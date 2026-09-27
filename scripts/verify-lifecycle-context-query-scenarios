@@ -5,8 +5,14 @@ import { spawnSync } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { queryLifecycleContext } from "./lib/lifecycle-context-query.mjs";
+import { loadRegistry, validateRegistry } from "./lib/lifecycle-registry.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+for (const [collection, id] of [["artifacts", "gate.user-confirmation"], ["checks", "gate.prototype-reviewed"], ["work_units", "check.missing"]]) {
+  const invalid = structuredClone(loadRegistry());
+  invalid[collection][0][collection === "work_units" ? "completion" : "trigger"] = `命中 ${id}`;
+  assert.throws(() => validateRegistry(invalid, { baseline: null }), /不存在的引用/);
+}
 
 const query = {
   mode: "route",
@@ -28,6 +34,7 @@ assert.equal(triageQuery.execution.mode, 'read_only');
 assert.equal(triage.mode_selection.gates_and_external_authorization, 'unchanged');
 assert.equal(triage.mode_selection.explicit_read_only, 'route');
 assert.equal(triage.mode_selection.clear_action_request, 'orchestrate');
+assert.equal(triage.mode_selection.clear_read_only_investigation_request, 'orchestrate');
 assert.equal(triage.mode_selection.mode_keywords_required, false);
 assert.equal(triage.clarification.timeout_is_answer, false);
 assert.equal(triage.next_action.skill_name_only_is_completion, false);
@@ -79,6 +86,19 @@ assert.throws(() => queryLifecycleContext({ stageId: "stage.discovery" }), /未�
 assert.throws(() => queryLifecycleContext({ workUnitId: "work-unit.discovery-requirements" }), /未知工作单元/);
 assert.match(first.sources.lifecycle_registry.semantic_sha256, /^[0-9a-f]{64}$/);
 assert.match(first.sources.orchestration_contract.sha256, /^[0-9a-f]{64}$/);
+const prototype = queryLifecycleContext({ stageId: 'stage.product-design', workUnitId: 'work-unit.prototype-design-v2' });
+assert.equal(prototype.execution.work_unit_route.evidence_schema_version, 4);
+assert.match(prototype.lifecycle.work_unit.completion, /schema v4/);
+assert.throws(() => queryLifecycleContext({ workUnitId: "work-unit.prototype-design" }), /未知工作单元/);
+assert.match(prototype.lifecycle.evidence.find(item=>item.id==='evidence.prototype-deliverable-verification').description, /schema v4/);
+assert.ok(prototype.lifecycle.artifacts.some(item=>item.id==='artifact.prototype-review-v2' && item.trigger.includes('check.prototype-reviewed')));
+assert.ok(prototype.lifecycle.artifacts.some(item=>item.id==='artifact.prototype-confirmation-v2' && item.trigger.includes('gate.product-design-approved')));
+assert.throws(()=>queryLifecycleContext({workUnitId:'work-unit.intensity-aware-verification'}),/未知工作单元/);
+assert.equal(queryLifecycleContext({workUnitId:'work-unit.intensity-aware-verification-v2'}).lifecycle.work_unit.scope,'template-source');
+const service = queryLifecycleContext({ stageId: 'stage.system-data-engineering', workUnitId: 'work-unit.service-project-initialization' });
+assert.equal(service.execution.work_unit_route.primary_skill, 'yss-layered-mvc-scaffold-generator');
+assert.equal(service.execution.work_unit_route.parent_work_unit, 'work-unit.implementation-repository-preparation');
+assert.deepEqual(service.execution.transition.next, ['work-unit.implementation-repository-preparation']);
 
 for (const invalid of [
   { mode: "invalid" },

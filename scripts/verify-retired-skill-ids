@@ -78,7 +78,11 @@ const matcher = new RegExp(retiredSkillPattern, "u");
 const matches = [];
 const inventory = spawnSync(
   "git",
-  ["ls-files", "-z", "--cached", "--others", "--exclude-standard"],
+  // These trees are already excluded below or unconditionally allowed above.
+  // Filter before buffering: retained Agent workspaces can exceed spawnSync's
+  // output limit without adding any active asset to this audit.
+  ["ls-files", "-z", "--cached", "--others", "--exclude-standard", "--", ".",
+    ":(exclude).template-source/evidence/**", ":(exclude).codegraph/**", ":(exclude)submodules/**"],
   { cwd: ROOT, encoding: "utf8" },
 );
 if (inventory.status !== 0) {

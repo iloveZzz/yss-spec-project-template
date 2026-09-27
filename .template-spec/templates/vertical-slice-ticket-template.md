@@ -72,14 +72,9 @@ Agent 使用 `scripts/slice-contract view <合同.yaml>` 展示审阅说明，�
 
 ### 后端阻断规则
 
-- [ ] 未填写 `Backend Slice Implementation Contract` 时不得写后端业务代码。
-- [ ] `CMD` / `Query` / `VO` / `SingleResult` / `MultiResult` / `PageResult` 按 `yss-dto` 定义或复用；不私自新建 / 混用响应包装。
-- [ ] Controller 不用内部类或非约定包临时承载主要 DTO / VO；写操作参数继承 `CommandDTO`，读操作参数继承 `QueryDTO` 或 `PageQuery`，分页查询优先继承 `PageQuery`。
-- [ ] Controller 不手工分页主要业务集合，不穿透 Repository / Mapper / PO。
-- [ ] Application 只做用例编排、事务边界和跨聚合协调，核心领域规则放入 Domain。
-- [ ] 需要持久化的切片必须补 PO / Repository / Convertor / GatewayImpl；临时 `InMemory*Gateway` 必须标记 `seam-deferred`。
-- [ ] POJO 样板代码默认使用 Lombok；成片手写 getter/setter、constructor、builder、logger 必须说明例外原因、测试证据和 review 结论。
-- [ ] MapStruct / Convertor 强制优先；`BeanUtils.copyProperties`、反射式通用拷贝或重复手写 mapping 必须说明例外原因、测试证据和 review 结论。
+- [ ] 涉及后端业务代码时，已批准且当前的 Slice Implementation Contract 绑定 Technical Design 的架构族、工程基线、适用 Skill、测试 seam 和实现写范围。
+- [ ] 根据已批准的 `domain-driven` 或 `layered-mvc` 路线，执行合同编译器给出的 DTO、Controller、Application、持久化和对象映射约束；不得把另一架构族的 Gateway、Domain 模块或映射方式强加给本切片。
+- [ ] 合同缺失、过期、验证失败或出现新影响时停止实现，返回生命周期重新编译与批准。
 
 ## 阻塞关系
 
@@ -127,7 +122,7 @@ Agent 使用 `scripts/slice-contract view <合同.yaml>` 展示审阅说明，�
 - [ ] 实现完成
 - [ ] 已新增测试且测试通过
 - [ ] 已移除调试 / 原型代码
-- [ ] 已在任务包核验 `Backend Slice Implementation Contract` 和 `Build Architecture Checklist`
+- [ ] 涉及后端时，已在任务包核验当前 Slice Implementation Contract 与适用架构约束
 - [ ] 已在任务包核验当前 `contract_id` / `contract_version`、全部工作单元和对应 `YSS Skill Execution Result`
 - [ ] 实际 changed files 均在合同允许路径内，预期证据齐全，验证结果包含执行时间
 - [ ] `new_impacts`、`drift`、`violation` 和重路由状态均有明确结论，合同未处于 `stale`

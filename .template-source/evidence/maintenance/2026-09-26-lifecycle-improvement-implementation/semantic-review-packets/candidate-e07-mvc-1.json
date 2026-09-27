@@ -1,0 +1,204 @@
+{
+  "result": {
+    "scenario": "e07-mvc",
+    "variant": "candidate",
+    "repeat": 1,
+    "elapsed_seconds": 261.13,
+    "exit_code": 0,
+    "timeout": false,
+    "assertion_failures": [],
+    "runtime_errors": [],
+    "tool_calls": 25,
+    "usage": [
+      {
+        "input_tokens": 521819,
+        "cached_input_tokens": 460160,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 7468,
+        "reasoning_output_tokens": 1288
+      }
+    ],
+    "automatic_result": "passed",
+    "semantic_review": "pending",
+    "trace": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-agent-evaluations-v2-2qx3mbr2/candidate/e07-mvc-1/trace.jsonl",
+    "steps": [
+      {
+        "step": "main",
+        "started_at": "2026-09-26T16:16:17Z",
+        "elapsed_seconds": 260.99,
+        "exit_code": 0,
+        "timeout": false,
+        "assertion_failures": [],
+        "runtime_errors": [],
+        "tool_calls": 25,
+        "usage": [
+          {
+            "input_tokens": 521819,
+            "cached_input_tokens": 460160,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 7468,
+            "reasoning_output_tokens": 1288
+          }
+        ],
+        "automatic_result": "passed",
+        "semantic_review": "pending",
+        "trace": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-agent-evaluations-v2-2qx3mbr2/candidate/e07-mvc-1/trace.jsonl"
+      }
+    ],
+    "unattempted_steps": []
+  },
+  "original_files_changed": [],
+  "original_files_missing": [],
+  "unsafe_paths": [],
+  "new_files": [
+    "api-check.json",
+    "technical-plan.md"
+  ],
+  "commands": [
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'pwd && cat yss-project.yaml'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"rg --files --hidden -g '\"'!'\"\\\\.git/**' -g '\"'!node_modules/**'\"' -g '\"'!*lock*'\"' -g '*technical*' -g '*api*decision*' -g '*scaffold*' -g '*implementation*' -g 'CONTEXT.md' -g 'AGENTS.md' -g '*tailoring*' -g '*lifecycle-registry*' -g '*SKILL.md' -g '*registration*' -g '*project*' .\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .agents/skills/yss-technical-design/SKILL.md .agents/skills/yss-product-lifecycle/SKILL.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat CONTEXT.md .template-spec/process/harness-process-tailoring.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .agents/skills/yss-openapi-governance/SKILL.md .agents/skills/i-have-adhd/SKILL.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"rg --files --hidden -g '\"'!.git/**'\"' -g '\"'!.agents/**'\"' -g '\"'!.template-spec/**'\"' -g '\"'!scripts/**'\"' -g '\"'!node_modules/**'\"' -g '\"'!.template-source/**'\"' .\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .agents/skills/yss-product-lifecycle/SKILL.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"rg -n '\"'^##|Order|订单|layered|API|技术|ui|UI|兼容|最近'\"' CONTEXT.md .template-spec/process/harness-process-tailoring.md\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .agents/skills/yss-technical-design/SKILL.md engineering-baseline.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .template-spec/process/contract-reading.md scripts/lib/api-contract-decision.test.mjs'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .template-spec/agents/backend-architecture-profiles.md .template-spec/process/document-writing.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"sed -n '1,38p' .template-spec/process/harness-process-tailoring.md && sed -n '100,150p' CONTEXT.md\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"sed -n '1,92p' .agents/skills/yss-openapi-governance/SKILL.md && cat scripts/lib/api-contract-decision.mjs\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"ls -ld .eval-tmp && sed -n '1,190p' scripts/lib/contract-source.mjs\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"cat .agents/skills/yss-technical-design/references/technical-design-contract.md && rg -n 'technical-analysis|technical-design|engineering-contract-approved|backend-architecture-platform-approved|api-contract-decision|product-design.*approved|openapi.*(review|freeze)' .template-spec/process/lifecycle-registry.yaml && rg -n '\\\"(required|schema_version|openapi|draft_review|freeze|decision_version|status)\\\"' .template-spec/process/schemas/api-contract-decision-v2.schema.json\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"sed -n '1,210p' scripts/lib/json-schema.mjs\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"sed -n '1,45p' .agents/skills/yss-openapi-governance/SKILL.md\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"sed -n '165,210p' .template-spec/process/lifecycle-registry.yaml && sed -n '425,442p' .template-spec/process/lifecycle-registry.yaml && sed -n '523,554p' .template-spec/process/lifecycle-registry.yaml\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .template-spec/process/schemas/api-contract-decision-v2.schema.json'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"node --input-type=module <<'NODE'\nimport { spawnSync } from 'node:child_process';\nimport { writeFileSync } from 'node:fs';\nimport path from 'node:path';\nconst command = 'node --test scripts/lib/api-contract-decision.test.mjs';\nconst environment = {\n  TMPDIR: path.join(process.cwd(), '.eval-tmp'),\n  PYTHONPATH: path.join(process.cwd(), '.eval-python'),\n  PYTHONDONTWRITEBYTECODE: '1',\n};\nconst startedAt = new Date().toISOString();\nconst run = spawnSync('node', ['--test', 'scripts/lib/api-contract-decision.test.mjs'], {\n  cwd: process.cwd(),\n  env: { ...process.env, ...environment },\n  encoding: 'utf8',\n  timeout: 45000,\n  maxBuffer: 4 * 1024 * 1024,\n});\nconst record = {\n  command,\n  exit_code: run.status,\n  signal: run.signal,\n  started_at: startedAt,\n  finished_at: new Date().toISOString(),\n  environment,\n  stdout: run.stdout ?? '',\n  stderr: run.stderr ?? '',\n  error: run.error ? { code: run.error.code, message: run.error.message } : null,\n  limitations: [\n    '仅在隔离 fixture 内执行现有 Node 测试，所有记录均为 test-data-only，不构成真实批准。',\n    'TMPDIR 指向 fixture 内已有 .eval-tmp；使用 fixture 内已有 .eval-python 依赖并禁用 Python 字节码写入；未联网或安装依赖。',\n    '指定测试包含两个 schema v1 / impact=not-applicable 场景，检查影响评估、原因、证据及原始字节摘要漂移；不覆盖 v2 prepare/migrate 或 required 分支的完整冻结链。',\n    '未提供实际订单查询 Spec、旧/新 OpenAPI、客户端样本及后端实现，未验证订单查询兼容性、HTTP 行为、数据库行为或性能。',\n    '未执行 Maven 构建、Redocly lint/bundle、独立审查或发布验证；PATH 替身的成功不能代表真实构建或交付。'\n  ],\n};\nwriteFileSync('api-check.json', JSON.stringify(record, null, 2) + '\\\\n');\nprocess.stdout.write(record.stdout);\nprocess.stderr.write(record.stderr);\nconsole.log(JSON.stringify({ command, exit_code: record.exit_code, signal: record.signal, error: record.error, artifact: 'api-check.json' }));\nif (run.status \"'!== null) process.exitCode = run.status;\nelse process.exitCode = 1;\nNODE'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"rg -n -A 28 -B 8 'existing.*mvc|layered-mvc-service|mvc-data-analysis-v1' .template-spec/agents/yss-skill-registry.yaml\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"sed -n '1,75p' .agents/skills/yss-dto/references/openapi-wire-profile.yaml\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .agents/skills/yss-technical-design/references/mvc-design.schema.json'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"node --input-type=module <<'NODE'\nimport assert from 'node:assert/strict';\nimport { readFileSync, existsSync, readdirSync } from 'node:fs';\nconst report = JSON.parse(readFileSync('api-check.json', 'utf8'));\nconst plan = readFileSync('technical-plan.md', 'utf8');\nassert.equal(report.command, 'node --test scripts/lib/api-contract-decision.test.mjs');\nassert.equal(report.exit_code, 0);\nassert.equal(report.error, null);\nassert.ok(Array.isArray(report.limitations) && report.limitations.length > 0);\nassert.match(report.stdout, /pass 2/);\nassert.match(report.stdout, /fail 0/);\nconst refs = [...plan.matchAll(/\\\\]\\\\(([\"'^)]+)'\"\\\\)/g)].map(match => match[1]);\nfor (const ref of refs) assert.ok(existsSync(ref), \"'`缺少文档引用: ${ref}`);\nconst leftovers = readdirSync('\"'.eval-tmp').filter(name => name.startsWith('api-contract-decision-'));\nassert.deepEqual(leftovers, []);\nconsole.log(JSON.stringify({ artifacts: ['technical-plan.md', 'api-check.json'], evidence_fields: 'valid', document_references: refs.length, missing_references: 0, test_temporary_directories_remaining: leftovers.length }));\nNODE\"",
+      "exit_code": 0
+    }
+  ],
+  "command_errors": [],
+  "other_tools": [],
+  "agent_messages": [
+    {
+      "step": "main",
+      "text": "我会读取仓库身份、现有架构合同和对应技能，编写 `technical-plan.md`，并把指定测试的实际结果写入 `api-check.json`。本轮仅写这两个文件。\n"
+    },
+    {
+      "step": "main",
+      "text": "`engineering-baseline.md` 确认了现有 `layered-mvc`、无 UI 影响且无需脚手架。我将使用 `yss-technical-design` 的 MVC 分支、`yss-openapi-governance` 和文档写作技能，区分 API 决定格式的 v1/v2 兼容与业务接口版本；缺少的订单契约证据会明确列出。\n"
+    },
+    {
+      "step": "main",
+      "text": "指定测试已执行：2 项通过，退出码为 `0`，原始输出已写入 `api-check.json`。它验证了 API 决定的证据要求和摘要漂移检查，未验证真实订单接口兼容性；我会在计划中明确这一区别及后续验证要求。\n"
+    },
+    {
+      "step": "main",
+      "text": "已仅写入两个产物：\n\n- [technical-plan.md](technical-plan.md)：说明既有 MVC 复用、API 决定 v1/v2 兼容、接口版本策略、影响与验证缺口。\n- [api-check.json](api-check.json)：保存指定测试的实际结果，`exit_code: 0`，2 项通过，包含命令、原始输出及限制。\n\n测试未验证真实订单接口兼容性。未生成工程或业务代码，未重新请求架构选择。"
+    }
+  ],
+  "artifacts": {
+    "technical-plan.md": "# 订单查询 API 兼容性修订技术计划\n\n本次沿用现有 `layered-mvc` 架构，在既有查询链路上规划兼容性修订，保持工程结构。交付范围仅为本文和 [api-check.json](api-check.json)。两份文件均为 `test-data-only`：本文是可审阅的技术计划草稿，测试结果只证明指定本地检查的结果，不构成真实项目批准、OpenAPI Freeze 或实现就绪结论。\n\n**依据与当前边界**\n\n根 [yss-project.yaml](yss-project.yaml) 声明 `schema_version: 1`、`repository_mode: project-instance`。[engineering-baseline.md](engineering-baseline.md) 明确既有后端为 `layered-mvc`、`UI impact=false`、无需脚手架，与用户输入一致。按 [流程裁剪规则](.template-spec/process/harness-process-tailoring.md)，本轮定位于 `stage.system-data-engineering` / `work-unit.technical-analysis` 的有界计划起草；未把任何上游阶段视为已批准。\n\n本次读取并采用的当前技能为 [yss-product-lifecycle](.agents/skills/yss-product-lifecycle/SKILL.md)、[yss-technical-design](.agents/skills/yss-technical-design/SKILL.md)、[yss-openapi-governance](.agents/skills/yss-openapi-governance/SKILL.md) 和 [i-have-adhd](.agents/skills/i-have-adhd/SKILL.md)。文档写法遵循 [document-writing.md](.template-spec/process/document-writing.md)，门禁以 [lifecycle-registry.yaml](.template-spec/process/lifecycle-registry.yaml) 为准。\n\n当前 fixture 没有实际订单查询 Spec、旧/新 OpenAPI、消费者清单、后端 POM 或完整实现仓登记。工程基线足以确定本轮复用 MVC 的方向，不能证明真实模块、平台版本或接口行为。本文不补造 API 路径、业务字段、错误码、规则 ID、版本号或批准记录。\n\n**架构复用与职责**\n\n架构族保持 `layered-mvc`；正式技术合同应以 `source_kind: existing-registration` 绑定现有项目登记及其原始字节摘要。现有 Spring Boot、Java、依赖版本应从固定工程基线/POM 复核后沿用；当前未提供这些版本，不作默认选择或升级。\n\n`gate.backend-architecture-platform-approved` 对本任务记为 `not-applicable`：这是既有后端的 API 修订，没有新工程、架构转换或平台升级，不再次请求 DDD/MVC 选择。架构复用的依据仍须在后续真实实现接入时核验。\n\n下表描述既有代码的职责落点，不要求新增模块或重命名目录。实际映射遵循 [backend-architecture-profiles.md](.template-spec/agents/backend-architecture-profiles.md) 及已登记 Profile；不能把现有工程强套为生成器的三模块或六模块结构。\n\n| 既有职责 | 本次承接方式 | 依赖边界 |\n|---|---|---|\n| Web / Controller、请求 DTO、响应 VO | 接收旧客户端请求，执行输入边界校验，在 HTTP DTO 与内部查询/结果之间转换，保持既有响应包装和错误映射 | 调用用例层，不直连 Repository |\n| Service / 用例层 | 承接查询规则、参数语义与查询编排；按批准差异处理兼容转换 | 依赖持久化能力，不依赖 HTTP DTO、Spring MVC 或数据库驱动；实际名称沿用现有 service/core |\n| Repository、Mapper、PO | 复用既有查询、映射和存储模型；仅在契约差异确实要求时评估调整 | 不反向依赖 Web 或用例层 |\n\n计划中的查询流程为：既有 HTTP 入口 → 边界校验与 DTO 转换 → 用例层查询规则 → Repository 读取 → 结果转换与既有响应。每项实际修订必须绑定来源规则/场景，并对应成功、失败和边界测试。未提供规则时仅列验证要求，不推断新的订单业务行为。\n\n一致性设计沿用既有读取事务和隔离语义；查询失败按既有稳定错误映射返回并保留内部因果异常。纯查询不新增写事务、补偿、幂等记录或状态迁移。重复调用应无新增写副作用；并发期间的结果与分页一致性以冻结合同和现有存储能力为准，不承诺跨请求快照。外部集成、状态流转和数据库结构变更在当前限定范围记为 `not-applicable`；若实际差异涉及这些内容，先重新分析影响。\n\nMVC 技术设计由 `yss-technical-design` 直接组织，不加载 `yss-domain`、不调用 DDD 战术设计、不要求战略 DDD、聚合、值对象、Domain Event 或 DDD Gateway。无需运行任何脚手架生成器。若后续形成正式 Technical Design Contract，新建格式为 schema v2；旧 schema v1 战术合同仅以 `--legacy-ddd` 兼容 DDD，不能解释为 MVC。本文不是该机器合同。\n\n**API 决定格式与兼容策略**\n\n本任务明确修订订单查询 API，API 影响为 `required`。无 UI 不等于无 API 影响，不能使用 `not-applicable` 绕过契约审查。以下区分决定文件格式、决定资产版本与对外 API 版本。\n\n| 对象 | 采用规则 |\n|---|---|\n| 新 API Contract Decision 格式 | 使用 `schema_version: 2`、`kind: api-contract-decision`，初始状态为 `draft`；按 [v2 schema](.template-spec/process/schemas/api-contract-decision-v2.schema.json) 组织 |\n| 历史 v1 决定 | 保留读取兼容，保持原文件及旧批准的原始字节；不能覆盖旧文件或默认为已迁移 |\n| 显式 v1 → v2 迁移 | 先校验完整 v1，使用 `scripts/api-contract-decision migrate` 写入新路径，指定严格递增的 `decision_version`；新候选为 draft，不自动继承批准 |\n| 资产版本与摘要 | `decision_version` 使用实际资产的 `vN`；消费绑定 `ref/version/digest/impact`，摘要取原始文件字节。v2 不持久化 `current_version`，当前性须由真实绑定检查得出 |\n| OpenAPI 与对外版本 | 权威协议为 OpenAPI 3.1 YAML；其格式版本、合同修订版本、HTTP 路径版本彼此独立。不能因决定格式升为 v2 就把业务接口改为 `/api/v2/` |\n\n以上以 [contract-reading.md](.template-spec/process/contract-reading.md)、治理技能“新建 v2；历史 v1 只读兼容”的明确规则及 [api-contract-decision.mjs](scripts/lib/api-contract-decision.mjs) 为依据。技能职责列表仍有 `api-contract-decision-v1` 字样，该历史表述不作为新建 v1 的依据。\n\nv2 的 `openapi` 是唯一 Draft 绑定，包含 `id/ref/version/digest`；`validation_record` 与 `draft_review` 保存各自的 `ref/digest`。审查结论、阻断项、Draft 来源必须读取实际审查记录，不能复制一份自报通过字段。`freeze` 仅保存版本和时间，并与同一 OpenAPI 版本关联。评估引用、评估摘要和可读证据同样必需；任一来源字节漂移后重新核验受影响证据，不靠 `status: approved` 自证有效。\n\n对外兼容性以旧冻结契约和真实旧消费者为基准：优先保留既有路径、HTTP 方法、稳定 `operationId`、请求参数语义、响应结构和错误行为。新增可选字段也须验证旧消费者的未知字段处理，不能直接认定兼容。新增必填参数、字段删改或类型/可空性变化、默认值/枚举/排序变化、错误语义变化均须逐项判断；发现破坏性差异时先调整方案，确需破坏性变更再单独提出版本并行、消费者迁移与退出策略，不能静默替换既有契约。本轮没有实际契约差异，尚不能判断真实兼容性或决定对外版本。\n\n公开 schema 消费 [YSS DTO wire profile](.agents/skills/yss-dto/references/openapi-wire-profile.yaml)，响应落为具体 endpoint wire shape。重点比对请求省略与 null、单对象/列表/分页包装、空结果、数字精度以及既有错误映射；分页接口还需验证参数边界、总数和排序语义。字段仅在真实接口存在时纳入追踪，不从 Java getter 推导公开字段，不借本次修订自动迁移历史 DTO 包。\n\n后续正式契约工作按以下顺序执行，本轮仅记录计划：\n\n1. 取得当前 Spec、旧冻结 YAML 和真实差异，形成逐字段及行为影响评估；高风险冻结行为差异用 Spec Delta 记录。\n2. 在单一 OpenAPI 3.1 YAML Draft 上表达修订，执行项目锁定版本的 Redocly lint 和 YSS DTO profile 检查，记录实际命令、退出码及 YAML SHA-256。\n3. 由独立 Reviewer 审查同一 Draft 和 Validation；缺失 lint、证据过期或存在阻断项时保持未批准。起草者不能自审。\n4. 将 Technical Design、Data Architecture Decision（无影响时有依据地记录不适用）和 API Contract Decision 交 `gate.engineering-contract-approved` 原子批准，API 影响同时绑定并冻结同一 YAML。只有 Freeze 后才能派生 JSON。\n5. 后续实施再按原登记仓库准备和 `yss-implementation-contract-compiler` 起草 Slice 合同，经批准且当前后实现。本文和指定测试不授予 `ready-for-agent`。\n\n**影响、验证与回退**\n\n| 影响面 | 本轮判断与证据 | 后续验证要求 |\n|---|---|---|\n| Backend / API | 命中；用户明确为既有订单查询兼容性修订 | 覆盖旧请求、旧消费者读取新响应、参数拒绝、空结果、查询失败和序列化；在实际公开 HTTP seam 上断言 |\n| 工程结构 / 脚手架 | 无变化；工程基线声明既有 MVC、无需脚手架 | 核对现有模块和依赖方向，复用 POM/平台，不生成工程 |\n| UI / 产品设计 / 前端实现 | `not-applicable`；用户声明无 UI，工程基线一致 | 不安排原型、截图、视觉回归或前端构建；API 消费者兼容仍须检查 |\n| 数据结构 / 状态 / 外部集成 | 当前范围 `not-applicable`；仅查询兼容修订，未要求这些变更 | 若 SQL、映射、状态或集成行为发生变化，重新路由并补专项验证 |\n| 跨仓影响 | 尚未确定；无消费者及仓库清单 | 后续先识别真实调用方；若需协同改动，绑定各仓版本、发布顺序和回滚点 |\n| 兼容风险 | 当前未验证，不能以“兼容性修订”推定向后兼容 | 对比旧/新请求响应样本；验证未知字段、默认值、错误与分页变化等反例 |\n\n将来实现优先在公开 HTTP seam 写旧消费者兼容场景，并通过用例层成功/失败测试和必要的 Repository 集成测试验证行为；若有查询变更，再检查实际数据库方言及性能。后端使用已登记工程根 `./mvnw` 执行适用测试/构建；Wrapper 缺失时记录受控例外与实际命令。当前没有真实实现仓、POM、数据库或已采纳覆盖率标准，不填写虚构构建结果或覆盖率达标结论。\n\n发布前需绑定真实可回退的后端版本和对应冻结契约；兼容失败时回退到该配对版本。若后续不得不并行新 API 版本，应保留旧版本服务直至批准的消费者迁移完成；退出时间及负责人当前未登记。本轮无部署、版本切换或其他外部动作。\n\n**本次已执行的验证与缺口**\n\n已执行 `node --test scripts/lib/api-contract-decision.test.mjs`，实际退出码 `0`，共 2 项测试，2 项通过、0 项失败。完整 stdout、stderr、执行时间、环境限定和 limitations 保存于 [api-check.json](api-check.json)。临时目录限定为 fixture 内 `.eval-tmp`，使用已有 `.eval-python` 依赖并禁用 Python 字节码写入；未联网、安装依赖或绕过 PATH 替身。\n\n这两项测试覆盖 schema v1 的 `not-applicable` 决定必须绑定影响评估、原因和可读证据，以及决定/评估原始字节漂移时失效。它们没有覆盖 schema v2 的 prepare/migrate、`required` 分支的 Draft/Validation/Review/Freeze 全链，也没有调用真实订单查询 API。退出码 `0` 不能证明本任务的订单兼容性、真实构建、独立审查或可发布性。本轮属于文档与既有校验执行，`behavior-tdd` 不适用；未编写业务代码或新测试，可执行验证即用户指定命令。\n\n已读取唯一根 [CONTEXT.md](CONTEXT.md) 及文首合同；业务术语表尚无订单条目。因此 `context_reconciliation` 尚不具备通过条件，本文只沿用用户的描述，不虚构 `Global/Order` 等稳定身份。按仅写两个产物的范围，本轮不改词汇表、不创建父 Ticket、checkpoint、正式技术/API 合同或批准记录，不推进阶段。\n\n后续真实流转的必要输入为：已批准且当前的订单 Spec/规则/场景、稳定术语及通过的对账、完整工程登记与固定 POM、旧/新 OpenAPI 和消费者样本、契约校验与独立审查证据。负责人当前未登记；这些缺口应在相应资产所有者进入正式工程契约批准前补齐。当前完成结论仅限本轮两份测试产物，工程门禁和实际交付仍未验证。\n",
+    "api-check.json": "{\n  \"command\": \"node --test scripts/lib/api-contract-decision.test.mjs\",\n  \"exit_code\": 0,\n  \"signal\": null,\n  \"started_at\": \"2026-09-26T16:17:52.015Z\",\n  \"finished_at\": \"2026-09-26T16:17:52.555Z\",\n  \"environment\": {\n    \"TMPDIR\": \"/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-agent-evaluations-v2-2qx3mbr2/candidate/e07-mvc-1/workspace/.eval-tmp\",\n    \"PYTHONPATH\": \"/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-agent-evaluations-v2-2qx3mbr2/candidate/e07-mvc-1/workspace/.eval-python\",\n    \"PYTHONDONTWRITEBYTECODE\": \"1\"\n  },\n  \"stdout\": \"✔ API not-applicable 决定必须绑定影响评估、原因和可读证据 (363.892625ms)\\n✔ API Decision 或影响评估原始字节漂移即失效 (87.292375ms)\\nℹ tests 2\\nℹ suites 0\\nℹ pass 2\\nℹ fail 0\\nℹ cancelled 0\\nℹ skipped 0\\nℹ todo 0\\nℹ duration_ms 504.591167\\n\",\n  \"stderr\": \"\",\n  \"error\": null,\n  \"limitations\": [\n    \"仅在隔离 fixture 内执行现有 Node 测试，所有记录均为 test-data-only，不构成真实批准。\",\n    \"TMPDIR 指向 fixture 内已有 .eval-tmp；使用 fixture 内已有 .eval-python 依赖并禁用 Python 字节码写入；未联网或安装依赖。\",\n    \"指定测试包含两个 schema v1 / impact=not-applicable 场景，检查影响评估、原因、证据及原始字节摘要漂移；不覆盖 v2 prepare/migrate 或 required 分支的完整冻结链。\",\n    \"未提供实际订单查询 Spec、旧/新 OpenAPI、客户端样本及后端实现，未验证订单查询兼容性、HTTP 行为、数据库行为或性能。\",\n    \"未执行 Maven 构建、Redocly lint/bundle、独立审查或发布验证；PATH 替身的成功不能代表真实构建或交付。\"\n  ]\n}\n"
+  },
+  "semantic_review": "pending"
+}

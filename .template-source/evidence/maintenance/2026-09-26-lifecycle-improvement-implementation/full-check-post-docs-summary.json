@@ -1,0 +1,13 @@
+{
+  "exit_code": 1,
+  "top_level_started_commands": 90,
+  "top_level_passed_commands": 89,
+  "top_level_failed_commands": 1,
+  "top_level_failures": [
+    "[失败] scripts/verify-strategic-handoff-tools-lock --require-committed (38ms, exit=1)"
+  ],
+  "final_error": "模板核验失败: 检查失败: scripts/verify-strategic-handoff-tools-lock --require-committed",
+  "nested_failure_lines": 6,
+  "parsing_note": "Only initial progress block counts top-level; later grouped raw logs include expected negative fixture failures",
+  "remaining_boundary": "committed-source required; no commit authorized"
+}

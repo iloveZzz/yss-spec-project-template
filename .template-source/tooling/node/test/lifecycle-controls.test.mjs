@@ -30,6 +30,25 @@ test('registry distinguishes seven approval gates from internal checks and rejec
  const cyclic=structuredClone(r);cyclic.checks[0].requires_checks=[cyclic.checks[1].id];cyclic.checks[1].requires_checks=[cyclic.checks[0].id];
  assert.throws(()=>validateRegistry(cyclic,{baseline:null}),/依赖循环/);
 });
+test('published lifecycle IDs migrate without changing retained semantics or accepting retired prose references',()=>{
+ const registry=loadRegistry();
+ assert.doesNotThrow(()=>validateRegistry(registry));
+ for(const [oldId,newId] of [
+  ['artifact.prototype-review','artifact.prototype-review-v2'],
+  ['artifact.prototype-confirmation','artifact.prototype-confirmation-v2'],
+  ['work-unit.intensity-aware-verification','work-unit.intensity-aware-verification-v2'],
+  ['work-unit.intensity-aware-review','work-unit.intensity-aware-review-v2'],
+ ]) {
+  assert.ok(registry.id_policy.deprecated_ids.includes(oldId));
+  assert.ok([...registry.artifacts,...registry.work_units].some(item=>item.id===newId));
+ }
+ const changed=structuredClone(registry);
+ changed.work_units.find(item=>item.id==='work-unit.ssot-update').completion='changed';
+ assert.throws(()=>validateRegistry(changed),/语义快照已变化/);
+ const stale=structuredClone(registry);
+ stale.artifacts.find(item=>item.id==='artifact.prototype-review-v2').trigger='命中 gate.prototype-reviewed。';
+ assert.throws(()=>validateRegistry(stale,{baseline:null}),/不存在的引用/);
+});
 test('automatic evidence passes without another human approval, missing and failed checks block',()=>fixture(f=>{
  assert.equal(f.verify().result,'passed');
  for(const status of ['pending','failed','stale','not-applicable']){f.state.checks[f.checkId].status=status;assert.throws(f.verify,/未通过|未命中/);}

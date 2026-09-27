@@ -1,0 +1,21 @@
+#!/usr/bin/env node
+import { parseArgs } from 'node:util';
+import path from 'node:path';
+import { preparePlanSpecEntry, diffPlanSpecEntry } from './lib/plan-spec-entry-view.mjs';
+
+try {
+  const [operation, ...args] = process.argv.slice(2);
+  const { values } = parseArgs({ args, strict: true, options: {
+    root: { type: 'string' }, feature: { type: 'string' }, plan: { type: 'string' },
+    'context-reconciliation': { type: 'string' }, review: { type: 'string' },
+  } });
+  const root = path.resolve(values.root ?? '.');
+  let result;
+  if (operation === 'prepare') result = preparePlanSpecEntry({ root, featureId: values.feature, planRef: values.plan, contextRef: values['context-reconciliation'] });
+  else if (operation === 'diff') result = diffPlanSpecEntry({ root, reviewRef: values.review });
+  else throw new TypeError('用法: scripts/plan-spec-entry prepare --root <项目> --feature <id> --plan <ref> --context-reconciliation <ref> | diff --root <项目> --review <ref>');
+  process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+} catch (error) {
+  process.stdout.write(`${JSON.stringify({ schema_version: 1, status: 'blocked', blocking_signals: ['plan-spec-entry-input-unavailable'], missing_requirements: [error.message], approval_created: false }, null, 2)}\n`);
+  process.exitCode = 1;
+}

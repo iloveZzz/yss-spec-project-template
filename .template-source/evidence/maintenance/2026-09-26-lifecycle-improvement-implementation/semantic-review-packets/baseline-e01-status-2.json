@@ -1,0 +1,152 @@
+{
+  "result": {
+    "scenario": "e01-status",
+    "variant": "baseline",
+    "repeat": 2,
+    "elapsed_seconds": 149.97,
+    "exit_code": 0,
+    "timeout": false,
+    "assertion_failures": [],
+    "runtime_errors": [],
+    "tool_calls": 15,
+    "usage": [
+      {
+        "input_tokens": 352156,
+        "cached_input_tokens": 311680,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 3816,
+        "reasoning_output_tokens": 1206
+      }
+    ],
+    "automatic_result": "passed",
+    "semantic_review": "pending",
+    "trace": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-agent-evaluations-v2-2qx3mbr2/baseline/e01-status-2/trace.jsonl",
+    "steps": [
+      {
+        "step": "main",
+        "started_at": "2026-09-26T14:51:27Z",
+        "elapsed_seconds": 149.82,
+        "exit_code": 0,
+        "timeout": false,
+        "assertion_failures": [],
+        "runtime_errors": [],
+        "tool_calls": 15,
+        "usage": [
+          {
+            "input_tokens": 352156,
+            "cached_input_tokens": 311680,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 3816,
+            "reasoning_output_tokens": 1206
+          }
+        ],
+        "automatic_result": "passed",
+        "semantic_review": "pending",
+        "trace": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-agent-evaluations-v2-2qx3mbr2/baseline/e01-status-2/trace.jsonl"
+      }
+    ],
+    "unattempted_steps": []
+  },
+  "original_files_changed": [],
+  "original_files_missing": [],
+  "unsafe_paths": [],
+  "new_files": [
+    "assessment.json"
+  ],
+  "commands": [
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat yss-project.yaml'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc pwd",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"rg --files --hidden -g 'checkpoint.json' -g 'AGENTS.md' -g '*assessment*' -g '*entry*' -g '*status*' -g '\"'!node_modules'\"' -g '\"'!.git'\"'\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .agents/skills/yss-product-lifecycle/SKILL.md .template-spec/process/harness-process-tailoring.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat checkpoint.json AGENTS.md CONTEXT.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat scripts/lifecycle-status scripts/lib/lifecycle-status.mjs'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'wc -l CONTEXT.md scripts/lib/stage-tracking.mjs .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .agents/skills/yss-product-lifecycle/SKILL.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"rg -n 'stage.plan|work-unit.plan-requirements|lifecycle-status|read.only|只读|status' .template-spec/process/lifecycle-registry.yaml .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml .template-spec/process/stage-tracking.md scripts/lib/stage-tracking.mjs\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"python3 -B - <<'PY'\nimport os, json, hashlib\nfrom pathlib import Path\nroot=Path.cwd()\nassert not (root/'assessment.json').exists(), 'assessment.json 已存在；不得覆盖'\nentries={}\nfor base, dirs, files in os.walk(root, followlinks=False):\n    for name in dirs+files:\n        p=Path(base)/name\n        rel=p.relative_to(root).as_posix()\n        s=p.lstat()\n        if p.is_symlink():\n            entries[rel]=['symlink',s.st_mode,os.readlink(p)]\n        elif p.is_file():\n            entries[rel]=['file',s.st_mode,hashlib.sha256(p.read_bytes()).hexdigest()]\n        else:\n            entries[rel]=['directory',s.st_mode]\nprint(json.dumps(entries,sort_keys=True))\nPY\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"sed -n '1,90p' scripts/lib/stage-tracking.mjs\nsed -n '40,76p' .template-spec/process/lifecycle-registry.yaml\nsed -n '380,420p' .template-spec/process/lifecycle-registry.yaml\nsed -n '50,103p' .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml\nsed -n '202,219p' .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml\nsed -n '313,337p' .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml\nsed -n '1045,1060p' .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml\ncat .template-spec/process/stage-tracking.md\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'scripts/lifecycle-status --checkpoint checkpoint.json'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"sed -n '65,117p' CONTEXT.md\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"python3 -B - <<'PY'\nimport os, json, hashlib\nfrom pathlib import Path\nroot=Path.cwd()\nentries={}\nfor base, dirs, files in os.walk(root, followlinks=False):\n    for name in dirs+files:\n        p=Path(base)/name\n        rel=p.relative_to(root).as_posix()\n        s=p.lstat()\n        if p.is_symlink():\n            entries[rel]=['symlink',s.st_mode,os.readlink(p)]\n        elif p.is_file():\n            entries[rel]=['file',s.st_mode,hashlib.sha256(p.read_bytes()).hexdigest()]\n        else:\n            entries[rel]=['directory',s.st_mode]\nassessment=json.loads((root/'assessment.json').read_text())\nassert set(assessment)=={'stage','known_blockers','verification_scope','execution_authorized','next_action'}\nassert assessment['execution_authorized'] is False\nprint(json.dumps({'entries':entries,'assessment':assessment},sort_keys=True))\nPY\"",
+      "exit_code": 0
+    }
+  ],
+  "command_errors": [],
+  "other_tools": [],
+  "agent_messages": [
+    {
+      "step": "main",
+      "text": "我会按项目已有生命周期入口核对 `checkpoint.json` 和相关证据，仅查看状态，并将结论写入 `assessment.json`。\n\n"
+    },
+    {
+      "step": "main",
+      "text": "已确认仓库为 `project-instance`，checkpoint 记录在 Plan 阶段，`context_reconciliation` 仍为 `pending`。我会使用 `yss-product-lifecycle` 技能指定的只读状态入口，并区分“状态入口未报告阻塞”与“已经确认可实施”。\n\n"
+    },
+    {
+      "step": "main",
+      "text": "状态入口已成功运行：当前为 Plan／需求分析待执行，负责人未登记，未报告阻塞。但该入口不做完整实施就绪验证；checkpoint 中的词汇对账仍待完成，资产和门禁记录也为空，因此本次不能确认可以实施。我会将这些检查边界写入报告，并核对原文件未变。\n\n"
+    },
+    {
+      "step": "main",
+      "text": "已保存 [assessment.json](assessment.json)。\n\n当前处于 `stage.plan`，下一工作单元为需求分析。只读入口未报告阻塞，但词汇对账仍待完成，本次未确认可以实施，`execution_authorized=false`。\n\n已校验仅新增报告，原文件未变，流程未推进。"
+    }
+  ],
+  "artifacts": {
+    "assessment.json": "{\n  \"stage\": \"stage.plan\",\n  \"known_blockers\": [\n    \"流转前置缺口：checkpoint.json 的 context_reconciliation.status 为 pending，ref 为 null，evidence_refs 为空。按项目合同，批准或流转前须完成并校验对账；这不表示当前只读状态入口报告了 blocked，也不禁止后续获授权的需求分析。\"\n  ],\n  \"verification_scope\": {\n    \"checked\": [\n      \"读取 yss-project.yaml，确认 schema_version=1、repository_mode=project-instance；读取 AGENTS.md、根 CONTEXT.md、yss-product-lifecycle 技能及相关流程裁剪规则。\",\n      \"实际执行项目只读入口 scripts/lifecycle-status --checkpoint checkpoint.json，退出码为 0；入口返回 read_only=true、checkpoint_status=routing、owner=未登记、blockers=[]。\",\n      \"入口核对 checkpoint 身份和版本、阶段 ID、下一工作单元 ID 及其执行路由，并生成 checkpoint、生命周期注册表及编排合同的当前摘要。\",\n      \"核对注册表中 stage.plan 的退出条件、work-unit.plan-requirements 的含义，以及编排合同中的只读模式、词汇对账与 ready_for_agent 要求。\",\n      \"检查 checkpoint 内容：artifacts={}、gates={}，没有 stage_tracking，没有可供该入口核验的已批准资产引用或对账证据引用；不能据此认定 Plan 已完成或门禁已通过。\"\n    ],\n    \"not_checked\": [\n      \"未执行完整 checkpoint schema、context_reconciliation 或 stage-tracking 专项校验；未进行完整生命周期流转验证或 ready-for-agent 计算。\",\n      \"未核验 checkpoint 未引用的实际 Plan、Spec、设计、OpenAPI、父 Ticket、垂直切片、用户批准及 Slice Implementation Contract 的内容、完整性和新鲜度。\",\n      \"未核验实现仓库准备、分支、CI、回滚点或质量基线；未运行构建、业务测试、独立代码审查、发布验证或模板验证套件。\",\n      \"未访问网络、外部 tracker、实现仓库或真实用户状态；fixture 中的测试数据不构成真实批准，本地状态入口成功不代表真实构建或交付通过。\"\n    ],\n    \"entry_result\": {\n      \"command\": \"scripts/lifecycle-status --checkpoint checkpoint.json\",\n      \"exit_code\": 0,\n      \"read_only\": true,\n      \"checkpoint_status\": \"routing\",\n      \"work_unit\": \"work-unit.plan-requirements\",\n      \"owner\": \"未登记\",\n      \"blockers\": [],\n      \"suggested_next_action\": \"执行 work-unit.plan-requirements\",\n      \"source_digests\": {\n        \"checkpoint\": {\n          \"ref\": \"checkpoint.json\",\n          \"digest\": \"sha256:c07bae643950ab30962c2967872122fc9f13abc28a5f24f6ab5a8db6ca73cc90\"\n        },\n        \"registry\": {\n          \"ref\": \".template-spec/process/lifecycle-registry.yaml\",\n          \"digest\": \"sha256:e9fbae32a659edff9444301ada1c1fdfc36ae0e8c45c8148e143aa04d761f83e\"\n        },\n        \"orchestration\": {\n          \"ref\": \".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml\",\n          \"digest\": \"sha256:3e4865660e976bd9a19726d93b876e550c1657f9cee291e7ea21a452180f752f\"\n        }\n      }\n    },\n    \"interpretation\": \"known_blockers 中列出的是从 checkpoint 与合同确认的流转前置缺口；状态入口自身报告的 blockers 仍为 []。该入口仅投影当前状态，空阻塞列表和退出码 0 均不授予实施权限。\",\n    \"change_scope\": \"本次仅新增 assessment.json，不推进流程，不回写 checkpoint、阶段追踪、资产、门禁或 Ticket。\"\n  },\n  \"execution_authorized\": false,\n  \"next_action\": \"本次停在只读检查并保存报告。若后续另获推进授权，按项目入口重新核验当前输入，再处理 checkpoint 指向的 work-unit.plan-requirements（需求分析），明确负责人、范围与验收；任何批准或流转前完成 context_reconciliation。入口建议的执行动作本次未执行，实施就绪须另行完整核验。\"\n}\n"
+  },
+  "semantic_review": "pending"
+}

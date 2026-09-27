@@ -8,6 +8,7 @@ import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 import { attachDesignPrerequisites } from "../../../../scripts/fixtures/backend-scaffold/design-prerequisites.mjs";
+import { validateNextRoute } from "../../../../scripts/lib/lifecycle-transition.mjs";
 
 const script = path.join(path.dirname(fileURLToPath(import.meta.url)), "generate_scaffold.mjs");
 const digest = (value) => `sha256:${createHash("sha256").update(value).digest("hex")}`;
@@ -80,8 +81,27 @@ test("数据分析初始化生成 H2 六模块和独立治理信封", async (t) 
   data.contract.context_handoff_ref = "context-handoff.md";
   data.contract.context_handoff_digest = digest(context);
   await writeFile(data.contractFile, JSON.stringify(data.contract));
+  const contractBytes = await readFile(data.contractFile);
+  const state = { service_project_initialization: {
+    project_id: "demo-service", contract_ref: data.contractFile, contract_digest: digest(contractBytes),
+    project_root: data.project, context_handoff_digest: digest(context)
+  } };
+  const edge = (from, to, value = state) => validateNextRoute(from, to, value, { root: data.root });
+  assert.equal(edge("work-unit.implementation-repository-preparation", "work-unit.service-project-initialization").result, "allowed", JSON.stringify(edge("work-unit.implementation-repository-preparation", "work-unit.service-project-initialization")));
+  const missingContract = structuredClone(state); missingContract.service_project_initialization.contract_ref = path.join(data.root, "missing-contract.json");
+  assert.equal(edge("work-unit.implementation-repository-preparation", "work-unit.service-project-initialization", missingContract).result, "blocked");
+  const changedContract = structuredClone(state); changedContract.service_project_initialization.contract_digest = digest("stale");
+  assert.equal(edge("work-unit.implementation-repository-preparation", "work-unit.service-project-initialization", changedContract).result, "blocked");
+  const approvedContract = structuredClone(data.contract);
+  data.contract.design_prerequisites.engineering_contract_approval_ref = "missing-approval.json";
+  await writeFile(data.contractFile, JSON.stringify(data.contract));
+  const missingApproval = structuredClone(state); missingApproval.service_project_initialization.contract_digest = digest(await readFile(data.contractFile));
+  assert.equal(edge("work-unit.implementation-repository-preparation", "work-unit.service-project-initialization", missingApproval).result, "blocked");
+  await writeFile(data.contractFile, JSON.stringify(approvedContract));
+  assert.equal(edge("work-unit.service-project-initialization", "work-unit.implementation-repository-preparation").result, "blocked");
   const result = spawnSync(process.execPath, [path.resolve(path.dirname(script), "../../../../scripts/fixtures/backend-scaffold/generate-candidate.mjs"), script, ...data.args], { encoding: "utf8" });
   assert.equal(result.status, 0, result.stderr);
+  assert.equal(edge("work-unit.implementation-repository-preparation", "work-unit.service-project-initialization").result, "blocked", "重复初始化不得放行");
   const manifest = JSON.parse(await readFile(path.join(data.project, ".yss/scaffold-generation.json"), "utf8"));
   assert.equal(manifest.architecture_identity.architecture_profile, "mvc-data-analysis-v1");
   assert.equal(manifest.generator_skill, "yss-layered-mvc-scaffold-generator");
@@ -89,6 +109,28 @@ test("数据分析初始化生成 H2 六模块和独立治理信封", async (t) 
   await stat(path.join(data.project, ".git"));
   await stat(path.join(data.output, "skillUtils/skills-lock.json"));
   assert.ok(!manifest.ownership.generated_files.some((entry) => entry.path.startsWith(".git/")));
+  const manifestRef = path.join(data.project, ".yss/scaffold-generation.json");
+  const verificationRef = path.join(data.root, "scaffold-verification.json");
+  const resultRef = path.join(data.root, "service-result.json");
+  manifest.completion_level = "empty-scaffold-verified";
+  await writeFile(manifestRef, JSON.stringify(manifest));
+  const commands = [];
+  for (const phase of ["validate", "test", "package"]) {
+    const stdout_ref = path.join(data.root, `${phase}.stdout.log`), stderr_ref = path.join(data.root, `${phase}.stderr.log`);
+    await writeFile(stdout_ref, "synthetic route fixture"); await writeFile(stderr_ref, "");
+    commands.push({ phase, command: `./mvnw ${phase}`, exit_code: 0, stdout_ref, stderr_ref });
+  }
+  await writeFile(verificationRef, JSON.stringify({ status: "passed", completion_level: "empty-scaffold-verified", project_root: data.project, commands }));
+  await writeFile(resultRef, JSON.stringify({ result_schema: "workflow-execution-result-v1", work_unit: "work-unit.service-project-initialization", result: "completed", evidence_refs: [manifestRef, verificationRef] }));
+  Object.assign(state.service_project_initialization, { manifest_ref: manifestRef, verification_ref: verificationRef, result_ref: resultRef });
+  assert.equal(edge("work-unit.service-project-initialization", "work-unit.implementation-repository-preparation").result, "allowed");
+  const stale = structuredClone(state); stale.service_project_initialization.context_handoff_digest = digest("stale");
+  assert.equal(edge("work-unit.service-project-initialization", "work-unit.implementation-repository-preparation", stale).result, "blocked");
+  commands[0].exit_code = 1; await writeFile(verificationRef, JSON.stringify({ status: "passed", completion_level: "empty-scaffold-verified", project_root: data.project, commands }));
+  assert.equal(edge("work-unit.service-project-initialization", "work-unit.implementation-repository-preparation").result, "blocked", "Wrapper 非零退出不得放行");
+  commands[0].exit_code = 0;
+  commands.pop(); await writeFile(verificationRef, JSON.stringify({ status: "passed", completion_level: "empty-scaffold-verified", project_root: data.project, commands }));
+  assert.equal(edge("work-unit.service-project-initialization", "work-unit.implementation-repository-preparation").result, "blocked", "缺失 Wrapper 命令不得放行");
   const core = await readFile(path.join(data.project, "demo-service-core/pom.xml"), "utf8");
   assert.doesNotMatch(core, /demo-service-client|spring-web|ojdbc|mysql-connector/);
 });

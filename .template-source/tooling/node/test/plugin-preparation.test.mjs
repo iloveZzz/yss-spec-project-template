@@ -11,7 +11,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../.
 const CLI = path.join(ROOT, '.template-source/plugins/yss-backend-delivery/plan.mjs');
 const CONTRACT = '.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml';
 const units = ['plan-opportunity', 'plan-requirements', 'domain-strategy-design', 'stage-decision',
-  'spec-synthesis', 'prototype-design', 'technical-analysis', 'implementation-repository-preparation',
+  'spec-synthesis', 'prototype-design-v2', 'technical-analysis', 'implementation-repository-preparation', 'service-project-initialization',
   'ticket-decomposition', 'slice-implementation', 'code-review'].map(x => `work-unit.${x}`);
 
 function fixture(t) {
@@ -33,7 +33,7 @@ function fixture(t) {
   };
   const contract = { lifecycle_native_entries: { default_entry: 'yss-product-lifecycle', formal_artifact_owner: 'yss-product-lifecycle' },
     work_unit_routes: Object.fromEntries(units.map(id => [id, { primary_skill: 'yss-product-lifecycle', skills: [] }])) };
-  contract.work_unit_routes['work-unit.prototype-design'].skills = ['yss-prototype-stage'];
+  contract.work_unit_routes['work-unit.prototype-design-v2'].skills = ['yss-prototype-stage'];
   contract.work_unit_routes['work-unit.slice-implementation'].skills = ['yss-ui'];
   put('yss-project.yaml', { schema_version: 1, repository_mode: 'template-source' });
   put('.template-spec/agents/yss-skill-registry.yaml', registry);
@@ -115,7 +115,7 @@ test('missing or retired dependencies fail closed at the public planning command
 test('registered platform aliases stay explicit external prerequisites instead of copied canonical skills', t => {
   const f = fixture(t);
   f.registry.platform_skills = [{ id: 'product-design', root: '.codex/skills', aliases: ['product-design:index'] }];
-  f.contract.work_unit_routes['work-unit.prototype-design'].skills.push('product-design:index');
+  f.contract.work_unit_routes['work-unit.prototype-design-v2'].skills.push('product-design:index');
   f.put('.codex/skills/product-design/skills/index/SKILL.md', '# platform fixture');
   f.put('.template-spec/agents/yss-skill-registry.yaml', f.registry); f.put(CONTRACT, f.contract);
   const { code, data } = run(f.source);

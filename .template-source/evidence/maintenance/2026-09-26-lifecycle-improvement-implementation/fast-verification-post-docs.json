@@ -1,0 +1,14 @@
+{
+  "command": [
+    "nice",
+    "-n",
+    "15",
+    "scripts/verify-template-fast"
+  ],
+  "started_at": "2026-09-26T17:19:57.023255+00:00",
+  "ended_at": "2026-09-26T17:25:04.759398+00:00",
+  "elapsed_seconds": 307.74,
+  "exit_code": 1,
+  "log": "verify-template-post-docs.log",
+  "note": "Final source; low process priority; run during bounded supplemental UI experiment, shared host timing is not isolated benchmark"
+}

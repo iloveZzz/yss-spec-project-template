@@ -1,0 +1,332 @@
+[
+  {
+    "document": "implementation-report.md",
+    "target": "../2026-09-26-lifecycle-improvement-plan/optimization-design-plan.md",
+    "exists": true
+  },
+  {
+    "document": "implementation-report.md",
+    "target": "baseline.json",
+    "exists": true
+  },
+  {
+    "document": "implementation-report.md",
+    "target": "implementation-delta.json",
+    "exists": true
+  },
+  {
+    "document": "implementation-report.md",
+    "target": "implementation.patch",
+    "exists": true
+  },
+  {
+    "document": "implementation-report.md",
+    "target": "post-comparison-source-delta.json",
+    "exists": true
+  },
+  {
+    "document": "implementation-report.md",
+    "target": "maintainer-self-check.md",
+    "exists": true
+  },
+  {
+    "document": "implementation-report.md",
+    "target": "template-trials/review.md",
+    "exists": true
+  },
+  {
+    "document": "implementation-report.md",
+    "target": "../../../scripts/skills-agent-eval.md",
+    "exists": true
+  },
+  {
+    "document": "implementation-report.md",
+    "target": "fresh-focused-verification.json",
+    "exists": true
+  },
+  {
+    "document": "implementation-report.md",
+    "target": "agent-comparison-report.md",
+    "exists": true
+  },
+  {
+    "document": "implementation-report.md",
+    "target": "ui-supplement-report.md",
+    "exists": true
+  },
+  {
+    "document": "implementation-report.md",
+    "target": "evaluation-coverage.md",
+    "exists": true
+  },
+  {
+    "document": "implementation-report.md",
+    "target": "auth-backend-pilot-readiness.md",
+    "exists": true
+  },
+  {
+    "document": "implementation-report.md",
+    "target": "post-doc-focused-verification.json",
+    "exists": true
+  },
+  {
+    "document": "implementation-report.md",
+    "target": "fresh-focused-verification.json",
+    "exists": true
+  },
+  {
+    "document": "implementation-report.md",
+    "target": "batch-verification.json",
+    "exists": true
+  },
+  {
+    "document": "implementation-report.md",
+    "target": "fast-verification-post-docs.json",
+    "exists": true
+  },
+  {
+    "document": "implementation-report.md",
+    "target": "full-check-post-docs-summary.json",
+    "exists": true
+  },
+  {
+    "document": "implementation-report.md",
+    "target": "all-evaluation-resource-ledger.json",
+    "exists": true
+  },
+  {
+    "document": "implementation-report.md",
+    "target": "budget-observation.json",
+    "exists": true
+  },
+  {
+    "document": "implementation-report.md",
+    "target": "calibration-archive.json",
+    "exists": true
+  },
+  {
+    "document": "implementation-report.md",
+    "target": "formal-archive.json",
+    "exists": true
+  },
+  {
+    "document": "implementation-report.md",
+    "target": "ui-supplement-archive.json",
+    "exists": true
+  },
+  {
+    "document": "implementation-report.md",
+    "target": "evaluation-coverage.md",
+    "exists": true
+  },
+  {
+    "document": "implementation-report.md",
+    "target": "auth-backend-pilot-readiness.md",
+    "exists": true
+  },
+  {
+    "document": "implementation-report.md",
+    "target": "../../../../.agents/skills/yss-product-lifecycle/SKILL.md",
+    "exists": true
+  },
+  {
+    "document": "agent-comparison-report.md",
+    "target": "evaluation-summary.json",
+    "exists": true
+  },
+  {
+    "document": "agent-comparison-report.md",
+    "target": "semantic-review.json",
+    "exists": true
+  },
+  {
+    "document": "agent-comparison-report.md",
+    "target": "ui-supplement-report.md",
+    "exists": true
+  },
+  {
+    "document": "agent-comparison-report.md",
+    "target": "all-evaluation-resource-ledger.json",
+    "exists": true
+  },
+  {
+    "document": "agent-comparison-report.md",
+    "target": "supplemental-findings.json",
+    "exists": true
+  },
+  {
+    "document": "agent-comparison-report.md",
+    "target": "evaluation-coverage.md",
+    "exists": true
+  },
+  {
+    "document": "agent-comparison-report.md",
+    "target": "C2-v2-config.json",
+    "exists": true
+  },
+  {
+    "document": "agent-comparison-report.md",
+    "target": "C2-v2-execution.json",
+    "exists": true
+  },
+  {
+    "document": "agent-comparison-report.md",
+    "target": "evaluation-summary.json",
+    "exists": true
+  },
+  {
+    "document": "agent-comparison-report.md",
+    "target": "semantic-review.json",
+    "exists": true
+  },
+  {
+    "document": "agent-comparison-report.md",
+    "target": "formal-archive.json",
+    "exists": true
+  },
+  {
+    "document": "auth-backend-pilot-readiness.md",
+    "target": "auth-legacy-checkpoint.log",
+    "exists": true
+  },
+  {
+    "document": "auth-backend-pilot-readiness.md",
+    "target": "auth-slice-preflight.log",
+    "exists": true
+  },
+  {
+    "document": "auth-backend-pilot-readiness.md",
+    "target": "auth-readiness.json",
+    "exists": true
+  },
+  {
+    "document": "auth-backend-pilot-readiness.md",
+    "target": "auth-frontend-recovery.log",
+    "exists": true
+  },
+  {
+    "document": "auth-backend-pilot-readiness.md",
+    "target": "auth-backend-bff-jdk17.json",
+    "exists": true
+  },
+  {
+    "document": "auth-backend-pilot-readiness.md",
+    "target": "auth-backend-bff-jdk17.log",
+    "exists": true
+  },
+  {
+    "document": "auth-backend-pilot-readiness.md",
+    "target": "auth-layout-migration-plan.json",
+    "exists": true
+  },
+  {
+    "document": "auth-backend-pilot-readiness.md",
+    "target": "auth-layout-migration-verification.json",
+    "exists": true
+  },
+  {
+    "document": "auth-backend-pilot-readiness.md",
+    "target": "auth-migration-conflict-triage.json",
+    "exists": true
+  },
+  {
+    "document": "auth-backend-pilot-readiness.md",
+    "target": "auth-profile-evidence.json",
+    "exists": true
+  },
+  {
+    "document": "auth-backend-pilot-readiness.md",
+    "target": "auth-backend-inventory.json",
+    "exists": true
+  },
+  {
+    "document": "maintainer-self-check.md",
+    "target": "template-trials/review.md",
+    "exists": true
+  },
+  {
+    "document": "maintainer-self-check.md",
+    "target": "fresh-focused-verification.json",
+    "exists": true
+  },
+  {
+    "document": "maintainer-self-check.md",
+    "target": "auth-backend-pilot-readiness.md",
+    "exists": true
+  },
+  {
+    "document": "maintainer-self-check.md",
+    "target": "agent-comparison-report.md",
+    "exists": true
+  },
+  {
+    "document": "maintainer-self-check.md",
+    "target": "ui-supplement-report.md",
+    "exists": true
+  },
+  {
+    "document": "maintainer-self-check.md",
+    "target": "post-doc-focused-verification.json",
+    "exists": true
+  },
+  {
+    "document": "maintainer-self-check.md",
+    "target": "post-comparison-source-delta.json",
+    "exists": true
+  },
+  {
+    "document": "maintainer-self-check.md",
+    "target": "full-check-post-docs-summary.json",
+    "exists": true
+  },
+  {
+    "document": "implementation-retrospective.md",
+    "target": "implementation-report.md",
+    "exists": true
+  },
+  {
+    "document": "implementation-retrospective.md",
+    "target": "ui-supplement-report.md",
+    "exists": true
+  },
+  {
+    "document": "implementation-retrospective.md",
+    "target": "all-evaluation-resource-ledger.json",
+    "exists": true
+  },
+  {
+    "document": "ui-supplement-report.md",
+    "target": "C2-ui-supplement-config.json",
+    "exists": true
+  },
+  {
+    "document": "ui-supplement-report.md",
+    "target": "C2-ui-supplement-execution.json",
+    "exists": true
+  },
+  {
+    "document": "ui-supplement-report.md",
+    "target": "ui-supplement-summary.json",
+    "exists": true
+  },
+  {
+    "document": "ui-supplement-report.md",
+    "target": "ui-supplement-semantic-review.json",
+    "exists": true
+  },
+  {
+    "document": "ui-supplement-report.md",
+    "target": "all-evaluation-resource-ledger.json",
+    "exists": true
+  },
+  {
+    "document": "ui-supplement-report.md",
+    "target": "formal-archive.json",
+    "exists": true
+  },
+  {
+    "document": "ui-supplement-report.md",
+    "target": "ui-supplement-archive.json",
+    "exists": true
+  }
+]

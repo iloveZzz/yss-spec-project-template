@@ -1,0 +1,1060 @@
+--- a/.agents/skills/yss-ddd-scaffold-generator/SKILL.md
++++ b/.agents/skills/yss-ddd-scaffold-generator/SKILL.md
+@@ -74,7 +74,7 @@
+ - 生成后的后端工程必须使用项目根目录 `./mvnw ...` 执行构建、测试、运行和 CI 验证；不得在 README、实施记录、Ticket、Review 或 Release 中默认写裸 `mvn ...`。既有仓库确实无法使用 wrapper 时，必须记录受控例外。
+ - 原型确认后，`scaffold_status=required` 才能进入本 skill；本 skill 的生成边界是工程结构、POM、配置、Wrapper 和机械模板，不是业务实现。
+ - 脚手架合同必须携带 `contract_id`、`contract_version`、实现合同编译器 draft 引用、生命周期批准引用、持久化引用、当前版本、允许写路径、预期证据文件和验证命令；字段缺失或版本过期时阻断。
+-- 新脚手架只接受统一 Project Scaffold Contract schema v4，并必须以原始字节摘要绑定批准且当前的 Technical Design、Data Architecture Decision v1、API Contract Decision v1 和真实工程合同批准记录。API `required` 必须闭包绑定同一 OpenAPI YAML 字节的 Validation、独立 Review、Freeze 与工程批准；`not-applicable` 必须绑定评估、明确原因和证据且禁止空占位资产。历史 Manifest 只读审计见 [历史兼容边界](references/generator-maintenance.md)，不得用于新生成。
++- 新脚手架只接受统一 Project Scaffold Contract schema v4，并必须以原始字节摘要绑定批准且当前的 Technical Design、Data Architecture Decision v1、API Contract Decision（新建 v2；历史 v1 只读兼容，准备与迁移见 `.template-spec/process/contract-reading.md`） 和真实工程合同批准记录。API `required` 必须闭包绑定同一 OpenAPI YAML 字节的 Validation、独立 Review、Freeze 与工程批准；`not-applicable` 必须绑定评估、明确原因和证据且禁止空占位资产。历史 Manifest 只读审计见 [历史兼容边界](references/generator-maintenance.md)，不得用于新生成。
+ - DDD 固定 `target-domain-model`、`mybatis-plus`、H2 验证、`web` DTO、`yss-internal`；平台与 Validation 命名空间由共享清单约束。普通 MyBatis、独立 client module、client-in-domain 和其他旧架构仍为 `unsupported`。
+ - 运行生成器必须传入 `--contract-file`；生成器会校验合同 `status=approved`、`current_version`、`primary_skill`、`controlled-generation`、实际输出路径和固定三条验证命令，不接受仅凭任意字符串引用的放行。
+ - 生成项目必须写入 Manifest v4 `.yss/scaffold-generation.json`，记录技术、数据与 API 设计门禁、架构选择及 digest、生成器、合同 digest、Target Profile、模块闭包、模板 digest、下游完整 当前合同 freshness、generator-owned 文件 hash、严格 `generation_policy` 和完成等级；清单缺失或不一致时不得交给后续 实现合同编译器。
+--- a/.agents/skills/yss-implementation-contract-compiler/SKILL.md
++++ b/.agents/skills/yss-implementation-contract-compiler/SKILL.md
+@@ -49,7 +49,7 @@
+ - Harness 内实现路径必须落在 `apps/backend/<project>/` 或 `apps/frontend/<project>/` 的具体项目目录；`apps/backend/`、`apps/frontend/` 只能作为容器，`app/backend/`、`app/frontend/` 及其子路径一律阻断。外部实现仓库使用其登记的真实项目根路径。`git-submodule` 使用 `implementation_path_policy: git-submodule-harness-apps`，空 gitlink、detached HEAD 或 `--force` 覆盖挂载点不得脚手架；`inspectWorkingTreeScope.writable` 必须为显式布尔值。
+ - 当前用户、缓存、审计、Excel、分布式 ID、请求校验、错误映射、加解密或网关韧性命中时，必须按 `compiler-contract.yaml` 的 `impact_to_capabilities` 补齐入口 capability；不能只在 `boundaries.md` 中提及。仅复用已经验证的平台认证 / 授权能力不算 component impact，不自动增加权限专项 skill。
+ - 业务行为使用 `behavior-tdd`；只有机械脚手架/生成物可用 `controlled-generation`，并记录例外和验证。
+-- 阶段 5 若命中交付面且无已有工程，按 Project Scaffold Contract schema v4 编译 `controlled-generation` 合同 draft。后端先读取已通过 `gate.backend-architecture-platform-approved` 的架构与精确 Spring Boot 版本决定，并以原始字节 digest 绑定批准且当前的 Technical Design、Data Architecture Decision v1、API Contract Decision v1 及 `gate.engineering-contract-approved` 真实批准记录；编译器不得自行默认、提问或批准。既有工程核验并复用当前登记架构及固定工程基线/POM 中的实际版本，不重新询问或生成。API `required` 时工程批准还必须直接绑定冻结 OpenAPI YAML 的版本与摘要，`not-applicable` 时必须有影响评估、明确原因和证据。前端绑定标准模板精确 commit、应用标识、路由、OpenAPI 影响、目标路径和 `init_git` 决定。合同经生命周期批准并持久化后才能运行生成器。历史后端 schema v3 只允许 Manifest 只读恢复审计，并须补齐 API 对账，不得新生成；前端只接受 v4。生成与验证完成、仓库登记并通过 `check.implementation-repositories-ready` 后，才编译 Ticket 与业务 Slice Contract。
++- 阶段 5 若命中交付面且无已有工程，按 Project Scaffold Contract schema v4 编译 `controlled-generation` 合同 draft。后端先读取已通过 `gate.backend-architecture-platform-approved` 的架构与精确 Spring Boot 版本决定，并以原始字节 digest 绑定批准且当前的 Technical Design、Data Architecture Decision v1、API Contract Decision（新建 v2；历史 v1 只读兼容，准备与迁移见 `.template-spec/process/contract-reading.md`） 及 `gate.engineering-contract-approved` 真实批准记录；编译器不得自行默认、提问或批准。既有工程核验并复用当前登记架构及固定工程基线/POM 中的实际版本，不重新询问或生成。API `required` 时工程批准还必须直接绑定冻结 OpenAPI YAML 的版本与摘要，`not-applicable` 时必须有影响评估、明确原因和证据。前端绑定标准模板精确 commit、应用标识、路由、OpenAPI 影响、目标路径和 `init_git` 决定。合同经生命周期批准并持久化后才能运行生成器。历史后端 schema v3 只允许 Manifest 只读恢复审计，并须补齐 API 对账，不得新生成；前端只接受 v4。生成与验证完成、仓库登记并通过 `check.implementation-repositories-ready` 后，才编译 Ticket 与业务 Slice Contract。
+ - 脚手架合同在编译阶段只能是 `draft` / `ready-for-lifecycle-review` / `blocked`；只有生命周期编排器可以把已持久化脚手架合同标记为 `approved`。脚手架合同只覆盖业务代码前的工程骨架工作单元；生成、基线校验和合同重编译完成后，它不能替代脚手架后的 Slice Implementation Contract。
+ - 脚手架输出消费批准的脚手架合同；脚手架后的所有生成后端代码都必须绑定当前批准且版本当前的 Slice Implementation Contract、主 YSS skill、依赖闭包、允许写路径、预期证据和 YSS Skill Execution Result。打印命令、`./mvnw validate` 单项通过或脚手架成功不能替代合同批准；生成范围从机械内容变成业务行为时触发完整重路由。
+ - 专项结果中的越界路径、缺失证据、`drift`、`violation` 或 `new_impacts` 必须阻断或重路由。
+--- a/.agents/skills/yss-layered-mvc-scaffold-generator/SKILL.md
++++ b/.agents/skills/yss-layered-mvc-scaffold-generator/SKILL.md
+@@ -11,7 +11,7 @@
+ 
+ - backend `scaffold_status=required`，目标目录已确认且不存在。
+ - `scaffold-architecture-decisions.yaml` 中对应项目已达到 `lifecycle-approved`，确认架构为 `layered-mvc`。
+-- `yss-implementation-contract-compiler` 已编译统一 Project Scaffold Contract schema v4，并绑定批准且当前的 Technical Design、Data Architecture Decision v1、API Contract Decision v1 和真实工程合同批准记录。API `required` 时 Draft、Validation、独立 Review、Freeze 与工程批准必须绑定同一 OpenAPI YAML 字节；`not-applicable` 时必须有评估、原因和证据且不得携带占位资产。合同须由生命周期批准并持久化。
++- `yss-implementation-contract-compiler` 已编译统一 Project Scaffold Contract schema v4，并绑定批准且当前的 Technical Design、Data Architecture Decision v1、API Contract Decision（新建 v2；历史 v1 只读兼容，准备与迁移见 `.template-spec/process/contract-reading.md`） 和真实工程合同批准记录。API `required` 时 Draft、Validation、独立 Review、Freeze 与工程批准必须绑定同一 OpenAPI YAML 字节；`not-applicable` 时必须有评估、原因和证据且不得携带占位资产。合同须由生命周期批准并持久化。
+ - 合同中的 `decision_id`、文件 digest、Profile、能力闭包、写路径和验证命令仍为当前版本。
+ 
+ 任一条件缺失时返回 `blocked`。本生成器无交互、无默认回退；用户选择由 `yss-product-lifecycle` 在 `work-unit.technical-analysis` 的工程基线内完成。
+--- a/.agents/skills/yss-openapi-governance/SKILL.md
++++ b/.agents/skills/yss-openapi-governance/SKILL.md
+@@ -34,7 +34,7 @@
+ - 在 `docs/.scratch/<feature>/api/<feature>-validation.yaml` 持久化结构校验记录，并用 `scripts/verify-openapi-draft-validation-record` 复核当前 YAML SHA-256、锁定的 Redocly 版本、实际命令、退出码、执行时间和证据引用。
+ - 在 OpenAPI Freeze 后，用锁定的 Redocly CLI 将 YAML bundle 为 JSON，并记录可重现证据。
+ - 维护治理记录、Freeze 记录和 JSON 派生记录。
+-- 在技术分析中生成 `api-contract-decision-v1`：有 API 影响时以原始字节摘要闭包绑定权威 YAML、Validation、独立 Draft Review 和 Freeze；无 API 影响时绑定影响评估、明确原因和至少一项可读证据，且不得生成空占位资产。
++- 在技术分析中生成 API Contract Decision（版本与历史兼容见下文第 3 步）：有 API 影响时以原始字节摘要闭包绑定权威 YAML、Validation、独立 Draft Review 和 Freeze；无 API 影响时绑定影响评估、明确原因和至少一项可读证据，且不得生成空占位资产。
+ - Spec Delta 影响存在时，在 `docs/.scratch/<feature>/spec-delta/` 记录与冻结 YAML 的关系；没有影响时明确记录 `not-applicable`。
+ 
+ 不使用本 skill 来替代：
+@@ -83,7 +83,7 @@
+    - 将通过 verifier 且 SHA-256 与当前 YAML 一致的 validation record 交给 `yss-openapi-draft-review`。缺锁定 lint 时可以先做语义预审，但独立 Review 总结果必须为 `Blocked`；不能用“Freeze 前补 lint”支持 `Approved`。
+    - YAML、validation record 或 lint ruleset 变化后，旧结构证据与旧 Review 立即失效，必须重新校验和审查。阻断项未关闭前，YAML 仍是 review-only Draft，不得生成生产客户端。
+    - Freeze 记录必须引用 YAML 路径、Git ref（如适用）和 YAML SHA-256。冻结后 API 行为变更必须先回到 YAML Draft 与审查。
+-   - 将同一 YAML 的版本与摘要、validation record、独立 Review 和 Freeze 写入 API Contract Decision v1。`gate.engineering-contract-approved` 一次批准同时绑定 Technical Design、Data Architecture Decision、API Contract Decision；API `required` 时还必须直接绑定冻结 YAML。不得另造字符串 URI 或仅凭 `status: approved` 关闭门禁。
++   - 将同一 YAML 的版本与摘要、validation record、独立 Review 和 Freeze 写入 API Contract Decision（新建 v2；历史 v1 只读兼容，准备与迁移见 `.template-spec/process/contract-reading.md`）。`gate.engineering-contract-approved` 一次批准同时绑定 Technical Design、Data Architecture Decision、API Contract Decision；API `required` 时还必须直接绑定冻结 YAML。不得另造字符串 URI 或仅凭 `status: approved` 关闭门禁。
+ 
+ 4. **从冻结 YAML 派生 JSON**
+    - 使用上面的锁定 `redocly bundle` 命令生成 `docs/.scratch/<feature>/api/<feature>.json`，JSON 不纳入人工编辑面。
+--- a/.agents/skills/yss-product-lifecycle/references/matt-yss-adapter.md
++++ b/.agents/skills/yss-product-lifecycle/references/matt-yss-adapter.md
+@@ -74,7 +74,7 @@
+ 
+ ## Review 候选与 Git 授权
+ 
+-YSS 调用 `code-review` 前必须形成 review input，至少包含 `review_mode`、`review_base_ref`、`implementation_candidate_ref`、`candidate_snapshot_ref`、`candidate_digest`、`spec_ref`、`ticket_ref`、`slice_contract_ref`、`build_architecture_checklist_ref` 和 `yss_execution_result_refs`，并满足 `orchestration-contract.yaml.review_input.manifest_required_by_mode`。Standards 还必须编译 `review_standards_route`：合同 `required_skills`、影响面专项检查输入、报告模板与 `finding_disposition`；机器检查按 `run_if_present` 执行。质量标准只从 `engineering-baseline` 引用，禁止在 review input 或切片中另起一份。命中高风险影响时，review input 还要引用 Doubt-Driven 主张 / 反证记录；缺少反证或残余风险未处理时返回 `blocked`。`committed` 审查 merge-base 到不可变 `HEAD`；`worktree` 一次捕获 merge-base 到 working tree 的 committed、staged、unstaged 和 untracked 内容，使用 `yss-worktree-candidate-v1` 规定的 raw path、uint64 big-endian 长度、tracked/untracked record 和不支持条目阻断规则计算 SHA-256，让两个 Reviewer 消费同一不可变快照，并在返回和完成 checkpoint 复核摘要未变化。缺少输入、候选为空、专项覆盖缺失、未关闭 mandatory `violation`、适用行空白或摘要变化时返回 `blocked`，不能缩小审查范围、另起通用审查 skill、由审查者改实现，或合并不同候选的结论。`violation` 类 finding 交实现者在原合同路径修复后全轴复审；`drift` / `new_impacts` 使合同 `stale` 并回 实现合同编译器。
++YSS 调用 `code-review` 前必须形成 review input，至少包含 `review_mode`、`review_base_ref`、`implementation_candidate_ref`、`candidate_snapshot_ref`、`candidate_digest`、`spec_ref`、`ticket_ref`、`slice_contract_ref`、`build_architecture_checklist_ref` 和 `yss_execution_result_refs`，并满足 `orchestration-contract.yaml.review_input.manifest_required_by_mode`。Standards 还必须编译 `review_standards_route`：合同 `required_skills`、影响面专项检查输入、报告模板与 `finding_disposition`；机器检查按 `run_if_present` 执行。质量标准只从 `engineering-baseline` 引用，禁止在 review input 或切片中另起一份。命中高风险影响时，review input 还要引用 Doubt-Driven 主张 / 反证记录；缺少反证或残余风险未处理时返回 `blocked`。`committed` 审查 merge-base 到不可变 `HEAD`；`worktree` 一次捕获 merge-base 到 working tree 的 committed、staged、unstaged 和 untracked 内容，使用 `yss-worktree-candidate-v1` 规定的 raw path、uint64 big-endian 长度、tracked/untracked record 和不支持条目阻断规则计算 SHA-256，让所有参与审查者（人数按 `orchestration-contract.yaml.gate_consolidation`） 消费同一不可变快照，并在返回和完成 checkpoint 复核摘要未变化。缺少输入、候选为空、专项覆盖缺失、未关闭 mandatory `violation`、适用行空白或摘要变化时返回 `blocked`，不能缩小审查范围、另起通用审查 skill、由审查者改实现，或合并不同候选的结论。`violation` 类 finding 交实现者在原合同路径修复后全轴复审；`drift` / `new_impacts` 使合同 `stale` 并回 实现合同编译器。
+ 
+ Matt `implement` 的通用提交指令不构成 YSS Git 授权。只有用户明确给出 `commit_authorized` 为 `true`、非空 `commit_scope` 和 `commit_authorization_ref` 时才能 commit；只有明确给出 `push_authorized` 为 `true`、非空 `push_scope` 和 `push_authorization_ref` 时才能 push。缺少任一字段时保持工作区不变，只输出 checkpoint 判断；不得把 `orchestrate`、实现授权、当前分支、测试通过或负责人要求解释为隐含授权。`git-submodule` 还必须按仓授权、禁止 detached HEAD 提交，并先推子仓再更新父仓 gitlink。
+ 
+--- a/.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml
++++ b/.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml
+@@ -139,6 +139,16 @@
+     template_regression_suite: template-maintenance-or-explicit-regression-task
+     per_work_unit_context_reconciliation: required
+     skip_triggered_gates: forbidden
++  recovery:
++    state_source: current-checkpoint-stage-tracking-and-readable-task-results
++    status_view: read-only-diagnostics-never-execution-authorization
++    running_or_unknown_task: inspect-existing-task-identity-before-dispatch
++    completed_task: verify-current-evidence-then-recompute-frontier
++    action_completed_before_checkpoint: reconcile-actual-artifacts-before-repeating-side-effects
++    changed_inputs: invalidate-affected-dependencies-and-revalidate
++    missing_legacy_tracking: existing-compatibility-or-explicit-migration
++    unknown_external_result: stop-duplicate-side-effect-and-report-missing-evidence
++    approval: revalidate-current-decision-or-supported-continuation
+   interaction:
+     questions: batch-independent-current-stage-questions
+     user_decision_policy_ref: .template-spec/agents/digital-human-roles.yaml#user_decision_policy
+--- a/.agents/skills/yss-product-lifecycle/references/orchestration.md
++++ b/.agents/skills/yss-product-lifecycle/references/orchestration.md
+@@ -12,6 +12,14 @@
+ 不要仅输出下一个提示词后结束 `orchestrate`/`resume`。不要因进入业务代码阶段而退出主控；应把实现交给专项 skill，并在返回后继续核验。
+ 
+ 连续阶段自动推进时累积 Ticket 同步和 Git 判断证据，在阶段退出、人工暂停、handoff、进入实现、合并或发布边界集中 checkpoint。发生阻塞、责任人变化或资产需要单独批准时立即落 checkpoint，不因合并记录而丢失阶段因果关系。
++
++## 状态查看与中断恢复
++
++`lifecycle-status` 保留原 JSON 字段，并以 `verification_scope` 区分已检查、失败、未检查和不适用；`diagnostics` 给出来源、已有负责人及恢复建议，`next_step` 给出前置条件和可用的命令参数数组。`blockers: []` 仅表示本次读取未发现阻塞，退出 0 不证明批准有效或允许实现。视图只写 stdout，不调用完整验证、远端或状态写入；缺少预检脚本时显示缺口，不能猜命令。
++
++恢复按合同 `execution_efficiency.recovery` 执行：读取当前 checkpoint、阶段工作项、任务包和真实结果，先识别运行中任务、已有完成证据及操作已完成但尚未登记的情况。运行中或结果未知时核对原任务身份，不因缺少摘要再次派发；已有完成证据须先复核新鲜度，再计算下一单元。外部动作缺可查询结果时报告缺口，不能重做副作用。
++
++上游变化按既有依赖关系使受影响资产过期，保留未受影响工作和历史记录；恢复、派发和交付边界仍执行适用 Context、决定/延续、门禁、仓库和允许写范围的校验。核验后输入变化即重验。有效授权不重复询问；未知或实质变化回交原责任方。历史实例缺 stage_tracking 时按已登记兼容和显式迁移入口处理，状态查询不自动补写。
+ 
+ ## 执行成本
+ 
+@@ -43,9 +51,9 @@
+ 
+ `prototype_confirmation` 通过后，先判断实现仓库登记中的 backend `scaffold_status`。当状态为 `required` 时，在进入 DDD / MVC 分支设计前完成 `gate.backend-architecture-platform-approved`：Agent 按领域复杂度给出 `domain-driven` / `layered-mvc` 推荐和依据，并从 `.template-spec/engineering/backend-platforms.json` 展示可选平台的精确 Spring Boot 补丁版本与 Java 版本；用户在同一次决定中确认架构与平台。本体选择作为子项目预填默认值，用户可批量确认全部项目或逐项覆盖。选择写入 `scaffold-architecture-decisions.yaml`；处于 `undecided`、`recommended`、`awaiting-user-decision` 或 `stale` 时必须阻断，不得默认 DDD、MVC 或 Spring Boot 版本，也不得在生成器内交互。既有工程使用当前 `existing-registration` 的架构及固定工程基线/POM 中的实际 Spring Boot 版本，核验摘要和支持状态后将该门禁记录为 `not-applicable`，不重复询问；架构转换或平台升级另行立项。
+ 
+-`gate.backend-architecture-platform-approved` 通过、选择达到 `lifecycle-approved` 且 digest 当前后，才可进入对应的 DDD 战术设计或 MVC 技术设计分支，再完成批准且当前的 Technical Design、Data Architecture Decision v1 和 API Contract Decision v1。数据与 API 均按影响强制：命中则绑定设计及评审闭包，未命中则绑定评估、明确原因和证据。再由 `yss-implementation-contract-compiler` 编译脚手架 schema v4 `controlled-generation` 工作单元合同。顺序为：工程基线与架构/平台推荐 → 用户确认与选择持久化 → DDD / MVC 分支设计 → 技术/数据/API 设计 → 工程合同原子批准 → 脚手架合同持久化 → `domain-driven` 使用 `yss-ddd-scaffold-generator` 或 `layered-mvc` 使用 `yss-layered-mvc-scaffold-generator` → 对应基线/Manifest v4 校验 → 仓库准备 v2 → 实现合同编译器业务合同重编译。`existing` / `initialized` 不重复生成；架构转换或平台升级必须单独立项。schema v3 只允许历史 Manifest 的只读恢复审计，不得新生成。
++`gate.backend-architecture-platform-approved` 通过、选择达到 `lifecycle-approved` 且 digest 当前后，才可进入对应的 DDD 战术设计或 MVC 技术设计分支，再完成批准且当前的 Technical Design、Data Architecture Decision v1 和 API Contract Decision（新建 v2；历史 v1 只读兼容，准备与迁移见 `.template-spec/process/contract-reading.md`）。数据与 API 均按影响强制：命中则绑定设计及评审闭包，未命中则绑定评估、明确原因和证据。再由 `yss-implementation-contract-compiler` 编译脚手架 schema v4 `controlled-generation` 工作单元合同。顺序为：工程基线与架构/平台推荐 → 用户确认与选择持久化 → DDD / MVC 分支设计 → 技术/数据/API 设计 → 工程合同原子批准 → 脚手架合同持久化 → `domain-driven` 使用 `yss-ddd-scaffold-generator` 或 `layered-mvc` 使用 `yss-layered-mvc-scaffold-generator` → 对应基线/Manifest v4 校验 → 仓库准备 v2 → 实现合同编译器业务合同重编译。`existing` / `initialized` 不重复生成；架构转换或平台升级必须单独立项。schema v3 只允许历史 Manifest 的只读恢复审计，不得新生成。
+ 
+-脚手架工作单元必须使用结构化 schema v4 合同 JSON，除工程身份、架构决定、Profile、模块闭包、允许路径和验证命令外，必须以原始字节 digest 绑定 Technical Design、Data Architecture Decision v1、API Contract Decision v1 和 `gate.engineering-contract-approved` 的真实批准记录。API `required` 时 Draft、Validation、独立 Review、Freeze 与工程批准必须绑定同一 OpenAPI YAML 字节；`not-applicable` 时不得携带空占位资产。生成器在创建输出目录前读取并校验所有引用、版本、主体、gate、批准范围、资产绑定与摘要；虚构 URI、字符串自证或仅有 `status: approved` 均无效。三条 Wrapper 命令必须由受控工作单元真实执行并留存证据。非空目标、`--force`、旧项目迁移和模板升级均阻断。脚手架不得生成 Controller、Repository 实现、SQL、领域行为、业务规则、状态机、权限、事务、复杂查询、错误映射、用户可见行为或示例业务 API；`empty-scaffold-verified` 仍不是 `ready-for-agent`。
++脚手架工作单元必须使用结构化 schema v4 合同 JSON，除工程身份、架构决定、Profile、模块闭包、允许路径和验证命令外，必须以原始字节 digest 绑定 Technical Design、Data Architecture Decision v1、API Contract Decision（新建 v2；历史 v1 只读兼容，准备与迁移见 `.template-spec/process/contract-reading.md`） 和 `gate.engineering-contract-approved` 的真实批准记录。API `required` 时 Draft、Validation、独立 Review、Freeze 与工程批准必须绑定同一 OpenAPI YAML 字节；`not-applicable` 时不得携带空占位资产。生成器在创建输出目录前读取并校验所有引用、版本、主体、gate、批准范围、资产绑定与摘要；虚构 URI、字符串自证或仅有 `status: approved` 均无效。三条 Wrapper 命令必须由受控工作单元真实执行并留存证据。非空目标、`--force`、旧项目迁移和模板升级均阻断。脚手架不得生成 Controller、Repository 实现、SQL、领域行为、业务规则、状态机、权限、事务、复杂查询、错误映射、用户可见行为或示例业务 API；`empty-scaffold-verified` 仍不是 `ready-for-agent`。
+ 
+ 脚手架完成后，所有后续生成的后端代码仍必须重新消费当前版本的批准 Slice Implementation Contract、YSS skill 依赖闭包、允许写路径、预期证据和 Execution Result。业务行为使用 `behavior-tdd`；只有机械结构、样板、配置和冻结客户端使用 `controlled-generation`。缺少合同、skill、证据或实际验证时立即阻断；生成范围从机械内容变成业务行为时触发完整重路由。
+ 
+@@ -78,7 +86,7 @@
+ 
+ ## 审查与验证
+ 
+-- 调用 `code-review` 前先固定 review input：`review_mode`、`review_base_ref`、`implementation_candidate_ref`、`candidate_snapshot_ref`、`candidate_digest`、Spec/Ticket、Slice Implementation Contract、Build Architecture Checklist 和 YSS Skill Execution Result 引用。`committed` 模式审查不可变 `HEAD`；`worktree` 模式一次捕获 committed、staged、unstaged 和 untracked 内容。必须按 `orchestration-contract.yaml.review_input` 的 manifest 按模式必填字段及 `yss-worktree-candidate-v1` 字节流（raw path、uint64 big-endian 长度、tracked/untracked record）计算 SHA-256，两个 Reviewer 必须消费同一不可变快照。返回后或完成 checkpoint 摘要变化时返回 `blocked`，由编排器决定重新审查。候选为空、漏项或 fixed point 不可解析时阻断。
++- 调用 `code-review` 前先固定 review input：`review_mode`、`review_base_ref`、`implementation_candidate_ref`、`candidate_snapshot_ref`、`candidate_digest`、Spec/Ticket、Slice Implementation Contract、Build Architecture Checklist 和 YSS Skill Execution Result 引用。`committed` 模式审查不可变 `HEAD`；`worktree` 模式一次捕获 committed、staged、unstaged 和 untracked 内容。必须按 `orchestration-contract.yaml.review_input` 的 manifest 按模式必填字段及 `yss-worktree-candidate-v1` 字节流（raw path、uint64 big-endian 长度、tracked/untracked record）计算 SHA-256，所有参与审查者（人数按 `orchestration-contract.yaml.gate_consolidation`） 必须消费同一不可变快照。返回后或完成 checkpoint 摘要变化时返回 `blocked`，由编排器决定重新审查。候选为空、漏项或 fixed point 不可解析时阻断。
+ - 小改动和中等变更可由同一独立执行者完成 `code-review` 与 fresh verification，并在同一报告中分别记录 findings、命令、结果和残余风险。
+ - 该执行者必须独立于实现者；新模块、高风险变更、职责冲突或需双人控制时，Reviewer 与 Verifier 分开。
+ - `code-review` 是唯一默认代码审查 skill。GitLab、CI、Sonar、Alibaba Java 与 YSS 前端 / 后端 skill 作为仓库规则或专项检查输入接入 Standards 轴，由 `review_standards_route` 按影响面编译；不再叠加第二个通用审查 skill。漏掉合同 `required_skills`、适用报告行空白、mandatory `violation` 未关闭或可机器检查规则既无工具结果也无原文引用时，不得 `completed`。
+--- a/.agents/skills/yss-product-lifecycle/references/state-model.md
++++ b/.agents/skills/yss-product-lifecycle/references/state-model.md
+@@ -71,7 +71,7 @@
+ 
+ ## Review 与 Git 授权状态
+ 
+-进入代码审查时保存 `review_mode`、`review_base_ref`、`implementation_candidate_ref`、`candidate_snapshot_ref`、`candidate_digest` 及 Spec、Ticket、合同、Checklist、YSS Execution Result 引用，并记录专项检查覆盖与机器检查结果。`worktree` 候选必须一次捕获 committed、staged、unstaged 和 untracked 文件；manifest 的按模式必填字段以及 `yss-worktree-candidate-v1`（raw path、uint64 big-endian 长度、tracked/untracked record、symlink 和不支持条目）以 `orchestration-contract.yaml.review_input` 为唯一执行定义。两个 Reviewer 消费同一不可变快照；返回后或完成 checkpoint 摘要变化则返回 `blocked` 并重新审查。Finding 分流不新增生命周期状态：`violation` 仍在当前合同路径由实现者修复后复审；`drift` / `new_impacts` 把合同标 `stale` 并走既有重路由。该清单只作为审查证据。
++进入代码审查时保存 `review_mode`、`review_base_ref`、`implementation_candidate_ref`、`candidate_snapshot_ref`、`candidate_digest` 及 Spec、Ticket、合同、Checklist、YSS Execution Result 引用，并记录专项检查覆盖与机器检查结果。`worktree` 候选必须一次捕获 committed、staged、unstaged 和 untracked 文件；manifest 的按模式必填字段以及 `yss-worktree-candidate-v1`（raw path、uint64 big-endian 长度、tracked/untracked record、symlink 和不支持条目）以 `orchestration-contract.yaml.review_input` 为唯一执行定义。所有参与审查者（人数按 `orchestration-contract.yaml.gate_consolidation`） 消费同一不可变快照；返回后或完成 checkpoint 摘要变化则返回 `blocked` 并重新审查。Finding 分流不新增生命周期状态：`violation` 仍在当前合同路径由实现者修复后复审；`drift` / `new_impacts` 把合同标 `stale` 并走既有重路由。该清单只作为审查证据。
+ 
+ Git 动作分别保存 `commit_authorized`、`commit_scope`、`commit_authorization_ref`、`push_authorized`、`push_scope`、`push_authorization_ref`。只有授权值严格为 `true`、范围和用户授权引用均非空时才执行相应动作；缺失授权时保持工作区不变并记录 checkpoint 判断。`git-submodule` 另保存每仓授权、`checkout_state` 和先子后父顺序；空 gitlink、detached HEAD 或 `--force` 覆盖挂载点时不得当成普通目录 commit / 脚手架。
+ 
+--- a/.template-source/distribution/strategic-handoff-tools.lock.json
++++ b/.template-source/distribution/strategic-handoff-tools.lock.json
+@@ -133,7 +133,7 @@
+     "scripts/lib/technical-design-boundary.mjs": "sha256:7ce54f91952eb3b1fddc0bb0e63b153316ef6016eb1f288230062e235c894a77",
+     "scripts/lib/ui-baseline.mjs": "sha256:d16dad62c49a4f63dbde61df7d7af82185069a4d5b3eaea6585b49166b80c095",
+     "scripts/lib/user-decision-reuse.mjs": "sha256:c00e11c2caf9a727c018d4c4caa482b43ae66bd53ecbffea50b5964b55377d36",
+-    "scripts/lib/user-decision.mjs": "sha256:b4f53bec8c6b2d491f299aebaef569627f66e5db42c0b28be4878c21303d6e5b",
++    "scripts/lib/user-decision.mjs": "sha256:bf7b9f31999d51b953e890c677e6a56d6bd8153f58fac8ba02c85c35eda2bf25",
+     "scripts/lib/validation-phase.mjs": "sha256:5a08dc611ef1ad75786c26010ebc1cb25e34c51b0d1a41db17101ffb52daf425",
+     "scripts/preflight-delivery": "sha256:cd83fa432847207b7167cfb5434846baff7615d5f2ffc33c7e9d4779c419f68f",
+     "scripts/slice-contract": "sha256:219edfe2ba6c13feabd565411b28822e231a9cf72cbb120181dfc736324625c1",
+@@ -156,7 +156,7 @@
+     "scripts/verify-strategic-handoff-consumption": "sha256:9ab43edbcf48ab6677ca7389e959a557d52939455ed309e5306391aa48ef0b10",
+     "scripts/verify-strategic-handoff-package-scenarios": "sha256:7b7e85b1d6d809173c2cc64eefbd78df9a44e5cf3b2c6e0802d537834f33c341",
+     "scripts/verify-strategic-handoff-tools-lock": "sha256:7b413ccc4ab4dc606113ec9e3f51ddac0d2045a761b18130483a70118c566d9b",
+-    ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml": "sha256:3e4865660e976bd9a19726d93b876e550c1657f9cee291e7ea21a452180f752f",
++    ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml": "sha256:9d3ff488dc7778bdd12e210928891871e27cd434bc9c6442b03a22bd105b0926",
+     ".template-spec/agents/yss-skill-registry.yaml": "sha256:856ae1d9cad9e902fc7bda3d8a12d692b838d00ccad5477d8f960c13359b02a7"
+   },
+   "effective_files": {
+@@ -285,7 +285,7 @@
+     "scripts/lib/technical-design-boundary.mjs": "sha256:7ce54f91952eb3b1fddc0bb0e63b153316ef6016eb1f288230062e235c894a77",
+     "scripts/lib/ui-baseline.mjs": "sha256:d16dad62c49a4f63dbde61df7d7af82185069a4d5b3eaea6585b49166b80c095",
+     "scripts/lib/user-decision-reuse.mjs": "sha256:c00e11c2caf9a727c018d4c4caa482b43ae66bd53ecbffea50b5964b55377d36",
+-    "scripts/lib/user-decision.mjs": "sha256:b4f53bec8c6b2d491f299aebaef569627f66e5db42c0b28be4878c21303d6e5b",
++    "scripts/lib/user-decision.mjs": "sha256:bf7b9f31999d51b953e890c677e6a56d6bd8153f58fac8ba02c85c35eda2bf25",
+     "scripts/lib/validation-phase.mjs": "sha256:5a08dc611ef1ad75786c26010ebc1cb25e34c51b0d1a41db17101ffb52daf425",
+     "scripts/preflight-delivery": "sha256:cd83fa432847207b7167cfb5434846baff7615d5f2ffc33c7e9d4779c419f68f",
+     "scripts/slice-contract": "sha256:219edfe2ba6c13feabd565411b28822e231a9cf72cbb120181dfc736324625c1",
+@@ -308,7 +308,7 @@
+     "scripts/verify-strategic-handoff-consumption": "sha256:9ab43edbcf48ab6677ca7389e959a557d52939455ed309e5306391aa48ef0b10",
+     "scripts/verify-strategic-handoff-package-scenarios": "sha256:7b7e85b1d6d809173c2cc64eefbd78df9a44e5cf3b2c6e0802d537834f33c341",
+     "scripts/verify-strategic-handoff-tools-lock": "sha256:7b413ccc4ab4dc606113ec9e3f51ddac0d2045a761b18130483a70118c566d9b",
+-    ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml": "sha256:3e4865660e976bd9a19726d93b876e550c1657f9cee291e7ea21a452180f752f",
++    ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml": "sha256:9d3ff488dc7778bdd12e210928891871e27cd434bc9c6442b03a22bd105b0926",
+     ".template-spec/agents/yss-skill-registry.yaml": "sha256:856ae1d9cad9e902fc7bda3d8a12d692b838d00ccad5477d8f960c13359b02a7"
+   }
+ }
+--- a/.template-source/scripts/skills-agent-eval.md
++++ b/.template-source/scripts/skills-agent-eval.md
+@@ -10,15 +10,24 @@
+   --variant baseline \
+   --codex /absolute/path/to/codex \
+   --model <available-model> --reasoning-effort high \
+-  --repetitions 2 --timeout 300
++  --repetitions 2 --timeout 300 \
++  --python-dependencies /absolute/path/to/offline-python-dependencies
+ ```
+ 
+-候选换用 `--source`、`--output` 与 `--variant candidate`，其他配置保持一致。修复后仅复跑受影响场景时使用 `--scenario <id>` 和新的输出目录；保留此前失败，不覆盖或删除不满意的样本。源目录至少提供场景所需 `.agents`、平台技能包、docs、scripts、CONTEXT 和仓库身份。凭据由运行时单独使用，不复制进产物目录。
++候选换用 `--source`、`--output` 与 `--variant candidate`，其他配置保持一致。修复后仅复跑受影响场景时使用 `--scenario <id>` 和新的输出目录；保留此前失败，不覆盖或删除不满意的样本。源目录通过 `source_paths` 声明复制闭包，并以 `required_paths` 声明必须存在的来源。默认包括 `.agents`、平台技能包、`.template-spec`、适用 `.template-source` 目录、docs、scripts、CONTEXT 和仓库身份；缺少必需来源时在 Agent 启动前失败。原始 AGENTS.md 保留，仅追加标记明确且两侧相同的 fixture 隔离约束；保存原始与有效规则摘要。凭据由运行时单独使用，不复制进产物目录。
+ 
+ 场景 JSON 为 `{"scenarios": [...]}`；每项含 `id`、`repo`（来源目录中的相对仓库路径）、`prompt`、可选 `files`（fixture 文件内容）及 `assertions`。断言支持存在/不存在、文本、JSON 字段、原文件不变、命令、最终答复、DOCX ZIP 内容及 Node 行为检查。所有产物路径必须留在 fixture 中。修正判定器应记录前后摘要、原因，证明提示和 fixture 未变，再对两侧统一重评分；不因此重跑模型挑样本。
+ 
+-每次运行保留 `trace.jsonl`、`stderr.log`、实际 workspace、`result.json`；总目录含 `run-config.json` 与 `results.jsonl`。`automatic_result` 只代表运行与自动断言，`semantic_review` 初始始终为 `pending`。维护者还须审阅实际工具调用、文件改动、关键状态、平台映射和交付类型。摘要中的 token 为运行时提供值；完整文件读取与宿主自动加载元数据不能仅从命令路径推断。
++`steps` 可声明多步场景，每步包含唯一安全 `id`、`prompt`、可选 `files` 和 `assertions`。每步使用同一 workspace 的当前字节启动新会话，测试从磁盘恢复，不冒充运行时会话续接。步骤输入支持 `${FIXTURE_ROOT}` 展开；不能覆盖 AGENTS.md、运行时配置或写到工作区外。某步失败或超时后保留结果，后续步骤列入 `unattempted_steps`；断言按步骤判断，不能用后一步成功掩盖前一步失败。临时文件留在 fixture 的 `.eval-tmp`。
++
++需要复用现有合成合同构造器时，可声明 `setup_script`，指向由场景维护者审阅的 fixture 内 `.mjs` 文件。runner 在模型启动前以 Node 执行它，保留 `setup.log`；失败或 60 秒超时不启动模型。构造器生成的批准与回复仍为测试数据。`fixture-manifest.json` 记录复制与注入阶段输入，各步 `step-input-manifest.json` 记录 setup 和该步注入之后、模型启动之前的实际输入；符号链接只记录目标，不读取外部内容。
++
++需要 Python 校验器的场景，应预备 `jsonschema`、PyYAML 等实际依赖闭包，并通过可选的 `--python-dependencies` 提供离线目录。runner 将它复制进每个 fixture 的 `.eval-python`，记录各文件摘要，设置仅指向此目录的 `PYTHONPATH` 并关闭 user site；不能依赖被隔离的个人 site-packages。两侧使用同一目录和解释器版本。启动付费运行前，在相同隔离环境与 shell 下验证导入及场景的实际校验命令；缺依赖属于环境失败，不能记为流程回归。
++
++每次运行保留 `fixture-manifest.json` 和各步 `trace.jsonl`、`stderr.log`、实际 workspace、`result.json`；总目录含 `run-config.json` 与 `results.jsonl`。`automatic_result` 只代表运行与自动断言，`semantic_review` 初始始终为 `pending`。维护者还须审阅实际工具调用、文件改动、关键状态、平台映射和交付类型。摘要中的 token 为运行时提供值；完整文件读取与宿主自动加载元数据不能仅从命令路径推断。
+ 
+ Git、包管理器及常见网络 CLI 通过 PATH 替身记录；工作区写入受运行时 sandbox 和 fixture 指令约束。实际宿主可能仍暴露其他能力元数据，不能声称已从工具目录移除全部 MCP。部分 login shell 会重写 PATH，因此必须审阅完整工具轨迹，不能只依赖 `.eval-commands.jsonl`。本次验收没有实际提交、上传或发布调用；替身返回成功也不等于真实 Git、依赖安装、平台构建或云端交付通过。
+ 
+ 缺凭据、运行时不可用或必须的执行能力缺失时记录未完成。场景本身测试“能力缺失时正确回退”可按其断言验收，但不得把缺失能力记成已执行成功。
++
++运行时使用实际可用且与 code-mode host 配套的 CLI；记录路径与二进制摘要，两侧保持一致。运行时缺 host、无 completed turn 或启动错误属于环境失败，不能计成 Agent 流程错误；修复后用新输出目录重跑并保留失败证据。超时终止该步骤的进程组，不让后台操作串入后续场景。
+--- a/.template-source/scripts/skills-agent-eval.py
++++ b/.template-source/scripts/skills-agent-eval.py
+@@ -11,7 +11,10 @@
+ import os
+ from pathlib import Path
+ import shutil
++import re
++import signal
+ import subprocess
++import sys
+ import tempfile
+ import time
+ import zipfile
+@@ -54,6 +57,108 @@
+     return failures
+ 
+ 
++FIXTURE_POLICY = """
++<!-- YSS_EVAL_FIXTURE_BOUNDARY -->
++本目录为隔离评测 fixture，测试数据与回复仅为 test-data-only，不得成为真实批准。
++保留上方被测来源规则；仅当其要求真实外部动作时，本段隔离边界优先并记录未测范围。
++只操作本目录中的文件，不读取真实用户状态、用户级技能或凭据，不访问网络。
++Git、包管理器和常见网络命令由 PATH 替身记录，不得绕过替身或安装真实依赖。
++允许在 fixture 内使用已有 Node/Python 和本地校验器；替身成功不代表真实构建或交付。
++不能完成时如实记录缺口，禁止假造命令、退出码、批准或验证结果。使用用户的语言。
++"""
++DEFAULT_SOURCE_PATHS = ["AGENTS.md", ".agents", ".codex/skills/data-analytics", ".codex/skills/product-design", ".template-spec", ".template-source/process", ".template-source/distribution", "docs", "scripts", "CONTEXT.md", "DESIGN.md", "skills-lock.json", "yss-project.yaml"]
++
++
++def write_fixture_files(workspace, files):
++    for ref, content in files.items():
++        target = safe(workspace, ref)
++        if target == workspace.resolve() / "AGENTS.md" or target.name in ["auth.json", "config.toml"]:
++            raise ValueError(f"fixture cannot replace rules or runtime configuration: {ref}")
++        target.parent.mkdir(parents=True, exist_ok=True)
++        target.write_text(content.replace("${FIXTURE_ROOT}", str(workspace)))
++
++
++def input_manifest(workspace):
++    rows = []
++    for item in sorted(workspace.rglob("*")):
++        ref = item.relative_to(workspace)
++        if any(part in ["__pycache__", ".eval-tmp", ".git"] for part in ref.parts): continue
++        if item.is_symlink(): rows.append({"ref": str(ref), "symlink": os.readlink(item)})
++        elif item.is_file(): rows.append({"ref": str(ref), "sha256": hashlib.sha256(item.read_bytes()).hexdigest()})
++    return rows
++
++
++def prepare_python_dependencies(source, workspace):
++    source = Path(source).resolve()
++    if not source.is_dir() or any(p.is_symlink() for p in source.rglob("*")):
++        raise ValueError("python dependencies must be a materialized directory")
++    target = workspace / ".eval-python"
++    shutil.copytree(source, target, ignore=shutil.ignore_patterns("__pycache__", ".DS_Store"))
++    return {"path": str(target), "files": input_manifest(target)}
++
++
++def prepare_workspace(origin, workspace, case):
++    for ref in case.get("required_paths", []):
++        if not safe(origin, ref).exists():
++            raise ValueError(f"required source unavailable: {ref}")
++    copied = []
++    for ref in case.get("source_paths", DEFAULT_SOURCE_PATHS):
++        src, dst = safe(origin, ref), safe(workspace, ref)
++        if not src.exists(): continue
++        candidates = [src] if src.is_file() else list(src.rglob("*"))
++        if src.is_symlink() or any(p.is_symlink() for p in candidates):
++            raise ValueError(f"source symlinks require an explicit materialized fixture: {ref}")
++        dst.parent.mkdir(parents=True, exist_ok=True)
++        if src.is_dir(): shutil.copytree(src, dst, ignore=shutil.ignore_patterns("node_modules", "__pycache__", ".git", ".DS_Store"), dirs_exist_ok=True)
++        elif src.is_file(): shutil.copy2(src, dst)
++        copied.append(ref)
++    write_fixture_files(workspace, case.get("files", {}))
++    policy = workspace / "AGENTS.md"
++    original = policy.read_bytes() if policy.exists() else b""
++    policy.write_bytes(original + FIXTURE_POLICY.encode())
++    manifest = [{"ref": str(p.relative_to(workspace)), "sha256": hashlib.sha256(p.read_bytes()).hexdigest()} for p in sorted(workspace.rglob("*")) if p.is_file()]
++    return {"copied_paths": copied, "source_rules_sha256": hashlib.sha256(original).hexdigest(), "effective_rules_sha256": hashlib.sha256(policy.read_bytes()).hexdigest(), "fixture_inputs": manifest, "execution_mode": "real-agent-with-command-stubs"}
++
++
++def scenario_steps(case):
++    steps = case.get("steps", [{"id": "main", "prompt": case.get("prompt"), "assertions": case.get("assertions", [])}])
++    ids = [step.get("id", "") for step in steps]
++    if not steps or len(set(ids)) != len(ids) or any(not re.fullmatch(r"[a-z0-9][a-z0-9-]*", value) for value in ids) or any(not step.get("prompt") for step in steps):
++        raise ValueError("steps require unique safe ids and nonempty prompts")
++    return steps
++
++
++def execute_step(command, env, destination, workspace, step, commands, timeout):
++    destination.mkdir(exist_ok=True)
++    write_fixture_files(workspace, step.get("files", {}))
++    (destination / "step-input-manifest.json").write_text(json.dumps(input_manifest(workspace), ensure_ascii=False, indent=2) + "\n")
++    offset = commands.stat().st_size if commands.exists() else 0
++    started_at = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
++    tick = time.monotonic(); timed_out = False
++    with (destination / "trace.jsonl").open("w") as trace, (destination / "stderr.log").open("w") as stderr:
++        process = subprocess.Popen(command + [step["prompt"]], env=env, stdin=subprocess.DEVNULL, stdout=trace, stderr=stderr, start_new_session=True)
++        try: exit_code = process.wait(timeout=timeout)
++        except subprocess.TimeoutExpired:
++            timed_out = True
++            os.killpg(process.pid, signal.SIGTERM)
++            try: process.wait(timeout=5)
++            except subprocess.TimeoutExpired: os.killpg(process.pid, signal.SIGKILL); process.wait()
++            exit_code = None
++    events = []
++    for line in (destination / "trace.jsonl").read_text().splitlines():
++        try: events.append(json.loads(line))
++        except json.JSONDecodeError: pass
++    command_log = commands.read_bytes()[offset:].decode() if commands.exists() else ""
++    failures = assertions(step, workspace, events, command_log)
++    errors = [e for e in events if e.get("type") == "error" or e.get("item", {}).get("type") == "error"]
++    if exit_code == 0 and not any(e.get("type") == "turn.completed" for e in events):
++        errors.append({"type": "error", "message": "runtime exited without a completed turn"})
++    calls = [e["item"] for e in events if e.get("type") == "item.completed" and e.get("item", {}).get("type") in ["command_execution", "mcp_tool_call", "file_change"]]
++    row = {"step": step["id"], "started_at": started_at, "elapsed_seconds": round(time.monotonic()-tick, 2), "exit_code": exit_code, "timeout": timed_out, "assertion_failures": failures, "runtime_errors": errors, "tool_calls": len(calls), "usage": [e["usage"] for e in events if "usage" in e], "automatic_result": "passed" if exit_code == 0 and not failures and not errors else "failed", "semantic_review": "pending", "trace": str(destination / "trace.jsonl")}
++    (destination / "step-result.json").write_text(json.dumps(row, ensure_ascii=False, indent=2) + "\n")
++    return row
++
++
+ def run(args):
+     suite = json.loads(Path(args.scenarios).read_text())
+     output = Path(args.output).resolve()
+@@ -66,7 +171,10 @@
+     auth = Path(os.environ.get("CODEX_HOME", str(Path.home() / ".codex"))) / "auth.json"
+     if not auth.exists(): raise RuntimeError("Codex credentials missing; evaluation incomplete")
+     selected = [c for c in suite["scenarios"] if not args.scenario or c["id"] in args.scenario]
+-    config = {"runtime": str(runtime), "runtime_sha256": hashlib.sha256(runtime.read_bytes()).hexdigest(), "model": args.model, "reasoning_effort": args.reasoning_effort, "repetitions": args.repetitions, "suite_sha256": hashlib.sha256(Path(args.scenarios).read_bytes()).hexdigest(), "source": str(source), "variant": args.variant}
++    if not selected or len({c["id"] for c in selected}) != len(selected) or any(not re.fullmatch(r"[a-z0-9][a-z0-9-]*", c["id"]) for c in selected):
++        raise ValueError("select nonempty scenarios with unique safe ids")
++    if args.repetitions < 1 or args.timeout <= 0: raise ValueError("repetitions and timeout must be positive")
++    config = {"runtime": str(runtime), "runtime_sha256": hashlib.sha256(runtime.read_bytes()).hexdigest(), "runner_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(), "model": args.model, "reasoning_effort": args.reasoning_effort, "repetitions": args.repetitions, "suite_sha256": hashlib.sha256(Path(args.scenarios).read_bytes()).hexdigest(), "source": str(source), "variant": args.variant, "python_dependencies": getattr(args, "python_dependencies", None), "python_runtime": sys.executable}
+     (output / "run-config.json").write_text(json.dumps(config, indent=2) + "\n")
+     for case in selected:
+         for repeat in range(1, args.repetitions + 1):
+@@ -77,14 +185,11 @@
+             workspace = destination / "workspace"
+             workspace.mkdir()
+             origin = safe(source, case["repo"]) if case["repo"] != "." else source
+-            for rel in [".agents", ".codex/skills/data-analytics", ".codex/skills/product-design", "docs", "scripts", "CONTEXT.md", "yss-project.yaml"]:
+-                src, dst = origin / rel, workspace / rel
+-                if src.is_dir(): shutil.copytree(src, dst, ignore=shutil.ignore_patterns("node_modules", "__pycache__", ".git"))
+-                elif src.is_file(): dst.parent.mkdir(parents=True, exist_ok=True); shutil.copy2(src, dst)
+-            for rel, content in case.get("files", {}).items():
+-                dst = safe(workspace, rel); dst.parent.mkdir(parents=True, exist_ok=True); dst.write_text(content)
+-            # Fixture safety policy is identical for both variants. It does not supply skill answers.
+-            (workspace / "AGENTS.md").write_text("本目录为隔离评测 fixture。按用户要求完成本地任务，按需发现和读取本地技能。只操作本目录中的文件；不读取真实用户状态、用户级技能或凭据，不访问网络。外部工具、Git 和包管理器由 PATH 中替身提供；不得绕过替身或安装真实依赖。不能完成时如实记录缺口。使用用户的语言。\n")
++            metadata = prepare_workspace(origin, workspace, case)
++            if getattr(args, "python_dependencies", None):
++                metadata["python_dependencies"] = prepare_python_dependencies(args.python_dependencies, workspace)
++            (destination / "fixture-manifest.json").write_text(json.dumps(metadata, ensure_ascii=False, indent=2) + "\n")
++            steps = scenario_steps(case)
+             bin_dir = workspace / ".eval-bin"; bin_dir.mkdir()
+             commands = workspace / ".eval-commands.jsonl"
+             stub = '''#!/usr/bin/env python3
+@@ -109,30 +214,35 @@
+ '''
+             for tool in ["git", "pnpm", "npm", "npx", "gh", "glab", "curl", "wget"]:
+                 p = bin_dir / tool; p.write_text(stub); p.chmod(0o755)
+-            (workspace / ".git").mkdir()
++            (workspace / ".git").mkdir(exist_ok=True)
++            run_start = time.monotonic(); step_rows = []
++            temporary = workspace / ".eval-tmp"; temporary.mkdir()
+             with tempfile.TemporaryDirectory(prefix="yss-eval-auth-") as private:
+                 private = Path(private); (private / "auth.json").symlink_to(auth)
+                 home = private / "home"; home.mkdir()
+                 env = os.environ.copy()
+-                env.update(HOME=str(home), CODEX_HOME=str(private), PATH=str(bin_dir) + os.pathsep + env["PATH"], YSS_EVAL_COMMAND_LOG=str(commands), YSS_EVAL_GIT_STATUS=case.get("git_status", ""))
++                env.update(HOME=str(home), CODEX_HOME=str(private), PATH=str(bin_dir) + os.pathsep + env["PATH"], YSS_EVAL_COMMAND_LOG=str(commands), YSS_EVAL_GIT_STATUS=case.get("git_status", ""), TMPDIR=str(temporary))
++                env.update(PYTHONNOUSERSITE="1", PYTHONPATH=metadata.get("python_dependencies", {}).get("path", ""))
++                if case.get("setup_script"):
++                    setup = safe(workspace, case["setup_script"])
++                    if setup.suffix != ".mjs" or not setup.is_file(): raise ValueError("setup_script must be a fixture-local .mjs file")
++                    with (destination / "setup.log").open("w") as log:
++                        prepared = subprocess.run(["node", str(setup)], cwd=workspace, env=env, stdout=log, stderr=subprocess.STDOUT, timeout=60)
++                    if prepared.returncode: raise RuntimeError("fixture setup failed before Agent execution; inspect setup.log")
+                 # Both variants ignore user config; host-provided tool metadata may still be exposed.
+-                command = [str(runtime), "exec", "--ignore-user-config", "--ephemeral", "--json", "--skip-git-repo-check", "--sandbox", "workspace-write", "-c", 'shell_environment_policy.inherit="all"', "-c", 'shell_environment_policy.ignore_default_excludes=true', "-c", f'model_reasoning_effort="{args.reasoning_effort}"', "--model", args.model, "-C", str(workspace), case["prompt"]]
+-                start = time.time(); timeout = False
+-                with (destination / "trace.jsonl").open("w") as trace, (destination / "stderr.log").open("w") as stderr:
+-                    try: result = subprocess.run(command, env=env, stdin=subprocess.DEVNULL, stdout=trace, stderr=stderr, timeout=args.timeout); exit_code = result.returncode
+-                    except subprocess.TimeoutExpired: timeout = True; exit_code = None
+-            events = []
+-            for line in (destination / "trace.jsonl").read_text().splitlines():
+-                try: events.append(json.loads(line))
+-                except json.JSONDecodeError: pass
+-            failures = assertions(case, workspace, events, commands.read_text() if commands.exists() else "")
+-            errors = [e for e in events if e.get("type") == "error" or e.get("item", {}).get("type") == "error"]
+-            tools = [e["item"] for e in events if e.get("type") == "item.completed" and e.get("item", {}).get("type") in ["command_execution", "mcp_tool_call", "file_change"]]
+-            row = {"scenario": case["id"], "variant": args.variant, "repeat": repeat, "elapsed_seconds": round(time.time()-start,2), "exit_code": exit_code, "timeout": timeout, "assertion_failures": failures, "runtime_errors": errors, "tool_calls": len(tools), "usage": [e["usage"] for e in events if "usage" in e], "automatic_result": "passed" if exit_code == 0 and not failures and not errors else "failed", "semantic_review": "pending", "trace": str(destination / "trace.jsonl")}
++                command = [str(runtime), "exec", "--ignore-user-config", "--ephemeral", "--json", "--skip-git-repo-check", "--sandbox", "workspace-write", "-c", 'shell_environment_policy.inherit="all"', "-c", 'shell_environment_policy.ignore_default_excludes=true', "-c", f'model_reasoning_effort="{args.reasoning_effort}"', "--model", args.model, "-C", str(workspace)]
++                for step in steps:
++                    step_dir = destination / step["id"] if "steps" in case else destination
++                    row = execute_step(command, env, step_dir, workspace, step, commands, args.timeout)
++                    step_rows.append(row)
++                    if row["automatic_result"] != "passed": break
++            complete = len(step_rows) == len(steps)
++            row = {"scenario": case["id"], "variant": args.variant, "repeat": repeat, "elapsed_seconds": round(time.monotonic()-run_start, 2), "exit_code": step_rows[-1]["exit_code"], "timeout": any(r["timeout"] for r in step_rows), "assertion_failures": [x for r in step_rows for x in r["assertion_failures"]], "runtime_errors": [x for r in step_rows for x in r["runtime_errors"]], "tool_calls": sum(r["tool_calls"] for r in step_rows), "usage": [x for r in step_rows for x in r["usage"]], "automatic_result": "passed" if complete and all(r["automatic_result"] == "passed" for r in step_rows) else "failed", "semantic_review": "pending", "trace": step_rows[0]["trace"], "steps": step_rows, "unattempted_steps": [s["id"] for s in steps[len(step_rows):]]}
+             (destination / "result.json").write_text(json.dumps(row, ensure_ascii=False, indent=2) + "\n")
+             with (output / "results.jsonl").open("a") as stream: stream.write(json.dumps(row, ensure_ascii=False) + "\n")
+             print(name, row["automatic_result"], flush=True)
+-            if errors and not tools: raise RuntimeError("Runtime unavailable; evaluation incomplete, remaining runs not attempted")
++            if row["runtime_errors"] and not row["tool_calls"]: raise RuntimeError("Runtime unavailable; evaluation incomplete, remaining runs not attempted")
++
+ 
+ 
+ if __name__ == "__main__":
+@@ -142,4 +252,5 @@
+     parser.add_argument("--repetitions", type=int, default=2)
+     parser.add_argument("--timeout", type=int, default=300)
+     parser.add_argument("--scenario", action="append")
++    parser.add_argument("--python-dependencies", help="Offline materialized Python dependency directory copied into each fixture")
+     run(parser.parse_args())
+--- a/.template-source/scripts/tests/test_skills_agent_eval.py
++++ b/.template-source/scripts/tests/test_skills_agent_eval.py
+@@ -1,6 +1,9 @@
+ """Counterexamples for result checking, without running an LLM or external action."""
+ import importlib.util
+ import json
++import os
++import subprocess
++import sys
+ from pathlib import Path
+ import tempfile
+ import unittest
+@@ -47,5 +50,86 @@
+                 with self.assertRaises(ValueError): evaluation.safe(Path(directory), relative)
+ 
+ 
++class WorkspaceChecks(unittest.TestCase):
++    def test_current_rules_and_layout_are_preserved(self):
++        with tempfile.TemporaryDirectory() as directory:
++            base = Path(directory); source = base / "source"; workspace = base / "workspace"
++            source.mkdir(); workspace.mkdir()
++            (source / "AGENTS.md").write_text("original authoritative policy\n")
++            (source / ".template-spec").mkdir()
++            (source / ".template-spec" / "registry.yaml").write_text("current registry")
++            metadata = evaluation.prepare_workspace(source, workspace, {"required_paths": ["AGENTS.md", ".template-spec/registry.yaml"]})
++            self.assertTrue((workspace / "AGENTS.md").read_text().startswith("original authoritative policy\n"))
++            self.assertIn("fixture", (workspace / "AGENTS.md").read_text())
++            self.assertEqual((workspace / ".template-spec/registry.yaml").read_text(), "current registry")
++            self.assertNotEqual(metadata["source_rules_sha256"], metadata["effective_rules_sha256"])
++
++    def test_missing_required_source_fails_before_execution(self):
++        with tempfile.TemporaryDirectory() as directory:
++            base = Path(directory); source = base / "source"; workspace = base / "workspace"
++            source.mkdir(); workspace.mkdir()
++            with self.assertRaisesRegex(ValueError, "required source"):
++                evaluation.prepare_workspace(source, workspace, {"required_paths": [".template-spec/missing.yaml"]})
++
++    def test_fixture_cannot_replace_rules_or_escape_via_symlink(self):
++        with tempfile.TemporaryDirectory() as directory:
++            base = Path(directory); workspace = base / "workspace"; workspace.mkdir()
++            for ref in ["AGENTS.md", "./AGENTS.md", str(workspace / "AGENTS.md")]:
++                with self.assertRaises(ValueError): evaluation.write_fixture_files(workspace, {ref: "fake policy"})
++            (workspace / "escape").symlink_to(base, target_is_directory=True)
++            with self.assertRaises(ValueError): evaluation.write_fixture_files(workspace, {"escape/outside.txt": "bad"})
++
++    def test_multistep_requires_unique_ids_and_reuses_workspace(self):
++        steps = evaluation.scenario_steps({"steps": [{"id": "first", "prompt": "draft"}, {"id": "resume", "prompt": "continue"}]})
++        self.assertEqual([step["id"] for step in steps], ["first", "resume"])
++        with self.assertRaises(ValueError): evaluation.scenario_steps({"steps": [{"id": "x", "prompt": "a"}, {"id": "x", "prompt": "b"}]})
++        with tempfile.TemporaryDirectory() as directory:
++            workspace = Path(directory)
++            evaluation.write_fixture_files(workspace, {"step1.txt": "retained"})
++            evaluation.write_fixture_files(workspace, {"step2.txt": "${FIXTURE_ROOT}"})
++            self.assertEqual((workspace / "step1.txt").read_text(), "retained")
++            self.assertEqual((workspace / "step2.txt").read_text(), str(workspace))
++
++    def test_offline_dependencies_work_without_user_site_and_are_fingerprinted(self):
++        with tempfile.TemporaryDirectory() as directory:
++            root = Path(directory); dependencies = root / "dependencies"; workspace = root / "workspace"
++            dependencies.mkdir(); workspace.mkdir()
++            (dependencies / "fixture_dependency.py").write_text("VALUE = 'offline'\n")
++            copied = evaluation.prepare_python_dependencies(dependencies, workspace)
++            env = os.environ.copy(); env.update(PYTHONPATH=copied["path"], PYTHONNOUSERSITE="1")
++            result = subprocess.run([sys.executable, "-s", "-c", "import fixture_dependency;print(fixture_dependency.VALUE)"], env=env, text=True, capture_output=True)
++            self.assertEqual(result.returncode, 0, result.stderr)
++            self.assertEqual(result.stdout.strip(), "offline")
++            self.assertEqual(copied["files"][0]["ref"], "fixture_dependency.py")
++
++    def test_manifest_records_symlink_without_reading_external_content(self):
++        with tempfile.TemporaryDirectory() as directory:
++            root = Path(directory); workspace = root / "workspace"; workspace.mkdir()
++            (workspace / "external").symlink_to(root / "unavailable")
++            manifest = evaluation.input_manifest(workspace)
++            self.assertEqual(manifest, [{"ref": "external", "symlink": str(root / "unavailable")}])
++
++
++class ExecutionChecks(unittest.TestCase):
++    def test_missing_completed_turn_and_timeout_are_failures(self):
++        with tempfile.TemporaryDirectory() as directory:
++            root = Path(directory); commands = root / "commands.jsonl"
++            step = {"id": "main", "prompt": "fixture", "assertions": []}
++            missing = evaluation.execute_step([sys.executable, "-c", "print('{}')"], os.environ.copy(), root / "missing", root, step, commands, 2)
++            self.assertEqual(missing["automatic_result"], "failed")
++            self.assertIn("completed turn", missing["runtime_errors"][0]["message"])
++            timed = evaluation.execute_step([sys.executable, "-c", "import time;time.sleep(5)"], os.environ.copy(), root / "timeout", root, step, commands, 0.05)
++            self.assertTrue(timed["timeout"])
++            self.assertIsNone(timed["exit_code"])
++            self.assertTrue((root / "timeout/step-result.json").exists())
++
++    def test_completed_turn_does_not_hide_artifact_assertion_failure(self):
++        with tempfile.TemporaryDirectory() as directory:
++            root = Path(directory)
++            row = evaluation.execute_step([sys.executable, "-c", "print('{\"type\":\"turn.completed\"}')"], os.environ.copy(), root / "result", root, {"id":"main", "prompt":"fixture", "assertions":[{"kind":"exists","path":"missing.json"}]}, root / "commands.jsonl", 2)
++            self.assertEqual(row["automatic_result"], "failed")
++            self.assertTrue(row["assertion_failures"])
++
++
+ if __name__ == "__main__":
+     unittest.main()
+--- a/.template-source/tooling/node/test/decision-continuation.test.mjs
++++ b/.template-source/tooling/node/test/decision-continuation.test.mjs
+@@ -95,6 +95,10 @@
+   f.proof.subject = f.asset(subject.ref); f.review.subject = f.proof.subject; f.review.comparison.after = f.proof.subject; f.refresh();
+   assert.throws(() => assertImplementationDecision(implementation.state), /写路径超出/);
+ }, 'implementation-scope'));
++test('conflicting direct decision and continuation references are rejected', () => fixture(f => {
++  f.requirement.user_decision_ref = f.source.ref;
++  assert.throws(f.verify, /两种证明路径/);
++}));
+ test('no reply and revoked source authorization cannot continue', () => fixture(f => {
+   f.source.record.responses = []; f.source.save(); assert.throws(f.verify, /response-required/);
+   f.source.respond({ decision: 'revoked', text: '撤回同意' }); f.source.save(); assert.throws(f.verify, /not-approved/);
+--- a/.template-spec/design/templates/interaction-spec-template.md
++++ b/.template-spec/design/templates/interaction-spec-template.md
+@@ -17,6 +17,8 @@
+ - 不在本次范围内的交互：<待填写>
+ 
+ ## 2. 页面地图
++
++引用总体设计的当前页面地图与边界；本节只细化交互入口、操作和后续流转。未变化的页面可引用上游对应行，当前阅读仍须能定位完整路径；发现边界、角色或目标变化时记录差异并回填 Spec / 总体设计，不重复定义另一份范围。
+ 
+ | 页面 / 区域 | 入口与角色 | 用户目标 | 关键操作 | 下一步 |
+ |---|---|---|---|---|
+--- a/.template-spec/design/templates/product-overview-design-template.md
++++ b/.template-spec/design/templates/product-overview-design-template.md
+@@ -22,11 +22,11 @@
+ 
+ ## 2. 设计目标
+ 
+-- 目标用户：
+-- 核心场景：
+-- MVP 目标：
+-- 非目标范围：
+-- 成功标准：
++引用 Plan / Spec 中已确认的目标用户、核心场景、MVP、非目标和成功标准，写明章节或规则 ID。本节说明这些目标对功能边界与设计的约束；仅记录新增细化或差异，不重新批准上游范围。必要摘录绑定同一来源；引用不可读或标准未确认时列为开放问题。
++
++| 上游目标 / 规则引用 | 本设计承接的约束 | 本阶段新增细化 / 差异与处理 |
++|---|---|---|
++| <当前资产及章节 / ID> | <对模块、流程或验收的约束> | <细化；无差异则说明沿用> |
+ 
+ ## 3. 用户主流程
+ 
+--- a/.template-spec/plan/entry-review.md
++++ b/.template-spec/plan/entry-review.md
+@@ -8,7 +8,7 @@
+ 
+ ## 持久化合同
+ 
+-入口状态包含 `feature_id`、`plan_review_ref`、`plan_user_decision_ref`。这三个字段同样用于任务包、checkpoint 和完成态 Workflow Execution Result；不从历史阶段、路径或默认值推断。
++入口状态包含 `feature_id`、`plan_review_ref`，并按用户决定协议提供 `plan_user_decision_ref` 或 `plan_continuation_ref`。这些字段同样用于任务包、checkpoint 和完成态 Workflow Execution Result；不从历史阶段、路径或默认值推断。两条证明路径均由现有用户决定校验器核验，不能混填或以延续记录伪造新回复。
+ 
+ `plan_review_ref` 指向 YAML / JSON：
+ 
+@@ -22,4 +22,6 @@
+ 
+ 先固定审阅包及依据，展示当前内容、范围、风险、延期、N/A 理由和下一动作，再取得真实用户回复。`plan_user_decision_ref` 采用 `.template-spec/process/schemas/user-decision.schema.json`：边界为 `gate.plan-approved`，subject 为当前 `plan_review_ref`，scope 包含当前 `feature_id`。不得将旧“继续”、数字人会签或合成测试回复当作本次批准。
+ 
+-审阅包、注册表、Plan、词汇、依据或批准来源变化均要求重新校验；摘要漂移时重新展示并取得当前确认。检查器保证结构、引用、摘要和回复绑定，不证明业务事实或身份来源绝对真实；主控仍须按证据核查影响面，不能为了放行而填 false 或空问题列表。
++审阅包、注册表、Plan、词汇、依据或批准来源变化均要求重新校验；摘要漂移时先展示差异并按用户决定协议重验：排版、措辞或派生内容变化，经独立等价审查证明决定依据与授权范围未变，且原始决定和适用外部审批仍有效时，可用 `plan_continuation_ref` 延续；范围、关键规则、验收、契约承诺、授权或风险接受发生实质变化时重新取得决定。未知影响先补分析，不能视为等价。检查器保证结构、引用、摘要和回复绑定，不证明业务事实或身份来源绝对真实；主控仍须按证据核查影响面，不能为了放行而填 false 或空问题列表。
++
++批准延续使用 `yss-product-lifecycle/references/user-decisions.md` 的 `approved-scope-continuation-v1`：绑定当前审阅包、原始真实决定、实际差异与独立审查；禁止链式延续、修改旧回复或跳过检查。`scripts/plan-spec-entry prepare` 只起草候选，`diff` 只报告原始字节变化；两者均不判定等价或批准。
+--- a/.template-spec/templates/release-note-template.md
++++ b/.template-spec/templates/release-note-template.md
+@@ -9,6 +9,21 @@
+ 
+ ## 变更内容
+ 
++引用本次 Spec / Ticket、当前候选及验收记录，说明用户可观察变化和实际交付范围。
++
+ ## 迁移说明
+ 
++说明兼容性、数据或配置迁移、受影响消费者及执行顺序；无迁移时给出依据。已有实例按显式迁移处理，不由本说明自动更新。
++
+ ## 验证结果
++
++引用同一候选的 Fresh Verification、实际运行环境及未覆盖范围。命中的必需验证失败或未执行仍阻断；不能以历史结果或 skipped 表示通过。
++
++## 发布与回滚
++
++- 发布前提与当前决定：<适用门禁、真实负责人回复及范围引用；未取得写待决定>。
++- 发布顺序与观察条件：<各仓 / 服务依赖、验证点与中止条件；不适用写依据>。
++- 回滚点、触发条件与处理人：<当前可执行方案及已有负责人>。
++- 实际执行记录：<已执行动作、版本、时间和结果引用；未执行写未发布>。
++
++本说明只汇总证据，不代替发布批准或授予外部动作权限。
+--- a/.template-spec/templates/retro-report-template.md
++++ b/.template-spec/templates/retro-report-template.md
+@@ -9,8 +9,16 @@
+ 
+ ## 做得好的地方
+ 
++引用本次实际结果与证据，说明哪些做法值得保留；不把预期收益写成已实现。
++
+ ## 需要改进的地方
++
++记录触发条件、实际影响与证据，区分已确认机制和待验证假设；说明返工或漏检为何未被既有检查发现。
+ 
+ ## 改进动作
+ 
++引用既有待办 / 工作项；在其权威记录中登记负责人、解决时点、验证方法、关闭条件与关闭证据。本节说明动作如何解决上述问题，不另外维护一套进度；未分派写未登记。
++
+ ## 沉淀去向
++
++列出需修订的事实源、Skill / 模板 / 校验场景及关联行动。关闭时引用实际修订和验证结果，只有建议或计划时保持待处理。
+--- a/.template-spec/templates/verification-record-template.md
++++ b/.template-spec/templates/verification-record-template.md
+@@ -12,6 +12,12 @@
+ 
+ ## 1. 验证范围
+ 
++- 当前验证对象：<候选 / 合同 / 工作树范围及其实际摘要记录引用>。
++- 上游验收依据：<当前 Spec、Ticket、适用契约与质量基线引用>。
++- 实际运行记录：<可读日志或结构化结果引用；未运行写未执行>。
++
++以下摘要从上述证据形成，保留证据来源；资产变化后按影响重新验证，不能沿用旧通过结论。
++
+ | 范围 | 说明 | 是否覆盖 |
+ |------|------|----------|
+ | Spec 验收标准 |  | 是 / 否 |
+@@ -23,9 +29,11 @@
+ 
+ ## 2. 命令与结果
+ 
+-| 时间 | 命令 | 结果 | 备注 |
+-|------|------|------|------|
+-|  |  | pass / fail / skipped |  |
++引用已有运行记录，核对其中的候选 / 输入、cwd、实际命令、开始与结束时间、退出码及日志位置。Agent 从记录整理下面的阅读摘要，人工无需另抄机器摘要；记录缺项时明确写未知，不能将计划命令写成已执行。
++
++| 运行记录引用 | 覆盖的验收 / 范围 | 实际结果与未覆盖项 |
++|---|---|---|
++| <日志 / 结构化结果> | <规则或验收引用> | <pass / fail / skipped / 未执行，及依据> |
+ 
+ ## 3. 手工验证
+ 
+@@ -43,11 +51,14 @@
+ 
+ - [ ] 验证命令是本次完成前新鲜执行的结果。
+ - [ ] 失败项已有修复或明确阻断。
+-- [ ] skipped 项有合理原因和后续处理方式。
++- [ ] skipped 项有原因和处理方式；命中的必需项未执行仍阻断，未命中项才按证据记录不适用。
+ - [ ] 发布 / 合并 / 归档所需证据已能追溯。
+ 
+ ## 6. 结论
+ 
+-- 验证结论：Approved / Blocked
+-- 可合并 / 可发布：是 / 否
+-- 阻断项：
++- 验证结论：<待验证 / 通过 / 阻断；仅针对上述候选和覆盖范围>。
++- 未覆盖范围及阻断项：<实际依据；无则说明核验范围>。
++- 合并 / 发布前提与决定：<引用当前适用门禁、Fresh Verification 和真实授权；缺失则待处理>。
++- 下一动作与负责人：<依据已有登记>。
++
++验证通过不产生合并或发布授权；实际动作仍按原流程和授权边界执行。
+--- a/AGENTS.md
++++ b/AGENTS.md
+@@ -60,7 +60,7 @@
+ 
+ - 实现前按 `.template-spec/process/implementation-repo-integration.md` 登记仓库、项目根、分支、CI、验证命令、回滚点；再用 `yss-implementation-contract-compiler` 编译最小 Skill 集和当前合同。
+ - 无工程先确认外部仓库或输出目录。Backend `scaffold_status=required` 时，由生命周期推荐 `domain-driven` / `layered-mvc`，用户逐项目确认后路由；Frontend 用 `yss-frontend-scaffold-generator`。缺目录不改路由。
+-- 脚手架仅在 `scaffold-architecture-decisions.yaml` 已确认且当前、schema v3 合同已持久化并获批准后无交互运行，只生成机械骨架。既有工程不得重选或覆盖；架构转换单独立项。
++- 脚手架仅在 `scaffold-architecture-decisions.yaml` 已确认且当前、Project Scaffold Contract schema v4 已持久化并获批准后无交互运行，只生成机械骨架。既有工程不得重选或覆盖；架构转换单独立项。
+ - 正式切片只消费已批准、已持久化且当前的 Slice Implementation Contract；编译器只起草，不批准、不设置 `ready-for-agent`、不宣布完成。
+ - UI 切片在 `ready-for-agent` 前须有已校验的 `frontend_implementation_plan`，实现后补 `frontend_implementation_verification`，覆盖截图 / 视觉回归、状态交互、console warning、实际 `pnpm` 退出码。
+ - 前端验证优先 `pnpm`，后端优先根 `./mvnw`；缺少时记录受控例外和实际命令。
+--- a/scripts/lib/lifecycle-status.mjs
++++ b/scripts/lib/lifecycle-status.mjs
+@@ -18,6 +18,7 @@
+ /** Read-only projection; checkpoint, registry and orchestration remain authoritative. */
+ export function lifecycleStatus({ root, checkpointRef }) {
+   if (!root || !checkpointRef) throw new TypeError('root and checkpoint are required');
++  root = path.resolve(root);
+   const identity = source(root, 'yss-project.yaml').value;
+   if (identity.schema_version !== 1 || identity.repository_mode !== 'project-instance') throw new TypeError('生命周期状态仅适用于 project-instance');
+   const registryRef = '.template-spec/process/lifecycle-registry.yaml';
+@@ -25,29 +26,80 @@
+   const checkpoint = source(root, checkpointRef), registry = source(root, registryRef), contract = source(root, contractRef);
+   const value = checkpoint.value;
+   if (value.schema_version !== 1 || value.repository_mode !== 'project-instance') throw new TypeError('checkpoint 身份或版本无效');
+-  const blockers = [...(Array.isArray(value.blockers) ? value.blockers.map(item => typeof item === 'string' ? item : JSON.stringify(item)) : [])];
++  const items = value.stage_tracking?.items ?? [];
++  if (!Array.isArray(items)) throw new TypeError('阶段追踪 items 必须为数组');
++  const activeItems = items.filter(item => item.work_unit === value.next_work_unit && item.progress !== 'cancelled');
++  const owner = value.pause?.owner_or_authority ?? activeItems.find(item => item.progress !== 'completed')?.owner ?? '未登记';
++  const diagnostics = [], verification_scope = [];
++  const check = (id, status, refs, reason) => verification_scope.push({ id, status, refs, reason });
++  const issue = (code, message, source_ref, recovery, severity = 'error') => diagnostics.push({ code, message, source_ref, owner, recovery, severity });
++  for (const item of Array.isArray(value.blockers) ? value.blockers : []) {
++    issue('registered-blocker', typeof item === 'string' ? item : JSON.stringify(item), checkpointRef, '按原阻塞证据处理并复验');
++  }
++  check('registered-blockers', diagnostics.length ? 'failed' : 'passed', [checkpointRef], '仅读取已登记阻塞，不代表完整就绪');
+   const stage = registry.value.stages?.find(item => item.id === value.stage);
+-  if (!stage) blockers.push(`未知阶段: ${value.stage}`);
+   const workUnit = registry.value.work_units?.find(item => item.id === value.next_work_unit);
+-  if (value.next_work_unit && !workUnit) blockers.push(`未知下一工作单元: ${value.next_work_unit}`);
+-  if (workUnit && workUnit.id !== 'work-unit.entry-triage' && !contract.value.work_unit_routes?.[workUnit.id]) blockers.push(`缺少执行路由: ${workUnit.id}`);
+-  if (value.context_reconciliation?.status === 'blocked') blockers.push('Context reconciliation blocked');
+-  for (const [id, gate] of Object.entries(value.gates ?? {})) if (['blocked', 'stale'].includes(gate?.status)) blockers.push(`${id}: ${gate.status}`);
++  if (!stage) issue('unknown-stage', `未知阶段: ${value.stage}`, registryRef, '按注册表核对当前阶段');
++  if (value.next_work_unit && !workUnit) issue('unknown-work-unit', `未知下一工作单元: ${value.next_work_unit}`, registryRef, '按注册表核对下一工作单元');
++  if (workUnit && workUnit.id !== 'work-unit.entry-triage' && !contract.value.work_unit_routes?.[workUnit.id]) issue('missing-route', `缺少执行路由: ${workUnit.id}`, contractRef, '修复当前合同路由后重验');
++  check('stage-and-route', diagnostics.some(x => ['unknown-stage', 'unknown-work-unit', 'missing-route'].includes(x.code)) ? 'failed' : 'passed', [registryRef, contractRef], '仅检查身份与路由存在，不计算完整 frontier');
++  if (value.context_reconciliation?.status === 'blocked') issue('context-blocked', 'Context reconciliation blocked', checkpointRef, '修复词汇对账并执行适用校验');
++  check('context-reconciliation', value.context_reconciliation?.status === 'blocked' ? 'failed' : 'not-checked', [value.context_reconciliation?.ref].filter(Boolean), '读取登记状态；当前对账内容和摘要仍须由原验证器核验');
++  for (const [id, gate] of Object.entries(value.gates ?? {})) {
++    if (['blocked', 'stale'].includes(gate?.status)) issue('gate-blocked', `${id}: ${gate.status}`, checkpointRef, '核对受影响依据和当前批准');
++  }
++  check('registered-gates', diagnostics.some(x => x.code === 'gate-blocked') ? 'failed' : 'passed', [checkpointRef], '仅检查登记的 blocked/stale 标志');
+   const evidenceRefs = [value.context_reconciliation?.ref, ...Object.values(value.artifacts ?? {}).filter(item => item?.status === 'approved').map(item => item.ref)].filter(Boolean);
+   for (const ref of evidenceRefs) {
+     try { readFileSync(safeTrackingPath(root, ref)); }
+-    catch { blockers.push(`证据不可读: ${ref}`); }
++    catch { issue('evidence-unreadable', `证据不可读: ${ref}`, ref, '恢复正确来源或重新取得证据，不伪造历史批准'); }
+   }
++  check('evidence-readable', diagnostics.some(x => x.code === 'evidence-unreadable') ? 'failed' : 'passed', evidenceRefs, '仅检查已引用证据可读，不证明证据完整或当前有效');
++  check('artifact-digests', 'not-checked', evidenceRefs, '未核验批准资产原字节摘要；恢复时运行资产所有者的适用预检');
++  check('approval-validity', 'not-checked', [checkpointRef], '未核验真实决定、延续、外部审批及完整执行授权');
+   if (value.stage_tracking?.items) {
+-    try { for (const id of trackingDrift(root, value.stage_tracking)) blockers.push(`阶段工作项来源漂移: ${id}`); }
+-    catch (error) { blockers.push(`阶段追踪不可核验: ${error.message}`); }
++    try {
++      const drift = trackingDrift(root, value.stage_tracking);
++      for (const id of drift) issue('tracking-drift', `阶段工作项来源漂移: ${id}`, checkpointRef, '按依赖重验受影响项，保留未受影响记录');
++      check('stage-tracking', drift.length ? 'failed' : 'passed', [checkpointRef], '只核对已登记工作项来源及完成证据摘要；结构与流转仍须原预检');
++    } catch (error) {
++      issue('tracking-unverifiable', `阶段追踪不可核验: ${error.message}`, checkpointRef, '修复追踪输入后重新检查');
++      check('stage-tracking', 'failed', [checkpointRef], error.message);
++    }
++  } else {
++    check('stage-tracking', 'not-checked', [checkpointRef], '未登记追踪；按实例既有兼容或显式迁移入口处理，不自动补建');
+   }
+-  if (value.status === 'blocked' && !blockers.length) blockers.push('checkpoint 已标 blocked，原因未登记');
+-  const owner = value.stage_tracking?.items?.find(item => item.work_unit === value.next_work_unit && item.progress !== 'completed')?.owner ?? '未登记';
+-  const next_action = blockers.length ? `处理当前阻塞：${blockers[0]}` : value.status === 'paused-human-gate' ? '核对当前需由用户决定的资产与批准范围' : value.next_work_unit ? `执行 ${value.next_work_unit}` : '复核当前阶段验收';
++  if (value.status === 'blocked' && !diagnostics.some(x => x.severity === 'error')) issue('reason-missing', 'checkpoint 已标 blocked，原因未登记', checkpointRef, '补齐真实阻塞原因');
++  const blockers = [...new Set(diagnostics.filter(x => x.severity === 'error').map(x => x.message))];
++  const next_step = {
++    action_type: 'verify', work_unit: value.next_work_unit ?? null, cwd: root,
++    command: null, input_refs: [checkpointRef],
++    prerequisites: ['核验当前来源、Context、适用门禁与决定或延续', '核对当前范围、任务结果和允许写路径；输入变化时重验'],
++  };
++  let next_action;
++  if (blockers.length) {
++    next_step.action_type = 'repair';
++    next_action = `处理当前阻塞：${blockers[0]}`;
++  } else if (value.status === 'paused-human-gate') {
++    next_step.action_type = 'wait';
++    next_action = '核对当前会签责任方、资产与决定范围；满足已登记恢复条件后复验';
++  } else if (activeItems.some(item => item.progress === 'running')) {
++    next_step.action_type = 'inspect';
++    next_action = '核对运行中任务身份与实际结果；状态未知时不得重复派发';
++  } else if (activeItems.length && activeItems.every(item => item.progress === 'completed')) {
++    next_step.action_type = 'inspect';
++    next_action = '核验已有完成证据并重算下一工作单元，不直接重做';
++  } else {
++    next_action = value.next_work_unit ? `先核验当前输入及适用门禁，再由主控恢复 ${value.next_work_unit}` : '复核当前阶段验收与下一动作';
++    // Commands are argv arrays. They are recommendations, never executed by this view.
++    const script = value.next_work_unit === 'work-unit.spec-synthesis' ? 'scripts/verify-plan-spec-entry' : 'scripts/verify-lifecycle-checkpoint';
++    try { readFileSync(safeTrackingPath(root, script)); next_step.command = ['node', script, checkpointRef]; }
++    catch { issue('precheck-unavailable', `预检入口不可读: ${script}`, script, '补齐当前实例工具后执行预检', 'warning'); }
++  }
+   return {
+     schema_version: 1, read_only: true, stage: value.stage, checkpoint_status: value.status,
+-    work_unit: value.next_work_unit ?? null, owner, blockers: [...new Set(blockers)], next_action,
++    work_unit: value.next_work_unit ?? null, owner, blockers, next_action,
++    execution_authorization: 'not-evaluated', verification_scope, diagnostics, next_step,
+     source_digests: { checkpoint: { ref: checkpointRef, digest: checkpoint.digest }, registry: { ref: registryRef, digest: registry.digest }, orchestration: { ref: contractRef, digest: contract.digest } },
+   };
+ }
+--- a/scripts/lib/plan-spec-entry-view.mjs
++++ b/scripts/lib/plan-spec-entry-view.mjs
+@@ -31,7 +31,7 @@
+     impacts: Object.fromEntries(Object.values(policy.check_impacts ?? {}).map(impact => [impact, null])),
+     internal_checks: Object.fromEntries(Object.keys(policy.check_impacts ?? {}).map(id => [id, { status: 'pending', evidence_refs: [] }])),
+   };
+-  return { schema_version: 1, status: 'draft', review_candidate, missing_requirements: ['补齐检查证据与影响判断', '展示完整审阅包并取得当前真实用户决定'], approval_created: false };
++  return { schema_version: 1, status: 'draft', review_candidate, missing_requirements: ['补齐检查证据与影响判断', '展示当前审阅包并提供真实用户决定，或按用户决定协议核验绑定当前范围的 plan_continuation_ref；未知或实质变化须重新决定'], approval_created: false };
+ }
+ 
+ export function diffPlanSpecEntry({ root, reviewRef }) {
+--- a/scripts/lib/user-decision.mjs
++++ b/scripts/lib/user-decision.mjs
+@@ -164,6 +164,7 @@
+ 
+ export function assertUserDecisionRequirement(requirement, options = {}) {
+   if (!requirement) decisionError("user-decision-response-required", "缺少当前决定及其范围");
++  if (requirement.user_decision_ref && requirement.continuation_ref) decisionError("user-decision-proof-conflict", "当前决定与批准延续是两种证明路径，不得同时提供");
+   if (requirement.continuation_ref) return assertDecisionContinuation(requirement, options.rolesDoc || loadDigitalHumanRoles(), options);
+   return verifyUserDecisionFile(requirement.user_decision_ref, { ...options, expected: [requirement] });
+ }
+--- a/scripts/lifecycle-status
++++ b/scripts/lifecycle-status
+@@ -9,6 +9,6 @@
+   process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+   if (result.blockers.length) process.exitCode = 1;
+ } catch (error) {
+-  process.stdout.write(`${JSON.stringify({ schema_version: 1, read_only: true, blockers: [error.message], owner: '未登记', next_action: `核查状态输入：${error.message}` }, null, 2)}\n`);
++  process.stdout.write(`${JSON.stringify({ schema_version: 1, read_only: true, blockers: [error.message], owner: '未登记', next_action: `核查状态输入：${error.message}`, execution_authorization: 'not-evaluated', verification_scope: [{ id: 'status-input', status: 'failed', refs: [], reason: error.message }], diagnostics: [{ code: 'status-input-invalid', severity: 'error', message: error.message, source_ref: null, owner: '未登记', recovery: '修复输入后重新读取状态' }], next_step: { action_type: 'repair', command: null, input_refs: [], prerequisites: ['提供有效项目根和 checkpoint 引用'] } }, null, 2)}\n`);
+   process.exitCode = 1;
+ }
+--- a/scripts/verify-lifecycle-operator-scenarios
++++ b/scripts/verify-lifecycle-operator-scenarios
+@@ -19,6 +19,8 @@
+   put('docs/.scratch/demo/plan.md', '# 当前 Plan\n');
+   put('docs/.scratch/demo/context.json', { status: 'reconciled', repository_mode: 'project-instance' });
+   copy('.template-spec/process/lifecycle-registry.yaml');
++  copy('scripts/verify-plan-spec-entry');
++  copy('scripts/verify-lifecycle-checkpoint');
+   copy('.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml');
+   const draft = preparePlanSpecEntry({ root, featureId: 'demo', planRef: 'docs/.scratch/demo/plan.md', contextRef: 'docs/.scratch/demo/context.json' });
+   assert.throws(() => preparePlanSpecEntry({ root, featureId: 'demo', planRef: 'docs/.scratch/demo/missing.md', contextRef: 'docs/.scratch/demo/context.json' }), /ENOENT/);
+@@ -50,6 +52,50 @@
+   checkpoint.next_work_unit = 'work-unit.missing';
+   put('docs/.scratch/demo/checkpoint.json', checkpoint);
+   assert.match(lifecycleStatus({ root, checkpointRef: 'docs/.scratch/demo/checkpoint.json' }).blockers.join(' '), /未知下一工作单元/);
++  // A read-only status view must expose its coverage and never grant execution.
++  checkpoint.next_work_unit = 'work-unit.spec-synthesis';
++  checkpoint.artifacts = { spec: { status: 'approved', ref: 'docs/.scratch/demo/plan.md', digest: digest('docs/.scratch/demo/plan.md') } };
++  put('docs/.scratch/demo/checkpoint.json', checkpoint);
++  put('docs/.scratch/demo/plan.md', '# New bytes but still readable\n');
++  const before = readFileSync(path.join(root, 'docs/.scratch/demo/checkpoint.json'));
++  const partial = lifecycleStatus({ root, checkpointRef: 'docs/.scratch/demo/checkpoint.json' });
++  assert.deepEqual(partial.blockers, []);
++  assert.equal(partial.verification_scope.find(x => x.id === 'approval-validity').status, 'not-checked');
++  assert.equal(partial.verification_scope.find(x => x.id === 'artifact-digests').status, 'not-checked');
++  assert.equal(partial.verification_scope.find(x => x.id === 'context-reconciliation').status, 'not-checked');
++  assert.equal(partial.verification_scope.find(x => x.id === 'stage-tracking').status, 'not-checked');
++  assert.equal(partial.next_step.action_type, 'verify');
++  assert.deepEqual(partial.next_step.command, ['node', 'scripts/verify-plan-spec-entry', 'docs/.scratch/demo/checkpoint.json']);
++  assert.equal(partial.next_step.cwd, root);
++  assert.equal(partial.execution_authorization, 'not-evaluated');
++  assert.doesNotMatch(partial.next_action, /^执行 /);
++  assert.deepEqual(readFileSync(path.join(root, 'docs/.scratch/demo/checkpoint.json')), before);
++  checkpoint.stage_tracking = { items: [{ id: 'active', work_unit: 'work-unit.spec-synthesis', owner: '需求负责人', progress: 'running', source_refs: [], completion: [], dependencies: [] }] };
++  put('docs/.scratch/demo/checkpoint.json', checkpoint);
++  let resumeView = lifecycleStatus({ root, checkpointRef: 'docs/.scratch/demo/checkpoint.json' });
++  assert.equal(resumeView.next_step.action_type, 'inspect');
++  assert.equal(resumeView.next_step.command, null);
++  assert.match(resumeView.next_action, /重复派发/);
++  checkpoint.stage_tracking.items[0].progress = 'completed';
++  put('docs/.scratch/demo/checkpoint.json', checkpoint);
++  resumeView = lifecycleStatus({ root, checkpointRef: 'docs/.scratch/demo/checkpoint.json' });
++  assert.equal(resumeView.next_step.action_type, 'inspect');
++  assert.match(resumeView.next_action, /完成证据/);
++  checkpoint.stage_tracking = undefined;
++  checkpoint.status = 'paused-human-gate';
++  checkpoint.pause = { owner_or_authority: 'role.test-engineer', reason_code: 'review-required', resume_condition: 'current review approved' };
++  put('docs/.scratch/demo/checkpoint.json', checkpoint);
++  resumeView = lifecycleStatus({ root, checkpointRef: 'docs/.scratch/demo/checkpoint.json' });
++  assert.equal(resumeView.next_step.action_type, 'wait');
++  assert.equal(resumeView.owner, 'role.test-engineer');
++  assert.doesNotMatch(resumeView.next_action, /需由用户决定/);
++  checkpoint.status = 'routing'; delete checkpoint.pause;
++  checkpoint.artifacts.spec.ref = 'docs/.scratch/demo/missing.md';
++  put('docs/.scratch/demo/checkpoint.json', checkpoint);
++  const missing = lifecycleStatus({ root, checkpointRef: 'docs/.scratch/demo/checkpoint.json' });
++  assert.ok(missing.diagnostics.some(x => x.code === 'evidence-unreadable' && x.severity === 'error'));
++  assert.equal(missing.next_step.action_type, 'repair');
++  assert.throws(() => lifecycleStatus({ root, checkpointRef: '../outside.json' }));
+   const template = readFileSync(path.join(sourceRoot, '.template-spec/design/templates/interaction-spec-template.md'), 'utf8');
+   const matrix = readFileSync(path.join(sourceRoot, '.template-spec/design/templates/state-matrix-template.md'), 'utf8');
+   const overview = readFileSync(path.join(sourceRoot, '.template-spec/design/templates/product-overview-design-template.md'), 'utf8');
+--- a/scripts/verify-retired-skill-ids
++++ b/scripts/verify-retired-skill-ids
+@@ -78,7 +78,11 @@
+ const matches = [];
+ const inventory = spawnSync(
+   "git",
+-  ["ls-files", "-z", "--cached", "--others", "--exclude-standard"],
++  // These trees are already excluded below or unconditionally allowed above.
++  // Filter before buffering: retained Agent workspaces can exceed spawnSync's
++  // output limit without adding any active asset to this audit.
++  ["ls-files", "-z", "--cached", "--others", "--exclude-standard", "--", ".",
++    ":(exclude).template-source/evidence/**", ":(exclude).codegraph/**", ":(exclude)submodules/**"],
+   { cwd: ROOT, encoding: "utf8" },
+ );
+ if (inventory.status !== 0) {
+--- a/skills-lock.json
++++ b/skills-lock.json
+@@ -679,7 +679,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/yss-ddd-scaffold-generator/SKILL.md",
+-        "effectiveHash": "feb0f1d0a187b6e78b878eb7302dd193bd22cc26051cf877db72b7a9c6b3aa43",
++        "effectiveHash": "3b5ed1cbf5cb199599c0cd252f915883a788031ebd1fe76a7341ebd1e9c09e65",
+         "targets": [
+           ".agents/skills",
+           ".codex/skills",
+@@ -817,7 +817,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/yss-implementation-contract-compiler/SKILL.md",
+-        "effectiveHash": "fcbfd55a92c4fa349351674bf740ce2a012be25ce4e23cd53f42093a5c252de1",
++        "effectiveHash": "82e06da43e2fcaaa30e27e36e9b6622c02ad553a76cd9430fc75cf9315e029e4",
+         "targets": [
+           ".agents/skills",
+           ".codex/skills",
+@@ -829,7 +829,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/yss-layered-mvc-scaffold-generator/SKILL.md",
+-        "effectiveHash": "25f828d675535d86321914047e9add6c522c2ca16bab15e19a4eb088660f9bc6",
++        "effectiveHash": "3d33822ed66bbd828df149e6347f869ebd2aa78f5c910f689dc7e85f88aa618c",
+         "targets": [
+           ".agents/skills",
+           ".codex/skills",
+@@ -865,7 +865,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/yss-openapi-governance/SKILL.md",
+-        "effectiveHash": "d0b9f206ead84c66be6ce4e29b49518ce5d1065c7a18bdcff66b380804d80ad4",
++        "effectiveHash": "8e2e7f722748d39f2e5f6ca5c26340f0abe79d810609461f5fe63c809663bbcc",
+         "targets": [
+           ".agents/skills",
+           ".codex/skills",
+@@ -877,7 +877,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/yss-product-lifecycle/SKILL.md",
+-        "effectiveHash": "d89dcd2b1f5d57d82321b7cb5fe5dc38254505585c7b1adde960c2f4412dd5a6",
++        "effectiveHash": "2b4da4d116a88b05ac330290964af471bf2c0887d944797266aaf0cc9e7cdb36",
+         "targets": [
+           ".agents/skills",
+           ".codex/skills",
+--- a/.template-source/profile-skill-patches/backend/yss-implementation-contract-compiler.patch
++++ b/.template-source/profile-skill-patches/backend/yss-implementation-contract-compiler.patch
+@@ -31,7 +31,7 @@
+ -6. 为切片生成基线合同；为当前行为生成工作单元增量路由。
+ -7. 选择 `behavior-tdd` 或 `controlled-generation`。
+ -8. 输出 `draft`、`blocked` 或 `ready-for-lifecycle-review`，交生命周期编排器核验和持久化。
+-+当 backend `scaffold_status=required` 时，还必须读取当前 `scaffold-architecture-decisions.yaml`。Harness Orchestrator 先基于领域复杂度给出 `domain-driven` / `layered-mvc` 推荐，并通过 `gate.backend-architecture-platform-approved` 取得用户对架构与精确 Spring Boot 版本的同一次逐项目确认；本体选择只作为子项目预填默认，编译器不得自行默认、提问或批准。确认 DDD 时绑定 `yss-ddd-scaffold-generator`，确认 MVC 时绑定 `yss-layered-mvc-scaffold-generator`，并把 decision ref / id / digest、精确平台配置、Profile、确定性模块闭包、批准且当前的 Technical Design、Data Architecture Decision v1、API Contract Decision v1 及真实工程合同批准记录写入 scaffold contract schema v4。既有工程核验并复用当前登记架构及固定工程基线/POM 中的实际版本，不重新询问或生成。API `required` 时工程批准还必须直接绑定冻结 OpenAPI YAML；`not-applicable` 时必须绑定影响评估、原因和证据。历史 v3 只允许补齐技术/数据/API 对账后的 Manifest 恢复审计，不得新生成。
+++当 backend `scaffold_status=required` 时，还必须读取当前 `scaffold-architecture-decisions.yaml`。Harness Orchestrator 先基于领域复杂度给出 `domain-driven` / `layered-mvc` 推荐，并通过 `gate.backend-architecture-platform-approved` 取得用户对架构与精确 Spring Boot 版本的同一次逐项目确认；本体选择只作为子项目预填默认，编译器不得自行默认、提问或批准。确认 DDD 时绑定 `yss-ddd-scaffold-generator`，确认 MVC 时绑定 `yss-layered-mvc-scaffold-generator`，并把 decision ref / id / digest、精确平台配置、Profile、确定性模块闭包、批准且当前的 Technical Design、Data Architecture Decision v1、API Contract Decision（新建 v2；历史 v1 只读兼容，准备与迁移见 `.template-spec/process/contract-reading.md`） 及真实工程合同批准记录写入 scaffold contract schema v4。既有工程核验并复用当前登记架构及固定工程基线/POM 中的实际版本，不重新询问或生成。API `required` 时工程批准还必须直接绑定冻结 OpenAPI YAML；`not-applicable` 时必须绑定影响评估、原因和证据。历史 v3 只允许补齐技术/数据/API 对账后的 Manifest 恢复审计，不得新生成。
+  
+ -完整草案使用 `scripts/slice-contract prepare` 或 `prepareSliceImplementationContract` 从已有 Ticket / checkpoint 和必要细化组装；执行前读取唯一 YAML，视图和检查报告不授予权限。
+  
+@@ -55,7 +55,7 @@
+ -- Harness 内实现路径必须落在 `apps/backend/<project>/` 或 `apps/frontend/<project>/` 的具体项目目录；`apps/backend/`、`apps/frontend/` 只能作为容器，`app/backend/`、`app/frontend/` 及其子路径一律阻断。外部实现仓库使用其登记的真实项目根路径。`git-submodule` 使用 `implementation_path_policy: git-submodule-harness-apps`，空 gitlink、detached HEAD 或 `--force` 覆盖挂载点不得脚手架；`inspectWorkingTreeScope.writable` 必须为显式布尔值。
+ -- 当前用户、缓存、审计、Excel、分布式 ID、请求校验、错误映射、加解密或网关韧性命中时，必须按 `compiler-contract.yaml` 的 `impact_to_capabilities` 补齐入口 capability；不能只在 `boundaries.md` 中提及。仅复用已经验证的平台认证 / 授权能力不算 component impact，不自动增加权限专项 skill。
+ -- 业务行为使用 `behavior-tdd`；只有机械脚手架/生成物可用 `controlled-generation`，并记录例外和验证。
+--- 阶段 5 若命中交付面且无已有工程，按 Project Scaffold Contract schema v4 编译 `controlled-generation` 合同 draft。后端先读取已通过 `gate.backend-architecture-platform-approved` 的架构与精确 Spring Boot 版本决定，并以原始字节 digest 绑定批准且当前的 Technical Design、Data Architecture Decision v1、API Contract Decision v1 及 `gate.engineering-contract-approved` 真实批准记录；编译器不得自行默认、提问或批准。既有工程核验并复用当前登记架构及固定工程基线/POM 中的实际版本，不重新询问或生成。API `required` 时工程批准还必须直接绑定冻结 OpenAPI YAML 的版本与摘要，`not-applicable` 时必须有影响评估、明确原因和证据。前端绑定标准模板精确 commit、应用标识、路由、OpenAPI 影响、目标路径和 `init_git` 决定。合同经生命周期批准并持久化后才能运行生成器。历史后端 schema v3 只允许 Manifest 只读恢复审计，并须补齐 API 对账，不得新生成；前端只接受 v4。生成与验证完成、仓库登记并通过 `check.implementation-repositories-ready` 后，才编译 Ticket 与业务 Slice Contract。
++-- 阶段 5 若命中交付面且无已有工程，按 Project Scaffold Contract schema v4 编译 `controlled-generation` 合同 draft。后端先读取已通过 `gate.backend-architecture-platform-approved` 的架构与精确 Spring Boot 版本决定，并以原始字节 digest 绑定批准且当前的 Technical Design、Data Architecture Decision v1、API Contract Decision（新建 v2；历史 v1 只读兼容，准备与迁移见 `.template-spec/process/contract-reading.md`） 及 `gate.engineering-contract-approved` 真实批准记录；编译器不得自行默认、提问或批准。既有工程核验并复用当前登记架构及固定工程基线/POM 中的实际版本，不重新询问或生成。API `required` 时工程批准还必须直接绑定冻结 OpenAPI YAML 的版本与摘要，`not-applicable` 时必须有影响评估、明确原因和证据。前端绑定标准模板精确 commit、应用标识、路由、OpenAPI 影响、目标路径和 `init_git` 决定。合同经生命周期批准并持久化后才能运行生成器。历史后端 schema v3 只允许 Manifest 只读恢复审计，并须补齐 API 对账，不得新生成；前端只接受 v4。生成与验证完成、仓库登记并通过 `check.implementation-repositories-ready` 后，才编译 Ticket 与业务 Slice Contract。
+ -- 脚手架合同在编译阶段只能是 `draft` / `ready-for-lifecycle-review` / `blocked`；只有生命周期编排器可以把已持久化脚手架合同标记为 `approved`。脚手架合同只覆盖业务代码前的工程骨架工作单元；生成、基线校验和合同重编译完成后，它不能替代脚手架后的 Slice Implementation Contract。
+ -- 脚手架输出消费批准的脚手架合同；脚手架后的所有生成后端代码都必须绑定当前批准且版本当前的 Slice Implementation Contract、主 YSS skill、依赖闭包、允许写路径、预期证据和 YSS Skill Execution Result。打印命令、`./mvnw validate` 单项通过或脚手架成功不能替代合同批准；生成范围从机械内容变成业务行为时触发完整重路由。
+ -- 专项结果中的越界路径、缺失证据、`drift`、`violation` 或 `new_impacts` 必须阻断或重路由。
+--- a/.template-source/profile-skill-patches/frontend/yss-implementation-contract-compiler.patch
++++ b/.template-source/profile-skill-patches/frontend/yss-implementation-contract-compiler.patch
+@@ -65,7 +65,7 @@
+ -- Harness 内实现路径必须落在 `apps/backend/<project>/` 或 `apps/frontend/<project>/` 的具体项目目录；`apps/backend/`、`apps/frontend/` 只能作为容器，`app/backend/`、`app/frontend/` 及其子路径一律阻断。外部实现仓库使用其登记的真实项目根路径。`git-submodule` 使用 `implementation_path_policy: git-submodule-harness-apps`，空 gitlink、detached HEAD 或 `--force` 覆盖挂载点不得脚手架；`inspectWorkingTreeScope.writable` 必须为显式布尔值。
+ -- 当前用户、缓存、审计、Excel、分布式 ID、请求校验、错误映射、加解密或网关韧性命中时，必须按 `compiler-contract.yaml` 的 `impact_to_capabilities` 补齐入口 capability；不能只在 `boundaries.md` 中提及。仅复用已经验证的平台认证 / 授权能力不算 component impact，不自动增加权限专项 skill。
+ -- 业务行为使用 `behavior-tdd`；只有机械脚手架/生成物可用 `controlled-generation`，并记录例外和验证。
+--- 阶段 5 若命中交付面且无已有工程，按 Project Scaffold Contract schema v4 编译 `controlled-generation` 合同 draft。后端先读取已通过 `gate.backend-architecture-platform-approved` 的架构与精确 Spring Boot 版本决定，并以原始字节 digest 绑定批准且当前的 Technical Design、Data Architecture Decision v1、API Contract Decision v1 及 `gate.engineering-contract-approved` 真实批准记录；编译器不得自行默认、提问或批准。既有工程核验并复用当前登记架构及固定工程基线/POM 中的实际版本，不重新询问或生成。API `required` 时工程批准还必须直接绑定冻结 OpenAPI YAML 的版本与摘要，`not-applicable` 时必须有影响评估、明确原因和证据。前端绑定标准模板精确 commit、应用标识、路由、OpenAPI 影响、目标路径和 `init_git` 决定。合同经生命周期批准并持久化后才能运行生成器。历史后端 schema v3 只允许 Manifest 只读恢复审计，并须补齐 API 对账，不得新生成；前端只接受 v4。生成与验证完成、仓库登记并通过 `check.implementation-repositories-ready` 后，才编译 Ticket 与业务 Slice Contract。
++-- 阶段 5 若命中交付面且无已有工程，按 Project Scaffold Contract schema v4 编译 `controlled-generation` 合同 draft。后端先读取已通过 `gate.backend-architecture-platform-approved` 的架构与精确 Spring Boot 版本决定，并以原始字节 digest 绑定批准且当前的 Technical Design、Data Architecture Decision v1、API Contract Decision（新建 v2；历史 v1 只读兼容，准备与迁移见 `.template-spec/process/contract-reading.md`） 及 `gate.engineering-contract-approved` 真实批准记录；编译器不得自行默认、提问或批准。既有工程核验并复用当前登记架构及固定工程基线/POM 中的实际版本，不重新询问或生成。API `required` 时工程批准还必须直接绑定冻结 OpenAPI YAML 的版本与摘要，`not-applicable` 时必须有影响评估、明确原因和证据。前端绑定标准模板精确 commit、应用标识、路由、OpenAPI 影响、目标路径和 `init_git` 决定。合同经生命周期批准并持久化后才能运行生成器。历史后端 schema v3 只允许 Manifest 只读恢复审计，并须补齐 API 对账，不得新生成；前端只接受 v4。生成与验证完成、仓库登记并通过 `check.implementation-repositories-ready` 后，才编译 Ticket 与业务 Slice Contract。
+ -- 脚手架合同在编译阶段只能是 `draft` / `ready-for-lifecycle-review` / `blocked`；只有生命周期编排器可以把已持久化脚手架合同标记为 `approved`。脚手架合同只覆盖业务代码前的工程骨架工作单元；生成、基线校验和合同重编译完成后，它不能替代脚手架后的 Slice Implementation Contract。
+ -- 脚手架输出消费批准的脚手架合同；脚手架后的所有生成后端代码都必须绑定当前批准且版本当前的 Slice Implementation Contract、主 YSS skill、依赖闭包、允许写路径、预期证据和 YSS Skill Execution Result。打印命令、`./mvnw validate` 单项通过或脚手架成功不能替代合同批准；生成范围从机械内容变成业务行为时触发完整重路由。
+ -- 专项结果中的越界路径、缺失证据、`drift`、`violation` 或 `new_impacts` 必须阻断或重路由。
+--- a/.template-source/profile-skill-patches/frontend/yss-openapi-governance.patch
++++ b/.template-source/profile-skill-patches/frontend/yss-openapi-governance.patch
+@@ -46,7 +46,7 @@
+ -- 在 `docs/.scratch/<feature>/api/<feature>-validation.yaml` 持久化结构校验记录，并用 `scripts/verify-openapi-draft-validation-record` 复核当前 YAML SHA-256、锁定的 Redocly 版本、实际命令、退出码、执行时间和证据引用。
+  - 在 OpenAPI Freeze 后，用锁定的 Redocly CLI 将 YAML bundle 为 JSON，并记录可重现证据。
+ -- 维护治理记录、Freeze 记录和 JSON 派生记录。
+--- 在技术分析中生成 `api-contract-decision-v1`：有 API 影响时以原始字节摘要闭包绑定权威 YAML、Validation、独立 Draft Review 和 Freeze；无 API 影响时绑定影响评估、明确原因和至少一项可读证据，且不得生成空占位资产。
++-- 在技术分析中生成 API Contract Decision（版本与历史兼容见下文第 3 步）：有 API 影响时以原始字节摘要闭包绑定权威 YAML、Validation、独立 Draft Review 和 Freeze；无 API 影响时绑定影响评估、明确原因和至少一项可读证据，且不得生成空占位资产。
+ +- 消费后端治理及 Freeze 记录，维护本地 JSON 派生与客户端生成记录。
+  - Spec Delta 影响存在时，在 `docs/.scratch/<feature>/spec-delta/` 记录与冻结 YAML 的关系；没有影响时明确记录 `not-applicable`。
+  
+@@ -70,7 +70,7 @@
+ -   - YAML、validation record 或 lint ruleset 变化后，旧结构证据与旧 Review 立即失效，必须重新校验和审查。阻断项未关闭前，YAML 仍是 review-only Draft，不得生成生产客户端。
+ +   - 将 fresh lint 证据交给 `yss-openapi-draft-review`；阻断项未关闭前，YAML 仍是 review-only Draft，不得生成生产客户端。
+     - Freeze 记录必须引用 YAML 路径、Git ref（如适用）和 YAML SHA-256。冻结后 API 行为变更必须先回到 YAML Draft 与审查。
+--   - 将同一 YAML 的版本与摘要、validation record、独立 Review 和 Freeze 写入 API Contract Decision v1。`gate.engineering-contract-approved` 一次批准同时绑定 Technical Design、Data Architecture Decision、API Contract Decision；API `required` 时还必须直接绑定冻结 YAML。不得另造字符串 URI 或仅凭 `status: approved` 关闭门禁。
++-   - 将同一 YAML 的版本与摘要、validation record、独立 Review 和 Freeze 写入 API Contract Decision（新建 v2；历史 v1 只读兼容，准备与迁移见 `.template-spec/process/contract-reading.md`）。`gate.engineering-contract-approved` 一次批准同时绑定 Technical Design、Data Architecture Decision、API Contract Decision；API `required` 时还必须直接绑定冻结 YAML。不得另造字符串 URI 或仅凭 `status: approved` 关闭门禁。
+  
+  4. **从冻结 YAML 派生 JSON**
+     - 使用上面的锁定 `redocly bundle` 命令生成 `docs/.scratch/<feature>/api/<feature>.json`，JSON 不纳入人工编辑面。
+--- a/.template-source/profile-skill-sync.json
++++ b/.template-source/profile-skill-sync.json
+@@ -348,13 +348,13 @@
+           "id": "yss-implementation-contract-compiler",
+           "strategy": "patch",
+           "patch": ".template-source/profile-skill-patches/backend/yss-implementation-contract-compiler.patch",
+-          "source_tree_sha256": "2791a97ace9376357c11b47ab1df363bfaa56c882c6dfbc6ec2aacca81ecfcc8"
++          "source_tree_sha256": "cce47e911650a1d447607b44f2fd62ea6a8df4d5eca615ef179ebd531f7e748f"
+         },
+         {
+           "id": "yss-openapi-governance",
+           "strategy": "patch",
+           "patch": ".template-source/profile-skill-patches/backend/yss-openapi-governance.patch",
+-          "source_tree_sha256": "cbd8cff2538419c2bbe45e9717613bf03f7094349164841f79d551a10c40e957"
++          "source_tree_sha256": "7e7a02cc92340d8d1804130b4a78e749aed68f029538bad91428179ccd2cc2d8"
+         },
+         {
+           "id": "prototype",
+@@ -635,13 +635,13 @@
+           "id": "yss-implementation-contract-compiler",
+           "strategy": "patch",
+           "patch": ".template-source/profile-skill-patches/frontend/yss-implementation-contract-compiler.patch",
+-          "source_tree_sha256": "2791a97ace9376357c11b47ab1df363bfaa56c882c6dfbc6ec2aacca81ecfcc8"
++          "source_tree_sha256": "cce47e911650a1d447607b44f2fd62ea6a8df4d5eca615ef179ebd531f7e748f"
+         },
+         {
+           "id": "yss-openapi-governance",
+           "strategy": "patch",
+           "patch": ".template-source/profile-skill-patches/frontend/yss-openapi-governance.patch",
+-          "source_tree_sha256": "cbd8cff2538419c2bbe45e9717613bf03f7094349164841f79d551a10c40e957"
++          "source_tree_sha256": "7e7a02cc92340d8d1804130b4a78e749aed68f029538bad91428179ccd2cc2d8"
+         },
+         {
+           "id": "prototype-review",
+--- a/submodules/yss-harness-backend-agent/scripts/lib/user-decision.mjs
++++ b/submodules/yss-harness-backend-agent/scripts/lib/user-decision.mjs
+@@ -164,6 +164,7 @@
+ 
+ export function assertUserDecisionRequirement(requirement, options = {}) {
+   if (!requirement) decisionError("user-decision-response-required", "缺少当前决定及其范围");
++  if (requirement.user_decision_ref && requirement.continuation_ref) decisionError("user-decision-proof-conflict", "当前决定与批准延续是两种证明路径，不得同时提供");
+   if (requirement.continuation_ref) return assertDecisionContinuation(requirement, options.rolesDoc || loadDigitalHumanRoles(), options);
+   return verifyUserDecisionFile(requirement.user_decision_ref, { ...options, expected: [requirement] });
+ }
+--- a/submodules/yss-harness-design-agent/scripts/lib/user-decision.mjs
++++ b/submodules/yss-harness-design-agent/scripts/lib/user-decision.mjs
+@@ -164,6 +164,7 @@
+ 
+ export function assertUserDecisionRequirement(requirement, options = {}) {
+   if (!requirement) decisionError("user-decision-response-required", "缺少当前决定及其范围");
++  if (requirement.user_decision_ref && requirement.continuation_ref) decisionError("user-decision-proof-conflict", "当前决定与批准延续是两种证明路径，不得同时提供");
+   if (requirement.continuation_ref) return assertDecisionContinuation(requirement, options.rolesDoc || loadDigitalHumanRoles(), options);
+   return verifyUserDecisionFile(requirement.user_decision_ref, { ...options, expected: [requirement] });
+ }
+--- a/submodules/yss-harness-frontend-agent/scripts/lib/user-decision.mjs
++++ b/submodules/yss-harness-frontend-agent/scripts/lib/user-decision.mjs
+@@ -164,6 +164,7 @@
+ 
+ export function assertUserDecisionRequirement(requirement, options = {}) {
+   if (!requirement) decisionError("user-decision-response-required", "缺少当前决定及其范围");
++  if (requirement.user_decision_ref && requirement.continuation_ref) decisionError("user-decision-proof-conflict", "当前决定与批准延续是两种证明路径，不得同时提供");
+   if (requirement.continuation_ref) return assertDecisionContinuation(requirement, options.rolesDoc || loadDigitalHumanRoles(), options);
+   return verifyUserDecisionFile(requirement.user_decision_ref, { ...options, expected: [requirement] });
+ }
+--- a/.template-spec/process/lifecycle-registry.yaml
++++ b/.template-spec/process/lifecycle-registry.yaml
+@@ -125,6 +125,7 @@
+     description: 基于低保真评审后的风险触发、决定目标、H1/H2 计算结果以及人工升降级依据。
+   - id: evidence.prototype-deliverable-verification
+     name: 原型交付物验证证据
++    # description 保留已发布稳定 ID 的历史语义快照；当前产物版本读取 public_description 及原型证据合同。
+     description: schema v3 共同证据与所选档位的浏览器、Design QA、无障碍、组件事实或真实组件合同验证结果。
+     public_description: 新原型证据采用 schema v4，包含共同证据、Visual Baseline Bundle、浏览器、Design QA、无障碍及档位验证结果；历史 v3 仅供只读兼容。
+   - id: evidence.prototype-confirmation

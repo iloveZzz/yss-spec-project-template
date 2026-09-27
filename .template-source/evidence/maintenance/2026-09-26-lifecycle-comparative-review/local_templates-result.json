@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "task_id": "lifecycle-audit-local_templates",
+  "work_unit_id": "work-unit.ssot-update",
+  "actor_id": "research-local_templates",
+  "role_id": "role.requirements-manager",
+  "runtime_id": "runtime.skill-projection",
+  "execution_state": "Explorer",
+  "status": "completed",
+  "repository_mode": "template-source",
+  "summary": "完成阶段模板只读核查；版本和 Reviewer 文档漂移、continuation 说明缺口、模板优化与合理机制结论均逐条定位。",
+  "findings": [
+    {
+      "id": "LT-01",
+      "classification": "reasonable-design"
+    },
+    {
+      "id": "LT-02",
+      "classification": "fixed-prior-findings"
+    },
+    {
+      "id": "LT-03",
+      "classification": "documentation-defect"
+    },
+    {
+      "id": "LT-04",
+      "classification": "documentation-defect"
+    },
+    {
+      "id": "LT-05",
+      "classification": "documentation-gap"
+    },
+    {
+      "id": "LT-06",
+      "classification": "optimization-hypothesis"
+    },
+    {
+      "id": "LT-07",
+      "classification": "evidence-template-risk"
+    },
+    {
+      "id": "LT-08",
+      "classification": "optimization-opportunity"
+    },
+    {
+      "id": "LT-09",
+      "classification": "reasonable-design"
+    },
+    {
+      "id": "LT-10",
+      "classification": "evidence-limitation"
+    }
+  ],
+  "evidence_refs": [
+    ".template-source/evidence/maintenance/2026-09-26-lifecycle-comparative-review/local_templates-notes.md",
+    ".template-source/evidence/maintenance/2026-09-26-lifecycle-comparative-review/local_templates-sources.json"
+  ],
+  "changed_files": [
+    ".template-source/evidence/maintenance/2026-09-26-lifecycle-comparative-review/local_templates-notes.md",
+    ".template-source/evidence/maintenance/2026-09-26-lifecycle-comparative-review/local_templates-sources.json",
+    ".template-source/evidence/maintenance/2026-09-26-lifecycle-comparative-review/local_templates-result.json"
+  ],
+  "verification_results": [
+    {
+      "command": "read-only Python source locator and wording assertions plus output nonempty/JSON verification",
+      "executed_at": "2026-09-26T13:39:08.159662+00:00",
+      "exit_code": 0,
+      "checks": {
+        "ten_findings": true,
+        "reviewer_wording_drift_present": true,
+        "api_new_format_v2_present": true,
+        "scaffold_schema_conflict_present": true,
+        "plan_continuation_supported": true,
+        "old_user_decision_link_fixed": true,
+        "source_ranges_valid": true
+      }
+    }
+  ],
+  "verification_failures_resolved": [
+    {
+      "command": "initial source line-range check",
+      "exit_code": 1,
+      "reason": "checkpoint has 50 lines; requested 52",
+      "resolution": "corrected locator to 1-50 before writing source/result files"
+    }
+  ],
+  "context_reconciliation": {
+    "status": "not-applicable",
+    "reason": "template-source maintenance research; no stable business glossary edits"
+  },
+  "deviations": [],
+  "new_impacts": [],
+  "missing_evidence": [
+    "Real project end-to-end usability, runtime review misrouting and release-consumer behavior were not exercised"
+  ],
+  "next_route": "parent synthesis and verification",
+  "approval_granted": false,
+  "release_ready": false
+}

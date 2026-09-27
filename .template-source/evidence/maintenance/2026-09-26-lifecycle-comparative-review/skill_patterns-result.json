@@ -1,0 +1,97 @@
+{
+  "result_schema": "workflow-execution-result-v1",
+  "work_unit": "work-unit.ssot-update",
+  "workflow_reference": {
+    "source": "yss-product-lifecycle",
+    "skill": "yss-research",
+    "invocation_mode": "model-invoked"
+  },
+  "result": "completed",
+  "result_scope": "仅完成子任务官方资料研究与结构交接；不批准生命周期、实现或发布。",
+  "skill": [
+    "yss-research",
+    "competitive-intelligence",
+    "i-have-adhd",
+    "openai-docs"
+  ],
+  "actor_id": "research-skill_patterns",
+  "role_id": "role.product-manager",
+  "runtime_id": "runtime.skill-projection",
+  "execution_state": "Explorer",
+  "contract": {
+    "kind": "template-maintenance",
+    "contract_id": "lifecycle-comparative-audit",
+    "contract_version": 1
+  },
+  "context_reconciliation": {
+    "status": "not-applicable",
+    "reason": "template-source 维护研究；已消费根 CONTEXT.md，未发现需新增稳定业务词汇。"
+  },
+  "changed_files": [
+    ".template-source/evidence/maintenance/2026-09-26-lifecycle-comparative-review/skill_patterns-notes.md",
+    ".template-source/evidence/maintenance/2026-09-26-lifecycle-comparative-review/skill_patterns-sources.json",
+    ".template-source/evidence/maintenance/2026-09-26-lifecycle-comparative-review/skill_patterns-result.json"
+  ],
+  "changed_artifacts": [
+    ".template-source/evidence/maintenance/2026-09-26-lifecycle-comparative-review/skill_patterns-notes.md",
+    ".template-source/evidence/maintenance/2026-09-26-lifecycle-comparative-review/skill_patterns-sources.json",
+    ".template-source/evidence/maintenance/2026-09-26-lifecycle-comparative-review/skill_patterns-result.json"
+  ],
+  "evidence_refs": [
+    ".template-source/evidence/maintenance/2026-09-26-lifecycle-comparative-review/skill_patterns-notes.md",
+    ".template-source/evidence/maintenance/2026-09-26-lifecycle-comparative-review/skill_patterns-sources.json"
+  ],
+  "verification_results": [
+    {
+      "command": "test -s .template-source/evidence/maintenance/2026-09-26-lifecycle-comparative-review/skill_patterns-notes.md && test -s .template-source/evidence/maintenance/2026-09-26-lifecycle-comparative-review/skill_patterns-sources.json",
+      "exit_code": 0,
+      "executed_at": "2026-09-26T13:41:04.689679+00:00",
+      "evidence_ref": ".template-source/evidence/maintenance/2026-09-26-lifecycle-comparative-review/skill_patterns-notes.md"
+    },
+    {
+      "command": "python3 inline: JSON parse, unique IDs, support/counter references, brief claim coverage, local source readability, fixed URL retrieval status, allowed write-path equality",
+      "exit_code": 0,
+      "executed_at": "2026-09-26T13:41:04.689679+00:00",
+      "duration_ms": 1,
+      "output": {
+        "status": "passed",
+        "sources": 23,
+        "claims": 8,
+        "searches": 17
+      },
+      "evidence_ref": ".template-source/evidence/maintenance/2026-09-26-lifecycle-comparative-review/skill_patterns-sources.json"
+    }
+  ],
+  "deferred_seams": [],
+  "drift": [],
+  "violation": [],
+  "new_impacts": [],
+  "stale_candidates": [],
+  "blocking_signals": [],
+  "limitations": [
+    "没有安装或运行竞品；行为仅为官方资料/源码合同。",
+    "关键源码固定 SHA，不代表稳定发行包；官方网页保留检索日期。",
+    "正式研究校验器要求 *-research-brief.md / *-evidence.yaml；受子任务三文件范围限制，由主控聚合后运行正式校验。",
+    "YSS 历史 64 次评估报告已现场读取，未在本次重跑或复评分。"
+  ],
+  "next_route": null,
+  "terminal_completed": true,
+  "next_action": "主控独立复核关键来源并纳入主研究包，结合本仓缺口决定改进优先级。",
+  "findings": [
+    "薄入口需测实际上下文装载与误触发",
+    "模板以新增决定、输入输出和验证为核心",
+    "独立上下文不等于共享磁盘隔离",
+    "恢复对账真实状态并避免异步任务重复提交",
+    "借用切片法但保留 YSS 就绪和授权适配",
+    "扩展既有真实 Agent runner 的恢复、漂移与效率覆盖",
+    "按影响面控制小任务流程成本"
+  ],
+  "memory_used": [
+    {
+      "path": "MEMORY.md",
+      "lines": "603-632",
+      "rollout_id": "01a0beb0-3a69-7543-aa9d-a93fe49eeafe",
+      "use": "定位既有 OpenAI Skills 评估；随后现场读取当前仓库 runner 与历史报告"
+    }
+  ]
+}

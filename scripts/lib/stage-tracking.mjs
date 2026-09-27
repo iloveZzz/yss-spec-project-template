@@ -11,7 +11,7 @@ export const STAGE_WORK_UNITS = Object.freeze({
   'work-unit.domain-strategy-design': 'stage.plan',
   'work-unit.stage-decision': 'stage.plan',
   'work-unit.spec-synthesis': 'stage.spec-architecture',
-  'work-unit.prototype-design': 'stage.product-design',
+  'work-unit.prototype-design-v2': 'stage.product-design',
 });
 export const sha256 = bytes => `sha256:${createHash('sha256').update(bytes).digest('hex')}`;
 export function parseYaml(bytes) {

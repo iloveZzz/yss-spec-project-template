@@ -37,7 +37,7 @@ test('real validators close a synthetic backend package, preserve the terminal a
   f.write('delivery.json',delivery);f.write('review-state.json',f.state);
   const exported=await exportBackendDelivery({sourceRoot:f.root,deliveryRef:'delivery.json',output:path.join(f.root,'delivery-package')});
   const input={delivery:file('delivery.json'),review_state:file('review-state.json'),bundle_ref:'delivery-package',bundle_digest:exported.bundle_digest,downstream:{owner:'synthetic-receiver',ticket_ref:'tickets/frontend.md',verification_plan:'receiver tests',target_version:'v1'}};
-  for(const ref of ['scripts','.template-spec/process/schemas','.template-spec/process/lifecycle-registry-baseline.json','.template-spec/agents/yss-skill-registry.yaml','.agents/skills','skills-lock.json']) {
+  for(const ref of ['scripts','.template-spec/process/schemas','.template-spec/process/lifecycle-registry-baseline.json','.template-spec/process/lifecycle-registry-baseline-v1.json','.template-spec/agents/yss-skill-registry.yaml','.agents/skills','skills-lock.json']) {
     fs.mkdirSync(path.dirname(path.join(f.root,ref)),{recursive:true});fs.cpSync(path.join(ROOT,ref),path.join(f.root,ref),{recursive:true});
   }
   f.refreshCoverage();f.save();f.write('review-state.json',f.state);input.review_state=file('review-state.json');

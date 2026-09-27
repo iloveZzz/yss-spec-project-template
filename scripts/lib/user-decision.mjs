@@ -164,6 +164,7 @@ export function verifyUserDecisionFile(ref, options = {}) {
 
 export function assertUserDecisionRequirement(requirement, options = {}) {
   if (!requirement) decisionError("user-decision-response-required", "缺少当前决定及其范围");
+  if (requirement.user_decision_ref && requirement.continuation_ref) decisionError("user-decision-proof-conflict", "当前决定与批准延续是两种证明路径，不得同时提供");
   if (requirement.continuation_ref) return assertDecisionContinuation(requirement, options.rolesDoc || loadDigitalHumanRoles(), options);
   return verifyUserDecisionFile(requirement.user_decision_ref, { ...options, expected: [requirement] });
 }

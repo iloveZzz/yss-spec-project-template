@@ -1,0 +1,11 @@
+{
+  "command": [
+    "scripts/verify-template-fast"
+  ],
+  "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+  "started_at": "2026-09-27T02:12:20.614167+00:00",
+  "ended_at": "2026-09-27T02:17:31.106432+00:00",
+  "seconds": 310.49,
+  "exit_code": 1,
+  "log": "verify-template-fast.log"
+}

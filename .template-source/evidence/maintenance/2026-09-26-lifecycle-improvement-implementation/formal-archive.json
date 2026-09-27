@@ -1,0 +1,3624 @@
+{
+  "archive": "formal-agent-evaluation-evidence.tar.gz",
+  "bytes": 21386302,
+  "sha256": "84344e53ea4f763b517432a86a0ceef42fa87e2f90bf6768c6d79711bb38b47f",
+  "created_at": "2026-09-26T17:13:06.525203+00:00",
+  "original_raw_root": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-agent-evaluations-v2-2qx3mbr2",
+  "original_files_retained": true,
+  "source_trees_archived_once": true,
+  "raw_traces_and_final_artifacts_preserved": true,
+  "excluded_duplicates_and_temporary_files": [
+    ".agents",
+    ".codex",
+    ".eval-bin",
+    ".eval-python",
+    ".eval-tmp",
+    ".git",
+    ".template-source",
+    ".template-spec",
+    "__pycache__",
+    "scripts"
+  ],
+  "files": [
+    {
+      "ref": "runs/baseline/e01-status-1/fixture-manifest.json",
+      "sha256": "2ac2e44eb2202741eb2046d81f1cc551ce25397977f5333f65f88221cb5132c8"
+    },
+    {
+      "ref": "runs/baseline/e01-status-1/result.json",
+      "sha256": "7ed1f7c50c45796127fff1b481089f519e21c72e005ba49db633be0769ea0944"
+    },
+    {
+      "ref": "runs/baseline/e01-status-1/stderr.log",
+      "sha256": "90ca6f766285909d8cbe218236fa9ae8fd9033594cde1e93179d730256fd5d7e"
+    },
+    {
+      "ref": "runs/baseline/e01-status-1/step-input-manifest.json",
+      "sha256": "27c6ce88deb0b0bdd6e45f0ec930a988887fde536cebb2e3fab75040b91dd953"
+    },
+    {
+      "ref": "runs/baseline/e01-status-1/step-result.json",
+      "sha256": "bb53aad0e3bc06da6b5be36e25fd088033ea78383649f0e9ab543b6b91ee08e3"
+    },
+    {
+      "ref": "runs/baseline/e01-status-1/trace.jsonl",
+      "sha256": "08c964ea1fb32e6bd6692b9b6bdc7d54f9515af64e67fc92ce5dafbafc6848e1"
+    },
+    {
+      "ref": "runs/baseline/e01-status-1/workspace/.eval-commands.jsonl",
+      "sha256": "b87d72e113957d5bc544bb5e25ebb56145d78a7770efbd2f99a5aac4a378fbce"
+    },
+    {
+      "ref": "runs/baseline/e01-status-1/workspace/AGENTS.md",
+      "sha256": "8cc65d79533beab9b35769f074aca2d1c1b438544c534315b28c632493c3b5b1"
+    },
+    {
+      "ref": "runs/baseline/e01-status-1/workspace/CONTEXT.md",
+      "sha256": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559"
+    },
+    {
+      "ref": "runs/baseline/e01-status-1/workspace/DESIGN.md",
+      "sha256": "e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+    },
+    {
+      "ref": "runs/baseline/e01-status-1/workspace/assessment.json",
+      "sha256": "6d3ce7753240e54df552661380275ce9c855ba0d191285148221c8ddbe80d541"
+    },
+    {
+      "ref": "runs/baseline/e01-status-1/workspace/checkpoint.json",
+      "sha256": "c07bae643950ab30962c2967872122fc9f13abc28a5f24f6ab5a8db6ca73cc90"
+    },
+    {
+      "ref": "runs/baseline/e01-status-1/workspace/skills-lock.json",
+      "sha256": "6eb953017b73d7c841e3ed0e6a2149492b8b4e787eec345b23fe4e35fac9b906"
+    },
+    {
+      "ref": "runs/baseline/e01-status-1/workspace/yss-project.yaml",
+      "sha256": "c3c62086b8790b9bd12ed28a1ca18194bbc40d3afc408ac217d21535b20b60aa"
+    },
+    {
+      "ref": "runs/baseline/e01-status-2/fixture-manifest.json",
+      "sha256": "ae0de56a38d391281d7681ce10d93d50b7ca95ba0fd6d5f89b3e2d2eb46603f1"
+    },
+    {
+      "ref": "runs/baseline/e01-status-2/result.json",
+      "sha256": "2d187be55f93a81bc250a5b10542930f965e490983faf94457a2c7fdce8a193e"
+    },
+    {
+      "ref": "runs/baseline/e01-status-2/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "ref": "runs/baseline/e01-status-2/step-input-manifest.json",
+      "sha256": "27c6ce88deb0b0bdd6e45f0ec930a988887fde536cebb2e3fab75040b91dd953"
+    },
+    {
+      "ref": "runs/baseline/e01-status-2/step-result.json",
+      "sha256": "a622cb07ad5813b702d6414225825ab4e98c3aa1e3e084b1fc9b9d7220b75885"
+    },
+    {
+      "ref": "runs/baseline/e01-status-2/trace.jsonl",
+      "sha256": "6582c61d3afe2cfb4c4628a17e1fad76e59b52c09fd0b814f9f367b8c5df664e"
+    },
+    {
+      "ref": "runs/baseline/e01-status-2/workspace/.eval-commands.jsonl",
+      "sha256": "b87d72e113957d5bc544bb5e25ebb56145d78a7770efbd2f99a5aac4a378fbce"
+    },
+    {
+      "ref": "runs/baseline/e01-status-2/workspace/AGENTS.md",
+      "sha256": "8cc65d79533beab9b35769f074aca2d1c1b438544c534315b28c632493c3b5b1"
+    },
+    {
+      "ref": "runs/baseline/e01-status-2/workspace/CONTEXT.md",
+      "sha256": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559"
+    },
+    {
+      "ref": "runs/baseline/e01-status-2/workspace/DESIGN.md",
+      "sha256": "e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+    },
+    {
+      "ref": "runs/baseline/e01-status-2/workspace/assessment.json",
+      "sha256": "c7676d13b66b9a159a5a1762847fc1f920ccff166c2bd2ab7f61a50feec9788b"
+    },
+    {
+      "ref": "runs/baseline/e01-status-2/workspace/checkpoint.json",
+      "sha256": "c07bae643950ab30962c2967872122fc9f13abc28a5f24f6ab5a8db6ca73cc90"
+    },
+    {
+      "ref": "runs/baseline/e01-status-2/workspace/skills-lock.json",
+      "sha256": "6eb953017b73d7c841e3ed0e6a2149492b8b4e787eec345b23fe4e35fac9b906"
+    },
+    {
+      "ref": "runs/baseline/e01-status-2/workspace/yss-project.yaml",
+      "sha256": "c3c62086b8790b9bd12ed28a1ca18194bbc40d3afc408ac217d21535b20b60aa"
+    },
+    {
+      "ref": "runs/baseline/e02-template-1/fixture-manifest.json",
+      "sha256": "e5acb92e9cb983e684677d7770538880e37a9d844d3a8204735abbe2de025e56"
+    },
+    {
+      "ref": "runs/baseline/e02-template-1/result.json",
+      "sha256": "8d6b95247be484c350cf9c0b41a0cf05906678da0ff48de3efa9a0bf3ab00e48"
+    },
+    {
+      "ref": "runs/baseline/e02-template-1/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "ref": "runs/baseline/e02-template-1/step-input-manifest.json",
+      "sha256": "e4950c76340ba97df6cd098301f125a9730a65a4ee79d9ae61f859be728dec8c"
+    },
+    {
+      "ref": "runs/baseline/e02-template-1/step-result.json",
+      "sha256": "1217896c05696470e14b9befcf0694bdade4ab35f57975e93f406914480e5082"
+    },
+    {
+      "ref": "runs/baseline/e02-template-1/trace.jsonl",
+      "sha256": "888003c9baeab9062ac697998ec0d3b62be46658a46fd5a57474560cc1171e76"
+    },
+    {
+      "ref": "runs/baseline/e02-template-1/workspace/.eval-commands.jsonl",
+      "sha256": "b87d72e113957d5bc544bb5e25ebb56145d78a7770efbd2f99a5aac4a378fbce"
+    },
+    {
+      "ref": "runs/baseline/e02-template-1/workspace/AGENTS.md",
+      "sha256": "8cc65d79533beab9b35769f074aca2d1c1b438544c534315b28c632493c3b5b1"
+    },
+    {
+      "ref": "runs/baseline/e02-template-1/workspace/CONTEXT.md",
+      "sha256": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559"
+    },
+    {
+      "ref": "runs/baseline/e02-template-1/workspace/DESIGN.md",
+      "sha256": "e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+    },
+    {
+      "ref": "runs/baseline/e02-template-1/workspace/maintenance-plan.md",
+      "sha256": "8e5a66ca17ef2b0f3126725b72b03386436554a4b1e200832aec5f7d8d1f234c"
+    },
+    {
+      "ref": "runs/baseline/e02-template-1/workspace/skills-lock.json",
+      "sha256": "6eb953017b73d7c841e3ed0e6a2149492b8b4e787eec345b23fe4e35fac9b906"
+    },
+    {
+      "ref": "runs/baseline/e02-template-1/workspace/yss-project.yaml",
+      "sha256": "dae2ddacbb024ba25b70a18830fc26ab7d3dcd8aaa361cc8b3767d68307f98af"
+    },
+    {
+      "ref": "runs/baseline/e02-template-2/fixture-manifest.json",
+      "sha256": "b0aa87a7e2fafdff4e30875d17867a672f9d071b63cad8da021a58a787e727d0"
+    },
+    {
+      "ref": "runs/baseline/e02-template-2/result.json",
+      "sha256": "a5a7e803c6c1f29bae968e3aa1f193495947644fcb85628599d18e3dbbf8bff8"
+    },
+    {
+      "ref": "runs/baseline/e02-template-2/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "ref": "runs/baseline/e02-template-2/step-input-manifest.json",
+      "sha256": "e4950c76340ba97df6cd098301f125a9730a65a4ee79d9ae61f859be728dec8c"
+    },
+    {
+      "ref": "runs/baseline/e02-template-2/step-result.json",
+      "sha256": "11fd3d0f8a9bc29783156851c2b99dc873065f0b2a27a497496b779d4db4a70a"
+    },
+    {
+      "ref": "runs/baseline/e02-template-2/trace.jsonl",
+      "sha256": "452cd23fd5546366ee4c03aa31ee17a7fdd01ec3c8d69c3df4219d4945ed6baa"
+    },
+    {
+      "ref": "runs/baseline/e02-template-2/workspace/.eval-commands.jsonl",
+      "sha256": "b87d72e113957d5bc544bb5e25ebb56145d78a7770efbd2f99a5aac4a378fbce"
+    },
+    {
+      "ref": "runs/baseline/e02-template-2/workspace/AGENTS.md",
+      "sha256": "8cc65d79533beab9b35769f074aca2d1c1b438544c534315b28c632493c3b5b1"
+    },
+    {
+      "ref": "runs/baseline/e02-template-2/workspace/CONTEXT.md",
+      "sha256": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559"
+    },
+    {
+      "ref": "runs/baseline/e02-template-2/workspace/DESIGN.md",
+      "sha256": "e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+    },
+    {
+      "ref": "runs/baseline/e02-template-2/workspace/maintenance-plan.md",
+      "sha256": "a3e3f46317fb3a64e4bab423ec1a44cee25e6b3e7526256c78666b53d43c585a"
+    },
+    {
+      "ref": "runs/baseline/e02-template-2/workspace/skills-lock.json",
+      "sha256": "6eb953017b73d7c841e3ed0e6a2149492b8b4e787eec345b23fe4e35fac9b906"
+    },
+    {
+      "ref": "runs/baseline/e02-template-2/workspace/yss-project.yaml",
+      "sha256": "dae2ddacbb024ba25b70a18830fc26ab7d3dcd8aaa361cc8b3767d68307f98af"
+    },
+    {
+      "ref": "runs/baseline/e03-small-1/fixture-manifest.json",
+      "sha256": "ecaf2c115e71dd90bf00483b1d4e94a4d99ccf103dd1b9d9278858b8a843ab0c"
+    },
+    {
+      "ref": "runs/baseline/e03-small-1/result.json",
+      "sha256": "bb327668cd42bfb9164e7184c4e164c64d893a9a15ca0ddb0a10305e35aa73d2"
+    },
+    {
+      "ref": "runs/baseline/e03-small-1/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "ref": "runs/baseline/e03-small-1/step-input-manifest.json",
+      "sha256": "4f64518f07e92e99f8718cde43217a625d121f0dccc0a4075ba466851eb9fafd"
+    },
+    {
+      "ref": "runs/baseline/e03-small-1/step-result.json",
+      "sha256": "e775f5e6abbdb6c412121caaac60b9cd476902fb44dbe5573c6df56c2d1f885c"
+    },
+    {
+      "ref": "runs/baseline/e03-small-1/trace.jsonl",
+      "sha256": "fccf63da670ee685e6e5659e3b83e278aa68d77728ffbf2b60338270974062de"
+    },
+    {
+      "ref": "runs/baseline/e03-small-1/workspace/AGENTS.md",
+      "sha256": "8cc65d79533beab9b35769f074aca2d1c1b438544c534315b28c632493c3b5b1"
+    },
+    {
+      "ref": "runs/baseline/e03-small-1/workspace/CONTEXT.md",
+      "sha256": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559"
+    },
+    {
+      "ref": "runs/baseline/e03-small-1/workspace/DESIGN.md",
+      "sha256": "e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+    },
+    {
+      "ref": "runs/baseline/e03-small-1/workspace/docs/note.md",
+      "sha256": "0e99f2f63ffb852a097d8edaf61c47d6242869e666f862f92c59e1e961b0726a"
+    },
+    {
+      "ref": "runs/baseline/e03-small-1/workspace/skills-lock.json",
+      "sha256": "6eb953017b73d7c841e3ed0e6a2149492b8b4e787eec345b23fe4e35fac9b906"
+    },
+    {
+      "ref": "runs/baseline/e03-small-1/workspace/yss-project.yaml",
+      "sha256": "c3c62086b8790b9bd12ed28a1ca18194bbc40d3afc408ac217d21535b20b60aa"
+    },
+    {
+      "ref": "runs/baseline/e03-small-2/fixture-manifest.json",
+      "sha256": "cf7b72a1a6d9cbcc70cac246d67bc696a98706d6f7f17b10242ea0c2e75df56d"
+    },
+    {
+      "ref": "runs/baseline/e03-small-2/result.json",
+      "sha256": "09a98e10a895e55a88989757cae56c225b7d5a08a4e5cbfc395058ba6221d26c"
+    },
+    {
+      "ref": "runs/baseline/e03-small-2/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "ref": "runs/baseline/e03-small-2/step-input-manifest.json",
+      "sha256": "4f64518f07e92e99f8718cde43217a625d121f0dccc0a4075ba466851eb9fafd"
+    },
+    {
+      "ref": "runs/baseline/e03-small-2/step-result.json",
+      "sha256": "966994519d36cba5bde5b1cd459b595363ca3289afcf8625b1caf220463778f2"
+    },
+    {
+      "ref": "runs/baseline/e03-small-2/trace.jsonl",
+      "sha256": "661172446909e0cedbdd707f259f863512d2f581cd8e57cee517ffa0fc768bc9"
+    },
+    {
+      "ref": "runs/baseline/e03-small-2/workspace/.eval-commands.jsonl",
+      "sha256": "b87d72e113957d5bc544bb5e25ebb56145d78a7770efbd2f99a5aac4a378fbce"
+    },
+    {
+      "ref": "runs/baseline/e03-small-2/workspace/AGENTS.md",
+      "sha256": "8cc65d79533beab9b35769f074aca2d1c1b438544c534315b28c632493c3b5b1"
+    },
+    {
+      "ref": "runs/baseline/e03-small-2/workspace/CONTEXT.md",
+      "sha256": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559"
+    },
+    {
+      "ref": "runs/baseline/e03-small-2/workspace/DESIGN.md",
+      "sha256": "e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+    },
+    {
+      "ref": "runs/baseline/e03-small-2/workspace/docs/note.md",
+      "sha256": "0e99f2f63ffb852a097d8edaf61c47d6242869e666f862f92c59e1e961b0726a"
+    },
+    {
+      "ref": "runs/baseline/e03-small-2/workspace/skills-lock.json",
+      "sha256": "6eb953017b73d7c841e3ed0e6a2149492b8b4e787eec345b23fe4e35fac9b906"
+    },
+    {
+      "ref": "runs/baseline/e03-small-2/workspace/yss-project.yaml",
+      "sha256": "c3c62086b8790b9bd12ed28a1ca18194bbc40d3afc408ac217d21535b20b60aa"
+    },
+    {
+      "ref": "runs/baseline/e04-current-1/fixture-manifest.json",
+      "sha256": "c6322841ae9ead056e4e3ea1772aee9569134cb3f23b13fa39c2cfd3d38866e1"
+    },
+    {
+      "ref": "runs/baseline/e04-current-1/result.json",
+      "sha256": "3a6b005de19f88d11eee7e72d3a3b0aeecbb80de419dfdaee259057276d5d1c2"
+    },
+    {
+      "ref": "runs/baseline/e04-current-1/setup.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "ref": "runs/baseline/e04-current-1/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "ref": "runs/baseline/e04-current-1/step-input-manifest.json",
+      "sha256": "5abf017a34af16ec838090abce7e9a93a90b146dce157b26f60be1b759b8849d"
+    },
+    {
+      "ref": "runs/baseline/e04-current-1/step-result.json",
+      "sha256": "93bd2da50391818f1998f7b593be5688290dcc6930ac7273e2ae2b4320d3be50"
+    },
+    {
+      "ref": "runs/baseline/e04-current-1/trace.jsonl",
+      "sha256": "8dd4ebb133690e4225eceaa0f1c150573f4aad97504ddcee3b3146b42cfc7849"
+    },
+    {
+      "ref": "runs/baseline/e04-current-1/workspace/.eval-commands.jsonl",
+      "sha256": "b87d72e113957d5bc544bb5e25ebb56145d78a7770efbd2f99a5aac4a378fbce"
+    },
+    {
+      "ref": "runs/baseline/e04-current-1/workspace/AGENTS.md",
+      "sha256": "8cc65d79533beab9b35769f074aca2d1c1b438544c534315b28c632493c3b5b1"
+    },
+    {
+      "ref": "runs/baseline/e04-current-1/workspace/CONTEXT.md",
+      "sha256": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559"
+    },
+    {
+      "ref": "runs/baseline/e04-current-1/workspace/DESIGN.md",
+      "sha256": "e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+    },
+    {
+      "ref": "runs/baseline/e04-current-1/workspace/approval/decision.json",
+      "sha256": "f4d139d890346becde6d04fe83c1863ff6685c92429180fa3877f34585bebf60"
+    },
+    {
+      "ref": "runs/baseline/e04-current-1/workspace/approval/presentation.json",
+      "sha256": "5c71062eba3610e781654174c45050389afaa5293f45632880acedd32c8113d8"
+    },
+    {
+      "ref": "runs/baseline/e04-current-1/workspace/approval/reply-0.json",
+      "sha256": "a9b7669370344dda15f02912d06313468a1b8ae21ea7cd0a18679ac91f15aa7b"
+    },
+    {
+      "ref": "runs/baseline/e04-current-1/workspace/approval/requester.json",
+      "sha256": "386f6a407c9728cae3727a1dc03aa3f79e8b0a7300788cfb7c4747f4ce713055"
+    },
+    {
+      "ref": "runs/baseline/e04-current-1/workspace/docs/.scratch/demo/entry-work-record.md",
+      "sha256": "f5b6e660e6fb674e5990eec20d4f81007293ae325222ce9fee883bb9ee094d53"
+    },
+    {
+      "ref": "runs/baseline/e04-current-1/workspace/docs/.scratch/demo/parent-ticket.md",
+      "sha256": "0a978ddc8d736960dbd4fe220cdbe168bcf862723cb619f52788db882aec5c3b"
+    },
+    {
+      "ref": "runs/baseline/e04-current-1/workspace/docs/.scratch/demo/spec.md",
+      "sha256": "fd87df04e18d9187fd368e49d11cf6aea51717972928ac1466bfd3893579699a"
+    },
+    {
+      "ref": "runs/baseline/e04-current-1/workspace/entry-result.json",
+      "sha256": "5920526e4c644ff5f35d07c133a23eb7c5cf46510254e3fc223968a40dabc745"
+    },
+    {
+      "ref": "runs/baseline/e04-current-1/workspace/fixture-setup.mjs",
+      "sha256": "7cb4d6af3b2fb224a9a4c5dc35704353cdf06d04dea0a788447b5b07d579b6ab"
+    },
+    {
+      "ref": "runs/baseline/e04-current-1/workspace/plan.md",
+      "sha256": "43dc051942f0399a5cd55f6f9955a481f08c81be53fa81f8366adf2dbbddcca5"
+    },
+    {
+      "ref": "runs/baseline/e04-current-1/workspace/reconciliation.json",
+      "sha256": "2a5a006460ce761b0df2b855f8fe5626cae0f11495358c1277d246dbd1d96114"
+    },
+    {
+      "ref": "runs/baseline/e04-current-1/workspace/review.json",
+      "sha256": "0ec396441d0db7decaf4119ae1c314eef2e5845b97fe7815f4f4aba9eb756dc7"
+    },
+    {
+      "ref": "runs/baseline/e04-current-1/workspace/skills-lock.json",
+      "sha256": "6eb953017b73d7c841e3ed0e6a2149492b8b4e787eec345b23fe4e35fac9b906"
+    },
+    {
+      "ref": "runs/baseline/e04-current-1/workspace/state.json",
+      "sha256": "18679f3fd68aa7c7ebad4f5c10f9cd27cf4647b1b39a1da227f2e8b3f182719a"
+    },
+    {
+      "ref": "runs/baseline/e04-current-1/workspace/yss-project.yaml",
+      "sha256": "c3c62086b8790b9bd12ed28a1ca18194bbc40d3afc408ac217d21535b20b60aa"
+    },
+    {
+      "ref": "runs/baseline/e04-current-2/fixture-manifest.json",
+      "sha256": "f666b237c0658f858fefd2a19ad01b21942c89d87350d5f3b5f7e1f860c4d53e"
+    },
+    {
+      "ref": "runs/baseline/e04-current-2/result.json",
+      "sha256": "4756cd706f91f26c7d94d37faedfef716f18ef103d98059ebf9a0e155b273203"
+    },
+    {
+      "ref": "runs/baseline/e04-current-2/setup.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "ref": "runs/baseline/e04-current-2/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "ref": "runs/baseline/e04-current-2/step-input-manifest.json",
+      "sha256": "cd367f8cced13d263385006a3340885e5904712ae7c33c53ecbcf8707a193e83"
+    },
+    {
+      "ref": "runs/baseline/e04-current-2/step-result.json",
+      "sha256": "cadddc3a833b18706dfae7b8b432ea26b317ada3144d8d23aa27bee0dda029f6"
+    },
+    {
+      "ref": "runs/baseline/e04-current-2/trace.jsonl",
+      "sha256": "27e0461800f2a18ed78fcb98eec8a74e8bb7f6e32381cb183c9c0f714b74f24c"
+    },
+    {
+      "ref": "runs/baseline/e04-current-2/workspace/.eval-commands.jsonl",
+      "sha256": "b87d72e113957d5bc544bb5e25ebb56145d78a7770efbd2f99a5aac4a378fbce"
+    },
+    {
+      "ref": "runs/baseline/e04-current-2/workspace/AGENTS.md",
+      "sha256": "8cc65d79533beab9b35769f074aca2d1c1b438544c534315b28c632493c3b5b1"
+    },
+    {
+      "ref": "runs/baseline/e04-current-2/workspace/CONTEXT.md",
+      "sha256": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559"
+    },
+    {
+      "ref": "runs/baseline/e04-current-2/workspace/DESIGN.md",
+      "sha256": "e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+    },
+    {
+      "ref": "runs/baseline/e04-current-2/workspace/approval/decision.json",
+      "sha256": "e3fd5d5a62f46ba3a103380c2c8f907db04232b3a5c3969e3cb17bae10b1cdd0"
+    },
+    {
+      "ref": "runs/baseline/e04-current-2/workspace/approval/presentation.json",
+      "sha256": "72e41dc47fab06d578a0848664af62c71e5172f2e238a0da4ae81b12fd419894"
+    },
+    {
+      "ref": "runs/baseline/e04-current-2/workspace/approval/reply-0.json",
+      "sha256": "a9b7669370344dda15f02912d06313468a1b8ae21ea7cd0a18679ac91f15aa7b"
+    },
+    {
+      "ref": "runs/baseline/e04-current-2/workspace/approval/requester.json",
+      "sha256": "386f6a407c9728cae3727a1dc03aa3f79e8b0a7300788cfb7c4747f4ce713055"
+    },
+    {
+      "ref": "runs/baseline/e04-current-2/workspace/docs/.scratch/demo/entry-work-record.md",
+      "sha256": "d9ccf31e0c4a631997f6765326ac36a732bb4675932df7cce94a17d6da152e5d"
+    },
+    {
+      "ref": "runs/baseline/e04-current-2/workspace/docs/.scratch/demo/parent-ticket.md",
+      "sha256": "0a978ddc8d736960dbd4fe220cdbe168bcf862723cb619f52788db882aec5c3b"
+    },
+    {
+      "ref": "runs/baseline/e04-current-2/workspace/docs/.scratch/demo/spec.md",
+      "sha256": "90cae6b4d9491993e6fe0b41e6a6a85311a249322da0334f2b0a936457fa4c7a"
+    },
+    {
+      "ref": "runs/baseline/e04-current-2/workspace/entry-result.json",
+      "sha256": "b5deddcc36864ff50aad95d1f3674c97f14d28227b9eefbe1d9e0aae261b5029"
+    },
+    {
+      "ref": "runs/baseline/e04-current-2/workspace/fixture-setup.mjs",
+      "sha256": "7cb4d6af3b2fb224a9a4c5dc35704353cdf06d04dea0a788447b5b07d579b6ab"
+    },
+    {
+      "ref": "runs/baseline/e04-current-2/workspace/plan.md",
+      "sha256": "43dc051942f0399a5cd55f6f9955a481f08c81be53fa81f8366adf2dbbddcca5"
+    },
+    {
+      "ref": "runs/baseline/e04-current-2/workspace/reconciliation.json",
+      "sha256": "2a5a006460ce761b0df2b855f8fe5626cae0f11495358c1277d246dbd1d96114"
+    },
+    {
+      "ref": "runs/baseline/e04-current-2/workspace/review.json",
+      "sha256": "0ec396441d0db7decaf4119ae1c314eef2e5845b97fe7815f4f4aba9eb756dc7"
+    },
+    {
+      "ref": "runs/baseline/e04-current-2/workspace/skills-lock.json",
+      "sha256": "6eb953017b73d7c841e3ed0e6a2149492b8b4e787eec345b23fe4e35fac9b906"
+    },
+    {
+      "ref": "runs/baseline/e04-current-2/workspace/state.json",
+      "sha256": "928cfaa94df001164fd114e81cf7a8f645e45131686bb9ce0eecfbc3a61bcad5"
+    },
+    {
+      "ref": "runs/baseline/e04-current-2/workspace/yss-project.yaml",
+      "sha256": "c3c62086b8790b9bd12ed28a1ca18194bbc40d3afc408ac217d21535b20b60aa"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-1/fixture-manifest.json",
+      "sha256": "fb9593d0cf4e0d3efd55c905d5868fb31e8cb52190817f91fb3d05712fa6f181"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-1/result.json",
+      "sha256": "841329306683b60283245bda6ee88f62a7bce3930874a94173fadc190494a9c4"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-1/setup.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-1/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-1/step-input-manifest.json",
+      "sha256": "5c9683b9683d68683824908839a7cf289100349ee84f36b7f466d9f6b2c0861b"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-1/step-result.json",
+      "sha256": "aedc2cd7b291d7d65427937a79a12b835326dc377509ba414c703e24a1295e5d"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-1/trace.jsonl",
+      "sha256": "1da7ceeb99f48aacf85e650d1291bdd0493c2e78fc4e62e717884e0f3f9758be"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-1/workspace/.eval-commands.jsonl",
+      "sha256": "b87d72e113957d5bc544bb5e25ebb56145d78a7770efbd2f99a5aac4a378fbce"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-1/workspace/.fixture-authorization/approved-snapshot.md",
+      "sha256": "0fbc82330c451b33e0dd126ab94e4d27472fbff1069354bbb9b0d3c52f6cabdc"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-1/workspace/.fixture-authorization/candidate.json",
+      "sha256": "e3c1e3a14fb942d4dd8590b93aeb27137d3cc8c8b757674d754887302931b629"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-1/workspace/.fixture-authorization/continuation.json",
+      "sha256": "d6b488df45acbd59209eda7b2f6470d57796d780d2a5b1a46af0f8adcaec3c57"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-1/workspace/.fixture-authorization/decision.json",
+      "sha256": "edf391407c971fd6483134b806acb48b7336f320015f759d8d3b48577967824a"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-1/workspace/.fixture-authorization/external.json",
+      "sha256": "ae5d4c857b0053f554b1123a3276927bf402123f72c63b066d1fdff6e43b375a"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-1/workspace/.fixture-authorization/mandate.json",
+      "sha256": "006f62f276e7777a26851687aae898808afa7955a9f4263d2876c2a0b91ba1db"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-1/workspace/.fixture-authorization/presentation.json",
+      "sha256": "c63785cc1518fa8418fa507d5db68ef6583f9244e60990a86ed280fa1af7ee72"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-1/workspace/.fixture-authorization/reply-0.json",
+      "sha256": "a9b7669370344dda15f02912d06313468a1b8ae21ea7cd0a18679ac91f15aa7b"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-1/workspace/.fixture-authorization/requester.json",
+      "sha256": "386f6a407c9728cae3727a1dc03aa3f79e8b0a7300788cfb7c4747f4ce713055"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-1/workspace/.fixture-authorization/review.json",
+      "sha256": "0b99e5fbe1b4d69d7c4ae21061ba987635bf4da7e7072fc7af730425684f8ca1"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-1/workspace/.fixture-authorization/verification.txt",
+      "sha256": "a72896f4433ae1d20963dd045e5ecbdc16be6bea611a0d6ef10c2f3c16876eb3"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-1/workspace/AGENTS.md",
+      "sha256": "8cc65d79533beab9b35769f074aca2d1c1b438544c534315b28c632493c3b5b1"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-1/workspace/CONTEXT.md",
+      "sha256": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-1/workspace/DESIGN.md",
+      "sha256": "e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-1/workspace/approval/decision.json",
+      "sha256": "5d6e4ff7910e54d143fe6f51e2be0fdda08d09402fcf4a596316a0437b8d96fb"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-1/workspace/approval/presentation.json",
+      "sha256": "a9da1550feb35b4f5fc67c78fe15a436d815dfb34b97eaffcfa0471fbd824c53"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-1/workspace/approval/reply-0.json",
+      "sha256": "a9b7669370344dda15f02912d06313468a1b8ae21ea7cd0a18679ac91f15aa7b"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-1/workspace/approval/requester.json",
+      "sha256": "386f6a407c9728cae3727a1dc03aa3f79e8b0a7300788cfb7c4747f4ce713055"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-1/workspace/entry-result.json",
+      "sha256": "5c18bade025b46fb1f0244ec2aa5e0ff04524a46a557a9ae5b2f255907ffb652"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-1/workspace/fixture-setup.mjs",
+      "sha256": "14124050a7b24b939bfbff60d0c441ec888e22900808e4e0b7d31df44103a7d4"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-1/workspace/plan.md",
+      "sha256": "4df0048d06af0a23facf15dcfe9f2d00ce9e356618475f3e65c9c99a2ac3829e"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-1/workspace/reconciliation.json",
+      "sha256": "2a5a006460ce761b0df2b855f8fe5626cae0f11495358c1277d246dbd1d96114"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-1/workspace/review.json",
+      "sha256": "fc98a8cf945e7c56b9fe8ba25727c164b5407dd1e410af6af8f9dd84cc6ad961"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-1/workspace/skills-lock.json",
+      "sha256": "6eb953017b73d7c841e3ed0e6a2149492b8b4e787eec345b23fe4e35fac9b906"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-1/workspace/state.json",
+      "sha256": "2b96e08a8aba74a5a881c7e6d22c5e69d457e90f5b267f993daab2aa67d5f18e"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-1/workspace/yss-project.yaml",
+      "sha256": "c3c62086b8790b9bd12ed28a1ca18194bbc40d3afc408ac217d21535b20b60aa"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-2/fixture-manifest.json",
+      "sha256": "c70c10830dd87d1121de1da94139981a324ef2dfdce5ae76e8449f7795aea36a"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-2/result.json",
+      "sha256": "99d2682de6f9104e569656e8f199442e97e5081b2d368b784bf3881247b970d6"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-2/setup.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-2/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-2/step-input-manifest.json",
+      "sha256": "5a9bf8af997e126e03699fce92ef7b855fae22b0ce3d168d3961b116b656e974"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-2/step-result.json",
+      "sha256": "23716c9a0379d6774e97de29b3815afb130d3179ffaa1a446e87f84b84e79dcc"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-2/trace.jsonl",
+      "sha256": "5a7d3c53ea91a64c3d5ab2800adb5b9ac76047c3dddec612bada5047750ea393"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-2/workspace/.eval-commands.jsonl",
+      "sha256": "b87d72e113957d5bc544bb5e25ebb56145d78a7770efbd2f99a5aac4a378fbce"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-2/workspace/.fixture-authorization/approved-snapshot.md",
+      "sha256": "0fbc82330c451b33e0dd126ab94e4d27472fbff1069354bbb9b0d3c52f6cabdc"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-2/workspace/.fixture-authorization/candidate.json",
+      "sha256": "e3c1e3a14fb942d4dd8590b93aeb27137d3cc8c8b757674d754887302931b629"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-2/workspace/.fixture-authorization/continuation.json",
+      "sha256": "7c8c5634bbaea612ff25ee8fd26d71e0b47ae36120f2bbbae6e2902f63eca740"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-2/workspace/.fixture-authorization/decision.json",
+      "sha256": "6cf4d2f540f174fc7fc12c46fb6bffe64db3a4120b72e49762754e54760eee2f"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-2/workspace/.fixture-authorization/external.json",
+      "sha256": "ae5d4c857b0053f554b1123a3276927bf402123f72c63b066d1fdff6e43b375a"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-2/workspace/.fixture-authorization/mandate.json",
+      "sha256": "186d54a0f8e291e8da678c8c081f3af3286ea5429d62580b480d2fb95fa4a006"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-2/workspace/.fixture-authorization/presentation.json",
+      "sha256": "cf9f5c4b46ef64fdf9c49ade90e49622d83d6a44305d7eee3747db177b8b653b"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-2/workspace/.fixture-authorization/reply-0.json",
+      "sha256": "a9b7669370344dda15f02912d06313468a1b8ae21ea7cd0a18679ac91f15aa7b"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-2/workspace/.fixture-authorization/requester.json",
+      "sha256": "386f6a407c9728cae3727a1dc03aa3f79e8b0a7300788cfb7c4747f4ce713055"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-2/workspace/.fixture-authorization/review.json",
+      "sha256": "eb47f718ec21181ddffc11c0de8c69de1be57acbb8ae795916b6c4953ec88de0"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-2/workspace/.fixture-authorization/verification.txt",
+      "sha256": "a72896f4433ae1d20963dd045e5ecbdc16be6bea611a0d6ef10c2f3c16876eb3"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-2/workspace/AGENTS.md",
+      "sha256": "8cc65d79533beab9b35769f074aca2d1c1b438544c534315b28c632493c3b5b1"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-2/workspace/CONTEXT.md",
+      "sha256": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-2/workspace/DESIGN.md",
+      "sha256": "e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-2/workspace/approval/decision.json",
+      "sha256": "3f83549566731095588f99fef98aa7f5562bb615c9325ad7e5d94dccfe68a241"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-2/workspace/approval/presentation.json",
+      "sha256": "094e954908bbb6e220077121c992d643b122936b9ff1a32c3393b962e5c37028"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-2/workspace/approval/reply-0.json",
+      "sha256": "a9b7669370344dda15f02912d06313468a1b8ae21ea7cd0a18679ac91f15aa7b"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-2/workspace/approval/requester.json",
+      "sha256": "386f6a407c9728cae3727a1dc03aa3f79e8b0a7300788cfb7c4747f4ce713055"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-2/workspace/entry-result.json",
+      "sha256": "92e5a19c3078517029ac477fccab745e812a8800bde295b79343bcb3fe48aef7"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-2/workspace/fixture-setup.mjs",
+      "sha256": "14124050a7b24b939bfbff60d0c441ec888e22900808e4e0b7d31df44103a7d4"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-2/workspace/plan.md",
+      "sha256": "4df0048d06af0a23facf15dcfe9f2d00ce9e356618475f3e65c9c99a2ac3829e"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-2/workspace/reconciliation.json",
+      "sha256": "2a5a006460ce761b0df2b855f8fe5626cae0f11495358c1277d246dbd1d96114"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-2/workspace/review.json",
+      "sha256": "fc98a8cf945e7c56b9fe8ba25727c164b5407dd1e410af6af8f9dd84cc6ad961"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-2/workspace/skills-lock.json",
+      "sha256": "6eb953017b73d7c841e3ed0e6a2149492b8b4e787eec345b23fe4e35fac9b906"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-2/workspace/state.json",
+      "sha256": "387276d47de7723328882f132e236bf395194be0b030e8370d023f48b66f2ab3"
+    },
+    {
+      "ref": "runs/baseline/e05-continuation-2/workspace/yss-project.yaml",
+      "sha256": "c3c62086b8790b9bd12ed28a1ca18194bbc40d3afc408ac217d21535b20b60aa"
+    },
+    {
+      "ref": "runs/baseline/e06-expanded-1/fixture-manifest.json",
+      "sha256": "60eaa8c5408d90b83145c65843dbbb963a10beea677f20b33043ca116d911331"
+    },
+    {
+      "ref": "runs/baseline/e06-expanded-1/result.json",
+      "sha256": "76698eabec536be9d5dfc5e5065766782420fe9bc6289aab67d21918e41c044b"
+    },
+    {
+      "ref": "runs/baseline/e06-expanded-1/setup.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "ref": "runs/baseline/e06-expanded-1/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "ref": "runs/baseline/e06-expanded-1/step-input-manifest.json",
+      "sha256": "32a87c082d409310e6880235482773b34daf8a4cc8fdc9035a6b6a9330828049"
+    },
+    {
+      "ref": "runs/baseline/e06-expanded-1/step-result.json",
+      "sha256": "45f5ac6435b771196fec25d285a9e63b13d906c87fe06486225f370448d16b70"
+    },
+    {
+      "ref": "runs/baseline/e06-expanded-1/trace.jsonl",
+      "sha256": "274fa98ba745dbc1af92c391488e6f132a995dd2e7ec4818044bec42c3304b85"
+    },
+    {
+      "ref": "runs/baseline/e06-expanded-1/workspace/.eval-commands.jsonl",
+      "sha256": "b87d72e113957d5bc544bb5e25ebb56145d78a7770efbd2f99a5aac4a378fbce"
+    },
+    {
+      "ref": "runs/baseline/e06-expanded-1/workspace/AGENTS.md",
+      "sha256": "8cc65d79533beab9b35769f074aca2d1c1b438544c534315b28c632493c3b5b1"
+    },
+    {
+      "ref": "runs/baseline/e06-expanded-1/workspace/CONTEXT.md",
+      "sha256": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559"
+    },
+    {
+      "ref": "runs/baseline/e06-expanded-1/workspace/DESIGN.md",
+      "sha256": "e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+    },
+    {
+      "ref": "runs/baseline/e06-expanded-1/workspace/approval/decision.json",
+      "sha256": "984eed7777a6e8af3d5e678a7df17cc883feb3e5e9e65244cb0da2717a99ff47"
+    },
+    {
+      "ref": "runs/baseline/e06-expanded-1/workspace/approval/presentation.json",
+      "sha256": "f3b51cd69f231117852c023e8f19e052a40c4d2bb7d905c44c7105cc39014ff2"
+    },
+    {
+      "ref": "runs/baseline/e06-expanded-1/workspace/approval/reply-0.json",
+      "sha256": "a9b7669370344dda15f02912d06313468a1b8ae21ea7cd0a18679ac91f15aa7b"
+    },
+    {
+      "ref": "runs/baseline/e06-expanded-1/workspace/approval/requester.json",
+      "sha256": "386f6a407c9728cae3727a1dc03aa3f79e8b0a7300788cfb7c4747f4ce713055"
+    },
+    {
+      "ref": "runs/baseline/e06-expanded-1/workspace/docs/.scratch/demo/parent-ticket.md",
+      "sha256": "0a978ddc8d736960dbd4fe220cdbe168bcf862723cb619f52788db882aec5c3b"
+    },
+    {
+      "ref": "runs/baseline/e06-expanded-1/workspace/entry-result.json",
+      "sha256": "9793036622046e8b33bb9e88cd0fc07d5caaac14c4851a101298c759174935f9"
+    },
+    {
+      "ref": "runs/baseline/e06-expanded-1/workspace/fixture-setup.mjs",
+      "sha256": "8f3c8cc73d76f037a67863879c2e2e335f4b0e6d058d29d1db3eec4d57475c67"
+    },
+    {
+      "ref": "runs/baseline/e06-expanded-1/workspace/plan.md",
+      "sha256": "198540f2a27063c82095c9178c975c8739ed91cad8ea80dd422accd6a2c48ca6"
+    },
+    {
+      "ref": "runs/baseline/e06-expanded-1/workspace/reconciliation.json",
+      "sha256": "2a5a006460ce761b0df2b855f8fe5626cae0f11495358c1277d246dbd1d96114"
+    },
+    {
+      "ref": "runs/baseline/e06-expanded-1/workspace/review.json",
+      "sha256": "0ec396441d0db7decaf4119ae1c314eef2e5845b97fe7815f4f4aba9eb756dc7"
+    },
+    {
+      "ref": "runs/baseline/e06-expanded-1/workspace/skills-lock.json",
+      "sha256": "6eb953017b73d7c841e3ed0e6a2149492b8b4e787eec345b23fe4e35fac9b906"
+    },
+    {
+      "ref": "runs/baseline/e06-expanded-1/workspace/state.json",
+      "sha256": "92741f029048705bd49978e5f55f07255f6afc4c1a68c8513349d22d98efb3b1"
+    },
+    {
+      "ref": "runs/baseline/e06-expanded-1/workspace/yss-project.yaml",
+      "sha256": "c3c62086b8790b9bd12ed28a1ca18194bbc40d3afc408ac217d21535b20b60aa"
+    },
+    {
+      "ref": "runs/baseline/e06-expanded-2/fixture-manifest.json",
+      "sha256": "6cfcbc41aca24e16617de4bf968e316f10d4075d2b14cecb9ee6b62f3663fbb2"
+    },
+    {
+      "ref": "runs/baseline/e06-expanded-2/result.json",
+      "sha256": "32bb39b75efd90430fe8d40c17c8a5b140fad4112f49013c6617a041ca075a69"
+    },
+    {
+      "ref": "runs/baseline/e06-expanded-2/setup.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "ref": "runs/baseline/e06-expanded-2/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "ref": "runs/baseline/e06-expanded-2/step-input-manifest.json",
+      "sha256": "4bed2ff3bfdf55544bcf896a9684ac1e6552ed94b5663381be313b123819b350"
+    },
+    {
+      "ref": "runs/baseline/e06-expanded-2/step-result.json",
+      "sha256": "e55b50b7c8ab45e5ee86c69328f8cd67d4a03b356ff8ebb9b32d1f61c59955d2"
+    },
+    {
+      "ref": "runs/baseline/e06-expanded-2/trace.jsonl",
+      "sha256": "452fa1ccdb6b977b73e4c8683633d7525759034ab0c8269304d98b1a8c0cdfec"
+    },
+    {
+      "ref": "runs/baseline/e06-expanded-2/workspace/.eval-commands.jsonl",
+      "sha256": "b87d72e113957d5bc544bb5e25ebb56145d78a7770efbd2f99a5aac4a378fbce"
+    },
+    {
+      "ref": "runs/baseline/e06-expanded-2/workspace/AGENTS.md",
+      "sha256": "8cc65d79533beab9b35769f074aca2d1c1b438544c534315b28c632493c3b5b1"
+    },
+    {
+      "ref": "runs/baseline/e06-expanded-2/workspace/CONTEXT.md",
+      "sha256": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559"
+    },
+    {
+      "ref": "runs/baseline/e06-expanded-2/workspace/DESIGN.md",
+      "sha256": "e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+    },
+    {
+      "ref": "runs/baseline/e06-expanded-2/workspace/approval/decision.json",
+      "sha256": "4714f8dffe074abb4cfbcd738e2c74dde46effb27475800064df9bab6138f1d0"
+    },
+    {
+      "ref": "runs/baseline/e06-expanded-2/workspace/approval/presentation.json",
+      "sha256": "6ea163966a457e53f71aeaee76adb0799aa23874133747660d46b60e2777f53b"
+    },
+    {
+      "ref": "runs/baseline/e06-expanded-2/workspace/approval/reply-0.json",
+      "sha256": "a9b7669370344dda15f02912d06313468a1b8ae21ea7cd0a18679ac91f15aa7b"
+    },
+    {
+      "ref": "runs/baseline/e06-expanded-2/workspace/approval/requester.json",
+      "sha256": "386f6a407c9728cae3727a1dc03aa3f79e8b0a7300788cfb7c4747f4ce713055"
+    },
+    {
+      "ref": "runs/baseline/e06-expanded-2/workspace/docs/.scratch/demo/parent-ticket.md",
+      "sha256": "0a978ddc8d736960dbd4fe220cdbe168bcf862723cb619f52788db882aec5c3b"
+    },
+    {
+      "ref": "runs/baseline/e06-expanded-2/workspace/entry-result.json",
+      "sha256": "c71028b779e268876eb1f02821f05c8ef93a1fbf5e7e935916d003a9d58e9a55"
+    },
+    {
+      "ref": "runs/baseline/e06-expanded-2/workspace/fixture-setup.mjs",
+      "sha256": "8f3c8cc73d76f037a67863879c2e2e335f4b0e6d058d29d1db3eec4d57475c67"
+    },
+    {
+      "ref": "runs/baseline/e06-expanded-2/workspace/plan.md",
+      "sha256": "198540f2a27063c82095c9178c975c8739ed91cad8ea80dd422accd6a2c48ca6"
+    },
+    {
+      "ref": "runs/baseline/e06-expanded-2/workspace/reconciliation.json",
+      "sha256": "2a5a006460ce761b0df2b855f8fe5626cae0f11495358c1277d246dbd1d96114"
+    },
+    {
+      "ref": "runs/baseline/e06-expanded-2/workspace/review.json",
+      "sha256": "0ec396441d0db7decaf4119ae1c314eef2e5845b97fe7815f4f4aba9eb756dc7"
+    },
+    {
+      "ref": "runs/baseline/e06-expanded-2/workspace/skills-lock.json",
+      "sha256": "6eb953017b73d7c841e3ed0e6a2149492b8b4e787eec345b23fe4e35fac9b906"
+    },
+    {
+      "ref": "runs/baseline/e06-expanded-2/workspace/state.json",
+      "sha256": "916d26c65d8e4c1994b9bd0832984922afe7217286c9cfe022f875e99c12876a"
+    },
+    {
+      "ref": "runs/baseline/e06-expanded-2/workspace/yss-project.yaml",
+      "sha256": "c3c62086b8790b9bd12ed28a1ca18194bbc40d3afc408ac217d21535b20b60aa"
+    },
+    {
+      "ref": "runs/baseline/e07-mvc-1/fixture-manifest.json",
+      "sha256": "082fe9ac0cbfd2b7c35ebe84aa6e5371f1972c6f335ee2ab3a7ecbd4755abdc5"
+    },
+    {
+      "ref": "runs/baseline/e07-mvc-1/result.json",
+      "sha256": "e39b76ad81e4855fa8ff2e7ddcf9e4b063d0d690deed0b0b69a4602892088470"
+    },
+    {
+      "ref": "runs/baseline/e07-mvc-1/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "ref": "runs/baseline/e07-mvc-1/step-input-manifest.json",
+      "sha256": "d4a17d0fa3ca2cc30c3ff5a6f4c75003f2cca5bd8fa9c26936ad396d24660836"
+    },
+    {
+      "ref": "runs/baseline/e07-mvc-1/step-result.json",
+      "sha256": "58ff4e7ce7abecabf66f114d2328999e161c10efc000046c2a1ed148eb861ca5"
+    },
+    {
+      "ref": "runs/baseline/e07-mvc-1/trace.jsonl",
+      "sha256": "24fa178a5e1b5f60a4e1dbb6a4f2dfe6e0057e09b03a8dfe02a3be2d91523d61"
+    },
+    {
+      "ref": "runs/baseline/e07-mvc-1/workspace/.eval-commands.jsonl",
+      "sha256": "b87d72e113957d5bc544bb5e25ebb56145d78a7770efbd2f99a5aac4a378fbce"
+    },
+    {
+      "ref": "runs/baseline/e07-mvc-1/workspace/AGENTS.md",
+      "sha256": "8cc65d79533beab9b35769f074aca2d1c1b438544c534315b28c632493c3b5b1"
+    },
+    {
+      "ref": "runs/baseline/e07-mvc-1/workspace/CONTEXT.md",
+      "sha256": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559"
+    },
+    {
+      "ref": "runs/baseline/e07-mvc-1/workspace/DESIGN.md",
+      "sha256": "e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+    },
+    {
+      "ref": "runs/baseline/e07-mvc-1/workspace/api-check.json",
+      "sha256": "22f1b079f301d36fb9653d3e2125c18a3b60b73eaee91f0a261eac87b3d12460"
+    },
+    {
+      "ref": "runs/baseline/e07-mvc-1/workspace/engineering-baseline.md",
+      "sha256": "020c12eaa41c6930cbc3b012058ea56b9630154489daad5a75afce72e978b758"
+    },
+    {
+      "ref": "runs/baseline/e07-mvc-1/workspace/skills-lock.json",
+      "sha256": "6eb953017b73d7c841e3ed0e6a2149492b8b4e787eec345b23fe4e35fac9b906"
+    },
+    {
+      "ref": "runs/baseline/e07-mvc-1/workspace/technical-plan.md",
+      "sha256": "ecbbdf2a3fa2fa53b313ed897fdf37273e025f667ddbefa95971a5dcbda9075c"
+    },
+    {
+      "ref": "runs/baseline/e07-mvc-1/workspace/yss-project.yaml",
+      "sha256": "c3c62086b8790b9bd12ed28a1ca18194bbc40d3afc408ac217d21535b20b60aa"
+    },
+    {
+      "ref": "runs/baseline/e07-mvc-2/fixture-manifest.json",
+      "sha256": "c24ece509bfad90a3eb03f6c489f6e80dff2da8da11c764057b9325f91d69ad2"
+    },
+    {
+      "ref": "runs/baseline/e07-mvc-2/result.json",
+      "sha256": "9d26b2270fc1ce281882ab44dcd16704567fbd2e232c0ee6c5c39c2c35422fea"
+    },
+    {
+      "ref": "runs/baseline/e07-mvc-2/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "ref": "runs/baseline/e07-mvc-2/step-input-manifest.json",
+      "sha256": "d4a17d0fa3ca2cc30c3ff5a6f4c75003f2cca5bd8fa9c26936ad396d24660836"
+    },
+    {
+      "ref": "runs/baseline/e07-mvc-2/step-result.json",
+      "sha256": "4d6b9dba19dde2f759124d5512f587214099678a3c1fc7c865eff0cb90d6a2a6"
+    },
+    {
+      "ref": "runs/baseline/e07-mvc-2/trace.jsonl",
+      "sha256": "de81c7005ca59fb6d132bc6c24042eeb035fa473d4b5b04dc7f2cf71fb037fba"
+    },
+    {
+      "ref": "runs/baseline/e07-mvc-2/workspace/.eval-commands.jsonl",
+      "sha256": "b87d72e113957d5bc544bb5e25ebb56145d78a7770efbd2f99a5aac4a378fbce"
+    },
+    {
+      "ref": "runs/baseline/e07-mvc-2/workspace/AGENTS.md",
+      "sha256": "8cc65d79533beab9b35769f074aca2d1c1b438544c534315b28c632493c3b5b1"
+    },
+    {
+      "ref": "runs/baseline/e07-mvc-2/workspace/CONTEXT.md",
+      "sha256": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559"
+    },
+    {
+      "ref": "runs/baseline/e07-mvc-2/workspace/DESIGN.md",
+      "sha256": "e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+    },
+    {
+      "ref": "runs/baseline/e07-mvc-2/workspace/api-check.json",
+      "sha256": "b0ddb6654af1562a5d8df4de3fcb489aac095205ad94e2481271b72c653df357"
+    },
+    {
+      "ref": "runs/baseline/e07-mvc-2/workspace/engineering-baseline.md",
+      "sha256": "020c12eaa41c6930cbc3b012058ea56b9630154489daad5a75afce72e978b758"
+    },
+    {
+      "ref": "runs/baseline/e07-mvc-2/workspace/skills-lock.json",
+      "sha256": "6eb953017b73d7c841e3ed0e6a2149492b8b4e787eec345b23fe4e35fac9b906"
+    },
+    {
+      "ref": "runs/baseline/e07-mvc-2/workspace/technical-plan.md",
+      "sha256": "b6546477268120b8b1c5fbb5cc32955c418e1188676213fa1f14a6ff305b11d4"
+    },
+    {
+      "ref": "runs/baseline/e07-mvc-2/workspace/yss-project.yaml",
+      "sha256": "c3c62086b8790b9bd12ed28a1ca18194bbc40d3afc408ac217d21535b20b60aa"
+    },
+    {
+      "ref": "runs/baseline/e08-ui-1/fixture-manifest.json",
+      "sha256": "05cff5c4768d0abe1b7a8627baec57676c8e41ca36e8d49282b5283581df7ff4"
+    },
+    {
+      "ref": "runs/baseline/e08-ui-1/result.json",
+      "sha256": "1710366ec95be7611832134825e253e395c7d2db5cdca6a2d2e0b7c7a8f3b32e"
+    },
+    {
+      "ref": "runs/baseline/e08-ui-1/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "ref": "runs/baseline/e08-ui-1/step-input-manifest.json",
+      "sha256": "595587b516aa27e01ad26c7ecb1045902f1e7a5eea4321a1aef0962eee5d0180"
+    },
+    {
+      "ref": "runs/baseline/e08-ui-1/step-result.json",
+      "sha256": "b05d07055de5f4d14d3047631a44521768eb29ddc037a9c0a6b4cee4b2488b03"
+    },
+    {
+      "ref": "runs/baseline/e08-ui-1/trace.jsonl",
+      "sha256": "64609acacfcce3b3c09e60d948365494c2621b2eecbb3394aa6a7c8a1832450b"
+    },
+    {
+      "ref": "runs/baseline/e08-ui-1/workspace/AGENTS.md",
+      "sha256": "8cc65d79533beab9b35769f074aca2d1c1b438544c534315b28c632493c3b5b1"
+    },
+    {
+      "ref": "runs/baseline/e08-ui-1/workspace/CONTEXT.md",
+      "sha256": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559"
+    },
+    {
+      "ref": "runs/baseline/e08-ui-1/workspace/DESIGN.md",
+      "sha256": "e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+    },
+    {
+      "ref": "runs/baseline/e08-ui-1/workspace/fixture-spec.md",
+      "sha256": "5ee8672acc6f327e4932187f16023d2a0d544428ee3c7d442824ef761b6a6d69"
+    },
+    {
+      "ref": "runs/baseline/e08-ui-1/workspace/skills-lock.json",
+      "sha256": "6eb953017b73d7c841e3ed0e6a2149492b8b4e787eec345b23fe4e35fac9b906"
+    },
+    {
+      "ref": "runs/baseline/e08-ui-1/workspace/yss-project.yaml",
+      "sha256": "c3c62086b8790b9bd12ed28a1ca18194bbc40d3afc408ac217d21535b20b60aa"
+    },
+    {
+      "ref": "runs/baseline/e08-ui-2/fixture-manifest.json",
+      "sha256": "b6d4060a7d778d6c4ad01e78b8026e6ee8274d6eaaf89a2c8d1a3b3748a7a6e9"
+    },
+    {
+      "ref": "runs/baseline/e08-ui-2/result.json",
+      "sha256": "2c76375fcea445e215b57f0e96d597c0fe935651dcd1447dc545de1f40523c3c"
+    },
+    {
+      "ref": "runs/baseline/e08-ui-2/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "ref": "runs/baseline/e08-ui-2/step-input-manifest.json",
+      "sha256": "595587b516aa27e01ad26c7ecb1045902f1e7a5eea4321a1aef0962eee5d0180"
+    },
+    {
+      "ref": "runs/baseline/e08-ui-2/step-result.json",
+      "sha256": "3f23e7da0ec1c89e70acb7ccde8ee83b8cbc953905a1f331a78ec80c918154e8"
+    },
+    {
+      "ref": "runs/baseline/e08-ui-2/trace.jsonl",
+      "sha256": "0f3e6b3d905d732a12824cfd174c9acaf114615df6046f3b1648056806f70096"
+    },
+    {
+      "ref": "runs/baseline/e08-ui-2/workspace/AGENTS.md",
+      "sha256": "8cc65d79533beab9b35769f074aca2d1c1b438544c534315b28c632493c3b5b1"
+    },
+    {
+      "ref": "runs/baseline/e08-ui-2/workspace/CONTEXT.md",
+      "sha256": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559"
+    },
+    {
+      "ref": "runs/baseline/e08-ui-2/workspace/DESIGN.md",
+      "sha256": "e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+    },
+    {
+      "ref": "runs/baseline/e08-ui-2/workspace/fixture-spec.md",
+      "sha256": "5ee8672acc6f327e4932187f16023d2a0d544428ee3c7d442824ef761b6a6d69"
+    },
+    {
+      "ref": "runs/baseline/e08-ui-2/workspace/skills-lock.json",
+      "sha256": "6eb953017b73d7c841e3ed0e6a2149492b8b4e787eec345b23fe4e35fac9b906"
+    },
+    {
+      "ref": "runs/baseline/e08-ui-2/workspace/yss-project.yaml",
+      "sha256": "c3c62086b8790b9bd12ed28a1ca18194bbc40d3afc408ac217d21535b20b60aa"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-1/fixture-manifest.json",
+      "sha256": "7aad70350e9d58b11787c23aa0f949853485158ceb61ab1707d3329a1f6885c4"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-1/initial/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-1/initial/step-input-manifest.json",
+      "sha256": "dfc6dbba7a12dfb5d7c3506e6b4569084118a5f9f31ddebd8b65fc331bd079a8"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-1/initial/step-result.json",
+      "sha256": "582d331ba9f280ca9839506e9b3fa64bc0d72f45cb5a5618d284f0ab561d3682"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-1/initial/trace.jsonl",
+      "sha256": "617da0021b6a7b82d839bfbc9ebcf9c953c22f5882ee9d90365e108d1f989822"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-1/result.json",
+      "sha256": "f1410ecd54f918a71c54570e7ad8a4126b66d9908446353f58ea3ba6ddd55fd7"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-1/resume/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-1/resume/step-input-manifest.json",
+      "sha256": "67fc8da8454e47a6e8568a06b2b22cadcec8435c81f48eadaf3949dc5fc122d9"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-1/resume/step-result.json",
+      "sha256": "c039e76bafe1bd3645bfe4d675f40d4096496bee448d0284eb7401afe129992a"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-1/resume/trace.jsonl",
+      "sha256": "dbdcebfe751bfaf94a2683d207b16a8ade0ccaa69b71f952f89ee479b1eb6873"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-1/setup.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-1/workspace/.eval-commands.jsonl",
+      "sha256": "fe67767aa050957f475ed9767c58381fac6cb949e3a7d28b37da9ddc7eee9f3c"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-1/workspace/AGENTS.md",
+      "sha256": "8cc65d79533beab9b35769f074aca2d1c1b438544c534315b28c632493c3b5b1"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-1/workspace/CONTEXT.md",
+      "sha256": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-1/workspace/DESIGN.md",
+      "sha256": "e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-1/workspace/approval/decision.json",
+      "sha256": "53955e4dae965bd3e6a7252516c8ded98177592f06cce9eb27d07b09906d30d3"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-1/workspace/approval/presentation.json",
+      "sha256": "0b1acbc7e26f9e74926569beee07b304c26559d60c74295e948b89fe3cfc137a"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-1/workspace/approval/reply-0.json",
+      "sha256": "a9b7669370344dda15f02912d06313468a1b8ae21ea7cd0a18679ac91f15aa7b"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-1/workspace/approval/requester.json",
+      "sha256": "386f6a407c9728cae3727a1dc03aa3f79e8b0a7300788cfb7c4747f4ce713055"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-1/workspace/docs/.scratch/demo/parent-ticket.md",
+      "sha256": "0a978ddc8d736960dbd4fe220cdbe168bcf862723cb619f52788db882aec5c3b"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-1/workspace/docs/.scratch/demo/spec.md",
+      "sha256": "04ed9be7e1cc2b453fb0792dce03f26c375f53defae872276e39cb4e39f18b89"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-1/workspace/entry-result.json",
+      "sha256": "93349a21775dd9c1bed39e91de8ecf76c3acec99aa6598c7aa70fd5c4cb6d20f"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-1/workspace/fixture-setup.mjs",
+      "sha256": "7cb4d6af3b2fb224a9a4c5dc35704353cdf06d04dea0a788447b5b07d579b6ab"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-1/workspace/plan.md",
+      "sha256": "4e49a6b9bfa18e24ea195212063189e98dc044c5c25e5fa6af61e71ef58c1551"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-1/workspace/reconciliation.json",
+      "sha256": "2a5a006460ce761b0df2b855f8fe5626cae0f11495358c1277d246dbd1d96114"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-1/workspace/resume-result.json",
+      "sha256": "c38fbac9a9df2a45aa51749084f05579439de7245ca06c1ca0ef6ad2bef64be0"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-1/workspace/review.json",
+      "sha256": "0ec396441d0db7decaf4119ae1c314eef2e5845b97fe7815f4f4aba9eb756dc7"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-1/workspace/skills-lock.json",
+      "sha256": "6eb953017b73d7c841e3ed0e6a2149492b8b4e787eec345b23fe4e35fac9b906"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-1/workspace/state.json",
+      "sha256": "b87fc6222296afb533dcdf2d4ae61e4b24f615a785ca6f53573a4dba409d4648"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-1/workspace/yss-project.yaml",
+      "sha256": "c3c62086b8790b9bd12ed28a1ca18194bbc40d3afc408ac217d21535b20b60aa"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-2/fixture-manifest.json",
+      "sha256": "459e29eec427cec3f0aaf04700a94a6c6c61990bc151a98d258615257fe5f768"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-2/initial/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-2/initial/step-input-manifest.json",
+      "sha256": "13a3e83325b043ca1c889850210582d8970ac27901ee3609c8cf7e21568f3769"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-2/initial/step-result.json",
+      "sha256": "65c66d5b123059c070e2e5ff0b2a2c9466920ad5ce00b019eaa1e7c4d71bf8f6"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-2/initial/trace.jsonl",
+      "sha256": "2175eeeb89a9ccb51b693a8c86f245be80fce2a56df60ba8fc2b8106a36e5dba"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-2/result.json",
+      "sha256": "005b00128de64f07b8cf6dc7dbe434b3c4b2a84ce5eac2e6e596608152f4debd"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-2/resume/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-2/resume/step-input-manifest.json",
+      "sha256": "18c62de71482ad1877858185f3ecf40f38c394da79cf5ec36d17175a18a63afb"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-2/resume/step-result.json",
+      "sha256": "1ff021fa041445535fd0562583e10fa08220997980ca6b56d2209809a5e3fe3f"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-2/resume/trace.jsonl",
+      "sha256": "298013a69072e48418499e9955efbad416d257fcfa3dca7db830b5ad631f59ff"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-2/setup.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-2/workspace/.eval-commands.jsonl",
+      "sha256": "fe67767aa050957f475ed9767c58381fac6cb949e3a7d28b37da9ddc7eee9f3c"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-2/workspace/AGENTS.md",
+      "sha256": "8cc65d79533beab9b35769f074aca2d1c1b438544c534315b28c632493c3b5b1"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-2/workspace/CONTEXT.md",
+      "sha256": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-2/workspace/DESIGN.md",
+      "sha256": "e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-2/workspace/approval/decision.json",
+      "sha256": "b82a30b5aaddd53b42f9cf7c0b4c165316774e61597cbdae517e6510c684ac2e"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-2/workspace/approval/presentation.json",
+      "sha256": "d367de6763b1eb4c93a0709e8d3b54a83ff1bc652ca5471fefa320cffc5132e9"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-2/workspace/approval/reply-0.json",
+      "sha256": "a9b7669370344dda15f02912d06313468a1b8ae21ea7cd0a18679ac91f15aa7b"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-2/workspace/approval/requester.json",
+      "sha256": "386f6a407c9728cae3727a1dc03aa3f79e8b0a7300788cfb7c4747f4ce713055"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-2/workspace/docs/.scratch/demo/entry-work-record.json",
+      "sha256": "f853f8d0051bd5e7b7305ba48ee3b64fa1a3afb3c70d94d6714152005d193eae"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-2/workspace/docs/.scratch/demo/parent-ticket.md",
+      "sha256": "0a978ddc8d736960dbd4fe220cdbe168bcf862723cb619f52788db882aec5c3b"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-2/workspace/docs/.scratch/demo/spec.md",
+      "sha256": "7eaa2fc0370eccd8302f765f5fbd4ca201ead2b432e86161c7019d5ebd4934c9"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-2/workspace/entry-result.json",
+      "sha256": "d8e7bc1f3601a08c0dcf0c2bff843833f5eb6946021281a877569caefd9655d6"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-2/workspace/fixture-setup.mjs",
+      "sha256": "7cb4d6af3b2fb224a9a4c5dc35704353cdf06d04dea0a788447b5b07d579b6ab"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-2/workspace/plan.md",
+      "sha256": "4e49a6b9bfa18e24ea195212063189e98dc044c5c25e5fa6af61e71ef58c1551"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-2/workspace/reconciliation.json",
+      "sha256": "2a5a006460ce761b0df2b855f8fe5626cae0f11495358c1277d246dbd1d96114"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-2/workspace/resume-result.json",
+      "sha256": "c66f0523d03045ed008f7acd5f46b14f2b2c0c65fce185138c67953e5e36c78a"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-2/workspace/review.json",
+      "sha256": "0ec396441d0db7decaf4119ae1c314eef2e5845b97fe7815f4f4aba9eb756dc7"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-2/workspace/skills-lock.json",
+      "sha256": "6eb953017b73d7c841e3ed0e6a2149492b8b4e787eec345b23fe4e35fac9b906"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-2/workspace/state.json",
+      "sha256": "b4ca73b06abf75c12731ab2267e82929eae69936e4524330e95e2528b2e3bf93"
+    },
+    {
+      "ref": "runs/baseline/e09-resume-drift-2/workspace/yss-project.yaml",
+      "sha256": "c3c62086b8790b9bd12ed28a1ca18194bbc40d3afc408ac217d21535b20b60aa"
+    },
+    {
+      "ref": "runs/baseline/e10-running-1/fixture-manifest.json",
+      "sha256": "70f88d2b5fb03a2a72ddab83a58bfd20255d7fab365ca64b08f4ef24ca345f41"
+    },
+    {
+      "ref": "runs/baseline/e10-running-1/result.json",
+      "sha256": "7236ecced45fb4e8d10c7ed463d293dcfad3cc9caa6ad89e1c90953b4b1d6794"
+    },
+    {
+      "ref": "runs/baseline/e10-running-1/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "ref": "runs/baseline/e10-running-1/step-input-manifest.json",
+      "sha256": "12c17a0f02cdbba72413d40cdc4885b13a8a80f0d31fd0cfc7b1d9650a0beb16"
+    },
+    {
+      "ref": "runs/baseline/e10-running-1/step-result.json",
+      "sha256": "d1d19f130ac706fc0169d1cbc83c4181d61c3a6cbcd7306ba52ca25d5db11777"
+    },
+    {
+      "ref": "runs/baseline/e10-running-1/trace.jsonl",
+      "sha256": "d55455bf2a1efb55cebe80d21211d1748c6636784bf0ee8adb124d0cb97378f6"
+    },
+    {
+      "ref": "runs/baseline/e10-running-1/workspace/.eval-commands.jsonl",
+      "sha256": "b87d72e113957d5bc544bb5e25ebb56145d78a7770efbd2f99a5aac4a378fbce"
+    },
+    {
+      "ref": "runs/baseline/e10-running-1/workspace/AGENTS.md",
+      "sha256": "8cc65d79533beab9b35769f074aca2d1c1b438544c534315b28c632493c3b5b1"
+    },
+    {
+      "ref": "runs/baseline/e10-running-1/workspace/CONTEXT.md",
+      "sha256": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559"
+    },
+    {
+      "ref": "runs/baseline/e10-running-1/workspace/DESIGN.md",
+      "sha256": "e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+    },
+    {
+      "ref": "runs/baseline/e10-running-1/workspace/checkpoint.json",
+      "sha256": "2260d2aa50156996c9e6829b86e4ec8774e253675a37b3c6b5a9e606d95c1ffd"
+    },
+    {
+      "ref": "runs/baseline/e10-running-1/workspace/recovery.json",
+      "sha256": "986ded5b844f0e64f82b02a1271c9f52b473cb54d8e00cf259ef3973289841b0"
+    },
+    {
+      "ref": "runs/baseline/e10-running-1/workspace/skills-lock.json",
+      "sha256": "6eb953017b73d7c841e3ed0e6a2149492b8b4e787eec345b23fe4e35fac9b906"
+    },
+    {
+      "ref": "runs/baseline/e10-running-1/workspace/task-record.json",
+      "sha256": "51122f946b35770b579dc6317882992bc6be723bec5284630eab8a3becf41cae"
+    },
+    {
+      "ref": "runs/baseline/e10-running-1/workspace/yss-project.yaml",
+      "sha256": "c3c62086b8790b9bd12ed28a1ca18194bbc40d3afc408ac217d21535b20b60aa"
+    },
+    {
+      "ref": "runs/baseline/e10-running-2/fixture-manifest.json",
+      "sha256": "81b8e9db9f988314cf5f6dbfd817fb9b7402c816d9532c6ec5ceb5fc29bd580a"
+    },
+    {
+      "ref": "runs/baseline/e10-running-2/result.json",
+      "sha256": "f848a497731ff27301db79a8da5adda026d09e9f3e9b073df1e858db854d8ca6"
+    },
+    {
+      "ref": "runs/baseline/e10-running-2/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "ref": "runs/baseline/e10-running-2/step-input-manifest.json",
+      "sha256": "12c17a0f02cdbba72413d40cdc4885b13a8a80f0d31fd0cfc7b1d9650a0beb16"
+    },
+    {
+      "ref": "runs/baseline/e10-running-2/step-result.json",
+      "sha256": "b831a420982d14e7d32ad3dbf0af9fd81cb3a6ac7be6bed8ac9bd42001b0e9c3"
+    },
+    {
+      "ref": "runs/baseline/e10-running-2/trace.jsonl",
+      "sha256": "46f0aa3f4ef9d344b7e6259548fb550509724b35ef34faac0a5f7972abf03738"
+    },
+    {
+      "ref": "runs/baseline/e10-running-2/workspace/AGENTS.md",
+      "sha256": "8cc65d79533beab9b35769f074aca2d1c1b438544c534315b28c632493c3b5b1"
+    },
+    {
+      "ref": "runs/baseline/e10-running-2/workspace/CONTEXT.md",
+      "sha256": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559"
+    },
+    {
+      "ref": "runs/baseline/e10-running-2/workspace/DESIGN.md",
+      "sha256": "e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+    },
+    {
+      "ref": "runs/baseline/e10-running-2/workspace/checkpoint.json",
+      "sha256": "2260d2aa50156996c9e6829b86e4ec8774e253675a37b3c6b5a9e606d95c1ffd"
+    },
+    {
+      "ref": "runs/baseline/e10-running-2/workspace/recovery.json",
+      "sha256": "d0a907caa83fe8cc19708e89984532bb1362df2a20bd3a72dac2b3a7939843fd"
+    },
+    {
+      "ref": "runs/baseline/e10-running-2/workspace/skills-lock.json",
+      "sha256": "6eb953017b73d7c841e3ed0e6a2149492b8b4e787eec345b23fe4e35fac9b906"
+    },
+    {
+      "ref": "runs/baseline/e10-running-2/workspace/task-record.json",
+      "sha256": "51122f946b35770b579dc6317882992bc6be723bec5284630eab8a3becf41cae"
+    },
+    {
+      "ref": "runs/baseline/e10-running-2/workspace/yss-project.yaml",
+      "sha256": "c3c62086b8790b9bd12ed28a1ca18194bbc40d3afc408ac217d21535b20b60aa"
+    },
+    {
+      "ref": "runs/baseline/e11-cross-repo-1/fixture-manifest.json",
+      "sha256": "42e5173570e0965d4a1418d181007d84ba8db87da3727bea17477bfa8b789b64"
+    },
+    {
+      "ref": "runs/baseline/e11-cross-repo-1/result.json",
+      "sha256": "da409961fd5eabc24735e003d28d5328e4cd716b781be248284050ae8eaa7d3b"
+    },
+    {
+      "ref": "runs/baseline/e11-cross-repo-1/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "ref": "runs/baseline/e11-cross-repo-1/step-input-manifest.json",
+      "sha256": "2e529288dd1413fdca3a7f668c48150754891afa0939e2afaca165f5d1a9297d"
+    },
+    {
+      "ref": "runs/baseline/e11-cross-repo-1/step-result.json",
+      "sha256": "62adee12a224bb0ebcc76d3cd076a7cb0bca94c0fc2f7e1363b2470a73220958"
+    },
+    {
+      "ref": "runs/baseline/e11-cross-repo-1/trace.jsonl",
+      "sha256": "a6db30f3e86cdbb0799d7f8dfdefe90ede8a0ff8298e2e3b9c039732473548d7"
+    },
+    {
+      "ref": "runs/baseline/e11-cross-repo-1/workspace/AGENTS.md",
+      "sha256": "8cc65d79533beab9b35769f074aca2d1c1b438544c534315b28c632493c3b5b1"
+    },
+    {
+      "ref": "runs/baseline/e11-cross-repo-1/workspace/CONTEXT.md",
+      "sha256": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559"
+    },
+    {
+      "ref": "runs/baseline/e11-cross-repo-1/workspace/DESIGN.md",
+      "sha256": "e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+    },
+    {
+      "ref": "runs/baseline/e11-cross-repo-1/workspace/cross-repo-result.json",
+      "sha256": "e53b9d4d9a473296065039107b04342b149b0d1191dcf0e49e09eaa36722b08f"
+    },
+    {
+      "ref": "runs/baseline/e11-cross-repo-1/workspace/cross-repo.log",
+      "sha256": "698800802e36da896804336a89c210997a156cab5d95ed0de82a2ea29f597444"
+    },
+    {
+      "ref": "runs/baseline/e11-cross-repo-1/workspace/skills-lock.json",
+      "sha256": "6eb953017b73d7c841e3ed0e6a2149492b8b4e787eec345b23fe4e35fac9b906"
+    },
+    {
+      "ref": "runs/baseline/e11-cross-repo-1/workspace/yss-project.yaml",
+      "sha256": "c3c62086b8790b9bd12ed28a1ca18194bbc40d3afc408ac217d21535b20b60aa"
+    },
+    {
+      "ref": "runs/baseline/e11-cross-repo-2/fixture-manifest.json",
+      "sha256": "8fd45eaa95db4a6869a83df42d9cb9e014984306d1569add2468983b174f49b2"
+    },
+    {
+      "ref": "runs/baseline/e11-cross-repo-2/result.json",
+      "sha256": "585f86c5de08d7f26700ae0fc90ac2b140f1a3bdaca621ff643c0ee7d9284cc2"
+    },
+    {
+      "ref": "runs/baseline/e11-cross-repo-2/stderr.log",
+      "sha256": "42d3cc8aafc60182a41f298794d5aaf880dc059b72f4a4b025784597c4ce2138"
+    },
+    {
+      "ref": "runs/baseline/e11-cross-repo-2/step-input-manifest.json",
+      "sha256": "2e529288dd1413fdca3a7f668c48150754891afa0939e2afaca165f5d1a9297d"
+    },
+    {
+      "ref": "runs/baseline/e11-cross-repo-2/step-result.json",
+      "sha256": "254799292a71e9ecaa8db84399cef2b54f44cef6fb46f8cc26c37fe406aa6d3b"
+    },
+    {
+      "ref": "runs/baseline/e11-cross-repo-2/trace.jsonl",
+      "sha256": "be4fec6500cbe2c35d9e565b0e3b8e3b8ea938dfbd5dfaa1babba8ea22e9d50b"
+    },
+    {
+      "ref": "runs/baseline/e11-cross-repo-2/workspace/.eval-commands.jsonl",
+      "sha256": "b87d72e113957d5bc544bb5e25ebb56145d78a7770efbd2f99a5aac4a378fbce"
+    },
+    {
+      "ref": "runs/baseline/e11-cross-repo-2/workspace/AGENTS.md",
+      "sha256": "8cc65d79533beab9b35769f074aca2d1c1b438544c534315b28c632493c3b5b1"
+    },
+    {
+      "ref": "runs/baseline/e11-cross-repo-2/workspace/CONTEXT.md",
+      "sha256": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559"
+    },
+    {
+      "ref": "runs/baseline/e11-cross-repo-2/workspace/DESIGN.md",
+      "sha256": "e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+    },
+    {
+      "ref": "runs/baseline/e11-cross-repo-2/workspace/cross-repo-result.json",
+      "sha256": "be685809f721032c86d3cc34c1f6385b98844c3b012360c0e8372e91102d02f2"
+    },
+    {
+      "ref": "runs/baseline/e11-cross-repo-2/workspace/cross-repo.log",
+      "sha256": "59467993180905fb615315538cc2998edc4464d2a3a3ccb2042b5d8c0f4b5cf4"
+    },
+    {
+      "ref": "runs/baseline/e11-cross-repo-2/workspace/skills-lock.json",
+      "sha256": "6eb953017b73d7c841e3ed0e6a2149492b8b4e787eec345b23fe4e35fac9b906"
+    },
+    {
+      "ref": "runs/baseline/e11-cross-repo-2/workspace/yss-project.yaml",
+      "sha256": "c3c62086b8790b9bd12ed28a1ca18194bbc40d3afc408ac217d21535b20b60aa"
+    },
+    {
+      "ref": "runs/baseline/e12-failed-verification-1/fixture-manifest.json",
+      "sha256": "68648a311084b4caa7bfdd6569ea04a4b2d82c90e322aec9cd642c99f7fda3be"
+    },
+    {
+      "ref": "runs/baseline/e12-failed-verification-1/result.json",
+      "sha256": "2bfa809e0ac632f3c172588b344e6577271a597e0ce5badefec82b0898f3cd81"
+    },
+    {
+      "ref": "runs/baseline/e12-failed-verification-1/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "ref": "runs/baseline/e12-failed-verification-1/step-input-manifest.json",
+      "sha256": "a433117fb586ce10cd96de0e563bdc3a5ed110f0f579f1c34299e7536cc6c97e"
+    },
+    {
+      "ref": "runs/baseline/e12-failed-verification-1/step-result.json",
+      "sha256": "699615552810a50d943fc654554e1664ab7fa365cf4e76b4213f1625e7c3f5a5"
+    },
+    {
+      "ref": "runs/baseline/e12-failed-verification-1/trace.jsonl",
+      "sha256": "b0f768955f66fc8b75d37e4d3e7486a9198380a180c706e81d528266f2325733"
+    },
+    {
+      "ref": "runs/baseline/e12-failed-verification-1/workspace/.eval-commands.jsonl",
+      "sha256": "b87d72e113957d5bc544bb5e25ebb56145d78a7770efbd2f99a5aac4a378fbce"
+    },
+    {
+      "ref": "runs/baseline/e12-failed-verification-1/workspace/AGENTS.md",
+      "sha256": "8cc65d79533beab9b35769f074aca2d1c1b438544c534315b28c632493c3b5b1"
+    },
+    {
+      "ref": "runs/baseline/e12-failed-verification-1/workspace/CONTEXT.md",
+      "sha256": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559"
+    },
+    {
+      "ref": "runs/baseline/e12-failed-verification-1/workspace/DESIGN.md",
+      "sha256": "e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+    },
+    {
+      "ref": "runs/baseline/e12-failed-verification-1/workspace/checks.mjs",
+      "sha256": "54fc09d1953dd61a18a8954087118ef23158ed774623c348a8b19a0ab6ee9ef7"
+    },
+    {
+      "ref": "runs/baseline/e12-failed-verification-1/workspace/delivery-result.json",
+      "sha256": "45adbe48a0f15f9b27db70247ebce3793b980706c2cd4026e00333db86cce3c0"
+    },
+    {
+      "ref": "runs/baseline/e12-failed-verification-1/workspace/skills-lock.json",
+      "sha256": "6eb953017b73d7c841e3ed0e6a2149492b8b4e787eec345b23fe4e35fac9b906"
+    },
+    {
+      "ref": "runs/baseline/e12-failed-verification-1/workspace/verification.md",
+      "sha256": "593ecfc08966aa8358de09c32dbdad3620ae6ccc4723d94210133060ed5b4ef9"
+    },
+    {
+      "ref": "runs/baseline/e12-failed-verification-1/workspace/yss-project.yaml",
+      "sha256": "c3c62086b8790b9bd12ed28a1ca18194bbc40d3afc408ac217d21535b20b60aa"
+    },
+    {
+      "ref": "runs/baseline/e12-failed-verification-2/fixture-manifest.json",
+      "sha256": "dfea8f9a6384c23baf921758d1d4018daba0d14971b42db2adc20b06d625a206"
+    },
+    {
+      "ref": "runs/baseline/e12-failed-verification-2/result.json",
+      "sha256": "6da61ec2a65bdae1430ae55e1e7bf29068a852950fffbf16fad0b27348b2a407"
+    },
+    {
+      "ref": "runs/baseline/e12-failed-verification-2/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "ref": "runs/baseline/e12-failed-verification-2/step-input-manifest.json",
+      "sha256": "a433117fb586ce10cd96de0e563bdc3a5ed110f0f579f1c34299e7536cc6c97e"
+    },
+    {
+      "ref": "runs/baseline/e12-failed-verification-2/step-result.json",
+      "sha256": "4519bc77305846e2037b4ddd4e27cbd23a5e52f7340c7a0124bcf1c243d1d824"
+    },
+    {
+      "ref": "runs/baseline/e12-failed-verification-2/trace.jsonl",
+      "sha256": "94d0f599224ca893185f2e1cf3670441479ba47ed4860164d07b4607a4a2d252"
+    },
+    {
+      "ref": "runs/baseline/e12-failed-verification-2/workspace/.eval-commands.jsonl",
+      "sha256": "b87d72e113957d5bc544bb5e25ebb56145d78a7770efbd2f99a5aac4a378fbce"
+    },
+    {
+      "ref": "runs/baseline/e12-failed-verification-2/workspace/AGENTS.md",
+      "sha256": "8cc65d79533beab9b35769f074aca2d1c1b438544c534315b28c632493c3b5b1"
+    },
+    {
+      "ref": "runs/baseline/e12-failed-verification-2/workspace/CONTEXT.md",
+      "sha256": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559"
+    },
+    {
+      "ref": "runs/baseline/e12-failed-verification-2/workspace/DESIGN.md",
+      "sha256": "e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+    },
+    {
+      "ref": "runs/baseline/e12-failed-verification-2/workspace/checks.mjs",
+      "sha256": "54fc09d1953dd61a18a8954087118ef23158ed774623c348a8b19a0ab6ee9ef7"
+    },
+    {
+      "ref": "runs/baseline/e12-failed-verification-2/workspace/delivery-result.json",
+      "sha256": "4b88958d52eafa32426e2aa7ff9716c5d8bf5f3155a62a44c9df4c90f3e5fd82"
+    },
+    {
+      "ref": "runs/baseline/e12-failed-verification-2/workspace/skills-lock.json",
+      "sha256": "6eb953017b73d7c841e3ed0e6a2149492b8b4e787eec345b23fe4e35fac9b906"
+    },
+    {
+      "ref": "runs/baseline/e12-failed-verification-2/workspace/verification.md",
+      "sha256": "83ab3a7937d9cf4431489ef94ae20b0b3b4ea16fe9f118379653ab44960d0649"
+    },
+    {
+      "ref": "runs/baseline/e12-failed-verification-2/workspace/yss-project.yaml",
+      "sha256": "c3c62086b8790b9bd12ed28a1ca18194bbc40d3afc408ac217d21535b20b60aa"
+    },
+    {
+      "ref": "runs/candidate/e01-status-1/fixture-manifest.json",
+      "sha256": "bb254f700a277c5ab7e69e27cda18dcf56697bf1ca8cd681041384dbbeb0badb"
+    },
+    {
+      "ref": "runs/candidate/e01-status-1/result.json",
+      "sha256": "14a48747cdb98d901717a4ed152a7d7b6be4109286238fef4353e7629c849bf5"
+    },
+    {
+      "ref": "runs/candidate/e01-status-1/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "ref": "runs/candidate/e01-status-1/step-input-manifest.json",
+      "sha256": "5fd9f464cb11a5497dfeeba292e2eb5b59be2b4bbefd35955f47636dd6b49c77"
+    },
+    {
+      "ref": "runs/candidate/e01-status-1/step-result.json",
+      "sha256": "d7c650c7575d12c5dbb5f8621b6e04b61e5ae4e75771b30b2c3b25eab3c37482"
+    },
+    {
+      "ref": "runs/candidate/e01-status-1/trace.jsonl",
+      "sha256": "d227ea62c6ce2e2980c6f21f488fd203f75ecbd2796aae4cc82ec7904bc0d933"
+    },
+    {
+      "ref": "runs/candidate/e01-status-1/workspace/AGENTS.md",
+      "sha256": "73171e25ea9715183a3ebe01d1dd58c4e50a1f1a7a4c527275cbadd1d9a5a1b2"
+    },
+    {
+      "ref": "runs/candidate/e01-status-1/workspace/CONTEXT.md",
+      "sha256": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559"
+    },
+    {
+      "ref": "runs/candidate/e01-status-1/workspace/DESIGN.md",
+      "sha256": "e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+    },
+    {
+      "ref": "runs/candidate/e01-status-1/workspace/assessment.json",
+      "sha256": "6a692b32671595e22e224d276825d983b3b14f99aa895ed3016e9e4590a18c75"
+    },
+    {
+      "ref": "runs/candidate/e01-status-1/workspace/checkpoint.json",
+      "sha256": "c07bae643950ab30962c2967872122fc9f13abc28a5f24f6ab5a8db6ca73cc90"
+    },
+    {
+      "ref": "runs/candidate/e01-status-1/workspace/skills-lock.json",
+      "sha256": "88cf02a9d26e09901e0576f22e3ea9f25e3499b2c13856359f912a6083f6f61f"
+    },
+    {
+      "ref": "runs/candidate/e01-status-1/workspace/yss-project.yaml",
+      "sha256": "c3c62086b8790b9bd12ed28a1ca18194bbc40d3afc408ac217d21535b20b60aa"
+    },
+    {
+      "ref": "runs/candidate/e01-status-2/fixture-manifest.json",
+      "sha256": "4c8e81300cfb7576c1d4ddf2bdf6be78dec9fdad29b2ae4747f4b83d233ca02e"
+    },
+    {
+      "ref": "runs/candidate/e01-status-2/result.json",
+      "sha256": "e9fa84795c1f1bb91ab68be30824d3af24c73b6f275b487497d2f82d5e8c1ffc"
+    },
+    {
+      "ref": "runs/candidate/e01-status-2/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "ref": "runs/candidate/e01-status-2/step-input-manifest.json",
+      "sha256": "5fd9f464cb11a5497dfeeba292e2eb5b59be2b4bbefd35955f47636dd6b49c77"
+    },
+    {
+      "ref": "runs/candidate/e01-status-2/step-result.json",
+      "sha256": "413da109d8d7537701798615c1970497dc0b0589e8247425ccd972f0d8ca24a3"
+    },
+    {
+      "ref": "runs/candidate/e01-status-2/trace.jsonl",
+      "sha256": "49efb5dc6dc418883f8167fc7e4bafc145a22bcf2871b56e34a2fc80c4dec6cc"
+    },
+    {
+      "ref": "runs/candidate/e01-status-2/workspace/AGENTS.md",
+      "sha256": "73171e25ea9715183a3ebe01d1dd58c4e50a1f1a7a4c527275cbadd1d9a5a1b2"
+    },
+    {
+      "ref": "runs/candidate/e01-status-2/workspace/CONTEXT.md",
+      "sha256": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559"
+    },
+    {
+      "ref": "runs/candidate/e01-status-2/workspace/DESIGN.md",
+      "sha256": "e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+    },
+    {
+      "ref": "runs/candidate/e01-status-2/workspace/assessment.json",
+      "sha256": "e281b962365a1a75b0976cf1abd8b5445dfd974a4ec53a09ac7e48abeb11d61e"
+    },
+    {
+      "ref": "runs/candidate/e01-status-2/workspace/checkpoint.json",
+      "sha256": "c07bae643950ab30962c2967872122fc9f13abc28a5f24f6ab5a8db6ca73cc90"
+    },
+    {
+      "ref": "runs/candidate/e01-status-2/workspace/skills-lock.json",
+      "sha256": "88cf02a9d26e09901e0576f22e3ea9f25e3499b2c13856359f912a6083f6f61f"
+    },
+    {
+      "ref": "runs/candidate/e01-status-2/workspace/yss-project.yaml",
+      "sha256": "c3c62086b8790b9bd12ed28a1ca18194bbc40d3afc408ac217d21535b20b60aa"
+    },
+    {
+      "ref": "runs/candidate/e02-template-1/fixture-manifest.json",
+      "sha256": "d7a9d977e328c29e567088903222b66c5acd1efe4bf3d3253faddc6af5e10531"
+    },
+    {
+      "ref": "runs/candidate/e02-template-1/result.json",
+      "sha256": "a58b373c722f419398de898dd0c08bbd1464d607d4c54b823e06f0fa3aaba252"
+    },
+    {
+      "ref": "runs/candidate/e02-template-1/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "ref": "runs/candidate/e02-template-1/step-input-manifest.json",
+      "sha256": "30855fc35841004eba00803539eb9181bd4c0c13c138760f919adc91f52920d3"
+    },
+    {
+      "ref": "runs/candidate/e02-template-1/step-result.json",
+      "sha256": "352624cc45004ae4d11a3ee57aeb49def1f6ecf385d6a562223c0789e61f24e1"
+    },
+    {
+      "ref": "runs/candidate/e02-template-1/trace.jsonl",
+      "sha256": "0a9fc8eabc67fb4bbf1f7f549d1c942939f482c2d7560a370e627e482537eedb"
+    },
+    {
+      "ref": "runs/candidate/e02-template-1/workspace/.eval-commands.jsonl",
+      "sha256": "b87d72e113957d5bc544bb5e25ebb56145d78a7770efbd2f99a5aac4a378fbce"
+    },
+    {
+      "ref": "runs/candidate/e02-template-1/workspace/AGENTS.md",
+      "sha256": "73171e25ea9715183a3ebe01d1dd58c4e50a1f1a7a4c527275cbadd1d9a5a1b2"
+    },
+    {
+      "ref": "runs/candidate/e02-template-1/workspace/CONTEXT.md",
+      "sha256": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559"
+    },
+    {
+      "ref": "runs/candidate/e02-template-1/workspace/DESIGN.md",
+      "sha256": "e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+    },
+    {
+      "ref": "runs/candidate/e02-template-1/workspace/maintenance-plan.md",
+      "sha256": "9cc4caaa493623a377a043899dfd50fdf32b63ee41989e8d2048e80bb77f3765"
+    },
+    {
+      "ref": "runs/candidate/e02-template-1/workspace/skills-lock.json",
+      "sha256": "88cf02a9d26e09901e0576f22e3ea9f25e3499b2c13856359f912a6083f6f61f"
+    },
+    {
+      "ref": "runs/candidate/e02-template-1/workspace/yss-project.yaml",
+      "sha256": "dae2ddacbb024ba25b70a18830fc26ab7d3dcd8aaa361cc8b3767d68307f98af"
+    },
+    {
+      "ref": "runs/candidate/e02-template-2/fixture-manifest.json",
+      "sha256": "6d3403dae2f6b8aae4fb9a2f0a4529e8a3cff088b58a11d7b2cf377674ed89c6"
+    },
+    {
+      "ref": "runs/candidate/e02-template-2/result.json",
+      "sha256": "aaa6fc4d36870ba8d9acf182e85c17c21fb31f99b3c7d547ed1bed6ca1f92707"
+    },
+    {
+      "ref": "runs/candidate/e02-template-2/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "ref": "runs/candidate/e02-template-2/step-input-manifest.json",
+      "sha256": "30855fc35841004eba00803539eb9181bd4c0c13c138760f919adc91f52920d3"
+    },
+    {
+      "ref": "runs/candidate/e02-template-2/step-result.json",
+      "sha256": "a8fcea598f17164bdfa65836cd90514007bc3a73f868e76092940e0c77d6b769"
+    },
+    {
+      "ref": "runs/candidate/e02-template-2/trace.jsonl",
+      "sha256": "66fcc54c2d3b51926eb7140defdc05e40a99b76c24760a77312cd81efd848da1"
+    },
+    {
+      "ref": "runs/candidate/e02-template-2/workspace/.eval-commands.jsonl",
+      "sha256": "b87d72e113957d5bc544bb5e25ebb56145d78a7770efbd2f99a5aac4a378fbce"
+    },
+    {
+      "ref": "runs/candidate/e02-template-2/workspace/AGENTS.md",
+      "sha256": "73171e25ea9715183a3ebe01d1dd58c4e50a1f1a7a4c527275cbadd1d9a5a1b2"
+    },
+    {
+      "ref": "runs/candidate/e02-template-2/workspace/CONTEXT.md",
+      "sha256": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559"
+    },
+    {
+      "ref": "runs/candidate/e02-template-2/workspace/DESIGN.md",
+      "sha256": "e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+    },
+    {
+      "ref": "runs/candidate/e02-template-2/workspace/maintenance-plan.md",
+      "sha256": "61506cd3e3c01abc980d01b20a6615d7fba57613253ed6c1320090a791c45266"
+    },
+    {
+      "ref": "runs/candidate/e02-template-2/workspace/skills-lock.json",
+      "sha256": "88cf02a9d26e09901e0576f22e3ea9f25e3499b2c13856359f912a6083f6f61f"
+    },
+    {
+      "ref": "runs/candidate/e02-template-2/workspace/yss-project.yaml",
+      "sha256": "dae2ddacbb024ba25b70a18830fc26ab7d3dcd8aaa361cc8b3767d68307f98af"
+    },
+    {
+      "ref": "runs/candidate/e03-small-1/fixture-manifest.json",
+      "sha256": "a27f06a03ee5a16902452b17c10451172e018ddf7e3d4075d3690151a556be88"
+    },
+    {
+      "ref": "runs/candidate/e03-small-1/result.json",
+      "sha256": "b23ea1b4270fb60f87889778bdd3d536dba5af5f042bcebb6a1730bc9f00b07a"
+    },
+    {
+      "ref": "runs/candidate/e03-small-1/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "ref": "runs/candidate/e03-small-1/step-input-manifest.json",
+      "sha256": "08ddc73a1c43e7f69e0cdf1764dcc69336ef777851cff8464465fa54c1ad3f0c"
+    },
+    {
+      "ref": "runs/candidate/e03-small-1/step-result.json",
+      "sha256": "7d3efaec1251101fbc5c9afe001e894d3447532b134b5fd1d38a2a5353382a7b"
+    },
+    {
+      "ref": "runs/candidate/e03-small-1/trace.jsonl",
+      "sha256": "ea5388cac8263b5208aa88fd4aa1edd15832383cc62d5dc814480937b365b754"
+    },
+    {
+      "ref": "runs/candidate/e03-small-1/workspace/.eval-commands.jsonl",
+      "sha256": "b87d72e113957d5bc544bb5e25ebb56145d78a7770efbd2f99a5aac4a378fbce"
+    },
+    {
+      "ref": "runs/candidate/e03-small-1/workspace/AGENTS.md",
+      "sha256": "73171e25ea9715183a3ebe01d1dd58c4e50a1f1a7a4c527275cbadd1d9a5a1b2"
+    },
+    {
+      "ref": "runs/candidate/e03-small-1/workspace/CONTEXT.md",
+      "sha256": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559"
+    },
+    {
+      "ref": "runs/candidate/e03-small-1/workspace/DESIGN.md",
+      "sha256": "e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+    },
+    {
+      "ref": "runs/candidate/e03-small-1/workspace/docs/note.md",
+      "sha256": "0e99f2f63ffb852a097d8edaf61c47d6242869e666f862f92c59e1e961b0726a"
+    },
+    {
+      "ref": "runs/candidate/e03-small-1/workspace/skills-lock.json",
+      "sha256": "88cf02a9d26e09901e0576f22e3ea9f25e3499b2c13856359f912a6083f6f61f"
+    },
+    {
+      "ref": "runs/candidate/e03-small-1/workspace/yss-project.yaml",
+      "sha256": "c3c62086b8790b9bd12ed28a1ca18194bbc40d3afc408ac217d21535b20b60aa"
+    },
+    {
+      "ref": "runs/candidate/e03-small-2/fixture-manifest.json",
+      "sha256": "4854df66ed76f3a9333eb1365cf406569f1d27c8e690a0e464d62b780c0dde53"
+    },
+    {
+      "ref": "runs/candidate/e03-small-2/result.json",
+      "sha256": "411165f71e6f3181cb4e59dd28782e8fb6bf6563293eec5b2f30f9972d91c6f6"
+    },
+    {
+      "ref": "runs/candidate/e03-small-2/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "ref": "runs/candidate/e03-small-2/step-input-manifest.json",
+      "sha256": "08ddc73a1c43e7f69e0cdf1764dcc69336ef777851cff8464465fa54c1ad3f0c"
+    },
+    {
+      "ref": "runs/candidate/e03-small-2/step-result.json",
+      "sha256": "4ce5436ed945d944a58a275da42010483bf7cff4aae71b9747ea266bc1f55022"
+    },
+    {
+      "ref": "runs/candidate/e03-small-2/trace.jsonl",
+      "sha256": "a7556b4c5645daf85a065865e915fe75adcdbcf4930c22e39daf10c4bb8d417c"
+    },
+    {
+      "ref": "runs/candidate/e03-small-2/workspace/.eval-commands.jsonl",
+      "sha256": "b87d72e113957d5bc544bb5e25ebb56145d78a7770efbd2f99a5aac4a378fbce"
+    },
+    {
+      "ref": "runs/candidate/e03-small-2/workspace/AGENTS.md",
+      "sha256": "73171e25ea9715183a3ebe01d1dd58c4e50a1f1a7a4c527275cbadd1d9a5a1b2"
+    },
+    {
+      "ref": "runs/candidate/e03-small-2/workspace/CONTEXT.md",
+      "sha256": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559"
+    },
+    {
+      "ref": "runs/candidate/e03-small-2/workspace/DESIGN.md",
+      "sha256": "e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+    },
+    {
+      "ref": "runs/candidate/e03-small-2/workspace/docs/note.md",
+      "sha256": "0e99f2f63ffb852a097d8edaf61c47d6242869e666f862f92c59e1e961b0726a"
+    },
+    {
+      "ref": "runs/candidate/e03-small-2/workspace/skills-lock.json",
+      "sha256": "88cf02a9d26e09901e0576f22e3ea9f25e3499b2c13856359f912a6083f6f61f"
+    },
+    {
+      "ref": "runs/candidate/e03-small-2/workspace/yss-project.yaml",
+      "sha256": "c3c62086b8790b9bd12ed28a1ca18194bbc40d3afc408ac217d21535b20b60aa"
+    },
+    {
+      "ref": "runs/candidate/e04-current-1/fixture-manifest.json",
+      "sha256": "f0d1a1d8308eead94e59a3515fb4ad09cbdf1122d32354d49216c47114ae80a9"
+    },
+    {
+      "ref": "runs/candidate/e04-current-1/result.json",
+      "sha256": "fc195b47a8785c6f50b3dec6d57d0f0b42a80b78202317b1077ff06ec8aa1570"
+    },
+    {
+      "ref": "runs/candidate/e04-current-1/setup.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "ref": "runs/candidate/e04-current-1/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "ref": "runs/candidate/e04-current-1/step-input-manifest.json",
+      "sha256": "4c33ce9d738e6d73fc84c7c262397b4a9ce3dff23c6fa5372ab1d96d1f203b54"
+    },
+    {
+      "ref": "runs/candidate/e04-current-1/step-result.json",
+      "sha256": "1b1e222689c62ee5a233c6f1267d181f56f182585e4ed0565f5cd975d428159c"
+    },
+    {
+      "ref": "runs/candidate/e04-current-1/trace.jsonl",
+      "sha256": "2f8a938b7e31b6a11fbb34d761731606f50921d05d44544da67613317f43c4ea"
+    },
+    {
+      "ref": "runs/candidate/e04-current-1/workspace/.eval-commands.jsonl",
+      "sha256": "b87d72e113957d5bc544bb5e25ebb56145d78a7770efbd2f99a5aac4a378fbce"
+    },
+    {
+      "ref": "runs/candidate/e04-current-1/workspace/AGENTS.md",
+      "sha256": "73171e25ea9715183a3ebe01d1dd58c4e50a1f1a7a4c527275cbadd1d9a5a1b2"
+    },
+    {
+      "ref": "runs/candidate/e04-current-1/workspace/CONTEXT.md",
+      "sha256": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559"
+    },
+    {
+      "ref": "runs/candidate/e04-current-1/workspace/DESIGN.md",
+      "sha256": "e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+    },
+    {
+      "ref": "runs/candidate/e04-current-1/workspace/approval/decision.json",
+      "sha256": "c935d257ee7b6e1d2fc55d50bd1a76add8b5cd6be108b0327729c4001d02749d"
+    },
+    {
+      "ref": "runs/candidate/e04-current-1/workspace/approval/presentation.json",
+      "sha256": "3646c3a70b6ea6c76852d7d3aee83eca26a75efa10fbc6d27cd2d4aee69e597c"
+    },
+    {
+      "ref": "runs/candidate/e04-current-1/workspace/approval/reply-0.json",
+      "sha256": "a9b7669370344dda15f02912d06313468a1b8ae21ea7cd0a18679ac91f15aa7b"
+    },
+    {
+      "ref": "runs/candidate/e04-current-1/workspace/approval/requester.json",
+      "sha256": "386f6a407c9728cae3727a1dc03aa3f79e8b0a7300788cfb7c4747f4ce713055"
+    },
+    {
+      "ref": "runs/candidate/e04-current-1/workspace/docs/.scratch/demo/entry-work-record.md",
+      "sha256": "de31f4d1bbe7feaf39495c0ec92df5441751a2477da245c86b5ca4ac41667b77"
+    },
+    {
+      "ref": "runs/candidate/e04-current-1/workspace/docs/.scratch/demo/parent-ticket.md",
+      "sha256": "0a978ddc8d736960dbd4fe220cdbe168bcf862723cb619f52788db882aec5c3b"
+    },
+    {
+      "ref": "runs/candidate/e04-current-1/workspace/docs/.scratch/demo/spec.md",
+      "sha256": "e0a5fdaf352dece1092fe8f7282aea0d4ab0b4b2e09df17cbf514e95f170c605"
+    },
+    {
+      "ref": "runs/candidate/e04-current-1/workspace/entry-result.json",
+      "sha256": "cf57a828470591633d9ba4bb58a88ddd73b2b097087e909f30303911b1ebd72c"
+    },
+    {
+      "ref": "runs/candidate/e04-current-1/workspace/fixture-setup.mjs",
+      "sha256": "7cb4d6af3b2fb224a9a4c5dc35704353cdf06d04dea0a788447b5b07d579b6ab"
+    },
+    {
+      "ref": "runs/candidate/e04-current-1/workspace/plan.md",
+      "sha256": "43dc051942f0399a5cd55f6f9955a481f08c81be53fa81f8366adf2dbbddcca5"
+    },
+    {
+      "ref": "runs/candidate/e04-current-1/workspace/reconciliation.json",
+      "sha256": "2a5a006460ce761b0df2b855f8fe5626cae0f11495358c1277d246dbd1d96114"
+    },
+    {
+      "ref": "runs/candidate/e04-current-1/workspace/review.json",
+      "sha256": "0ec396441d0db7decaf4119ae1c314eef2e5845b97fe7815f4f4aba9eb756dc7"
+    },
+    {
+      "ref": "runs/candidate/e04-current-1/workspace/skills-lock.json",
+      "sha256": "88cf02a9d26e09901e0576f22e3ea9f25e3499b2c13856359f912a6083f6f61f"
+    },
+    {
+      "ref": "runs/candidate/e04-current-1/workspace/state.json",
+      "sha256": "5786103d6a1592e804aa45d80d8f585ab469a572347fd489de019cd2983150d5"
+    },
+    {
+      "ref": "runs/candidate/e04-current-1/workspace/yss-project.yaml",
+      "sha256": "c3c62086b8790b9bd12ed28a1ca18194bbc40d3afc408ac217d21535b20b60aa"
+    },
+    {
+      "ref": "runs/candidate/e04-current-2/fixture-manifest.json",
+      "sha256": "52ac17cb3612939cad828892777533a17f9f26af9d9d6d2f61d6b9af85a2f9c0"
+    },
+    {
+      "ref": "runs/candidate/e04-current-2/result.json",
+      "sha256": "994b3583e52b988202f6efac2a26c977e9c8fa64a9546f20e7ad6721c250d9fc"
+    },
+    {
+      "ref": "runs/candidate/e04-current-2/setup.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "ref": "runs/candidate/e04-current-2/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "ref": "runs/candidate/e04-current-2/step-input-manifest.json",
+      "sha256": "1cecd196db41f00e64b9e98ad25e1a934944827174a94415c4d7b0e6b0ed0ca4"
+    },
+    {
+      "ref": "runs/candidate/e04-current-2/step-result.json",
+      "sha256": "29056d77650e05f9c02b30af05a61aa504c9c9de33395b0b171b3ffc5f40afdd"
+    },
+    {
+      "ref": "runs/candidate/e04-current-2/trace.jsonl",
+      "sha256": "7bf7dd518609d7987129af5c20bbb306aaabe39093e4720c7099e7f75a5183e9"
+    },
+    {
+      "ref": "runs/candidate/e04-current-2/workspace/.eval-commands.jsonl",
+      "sha256": "b87d72e113957d5bc544bb5e25ebb56145d78a7770efbd2f99a5aac4a378fbce"
+    },
+    {
+      "ref": "runs/candidate/e04-current-2/workspace/AGENTS.md",
+      "sha256": "73171e25ea9715183a3ebe01d1dd58c4e50a1f1a7a4c527275cbadd1d9a5a1b2"
+    },
+    {
+      "ref": "runs/candidate/e04-current-2/workspace/CONTEXT.md",
+      "sha256": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559"
+    },
+    {
+      "ref": "runs/candidate/e04-current-2/workspace/DESIGN.md",
+      "sha256": "e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+    },
+    {
+      "ref": "runs/candidate/e04-current-2/workspace/approval/decision.json",
+      "sha256": "7aaf61681fe51ca539946bf9f4e1fc9c7f769606d84e931e3ed66fb4c9e620d6"
+    },
+    {
+      "ref": "runs/candidate/e04-current-2/workspace/approval/presentation.json",
+      "sha256": "0429f903cea76283bf1c957fe336555bd5e6e794c7bc278c563da213d2f91bba"
+    },
+    {
+      "ref": "runs/candidate/e04-current-2/workspace/approval/reply-0.json",
+      "sha256": "a9b7669370344dda15f02912d06313468a1b8ae21ea7cd0a18679ac91f15aa7b"
+    },
+    {
+      "ref": "runs/candidate/e04-current-2/workspace/approval/requester.json",
+      "sha256": "386f6a407c9728cae3727a1dc03aa3f79e8b0a7300788cfb7c4747f4ce713055"
+    },
+    {
+      "ref": "runs/candidate/e04-current-2/workspace/docs/.scratch/demo/parent-ticket.md",
+      "sha256": "0a978ddc8d736960dbd4fe220cdbe168bcf862723cb619f52788db882aec5c3b"
+    },
+    {
+      "ref": "runs/candidate/e04-current-2/workspace/docs/.scratch/demo/spec.md",
+      "sha256": "51227b73500f0250133b6c1c672064f904eca4262288372bd92096c6f5c7b776"
+    },
+    {
+      "ref": "runs/candidate/e04-current-2/workspace/docs/.scratch/demo/work-record.md",
+      "sha256": "d24482cb2fca611826d94aadac25eb1234b122930c2f65d0f4f59d7a71b35648"
+    },
+    {
+      "ref": "runs/candidate/e04-current-2/workspace/entry-result.json",
+      "sha256": "ece45760ce0950a3e007d0336721dcf6b71a76ec75f2325304c64f8ab77e55db"
+    },
+    {
+      "ref": "runs/candidate/e04-current-2/workspace/fixture-setup.mjs",
+      "sha256": "7cb4d6af3b2fb224a9a4c5dc35704353cdf06d04dea0a788447b5b07d579b6ab"
+    },
+    {
+      "ref": "runs/candidate/e04-current-2/workspace/plan.md",
+      "sha256": "43dc051942f0399a5cd55f6f9955a481f08c81be53fa81f8366adf2dbbddcca5"
+    },
+    {
+      "ref": "runs/candidate/e04-current-2/workspace/reconciliation.json",
+      "sha256": "2a5a006460ce761b0df2b855f8fe5626cae0f11495358c1277d246dbd1d96114"
+    },
+    {
+      "ref": "runs/candidate/e04-current-2/workspace/review.json",
+      "sha256": "0ec396441d0db7decaf4119ae1c314eef2e5845b97fe7815f4f4aba9eb756dc7"
+    },
+    {
+      "ref": "runs/candidate/e04-current-2/workspace/skills-lock.json",
+      "sha256": "88cf02a9d26e09901e0576f22e3ea9f25e3499b2c13856359f912a6083f6f61f"
+    },
+    {
+      "ref": "runs/candidate/e04-current-2/workspace/state.json",
+      "sha256": "5da46d48b07f191908629bf8a040942d507de1355baa4e0742cf98ddd510a1b1"
+    },
+    {
+      "ref": "runs/candidate/e04-current-2/workspace/yss-project.yaml",
+      "sha256": "c3c62086b8790b9bd12ed28a1ca18194bbc40d3afc408ac217d21535b20b60aa"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-1/fixture-manifest.json",
+      "sha256": "1a9560f95b01eac2fd1dcda57dfe1baa20d46aaf03bdd30530e55243d8f679f1"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-1/result.json",
+      "sha256": "434863e5b8ec072d9cfbdffb5aad565186f7da1f4849e16cc9ecb69365345b70"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-1/setup.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-1/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-1/step-input-manifest.json",
+      "sha256": "4472badbfee96abf971566b5af11adb2c087fea6e8e2a8eaafd2a23e1fc56d36"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-1/step-result.json",
+      "sha256": "11176ca788d7d285c550da28a59ccb81924eea7a11faf9c049cd04eb20b47082"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-1/trace.jsonl",
+      "sha256": "51a7636c270084b9de290d6d022b7c0289bfdff503ace61575e311fcca6c3b93"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-1/workspace/.eval-commands.jsonl",
+      "sha256": "b87d72e113957d5bc544bb5e25ebb56145d78a7770efbd2f99a5aac4a378fbce"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-1/workspace/.fixture-authorization/approved-snapshot.md",
+      "sha256": "0fbc82330c451b33e0dd126ab94e4d27472fbff1069354bbb9b0d3c52f6cabdc"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-1/workspace/.fixture-authorization/candidate.json",
+      "sha256": "e3c1e3a14fb942d4dd8590b93aeb27137d3cc8c8b757674d754887302931b629"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-1/workspace/.fixture-authorization/continuation.json",
+      "sha256": "d75168899f16b8d8d87e79074bc8a1d70b32c24ebefac304150e3debf553e3e4"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-1/workspace/.fixture-authorization/decision.json",
+      "sha256": "33ba49ec124a1a6220ed70ee60c8662ba72b246437328524a0d9fc8c8f0aec2f"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-1/workspace/.fixture-authorization/external.json",
+      "sha256": "ae5d4c857b0053f554b1123a3276927bf402123f72c63b066d1fdff6e43b375a"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-1/workspace/.fixture-authorization/mandate.json",
+      "sha256": "3cbbcc6ec9a836cad515d30dc48f526d087b6e1b31ecc142bbd11f331ef35bf2"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-1/workspace/.fixture-authorization/presentation.json",
+      "sha256": "04406300d62afd9587254fe19244b8ef762367a7cc54ec5ab3a633e14b994ae2"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-1/workspace/.fixture-authorization/reply-0.json",
+      "sha256": "a9b7669370344dda15f02912d06313468a1b8ae21ea7cd0a18679ac91f15aa7b"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-1/workspace/.fixture-authorization/requester.json",
+      "sha256": "386f6a407c9728cae3727a1dc03aa3f79e8b0a7300788cfb7c4747f4ce713055"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-1/workspace/.fixture-authorization/review.json",
+      "sha256": "67df00ae7b06e048ca990ead22b1b6e85bc222e15076092d2a287ecc3b1e710f"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-1/workspace/.fixture-authorization/verification.txt",
+      "sha256": "a72896f4433ae1d20963dd045e5ecbdc16be6bea611a0d6ef10c2f3c16876eb3"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-1/workspace/AGENTS.md",
+      "sha256": "73171e25ea9715183a3ebe01d1dd58c4e50a1f1a7a4c527275cbadd1d9a5a1b2"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-1/workspace/CONTEXT.md",
+      "sha256": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-1/workspace/DESIGN.md",
+      "sha256": "e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-1/workspace/approval/decision.json",
+      "sha256": "b3917d542aade03d850398412162e9504f1423a7d7f1cc49682ed4c950c45ad8"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-1/workspace/approval/presentation.json",
+      "sha256": "75bdaa100900c998dfa8a31652b01b9f7885ba440646faf61afd3e8d815f081a"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-1/workspace/approval/reply-0.json",
+      "sha256": "a9b7669370344dda15f02912d06313468a1b8ae21ea7cd0a18679ac91f15aa7b"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-1/workspace/approval/requester.json",
+      "sha256": "386f6a407c9728cae3727a1dc03aa3f79e8b0a7300788cfb7c4747f4ce713055"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-1/workspace/entry-result.json",
+      "sha256": "266003166cefa86d6ce6eac842281c47ad6f73a786ee237285b96f7f46163598"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-1/workspace/fixture-setup.mjs",
+      "sha256": "14124050a7b24b939bfbff60d0c441ec888e22900808e4e0b7d31df44103a7d4"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-1/workspace/plan.md",
+      "sha256": "4df0048d06af0a23facf15dcfe9f2d00ce9e356618475f3e65c9c99a2ac3829e"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-1/workspace/reconciliation.json",
+      "sha256": "2a5a006460ce761b0df2b855f8fe5626cae0f11495358c1277d246dbd1d96114"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-1/workspace/review.json",
+      "sha256": "fc98a8cf945e7c56b9fe8ba25727c164b5407dd1e410af6af8f9dd84cc6ad961"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-1/workspace/skills-lock.json",
+      "sha256": "88cf02a9d26e09901e0576f22e3ea9f25e3499b2c13856359f912a6083f6f61f"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-1/workspace/state.json",
+      "sha256": "38b69e6fe4d9919bb093edda5ad8eb6a8eb82863827dd074189073f4c5588597"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-1/workspace/yss-project.yaml",
+      "sha256": "c3c62086b8790b9bd12ed28a1ca18194bbc40d3afc408ac217d21535b20b60aa"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-2/fixture-manifest.json",
+      "sha256": "7b8f8b0e762d2bd6f7d8d45943b8ff721aa73901355e6dcc0d96e92c43285c45"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-2/result.json",
+      "sha256": "75ccfc90b4da1605e239de6f21c381c0ca8834be79273819f67c91155a7fb552"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-2/setup.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-2/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-2/step-input-manifest.json",
+      "sha256": "a77a5f2d52525d318b8bf20383601251efd86623cd32c0d2519cc67256201b2f"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-2/step-result.json",
+      "sha256": "f8b9581530430efb4a3a33b4bc63acd5a6bbc1a4b6b7006914bf0450da1aa4b9"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-2/trace.jsonl",
+      "sha256": "ccd26e753ee5cce7ac04ddb9db985411e7ff7060c88c261cb3d9b17f529a6091"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-2/workspace/.eval-commands.jsonl",
+      "sha256": "b87d72e113957d5bc544bb5e25ebb56145d78a7770efbd2f99a5aac4a378fbce"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-2/workspace/.fixture-authorization/approved-snapshot.md",
+      "sha256": "0fbc82330c451b33e0dd126ab94e4d27472fbff1069354bbb9b0d3c52f6cabdc"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-2/workspace/.fixture-authorization/candidate.json",
+      "sha256": "e3c1e3a14fb942d4dd8590b93aeb27137d3cc8c8b757674d754887302931b629"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-2/workspace/.fixture-authorization/continuation.json",
+      "sha256": "b75435b570b3efe6708b6e23a9e9e3abffe22bd481cb9bfc4b441eb670b2fb70"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-2/workspace/.fixture-authorization/decision.json",
+      "sha256": "641da5d882b982c6ccb29c970fa304b70988a54f95350647356d020b3bda62c5"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-2/workspace/.fixture-authorization/external.json",
+      "sha256": "ae5d4c857b0053f554b1123a3276927bf402123f72c63b066d1fdff6e43b375a"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-2/workspace/.fixture-authorization/mandate.json",
+      "sha256": "d28175d597453a38781e1b71dcf065c31ff4ae31708c6601b84dac499084f3ec"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-2/workspace/.fixture-authorization/presentation.json",
+      "sha256": "d128d0bc7d2ae9d6fa5dfc47692150e86aef253798cfd9d31b0fcd73f1e0c82d"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-2/workspace/.fixture-authorization/reply-0.json",
+      "sha256": "a9b7669370344dda15f02912d06313468a1b8ae21ea7cd0a18679ac91f15aa7b"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-2/workspace/.fixture-authorization/requester.json",
+      "sha256": "386f6a407c9728cae3727a1dc03aa3f79e8b0a7300788cfb7c4747f4ce713055"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-2/workspace/.fixture-authorization/review.json",
+      "sha256": "2e650d50d16e05613b8b55dfb12eca628465ee5576f62e339ff99c99e34c2ac0"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-2/workspace/.fixture-authorization/verification.txt",
+      "sha256": "a72896f4433ae1d20963dd045e5ecbdc16be6bea611a0d6ef10c2f3c16876eb3"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-2/workspace/AGENTS.md",
+      "sha256": "73171e25ea9715183a3ebe01d1dd58c4e50a1f1a7a4c527275cbadd1d9a5a1b2"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-2/workspace/CONTEXT.md",
+      "sha256": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-2/workspace/DESIGN.md",
+      "sha256": "e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-2/workspace/approval/decision.json",
+      "sha256": "79d110ac3ec978adb7a519998c76466ea6ce477bdc47c0a3c82e60d7f1a658b0"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-2/workspace/approval/presentation.json",
+      "sha256": "a54b17fd7c4edd357c49ab8ac10318ecbe3f9bd82ad211d038abe404da312b2a"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-2/workspace/approval/reply-0.json",
+      "sha256": "a9b7669370344dda15f02912d06313468a1b8ae21ea7cd0a18679ac91f15aa7b"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-2/workspace/approval/requester.json",
+      "sha256": "386f6a407c9728cae3727a1dc03aa3f79e8b0a7300788cfb7c4747f4ce713055"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-2/workspace/entry-result.json",
+      "sha256": "06a88503a1d2f625e46ed42665c9a7e1130fd7eef6d13cbc4f515a2578b8ed64"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-2/workspace/fixture-setup.mjs",
+      "sha256": "14124050a7b24b939bfbff60d0c441ec888e22900808e4e0b7d31df44103a7d4"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-2/workspace/plan.md",
+      "sha256": "4df0048d06af0a23facf15dcfe9f2d00ce9e356618475f3e65c9c99a2ac3829e"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-2/workspace/reconciliation.json",
+      "sha256": "2a5a006460ce761b0df2b855f8fe5626cae0f11495358c1277d246dbd1d96114"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-2/workspace/review.json",
+      "sha256": "fc98a8cf945e7c56b9fe8ba25727c164b5407dd1e410af6af8f9dd84cc6ad961"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-2/workspace/skills-lock.json",
+      "sha256": "88cf02a9d26e09901e0576f22e3ea9f25e3499b2c13856359f912a6083f6f61f"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-2/workspace/state.json",
+      "sha256": "8bc1171e71edd9f2578d8a7b8c5ff062881c1a8d34f72365724b39adb0e8a4e1"
+    },
+    {
+      "ref": "runs/candidate/e05-continuation-2/workspace/yss-project.yaml",
+      "sha256": "c3c62086b8790b9bd12ed28a1ca18194bbc40d3afc408ac217d21535b20b60aa"
+    },
+    {
+      "ref": "runs/candidate/e06-expanded-1/fixture-manifest.json",
+      "sha256": "0702520673f76481fe94c46c04c62575eb205b728dad912041b0ecc8e898a0a9"
+    },
+    {
+      "ref": "runs/candidate/e06-expanded-1/result.json",
+      "sha256": "cb2ed7a3a9a05822c4dc6181455f138d9604d4f24a3f848ff3e1487a3ff1268f"
+    },
+    {
+      "ref": "runs/candidate/e06-expanded-1/setup.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "ref": "runs/candidate/e06-expanded-1/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "ref": "runs/candidate/e06-expanded-1/step-input-manifest.json",
+      "sha256": "20e9349067702df001bf055598bdaab6a06e97f41754da0f4dfebb7cbd4d7b6e"
+    },
+    {
+      "ref": "runs/candidate/e06-expanded-1/step-result.json",
+      "sha256": "1242a0aa0ac5415d3129b2091e760fcdbf20e807e8dcb0966aa96b51001357c0"
+    },
+    {
+      "ref": "runs/candidate/e06-expanded-1/trace.jsonl",
+      "sha256": "6a2b71841a6d72451edae36408e9018f36e5adaf056ce37ea3bd9027534141e4"
+    },
+    {
+      "ref": "runs/candidate/e06-expanded-1/workspace/.eval-commands.jsonl",
+      "sha256": "b87d72e113957d5bc544bb5e25ebb56145d78a7770efbd2f99a5aac4a378fbce"
+    },
+    {
+      "ref": "runs/candidate/e06-expanded-1/workspace/AGENTS.md",
+      "sha256": "73171e25ea9715183a3ebe01d1dd58c4e50a1f1a7a4c527275cbadd1d9a5a1b2"
+    },
+    {
+      "ref": "runs/candidate/e06-expanded-1/workspace/CONTEXT.md",
+      "sha256": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559"
+    },
+    {
+      "ref": "runs/candidate/e06-expanded-1/workspace/DESIGN.md",
+      "sha256": "e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+    },
+    {
+      "ref": "runs/candidate/e06-expanded-1/workspace/approval/decision.json",
+      "sha256": "eeebca592b01023537152bff6cd5e1014a365eda68b774fb5de1fadc687bd698"
+    },
+    {
+      "ref": "runs/candidate/e06-expanded-1/workspace/approval/presentation.json",
+      "sha256": "e8cd7dc74839066559449636ae5301508bc8e1706922928c0a3212e68aca8c77"
+    },
+    {
+      "ref": "runs/candidate/e06-expanded-1/workspace/approval/reply-0.json",
+      "sha256": "a9b7669370344dda15f02912d06313468a1b8ae21ea7cd0a18679ac91f15aa7b"
+    },
+    {
+      "ref": "runs/candidate/e06-expanded-1/workspace/approval/requester.json",
+      "sha256": "386f6a407c9728cae3727a1dc03aa3f79e8b0a7300788cfb7c4747f4ce713055"
+    },
+    {
+      "ref": "runs/candidate/e06-expanded-1/workspace/docs/.scratch/demo/parent-ticket.md",
+      "sha256": "0a978ddc8d736960dbd4fe220cdbe168bcf862723cb619f52788db882aec5c3b"
+    },
+    {
+      "ref": "runs/candidate/e06-expanded-1/workspace/entry-result.json",
+      "sha256": "cb4826c34172932471a176914f804c3add6b1d9013c5a937d3d2c202d40b419b"
+    },
+    {
+      "ref": "runs/candidate/e06-expanded-1/workspace/fixture-setup.mjs",
+      "sha256": "8f3c8cc73d76f037a67863879c2e2e335f4b0e6d058d29d1db3eec4d57475c67"
+    },
+    {
+      "ref": "runs/candidate/e06-expanded-1/workspace/plan.md",
+      "sha256": "198540f2a27063c82095c9178c975c8739ed91cad8ea80dd422accd6a2c48ca6"
+    },
+    {
+      "ref": "runs/candidate/e06-expanded-1/workspace/reconciliation.json",
+      "sha256": "2a5a006460ce761b0df2b855f8fe5626cae0f11495358c1277d246dbd1d96114"
+    },
+    {
+      "ref": "runs/candidate/e06-expanded-1/workspace/review.json",
+      "sha256": "0ec396441d0db7decaf4119ae1c314eef2e5845b97fe7815f4f4aba9eb756dc7"
+    },
+    {
+      "ref": "runs/candidate/e06-expanded-1/workspace/skills-lock.json",
+      "sha256": "88cf02a9d26e09901e0576f22e3ea9f25e3499b2c13856359f912a6083f6f61f"
+    },
+    {
+      "ref": "runs/candidate/e06-expanded-1/workspace/state.json",
+      "sha256": "19df4afbf95d8dccf28a021f66c2b5d6f803a9ff8ab74967aec9062866ff0fe4"
+    },
+    {
+      "ref": "runs/candidate/e06-expanded-1/workspace/yss-project.yaml",
+      "sha256": "c3c62086b8790b9bd12ed28a1ca18194bbc40d3afc408ac217d21535b20b60aa"
+    },
+    {
+      "ref": "runs/candidate/e06-expanded-2/fixture-manifest.json",
+      "sha256": "92e989067e825646f60b18ecefe03f975f0134e67a76ec64a843af3ecaadf4d3"
+    },
+    {
+      "ref": "runs/candidate/e06-expanded-2/result.json",
+      "sha256": "bcbd59a7fc8d9b1842f99c7e1e751e2d33ab5d27aa8ce3e138d8be3c06dca649"
+    },
+    {
+      "ref": "runs/candidate/e06-expanded-2/setup.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "ref": "runs/candidate/e06-expanded-2/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "ref": "runs/candidate/e06-expanded-2/step-input-manifest.json",
+      "sha256": "742f736d3805dffa598bcfb80dc6dfde7094dfbba36f811cefc85b5734255ec7"
+    },
+    {
+      "ref": "runs/candidate/e06-expanded-2/step-result.json",
+      "sha256": "f54237cb97ebb9f0b0fafc8139ac83db4c0036e79d562be43c508cbf6f6dbba8"
+    },
+    {
+      "ref": "runs/candidate/e06-expanded-2/trace.jsonl",
+      "sha256": "50fd7ced8cd4d48b807fd590b9c1520c1d7077b2174ad81c2326d821826e16ad"
+    },
+    {
+      "ref": "runs/candidate/e06-expanded-2/workspace/.eval-commands.jsonl",
+      "sha256": "b87d72e113957d5bc544bb5e25ebb56145d78a7770efbd2f99a5aac4a378fbce"
+    },
+    {
+      "ref": "runs/candidate/e06-expanded-2/workspace/AGENTS.md",
+      "sha256": "73171e25ea9715183a3ebe01d1dd58c4e50a1f1a7a4c527275cbadd1d9a5a1b2"
+    },
+    {
+      "ref": "runs/candidate/e06-expanded-2/workspace/CONTEXT.md",
+      "sha256": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559"
+    },
+    {
+      "ref": "runs/candidate/e06-expanded-2/workspace/DESIGN.md",
+      "sha256": "e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+    },
+    {
+      "ref": "runs/candidate/e06-expanded-2/workspace/approval/decision.json",
+      "sha256": "ee2079b116c81cd49d16f7ab385e74da4767c322c19f7ee4348cfc0f168edf6c"
+    },
+    {
+      "ref": "runs/candidate/e06-expanded-2/workspace/approval/presentation.json",
+      "sha256": "3aca558c40a0cf8ff924f6f99ab31ad2c9ba5f592ef1e3b142a4c17cf51de392"
+    },
+    {
+      "ref": "runs/candidate/e06-expanded-2/workspace/approval/reply-0.json",
+      "sha256": "a9b7669370344dda15f02912d06313468a1b8ae21ea7cd0a18679ac91f15aa7b"
+    },
+    {
+      "ref": "runs/candidate/e06-expanded-2/workspace/approval/requester.json",
+      "sha256": "386f6a407c9728cae3727a1dc03aa3f79e8b0a7300788cfb7c4747f4ce713055"
+    },
+    {
+      "ref": "runs/candidate/e06-expanded-2/workspace/docs/.scratch/demo/parent-ticket.md",
+      "sha256": "0a978ddc8d736960dbd4fe220cdbe168bcf862723cb619f52788db882aec5c3b"
+    },
+    {
+      "ref": "runs/candidate/e06-expanded-2/workspace/entry-result.json",
+      "sha256": "035fccd39c96c7ed6e28e244736bc7ca1b69d0bd645a134db92dedd8b1a63cf1"
+    },
+    {
+      "ref": "runs/candidate/e06-expanded-2/workspace/fixture-setup.mjs",
+      "sha256": "8f3c8cc73d76f037a67863879c2e2e335f4b0e6d058d29d1db3eec4d57475c67"
+    },
+    {
+      "ref": "runs/candidate/e06-expanded-2/workspace/plan.md",
+      "sha256": "198540f2a27063c82095c9178c975c8739ed91cad8ea80dd422accd6a2c48ca6"
+    },
+    {
+      "ref": "runs/candidate/e06-expanded-2/workspace/reconciliation.json",
+      "sha256": "2a5a006460ce761b0df2b855f8fe5626cae0f11495358c1277d246dbd1d96114"
+    },
+    {
+      "ref": "runs/candidate/e06-expanded-2/workspace/review.json",
+      "sha256": "0ec396441d0db7decaf4119ae1c314eef2e5845b97fe7815f4f4aba9eb756dc7"
+    },
+    {
+      "ref": "runs/candidate/e06-expanded-2/workspace/skills-lock.json",
+      "sha256": "88cf02a9d26e09901e0576f22e3ea9f25e3499b2c13856359f912a6083f6f61f"
+    },
+    {
+      "ref": "runs/candidate/e06-expanded-2/workspace/state.json",
+      "sha256": "cbb213ed22aa13ec25c6bfd0f96a311366a8c3f2069dc80eed1cd6b1b2a9715e"
+    },
+    {
+      "ref": "runs/candidate/e06-expanded-2/workspace/yss-project.yaml",
+      "sha256": "c3c62086b8790b9bd12ed28a1ca18194bbc40d3afc408ac217d21535b20b60aa"
+    },
+    {
+      "ref": "runs/candidate/e07-mvc-1/fixture-manifest.json",
+      "sha256": "8b85e8bb465dc44703605013f63b4433d15da51e79d447e77de03ca77a8ab7b5"
+    },
+    {
+      "ref": "runs/candidate/e07-mvc-1/result.json",
+      "sha256": "89ab80ceff02a6cfaf44bf2e950a3c8450e3f1db3d57413fbf9c967e4beedc22"
+    },
+    {
+      "ref": "runs/candidate/e07-mvc-1/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "ref": "runs/candidate/e07-mvc-1/step-input-manifest.json",
+      "sha256": "3efd9c343a32cacd647b5ff7eb4cd058efb22023d87ee8dc5ef61a7bba3d6ca7"
+    },
+    {
+      "ref": "runs/candidate/e07-mvc-1/step-result.json",
+      "sha256": "83faaa6cfb74e99aea22cc706b84acbdc84f8f333ab19e909730bdb91664b8e6"
+    },
+    {
+      "ref": "runs/candidate/e07-mvc-1/trace.jsonl",
+      "sha256": "5657f5b59171accbc988a50e2614c85037120ffc34a0d4416389883960d0f18d"
+    },
+    {
+      "ref": "runs/candidate/e07-mvc-1/workspace/.eval-commands.jsonl",
+      "sha256": "b87d72e113957d5bc544bb5e25ebb56145d78a7770efbd2f99a5aac4a378fbce"
+    },
+    {
+      "ref": "runs/candidate/e07-mvc-1/workspace/AGENTS.md",
+      "sha256": "73171e25ea9715183a3ebe01d1dd58c4e50a1f1a7a4c527275cbadd1d9a5a1b2"
+    },
+    {
+      "ref": "runs/candidate/e07-mvc-1/workspace/CONTEXT.md",
+      "sha256": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559"
+    },
+    {
+      "ref": "runs/candidate/e07-mvc-1/workspace/DESIGN.md",
+      "sha256": "e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+    },
+    {
+      "ref": "runs/candidate/e07-mvc-1/workspace/api-check.json",
+      "sha256": "a55b421a41e64b97e12dab10aa417de117624cb4f4faad50952278ad4484b30f"
+    },
+    {
+      "ref": "runs/candidate/e07-mvc-1/workspace/engineering-baseline.md",
+      "sha256": "020c12eaa41c6930cbc3b012058ea56b9630154489daad5a75afce72e978b758"
+    },
+    {
+      "ref": "runs/candidate/e07-mvc-1/workspace/skills-lock.json",
+      "sha256": "88cf02a9d26e09901e0576f22e3ea9f25e3499b2c13856359f912a6083f6f61f"
+    },
+    {
+      "ref": "runs/candidate/e07-mvc-1/workspace/technical-plan.md",
+      "sha256": "1ba710138e9c61b285ea5fedd01131f817ed171e65a1def7ea97a19eaf9aacbf"
+    },
+    {
+      "ref": "runs/candidate/e07-mvc-1/workspace/yss-project.yaml",
+      "sha256": "c3c62086b8790b9bd12ed28a1ca18194bbc40d3afc408ac217d21535b20b60aa"
+    },
+    {
+      "ref": "runs/candidate/e07-mvc-2/fixture-manifest.json",
+      "sha256": "28a49480cd864200b927f9faf17df052bc864b29a2a09b8c80f50798dfb0246b"
+    },
+    {
+      "ref": "runs/candidate/e07-mvc-2/result.json",
+      "sha256": "ce3197df9da608b7fc885cd7bb98cd39eb7095fb504bf596f729df7245cd17e7"
+    },
+    {
+      "ref": "runs/candidate/e07-mvc-2/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "ref": "runs/candidate/e07-mvc-2/step-input-manifest.json",
+      "sha256": "3efd9c343a32cacd647b5ff7eb4cd058efb22023d87ee8dc5ef61a7bba3d6ca7"
+    },
+    {
+      "ref": "runs/candidate/e07-mvc-2/step-result.json",
+      "sha256": "6703088a6b9aa338becd4fede4c559fb0a56b6bee8443cc1220ee423ac99bf24"
+    },
+    {
+      "ref": "runs/candidate/e07-mvc-2/trace.jsonl",
+      "sha256": "9f201c62d936d7619f611d2b8371e3d17de45c58f6f1295fe2fda5a4c7b71a94"
+    },
+    {
+      "ref": "runs/candidate/e07-mvc-2/workspace/.eval-commands.jsonl",
+      "sha256": "b87d72e113957d5bc544bb5e25ebb56145d78a7770efbd2f99a5aac4a378fbce"
+    },
+    {
+      "ref": "runs/candidate/e07-mvc-2/workspace/AGENTS.md",
+      "sha256": "73171e25ea9715183a3ebe01d1dd58c4e50a1f1a7a4c527275cbadd1d9a5a1b2"
+    },
+    {
+      "ref": "runs/candidate/e07-mvc-2/workspace/CONTEXT.md",
+      "sha256": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559"
+    },
+    {
+      "ref": "runs/candidate/e07-mvc-2/workspace/DESIGN.md",
+      "sha256": "e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+    },
+    {
+      "ref": "runs/candidate/e07-mvc-2/workspace/api-check.json",
+      "sha256": "f66758612e762c41bcdc6a1ae84e4504052a753910e2eacbf806bddf9183b187"
+    },
+    {
+      "ref": "runs/candidate/e07-mvc-2/workspace/engineering-baseline.md",
+      "sha256": "020c12eaa41c6930cbc3b012058ea56b9630154489daad5a75afce72e978b758"
+    },
+    {
+      "ref": "runs/candidate/e07-mvc-2/workspace/skills-lock.json",
+      "sha256": "88cf02a9d26e09901e0576f22e3ea9f25e3499b2c13856359f912a6083f6f61f"
+    },
+    {
+      "ref": "runs/candidate/e07-mvc-2/workspace/technical-plan.md",
+      "sha256": "4b4fd032294873006cbf2e8a3de2cdabb5f92eef266bc73b3e077a80b0c4c829"
+    },
+    {
+      "ref": "runs/candidate/e07-mvc-2/workspace/yss-project.yaml",
+      "sha256": "c3c62086b8790b9bd12ed28a1ca18194bbc40d3afc408ac217d21535b20b60aa"
+    },
+    {
+      "ref": "runs/candidate/e08-ui-1/fixture-manifest.json",
+      "sha256": "0bfe6162ace3930404c306fff3cb15949be67a4b50a9cd6c99411c6264f50052"
+    },
+    {
+      "ref": "runs/candidate/e08-ui-1/result.json",
+      "sha256": "399feab5c700592c3b90a2ec66de53b0ada2c87f5272b30faaf31f18e7b84720"
+    },
+    {
+      "ref": "runs/candidate/e08-ui-1/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "ref": "runs/candidate/e08-ui-1/step-input-manifest.json",
+      "sha256": "9576c215a10d733ef97b5ac6a8a3f13600b8f269b38bf572b54bb0f9e42f1cde"
+    },
+    {
+      "ref": "runs/candidate/e08-ui-1/step-result.json",
+      "sha256": "594fee50906fd9563ec0d1e4781585b540101b3811c89fa42d4bc6052a159a6a"
+    },
+    {
+      "ref": "runs/candidate/e08-ui-1/trace.jsonl",
+      "sha256": "41cc64d8122f34d706fbb5c08f3653c6fb7a36d754cda401fd451a6478861c7d"
+    },
+    {
+      "ref": "runs/candidate/e08-ui-1/workspace/AGENTS.md",
+      "sha256": "73171e25ea9715183a3ebe01d1dd58c4e50a1f1a7a4c527275cbadd1d9a5a1b2"
+    },
+    {
+      "ref": "runs/candidate/e08-ui-1/workspace/CONTEXT.md",
+      "sha256": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559"
+    },
+    {
+      "ref": "runs/candidate/e08-ui-1/workspace/DESIGN.md",
+      "sha256": "e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+    },
+    {
+      "ref": "runs/candidate/e08-ui-1/workspace/fixture-spec.md",
+      "sha256": "5ee8672acc6f327e4932187f16023d2a0d544428ee3c7d442824ef761b6a6d69"
+    },
+    {
+      "ref": "runs/candidate/e08-ui-1/workspace/skills-lock.json",
+      "sha256": "88cf02a9d26e09901e0576f22e3ea9f25e3499b2c13856359f912a6083f6f61f"
+    },
+    {
+      "ref": "runs/candidate/e08-ui-1/workspace/yss-project.yaml",
+      "sha256": "c3c62086b8790b9bd12ed28a1ca18194bbc40d3afc408ac217d21535b20b60aa"
+    },
+    {
+      "ref": "runs/candidate/e08-ui-2/fixture-manifest.json",
+      "sha256": "31ade28e8dcf33bc3c77d8d88362f78504d6bc750f6e14867fc20ec5f68c56de"
+    },
+    {
+      "ref": "runs/candidate/e08-ui-2/result.json",
+      "sha256": "569526e72297d8a371393eb0416b71d0f8400cdae39c760becdb3cf2816e1672"
+    },
+    {
+      "ref": "runs/candidate/e08-ui-2/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "ref": "runs/candidate/e08-ui-2/step-input-manifest.json",
+      "sha256": "9576c215a10d733ef97b5ac6a8a3f13600b8f269b38bf572b54bb0f9e42f1cde"
+    },
+    {
+      "ref": "runs/candidate/e08-ui-2/step-result.json",
+      "sha256": "eb7f8ed5f6ebad9f68596ea55d3caee48d8c528968cc024ac59666744923c830"
+    },
+    {
+      "ref": "runs/candidate/e08-ui-2/trace.jsonl",
+      "sha256": "f02a3910c612fa7160c5e3a663585206e2e3bbfae9e964c081b8f6601a40e515"
+    },
+    {
+      "ref": "runs/candidate/e08-ui-2/workspace/AGENTS.md",
+      "sha256": "73171e25ea9715183a3ebe01d1dd58c4e50a1f1a7a4c527275cbadd1d9a5a1b2"
+    },
+    {
+      "ref": "runs/candidate/e08-ui-2/workspace/CONTEXT.md",
+      "sha256": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559"
+    },
+    {
+      "ref": "runs/candidate/e08-ui-2/workspace/DESIGN.md",
+      "sha256": "e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+    },
+    {
+      "ref": "runs/candidate/e08-ui-2/workspace/fixture-spec.md",
+      "sha256": "5ee8672acc6f327e4932187f16023d2a0d544428ee3c7d442824ef761b6a6d69"
+    },
+    {
+      "ref": "runs/candidate/e08-ui-2/workspace/skills-lock.json",
+      "sha256": "88cf02a9d26e09901e0576f22e3ea9f25e3499b2c13856359f912a6083f6f61f"
+    },
+    {
+      "ref": "runs/candidate/e08-ui-2/workspace/yss-project.yaml",
+      "sha256": "c3c62086b8790b9bd12ed28a1ca18194bbc40d3afc408ac217d21535b20b60aa"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-1/fixture-manifest.json",
+      "sha256": "3592b90d032fde2c221979c086daed6f198db8ec737f20c402051e6f52bf3d30"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-1/initial/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-1/initial/step-input-manifest.json",
+      "sha256": "bfd8ad9700aa7cf746283764a1cfdd4857bbae83a47934beaab1b7df7116ce5b"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-1/initial/step-result.json",
+      "sha256": "929625042d1c8e77be0937a8a4ff4be327d3679d7bb7c6097832bc23a940ec20"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-1/initial/trace.jsonl",
+      "sha256": "a9a139aa2cfb12e5deffd453e214c0a730636a90d60b253d43b59b0a180871d6"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-1/result.json",
+      "sha256": "7e71e7b1188daa2fe6a5cfdfb6911e4cdddd3b438bf36c1273b50ec1fa1fcd59"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-1/resume/stderr.log",
+      "sha256": "d477bec5fa06cc421021d0c5c9c1af348851207be30900e3426b89647f857be6"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-1/resume/step-input-manifest.json",
+      "sha256": "d92e006aa036295fef66954532f5b2cb7492c0029a496d0175c839c3c6401ba3"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-1/resume/step-result.json",
+      "sha256": "d7a854cf9ffe4f5e3851b3cb5dca3e2c24c60bbfa9631a940b9b3cf8de1e032f"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-1/resume/trace.jsonl",
+      "sha256": "7ba013b09b3bfbd6a398d11ea0a98dd8f4010f88cfbb8b4449971d2343889d70"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-1/setup.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-1/workspace/.eval-commands.jsonl",
+      "sha256": "fe67767aa050957f475ed9767c58381fac6cb949e3a7d28b37da9ddc7eee9f3c"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-1/workspace/AGENTS.md",
+      "sha256": "73171e25ea9715183a3ebe01d1dd58c4e50a1f1a7a4c527275cbadd1d9a5a1b2"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-1/workspace/CONTEXT.md",
+      "sha256": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-1/workspace/DESIGN.md",
+      "sha256": "e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-1/workspace/approval/decision.json",
+      "sha256": "92d8be7946506b49a185a0279271212aba4e5d8c4c43f34c6c486e65b25f47ad"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-1/workspace/approval/presentation.json",
+      "sha256": "3ee30caf73a7ce2b6e82425d705bbfa54045c61f32600c93b9f67029917ff1ab"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-1/workspace/approval/reply-0.json",
+      "sha256": "a9b7669370344dda15f02912d06313468a1b8ae21ea7cd0a18679ac91f15aa7b"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-1/workspace/approval/requester.json",
+      "sha256": "386f6a407c9728cae3727a1dc03aa3f79e8b0a7300788cfb7c4747f4ce713055"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-1/workspace/docs/.scratch/demo/parent-ticket.md",
+      "sha256": "0a978ddc8d736960dbd4fe220cdbe168bcf862723cb619f52788db882aec5c3b"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-1/workspace/docs/.scratch/demo/spec.md",
+      "sha256": "003bacc269871f3c8320e7296be62878ec5468860337fc5fb625f16448f7b181"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-1/workspace/docs/.scratch/demo/work-record.md",
+      "sha256": "f655cda1022935786ee2af64d2c1da10580a5ffb86bf5dc81d8b8c5dbdc447f2"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-1/workspace/entry-result.json",
+      "sha256": "5dfeae0961bcd51a8ff146105280f71059157830c14f0f0406c113f011481789"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-1/workspace/fixture-setup.mjs",
+      "sha256": "7cb4d6af3b2fb224a9a4c5dc35704353cdf06d04dea0a788447b5b07d579b6ab"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-1/workspace/plan.md",
+      "sha256": "4e49a6b9bfa18e24ea195212063189e98dc044c5c25e5fa6af61e71ef58c1551"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-1/workspace/reconciliation.json",
+      "sha256": "2a5a006460ce761b0df2b855f8fe5626cae0f11495358c1277d246dbd1d96114"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-1/workspace/resume-result.json",
+      "sha256": "2925eff070790a03326acbc2fc3c1192de7266e019118d52c3bb708916d03182"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-1/workspace/review.json",
+      "sha256": "0ec396441d0db7decaf4119ae1c314eef2e5845b97fe7815f4f4aba9eb756dc7"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-1/workspace/skills-lock.json",
+      "sha256": "88cf02a9d26e09901e0576f22e3ea9f25e3499b2c13856359f912a6083f6f61f"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-1/workspace/state.json",
+      "sha256": "c153507b972b06fd8e55ece2e57b1c762460b267e7cea208c143f8b1b38c8aa2"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-1/workspace/yss-project.yaml",
+      "sha256": "c3c62086b8790b9bd12ed28a1ca18194bbc40d3afc408ac217d21535b20b60aa"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-2/fixture-manifest.json",
+      "sha256": "1669f4721686db42416932b943a322b998aa1f1ca835b45027a3bc23319523ba"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-2/initial/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-2/initial/step-input-manifest.json",
+      "sha256": "fe10ca62a323450c3bace7825e8c44f0ae5420c66cf3e00852977251fb1af40e"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-2/initial/step-result.json",
+      "sha256": "0c78b4537c9eb5aee3be8f62f5c89fd3c5c42f2bcd47c99a277e92a4c5065199"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-2/initial/trace.jsonl",
+      "sha256": "e68a31be99502da9974f49962e0b5e0496ac521e7eaebfcadff9dec049910ee6"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-2/result.json",
+      "sha256": "2f63a307d4805a069e70278056425df39e836f4538b56a95566361cbbb214472"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-2/resume/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-2/resume/step-input-manifest.json",
+      "sha256": "b3c2e5b63898b2385af10834efcc1dfba371555420288d024437c9f11b93ad41"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-2/resume/step-result.json",
+      "sha256": "f6884f46817ede63b2c48b33f4d6b3ade0fe76919b625a622de3372a7c121016"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-2/resume/trace.jsonl",
+      "sha256": "869ddbb4f31f90abef5212f1a1dbf4e0a3bd7db39332177ce9d71d75f4eb1563"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-2/setup.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-2/workspace/.eval-commands.jsonl",
+      "sha256": "fe67767aa050957f475ed9767c58381fac6cb949e3a7d28b37da9ddc7eee9f3c"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-2/workspace/AGENTS.md",
+      "sha256": "73171e25ea9715183a3ebe01d1dd58c4e50a1f1a7a4c527275cbadd1d9a5a1b2"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-2/workspace/CONTEXT.md",
+      "sha256": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-2/workspace/DESIGN.md",
+      "sha256": "e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-2/workspace/approval/decision.json",
+      "sha256": "bcba1aa4b8a2dd1cece222f621cf89358b554f2613dee717246495f274d67e38"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-2/workspace/approval/presentation.json",
+      "sha256": "afac21babb1590c985c5aadfc83e649bd33b6236768ad7fe2f1dc02aaeb03b75"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-2/workspace/approval/reply-0.json",
+      "sha256": "a9b7669370344dda15f02912d06313468a1b8ae21ea7cd0a18679ac91f15aa7b"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-2/workspace/approval/requester.json",
+      "sha256": "386f6a407c9728cae3727a1dc03aa3f79e8b0a7300788cfb7c4747f4ce713055"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-2/workspace/docs/.scratch/demo/entry-work-record.md",
+      "sha256": "6db35c0e200a87e3818ac4b5acf52537893e17ecac95c4b2b14804cf80d57544"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-2/workspace/docs/.scratch/demo/parent-ticket.md",
+      "sha256": "0a978ddc8d736960dbd4fe220cdbe168bcf862723cb619f52788db882aec5c3b"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-2/workspace/docs/.scratch/demo/spec.md",
+      "sha256": "98f01886b2806dec4400efffb233972ed58739ba7c68c9afade753783802891f"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-2/workspace/entry-result.json",
+      "sha256": "ee40ec345d7f4aefeaed5a20847b38d2e999a51378edd5e8fcf83d7063d3e73d"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-2/workspace/fixture-setup.mjs",
+      "sha256": "7cb4d6af3b2fb224a9a4c5dc35704353cdf06d04dea0a788447b5b07d579b6ab"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-2/workspace/plan.md",
+      "sha256": "4e49a6b9bfa18e24ea195212063189e98dc044c5c25e5fa6af61e71ef58c1551"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-2/workspace/reconciliation.json",
+      "sha256": "2a5a006460ce761b0df2b855f8fe5626cae0f11495358c1277d246dbd1d96114"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-2/workspace/resume-result.json",
+      "sha256": "41637d375c89f5e495b1b77181bf569ceea38262e03804528c8fccd8ccee82f3"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-2/workspace/review.json",
+      "sha256": "0ec396441d0db7decaf4119ae1c314eef2e5845b97fe7815f4f4aba9eb756dc7"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-2/workspace/skills-lock.json",
+      "sha256": "88cf02a9d26e09901e0576f22e3ea9f25e3499b2c13856359f912a6083f6f61f"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-2/workspace/state.json",
+      "sha256": "dc89c8c105ee86a2b66c722364284565956a3df14b5b8487673f39af7eaf466a"
+    },
+    {
+      "ref": "runs/candidate/e09-resume-drift-2/workspace/yss-project.yaml",
+      "sha256": "c3c62086b8790b9bd12ed28a1ca18194bbc40d3afc408ac217d21535b20b60aa"
+    },
+    {
+      "ref": "runs/candidate/e10-running-1/fixture-manifest.json",
+      "sha256": "dc468bd1c7bcc32f41a5fd2d74f270398ba9156d6521697eca0c16b3f2367c3e"
+    },
+    {
+      "ref": "runs/candidate/e10-running-1/result.json",
+      "sha256": "adbd3c759da18c04f1f9de89acddc11a4a6ff138db28ab94b68bdb2b64d6581e"
+    },
+    {
+      "ref": "runs/candidate/e10-running-1/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "ref": "runs/candidate/e10-running-1/step-input-manifest.json",
+      "sha256": "ce8fc8bbe4b1512f7dbc6560ee7cd9ea08680ebda48baec52ae2c38cdc1778a7"
+    },
+    {
+      "ref": "runs/candidate/e10-running-1/step-result.json",
+      "sha256": "5b749283237c8bb99a2e4b98ed29414380d5f68b43448683d37273752e5a836e"
+    },
+    {
+      "ref": "runs/candidate/e10-running-1/trace.jsonl",
+      "sha256": "8c28c11dd98a5b52be636ea6be4689fd88f3a1b2b99f6de5810150cc7b843144"
+    },
+    {
+      "ref": "runs/candidate/e10-running-1/workspace/.eval-commands.jsonl",
+      "sha256": "b87d72e113957d5bc544bb5e25ebb56145d78a7770efbd2f99a5aac4a378fbce"
+    },
+    {
+      "ref": "runs/candidate/e10-running-1/workspace/AGENTS.md",
+      "sha256": "73171e25ea9715183a3ebe01d1dd58c4e50a1f1a7a4c527275cbadd1d9a5a1b2"
+    },
+    {
+      "ref": "runs/candidate/e10-running-1/workspace/CONTEXT.md",
+      "sha256": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559"
+    },
+    {
+      "ref": "runs/candidate/e10-running-1/workspace/DESIGN.md",
+      "sha256": "e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+    },
+    {
+      "ref": "runs/candidate/e10-running-1/workspace/checkpoint.json",
+      "sha256": "2260d2aa50156996c9e6829b86e4ec8774e253675a37b3c6b5a9e606d95c1ffd"
+    },
+    {
+      "ref": "runs/candidate/e10-running-1/workspace/recovery.json",
+      "sha256": "1ae3070764bc3f7551bd268aa574cdf33b539073dc688253a461820389f54b78"
+    },
+    {
+      "ref": "runs/candidate/e10-running-1/workspace/skills-lock.json",
+      "sha256": "88cf02a9d26e09901e0576f22e3ea9f25e3499b2c13856359f912a6083f6f61f"
+    },
+    {
+      "ref": "runs/candidate/e10-running-1/workspace/task-record.json",
+      "sha256": "51122f946b35770b579dc6317882992bc6be723bec5284630eab8a3becf41cae"
+    },
+    {
+      "ref": "runs/candidate/e10-running-1/workspace/yss-project.yaml",
+      "sha256": "c3c62086b8790b9bd12ed28a1ca18194bbc40d3afc408ac217d21535b20b60aa"
+    },
+    {
+      "ref": "runs/candidate/e10-running-2/fixture-manifest.json",
+      "sha256": "8b65aad148a97503ae366d56dfae9b41a5c4e06ac198698e71a520c349456282"
+    },
+    {
+      "ref": "runs/candidate/e10-running-2/result.json",
+      "sha256": "4c8a0638c05dd228bb408737b359352fa5ef4709166f808ad6d048d3c0ad0076"
+    },
+    {
+      "ref": "runs/candidate/e10-running-2/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "ref": "runs/candidate/e10-running-2/step-input-manifest.json",
+      "sha256": "ce8fc8bbe4b1512f7dbc6560ee7cd9ea08680ebda48baec52ae2c38cdc1778a7"
+    },
+    {
+      "ref": "runs/candidate/e10-running-2/step-result.json",
+      "sha256": "8b47e689cea8b9dab8e1901a5fa94536c0ef01ab36eb50e66c16ee7044bbe498"
+    },
+    {
+      "ref": "runs/candidate/e10-running-2/trace.jsonl",
+      "sha256": "0e026b3f3f3fc465b451cb5d866c240dd36779e0f4bcc7ccd374a255e025d8d0"
+    },
+    {
+      "ref": "runs/candidate/e10-running-2/workspace/.eval-commands.jsonl",
+      "sha256": "b87d72e113957d5bc544bb5e25ebb56145d78a7770efbd2f99a5aac4a378fbce"
+    },
+    {
+      "ref": "runs/candidate/e10-running-2/workspace/AGENTS.md",
+      "sha256": "73171e25ea9715183a3ebe01d1dd58c4e50a1f1a7a4c527275cbadd1d9a5a1b2"
+    },
+    {
+      "ref": "runs/candidate/e10-running-2/workspace/CONTEXT.md",
+      "sha256": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559"
+    },
+    {
+      "ref": "runs/candidate/e10-running-2/workspace/DESIGN.md",
+      "sha256": "e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+    },
+    {
+      "ref": "runs/candidate/e10-running-2/workspace/checkpoint.json",
+      "sha256": "2260d2aa50156996c9e6829b86e4ec8774e253675a37b3c6b5a9e606d95c1ffd"
+    },
+    {
+      "ref": "runs/candidate/e10-running-2/workspace/recovery.json",
+      "sha256": "e56d3497977f6292cf5d3fe592f2d9f4b74609e0aa885687e1036b3138b9e759"
+    },
+    {
+      "ref": "runs/candidate/e10-running-2/workspace/skills-lock.json",
+      "sha256": "88cf02a9d26e09901e0576f22e3ea9f25e3499b2c13856359f912a6083f6f61f"
+    },
+    {
+      "ref": "runs/candidate/e10-running-2/workspace/task-record.json",
+      "sha256": "51122f946b35770b579dc6317882992bc6be723bec5284630eab8a3becf41cae"
+    },
+    {
+      "ref": "runs/candidate/e10-running-2/workspace/yss-project.yaml",
+      "sha256": "c3c62086b8790b9bd12ed28a1ca18194bbc40d3afc408ac217d21535b20b60aa"
+    },
+    {
+      "ref": "runs/candidate/e11-cross-repo-1/fixture-manifest.json",
+      "sha256": "05e055de6ac06f23798ab9c9bf54e9f8f63f0263075fddb4fa781834ce557dbc"
+    },
+    {
+      "ref": "runs/candidate/e11-cross-repo-1/result.json",
+      "sha256": "b95264d2d57cffeaba663df03509cc643eecd792cbe8725f4ed0ceac9358ffda"
+    },
+    {
+      "ref": "runs/candidate/e11-cross-repo-1/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "ref": "runs/candidate/e11-cross-repo-1/step-input-manifest.json",
+      "sha256": "13b112d0e3f4d1c6478eb209f885273aba1856d454f4407fdb65f3981b5757c3"
+    },
+    {
+      "ref": "runs/candidate/e11-cross-repo-1/step-result.json",
+      "sha256": "8f14cb11e1754fb2fd3b3d743d549420f636491f14dc43705ae2785920e1f96d"
+    },
+    {
+      "ref": "runs/candidate/e11-cross-repo-1/trace.jsonl",
+      "sha256": "ab6ee51f169133c2f7a2899636a278fb069b2ceae1908e3001e19affd0f3177a"
+    },
+    {
+      "ref": "runs/candidate/e11-cross-repo-1/workspace/AGENTS.md",
+      "sha256": "73171e25ea9715183a3ebe01d1dd58c4e50a1f1a7a4c527275cbadd1d9a5a1b2"
+    },
+    {
+      "ref": "runs/candidate/e11-cross-repo-1/workspace/CONTEXT.md",
+      "sha256": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559"
+    },
+    {
+      "ref": "runs/candidate/e11-cross-repo-1/workspace/DESIGN.md",
+      "sha256": "e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+    },
+    {
+      "ref": "runs/candidate/e11-cross-repo-1/workspace/cross-repo-result.json",
+      "sha256": "e64ee8435052daca559403dfed0b23af18d3998083b80853ddaa9a405ae7105c"
+    },
+    {
+      "ref": "runs/candidate/e11-cross-repo-1/workspace/cross-repo.log",
+      "sha256": "09d6d3dded3f89251c725c357a7899ca6ffba6155241adb39f92d0a4bcfb0f14"
+    },
+    {
+      "ref": "runs/candidate/e11-cross-repo-1/workspace/skills-lock.json",
+      "sha256": "88cf02a9d26e09901e0576f22e3ea9f25e3499b2c13856359f912a6083f6f61f"
+    },
+    {
+      "ref": "runs/candidate/e11-cross-repo-1/workspace/yss-project.yaml",
+      "sha256": "c3c62086b8790b9bd12ed28a1ca18194bbc40d3afc408ac217d21535b20b60aa"
+    },
+    {
+      "ref": "runs/candidate/e11-cross-repo-2/fixture-manifest.json",
+      "sha256": "7be9b7e5d176799a20e216e5cdc8d1994d726386c7d84d142296c56eb7b7ecbd"
+    },
+    {
+      "ref": "runs/candidate/e11-cross-repo-2/result.json",
+      "sha256": "b3c3cbc0781928e16d13a99738ac47028e04ed2634252bbbd0ed6e98a9151918"
+    },
+    {
+      "ref": "runs/candidate/e11-cross-repo-2/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "ref": "runs/candidate/e11-cross-repo-2/step-input-manifest.json",
+      "sha256": "13b112d0e3f4d1c6478eb209f885273aba1856d454f4407fdb65f3981b5757c3"
+    },
+    {
+      "ref": "runs/candidate/e11-cross-repo-2/step-result.json",
+      "sha256": "3d86761d746d30ff2ddbaa566784425abefd133680b16d3b5914ba144e3fb4a6"
+    },
+    {
+      "ref": "runs/candidate/e11-cross-repo-2/trace.jsonl",
+      "sha256": "72b673fd543b52bcce72bde1153532694adcc97b195716059cea993aad5d8910"
+    },
+    {
+      "ref": "runs/candidate/e11-cross-repo-2/workspace/AGENTS.md",
+      "sha256": "73171e25ea9715183a3ebe01d1dd58c4e50a1f1a7a4c527275cbadd1d9a5a1b2"
+    },
+    {
+      "ref": "runs/candidate/e11-cross-repo-2/workspace/CONTEXT.md",
+      "sha256": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559"
+    },
+    {
+      "ref": "runs/candidate/e11-cross-repo-2/workspace/DESIGN.md",
+      "sha256": "e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+    },
+    {
+      "ref": "runs/candidate/e11-cross-repo-2/workspace/cross-repo-result.json",
+      "sha256": "c62873243bebce1c43b1b4972dfc15ab51eb886cbbd5ccfae8544075a3bca4d8"
+    },
+    {
+      "ref": "runs/candidate/e11-cross-repo-2/workspace/cross-repo.log",
+      "sha256": "9b165c2b6ca87697acb9e41d2bc7c54689fe7b363b1765155f6045f0541e9f7f"
+    },
+    {
+      "ref": "runs/candidate/e11-cross-repo-2/workspace/skills-lock.json",
+      "sha256": "88cf02a9d26e09901e0576f22e3ea9f25e3499b2c13856359f912a6083f6f61f"
+    },
+    {
+      "ref": "runs/candidate/e11-cross-repo-2/workspace/yss-project.yaml",
+      "sha256": "c3c62086b8790b9bd12ed28a1ca18194bbc40d3afc408ac217d21535b20b60aa"
+    },
+    {
+      "ref": "runs/candidate/e12-failed-verification-1/fixture-manifest.json",
+      "sha256": "b9b033e7fb06465fa6b1227ff778438b1c05b3f170c02737e1fcc62c2322ffb8"
+    },
+    {
+      "ref": "runs/candidate/e12-failed-verification-1/result.json",
+      "sha256": "00eaadb0ae446f6aaacbe68b5b4179e3ae9f2beb6f20b581ae23adc0b3bb496c"
+    },
+    {
+      "ref": "runs/candidate/e12-failed-verification-1/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "ref": "runs/candidate/e12-failed-verification-1/step-input-manifest.json",
+      "sha256": "8d2a884e6aeb968e71de530724e9a8aea28ff5222c2bd476fce83ba2b35040b2"
+    },
+    {
+      "ref": "runs/candidate/e12-failed-verification-1/step-result.json",
+      "sha256": "06545c13bda0e647e7cd5fd82698e1062bd5d770c884e43047f5e471c47bd1ec"
+    },
+    {
+      "ref": "runs/candidate/e12-failed-verification-1/trace.jsonl",
+      "sha256": "3144ffeb01c3435f9bff1505655c8d01b2fe661afda57a2c3bbc79c7010ec722"
+    },
+    {
+      "ref": "runs/candidate/e12-failed-verification-1/workspace/.eval-commands.jsonl",
+      "sha256": "b87d72e113957d5bc544bb5e25ebb56145d78a7770efbd2f99a5aac4a378fbce"
+    },
+    {
+      "ref": "runs/candidate/e12-failed-verification-1/workspace/AGENTS.md",
+      "sha256": "73171e25ea9715183a3ebe01d1dd58c4e50a1f1a7a4c527275cbadd1d9a5a1b2"
+    },
+    {
+      "ref": "runs/candidate/e12-failed-verification-1/workspace/CONTEXT.md",
+      "sha256": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559"
+    },
+    {
+      "ref": "runs/candidate/e12-failed-verification-1/workspace/DESIGN.md",
+      "sha256": "e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+    },
+    {
+      "ref": "runs/candidate/e12-failed-verification-1/workspace/checks.mjs",
+      "sha256": "54fc09d1953dd61a18a8954087118ef23158ed774623c348a8b19a0ab6ee9ef7"
+    },
+    {
+      "ref": "runs/candidate/e12-failed-verification-1/workspace/delivery-result.json",
+      "sha256": "2d803203af6c9d5aca140552a8c92cbd4d8eefe4f02854c4836445eab4b4be78"
+    },
+    {
+      "ref": "runs/candidate/e12-failed-verification-1/workspace/skills-lock.json",
+      "sha256": "88cf02a9d26e09901e0576f22e3ea9f25e3499b2c13856359f912a6083f6f61f"
+    },
+    {
+      "ref": "runs/candidate/e12-failed-verification-1/workspace/verification-run.json",
+      "sha256": "193c1340830f1d3b491a0fb185689d031f92712de13ec4f309cd1e6e6e7049f1"
+    },
+    {
+      "ref": "runs/candidate/e12-failed-verification-1/workspace/verification.md",
+      "sha256": "9ad897be0a2eda1145f210e0ceb6874c6e99b40c2441701c1568017802cb42f7"
+    },
+    {
+      "ref": "runs/candidate/e12-failed-verification-1/workspace/verification.stderr.log",
+      "sha256": "6dcc497fc7661d0c15c29ada160eeed4e00f6f1234626842a9edd768361c869a"
+    },
+    {
+      "ref": "runs/candidate/e12-failed-verification-1/workspace/verification.stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "ref": "runs/candidate/e12-failed-verification-1/workspace/yss-project.yaml",
+      "sha256": "c3c62086b8790b9bd12ed28a1ca18194bbc40d3afc408ac217d21535b20b60aa"
+    },
+    {
+      "ref": "runs/candidate/e12-failed-verification-2/fixture-manifest.json",
+      "sha256": "9bc77e57bfe7308b8fccabed219627f4fa45b2e5699f4a8c260299856cfa3ed4"
+    },
+    {
+      "ref": "runs/candidate/e12-failed-verification-2/result.json",
+      "sha256": "1e9cd5808b16199842225d68ae5cf8749e24b144eececabe16b8004b5535179b"
+    },
+    {
+      "ref": "runs/candidate/e12-failed-verification-2/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "ref": "runs/candidate/e12-failed-verification-2/step-input-manifest.json",
+      "sha256": "8d2a884e6aeb968e71de530724e9a8aea28ff5222c2bd476fce83ba2b35040b2"
+    },
+    {
+      "ref": "runs/candidate/e12-failed-verification-2/step-result.json",
+      "sha256": "f65f1656fd0ca4e51691dbe00b8167090cfcda070046fa6098cbf6a6e35f9c21"
+    },
+    {
+      "ref": "runs/candidate/e12-failed-verification-2/trace.jsonl",
+      "sha256": "218929635c91422db738d75f5921160fdba46611d512fc12e03171d3df15cfd0"
+    },
+    {
+      "ref": "runs/candidate/e12-failed-verification-2/workspace/.eval-commands.jsonl",
+      "sha256": "b87d72e113957d5bc544bb5e25ebb56145d78a7770efbd2f99a5aac4a378fbce"
+    },
+    {
+      "ref": "runs/candidate/e12-failed-verification-2/workspace/AGENTS.md",
+      "sha256": "73171e25ea9715183a3ebe01d1dd58c4e50a1f1a7a4c527275cbadd1d9a5a1b2"
+    },
+    {
+      "ref": "runs/candidate/e12-failed-verification-2/workspace/CONTEXT.md",
+      "sha256": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559"
+    },
+    {
+      "ref": "runs/candidate/e12-failed-verification-2/workspace/DESIGN.md",
+      "sha256": "e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+    },
+    {
+      "ref": "runs/candidate/e12-failed-verification-2/workspace/checks.mjs",
+      "sha256": "54fc09d1953dd61a18a8954087118ef23158ed774623c348a8b19a0ab6ee9ef7"
+    },
+    {
+      "ref": "runs/candidate/e12-failed-verification-2/workspace/delivery-result.json",
+      "sha256": "1b57f9b4511a473ceb2522c356c5fb9d4f53137075b3729d387d8aa32006e7e0"
+    },
+    {
+      "ref": "runs/candidate/e12-failed-verification-2/workspace/skills-lock.json",
+      "sha256": "88cf02a9d26e09901e0576f22e3ea9f25e3499b2c13856359f912a6083f6f61f"
+    },
+    {
+      "ref": "runs/candidate/e12-failed-verification-2/workspace/verification-run.json",
+      "sha256": "9254ae4addfaaadbfbe3e09331fee4c2fee412c5bd4401aa82bff86fd5674464"
+    },
+    {
+      "ref": "runs/candidate/e12-failed-verification-2/workspace/verification.md",
+      "sha256": "33665a272e9078506debe9477dbbb3f4240b794cf39c9329c5bede060d9d7fd4"
+    },
+    {
+      "ref": "runs/candidate/e12-failed-verification-2/workspace/yss-project.yaml",
+      "sha256": "c3c62086b8790b9bd12ed28a1ca18194bbc40d3afc408ac217d21535b20b60aa"
+    }
+  ]
+}

@@ -1,0 +1,173 @@
+{
+  "result": {
+    "scenario": "e10-running",
+    "variant": "baseline",
+    "repeat": 2,
+    "elapsed_seconds": 112.66,
+    "exit_code": 0,
+    "timeout": false,
+    "assertion_failures": [],
+    "runtime_errors": [],
+    "tool_calls": 16,
+    "usage": [
+      {
+        "input_tokens": 349243,
+        "cached_input_tokens": 297600,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 2767,
+        "reasoning_output_tokens": 553
+      }
+    ],
+    "automatic_result": "passed",
+    "semantic_review": "pending",
+    "trace": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-agent-evaluations-v2-2qx3mbr2/baseline/e10-running-2/trace.jsonl",
+    "steps": [
+      {
+        "step": "main",
+        "started_at": "2026-09-26T15:43:47Z",
+        "elapsed_seconds": 112.53,
+        "exit_code": 0,
+        "timeout": false,
+        "assertion_failures": [],
+        "runtime_errors": [],
+        "tool_calls": 16,
+        "usage": [
+          {
+            "input_tokens": 349243,
+            "cached_input_tokens": 297600,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 2767,
+            "reasoning_output_tokens": 553
+          }
+        ],
+        "automatic_result": "passed",
+        "semantic_review": "pending",
+        "trace": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-agent-evaluations-v2-2qx3mbr2/baseline/e10-running-2/trace.jsonl"
+      }
+    ],
+    "unattempted_steps": []
+  },
+  "original_files_changed": [],
+  "original_files_missing": [],
+  "unsafe_paths": [],
+  "new_files": [
+    "recovery.json"
+  ],
+  "commands": [
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'pwd && cat yss-project.yaml'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"rg --files -g 'AGENTS.md' -g 'CONTEXT.md' -g '*checkpoint*' -g '*task-record*' -g '*recovery*' -g '*subagent*' -g '*stage-tracking*' -g '*harness-process-tailoring*' -g '*lifecycle-registry*' -g '*digital-human*' -g 'SKILL.md' --hidden\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .agents/skills/yss-product-lifecycle/SKILL.md .template-spec/process/harness-process-tailoring.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat AGENTS.md CONTEXT.md checkpoint.json task-record.json'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat checkpoint.json task-record.json .agents/skills/yss-product-lifecycle/SKILL.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"rg -n '恢复|running|recover|redispatch|resume|checkpoint|task-record' .agents/skills/yss-product-lifecycle/references/orchestration.md .template-spec/process/subagent-collaboration.md .template-spec/process/lifecycle-registry.yaml .template-spec/process/stage-tracking.md .template-spec/agents/digital-human-roles.yaml\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .template-spec/process/stage-tracking.md .template-spec/plan/README.md .template-spec/process/plan-migration.md .template-spec/process/contract-reading.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"rg -n 'resume:|running|recovery|redispatch|task_record|result_ref|external_job|missing_evidence|document_writing|frontier' .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml scripts/query-lifecycle-context scripts/verify-lifecycle-checkpoint scripts/stage-tracking\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"rg --files --hidden -g '\"'!'\"\\\\.git/**' -g '*result*' -g '*task*' -g 'docs/**' -g '\"'!node_modules/**'\"'; cat scripts/query-lifecycle-context scripts/stage-tracking\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat CONTEXT.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"sed -n '1,100p' .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml; sed -n '550,605p' .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml; rg -n -i 'resume|rebuild|in.flight|重派|重新派|运行中|task.*status|task.demo|fixture.job.1' .agents/skills/yss-product-lifecycle .template-spec/process/subagent-collaboration.md scripts/lib/lifecycle*\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'node scripts/query-lifecycle-context --mode resume --stage stage.plan --work-unit work-unit.plan-requirements; node scripts/stage-tracking check --root . --checkpoint checkpoint.json'",
+      "exit_code": 1
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"sed -n '110,155p' .agents/skills/yss-product-lifecycle/references/state-model.md; cat .agents/skills/i-have-adhd/SKILL.md .template-spec/process/document-writing.md\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"python3 -B - <<'PY'\nfrom pathlib import Path\nimport hashlib, json\nfor name in ['checkpoint.json','task-record.json','result-not-yet-received.json','recovery.json']:\n p=Path(name)\n print(json.dumps({'path': name, 'exists': p.exists(), 'sha256': hashlib.sha256(p.read_bytes()).hexdigest() if p.is_file() else None}))\nPY\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'node scripts/stage-tracking check --root . --checkpoint checkpoint.json'",
+      "exit_code": 1
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"python3 -B - <<'PY'\nimport hashlib\nimport json\nfrom pathlib import Path\n\nexpected = {\n    'checkpoint.json': '2260d2aa50156996c9e6829b86e4ec8774e253675a37b3c6b5a9e606d95c1ffd',\n    'task-record.json': '51122f946b35770b579dc6317882992bc6be723bec5284630eab8a3becf41cae',\n}\nfor name, digest in expected.items():\n    assert hashlib.sha256(Path(name).read_bytes()).hexdigest() == digest, name\nassert not Path('result-not-yet-received.json').exists()\n\nrecovery = {\n    'action': 'wait',\n    'redispatched': False,\n    'missing_evidence': [\n        'task-record.json 引用的 result-not-yet-received.json 不存在；缺少 task.demo 的真实执行结果及其产物、验证证据。',\n        '缺少 external_job_id=fixture.job.1 的最新外部状态。磁盘记录为 running，当前环境无法查询，不能据此确认任务仍在执行、已经完成、失败或取消。',\n        'checkpoint.json 的 artifacts、gates 为空，requirements 工作项的 source_refs、completion 为空；没有可用于验收或推进 Plan 的产物与证据。',\n        'checkpoint.json 的 context_reconciliation 为 pending，ref 为 null，evidence_refs 为空；缺少批准或流转前所需的词汇对账证据。',\n        '本轮执行 node scripts/stage-tracking check --root . --checkpoint checkpoint.json，实际退出码为 1，输出 tracking-checkpoint-path-invalid；阶段追踪恢复校验未通过，未迁移或修改原记录。'\n    ],\n    'next_action': (\n        '依据 .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml 的 modes.resume=rebuild_then_bounded_write、'\n        'references/state-model.md 的 Resume 规则及 .template-spec/process/stage-tracking.md 的恢复要求，'\n        '当前停留在 stage.plan/work-unit.plan-requirements 的恢复核对，不推进阶段、不认定任务失败或完成，也不重复派发。'\n        '等待原任务 task.demo 的真实结果回流；如后续具备查询能力，先按 fixture.job.1 核对原任务状态。'\n        '结果可读后，由主控验收 Workflow Execution Result、实际产物及验证证据，核查 context_reconciliation，并在获准处理追踪路径后重新执行恢复校验，再计算门禁和下一工作单元。'\n        '本轮只写 recovery.json，checkpoint.json 与 task-record.json 保持原字节；外部查询和任务执行未验证。本记录仅为 fixture test-data-only，不构成真实批准。'\n    )\n}\noutput = Path('recovery.json')\nwith output.open('x', encoding='utf-8') as stream:\n    json.dump(recovery, stream, ensure_ascii=False, indent=2)\n    stream.write('\\\\n')\nloaded = json.loads(output.read_text(encoding='utf-8'))\nassert set(loaded) == {'action', 'redispatched', 'missing_evidence', 'next_action'}\nassert loaded['redispatched'] is False\nfor name, digest in expected.items():\n    assert hashlib.sha256(Path(name).read_bytes()).hexdigest() == digest, name\nassert not Path('result-not-yet-received.json').exists()\nprint('recovery.json 已保存并通过 JSON 结构检查；原记录 SHA-256 未变化，未创建任务结果文件。')\nPY\"",
+      "exit_code": 0
+    }
+  ],
+  "command_errors": [
+    {
+      "command": "/bin/zsh -lc 'node scripts/query-lifecycle-context --mode resume --stage stage.plan --work-unit work-unit.plan-requirements; node scripts/stage-tracking check --root . --checkpoint checkpoint.json'",
+      "exit_code": 1,
+      "output": "{\n  \"execution\": {\n    \"mode\": \"rebuild_then_bounded_write\",\n    \"plan_checks\": [\n      {\n        \"evidence_refs\": [],\n        \"id\": \"goals\",\n        \"status\": \"pending\"\n      },\n      {\n        \"evidence_refs\": [],\n        \"id\": \"scope_and_priority\",\n        \"status\": \"pending\"\n      },\n      {\n        \"evidence_refs\": [],\n        \"id\": \"boundaries_and_rules\",\n        \"status\": \"pending\"\n      },\n      {\n        \"evidence_refs\": [],\n        \"id\": \"open_questions\",\n        \"status\": \"pending\"\n      },\n      {\n        \"evidence_refs\": [],\n        \"id\": \"handoff\",\n        \"status\": \"pending\"\n      },\n      {\n        \"evidence_refs\": [],\n        \"id\": \"context_reconciliation\",\n        \"status\": \"pending\"\n      },\n      {\n        \"evidence_refs\": [],\n        \"id\": \"grill_exit\",\n        \"status\": \"pending\"\n      }\n    ],\n    \"selected\": {\n      \"gate_consolidation\": {\n        \"acceptance_does_not_authorize\": [\n          \"merge\",\n          \"push\",\n          \"release\",\n          \"production_change\"\n        ],\n        \"adjacent_reviews\": \"one_bundle_with_explicit_per_check_outcomes\",\n        \"api_freeze\": \"atomic_with_engineering_contract_approval_same_version\",\n        \"check_failure\": \"blocks_aggregate_gate\",\n        \"check_policy\": \".template-spec/agents/digital-human-roles.yaml\",\n        \"checks\": \"automatic_or_independent_review_without_separate_user_decision\",\n        \"continuation_protocol\": \"references/user-decisions.md\",\n        \"default_review\": \"one_owner_one_independent_reviewer\",\n        \"extra_reviewers\": \"uncovered_expertise_conflict_or_external_requirement\",\n        \"historical_gate_records\": \"read_only_no_automatic_approval_migration\",\n        \"invalidation\": \"affected_dependencies_or_authorization_change_only\",\n        \"plan_decision_boundary\": \"gate.plan-approved\",\n        \"readiness\": \"computed_after_current_approved_contract_and_all_applicable_preconditions\",\n        \"reuse\": \"unchanged_approval_or_verified_approved_scope_continuation\",\n        \"source\": \".template-spec/process/lifecycle-registry.yaml\",\n        \"suggestions\": \"recorded_backlog_without_blocking\",\n        \"verifier\": \"scripts/verify-lifecycle-checkpoint\"\n      },\n      \"grill_exit\": {\n        \"facts_resolved_or_routed\": {\n          \"external_decision\": \"external-input-required\",\n          \"runnable_question\": \"handoff-prototype-handoff\",\n          \"technical_fact\": \"yss-research\"\n        },\n        \"output\": \"plan-evidence\",\n        \"required\": [\n          \"frontier_empty\",\n          \"facts_resolved_or_routed\",\n          \"decisions_confirmed\",\n          \"shared_understanding_confirmed\",\n          \"no_unresolved_runnable_blocker\"\n        ],\n        \"user_confirmation_required\": true\n      },\n      \"planning\": {\n        \"check_policy\": \".template-spec/process/lifecycle-registry.yaml\",\n        \"critical_open_questions\": \"block-before-spec\",\n        \"default_check_status\": \"pending\",\n        \"deferred_details\": \"excluded-from-frontier-only-after-user-confirms-deferral\",\n        \"deferred_details_require\": [\n          \"noncritical_reason\",\n          \"owner\",\n          \"resolution_point\",\n          \"downstream_recipient\"\n        ],\n        \"downstream\": \"work-unit.spec-synthesis\",\n        \"entry_validator\": \"scripts/verify-plan-spec-entry\",\n        \"exit_policy\": \".template-spec/process/lifecycle-registry.yaml\",\n        \"formal_spec_draft_requires_passed_entry\": true,\n        \"frontier_scope\": \"current-plan-decisions\",\n        \"implementation_authorized\": false,\n        \"migration_policy\": \".template-spec/process/plan-migration.md\",\n        \"record\": \"artifact.plan-record\",\n        \"reuse_requires\": [\n          \"source_ref\",\n          \"current_version\",\n          \"applicable_scope\",\n          \"reason\"\n        ],\n        \"review_contract\": \".template-spec/plan/entry-review.md\",\n        \"stage\": \"stage.plan\",\n        \"template\": \".template-spec/plan/templates/plan-template.md\"\n      }\n    },\n    \"transition\": {\n      \"forbidden_shortcuts\": [],\n      \"next\": [\n        \"work-unit.domain-strategy-design\",\n        \"work-unit.stage-decision\",\n        \"work-unit.spec-synthesis\"\n      ]\n    },\n    \"work_unit_route\": {\n      \"applies_when\": \"requirements_or_domain_boundary_unclear\",\n      \"native\": {\n        \"invocation_mode\": \"model-invoked\",\n        \"skill\": \"yss-product-lifecycle\",\n        \"source\": \"yss-product-lifecycle\"\n      },\n      \"not_applicable_reason\": \"requirements_already_confirmed\",\n      \"primary_skill\": \"yss-product-lifecycle\",\n      \"skills\": [\n        \"grilling\",\n        \"domain-modeling\"\n      ],\n      \"supporting_skills\": [\n        \"grilling\",\n        \"domain-modeling\"\n      ]\n    }\n  },\n  \"lifecycle\": {\n    \"artifacts\": [\n      {\n        \"id\": \"artifact.domain-strategy\",\n        \"name\": \"DDD 战略设计\",\n        \"public_name\": \"业务边界与规则设计\",\n        \"public_trigger\": \"新产品/模块、跨责任区协作、业务词汇冲突、责任边界或关键规则变化。\",\n        \"stage\": \"stage.plan\",\n        \"trigger\": \"新产品/模块、跨上下文功能、统一语言冲突、服务边界或核心规则变化。\"\n      },\n      {\n        \"id\": \"artifact.stage-decision-package\",\n        \"name\": \"阶段决策包\",\n        \"public_name\": \"方案决策包\",\n        \"stage\": \"stage.plan\",\n        \"trigger\": \"Plan 到 Spec 入口需要结构化上游决策。\"\n      },\n      {\n        \"id\": \"artifact.plan-record\",\n        \"name\": \"Plan 记录\",\n        \"stage\": \"stage.plan\",\n        \"trigger\": \"新问题或边界不清。\"\n      },\n      {\n        \"id\": \"artifact.parent-ticket\",\n        \"name\": \"功能父 Ticket\",\n        \"stage\": \"stage.plan\",\n        \"trigger\": \"每个功能首次进入 Plan 或最近可信接入阶段时建立，正式化时复用；Design profile 不创建工程父 Ticket。\"\n      }\n    ],\n    \"checks\": [\n      {\n        \"evidence\": [\n          \"evidence.domain-strategy-review\",\n          \"evidence.approval-record\"\n        ],\n        \"id\": \"check.domain-strategy-approved\",\n        \"name\": \"业务边界与规则评审\",\n        \"public_name\": \"业务边界与规则评审\",\n        \"public_trigger\": \"需要确定业务板块、业务责任区、统一业务词汇、协作关系或关键规则。\",\n        \"stage\": \"stage.plan\",\n        \"trigger\": \"存在 DDD 战略设计影响或需要确定领域边界、统一语言和核心规则。\"\n      },\n      {\n        \"evidence\": [\n          \"evidence.stage-decision-package\",\n          \"evidence.approval-record\"\n        ],\n        \"id\": \"check.stage-decision-package-approved\",\n        \"name\": \"阶段决策包评审\",\n        \"requires_checks\": [\n          \"check.domain-strategy-approved\"\n        ],\n        \"stage\": \"stage.plan\",\n        \"trigger\": \"Plan 到 Spec 入口需要稳定的阶段决策合同。\"\n      }\n    ],\n    \"evidence\": [\n      {\n        \"description\": \"业务板块、业务责任区、统一业务词汇、协作与交接关系、关键场景和不可违反规则的结构化评审结果。\",\n        \"id\": \"evidence.domain-strategy-review\",\n        \"name\": \"DDD 战略设计评审证据\",\n        \"public_name\": \"业务边界与规则评审证据\"\n      },\n      {\n        \"description\": \"阶段决策包的 Schema、引用、语义一致性、影响传播和下游消费验证结果。\",\n        \"id\": \"evidence.stage-decision-package\",\n        \"name\": \"阶段决策包验证证据\"\n      },\n      {\n        \"description\": \"对需要人工批准的 Spec、设计、契约或发布裁决的可追溯记录。\",\n        \"id\": \"evidence.approval-record\",\n        \"name\": \"人工批准记录\"\n      }\n    ],\n    \"gates\": [\n      {\n        \"evidence\": [\n          \"evidence.approval-record\"\n        ],\n        \"id\": \"gate.plan-approved\",\n        \"name\": \"Plan 批准\",\n        \"requires_checks\": [\n          \"check.domain-strategy-approved\",\n          \"check.stage-decision-package-approved\"\n        ],\n        \"stage\": \"stage.plan\",\n        \"trigger\": \"Plan 结论进入 Spec；汇总战略检查，核验当前规划范围的原始批准或有效授权延续。\"\n      }\n    ],\n    \"stage\": {\n      \"exit_criteria\": \"命中的战略与阶段决策检查通过，用户统一批准当前 Plan；影响业务边界、关键规则或 MVP 的问题已解决，其他未决项有责任人和解决时点；下游可进入 Spec，不代表可实现。\",\n      \"goal\": \"确认目标、业务边界、关键规则、MVP / 非目标、优先级和交接责任，为 Spec 提供战略输入；按影响面探索并复用仍有效的结论。\",\n      \"id\": \"stage.plan\",\n      \"name\": \"Plan（战略规划）\",\n      \"spec_entry\": {\n        \"check_impacts\": {\n          \"check.domain-strategy-approved\": \"domain_strategy\",\n          \"check.stage-decision-package-approved\": \"stage_decision\"\n        },\n        \"gate_impacts\": {\n          \"gate.plan-approved\": \"plan\"\n        },\n        \"required_checks\": [\n          \"goals\",\n          \"scope_and_priority\",\n          \"boundaries_and_rules\",\n          \"open_questions\",\n          \"handoff\",\n          \"context_reconciliation\",\n          \"grill_exit\"\n        ]\n      }\n    },\n    \"work_unit\": {\n      \"completion\": \"frontier 清空；用户确认；无 runnable blocker。\",\n      \"id\": \"work-unit.plan-requirements\",\n      \"input\": \"机会结论、用户反馈和领域词汇。\",\n      \"name\": \"需求分析\",\n      \"output\": \"用户、MVP、非目标、成功标准、测试 seam 和未决项。\",\n      \"scope\": \"project-instance\"\n    }\n  },\n  \"query\": {\n    \"include\": [\n      \"gate_consolidation\",\n      \"grill_exit\",\n      \"planning\"\n    ],\n    \"mode\": \"resume\",\n    \"stage\": \"stage.plan\",\n    \"work_unit\": \"work-unit.plan-requirements\"\n  },\n  \"references\": [\n    \".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml\",\n    \".template-spec/agents/digital-human-roles.yaml\",\n    \".template-spec/agents/yss-skill-registry.yaml\",\n    \".template-spec/plan/entry-review.md\",\n    \".template-spec/plan/templates/plan-template.md\",\n    \".template-spec/process/lifecycle-registry.yaml\",\n    \".template-spec/process/plan-migration.md\",\n    \"references/user-decisions.md\"\n  ],\n  \"schema_version\": 1,\n  \"skills\": [\n    {\n      \"aliases\": [],\n      \"id\": \"domain-modeling\",\n      \"impacts\": [\n        \"discovery\"\n      ],\n      \"instance_default_discoverable\": true,\n      \"layer\": \"core\",\n      \"maturity\": \"supported\"\n    },\n    {\n      \"aliases\": [],\n      \"id\": \"grilling\",\n      \"impacts\": [\n        \"discovery\"\n      ],\n      \"instance_default_discoverable\": true,\n      \"layer\": \"core\",\n      \"maturity\": \"supported\"\n    },\n    {\n      \"aliases\": [],\n      \"id\": \"yss-product-lifecycle\",\n      \"impacts\": [\n        \"lifecycle\"\n      ],\n      \"instance_default_discoverable\": true,\n      \"layer\": \"core\",\n      \"maturity\": \"supported\"\n    }\n  ],\n  \"sources\": {\n    \"lifecycle_registry\": {\n      \"ref\": \".template-spec/process/lifecycle-registry.yaml\",\n      \"semantic_sha256\": \"348d87b19dfc19054bec6905c59dc206dd3d60d888c625c223dd0b74de94a9c2\",\n      \"status\": \"active\"\n    },\n    \"orchestration_contract\": {\n      \"ref\": \".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml\",\n      \"sha256\": \"3e4865660e976bd9a19726d93b876e550c1657f9cee291e7ea21a452180f752f\"\n    },\n    \"skill_registry\": {\n      \"ref\": \".template-spec/agents/yss-skill-registry.yaml\",\n      \"sha256\": \"856ae1d9cad9e902fc7bda3d8a12d692b838d00ccad5477d8f960c13359b02a7\",\n      \"status\": \"active\"\n    }\n  }\n}\ntracking-checkpoint-path-invalid\n"
+    },
+    {
+      "command": "/bin/zsh -lc 'node scripts/stage-tracking check --root . --checkpoint checkpoint.json'",
+      "exit_code": 1,
+      "output": "tracking-checkpoint-path-invalid\n"
+    }
+  ],
+  "other_tools": [],
+  "agent_messages": [
+    {
+      "step": "main",
+      "text": "我会核对仓库身份、主控恢复规则和现有记录，仅将恢复判断写入 `recovery.json`；不重新派发任务，也不改动已有记录。\n"
+    },
+    {
+      "step": "main",
+      "text": "仓库身份是 `project-instance`。我将使用 `yss-product-lifecycle` 技能核对恢复规则，重点检查运行中任务在结果尚未落盘、也无法查询时应如何处理。\n"
+    },
+    {
+      "step": "main",
+      "text": "现有记录均为 `running`，引用的结果文件确实不存在，尚不能确认外部任务的最新状态。我会保存“等待原任务结果、不重新派发”的判断，并按 `i-have-adhd` 文档规范记录缺口。只读追踪校验返回 `tracking-checkpoint-path-invalid`（退出码 1），这项问题也会保留，已有文件不会迁移或修改。\n"
+    },
+    {
+      "step": "main",
+      "text": "已保存 [recovery.json](recovery.json)：`action: \"wait\"`、`redispatched: false`，并记录缺失证据、追踪校验失败及恢复步骤。\n\n等待原任务真实结果回流；未伪造结果。两份已有记录的 SHA-256 均未变化。"
+    }
+  ],
+  "artifacts": {
+    "recovery.json": "{\n  \"action\": \"wait\",\n  \"redispatched\": false,\n  \"missing_evidence\": [\n    \"task-record.json 引用的 result-not-yet-received.json 不存在；缺少 task.demo 的真实执行结果及其产物、验证证据。\",\n    \"缺少 external_job_id=fixture.job.1 的最新外部状态。磁盘记录为 running，当前环境无法查询，不能据此确认任务仍在执行、已经完成、失败或取消。\",\n    \"checkpoint.json 的 artifacts、gates 为空，requirements 工作项的 source_refs、completion 为空；没有可用于验收或推进 Plan 的产物与证据。\",\n    \"checkpoint.json 的 context_reconciliation 为 pending，ref 为 null，evidence_refs 为空；缺少批准或流转前所需的词汇对账证据。\",\n    \"本轮执行 node scripts/stage-tracking check --root . --checkpoint checkpoint.json，实际退出码为 1，输出 tracking-checkpoint-path-invalid；阶段追踪恢复校验未通过，未迁移或修改原记录。\"\n  ],\n  \"next_action\": \"依据 .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml 的 modes.resume=rebuild_then_bounded_write、references/state-model.md 的 Resume 规则及 .template-spec/process/stage-tracking.md 的恢复要求，当前停留在 stage.plan/work-unit.plan-requirements 的恢复核对，不推进阶段、不认定任务失败或完成，也不重复派发。等待原任务 task.demo 的真实结果回流；如后续具备查询能力，先按 fixture.job.1 核对原任务状态。结果可读后，由主控验收 Workflow Execution Result、实际产物及验证证据，核查 context_reconciliation，并在获准处理追踪路径后重新执行恢复校验，再计算门禁和下一工作单元。本轮只写 recovery.json，checkpoint.json 与 task-record.json 保持原字节；外部查询和任务执行未验证。本记录仅为 fixture test-data-only，不构成真实批准。\"\n}\n"
+  },
+  "semantic_review": "pending"
+}

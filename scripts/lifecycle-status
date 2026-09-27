@@ -1,0 +1,14 @@
+#!/usr/bin/env node
+import { parseArgs } from 'node:util';
+import path from 'node:path';
+import { lifecycleStatus } from './lib/lifecycle-status.mjs';
+
+try {
+  const { values } = parseArgs({ strict: true, options: { root: { type: 'string' }, checkpoint: { type: 'string' } } });
+  const result = lifecycleStatus({ root: path.resolve(values.root ?? '.'), checkpointRef: values.checkpoint });
+  process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+  if (result.blockers.length) process.exitCode = 1;
+} catch (error) {
+  process.stdout.write(`${JSON.stringify({ schema_version: 1, read_only: true, blockers: [error.message], owner: '未登记', next_action: `核查状态输入：${error.message}`, execution_authorization: 'not-evaluated', verification_scope: [{ id: 'status-input', status: 'failed', refs: [], reason: error.message }], diagnostics: [{ code: 'status-input-invalid', severity: 'error', message: error.message, source_ref: null, owner: '未登记', recovery: '修复输入后重新读取状态' }], next_step: { action_type: 'repair', command: null, input_refs: [], prerequisites: ['提供有效项目根和 checkpoint 引用'] } }, null, 2)}\n`);
+  process.exitCode = 1;
+}

@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { parseArgs } from "node:util";
+import { readFileSync } from "node:fs";
 import { loadTaskPackage, validateTaskPackage } from "../../scripts/lib/task-package.mjs";
 
 try {
@@ -11,8 +12,14 @@ try {
   if (value.skill_source?.registry_ref !== "docs/agents/digital-human-roles.yaml") {
     throw new TypeError("历史任务包缺少旧注册表引用");
   }
+  const baseline = JSON.parse(readFileSync(".template-spec/process/lifecycle-registry-baseline.json", "utf8"));
+  const migrations = baseline.migrations ?? {};
+  const currentWorkUnit = migrations[value.work_unit_id] ?? value.work_unit_id;
+  const currentParent = migrations[value.convergence?.parent_work_unit] ?? value.convergence?.parent_work_unit;
   validateTaskPackage({
     ...value,
+    work_unit_id: currentWorkUnit,
+    convergence: { ...value.convergence, parent_work_unit: currentParent },
     skill_source: { ...value.skill_source, registry_ref: ".template-spec/agents/digital-human-roles.yaml" },
   });
   process.stdout.write("历史任务包结构校验通过；不构成当前放行\n");

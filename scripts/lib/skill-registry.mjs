@@ -669,7 +669,7 @@ export function validateSkillRegistry(registry, { lock, compilerContract, lifecy
           fail(`${routeId}.frontend_route 主入口引用了未登记技能`);
         }
       }
-      if (routeId === "work-unit.prototype-design") {
+      if (routeId === "work-unit.prototype-design-v2") {
         if (!route.skills.includes("prototype-review") || !route.supporting_skills.includes("prototype-review")) {
           fail("原型工作单元必须包含独立 prototype-review supporting skill");
         }

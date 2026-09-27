@@ -1,0 +1,21 @@
+{
+  "primary_first_step": "2026-09-26T14:49:06+00:00",
+  "primary_ended_at": "2026-09-26T17:00:27.006027+00:00",
+  "primary_wall_seconds": 7881.01,
+  "primary_outer_process_seconds": 7880.719999999999,
+  "completed_primary_records": 48,
+  "primary_semantic_reviews": 48,
+  "ui_supplement_plan": "C2-ui-supplement-plan.json",
+  "deadline": "2026-09-26T17:49:06+00:00",
+  "monetary_cost": null,
+  "note": "No verified billing or rate; report runtime usage and elapsed; supplementary separately bounded",
+  "ui_supplement_ended_at": "2026-09-26T17:35:18.328779+00:00",
+  "ui_supplement_records": 4,
+  "ui_supplement_semantic_reviews": 4,
+  "ui_supplement_wall_seconds": 2068.94,
+  "formal_and_supplement_wall_seconds": 9972.33,
+  "seconds_before_deadline": 827.67,
+  "within_formal_model_window": true,
+  "resource_ledger": "all-evaluation-resource-ledger.json",
+  "window_scope": "Primary and bounded UI supplement only; calibration/environment failures retained separately in full resource ledger; this is not total task wall time"
+}

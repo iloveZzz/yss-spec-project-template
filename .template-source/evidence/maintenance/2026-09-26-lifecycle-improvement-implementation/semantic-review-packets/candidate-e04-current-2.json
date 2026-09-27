@@ -1,0 +1,174 @@
+{
+  "result": {
+    "scenario": "e04-current",
+    "variant": "candidate",
+    "repeat": 2,
+    "elapsed_seconds": 200.66,
+    "exit_code": 0,
+    "timeout": false,
+    "assertion_failures": [],
+    "runtime_errors": [],
+    "tool_calls": 18,
+    "usage": [
+      {
+        "input_tokens": 504285,
+        "cached_input_tokens": 433024,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 5377,
+        "reasoning_output_tokens": 581
+      }
+    ],
+    "automatic_result": "passed",
+    "semantic_review": "pending",
+    "trace": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-agent-evaluations-v2-2qx3mbr2/candidate/e04-current-2/trace.jsonl",
+    "steps": [
+      {
+        "step": "main",
+        "started_at": "2026-09-26T16:06:59Z",
+        "elapsed_seconds": 200.42,
+        "exit_code": 0,
+        "timeout": false,
+        "assertion_failures": [],
+        "runtime_errors": [],
+        "tool_calls": 18,
+        "usage": [
+          {
+            "input_tokens": 504285,
+            "cached_input_tokens": 433024,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 5377,
+            "reasoning_output_tokens": 581
+          }
+        ],
+        "automatic_result": "passed",
+        "semantic_review": "pending",
+        "trace": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-agent-evaluations-v2-2qx3mbr2/candidate/e04-current-2/trace.jsonl"
+      }
+    ],
+    "unattempted_steps": []
+  },
+  "original_files_changed": [],
+  "original_files_missing": [],
+  "unsafe_paths": [],
+  "new_files": [
+    "docs/.scratch/demo/spec.md",
+    "docs/.scratch/demo/work-record.md",
+    "entry-result.json"
+  ],
+  "commands": [
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"pwd && rg --files -g 'yss-project.yaml' -g 'state.json' -g 'AGENTS.md' -g 'CONTEXT.md' -g '*plan*' -g '*decision*' -g '*entry*' -g '*review*' -g 'SKILL.md' -g '*verify*' -g '*stage*' -g '*lifecycle*' -g '*tailoring*' -g '*tracker*' -g '*triage*' -g '*approval*' -g '*artifacts*' -g '*tracking*' --hidden .\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat yss-project.yaml'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .agents/skills/yss-product-lifecycle/SKILL.md .agents/skills/yss-product-lifecycle/references/user-decisions.md .template-spec/process/harness-process-tailoring.md .template-spec/plan/entry-review.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"cat scripts/verify-plan-spec-entry scripts/plan-spec-entry && rg -n 'plan.spec|Plan|user_decision_policy|plan-to-spec|to-spec' .template-spec/process/lifecycle-registry.yaml scripts/lib/plan-spec-entry.mjs scripts/lib/user-decision.mjs\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat state.json plan.md review.json CONTEXT.md AGENTS.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .agents/skills/yss-product-lifecycle/SKILL.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .agents/skills/yss-product-lifecycle/references/user-decisions.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"sed -n '80,240p' CONTEXT.md && cat .template-spec/plan/README.md .template-spec/process/plan-migration.md\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"sed -n '1,160p' .template-spec/process/harness-process-tailoring.md && sed -n '1,190p' .template-spec/process/lifecycle-registry.yaml && rg -n -A 100 '\"'^user_decision_policy:'\"' .template-spec/agents/digital-human-roles.yaml\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"cat approval/decision.json reconciliation.json && rg --files approval docs .eval-tmp && sed -n '1,130p' scripts/lib/plan-spec-entry.mjs\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'node scripts/verify-plan-spec-entry state.json'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"cat approval/requester.json approval/presentation.json approval/reply-0.json && sed -n '40,76p' .template-spec/process/lifecycle-registry.yaml\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .agents/skills/i-have-adhd/SKILL.md .template-spec/process/document-writing.md .template-spec/process/stage-tracking.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"rg --files .template-spec docs --hidden -g '*spec*' -g '*ticket*' -g '*checkpoint*' -g '*workflow*' && sed -n '412,442p' .template-spec/process/lifecycle-registry.yaml && rg -n -A 35 'document_writing:|spec-synthesis|matt_invocation_boundary:' .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml && cat .template-spec/agents/issue-tracker.md\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat docs/.scratch/demo/parent-ticket.md .template-spec/templates/spec-template.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"python3 - <<'PY'\nimport hashlib, json\nfrom pathlib import Path\npaths = ['yss-project.yaml', 'state.json', 'plan.md', 'review.json', 'CONTEXT.md', 'reconciliation.json', 'docs/.scratch/demo/parent-ticket.md', '.template-spec/process/lifecycle-registry.yaml', '.template-spec/agents/digital-human-roles.yaml', '.agents/skills/yss-product-lifecycle/references/user-decisions.md']\npaths += [str(p) for p in sorted(Path('approval').glob('*.json'))]\nprint(json.dumps({p: hashlib.sha256(Path(p).read_bytes()).hexdigest() for p in paths}))\nPY\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"python3 -c 'import hashlib, json, re\nfrom pathlib import Path\nexpected = json.loads(\\\"{\\\\\\\"yss-project.yaml\\\\\\\":\\\\\\\"c3c62086b8790b9bd12ed28a1ca18194bbc40d3afc408ac217d21535b20b60aa\\\\\\\",\\\\\\\"state.json\\\\\\\":\\\\\\\"5da46d48b07f191908629bf8a040942d507de1355baa4e0742cf98ddd510a1b1\\\\\\\",\\\\\\\"plan.md\\\\\\\":\\\\\\\"43dc051942f0399a5cd55f6f9955a481f08c81be53fa81f8366adf2dbbddcca5\\\\\\\",\\\\\\\"review.json\\\\\\\":\\\\\\\"0ec396441d0db7decaf4119ae1c314eef2e5845b97fe7815f4f4aba9eb756dc7\\\\\\\",\\\\\\\"CONTEXT.md\\\\\\\":\\\\\\\"887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559\\\\\\\",\\\\\\\"reconciliation.json\\\\\\\":\\\\\\\"2a5a006460ce761b0df2b855f8fe5626cae0f11495358c1277d246dbd1d96114\\\\\\\",\\\\\\\"docs/.scratch/demo/parent-ticket.md\\\\\\\":\\\\\\\"0a978ddc8d736960dbd4fe220cdbe168bcf862723cb619f52788db882aec5c3b\\\\\\\",\\\\\\\".template-spec/process/lifecycle-registry.yaml\\\\\\\":\\\\\\\"e9fbae32a659edff9444301ada1c1fdfc36ae0e8c45c8148e143aa04d761f83e\\\\\\\",\\\\\\\".template-spec/agents/digital-human-roles.yaml\\\\\\\":\\\\\\\"ec414e3c80adaad95b011557509b8b977c9074f6f9353f4be51c2295138f078b\\\\\\\",\\\\\\\".agents/skills/yss-product-lifecycle/references/user-decisions.md\\\\\\\":\\\\\\\"8c9fd3abf3ebc7db787b154e1b63eda93e20974c7721adab9ded913bcf64f4a9\\\\\\\",\\\\\\\"approval/decision.json\\\\\\\":\\\\\\\"7aaf61681fe51ca539946bf9f4e1fc9c7f769606d84e931e3ed66fb4c9e620d6\\\\\\\",\\\\\\\"approval/presentation.json\\\\\\\":\\\\\\\"0429f903cea76283bf1c957fe336555bd5e6e794c7bc278c563da213d2f91bba\\\\\\\",\\\\\\\"approval/reply-0.json\\\\\\\":\\\\\\\"a9b7669370344dda15f02912d06313468a1b8ae21ea7cd0a18679ac91f15aa7b\\\\\\\",\\\\\\\"approval/requester.json\\\\\\\":\\\\\\\"386f6a407c9728cae3727a1dc03aa3f79e8b0a7300788cfb7c4747f4ce713055\\\\\\\"}\\\")\nchanged = [p for p, digest in expected.items() if hashlib.sha256(Path(p).read_bytes()).hexdigest() \"'!= digest]\nassert not changed, changed\nresult = json.loads(Path('\"'\\\\''entry-result.json'\\\\'').read_text())\nassert set(result) == {'\\\\''result'\\\\'', '\\\\''verification_command'\\\\'', '\\\\''exit_code'\\\\'', '\\\\''reason'\\\\''}\nassert result['\\\\''result'\\\\''] == '\\\\''allowed'\\\\''\nassert result['\\\\''verification_command'\\\\''] == '\\\\''node scripts/verify-plan-spec-entry state.json'\\\\''\nassert result['\\\\''exit_code'\\\\''] == 0\nspec = Path('\\\\''docs/.scratch/demo/spec.md'\\\\'').read_text()\nassert '\\\\''status: ready-for-human'\\\\'' in spec\nassert '\\\\''status: ready-for-agent'\\\\'' not in spec\nassert all(x in spec for x in ['\\\\''test-data-only'\\\\'', '\\\\''AC-001'\\\\'', '\\\\''AC-002'\\\\'', '\\\\''AC-003'\\\\''])\nfor name in ['\\\\''docs/.scratch/demo/spec.md'\\\\'', '\\\\''docs/.scratch/demo/work-record.md'\\\\'']:\n    p = Path(name)\n    for ref in re.findall(r'\\\\''\\\\]\\\\(([\"'^)]+)'\"\\\\)'\\\\'', p.read_text()):\n        assert (p.parent / ref).is_file(), (name, ref)\nprint('\\\\''产物检查通过：结果字段及实际退出码一致；Spec 为 ready-for-human，三项验收齐全；文档引用可读；14 个上游输入与批准文件摘要未变。'\\\\'')\n'\"",
+      "exit_code": 0
+    }
+  ],
+  "command_errors": [],
+  "other_tools": [],
+  "agent_messages": [
+    {
+      "step": "main",
+      "text": "我会先读取仓库身份、state.json、当前 Plan 和用户决定规则，再运行本地 Plan→Spec 校验；根据实际结果保存 entry-result.json，并只在校验允许时生成 Spec 草稿。"
+    },
+    {
+      "step": "main",
+      "text": "仓库身份是 `project-instance`。我会按 `yss-product-lifecycle` 技能核验入口，重点检查当前 Plan、审阅包摘要和用户决定的绑定；测试数据只用于本次校验，不视为真实批准。"
+    },
+    {
+      "step": "main",
+      "text": "真实校验已通过，命令退出码为 `0`。我将按当前 Plan 起草只读查询 Spec，覆盖成功、未找到和无权访问三项验收，保留为 `ready-for-human` 草稿，并记录 test-data-only 边界。"
+    },
+    {
+      "step": "main",
+      "text": "Spec 的验收将逐项对应 Plan，不补设 HTTP 路径、错误码或状态枚举。文档按 `i-have-adhd` 技能的中文规范整理；当前 tracker 未启用新版阶段追踪，将复用已有父 Ticket，并另存本轮工作记录。"
+    },
+    {
+      "step": "main",
+      "text": "校验结果为 `allowed`，实际执行 `node scripts/verify-plan-spec-entry state.json`，退出码 `0`。\n\n已保存 [entry-result.json](entry-result.json)、[Spec 草稿](docs/.scratch/demo/spec.md)及工作记录。Spec 状态为 `ready-for-human`，覆盖三项验收；上游来源和批准未修改。全部仅用于 test-data-only，不构成真实批准或实现授权。"
+    }
+  ],
+  "artifacts": {
+    "entry-result.json": "{\n  \"result\": \"allowed\",\n  \"verification_command\": \"node scripts/verify-plan-spec-entry state.json\",\n  \"exit_code\": 0,\n  \"reason\": \"真实本地校验器输出：Plan → Spec 入口检查通过（不授权实现）。当前 Plan、审阅依据、Context 调和及用户决定绑定通过校验；仅在 test-data-only 隔离范围内允许生成 Spec 草稿，不构成真实批准或实现授权。\"\n}\n",
+    "docs/.scratch/demo/spec.md": "---\npipeline: feature.demo\nstage: open\nstatus: ready-for-human\nowner: ai\n---\n\n# 产品研发规格：查询已有任务状态\n\n用户按 ID 查询已有任务，获得状态和更新时间。本期为只读查询，必须覆盖成功、未找到和无权访问三种结果，并避免泄露其他租户的数据。\n\n本文是 test-data-only 的 Spec 草稿，依据当前 [Plan](../../../plan.md) 整理。真实入口校验已通过，证据见 [entry-result.json](../../../entry-result.json)；测试用户决定不构成真实批准，本文尚未通过 `gate.spec-baseline-approved`。\n\n## 功能父 Ticket 与来源\n\n功能父 Ticket 为 [parent-ticket.md](parent-ticket.md)。入口消费 [state.json](../../../state.json)、[审阅包](../../../review.json)、根 [CONTEXT.md](../../../CONTEXT.md) 和 [Context 调和记录](../../../reconciliation.json)，本轮记录见 [work-record.md](work-record.md)。\n\n## 问题与解决方案\n\n用户需要了解已有任务的当前状态及更新时间。查询在既有业务范围内读取任务信息；不存在的 ID 返回未找到，无权访问时不返回受保护数据。当前 Plan 明确无 UI、无编辑、无新增领域边界。\n\n用户故事：作为查询任务的用户，我希望按 ID 获得有权访问的已有任务的状态和更新时间，以了解该任务的情况。\n\n## 功能需求\n\n下列条目均为本期必需需求，来源为当前 Plan；编号仅用于本文规则与验收映射。\n\n| ID | 条件与行为 | 验收 |\n|---|---|---|\n| FR-001 | 用户查询有权访问的已有任务时，仅展示该任务的状态和更新时间。 | AC-001 |\n| FR-002 | 查询的 ID 不存在时，返回未找到。 | AC-002 |\n| FR-003 | 用户无权访问查询对象时，拒绝提供其受保护数据；不得泄露其他租户的数据，包括任务状态和更新时间。 | AC-003 |\n| FR-004 | 查询为只读操作，不提供编辑能力，不改变任务状态或更新时间。 | AC-001、AC-002、AC-003 |\n\n## 验收标准\n\n| ID | 给定 | 当 | 则 |\n|---|---|---|---|\n| AC-001 成功 | 存在一个任务，当前用户有权访问；其状态和更新时间已知。 | 用户按该任务 ID 查询。 | 查询成功，展示的业务信息仅为该任务的状态和更新时间，值与已有数据一致；查询前后任务数据不变。 |\n| AC-002 未找到 | 查询 ID 不存在。 | 用户按该 ID 查询。 | 返回未找到，不返回任务状态或更新时间；不创建或修改任务。 |\n| AC-003 无权访问 | 存在一个当前用户无权访问的任务，测试数据覆盖其他租户的任务。 | 用户按该 ID 查询。 | 查询不返回该任务的受保护数据，不泄露其他租户数据；任务数据不变。 |\n\nAC-003 要验证拒绝访问的行为，但不自行规定对外使用独立错误码还是与未找到一致的响应；具体 wire 语义须由后续契约承接既有权限及隔离规则，防止返回信息暴露其他租户数据。\n\n## 产品总体设计与功能边界\n\n本期只有“按 ID 查询 → 判断访问范围与是否存在 → 返回允许展示的结果”的业务流程；此描述不指定内部查询或鉴权的执行顺序。MVP 为上述四项需求与三项验收。\n\n| 影响 | 当前判断与依据 |\n|---|---|\n| UI / 产品设计 | `not-applicable`：Plan 明确无 UI，因此不生成页面、交互原型或前端实现计划。 |\n| 领域边界、协作与状态机 | 不新增领域边界；只读取已有任务状态，不引入状态转换。审阅包的领域战略及阶段决策专业检查均记录为有依据的 `not-applicable`。 |\n| 统一业务词汇 | 沿用 Plan 描述，不在本草稿新增稳定术语 ID。根 CONTEXT 的业务术语表尚无条目；正式术语与工程映射须在下游流转前完成对账。 |\n| 权限与数据 | 必须承接无权访问及租户隔离验收；本期无业务数据写入，不以此推断无需权限验证。 |\n| API / 后端 | 需要承接查询、未找到与拒绝访问语义；现有入口及 API 是否变更尚待影响分析，不虚构端点或无 API 影响结论。 |\n\n## OpenAPI 与工程承接\n\nPlan 未提供现有查询入口、HTTP 方法、路径、响应字段标识、错误码、状态枚举或时间格式。本文不冻结这些细节。若后续 API 影响分析确认需要变更，须形成 OpenAPI 3.1 Draft，完成审查及 Freeze 后再用于实现；无 API 影响时保存对应证据。\n\n未提供性能、容量或可靠性目标，本草稿不新增数值承诺。\n\n## 测试决策\n\n建议以任务状态查询的公开入口作为行为测试 seam，输入包括任务 ID 和当前访问上下文，断言允许返回的信息及拒绝访问结果。具体入口由后续工程契约确认，当前未声明已有代码 seam 已获批准。\n\n必需行为测试覆盖 AC-001、AC-002、AC-003，并在每个场景核对只读约束；跨租户数据使用隔离测试数据。若涉及 API，再将三项验收映射为契约测试。相似测试、实现仓库及执行命令尚未提供，当前只保留测试计划，不声称业务测试通过。\n\n## 非目标范围\n\n本期不提供任务编辑，不新增 UI，不新增领域边界；不从本 Spec 草稿生成实现代码或客户端。\n\n## 审阅与未决承接事项\n\n| 事项 | 影响与解决时点 | 责任人 / 接收方 |\n|---|---|---|\n| 现有入口、响应形状和无权访问的对外语义 | 在工程契约冻结前依据现有系统确认，覆盖三项验收及租户数据保护；不得把草稿中的描述当作已冻结 wire 契约。 | 负责人未登记；后续技术分析工作单元承接。 |\n| 业务词汇及公开测试 seam 映射 | 下游流转前核验根 CONTEXT 和真实工程入口，不能自行补造稳定术语或已批准 seam。 | 负责人未登记；生命周期主控协调。 |\n| Spec 基线审阅 | 本文状态为 `ready-for-human`；进入下游前仍须按现有用户决定规则完成 `gate.spec-baseline-approved`。 | 审查及决定负责人未登记。 |\n\n上述事项是草稿的下游承接缺口，不是已批准的延期或 `seam-deferred`。本轮仅形成可审阅草稿，不设置 `ready-for-agent`。\n"
+  },
+  "semantic_review": "pending"
+}

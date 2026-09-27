@@ -1,0 +1,138 @@
+{
+  "result": {
+    "scenario": "e05-continuation",
+    "variant": "baseline",
+    "repeat": 1,
+    "elapsed_seconds": 91.25,
+    "exit_code": 0,
+    "timeout": false,
+    "assertion_failures": [],
+    "runtime_errors": [],
+    "tool_calls": 13,
+    "usage": [
+      {
+        "input_tokens": 286696,
+        "cached_input_tokens": 228864,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 1930,
+        "reasoning_output_tokens": 425
+      }
+    ],
+    "automatic_result": "passed",
+    "semantic_review": "pending",
+    "trace": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-agent-evaluations-v2-2qx3mbr2/baseline/e05-continuation-1/trace.jsonl",
+    "steps": [
+      {
+        "step": "main",
+        "started_at": "2026-09-26T15:05:51Z",
+        "elapsed_seconds": 90.96,
+        "exit_code": 0,
+        "timeout": false,
+        "assertion_failures": [],
+        "runtime_errors": [],
+        "tool_calls": 13,
+        "usage": [
+          {
+            "input_tokens": 286696,
+            "cached_input_tokens": 228864,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1930,
+            "reasoning_output_tokens": 425
+          }
+        ],
+        "automatic_result": "passed",
+        "semantic_review": "pending",
+        "trace": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-agent-evaluations-v2-2qx3mbr2/baseline/e05-continuation-1/trace.jsonl"
+      }
+    ],
+    "unattempted_steps": []
+  },
+  "original_files_changed": [],
+  "original_files_missing": [],
+  "unsafe_paths": [],
+  "new_files": [
+    "entry-result.json"
+  ],
+  "commands": [
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"pwd && cat yss-project.yaml && rg --files -g 'state.json' -g 'AGENTS.md' -g '*entry-result*' -g '*user-decisions*' -g '*stage-tracking*' -g '*harness-process-tailoring*' -g '*lifecycle-registry*' -g '*verify*' -g 'CONTEXT.md' -g 'SKILL.md' . .template-spec .agents/skills/yss-product-lifecycle\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .template-spec/process/harness-process-tailoring.md scripts/verify-plan-spec-entry'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .agents/skills/yss-product-lifecycle/SKILL.md .agents/skills/yss-product-lifecycle/references/user-decisions.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat state.json CONTEXT.md AGENTS.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .agents/skills/yss-product-lifecycle/SKILL.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .agents/skills/yss-product-lifecycle/references/user-decisions.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"cat scripts/lib/plan-spec-entry.mjs review.json .fixture-authorization/continuation.json approval/decision.json && rg -n 'gate.plan-approved|check.plan|plan_continuation|plan-review|user_decision_policy' .template-spec/process/lifecycle-registry.yaml .template-spec/agents/digital-human-roles.yaml\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"cat .template-spec/plan/entry-review.md .template-spec/plan/README.md .template-spec/process/plan-migration.md .template-spec/process/contract-reading.md && sed -n '1,75p' .template-spec/process/lifecycle-registry.yaml && sed -n '150,184p' .template-spec/process/lifecycle-registry.yaml && sed -n '266,317p' .template-spec/agents/digital-human-roles.yaml\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"cat .fixture-authorization/review.json .fixture-authorization/mandate.json .fixture-authorization/verification.txt .fixture-authorization/decision.json plan.md reconciliation.json && rg -n 'continuation|external_policy|comparison|classification|assertUserDecisionRequirement|export function decisionIO' scripts/lib/user-decision.mjs && rg --files .fixture-authorization\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"cat .fixture-authorization/external.json .fixture-authorization/approved-snapshot.md .fixture-authorization/requester.json .fixture-authorization/presentation.json .fixture-authorization/reply-0.json && sed -n '1,75p' scripts/lib/user-decision.mjs && sed -n '1,230p' scripts/lib/decision-continuation.mjs\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'node scripts/verify-plan-spec-entry state.json'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"python3 -c 'import json; from pathlib import Path; p=Path(\\\"entry-result.json\\\"); r=json.loads(p.read_text()); assert set(r)=={\\\"result\\\",\\\"verification_command\\\",\\\"exit_code\\\",\\\"needs_new_reply\\\",\\\"reason\\\"}; assert r[\\\"result\\\"]==\\\"allowed\\\" and type(r[\\\"exit_code\\\"]) is int and r[\\\"exit_code\\\"]==0; assert type(r[\\\"needs_new_reply\\\"]) is bool and r[\\\"needs_new_reply\\\"] is False; print(p.read_text())'\"",
+      "exit_code": 0
+    }
+  ],
+  "command_errors": [],
+  "other_tools": [],
+  "agent_messages": [
+    {
+      "step": "main",
+      "text": "我会先核对仓库身份、`state.json` 延续路径和本地阶段门禁，使用 `yss-product-lifecycle` 校验 Plan→Spec 是否可继续，并将结果保存到 `entry-result.json`。\n"
+    },
+    {
+      "step": "main",
+      "text": "本地规则明确支持通过 `plan_continuation_ref` 延续已有授权；证据有效且决定依据未变时，无需再次回复。我已确认 `state.json` 使用了该路径，接下来运行入口校验器，核验摘要、独立审查、原回复绑定和 Context 对账。\n"
+    },
+    {
+      "step": "main",
+      "text": "已保存 [entry-result.json](/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-agent-evaluations-v2-2qx3mbr2/baseline/e05-continuation-1/workspace/entry-result.json)。\n\n`node scripts/verify-plan-spec-entry state.json` 实际退出码为 `0`；结果为 `allowed`，`needs_new_reply: false`。\n\n结论仅限隔离测试。未改写或生成批准，未起草产品资产。"
+    }
+  ],
+  "artifacts": {
+    "entry-result.json": "{\n  \"result\": \"allowed\",\n  \"verification_command\": \"node scripts/verify-plan-spec-entry state.json\",\n  \"exit_code\": 0,\n  \"needs_new_reply\": false,\n  \"reason\": \"隔离 fixture 内 Plan→Spec 入口校验通过。state.json 的 plan_continuation_ref 按 approved-scope-continuation-v1 核验了原回复合成副本、授权范围、当前资产摘要、独立等价审查及已确认的外部制度；Plan 必需检查和 Context 对账通过。依照本地用户决定协议，已有授权有效覆盖当前范围，无需新回复。本次仅校验并保存结果，未改写或生成批准，未起草产品资产。结论仅限 test-data-only，不构成真实批准或实现授权；真实身份、外部动作及构建交付未测试。\"\n}\n"
+  },
+  "semantic_review": "pending"
+}

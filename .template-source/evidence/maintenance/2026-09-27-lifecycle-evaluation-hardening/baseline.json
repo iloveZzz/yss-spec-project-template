@@ -1,0 +1,32 @@
+{
+  "recorded_at": "2026-09-27T01:58:21.843433+00:00",
+  "files": [
+    {
+      "ref": "scripts/lib/lifecycle-status.mjs",
+      "sha256": "4c6065440c32ca96fd4010767530c31b3e389ee2484e294b41c8d0b6e95ec71b"
+    },
+    {
+      "ref": "scripts/verify-lifecycle-operator-scenarios",
+      "sha256": "d686fac615bcb6d2f0487080dd3436afc7e1adfa72d0f50fd8be9166dc8c44e9"
+    },
+    {
+      "ref": ".template-source/scripts/skills-agent-eval.py",
+      "sha256": "4905a7fab83f43174726eb5e9d3f68792a12c168db507f2d49cf8b115665f9ef"
+    },
+    {
+      "ref": ".template-source/scripts/tests/test_skills_agent_eval.py",
+      "sha256": "f2224e505ed2a728e4429e8841f68472bab050de2edf92098360983fc2e0b492"
+    },
+    {
+      "ref": ".template-source/scripts/skills-agent-eval.md",
+      "sha256": "14b4dc9eae87910132c97583f2e0f0d0419f831c9dfbb8f34c82bc6f2fdb6447"
+    },
+    {
+      "ref": ".template-source/process/template-verification-profiles.yaml",
+      "sha256": "22aa2e75d633372e2cbeddc022aca2ee961a09ea6bd52356eb09df16dc6b25d4"
+    }
+  ],
+  "git_status": " M .agents/skills/yss-ddd-scaffold-generator/SKILL.md\n M .agents/skills/yss-implementation-contract-compiler/SKILL.md\n M .agents/skills/yss-layered-mvc-scaffold-generator/SKILL.md\n M .agents/skills/yss-layered-mvc-scaffold-generator/scripts/scaffold-generator.test.mjs\n M .agents/skills/yss-openapi-governance/SKILL.md\n M .agents/skills/yss-product-lifecycle/references/matt-yss-adapter.md\n M .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml\n M .agents/skills/yss-product-lifecycle/references/orchestration.md\n M .agents/skills/yss-product-lifecycle/references/request-triage.md\n M .agents/skills/yss-product-lifecycle/references/state-model.md\n M .agents/skills/yss-stage-decision/SKILL.md\n M .codex/skills/yss-ddd-scaffold-generator/SKILL.md\n M .codex/skills/yss-openapi-governance/SKILL.md\n M .codex/skills/yss-product-lifecycle/references/matt-yss-adapter.md\n M .codex/skills/yss-product-lifecycle/references/orchestration-contract.yaml\n M .codex/skills/yss-product-lifecycle/references/orchestration.md\n M .codex/skills/yss-product-lifecycle/references/request-triage.md\n M .codex/skills/yss-product-lifecycle/references/state-model.md\n M .template-source/derived/harness-work-unit-map.md\n M .template-source/distribution/strategic-handoff-tools.lock.json\n M .template-source/plugins/yss-backend-delivery/plan.mjs\n M .template-source/process/template-verification-profiles.yaml\n M .template-source/profile-skill-patches/backend/yss-implementation-contract-compiler.patch\n M .template-source/profile-skill-patches/frontend/yss-implementation-contract-compiler.patch\n M .template-source/profile-skill-patches/frontend/yss-openapi-governance.patch\n M .template-source/profile-skill-sync.json\n M .template-source/scripts/skills-agent-eval.md\n M .template-source/scripts/skills-agent-eval.py\n M .template-source/scripts/tests/test_skills_agent_eval.py\n M .template-source/scripts/verify-historical-task-package\n M .template-source/tooling/node/test/decision-continuation.test.mjs\n M .template-source/tooling/node/test/lifecycle-controls.test.mjs\n M .template-source/tooling/node/test/plugin-preparation.test.mjs\n M .template-source/tooling/node/test/plugin-project.test.mjs\n M .template-source/tooling/node/test/plugin-scope.test.mjs\n M .template-source/tooling/node/test/plugin-terminal.test.mjs\n M .template-source/tooling/node/test/skill-registry.test.mjs\n M .template-spec/agents/digital-human-roles.yaml\n M .template-spec/architecture/templates/tech-design-template.md\n M .template-spec/design/README.md\n M .template-spec/design/templates/interaction-spec-template.md\n M .template-spec/design/templates/product-overview-design-template.md\n M .template-spec/design/templates/state-matrix-template.md\n M .template-spec/plan/entry-review.md\n M .template-spec/process/lifecycle-artifact-map.md\n M .template-spec/process/lifecycle-registry-baseline.json\n M .template-spec/process/lifecycle-registry.yaml\n M .template-spec/process/schemas/lifecycle-checkpoint.schema.json\n M .template-spec/templates/release-note-template.md\n M .template-spec/templates/retro-report-template.md\n M .template-spec/templates/verification-record-template.md\n M .template-spec/templates/vertical-slice-ticket-template.md\n M AGENTS.md\n M scripts/fixtures/existing-ui-baseline/design-source-roles.json\n M scripts/fixtures/stage-tracking/tracking.test.mjs\n M scripts/fixtures/strategic-handoff/aggregate-source-roles.json\n M scripts/lib/lifecycle-context-query.mjs\n M scripts/lib/lifecycle-registry.mjs\n M scripts/lib/lifecycle-transition.mjs\n M scripts/lib/maintenance-review-workflow.mjs\n M scripts/lib/scenario-checks.mjs\n M scripts/lib/skill-registry.mjs\n M scripts/lib/slice-contract-preparation.mjs\n M scripts/lib/stage-tracking.mjs\n M scripts/lib/user-decision.mjs\n M scripts/node-verify-lifecycle-registry.mjs\n M scripts/verify-frontend-delivery-scenarios\n M scripts/verify-lifecycle-context-query-scenarios\n M scripts/verify-lifecycle-transition-scenarios\n M scripts/verify-retired-skill-ids\n M scripts/verify-subagent-task-package-scenarios\n M skills-lock.json\n m submodules/create-yss-spec\n m submodules/yss-harness-backend-agent\n m submodules/yss-harness-design-agent\n m submodules/yss-harness-frontend-agent\n?? .template-source/evidence/maintenance/2026-09-25-lifecycle-audit/\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-comparative-review/\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-improvement-implementation/\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-improvement-plan/\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-optimization/\n?? .template-source/evidence/maintenance/2026-09-27-lifecycle-evaluation-hardening/\n?? .template-source/scripts/replay-lifecycle-triage\n?? .template-source/scripts/run-lifecycle-cross-repo-pilot\n?? .template-spec/design/templates/examples/\n?? .template-spec/process/lifecycle-registry-baseline-v1.json\n?? scripts/lib/lifecycle-status.mjs\n?? scripts/lib/plan-spec-entry-view.mjs\n?? scripts/lifecycle-status\n?? scripts/plan-spec-entry\n?? scripts/verify-lifecycle-operator-scenarios\n",
+  "head": "ab0c247d5d30520dfe3a5876a96f5d0864d83cd0",
+  "scope": "Local diagnosis and evaluation hardening; preserve existing dirty work and historical runs; no real project migration or Git delivery"
+}

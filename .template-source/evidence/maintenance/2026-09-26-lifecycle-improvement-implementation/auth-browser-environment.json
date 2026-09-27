@@ -1,0 +1,30 @@
+{
+  "checked_at": "2026-09-26T15:21:16.802116+00:00",
+  "configured_frontend": "http://localhost:8081",
+  "configured_proxy_target": "http://127.0.0.1:8090",
+  "checks": [
+    {
+      "command": [
+        "lsof",
+        "-nP",
+        "-iTCP:8081",
+        "-sTCP:LISTEN"
+      ],
+      "exit_code": 1,
+      "output": ""
+    },
+    {
+      "command": [
+        "lsof",
+        "-nP",
+        "-iTCP:8090",
+        "-sTCP:LISTEN"
+      ],
+      "exit_code": 1,
+      "output": ""
+    }
+  ],
+  "browser_executed": false,
+  "services_started": false,
+  "limitation": "No matching development listeners at this observation; no browser or external identity-provider session used"
+}

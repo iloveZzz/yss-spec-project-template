@@ -38,7 +38,7 @@ try {
   if (registryPath === DEFAULT_REGISTRY) {
     const generated = run("node", ["scripts/node-generate-lifecycle-artifacts.mjs", "--check"]);
     if (generated.status !== 0) throw new TypeError(`${generated.stdout}${generated.stderr}`.trim());
-    for (const relativePath of [".template-spec/process/lifecycle-registry.yaml", ".template-spec/process/lifecycle-registry-baseline.json", ".template-spec/process/schemas/lifecycle-registry.schema.json"]) {
+    for (const relativePath of [".template-spec/process/lifecycle-registry.yaml", ".template-spec/process/lifecycle-registry-baseline.json", ".template-spec/process/lifecycle-registry-baseline-v1.json", ".template-spec/process/schemas/lifecycle-registry.schema.json"]) {
       const ignored = run("git", ["check-ignore", "-q", relativePath]);
       if (ignored.status === 0) throw new TypeError(`权威注册表资产不得被 Git 忽略: ${relativePath}`);
     }

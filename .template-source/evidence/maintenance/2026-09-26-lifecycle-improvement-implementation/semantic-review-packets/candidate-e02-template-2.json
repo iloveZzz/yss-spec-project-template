@@ -1,0 +1,153 @@
+{
+  "result": {
+    "scenario": "e02-template",
+    "variant": "candidate",
+    "repeat": 2,
+    "elapsed_seconds": 78.48,
+    "exit_code": 0,
+    "timeout": false,
+    "assertion_failures": [],
+    "runtime_errors": [],
+    "tool_calls": 16,
+    "usage": [
+      {
+        "input_tokens": 205582,
+        "cached_input_tokens": 160000,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 1704,
+        "reasoning_output_tokens": 360
+      }
+    ],
+    "automatic_result": "passed",
+    "semantic_review": "pending",
+    "trace": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-agent-evaluations-v2-2qx3mbr2/candidate/e02-template-2/trace.jsonl",
+    "steps": [
+      {
+        "step": "main",
+        "started_at": "2026-09-26T15:59:31Z",
+        "elapsed_seconds": 78.34,
+        "exit_code": 0,
+        "timeout": false,
+        "assertion_failures": [],
+        "runtime_errors": [],
+        "tool_calls": 16,
+        "usage": [
+          {
+            "input_tokens": 205582,
+            "cached_input_tokens": 160000,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1704,
+            "reasoning_output_tokens": 360
+          }
+        ],
+        "automatic_result": "passed",
+        "semantic_review": "pending",
+        "trace": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-agent-evaluations-v2-2qx3mbr2/candidate/e02-template-2/trace.jsonl"
+      }
+    ],
+    "unattempted_steps": []
+  },
+  "original_files_changed": [],
+  "original_files_missing": [],
+  "unsafe_paths": [],
+  "new_files": [
+    "maintenance-plan.md"
+  ],
+  "commands": [
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat yss-project.yaml'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc pwd",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"rg --files --hidden -g AGENTS.md -g CONTEXT.md -g '*maintenance*' -g '*process*' -g '\"'!**/.git/**'\"'\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .template-spec/process/harness-process-tailoring.md .template-source/process/maintenance-intensity.yaml'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat AGENTS.md CONTEXT.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .agents/skills/i-have-adhd/SKILL.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"rg -n '版本引用|版本|schema_version' .template-source/process .template-spec/process yss-project.yaml | head -100\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"sed -n '1,120p' .template-spec/process/harness-process-tailoring.md\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .agents/skills/i-have-adhd/SKILL.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"sed -n '70,180p' CONTEXT.md\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .template-source/process/maintenance-intensity.yaml'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'test ! -e maintenance-plan.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .template-spec/process/document-writing.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"rg --files scripts .template-spec .template-source | rg 'verify-(project|context|template)|project.*schema|verification-profiles'\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat maintenance-plan.md'",
+      "exit_code": 0
+    }
+  ],
+  "command_errors": [],
+  "other_tools": [],
+  "agent_messages": [
+    {
+      "step": "main",
+      "text": "我会先读取仓库身份和必要维护规则，再编写简短的 `maintenance-plan.md`，明确目标文件、核验方式和完成边界。"
+    },
+    {
+      "step": "main",
+      "text": "已确认身份为 `template-source`。若仅修正文档中的版本引用，适用 L1 维护；当前尚未指定具体文件和新旧版本，我会将它们列为实施前待核对项，并使用 `i-have-adhd` 技能规范计划表达。"
+    },
+    {
+      "step": "main",
+      "text": "已创建 [maintenance-plan.md](/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-agent-evaluations-v2-2qx3mbr2/candidate/e02-template-2/workspace/maintenance-plan.md)，记录目标范围、L1 分级、适用核验和完成边界。\n\n仅写入计划；具体文件及新旧版本列为待核对项，未实施修改或运行维护验证。"
+    }
+  ],
+  "artifacts": {
+    "maintenance-plan.md": "本计划用于修正流程说明中的版本引用，本轮仅编写计划。\n\n- **身份与依据**：已读取 `yss-project.yaml`（schema v1，`template-source`）、`AGENTS.md`、根 `CONTEXT.md` 及文首合同，并依据 `.template-spec/process/harness-process-tailoring.md`、`.template-source/process/maintenance-intensity.yaml` 分级。\n- **目标文件**：本轮唯一写入 `maintenance-plan.md`。后续拟在 `.template-spec/process/*.md`、`.template-source/process/*.md` 定位相关说明；具体文件、原引用、正确版本及权威来源尚未指定，实施前逐项核对，不猜版本。\n- **执行顺序**：列出引用差异及来源 → 仅修正已证实错误的说明 → 检查受影响派生与分发引用。纯文本或链接修正暂定 L1（`textual-only` / `link-only`），采用 `self-check`；若涉及规则或行为变化，重新判定影响与等级。\n- **适用核验**：实施后逐项对照权威版本、核查链接，并运行 `scripts/verify-template-fast`，保存实际输出与退出码。进入 PR 时运行 `scripts/verify-template-candidate`；main / 发布前运行完整 `scripts/verify-template`。L1 不构造 RED；流程文档无业务行为，`behavior-tdd` 不适用。\n- **裁剪**：`context_reconciliation: not-applicable`，原因是模板源维护，后续核验适用模板合同；产品 Spec、原型、OpenAPI、垂直切片 Ticket、运行时代码均不适用，本次无产品影响。\n- **完成边界**：本轮以计划落盘及内容自检为止，不实施引用修正、提交、推送或发布。后续修正须引用一致、适用同步与 fresh verification 闭合，才可记录维护完成；当前核验命令均为计划，未执行。fixture 内替身成功不构成真实交付证据，外部固定版本 `create-yss-spec` 集成未测，不宣称可发布。\n"
+  },
+  "semantic_review": "pending"
+}

@@ -1,0 +1,163 @@
+{
+  "checked_at": "2026-09-26T17:42:45.061465+00:00",
+  "checks": [
+    {
+      "ref": ".agents/skills/yss-ddd-scaffold-generator/SKILL.md",
+      "matches_recorded_after": true
+    },
+    {
+      "ref": ".agents/skills/yss-implementation-contract-compiler/SKILL.md",
+      "matches_recorded_after": true
+    },
+    {
+      "ref": ".agents/skills/yss-layered-mvc-scaffold-generator/SKILL.md",
+      "matches_recorded_after": true
+    },
+    {
+      "ref": ".agents/skills/yss-openapi-governance/SKILL.md",
+      "matches_recorded_after": true
+    },
+    {
+      "ref": ".agents/skills/yss-product-lifecycle/references/matt-yss-adapter.md",
+      "matches_recorded_after": true
+    },
+    {
+      "ref": ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml",
+      "matches_recorded_after": true
+    },
+    {
+      "ref": ".agents/skills/yss-product-lifecycle/references/orchestration.md",
+      "matches_recorded_after": true
+    },
+    {
+      "ref": ".agents/skills/yss-product-lifecycle/references/state-model.md",
+      "matches_recorded_after": true
+    },
+    {
+      "ref": ".template-source/distribution/strategic-handoff-tools.lock.json",
+      "matches_recorded_after": true
+    },
+    {
+      "ref": ".template-source/scripts/skills-agent-eval.md",
+      "matches_recorded_after": true
+    },
+    {
+      "ref": ".template-source/scripts/skills-agent-eval.py",
+      "matches_recorded_after": true
+    },
+    {
+      "ref": ".template-source/scripts/tests/test_skills_agent_eval.py",
+      "matches_recorded_after": true
+    },
+    {
+      "ref": ".template-source/tooling/node/test/decision-continuation.test.mjs",
+      "matches_recorded_after": true
+    },
+    {
+      "ref": ".template-spec/design/templates/interaction-spec-template.md",
+      "matches_recorded_after": true
+    },
+    {
+      "ref": ".template-spec/design/templates/product-overview-design-template.md",
+      "matches_recorded_after": true
+    },
+    {
+      "ref": ".template-spec/plan/entry-review.md",
+      "matches_recorded_after": true
+    },
+    {
+      "ref": ".template-spec/templates/release-note-template.md",
+      "matches_recorded_after": true
+    },
+    {
+      "ref": ".template-spec/templates/retro-report-template.md",
+      "matches_recorded_after": true
+    },
+    {
+      "ref": ".template-spec/templates/verification-record-template.md",
+      "matches_recorded_after": true
+    },
+    {
+      "ref": "AGENTS.md",
+      "matches_recorded_after": true
+    },
+    {
+      "ref": "scripts/lib/lifecycle-status.mjs",
+      "matches_recorded_after": true
+    },
+    {
+      "ref": "scripts/lib/plan-spec-entry-view.mjs",
+      "matches_recorded_after": true
+    },
+    {
+      "ref": "scripts/lib/user-decision.mjs",
+      "matches_recorded_after": true
+    },
+    {
+      "ref": "scripts/lifecycle-status",
+      "matches_recorded_after": true
+    },
+    {
+      "ref": "scripts/verify-lifecycle-operator-scenarios",
+      "matches_recorded_after": true
+    },
+    {
+      "ref": "scripts/verify-retired-skill-ids",
+      "matches_recorded_after": true
+    },
+    {
+      "ref": "skills-lock.json",
+      "matches_recorded_after": true
+    },
+    {
+      "ref": ".template-source/profile-skill-patches/backend/yss-implementation-contract-compiler.patch",
+      "matches_recorded_after": true
+    },
+    {
+      "ref": ".template-source/profile-skill-patches/frontend/yss-implementation-contract-compiler.patch",
+      "matches_recorded_after": true
+    },
+    {
+      "ref": ".template-source/profile-skill-patches/frontend/yss-openapi-governance.patch",
+      "matches_recorded_after": true
+    },
+    {
+      "ref": ".template-source/profile-skill-sync.json",
+      "matches_recorded_after": true
+    },
+    {
+      "ref": "submodules/yss-harness-backend-agent/scripts/lib/user-decision.mjs",
+      "matches_recorded_after": true
+    },
+    {
+      "ref": "submodules/yss-harness-design-agent/scripts/lib/user-decision.mjs",
+      "matches_recorded_after": true
+    },
+    {
+      "ref": "submodules/yss-harness-frontend-agent/scripts/lib/user-decision.mjs",
+      "matches_recorded_after": true
+    },
+    {
+      "ref": ".template-spec/process/lifecycle-registry.yaml",
+      "matches_recorded_after": true
+    },
+    {
+      "ref": ".codex/skills/yss-openapi-governance/SKILL.md",
+      "matches_recorded_after": true
+    },
+    {
+      "ref": "submodules/yss-harness-backend-agent/skills-lock.json",
+      "matches_recorded_after": true
+    },
+    {
+      "ref": "submodules/yss-harness-backend-agent/.agents/skills/yss-openapi-governance/SKILL.md",
+      "matches_recorded_after": true
+    },
+    {
+      "ref": "submodules/yss-harness-backend-agent/.codex/skills/yss-openapi-governance/SKILL.md",
+      "matches_recorded_after": true
+    }
+  ],
+  "all_match": true,
+  "scope": "Unique final paths from implementation and post-comparison deltas; not an inventory of unrelated workspace files"
+}

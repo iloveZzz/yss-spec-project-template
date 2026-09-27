@@ -1,0 +1,125 @@
+{
+  "result": {
+    "scenario": "e11-cross-repo",
+    "variant": "candidate",
+    "repeat": 2,
+    "elapsed_seconds": 83.66,
+    "exit_code": 0,
+    "timeout": false,
+    "assertion_failures": [],
+    "runtime_errors": [],
+    "tool_calls": 9,
+    "usage": [
+      {
+        "input_tokens": 200693,
+        "cached_input_tokens": 161664,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 1788,
+        "reasoning_output_tokens": 580
+      }
+    ],
+    "automatic_result": "passed",
+    "semantic_review": "pending",
+    "trace": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-agent-evaluations-v2-2qx3mbr2/candidate/e11-cross-repo-2/trace.jsonl",
+    "steps": [
+      {
+        "step": "main",
+        "started_at": "2026-09-26T16:54:15Z",
+        "elapsed_seconds": 83.53,
+        "exit_code": 0,
+        "timeout": false,
+        "assertion_failures": [],
+        "runtime_errors": [],
+        "tool_calls": 9,
+        "usage": [
+          {
+            "input_tokens": 200693,
+            "cached_input_tokens": 161664,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1788,
+            "reasoning_output_tokens": 580
+          }
+        ],
+        "automatic_result": "passed",
+        "semantic_review": "pending",
+        "trace": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-agent-evaluations-v2-2qx3mbr2/candidate/e11-cross-repo-2/trace.jsonl"
+      }
+    ],
+    "unattempted_steps": []
+  },
+  "original_files_changed": [],
+  "original_files_missing": [],
+  "unsafe_paths": [],
+  "new_files": [
+    "cross-repo-result.json",
+    "cross-repo.log"
+  ],
+  "commands": [
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc pwd",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat yss-project.yaml'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat AGENTS.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"sed -n '1,200p' scripts/verify-strategic-handoff-package-scenarios\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"sed -n '1,100p' scripts/lib/strategic-handoff-io.mjs\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'ls -ld .eval-tmp'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat CONTEXT.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"python3 - <<'PY'\nimport os\nimport subprocess\nfrom pathlib import Path\ncommand = ['node', '--test', '--test-name-pattern=规则遗漏、摘要漂移、批准不匹配和离线资源丢失阻断导出', 'scripts/verify-strategic-handoff-package-scenarios']\nenv = os.environ.copy()\nenv['TMPDIR'] = str(Path('.eval-tmp').resolve())\nwith Path('cross-repo.log').open('wb') as log:\n    completed = subprocess.run(command, stdout=log, stderr=subprocess.STDOUT, env=env)\nprint('exit_code=' + str(completed.returncode))\nprint(Path('cross-repo.log').read_text(encoding='utf-8', errors='replace'))\nPY\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"python3 - <<'PY'\nimport json\nimport re\nfrom pathlib import Path\nlog = Path('cross-repo.log').read_text(encoding='utf-8')\ncount = re.search(r'\"'^ℹ tests ('\"\\\\d+)\\\\s*\"'$'\"', log, re.MULTILINE)\nassert count, '日志中未找到实际测试数'\nassert re.search(r'\"'^ℹ pass 1'\"\\\\s*\"'$'\"', log, re.MULTILINE)\nassert re.search(r'\"'^ℹ fail 0'\"\\\\s*\"'$'\"', log, re.MULTILINE)\nresult = {\n    'command': ['node', '--test', '--test-name-pattern=规则遗漏、摘要漂移、批准不匹配和离线资源丢失阻断导出', 'scripts/verify-strategic-handoff-package-scenarios'],\n    'exit_code': 0,\n    'actual_test_count': int(count.group(1)),\n    'limitations': [\n        '仅运行名称匹配的既有场景，实际为 1 个测试；未运行完整跨仓场景集。此次命令未报告缺失依赖。',\n        'TMPDIR 指向 fixture 内既有的 .eval-tmp；cross-repo.log 原样保存命令合并后的 stdout 和 stderr。',\n        '离线资源用例修改页面为引用 missing.png，并断言导出以“过期”拒绝；该断言不单独证明资源存在性检查。',\n        '所有测试数据和批准均为 test-data-only，不构成真实项目批准、阶段流转或发布授权。',\n        '未核验真实外部仓库、网络、构建、部署或交付；PATH 替身成功不代表真实构建或交付。'\n    ]\n}\noutput = Path('cross-repo-result.json')\noutput.write_text(json.dumps(result, ensure_ascii=False, indent=2) + '\\\\n', encoding='utf-8')\nassert json.loads(output.read_text(encoding='utf-8')) == result\nprint(output.read_text(encoding='utf-8'))\nprint('temporary_entries=' + json.dumps([p.name for p in Path('.eval-tmp').iterdir()], ensure_ascii=False))\nPY\"",
+      "exit_code": 0
+    }
+  ],
+  "command_errors": [],
+  "other_tools": [],
+  "agent_messages": [
+    {
+      "step": "main",
+      "text": "我会在隔离目录内核对运行约束，执行指定场景，并只保存结果 JSON 和原始命令日志；测试中的批准不会视为真实项目批准。"
+    },
+    {
+      "step": "main",
+      "text": "指定场景已通过：命令退出码为 0，实际运行 1 个测试。结果文件会注明隔离范围；其中离线资源用例断言的是“过期”拒绝，不能单独证明资源存在性检查。"
+    },
+    {
+      "step": "main",
+      "text": "指定场景通过：退出码 `0`，实际运行 `1` 个测试，未报告依赖缺失。\n\n已保存：\n- [cross-repo-result.json](cross-repo-result.json)\n- [cross-repo.log](cross-repo.log)\n\n限制已记录；测试批准不构成真实项目批准。"
+    }
+  ],
+  "artifacts": {
+    "cross-repo-result.json": "{\n  \"command\": [\n    \"node\",\n    \"--test\",\n    \"--test-name-pattern=规则遗漏、摘要漂移、批准不匹配和离线资源丢失阻断导出\",\n    \"scripts/verify-strategic-handoff-package-scenarios\"\n  ],\n  \"exit_code\": 0,\n  \"actual_test_count\": 1,\n  \"limitations\": [\n    \"仅运行名称匹配的既有场景，实际为 1 个测试；未运行完整跨仓场景集。此次命令未报告缺失依赖。\",\n    \"TMPDIR 指向 fixture 内既有的 .eval-tmp；cross-repo.log 原样保存命令合并后的 stdout 和 stderr。\",\n    \"离线资源用例修改页面为引用 missing.png，并断言导出以“过期”拒绝；该断言不单独证明资源存在性检查。\",\n    \"所有测试数据和批准均为 test-data-only，不构成真实项目批准、阶段流转或发布授权。\",\n    \"未核验真实外部仓库、网络、构建、部署或交付；PATH 替身成功不代表真实构建或交付。\"\n  ]\n}\n",
+    "cross-repo.log": "✔ 规则遗漏、摘要漂移、批准不匹配和离线资源丢失阻断导出 (1129.433083ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 1183.537125\n"
+  },
+  "semantic_review": "pending"
+}

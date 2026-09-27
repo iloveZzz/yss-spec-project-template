@@ -14,7 +14,7 @@ Token 或组件视觉变体变更必须先修改 `DESIGN.md`，再更新派生�
 
 产品原型由 `yss-prototype-stage` 持有阶段合同：先评审低保真/状态矩阵，再选择 H1 视觉或 H2 流程，并按需调用 `product-design:index` focused workflow。YSS 生命周期负责校验档位选择、Prototype Evidence schema v4、Visual Baseline schema v1、统一 Design QA、用户确认和 Spec / OpenAPI 回填。原型阶段不得调用生产实现技能 `yss-ui`。
 
-进入 Spec 初稿 / 需求基线流程后，必须先沉淀产品总体设计 / 功能架构，再进入页面 / 原型 / 交互设计、Spec 校准、API 影响分析 / 契约草案或实现。产品总体设计文档必须包含低保真原型 / 页面草图，用于验证页面结构、关键操作和主流程。无 UI 的功能也需要产品总体设计 / 功能架构来说明功能域、业务对象、模块边界、API / 数据影响和不适用的页面状态；只有不进入 Spec 生命周期的小改动可在影响面评估中记录不适用原因。
+进入 Spec 初稿 / 需求基线流程后，先沉淀产品总体设计 / 功能架构，再进入页面 / 原型 / 交互设计、Spec 校准、API 影响分析 / 契约草案或实现。有 UI 影响时，产品总体设计记录早期页面 / 流程草图与待验证问题；正式低保真原型属于产品设计阶段。无 UI 的功能仍需说明功能域、业务对象、模块边界及 API / 数据影响，并记录页面草图不适用的依据；不生成空原型。
 
 进入 API 影响分析 / 契约草案前，有用户界面的功能还必须沉淀：
 
@@ -31,9 +31,10 @@ Token 或组件视觉变体变更必须先修改 `DESIGN.md`，再更新派生�
 
 推荐模板：
 
-- `.template-spec/design/templates/product-overview-design-template.md`：Spec 初稿之后、页面 / 原型 / 交互设计之前，用于团队评审产品总体设计、功能架构、低保真原型、页面/API/数据影响和 Spec 回填项；它是后续交互设计输入，不替代详细交互说明。
+- `.template-spec/design/templates/product-overview-design-template.md`：Spec 初稿之后、产品设计之前，用于评审功能架构、早期页面 / 流程草图、影响面和 Spec 回填项；正式低保真原型在产品设计阶段完成。
 - `.template-spec/design/templates/interaction-spec-template.md`：页面、流程、交互、Spec 回填项和 OpenAPI 反推清单。
 - `.template-spec/design/templates/state-matrix-template.md`：loading、empty、error、readonly、no-permission、conflict 等状态。
+- `.template-spec/design/templates/examples/`：已填示例仅说明填写方式，不构成项目需求或批准结论。
 - `.template-spec/design/templates/prototype-review-checklist.md`：进入 Spec 校准 / API 影响分析 / 契约草案前的原型评审门禁。
 - `.template-spec/design/templates/prototype-confirmation-template.md`：原型交付物验证后的用户确认记录。
 - `.template-spec/design/templates/prototype-evidence-template.yaml`：Prototype Evidence schema v4 原型档位、浏览器、统一 Design QA、Visual Baseline 引用、条件组件事实、评审和确认的机器可读证据清单。

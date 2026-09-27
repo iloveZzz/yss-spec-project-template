@@ -36,7 +36,7 @@ Plan 的目标与退出条件由 `.template-spec/process/lifecycle-registry.yaml
 
 ## 控制面引用
 
-- 用户决定遵循 `.template-spec/process/lifecycle/references/user-decisions.md`：决定必须绑定资产、版本、范围和证据；范围、风险、摘要或失效条件变化后重新确认。
+- 用户决定遵循 [用户决定协议](../yss-product-lifecycle/references/user-decisions.md)：决定必须绑定资产、版本、范围和证据；范围、风险、摘要或失效条件变化后重新确认。
 - checkpoint 是唯一机器状态源，业务 Ticket 只保存追踪引用，不复制阶段状态。
 - 每次批准、重发和消费者流转前执行 `context_reconciliation`，核验 `CONTEXT.md` 的全文与引用术语双摘要。
 - 技术事实与第三方行为走 `yss-research` 的 `technical-evidence`；产品策略依据走 `strategy-evidence`；市场与竞品判断走 `competitive-intelligence`。

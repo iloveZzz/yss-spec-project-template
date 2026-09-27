@@ -228,13 +228,13 @@ const parentOnly = validateTicketFormalization({
 assert.equal(parentOnly.result, "blocked");
 
 assert.equal(validateNextRoute("work-unit.ticket-decomposition", "work-unit.slice-implementation").result, "allowed");
-for (const current of ["work-unit.spec-synthesis", "work-unit.prototype-design", "work-unit.technical-analysis"]) {
+for (const current of ["work-unit.spec-synthesis", "work-unit.prototype-design-v2", "work-unit.technical-analysis"]) {
   const result = validateNextRoute(current, "work-unit.slice-implementation");
   assert.equal(result.result, "blocked", current);
   assert.ok(result.blocking_signals.includes("ticket-formalization-required"), current);
 }
 assert.equal(validateNextRoute("work-unit.spec-synthesis", "work-unit.ticket-decomposition").result, "blocked");
-for (const current of ["work-unit.spec-synthesis", "work-unit.prototype-design"]) {
+for (const current of ["work-unit.spec-synthesis", "work-unit.prototype-design-v2"]) {
   const result = validateNextRoute(current, "work-unit.implementation-repository-preparation");
   assert.equal(result.result, "blocked", `${current} must not bypass technical analysis`);
   assert.ok(result.blocking_signals.includes("technical-analysis-required"), current);
@@ -267,7 +267,7 @@ assert.ok(validateNextRoute("work-unit.technical-analysis", "work-unit.implement
 }, options).blocking_signals.includes("technical-analysis-required"));
 assert.equal(validateNextRoute("work-unit.implementation-repository-preparation", "work-unit.ticket-decomposition", validTicketState, options).result, "allowed");
 assert.ok(validateNextRoute("work-unit.implementation-repository-preparation", "work-unit.ticket-decomposition", {}, options).blocking_signals.includes("implementation-repository-decision-required"));
-assert.equal(validateNextRoute("work-unit.intensity-aware-verification", "work-unit.intensity-aware-review").result, "allowed");
+assert.equal(validateNextRoute("work-unit.intensity-aware-verification-v2", "work-unit.intensity-aware-review-v2").result, "allowed");
 assert.equal(validateNextRoute("work-unit.release-and-rollback", null).result, "allowed");
 const arbitraryReadable = validateTicketFormalization({
   ...validTicketState,

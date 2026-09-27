@@ -16,7 +16,7 @@ function fixture({ design = false, enabled = false, platform = 'local-markdown' 
   put(root, 'yss-project.yaml', { schema_version: 1, repository_mode: 'project-instance' });
   put(root, 'CONTEXT.md', '# 测试词汇');
   put(root, '.template-spec/agents/issue-tracker.md', `---\ntracker:\n  platform: ${platform}\n${enabled ? '  lifecycle_tracking_version: 1\n' : ''}---\n# Tracker\n`);
-  if (design) put(root, '.template-spec/process/harness-profile.yaml', { profile_id: 'harness.business-ddd-strategy-handoff', allowed_work_units: ['work-unit.plan-requirements', 'work-unit.spec-synthesis', 'work-unit.prototype-design'] });
+  if (design) put(root, '.template-spec/process/harness-profile.yaml', { profile_id: 'harness.business-ddd-strategy-handoff', allowed_work_units: ['work-unit.plan-requirements', 'work-unit.spec-synthesis', 'work-unit.prototype-design-v2'] });
   put(root, 'docs/.scratch/demo/plan/input.md', '# 已确认的问题');
   return root;
 }
@@ -166,7 +166,7 @@ test('dispatch rejects missing registration and permits independent pending work
   assert.throws(() => assertTrackingEntry('work-unit.plan-requirements', {}, { root }), /entry-checkpoint-required/);
   const active = start();
   assert.doesNotThrow(() => assertTrackingEntry('work-unit.plan-requirements', { checkpoint_ref: checkpointRef }, { root: active.root }));
-  assert.throws(() => assertTrackingEntry('work-unit.prototype-design', { checkpoint_ref: checkpointRef }, { root: active.root }), /entry-work-item-required/);
+  assert.throws(() => assertTrackingEntry('work-unit.prototype-design-v2', { checkpoint_ref: checkpointRef }, { root: active.root }), /entry-work-item-required/);
 });
 test('checkpoint schema embeds the canonical stage tracking schema exactly', () => {
   assert.deepEqual(JSON.parse(readFileSync(path.join(repo, '.template-spec/process/schemas/lifecycle-checkpoint.schema.json'))).properties.stage_tracking, JSON.parse(readFileSync(path.join(repo, '.template-spec/process/schemas/stage-tracking.schema.json'))));

@@ -89,6 +89,7 @@ request_triage:
     explicit_audit: audit
     authorized_continuation: resume
     clear_action_request: orchestrate
+    clear_read_only_investigation_request: orchestrate
     unresolved_intent: route
     investigation: read-only-actions-unless-additional-scope-authorized
     mode_keywords_required: false
@@ -138,6 +139,16 @@ execution_efficiency:
     template_regression_suite: template-maintenance-or-explicit-regression-task
     per_work_unit_context_reconciliation: required
     skip_triggered_gates: forbidden
+  recovery:
+    state_source: current-checkpoint-stage-tracking-and-readable-task-results
+    status_view: read-only-diagnostics-never-execution-authorization
+    running_or_unknown_task: inspect-existing-task-identity-before-dispatch
+    completed_task: verify-current-evidence-then-recompute-frontier
+    action_completed_before_checkpoint: reconcile-actual-artifacts-before-repeating-side-effects
+    changed_inputs: invalidate-affected-dependencies-and-revalidate
+    missing_legacy_tracking: existing-compatibility-or-explicit-migration
+    unknown_external_result: stop-duplicate-side-effect-and-report-missing-evidence
+    approval: revalidate-current-decision-or-supported-continuation
   interaction:
     questions: batch-independent-current-stage-questions
     user_decision_policy_ref: .template-spec/agents/digital-human-roles.yaml#user_decision_policy
@@ -354,7 +365,7 @@ work_unit_routes:
     human_gate: spec-baseline
     applies_when: new_feature_or_behavior_change
     not_applicable_reason: existing_frozen_spec_is_current
-  work-unit.prototype-design:
+  work-unit.prototype-design-v2:
     native: {source: yss-product-lifecycle, skill: yss-product-lifecycle, invocation_mode: model-invoked}
     primary_skill: yss-prototype-stage
     supporting_skills: [prototype-review, yss-design-system, product-design:index]
@@ -362,7 +373,7 @@ work_unit_routes:
     execution_order: [yss-design-system, low-fidelity-assets, prototype-review, prototype-profile-routing, profile-adapter-build, browser-design-qa-accessibility, user-confirmation]
     profile_routing_ref: .agents/skills/yss-prototype-stage/references/prototype-profile-routing.md
     prototype_adapter_ref: .agents/skills/yss-prototype-stage/references/product-design-adapter.md
-    evidence_schema_version: 3
+    evidence_schema_version: 4
     profile_contract:
       default_when_uncertain: H2
       highest_matching_profile_wins: true
@@ -438,6 +449,16 @@ work_unit_routes:
     result_schema_version: 2
     backend_design_prerequisites_required: [technical_design, data_architecture_decision, api_contract_decision, engineering_contract_approval_ref]
     must_complete_before: work-unit.ticket-decomposition
+  work-unit.service-project-initialization:
+    native: {source: yss-product-lifecycle, skill: yss-product-lifecycle, invocation_mode: model-invoked}
+    primary_skill: yss-layered-mvc-scaffold-generator
+    supporting_skills: []
+    skills: [yss-layered-mvc-scaffold-generator]
+    parent_work_unit: work-unit.implementation-repository-preparation
+    return_to: work-unit.implementation-repository-preparation
+    applies_when: new_backend_project_with_approved_current_v4_mvc-data-analysis-v1_contract
+    completion_evidence: [scaffold-manifest-v4, scaffold-verification, workflow-execution-result, context-handoff-digest]
+    not_applicable_reason: existing_project_or_other_architecture_profile
   work-unit.ticket-decomposition:
     native: {source: yss-product-lifecycle, skill: yss-product-lifecycle, invocation_mode: model-invoked}
     primary_skill: yss-product-lifecycle
@@ -621,21 +642,22 @@ transition_graph:
   validator: scripts/lib/lifecycle-transition.mjs
   implementation_requires_predecessor: work-unit.ticket-decomposition
   routes:
-    work-unit.ssot-update: [work-unit.skill-projection-sync, work-unit.intensity-aware-verification]
-    work-unit.skill-projection-sync: [work-unit.template-snapshot-build, work-unit.intensity-aware-verification]
-    work-unit.template-snapshot-build: [work-unit.attach-sync-integration, work-unit.intensity-aware-verification]
-    work-unit.attach-sync-integration: [work-unit.intensity-aware-verification]
-    work-unit.intensity-aware-verification: [work-unit.intensity-aware-review]
-    work-unit.intensity-aware-review: [work-unit.release-and-rollback]
+    work-unit.ssot-update: [work-unit.skill-projection-sync, work-unit.intensity-aware-verification-v2]
+    work-unit.skill-projection-sync: [work-unit.template-snapshot-build, work-unit.intensity-aware-verification-v2]
+    work-unit.template-snapshot-build: [work-unit.attach-sync-integration, work-unit.intensity-aware-verification-v2]
+    work-unit.attach-sync-integration: [work-unit.intensity-aware-verification-v2]
+    work-unit.intensity-aware-verification-v2: [work-unit.intensity-aware-review-v2]
+    work-unit.intensity-aware-review-v2: [work-unit.release-and-rollback]
     work-unit.release-and-rollback: []
     work-unit.plan-opportunity: [work-unit.plan-requirements, work-unit.domain-strategy-design, work-unit.stage-decision, work-unit.spec-synthesis]
     work-unit.plan-requirements: [work-unit.domain-strategy-design, work-unit.stage-decision, work-unit.spec-synthesis]
     work-unit.domain-strategy-design: [work-unit.stage-decision, work-unit.spec-synthesis]
     work-unit.stage-decision: [work-unit.spec-synthesis]
-    work-unit.spec-synthesis: [work-unit.prototype-design, work-unit.technical-analysis]
-    work-unit.prototype-design: [work-unit.technical-analysis]
+    work-unit.spec-synthesis: [work-unit.prototype-design-v2, work-unit.technical-analysis]
+    work-unit.prototype-design-v2: [work-unit.technical-analysis]
     work-unit.technical-analysis: [work-unit.implementation-repository-preparation]
-    work-unit.implementation-repository-preparation: [work-unit.ticket-decomposition]
+    work-unit.implementation-repository-preparation: [work-unit.service-project-initialization, work-unit.ticket-decomposition]
+    work-unit.service-project-initialization: [work-unit.implementation-repository-preparation]
     work-unit.ticket-decomposition: [work-unit.slice-implementation]
     work-unit.slice-implementation: [work-unit.frontend-implementation-verification, work-unit.code-review]
     work-unit.frontend-implementation-verification: [work-unit.code-review]
@@ -644,9 +666,9 @@ transition_graph:
     work-unit.release-and-retrospective: []
   forbidden_shortcuts:
     - {from: work-unit.spec-synthesis, to: work-unit.implementation-repository-preparation}
-    - {from: work-unit.prototype-design, to: work-unit.implementation-repository-preparation}
+    - {from: work-unit.prototype-design-v2, to: work-unit.implementation-repository-preparation}
     - {from: work-unit.spec-synthesis, to: work-unit.slice-implementation}
-    - {from: work-unit.prototype-design, to: work-unit.slice-implementation}
+    - {from: work-unit.prototype-design-v2, to: work-unit.slice-implementation}
     - {from: work-unit.technical-analysis, to: work-unit.slice-implementation}
     - {from: work-unit.technical-analysis, to: work-unit.ticket-decomposition}
 
@@ -1220,7 +1242,7 @@ execution_scopes:
     validator: scripts/lib/lifecycle-execution-scope.mjs
     terminal_work_unit: work-unit.backend-delivery
     terminal_record: .yss-backend-delivery.json
-    allowed_work_units: [work-unit.entry-triage, work-unit.plan-opportunity, work-unit.plan-requirements, work-unit.domain-strategy-design, work-unit.stage-decision, work-unit.spec-synthesis, work-unit.prototype-design, work-unit.technical-analysis, work-unit.implementation-repository-preparation, work-unit.scaffold-generation, work-unit.ticket-decomposition, work-unit.slice-implementation, work-unit.code-review, work-unit.backend-delivery]
+    allowed_work_units: [work-unit.entry-triage, work-unit.plan-opportunity, work-unit.plan-requirements, work-unit.domain-strategy-design, work-unit.stage-decision, work-unit.spec-synthesis, work-unit.prototype-design-v2, work-unit.technical-analysis, work-unit.implementation-repository-preparation, work-unit.service-project-initialization, work-unit.scaffold-generation, work-unit.ticket-decomposition, work-unit.slice-implementation, work-unit.code-review, work-unit.backend-delivery]
     route_overrides:
       work-unit.code-review: [work-unit.slice-implementation, work-unit.backend-delivery]
       work-unit.slice-implementation: [work-unit.code-review]

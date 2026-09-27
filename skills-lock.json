@@ -679,7 +679,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-ddd-scaffold-generator/SKILL.md",
-        "effectiveHash": "feb0f1d0a187b6e78b878eb7302dd193bd22cc26051cf877db72b7a9c6b3aa43",
+        "effectiveHash": "3b5ed1cbf5cb199599c0cd252f915883a788031ebd1fe76a7341ebd1e9c09e65",
         "targets": [
           ".agents/skills",
           ".codex/skills",
@@ -817,7 +817,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-implementation-contract-compiler/SKILL.md",
-        "effectiveHash": "fcbfd55a92c4fa349351674bf740ce2a012be25ce4e23cd53f42093a5c252de1",
+        "effectiveHash": "82e06da43e2fcaaa30e27e36e9b6622c02ad553a76cd9430fc75cf9315e029e4",
         "targets": [
           ".agents/skills",
           ".codex/skills",
@@ -829,7 +829,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-layered-mvc-scaffold-generator/SKILL.md",
-        "effectiveHash": "5ac5a0f4374f9b85aec5d4455227c05206dd0439171f4ac163f7d9f45c807379",
+        "effectiveHash": "3d33822ed66bbd828df149e6347f869ebd2aa78f5c910f689dc7e85f88aa618c",
         "targets": [
           ".agents/skills",
           ".codex/skills",
@@ -865,7 +865,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-openapi-governance/SKILL.md",
-        "effectiveHash": "d0b9f206ead84c66be6ce4e29b49518ce5d1065c7a18bdcff66b380804d80ad4",
+        "effectiveHash": "8e2e7f722748d39f2e5f6ca5c26340f0abe79d810609461f5fe63c809663bbcc",
         "targets": [
           ".agents/skills",
           ".codex/skills",
@@ -877,7 +877,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-product-lifecycle/SKILL.md",
-        "effectiveHash": "297e07d8090ba5db739eae4942f2f2b58ec6e9f2d8280d5d6dcd50553c8f2e5f",
+        "effectiveHash": "2b4da4d116a88b05ac330290964af471bf2c0887d944797266aaf0cc9e7cdb36",
         "targets": [
           ".agents/skills",
           ".codex/skills",
@@ -967,7 +967,7 @@
         "source": "iloveZzz/yss-harness-design-agent",
         "sourceType": "git-submodule",
         "skillPath": ".agents/skills/yss-stage-decision/SKILL.md",
-        "effectiveHash": "46f05a7cebed453d480dff93df366f3dc7a45cb7c544b4f5ed1143e28cb2e72e",
+        "effectiveHash": "2284f6060799fb74f7396b27a273669f78d62a6ac24f9acc533770b71198da18",
         "sourceRevision": "d420552cfe9e95ce95a36edba0ebb120896500cc",
         "upstreamHash": "6cd0ed5aa21d68cea871d0bd202beb3b28cca2981f075ad9c24667ac030118d2",
         "adaptationRef": ".template-source/agents/strategic-design-skills-integration.md",

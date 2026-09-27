@@ -12,11 +12,13 @@ import path from "node:path";
 import { validateApiContractDecision } from "./api-contract-decision.mjs";
 import { loadApprovalRecord, validateApprovalRecord } from "./approval-record.mjs";
 import { validateBackendReview } from "./backend-review.mjs";
+import { validateJsonSchema } from "./json-schema.mjs";
 import { ROOT } from "./lifecycle-registry.mjs";
 
 const IMPLEMENTATION_WORK_UNIT = "work-unit.slice-implementation";
 const TICKET_DECOMPOSITION_WORK_UNIT = "work-unit.ticket-decomposition";
 const REPOSITORY_PREPARATION_WORK_UNIT = "work-unit.implementation-repository-preparation";
+const SERVICE_INITIALIZATION_WORK_UNIT = "work-unit.service-project-initialization";
 
 function deepFreeze(value) {
   if (!value || typeof value !== "object" || Object.isFrozen(value)) return value;
@@ -27,21 +29,22 @@ function deepFreeze(value) {
 
 const NEXT_ROUTES = deepFreeze({
   "work-unit.entry-triage": ["work-unit.plan-opportunity", "work-unit.plan-requirements"],
-  "work-unit.ssot-update": ["work-unit.skill-projection-sync", "work-unit.intensity-aware-verification"],
-  "work-unit.skill-projection-sync": ["work-unit.template-snapshot-build", "work-unit.intensity-aware-verification"],
-  "work-unit.template-snapshot-build": ["work-unit.attach-sync-integration", "work-unit.intensity-aware-verification"],
-  "work-unit.attach-sync-integration": ["work-unit.intensity-aware-verification"],
-  "work-unit.intensity-aware-verification": ["work-unit.intensity-aware-review"],
-  "work-unit.intensity-aware-review": ["work-unit.release-and-rollback"],
+  "work-unit.ssot-update": ["work-unit.skill-projection-sync", "work-unit.intensity-aware-verification-v2"],
+  "work-unit.skill-projection-sync": ["work-unit.template-snapshot-build", "work-unit.intensity-aware-verification-v2"],
+  "work-unit.template-snapshot-build": ["work-unit.attach-sync-integration", "work-unit.intensity-aware-verification-v2"],
+  "work-unit.attach-sync-integration": ["work-unit.intensity-aware-verification-v2"],
+  "work-unit.intensity-aware-verification-v2": ["work-unit.intensity-aware-review-v2"],
+  "work-unit.intensity-aware-review-v2": ["work-unit.release-and-rollback"],
   "work-unit.release-and-rollback": [],
   "work-unit.plan-opportunity": ["work-unit.plan-requirements", "work-unit.domain-strategy-design", "work-unit.stage-decision", "work-unit.spec-synthesis"],
   "work-unit.plan-requirements": ["work-unit.domain-strategy-design", "work-unit.stage-decision", "work-unit.spec-synthesis"],
   "work-unit.domain-strategy-design": ["work-unit.stage-decision", "work-unit.spec-synthesis"],
   "work-unit.stage-decision": ["work-unit.spec-synthesis"],
-  "work-unit.spec-synthesis": ["work-unit.prototype-design", "work-unit.technical-analysis"],
-  "work-unit.prototype-design": ["work-unit.technical-analysis"],
+  "work-unit.spec-synthesis": ["work-unit.prototype-design-v2", "work-unit.technical-analysis"],
+  "work-unit.prototype-design-v2": ["work-unit.technical-analysis"],
   "work-unit.technical-analysis": [REPOSITORY_PREPARATION_WORK_UNIT],
-  [REPOSITORY_PREPARATION_WORK_UNIT]: [TICKET_DECOMPOSITION_WORK_UNIT],
+  [REPOSITORY_PREPARATION_WORK_UNIT]: [SERVICE_INITIALIZATION_WORK_UNIT, TICKET_DECOMPOSITION_WORK_UNIT],
+  [SERVICE_INITIALIZATION_WORK_UNIT]: [REPOSITORY_PREPARATION_WORK_UNIT],
   [TICKET_DECOMPOSITION_WORK_UNIT]: [IMPLEMENTATION_WORK_UNIT],
   [IMPLEMENTATION_WORK_UNIT]: ["work-unit.frontend-implementation-verification", "work-unit.code-review"],
   "work-unit.frontend-implementation-verification": ["work-unit.code-review"],
@@ -83,6 +86,8 @@ const BLOCKING_SIGNALS = Object.freeze({
   backendDesignPrerequisitesMissing: "backend-design-prerequisites-missing",
   legacyScaffoldReconciliationRequired: "legacy-scaffold-reconciliation-required",
   prematureImplementationDetected: "premature-implementation-detected",
+  serviceInitializationInvalid: "service-project-initialization-invalid",
+  serviceInitializationIncomplete: "service-project-initialization-incomplete",
 });
 
 const allowedResult = (evidenceRefs = []) => ({
@@ -119,6 +124,52 @@ function readDecompositionResult(ref, read) {
   } catch {
     return null;
   }
+}
+
+/** The service branch reuses the approved v4 scaffold contract and its real verification. */
+export function validateServiceProjectInitialization(state, { root = ROOT, exists = existsSync, read = (ref) => readFileSync(ref, "utf8"), completed = false } = {}) {
+  const request = state?.service_project_initialization;
+  const resolved = ref => path.isAbsolute(ref) ? ref : path.resolve(root, ref);
+  const present = ref => hasText(ref) && exists(resolved(ref));
+  const contents = ref => read(resolved(ref));
+  const document = ref => readDecompositionResult(resolved(ref), contents);
+  const blocked = (detail, incomplete = false) => blockedResult(
+    [incomplete ? BLOCKING_SIGNALS.serviceInitializationIncomplete : BLOCKING_SIGNALS.serviceInitializationInvalid], [detail]);
+  if (!request || !hasText(request.project_id) || !hasText(request.contract_ref) || !hasText(request.contract_digest) || !hasText(request.project_root)) return blocked("project_id, contract_ref, contract_digest and project_root required");
+  const contractFile = resolved(request.contract_ref);
+  if (!present(contractFile)) return blocked("approved v4 scaffold contract must be readable");
+  let contractBytes;
+  try { contractBytes = contents(contractFile); } catch { return blocked("approved v4 scaffold contract must be readable"); }
+  const contract = document(contractFile);
+  if (!contract || request.contract_digest !== `sha256:${createHash("sha256").update(contractBytes).digest("hex")}`) return blocked("current scaffold contract digest mismatch");
+  try { validateJsonSchema(contract, path.join(ROOT, ".template-spec/process/schemas/project-scaffold-contract.schema.json")); }
+  catch (error) { return blocked(`scaffold contract schema: ${error.message}`); }
+  if (contract.schema_version !== 4 || contract.status !== "approved" || contract.current_version !== true || !hasText(contract.persisted_ref) || contract.architecture_profile !== "mvc-data-analysis-v1" || contract.scaffold_kind !== "backend-mvc-data-analysis" || contract.generator_skill !== "yss-layered-mvc-scaffold-generator" || contract.init_git !== true || contract.project_name !== request.project_id || path.resolve(contract.target_output_dir, contract.project_name) !== path.resolve(request.project_root)) return blocked("current approved mvc-data-analysis-v1 initialization contract required");
+  const contractRoot = path.dirname(contractFile);
+  const contractExists = ref => exists(path.isAbsolute(ref) ? ref : path.resolve(contractRoot, ref));
+  if (!backendDesignPrerequisitesReady(contract.design_prerequisites, contractExists, contractRoot, request.project_id)) return blocked("current technical, data, API and engineering approval bindings required");
+  const handoff = path.resolve(path.dirname(contractFile), contract.context_handoff_ref ?? "");
+  if (!handoff.startsWith(`${path.dirname(contractFile)}${path.sep}`) || !present(handoff)) return blocked("CONTEXT handoff must be inside the contract directory");
+  let handoffBytes;
+  try { handoffBytes = contents(handoff); } catch { return blocked("CONTEXT handoff must be readable"); }
+  const handoffDigest = `sha256:${createHash("sha256").update(handoffBytes).digest("hex")}`;
+  if (contract.context_handoff_digest !== handoffDigest || request.context_handoff_digest !== handoffDigest) return blocked("CONTEXT handoff digest mismatch");
+  if (!completed) {
+    if (present(request.project_root)) return blocked("service project already exists; initialization is not repeatable");
+    return allowedResult([request.contract_ref, contract.context_handoff_ref]);
+  }
+  for (const field of ["manifest_ref", "verification_ref", "result_ref"]) if (!present(request[field])) return blocked(`${field} must be readable`, true);
+  const manifest = document(request.manifest_ref);
+  const verification = document(request.verification_ref);
+  const result = document(request.result_ref);
+  if (result?.result_schema !== "workflow-execution-result-v1" || result.work_unit !== SERVICE_INITIALIZATION_WORK_UNIT || result.result !== "completed" || ![request.manifest_ref, request.verification_ref].every(ref => result.evidence_refs?.includes(ref))) return blocked("completed Workflow Execution Result with manifest and verification evidence required", true);
+  if (manifest?.schema_version !== 4 || manifest.kind !== "service-project-initialization" || manifest.architecture_profile !== "mvc-data-analysis-v1" || manifest.project_name !== request.project_id || manifest.contract_digest !== request.contract_digest || manifest.completion_level !== "empty-scaffold-verified") return blocked("current v4 service Manifest required", true);
+  const phases = ["validate", "test", "package"];
+  if (verification?.status !== "passed" || verification.completion_level !== "empty-scaffold-verified" || path.resolve(verification.project_root ?? "") !== path.resolve(request.project_root) || !Array.isArray(verification.commands) || phases.some(phase => !verification.commands.some(item => item.phase === phase && item.exit_code === 0 && item.command?.startsWith(`./mvnw ${phase}`) && present(item.stdout_ref) && present(item.stderr_ref)))) return blocked("real Maven Wrapper validate/test/package evidence required", true);
+  const childContext = path.join(request.project_root, "CONTEXT.md");
+  const initialization = document(path.join(request.project_root, ".template-spec/process/service-initialization.json"));
+  if (!present(childContext) || !present(path.join(request.project_root, ".git")) || !present(path.join(path.dirname(request.project_root), "skillUtils/skills-lock.json")) || contents(childContext) !== handoffBytes || initialization?.contract_id !== contract.contract_id || initialization.context_handoff_digest !== handoffDigest) return blocked("child project identity, CONTEXT and skillUtils must match the contract", true);
+  return allowedResult([request.result_ref, request.manifest_ref, request.verification_ref]);
 }
 
 function artifactBindingReady(binding, exists) {
@@ -271,7 +322,7 @@ export function validateNextRoute(currentWorkUnit, nextRoute, decisionState, opt
   }
   const routes = NEXT_ROUTES[currentWorkUnit] && scopedNextRoutes(currentWorkUnit, NEXT_ROUTES[currentWorkUnit], options);
   if (!routes) return blockedResult([BLOCKING_SIGNALS.invalidRoute], ["known_current_work_unit"]);
-  if (nextRoute === REPOSITORY_PREPARATION_WORK_UNIT && currentWorkUnit !== "work-unit.technical-analysis") {
+  if (nextRoute === REPOSITORY_PREPARATION_WORK_UNIT && !["work-unit.technical-analysis", SERVICE_INITIALIZATION_WORK_UNIT].includes(currentWorkUnit)) {
     return blockedResult([BLOCKING_SIGNALS.technicalAnalysisRequired], ["work-unit.technical-analysis predecessor"]);
   }
   if (nextRoute === null && routes.length === 0) {
@@ -285,6 +336,12 @@ export function validateNextRoute(currentWorkUnit, nextRoute, decisionState, opt
     }
     return blockedResult(signals, ["allowed_next_route"]);
   }
+  if (nextRoute === SERVICE_INITIALIZATION_WORK_UNIT) {
+    return validateServiceProjectInitialization(decisionState, { ...options, completed: false });
+  }
+  if (currentWorkUnit === SERVICE_INITIALIZATION_WORK_UNIT && nextRoute === REPOSITORY_PREPARATION_WORK_UNIT) {
+    return validateServiceProjectInitialization(decisionState, { ...options, completed: true });
+  }
   if (nextRoute === REPOSITORY_PREPARATION_WORK_UNIT) {
     const analysis = validateTechnicalAnalysisCompletion(decisionState, options);
     if (analysis.result === "blocked") return analysis;
@@ -294,6 +351,10 @@ export function validateNextRoute(currentWorkUnit, nextRoute, decisionState, opt
     if (entry.result === 'blocked' || nextRoute === 'work-unit.spec-synthesis') return entry;
   }
   if (nextRoute === TICKET_DECOMPOSITION_WORK_UNIT) {
+    if (decisionState?.service_project_initialization) {
+      const service = validateServiceProjectInitialization(decisionState, { ...options, completed: true });
+      if (service.result === "blocked") return service;
+    }
     const readiness = validateImplementationRepositoriesReady(decisionState, options);
     if (readiness.result === "blocked") return readiness;
   }

@@ -1,0 +1,139 @@
+{
+  "result": {
+    "scenario": "e02-template",
+    "variant": "candidate",
+    "repeat": 1,
+    "elapsed_seconds": 93.31,
+    "exit_code": 0,
+    "timeout": false,
+    "assertion_failures": [],
+    "runtime_errors": [],
+    "tool_calls": 12,
+    "usage": [
+      {
+        "input_tokens": 200514,
+        "cached_input_tokens": 163200,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 2024,
+        "reasoning_output_tokens": 725
+      }
+    ],
+    "automatic_result": "passed",
+    "semantic_review": "pending",
+    "trace": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-agent-evaluations-v2-2qx3mbr2/candidate/e02-template-1/trace.jsonl",
+    "steps": [
+      {
+        "step": "main",
+        "started_at": "2026-09-26T15:57:57Z",
+        "elapsed_seconds": 93.17,
+        "exit_code": 0,
+        "timeout": false,
+        "assertion_failures": [],
+        "runtime_errors": [],
+        "tool_calls": 12,
+        "usage": [
+          {
+            "input_tokens": 200514,
+            "cached_input_tokens": 163200,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 2024,
+            "reasoning_output_tokens": 725
+          }
+        ],
+        "automatic_result": "passed",
+        "semantic_review": "pending",
+        "trace": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-agent-evaluations-v2-2qx3mbr2/candidate/e02-template-1/trace.jsonl"
+      }
+    ],
+    "unattempted_steps": []
+  },
+  "original_files_changed": [],
+  "original_files_missing": [],
+  "unsafe_paths": [],
+  "new_files": [
+    "maintenance-plan.md"
+  ],
+  "commands": [
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat yss-project.yaml'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"pwd; rg --files --hidden -g 'AGENTS.md' -g 'CONTEXT.md' -g '*maintenance*' -g '*tailoring*' -g '*version*' -g '*版本*' -g 'lifecycle-registry.yaml' -g 'lifecycle-artifact-map.md' -g '\"'!**/.git/**'\"'\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat AGENTS.md CONTEXT.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .template-spec/process/harness-process-tailoring.md .template-source/process/maintenance-intensity.yaml'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"rg -n '版本引用|流程说明|schema v[0-9]|schema_version|固定版本|版本' .template-spec/process .template-source/process README.md --glob '*.md' --glob '*.yaml'\"",
+      "exit_code": 2
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .template-spec/process/harness-process-tailoring.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .template-source/process/maintenance-intensity.yaml'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"sed -n '100,220p' CONTEXT.md\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"sed -n '115,134p' .template-spec/process/lifecycle-registry.yaml; sed -n '62,99p' CONTEXT.md\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"rg -n 'lifecycle-artifact-map|lifecycle-registry|context|documentation|markdown' .template-source/process/template-verification-profiles.yaml; rg --files scripts | rg 'lifecycle|context|identity|render'\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat maintenance-plan.md'",
+      "exit_code": 0
+    }
+  ],
+  "command_errors": [
+    {
+      "command": "/bin/zsh -lc \"rg -n '版本引用|流程说明|schema v[0-9]|schema_version|固定版本|版本' .template-spec/process .template-source/process README.md --glob '*.md' --glob '*.yaml'\"",
+      "exit_code": 2,
+      "output": "rg: README.md: No such file or directory (os error 2)\n.template-source/process/templates/maintenance-checkpoint-template.yaml:1:schema_version: 2\n.template-spec/process/existing-backend-architecture.md:3:既有工程以 `source_kind: existing-registration` / 身份 schema v2 接入，不反推生成器历史。原生成式身份与脚手架合同继续使用原字段和 H2/not-bound 语义。外层 Slice Contract v2、Technical Design v2、根身份/生命周期状态 v1 不改变。\n.template-spec/process/existing-backend-architecture.md:12:- 工程基线使用 `schema_version: 1/kind: existing-engineering-baseline`，含 `id/version/status: current/author`、项目身份、`architecture_identity`、`source`、`build_units`、`boundary_scope`、验证命令、数据库声明及 `boundary_review`。仅将有证据的功能范围登记为 DDD/MVC，不宣称混合仓整体同构。\n.template-spec/process/existing-backend-architecture.md:13:- 观测 manifest 使用 `schema_version: 1/kind: existing-project-observation`，含同一项目身份、`architecture_identity`、`source`、`build_units`。它记录当前可重复读取的事实，不记录虚构的生成器完成状态。\n.template-spec/process/existing-backend-architecture.md:19:身份仅保存 `schema_version/source_kind/architecture_family/architecture_profile/repository_id/project_id/source_digest/build_units_digest`。后两个摘要使用规范 JSON（对象键排序、数组保持顺序）的 SHA-256。三份文件保存同一身份，编译器必须重新读取原引用核验，不能仅比较身份副本。\n.template-spec/process/existing-backend-architecture.md:25:`databases.verification` 与 `databases.production` 分别记录 `declared/verified/unknown/not-applicable`。`verified` 必须包含 engine/version/environment_id 及原字节 verification 引用；被引用记录绑定 source_digest、相同环境/引擎/版本、实际命令/退出码/时间和原始日志摘要。声明 PostgreSQL、装有驱动或 H2 通过均不能当作 PostgreSQL 实库验证；生产未知据实保留未知。\n.template-source/process/github-workflows.md:14:模板工作流首先要求 `template-source`。全量检查初始化验证实际依赖的公开 gitlink 固定子模块，不追踪上游分支；兼容期私有 `yss-harness-dev-agent` 不参与主模板验证，也不要求 GitHub 默认 token 具备跨仓私有读取权限。工具依赖使用固定 pnpm 与 frozen lockfile；Node 24 为主验证环境，Python 3.12 / jsonschema 4.23.0 提供既有 schema 检查依赖。vendor 校验在临时目录重建并比较，不先覆盖受版本管理的 vendor。\n.template-source/process/github-workflows.md:20:## 发布版本与证据\n.template-source/process/github-workflows.md:22:`Template release verification` 必须先存在于默认分支。输入 SHA 与实际 HEAD 必须一致；该提交也必须具备本合同对应的脚本和 action。调用工作流的版本与待验证 SHA 可能不同，Actions run 保留编排版本，报告记录被验证版本。\n.template-source/process/github-workflows.md:26:生成器消费者验收使用 `npm pack --ignore-scripts` 和本地 tarball 安装，属于包格式验证的受控工具例外；模板工具测试仍用 pnpm。不会执行 npm publish，也不使用浮动生成器版本或 latest 包。\n.template-source/process/github-workflows.md:28:证据保存在 runner 临时目录，通过 artifact 上传：PR 保留计划、base/head/tested commit 与日志；发布保留 `release-verification.json`、每条命令实际退出码、日志、模板 SHA、生成器 SHA、子模块版本与新快照摘要；兼容 job 分别上传日志。失败时也尝试上传，准备阶段失败或 runner 丢失造成证据缺失时不得宣称通过。最终通过要求全量、集成和阻断兼容 job 均成功；Node 26 观察失败可见但不阻断。\n.template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md:12:- Matt 的 `research` 已适配为 canonical `yss-research`，旧名只作为 deprecated alias。YSS 版本提供 `technical-evidence` / `strategy-evidence` profile、`quick` / `evidence-audited` 模式、证据合同和确定性校验，同时保留上游 revision 与原始 hash 以便追溯。\n.template-spec/process/templates/scaffold-architecture-decisions-template.yaml:1:schema_version: 1\n.template-spec/process/templates/context-reconciliation-template.yaml:1:schema_version: 1\n.template-spec/process/templates/context-reconciliation-template.yaml:8:  context_schema_version: 1\n.template-source/process/template-verification-profiles.yaml:1:schema_version: 1\n.template-spec/process/templates/frontend-implementation-verification-template.yaml:1:schema_version: 2\n.template-source/process/maintenance-intensity.yaml:1:schema_version: 1\n.template-spec/process/templates/lifecycle-checkpoint-template.yaml:1:schema_version: 1\n.template-source/process/template-engineering-overview.md:5:YSS 模板工程是一套可版本化的研发治理系统。它用仓库身份、生命周期、条件门禁、工程契约、Agent skills 和可读证据，把产品研发从需求澄清连接到实现、审查、发布与复盘。\n.template-source/process/template-engineering-overview.md:31:模板工程按研发责任边界提供综合、战略、后端、前端入口；既有通用研发实例继续核对原固定版本。选型、CLI 支持与默认写入行为集中维护在[用户手册的 CLI 能力与写入方式](../user-guide/用户手册.md#cli-能力与写入方式)。具体生命周期边界由对应实例的 profile 和生命周期注册表决定。\n.template-source/process/template-engineering-overview.md:47:`.template-spec/agents/yss-skill-registry.yaml` 管理技能分层、成熟度、别名和运行时发现；`skills-lock.json` 管理来源、版本、hash 与投影完整性。修改共享技能后必须同步投影并更新 lock，不能分别编辑平台副本。\n.template-source/process/template-engineering-overview.md:57:模板实例分发面包含根规则、`CONTEXT.md`、共享 skills、`docs/` 中的实例流程资产和共享验证脚本。CLI 从固定模板 commit 构建 bundled snapshot，并在 metadata 中保存模板身份和版本。\n.template-source/process/template-engineering-overview.md:67:5. **审查与发布**：L1/L2/L3 日常使用维护者自检，不强制冻结候选或独立审查；分级只决定验证强度。正式发布前执行完整 `scripts/verify-template` 和固定版本生成器集成。GitHub CI 边界见 `github-workflows.md`。\n.template-source/process/template-engineering-overview.md:68:6. **发布与回滚**：先发布或提交子仓，再更新父仓 gitlink；跨仓版本、验证命令、发布顺序和回滚点必须可以重建。\n.template-spec/process/templates/stage-checkpoint-template.md:4:schema_version: 1\n.template-spec/process/plan-migration.md:7:历史冻结文档、批准记录和摘要保持原字节。旧状态不能直接恢复执行；如需继续，按当前 Plan 模板重新整理输入并核查当前退出条件，不把旧批准自动视为新流程批准。已有事实和结论可引用，但须记录当前版本、适用范围和复用理由。\n.template-spec/process/templates/frontend-implementation-plan-template.yaml:1:schema_version: 2\n.template-spec/process/contract-reading.md:10:默认 `review` 展示目标、非目标、验收、取舍、风险及未决事项，隐藏机器摘要明细，不附带折叠完整 JSON。`task` 保留适用工作单元、执行目录、写边界、Skill、验证、证据和未分类约束；Slice 必须明确 `--unit`。`full` 读取完整权威内容与绑定。三种视图均显示权威身份、版本、完整 SHA-256 和检查范围。批准有效性未核验；执行仍使用原预检和派发入口。来源未提供风险或取舍时明确标记缺口，不推断为无风险。\n.template-spec/process/contract-reading.md:27:Slice 继续使用 `scripts/slice-contract prepare`。来源的原始字节摘要、版本、别名、Skill 闭包和验证映射由现有准备器生成。共用的 `scripts/lib/contract-source.mjs` 只读取明确选择的来源；冲突报告保留 supplied / observed 和恢复动作，不根据目录猜测授权。其他资产继续使用各自的生成器，不新增项目人员要维护的表单。\n.template-spec/process/contract-reading.md:36:准备输入包括决定 ID / 版本、影响、评估引用、证据和业务原因；有 API 影响时再给 `openapi.id/ref/version`、`validation_record.ref`、`draft_review.ref` 和 `freeze.version/frozen_at`。摘要自动生成；来源明确但缺失时报告缺口。准备器不能产生批准状态。新路径以排他方式写入；已存在路径不能覆盖。\n.template-spec/process/contract-reading.md:38:v2 的 `openapi` 是唯一 Draft 绑定，`draft_review` 只存 `ref/digest`，Freeze 只保存版本和时间；实际结果、阻断项与 Draft 来源从真实审查记录读取。v1/v2 在消费时归一，外部永远绑定原文件 SHA-256。迁移先验证完整 v1，旧审查额外证据合并到顶层，旧文件与旧批准保持原字节。新候选按既有差异及授权延续协议处理，不继承批准。\n.template-spec/process/templates/user-decision-template.yaml:2:schema_version: 1\n.template-spec/process/strategic-handoff-package.md:9:3. 新原型与既有 UI 交接都使用 Handoff v5，分别选择 `prototype` 或 `existing-ui-baseline`。历史 Handoff v3/v4 与既有裸 v5 包继续按冻结 schema 执行 `verify/import`，但 v3/v4 不再创建新 export；修改或重新交付必须迁移到 v5 并重新批准。校验器先读取 `schema_version` 再选择固定 schema，未知版本输出支持列表并 fail closed。`package_export` 的 `approvals` 按 `source` 字段及 `handoff` 绑定批准记录，声明 `record_ref`、`gate_id`、`digest_kind`。当前战略 profile 的领域战略、阶段决策和业务 Ticket 绑定 `gate.plan-approved`，Spec 绑定 `gate.spec-baseline-approved`，原型、视觉或既有 UI 基线绑定 `gate.product-design-approved`，交接自身绑定 `gate.strategic-design-handoff-approved`。历史包仍按包内明确登记的源批准规则验证，但旧门禁只能作为历史证据，不能作为当前输入继续流转。\n.template-spec/process/strategic-handoff-package.md:39:`package/` 是权威不可变交付件。相同 ID/version 且逻辑摘要一致时重新整包验证并返回 `already-packaged`；内容不一致返回 `delivery-version-conflict`，必须提升版本。README 由工具确定性生成，只列范围、来源引用、消费者、待决项和接收命令，不复制业务正文。ZIP 只负责运输，不参与逻辑版本判定，也不要求提交 Git。\n.template-spec/process/strategic-handoff-package.md:45:`manifest.json` 的 `files` 声明所有文件的字节摘要和大小。`bundle_digest` 是删除自身字段后 canonical JSON 的 SHA-256；不把整 ZIP 摘要当逻辑版本摘要。目录与 ZIP 的逻辑摘要相同。源合同的既有语义 digest 另行复核。目录/ZIP 已存在时拒绝覆盖，同身份版本不同内容的导入拒绝；已验过且相同的重复导入返回 `already-imported`。限制为 20,000 文件、512 MiB 展开内容；拒绝 ZIP 路径穿越、重复路径、大小写碰撞和符号链接。\n.template-spec/process/strategic-handoff-package.md:83:前端先验证与交接版本匹配的 Strategic Preflight：Handoff v4 使用 v1，Handoff v5 使用 v2 的 `ui_baseline_kind/ui_baseline_ref`，只允许起草前端工程设计与实现计划，固定返回 `ready_for_agent: false`。最终 Frontend Delivery Acceptance v2（Handoff v4）或 v3（Handoff v5）在 Backend/API/Data 有影响时必须绑定真实 Backend Delivery 收据与版本探测；UI-only 时使用与战略路由一致的 `backend-not-applicable`，此时 `operation_ids` 必须为空。无论哪条路径，当前且已批准的 Slice Contract 仍是实现入口。\n.template-spec/process/strategic-handoff-package.md:87:Consumer Feedback v1 与 Feedback Adjudication v1 独立保存在已交付 package 外，分别绑定 bundle ID/version/digest、route、source ID/digest 和 feedback 原始字节 digest。`keep` 允许消费者重新核验后继续；`amend` 保持旧路径 blocked，战略资产升版、重新批准并导出新版本 Handoff；`defer` 对 blocking 问题继续阻断，非阻断问题只有责任人、风险、验证计划和目标版本齐全时继续。任何范围或风险变化重新应用用户决定失效规则；禁止修改历史 package 或用旧摘要冒充当前裁决。\n.template-spec/process/strategic-handoff-package.md:96:每版完整快照可独立消费，差异区分 added / updated / removed。更新须提升交接版本，内容变化的源资产也须提升其版本。接收新版本后，消费校验比较最新已导入源对象摘要；规则变化按行依赖阻断，未映射的新规则扩大阻断，战略责任边界、方案决策、Spec/视觉/原型源码/既有 UI 基线等变化未重新绑定时整体阻断。`upstream-change-impact.json` 是生命周期处理 stale 的证据输入，不直接改 Tracker 或覆盖战术合同。\n.template-spec/process/existing-ui-baseline.md:7:`existing-ui-baseline.schema.json` 定义 v1 外层合同。独立 `existing-ui-baseline.json` 与所有证据文件放在同一目录；引用均相对此目录，禁止绝对路径、越界和符号链接。未知类型与版本拒绝。\n.template-spec/process/existing-ui-baseline.md:9:- `source` 绑定登记的 repository/project ID、固定 Git commit、源码快照树摘要、锁文件和独立源码观测 manifest。观测 manifest 为 `schema_version: 1`、`kind: existing-ui-source-observation`，包含相同身份、`source_digest` 和精确 `files: [{path,digest}]`。源码文件集必须与实际快照一致；不得把不属于固定提交的源码标记为该提交。\n.template-spec/process/existing-ui-baseline.md:10:- `build` 指向原始构建记录：`schema_version: 1`、`source_commit`、`source_digest`、`lock_digest`、实际 `command/executed_at/exit_code`、`evidence: [{ref,digest}]` 及构建输出树 `output: {ref,digest}`。前端优先 `pnpm`；执行记录不能由后续验证器补造。\n.template-spec/process/existing-ui-baseline.md:12:- 每个 case 将精确源码文件、动作说明、PNG 截图、视口与 API 记录绑定到唯一 `case_id`。API 记录包含 `schema_version: 1`、`case_id`、源码/构建/OpenAPI 摘要以及 `exchanges`；每次交换记录实际 operation ID、method、URL、status、executed_at 及原始 request/response 文件摘要。操作必须存在于冻结 OpenAPI 且 method/path 一致。\n.template-spec/process/existing-ui-baseline.md:17:## 当前批准与交接版本\n.template-spec/process/existing-ui-baseline.md:30:- `ui-baseline.mjs` 导出 `uiBaselineKind`、`uiBaselineRef`、`uiBaselineCaseIds`、`uiBaselineSourceKeys`、`hasConsumerRoutes` 和 `validateHandoffUiBaseline(root,handoff)`。消费者应通过这些入口分派，不散落版本或字段假设。\n.template-spec/process/document-writing.md:13:写作调整应保留这些内容的原意：主体、触发条件、规则、例外、量词、范围、非目标、数值及单位、证据引用、未决项、责任人、时点和依赖。稳定 ID、API 标识、schema、metadata、版本及批准记录按原合同保存。已经冻结的内容若需要改变行为，应回交资产所有者处理，不作为润色顺手修改。\n.template-spec/process/document-writing.md:43:引用上游规则的可定位位置和必要版本，本阶段写新增细化、适用范围和交接。直接决定本地验收的条件可以在场景中重述，并绑定同一规则 ID；以一致性核验控制漂移。\n.template-spec/process/document-writing.md:45:不要用“详见相关文档”代替必要信息。引用不可读或版本不明时按现有合同处理。条件项只在流程允许时记录带原因的 `not-applicable`；命中的要求和必要异常场景应完整展示。\n.template-spec/process/document-writing.md:55:| 工程契约 | 实现必须遵守什么，哪些地方有取舍？ | 精确协议与解释正文配合；标识、版本、范围及约束保持可核验 |\n.template-spec/process/document-writing.md:70:请求决定时展示当前版本、推荐方案及理由、实质选项和取舍、风险、批准范围与后续动作，遵守既有用户决定协议。可以突出当前最重要的问题，但所有影响决定的阻塞和选项都应可见。一次回复需要多个相互独立的决定时，分别说明各自影响。\n.template-spec/process/document-writing.md:78:3. 对照输入检查有无新增承诺、规则丢失、范围扩大、责任转移或不确定性被抹去。发现源资产冲突时记录并回交，不自行选一个版本。\n.template-spec/process/lifecycle-registry.yaml:1:schema_version: 1\n.template-spec/process/lifecycle-registry.yaml:67:    exit_criteria: 新建后端已由用户确认 DDD / MVC 与精确 Spring Boot 版本，既有工程已核验并复用登记值；受影响工程契约冻结或记录无 API 影响；required 脚手架证据齐全。\n.template-spec/process/lifecycle-registry.yaml:119:    description: 设计语言、组件、demo、token、semantic 与 lint 的实际 CLI/目标版本和可读输出引用。\n.template-spec/process/lifecycle-registry.yaml:128:    description: schema v3 共同证据与所选档位的浏览器、Design QA、无障碍、组件事实或真实组件合同验证结果。\n.template-spec/process/lifecycle-registry.yaml:129:    public_description: 新原型证据采用 schema v4，包含共同证据、Visual Baseline Bundle、浏览器、Design QA、无障碍及档位验证结果；历史 v3 仅供只读兼容。\n.template-spec/process/lifecycle-registry.yaml:138:    description: 生命周期编排器批准且已持久化的当前版本合同引用。\n.template-spec/process/lifecycle-registry.yaml:141:    description: 专项 skill 的合同版本、写入、验证、延期 seam 与偏离证据。\n.template-spec/process/lifecycle-registry.yaml:150:    description: 按项目记录交付面、已有仓库接入或新脚手架合同、生成清单、实际验证结果、仓库位置、Git 边界和当前版本。\n.template-spec/process/lifecycle-registry.yaml:184:    trigger: 新建后端工程进入技术设计分支前，由用户在同一次决定中确认 domain-driven / layered-mvc 和精确 Spring Boot 版本；既有工程核验并复用当前登记架构及固定工程基线中的实际 Spring Boot 版本，记录 not-applicable，不重复询问。\n.template-spec/process/lifecycle-registry.yaml:415:    output: 带版本、digest、证据和下游映射的阶段决策包。\n.template-spec/process/lifecycle-registry.yaml:419:    public_output: 带版本、digest、证据和下游映射的方案决策包。\n.template-spec/process/lifecycle-registry.yaml:431:    completion: 低保真评审、schema v4 原型交付物验证和用户确认门禁均通过；Visual Baseline Bundle 和生产组件待验事项已交接到前端实现计划。\n.template-spec/process/lifecycle-registry.yaml:436:    output: 新建后端的 DDD / MVC 与精确 Spring Boot 版本用户决定，或既有工程复用核验；OpenAPI、数据架构、按确认架构形成的 DDD / MVC 技术设计合同、工程基线、架构审查和 Slice 合同草案。\n.template-spec/process/lifecycle-registry.yaml:447:    input: 逐项目批准的架构决策、Technical Design、Data Architecture Decision、工程合同批准、schema v4 初始化合同、战略上下文交接及目标/skillUtils 写范围。\n.template-spec/process/lifecycle-registry.yaml:459:    input: 当前版本 Slice Implementation Contract 和允许写路径。\n.template-spec/process/lifecycle-registry.yaml:545:    trigger: 有 API 影响；确认待冻结版本、Draft 审查和契约绑定，工程契约批准后原子冻结同一版本。\n.template-spec/process/delivery-preflight.md:5:输入采用 [delivery-preflight-input.schema.json](schemas/delivery-preflight-input.schema.json)，输出采用 [delivery-preflight-result.schema.json](schemas/delivery-preflight-result.schema.json)。`schema_version` 均为 1。退出码：当前阶段就绪为 `0`，存在阻断为 `1`，协议、参数或输入语法无效为 `2`。CLI 总是输出 JSON；`--json` 是显式调用标志。库入口为 `await preflightDelivery(input, {stage, root})`，与 CLI 使用同一结果结构。\n.template-spec/process/delivery-preflight.md:13:- `assets` 中各引用采用 `{ref,digest,id?,version?,approval_ref?}`。摘要是当前文件字节的 `sha256:`。需要批准的 API、技术设计、Slice 和 UI 基线须提供资产 ID、版本及原始批准引用，并核验真实决定和当前字节覆盖。\n.template-spec/process/delivery-preflight.md:39:战略来源通过 `inspectSource` 复验。技术设计消费与后端交付复验使用严格 `readOnly: true`；可完整只读验证的目录包正常承接。必须解包或缺少可直接读取的来源布局时，明确返回未就绪及恢复信息；不得悄悄写临时目录或将 ZIP 的摘要相同当作内容验证通过。旧生成式身份和原型仍按原有规则读取，未知版本明确拒绝。预检不把 `verified` profile 自动升级为 `supported`。\n.template-spec/process/delivery-preflight.md:47:主模板当前将 `gate.slice-contract-approved` 配置为生命周期主控，`approval_ref` 指向现有生命周期 checkpoint：对应 gate 为 `approved`，`subject_ref` 指向本次 Slice；`human_review.implementation` 与 `human_review.user_decisions` 通过已有 `assertImplementationDecision` 核验原始回复、当前合同字节、Ticket、实现仓库、允许写范围和工程基线。不得为该主控 gate 伪造 `approval-record`。来源明确将此 gate 配置为会签时，遵守来源会签协议；当前专用后端同时列入主控及双数字人会签，显式会签规则优先，需要绑定当前合同身份、版本、摘要的批准记录，不能复用主模板 checkpoint。这里复用来源现有批准规则，不另建并行门禁。\n.template-spec/process/harness-process-tailoring.md:7:门禁与内部检查以 `lifecycle-registry.yaml` 的 `gates` / `checks` 为准。自动前置校验和就绪计算不产生独立批准；专业审查作为聚合门禁内部证据保留独立性。未命中项须有影响面依据和原因，命中项失败仍阻断。Plan、设计和工程资产在聚合边界统一呈现批准范围；相同资产版本、依据和范围复用原批准，相关变化仅使受影响批准失效。交付验收不代替实际合并、发布等外部动作授权。\n.template-spec/process/harness-process-tailoring.md:71:- `scripts/verify-template`：执行不可裁剪的完整验证；main 与正式发布前运行。发布前按 `github-workflows.md` 额外验证固定版本生成器集成与兼容性，修复内循环按影响面执行。\n.template-spec/process/harness-process-tailoring.md:73:新模板维护 checkpoint 使用 schema v2；历史 schema v1 继续只读兼容，不批量迁移。L1/L2 可直接写入主 Ticket 或集中 checkpoint，不要求新增独立文档：\n.template-spec/process/harness-process-tailoring.md:76:schema_version: 2\n.template-spec/process/lifecycle-artifact-map.md:16:| `stage.system-data-engineering` | 系统 / 数据架构与工程契约 | 固化系统、数据、工程基线和 API 契约。 | 新建后端已由用户确认 DDD / MVC 与精确 Spring Boot 版本，既有工程已核验并复用登记值；受影响工程契约冻结或记录无 API 影响；required 脚手架证据齐全。 |\n.template-spec/process/lifecycle-artifact-map.md:32:| `gate.backend-architecture-platform-approved` | 后端架构与平台批准 | `stage.system-data-engineering` | 新建后端工程进入技术设计分支前，由用户在同一次决定中确认 domain-driven / layered-mvc 和精确 Spring Boot 版本；既有工程核验并复用当前登记架构及固定工程基线中的实际 Spring Boot 版本，记录 not-applicable，不重复询问。 | 无 | `evidence.approval-record` |\n.template-spec/process/lifecycle-artifact-map.md:51:| `check.openapi-frozen` | OpenAPI 冻结准备 | `stage.system-data-engineering` | 有 API 影响；确认待冻结版本、Draft 审查和契约绑定，工程契约批准后原子冻结同一版本。 |\n.template-spec/process/lifecycle-artifact-map.md:107:| `evidence.antd-cli-validation` | Ant Design CLI 校验证据 | 设计语言、组件、demo、token、semantic 与 lint 的实际 CLI/目标版本和可读输出引用。 |\n.template-spec/process/lifecycle-artifact-map.md:110:| `evidence.prototype-deliverable-verification` | 原型交付物验证证据 | 新原型证据采用 schema v4，包含共同证据、Visual Baseline Bundle、浏览器、Design QA、无障碍及档位验证结果；历史 v3 仅供只读兼容。 |\n.template-spec/process/lifecycle-artifact-map.md:113:| `evidence.contract-approval` | Slice 合同批准记录 | 生命周期编排器批准且已持久化的当前版本合同引用。 |\n.template-spec/process/lifecycle-artifact-map.md:114:| `evidence.yss-skill-execution-result` | YSS Skill Execution Result | 专项 skill 的合同版本、写入、验证、延期 seam 与偏离证据。 |\n.template-spec/process/lifecycle-artifact-map.md:117:| `evidence.implementation-repository-preparation` | 实现仓库准备证据 | 按项目记录交付面、已有仓库接入或新脚手架合同、生成清单、实际验证结果、仓库位置、Git 边界和当前版本。 |\n.template-spec/process/frontend-backend-delivery.md:25:后端交付保存于 `docs/backend-deliveries/<delivery-id>/<version>/`。战略快照自动通过既有工具导入 `docs/handoffs/`；两种包各自原子落盘、重复导入幂等，同身份版本不同内容拒绝。后端接收失败后已成功导入的战略快照可以保留并在重试时复用，不自动放行工作。\n.template-spec/process/frontend-backend-delivery.md:33:后端交付导入只新增匹配的 backend binding 并产生 `frontend-acceptance-draft.json`，不会覆盖已填写的前端预检/设计草案，也不会批准资产。最终接收方按交接版本准备记录，禁止静默降级：\n.template-spec/process/frontend-backend-delivery.md:58:工具重新验两类包及批准、当前目标词汇、已知战略变更、最新已导入后端版本、场景映射和真实服务。成功仅返回 `inputs-verified`、`ready_for_agent: false`，供准备前端实现资产使用；`accepted` 字段本身不能证明就绪。\n.template-spec/process/frontend-backend-delivery.md:66:环境提供一个可只读探测的 JSON 版本响应，`revision_path` 和 JSON Pointer 由交付描述登记，不假定业务服务已有固定端点。响应须匹配 `deployment_id`、`source_commit`、`openapi_digest`、`artifact_digest` 和 `test_data_digest`；最后一项绑定已准备的数据说明/数据集版本。不能提供这些可核验身份时先补部署证据与探测能力。\n.template-spec/process/frontend-backend-delivery.md:70:版本响应通过只证明当前服务身份可达，业务接口正确性仍依赖同基线的后端契约测试及后续真实联调。离线验包不能证明服务当前可用，也不能证明未同步源仓没有新变化。\n.template-spec/process/frontend-backend-delivery.md:76:后端可交接、前端可验收和业务切片完成分开记录。最终业务验收绑定同一战略、API、后端部署和前端版本，复用既有视觉、交互、权限/失败场景、端到端和 Fresh Verification 条件；验包不替代其中任何一项。\n.template-spec/process/subagent-collaboration.md:9:凡主控向数字人角色或独立运行时正式派发生命周期工作单元，都必须使用 `.template-spec/process/schemas/digital-human-task-package.schema.json` 定义的任务包，并写明 `task_id`、`work_unit_id`、`actor_id`、数字人角色 ID、`runtime_id`、执行态、工作流状态、从 `.template-spec/agents/digital-human-roles.yaml` 复制的 `core_skills` / `forbidden_skills`（可用 `taskPackageDefaults`）、合同类型和版本、输入资产、目标、允许写路径、禁止事项、验收标准、验证命令及其实际退出码 / 执行时间 / 证据引用、下游消费者和汇合方式。`slice-implementation` 才额外绑定 Slice Implementation Contract；禁止手写第二套技能包；任务包由 `scripts/verify-digital-human-task-package` 校验，`scripts/verify-subagent-task-package` 仅为兼容入口。\n"
+    }
+  ],
+  "other_tools": [],
+  "agent_messages": [
+    {
+      "step": "main",
+      "text": "我会先读取仓库身份和模板维护规则，再编写简短的 `maintenance-plan.md`，明确目标文件、适用核验和完成边界。"
+    },
+    {
+      "step": "main",
+      "text": "已确认身份为 `template-source`。仅修正版本文字且不改变流程行为时，适用 L1；计划会注明这一前提，并将后续核验与本次仅写计划的完成边界分开。"
+    },
+    {
+      "step": "main",
+      "text": "已创建 [maintenance-plan.md](/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-agent-evaluations-v2-2qx3mbr2/candidate/e02-template-1/workspace/maintenance-plan.md)，记录目标文件、L1 分级前提、适用核验与完成边界。\n\n已读取身份和必要规则；本次仅写计划，未实施修正。"
+    }
+  ],
+  "artifacts": {
+    "maintenance-plan.md": "# 版本引用维护计划\n\n- **依据**：已读 `yss-project.yaml`（schema 1，`template-source`）、`AGENTS.md`、根 `CONTEXT.md`、`.template-spec/process/harness-process-tailoring.md` 和 `.template-source/process/maintenance-intensity.yaml`。\n- **目标文件**：候选为 `.template-spec/process/lifecycle-registry.yaml` 的 `evidence.prototype-deliverable-verification` 说明（`description` 写 v3，`public_description` 写新建 v4／历史 v3）。实施前对照对应 schema 核实旧→新引用，保留历史兼容语义；派生 `.template-spec/process/lifecycle-artifact-map.md` 仅按源变化重新生成。\n- **分级**：暂定 L1，触发项 `textual-only`；若发现改变流程行为或版本兼容规则，重新判定影响面与等级。产品 Spec、原型、OpenAPI、Ticket、`context_reconciliation` 和行为 TDD 均为 `not-applicable`：本项仅涉及模板说明文字。\n- **后续核验**：自检版本与事实源一致，运行 `scripts/verify-lifecycle-registry`、`scripts/verify-template-fast`，记录实际退出码及证据；PR 用 `scripts/verify-template-candidate`，main／发布前用完整 `scripts/verify-template`，遵循自动升级结果。\n- **完成边界**：本次仅交付本计划，未实施修正或执行上述核验。后续维护须闭合受影响派生内容和本轮核验证据，才可记录 `implementation-ready`；可发布还需固定版本外部生成器集成等证据。提交、推送、发布另依授权。\n- **隔离限制**：仅在 fixture 内操作，不联网；计划与替身结果均为 test-data-only，不构成真实批准、构建或发布证据。\n"
+  },
+  "semantic_review": "pending"
+}

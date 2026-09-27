@@ -1,0 +1,717 @@
+--- a/scripts/lib/lifecycle-status.mjs
++++ b/scripts/lib/lifecycle-status.mjs
+@@ -33,8 +33,14 @@
+   const diagnostics = [], verification_scope = [];
+   const check = (id, status, refs, reason) => verification_scope.push({ id, status, refs, reason });
+   const issue = (code, message, source_ref, recovery, severity = 'error') => diagnostics.push({ code, message, source_ref, owner, recovery, severity });
+-  for (const item of Array.isArray(value.blockers) ? value.blockers : []) {
+-    issue('registered-blocker', typeof item === 'string' ? item : JSON.stringify(item), checkpointRef, '按原阻塞证据处理并复验');
++  if (!Object.hasOwn(value, 'blockers')) {
++    issue('registered-blockers-missing', 'checkpoint 缺少 blockers；不能据此判定无已登记阻塞', checkpointRef, '核对原始状态并补齐真实阻塞记录后重验');
++  } else if (!Array.isArray(value.blockers)) {
++    issue('registered-blockers-invalid', 'checkpoint.blockers 必须为数组；当前登记不可核验', checkpointRef, '修复阻塞记录类型，保留原有阻塞内容后重验');
++  } else {
++    for (const item of value.blockers) {
++      issue('registered-blocker', typeof item === 'string' ? item : JSON.stringify(item), checkpointRef, '按原阻塞证据处理并复验');
++    }
+   }
+   check('registered-blockers', diagnostics.length ? 'failed' : 'passed', [checkpointRef], '仅读取已登记阻塞，不代表完整就绪');
+   const stage = registry.value.stages?.find(item => item.id === value.stage);
+--- a/scripts/verify-lifecycle-operator-scenarios
++++ b/scripts/verify-lifecycle-operator-scenarios
+@@ -41,6 +41,19 @@
+   assert.deepEqual(current.blockers, []);
+   assert.equal(current.owner, '产品负责人');
+   assert.match(current.next_action, /plan-requirements/);
++  for (const malformed of [undefined, null, 'API 尚未冻结', {}, false, 0]) {
++    const input = { ...checkpoint, blockers: malformed };
++    put('docs/.scratch/demo/checkpoint.json', input);
++    const bytes = readFileSync(path.join(root, 'docs/.scratch/demo/checkpoint.json'));
++    const invalid = lifecycleStatus({ root, checkpointRef: 'docs/.scratch/demo/checkpoint.json' });
++    assert.equal(invalid.verification_scope.find(row => row.id === 'registered-blockers').status, 'failed');
++    assert.ok(invalid.diagnostics.some(row => row.code === (malformed === undefined ? 'registered-blockers-missing' : 'registered-blockers-invalid')));
++    assert.equal(invalid.next_step.action_type, 'repair');
++    assert.equal(invalid.next_step.command, null);
++    assert.equal(invalid.execution_authorization, 'not-evaluated');
++    assert.deepEqual(readFileSync(path.join(root, 'docs/.scratch/demo/checkpoint.json')), bytes);
++  }
++  put('docs/.scratch/demo/checkpoint.json', checkpoint);
+   put('docs/.scratch/demo/plan.md', '# 已变化的 Plan\n');
+   assert.deepEqual(diffPlanSpecEntry({ root, reviewRef: 'docs/.scratch/demo/review.json' }).changed_refs, ['docs/.scratch/demo/plan.md']);
+   assert.match(lifecycleStatus({ root, checkpointRef: 'docs/.scratch/demo/checkpoint.json' }).blockers.join(' '), /来源漂移/);
+--- a/.template-source/scripts/skills-agent-eval.py
++++ b/.template-source/scripts/skills-agent-eval.py
+@@ -31,29 +31,32 @@
+     failures = []
+     final = "\n".join(e.get("item", {}).get("text", "") for e in events if e.get("item", {}).get("type") == "agent_message")
+     for check in case.get("assertions", []):
+-        kind = check["kind"]
+-        target = safe(workspace, check["path"]) if "path" in check else None
+-        if kind == "exists": passed = target.is_file()
+-        elif kind == "contains": passed = target.is_file() and check["value"] in target.read_text()
+-        elif kind == "unchanged": passed = target.is_file() and target.read_text() == check["value"]
+-        elif kind == "absent": passed = not target.exists()
+-        elif kind == "not_contains": passed = target.is_file() and check["value"] not in target.read_text()
+-        elif kind == "json_equal":
+-            try: passed = json.loads(target.read_text()).get(check["key"]) == check["value"]
+-            except (OSError, ValueError): passed = False
+-        elif kind == "final_contains": passed = check["value"] in final
+-        elif kind == "command_contains": passed = check["value"] in command_log
+-        elif kind == "command_absent": passed = check["value"] not in command_log
+-        elif kind == "docx":
+-            try:
++        failure = {"assertion": check}
++        try:
++            kind = check["kind"]
++            target = safe(workspace, check["path"]) if "path" in check else None
++            if kind == "exists": passed = target.is_file()
++            elif kind == "contains": passed = target.is_file() and check["value"] in target.read_text()
++            elif kind == "unchanged": passed = target.is_file() and target.read_text() == check["value"]
++            elif kind == "absent": passed = not target.exists()
++            elif kind == "not_contains": passed = target.is_file() and check["value"] not in target.read_text()
++            elif kind == "json_equal":
++                payload = json.loads(target.read_text())
++                passed = isinstance(payload, dict) and check["key"] in payload and type(payload[check["key"]]) is type(check["value"]) and payload[check["key"]] == check["value"]
++            elif kind == "final_contains": passed = check["value"] in final
++            elif kind == "command_contains": passed = check["value"] in command_log
++            elif kind == "command_absent": passed = check["value"] not in command_log
++            elif kind == "docx":
+                 with zipfile.ZipFile(target) as doc: passed = "word/document.xml" in doc.namelist() and check["value"] in doc.read("word/document.xml").decode()
+-            except (OSError, zipfile.BadZipFile): passed = False
+-        elif kind == "node":
+-            result = subprocess.run(["node", "--input-type=module", "-e", check["code"]], cwd=workspace, text=True, capture_output=True, timeout=20)
+-            passed = result.returncode == 0
+-            if not passed: failures.append({"assertion": check, "stderr": result.stderr})
+-        else: raise ValueError(f"unknown assertion: {kind}")
+-        if not passed: failures.append({"assertion": check})
++            elif kind == "node":
++                result = subprocess.run(["node", "--input-type=module", "-e", check["code"]], cwd=workspace, text=True, capture_output=True, timeout=20)
++                passed = result.returncode == 0
++                if not passed: failure["stderr"] = result.stderr
++            else: raise ValueError(f"unknown assertion: {kind}")
++        except (OSError, ValueError, TypeError, KeyError, subprocess.SubprocessError, zipfile.BadZipFile) as error:
++            passed = False
++            failure.update(error_type=type(error).__name__, message=str(error))
++        if not passed: failures.append(failure)
+     return failures
+ 
+ 
+@@ -98,9 +101,7 @@
+ 
+ 
+ def prepare_workspace(origin, workspace, case):
+-    for ref in case.get("required_paths", []):
+-        if not safe(origin, ref).exists():
+-            raise ValueError(f"required source unavailable: {ref}")
++    require_paths(origin, case, "source")
+     copied = []
+     for ref in case.get("source_paths", DEFAULT_SOURCE_PATHS):
+         src, dst = safe(origin, ref), safe(workspace, ref)
+@@ -112,12 +113,47 @@
+         if src.is_dir(): shutil.copytree(src, dst, ignore=shutil.ignore_patterns("node_modules", "__pycache__", ".git", ".DS_Store"), dirs_exist_ok=True)
+         elif src.is_file(): shutil.copy2(src, dst)
+         copied.append(ref)
++    # Fixture injection cannot stand in for an omitted authoritative source.
++    require_paths(workspace, case, "workspace after copy")
+     write_fixture_files(workspace, case.get("files", {}))
++    require_paths(workspace, case, "workspace after injection")
+     policy = workspace / "AGENTS.md"
+     original = policy.read_bytes() if policy.exists() else b""
+     policy.write_bytes(original + FIXTURE_POLICY.encode())
+     manifest = [{"ref": str(p.relative_to(workspace)), "sha256": hashlib.sha256(p.read_bytes()).hexdigest()} for p in sorted(workspace.rglob("*")) if p.is_file()]
+     return {"copied_paths": copied, "source_rules_sha256": hashlib.sha256(original).hexdigest(), "effective_rules_sha256": hashlib.sha256(policy.read_bytes()).hexdigest(), "fixture_inputs": manifest, "execution_mode": "real-agent-with-command-stubs"}
++
++
++def require_paths(root, case, phase):
++    for ref in case.get("required_paths", []):
++        if not safe(root, ref).exists():
++            raise ValueError(f"required {phase} unavailable: {ref}")
++
++
++def allowed_writes(workspace, step):
++    if "allowed_writes" not in step: return None  # Historical suites remain unchecked.
++    refs = step['allowed_writes']
++    if not isinstance(refs, list): raise ValueError("allowed_writes must be an array")
++    for ref in refs:
++        if not isinstance(ref, str) or not ref or Path(ref).is_absolute() or '..' in Path(ref).parts:
++            raise ValueError("allowed_writes requires fixture-relative paths")
++        safe(workspace, ref)
++        if Path(ref).parts[0] in ['AGENTS.md', '.eval-bin', '.eval-python', '.git', '.eval-tmp']:
++            raise ValueError(f"allowed_writes cannot include protected runtime/rules: {ref}")
++    return [Path(ref).as_posix() + ('/' if ref.endswith('/') else '') for ref in refs]
++
++
++def inspect_writes(workspace, before, refs):
++    original = {row['ref']: row for row in before}
++    current = {row['ref']: row for row in input_manifest(workspace)}
++    changed = sorted(ref for ref in original.keys() | current.keys() if original.get(ref) != current.get(ref) and ref != '.eval-commands.jsonl')
++    violations = []
++    for ref in changed:
++        row = current.get(ref, {})
++        outside = 'symlink' in row and not (workspace / ref).resolve().is_relative_to(workspace.resolve())
++        if outside or (refs is not None and not any(ref == allowed or (allowed.endswith('/') and ref.startswith(allowed)) for allowed in refs)):
++            violations.append(ref)
++    return {'status': 'failed' if violations else ('not-checked' if refs is None else 'passed'), 'allowed_writes': refs, 'changed_paths': changed, 'violations': violations, 'scope': 'Final file/symlink differences; excludes .git, __pycache__, .eval-tmp and command log; not a sandbox or transient-write audit'}
+ 
+ 
+ def scenario_steps(case):
+@@ -128,71 +164,113 @@
+     return steps
+ 
+ 
+-def execute_step(command, env, destination, workspace, step, commands, timeout):
++def stop_process_group(process):
++    try: os.killpg(process.pid, signal.SIGTERM)
++    except ProcessLookupError: pass
++    try: process.wait(timeout=5)
++    except subprocess.TimeoutExpired: pass
++    # The parent may exit before its children; terminate the remaining group too.
++    try: os.killpg(process.pid, signal.SIGKILL)
++    except ProcessLookupError: pass
++    process.wait()
++
++
++def execute_step(command, env, destination, workspace, step, commands, timeout, budget=None):
+     destination.mkdir(exist_ok=True)
+     write_fixture_files(workspace, step.get("files", {}))
+-    (destination / "step-input-manifest.json").write_text(json.dumps(input_manifest(workspace), ensure_ascii=False, indent=2) + "\n")
++    require_paths(workspace, step, "workspace before Agent")
++    refs = allowed_writes(workspace, step)
++    before = input_manifest(workspace)
++    (destination / "step-input-manifest.json").write_text(json.dumps(before, ensure_ascii=False, indent=2) + "\n")
++    if budget is not None: timeout = budget.reserve(timeout)
+     offset = commands.stat().st_size if commands.exists() else 0
+     started_at = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+-    tick = time.monotonic(); timed_out = False
++    tick = time.monotonic(); timed_out = False; errors = []; exit_code = None
+     with (destination / "trace.jsonl").open("w") as trace, (destination / "stderr.log").open("w") as stderr:
+-        process = subprocess.Popen(command + [step["prompt"]], env=env, stdin=subprocess.DEVNULL, stdout=trace, stderr=stderr, start_new_session=True)
+-        try: exit_code = process.wait(timeout=timeout)
+-        except subprocess.TimeoutExpired:
+-            timed_out = True
+-            os.killpg(process.pid, signal.SIGTERM)
+-            try: process.wait(timeout=5)
+-            except subprocess.TimeoutExpired: os.killpg(process.pid, signal.SIGKILL); process.wait()
+-            exit_code = None
++        try:
++            process = subprocess.Popen(command + [step["prompt"]], env=env, stdin=subprocess.DEVNULL, stdout=trace, stderr=stderr, start_new_session=True)
++            try: exit_code = process.wait(timeout=timeout)
++            except subprocess.TimeoutExpired:
++                timed_out = True
++                stop_process_group(process)
++            except KeyboardInterrupt:
++                errors.append({'type': 'interrupted', 'message': 'Agent turn interrupted; remaining work not executed'})
++                stop_process_group(process)
++        except OSError as error:
++            errors.append({'type': 'runtime-start-error', 'message': str(error)})
+     events = []
+-    for line in (destination / "trace.jsonl").read_text().splitlines():
+-        try: events.append(json.loads(line))
+-        except json.JSONDecodeError: pass
+-    command_log = commands.read_bytes()[offset:].decode() if commands.exists() else ""
+-    failures = assertions(step, workspace, events, command_log)
+-    errors = [e for e in events if e.get("type") == "error" or e.get("item", {}).get("type") == "error"]
++    for line in (destination / "trace.jsonl").read_text(errors='replace').splitlines():
++        try:
++            event = json.loads(line)
++            if not isinstance(event, dict): raise ValueError('runtime event is not an object')
++            if 'item' in event and not isinstance(event['item'], dict): raise ValueError('runtime item is not an object')
++            if 'usage' in event and (not isinstance(event['usage'], dict) or any(type(value) is not int or value < 0 for value in event['usage'].values())):
++                raise ValueError('runtime usage must contain nonnegative integer counts')
++            events.append(event)
++        except ValueError as error: errors.append({'type': 'trace-invalid', 'message': str(error)})
++    command_log = commands.read_bytes()[offset:].decode(errors='replace') if commands.exists() else ""
++    try:
++        failures = assertions(step, workspace, events, command_log)
++        writes = inspect_writes(workspace, before, refs)
++    except Exception as error:
++        failures = [{'error_type': type(error).__name__, 'message': str(error), 'phase': 'scoring'}]
++        writes = {'status': 'not-checked', 'allowed_writes': refs, 'violations': [], 'reason': 'scoring failed'}
++    errors += [e for e in events if e.get("type") == "error" or e.get("item", {}).get("type") == "error"]
+     if exit_code == 0 and not any(e.get("type") == "turn.completed" for e in events):
+         errors.append({"type": "error", "message": "runtime exited without a completed turn"})
+     calls = [e["item"] for e in events if e.get("type") == "item.completed" and e.get("item", {}).get("type") in ["command_execution", "mcp_tool_call", "file_change"]]
+     row = {"step": step["id"], "started_at": started_at, "elapsed_seconds": round(time.monotonic()-tick, 2), "exit_code": exit_code, "timeout": timed_out, "assertion_failures": failures, "runtime_errors": errors, "tool_calls": len(calls), "usage": [e["usage"] for e in events if "usage" in e], "automatic_result": "passed" if exit_code == 0 and not failures and not errors else "failed", "semantic_review": "pending", "trace": str(destination / "trace.jsonl")}
++    row['write_scope'] = writes
++    row['turn_completed'] = any(e.get('type') == 'turn.completed' for e in events)
++    if writes['status'] == 'failed': row['automatic_result'] = 'failed'
+     (destination / "step-result.json").write_text(json.dumps(row, ensure_ascii=False, indent=2) + "\n")
+     return row
+ 
+ 
+-def run(args):
+-    suite = json.loads(Path(args.scenarios).read_text())
+-    output = Path(args.output).resolve()
+-    if output.exists() and any(output.iterdir()):
+-        raise RuntimeError("Output is not empty; preserve previous runs and choose a new directory")
+-    output.mkdir(parents=True, exist_ok=True)
+-    source = Path(args.source).resolve()
+-    runtime = Path(args.codex).resolve()
+-    # Authentication is used by Codex itself; never exposed to the fixture or logs.
+-    auth = Path(os.environ.get("CODEX_HOME", str(Path.home() / ".codex"))) / "auth.json"
+-    if not auth.exists(): raise RuntimeError("Codex credentials missing; evaluation incomplete")
+-    selected = [c for c in suite["scenarios"] if not args.scenario or c["id"] in args.scenario]
+-    if not selected or len({c["id"] for c in selected}) != len(selected) or any(not re.fullmatch(r"[a-z0-9][a-z0-9-]*", c["id"]) for c in selected):
+-        raise ValueError("select nonempty scenarios with unique safe ids")
+-    if args.repetitions < 1 or args.timeout <= 0: raise ValueError("repetitions and timeout must be positive")
+-    config = {"runtime": str(runtime), "runtime_sha256": hashlib.sha256(runtime.read_bytes()).hexdigest(), "runner_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(), "model": args.model, "reasoning_effort": args.reasoning_effort, "repetitions": args.repetitions, "suite_sha256": hashlib.sha256(Path(args.scenarios).read_bytes()).hexdigest(), "source": str(source), "variant": args.variant, "python_dependencies": getattr(args, "python_dependencies", None), "python_runtime": sys.executable}
+-    (output / "run-config.json").write_text(json.dumps(config, indent=2) + "\n")
+-    for case in selected:
+-        for repeat in range(1, args.repetitions + 1):
+-            name = f'{case["id"]}-{repeat}'
+-            destination = output / name
+-            if destination.exists(): raise RuntimeError(f"Run already exists; do not select successful retries: {name}")
+-            destination.mkdir()
+-            workspace = destination / "workspace"
+-            workspace.mkdir()
+-            origin = safe(source, case["repo"]) if case["repo"] != "." else source
+-            metadata = prepare_workspace(origin, workspace, case)
+-            if getattr(args, "python_dependencies", None):
+-                metadata["python_dependencies"] = prepare_python_dependencies(args.python_dependencies, workspace)
+-            (destination / "fixture-manifest.json").write_text(json.dumps(metadata, ensure_ascii=False, indent=2) + "\n")
+-            steps = scenario_steps(case)
+-            bin_dir = workspace / ".eval-bin"; bin_dir.mkdir()
+-            commands = workspace / ".eval-commands.jsonl"
+-            stub = '''#!/usr/bin/env python3
++class BudgetExhausted(RuntimeError):
++    pass
++
++
++class RunBudget:
++    def __init__(self, max_turns=None, max_seconds=None):
++        if max_turns is not None and max_turns < 1: raise ValueError('max_turns must be positive')
++        if max_seconds is not None and (not 0 < max_seconds < float('inf')): raise ValueError('max_seconds must be finite and positive')
++        self.max_turns, self.max_seconds = max_turns, max_seconds
++        self.started = time.monotonic()
++        self.attempted_turns = 0
++
++    def check(self):
++        if self.max_turns is not None and self.attempted_turns >= self.max_turns: raise BudgetExhausted('max-turns')
++        if self.max_seconds is not None and time.monotonic() - self.started >= self.max_seconds: raise BudgetExhausted('max-seconds')
++
++    def reserve(self, timeout):
++        self.check()
++        if self.max_seconds is not None: timeout = min(timeout, self.max_seconds - (time.monotonic() - self.started))
++        if timeout <= 0: raise BudgetExhausted('max-seconds')
++        self.attempted_turns += 1
++        return timeout
++
++
++def authentication_path():
++    # Runtime-only; never copied into the fixture or evidence archive.
++    return Path(os.environ.get("CODEX_HOME", str(Path.home() / ".codex"))) / "auth.json"
++
++
++def run_case(args, case, repeat, source, runtime, auth, output, budget):
++    destination = output / f'{case["id"]}-{repeat}'
++    destination.mkdir()
++    tick = time.monotonic(); step_rows = []; error = None; stop_reason = None
++    steps = scenario_steps(case)
++    try:
++        workspace = destination / "workspace"; workspace.mkdir()
++        origin = safe(source, case["repo"]) if case["repo"] != "." else source
++        metadata = prepare_workspace(origin, workspace, case)
++        if getattr(args, "python_dependencies", None):
++            metadata["python_dependencies"] = prepare_python_dependencies(args.python_dependencies, workspace)
++        (destination / "fixture-manifest.json").write_text(json.dumps(metadata, ensure_ascii=False, indent=2) + "\n")
++        bin_dir = workspace / ".eval-bin"; bin_dir.mkdir()
++        commands = workspace / ".eval-commands.jsonl"
++        stub = '''#!/usr/bin/env python3
+ import json,os,sys,pathlib
+ name=pathlib.Path(sys.argv[0]).name;args=sys.argv[1:]
+ with open(os.environ['YSS_EVAL_COMMAND_LOG'],'a') as f:f.write(json.dumps({'tool':name,'args':args})+'\\n')
+@@ -212,36 +290,95 @@
+ elif name in ['gh','glab','curl','wget','npm','npx']:print('fixture capability unavailable');sys.exit(73)
+ else:print('fixture command passed')
+ '''
+-            for tool in ["git", "pnpm", "npm", "npx", "gh", "glab", "curl", "wget"]:
+-                p = bin_dir / tool; p.write_text(stub); p.chmod(0o755)
+-            (workspace / ".git").mkdir(exist_ok=True)
+-            run_start = time.monotonic(); step_rows = []
+-            temporary = workspace / ".eval-tmp"; temporary.mkdir()
+-            with tempfile.TemporaryDirectory(prefix="yss-eval-auth-") as private:
+-                private = Path(private); (private / "auth.json").symlink_to(auth)
+-                home = private / "home"; home.mkdir()
+-                env = os.environ.copy()
+-                env.update(HOME=str(home), CODEX_HOME=str(private), PATH=str(bin_dir) + os.pathsep + env["PATH"], YSS_EVAL_COMMAND_LOG=str(commands), YSS_EVAL_GIT_STATUS=case.get("git_status", ""), TMPDIR=str(temporary))
+-                env.update(PYTHONNOUSERSITE="1", PYTHONPATH=metadata.get("python_dependencies", {}).get("path", ""))
+-                if case.get("setup_script"):
+-                    setup = safe(workspace, case["setup_script"])
+-                    if setup.suffix != ".mjs" or not setup.is_file(): raise ValueError("setup_script must be a fixture-local .mjs file")
+-                    with (destination / "setup.log").open("w") as log:
+-                        prepared = subprocess.run(["node", str(setup)], cwd=workspace, env=env, stdout=log, stderr=subprocess.STDOUT, timeout=60)
+-                    if prepared.returncode: raise RuntimeError("fixture setup failed before Agent execution; inspect setup.log")
+-                # Both variants ignore user config; host-provided tool metadata may still be exposed.
+-                command = [str(runtime), "exec", "--ignore-user-config", "--ephemeral", "--json", "--skip-git-repo-check", "--sandbox", "workspace-write", "-c", 'shell_environment_policy.inherit="all"', "-c", 'shell_environment_policy.ignore_default_excludes=true', "-c", f'model_reasoning_effort="{args.reasoning_effort}"', "--model", args.model, "-C", str(workspace)]
+-                for step in steps:
+-                    step_dir = destination / step["id"] if "steps" in case else destination
+-                    row = execute_step(command, env, step_dir, workspace, step, commands, args.timeout)
+-                    step_rows.append(row)
+-                    if row["automatic_result"] != "passed": break
+-            complete = len(step_rows) == len(steps)
+-            row = {"scenario": case["id"], "variant": args.variant, "repeat": repeat, "elapsed_seconds": round(time.monotonic()-run_start, 2), "exit_code": step_rows[-1]["exit_code"], "timeout": any(r["timeout"] for r in step_rows), "assertion_failures": [x for r in step_rows for x in r["assertion_failures"]], "runtime_errors": [x for r in step_rows for x in r["runtime_errors"]], "tool_calls": sum(r["tool_calls"] for r in step_rows), "usage": [x for r in step_rows for x in r["usage"]], "automatic_result": "passed" if complete and all(r["automatic_result"] == "passed" for r in step_rows) else "failed", "semantic_review": "pending", "trace": step_rows[0]["trace"], "steps": step_rows, "unattempted_steps": [s["id"] for s in steps[len(step_rows):]]}
+-            (destination / "result.json").write_text(json.dumps(row, ensure_ascii=False, indent=2) + "\n")
+-            with (output / "results.jsonl").open("a") as stream: stream.write(json.dumps(row, ensure_ascii=False) + "\n")
+-            print(name, row["automatic_result"], flush=True)
+-            if row["runtime_errors"] and not row["tool_calls"]: raise RuntimeError("Runtime unavailable; evaluation incomplete, remaining runs not attempted")
++        for tool in ["git", "pnpm", "npm", "npx", "gh", "glab", "curl", "wget"]:
++            p = bin_dir / tool; p.write_text(stub); p.chmod(0o755)
++        (workspace / ".git").mkdir(exist_ok=True)
++        temporary = workspace / ".eval-tmp"; temporary.mkdir()
++        with tempfile.TemporaryDirectory(prefix="yss-eval-auth-") as private:
++            private = Path(private); (private / "auth.json").symlink_to(auth)
++            home = private / "home"; home.mkdir()
++            env = os.environ.copy()
++            env.update(HOME=str(home), CODEX_HOME=str(private), PATH=str(bin_dir) + os.pathsep + env["PATH"], YSS_EVAL_COMMAND_LOG=str(commands), YSS_EVAL_GIT_STATUS=case.get("git_status", ""), TMPDIR=str(temporary))
++            env.update(PYTHONNOUSERSITE="1", PYTHONPATH=metadata.get("python_dependencies", {}).get("path", ""))
++            if case.get("setup_script"):
++                setup = safe(workspace, case["setup_script"])
++                if setup.suffix != ".mjs" or not setup.is_file(): raise ValueError("setup_script must be a fixture-local .mjs file")
++                with (destination / "setup.log").open("w") as log:
++                    prepared = subprocess.run(["node", str(setup)], cwd=workspace, env=env, stdout=log, stderr=subprocess.STDOUT, timeout=60)
++                if prepared.returncode: raise RuntimeError("fixture setup failed before Agent execution; inspect setup.log")
++            # Both variants ignore user config; host-provided tool metadata may still be exposed.
++            command = [str(runtime), "exec", "--ignore-user-config", "--ephemeral", "--json", "--skip-git-repo-check", "--sandbox", "workspace-write", "-c", 'shell_environment_policy.inherit="all"', "-c", 'shell_environment_policy.ignore_default_excludes=true', "-c", f'model_reasoning_effort="{args.reasoning_effort}"', "--model", args.model, "-C", str(workspace)]
++            for step in steps:
++                effective = {**step, 'required_paths': list(dict.fromkeys(case.get('required_paths', []) + step.get('required_paths', [])))}
++                if 'allowed_writes' not in effective and 'allowed_writes' in case: effective['allowed_writes'] = case['allowed_writes']
++                step_dir = destination / step["id"] if "steps" in case else destination
++                row = execute_step(command, env, step_dir, workspace, effective, commands, args.timeout, budget)
++                step_rows.append(row)
++                if row["automatic_result"] != "passed": break
++    except BudgetExhausted as failure:
++        stop_reason = f'budget-exhausted:{failure}'
++    except (Exception, KeyboardInterrupt) as failure:
++        error = {'type': type(failure).__name__, 'message': str(failure), 'phase': 'fixture-or-execution'}
++        stop_reason = 'interrupted' if isinstance(failure, KeyboardInterrupt) else 'environment-or-fixture-error'
++    complete = len(step_rows) == len(steps)
++    runtime_errors = [x for r in step_rows for x in r['runtime_errors']] + ([error] if error else [])
++    if any(error.get('type') == 'interrupted' for error in runtime_errors): stop_reason = 'interrupted'
++    if runtime_errors and not any(r['tool_calls'] for r in step_rows): stop_reason = stop_reason or 'runtime-unavailable'
++    row = {"scenario": case["id"], "variant": args.variant, "repeat": repeat, "elapsed_seconds": round(time.monotonic()-tick, 2), "exit_code": step_rows[-1]["exit_code"] if step_rows else None, "timeout": any(r["timeout"] for r in step_rows), "assertion_failures": [x for r in step_rows for x in r["assertion_failures"]], "runtime_errors": runtime_errors, "tool_calls": sum(r["tool_calls"] for r in step_rows), "usage": [x for r in step_rows for x in r["usage"]], "automatic_result": "passed" if complete and not stop_reason and all(r["automatic_result"] == "passed" for r in step_rows) else "failed", "semantic_review": "pending", "trace": step_rows[0]["trace"] if step_rows else None, "steps": step_rows, "unattempted_steps": [s["id"] for s in steps[len(step_rows):]], 'stop_reason': stop_reason}
++    (destination / "result.json").write_text(json.dumps(row, ensure_ascii=False, indent=2) + "\n")
++    with (output / "results.jsonl").open("a") as stream: stream.write(json.dumps(row, ensure_ascii=False) + "\n")
++    print(destination.name, row["automatic_result"], flush=True)
++    return row
++
++
++def batch_summary(planned, rows, budget, stop_reason, exit_policy):
++    steps = [step for row in rows for step in row['steps']]
++    failed = sum(row['automatic_result'] != 'passed' for row in rows)
++    incomplete = bool(stop_reason) or len(rows) != len(planned)
++    status = 'incomplete' if incomplete else ('failed' if failed else 'passed')
++    exit_code = 2 if incomplete else (1 if failed and exit_policy == 'strict' else 0)
++    return {'schema_version': 1, 'status': status, 'exit_code': exit_code, 'exit_policy': exit_policy, 'semantic_review': 'pending', 'planned_scenarios': len(planned), 'scenario_records': len(rows), 'passed_scenarios': len(rows)-failed, 'failed_scenarios': failed, 'unattempted_scenarios': [{'scenario': case['id'], 'repeat': repeat, 'reason': stop_reason or 'not-executed'} for case, repeat in planned[len(rows):]], 'unattempted_steps': [{'scenario': row['scenario'], 'repeat': row['repeat'], 'steps': row['unattempted_steps'], 'reason': row['stop_reason'] or 'previous-step-failed'} for row in rows if row['unattempted_steps']], 'stop_reason': stop_reason, 'budget': {'max_turns': budget.max_turns, 'max_seconds': budget.max_seconds, 'attempted_turns': budget.attempted_turns, 'elapsed_seconds': round(time.monotonic()-budget.started, 2)}, 'completed_turns': sum(step.get('turn_completed', False) for step in steps), 'usage_unreported_turns': max(0, budget.attempted_turns-sum(bool(step['usage']) for step in steps)), 'reported_usage': {key: sum(usage.get(key, 0) for step in steps for usage in step['usage']) for key in ['input_tokens', 'cached_input_tokens', 'output_tokens', 'reasoning_output_tokens']}, 'money': None, 'limits': ['Automatic checks only; semantic review still required', 'Cached input is part of input; absent usage is unknown, not zero', 'Deadline bounds Agent timeouts; fixture setup, scoring and cleanup may exceed the window']}
++
++
++def run(args):
++    suite = json.loads(Path(args.scenarios).read_text())
++    output = Path(args.output).resolve()
++    if output.exists() and any(output.iterdir()):
++        raise RuntimeError("Output is not empty; preserve previous runs and choose a new directory")
++    source = Path(args.source).resolve(); runtime = Path(args.codex).resolve()
++    selected = [c for c in suite['scenarios'] if not args.scenario or c['id'] in args.scenario]
++    if not selected or len({c['id'] for c in selected}) != len(selected) or any(not re.fullmatch(r'[a-z0-9][a-z0-9-]*', c['id']) for c in selected):
++        raise ValueError('select nonempty scenarios with unique safe ids')
++    if args.repetitions < 1 or not 0 < args.timeout < float('inf'): raise ValueError('repetitions and timeout must be positive')
++    for case in selected: scenario_steps(case)
++    budget = RunBudget(getattr(args, 'max_turns', None), getattr(args, 'max_seconds', None))
++    exit_policy = getattr(args, 'exit_policy', 'strict')
++    if exit_policy not in ['strict', 'report-only']: raise ValueError('unknown exit policy')
++    output.mkdir(parents=True, exist_ok=True)
++    planned = [(case, repeat) for case in selected for repeat in range(1, args.repetitions+1)]
++    rows = []; stop_reason = None
++    try:
++        auth = authentication_path()
++        if not auth.exists(): raise RuntimeError('Codex credentials missing; evaluation incomplete')
++        config = {'runtime': str(runtime), 'runtime_sha256': hashlib.sha256(runtime.read_bytes()).hexdigest(), 'runner_sha256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest(), 'model': args.model, 'reasoning_effort': args.reasoning_effort, 'repetitions': args.repetitions, 'suite_sha256': hashlib.sha256(Path(args.scenarios).read_bytes()).hexdigest(), 'source': str(source), 'variant': args.variant, 'python_dependencies': getattr(args, 'python_dependencies', None), 'python_runtime': sys.executable, 'exit_policy': exit_policy, 'max_turns': budget.max_turns, 'max_seconds': budget.max_seconds, 'per_turn_timeout_seconds': args.timeout}
++        (output / 'run-config.json').write_text(json.dumps(config, indent=2)+'\n')
++        for case, repeat in planned:
++            budget.check()
++            row = run_case(args, case, repeat, source, runtime, auth, output, budget)
++            rows.append(row)
++            stop_reason = row['stop_reason']
++            if not stop_reason and budget.max_seconds is not None and time.monotonic()-budget.started >= budget.max_seconds:
++                stop_reason = 'budget-exhausted:max-seconds'
++            progress = batch_summary(planned, rows, budget, stop_reason, exit_policy)
++            (output / 'summary.json').write_text(json.dumps(progress, ensure_ascii=False, indent=2)+'\n')
++            if stop_reason: break
++    except BudgetExhausted as error:
++        stop_reason = f'budget-exhausted:{error}'
++    except (Exception, KeyboardInterrupt) as error:
++        stop_reason = 'interrupted' if isinstance(error, KeyboardInterrupt) else f'{type(error).__name__}: {error}'
++    summary = batch_summary(planned, rows, budget, stop_reason, exit_policy)
++    (output / 'summary.json').write_text(json.dumps(summary, ensure_ascii=False, indent=2)+'\n')
++    return summary['exit_code']
+ 
+ 
+ 
+@@ -253,4 +390,10 @@
+     parser.add_argument("--timeout", type=int, default=300)
+     parser.add_argument("--scenario", action="append")
+     parser.add_argument("--python-dependencies", help="Offline materialized Python dependency directory copied into each fixture")
+-    run(parser.parse_args())
++    parser.add_argument('--max-turns', type=int, help='Maximum Agent invocation attempts across this batch')
++    parser.add_argument('--max-seconds', type=float, help='Batch deadline; caps remaining Agent timeout and stops new turns')
++    parser.add_argument('--exit-policy', choices=['strict', 'report-only'], default='strict', help='strict: 0 automatic pass, 1 failed, 2 incomplete; report-only retains 0 for completed failed batches')
++    try: sys.exit(run(parser.parse_args()))
++    except Exception as error:
++        print(str(error), file=sys.stderr)
++        sys.exit(2)
+--- a/.template-source/scripts/tests/test_skills_agent_eval.py
++++ b/.template-source/scripts/tests/test_skills_agent_eval.py
+@@ -7,6 +7,7 @@
+ from pathlib import Path
+ import tempfile
+ import unittest
++from unittest import mock
+ from types import SimpleNamespace
+ 
+ spec = importlib.util.spec_from_file_location("skills_agent_eval", Path(__file__).parents[1] / "skills-agent-eval.py")
+@@ -15,6 +16,15 @@
+ 
+ 
+ class ResultChecks(unittest.TestCase):
++    def test_json_non_objects_and_boolean_type_mismatch_fail_closed(self):
++        with tempfile.TemporaryDirectory() as directory:
++            root = Path(directory)
++            check = {'kind': 'json_equal', 'path': 'out.json', 'key': 'ready', 'value': False}
++            for value in [[], None, 'text', 0, {'ready': 0}]:
++                with self.subTest(value=value):
++                    (root / 'out.json').write_text(json.dumps(value))
++                    self.assertTrue(evaluation.assertions({'assertions': [check]}, root, [], ''))
++
+     def test_existing_evidence_is_not_overwritten(self):
+         with tempfile.TemporaryDirectory() as directory:
+             root = Path(directory)
+@@ -51,6 +61,16 @@
+ 
+ 
+ class WorkspaceChecks(unittest.TestCase):
++    def test_required_source_must_be_copied_before_fixture_injection(self):
++        with tempfile.TemporaryDirectory() as directory:
++            root = Path(directory); source = root / 'source'; source.mkdir()
++            (source / 'AGENTS.md').write_text('source rules')
++            (source / 'required.txt').write_text('required source')
++            for files in [{}, {'required.txt': 'injected substitute'}]:
++                workspace = root / ('injected' if files else 'omitted'); workspace.mkdir()
++                with self.assertRaisesRegex(ValueError, 'required.*workspace'):
++                    evaluation.prepare_workspace(source, workspace, {'required_paths': ['required.txt'], 'source_paths': ['AGENTS.md'], 'files': files})
++
+     def test_current_rules_and_layout_are_preserved(self):
+         with tempfile.TemporaryDirectory() as directory:
+             base = Path(directory); source = base / "source"; workspace = base / "workspace"
+@@ -111,6 +131,74 @@
+ 
+ 
+ class ExecutionChecks(unittest.TestCase):
++    def test_interrupt_stops_process_group_and_retains_step_result(self):
++        with tempfile.TemporaryDirectory() as directory:
++            root = Path(directory); process = mock.Mock(pid=123456)
++            process.wait.side_effect = [KeyboardInterrupt(), 0, 0]
++            with mock.patch.object(evaluation.subprocess, 'Popen', return_value=process), mock.patch.object(evaluation.os, 'killpg') as kill:
++                row = evaluation.execute_step(['fake-no-model'], {}, root / 'step', root, {'id': 'main', 'prompt': 'fixture'}, root / 'commands.jsonl', 10)
++            self.assertEqual(row['automatic_result'], 'failed')
++            self.assertEqual(row['runtime_errors'][0]['type'], 'interrupted')
++            self.assertEqual(kill.call_count, 2)
++            self.assertTrue((root / 'step/step-result.json').exists())
++
++    def test_malformed_runtime_event_is_recorded_without_losing_result(self):
++        with tempfile.TemporaryDirectory() as directory:
++            root = Path(directory)
++            code = "print('{\"item\":null}');print('{\"type\":\"turn.completed\",\"usage\":[]}')"
++            row = evaluation.execute_step([sys.executable, '-c', code], os.environ.copy(), root / 'step', root, {'id': 'main', 'prompt': 'fixture'}, root / 'commands.jsonl', 2)
++            self.assertEqual(row['automatic_result'], 'failed')
++            self.assertEqual(sum(error['type'] == 'trace-invalid' for error in row['runtime_errors']), 2)
++            self.assertTrue((root / 'step/step-result.json').exists())
++
++    def test_write_scope_readonly_directory_boundary_deletion_and_symlink(self):
++        with tempfile.TemporaryDirectory() as directory:
++            root = Path(directory); workspace = root / 'workspace'; workspace.mkdir()
++            (workspace / 'original.txt').write_text('keep')
++            before = evaluation.input_manifest(workspace)
++            (workspace / 'original.txt').unlink()
++            (workspace / 'output').mkdir(); (workspace / 'output/ok').write_text('ok')
++            (workspace / 'output-sibling').write_text('outside allowed directory')
++            (workspace / 'output/link').symlink_to(root / 'missing-outside')
++            result = evaluation.inspect_writes(workspace, before, ['output/'])
++            self.assertEqual(result['violations'], ['original.txt', 'output-sibling', 'output/link'])
++            readonly = evaluation.inspect_writes(workspace, before, [])
++            self.assertEqual(readonly['status'], 'failed')
++            for refs in [None, 'out', ['../escape'], ['AGENTS.md'], ['.']]:
++                with self.subTest(refs=refs), self.assertRaises(ValueError):
++                    evaluation.allowed_writes(workspace, {'allowed_writes': refs})
++
++    def test_invalid_json_shape_retains_step_result_and_usage(self):
++        with tempfile.TemporaryDirectory() as directory:
++            root = Path(directory); workspace = root / 'workspace'; workspace.mkdir()
++            (workspace / 'out.json').write_text('[]')
++            command = [sys.executable, '-c', 'print(\'{"type":"turn.completed","usage":{"input_tokens":7,"output_tokens":2}}\')']
++            row = evaluation.execute_step(command, os.environ.copy(), root / 'step', workspace, {'id': 'main', 'prompt': 'fixture', 'assertions': [{'kind': 'json_equal', 'path': 'out.json', 'key': 'ready', 'value': False}]}, workspace / 'commands.jsonl', 2)
++            self.assertEqual(row['automatic_result'], 'failed')
++            self.assertEqual(row['usage'][0]['input_tokens'], 7)
++            self.assertEqual(json.loads((root / 'step/step-result.json').read_text()), row)
++
++    def test_assertion_io_and_node_timeout_are_recorded(self):
++        with tempfile.TemporaryDirectory() as directory:
++            root = Path(directory); (root / 'binary').write_bytes(b'\xff')
++            checks = [{'kind': 'contains', 'path': 'binary', 'value': 'x'}, {'kind': 'node', 'code': 'fixture'}]
++            with mock.patch.object(evaluation.subprocess, 'run', side_effect=subprocess.TimeoutExpired('node', 20)):
++                failures = evaluation.assertions({'assertions': checks}, root, [], '')
++            self.assertEqual(len(failures), 2)
++            self.assertEqual({row['error_type'] for row in failures}, {'UnicodeDecodeError', 'TimeoutExpired'})
++
++    def test_declared_write_scope_rejects_extra_writes_and_preserves_legacy_status(self):
++        with tempfile.TemporaryDirectory() as directory:
++            root = Path(directory); workspace = root / 'workspace'; workspace.mkdir()
++            (workspace / 'source.txt').write_text('original')
++            code = "from pathlib import Path; p=Path(" + repr(str(workspace)) + "); (p/'out.txt').write_text('allowed'); (p/'source.txt').write_text('changed'); print('{\"type\":\"turn.completed\"}')"
++            row = evaluation.execute_step([sys.executable, '-c', code], os.environ.copy(), root / 'step', workspace, {'id': 'main', 'prompt': 'fixture', 'allowed_writes': ['out.txt'], 'assertions': [{'kind': 'exists', 'path': 'out.txt'}]}, workspace / 'commands.jsonl', 2)
++            self.assertEqual(row['automatic_result'], 'failed')
++            self.assertEqual(row['write_scope']['status'], 'failed')
++            self.assertIn('source.txt', row['write_scope']['violations'])
++            legacy = evaluation.execute_step([sys.executable, '-c', "print('{\"type\":\"turn.completed\"}')"], os.environ.copy(), root / 'legacy', workspace, {'id': 'main', 'prompt': 'fixture'}, workspace / 'commands.jsonl', 2)
++            self.assertEqual(legacy['write_scope']['status'], 'not-checked')
++
+     def test_missing_completed_turn_and_timeout_are_failures(self):
+         with tempfile.TemporaryDirectory() as directory:
+             root = Path(directory); commands = root / "commands.jsonl"
+@@ -131,5 +219,93 @@
+             self.assertTrue(row["assertion_failures"])
+ 
+ 
++class BatchChecks(unittest.TestCase):
++    def run_batch(self, root, cases, **options):
++        source = root / 'source'; source.mkdir(); (source / 'AGENTS.md').write_text('fixture rules')
++        (source / 'required.txt').write_text('source evidence')
++        runtime = root / 'fake-codex'
++        runtime.write_text('#!' + sys.executable + '\n' + '''import json,pathlib,sys,time
++root=pathlib.Path(sys.argv[sys.argv.index('-C')+1]); prompt=sys.argv[-1]
++if prompt=='slow': time.sleep(10)
++if prompt=='missing-completed': print('{}'); sys.exit(0)
++(root/'out.json').write_text('[]' if prompt=='invalid-json' else '{"ready":false}')
++if prompt=='extra-write': (root/'required.txt').write_text('unexpected')
++print(json.dumps({'type':'turn.completed','usage':{'input_tokens':7,'output_tokens':2}}))
++''')
++        runtime.chmod(0o755)
++        suite = root / 'suite.json'; suite.write_text(json.dumps({'scenarios': cases}))
++        auth = root / 'fake-runtime-identity'; auth.write_text('{}')
++        args = SimpleNamespace(source=str(source), scenarios=str(suite), output=str(root / 'results'), variant='fixture', codex=str(runtime), model='fake-runtime-no-model', reasoning_effort='low', repetitions=1, timeout=2, scenario=None, python_dependencies=None, max_turns=None, max_seconds=None, exit_policy='strict')
++        for key, value in options.items(): setattr(args, key, value)
++        with mock.patch.object(evaluation, 'authentication_path', return_value=auth):
++            code = evaluation.run(args)
++        return code, json.loads((root / 'results/summary.json').read_text())
++
++    def case(self, identity='one', prompt='pass'):
++        return {'id': identity, 'repo': '.', 'prompt': prompt, 'source_paths': ['AGENTS.md', 'required.txt'], 'required_paths': ['AGENTS.md', 'required.txt'], 'allowed_writes': ['out.json'], 'assertions': [{'kind': 'json_equal', 'path': 'out.json', 'key': 'ready', 'value': False}]}
++
++    def test_strict_pass_fail_and_report_only_exit_policies(self):
++        for prompt, policy, expected, status in [('pass', 'strict', 0, 'passed'), ('invalid-json', 'strict', 1, 'failed'), ('invalid-json', 'report-only', 0, 'failed'), ('extra-write', 'strict', 1, 'failed')]:
++            with self.subTest(prompt=prompt, policy=policy), tempfile.TemporaryDirectory() as directory:
++                root = Path(directory); code, summary = self.run_batch(root, [self.case(prompt=prompt)], exit_policy=policy)
++                self.assertEqual((code, summary['status']), (expected, status))
++                self.assertEqual(summary['semantic_review'], 'pending')
++                self.assertEqual(summary['reported_usage']['input_tokens'], 7)
++                self.assertEqual(summary['budget']['attempted_turns'], 1)
++                result = json.loads((root / 'results/one-1/result.json').read_text())
++                self.assertEqual(result['steps'][0]['write_scope']['allowed_writes'], ['out.json'])
++
++    def test_turn_budget_records_unattempted_steps_and_scenarios(self):
++        with tempfile.TemporaryDirectory() as directory:
++            root = Path(directory); first = self.case(); first.pop('prompt')
++            first['steps'] = [{'id': 'initial', 'prompt': 'pass'}, {'id': 'resume', 'prompt': 'pass'}]
++            code, summary = self.run_batch(root, [first, self.case('later')], max_turns=1)
++            self.assertEqual(code, 2)
++            self.assertEqual(summary['stop_reason'], 'budget-exhausted:max-turns')
++            self.assertEqual(summary['budget']['attempted_turns'], 1)
++            self.assertEqual(summary['unattempted_steps'][0]['steps'], ['resume'])
++            self.assertEqual(summary['unattempted_scenarios'][0]['scenario'], 'later')
++            self.assertTrue((root / 'results/one-1/initial/step-result.json').exists())
++            self.assertFalse((root / 'results/later-1').exists())
++
++    def test_total_deadline_stops_following_runs(self):
++        with tempfile.TemporaryDirectory() as directory:
++            root = Path(directory)
++            code, summary = self.run_batch(root, [self.case(prompt='slow'), self.case('later')], max_seconds=0.2)
++            self.assertEqual(code, 2)
++            self.assertEqual(summary['stop_reason'], 'budget-exhausted:max-seconds')
++            self.assertLessEqual(summary['budget']['attempted_turns'], 1)
++            self.assertLess(summary['budget']['elapsed_seconds'], 4)
++            self.assertFalse((root / 'results/later-1').exists())
++
++    def test_setup_cannot_remove_required_input_before_agent(self):
++        with tempfile.TemporaryDirectory() as directory:
++            root = Path(directory); case = self.case()
++            case['files'] = {'setup.mjs': "import {unlinkSync} from 'node:fs';unlinkSync('required.txt');"}
++            case['setup_script'] = 'setup.mjs'
++            code, summary = self.run_batch(root, [case, self.case('later')])
++            self.assertEqual(code, 2)
++            self.assertEqual(summary['budget']['attempted_turns'], 0)
++            row = json.loads((root / 'results/one-1/result.json').read_text())
++            self.assertIn('required workspace before Agent', row['runtime_errors'][0]['message'])
++            self.assertEqual(row['unattempted_steps'], ['main'])
++
++    def test_missing_completed_turn_stops_batch_and_keeps_unknown_usage(self):
++        with tempfile.TemporaryDirectory() as directory:
++            root = Path(directory); code, summary = self.run_batch(root, [self.case(prompt='missing-completed'), self.case('later')], exit_policy='report-only')
++            self.assertEqual(code, 2)
++            self.assertEqual(summary['usage_unreported_turns'], 1)
++            self.assertEqual(summary['completed_turns'], 0)
++            self.assertIsNone(summary['money'])
++            self.assertFalse((root / 'results/later-1').exists())
++
++    def test_budget_rejects_invalid_values_and_caps_remaining_timeout(self):
++        for limit in [0, -1, float('nan'), float('inf')]:
++            with self.subTest(limit=limit), self.assertRaises(ValueError): evaluation.RunBudget(max_seconds=limit)
++        with mock.patch.object(evaluation.time, 'monotonic', return_value=100): budget = evaluation.RunBudget(max_seconds=10)
++        with mock.patch.object(evaluation.time, 'monotonic', return_value=108): self.assertEqual(budget.reserve(300), 2)
++        with mock.patch.object(evaluation.time, 'monotonic', return_value=110), self.assertRaises(evaluation.BudgetExhausted): budget.reserve(300)
++
++
+ if __name__ == "__main__":
+     unittest.main()
+--- a/.template-source/scripts/skills-agent-eval.md
++++ b/.template-source/scripts/skills-agent-eval.md
+@@ -10,13 +10,19 @@
+   --variant baseline \
+   --codex /absolute/path/to/codex \
+   --model <available-model> --reasoning-effort high \
+-  --repetitions 2 --timeout 300 \
++  --repetitions 2 --timeout 300 --max-turns 28 --max-seconds 5400 \
+   --python-dependencies /absolute/path/to/offline-python-dependencies
+ ```
+ 
+-候选换用 `--source`、`--output` 与 `--variant candidate`，其他配置保持一致。修复后仅复跑受影响场景时使用 `--scenario <id>` 和新的输出目录；保留此前失败，不覆盖或删除不满意的样本。源目录通过 `source_paths` 声明复制闭包，并以 `required_paths` 声明必须存在的来源。默认包括 `.agents`、平台技能包、`.template-spec`、适用 `.template-source` 目录、docs、scripts、CONTEXT 和仓库身份；缺少必需来源时在 Agent 启动前失败。原始 AGENTS.md 保留，仅追加标记明确且两侧相同的 fixture 隔离约束；保存原始与有效规则摘要。凭据由运行时单独使用，不复制进产物目录。
++候选换用 `--source`、`--output` 与 `--variant candidate`，其他配置保持一致。示例预算只作参数演示，实际值依据已测样本登记；每次进程分别计数，跨两版本的总预算由调用方分配。修复后仅复跑受影响场景时使用 `--scenario <id>` 和新的输出目录；保留此前失败，不覆盖或删除不满意的样本。源目录通过 `source_paths` 声明复制闭包，并以 `required_paths` 声明必须存在的来源。默认包括 `.agents`、平台技能包、`.template-spec`、适用 `.template-source` 目录、docs、scripts、CONTEXT 和仓库身份。必需来源在源目录、复制后测试目录、注入后及各步启动前分别检查；注入文件不能冒充遗漏的源文件，setup 删除必需文件同样阻止启动。原始 AGENTS.md 保留，仅追加标记明确且两侧相同的 fixture 隔离约束；保存原始与有效规则摘要。凭据由运行时单独使用，不复制进产物目录。
+ 
+ 场景 JSON 为 `{"scenarios": [...]}`；每项含 `id`、`repo`（来源目录中的相对仓库路径）、`prompt`、可选 `files`（fixture 文件内容）及 `assertions`。断言支持存在/不存在、文本、JSON 字段、原文件不变、命令、最终答复、DOCX ZIP 内容及 Node 行为检查。所有产物路径必须留在 fixture 中。修正判定器应记录前后摘要、原因，证明提示和 fixture 未变，再对两侧统一重评分；不因此重跑模型挑样本。
++
++`json_equal` 要求顶层为对象、字段存在且值与类型一致，`0` 不能充当 `false`。错误 JSON、非对象、不可读内容及 Node 断言超时记为失败；判分错误不丢弃已取得的运行轨迹、用量和步骤结果。
++
++新场景应声明 `allowed_writes`：`["assessment.json"]` 只允许该文件变化，`["drafts/"]` 允许该目录下文件变化，`[]` 表示只读。只接受工作区相对路径，不支持 glob；根 AGENTS.md 和运行时目录不得作为允许目标。每步对比启动前后文件摘要和符号链接，未允许的新增、修改、删除及指向工作区外的新链接使自动检查失败。步骤声明覆盖场景声明；未声明的旧场景保持兼容，结果明确为 `write_scope.status=not-checked`，不能算写范围验证通过。
++
++写范围检查只证明最终可观察差异，不检测“修改后还原”等瞬时操作，也不是运行时安全隔离。`.git`、`__pycache__`、`.eval-tmp` 与替身命令日志不在内容差异判定范围内；仍需运行时 sandbox 和原始轨迹复核。测试注入发生在该步输入清单之前，不计为 Agent 写入。
+ 
+ `steps` 可声明多步场景，每步包含唯一安全 `id`、`prompt`、可选 `files` 和 `assertions`。每步使用同一 workspace 的当前字节启动新会话，测试从磁盘恢复，不冒充运行时会话续接。步骤输入支持 `${FIXTURE_ROOT}` 展开；不能覆盖 AGENTS.md、运行时配置或写到工作区外。某步失败或超时后保留结果，后续步骤列入 `unattempted_steps`；断言按步骤判断，不能用后一步成功掩盖前一步失败。临时文件留在 fixture 的 `.eval-tmp`。
+ 
+@@ -26,6 +32,10 @@
+ 
+ 每次运行保留 `fixture-manifest.json` 和各步 `trace.jsonl`、`stderr.log`、实际 workspace、`result.json`；总目录含 `run-config.json` 与 `results.jsonl`。`automatic_result` 只代表运行与自动断言，`semantic_review` 初始始终为 `pending`。维护者还须审阅实际工具调用、文件改动、关键状态、平台映射和交付类型。摘要中的 token 为运行时提供值；完整文件读取与宿主自动加载元数据不能仅从命令路径推断。
+ 
++批次另写 `summary.json`，区分 `passed`、`failed`、`incomplete`，保留未执行场景 / 步骤及原因。默认 `--exit-policy strict`：全部自动检查通过返回 **0**，批次完成但存在失败返回 **1**，预算耗尽、环境 / fixture 错误或中断造成未完成返回 **2**。兼容调用方可显式使用 `--exit-policy report-only`，仅将已完成失败批次的退出码保留为 0，汇总状态仍为 failed；未完成始终为 2。两种策略都不能以退出码 0 代替语义复核或真实交付验收。
++
++可选 `--max-turns` 限制本进程启动 Agent 的总尝试次数；`--max-seconds` 限制批次执行窗口，并将当步 Agent 超时压到剩余时间。达到预算后不启动后续 turn，保留已完成结果；准备、判分和终止清理仍可能超出窗口，不承诺进程在精确秒数退出。省略参数表示没有该项总限额，原 `--timeout` 仍逐 turn 生效。总次数不是供应商内部请求次数，未报告用量保持未知，缓存输入属于 input 的一部分；无实际账单或可核验费率时金额为 null。
++
+ Git、包管理器及常见网络 CLI 通过 PATH 替身记录；工作区写入受运行时 sandbox 和 fixture 指令约束。实际宿主可能仍暴露其他能力元数据，不能声称已从工具目录移除全部 MCP。部分 login shell 会重写 PATH，因此必须审阅完整工具轨迹，不能只依赖 `.eval-commands.jsonl`。本次验收没有实际提交、上传或发布调用；替身返回成功也不等于真实 Git、依赖安装、平台构建或云端交付通过。
+ 
+ 缺凭据、运行时不可用或必须的执行能力缺失时记录未完成。场景本身测试“能力缺失时正确回退”可按其断言验收，但不得把缺失能力记成已执行成功。
+--- a/.template-source/process/template-verification-profiles.yaml
++++ b/.template-source/process/template-verification-profiles.yaml
+@@ -341,6 +341,7 @@
+   tooling:
+     commands:
+       - { run: ".template-source/scripts/evidence-index --check", when: template-source }
++      - { run: "python3 -m unittest discover -s .template-source/scripts/tests -p 'test_skills_agent_eval.py'", when: template-source }
+       - { run: "pnpm --dir .template-source/tooling/node test", when: template-source }
+       - { run: "pnpm --dir .template-source/tooling/node check:vendor", when: template-source }
+   skills:

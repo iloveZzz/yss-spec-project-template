@@ -1,0 +1,661 @@
+[
+  {
+    "variant": "baseline",
+    "run": "e01-status-1",
+    "automatic_result": "passed",
+    "elapsed_seconds": 139.74,
+    "changed": [],
+    "missing": [],
+    "added": [
+      "assessment.json"
+    ],
+    "packet": "baseline-e01-status-1.json",
+    "semantic_review": "pending"
+  },
+  {
+    "variant": "baseline",
+    "run": "e01-status-2",
+    "automatic_result": "passed",
+    "elapsed_seconds": 149.97,
+    "changed": [],
+    "missing": [],
+    "added": [
+      "assessment.json"
+    ],
+    "packet": "baseline-e01-status-2.json",
+    "semantic_review": "pending"
+  },
+  {
+    "variant": "baseline",
+    "run": "e02-template-1",
+    "automatic_result": "passed",
+    "elapsed_seconds": 82.66,
+    "changed": [],
+    "missing": [],
+    "added": [
+      "maintenance-plan.md"
+    ],
+    "packet": "baseline-e02-template-1.json",
+    "semantic_review": "pending"
+  },
+  {
+    "variant": "baseline",
+    "run": "e02-template-2",
+    "automatic_result": "passed",
+    "elapsed_seconds": 94.75,
+    "changed": [],
+    "missing": [],
+    "added": [
+      "maintenance-plan.md"
+    ],
+    "packet": "baseline-e02-template-2.json",
+    "semantic_review": "pending"
+  },
+  {
+    "variant": "baseline",
+    "run": "e03-small-1",
+    "automatic_result": "passed",
+    "elapsed_seconds": 59.44,
+    "changed": [
+      "docs/note.md"
+    ],
+    "missing": [],
+    "added": [],
+    "packet": "baseline-e03-small-1.json",
+    "semantic_review": "pending"
+  },
+  {
+    "variant": "baseline",
+    "run": "e03-small-2",
+    "automatic_result": "passed",
+    "elapsed_seconds": 54.77,
+    "changed": [
+      "docs/note.md"
+    ],
+    "missing": [],
+    "added": [],
+    "packet": "baseline-e03-small-2.json",
+    "semantic_review": "pending"
+  },
+  {
+    "variant": "baseline",
+    "run": "e04-current-1",
+    "automatic_result": "passed",
+    "elapsed_seconds": 200.33,
+    "changed": [],
+    "missing": [],
+    "added": [
+      "docs/.scratch/demo/entry-work-record.md",
+      "docs/.scratch/demo/spec.md",
+      "entry-result.json"
+    ],
+    "packet": "baseline-e04-current-1.json",
+    "semantic_review": "pending"
+  },
+  {
+    "variant": "baseline",
+    "run": "e04-current-2",
+    "automatic_result": "passed",
+    "elapsed_seconds": 205.52,
+    "changed": [],
+    "missing": [],
+    "added": [
+      "docs/.scratch/demo/entry-work-record.md",
+      "docs/.scratch/demo/spec.md",
+      "entry-result.json"
+    ],
+    "packet": "baseline-e04-current-2.json",
+    "semantic_review": "pending"
+  },
+  {
+    "variant": "baseline",
+    "run": "e05-continuation-1",
+    "automatic_result": "passed",
+    "elapsed_seconds": 91.25,
+    "changed": [],
+    "missing": [],
+    "added": [
+      "entry-result.json"
+    ],
+    "packet": "baseline-e05-continuation-1.json",
+    "semantic_review": "pending"
+  },
+  {
+    "variant": "baseline",
+    "run": "e05-continuation-2",
+    "automatic_result": "passed",
+    "elapsed_seconds": 95.95,
+    "changed": [],
+    "missing": [],
+    "added": [
+      "entry-result.json"
+    ],
+    "packet": "baseline-e05-continuation-2.json",
+    "semantic_review": "pending"
+  },
+  {
+    "variant": "baseline",
+    "run": "e06-expanded-1",
+    "automatic_result": "passed",
+    "elapsed_seconds": 84.22,
+    "changed": [],
+    "missing": [],
+    "added": [
+      "entry-result.json"
+    ],
+    "packet": "baseline-e06-expanded-1.json",
+    "semantic_review": "pending"
+  },
+  {
+    "variant": "baseline",
+    "run": "e06-expanded-2",
+    "automatic_result": "passed",
+    "elapsed_seconds": 85.02,
+    "changed": [],
+    "missing": [],
+    "added": [
+      "entry-result.json"
+    ],
+    "packet": "baseline-e06-expanded-2.json",
+    "semantic_review": "pending"
+  },
+  {
+    "variant": "baseline",
+    "run": "e07-mvc-1",
+    "automatic_result": "passed",
+    "elapsed_seconds": 277.4,
+    "changed": [],
+    "missing": [],
+    "added": [
+      "api-check.json",
+      "technical-plan.md"
+    ],
+    "packet": "baseline-e07-mvc-1.json",
+    "semantic_review": "pending"
+  },
+  {
+    "variant": "baseline",
+    "run": "e07-mvc-2",
+    "automatic_result": "passed",
+    "elapsed_seconds": 278.22,
+    "changed": [],
+    "missing": [],
+    "added": [
+      "api-check.json",
+      "technical-plan.md"
+    ],
+    "packet": "baseline-e07-mvc-2.json",
+    "semantic_review": "pending"
+  },
+  {
+    "variant": "baseline",
+    "run": "e08-ui-1",
+    "automatic_result": "failed",
+    "elapsed_seconds": 300.17,
+    "changed": [],
+    "missing": [],
+    "added": [],
+    "packet": "baseline-e08-ui-1.json",
+    "semantic_review": "pending"
+  },
+  {
+    "variant": "baseline",
+    "run": "e08-ui-2",
+    "automatic_result": "failed",
+    "elapsed_seconds": 300.16,
+    "changed": [],
+    "missing": [],
+    "added": [],
+    "packet": "baseline-e08-ui-2.json",
+    "semantic_review": "pending"
+  },
+  {
+    "variant": "baseline",
+    "run": "e09-resume-drift-1",
+    "automatic_result": "passed",
+    "elapsed_seconds": 269.55,
+    "changed": [
+      "plan.md"
+    ],
+    "missing": [],
+    "added": [
+      "docs/.scratch/demo/spec.md",
+      "entry-result.json",
+      "resume-result.json"
+    ],
+    "packet": "baseline-e09-resume-drift-1.json",
+    "semantic_review": "pending"
+  },
+  {
+    "variant": "baseline",
+    "run": "e09-resume-drift-2",
+    "automatic_result": "passed",
+    "elapsed_seconds": 347.11,
+    "changed": [
+      "plan.md"
+    ],
+    "missing": [],
+    "added": [
+      "docs/.scratch/demo/entry-work-record.json",
+      "docs/.scratch/demo/spec.md",
+      "entry-result.json",
+      "resume-result.json"
+    ],
+    "packet": "baseline-e09-resume-drift-2.json",
+    "semantic_review": "pending"
+  },
+  {
+    "variant": "baseline",
+    "run": "e10-running-1",
+    "automatic_result": "passed",
+    "elapsed_seconds": 143.14,
+    "changed": [],
+    "missing": [],
+    "added": [
+      "recovery.json"
+    ],
+    "packet": "baseline-e10-running-1.json",
+    "semantic_review": "pending"
+  },
+  {
+    "variant": "baseline",
+    "run": "e10-running-2",
+    "automatic_result": "passed",
+    "elapsed_seconds": 112.66,
+    "changed": [],
+    "missing": [],
+    "added": [
+      "recovery.json"
+    ],
+    "packet": "baseline-e10-running-2.json",
+    "semantic_review": "pending"
+  },
+  {
+    "variant": "baseline",
+    "run": "e11-cross-repo-1",
+    "automatic_result": "passed",
+    "elapsed_seconds": 82.35,
+    "changed": [],
+    "missing": [],
+    "added": [
+      "cross-repo-result.json",
+      "cross-repo.log"
+    ],
+    "packet": "baseline-e11-cross-repo-1.json",
+    "semantic_review": "pending"
+  },
+  {
+    "variant": "baseline",
+    "run": "e11-cross-repo-2",
+    "automatic_result": "passed",
+    "elapsed_seconds": 99.0,
+    "changed": [],
+    "missing": [],
+    "added": [
+      "cross-repo-result.json",
+      "cross-repo.log"
+    ],
+    "packet": "baseline-e11-cross-repo-2.json",
+    "semantic_review": "pending"
+  },
+  {
+    "variant": "baseline",
+    "run": "e12-failed-verification-1",
+    "automatic_result": "passed",
+    "elapsed_seconds": 144.54,
+    "changed": [],
+    "missing": [],
+    "added": [
+      "delivery-result.json",
+      "verification.md"
+    ],
+    "packet": "baseline-e12-failed-verification-1.json",
+    "semantic_review": "pending"
+  },
+  {
+    "variant": "baseline",
+    "run": "e12-failed-verification-2",
+    "automatic_result": "passed",
+    "elapsed_seconds": 153.97,
+    "changed": [],
+    "missing": [],
+    "added": [
+      "delivery-result.json",
+      "verification.md"
+    ],
+    "packet": "baseline-e12-failed-verification-2.json",
+    "semantic_review": "pending"
+  },
+  {
+    "variant": "candidate",
+    "run": "e01-status-1",
+    "automatic_result": "passed",
+    "elapsed_seconds": 138.91,
+    "changed": [],
+    "missing": [],
+    "added": [
+      "assessment.json"
+    ],
+    "packet": "candidate-e01-status-1.json",
+    "semantic_review": "pending"
+  },
+  {
+    "variant": "candidate",
+    "run": "e01-status-2",
+    "automatic_result": "passed",
+    "elapsed_seconds": 116.29,
+    "changed": [],
+    "missing": [],
+    "added": [
+      "assessment.json"
+    ],
+    "packet": "candidate-e01-status-2.json",
+    "semantic_review": "pending"
+  },
+  {
+    "variant": "candidate",
+    "run": "e02-template-1",
+    "automatic_result": "passed",
+    "elapsed_seconds": 93.31,
+    "changed": [],
+    "missing": [],
+    "added": [
+      "maintenance-plan.md"
+    ],
+    "packet": "candidate-e02-template-1.json",
+    "semantic_review": "pending"
+  },
+  {
+    "variant": "candidate",
+    "run": "e02-template-2",
+    "automatic_result": "passed",
+    "elapsed_seconds": 78.48,
+    "changed": [],
+    "missing": [],
+    "added": [
+      "maintenance-plan.md"
+    ],
+    "packet": "candidate-e02-template-2.json",
+    "semantic_review": "pending"
+  },
+  {
+    "variant": "candidate",
+    "run": "e03-small-1",
+    "automatic_result": "passed",
+    "elapsed_seconds": 70.82,
+    "changed": [
+      "docs/note.md"
+    ],
+    "missing": [],
+    "added": [],
+    "packet": "candidate-e03-small-1.json",
+    "semantic_review": "pending"
+  },
+  {
+    "variant": "candidate",
+    "run": "e03-small-2",
+    "automatic_result": "passed",
+    "elapsed_seconds": 66.98,
+    "changed": [
+      "docs/note.md"
+    ],
+    "missing": [],
+    "added": [],
+    "packet": "candidate-e03-small-2.json",
+    "semantic_review": "pending"
+  },
+  {
+    "variant": "candidate",
+    "run": "e04-current-1",
+    "automatic_result": "passed",
+    "elapsed_seconds": 230.53,
+    "changed": [],
+    "missing": [],
+    "added": [
+      "docs/.scratch/demo/entry-work-record.md",
+      "docs/.scratch/demo/spec.md",
+      "entry-result.json"
+    ],
+    "packet": "candidate-e04-current-1.json",
+    "semantic_review": "pending"
+  },
+  {
+    "variant": "candidate",
+    "run": "e04-current-2",
+    "automatic_result": "passed",
+    "elapsed_seconds": 200.66,
+    "changed": [],
+    "missing": [],
+    "added": [
+      "docs/.scratch/demo/spec.md",
+      "docs/.scratch/demo/work-record.md",
+      "entry-result.json"
+    ],
+    "packet": "candidate-e04-current-2.json",
+    "semantic_review": "pending"
+  },
+  {
+    "variant": "candidate",
+    "run": "e05-continuation-1",
+    "automatic_result": "passed",
+    "elapsed_seconds": 92.67,
+    "changed": [],
+    "missing": [],
+    "added": [
+      "entry-result.json"
+    ],
+    "packet": "candidate-e05-continuation-1.json",
+    "semantic_review": "pending"
+  },
+  {
+    "variant": "candidate",
+    "run": "e05-continuation-2",
+    "automatic_result": "passed",
+    "elapsed_seconds": 90.11,
+    "changed": [],
+    "missing": [],
+    "added": [
+      "entry-result.json"
+    ],
+    "packet": "candidate-e05-continuation-2.json",
+    "semantic_review": "pending"
+  },
+  {
+    "variant": "candidate",
+    "run": "e06-expanded-1",
+    "automatic_result": "passed",
+    "elapsed_seconds": 88.45,
+    "changed": [],
+    "missing": [],
+    "added": [
+      "entry-result.json"
+    ],
+    "packet": "candidate-e06-expanded-1.json",
+    "semantic_review": "pending"
+  },
+  {
+    "variant": "candidate",
+    "run": "e06-expanded-2",
+    "automatic_result": "passed",
+    "elapsed_seconds": 83.58,
+    "changed": [],
+    "missing": [],
+    "added": [
+      "entry-result.json"
+    ],
+    "packet": "candidate-e06-expanded-2.json",
+    "semantic_review": "pending"
+  },
+  {
+    "variant": "candidate",
+    "run": "e07-mvc-1",
+    "automatic_result": "passed",
+    "elapsed_seconds": 261.13,
+    "changed": [],
+    "missing": [],
+    "added": [
+      "api-check.json",
+      "technical-plan.md"
+    ],
+    "packet": "candidate-e07-mvc-1.json",
+    "semantic_review": "pending"
+  },
+  {
+    "variant": "candidate",
+    "run": "e07-mvc-2",
+    "automatic_result": "passed",
+    "elapsed_seconds": 285.52,
+    "changed": [],
+    "missing": [],
+    "added": [
+      "api-check.json",
+      "technical-plan.md"
+    ],
+    "packet": "candidate-e07-mvc-2.json",
+    "semantic_review": "pending"
+  },
+  {
+    "variant": "candidate",
+    "run": "e08-ui-1",
+    "automatic_result": "failed",
+    "elapsed_seconds": 300.16,
+    "changed": [],
+    "missing": [],
+    "added": [],
+    "packet": "candidate-e08-ui-1.json",
+    "semantic_review": "pending"
+  },
+  {
+    "variant": "candidate",
+    "run": "e08-ui-2",
+    "automatic_result": "failed",
+    "elapsed_seconds": 300.16,
+    "changed": [],
+    "missing": [],
+    "added": [],
+    "packet": "candidate-e08-ui-2.json",
+    "semantic_review": "pending"
+  },
+  {
+    "variant": "candidate",
+    "run": "e09-resume-drift-1",
+    "automatic_result": "passed",
+    "elapsed_seconds": 371.04,
+    "changed": [
+      "plan.md"
+    ],
+    "missing": [],
+    "added": [
+      "docs/.scratch/demo/spec.md",
+      "docs/.scratch/demo/work-record.md",
+      "entry-result.json",
+      "resume-result.json"
+    ],
+    "packet": "candidate-e09-resume-drift-1.json",
+    "semantic_review": "pending"
+  },
+  {
+    "variant": "candidate",
+    "run": "e09-resume-drift-2",
+    "automatic_result": "passed",
+    "elapsed_seconds": 372.26,
+    "changed": [
+      "plan.md"
+    ],
+    "missing": [],
+    "added": [
+      "docs/.scratch/demo/entry-work-record.md",
+      "docs/.scratch/demo/spec.md",
+      "entry-result.json",
+      "resume-result.json"
+    ],
+    "packet": "candidate-e09-resume-drift-2.json",
+    "semantic_review": "pending"
+  },
+  {
+    "variant": "candidate",
+    "run": "e10-running-1",
+    "automatic_result": "passed",
+    "elapsed_seconds": 157.31,
+    "changed": [],
+    "missing": [],
+    "added": [
+      "recovery.json"
+    ],
+    "packet": "candidate-e10-running-1.json",
+    "semantic_review": "pending"
+  },
+  {
+    "variant": "candidate",
+    "run": "e10-running-2",
+    "automatic_result": "passed",
+    "elapsed_seconds": 154.5,
+    "changed": [],
+    "missing": [],
+    "added": [
+      "recovery.json"
+    ],
+    "packet": "candidate-e10-running-2.json",
+    "semantic_review": "pending"
+  },
+  {
+    "variant": "candidate",
+    "run": "e11-cross-repo-1",
+    "automatic_result": "passed",
+    "elapsed_seconds": 72.54,
+    "changed": [],
+    "missing": [],
+    "added": [
+      "cross-repo-result.json",
+      "cross-repo.log"
+    ],
+    "packet": "candidate-e11-cross-repo-1.json",
+    "semantic_review": "pending"
+  },
+  {
+    "variant": "candidate",
+    "run": "e11-cross-repo-2",
+    "automatic_result": "passed",
+    "elapsed_seconds": 83.66,
+    "changed": [],
+    "missing": [],
+    "added": [
+      "cross-repo-result.json",
+      "cross-repo.log"
+    ],
+    "packet": "candidate-e11-cross-repo-2.json",
+    "semantic_review": "pending"
+  },
+  {
+    "variant": "candidate",
+    "run": "e12-failed-verification-1",
+    "automatic_result": "passed",
+    "elapsed_seconds": 151.86,
+    "changed": [],
+    "missing": [],
+    "added": [
+      "delivery-result.json",
+      "verification-run.json",
+      "verification.md",
+      "verification.stderr.log",
+      "verification.stdout.log"
+    ],
+    "packet": "candidate-e12-failed-verification-1.json",
+    "semantic_review": "pending"
+  },
+  {
+    "variant": "candidate",
+    "run": "e12-failed-verification-2",
+    "automatic_result": "passed",
+    "elapsed_seconds": 135.74,
+    "changed": [],
+    "missing": [],
+    "added": [
+      "delivery-result.json",
+      "verification-run.json",
+      "verification.md"
+    ],
+    "packet": "candidate-e12-failed-verification-2.json",
+    "semantic_review": "pending"
+  }
+]

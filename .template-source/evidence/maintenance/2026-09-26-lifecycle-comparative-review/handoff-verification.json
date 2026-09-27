@@ -1,0 +1,32 @@
+{
+  "checks": [
+    {
+      "task_id": "lifecycle-audit-competitors",
+      "result": "accepted",
+      "executed_at": "2026-09-26T13:46:02.443Z",
+      "validation": "validateTaskPackage current source + output nonempty + structured result normalization",
+      "exit_code": 0,
+      "next_route_meaning": "主控验证研究包；不执行建议的治理改动"
+    },
+    {
+      "task_id": "lifecycle-audit-local_templates",
+      "result": "accepted",
+      "executed_at": "2026-09-26T13:46:02.527Z",
+      "validation": "validateTaskPackage current source + output nonempty + structured result normalization",
+      "exit_code": 0,
+      "next_route_meaning": "主控验证研究包；不执行建议的治理改动"
+    },
+    {
+      "task_id": "lifecycle-audit-skill_patterns",
+      "result": "accepted",
+      "executed_at": "2026-09-26T13:46:02.609Z",
+      "validation": "validateTaskPackage current source + output nonempty + structured result normalization",
+      "exit_code": 0,
+      "next_route_meaning": "主控验证研究包；不执行建议的治理改动"
+    }
+  ],
+  "normalization_notes": [
+    "原始子研究结果保留；主控按任务包schema将workflow_reference/skill归一为字符串并补根CONTEXT引用。",
+    "首次使用null下一路由被校验器以illegal-next-route拒绝；正确后续为主控完成本研究包的分级验证，不代表实施建议。"
+  ]
+}

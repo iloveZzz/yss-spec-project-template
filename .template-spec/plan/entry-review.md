@@ -2,11 +2,13 @@
 
 正式 Spec 起草之前必须通过 `node scripts/verify-plan-spec-entry <state.yaml>`；显式 `to-spec`、恢复、任务包派发和下一路由均不得绕过。Plan 不通过时可继续无依赖调研，不创建正式 Spec 草稿。此检查复用 `gate.plan-approved` 用户决定，不新增批准阶段，也不授权实现。
 
+可先用 `scripts/plan-spec-entry prepare --root <项目> --feature <id> --plan <Plan引用> --context-reconciliation <调和记录引用>` 将可读输入及当前摘要组织为待审候选 JSON，或用 `scripts/plan-spec-entry diff --root <项目> --review <审阅包引用>` 比较原依据与当前字节。两条命令只写标准输出；所有检查初始为 `pending`，影响判断为未知，候选不构成会签或批准。缺输入时返回结构化阻断原因。
+
 检查 ID 与条件门禁取自 `.template-spec/process/lifecycle-registry.yaml` 的 `stage.plan.spec_entry`。查询 Plan 或相关工作单元自动加载 `planning`、`grill_exit` 和全量检查，初始均为 `pending`。自动加载不代表勾选通过。
 
 ## 持久化合同
 
-入口状态包含 `feature_id`、`plan_review_ref`、`plan_user_decision_ref`。这三个字段同样用于任务包、checkpoint 和完成态 Workflow Execution Result；不从历史阶段、路径或默认值推断。
+入口状态包含 `feature_id`、`plan_review_ref`，并按用户决定协议提供 `plan_user_decision_ref` 或 `plan_continuation_ref`。这些字段同样用于任务包、checkpoint 和完成态 Workflow Execution Result；不从历史阶段、路径或默认值推断。两条证明路径均由现有用户决定校验器核验，不能混填或以延续记录伪造新回复。
 
 `plan_review_ref` 指向 YAML / JSON：
 
@@ -20,4 +22,6 @@
 
 先固定审阅包及依据，展示当前内容、范围、风险、延期、N/A 理由和下一动作，再取得真实用户回复。`plan_user_decision_ref` 采用 `.template-spec/process/schemas/user-decision.schema.json`：边界为 `gate.plan-approved`，subject 为当前 `plan_review_ref`，scope 包含当前 `feature_id`。不得将旧“继续”、数字人会签或合成测试回复当作本次批准。
 
-审阅包、注册表、Plan、词汇、依据或批准来源变化均要求重新校验；摘要漂移时重新展示并取得当前确认。检查器保证结构、引用、摘要和回复绑定，不证明业务事实或身份来源绝对真实；主控仍须按证据核查影响面，不能为了放行而填 false 或空问题列表。
+审阅包、注册表、Plan、词汇、依据或批准来源变化均要求重新校验；摘要漂移时先展示差异并按用户决定协议重验：排版、措辞或派生内容变化，经独立等价审查证明决定依据与授权范围未变，且原始决定和适用外部审批仍有效时，可用 `plan_continuation_ref` 延续；范围、关键规则、验收、契约承诺、授权或风险接受发生实质变化时重新取得决定。未知影响先补分析，不能视为等价。检查器保证结构、引用、摘要和回复绑定，不证明业务事实或身份来源绝对真实；主控仍须按证据核查影响面，不能为了放行而填 false 或空问题列表。
+
+批准延续使用 `yss-product-lifecycle/references/user-decisions.md` 的 `approved-scope-continuation-v1`：绑定当前审阅包、原始真实决定、实际差异与独立审查；禁止链式延续、修改旧回复或跳过检查。`scripts/plan-spec-entry prepare` 只起草候选，`diff` 只报告原始字节变化；两者均不判定等价或批准。

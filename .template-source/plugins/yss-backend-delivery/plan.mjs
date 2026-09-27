@@ -15,8 +15,8 @@ const REGISTRY = '.template-spec/agents/yss-skill-registry.yaml';
 const CONTRACT = '.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml';
 const UNITS = [
   'plan-opportunity', 'plan-requirements', 'domain-strategy-design', 'stage-decision',
-  'spec-synthesis', 'prototype-design', 'technical-analysis',
-  'implementation-repository-preparation', 'ticket-decomposition', 'slice-implementation', 'code-review',
+  'spec-synthesis', 'prototype-design-v2', 'technical-analysis',
+  'implementation-repository-preparation', 'service-project-initialization', 'ticket-decomposition', 'slice-implementation', 'code-review',
 ].map(id => `work-unit.${id}`);
 // These omissions are packaging proposals, never runtime routing exemptions.
 const FRONTEND_IMPLEMENTATION = new Set([

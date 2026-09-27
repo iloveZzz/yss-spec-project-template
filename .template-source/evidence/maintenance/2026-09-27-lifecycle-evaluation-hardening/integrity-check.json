@@ -1,0 +1,82 @@
+{
+  "checked_at": "2026-09-27T02:18:30.685320+00:00",
+  "source_checks": [
+    {
+      "ref": "scripts/lib/lifecycle-status.mjs",
+      "matches_recorded_after": true
+    },
+    {
+      "ref": "scripts/verify-lifecycle-operator-scenarios",
+      "matches_recorded_after": true
+    },
+    {
+      "ref": ".template-source/scripts/skills-agent-eval.py",
+      "matches_recorded_after": true
+    },
+    {
+      "ref": ".template-source/scripts/tests/test_skills_agent_eval.py",
+      "matches_recorded_after": true
+    },
+    {
+      "ref": ".template-source/scripts/skills-agent-eval.md",
+      "matches_recorded_after": true
+    },
+    {
+      "ref": ".template-source/process/template-verification-profiles.yaml",
+      "matches_recorded_after": true
+    }
+  ],
+  "report_links": [
+    {
+      "target": "../../../scripts/skills-agent-eval.md",
+      "exists": true
+    },
+    {
+      "target": "baseline.json",
+      "exists": true
+    },
+    {
+      "target": "implementation-delta.json",
+      "exists": true
+    },
+    {
+      "target": "implementation.patch",
+      "exists": true
+    },
+    {
+      "target": "red-verification.json",
+      "exists": true
+    },
+    {
+      "target": "focused-verification.json",
+      "exists": true
+    },
+    {
+      "target": "template-verification.json",
+      "exists": true
+    },
+    {
+      "target": "full-check-summary.json",
+      "exists": true
+    },
+    {
+      "target": "verify-template-fast.log",
+      "exists": true
+    },
+    {
+      "target": "integrity-check.json",
+      "exists": true
+    },
+    {
+      "target": "../2026-09-26-lifecycle-improvement-implementation/evaluation-coverage.md",
+      "exists": true
+    },
+    {
+      "target": "../2026-09-26-lifecycle-improvement-implementation/auth-backend-pilot-readiness.md",
+      "exists": true
+    }
+  ],
+  "python_ast": "passed",
+  "git_diff_check_exit_code": 0,
+  "fresh_template_verification": "template-verification.json"
+}

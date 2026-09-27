@@ -87,7 +87,7 @@ roles:
     contract_version: 1
     title: YSS 产品经理
     stages: [ stage.plan, stage.spec-architecture, stage.product-design, stage.verification-release-retrospective ]
-    draft_artifact_ids: [ artifact.product-overview, artifact.functional-architecture, artifact.interaction-spec, artifact.state-matrix, artifact.prototype-confirmation ]
+    draft_artifact_ids: [ artifact.product-overview, artifact.functional-architecture, artifact.interaction-spec, artifact.state-matrix, artifact.prototype-confirmation-v2 ]
     core_skills: [ yss-design-system, yss-prototype-stage, prototype-review, yss-research, competitive-intelligence ]
     forbidden_skills: [ yss-ui, yss-domain, yss-repository, yss-web-controller, yss-ddd-scaffold-generator, yss-layered-mvc-scaffold-generator, implement, tdd ]
     description: >-
@@ -290,7 +290,7 @@ user_decision_policy:
   work_unit_gates:
     work-unit.spec-synthesis:
       - gate.spec-baseline-approved
-    work-unit.prototype-design:
+    work-unit.prototype-design-v2:
       - gate.product-design-approved
     work-unit.technical-analysis:
       - gate.backend-architecture-platform-approved

@@ -1,0 +1,50 @@
+schema_version: 2
+intensity: L3
+classification_reason: >-
+  生命周期稳定 ID、同阶段服务初始化路由和核心校验器发生语义变更，
+  并覆盖 Skill 分发、只读操作入口及跨仓交付合同，按 L3 维护。
+triggers:
+  - lifecycle-gate
+  - cross-repo-contract
+  - core-validator
+  - aggregate-behavior-change
+changed_assets:
+  - .template-spec/process/lifecycle-registry.yaml
+  - .template-spec/process/lifecycle-registry-baseline.json
+  - .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml
+  - scripts/lib/lifecycle-transition.mjs
+  - scripts/lib/lifecycle-registry.mjs
+  - scripts/plan-spec-entry
+  - scripts/lifecycle-status
+  - .template-spec/design/templates/interaction-spec-template.md
+  - .template-spec/design/templates/state-matrix-template.md
+  - .template-source/scripts/replay-lifecycle-triage
+  - .template-source/scripts/run-lifecycle-cross-repo-pilot
+  - .template-source/evidence/maintenance/2026-09-26-lifecycle-optimization/triage-replay-report.md
+  - .template-source/evidence/maintenance/2026-09-26-lifecycle-optimization/cross-repo-pilot-report.md
+  - skills-lock.json
+verification_evidence:
+  - kind: self-check
+    command: pnpm --dir .template-source/tooling/node test
+    result: pass
+  - kind: self-check
+    command: node --test .agents/skills/yss-layered-mvc-scaffold-generator/scripts/scaffold-generator.test.mjs
+    result: pass
+  - kind: self-check
+    command: scripts/verify-frontend-delivery-scenarios
+    result: pass
+  - kind: self-check
+    command: scripts/sync-skills --check && scripts/update-skill-lock --check && scripts/sync-profile-skills --check && scripts/sync-strategic-handoff-tools --check && scripts/verify-strategic-handoff-tools-lock
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-lifecycle-registry && scripts/verify-lifecycle-context-query-scenarios && scripts/verify-lifecycle-transition-scenarios && scripts/verify-lifecycle-operator-scenarios
+    result: pass
+review_mode: self-check
+escalation: >-
+  本批保持 implementation-ready。候选验证已执行；固定已提交来源的
+  release 级门禁须在后续经授权提交、候选冻结后重验，不将工作树标为可发布。
+target_state: implementation-ready
+current_state: implementation-ready
+verification_profile: fast
+review_round: 0
+candidate_digest: null

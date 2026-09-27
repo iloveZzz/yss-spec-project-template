@@ -11,7 +11,7 @@ description: 在生命周期已批准的脚手架合同下生成通用 YSS 分�
 
 - backend `scaffold_status=required`，目标目录已确认且不存在。
 - `scaffold-architecture-decisions.yaml` 中对应项目已达到 `lifecycle-approved`，确认架构为 `layered-mvc`。
-- `yss-implementation-contract-compiler` 已编译统一 Project Scaffold Contract schema v4，并绑定批准且当前的 Technical Design、Data Architecture Decision v1、API Contract Decision v1 和真实工程合同批准记录。API `required` 时 Draft、Validation、独立 Review、Freeze 与工程批准必须绑定同一 OpenAPI YAML 字节；`not-applicable` 时必须有评估、原因和证据且不得携带占位资产。合同须由生命周期批准并持久化。
+- `yss-implementation-contract-compiler` 已编译统一 Project Scaffold Contract schema v4，并绑定批准且当前的 Technical Design、Data Architecture Decision v1、API Contract Decision（新建 v2；历史 v1 只读兼容，准备与迁移见 `.template-spec/process/contract-reading.md`） 和真实工程合同批准记录。API `required` 时 Draft、Validation、独立 Review、Freeze 与工程批准必须绑定同一 OpenAPI YAML 字节；`not-applicable` 时必须有评估、原因和证据且不得携带占位资产。合同须由生命周期批准并持久化。
 - 合同中的 `decision_id`、文件 digest、Profile、能力闭包、写路径和验证命令仍为当前版本。
 
 任一条件缺失时返回 `blocked`。本生成器无交互、无默认回退；用户选择由 `yss-product-lifecycle` 在 `work-unit.technical-analysis` 的工程基线内完成。

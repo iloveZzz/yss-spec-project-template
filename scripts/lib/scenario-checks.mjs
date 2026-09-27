@@ -66,7 +66,7 @@ function validateInvocationBoundary(data) {
   ensure(strategyResearch?.profile === "strategy-evidence" && strategyResearch.mode_before_gate === "evidence-audited" && strategyResearch.artifact_owner === "yss-research" && strategyResearch.downstream_owner === "yss-stage-decision", "领域战略研究合同缺少 profile、门禁前审计或资产所有权边界");
   const stageDecisionResearch = routes?.["work-unit.stage-decision"]?.research_contract;
   ensure(routes?.["work-unit.stage-decision"]?.skills?.includes("yss-research") && stageDecisionResearch?.profile === "strategy-evidence" && stageDecisionResearch.mode_before_gate === "evidence-audited" && stageDecisionResearch.artifact_owner === "yss-research" && stageDecisionResearch.downstream_owner === "yss-stage-decision", "阶段决策工作单元缺少 evidence-audited 战略研究合同");
-  const prototypeRoute = routes?.["work-unit.prototype-design"];
+  const prototypeRoute = routes?.["work-unit.prototype-design-v2"];
   ensure(!prototypeRoute?.skills?.includes("yss-ui") && !prototypeRoute?.supporting_skills?.includes("yss-ui"), "原型工作单元不得调用生产实现技能 yss-ui");
   ensure(JSON.stringify(Object.keys(prototypeRoute?.profile_contract?.profiles ?? {})) === JSON.stringify(["H1", "H2"]) && prototypeRoute?.version_boundary?.prototype_must_not_call === "yss-ui", "原型档位必须仅包含 H1/H2 并明确 yss-ui 边界");
   ensure(routes?.["work-unit.slice-implementation"]?.skills?.includes("tdd") && routes?.["work-unit.slice-implementation"]?.skills?.includes("yss-ui") && routes?.["work-unit.slice-implementation"]?.skills?.includes("yss-ui-business-page-generation"), "原生实现工作单元缺少 TDD、UI 或业务页面生成路由");
@@ -268,9 +268,9 @@ export function runScenario(name) {
     ensure(contract.transition_graph?.implementation_requires_predecessor === "work-unit.ticket-decomposition", "生命周期转换图未声明实现前置工作单元");
     ensure(JSON.stringify(contract.transition_graph?.forbidden_shortcuts) === JSON.stringify([
       { from: "work-unit.spec-synthesis", to: "work-unit.implementation-repository-preparation" },
-      { from: "work-unit.prototype-design", to: "work-unit.implementation-repository-preparation" },
+      { from: "work-unit.prototype-design-v2", to: "work-unit.implementation-repository-preparation" },
       { from: "work-unit.spec-synthesis", to: "work-unit.slice-implementation" },
-      { from: "work-unit.prototype-design", to: "work-unit.slice-implementation" },
+      { from: "work-unit.prototype-design-v2", to: "work-unit.slice-implementation" },
       { from: "work-unit.technical-analysis", to: "work-unit.slice-implementation" },
       { from: "work-unit.technical-analysis", to: "work-unit.ticket-decomposition" },
     ]), "生命周期转换图缺少工程准备、Ticket 正式化与实现越级阻断");

@@ -1,0 +1,176 @@
+{
+  "result": {
+    "scenario": "e08-ui",
+    "variant": "baseline",
+    "repeat": 1,
+    "elapsed_seconds": 508.17,
+    "exit_code": 0,
+    "timeout": false,
+    "assertion_failures": [],
+    "runtime_errors": [],
+    "tool_calls": 20,
+    "usage": [
+      {
+        "input_tokens": 533127,
+        "cached_input_tokens": 467072,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 15751,
+        "reasoning_output_tokens": 1969
+      }
+    ],
+    "automatic_result": "passed",
+    "semantic_review": "pending",
+    "trace": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-ui-supplement-6px70sb6/baseline/e08-ui-1/trace.jsonl",
+    "steps": [
+      {
+        "step": "main",
+        "started_at": "2026-09-26T17:00:50Z",
+        "elapsed_seconds": 508.03,
+        "exit_code": 0,
+        "timeout": false,
+        "assertion_failures": [],
+        "runtime_errors": [],
+        "tool_calls": 20,
+        "usage": [
+          {
+            "input_tokens": 533127,
+            "cached_input_tokens": 467072,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 15751,
+            "reasoning_output_tokens": 1969
+          }
+        ],
+        "automatic_result": "passed",
+        "semantic_review": "pending",
+        "trace": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-ui-supplement-6px70sb6/baseline/e08-ui-1/trace.jsonl"
+      }
+    ],
+    "unattempted_steps": []
+  },
+  "original_files_changed": [],
+  "original_files_missing": [],
+  "unsafe_paths": [],
+  "new_files": [
+    "design-overview.md",
+    "interaction.md",
+    "state-matrix.md"
+  ],
+  "commands": [
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'pwd && cat yss-project.yaml'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"rg --files -g 'AGENTS.md' -g 'CONTEXT.md' -g '*fixture-spec*' -g '*design-overview*' -g '*interaction*' -g '*state-matrix*' -g 'DESIGN.md' -g '*harness-process-tailoring*' -g '*lifecycle-registry*' -g '*stage-tracking*' -g '*SKILL.md' -g '\"'!node_modules'\"' -g '\"'!.git'\"' --hidden\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .agents/skills/yss-product-lifecycle/SKILL.md .agents/skills/yss-prototype-stage/SKILL.md .agents/skills/i-have-adhd/SKILL.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat fixture-spec.md CONTEXT.md DESIGN.md AGENTS.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .template-spec/process/harness-process-tailoring.md && rg --files .template-spec/design --hidden'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .template-spec/design/templates/product-overview-design-template.md .template-spec/design/templates/interaction-spec-template.md .template-spec/design/templates/state-matrix-template.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .agents/skills/yss-prototype-stage/SKILL.md .agents/skills/i-have-adhd/SKILL.md .template-spec/process/document-writing.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .agents/skills/yss-product-lifecycle/SKILL.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"wc -l CONTEXT.md DESIGN.md AGENTS.md && rg -n '\"'^## |''^### |申请|回执|幂等|fixture|test-data-only'\"' CONTEXT.md DESIGN.md AGENTS.md && rg -n 'product-overview|interaction-spec|state-matrix|product-design|prototype|design-overview' .template-spec/process/lifecycle-registry.yaml\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"cat DESIGN.md && sed -n '90,125p' CONTEXT.md\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .agents/skills/yss-design-system/SKILL.md .template-spec/design/design.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"sed -n '235,275p' .template-spec/process/lifecycle-registry.yaml && sed -n '410,448p' .template-spec/process/lifecycle-registry.yaml && cat .template-spec/process/stage-tracking.md\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"sed -n '1,160p' DESIGN.md\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"sed -n '161,224p' DESIGN.md && sed -n '1,100p' .template-spec/design/design.md && sed -n '115,175p' .agents/skills/yss-design-system/SKILL.md && sed -n '1,55p' .template-spec/design/tokens/tokens.default.json\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"python3 - <<'PY'\nimport os,json\nfrom pathlib import Path\nroot=Path.cwd()\nfiles={}\nfor base,dirs,names in os.walk(root,followlinks=False):\n    dirs[:] = [d for d in dirs if d \"'!= '\"'.git']\n    for name in names:\n        p=Path(base)/name\n        s=p.lstat()\n        files[str(p.relative_to(root))]=[s.st_size,s.st_mtime_ns]\nprint(json.dumps(files))\nPY\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"python3 - <<'PY'\nimport os,json\nfrom pathlib import Path\nroot=Path.cwd()\nfiles={}\nfor base,dirs,names in os.walk(root,followlinks=False):\n    dirs[:] = [d for d in dirs if d \"'!= '\"'.git']\n    for name in names:\n        p=Path(base)/name\n        s=p.lstat()\n        files[str(p.relative_to(root))]=[s.st_size,s.st_mtime_ns]\nprint(json.dumps(files))\nPY\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"python3 - <<'PY'\nfrom pathlib import Path\nimport re\npairs=[('design-overview.md','.template-spec/design/templates/product-overview-design-template.md'),('interaction.md','.template-spec/design/templates/interaction-spec-template.md'),('state-matrix.md','.template-spec/design/templates/state-matrix-template.md')]\nfor name,template in pairs:\n    text=Path(name).read_text()\n    headings=re.findall(r'\"'^## .+$'\"',text,re.M)\n    expected=re.findall(r'\"'^## .+$'\"',Path(template).read_text(),re.M)\n    assert headings==expected,(name,headings,expected)\n    for rule in ['R1','R2','R3']:\n        assert rule in text,(name,rule)\n    assert 'test-data-only' in text and 'status: draft' in text,name\n    assert not re.search(r'<待填写>|\\\\[x\\\\]|status: (approved|ready-for-agent)',text),name\n    for link in re.findall(r'\\\\]\\\\(([\"'^)]+)'\"\\\\)',text):\n        assert Path(link.split('#')[0]).is_file(),(name,link)\n    for state in ['正常','无权限','空态','校验失败','提交中','超时']:\n        assert state in text,(name,state)\n    print(f'{name}: {len(headings)} 个模板章节、规则引用、状态覆盖及本地链接检查通过；{len(text.splitlines())} 行')\ntext=Path('state-matrix.md').read_text()\npage=text.split('## 页面状态\\\\n',1)[1].split('## 状态转换与恢复',1)[0]\ntrans=text.split('## 状态转换与恢复\\\\n',1)[1].split('## 待确认的产品决定',1)[0]\nstates=set(re.findall(r'\\\\bS\\\\d+\\\\b',page))\nused=set(re.findall(r'\\\\bS\\\\d+\\\\b',trans))\nassert states==used,(states,used)\nfor state in states:\n    assert re.search(r'\"'^'\"\\\\| [\"'^|]*'\"\\\\b'+state+r'\\\\b[\"'^|]*'\"\\\\|',trans,re.M),state\nfor marker in ['Guard','K + P','不分配新键','不重复创建','不发写请求','不增加写请求']:\n    assert marker in text,marker\nprint('state-matrix.md: S0—S8 均有页面定义与出站转换，幂等及权限约束检查通过')\nprint('仅为静态文档检查；未执行浏览器、API 或生产测试。')\nPY\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"python3 - <<'PY'\nfrom pathlib import Path\nimport re\nfor name,template in [('design-overview.md','product-overview-design-template.md'),('interaction.md','interaction-spec-template.md'),('state-matrix.md','state-matrix-template.md')]:\n    text=Path(name).read_text()\n    source=Path('.template-spec/design/templates',template).read_text()\n    assert re.findall(r'\"'^## .+$'\"',text,re.M)==re.findall(r'\"'^## .+$'\"',source,re.M)\n    assert all(s in text for s in ['R1','R2','R3','test-data-only','status: draft','正常','无权限','空态','校验失败','提交中','超时'])\n    for link in re.findall(r'\\\\]\\\\(([\"'^)]+)'\"\\\\)',text):\n        assert Path(link.split('#')[0]).is_file(),(name,link)\n    assert not re.search(r'<待填写>|\\\\[x\\\\]|status: (approved|ready-for-agent)',text)\ntext=Path('state-matrix.md').read_text()\npage=text.split('## 页面状态\\\\n',1)[1].split('## 状态转换与恢复',1)[0]\ntrans=text.split('## 状态转换与恢复\\\\n',1)[1].split('## 待确认的产品决定',1)[0]\nstates=set(re.findall(r'\\\\bS\\\\d+\\\\b',page))\nassert states==set(re.findall(r'\\\\bS\\\\d+\\\\b',trans))\nfor state in states:\n    assert re.search(r'\"'^'\"\\\\| [\"'^|]*'\"\\\\b'+state+r'\\\\b[\"'^|]*'\"\\\\|',trans,re.M)\nassert '当前没有待恢复的逻辑提交' in trans and '不回到新提交入口' in trans\nprint('最终文档静态检查通过：模板章节、本地链接、R1/R2/R3、要求状态、S0—S8 转换及草稿标记。')\nprint('恢复中的提交不会被初始化为新提交；未执行运行时或独立评审验证。')\nPY\"",
+      "exit_code": 0
+    }
+  ],
+  "command_errors": [],
+  "other_tools": [],
+  "agent_messages": [
+    {
+      "step": "main",
+      "text": "我会先核对仓库身份、受测输入和现有模板，再起草这三个设计文件，保留 R1/R2/R3 的追溯关系，并细化各状态的交互与恢复方式。\n"
+    },
+    {
+      "step": "main",
+      "text": "已确认仓库是 `project-instance`，三个模板也已找到。我会按 `yss-product-lifecycle`、`yss-prototype-stage` 和 `i-have-adhd` 的文档规范起草，并用 `yss-design-system` 核对视觉基线。输入未定义具体字段、回执内容和超时阈值，这些会保留为待确认项；本轮只形成三个试填草稿。\n"
+    },
+    {
+      "step": "main",
+      "text": "三个草稿已写入，已覆盖要求的六类状态和成功回执。超时恢复明确区分“结果未确认”与“提交失败”，并要求重试复用原幂等键和原内容。接下来核对规则引用、状态转换及写入范围；字段、空数据含义和跨刷新恢复仍保留为待确认项。\n"
+    },
+    {
+      "step": "main",
+      "text": "已按当前模板起草：\n\n- [design-overview.md](design-overview.md)\n- [interaction.md](interaction.md)\n- [state-matrix.md](state-matrix.md)\n\n均引用 R1/R2/R3，覆盖正常、无权限、空态、校验失败、提交中、超时恢复及成功回执；上游范围仅作引用，缺失信息列为待确认项。\n\n静态检查通过，仅新增这三个 `test-data-only` 草稿，未生成原型、生产代码或批准记录。"
+    }
+  ],
+  "artifacts": {
+    "design-overview.md": "---\npipeline: fixture-application-submission\nstage: product-overview-design\nstatus: draft\nowner: ai\n---\n\n# 申请提交：产品总体设计与功能架构（隔离试填）\n\n本稿依据 [fixture-spec.md](fixture-spec.md) 形成页面、操作反馈和恢复路径的设计细化，标记为 `test-data-only`。上游范围仅引用该文件第 5 行；业务规则仅引用 R1/R2/R3，不在本稿另行定义 MVP。本文及配套 [交互说明](interaction.md)、[状态矩阵](state-matrix.md) 均未评审、未批准，不表示正式阶段流转。\n\n采用当前 [总体设计模板](.template-spec/design/templates/product-overview-design-template.md)。下文的页面组织、文案和焦点策略均为设计建议；具体字段和协议缺口见第 9、10 节。\n\n## 1. 输入资产\n\n| 资产 | 路径 / 链接 | 状态 | 备注 |\n|------|-------------|------|------|\n| Plan / 竞品分析 | 未提供 | 未核验 | 本轮以用户指定的隔离输入试填，不推断上游已批准 |\n| 业务架构 | 未提供 | 未核验 | 仅划分本次页面职责，不认定业务责任区 |\n| Spec 初稿 | [fixture-spec.md](fixture-spec.md) | test-data-only | R1 第 2 行；R2 第 3 行；R3 第 4 行；范围第 5 行 |\n| CONTEXT 术语 | [CONTEXT.md](CONTEXT.md) 的“业务术语” | 可读，业务表为空 | “申请”“回执”沿用输入原词，尚无稳定术语身份；见 Q6 |\n| 视觉规范 | [DESIGN.md](DESIGN.md) | 本地设计基线 | 使用默认亮色；遵循单一主操作与可读状态反馈 |\n| 设计治理与派生主题 | [治理说明](.template-spec/design/design.md)、[默认 Token](.template-spec/design/tokens/tokens.default.json) | 本地引用 | 具体视觉值只由 DESIGN.md 定义 |\n\n## 2. 设计目标\n\n| 上游事项 | 权威引用 | 本阶段设计细化 |\n|---|---|---|\n| 目标用户 | fixture-spec.md，R1 | 在进入与提交入口显式呈现权限状态 |\n| 核心场景 | fixture-spec.md，R1/R2/R3 | 同一工作区完成填写、校验、提交、结果反馈和超时重试 |\n| MVP 目标与非目标范围 | fixture-spec.md，第 5 行 | 页面地图只承接该范围，不增加业务入口 |\n| 成功标准 | fixture-spec.md，R1/R2/R3 | 将规则映射到可观察的按钮状态、字段定位、回执和恢复路径；验收场景见 interaction.md 第 7 节 |\n\n## 3. 用户主流程\n\n| 流程 | 触发角色 | 起点 | 关键步骤 | 终点 | 异常 / 分支 |\n|------|----------|------|----------|------|-------------|\n| 正常提交 | R1 中的授权用户 | 申请工作区 | 填写 → 提交时核验权限与字段 → 提交中 → 展示回执 | S7 成功 | R1/R2/R3；状态定义见 state-matrix.md |\n| 权限拒绝 | R1 中的未授权用户 | 访问工作区或尝试提交 | 展示拒绝原因，阻断写入口 | S3 无权限 | 权限重新确认后才能恢复；不设计提权申请流程 |\n| 空态与校验恢复 | 授权用户 | S2 空态或 S4 校验失败 | 空数据区说明当前无数据；缺失字段定位后允许补填并再次提交 | 回到可提交状态 | R3；空数据的对象和是否影响提交待 Q2 |\n| 超时恢复 | 原提交用户 | S5 提交中 | 超时 → 保留输入 → 用户重试 → 回执 | S6 超时恢复或 S7 成功 | R2；重试沿用原幂等键和原提交内容，不自动生成新申请 |\n\n## 4. 业务对象与状态\n\n本表仅承接输入中的对象称呼。S0—S8 是本稿页面状态索引，不是新增业务术语或申请审批状态。\n\n| 业务对象 | 说明 | 关键字段 / 属性 | 状态 | 关系 |\n|----------|------|-----------------|------|------|\n| 申请（R1/R2） | 页面承载本次填写与提交内容 | 实际字段、必填规则未提供，见 Q1 | 采用 state-matrix.md 的交互状态；业务状态枚举未定义 | 一次逻辑提交的重试仍指向同一申请 |\n| 回执（R2） | 确认提交成功的展示依据 | 服务返回内容、展示字段待 Q3 | S7 只读展示 | 关联当前逻辑提交；重复响应不产生多份回执区域 |\n| 幂等键（R2，交互约束） | 关联首次提交及其重试 | 本文以 K 指代原键、P 指代首次发送内容；不定义 wire 字段 | 提交中和超时恢复期间保留 | K 与 P 绑定；不是需要用户填写的业务字段 |\n\n## 5. 功能域与模块边界\n\n优先级沿用上游范围，本次只给出页面职责，不新增产品排期。\n\n| 功能域 | 模块 / 页面 | 主要能力 | 优先级 | 依赖 | 非目标 |\n|--------|-------------|----------|--------|------|--------|\n| 申请提交 | P1 申请工作区 | 权限反馈、填写、校验、提交状态 | 本次范围内 | R1/R3、字段与权限来源 | 引用 fixture-spec.md 第 5 行 |\n| 结果反馈 | P1 内的回执 / 恢复区 | 成功回执、超时保留与重试 | 本次范围内 | R2、幂等结果语义 | 同上；不扩展独立业务模块 |\n\n## 6. 业务边界与协作检查（轻量）\n\n| 业务责任区 | 核心职责 | 统一业务词汇 / 关键术语 | 规则提供方 / 使用方 / 协作关系 | 对应功能域 / 页面 / API | 非目标 |\n|------------|----------|---------------------|-------------------------|--------------------------|--------|\n| 未登记，不推断 context_id | 页面承接填写与反馈；服务需提供权限、提交结果与幂等保证 | 申请、回执仍是输入原词；待 Q6 登记 | fixture-spec.md 提供规则；三份设计稿消费；工程协议待后续资产定义 | P1；尚无 API 路径 | 引用 fixture-spec.md 第 5 行 |\n\n业务边界与协作就绪检查：\n\n- 词汇核对：CONTEXT.md 可读但业务术语未登记；本轮不修改词汇表，不伪造 `<ContextId>/<EnglishIdentifier>`。\n- 核心域 / 支撑域 / 通用域分类：现有输入不足，待业务架构确认，不从页面推断。\n- 页面能力已承接 R1/R2/R3；业务责任归属、跨上下文关系仍待登记。\n- 接口只记录页面需要的结果语义，不暴露或假定内部模型。\n- 上述缺口不阻止隔离试填，但正式批准或流转前仍须补齐输入并完成 `context_reconciliation`。\n\n## 7. 页面 / API / 数据影响\n\n| 能力 | 页面影响 | API 影响 | 数据影响 | 权限 / 审计影响 | 备注 |\n|------|----------|----------|----------|------------------|------|\n| 权限控制（R1） | 拒绝态、禁用主操作、提交前检查 | 需可判定权限；服务端拒绝语义待明确 | 未获授权不得因页面操作创建申请 | 权限事实来源待 Q4；输入未提出审计变更 | 不指定角色名、权限码、HTTP 状态码 |\n| 校验与空态（R3） | 字段错误、焦点定位、数据区空反馈 | 需明确字段错误映射及空数据形态 | 校验失败保留已填内容 | 仍遵循 R1 | 不把空数据解释为请求失败或无权限 |\n| 提交与回执（R2/R3） | 提交忙态、成功回执 | 成功识别及回执结构待 Q3 | 创建申请、返回关联回执 | 写入前仍满足 R1 | 不推定表结构或数据库实现 |\n| 超时与重试（R2） | 保留内容、结果未确认提示、重试入口 | 同键同内容重试及已成功结果的返回语义待明确 | 不重复创建申请 | 重试也须核验权限 | 超时不等于服务端未创建；见 Q5 |\n\n## 8. 页面结构 / 流程草图（条件适用）\n\n### 8.1 页面地图\n\n| 页面 / 区域 | 入口 | 核心任务 | 关键操作 | 下一步 |\n|-------------|------|----------|----------|--------|\n| P1 申请工作区 | 来自宿主入口，具体导航待确认 | 承载填写与状态反馈 | 提交；超时后替换为重试 | 同页成功回执或定位错误 |\n| P1 反馈区 | 由当前状态展示 | 说明权限、空数据、校验或结果 | 按状态定位字段、重试或返回来源入口 | 转换规则只在 state-matrix.md 定义 |\n\n### 8.2 早期结构草图（有 UI 影响时填写）\n\n以下仅为模板内文字结构，不生成低保真原型资产。\n\n```text\nP1 申请工作区\n  标题 / 返回来源入口（目标待宿主确认）\n  状态反馈区：权限提示 / 错误摘要 / 超时提示 / 成功回执\n  内容区：带标签的申请字段；涉及的数据为空时在相应区域显示空态\n  操作区：提交 或 重试（由状态决定，始终只有一个主操作）\n```\n\n布局使用 DESIGN.md 的页面、容器、输入框、主按钮和 Alert 语义；错误、无权限和超时均有可读文本，不仅用颜色或 Tag 表示。窄屏按“反馈—字段—操作”顺序纵向排列，错误定位不被操作区遮挡。桌面与窄屏的实际视觉验证不属于本轮试填。\n\n### 8.3 后续原型评审关注点（有 UI 影响时填写）\n\n| 页面 / 流程 | 需要验证的问题 | 关联需求 | 关联 API / 数据 / 权限影响 | 后续交互设计待细化 |\n|-------------|----------------|----------|--------------------------|--------------------|\n| 提交入口 | 用户能否理解拒绝原因并避免误触 | R1 | 权限来源与拒绝反馈 | Q4 |\n| 字段与空态 | 错误能否准确定位；空态是否误挡提交 | R3 | 字段规则与空数据含义 | Q1/Q2 |\n| 超时恢复 | 用户能否区分未确认和失败，安全重试 | R2/R3 | 幂等重试、迟到回执 | Q3/Q5 |\n\n## 9. Spec 回填项\n\n此处是发现清单，不修改受测输入；均需在正式下游设计前由对应资产所有者确认。\n\n| 编号 | 回填内容 | 影响章节 | 优先级 | 状态 |\n|------|----------|----------|--------|------|\n| Q1 | 申请字段、必填与格式规则、服务端字段错误定位方式 | R3 的验收细化 | 正式流转阻断 | 待确认 |\n| Q2 | 空数据具体指向什么区域；是否缺少提交必需的数据 | R3 的空态验收 | 正式流转阻断 | 待确认 |\n| Q3 | 成功识别依据、回执字段、同一申请重试后的回执一致性 | R2 的成功验收 | 正式流转阻断 | 待确认 |\n| Q4 | 权限事实来源、未知态处理、权限变化时的恢复入口 | R1 的权限验收 | 正式流转阻断 | 待确认 |\n| Q5 | 超时判定、幂等键来源与有效期、迟到响应、跨刷新恢复、确定失败后的处理 | R2/R3 的恢复验收 | 正式流转阻断 | 待确认 |\n| Q6 | 将输入中的稳定业务词登记到根 CONTEXT.md，并明确责任区 | 术语引用与上下文对账 | 正式流转阻断 | 待确认 |\n\n## 10. 开放问题与决策\n\n| 问题 / 决策 | 选项 | 建议 | 负责人 | 截止点 | 状态 |\n|-------------|------|------|------|--------|------|\n| Q1—Q4、Q6 的源信息缺口 | 由源资产补齐后校准设计 | 保留未决，不用示例字段或角色替代事实 | 未登记 | 正式设计流转前 | 待确认 |\n| Q5：超时后能否修改本次内容 | 原内容重试；结果明确后另行确定更改路径 | 超时恢复期间保持 P 只读，以 K + P 重试，避免同键异内容；这是设计建议 | 未登记 | 正式交互确认前 | 待确认 |\n| Q5：重试与保留边界 | 当前页面恢复；跨刷新 / 跨会话恢复 | 本稿先细化当前页面流程，后者及键失效后的恢复不作已支持承诺 | 未登记 | API 影响分析前 | 待确认 |\n\n## 11. 评审清单\n\n以下均为待独立审查项，不以起草者自检勾选为通过证据。\n\n- [ ] R1/R2/R3 与页面、交互、状态转换保持一致。\n- [ ] 正常、无权限、空态、校验失败、提交中、超时恢复及成功回执均可核验。\n- [ ] Q1—Q6 已确认并回填对应权威资产，完成术语对账。\n- [ ] 重试复用原键且不重复创建的契约与验证方式已明确。\n- [ ] 后续原型、浏览器和独立评审证据齐备后，再判断正式流转条件。\n\n## 12. 结论\n\n- 当前结论：`draft / test-data-only`，未评审、未批准；不能据此认定产品设计门禁通过。\n- 阻断项：Q1—Q6 影响正式流转；不阻断本次三个文件的隔离起草。\n- 本轮终点：仅形成 design-overview.md、interaction.md、state-matrix.md。原型、生产代码、API 契约、Ticket 状态与批准记录均不在本轮写入范围。\n",
+    "interaction.md": "---\nstatus: draft\n---\n\n# 申请提交：交互说明（隔离试填）\n\n本稿为 `test-data-only`，采用当前 [交互说明模板](.template-spec/design/templates/interaction-spec-template.md)。它细化入口、操作、反馈和恢复，不构成批准；所有新增文案、布局、焦点与锁定策略均为待评审设计建议。\n\n## 1. 输入与范围\n\n| 资产 | 当前引用 / 版本 | 用途或未决项 |\n|---|---|---|\n| Spec 初稿 | [fixture-spec.md](fixture-spec.md)，R1 第 2 行 / R2 第 3 行 / R3 第 4 行 | 唯一业务规则来源；范围引用第 5 行 |\n| 产品总体设计 / 功能架构 | [design-overview.md](design-overview.md)，本次 draft | P1 页面职责、结构及 Q1—Q6 未决项 |\n| Plan 决策 | 未提供 | 不推断范围或上游批准 |\n| 领域词汇 | [CONTEXT.md](CONTEXT.md) 的“业务术语” | 表为空；只沿用输入原词，正式引用待 Q6 |\n| 视觉来源 | [DESIGN.md](DESIGN.md)、[治理说明](.template-spec/design/design.md)、[默认 Token](.template-spec/design/tokens/tokens.default.json) | 使用默认亮色和语义组件，不增加视觉规范 |\n| 已有原型或 API 草案 | 未提供 | 本轮仅文字试填，不生成这两类资产 |\n\n本次用户和任务依据 R1/R2/R3；范围及排除项仅引用 fixture-spec.md 第 5 行。新增设计内容限于 P1 内的呈现、反馈与恢复。S0—S8 的状态及转换由 [state-matrix.md](state-matrix.md) 单点定义。\n\n## 2. 页面地图\n\n| 页面 / 区域 | 入口与角色 | 用户目标 | 关键操作 | 下一步 |\n|---|---|---|---|---|\n| P1 工作区 | 宿主入口；权限按 R1 判定 | 填写并提交 | 提交、返回来源入口 | 字段定位、提交中或回执 |\n| P1 状态反馈区 | 当前页面状态触发 | 理解是否可操作及如何继续 | 校验摘要中的字段定位；超时后的重试 | 留在当前页恢复 |\n| P1 回执区 | 当前逻辑提交成功后 | 确认提交结果 | 阅读回执、返回来源入口 | 当前提交结束；无再次提交同一内容入口 |\n\n## 3. 主流程与恢复\n\n| 步骤 / 触发 | 用户操作 | 系统反馈 | 失败或异常 | 恢复路径 | Spec 规则引用 |\n|---|---|---|---|---|---|\n| 进入 P1 | 打开工作区 | 权限尚未明确时显示“正在确认可用操作”，提交不可用；所需读取完成后展示内容 | 无权限显示“暂无提交权限”；读取失败不伪装为空态 | 无权限时返回来源入口；恢复权限后重新核验；读取失败可仅重试读取 | R1/R3 |\n| 数据为空 | 查看对应内容区 | “暂无数据”，保留页面标题和状态说明；不伪造记录 | 空数据对象未定义，见 Q2 | 非必需数据为空时仍可填写；必需数据缺失是否阻断须由 Q2 确认 | R3 |\n| 正常填写 | 输入已定义的字段 | 标签、必填标识和输入内容可见；仅一个“提交”主按钮 | 字段集合、规则待 Q1 | 提交前可修改本次未发送内容 | R1/R3 |\n| 点击提交 | 点击按钮或用键盘触发同一提交入口 | 先核验权限，再校验字段；通过后立即进入提交中 | 未授权：拒绝且不发写请求；缺失字段：错误摘要与字段提示 | 定位第一个缺失字段，保留其他输入；补齐后由用户再次提交 | R1/R3 |\n| 请求进行中 | 等待结果 | 按钮显示“提交中…”并禁用；建议暂时锁定本次字段；忙态有文本反馈 | 连点、回车、重复事件均不新增写请求 | 等待回执、明确的字段拒绝或超时；权限丢失后不再发送后续写请求 | R1/R2/R3 |\n| 收到字段拒绝 | 阅读反馈并修改 | 仅在服务明确拒绝且未创建申请时回到校验失败；定位服务指出的字段 | 无法定位的错误映射待 Q1，不能只展示瞬时提示 | 保留输入、修改后再次校验；不能把结果不明确的错误当作可重新创建 | R3；R2 的去重约束 |\n| 成功 | 阅读回执 | 显示“提交成功”及服务返回的回执；回执区取得可感知的焦点 / 状态通知 | 回执字段或成功识别条件不明确，见 Q3 | 当前逻辑提交结束，主提交入口撤下；重复成功响应更新同一回执区 | R2 |\n| 服务超时 | 查看提示 | “提交结果尚未确认，已保留本次输入，可重试”；恢复“重试”主按钮，保持本次内容可见 | 超时不证明未创建；不得提示确定失败或自动清空输入 | 由用户显式重试，复用原幂等键与原内容；再次超时仍保留 | R2 |\n| 重试 | 点击“重试” | 权限仍满足且保有原键 K、原内容 P 时进入提交中；界面不向用户暴露 K | 权限不足不发送；K 或 P 不可恢复时不生成替代键，提示当前无法安全重试，后续路径待 Q5 | 已创建则返回同一申请结果；未创建则按相同逻辑提交处理；最终显示回执 | R1/R2/R3 |\n| 迟到回执 | 无需再次操作 | 与当前 K 对应的可信成功结果可结束超时或重试忙态 | 旧超时 / 失败回调不得覆盖已确认成功；权限不足时仍保留拒绝界面 | 进入同一成功状态，不新增申请或重复回执区 | R1/R2 |\n\n首次通过权限与校验后，将原键 K 和本次发送内容 P 关联；提交前校验失败不启动写请求。超时后锁定 P 是本稿建议，防止“原键 + 修改后的内容”被误当作安全重试，待 Q5 确认。当前页面的保留流程已细化；刷新、关闭页面、跨会话、键过期和未分类服务错误的恢复仍属 Q5，不能承诺已覆盖。\n\n## 4. 页面细节\n\n| 页面 / 区域 | 信息或字段 | 数据来源 | 可用条件 / 权限 | 校验与反馈 | 待确认项 |\n|---|---|---|---|---|---|\n| 申请内容区 | 实际字段待定义，不使用示例字段作事实 | 后续字段合同与用户输入 | 已授权；提交中 / 超时恢复时建议只读 | 标签与错误关联；错误摘要链接对应字段，聚焦首个缺失项并滚动到可见位置 | Q1/Q5 |\n| 数据空态区 | “暂无数据”及对应区域名称 | 已成功读取的空结果 | 空态本身不代表无权限或校验通过 | 不显示假记录；保持可理解的下一步 | Q2 |\n| 操作区 | 提交 / 提交中… / 重试 | state-matrix.md | 权限明确、规则满足且无当前请求；重试还需 K 与 P | 按钮 disabled 与事件入口 guard 同时生效，键盘行为一致 | Q4/Q5 |\n| 权限提示区 | “暂无提交权限”与返回入口 | 当前可信权限结论 | 无权限时阻断所有写操作 | 不用空态、Toast 或单独 Tag 代替权限说明 | 权限来源、返回目的地待 Q4 |\n| 回执区 | “提交成功”及回执正文 | 当前逻辑提交的可信成功结果 | 按权限条件显示，内容只读 | 不推定回执编号、审批进度、下载或编辑动作 | Q3 |\n| 超时提示区 | 结果未确认说明、保留内容、重试 | 当前提交的超时结论 | 保留可读输入；满足重试 guard 才能发送 | 不显示“申请未创建”；不自动重试，不以新键重建 | Q5 |\n\n视觉映射采用 DESIGN.md 的 `components.page-shell`、`card-default`、`input-default`、`input-error`、`button-primary*` 与 `alert-*`。这些仅表达视觉和控件语义，不声明生产组件 API 已验证。字段错误、无权限、忙态与结果变化都应可被键盘和辅助技术感知；窄屏垂直重排，提示和字段标签不截断。待后续验证桌面 1440×900、窄屏 390×844 及缩放后的可读性，本轮未做浏览器验证。\n\n## 5. 状态与原型\n\n- 状态矩阵：[state-matrix.md](state-matrix.md)，覆盖状态、事件、guard、动作和退出路径。\n- 低保真评审：未执行；本轮只起草三个文档，未生成原型。\n- H1/H2 档位：未选择，须在后续低保真独立评审后依据权限与恢复风险判定。\n- 原型交付物、schema v4 验证和视觉基线：本轮未产出、未执行，不能将文档自检当作替代证据。\n- 生产组件待验事项：字段错误与焦点联动、按钮忙态的鼠标 / 键盘防重复、输入只读时的可访问性、状态播报及窄屏重排；如后续获准实现，由前端实现计划承接。\n\n## 6. API 影响与 Spec 回填\n\n| 交互需求 / 原型发现 | API 或数据影响 | 需回填的 Spec 规则 / 验收 | 负责人 | 状态 |\n|---|---|---|---|---|\n| 权限拒绝及提交前 guard | 权限结论与拒绝响应需可识别；不在本文指定端点 | R1；Q4 | 未登记 | 待确认 |\n| 空态、缺失字段定位 | 空结果对象、必填定义与字段错误映射 | R3；Q1/Q2 | 未登记 | 待确认 |\n| 成功回执 | 成功结果须关联当前申请及逻辑提交 | R2；Q3 | 未登记 | 待确认 |\n| 超时后同键同内容重试 | 幂等键来源 / 有效期、重试结果、迟到响应、原内容保留 | R2/R3；Q5 | 未登记 | 待确认 |\n\n以上为文字设计反推点，尚无原型发现或 API 冻结结论。问题的完整记录集中在 design-overview.md 第 9、10 节。\n\n## 7. 验收与未决问题\n\n下表是后续可核验的设计场景，尚未执行测试。\n\n| 场景 | 可观察结果 | 规则引用 |\n|---|---|---|\n| 已授权，字段有效，提交成功 | 经 S1 → S5 → S7 显示回执；一次提交只呈现一个结果 | R1/R2/R3 |\n| 未授权点击或键盘触发提交 | S3 明确拒绝，写请求数为 0 | R1 |\n| 读取成功但数据为空 | S2 显示空态，不误报失败或无权限；提交可用性依 Q2 | R3 |\n| 必填字段缺失 | S4 保留输入、定位首个缺失字段；客户端校验拒绝时写请求数为 0 | R3 |\n| 提交中连点或重复回车 | 留在 S5，写请求数不增加，按钮有忙态与禁用反馈 | R3 |\n| 首次提交超时，用户重试 | S6 保留 P，重试发送相同 K + P；服务侧申请总数至多一份 | R2 |\n| 首次已创建但回执丢失，重试成功 | 返回同一申请回执，S7 不受迟到超时事件覆盖 | R2 |\n| 重试前权限丢失 | 转 S3，重试写请求数为 0 | R1/R2 |\n\n| 问题 / 决定 | 当前选项与依据 | 负责人 | 解决时点 | 状态 |\n|---|---|---|---|---|\n| Q1—Q6 | 见 design-overview.md 第 9、10 节；不得用控件默认行为补业务决定 | 未登记 | 正式流转前，按各问题截止点 | 待确认 |\n\n本稿保持 `draft / test-data-only`。三份文档的静态一致性核对不等于原型评审、浏览器验证、实现验收或批准。\n",
+    "state-matrix.md": "---\nstatus: draft\n---\n\n# 申请提交：状态矩阵（隔离试填）\n\n本稿为 `test-data-only`，采用当前 [状态矩阵模板](.template-spec/design/templates/state-matrix-template.md)，同时承担本次文字设计的状态转换说明；未评审、未批准。\n\n业务来源为 [fixture-spec.md](fixture-spec.md)：R1 第 2 行、R2 第 3 行、R3 第 4 行；范围仅引用第 5 行。页面与问题清单见 [design-overview.md](design-overview.md)，操作与反馈见 [interaction.md](interaction.md)。状态 ID 为本稿索引，不是 CONTEXT.md 中的业务状态枚举；转换和控件策略为待评审设计细化。\n\n## 页面状态\n\n| 页面 / 组件 | 状态 | 触发条件 | 界面反馈 | API / 数据来源 | 验收点 / 规则引用 |\n|---|---|---|---|---|---|\n| P1 工作区 | S0 初始化 / loading | 刚进入或重新核验权限、必要数据 | 显示正在读取；提交禁用，不将权限未知视为已授权 | 权限与必要读取来源待定义 | 未取得可提交条件不发写请求；R1/R3 |\n| P1 表单 | S1 正常 / 可填写 | 权限已确认且页面可操作 | 字段可编辑，唯一主操作为“提交”；点击后仍需校验 | 已确认权限、用户输入、所需页面数据 | 有效提交可进入 S5；R1/R3 |\n| P1 数据区 | S2 空态 / empty | 已授权，读取成功且指定数据区为空 | “暂无数据”；不伪造记录，不当作服务失败；表单可填写性按数据依赖判定 | 空结果，具体对象待 Q2 | 空态可见；非必需数据为空不应阻断合法提交；R3 |\n| P1 权限区 | S3 无权限 / no-permission | 当前权限结论为拒绝，或服务明确拒绝授权 | “暂无提交权限”；提交、重试不可用，可返回来源入口 | 可信权限结果 / 拒绝响应，来源待 Q4 | 客户端已知未授权时写请求数为 0；R1 |\n| P1 字段与摘要 | S4 校验失败 / error | 客户端发现缺失字段，或服务明确拒绝且确认未创建 | 展示错误摘要与字段提示，定位首个缺失字段；保留全部输入，可修改 | Q1 字段规则 / 可映射的字段错误 | 客户端校验失败不发写请求；补齐后可继续；R3 |\n| P1 操作区 | S5 提交中 / loading + disabled | 权限与校验通过，提交或重试正在执行 | “提交中…”；按钮禁用，建议字段只读；所有重复触发被 guard 拦截 | 当前逻辑提交，原键 K 与原内容 P | 重复点击、键盘事件不增加写请求；R3 |\n| P1 恢复区 | S6 超时恢复 / error | 当前尝试超时，尚无可信成功结果 | 明确“结果尚未确认”；保留并展示 P，建议只读；提供“重试” | 当前尝试的超时事件；保留 K + P | 不清空、不换键、不宣布确定失败；重试不重复创建；R2 |\n| P1 回执区 | S7 成功 / success + readonly | 收到当前逻辑提交的可信成功结果 | “提交成功”与回执；撤下本次提交 / 重试入口；可返回来源入口 | 服务返回的关联回执，字段待 Q3 | 同一申请只显示一个回执区，重复响应不新增结果；R2 |\n| P1 读取反馈区 | S8 读取失败 / error | 权限或必要数据读取失败，无法判定可用性 | “暂时无法加载，请重试”；禁用提交，读取重试为主操作 | 初始化读取失败，具体协议待定义 | 不把读取失败当作空数据、无权限或写成功；R1/R3 的设计细化 |\n\n状态适用说明：`readonly` 已覆盖 S5/S6 的建议锁定和 S7 回执；`disabled` 已覆盖权限未知、无权限、提交中等操作限制。独立的业务只读模式、多人编辑冲突 / `conflict` 为 `not-applicable`：fixture-spec.md 第 5 行未包含编辑流程。同键异内容属于 Q5 的契约缺口，本稿通过保留 P 的建议避免产生该交互，不假定服务端冲突码。\n\n## 状态转换与恢复\n\n记号：K 为同一次逻辑提交的原幂等键，P 为首次发送内容；重试使用相同 K + P。它们是设计说明符号，不定义具体 HTTP 字段、键生成算法、有效期或存储方式。客户端的按钮禁用不能代替 R2 要求的服务端幂等保证。\n\n| 当前状态 | 事件 | Guard | 下一状态 | 进入 / 退出动作 | 恢复或退出路径 |\n|---|---|---|---|---|---|\n| 页面外 | 打开工作区 | 有宿主入口，尚未确认可操作条件 | S0 | 读取权限和必要数据，阻断写入口 | 等待读取结果或返回来源入口；R1 |\n| S0 | 初始化完成且有数据 | 明确已授权，页面所需条件可用，当前没有待恢复的逻辑提交 | S1 | 展示可填写内容，结束读取忙态 | 填写后提交；R1/R3 |\n| S0 | 初始化完成但空数据 | 明确已授权，读取成功且指定区域为空，当前没有待恢复的逻辑提交 | S2 | 展示空态，按 Q2 判定哪些操作可用 | 填写或等待数据条件满足；不把空态当失败；R3 |\n| S0 | 读取失败 | 尚不能确定权限或必要数据 | S8 | 结束忙态，显示读取失败，保持写入口关闭 | 读取重试或返回来源入口；R1/R3 |\n| S8 | 重试读取 | 用户显式操作，没有同类读取进行中 | S0 | 仅重新读取，不发提交写请求 | 成功到 S1/S2，失败回 S8；R1/R3 |\n| S0/S1/S2/S4/S5/S6/S7/S8 | 权限拒绝或失效 | 取得可信拒绝结论 | S3 | 阻断后续写操作，显示拒绝；已发请求不能被视为撤销或未创建 | 重新核验或返回来源入口；已有 K + P 不因拒绝改成新提交；R1/R2 |\n| S3 | 再次点击提交 / 重试或回车 | 当前无权限 | S3 | 拦截事件，不发写请求 | 仅重新核验权限或离开；R1 |\n| S3 | 重新核验权限 | 用户重进页面或触发只读核验 | S0 | 只做读取，保留当前页面中已有的逻辑提交关联 | 恢复后按下两行及普通初始化行路由；R1/R2 |\n| S0 | 权限恢复且已有未确认提交 | 已授权，有 K + P，当前尝试仍在等待 / 已超时 | S5 / S6（按实际尝试状态） | 恢复忙态或超时提示，不自动重发，不进入新申请流程 | 等待结果或原键重试；R1/R2 |\n| S0 | 检出待恢复提交但关联资料不完整 | 已授权，已知存在未确认提交，但 K 或 P 不可恢复 | S6 | 保留尚存输入，显示无法安全重试，不回到新提交入口 | 核对结果的恢复方式待 Q5；不生成替代键；R2 |\n| S0 | 权限恢复且结果已确认成功 | 已授权，回执对应当前 K | S7 | 展示已关联回执，不重复提交 | 阅读后返回；R1/R2 |\n| S1/S2/S4 | 点击提交或键盘提交 | 明确已授权；存在缺失 / 无效字段 | S4 | 不发写请求；保留输入，显示错误并聚焦首个缺失字段 | 修改后重新校验；R1/R3 |\n| S4 | 修改字段 | 已授权，无未确认的写入结果 | S4；错误全部消除后 S1 或 S2 | 清除已解决错误，保留其他提示；不自动提交 | 用户再次提交；R3 |\n| S1/S2/S4 | 提交通过本地检查 | 明确已授权，字段有效，必要数据就绪，无活动请求或未确认提交 | S5 | 关联 K + P，立即锁定重复入口，再发起一次写请求 | 等待成功、明确拒绝或超时；R1/R2/R3 |\n| S2 | 对应数据恢复 | 已授权，数据读取成功且非空 | S1 | 替换空态区域，保留输入 | 正常填写 / 提交；R3 |\n| S5 | 重复点击、回车或重复提交事件 | 当前尝试尚未结束 | S5 | 拦截重复事件；不增加写请求、不换 K | 等待结果；R3 |\n| S5 | 服务返回字段拒绝 | 明确拒绝、确认未创建，错误可定位且属于当前尝试 | S4 | 解除忙态，保留输入并定位字段；再次发送的键策略待 Q5 | 修改后重新校验；R3 |\n| S5 | 当前尝试超时 | 尚无当前 K 的可信成功结果 | S6 | 解除按钮忙态，保留 K + P，显示结果未确认 | 显式重试或等待关联回执；R2 |\n| S6 | 点击重试 | 重新核验已授权；K + P 完整可用；无活动重试 | S5 | 发起相同 K + P 的重试，按钮立即进入忙态；不分配新键 | 成功到 S7，再超时回 S6；R1/R2/R3 |\n| S6 | 尝试修改内容 | 本稿建议：结果未确认期间 P 只读 | S6 | 保持原内容，说明当前可重试；不发送同键异内容 | 用原内容重试；其他更改路径待 Q5；R2 |\n| S6 | 重试条件不完整 | K 或 P 缺失 / 不可恢复 | S6 | 不发送，不生成替代键，说明暂时无法安全重试 | 保留尚存输入；需 Q5 明确核对结果的恢复路径；R2 |\n| S5/S6 | 收到成功或迟到回执 | 已授权，成功结果可信且对应当前 K | S7 | 结束当前忙态，显示同一回执；撤下本次写入口 | 阅读或返回来源入口；R2 |\n| S7 | 迟到的超时、失败或重复成功响应 | 已有当前 K 的可信成功结果 | S7 | 不降级状态、不重复增加回执、不重发 | 阅读或返回；R2 |\n| S5/S6 | 收到其他尝试的旧超时 / 字段错误 | 事件不属于当前活动尝试 | 保持当前状态 | 不让旧事件解锁当前请求或丢失 K + P | 等待当前结果；R2/R3 |\n| S0/S1/S2/S3/S4/S5/S6/S7/S8 | 返回来源入口 | 用户显式导航，目标由宿主确定 | 页面外 | 导航不等于撤销服务请求；不发送额外写请求 | 再进入按初始化核验；跨页面保留与结果恢复待 Q5 |\n\n权限判定先于写操作；权限未知不授权。若权限在写请求发出后才改变，前端不能撤回已发请求，需服务侧拒绝及结果关联协议承接 R1。空态优先级低于权限拒绝和读取失败。成功一经可信确认，旧超时不得将其改回可重试状态。\n\n## 待确认的产品决定\n\n| 决定 | 方案与依据 | 负责人 | 解决时点 | 状态 |\n|---|---|---|---|---|\n| Q1/Q2：字段与空态的可提交条件 | 按源字段规则定位缺失项；区分非必需空数据与必需数据缺失 | 未登记 | 正式交互确认前 | 待确认；完整记录见 design-overview.md |\n| Q3/Q4：成功与授权事实 | 使用服务可判定的结果，不靠按钮状态或前端推测 | 未登记 | 正式设计流转前 | 待确认 |\n| Q5：未确认时能否改内容 | 建议 S6 保持 P 只读，仅原键重试；更改路径须先解决原结果 | 未登记 | 正式交互确认前 | 待确认 |\n| Q5：键失效、离开页面、未分类服务错误 | 保留已知输入，禁止用新键猜测重建；实际核对结果 / 恢复方式须由契约补齐 | 未登记 | API 影响分析前 | 待确认；当前不可声称恢复闭环已获验证 |\n| Q6：稳定业务术语 | 由权威 CONTEXT.md 登记后引用，不把 S0—S8 当业务词汇 | 未登记 | 正式流转前 | 待确认 |\n\n## OpenAPI 与 Spec 回填\n\n| 状态 / 转换 | 契约影响 | Spec 规则或验收回填 | 处理状态 |\n|---|---|---|---|\n| S0/S3 权限判定 | 权限来源、有效性和服务拒绝语义；不在本文指定端点或错误码 | R1：无权限页面动作不发写请求；权限变化场景待补 | Q4 待确认 |\n| S2 空态 | 明确空结果指向的数据及必要性，不与读取错误混用 | R3：空态触发与可用操作 | Q2 待确认 |\n| S4 校验失败 | 必填字段、错误定位映射、服务拒绝未创建的语义 | R3：保留输入、聚焦缺失字段、修正后继续 | Q1 待确认 |\n| S5 提交中 | 逻辑提交与尝试的关联；本地重复事件拦截不代替服务去重 | R3：忙态禁止重复点击及键盘触发 | Q5 待确认 |\n| S6 → S5 → S7 | 原键来源 / 有效期、同内容重试、已创建结果复用、迟到响应关联 | R2：保留输入、复用原键、至多创建一份申请 | Q3/Q5 待确认 |\n| S7 成功 | 成功结果与回执字段、同一申请的一致结果 | R2：显示回执，旧超时不回退已成功状态 | Q3 待确认 |\n\n本轮仅进行文档起草与静态一致性检查。上述验收点尚无实际 API、浏览器或生产运行证据，不作为审批记录或可实现合同。\n"
+  },
+  "semantic_review": "pending"
+}

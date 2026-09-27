@@ -31,7 +31,7 @@ function markdownAcceptance(text) {
 }
 function lifecycleSources(checkpoint,report) {
   const result={};
-  for(const [artifact,key]of Object.entries({'artifact.spec':'spec','artifact.engineering-baseline':'engineering_baseline','artifact.architecture-review':'architecture_review','artifact.technical-design':'technical_design','artifact.data-architecture':'data_architecture','artifact.state-matrix':'state_matrix','artifact.prototype-deliverable':'prototype_deliverable','artifact.prototype-review':'prototype_review','artifact.prototype-confirmation':'prototype_confirmation','artifact.openapi-freeze-record':'openapi_freeze'})) {
+  for(const [artifact,key]of Object.entries({'artifact.spec':'spec','artifact.engineering-baseline':'engineering_baseline','artifact.architecture-review':'architecture_review','artifact.technical-design':'technical_design','artifact.data-architecture':'data_architecture','artifact.state-matrix':'state_matrix','artifact.prototype-deliverable':'prototype_deliverable','artifact.prototype-review-v2':'prototype_review','artifact.prototype-confirmation-v2':'prototype_confirmation','artifact.openapi-freeze-record':'openapi_freeze'})) {
     const value=checkpoint.artifacts?.[artifact];if(value===undefined)continue;
     if(typeof value==='string')result[key]={ref:value};
     else if(object(value)&&typeof value.ref==='string')result[key]=Object.fromEntries(['ref','version','digest','approval_ref'].filter(k=>value[k]!==undefined).map(k=>[k,value[k]]));

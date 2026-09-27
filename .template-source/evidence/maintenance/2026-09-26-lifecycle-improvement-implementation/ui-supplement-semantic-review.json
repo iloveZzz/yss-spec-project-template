@@ -1,0 +1,87 @@
+[
+  {
+    "variant": "baseline",
+    "scenario": "e08-ui",
+    "repeat": 1,
+    "automatic_result": "passed",
+    "semantic_result": "passed",
+    "reviewer": "primary-maintainer; not independent",
+    "reviewed_at": "2026-09-26T17:09:44.545875+00:00",
+    "evidence": "ui-supplement-review-packets/baseline-e08-ui-1.json",
+    "observed": [
+      "Only three requested draft documents created; original inputs unchanged; R1/R2/R3 and scope referenced",
+      "All required normal/no-permission/empty/invalid/submitting/timeout states plus success mapped to observable acceptance; unauthorized write count zero and busy repeat-event guard explicit",
+      "Timeout preserves input and original idempotency key/content; unknown result not treated as confirmed failure; service deduplication, late success and missing key limits distinguished",
+      "Fields, empty-data meaning, authority, receipt schema and refresh recovery remain explicit unknowns; no fabricated API/browser/prototype approval"
+    ],
+    "critical_wrong_allow": 0,
+    "wrong_reject": 0,
+    "duplicate_decision_requests": 0,
+    "duplicate_side_effects": 0,
+    "limits": "Draft quality only; no browser/code/real service semantics or approved field definitions; no time reduction inferred"
+  },
+  {
+    "variant": "baseline",
+    "scenario": "e08-ui",
+    "repeat": 2,
+    "automatic_result": "passed",
+    "semantic_result": "passed",
+    "reviewer": "primary-maintainer; not independent",
+    "reviewed_at": "2026-09-26T17:19:22.567377+00:00",
+    "evidence": "ui-supplement-review-packets/baseline-e08-ui-2.json",
+    "observed": [
+      "Only the three requested draft documents created; existing sources unchanged",
+      "R1/R2/R3 traced into normal/refusal/empty/validation/busy/timeout/success states and transition guards, with corresponding acceptance",
+      "Unauthorized actions issue no writes; inflight repeats rejected; timeout retains same key and original payload, does not infer failure or generate a new key",
+      "Fields, receipt, authority, empty-data interpretation and cross-refresh recovery explicitly pending; proposed readonly timeout policy labelled design suggestion; no approval or implementation claimed"
+    ],
+    "critical_wrong_allow": 0,
+    "wrong_reject": 0,
+    "duplicate_decision_requests": 0,
+    "duplicate_side_effects": 0,
+    "limits": "Draft quality only; no browser/code/real service semantics or approved field definitions; no time reduction inferred"
+  },
+  {
+    "variant": "candidate",
+    "scenario": "e08-ui",
+    "repeat": 1,
+    "automatic_result": "passed",
+    "semantic_result": "passed",
+    "reviewer": "primary-maintainer; not independent",
+    "reviewed_at": "2026-09-26T17:28:35.558770+00:00",
+    "evidence": "ui-supplement-review-packets/candidate-e08-ui-1.json",
+    "observed": [
+      "Exactly three requested drafts added; original source files unchanged; source scope and R1/R2/R3 references readable",
+      "All six required states and success trace through state guards and acceptance; no-permission writes zero and busy mouse/keyboard repeated triggers blocked",
+      "Timeout treated as unknown creation outcome; preserve original key and payload, same-key service deduplication, late success and stale callbacks covered",
+      "Upstream facts, local design additions and unresolved field/receipt/permission/refresh contracts separated; no fabricated approval, API or browser validation",
+      "One rg no-match exit 1 is lookup-only; completed final checks and task pass recorded separately"
+    ],
+    "critical_wrong_allow": 0,
+    "wrong_reject": 0,
+    "duplicate_decision_requests": 0,
+    "duplicate_side_effects": 0,
+    "limits": "Only synthetic draft writing; explicit prompt requests reference reuse; no causal template benefit or isolated performance claim"
+  },
+  {
+    "variant": "candidate",
+    "scenario": "e08-ui",
+    "repeat": 2,
+    "automatic_result": "passed",
+    "semantic_result": "passed",
+    "reviewer": "primary-maintainer; not independent",
+    "reviewed_at": "2026-09-26T17:39:47.184215+00:00",
+    "evidence": "ui-supplement-review-packets/candidate-e08-ui-2.json",
+    "observed": [
+      "Exactly three requested drafts added; original sources unchanged; R1/R2/R3 scope and unresolved input references retained",
+      "Normal, no-permission, empty, validation, submitting, timeout and success states have transition guards and observable acceptance; unauthorized known before writing yields zero requests; busy mouse and keyboard repeat events blocked",
+      "Unknown timeout outcome preserves original idempotency key and payload; same-key service deduplication distinguished from UI guards; lost key does not authorize a new submission; late success and stale timeout callbacks cannot regress confirmed success",
+      "Fields, receipt, authority, empty-data semantics and refresh recovery explicitly pending; P0 is a proposed design capability grouping, not an upstream priority or approval; no implementation/browser/API/prototype approval claimed"
+    ],
+    "critical_wrong_allow": 0,
+    "wrong_reject": 0,
+    "duplicate_decision_requests": 0,
+    "duplicate_side_effects": 0,
+    "limits": "Only synthetic draft writing; explicit prompt requests reference reuse; no causal template benefit or isolated performance claim"
+  }
+]

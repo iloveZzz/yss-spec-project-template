@@ -1,0 +1,174 @@
+{
+  "result": {
+    "scenario": "e08-ui",
+    "variant": "baseline",
+    "repeat": 2,
+    "elapsed_seconds": 300.16,
+    "exit_code": null,
+    "timeout": true,
+    "assertion_failures": [
+      {
+        "assertion": {
+          "kind": "exists",
+          "path": "design-overview.md"
+        }
+      },
+      {
+        "assertion": {
+          "kind": "contains",
+          "path": "interaction.md",
+          "value": "幂等"
+        }
+      },
+      {
+        "assertion": {
+          "kind": "contains",
+          "path": "state-matrix.md",
+          "value": "超时"
+        }
+      },
+      {
+        "assertion": {
+          "kind": "contains",
+          "path": "state-matrix.md",
+          "value": "R1"
+        }
+      }
+    ],
+    "runtime_errors": [],
+    "tool_calls": 10,
+    "usage": [],
+    "automatic_result": "failed",
+    "semantic_review": "pending",
+    "trace": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-agent-evaluations-v2-2qx3mbr2/baseline/e08-ui-2/trace.jsonl",
+    "steps": [
+      {
+        "step": "main",
+        "started_at": "2026-09-26T15:26:05Z",
+        "elapsed_seconds": 300.03,
+        "exit_code": null,
+        "timeout": true,
+        "assertion_failures": [
+          {
+            "assertion": {
+              "kind": "exists",
+              "path": "design-overview.md"
+            }
+          },
+          {
+            "assertion": {
+              "kind": "contains",
+              "path": "interaction.md",
+              "value": "幂等"
+            }
+          },
+          {
+            "assertion": {
+              "kind": "contains",
+              "path": "state-matrix.md",
+              "value": "超时"
+            }
+          },
+          {
+            "assertion": {
+              "kind": "contains",
+              "path": "state-matrix.md",
+              "value": "R1"
+            }
+          }
+        ],
+        "runtime_errors": [],
+        "tool_calls": 10,
+        "usage": [],
+        "automatic_result": "failed",
+        "semantic_review": "pending",
+        "trace": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-agent-evaluations-v2-2qx3mbr2/baseline/e08-ui-2/trace.jsonl"
+      }
+    ],
+    "unattempted_steps": []
+  },
+  "original_files_changed": [],
+  "original_files_missing": [],
+  "unsafe_paths": [],
+  "new_files": [],
+  "commands": [
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"pwd && cat yss-project.yaml && rg --files -g 'AGENTS.md' -g 'fixture-spec.md' -g 'CONTEXT.md' -g '*design-overview*' -g '*interaction*' -g '*state-matrix*' -g 'DESIGN.md' -g '*harness-process-tailoring*' -g '*lifecycle-registry*' -g '*lifecycle-artifact-map*'\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat fixture-spec.md CONTEXT.md DESIGN.md && cat .agents/skills/yss-product-lifecycle/SKILL.md .agents/skills/yss-prototype-stage/SKILL.md .agents/skills/i-have-adhd/SKILL.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"cat .template-spec/process/harness-process-tailoring.md && rg --files --hidden .template-spec .template-source .agents/skills/yss-prototype-stage .agents/skills/yss-product-lifecycle | rg '(design-overview|interaction|state-matrix|lifecycle-registry|user-decisions|product-design|stage-tracking)'\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .agents/skills/yss-product-lifecycle/SKILL.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"cat DESIGN.md && sed -n '95,230p' CONTEXT.md && cat .template-spec/design/templates/interaction-spec-template.md .template-spec/design/templates/state-matrix-template.md\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"cat .agents/skills/yss-prototype-stage/SKILL.md .template-spec/process/document-writing.md && rg --files --hidden .template-spec | rg '(overall|overview|design.*template|template.*design)'\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"cat .template-spec/process/document-writing.md && rg --files --hidden .template-spec/design .template-spec/templates | rg '(overall|overview|design.*template|template.*design)' && rg -n 'design-overview|总体设计|interaction-spec|state-matrix|product-design' .template-spec/process/lifecycle-registry.yaml\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .template-spec/design/templates/product-overview-design-template.md .agents/skills/yss-design-system/SKILL.md .template-spec/design/design.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"sed -n '45,77p' .template-spec/process/lifecycle-registry.yaml && sed -n '160,188p' .template-spec/process/lifecycle-registry.yaml && sed -n '240,282p' .template-spec/process/lifecycle-registry.yaml && sed -n '508,540p' .template-spec/process/lifecycle-registry.yaml && cat AGENTS.md && rg --files --hidden -g '\"'!**/.git/**'\"' -g '\"'!**/.agents/**'\"' -g '\"'!**/.codex/**'\"' -g '\"'!**/.template-source/**'\"' -g '\"'!**/.template-spec/**'\"' -g '*design-overview.md' -g '*interaction.md' -g '*state-matrix.md'\"",
+      "exit_code": 1
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"sed -n '100,180p' .agents/skills/yss-design-system/SKILL.md && sed -n '1,102p' .template-spec/design/design.md && sed -n '1,65p' .template-spec/design/tokens/tokens.default.json && python3 - <<'PY'\nfrom pathlib import Path\nfor name in ('design-overview.md', 'interaction.md', 'state-matrix.md'):\n    p = Path(name)\n    print(f'{name}: exists={p.exists()}')\nPY\"",
+      "exit_code": 0
+    }
+  ],
+  "command_errors": [
+    {
+      "command": "/bin/zsh -lc \"sed -n '45,77p' .template-spec/process/lifecycle-registry.yaml && sed -n '160,188p' .template-spec/process/lifecycle-registry.yaml && sed -n '240,282p' .template-spec/process/lifecycle-registry.yaml && sed -n '508,540p' .template-spec/process/lifecycle-registry.yaml && cat AGENTS.md && rg --files --hidden -g '\"'!**/.git/**'\"' -g '\"'!**/.agents/**'\"' -g '\"'!**/.codex/**'\"' -g '\"'!**/.template-source/**'\"' -g '\"'!**/.template-spec/**'\"' -g '*design-overview.md' -g '*interaction.md' -g '*state-matrix.md'\"",
+      "exit_code": 1,
+      "output": "  - id: stage.plan\n    name: Plan（战略规划）\n    goal: 确认目标、业务边界、关键规则、MVP / 非目标、优先级和交接责任，为 Spec 提供战略输入；按影响面探索并复用仍有效的结论。\n    exit_criteria: 命中的战略与阶段决策检查通过，用户统一批准当前 Plan；影响业务边界、关键规则或 MVP 的问题已解决，其他未决项有责任人和解决时点；下游可进入 Spec，不代表可实现。\n    spec_entry:\n      required_checks: [ goals, scope_and_priority, boundaries_and_rules, open_questions, handoff, context_reconciliation, grill_exit ]\n      gate_impacts:\n        gate.plan-approved: plan\n      check_impacts:\n        check.domain-strategy-approved: domain_strategy\n        check.stage-decision-package-approved: stage_decision\n  - id: stage.spec-architecture\n    name: Spec / 功能架构\n    goal: 固化解决方案和功能边界。\n    exit_criteria: Spec 基线和功能边界可审查。\n  - id: stage.product-design\n    name: 产品设计\n    goal: 在存在产品设计影响时校准页面流和状态。\n    exit_criteria: 命中的设计门禁通过；未命中项记录 not-applicable 及原因。\n  - id: stage.system-data-engineering\n    name: 系统 / 数据架构与工程契约\n    goal: 固化系统、数据、工程基线和 API 契约。\n    exit_criteria: 新建后端已由用户确认 DDD / MVC 与精确 Spring Boot 版本，既有工程已核验并复用登记值；受影响工程契约冻结或记录无 API 影响；required 脚手架证据齐全。\n  - id: stage.ticket-formalization\n    name: Ticket 正式化\n    goal: 在既有功能追踪入口下，将冻结范围正式化为垂直切片。\n    exit_criteria: 工作单元窄、依赖清晰、验收和测试 seam 可执行。\n  - id: stage.vertical-slice-implementation\n    name: 垂直切片实现\n    goal: 以批准合同驱动 TDD 实现和跨仓库协作。\n    exit_criteria: 允许写路径、禁止模式、证据和验证命令全部满足。\n  - id: stage.verification-release-retrospective\n    name: 验证 / 发布 / 复盘\n    evidence:\n      - evidence.approval-record\n    requires_checks:\n      - check.domain-strategy-approved\n      - check.stage-decision-package-approved\n  - id: gate.spec-baseline-approved\n    name: Spec 基线批准\n    stage: stage.spec-architecture\n    trigger: 新功能、行为变化或范围扩大进入 Spec 基线；已授权范围内细化复用当前有效授权，实质变化重新决定。\n    evidence:\n      - evidence.approval-record\n    requires_checks: []\n  - id: gate.product-design-approved\n    name: 产品设计批准\n    stage: stage.product-design\n    trigger: 存在产品设计影响；独立原型评审与交付物验证通过后核验原批准或授权延续，新增体验取舍由用户决定。\n    evidence:\n      - evidence.prototype-confirmation\n    requires_checks:\n      - check.prototype-reviewed\n      - check.prototype-verified\n  - id: gate.backend-architecture-platform-approved\n    name: 后端架构与平台批准\n    stage: stage.system-data-engineering\n    trigger: 新建后端工程进入技术设计分支前，由用户在同一次决定中确认 domain-driven / layered-mvc 和精确 Spring Boot 版本；既有工程核验并复用当前登记架构及固定工程基线中的实际 Spring Boot 版本，记录 not-applicable，不重复询问。\n    evidence:\n      - evidence.approval-record\n    requires_checks: []\n  - id: gate.engineering-contract-approved\n  - id: artifact.spec\n    name: Spec\n    stage: stage.spec-architecture\n    trigger: 新功能、行为变化或范围扩大。\n  - id: artifact.product-overview\n    name: 产品总体设计\n    stage: stage.spec-architecture\n    trigger: 进入 Spec 基线。\n  - id: artifact.functional-architecture\n    name: 功能架构\n    stage: stage.spec-architecture\n    trigger: 新模块或跨边界变化。\n  - id: artifact.interaction-spec\n    name: 交互说明\n    stage: stage.product-design\n    trigger: 命中产品设计影响。\n  - id: artifact.low-fidelity-prototype\n    name: 低保真原型\n    stage: stage.product-design\n    trigger: 命中产品设计影响。\n  - id: artifact.state-matrix\n    name: 状态矩阵\n    stage: stage.product-design\n    trigger: 存在状态流转、异常或恢复。\n  - id: artifact.prototype-deliverable\n    name: 原型交付物\n    stage: stage.product-design\n    trigger: 低保真评审后需要 H1 视觉或 H2 流程校准。\n  - id: artifact.prototype-review-v2\n    name: 原型评审记录\n    stage: stage.product-design\n    trigger: 命中 check.prototype-reviewed。\n  - id: artifact.prototype-confirmation-v2\n    name: 原型确认记录\n    stage: stage.product-design\n    trigger: 命中 gate.product-design-approved。\n  - id: artifact.openapi-draft\n    name: OpenAPI Draft\n    stage: stage.system-data-engineering\n    trigger: 有 API 影响。\n  - id: artifact.openapi-freeze-record\n    name: OpenAPI Freeze 记录\n    stage: stage.system-data-engineering\n  - id: check.stage-decision-package-approved\n    name: 阶段决策包评审\n    stage: stage.plan\n    trigger: Plan 到 Spec 入口需要稳定的阶段决策合同。\n    evidence:\n      - evidence.stage-decision-package\n      - evidence.approval-record\n    requires_checks:\n      - check.domain-strategy-approved\n  - id: check.prototype-reviewed\n    name: 原型评审\n    stage: stage.product-design\n    trigger: 命中产品设计影响，且低保真页面、流程、状态或 API 反推需要独立评审。\n    evidence:\n      - evidence.prototype-review-result\n  - id: check.prototype-verified\n    name: 原型交付物验证\n    stage: stage.product-design\n    trigger: 产品设计影响需要通过 H1/H2 原型交付物进行视觉或流程校准；真实组件验证留到前端实现阶段。\n    evidence:\n      - evidence.prototype-profile-decision\n      - evidence.prototype-deliverable-verification\n  - id: check.openapi-draft-reviewed\n    name: OpenAPI Draft Review\n    stage: stage.system-data-engineering\n    trigger: 有 API 影响且 Draft 已生成。\n    evidence:\n      - evidence.openapi-draft-review\n  - id: check.design-reviewed\n    name: 设计审查\n    stage: stage.system-data-engineering\n    trigger: API 或架构影响。\n    evidence:\n# AGENTS.md — AI 开发入口规则\n\n> 只保留入口、硬门禁和禁令。\n\n## 1. 首先识别仓库身份\n\n先读根 `yss-project.yaml`：`template-source` 走模板维护；`project-instance` 走产品生命周期。\n\n- `template-source` 不生成产品 Spec、原型、OpenAPI 或垂直切片 Ticket。\n- 文件缺失、schema 不支持或模式非法时停止并迁移检查；不得按目录、Git remote 或占位符猜身份。\n\n## 2. 单一事实来源\n\n| 事实 | 权威资产 |\n|---|---|\n| 词汇 | `CONTEXT.md` |\n| Agent 入口红线 | `AGENTS.md` |\n| 阶段、门禁、产物、工作单元、证据、稳定 ID | `.template-spec/process/lifecycle-registry.yaml`；`.template-spec/process/lifecycle-artifact-map.md` 仅为派生阅读视图 |\n| 影响面、`not-applicable`、模板维护强度 | `.template-spec/process/harness-process-tailoring.md`、`.template-source/process/maintenance-intensity.yaml` |\n| Skill 来源、版本、投影、路由 | `skills-lock.json`、`.template-spec/agents/yss-skill-registry.yaml` |\n| 数字人角色、运行时与会签 | `.template-spec/agents/digital-human-roles.yaml` |\n| 视觉规范 | `DESIGN.md`；治理见 `.template-spec/design/design.md` |\n\n其他文档和派生视图只引用，不重复定义。\n\n## 3. 标准文档语言与规范语汇\n\n- 生命周期文档用简体中文；英文专名、代码 / API 标识、schema、命令、文件名和 metadata 原样保留。新流程统一用 Spec、Ticket、`to-spec`、`to-tickets`。\n- 规划至实现全程消费根 `CONTEXT.md` 及文首合同；不可读即 `blocked`。稳定术语先登记，再以 `<ContextId>/<EnglishIdentifier>` 引用；跨上下文用 `Global/<EnglishIdentifier>`。\n- 每仓只允许根目录一个大小写精确的 `CONTEXT.md`；禁止嵌套、`CONTEXT-MAP.md`、跨仓路径和伪锚点。\n- `project-instance` 每个工作单元批准或流转前完成 `context_reconciliation`；缺失、冲突或摘要漂移即 `blocked`。`template-source` 校验模板合同并记录带原因的 `not-applicable`。\n\n## 4. `template-source` 模板维护路由\n\n在用户已授权的模板维护范围内，继续完成受影响 Skill、投影、锁文件和分发快照的同步与适用验证；按当前影响面读取文档。首次编辑完成不等于交付完成。只有新增决定、缺失必要输入或命中既有审批边界时才暂停；提交、推送、发布仍按本仓授权规则执行。\n\n- 按“影响面 → 事实源 → 投影 / 派生 → 分级证据”维护；改 Skill 必须用 `maintaining-skills`，并按 `.template-spec/process/harness-process-tailoring.md` 判定 L1 / L2 / L3。\n- `.agents/skills` 是共享 Skill 权威目录；其他 Agent root 下的同名 Skill 是生成投影，不得手改或与 canonical 并列维护。\n- 内循环运行 `scripts/verify-template-fast`；PR 运行 `scripts/verify-template-candidate`；main 和发布前运行不可裁剪的 `scripts/verify-template`。日常维护不强制独立审查或候选冻结，L1/L2/L3 决定验证强度；外部 `create-yss-spec` 固定版本集成未闭合不得称可发布。CI 边界见 `.template-source/process/github-workflows.md`。\n\n## 5. `project-instance` 产品研发路由\n\n主流程：分诊 → Plan → Spec / 功能架构 → 产品设计 → 工程契约 → Ticket → 切片 → 验证 / 发布 / 复盘。\n\n- 先按 `.template-spec/process/harness-process-tailoring.md` 判定影响面和最近可信阶段，再由 `yss-product-lifecycle` 执行 `.template-spec/process/lifecycle-registry.yaml`；阅读导航见 `.template-spec/process/lifecycle-artifact-map.md`。\n- 命中门禁必须完成；仅未命中时记录带原因的 `not-applicable`，不得生成空文档或混淆门禁、产物、工作单元、证据。安全 / 权限写入普通 Spec、契约、架构、验收和 seam，按实际影响触发门禁。\n- 新功能和较大变更先进入 Plan；`grill-with-docs`、`to-spec`、`to-tickets`、`implement` 仅为用户显式兼容入口。API 变更先形成 OpenAPI 3.1 Draft，审查后 Freeze，再实现。\n- Spec Delta 只记冻结基线的高风险行为差异。OpenAPI Freeze 或无 API 影响记录后拆窄垂直切片，禁止仅按技术层横拆。\n- `seam-deferred` 必须记录风险、责任人、后续 Ticket、验证计划和目标版本或发布日期。\n\n## 6. Ticket 与状态\n\n- Plan / Spec / Design 按 `.template-spec/process/stage-tracking.md` 从阶段入口登记工作、按需拆分并在恢复 / 流转时验证；工作项进度不替代 Ticket 五态和阶段批准。\n\n- 每个功能先建父 Ticket，汇总阶段资产、审查、阻塞和证据。\n- Spec、设计、原型、OpenAPI Draft 和待冻结资产使用 `ready-for-human`；只有门禁通过、阻塞清除且可直接实现的垂直切片才能使用 `ready-for-agent`。\n- 按 `.template-spec/agents/issue-tracker.md` 持久化主 tracker，不从 Git remote 推断；平台不可用时生成待发布草案。五态见 `.template-spec/agents/triage-labels.md`。\n\n## 7. 实现与 YSS 路由硬门禁\n\n- 实现前按 `.template-spec/process/implementation-repo-integration.md` 登记仓库、项目根、分支、CI、验证命令、回滚点；再用 `yss-implementation-contract-compiler` 编译最小 Skill 集和当前合同。\n- 无工程先确认外部仓库或输出目录。Backend `scaffold_status=required` 时，由生命周期推荐 `domain-driven` / `layered-mvc`，用户逐项目确认后路由；Frontend 用 `yss-frontend-scaffold-generator`。缺目录不改路由。\n- 脚手架仅在 `scaffold-architecture-decisions.yaml` 已确认且当前、schema v3 合同已持久化并获批准后无交互运行，只生成机械骨架。既有工程不得重选或覆盖；架构转换单独立项。\n- 正式切片只消费已批准、已持久化且当前的 Slice Implementation Contract；编译器只起草，不批准、不设置 `ready-for-agent`、不宣布完成。\n- UI 切片在 `ready-for-agent` 前须有已校验的 `frontend_implementation_plan`，实现后补 `frontend_implementation_verification`，覆盖截图 / 视觉回归、状态交互、console warning、实际 `pnpm` 退出码。\n- 前端验证优先 `pnpm`，后端优先根 `./mvnw`；缺少时记录受控例外和实际命令。\n- 路径越界、证据缺失、验证未执行、`drift`、`violation` 或 `new_impacts` 时停止实现并重新路由。\n\n## 8. 专项任务的强制入口\n\n- 技术事实、标准、第三方 API 或框架行为用 `yss-research`（`technical-evidence` / `strategy-evidence`）；竞品、市场、口碑用 `competitive-intelligence`。\n- 产品设计由 `yss-prototype-stage` 持有合同并调用设计系统、独立评审、H1 / H2 适配器；原型禁用 `yss-ui`。真实组件事实只用于实现计划、已批准实现和还原验证。\n- 数字人协同或会签先读 `.template-spec/agents/digital-human-roles.yaml`；角色不得另起生命周期、批准 Slice 合同、设置 `ready-for-agent` 或宣布可发布。\n- 业务行为默认按 `tdd` 的 `behavior-tdd` 使用已确认公开 seam 逐切片实现；一次性生成、纯配置或流程文档不适用时，记录例外理由和可执行验证。\n\n## 9. 工作区与实现仓库边界\n\n- 运行时代码默认进入已登记的 `external-repository`；仅用户明确选择时使用 `apps/backend/<project>`、`apps/frontend/<project>` 的 `harness-apps`，或以真实 gitlink 使用 `git-submodule`。三种 scope 按实现接入文档登记。\n- 禁止向 `app/backend/`、`app/frontend/` 输出；空 gitlink、detached HEAD、`--force` 挂载点不得视为普通目录；不得把 submodule 登记为 `harness-apps` 或复制源码冒充。\n\n## 10. 独立审查、验证和追踪\n\n- 实现者不做独立审查，Reviewer 不写实现；代码审查统一用 `code-review`。mandatory 不豁免；`violation` 修复后重审，`drift` / `new_impacts` 使合同 `stale` 并回编译器。\n- “完成 / 可合并 / 可发布”仅基于 Fresh Verification；历史结果、自述无效。\n- 会签按角色表 `gate_policy` 并经 `scripts/verify-approval-record --require-approved` 核验；`user_decision_policy` 命中的关键决定必须先展示可审阅资产，再取得提问者或其明确指定负责人的真实回复。无回复保持等待，数字人不能代答；原始来源、范围、复用和失效见生命周期 `references/user-decisions.md`。发布、商务承诺、运行时外部副作用仍须生物人。\n- 普通功能默认一个推进负责人和一个独立审查者；候选角色列表不要求逐角色签字。相邻检查可组合审查、逐项留结论。已有范围授权按用户决定协议验证延续，实质变化或未知影响才重新决定；外部强制审批不得裁掉，缺陷和缺证据仍阻断，非阻断建议进入待办。\n- 会签暂停、handoff、实现、合并、发布边界同步范围、证据、风险、会签点、Ticket 状态和下一步。Git checkpoint 只含本轮范围；提交 / 推送须用户授权。\n- 发布或阶段完成时判断复盘；架构 / 验证返工、IMPORTANT / CRITICAL finding、人工确认延期时，落中文复盘并修订事实源。\n\n## 11. Subagent 协同\n\n- 使用 subagent 或其他运行时前读 `.template-spec/process/subagent-collaboration.md`，建立含角色、`runtime_id`、执行态、技能约束和不重叠写范围的任务包；共享工作区不是安全边界。\n- 仓库身份、Ticket 最终状态、Git checkpoint、Slice 合同批准和完成结论由主控裁决；实现者不得兼任独立审查者或会签自己的资产。\n\n## 12. 测试质量基线\n\n模板推荐 Domain / Application `>= 90%`、API `>= 80%`、前端组件 `>= 75%`、关键流程 `100% E2E`；`project-instance` 明确采纳后才是 CI 门禁，未定义关键流程不得称 100% E2E。\n\n<!-- YSS_EVAL_FIXTURE_BOUNDARY -->\n本目录为隔离评测 fixture，测试数据与回复仅为 test-data-only，不得成为真实批准。\n保留上方被测来源规则；仅当其要求真实外部动作时，本段隔离边界优先并记录未测范围。\n只操作本目录中的文件，不读取真实用户状态、用户级技能或凭据，不访问网络。\nGit、包管理器和常见网络命令由 PATH 替身记录，不得绕过替身或安装真实依赖。\n允许在 fixture 内使用已有 Node/Python 和本地校验器；替身成功不代表真实构建或交付。\n不能完成时如实记录缺口，禁止假造命令、退出码、批准或验证结果。使用用户的语言。\n"
+    }
+  ],
+  "other_tools": [],
+  "agent_messages": [
+    {
+      "step": "main",
+      "text": "我会先核对仓库身份、受测输入和当前设计模板，再起草这三个文件；保留 R1/R2/R3 的引用，并补齐指定状态与恢复路径。\n"
+    },
+    {
+      "step": "main",
+      "text": "仓库是 `project-instance`，受测输入只有 R1/R2/R3 和 MVP 边界。我会使用 `yss-product-lifecycle` 核对范围，按 `yss-prototype-stage` 的设计文档要求及 `i-have-adhd` 的中文规范起草，保持 test-data-only 草稿状态。\n"
+    },
+    {
+      "step": "main",
+      "text": "当前模板已找到。输入尚未定义具体字段、空数据的对象和权限恢复方式；我会将这些列为待确认项。超时恢复会明确区分“结果未知”和“提交失败”，并细化保留输入、复用原幂等键重试的交互。视觉引用按 `yss-design-system` 指向现有基线。\n"
+    }
+  ],
+  "artifacts": {
+    "design-overview.md": null,
+    "interaction.md": null,
+    "state-matrix.md": null
+  },
+  "semantic_review": "pending"
+}

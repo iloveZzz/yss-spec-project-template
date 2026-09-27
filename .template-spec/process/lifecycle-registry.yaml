@@ -31,6 +31,11 @@ id_policy:
     - gate.slice-ready-for-agent
     - gate.frontend-implementation-verified
     - gate.release-ready
+    - artifact.prototype-review
+    - artifact.prototype-confirmation
+    - work-unit.intensity-aware-verification
+    - work-unit.intensity-aware-review
+    - work-unit.prototype-design
 
 stages:
   - id: stage.entry-triage
@@ -120,7 +125,9 @@ evidence:
     description: 基于低保真评审后的风险触发、决定目标、H1/H2 计算结果以及人工升降级依据。
   - id: evidence.prototype-deliverable-verification
     name: 原型交付物验证证据
+    # description 保留已发布稳定 ID 的历史语义快照；当前产物版本读取 public_description 及原型证据合同。
     description: schema v3 共同证据与所选档位的浏览器、Design QA、无障碍、组件事实或真实组件合同验证结果。
+    public_description: 新原型证据采用 schema v4，包含共同证据、Visual Baseline Bundle、浏览器、Design QA、无障碍及档位验证结果；历史 v3 仅供只读兼容。
   - id: evidence.prototype-confirmation
     name: 原型用户确认记录
     description: 高保真原型、验证清单和进入下游阶段范围的人工确认结论。
@@ -259,14 +266,14 @@ artifacts:
     name: 原型交付物
     stage: stage.product-design
     trigger: 低保真评审后需要 H1 视觉或 H2 流程校准。
-  - id: artifact.prototype-review
+  - id: artifact.prototype-review-v2
     name: 原型评审记录
     stage: stage.product-design
-    trigger: 命中 gate.prototype-reviewed。
-  - id: artifact.prototype-confirmation
+    trigger: 命中 check.prototype-reviewed。
+  - id: artifact.prototype-confirmation-v2
     name: 原型确认记录
     stage: stage.product-design
-    trigger: 命中 gate.user-confirmation。
+    trigger: 命中 gate.product-design-approved。
   - id: artifact.openapi-draft
     name: OpenAPI Draft
     stage: stage.system-data-engineering
@@ -363,18 +370,18 @@ work_units:
     input: 目标仓库、dry-run 计划。
     output: 受管资产和 metadata。
     completion: 验证通过或完整回滚。
-  - id: work-unit.intensity-aware-verification
+  - id: work-unit.intensity-aware-verification-v2
     name: 分级 Fresh verification
     scope: template-source
     input: 变更仓库、强度分级与对应最低证据。
     output: 命令输出与证据。
-    completion: L1 相关检查、L2 最小反例与 fresh verification、L3 完整 RED / GREEN / REFACTOR 与 fresh verification 按命中等级通过。
-  - id: work-unit.intensity-aware-review
+    completion: L1 完成相关检查；L2 完成最小反例、维护者自检与本轮 fresh verification；L3 完成维护者自检与本轮 fresh verification，正式发布前另运行完整 scripts/verify-template。
+  - id: work-unit.intensity-aware-review-v2
     name: 分级审查
     scope: template-source
     input: 变更 diff、强度分级与验证证据。
-    output: L1 self-check / 人工 checkpoint、L2 聚焦独立审查或 L3 正式独立审查结论。
-    completion: 已按命中等级完成审查且无未处理阻断项；L1 不强制独立 reviewer。
+    output: 维护者自检结论与阻断项；按需记录聚焦独立审查结果。
+    completion: 已完成命中等级要求的维护者自检并处理阻断项；独立审查仅在另行触发时执行，不由 L2 或 L3 自动强制。
   - id: work-unit.release-and-rollback
     name: 发布与回滚
     scope: template-source
@@ -417,12 +424,12 @@ work_units:
     input: 已确认的 Plan 记录和测试 seam。
     output: Spec、产品总体设计和功能架构。
     completion: Spec 内容完整并进入 ready-for-human；下游推进仍需 gate.spec-baseline-approved。
-  - id: work-unit.prototype-design
+  - id: work-unit.prototype-design-v2
     name: 原型设计与验证
     scope: project-instance
     input: Spec、产品设计影响和状态矩阵。
     output: 交互说明、低保真、状态矩阵、H1/H2 原型交付物、统一 Design QA、档位验证证据与前端实现交接事项。
-    completion: 低保真评审、schema v3 原型交付物验证和用户确认门禁均通过；生产组件待验事项已交接到前端实现计划。
+    completion: 低保真评审、schema v4 原型交付物验证和用户确认门禁均通过；Visual Baseline Bundle 和生产组件待验事项已交接到前端实现计划。
   - id: work-unit.technical-analysis
     name: 技术分析与契约冻结
     scope: project-instance

@@ -81,6 +81,7 @@ required_files:
   - .template-spec/agents/digital-human-roles.yaml
   - .template-spec/process/lifecycle-registry.yaml
   - .template-spec/process/lifecycle-registry-baseline.json
+  - .template-spec/process/lifecycle-registry-baseline-v1.json
   - .template-source/process/template-verification-profiles.yaml
   - .template-source/process/maintenance-intensity.yaml
   - .template-spec/process/schemas/digital-human-task-package.schema.json
@@ -141,6 +142,11 @@ required_files:
   - scripts/query-lifecycle-context
   - scripts/lib/lifecycle-context-query.mjs
   - scripts/verify-lifecycle-context-query-scenarios
+  - scripts/plan-spec-entry
+  - scripts/lifecycle-status
+  - scripts/lib/plan-spec-entry-view.mjs
+  - scripts/lib/lifecycle-status.mjs
+  - scripts/verify-lifecycle-operator-scenarios
   - scripts/verify-frontend-implementation-evidence-scenarios
   - scripts/prepare-maintenance-review
   - scripts/evaluate-maintenance-review-round
@@ -335,6 +341,7 @@ groups:
   tooling:
     commands:
       - { run: ".template-source/scripts/evidence-index --check", when: template-source }
+      - { run: "python3 -m unittest discover -s .template-source/scripts/tests -p 'test_skills_agent_eval.py'", when: template-source }
       - { run: "pnpm --dir .template-source/tooling/node test", when: template-source }
       - { run: "pnpm --dir .template-source/tooling/node check:vendor", when: template-source }
   skills:
@@ -385,6 +392,7 @@ groups:
       - { run: "scripts/verify-strategic-context-import-scenarios" }
       - { run: "scripts/verify-lifecycle-registry" }
       - { run: "scripts/verify-lifecycle-context-query-scenarios" }
+      - { run: "scripts/verify-lifecycle-operator-scenarios" }
       - { run: "scripts/verify-lifecycle-checkpoint .template-spec/process/templates/lifecycle-checkpoint-template.yaml" }
       - { run: "scripts/verify-frontend-implementation-evidence --allow-template .template-spec/process/templates/frontend-implementation-plan-template.yaml" }
       - { run: "scripts/verify-frontend-implementation-evidence --allow-template .template-spec/process/templates/frontend-implementation-verification-template.yaml" }

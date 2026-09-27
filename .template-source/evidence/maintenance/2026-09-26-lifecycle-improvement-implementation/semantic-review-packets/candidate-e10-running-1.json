@@ -1,0 +1,168 @@
+{
+  "result": {
+    "scenario": "e10-running",
+    "variant": "candidate",
+    "repeat": 1,
+    "elapsed_seconds": 157.31,
+    "exit_code": 0,
+    "timeout": false,
+    "assertion_failures": [],
+    "runtime_errors": [],
+    "tool_calls": 17,
+    "usage": [
+      {
+        "input_tokens": 558465,
+        "cached_input_tokens": 507136,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 3836,
+        "reasoning_output_tokens": 900
+      }
+    ],
+    "automatic_result": "passed",
+    "semantic_review": "pending",
+    "trace": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-agent-evaluations-v2-2qx3mbr2/candidate/e10-running-1/trace.jsonl",
+    "steps": [
+      {
+        "step": "main",
+        "started_at": "2026-09-26T16:47:49Z",
+        "elapsed_seconds": 157.17,
+        "exit_code": 0,
+        "timeout": false,
+        "assertion_failures": [],
+        "runtime_errors": [],
+        "tool_calls": 17,
+        "usage": [
+          {
+            "input_tokens": 558465,
+            "cached_input_tokens": 507136,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 3836,
+            "reasoning_output_tokens": 900
+          }
+        ],
+        "automatic_result": "passed",
+        "semantic_review": "pending",
+        "trace": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-agent-evaluations-v2-2qx3mbr2/candidate/e10-running-1/trace.jsonl"
+      }
+    ],
+    "unattempted_steps": []
+  },
+  "original_files_changed": [],
+  "original_files_missing": [],
+  "unsafe_paths": [],
+  "new_files": [
+    "recovery.json"
+  ],
+  "commands": [
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"pwd && cat yss-project.yaml && rg --files -g 'AGENTS.md' -g 'CONTEXT.md' -g '*checkpoint*' -g '*task-record*' -g '*recovery*' -g '*plan*' -g '*Plan*' -g 'SKILL.md' -g '*stage-tracking*' -g '*subagent-collaboration*' -g '*lifecycle-registry*' -g '*harness-process-tailoring*' -g '*digital-human-roles*' . .template-spec .agents/skills/yss-product-lifecycle\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .agents/skills/yss-product-lifecycle/SKILL.md .template-spec/process/harness-process-tailoring.md .template-spec/process/stage-tracking.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat AGENTS.md CONTEXT.md checkpoint.json task-record.json'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"rg -n '恢复|recover|redispatch|running|运行中|checkpoint|task-record|lost|unknown|重新派发|重新分派|重派|主控' .agents/skills/yss-product-lifecycle .template-spec/process .template-spec/agents/digital-human-roles.yaml && rg --files --hidden -g '\"'!'\"\\\\.git/**' -g '\"'!'\"\\\\.agents/skills/**' -g '\"'!'\"\\\\.template-spec/**' -g '\"'!scripts/**'\"' -g '\"'!node_modules/**'\"'\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat checkpoint.json task-record.json .agents/skills/yss-product-lifecycle/SKILL.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .template-spec/process/harness-process-tailoring.md .template-spec/process/stage-tracking.md .template-spec/plan/README.md .template-spec/process/plan-migration.md .template-spec/process/contract-reading.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"rg -n 'resume|recovery|running|unknown|task_record|task-record|result_ref|redispatch|in.flight|重派|重新派发|恢复|external_job' .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml .agents/skills/yss-product-lifecycle/references/orchestration.md .template-spec/process/stage-tracking.md .template-spec/process/subagent-collaboration.md\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"rg --files --hidden -g '\"'!'\"\\\\.git/**' -g '\"'!'\"\\\\.eval-python/**' -g '\"'!'\"\\\\.agents/**' -g '\"'!'\"\\\\.template-spec/**' -g '\"'!'\"\\\\.template-source/**' -g '\"'!scripts/**'\"' && sed -n '75,180p' CONTEXT.md && cat scripts/query-lifecycle-context\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"sed -n '115,165p' .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml && cat scripts/stage-tracking && sed -n '1,140p' scripts/lib/lifecycle-context-query.mjs && cat .template-spec/process/stage-tracking.md\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"node --input-type=module <<'NODE'\nimport fs from 'node:fs';\nimport path from 'node:path';\nimport {createHash} from 'node:crypto';\nconst entries=[];\nfunction walk(dir) { for (const e of fs.readdirSync(dir,{withFileTypes:true}).sort((a,b)=>a.name.localeCompare(b.name))) { const p=path.join(dir,e.name); if(p==='recovery.json') continue; if(e.isDirectory()) walk(p); else if(e.isFile()) entries.push([p,createHash('sha256').update(fs.readFileSync(p)).digest('hex')]); else if(e.isSymbolicLink()) entries.push([p,fs.readlinkSync(p)]); } }\nwalk('.');\nconsole.log(JSON.stringify({files:entries.length,digest:createHash('sha256').update(JSON.stringify(entries)).digest('hex'),result_exists:fs.existsSync('result-not-yet-received.json')}));\nNODE\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"sed -n '45,76p' CONTEXT.md && sed -n '35,105p' .template-spec/process/harness-process-tailoring.md\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'PYTHONDONTWRITEBYTECODE=1 node scripts/stage-tracking check --root . --checkpoint checkpoint.json'",
+      "exit_code": 1
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"PYTHONDONTWRITEBYTECODE=1 node --input-type=module <<'NODE'\nimport {queryLifecycleContext} from './scripts/lib/lifecycle-context-query.mjs';\nconst r=queryLifecycleContext({mode:'resume',stageId:'stage.plan',workUnitId:'work-unit.plan-requirements',include:['execution_efficiency']});\nconsole.log(JSON.stringify({sources:r.sources,stage:r.lifecycle.stage,work_unit:r.lifecycle.work_unit,orchestration:r.orchestration},null,2));\nNODE\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"rg -n -C 3 'tracking-checkpoint-path-invalid' scripts/lib/stage-tracking-migration.mjs && sed -n '135,178p' scripts/lib/lifecycle-context-query.mjs && rg -n '\"'^document_writing:|''^  .*document'\"' .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"cat .agents/skills/i-have-adhd/SKILL.md .template-spec/process/document-writing.md && sed -n '1,14p' .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"node --input-type=module <<'NODE'\nimport fs from 'node:fs';\nimport path from 'node:path';\nimport assert from 'node:assert/strict';\nimport {createHash} from 'node:crypto';\nconst report=JSON.parse(fs.readFileSync('recovery.json','utf8'));\nassert.deepEqual(Object.keys(report).sort(),['action','missing_evidence','next_action','redispatched']);\nassert.equal(report.redispatched,false);\nassert.ok(report.action && report.next_action && report.missing_evidence.length);\nconst entries=[];\nfunction walk(dir) { for (const e of fs.readdirSync(dir,{withFileTypes:true}).sort((a,b)=>a.name.localeCompare(b.name))) { const p=path.join(dir,e.name); if(p==='recovery.json') continue; if(e.isDirectory()) walk(p); else if(e.isFile()) entries.push([p,createHash('sha256').update(fs.readFileSync(p)).digest('hex')]); else if(e.isSymbolicLink()) entries.push([p,fs.readlinkSync(p)]); } }\nwalk('.');\nconsole.log(JSON.stringify({files:entries.length,digest:createHash('sha256').update(JSON.stringify(entries)).digest('hex'),result_exists:fs.existsSync('result-not-yet-received.json')}));\nNODE\"",
+      "exit_code": 0
+    }
+  ],
+  "command_errors": [
+    {
+      "command": "/bin/zsh -lc 'PYTHONDONTWRITEBYTECODE=1 node scripts/stage-tracking check --root . --checkpoint checkpoint.json'",
+      "exit_code": 1,
+      "output": "tracking-checkpoint-path-invalid\n"
+    }
+  ],
+  "other_tools": [],
+  "agent_messages": [
+    {
+      "step": "main",
+      "text": "我会按 `yss-product-lifecycle` 技能核对主控恢复规则、现有记录和 Plan 资产，再只写入 `recovery.json`，如实记录缺失证据与下一步。\n"
+    },
+    {
+      "step": "main",
+      "text": "两个记录都仍标为 `running`，磁盘中没有任务结果。当前恢复规则要求先核对原任务身份；结果未知时不得重复派发。我会继续核验阶段记录，把无法查询外部任务的限制写入恢复结论。\n"
+    },
+    {
+      "step": "main",
+      "text": "恢复结论已明确：等待原任务结果，本轮不重新派发。阶段追踪校验实际返回 `tracking-checkpoint-path-invalid`（退出码 1），原因是根目录 `checkpoint.json` 不符合校验器要求的路径；我会保留原文件，并按 `i-have-adhd` 文档规范把这项限制和缺失证据写入恢复记录。\n"
+    },
+    {
+      "step": "main",
+      "text": "已保存 [recovery.json](/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-agent-evaluations-v2-2qx3mbr2/candidate/e10-running-1/workspace/recovery.json)。\n\n结论：等待原任务结果，`redispatched: false`。已记录缺失证据、阶段追踪校验失败及下一步。核验确认其余文件未变，未伪造外部结果。"
+    }
+  ],
+  "artifacts": {
+    "recovery.json": "{\n  \"action\": \"wait-for-existing-task-result\",\n  \"redispatched\": false,\n  \"missing_evidence\": [\n    {\n      \"ref\": \"result-not-yet-received.json\",\n      \"detail\": \"task-record.json 中 task.demo 的 result_ref 指向此文件，当前文件不存在，无法验收原任务的执行结果、产物或实际验证证据。\"\n    },\n    {\n      \"ref\": \"task-record.json\",\n      \"detail\": \"现有记录为 task_id=task.demo、external_job_id=fixture.job.1、status=running。当前环境没有查询外部任务的能力，缺少该原任务的当前状态与结果回执；记录中的 running 不能证明外部任务此刻仍在运行，结果缺失也不能证明任务失败或未执行。\"\n    },\n    {\n      \"ref\": \"checkpoint.json#/stage_tracking/items/0\",\n      \"detail\": \"requirements 工作项对应 work-unit.plan-requirements，负责人为需求负责人，进度为 running；source_refs、completion 均为空，checkpoint.artifacts 和 gates 也为空，缺少可核验的 Plan 产物与完成证据，不能据此完成工作项或流转至 Spec。\"\n    },\n    {\n      \"ref\": \"checkpoint.json#/context_reconciliation\",\n      \"detail\": \"状态为 pending，ref 为 null，evidence_refs 为空；缺少批准或流转前所需的当前词汇对账证据。\"\n    },\n    {\n      \"ref\": \".template-spec/process/stage-tracking.md\",\n      \"command\": \"PYTHONDONTWRITEBYTECODE=1 node scripts/stage-tracking check --root . --checkpoint checkpoint.json\",\n      \"exit_code\": 1,\n      \"detail\": \"本轮只读校验返回 tracking-checkpoint-path-invalid。校验器要求 docs/.scratch/<feature>/<文件名>.yaml 或 .json 路径，现有根目录 checkpoint.json 不符合要求，因此尚未通过阶段追踪校验；本轮未迁移或修改原记录。\"\n    }\n  ],\n  \"next_action\": \"依据 .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml 的 execution_efficiency.recovery 及 references/orchestration.md 的中断恢复规则，保持原任务身份 task.demo / fixture.job.1，等待原结果回传；具备查询能力时先查询同一外部任务，结果未知期间不得重复派发或重做外部副作用。取得结果后，先核对任务身份、真实产物和证据新鲜度，再复验阶段追踪与 context_reconciliation，重算下一工作单元；路径问题须在后续获准修改记录的范围内处理。本轮仅保存 recovery.json，不更新 checkpoint.json 或 task-record.json，不宣布 Plan 完成。外部任务查询和执行结果仍未核验；本记录仅为 test-data-only，不构成真实批准。\"\n}\n"
+  },
+  "semantic_review": "pending"
+}

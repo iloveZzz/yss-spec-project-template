@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "sample_kind": "isolated-synthetic",
+  "approval_kind": "test-data-only",
+  "workspaces": [
+    "management",
+    "backend",
+    "frontend"
+  ],
+  "slice": "submit-application",
+  "commands": [
+    {
+      "name": "management-init",
+      "cwd_role": "yss-spec-project-template",
+      "command": "node /Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-spec/bin/create-yss-spec.js --target-dir /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-submit-pilot-OpeMin/management --project-name 提交申请管理样板 --business-domain 申请受理 --team-size 1 --agent-runtime codex --issue-tracker github",
+      "elapsed_ms": 875,
+      "exit_code": 0,
+      "stdout": "management-init.stdout.log",
+      "stderr": "management-init.stderr.log"
+    },
+    {
+      "name": "backend-init",
+      "cwd_role": "yss-spec-project-template",
+      "command": "node /Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-backend/bin/create-yss-harness-backend.js init --target-dir /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-submit-pilot-OpeMin/backend --project-name 提交申请后端样板 --business-domain 申请受理 --team-size 1 --issue-tracker local-markdown",
+      "elapsed_ms": 162,
+      "exit_code": 1,
+      "stdout": "backend-init.stdout.log",
+      "stderr": "backend-init.stderr.log"
+    }
+  ],
+  "source_files": [],
+  "result": "blocked",
+  "error": "backend-init failed (1); see backend-init.stderr.log"
+}

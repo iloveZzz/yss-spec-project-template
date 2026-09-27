@@ -1,0 +1,14 @@
+{
+  "executed_at": "2026-09-26T13:46:02.744769+00:00",
+  "command": "research validator + saved/reopened source hashes + narrative claim coverage + local links",
+  "exit_code": 0,
+  "source_files_rechecked": 63,
+  "local_passports_rechecked": 30,
+  "claims": 18,
+  "issues": [],
+  "research_validator": {
+    "command": "node .agents/skills/yss-research/scripts/validate-research-package.mjs .template-source/evidence/maintenance/2026-09-26-lifecycle-comparative-review/lifecycle-review-research-brief.md .template-source/evidence/maintenance/2026-09-26-lifecycle-comparative-review/lifecycle-review-evidence.yaml",
+    "exit_code": 0,
+    "output": "YSS research package valid (technical-evidence, 18 claims, 113 evidence items, 32 searches)"
+  }
+}

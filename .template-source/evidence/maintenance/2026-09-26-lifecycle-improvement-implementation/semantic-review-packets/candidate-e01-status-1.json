@@ -1,0 +1,148 @@
+{
+  "result": {
+    "scenario": "e01-status",
+    "variant": "candidate",
+    "repeat": 1,
+    "elapsed_seconds": 138.91,
+    "exit_code": 0,
+    "timeout": false,
+    "assertion_failures": [],
+    "runtime_errors": [],
+    "tool_calls": 14,
+    "usage": [
+      {
+        "input_tokens": 266520,
+        "cached_input_tokens": 228992,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 3125,
+        "reasoning_output_tokens": 707
+      }
+    ],
+    "automatic_result": "passed",
+    "semantic_review": "pending",
+    "trace": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-agent-evaluations-v2-2qx3mbr2/candidate/e01-status-1/trace.jsonl",
+    "steps": [
+      {
+        "step": "main",
+        "started_at": "2026-09-26T15:53:42Z",
+        "elapsed_seconds": 138.77,
+        "exit_code": 0,
+        "timeout": false,
+        "assertion_failures": [],
+        "runtime_errors": [],
+        "tool_calls": 14,
+        "usage": [
+          {
+            "input_tokens": 266520,
+            "cached_input_tokens": 228992,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 3125,
+            "reasoning_output_tokens": 707
+          }
+        ],
+        "automatic_result": "passed",
+        "semantic_review": "pending",
+        "trace": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-agent-evaluations-v2-2qx3mbr2/candidate/e01-status-1/trace.jsonl"
+      }
+    ],
+    "unattempted_steps": []
+  },
+  "original_files_changed": [],
+  "original_files_missing": [],
+  "unsafe_paths": [],
+  "new_files": [
+    "assessment.json"
+  ],
+  "commands": [
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'pwd && cat yss-project.yaml'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"rg --files --hidden -g 'AGENTS.md' -g 'checkpoint.json' -g '*status*' -g '*checkpoint*' -g 'CONTEXT.md' -g 'assessment.json' -g '\"'!**/.git/**'\"'\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .agents/skills/yss-product-lifecycle/SKILL.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .template-spec/process/contract-reading.md .template-spec/process/harness-process-tailoring.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat AGENTS.md CONTEXT.md checkpoint.json'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"sed -n '1,240p' scripts/lifecycle-status && sed -n '1,280p' scripts/lib/lifecycle-status.mjs\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"rg --files --hidden -g '\"'!**/.git/**'\"' -g '\"'!**/node_modules/**'\"' -g '\"'!**/skills/**'\"' -g '\"'!**/yss-product-lifecycle/**'\"' -g '*checkpoint*' -g '*approval*' -g '*ticket*' -g '*spec*' -g '*context*' -g '*state*' -g '*progress*'\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"python3 -B - <<'PY'\nimport os, hashlib, json\nfiles = {}\nfor root, dirs, names in os.walk('.'):\n    dirs[:] = sorted(d for d in dirs if not os.path.islink(os.path.join(root,d)))\n    for name in sorted(names):\n        path=os.path.join(root,name)\n        if os.path.islink(path):\n            files[path]={'symlink':os.readlink(path)}\n        elif os.path.isfile(path):\n            with open(path,'rb') as f:\n                files[path]=hashlib.sha256(f.read()).hexdigest()\nprint(json.dumps(files,sort_keys=True))\nPY\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"cat checkpoint.json && cat scripts/lifecycle-status && sed -n '1,220p' scripts/lib/lifecycle-status.mjs\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"rg -n '\"'^(## 业务|## 业务边界|## |context_)|''^'\"\\\\|[\"'^|]*'\"\\\\|[\"'^|]*'\"\\\\|[\"'^—|]+'\"\\\\|' CONTEXT.md && rg -n 'lifecycle-status|read.only|只读|execution_authorized|status-readonly' .template-spec/process/contract-reading.md .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml .agents/skills/yss-product-lifecycle/references/orchestration.md .template-spec/process/lifecycle-registry.yaml\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"sed -n '1,36p' .agents/skills/yss-product-lifecycle/references/orchestration.md && sed -n '50,154p' .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml && sed -n '108,155p' CONTEXT.md && rg -n -A 18 '\"'^  - id: stage.plan|''^  - id: work-unit.plan-requirements|''^  work-unit.plan-requirements:'\"' .template-spec/process/lifecycle-registry.yaml .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'node scripts/lifecycle-status --root . --checkpoint checkpoint.json'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"python3 -B - <<'PY'\nimport json\ntext = \\\"{\\\\n  \\\\\\\"stage\\\\\\\": \\\\\\\"stage.plan\\\\\\\",\\\\n  \\\\\\\"known_blockers\\\\\\\": [],\\\\n  \\\\\\\"verification_scope\\\\\\\": {\\\\n    \\\\\\\"entry_command\\\\\\\": \\\\\\\"node scripts/lifecycle-status --root . --checkpoint checkpoint.json\\\\\\\",\\\\n    \\\\\\\"exit_code\\\\\\\": 0,\\\\n    \\\\\\\"read_only\\\\\\\": true,\\\\n    \\\\\\\"checkpoint_status\\\\\\\": \\\\\\\"routing\\\\\\\",\\\\n    \\\\\\\"next_work_unit\\\\\\\": \\\\\\\"work-unit.plan-requirements\\\\\\\",\\\\n    \\\\\\\"checked\\\\\\\": [\\\\n      \\\\\\\"读取 yss-project.yaml，确认 schema_version=1、repository_mode=project-instance；读取根 CONTEXT.md 及其文首合同。\\\\\\\",\\\\n      \\\\\\\"读取 checkpoint.json，并通过已有状态入口核对登记阻塞、阶段 ID、下一工作单元及路由存在性。\\\\\\\",\\\\n      \\\\\\\"检查已登记门禁的 blocked/stale 标志和已引用证据的可读性；当前 artifacts、gates 均为空，证据引用为空，不能据此证明阶段完成或证据齐全。\\\\\\\"\\\\n    ],\\\\n    \\\\\\\"entry_checks\\\\\\\": [\\\\n      {\\\\n        \\\\\\\"id\\\\\\\": \\\\\\\"registered-blockers\\\\\\\",\\\\n        \\\\\\\"status\\\\\\\": \\\\\\\"passed\\\\\\\",\\\\n        \\\\\\\"refs\\\\\\\": [\\\\n          \\\\\\\"checkpoint.json\\\\\\\"\\\\n        ],\\\\n        \\\\\\\"reason\\\\\\\": \\\\\\\"仅读取已登记阻塞，不代表完整就绪\\\\\\\"\\\\n      },\\\\n      {\\\\n        \\\\\\\"id\\\\\\\": \\\\\\\"stage-and-route\\\\\\\",\\\\n        \\\\\\\"status\\\\\\\": \\\\\\\"passed\\\\\\\",\\\\n        \\\\\\\"refs\\\\\\\": [\\\\n          \\\\\\\".template-spec/process/lifecycle-registry.yaml\\\\\\\",\\\\n          \\\\\\\".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml\\\\\\\"\\\\n        ],\\\\n        \\\\\\\"reason\\\\\\\": \\\\\\\"仅检查身份与路由存在，不计算完整 frontier\\\\\\\"\\\\n      },\\\\n      {\\\\n        \\\\\\\"id\\\\\\\": \\\\\\\"context-reconciliation\\\\\\\",\\\\n        \\\\\\\"status\\\\\\\": \\\\\\\"not-checked\\\\\\\",\\\\n        \\\\\\\"refs\\\\\\\": [],\\\\n        \\\\\\\"reason\\\\\\\": \\\\\\\"读取登记状态；当前对账内容和摘要仍须由原验证器核验\\\\\\\"\\\\n      },\\\\n      {\\\\n        \\\\\\\"id\\\\\\\": \\\\\\\"registered-gates\\\\\\\",\\\\n        \\\\\\\"status\\\\\\\": \\\\\\\"passed\\\\\\\",\\\\n        \\\\\\\"refs\\\\\\\": [\\\\n          \\\\\\\"checkpoint.json\\\\\\\"\\\\n        ],\\\\n        \\\\\\\"reason\\\\\\\": \\\\\\\"仅检查登记的 blocked/stale 标志\\\\\\\"\\\\n      },\\\\n      {\\\\n        \\\\\\\"id\\\\\\\": \\\\\\\"evidence-readable\\\\\\\",\\\\n        \\\\\\\"status\\\\\\\": \\\\\\\"passed\\\\\\\",\\\\n        \\\\\\\"refs\\\\\\\": [],\\\\n        \\\\\\\"reason\\\\\\\": \\\\\\\"仅检查已引用证据可读，不证明证据完整或当前有效\\\\\\\"\\\\n      },\\\\n      {\\\\n        \\\\\\\"id\\\\\\\": \\\\\\\"artifact-digests\\\\\\\",\\\\n        \\\\\\\"status\\\\\\\": \\\\\\\"not-checked\\\\\\\",\\\\n        \\\\\\\"refs\\\\\\\": [],\\\\n        \\\\\\\"reason\\\\\\\": \\\\\\\"未核验批准资产原字节摘要；恢复时运行资产所有者的适用预检\\\\\\\"\\\\n      },\\\\n      {\\\\n        \\\\\\\"id\\\\\\\": \\\\\\\"approval-validity\\\\\\\",\\\\n        \\\\\\\"status\\\\\\\": \\\\\\\"not-checked\\\\\\\",\\\\n        \\\\\\\"refs\\\\\\\": [\\\\n          \\\\\\\"checkpoint.json\\\\\\\"\\\\n        ],\\\\n        \\\\\\\"reason\\\\\\\": \\\\\\\"未核验真实决定、延续、外部审批及完整执行授权\\\\\\\"\\\\n      },\\\\n      {\\\\n        \\\\\\\"id\\\\\\\": \\\\\\\"stage-tracking\\\\\\\",\\\\n        \\\\\\\"status\\\\\\\": \\\\\\\"not-checked\\\\\\\",\\\\n        \\\\\\\"refs\\\\\\\": [\\\\n          \\\\\\\"checkpoint.json\\\\\\\"\\\\n        ],\\\\n        \\\\\\\"reason\\\\\\\": \\\\\\\"未登记追踪；按实例既有兼容或显式迁移入口处理，不自动补建\\\\\\\"\\\\n      }\\\\n    ],\\\\n    \\\\\\\"not_checked\\\\\\\": [\\\\n      \\\\\\\"Context 对账内容及摘要：checkpoint 登记为 pending，ref=null，evidence_refs=[]；本次未执行对账验证器。\\\\\\\",\\\\n      \\\\\\\"阶段工作项结构、进度与流转：checkpoint 未登记 stage_tracking，负责人未登记。\\\\\\\",\\\\n      \\\\\\\"批准资产原字节摘要、上游新鲜度、真实用户决定、授权延续及外部强制审批。\\\\\\\",\\\\n      \\\\\\\"完整 frontier、适用门禁完整性、阶段退出条件、ready-for-agent 和正式实施授权；未运行 scripts/verify-lifecycle-checkpoint 或其他完整流转预检。\\\\\\\",\\\\n      \\\\\\\"实现仓库、Slice Implementation Contract、构建、测试、CI、远端及发布条件；未访问网络或执行外部动作。\\\\\\\"\\\\n    ],\\\\n    \\\\\\\"interpretation\\\\\\\": \\\\\\\"known_blockers=[] 和状态入口退出 0 仅表示有限只读检查未发现阻塞；execution_authorization=not-evaluated，不表示已通过全部门禁或允许实施。fixture 数据仅为 test-data-only，不构成真实批准。\\\\\\\",\\\\n    \\\\\\\"source_digests\\\\\\\": {\\\\n      \\\\\\\"checkpoint\\\\\\\": {\\\\n        \\\\\\\"ref\\\\\\\": \\\\\\\"checkpoint.json\\\\\\\",\\\\n        \\\\\\\"digest\\\\\\\": \\\\\\\"sha256:c07bae643950ab30962c2967872122fc9f13abc28a5f24f6ab5a8db6ca73cc90\\\\\\\"\\\\n      },\\\\n      \\\\\\\"registry\\\\\\\": {\\\\n        \\\\\\\"ref\\\\\\\": \\\\\\\".template-spec/process/lifecycle-registry.yaml\\\\\\\",\\\\n        \\\\\\\"digest\\\\\\\": \\\\\\\"sha256:e9fbae32a659edff9444301ada1c1fdfc36ae0e8c45c8148e143aa04d761f83e\\\\\\\"\\\\n      },\\\\n      \\\\\\\"orchestration\\\\\\\": {\\\\n        \\\\\\\"ref\\\\\\\": \\\\\\\".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml\\\\\\\",\\\\n        \\\\\\\"digest\\\\\\\": \\\\\\\"sha256:9d3ff488dc7778bdd12e210928891871e27cd434bc9c6442b03a22bd105b0926\\\\\\\"\\\\n      }\\\\n    }\\\\n  },\\\\n  \\\\\\\"execution_authorized\\\\\\\": false,\\\\n  \\\\\\\"next_action\\\\\\\": \\\\\\\"本次仅保存 assessment.json，保持 checkpoint 和其他输入不变，不推进流程。后续如获恢复流程授权，先运行 node scripts/verify-lifecycle-checkpoint checkpoint.json，并核验当前来源、Context 对账、适用门禁、决定或授权延续及允许写范围；通过后由主控判断是否恢复 work-unit.plan-requirements，不直接进入实现。\\\\\\\"\\\\n}\\\\n\\\"\nvalue = json.loads(text)\nassert set(value) == {'stage', 'known_blockers', 'verification_scope', 'execution_authorized', 'next_action'}\nassert value['execution_authorized'] is False\nwith open('assessment.json', 'x', encoding='utf-8') as f:\n    f.write(text)\nprint('assessment.json 已新增；JSON 结构及五个顶层字段有效。')\nPY\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"python3 -B - <<'PY'\nimport os, hashlib, json\nfiles = {}\nfor root, dirs, names in os.walk('.'):\n    dirs[:] = sorted(d for d in dirs if not os.path.islink(os.path.join(root,d)))\n    for name in sorted(names):\n        path=os.path.join(root,name)\n        if os.path.islink(path):\n            files[path]={'symlink':os.readlink(path)}\n        elif os.path.isfile(path):\n            with open(path,'rb') as f:\n                files[path]=hashlib.sha256(f.read()).hexdigest()\nwith open('assessment.json', encoding='utf-8') as f:\n    report=json.load(f)\nassert set(report)=={'stage','known_blockers','verification_scope','execution_authorized','next_action'}\nassert report['execution_authorized'] is False\nprint(json.dumps(files,sort_keys=True))\nPY\"",
+      "exit_code": 0
+    }
+  ],
+  "command_errors": [],
+  "other_tools": [],
+  "agent_messages": [
+    {
+      "step": "main",
+      "text": "我会先读取仓库身份和项目已有状态入口，使用 `yss-product-lifecycle` 技能核对 checkpoint 对应的进度。本次只做检查并新增 `assessment.json`，不推进流程。\n"
+    },
+    {
+      "step": "main",
+      "text": "项目状态入口显示当前处于 Plan 阶段，下一工作单元是需求分析，本次未发现已登记阻塞。但 Context 对账仍为 `pending`，资产、门禁和阶段工作项尚未登记，完整就绪条件与批准有效性未核验，因此本次不能确认可以实施。我会将这些检查边界写入 `assessment.json`，并核对原文件未被修改。\n"
+    },
+    {
+      "step": "main",
+      "text": "已通过项目已有状态入口检查，并保存至 [assessment.json](/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-agent-evaluations-v2-2qx3mbr2/candidate/e01-status-1/workspace/assessment.json)。\n\n当前为 `stage.plan`，下一工作单元为需求分析。本次未发现已登记阻塞，但完整门禁与批准有效性未核验，`execution_authorized` 为 `false`。\n\n仅新增该文件；已核对全部 1478 个原文件内容未变，未推进流程。"
+    }
+  ],
+  "artifacts": {
+    "assessment.json": "{\n  \"stage\": \"stage.plan\",\n  \"known_blockers\": [],\n  \"verification_scope\": {\n    \"entry_command\": \"node scripts/lifecycle-status --root . --checkpoint checkpoint.json\",\n    \"exit_code\": 0,\n    \"read_only\": true,\n    \"checkpoint_status\": \"routing\",\n    \"next_work_unit\": \"work-unit.plan-requirements\",\n    \"checked\": [\n      \"读取 yss-project.yaml，确认 schema_version=1、repository_mode=project-instance；读取根 CONTEXT.md 及其文首合同。\",\n      \"读取 checkpoint.json，并通过已有状态入口核对登记阻塞、阶段 ID、下一工作单元及路由存在性。\",\n      \"检查已登记门禁的 blocked/stale 标志和已引用证据的可读性；当前 artifacts、gates 均为空，证据引用为空，不能据此证明阶段完成或证据齐全。\"\n    ],\n    \"entry_checks\": [\n      {\n        \"id\": \"registered-blockers\",\n        \"status\": \"passed\",\n        \"refs\": [\n          \"checkpoint.json\"\n        ],\n        \"reason\": \"仅读取已登记阻塞，不代表完整就绪\"\n      },\n      {\n        \"id\": \"stage-and-route\",\n        \"status\": \"passed\",\n        \"refs\": [\n          \".template-spec/process/lifecycle-registry.yaml\",\n          \".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml\"\n        ],\n        \"reason\": \"仅检查身份与路由存在，不计算完整 frontier\"\n      },\n      {\n        \"id\": \"context-reconciliation\",\n        \"status\": \"not-checked\",\n        \"refs\": [],\n        \"reason\": \"读取登记状态；当前对账内容和摘要仍须由原验证器核验\"\n      },\n      {\n        \"id\": \"registered-gates\",\n        \"status\": \"passed\",\n        \"refs\": [\n          \"checkpoint.json\"\n        ],\n        \"reason\": \"仅检查登记的 blocked/stale 标志\"\n      },\n      {\n        \"id\": \"evidence-readable\",\n        \"status\": \"passed\",\n        \"refs\": [],\n        \"reason\": \"仅检查已引用证据可读，不证明证据完整或当前有效\"\n      },\n      {\n        \"id\": \"artifact-digests\",\n        \"status\": \"not-checked\",\n        \"refs\": [],\n        \"reason\": \"未核验批准资产原字节摘要；恢复时运行资产所有者的适用预检\"\n      },\n      {\n        \"id\": \"approval-validity\",\n        \"status\": \"not-checked\",\n        \"refs\": [\n          \"checkpoint.json\"\n        ],\n        \"reason\": \"未核验真实决定、延续、外部审批及完整执行授权\"\n      },\n      {\n        \"id\": \"stage-tracking\",\n        \"status\": \"not-checked\",\n        \"refs\": [\n          \"checkpoint.json\"\n        ],\n        \"reason\": \"未登记追踪；按实例既有兼容或显式迁移入口处理，不自动补建\"\n      }\n    ],\n    \"not_checked\": [\n      \"Context 对账内容及摘要：checkpoint 登记为 pending，ref=null，evidence_refs=[]；本次未执行对账验证器。\",\n      \"阶段工作项结构、进度与流转：checkpoint 未登记 stage_tracking，负责人未登记。\",\n      \"批准资产原字节摘要、上游新鲜度、真实用户决定、授权延续及外部强制审批。\",\n      \"完整 frontier、适用门禁完整性、阶段退出条件、ready-for-agent 和正式实施授权；未运行 scripts/verify-lifecycle-checkpoint 或其他完整流转预检。\",\n      \"实现仓库、Slice Implementation Contract、构建、测试、CI、远端及发布条件；未访问网络或执行外部动作。\"\n    ],\n    \"interpretation\": \"known_blockers=[] 和状态入口退出 0 仅表示有限只读检查未发现阻塞；execution_authorization=not-evaluated，不表示已通过全部门禁或允许实施。fixture 数据仅为 test-data-only，不构成真实批准。\",\n    \"source_digests\": {\n      \"checkpoint\": {\n        \"ref\": \"checkpoint.json\",\n        \"digest\": \"sha256:c07bae643950ab30962c2967872122fc9f13abc28a5f24f6ab5a8db6ca73cc90\"\n      },\n      \"registry\": {\n        \"ref\": \".template-spec/process/lifecycle-registry.yaml\",\n        \"digest\": \"sha256:e9fbae32a659edff9444301ada1c1fdfc36ae0e8c45c8148e143aa04d761f83e\"\n      },\n      \"orchestration\": {\n        \"ref\": \".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml\",\n        \"digest\": \"sha256:9d3ff488dc7778bdd12e210928891871e27cd434bc9c6442b03a22bd105b0926\"\n      }\n    }\n  },\n  \"execution_authorized\": false,\n  \"next_action\": \"本次仅保存 assessment.json，保持 checkpoint 和其他输入不变，不推进流程。后续如获恢复流程授权，先运行 node scripts/verify-lifecycle-checkpoint checkpoint.json，并核验当前来源、Context 对账、适用门禁、决定或授权延续及允许写范围；通过后由主控判断是否恢复 work-unit.plan-requirements，不直接进入实现。\"\n}\n"
+  },
+  "semantic_review": "pending"
+}

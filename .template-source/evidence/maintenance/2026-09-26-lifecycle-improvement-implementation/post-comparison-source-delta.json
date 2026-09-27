@@ -1,0 +1,52 @@
+{
+  "applied_at": "2026-09-26T17:02:01.862741+00:00",
+  "evaluated_snapshot_unchanged": true,
+  "scope": "Two prose corrections and governed derivatives, no behavioral code change",
+  "changes": [
+    {
+      "ref": "skills-lock.json",
+      "before_sha256": "88cf02a9d26e09901e0576f22e3ea9f25e3499b2c13856359f912a6083f6f61f",
+      "after_sha256": "21177f4ec3dfe8a7a8ecfa642cf866efb8306f00e1a320e840ee7d226cd7b031"
+    },
+    {
+      "ref": ".template-source/profile-skill-sync.json",
+      "before_sha256": "02c15d4fce8b688ad4f791ae045caeef53a48bd69178ef87c299206a718e60e1",
+      "after_sha256": "45b7dcdc3289611f2e2b9a9d664cd0fdff227bfc7fdb4bfd565ed0a5e6472dfe"
+    },
+    {
+      "ref": ".template-spec/process/lifecycle-registry.yaml",
+      "before_sha256": "e9fbae32a659edff9444301ada1c1fdfc36ae0e8c45c8148e143aa04d761f83e",
+      "after_sha256": "e301b1d2cfe7f1e52c99f64d36c04e3395737deae2e00713401a90685a683bef"
+    },
+    {
+      "ref": ".agents/skills/yss-openapi-governance/SKILL.md",
+      "before_sha256": "5a4d1838f2af3ef33c4efc942970af8cb32cf7871e66e14a7efa949c6310ccc2",
+      "after_sha256": "9cbe4660d3961a052d0fc1d9e9ac653e981e6983dec730d59ecf34409b7e822d"
+    },
+    {
+      "ref": ".template-source/profile-skill-patches/frontend/yss-openapi-governance.patch",
+      "before_sha256": "1c808452171f3625ead98105936209d9225f5b75c3a0a7baa1675038308ad960",
+      "after_sha256": "f2c3c76ed4a0d278cd85a2bc0b6f3af2547d7583ca00cda60f1f407937172537"
+    },
+    {
+      "ref": ".codex/skills/yss-openapi-governance/SKILL.md",
+      "before_sha256": "5a4d1838f2af3ef33c4efc942970af8cb32cf7871e66e14a7efa949c6310ccc2",
+      "after_sha256": "9cbe4660d3961a052d0fc1d9e9ac653e981e6983dec730d59ecf34409b7e822d"
+    },
+    {
+      "ref": "submodules/yss-harness-backend-agent/skills-lock.json",
+      "before_sha256": "d5ce3deff4ec8485402d00bd047aeaf8eb39a2ae8efdaa1d990a57481e0ad53d",
+      "after_sha256": "1682bdf6296dbffe5051e4cf71ff5c7da8e37ff175a1f8283d47b879bab80d02"
+    },
+    {
+      "ref": "submodules/yss-harness-backend-agent/.agents/skills/yss-openapi-governance/SKILL.md",
+      "before_sha256": "68d567b4b3082fc61d3558868264f52a8274cbc128f707719d437ac4f27c9236",
+      "after_sha256": "aa49861294e0e8dfe1668832b984d8916f57135884e21ddef95562a710793140"
+    },
+    {
+      "ref": "submodules/yss-harness-backend-agent/.codex/skills/yss-openapi-governance/SKILL.md",
+      "before_sha256": "68d567b4b3082fc61d3558868264f52a8274cbc128f707719d437ac4f27c9236",
+      "after_sha256": "aa49861294e0e8dfe1668832b984d8916f57135884e21ddef95562a710793140"
+    }
+  ]
+}

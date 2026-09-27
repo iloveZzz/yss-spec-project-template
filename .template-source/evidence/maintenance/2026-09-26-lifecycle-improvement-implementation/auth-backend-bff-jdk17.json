@@ -1,0 +1,20 @@
+{
+  "command": [
+    "./mvnw",
+    "-o",
+    "-f",
+    "apps/backend/auth-service/pom.xml",
+    "-pl",
+    "auth-service-adapter/auth-service-web",
+    "-am",
+    "-Dtest=BffProxyControllerTest",
+    "-Dsurefire.failIfNoSpecifiedTests=false",
+    "test"
+  ],
+  "cwd": "/Users/zhudaoming/Documents/antigravity/peaceful-hubble/auth-backend",
+  "java_home": "/Library/Java/JavaVirtualMachines/amazon-corretto-17.jdk/Contents/Home",
+  "started_at": "2026-09-26T14:36:35.811007+00:00",
+  "exit_code": 0,
+  "seconds": 2.61,
+  "log": "auth-backend-bff-jdk17.log"
+}

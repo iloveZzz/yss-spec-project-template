@@ -1,0 +1,2512 @@
+{
+  "schema_version": 1,
+  "profile": "technical-evidence",
+  "mode": "evidence-audited",
+  "scope": {
+    "topic": "YSS主控/阶段模板/配套Skill合理性及同类工具机制比较",
+    "audience": "模板维护者",
+    "time_horizon": "2026-09-26访问；未来1至2个维护迭代",
+    "research_questions": [
+      "现行责任与阶段是否合理",
+      "哪些当前缺陷仍未修",
+      "同类工具哪些机制值得借鉴",
+      "什么证据支持下一轮维护优先级"
+    ],
+    "inclusion_criteria": [
+      "当前本地权威资产和实际执行记录",
+      "外部官方文档、固定源码与发行说明",
+      "已有研究先复核再刷新"
+    ],
+    "exclusion_criteria": [
+      "搜索摘要不能支持结论",
+      "未实测性能或市场排名",
+      "历史结果不能充作本轮Fresh Verification"
+    ]
+  },
+  "ownership": {
+    "research_owner": "yss-research",
+    "downstream_owner": "yss-product-lifecycle及模板维护者",
+    "decision_ref": null
+  },
+  "search_log": [
+    {
+      "id": "search-comp-search-01",
+      "channel": "web.search",
+      "query_or_corpus": "site.github.com/github/spec-kit spec driven development main",
+      "searched_at": "2026-09-26",
+      "result": "results-found",
+      "notes": "官方概念与 workflow 线索；非官方结果排除"
+    },
+    {
+      "id": "search-comp-search-02",
+      "channel": "web.search",
+      "query_or_corpus": "site.openspec.dev docs workflow verify archive",
+      "searched_at": "2026-09-26",
+      "result": "results-found",
+      "notes": "官方 quickstart/CLI；转读官方 GitHub workflow"
+    },
+    {
+      "id": "search-comp-search-03",
+      "channel": "web.search",
+      "query_or_corpus": "site.kiro.dev docs specs requirements design tasks",
+      "searched_at": "2026-09-26",
+      "result": "results-found",
+      "notes": "Specs、Quick Spec"
+    },
+    {
+      "id": "search-comp-search-04",
+      "channel": "web.search",
+      "query_or_corpus": "site.docs.bmad-method.org bmad build adaptive specification",
+      "searched_at": "2026-09-26",
+      "result": "results-found",
+      "notes": "官方首页及 Build 指南"
+    },
+    {
+      "id": "search-comp-search-05",
+      "channel": "web.search",
+      "query_or_corpus": "site.github.com/awslabs/aidlc-workflows multi repository brownfield approval",
+      "searched_at": "2026-09-26",
+      "result": "results-found",
+      "notes": "官方 orchestrator/state/reference"
+    },
+    {
+      "id": "search-comp-search-06",
+      "channel": "web.search",
+      "query_or_corpus": "site.github.github.com/spec-kit \"Evolving Specs\"",
+      "searched_at": "2026-09-26",
+      "result": "results-found",
+      "notes": "官方演进指南"
+    },
+    {
+      "id": "search-comp-search-07",
+      "channel": "web.search",
+      "query_or_corpus": "site.github.github.com/spec-kit \"Contract-Driven\"",
+      "searched_at": "2026-09-26",
+      "result": "results-found",
+      "notes": "官方 CDD 指南"
+    },
+    {
+      "id": "search-comp-search-08",
+      "channel": "local-read",
+      "query_or_corpus": ".template-source/evidence/maintenance/2026-09-25-lifecycle-audit/lifecycle-skills-research-brief.md",
+      "searched_at": "2026-09-26",
+      "result": "results-found",
+      "notes": "只用作检索导航，所有竞品决策性事实重新访问官方来源"
+    },
+    {
+      "id": "search-comp-search-09",
+      "channel": "web.open",
+      "query_or_corpus": "https://openspec.dev/docs/workflows",
+      "searched_at": "2026-09-26",
+      "result": "access-failed",
+      "notes": "Internal Error；改读官方 GitHub docs/workflows.md"
+    },
+    {
+      "id": "search-comp-search-10",
+      "channel": "web.click",
+      "query_or_corpus": "AI-DLC docs/harness-engineering/00-overview.md 与 docs/guide/10-state-and-audit.md 的 Raw 链接",
+      "searched_at": "2026-09-26",
+      "result": "access-failed",
+      "notes": "Internal Error；GitHub rendered 文本可访问"
+    },
+    {
+      "id": "search-comp-search-11",
+      "channel": "web.open",
+      "query_or_corpus": "五个产品官方核心文档、发行页和下列 sources URL",
+      "searched_at": "2026-09-26",
+      "result": "results-found",
+      "notes": "所有 supporting sources 逐一打开；locator 使用章节名及观察关键词；未做运行测试"
+    },
+    {
+      "id": "search-pattern-search-01",
+      "channel": "local",
+      "query_or_corpus": "用户附 yss-product-lifecycle / yss-research；任务包；yss-project.yaml；CONTEXT.md；competitive-intelligence 与 document-writing",
+      "searched_at": "2026-09-26",
+      "result": "results-found"
+    },
+    {
+      "id": "search-pattern-search-02",
+      "channel": "local-memory",
+      "query_or_corpus": "rg research|superpowers|GSD|mattpocock|progressive|技能评估 MEMORY.md；603-632",
+      "searched_at": "2026-09-26",
+      "result": "results-found"
+    },
+    {
+      "id": "search-pattern-search-03",
+      "channel": "local",
+      "query_or_corpus": "OpenAI Docs 本地 SKILL.md；CodeGraph explore OpenAI skills evaluation real agent eval scenarios skill governance maintained sources",
+      "searched_at": "2026-09-26",
+      "result": "results-found"
+    },
+    {
+      "id": "search-pattern-search-04",
+      "channel": "local",
+      "query_or_corpus": "rg real.agent|real_agent|skill.*eval|eval.*skill .template-source/evidence/maintenance .template-source/process .agents/skills/maintaining-skills；读 skills-agent-eval.md 与 completion-report.md",
+      "searched_at": "2026-09-26",
+      "result": "results-found"
+    },
+    {
+      "id": "search-pattern-search-05",
+      "channel": "web-search",
+      "query_or_corpus": "site:developers.openai.com Codex skills evaluate skills evals；Codex evaluating skills evals [developers.openai.com]",
+      "searched_at": "2026-09-26",
+      "result": "results-found"
+    },
+    {
+      "id": "search-pattern-search-06",
+      "channel": "web-search",
+      "query_or_corpus": "site:github.com/obra/superpowers writing-skills tests subagent-driven-development",
+      "searched_at": "2026-09-26",
+      "result": "results-found"
+    },
+    {
+      "id": "search-pattern-search-07",
+      "channel": "web-search",
+      "query_or_corpus": "site:github.com/gsd-build/get-shit-done pause-work resume-work；get shit done context engineering fresh subagent context planning github [github.com]",
+      "searched_at": "2026-09-26",
+      "result": "results-found"
+    },
+    {
+      "id": "search-pattern-search-08",
+      "channel": "web-search",
+      "query_or_corpus": "site:github.com/mattpocock/skills to-spec to-tickets",
+      "searched_at": "2026-09-26",
+      "result": "results-found"
+    },
+    {
+      "id": "search-pattern-search-09",
+      "channel": "web-search",
+      "query_or_corpus": "Agent Skills specification progressive disclosure [agentskills.io]",
+      "searched_at": "2026-09-26",
+      "result": "results-found"
+    },
+    {
+      "id": "search-pattern-search-10",
+      "channel": "official-web-open",
+      "query_or_corpus": "developers.openai.com/blog/eval-skills；/codex/skills 重定向 learn.chatgpt.com/docs/build-skills；agentskills.io/specification；OpenAI rethinking-skills-and-prompts-for-gpt-6-astra",
+      "searched_at": "2026-09-26",
+      "result": "results-found"
+    },
+    {
+      "id": "search-pattern-search-11",
+      "channel": "github-api",
+      "query_or_corpus": "GET repos/{obra/superpowers,mattpocock/skills,gsd-build/get-shit-done}/commits/main；repos/open-gsd/gsd-core/commits/next；各树 recursive 定位目标文件",
+      "searched_at": "2026-09-26",
+      "result": "results-found"
+    },
+    {
+      "id": "search-pattern-search-12",
+      "channel": "official-source",
+      "query_or_corpus": "固定 SHA 获取 Superpowers subagent-driven-development / writing-plans / writing-skills/testing-skills-with-subagents；检查 ruling、commit、ledger 与评估反证",
+      "searched_at": "2026-09-26",
+      "result": "results-found"
+    },
+    {
+      "id": "search-pattern-search-13",
+      "channel": "official-source",
+      "query_or_corpus": "固定 SHA 获取 GSD pause-work、resume-project、templates/phase-prompt；检查 Git 副作用、真实状态、异步任务、防假完成",
+      "searched_at": "2026-09-26",
+      "result": "results-found"
+    },
+    {
+      "id": "search-pattern-search-14",
+      "channel": "official-source",
+      "query_or_corpus": "固定 SHA 获取 Matt to-spec / to-tickets；对比文档与源码标签、依赖、显式调用",
+      "searched_at": "2026-09-26",
+      "result": "results-found"
+    },
+    {
+      "id": "search-pattern-search-15",
+      "channel": "official-source",
+      "query_or_corpus": "https://raw.githubusercontent.com/obra/superpowers/8ca22dba9a94f28898bbce59f2537ff4d87c747d/evals/README.md",
+      "searched_at": "2026-09-26",
+      "result": "access-failed"
+    },
+    {
+      "id": "search-pattern-search-16",
+      "channel": "official-source",
+      "query_or_corpus": "Superpowers 固定树未含 evals/README.md；改读 docs/superpowers/specs/2026-07-06-sdd-plan-scoped-workspace-eval-results.md",
+      "searched_at": "2026-09-26",
+      "result": "results-found"
+    },
+    {
+      "id": "search-pattern-search-17",
+      "channel": "web-search",
+      "query_or_corpus": "检索出现的 GSD forks、转载、搜索摘要、stars 与营销可靠性表述",
+      "searched_at": "2026-09-26",
+      "result": "excluded"
+    },
+    {
+      "id": "search-local-current",
+      "channel": "local-files+CodeGraph",
+      "query_or_corpus": "仓库身份、CONTEXT、主控合同、注册表、阶段模板、编译器/生成器入口；先读 09-25 审计、09-26 优化与 09-20 Agent 评测再复核当前正文",
+      "searched_at": "2026-09-26",
+      "result": "results-found"
+    },
+    {
+      "id": "search-root-web-refresh",
+      "channel": "web.open/find",
+      "query_or_corpus": "主控复访 Spec Kit workflow/CDD、OpenSpec Stores、Kiro Quick/Bugfix、BMAD v6.12、AI-DLC releases、固定 SHA Matt to-spec/GSD resume/Superpowers SDD、Agent Skills 与 OpenAI eval-skills",
+      "searched_at": "2026-09-26",
+      "result": "results-found"
+    },
+    {
+      "id": "search-execution",
+      "channel": "local-exec",
+      "query_or_corpus": "verification.json 中 8 个定向命令；当前 lifecycleStatus 合成覆盖范围探针",
+      "searched_at": "2026-09-26",
+      "result": "results-found"
+    },
+    {
+      "id": "search-invalid-fixture",
+      "channel": "local-exec",
+      "query_or_corpus": "首次状态探针把 Buffer 错误写为 JSON 导致 registry 无效；记录保留但排除",
+      "searched_at": "2026-09-26",
+      "result": "excluded"
+    }
+  ],
+  "evidence_items": [
+    {
+      "id": "evidence-sk-release",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-release",
+      "source_ref": "https://github.com/github/spec-kit/releases/tag/v1.0.12",
+      "locator": "Release header / Install / Upcoming Deprecation",
+      "stance": "support",
+      "observed_at": "2026-09-26",
+      "evidence_date": "v1.0.12; 2026-09-25; e77daa9",
+      "observation": "latest 1.0.12；taskstoissues 仍支持但计划迁出核心",
+      "limitations": [
+        "未安装运行竞品；在线/main/beta不自动归属稳定包。",
+        "不能据在线文档认定全部能力已进入该安装包"
+      ]
+    },
+    {
+      "id": "evidence-sk-release-counter",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-release",
+      "source_ref": "https://github.com/github/spec-kit/releases/tag/v1.0.12",
+      "locator": "Release header / Install / Upcoming Deprecation",
+      "stance": "counter",
+      "observed_at": "2026-09-26",
+      "evidence_date": "v1.0.12; 2026-09-25; e77daa9",
+      "observation": "不能据在线文档认定全部能力已进入该安装包",
+      "limitations": [
+        "未安装运行竞品；在线/main/beta不自动归属稳定包。",
+        "不能据在线文档认定全部能力已进入该安装包"
+      ]
+    },
+    {
+      "id": "evidence-sk-workflow",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-release",
+      "source_ref": "https://github.github.com/spec-kit/reference/workflows.html",
+      "locator": "Resume a Workflow; State and Resume; Gate Verdict Inputs; Step Types; Workflow Overlays",
+      "stance": "support",
+      "observed_at": "2026-09-26",
+      "evidence_date": "online docs read 2026-09-26",
+      "observation": "持久化 state/inputs/log；精确恢复；JSON 输出；overlay 组合与 resolve 归因",
+      "limitations": [
+        "未安装运行竞品；在线/main/beta不自动归属稳定包。",
+        "gate 可由非空默认输入自动决定；shell 无能力沙箱；未实跑"
+      ]
+    },
+    {
+      "id": "evidence-sk-workflow-counter",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-release",
+      "source_ref": "https://github.github.com/spec-kit/reference/workflows.html",
+      "locator": "Resume a Workflow; State and Resume; Gate Verdict Inputs; Step Types; Workflow Overlays",
+      "stance": "counter",
+      "observed_at": "2026-09-26",
+      "evidence_date": "online docs read 2026-09-26",
+      "observation": "gate 可由非空默认输入自动决定；shell 无能力沙箱；未实跑",
+      "limitations": [
+        "未安装运行竞品；在线/main/beta不自动归属稳定包。",
+        "gate 可由非空默认输入自动决定；shell 无能力沙箱；未实跑"
+      ]
+    },
+    {
+      "id": "evidence-sk-sdd",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-release",
+      "source_ref": "https://github.github.com/spec-kit/reference/agentic-sdd.html",
+      "locator": "Command overview; /speckit.analyze; /speckit.converge",
+      "stance": "support",
+      "observed_at": "2026-09-26",
+      "evidence_date": "online docs read 2026-09-26",
+      "observation": "技术 Plan 在规格之后；Analyze 检查工件一致性；Converge 只追加未完成任务",
+      "limitations": [
+        "未安装运行竞品；在线/main/beta不自动归属稳定包。",
+        "quality gates 多为可选；converged 不代表本轮验证质量或真实发布认证"
+      ]
+    },
+    {
+      "id": "evidence-sk-sdd-counter",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-release",
+      "source_ref": "https://github.github.com/spec-kit/reference/agentic-sdd.html",
+      "locator": "Command overview; /speckit.analyze; /speckit.converge",
+      "stance": "counter",
+      "observed_at": "2026-09-26",
+      "evidence_date": "online docs read 2026-09-26",
+      "observation": "quality gates 多为可选；converged 不代表本轮验证质量或真实发布认证",
+      "limitations": [
+        "未安装运行竞品；在线/main/beta不自动归属稳定包。",
+        "quality gates 多为可选；converged 不代表本轮验证质量或真实发布认证"
+      ]
+    },
+    {
+      "id": "evidence-sk-evolve",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-release",
+      "source_ref": "https://github.github.com/spec-kit/guides/evolving-specs.html",
+      "locator": "Flow-Forward Spec; Living Spec; Flow-Back Spec",
+      "stance": "support",
+      "observed_at": "2026-09-26",
+      "evidence_date": "online docs read 2026-09-26",
+      "observation": "分别描述历史增量、可更新规格及实现发现回流三种持久化策略",
+      "limitations": [
+        "未安装运行竞品；在线/main/beta不自动归属稳定包。",
+        "是团队选择的维护方法；不自动替团队统一事实源"
+      ]
+    },
+    {
+      "id": "evidence-sk-evolve-counter",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-release",
+      "source_ref": "https://github.github.com/spec-kit/guides/evolving-specs.html",
+      "locator": "Flow-Forward Spec; Living Spec; Flow-Back Spec",
+      "stance": "counter",
+      "observed_at": "2026-09-26",
+      "evidence_date": "online docs read 2026-09-26",
+      "observation": "是团队选择的维护方法；不自动替团队统一事实源",
+      "limitations": [
+        "未安装运行竞品；在线/main/beta不自动归属稳定包。",
+        "是团队选择的维护方法；不自动替团队统一事实源"
+      ]
+    },
+    {
+      "id": "evidence-sk-cdd",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-release",
+      "source_ref": "https://github.github.com/spec-kit/guides/contract-driven-development.html",
+      "locator": "One authoritative owner; Using the Spec Kit workflow; Evolve an agreed contract deliberately",
+      "stance": "support",
+      "observed_at": "2026-09-26",
+      "evidence_date": "online docs read 2026-09-26",
+      "observation": "跨仓消费者固定版本/只读副本；provider 和 consumer 验证；区分合同发布与部署可用",
+      "limitations": [
+        "未安装运行竞品；在线/main/beta不自动归属稳定包。",
+        "明确不自动同步契约、解析跨仓依赖或编排发布；mock 不证明真实 provider 符合"
+      ]
+    },
+    {
+      "id": "evidence-sk-cdd-counter",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-release",
+      "source_ref": "https://github.github.com/spec-kit/guides/contract-driven-development.html",
+      "locator": "One authoritative owner; Using the Spec Kit workflow; Evolve an agreed contract deliberately",
+      "stance": "counter",
+      "observed_at": "2026-09-26",
+      "evidence_date": "online docs read 2026-09-26",
+      "observation": "明确不自动同步契约、解析跨仓依赖或编排发布；mock 不证明真实 provider 符合",
+      "limitations": [
+        "未安装运行竞品；在线/main/beta不自动归属稳定包。",
+        "明确不自动同步契约、解析跨仓依赖或编排发布；mock 不证明真实 provider 符合"
+      ]
+    },
+    {
+      "id": "evidence-os-workflows",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-release",
+      "source_ref": "https://github.com/Fission-AI/OpenSpec/blob/main/docs/workflows.md",
+      "locator": "Philosophy: Actions, Not Phases; Parallel Changes; Completing a Change",
+      "stance": "support",
+      "observed_at": "2026-09-26",
+      "evidence_date": "main read 2026-09-26",
+      "observation": "proposal/specs/design/tasks 可反复更新；指定 change 恢复；verify 三维检查",
+      "limitations": [
+        "未安装运行竞品；在线/main/beta不自动归属稳定包。",
+        "verify 可选且不阻断 archive；未完成任务是警告；不等价于 YSS fail-closed"
+      ]
+    },
+    {
+      "id": "evidence-os-workflows-counter",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-release",
+      "source_ref": "https://github.com/Fission-AI/OpenSpec/blob/main/docs/workflows.md",
+      "locator": "Philosophy: Actions, Not Phases; Parallel Changes; Completing a Change",
+      "stance": "counter",
+      "observed_at": "2026-09-26",
+      "evidence_date": "main read 2026-09-26",
+      "observation": "verify 可选且不阻断 archive；未完成任务是警告；不等价于 YSS fail-closed",
+      "limitations": [
+        "未安装运行竞品；在线/main/beta不自动归属稳定包。",
+        "verify 可选且不阻断 archive；未完成任务是警告；不等价于 YSS fail-closed"
+      ]
+    },
+    {
+      "id": "evidence-os-stores",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-release",
+      "source_ref": "https://github.com/Fission-AI/OpenSpec/blob/main/docs/stores-beta/user-guide.md",
+      "locator": "Beta notice; Example: one feature, two component repos; Two questions you can always ask",
+      "stance": "support",
+      "observed_at": "2026-09-26",
+      "evidence_date": "main, explicitly beta; read 2026-09-26",
+      "observation": "独立规划 store；只读 references；各组件本地 change/任务/review；doctor/context 提供指令与 JSON",
+      "limitations": [
+        "未安装运行竞品；在线/main/beta不自动归属稳定包。",
+        "不会自动 Git sync/push、不路由任务到仓库；workset 仅个人 workspace；格式可能变化"
+      ]
+    },
+    {
+      "id": "evidence-os-stores-counter",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-release",
+      "source_ref": "https://github.com/Fission-AI/OpenSpec/blob/main/docs/stores-beta/user-guide.md",
+      "locator": "Beta notice; Example: one feature, two component repos; Two questions you can always ask",
+      "stance": "counter",
+      "observed_at": "2026-09-26",
+      "evidence_date": "main, explicitly beta; read 2026-09-26",
+      "observation": "不会自动 Git sync/push、不路由任务到仓库；workset 仅个人 workspace；格式可能变化",
+      "limitations": [
+        "未安装运行竞品；在线/main/beta不自动归属稳定包。",
+        "不会自动 Git sync/push、不路由任务到仓库；workset 仅个人 workspace；格式可能变化"
+      ]
+    },
+    {
+      "id": "evidence-os-release",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-release",
+      "source_ref": "https://github.com/Fission-AI/OpenSpec/releases/tag/v1.13.2",
+      "locator": "What's New in v1.13.2; Improved; Fixed",
+      "stance": "support",
+      "observed_at": "2026-09-26",
+      "evidence_date": "v1.13.2; 2026-09-23; db23097",
+      "observation": "verify 修复 skipped checks 被报 passing；任务组包含自己的 tests/docs；归档 Windows 修复",
+      "limitations": [
+        "未安装运行竞品；在线/main/beta不自动归属稳定包。",
+        "发行者修复声明，未安装复现；不能外推全部历史验证都错"
+      ]
+    },
+    {
+      "id": "evidence-os-release-counter",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-release",
+      "source_ref": "https://github.com/Fission-AI/OpenSpec/releases/tag/v1.13.2",
+      "locator": "What's New in v1.13.2; Improved; Fixed",
+      "stance": "counter",
+      "observed_at": "2026-09-26",
+      "evidence_date": "v1.13.2; 2026-09-23; db23097",
+      "observation": "发行者修复声明，未安装复现；不能外推全部历史验证都错",
+      "limitations": [
+        "未安装运行竞品；在线/main/beta不自动归属稳定包。",
+        "发行者修复声明，未安装复现；不能外推全部历史验证都错"
+      ]
+    },
+    {
+      "id": "evidence-os-release-112",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-release",
+      "source_ref": "https://github.com/Fission-AI/OpenSpec/releases",
+      "locator": "v1.12.0 - Findings Reports, SourceCraft; Improved",
+      "stance": "support",
+      "observed_at": "2026-09-26",
+      "evidence_date": "v1.12.0; 2026-09-03; e062b95",
+      "observation": "propose/fast-forward 先读相关代码、测试、文档；explore 先查仓库再问事实；findings-only reports",
+      "limitations": [
+        "未安装运行竞品；在线/main/beta不自动归属稳定包。",
+        "源码内容调查仍不能代替真实业务决定；未测澄清次数/耗时"
+      ]
+    },
+    {
+      "id": "evidence-os-release-112-counter",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-release",
+      "source_ref": "https://github.com/Fission-AI/OpenSpec/releases",
+      "locator": "v1.12.0 - Findings Reports, SourceCraft; Improved",
+      "stance": "counter",
+      "observed_at": "2026-09-26",
+      "evidence_date": "v1.12.0; 2026-09-03; e062b95",
+      "observation": "源码内容调查仍不能代替真实业务决定；未测澄清次数/耗时",
+      "limitations": [
+        "未安装运行竞品；在线/main/beta不自动归属稳定包。",
+        "源码内容调查仍不能代替真实业务决定；未测澄清次数/耗时"
+      ]
+    },
+    {
+      "id": "evidence-kiro-specs",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-release",
+      "source_ref": "https://kiro.dev/docs/specs/",
+      "locator": "Capability table; Core Structure; Three-Phase Workflow; Running tasks in parallel",
+      "stance": "support",
+      "observed_at": "2026-09-26",
+      "evidence_date": "page updated 2026-08-27",
+      "observation": "requirements 或 bugfix、design、tasks；按依赖图波次并行",
+      "limitations": [
+        "未安装运行竞品；在线/main/beta不自动归属稳定包。",
+        "Correctness/PBT 能力表仅 IDE；Analyze 只 IDE/CLI；不能把端能力一概而论"
+      ]
+    },
+    {
+      "id": "evidence-kiro-specs-counter",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-release",
+      "source_ref": "https://kiro.dev/docs/specs/",
+      "locator": "Capability table; Core Structure; Three-Phase Workflow; Running tasks in parallel",
+      "stance": "counter",
+      "observed_at": "2026-09-26",
+      "evidence_date": "page updated 2026-08-27",
+      "observation": "Correctness/PBT 能力表仅 IDE；Analyze 只 IDE/CLI；不能把端能力一概而论",
+      "limitations": [
+        "未安装运行竞品；在线/main/beta不自动归属稳定包。",
+        "Correctness/PBT 能力表仅 IDE；Analyze 只 IDE/CLI；不能把端能力一概而论"
+      ]
+    },
+    {
+      "id": "evidence-kiro-quick",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-release",
+      "source_ref": "https://kiro.dev/docs/specs/quick-spec/",
+      "locator": "When to use Quick Spec; How it works; FAQ",
+      "stance": "support",
+      "observed_at": "2026-09-26",
+      "evidence_date": "page updated 2026-08-04",
+      "observation": "熟悉功能/原型先澄清后一次生成相同格式的三工件，无阶段审批",
+      "limitations": [
+        "未安装运行竞品；在线/main/beta不自动归属稳定包。",
+        "官方建议复杂/合规敏感/陌生工作优先标准 Feature；速度收益未实测"
+      ]
+    },
+    {
+      "id": "evidence-kiro-quick-counter",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-release",
+      "source_ref": "https://kiro.dev/docs/specs/quick-spec/",
+      "locator": "When to use Quick Spec; How it works; FAQ",
+      "stance": "counter",
+      "observed_at": "2026-09-26",
+      "evidence_date": "page updated 2026-08-04",
+      "observation": "官方建议复杂/合规敏感/陌生工作优先标准 Feature；速度收益未实测",
+      "limitations": [
+        "未安装运行竞品；在线/main/beta不自动归属稳定包。",
+        "官方建议复杂/合规敏感/陌生工作优先标准 Feature；速度收益未实测"
+      ]
+    },
+    {
+      "id": "evidence-kiro-bugfix",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-release",
+      "source_ref": "https://kiro.dev/docs/specs/bugfix-specs/",
+      "locator": "Bugfix Analysis Phase; Design Phase; Tasks Phase",
+      "stance": "support",
+      "observed_at": "2026-09-26",
+      "evidence_date": "page updated 2026-08-04",
+      "observation": "缺陷、期望、保留行为三分；设计要求复现、修复及回归验证",
+      "limitations": [
+        "未安装运行竞品；在线/main/beta不自动归属稳定包。",
+        "PBT 生成声明不能证明性质完整或回归率；端能力另看 Specs 表"
+      ]
+    },
+    {
+      "id": "evidence-kiro-bugfix-counter",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-release",
+      "source_ref": "https://kiro.dev/docs/specs/bugfix-specs/",
+      "locator": "Bugfix Analysis Phase; Design Phase; Tasks Phase",
+      "stance": "counter",
+      "observed_at": "2026-09-26",
+      "evidence_date": "page updated 2026-08-04",
+      "observation": "PBT 生成声明不能证明性质完整或回归率；端能力另看 Specs 表",
+      "limitations": [
+        "未安装运行竞品；在线/main/beta不自动归属稳定包。",
+        "PBT 生成声明不能证明性质完整或回归率；端能力另看 Specs 表"
+      ]
+    },
+    {
+      "id": "evidence-kiro-analyze",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-release",
+      "source_ref": "https://kiro.dev/docs/specs/analyze-requirements/",
+      "locator": "What it catches; What to expect",
+      "stance": "support",
+      "observed_at": "2026-09-26",
+      "evidence_date": "online docs read 2026-09-26",
+      "observation": "跨需求分析逻辑不一致、冲突约束、未声明假设、异常边界；按 finding 澄清并更新需求",
+      "limitations": [
+        "未安装运行竞品；在线/main/beta不自动归属稳定包。",
+        "用户可 dismiss 有意模糊问题；官方称需要分钟级，未测精度或耗时"
+      ]
+    },
+    {
+      "id": "evidence-kiro-analyze-counter",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-release",
+      "source_ref": "https://kiro.dev/docs/specs/analyze-requirements/",
+      "locator": "What it catches; What to expect",
+      "stance": "counter",
+      "observed_at": "2026-09-26",
+      "evidence_date": "online docs read 2026-09-26",
+      "observation": "用户可 dismiss 有意模糊问题；官方称需要分钟级，未测精度或耗时",
+      "limitations": [
+        "未安装运行竞品；在线/main/beta不自动归属稳定包。",
+        "用户可 dismiss 有意模糊问题；官方称需要分钟级，未测精度或耗时"
+      ]
+    },
+    {
+      "id": "evidence-kiro-web",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-release",
+      "source_ref": "https://kiro.dev/docs/web/github/",
+      "locator": "How the agent works with GitHub; Review pull requests in your session; Permissions",
+      "stance": "support",
+      "observed_at": "2026-09-26",
+      "evidence_date": "page updated 2026-08-22",
+      "observation": "一个任务可跨多个授权仓；创建分支/commit/push/PR；受保护分支走 PR",
+      "limitations": [
+        "未安装运行竞品；在线/main/beta不自动归属稳定包。",
+        "任务产品授权模式不同；review approval/merge 在 GitHub；未验证多仓联合契约接收"
+      ]
+    },
+    {
+      "id": "evidence-kiro-web-counter",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-release",
+      "source_ref": "https://kiro.dev/docs/web/github/",
+      "locator": "How the agent works with GitHub; Review pull requests in your session; Permissions",
+      "stance": "counter",
+      "observed_at": "2026-09-26",
+      "evidence_date": "page updated 2026-08-22",
+      "observation": "任务产品授权模式不同；review approval/merge 在 GitHub；未验证多仓联合契约接收",
+      "limitations": [
+        "未安装运行竞品；在线/main/beta不自动归属稳定包。",
+        "任务产品授权模式不同；review approval/merge 在 GitHub；未验证多仓联合契约接收"
+      ]
+    },
+    {
+      "id": "evidence-bmad-release",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-release",
+      "source_ref": "https://github.com/bmad-code-org/BMAD-METHOD/releases/tag/v6.12.0",
+      "locator": "Release opening paragraphs; Breaking",
+      "stance": "support",
+      "observed_at": "2026-09-26",
+      "evidence_date": "v6.12.0; 2026-09-04; 05bfbd4",
+      "observation": "调查后决定流程深度；简单改动两部分 spec；每 finding 记录 verdict 和 evidence；新装 shims opt-in",
+      "limitations": [
+        "未安装运行竞品；在线/main/beta不自动归属稳定包。",
+        "发行说明非独立实测；persistent_facts 默认清空等 breaking 需要迁移"
+      ]
+    },
+    {
+      "id": "evidence-bmad-release-counter",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-release",
+      "source_ref": "https://github.com/bmad-code-org/BMAD-METHOD/releases/tag/v6.12.0",
+      "locator": "Release opening paragraphs; Breaking",
+      "stance": "counter",
+      "observed_at": "2026-09-26",
+      "evidence_date": "v6.12.0; 2026-09-04; 05bfbd4",
+      "observation": "发行说明非独立实测；persistent_facts 默认清空等 breaking 需要迁移",
+      "limitations": [
+        "未安装运行竞品；在线/main/beta不自动归属稳定包。",
+        "发行说明非独立实测；persistent_facts 默认清空等 breaking 需要迁移"
+      ]
+    },
+    {
+      "id": "evidence-bmad-release-611",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-release",
+      "source_ref": "https://github.com/bmad-code-org/BMAD-METHOD/releases/tag/v6.11.0",
+      "locator": "Headline",
+      "stance": "support",
+      "observed_at": "2026-09-26",
+      "evidence_date": "v6.11.0; 2026-08-10; 9ce3c39",
+      "observation": "Build 收敛实现入口；review/research/context 合并；旧 ID 有 forwarding shim；状态计算移入脚本",
+      "limitations": [
+        "未安装运行竞品；在线/main/beta不自动归属稳定包。",
+        "shim 到 v7 cut 的兼容期限有限；v6.12 新装策略已变化"
+      ]
+    },
+    {
+      "id": "evidence-bmad-release-611-counter",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-release",
+      "source_ref": "https://github.com/bmad-code-org/BMAD-METHOD/releases/tag/v6.11.0",
+      "locator": "Headline",
+      "stance": "counter",
+      "observed_at": "2026-09-26",
+      "evidence_date": "v6.11.0; 2026-08-10; 9ce3c39",
+      "observation": "shim 到 v7 cut 的兼容期限有限；v6.12 新装策略已变化",
+      "limitations": [
+        "未安装运行竞品；在线/main/beta不自动归属稳定包。",
+        "shim 到 v7 cut 的兼容期限有限；v6.12 新装策略已变化"
+      ]
+    },
+    {
+      "id": "evidence-bmad-build",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-release",
+      "source_ref": "https://docs.bmad-method.org/build/build-a-change/",
+      "locator": "Resolve Intent from Evidence; Approve a Plan When Asked; Implementation and Review; What You Get",
+      "stance": "support",
+      "observed_at": "2026-09-26",
+      "evidence_date": "current online docs read 2026-09-26",
+      "observation": "先调查后以意图缺口、不可逆动作、footprint 选轻/完整路径；接续 plan；独立 reviewer triage",
+      "limitations": [
+        "未安装运行竞品；在线/main/beta不自动归属稳定包。",
+        "Build 文档含本地自动提交；在线指南出现 ticket-tree 内容，不能直接当 v6.12 全部行为"
+      ]
+    },
+    {
+      "id": "evidence-bmad-build-counter",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-release",
+      "source_ref": "https://docs.bmad-method.org/build/build-a-change/",
+      "locator": "Resolve Intent from Evidence; Approve a Plan When Asked; Implementation and Review; What You Get",
+      "stance": "counter",
+      "observed_at": "2026-09-26",
+      "evidence_date": "current online docs read 2026-09-26",
+      "observation": "Build 文档含本地自动提交；在线指南出现 ticket-tree 内容，不能直接当 v6.12 全部行为",
+      "limitations": [
+        "未安装运行竞品；在线/main/beta不自动归属稳定包。",
+        "Build 文档含本地自动提交；在线指南出现 ticket-tree 内容，不能直接当 v6.12 全部行为"
+      ]
+    },
+    {
+      "id": "evidence-bmad-plan",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-release",
+      "source_ref": "https://docs.bmad-method.org/plan/choose-a-planning-path/",
+      "locator": "Planning Skills and What They Produce; Size Follows the Intent; Run the Path",
+      "stance": "support",
+      "observed_at": "2026-09-26",
+      "evidence_date": "current online docs read 2026-09-26",
+      "observation": "规划可选；短 Spec、PRD、UX、架构各自提供不同上下文；大项目重复共同实施单元",
+      "limitations": [
+        "未安装运行竞品；在线/main/beta不自动归属稳定包。",
+        "当前导航/正文混入 preview-ticketing；不能直接用于稳定版本安装承诺"
+      ]
+    },
+    {
+      "id": "evidence-bmad-plan-counter",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-release",
+      "source_ref": "https://docs.bmad-method.org/plan/choose-a-planning-path/",
+      "locator": "Planning Skills and What They Produce; Size Follows the Intent; Run the Path",
+      "stance": "counter",
+      "observed_at": "2026-09-26",
+      "evidence_date": "current online docs read 2026-09-26",
+      "observation": "当前导航/正文混入 preview-ticketing；不能直接用于稳定版本安装承诺",
+      "limitations": [
+        "未安装运行竞品；在线/main/beta不自动归属稳定包。",
+        "当前导航/正文混入 preview-ticketing；不能直接用于稳定版本安装承诺"
+      ]
+    },
+    {
+      "id": "evidence-bmad-preview",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-release",
+      "source_ref": "https://docs.bmad-method.org/plan/help-test-v7-previews/",
+      "locator": "Set Up the Ticket Tree; Install the Skills; Create an Initiative Store",
+      "stance": "support",
+      "observed_at": "2026-09-26",
+      "evidence_date": "explicit preview; read 2026-09-26",
+      "observation": "initiative store 可独立 Git 仓，位于多个代码仓的 workspace；ticket tree 给 build/review/retro 消费",
+      "limitations": [
+        "未安装运行竞品；在线/main/beta不自动归属稳定包。",
+        "普通 npx bmad-method install 即使 @next 也不安装这些 preview skills；需单独 skills CLI"
+      ]
+    },
+    {
+      "id": "evidence-bmad-preview-counter",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-release",
+      "source_ref": "https://docs.bmad-method.org/plan/help-test-v7-previews/",
+      "locator": "Set Up the Ticket Tree; Install the Skills; Create an Initiative Store",
+      "stance": "counter",
+      "observed_at": "2026-09-26",
+      "evidence_date": "explicit preview; read 2026-09-26",
+      "observation": "普通 npx bmad-method install 即使 @next 也不安装这些 preview skills；需单独 skills CLI",
+      "limitations": [
+        "未安装运行竞品；在线/main/beta不自动归属稳定包。",
+        "普通 npx bmad-method install 即使 @next 也不安装这些 preview skills；需单独 skills CLI"
+      ]
+    },
+    {
+      "id": "evidence-aidlc-harness",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-release",
+      "source_ref": "https://github.com/awslabs/aidlc-workflows/blob/main/docs/harness-engineering/00-overview.md",
+      "locator": "The mental model: stages are what, agents are who; The build model",
+      "stance": "support",
+      "observed_at": "2026-09-26",
+      "evidence_date": "main read 2026-09-26",
+      "observation": "engine 从 state + compiled stage graph 发 typed directive；thin conductor；canonical core 生成多 harness 投影",
+      "limitations": [
+        "未安装运行竞品；在线/main/beta不自动归属稳定包。",
+        "文档声称不等同源码/运行认证；所列版本能力不能直接视为稳定 tag 实现"
+      ]
+    },
+    {
+      "id": "evidence-aidlc-harness-counter",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-release",
+      "source_ref": "https://github.com/awslabs/aidlc-workflows/blob/main/docs/harness-engineering/00-overview.md",
+      "locator": "The mental model: stages are what, agents are who; The build model",
+      "stance": "counter",
+      "observed_at": "2026-09-26",
+      "evidence_date": "main read 2026-09-26",
+      "observation": "文档声称不等同源码/运行认证；所列版本能力不能直接视为稳定 tag 实现",
+      "limitations": [
+        "未安装运行竞品；在线/main/beta不自动归属稳定包。",
+        "文档声称不等同源码/运行认证；所列版本能力不能直接视为稳定 tag 实现"
+      ]
+    },
+    {
+      "id": "evidence-aidlc-state",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-release",
+      "source_ref": "https://github.com/awslabs/aidlc-workflows/blob/main/docs/guide/10-state-and-audit.md",
+      "locator": "State file; Six-state checkboxes; State transitions",
+      "stance": "support",
+      "observed_at": "2026-09-26",
+      "evidence_date": "main read 2026-09-26",
+      "observation": "区分未开始/进行/待批/修订/完成/跳过；Session Resume Point；验证命令关联当前会话用户批准回执",
+      "limitations": [
+        "未安装运行竞品；在线/main/beta不自动归属稳定包。",
+        "不能仅有状态字段当授权；本轮未测试回执解析绕过或恢复行为"
+      ]
+    },
+    {
+      "id": "evidence-aidlc-state-counter",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-release",
+      "source_ref": "https://github.com/awslabs/aidlc-workflows/blob/main/docs/guide/10-state-and-audit.md",
+      "locator": "State file; Six-state checkboxes; State transitions",
+      "stance": "counter",
+      "observed_at": "2026-09-26",
+      "evidence_date": "main read 2026-09-26",
+      "observation": "不能仅有状态字段当授权；本轮未测试回执解析绕过或恢复行为",
+      "limitations": [
+        "未安装运行竞品；在线/main/beta不自动归属稳定包。",
+        "不能仅有状态字段当授权；本轮未测试回执解析绕过或恢复行为"
+      ]
+    },
+    {
+      "id": "evidence-aidlc-orchestrator",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-release",
+      "source_ref": "https://github.com/awslabs/aidlc-workflows/blob/main/docs/reference/03-orchestrator.md",
+      "locator": "Two-Link Reverse Engineering Pipeline; Stage Advancement Protocol; Completed-stage validity advisory",
+      "stance": "support",
+      "observed_at": "2026-09-26",
+      "evidence_date": "main read 2026-09-26",
+      "observation": "棕地每仓 codekb 复用需新鲜；每仓链回执；阻断 sensor 拒绝 gate；按消费依赖传播 stale",
+      "limitations": [
+        "未安装运行竞品；在线/main/beta不自动归属稳定包。",
+        "完成阶段 validity 是 advisory 后继续路由；历史 receipt-less fail-open；artifact guard 有显式环境旁路"
+      ]
+    },
+    {
+      "id": "evidence-aidlc-orchestrator-counter",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-release",
+      "source_ref": "https://github.com/awslabs/aidlc-workflows/blob/main/docs/reference/03-orchestrator.md",
+      "locator": "Two-Link Reverse Engineering Pipeline; Stage Advancement Protocol; Completed-stage validity advisory",
+      "stance": "counter",
+      "observed_at": "2026-09-26",
+      "evidence_date": "main read 2026-09-26",
+      "observation": "完成阶段 validity 是 advisory 后继续路由；历史 receipt-less fail-open；artifact guard 有显式环境旁路",
+      "limitations": [
+        "未安装运行竞品；在线/main/beta不自动归属稳定包。",
+        "完成阶段 validity 是 advisory 后继续路由；历史 receipt-less fail-open；artifact guard 有显式环境旁路"
+      ]
+    },
+    {
+      "id": "evidence-aidlc-release",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-release",
+      "source_ref": "https://github.com/awslabs/aidlc-workflows/releases/tag/v2.10.0",
+      "locator": "Summary; Workflow authority and recovery; Worktrees and lifecycle",
+      "stance": "support",
+      "observed_at": "2026-09-26",
+      "evidence_date": "v2.10.0; 2026-09-24; 2a88385",
+      "observation": "verified Unit/batch checkpoints；human approval 边界；拒绝后给可执行恢复动作；park 字节恢复",
+      "limitations": [
+        "未安装运行竞品；在线/main/beta不自动归属稳定包。",
+        "发行说明不是本轮运行验证；main 已有后续 commit，需固定版本实验"
+      ]
+    },
+    {
+      "id": "evidence-aidlc-release-counter",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-release",
+      "source_ref": "https://github.com/awslabs/aidlc-workflows/releases/tag/v2.10.0",
+      "locator": "Summary; Workflow authority and recovery; Worktrees and lifecycle",
+      "stance": "counter",
+      "observed_at": "2026-09-26",
+      "evidence_date": "v2.10.0; 2026-09-24; 2a88385",
+      "observation": "发行说明不是本轮运行验证；main 已有后续 commit，需固定版本实验",
+      "limitations": [
+        "未安装运行竞品；在线/main/beta不自动归属稳定包。",
+        "发行说明不是本轮运行验证；main 已有后续 commit，需固定版本实验"
+      ]
+    },
+    {
+      "id": "evidence-aidlc-preview",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-release",
+      "source_ref": "https://github.com/awslabs/aidlc-workflows/releases/tag/v2.10.1-preview.20260925.1",
+      "locator": "Warning; Nightly test report",
+      "stance": "support",
+      "observed_at": "2026-09-26",
+      "evidence_date": "v2.10.1-preview.20260925.1; 2026-09-25; 60214a0",
+      "observation": "页面明示 Full Suite failed；live_hosted 和 live_windows failed；preview 不等待这些测试",
+      "limitations": [
+        "未安装运行竞品；在线/main/beta不自动归属稳定包。",
+        "失败说明未提供具体 failing test files；不能推断所有功能有缺陷，也不能当稳定版认证"
+      ]
+    },
+    {
+      "id": "evidence-aidlc-preview-counter",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-release",
+      "source_ref": "https://github.com/awslabs/aidlc-workflows/releases/tag/v2.10.1-preview.20260925.1",
+      "locator": "Warning; Nightly test report",
+      "stance": "counter",
+      "observed_at": "2026-09-26",
+      "evidence_date": "v2.10.1-preview.20260925.1; 2026-09-25; 60214a0",
+      "observation": "失败说明未提供具体 failing test files；不能推断所有功能有缺陷，也不能当稳定版认证",
+      "limitations": [
+        "未安装运行竞品；在线/main/beta不自动归属稳定包。",
+        "失败说明未提供具体 failing test files；不能推断所有功能有缺陷，也不能当稳定版认证"
+      ]
+    },
+    {
+      "id": "evidence-sp-01",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "source-code",
+      "source_ref": "https://github.com/obra/superpowers/blob/8ca22dba9a94f28898bbce59f2537ff4d87c747d/skills/subagent-driven-development/SKILL.md",
+      "locator": "Overview; Setup; ledger identity; The Process",
+      "stance": "support",
+      "observed_at": "2026-09-26",
+      "evidence_date": "2026-09-26",
+      "observation": "任务使用独立上下文、任务审查与最终分支审查；每个 plan 有专属 workspace 和持久 ledger。",
+      "limitations": [
+        "源码合同，未执行竞品；上下文隔离不能证明文件系统隔离。"
+      ],
+      "retrieval": {
+        "verified_url": "https://raw.githubusercontent.com/obra/superpowers/8ca22dba9a94f28898bbce59f2537ff4d87c747d/skills/subagent-driven-development/SKILL.md",
+        "sha256": "8dde5589ee083fb4999106d116f01c8fdaf3116a8a9813fdedeb80329de49046",
+        "byte_length": 32577,
+        "line_count": 568,
+        "status": "fetched"
+      }
+    },
+    {
+      "id": "evidence-sp-02",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "source-code",
+      "source_ref": "https://github.com/obra/superpowers/blob/8ca22dba9a94f28898bbce59f2537ff4d87c747d/skills/subagent-driven-development/SKILL.md",
+      "locator": "Continuous execution; Rulings, not stalls; task commit steps",
+      "stance": "counter",
+      "observed_at": "2026-09-26",
+      "evidence_date": "2026-09-26",
+      "observation": "授权外部动作会暂停，但一般歧义由主控记录 ruling 并继续；实现步骤包含 commit。",
+      "limitations": [
+        "其批准策略与 YSS 不同，不可直接移植。"
+      ],
+      "retrieval": {
+        "verified_url": "https://raw.githubusercontent.com/obra/superpowers/8ca22dba9a94f28898bbce59f2537ff4d87c747d/skills/subagent-driven-development/SKILL.md",
+        "sha256": "8dde5589ee083fb4999106d116f01c8fdaf3116a8a9813fdedeb80329de49046",
+        "byte_length": 32577,
+        "line_count": 568,
+        "status": "fetched"
+      }
+    },
+    {
+      "id": "evidence-sp-03",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "source-code",
+      "source_ref": "https://github.com/obra/superpowers/blob/8ca22dba9a94f28898bbce59f2537ff4d87c747d/skills/writing-plans/SKILL.md",
+      "locator": "Task Right-Sizing; Plan Document Header; Task Structure; Self-Review",
+      "stance": "support",
+      "observed_at": "2026-09-26",
+      "evidence_date": "2026-09-26",
+      "observation": "任务以可独立审查与测试的结果划分；模板显式记录 Spec、全局约束、输入输出接口、验证与遗漏场景。",
+      "limitations": [
+        "实现计划模板，不能替代业务 Plan/Spec；固定五项 Review Focus 是其具体选择。"
+      ],
+      "retrieval": {
+        "verified_url": "https://raw.githubusercontent.com/obra/superpowers/8ca22dba9a94f28898bbce59f2537ff4d87c747d/skills/writing-plans/SKILL.md",
+        "sha256": "a6c67c1900064347c2a329990dd3c555657c51c3ec53b259a08aa01a2c26139a",
+        "byte_length": 10335,
+        "line_count": 204,
+        "status": "fetched"
+      }
+    },
+    {
+      "id": "evidence-sp-04",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "source-code",
+      "source_ref": "https://github.com/obra/superpowers/blob/8ca22dba9a94f28898bbce59f2537ff4d87c747d/skills/writing-skills/testing-skills-with-subagents.md",
+      "locator": "RED Phase; GREEN Phase; Testing Checklist",
+      "stance": "support",
+      "observed_at": "2026-09-26",
+      "evidence_date": "2026-09-26",
+      "observation": "将真实 Agent 压力场景按无技能/有技能比较，收集偏离，再用同场景回归。",
+      "limitations": [
+        "方法说明与作者经验，不是跨模型可靠性证明；不采纳其删除既有实现等绝对化指令。"
+      ],
+      "retrieval": {
+        "verified_url": "https://raw.githubusercontent.com/obra/superpowers/8ca22dba9a94f28898bbce59f2537ff4d87c747d/skills/writing-skills/testing-skills-with-subagents.md",
+        "sha256": "c711346852c911b24a84aa161e0cff06a4cd7f4e2fa9e9c0a266cead5afcbade",
+        "byte_length": 12558,
+        "line_count": 384,
+        "status": "fetched"
+      }
+    },
+    {
+      "id": "evidence-sp-05",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "source-code",
+      "source_ref": "https://github.com/obra/superpowers/blob/8ca22dba9a94f28898bbce59f2537ff4d87c747d/docs/superpowers/specs/2026-07-06-sdd-plan-scoped-workspace-eval-results.md",
+      "locator": "What RED showed (and did not show); Fixture iterations; Results",
+      "stance": "counter",
+      "observed_at": "2026-09-26",
+      "evidence_date": "2026-07-06",
+      "observation": "作者记录原始坏账本误采纳假设未复现；改进按结构理由推进，且工具调用未下降。",
+      "limitations": [
+        "第一方自报、单模型小样本；原始临时轨迹未独立取得。"
+      ],
+      "retrieval": {
+        "verified_url": "https://raw.githubusercontent.com/obra/superpowers/8ca22dba9a94f28898bbce59f2537ff4d87c747d/docs/superpowers/specs/2026-07-06-sdd-plan-scoped-workspace-eval-results.md",
+        "sha256": "c4d2f3f086648ee6b949fd0ed999dd7b0a3a8d45ba290b2024389c66b2ed95b7",
+        "byte_length": 24547,
+        "line_count": 543,
+        "status": "fetched"
+      }
+    },
+    {
+      "id": "evidence-gsd-00",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "docs",
+      "source_ref": "https://github.com/gsd-build/get-shit-done",
+      "locator": "README: GSD Has Moved",
+      "stance": "support",
+      "observed_at": "2026-09-26",
+      "evidence_date": "2026-09-26",
+      "observation": "旧仓 README 指向 open-gsd/gsd-core 作为当前源码与贡献入口。",
+      "limitations": [
+        "本次按 README 的迁移声明追踪；不推断组织或产品全量历史。"
+      ]
+    },
+    {
+      "id": "evidence-gsd-01",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "docs",
+      "source_ref": "https://github.com/open-gsd/gsd-core/blob/b3a055c07d6577f5bcbce8d360653ddd6979d1c5/docs/explanation/context-engineering.md",
+      "locator": "Fresh-context subagents; .planning; Trade-offs",
+      "stance": "support",
+      "observed_at": "2026-09-26",
+      "evidence_date": "2026-09-26",
+      "observation": "主控用精简状态协调研究、规划、执行；工作结果落盘以跨会话恢复。",
+      "limitations": [
+        "机制由文档描述；200k 等数值取决于运行时，未作为通用事实。"
+      ],
+      "retrieval": {
+        "verified_url": "https://raw.githubusercontent.com/open-gsd/gsd-core/b3a055c07d6577f5bcbce8d360653ddd6979d1c5/docs/explanation/context-engineering.md",
+        "sha256": "ab69ce6fe028b81fa6a2ecf2cb01555010168cb347f099aa9ff93fb4a61904ec",
+        "byte_length": 13012,
+        "line_count": 133,
+        "status": "fetched"
+      }
+    },
+    {
+      "id": "evidence-gsd-02",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "docs",
+      "source_ref": "https://github.com/open-gsd/gsd-core/blob/b3a055c07d6577f5bcbce8d360653ddd6979d1c5/docs/explanation/context-engineering.md",
+      "locator": "Trade-offs; effort signals",
+      "stance": "counter",
+      "observed_at": "2026-09-26",
+      "evidence_date": "2026-09-26",
+      "observation": "文档承认多阶段和子 Agent 增加耗时；小任务建议 quick/fast；隔离与 hooks 有运行时限制。",
+      "limitations": [
+        "文档有泛化措辞，未独立测量效率。"
+      ],
+      "retrieval": {
+        "verified_url": "https://raw.githubusercontent.com/open-gsd/gsd-core/b3a055c07d6577f5bcbce8d360653ddd6979d1c5/docs/explanation/context-engineering.md",
+        "sha256": "ab69ce6fe028b81fa6a2ecf2cb01555010168cb347f099aa9ff93fb4a61904ec",
+        "byte_length": 13012,
+        "line_count": 133,
+        "status": "fetched"
+      }
+    },
+    {
+      "id": "evidence-gsd-03",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "source-code",
+      "source_ref": "https://github.com/open-gsd/gsd-core/blob/b3a055c07d6577f5bcbce8d360653ddd6979d1c5/gsd-core/workflows/pause-work.md",
+      "locator": "gather; write_structured; measured uncommitted_files",
+      "stance": "support",
+      "observed_at": "2026-09-26",
+      "evidence_date": "2026-09-26",
+      "observation": "handoff 保留位置、剩余工作、决定、人工事项、异步任务；未提交文件要求实测 git status。",
+      "limitations": [
+        "模板有两类可读视图，移植须保持已有 checkpoint 为 SSOT。"
+      ],
+      "retrieval": {
+        "verified_url": "https://raw.githubusercontent.com/open-gsd/gsd-core/b3a055c07d6577f5bcbce8d360653ddd6979d1c5/gsd-core/workflows/pause-work.md",
+        "sha256": "26a92750d58a2150ec856511ce8cec2ebe314d93f7604bac84acde3b11473736",
+        "byte_length": 13330,
+        "line_count": 265,
+        "status": "fetched"
+      }
+    },
+    {
+      "id": "evidence-gsd-04",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "source-code",
+      "source_ref": "https://github.com/open-gsd/gsd-core/blob/b3a055c07d6577f5bcbce8d360653ddd6979d1c5/gsd-core/workflows/resume-project.md",
+      "locator": "check_incomplete_work; determine_next_action",
+      "stance": "support",
+      "observed_at": "2026-09-26",
+      "evidence_date": "2026-09-26",
+      "observation": "恢复校验 handoff 与 git status；运行中的外部任务不能误当无 SUMMARY 的未完成计划重复提交。",
+      "limitations": [
+        "本次只审源码；外部清单命令仍需信任与权限判断。"
+      ],
+      "retrieval": {
+        "verified_url": "https://raw.githubusercontent.com/open-gsd/gsd-core/b3a055c07d6577f5bcbce8d360653ddd6979d1c5/gsd-core/workflows/resume-project.md",
+        "sha256": "9674d959ca66a547584b6f4be27379c4a55227de56d3efafced164f49c8db33e",
+        "byte_length": 15408,
+        "line_count": 351,
+        "status": "fetched"
+      }
+    },
+    {
+      "id": "evidence-gsd-05",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "source-code",
+      "source_ref": "https://github.com/open-gsd/gsd-core/blob/b3a055c07d6577f5bcbce8d360653ddd6979d1c5/gsd-core/workflows/pause-work.md",
+      "locator": "commit; success_criteria",
+      "stance": "counter",
+      "observed_at": "2026-09-26",
+      "evidence_date": "2026-09-26",
+      "observation": "暂停流程包含自动 WIP commit。",
+      "limitations": [
+        "YSS Git 授权独立，不能随恢复功能一起引入。"
+      ],
+      "retrieval": {
+        "verified_url": "https://raw.githubusercontent.com/open-gsd/gsd-core/b3a055c07d6577f5bcbce8d360653ddd6979d1c5/gsd-core/workflows/pause-work.md",
+        "sha256": "26a92750d58a2150ec856511ce8cec2ebe314d93f7604bac84acde3b11473736",
+        "byte_length": 13330,
+        "line_count": 265,
+        "status": "fetched"
+      }
+    },
+    {
+      "id": "evidence-gsd-06",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "source-code",
+      "source_ref": "https://github.com/open-gsd/gsd-core/blob/b3a055c07d6577f5bcbce8d360653ddd6979d1c5/gsd-core/templates/phase-prompt.md",
+      "locator": "frontmatter must_haves; task verify/done; Must-Haves",
+      "stance": "support",
+      "observed_at": "2026-09-26",
+      "evidence_date": "2026-09-26",
+      "observation": "计划同时表达行为 truths、实体 artifacts、连接 key_links，以及任务验证与完成标准。",
+      "limitations": [
+        "包含 min_lines/contains 等弱代理；YSS 应用真实行为验证，不能以行数证明完成。"
+      ],
+      "retrieval": {
+        "verified_url": "https://raw.githubusercontent.com/open-gsd/gsd-core/b3a055c07d6577f5bcbce8d360653ddd6979d1c5/gsd-core/templates/phase-prompt.md",
+        "sha256": "e6843d52d90f3bdb09a678b2b3a60fadbd58618bde48a5e0fc3eb4530b38b75a",
+        "byte_length": 19404,
+        "line_count": 615,
+        "status": "fetched"
+      }
+    },
+    {
+      "id": "evidence-gsd-07",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "source-code",
+      "source_ref": "https://github.com/open-gsd/gsd-core/blob/b3a055c07d6577f5bcbce8d360653ddd6979d1c5/gsd-core/templates/phase-prompt.md",
+      "locator": "Must-Haves field descriptions",
+      "stance": "counter",
+      "observed_at": "2026-09-26",
+      "evidence_date": "2026-09-26",
+      "observation": "模板也允许最少行数、包含文本等作为产物存在/充实度线索。",
+      "limitations": [
+        "它们不能证明业务正确或运行成功。"
+      ],
+      "retrieval": {
+        "verified_url": "https://raw.githubusercontent.com/open-gsd/gsd-core/b3a055c07d6577f5bcbce8d360653ddd6979d1c5/gsd-core/templates/phase-prompt.md",
+        "sha256": "e6843d52d90f3bdb09a678b2b3a60fadbd58618bde48a5e0fc3eb4530b38b75a",
+        "byte_length": 19404,
+        "line_count": 615,
+        "status": "fetched"
+      }
+    },
+    {
+      "id": "evidence-matt-01",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "source-code",
+      "source_ref": "https://github.com/mattpocock/skills/blob/c55ee46073ed923f86ce59a5eb3b6d895095d1b7/skills/engineering/to-spec/SKILL.md",
+      "locator": "frontmatter; Process; spec-template",
+      "stance": "support",
+      "observed_at": "2026-09-26",
+      "evidence_date": "2026-09-26",
+      "observation": "to-spec 只显式调用，汇总已确认决定，先确认测试 seam；正文覆盖问题、故事、决策、测试、非目标。",
+      "limitations": [
+        "其轻量 Spec 不等同于 YSS 冻结工程契约。"
+      ],
+      "retrieval": {
+        "verified_url": "https://raw.githubusercontent.com/mattpocock/skills/c55ee46073ed923f86ce59a5eb3b6d895095d1b7/skills/engineering/to-spec/SKILL.md",
+        "sha256": "43ad9cf318e5e7d3d1fa360253a37021796dc87a0c2e595ad262661a10f85088",
+        "byte_length": 3043,
+        "line_count": 75,
+        "status": "fetched"
+      }
+    },
+    {
+      "id": "evidence-matt-02",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "source-code",
+      "source_ref": "https://github.com/mattpocock/skills/blob/c55ee46073ed923f86ce59a5eb3b6d895095d1b7/skills/engineering/to-spec/SKILL.md",
+      "locator": "Process step 3",
+      "stance": "counter",
+      "observed_at": "2026-09-26",
+      "evidence_date": "2026-09-26",
+      "observation": "上游仍直接给 Spec ready-for-agent。",
+      "limitations": [
+        "与 YSS 未冻结资产 ready-for-human 的语义冲突；必须保留适配。"
+      ],
+      "retrieval": {
+        "verified_url": "https://raw.githubusercontent.com/mattpocock/skills/c55ee46073ed923f86ce59a5eb3b6d895095d1b7/skills/engineering/to-spec/SKILL.md",
+        "sha256": "43ad9cf318e5e7d3d1fa360253a37021796dc87a0c2e595ad262661a10f85088",
+        "byte_length": 3043,
+        "line_count": 75,
+        "status": "fetched"
+      }
+    },
+    {
+      "id": "evidence-matt-03",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "source-code",
+      "source_ref": "https://github.com/mattpocock/skills/blob/c55ee46073ed923f86ce59a5eb3b6d895095d1b7/skills/engineering/to-tickets/SKILL.md",
+      "locator": "Draft vertical slices; blocking edges; Quiz the user; Publish",
+      "stance": "support",
+      "observed_at": "2026-09-26",
+      "evidence_date": "2026-09-26",
+      "observation": "切片以可演示行为划分并声明依赖；宽机械重构有 expand-contract 例外；发布前请用户确认拆分。",
+      "limitations": [
+        "标签默认 ready-for-agent，不具备 YSS 工程门禁含义。"
+      ],
+      "retrieval": {
+        "verified_url": "https://raw.githubusercontent.com/mattpocock/skills/c55ee46073ed923f86ce59a5eb3b6d895095d1b7/skills/engineering/to-tickets/SKILL.md",
+        "sha256": "5c9fba69845c2519b9b35b9af42ae5142c21f8ca15ac2123dc2722002c8058ae",
+        "byte_length": 5671,
+        "line_count": 105,
+        "status": "fetched"
+      }
+    },
+    {
+      "id": "evidence-standard-01",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "specification",
+      "source_ref": "https://agentskills.io/specification",
+      "locator": "Progressive disclosure; File references; Validation",
+      "stance": "support",
+      "observed_at": "2026-09-26",
+      "evidence_date": "2026-09-26",
+      "observation": "标准建议元数据、技能正文、按需资源分层；正文建议低于 5000 tokens、500 行，引用保持浅层。",
+      "limitations": [
+        "是建议与格式约定；格式校验仅检查 frontmatter/naming，不证明行为正确。"
+      ]
+    },
+    {
+      "id": "evidence-standard-02",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "specification",
+      "source_ref": "https://agentskills.io/specification",
+      "locator": "Validation",
+      "stance": "counter",
+      "observed_at": "2026-09-26",
+      "evidence_date": "2026-09-26",
+      "observation": "skills-ref validate 只校验命名和 frontmatter 格式。",
+      "limitations": [
+        "不能由结构通过推出生命周期行为可靠。"
+      ]
+    },
+    {
+      "id": "evidence-openai-01",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "docs",
+      "source_ref": "https://learn.chatgpt.com/docs/build-skills",
+      "locator": "Skills structure; progressive disclosure",
+      "stance": "support",
+      "observed_at": "2026-09-26",
+      "evidence_date": "2026-09-26",
+      "observation": "Codex 先装载名称和描述；当前文档说明发现列表有上下文预算，过多时可能缩短或遗漏描述。",
+      "limitations": [
+        "运行时文档可变；非所有平台统一限额。"
+      ]
+    },
+    {
+      "id": "evidence-openai-02",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "docs",
+      "source_ref": "https://developers.openai.com/blog/rethinking-skills-and-prompts-for-gpt-6-astra",
+      "locator": "Better skills; Up-to-date AGENTS.md; Decision boundaries; Persistence",
+      "stance": "support",
+      "observed_at": "2026-09-26",
+      "evidence_date": "2026-09-11",
+      "observation": "建议窄触发、薄入口、按任务加载；避免不必要重测与过早停止，并按模型差异评估约束。",
+      "limitations": [
+        "针对特定模型的指导；不构成去除 YSS 批准/权限红线的依据。"
+      ]
+    },
+    {
+      "id": "evidence-openai-03",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "docs",
+      "source_ref": "https://developers.openai.com/blog/eval-skills",
+      "locator": "1. Define success; 4. targeted prompt set; 5-7. traces and grading",
+      "stance": "support",
+      "observed_at": "2026-09-26",
+      "evidence_date": "2026-01-22",
+      "observation": "eval 同时检查结果、过程、风格、效率；用显式/隐式/邻近负例、实际轨迹与产物评分。",
+      "limitations": [
+        "示例是起点，不是完整生命周期的认证；模型评分仍需可解释 rubrics。"
+      ]
+    },
+    {
+      "id": "evidence-yss-01",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "docs",
+      "source_ref": ".template-source/scripts/skills-agent-eval.md",
+      "locator": "全文，尤其场景/轨迹/semantic_review/宿主能力边界",
+      "stance": "support",
+      "observed_at": "2026-09-26",
+      "evidence_date": "2026-09-26",
+      "observation": "当前已有冻结来源的 baseline/candidate 真实 Agent runner、轨迹与断言分离、语义审阅。",
+      "limitations": [
+        "本次未重跑；不能据此声称当前全部技能行为通过。"
+      ]
+    },
+    {
+      "id": "evidence-yss-02",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "report",
+      "source_ref": ".template-source/evidence/maintenance/2026-09-20-openai-skills-implementation/completion-report.md",
+      "locator": "实际验证; 真实 Agent; 效率观察; 边界与复盘",
+      "stance": "counter",
+      "observed_at": "2026-09-26",
+      "evidence_date": "2026-09-20",
+      "observation": "历史报告记载 16 场景 64 次运行；两侧统一评分均通过，候选未显示耗时、调用或 token 降低。",
+      "limitations": [
+        "历史快照而非当前 Fresh Verification；尚未独立重评分原始轨迹。"
+      ]
+    },
+    {
+      "id": "evidence-local-S01",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "current-local-source",
+      "source_ref": ".template-spec/plan/templates/plan-template.md",
+      "locator": "lines 14-60",
+      "stance": "support",
+      "observed_at": "2026-09-26T13:39:08.159662+00:00",
+      "observation": "Plan 模板要求引用战略资产，填写用户、MVP、非目标、成功标准和未决项。",
+      "limitations": [
+        "当前工作树/已保存历史报告的源事实；不等于所有运行时或发布版本已验证。"
+      ],
+      "sha256": "aa26de6814ff02368365c922f1ff76fd71448e0bc41cf3f182e6e9ed117835e4"
+    },
+    {
+      "id": "evidence-local-S02",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "current-local-source",
+      "source_ref": ".template-spec/templates/spec-template.md",
+      "locator": "lines 28-99",
+      "stance": "support",
+      "observed_at": "2026-09-26T13:39:08.159662+00:00",
+      "observation": "Spec 模板覆盖可观察行为、验收、影响和测试 seam。",
+      "limitations": [
+        "当前工作树/已保存历史报告的源事实；不等于所有运行时或发布版本已验证。"
+      ],
+      "sha256": "7594fbab61504e33f6fa9b25ca0da006441191f8eef01c1ff2984ed67b4c1dcf"
+    },
+    {
+      "id": "evidence-local-S03",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "current-local-source",
+      "source_ref": ".template-spec/process/document-writing.md",
+      "locator": "lines 41-58",
+      "stance": "support",
+      "observed_at": "2026-09-26T13:39:08.159662+00:00",
+      "observation": "写作规范要求引用上游、仅写本阶段新增细化；状态未经核验不得声称无阻塞。",
+      "limitations": [
+        "当前工作树/已保存历史报告的源事实；不等于所有运行时或发布版本已验证。"
+      ],
+      "sha256": "974c195d98450295e64b17d7a94c6bd84c64efaa571446905654cc52ff26c138"
+    },
+    {
+      "id": "evidence-local-S04",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "current-local-source",
+      "source_ref": ".template-spec/design/templates/product-overview-design-template.md",
+      "locator": "lines 23-29; lines 75-79",
+      "stance": "support",
+      "observed_at": "2026-09-26T13:39:08.159662+00:00",
+      "observation": "产品总体设计提供用户/MVP/非目标/成功标准及页面地图空白栏目。",
+      "limitations": [
+        "当前工作树/已保存历史报告的源事实；不等于所有运行时或发布版本已验证。"
+      ],
+      "sha256": "7347735b6cf1c5efcdd02187ca42374708ec676b30fa373377f13c1b318736e2"
+    },
+    {
+      "id": "evidence-local-S05",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "current-local-source",
+      "source_ref": ".template-spec/design/templates/interaction-spec-template.md",
+      "locator": "lines 19-55",
+      "stance": "support",
+      "observed_at": "2026-09-26T13:39:08.159662+00:00",
+      "observation": "交互模板包含页面地图、操作反馈、异常和恢复。",
+      "limitations": [
+        "当前工作树/已保存历史报告的源事实；不等于所有运行时或发布版本已验证。"
+      ],
+      "sha256": "880ff16c09bd0017dfe0bf4837f7477442862cd497685d2e749e67d4ecaadb8e"
+    },
+    {
+      "id": "evidence-local-S06",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "current-local-source",
+      "source_ref": ".template-spec/design/templates/state-matrix-template.md",
+      "locator": "lines 3-29",
+      "stance": "support",
+      "observed_at": "2026-09-26T13:39:08.159662+00:00",
+      "observation": "状态矩阵作为轻量状态机，包含事件、转换、guard、动作和退出路径。",
+      "limitations": [
+        "当前工作树/已保存历史报告的源事实；不等于所有运行时或发布版本已验证。"
+      ],
+      "sha256": "5037b3ca1ca8dd56d22e7a0911126fe30f1617149ebc81d166e7d64a4bc3e13c"
+    },
+    {
+      "id": "evidence-local-S07",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "current-local-source",
+      "source_ref": ".agents/skills/yss-prototype-stage/SKILL.md",
+      "locator": "lines 20-25; lines 27-51",
+      "stance": "support",
+      "observed_at": "2026-09-26T13:39:08.159662+00:00",
+      "observation": "原型 Skill 区分产品设计影响，选择 H1/H2，当前证据 schema v4。",
+      "limitations": [
+        "当前工作树/已保存历史报告的源事实；不等于所有运行时或发布版本已验证。"
+      ],
+      "sha256": "71fa0372cd667674c68ba3b0f555fb2cd489d269ede4e1c264617a245c4fd624"
+    },
+    {
+      "id": "evidence-local-S08",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "current-local-source",
+      "source_ref": ".agents/skills/yss-technical-design/SKILL.md",
+      "locator": "lines 20-39",
+      "stance": "support",
+      "observed_at": "2026-09-26T13:39:08.159662+00:00",
+      "observation": "Technical Design 以统一入口分别设计 DDD 与 MVC，不为 MVC 强制 DDD。",
+      "limitations": [
+        "当前工作树/已保存历史报告的源事实；不等于所有运行时或发布版本已验证。"
+      ],
+      "sha256": "6c468ab185cd329e5c16351cd5ed0015085169f87536c189f14b776dd65ff978"
+    },
+    {
+      "id": "evidence-local-S09",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "current-local-source",
+      "source_ref": ".template-spec/templates/vertical-slice-ticket-template.md",
+      "locator": "lines 14-18; lines 52-77",
+      "stance": "support",
+      "observed_at": "2026-09-26T13:39:08.159662+00:00",
+      "observation": "当前 Ticket 后端要求已分 DDD/MVC，细约束引用 Slice YAML。",
+      "limitations": [
+        "当前工作树/已保存历史报告的源事实；不等于所有运行时或发布版本已验证。"
+      ],
+      "sha256": "1b820d128660b538adc07f1c7074fc499ffa919ef67c13b10996ec31d21a0fde"
+    },
+    {
+      "id": "evidence-local-S10",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "current-local-source",
+      "source_ref": ".template-spec/plan/entry-review.md",
+      "locator": "lines 3-25",
+      "stance": "support",
+      "observed_at": "2026-09-26T13:39:08.159662+00:00",
+      "observation": "Plan 入口说明已有 prepare/diff，但只列 plan_user_decision_ref，未完整描述 continuation。",
+      "limitations": [
+        "当前工作树/已保存历史报告的源事实；不等于所有运行时或发布版本已验证。"
+      ],
+      "sha256": "27ad4c3291be33c614605b00ba1bc4c79caa61bd43db1d501d406792146f57b0"
+    },
+    {
+      "id": "evidence-local-S11",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "current-local-source",
+      "source_ref": ".agents/skills/yss-product-lifecycle/references/state-model.md",
+      "locator": "lines 74-74",
+      "stance": "support",
+      "observed_at": "2026-09-26T13:39:08.159662+00:00",
+      "observation": "state-model 第74行无条件写两个 Reviewer。",
+      "limitations": [
+        "当前工作树/已保存历史报告的源事实；不等于所有运行时或发布版本已验证。"
+      ],
+      "sha256": "035dd6777ed831146579ab07b1df2a1bb9a656cb37c5c149c9a0b82f93b4d0fd"
+    },
+    {
+      "id": "evidence-local-S12",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "current-local-source",
+      "source_ref": ".agents/skills/yss-product-lifecycle/references/orchestration.md",
+      "locator": "lines 46-48; lines 81-87",
+      "stance": "support",
+      "observed_at": "2026-09-26T13:39:08.159662+00:00",
+      "observation": "orchestration 第46/48行写 API Decision v1，第81行写两个 Reviewer。",
+      "limitations": [
+        "当前工作树/已保存历史报告的源事实；不等于所有运行时或发布版本已验证。"
+      ],
+      "sha256": "8ea29a14337b93a94324cc696f307e991bc4966c9190896a9425a01e0e41a12a"
+    },
+    {
+      "id": "evidence-local-S13",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "current-local-source",
+      "source_ref": ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml",
+      "locator": "lines 358-375; lines 700-718; lines 997-1006; lines 1207-1225",
+      "stance": "support",
+      "observed_at": "2026-09-26T13:39:08.159662+00:00",
+      "observation": "权威合同默认一个独立 Reviewer，条件增员；允许经核验的授权延续。",
+      "limitations": [
+        "当前工作树/已保存历史报告的源事实；不等于所有运行时或发布版本已验证。"
+      ],
+      "sha256": "3e4865660e976bd9a19726d93b876e550c1657f9cee291e7ea21a452180f752f"
+    },
+    {
+      "id": "evidence-local-S14",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "current-local-source",
+      "source_ref": ".template-spec/process/contract-reading.md",
+      "locator": "lines 3-10; lines 25-38",
+      "stance": "support",
+      "observed_at": "2026-09-26T13:39:08.159662+00:00",
+      "observation": "合同阅读说明新 API Decision v2，保留 v1 读取兼容。",
+      "limitations": [
+        "当前工作树/已保存历史报告的源事实；不等于所有运行时或发布版本已验证。"
+      ],
+      "sha256": "a09d4929a2cf2e57651aa8076d8ebcfc12b0718c891e3a995ccd3d81027803c5"
+    },
+    {
+      "id": "evidence-local-S15",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "current-local-source",
+      "source_ref": "scripts/lib/api-contract-decision.mjs",
+      "locator": "lines 28-35; lines 63-77",
+      "stance": "support",
+      "observed_at": "2026-09-26T13:39:08.159662+00:00",
+      "observation": "API 决定校验器按 schema_version 选择 v1/v2，prepare 新建 v2。",
+      "limitations": [
+        "当前工作树/已保存历史报告的源事实；不等于所有运行时或发布版本已验证。"
+      ],
+      "sha256": "48d1b35d017177e83b8ce72c589dd1e4d73d899dbb2b87281116f637f4ce2d1f"
+    },
+    {
+      "id": "evidence-local-S16",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "current-local-source",
+      "source_ref": ".template-spec/templates/verification-record-template.md",
+      "locator": "lines 24-28; lines 49-53",
+      "stance": "support",
+      "observed_at": "2026-09-26T13:39:08.159662+00:00",
+      "observation": "验证模板命令表仅时间、命令、pass/fail/skipped、备注；结论直接有可合并/可发布字段。",
+      "limitations": [
+        "当前工作树/已保存历史报告的源事实；不等于所有运行时或发布版本已验证。"
+      ],
+      "sha256": "addb1ac7dd55713dba9023f9676477397041b0c64a6060355c78f7987f062a62"
+    },
+    {
+      "id": "evidence-local-S17",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "current-local-source",
+      "source_ref": ".template-spec/templates/release-note-template.md",
+      "locator": "lines 8-14",
+      "stance": "support",
+      "observed_at": "2026-09-26T13:39:08.159662+00:00",
+      "observation": "发布说明模板只有变更、迁移和验证三个正文标题。",
+      "limitations": [
+        "当前工作树/已保存历史报告的源事实；不等于所有运行时或发布版本已验证。"
+      ],
+      "sha256": "4b62466769588c295a1fd5a1aa4eb11efb493178e2bb606cdfd7796e7abfbae3"
+    },
+    {
+      "id": "evidence-local-S18",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "current-local-source",
+      "source_ref": ".template-spec/templates/retro-report-template.md",
+      "locator": "lines 8-16",
+      "stance": "support",
+      "observed_at": "2026-09-26T13:39:08.159662+00:00",
+      "observation": "复盘模板含做得好、需改进、改进动作、沉淀去向四标题，无显式owner/验收/期限位置。",
+      "limitations": [
+        "当前工作树/已保存历史报告的源事实；不等于所有运行时或发布版本已验证。"
+      ],
+      "sha256": "72285356f56f29f1871df3ea240f47b107a4782dcbf18e013192e10c53b6dcaa"
+    },
+    {
+      "id": "evidence-local-S19",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "current-local-source",
+      "source_ref": ".template-spec/process/lifecycle-registry.yaml",
+      "locator": "lines 210-218; lines 268-275; lines 372-383; lines 480-485",
+      "stance": "support",
+      "observed_at": "2026-09-26T13:39:08.159662+00:00",
+      "observation": "当前注册表包含8阶段、7聚合门禁、14内部检查、23工作单元；旧审计的原型和L3文字已更新。",
+      "limitations": [
+        "当前工作树/已保存历史报告的源事实；不等于所有运行时或发布版本已验证。"
+      ],
+      "sha256": "e9fbae32a659edff9444301ada1c1fdfc36ae0e8c45c8148e143aa04d761f83e"
+    },
+    {
+      "id": "evidence-local-S20",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "current-local-source",
+      "source_ref": ".template-spec/process/stage-tracking.md",
+      "locator": "lines 11-43",
+      "stance": "support",
+      "observed_at": "2026-09-26T13:39:08.159662+00:00",
+      "observation": "阶段追踪由 checkpoint 持有，提供 check/plan/apply、漂移和并发处理。",
+      "limitations": [
+        "当前工作树/已保存历史报告的源事实；不等于所有运行时或发布版本已验证。"
+      ],
+      "sha256": "8920ecd6fe9e4c149d85f19a73ed97aee650d187046f80f47b1ed1d0ddebf975"
+    },
+    {
+      "id": "evidence-local-S21",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "prior-local-report",
+      "source_ref": ".template-source/evidence/maintenance/2026-09-26-lifecycle-optimization/triage-replay-report.md",
+      "locator": "lines 5-8; lines 31-38",
+      "stance": "support",
+      "observed_at": "2026-09-26T13:39:08.159662+00:00",
+      "observation": "历史分诊回放报告为14个合成首步场景，零工具调用，脱敏真实样本0；模式错误2到0。",
+      "limitations": [
+        "当前工作树/已保存历史报告的源事实；不等于所有运行时或发布版本已验证。"
+      ],
+      "sha256": "6c7baa4500ca50678888bcf54fd057abda925061fcfd4b321d30c4a1a18cebdb"
+    },
+    {
+      "id": "evidence-local-S22",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "prior-local-report",
+      "source_ref": ".template-source/evidence/maintenance/2026-09-26-lifecycle-optimization/cross-repo-pilot-report.md",
+      "locator": "lines 5-5; lines 16-16; lines 29-29",
+      "stance": "support",
+      "observed_at": "2026-09-26T13:39:08.159662+00:00",
+      "observation": "历史跨仓样板使用test-data-only批准、有限Java/Vue样本；未证明真实平台、部署、浏览器或正式Slice批准。",
+      "limitations": [
+        "当前工作树/已保存历史报告的源事实；不等于所有运行时或发布版本已验证。"
+      ],
+      "sha256": "8c46031897103e00424993aef48c680be04ee1615ff6df4c9624fec2f7551ab0"
+    },
+    {
+      "id": "evidence-local-S23",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "prior-local-report",
+      "source_ref": ".template-source/evidence/maintenance/2026-09-26-lifecycle-optimization/checkpoint.yaml",
+      "locator": "lines 1-50",
+      "stance": "support",
+      "observed_at": "2026-09-26T13:39:08.159662+00:00",
+      "observation": "当前优化 checkpoint 目标为 implementation-ready，而非 release-ready。",
+      "limitations": [
+        "当前工作树/已保存历史报告的源事实；不等于所有运行时或发布版本已验证。"
+      ],
+      "sha256": "c3c21bccf1654e02d2e6b6f4ac9997885bd432e7825206ed0a3fd4a25063b2d3"
+    },
+    {
+      "id": "evidence-local-S24",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "current-local-source",
+      "source_ref": ".agents/skills/yss-stage-decision/SKILL.md",
+      "locator": "lines 39-39",
+      "stance": "support",
+      "observed_at": "2026-09-26T13:39:08.159662+00:00",
+      "observation": "阶段决策入口以引用组织战略和方案包，当前用户决定路径已修复。",
+      "limitations": [
+        "当前工作树/已保存历史报告的源事实；不等于所有运行时或发布版本已验证。"
+      ],
+      "sha256": "b6f1ca70ad566dae313c32a56cfa9164b5d4996e45a236ff5bdc86b5a48662d0"
+    },
+    {
+      "id": "evidence-local-S25",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "current-local-source",
+      "source_ref": "scripts/lib/plan-spec-entry.mjs",
+      "locator": "lines 73-76",
+      "stance": "support",
+      "observed_at": "2026-09-26T13:39:08.159662+00:00",
+      "observation": "Plan入口校验器第75行同时传递 user_decision_ref 和 continuation_ref。",
+      "limitations": [
+        "当前工作树/已保存历史报告的源事实；不等于所有运行时或发布版本已验证。"
+      ],
+      "sha256": "d68460a139d13a0d2dae120c5cc1f0f2bb3d01ca6211b31752567415f05a1629"
+    },
+    {
+      "id": "evidence-local-S26",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "prior-local-report",
+      "source_ref": ".template-source/evidence/maintenance/2026-09-25-lifecycle-audit/lifecycle-skills-research-brief.md",
+      "locator": "lines 15-44",
+      "stance": "support",
+      "observed_at": "2026-09-26T13:39:08.159662+00:00",
+      "observation": "09-25审计作为旧发现对照，不作为当前未修缺陷结论。",
+      "limitations": [
+        "当前工作树/已保存历史报告的源事实；不等于所有运行时或发布版本已验证。"
+      ],
+      "sha256": "425d27ecfd0c696c0ff89f9ea5ab16e9c218d6d3e98a3be285262ad044fcc053"
+    },
+    {
+      "id": "evidence-local-S27",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "current-local-source",
+      "source_ref": "AGENTS.md",
+      "locator": "lines 59-67",
+      "stance": "support",
+      "observed_at": "2026-09-26T13:39:08.159662+00:00",
+      "observation": "根AGENTS第63行仍要求脚手架schema v3。",
+      "limitations": [
+        "当前工作树/已保存历史报告的源事实；不等于所有运行时或发布版本已验证。"
+      ],
+      "sha256": "c08b72ff83e7b43e9598269c2989c6c7e49480c1ac5906acf6e5f9295358b20a"
+    },
+    {
+      "id": "evidence-local-S28",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "current-local-source",
+      "source_ref": ".agents/skills/yss-implementation-contract-compiler/SKILL.md",
+      "locator": "lines 52-53",
+      "stance": "support",
+      "observed_at": "2026-09-26T13:39:08.159662+00:00",
+      "observation": "合同编译器第52行规定新脚手架v4，但API Decision文字仍写v1。",
+      "limitations": [
+        "当前工作树/已保存历史报告的源事实；不等于所有运行时或发布版本已验证。"
+      ],
+      "sha256": "b4f8c27da955cf0c43bf103fe49b14e22fd28f236539e0f65d041729387f89a6"
+    },
+    {
+      "id": "evidence-local-S29",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "current-local-source",
+      "source_ref": ".agents/skills/yss-layered-mvc-scaffold-generator/SKILL.md",
+      "locator": "lines 14-17; lines 72-72",
+      "stance": "support",
+      "observed_at": "2026-09-26T13:39:08.159662+00:00",
+      "observation": "MVC生成器第14/72行要求新v4，历史v3不用于新生成；API文字仍为v1。",
+      "limitations": [
+        "当前工作树/已保存历史报告的源事实；不等于所有运行时或发布版本已验证。"
+      ],
+      "sha256": "7bbb5ed77fb4ec57b4c7677cb468b1edcb616ef179d7800d8e5621e680c68329"
+    },
+    {
+      "id": "evidence-local-S30",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "current-local-source",
+      "source_ref": ".agents/skills/yss-ddd-scaffold-generator/SKILL.md",
+      "locator": "lines 77-80",
+      "stance": "support",
+      "observed_at": "2026-09-26T13:39:08.159662+00:00",
+      "observation": "DDD生成器第77行要求新v4，API Decision文字仍为v1。",
+      "limitations": [
+        "当前工作树/已保存历史报告的源事实；不等于所有运行时或发布版本已验证。"
+      ],
+      "sha256": "10207f0be4f36113ed5cd9b0db7348f1956c33cddd247beffad086f4aae0544e"
+    },
+    {
+      "id": "evidence-current-checks",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code-or-execution-record",
+      "source_ref": ".template-source/evidence/maintenance/2026-09-26-lifecycle-comparative-review/verification.json",
+      "locator": "all 8 records",
+      "stance": "support",
+      "observed_at": "2026-09-26",
+      "observation": "本轮8项定向命令均退出0，记录时间、耗时与日志。",
+      "limitations": [
+        "仅支持所述检查范围，不推断完整发布或真实生产行为。"
+      ],
+      "sha256": "74b83e4fb95fb23c167e11e2a18916560984cef42fb99271d778078c36fdf6d2"
+    },
+    {
+      "id": "evidence-checks-counter",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code-or-execution-record",
+      "source_ref": ".template-source/evidence/maintenance/2026-09-26-lifecycle-comparative-review/verification.json",
+      "locator": "commands list",
+      "stance": "counter",
+      "observed_at": "2026-09-26",
+      "observation": "这些命令不包含完整 verify-template、竞品安装运行或真实实例端到端。",
+      "limitations": [
+        "仅支持所述检查范围，不推断完整发布或真实生产行为。"
+      ],
+      "sha256": "74b83e4fb95fb23c167e11e2a18916560984cef42fb99271d778078c36fdf6d2"
+    },
+    {
+      "id": "evidence-policy-counter",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code-or-execution-record",
+      "source_ref": ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml",
+      "locator": "gate_consolidation / ready_for_agent",
+      "stance": "counter",
+      "observed_at": "2026-09-26",
+      "observation": "权威合同仍要求当前批准、正式Ticket和适用验证；文字漂移不证明正式门禁可绕过。",
+      "limitations": [
+        "仅支持所述检查范围，不推断完整发布或真实生产行为。"
+      ],
+      "sha256": "3e4865660e976bd9a19726d93b876e550c1657f9cee291e7ea21a452180f752f"
+    },
+    {
+      "id": "evidence-template-counter",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code-or-execution-record",
+      "source_ref": ".template-spec/process/document-writing.md",
+      "locator": "section 2 / section 3",
+      "stance": "counter",
+      "observed_at": "2026-09-26",
+      "observation": "共用规范已经要求引用上游、保留必要限定；重复栏目可能服务不同粒度。",
+      "limitations": [
+        "仅支持所述检查范围，不推断完整发布或真实生产行为。"
+      ],
+      "sha256": "974c195d98450295e64b17d7a94c6bd84c64efaa571446905654cc52ff26c138"
+    },
+    {
+      "id": "evidence-status-source",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code-or-execution-record",
+      "source_ref": "scripts/lib/lifecycle-status.mjs",
+      "locator": "lines 28-51",
+      "stance": "support",
+      "observed_at": "2026-09-26",
+      "observation": "视图检查显式状态、可读性和trackingDrift；approved资产只readFileSync，不对其digest比较。",
+      "limitations": [
+        "仅支持所述检查范围，不推断完整发布或真实生产行为。"
+      ],
+      "sha256": "137bcd71d7401fce06edde5fe1539387942316544ac97e7268163f1ba55409c0"
+    },
+    {
+      "id": "evidence-status-probe",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code-or-execution-record",
+      "source_ref": ".template-source/evidence/maintenance/2026-09-26-lifecycle-comparative-review/status-view-probe.json",
+      "locator": "before/after/interpretation",
+      "stance": "support",
+      "observed_at": "2026-09-26",
+      "observation": "当前探针修改可读approved资产字节，context pending且无tracking时，前后blockers均为空，next_action建议执行Spec综合。",
+      "limitations": [
+        "仅支持所述检查范围，不推断完整发布或真实生产行为。"
+      ],
+      "sha256": "aaecdb34d5a159f1e557e8abc21feb0994378312fe12c5d46ed8263c32446632"
+    },
+    {
+      "id": "evidence-status-counter",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code-or-execution-record",
+      "source_ref": "scripts/lib/lifecycle-status.mjs",
+      "locator": "lines 18,41-51",
+      "stance": "counter",
+      "observed_at": "2026-09-26",
+      "observation": "工具声明read_only，确有stage-tracking摘要漂移检查；探针没有执行正式流转。",
+      "limitations": [
+        "仅支持所述检查范围，不推断完整发布或真实生产行为。"
+      ],
+      "sha256": "137bcd71d7401fce06edde5fe1539387942316544ac97e7268163f1ba55409c0"
+    },
+    {
+      "id": "evidence-eval-record",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code-or-execution-record",
+      "source_ref": ".template-source/evidence/maintenance/2026-09-20-openai-skills-implementation/agent-evaluation-summary.json",
+      "locator": "results / limits",
+      "stance": "support",
+      "observed_at": "2026-09-26",
+      "observation": "历史64次、16场景、两版本各2次；重评后32/32对32/32，没有候选效率改善证据。",
+      "limitations": [
+        "本轮重读存档，未重跑；两次重复不可作统计性能结论。"
+      ],
+      "sha256": "6d01d83a2163ce9eab7a9a993c14e5d98f686a1438ef211eb72480cc862e081c"
+    },
+    {
+      "id": "evidence-eval-counter",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code-or-execution-record",
+      "source_ref": ".template-source/evidence/maintenance/2026-09-26-lifecycle-optimization/cross-repo-pilot-report.md",
+      "locator": "scope / limitations",
+      "stance": "counter",
+      "observed_at": "2026-09-26",
+      "observation": "跨仓样板已执行有限构建及错误注入，并非只有静态文本；仍未覆盖真实平台部署浏览器与正式批准。",
+      "limitations": [
+        "仅支持所述检查范围，不推断完整发布或真实生产行为。"
+      ],
+      "sha256": "8c46031897103e00424993aef48c680be04ee1615ff6df4c9624fec2f7551ab0"
+    },
+    {
+      "id": "evidence-foundation",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code-or-execution-record",
+      "source_ref": ".agents/skills/yss-product-lifecycle/SKILL.md",
+      "locator": "facts / boundaries / bounded loop",
+      "stance": "support",
+      "observed_at": "2026-09-26",
+      "observation": "主控以身份、注册表、合同、授权和证据选工作单元，专项执行与批准职责分开。",
+      "limitations": [
+        "仅支持所述检查范围，不推断完整发布或真实生产行为。"
+      ],
+      "sha256": "f200bde383ed7f77039aadc49e23916ed39f9716cf1a089d71157e070e351fb8"
+    },
+    {
+      "id": "evidence-grilling",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code-or-execution-record",
+      "source_ref": ".agents/skills/grilling/SKILL.md",
+      "locator": "frontier and stop condition",
+      "stance": "support",
+      "observed_at": "2026-09-26",
+      "observation": "按当前frontier询问，主动找事实，复用已确认决定，达到已授权范围退出。",
+      "limitations": [
+        "仅支持所述检查范围，不推断完整发布或真实生产行为。"
+      ],
+      "sha256": "a521b01e5dd581fd7b0a71f9dcca74c983cdb9503ad1f7ea87ff273a4745530f"
+    },
+    {
+      "id": "evidence-domain",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code-or-execution-record",
+      "source_ref": ".agents/skills/domain-modeling/SKILL.md",
+      "locator": "entry / ownership",
+      "stance": "support",
+      "observed_at": "2026-09-26",
+      "observation": "业务词汇和关键决定归本技能；仅阅读CONTEXT不需调用。",
+      "limitations": [
+        "仅支持所述检查范围，不推断完整发布或真实生产行为。"
+      ],
+      "sha256": "6bbfeeaa16b7e90eb298e76190e63f290f5f7a4f5cebc2db753de0448f6780aa"
+    }
+  ],
+  "claims": [
+    {
+      "id": "claim-local-foundation",
+      "claim_kind": "technical-fact",
+      "statement": "当前主控与核心Skill分工、条件裁剪、编译/批准分离已有明确合同；注册表为8阶段7门禁14检查23工作单元。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-foundation",
+        "evidence-grilling",
+        "evidence-domain",
+        "evidence-local-S07",
+        "evidence-local-S08",
+        "evidence-local-S13",
+        "evidence-local-S19",
+        "evidence-local-S24",
+        "evidence-local-S28"
+      ],
+      "counter_signal_refs": [
+        "evidence-checks-counter"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-existing-fixes",
+      "claim_kind": "technical-fact",
+      "statement": "09-25所列原型ID/Evidence版本/L3/Ticket DDD约束/死链接问题在当前工作树已修，prepare/diff和状态工具已新增。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-local-S07",
+        "evidence-local-S09",
+        "evidence-local-S10",
+        "evidence-local-S19",
+        "evidence-local-S24",
+        "evidence-status-source"
+      ],
+      "counter_signal_refs": [
+        "evidence-checks-counter"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-schema-drift",
+      "claim_kind": "technical-fact",
+      "statement": "根入口脚手架v3与配套新v4要求冲突；多处API v1文字与新建v2机制不一致；不据此推断运行拒收。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-local-S12",
+        "evidence-local-S14",
+        "evidence-local-S15",
+        "evidence-local-S27",
+        "evidence-local-S28",
+        "evidence-local-S29",
+        "evidence-local-S30"
+      ],
+      "counter_signal_refs": [
+        "evidence-policy-counter"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-reviewer-drift",
+      "claim_kind": "technical-fact",
+      "statement": "两个Reviewer的无条件说明与默认一个独立Reviewer的权威策略冲突；尚未复现实例误派。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-local-S11",
+        "evidence-local-S12",
+        "evidence-local-S13"
+      ],
+      "counter_signal_refs": [
+        "evidence-policy-counter"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-continuation-gap",
+      "claim_kind": "technical-fact",
+      "statement": "Plan入口阅读说明未完整描述校验器已有的plan_continuation_ref和核验延续路径。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-local-S10",
+        "evidence-local-S13",
+        "evidence-local-S25"
+      ],
+      "counter_signal_refs": [
+        "evidence-policy-counter"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-current-checks",
+      "claim_kind": "technical-fact",
+      "statement": "本轮8项定向检查全部退出0，只代表列出的命令范围。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-current-checks"
+      ],
+      "counter_signal_refs": [
+        "evidence-checks-counter"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-status-scope",
+      "claim_kind": "technical-fact",
+      "statement": "只读状态视图空blockers不能代表全部批准/摘要/Context已核验；当前合成探针能出现未核验摘要变化仍建议下一动作。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-status-source",
+        "evidence-status-probe"
+      ],
+      "counter_signal_refs": [
+        "evidence-status-counter"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-template-guidance",
+      "claim_kind": "technical-fact",
+      "statement": "总体设计与上游有重复栏目，末段模板对候选/日志/行动闭环提示偏简；这是模板改进机会而非已证明放行漏洞。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-local-S01",
+        "evidence-local-S04",
+        "evidence-local-S05",
+        "evidence-local-S16",
+        "evidence-local-S17",
+        "evidence-local-S18",
+        "evidence-local-S19"
+      ],
+      "counter_signal_refs": [
+        "evidence-template-counter",
+        "evidence-policy-counter"
+      ],
+      "audit_status": "supported",
+      "confidence": "medium",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-speckit",
+      "claim_kind": "technical-fact",
+      "statement": "Spec Kit当前官方文档提供执行状态/精确恢复/JSON，以及单一契约owner和固定消费者版本；gate默认verdict与YSS不同。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-sk-workflow",
+        "evidence-sk-cdd"
+      ],
+      "counter_signal_refs": [
+        "evidence-sk-workflow-counter",
+        "evidence-sk-cdd-counter"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-openspec",
+      "claim_kind": "technical-fact",
+      "statement": "OpenSpec Stores beta提供独立规划仓及只读reference，组件自行保持本地change；不自动路由仓库任务或同步Git。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-os-stores"
+      ],
+      "counter_signal_refs": [
+        "evidence-os-stores-counter"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-kiro",
+      "claim_kind": "technical-fact",
+      "statement": "Kiro Quick以相同工件取消阶段间审批；Bugfix明确须保留行为；Quick不宜直接替换YSS已命中门禁。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-kiro-quick",
+        "evidence-kiro-bugfix"
+      ],
+      "counter_signal_refs": [
+        "evidence-kiro-quick-counter",
+        "evidence-kiro-bugfix-counter"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-bmad",
+      "claim_kind": "technical-fact",
+      "statement": "BMAD v6.12以调查结果确定流程深度，v6.11收敛Skill并考虑兼容；预览与稳定安装须区分。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-bmad-release",
+        "evidence-bmad-release-611",
+        "evidence-bmad-preview"
+      ],
+      "counter_signal_refs": [
+        "evidence-bmad-preview-counter"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-aidlc",
+      "claim_kind": "technical-fact",
+      "statement": "AI-DLC稳定v2.10.0发行说明有Unit/batch验证检查点、人工边界和可执行恢复；main/preview不能作为稳定运行认证。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-aidlc-release",
+        "evidence-aidlc-harness"
+      ],
+      "counter_signal_refs": [
+        "evidence-aidlc-harness-counter",
+        "evidence-aidlc-preview-counter"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-superpowers",
+      "claim_kind": "technical-fact",
+      "statement": "固定SHA的Superpowers有独立任务上下文与ledger；其主控自主ruling和提交语义不能直接覆盖YSS批准策略。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-sp-01"
+      ],
+      "counter_signal_refs": [
+        "evidence-sp-02"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-gsd",
+      "claim_kind": "technical-fact",
+      "statement": "GSD旧仓已指向gsd-core；固定resume源码核对未提交文件并区分异步任务，防止误重做。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-gsd-00",
+        "evidence-gsd-04"
+      ],
+      "counter_signal_refs": [
+        "evidence-gsd-02",
+        "evidence-gsd-05"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-matt",
+      "claim_kind": "technical-fact",
+      "statement": "固定SHA的Matt to-spec有显式调用、seam及综合模板，也把Spec直接标ready-for-agent，与YSS语义不同。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-matt-01",
+        "evidence-foundation"
+      ],
+      "counter_signal_refs": [
+        "evidence-matt-02"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-skill-evaluation",
+      "claim_kind": "technical-fact",
+      "statement": "官方Skill规范支持渐进加载，OpenAI eval指南检查真实轨迹/产物及触发负对照；YSS已有相应runner。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-standard-01",
+        "evidence-openai-03",
+        "evidence-yss-01"
+      ],
+      "counter_signal_refs": [
+        "evidence-standard-02",
+        "evidence-yss-02"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-evaluation-limits",
+      "claim_kind": "technical-fact",
+      "statement": "既有64次Agent评测、14场景零调用分诊和test-data-only跨仓试点的范围不同，不能据此声称真实全流程效率提升。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-eval-record",
+        "evidence-local-S21",
+        "evidence-local-S22"
+      ],
+      "counter_signal_refs": [
+        "evidence-eval-counter"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    }
+  ],
+  "source_gaps": [
+    {
+      "id": "gap-runtime",
+      "description": "竞品未安装实测；main/beta和稳定发布范围不等同。"
+    },
+    {
+      "id": "gap-real-project",
+      "description": "没有真实用户流程样本/当前完整实例串行运行，未测吞吐和人工时间。"
+    },
+    {
+      "id": "gap-release",
+      "description": "有未提交工作树改动，未做完整发布验证或固定外部CLI消费者认证。"
+    },
+    {
+      "id": "gap-invalid-probe",
+      "description": "首次Buffer序列化探针无效，保留但排除；只消费修正后结果。"
+    },
+    {
+      "id": "pattern-gap-0",
+      "description": "{'id': 'gap-01', 'description': 'Superpowers evals/README.md 固定 SHA 请求 HTTP 404；发现公开评估报告，但没有独立获取并复跑其临时原始轨迹。', 'search_ref': 'search-15'}"
+    },
+    {
+      "id": "pattern-gap-1",
+      "description": "{'id': 'gap-02', 'description': '未安装/执行竞品；机制是源码与文档事实，不是性能或整体可靠性认证。'}"
+    },
+    {
+      "id": "pattern-gap-2",
+      "description": "{'id': 'gap-03', 'description': '官方网页和 main/next 为可变入口。关键 GitHub 源码固定 SHA；官方网页仅记录检索日。'}"
+    },
+    {
+      "id": "competitor-gap-0",
+      "description": "{'id': 'gap-runtime', 'scope': 'all', 'detail': '未安装运行五个产品，无检出率/耗时/成本/采用率证据。'}"
+    },
+    {
+      "id": "competitor-gap-1",
+      "description": "{'id': 'gap-version', 'scope': 'all', 'detail': '在线文档或 main 是 2026-09-26 访问快照；除固定 tag 发行声明外，未逐文件证明能力属于稳定安装包。'}"
+    },
+    {
+      "id": "competitor-gap-2",
+      "description": "{'id': 'gap-access', 'scope': 'OpenSpec website and AI-DLC Raw links', 'detail': '部分 URL 返回 Internal Error，已使用可读官方仓库 rendered 页面；见 search-09/10。'}"
+    },
+    {
+      "id": "competitor-gap-3",
+      "description": "{'id': 'gap-kiro', 'scope': 'Kiro', 'detail': '未核验账号/套餐可用性；运行端能力以官方 Specs capability table 限定。'}"
+    }
+  ],
+  "audit_summary": {
+    "status": "complete",
+    "audited_claim_ids": [
+      "claim-local-foundation",
+      "claim-existing-fixes",
+      "claim-schema-drift",
+      "claim-reviewer-drift",
+      "claim-continuation-gap",
+      "claim-current-checks",
+      "claim-status-scope",
+      "claim-template-guidance",
+      "claim-speckit",
+      "claim-openspec",
+      "claim-kiro",
+      "claim-bmad",
+      "claim-aidlc",
+      "claim-superpowers",
+      "claim-gsd",
+      "claim-matt",
+      "claim-skill-evaluation",
+      "claim-evaluation-limits"
+    ],
+    "notes": [
+      "主控复核报告中决策性事实；建议为设计推断，未授予下游批准。",
+      "子任务Search Log与原始来源护照保留。",
+      "支持与反证分别记录，同一页可包含不同方向的观察。",
+      "结构校验只证明包完整性，不证明所有语义或运行行为。"
+    ]
+  }
+}

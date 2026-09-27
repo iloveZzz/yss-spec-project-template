@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "baseline_commit": "ab0c247d5d30520dfe3a5876a96f5d0864d83cd0",
+  "model": "gpt-6-sol",
+  "cli": "codex-cli 0.153.4",
+  "cases_ref": ".agents/skills/yss-product-lifecycle/references/request-triage-scenarios.yaml",
+  "cases_digest": "sha256:aa5039f61a8f26b23b4eac559a57f181f8dddc0bace3e4a1f2e4b023205675d6",
+  "variants": {
+    "baseline": {
+      ".agents/skills/yss-product-lifecycle/SKILL.md": "sha256:f200bde383ed7f77039aadc49e23916ed39f9716cf1a089d71157e070e351fb8",
+      ".agents/skills/yss-product-lifecycle/references/request-triage.md": "sha256:63f742c01cd140981dd8fbaa706be24cc37207616dde4e5e97ccf4f2cc267b82",
+      ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml": "sha256:dec1d6749a1c1f0c89da4a33098b9989b576b737a7183510f40e66db29ace2f7"
+    },
+    "candidate": {
+      ".agents/skills/yss-product-lifecycle/SKILL.md": "sha256:f200bde383ed7f77039aadc49e23916ed39f9716cf1a089d71157e070e351fb8",
+      ".agents/skills/yss-product-lifecycle/references/request-triage.md": "sha256:63f742c01cd140981dd8fbaa706be24cc37207616dde4e5e97ccf4f2cc267b82",
+      ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml": "sha256:9e18c7a7ad71cdd7eaca07171bf9486e5da9f89e2210b1dcb250d49750231248"
+    }
+  }
+}

@@ -1,0 +1,82 @@
+#!/usr/bin/env node
+// Deliberately excluded from deterministic CI: this is an observed model replay.
+import { createHash } from 'node:crypto';
+import { execFileSync, spawnSync } from 'node:child_process';
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { parseDocument } from '../../scripts/vendor/yaml.mjs';
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+const output = process.argv[2];
+if (!output) throw new TypeError('用法: .template-source/scripts/replay-lifecycle-triage <new-output-dir> [model]');
+const model = process.argv[3] ?? 'gpt-6-sol';
+const baseline = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim();
+const cli = execFileSync('codex', ['--version'], { encoding: 'utf8' }).trim();
+const refs = [
+  '.agents/skills/yss-product-lifecycle/SKILL.md',
+  '.agents/skills/yss-product-lifecycle/references/request-triage.md',
+  '.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml',
+];
+const sha = bytes => `sha256:${createHash('sha256').update(bytes).digest('hex')}`;
+const casesRef = '.agents/skills/yss-product-lifecycle/references/request-triage-scenarios.yaml';
+const cases = JSON.parse(readFileSync(path.join(root, casesRef), 'utf8')).cases;
+const temp = mkdtempSync(path.join(os.tmpdir(), 'yss-triage-replay-'));
+mkdirSync(output, { recursive: false });
+const metadata = { schema_version: 1, baseline_commit: baseline, model, cli, cases_ref: casesRef, cases_digest: sha(readFileSync(path.join(root, casesRef))), variants: {} };
+try {
+  const schema = {
+    type: 'object', additionalProperties: false, required: ['cases'], properties: {
+      cases: { type: 'array', items: { type: 'object', additionalProperties: false,
+        required: ['id', 'mode', 'next_action', 'answer', 'tool_calls'], properties: {
+          id: { type: 'string' }, mode: { type: 'string' }, next_action: { type: 'string' },
+          answer: { type: 'string' }, tool_calls: { type: 'array', items: { type: 'string' } },
+        } } },
+    },
+  };
+  const schemaFile = path.join(temp, 'output-schema.json');
+  writeFileSync(schemaFile, `${JSON.stringify(schema)}\n`);
+  for (const variant of ['baseline', 'candidate']) {
+    const sources = Object.fromEntries(refs.map(ref => {
+      const bytes = variant === 'baseline'
+        ? execFileSync('git', ['show', `${baseline}:${ref}`], { cwd: root })
+        : readFileSync(path.join(root, ref));
+      return [ref, { text: String(bytes), digest: sha(bytes) }];
+    }));
+    const contractRef = refs[2];
+    const contract = parseDocument(sources[contractRef].text).toJS();
+    sources[contractRef].text = JSON.stringify({ request_triage: contract.request_triage, modes: contract.modes }, null, 2);
+    metadata.variants[variant] = Object.fromEntries(refs.map(ref => [ref, sources[ref].digest]));
+    const prompt = [
+      '你是隔离的 YSS 研发请求分诊执行者。仅依据下列固定 Skill 快照，对每个 case 的 input 和 context 判断首个动作。',
+      '逐案独立处理；只返回 JSON；不要读取文件、调用工具、修改状态或假装已执行动作。answer 写原本会给用户的简短中文答复；tool_calls 记本次真实调用，未调用用空数组。',
+      ...refs.map(ref => `\n### ${ref}\n${sources[ref].text}`),
+      `\n### cases\n${JSON.stringify(cases.map(({ id, input, context }) => ({ id, input, context })), null, 2)}`,
+    ].join('\n');
+    writeFileSync(path.join(output, `${variant}-prompt.txt`), prompt);
+    const result = spawnSync('codex', ['exec', '--json', '--ephemeral', '--ignore-rules', '--sandbox', 'read-only', '--skip-git-repo-check', '-C', temp, '-m', model, '--output-schema', schemaFile, '-'], {
+      input: prompt, encoding: 'utf8', timeout: 600000, maxBuffer: 32 * 1024 * 1024,
+    });
+    writeFileSync(path.join(output, `${variant}-raw.jsonl`), result.stdout ?? '');
+    writeFileSync(path.join(output, `${variant}-stderr.txt`), result.stderr ?? '');
+    if (result.error || result.status !== 0) throw new Error(`${variant} replay failed: ${result.error?.message ?? result.status}`);
+    const events = result.stdout.trim().split('\n').map(line => JSON.parse(line));
+    const answerEvent = events.filter(event => event.type === 'item.completed' && event.item?.type === 'agent_message').at(-1);
+    if (!answerEvent) throw new Error(`${variant} replay missing answer event`);
+    const answer = JSON.parse(answerEvent.item.text);
+    const actualCalls = events.filter(event => event.type === 'item.started' && event.item?.type?.includes('call'));
+    if (actualCalls.length) throw new Error(`${variant} replay used ${actualCalls.length} unexpected tools`);
+    if (answer.cases.length !== cases.length || new Set(answer.cases.map(row => row.id)).size !== cases.length) throw new Error(`${variant} replay missing or duplicate cases`);
+    const scored = cases.map(expected => {
+      const actual = answer.cases.find(row => row.id === expected.id);
+      if (!actual) throw new Error(`${variant} replay missing ${expected.id}`);
+      return { id: expected.id, expected: expected.expected, forbidden: expected.forbidden, actual,
+        route_match: actual.mode === expected.expected.mode && actual.next_action === expected.expected.next_action,
+        expected_outcomes_review: 'pending-human-review', forbidden_review: 'pending-human-review' };
+    });
+    writeFileSync(path.join(output, `${variant}-scored.json`), `${JSON.stringify(scored, null, 2)}\n`);
+  }
+  writeFileSync(path.join(output, 'metadata.json'), `${JSON.stringify(metadata, null, 2)}\n`);
+  process.stdout.write(`${JSON.stringify({ output, model, baseline_commit: baseline, cases: cases.length })}\n`);
+} finally { rmSync(temp, { recursive: true, force: true }); }

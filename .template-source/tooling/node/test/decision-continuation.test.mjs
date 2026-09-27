@@ -95,6 +95,10 @@ test('implementation continuation preserves contract, repository and write-path 
   f.proof.subject = f.asset(subject.ref); f.review.subject = f.proof.subject; f.review.comparison.after = f.proof.subject; f.refresh();
   assert.throws(() => assertImplementationDecision(implementation.state), /写路径超出/);
 }, 'implementation-scope'));
+test('conflicting direct decision and continuation references are rejected', () => fixture(f => {
+  f.requirement.user_decision_ref = f.source.ref;
+  assert.throws(f.verify, /两种证明路径/);
+}));
 test('no reply and revoked source authorization cannot continue', () => fixture(f => {
   f.source.record.responses = []; f.source.save(); assert.throws(f.verify, /response-required/);
   f.source.respond({ decision: 'revoked', text: '撤回同意' }); f.source.save(); assert.throws(f.verify, /not-approved/);

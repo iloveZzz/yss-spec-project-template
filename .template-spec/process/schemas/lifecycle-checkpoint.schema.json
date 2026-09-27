@@ -22,6 +22,21 @@
     "rollback"
   ],
   "properties": {
+    "service_project_initialization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["project_id", "contract_ref", "contract_digest", "project_root", "context_handoff_digest"],
+      "properties": {
+        "project_id": { "type": "string", "minLength": 1 },
+        "contract_ref": { "type": "string", "minLength": 1 },
+        "contract_digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+        "project_root": { "type": "string", "minLength": 1 },
+        "context_handoff_digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+        "manifest_ref": { "type": "string", "minLength": 1 },
+        "verification_ref": { "type": "string", "minLength": 1 },
+        "result_ref": { "type": "string", "minLength": 1 }
+      }
+    },
     "plan_continuation_ref": {
       "type": "string",
       "minLength": 1

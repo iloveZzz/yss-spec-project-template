@@ -2,7 +2,7 @@
 
 ## 有界推进循环
 
-1. 按 `orchestration-contract.yaml.request_triage` 理解请求并选择模式，再识别仓库身份、任务规模和影响面；问题理解与澄清细节见 [请求分诊协议](request-triage.md)。
+1. 按 `orchestration-contract.yaml.request_triage` 理解请求并选择模式，再识别仓库身份、任务规模和影响面；问题理解与澄清细节见 [请求分诊协议](request-triage.md)。查看已有项目进度可用 `scripts/lifecycle-status --root <项目> --checkpoint <引用>` 读取当前阶段、阻塞、负责人和下一动作；此视图不推进状态或代替流转校验。
 2. `setup readiness`：每个任务只执行一次，核对 tracker、五态标签和领域文档布局，并在本轮缓存结果；仅在 tracker、主远端、真实标签或配置变化时重查。
 3. 加载父 Ticket/checkpoint 与真实资产，计算最近可信阶段；按 `.template-spec/process/stage-tracking.md` 登记、恢复并核验当前阶段工作项，写入前确保 checkpoint 已持久化，工作单元结果带 checkpoint_ref。
 4. 评估资产、门禁和 `stale`，选择第一个未阻塞工作单元。进入 `work-unit.slice-implementation` 前，必须先通过 `scripts/lib/lifecycle-transition.mjs` 的 Ticket 正式化、垂直切片绑定和合法 `next_route` 校验；父 Ticket、缺少垂直切片或 `ready-for-human` 的切片一律 `blocked`。
@@ -12,6 +12,14 @@
 不要仅输出下一个提示词后结束 `orchestrate`/`resume`。不要因进入业务代码阶段而退出主控；应把实现交给专项 skill，并在返回后继续核验。
 
 连续阶段自动推进时累积 Ticket 同步和 Git 判断证据，在阶段退出、人工暂停、handoff、进入实现、合并或发布边界集中 checkpoint。发生阻塞、责任人变化或资产需要单独批准时立即落 checkpoint，不因合并记录而丢失阶段因果关系。
+
+## 状态查看与中断恢复
+
+`lifecycle-status` 保留原 JSON 字段，并以 `verification_scope` 区分已检查、失败、未检查和不适用；`diagnostics` 给出来源、已有负责人及恢复建议，`next_step` 给出前置条件和可用的命令参数数组。`blockers: []` 仅表示本次读取未发现阻塞，退出 0 不证明批准有效或允许实现。视图只写 stdout，不调用完整验证、远端或状态写入；缺少预检脚本时显示缺口，不能猜命令。
+
+恢复按合同 `execution_efficiency.recovery` 执行：读取当前 checkpoint、阶段工作项、任务包和真实结果，先识别运行中任务、已有完成证据及操作已完成但尚未登记的情况。运行中或结果未知时核对原任务身份，不因缺少摘要再次派发；已有完成证据须先复核新鲜度，再计算下一单元。外部动作缺可查询结果时报告缺口，不能重做副作用。
+
+上游变化按既有依赖关系使受影响资产过期，保留未受影响工作和历史记录；恢复、派发和交付边界仍执行适用 Context、决定/延续、门禁、仓库和允许写范围的校验。核验后输入变化即重验。有效授权不重复询问；未知或实质变化回交原责任方。历史实例缺 stage_tracking 时按已登记兼容和显式迁移入口处理，状态查询不自动补写。
 
 ## 执行成本
 
@@ -43,9 +51,9 @@ Matt phase boundary 是工作阶段之间的上下文决策，不是新的生命
 
 `prototype_confirmation` 通过后，先判断实现仓库登记中的 backend `scaffold_status`。当状态为 `required` 时，在进入 DDD / MVC 分支设计前完成 `gate.backend-architecture-platform-approved`：Agent 按领域复杂度给出 `domain-driven` / `layered-mvc` 推荐和依据，并从 `.template-spec/engineering/backend-platforms.json` 展示可选平台的精确 Spring Boot 补丁版本与 Java 版本；用户在同一次决定中确认架构与平台。本体选择作为子项目预填默认值，用户可批量确认全部项目或逐项覆盖。选择写入 `scaffold-architecture-decisions.yaml`；处于 `undecided`、`recommended`、`awaiting-user-decision` 或 `stale` 时必须阻断，不得默认 DDD、MVC 或 Spring Boot 版本，也不得在生成器内交互。既有工程使用当前 `existing-registration` 的架构及固定工程基线/POM 中的实际 Spring Boot 版本，核验摘要和支持状态后将该门禁记录为 `not-applicable`，不重复询问；架构转换或平台升级另行立项。
 
-`gate.backend-architecture-platform-approved` 通过、选择达到 `lifecycle-approved` 且 digest 当前后，才可进入对应的 DDD 战术设计或 MVC 技术设计分支，再完成批准且当前的 Technical Design、Data Architecture Decision v1 和 API Contract Decision v1。数据与 API 均按影响强制：命中则绑定设计及评审闭包，未命中则绑定评估、明确原因和证据。再由 `yss-implementation-contract-compiler` 编译脚手架 schema v4 `controlled-generation` 工作单元合同。顺序为：工程基线与架构/平台推荐 → 用户确认与选择持久化 → DDD / MVC 分支设计 → 技术/数据/API 设计 → 工程合同原子批准 → 脚手架合同持久化 → `domain-driven` 使用 `yss-ddd-scaffold-generator` 或 `layered-mvc` 使用 `yss-layered-mvc-scaffold-generator` → 对应基线/Manifest v4 校验 → 仓库准备 v2 → 实现合同编译器业务合同重编译。`existing` / `initialized` 不重复生成；架构转换或平台升级必须单独立项。schema v3 只允许历史 Manifest 的只读恢复审计，不得新生成。
+`gate.backend-architecture-platform-approved` 通过、选择达到 `lifecycle-approved` 且 digest 当前后，才可进入对应的 DDD 战术设计或 MVC 技术设计分支，再完成批准且当前的 Technical Design、Data Architecture Decision v1 和 API Contract Decision（新建 v2；历史 v1 只读兼容，准备与迁移见 `.template-spec/process/contract-reading.md`）。数据与 API 均按影响强制：命中则绑定设计及评审闭包，未命中则绑定评估、明确原因和证据。再由 `yss-implementation-contract-compiler` 编译脚手架 schema v4 `controlled-generation` 工作单元合同。顺序为：工程基线与架构/平台推荐 → 用户确认与选择持久化 → DDD / MVC 分支设计 → 技术/数据/API 设计 → 工程合同原子批准 → 脚手架合同持久化 → `domain-driven` 使用 `yss-ddd-scaffold-generator` 或 `layered-mvc` 使用 `yss-layered-mvc-scaffold-generator` → 对应基线/Manifest v4 校验 → 仓库准备 v2 → 实现合同编译器业务合同重编译。`existing` / `initialized` 不重复生成；架构转换或平台升级必须单独立项。schema v3 只允许历史 Manifest 的只读恢复审计，不得新生成。
 
-脚手架工作单元必须使用结构化 schema v4 合同 JSON，除工程身份、架构决定、Profile、模块闭包、允许路径和验证命令外，必须以原始字节 digest 绑定 Technical Design、Data Architecture Decision v1、API Contract Decision v1 和 `gate.engineering-contract-approved` 的真实批准记录。API `required` 时 Draft、Validation、独立 Review、Freeze 与工程批准必须绑定同一 OpenAPI YAML 字节；`not-applicable` 时不得携带空占位资产。生成器在创建输出目录前读取并校验所有引用、版本、主体、gate、批准范围、资产绑定与摘要；虚构 URI、字符串自证或仅有 `status: approved` 均无效。三条 Wrapper 命令必须由受控工作单元真实执行并留存证据。非空目标、`--force`、旧项目迁移和模板升级均阻断。脚手架不得生成 Controller、Repository 实现、SQL、领域行为、业务规则、状态机、权限、事务、复杂查询、错误映射、用户可见行为或示例业务 API；`empty-scaffold-verified` 仍不是 `ready-for-agent`。
+脚手架工作单元必须使用结构化 schema v4 合同 JSON，除工程身份、架构决定、Profile、模块闭包、允许路径和验证命令外，必须以原始字节 digest 绑定 Technical Design、Data Architecture Decision v1、API Contract Decision（新建 v2；历史 v1 只读兼容，准备与迁移见 `.template-spec/process/contract-reading.md`） 和 `gate.engineering-contract-approved` 的真实批准记录。API `required` 时 Draft、Validation、独立 Review、Freeze 与工程批准必须绑定同一 OpenAPI YAML 字节；`not-applicable` 时不得携带空占位资产。生成器在创建输出目录前读取并校验所有引用、版本、主体、gate、批准范围、资产绑定与摘要；虚构 URI、字符串自证或仅有 `status: approved` 均无效。三条 Wrapper 命令必须由受控工作单元真实执行并留存证据。非空目标、`--force`、旧项目迁移和模板升级均阻断。脚手架不得生成 Controller、Repository 实现、SQL、领域行为、业务规则、状态机、权限、事务、复杂查询、错误映射、用户可见行为或示例业务 API；`empty-scaffold-verified` 仍不是 `ready-for-agent`。
 
 脚手架完成后，所有后续生成的后端代码仍必须重新消费当前版本的批准 Slice Implementation Contract、YSS skill 依赖闭包、允许写路径、预期证据和 Execution Result。业务行为使用 `behavior-tdd`；只有机械结构、样板、配置和冻结客户端使用 `controlled-generation`。缺少合同、skill、证据或实际验证时立即阻断；生成范围从机械内容变成业务行为时触发完整重路由。
 
@@ -78,7 +86,7 @@ tracker 选择和冲突按 `.template-spec/agents/issue-tracker.md` 裁决：已
 
 ## 审查与验证
 
-- 调用 `code-review` 前先固定 review input：`review_mode`、`review_base_ref`、`implementation_candidate_ref`、`candidate_snapshot_ref`、`candidate_digest`、Spec/Ticket、Slice Implementation Contract、Build Architecture Checklist 和 YSS Skill Execution Result 引用。`committed` 模式审查不可变 `HEAD`；`worktree` 模式一次捕获 committed、staged、unstaged 和 untracked 内容。必须按 `orchestration-contract.yaml.review_input` 的 manifest 按模式必填字段及 `yss-worktree-candidate-v1` 字节流（raw path、uint64 big-endian 长度、tracked/untracked record）计算 SHA-256，两个 Reviewer 必须消费同一不可变快照。返回后或完成 checkpoint 摘要变化时返回 `blocked`，由编排器决定重新审查。候选为空、漏项或 fixed point 不可解析时阻断。
+- 调用 `code-review` 前先固定 review input：`review_mode`、`review_base_ref`、`implementation_candidate_ref`、`candidate_snapshot_ref`、`candidate_digest`、Spec/Ticket、Slice Implementation Contract、Build Architecture Checklist 和 YSS Skill Execution Result 引用。`committed` 模式审查不可变 `HEAD`；`worktree` 模式一次捕获 committed、staged、unstaged 和 untracked 内容。必须按 `orchestration-contract.yaml.review_input` 的 manifest 按模式必填字段及 `yss-worktree-candidate-v1` 字节流（raw path、uint64 big-endian 长度、tracked/untracked record）计算 SHA-256，所有参与审查者（人数按 `orchestration-contract.yaml.gate_consolidation`） 必须消费同一不可变快照。返回后或完成 checkpoint 摘要变化时返回 `blocked`，由编排器决定重新审查。候选为空、漏项或 fixed point 不可解析时阻断。
 - 小改动和中等变更可由同一独立执行者完成 `code-review` 与 fresh verification，并在同一报告中分别记录 findings、命令、结果和残余风险。
 - 该执行者必须独立于实现者；新模块、高风险变更、职责冲突或需双人控制时，Reviewer 与 Verifier 分开。
 - `code-review` 是唯一默认代码审查 skill。GitLab、CI、Sonar、Alibaba Java 与 YSS 前端 / 后端 skill 作为仓库规则或专项检查输入接入 Standards 轴，由 `review_standards_route` 按影响面编译；不再叠加第二个通用审查 skill。漏掉合同 `required_skills`、适用报告行空白、mandatory `violation` 未关闭或可机器检查规则既无工具结果也无原文引用时，不得 `completed`。
@@ -129,7 +137,7 @@ Decision ticket 产生决策，不是实现切片，不得标记 `ready-for-agen
 
 Prototype 回流必须有可核验证据：来源 handoff、prototype 资产或运行记录、结论、被更新的 Spec/设计/ADR/Ticket 引用、剩余未决项和返回 handoff。仅在对话中声称“已验证”不算回流完成。
 
-Matt `prototype` 的回流还必须注明 `prototype_branch`，并保留单文件 HTML 主来源；该结果只能作为 YSS 原型输入，仍须完成阶段 4 的低保真评审、H1/H2 档位路由、schema v3 验证和用户确认，不得用 throwaway prototype 替代。
+Matt `prototype` 的回流还必须注明 `prototype_branch`，并保留单文件 HTML 主来源；该结果只能作为 YSS 原型输入，仍须完成阶段 4 的低保真评审、H1/H2 档位路由、schema v4 验证和用户确认，不得用 throwaway prototype 替代。
 
 `to-questionnaire` 未收到答案时使用 `external-input-required` 暂停，记录问卷、接收人、所需输出和恢复路由；收到答案后记录 response、重新分类影响面和更新后的权威资产，再回到 `grill-with-docs` 或 `to-spec`。
 

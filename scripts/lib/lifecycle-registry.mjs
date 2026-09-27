@@ -63,6 +63,12 @@ export function semanticDigest(registry) {
   return createHash("sha256").update(JSON.stringify(semanticProjection(registry))).digest("hex");
 }
 
+export function semanticHashesById(registry) {
+  return Object.fromEntries(semanticProjection(registry).map(({ record }) => [
+    record.id, createHash("sha256").update(JSON.stringify(record)).digest("hex")
+  ]));
+}
+
 function validateBaseline(registry, ids, baselinePath) {
   let baseline;
   try {
@@ -72,7 +78,7 @@ function validateBaseline(registry, ids, baselinePath) {
     if (error instanceof SyntaxError) fail(`无法解析生命周期已发布基线: ${error.message}`);
     throw error;
   }
-  if (baseline.schema_version !== 1 || baseline.registry_id !== registry.registry_id) {
+  if (![1, 2].includes(baseline.schema_version) || baseline.registry_id !== registry.registry_id) {
     fail("生命周期已发布基线版本或 registry_id 不匹配");
   }
   const publishedIds = baseline.published_ids;
@@ -91,7 +97,26 @@ function validateBaseline(registry, ids, baselinePath) {
   if (JSON.stringify(activeIds) !== JSON.stringify(expected)) {
     fail("生命周期活跃 ID 与已发布基线不一致；新增、移除或弃用必须先更新发布基线");
   }
-  if (baseline.semantic_sha256 !== semanticDigest(registry)) fail("生命周期稳定 ID 的语义快照已变化；不得复用已发布 ID");
+  if (baseline.schema_version === 1) {
+    if (baseline.semantic_sha256 !== semanticDigest(registry)) fail("生命周期稳定 ID 的语义快照已变化；不得复用已发布 ID");
+    return;
+  }
+  const archivedPath = path.resolve(ROOT, baseline.historical_baseline ?? "");
+  if (baseline.historical_baseline !== ".template-spec/process/lifecycle-registry-baseline-v1.json") fail("生命周期历史基线路径无效");
+  const archivedBytes = readFileSync(archivedPath);
+  if (createHash("sha256").update(archivedBytes).digest("hex") !== baseline.historical_sha256) fail("生命周期历史基线摘要不匹配");
+  const archived = JSON.parse(archivedBytes.toString("utf8"));
+  if (archived.schema_version !== 1 || archived.registry_id !== registry.registry_id || !archived.published_ids.every((id) => publishedIds.includes(id))) fail("生命周期历史基线与当前发布 ID 不兼容");
+  const migrations = baseline.migrations;
+  if (!migrations || typeof migrations !== "object" || Array.isArray(migrations)) fail("生命周期迁移映射无效");
+  for (const [oldId, newId] of Object.entries(migrations)) {
+    if (!archived.published_ids.includes(oldId) || !deprecated.includes(oldId) || !activeIds.includes(newId) || oldId.split(".")[0] !== newId.split(".")[0]) fail(`生命周期迁移映射无效: ${oldId} -> ${newId}`);
+  }
+  const hashes = semanticHashesById(registry);
+  if (!baseline.semantic_sha256_by_id || JSON.stringify(Object.keys(baseline.semantic_sha256_by_id).sort()) !== JSON.stringify(activeIds)) fail("生命周期逐 ID 语义基线与活跃 ID 不一致");
+  for (const [id, digest] of Object.entries(hashes)) {
+    if (baseline.semantic_sha256_by_id[id] !== digest) fail(`生命周期稳定 ID 的语义快照已变化: ${id}`);
+  }
 }
 
 export function validateRegistry(registry, { baseline = DEFAULT_BASELINE } = {}) {
@@ -159,6 +184,20 @@ export function validateRegistry(registry, { baseline = DEFAULT_BASELINE } = {})
   for (const artifact of registry.artifacts) {
     requireReference(ids, artifact.stage, `${artifact.id}.stage`);
     if (ids.get(artifact.stage) !== "stages") fail(`${artifact.id}.stage 必须引用 stage.*`);
+    for (const reference of artifact.trigger.match(/\b(?:stage|gate|check|artifact|work-unit|evidence)\.[a-z0-9][a-z0-9-]*\b/g) ?? []) {
+      requireReference(ids, reference, `${artifact.id}.trigger`);
+    }
+  }
+  // Human-readable rules are execution instructions too. A retired control ID
+  // must never survive in an active trigger or completion sentence.
+  for (const collection of COLLECTIONS) for (const record of registry[collection]) {
+    for (const [field, value] of Object.entries(record)) {
+      if (field === "id" || typeof value !== "string") continue;
+      for (const reference of value.match(/\b(?:gate|check)\.[a-z0-9][a-z0-9-]*\b/g) ?? []) {
+        requireReference(ids, reference, `${record.id}.${field}`);
+        if (ids.get(reference) !== `${reference.split(".")[0]}s`) fail(`${record.id}.${field} 引用类型不匹配: ${reference}`);
+      }
+    }
   }
   if (baseline) validateBaseline(registry, ids, baseline);
   return registry;

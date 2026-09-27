@@ -21,7 +21,7 @@
       "work-unit.spec-synthesis": [
         "gate.spec-baseline-approved"
       ],
-      "work-unit.prototype-design": [
+      "work-unit.prototype-design-v2": [
         "gate.product-design-approved"
       ]
     },

@@ -1,0 +1,134 @@
+{
+  "captured_at": "2026-09-26T13:53:41.102539+00:00",
+  "repository_mode": "template-source",
+  "head": "ab0c247d5d30520dfe3a5876a96f5d0864d83cd0",
+  "source_state": "working-tree",
+  "scope": "planning-only",
+  "sources": [
+    {
+      "ref": "yss-project.yaml",
+      "sha256": "dae2ddacbb024ba25b70a18830fc26ab7d3dcd8aaa361cc8b3767d68307f98af"
+    },
+    {
+      "ref": "AGENTS.md",
+      "sha256": "c08b72ff83e7b43e9598269c2989c6c7e49480c1ac5906acf6e5f9295358b20a"
+    },
+    {
+      "ref": "CONTEXT.md",
+      "sha256": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559"
+    },
+    {
+      "ref": ".agents/skills/yss-product-lifecycle/SKILL.md",
+      "sha256": "f200bde383ed7f77039aadc49e23916ed39f9716cf1a089d71157e070e351fb8"
+    },
+    {
+      "ref": ".agents/skills/maintaining-skills/SKILL.md",
+      "sha256": "8cbee427b4afca3fcf56e4a32de65de58828b0e87524e66df36bf239859e4585"
+    },
+    {
+      "ref": ".agents/skills/i-have-adhd/SKILL.md",
+      "sha256": "7fa86a58e11fafe486b2bbab8e5a7d3421fab917f8ce55e2c659a54b72f11112"
+    },
+    {
+      "ref": ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml",
+      "sha256": "3e4865660e976bd9a19726d93b876e550c1657f9cee291e7ea21a452180f752f"
+    },
+    {
+      "ref": ".agents/skills/yss-product-lifecycle/references/orchestration.md",
+      "sha256": "8ea29a14337b93a94324cc696f307e991bc4966c9190896a9425a01e0e41a12a"
+    },
+    {
+      "ref": ".agents/skills/yss-product-lifecycle/references/state-model.md",
+      "sha256": "035dd6777ed831146579ab07b1df2a1bb9a656cb37c5c149c9a0b82f93b4d0fd"
+    },
+    {
+      "ref": ".agents/skills/yss-product-lifecycle/references/user-decisions.md",
+      "sha256": "8c9fd3abf3ebc7db787b154e1b63eda93e20974c7721adab9ded913bcf64f4a9"
+    },
+    {
+      "ref": ".agents/skills/yss-implementation-contract-compiler/SKILL.md",
+      "sha256": "b4f8c27da955cf0c43bf103fe49b14e22fd28f236539e0f65d041729387f89a6"
+    },
+    {
+      "ref": ".template-spec/plan/entry-review.md",
+      "sha256": "27ad4c3291be33c614605b00ba1bc4c79caa61bd43db1d501d406792146f57b0"
+    },
+    {
+      "ref": ".template-spec/process/document-writing.md",
+      "sha256": "974c195d98450295e64b17d7a94c6bd84c64efaa571446905654cc52ff26c138"
+    },
+    {
+      "ref": ".template-spec/process/harness-process-tailoring.md",
+      "sha256": "33de8e7fe924ba4ab7db0739ab2c194b1abfd46fce299e6d36591741582b4be2"
+    },
+    {
+      "ref": ".template-source/process/maintenance-intensity.yaml",
+      "sha256": "6338e218860416a2a2ca9c187b5589bc1140b967dbac5f3ecea906adfb588a0f"
+    },
+    {
+      "ref": ".template-spec/process/contract-reading.md",
+      "sha256": "a09d4929a2cf2e57651aa8076d8ebcfc12b0718c891e3a995ccd3d81027803c5"
+    },
+    {
+      "ref": ".template-source/process/template-verification-profiles.yaml",
+      "sha256": "22aa2e75d633372e2cbeddc022aca2ee961a09ea6bd52356eb09df16dc6b25d4"
+    },
+    {
+      "ref": ".template-spec/templates/verification-record-template.md",
+      "sha256": "addb1ac7dd55713dba9023f9676477397041b0c64a6060355c78f7987f062a62"
+    },
+    {
+      "ref": ".template-spec/templates/release-note-template.md",
+      "sha256": "4b62466769588c295a1fd5a1aa4eb11efb493178e2bb606cdfd7796e7abfbae3"
+    },
+    {
+      "ref": ".template-spec/templates/retro-report-template.md",
+      "sha256": "72285356f56f29f1871df3ea240f47b107a4782dcbf18e013192e10c53b6dcaa"
+    },
+    {
+      "ref": ".template-spec/design/templates/product-overview-design-template.md",
+      "sha256": "7347735b6cf1c5efcdd02187ca42374708ec676b30fa373377f13c1b318736e2"
+    },
+    {
+      "ref": ".template-spec/design/templates/interaction-spec-template.md",
+      "sha256": "880ff16c09bd0017dfe0bf4837f7477442862cd497685d2e749e67d4ecaadb8e"
+    },
+    {
+      "ref": "scripts/lib/lifecycle-status.mjs",
+      "sha256": "137bcd71d7401fce06edde5fe1539387942316544ac97e7268163f1ba55409c0"
+    },
+    {
+      "ref": "scripts/lifecycle-status",
+      "sha256": "7008417c11e7595c71a367c3f8ce6daa90fb4b754766e2e97ea5574107586322"
+    },
+    {
+      "ref": "scripts/plan-spec-entry",
+      "sha256": "24fe29df4b12355f6183f5158a353857e099694fa2f59728c04aded9384158ab"
+    },
+    {
+      "ref": "scripts/lib/plan-spec-entry-view.mjs",
+      "sha256": "6f906bfb86d2232178c0dec6b9dfcda716495634647cb903cc3fb71d4cc0a01a"
+    },
+    {
+      "ref": "scripts/lib/plan-spec-entry.mjs",
+      "sha256": "d68460a139d13a0d2dae120c5cc1f0f2bb3d01ca6211b31752567415f05a1629"
+    },
+    {
+      "ref": ".template-source/scripts/skills-agent-eval.py",
+      "sha256": "7f862b6dd044b506bc9a61545136f2bb575e457369502b82be60cd05252def0d"
+    },
+    {
+      "ref": ".template-source/scripts/skills-agent-eval.md",
+      "sha256": "9f0fe27c25683c16c44465269fe03d4bbfe337a3de929bfe80b0a91c949c3837"
+    },
+    {
+      "ref": ".template-source/scripts/tests/test_skills_agent_eval.py",
+      "sha256": "b318b20c72d333c5ec98477857e6129d8292b6a58729028af9c6521d3892a404"
+    },
+    {
+      "ref": ".template-source/evidence/maintenance/2026-09-26-lifecycle-comparative-review/lifecycle-review-research-brief.md",
+      "sha256": "8d22daf6d2587764c30613fe16438b9ab3a1065030b3c950f05e9bf271c76314"
+    }
+  ],
+  "preexisting_status": " M .agents/skills/yss-layered-mvc-scaffold-generator/scripts/scaffold-generator.test.mjs\n M .agents/skills/yss-product-lifecycle/references/matt-yss-adapter.md\n M .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml\n M .agents/skills/yss-product-lifecycle/references/orchestration.md\n M .agents/skills/yss-product-lifecycle/references/request-triage.md\n M .agents/skills/yss-stage-decision/SKILL.md\n M .codex/skills/yss-product-lifecycle/references/matt-yss-adapter.md\n M .codex/skills/yss-product-lifecycle/references/orchestration-contract.yaml\n M .codex/skills/yss-product-lifecycle/references/orchestration.md\n M .codex/skills/yss-product-lifecycle/references/request-triage.md\n M .template-source/derived/harness-work-unit-map.md\n M .template-source/distribution/strategic-handoff-tools.lock.json\n M .template-source/plugins/yss-backend-delivery/plan.mjs\n M .template-source/process/template-verification-profiles.yaml\n M .template-source/scripts/verify-historical-task-package\n M .template-source/tooling/node/test/lifecycle-controls.test.mjs\n M .template-source/tooling/node/test/plugin-preparation.test.mjs\n M .template-source/tooling/node/test/plugin-project.test.mjs\n M .template-source/tooling/node/test/plugin-scope.test.mjs\n M .template-source/tooling/node/test/plugin-terminal.test.mjs\n M .template-source/tooling/node/test/skill-registry.test.mjs\n M .template-spec/agents/digital-human-roles.yaml\n M .template-spec/architecture/templates/tech-design-template.md\n M .template-spec/design/README.md\n M .template-spec/design/templates/interaction-spec-template.md\n M .template-spec/design/templates/product-overview-design-template.md\n M .template-spec/design/templates/state-matrix-template.md\n M .template-spec/plan/entry-review.md\n M .template-spec/process/lifecycle-artifact-map.md\n M .template-spec/process/lifecycle-registry-baseline.json\n M .template-spec/process/lifecycle-registry.yaml\n M .template-spec/process/schemas/lifecycle-checkpoint.schema.json\n M .template-spec/templates/vertical-slice-ticket-template.md\n M scripts/fixtures/existing-ui-baseline/design-source-roles.json\n M scripts/fixtures/stage-tracking/tracking.test.mjs\n M scripts/fixtures/strategic-handoff/aggregate-source-roles.json\n M scripts/lib/lifecycle-context-query.mjs\n M scripts/lib/lifecycle-registry.mjs\n M scripts/lib/lifecycle-transition.mjs\n M scripts/lib/maintenance-review-workflow.mjs\n M scripts/lib/scenario-checks.mjs\n M scripts/lib/skill-registry.mjs\n M scripts/lib/slice-contract-preparation.mjs\n M scripts/lib/stage-tracking.mjs\n M scripts/node-verify-lifecycle-registry.mjs\n M scripts/verify-frontend-delivery-scenarios\n M scripts/verify-lifecycle-context-query-scenarios\n M scripts/verify-lifecycle-transition-scenarios\n M scripts/verify-subagent-task-package-scenarios\n M skills-lock.json\n m submodules/create-yss-spec\n m submodules/yss-harness-backend-agent\n m submodules/yss-harness-design-agent\n m submodules/yss-harness-frontend-agent\n?? .template-source/evidence/maintenance/2026-09-25-lifecycle-audit/lifecycle-skills-evidence.yaml\n?? .template-source/evidence/maintenance/2026-09-25-lifecycle-audit/lifecycle-skills-research-brief.md\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-comparative-review/checkpoint.yaml\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-comparative-review/competitors-notes.md\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-comparative-review/competitors-result.json\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-comparative-review/competitors-sources.json\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-comparative-review/competitors-task.json\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-comparative-review/final-verification.json\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-comparative-review/handoff-verification.json\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-comparative-review/lifecycle-review-evidence.yaml\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-comparative-review/lifecycle-review-research-brief.md\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-comparative-review/local_templates-notes.md\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-comparative-review/local_templates-result.json\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-comparative-review/local_templates-sources.json\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-comparative-review/local_templates-task.json\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-comparative-review/skill_patterns-notes.md\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-comparative-review/skill_patterns-result.json\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-comparative-review/skill_patterns-sources.json\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-comparative-review/skill_patterns-task.json\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-comparative-review/source-snapshot.json\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-comparative-review/status-view-probe-invalid-fixture.json\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-comparative-review/status-view-probe.json\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-comparative-review/verification.json\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-optimization/checkpoint.yaml\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-optimization/cross-repo-pilot-report.md\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-optimization/cross-repo-pilot-v2/report.json\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-optimization/cross-repo-pilot-v3/report.json\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-optimization/cross-repo-pilot-v4/report.json\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-optimization/cross-repo-pilot/report.json\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-optimization/triage-replay-gpt-5.3-codex/baseline-prompt.txt\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-optimization/triage-replay-gpt-5.3-codex/baseline-raw.jsonl\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-optimization/triage-replay-gpt-5.3-codex/baseline-stderr.txt\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-optimization/triage-replay-gpt-6-sol/baseline-prompt.txt\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-optimization/triage-replay-gpt-6-sol/baseline-raw.jsonl\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-optimization/triage-replay-gpt-6-sol/baseline-scored.json\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-optimization/triage-replay-gpt-6-sol/baseline-stderr.txt\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-optimization/triage-replay-gpt-6-sol/candidate-prompt.txt\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-optimization/triage-replay-gpt-6-sol/candidate-raw.jsonl\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-optimization/triage-replay-gpt-6-sol/candidate-scored.json\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-optimization/triage-replay-gpt-6-sol/candidate-stderr.txt\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-optimization/triage-replay-gpt-6-sol/metadata.json\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-optimization/triage-replay-report.md\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-optimization/triage-replay-v2/baseline-prompt.txt\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-optimization/triage-replay-v2/baseline-raw.jsonl\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-optimization/triage-replay-v2/baseline-scored.json\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-optimization/triage-replay-v2/baseline-stderr.txt\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-optimization/triage-replay-v2/candidate-prompt.txt\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-optimization/triage-replay-v2/candidate-raw.jsonl\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-optimization/triage-replay-v2/candidate-scored.json\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-optimization/triage-replay-v2/candidate-stderr.txt\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-optimization/triage-replay-v2/metadata.json\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-optimization/triage-replay/baseline-prompt.txt\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-optimization/triage-replay/baseline-raw.jsonl\n?? .template-source/evidence/maintenance/2026-09-26-lifecycle-optimization/triage-replay/baseline-stderr.txt\n?? .template-source/scripts/replay-lifecycle-triage\n?? .template-source/scripts/run-lifecycle-cross-repo-pilot\n?? .template-spec/design/templates/examples/model-publishing-interaction.example.md\n?? .template-spec/design/templates/examples/model-publishing-state-matrix.example.md\n?? .template-spec/process/lifecycle-registry-baseline-v1.json\n?? scripts/lib/lifecycle-status.mjs\n?? scripts/lib/plan-spec-entry-view.mjs\n?? scripts/lifecycle-status\n?? scripts/plan-spec-entry\n?? scripts/verify-lifecycle-operator-scenarios\n"
+}

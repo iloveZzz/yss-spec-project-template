@@ -1,0 +1,10 @@
+{
+  "reason": "isolated Python lacks jsonschema; original batch excluded from formal comparison",
+  "interrupted_pids": [
+    12062,
+    13184,
+    13248
+  ],
+  "root": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-agent-evaluations-vz_t1h3q",
+  "recorded_at": "2026-09-26T14:41:20Z"
+}

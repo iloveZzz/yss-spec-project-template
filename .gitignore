@@ -53,3 +53,6 @@ docs/process/yss-product-lifecycle-team-guide.md
 .template-spec/process/yss-product-lifecycle-team-guide.md
 docs/graphify-out
 docs/.scratch/
+# Preserved in calibration-and-environment-evidence.tar.gz with a SHA-256 manifest.
+.template-source/evidence/maintenance/2026-09-26-lifecycle-improvement-implementation/agent-smoke-baseline/
+.template-source/evidence/maintenance/2026-09-26-lifecycle-improvement-implementation/agent-smoke-baseline-paired/

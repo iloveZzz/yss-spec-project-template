@@ -1,0 +1,70 @@
+{
+  "scenarios": [
+    {
+      "repo": ".",
+      "required_paths": [
+        "AGENTS.md",
+        "CONTEXT.md",
+        ".template-spec/process/lifecycle-registry.yaml",
+        "scripts/lifecycle-status"
+      ],
+      "files": {
+        "yss-project.yaml": "schema_version: 1\nrepository_mode: project-instance\n",
+        "checkpoint.json": "{\n  \"schema_version\": 1,\n  \"repository_mode\": \"project-instance\",\n  \"mode\": \"route\",\n  \"status\": \"routing\",\n  \"stage\": \"stage.plan\",\n  \"artifacts\": {},\n  \"gates\": {},\n  \"context_reconciliation\": {\n    \"status\": \"pending\",\n    \"ref\": null,\n    \"evidence_refs\": []\n  },\n  \"next_work_unit\": \"work-unit.plan-requirements\",\n  \"blockers\": []\n}\n"
+      },
+      "id": "e01-status",
+      "prompt": "请检查当前 checkpoint.json 对应的研发进度。本次只读查看状态，不推进流程。使用项目已有入口，并把本次结论保存到 assessment.json，字段为 stage、known_blockers、verification_scope（说明已检查与未检查的范围）、execution_authorized（是否已经由本次检查确认可以实施）、next_action。只允许新增 assessment.json；原输入不得改变。",
+      "assertions": [
+        {
+          "kind": "json_equal",
+          "path": "assessment.json",
+          "key": "execution_authorized",
+          "value": false
+        },
+        {
+          "kind": "unchanged",
+          "path": "checkpoint.json",
+          "value": "{\n  \"schema_version\": 1,\n  \"repository_mode\": \"project-instance\",\n  \"mode\": \"route\",\n  \"status\": \"routing\",\n  \"stage\": \"stage.plan\",\n  \"artifacts\": {},\n  \"gates\": {},\n  \"context_reconciliation\": {\n    \"status\": \"pending\",\n    \"ref\": null,\n    \"evidence_refs\": []\n  },\n  \"next_work_unit\": \"work-unit.plan-requirements\",\n  \"blockers\": []\n}\n"
+        },
+        {
+          "kind": "contains",
+          "path": "assessment.json",
+          "value": "verification_scope"
+        }
+      ]
+    },
+    {
+      "repo": ".",
+      "required_paths": [
+        "AGENTS.md",
+        "CONTEXT.md",
+        ".template-spec/process/lifecycle-registry.yaml",
+        "scripts/lifecycle-status"
+      ],
+      "files": {
+        "yss-project.yaml": "schema_version: 1\nrepository_mode: project-instance\n",
+        "checkpoint.json": "{\n  \"schema_version\": 1,\n  \"repository_mode\": \"project-instance\",\n  \"mode\": \"resume\",\n  \"status\": \"running\",\n  \"stage\": \"stage.plan\",\n  \"artifacts\": {},\n  \"gates\": {},\n  \"context_reconciliation\": {\n    \"status\": \"pending\",\n    \"ref\": null,\n    \"evidence_refs\": []\n  },\n  \"next_work_unit\": \"work-unit.plan-requirements\",\n  \"blockers\": [],\n  \"stage_tracking\": {\n    \"items\": [\n      {\n        \"id\": \"requirements\",\n        \"work_unit\": \"work-unit.plan-requirements\",\n        \"owner\": \"需求负责人\",\n        \"progress\": \"running\",\n        \"source_refs\": [],\n        \"completion\": [],\n        \"dependencies\": []\n      }\n    ]\n  }\n}\n",
+        "task-record.json": "{\n  \"task_id\": \"task.demo\",\n  \"status\": \"running\",\n  \"result_ref\": \"result-not-yet-received.json\",\n  \"external_job_id\": \"fixture.job.1\"\n}\n"
+      },
+      "id": "e10-running",
+      "prompt": "继续此前中断的 Plan 工作。当前 checkpoint.json 和 task-record.json 是现有记录，task 运行结果尚未回到磁盘，当前环境没有查询外部任务的能力。核对当前主控恢复规则和实际资产，保存 recovery.json：action、redispatched（本轮是否重新派发）、missing_evidence、next_action。只允许写 recovery.json；不要伪造外部任务结果或更改已有记录。",
+      "assertions": [
+        {
+          "kind": "json_equal",
+          "path": "recovery.json",
+          "key": "redispatched",
+          "value": false
+        },
+        {
+          "kind": "unchanged",
+          "path": "task-record.json",
+          "value": "{\n  \"task_id\": \"task.demo\",\n  \"status\": \"running\",\n  \"result_ref\": \"result-not-yet-received.json\",\n  \"external_job_id\": \"fixture.job.1\"\n}\n"
+        },
+        {
+          "kind": "absent",
+          "path": "result-not-yet-received.json"
+        }
+      ]
+    }
+  ]
+}

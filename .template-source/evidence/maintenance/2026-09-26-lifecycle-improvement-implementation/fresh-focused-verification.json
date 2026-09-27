@@ -1,0 +1,75 @@
+[
+  {
+    "name": "runner-final",
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      ".template-source/scripts/tests",
+      "-p",
+      "test_skills_agent_eval.py"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "started_at": "2026-09-26T14:50:01.909724+00:00",
+    "ended_at": "2026-09-26T14:50:02.131693+00:00",
+    "seconds": 0.22,
+    "exit_code": 0,
+    "log": "runner-final.log"
+  },
+  {
+    "name": "retired-inventory",
+    "command": [
+      "node",
+      "scripts/verify-retired-skill-ids"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "started_at": "2026-09-26T14:50:01.910105+00:00",
+    "ended_at": "2026-09-26T14:50:02.392251+00:00",
+    "seconds": 0.48,
+    "exit_code": 0,
+    "log": "retired-inventory.log"
+  },
+  {
+    "name": "status-final",
+    "command": [
+      "node",
+      "scripts/verify-lifecycle-operator-scenarios"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "started_at": "2026-09-26T14:50:01.910186+00:00",
+    "ended_at": "2026-09-26T14:50:02.160530+00:00",
+    "seconds": 0.25,
+    "exit_code": 0,
+    "log": "status-final.log"
+  },
+  {
+    "name": "decision-final",
+    "command": [
+      "node",
+      "--test",
+      ".template-source/tooling/node/test/decision-continuation.test.mjs"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "started_at": "2026-09-26T14:50:01.910258+00:00",
+    "ended_at": "2026-09-26T14:50:05.577529+00:00",
+    "seconds": 3.67,
+    "exit_code": 0,
+    "log": "decision-final.log"
+  },
+  {
+    "name": "tracking-final",
+    "command": [
+      "node",
+      "--test",
+      "scripts/fixtures/stage-tracking/tracking.test.mjs"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "started_at": "2026-09-26T14:50:01.910414+00:00",
+    "ended_at": "2026-09-26T14:50:05.176262+00:00",
+    "seconds": 3.27,
+    "exit_code": 0,
+    "log": "tracking-final.log"
+  }
+]

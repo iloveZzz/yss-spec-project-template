@@ -1,0 +1,34 @@
+{
+  "checked_at": "2026-09-26T17:42:46.121088+00:00",
+  "report_links": 66,
+  "all_report_links_exist": true,
+  "unique_source_paths_checked": 39,
+  "final_source_hashes_match": true,
+  "archives": [
+    {
+      "index": "calibration-archive.json",
+      "archive": "calibration-and-environment-evidence.tar.gz",
+      "sha256_matches": true,
+      "readable": true,
+      "entry_count": 21149
+    },
+    {
+      "index": "formal-archive.json",
+      "archive": "formal-agent-evaluation-evidence.tar.gz",
+      "sha256_matches": true,
+      "readable": true,
+      "entry_count": 4785
+    },
+    {
+      "index": "ui-supplement-archive.json",
+      "archive": "ui-supplement-evidence.tar.gz",
+      "sha256_matches": true,
+      "readable": true,
+      "entry_count": 80
+    }
+  ],
+  "primary_semantic_reviews": 48,
+  "supplement_semantic_reviews": 4,
+  "evidence_helpers_syntax": "passed",
+  "source_verification": "fast-verification-post-docs.json; source bytes unchanged since final verification"
+}

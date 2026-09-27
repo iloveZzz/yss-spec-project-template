@@ -1,0 +1,131 @@
+{
+  "result": {
+    "scenario": "e11-cross-repo",
+    "variant": "baseline",
+    "repeat": 2,
+    "elapsed_seconds": 99.0,
+    "exit_code": 0,
+    "timeout": false,
+    "assertion_failures": [],
+    "runtime_errors": [],
+    "tool_calls": 10,
+    "usage": [
+      {
+        "input_tokens": 306239,
+        "cached_input_tokens": 277888,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 2129,
+        "reasoning_output_tokens": 509
+      }
+    ],
+    "automatic_result": "passed",
+    "semantic_review": "pending",
+    "trace": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-agent-evaluations-v2-2qx3mbr2/baseline/e11-cross-repo-2/trace.jsonl",
+    "steps": [
+      {
+        "step": "main",
+        "started_at": "2026-09-26T15:47:03Z",
+        "elapsed_seconds": 98.88,
+        "exit_code": 0,
+        "timeout": false,
+        "assertion_failures": [],
+        "runtime_errors": [],
+        "tool_calls": 10,
+        "usage": [
+          {
+            "input_tokens": 306239,
+            "cached_input_tokens": 277888,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 2129,
+            "reasoning_output_tokens": 509
+          }
+        ],
+        "automatic_result": "passed",
+        "semantic_review": "pending",
+        "trace": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-agent-evaluations-v2-2qx3mbr2/baseline/e11-cross-repo-2/trace.jsonl"
+      }
+    ],
+    "unattempted_steps": []
+  },
+  "original_files_changed": [],
+  "original_files_missing": [],
+  "unsafe_paths": [],
+  "new_files": [
+    "cross-repo-result.json",
+    "cross-repo.log"
+  ],
+  "commands": [
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat yss-project.yaml'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"rg --files -g AGENTS.md -g '*verify-strategic-handoff-package-scenarios*' -g '*cross-repo*' -g package.json -g CONTEXT.md\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat AGENTS.md CONTEXT.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"sed -n '1,240p' scripts/verify-strategic-handoff-package-scenarios\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"sed -n '1,78p' scripts/verify-strategic-handoff-package-scenarios\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"rg -n '\"'^(import|export).*|mkdtemp|tmpdir|spawnSync|execSync|from .*yaml'\"' scripts/lib/strategic-handoff-package.mjs scripts/lib/strategic-handoff*.mjs\"",
+      "exit_code": 2
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"python3 - <<'PY'\nimport os\nimport subprocess\nimport sys\nfrom pathlib import Path\nroot = Path.cwd()\ncommand = ['node', '--test', '--test-name-pattern=规则遗漏、摘要漂移、批准不匹配和离线资源丢失阻断导出', 'scripts/verify-strategic-handoff-package-scenarios']\nenv = os.environ.copy()\nenv['TMPDIR'] = str(root)\nenv['TMP'] = str(root)\nenv['TEMP'] = str(root)\nenv['PYTHONDONTWRITEBYTECODE'] = '1'\nwith (root / 'cross-repo.log').open('wb') as log:\n    try:\n        completed = subprocess.run(command, cwd=root, env=env, stdout=log, stderr=subprocess.STDOUT)\n        code = completed.returncode\n    except OSError as exc:\n        log.write((str(exc) + '\\\\n').encode('utf-8'))\n        code = 127\nprint('command_exit_code=' + str(code))\nsys.exit(code)\nPY\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat cross-repo.log'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"python3 - <<'PY'\nimport json\nimport re\nfrom pathlib import Path\nroot = Path.cwd()\nresult = json.loads((root / 'cross-repo-result.json').read_text())\nlog = (root / 'cross-repo.log').read_text()\nassert result['command'] == ['node', '--test', '--test-name-pattern=规则遗漏、摘要漂移、批准不匹配和离线资源丢失阻断导出', 'scripts/verify-strategic-handoff-package-scenarios']\nassert result['actual_test_count'] == int(re.search(r'\"'^ℹ tests ('\"\\\\d+)\"'$'\"', log, re.M).group(1)) == 1\nassert result['exit_code'] == 0\nassert re.search(r'\"'^ℹ pass 1$'\"', log, re.M)\nassert re.search(r'\"'^ℹ fail 0$'\"', log, re.M)\nassert not list(root.glob('handoff-test-*'))\nprint('结果 JSON 与原始日志一致；1 个场景通过，临时 fixture 已清理。')\nPY\"",
+      "exit_code": 0
+    }
+  ],
+  "command_errors": [
+    {
+      "command": "/bin/zsh -lc \"rg -n '\"'^(import|export).*|mkdtemp|tmpdir|spawnSync|execSync|from .*yaml'\"' scripts/lib/strategic-handoff-package.mjs scripts/lib/strategic-handoff*.mjs\"",
+      "exit_code": 2,
+      "output": "rg: scripts/lib/strategic-handoff-package.mjs: No such file or directory (os error 2)\nscripts/lib/strategic-handoff-routing.mjs:1:import { existsSync } from './validation-phase.mjs';\nscripts/lib/strategic-handoff-routing.mjs:2:import path from 'node:path';\nscripts/lib/strategic-handoff-routing.mjs:3:import { read, safe, ensure } from './strategic-handoff-io.mjs';\nscripts/lib/strategic-handoff-routing.mjs:6:export function consumerEntry(root, capability, sourceWorkUnit) {\nscripts/lib/strategic-handoff-routing.mjs:24:export function scopedConsumerCapabilities(root, fallback) {\nscripts/lib/strategic-handoff.mjs:1:import { scopedConsumerCapabilities } from './strategic-handoff-routing.mjs';\nscripts/lib/strategic-handoff.mjs:2:import { existsSync, lstatSync, readFileSync } from './validation-phase.mjs';\nscripts/lib/strategic-handoff.mjs:3:import { mkdirSync, mkdtempSync, renameSync, rmSync, cpSync } from 'node:fs';\nscripts/lib/strategic-handoff.mjs:4:import path from 'node:path';\nscripts/lib/strategic-handoff.mjs:5:import { tmpdir } from 'node:os';\nscripts/lib/strategic-handoff.mjs:6:import { ensure, canonical, digest, hash, json, parse, read, safe, relative, files, write, project, schema, schemaBatch, archive, ROOT, sourceApprovalPolicy, withSourceContextSnapshot } from './strategic-handoff-io.mjs';\nscripts/lib/strategic-handoff.mjs:7:import { parseContextSource, parseContextContract, resolveContextTermRefs } from './context-contract.mjs';\nscripts/lib/strategic-handoff.mjs:8:import { countersignRuleForGate } from './digital-human-roles.mjs';\nscripts/lib/strategic-handoff.mjs:9:import { validateApprovalRecord } from './approval-record.mjs';\nscripts/lib/strategic-handoff.mjs:10:import { treeDigest } from './strategic-handoff-io.mjs';\nscripts/lib/strategic-handoff.mjs:11:import { uiBaselineKind, uiBaselineRef, uiBaselineCaseIds, hasConsumerRoutes, validateHandoffUiBaseline } from './ui-baseline.mjs';\nscripts/lib/strategic-handoff.mjs:12:import { extractTraceability, compareIndexes } from './strategic-handoff-rules.mjs';\nscripts/lib/strategic-handoff.mjs:86:export async function sourceApproval(record, roles, root) {\nscripts/lib/strategic-handoff.mjs:165:export async function inspectSource(root, handoffRef) {\nscripts/lib/strategic-handoff.mjs:269:export async function openBundle(input, action, {readOnly=false}={}) {\nscripts/lib/strategic-handoff.mjs:270:  const temp=readOnly?null:mkdtempSync(path.join(tmpdir(),'yss-handoff-'));\nscripts/lib/strategic-handoff.mjs:312:export async function exportBundle({sourceRoot,handoffRef,output,zip=false,previous}) {\nscripts/lib/strategic-handoff.mjs:325:  const staging=mkdtempSync(path.join(path.dirname(target),'.handoff-staging-'));\nscripts/lib/strategic-handoff.mjs:350:export async function openDelivery(input, action) {\nscripts/lib/strategic-handoff.mjs:378:export async function finalizeDelivery({sourceRoot,handoffRef,zip=false,previous}) {\nscripts/lib/strategic-handoff.mjs:386:  const stage=mkdtempSync(path.join(parent,'.delivery-staging-'));\nscripts/lib/strategic-handoff.mjs:407:export async function importBundle({bundle,targetRoot}) {\nscripts/lib/strategic-handoff.mjs:425:    mkdirSync(path.dirname(dest),{recursive:true});const stage=mkdtempSync(path.join(path.dirname(dest),'.import-staging-'));\nscripts/lib/strategic-handoff-design-targets.mjs:1:import { ensure } from './strategic-handoff-io.mjs';\nscripts/lib/strategic-handoff-design-targets.mjs:3:export function designTargets(data) {\nscripts/lib/strategic-handoff-io.mjs:1:import { createHash } from 'node:crypto';\nscripts/lib/strategic-handoff-io.mjs:2:import { mkdirSync, writeFileSync, realpathSync } from 'node:fs';\nscripts/lib/strategic-handoff-io.mjs:3:import { existsSync, lstatSync, readdirSync, readFileSync, validationMemo } from './validation-phase.mjs';\nscripts/lib/strategic-handoff-io.mjs:4:import path from 'node:path';\nscripts/lib/strategic-handoff-io.mjs:5:import { AsyncLocalStorage } from 'node:async_hooks';\nscripts/lib/strategic-handoff-io.mjs:6:import { spawnSync } from 'node:child_process';\nscripts/lib/strategic-handoff-io.mjs:7:import { fileURLToPath } from 'node:url';\nscripts/lib/strategic-handoff-io.mjs:8:import { validateJsonSchemas } from './json-schema.mjs';\nscripts/lib/strategic-handoff-io.mjs:9:import { parseDocument } from '../vendor/yaml.mjs';\nscripts/lib/strategic-handoff-io.mjs:10:export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');\nscripts/lib/strategic-handoff-io.mjs:15:export function withSourceContextSnapshot(root, action) {\nscripts/lib/strategic-handoff-io.mjs:20:export const ensure = (condition, message) => { if (!condition) throw new TypeError(message); };\nscripts/lib/strategic-handoff-io.mjs:21:export const canonical = value => Array.isArray(value) ? value.map(canonical) : value && typeof value === 'object' ? Object.fromEntries(Object.keys(value).sort().map(k => [k, canonical(value[k])])) : value;\nscripts/lib/strategic-handoff-io.mjs:22:export const hash = bytes => `sha256:${createHash('sha256').update(bytes).digest('hex')}`;\nscripts/lib/strategic-handoff-io.mjs:23:export const digest = value => hash(JSON.stringify(canonical(value)));\nscripts/lib/strategic-handoff-io.mjs:24:export const json = value => `${JSON.stringify(canonical(value), null, 2)}\\n`;\nscripts/lib/strategic-handoff-io.mjs:25:export function parse(bytes) {return validationMemo(parseCache,String(bytes),()=>parseFresh(bytes));}\nscripts/lib/strategic-handoff-io.mjs:31:export const read = file => parse(readFileSync(file, 'utf8'));\nscripts/lib/strategic-handoff-io.mjs:32:export function relative(ref) {\nscripts/lib/strategic-handoff-io.mjs:36:export function safe(root, ref, { missing = false } = {}) {\nscripts/lib/strategic-handoff-io.mjs:48:export function files(root, prefix = '') {\nscripts/lib/strategic-handoff-io.mjs:57:export const treeDigest = (root, prefix) => digest(files(root, prefix).map(ref => ({ path: path.posix.relative(prefix, ref), sha256: hash(readFileSync(safe(root, ref))) })));\nscripts/lib/strategic-handoff-io.mjs:58:export function write(root, ref, bytes) {\nscripts/lib/strategic-handoff-io.mjs:62:export function project(root) {\nscripts/lib/strategic-handoff-io.mjs:67:export function schemaBatch(items) {\nscripts/lib/strategic-handoff-io.mjs:71:export function schema(value, ref) { schemaBatch([[value, ref]]); }\nscripts/lib/strategic-handoff-io.mjs:72:export function archive(command, source, destination) {\nscripts/lib/strategic-handoff-io.mjs:73:  const out = spawnSync('python3', [path.join(ROOT, 'scripts/lib/strategic-handoff-zip.py'), command, source, destination], { encoding: 'utf8' });\nscripts/lib/strategic-handoff-io.mjs:79:export function sourceApprovalPolicy(source) {\nscripts/lib/strategic-handoff-rules.mjs:1:import { ensure, digest } from './strategic-handoff-io.mjs';\nscripts/lib/strategic-handoff-rules.mjs:4:export function extractTraceability(strategy) {\nscripts/lib/strategic-handoff-rules.mjs:33:export function compareIndexes(current, previous) {\nscripts/lib/strategic-handoff-consumption.mjs:1:import { uiBaselineSourceKeys, uiBaselineKind } from './ui-baseline.mjs';\nscripts/lib/strategic-handoff-consumption.mjs:2:import { existsSync, readdirSync, inValidationPhase, acceptValidationDependencies } from './validation-phase.mjs';\nscripts/lib/strategic-handoff-consumption.mjs:3:import path from 'node:path';\nscripts/lib/strategic-handoff-consumption.mjs:4:import { spawnSync } from 'node:child_process';\nscripts/lib/strategic-handoff-consumption.mjs:5:import { openBundle } from './strategic-handoff.mjs';\nscripts/lib/strategic-handoff-consumption.mjs:6:import { read, safe, ensure, ROOT, digest, project } from './strategic-handoff-io.mjs';\nscripts/lib/strategic-handoff-consumption.mjs:7:import { designTargets } from './strategic-handoff-design-targets.mjs';\nscripts/lib/strategic-handoff-consumption.mjs:8:import { parseContextContract } from './context-contract.mjs';\nscripts/lib/strategic-handoff-consumption.mjs:16:export async function verifyConsumption(data,{root=process.cwd(),sliceRef,consumer='tactical',readOnly=false}={}) {\nscripts/lib/strategic-handoff-consumption.mjs:32:  const result=spawnSync(process.execPath,[path.join(ROOT,'scripts/verify-context-reconciliation'),'--root',root,safe(root,binding.context_reconciliation_ref),...(inValidationPhase()?['--validation-dependencies']:[])],{encoding:'utf8',timeout:60000,maxBuffer:16*1024*1024});\n"
+    }
+  ],
+  "other_tools": [],
+  "agent_messages": [
+    {
+      "step": "main",
+      "text": "我会先读取仓库身份，再运行指定的隔离场景；仅保存结果 JSON 和原始日志，并注明测试批准与真实项目批准的边界。\n"
+    },
+    {
+      "step": "main",
+      "text": "已确认仓库为 `project-instance`，该场景使用临时 fixture。我会把临时目录限制在当前工作区内，并保留命令的原始输出和退出码。\n"
+    },
+    {
+      "step": "main",
+      "text": "指定场景已运行：退出码 `0`，实际执行 `1` 个测试并通过，未报告依赖缺失。\n\n已保存 [cross-repo-result.json](cross-repo-result.json) 和 [cross-repo.log](cross-repo.log)。测试批准仅为隔离测试数据，不构成真实项目批准；验证范围限制已记录。"
+    }
+  ],
+  "artifacts": {
+    "cross-repo-result.json": "{\n  \"command\": [\n    \"node\",\n    \"--test\",\n    \"--test-name-pattern=规则遗漏、摘要漂移、批准不匹配和离线资源丢失阻断导出\",\n    \"scripts/verify-strategic-handoff-package-scenarios\"\n  ],\n  \"exit_code\": 0,\n  \"actual_test_count\": 1,\n  \"limitations\": [\n    \"仅执行指定名称匹配的既有场景；原始日志报告 tests=1、pass=1、fail=0、skipped=0，不代表完整跨仓交付测试套件通过。\",\n    \"场景使用隔离 fixture，所有测试批准均为 test-data-only，不构成真实项目批准、实现授权或发布批准。\",\n    \"TMPDIR、TMP、TEMP 指向当前工作区，PYTHONDONTWRITEBYTECODE=1；场景临时文件由既有测试清理，未修改测试源码或安装依赖。本次运行未报告必要依赖缺失。\",\n    \"未核验真实外部仓库、网络、服务、构建、部署或交付；PATH 替身的成功不能视为真实构建或交付证据。\",\n    \"actual_test_count 按测试运行器的场景计数；该场景内包含多次拒绝断言。离线资源缺失用例期望匹配“过期”错误，通过不单独证明缺失资源诊断分支已执行。\"\n  ]\n}\n",
+    "cross-repo.log": "✔ 规则遗漏、摘要漂移、批准不匹配和离线资源丢失阻断导出 (1612.661791ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 1667.1045\n"
+  },
+  "semantic_review": "pending"
+}

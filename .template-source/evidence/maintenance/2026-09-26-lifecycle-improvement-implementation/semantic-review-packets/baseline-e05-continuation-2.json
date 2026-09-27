@@ -1,0 +1,152 @@
+{
+  "result": {
+    "scenario": "e05-continuation",
+    "variant": "baseline",
+    "repeat": 2,
+    "elapsed_seconds": 95.95,
+    "exit_code": 0,
+    "timeout": false,
+    "assertion_failures": [],
+    "runtime_errors": [],
+    "tool_calls": 15,
+    "usage": [
+      {
+        "input_tokens": 313962,
+        "cached_input_tokens": 260992,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 1988,
+        "reasoning_output_tokens": 175
+      }
+    ],
+    "automatic_result": "passed",
+    "semantic_review": "pending",
+    "trace": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-agent-evaluations-v2-2qx3mbr2/baseline/e05-continuation-2/trace.jsonl",
+    "steps": [
+      {
+        "step": "main",
+        "started_at": "2026-09-26T15:07:22Z",
+        "elapsed_seconds": 95.67,
+        "exit_code": 0,
+        "timeout": false,
+        "assertion_failures": [],
+        "runtime_errors": [],
+        "tool_calls": 15,
+        "usage": [
+          {
+            "input_tokens": 313962,
+            "cached_input_tokens": 260992,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1988,
+            "reasoning_output_tokens": 175
+          }
+        ],
+        "automatic_result": "passed",
+        "semantic_review": "pending",
+        "trace": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-agent-evaluations-v2-2qx3mbr2/baseline/e05-continuation-2/trace.jsonl"
+      }
+    ],
+    "unattempted_steps": []
+  },
+  "original_files_changed": [],
+  "original_files_missing": [],
+  "unsafe_paths": [],
+  "new_files": [
+    "entry-result.json"
+  ],
+  "commands": [
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"pwd && rg --files -g 'yss-project.yaml' -g 'state.json' -g 'AGENTS.md' -g 'CONTEXT.md' -g '*entry*' -g '*approval*' -g '*decision*' -g '*continu*' -g '*equival*' -g '*verify*' -g 'SKILL.md' -g 'harness-process-tailoring.md' -g 'lifecycle-registry.yaml' -g 'stage-tracking.md' -g 'digital-human-roles.yaml' -g 'yss-skill-registry.yaml' -g 'skills-lock.json' -g '\"'!node_modules'\"' -g '\"'!.git'\"' --hidden\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat yss-project.yaml'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat state.json AGENTS.md CONTEXT.md .agents/skills/yss-product-lifecycle/SKILL.md .template-spec/process/harness-process-tailoring.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"rg -n 'plan-approved|plan_spec|plan-spec|continuation|user_decision_policy' .template-spec/process/lifecycle-registry.yaml .template-spec/agents/digital-human-roles.yaml && wc -l CONTEXT.md\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat scripts/verify-plan-spec-entry scripts/lib/plan-spec-entry.mjs'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat review.json .fixture-authorization/continuation.json approval/decision.json .fixture-authorization/decision.json'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .agents/skills/yss-product-lifecycle/SKILL.md .agents/skills/yss-product-lifecycle/references/user-decisions.md .template-spec/plan/entry-review.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .template-spec/plan/entry-review.md .template-spec/plan/README.md .template-spec/process/plan-migration.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .fixture-authorization/mandate.json .fixture-authorization/review.json .fixture-authorization/verification.txt plan.md reconciliation.json && rg --files --hidden .fixture-authorization && cat scripts/lib/decision-continuation.mjs'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"sed -n '1,75p' .template-spec/process/lifecycle-registry.yaml && sed -n '140,200p' .template-spec/process/lifecycle-registry.yaml && sed -n '160,220p' .template-spec/agents/digital-human-roles.yaml && sed -n '260,320p' .template-spec/agents/digital-human-roles.yaml && sed -n '45,130p' CONTEXT.md\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"sed -n '45,82p' CONTEXT.md && sed -n '1,110p' scripts/lib/user-decision.mjs\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .fixture-authorization/external.json .fixture-authorization/approved-snapshot.md .fixture-authorization/requester.json .fixture-authorization/presentation.json .fixture-authorization/reply-0.json'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'node scripts/verify-plan-spec-entry state.json'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"node --input-type=module <<'NODE'\nimport assert from 'node:assert/strict';\nimport { readFileSync } from 'node:fs';\nconst result = JSON.parse(readFileSync('entry-result.json', 'utf8'));\nassert.deepEqual(Object.keys(result).sort(), ['result', 'verification_command', 'exit_code', 'needs_new_reply', 'reason'].sort());\nassert.equal(result.result, 'allowed');\nassert.equal(result.verification_command, 'node scripts/verify-plan-spec-entry state.json');\nassert.equal(result.exit_code, 0);\nassert.equal(result.needs_new_reply, false);\nassert.ok(typeof result.reason === 'string' && result.reason.length > 0);\nconsole.log('entry-result.json 字段与类型校验通过');\nNODE\"",
+      "exit_code": 0
+    }
+  ],
+  "command_errors": [],
+  "other_tools": [],
+  "agent_messages": [
+    {
+      "step": "main",
+      "text": "我会读取仓库身份、`state.json` 和本地阶段规则，验证已有回复及等价证据能否支持 Plan→Spec 延续；仅保存校验结果，不生成批准或产品资产。\n"
+    },
+    {
+      "step": "main",
+      "text": "仓库身份是 `project-instance`，`state.json` 已提供 `plan_continuation_ref`。我会按 `yss-product-lifecycle` 技能和用户决定协议检查延续证据，再运行 Plan→Spec 入口校验器。\n"
+    },
+    {
+      "step": "main",
+      "text": "入口校验器已通过，实际退出码为 `0`。本地规则支持通过 `plan_continuation_ref` 复用已有范围授权；当前证据通过了范围、摘要、独立审查和来源绑定检查，无需新增回复。我会将这一结论保存为隔离测试结果，不将合成证据视为真实批准。\n"
+    },
+    {
+      "step": "main",
+      "text": "已保存 [entry-result.json](/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-agent-evaluations-v2-2qx3mbr2/baseline/e05-continuation-2/workspace/entry-result.json)。\n\n`node scripts/verify-plan-spec-entry state.json` 实际退出码为 `0`：结果 `allowed`，`needs_new_reply: false`。\n\n结论仅适用于隔离测试；未改写或生成批准，未起草产品资产。"
+    }
+  ],
+  "artifacts": {
+    "entry-result.json": "{\n  \"result\": \"allowed\",\n  \"verification_command\": \"node scripts/verify-plan-spec-entry state.json\",\n  \"exit_code\": 0,\n  \"needs_new_reply\": false,\n  \"reason\": \"仅就本隔离 fixture 的 Plan→Spec 入口校验，允许延续。按生命周期注册表、角色表 user_decision_policy.continuation 和用户决定协议，state.json 的 plan_continuation_ref 可核验已有授权延续，无需补写 plan_user_decision_ref 或生成新批准。本轮入口校验实际通过：Plan 审阅包及依据摘要、必需检查、Context 调和、原始回复合成副本的来源绑定、原授权对当前边界和范围的覆盖、独立等价审查及已确认的外部审批要求均通过核验；无实质变化或未解决阻断项，因此不需要新回复。结果仅为 test-data-only，不构成真实批准、实现或发布授权；未验证真实身份、外部状态或真实构建，verification.txt 中的 synthetic pnpm 结果不作为本轮真实构建证据。本次仅保存校验结果，未改写批准、来源或产品资产。\"\n}\n"
+  },
+  "semantic_review": "pending"
+}

@@ -1,0 +1,188 @@
+{
+  "result": {
+    "scenario": "e10-running",
+    "variant": "baseline",
+    "repeat": 1,
+    "elapsed_seconds": 143.14,
+    "exit_code": 0,
+    "timeout": false,
+    "assertion_failures": [],
+    "runtime_errors": [],
+    "tool_calls": 19,
+    "usage": [
+      {
+        "input_tokens": 442037,
+        "cached_input_tokens": 371328,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 3703,
+        "reasoning_output_tokens": 751
+      }
+    ],
+    "automatic_result": "passed",
+    "semantic_review": "pending",
+    "trace": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-agent-evaluations-v2-2qx3mbr2/baseline/e10-running-1/trace.jsonl",
+    "steps": [
+      {
+        "step": "main",
+        "started_at": "2026-09-26T15:41:24Z",
+        "elapsed_seconds": 143.0,
+        "exit_code": 0,
+        "timeout": false,
+        "assertion_failures": [],
+        "runtime_errors": [],
+        "tool_calls": 19,
+        "usage": [
+          {
+            "input_tokens": 442037,
+            "cached_input_tokens": 371328,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 3703,
+            "reasoning_output_tokens": 751
+          }
+        ],
+        "automatic_result": "passed",
+        "semantic_review": "pending",
+        "trace": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-agent-evaluations-v2-2qx3mbr2/baseline/e10-running-1/trace.jsonl"
+      }
+    ],
+    "unattempted_steps": []
+  },
+  "original_files_changed": [],
+  "original_files_missing": [],
+  "unsafe_paths": [],
+  "new_files": [
+    "recovery.json"
+  ],
+  "commands": [
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat yss-project.yaml'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"pwd; rg --files --hidden -g '\"'!'\"\\\\.git/**' -g 'AGENTS.md' -g '*checkpoint*' -g '*task-record*' -g '*recovery*' -g 'CONTEXT.md' -g '*subagent*' -g '*lifecycle*' -g '*stage-tracking*' -g '*tailoring*'\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .agents/skills/yss-product-lifecycle/SKILL.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat AGENTS.md CONTEXT.md checkpoint.json task-record.json'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"rg -n -i 'recovery|recover|redispatch|running|恢复|重新派发|重派|主控|missing_evidence' .template-spec/process/subagent-collaboration.md .template-spec/process/stage-tracking.md .template-spec/process/harness-process-tailoring.md .agents/skills/yss-product-lifecycle .template-spec/agents/digital-human-roles.yaml scripts/verify-lifecycle-checkpoint scripts/lib/lifecycle-status.mjs\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat checkpoint.json task-record.json .agents/skills/yss-product-lifecycle/SKILL.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .template-spec/process/harness-process-tailoring.md .template-spec/process/stage-tracking.md .template-spec/process/subagent-collaboration.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"rg -n -i 'recovery|redispatch|task.record|task_record|running|恢复|重派|重新派发|resume|dispatch' .template-spec/process/lifecycle-registry.yaml .template-spec/agents/digital-human-roles.yaml .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml scripts/lifecycle-status scripts/verify-lifecycle-checkpoint scripts/lib/lifecycle-status.mjs; rg --files --hidden docs .eval-tmp\"",
+      "exit_code": 2
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"cat scripts/stage-tracking scripts/verify-lifecycle-checkpoint scripts/query-lifecycle-context .template-spec/process/contract-reading.md; sed -n '1,100p' .template-spec/plan/README.md; cat .template-spec/process/plan-migration.md\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"sed -n '1,285p' .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml; sed -n '1,115p' .agents/skills/yss-product-lifecycle/references/orchestration.md\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"rg -n -i '重新派发|重复派发|重派|task-record|external_job_id|result_ref|running.*恢复|恢复.*running|resume|recovery' .template-spec/agents .agents/skills/yss-product-lifecycle scripts/lib/lifecycle-controls.mjs scripts/lib/lifecycle-transition.mjs; rg --files --hidden -g '\"'!'\"\\\\.git/**' -g '*result*' -g '*plan*' -g '*ticket*' -g '*reconcil*' -g '*task*' -g '*checkpoint*'\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"sed -n '112,132p' .agents/skills/yss-product-lifecycle/references/state-model.md; cat scripts/stage-tracking scripts/verify-lifecycle-checkpoint scripts/query-lifecycle-context\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"cat .agents/skills/i-have-adhd/SKILL.md .template-spec/process/document-writing.md; sed -n '1,90p' .template-spec/process/lifecycle-registry.yaml; rg -n -A 16 -B 4 'work-unit.plan-requirements' .template-spec/process/lifecycle-registry.yaml; sed -n '1,145p' scripts/lib/stage-tracking-migration.mjs\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"python3 -B - <<'PY'\nfrom pathlib import Path\nimport hashlib, json\nroot = Path.cwd()\nfor name in ('checkpoint.json','task-record.json'):\n p=root/name\n print(name, 'sha256='+hashlib.sha256(p.read_bytes()).hexdigest())\ntask=json.loads((root/'task-record.json').read_text())\np=root/task['result_ref']\nprint(json.dumps({'result_ref':task['result_ref'],'exists':p.exists(),'is_symlink':p.is_symlink()},ensure_ascii=False))\nprint('root_entries:', ', '.join(sorted(x.name for x in root.iterdir())))\nPY\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'PYTHONDONTWRITEBYTECODE=1 node scripts/stage-tracking check --root . --checkpoint checkpoint.json'",
+      "exit_code": 1
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'node scripts/query-lifecycle-context --mode resume --stage stage.plan --work-unit work-unit.plan-requirements --include execution_efficiency'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'PYTHONDONTWRITEBYTECODE=1 node scripts/verify-lifecycle-checkpoint checkpoint.json'",
+      "exit_code": 1
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"python3 -B - <<'PY'\nfrom pathlib import Path\nimport hashlib, json\nroot = Path.cwd()\np = root / 'recovery.json'\ndata = json.loads(p.read_text())\nassert set(data) == {'action', 'redispatched', 'missing_evidence', 'next_action'}\nassert data['action'] == 'wait'\nassert data['redispatched'] is False\nassert data['missing_evidence'] and data['next_action']\nexpected = {\n 'checkpoint.json': '2260d2aa50156996c9e6829b86e4ec8774e253675a37b3c6b5a9e606d95c1ffd',\n 'task-record.json': '51122f946b35770b579dc6317882992bc6be723bec5284630eab8a3becf41cae'\n}\nfor name, digest in expected.items():\n assert hashlib.sha256((root / name).read_bytes()).hexdigest() == digest, name + ' changed'\nassert not (root / 'result-not-yet-received.json').exists()\nprint('recovery.json：JSON 和四个字段检查通过；redispatched=false；两份现有记录 SHA-256 未变；结果文件仍不存在。')\nPY\"",
+      "exit_code": 0
+    }
+  ],
+  "command_errors": [
+    {
+      "command": "/bin/zsh -lc \"rg -n -i 'recovery|redispatch|task.record|task_record|running|恢复|重派|重新派发|resume|dispatch' .template-spec/process/lifecycle-registry.yaml .template-spec/agents/digital-human-roles.yaml .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml scripts/lifecycle-status scripts/verify-lifecycle-checkpoint scripts/lib/lifecycle-status.mjs; rg --files --hidden docs .eval-tmp\"",
+      "exit_code": 2,
+      "output": "scripts/verify-lifecycle-checkpoint:42:    else if(value.mode==='resume'||value.mode==='orchestrate') assertScopeWorkUnit('work-unit.entry-triage',{root});\nscripts/verify-lifecycle-checkpoint:44:  assertStageTracking(value, { root, checkpointRef: path.relative(root, sourcePath), nextWorkUnit: value.next_work_unit, entering: value.mode === 'resume' || value.mode === 'orchestrate' });\n.template-spec/agents/digital-human-roles.yaml:12:  dispatch: orchestrator-one-to-one\n.template-spec/process/lifecycle-registry.yaml:153:    description: 可追溯的变更边界、发布记录和恢复动作。\n.template-spec/process/lifecycle-registry.yaml:263:    trigger: 存在状态流转、异常或恢复。\n.template-spec/process/lifecycle-registry.yaml:389:    completion: 两仓库顺序和恢复动作明确。\n.template-spec/process/lifecycle-registry.yaml:443:    completion: 每个后端项目均携带技术/数据设计门禁结果；新生成只接受 v4；历史 v3 仅在机械骨架未修改、设计补齐和恢复批准均通过时对账复用；检测到提前业务实现时保持 blocked。每个命中的交付面均为 existing-and-onboarded 或 initialized-and-verified，未命中的交付面有带原因的 not-applicable；聚合结果当前且证据可读。\n.template-spec/process/lifecycle-registry.yaml:490:    trigger: 专职前端 profile 或显式 frontend_delivery 绑定的任务启动、恢复、合同编译、实现和验证；实际执行 scripts/verify-frontend-delivery，输入就绪不等于实现获批。\n.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml:6:  dispatch: pass-condition-and-reference-to-document-owner\n.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml:10:  dispatch_input: include-reference-for-document-work\n.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml:66:  resume: rebuild_then_bounded_write\n.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml:90:    authorized_continuation: resume\n.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml:131:    refresh_on: [source-changed, new-impact, evidence-conflict, resume, handoff]\n.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml:138:    always_revalidate_on: [resume, handoff, implementation-entry, merge, release]\n.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml:236:  applies_to: all-formal-digital-human-dispatches\n.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml:252:    status_at_dispatch: issued\n.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml:268:  dispatch:\n.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml:303:  retired_shared_skills: [yss-antd-design, yss-antdv-next-design, ask-matt, batch-grill-me, grill-me, dispatching-parallel-agents, loop-me, migrate-to-shoehorn, product-design-prototype, prototype-page-acceptance, scaffold-exercises, setup-pre-commit, setup-ts-deep-modules, teach, writing-beats, writing-fragments, writing-shape, yss-components, yss-dictionary, yss-jdbc, yss-log, yss-microapp-commit, yss-mvc-scaffold-generator, yss-mvc-design, yss-mvc-data-analysis-project-initializer, yss-backend-scaffold-parent, yss-page-module-development, yss-taskflow, yss-backend-scaffold-application, yss-backend-scaffold-domain, yss-backend-scaffold-infrastructure, yss-backend-scaffold-web, yss-backend-scaffold-adapter, yss-application-layer-reference, yss-domain-layer-reference, yss-infrastructure-layer-reference, yss-web-layer-reference]\n.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml:622:    legacy_v3_requires: [legacy_reconciliation, unchanged_mechanical_ownership, completed_technical_data_api_prerequisites, recovery_approval]\n.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml:979:  resume_route: setup-readiness\n.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml:1021:  template_source_use: only-when-template-evolution-is-long-running\n.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml:1173:  required: [questionnaire_ref, recipient_role, requested_outputs, resume_route]\n.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml:1175:  resume_requires: [response_ref, user_decisions, reclassified_impact, updated_authoritative_asset]\n.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml:1248:    resume: revalidate-current-scope-approvals-and-delivery\nrg: docs: No such file or directory (os error 2)\n"
+    },
+    {
+      "command": "/bin/zsh -lc 'PYTHONDONTWRITEBYTECODE=1 node scripts/stage-tracking check --root . --checkpoint checkpoint.json'",
+      "exit_code": 1,
+      "output": ""
+    },
+    {
+      "command": "/bin/zsh -lc 'PYTHONDONTWRITEBYTECODE=1 node scripts/verify-lifecycle-checkpoint checkpoint.json'",
+      "exit_code": 1,
+      "output": "生命周期 checkpoint 验证失败: <root>: 'ticket_sync' is a required property\n<root>: 'verification' is a required property\n<root>: 'human_review' is a required property\n<root>: 'git_checkpoint' is a required property\n<root>: 'rollback' is a required property\nstage_tracking: 'schema_version' is a required property\nstage_tracking: 'feature_id' is a required property\nstage_tracking: 'checkpoint_ref' is a required property\nstage_tracking: 'entry_stage' is a required property\nstage_tracking: 'entry' is a required property\nstage_tracking.items.0: 'kind' is a required property\nstage_tracking.items.0: 'title' is a required property\nstage_tracking.items.0: 'stage' is a required property\nstage_tracking.items.0: 'scope' is a required property\nstage_tracking.items.0: 'acceptance' is a required property\nstage_tracking.items.0: 'split_reasons' is a required property\n"
+    }
+  ],
+  "other_tools": [],
+  "agent_messages": [
+    {
+      "step": "main",
+      "text": "我会核对仓库身份、主控恢复规则和现有记录，只写入 `recovery.json`，如实记录缺失的证据及下一步。\n"
+    },
+    {
+      "step": "main",
+      "text": "仓库身份是 `project-instance`。我会使用 `yss-product-lifecycle` 技能核对恢复规则，重点确认任务状态、输出证据和是否可以重新派发。\n"
+    },
+    {
+      "step": "main",
+      "text": "`task.demo` 的现有记录为 `running`，结果文件确实尚不存在；当前无法确认外部任务的最新状态，因此本轮不重新派发。Context 对账和阶段验收证据也尚未齐备。我会执行本地只读校验，并按 `i-have-adhd` 文档规范把缺口及恢复条件写入 `recovery.json`。\n"
+    },
+    {
+      "step": "main",
+      "text": "已保存 [recovery.json](/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-agent-evaluations-v2-2qx3mbr2/baseline/e10-running-1/workspace/recovery.json)。\n\n`action=wait`，`redispatched=false`。已记录证据缺口、本地校验失败和恢复步骤。未伪造任务结果，两份已有记录的哈希均未改变。"
+    }
+  ],
+  "artifacts": {
+    "recovery.json": "{\n  \"action\": \"wait\",\n  \"redispatched\": false,\n  \"missing_evidence\": [\n    {\n      \"kind\": \"task_result\",\n      \"ref\": \"result-not-yet-received.json\",\n      \"detail\": \"task-record.json 中 task.demo 记录为 running，所引用的结果文件不存在，尚无可验收的 Workflow Execution Result、产物或实际验证证据。结果未落盘不能证明任务失败或完成。\"\n    },\n    {\n      \"kind\": \"external_task_status\",\n      \"ref\": \"task-record.json\",\n      \"detail\": \"外部任务 fixture.job.1 的最新执行状态未知。当前环境没有查询外部任务的能力；未发起查询，也没有确认其失败、取消或终止的证据。\"\n    },\n    {\n      \"kind\": \"context_reconciliation\",\n      \"ref\": \"checkpoint.json#/context_reconciliation\",\n      \"detail\": \"状态为 pending，ref 为 null，evidence_refs 为空；缺少已完成且通过当前校验的 Context 对账证据，不能批准或流转工作单元。\"\n    },\n    {\n      \"kind\": \"stage_acceptance\",\n      \"ref\": \"checkpoint.json#/stage_tracking/items/0\",\n      \"detail\": \"requirements 工作项记录为 running，source_refs 和 completion 为空，缺少范围、验收条件及逐项验收证据；checkpoint 的 artifacts 和 gates 也为空，不能推断 Plan 已完成或门禁已通过。\"\n    },\n    {\n      \"kind\": \"stage_tracking_validation\",\n      \"ref\": \"checkpoint.json\",\n      \"command\": \"PYTHONDONTWRITEBYTECODE=1 node scripts/stage-tracking check --root . --checkpoint checkpoint.json\",\n      \"exit_code\": 1,\n      \"detail\": \"本轮只读校验返回 tracking-checkpoint-path-invalid；根目录 checkpoint.json 不符合当前检查器要求的 docs/.scratch/<feature>/ 下路径。按用户限制保留原文件，未迁移或修改。\"\n    },\n    {\n      \"kind\": \"checkpoint_validation\",\n      \"ref\": \"checkpoint.json\",\n      \"command\": \"PYTHONDONTWRITEBYTECODE=1 node scripts/verify-lifecycle-checkpoint checkpoint.json\",\n      \"exit_code\": 1,\n      \"detail\": \"本轮只读校验失败：根记录缺少 ticket_sync、verification、human_review、git_checkpoint、rollback；stage_tracking 缺少 schema_version、feature_id、checkpoint_ref、entry_stage、entry；工作项缺少 kind、title、stage、scope、acceptance、split_reasons。缺口仅记录，未补造或改写原记录。\"\n    }\n  ],\n  \"next_action\": \"依据 yss-product-lifecycle/references/state-model.md 的 Resume 规则及 orchestration-contract.yaml 的 resume、request_triage、workflow_execution_result 合同，保留已有 checkpoint.json、task-record.json，等待 task.demo 的真实结果落盘；查询能力恢复后可先核对同一 external_job_id=fixture.job.1，不能因结果文件缺失而重复派发。结果到达后核对任务身份、实际产物和证据，并执行适用的 fresh verification；记录路径及结构缺口须在另获修改授权后按当前合同处理，Context 对账和阶段验收通过前不推进 Plan 或进入 Spec。只有取得原任务已结束且确需重试的可靠证据，并满足授权和任务包要求后，才重新评估派发。本轮仅保存 recovery.json；外部任务状态与结果未验证，fixture 数据不构成真实批准。\"\n}\n"
+  },
+  "semantic_review": "pending"
+}

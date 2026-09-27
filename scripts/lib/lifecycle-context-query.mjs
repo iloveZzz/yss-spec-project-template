@@ -88,6 +88,12 @@ export function queryLifecycleContext({ mode, stageId, workUnitId, include = [] 
   }
 
   const route = workUnitId ? orchestration.work_unit_routes?.[workUnitId] ?? null : null;
+  if (workUnit?.scope === "project-instance" && workUnit.id !== "work-unit.entry-triage" && !route) {
+    throw new TypeError(`项目工作单元缺少执行路由: ${workUnit.id}`);
+  }
+  if (workUnit?.scope === "project-instance" && workUnit.id !== "work-unit.entry-triage" && !Object.hasOwn(orchestration.transition_graph?.routes ?? {}, workUnit.id)) {
+    throw new TypeError(`项目工作单元缺少流转路由: ${workUnit.id}`);
+  }
   const gates = lifecycle.gates.filter((gate) => gate.stage === stageId || (loadPlan && gate.stage === 'stage.plan'));
   const checks = lifecycle.checks.filter(check => check.stage === stageId || gates.some(gate => gate.requires_checks?.includes(check.id)));
   const artifacts = lifecycle.artifacts.filter((artifact) => artifact.stage === stageId || (loadPlan && artifact.stage === 'stage.plan'));
@@ -125,7 +131,9 @@ export function queryLifecycleContext({ mode, stageId, workUnitId, include = [] 
     },
     lifecycle: {
       artifacts,
-      evidence: lifecycle.evidence.filter((item) => evidenceIds.has(item.id)),
+      evidence: lifecycle.evidence.filter((item) => evidenceIds.has(item.id)).map(({ public_description, ...item }) => ({
+        ...item, description: public_description ?? item.description
+      })),
       gates,
       checks,
       stage,

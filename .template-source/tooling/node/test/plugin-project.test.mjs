@@ -62,7 +62,7 @@ test('fixed CLI initializes, binds and resumes a separate governance project wit
     assert.equal(review.query.execution.responsibility_scope.scope_id, 'plan-to-backend');
     assert.deepEqual(review.query.execution.transition.next, ['work-unit.slice-implementation', 'work-unit.backend-delivery']);
     assert.equal(call('query-project', ['--target-dir', target, '--work-unit', 'work-unit.release-and-retrospective']).status, 1);
-    assert.equal(success(call('query-project', ['--target-dir', target, '--work-unit', 'work-unit.prototype-design'])).query.lifecycle.work_unit.id, 'work-unit.prototype-design');
+    assert.equal(success(call('query-project', ['--target-dir', target, '--work-unit', 'work-unit.prototype-design-v2'])).query.lifecycle.work_unit.id, 'work-unit.prototype-design-v2');
     assert.equal(call('project-resume', ['--target-dir', target, '--checkpoint', 'missing.yaml']).status, 1);
     writeFileSync(path.join(target, 'dispatch-input.json'), JSON.stringify({binding:{},work_unit_id:'work-unit.synthetic',runtime_id:'runtime.generic'}));
     assert.equal(call('project-dispatch', ['--target-dir', target, '--input', 'dispatch-input.json']).status, 1);

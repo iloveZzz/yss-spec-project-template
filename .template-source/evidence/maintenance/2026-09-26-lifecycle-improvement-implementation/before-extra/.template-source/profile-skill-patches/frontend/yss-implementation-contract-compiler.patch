@@ -1,0 +1,1572 @@
+diff --git a/SKILL.md b/SKILL.md
+index d43cca2..bb7461c 100644
+--- a/SKILL.md
++++ b/SKILL.md
+@@ -7,71 +7,60 @@ description: "编译或重验 YSS Slice Implementation Contract、最小 Skill 
+ 
+ 已有生命周期资产优先用 `scripts/contract view <资产> --kind <类型>` 阅读；执行任务用 `--profile task --unit <ID>`，绑定与校验明细用 `--profile full`。视图不授予执行权限，仍按本 Skill 的原始来源和批准门禁处理。类型、准备和迁移见 `.template-spec/process/contract-reading.md`。
+ 
+-阶段 7 的实现合同编译器。它把已批准的生命周期资产、垂直切片、capability 和窄 Recipe 编译为 `Slice Implementation Contract` v3 草案；不批准合同、不写业务代码、不设置 `ready-for-agent`。
++本技能是确定性的实现合同编译器，不是生命周期主控。它消费已批准且版本当前的输入，输出 draft、blocked 或 ready-for-lifecycle-review 的合同草案，由 `harness-orchestrator` 批准、持久化并设置 ready-for-agent。
+ 
+ 文档输出时按 `lifecycle-document-output` 条件调用 `i-have-adhd`，读取 `.template-spec/process/document-writing.md`；作用域仅限当前产物，派发时传递条件及引用。
+ 
+-## 文档写作
++## 输入
+ 
+-撰写实现合同的解释正文和切片交接说明前，读取 `.template-spec/process/document-writing.md` 的共用写法及工程契约 / Ticket 指引；不改变结构化合同、批准状态或就绪条件。
++采用专职前端 profile 或显式 `frontend_delivery` 时，按 `.template-spec/process/frontend-backend-delivery.md` 核验战略与后端联合交付；缺任一输入只诊断和回交，正式实现与恢复从当前批准的 Slice Contract 重验接收摘要和真实服务。
+ 
+-## 输入
++必须读取 yss-project.yaml、CONTEXT.md、Spec / 战略设计、前端工程设计、已核验的后端交付、API / UI 消费影响、实现仓库登记、允许写路径和验证命令。输入缺失、未批准或过期时返回 blocked。
+ 
+-先读取 Spec、切片 Ticket、需求冻结、适用的原型确认、OpenAPI Freeze/no-impact、适用的系统/数据架构和 Design Review、Build Architecture Checklist、实现仓库和验证命令。输入缺失、未批准或 `stale` 时输出 `blocked`，交回 `yss-product-lifecycle`。
++后端 DDD / MVC 技术设计、架构确认和脚手架由后端项目持有；本仓只读消费已冻结 API、联合交付与页面工程约束。两类战略交接合同均可导入，不为前端切片补造后端技术设计。
+ 
+-## 编译循环
+ 
+-1. 判断 frontend/backend/API/data/domain/cross-repo 影响，并按 [compiler-contract.yaml](references/compiler-contract.yaml) 把 impact 映射为入口 capability；逐项填写 backend `component_impacts`。
+-2. 按 `.template-spec/process/delivery-preflight.md` 只读检查当前阶段交付前提，再检查工程存在性和核心/长尾 skill 可用性。既有 Java/Maven 工程按 `.template-spec/process/existing-backend-architecture.md` 加载登记、工程基线、独立观测的原始引用与摘要；不伪填生成器或 H2。
+-3. 从 `.template-spec/agents/yss-skill-registry.yaml` 选择一个或多个窄 Recipe，合并 `required_capabilities`；Recipe 不得直接引用 skill。
+-4. 由 capability 解析入口 skill，只递归 `context-required`；`context-conditional` 仅在显式 condition 命中时加载，其他依赖类型只进入原因链，不扩张执行上下文。
+-5. 按“Recipe 声明顺序 → 依赖拓扑 → skill ID”确定性排序，去重 skill 并保留全部原因；冻结 Registry 与编译器合同 SHA-256。
+-6. 为切片生成基线合同；为当前行为生成工作单元增量路由。
+-7. 选择 `behavior-tdd` 或 `controlled-generation`。
+-8. 输出 `draft`、`blocked` 或 `ready-for-lifecycle-review`，交生命周期编排器核验和持久化。
++接入与导出先按 `.template-spec/process/delivery-preflight.md` 执行对应阶段只读预检；既有工程身份按 `.template-spec/process/existing-backend-architecture.md` 读取原始证据，不补造生成器来源。无 UI 改动可承接当前确认的 `existing-ui-baseline`，新设计仍走原型；当前批准后仅允许登记与合同交集内的输出增量。
+ 
+-完整草案使用 `scripts/slice-contract prepare` 或 `prepareSliceImplementationContract` 从已有 Ticket / checkpoint 和必要细化组装；执行前读取唯一 YAML，视图和检查报告不授予权限。
++## 编译结果
+ 
+-合同结构见 [slice-implementation-contract.md](references/slice-implementation-contract.md)，专项返回协议见 [yss-skill-execution-result.md](references/yss-skill-execution-result.md)。前端、后端和测试子任务必须由生命周期主控从批准的 Slice Contract 编译任务包；任务包 schema 为 `.template-spec/process/schemas/subagent-task-package.schema.json`，技能列表必须来自 `taskPackageDefaults`，不能由编译器或执行 Agent 另行手写。
++新合同使用 Slice v3 唯一 YAML：basis、scope、resolution、acceptance、verification、work_units 与适用 extensions 单点保存；任务包由批准合同派生。v2 按原规则读取，修改时显式迁移新草案，不继承批准。
+ 
+-## 硬规则
++编译器必须计算：
+ 
+-采用专职前端 profile 或显式 `frontend_delivery` 绑定时，先按 `.template-spec/process/frontend-backend-delivery.md` 实际核验战略与后端联合交付。缺任一输入只能诊断和回交；输入通过后准备计划/合同，正式实现、生成和恢复仍须当前批准的 Slice Contract 冻结接收摘要。接口或部署版本漂移时重新接收，不复用旧成功输出。
++- 按 `compiler-contract.yaml` 将 impact 映射为入口 capability；Recipe 只能引用 capability。
++- 合并多个窄 Recipe 后只计算一次闭包；只递归 `context-required`，显式 condition 命中时才加载 `context-conditional`，其他类型不扩张实现上下文。
++- 按 Recipe 声明顺序、依赖拓扑和 skill ID 兜底确定性排序；去重 skill 并保留全部原因链。
++- API Freeze 或无 API 影响记录。
++- 数据架构或无数据影响记录。
++- UI 交互、状态、原型输入，以及批准且 digest 当前的 Visual Baseline manifest 与当前切片 `case_id`；无 UI 影响时记录不适用。
++- 实现仓库、分支、项目根、CI、验证命令、回滚点和允许写路径。
++- `required_capabilities`、`required_skills`、Registry/Compiler digest、TDD 模式、预期证据和完整重路由触发器。
+ 
+-- 编译器不得输出 `approved`、`ready-for-agent` 或 `completed`。
+-- Registry 和编译规则保持 schema v2；新 Slice 使用 v3，v2 按原规则读取和显式迁移。schema v1 一律拒绝，不自动升级，不提供旧技能名兼容。
+-- `required_capabilities` 与 `required_skills` 必须同时冻结；Registry 或编译器摘要变化后合同立即 `stale`，重新编译后仍须交生命周期重新批准。
+-- UI 影响按来源分支核验：新设计保持正式原型确认与 Visual Baseline；无 UI 改动才允许 `existing-ui-baseline` v1，并须当前真实基线确认及 `case_id`。任一来源缺少当前批准或摘要绑定时，不得路由页面实现。模型必须先读 manifest 与语义引用，再查看对应 PNG；禁止目录 glob 和图片独立猜义。
+-- Repository/数据模型影响缺少数据架构时，不得路由持久化实现。
+-- 后端技术设计由 `yss-technical-design` 先行组织。消费批准且版本当前的 Technical Design Contract，核对其架构与工程基线一致；DDD 才消费聚合、Gateway 等战术字段并路由 `yss-domain`，MVC 消费用例、分层、规则和事务设计并按 Profile 路由。旧 v1 战术合同只按 DDD 显式兼容读取。无相关影响记录带原因的 `not-applicable`。
+-- API 变化必须回到生命周期 Draft/Review/Freeze；半成品 backend 不得冒充稳定 source of truth。
+-- 后端端到端切片必须包含 Application；对象/POJO 影响按契约自动补 `mapstruct`、`lombok`、`alibaba-java-code-style`。
+-- Harness 内实现路径必须落在 `apps/backend/<project>/` 或 `apps/frontend/<project>/` 的具体项目目录；`apps/backend/`、`apps/frontend/` 只能作为容器，`app/backend/`、`app/frontend/` 及其子路径一律阻断。外部实现仓库使用其登记的真实项目根路径。`git-submodule` 使用 `implementation_path_policy: git-submodule-harness-apps`，空 gitlink、detached HEAD 或 `--force` 覆盖挂载点不得脚手架；`inspectWorkingTreeScope.writable` 必须为显式布尔值。
+-- 当前用户、缓存、审计、Excel、分布式 ID、请求校验、错误映射、加解密或网关韧性命中时，必须按 `compiler-contract.yaml` 的 `impact_to_capabilities` 补齐入口 capability；不能只在 `boundaries.md` 中提及。仅复用已经验证的平台认证 / 授权能力不算 component impact，不自动增加权限专项 skill。
+-- 业务行为使用 `behavior-tdd`；只有机械脚手架/生成物可用 `controlled-generation`，并记录例外和验证。
+-- 阶段 5 若命中交付面且无已有工程，按 Project Scaffold Contract schema v4 编译 `controlled-generation` 合同 draft。后端先读取已通过 `gate.backend-architecture-platform-approved` 的架构与精确 Spring Boot 版本决定，并以原始字节 digest 绑定批准且当前的 Technical Design、Data Architecture Decision v1、API Contract Decision v1 及 `gate.engineering-contract-approved` 真实批准记录；编译器不得自行默认、提问或批准。既有工程核验并复用当前登记架构及固定工程基线/POM 中的实际版本，不重新询问或生成。API `required` 时工程批准还必须直接绑定冻结 OpenAPI YAML 的版本与摘要，`not-applicable` 时必须有影响评估、明确原因和证据。前端绑定标准模板精确 commit、应用标识、路由、OpenAPI 影响、目标路径和 `init_git` 决定。合同经生命周期批准并持久化后才能运行生成器。历史后端 schema v3 只允许 Manifest 只读恢复审计，并须补齐 API 对账，不得新生成；前端只接受 v4。生成与验证完成、仓库登记并通过 `check.implementation-repositories-ready` 后，才编译 Ticket 与业务 Slice Contract。
+-- 脚手架合同在编译阶段只能是 `draft` / `ready-for-lifecycle-review` / `blocked`；只有生命周期编排器可以把已持久化脚手架合同标记为 `approved`。脚手架合同只覆盖业务代码前的工程骨架工作单元；生成、基线校验和合同重编译完成后，它不能替代脚手架后的 Slice Implementation Contract。
+-- 脚手架输出消费批准的脚手架合同；脚手架后的所有生成后端代码都必须绑定当前批准且版本当前的 Slice Implementation Contract、主 YSS skill、依赖闭包、允许写路径、预期证据和 YSS Skill Execution Result。打印命令、`./mvnw validate` 单项通过或脚手架成功不能替代合同批准；生成范围从机械内容变成业务行为时触发完整重路由。
+-- 专项结果中的越界路径、缺失证据、`drift`、`violation` 或 `new_impacts` 必须阻断或重路由。
+-- 前后端子任务必须使用同一 `contract_id/contract_version`，并在任务包中记录 `role_id`、`runtime_id`、`execution_state`、`allowed_write_paths`、`downstream_consumers` 和 `convergence_ref`；版本不一致或汇合引用缺失时输出 `blocked`。
+-- 长尾 skill 不可用时显式 `blocked`，不得用通用知识假装已应用 YSS 规范。
++## 硬规则
+ 
+-## 三级编译模式
++- 编译器不得输出 approved、ready-for-agent 或 completed。
++- Registry、编译器合同或 Slice Contract schema v1 一律拒绝并返回迁移提示；不自动升级，不提供旧技能名 alias。
++- 任一 Registry/Compiler digest 变化使合同 `stale`；重新编译后仍须由 `harness-orchestrator` 再批准。
++- 发现后端业务规则、架构、状态或持久化变化时回交后端 / 战略方，不路由本地 Domain 实现。
++- API、状态、Visual Baseline 版本或 digest、数据模型、写路径、测试 seam 或验证命令变化时，必须返回 new_impacts / drift 并完整重路由。
++- UI 实现先按 `visual_baseline_case_ids` 读取 manifest、语义引用和对应 PNG，再以相同 case_id、视口、状态和数据 fixture 捕获实现图；禁止目录 glob 和图片独立猜义。
++- 前端和后端任务必须使用同一合同版本；版本不一致立即 blocked。
++- 业务行为使用 behavior-tdd；只有机械内容允许使用受控生成合同。
++- 已存在或已初始化工程不得因架构选择而重新生成；DDD/MVC 互转必须完整重路由到独立迁移工作单元。
++- 任务包写入范围、证据和命令必须能被独立验证，不能用自然语言说明替代结构化字段。
+ 
+-- 切片基线编译：生成完整合同和技能闭包。
+-- 工作单元增量编译：绑定一个行为、主/辅 skills、TDD 模式、路径和证据。
+-- 完整重编译：API/schema、状态机、数据模型、仓库、写路径、skill、测试 seam 或架构约束发生实质变化时触发。实现中出现未冻结的新行为（包括明确的权限业务行为）统一写入 `new_impacts`，由生命周期按普通影响面重新分诊。
++## 战略交接快照包
+ 
+-## 输出
++使用 `scripts/strategic-handoff export / verify / import`；源资产冻结、规则身份与批准绑定、目标术语对账和逐条承接合同以 `.template-spec/process/strategic-handoff-package.md` 为准。来自导入包时，战术合同绑定 `strategic_handoff`；批准/流转前执行 `scripts/verify-strategic-handoff-consumption --root <target> <tactical>`，切片消费追加 `--slice <slice-id>`。存在延期时仅允许无依赖且核验通过的切片继续；未知依赖扩大阻断。
+ 
+-输出唯一 YAML 合同草案及派生报告；报告包含 capability/Recipe 解析记录、技能依赖闭包、不适用理由、阻塞项、TDD 模式、工作单元、预期证据、验证命令、人工审查点、完整重路由触发器，以及建议的 `suggested_owner_role_id`（UI 影响 → `role.frontend-engineer`，后端影响 → `role.backend-engineer`，测试/审查 → `role.test-engineer`）。自然语言说明不能替代结构化合同字段。编译器不得自行批准合同、设置 `ready-for-agent` 或关闭会签门禁；owner 建议只供主控派活。
++## Slice v3 准备与批准
+ 
+-## 战略交接快照包
++使用 `scripts/slice-contract prepare/view/diff/migrate`，字段与接口见 [Slice v3](references/slice-implementation-contract.md)。用户只确认目标、范围、验收和关键取舍，已有有效确认按原协议延续；独立专业审查核验工程约束，主控汇总批准。原因链、缺口、检查结果和任务进度留在派生报告或现有证据，不改写权威合同。不得从普通 Spec 确认推断实施授权。
+ 
+-消费战略包时必须绑定导入收据、包摘要、目标对账和逐条承接。按 [跨仓承接核验](references/strategic-handoff-routing.md) 执行；源变化使依赖项 stale，未知依赖扩大阻断，编译器不能补字段后沿用旧批准。
++## 后端组件合同的只读承接
+ 
+-## 后端脚手架平台承接
++前端任务不选择或认证 YSS 后端组件。跨仓 Slice 含 `component_bindings` 时必须原样保留并消费 `component_bindings_digest`；绑定缺失或漂移时返回 `stale` 并交回后端与主控重新编译，禁止在前端合同中补造构件证据。
+ 
+-消费生命周期已确认的架构与 `platform_configuration` v2；不得自行选择、批准或静默升级 Boot/Java。平台清单执行 `scripts/backend-platforms` 查询；只允许已验证 YSS 组合，新生成缺少配置或证据即阻断。决定、合同、Manifest 与下游架构身份须绑定同一平台及兼容摘要。详见 仓库共享合同 `.template-spec/engineering/backend-platforms.md`。
+ 
+-后端 Slice 解析出 `component_binding: required` 的 capability 或其主 Skill 时，必须在同一平台兼容条目中逐项解析 `component_capabilities`。编译结果保存 `component_bindings` 与 `component_bindings_digest`；未登记、未验证、架构证据缺失、构件坐标冲突或摘要漂移均阻断。旧合同含组件 Skill 但没有组件绑定时直接 `stale`，重新编译并交生命周期批准，禁止自动补字段后沿用原批准。
++仅消费战略交接包时，按 [跨仓承接核验](references/strategic-handoff-routing.md) 追加当前摘要与逐规则承接检查；本 profile 的主控批准边界不变。
+diff --git a/agents/openai.yaml b/agents/openai.yaml
+index b2b097f..9278c4b 100644
+--- a/agents/openai.yaml
++++ b/agents/openai.yaml
+@@ -1,4 +1,4 @@
+ interface:
+   display_name: "YSS Implementation Contract Compiler"
+   short_description: "Compile capabilities into a minimal implementation contract"
+-  default_prompt: "Use yss-implementation-contract-compiler to compile the approved slice capabilities, deterministic skill closure, evidence plan, and v3 contract draft."
++  default_prompt: "Use yss-implementation-contract-compiler to compile approved capabilities, deterministic skill closure, evidence, and a v3 contract draft."
+diff --git a/references/boundaries.md b/references/boundaries.md
+index 3defa55..eff7662 100644
+--- a/references/boundaries.md
++++ b/references/boundaries.md
+@@ -18,39 +18,14 @@
+ 
+ | Capability | Primary skill | Task modes |
+ | --- | --- | --- |
+-| `governance.backend-spec-conformance` | `yss-backend-spec-review` | `guidance`, `troubleshooting`, `review-input` |
+ | `writing.lifecycle-document` | `i-have-adhd` | `guidance` |
+-| `architecture.technical-design` | `yss-technical-design` | `guidance`, `integration`, `review-input` |
+-| `architecture.mvc-design` | `yss-technical-design` | `guidance`, `integration`, `review-input` |
+-| `layer.mvc-service` | `yss-application` | `guidance`, `integration`, `slice-implementation`, `troubleshooting`, `review-input` |
+-| `layer.mvc-persistence` | `yss-repository` | `guidance`, `integration`, `slice-implementation`, `troubleshooting`, `review-input` |
+-| `layer.mvc-web` | `yss-web-controller` | `guidance`, `integration`, `slice-implementation`, `troubleshooting`, `review-input` |
++| `execution.frontend-slice` | `frontend-agent` | `slice-implementation`, `result-validation` |
++| `frontend.ui` | `yss-ui` | `integration`, `slice-implementation`, `review-input` |
++| `frontend.api-integration` | `yss-api-integration` | `integration`, `slice-implementation` |
+ | `governance.implementation-contract` | `yss-implementation-contract-compiler` | `contract-compilation`, `reroute`, `result-validation` |
++| `architecture.system-data` | `architecture-agent` | `guidance`, `contract-compilation`, `review-input` |
+ | `maintenance.skill-source-index` | `yss-skill-source-index-refresh` | `component-maintenance`, `source-index-refresh` |
+-| `architecture.tactical-domain` | `yss-tactical-design` | `guidance`, `integration`, `slice-implementation`, `review-input` |
+-| `layer.domain` | `yss-domain` | `guidance`, `integration`, `slice-implementation`, `troubleshooting`, `review-input` |
+-| `layer.application` | `yss-application` | `guidance`, `integration`, `slice-implementation`, `troubleshooting`, `review-input` |
+-| `layer.persistence` | `yss-repository` | `guidance`, `integration`, `slice-implementation`, `troubleshooting`, `review-input` |
+-| `layer.web-adapter` | `yss-web-controller` | `guidance`, `integration`, `slice-implementation`, `troubleshooting`, `review-input` |
+-| `contract.dto-wire` | `yss-dto` | `guidance`, `integration`, `slice-implementation`, `troubleshooting`, `review-input` |
+-| `contract.request-validation` | `yss-validation` | `guidance`, `integration`, `slice-implementation`, `troubleshooting`, `review-input` |
+-| `contract.error-mapping` | `yss-exception` | `guidance`, `integration`, `slice-implementation`, `troubleshooting`, `review-input` |
+-| `framework.mybatis` | `yss-mybatis` | `guidance`, `integration`, `slice-implementation`, `troubleshooting`, `review-input` |
+-| `quality.java-code-style` | `alibaba-java-code-style` | `guidance`, `slice-implementation`, `review-input` |
+-| `codegen.mapstruct` | `mapstruct` | `integration`, `slice-implementation`, `troubleshooting`, `review-input` |
+-| `codegen.lombok` | `lombok` | `integration`, `slice-implementation`, `troubleshooting`, `review-input` |
+-| `component.cache` | `yss-cache` | `guidance`, `integration`, `slice-implementation`, `troubleshooting`, `component-maintenance`, `review-input` |
+-| `component.current-user-context` | `yss-userinfo` | `guidance`, `integration`, `slice-implementation`, `troubleshooting`, `component-maintenance`, `review-input` |
+-| `component.audit-log` | `yss-audit-log` | `guidance`, `integration`, `slice-implementation`, `troubleshooting`, `component-maintenance`, `review-input` |
+-| `component.excel-import-export` | `yss-excel-mvc` | `guidance`, `integration`, `slice-implementation`, `troubleshooting`, `component-maintenance`, `review-input` |
+-| `component.distributed-id` | `yss-distributed-id` | `guidance`, `integration`, `slice-implementation`, `troubleshooting`, `component-maintenance`, `review-input` |
+-| `component.security-algorithm` | `yss-security-algorithm` | `guidance`, `integration`, `slice-implementation`, `troubleshooting`, `component-maintenance`, `review-input` |
+-| `component.gateway-resilience` | `yss-resilience4j` | `guidance`, `integration`, `slice-implementation`, `troubleshooting`, `component-maintenance`, `review-input` |
+-| `scaffold.ddd` | `yss-ddd-scaffold-generator` | `integration`, `component-maintenance` |
+-| `scaffold.layered-mvc` | `yss-layered-mvc-scaffold-generator` | `integration`, `component-maintenance` |
+ | `scaffold.frontend-vue3` | `yss-frontend-scaffold-generator` | `integration`, `component-maintenance` |
+-| `project-init.mvc-data-analysis` | `yss-layered-mvc-scaffold-generator` | `component-maintenance` |
+-| `migration.springboot3` | `yss-up-springboot3` | `guidance`, `integration`, `troubleshooting`, `component-maintenance`, `review-input` |
+ 
+ ## Narrow Recipes
+ 
+@@ -58,103 +33,28 @@
+ 
+ | Recipe | Capabilities |
+ | --- | --- |
+-| `backend.spec-conformance` | `governance.backend-spec-conformance`, `quality.java-code-style` |
+-| `backend.ddd-domain-behavior` | `layer.domain`, `layer.application`, `quality.java-code-style` |
+-| `backend.ddd-persistence-mybatis` | `layer.persistence`, `framework.mybatis`, `codegen.mapstruct`, `codegen.lombok`, `quality.java-code-style` |
+-| `backend.ddd-http-api` | `layer.web-adapter`, `contract.dto-wire`, `contract.request-validation`, `contract.error-mapping`, `codegen.mapstruct`, `codegen.lombok`, `quality.java-code-style` |
+-| `backend.mvc-service-behavior` | `layer.mvc-service`, `quality.java-code-style` |
+-| `backend.mvc-persistence-mybatis` | `layer.mvc-persistence`, `framework.mybatis`, `codegen.mapstruct`, `codegen.lombok`, `quality.java-code-style` |
+-| `backend.mvc-http-api` | `layer.mvc-web`, `contract.dto-wire`, `contract.request-validation`, `contract.error-mapping`, `codegen.mapstruct`, `codegen.lombok`, `quality.java-code-style` |
+-| `backend.domain-behavior` | `layer.domain`, `layer.application`, `quality.java-code-style` |
+-| `backend.persistence-mybatis` | `layer.persistence`, `framework.mybatis`, `codegen.mapstruct`, `codegen.lombok`, `quality.java-code-style` |
+-| `backend.http-api` | `layer.web-adapter`, `contract.dto-wire`, `contract.request-validation`, `contract.error-mapping`, `codegen.mapstruct`, `codegen.lombok`, `quality.java-code-style` |
+-| `backend.current-user-context` | `component.current-user-context`, `contract.dto-wire` |
+-| `backend.cached-current-user` | `component.current-user-context`, `component.cache`, `contract.dto-wire` |
+-| `backend.audit-event` | `component.audit-log`, `component.current-user-context`, `contract.dto-wire` |
+-| `backend.excel-import-export` | `component.excel-import-export`, `contract.dto-wire`, `contract.request-validation`, `contract.error-mapping` |
+-| `backend.gateway-resilience` | `component.gateway-resilience`, `contract.error-mapping` |
+-| `backend.security-algorithm` | `component.security-algorithm`, `contract.error-mapping` |
+-| `backend.distributed-id` | `component.distributed-id` |
+-| `backend.ddd-scaffold` | `scaffold.ddd`, `quality.java-code-style` |
+-| `backend.mvc-scaffold` | `scaffold.layered-mvc`, `quality.java-code-style` |
+-| `frontend.vue3-scaffold` | `scaffold.frontend-vue3` |
+-| `backend.springboot3-migration` | `migration.springboot3`, `quality.java-code-style` |
++| `frontend.ui-slice` | `execution.frontend-slice`, `frontend.ui`, `governance.implementation-contract` |
+ 
+ ## Impact Entry Mapping
+ 
+ | Impact | Entry capabilities |
+ | --- | --- |
+-| `domain-impact` | `layer.domain`, `layer.application` |
+-| `tactical-domain-impact` | `architecture.tactical-domain` |
+-| `persistence-impact` | `layer.persistence` |
+-| `mybatis-framework-impact` | `framework.mybatis` |
+-| `web-adapter-impact` | `layer.web-adapter` |
+-| `dto-wire-impact` | `contract.dto-wire` |
+-| `request-validation` | `contract.request-validation` |
+-| `error-mapping` | `contract.error-mapping`, `contract.dto-wire` |
+-| `cache` | `component.cache` |
+-| `current-user-context` | `component.current-user-context` |
+-| `user-cache-lookup` | `component.current-user-context`, `component.cache` |
+-| `audit-event` | `component.audit-log`, `component.current-user-context`, `contract.dto-wire` |
+-| `excel-import-export` | `component.excel-import-export` |
+-| `distributed-id` | `component.distributed-id` |
+-| `encryption-or-signing` | `component.security-algorithm` |
+-| `gateway-resilience` | `component.gateway-resilience` |
+-| `ddd-scaffold` | `scaffold.ddd` |
+-| `mvc-scaffold` | `scaffold.layered-mvc` |
+-| `springboot3-migration` | `migration.springboot3` |
++| `system-data-architecture` | `architecture.system-data` |
+ 
+ ## Typed Skill Dependencies
+ 
+ | Skill | Dependency | Type | Condition |
+ | --- | --- | --- | --- |
+-| `yss-backend-spec-review` | `alibaba-java-code-style` | `context-required` | — |
+-| `yss-backend-spec-review` | `yss-implementation-contract-compiler` | `coordination-only` | — |
+-| `yss-backend-spec-review` | `code-review` | `review-only` | — |
++| `test-agent` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
++| `frontend-agent` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
++| `architecture-agent` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
+ | `prototype-review` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
++| `code-review` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
+ | `yss-implementation-contract-compiler` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
+ | `yss-openapi-governance` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
+-| `yss-stage-decision` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
+-| `yss-research` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
+-| `yss-product-lifecycle` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
+-| `code-review` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
+-| `code-review` | `yss-repository` | `context-conditional` | `backend-persistence-impact` |
+-| `code-review` | `yss-mybatis` | `context-conditional` | `backend-persistence-impact` |
+ | `yss-prototype-stage` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
+-| `yss-prototype-stage` | `prototype-review` | `review-only` | — |
+-| `yss-prototype-stage` | `yss-design-system` | `coordination-only` | — |
+-| `yss-ddd-scaffold-generator` | `alibaba-java-code-style` | `context-required` | — |
+-| `yss-layered-mvc-scaffold-generator` | `alibaba-java-code-style` | `context-required` | — |
+-| `yss-domain` | `alibaba-java-code-style` | `context-required` | — |
+-| `yss-domain` | `domain-modeling` | `coordination-only` | — |
+-| `yss-domain` | `yss-tactical-design` | `context-conditional` | `tactical-domain` |
+-| `yss-domain` | `lombok` | `context-conditional` | `pojo` |
+-| `yss-technical-design` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
+-| `yss-technical-design` | `yss-tactical-design` | `coordination-only` | `domain-driven` |
+-| `yss-technical-design` | `yss-openapi-draft-review` | `review-only` | `api-impact` |
+-| `yss-tactical-design` | `domain-modeling` | `coordination-only` | — |
+-| `yss-tactical-design` | `yss-openapi-draft-review` | `review-only` | `api-impact` |
+-| `yss-tactical-design` | `yss-repository` | `component-dependency` | `data-impact` |
+-| `yss-application` | `alibaba-java-code-style` | `context-required` | — |
+-| `yss-application` | `mapstruct` | `context-conditional` | `conversion` |
+-| `yss-application` | `lombok` | `context-conditional` | `pojo` |
+-| `yss-repository` | `yss-mybatis` | `context-conditional` | `mybatis` |
+-| `yss-repository` | `mapstruct` | `context-conditional` | `conversion` |
+-| `yss-repository` | `lombok` | `context-conditional` | `pojo` |
+-| `yss-repository` | `alibaba-java-code-style` | `context-required` | — |
+-| `yss-web-controller` | `yss-dto` | `context-required` | — |
+-| `yss-web-controller` | `yss-validation` | `context-conditional` | `request-validation` |
+-| `yss-web-controller` | `yss-exception` | `context-conditional` | `error-mapping` |
+-| `yss-web-controller` | `mapstruct` | `context-conditional` | `conversion` |
+-| `yss-web-controller` | `lombok` | `context-conditional` | `pojo` |
+-| `yss-web-controller` | `alibaba-java-code-style` | `context-required` | — |
+-| `yss-userinfo` | `yss-dto` | `component-dependency` | — |
+-| `yss-userinfo` | `yss-cache` | `context-conditional` | `cache-lookup` |
+-| `yss-audit-log` | `yss-userinfo` | `component-dependency` | — |
+-| `yss-audit-log` | `yss-dto` | `component-dependency` | — |
+-| `yss-validation` | `yss-exception` | `component-dependency` | — |
+-| `yss-security-algorithm` | `yss-exception` | `component-dependency` | — |
+-| `yss-exception` | `yss-dto` | `context-required` | — |
++| `yss-research` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
++| `harness-orchestrator` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
+ | `yss-ui-business-page-generation` | `yss-ui` | `context-required` | — |
+ | `yss-ui-business-page-generation` | `yss-hook` | `context-conditional` | `hooks` |
+ | `yss-ui-business-page-generation` | `yss-formily` | `context-conditional` | `form` |
+diff --git a/references/compiler-contract.yaml b/references/compiler-contract.yaml
+index db54b2d..34ed571 100644
+--- a/references/compiler-contract.yaml
++++ b/references/compiler-contract.yaml
+@@ -8,141 +8,169 @@ slice_contract_versions:
+ backend_architecture:
+   registry_source: .template-spec/agents/yss-skill-registry.yaml
+   identity_schema: .template-spec/process/schemas/backend-architecture-identity.schema.json
+-  required_evidence: [engineering_baseline, repository_registration, manifest]
++  required_evidence:
++  - engineering_baseline
++  - repository_registration
++  - manifest
+   evidence_loading: original-references-and-raw-sha256
+   existing_identity: {schema_version: 2, source_kind: existing-registration, profiles_source: existing_project_profiles}
+   generated_identity: preserve-original-generator-and-module-closure
+   existing_source_policy: fixed-input-and-approved-bounded-output
+-  required_identity_surfaces: [resolution, work_unit, execution_result]
++  required_identity_surfaces:
++  - resolution
++  - work_unit
++  - execution_result
+   family_recipe_selection: explicit-ddd-or-mvc-no-legacy-alias
+   readiness: supported-profile-and-current-identical-evidence
++contract_id: harness-implementation-contract-compiler-v2
+ compiled_by: yss-implementation-contract-compiler
+-approved_by: yss-product-lifecycle
++approved_by: harness-orchestrator
+ capability_source: .template-spec/agents/yss-skill-registry.yaml
+ recipe_source: .template-spec/agents/yss-skill-registry.yaml
+ digest_algorithm: sha256
+ unsupported_inputs:
+   registry_schema_v1: reject-with-migration-guidance
+   slice_contract_schema_v1: reject-with-migration-guidance
+-allowed_statuses: [draft, blocked, ready-for-lifecycle-review]
+-forbidden_statuses: [approved, ready-for-agent, completed]
+-implementation_path_policy:
+-  applies_to: harness-resident-runtime-code
+-  project_roots:
+-    backend: apps/backend/<project>/
+-    frontend: apps/frontend/<project>/
+-  container_roots:
+-    - apps/backend/
+-    - apps/frontend/
+-  forbidden_roots:
+-    - app/backend/
+-    - app/frontend/
+-  policies:
+-    - harness-apps-multi-project
+-    - external-repository-native
+-    - git-submodule-harness-apps
+-  git_submodule:
+-    repository_scope: git-submodule
+-    layout_policy: git-submodule-harness-apps
+-    git_entry_mode: "160000"
+-    empty_gitlink_scaffold: blocked
+-    treat_empty_gitlink_as_regular_dir: blocked
+-    treat_detached_head_as_regular_dir: blocked
+-    force_overlay_mount: blocked
+-    write_inside_detached_head: blocked
+-    copy_source_into_harness: forbidden
+-    inspect_working_tree_writable: explicit-boolean
+-    empty_gitlink_writable: false
+-    force_overlay_regular_dir_path: blocked
+-  rules:
+-    - "Harness 内每个运行时工程必须位于具体 project 目录，不能直接写入 apps/backend/ 或 apps/frontend/。"
+-    - "app/backend/、app/frontend/ 及其子路径不是兼容别名，必须阻断。"
+-    - "外部实现仓库使用登记的真实项目根路径，不用 Harness 容器路径冒充。"
+-    - "git-submodule 挂载路径使用 git-submodule-harness-apps，必须是 gitlink 且分别登记；不得登记为 harness-apps。"
+-    - "空 gitlink、detached HEAD、--force 覆盖挂载点不得当成普通目录；也不得在 detached HEAD 工作树内当普通目录写入。"
+-    - "inspectWorkingTreeScope 必须返回 { writable }；空 gitlink / detached HEAD 的 writable 必为 false；--force 覆盖 gitlink 不得走普通目录覆盖路径。"
+-subcontract_statuses: [required, not-applicable]
+-
+-readiness:
+-  common: [spec, slice_ticket, architecture_review, build_architecture_checklist, implementation_repository, verification_commands]
+-  ui_impact: [requirement_freeze, low_fidelity_review, prototype_review, prototype_profile_decision, prototype_deliverable, prototype_deliverable_verification, prototype_confirmation]
+-  api_impact: [openapi_freeze]
+-  no_api_impact: [no_api_impact_record]
+-  data_impact: [data_architecture]
+-  backend_impact: [engineering_baseline, backend_repository, maven_wrapper]
+-  cross_repo: [repository_registry, delivery_order, integration_verification, rollback_order]
+-  frontend_delivery:
+-    when: specialized-frontend-profile-or-explicit-frontend-delivery-binding
+-    source: .template-spec/process/frontend-backend-delivery.md
+-    verifier: scripts/verify-frontend-delivery
+-    output_binding: frontend.delivery
+-    inputs_verified_is_implementation_approval: false
+-
+-compiler_input_required:
++allowed_statuses:
++- draft
++- blocked
++- ready-for-lifecycle-review
++forbidden_statuses:
++- approved
++- ready-for-agent
++- completed
++implementation_path_policy: git-submodule-harness-apps
++execution_states:
++- Explorer
++- Drafter
++- Worker
++- Reviewer
++- Verifier
++roles:
++  architecture: role.architecture-agent
++  frontend: role.frontend-agent
++  backend: role.backend-agent
++  testing: role.test-agent
++  orchestrator: role.harness-orchestrator
++readiness_formula:
++  all_of:
++  - upstream_inputs_current_and_approved
++  - frontend_engineering_design_current_and_approved
++  - api_freeze_or_no_api_impact_recorded
++  - data_architecture_or_no_data_impact_recorded
++  - ui_inputs_or_no_ui_impact_recorded
++  - implementation_repositories_and_commands_registered
++  - allowed_write_paths_registered
++  - test_seams_and_acceptance_executable
++  - task_packages_share_contract_version
++  - no_blocking_signals
++slice_contract_required:
++  root:
++  - schema_version
++  - contract_id
++  - contract_version
+   - slice_id
+-  - impact_flags
++  - status
++  - lifecycle_refs
++  - readiness
++  - resolution
++  - common
++  - architecture
++  - frontend
++  - backend
++  - testing
++  - contract
++  - cross_repo
++  - work_units
++  resolution:
+   - required_capabilities
++  - required_skills
+   - recipe_ids
+   - conditions
+-  - lifecycle
+-  - implementation
+-  - acceptance
+-impact_flags_required: [ui_impact, api_impact, no_api_impact, data_impact, backend_impact, cross_repo, existing_frozen_baseline]
+-exclusive_flags:
+-  - [api_impact, no_api_impact]
+-
+-# 以下 required 表仅供历史 Slice v2；v3 由 v3_schema 校验。
+-slice_contract_required:
+-  root: [schema_version, contract_id, contract_version, slice_id, status, lifecycle_refs, readiness, resolution, common, frontend, backend, contract, cross_repo, work_units]
+-  lifecycle_refs: [spec, ticket, requirement_freeze, low_fidelity_review, prototype_review, prototype_profile_decision, prototype_deliverable, prototype_deliverable_verification, visual_baseline, prototype_confirmation, openapi_freeze_or_no_impact, architecture_review, data_architecture, technical_design, tactical_design, engineering_baseline, build_architecture_checklist, implementation_repository, frontend_repository, backend_repository, maven_wrapper]
+-  readiness: [blockers, stale_inputs, not_applicable]
+-  resolution: [required_capabilities, required_skills, recipe_ids, conditions, reason_chains, registry_digest, compiler_contract_digest, compiled_at, freshness]
+-  common: [impacted_areas, implementation_path_policy, project_roots, required_capabilities, required_skills, optional_skills, unavailable_skills, allowed_write_paths, forbidden_patterns, expected_evidence_files, verification_commands, human_review_points, full_reroute_triggers, quality_baseline_ref, context_plan, doubt_driven_review]
+-  frontend: [status, required_skills, approved_prototype_ref, state_matrix_ref, visual_baseline_ref, visual_baseline_case_ids, allowed_write_paths, component_test_seams, e2e_paths]
+-  backend: [status, affected_layers, component_impacts, required_skills, application_boundary, transaction_boundary, persistence_strategy, allowed_write_paths, forbidden_patterns, expected_evidence_files, seam_deferred, verification_commands, tactical_ddd]
+-  contract: [api_impact, freeze_ref, no_api_impact_ref, generated_clients, contract_tests, regeneration_commands]
+-  cross_repo: [repositories, delivery_order, integration_verification, rollback_order]
+-
+-lifecycle_ref_by_readiness:
+-  spec: spec
+-  slice_ticket: ticket
+-  architecture_review: architecture_review
+-  build_architecture_checklist: build_architecture_checklist
+-  implementation_repository: implementation_repository
+-  requirement_freeze: requirement_freeze
+-  low_fidelity_review: low_fidelity_review
+-  prototype_review: prototype_review
+-  prototype_profile_decision: prototype_profile_decision
+-  prototype_deliverable: prototype_deliverable
+-  prototype_deliverable_verification: prototype_deliverable_verification
+-  visual_baseline: visual_baseline
+-  prototype_confirmation: prototype_confirmation
+-  openapi_freeze: openapi_freeze_or_no_impact
+-  no_api_impact_record: openapi_freeze_or_no_impact
+-  data_architecture: data_architecture
+-  technical_design: technical_design
+-  tactical_design: tactical_design
+-  engineering_baseline: engineering_baseline
+-  backend_repository: backend_repository
+-  maven_wrapper: maven_wrapper
+-
+-work_unit_required: [id, behavior, primary_skill, supporting_skills, tdd_mode, allowed_write_paths, expected_evidence, verification_commands, controlled_generation]
+-work_unit_nonempty_arrays: [allowed_write_paths, expected_evidence, verification_commands]
+-slice_contract_nonempty: [contract_id, contract_version, slice_id, status]
+-slice_contract_array_fields:
+-  common: [impacted_areas, implementation_path_policy, project_roots, required_capabilities, required_skills, allowed_write_paths, forbidden_patterns, expected_evidence_files, verification_commands, full_reroute_triggers, quality_baseline_ref, context_plan, doubt_driven_review]
+-
++  - reason_chains
++  - registry_digest
++  - compiler_contract_digest
++  - compiled_at
++  - freshness
++  common:
++  - impacted_areas
++  - implementation_path_policy
++  - project_roots
++  - required_capabilities
++  - required_skills
++  - optional_skills
++  - unavailable_skills
++  - allowed_write_paths
++  - forbidden_patterns
++  - expected_evidence_files
++  - verification_commands
++  - human_review_points
++  - full_reroute_triggers
++  architecture:
++  - frontend_engineering_design_ref
++  - decision_refs
++  frontend:
++  - status
++  - required_skills
++  - approved_interaction_ref
++  - state_matrix_ref
++  - visual_baseline_ref
++  - visual_baseline_case_ids
++  - generated_api_client_ref
++  - allowed_write_paths
++  - component_test_seams
++  - e2e_paths
++  backend:
++  - status
++  - affected_layers
++  - component_impacts
++  - required_skills
++  - application_boundary
++  - transaction_boundary
++  - persistence_strategy
++  - allowed_write_paths
++  - forbidden_patterns
++  - expected_evidence_files
++  - verification_commands
++  testing:
++  - status
++  - required_skills
++  - test_strategy_ref
++  - test_seams
++  - fixtures
++  - coverage_targets
++  - critical_flows
++  - verification_commands
++  contract:
++  - api_impact
++  - freeze_ref
++  - no_api_impact_ref
++  - generated_clients
++  - contract_tests
++  - regeneration_commands
++  cross_repo:
++  - repositories
++  - delivery_order
++  - integration_verification
++  - rollback_order
+ resolution_contract:
+   required_capabilities_source: registry-capability-or-recipe-only
+   recipes_reference: capabilities-only
+-  closure_recursive_types: [context-required]
++  closure_recursive_types:
++  - context-required
+   closure_conditional_type: context-conditional
+-  closure_non_expanding_types: [coordination-only, review-only, component-dependency]
++  closure_non_expanding_types:
++  - coordination-only
++  - review-only
++  - component-dependency
+   deduplicate_skills: true
+   preserve_all_reasons: true
+-  deterministic_order: [recipe-declaration, dependency-topology, skill-id]
++  deterministic_order:
++  - recipe-declaration
++  - dependency-topology
++  - skill-id
+   digest_change_status: stale
+-  stale_action: recompile-and-return-to-lifecycle-approval
++  stale_action: recompile-and-return-to-harness-approval
+   component_bindings:
+     when: any-required-capability-provider-kind-is-yss-component
+     platform_configuration: required-v2
+@@ -151,309 +179,302 @@ resolution_contract:
+     exact_artifact_binding: [group_id, artifact_id, declared_version, resolved_version, pom_sha256, jar_sha256, source_tree]
+     digest_change_status: stale
+     old_contract_without_binding: stale-and-recompile-no-auto-upgrade
+-
+-context_plan:
+-  required: [required_context_refs, on_demand_context_refs, context_stop_rule, missing_context_action]
+-  context_stop_rule: minimal-sufficient-evidence
+-  missing_context_action: [blocked, reroute]
+-
+-project_scaffold_contract_schema:
+-  schema_version: 4
+-  schema_ref: .template-spec/process/schemas/project-scaffold-contract.schema.json
+-  identity: project-engineering-baseline
+-  discriminant: delivery_role
+-  delivery_roles:
+-    backend:
+-      scaffold_kinds: [backend-ddd, backend-layered-mvc, backend-mvc-data-analysis]
+-      generators: [yss-ddd-scaffold-generator, yss-layered-mvc-scaffold-generator]
+-      requires: [scaffold_request_id, architecture_family, decision_ref, decision_id, decision_digest, project_name, base_package, maven_coordinates, profiles, module_profile, design_prerequisites]
+-      design_prerequisites:
+-        required: [technical_design, data_architecture_decision, api_contract_decision, engineering_contract_approval_ref]
+-        artifact_binding: [ref, version, digest]
+-        data_impact_modes: [required, not-applicable]
+-        api_impact_modes: [required, not-applicable]
+-        api_required_closure: [openapi_yaml, validation_record, independent_draft_review, freeze]
+-        api_same_original_bytes: true
+-        approval_gate: gate.engineering-contract-approved
+-    frontend:
+-      scaffold_kinds: [frontend-yss-vue3]
+-      generators: [yss-frontend-scaffold-generator]
+-      requires: [frontend, repository_scope, init_git]
+-      openapi_modes: [frozen, not-applicable]
+-  common_required: [contract_id, contract_version, status, persisted_ref, current_version, delivery_role, scaffold_kind, generator_skill, implementation_repository, target_output_dir, repository_scope, init_git, allowed_write_paths, expected_evidence_files, verification_commands, approval, generation_policy]
+-  approved_by: yss-product-lifecycle
+-  generation_mode: controlled-generation
+-  target_policy: nonexistent-or-empty
+-  force_overwrite: forbidden
+-  compatibility:
+-    backend_schema_v3: historical-manifest-read-only-recovery-audit
+-    frontend_before_v4: unsupported
+-
++impact_to_capabilities:
++  system-data-architecture:
++  - architecture.system-data
++full_reroute_triggers:
++- api-schema-impact
++- database-schema-impact
++- state-machine-impact
++- visual-baseline-version-or-digest-changed
++- aggregate-impact
++- invariant-impact
++- scaffold-architecture-decision-changed
++- scaffold-profile-or-module-closure-changed
++- component-binding-drift
++- new-write-path
++- new-repository
++- contract-violation
++- test-seam-changed
++- verification-command-changed
++- architecture-drift
++tdd_modes:
++  behavior-tdd:
++    impacts:
++    - domain-rule
++    - state-machine
++    - transaction
++    - complex-query
++    - error-mapping
++    - page-interaction
++    - user-visible-state
++  controlled-generation:
++    impacts:
++    - project-scaffold
++    - dto-boilerplate
++    - frozen-openapi-client
++    - mechanical-config
++    required:
++    - exception_reason
++    - generator
++    - generator_inputs
++    - expected_files
++    - verification_commands
++    - behavior_tests_after_generation
+ scaffold_contract_schema:
+   schema_version: 3
+-  compatibility_status: legacy-backend-read-only
+   identity: service-engineering-baseline
+   compiled_by: yss-implementation-contract-compiler
+-  approved_by: yss-product-lifecycle
++  approved_by: harness-orchestrator
+   status_by_owner:
+-    compiler: [draft, ready-for-lifecycle-review, blocked]
+-    lifecycle: [approved, stale, blocked]
+-  required: [contract_id, contract_version, scaffold_request_id, status, compiler_draft_ref, lifecycle_approval_ref, persisted_ref, current_version, implementation_repository, backend_repository, scaffold_status, project_name, target_output_dir, base_package, architecture_family, generator_skill, decision_ref, decision_id, decision_digest, maven_coordinates, profiles, module_profile, allowed_write_paths, expected_evidence_files, verification_commands, approval, work_unit, generation_policy]
++    compiler:
++    - draft
++    - ready-for-lifecycle-review
++    - blocked
++    orchestrator:
++    - approved
++    - stale
++    - blocked
++  required:
++  - contract_id
++  - contract_version
++  - scaffold_request_id
++  - status
++  - compiler_draft_ref
++  - lifecycle_approval_ref
++  - persisted_ref
++  - current_version
++  - implementation_repository
++  - backend_repository
++  - scaffold_status
++  - project_name
++  - target_output_dir
++  - base_package
++  - architecture_family
++  - generator_skill
++  - decision_ref
++  - decision_id
++  - decision_digest
++  - maven_coordinates
++  - profiles
++  - module_profile
++  - allowed_write_paths
++  - expected_evidence_files
++  - verification_commands
++  - approval
++  - work_unit
++  - generation_policy
+   architecture_decision:
+-    source: scaffold-architecture-decisions.yaml
+-    required_status: lifecycle-approved
+-    allowed_architectures: [domain-driven, layered-mvc]
+-    blocked_statuses: [undecided, recommended, awaiting-user-decision, stale]
+-    reference: [decision_ref, decision_id, decision_digest]
+-    no_silent_default: true
++    artifact: scaffold-architecture-decisions.yaml
++    status: lifecycle-approved
++    allowed_architectures:
++    - domain-driven
++    - layered-mvc
++    agent_recommends: true
+     user_confirmation_required: true
+-    change_action: stale-and-recompile
++    silent_default: forbidden
++    root_project_is_child_default_only: true
++    child_projects_require_visible_batch_confirmation: true
++    override_requires_reason: true
++    compiler_may_approve: false
++    digest_algorithm: sha256
++  generator_by_architecture:
++    domain-driven: yss-ddd-scaffold-generator
++    layered-mvc: yss-layered-mvc-scaffold-generator
+   approval:
+-    required: [approval_ref, approver, persisted_ref, current_version]
++    required:
++    - approval_ref
++    - approver
++    - persisted_ref
++    - current_version
+   generation_policy:
+-    required: [mode, existing_target, old_project_migration, template_upgrade]
++    required:
++    - mode
++    - existing_target
++    - old_project_migration
++    - template_upgrade
+     mode: initialize-only
+     existing_target: unsupported
+     old_project_migration: unsupported
+     template_upgrade: unsupported
+   maven_coordinates:
+-    required: [group_id, project_version, parent, yss_components_version]
+-    parent_required: [group_id, artifact_id, version]
++    required:
++    - group_id
++    - project_version
++    - parent
++    - yss_components_version
++    parent_required:
++    - group_id
++    - artifact_id
++    - version
+     yss_components_version: 2.0.0-SNAPSHOT
+   profiles:
+-    discriminant: architecture_family
+-    domain-driven:
+-      generator_skill: yss-ddd-scaffold-generator
+-      required: [architecture, persistence, verification_database, production_database, platform, validation_namespace, dto_placement, repository]
+-      supported_initial: { architecture: target-domain-model, persistence: mybatis-plus, verification_database: h2, production_database: not-bound, platform: spring-boot-2.7-jdk8, validation_namespace: javax, dto_placement: web, repository: yss-internal }
+-      resolved_modules: [domain, application, infrastructure, adapter, bootstrap]
+-    layered-mvc:
+-      generator_skill: yss-layered-mvc-scaffold-generator
+-      required: [architecture, persistence, verification_database, production_database, platform, validation_namespace, repository]
+-      supported_initial:
++    required:
++    - architecture
++    - persistence
++    - verification_database
++    - production_database
++    - platform
++    - validation_namespace
++    - dto_placement
++    - repository
++    supported_initial:
++      domain-driven:
++        architecture: target-domain-model
++        persistence: mybatis-plus
++        verification_database: h2
++        production_database: not-bound
++        platform: spring-boot-2.7-jdk8
++        validation_namespace: javax
++        dto_placement: web
++        repository: yss-internal
++      layered-mvc:
+         architecture: layered-mvc
+         persistence: mybatis-plus
+         verification_database: h2
+         production_database: not-bound
+         platform: spring-boot-2.7-jdk8
+         validation_namespace: javax
++        dto_placement: web
+         repository: yss-internal
+-      module_resolution:
+-        version: 1
+-        core: [server, service, repository]
+-        capabilities:
+-          external-integration: [adapter]
+-          published-client: [client]
+-          feign-client: [client, feign-client]
+-    unsupported: [old-architecture-profile, mybatis, spring-boot-3, jakarta, arbitrary-module-combination]
++    unsupported:
++    - old-architecture-profile
++    - client-in-domain
++    - mybatis
++    - spring-boot-3
++    - jakarta
++    - separate-client-module
+   module_profile:
+-    required: [requested_capabilities, resolved_modules, resolution_version]
++    required:
++    - requested_capabilities
++    - resolved_modules
++    - resolution_version
+     resolution_version: 1
+-    freeze_both_request_and_resolution: true
+-    digest_change_status: stale
++    domain-driven:
++      requested_capabilities: []
++      resolved_modules:
++      - domain
++      - application
++      - infrastructure
++      - adapter
++      - bootstrap
++    layered-mvc:
++      core_modules:
++      - server
++      - service
++      - repository
++      capability_modules:
++        external-integration:
++        - adapter
++        published-client:
++        - client
++        feign-client:
++        - client
++        - feign-client
+   unsupported_inputs:
+     schema_v1: reject-no-auto-upgrade
+-    schema_v2_new_generation: reject-no-auto-upgrade
++    schema_v2_for_new_generation: reject-read-only-history
+     slice_id: forbidden-as-scaffold-identity
+     existing_project: reject-no-scaffold-migration
+   lifecycle_boundary:
+-    compiler_emits: [draft, ready-for-lifecycle-review, blocked]
+-    lifecycle_approves: [approved]
+-    generator_consumes: []
+-    after_generation:
+-      domain-driven: [yss-implementation-contract-compiler]
+-      layered-mvc: [yss-implementation-contract-compiler]
++    compiler_emits:
++    - draft
++    - ready-for-lifecycle-review
++    - blocked
++    orchestrator_approves:
++    - approved
++    generator_consumes:
++    - approved
++    after_generation_by_architecture:
++      domain-driven:
++      - yss-implementation-contract-compiler
++      layered-mvc:
++      - yss-implementation-contract-compiler
+   work_unit:
+-    required: [id, behavior, primary_skill, supporting_skills, tdd_mode, allowed_write_paths, expected_evidence, verification_commands, controlled_generation]
++    required:
++    - id
++    - behavior
++    - primary_skill
++    - supporting_skills
++    - tdd_mode
++    - allowed_write_paths
++    - expected_evidence
++    - verification_commands
++    - controlled_generation
+   generation_boundary:
+-    allowed_for: [project_scaffold, pom, mechanical_config, wrapper, bootstrap_entrypoint, manifest_v3, architecture_rules, test_infrastructure]
+-    forbidden_when: [business_behavior, business_fields, business_state, permission, transaction, complex_query, error_mapping, business_example_crud]
++    allowed_for:
++    - project_scaffold
++    - pom
++    - mechanical_config
++    - wrapper
++    - bootstrap_entrypoint
++    - manifest_v3
++    - architecture_rules
++    - test_infrastructure
++    forbidden_when:
++    - business_behavior
++    - business_fields
++    - business_state
++    - permission
++    - transaction
++    - complex_query
++    - error_mapping
++    - business_example_crud
+     initialization: initialize-only
+     regeneration: unsupported
+     template_upgrade: unsupported
+     old_project_migration: unsupported-separate-architecture-modernization-initiative
+   verification:
+-    commands: ["./mvnw validate", "./mvnw test", "./mvnw package"]
++    commands:
++    - ./mvnw validate
++    - ./mvnw test
++    - ./mvnw package
+     requires_execution: true
+-    completion_levels: [generated, empty-scaffold-verified, first-slice-verified]
++    completion_levels:
++    - generated
++    - empty-scaffold-verified
++    - first-slice-verified
+     downstream_readiness_claim_requires: first-slice-verified
+-    evidence: [preflight, command, exit_code, failure_category, duration_ms, stdout_ref, stderr_ref, executed_at]
+-
+-applicable_subcontract_nonempty:
+-  frontend:
+-    scalar: [approved_prototype_ref, state_matrix_ref, visual_baseline_ref]
+-    array: [required_skills, visual_baseline_case_ids, allowed_write_paths, component_test_seams, e2e_paths]
+-  backend:
+-    scalar: [application_boundary, transaction_boundary, persistence_strategy]
+-    array: [affected_layers, required_skills, allowed_write_paths, forbidden_patterns, expected_evidence_files, verification_commands]
+-    conditional_technical_design:
+-      when: backend-technical-design-impact
+-      binding: resolution.technical_design
+-      scalar: [ref, version, digest]
+-      architecture_match: resolution.architecture_identity.architecture_family
+-      verification: node .agents/skills/yss-technical-design/scripts/validate-technical-design.mjs <contract> --root <target> --slice <slice-id>
+-    conditional_tactical_ddd:
+-      architecture_family: domain-driven
+-      when: [aggregate-impact, state-machine-impact, invariant-impact, consistency-impact, domain-event-impact, gateway-boundary-impact, persistence-mapping-impact]
+-      scalar: [tactical_design_ref, tactical_design_version, gateway_boundary_ref]
+-      array: [aggregate_refs, invariant_refs, state_behavior_refs, domain_test_seams, application_test_seams]
+-  contract_api:
+-    scalar: [freeze_ref]
+-    array: [contract_tests]
+-  contract_no_api:
+-    scalar: [no_api_impact_ref]
+-  cross_repo:
+-    array: [repositories, delivery_order, integration_verification, rollback_order]
+-
+-impact_to_capabilities:
+-  domain-impact: [layer.domain, layer.application]
+-  tactical-domain-impact: [architecture.tactical-domain]
+-  persistence-impact: [layer.persistence]
+-  mybatis-framework-impact: [framework.mybatis]
+-  web-adapter-impact: [layer.web-adapter]
+-  dto-wire-impact: [contract.dto-wire]
+-  request-validation: [contract.request-validation]
+-  error-mapping: [contract.error-mapping, contract.dto-wire]
+-  cache: [component.cache]
+-  current-user-context: [component.current-user-context]
+-  user-cache-lookup: [component.current-user-context, component.cache]
+-  audit-event: [component.audit-log, component.current-user-context, contract.dto-wire]
+-  excel-import-export: [component.excel-import-export]
+-  distributed-id: [component.distributed-id]
+-  encryption-or-signing: [component.security-algorithm]
+-  gateway-resilience: [component.gateway-resilience]
+-  ddd-scaffold: [scaffold.ddd]
+-  mvc-scaffold: [scaffold.layered-mvc]
+-  springboot3-migration: [migration.springboot3]
+-
+-tdd_modes:
+-  behavior-tdd:
+-    impacts: [domain-rule, state-machine, transaction, complex-query, permission, error-mapping, page-interaction, user-visible-state]
+-  controlled-generation:
+-    impacts: [project-scaffold, dto-boilerplate, po-boilerplate, mapstruct-generated, frozen-openapi-client, mechanical-config]
+-    required: [exception_reason, generator, generator_inputs, expected_files, verification_commands, behavior_tests_after_generation]
+-
+-full_reroute_triggers:
+-  - scaffold-baseline-drift
+-  - scaffold-architecture-decision-changed
+-  - scaffold-profile-changed
+-  - scaffold-module-resolution-changed
+-  - component-binding-drift
+-  - api-schema-impact
+-  - database-schema-impact
+-  - state-machine-impact
+-  - visual-baseline-version-or-digest-changed
+-  - data-model-impact
+-  - new-write-path
+-  - new-repository
+-  - aggregate-impact
+-  - invariant-impact
+-  - consistency-impact
+-  - domain-event-impact
+-  - gateway-boundary-impact
+-  - persistence-mapping-impact
+-  - new-required-skill
+-  - not-applicable-invalidated
+-  - architecture-drift
+-  - contract-violation
+-  - generation-became-behavior
+-  - test-seam-changed
+-  - verification-command-changed
+-  - delivery-order-changed
+-  - doubt-review-triggered
+-
+-reroute_destinations:
+-  scaffold-baseline-drift: stage7-scaffold-revalidation
+-  component-binding-drift: stage7-contract-recompile
+-  api-schema-impact: system-data-architecture-and-contract-review
+-  database-schema-impact: data-architecture-and-migration-review
+-  state-machine-impact: spec-system-data-and-contract-review
+-  data-model-impact: data-architecture-and-contract-review
+-  new-write-path: stage7-contract-recompile
+-  new-repository: stage7-contract-recompile
+-  new-required-skill: stage7-contract-recompile
+-  not-applicable-invalidated: lifecycle-impact-reassessment
+-  architecture-drift: architecture-recheck
+-  contract-violation: stage7-contract-recompile
+-  generation-became-behavior: stage7-contract-recompile
+-  test-seam-changed: spec-ticket-test-seam-review
+-  verification-command-changed: stage7-contract-recompile
+-  delivery-order-changed: cross-repo-release-review
+-  doubt-review-triggered: high-risk-decision-review
+-
+-doubt_driven_review:
+-  applies_when:
+-    - api-schema-impact
+-    - database-schema-impact
+-    - cross-repo-contract
+-    - release-or-rollback
+-    - authentication-authorization-tenant-or-sensitive-data-behavior
+-    - lifecycle-or-generation-semantics
+-  required: [claim, counterclaim, evidence_refs, residual_risks, reviewer_ref]
+-  status_values: [not-applicable, required, completed, blocked]
+-  blocking_when: [missing-counterclaim, insufficient-evidence, unresolved-residual-risk]
+-  evidence_owner: decision-or-review-record
+-  no_new_lifecycle_stage: true
+-
+-quality_baseline:
+-  source: lifecycle_refs.engineering_baseline
+-  required_for: [project-instance]
+-  reused_by: [slice-contract, yss-skill-execution-result, code-review, release]
+-  redefinition: forbidden
+-
+-execution_result_allowed_statuses: [implemented, seam-deferred, drift, violation, not-applicable]
+-execution_blockers: [path-outside-contract, missing-evidence, verification-not-executed, verification-command-mismatch, seam-deferred-without-owner, constraint-failed, doubt-review-missing, unapproved-deviation, drift, violation, new-impacts]
+-
+-contract_versioning:
+-  full_reroute_current_status: stale
+-  next_version: increment
+-  required_history: [previous_contract_ref, stale_reason, reroute_trigger]
+-  affected_work_units_status: paused
+-
+-execution_result_required:
+-  - consumed_contract
+-  - changed_files
+-  - evidence_files
+-  - verification_results
+-  - constraint_results
+-  - seam_deferred
+-  - deviations
+-  - new_impacts
+-  - not_applicable_reason
+-execution_result_component_binding:
+-  when: resolution.component_bindings-present
+-  required: consumed_contract.component_bindings_digest
+-  mismatch: component-binding-mismatch
+-seam_deferred_required: [risk, owner, follow_up_ticket, verification_plan, target_version_or_release_date]
+-deviation_required: [rule, reason, approval_ref]
+-not_applicable_required: [item, reason]
+-unavailable_skill_required: [skill, provider, fallback, resolution]
+-
++    completion_requires:
++    - validate_passed
++    - test_passed
++    - package_passed
++    evidence:
++    - preflight
++    - command
++    - exit_code
++    - failure_category
++    - duration_ms
++    - stdout_ref
++    - stderr_ref
++    - executed_at
++    failure_action: blocked
+ strategic_handoff_consumption:
+   when: upstream-source-is-imported-strategic-handoff
+-  required: [import_receipt_ref, bundle_digest, context_reconciliation_ref, rows]
+-  verification: scripts/verify-strategic-handoff-consumption --root <target> --slice <slice-id> <approved-technical-design-contract>
++  required:
++  - import_receipt_ref
++  - bundle_digest
++  - context_reconciliation_ref
++  - rows
++  verification: scripts/verify-strategic-handoff-consumption --root <target> --slice <slice-id> <approved-tactical-contract>
+   require_actual_exit_code: 0
+   stale_policy: latest-imported-source-digest-and-dependent-slices
+   unknown_dependency: block-all
+   compiler_must_not_approve: true
++frontend_delivery_readiness:
++  when: specialized-frontend-profile-or-explicit-frontend-delivery-binding
++  source: .template-spec/process/frontend-backend-delivery.md
++  verifier: scripts/verify-frontend-delivery
++  output_binding: frontend.delivery
++  inputs_verified_is_implementation_approval: false
++
++execution_result_component_binding:
++  when: resolution.component_bindings-present
++  required: consumed_contract.component_bindings_digest
++  mismatch: component-binding-mismatch
+ 
+-backend_platform_contract:
+-  schema_version: 2
+-  catalog_ref: .template-spec/engineering/backend-platforms.json
+-  configuration_field: platform_configuration
+-  selection_owner: yss-product-lifecycle
+-  new_generation_requires: [exact-boot-java, confirmed-decision, matching-yss-coordinates, verified-compatibility-entry]
+-  candidate_generation: maintenance-only
+-  candidate_downstream: blocked
+-  component_capabilities:
+-    registry_marker: provider-kind-yss-component
+-    mapping_key: provider-binding-id
+-    foundational_capabilities: [contract.dto-wire, contract.request-validation, contract.error-mapping, framework.mybatis]
+-    specialized_capabilities: [component.cache, component.current-user-context, component.audit-log, component.excel-import-export, component.distributed-id, component.security-algorithm, component.gateway-resilience]
+-    exact_artifact_evidence: [group_id, artifact_id, declared_version, resolved_version, pom_sha256, jar_sha256, source_tree]
+-    verified_architecture_required: true
+-    unlisted_or_blocked: component-unavailable-for-platform
+-    missing_evidence: component-evidence-missing
+-    coordinate_conflict: component-artifact-coordinate-conflict
+-    drift: component-binding-drift
++backend_component_contract_readonly:
++  binding_fields: [component_bindings, component_bindings_digest]
++  missing_or_drift: component-binding-drift
++  action: return-to-backend-and-harness-orchestrator
++  frontend_must_not_certify: true
+diff --git a/references/slice-implementation-contract-v2.md b/references/slice-implementation-contract-v2.md
+index a5319c6..fc6d7fb 100644
+--- a/references/slice-implementation-contract-v2.md
++++ b/references/slice-implementation-contract-v2.md
+@@ -1,100 +1,64 @@
+-# Slice v2 历史读取与显式迁移
++# Slice v2 历史格式
+ 
+-本页仅描述旧格式。新合同使用 [Slice v3](slice-implementation-contract.md)；v2 保留原验证和过期判定，修改时显式生成新版本，不继承批准。
++只读兼容；新合同使用 v3，不继承旧批准。
+ 
+-# Slice Implementation Contract
++# Slice Implementation Contract v2
+ 
+-后端合同还必须绑定 `architecture_identity`（schema 见 `.template-spec/process/schemas/backend-architecture-identity.schema.json`），并与工程基线、登记和 Manifest 一致。将同一身份复制到 `resolution`、backend 工作单元和执行结果；Profile 的成熟度/Recipe 来源是技能注册表，draft 不得 ready-for-agent。旧 backend.domain-behavior/persistence-mybatis/http-api Recipe 只读退役，重新编译时显式选择 backend.ddd-* 或 backend.mvc-*。
++implementation_path_policy: git-submodule-harness-apps
+ 
+-`yss-implementation-contract-compiler` 生成草案；`yss-product-lifecycle` 核验、批准并持久化。合同缺少必填字段时状态为 `blocked`。schema v1 已停止支持，必须重新编译为 v2，不提供自动升级。
++由 `yss-implementation-contract-compiler` 生成草案，由 `harness-orchestrator` 校验、持久化和批准。合同以一个垂直切片为边界，四个 Agent 必须消费同一个 contract_id / contract_version 和 resolution digest。schema v1 已停止支持，必须重新编译，不自动升级。
+ 
+-采用专职前端 profile 时，`frontend.delivery` 绑定 `{acceptance_ref, digest}`，来自 `scripts/verify-frontend-delivery` 的当前结果；也可由 `resolution.frontend_delivery` 承载，两处并存时必须一致。正式执行从持久化合同读取并重验输入。细则见 `.template-spec/process/frontend-backend-delivery.md`。
++## 合同结构
+ 
+-```yaml
+ slice_contract:
+   schema_version: 2
+-  contract_id:
++  contract_id: slice-implementation-contract-v2:<slice-id>
+   contract_version: 1
+   slice_id:
+   status: draft
+-  suggested_owner_role_id: # role.frontend-engineer | role.backend-engineer | role.test-engineer；编译器只建议，生命周期编排器派活并批准
+   lifecycle_refs:
+-    spec:
+-    ticket:
+-    requirement_freeze:
+-    low_fidelity_review:
+-    prototype_review:
+-    prototype_profile_decision:
+-    prototype_deliverable:
+-    prototype_deliverable_verification:
+-    prototype_confirmation:
+-    openapi_freeze_or_no_impact:
+-    architecture_review:
+-    data_architecture:
+-    engineering_baseline:
+-    technical_design: # 阅读引用；与 resolution.technical_design.ref 指向同一文件
+-    tactical_design: # 旧 DDD 引用兼容
+-    build_architecture_checklist:
+-    implementation_repository:
+-    frontend_repository:
+-    backend_repository:
+-    maven_wrapper:
++    upstream_inputs:
++    frontend_engineering_design:
++    api_freeze_or_no_impact:
++    data_architecture_or_no_impact:
++    ui_inputs_or_no_impact:
++    implementation_repositories:
+   readiness:
+     blockers: []
+     stale_inputs: []
+-    not_applicable:
+-      - item:
+-        reason:
++    not_applicable: []
+   resolution:
+-    technical_design: # 有技术设计影响时由编译器绑定，DDD / MVC 共用
+-      ref:
+-      version:
+-      digest: # 已持久化合同原始字节摘要
+     required_capabilities: []
+     required_skills: []
+     recipe_ids: []
+     conditions: []
+     reason_chains: {}
+-    registry_digest: # sha256 of normalized .template-spec/agents/yss-skill-registry.yaml
+-    compiler_contract_digest: # sha256 of normalized compiler-contract.yaml
++    registry_digest:
++    compiler_contract_digest:
+     compiled_at:
+-    freshness: current # digest 变化后为 stale
++    freshness: current
+   common:
+     impacted_areas: []
+-    implementation_path_policy: harness-apps-multi-project # or external-repository-native | git-submodule-harness-apps
+     project_roots: []
+     required_capabilities: []
+     required_skills: []
+-    optional_skills: []
+-    unavailable_skills:
+-      - skill:
+-        provider:
+-        fallback: blocked | approved-equivalent
+-        resolution:
+     allowed_write_paths: []
+     forbidden_patterns: []
+     expected_evidence_files: []
+     verification_commands: []
+-    human_review_points: []
+     full_reroute_triggers: []
+-    quality_baseline_ref:
+-    context_plan:
+-      required_context_refs: []
+-      on_demand_context_refs: []
+-      context_stop_rule: minimal-sufficient-evidence
+-      missing_context_action: blocked # or reroute
+-    doubt_driven_review:
+-      status: not-applicable # or required / completed / blocked
+-      trigger_impacts: []
+-      claim:
+-      counterclaim:
+-      evidence_refs: []
+-      residual_risks: []
+-      reviewer_ref:
++  architecture:
++    frontend_engineering_design_ref:
++    backend_delivery_ref:
++    backend_delivery_version:
++    component_boundary_refs: []
++    state_and_interaction_refs: []
++    api_consumption_ref:
++    decision_refs: []
+   frontend:
+     status: not-applicable
+     required_skills: []
+-    approved_prototype_ref:
++    approved_interaction_ref:
+     state_matrix_ref:
+     visual_baseline_ref:
+     visual_baseline_case_ids: []
+@@ -110,28 +74,21 @@ slice_contract:
+     application_boundary:
+     transaction_boundary:
+     persistence_strategy:
+-    tactical_design_ref:
+-    tactical_design_version:
+-    aggregate_refs: []
+-    invariant_refs: []
+-    state_behavior_refs: []
+-    gateway_boundary_ref:
+-    domain_test_seams: []
+-    application_test_seams: []
+-    tactical_ddd:
+-      status: not-applicable
+-      tactical_design_ref:
+-      tactical_design_version:
+-      aggregate_refs: []
+-      invariant_refs: []
+-      state_behavior_refs: []
+-      gateway_boundary_ref:
+-      domain_test_seams: []
+-      application_test_seams: []
+     allowed_write_paths: []
+     forbidden_patterns: []
+     expected_evidence_files: []
+-    seam_deferred: []
++    verification_commands: []
++  testing:
++    status: draft
++    required_skills: []
++    test_strategy_ref:
++    test_seams: []
++    fixtures: []
++    coverage_targets:
++      domain_application: 90
++      api: 80
++      frontend_component: 75
++    critical_flows: []
+     verification_commands: []
+   contract:
+     api_impact: false
+@@ -142,73 +99,19 @@ slice_contract:
+     regeneration_commands: []
+   cross_repo:
+     repositories: []
+-    delivery_order: []
++    delivery_order: [test-seams, backend, frontend, verification]
+     integration_verification: []
+     rollback_order: []
+-  work_units:
+-    - id: slice-frontend
+-      role_id: role.frontend-engineer
+-      runtime_id: runtime.skill-projection
+-      execution_state: Worker
+-      workflow_status: not-started
+-      task_package_ref:
+-      contract_id: # must equal slice_contract.contract_id
+-      contract_version: # must equal slice_contract.contract_version
+-      downstream_consumers: []
+-      convergence_ref:
+-      work_unit:
+-        behavior:
+-        primary_skill:
+-        supporting_skills: []
+-        tdd_mode: behavior-tdd
+-        allowed_write_paths: []
+-        expected_evidence: []
+-        verification_commands: []
+-    - id: slice-backend
+-      role_id: role.backend-engineer
+-      runtime_id: runtime.skill-projection
+-      execution_state: Worker
+-      workflow_status: not-started
+-      task_package_ref:
+-      contract_id:
+-      contract_version:
+-      downstream_consumers: []
+-      convergence_ref:
+-      work_unit:
+-        behavior:
+-        primary_skill:
+-        supporting_skills: []
+-        tdd_mode: behavior-tdd
+-        allowed_write_paths: []
+-        expected_evidence: []
+-        verification_commands: []
+-```
++  work_units: []
+ 
+-工作单元：
++## 就绪与重路由
+ 
+-```yaml
+-work_unit:
+-  id:
+-  behavior:
+-  primary_skill:
+-  supporting_skills: []
+-  tdd_mode: behavior-tdd
+-  allowed_write_paths: []
+-  expected_evidence: []
+-  verification_commands: []
+-  controlled_generation:
+-    exception_reason:
+-    generator:
+-    generator_inputs: []
+-    expected_files: []
+-    verification_commands: []
+-    behavior_tests_after_generation: []
+-```
++只有上游输入、前端工程设计、条件化 Backend Delivery / `backend-not-applicable`、API / 数据 / UI 影响、实现仓库、写路径、测试 seam、验证命令和证据均满足，且不存在 blocked / stale / drift / violation / new_impacts 时，Orchestrator 才能把合同和切片设置为 ready-for-agent。
+ 
+-`controlled_generation` 仅在 `tdd_mode: controlled-generation` 时必填；其他模式标记 `not-applicable`。明确写入需求的权限业务行为仍使用 `behavior-tdd`；API schema 与 database schema 分别触发契约或数据架构回退，不得用一个含糊的 schema 类型决定路线。
++API schema、数据库 schema、状态机、Visual Baseline 版本或 digest、聚合、不变量、Gateway、写路径、测试 seam、验证命令、Registry digest 或 Compiler digest 发生实质变化时，当前合同变为 stale，所有下游任务暂停并递增 contract_version；重新编译后仍须由 Orchestrator 再批准。UI 切片只消费 `visual_baseline_case_ids` 指定的图片；Agent 必须先读 manifest 与语义引用，不得按目录 glob 猜测图片含义。
+ 
+-`work_units` 中的前端、后端和测试任务是切片级子任务，不是新的生命周期阶段。每个子任务必须引用独立任务包；任务包只能消费同一份已批准且版本当前的 Slice Contract。`workflow_status` 追踪执行过程，不能替代生命周期状态；`contract_id`、`contract_version` 或 resolution digest 不一致时必须阻断并回到实现合同编译器。
++一个切片可以组合多个窄 Recipe，但只计算一次闭包。Recipe 只能引用 capability；合同必须同时冻结 `required_capabilities`、`required_skills`、原因链与两个 digest。
+ 
+-一个切片可以组合多个窄 Recipe，但只计算一次闭包。Recipe 只能引用 capability；合同同时冻结 `required_capabilities`、`required_skills`、完整原因链和 Registry/Compiler digest。任一 digest 或 Visual Baseline 版本 / digest 改变时，当前合同标记 `stale`，重新编译后仍须由 `yss-product-lifecycle` 再批准。UI 切片只消费 `visual_baseline_case_ids` 指定的图片，并先读取 manifest 与语义引用，禁止按目录 glob 猜测图片含义。
++实现任务包使用 execution_state: Worker；测试 Agent 的独立 Review / Verifier 必须使用不同 actor_id。结果必须符合 workflow-execution-result-v1，并记录实际命令、退出码、执行时间和证据引用。
+ 
+-技术设计编译绑定使用 `technical_design: {ref, version, digest}` 与 `slice_id`，校验器规则见 `yss-technical-design/references/technical-design-contract.md`。`backend.tactical_ddd` 仅适用于 `domain-driven`；MVC 消费共同技术设计绑定与 `design` 的用例、规则、事务和测试 seam，不填聚合或 Gateway 字段。
++前端专职合同仅填写页面工程、组件、状态管理、API 消费与测试边界。来自导入包的承接使用前端联合接收核验，不生成或执行后端技术设计。
+diff --git a/references/yss-skill-execution-result.md b/references/yss-skill-execution-result.md
+index 78c25ab..c2e9df0 100644
+--- a/references/yss-skill-execution-result.md
++++ b/references/yss-skill-execution-result.md
+@@ -2,8 +2,6 @@
+ 
+ 核心 YSS skill 必须消费已批准合同版本，并返回：
+ 
+-后端结果顶层带与当前 resolution 完全一致的 `architecture_identity`；每条验证记录还须有整数 `exit_code`。身份缺失、Profile 未 supported、验证非零或没有执行时间均不得 accepted。
+-
+ ```yaml
+ execution_result:
+   schema_version: 2
+@@ -18,8 +16,6 @@ execution_result:
+     registry_digest:
+     compiler_contract_digest:
+     component_bindings_digest: # 合同含 component_bindings 时必填
+-    quality_baseline_ref:
+-    context_plan_ref:
+   changed_files:
+     - path:
+       contract_area: common | frontend | backend | contract | cross_repo
+@@ -37,9 +33,6 @@ execution_result:
+       constraint:
+       status: passed | failed | not-applicable
+       evidence_ref:
+-  doubt_driven_review:
+-    status: not-applicable | completed | blocked
+-    record_ref:
+   seam_deferred:
+     - risk:
+       owner:
+diff --git a/tests/compiler-scenarios.test.mjs b/tests/compiler-scenarios.test.mjs
+index 967988c..dc5b962 100644
+--- a/tests/compiler-scenarios.test.mjs
++++ b/tests/compiler-scenarios.test.mjs
+@@ -1,6 +1,5 @@
+ import assert from "node:assert/strict";
+ import test from "node:test";
+-import { readFileSync } from "node:fs";
+ import {
+   compileImplementationContract,
+   digestDocument,
+@@ -9,94 +8,50 @@ import {
+   validateExecutionResult
+ } from "../../../../scripts/lib/implementation-contract-compiler.mjs";
+ import { loadSkillRegistry } from "../../../../scripts/lib/skill-registry.mjs";
+-import { loadBackendPlatforms, platformBinding } from "../../../../scripts/lib/backend-platform.mjs";
+ 
+ const registry = loadSkillRegistry();
+ const compilerContract = loadCompilerContract();
+ const fixed = "2026-09-04T00:00:00.000Z";
+-const identity = { architecture_family: "domain-driven", architecture_profile: "target-domain-model", generator_skill: "yss-ddd-scaffold-generator", requested_capabilities: [], resolved_modules: ["domain", "application", "infrastructure", "adapter", "bootstrap"], verification_database: "h2", production_database: "not-bound", contract_digest: "a".repeat(64) };
+-const architecture = { architecture_identity: identity, architecture_evidence: { engineering_baseline: identity, repository_registration: identity, manifest: identity } };
+-const compile = (input) => compileImplementationContract({ registry, compilerContract, compiledAt: fixed, ...architecture, ...input });
+-const stableComponentError = code => error => error?.code === code && new RegExp(`^component-capability: ${code}:`).test(error.message);
++const compile = (input) => compileImplementationContract({ registry, compilerContract, compiledAt: fixed, ...input });
+ 
+-test("combines narrow recipes once and preserves deterministic output", () => {
+-  const input = {
+-    recipeIds: ["backend.ddd-domain-behavior"],
+-    conditions: ["conversion", "pojo"]
+-  };
+-  const first = compile(input);
+-  const second = compile({ ...input, recipeIds: [...input.recipeIds].reverse(), conditions: [...input.conditions].reverse() });
+-  assert.deepEqual(first, second);
+-  assert.deepEqual(first.recipe_ids, ["backend.ddd-domain-behavior"]);
+-  for (const skill of ["yss-domain", "yss-application", "mapstruct", "lombok", "alibaba-java-code-style"]) {
+-    assert.equal(first.required_skills.filter((candidate) => candidate === skill).length, 1, `${skill} should appear once`);
+-  }
+-});
+-
+-test("does not promote conditional or component dependencies without explicit input", () => {
+-  const persistence = compile({ requiredCapabilities: ["layer.persistence"] });
+-  assert.deepEqual(persistence.required_skills, ["alibaba-java-code-style", "yss-repository"]);
+-  assert.equal(persistence.required_skills.includes("yss-mybatis"), false);
+-  assert.equal(persistence.required_skills.includes("mapstruct"), false);
+-  assert.equal(persistence.required_skills.includes("lombok"), false);
+-
+-  assert.throws(
+-    () => compile({ requiredCapabilities: ["contract.request-validation"], architecture_identity: undefined, architecture_evidence: undefined }),
+-    /component-platform-binding-required/
+-  );
+-});
+-
+-test("loads only explicitly satisfied context-conditional dependencies", () => {
+-  const application = compile({ requiredCapabilities: ["layer.application"], conditions: ["conversion"] });
+-  assert.equal(application.required_skills.includes("mapstruct"), true);
+-  assert.equal(application.required_skills.includes("lombok"), false);
+-  assert.equal(application.required_skills.includes("yss-mybatis"), false);
+-});
+-
+-test("requires a platform binding for every backend component capability", () => {
+-  for (const capability of ["contract.dto-wire", "contract.request-validation", "contract.error-mapping", "framework.mybatis", "component.cache", "component.current-user-context", "component.audit-log", "component.excel-import-export", "component.distributed-id", "component.security-algorithm", "component.gateway-resilience"]) {
+-    assert.throws(
+-      () => compile({ requiredCapabilities: [capability], architecture_identity: undefined, architecture_evidence: undefined }),
+-      stableComponentError("component-platform-binding-required"),
+-      capability
+-    );
++test("deduplicates frontend recipes without backend skills or architecture", () => {
++  const first = compile({recipeIds:["frontend.ui-slice", "frontend.ui-slice"]});
++  assert.deepEqual(first, compile({recipeIds:["frontend.ui-slice"]}));
++  for (const skill of ["frontend-agent", "yss-ui", "yss-implementation-contract-compiler"]) {
++    assert.equal(first.required_skills.filter(s => s === skill).length, 1);
+   }
++  assert.ok(!first.required_skills.some(s => ["yss-userinfo", "yss-validation", "yss-domain"].includes(s)));
++  assert.throws(() => compile({recipeIds:["backend.ddd-http-api"]}), /未知 recipe/);
++  assert.throws(() => compile({requiredCapabilities:["component.current-user-context"]}), /未知 capability/);
+ });
+ 
+-test("public compiler entry preserves stable component error codes", () => {
+-  const catalog = loadBackendPlatforms();
+-  const boot2Profile = catalog.profiles.find(item => item.id === "spring-boot-2.7-jdk8");
+-  const boot2Entry = catalog.compatibility.find(item => item.profile_id === boot2Profile.id);
+-  const boot2 = platformBinding(boot2Profile, boot2Entry);
+-  const withPlatform = platform_configuration => {
+-    const architecture_identity = { ...identity, platform_configuration };
+-    return { architecture_identity, architecture_evidence: { engineering_baseline: architecture_identity, repository_registration: architecture_identity, manifest: architecture_identity } };
+-  };
+-  assert.throws(() => compile({ requiredCapabilities: ["contract.dto-wire"], ...withPlatform(boot2) }), stableComponentError("component-evidence-missing"));
+-  assert.throws(() => compile({ requiredCapabilities: ["component.cache"], ...withPlatform(boot2) }), stableComponentError("component-platform-generation-mismatch"));
+-  const boot3Profile = catalog.profiles.find(item => item.id === "spring-boot-3.5-jdk17");
+-  const boot3 = { ...boot2, profile_id: boot3Profile.id, spring_boot_version: boot3Profile.spring_boot_version, java_version: boot3Profile.java_version, compatibility_id: "unavailable-boot3-components" };
+-  assert.throws(() => compile({ requiredCapabilities: ["contract.dto-wire"], ...withPlatform(boot3) }), stableComponentError("component-unavailable-for-platform"));
++test("frontend API generation only expands its explicit regeneration condition", () => {
++  const plain = compile({requiredCapabilities:["frontend.api-integration"]});
++  assert.deepEqual(plain.required_skills, ["yss-api-integration"]);
++  const regeneration = compile({requiredCapabilities:["frontend.api-integration"],conditions:["regeneration"]});
++  assert.ok(regeneration.required_skills.includes("yss-openapi-governance"));
++  assert.ok(!regeneration.required_skills.includes("yss-dto"));
+ });
+ 
+ test("rejects recipes that reference skills and context-required cycles", () => {
+   const invalidRecipeRegistry = structuredClone(registry);
+-  invalidRecipeRegistry.recipes[0].skills = ["yss-domain"];
+-  assert.throws(() => compileImplementationContract({ ...architecture, registry: invalidRecipeRegistry, compilerContract, recipeIds: [invalidRecipeRegistry.recipes[0].id] }), /不得直接引用 skills/);
++  invalidRecipeRegistry.recipes[0].skills = ["yss-ui"];
++  assert.throws(() => compileImplementationContract({ registry: invalidRecipeRegistry, compilerContract, recipeIds: [invalidRecipeRegistry.recipes[0].id] }), /不得直接引用 skills/);
+ 
+   const cyclicRegistry = structuredClone(registry);
+-  cyclicRegistry.skill_dependencies["alibaba-java-code-style"] = [{ skill: "yss-domain", type: "context-required" }];
+-  assert.throws(() => compileImplementationContract({ ...architecture, registry: cyclicRegistry, compilerContract, requiredCapabilities: ["layer.domain"] }), /依赖循环/);
++  cyclicRegistry.skill_dependencies["yss-ui"] = [{ skill: "yss-api-integration", type: "context-required" }];
++  cyclicRegistry.skill_dependencies["yss-api-integration"] = [{ skill: "yss-ui", type: "context-required" }];
++  assert.throws(() => compileImplementationContract({ registry: cyclicRegistry, compilerContract, requiredCapabilities: ["frontend.ui"] }), /依赖循环/);
+ });
+ 
+ test("rejects removed ids and schema v1 without compatibility", () => {
+   assert.throws(() => compile({ recipeIds: ["yss-router"] }), /已移除 skill id/);
+-  assert.throws(() => compileImplementationContract({ registry: { ...registry, schema_version: 1 }, compilerContract, requiredCapabilities: ["layer.domain"] }), /schema v1\/v2 已停止支持/);
+-  assert.throws(() => compileImplementationContract({ registry, compilerContract: { ...compilerContract, schema_version: 1 }, requiredCapabilities: ["layer.domain"] }), /schema v1 已停止支持/);
++  assert.throws(() => compileImplementationContract({ registry: { ...registry, schema_version: 1 }, compilerContract, requiredCapabilities: ["frontend.ui"] }), /schema v1\/v2 已停止支持/);
++  assert.throws(() => compileImplementationContract({ registry, compilerContract: { ...compilerContract, schema_version: 1 }, requiredCapabilities: ["frontend.ui"] }), /schema v1 已停止支持/);
+ });
+ 
+ test("marks digest drift stale and validates v2 execution evidence", () => {
+-  const resolution = compile({ requiredCapabilities: ["quality.java-code-style"], architecture_identity: undefined, architecture_evidence: undefined });
++  const resolution = compile({ requiredCapabilities: ["frontend.api-integration"], architecture_identity: undefined, architecture_evidence: undefined });
+   const contract = { schema_version: 2, contract_id: "slice-1", contract_version: 1, resolution };
+   assert.deepEqual(evaluateContractFreshness(contract, { registry, compilerContract }), { freshness: "current", reasons: [] });
+   const changedRegistry = structuredClone(registry);
+@@ -112,26 +67,9 @@ test("marks digest drift stale and validates v2 execution evidence", () => {
+       registry_digest: digestDocument(registry),
+       compiler_contract_digest: digestDocument(compilerContract)
+     },
+-    verification_results: [{ command: "./mvnw test", exit_code: 0, executed_at: fixed }],
++    verification_results: [{ command: "pnpm test", exit_code: 0, executed_at: fixed }],
+     new_impacts: []
+   };
+   assert.deepEqual(validateExecutionResult(result, contract, { registry, compilerContract }), { status: "accepted", blockers: [] });
+   assert.deepEqual(validateExecutionResult({ ...result, new_impacts: [{ impact_type: "cache" }] }, contract, { registry, compilerContract }), { status: "blocked", blockers: ["new-impacts"] });
+ });
+-
+-test("marks legacy component contracts without component bindings stale", () => {
+-  const resolution = compile({ requiredCapabilities: ["quality.java-code-style"], architecture_identity: undefined, architecture_evidence: undefined });
+-  resolution.required_capabilities = ["contract.dto-wire"];
+-  resolution.required_skills = ["yss-dto"];
+-  const contract = { schema_version: 2, contract_id: "legacy-component", contract_version: 1, resolution };
+-  assert.ok(evaluateContractFreshness(contract, { registry, compilerContract }).reasons.includes("component-binding-drift"));
+-});
+-
+-test("current lifecycle scaffold contract delegates platform facts to the catalog", () => {
+-  const source = readFileSync(new URL("../../yss-product-lifecycle/references/orchestration-contract.yaml", import.meta.url), "utf8");
+-  const current = source.slice(source.indexOf("backend_scaffold:"), source.indexOf("  required_inputs:", source.indexOf("backend_scaffold:")));
+-  assert.match(current, /platform_binding: platform_configuration-v2/);
+-  assert.doesNotMatch(current, /yss_components_version:\s*2\.0\.0-SNAPSHOT/);
+-  assert.doesNotMatch(current, /spring-boot-3/);
+-  assert.doesNotMatch(current, /validation_namespace:\s*javax/);
+-});

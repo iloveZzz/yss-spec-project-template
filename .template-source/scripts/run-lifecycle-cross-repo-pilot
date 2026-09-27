@@ -1,0 +1,57 @@
+#!/usr/bin/env node
+// Isolated maintenance sample. Its generated approvals are test data only.
+import { createHash } from 'node:crypto';
+import { spawnSync } from 'node:child_process';
+import { cpSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+const output = process.argv[2];
+if (!output) throw new TypeError('用法: .template-source/scripts/run-lifecycle-cross-repo-pilot <new-output-dir>');
+mkdirSync(output, { recursive: false });
+const workspace = mkdtempSync(path.join(realpathSync(os.tmpdir()), 'yss-submit-pilot-'));
+const sha = bytes => `sha256:${createHash('sha256').update(bytes).digest('hex')}`;
+const report = { schema_version: 1, sample_kind: 'isolated-synthetic', approval_kind: 'test-data-only', workspaces: ['management', 'backend', 'frontend'], slice: 'submit-application', commands: [], source_files: [] };
+function put(base, ref, content) {
+  const target = path.join(base, ref); mkdirSync(path.dirname(target), { recursive: true }); writeFileSync(target, content);
+  report.source_files.push({ workspace: path.basename(base), ref, digest: sha(readFileSync(target)) });
+}
+function command(name, cwd, commandName, args, timeout = 180000, extraEnv = {}) {
+  const start = Date.now();
+  const result = spawnSync(commandName, args, { cwd, encoding: 'utf8', timeout, maxBuffer: 16 * 1024 * 1024, env: { ...process.env, ...extraEnv } });
+  const stdout = `${name}.stdout.log`, stderr = `${name}.stderr.log`;
+  writeFileSync(path.join(output, stdout), result.stdout ?? ''); writeFileSync(path.join(output, stderr), result.stderr ?? String(result.error ?? ''));
+  const record = { name, cwd_role: path.basename(cwd), command: [commandName, ...args].join(' '), elapsed_ms: Date.now() - start, exit_code: result.status, stdout, stderr };
+  report.commands.push(record);
+  if (result.error || result.status !== 0) throw new Error(`${name} failed (${result.error?.message ?? result.status}); see ${stderr}`);
+  return result;
+}
+try {
+  const management = path.join(workspace, 'management'), backend = path.join(workspace, 'backend'), frontend = path.join(workspace, 'frontend');
+  command('management-init', root, 'node', [path.join(root, 'submodules/create-yss-spec/bin/create-yss-spec.js'), '--target-dir', management, '--project-name', '提交申请管理样板', '--business-domain', '申请受理', '--team-size', '1', '--agent-runtime', 'codex', '--issue-tracker', 'github']);
+  command('backend-init', root, 'node', [path.join(root, 'submodules/create-yss-harness-backend/bin/create-yss-harness-backend.js'), 'init', '--target-dir', backend, '--project-name', '提交申请后端样板', '--business-domain', '申请受理', '--team-size', '1', '--issue-tracker', 'local-markdown']);
+  command('frontend-init', root, 'node', [path.join(root, 'submodules/create-yss-harness-frontend/bin/create-yss-harness-frontend.js'), 'init', '--target-dir', frontend, '--project-name', '提交申请前端样板', '--business-domain', '申请受理', '--team-size', '1', '--issue-tracker', 'local-markdown']);
+  put(management, 'docs/.scratch/pilot/spec.md', '# 提交申请（样板测试数据）\n\n材料完整时提交成功；缺少申请人或材料时拒绝。\n');
+  put(backend, 'pom.xml', `<project xmlns="http://maven.apache.org/POM/4.0.0"><modelVersion>4.0.0</modelVersion><groupId>example.invalid</groupId><artifactId>submit-application-pilot</artifactId><version>1.0.0</version><properties><maven.compiler.source>8</maven.compiler.source><maven.compiler.target>8</maven.compiler.target><project.build.sourceEncoding>UTF-8</project.build.sourceEncoding></properties><dependencies><dependency><groupId>junit</groupId><artifactId>junit</artifactId><version>4.13.2</version><scope>test</scope></dependency></dependencies><build><plugins><plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-compiler-plugin</artifactId><version>3.8.1</version></plugin><plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-surefire-plugin</artifactId><version>2.22.2</version></plugin></plugins></build></project>\n`);
+  cpSync(path.join(root, '.agents/skills/yss-ddd-scaffold-generator/assets/wrapper'), backend, { recursive: true });
+  put(backend, 'src/main/java/pilot/SubmissionService.java', `package pilot;\npublic final class SubmissionService {\n  public String submit(String applicant, String materials) {\n    if (applicant == null || applicant.trim().isEmpty() || materials == null || materials.trim().isEmpty()) throw new IllegalArgumentException("required fields");\n    return "SUBMITTED";\n  }\n}\n`);
+  put(backend, 'src/test/java/pilot/SubmissionServiceTest.java', `package pilot;\nimport org.junit.Test;\nimport static org.junit.Assert.*;\npublic class SubmissionServiceTest {\n  @Test public void submitsCompleteApplication() { assertEquals("SUBMITTED", new SubmissionService().submit("张三", "身份证明")); }\n  @Test(expected=IllegalArgumentException.class) public void rejectsMissingMaterials() { new SubmissionService().submit("张三", " "); }\n}\n`);
+  for (const phase of ['validate', 'test', 'package']) command(`backend-mvnw-${phase}`, backend, './mvnw', ['-o', phase], 180000);
+  put(frontend, 'package.json', `${JSON.stringify({ name: 'submit-application-pilot', version: '1.0.0', private: true, type: 'module', scripts: { test: 'node --test src/submit.test.js', build: 'node build.mjs' }, dependencies: { vue: '3.5.18', '@vue/compiler-sfc': '3.5.18' } }, null, 2)}\n`);
+  put(frontend, 'src/submit.js', `export async function submitApplication(fetcher, applicant, materials) {\n  if (!applicant?.trim() || !materials?.trim()) throw new Error('申请人和材料必填');\n  const response = await fetcher('/applications', { method: 'POST', body: JSON.stringify({ applicant, materials }) });\n  if (!response.ok) throw new Error('提交失败');\n  return response.json();\n}\n`);
+  put(frontend, 'src/SubmitApplication.vue', `<script setup>\nimport { ref } from 'vue'\nimport { submitApplication } from './submit.js'\nconst applicant = ref('')\nconst materials = ref('')\nconst status = ref('')\nasync function submit() { try { const result = await submitApplication(fetch, applicant.value, materials.value); status.value = result.status } catch (error) { status.value = error.message } }\n</script>\n<template><form @submit.prevent="submit"><input v-model="applicant" aria-label="申请人"/><textarea v-model="materials" aria-label="材料"/><button type="submit">提交申请</button><p role="status">{{ status }}</p></form></template>\n`);
+  put(frontend, 'src/submit.test.js', `import { test } from 'node:test';\nimport { strict as assert } from 'node:assert';\nimport { submitApplication } from './submit.js';\ntest('提交完整申请', async () => { const calls=[]; const result=await submitApplication(async (url,options)=>{calls.push({url,options});return {ok:true,json:async()=>({status:'SUBMITTED'})}},'张三','身份证明');assert.equal(result.status,'SUBMITTED');assert.equal(calls[0].url,'/applications'); });\ntest('拒绝缺少材料', async () => { await assert.rejects(()=>submitApplication(()=>{throw new Error('不应调用')},'张三',' '),/必填/); });\n`);
+  put(frontend, 'build.mjs', `import { readFileSync, writeFileSync } from 'node:fs';\nimport { parse, compileScript, compileTemplate } from '@vue/compiler-sfc';\nconst filename='src/SubmitApplication.vue'; const source=readFileSync(filename,'utf8'); const {descriptor,errors}=parse(source,{filename}); if(errors.length) throw errors[0]; const script=compileScript(descriptor,{id:'pilot'}); const template=compileTemplate({source:descriptor.template.content,filename,id:'pilot'}); if(template.errors.length) throw template.errors[0]; writeFileSync('pilot-build.txt',script.content+'\\n'+template.code);\n`);
+  command('frontend-pnpm-install', frontend, 'pnpm', ['install', '--ignore-scripts'], 180000);
+  command('frontend-pnpm-test', frontend, 'pnpm', ['test']);
+  command('frontend-pnpm-build', frontend, 'pnpm', ['build']);
+  command('delivery-import-and-acceptance', root, 'node', ['--test', 'scripts/verify-frontend-delivery-scenarios'], 180000, { YSS_CROSS_REPO_SAMPLE_ROOT: workspace });
+  report.result = 'passed';
+} catch (error) {
+  report.result = 'blocked'; report.error = error.message; process.exitCode = 1;
+} finally {
+  writeFileSync(path.join(output, 'report.json'), `${JSON.stringify(report, null, 2)}\n`);
+  rmSync(workspace, { recursive: true, force: true });
+}

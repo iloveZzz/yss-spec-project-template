@@ -1,0 +1,144 @@
+{
+  "result": {
+    "scenario": "e03-small",
+    "variant": "candidate",
+    "repeat": 2,
+    "elapsed_seconds": 66.98,
+    "exit_code": 0,
+    "timeout": false,
+    "assertion_failures": [],
+    "runtime_errors": [],
+    "tool_calls": 12,
+    "usage": [
+      {
+        "input_tokens": 202240,
+        "cached_input_tokens": 161920,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 1335,
+        "reasoning_output_tokens": 304
+      }
+    ],
+    "automatic_result": "passed",
+    "semantic_review": "pending",
+    "trace": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-agent-evaluations-v2-2qx3mbr2/candidate/e03-small-2/trace.jsonl",
+    "steps": [
+      {
+        "step": "main",
+        "started_at": "2026-09-26T16:02:01Z",
+        "elapsed_seconds": 66.84,
+        "exit_code": 0,
+        "timeout": false,
+        "assertion_failures": [],
+        "runtime_errors": [],
+        "tool_calls": 12,
+        "usage": [
+          {
+            "input_tokens": 202240,
+            "cached_input_tokens": 161920,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1335,
+            "reasoning_output_tokens": 304
+          }
+        ],
+        "automatic_result": "passed",
+        "semantic_review": "pending",
+        "trace": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-agent-evaluations-v2-2qx3mbr2/candidate/e03-small-2/trace.jsonl"
+      }
+    ],
+    "unattempted_steps": []
+  },
+  "original_files_changed": [
+    "docs/note.md"
+  ],
+  "original_files_missing": [],
+  "unsafe_paths": [],
+  "new_files": [],
+  "commands": [
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat yss-project.yaml'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc pwd",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'rg --files -g AGENTS.md -g CONTEXT.md -g note.md -g harness-process-tailoring.md -g stage-tracking.md -g lifecycle-registry.yaml -g SKILL.md .template-spec docs .agents/skills/yss-product-lifecycle .agents/skills/i-have-adhd'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .agents/skills/yss-product-lifecycle/SKILL.md docs/note.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat AGENTS.md CONTEXT.md .template-spec/process/harness-process-tailoring.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"rg --files --hidden -g AGENTS.md -g '\"'!'\"\\\\.git' docs; git status --short\"",
+      "exit_code": 128
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat CONTEXT.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"sed -n '1,40p' .template-spec/process/harness-process-tailoring.md\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"rg -n '小改动|错别字|说明文字|typo|small.change|document_writing' .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml .template-spec/process/lifecycle-registry.yaml; rg --files --hidden -g AGENTS.md docs\"",
+      "exit_code": 1
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"python3 - <<'PY'\nfrom pathlib import Path\nimport base64\np = Path('docs/note.md')\nassert not p.is_symlink()\nprint(base64.b64encode(p.read_bytes()).decode())\nPY\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"python3 - <<'PY'\nfrom pathlib import Path\nimport base64, difflib\nbefore = base64.b64decode('IyDmk43kvZzor7TmmI4K5p+l5rS15bey5pyJ5Lu75Yqh77yM5LiN5L+u5pS55Lu75Yqh44CCCg==')\nafter = Path('docs/note.md').read_bytes()\nold, new = '查洵'.encode(), '查询'.encode()\nassert before.count(old) == 1\nassert after == before.replace(old, new)\nassert old not in after\nprint('PASS：仅替换 1 处“查洵”为“查询”，其余字节完全一致。')\nprint(''.join(difflib.unified_diff(before.decode().splitlines(True), after.decode().splitlines(True), fromfile='before/docs/note.md', tofile='after/docs/note.md')), end='')\nPY\"",
+      "exit_code": 0
+    }
+  ],
+  "command_errors": [
+    {
+      "command": "/bin/zsh -lc \"rg --files --hidden -g AGENTS.md -g '\"'!'\"\\\\.git' docs; git status --short\"",
+      "exit_code": 128,
+      "output": "fatal: not a git repository (or any of the parent directories): .git\n"
+    },
+    {
+      "command": "/bin/zsh -lc \"rg -n '小改动|错别字|说明文字|typo|small.change|document_writing' .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml .template-spec/process/lifecycle-registry.yaml; rg --files --hidden -g AGENTS.md docs\"",
+      "exit_code": 1,
+      "output": ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml:2:document_writing:\n"
+    }
+  ],
+  "other_tools": [],
+  "agent_messages": [
+    {
+      "step": "main",
+      "text": "我会先核对仓库入口规则和文件内容，再只修改 `docs/note.md` 中的错别字，并说明实际验证结果。\n"
+    },
+    {
+      "step": "main",
+      "text": "仓库标识为 `project-instance`。我会按 `yss-product-lifecycle` 的轻量修正规则核对适用范围，保持本次只改指定文件。\n"
+    },
+    {
+      "step": "main",
+      "text": "已仅修改 `docs/note.md`：将 1 处“查洵”改为“查询”。\n\n实际验证：Python 字节比对通过，退出码为 `0`，确认其余内容完全一致。纯文字修正，未运行构建或业务测试。"
+    }
+  ],
+  "artifacts": {
+    "docs/note.md": "# 操作说明\n查询已有任务，不修改任务。\n"
+  },
+  "semantic_review": "pending"
+}

@@ -1,0 +1,6128 @@
+{
+  "schemaVersion": 1,
+  "operation": "sync",
+  "targetDir": "/Users/zhudaoming/Documents/antigravity/peaceful-hubble/auth-backend",
+  "template": {
+    "from": "3.4.10",
+    "to": "3.5.1"
+  },
+  "changes": [
+    {
+      "action": "update",
+      "path": ".agents/rules/yss-ai-skills.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/.strategic-design-skills-manifest.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/.yss-skills-manifest.json",
+      "ownership": "generated",
+      "generatorId": "skills-manifest",
+      "generatorVersion": 1
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/alibaba-java-code-style/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/code-review/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/code-review/references/yss-review-standards.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/cross-repo-implementation-routing/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/i-have-adhd/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/i-have-adhd/references/yss-adaptation.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/i-have-adhd/tests/verify-integration.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/implementation-repo-onboarding/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/llm-wiki/references/discover.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/prototype-review/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/setup-matt-pocock-skills/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/triage/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-application/references/profiles/layered-mvc-service.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-application/references/profiles/mvc-data-analysis-v1.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-backend-spec-review/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-backend-spec-review/references/check-inputs.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-cache/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-cache/references/annotations.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-cache/references/architecture.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-cache/references/configuration.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-cache/references/redis-fallback.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-cache/references/verification.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-cache/scripts/verify-cache-component.sh",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-ddd-scaffold-generator/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-ddd-scaffold-generator/scripts/generate_scaffold.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-design-system/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-design-system/references/design-qa-theme.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-design-system/references/design-system.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-distributed-id/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-distributed-id/agents/openai.yaml",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-distributed-id/references/README.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-exception/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-frontend-scaffold-generator/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-frontend-scaffold-generator/scripts/generate_scaffold.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-frontend-scaffold-generator/scripts/refresh_baseline.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-implementation-contract-compiler/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-implementation-contract-compiler/references/boundaries.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-implementation-contract-compiler/references/slice-implementation-contract-v2.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-implementation-contract-compiler/references/slice-implementation-contract.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-implementation-contract-compiler/references/strategic-handoff-routing.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-layered-mvc-scaffold-generator/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-layered-mvc-scaffold-generator/scripts/data-analysis-profile.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-layered-mvc-scaffold-generator/scripts/generate_scaffold.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-layered-mvc-scaffold-generator/scripts/scaffold-generator.test.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-mybatis/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-openapi-draft-review/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-openapi-governance/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-product-lifecycle/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-product-lifecycle/references/matt-yss-adapter.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-product-lifecycle/references/orchestration.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-product-lifecycle/references/request-triage.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-product-lifecycle/references/state-model.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-product-lifecycle/references/user-decisions.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-prototype-stage/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-prototype-stage/references/existing-ui-entry.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-prototype-stage/scripts/build-antd-prototype.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-prototype-stage/scripts/offline-html.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-prototype-stage/tests/browser-smoke.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-prototype-stage/tests/run-scenarios.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-prototype-stage/tests/workbench-smoke.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-repository/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-repository/references/profiles/layered-mvc-service.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-repository/references/profiles/mvc-data-analysis-v1.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-repository/tests/profile-routing.test.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-research/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-skill-source-index-refresh/references/backend-component-platform-compatibility.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-stage-decision/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-stage-decision/references/domain-strategy-contract.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-stage-decision/references/strategic-handoff-routing.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-tactical-design/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-tactical-design/references/strategic-handoff-routing.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-tactical-design/references/tactical-design-contract.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-technical-design/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-technical-design/references/technical-design-contract.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-ui/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-up-springboot3/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-web-controller/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".agents/skills/yss-web-controller/references/profiles/layered-mvc-service.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/alibaba-java-code-style/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/code-review/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/code-review/references/yss-review-standards.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/cross-repo-implementation-routing/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/i-have-adhd/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/i-have-adhd/references/yss-adaptation.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/i-have-adhd/tests/verify-integration.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/implementation-repo-onboarding/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/llm-wiki/references/discover.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/prototype-review/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/setup-matt-pocock-skills/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/triage/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-application/references/profiles/layered-mvc-service.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-application/references/profiles/mvc-data-analysis-v1.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-backend-spec-review/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-backend-spec-review/references/check-inputs.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-cache/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-cache/references/annotations.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-cache/references/architecture.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-cache/references/configuration.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-cache/references/redis-fallback.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-cache/references/verification.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-cache/scripts/verify-cache-component.sh",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-ddd-scaffold-generator/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-ddd-scaffold-generator/scripts/generate_scaffold.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-design-system/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-design-system/references/design-qa-theme.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-design-system/references/design-system.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-distributed-id/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-distributed-id/agents/openai.yaml",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-distributed-id/references/README.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-exception/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-frontend-scaffold-generator/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-frontend-scaffold-generator/scripts/generate_scaffold.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-frontend-scaffold-generator/scripts/refresh_baseline.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-implementation-contract-compiler/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-implementation-contract-compiler/references/boundaries.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-implementation-contract-compiler/references/slice-implementation-contract-v2.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-implementation-contract-compiler/references/slice-implementation-contract.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-implementation-contract-compiler/references/strategic-handoff-routing.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-layered-mvc-scaffold-generator/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-layered-mvc-scaffold-generator/scripts/data-analysis-profile.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-layered-mvc-scaffold-generator/scripts/generate_scaffold.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-layered-mvc-scaffold-generator/scripts/scaffold-generator.test.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-mybatis/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-openapi-draft-review/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-openapi-governance/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-product-lifecycle/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-product-lifecycle/references/matt-yss-adapter.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-product-lifecycle/references/orchestration-contract.yaml",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-product-lifecycle/references/orchestration.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-product-lifecycle/references/request-triage.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-product-lifecycle/references/state-model.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-product-lifecycle/references/user-decisions.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-prototype-stage/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-prototype-stage/references/existing-ui-entry.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-prototype-stage/scripts/build-antd-prototype.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-prototype-stage/scripts/offline-html.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-prototype-stage/tests/browser-smoke.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-prototype-stage/tests/run-scenarios.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-prototype-stage/tests/workbench-smoke.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-repository/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-repository/references/profiles/layered-mvc-service.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-repository/references/profiles/mvc-data-analysis-v1.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-repository/tests/profile-routing.test.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-research/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-skill-source-index-refresh/references/backend-component-platform-compatibility.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-stage-decision/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-stage-decision/references/domain-strategy-contract.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-stage-decision/references/strategic-handoff-routing.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-tactical-design/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-tactical-design/references/strategic-handoff-routing.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-tactical-design/references/tactical-design-contract.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-technical-design/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-technical-design/references/technical-design-contract.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-ui/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-up-springboot3/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-web-controller/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".codex/skills/yss-web-controller/references/profiles/layered-mvc-service.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/alibaba-java-code-style/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/code-review/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/code-review/references/yss-review-standards.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/cross-repo-implementation-routing/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/i-have-adhd/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/i-have-adhd/references/yss-adaptation.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/i-have-adhd/tests/verify-integration.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/implementation-repo-onboarding/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/llm-wiki/references/discover.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/prototype-review/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/setup-matt-pocock-skills/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/triage/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-application/references/profiles/layered-mvc-service.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-application/references/profiles/mvc-data-analysis-v1.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-backend-spec-review/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-backend-spec-review/references/check-inputs.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-cache/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-cache/references/annotations.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-cache/references/architecture.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-cache/references/configuration.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-cache/references/redis-fallback.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-cache/references/verification.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-cache/scripts/verify-cache-component.sh",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-ddd-scaffold-generator/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-ddd-scaffold-generator/scripts/generate_scaffold.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-design-system/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-design-system/references/design-qa-theme.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-design-system/references/design-system.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-distributed-id/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-distributed-id/agents/openai.yaml",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-distributed-id/references/README.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-exception/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-frontend-scaffold-generator/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-frontend-scaffold-generator/scripts/generate_scaffold.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-frontend-scaffold-generator/scripts/refresh_baseline.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-implementation-contract-compiler/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-implementation-contract-compiler/references/boundaries.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-implementation-contract-compiler/references/slice-implementation-contract-v2.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-implementation-contract-compiler/references/slice-implementation-contract.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-implementation-contract-compiler/references/strategic-handoff-routing.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-layered-mvc-scaffold-generator/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-layered-mvc-scaffold-generator/scripts/data-analysis-profile.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-layered-mvc-scaffold-generator/scripts/generate_scaffold.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-layered-mvc-scaffold-generator/scripts/scaffold-generator.test.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-mybatis/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-openapi-draft-review/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-openapi-governance/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-product-lifecycle/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-product-lifecycle/references/matt-yss-adapter.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-product-lifecycle/references/orchestration-contract.yaml",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-product-lifecycle/references/orchestration.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-product-lifecycle/references/request-triage.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-product-lifecycle/references/state-model.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-product-lifecycle/references/user-decisions.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-prototype-stage/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-prototype-stage/references/existing-ui-entry.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-prototype-stage/scripts/build-antd-prototype.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-prototype-stage/scripts/offline-html.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-prototype-stage/tests/browser-smoke.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-prototype-stage/tests/run-scenarios.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-prototype-stage/tests/workbench-smoke.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-repository/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-repository/references/profiles/layered-mvc-service.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-repository/references/profiles/mvc-data-analysis-v1.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-repository/tests/profile-routing.test.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-research/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-skill-source-index-refresh/references/backend-component-platform-compatibility.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-stage-decision/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-stage-decision/references/domain-strategy-contract.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-stage-decision/references/strategic-handoff-routing.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-tactical-design/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-tactical-design/references/strategic-handoff-routing.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-tactical-design/references/tactical-design-contract.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-technical-design/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-technical-design/references/technical-design-contract.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-ui/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-up-springboot3/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-web-controller/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursor/skills/yss-web-controller/references/profiles/layered-mvc-service.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".cursorrules",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/alibaba-java-code-style/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/code-review/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/code-review/references/yss-review-standards.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/cross-repo-implementation-routing/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/i-have-adhd/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/i-have-adhd/references/yss-adaptation.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/i-have-adhd/tests/verify-integration.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/implementation-repo-onboarding/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/llm-wiki/references/discover.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/prototype-review/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/setup-matt-pocock-skills/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/triage/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-application/references/profiles/layered-mvc-service.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-application/references/profiles/mvc-data-analysis-v1.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-backend-spec-review/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-backend-spec-review/references/check-inputs.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-cache/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-cache/references/annotations.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-cache/references/architecture.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-cache/references/configuration.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-cache/references/redis-fallback.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-cache/references/verification.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-cache/scripts/verify-cache-component.sh",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-ddd-scaffold-generator/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-ddd-scaffold-generator/scripts/generate_scaffold.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-design-system/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-design-system/references/design-qa-theme.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-design-system/references/design-system.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-distributed-id/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-distributed-id/agents/openai.yaml",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-distributed-id/references/README.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-exception/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-frontend-scaffold-generator/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-frontend-scaffold-generator/scripts/generate_scaffold.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-frontend-scaffold-generator/scripts/refresh_baseline.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-implementation-contract-compiler/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-implementation-contract-compiler/references/boundaries.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-implementation-contract-compiler/references/slice-implementation-contract-v2.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-implementation-contract-compiler/references/slice-implementation-contract.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-implementation-contract-compiler/references/strategic-handoff-routing.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-layered-mvc-scaffold-generator/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-layered-mvc-scaffold-generator/scripts/data-analysis-profile.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-layered-mvc-scaffold-generator/scripts/generate_scaffold.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-layered-mvc-scaffold-generator/scripts/scaffold-generator.test.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-mybatis/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-openapi-draft-review/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-openapi-governance/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-product-lifecycle/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-product-lifecycle/references/matt-yss-adapter.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-product-lifecycle/references/orchestration-contract.yaml",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-product-lifecycle/references/orchestration.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-product-lifecycle/references/request-triage.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-product-lifecycle/references/state-model.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-product-lifecycle/references/user-decisions.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-prototype-stage/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-prototype-stage/references/existing-ui-entry.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-prototype-stage/scripts/build-antd-prototype.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-prototype-stage/scripts/offline-html.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-prototype-stage/tests/browser-smoke.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-prototype-stage/tests/run-scenarios.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-prototype-stage/tests/workbench-smoke.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-repository/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-repository/references/profiles/layered-mvc-service.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-repository/references/profiles/mvc-data-analysis-v1.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-repository/tests/profile-routing.test.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-research/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-skill-source-index-refresh/references/backend-component-platform-compatibility.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-stage-decision/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-stage-decision/references/domain-strategy-contract.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-stage-decision/references/strategic-handoff-routing.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-tactical-design/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-tactical-design/references/strategic-handoff-routing.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-tactical-design/references/tactical-design-contract.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-technical-design/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-technical-design/references/technical-design-contract.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-ui/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-up-springboot3/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-web-controller/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": ".pi/skills/yss-web-controller/references/profiles/layered-mvc-service.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": "AGENTS.md",
+      "ownership": "managed-customizable",
+      "mergeStrategy": "replace-with-force"
+    },
+    {
+      "action": "update",
+      "path": "scripts/backend-delivery",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": "scripts/lib/api-contract-decision.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": "scripts/lib/approved-execution-context.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": "scripts/lib/backend-delivery.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": "scripts/lib/backend-platform.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": "scripts/lib/backend-review.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": "scripts/lib/backend-scaffold-prerequisites.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": "scripts/lib/backend-standards-coverage.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": "scripts/lib/context-reconciliation.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": "scripts/lib/contract-views.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": "scripts/lib/delivery-preflight.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": "scripts/lib/digital-human-roles.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": "scripts/lib/existing-backend-architecture.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": "scripts/lib/existing-ui-baseline.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": "scripts/lib/frontend-delivery.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": "scripts/lib/harness-execution-scope.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": "scripts/lib/lifecycle-context-query.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": "scripts/lib/lifecycle-registry.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": "scripts/lib/lifecycle-transition.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": "scripts/lib/openapi-draft-validation.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": "scripts/lib/plan-spec-entry.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": "scripts/lib/skill-registry.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": "scripts/lib/skill-supply-chain.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": "scripts/lib/slice-contract-preparation.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": "scripts/lib/slice-contract.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": "scripts/lib/slice-repositories.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": "scripts/lib/slice-task-package.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": "scripts/lib/stage-tracking-migration.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": "scripts/lib/stage-tracking.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": "scripts/lib/strategic-feedback.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": "scripts/lib/strategic-handoff-routing.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": "scripts/lib/strategic-handoff.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": "scripts/lib/task-package-schema.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": "scripts/lib/task-package.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": "scripts/lib/technical-design-boundary.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": "scripts/lib/user-decision.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": "scripts/strategic-consumer-entry",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": "scripts/strategic-handoff",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": "scripts/verify-frontend-implementation-evidence",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": "scripts/verify-lifecycle-checkpoint",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": "scripts/verify-project-instance",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": "scripts/verify-scaffold-architecture-decisions",
+      "ownership": "managed"
+    },
+    {
+      "action": "update",
+      "path": "scripts/verify-strategic-context-import",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".agents/skills/yss-cache/references/jetcache.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".codex/skills/yss-cache/references/jetcache.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".cursor/skills/yss-cache/references/jetcache.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".pi/skills/yss-cache/references/jetcache.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/adr/README.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/agents/README.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/agents/backend-architecture-profiles.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/agents/digital-human-roles.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/agents/digital-human-roles.yaml",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/agents/domain.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/agents/gitlab-workflow-skills.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/agents/issue-tracker.md",
+      "ownership": "managed-customizable",
+      "mergeStrategy": "manual"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/agents/skill-migrations.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/agents/triage-labels.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/agents/yss-skill-registry.yaml",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/api/templates/openapi-draft-review-checklist.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/api/templates/openapi-draft-validation-record-template.yaml",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/api/templates/openapi-freeze-record-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/api/templates/openapi-json-export-record-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/architecture/README.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/architecture/templates/architecture-deepening-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/architecture/templates/architecture-review-checklist.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/architecture/templates/business-architecture-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/architecture/templates/data-architecture-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/architecture/templates/engineering-baseline-review-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/architecture/templates/functional-architecture-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/architecture/templates/system-overview-design-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/architecture/templates/tech-design-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/design/README.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/design/design.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/design/diagrams/README.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/design/schemas/visual-baseline.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/design/templates/examples/model-publishing-interaction.example.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/design/templates/examples/model-publishing-state-matrix.example.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/design/templates/interaction-spec-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/design/templates/product-overview-design-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/design/templates/prototype-confirmation-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/design/templates/prototype-evidence-template.yaml",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/design/templates/prototype-review-checklist.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/design/templates/state-matrix-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/design/templates/visual-baseline-template.yaml",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/design/tokens/.design-md-projection.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/design/tokens/theme.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/design/tokens/tokens.compact.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/design/tokens/tokens.dark.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/design/tokens/tokens.default.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/design/tokens/variables.css",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/design/tokens/variables.dark.css",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/engineering/backend-platforms.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/engineering/backend-platforms.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/plan/README.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/plan/entry-review.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/plan/templates/competitive-analysis-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/plan/templates/competitive-matrix-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/plan/templates/market-analysis-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/plan/templates/plan-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/plan/templates/user-pain-points-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/contract-reading.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/delivery-preflight.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/document-writing.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/existing-backend-architecture.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/existing-ui-baseline.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/frontend-backend-delivery.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/harness-process-tailoring.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/implementation-repo-integration.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/lifecycle-artifact-map.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/lifecycle-registry-baseline-v1.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/lifecycle-registry-baseline.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/lifecycle-registry.yaml",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/plan-migration.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/schemas/api-contract-decision-v2.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/schemas/api-contract-decision.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/schemas/backend-architecture-identity.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/schemas/backend-delivery-verification.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/schemas/backend-delivery.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/schemas/context-reconciliation.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/schemas/data-architecture-decision.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/schemas/delivery-preflight-input.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/schemas/delivery-preflight-result.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/schemas/digital-human-task-package.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/schemas/existing-ui-baseline.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/schemas/frontend-delivery-acceptance-v1.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/schemas/frontend-delivery-acceptance-v3.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/schemas/frontend-delivery-acceptance.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/schemas/frontend-implementation-evidence.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/schemas/frontend-strategic-preflight-v2.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/schemas/frontend-strategic-preflight.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/schemas/implementation-repository-preparation-result.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/schemas/lifecycle-checkpoint.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/schemas/lifecycle-registry.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/schemas/openapi-draft-validation-record.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/schemas/project-scaffold-contract.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/schemas/review-bundle.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/schemas/scaffold-architecture-decisions.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/schemas/slice-implementation-contract-v3.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/schemas/stage-tracking.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/schemas/strategic-consumer-feedback.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/schemas/strategic-design-handoff-v3.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/schemas/strategic-design-handoff-v4.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/schemas/strategic-design-handoff-v5.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/schemas/strategic-design-handoff.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/schemas/strategic-feedback-adjudication.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/schemas/strategic-handoff-delivery-verification.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/schemas/strategic-handoff-delivery.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/schemas/strategic-handoff-domain-strategy-v3.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/schemas/strategic-handoff-domain-strategy.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/schemas/strategic-handoff-export-v2.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/schemas/strategic-handoff-export.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/schemas/strategic-handoff-import-receipt-v3.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/schemas/strategic-handoff-import-receipt.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/schemas/strategic-handoff-package.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/schemas/strategic-handoff-stage-decision-package-v3.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/schemas/strategic-handoff-stage-decision-package.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/schemas/subagent-task-package.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/schemas/user-decision.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/stage-tracking.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/strategic-handoff-package.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/subagent-collaboration.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/templates/context-reconciliation-template.yaml",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/templates/frontend-implementation-plan-template.yaml",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/templates/frontend-implementation-verification-template.yaml",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/templates/lifecycle-checkpoint-template.yaml",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/templates/scaffold-architecture-decisions-template.yaml",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/templates/stage-checkpoint-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/process/templates/user-decision-template.yaml",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/templates/adr-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/templates/approval-record-template.yaml",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/templates/build-architecture-checklist-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/templates/cross-repo-slice-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/templates/digital-human-runtime-profile-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/templates/examples/lifecycle-writing-examples.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/templates/grok-bot-profile-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/templates/implementation-repo-registry-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/templates/local-parent-ticket-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/templates/openapi-spec-template.yaml",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/templates/release-note-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/templates/retro-report-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/templates/review-bundle-template.yaml",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/templates/review-report-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/templates/spec-delta-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/templates/spec-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/templates/subagent-task-package-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/templates/verification-record-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/templates/vertical-slice-ticket-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/user-guide/yss-ui-mcp.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/user-guide/技术设计用户指南.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/user-guide/用户手册.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/user-guide/用户手册索引.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/user-guide/设备借用贯穿案例.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": ".template-spec/user-guide/阶段接入与产物复用使用手册.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": "scripts/design-md",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": "scripts/lib/design-md.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": "scripts/lib/governance-layout.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": "scripts/lib/lifecycle-status.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": "scripts/lib/plan-spec-entry-view.mjs",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": "scripts/lifecycle-status",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": "scripts/plan-spec-entry",
+      "ownership": "managed"
+    },
+    {
+      "action": "add",
+      "path": "scripts/verify-governance-layout",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": ".agents/skills/grill-me/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": ".agents/skills/grill-me/agents/openai.yaml",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": ".agents/skills/yss-distributed-id/assets/AutoIdInterceptor.java",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": ".agents/skills/yss-distributed-id/assets/EnableDistributedId.java",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": ".agents/skills/yss-distributed-id/assets/LeafConf.java",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": ".codex/skills/grill-me/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": ".codex/skills/grill-me/agents/openai.yaml",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": ".codex/skills/yss-distributed-id/assets/AutoIdInterceptor.java",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": ".codex/skills/yss-distributed-id/assets/EnableDistributedId.java",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": ".codex/skills/yss-distributed-id/assets/LeafConf.java",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": ".cursor/skills/grill-me/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": ".cursor/skills/grill-me/agents/openai.yaml",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": ".cursor/skills/yss-distributed-id/assets/AutoIdInterceptor.java",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": ".cursor/skills/yss-distributed-id/assets/EnableDistributedId.java",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": ".cursor/skills/yss-distributed-id/assets/LeafConf.java",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": ".pi/skills/grill-me/SKILL.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": ".pi/skills/grill-me/agents/openai.yaml",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": ".pi/skills/yss-distributed-id/assets/AutoIdInterceptor.java",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": ".pi/skills/yss-distributed-id/assets/EnableDistributedId.java",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": ".pi/skills/yss-distributed-id/assets/LeafConf.java",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/adr/README.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/agents/README.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/agents/archify-integration.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/agents/backend-architecture-profiles.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/agents/digital-human-roles.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/agents/digital-human-roles.yaml",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/agents/domain.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/agents/gitlab-workflow-skills.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/agents/issue-tracker.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/agents/skill-migrations.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/agents/triage-labels.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/agents/yss-plugin-dependency-contract.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/agents/yss-skill-registry.yaml",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/api/.gitkeep",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/api/specs/.gitkeep",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/api/templates/openapi-draft-review-checklist.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/api/templates/openapi-draft-validation-record-template.yaml",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/api/templates/openapi-freeze-record-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/api/templates/openapi-json-export-record-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/architecture/.gitkeep",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/architecture/README.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/architecture/templates/architecture-deepening-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/architecture/templates/architecture-review-checklist.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/architecture/templates/business-architecture-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/architecture/templates/data-architecture-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/architecture/templates/engineering-baseline-review-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/architecture/templates/functional-architecture-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/architecture/templates/system-overview-design-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/architecture/templates/tech-design-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/design/README.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/design/design-system-sync.yaml",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/design/design.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/design/diagrams/README.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/design/facts/antdv-next/1.5.2/cli-help.txt",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/design/facts/antdv-next/1.5.2/component-list.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/design/facts/antdv-next/1.5.2/components/Alert/demo-basic.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/design/facts/antdv-next/1.5.2/components/Alert/info.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/design/facts/antdv-next/1.5.2/components/Alert/semantic.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/design/facts/antdv-next/1.5.2/components/Alert/token.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/design/facts/antdv-next/1.5.2/components/Button/demo-basic.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/design/facts/antdv-next/1.5.2/components/Button/info.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/design/facts/antdv-next/1.5.2/components/Button/semantic.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/design/facts/antdv-next/1.5.2/components/Button/token.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/design/facts/antdv-next/1.5.2/components/Input/demo-basic.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/design/facts/antdv-next/1.5.2/components/Input/info.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/design/facts/antdv-next/1.5.2/components/Input/semantic.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/design/facts/antdv-next/1.5.2/components/Input/token.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/design/facts/antdv-next/1.5.2/components/Modal/demo-basic.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/design/facts/antdv-next/1.5.2/components/Modal/info.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/design/facts/antdv-next/1.5.2/components/Modal/semantic.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/design/facts/antdv-next/1.5.2/components/Modal/token.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/design/facts/antdv-next/1.5.2/components/Select/demo-basic.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/design/facts/antdv-next/1.5.2/components/Select/info.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/design/facts/antdv-next/1.5.2/components/Select/semantic.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/design/facts/antdv-next/1.5.2/components/Select/token.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/design/facts/antdv-next/1.5.2/components/Table/demo-basic.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/design/facts/antdv-next/1.5.2/components/Table/info.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/design/facts/antdv-next/1.5.2/components/Table/semantic.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/design/facts/antdv-next/1.5.2/components/Table/token.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/design/facts/antdv-next/1.5.2/components/Tag/demo-basic.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/design/facts/antdv-next/1.5.2/components/Tag/info.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/design/facts/antdv-next/1.5.2/components/Tag/semantic.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/design/facts/antdv-next/1.5.2/components/Tag/token.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/design/facts/antdv-next/1.5.2/design-md.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/design/facts/antdv-next/1.5.2/manifest.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/design/facts/antdv-next/1.5.2/resolution-probe.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/design/preview-dark.html",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/design/preview.css",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/design/preview.html",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/design/preview.js",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/design/prototypes/.gitkeep",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/design/schemas/visual-baseline.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/design/templates/interaction-spec-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/design/templates/product-overview-design-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/design/templates/prototype-confirmation-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/design/templates/prototype-evidence-template.yaml",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/design/templates/prototype-review-checklist.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/design/templates/state-matrix-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/design/templates/visual-baseline-template.yaml",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/design/tokens/.design-md-projection.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/design/tokens/theme.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/design/tokens/tokens.compact.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/design/tokens/tokens.dark.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/design/tokens/tokens.default.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/design/tokens/variables.css",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/design/tokens/variables.dark.css",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/engineering/backend-platforms.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/engineering/backend-platforms.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/implementation/.gitkeep",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/plan/IDEATION.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/plan/README.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/plan/entry-review.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/plan/templates/competitive-analysis-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/plan/templates/competitive-matrix-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/plan/templates/market-analysis-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/plan/templates/plan-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/plan/templates/user-pain-points-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/process/PDCA-SCRUM.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/delivery-preflight.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/document-writing.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/existing-backend-architecture.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/existing-ui-baseline.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/frontend-backend-delivery.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/github-workflows.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/process/harness-executive-blueprint.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/harness-process-tailoring.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/implementation-repo-integration.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/lifecycle-artifact-map.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/lifecycle-registry-baseline.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/lifecycle-registry.yaml",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/plan-migration.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/schemas/api-contract-decision.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/schemas/backend-architecture-identity.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/schemas/backend-delivery-verification.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/schemas/backend-delivery.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/schemas/context-reconciliation.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/schemas/data-architecture-decision.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/schemas/delivery-preflight-input.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/schemas/delivery-preflight-result.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/schemas/digital-human-task-package.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/schemas/existing-ui-baseline.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/schemas/frontend-delivery-acceptance-v1.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/schemas/frontend-delivery-acceptance-v3.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/schemas/frontend-delivery-acceptance.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/schemas/frontend-implementation-evidence.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/schemas/frontend-strategic-preflight-v2.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/schemas/frontend-strategic-preflight.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/schemas/implementation-repository-preparation-result.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/schemas/lifecycle-checkpoint.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/schemas/lifecycle-registry.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/schemas/openapi-draft-validation-record.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/schemas/project-scaffold-contract.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/schemas/review-bundle.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/schemas/scaffold-architecture-decisions.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/schemas/slice-implementation-contract-v3.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/schemas/strategic-consumer-feedback.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/schemas/strategic-design-handoff-v3.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/schemas/strategic-design-handoff-v4.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/schemas/strategic-design-handoff-v5.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/schemas/strategic-design-handoff.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/schemas/strategic-feedback-adjudication.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/schemas/strategic-handoff-delivery-verification.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/schemas/strategic-handoff-delivery.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/schemas/strategic-handoff-domain-strategy-v3.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/schemas/strategic-handoff-domain-strategy.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/schemas/strategic-handoff-export-v2.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/schemas/strategic-handoff-export.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/schemas/strategic-handoff-import-receipt-v3.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/schemas/strategic-handoff-import-receipt.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/schemas/strategic-handoff-package.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/schemas/strategic-handoff-stage-decision-package-v3.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/schemas/strategic-handoff-stage-decision-package.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/schemas/subagent-task-package.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/schemas/user-decision.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/strategic-handoff-package.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/subagent-collaboration.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/templates/context-reconciliation-template.yaml",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/templates/frontend-implementation-plan-template.yaml",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/templates/frontend-implementation-verification-template.yaml",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/templates/lifecycle-checkpoint-template.yaml",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/templates/scaffold-architecture-decisions-template.yaml",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/templates/stage-checkpoint-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/templates/user-decision-template.yaml",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/releases/.gitkeep",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/requirements/README.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/requirements/tickets/.gitkeep",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/templates/adr-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/templates/agent-brief-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/templates/approval-record-template.yaml",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/templates/architecture-proposal-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/templates/build-architecture-checklist-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/templates/cross-repo-slice-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/templates/digital-human-runtime-profile-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/templates/examples/lifecycle-writing-examples.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/templates/grok-bot-profile-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/templates/implementation-plan-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/templates/implementation-repo-registry-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/templates/implementation-routing-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/templates/local-parent-ticket-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/templates/openapi-spec-template.yaml",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/templates/release-note-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/templates/requirement-freeze-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/templates/retro-report-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/templates/review-bundle-template.yaml",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/templates/review-report-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/templates/risk-register-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/templates/spec-delta-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/templates/spec-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/templates/subagent-task-package-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/templates/user-story-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/templates/verification-record-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/templates/vertical-slice-ticket-template.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "docs/testing/README.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/user-guide/yss-ui-mcp.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/user-guide/技术设计用户指南.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/user-guide/用户手册.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/user-guide/用户手册索引.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/user-guide/设备借用贯穿案例.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "prunable",
+      "path": "yss-public-skills.json",
+      "ownership": "generated"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/contract-reading.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/schemas/api-contract-decision-v2.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/schemas/stage-tracking.schema.json",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/process/stage-tracking.md",
+      "ownership": "managed"
+    },
+    {
+      "action": "remove-report",
+      "path": "docs/user-guide/阶段接入与产物复用使用手册.md",
+      "ownership": "managed"
+    }
+  ],
+  "conflicts": [
+    {
+      "path": ".codex/config.toml",
+      "reason": "检测到本地已修改的受管文件",
+      "forceable": true,
+      "source": "managed-file",
+      "ownership": "managed"
+    },
+    {
+      "path": "CONTEXT.md",
+      "reason": "检测到本地已修改的可定制文件；mergeStrategy=manual，必须人工处理",
+      "forceable": false,
+      "source": "managed-file",
+      "ownership": "managed-customizable",
+      "mergeStrategy": "manual"
+    },
+    {
+      "path": "DESIGN.md",
+      "reason": "检测到本地已修改的可定制文件；mergeStrategy=manual，必须人工处理",
+      "forceable": false,
+      "source": "managed-file",
+      "ownership": "managed-customizable",
+      "mergeStrategy": "manual"
+    },
+    {
+      "path": "skills-lock.json",
+      "reason": "检测到本地已修改的受管文件",
+      "forceable": true,
+      "source": "managed-file",
+      "ownership": "generated",
+      "generatorId": "skills-lock",
+      "generatorVersion": 1
+    },
+    {
+      "path": "docs/agents/skills-maintenance.md",
+      "from": "docs/agents/skills-maintenance.md",
+      "to": ".template-spec/agents/skills-maintenance.md",
+      "reason": "缺少可信受管摘要或旧治理文件已被项目修改",
+      "forceable": false,
+      "source": "migration",
+      "ownership": "managed"
+    },
+    {
+      "path": "docs/agents/yss-plugin-dependency-contract.md",
+      "from": "docs/agents/yss-plugin-dependency-contract.md",
+      "to": ".template-spec/agents/yss-plugin-dependency-contract.md",
+      "reason": "目标阶段未安装对应治理资产，不能静默丢弃",
+      "forceable": false,
+      "source": "migration",
+      "ownership": "managed"
+    },
+    {
+      "path": "docs/design/design-system-sync.yaml",
+      "from": "docs/design/design-system-sync.yaml",
+      "to": ".template-spec/design/design-system-sync.yaml",
+      "reason": "缺少可信受管摘要或旧治理文件已被项目修改",
+      "forceable": false,
+      "source": "migration",
+      "ownership": "managed"
+    },
+    {
+      "path": "docs/design/tokens/.design-md-projection.json",
+      "from": "docs/design/tokens/.design-md-projection.json",
+      "to": ".template-spec/design/tokens/.design-md-projection.json",
+      "reason": "缺少可信受管摘要或旧治理文件已被项目修改",
+      "forceable": false,
+      "source": "migration",
+      "ownership": "managed"
+    },
+    {
+      "path": "docs/design/tokens/theme.json",
+      "from": "docs/design/tokens/theme.json",
+      "to": ".template-spec/design/tokens/theme.json",
+      "reason": "缺少可信受管摘要或旧治理文件已被项目修改",
+      "forceable": false,
+      "source": "migration",
+      "ownership": "managed"
+    },
+    {
+      "path": "docs/design/tokens/tokens.compact.json",
+      "from": "docs/design/tokens/tokens.compact.json",
+      "to": ".template-spec/design/tokens/tokens.compact.json",
+      "reason": "缺少可信受管摘要或旧治理文件已被项目修改",
+      "forceable": false,
+      "source": "migration",
+      "ownership": "managed"
+    },
+    {
+      "path": "docs/design/tokens/tokens.default.json",
+      "from": "docs/design/tokens/tokens.default.json",
+      "to": ".template-spec/design/tokens/tokens.default.json",
+      "reason": "缺少可信受管摘要或旧治理文件已被项目修改",
+      "forceable": false,
+      "source": "migration",
+      "ownership": "managed"
+    },
+    {
+      "path": "docs/design/tokens/variables.css",
+      "from": "docs/design/tokens/variables.css",
+      "to": ".template-spec/design/tokens/variables.css",
+      "reason": "缺少可信受管摘要或旧治理文件已被项目修改",
+      "forceable": false,
+      "source": "migration",
+      "ownership": "managed"
+    },
+    {
+      "path": "docs/discovery/IDEATION.md",
+      "from": "docs/discovery/IDEATION.md",
+      "to": ".template-spec/discovery/IDEATION.md",
+      "reason": "缺少可信受管摘要或旧治理文件已被项目修改",
+      "forceable": false,
+      "source": "migration",
+      "ownership": "managed"
+    },
+    {
+      "path": "docs/discovery/README.md",
+      "from": "docs/discovery/README.md",
+      "to": ".template-spec/discovery/README.md",
+      "reason": "缺少可信受管摘要或旧治理文件已被项目修改",
+      "forceable": false,
+      "source": "migration",
+      "ownership": "managed"
+    },
+    {
+      "path": "docs/discovery/templates/competitive-analysis-template.md",
+      "from": "docs/discovery/templates/competitive-analysis-template.md",
+      "to": ".template-spec/discovery/templates/competitive-analysis-template.md",
+      "reason": "缺少可信受管摘要或旧治理文件已被项目修改",
+      "forceable": false,
+      "source": "migration",
+      "ownership": "managed"
+    },
+    {
+      "path": "docs/discovery/templates/competitive-matrix-template.md",
+      "from": "docs/discovery/templates/competitive-matrix-template.md",
+      "to": ".template-spec/discovery/templates/competitive-matrix-template.md",
+      "reason": "缺少可信受管摘要或旧治理文件已被项目修改",
+      "forceable": false,
+      "source": "migration",
+      "ownership": "managed"
+    },
+    {
+      "path": "docs/discovery/templates/discovery-template.md",
+      "from": "docs/discovery/templates/discovery-template.md",
+      "to": ".template-spec/discovery/templates/discovery-template.md",
+      "reason": "缺少可信受管摘要或旧治理文件已被项目修改",
+      "forceable": false,
+      "source": "migration",
+      "ownership": "managed"
+    },
+    {
+      "path": "docs/discovery/templates/market-analysis-template.md",
+      "from": "docs/discovery/templates/market-analysis-template.md",
+      "to": ".template-spec/discovery/templates/market-analysis-template.md",
+      "reason": "缺少可信受管摘要或旧治理文件已被项目修改",
+      "forceable": false,
+      "source": "migration",
+      "ownership": "managed"
+    },
+    {
+      "path": "docs/discovery/templates/user-pain-points-template.md",
+      "from": "docs/discovery/templates/user-pain-points-template.md",
+      "to": ".template-spec/discovery/templates/user-pain-points-template.md",
+      "reason": "缺少可信受管摘要或旧治理文件已被项目修改",
+      "forceable": false,
+      "source": "migration",
+      "ownership": "managed"
+    },
+    {
+      "path": "docs/process/PDCA-SCRUM.md",
+      "from": "docs/process/PDCA-SCRUM.md",
+      "to": ".template-spec/process/PDCA-SCRUM.md",
+      "reason": "目标阶段未安装对应治理资产，不能静默丢弃",
+      "forceable": false,
+      "source": "migration",
+      "ownership": "managed"
+    },
+    {
+      "path": "docs/process/checkpoints/stage-6-slice-contract-approved-checkpoint.yaml",
+      "from": "docs/process/checkpoints/stage-6-slice-contract-approved-checkpoint.yaml",
+      "to": ".template-spec/process/checkpoints/stage-6-slice-contract-approved-checkpoint.yaml",
+      "reason": "缺少可信受管摘要或旧治理文件已被项目修改",
+      "forceable": false,
+      "source": "migration",
+      "ownership": "managed"
+    },
+    {
+      "path": "docs/process/checkpoints/stage-8-delivery-accepted-checkpoint.yaml",
+      "from": "docs/process/checkpoints/stage-8-delivery-accepted-checkpoint.yaml",
+      "to": ".template-spec/process/checkpoints/stage-8-delivery-accepted-checkpoint.yaml",
+      "reason": "缺少可信受管摘要或旧治理文件已被项目修改",
+      "forceable": false,
+      "source": "migration",
+      "ownership": "managed"
+    },
+    {
+      "path": "docs/process/harness-executive-blueprint.md",
+      "from": "docs/process/harness-executive-blueprint.md",
+      "to": ".template-spec/process/harness-executive-blueprint.md",
+      "reason": "目标阶段未安装对应治理资产，不能静默丢弃",
+      "forceable": false,
+      "source": "migration",
+      "ownership": "managed"
+    },
+    {
+      "path": "docs/process/manifests/implementation-scope.json",
+      "from": "docs/process/manifests/implementation-scope.json",
+      "to": ".template-spec/process/manifests/implementation-scope.json",
+      "reason": "缺少可信受管摘要或旧治理文件已被项目修改",
+      "forceable": false,
+      "source": "migration",
+      "ownership": "managed"
+    },
+    {
+      "path": "docs/templates/agent-brief-template.md",
+      "from": "docs/templates/agent-brief-template.md",
+      "to": ".template-spec/templates/agent-brief-template.md",
+      "reason": "目标阶段未安装对应治理资产，不能静默丢弃",
+      "forceable": false,
+      "source": "migration",
+      "ownership": "managed"
+    },
+    {
+      "path": "docs/templates/architecture-proposal-template.md",
+      "from": "docs/templates/architecture-proposal-template.md",
+      "to": ".template-spec/templates/architecture-proposal-template.md",
+      "reason": "目标阶段未安装对应治理资产，不能静默丢弃",
+      "forceable": false,
+      "source": "migration",
+      "ownership": "managed"
+    },
+    {
+      "path": "docs/templates/implementation-plan-template.md",
+      "from": "docs/templates/implementation-plan-template.md",
+      "to": ".template-spec/templates/implementation-plan-template.md",
+      "reason": "目标阶段未安装对应治理资产，不能静默丢弃",
+      "forceable": false,
+      "source": "migration",
+      "ownership": "managed"
+    },
+    {
+      "path": "docs/templates/implementation-routing-template.md",
+      "from": "docs/templates/implementation-routing-template.md",
+      "to": ".template-spec/templates/implementation-routing-template.md",
+      "reason": "目标阶段未安装对应治理资产，不能静默丢弃",
+      "forceable": false,
+      "source": "migration",
+      "ownership": "managed"
+    },
+    {
+      "path": "docs/templates/requirement-freeze-template.md",
+      "from": "docs/templates/requirement-freeze-template.md",
+      "to": ".template-spec/templates/requirement-freeze-template.md",
+      "reason": "目标阶段未安装对应治理资产，不能静默丢弃",
+      "forceable": false,
+      "source": "migration",
+      "ownership": "managed"
+    },
+    {
+      "path": "docs/templates/risk-register-template.md",
+      "from": "docs/templates/risk-register-template.md",
+      "to": ".template-spec/templates/risk-register-template.md",
+      "reason": "目标阶段未安装对应治理资产，不能静默丢弃",
+      "forceable": false,
+      "source": "migration",
+      "ownership": "managed"
+    },
+    {
+      "path": "docs/templates/user-story-template.md",
+      "from": "docs/templates/user-story-template.md",
+      "to": ".template-spec/templates/user-story-template.md",
+      "reason": "目标阶段未安装对应治理资产，不能静默丢弃",
+      "forceable": false,
+      "source": "migration",
+      "ownership": "managed"
+    },
+    {
+      "path": "docs/user-guide/CLI使用说明.md",
+      "from": "docs/user-guide/CLI使用说明.md",
+      "to": ".template-spec/user-guide/CLI使用说明.md",
+      "reason": "缺少可信受管摘要或旧治理文件已被项目修改",
+      "forceable": false,
+      "source": "migration",
+      "ownership": "managed"
+    },
+    {
+      "path": "docs/user-guide/产品生命周期工作流.md",
+      "from": "docs/user-guide/产品生命周期工作流.md",
+      "to": ".template-spec/user-guide/产品生命周期工作流.md",
+      "reason": "缺少可信受管摘要或旧治理文件已被项目修改",
+      "forceable": false,
+      "source": "migration",
+      "ownership": "managed"
+    },
+    {
+      "path": "docs/user-guide/后端子项目用户手册.md",
+      "from": "docs/user-guide/后端子项目用户手册.md",
+      "to": ".template-spec/user-guide/后端子项目用户手册.md",
+      "reason": "缺少可信受管摘要或旧治理文件已被项目修改",
+      "forceable": false,
+      "source": "migration",
+      "ownership": "managed"
+    }
+  ],
+  "unsafe": [],
+  "warnings": [
+    "警告：目标 Git worktree 存在未提交改动；CLI 不会自动 stash 或提交，请在结果后检查 git diff / git status"
+  ],
+  "blocked": true,
+  "stats": {
+    "updated": 368,
+    "added": 158,
+    "unchanged": 3486,
+    "skipped": 4,
+    "conflicts": 34,
+    "unsafe": 0,
+    "removed": 225,
+    "prunable": 74,
+    "retainedRemoved": 6
+  },
+  "migration": {
+    "targetDir": "/Users/zhudaoming/Documents/antigravity/peaceful-hubble/auth-backend",
+    "operations": [
+      {
+        "kind": "remove",
+        "path": "docs/adr/README.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/agents/README.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/agents/archify-integration.md",
+        "reason": "可信模板专用文件退出实例"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/agents/backend-architecture-profiles.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/agents/digital-human-roles.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/agents/digital-human-roles.yaml",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/agents/domain.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/agents/gitlab-workflow-skills.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/agents/issue-tracker.md",
+        "reason": "保留项目 tracker 原内容并退出旧路径"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/agents/skill-migrations.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/agents/triage-labels.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/agents/yss-skill-registry.yaml",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/api/templates/openapi-draft-review-checklist.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/api/templates/openapi-draft-validation-record-template.yaml",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/api/templates/openapi-freeze-record-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/api/templates/openapi-json-export-record-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/architecture/README.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/architecture/templates/architecture-deepening-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/architecture/templates/architecture-review-checklist.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/architecture/templates/business-architecture-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/architecture/templates/data-architecture-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/architecture/templates/engineering-baseline-review-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/architecture/templates/functional-architecture-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/architecture/templates/system-overview-design-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/architecture/templates/tech-design-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/design/README.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/design/design.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/design/diagrams/README.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/design/preview-dark.html",
+        "reason": "可信模板专用文件退出实例"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/design/preview.css",
+        "reason": "可信模板专用文件退出实例"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/design/preview.html",
+        "reason": "可信模板专用文件退出实例"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/design/preview.js",
+        "reason": "可信模板专用文件退出实例"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/design/schemas/visual-baseline.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/design/templates/interaction-spec-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/design/templates/product-overview-design-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/design/templates/prototype-confirmation-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/design/templates/prototype-evidence-template.yaml",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/design/templates/prototype-review-checklist.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/design/templates/state-matrix-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/design/templates/visual-baseline-template.yaml",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/design/tokens/tokens.dark.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/design/tokens/variables.dark.css",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/engineering/backend-platforms.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/engineering/backend-platforms.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/plan/README.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/plan/entry-review.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/plan/templates/competitive-analysis-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/plan/templates/competitive-matrix-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/plan/templates/market-analysis-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/plan/templates/plan-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/plan/templates/user-pain-points-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+        "reason": "可信模板专用文件退出实例"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/contract-reading.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/delivery-preflight.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/document-writing.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/existing-backend-architecture.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/existing-ui-baseline.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/frontend-backend-delivery.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/github-workflows.md",
+        "reason": "可信模板专用文件退出实例"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/harness-process-tailoring.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/implementation-repo-integration.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/lifecycle-artifact-map.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/lifecycle-registry-baseline.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/lifecycle-registry.yaml",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/plan-migration.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/schemas/api-contract-decision-v2.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/schemas/api-contract-decision.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/schemas/backend-architecture-identity.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/schemas/backend-delivery-verification.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/schemas/backend-delivery.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/schemas/context-reconciliation.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/schemas/data-architecture-decision.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/schemas/delivery-preflight-input.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/schemas/delivery-preflight-result.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/schemas/digital-human-task-package.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/schemas/existing-ui-baseline.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/schemas/frontend-delivery-acceptance-v1.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/schemas/frontend-delivery-acceptance-v3.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/schemas/frontend-delivery-acceptance.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/schemas/frontend-implementation-evidence.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/schemas/frontend-strategic-preflight-v2.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/schemas/frontend-strategic-preflight.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/schemas/implementation-repository-preparation-result.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/schemas/lifecycle-checkpoint.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/schemas/lifecycle-registry.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/schemas/openapi-draft-validation-record.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/schemas/project-scaffold-contract.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/schemas/review-bundle.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/schemas/scaffold-architecture-decisions.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/schemas/slice-implementation-contract-v3.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/schemas/stage-tracking.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/schemas/strategic-consumer-feedback.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/schemas/strategic-design-handoff-v3.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/schemas/strategic-design-handoff-v4.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/schemas/strategic-design-handoff-v5.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/schemas/strategic-design-handoff.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/schemas/strategic-feedback-adjudication.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/schemas/strategic-handoff-delivery-verification.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/schemas/strategic-handoff-delivery.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/schemas/strategic-handoff-domain-strategy-v3.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/schemas/strategic-handoff-domain-strategy.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/schemas/strategic-handoff-export-v2.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/schemas/strategic-handoff-export.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/schemas/strategic-handoff-import-receipt-v3.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/schemas/strategic-handoff-import-receipt.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/schemas/strategic-handoff-package.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/schemas/strategic-handoff-stage-decision-package-v3.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/schemas/strategic-handoff-stage-decision-package.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/schemas/subagent-task-package.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/schemas/user-decision.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/stage-tracking.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/strategic-handoff-package.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/subagent-collaboration.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/templates/context-reconciliation-template.yaml",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/templates/frontend-implementation-plan-template.yaml",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/templates/frontend-implementation-verification-template.yaml",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/templates/lifecycle-checkpoint-template.yaml",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/templates/scaffold-architecture-decisions-template.yaml",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/templates/stage-checkpoint-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/process/templates/user-decision-template.yaml",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/templates/adr-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/templates/approval-record-template.yaml",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/templates/build-architecture-checklist-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/templates/cross-repo-slice-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/templates/digital-human-runtime-profile-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/templates/examples/lifecycle-writing-examples.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/templates/grok-bot-profile-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/templates/implementation-repo-registry-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/templates/local-parent-ticket-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/templates/openapi-spec-template.yaml",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/templates/release-note-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/templates/retro-report-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/templates/review-bundle-template.yaml",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/templates/review-report-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/templates/spec-delta-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/templates/spec-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/templates/subagent-task-package-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/templates/verification-record-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/templates/vertical-slice-ticket-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/user-guide/yss-ui-mcp.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/user-guide/技术设计用户指南.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/user-guide/用户手册.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/user-guide/用户手册索引.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/user-guide/设备借用贯穿案例.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "kind": "remove",
+        "path": "docs/user-guide/阶段接入与产物复用使用手册.md",
+        "reason": "可信旧治理文件由新模板取代"
+      }
+    ],
+    "legacy": [
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/adr/README.md",
+        "to": ".template-spec/adr/README.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/agents/README.md",
+        "to": ".template-spec/agents/README.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "retire-template-only",
+        "from": "docs/agents/archify-integration.md",
+        "to": null,
+        "reason": "可信模板专用文件退出实例"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/agents/backend-architecture-profiles.md",
+        "to": ".template-spec/agents/backend-architecture-profiles.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/agents/digital-human-roles.md",
+        "to": ".template-spec/agents/digital-human-roles.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/agents/digital-human-roles.yaml",
+        "to": ".template-spec/agents/digital-human-roles.yaml",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/agents/domain.md",
+        "to": ".template-spec/agents/domain.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/agents/gitlab-workflow-skills.md",
+        "to": ".template-spec/agents/gitlab-workflow-skills.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "preserve-project-config",
+        "from": "docs/agents/issue-tracker.md",
+        "to": ".template-spec/agents/issue-tracker.md",
+        "reason": "保留项目 tracker 原内容并退出旧路径"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/agents/skill-migrations.md",
+        "to": ".template-spec/agents/skill-migrations.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "conflict",
+        "from": "docs/agents/skills-maintenance.md",
+        "to": ".template-spec/agents/skills-maintenance.md",
+        "reason": "缺少可信受管摘要或旧治理文件已被项目修改"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/agents/triage-labels.md",
+        "to": ".template-spec/agents/triage-labels.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "conflict",
+        "from": "docs/agents/yss-plugin-dependency-contract.md",
+        "to": ".template-spec/agents/yss-plugin-dependency-contract.md",
+        "reason": "目标阶段未安装对应治理资产，不能静默丢弃"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/agents/yss-skill-registry.yaml",
+        "to": ".template-spec/agents/yss-skill-registry.yaml",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/api/templates/openapi-draft-review-checklist.md",
+        "to": ".template-spec/api/templates/openapi-draft-review-checklist.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/api/templates/openapi-draft-validation-record-template.yaml",
+        "to": ".template-spec/api/templates/openapi-draft-validation-record-template.yaml",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/api/templates/openapi-freeze-record-template.md",
+        "to": ".template-spec/api/templates/openapi-freeze-record-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/api/templates/openapi-json-export-record-template.md",
+        "to": ".template-spec/api/templates/openapi-json-export-record-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/architecture/README.md",
+        "to": ".template-spec/architecture/README.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/architecture/templates/architecture-deepening-template.md",
+        "to": ".template-spec/architecture/templates/architecture-deepening-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/architecture/templates/architecture-review-checklist.md",
+        "to": ".template-spec/architecture/templates/architecture-review-checklist.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/architecture/templates/business-architecture-template.md",
+        "to": ".template-spec/architecture/templates/business-architecture-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/architecture/templates/data-architecture-template.md",
+        "to": ".template-spec/architecture/templates/data-architecture-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/architecture/templates/engineering-baseline-review-template.md",
+        "to": ".template-spec/architecture/templates/engineering-baseline-review-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/architecture/templates/functional-architecture-template.md",
+        "to": ".template-spec/architecture/templates/functional-architecture-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/architecture/templates/system-overview-design-template.md",
+        "to": ".template-spec/architecture/templates/system-overview-design-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/architecture/templates/tech-design-template.md",
+        "to": ".template-spec/architecture/templates/tech-design-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/design/README.md",
+        "to": ".template-spec/design/README.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "conflict",
+        "from": "docs/design/design-system-sync.yaml",
+        "to": ".template-spec/design/design-system-sync.yaml",
+        "reason": "缺少可信受管摘要或旧治理文件已被项目修改"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/design/design.md",
+        "to": ".template-spec/design/design.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/design/diagrams/README.md",
+        "to": ".template-spec/design/diagrams/README.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "retire-template-only",
+        "from": "docs/design/preview-dark.html",
+        "to": null,
+        "reason": "可信模板专用文件退出实例"
+      },
+      {
+        "action": "retire-template-only",
+        "from": "docs/design/preview.css",
+        "to": null,
+        "reason": "可信模板专用文件退出实例"
+      },
+      {
+        "action": "retire-template-only",
+        "from": "docs/design/preview.html",
+        "to": null,
+        "reason": "可信模板专用文件退出实例"
+      },
+      {
+        "action": "retire-template-only",
+        "from": "docs/design/preview.js",
+        "to": null,
+        "reason": "可信模板专用文件退出实例"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/design/schemas/visual-baseline.schema.json",
+        "to": ".template-spec/design/schemas/visual-baseline.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/design/templates/interaction-spec-template.md",
+        "to": ".template-spec/design/templates/interaction-spec-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/design/templates/product-overview-design-template.md",
+        "to": ".template-spec/design/templates/product-overview-design-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/design/templates/prototype-confirmation-template.md",
+        "to": ".template-spec/design/templates/prototype-confirmation-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/design/templates/prototype-evidence-template.yaml",
+        "to": ".template-spec/design/templates/prototype-evidence-template.yaml",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/design/templates/prototype-review-checklist.md",
+        "to": ".template-spec/design/templates/prototype-review-checklist.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/design/templates/state-matrix-template.md",
+        "to": ".template-spec/design/templates/state-matrix-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/design/templates/visual-baseline-template.yaml",
+        "to": ".template-spec/design/templates/visual-baseline-template.yaml",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "conflict",
+        "from": "docs/design/tokens/.design-md-projection.json",
+        "to": ".template-spec/design/tokens/.design-md-projection.json",
+        "reason": "缺少可信受管摘要或旧治理文件已被项目修改"
+      },
+      {
+        "action": "conflict",
+        "from": "docs/design/tokens/theme.json",
+        "to": ".template-spec/design/tokens/theme.json",
+        "reason": "缺少可信受管摘要或旧治理文件已被项目修改"
+      },
+      {
+        "action": "conflict",
+        "from": "docs/design/tokens/tokens.compact.json",
+        "to": ".template-spec/design/tokens/tokens.compact.json",
+        "reason": "缺少可信受管摘要或旧治理文件已被项目修改"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/design/tokens/tokens.dark.json",
+        "to": ".template-spec/design/tokens/tokens.dark.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "conflict",
+        "from": "docs/design/tokens/tokens.default.json",
+        "to": ".template-spec/design/tokens/tokens.default.json",
+        "reason": "缺少可信受管摘要或旧治理文件已被项目修改"
+      },
+      {
+        "action": "conflict",
+        "from": "docs/design/tokens/variables.css",
+        "to": ".template-spec/design/tokens/variables.css",
+        "reason": "缺少可信受管摘要或旧治理文件已被项目修改"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/design/tokens/variables.dark.css",
+        "to": ".template-spec/design/tokens/variables.dark.css",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "conflict",
+        "from": "docs/discovery/IDEATION.md",
+        "to": ".template-spec/discovery/IDEATION.md",
+        "reason": "缺少可信受管摘要或旧治理文件已被项目修改"
+      },
+      {
+        "action": "conflict",
+        "from": "docs/discovery/README.md",
+        "to": ".template-spec/discovery/README.md",
+        "reason": "缺少可信受管摘要或旧治理文件已被项目修改"
+      },
+      {
+        "action": "conflict",
+        "from": "docs/discovery/templates/competitive-analysis-template.md",
+        "to": ".template-spec/discovery/templates/competitive-analysis-template.md",
+        "reason": "缺少可信受管摘要或旧治理文件已被项目修改"
+      },
+      {
+        "action": "conflict",
+        "from": "docs/discovery/templates/competitive-matrix-template.md",
+        "to": ".template-spec/discovery/templates/competitive-matrix-template.md",
+        "reason": "缺少可信受管摘要或旧治理文件已被项目修改"
+      },
+      {
+        "action": "conflict",
+        "from": "docs/discovery/templates/discovery-template.md",
+        "to": ".template-spec/discovery/templates/discovery-template.md",
+        "reason": "缺少可信受管摘要或旧治理文件已被项目修改"
+      },
+      {
+        "action": "conflict",
+        "from": "docs/discovery/templates/market-analysis-template.md",
+        "to": ".template-spec/discovery/templates/market-analysis-template.md",
+        "reason": "缺少可信受管摘要或旧治理文件已被项目修改"
+      },
+      {
+        "action": "conflict",
+        "from": "docs/discovery/templates/user-pain-points-template.md",
+        "to": ".template-spec/discovery/templates/user-pain-points-template.md",
+        "reason": "缺少可信受管摘要或旧治理文件已被项目修改"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/engineering/backend-platforms.json",
+        "to": ".template-spec/engineering/backend-platforms.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/engineering/backend-platforms.md",
+        "to": ".template-spec/engineering/backend-platforms.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/plan/README.md",
+        "to": ".template-spec/plan/README.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/plan/entry-review.md",
+        "to": ".template-spec/plan/entry-review.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/plan/templates/competitive-analysis-template.md",
+        "to": ".template-spec/plan/templates/competitive-analysis-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/plan/templates/competitive-matrix-template.md",
+        "to": ".template-spec/plan/templates/competitive-matrix-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/plan/templates/market-analysis-template.md",
+        "to": ".template-spec/plan/templates/market-analysis-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/plan/templates/plan-template.md",
+        "to": ".template-spec/plan/templates/plan-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/plan/templates/user-pain-points-template.md",
+        "to": ".template-spec/plan/templates/user-pain-points-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "retire-template-only",
+        "from": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+        "to": null,
+        "reason": "可信模板专用文件退出实例"
+      },
+      {
+        "action": "conflict",
+        "from": "docs/process/PDCA-SCRUM.md",
+        "to": ".template-spec/process/PDCA-SCRUM.md",
+        "reason": "目标阶段未安装对应治理资产，不能静默丢弃"
+      },
+      {
+        "action": "conflict",
+        "from": "docs/process/checkpoints/stage-6-slice-contract-approved-checkpoint.yaml",
+        "to": ".template-spec/process/checkpoints/stage-6-slice-contract-approved-checkpoint.yaml",
+        "reason": "缺少可信受管摘要或旧治理文件已被项目修改"
+      },
+      {
+        "action": "conflict",
+        "from": "docs/process/checkpoints/stage-8-delivery-accepted-checkpoint.yaml",
+        "to": ".template-spec/process/checkpoints/stage-8-delivery-accepted-checkpoint.yaml",
+        "reason": "缺少可信受管摘要或旧治理文件已被项目修改"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/contract-reading.md",
+        "to": ".template-spec/process/contract-reading.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/delivery-preflight.md",
+        "to": ".template-spec/process/delivery-preflight.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/document-writing.md",
+        "to": ".template-spec/process/document-writing.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/existing-backend-architecture.md",
+        "to": ".template-spec/process/existing-backend-architecture.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/existing-ui-baseline.md",
+        "to": ".template-spec/process/existing-ui-baseline.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/frontend-backend-delivery.md",
+        "to": ".template-spec/process/frontend-backend-delivery.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "retire-template-only",
+        "from": "docs/process/github-workflows.md",
+        "to": null,
+        "reason": "可信模板专用文件退出实例"
+      },
+      {
+        "action": "conflict",
+        "from": "docs/process/harness-executive-blueprint.md",
+        "to": ".template-spec/process/harness-executive-blueprint.md",
+        "reason": "目标阶段未安装对应治理资产，不能静默丢弃"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/harness-process-tailoring.md",
+        "to": ".template-spec/process/harness-process-tailoring.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/implementation-repo-integration.md",
+        "to": ".template-spec/process/implementation-repo-integration.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/lifecycle-artifact-map.md",
+        "to": ".template-spec/process/lifecycle-artifact-map.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/lifecycle-registry-baseline.json",
+        "to": ".template-spec/process/lifecycle-registry-baseline.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/lifecycle-registry.yaml",
+        "to": ".template-spec/process/lifecycle-registry.yaml",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "conflict",
+        "from": "docs/process/manifests/implementation-scope.json",
+        "to": ".template-spec/process/manifests/implementation-scope.json",
+        "reason": "缺少可信受管摘要或旧治理文件已被项目修改"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/plan-migration.md",
+        "to": ".template-spec/process/plan-migration.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/schemas/api-contract-decision-v2.schema.json",
+        "to": ".template-spec/process/schemas/api-contract-decision-v2.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/schemas/api-contract-decision.schema.json",
+        "to": ".template-spec/process/schemas/api-contract-decision.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/schemas/backend-architecture-identity.schema.json",
+        "to": ".template-spec/process/schemas/backend-architecture-identity.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/schemas/backend-delivery-verification.schema.json",
+        "to": ".template-spec/process/schemas/backend-delivery-verification.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/schemas/backend-delivery.schema.json",
+        "to": ".template-spec/process/schemas/backend-delivery.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/schemas/context-reconciliation.schema.json",
+        "to": ".template-spec/process/schemas/context-reconciliation.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/schemas/data-architecture-decision.schema.json",
+        "to": ".template-spec/process/schemas/data-architecture-decision.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/schemas/delivery-preflight-input.schema.json",
+        "to": ".template-spec/process/schemas/delivery-preflight-input.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/schemas/delivery-preflight-result.schema.json",
+        "to": ".template-spec/process/schemas/delivery-preflight-result.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/schemas/digital-human-task-package.schema.json",
+        "to": ".template-spec/process/schemas/digital-human-task-package.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/schemas/existing-ui-baseline.schema.json",
+        "to": ".template-spec/process/schemas/existing-ui-baseline.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/schemas/frontend-delivery-acceptance-v1.schema.json",
+        "to": ".template-spec/process/schemas/frontend-delivery-acceptance-v1.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/schemas/frontend-delivery-acceptance-v3.schema.json",
+        "to": ".template-spec/process/schemas/frontend-delivery-acceptance-v3.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/schemas/frontend-delivery-acceptance.schema.json",
+        "to": ".template-spec/process/schemas/frontend-delivery-acceptance.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/schemas/frontend-implementation-evidence.schema.json",
+        "to": ".template-spec/process/schemas/frontend-implementation-evidence.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/schemas/frontend-strategic-preflight-v2.schema.json",
+        "to": ".template-spec/process/schemas/frontend-strategic-preflight-v2.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/schemas/frontend-strategic-preflight.schema.json",
+        "to": ".template-spec/process/schemas/frontend-strategic-preflight.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/schemas/implementation-repository-preparation-result.schema.json",
+        "to": ".template-spec/process/schemas/implementation-repository-preparation-result.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/schemas/lifecycle-checkpoint.schema.json",
+        "to": ".template-spec/process/schemas/lifecycle-checkpoint.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/schemas/lifecycle-registry.schema.json",
+        "to": ".template-spec/process/schemas/lifecycle-registry.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/schemas/openapi-draft-validation-record.schema.json",
+        "to": ".template-spec/process/schemas/openapi-draft-validation-record.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/schemas/project-scaffold-contract.schema.json",
+        "to": ".template-spec/process/schemas/project-scaffold-contract.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/schemas/review-bundle.schema.json",
+        "to": ".template-spec/process/schemas/review-bundle.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/schemas/scaffold-architecture-decisions.schema.json",
+        "to": ".template-spec/process/schemas/scaffold-architecture-decisions.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/schemas/slice-implementation-contract-v3.schema.json",
+        "to": ".template-spec/process/schemas/slice-implementation-contract-v3.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/schemas/stage-tracking.schema.json",
+        "to": ".template-spec/process/schemas/stage-tracking.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/schemas/strategic-consumer-feedback.schema.json",
+        "to": ".template-spec/process/schemas/strategic-consumer-feedback.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/schemas/strategic-design-handoff-v3.schema.json",
+        "to": ".template-spec/process/schemas/strategic-design-handoff-v3.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/schemas/strategic-design-handoff-v4.schema.json",
+        "to": ".template-spec/process/schemas/strategic-design-handoff-v4.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/schemas/strategic-design-handoff-v5.schema.json",
+        "to": ".template-spec/process/schemas/strategic-design-handoff-v5.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/schemas/strategic-design-handoff.schema.json",
+        "to": ".template-spec/process/schemas/strategic-design-handoff.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/schemas/strategic-feedback-adjudication.schema.json",
+        "to": ".template-spec/process/schemas/strategic-feedback-adjudication.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/schemas/strategic-handoff-delivery-verification.schema.json",
+        "to": ".template-spec/process/schemas/strategic-handoff-delivery-verification.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/schemas/strategic-handoff-delivery.schema.json",
+        "to": ".template-spec/process/schemas/strategic-handoff-delivery.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/schemas/strategic-handoff-domain-strategy-v3.schema.json",
+        "to": ".template-spec/process/schemas/strategic-handoff-domain-strategy-v3.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/schemas/strategic-handoff-domain-strategy.schema.json",
+        "to": ".template-spec/process/schemas/strategic-handoff-domain-strategy.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/schemas/strategic-handoff-export-v2.schema.json",
+        "to": ".template-spec/process/schemas/strategic-handoff-export-v2.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/schemas/strategic-handoff-export.schema.json",
+        "to": ".template-spec/process/schemas/strategic-handoff-export.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/schemas/strategic-handoff-import-receipt-v3.schema.json",
+        "to": ".template-spec/process/schemas/strategic-handoff-import-receipt-v3.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/schemas/strategic-handoff-import-receipt.schema.json",
+        "to": ".template-spec/process/schemas/strategic-handoff-import-receipt.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/schemas/strategic-handoff-package.schema.json",
+        "to": ".template-spec/process/schemas/strategic-handoff-package.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/schemas/strategic-handoff-stage-decision-package-v3.schema.json",
+        "to": ".template-spec/process/schemas/strategic-handoff-stage-decision-package-v3.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/schemas/strategic-handoff-stage-decision-package.schema.json",
+        "to": ".template-spec/process/schemas/strategic-handoff-stage-decision-package.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/schemas/subagent-task-package.schema.json",
+        "to": ".template-spec/process/schemas/subagent-task-package.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/schemas/user-decision.schema.json",
+        "to": ".template-spec/process/schemas/user-decision.schema.json",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/stage-tracking.md",
+        "to": ".template-spec/process/stage-tracking.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/strategic-handoff-package.md",
+        "to": ".template-spec/process/strategic-handoff-package.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/subagent-collaboration.md",
+        "to": ".template-spec/process/subagent-collaboration.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/templates/context-reconciliation-template.yaml",
+        "to": ".template-spec/process/templates/context-reconciliation-template.yaml",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/templates/frontend-implementation-plan-template.yaml",
+        "to": ".template-spec/process/templates/frontend-implementation-plan-template.yaml",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/templates/frontend-implementation-verification-template.yaml",
+        "to": ".template-spec/process/templates/frontend-implementation-verification-template.yaml",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/templates/lifecycle-checkpoint-template.yaml",
+        "to": ".template-spec/process/templates/lifecycle-checkpoint-template.yaml",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/templates/scaffold-architecture-decisions-template.yaml",
+        "to": ".template-spec/process/templates/scaffold-architecture-decisions-template.yaml",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/templates/stage-checkpoint-template.md",
+        "to": ".template-spec/process/templates/stage-checkpoint-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/process/templates/user-decision-template.yaml",
+        "to": ".template-spec/process/templates/user-decision-template.yaml",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/templates/adr-template.md",
+        "to": ".template-spec/templates/adr-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "conflict",
+        "from": "docs/templates/agent-brief-template.md",
+        "to": ".template-spec/templates/agent-brief-template.md",
+        "reason": "目标阶段未安装对应治理资产，不能静默丢弃"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/templates/approval-record-template.yaml",
+        "to": ".template-spec/templates/approval-record-template.yaml",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "conflict",
+        "from": "docs/templates/architecture-proposal-template.md",
+        "to": ".template-spec/templates/architecture-proposal-template.md",
+        "reason": "目标阶段未安装对应治理资产，不能静默丢弃"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/templates/build-architecture-checklist-template.md",
+        "to": ".template-spec/templates/build-architecture-checklist-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/templates/cross-repo-slice-template.md",
+        "to": ".template-spec/templates/cross-repo-slice-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/templates/digital-human-runtime-profile-template.md",
+        "to": ".template-spec/templates/digital-human-runtime-profile-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/templates/examples/lifecycle-writing-examples.md",
+        "to": ".template-spec/templates/examples/lifecycle-writing-examples.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/templates/grok-bot-profile-template.md",
+        "to": ".template-spec/templates/grok-bot-profile-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "conflict",
+        "from": "docs/templates/implementation-plan-template.md",
+        "to": ".template-spec/templates/implementation-plan-template.md",
+        "reason": "目标阶段未安装对应治理资产，不能静默丢弃"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/templates/implementation-repo-registry-template.md",
+        "to": ".template-spec/templates/implementation-repo-registry-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "conflict",
+        "from": "docs/templates/implementation-routing-template.md",
+        "to": ".template-spec/templates/implementation-routing-template.md",
+        "reason": "目标阶段未安装对应治理资产，不能静默丢弃"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/templates/local-parent-ticket-template.md",
+        "to": ".template-spec/templates/local-parent-ticket-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/templates/openapi-spec-template.yaml",
+        "to": ".template-spec/templates/openapi-spec-template.yaml",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/templates/release-note-template.md",
+        "to": ".template-spec/templates/release-note-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "conflict",
+        "from": "docs/templates/requirement-freeze-template.md",
+        "to": ".template-spec/templates/requirement-freeze-template.md",
+        "reason": "目标阶段未安装对应治理资产，不能静默丢弃"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/templates/retro-report-template.md",
+        "to": ".template-spec/templates/retro-report-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/templates/review-bundle-template.yaml",
+        "to": ".template-spec/templates/review-bundle-template.yaml",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/templates/review-report-template.md",
+        "to": ".template-spec/templates/review-report-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "conflict",
+        "from": "docs/templates/risk-register-template.md",
+        "to": ".template-spec/templates/risk-register-template.md",
+        "reason": "目标阶段未安装对应治理资产，不能静默丢弃"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/templates/spec-delta-template.md",
+        "to": ".template-spec/templates/spec-delta-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/templates/spec-template.md",
+        "to": ".template-spec/templates/spec-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/templates/subagent-task-package-template.md",
+        "to": ".template-spec/templates/subagent-task-package-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "conflict",
+        "from": "docs/templates/user-story-template.md",
+        "to": ".template-spec/templates/user-story-template.md",
+        "reason": "目标阶段未安装对应治理资产，不能静默丢弃"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/templates/verification-record-template.md",
+        "to": ".template-spec/templates/verification-record-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/templates/vertical-slice-ticket-template.md",
+        "to": ".template-spec/templates/vertical-slice-ticket-template.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "conflict",
+        "from": "docs/user-guide/CLI使用说明.md",
+        "to": ".template-spec/user-guide/CLI使用说明.md",
+        "reason": "缺少可信受管摘要或旧治理文件已被项目修改"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/user-guide/yss-ui-mcp.md",
+        "to": ".template-spec/user-guide/yss-ui-mcp.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "conflict",
+        "from": "docs/user-guide/产品生命周期工作流.md",
+        "to": ".template-spec/user-guide/产品生命周期工作流.md",
+        "reason": "缺少可信受管摘要或旧治理文件已被项目修改"
+      },
+      {
+        "action": "conflict",
+        "from": "docs/user-guide/后端子项目用户手册.md",
+        "to": ".template-spec/user-guide/后端子项目用户手册.md",
+        "reason": "缺少可信受管摘要或旧治理文件已被项目修改"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/user-guide/技术设计用户指南.md",
+        "to": ".template-spec/user-guide/技术设计用户指南.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/user-guide/用户手册.md",
+        "to": ".template-spec/user-guide/用户手册.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/user-guide/用户手册索引.md",
+        "to": ".template-spec/user-guide/用户手册索引.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/user-guide/设备借用贯穿案例.md",
+        "to": ".template-spec/user-guide/设备借用贯穿案例.md",
+        "reason": "可信旧治理文件由新模板取代"
+      },
+      {
+        "action": "replace-with-current-template",
+        "from": "docs/user-guide/阶段接入与产物复用使用手册.md",
+        "to": ".template-spec/user-guide/阶段接入与产物复用使用手册.md",
+        "reason": "可信旧治理文件由新模板取代"
+      }
+    ],
+    "conflicts": [
+      {
+        "from": "docs/agents/skills-maintenance.md",
+        "to": ".template-spec/agents/skills-maintenance.md",
+        "reason": "缺少可信受管摘要或旧治理文件已被项目修改"
+      },
+      {
+        "from": "docs/agents/yss-plugin-dependency-contract.md",
+        "to": ".template-spec/agents/yss-plugin-dependency-contract.md",
+        "reason": "目标阶段未安装对应治理资产，不能静默丢弃"
+      },
+      {
+        "from": "docs/design/design-system-sync.yaml",
+        "to": ".template-spec/design/design-system-sync.yaml",
+        "reason": "缺少可信受管摘要或旧治理文件已被项目修改"
+      },
+      {
+        "from": "docs/design/tokens/.design-md-projection.json",
+        "to": ".template-spec/design/tokens/.design-md-projection.json",
+        "reason": "缺少可信受管摘要或旧治理文件已被项目修改"
+      },
+      {
+        "from": "docs/design/tokens/theme.json",
+        "to": ".template-spec/design/tokens/theme.json",
+        "reason": "缺少可信受管摘要或旧治理文件已被项目修改"
+      },
+      {
+        "from": "docs/design/tokens/tokens.compact.json",
+        "to": ".template-spec/design/tokens/tokens.compact.json",
+        "reason": "缺少可信受管摘要或旧治理文件已被项目修改"
+      },
+      {
+        "from": "docs/design/tokens/tokens.default.json",
+        "to": ".template-spec/design/tokens/tokens.default.json",
+        "reason": "缺少可信受管摘要或旧治理文件已被项目修改"
+      },
+      {
+        "from": "docs/design/tokens/variables.css",
+        "to": ".template-spec/design/tokens/variables.css",
+        "reason": "缺少可信受管摘要或旧治理文件已被项目修改"
+      },
+      {
+        "from": "docs/discovery/IDEATION.md",
+        "to": ".template-spec/discovery/IDEATION.md",
+        "reason": "缺少可信受管摘要或旧治理文件已被项目修改"
+      },
+      {
+        "from": "docs/discovery/README.md",
+        "to": ".template-spec/discovery/README.md",
+        "reason": "缺少可信受管摘要或旧治理文件已被项目修改"
+      },
+      {
+        "from": "docs/discovery/templates/competitive-analysis-template.md",
+        "to": ".template-spec/discovery/templates/competitive-analysis-template.md",
+        "reason": "缺少可信受管摘要或旧治理文件已被项目修改"
+      },
+      {
+        "from": "docs/discovery/templates/competitive-matrix-template.md",
+        "to": ".template-spec/discovery/templates/competitive-matrix-template.md",
+        "reason": "缺少可信受管摘要或旧治理文件已被项目修改"
+      },
+      {
+        "from": "docs/discovery/templates/discovery-template.md",
+        "to": ".template-spec/discovery/templates/discovery-template.md",
+        "reason": "缺少可信受管摘要或旧治理文件已被项目修改"
+      },
+      {
+        "from": "docs/discovery/templates/market-analysis-template.md",
+        "to": ".template-spec/discovery/templates/market-analysis-template.md",
+        "reason": "缺少可信受管摘要或旧治理文件已被项目修改"
+      },
+      {
+        "from": "docs/discovery/templates/user-pain-points-template.md",
+        "to": ".template-spec/discovery/templates/user-pain-points-template.md",
+        "reason": "缺少可信受管摘要或旧治理文件已被项目修改"
+      },
+      {
+        "from": "docs/process/PDCA-SCRUM.md",
+        "to": ".template-spec/process/PDCA-SCRUM.md",
+        "reason": "目标阶段未安装对应治理资产，不能静默丢弃"
+      },
+      {
+        "from": "docs/process/checkpoints/stage-6-slice-contract-approved-checkpoint.yaml",
+        "to": ".template-spec/process/checkpoints/stage-6-slice-contract-approved-checkpoint.yaml",
+        "reason": "缺少可信受管摘要或旧治理文件已被项目修改"
+      },
+      {
+        "from": "docs/process/checkpoints/stage-8-delivery-accepted-checkpoint.yaml",
+        "to": ".template-spec/process/checkpoints/stage-8-delivery-accepted-checkpoint.yaml",
+        "reason": "缺少可信受管摘要或旧治理文件已被项目修改"
+      },
+      {
+        "from": "docs/process/harness-executive-blueprint.md",
+        "to": ".template-spec/process/harness-executive-blueprint.md",
+        "reason": "目标阶段未安装对应治理资产，不能静默丢弃"
+      },
+      {
+        "from": "docs/process/manifests/implementation-scope.json",
+        "to": ".template-spec/process/manifests/implementation-scope.json",
+        "reason": "缺少可信受管摘要或旧治理文件已被项目修改"
+      },
+      {
+        "from": "docs/templates/agent-brief-template.md",
+        "to": ".template-spec/templates/agent-brief-template.md",
+        "reason": "目标阶段未安装对应治理资产，不能静默丢弃"
+      },
+      {
+        "from": "docs/templates/architecture-proposal-template.md",
+        "to": ".template-spec/templates/architecture-proposal-template.md",
+        "reason": "目标阶段未安装对应治理资产，不能静默丢弃"
+      },
+      {
+        "from": "docs/templates/implementation-plan-template.md",
+        "to": ".template-spec/templates/implementation-plan-template.md",
+        "reason": "目标阶段未安装对应治理资产，不能静默丢弃"
+      },
+      {
+        "from": "docs/templates/implementation-routing-template.md",
+        "to": ".template-spec/templates/implementation-routing-template.md",
+        "reason": "目标阶段未安装对应治理资产，不能静默丢弃"
+      },
+      {
+        "from": "docs/templates/requirement-freeze-template.md",
+        "to": ".template-spec/templates/requirement-freeze-template.md",
+        "reason": "目标阶段未安装对应治理资产，不能静默丢弃"
+      },
+      {
+        "from": "docs/templates/risk-register-template.md",
+        "to": ".template-spec/templates/risk-register-template.md",
+        "reason": "目标阶段未安装对应治理资产，不能静默丢弃"
+      },
+      {
+        "from": "docs/templates/user-story-template.md",
+        "to": ".template-spec/templates/user-story-template.md",
+        "reason": "目标阶段未安装对应治理资产，不能静默丢弃"
+      },
+      {
+        "from": "docs/user-guide/CLI使用说明.md",
+        "to": ".template-spec/user-guide/CLI使用说明.md",
+        "reason": "缺少可信受管摘要或旧治理文件已被项目修改"
+      },
+      {
+        "from": "docs/user-guide/产品生命周期工作流.md",
+        "to": ".template-spec/user-guide/产品生命周期工作流.md",
+        "reason": "缺少可信受管摘要或旧治理文件已被项目修改"
+      },
+      {
+        "from": "docs/user-guide/后端子项目用户手册.md",
+        "to": ".template-spec/user-guide/后端子项目用户手册.md",
+        "reason": "缺少可信受管摘要或旧治理文件已被项目修改"
+      }
+    ],
+    "unsafe": []
+  },
+  "prunable": [
+    ".agents/skills/grill-me/SKILL.md",
+    ".agents/skills/grill-me/agents/openai.yaml",
+    ".agents/skills/yss-distributed-id/assets/AutoIdInterceptor.java",
+    ".agents/skills/yss-distributed-id/assets/EnableDistributedId.java",
+    ".agents/skills/yss-distributed-id/assets/LeafConf.java",
+    ".codex/skills/grill-me/SKILL.md",
+    ".codex/skills/grill-me/agents/openai.yaml",
+    ".codex/skills/yss-distributed-id/assets/AutoIdInterceptor.java",
+    ".codex/skills/yss-distributed-id/assets/EnableDistributedId.java",
+    ".codex/skills/yss-distributed-id/assets/LeafConf.java",
+    ".cursor/skills/grill-me/SKILL.md",
+    ".cursor/skills/grill-me/agents/openai.yaml",
+    ".cursor/skills/yss-distributed-id/assets/AutoIdInterceptor.java",
+    ".cursor/skills/yss-distributed-id/assets/EnableDistributedId.java",
+    ".cursor/skills/yss-distributed-id/assets/LeafConf.java",
+    ".pi/skills/grill-me/SKILL.md",
+    ".pi/skills/grill-me/agents/openai.yaml",
+    ".pi/skills/yss-distributed-id/assets/AutoIdInterceptor.java",
+    ".pi/skills/yss-distributed-id/assets/EnableDistributedId.java",
+    ".pi/skills/yss-distributed-id/assets/LeafConf.java",
+    "docs/agents/yss-plugin-dependency-contract.md",
+    "docs/api/.gitkeep",
+    "docs/api/specs/.gitkeep",
+    "docs/architecture/.gitkeep",
+    "docs/design/facts/antdv-next/1.5.2/cli-help.txt",
+    "docs/design/facts/antdv-next/1.5.2/component-list.json",
+    "docs/design/facts/antdv-next/1.5.2/components/Alert/demo-basic.json",
+    "docs/design/facts/antdv-next/1.5.2/components/Alert/info.json",
+    "docs/design/facts/antdv-next/1.5.2/components/Alert/semantic.json",
+    "docs/design/facts/antdv-next/1.5.2/components/Alert/token.json",
+    "docs/design/facts/antdv-next/1.5.2/components/Button/demo-basic.json",
+    "docs/design/facts/antdv-next/1.5.2/components/Button/info.json",
+    "docs/design/facts/antdv-next/1.5.2/components/Button/semantic.json",
+    "docs/design/facts/antdv-next/1.5.2/components/Button/token.json",
+    "docs/design/facts/antdv-next/1.5.2/components/Input/demo-basic.json",
+    "docs/design/facts/antdv-next/1.5.2/components/Input/info.json",
+    "docs/design/facts/antdv-next/1.5.2/components/Input/semantic.json",
+    "docs/design/facts/antdv-next/1.5.2/components/Input/token.json",
+    "docs/design/facts/antdv-next/1.5.2/components/Modal/demo-basic.json",
+    "docs/design/facts/antdv-next/1.5.2/components/Modal/info.json",
+    "docs/design/facts/antdv-next/1.5.2/components/Modal/semantic.json",
+    "docs/design/facts/antdv-next/1.5.2/components/Modal/token.json",
+    "docs/design/facts/antdv-next/1.5.2/components/Select/demo-basic.json",
+    "docs/design/facts/antdv-next/1.5.2/components/Select/info.json",
+    "docs/design/facts/antdv-next/1.5.2/components/Select/semantic.json",
+    "docs/design/facts/antdv-next/1.5.2/components/Select/token.json",
+    "docs/design/facts/antdv-next/1.5.2/components/Table/demo-basic.json",
+    "docs/design/facts/antdv-next/1.5.2/components/Table/info.json",
+    "docs/design/facts/antdv-next/1.5.2/components/Table/semantic.json",
+    "docs/design/facts/antdv-next/1.5.2/components/Table/token.json",
+    "docs/design/facts/antdv-next/1.5.2/components/Tag/demo-basic.json",
+    "docs/design/facts/antdv-next/1.5.2/components/Tag/info.json",
+    "docs/design/facts/antdv-next/1.5.2/components/Tag/semantic.json",
+    "docs/design/facts/antdv-next/1.5.2/components/Tag/token.json",
+    "docs/design/facts/antdv-next/1.5.2/design-md.json",
+    "docs/design/facts/antdv-next/1.5.2/manifest.json",
+    "docs/design/facts/antdv-next/1.5.2/resolution-probe.json",
+    "docs/design/prototypes/.gitkeep",
+    "docs/implementation/.gitkeep",
+    "docs/plan/IDEATION.md",
+    "docs/process/PDCA-SCRUM.md",
+    "docs/process/harness-executive-blueprint.md",
+    "docs/releases/.gitkeep",
+    "docs/requirements/README.md",
+    "docs/requirements/tickets/.gitkeep",
+    "docs/templates/agent-brief-template.md",
+    "docs/templates/architecture-proposal-template.md",
+    "docs/templates/implementation-plan-template.md",
+    "docs/templates/implementation-routing-template.md",
+    "docs/templates/requirement-freeze-template.md",
+    "docs/templates/risk-register-template.md",
+    "docs/templates/user-story-template.md",
+    "docs/testing/README.md",
+    "yss-public-skills.json"
+  ],
+  "pruned": [],
+  "retainedRemoved": [
+    {
+      "path": "docs/design/design-system-sync.yaml",
+      "reason": "文件已被项目修改"
+    },
+    {
+      "path": "docs/design/tokens/.design-md-projection.json",
+      "reason": "文件已被项目修改"
+    },
+    {
+      "path": "docs/design/tokens/theme.json",
+      "reason": "文件已被项目修改"
+    },
+    {
+      "path": "docs/design/tokens/tokens.compact.json",
+      "reason": "文件已被项目修改"
+    },
+    {
+      "path": "docs/design/tokens/tokens.default.json",
+      "reason": "文件已被项目修改"
+    },
+    {
+      "path": "docs/design/tokens/variables.css",
+      "reason": "文件已被项目修改"
+    }
+  ]
+}

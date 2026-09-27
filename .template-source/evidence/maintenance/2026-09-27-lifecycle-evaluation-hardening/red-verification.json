@@ -1,0 +1,30 @@
+[
+  {
+    "name": "runner-red",
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      ".template-source/scripts/tests",
+      "-p",
+      "test_skills_agent_eval.py"
+    ],
+    "started_at": "2026-09-27T02:00:22.272273+00:00",
+    "seconds": 0.31,
+    "exit_code": 1,
+    "log": "runner-red.log"
+  },
+  {
+    "name": "status-red",
+    "command": [
+      "node",
+      "scripts/verify-lifecycle-operator-scenarios"
+    ],
+    "started_at": "2026-09-27T02:00:22.579076+00:00",
+    "seconds": 0.11,
+    "exit_code": 1,
+    "log": "status-red.log"
+  }
+]

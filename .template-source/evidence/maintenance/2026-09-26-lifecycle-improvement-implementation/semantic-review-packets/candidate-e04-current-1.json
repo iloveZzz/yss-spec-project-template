@@ -1,0 +1,176 @@
+{
+  "result": {
+    "scenario": "e04-current",
+    "variant": "candidate",
+    "repeat": 1,
+    "elapsed_seconds": 230.53,
+    "exit_code": 0,
+    "timeout": false,
+    "assertion_failures": [],
+    "runtime_errors": [],
+    "tool_calls": 18,
+    "usage": [
+      {
+        "input_tokens": 462753,
+        "cached_input_tokens": 408960,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 5716,
+        "reasoning_output_tokens": 616
+      }
+    ],
+    "automatic_result": "passed",
+    "semantic_review": "pending",
+    "trace": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-agent-evaluations-v2-2qx3mbr2/candidate/e04-current-1/trace.jsonl",
+    "steps": [
+      {
+        "step": "main",
+        "started_at": "2026-09-26T16:03:09Z",
+        "elapsed_seconds": 230.3,
+        "exit_code": 0,
+        "timeout": false,
+        "assertion_failures": [],
+        "runtime_errors": [],
+        "tool_calls": 18,
+        "usage": [
+          {
+            "input_tokens": 462753,
+            "cached_input_tokens": 408960,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 5716,
+            "reasoning_output_tokens": 616
+          }
+        ],
+        "automatic_result": "passed",
+        "semantic_review": "pending",
+        "trace": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-agent-evaluations-v2-2qx3mbr2/candidate/e04-current-1/trace.jsonl"
+      }
+    ],
+    "unattempted_steps": []
+  },
+  "original_files_changed": [],
+  "original_files_missing": [],
+  "unsafe_paths": [],
+  "new_files": [
+    "docs/.scratch/demo/entry-work-record.md",
+    "docs/.scratch/demo/spec.md",
+    "entry-result.json"
+  ],
+  "commands": [
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"pwd && cat yss-project.yaml && rg --files -g 'state.json' -g '*plan*' -g '*review*' -g 'AGENTS.md' -g '*user-decisions*' -g '*entry*' -g 'CONTEXT.md' -g 'SKILL.md' .template-spec .agents/skills/yss-product-lifecycle docs . 2>/dev/null\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat AGENTS.md CONTEXT.md state.json plan.md review.json'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .agents/skills/yss-product-lifecycle/SKILL.md .agents/skills/yss-product-lifecycle/references/user-decisions.md .template-spec/plan/entry-review.md .template-spec/process/harness-process-tailoring.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat scripts/verify-plan-spec-entry scripts/plan-spec-entry && rg --files docs .template-spec/process .template-spec/plan .agents/skills/yss-product-lifecycle/references | sort'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat state.json plan.md review.json'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .agents/skills/yss-product-lifecycle/SKILL.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .agents/skills/yss-product-lifecycle/references/user-decisions.md .template-spec/plan/entry-review.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"cat approval/decision.json reconciliation.json && rg -n 'user_decision_policy|gate.plan-approved|spec_entry:|stage.spec|document_writing' .template-spec/agents/digital-human-roles.yaml .template-spec/process/lifecycle-registry.yaml .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml && cat .template-spec/plan/README.md .template-spec/process/plan-migration.md\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'node scripts/verify-plan-spec-entry state.json'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"sed -n '1,260p' scripts/lib/plan-spec-entry.mjs && cat .template-spec/spec/README.md\"",
+      "exit_code": 1
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"cat CONTEXT.md && cat approval/requester.json approval/presentation.json approval/reply-0.json && rg --files -g '*spec*template*' -g '*stage*' -g '*checkpoint*' -g '*ticket*' -g 'AGENTS.md' docs .template-spec | sort\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"cat .agents/skills/i-have-adhd/SKILL.md .template-spec/process/document-writing.md .template-spec/process/stage-tracking.md && sed -n '1,90p' .template-spec/process/lifecycle-registry.yaml && sed -n '235,265p' .template-spec/process/lifecycle-registry.yaml && sed -n '266,318p' .template-spec/agents/digital-human-roles.yaml && sed -n '1,38p' .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"cat .template-spec/templates/spec-template.md .template-spec/agents/issue-tracker.md && sed -n '1,23p' .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml && sed -n '266,310p' .template-spec/agents/digital-human-roles.yaml && sed -n '305,332p' .template-spec/process/lifecycle-registry.yaml && rg --files --hidden docs | head -60\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"cat docs/.scratch/demo/parent-ticket.md && cat .template-spec/templates/local-parent-ticket-template.md && rg -n 'spec-synthesis|spec-synthesis:|spec:' .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"python3 - <<'PY'\nfrom pathlib import Path\nimport hashlib,json\nroot=Path.cwd()\nrefs=['yss-project.yaml','state.json','plan.md','review.json','CONTEXT.md','reconciliation.json','.template-spec/process/lifecycle-registry.yaml','.template-spec/agents/issue-tracker.md','docs/.scratch/demo/parent-ticket.md']\nrefs += [p.as_posix() for p in Path('approval').rglob('*') if p.is_file()]\nprint(json.dumps({p:hashlib.sha256(Path(p).read_bytes()).hexdigest() for p in refs},ensure_ascii=False,indent=2))\nprint('spec_exists:',Path('docs/.scratch/demo/spec.md').exists())\nprint('result_exists:',Path('entry-result.json').exists())\nPY\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"sed -n '345,384p' .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"python3 - <<'PY'\nfrom pathlib import Path\nimport hashlib,json,re\nexpected={\n'yss-project.yaml':'c3c62086b8790b9bd12ed28a1ca18194bbc40d3afc408ac217d21535b20b60aa',\n'state.json':'5786103d6a1592e804aa45d80d8f585ab469a572347fd489de019cd2983150d5',\n'plan.md':'43dc051942f0399a5cd55f6f9955a481f08c81be53fa81f8366adf2dbbddcca5',\n'review.json':'0ec396441d0db7decaf4119ae1c314eef2e5845b97fe7815f4f4aba9eb756dc7',\n'CONTEXT.md':'887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559',\n'reconciliation.json':'2a5a006460ce761b0df2b855f8fe5626cae0f11495358c1277d246dbd1d96114',\n'.template-spec/process/lifecycle-registry.yaml':'e9fbae32a659edff9444301ada1c1fdfc36ae0e8c45c8148e143aa04d761f83e',\n'.template-spec/agents/issue-tracker.md':'3919f55ba00b3f5dcd4c76d4a3f387df187d8afb3197947e57df942d88a3414b',\n'docs/.scratch/demo/parent-ticket.md':'0a978ddc8d736960dbd4fe220cdbe168bcf862723cb619f52788db882aec5c3b',\n'approval/presentation.json':'3646c3a70b6ea6c76852d7d3aee83eca26a75efa10fbc6d27cd2d4aee69e597c',\n'approval/reply-0.json':'a9b7669370344dda15f02912d06313468a1b8ae21ea7cd0a18679ac91f15aa7b',\n'approval/decision.json':'c935d257ee7b6e1d2fc55d50bd1a76add8b5cd6be108b0327729c4001d02749d',\n'approval/requester.json':'386f6a407c9728cae3727a1dc03aa3f79e8b0a7300788cfb7c4747f4ce713055'}\nfor ref,digest in expected.items():\n    assert hashlib.sha256(Path(ref).read_bytes()).hexdigest()==digest,ref\nresult=json.loads(Path('entry-result.json').read_text())\nassert set(result)=={'result','verification_command','exit_code','reason'}\nassert result['result']=='allowed' and result['exit_code']==0\nassert result['verification_command']=='node scripts/verify-plan-spec-entry state.json'\nspec=Path('docs/.scratch/demo/spec.md').read_text()\nassert '\\\\nstatus: ready-for-human\\\\n' in spec and 'ready-for-agent' not in spec\nfor scenario in ['AC-001：查询成功','AC-002：任务未找到','AC-003：无权访问']:\n    assert scenario in spec,scenario\nfor ref in ['docs/.scratch/demo/spec.md','docs/.scratch/demo/entry-work-record.md']:\n    document=Path(ref)\n    for link in re.findall(r'\\\\]\\\\(([\"'^)]+)'\"\\\\)',document.read_text()):\n        assert (document.parent/link).is_file(),link\nprint('产物检查通过：结果字段、草稿状态、三项验收及本地链接有效；13 个上游 / 批准 / tracker 文件摘要未变。')\nPY\"",
+      "exit_code": 0
+    }
+  ],
+  "command_errors": [
+    {
+      "command": "/bin/zsh -lc \"sed -n '1,260p' scripts/lib/plan-spec-entry.mjs && cat .template-spec/spec/README.md\"",
+      "exit_code": 1,
+      "output": "import path from 'node:path';\nimport { verifyContextReconciliation } from './context-reconciliation.mjs';\nimport { decisionIO, decisionDigest, assertUserDecisionRequirement } from './user-decision.mjs';\nimport { validateApprovalRecord, selectApprovalRecord } from './approval-record.mjs';\n\nconst fail = message => { throw new TypeError(`plan-spec-entry-blocked: ${message}`); };\nconst text = value => typeof value === 'string' && value.trim().length > 0;\n\nexport function planEntryPolicy(options = {}) {\n  const registry = decisionIO(options).document('.template-spec/process/lifecycle-registry.yaml');\n  const policy = registry.stages.find(stage => stage.id === 'stage.plan')?.spec_entry;\n  if (!policy?.required_checks?.length || !policy?.gate_impacts) fail('缺少 Plan 入口策略');\n  const gateIds = registry.gates.filter(gate => gate.stage === 'stage.plan').map(gate => gate.id).sort();\n  if (JSON.stringify(gateIds) !== JSON.stringify(Object.keys(policy.gate_impacts).sort())) fail('Plan 门禁触发策略覆盖不完整');\n  const checkIds = registry.checks.filter(check => check.stage === 'stage.plan').map(check => check.id).sort();\n  if (JSON.stringify(checkIds) !== JSON.stringify(Object.keys(policy.check_impacts || {}).sort())) fail('Plan 内部检查触发策略覆盖不完整');\n  return policy;\n}\n\n// 自动加载只产生 pending；持久化审阅包、证据新鲜度和真实回复共同决定放行。\nexport function assertPlanSpecEntry(state, options = {}) {\n  if (!text(state?.plan_review_ref) || !text(state?.feature_id)) fail('缺少 plan_review_ref / feature_id');\n  const io = decisionIO(options);\n  const policy = planEntryPolicy(options);\n  const review = io.document(state.plan_review_ref);\n  if (review.schema_version !== 1 || review.kind !== 'plan-entry-review' || review.gate_id !== 'gate.plan-approved' || review.feature_id !== state.feature_id) fail('审阅包身份或范围不匹配');\n  if (!Array.isArray(review.basis) || !review.basis.length) fail('缺少带摘要依据');\n  const basis = new Map();\n  for (const asset of review.basis) {\n    if (!text(asset.ref) || basis.has(asset.ref) || decisionDigest(io.bytes(asset.ref)) !== asset.digest) fail(`依据缺失、重复或已变更: ${asset.ref}`);\n    basis.set(asset.ref, asset);\n  }\n  const evidence = refs => {\n    if (!Array.isArray(refs) || !refs.length || refs.some(ref => !basis.has(ref))) fail('检查项缺少当前依据');\n  };\n  for (const ref of [review.plan_ref, 'CONTEXT.md', '.template-spec/process/lifecycle-registry.yaml', review.context_reconciliation_ref]) {\n    if (!basis.has(ref)) fail(`必需依据未绑定: ${ref}`);\n  }\n  if (Object.keys(review.checks || {}).length !== policy.required_checks.length) fail('检查项缺失或存在未知项');\n  for (const id of policy.required_checks) {\n    const check = review.checks[id];\n    if (check?.status !== 'passed') fail(`检查未通过: ${id}`);\n    evidence(check.evidence_refs);\n  }\n  if (!Array.isArray(review.open_items)) fail('必须显式列出未决项');\n  for (const item of review.open_items) {\n    if (!text(item.id) || typeof item.critical !== 'boolean' || typeof item.runnable_blocker !== 'boolean') fail('未决项分类不完整');\n    if (item.status === 'resolved') { evidence(item.evidence_refs); continue; }\n    if (item.status !== 'deferred' || item.critical || item.runnable_blocker) fail(`关键问题或可执行阻塞未解决: ${item.id}`);\n    for (const field of ['noncritical_reason', 'owner', 'resolution_point', 'downstream_recipient']) if (!text(item[field])) fail(`延期项缺少 ${field}`);\n    evidence(item.evidence_refs);\n  }\n  for (const [gateId, impact] of Object.entries(policy.check_impacts)) {\n    if (typeof review.impacts?.[impact] !== 'boolean') fail(`未评估影响面: ${impact}`);\n    const gate = review.internal_checks?.[gateId];\n    evidence(gate?.evidence_refs);\n    if (review.impacts[impact]) {\n      if (gate.status !== 'approved' || !basis.has(gate.approval_ref) || !basis.has(gate.subject_ref)) fail(`命中门禁未批准或未绑定依据: ${gateId}`);\n      const record = selectApprovalRecord(io.document(gate.approval_ref), gateId);\n      if (record.gate_id !== gateId || record.subject_ref !== gate.subject_ref || !gate.approval_scope?.includes(state.feature_id) || JSON.stringify([...(gate.approval_scope || [])].sort()) !== JSON.stringify([...(record.approval_scope || [])].sort())) fail(`会签资产或范围不匹配: ${gateId}`);\n      validateApprovalRecord(record, { ...options, requireApproved: true });\n    } else if (gate.status !== 'not-applicable' || !text(gate.reason)) fail(`未命中门禁须有原因和依据: ${gateId}`);\n  }\n  // 门禁依赖不能通过将上游标成 N/A 来跳过。\n  const registry = io.document('.template-spec/process/lifecycle-registry.yaml');\n  for (const gate of registry.checks.filter(gate => gate.stage === 'stage.plan')) {\n    if (review.internal_checks[gate.id]?.status === 'approved') {\n      for (const dependency of gate.requires_checks || []) if (review.internal_checks[dependency]?.status !== 'approved') fail(`门禁依赖未批准: ${dependency}`);\n    }\n  }\n  const reconciliation = io.document(review.context_reconciliation_ref);\n  if (reconciliation.status !== 'reconciled' || reconciliation.repository_mode !== 'project-instance') fail('Context 未调和');\n  try { verifyContextReconciliation(path.resolve(io.root, review.context_reconciliation_ref), { root: io.root }); }\n  catch (error) { fail(`Context reconciliation 验证失败: ${error.message}\\n`); }\n  assertUserDecisionRequirement({ boundary: 'gate.plan-approved', subject_ref: state.plan_review_ref, scope: [state.feature_id], user_decision_ref: state.plan_user_decision_ref, continuation_ref: state.plan_continuation_ref }, options);\n  return { result: 'allowed', blocking_signals: [], missing_requirements: [], evidence_refs: [state.plan_review_ref, ...basis.keys()], next_work_unit: null };\n}\n\nexport function validatePlanSpecEntry(state, options = {}) {\n  try { return assertPlanSpecEntry(state, options); }\n  catch (error) { return { result: 'blocked', blocking_signals: ['plan-spec-entry-blocked'], missing_requirements: [error.message], evidence_refs: [], next_work_unit: null }; }\n}\n\nexport function assertPlanCheckpoint(checkpoint, options = {}) {\n  if (checkpoint.repository_mode !== 'project-instance') return;\n  const entering = checkpoint.next_work_unit === 'work-unit.spec-synthesis' || checkpoint.stage === 'stage.spec-architecture' || checkpoint.stage_trace?.completed_work_unit === 'work-unit.spec-synthesis';\n  if (entering) assertPlanSpecEntry(checkpoint, options);\n}\ncat: .template-spec/spec/README.md: No such file or directory\n"
+    }
+  ],
+  "other_tools": [],
+  "agent_messages": [
+    {
+      "step": "main",
+      "text": "我会先核对仓库身份、现有 Plan 和用户决定规则，使用 `yss-product-lifecycle` 运行 Plan→Spec 校验，并据实际结果决定是否生成 Spec 草稿。所有记录都会保留 test-data-only 边界。\n"
+    },
+    {
+      "step": "main",
+      "text": "校验器实际运行成功，退出码为 `0`，允许进入 Spec 起草，但不授权实现。我会按当前 Plan 写入“查询任务状态”的草稿，覆盖成功、未找到、无权访问三项验收，并保存本次测试结果。\n"
+    },
+    {
+      "step": "main",
+      "text": "Spec 将采用 `i-have-adhd` 配套写作规范，状态设为 `ready-for-human`。当前 tracker 未启用新版阶段追踪；我会复用已有父 Ticket，新增本地工作记录，并保留接口和权限协议的待确认细节。\n"
+    },
+    {
+      "step": "main",
+      "text": "校验结果为 `allowed`：实际执行 `node scripts/verify-plan-spec-entry state.json`，退出码 `0`。\n\n已保存 `entry-result.json`，生成 `docs/.scratch/demo/spec.md` 和工作记录。Spec 保持 `ready-for-human`，覆盖成功、未找到、无权访问三项验收；上游来源和批准未修改。\n\n全部产物仅为 `test-data-only`，不构成真实批准或实现授权。"
+    }
+  ],
+  "artifacts": {
+    "entry-result.json": "{\n  \"result\": \"allowed\",\n  \"verification_command\": \"node scripts/verify-plan-spec-entry state.json\",\n  \"exit_code\": 0,\n  \"reason\": \"真实本地 Plan→Spec 校验器返回入口检查通过（不授权实现）；当前 Plan、审阅包、Context 调和与测试决定来源的绑定通过校验。已生成 docs/.scratch/demo/spec.md，状态为 ready-for-human，未修改上游来源或批准。全部输入和输出仅为 test-data-only，不构成真实批准或实现授权。\"\n}\n",
+    "docs/.scratch/demo/spec.md": "---\npipeline: feature.demo\nstage: open\nstatus: ready-for-human\nowner: ai\ntest_data_only: true\n---\n\n# 产品研发规格：查询已有任务状态\n\n用户按已有任务的 ID 查询状态和更新时间。本期只读，不提供编辑功能。本文件为隔离测试中的 Spec 草稿，依据当前 [Plan](../../../plan.md) 起草，尚未获得 Spec 基线批准，不授权实现。\n\n## 功能父 Ticket 与输入\n\n- 功能父 Ticket：[parent-ticket.md](parent-ticket.md)。\n- 入口状态：[state.json](../../../state.json)；审阅包：[review.json](../../../review.json)。\n- 词汇与调和依据：[CONTEXT.md](../../../CONTEXT.md)、[reconciliation.json](../../../reconciliation.json)。本轮未新增稳定术语。\n- 本次实际入口校验及限制：[entry-work-record.md](entry-work-record.md)。\n\n## 问题陈述与解决方案\n\n当前 Plan 要求用户能够查询已有任务的状态。查询成功时仅展示状态和更新时间；任务 ID 不存在时返回未找到；用户无权访问时不得获得该任务的数据。查询过程必须保护其他租户的数据。\n\n用户故事：作为查询已有任务的用户，我希望通过任务 ID 获取其状态和更新时间，以便了解任务当前情况。\n\n## 功能需求\n\n| ID | 条件与行为 | 验收 |\n|---|---|---|\n| FR-001 | 用户有权访问且任务存在时，查询返回该任务的状态和更新时间，展示范围限于这两项信息。 | AC-001 |\n| FR-002 | 查询的任务 ID 不存在时，返回未找到，不返回任务状态和更新时间。 | AC-002 |\n| FR-003 | 用户无权访问任务时，拒绝提供任务数据；任何结果均不得泄露其他租户数据。 | AC-003 |\n| FR-004 | 本期查询为只读行为，不编辑任务，不因查询改变任务状态或更新时间。 | AC-001、AC-002、AC-003 |\n\n四项需求均承接当前 Plan，未另行分配优先级。Plan 未提供性能数值、状态枚举或时间格式，本草稿不设定这些承诺。\n\n## 验收标准\n\n### AC-001：查询成功\n\n假如存在用户有权访问的任务，且其状态与更新时间已知；当用户按该任务 ID 查询；那么结果展示该任务的状态和更新时间，与已知记录一致，且不包含其他租户数据。查询前后任务数据不变。对应 FR-001、FR-004。\n\n### AC-002：任务未找到\n\n假如查询的任务 ID 不存在；当用户发起查询；那么结果表示未找到，不返回任务状态和更新时间，也不包含其他租户数据。查询不新增或修改任务。对应 FR-002、FR-004。\n\n### AC-003：无权访问\n\n假如任务存在，但当前用户无权访问，例如该任务属于其他租户；当用户按该任务 ID 查询；那么不能获取该任务的数据，结果不得泄露其他租户数据，任务数据不变。无权访问的具体协议表达须在契约中确定，本草稿不指定独立错误码或暴露该任务是否存在。对应 FR-003、FR-004。\n\n## 产品总体设计与功能边界\n\n本期功能范围为查询已有任务的状态和更新时间，沿用既有业务边界，不新增领域边界或状态转换。依据 Plan，无 UI；页面、交互原型及前端视觉验收记录为 `not-applicable`，原因是本期没有页面交付。\n\n权限与租户隔离属于验收要求，后续契约及实现验证必须覆盖，不能因只读而省略。现有模块、数据访问规则和认证上下文未随输入提供，本草稿不指定技术分层、存储方案或实现仓库。\n\n## OpenAPI 影响\n\n需要 API 影响分析。输入未提供既有端点或冻结协议，暂不能判定是否新增或变更 API；不填写假设的方法、路径、字段名或错误码。有 API 影响时，按现有流程先形成 OpenAPI 3.1 Draft，审查后 Freeze；无影响时提供对应评估证据。本草稿不是稳定实现契约。\n\n## 测试决策\n\n候选公开测试 seam 为任务查询入口，输入包含任务 ID 及调用者现有身份 / 租户上下文，观察查询结果与任务是否被修改。具体方法或端点须由后续合同确认；当前没有实现仓库或相似测试可供引用。\n\n后续必需行为测试对应 AC-001 至 AC-003，并校验只读性及跨租户数据隔离。API / 契约测试随影响分析确定；前端组件测试不适用。关键 E2E 流程及覆盖率目标尚未定义，本轮未执行产品测试。\n\n## 非目标范围\n\n不提供编辑能力、不制作 UI、不新增领域边界；这些边界来自当前 Plan。本轮仅形成可审阅草稿。\n\n## 风险与待确认事项\n\n| 事项 | 当前限制与影响 | 解决时点 / 接收方 |\n|---|---|---|\n| 无权访问的协议表达 | 需结合既有权限合同确定，必须满足不泄露其他租户数据；本草稿不默认其与未找到使用不同的外部响应。 | 契约冻结前，由工程契约审查承接；负责人未登记 |\n| 状态与时间的协议表示 | 状态取值、时间格式及既有端点未提供，尚不能生成实现或客户端。 | 契约冻结前，由工程契约审查承接；负责人未登记 |\n| 公开测试 seam 与工程接入 | 未提供实现仓库和稳定接口，当前只能给出行为级验收。 | 切片正式化前，由生命周期编排承接；负责人未登记 |\n\n以上为草稿细化所需工程输入，不是已获批准的延期事项。后续审查如发现影响业务范围或关键规则的变化，应重新路由。当前状态保持 `ready-for-human`；Spec 基线和实现就绪均未批准。\n"
+  },
+  "semantic_review": "pending"
+}

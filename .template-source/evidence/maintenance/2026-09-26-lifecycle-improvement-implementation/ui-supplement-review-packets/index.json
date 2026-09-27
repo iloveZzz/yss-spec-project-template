@@ -1,0 +1,58 @@
+[
+  {
+    "variant": "baseline",
+    "run": "e08-ui-1",
+    "automatic_result": "passed",
+    "seconds": 508.17,
+    "changed": [],
+    "missing": [],
+    "new_files": [
+      "design-overview.md",
+      "interaction.md",
+      "state-matrix.md"
+    ],
+    "packet": "baseline-e08-ui-1.json"
+  },
+  {
+    "variant": "baseline",
+    "run": "e08-ui-2",
+    "automatic_result": "passed",
+    "seconds": 510.39,
+    "changed": [],
+    "missing": [],
+    "new_files": [
+      "design-overview.md",
+      "interaction.md",
+      "state-matrix.md"
+    ],
+    "packet": "baseline-e08-ui-2.json"
+  },
+  {
+    "variant": "candidate",
+    "run": "e08-ui-1",
+    "automatic_result": "passed",
+    "seconds": 524.64,
+    "changed": [],
+    "missing": [],
+    "new_files": [
+      "design-overview.md",
+      "interaction.md",
+      "state-matrix.md"
+    ],
+    "packet": "candidate-e08-ui-1.json"
+  },
+  {
+    "variant": "candidate",
+    "run": "e08-ui-2",
+    "automatic_result": "passed",
+    "seconds": 523.88,
+    "changed": [],
+    "missing": [],
+    "new_files": [
+      "design-overview.md",
+      "interaction.md",
+      "state-matrix.md"
+    ],
+    "packet": "candidate-e08-ui-2.json"
+  }
+]

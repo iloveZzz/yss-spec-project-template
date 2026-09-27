@@ -1,0 +1,134 @@
+{
+  "schema_version": 1,
+  "sample_kind": "isolated-synthetic",
+  "approval_kind": "test-data-only",
+  "workspaces": [
+    "management",
+    "backend",
+    "frontend"
+  ],
+  "slice": "submit-application",
+  "commands": [
+    {
+      "name": "management-init",
+      "cwd_role": "yss-spec-project-template",
+      "command": "node /Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-spec/bin/create-yss-spec.js --target-dir /private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-submit-pilot-ZbDtlm/management --project-name 提交申请管理样板 --business-domain 申请受理 --team-size 1 --agent-runtime codex --issue-tracker github",
+      "elapsed_ms": 1030,
+      "exit_code": 0,
+      "stdout": "management-init.stdout.log",
+      "stderr": "management-init.stderr.log"
+    },
+    {
+      "name": "backend-init",
+      "cwd_role": "yss-spec-project-template",
+      "command": "node /Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-backend/bin/create-yss-harness-backend.js init --target-dir /private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-submit-pilot-ZbDtlm/backend --project-name 提交申请后端样板 --business-domain 申请受理 --team-size 1 --issue-tracker local-markdown",
+      "elapsed_ms": 31528,
+      "exit_code": 0,
+      "stdout": "backend-init.stdout.log",
+      "stderr": "backend-init.stderr.log"
+    },
+    {
+      "name": "frontend-init",
+      "cwd_role": "yss-spec-project-template",
+      "command": "node /Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-frontend/bin/create-yss-harness-frontend.js init --target-dir /private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-submit-pilot-ZbDtlm/frontend --project-name 提交申请前端样板 --business-domain 申请受理 --team-size 1 --issue-tracker local-markdown",
+      "elapsed_ms": 35625,
+      "exit_code": 0,
+      "stdout": "frontend-init.stdout.log",
+      "stderr": "frontend-init.stderr.log"
+    },
+    {
+      "name": "backend-mvnw-validate",
+      "cwd_role": "backend",
+      "command": "./mvnw -o validate",
+      "elapsed_ms": 669,
+      "exit_code": 0,
+      "stdout": "backend-mvnw-validate.stdout.log",
+      "stderr": "backend-mvnw-validate.stderr.log"
+    },
+    {
+      "name": "backend-mvnw-test",
+      "cwd_role": "backend",
+      "command": "./mvnw -o test",
+      "elapsed_ms": 1606,
+      "exit_code": 0,
+      "stdout": "backend-mvnw-test.stdout.log",
+      "stderr": "backend-mvnw-test.stderr.log"
+    },
+    {
+      "name": "backend-mvnw-package",
+      "cwd_role": "backend",
+      "command": "./mvnw -o package",
+      "elapsed_ms": 1410,
+      "exit_code": 0,
+      "stdout": "backend-mvnw-package.stdout.log",
+      "stderr": "backend-mvnw-package.stderr.log"
+    },
+    {
+      "name": "frontend-pnpm-install",
+      "cwd_role": "frontend",
+      "command": "pnpm install --ignore-scripts",
+      "elapsed_ms": 6150,
+      "exit_code": 0,
+      "stdout": "frontend-pnpm-install.stdout.log",
+      "stderr": "frontend-pnpm-install.stderr.log"
+    },
+    {
+      "name": "frontend-pnpm-test",
+      "cwd_role": "frontend",
+      "command": "pnpm test",
+      "elapsed_ms": 759,
+      "exit_code": 1,
+      "stdout": "frontend-pnpm-test.stdout.log",
+      "stderr": "frontend-pnpm-test.stderr.log"
+    }
+  ],
+  "source_files": [
+    {
+      "workspace": "management",
+      "ref": "docs/.scratch/pilot/spec.md",
+      "digest": "sha256:4d660397d4a26420440c11cbc9438736600a91e57f6f5ab1e0509c4fe5dc3a5e"
+    },
+    {
+      "workspace": "backend",
+      "ref": "pom.xml",
+      "digest": "sha256:09085703d162ab2380aa628672afd790d8f3976f6b66aa4b5a66d933fd7309b6"
+    },
+    {
+      "workspace": "backend",
+      "ref": "src/main/java/pilot/SubmissionService.java",
+      "digest": "sha256:6806c28129ffccd5d93dd645ffbc02eb65d942c8e65fab35f89999a96c963d04"
+    },
+    {
+      "workspace": "backend",
+      "ref": "src/test/java/pilot/SubmissionServiceTest.java",
+      "digest": "sha256:0cc5f959c199499ccede8c8d565b544d9bee9e86bbf83632d367176b9bdd7c8d"
+    },
+    {
+      "workspace": "frontend",
+      "ref": "package.json",
+      "digest": "sha256:dbbf074215159c289638e45aba89f9b1b16b5f71c4ec8f34e367cf27082ad0d7"
+    },
+    {
+      "workspace": "frontend",
+      "ref": "src/submit.js",
+      "digest": "sha256:5c7efecc66e337772040bcb118007f27e0ffe51e351270719092990bf314a5aa"
+    },
+    {
+      "workspace": "frontend",
+      "ref": "src/SubmitApplication.vue",
+      "digest": "sha256:5635a1cf76721e5e2f9b343927f7bf1cf819e45b4e56f8fc1afc84e17fcabf9d"
+    },
+    {
+      "workspace": "frontend",
+      "ref": "src/submit.test.js",
+      "digest": "sha256:4a259da8a0310271942d30a4a9c9f469ab5af90bbad9201b1518ff4c3cbfd3f6"
+    },
+    {
+      "workspace": "frontend",
+      "ref": "build.mjs",
+      "digest": "sha256:6e9883316a79937a7cc8af02e86c88908252636113a42c2cd2481c07a6c259c1"
+    }
+  ],
+  "result": "blocked",
+  "error": "frontend-pnpm-test failed (1); see frontend-pnpm-test.stderr.log"
+}

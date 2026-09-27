@@ -60,7 +60,7 @@
 
 - 实现前按 `.template-spec/process/implementation-repo-integration.md` 登记仓库、项目根、分支、CI、验证命令、回滚点；再用 `yss-implementation-contract-compiler` 编译最小 Skill 集和当前合同。
 - 无工程先确认外部仓库或输出目录。Backend `scaffold_status=required` 时，由生命周期推荐 `domain-driven` / `layered-mvc`，用户逐项目确认后路由；Frontend 用 `yss-frontend-scaffold-generator`。缺目录不改路由。
-- 脚手架仅在 `scaffold-architecture-decisions.yaml` 已确认且当前、schema v3 合同已持久化并获批准后无交互运行，只生成机械骨架。既有工程不得重选或覆盖；架构转换单独立项。
+- 脚手架仅在 `scaffold-architecture-decisions.yaml` 已确认且当前、Project Scaffold Contract schema v4 已持久化并获批准后无交互运行，只生成机械骨架。既有工程不得重选或覆盖；架构转换单独立项。
 - 正式切片只消费已批准、已持久化且当前的 Slice Implementation Contract；编译器只起草，不批准、不设置 `ready-for-agent`、不宣布完成。
 - UI 切片在 `ready-for-agent` 前须有已校验的 `frontend_implementation_plan`，实现后补 `frontend_implementation_verification`，覆盖截图 / 视觉回归、状态交互、console warning、实际 `pnpm` 退出码。
 - 前端验证优先 `pnpm`，后端优先根 `./mvnw`；缺少时记录受控例外和实际命令。

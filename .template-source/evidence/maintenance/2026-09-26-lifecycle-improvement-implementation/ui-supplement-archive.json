@@ -1,0 +1,11 @@
+{
+  "archive": "ui-supplement-evidence.tar.gz",
+  "sha256": "2354568f1e8a180c19d2529866eaa638658c9a21571bdcaab7568ac33cb4abeb",
+  "bytes": 1246047,
+  "trace_count": 4,
+  "result_count": 4,
+  "archive_readback_verified": true,
+  "source_archive": "formal-agent-evaluation-evidence.tar.gz",
+  "original_raw_root": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-ui-supplement-6px70sb6",
+  "original_files_retained": true
+}

@@ -91,7 +91,7 @@ function lifecycleStagePackage(roleId, taskId, workUnitId, stageId) {
 }
 
 function templatePackage() {
-  return packageBase("role.test-engineer", "task-maintenance", "work-unit.intensity-aware-verification", "template-maintenance", { maintenance_ref: maintenanceRef, contract_id: "template-maintenance", contract_version: 1 });
+  return packageBase("role.test-engineer", "task-maintenance", "work-unit.intensity-aware-verification-v2", "template-maintenance", { maintenance_ref: maintenanceRef, contract_id: "template-maintenance", contract_version: 1 });
 }
 
 function slicePackage(roleId, taskId, workUnitId, writePath) {
@@ -149,7 +149,7 @@ function mustFail(mutator, pattern, label, factory = () => lifecyclePackage()) {
 try {
   const discovery = lifecyclePackage();
   const spec = lifecycleStagePackage("role.requirements-manager", "task-spec", "work-unit.spec-synthesis", "stage.spec-architecture");
-  const prototype = lifecycleStagePackage("role.product-manager", "task-prototype", "work-unit.prototype-design", "stage.product-design");
+  const prototype = lifecycleStagePackage("role.product-manager", "task-prototype", "work-unit.prototype-design-v2", "stage.product-design");
   const technical = lifecycleStagePackage("role.backend-engineer", "task-technical", "work-unit.technical-analysis", "stage.system-data-engineering");
   const tickets = lifecycleStagePackage("role.project-manager", "task-tickets", "work-unit.ticket-decomposition", "stage.ticket-formalization");
   const review = lifecycleStagePackage("role.test-engineer", "task-review", "work-unit.code-review", "stage.verification-release-retrospective");
@@ -214,7 +214,7 @@ try {
   mustFail((value) => { delete value.contract.lifecycle_ref; }, /lifecycle_ref/, "lifecycle-missing-ref");
   mustFail((value) => { value.contract.kind = "slice-implementation"; delete value.contract.slice_contract_ref; }, /slice_contract_ref/, "slice-missing-ref");
   mustFail((value) => { value.contract.kind = "template-maintenance"; delete value.contract.maintenance_ref; }, /maintenance_ref/, "maintenance-missing-ref");
-  mustFail((value) => { value.work_unit_id = "work-unit.intensity-aware-review"; value.contract.kind = "lifecycle-work-unit"; value.contract.lifecycle_ref = ".template-spec/process/lifecycle-registry.yaml"; }, /template-source.*template-maintenance/, "template-source-lifecycle-kind");
+  mustFail((value) => { value.work_unit_id = "work-unit.intensity-aware-review-v2"; value.contract.kind = "lifecycle-work-unit"; value.contract.lifecycle_ref = ".template-spec/process/lifecycle-registry.yaml"; }, /template-source.*template-maintenance/, "template-source-lifecycle-kind");
   mustFail((value) => { value.work_unit_id = "work-unit.slice-implementation"; value.stage_id = "stage.vertical-slice-implementation"; value.contract.kind = "lifecycle-work-unit"; value.contract.lifecycle_ref = ".template-spec/process/lifecycle-registry.yaml"; }, /不得冒充垂直切片/, "implementation-lifecycle-kind", () => lifecycleStagePackage("role.frontend-engineer", "task-illegal-implementation", "work-unit.slice-implementation", "stage.vertical-slice-implementation"));
   mustFail((value) => { value.convergence.parent_work_unit = "work-unit.code-review"; }, /必须汇合到 work-unit.slice-implementation/, "slice-wrong-parent", () => slicePackage("role.frontend-engineer", "task-slice-parent", "work-unit.slice-frontend", "apps/frontend/todo/"));
   mustFail((value) => { value.contract.status = "stale"; }, /stale 任务包必须暂停/, "stale-not-paused");

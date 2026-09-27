@@ -61,7 +61,7 @@ export function generateReviewerTaskPackages({ checkpointRef, candidateRef, outp
     const packageRef = `${outputDir}/${stem}-${axis}-review-task-round${round}.yaml`;
     const taskPackage = generateTaskPackageDefaults(role, {
       task_id: `${stem}-${axis}-review-round${round}`,
-      work_unit_id: "work-unit.intensity-aware-review",
+      work_unit_id: "work-unit.intensity-aware-review-v2",
       actor_id: `reviewer.${stem}.${axis}.r${round}`,
       runtime_id: "runtime.skill-projection",
       execution_state: "Reviewer",
@@ -91,7 +91,7 @@ export function generateReviewerTaskPackages({ checkpointRef, candidateRef, outp
       verification_results: upstreamVerificationResults,
       review_context: { implementation_actor_id: implementationActorId, implementation_task_id: `${stem}-implementation` },
       downstream_consumers: axis === "lead" ? ["role.lifecycle-orchestrator"] : [`reviewer.${stem}.lead.r${round}`],
-      convergence: { parent_work_unit: "work-unit.intensity-aware-review", convergence_ref: checkpointRef, conflict_escalation: "violation 交实现者修复；drift/new_impacts 重新路由；第二轮仍阻断则 needs-human" }
+      convergence: { parent_work_unit: "work-unit.intensity-aware-review-v2", convergence_ref: checkpointRef, conflict_escalation: "violation 交实现者修复；drift/new_impacts 重新路由；第二轮仍阻断则 needs-human" }
     });
     return { axis, packageRef, reportRef, package: taskPackage };
   });

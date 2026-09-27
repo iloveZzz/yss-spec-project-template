@@ -139,7 +139,7 @@ test("prototype design route requires independent prototype-review", () => {
     not_applicable_reason: "no_ui_or_product_design_impact"
   };
   assert.throws(() => validateSkillRegistry(data, {
-    lifecycleContract: { work_unit_routes: { "work-unit.prototype-design": route } }
+    lifecycleContract: { work_unit_routes: { "work-unit.prototype-design-v2": route } }
   }), /prototype-review/);
 });
 

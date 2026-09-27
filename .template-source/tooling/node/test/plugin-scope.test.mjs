@@ -30,7 +30,7 @@ test('scope opt-in cannot silently disappear or accept a custom work-unit allowl
 });
 test('backend scope keeps product design while forbidding frontend implementation and release routes',t=>{
   const {root}=fixture(t);
-  assert.doesNotThrow(()=>assertScopeWorkUnit('work-unit.prototype-design',{root}));
+  assert.doesNotThrow(()=>assertScopeWorkUnit('work-unit.prototype-design-v2',{root}));
   assert.deepEqual(scopedNextRoutes('work-unit.code-review',['work-unit.release-and-retrospective'],{root}),['work-unit.slice-implementation','work-unit.backend-delivery']);
   for(const next of ['work-unit.frontend-implementation-verification','work-unit.release-and-retrospective'])assert.equal(validateNextRoute('work-unit.code-review',next,{}, {root}).result,'blocked');
   assert.throws(()=>assertScopeImpacts({ui_impact:true},{root}),/下游/);

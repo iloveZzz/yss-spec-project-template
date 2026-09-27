@@ -1,0 +1,150 @@
+{
+  "result": {
+    "scenario": "e04-current",
+    "variant": "baseline",
+    "repeat": 1,
+    "elapsed_seconds": 200.33,
+    "exit_code": 0,
+    "timeout": false,
+    "assertion_failures": [],
+    "runtime_errors": [],
+    "tool_calls": 15,
+    "usage": [
+      {
+        "input_tokens": 537525,
+        "cached_input_tokens": 469632,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 5563,
+        "reasoning_output_tokens": 863
+      }
+    ],
+    "automatic_result": "passed",
+    "semantic_review": "pending",
+    "trace": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-agent-evaluations-v2-2qx3mbr2/baseline/e04-current-1/trace.jsonl",
+    "steps": [
+      {
+        "step": "main",
+        "started_at": "2026-09-26T14:59:04Z",
+        "elapsed_seconds": 200.04,
+        "exit_code": 0,
+        "timeout": false,
+        "assertion_failures": [],
+        "runtime_errors": [],
+        "tool_calls": 15,
+        "usage": [
+          {
+            "input_tokens": 537525,
+            "cached_input_tokens": 469632,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 5563,
+            "reasoning_output_tokens": 863
+          }
+        ],
+        "automatic_result": "passed",
+        "semantic_review": "pending",
+        "trace": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-agent-evaluations-v2-2qx3mbr2/baseline/e04-current-1/trace.jsonl"
+      }
+    ],
+    "unattempted_steps": []
+  },
+  "original_files_changed": [],
+  "original_files_missing": [],
+  "unsafe_paths": [],
+  "new_files": [
+    "docs/.scratch/demo/entry-work-record.md",
+    "docs/.scratch/demo/spec.md",
+    "entry-result.json"
+  ],
+  "commands": [
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"pwd && cat yss-project.yaml && rg --files -g 'state.json' -g 'AGENTS.md' -g '*plan*' -g '*review*' -g '*decision*' -g '*entry*' -g '*spec*' -g '\"'!node_modules'\"' -g '\"'!.git'\"' -g '\"'!skills-lock.json'\"' .\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .agents/skills/yss-product-lifecycle/SKILL.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .template-spec/plan/entry-review.md .agents/skills/yss-product-lifecycle/references/user-decisions.md scripts/verify-plan-spec-entry'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat state.json plan.md review.json approval/decision.json CONTEXT.md AGENTS.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .template-spec/process/harness-process-tailoring.md .template-spec/process/contract-reading.md && rg --files approval docs .eval-tmp && cat .template-spec/plan/README.md .template-spec/process/plan-migration.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .template-spec/plan/entry-review.md .agents/skills/yss-product-lifecycle/references/user-decisions.md scripts/verify-plan-spec-entry'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat scripts/lib/plan-spec-entry.mjs'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"cat reconciliation.json approval/requester.json approval/presentation.json approval/reply-0.json && rg -n -A 85 -B 6 'spec_entry:|user_decision_policy:' .template-spec/process/lifecycle-registry.yaml .template-spec/agents/digital-human-roles.yaml && sed -n '92,180p' CONTEXT.md\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'node scripts/verify-plan-spec-entry state.json'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc 'cat .agents/skills/i-have-adhd/SKILL.md .template-spec/process/document-writing.md .template-spec/templates/spec-template.md'",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"cat .template-spec/process/stage-tracking.md .template-spec/agents/issue-tracker.md && rg -n -A 48 -B 4 'id: work-unit.spec-synthesis|id: gate.spec-baseline-approved|document_writing:' .template-spec/process/lifecycle-registry.yaml .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml && rg --files --hidden docs .eval-tmp -g 'AGENTS.md' -g '*checkpoint*' -g '*ticket*' -g '*tracking*'\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"cat docs/.scratch/demo/parent-ticket.md && rg --files --hidden docs && sed -n '72,96p' CONTEXT.md && sed -n '1,160p' scripts/lib/context-reconciliation.mjs\"",
+      "exit_code": 0
+    },
+    {
+      "step": "main",
+      "command": "/bin/zsh -lc \"python3 - <<'PY'\nimport hashlib\nimport json\nfrom pathlib import Path\nimport re\n\nroot = Path.cwd()\nresult = json.loads((root / 'entry-result.json').read_text())\nassert set(result) == {'result', 'verification_command', 'exit_code', 'reason'}\nassert result['result'] == 'allowed' and result['exit_code'] == 0\nassert result['verification_command'] == 'node scripts/verify-plan-spec-entry state.json'\nreview = json.loads((root / 'review.json').read_text())\nfor asset in review['basis']:\n    digest = 'sha256:' + hashlib.sha256((root / asset['ref']).read_bytes()).hexdigest()\n    assert digest == asset['digest'], asset['ref']\ndecision = json.loads((root / 'approval/decision.json').read_text())\nfor source in [decision['request']['requester_source'], decision['request']['presented_source']] + [r['source'] for r in decision['responses']]:\n    source_path = Path(source['ref']).resolve()\n    assert source_path.is_relative_to(root)\n    assert 'sha256:' + hashlib.sha256(source_path.read_bytes()).hexdigest() == source['digest']\nfor item in decision['request']['items']:\n    subject = item['subject']\n    assert 'sha256:' + hashlib.sha256(Path(subject['ref']).read_bytes()).hexdigest() == subject['digest']\nfor name in ['spec.md', 'entry-work-record.md']:\n    doc = root / 'docs/.scratch/demo' / name\n    content = doc.read_text()\n    for target in re.findall(r'\\\\]\\\\(([\"'^)]+)'\"\\\\)', content):\n        linked = (doc.parent / target).resolve()\n        assert linked.is_relative_to(root) and linked.is_file(), target\nspec = (root / 'docs/.scratch/demo/spec.md').read_text()\nassert 'status: ready-for-human' in spec and 'test_data_only: true' in spec\nassert 'status: ready-for-agent' not in spec\nprint('PASS: entry-result.json 字段、Spec 草稿状态与本地链接有效；审阅包依据、用户决定主体和原始来源摘要均匹配。')\nPY\"",
+      "exit_code": 0
+    }
+  ],
+  "command_errors": [],
+  "other_tools": [],
+  "agent_messages": [
+    {
+      "step": "main",
+      "text": "我会先核对仓库身份、`state.json`、当前 Plan 和用户决定规则，使用 `yss-product-lifecycle` 运行本地 Plan→Spec 校验，并按校验结果保存记录。所有产物均按 `test-data-only` 处理。"
+    },
+    {
+      "step": "main",
+      "text": "真实入口校验已通过，退出码为 `0`。现有审阅包和回复绑定满足本次测试校验；我会据当前 Plan 起草只读任务状态查询 Spec，覆盖成功、未找到、无权访问及租户隔离，并保留为 `ready-for-human` 草稿。文档使用 `i-have-adhd` 规范整理。"
+    },
+    {
+      "step": "main",
+      "text": "Spec 草稿已落盘，状态为 `ready-for-human`。文中保留了 Plan 的查询范围，并将尚未提供的接口映射、状态格式和测试入口列为待确认项。接下来核对结果文件、文档链接和来源摘要。"
+    },
+    {
+      "step": "main",
+      "text": "校验结果为 `allowed`：实际运行 `node scripts/verify-plan-spec-entry state.json`，退出码 `0`。\n\n已保存 [entry-result.json](entry-result.json) 和 [Spec 草稿](docs/.scratch/demo/spec.md)。草稿为 `ready-for-human`，未修改上游来源或批准；全部仅用于 `test-data-only`。"
+    }
+  ],
+  "artifacts": {
+    "entry-result.json": "{\n  \"result\": \"allowed\",\n  \"verification_command\": \"node scripts/verify-plan-spec-entry state.json\",\n  \"exit_code\": 0,\n  \"reason\": \"Plan → Spec 入口检查通过（不授权实现）。仅适用于本隔离 fixture 的 test-data-only 校验及 Spec 草稿，不构成真实批准。\"\n}\n",
+    "docs/.scratch/demo/spec.md": "---\npipeline: feature.demo\nstage: open\nstatus: ready-for-human\nowner: ai\ntest_data_only: true\n---\n\n# 产品研发规格：已有任务状态查询\n\n用户按 ID 查询已有任务，只获取状态和更新时间。本文依据[当前 Plan](../../../plan.md)形成待审草稿，仅用于隔离生命周期测试；不是冻结基线、实现合同或真实批准。\n\n## 功能父 Ticket 与来源\n\n关联[测试父 Ticket](parent-ticket.md)。Plan → Spec 入口已使用 `node scripts/verify-plan-spec-entry state.json` 实际校验，退出码为 `0`，见[入口结果](../../../entry-result.json)与[工作记录](entry-work-record.md)。\n\n本次输入绑定见[审阅包](../../../review.json)及[用户决定记录](../../../approval/decision.json)。消费根 [CONTEXT.md](../../../CONTEXT.md) 和 [Context 对账](../../../reconciliation.json)；沿用 Plan 的描述性业务语言，不自行补造稳定术语 ID。\n\n## 问题陈述与解决方案\n\n用户需要知道已有任务的状态及其更新时间。本期提供只读查询，并保留成功、未找到和无权访问三类业务验收。查询需遵守租户隔离，不能返回其他租户的数据。\n\n用户故事：作为查询用户，我希望按任务 ID 获知我有权访问的任务的状态和更新时间，以便了解该任务的当前情况。\n\n## 功能需求\n\n以下需求均来自当前 Plan，均为本期必须覆盖的范围；Plan 未定义 P0/P1/P2 排序。\n\n| ID | 条件与行为 | 验收 |\n|---|---|---|\n| FR-001 | 用户查询存在且有权访问的任务时，返回该任务已有的状态和更新时间；本期业务展示内容仅包含这两项。 | AC-001 |\n| FR-002 | 用户查询不存在的任务 ID 时，返回未找到结果。 | AC-002 |\n| FR-003 | 用户无权访问任务时，拒绝返回该任务的状态和更新时间，不以成功查询返回数据。 | AC-003 |\n| FR-004 | 查询不能泄露其他租户的数据；错误反馈不得暴露其他租户任务的内容或存在性。 | AC-004 |\n| FR-005 | 查询保持只读，不修改任务状态、更新时间或其他任务业务数据。 | AC-001 至 AC-004 |\n\n## 验收标准\n\n| ID | 假如 | 当 | 那么 |\n|---|---|---|---|\n| AC-001 成功 | 当前用户所属租户内存在一个用户有权访问的任务，已有状态和更新时间 | 用户按该任务 ID 查询 | 返回该任务已有状态和更新时间；不增加其他业务展示项；任务业务数据保持查询前值 |\n| AC-002 未找到 | 查询 ID 对应的任务不存在 | 用户按该 ID 查询 | 得到未找到结果，不返回任务状态或更新时间；不创建或修改任务 |\n| AC-003 无权访问 | 当前租户内存在一个用户无权访问的任务 | 用户按该任务 ID 查询 | 查询被拒绝，不返回该任务状态或更新时间；任务业务数据不变 |\n| AC-004 租户隔离 | 租户 A 的用户分别持有租户 B 的任务 ID 和一个不存在的 ID | 用户分别查询这两个 ID | 不泄露租户 B 的任务内容或存在性，不能通过两次反馈识别租户 B 是否存在该任务；任务业务数据不变 |\n\n“无权访问”和“未找到”在这里是业务结果。HTTP 状态码、错误码和跨租户响应的具体映射由后续契约明确；本草稿不决定区分跨租户任务存在性的响应。\n\n## 非功能需求\n\n权限与数据隔离通过 AC-003、AC-004 验证。Plan 没有给出时延、吞吐量、可用性或覆盖率阈值；本草稿不新增数值承诺。\n\n## 产品总体设计 / 功能架构\n\n功能限于既有任务的读取和权限判断。Plan 明确无 UI、无新增领域边界，因此本次 UI、产品设计和原型为 `not-applicable`，不生成页面或原型资产。\n\n不引入新模块边界或状态机；具体调用位置与实现模块应在后续结合既有工程确认。本次不修改或补建工程登记。\n\n## OpenAPI 与业务边界影响\n\nAPI 影响待分析：Plan 没有给出既有端点、方法、请求参数或响应合同，不能据此判断“无 API 影响”。如需变更接口，应先形成 OpenAPI 3.1 Draft，审查并 Freeze 后才能实现。\n\n| 检查项 | 当前判断与依据 |\n|---|---|\n| 统一业务词汇 | 沿用 Plan 描述；根 CONTEXT.md 暂无产品术语行，本次不新增英文标识或术语映射 |\n| 业务责任区、协作边界 | 沿用审阅包中 domain_strategy=false、stage_decision=false 的影响判断；Plan 明确无新增领域边界 |\n| 核心对象与状态机 | 仅读取已有状态，不定义新状态、流转规则或业务写入 |\n| 权限与数据 | 必须覆盖无权访问及租户隔离；具体授权规则、接口和测试数据映射需结合既有基线确认 |\n\n## 测试决策\n\n候选公开测试 seam 为面向调用者的任务查询入口：输入任务 ID 与已有可信身份上下文，观察业务结果及可返回内容。实际 API 或公开方法尚未提供，需在实现准备前绑定，不能按本草稿臆造接口。\n\n未来测试需逐项覆盖 AC-001 至 AC-004，并在每项中检查任务业务数据未改变。未提供实现代码库或相似测试引用；应用测试和契约测试尚未执行。无 UI，不适用前端组件或浏览器交互测试。本次流程文档起草不适用 behavior-tdd，实际执行范围仅为入口校验。\n\n## 审查点、风险与待确认项\n\n| 事项 | 影响及下一动作 | 责任与时点 |\n|---|---|---|\n| 权限拒绝与跨租户错误呈现 | 需在具体响应映射中保留三项业务验收，同时避免泄露其他租户任务的存在性 | 负责人未登记；后续契约审查前确认，接收方为契约与测试工作单元 |\n| 状态与更新时间的表示 | 沿用既有值；状态集合、时间格式和可空性未提供，不自定默认值 | 负责人未登记；后续契约审查前核对既有合同 |\n| API 影响和公开 seam | 需读取现有接口与工程基线，确认变更范围并绑定验收入口 | 负责人未登记；进入实现准备前明确，接收方为契约与测试工作单元 |\n| 草稿与真实批准边界 | 需经独立审查及适用 Spec 基线决定才能继续下游；fixture 中的回复不能成为真实批准 | 本次止于草稿，不宣布阶段完成或可实现 |\n\n这些是下游细化及证据缺口，未写回或更改 Plan 审阅包的 open_items，也未登记为已获准延期的 seam。\n\n## 非目标范围\n\n本期不提供任务编辑，不新增 UI 或领域边界，不扩展状态和更新时间之外的业务展示内容；依据为当前 Plan。运行时代码、OpenAPI Freeze、垂直切片、提交、推送和发布均不属于本次测试任务。\n"
+  },
+  "semantic_review": "pending"
+}
