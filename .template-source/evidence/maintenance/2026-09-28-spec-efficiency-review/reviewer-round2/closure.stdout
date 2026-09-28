@@ -1,0 +1,52 @@
+{
+  "schema_version": 2,
+  "blockers": [],
+  "checks": [
+    {
+      "text": "必须由数据负责人确认导出范围",
+      "in_review": true,
+      "in_full": true
+    },
+    {
+      "text": "发现新的导出字段时必须重新分析影响",
+      "in_review": true,
+      "in_full": true
+    },
+    {
+      "text": "未知审批约束必须回到负责人",
+      "in_review": true,
+      "in_full": true
+    }
+  ]
+}
+{
+  "schema_version": 3,
+  "blockers": [],
+  "checks": [
+    {
+      "text": "必须由数据负责人确认导出范围",
+      "in_review": true,
+      "in_full": true
+    },
+    {
+      "text": "发现新的导出字段时必须重新分析影响",
+      "in_review": true,
+      "in_full": true
+    },
+    {
+      "text": "未知审批约束必须回到负责人",
+      "in_review": true,
+      "in_full": true
+    }
+  ]
+}
+{
+  "kind": "synthetic-byte-budget",
+  "baseline_bytes": 5647,
+  "review_bytes": 3456,
+  "global_constraint_bytes": 1799,
+  "remaining_bytes": 1657,
+  "total_ratio": 0.612006375066407,
+  "remaining_ratio": 0.2934301398972906,
+  "total_70_percent_reduction_claim": false
+}

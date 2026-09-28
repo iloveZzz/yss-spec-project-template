@@ -1,0 +1,113 @@
+{
+  "reused_full_verification": {
+    "status": "passed",
+    "input_drift": false,
+    "unique_commands": 204,
+    "result_rows": 205,
+    "missing_archived_logs": []
+  },
+  "projection_correspondence": [
+    {
+      "profile": "yss-harness-design-agent",
+      "ref": "scripts/lib/contract-views.mjs",
+      "sha256": "37d85acde58bdb9b91d2fd4162c4be1401889efac2ecb1354e430ec74042e8d3",
+      "matches_canonical": true
+    },
+    {
+      "profile": "yss-harness-design-agent",
+      "ref": "scripts/lib/read-only-intake.mjs",
+      "sha256": "de89992861b819e13ab8cbea372083eebf6a87578d13ec1888130724f5dbe396",
+      "matches_canonical": true
+    },
+    {
+      "profile": "yss-harness-design-agent",
+      "ref": ".template-spec/process/schemas/digital-human-task-package.schema.json",
+      "sha256": "199cc3f5c1ec1c7f735329565717ee13bb1da17b6571da1c1a2e2728c2e9315d",
+      "matches_canonical": true
+    },
+    {
+      "profile": "yss-harness-design-agent",
+      "ref": "scripts/prepare-read-only-intake",
+      "sha256": "ec6bbd237994218a0b93e639960c9baeb64b6bdcd0b2c27a53dbe38b611dc438",
+      "matches_canonical": true
+    },
+    {
+      "profile": "yss-harness-design-agent",
+      "ref": "scripts/run-read-only-intake",
+      "sha256": "85996cd6f5adb126f46f5ca74ecb2e175b4b1649c8f8c2cf1d77993fb8fe2288",
+      "matches_canonical": true
+    },
+    {
+      "profile": "yss-harness-backend-agent",
+      "ref": "scripts/lib/contract-views.mjs",
+      "sha256": "37d85acde58bdb9b91d2fd4162c4be1401889efac2ecb1354e430ec74042e8d3",
+      "matches_canonical": true
+    },
+    {
+      "profile": "yss-harness-backend-agent",
+      "ref": "scripts/lib/read-only-intake.mjs",
+      "sha256": "de89992861b819e13ab8cbea372083eebf6a87578d13ec1888130724f5dbe396",
+      "matches_canonical": true
+    },
+    {
+      "profile": "yss-harness-backend-agent",
+      "ref": ".template-spec/process/schemas/digital-human-task-package.schema.json",
+      "sha256": "199cc3f5c1ec1c7f735329565717ee13bb1da17b6571da1c1a2e2728c2e9315d",
+      "matches_canonical": true
+    },
+    {
+      "profile": "yss-harness-backend-agent",
+      "ref": "scripts/prepare-read-only-intake",
+      "sha256": "ec6bbd237994218a0b93e639960c9baeb64b6bdcd0b2c27a53dbe38b611dc438",
+      "matches_canonical": true
+    },
+    {
+      "profile": "yss-harness-backend-agent",
+      "ref": "scripts/run-read-only-intake",
+      "sha256": "85996cd6f5adb126f46f5ca74ecb2e175b4b1649c8f8c2cf1d77993fb8fe2288",
+      "matches_canonical": true
+    },
+    {
+      "profile": "yss-harness-frontend-agent",
+      "ref": "scripts/lib/contract-views.mjs",
+      "sha256": "37d85acde58bdb9b91d2fd4162c4be1401889efac2ecb1354e430ec74042e8d3",
+      "matches_canonical": true
+    },
+    {
+      "profile": "yss-harness-frontend-agent",
+      "ref": "scripts/lib/read-only-intake.mjs",
+      "sha256": "de89992861b819e13ab8cbea372083eebf6a87578d13ec1888130724f5dbe396",
+      "matches_canonical": true
+    },
+    {
+      "profile": "yss-harness-frontend-agent",
+      "ref": ".template-spec/process/schemas/digital-human-task-package.schema.json",
+      "sha256": "199cc3f5c1ec1c7f735329565717ee13bb1da17b6571da1c1a2e2728c2e9315d",
+      "matches_canonical": true
+    },
+    {
+      "profile": "yss-harness-frontend-agent",
+      "ref": "scripts/prepare-read-only-intake",
+      "sha256": "ec6bbd237994218a0b93e639960c9baeb64b6bdcd0b2c27a53dbe38b611dc438",
+      "matches_canonical": true
+    },
+    {
+      "profile": "yss-harness-frontend-agent",
+      "ref": "scripts/run-read-only-intake",
+      "sha256": "85996cd6f5adb126f46f5ca74ecb2e175b4b1649c8f8c2cf1d77993fb8fe2288",
+      "matches_canonical": true
+    },
+    {
+      "profile": "codex",
+      "ref": ".codex/skills/yss-research/SKILL.md",
+      "sha256": "a86999e302fe8fb390f800e73cc9456f0d5a7c8ae45b8ca37cc760d7951df8fa",
+      "matches_canonical": true
+    },
+    {
+      "profile": "codex",
+      "ref": ".codex/skills/yss-product-lifecycle/references/orchestration-contract.yaml",
+      "sha256": "30228191140bee929682a56bb480285c4379db4f63b5d5e6cb6228827b86a850",
+      "matches_canonical": true
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+✔ display changes invalidate content binding without changing published semantics (88.026541ms)
+✔ identical queries bind deterministically, different queries bind independently (71.710917ms)
+✔ source changes during a query fail instead of mixing snapshots (21.009708ms)
+✔ an invalid identity fails even without an execution scope marker (0.217209ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 233.881459

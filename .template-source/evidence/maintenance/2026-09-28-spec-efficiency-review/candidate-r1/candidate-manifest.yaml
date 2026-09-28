@@ -1,0 +1,20 @@
+schema_version: 1
+candidate_kind: yss-worktree-candidate-v1
+storage: packed-stream
+review_mode: worktree
+review_base_ref: main
+merge_base: 79c405998388ee1b13e166377cdfc3bfaa9f0c14
+implementation_candidate_ref: working-tree
+candidate_snapshot_ref: .template-source/evidence/maintenance/2026-09-28-spec-efficiency-review/candidate-r1/candidate-manifest.yaml
+candidate_digest: 43cb6c24fdc1ceb14ad73a6d19c3f90597dad12c571e2a3b3182d6dffee1497d
+tracked_diff_command: git diff --no-ext-diff --binary --full-index 79c405998388ee1b13e166377cdfc3bfaa9f0c14
+untracked_inventory_command: git ls-files -z --others --exclude-standard
+untracked_diff_command: packed in candidate.bin
+untracked_files: []
+untracked_path_bytes: []
+excluded_paths:
+  - .template-source/evidence/maintenance/2026-09-28-spec-efficiency-review/candidate-r1
+  - .template-source/evidence/maintenance
+snapshot_stream_ref: .template-source/evidence/maintenance/2026-09-28-spec-efficiency-review/candidate-r1/candidate.bin
+tracked_diff_ref: .template-source/evidence/maintenance/2026-09-28-spec-efficiency-review/candidate-r1/tracked.diff
+commit_list_command: git log main..HEAD --oneline

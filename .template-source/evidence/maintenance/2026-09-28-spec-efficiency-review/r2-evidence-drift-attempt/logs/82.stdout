@@ -1,0 +1,105 @@
+YSS implementation contract compiler stage 7 scenarios passed
+✔ combines narrow recipes once and preserves deterministic output (9.641709ms)
+✔ does not promote conditional or component dependencies without explicit input (0.954375ms)
+✔ loads only explicitly satisfied context-conditional dependencies (0.620333ms)
+✔ requires a platform binding for every backend component capability (0.822083ms)
+✔ public compiler entry preserves stable component error codes (8.807375ms)
+✔ rejects recipes that reference skills and context-required cycles (2.006791ms)
+✔ rejects removed ids and schema v1 without compatibility (0.191458ms)
+✔ marks digest drift stale and validates v2 execution evidence (3.892375ms)
+✔ marks legacy component contracts without component bindings stale (1.834375ms)
+✔ current lifecycle scaffold contract delegates platform facts to the catalog (0.478709ms)
+✔ registered component imports and Maven artifacts discover omitted auxiliary skills on their own platform (202.212167ms)
+✔ HTTP and DTO are discovered without reported skill impacts (251.850709ms)
+✔ renamed controller, annotated interface and local composed annotation stay in coverage (181.911458ms)
+✔ missing one rule and duplicate rows cannot masquerade as complete skill review (178.917625ms)
+✔ rule-level N/A is allowed for absent pagination, never for the required use-case boundary (134.951166ms)
+✔ missing semantics, stale rule and evidence cannot pass (177.064917ms)
+✔ baseline can be clean and lacks business Spec but never authorizes implementation (212.175583ms)
+✔ baseline evidence binds current code and filesystem modes (192.706709ms)
+✔ domain-driven: discover violation → remediation → fresh independent protocol → full reconciliation (172.314416ms)
+✔ layered-mvc: discover violation → remediation → fresh independent protocol → full reconciliation (154.300833ms)
+✔ keeps registered boot2-java8, manual streaming endpoints need no CRUD metadata (148.33525ms)
+✔ keeps registered boot3-java17, manual streaming endpoints need no CRUD metadata (156.676709ms)
+✔ MyBatis from mapper XML is detected without Java Mapper naming (109.232334ms)
+✔ empty or unparsed business scope cannot claim conformance (106.757375ms)
+✔ unknown external annotation requires source-bound responsibility evidence (116.196458ms)
+✔ exact registered platform rejects wrong Validation namespace without upgrading JDK (172.850958ms)
+✔ comment and string type names are not architecture dependencies (122.246834ms)
+✔ persistence cannot import Web DTO even when behavioral assertions are green (122.1705ms)
+✔ CLI compilation is read-only and can audit without a Slice or scaffold manifest (227.556167ms)
+✔ unclassified existing type is a coverage gap, not an automatic N/A (117.342291ms)
+✔ changed source index or wire profile invalidates the locked skill even when SKILL.md is unchanged (147.842375ms)
+✔ an empty, skipped or historical test report cannot prove first slice behavior (7.229417ms)
+✔ matrix subset excludes unrequested candidates without calling them passed (148.28ms)
+✔ reduced historical v2 is readable but never executable (801.818208ms)
+✔ v3 verification separates structural reading from real bound approval and freshness (2449.605291ms)
+✔ responsibility bindings accept renamed types and require no unused persistence/page adapter (608.116792ms)
+✔ independent Standards and Spec record covers every applicable skill (2663.831041ms)
+✔ review refuses omitted skill (2184.991291ms)
+✔ review refuses self review (1813.768375ms)
+✔ review refuses stale candidate (1739.334125ms)
+✔ review refuses missing rule evidence (1889.207667ms)
+✔ review refuses tests green but standards violation (1890.970875ms)
+✔ review refuses stale verification bytes (1885.657541ms)
+✔ workflow cannot complete review without persisted review inputs (0.357916ms)
+✔ actual impact skills cannot be marked not-applicable (1844.321459ms)
+✔ untracked executable mode is part of candidate identity (1756.054541ms)
+✔ v2 migration preserves old bytes and extra evidence, reduces fields, and never inherits approval (986.847292ms)
+ℹ {"v1_fields":31,"v2_fields":23,"reduction":0.25806451612903225}
+✔ preparation generates all digests and rejects conflicting sources; actual review governs consumption (609.911042ms)
+✔ both API versions reject mismatched Drafts, unresolved review findings, missing evidence and stale versions (1825.434416ms)
+✔ design/backend/frontend receivers expose identical review and task constraints using original YAML (2793.579709ms)
+✔ a validation operation rejects changed bytes and additions, and the next operation reads fresh input (5.640208ms)
+✔ child dependency receipts reject missing, conflicting, and changed sources including policy/schema/message bytes (4.771084ms)
+✔ stages isolate immutable parsed values, purposes, roots, units and read-only state; cancellation rejects success (1.468291ms)
+✔ branded execution context rejects serialization, another root, read-only upgrade and reuse after its stage (1624.869333ms)
+✔ strict YAML and schema batching preserve duplicates, precision, array order, options and error order (81.992334ms)
+✔ review is compact, retains acceptance, and never authorizes execution; task retains every constraint (1919.96125ms)
+✔ all lifecycle asset groups remain readable and preserve unclassified constraints without granting execution (2986.228542ms)
+✖ compact review achieves the byte target without hiding required review information; task includes verification cwd and evidence (1167.184959ms)
+✔ frozen Ticket keeps tracker updates outside the requirement binding and rejects changed requirements (2367.086458ms)
+✔ low risk applicability comes from lifecycle rules; frontend existing baseline cannot hide UI changes (2087.1375ms)
+✔ preparation reports independent missing sources together and blocked drafts remain diagnostic-only (951.152ms)
+✔ review reads each aliased source once and exposes missing explanations without repeating acceptance (1066.334417ms)
+✔ registered cross-repo preparation and approved dispatch keep same-name paths and cwd distinct (9458.746292ms)
+✔ cross-repo execution result rejects same-name evidence substitution and missing joint dependencies (28270.093209ms)
+✔ existing UI baseline is fully verified and cannot replace new UI design evidence (1267.216791ms)
+✔ preparation blocks compiler basis changes during a single invocation (1244.120333ms)
+✔ v3 inherits constraints once and refuses task scope expansion and omitted acceptance (248.946958ms)
+✔ preparation reuses Ticket facts, renders persisted YAML and refuses source drift (581.203959ms)
+✔ MVC v3 requires real approval bindings and independent review before execution (8956.414292ms)
+✔ backend and frontend receiving distributions read the same authoritative v3 constraints (1507.509917ms)
+✔ conditional contracts and source bindings never turn missing information into not-applicable (624.530791ms)
+✔ explicit v2 migration preserves effective scope, rejects conflicts and never inherits approval (434.79625ms)
+✔ frontend and cross-repository extensions preserve required inputs and order (290.500625ms)
+✔ diff reports byte changes, array order and unknown upstream history without granting continuation (7.062541ms)
+✔ DDD design remains a single bound source with its slice-specific invariants visible (144.540125ms)
+✔ stage work item cannot be disguised as the implementation contract ticket (72.28875ms)
+ℹ tests 76
+ℹ suites 0
+ℹ pass 75
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 46819.221042
+
+✖ failing tests:
+
+test at scripts/fixtures/contract-efficiency/views.test.mjs:33:1
+✖ compact review achieves the byte target without hiding required review information; task includes verification cwd and evidence (1167.184959ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(Buffer.byteLength(review.markdown)<=Buffer.byteLength(original.markdown)*.3)
+  
+      at TestContext.<anonymous> (file:///Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template/scripts/fixtures/contract-efficiency/views.test.mjs:38:9)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

@@ -1,0 +1,894 @@
+diff --git a/.agents/skills/yss-research/SKILL.md b/.agents/skills/yss-research/SKILL.md
+index 87070f1af7f6101d036f43c6251ec57949d23ee7..a64333dd6bb633c2097fe449c3a2aa2b585b6547 100644
+--- a/.agents/skills/yss-research/SKILL.md
++++ b/.agents/skills/yss-research/SKILL.md
+@@ -42,6 +42,8 @@ Do not silently promote an exploratory request solely because more rigor would b
+ 
+ Use a background Agent when the runtime supports it and the reading can proceed independently while other useful work continues. Otherwise research in the current Agent. Delegation is an execution optimization, not a trust signal.
+ 
++Read-only intake uses task-package schema v2 with `contract.kind: read-only-intake`, `Explorer`, a registered intake work unit and an empty write set. Use `scripts/prepare-read-only-intake` and `scripts/run-read-only-intake`; the dispatcher keeps task and execution evidence outside the repository. No maintenance checkpoint is needed for research intake. No executed commands means `verification_status: not-executed`, not verified. Formal asset writes require owner impact analysis and a new formal task package. See `.template-spec/process/subagent-collaboration.md`.
++
+ Lifecycle dispatches must use the repository's structured task package, write isolation, role binding, and handoff contract. The owner receiving the result remains responsible for verifying material claims before consuming them.
+ 
+ ## Evidence-audited workflow
+diff --git a/.template-source/distribution/strategic-handoff-tools.lock.json b/.template-source/distribution/strategic-handoff-tools.lock.json
+index 288b38f6484f691b8794fe90dd3a4a25cbff559f..7691f10a9e94e40fbc28bab90cf7ff46bbc2629f 100644
+--- a/.template-source/distribution/strategic-handoff-tools.lock.json
++++ b/.template-source/distribution/strategic-handoff-tools.lock.json
+@@ -2,7 +2,7 @@
+   "schema_version": 1,
+   "target_id": "yss-harness-frontend-agent",
+   "source_repository": "yss-spec-project-template",
+-  "source_revision": "c686bfc7d65ae6b4831357365bf57a374d05e245",
++  "source_revision": "6c3f6c14c80fc940f5ee3f4ad618f53425cc401c",
+   "source_state": "committed",
+   "transformation_set": [
+     "identity"
+@@ -11,7 +11,7 @@
+     ".template-spec/agents/backend-architecture-profiles.md": "sha256:a10045a32a1738d2ab0fb602bcca2adc21c26ebcc14e508e8e6d9468d0b009cd",
+     ".template-spec/engineering/backend-platforms.json": "sha256:b9ca61d8480050ae3ffd538cd1428471280d8c46a6d90c217ff211f78c66ec60",
+     ".template-spec/engineering/backend-platforms.md": "sha256:6087daeebf507cfc12d7d66cf3331958adf7763507b6e2462501d497948244ae",
+-    ".template-spec/process/contract-reading.md": "sha256:a09d4929a2cf2e57651aa8076d8ebcfc12b0718c891e3a995ccd3d81027803c5",
++    ".template-spec/process/contract-reading.md": "sha256:98a23bc210fb14364a14954475abcf65055be38370c89864443a1bb91cc3eca4",
+     ".template-spec/process/delivery-preflight.md": "sha256:334a2d4df29ae8213b3e8214d17a2eb48662649fa895c3a9d68fcd23b3a1499d",
+     ".template-spec/process/existing-backend-architecture.md": "sha256:6fae391f6a81e510643139e33b5859e04279c5d8eb0abee66610c4888e785c60",
+     ".template-spec/process/existing-ui-baseline.md": "sha256:a4019c9aa3741c2009b9295ca84456bcc5655fbb514cdbd1b3cdba84f9cd06b4",
+@@ -23,7 +23,7 @@
+     ".template-spec/process/schemas/backend-delivery.schema.json": "sha256:92a97c59e180c2d618039af64e59863e48fe081d3e0a2ceea0b34923b426f5ee",
+     ".template-spec/process/schemas/delivery-preflight-input.schema.json": "sha256:3b9d38d917d92f305cfacf4e949672b4f4539d50194583027f39fd2fb31ce93c",
+     ".template-spec/process/schemas/delivery-preflight-result.schema.json": "sha256:fdd98392148dd4bb9f9e7a2654a7c77e8937740ae82a6778dbbb275e5916122d",
+-    ".template-spec/process/schemas/digital-human-task-package.schema.json": "sha256:47cf25093e768fb617abb5cbf8d2af99d70ce82ae0a3f260554ca1cac180ffa8",
++    ".template-spec/process/schemas/digital-human-task-package.schema.json": "sha256:199cc3f5c1ec1c7f735329565717ee13bb1da17b6571da1c1a2e2728c2e9315d",
+     ".template-spec/process/schemas/existing-ui-baseline.schema.json": "sha256:a6829ca6ed204a69897d7eff35cb350db71e281260bf72fa97d9bc124433af02",
+     ".template-spec/process/schemas/frontend-delivery-acceptance-v1.schema.json": "sha256:831f0132d391fd34eb7268417301588676c18e7d0e8700f74dc0a1f6f6f04754",
+     ".template-spec/process/schemas/frontend-delivery-acceptance-v3.schema.json": "sha256:fc2555fed02480e00e751c10cd7e3b07234f812d7d37acbe2819970ab73f2c2d",
+@@ -57,12 +57,13 @@
+     ".template-spec/process/schemas/user-decision.schema.json": "sha256:3391456766bb41766a939c8a06db39ab256f2d261bdd09fcc6bce05b243d128b",
+     ".template-spec/process/stage-tracking.md": "sha256:8920ecd6fe9e4c149d85f19a73ed97aee650d187046f80f47b1ed1d0ddebf975",
+     ".template-spec/process/strategic-handoff-package.md": "sha256:3c547f92585b8dd8a16aae7d8b07c4bd2bb3abc90436f9b5443454a9ba35b587",
++    ".template-spec/process/subagent-collaboration.md": "sha256:1b79230044195f262c72f7d348032546ef9fb7678ff43b84fdfce4b1be554a7f",
+     "scripts/api-contract-decision": "sha256:080fb7f7f187341985abb3ba8d8dfa823c17d88dbfbfb55e357f18f7b8f54a87",
+     "scripts/backend-delivery": "sha256:51ae1dc83e6b3d1bf740d5e371eecc3268577a95e4e200927954f48254a9aabf",
+     "scripts/backend-platforms": "sha256:1a85ffb099895b2aff22fd2792817553dcc8ae1480f555ef9180d419d972b83c",
+     "scripts/backend-standards-coverage": "sha256:433dfd5435e6a7c8b53297180557e7e94ff8818559c2c61f905b5f9fbac1524d",
+     "scripts/complete-backend-delivery": "sha256:543a442d32869c3e60280e84a85e5c1338a0ec4b784ba72486d2666be675efe2",
+-    "scripts/contract": "sha256:a24b786687f60c381327d78ef8c4e9203ca5f34a7cad3833173f25b03e0bebc6",
++    "scripts/contract": "sha256:c6ff2e1e0b8587f3892f241a651ce9382dbf377a5b059b75996af465f4ba40ed",
+     "scripts/dispatch-slice-task": "sha256:4771198c366d98b5d12bb8b5d377ad6956857c9c2b1e67496c5fe3855f6a4078",
+     "scripts/fixtures/backend-delivery/approval-fixture.mjs": "sha256:2bc8c2fa8899b54885deb26c628ea318b0702cc72824d097953b053f4ccbdd90",
+     "scripts/fixtures/backend-scaffold/design-prerequisites.mjs": "sha256:38e783e7bd8a85709d671436bb6f0d0184790cb35c2fb6b2df001a71d4f88685",
+@@ -94,7 +95,7 @@
+     "scripts/lib/context-contract.mjs": "sha256:4c674b02875b96f6bd8d8022c010423744cb7b82abe2a60e844ff74dd74e2220",
+     "scripts/lib/context-reconciliation.mjs": "sha256:20ef9e5a43c96d15bd201a2c769f62d45b1af0e65cd3b84ea15b8c68893802a6",
+     "scripts/lib/contract-source.mjs": "sha256:57d271e9be9b8ccb171671be3e244c0a148da00b93bc67400d0c27c7e9148fe2",
+-    "scripts/lib/contract-views.mjs": "sha256:5ae21520e87c683e5c70b4fd2d25e637b0561ceef9fc24ae16d1fd105c60dd53",
++    "scripts/lib/contract-views.mjs": "sha256:37d85acde58bdb9b91d2fd4162c4be1401889efac2ecb1354e430ec74042e8d3",
+     "scripts/lib/decision-continuation.mjs": "sha256:fbd544e0468ef7df19e6e69e33fd39d9fd419fc785ef606ec82f45edca9b70c1",
+     "scripts/lib/delivery-preflight.mjs": "sha256:ccf908d513dfeb607f39f15e47c92dde3496342c6f6181f7bc2e97f467268b4f",
+     "scripts/lib/existing-backend-architecture.mjs": "sha256:62ccf0726329aa6a75e018804b5c2e52041465c0e8bf72723aa14bb25ff58f27",
+@@ -103,11 +104,13 @@
+     "scripts/lib/first-slice-tests.mjs": "sha256:1fc8ba26f8eaf71023e90acc56c7b14781cb321445f2320e3bba7b244c4e4e5f",
+     "scripts/lib/frontend-delivery-boundary.mjs": "sha256:f101a277f535bb26e7751ea1f66023946b13ef2cbef1226b6545cc06cd35efdc",
+     "scripts/lib/frontend-delivery.mjs": "sha256:13fe908a266c062c4b627bcc103ddaa6d0203ea57f9a06d6268e394d44d17dbf",
++    "scripts/lib/harness-execution-scope.mjs": "sha256:4deb32ba90d322a9d2651adea3d0072de6f151d2c3a7f43389df790012ac0af3",
+     "scripts/lib/implementation-contract-compiler.mjs": "sha256:4e828f79c1996d5dfd30c06fe3a4f5600c155e93ee6a91af060e58a360fe19c1",
+     "scripts/lib/json-schema.mjs": "sha256:51800bc3e3bfa5d6a676a448e9ec4ca098c2847c6adc2f362aebf0a548b24fec",
+     "scripts/lib/lifecycle-execution-scope.mjs": "sha256:59907ff74c550573a9389d49ed80007a05dec0c810948ea1e1e55cbc30d27bb2",
+     "scripts/lib/maintenance-candidate.mjs": "sha256:4c5c89e66bd71383d8e99a7711370728d0fcf463644977a2af3b14b496dd1ffd",
+     "scripts/lib/openapi-draft-validation.mjs": "sha256:d37ca46115227b8f32fdf8a394086094aac602fbdd77815762a63ad0d39c9bba",
++    "scripts/lib/read-only-intake.mjs": "sha256:de89992861b819e13ab8cbea372083eebf6a87578d13ec1888130724f5dbe396",
+     "scripts/lib/scaffold-local-database.mjs": "sha256:66d47c11698b36ff57e4f37577c6f83ea3a6590f4b9ab6862833bd991fde3662",
+     "scripts/lib/skill-registry.mjs": "sha256:54532fa4ca31b6f3964b7214b67ac7e31f6721fe2a28ef056b4a907f731e3abc",
+     "scripts/lib/skill-supply-chain.mjs": "sha256:7cf8caff5226b50cae7d492c7353c19aea3df917539a21ab2c322c8155337611",
+@@ -117,7 +120,7 @@
+     "scripts/lib/slice-contract.mjs": "sha256:3dc8ce53ae8e4bfc9c8f4c3e74ebd132dba37994a94edc58acd24e3393973abd",
+     "scripts/lib/slice-execution-preflight.mjs": "sha256:5f8155944be784bfaead5c5e1ab24c40868b05917ff81fb17c25535c6a4dc181",
+     "scripts/lib/slice-repositories.mjs": "sha256:3658ce26cb3d4b88bff3c882a848977dcd4bc5664bcba6fc235f6c16c35f99e3",
+-    "scripts/lib/slice-task-package.mjs": "sha256:a59e5edad2fa580daef6d908087d3fedfa608393c8a96ac116bef15c6b7a5129",
++    "scripts/lib/slice-task-package.mjs": "sha256:0ee64f8f3cf0ce8480ac162c522580e00d8414ac8a8f6a52de079706227727aa",
+     "scripts/lib/stage-tracking-migration.mjs": "sha256:87543d601943e0b31ea550e4a2cd77d1f91ae701124fa7c8afe5731fb4f01fae",
+     "scripts/lib/stage-tracking.mjs": "sha256:5f1adf674bdc545c942fb43fdb7391d5b714980cddd8a7277158b1ae56f466bd",
+     "scripts/lib/strategic-feedback.mjs": "sha256:4121b6104c32f4d154ef789e2daab4a40b95cdf7a10bfa622a50c163eb1d4245",
+@@ -128,12 +131,15 @@
+     "scripts/lib/strategic-handoff-rules.mjs": "sha256:f346ef52b6b790e37071d691e4a6443ec40f5f070760c8110fa2e8b5646c195e",
+     "scripts/lib/strategic-handoff-zip.py": "sha256:726a86004b4bb7a38a670c81dc0b1d115411732e418688b698b1f7d4d900e180",
+     "scripts/lib/strategic-handoff.mjs": "sha256:eec8893ca3c5b35a0cfa651baacfe99324995aeb62147c65b0a1ba24992a3308",
++    "scripts/lib/task-package-schema.mjs": "sha256:ae16aeba04a0fef4a442c274a82d3888a089d9c86e747e67d27b11dc87c13f27",
+     "scripts/lib/technical-design-boundary.mjs": "sha256:7ce54f91952eb3b1fddc0bb0e63b153316ef6016eb1f288230062e235c894a77",
+     "scripts/lib/ui-baseline.mjs": "sha256:d16dad62c49a4f63dbde61df7d7af82185069a4d5b3eaea6585b49166b80c095",
+     "scripts/lib/user-decision-reuse.mjs": "sha256:c00e11c2caf9a727c018d4c4caa482b43ae66bd53ecbffea50b5964b55377d36",
+     "scripts/lib/user-decision.mjs": "sha256:bf7b9f31999d51b953e890c677e6a56d6bd8153f58fac8ba02c85c35eda2bf25",
+     "scripts/lib/validation-phase.mjs": "sha256:5a08dc611ef1ad75786c26010ebc1cb25e34c51b0d1a41db17101ffb52daf425",
+     "scripts/preflight-delivery": "sha256:cd83fa432847207b7167cfb5434846baff7615d5f2ffc33c7e9d4779c419f68f",
++    "scripts/prepare-read-only-intake": "sha256:ec6bbd237994218a0b93e639960c9baeb64b6bdcd0b2c27a53dbe38b611dc438",
++    "scripts/run-read-only-intake": "sha256:85996cd6f5adb126f46f5ca74ecb2e175b4b1649c8f8c2cf1d77993fb8fe2288",
+     "scripts/slice-contract": "sha256:219edfe2ba6c13feabd565411b28822e231a9cf72cbb120181dfc736324625c1",
+     "scripts/stage-tracking": "sha256:88132c6b8adc559f756de457f006dd4d0b127651ca7c9c86ca0e85516347f528",
+     "scripts/strategic-consumer-entry": "sha256:3977c9ee654a05f084ea431ae76982229c659f14ccfac4949c640750c41cb686",
+@@ -142,6 +148,7 @@
+     "scripts/vendor/xml.mjs": "sha256:bab9b35f123c30198a7597422ca0baa9f207c0e536b41f2c478c6fd6b7fdfc79",
+     "scripts/verify-context-reconciliation": "sha256:3734954ea8d6db85f5ac9d68dda45f6c6a975c9983b78f8b103bed8035e46ca3",
+     "scripts/verify-delivery-preflight-scenarios": "sha256:628dfb262117e609afe38216225cc5c5c5e2b20cb83f7eb47f021af4730e39a7",
++    "scripts/verify-digital-human-task-package": "sha256:725485bd830ce4196447343f689ec5cec5a4bf29cc979949858a0e0c9f0680b0",
+     "scripts/verify-existing-ui-baseline-scenarios": "sha256:a862b48bd0d3b70bff6e9b26c6998e95dad60d42de122f52477ccbd51dc09124",
+     "scripts/verify-frontend-delivery": "sha256:b592aaa6bba168f4ac39f9caa89a01590357f574cc9748bcf7148b622bf3837f",
+     "scripts/verify-frontend-strategic-preflight": "sha256:7543e9dbe7f710bf28d4187b97f234a76d239cb3eb07d4f2921e9442c76a8dd2",
+@@ -151,14 +158,14 @@
+     "scripts/verify-strategic-handoff-consumption": "sha256:9ab43edbcf48ab6677ca7389e959a557d52939455ed309e5306391aa48ef0b10",
+     "scripts/verify-strategic-handoff-package-scenarios": "sha256:7b7e85b1d6d809173c2cc64eefbd78df9a44e5cf3b2c6e0802d537834f33c341",
+     "scripts/verify-strategic-handoff-tools-lock": "sha256:7b413ccc4ab4dc606113ec9e3f51ddac0d2045a761b18130483a70118c566d9b",
+-    ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml": "sha256:9d3ff488dc7778bdd12e210928891871e27cd434bc9c6442b03a22bd105b0926",
++    ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml": "sha256:30228191140bee929682a56bb480285c4379db4f63b5d5e6cb6228827b86a850",
+     ".template-spec/agents/yss-skill-registry.yaml": "sha256:856ae1d9cad9e902fc7bda3d8a12d692b838d00ccad5477d8f960c13359b02a7"
+   },
+   "effective_files": {
+     ".template-spec/agents/backend-architecture-profiles.md": "sha256:a10045a32a1738d2ab0fb602bcca2adc21c26ebcc14e508e8e6d9468d0b009cd",
+     ".template-spec/engineering/backend-platforms.json": "sha256:b9ca61d8480050ae3ffd538cd1428471280d8c46a6d90c217ff211f78c66ec60",
+     ".template-spec/engineering/backend-platforms.md": "sha256:6087daeebf507cfc12d7d66cf3331958adf7763507b6e2462501d497948244ae",
+-    ".template-spec/process/contract-reading.md": "sha256:a09d4929a2cf2e57651aa8076d8ebcfc12b0718c891e3a995ccd3d81027803c5",
++    ".template-spec/process/contract-reading.md": "sha256:98a23bc210fb14364a14954475abcf65055be38370c89864443a1bb91cc3eca4",
+     ".template-spec/process/delivery-preflight.md": "sha256:334a2d4df29ae8213b3e8214d17a2eb48662649fa895c3a9d68fcd23b3a1499d",
+     ".template-spec/process/existing-backend-architecture.md": "sha256:6fae391f6a81e510643139e33b5859e04279c5d8eb0abee66610c4888e785c60",
+     ".template-spec/process/existing-ui-baseline.md": "sha256:a4019c9aa3741c2009b9295ca84456bcc5655fbb514cdbd1b3cdba84f9cd06b4",
+@@ -170,7 +177,7 @@
+     ".template-spec/process/schemas/backend-delivery.schema.json": "sha256:92a97c59e180c2d618039af64e59863e48fe081d3e0a2ceea0b34923b426f5ee",
+     ".template-spec/process/schemas/delivery-preflight-input.schema.json": "sha256:3b9d38d917d92f305cfacf4e949672b4f4539d50194583027f39fd2fb31ce93c",
+     ".template-spec/process/schemas/delivery-preflight-result.schema.json": "sha256:fdd98392148dd4bb9f9e7a2654a7c77e8937740ae82a6778dbbb275e5916122d",
+-    ".template-spec/process/schemas/digital-human-task-package.schema.json": "sha256:47cf25093e768fb617abb5cbf8d2af99d70ce82ae0a3f260554ca1cac180ffa8",
++    ".template-spec/process/schemas/digital-human-task-package.schema.json": "sha256:199cc3f5c1ec1c7f735329565717ee13bb1da17b6571da1c1a2e2728c2e9315d",
+     ".template-spec/process/schemas/existing-ui-baseline.schema.json": "sha256:a6829ca6ed204a69897d7eff35cb350db71e281260bf72fa97d9bc124433af02",
+     ".template-spec/process/schemas/frontend-delivery-acceptance-v1.schema.json": "sha256:831f0132d391fd34eb7268417301588676c18e7d0e8700f74dc0a1f6f6f04754",
+     ".template-spec/process/schemas/frontend-delivery-acceptance-v3.schema.json": "sha256:fc2555fed02480e00e751c10cd7e3b07234f812d7d37acbe2819970ab73f2c2d",
+@@ -204,12 +211,13 @@
+     ".template-spec/process/schemas/user-decision.schema.json": "sha256:3391456766bb41766a939c8a06db39ab256f2d261bdd09fcc6bce05b243d128b",
+     ".template-spec/process/stage-tracking.md": "sha256:8920ecd6fe9e4c149d85f19a73ed97aee650d187046f80f47b1ed1d0ddebf975",
+     ".template-spec/process/strategic-handoff-package.md": "sha256:3c547f92585b8dd8a16aae7d8b07c4bd2bb3abc90436f9b5443454a9ba35b587",
++    ".template-spec/process/subagent-collaboration.md": "sha256:1b79230044195f262c72f7d348032546ef9fb7678ff43b84fdfce4b1be554a7f",
+     "scripts/api-contract-decision": "sha256:080fb7f7f187341985abb3ba8d8dfa823c17d88dbfbfb55e357f18f7b8f54a87",
+     "scripts/backend-delivery": "sha256:51ae1dc83e6b3d1bf740d5e371eecc3268577a95e4e200927954f48254a9aabf",
+     "scripts/backend-platforms": "sha256:1a85ffb099895b2aff22fd2792817553dcc8ae1480f555ef9180d419d972b83c",
+     "scripts/backend-standards-coverage": "sha256:433dfd5435e6a7c8b53297180557e7e94ff8818559c2c61f905b5f9fbac1524d",
+     "scripts/complete-backend-delivery": "sha256:543a442d32869c3e60280e84a85e5c1338a0ec4b784ba72486d2666be675efe2",
+-    "scripts/contract": "sha256:a24b786687f60c381327d78ef8c4e9203ca5f34a7cad3833173f25b03e0bebc6",
++    "scripts/contract": "sha256:c6ff2e1e0b8587f3892f241a651ce9382dbf377a5b059b75996af465f4ba40ed",
+     "scripts/dispatch-slice-task": "sha256:4771198c366d98b5d12bb8b5d377ad6956857c9c2b1e67496c5fe3855f6a4078",
+     "scripts/fixtures/backend-delivery/approval-fixture.mjs": "sha256:2bc8c2fa8899b54885deb26c628ea318b0702cc72824d097953b053f4ccbdd90",
+     "scripts/fixtures/backend-scaffold/design-prerequisites.mjs": "sha256:38e783e7bd8a85709d671436bb6f0d0184790cb35c2fb6b2df001a71d4f88685",
+@@ -241,7 +249,7 @@
+     "scripts/lib/context-contract.mjs": "sha256:4c674b02875b96f6bd8d8022c010423744cb7b82abe2a60e844ff74dd74e2220",
+     "scripts/lib/context-reconciliation.mjs": "sha256:20ef9e5a43c96d15bd201a2c769f62d45b1af0e65cd3b84ea15b8c68893802a6",
+     "scripts/lib/contract-source.mjs": "sha256:57d271e9be9b8ccb171671be3e244c0a148da00b93bc67400d0c27c7e9148fe2",
+-    "scripts/lib/contract-views.mjs": "sha256:5ae21520e87c683e5c70b4fd2d25e637b0561ceef9fc24ae16d1fd105c60dd53",
++    "scripts/lib/contract-views.mjs": "sha256:37d85acde58bdb9b91d2fd4162c4be1401889efac2ecb1354e430ec74042e8d3",
+     "scripts/lib/decision-continuation.mjs": "sha256:fbd544e0468ef7df19e6e69e33fd39d9fd419fc785ef606ec82f45edca9b70c1",
+     "scripts/lib/delivery-preflight.mjs": "sha256:ccf908d513dfeb607f39f15e47c92dde3496342c6f6181f7bc2e97f467268b4f",
+     "scripts/lib/existing-backend-architecture.mjs": "sha256:62ccf0726329aa6a75e018804b5c2e52041465c0e8bf72723aa14bb25ff58f27",
+@@ -250,11 +258,13 @@
+     "scripts/lib/first-slice-tests.mjs": "sha256:1fc8ba26f8eaf71023e90acc56c7b14781cb321445f2320e3bba7b244c4e4e5f",
+     "scripts/lib/frontend-delivery-boundary.mjs": "sha256:f101a277f535bb26e7751ea1f66023946b13ef2cbef1226b6545cc06cd35efdc",
+     "scripts/lib/frontend-delivery.mjs": "sha256:13fe908a266c062c4b627bcc103ddaa6d0203ea57f9a06d6268e394d44d17dbf",
++    "scripts/lib/harness-execution-scope.mjs": "sha256:4deb32ba90d322a9d2651adea3d0072de6f151d2c3a7f43389df790012ac0af3",
+     "scripts/lib/implementation-contract-compiler.mjs": "sha256:4e828f79c1996d5dfd30c06fe3a4f5600c155e93ee6a91af060e58a360fe19c1",
+     "scripts/lib/json-schema.mjs": "sha256:51800bc3e3bfa5d6a676a448e9ec4ca098c2847c6adc2f362aebf0a548b24fec",
+     "scripts/lib/lifecycle-execution-scope.mjs": "sha256:59907ff74c550573a9389d49ed80007a05dec0c810948ea1e1e55cbc30d27bb2",
+     "scripts/lib/maintenance-candidate.mjs": "sha256:4c5c89e66bd71383d8e99a7711370728d0fcf463644977a2af3b14b496dd1ffd",
+     "scripts/lib/openapi-draft-validation.mjs": "sha256:d37ca46115227b8f32fdf8a394086094aac602fbdd77815762a63ad0d39c9bba",
++    "scripts/lib/read-only-intake.mjs": "sha256:de89992861b819e13ab8cbea372083eebf6a87578d13ec1888130724f5dbe396",
+     "scripts/lib/scaffold-local-database.mjs": "sha256:66d47c11698b36ff57e4f37577c6f83ea3a6590f4b9ab6862833bd991fde3662",
+     "scripts/lib/skill-registry.mjs": "sha256:54532fa4ca31b6f3964b7214b67ac7e31f6721fe2a28ef056b4a907f731e3abc",
+     "scripts/lib/skill-supply-chain.mjs": "sha256:7cf8caff5226b50cae7d492c7353c19aea3df917539a21ab2c322c8155337611",
+@@ -264,7 +274,7 @@
+     "scripts/lib/slice-contract.mjs": "sha256:3dc8ce53ae8e4bfc9c8f4c3e74ebd132dba37994a94edc58acd24e3393973abd",
+     "scripts/lib/slice-execution-preflight.mjs": "sha256:5f8155944be784bfaead5c5e1ab24c40868b05917ff81fb17c25535c6a4dc181",
+     "scripts/lib/slice-repositories.mjs": "sha256:3658ce26cb3d4b88bff3c882a848977dcd4bc5664bcba6fc235f6c16c35f99e3",
+-    "scripts/lib/slice-task-package.mjs": "sha256:a59e5edad2fa580daef6d908087d3fedfa608393c8a96ac116bef15c6b7a5129",
++    "scripts/lib/slice-task-package.mjs": "sha256:0ee64f8f3cf0ce8480ac162c522580e00d8414ac8a8f6a52de079706227727aa",
+     "scripts/lib/stage-tracking-migration.mjs": "sha256:87543d601943e0b31ea550e4a2cd77d1f91ae701124fa7c8afe5731fb4f01fae",
+     "scripts/lib/stage-tracking.mjs": "sha256:5f1adf674bdc545c942fb43fdb7391d5b714980cddd8a7277158b1ae56f466bd",
+     "scripts/lib/strategic-feedback.mjs": "sha256:4121b6104c32f4d154ef789e2daab4a40b95cdf7a10bfa622a50c163eb1d4245",
+@@ -275,12 +285,15 @@
+     "scripts/lib/strategic-handoff-rules.mjs": "sha256:f346ef52b6b790e37071d691e4a6443ec40f5f070760c8110fa2e8b5646c195e",
+     "scripts/lib/strategic-handoff-zip.py": "sha256:726a86004b4bb7a38a670c81dc0b1d115411732e418688b698b1f7d4d900e180",
+     "scripts/lib/strategic-handoff.mjs": "sha256:eec8893ca3c5b35a0cfa651baacfe99324995aeb62147c65b0a1ba24992a3308",
++    "scripts/lib/task-package-schema.mjs": "sha256:ae16aeba04a0fef4a442c274a82d3888a089d9c86e747e67d27b11dc87c13f27",
+     "scripts/lib/technical-design-boundary.mjs": "sha256:7ce54f91952eb3b1fddc0bb0e63b153316ef6016eb1f288230062e235c894a77",
+     "scripts/lib/ui-baseline.mjs": "sha256:d16dad62c49a4f63dbde61df7d7af82185069a4d5b3eaea6585b49166b80c095",
+     "scripts/lib/user-decision-reuse.mjs": "sha256:c00e11c2caf9a727c018d4c4caa482b43ae66bd53ecbffea50b5964b55377d36",
+     "scripts/lib/user-decision.mjs": "sha256:bf7b9f31999d51b953e890c677e6a56d6bd8153f58fac8ba02c85c35eda2bf25",
+     "scripts/lib/validation-phase.mjs": "sha256:5a08dc611ef1ad75786c26010ebc1cb25e34c51b0d1a41db17101ffb52daf425",
+     "scripts/preflight-delivery": "sha256:cd83fa432847207b7167cfb5434846baff7615d5f2ffc33c7e9d4779c419f68f",
++    "scripts/prepare-read-only-intake": "sha256:ec6bbd237994218a0b93e639960c9baeb64b6bdcd0b2c27a53dbe38b611dc438",
++    "scripts/run-read-only-intake": "sha256:85996cd6f5adb126f46f5ca74ecb2e175b4b1649c8f8c2cf1d77993fb8fe2288",
+     "scripts/slice-contract": "sha256:219edfe2ba6c13feabd565411b28822e231a9cf72cbb120181dfc736324625c1",
+     "scripts/stage-tracking": "sha256:88132c6b8adc559f756de457f006dd4d0b127651ca7c9c86ca0e85516347f528",
+     "scripts/strategic-consumer-entry": "sha256:3977c9ee654a05f084ea431ae76982229c659f14ccfac4949c640750c41cb686",
+@@ -289,6 +302,7 @@
+     "scripts/vendor/xml.mjs": "sha256:bab9b35f123c30198a7597422ca0baa9f207c0e536b41f2c478c6fd6b7fdfc79",
+     "scripts/verify-context-reconciliation": "sha256:3734954ea8d6db85f5ac9d68dda45f6c6a975c9983b78f8b103bed8035e46ca3",
+     "scripts/verify-delivery-preflight-scenarios": "sha256:628dfb262117e609afe38216225cc5c5c5e2b20cb83f7eb47f021af4730e39a7",
++    "scripts/verify-digital-human-task-package": "sha256:725485bd830ce4196447343f689ec5cec5a4bf29cc979949858a0e0c9f0680b0",
+     "scripts/verify-existing-ui-baseline-scenarios": "sha256:a862b48bd0d3b70bff6e9b26c6998e95dad60d42de122f52477ccbd51dc09124",
+     "scripts/verify-frontend-delivery": "sha256:b592aaa6bba168f4ac39f9caa89a01590357f574cc9748bcf7148b622bf3837f",
+     "scripts/verify-frontend-strategic-preflight": "sha256:7543e9dbe7f710bf28d4187b97f234a76d239cb3eb07d4f2921e9442c76a8dd2",
+diff --git a/.template-spec/process/contract-reading.md b/.template-spec/process/contract-reading.md
+index a0dfc36720edfe66b91cfb2ed2b045814e103cfa..c1e18c0f2378a2ba99c752f681b58f0edd32e613 100644
+--- a/.template-spec/process/contract-reading.md
++++ b/.template-spec/process/contract-reading.md
+@@ -44,3 +44,15 @@ v2 的 `openapi` 是唯一 Draft 绑定，`draft_review` 只存 `ref/digest`，F
+ 成功返回前复核所有登记原字节、目录枚举及不存在项。技术设计子进程自行验证批准，再返回依赖清单；父进程合并读取集合，读取矛盾、遗漏报告或异常均阻断。此清单不是批准上下文。品牌上下文不能序列化、跨仓或从只读升级；在阶段中生成的上下文结束后失效。调用者可传入 `AbortSignal`，已收到的撤回事件须中止当前操作；下一次边界始终重新读取当前批准和回复。未接入读取追踪的消费者保留原检查，不共享结果。
+ 
+ P1 可回用原 `slice-contract` 阅读入口；P2 可回退阶段调用与本次改动的读取适配，恢复完整重复检查；P3 可停止创建 v2，但已生成 v2 的读取能力必须保留。回退后重新验证当前来源和批准，不恢复历史通过状态。
++
++## 默认派发与审阅材料
++
++提供该查询入口的聚合与战略模板中，派发首先用 `scripts/query-lifecycle-context` 一次组合 mode、stage、work-unit 与必要合同子树（`--mode`、`--stage`、`--work-unit`、`--include`）。结果 `sources.lifecycle_registry.sha256` 绑定原始注册表字节，`context_sha256` 绑定规范化查询、实际返回内容及来源；旧 `semantic_sha256` 只绑定稳定 ID 语义。旧结果缺少新增绑定时重新查询，不视作可复用。身份、执行范围和查询来源在同一 `validation-phase` 内读取，返回前变化则失败。
++
++专职交付 Profile 的阶段与 mode 继续由其现有 harness-profile 和主控入口解析，不假定未分发的查询命令存在。实现者默认读取指定 `--unit` 的 `task` 视图，审阅者默认读取 `review`；不要先整读 YAML 再重复生成相同视图。身份、版本、写边界、验收、停止条件、风险与未知约束均须保留，需要追溯时展开 `full`。一次执行边界内可复用未变来源；恢复、交接、实现、合并及发布重新核验。Context Plan 的原始 v2 字段为 `common.context_plan`，原始 v3 为 `scope.context_plan`；`common.context_plan` 在 v3 运行时只是归一化别名，不是修改原 YAML 的位置。
++
++```sh
++scripts/contract prepare-review <前资产> <后资产> --kind <类型> [--unit <ID>] [--decision <原决定.yaml>] --json
++```
++
++输出来源字节绑定、差异、完整约束、原决定与缺口及恢复动作。`approval_reusable: false`、`execution_allowed: false` 固定不授予批准或执行权；语义等价、风险接受、原回复真实性和批准延续由原审查及决定验证器处理。缺少原决定标记未提供，不能据此沿用批准。
+diff --git a/.template-spec/process/schemas/digital-human-task-package.schema.json b/.template-spec/process/schemas/digital-human-task-package.schema.json
+index 3e869a19e6cfed2409e2b1c6176fc75169d0a68e..190232f7cd1f1221d26abc37131455962bd67707 100644
+--- a/.template-spec/process/schemas/digital-human-task-package.schema.json
++++ b/.template-spec/process/schemas/digital-human-task-package.schema.json
+@@ -31,13 +31,28 @@
+       "type": "object",
+       "additionalProperties": false,
+       "properties": {
+-        "strategic_handoff_consumption": { "type": "object" },
+-        "approved_spec": { "type": "object" },
+-        "context_reconciliation": { "type": "object" },
+-        "technical_design": { "type": "object" },
+-        "data_architecture_decision": { "type": "object" },
+-        "api_contract_decision": { "type": "object" },
+-        "engineering_contract_approval_ref": { "type": "string", "minLength": 1 }
++        "strategic_handoff_consumption": {
++          "type": "object"
++        },
++        "approved_spec": {
++          "type": "object"
++        },
++        "context_reconciliation": {
++          "type": "object"
++        },
++        "technical_design": {
++          "type": "object"
++        },
++        "data_architecture_decision": {
++          "type": "object"
++        },
++        "api_contract_decision": {
++          "type": "object"
++        },
++        "engineering_contract_approval_ref": {
++          "type": "string",
++          "minLength": 1
++        }
+       }
+     },
+     "plan_review_ref": {
+@@ -57,7 +72,10 @@
+       "minLength": 1
+     },
+     "schema_version": {
+-      "const": 1
++      "enum": [
++        1,
++        2
++      ]
+     },
+     "frontend_delivery": {
+       "type": "object",
+@@ -181,7 +199,8 @@
+           "enum": [
+             "lifecycle-work-unit",
+             "slice-implementation",
+-            "template-maintenance"
++            "template-maintenance",
++            "read-only-intake"
+           ]
+         },
+         "contract_id": {
+@@ -343,7 +362,7 @@
+     },
+     "allowed_write_paths": {
+       "type": "array",
+-      "minItems": 1,
++      "minItems": 0,
+       "uniqueItems": true,
+       "items": {
+         "type": "string",
+@@ -369,7 +388,7 @@
+     },
+     "expected_evidence_files": {
+       "type": "array",
+-      "minItems": 1,
++      "minItems": 0,
+       "uniqueItems": true,
+       "items": {
+         "type": "string",
+@@ -378,7 +397,7 @@
+     },
+     "verification_commands": {
+       "type": "array",
+-      "minItems": 1,
++      "minItems": 0,
+       "items": {
+         "type": "string",
+         "minLength": 1
+@@ -423,6 +442,10 @@
+           "stderr_ref": {
+             "type": "string",
+             "minLength": 1
++          },
++          "evidence_digest": {
++            "type": "string",
++            "pattern": "^sha256:[a-f0-9]{64}$"
+           }
+         }
+       }
+@@ -677,6 +700,16 @@
+     "checkpoint_ref": {
+       "type": "string",
+       "minLength": 1
++    },
++    "verification_status": {
++      "enum": [
++        "not-executed",
++        "executed"
++      ]
++    },
++    "observation_ref": {
++      "type": "string",
++      "pattern": "^run:"
+     }
+   },
+   "allOf": [
+@@ -765,6 +798,127 @@
+           "review_context"
+         ]
+       }
++    },
++    {
++      "if": {
++        "properties": {
++          "schema_version": {
++            "const": 1
++          }
++        }
++      },
++      "then": {
++        "properties": {
++          "contract": {
++            "properties": {
++              "kind": {
++                "enum": [
++                  "lifecycle-work-unit",
++                  "slice-implementation",
++                  "template-maintenance"
++                ]
++              }
++            }
++          },
++          "allowed_write_paths": {
++            "minItems": 1
++          },
++          "expected_evidence_files": {
++            "minItems": 1
++          },
++          "verification_commands": {
++            "minItems": 1
++          }
++        }
++      },
++      "else": {
++        "required": [
++          "verification_status"
++        ],
++        "properties": {
++          "execution_state": {
++            "const": "Explorer"
++          },
++          "work_unit_id": {
++            "enum": [
++              "work-unit.entry-triage",
++              "work-unit.harness-entry"
++            ]
++          },
++          "allowed_write_paths": {
++            "maxItems": 0
++          },
++          "contract": {
++            "properties": {
++              "kind": {
++                "const": "read-only-intake"
++              }
++            },
++            "not": {
++              "anyOf": [
++                {
++                  "required": [
++                    "maintenance_ref"
++                  ]
++                },
++                {
++                  "required": [
++                    "slice_contract_ref"
++                  ]
++                },
++                {
++                  "required": [
++                    "lifecycle_ref"
++                  ]
++                }
++              ]
++            }
++          },
++          "result": {
++            "properties": {
++              "changed_files": {
++                "maxItems": 0
++              },
++              "changed_artifacts": {
++                "maxItems": 0
++              },
++              "next_route": {
++                "type": "null"
++              }
++            }
++          },
++          "stage_id": {
++            "enum": [
++              "stage.entry-triage",
++              "stage.harness-entry"
++            ]
++          }
++        },
++        "not": {
++          "anyOf": [
++            {
++              "required": [
++                "checkpoint_ref"
++              ]
++            },
++            {
++              "required": [
++                "review_context"
++              ]
++            },
++            {
++              "required": [
++                "review_input"
++              ]
++            },
++            {
++              "required": [
++                "user_decisions"
++              ]
++            }
++          ]
++        }
++      }
+     }
+   ]
+ }
+diff --git a/.template-spec/process/subagent-collaboration.md b/.template-spec/process/subagent-collaboration.md
+index 2541e89c1173036adb312e0ffd675c8b554784eb..55665b38beee00b9962fb4ce7e43781d031453ac 100644
+--- a/.template-spec/process/subagent-collaboration.md
++++ b/.template-spec/process/subagent-collaboration.md
+@@ -1,13 +1,21 @@
+ # Subagent 协作规则
+ 
+-Subagent 和其它运行时实例只接收边界清晰的任务包。Harness Orchestrator 负责仓库身份、门禁计算、Ticket 状态、Git checkpoint 和完成结论。四类 Agent 角色、`runtime_id` 与 Explorer / Drafter / Worker / Reviewer / Verifier 执行态正交，任务包必须同时写明。
++Subagent 和其它运行时实例只接收边界清晰的任务包。主控数字人负责仓库身份、门禁计算、Ticket 状态、Git checkpoint 和完成结论。数字人角色、`runtime_id` 与 Explorer / Drafter / Worker / Reviewer / Verifier 执行态正交，任务包必须同时写明。
+ 
+ 写入范围不得与其他执行者重叠；实现者不得同时担任同一切片的独立审查者，也不得会签自己起草的资产。写隔离以任务包为准。某运行时若共享磁盘或会话，不得把不同实例当成安全边界。
+ 
+ ## 任务包
+ 
+-Harness Orchestrator 向四类 Agent 或独立运行时正式派发 Harness 工作单元时，必须使用 `.template-spec/process/schemas/digital-human-task-package.schema.json` 定义的任务包，并写明 `task_id`、`work_unit_id`、`actor_id`、角色 ID、`runtime_id`、执行态、工作流状态、从 `.template-spec/agents/digital-human-roles.yaml` 复制的 `core_skills` / `forbidden_skills`（可用 `taskPackageDefaults`）、合同类型和版本、输入资产、目标、允许写路径、禁止事项、验收标准、验证命令及其实际退出码 / 执行时间 / 证据引用、下游消费者和汇合方式。`slice-implementation` 额外绑定 Slice Implementation Contract；禁止手写第二套技能包；任务包由 `scripts/verify-digital-human-task-package` 校验，`scripts/verify-subagent-task-package` 仅为兼容入口。
++凡主控向数字人角色或独立运行时正式派发生命周期工作单元，都必须使用 `.template-spec/process/schemas/digital-human-task-package.schema.json` 定义的任务包，并写明 `task_id`、`work_unit_id`、`actor_id`、数字人角色 ID、`runtime_id`、执行态、工作流状态、从 `.template-spec/agents/digital-human-roles.yaml` 复制的 `core_skills` / `forbidden_skills`（可用 `taskPackageDefaults`）、合同类型和版本、输入资产、目标、允许写路径、禁止事项、验收标准、验证命令及其实际退出码 / 执行时间 / 证据引用、下游消费者和汇合方式。`slice-implementation` 才额外绑定 Slice Implementation Contract；禁止手写第二套技能包；任务包由 `scripts/verify-digital-human-task-package` 校验，`scripts/verify-subagent-task-package` 仅为兼容入口。
+ 
+ ## 汇合
+ 
+ 返回结果必须符合 `workflow-execution-result-v1`，至少包括 `work_unit`、`workflow_reference`、`result`、`skill`、`changed_files` / `changed_artifacts`、`evidence_refs`、实际验证结果、`deferred_seams`、`drift`、`violation`、`new_impacts`、`stale_candidates`、`blocking_signals` 和 `next_route`。主控必须重新执行 fresh verification，并在集中 checkpoint 中保留阶段因果。会签写入 `docs/.scratch/<feature>/gates/<gate-id>-approval.yaml`（形状见 `.template-spec/templates/approval-record-template.yaml`），不能用聊天表情代替。恢复前校验 `scripts/verify-approval-record`。
++
++## 只读分诊任务包 v2
++
++schema v1 及三种正式合同继续执行原规则。v2 仅用于 `read-only-intake`：`Explorer`、注册表已有 `work-unit.entry-triage` 或专职 Profile 的 `work-unit.harness-entry`、`allowed_write_paths: []`，不带 checkpoint、Slice 或正式审查合同。研究完成只回传来源和结论，不更新阶段、Ticket、批准或 `next_route`；写正式资产前由主控重新分析影响并生成正式任务包。旧消费者必须拒绝 v2 并升级，禁止改写为 v1 绕过边界。
++
++`prepare-read-only-intake --input <选择.yaml> --output <仓库外/task.json>` 从角色默认值生成任务包；输入沿用任务 ID、角色、运行时、分诊入口、合同 ID/版本/来源、输入、目标、禁止事项、预期输出、下游消费者和汇合字段。`run-read-only-intake --task <task.json> --run-dir <仓库外新目录> [--timeout-ms <毫秒>] -- <命令> <参数>` 保存观测与日志；不传命令时明确未执行验证。复核使用 `verify-digital-human-task-package <run-dir/task-result.json> --run-dir <绝对目录>`。
++
++运行证据使用 `run:` 相对引用，禁止绝对路径、`..` 与符号链接逃逸。命令、退出码、时间、stdout/stderr 与摘要必须一致；源码引用不能冒充运行日志。派发器观察 Git 跟踪、未跟踪及忽略文件的新增、删除、修改及已初始化子仓，结果中的空变更声明不能覆盖实际差异。未初始化子仓阻断观测。此工具是合同与结果审计，不是 OS 沙箱：执行期间改后恢复及可信派发器证据被恶意同步伪造不在终态观测能力内；运行目录应由派发器持有，不扩大 Agent 仓库写权限，运行时仍须采用只读权限。恢复后重新观察，不能直接复用旧完成状态。
+diff --git a/scripts/contract b/scripts/contract
+index a06a083281f509fe8078e515136b25364a2b8b10..3fe7afb087294be1477f2a9a28868349514cb0ee 100755
+--- a/scripts/contract
++++ b/scripts/contract
+@@ -1,13 +1,13 @@
+ #!/usr/bin/env node
+ import path from 'node:path';
+-import {viewContract,diffContract} from './lib/contract-views.mjs';
++import {viewContract,diffContract,prepareContractReview} from './lib/contract-views.mjs';
+ try{
+  const args=process.argv.slice(2),mode=args.shift(),options={},positional=[];
+- for(let i=0;i<args.length;i++){const arg=args[i];if(arg==='--json')options.json=true;else if(arg.startsWith('--')){const key=arg.slice(2);if(!['kind','profile','unit','root','before-root'].includes(key)||!args[i+1]||args[i+1].startsWith('--'))throw Error(`未知或缺值参数 ${arg}`);options[key]=args[++i];}else positional.push(arg);}
+- const config={kind:options.kind,root:path.resolve(options.root||process.cwd()),profile:options.profile||'review',unit_id:options.unit,beforeRoot:options['before-root']?path.resolve(options['before-root']):undefined};
++ for(let i=0;i<args.length;i++){const arg=args[i];if(arg==='--json')options.json=true;else if(arg.startsWith('--')){const key=arg.slice(2);if(!['kind','profile','unit','root','before-root','decision'].includes(key)||!args[i+1]||args[i+1].startsWith('--'))throw Error(`未知或缺值参数 ${arg}`);options[key]=args[++i];}else positional.push(arg);}
++ const config={kind:options.kind,root:path.resolve(options.root||process.cwd()),profile:options.profile||'review',unit_id:options.unit,beforeRoot:options['before-root']?path.resolve(options['before-root']):undefined,decision_ref:options.decision};
+  if(!options.kind)throw Error('必须用 --kind 明确资产类型');
+- if(!['view','diff'].includes(mode)||positional.length!==(mode==='view'?1:2))throw Error('用法: contract view <资产> --kind <类型> [--profile review|task|full] [--unit <ID>] [--json] | diff <旧资产> <新资产> --kind <类型>');
+- const result=mode==='view'?viewContract(positional[0],config):diffContract(positional[0],positional[1],config);
++ if(!['view','diff','prepare-review'].includes(mode)||positional.length!==(mode==='view'?1:2))throw Error('用法: contract view <资产> --kind <类型> [--profile review|task|full] [--unit <ID>] [--json] | diff|prepare-review <旧资产> <新资产> --kind <类型> [--decision <原决定>]');
++ const result=mode==='view'?viewContract(positional[0],config):mode==='prepare-review'?prepareContractReview(positional[0],positional[1],config):diffContract(positional[0],positional[1],config);
+  process.stdout.write(options.json||!result.markdown?JSON.stringify(result,null,2)+'\n':result.markdown);
+  if(result.blockers?.length)process.exitCode=1;
+ }catch(error){process.stderr.write(error.message+'\n');process.exitCode=1;}
+diff --git a/scripts/lib/contract-views.mjs b/scripts/lib/contract-views.mjs
+index 974e6a49afc4c99b9556763eeea93f68195ca840..724229cbf38a29ac517b0ebde6c63cc1f4c04e1b 100644
+--- a/scripts/lib/contract-views.mjs
++++ b/scripts/lib/contract-views.mjs
+@@ -66,12 +66,15 @@ function view(ref,{root=process.cwd(),kind,profile='review',unit_id}={}){
+   const loaded=readSliceContract(ref,{root,diagnostic:true});binding=loaded.binding;blockers.push(...declaredBlockers(loaded.raw));
+   const legacy=renderSliceContractView(ref,{root,unit_id:profile==='task'?unit_id:undefined});
+   checks.push('Slice 结构及绑定来源');
+-  if(legacy.diagnostic_only){content={诊断:legacy.blockers};blockers=legacy.blockers.map(b=>b.reason);}
++  if(legacy.diagnostic_only){content={诊断:legacy.blockers,未校验的原合同:loaded.raw};blockers=legacy.blockers.map(b=>b.reason);}
+   else if(profile==='full')content={权威合同:loaded.raw,完整视图:legacy};
+   else if(profile==='review'){
+    content={...legacy.summary,验收:legacy.acceptance,实施范围:{工程:loaded.raw.scope?.project_roots||legacy.constraints.project_roots,允许写入:loaded.raw.scope?.allowed_write_paths||legacy.constraints.allowed_write_paths},关键约束:loaded.raw.scope?.forbidden_patterns||legacy.constraints.forbidden_patterns,停止条件:'来源或批准过期、越界、缺证据、验证失败、drift / violation / new_impacts 时停止并回交。'};
+    for(const key of ['risks','risk_acceptance','blockers','pending_decisions','constraints'])if(loaded.raw[key])content[key]=loaded.raw[key];
+    for(const [label,pattern]of [['风险',/风险/],['关键取舍',/取舍/],['待决定事项',/待|决定/],['变化',/变化|变更/]])if(!Object.keys(content).some(k=>pattern.test(k)))content[label]='来源未说明，审阅时核实。';
++   const reviewKnown=new Set(['schema_version','contract_id','contract_version','slice_id','status','basis','scope','common','lifecycle_refs','applicability','resolution','acceptance','verification','work_units','extensions','ticket_policy']);
++   content.未分类约束=Object.fromEntries(Object.entries(loaded.raw).filter(([key])=>!reviewKnown.has(key)));
++   content.专项约束=loaded.raw.extensions;content.适用性=loaded.raw.applicability;
+    const extensions=loaded.raw.extensions||{};
+    for(const [name,extension]of Object.entries(extensions))for(const [key,value]of Object.entries(extension))if(/risk|constraint|decision|block|exception|unknown/.test(key))content[`${name}.${key}`]=value;
+   }else{
+@@ -107,3 +110,45 @@ export function diffContract(beforeRef,afterRef,{root=process.cwd(),beforeRoot=r
+  walk(before.raw,after.raw,'');const source_checks=[...references(before.raw,beforeRoot).map(x=>({...x,side:'before'})),...references(after.raw,root).map(x=>({...x,side:'after'}))];
+  return{read_only:true,approval_reusable:false,execution_allowed:false,before:{ref:beforeRef,digest:hash(before.bytes)},after:{ref:afterRef,digest:hash(after.bytes)},bytes_changed:!before.bytes.equals(after.bytes),changes,source_checks,decision_impact:'必须按当前差异和授权延续协议核验；无法读取旧来源时影响未知。'};
+ }
++
++/** Mechanical review material only; original decisions and semantic review remain authoritative. */
++export function prepareContractReview(beforeRef, afterRef, options = {}) {
++  const root = options.root || process.cwd();
++  return withValidationPhase({root,purpose:'prepare-contract-review',readOnly:true}, () => {
++    validateKind(options.kind);
++    const gaps = [];
++    const gap = (code, source_ref, reason, recovery) => gaps.push({code,source_ref,reason,recovery});
++    const readView = (ref, side, sourceRoot) => {
++      try {
++        const value = viewContract(ref,{...options,root:sourceRoot,profile:'full'});
++        for(const blocker of value.blockers)gap('SOURCE_INVALID',ref,blocker,'恢复当前权威来源并重新校验');
++        return value;
++      } catch(error) { gap('SOURCE_UNREADABLE',ref,`${side}: ${error.message}`,'提供可读取的原始资产；不推断历史内容');return null; }
++    };
++    const before = readView(beforeRef,'before',options.beforeRoot||root), after = readView(afterRef,'after',root);
++    if(before?.binding.id && after?.binding.id && before.binding.id!==after.binding.id)gap('IDENTITY_CONFLICT',afterRef,'前后资产 ID 不一致','选择同一资产的前后版本');
++    if(before?.binding.version && before.binding.version===after?.binding.version && before.binding.digest!==after.binding.digest)gap('VERSION_CONFLICT',afterRef,'相同版本包含不同字节','形成新候选版本并重新核验');
++    let diff = null;
++    if(before&&after)try{diff=diffContract(beforeRef,afterRef,options);}catch(error){gap('DIFF_UNAVAILABLE',afterRef,error.message,'先修复来源绑定与版本冲突');}
++    let originalDecision = null;
++    if(options.decision_ref) {
++      try {
++        const loaded=load(options.decision_ref,root);
++        schema(loaded.raw,'.template-spec/process/schemas/user-decision.schema.json');
++        originalDecision={ref:options.decision_ref,digest:hash(loaded.bytes),record:loaded.raw};
++        for(const row of references(loaded.raw,root))if(!row.current)gap('DECISION_SOURCE_STALE',row.ref,row.error||'原决定来源摘要不匹配','恢复原决定快照；不得重绑旧回复');
++      }catch(error){gap('DECISION_UNAVAILABLE',options.decision_ref,error.message,'提供有效的原始决定；本材料不能替代用户回复');}
++    }
++    if(!options.decision_ref)gaps.push({code:'DECISION_NOT_PROVIDED',source_ref:null,reason:'未提供原决定，不能判断批准延续',recovery:'需要沿用批准时提供原决定及原始回复来源',blocking:false});
++    return {
++      schema_version:1,kind:'contract-review-preparation',read_only:true,execution_allowed:false,
++      approval_reusable:false,approval_validity:'not-checked',semantic_equivalence:'requires-independent-review',
++      before:before?.binding||null,after:after?.binding||null,original_decision:originalDecision,
++      decision_status:options.decision_ref?(originalDecision?'requires-validation':'missing-or-invalid'):'not-provided',
++      source_views:{before:before?.content||null,after:after?.content||null},diff,gaps,
++      review_required:['business_scope','acceptance','contract_commitments','authorization','risk_acceptance','quality','external_commitments'],
++      next_action:gaps.some(x=>x.blocking!==false)?'repair-source-gaps':'independent-semantic-review',
++      blockers:gaps.filter(x=>x.blocking!==false).map(item=>item.reason)
++    };
++  });
++}
+diff --git a/scripts/lib/harness-execution-scope.mjs b/scripts/lib/harness-execution-scope.mjs
+index 4718e55a64c6f8364302e5f5a5b9601e3e7bdddd..404fe2fe2e78667c208fee01cb0fc20c111cdc0f 100644
+--- a/scripts/lib/harness-execution-scope.mjs
++++ b/scripts/lib/harness-execution-scope.mjs
+@@ -1,5 +1,5 @@
+-import { assertLocalSkillReferences } from './harness-skill-scope.mjs';
+-import { existsSync } from 'node:fs';
++import { loadExecutionScope, assertScopeWorkUnit } from './lifecycle-execution-scope.mjs';
++import { existsSync } from './validation-phase.mjs';
+ import path from 'node:path';
+ import { ROOT, read, safe, ensure } from './strategic-handoff-io.mjs';
+ 
+@@ -31,6 +31,12 @@ function activeProfile(root) {
+ }
+ 
+ export function enforceHarnessTaskScope(task,{root=ROOT}={}) {
++  const scope=loadExecutionScope(root);
++  if(scope) {
++    assertScopeWorkUnit(task.contract?.kind==='slice-implementation'?'work-unit.slice-implementation':task.work_unit_id,{root,readOnly:task.contract?.kind==='read-only-intake'});
++    ensure(task.role_id!=='role.frontend-engineer','后端职责不允许派发前端实现');
++    ensure(task.allowed_write_paths.every(ref=>!/^apps\/frontend(?:\/|$)/.test(ref)),'禁止写入前端工程');
++  }
+   const profile=activeProfile(root);
+   if (!profile) return;
+   ensure(task.contract?.kind!=='template-maintenance','专职产品项目不得派发模板维护任务');
+@@ -42,9 +48,15 @@ export function enforceHarnessTaskScope(task,{root=ROOT}={}) {
+ }
+ 
+ export function enforceHarnessSkillScope(skills,registry,{root=ROOT}={}) {
++  if(loadExecutionScope(root)) {
++    assertScopeWorkUnit('work-unit.slice-implementation',{root});
++    for(const id of skills) {
++      const impacts=registry.skills.find(skill=>skill.id===id)?.impacts||[];
++      ensure(!impacts.includes('frontend')||impacts.includes('backend')||impacts.includes('lifecycle'),`后端职责禁止编译生产前端技能: ${id}`);
++    }
++  }
+   const profile=activeProfile(root);
+   if (!profile) return;
+-  assertLocalSkillReferences(skills, registry, profile);
+   const side=profile.profile_id==='harness.frontend-delivery'?'frontend':'backend';
+   const opposite=side==='frontend'?'backend':'frontend';
+   for (const id of skills) {
+diff --git a/scripts/lib/read-only-intake.mjs b/scripts/lib/read-only-intake.mjs
+new file mode 100644
+index 0000000000000000000000000000000000000000..6ed5825430eaa40f95b271736c12b5a1bfa8599d
+--- /dev/null
++++ b/scripts/lib/read-only-intake.mjs
+@@ -0,0 +1,122 @@
++import fs from 'node:fs';
++import path from 'node:path';
++import { spawnSync } from 'node:child_process';
++import { createHash } from 'node:crypto';
++import { parse } from '../vendor/yaml.mjs';
++import { runCommand } from './command-runner.mjs';
++
++const ensure = (ok, message) => { if (!ok) throw new TypeError(`read-only-intake: ${message}`); };
++export const digest = value => `sha256:${createHash('sha256').update(value).digest('hex')}`;
++const inside = (root, file) => { const rel = path.relative(root, file); return rel !== '..' && !rel.startsWith(`..${path.sep}`) && !path.isAbsolute(rel); };
++export function intakeEvidencePath(ref, { root, runDir }) {
++  const runtime = ref.startsWith('run:');
++  const base = runtime ? runDir : root;
++  ensure(base && path.isAbsolute(base), '运行证据必须显式提供绝对 run-dir');
++  const relative = runtime ? ref.slice(4) : ref;
++  ensure(relative && !path.isAbsolute(relative) && !relative.split(/[\\/]/).includes('..'), '证据路径越界');
++  const resolvedBase = fs.realpathSync(base), file = path.resolve(base, relative);
++  ensure(inside(path.resolve(base), file) && inside(resolvedBase, fs.realpathSync(file)), '证据符号链接越界');
++  ensure(fs.statSync(file).isFile(), '证据必须为文件');
++  return file;
++}
++/** Final observable repository files, including ignored and untracked files; never follow links. */
++export function intakeSnapshot(root) {
++  const result = spawnSync('git', ['ls-files', '-z', '--cached', '--others'], { cwd: root, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 });
++  ensure(result.status === 0, result.stderr || '无法观察仓库');
++  const rows = {};
++  for (const ref of [...new Set(result.stdout.split('\0').filter(Boolean))].sort()) {
++    const file = path.join(root, ref);
++    try {
++      const stat = fs.lstatSync(file);
++      if (stat.isDirectory()) {
++        const nested = spawnSync('git', ['rev-parse', '--show-toplevel'], { cwd: file, encoding: 'utf8' });
++        ensure(nested.status === 0 && fs.realpathSync(nested.stdout.trim()) === fs.realpathSync(file), `子仓未初始化: ${ref}`);
++        const head = spawnSync('git', ['rev-parse', 'HEAD'], { cwd: file, encoding: 'utf8' });
++        ensure(nested.status === 0 && head.status === 0, `子仓不可观测: ${ref}`);
++        rows[ref] = { kind: 'gitlink', head: head.stdout.trim(), files: intakeSnapshot(file) };
++      } else rows[ref] = { kind: stat.isSymbolicLink() ? 'link' : 'file', mode: stat.mode, digest: digest(stat.isSymbolicLink() ? fs.readlinkSync(file) : fs.readFileSync(file)) };
++    } catch (error) { if (error.code === 'ENOENT') rows[ref] = null; else throw error; }
++  }
++  const head=spawnSync('git',['rev-parse','--verify','HEAD'],{cwd:root,encoding:'utf8'});
++  const index=spawnSync('git',['ls-files','--stage','-z'],{cwd:root,encoding:'utf8',maxBuffer:16*1024*1024});
++  ensure(index.status===0,'无法观察 Git index');
++  return {git:{head:head.status===0?head.stdout.trim():null,index_digest:digest(index.stdout)},files:rows};
++}
++export function validateReadOnlyIntake(value, { root, runDir, roles, lifecycle }) {
++  const identity = parse(fs.readFileSync(path.join(root, 'yss-project.yaml'), 'utf8'));
++  ensure(identity.schema_version === 1 && ['template-source', 'project-instance'].includes(identity.repository_mode), '仓库身份无效');
++  ensure(value.contract.kind === 'read-only-intake' && value.schema_version === 2 && value.execution_state === 'Explorer' && value.allowed_write_paths.length === 0, '只读合同不授予写权限');
++  ensure(lifecycle.work_units.some(x => x.id === value.work_unit_id) && ['work-unit.entry-triage', 'work-unit.harness-entry'].includes(value.work_unit_id), '只允许已登记分诊入口');
++  ensure(roles.runtimes.some(x => x.id === value.runtime_id), '未知运行时');
++  ensure(value.contract.status === 'issued' || value.workflow_status === 'paused', '过期合同必须暂停');
++  for (const ref of [value.contract.contract_ref, ...value.inputs, ...value.expected_evidence_files]) intakeEvidencePath(ref, { root, runDir });
++  if (value.result) {
++    ensure(value.result.work_unit===value.work_unit_id && value.result.workflow_reference===value.contract.contract_ref,'结果必须绑定原分诊工作单元和合同来源');
++    ensure(!value.result.changed_files?.length && !value.result.changed_artifacts?.length, '只读结果包含变更');
++    ensure(value.result.next_route == null && !value.result.checkpoint_ref, '只读结果不得流转或修改 checkpoint');
++    for (const ref of value.result.evidence_refs || []) intakeEvidencePath(ref, { root, runDir });
++  }
++  const commands = new Set(value.verification_commands);
++  ensure((value.verification_status === 'not-executed') === (value.verification_results.length === 0), '执行状态与实际结果不一致');
++  for (const row of value.verification_results) {
++    ensure(commands.has(row.command) && row.evidence_ref.startsWith('run:'), '运行结果必须绑定声明的命令及真实运行日志');
++    const evidence = fs.readFileSync(intakeEvidencePath(row.evidence_ref, { root, runDir }));
++    ensure(row.evidence_digest === digest(evidence), '运行证据摘要不一致');
++    const record = JSON.parse(evidence);
++    for (const key of ['command','exit_code','duration_ms','executed_at']) ensure(record[key] === row[key], `运行记录 ${key} 不一致`);
++    for (const stream of ['stdout','stderr']) {
++      const ref = row[`${stream}_ref`];
++      ensure(ref?.startsWith('run:'), '运行日志无效');
++      ensure(record[`${stream}_digest`] === digest(fs.readFileSync(intakeEvidencePath(ref, { root, runDir }))), '运行日志摘要不一致');
++    }
++  }
++  if (value.workflow_status === 'resolved' || value.result?.result === 'completed') {
++    ensure(value.workflow_status === 'resolved' && value.result?.result === 'completed', '完成状态不一致');
++    ensure(value.result.evidence_refs?.length && value.result.context_reconciliation?.status === 'not-applicable' && value.result.context_reconciliation?.reason, '只读结论缺少来源或不流转说明');
++    for (const key of ['drift','violation','new_impacts','stale_candidates','blocking_signals','deferred_seams']) ensure(Array.isArray(value.result[key]) && !value.result[key].length, `完成结果 ${key} 必须为空`);
++    ensure(value.verification_results.every(x => x.exit_code === 0) && [...commands].every(c => value.verification_results.some(x => x.command === c)), '实际验证缺失或失败');
++    ensure(value.observation_ref?.startsWith('run:'), '完成结果缺少执行器仓库观测');
++    const observation = JSON.parse(fs.readFileSync(intakeEvidencePath(value.observation_ref, { root, runDir }), 'utf8'));
++    const dispatchedBytes=fs.readFileSync(intakeEvidencePath(observation.task_ref,{root,runDir}));
++    ensure(observation.task_digest===digest(dispatchedBytes),'原派发任务摘要不一致');
++    const dispatched=JSON.parse(dispatchedBytes);
++    for(const key of ['task_id','work_unit_id','actor_id','role_id','runtime_id','contract','inputs','allowed_write_paths','objective','forbidden_actions','expected_outputs','expected_evidence_files','skill_source','downstream_consumers','convergence'])ensure(JSON.stringify(dispatched[key])===JSON.stringify(value[key]),`结果替换原任务 ${key}`);
++    ensure(!dispatched.verification_commands.length || JSON.stringify(dispatched.verification_commands)===JSON.stringify(value.verification_commands),'结果替换验证要求');
++    ensure(observation.kind === 'read-only-intake-observation' && observation.task_id === value.task_id && observation.root === fs.realpathSync(root), '观测身份不匹配');
++    ensure(JSON.stringify(observation.before) === JSON.stringify(observation.after) && JSON.stringify(observation.after) === JSON.stringify(intakeSnapshot(root)), '仓库实际差异与只读声明冲突');
++  }
++  return value;
++}
++/** Runner-owned evidence is outside the repository; the child receives no new repository permissions. */
++export async function observeReadOnlyIntake(task, { root, runDir, command, args = [], timeoutMs = 0 }) {
++  const label = command ? JSON.stringify([command,...args]) : null;
++  ensure(!command || !task.verification_commands.length || task.verification_commands.length===1 && task.verification_commands[0]===label,'执行命令与声明不一致，不得替换要求的验证');
++  root = fs.realpathSync(root);
++  ensure(path.isAbsolute(runDir) && !inside(root, path.resolve(runDir)), '运行目录必须位于仓库外');
++  ensure(!inside(root, fs.realpathSync(path.dirname(runDir))), '运行目录父路径符号链接进入仓库');
++  fs.mkdirSync(runDir, { recursive: false });
++  runDir = fs.realpathSync(runDir);
++  fs.writeFileSync(path.join(runDir,'task.json'),JSON.stringify(task,null,2)+'\n',{flag:'wx'});
++  const before = intakeSnapshot(root), started = new Date().toISOString();
++  const result = command ? await runCommand(command, args, { cwd: root, timeoutMs, stdoutFile: path.join(runDir, 'stdout.log'), stderrFile: path.join(runDir, 'stderr.log') }) : null;
++  const after = intakeSnapshot(root);
++  const observation = { schema_version: 1, kind: 'read-only-intake-observation', task_id: task.task_id, task_ref:'run:task.json', task_digest:digest(fs.readFileSync(path.join(runDir,'task.json'))), root, started_at: started, before, after };
++  fs.writeFileSync(path.join(runDir, 'observation.json'), JSON.stringify(observation, null, 2)+'\n');
++  const changed = JSON.stringify(before) !== JSON.stringify(after);
++  const completed = !changed && (!result || result.status === 0);
++  const output = structuredClone(task);
++  output.observation_ref = 'run:observation.json';
++  output.verification_status = result ? 'executed' : 'not-executed';
++  output.verification_results = [];
++  if (result) {
++    const label = JSON.stringify([command, ...args]);
++    const record = { command: label, exit_code: result.status ?? 1, duration_ms: Math.round(result.duration_ms), executed_at: started, termination: result.termination ?? null, stdout_digest: digest(fs.readFileSync(path.join(runDir,'stdout.log'))), stderr_digest: digest(fs.readFileSync(path.join(runDir,'stderr.log'))) };
++    const bytes = JSON.stringify(record, null, 2)+'\n'; fs.writeFileSync(path.join(runDir, 'execution.json'), bytes);
++    output.verification_commands = [label];
++    output.verification_results = [{command:label,exit_code:record.exit_code,duration_ms:record.duration_ms,executed_at:started,evidence_ref:'run:execution.json',evidence_digest:digest(bytes),stdout_ref:'run:stdout.log',stderr_ref:'run:stderr.log'}];
++  }
++  output.workflow_status = completed ? 'resolved' : 'failed';
++  output.result = { result_schema: 'workflow-execution-result-v1', work_unit: task.work_unit_id, workflow_reference: task.contract.contract_ref, result: completed ? 'completed' : 'failed', skill: 'yss-research', changed_files: [], changed_artifacts: [], evidence_refs: [...task.inputs, 'run:observation.json'], context_reconciliation: {status:'not-applicable',ref:'CONTEXT.md',reason:'只读分诊，不批准资产或流转阶段'}, deferred_seams: [], drift: [], violation: changed ? ['repository-changed'] : [], new_impacts: [], stale_candidates: [], next_route: null, blocking_signals: completed ? [] : ['read-only-intake-failed'] };
++  fs.writeFileSync(path.join(runDir, 'task-result.json'), JSON.stringify(output, null, 2)+'\n');
++  return output;
++}
+diff --git a/scripts/lib/slice-task-package.mjs b/scripts/lib/slice-task-package.mjs
+index 3e398c93dd6f59319e44cc0d2e7e5ccd27ce8219..c53f7162b147f0772424519c4db9ae0b9eeadba2 100644
+--- a/scripts/lib/slice-task-package.mjs
++++ b/scripts/lib/slice-task-package.mjs
+@@ -31,7 +31,7 @@ function compile(binding,{root=ROOT,work_unit_id,task_id,actor_id,runtime_id,exe
+     task_id,work_unit_id,actor_id,runtime_id,execution_state,workflow_status:'not-started',stage_id:'stage.vertical-slice-implementation',
+     contract:{kind:'slice-implementation',contract_id:contract.contract_id,contract_version:contract.contract_version,status:'issued',contract_ref:binding.ref,slice_contract_ref:binding.ref,gate_refs:[binding.approval_ref]},
+     inputs:[binding.ref,...new Set(Object.values(contract.lifecycle_refs))],
+-    objective:`${unit.behavior}（执行目录：${unit.project_root}；完整约束读取 ${binding.ref}）`,
++    objective:`${unit.behavior}（执行目录：${unit.project_root}；默认消费 ${binding.ref} 的 task 视图并指定 ${work_unit_id}，追溯时展开 full）`,
+     allowed_write_paths:unit.allowed_write_paths,forbidden_actions:[...unit.work_unit.forbidden_patterns,'来源过期、越界、缺证据、验证失败或新增影响时停止并回交'],
+     expected_outputs:[unit.behavior],expected_evidence_files:unit.work_unit.expected_evidence,verification_commands:unit.work_unit.verification_commands,verification_results:[],
+     downstream_consumers:unit.downstream_consumers||['role.lifecycle-orchestrator'],convergence:{parent_work_unit:'work-unit.slice-implementation',convergence_ref:unit.convergence_ref||binding.approval_ref,conflict_escalation:'返回生命周期主控'},user_decisions:decisions
+diff --git a/scripts/lib/task-package.mjs b/scripts/lib/task-package.mjs
+index 416c2aaedac4c01ebabd2cb077e064e6afdc7ed5..6d0408b828a780ff3113ecdca0d9abdc9a3d9046 100644
+--- a/scripts/lib/task-package.mjs
++++ b/scripts/lib/task-package.mjs
+@@ -1,3 +1,4 @@
++import { validateReadOnlyIntake } from './read-only-intake.mjs';
+ import { assertTrackingEntry } from './stage-tracking.mjs';
+ import { normalizeSliceContract } from './slice-contract.mjs';
+ import { assertSliceV3TaskPackage } from './slice-task-package.mjs';
+@@ -9,13 +10,16 @@ import path from "node:path";
+ import { parseDocument } from "../vendor/yaml.mjs";
+ import { loadDigitalHumanRoles, taskPackageDefaults } from "./digital-human-roles.mjs";
+ import { loadRegistry, ROOT } from "./lifecycle-registry.mjs";
+-import { loadMaintenanceCheckpoint, validateMaintenanceCheckpoint } from "./maintenance-intensity.mjs";
++import { readRepositoryMode } from './repository-mode.mjs';
++const maintenanceValidators = readRepositoryMode(ROOT)==='template-source' ? await import('./maintenance-intensity.mjs') : null;
++function loadMaintenanceCheckpoint(...args){if(!maintenanceValidators)throw new TypeError('project-instance 不允许模板维护合同');return maintenanceValidators.loadMaintenanceCheckpoint(...args);}
++function validateMaintenanceCheckpoint(...args){if(!maintenanceValidators)throw new TypeError('project-instance 不允许模板维护合同');return maintenanceValidators.validateMaintenanceCheckpoint(...args);}
+ import { validateNextRoute } from "./lifecycle-transition.mjs";
+ import { LEGACY_TASK_PACKAGE_SCHEMA, TASK_PACKAGE_SCHEMA, validateTaskPackageSchema } from "./task-package-schema.mjs";
+ 
+ export { LEGACY_TASK_PACKAGE_SCHEMA, TASK_PACKAGE_SCHEMA, validateTaskPackageSchema };
+ export const TASK_PACKAGE_REGISTRY_REF = ".template-spec/agents/digital-human-roles.yaml";
+-export const CONTRACT_KINDS = new Set(["lifecycle-work-unit", "slice-implementation", "template-maintenance"]);
++export const CONTRACT_KINDS = new Set(["lifecycle-work-unit", "slice-implementation", "template-maintenance", "read-only-intake"]);
+ export const EXECUTION_STATES = new Set(["Explorer", "Drafter", "Worker", "Reviewer", "Verifier"]);
+ export const WORKFLOW_STATUSES = new Set(["not-started", "active", "paused", "resolved", "failed"]);
+ 
+@@ -174,8 +178,14 @@ function validateContract(value, registry, lifecycle) {
+   }
+ }
+ 
+-export function validateTaskPackage(value, { rolesDoc, lifecycleDoc } = {}) {
++export function validateTaskPackage(value, { rolesDoc, lifecycleDoc, root = ROOT, runDir } = {}) {
+   validateTaskPackageSchema(value);
++  if (value.schema_version === 2) {
++    enforceHarnessTaskScope(value,{root});
++    const registry = rolesDoc || loadDigitalHumanRoles();
++    validateSkillSource(value,registry);
++    return validateReadOnlyIntake(value,{root,runDir,roles:registry,lifecycle:lifecycleDoc||loadRegistry()});
++  }
+   enforceHarnessTaskScope(value);
+   const intake = value.execution_state === "Explorer" && value.allowed_write_paths.length === 0 && ["work-unit.entry-triage", "work-unit.harness-entry"].includes(value.work_unit_id);
+   if (!intake) {
+diff --git a/scripts/prepare-read-only-intake b/scripts/prepare-read-only-intake
+new file mode 100755
+index 0000000000000000000000000000000000000000..8d8c2110ebd7e83af07b467b3d540125e21de792
+--- /dev/null
++++ b/scripts/prepare-read-only-intake
+@@ -0,0 +1,16 @@
++#!/usr/bin/env node
++import fs from 'node:fs';
++import path from 'node:path';
++import {parseArgs} from 'node:util';
++import {ROOT} from './lib/lifecycle-registry.mjs';
++import {loadTaskPackage,generateTaskPackageDefaults,validateTaskPackage} from './lib/task-package.mjs';
++try {
++ const {values}=parseArgs({options:{input:{type:'string'},output:{type:'string'}}});
++ if(!values.input||!values.output)throw Error('用法: prepare-read-only-intake --input <来源选择.json|yaml> --output <仓库外/task.json>');
++ const {value:input}=loadTaskPackage(values.input);
++ const output=path.resolve(values.output),parent=fs.realpathSync(path.dirname(output)),root=fs.realpathSync(ROOT);
++ if(parent===root||parent.startsWith(root+path.sep))throw Error('任务包必须保存于仓库外运行目录');
++ const task=generateTaskPackageDefaults(input.role_id,{...input,schema_version:2,execution_state:'Explorer',workflow_status:'active',allowed_write_paths:[],expected_evidence_files:[],verification_commands:input.verification_commands||[],verification_results:[],verification_status:'not-executed',contract:{...input.contract,kind:'read-only-intake',status:'issued'}});
++ validateTaskPackage(task);
++ fs.writeFileSync(output,JSON.stringify(task,null,2)+'\n',{flag:'wx'});process.stdout.write(output+'\n');
++}catch(error){process.stderr.write(error.message+'\n');process.exitCode=1;}
+diff --git a/scripts/run-read-only-intake b/scripts/run-read-only-intake
+new file mode 100755
+index 0000000000000000000000000000000000000000..d219667432a9542e755cdc4f244dc0091826d565
+--- /dev/null
++++ b/scripts/run-read-only-intake
+@@ -0,0 +1,14 @@
++#!/usr/bin/env node
++import { parseArgs } from 'node:util';
++import { ROOT } from './lib/lifecycle-registry.mjs';
++import { loadTaskPackage, validateTaskPackage } from './lib/task-package.mjs';
++import { observeReadOnlyIntake } from './lib/read-only-intake.mjs';
++try {
++  const {values,positionals} = parseArgs({options:{task:{type:'string'},'run-dir':{type:'string'},'timeout-ms':{type:'string',default:'0'}},allowPositionals:true});
++  if(!values.task||!values['run-dir'])throw Error('需要 --task 和仓库外新目录 --run-dir；命令放在 -- 之后');
++  const {value}=loadTaskPackage(values.task);validateTaskPackage(value);
++  if(value.schema_version!==2||value.workflow_status!=='active')throw Error('只接受 active 的只读 v2 任务');
++  const result=await observeReadOnlyIntake(value,{root:ROOT,runDir:values['run-dir'],command:positionals[0],args:positionals.slice(1),timeoutMs:Number(values['timeout-ms'])});
++  validateTaskPackage(result,{runDir:values['run-dir']});
++  process.stdout.write(JSON.stringify(result,null,2)+'\n');if(result.workflow_status!=='resolved')process.exitCode=1;
++}catch(error){process.stderr.write(error.message+'\n');process.exitCode=1;}
+diff --git a/scripts/verify-digital-human-task-package b/scripts/verify-digital-human-task-package
+index 5efa8eee028b992fce89b27a6d5d07b4c1654e84..5600cf517590c16b4c99756a8a43e628a9868b80 100755
+--- a/scripts/verify-digital-human-task-package
++++ b/scripts/verify-digital-human-task-package
+@@ -3,10 +3,10 @@ import { parseArgs } from "node:util";
+ import { loadTaskPackage, validateTaskPackage } from "./lib/task-package.mjs";
+ 
+ try {
+-  const { positionals } = parseArgs({ allowPositionals: true, strict: true });
++  const { positionals, values } = parseArgs({ options: { "run-dir": { type: "string" } }, allowPositionals: true, strict: true });
+   if (positionals.length !== 1) throw new TypeError("用法: scripts/verify-digital-human-task-package <task-package.yaml|task-package.json>");
+   const { value } = loadTaskPackage(positionals[0]);
+-  validateTaskPackage(value);
++  validateTaskPackage(value, { runDir: values["run-dir"] });
+   process.stdout.write("数字人任务包验证通过\n");
+ } catch (error) {
+   process.stderr.write(`数字人任务包验证失败: ${error.message}\n`);
+diff --git a/skills-lock.json b/skills-lock.json
+index 23785db16e32ab5cc001d8ab5892e7796d37e146..ae34b308086423a69c3b2cd28a17b235bb5e27bf 100644
+--- a/skills-lock.json
++++ b/skills-lock.json
+@@ -746,7 +746,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/yss-research/SKILL.md",
+-        "effectiveHash": "38059a4a505dcf1b674f324e8f507e8564f8ba036e417129a7bbc2727b5209a3",
++        "effectiveHash": "df66dab86ee68d874d6b3572074508aa8fb7e4dc8c63570f0b5d585e569f1b3e",
+         "targets": [
+           ".agents/skills",
+           ".codex/skills",

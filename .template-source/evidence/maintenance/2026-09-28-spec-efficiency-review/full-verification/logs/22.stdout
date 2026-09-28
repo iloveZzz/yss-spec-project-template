@@ -1,0 +1,13 @@
+✔ writes Node-labelled generated indexes (186.311667ms)
+✔ keeps generation-specific component path sets (0.479334ms)
+✔ writes a source-backed MyBatis capability matrix without absolute paths (6.096791ms)
+✔ source freshness is scoped to the indexed component subtree (115.468042ms)
+✔ records Maven lineage and platform signals and validates the exact component tree (177.885791ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 525.193959

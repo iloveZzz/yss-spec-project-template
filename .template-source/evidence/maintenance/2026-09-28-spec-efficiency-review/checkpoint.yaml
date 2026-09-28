@@ -1,0 +1,90 @@
+{
+  "schema_version": 2,
+  "intensity": "L3",
+  "classification_reason": "核心验证选择与报告、来源绑定及只读权限合同变化，涉及三个专职消费者和四个 CLI。",
+  "triggers": [
+    "core-validator",
+    "permission-boundary",
+    "cross-repo-contract"
+  ],
+  "changed_assets": [
+    "scripts/lib/lifecycle-context-query.mjs",
+    "scripts/lib/read-only-intake.mjs",
+    "scripts/lib/task-package.mjs",
+    ".template-spec/process/schemas/digital-human-task-package.schema.json",
+    "scripts/lib/contract-views.mjs",
+    "scripts/run-template-verification",
+    "scripts/lib/verification-selection.mjs",
+    "scripts/lib/verification-report.mjs",
+    ".template-source/process/template-verification-profiles.yaml",
+    "scripts/fixtures/contract-efficiency",
+    "scripts/sync-strategic-handoff-tools",
+    ".agents/skills/yss-research/SKILL.md",
+    ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml",
+    "submodules/create-yss-spec/src/template/asset-runtime.js",
+    "submodules/yss-harness-design-agent/scripts/lib/lifecycle-registry.mjs"
+  ],
+  "verification_evidence": [
+    {
+      "kind": "self-check",
+      "command": "self-check.md",
+      "result": "pass",
+      "evidence_ref": ".template-source/evidence/maintenance/2026-09-28-spec-efficiency/self-check.md"
+    },
+    {
+      "kind": "fresh-verification",
+      "command": "scripts/verify-template",
+      "arguments": [
+        "--concurrency",
+        "1",
+        "--report-dir",
+        "/tmp/yss-efficiency-merge-full-serial"
+      ],
+      "result": "pass",
+      "executed_at": "2026-09-28T07:12:57.031Z",
+      "duration_ms": 656977,
+      "evidence_ref": ".template-source/evidence/maintenance/2026-09-28-spec-efficiency-review/full-verification/report.json"
+    },
+    {
+      "kind": "candidate-verification",
+      "command": "scripts/verify-template",
+      "arguments": [
+        "--concurrency",
+        "1",
+        "--report-dir",
+        "/tmp/yss-efficiency-merge-full-serial"
+      ],
+      "result": "pass",
+      "executed_at": "2026-09-28T07:12:57.031Z",
+      "duration_ms": 656977,
+      "evidence_ref": ".template-source/evidence/maintenance/2026-09-28-spec-efficiency-review/full-verification/report.json"
+    },
+    {
+      "kind": "initial-release-verification",
+      "command": "scripts/verify-template",
+      "arguments": [
+        "--concurrency",
+        "1",
+        "--report-dir",
+        "/tmp/yss-efficiency-merge-full-serial"
+      ],
+      "result": "pass",
+      "executed_at": "2026-09-28T07:12:57.031Z",
+      "duration_ms": 656977,
+      "evidence_ref": ".template-source/evidence/maintenance/2026-09-28-spec-efficiency-review/full-verification/report.json"
+    },
+    {
+      "kind": "review-task-packages",
+      "command": "scripts/verify-digital-human-task-package (Standards and Spec)",
+      "result": "pass",
+      "evidence_ref": ".template-source/evidence/maintenance/2026-09-28-spec-efficiency-review/task-validation.txt"
+    }
+  ],
+  "review_mode": "focused-independent",
+  "escalation": "用户已授权独立审查后本地合并 main；同一完整串行门禁复用为候选与初始全量证据。并行尝试中的来源状态竞态已通过隔离及串行复验定位，保留失败记录。",
+  "target_state": "review-ready",
+  "current_state": "review-ready",
+  "verification_profile": "candidate",
+  "review_round": 1,
+  "candidate_digest": "43cb6c24fdc1ceb14ad73a6d19c3f90597dad12c571e2a3b3182d6dffee1497d"
+}

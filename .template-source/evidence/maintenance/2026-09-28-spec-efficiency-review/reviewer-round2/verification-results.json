@@ -1,0 +1,50 @@
+[
+  {
+    "command": "git diff --check 79c405998388ee1b13e166377cdfc3bfaa9f0c14",
+    "executed_at": "2026-09-28T07:57:46.883948+00:00",
+    "duration_ms": 110.7980830129236,
+    "exit_code": 0,
+    "stdout_ref": "check-0.stdout",
+    "stderr_ref": "check-0.stderr"
+  },
+  {
+    "command": "node --test tests/lifecycle-query-freshness.test.mjs tests/read-only-intake.test.mjs tests/contract-review-preparation.test.mjs tests/verification-selection.test.mjs tests/verification-report.test.mjs tests/efficiency-distribution.test.mjs",
+    "executed_at": "2026-09-28T07:57:46.994942+00:00",
+    "duration_ms": 2227.021500002593,
+    "exit_code": 0,
+    "stdout_ref": "check-1.stdout",
+    "stderr_ref": "check-1.stderr"
+  },
+  {
+    "command": "node --test scripts/fixtures/contract-efficiency/views.test.mjs",
+    "executed_at": "2026-09-28T07:57:49.221992+00:00",
+    "duration_ms": 4501.77329100552,
+    "exit_code": 0,
+    "stdout_ref": "check-2.stdout",
+    "stderr_ref": "check-2.stderr"
+  },
+  {
+    "command": "node .template-source/evidence/maintenance/2026-09-28-spec-efficiency-review/reviewer-round2/verify-review-closure.mjs",
+    "executed_at": "2026-09-28T07:59:30.235348+00:00",
+    "duration_ms": 2599.7087499999907,
+    "exit_code": 0,
+    "stdout_ref": "closure.stdout",
+    "stderr_ref": "closure.stderr"
+  },
+  {
+    "command": "scripts/verify-maintenance-review-record --kind focused-independent-review .template-source/evidence/maintenance/2026-09-28-spec-efficiency-review/reviewer-round2/standards-record.json",
+    "executed_at": "2026-09-28T08:02:13.391576+00:00",
+    "duration_ms": 203.8974169990979,
+    "exit_code": 0,
+    "stdout_ref": "standards-record-check.stdout",
+    "stderr_ref": "standards-record-check.stderr"
+  },
+  {
+    "command": "scripts/verify-maintenance-review-record --kind focused-independent-review .template-source/evidence/maintenance/2026-09-28-spec-efficiency-review/reviewer-round2/spec-record.json",
+    "executed_at": "2026-09-28T08:02:13.595707+00:00",
+    "duration_ms": 188.82374998065643,
+    "exit_code": 0,
+    "stdout_ref": "spec-record-check.stdout",
+    "stderr_ref": "spec-record-check.stderr"
+  }
+]

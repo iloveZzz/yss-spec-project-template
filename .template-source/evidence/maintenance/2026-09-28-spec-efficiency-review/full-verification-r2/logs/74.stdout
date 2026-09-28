@@ -1,0 +1,229 @@
+🚀 开始生成项目: platform-service
+📦 基础包名: com.yss.platform
+📁 输出目录: /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-platform-matrix-X5DiFV/output
+
+📁 创建项目目录结构...
+  ✓ platform-service-domain
+  ✓ platform-service-application
+  ✓ platform-service-infrastructure
+  ✓ platform-service-adapter
+  ✓ platform-service-bootstrap
+  ✓ platform-service-adapter/platform-service-web
+  ✓ db
+
+📝 生成 Maven POM 文件...
+  ✓ 父级 pom.xml
+  ✓ domain pom.xml
+  ✓ application pom.xml
+  ✓ infrastructure pom.xml
+  ✓ adapter pom.xml
+  ✓ web pom.xml
+  ✓ bootstrap pom.xml
+
+☕ 生成机械启动入口...
+  ✓ PlatformServiceApplication.java
+  ✓ ArchitectureRulesTest.java
+
+⚙️  生成配置文件...
+  ✓ application.yml
+  ✓ application-scaffold-local.yml
+  ✓ test H2 configuration
+  ✓ logback-spring.xml
+
+🗃️  保留数据库目录布局...
+  ✓ db/（业务 schema 和初始化数据由批准切片合同生成）
+
+📚 生成项目文档...
+  ✓ README.md
+  ✓ .yss/scaffold-generation.json
+
+✅ 工程文件生成完成，等待受控 Maven 验证
+📂 项目位置: /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-platform-matrix-X5DiFV/output/platform-service
+
+🎯 下一步:
+  cd /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-platform-matrix-X5DiFV/output/platform-service
+  ./mvnw validate
+  ./mvnw test
+  ./mvnw package
+  ./mvnw spring-boot:run -pl platform-service-bootstrap
+✔ candidate rendering only: domain-driven spring-boot-2.7-jdk8 (725.749583ms)
+🚀 开始生成项目: platform-service
+📦 基础包名: com.yss.platform
+📁 输出目录: /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-platform-matrix-Uf1W35/output
+
+📁 创建项目目录结构...
+  ✓ platform-service-domain
+  ✓ platform-service-application
+  ✓ platform-service-infrastructure
+  ✓ platform-service-adapter
+  ✓ platform-service-bootstrap
+  ✓ platform-service-adapter/platform-service-web
+  ✓ db
+
+📝 生成 Maven POM 文件...
+  ✓ 父级 pom.xml
+  ✓ domain pom.xml
+  ✓ application pom.xml
+  ✓ infrastructure pom.xml
+  ✓ adapter pom.xml
+  ✓ web pom.xml
+  ✓ bootstrap pom.xml
+
+☕ 生成机械启动入口...
+  ✓ PlatformServiceApplication.java
+  ✓ ArchitectureRulesTest.java
+
+⚙️  生成配置文件...
+  ✓ application.yml
+  ✓ application-scaffold-local.yml
+  ✓ test H2 configuration
+  ✓ logback-spring.xml
+
+🗃️  保留数据库目录布局...
+  ✓ db/（业务 schema 和初始化数据由批准切片合同生成）
+
+📚 生成项目文档...
+  ✓ README.md
+  ✓ .yss/scaffold-generation.json
+
+✅ 工程文件生成完成，等待受控 Maven 验证
+📂 项目位置: /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-platform-matrix-Uf1W35/output/platform-service
+
+🎯 下一步:
+  cd /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-platform-matrix-Uf1W35/output/platform-service
+  ./mvnw validate
+  ./mvnw test
+  ./mvnw package
+  ./mvnw spring-boot:run -pl platform-service-bootstrap
+✔ candidate rendering only: domain-driven spring-boot-3.5-jdk17 (646.368542ms)
+🚀 开始生成项目: platform-service
+📦 基础包名: com.yss.platform
+📁 输出目录: /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-platform-matrix-YmRc4y/output
+
+📁 创建项目目录结构...
+  ✓ platform-service-domain
+  ✓ platform-service-application
+  ✓ platform-service-infrastructure
+  ✓ platform-service-adapter
+  ✓ platform-service-bootstrap
+  ✓ platform-service-adapter/platform-service-web
+  ✓ db
+
+📝 生成 Maven POM 文件...
+  ✓ 父级 pom.xml
+  ✓ domain pom.xml
+  ✓ application pom.xml
+  ✓ infrastructure pom.xml
+  ✓ adapter pom.xml
+  ✓ web pom.xml
+  ✓ bootstrap pom.xml
+
+☕ 生成机械启动入口...
+  ✓ PlatformServiceApplication.java
+  ✓ ArchitectureRulesTest.java
+
+⚙️  生成配置文件...
+  ✓ application.yml
+  ✓ application-scaffold-local.yml
+  ✓ test H2 configuration
+  ✓ logback-spring.xml
+
+🗃️  保留数据库目录布局...
+  ✓ db/（业务 schema 和初始化数据由批准切片合同生成）
+
+📚 生成项目文档...
+  ✓ README.md
+  ✓ .yss/scaffold-generation.json
+
+✅ 工程文件生成完成，等待受控 Maven 验证
+📂 项目位置: /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-platform-matrix-YmRc4y/output/platform-service
+
+🎯 下一步:
+  cd /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-platform-matrix-YmRc4y/output/platform-service
+  ./mvnw validate
+  ./mvnw test
+  ./mvnw package
+  ./mvnw spring-boot:run -pl platform-service-bootstrap
+✔ candidate rendering only: domain-driven spring-boot-3.5-jdk21 (625.391333ms)
+{
+  "status": "generated",
+  "project_root": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-platform-matrix-vTkXBn/output/platform-service",
+  "modules": [
+    "server",
+    "service",
+    "repository",
+    "adapter",
+    "client",
+    "feign-client"
+  ]
+}
+✔ candidate rendering only: layered-mvc spring-boot-2.7-jdk8 (623.146958ms)
+{
+  "status": "generated",
+  "project_root": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-platform-matrix-550xef/output/platform-service",
+  "modules": [
+    "server",
+    "service",
+    "repository",
+    "adapter",
+    "client",
+    "feign-client"
+  ]
+}
+✔ candidate rendering only: layered-mvc spring-boot-3.5-jdk17 (614.728792ms)
+{
+  "status": "generated",
+  "project_root": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-platform-matrix-Q7Z472/output/platform-service",
+  "modules": [
+    "server",
+    "service",
+    "repository",
+    "adapter",
+    "client",
+    "feign-client"
+  ]
+}
+✔ candidate rendering only: layered-mvc spring-boot-3.5-jdk21 (604.744708ms)
+✔ unsupported component platform never synthesizes a binding: domain-driven spring-boot-4.1-jdk17 (82.711083ms)
+✔ unsupported component platform never synthesizes a binding: domain-driven spring-boot-4.1-jdk21 (80.729834ms)
+✔ unsupported component platform never synthesizes a binding: layered-mvc spring-boot-4.1-jdk17 (101.512542ms)
+✔ unsupported component platform never synthesizes a binding: layered-mvc spring-boot-4.1-jdk21 (83.364ms)
+✔ v2 scaffold schema rejects a platform binding without the normalized component line (80.622375ms)
+✔ production fail-closed and zero writes: domain-driven (570.212583ms)
+✔ production fail-closed and zero writes: layered-mvc (600.704167ms)
+✔ version, digest, namespace, YSS coordinates and decision mismatches are rejected (1.283875ms)
+✔ runtime dependencies require startup module, proper scope and exact independent Boot BOM (3.851458ms)
+✔ packaged runtime jar must contain every runtime artifact (0.285041ms)
+✔ integration evidence rejects skipped tests and missing optional Feign coverage (0.654083ms)
+✔ verified compatibility binds report bytes and every portable evidence artifact (8.161416ms)
+✔ multiple exact patches coexist without rebinding earlier contracts (0.400542ms)
+✔ component capabilities are nested by registry capability id and uncertified profiles stay closed (1.146458ms)
+✔ Boot 3 catalog parser rejects drift in candidate and platform-managed bindings (3.658542ms)
+✔ artifact resolution evidence binds catalog coordinates and bytes (2.484208ms)
+✔ component adoption, platform generation and retirement evidence expose stable failure codes (1.300417ms)
+✔ component capability resolver returns exact serializable bindings and fails closed (1.69725ms)
+✔ component capability resolver rejects coordinate conflicts and evidence drift (1.543584ms)
+✔ resolved SNAPSHOT, POM/JAR digests and source tree are mandatory for verified components (1.246542ms)
+✔ resolveBackendPlatform loads the catalog beneath an explicit root (1.238958ms)
+✔ backend-platforms require-profile exposes nested component blockers and exits non-zero (74.99525ms)
+{
+  "status": "generated",
+  "project_root": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-platform-resume-pAKV9e/output/platform-service",
+  "modules": [
+    "server",
+    "service",
+    "repository",
+    "adapter",
+    "client",
+    "feign-client"
+  ]
+}
+✔ resume never regenerates or accepts changed files, extra source or changed contracts (540.655625ms)
+ℹ tests 29
+ℹ suites 0
+ℹ pass 29
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 6161.325542

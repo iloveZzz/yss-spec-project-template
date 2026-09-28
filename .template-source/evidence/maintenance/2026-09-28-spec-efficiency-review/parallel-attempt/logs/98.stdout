@@ -1,0 +1,13 @@
+✔ mechanical preparation keeps versions, risks, unknown constraints, and grants no approval (7.063125ms)
+✔ missing originals and decisions give actionable gaps without fabricated approval (1.292542ms)
+✔ stale source bindings remain visible in preparation (1.981417ms)
+✔ same version changed bytes is a conflict (1.260667ms)
+✔ valid original decision remains unapproved; stale reply source produces a gap (141.212708ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 210.188458

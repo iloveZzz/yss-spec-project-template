@@ -1,0 +1,24 @@
+✔ ordinary engineering work reuses explicit authorization through public approval and CLI (397.963708ms)
+✔ product design can continue after independent review without a repeated human reply (66.184959ms)
+✔ source approval continuation is verified by all three dedicated receivers (714.709083ms)
+✔ Plan entry consumes continuation and still blocks incomplete checks (144.490542ms)
+✔ implementation continuation preserves contract, repository and write-path checks (203.029541ms)
+✔ conflicting direct decision and continuation references are rejected (1.628875ms)
+✔ no reply and revoked source authorization cannot continue (133.945292ms)
+✔ new scope, new target and side effects cannot inherit authorization (6.072375ms)
+✔ material changes and unclassified changes require a decision (135.530459ms)
+✔ new risk, quality reduction or changed authorization cannot be labelled cosmetic (277.274417ms)
+✔ self review, wrong expertise, missing comparisons and stale verification block (266.053708ms)
+✔ external policy unknown, missing approvals and changed policy cannot be waived (315.889667ms)
+✔ suggestions do not block, unresolved defects and missing evidence do (256.265167ms)
+✔ formatting refresh requires new current review but not another source reply (130.219708ms)
+✔ older receivers without continuation capability reject rather than silently approve (3.473083ms)
+✔ one review bundle retains explicit per-check outcomes and rejects duplicates (11.108167ms)
+ℹ tests 16
+ℹ suites 0
+ℹ pass 16
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3120.752666

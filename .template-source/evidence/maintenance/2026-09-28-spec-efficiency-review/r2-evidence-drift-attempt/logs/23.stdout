@@ -1,0 +1,11 @@
+✔ repository router exposes exactly the registered profile entry points (20.702875ms)
+✔ normative persistence skills do not contain business-specific templates or production source mirrors (1.016417ms)
+✔ code review wires Repository and MyBatis with registered backend scope (0.883ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 62.095417

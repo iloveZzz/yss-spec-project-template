@@ -1,0 +1,36 @@
+[
+  {
+    "repository": "create-yss-spec",
+    "commit": "b8dc7c5b4244da02b5089649b243447b070f18d9",
+    "template_commit": "1f17bf55b496ecab2c823e7e80986c6955b8a6ec",
+    "source_state": "committed",
+    "dirty": false
+  },
+  {
+    "repository": "create-yss-strategic-design",
+    "commit": "0cb4d8a081484b9572a6bf0e44622438801b6b89",
+    "template_commit": "5c968c732a1f06ad4b699353886a53141f4950b2",
+    "source_state": "committed",
+    "dirty": false,
+    "core_source_state": "committed",
+    "core_source_revision": "1f17bf55b496ecab2c823e7e80986c6955b8a6ec"
+  },
+  {
+    "repository": "create-yss-harness-backend",
+    "commit": "897dbfd95bbe316e4dd61c6bbdccfb2a58a05657",
+    "template_commit": "0f0061e4c2c21c9c26a3a874853bb1c0ef18043b",
+    "source_state": "committed",
+    "dirty": false,
+    "core_source_state": "committed",
+    "core_source_revision": "1f17bf55b496ecab2c823e7e80986c6955b8a6ec"
+  },
+  {
+    "repository": "create-yss-harness-frontend",
+    "commit": "13d4346db66f6db8e588486efacaedc4bdefacac",
+    "template_commit": "020955bffe43f087d34ab194731d26fbbfe8e685",
+    "source_state": "committed",
+    "dirty": false,
+    "core_source_state": "committed",
+    "core_source_revision": "1f17bf55b496ecab2c823e7e80986c6955b8a6ec"
+  }
+]

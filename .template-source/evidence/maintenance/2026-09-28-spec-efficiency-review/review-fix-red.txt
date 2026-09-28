@@ -1,0 +1,51 @@
+✖ default Slice review retains v2 global and nested unknown constraints (527.013833ms)
+✖ default Slice review retains v3 global and nested unknown constraints (874.711041ms)
+✔ mechanical preparation keeps versions, risks, unknown constraints, and grants no approval (1.714042ms)
+✔ missing originals and decisions give actionable gaps without fabricated approval (0.830333ms)
+✔ stale source bindings remain visible in preparation (1.254ms)
+✔ same version changed bytes is a conflict (0.94625ms)
+✔ valid original decision remains unapproved; stale reply source produces a gap (129.246666ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 5
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1624.706125
+
+✖ failing tests:
+
+test at tests/contract-review-preparation.test.mjs:10:31
+✖ default Slice review retains v2 global and nested unknown constraints (527.013833ms)
+  AssertionError [ERR_ASSERTION]: 必须由数据负责人确认导出范围
+      at TestContext.<anonymous> (file:///Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template/tests/contract-review-preparation.test.mjs:22:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.start (node:internal/test_runner/test:1262:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/contract-review-preparation.test.mjs:10:31
+✖ default Slice review retains v3 global and nested unknown constraints (874.711041ms)
+  AssertionError [ERR_ASSERTION]: 必须由数据负责人确认导出范围
+      at TestContext.<anonymous> (file:///Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template/tests/contract-review-preparation.test.mjs:22:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

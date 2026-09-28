@@ -1,0 +1,15 @@
+✔ default Slice review retains v2 global and nested unknown constraints (522.85025ms)
+✔ default Slice review retains v3 global and nested unknown constraints (1003.346208ms)
+✔ mechanical preparation keeps versions, risks, unknown constraints, and grants no approval (1.707459ms)
+✔ missing originals and decisions give actionable gaps without fabricated approval (0.773292ms)
+✔ stale source bindings remain visible in preparation (1.3445ms)
+✔ same version changed bytes is a conflict (1.111958ms)
+✔ valid original decision remains unapproved; stale reply source produces a gap (143.102833ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1751.978375

@@ -1,0 +1,90 @@
+{
+  "schema_version": 2,
+  "intensity": "L3",
+  "classification_reason": "核心验证选择与报告、来源绑定及只读权限合同变化，涉及三个专职消费者和四个 CLI。",
+  "triggers": [
+    "core-validator",
+    "permission-boundary",
+    "cross-repo-contract"
+  ],
+  "changed_assets": [
+    "scripts/lib/lifecycle-context-query.mjs",
+    "scripts/lib/read-only-intake.mjs",
+    "scripts/lib/task-package.mjs",
+    ".template-spec/process/schemas/digital-human-task-package.schema.json",
+    "scripts/lib/contract-views.mjs",
+    "scripts/run-template-verification",
+    "scripts/lib/verification-selection.mjs",
+    "scripts/lib/verification-report.mjs",
+    ".template-source/process/template-verification-profiles.yaml",
+    "scripts/fixtures/contract-efficiency",
+    "scripts/sync-strategic-handoff-tools",
+    ".agents/skills/yss-research/SKILL.md",
+    ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml",
+    "submodules/create-yss-spec/src/template/asset-runtime.js",
+    "submodules/yss-harness-design-agent/scripts/lib/lifecycle-registry.mjs"
+  ],
+  "verification_evidence": [
+    {
+      "kind": "self-check",
+      "command": "self-check.md",
+      "result": "pass",
+      "evidence_ref": ".template-source/evidence/maintenance/2026-09-28-spec-efficiency/self-check.md"
+    },
+    {
+      "kind": "fresh-verification",
+      "command": "scripts/verify-template",
+      "arguments": [
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/tmp/yss-efficiency-merge-full-r2-final"
+      ],
+      "result": "pass",
+      "executed_at": "2026-09-28T07:49:01.380Z",
+      "duration_ms": 385392,
+      "evidence_ref": ".template-source/evidence/maintenance/2026-09-28-spec-efficiency-review/full-verification-r2/report.json"
+    },
+    {
+      "kind": "candidate-verification",
+      "command": "scripts/verify-template",
+      "arguments": [
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/tmp/yss-efficiency-merge-full-r2-final"
+      ],
+      "result": "pass",
+      "executed_at": "2026-09-28T07:49:01.380Z",
+      "duration_ms": 385392,
+      "evidence_ref": ".template-source/evidence/maintenance/2026-09-28-spec-efficiency-review/full-verification-r2/report.json"
+    },
+    {
+      "kind": "initial-release-verification",
+      "command": "scripts/verify-template",
+      "arguments": [
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/tmp/yss-efficiency-merge-full-r2-final"
+      ],
+      "result": "pass",
+      "executed_at": "2026-09-28T07:49:01.380Z",
+      "duration_ms": 385392,
+      "evidence_ref": ".template-source/evidence/maintenance/2026-09-28-spec-efficiency-review/full-verification-r2/report.json"
+    },
+    {
+      "kind": "review-task-packages",
+      "command": "scripts/verify-digital-human-task-package (Standards and Spec)",
+      "result": "pass",
+      "evidence_ref": ".template-source/evidence/maintenance/2026-09-28-spec-efficiency-review/task-validation-r2.txt"
+    }
+  ],
+  "review_mode": "focused-independent",
+  "escalation": "第一轮 SPEC-1 修复后重新捕获完整候选；raw v2/v3 默认 review 全局与未知约束回归先红后绿。新候选完整门禁通过，concurrency=2；此前串行运行由于复盘材料写入被输入漂移保护拒绝，原记录保留。第二轮仍有阻断则 needs-human，禁止自动第三轮。",
+  "target_state": "review-ready",
+  "current_state": "review-ready",
+  "verification_profile": "candidate",
+  "review_round": 2,
+  "candidate_digest": "f6f863a4e8ba14ffbebe96d519ba8f7819f60d0b657b228a9277ff7d2951fae8"
+}

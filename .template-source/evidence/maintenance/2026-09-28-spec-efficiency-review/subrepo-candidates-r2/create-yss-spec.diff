@@ -1,0 +1,198 @@
+diff --git a/src/template/asset-runtime.js b/src/template/asset-runtime.js
+index 13dc4db..20bce6f 100644
+--- a/src/template/asset-runtime.js
++++ b/src/template/asset-runtime.js
+@@ -27,6 +27,7 @@ const COMMON = {
+     ".template-spec/process/harness-process-tailoring.md",
+     ".template-spec/process/document-writing.md",
+     ".template-spec/process/contract-reading.md",
++    ".template-spec/process/subagent-collaboration.md",
+     ".template-spec/process/stage-tracking.md",
+     ".template-spec/process/schemas/context-reconciliation.schema.json",
+     ".template-spec/process/schemas/digital-human-task-package.schema.json",
+@@ -54,6 +55,8 @@ const COMMON = {
+     "scripts/verify-user-decision",
+     "scripts/verify-approval-record",
+     "scripts/query-lifecycle-context",
++    "scripts/prepare-read-only-intake",
++    "scripts/run-read-only-intake",
+     "scripts/contract",
+     "scripts/stage-tracking",
+     "scripts/gitworks",
+diff --git a/template.manifest.json b/template.manifest.json
+index 96f3f8a..35f28b6 100644
+--- a/template.manifest.json
++++ b/template.manifest.json
+@@ -92,9 +92,13 @@
+     "scripts/lib/skill-governance.mjs",
+     "scripts/lib/template-commit-cache.mjs",
+     "scripts/lib/template-verification.mjs",
+-    "scripts/lib/template-verification-runner.mjs"
++    "scripts/lib/template-verification-runner.mjs",
++    "scripts/lib/verification-selection.mjs",
++    "scripts/lib/verification-report.mjs"
++  ],
++  "excludePathSuffixes": [
++    "-scenarios"
+   ],
+-  "excludePathSuffixes": ["-scenarios"],
+   "renderPaths": [
+     ".gitignore",
+     "AGENTS.md",
+@@ -128,44 +132,129 @@
+     "version": 1,
+     "default": "managed",
+     "rules": [
+-      { "pattern": ".git/**", "ownership": "protected" },
+-      { "pattern": ".template-source/**", "ownership": "protected" },
+-      { "pattern": ".cursor/environment.json", "ownership": "protected" },
+-      { "pattern": ".gitmodules", "ownership": "user-owned" },
+-      { "pattern": ".gitignore", "ownership": "managed-customizable" },
+-      { "pattern": "apps/**", "ownership": "user-owned" },
+-      { "pattern": "packages/**", "ownership": "user-owned" },
+-      { "pattern": "wiki/**", "ownership": "user-owned" },
+-      { "pattern": "docs/reviews/**", "ownership": "user-owned" },
+-      { "pattern": "docs/.scratch/**", "ownership": "user-owned" },
+-      { "pattern": ".template-spec/agents/issue-tracker.md", "ownership": "managed-customizable" },
+-      { "pattern": "yss-project.yaml", "ownership": "generated" },
+-      { "pattern": "skills-lock.json", "ownership": "generated" },
+-      { "pattern": "yss-public-skills.json", "ownership": "generated" },
+-      { "pattern": ".agents/skills/.yss-skills-manifest.json", "ownership": "generated" },
+-      { "pattern": "AGENTS.md", "ownership": "managed-customizable" },
+-      { "pattern": "CONTEXT.md", "ownership": "managed-customizable" },
+-      { "pattern": "DESIGN.md", "ownership": "managed-customizable" },
+-      { "pattern": "README.md", "ownership": "user-owned" }
++      {
++        "pattern": ".git/**",
++        "ownership": "protected"
++      },
++      {
++        "pattern": ".template-source/**",
++        "ownership": "protected"
++      },
++      {
++        "pattern": ".cursor/environment.json",
++        "ownership": "protected"
++      },
++      {
++        "pattern": ".gitmodules",
++        "ownership": "user-owned"
++      },
++      {
++        "pattern": ".gitignore",
++        "ownership": "managed-customizable"
++      },
++      {
++        "pattern": "apps/**",
++        "ownership": "user-owned"
++      },
++      {
++        "pattern": "packages/**",
++        "ownership": "user-owned"
++      },
++      {
++        "pattern": "wiki/**",
++        "ownership": "user-owned"
++      },
++      {
++        "pattern": "docs/reviews/**",
++        "ownership": "user-owned"
++      },
++      {
++        "pattern": "docs/.scratch/**",
++        "ownership": "user-owned"
++      },
++      {
++        "pattern": ".template-spec/agents/issue-tracker.md",
++        "ownership": "managed-customizable"
++      },
++      {
++        "pattern": "yss-project.yaml",
++        "ownership": "generated"
++      },
++      {
++        "pattern": "skills-lock.json",
++        "ownership": "generated"
++      },
++      {
++        "pattern": "yss-public-skills.json",
++        "ownership": "generated"
++      },
++      {
++        "pattern": ".agents/skills/.yss-skills-manifest.json",
++        "ownership": "generated"
++      },
++      {
++        "pattern": "AGENTS.md",
++        "ownership": "managed-customizable"
++      },
++      {
++        "pattern": "CONTEXT.md",
++        "ownership": "managed-customizable"
++      },
++      {
++        "pattern": "DESIGN.md",
++        "ownership": "managed-customizable"
++      },
++      {
++        "pattern": "README.md",
++        "ownership": "user-owned"
++      }
+     ]
+   },
+   "customizationPolicy": {
+     "version": 1,
+     "defaultStrategy": "replace-with-force",
+     "rules": [
+-      { "pattern": ".gitignore", "strategy": "manual" },
+-      { "pattern": ".template-spec/agents/issue-tracker.md", "strategy": "manual" },
+-      { "pattern": "CONTEXT.md", "strategy": "manual" },
+-      { "pattern": "DESIGN.md", "strategy": "manual" }
++      {
++        "pattern": ".gitignore",
++        "strategy": "manual"
++      },
++      {
++        "pattern": ".template-spec/agents/issue-tracker.md",
++        "strategy": "manual"
++      },
++      {
++        "pattern": "CONTEXT.md",
++        "strategy": "manual"
++      },
++      {
++        "pattern": "DESIGN.md",
++        "strategy": "manual"
++      }
+     ]
+   },
+   "generatorPolicy": {
+     "version": 1,
+     "rules": [
+-      { "pattern": "yss-project.yaml", "generatorId": "repository-identity", "generatorVersion": 1 },
+-      { "pattern": "skills-lock.json", "generatorId": "skills-lock", "generatorVersion": 1 },
+-      { "pattern": "yss-public-skills.json", "generatorId": "public-skills", "generatorVersion": 1 },
+-      { "pattern": ".agents/skills/.yss-skills-manifest.json", "generatorId": "skills-manifest", "generatorVersion": 1 }
++      {
++        "pattern": "yss-project.yaml",
++        "generatorId": "repository-identity",
++        "generatorVersion": 1
++      },
++      {
++        "pattern": "skills-lock.json",
++        "generatorId": "skills-lock",
++        "generatorVersion": 1
++      },
++      {
++        "pattern": "yss-public-skills.json",
++        "generatorId": "public-skills",
++        "generatorVersion": 1
++      },
++      {
++        "pattern": ".agents/skills/.yss-skills-manifest.json",
++        "generatorId": "skills-manifest",
++        "generatorVersion": 1
++      }
+     ]
+   }
+ }
