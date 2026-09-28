@@ -1,0 +1,22 @@
+[开始] node -e "console.log(123)"
+[完成] node -e "console.log(123)" (32ms, exit=0)
+[开始] node -e "process.exit(7)"
+[失败] node -e "process.exit(7)" (28ms, exit=7)
+[开始] node -e "setTimeout(()=>{},10000)"
+✔ actual logs, deduplication, failures and wall time are distinct (64.103375ms)
+[失败] node -e "setTimeout(()=>{},10000)" (103ms, exit=130)
+✔ interruption preserves partial execution and marks remaining checks (103.987ms)
+✔ shadow executes exactly legacy; explains unrelated scenario exclusions (28.967416ms)
+✔ unknown, mixed, executable, core, projection outside pilot, lock and release fail safe (41.459625ms)
+✔ path sets cover add delete rename untracked; candidate and release cannot hide actual paths (5.084125ms)
+✔ dependency closure and cycles/unknown dependency fail closed (4.598417ms)
+✔ qualification binds configuration and source bytes; no automatic expansion (5.907375ms)
+✔ missing dependency declaration retains the original check (3.642ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 208.110958

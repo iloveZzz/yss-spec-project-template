@@ -1,0 +1,50 @@
+[
+  {
+    "repo": "/Users/zhudaoming/.codex/worktrees/lifecycle-core-verification/yss-spec-project-template/submodules/create-yss-strategic-design",
+    "before": "0a9ece0922510f13c27cfde26cfa2d12dd3141b4",
+    "after": "0a9ece0922510f13c27cfde26cfa2d12dd3141b4",
+    "preserved_stash": "30da64da4dcda939eba413aa51490d8450da4032"
+  },
+  {
+    "repo": "/Users/zhudaoming/.codex/worktrees/lifecycle-core-verification/yss-spec-project-template/submodules/yss-harness-design-agent",
+    "before": "6c9e47c3863f3f998443f7e5cc723ae750e21d1f",
+    "after": "0e1f9407e6d7915bb6c293f228257e691ef9dc9d",
+    "preserved_stash": "2c609fc450bd860b47ad89e093f707d00e081ca6"
+  },
+  {
+    "repo": "/Users/zhudaoming/.codex/worktrees/lifecycle-core-verification/yss-spec-project-template/submodules/yss-harness-backend-agent",
+    "before": "f46f22901528bcc76a0182c95153d463bb685a88",
+    "after": "a390405ef24536756a7b93c016bd77fd46739e09",
+    "preserved_stash": "68c393a95b9b059d0c55bbc5b408c2a72cb62995"
+  },
+  {
+    "repo": "/Users/zhudaoming/.codex/worktrees/lifecycle-core-verification/yss-spec-project-template/submodules/yss-harness-frontend-agent",
+    "before": "a1dab008ec1a07f04b6eb421201146031ce00fd2",
+    "after": "793c92aa59f7ebaaf3e853c66a5feaf194d987cc",
+    "preserved_stash": "5695827f2e762126a534172f621fdb4039494601"
+  },
+  {
+    "repo": "/Users/zhudaoming/.codex/worktrees/lifecycle-core-verification/yss-spec-project-template/submodules/create-yss-spec",
+    "before": "b8dc7c5b4244da02b5089649b243447b070f18d9",
+    "after": "b8dc7c5b4244da02b5089649b243447b070f18d9",
+    "preserved_stash": "bc6da80ccfbb88b0f005861f64e22ffdfd282272"
+  },
+  {
+    "repo": "/Users/zhudaoming/.codex/worktrees/lifecycle-core-verification/yss-spec-project-template/submodules/create-yss-harness-frontend",
+    "before": "31d554abf24dec320d8e6a76e24c960464e1959c",
+    "after": "31d554abf24dec320d8e6a76e24c960464e1959c",
+    "preserved_stash": "117da1cad67c2dee5a7e69c2834a9172aa160152"
+  },
+  {
+    "repo": "/Users/zhudaoming/.codex/worktrees/lifecycle-core-verification/yss-spec-project-template/submodules/create-yss-harness-backend",
+    "before": "f76735ec9b0a0dc47738d79d67f5918f89e7dbc8",
+    "after": "f76735ec9b0a0dc47738d79d67f5918f89e7dbc8",
+    "preserved_stash": "65803a4dae45c925dcbb9fa98ce9266bc55aa7dd"
+  },
+  {
+    "repo": "/Users/zhudaoming/.codex/worktrees/lifecycle-core-verification/yss-spec-project-template",
+    "before": "afe739ff38ecfd02d83238b632ad18babd635d50",
+    "after": "9e9abf162d532c16c0292bba21f68d8c17f29d9e",
+    "preserved_stash": "57fd37210e10a92145014e4cb023190c9e4e1fee"
+  }
+]

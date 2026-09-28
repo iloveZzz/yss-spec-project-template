@@ -1,0 +1,7 @@
+{
+  "command": "node .agents/skills/yss-research/scripts/validate-research-package.mjs .template-source/evidence/maintenance/2026-09-28-official-spec-research/google/google-research-brief.md .template-source/evidence/maintenance/2026-09-28-official-spec-research/google/google-evidence.yaml",
+  "exit_code": 0,
+  "observed_at": "2026-09-28T05:30:58.383221+00:00",
+  "log_ref": ".template-source/evidence/maintenance/2026-09-28-official-spec-research/google/validation.log",
+  "scope": "研究包结构与引用校验，不代表独立语义审查"
+}

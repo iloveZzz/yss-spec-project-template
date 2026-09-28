@@ -1,0 +1,121 @@
+{
+  "record_type": "ui-inspection-checkpoint",
+  "test_data_only": true,
+  "repository_mode": "template-source",
+  "scope": "仅核验隔离 fixture 的 ui.html；不修改来源、合同、规则或实现，不提交 Git。",
+  "status": "incomplete",
+  "current_step": "inspect",
+  "next_action": "verify",
+  "stopped_before_interaction": true,
+  "stop_reason": "按用户要求停在交互验证之前；inspect 同时因浏览器启动失败而未完成。",
+  "rules_consulted": [
+    "AGENTS.md",
+    "yss-project.yaml",
+    "CONTEXT.md",
+    ".template-spec/process/harness-process-tailoring.md",
+    ".template-spec/process/lifecycle-registry.yaml",
+    ".agents/skills/yss-ui/SKILL.md",
+    ".agents/skills/yss-ui/references/verification.md"
+  ],
+  "applicability": {
+    "yss_ui": "仅采用按影响面核验、记录实际命令和退出码、缺证据不得通过的要求；此页为原生 HTML 测试 fixture，不宣称 Vue/YSS 生产组件合规。",
+    "product_lifecycle": "not-applicable：仓库身份为 template-source，本轮不创建产品 Spec、原型、OpenAPI、Ticket 或 Slice 合同，也不流转阶段。",
+    "context_reconciliation": "not-applicable：template-source 只读核验，已读取根 CONTEXT.md，不新增或修改业务词汇。",
+    "maintenance_changes": "not-applicable：本轮无模板、规则或 Skill 维护，不宣称模板验证就绪。",
+    "behavior_tdd": "not-applicable：本轮不实现或修改行为。"
+  },
+  "input_sha256": {
+    "yss-project.yaml": "dae2ddacbb024ba25b70a18830fc26ab7d3dcd8aaa361cc8b3767d68307f98af",
+    "CONTEXT.md": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559",
+    "probe-ui.mjs": "a62e9d12ada821a27b04a4a9673dccb9377825e015f5ed957a6685352c5905e5",
+    "ui.html": "62f6979ace6ab56b1c8dcec6273555f01f8459068e572cc8c67b873f85eecb01"
+  },
+  "inspect": {
+    "command": "node probe-ui.mjs inspect",
+    "executed": true,
+    "exit_code": 1,
+    "result": "blocked",
+    "environment": {
+      "node_version_observed": "v24.14.1",
+      "browser_engine": "Chromium via local playwright-core",
+      "browser_executable_requested": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+      "headless": true,
+      "entry_point": "file:// ui.html"
+    },
+    "browser_launch_attempted": true,
+    "actual_browser_inspection_completed": false,
+    "page_loaded": false,
+    "failure_stage": "chromium.launch",
+    "error": "browserType.launch: Target page, context or browser has been closed",
+    "browser_exit_code": null,
+    "browser_exit_signal": "SIGABRT",
+    "additional_log": "exception while trying to kill process: Error: kill EPERM",
+    "root_cause": "未确定；日志只证明浏览器启动失败，不能归因为页面缺陷。",
+    "initial_result_empty": null,
+    "screenshot_observed": false,
+    "console_messages": null,
+    "console_check": "未执行；无采集结果不能解释为没有 warning/error。",
+    "evidence_files_created": [],
+    "expected_inspect_artifacts_absent_at_checkpoint": [
+      "ui-evidence/before.png",
+      "ui-evidence/inspect.json"
+    ]
+  },
+  "static_review": {
+    "basis": "只读检查 probe-ui.mjs 和 ui.html 的内容；以下为脚本预期，不是浏览器观察结果。",
+    "inspect_expected": "打开页面，保存 before.png，并断言 #result 初始为空。",
+    "verify_expected": [
+      "点击 #save 后，#result 为 请填写名称。",
+      "在 #name 填入 YSS 后点击 #save，#result 为 已保存：YSS。",
+      "保存 after.png，断言所采集 pageerror 与 console error/warning 为空。"
+    ],
+    "network_policy_in_source": "页面路由仅放行 file:，其余请求 abort；启动参数含 --disable-background-networking。因启动失败未验证运行时隔离。",
+    "api_required_for_this_fixture": false,
+    "api_reason": "当前 HTML 的保存按钮只更新本页文本，脚本未调用 API。"
+  },
+  "verification": {
+    "command": "node probe-ui.mjs verify",
+    "executed": false,
+    "exit_code": null,
+    "result": "not-run",
+    "empty_rejected": null,
+    "save_observed": null,
+    "console_check_passed": null,
+    "evidence_files_created": [],
+    "pnpm": {
+      "executed": false,
+      "exit_code": null,
+      "reason": "根目录未发现 package.json 或 pnpm-lock.yaml；本轮执行用户指定的 Node 浏览器探针，不发明 pnpm scripts，不以 PATH 替身成功代表真实构建。"
+    }
+  },
+  "next_step": {
+    "action": "verify",
+    "command": "node probe-ui.mjs verify",
+    "prerequisites": [
+      "在允许的隔离环境恢复真实浏览器启动能力，不修改来源、合同、规则或实现，不绕过沙箱或命令替身。",
+      "复核输入摘要；先重新执行 node probe-ui.mjs inspect，取得真实页面、截图、初始状态及 console 证据。",
+      "恢复交互验证任务后才执行 verify；本轮不执行。"
+    ],
+    "evidence_to_capture": [
+      "实际退出码及失败日志",
+      "空名称提示和填写 YSS 后保存反馈的真实浏览器断言",
+      "ui-evidence/after.png 与 ui-evidence/verification.json 的实际内容",
+      "pageerror 与 console error/warning 采集结果"
+    ],
+    "acceptance_limit": "文件存在或脚本名不构成通过证据；即使 verify 通过，也仅覆盖此 fixture 指定交互，不代表完整 UI 还原、真实构建、生产或发布验收。"
+  },
+  "unverified": [
+    "真实浏览器页面加载、初始状态和截图",
+    "空名称校验与保存交互",
+    "页面 console warning/error 与 pageerror",
+    "视觉回归、窄屏、键盘和焦点等更广 UI 验证",
+    "真实 pnpm 构建或测试，以及生产与外网行为"
+  ],
+  "changed_files": ["checkpoint.json"],
+  "source_contract_rule_implementation_edits": [],
+  "git_commands_executed": false,
+  "temporary_api_started": false,
+  "real_approval_recorded": false,
+  "ticket_status": "not-applicable：本轮无产品 Ticket 状态变更。",
+  "review_or_release_conclusion": "未作通过、完成、可合并或可发布结论。"
+}

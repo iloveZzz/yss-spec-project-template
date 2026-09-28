@@ -1,0 +1,5 @@
+{
+  "closed": true,
+  "next_route": null,
+  "reason": "本隔离样本的正式落盘研究可在 template-source 仓库按 work-unit.maintenance-research 独立结束。已实际读取 research/source.txt，第 1 行 version=1 支持 claim-001；未发现其他版本的结论仅限该文件。research/state.json 绑定的验证记录、简报、证据台账、当前校验器及 stdout/stderr 六项 SHA-256 均匹配，原记录的命令、时间和退出码有效。2026-09-28T08:49:32.741Z 至 08:49:32.773Z 实际重跑 node .agents/skills/yss-research/scripts/validate-research-package.mjs research/demo-research-brief.md research/demo-evidence.yaml，退出码为 0，stdout 报告 1 条结论、1 项证据、2 次检索有效，stderr 为空。实际调用当前 scripts/lib/lifecycle-transition.mjs 的 validateNextRoute('work-unit.maintenance-research', null, state, {root})，接收端复验返回 allowed、next_work_unit=null，blocking_signals 与 missing_requirements 为空。根 CONTEXT.md 合同校验退出码为 0；研究 Context 已说明 not-applicable 原因，必需证据引用齐全，执行阻断、drift、violation、new_impacts、stale_candidates 均为空。依据 research-completion.md 和当前流转合同，独立结束无需后续维护授权，不进入产品 Plan 或实施。旧研究文件经核验保持原字节，本轮只写 assessment.json。结论仅证明本地合成样本的研究收尾，不构成真实批准、生产研究结论或维护发布许可；未访问外网、生产环境，未提交 Git。"
+}

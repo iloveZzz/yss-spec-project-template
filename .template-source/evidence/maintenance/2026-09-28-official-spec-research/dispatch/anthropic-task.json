@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "role_id": "role.requirements-manager",
+  "skill_source": {
+    "registry_ref": ".template-spec/agents/digital-human-roles.yaml",
+    "defaults_ref": "taskPackageDefaults(role.requirements-manager)",
+    "core_skills": [
+      "grilling",
+      "domain-modeling",
+      "yss-research",
+      "competitive-intelligence",
+      "grill-with-docs"
+    ],
+    "forbidden_skills": [
+      "yss-ui",
+      "yss-domain",
+      "yss-web-controller",
+      "yss-repository",
+      "yss-ddd-scaffold-generator",
+      "yss-layered-mvc-scaffold-generator",
+      "yss-frontend-scaffold-generator",
+      "implement",
+      "tdd"
+    ]
+  },
+  "task_id": "official-spec-anthropic",
+  "work_unit_id": "work-unit.entry-triage",
+  "actor_id": "research.anthropic",
+  "runtime_id": "runtime.skill-projection",
+  "execution_state": "Explorer",
+  "workflow_status": "paused",
+  "contract": {
+    "kind": "template-maintenance",
+    "contract_id": "official-spec-research-20260928",
+    "contract_version": 1,
+    "status": "issued",
+    "contract_ref": ".template-source/evidence/maintenance/2026-09-28-official-spec-research/research-scope.md",
+    "maintenance_ref": ".template-source/evidence/maintenance/2026-09-28-official-spec-research/checkpoint.json"
+  },
+  "inputs": [
+    "yss-project.yaml",
+    "CONTEXT.md",
+    ".agents/skills/yss-research/SKILL.md",
+    ".agents/skills/yss-research/references/evidence-contract.md",
+    ".template-source/evidence/maintenance/2026-09-28-official-spec-research/research-scope.md"
+  ],
+  "objective": "调研 anthropic 第一方研发规格和执行工作流；提供可定位来源、反证、可借鉴机制和边界，研究不批准。",
+  "allowed_write_paths": [
+    ".template-source/evidence/maintenance/2026-09-28-official-spec-research/anthropic"
+  ],
+  "forbidden_actions": [
+    "不修改其他路径、既有用户改动、权威合同、词汇、Ticket 或批准",
+    "不提交、推送、发布或调用付费模型",
+    "不将第三方项目归属为官方模板",
+    "不把结构验证当成研究语义独立审查"
+  ],
+  "expected_outputs": [
+    ".template-source/evidence/maintenance/2026-09-28-official-spec-research/anthropic/anthropic-research-brief.md",
+    ".template-source/evidence/maintenance/2026-09-28-official-spec-research/anthropic/anthropic-evidence.yaml",
+    ".template-source/evidence/maintenance/2026-09-28-official-spec-research/anthropic/result.json"
+  ],
+  "expected_evidence_files": [
+    ".template-source/evidence/maintenance/2026-09-28-official-spec-research/anthropic/anthropic-evidence.yaml"
+  ],
+  "verification_commands": [
+    "node .agents/skills/yss-research/scripts/validate-research-package.mjs .template-source/evidence/maintenance/2026-09-28-official-spec-research/anthropic/anthropic-research-brief.md .template-source/evidence/maintenance/2026-09-28-official-spec-research/anthropic/anthropic-evidence.yaml"
+  ],
+  "verification_results": [
+    {
+      "command": "node .agents/skills/yss-research/scripts/validate-research-package.mjs .template-source/evidence/maintenance/2026-09-28-official-spec-research/anthropic/anthropic-research-brief.md .template-source/evidence/maintenance/2026-09-28-official-spec-research/anthropic/anthropic-evidence.yaml",
+      "exit_code": 0,
+      "executed_at": "2026-09-28T05:30:40.891517+00:00",
+      "duration_ms": 28,
+      "evidence_ref": ".template-source/evidence/maintenance/2026-09-28-official-spec-research/anthropic/validation.log"
+    }
+  ],
+  "downstream_consumers": [
+    "主控 yss-research 汇总审计"
+  ],
+  "convergence": {
+    "parent_work_unit": "work-unit.entry-triage",
+    "convergence_ref": ".template-source/evidence/maintenance/2026-09-28-official-spec-research/research-scope.md",
+    "conflict_escalation": "返回主控核对来源，保留缺口，不自行裁决"
+  },
+  "result": {
+    "result_schema": "workflow-execution-result-v1",
+    "work_unit": "work-unit.entry-triage",
+    "workflow_reference": ".template-source/evidence/maintenance/2026-09-28-official-spec-research/research-scope.md",
+    "result": "blocked",
+    "context_reconciliation": {
+      "status": "not-applicable",
+      "ref": ".template-source/evidence/maintenance/2026-09-28-official-spec-research/research-scope.md",
+      "reason": "template-source 模板维护研究，无产品业务词汇或 CONTEXT.md 变更。"
+    },
+    "skill": "yss-research",
+    "changed_files": [
+      ".template-source/evidence/maintenance/2026-09-28-official-spec-research/anthropic/anthropic-research-brief.md",
+      ".template-source/evidence/maintenance/2026-09-28-official-spec-research/anthropic/anthropic-evidence.yaml",
+      ".template-source/evidence/maintenance/2026-09-28-official-spec-research/anthropic/source-manifest.json",
+      ".template-source/evidence/maintenance/2026-09-28-official-spec-research/anthropic/validation.log",
+      ".template-source/evidence/maintenance/2026-09-28-official-spec-research/anthropic/result.json"
+    ],
+    "changed_artifacts": [
+      ".template-source/evidence/maintenance/2026-09-28-official-spec-research/anthropic/anthropic-research-brief.md",
+      ".template-source/evidence/maintenance/2026-09-28-official-spec-research/anthropic/anthropic-evidence.yaml"
+    ],
+    "evidence_refs": [
+      ".template-source/evidence/maintenance/2026-09-28-official-spec-research/anthropic/anthropic-evidence.yaml",
+      ".template-source/evidence/maintenance/2026-09-28-official-spec-research/anthropic/source-manifest.json",
+      ".template-source/evidence/maintenance/2026-09-28-official-spec-research/anthropic/validation.log",
+      ".template-source/evidence/maintenance/2026-09-28-official-spec-research/research-scope.md",
+      ".template-source/evidence/maintenance/2026-09-28-official-spec-research/verification/research-route-reproduction.json",
+      ".template-source/evidence/maintenance/2026-09-28-official-spec-research/verification/dispatch-closure.md"
+    ],
+    "deferred_seams": [],
+    "drift": [],
+    "violation": [],
+    "new_impacts": [],
+    "stale_candidates": [],
+    "next_route": null,
+    "blocking_signals": [
+      "research-only-terminal-route-unsupported"
+    ],
+    "checkpoint_ref": ".template-source/evidence/maintenance/2026-09-28-official-spec-research/checkpoint.json"
+  }
+}

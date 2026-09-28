@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "kind": "maintenance-research-verification",
+  "inputs": {
+    "brief": {
+      "ref": ".template-source/evidence/maintenance/2026-09-28-official-spec-research/official-spec-research-brief.md",
+      "digest": "sha256:2aec73684c45d4b87acdc3bbaf53364838ad36230a284621f36a909a6f548cf8"
+    },
+    "evidence": {
+      "ref": ".template-source/evidence/maintenance/2026-09-28-official-spec-research/official-spec-evidence.yaml",
+      "digest": "sha256:a26333a5cbf04245d93e4ab05fc6f498bbc4834d256d4ac91784d0926d3eed58"
+    },
+    "validator": {
+      "ref": ".agents/skills/yss-research/scripts/validate-research-package.mjs",
+      "digest": "sha256:5e4e437d54e67cce9dd380974744605bd149c71939c5f01e3ea4719c79911d0f"
+    }
+  },
+  "command": [
+    "node",
+    ".agents/skills/yss-research/scripts/validate-research-package.mjs",
+    ".template-source/evidence/maintenance/2026-09-28-official-spec-research/official-spec-research-brief.md",
+    ".template-source/evidence/maintenance/2026-09-28-official-spec-research/official-spec-evidence.yaml"
+  ],
+  "started_at": "2026-09-28T08:32:30.121Z",
+  "completed_at": "2026-09-28T08:32:30.151Z",
+  "exit_code": 0,
+  "stdout": {
+    "ref": ".template-source/evidence/maintenance/2026-09-28-lifecycle-core-optimization/research-closure/official-spec/run/stdout.log",
+    "digest": "sha256:3544937b88b8f9a85610a31727c75d0ee6057a134a94c5b68784362be7117823"
+  },
+  "stderr": {
+    "ref": ".template-source/evidence/maintenance/2026-09-28-lifecycle-core-optimization/research-closure/official-spec/run/stderr.log",
+    "digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

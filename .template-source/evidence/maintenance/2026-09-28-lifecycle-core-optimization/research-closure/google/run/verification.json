@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "kind": "maintenance-research-verification",
+  "inputs": {
+    "brief": {
+      "ref": ".template-source/evidence/maintenance/2026-09-28-official-spec-research/google/google-research-brief.md",
+      "digest": "sha256:9fbf59a753af0666be5fe38a407109a613e15790a5c7adcef56dbfb89e2f17ca"
+    },
+    "evidence": {
+      "ref": ".template-source/evidence/maintenance/2026-09-28-official-spec-research/google/google-evidence.yaml",
+      "digest": "sha256:6dc6e04414718b7117d34f57c49a2014952a7985ec0aa5880c985a350c8fd8dd"
+    },
+    "validator": {
+      "ref": ".agents/skills/yss-research/scripts/validate-research-package.mjs",
+      "digest": "sha256:5e4e437d54e67cce9dd380974744605bd149c71939c5f01e3ea4719c79911d0f"
+    }
+  },
+  "command": [
+    "node",
+    ".agents/skills/yss-research/scripts/validate-research-package.mjs",
+    ".template-source/evidence/maintenance/2026-09-28-official-spec-research/google/google-research-brief.md",
+    ".template-source/evidence/maintenance/2026-09-28-official-spec-research/google/google-evidence.yaml"
+  ],
+  "started_at": "2026-09-28T08:32:29.994Z",
+  "completed_at": "2026-09-28T08:32:30.022Z",
+  "exit_code": 0,
+  "stdout": {
+    "ref": ".template-source/evidence/maintenance/2026-09-28-lifecycle-core-optimization/research-closure/google/run/stdout.log",
+    "digest": "sha256:e9abe56dd8a3c75dde2fc0b57809a102a48cb8bc91c399df00e0f5a222413df9"
+  },
+  "stderr": {
+    "ref": ".template-source/evidence/maintenance/2026-09-28-lifecycle-core-optimization/research-closure/google/run/stderr.log",
+    "digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

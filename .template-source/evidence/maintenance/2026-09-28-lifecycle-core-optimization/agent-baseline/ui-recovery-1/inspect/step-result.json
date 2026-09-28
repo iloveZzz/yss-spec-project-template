@@ -1,0 +1,43 @@
+{
+  "step": "inspect",
+  "started_at": "2026-09-28T08:38:52Z",
+  "elapsed_seconds": 138.15,
+  "exit_code": 0,
+  "timeout": false,
+  "assertion_failures": [
+    {
+      "assertion": {
+        "kind": "exists",
+        "path": "ui-evidence/before.png"
+      }
+    }
+  ],
+  "runtime_errors": [],
+  "tool_calls": 17,
+  "usage": [
+    {
+      "input_tokens": 392888,
+      "cached_input_tokens": 331520,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 3397,
+      "reasoning_output_tokens": 558
+    }
+  ],
+  "automatic_result": "failed",
+  "semantic_review": "pending",
+  "trace": "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-28-lifecycle-core-optimization/agent-baseline/ui-recovery-1/inspect/trace.jsonl",
+  "write_scope": {
+    "status": "passed",
+    "allowed_writes": [
+      "assessment.json",
+      "checkpoint.json",
+      "ui-evidence/"
+    ],
+    "changed_paths": [
+      "checkpoint.json"
+    ],
+    "violations": [],
+    "scope": "Final file/symlink differences; excludes .git, __pycache__, .eval-tmp and command log; not a sandbox or transient-write audit"
+  },
+  "turn_completed": true
+}

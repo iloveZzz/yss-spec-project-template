@@ -1,0 +1,79 @@
+{
+  "scenario": "ui-recovery",
+  "variant": "candidate",
+  "repeat": 1,
+  "elapsed_seconds": 142.83,
+  "exit_code": 0,
+  "timeout": false,
+  "assertion_failures": [
+    {
+      "assertion": {
+        "kind": "exists",
+        "path": "ui-evidence/before.png"
+      }
+    }
+  ],
+  "runtime_errors": [],
+  "tool_calls": 13,
+  "usage": [
+    {
+      "input_tokens": 242438,
+      "cached_input_tokens": 205440,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 3846,
+      "reasoning_output_tokens": 554
+    }
+  ],
+  "automatic_result": "failed",
+  "semantic_review": "pending",
+  "trace": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-core-eval-irs_5jqm/agent-candidate/ui-recovery-1/inspect/trace.jsonl",
+  "steps": [
+    {
+      "step": "inspect",
+      "started_at": "2026-09-28T08:57:52Z",
+      "elapsed_seconds": 142.03,
+      "exit_code": 0,
+      "timeout": false,
+      "assertion_failures": [
+        {
+          "assertion": {
+            "kind": "exists",
+            "path": "ui-evidence/before.png"
+          }
+        }
+      ],
+      "runtime_errors": [],
+      "tool_calls": 13,
+      "usage": [
+        {
+          "input_tokens": 242438,
+          "cached_input_tokens": 205440,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 3846,
+          "reasoning_output_tokens": 554
+        }
+      ],
+      "automatic_result": "failed",
+      "semantic_review": "pending",
+      "trace": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-core-eval-irs_5jqm/agent-candidate/ui-recovery-1/inspect/trace.jsonl",
+      "write_scope": {
+        "status": "passed",
+        "allowed_writes": [
+          "assessment.json",
+          "checkpoint.json",
+          "ui-evidence/"
+        ],
+        "changed_paths": [
+          "checkpoint.json"
+        ],
+        "violations": [],
+        "scope": "Final file/symlink differences; excludes .git, __pycache__, .eval-tmp and command log; not a sandbox or transient-write audit"
+      },
+      "turn_completed": true
+    }
+  ],
+  "unattempted_steps": [
+    "resume"
+  ],
+  "stop_reason": null
+}

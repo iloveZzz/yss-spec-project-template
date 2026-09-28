@@ -1,0 +1,14 @@
+{
+  "command": [
+    "node",
+    "--test",
+    ".template-source/scripts/tests/template-ci.test.mjs"
+  ],
+  "cwd": "/Users/zhudaoming/.codex/worktrees/lifecycle-core-verification/yss-spec-project-template",
+  "node": "v24.21.0",
+  "npm": "11.19.0",
+  "path_prefix": "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin",
+  "exit_code": 0,
+  "duration_seconds": 2.531,
+  "prior_npm12_failure_preserved": true
+}

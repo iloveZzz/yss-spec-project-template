@@ -1,0 +1,36 @@
+{
+  "executed_at": "2026-09-28T05:36:10.876Z",
+  "scope": "template-source research-only dispatch terminal; not a product gate bypass test",
+  "checks": [
+    {
+      "work_unit": "work-unit.entry-triage",
+      "next_route": null,
+      "result": {
+        "result": "blocked",
+        "blocking_signals": [
+          "illegal-next-route"
+        ],
+        "missing_requirements": [
+          "allowed_next_route"
+        ],
+        "evidence_refs": [],
+        "next_work_unit": null
+      }
+    },
+    {
+      "work_unit": "work-unit.entry-triage",
+      "next_route": "work-unit.ssot-update",
+      "result": {
+        "result": "blocked",
+        "blocking_signals": [
+          "illegal-next-route"
+        ],
+        "missing_requirements": [
+          "allowed_next_route"
+        ],
+        "evidence_refs": [],
+        "next_work_unit": null
+      }
+    }
+  ]
+}

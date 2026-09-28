@@ -1,0 +1,2 @@
+[开始] "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node" -e "process.stdout.write('out');process.stderr.write('err')"
+[完成] "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node" -e "process.stdout.write('out');process.stderr.write('err')" (39ms, exit=0)

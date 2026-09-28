@@ -1,0 +1,17 @@
+{
+  "runtime": "/Applications/ChatGPT.app/Contents/Resources/codex-cli/bin/codex",
+  "runtime_sha256": "50ab38ba21d0d9f8346f32f41848382f15b556190f3c7a07e885a4fb73e379c8",
+  "runner_sha256": "07811ab30d5f683126920eb45d470554f6ddc6c48b13faaf701ee110223bd90f",
+  "model": "gpt-6-astra",
+  "reasoning_effort": "xhigh",
+  "repetitions": 2,
+  "suite_sha256": "2dbb83667b5c87733a77d1ba5c13c46bc3bcd390918b3dbbbfd0083069ae564d",
+  "source": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-core-eval-irs_5jqm/frozen-candidate",
+  "variant": "candidate",
+  "python_dependencies": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-core-eval-irs_5jqm/python-dependencies",
+  "python_runtime": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+  "exit_policy": "strict",
+  "max_turns": 10,
+  "max_seconds": 1800.0,
+  "per_turn_timeout_seconds": 300
+}

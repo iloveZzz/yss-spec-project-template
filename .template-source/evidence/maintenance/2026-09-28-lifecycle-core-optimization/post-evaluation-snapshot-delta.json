@@ -1,0 +1,11 @@
+{
+  "changed_since_frozen_agent_candidate": [
+    ".agents/skills/yss-product-lifecycle/SKILL.md",
+    ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml",
+    ".template-source/distribution/strategic-handoff-tools.lock.json",
+    ".template-spec/process/contract-reading.md",
+    "skills-lock.json"
+  ],
+  "explanation": "Consumer validation required not_applicable_reason metadata and the 8 KiB lifecycle entry budget. Final source is covered by deterministic checks; Agent trial is retained as a fixed earlier candidate and does not authorize rollout or efficiency defaults.",
+  "agent_runs_repeated": false
+}

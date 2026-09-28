@@ -1,0 +1,1170 @@
+{
+  "schema_version": 1,
+  "profile": "technical-evidence",
+  "mode": "evidence-audited",
+  "scope": {
+    "topic": "YSS生命周期与Anthropic/OpenAI/Google官方研发规格机制的选择性引入",
+    "audience": "YSS模板维护者与生命周期/实现合同所有者",
+    "time_horizon": "截至2026-09-28可读取公开材料和当前工作树；建议尚需后续试点",
+    "research_questions": [
+      "YSS目前有哪些相关机制及证据边界？",
+      "三家真正第一方研发模板/执行机制是什么，版本是否当前？",
+      "怎样有界引入，冲突/收益如何验证？"
+    ],
+    "inclusion_criteria": [
+      "本仓权威合同及实际只读验证",
+      "供应商第一方公开文档/源码，关键源码固定SHA",
+      "反证、访问失败和实验限制"
+    ],
+    "exclusion_criteria": [
+      "社区兼容误当官方归属",
+      "宣传或模型自述替代行为证明",
+      "内部未公开模板推测、无预算的模型实跑"
+    ]
+  },
+  "ownership": {
+    "research_owner": "yss-research",
+    "downstream_owner": "模板维护者 / yss-product-lifecycle / yss-implementation-contract-compiler",
+    "decision_ref": null
+  },
+  "search_log": [
+    {
+      "id": "search-owner-import-anthropic-search-anthropic-001",
+      "channel": "web.search_query",
+      "query_or_corpus": "site.code.claude.com/docs best practices plan mode CLAUDE.md; site.anthropic.com engineering effective harnesses long-running agents feature list; site.github.com/anthropics skills spec workflow template",
+      "searched_at": "2026-09-28",
+      "result": "results-found",
+      "outcome": "找到官方文档、2025/2026 harness 文章和官方示例仓库。"
+    },
+    {
+      "id": "search-owner-import-anthropic-search-anthropic-002",
+      "channel": "web.open/find",
+      "query_or_corpus": "官方 best-practices、memory、effective-harnesses-for-long-running-agents、harness-design-long-running-apps；定位 Plan/Spec、CLAUDE.md、sprint 与反信号段落",
+      "searched_at": "2026-09-28",
+      "result": "results-found",
+      "outcome": "已阅读全文相关章节；源页段落同时含能力和限制。"
+    },
+    {
+      "id": "search-owner-import-anthropic-search-anthropic-003",
+      "channel": "web.open + GitHub REST API",
+      "query_or_corpus": "anthropics/cwc-long-running-agents, anthropics/skills; GET /repos/{owner}/{repo}/commits/main",
+      "searched_at": "2026-09-28",
+      "result": "results-found",
+      "outcome": "固定 SHA：ad107a974bced5244f74dd283dbf2bfd3baee3a1 (2026-05-13T00:54:24Z); 33375500bcea98d610eb30ce10ac4e59b89c390d (2026-09-24T16:20:35Z)。"
+    },
+    {
+      "id": "search-owner-import-anthropic-search-anthropic-004",
+      "channel": "web.open",
+      "query_or_corpus": "上述固定 SHA 的 verify-gate.sh、evaluator.md、commit-on-stop.sh、Skill template、spec redirect、README",
+      "searched_at": "2026-09-28",
+      "result": "results-found",
+      "outcome": "源码确认证据门禁和只读边界的明确限制；仅静态阅读。"
+    },
+    {
+      "id": "search-owner-import-anthropic-search-anthropic-005",
+      "channel": "web.search_query",
+      "query_or_corpus": "site.anthropic.com software development lifecycle specification template; site.code.claude.com/docs spec SPEC.md template requirements; site.github.com/anthropics specification driven development template lifecycle",
+      "searched_at": "2026-09-28",
+      "result": "results-found",
+      "outcome": "找到官方实践、行业报告及第三方 spec 工具；本次样本未提供可替换 YSS 的统一批准模型，不能据此证明不存在。"
+    },
+    {
+      "id": "search-owner-import-anthropic-search-anthropic-006",
+      "channel": "web.search_query with domains",
+      "query_or_corpus": "specification template development lifecycle (anthropic.com, code.claude.com); spec workflow (github.com/anthropics)",
+      "searched_at": "2026-09-28",
+      "result": "results-found",
+      "outcome": "结果含客户案例、市场报告与 model-spec 资料；未用作技术门禁证据。"
+    },
+    {
+      "id": "search-owner-import-anthropic-search-anthropic-007",
+      "channel": "source selection",
+      "query_or_corpus": "claude-world/claude-world-examples、VanguardiaAI/claude-code-spec-kit、gotalab/claude-code-spec 和 Reddit 检索结果",
+      "searched_at": "2026-09-28",
+      "result": "excluded",
+      "outcome": "组织不是 anthropics，或仅为讨论；不归属为 Anthropic 官方模板，不作为承重证据。"
+    },
+    {
+      "id": "search-owner-import-anthropic-search-anthropic-008",
+      "channel": "web.click",
+      "query_or_corpus": "anthropics/skills README 的 ./spec 和 ./template 链接",
+      "searched_at": "2026-09-28",
+      "result": "access-failed",
+      "outcome": "web click 返回 Internal Error；之后改用固定 SHA raw URL 成功读取。"
+    },
+    {
+      "id": "search-owner-import-anthropic-search-anthropic-009",
+      "channel": "Python urllib HTTP",
+      "query_or_corpus": "4 个官方 HTML 页面与 7 个固定 SHA raw 文件的可达性/哈希采集",
+      "searched_at": "2026-09-28",
+      "result": "access-failed",
+      "outcome": "HTML 直连均 403，但 web 工具已成功读取；raw 7 项 HTTP 200，详见 source-manifest.json。"
+    },
+    {
+      "id": "search-owner-import-openai-search-openai-local-graph",
+      "channel": "shell / CodeGraph",
+      "query_or_corpus": "codegraph explore \"OpenAI Codex ExecPlan PLANS.md official specification research\"",
+      "searched_at": "2026-09-28",
+      "result": "results-found",
+      "notes": "结果以不相关通用符号为主；未用其支撑OpenAI结论。"
+    },
+    {
+      "id": "search-owner-import-openai-search-openai-local-search",
+      "channel": "shell / rg",
+      "query_or_corpus": "rg ExecPlan|PLANS.md|harness-engineering|openai.com|Model Spec .template-spec .agents/skills/yss-research .template-source/process .template-source/evidence/maintenance",
+      "searched_at": "2026-09-28",
+      "result": "results-found",
+      "notes": "发现2026-09-20 OpenAI Skills审计与2026-09-26对照材料；仅作为当前官方来源线索。"
+    },
+    {
+      "id": "search-owner-import-openai-search-openai-official-search",
+      "channel": "web.search",
+      "query_or_corpus": "Codex AGENTS.md ExecPlans PLANS.md [developers.openai.com]; harness engineering long running agents [openai.com]; Codex ExecPlans PLANS.md [cookbook.openai.com]",
+      "searched_at": "2026-09-28",
+      "result": "results-found",
+      "notes": "查到Harness和长任务文章；搜索页面未稳定返回ExecPlan，随后直开已知官方URL。"
+    },
+    {
+      "id": "search-owner-import-openai-search-openai-official-search-two",
+      "channel": "web.search",
+      "query_or_corpus": "Codex \"ExecPlans\" \"PLANS.md\" [cookbook.openai.com,developers.openai.com]; Codex \"AGENTS.md\" guide [developers.openai.com]; \"Model Spec\" \"intended behavior\" [openai.com,model-spec.openai.com]",
+      "searched_at": "2026-09-28",
+      "result": "results-found",
+      "notes": "查到模型规范官方说明和当前提示指导；直接打开拥有者正文核对。"
+    },
+    {
+      "id": "search-owner-import-openai-search-openai-official-open",
+      "channel": "web.open",
+      "query_or_corpus": "cookbook.openai.com/articles/codex_exec_plans; developers.openai.com/codex/guides/agents-md; openai.com/index/harness-engineering/; developers.openai.com/blog/run-long-horizon-tasks-with-codex; openai.com/index/our-approach-to-the-model-spec/",
+      "searched_at": "2026-09-28",
+      "result": "results-found",
+      "notes": "Cookbook重定向developers；AGENTS重定向learn.chatgpt.com。全部HTML正文可读。"
+    },
+    {
+      "id": "search-owner-import-openai-search-openai-counter-sections",
+      "channel": "web.open / find",
+      "query_or_corpus": "ExecPlan页首archive和自定义条款；Harness少阻塞合并及泛化限制；long-horizon实验及production-ready边界；Model Spec范围与训练滞后",
+      "searched_at": "2026-09-28",
+      "result": "results-found",
+      "notes": "发现明确边界，作为反信号收录。"
+    },
+    {
+      "id": "search-owner-import-openai-search-openai-markdown-access",
+      "channel": "web.open",
+      "query_or_corpus": "https://developers.openai.com/cookbook/articles/codex_exec_plans.md; https://developers.openai.com/blog/run-long-horizon-tasks-with-codex.md",
+      "searched_at": "2026-09-28",
+      "result": "access-failed",
+      "notes": "工具返回Internal Error；已可读HTML足以核验，不把Markdown失败当资料不存在。"
+    },
+    {
+      "id": "search-owner-import-openai-search-openai-evals-current",
+      "channel": "web.open / find",
+      "query_or_corpus": "https://developers.openai.com/blog/eval-skills; https://developers.openai.com/blog/rethinking-skills-and-prompts-for-gpt-6-astra; success/negative/Better skills",
+      "searched_at": "2026-09-28",
+      "result": "results-found",
+      "notes": "核对2026-01-22评估模式与2026-09-11精简、按需加载及跨模型限制。"
+    },
+    {
+      "id": "search-owner-import-openai-search-openai-attribution",
+      "channel": "web.open",
+      "query_or_corpus": "https://github.com/github/spec-kit，README及repository owner",
+      "searched_at": "2026-09-28",
+      "result": "results-found",
+      "notes": "核对归属，排除出OpenAI官方模板集合；只作为归属反混淆证据。"
+    },
+    {
+      "id": "search-owner-import-openai-search-openai-local-contract",
+      "channel": "shell / read",
+      "query_or_corpus": "AGENTS.md; yss-project.yaml; CONTEXT.md; yss-research evidence-contract; document-writing; i-have-adhd; digital-human-task-package.schema.json",
+      "searched_at": "2026-09-28",
+      "result": "results-found",
+      "notes": "核对template-source、输出、权限、字段与本仓接收边界。"
+    },
+    {
+      "id": "search-owner-import-google-search-google-01",
+      "channel": "web.search",
+      "query_or_corpus": "site.developers.googleblog.com conductor gemini cli context driven development spec plan; site.github.com/gemini-cli-extensions/conductor workflow spec plan",
+      "searched_at": "2026-09-28",
+      "result": "results-found",
+      "notes": "命中 2025 发布、2026 演进、官方仓库。"
+    },
+    {
+      "id": "search-owner-import-google-search-google-02",
+      "channel": "web.open",
+      "query_or_corpus": "2025-12-17 /conductor-introducing-context-driven-development-for-gemini-cli/; 2026-07-16 /evolving-spec-driven-development-conductor-now-supports-antigravity/; github.com/gemini-cli-extensions/conductor",
+      "searched_at": "2026-09-28",
+      "result": "results-found",
+      "notes": ""
+    },
+    {
+      "id": "search-owner-import-google-search-google-03",
+      "channel": "GitHub REST + raw source",
+      "query_or_corpus": "GET /repos/gemini-cli-extensions/conductor/commits/main; /git/trees/6e8f9a860bcdd6a2c423473c12e745200688c633?recursive=1; fixed-commit README, VERSION, new-track, workflow, implement, review, revert",
+      "searched_at": "2026-09-28",
+      "result": "results-found",
+      "notes": "固定 main 为 6e8f9a860bcdd6a2c423473c12e745200688c633，committer date 2026-09-01T22:58:24Z；VERSION=0.3.0；new-track skill metadata 1.1。"
+    },
+    {
+      "id": "search-owner-import-google-search-google-04",
+      "channel": "web.search/open",
+      "query_or_corpus": "site.gemini-cli-docs.pages.dev GEMINI.md context files; open https://geminicli.com/docs/cli/gemini-md/",
+      "searched_at": "2026-09-28",
+      "result": "results-found",
+      "notes": "最终用 geminicli.com 当前官方文档，页面 Last updated Jun 18, 2026；旧 google-gemini.github.io 页面不作当前行为依据。"
+    },
+    {
+      "id": "search-owner-import-google-search-google-05",
+      "channel": "web.search/open",
+      "query_or_corpus": "site.antigravity.google docs artifacts implementation plan walkthrough; /artifacts/, /implementation-plan/, /artifact-review/, /walkthrough",
+      "searched_at": "2026-09-28",
+      "result": "results-found",
+      "notes": "当前文档可访问；未标 source date 的项记 null。"
+    },
+    {
+      "id": "search-owner-import-google-search-google-06",
+      "channel": "web.search/open",
+      "query_or_corpus": "site.google.github.io/eng-practices design doc; site.abseil.io resources swe-book design document; site.abseil.io/resources/swe-book/html \"Design Docs\" \"template\"",
+      "searched_at": "2026-09-28",
+      "result": "results-found",
+      "notes": "找到 Google 工程文档指南及 SWE Book Documentation；最初误开 ch15 实为 Deprecation，排除，改用 ch10 Design Docs。"
+    },
+    {
+      "id": "search-owner-import-google-search-google-07",
+      "channel": "web.search/open",
+      "query_or_corpus": "site.github.com/gemini-cli-extensions/conductor \"schema\" \"approval\"; site.developers.googleblog.com \"Conductor\" \"token\"; site.google.github.io/eng-practices \"design\" \"Small CLs\"",
+      "searched_at": "2026-09-28",
+      "result": "results-found",
+      "notes": "Conductor 同名混杂，归属按官方博客链接与仓库 owner；读取实际源码确认 review 非独立强门禁。"
+    },
+    {
+      "id": "search-owner-import-google-search-google-08",
+      "channel": "source exclusion",
+      "query_or_corpus": "conductor-oss/conductor; microsoft/conductor; fcoury/conductor; infodungeon/gemini-cli-maestro; Reddit、镜像翻译、Spec Kit 对 Gemini 的兼容",
+      "searched_at": "2026-09-28",
+      "result": "excluded",
+      "notes": "不同产品/社区来源均未用于支持 Google 官方模板结论。"
+    },
+    {
+      "id": "search-owner-import-google-search-google-09",
+      "channel": "web.open",
+      "query_or_corpus": "https://codelabs.developers.google.com/conductor-plugin",
+      "searched_at": "2026-09-28",
+      "result": "results-found",
+      "notes": "官方教程辅助验证产品归属；不把教程应用复杂度建议作为 YSS 门禁。"
+    },
+    {
+      "id": "search-owner-local",
+      "channel": "local-shell / CodeGraph / readonly validators",
+      "query_or_corpus": "yss-project.yaml, CONTEXT.md, lifecycle-registry, orchestration-contract, Spec/Ticket/Slice v3, contract-reading, stage-tracking, retained Agent evaluation coverage; CodeGraph no exact YAML match then direct files; no graph update",
+      "searched_at": "2026-09-28",
+      "result": "results-found"
+    },
+    {
+      "id": "search-owner-web",
+      "channel": "web search and open",
+      "query_or_corpus": "site.anthropic.com engineering harness design long running application development planner generator evaluator 2026; site.developers.openai.com cookbook codex exec plans PLANS.md; site.developers.googleblog.com conductor gemini cli context driven development spec plan; follow official 2026-07 and 2026-09 pages",
+      "searched_at": "2026-09-28",
+      "result": "results-found"
+    },
+    {
+      "id": "search-owner-fixed-source",
+      "channel": "urllib primary raw GitHub",
+      "query_or_corpus": "7 fixed SHA source files for Anthropic verify-gate/evaluator/commit-on-stop and Google new-track/implement/review/workflow; metadata in verification/owner-fixed-source-reads.json",
+      "searched_at": "2026-09-28",
+      "result": "results-found"
+    },
+    {
+      "id": "search-owner-markdown",
+      "channel": "web open",
+      "query_or_corpus": "https://developers.openai.com/blog/rethinking-skills-and-prompts-for-gpt-6-astra.md",
+      "searched_at": "2026-09-28",
+      "result": "access-failed"
+    }
+  ],
+  "evidence_items": [
+    {
+      "id": "evidence-yss-structure",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "repository-contract",
+      "source_ref": ".template-spec/process/lifecycle-registry.yaml",
+      "locator": "stages L40; gates L156; artifacts L221; work_units L342; checks L487; 本轮 local-source-snapshot.json counts",
+      "stance": "support",
+      "observed_at": "2026-09-28",
+      "evidence_date": null,
+      "observation": "当前解析得到 stages 8、gates 7、checks 14、work_units 23、artifacts 29、evidence 23。",
+      "limitations": [
+        "本轮读取当前字节；文档/结构核验不能证明全部真实运行行为。"
+      ]
+    },
+    {
+      "id": "evidence-yss-spec",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "repository-contract",
+      "source_ref": ".template-spec/templates/spec-template.md",
+      "locator": "L16-53; L91-115",
+      "stance": "support",
+      "observed_at": "2026-09-28",
+      "evidence_date": null,
+      "observation": "Spec 已包含问题、用户故事、FR/NFR、验收、测试 seam、非目标和风险。",
+      "limitations": [
+        "本轮读取当前字节；文档/结构核验不能证明全部真实运行行为。"
+      ]
+    },
+    {
+      "id": "evidence-yss-slice",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "repository-contract",
+      "source_ref": ".agents/skills/yss-implementation-contract-compiler/references/slice-implementation-contract.md",
+      "locator": "L1-25; L45-68",
+      "stance": "support",
+      "observed_at": "2026-09-28",
+      "evidence_date": null,
+      "observation": "v3 YAML 单一权威；basis 绑定原字节，验收映射工作单元/验证，视图不能授权，冻结 Ticket 进度在 tracker/task-package，历史 v2 只读兼容。",
+      "limitations": [
+        "本轮读取当前字节；文档/结构核验不能证明全部真实运行行为。"
+      ]
+    },
+    {
+      "id": "evidence-yss-view",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "repository-contract",
+      "source_ref": ".template-spec/process/contract-reading.md",
+      "locator": "L3-27; L40-48",
+      "stance": "support",
+      "observed_at": "2026-09-28",
+      "evidence_date": null,
+      "observation": "已存在 review/task/full 视图和diff；视图带身份、版本、摘要，批准仍走专用入口；按任务选择资料。",
+      "limitations": [
+        "本轮读取当前字节；文档/结构核验不能证明全部真实运行行为。"
+      ]
+    },
+    {
+      "id": "evidence-yss-state",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "repository-contract",
+      "source_ref": ".template-spec/process/stage-tracking.md",
+      "locator": "L5-28",
+      "stance": "support",
+      "observed_at": "2026-09-28",
+      "evidence_date": null,
+      "observation": "阶段进度唯一来源是checkpoint.stage_tracking；完成逐条关联证据并核验摘要；恢复检查、漂移重检与显式迁移已规定。",
+      "limitations": [
+        "本轮读取当前字节；文档/结构核验不能证明全部真实运行行为。"
+      ]
+    },
+    {
+      "id": "evidence-yss-efficiency",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "repository-contract",
+      "source_ref": ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml",
+      "locator": "execution_efficiency L126-161; context_engineering L1033-1040",
+      "stance": "support",
+      "observed_at": "2026-09-28",
+      "evidence_date": null,
+      "observation": "已有按需上下文、同边界不变输入复用、恢复/交接/实现/合并/发布重验、运行任务不重派、耗时分解与最小充分证据停止规则。",
+      "limitations": [
+        "本轮读取当前字节；文档/结构核验不能证明全部真实运行行为。"
+      ]
+    },
+    {
+      "id": "evidence-yss-policy",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "repository-contract",
+      "source_ref": "AGENTS.md",
+      "locator": "第2、4、7、10、11节；digital-human-roles.yaml gate_policy L175/user_decision_policy L266",
+      "stance": "support",
+      "observed_at": "2026-09-28",
+      "evidence_date": null,
+      "observation": "模板源与产品实例区分、唯一事实源、批准合同、独立审查、Git授权、真实回复及授权延续不可由外部模板替代。",
+      "limitations": [
+        "本轮读取当前字节；文档/结构核验不能证明全部真实运行行为。"
+      ]
+    },
+    {
+      "id": "evidence-yss-evaluator",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "repository-contract",
+      "source_ref": ".template-source/scripts/skills-agent-eval.md",
+      "locator": "全文：冻结来源、allowed_writes、steps、semantic_review、预算、退出策略",
+      "stance": "support",
+      "observed_at": "2026-09-28",
+      "evidence_date": null,
+      "observation": "本仓已有真实Agent对照runner，保留轨迹、失败、未完成、用量及语义复核要求；合成批准和替身命令不代表真实交付。",
+      "limitations": [
+        "本轮读取当前字节；文档/结构核验不能证明全部真实运行行为。"
+      ]
+    },
+    {
+      "id": "evidence-yss-eval-results",
+      "source_level": "direct-experience",
+      "visibility": "internal",
+      "source_class": "retained-evaluation",
+      "source_ref": ".template-source/evidence/maintenance/2026-09-26-lifecycle-improvement-implementation/evaluation-summary.json",
+      "locator": "/variants/baseline 与 /variants/candidate；/limitations",
+      "stance": "support",
+      "observed_at": "2026-09-28",
+      "evidence_date": null,
+      "observation": "历史主批次两侧各24记录、22语义通过、2自动失败；这不是本轮重新执行结果。",
+      "limitations": [
+        "两次重复、提示引导、合成批准；本轮只读取保留摘要和覆盖边界，未重新审计全部原始模型轨迹。"
+      ]
+    },
+    {
+      "id": "evidence-yss-eval-limits",
+      "source_level": "direct-experience",
+      "visibility": "internal",
+      "source_class": "retained-evaluation",
+      "source_ref": ".template-source/evidence/maintenance/2026-09-26-lifecycle-improvement-implementation/evaluation-coverage.md",
+      "locator": "E07/E08/E11、表后限制和主批次后的补充范围",
+      "stance": "counter",
+      "observed_at": "2026-09-28",
+      "evidence_date": null,
+      "observation": "历史评测未覆盖完整API资产链、浏览器还原/生产验证及真实跨仓交付；不支持生产收益推断。",
+      "limitations": [
+        "本轮读取当前字节；文档/结构核验不能证明全部真实运行行为。"
+      ]
+    },
+    {
+      "id": "evidence-yss-tailoring",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "repository-contract",
+      "source_ref": ".template-spec/process/harness-process-tailoring.md",
+      "locator": "第2、4、5节",
+      "stance": "counter",
+      "observed_at": "2026-09-28",
+      "evidence_date": null,
+      "observation": "门禁按影响触发，不适用有原因；L1/L2/L3裁剪；产品实例与模板维护不同。对象数量不等于每功能全部材料负担。",
+      "limitations": [
+        "本轮读取当前字节；文档/结构核验不能证明全部真实运行行为。"
+      ]
+    },
+    {
+      "id": "evidence-yss-view-overlap",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "repository-contract",
+      "source_ref": ".template-spec/process/contract-reading.md",
+      "locator": "L3-27",
+      "stance": "counter",
+      "observed_at": "2026-09-28",
+      "evidence_date": null,
+      "observation": "已有任务视图和来源绑定，说明新的执行展示可能只是重复；应先测现有入口。",
+      "limitations": [
+        "本轮读取当前字节；文档/结构核验不能证明全部真实运行行为。"
+      ]
+    },
+    {
+      "id": "evidence-yss-authority",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "repository-contract",
+      "source_ref": ".template-spec/templates/vertical-slice-ticket-template.md",
+      "locator": "L8、L65-71、L83-127",
+      "stance": "counter",
+      "observed_at": "2026-09-28",
+      "evidence_date": null,
+      "observation": "冻结需求不可回写状态；当前状态与执行结果在tracker/任务包，外部可变计划与自主提交不能原样替代。",
+      "limitations": [
+        "本轮读取当前字节；文档/结构核验不能证明全部真实运行行为。"
+      ]
+    },
+    {
+      "id": "evidence-google-commit-fact",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "source-code",
+      "source_ref": "https://github.com/gemini-cli-extensions/conductor/blob/6e8f9a860bcdd6a2c423473c12e745200688c633/skills/conductor-new-track/SKILL.md#L170-L177",
+      "locator": "L170-177",
+      "stance": "support",
+      "observed_at": "2026-09-28",
+      "evidence_date": "2026-09-01",
+      "observation": "new-track 规定 stage 整个 conductor/ 后提交；未经 YSS 适配直接消费会引入默认 Git 写入策略。",
+      "limitations": [
+        "仅核验公开文档或源码，未实际运行产品；行为仍受版本、宿主和模型影响。"
+      ]
+    },
+    {
+      "id": "evidence-google-workflow-fact",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "source-code",
+      "source_ref": "https://github.com/gemini-cli-extensions/conductor/blob/6e8f9a860bcdd6a2c423473c12e745200688c633/skills/conductor-setup/assets/workflow.md#L3-L13",
+      "locator": "L3-13；L180-186；L188-206",
+      "stance": "support",
+      "observed_at": "2026-09-28",
+      "evidence_date": "2026-09-01",
+      "observation": "默认 plan.md 被视为工作事实源；覆盖率统一目标 >80%；每阶段要求人工确认；步骤 6 不创建空 checkpoint commit，步骤 8 仍称 just-created checkpoint commit，文本存在歧义。",
+      "limitations": [
+        "仅核验公开文档或源码，未实际运行产品；行为仍受版本、宿主和模型影响。"
+      ]
+    },
+    {
+      "id": "evidence-google-status-fact",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "source-code",
+      "source_ref": "https://github.com/gemini-cli-extensions/conductor/blob/6e8f9a860bcdd6a2c423473c12e745200688c633/skills/conductor-implement/SKILL.md#L87-L139",
+      "locator": "L87-90；L131-139",
+      "stance": "support",
+      "observed_at": "2026-09-28",
+      "evidence_date": "2026-09-01",
+      "observation": "implementation 完成任务后即把 track 标 completed 并提交，然后再询问是否开展正式 code review；review 可拒绝后稍后执行。",
+      "limitations": [
+        "仅核验公开文档或源码，未实际运行产品；行为仍受版本、宿主和模型影响。"
+      ]
+    },
+    {
+      "id": "evidence-google-review-fact",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "source-code",
+      "source_ref": "https://github.com/gemini-cli-extensions/conductor/blob/6e8f9a860bcdd6a2c423473c12e745200688c633/skills/conductor-review/SKILL.md#L94-L155",
+      "locator": "L94-155；L157-209",
+      "stance": "support",
+      "observed_at": "2026-09-28",
+      "evidence_date": "2026-09-01",
+      "observation": "review 检查意图、规范、正确性/安全并自动执行推断的测试命令；也提供 Apply Fixes 和 Complete Track 忽略警告选项，并含提交、归档/删除路径。",
+      "limitations": [
+        "仅核验公开文档或源码，未实际运行产品；行为仍受版本、宿主和模型影响。"
+      ]
+    },
+    {
+      "id": "evidence-anthropic-hook-limit-fact",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "source-code",
+      "source_ref": "https://github.com/anthropics/cwc-long-running-agents/blob/ad107a974bced5244f74dd283dbf2bfd3baee3a1/claude-code-config/.claude/hooks/verify-gate.sh",
+      "locator": "lines 5-11, 13-27",
+      "stance": "support",
+      "observed_at": "2026-09-28",
+      "evidence_date": "2026-05-13",
+      "observation": "该钩子仅覆盖 Write/Edit；Bash 可绕过，basename 匹配，任一证据读取可解锁任一结果行；源码明示教学示例并非安全边界。",
+      "limitations": [
+        "第一方自述；未在本仓运行 Claude 或验证效果。"
+      ]
+    },
+    {
+      "id": "evidence-anthropic-007",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-documentation",
+      "source_ref": "https://www.anthropic.com/engineering/harness-design-long-running-apps",
+      "locator": "The architecture; Running the harness; Removing the sprint construct",
+      "stance": "support",
+      "observed_at": "2026-09-28",
+      "evidence_date": "2026-03-24",
+      "observation": "2026 试验将高层产品 Spec 与可测试交付条件衔接，并使用独立 evaluator；后续 Opus 4.6 试验取消 sprint 结构，保留 planner 与 evaluator。",
+      "limitations": [
+        "第一方自述；未在本仓运行 Claude 或验证效果。"
+      ]
+    },
+    {
+      "id": "evidence-anthropic-008",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-documentation",
+      "source_ref": "https://www.anthropic.com/engineering/harness-design-long-running-apps",
+      "locator": "Running the harness; Iterating on the harness; Removing the sprint construct",
+      "stance": "counter",
+      "observed_at": "2026-09-28",
+      "evidence_date": "2026-03-24",
+      "observation": "评估器需要反复调校且仍漏检；复杂 harness 成本高，作者认为 evaluator 的价值随任务和模型能力边界变化，不能机械固定。",
+      "limitations": [
+        "第一方自述；未在本仓运行 Claude 或验证效果。"
+      ]
+    },
+    {
+      "id": "evidence-anthropic-009",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "source-code",
+      "source_ref": "https://github.com/anthropics/cwc-long-running-agents/blob/ad107a974bced5244f74dd283dbf2bfd3baee3a1/README.md",
+      "locator": "The quality loop / Default-FAIL contract; Fresh-context evaluator; Running the loop",
+      "stance": "support",
+      "observed_at": "2026-09-28",
+      "evidence_date": "2026-05-13",
+      "observation": "官方演示仓库将验收默认未通过、独立上下文评估和交接拆为可选原语；builder 更新结果与 evaluator verdict 分离。",
+      "limitations": [
+        "第一方自述；未在本仓运行 Claude 或验证效果。"
+      ]
+    },
+    {
+      "id": "evidence-anthropic-015",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "source-code",
+      "source_ref": "https://github.com/anthropics/cwc-long-running-agents/blob/ad107a974bced5244f74dd283dbf2bfd3baee3a1/claude-code-config/.claude/hooks/commit-on-stop.sh",
+      "locator": "lines 5-16",
+      "stance": "support",
+      "observed_at": "2026-09-28",
+      "evidence_date": "2026-05-13",
+      "observation": "停止钩子使用 git commit -am 提交已跟踪改动，并隐藏命令输出，失败最终仍 exit 0。",
+      "limitations": [
+        "第一方自述；未在本仓运行 Claude 或验证效果。"
+      ]
+    },
+    {
+      "id": "evidence-anthropic-016",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "source-code",
+      "source_ref": "https://github.com/anthropics/cwc-long-running-agents/blob/ad107a974bced5244f74dd283dbf2bfd3baee3a1/README.md",
+      "locator": "Introduction notice; How to use this repo; Agent-maintained handoff",
+      "stance": "counter",
+      "observed_at": "2026-09-28",
+      "evidence_date": "2026-05-13",
+      "observation": "仓库注明活动演示、不维护、非完整 harness，要求项目调整路径并选择性借鉴；交接机制应随模型能力重新检验。",
+      "limitations": [
+        "第一方自述；未在本仓运行 Claude 或验证效果。"
+      ]
+    },
+    {
+      "id": "evidence-oa-plans",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-documentation",
+      "source_ref": "https://developers.openai.com/cookbook/articles/codex_exec_plans",
+      "locator": "AGENTS.md / PLANS.md / Skeleton of a Good ExecPlan，网页行834-861、893-959",
+      "stance": "support",
+      "observed_at": "2026-09-28",
+      "evidence_date": "2025-10-07",
+      "observation": "ExecPlan 是作者约定名称；提供用户可观察目标、执行步骤、验收、恢复、进度和决定记录的可定制范本。",
+      "limitations": [
+        "第一方公开资料；没有在本仓复现效果。动态网页未固定内容版本。"
+      ]
+    },
+    {
+      "id": "evidence-oa-plans-limit",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-documentation",
+      "source_ref": "https://developers.openai.com/cookbook/articles/codex_exec_plans",
+      "locator": "页首与 PLANS.md，网页行821-824、841、848、861",
+      "stance": "counter",
+      "observed_at": "2026-09-28",
+      "evidence_date": "2025-10-07",
+      "observation": "页面已归档，提醒模型/API可能过时；范本允许定制，却含自主解歧、频繁提交、内嵌上下文指令，直接照搬会扩大权限并重复权威资产。",
+      "limitations": [
+        "归档状态于2026-09-28读取；与YSS的冲突是基于本仓AGENTS规则的研究推断。"
+      ]
+    },
+    {
+      "id": "evidence-oa-long-limit",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-documentation",
+      "source_ref": "https://developers.openai.com/blog/run-long-horizon-tasks-with-codex",
+      "locator": "Introduction / What the agent built，网页行831-832、963-965",
+      "stance": "counter",
+      "observed_at": "2026-09-28",
+      "evidence_date": "2026-02-23",
+      "observation": "作者将约25小时运行称为实验，并明确结果并未达到生产就绪。",
+      "limitations": [
+        "第一方公开资料；没有在本仓复现效果。动态网页未固定内容版本。"
+      ]
+    },
+    {
+      "id": "evidence-oa-skills",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-documentation",
+      "source_ref": "https://developers.openai.com/blog/rethinking-skills-and-prompts-for-gpt-6-astra",
+      "locator": "Better skills / Up-to-date AGENTS.md，网页行838-879",
+      "stance": "support",
+      "observed_at": "2026-09-28",
+      "evidence_date": "2026-09-11",
+      "observation": "2026-09-11指导建议缩短并精确限定Skill描述，以薄入口按需加载资料，避免每次修改强读全套文档，明确安全工作范围后持续完成。",
+      "limitations": [
+        "第一方公开资料；没有在本仓复现效果。动态网页未固定内容版本。"
+      ]
+    },
+    {
+      "id": "evidence-oa-skills-limit",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-documentation",
+      "source_ref": "https://developers.openai.com/blog/rethinking-skills-and-prompts-for-gpt-6-astra",
+      "locator": "Better skills，网页行856-859",
+      "stance": "counter",
+      "observed_at": "2026-09-28",
+      "evidence_date": "2026-09-11",
+      "observation": "同一仓库指令会被不同模型消费；适合某模型的详细步骤可能约束另一模型。因此不能把模型特定精简建议当成移除业务不变量的通用证明。",
+      "limitations": [
+        "最后一句为边界推断；原文只确认跨模型使用及过度约束风险。"
+      ]
+    },
+    {
+      "id": "evidence-oa-model",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-documentation",
+      "source_ref": "https://openai.com/index/our-approach-to-the-model-spec/",
+      "locator": "What the Model Spec is not，网页行109-115",
+      "stance": "support",
+      "observed_at": "2026-09-28",
+      "evidence_date": "2026-03-25",
+      "observation": "Model Spec 描述期望的模型行为及其公开讨论界面，不描述整个产品，也不是训练实现的全量文档。",
+      "limitations": [
+        "第一方公开资料；没有在本仓复现效果。动态网页未固定内容版本。"
+      ]
+    },
+    {
+      "id": "evidence-google-02",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-documentation",
+      "source_ref": "https://developers.googleblog.com/evolving-spec-driven-development-conductor-now-supports-antigravity/",
+      "locator": "发布日期；Driving SDD via a natural conversation；Conductor for Antigravity CLI and beyond",
+      "stance": "support",
+      "observed_at": "2026-09-28",
+      "evidence_date": "2026-07-16",
+      "observation": "2026-07-16 宣布从 Gemini CLI extension 演进为支持 Antigravity CLI、Claude 等工具的 plugin，仍保留 spec.md 与 plan.md。",
+      "limitations": [
+        "仅核验公开文档或源码，未实际运行产品；行为仍受版本、宿主和模型影响。"
+      ]
+    },
+    {
+      "id": "evidence-google-03",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "source-code",
+      "source_ref": "https://github.com/gemini-cli-extensions/conductor/blob/6e8f9a860bcdd6a2c423473c12e745200688c633/README.md",
+      "locator": "Installation Guide；Usage & Lifecycle；Commands Reference；Repository Structure",
+      "stance": "support",
+      "observed_at": "2026-09-28",
+      "evidence_date": "2026-09-01",
+      "observation": "当前 README 面向 Antigravity/Claude Code，提供 setup/new-track/implement/status/revert/review；项目上下文和每个 track 的 spec、plan、metadata 分离。",
+      "limitations": [
+        "仅核验公开文档或源码，未实际运行产品；行为仍受版本、宿主和模型影响。"
+      ]
+    },
+    {
+      "id": "evidence-google-04",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "source-code",
+      "source_ref": "https://github.com/gemini-cli-extensions/conductor/blob/6e8f9a860bcdd6a2c423473c12e745200688c633/skills/conductor-new-track/SKILL.md#L59-L110",
+      "locator": "L59-110；L153-168",
+      "stance": "support",
+      "observed_at": "2026-09-28",
+      "evidence_date": "2026-09-01",
+      "observation": "spec.md 建议 Overview、Functional Requirements、可选 NFR、Acceptance Criteria、Out of Scope；用户确认后从 workflow 生成 phases/tasks/subtasks 的 plan，再确认；index/metadata/registry 提供导航。",
+      "limitations": [
+        "仅核验公开文档或源码，未实际运行产品；行为仍受版本、宿主和模型影响。"
+      ]
+    },
+    {
+      "id": "evidence-google-08",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "source-code",
+      "source_ref": "https://github.com/gemini-cli-extensions/conductor/blob/6e8f9a860bcdd6a2c423473c12e745200688c633/skills/conductor-setup/assets/workflow.md#L3-L13",
+      "locator": "L3-13；L180-186；L188-206",
+      "stance": "counter",
+      "observed_at": "2026-09-28",
+      "evidence_date": "2026-09-01",
+      "observation": "默认 plan.md 被视为工作事实源；覆盖率统一目标 >80%；每阶段要求人工确认；步骤 6 不创建空 checkpoint commit，步骤 8 仍称 just-created checkpoint commit，文本存在歧义。",
+      "limitations": [
+        "仅核验公开文档或源码，未实际运行产品；行为仍受版本、宿主和模型影响。"
+      ]
+    },
+    {
+      "id": "evidence-google-20",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-documentation",
+      "source_ref": "https://developers.googleblog.com/evolving-spec-driven-development-conductor-now-supports-antigravity/",
+      "locator": "What this means for your team > Improved task completion",
+      "stance": "counter",
+      "observed_at": "2026-09-28",
+      "evidence_date": "2026-07-16",
+      "observation": "官方声称 Conductor Plugin 在 TerminalBench 最复杂子集的成功率更高，页面未给出足以复现的任务集合、完整配置、原始结果及统计。",
+      "limitations": [
+        "厂商声明，不能作为 YSS 项目效率或质量提升的直接证据。"
+      ]
+    },
+    {
+      "id": "evidence-yss-terminal-source",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code",
+      "source_ref": "scripts/lib/lifecycle-transition.mjs",
+      "locator": "L30-32, L323-338; scripts/lib/task-package.mjs L91-110; lifecycle-registry.yaml L342-348",
+      "stance": "support",
+      "observed_at": "2026-09-28",
+      "observation": "entry-triage后继只有两个产品Plan工作单元；completed任务包必须通过此流转校验；next_route null仅在无后继时允许。",
+      "limitations": [
+        "仅定位本次研究所选entry-triage调度与结束语义，不推断所有维护任务。"
+      ]
+    },
+    {
+      "id": "evidence-yss-terminal-repro",
+      "source_level": "direct-experience",
+      "visibility": "internal",
+      "source_class": "readonly-runtime-probe",
+      "source_ref": ".template-source/evidence/maintenance/2026-09-28-official-spec-research/verification/research-route-reproduction.json",
+      "locator": "/checks/0 与 /checks/1",
+      "stance": "support",
+      "observed_at": "2026-09-28",
+      "observation": "向validateNextRoute传入template-source，entry-triage到null或ssot-update均返回illegal-next-route。",
+      "limitations": [
+        "探针只验证流转函数，本次提交任务包另有真实失败日志。"
+      ]
+    },
+    {
+      "id": "evidence-google-16",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-documentation",
+      "source_ref": "https://abseil.io/resources/swe-book/html/ch10.html",
+      "locator": "Documentation Types > Design Docs",
+      "stance": "support",
+      "observed_at": "2026-09-28",
+      "evidence_date": "2020-03",
+      "observation": "《Software Engineering at Google》介绍多数团队对 major project 使用团队认可的 design doc 模板；包含目标、实现策略、关键取舍和备选方案，并考虑安全/隐私等专业问题；批准后归档且发布前回看目标。",
+      "limitations": [
+        "2020 年书籍描述，不证明 2026 年 Google 所有团队统一执行；不能据此宣称公开了公司统一完整模板。"
+      ]
+    },
+    {
+      "id": "evidence-google-17",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-documentation",
+      "source_ref": "https://google.github.io/styleguide/docguide/best_practices.html",
+      "locator": "Minimum Viable Documentation；Documentation is the Story of Your Code #6；Duplication is Evil",
+      "stance": "counter",
+      "observed_at": "2026-09-28",
+      "evidence_date": null,
+      "observation": "强调少量准确文档、随代码更新；design doc/PRD 实现后作为决策档案；通用指南优先引用，避免重复。",
+      "limitations": [
+        "当前公开页面未标发布日期；研究日直接读取，不能精确定位内部实践生效日。"
+      ]
+    }
+  ],
+  "claims": [
+    {
+      "id": "claim-local-structure",
+      "claim_kind": "technical-fact",
+      "statement": "当前注册表有8阶段、7聚合门禁、14内部检查、23工作单元、29产物、23证据；注册数量不代表每功能必做全部。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-yss-structure"
+      ],
+      "counter_signal_refs": [
+        "evidence-yss-tailoring"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-local-contract",
+      "claim_kind": "technical-fact",
+      "statement": "YSS已有Spec验收与测试seam、Slice v3来源摘要/工作单元/验证映射、派生阅读和批准边界，无须把这些列成待从零引入的能力。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-yss-spec",
+        "evidence-yss-slice",
+        "evidence-yss-view",
+        "evidence-yss-policy"
+      ],
+      "counter_signal_refs": [
+        "evidence-yss-eval-limits"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-local-recovery",
+      "claim_kind": "technical-fact",
+      "statement": "YSS合同已经规定集中阶段状态、冻结Ticket进度分离、恢复复验与按需上下文/同边界验证复用。这里只证明合同和入口存在。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-yss-state",
+        "evidence-yss-efficiency",
+        "evidence-yss-slice"
+      ],
+      "counter_signal_refs": [
+        "evidence-yss-eval-limits"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-anthropic",
+      "claim_kind": "technical-fact",
+      "statement": "Anthropic公开长任务实验和演示原语支持可测试条件、独立评估、交接；2026迭代移除固定sprint，不能推成全公司统一模板或普遍固定多Agent要求。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-anthropic-007",
+        "evidence-anthropic-009"
+      ],
+      "counter_signal_refs": [
+        "evidence-anthropic-008",
+        "evidence-anthropic-016"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-proof-semantics",
+      "claim_kind": "technical-fact",
+      "statement": "官方demo读取证据钩子只证明读操作并有明确绕过/错配边界，不能替代当前版本/验收项绑定与行为检验。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-anthropic-009",
+        "evidence-anthropic-hook-limit-fact",
+        "evidence-yss-slice"
+      ],
+      "counter_signal_refs": [
+        "evidence-anthropic-016",
+        "evidence-anthropic-008"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-openai",
+      "claim_kind": "technical-fact",
+      "statement": "OpenAI ExecPlan是可定制的执行文档配方，页面已归档；其可恢复结构可供参考，非项目治理强制标准，也不能替代YSS语义。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-oa-plans",
+        "evidence-oa-model",
+        "evidence-yss-slice"
+      ],
+      "counter_signal_refs": [
+        "evidence-oa-plans-limit",
+        "evidence-oa-long-limit"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-google",
+      "claim_kind": "technical-fact",
+      "statement": "Google官方于2026-07宣布Conductor由Gemini CLI扩展演进为跨工具插件并保留spec/plan；这是公开工作流，不证明公司统一模板或YSS收益。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-google-02",
+        "evidence-google-03",
+        "evidence-google-04"
+      ],
+      "counter_signal_refs": [
+        "evidence-google-20",
+        "evidence-google-08"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-google-conflicts",
+      "claim_kind": "technical-fact",
+      "statement": "固定Conductor源码的自动提交、计划/track状态、可选review与审查修复及默认workflow规则，与YSS当前授权/事实源/独立审查政策不相同，直接启用需适配。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-google-commit-fact",
+        "evidence-google-workflow-fact",
+        "evidence-google-status-fact",
+        "evidence-google-review-fact",
+        "evidence-yss-policy"
+      ],
+      "counter_signal_refs": [
+        "evidence-yss-view-overlap"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-context-calibration",
+      "claim_kind": "technical-fact",
+      "statement": "OpenAI2026-09指导与Anthropic迭代支持试验更精确路由和按需资料、按模型/任务调整辅助流程；不证明可删除治理不变量或必然降低成本。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-oa-skills",
+        "evidence-anthropic-007",
+        "evidence-yss-efficiency"
+      ],
+      "counter_signal_refs": [
+        "evidence-oa-skills-limit",
+        "evidence-yss-eval-limits"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-field-mapping",
+      "claim_kind": "technical-fact",
+      "statement": "外部目标/验收/计划/状态/运行方式可映射到YSS既有资产，建议采用有来源版本的派生视图；具体适配与收益尚未实测。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-yss-spec",
+        "evidence-yss-slice",
+        "evidence-yss-state",
+        "evidence-oa-plans",
+        "evidence-google-04"
+      ],
+      "counter_signal_refs": [
+        "evidence-yss-authority",
+        "evidence-yss-view-overlap"
+      ],
+      "audit_status": "partially-supported",
+      "confidence": "medium",
+      "disposition": "qualify"
+    },
+    {
+      "id": "claim-evaluation-boundary",
+      "claim_kind": "technical-fact",
+      "statement": "本仓已有真实Agent评测和历史小样本对照，但已记录的范围不覆盖完整生产API/UI/跨仓交付，也不能证明引入外部机制会更快。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-yss-evaluator",
+        "evidence-yss-eval-results"
+      ],
+      "counter_signal_refs": [
+        "evidence-yss-eval-limits"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-adoption-boundary",
+      "claim_kind": "technical-fact",
+      "statement": "建议选择性吸收执行与验证机制并保留YSS唯一事实来源、批准与状态模型；不建议直接让外部编排器成为第二主控。技术冲突有依据，整套替换与收益未验证。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-yss-policy",
+        "evidence-yss-slice",
+        "evidence-google-commit-fact",
+        "evidence-google-status-fact",
+        "evidence-google-review-fact",
+        "evidence-anthropic-015"
+      ],
+      "counter_signal_refs": [
+        "evidence-yss-view-overlap",
+        "evidence-anthropic-016"
+      ],
+      "audit_status": "partially-supported",
+      "confidence": "medium",
+      "disposition": "qualify"
+    },
+    {
+      "id": "claim-pilot",
+      "claim_kind": "technical-fact",
+      "statement": "优先用现有视图建立恢复基线和真实验收负例，再按需试点上下文裁剪与只读导入；这是可执行研究建议，不是已证实收益或批准。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-yss-evaluator",
+        "evidence-yss-view",
+        "evidence-yss-state",
+        "evidence-oa-skills",
+        "evidence-anthropic-009"
+      ],
+      "counter_signal_refs": [
+        "evidence-yss-view-overlap",
+        "evidence-yss-eval-limits",
+        "evidence-oa-skills-limit"
+      ],
+      "audit_status": "partially-supported",
+      "confidence": "medium",
+      "disposition": "qualify"
+    },
+    {
+      "id": "claim-research-terminal-gap",
+      "claim_kind": "technical-fact",
+      "statement": "本次template-maintenance/entry-triage研究派发的初始包可验证，但已完成研究用null终止或接模板ssot-update会被流转表拒绝；这是当前研究任务归属/终止语义的适配缺口，非全部生命周期失效。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-yss-terminal-source",
+        "evidence-yss-terminal-repro"
+      ],
+      "counter_signal_refs": [
+        "evidence-yss-tailoring"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-google-design-doc",
+      "claim_kind": "technical-fact",
+      "statement": "Google公开工程书籍描述重大项目的团队认可Design Doc模板，强调目标、备选与取舍；可作为YSS既有Technical Design/ADR内容质量参照，不能推断一份公开统一模板可直接替换。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-google-16"
+      ],
+      "counter_signal_refs": [
+        "evidence-google-17"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    }
+  ],
+  "source_gaps": [
+    {
+      "gap": "没有安装/运行三套外部工作流或跨模型同题对照；Java/Vue跨仓实际收益未知",
+      "impact": "建议只可作为试点输入，不能当性能、生产可靠性或发布证明"
+    },
+    {
+      "gap": "公开资料不能代表三家公司内部全部规范；网页滚动更新",
+      "impact": "限定结论到已访问第一方材料，固定仓库SHA并记录日期"
+    },
+    {
+      "gap": "OpenAI .md页面web抓取不支持text/markdown",
+      "impact": "已通过正常HTML页读取同一文章正文，不阻断相关结论"
+    },
+    {
+      "gap": "历史模型评测本轮只复读结果与覆盖说明，未重跑或逐条重审原始轨迹",
+      "impact": "只作历史反信号，不作本轮性能统计"
+    },
+    {
+      "gap": "本次研究调度终止无法以resolved/null通过现行任务验证",
+      "impact": "研究资产交付、调度闭包分开报告；保留paused/blocked结果，不伪造产品路由。"
+    }
+  ],
+  "audit_summary": {
+    "status": "complete",
+    "audited_claim_ids": [
+      "claim-local-structure",
+      "claim-local-contract",
+      "claim-local-recovery",
+      "claim-anthropic",
+      "claim-proof-semantics",
+      "claim-openai",
+      "claim-google",
+      "claim-google-conflicts",
+      "claim-context-calibration",
+      "claim-field-mapping",
+      "claim-evaluation-boundary",
+      "claim-adoption-boundary",
+      "claim-pilot",
+      "claim-research-terminal-gap",
+      "claim-google-design-doc"
+    ],
+    "notes": [
+      "主控复核采用的关键官方页面及7个固定源码；详见owner-source-audit.json",
+      "supported只覆盖限定的事实表述；映射、优先级、收益均为建议，不是批准",
+      "结构验证与作者事实核查不称独立代码审查或三模型互评"
+    ]
+  }
+}

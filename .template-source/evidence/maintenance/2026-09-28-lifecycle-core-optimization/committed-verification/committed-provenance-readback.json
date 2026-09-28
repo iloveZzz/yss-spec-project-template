@@ -1,0 +1,41 @@
+{
+  "recorded_at": "2026-09-28T09:37:17.301210+00:00",
+  "locks": [
+    {
+      "repository": "yss-spec-project-template",
+      "source_revision": "83c5f3b4b6f289deb6005fc007b17b2a86a3f933",
+      "source_state": "committed",
+      "source_files_checked": 162,
+      "effective_files_checked": 162,
+      "failures": [],
+      "passed": true
+    },
+    {
+      "repository": "yss-harness-design-agent",
+      "source_revision": "83c5f3b4b6f289deb6005fc007b17b2a86a3f933",
+      "source_state": "committed",
+      "source_files_checked": 139,
+      "effective_files_checked": 139,
+      "failures": [],
+      "passed": true
+    },
+    {
+      "repository": "yss-harness-backend-agent",
+      "source_revision": "83c5f3b4b6f289deb6005fc007b17b2a86a3f933",
+      "source_state": "committed",
+      "source_files_checked": 163,
+      "effective_files_checked": 163,
+      "failures": [],
+      "passed": true
+    },
+    {
+      "repository": "yss-harness-frontend-agent",
+      "source_revision": "83c5f3b4b6f289deb6005fc007b17b2a86a3f933",
+      "source_state": "committed",
+      "source_files_checked": 157,
+      "effective_files_checked": 157,
+      "failures": [],
+      "passed": true
+    }
+  ]
+}

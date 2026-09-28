@@ -1,0 +1,6 @@
+{
+  "reason": "Stopped after deterministic provenance audit found a backend projection mismatch. Not a passing full verification.",
+  "fix_commit": "83c5f3b4",
+  "regression_before": "../projection-regression-before.log",
+  "regression_after": "../projection-regression-after.log"
+}

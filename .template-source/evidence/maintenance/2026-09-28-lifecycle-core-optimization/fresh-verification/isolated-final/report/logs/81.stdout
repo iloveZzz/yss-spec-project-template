@@ -1,0 +1,12 @@
+✔ 未修改的历史 v3 机械骨架可进入恢复对账但不会自动批准 (11.700333ms)
+✔ 额外业务代码保留并标记 premature-implementation-detected (4.081291ms)
+✔ 历史生成文件摘要漂移时保持 blocked (3.322542ms)
+✔ 审计器拒绝将 v4 当作历史恢复输入 (2.504208ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 62.463125

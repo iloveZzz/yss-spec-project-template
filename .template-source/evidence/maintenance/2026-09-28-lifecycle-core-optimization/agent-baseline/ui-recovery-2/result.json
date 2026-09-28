@@ -1,0 +1,79 @@
+{
+  "scenario": "ui-recovery",
+  "variant": "baseline",
+  "repeat": 2,
+  "elapsed_seconds": 171.83,
+  "exit_code": 0,
+  "timeout": false,
+  "assertion_failures": [
+    {
+      "assertion": {
+        "kind": "exists",
+        "path": "ui-evidence/before.png"
+      }
+    }
+  ],
+  "runtime_errors": [],
+  "tool_calls": 20,
+  "usage": [
+    {
+      "input_tokens": 409953,
+      "cached_input_tokens": 344064,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 4576,
+      "reasoning_output_tokens": 718
+    }
+  ],
+  "automatic_result": "failed",
+  "semantic_review": "pending",
+  "trace": "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-28-lifecycle-core-optimization/agent-baseline/ui-recovery-2/inspect/trace.jsonl",
+  "steps": [
+    {
+      "step": "inspect",
+      "started_at": "2026-09-28T08:41:11Z",
+      "elapsed_seconds": 171.17,
+      "exit_code": 0,
+      "timeout": false,
+      "assertion_failures": [
+        {
+          "assertion": {
+            "kind": "exists",
+            "path": "ui-evidence/before.png"
+          }
+        }
+      ],
+      "runtime_errors": [],
+      "tool_calls": 20,
+      "usage": [
+        {
+          "input_tokens": 409953,
+          "cached_input_tokens": 344064,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 4576,
+          "reasoning_output_tokens": 718
+        }
+      ],
+      "automatic_result": "failed",
+      "semantic_review": "pending",
+      "trace": "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-28-lifecycle-core-optimization/agent-baseline/ui-recovery-2/inspect/trace.jsonl",
+      "write_scope": {
+        "status": "passed",
+        "allowed_writes": [
+          "assessment.json",
+          "checkpoint.json",
+          "ui-evidence/"
+        ],
+        "changed_paths": [
+          "checkpoint.json"
+        ],
+        "violations": [],
+        "scope": "Final file/symlink differences; excludes .git, __pycache__, .eval-tmp and command log; not a sandbox or transient-write audit"
+      },
+      "turn_completed": true
+    }
+  ],
+  "unattempted_steps": [
+    "resume"
+  ],
+  "stop_reason": null
+}

@@ -1,0 +1,14 @@
+{
+  "verification_results": [
+    {
+      "command": "node .agents/skills/yss-research/scripts/validate-research-package.mjs .template-source/evidence/maintenance/2026-09-28-official-spec-research/openai/openai-research-brief.md .template-source/evidence/maintenance/2026-09-28-official-spec-research/openai/openai-evidence.yaml",
+      "executed_at": "2026-09-28T05:30:14.229155+00:00",
+      "exit_code": 0,
+      "duration_ms": 34,
+      "evidence_refs": [
+        ".template-source/evidence/maintenance/2026-09-28-official-spec-research/openai/validation.log"
+      ],
+      "scope": "仅研究包结构和引用闭包，不是独立语义审查"
+    }
+  ]
+}

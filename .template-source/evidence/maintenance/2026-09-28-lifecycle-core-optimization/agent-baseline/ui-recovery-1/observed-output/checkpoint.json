@@ -1,0 +1,131 @@
+{
+  "record_type": "ui-probe-checkpoint",
+  "test_data_only": true,
+  "recorded_at": "2026-09-28T08:41:02.325Z",
+  "repository_mode": "template-source",
+  "mode": "audit",
+  "scope": "仅核验隔离 fixture 的 ui.html；本轮停在交互验证之前。此记录不构成正式生命周期批准或维护完成结论。",
+  "current_step": "inspect",
+  "status": "blocked",
+  "result": "未完成真实浏览器页面检查",
+  "verification": {
+    "command": "node probe-ui.mjs inspect",
+    "executed": true,
+    "exit_code": 1,
+    "browser_launch_attempted": true,
+    "browser": "Google Chrome / Playwright chromium",
+    "failed_at": "chromium.launch",
+    "error": "browserType.launch: Target page, context or browser has been closed",
+    "browser_process": {
+      "pid": 18901,
+      "exit_code": null,
+      "signal": "SIGABRT"
+    },
+    "cleanup_log": "exception while trying to kill process: Error: kill EPERM",
+    "root_cause": "未确定；日志证明浏览器启动失败，不据此推断页面有缺陷。",
+    "page_loaded": false,
+    "actual_browser_inspection_completed": false,
+    "initial_result_empty": null,
+    "console": null,
+    "screenshot": null,
+    "evidence_source": "本轮 exec_command 的实际返回，chunk_id=f17300；命令退出码与浏览器进程退出状态分别记录。"
+  },
+  "artifacts_observed": [
+    {
+      "path": "ui-evidence/before.png",
+      "exists": false
+    },
+    {
+      "path": "ui-evidence/inspect.json",
+      "exists": false
+    },
+    {
+      "path": "ui-evidence/after.png",
+      "exists": false
+    },
+    {
+      "path": "ui-evidence/verification.json",
+      "exists": false
+    }
+  ],
+  "rules_check": {
+    "applied_skills": [
+      "yss-product-lifecycle",
+      "yss-design-system"
+    ],
+    "fresh_verification": "未通过；不得以源码、文件存在或脚本名称替代真实浏览器证据。",
+    "static_observations": [
+      "ui.html 包含名称输入、保存按钮及 role=status 的反馈区域；源码定义空值与非空值反馈，尚未在浏览器观察。",
+      "ui.html 未引用项目 Token CSS；没有截图或计算样式证据，不能宣称符合 YSS 视觉基线。",
+      "probe-ui.mjs 配置 file:// 导航并阻断非 file: 页面请求；此次在创建页面前失败，该拦截未进入运行验证。",
+      "inspect 分支计划截图并断言初始结果为空，但仅记录 console，不断言其为空；不能仅凭 inspect 命令成功宣称完整 UI 验收通过。"
+    ],
+    "context_reconciliation": {
+      "status": "not-applicable",
+      "reason": "template-source 的只读 fixture 核验，不涉及产品工作单元批准、流转或术语变更。根 CONTEXT.md 及文首合同已读取。"
+    },
+    "maintenance_intensity": {
+      "status": "not-applicable",
+      "reason": "没有模板、流程规则或共享 Skill 修改；仅写用户指定的运行检查记录。"
+    },
+    "product_artifacts": {
+      "status": "not-applicable",
+      "reason": "仓库为 template-source；不创建产品 Spec、原型、OpenAPI、Ticket 或 Slice 合同。"
+    },
+    "tdd": {
+      "status": "not-applicable",
+      "reason": "本轮不实现业务行为，仅运行既有探针并记录实际结果。"
+    },
+    "pnpm": {
+      "executed": false,
+      "exit_code": null,
+      "reason": "本轮执行用户指定的 Node 浏览器探针，不进行构建；未以 PATH 替身成功代替真实构建证据。"
+    }
+  },
+  "unverified": [
+    "页面实际加载、初始结果及检查截图",
+    "浏览器 console warning、error 和 pageerror",
+    "空名称拒绝及填写 YSS 后的保存反馈",
+    "YSS 计算样式、视觉基线、响应式及焦点状态"
+  ],
+  "next_action": "verify",
+  "next_command": "node probe-ui.mjs verify",
+  "next_step": {
+    "status": "not-run",
+    "prerequisites": [
+      "在现有隔离限制内恢复真实 Chrome 启动能力；不得修改来源、合同、规则或实现，不安装依赖、不绕过替身。",
+      "核对本记录的输入摘要；先重跑 node probe-ui.mjs inspect，确认实际页面、初始断言、截图及 console 结果。",
+      "本轮按用户要求停止；后续恢复时再执行 verify。"
+    ],
+    "planned_assertions": [
+      "空名称点击保存，实际显示“请填写名称”。",
+      "填写 YSS 后点击保存，实际显示“已保存：YSS”。",
+      "生成 ui-evidence/after.png；console error、warning 和 pageerror 收集结果为空。"
+    ],
+    "limitations": "verify 只覆盖既有脚本定义的交互与控制台检查，不能代替完整 YSS 视觉、响应式或工程验收。"
+  },
+  "stop_reason": "浏览器启动失败，且用户明确要求本轮停止在交互验证之前。",
+  "git": {
+    "executed": false,
+    "committed": false
+  },
+  "api_started": false,
+  "source_changes": [],
+  "written_outputs": [
+    "checkpoint.json"
+  ],
+  "source_sha256": {
+    "yss-project.yaml": "dae2ddacbb024ba25b70a18830fc26ab7d3dcd8aaa361cc8b3767d68307f98af",
+    "AGENTS.md": "73171e25ea9715183a3ebe01d1dd58c4e50a1f1a7a4c527275cbadd1d9a5a1b2",
+    "CONTEXT.md": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559",
+    "probe-ui.mjs": "a62e9d12ada821a27b04a4a9673dccb9377825e015f5ed957a6685352c5905e5",
+    "ui.html": "62f6979ace6ab56b1c8dcec6273555f01f8459068e572cc8c67b873f85eecb01",
+    "DESIGN.md": "e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec",
+    ".template-spec/process/harness-process-tailoring.md": "33de8e7fe924ba4ab7db0739ab2c194b1abfd46fce299e6d36591741582b4be2",
+    ".template-spec/design/design.md": "b285bdbef1e0495b5b7982f92ca03f9fe72b241353b1213103924a2f428df65f",
+    ".template-spec/design/tokens/tokens.default.json": "4e6446ee85195e3a75676a763cb8be2c625dc86b2b0676cbc8b45b2221135a71",
+    ".agents/skills/yss-product-lifecycle/SKILL.md": "f200bde383ed7f77039aadc49e23916ed39f9716cf1a089d71157e070e351fb8",
+    ".agents/skills/yss-design-system/SKILL.md": "eb06c28e2d72fda4ec60f276392933199eb26d94e236ed91111629167edafa3e",
+    ".agents/skills/yss-design-system/references/design-system.md": "83af8e5018af3200445c3d6487c5b9623c93869e78d59a4a79179afcf5414613"
+  }
+}

@@ -1,0 +1,292 @@
+{
+  "execution": {
+    "mode": "read_only",
+    "selected": {
+      "execution_efficiency": {
+        "context_query": {
+          "read_scope": "current-work-unit-and-triggered-impacts",
+          "refresh_on": [
+            "source-changed",
+            "new-impact",
+            "evidence-conflict",
+            "resume",
+            "handoff"
+          ],
+          "reuse": "already-read-unchanged-sources-within-current-task",
+          "strategy": "combine-mode-stage-work-unit-and-required-includes"
+        },
+        "interaction": {
+          "checkpoint_policy_ref": "checkpoint_policy",
+          "decision_evidence_ref": "references/user-decisions.md",
+          "dependent_future_approvals": "forbidden",
+          "questions": "batch-independent-current-stage-questions",
+          "user_decision_policy_ref": ".template-spec/agents/digital-human-roles.yaml#user_decision_policy"
+        },
+        "recovery": {
+          "action_completed_before_checkpoint": "reconcile-actual-artifacts-before-repeating-side-effects",
+          "approval": "revalidate-current-decision-or-supported-continuation",
+          "changed_inputs": "invalidate-affected-dependencies-and-revalidate",
+          "completed_task": "verify-current-evidence-then-recompute-frontier",
+          "missing_legacy_tracking": "existing-compatibility-or-explicit-migration",
+          "running_or_unknown_task": "inspect-existing-task-identity-before-dispatch",
+          "state_source": "current-checkpoint-stage-tracking-and-readable-task-results",
+          "status_view": "read-only-diagnostics-never-execution-authorization",
+          "unknown_external_result": "stop-duplicate-side-effect-and-report-missing-evidence"
+        },
+        "timing_evidence": {
+          "distinguish": [
+            "script-execution",
+            "agent-orchestration",
+            "human-wait"
+          ],
+          "location": "existing-checkpoint-verification-evidence",
+          "script_fields": [
+            "command",
+            "duration_ms",
+            "exit_code"
+          ],
+          "unmeasured_duration": "unknown"
+        },
+        "verification": {
+          "always_revalidate_on": [
+            "resume",
+            "handoff",
+            "implementation-entry",
+            "merge",
+            "release"
+          ],
+          "duplicate_check": "reuse-only-within-same-boundary-and-unchanged-inputs",
+          "freshness_unknown": "rerun",
+          "per_work_unit_context_reconciliation": "required",
+          "scope": "current-artifacts-and-triggered-contracts",
+          "skip_triggered_gates": "forbidden",
+          "template_regression_suite": "template-maintenance-or-explicit-regression-task",
+          "timing": "after-artifact-write-before-approval-or-transition",
+          "unchanged_inputs": [
+            "artifact-bytes",
+            "upstream-bytes",
+            "validator-and-schema",
+            "command-and-options",
+            "repository-root"
+          ]
+        }
+      },
+      "gate_consolidation": {
+        "acceptance_does_not_authorize": [
+          "merge",
+          "push",
+          "release",
+          "production_change"
+        ],
+        "adjacent_reviews": "one_bundle_with_explicit_per_check_outcomes",
+        "api_freeze": "atomic_with_engineering_contract_approval_same_version",
+        "check_failure": "blocks_aggregate_gate",
+        "check_policy": ".template-spec/agents/digital-human-roles.yaml",
+        "checks": "automatic_or_independent_review_without_separate_user_decision",
+        "continuation_protocol": "references/user-decisions.md",
+        "default_review": "one_owner_one_independent_reviewer",
+        "extra_reviewers": "uncovered_expertise_conflict_or_external_requirement",
+        "historical_gate_records": "read_only_no_automatic_approval_migration",
+        "invalidation": "affected_dependencies_or_authorization_change_only",
+        "plan_decision_boundary": "gate.plan-approved",
+        "readiness": "computed_after_current_approved_contract_and_all_applicable_preconditions",
+        "reuse": "unchanged_approval_or_verified_approved_scope_continuation",
+        "source": ".template-spec/process/lifecycle-registry.yaml",
+        "suggestions": "recorded_backlog_without_blocking",
+        "verifier": "scripts/verify-lifecycle-checkpoint"
+      }
+    },
+    "transition": {
+      "forbidden_shortcuts": [
+        {
+          "from": "work-unit.spec-synthesis",
+          "to": "work-unit.slice-implementation"
+        },
+        {
+          "from": "work-unit.prototype-design-v2",
+          "to": "work-unit.slice-implementation"
+        },
+        {
+          "from": "work-unit.technical-analysis",
+          "to": "work-unit.slice-implementation"
+        }
+      ],
+      "next": [
+        "work-unit.frontend-implementation-verification",
+        "work-unit.code-review"
+      ]
+    },
+    "work_unit_route": {
+      "applies_when": "ready_for_agent",
+      "compatibility": {
+        "formal_artifact_owner": "explicit-user-entry",
+        "invocation_mode": "reference",
+        "skill": "implement",
+        "source": "mattpocock/skills"
+      },
+      "frontend_route": {
+        "conditional_skills": {
+          "api_impact": [
+            "yss-api-integration"
+          ],
+          "export_impact": [
+            "file-export-download"
+          ],
+          "formily_impact": [
+            "yss-formily"
+          ],
+          "table_impact": [
+            "ytable-usage",
+            "yedit-table-usage"
+          ],
+          "theme_impact": [
+            "theme-token-usage"
+          ],
+          "tree_impact": [
+            "ytree-usage"
+          ]
+        },
+        "not_applicable_reasons": {
+          "api_impact": "no_api_impact",
+          "export_impact": "no_export_impact",
+          "formily_impact": "no_formily_impact",
+          "table_impact": "no_table_impact",
+          "theme_impact": "no_theme_impact",
+          "tree_impact": "no_tree_impact"
+        },
+        "page_generation_skill": "yss-ui-business-page-generation",
+        "page_orchestration_skill": "yss-ui-business-page-generation",
+        "primary_skill": "yss-ui"
+      },
+      "native": {
+        "invocation_mode": "model-invoked",
+        "skill": "yss-product-lifecycle",
+        "source": "yss-product-lifecycle"
+      },
+      "not_applicable_reason": "slice_contract_not_approved",
+      "primary_skill": "yss-implementation-contract-compiler",
+      "requires_completed_work_units": [
+        "work-unit.ticket-decomposition"
+      ],
+      "skills": [
+        "tdd",
+        "yss-implementation-contract-compiler",
+        "yss-ui",
+        "yss-ui-business-page-generation"
+      ],
+      "supporting_skills": [
+        "tdd",
+        "yss-ui",
+        "yss-ui-business-page-generation"
+      ]
+    }
+  },
+  "lifecycle": {
+    "artifacts": [],
+    "checks": [],
+    "evidence": [],
+    "gates": [],
+    "stage": {
+      "exit_criteria": "允许写路径、禁止模式、证据和验证命令全部满足。",
+      "goal": "以批准合同驱动 TDD 实现和跨仓库协作。",
+      "id": "stage.vertical-slice-implementation",
+      "name": "垂直切片实现"
+    },
+    "work_unit": {
+      "completion": "行为通过 `behavior-tdd`；UI 影响完成还原验证计划；无 drift/violation。",
+      "id": "work-unit.slice-implementation",
+      "input": "当前版本 Slice Implementation Contract 和允许写路径。",
+      "name": "垂直切片实现",
+      "output": "前后端实现、TDD 和 YSS Skill Execution Result。",
+      "scope": "project-instance"
+    }
+  },
+  "query": {
+    "include": [
+      "execution_efficiency",
+      "gate_consolidation"
+    ],
+    "mode": "audit",
+    "stage": "stage.vertical-slice-implementation",
+    "work_unit": "work-unit.slice-implementation"
+  },
+  "references": [
+    ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml",
+    ".template-spec/agents/digital-human-roles.yaml",
+    ".template-spec/agents/digital-human-roles.yaml#user_decision_policy",
+    ".template-spec/agents/yss-skill-registry.yaml",
+    ".template-spec/process/lifecycle-registry.yaml",
+    "references/user-decisions.md"
+  ],
+  "schema_version": 1,
+  "skills": [
+    {
+      "aliases": [],
+      "id": "tdd",
+      "impacts": [
+        "quality"
+      ],
+      "instance_default_discoverable": true,
+      "layer": "core",
+      "maturity": "supported"
+    },
+    {
+      "aliases": [],
+      "id": "yss-product-lifecycle",
+      "impacts": [
+        "lifecycle"
+      ],
+      "instance_default_discoverable": true,
+      "layer": "core",
+      "maturity": "supported"
+    },
+    {
+      "aliases": [],
+      "id": "yss-implementation-contract-compiler",
+      "impacts": [
+        "lifecycle",
+        "backend",
+        "frontend"
+      ],
+      "instance_default_discoverable": true,
+      "layer": "core",
+      "maturity": "supported"
+    },
+    {
+      "aliases": [],
+      "id": "yss-ui",
+      "impacts": [
+        "frontend"
+      ],
+      "instance_default_discoverable": false,
+      "layer": "specialist",
+      "maturity": "supported"
+    },
+    {
+      "aliases": [],
+      "id": "yss-ui-business-page-generation",
+      "impacts": [
+        "frontend"
+      ],
+      "instance_default_discoverable": false,
+      "layer": "specialist",
+      "maturity": "supported"
+    }
+  ],
+  "sources": {
+    "lifecycle_registry": {
+      "ref": ".template-spec/process/lifecycle-registry.yaml",
+      "semantic_sha256": "348d87b19dfc19054bec6905c59dc206dd3d60d888c625c223dd0b74de94a9c2",
+      "status": "active"
+    },
+    "orchestration_contract": {
+      "ref": ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml",
+      "sha256": "9d3ff488dc7778bdd12e210928891871e27cd434bc9c6442b03a22bd105b0926"
+    },
+    "skill_registry": {
+      "ref": ".template-spec/agents/yss-skill-registry.yaml",
+      "sha256": "856ae1d9cad9e902fc7bda3d8a12d692b838d00ccad5477d8f960c13359b02a7",
+      "status": "active"
+    }
+  }
+}

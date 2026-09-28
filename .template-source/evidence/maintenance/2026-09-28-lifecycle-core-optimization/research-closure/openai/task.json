@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "role_id": "role.requirements-manager",
+  "skill_source": {
+    "registry_ref": ".template-spec/agents/digital-human-roles.yaml",
+    "defaults_ref": "taskPackageDefaults(role.requirements-manager)",
+    "core_skills": [
+      "grilling",
+      "domain-modeling",
+      "yss-research",
+      "competitive-intelligence",
+      "grill-with-docs"
+    ],
+    "forbidden_skills": [
+      "yss-ui",
+      "yss-domain",
+      "yss-web-controller",
+      "yss-repository",
+      "yss-ddd-scaffold-generator",
+      "yss-layered-mvc-scaffold-generator",
+      "yss-frontend-scaffold-generator",
+      "implement",
+      "tdd"
+    ]
+  },
+  "task_id": "research-current-closure-openai",
+  "work_unit_id": "work-unit.maintenance-research",
+  "actor_id": "lifecycle-core.research-closure",
+  "runtime_id": "runtime.skill-projection",
+  "execution_state": "Explorer",
+  "workflow_status": "resolved",
+  "contract": {
+    "kind": "template-maintenance",
+    "contract_id": "official-spec-research-20260928",
+    "contract_version": 1,
+    "status": "issued",
+    "contract_ref": ".template-source/evidence/maintenance/2026-09-28-official-spec-research/research-scope.md",
+    "maintenance_ref": ".template-source/evidence/maintenance/2026-09-28-official-spec-research/checkpoint.json"
+  },
+  "inputs": [
+    "yss-project.yaml",
+    "CONTEXT.md",
+    ".agents/skills/yss-research/SKILL.md",
+    ".agents/skills/yss-research/references/evidence-contract.md",
+    ".template-source/evidence/maintenance/2026-09-28-official-spec-research/research-scope.md",
+    ".template-source/evidence/maintenance/2026-09-28-official-spec-research/dispatch/openai-task.json",
+    ".template-source/evidence/maintenance/2026-09-28-official-spec-research/openai/openai-research-brief.md",
+    ".template-source/evidence/maintenance/2026-09-28-official-spec-research/openai/openai-evidence.yaml"
+  ],
+  "objective": "重新核验 openai 历史研究包并关闭研究任务；来源事实范围仍为原报告范围，本轮不冒充重新调研。",
+  "allowed_write_paths": [
+    ".template-source/evidence/maintenance/2026-09-28-lifecycle-core-optimization/research-closure/openai"
+  ],
+  "forbidden_actions": [
+    "不修改其他路径、既有用户改动、权威合同、词汇、Ticket 或批准",
+    "不提交、推送、发布或调用付费模型",
+    "不将第三方项目归属为官方模板",
+    "不把结构验证当成研究语义独立审查"
+  ],
+  "expected_outputs": [
+    ".template-source/evidence/maintenance/2026-09-28-lifecycle-core-optimization/research-closure/openai/run/verification.json"
+  ],
+  "expected_evidence_files": [
+    ".template-source/evidence/maintenance/2026-09-28-lifecycle-core-optimization/research-closure/openai/run/verification.json",
+    ".template-source/evidence/maintenance/2026-09-28-official-spec-research/openai/openai-research-brief.md",
+    ".template-source/evidence/maintenance/2026-09-28-official-spec-research/openai/openai-evidence.yaml"
+  ],
+  "verification_commands": [
+    "node .agents/skills/yss-research/scripts/validate-research-package.mjs .template-source/evidence/maintenance/2026-09-28-official-spec-research/openai/openai-research-brief.md .template-source/evidence/maintenance/2026-09-28-official-spec-research/openai/openai-evidence.yaml"
+  ],
+  "verification_results": [
+    {
+      "command": "node .agents/skills/yss-research/scripts/validate-research-package.mjs .template-source/evidence/maintenance/2026-09-28-official-spec-research/openai/openai-research-brief.md .template-source/evidence/maintenance/2026-09-28-official-spec-research/openai/openai-evidence.yaml",
+      "exit_code": 0,
+      "executed_at": "2026-09-28T08:32:29.863Z",
+      "evidence_ref": ".template-source/evidence/maintenance/2026-09-28-lifecycle-core-optimization/research-closure/openai/run/verification.json",
+      "stdout_ref": ".template-source/evidence/maintenance/2026-09-28-lifecycle-core-optimization/research-closure/openai/run/stdout.log",
+      "stderr_ref": ".template-source/evidence/maintenance/2026-09-28-lifecycle-core-optimization/research-closure/openai/run/stderr.log"
+    }
+  ],
+  "downstream_consumers": [
+    "主控 yss-research 汇总审计"
+  ],
+  "convergence": {
+    "parent_work_unit": "work-unit.maintenance-research",
+    "convergence_ref": ".template-source/evidence/maintenance/2026-09-28-official-spec-research/research-scope.md",
+    "conflict_escalation": "返回主控核对来源，保留缺口，不自行裁决"
+  },
+  "result": {
+    "result_schema": "workflow-execution-result-v1",
+    "work_unit": "work-unit.maintenance-research",
+    "workflow_reference": ".template-source/evidence/maintenance/2026-09-28-official-spec-research/dispatch/openai-task.json",
+    "result": "completed",
+    "context_reconciliation": {
+      "status": "not-applicable",
+      "ref": ".template-source/evidence/maintenance/2026-09-28-official-spec-research/research-scope.md",
+      "reason": "template-source维护研究，无业务术语或产品生命周期状态变更"
+    },
+    "skill": "yss-research",
+    "changed_files": [
+      ".template-source/evidence/maintenance/2026-09-28-lifecycle-core-optimization/research-closure/openai/run/verification.json",
+      ".template-source/evidence/maintenance/2026-09-28-lifecycle-core-optimization/research-closure/openai/run/stdout.log",
+      ".template-source/evidence/maintenance/2026-09-28-lifecycle-core-optimization/research-closure/openai/run/stderr.log"
+    ],
+    "changed_artifacts": [
+      ".template-source/evidence/maintenance/2026-09-28-official-spec-research/openai/openai-research-brief.md",
+      ".template-source/evidence/maintenance/2026-09-28-official-spec-research/openai/openai-evidence.yaml"
+    ],
+    "evidence_refs": [
+      ".template-source/evidence/maintenance/2026-09-28-official-spec-research/research-scope.md",
+      ".template-source/evidence/maintenance/2026-09-28-official-spec-research/openai/openai-research-brief.md",
+      ".template-source/evidence/maintenance/2026-09-28-official-spec-research/openai/openai-evidence.yaml",
+      ".template-source/evidence/maintenance/2026-09-28-lifecycle-core-optimization/research-closure/openai/run/verification.json",
+      ".template-source/evidence/maintenance/2026-09-28-official-spec-research/dispatch/openai-task.json"
+    ],
+    "deferred_seams": [],
+    "drift": [],
+    "violation": [],
+    "new_impacts": [],
+    "stale_candidates": [],
+    "blocking_signals": [],
+    "next_route": null,
+    "research_verification": {
+      "ref": ".template-source/evidence/maintenance/2026-09-28-lifecycle-core-optimization/research-closure/openai/run/verification.json",
+      "digest": "sha256:ccc0cc24d6138a3bab1350feecc9e818b0564e68ab03a40c02cef145fc258026"
+    }
+  }
+}

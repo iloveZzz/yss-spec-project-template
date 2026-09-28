@@ -1,0 +1,6 @@
+[发布验证] scripts/repository-mode 
+[发布验证] scripts/verify-template --concurrency 1
+发布前验证失败: scripts/verify-template 失败，详见 /private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-committed-2lfqwnrp/release/02.log
+
+1 !== 0
+

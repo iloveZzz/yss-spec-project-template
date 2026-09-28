@@ -1,0 +1,16 @@
+✔ domain-driven: existing identity has no fabricated generator or H2 claim (0.584584ms)
+✔ layered-mvc: existing identity has no fabricated generator or H2 claim (0.063334ms)
+✔ existing original evidence cannot be replaced by three matching objects (0.519042ms)
+✔ unknown source, profile and disguised generator fail closed (0.085083ms)
+✔ domain-driven: compiles a real on-disk existing Git/Maven identity; input changes stale (615.904458ms)
+✔ layered-mvc: compiles a real on-disk existing Git/Maven identity; input changes stale (563.508875ms)
+✔ existing profiles resolve concrete Web and Application execution references (525.712542ms)
+✔ raw evidence drift, self-review, missing source files and actual POM conflicts are rejected (847.501917ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2634.793917

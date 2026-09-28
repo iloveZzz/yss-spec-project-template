@@ -1,0 +1,14 @@
+[
+  {
+    "repository": "yss-harness-design-agent",
+    "commit": "98b2d5682b1ded9f35b9773929006d225bc0c305"
+  },
+  {
+    "repository": "yss-harness-backend-agent",
+    "commit": "cbded26aea8b4104f87b2377922bc3416befb0a6"
+  },
+  {
+    "repository": "yss-harness-frontend-agent",
+    "commit": "2aa574462cb55815421e03cd394da02e06d9948c"
+  }
+]

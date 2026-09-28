@@ -1,0 +1,6 @@
+{
+  "api_verified": false,
+  "evidence_current": false,
+  "accepted": false,
+  "reason": "本轮实际运行 node probe-api.mjs，退出码为 1，监听 127.0.0.1 时报 listen EPERM: operation not permitted；临时 API 未启动，成功、缺参及错误 JSON 三个 HTTP 场景均未执行，也未生成 api-observation.json，因此 API 验证未完成。只读调用仓库 scripts/lib/execution-evidence.mjs 的 executionEvidenceBlockers，返回 evidence-digest-mismatch。subject/contract.json 和 subject/source.txt 的原始字节摘要与绑定一致，但 evidence/test.log 实际摘要为 sha256:8dfac92e5349e02f959f269d016a27bcad7aa222b775ec3f36a25ad8add730c3，subject/result.json 记录的摘要为 sha256:beffed405c110a01b7d23c6500d5d329f839e2b557a0f5c64fbfdd5a8ee276bd；日志内容为验证后替换的无关日志说明，不能证明 AC-1。依据 AGENTS.md 的 Fresh Verification 要求及 yss-implementation-contract-compiler 的当前证据绑定规则，现有结果和日志不能用于本轮验收，历史 exit_code: 0 不能替代本轮执行。仅核验隔离测试样本，不构成生产批准；未修改来源、合同、规则、实现或既有证据，未提交 Git。"
+}

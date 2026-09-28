@@ -1,0 +1,7 @@
+{
+  "observed_at": "2026-09-28T05:38:33.352321+00:00",
+  "local_links_missing": [],
+  "source_snapshot_drift": [],
+  "passed": true,
+  "scope": "local files and source hashes; remote URLs individually checked during research"
+}

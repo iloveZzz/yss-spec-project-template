@@ -1,0 +1,2 @@
+数字人任务包验证失败: verification_results.0: Additional properties are not allowed ('evidence_refs', 'scope' were unexpected)
+verification_results.0: 'evidence_ref' is a required property

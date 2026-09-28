@@ -1,0 +1,395 @@
+{
+  "root_changes": [
+    {
+      "path": ".agents/skills/yss-implementation-contract-compiler/SKILL.md",
+      "sha256": "58d02bc6bdd5a21a7a564ec5bcc486c01cb1c3253060f0c2a8f6337cd7e94cbf",
+      "kind": "modified",
+      "baseline_sha256": "cd3f7ee2d748083877227619d5e72e7f307409a17516d3121a0e547a86816d0b"
+    },
+    {
+      "path": ".agents/skills/yss-implementation-contract-compiler/references/yss-skill-execution-result.md",
+      "sha256": "75bbdaa440b9531fc70bbbb3321ae6e99db96fdefb7f80d20d71150b38ea362d",
+      "kind": "modified",
+      "baseline_sha256": "ae45bf5c781492c6969fa8afc87707d158faf3e85430611173896634d2cac9ba"
+    },
+    {
+      "path": ".agents/skills/yss-product-lifecycle/SKILL.md",
+      "sha256": "ee4a532300a270a230d34fd222802a818663cc32bef320064bb24d8858dca96a",
+      "kind": "modified",
+      "baseline_sha256": "f200bde383ed7f77039aadc49e23916ed39f9716cf1a089d71157e070e351fb8"
+    },
+    {
+      "path": ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml",
+      "sha256": "47103aaf83bdf210e62718fbc2d02320e183fd8528eb871ebaacd12ad8eafb0e",
+      "kind": "modified",
+      "baseline_sha256": "30228191140bee929682a56bb480285c4379db4f63b5d5e6cb6228827b86a850"
+    },
+    {
+      "path": ".agents/skills/yss-research/SKILL.md",
+      "sha256": "789fa6131272d11d9758df4efd54ef5c6d8c265c2581bebeae56633685680696",
+      "kind": "modified",
+      "baseline_sha256": "a86999e302fe8fb390f800e73cc9456f0d5a7c8ae45b8ca37cc760d7951df8fa"
+    },
+    {
+      "path": ".codex/skills/yss-product-lifecycle/SKILL.md",
+      "sha256": "ee4a532300a270a230d34fd222802a818663cc32bef320064bb24d8858dca96a",
+      "kind": "modified",
+      "baseline_sha256": null
+    },
+    {
+      "path": ".codex/skills/yss-product-lifecycle/references/orchestration-contract.yaml",
+      "sha256": "47103aaf83bdf210e62718fbc2d02320e183fd8528eb871ebaacd12ad8eafb0e",
+      "kind": "modified",
+      "baseline_sha256": null
+    },
+    {
+      "path": ".template-source/derived/harness-work-unit-map.md",
+      "sha256": "cdc5289fb6455981d71db3601e6084a316c4836ac9d92f92a61074bfb87f9ae9",
+      "kind": "modified",
+      "baseline_sha256": null
+    },
+    {
+      "path": ".template-source/distribution/strategic-handoff-tools.lock.json",
+      "sha256": "c575b4723d0466a15f2b5c10b284f644717965ceb28e97a81edfb08ed8f44ce7",
+      "kind": "modified",
+      "baseline_sha256": "a27bf81e26cddf00f6b8a5569ff08e891dcbdb57991182b4b53e9c6af6b04e1c"
+    },
+    {
+      "path": ".template-source/profile-skill-patches/backend/yss-implementation-contract-compiler.patch",
+      "sha256": "e2caac18f9d4bf1979debc4a6e6b0d46d470b7d42cf124b7342f2ed6311957bf",
+      "kind": "modified",
+      "baseline_sha256": null
+    },
+    {
+      "path": ".template-source/profile-skill-patches/frontend/yss-implementation-contract-compiler.patch",
+      "sha256": "4eac40e146f3a02928164cec3b635bc0fe3621295bbe152e19e839ed79c977e6",
+      "kind": "modified",
+      "baseline_sha256": null
+    },
+    {
+      "path": ".template-source/profile-skill-sync.json",
+      "sha256": "4fcfe65bfee5b2ef01f2fcc53f223e32f3dfa2f06f6b99306bee0fc2a01c70bd",
+      "kind": "modified",
+      "baseline_sha256": null
+    },
+    {
+      "path": ".template-spec/process/contract-reading.md",
+      "sha256": "eab5de51710634426841c2ae04369be6ade0944f509effae616e83c104b54320",
+      "kind": "modified",
+      "baseline_sha256": "98a23bc210fb14364a14954475abcf65055be38370c89864443a1bb91cc3eca4"
+    },
+    {
+      "path": ".template-spec/process/lifecycle-registry-baseline.json",
+      "sha256": "ab27e1a8f650989f98ec42525fbb502597fef3ecc2feba887e54fd477310c6d2",
+      "kind": "modified",
+      "baseline_sha256": "317772014bccb722e8e774448cbecf5f15d030f3a43ba6181d68b82c362c1dd0"
+    },
+    {
+      "path": ".template-spec/process/lifecycle-registry.yaml",
+      "sha256": "d57c05c9c687aae21eebe62ba72e0a7028f9b85665495fe710ae48e2e0efb46f",
+      "kind": "modified",
+      "baseline_sha256": "e301b1d2cfe7f1e52c99f64d36c04e3395737deae2e00713401a90685a683bef"
+    },
+    {
+      "path": ".template-spec/process/research-completion.md",
+      "sha256": "3adfcd90d7f25f1fc7c989862d9ee1e39c4a8a4afb68d90784ebe56ca320991e",
+      "kind": "new",
+      "baseline_sha256": null
+    },
+    {
+      "path": ".template-spec/process/schemas/digital-human-task-package.schema.json",
+      "sha256": "78ee716f228660fa07666974ab51d69306e4d510ffbca0c31d9d9c05005bb976",
+      "kind": "modified",
+      "baseline_sha256": "199cc3f5c1ec1c7f735329565717ee13bb1da17b6571da1c1a2e2728c2e9315d"
+    },
+    {
+      "path": ".template-spec/process/schemas/frontend-implementation-evidence.schema.json",
+      "sha256": "f4ce1b9e44ac28f62327f7fe2e13568686211a95d3c6ec93d92355d7e5c98aab",
+      "kind": "modified",
+      "baseline_sha256": "9e432cce4c3d6cb39be3a5d18058d1c8d5229fec7a5e5db2d42015b1c738d39c"
+    },
+    {
+      "path": ".template-spec/process/templates/frontend-implementation-verification-template.yaml",
+      "sha256": "64f6b11971ab7697a271c632dafdc626c8bdc0d74730a1b6cf1dc36c3ca5b2fc",
+      "kind": "modified",
+      "baseline_sha256": "0f0fa43a96aa19411b5a13f14988781297b52e9bf6a89239b219a8f099c83e12"
+    },
+    {
+      "path": "scripts/contract",
+      "sha256": "4ae8a46d2bcc5db1aa821b7e8cf83bf57da437d336bdfe28242a9ff1b5cd53e7",
+      "kind": "modified",
+      "baseline_sha256": "c6ff2e1e0b8587f3892f241a651ce9382dbf377a5b059b75996af465f4ba40ed"
+    },
+    {
+      "path": "scripts/fixtures/lifecycle-core/evidence.test.mjs",
+      "sha256": "a9b3e53b0b05f215ec111639e7d94cb50db331e6f902a0bcffba00ead42d4b7e",
+      "kind": "new",
+      "baseline_sha256": null
+    },
+    {
+      "path": "scripts/fixtures/lifecycle-core/research.test.mjs",
+      "sha256": "7dcaeed7ff0ffe3244a32c998ac176a18a7bc142fb9e45b6effe74ee7d167077",
+      "kind": "new",
+      "baseline_sha256": null
+    },
+    {
+      "path": "scripts/fixtures/lifecycle-core/views.test.mjs",
+      "sha256": "5f6c5340818d978be8e5a567c9f46331d632f7580f0969d13415085e6fe6e2f5",
+      "kind": "new",
+      "baseline_sha256": null
+    },
+    {
+      "path": "scripts/fixtures/slice-contract-v3/evidence-fixture.mjs",
+      "sha256": "fd95fc8062eb86f443097b3d2ee4b1e4c56eb628b1b7f72409e9997288606124",
+      "kind": "new",
+      "baseline_sha256": null
+    },
+    {
+      "path": "scripts/fixtures/slice-contract-v3/round2.test.mjs",
+      "sha256": "8bb58514b840e651d0158ca079ad563a3e5913c7fd23f9575ae397802acf96e4",
+      "kind": "modified",
+      "baseline_sha256": "632091077a45a159d902de38e55874059f3158cf76794f4d76bc4d10c57ab5be"
+    },
+    {
+      "path": "scripts/fixtures/slice-contract-v3/scenarios.test.mjs",
+      "sha256": "5ed66483e38a365d7da088730c045c8271d574e2764c4efd318b17b6b1708708",
+      "kind": "modified",
+      "baseline_sha256": "6725ac5b20ba4bd252c22f19d6a0ba32ba9f1c39d090f54c187ef68251cc39b9"
+    },
+    {
+      "path": "scripts/lib/contract-views.mjs",
+      "sha256": "7687f06db3c048c4980d957f54e8135628056154070798ec136c4b410c4beb80",
+      "kind": "modified",
+      "baseline_sha256": "694d4fd94f4ecf50a9d6408ebc845ed70f02f5c673bf59f636370f8b1216df94"
+    },
+    {
+      "path": "scripts/lib/execution-evidence.mjs",
+      "sha256": "976b613225195e45a45855bf6911806237e19e0e966878fa6be664bc04257327",
+      "kind": "new",
+      "baseline_sha256": null
+    },
+    {
+      "path": "scripts/lib/implementation-contract-compiler.mjs",
+      "sha256": "8ea917697708a36a5e63594a86ad321e73bdffaf89e7288ea9378642ec57aac9",
+      "kind": "modified",
+      "baseline_sha256": "4e828f79c1996d5dfd30c06fe3a4f5600c155e93ee6a91af060e58a360fe19c1"
+    },
+    {
+      "path": "scripts/lib/lifecycle-status.mjs",
+      "sha256": "eaf530164c023674e0dc419963546bf12556eb3e49228f7f2859a1a50b1621ad",
+      "kind": "modified",
+      "baseline_sha256": "0fa888c11c5a94fba7e9649699ada5052b13e6896fb1d19d3d2fe5dc22a12b93"
+    },
+    {
+      "path": "scripts/lib/lifecycle-transition.mjs",
+      "sha256": "0d13a55dc2a3d8e937f7d7eacaf1c5fe5f1aaaabd1a04e40df03f59a28590cc5",
+      "kind": "modified",
+      "baseline_sha256": "7e8bbce449d828fa0b06d4b0a0fa0e6df6e93cfaf99f4a6d29605c68a73a8266"
+    },
+    {
+      "path": "scripts/lib/maintenance-research.mjs",
+      "sha256": "4f10d8577472fb6d9be2d4773d1b7d9acd616f1506b42c283b0f2bd8f53f7541",
+      "kind": "new",
+      "baseline_sha256": null
+    },
+    {
+      "path": "scripts/lifecycle-status",
+      "sha256": "810d376a815d89e70e360885221be86473c8ad0d4d4b015716e248a8fc8487d2",
+      "kind": "modified",
+      "baseline_sha256": "d7ed4d89bc499b650b2f21a9d60e00f5308fd441c6ed9026fbc41917e64e3491"
+    },
+    {
+      "path": "scripts/sync-strategic-handoff-tools",
+      "sha256": "925cd4006cc8ef18d3463aea0e15bd64729ae25d9762a2dc5bc00888bf3920a2",
+      "kind": "modified",
+      "baseline_sha256": "44877e149725395d45b83a8e751f2ead13ffcd94ed1be9fc79608966e0278215"
+    },
+    {
+      "path": "scripts/verify-frontend-implementation-evidence",
+      "sha256": "630990a44c73e12df6177232ec5e02903b56c7e2579538c541e356b189990d42",
+      "kind": "modified",
+      "baseline_sha256": "a377cfc1bdd24e3004e5fe3b12f77d0c2f7a29d4116918fae0e019716dc43249"
+    },
+    {
+      "path": "scripts/verify-frontend-implementation-evidence-scenarios",
+      "sha256": "f9e1b4481ad0af09c8f597aca58e0d05f317b4599987b3514b4580a7bbc245fb",
+      "kind": "modified",
+      "baseline_sha256": "6ca558ab69ae618a387d29f3505e28e540dc312bdbbf86372a3e5fcecb07159e"
+    },
+    {
+      "path": "scripts/verify-maintenance-research",
+      "sha256": "bdd17f32873143f4af152efdf14cb13ece04d2419aeb096f4cc9988176f17a14",
+      "kind": "new",
+      "baseline_sha256": null
+    },
+    {
+      "path": "scripts/verify-yss-implementation-contract-compiler-scenarios",
+      "sha256": "278ca3098e28a49abee390259ffc44b91829f0d24ee5b80b442c34883c76c453",
+      "kind": "modified",
+      "baseline_sha256": "7ac958b13128a2dcdee96f094ffa807385330311ce311ecf5a06db37c4ceee43"
+    },
+    {
+      "path": "skills-lock.json",
+      "sha256": "c32ed944d066c579326e5282070af689fbe522eb00d5615b0e20c2e3a9f892a8",
+      "kind": "modified",
+      "baseline_sha256": "78157322e5368805a48f476afa91b05a813d4f712611391de4c52180d76742ba"
+    }
+  ],
+  "receiving_changes": [
+    {
+      "path": "submodules/yss-harness-design-agent/.agents/skills/yss-research/SKILL.md",
+      "sha256": "789fa6131272d11d9758df4efd54ef5c6d8c265c2581bebeae56633685680696"
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.template-source/distribution/strategic-handoff-tools.lock.json",
+      "sha256": "77880724c1498a47603f9486ea94fb964df9b84a1a9cbe0ee3c5b99bb3060d5d"
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.template-spec/process/contract-reading.md",
+      "sha256": "eab5de51710634426841c2ae04369be6ade0944f509effae616e83c104b54320"
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.template-spec/process/research-completion.md",
+      "sha256": "3adfcd90d7f25f1fc7c989862d9ee1e39c4a8a4afb68d90784ebe56ca320991e"
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.template-spec/process/schemas/digital-human-task-package.schema.json",
+      "sha256": "78ee716f228660fa07666974ab51d69306e4d510ffbca0c31d9d9c05005bb976"
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/scripts/contract",
+      "sha256": "4ae8a46d2bcc5db1aa821b7e8cf83bf57da437d336bdfe28242a9ff1b5cd53e7"
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/scripts/lib/contract-views.mjs",
+      "sha256": "7687f06db3c048c4980d957f54e8135628056154070798ec136c4b410c4beb80"
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/skills-lock.json",
+      "sha256": "b3d01eb311bc1dd703eab58a9babcd3dbdd12dfad3ef18b22a0b74e265357bc0"
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.agents/skills/yss-implementation-contract-compiler/SKILL.md",
+      "sha256": "8b82d45741676c5a513f0affa67724d465387cba99f0580f9b7aec648f465b91"
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.agents/skills/yss-implementation-contract-compiler/references/yss-skill-execution-result.md",
+      "sha256": "c37b69dc9104169f06adc1371483bc95a1eb9051de44264cad59a68fe8b133ce"
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.agents/skills/yss-research/SKILL.md",
+      "sha256": "789fa6131272d11d9758df4efd54ef5c6d8c265c2581bebeae56633685680696"
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.template-source/distribution/strategic-handoff-tools.lock.json",
+      "sha256": "59bfa78f3651b6d6ecb9d76f3254c0372fde526bcedc87e72ef8ec65fa86950b"
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.template-spec/process/contract-reading.md",
+      "sha256": "eab5de51710634426841c2ae04369be6ade0944f509effae616e83c104b54320"
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.template-spec/process/research-completion.md",
+      "sha256": "3adfcd90d7f25f1fc7c989862d9ee1e39c4a8a4afb68d90784ebe56ca320991e"
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.template-spec/process/schemas/digital-human-task-package.schema.json",
+      "sha256": "78ee716f228660fa07666974ab51d69306e4d510ffbca0c31d9d9c05005bb976"
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.template-spec/process/schemas/frontend-implementation-evidence.schema.json",
+      "sha256": "f4ce1b9e44ac28f62327f7fe2e13568686211a95d3c6ec93d92355d7e5c98aab"
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.template-spec/process/templates/frontend-implementation-verification-template.yaml",
+      "sha256": "64f6b11971ab7697a271c632dafdc626c8bdc0d74730a1b6cf1dc36c3ca5b2fc"
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/scripts/contract",
+      "sha256": "4ae8a46d2bcc5db1aa821b7e8cf83bf57da437d336bdfe28242a9ff1b5cd53e7"
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/scripts/lib/contract-views.mjs",
+      "sha256": "7687f06db3c048c4980d957f54e8135628056154070798ec136c4b410c4beb80"
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/scripts/lib/execution-evidence.mjs",
+      "sha256": "976b613225195e45a45855bf6911806237e19e0e966878fa6be664bc04257327"
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/scripts/lib/implementation-contract-compiler.mjs",
+      "sha256": "8ea917697708a36a5e63594a86ad321e73bdffaf89e7288ea9378642ec57aac9"
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/scripts/verify-frontend-implementation-evidence",
+      "sha256": "630990a44c73e12df6177232ec5e02903b56c7e2579538c541e356b189990d42"
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/skills-lock.json",
+      "sha256": "9697665cd518207a5804ee8e5a3012a459728e99e1747b00737253a2a68ad2f1"
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.agents/skills/yss-implementation-contract-compiler/SKILL.md",
+      "sha256": "81f994b918058f82cac062da01e99cf0b54763af2eacafb0b6d6f989d7e552b4"
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.agents/skills/yss-implementation-contract-compiler/references/yss-skill-execution-result.md",
+      "sha256": "1726b9eec073b7b6b5d76f26696869509ea874b8f7f41028f88f7a5749428f48"
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.agents/skills/yss-research/SKILL.md",
+      "sha256": "789fa6131272d11d9758df4efd54ef5c6d8c265c2581bebeae56633685680696"
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.template-source/distribution/strategic-handoff-tools.lock.json",
+      "sha256": "988f2aeaa9493180f70d1542be9799a81294f7af6eb03c44e8c9d34ab8debf0e"
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.template-spec/process/contract-reading.md",
+      "sha256": "eab5de51710634426841c2ae04369be6ade0944f509effae616e83c104b54320"
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.template-spec/process/research-completion.md",
+      "sha256": "3adfcd90d7f25f1fc7c989862d9ee1e39c4a8a4afb68d90784ebe56ca320991e"
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.template-spec/process/schemas/digital-human-task-package.schema.json",
+      "sha256": "78ee716f228660fa07666974ab51d69306e4d510ffbca0c31d9d9c05005bb976"
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.template-spec/process/schemas/frontend-implementation-evidence.schema.json",
+      "sha256": "f4ce1b9e44ac28f62327f7fe2e13568686211a95d3c6ec93d92355d7e5c98aab"
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.template-spec/process/templates/frontend-implementation-verification-template.yaml",
+      "sha256": "64f6b11971ab7697a271c632dafdc626c8bdc0d74730a1b6cf1dc36c3ca5b2fc"
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/scripts/contract",
+      "sha256": "4ae8a46d2bcc5db1aa821b7e8cf83bf57da437d336bdfe28242a9ff1b5cd53e7"
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/scripts/lib/contract-views.mjs",
+      "sha256": "7687f06db3c048c4980d957f54e8135628056154070798ec136c4b410c4beb80"
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/scripts/lib/execution-evidence.mjs",
+      "sha256": "976b613225195e45a45855bf6911806237e19e0e966878fa6be664bc04257327"
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/scripts/lib/implementation-contract-compiler.mjs",
+      "sha256": "8ea917697708a36a5e63594a86ad321e73bdffaf89e7288ea9378642ec57aac9"
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/scripts/verify-frontend-implementation-evidence",
+      "sha256": "630990a44c73e12df6177232ec5e02903b56c7e2579538c541e356b189990d42"
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/skills-lock.json",
+      "sha256": "26aa6645b416a410c1ee929d0103af506f17981319e2306ac01081e4d93bf33b"
+    }
+  ],
+  "git_commits_performed": false,
+  "cli_original_worktrees_modified": false,
+  "cli_snapshots": "WORKTREE builds only in isolated verification checkout"
+}

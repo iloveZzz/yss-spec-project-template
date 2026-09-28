@@ -1,0 +1,29 @@
+[
+  {
+    "cli": "create-yss-strategic-design",
+    "source": "98b2d5682b1ded9f35b9773929006d225bc0c305",
+    "commit": "d421c69dbcdc45ef94536ccc2d27f36508f65292",
+    "verified": [
+      "sync-check",
+      "verify-bundle"
+    ]
+  },
+  {
+    "cli": "create-yss-harness-backend",
+    "source": "cbded26aea8b4104f87b2377922bc3416befb0a6",
+    "commit": "8cdcc3e59cf03190bab4e6533fdd9d5fbdf7011d",
+    "verified": [
+      "sync-check",
+      "verify-bundle"
+    ]
+  },
+  {
+    "cli": "create-yss-harness-frontend",
+    "source": "2aa574462cb55815421e03cd394da02e06d9948c",
+    "commit": "97b19fad7b8935650fb7e654259f6bfd8c753a58",
+    "verified": [
+      "sync-check",
+      "verify-bundle"
+    ]
+  }
+]

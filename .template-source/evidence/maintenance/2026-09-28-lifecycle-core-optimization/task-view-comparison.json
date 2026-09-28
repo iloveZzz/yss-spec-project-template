@@ -1,0 +1,20 @@
+[
+  {
+    "kind": "synthetic-mechanism-fixture",
+    "acceptance_count": 3,
+    "applicable": 1,
+    "legacy_bytes": 10701,
+    "focused_bytes": 10976,
+    "same_binding": true,
+    "meaning": "bytes only; no Agent-token or recovery-benefit claim"
+  },
+  {
+    "kind": "synthetic-mechanism-fixture",
+    "acceptance_count": 24,
+    "applicable": 1,
+    "legacy_bytes": 12249,
+    "focused_bytes": 11243,
+    "same_binding": true,
+    "meaning": "bytes only; no Agent-token or recovery-benefit claim"
+  }
+]

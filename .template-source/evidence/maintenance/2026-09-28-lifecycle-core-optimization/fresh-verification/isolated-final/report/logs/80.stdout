@@ -1,0 +1,26 @@
+✔ 数据分析初始化生成 H2 六模块和独立治理信封 (2961.912708ms)
+✔ 数据分析 Profile 缺少 CONTEXT handoff 或独立 Git 合同时零写入阻断 (129.034959ms)
+✔ 旧数据库和 Mock 参数在写入前被拒绝 (110.925959ms)
+✔ 统一 Project Scaffold Contract v4 可生成 Layered MVC 后端并保留设计门禁 (598.253375ms)
+✔ 数据影响为 required 时绑定数据架构后可生成 Layered MVC 后端 (590.529125ms)
+✔ API 影响为 required 时绑定同字节 Draft、Validation、Review 和 Freeze 后可生成 Layered MVC 后端 (643.505083ms)
+✔ 缺少设计门禁时在写文件前拒绝 Layered MVC 新生成 (129.4505ms)
+✔ 技术和数据设计齐全但缺少 API Decision 时在写文件前拒绝 Layered MVC 新生成 (126.657416ms)
+✔ API Draft、Validation、Review 或工程批准异常时均在零写入状态阻断 Layered MVC (2139.960958ms)
+✔ schema v3 只读兼容但禁止用于 Layered MVC 新生成 (60.585291ms)
+﹣ 可选离线 Maven 可行性检查（不替代受控仓库验收） (0.079958ms) # SKIP
+✔ 生成 h2 基础 Profile (577.108958ms)
+✔ 能力闭包 basic (583.211958ms)
+✔ 能力闭包 adapter (595.272709ms)
+✔ 能力闭包 client (594.829792ms)
+✔ 能力闭包 feign (597.755958ms)
+✔ 能力闭包 combined (602.295ms)
+✔ 选择缺失、digest 漂移和非空目标均阻断 (313.310042ms)
+ℹ tests 18
+ℹ suites 0
+ℹ pass 17
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 1
+ℹ todo 0
+ℹ duration_ms 11416.793334

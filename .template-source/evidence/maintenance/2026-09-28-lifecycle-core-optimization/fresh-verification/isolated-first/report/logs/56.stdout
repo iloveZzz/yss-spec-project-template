@@ -1,0 +1,72 @@
+✔ 生成批准的服务级 target profile 骨架，并写入带设计门禁的 Manifest v4 (687.950917ms)
+✔ 数据影响为 required 时绑定数据架构后可生成 DDD 后端 (676.363709ms)
+✔ API 影响为 required 时绑定同字节 Draft、Validation、Review 和 Freeze 后可生成 DDD 后端 (756.266125ms)
+✔ 缺少设计门禁时在写文件前拒绝 DDD 新生成 (158.253125ms)
+✔ 技术和数据设计齐全但缺少 API Decision 时在写文件前拒绝 DDD 新生成 (164.960209ms)
+✔ API Draft、Validation、Review 或工程批准漂移时均在零写入状态阻断 DDD (2271.224375ms)
+✔ schema v3 只读兼容但禁止用于 DDD 新生成 (86.361375ms)
+✔ schema v1 scaffold contract is unsupported and is never upgraded (81.17675ms)
+﹣ 一键工作流只有在真实 Maven 三命令全部通过后才报告完成 (0.267167ms) # 缺少受控 YSS Maven 仓库环境，真实 Wrapper 验证由 L3 环境门禁执行
+✔ 显式 Maven 坐标贯穿批准合同、生成参数、全部 POM 和生成清单 (682.313417ms)
+✔ 生成工程声明命名仓库 profile、target DDD 依赖边界和构建门禁 (694.519ms)
+✔ 生成工程固定平台 profile、Wrapper checksum，并把调试日志隔离到 local 配置 (688.93325ms)
+✔ initialize-only 在写文件前拒绝任何已存在目标和 --force (705.839666ms)
+✔ 拒绝基础包名与批准合同不一致 (163.599417ms)
+✔ 合同 project_name、profile 和 allowed_write_paths 必须约束实际输出 (519.35775ms)
+✔ initialize-only 拒绝以 --force 覆盖 .gitmodules 登记的挂载点 (106.27925ms)
+Cloning into '/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-gitlink-WlzqwL/super/apps/backend/billing-service'...
+done.
+HEAD is now at d20e636 init child
+✔ 拒绝在 detached HEAD 子仓工作树内当成普通目录生成 (517.633875ms)
+✔ --force 覆盖真实 gitlink 不得走普通目录覆盖路径 (234.705667ms)
+[开始] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-verifier-HDwIM7/project/mvnw validate
+[完成] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-verifier-HDwIM7/project/mvnw (4ms, exit=0)
+[开始] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-verifier-HDwIM7/project/mvnw test
+[失败] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-verifier-HDwIM7/project/mvnw (3ms, exit=2)
+[开始] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-verifier-HDwIM7/project/mvnw package
+[完成] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-verifier-HDwIM7/project/mvnw (3ms, exit=0)
+✔ 验证器记录三条 wrapper 命令的成功和失败证据 (15.474083ms)
+[开始] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-repository-failure-jpl9Ls/project/mvnw validate
+[失败] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-repository-failure-jpl9Ls/project/mvnw (3ms, exit=1)
+[开始] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-repository-failure-jpl9Ls/project/mvnw test
+[失败] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-repository-failure-jpl9Ls/project/mvnw (3ms, exit=1)
+[开始] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-repository-failure-jpl9Ls/project/mvnw package
+[失败] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-repository-failure-jpl9Ls/project/mvnw (4ms, exit=1)
+✔ 验证器把内部仓库解析失败与编译失败分开报告 (13.166458ms)
+[开始] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-build-failure-fPoX5U/project/mvnw validate
+[完成] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-build-failure-fPoX5U/project/mvnw (4ms, exit=0)
+[开始] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-build-failure-fPoX5U/project/mvnw test
+[完成] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-build-failure-fPoX5U/project/mvnw (3ms, exit=0)
+[开始] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-build-failure-fPoX5U/project/mvnw package
+[失败] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-build-failure-fPoX5U/project/mvnw (4ms, exit=1)
+[开始] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-build-failure-RKWNfo/project/mvnw validate
+[完成] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-build-failure-RKWNfo/project/mvnw (3ms, exit=0)
+[开始] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-build-failure-RKWNfo/project/mvnw test
+[完成] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-build-failure-RKWNfo/project/mvnw (3ms, exit=0)
+[开始] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-build-failure-RKWNfo/project/mvnw package
+[失败] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-build-failure-RKWNfo/project/mvnw (3ms, exit=1)
+✔ 验证器单独标记 Java 编译失败和 Bootstrap 主类缺失 (25.71775ms)
+[开始] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-verifier-success-bVchRa/project/mvnw validate
+[完成] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-verifier-success-bVchRa/project/mvnw (3ms, exit=0)
+[开始] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-verifier-success-bVchRa/project/mvnw test
+[完成] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-verifier-success-bVchRa/project/mvnw (3ms, exit=0)
+[开始] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-verifier-success-bVchRa/project/mvnw package
+[完成] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-verifier-success-bVchRa/project/mvnw (3ms, exit=0)
+✔ 验证器在全部 Maven 命令成功时通过并保留日志引用 (12.1585ms)
+✔ 历史 Manifest v3 只读校验仍在缺少受控仓库环境时先于 Maven 阻断 (1.696834ms)
+✔ Manifest schema v1 is unsupported and verifier never executes its wrapper (1.729875ms)
+[开始] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-redaction-cvF0qN/project/mvnw validate
+[完成] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-redaction-cvF0qN/project/mvnw (4ms, exit=0)
+[开始] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-redaction-cvF0qN/project/mvnw test
+[完成] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-redaction-cvF0qN/project/mvnw (3ms, exit=0)
+[开始] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-redaction-cvF0qN/project/mvnw package
+[完成] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-redaction-cvF0qN/project/mvnw (3ms, exit=0)
+✔ 验证日志会脱敏 Maven 仓库凭据 (12.818417ms)
+ℹ tests 25
+ℹ suites 0
+ℹ pass 24
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 1
+ℹ todo 0
+ℹ duration_ms 9343.223958

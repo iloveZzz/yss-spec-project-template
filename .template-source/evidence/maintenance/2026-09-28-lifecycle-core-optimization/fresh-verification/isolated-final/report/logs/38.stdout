@@ -1,0 +1,31 @@
+✔ new Plan: unique parent, inline item, no slice; check and plan are read-only (167.061125ms)
+✔ Design entry uses checkpoint and never engineering parent (150.496875ms)
+✔ existing Spec entry preserves approvals and records entry stage, not historical completion (79.74325ms)
+✔ independent item has no duplicate progress; definition drift fails (150.939667ms)
+✔ completion requires mapped, current evidence and frozen source digests (289.226583ms)
+✔ refresh propagates only to dependents and retains previous evidence (80.599542ms)
+✔ blocked dependency prevents start; unrelated work remains valid (286.412542ms)
+✔ missing items block migration instead of inventing owner or acceptance (3.37275ms)
+✔ legacy project accepted; enabled missing checkpoint ref rejected at transition (3.163167ms)
+✔ transition requires current unit closure and persisted state (225.142375ms)
+✔ stage item cannot receive implementation readiness (207.992792ms)
+✔ migration rejects source drift and altered plan; failed writes roll back (14.35775ms)
+✔ migration protects symlink paths and profile boundaries (2.596417ms)
+✔ remote tracker stays pending; local requires no remote issue (78.654208ms)
+✔ CLI check/plan/apply roundtrip and meaningful exit codes (374.0495ms)
+✔ deferral needs independent record and remains non-completed (288.742625ms)
+✔ public transition entry cannot bypass tracking with a claimed WER (11.97625ms)
+✔ dispatch rejects missing registration and permits independent pending work (219.428167ms)
+✔ checkpoint schema embeds the canonical stage tracking schema exactly (0.315667ms)
+✔ source changes during apply are detected and preserved while own writes roll back (7.192666ms)
+✔ migration preserves existing stable feature IDs independently of folder slugs (146.735417ms)
+✔ a quoted stage-work-item moved under issues still cannot become an implementation ticket (2.267ms)
+✔ manual checkpoint edits cannot bypass required owner splitting (148.006666ms)
+ℹ tests 23
+ℹ suites 0
+ℹ pass 23
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2990.409208

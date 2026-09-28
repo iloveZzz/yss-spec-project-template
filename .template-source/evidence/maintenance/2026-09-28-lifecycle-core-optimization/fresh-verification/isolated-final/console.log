@@ -1,0 +1,1493 @@
+验证 selection: shadow -> shadow，范围: complete-candidate
+模板核验 profile: fast -> release
+自动升级原因: 核心核验资产变化: .template-spec/process/lifecycle-registry.yaml
+[开始] node --test submodules/create-yss-spec/tests/sync-fast-smoke.test.js
+[开始] node --test .template-source/cli-core/tests/*.test.mjs
+[开始] scripts/verify-frontend-delivery-scenarios
+[开始] node .template-source/scripts/verify-delivery-harness-distribution.mjs
+[完成] node --test submodules/create-yss-spec/tests/sync-fast-smoke.test.js (3800ms, exit=0)
+[开始] scripts/verify-repository-scope-scenarios
+[完成] scripts/verify-repository-scope-scenarios (2940ms, exit=0)
+[开始] scripts/verify-strategic-handoff-tools-lock
+[完成] scripts/verify-strategic-handoff-tools-lock (46ms, exit=0)
+[开始] node --check scripts/lib/strategic-handoff.mjs
+[完成] node --check scripts/lib/strategic-handoff.mjs (26ms, exit=0)
+[开始] scripts/verify-strategic-handoff-package-scenarios
+[完成] scripts/verify-frontend-delivery-scenarios (63528ms, exit=0)
+[开始] node .template-source/tooling/node/scripts/design-md.mjs lint DESIGN.md
+[完成] node .template-source/tooling/node/scripts/design-md.mjs lint DESIGN.md (2861ms, exit=0)
+[开始] node .template-source/tooling/node/scripts/design-md.mjs drift
+[完成] node .template-source/tooling/node/scripts/design-md.mjs drift (58ms, exit=0)
+[开始] scripts/verify-governance-layout
+[完成] scripts/verify-governance-layout (48ms, exit=0)
+[开始] .template-source/scripts/evidence-index --check
+[完成] .template-source/scripts/evidence-index --check (356ms, exit=0)
+[开始] python3 -m unittest discover -s .template-source/scripts/tests -p 'test_skills_agent_eval.py'
+[完成] python3 -m unittest discover -s .template-source/scripts/tests -p 'test_skills_agent_eval.py' (1762ms, exit=0)
+[开始] pnpm --dir .template-source/tooling/node test
+[完成] node --test .template-source/cli-core/tests/*.test.mjs (71356ms, exit=0)
+[开始] scripts/sync-profile-skills --check --profile=all
+[完成] scripts/sync-profile-skills --check --profile=all (468ms, exit=0)
+[开始] scripts/sync-skills --check
+[完成] scripts/sync-skills --check (89ms, exit=0)
+[开始] scripts/update-skill-lock --check
+[完成] scripts/update-skill-lock --check (100ms, exit=0)
+[开始] node --test tests/skill-sync-efficiency.test.mjs
+[完成] node --test tests/skill-sync-efficiency.test.mjs (286ms, exit=0)
+[开始] scripts/verify-skill-registry
+[完成] scripts/verify-skill-registry (100ms, exit=0)
+[开始] scripts/verify-skill-governance
+[完成] scripts/verify-skill-governance (70ms, exit=0)
+[开始] scripts/verify-upstream-skill-source --source=iloveZzz/yss-harness-design-agent --source-root=submodules/yss-harness-design-agent
+[完成] scripts/verify-upstream-skill-source --source=iloveZzz/yss-harness-design-agent --source-root=submodules/yss-harness-design-agent (59ms, exit=0)
+[开始] node --test .agents/skills/yss-skill-source-index-refresh/scripts/refresh-yss-skill-index.test.mjs
+[完成] node --test .agents/skills/yss-skill-source-index-refresh/scripts/refresh-yss-skill-index.test.mjs (966ms, exit=0)
+[开始] node --test .agents/skills/yss-repository/tests/profile-routing.test.mjs
+[完成] node --test .agents/skills/yss-repository/tests/profile-routing.test.mjs (96ms, exit=0)
+[开始] node .agents/skills/yss-technical-design/scripts/generate-schema.mjs --check
+[完成] node .agents/skills/yss-technical-design/scripts/generate-schema.mjs --check (36ms, exit=0)
+[开始] node .agents/skills/yss-technical-design/tests/run-scenarios.mjs
+[完成] node .agents/skills/yss-technical-design/tests/run-scenarios.mjs (1959ms, exit=0)
+[开始] node --test .agents/skills/yss-technical-design/tests/engineering-scenarios.mjs
+[完成] node --test .agents/skills/yss-technical-design/tests/engineering-scenarios.mjs (1944ms, exit=0)
+[开始] node --check .agents/skills/yss-tactical-design/scripts/validate-tactical-design.mjs
+[完成] node --check .agents/skills/yss-tactical-design/scripts/validate-tactical-design.mjs (30ms, exit=0)
+[开始] node --check .agents/skills/yss-tactical-design/tests/run-scenarios.mjs
+[完成] node --check .agents/skills/yss-tactical-design/tests/run-scenarios.mjs (29ms, exit=0)
+[开始] node .agents/skills/yss-tactical-design/tests/run-scenarios.mjs
+[完成] node .agents/skills/yss-tactical-design/tests/run-scenarios.mjs (532ms, exit=0)
+[开始] scripts/verify-yss-dto-openapi-profile
+[完成] scripts/verify-yss-dto-openapi-profile (44ms, exit=0)
+[开始] scripts/verify-yss-dto-openapi-scenarios
+[完成] scripts/verify-yss-dto-openapi-scenarios (93ms, exit=0)
+[开始] scripts/verify-openapi-yaml-first-scenarios
+[完成] scripts/verify-openapi-yaml-first-scenarios (856ms, exit=0)
+[开始] scripts/verify-openapi-json-handoff-scenarios
+[完成] scripts/verify-openapi-json-handoff-scenarios (51ms, exit=0)
+[开始] scripts/verify-digital-human-roles
+[完成] scripts/verify-digital-human-roles (78ms, exit=0)
+[开始] scripts/verify-digital-human-roles-scenarios
+[完成] scripts/verify-digital-human-roles-scenarios (231ms, exit=0)
+[开始] scripts/verify-approval-record --history .template-spec/templates/approval-record-template.yaml
+[完成] scripts/verify-approval-record --history .template-spec/templates/approval-record-template.yaml (68ms, exit=0)
+[开始] scripts/verify-subagent-task-package-scenarios
+[完成] scripts/verify-subagent-task-package-scenarios (3859ms, exit=0)
+[开始] scripts/verify-digital-human-task-package-scenarios
+[完成] scripts/verify-strategic-handoff-package-scenarios (77502ms, exit=0)
+[开始] node --test scripts/fixtures/stage-tracking/tracking.test.mjs
+[完成] scripts/verify-digital-human-task-package-scenarios (3898ms, exit=0)
+[开始] .template-source/scripts/verify-historical-task-package .template-source/evidence/maintenance/digital-human-task-package-review-task.yaml
+[完成] node --test scripts/fixtures/stage-tracking/tracking.test.mjs (3024ms, exit=0)
+[开始] node --test .template-source/tooling/node/test/decision-continuation.test.mjs
+[完成] .template-source/scripts/verify-historical-task-package .template-source/evidence/maintenance/digital-human-task-package-review-task.yaml (142ms, exit=0)
+[开始] .template-source/scripts/verify-historical-task-package .template-source/evidence/maintenance/lifecycle-ticket-transition-review-task-package.yaml
+[完成] .template-source/scripts/verify-historical-task-package .template-source/evidence/maintenance/lifecycle-ticket-transition-review-task-package.yaml (141ms, exit=0)
+[开始] node --test tests/read-only-intake.test.mjs
+[完成] node --test tests/read-only-intake.test.mjs (2363ms, exit=0)
+[开始] scripts/verify-maintenance-checkpoint .template-source/evidence/maintenance/yss-tactical-design-l3-checkpoint-2026-08-27.yaml
+[完成] scripts/verify-maintenance-checkpoint .template-source/evidence/maintenance/yss-tactical-design-l3-checkpoint-2026-08-27.yaml (47ms, exit=0)
+[开始] scripts/verify-maintenance-intensity-scenarios
+[完成] node --test .template-source/tooling/node/test/decision-continuation.test.mjs (3491ms, exit=0)
+[开始] scripts/verify-user-decision-scenarios
+[完成] scripts/verify-maintenance-intensity-scenarios (929ms, exit=0)
+[开始] node scripts/verify-maintenance-review-workflow-scenarios
+[完成] node scripts/verify-maintenance-review-workflow-scenarios (397ms, exit=0)
+[开始] scripts/verify-existing-backend-architecture-scenarios
+[完成] scripts/verify-existing-backend-architecture-scenarios (2701ms, exit=0)
+[开始] scripts/verify-delivery-preflight-scenarios
+[完成] scripts/verify-user-decision-scenarios (3306ms, exit=0)
+[开始] scripts/verify-context-contract --root . --json
+[完成] scripts/verify-context-contract --root . --json (63ms, exit=0)
+[开始] scripts/verify-context-contract-scenarios
+[完成] scripts/verify-context-contract-scenarios (350ms, exit=0)
+[开始] node scripts/verify-business-language-scenarios
+[完成] node scripts/verify-business-language-scenarios (59ms, exit=0)
+[开始] scripts/verify-context-reconciliation-scenarios
+[完成] scripts/verify-context-reconciliation-scenarios (772ms, exit=0)
+[开始] node scripts/verify-script-performance-scenarios
+[完成] node scripts/verify-script-performance-scenarios (1327ms, exit=0)
+[开始] scripts/verify-grill-with-docs-context-scenarios
+[完成] scripts/verify-grill-with-docs-context-scenarios (1135ms, exit=0)
+[开始] scripts/verify-strategic-context-import-scenarios
+[完成] scripts/verify-strategic-context-import-scenarios (620ms, exit=0)
+[开始] scripts/verify-lifecycle-registry
+[完成] scripts/verify-lifecycle-registry (230ms, exit=0)
+[开始] scripts/verify-lifecycle-context-query-scenarios
+[完成] scripts/verify-lifecycle-context-query-scenarios (570ms, exit=0)
+[开始] scripts/verify-lifecycle-operator-scenarios
+[完成] scripts/verify-lifecycle-operator-scenarios (297ms, exit=0)
+[开始] scripts/verify-lifecycle-checkpoint .template-spec/process/templates/lifecycle-checkpoint-template.yaml
+[完成] scripts/verify-lifecycle-checkpoint .template-spec/process/templates/lifecycle-checkpoint-template.yaml (136ms, exit=0)
+[开始] scripts/verify-frontend-implementation-evidence --allow-template .template-spec/process/templates/frontend-implementation-plan-template.yaml
+[完成] scripts/verify-frontend-implementation-evidence --allow-template .template-spec/process/templates/frontend-implementation-plan-template.yaml (124ms, exit=0)
+[开始] scripts/verify-frontend-implementation-evidence --allow-template .template-spec/process/templates/frontend-implementation-verification-template.yaml
+[完成] scripts/verify-frontend-implementation-evidence --allow-template .template-spec/process/templates/frontend-implementation-verification-template.yaml (126ms, exit=0)
+[开始] scripts/verify-frontend-implementation-evidence-scenarios
+[完成] scripts/verify-frontend-implementation-evidence-scenarios (2034ms, exit=0)
+[开始] scripts/verify-scaffold-architecture-decisions --allow-template .template-spec/process/templates/scaffold-architecture-decisions-template.yaml
+[完成] scripts/verify-scaffold-architecture-decisions --allow-template .template-spec/process/templates/scaffold-architecture-decisions-template.yaml (139ms, exit=0)
+[开始] scripts/verify-scaffold-architecture-decision-scenarios
+[完成] scripts/verify-scaffold-architecture-decision-scenarios (1227ms, exit=0)
+[开始] scripts/verify-lifecycle-scenarios
+[完成] scripts/verify-lifecycle-scenarios (440ms, exit=0)
+[开始] scripts/verify-lifecycle-transition-scenarios
+[完成] scripts/verify-lifecycle-transition-scenarios (6091ms, exit=0)
+[开始] node scripts/verify-plan-spec-entry-scenarios
+[完成] node scripts/verify-plan-spec-entry-scenarios (1188ms, exit=0)
+[开始] scripts/verify-frontend-scaffold-generator-scenarios
+[完成] scripts/verify-frontend-scaffold-generator-scenarios (999ms, exit=0)
+[开始] node --test tests/lifecycle-query-freshness.test.mjs
+[完成] node --test tests/lifecycle-query-freshness.test.mjs (276ms, exit=0)
+[开始] scripts/verify-implementation-path-scenarios
+[完成] scripts/verify-implementation-path-scenarios (33ms, exit=0)
+[开始] scripts/verify-repository-scope-scenarios
+[完成] scripts/verify-delivery-preflight-scenarios (18603ms, exit=0)
+[开始] scripts/verify-existing-ui-baseline-scenarios
+[完成] scripts/verify-repository-scope-scenarios (1353ms, exit=0)
+[开始] scripts/verify-scaffold-generator-scenarios
+[完成] scripts/verify-scaffold-generator-scenarios (1857ms, exit=0)
+[开始] node --test scripts/fixtures/backend-scaffold/platform-scenarios.test.mjs
+[完成] node --test scripts/fixtures/backend-scaffold/platform-scenarios.test.mjs (5790ms, exit=0)
+[开始] node --test .agents/skills/yss-ddd-scaffold-generator/scripts/scaffold-generator.test.mjs
+[完成] node .template-source/scripts/verify-delivery-harness-distribution.mjs (125541ms, exit=0)
+[开始] scripts/verify-governance-release
+[完成] scripts/verify-governance-release (38ms, exit=0)
+[开始] scripts/verify-strategic-handoff-tools-lock --require-committed
+[失败] scripts/verify-strategic-handoff-tools-lock --require-committed (35ms, exit=1)
+[开始] node .agents/skills/yss-research/tests/run-scenarios.mjs
+[完成] node .agents/skills/yss-research/tests/run-scenarios.mjs (265ms, exit=0)
+[开始] node .agents/skills/i-have-adhd/tests/verify-integration.mjs
+[完成] node .agents/skills/i-have-adhd/tests/verify-integration.mjs (116ms, exit=0)
+[完成] node --test .agents/skills/yss-ddd-scaffold-generator/scripts/scaffold-generator.test.mjs (8342ms, exit=0)
+[开始] node --test .agents/skills/yss-layered-mvc-scaffold-generator/scripts/scaffold-generator.test.mjs
+[完成] node --test .agents/skills/yss-layered-mvc-scaffold-generator/scripts/scaffold-generator.test.mjs (11450ms, exit=0)
+[开始] node --test scripts/lib/legacy-backend-scaffold-audit.test.mjs
+[完成] node --test scripts/lib/legacy-backend-scaffold-audit.test.mjs (95ms, exit=0)
+[开始] node --test scripts/lib/api-contract-decision.test.mjs
+[完成] node --test scripts/lib/api-contract-decision.test.mjs (415ms, exit=0)
+[开始] scripts/verify-prototype-backend-scaffold-scenarios
+[完成] scripts/verify-prototype-backend-scaffold-scenarios (49ms, exit=0)
+[开始] scripts/verify-matt-yss-integration-scenarios
+[完成] scripts/verify-matt-yss-integration-scenarios (4219ms, exit=0)
+[开始] scripts/verify-yss-implementation-contract-compiler-scenarios
+[完成] scripts/verify-existing-ui-baseline-scenarios (34546ms, exit=0)
+[完成] scripts/verify-yss-implementation-contract-compiler-scenarios (46505ms, exit=0)
+[开始] scripts/generate-yss-skill-boundaries --check
+[完成] scripts/generate-yss-skill-boundaries --check (75ms, exit=0)
+[开始] scripts/audit-yss-backend-skills --check
+[完成] scripts/audit-yss-backend-skills --check (65ms, exit=0)
+[开始] scripts/verify-retired-skill-ids
+[完成] scripts/verify-retired-skill-ids (303ms, exit=0)
+[开始] scripts/verify-yss-ui-scenarios
+[完成] scripts/verify-yss-ui-scenarios (41ms, exit=0)
+[开始] scripts/verify-yss-prototype-contract-scenarios
+[完成] scripts/verify-yss-prototype-contract-scenarios (416ms, exit=0)
+[开始] node --test .agents/skills/yss-prototype-stage/tests/antd-reference.test.mjs
+[完成] node --test .agents/skills/yss-prototype-stage/tests/antd-reference.test.mjs (75ms, exit=0)
+[开始] node .agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs validate-evidence .template-spec/design/templates/prototype-evidence-template.yaml --allow-template
+[完成] node .agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs validate-evidence .template-spec/design/templates/prototype-evidence-template.yaml --allow-template (52ms, exit=0)
+[开始] node .agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs validate .template-spec/design/templates/visual-baseline-template.yaml --allow-template
+[完成] node .agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs validate .template-spec/design/templates/visual-baseline-template.yaml --allow-template (42ms, exit=0)
+[开始] node --test tests/contract-review-preparation.test.mjs
+[完成] node --test tests/contract-review-preparation.test.mjs (1650ms, exit=0)
+[完成] pnpm --dir .template-source/tooling/node test (240078ms, exit=0)
+[开始] pnpm --dir .template-source/tooling/node check:vendor
+[完成] pnpm --dir .template-source/tooling/node check:vendor (221ms, exit=0)
+
+[cli-sync]
+$ node --test submodules/create-yss-spec/tests/sync-fast-smoke.test.js (3800ms)
+✔ sync fast path preserves unchanged files, project assets and rollback (3724.392417ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3765.991875
+$ scripts/verify-repository-scope-scenarios (2940ms)
+named stress unknown_scope: PASS
+named stress layout_mismatch: PASS
+named stress same_origin_url: PASS
+named stress copy_source_into_harness: PASS
+named stress missing_git_entry_mode: PASS
+named stress empty_gitlink_as_regular_dir: PASS
+named stress declared_harness_apps_actual_gitlink: PASS
+named stress detached_head_as_regular_dir: PASS
+named stress force_overlay_mount: PASS
+实现仓库 repository_scope 压力场景验证通过
+Cloning into '/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-gitlink-7eIalP/super/apps/backend/billing-service'...
+done.
+HEAD is now at 0192d98 init child
+Cloning into '/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-gitlink-WCkONf/super/apps/backend/billing-service'...
+done.
+Reset branch 'main'
+
+[dedicated-cli-core]
+$ node --test .template-source/cli-core/tests/*.test.mjs (71356ms)
+✔ 战略 YAML 清单投影、固定来源与 WORKTREE 仅在临时副本构建 (479.337417ms)
+✔ 两家族从离线固定包创建空目录实例，记录新版基线并保留可执行 mode (489.529541ms)
+✔ 旧治理目录仅在显式迁移时转入新目录，保留项目 tracker 配置 (610.213666ms)
+✔ 显式迁移不覆盖已修改的旧治理文件 (266.358375ms)
+✔ 已初始化实例升级到 Harness profile schema v2 后仍可同步 (593.153416ms)
+✔ 通用命令只读、README 保留、退出分发必须显式 prune (2800.561792ms)
+✔ attach 默认与 dry-run 零写入，碰撞整次暂停，force 备份且业务文件保持原样 (546.463917ms)
+✔ 普通无碰撞仓 attach 预览可应用计划但不创建状态目录 (60.628125ms)
+✔ 旧格式、旧 profile、异族、多身份、未知schema和链接拒绝且 force 无法绕过 (654.114709ms)
+✔ sync 三方规则：本地保留、模板升级、新增、删除和冲突整次暂停 (1151.24075ms)
+✔ init dry-run 无写入；非空目录、未知基线、目录碰撞、嵌套仓库和快照越界均拒绝 (989.661042ms)
+✔ 写入失败自动恢复内容与 metadata，备份失败不应用计划 (1511.308417ms)
+✔ 进程中断后预览只诊断；下次 apply 恢复再允许重试 (1431.794667ms)
+✔ update/upgrade 使用固定包名检查新版，源码安装仅输出指引且实例不变 (762.378917ms)
+✔ init --git-init 创建独立 Git；非法参数不留下项目 (728.779958ms)
+✔ 未检出的声明 gitlink、硬链接、未知状态目录和跨家族恢复保持零写入 (253.480958ms)
+✔ 并发修改和恢复失败保留外部修改，明确报告未恢复路径 (851.189875ms)
+✔ 中断恢复前拒绝旧身份、嵌套仓库、声明gitlink及损坏备份，整次零写入 (3253.756125ms)
+✔ 实际入口尾斜杠的全局安装识别保留 -g，upgrade 不降级 (214.314042ms)
+✔ 重复身份字段不能通过 force 同步 (571.070083ms)
+✔ 真实入口禁止在 CLI 包内子目录初始化，不破坏受锁核心 (71.686042ms)
+✔ update --force 不把较新 CLI 降级到 registry 的旧版本 (113.754208ms)
+✔ 技能退役清理空目录，但保留用户文件；失败后恢复技能 (2058.1125ms)
+✔ 同步与接入保留已有业务词汇表，即使模板同时更新且传入 force (4188.864042ms)
+✔ WAL 兼容旧 progress 恢复，忽略未完成尾部且拒绝完整损坏记录 (2666.399875ms)
+✔ WAL 和目标持久化阶段失败均回滚且不推进 metadata (4741.622792ms)
+✔ 持久化模型：目录项未落盘时恢复接受 before/after 混合状态 (783.841541ms)
+✔ 持久化顺序：WAL 与文件 fsync 先于 rename，目录屏障先于 metadata (873.016334ms)
+✔ 初始化先持久化新目标的父目录；父目录刷盘失败不写入业务文件 (660.429958ms)
+▶ 持久化边界矩阵：异常与进程中断都保留可证明的恢复状态
+  ✔ backup/throw (657.307916ms)
+  ✔ backup/kill (664.100667ms)
+  ✔ wal-write/throw (726.068834ms)
+  ✔ wal-write/kill (763.896125ms)
+  ✔ wal-fsync/throw (718.21525ms)
+  ✔ wal-fsync/kill (761.388291ms)
+  ✔ target-fsync/throw (830.299125ms)
+  ✔ target-fsync/kill (886.198125ms)
+  ✔ rename/throw (845.122ms)
+  ✔ rename/kill (862.020125ms)
+  ✔ directory/throw (828.002125ms)
+  ✔ directory/kill (900.987875ms)
+  ✔ commit/throw (901.666875ms)
+  ✔ commit/kill (855.573833ms)
+✔ 持久化边界矩阵：异常与进程中断都保留可证明的恢复状态 (11855.698ms)
+✔ 临时文件被用户修改或在独占创建前抢占时保留恢复清单 (1677.19225ms)
+✔ 三家族 .gitignore 区块保留用户字节，损坏标记阻断，prune 不删修改文件 (2888.673542ms)
+✔ 三家族手册退出分发仅由 prune 删除未修改 baseline (3655.166834ms)
+✔ 三家族参数、异族、硬链接和嵌套仓库不能经新命令绕过 (4483.631791ms)
+✔ 战略 v1 缺少证据不迁移，合法来源仅在 apply 转换，未知 mode 不授予 prune (1006.009125ms)
+✔ 三家族真实写入、中断、备份损坏、并发修改及校验失败均保持恢复边界 (11135.493792ms)
+✔ tracker remains project-owned on sync and force; new init enables stage tracking (669.872167ms)
+ℹ tests 51
+ℹ suites 0
+ℹ pass 51
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 71320.918708
+
+[frontend-delivery]
+$ scripts/verify-frontend-delivery-scenarios (63528ms)
+✔ Frontend-only v4 可先完成战略预检，并以 backend-not-applicable 接收 (4114.574583ms)
+▶ 战略与后端交付联合接收：便携、真实服务、拒绝不完整/过期输入及执行入口绕过
+  ✔ 旧 Spec 摘要阻断战略交付，恢复源字节后可继续 (205.875ms)
+  ✔ 导出拒绝缺失场景、篡改接口及错误批准 (868.107334ms)
+  ✔ 草案/缺少两类产物不能进入前端任务 (84.660625ms)
+  ✔ 源仓消失后可验 ZIP 并独立恢复；输入就绪不授予代码实施 (11973.176958ms)
+  ✔ 实现边界读取持久化合同并冻结接收记录及用例字节 (6454.283416ms)
+  ✔ 部署版本/数据失配与服务失败使旧接收记录失效 (22887.382458ms)
+  ✔ 范围、摘要和逐条承接缺口均拒绝 (8032.453667ms)
+  ✔ 已导入更新版本阻断旧切片；包篡改拒绝 (647.718708ms)
+✔ 战略与后端交付联合接收：便携、真实服务、拒绝不完整/过期输入及执行入口绕过 (59332.865542ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 63453.249459
+$ node .template-source/scripts/verify-delivery-harness-distribution.mjs (125541ms)
+backend: 初始化身份、独立入口、禁止覆盖和跨端任务边界通过
+frontend: 初始化身份、独立入口、禁止覆盖和跨端任务边界通过
+✔ Frontend-only v4 可先完成战略预检，并以 backend-not-applicable 接收 (3532.344625ms)
+▶ 战略与后端交付联合接收：便携、真实服务、拒绝不完整/过期输入及执行入口绕过
+  ✔ 旧 Spec 摘要阻断战略交付，恢复源字节后可继续 (209.586667ms)
+  ✔ 导出拒绝缺失场景、篡改接口及错误批准 (710.189666ms)
+  ✔ 草案/缺少两类产物不能进入前端任务 (1317.631375ms)
+  ✔ 源仓消失后可验 ZIP 并独立恢复；输入就绪不授予代码实施 (8944.282666ms)
+  ✔ 实现边界读取持久化合同并冻结接收记录及用例字节 (5350.942875ms)
+  ✔ 部署版本/数据失配与服务失败使旧接收记录失效 (14183.4195ms)
+  ✔ 范围、摘要和逐条承接缺口均拒绝 (7133.542958ms)
+  ✔ 已导入更新版本阻断旧切片；包篡改拒绝 (660.654167ms)
+✔ 战略与后端交付联合接收：便携、真实服务、拒绝不完整/过期输入及执行入口绕过 (43132.456542ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 46668.106375
+生成实例接力及阻断验证通过；服务为维护测试进程，不是产品部署验收。
+
+[strategic-handoff-package]
+$ scripts/verify-strategic-handoff-tools-lock (46ms)
+战略交接工具 lock 验证通过：template-root，source_state=working-tree
+$ node --check scripts/lib/strategic-handoff.mjs (26ms)
+$ scripts/verify-strategic-handoff-package-scenarios (77502ms)
+✔ 目录和 ZIP 可脱离源仓验包；导入幂等且不修改词汇表 (4899.83025ms)
+✔ v5 finalize 生成固定不可变交付目录，支持幂等重验并拒绝同版本冲突 (28911.102084ms)
+✔ v5 交付目录分别导入后端和前端，生成 Import Receipt v3 并保留原始 delivery record (12137.721291ms)
+✔ v3/v4 不允许 finalize，新交付必须迁移到 Handoff v5 (442.267042ms)
+✔ v4 按消费者能力导入 Import Receipt v2 并生成路由草案 (1608.73575ms)
+✔ v4 路由必须与影响矩阵一致；未知版本 fail closed (334.190375ms)
+✔ v4 无实现影响时三条路由均 N/A，且不生成消费者空合同 (1449.467625ms)
+✔ 消费者反馈按源摘要裁决，amend 与 blocking defer 保持阻断 (3671.847708ms)
+✔ 规则遗漏、摘要漂移、批准不匹配和离线资源丢失阻断导出 (1355.904959ms)
+✔ 篡改 payload、重新封摘要后的虚构规则索引、额外文件均拒绝 (1119.96325ms)
+✔ ZIP 路径穿越和重复条目拒绝 (196.672666ms)
+✔ 版本差异绑定前版，重复版本不允许；修改规则产生更新集合 (2464.108417ms)
+✔ 受控延期只阻断依赖切片；未知依赖扩大阻断；目标未对账禁止消费 (10505.704708ms)
+✔ 源规则必须稳定可追溯，关键场景不能遗漏结果 (18.486125ms)
+✔ 统一 CLI 在源目录消失后通过 ZIP 验包 (3527.305083ms)
+✔ 当前 Plan、Spec、产品决定可离线验证；交接只需独立复核 (4801.887042ms)
+ℹ tests 16
+ℹ suites 0
+ℹ pass 16
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 77449.050292
+
+[design-system]
+$ node .template-source/tooling/node/scripts/design-md.mjs lint DESIGN.md (2861ms)
+{
+  "findings": [
+    {
+      "severity": "info",
+      "message": "Design system defines 22 colors, 6 typography scales, 5 rounding levels, 8 spacing tokens, 26 components.",
+      "rule": "token-summary"
+    }
+  ],
+  "summary": {
+    "errors": 0,
+    "warnings": 0,
+    "infos": 1
+  }
+}
+$ node .template-source/tooling/node/scripts/design-md.mjs drift (58ms)
+DESIGN.md 投影无漂移
+
+[hygiene]
+$ scripts/verify-governance-layout (48ms)
+治理目录布局验证通过（template-source）
+
+[tooling]
+$ .template-source/scripts/evidence-index --check (356ms)
+证据索引验证通过（complete）
+$ python3 -m unittest discover -s .template-source/scripts/tests -p 'test_skills_agent_eval.py' (1762ms)
+one-1 failed
+one-1 failed
+one-1 passed
+one-1 failed
+one-1 failed
+one-1 failed
+one-1 failed
+one-1 failed
+..........................
+----------------------------------------------------------------------
+Ran 26 tests in 1.667s
+
+OK
+$ pnpm --dir .template-source/tooling/node test (240078ms)
+
+> yss-template-node-tooling@1.0.0 test /Users/zhudaoming/.codex/worktrees/lifecycle-core-verification/yss-spec-project-template/.template-source/tooling/node
+> node scripts/test-with-plugin-clis.mjs test/**/*.test.mjs
+
+Plugin test dependency: create-yss-spec@3.5.1 (950f1e5e9ed76c8841b0a3a3ad230fc01e473ef3)
+Plugin test dependency: create-yss-harness-design@0.8.8 (943c4c3744c0931a6baa7facb7dabc7b49a021f5)
+✔ ordinary engineering work reuses explicit authorization through public approval and CLI (434.112709ms)
+✔ product design can continue after independent review without a repeated human reply (73.17225ms)
+✔ source approval continuation is verified by all three dedicated receivers (783.533083ms)
+✔ Plan entry consumes continuation and still blocks incomplete checks (158.663875ms)
+✔ implementation continuation preserves contract, repository and write-path checks (214.168667ms)
+✔ conflicting direct decision and continuation references are rejected (1.650166ms)
+✔ no reply and revoked source authorization cannot continue (137.0655ms)
+✔ new scope, new target and side effects cannot inherit authorization (6.002584ms)
+✔ material changes and unclassified changes require a decision (139.805ms)
+✔ new risk, quality reduction or changed authorization cannot be labelled cosmetic (290.379583ms)
+✔ self review, wrong expertise, missing comparisons and stale verification block (287.602042ms)
+✔ external policy unknown, missing approvals and changed policy cannot be waived (346.066625ms)
+✔ suggestions do not block, unresolved defects and missing evidence do (273.299667ms)
+✔ formatting refresh requires new current review but not another source reply (144.198ms)
+✔ older receivers without continuation capability reject rather than silently approve (4.073084ms)
+✔ one review bundle retains explicit per-check outcomes and rejects duplicates (11.46925ms)
+✔ DESIGN.md passes local and pinned upstream lint (848.986917ms)
+✔ DESIGN.md projection manifest is current (57.522416ms)
+✔ cross-repository design sync digest matches DESIGN.md (0.456416ms)
+✔ digital human roles are runtime-agnostic and grok is only an adapter (76.543083ms)
+✔ approval records reject the wrong signer and approved countersign gates need approval_ref (32.864209ms)
+✔ registry distinguishes seven approval gates from internal checks and rejects cycles (13.71875ms)
+✔ published lifecycle IDs migrate without changing retained semantics or accepting retired prose references (14.302583ms)
+✔ automatic evidence passes without another human approval, missing and failed checks block (21.80425ms)
+✔ N/A requires explicit applicability, explanation and current evidence (5.248875ms)
+✔ evidence drift and aggregate omissions cannot reuse approval (7.703375ms)
+✔ a bare passed flag and unbound evidence cannot close a check (2.8605ms)
+✔ retired approvals remain readable but cannot approve new gates (13.657375ms)
+✔ delivery acceptance does not require a release decision; runtime actions still require human authorization (2.272792ms)
+✔ professional checks require current subject, matching scope and an independent reviewer (11.377334ms)
+✔ approval cannot be reused by changing evidence and recomputing checkpoint hashes (12.060875ms)
+▶ generated development plugin is portable, deterministic and fails closed on corruption
+  ✔ moved artifact runs verification and real Plan query from an unrelated cwd (453.030083ms)
+  ✔ all source, generated entry and external dependency provenance is retained (18.428792ms)
+  ✔ same source yields identical lock regardless of output directory (9760.488666ms)
+  ✔ existing output is preserved and symlink parents are rejected (82.160125ms)
+  ✔ missing, altered, executable-mode and directory replacements are rejected (383.772542ms)
+  ✔ undeclared file and symlink cannot join the artifact (107.276125ms)
+✔ generated development plugin is portable, deterministic and fails closed on corruption (21131.312708ms)
+✔ consumer mapping preserves dedicated backend identity and rejects unknown wire IDs or out-of-profile targets (34.2745ms)
+▶ backend plugin receives Handoff v5 without bypassing engineering or implementation gates
+  ✔ formal directory import selects only backend responsibility and maps wire entry (4962.322417ms)
+  ✔ reuse and duplicate import reverify immutable source without approving it (8461.187875ms)
+  ✔ transport ZIP imports into another governance root with the existing v2 receipt contract (12595.47875ms)
+  ✔ tampered receipt and package cannot be resumed (4944.592667ms)
+  ✔ UI-only package is rejected before any import write (9121.644542ms)
+  ✔ registered 0.2 project migrates while retaining receipt and business data (18229.098125ms)
+✔ backend plugin receives Handoff v5 without bypassing engineering or implementation gates (80477.589833ms)
+▶ single entry and explicit M4 migration preserve project assets and fail closed
+  ✔ entry hands off to the bound local orchestrator without granting stage approval (4487.058084ms)
+  ✔ unknown identity, drift and completed projects reject migration (3971.938667ms)
+  ✔ preview is read-only and stale plans cannot apply (5290.937459ms)
+  ✔ verification failure rolls back original bytes without discarding the backup (7354.163583ms)
+  ✔ known M4 source migrates and retains all original business evidence (9112.464292ms)
+✔ single entry and explicit M4 migration preserve project assets and fail closed (58118.791ms)
+✔ planning includes prototype review and conditional backend dependencies without granting readiness (100.757583ms)
+✔ project check allows project-owned Context changes but blocks contract drift (107.909708ms)
+✔ source change is detected even if the project keeps an older valid-looking contract (60.783417ms)
+✔ a directory containing identical bytes cannot replace a bound project file (59.774792ms)
+✔ missing or retired dependencies fail closed at the public planning command (84.875459ms)
+✔ registered platform aliases stay explicit external prerequisites instead of copied canonical skills (55.043625ms)
+✔ unknown work units and replaced orchestrators cannot produce a plan (83.793583ms)
+✔ missing and symlinked source resources cannot enter the inventory (92.269375ms)
+✔ template-source targets and invalid Context cannot pass project version checks (123.724708ms)
+▶ fixed CLI initializes, binds and resumes a separate governance project without overwriting user work
+  ✔ public dry-run lists writes while leaving target and backend unchanged (1231.760125ms)
+  ✔ actual offline CLI initialization succeeds, uses fixed provenance and does not initialize Git (2754.549834ms)
+  ✔ a new process binds to project-local rules and accepts project-owned Context edits (1180.513125ms)
+  ✔ M4 queries use scoped local routes and reject release, missing checkpoint and unapproved dispatch (5697.049166ms)
+  ✔ core drift cannot be hidden by rewriting local managed-file hashes (976.10225ms)
+  ✔ wrong template and plugin versions fail closed without migration or writes (2089.310625ms)
+  ✔ compatible existing governance binds by writing only the new receipt (2245.00175ms)
+  ✔ nonempty code directories and plans made stale by user files cannot be overwritten (3166.307291ms)
+  ✔ initializer failure preserves an existing empty target and cleans only its staging directory (2728.030667ms)
+✔ fixed CLI initializes, binds and resumes a separate governance project without overwriting user work (31082.385166ms)
+✔ scope opt-in cannot silently disappear or accept a custom work-unit allowlist (28.045834ms)
+✔ backend scope keeps product design while forbidding frontend implementation and release routes (130.043167ms)
+✔ scope does not bypass Plan approval, formal Ticket, implementation approval or code review (67.34875ms)
+✔ dispatch and compiler deny frontend roles and recipes; project paths cannot supply permission (47.995084ms)
+✔ missing or forged terminal cannot close a lifecycle or restart implementation (91.093ms)
+✔ unscoped projects retain their existing route and cannot select the scoped terminal (1.301084ms)
+✔ approved read-only inspection context cannot be used as implementation authority (710.724042ms)
+✔ real validators close a synthetic backend package, preserve the terminal across resume and reject stale review/source (12934.848584ms)
+▶ design plugin uses pinned design CLI and a bounded project-local lifecycle
+  ✔ plan is read-only; application creates a distinct design instance (12638.487459ms)
+  ✔ public entry resolves an actual readable local master and current contracts (745.621084ms)
+  ✔ resume, path escapes and fake terminal records fail closed (894.966458ms)
+  ✔ core drift and unrelated family metadata cannot be hidden by local metadata changes (234.166625ms)
+  ✔ exact existing instance binds only a receipt and preserves business content (564.914042ms)
+  ✔ stale initialization plans preserve newly created user work (459.570166ms)
+  ✔ initializer errors preserve an empty target and remove only staging (595.293292ms)
+✔ design plugin uses pinned design CLI and a bounded project-local lifecycle (17043.747416ms)
+✔ text preview retains changes and conflict diagnostics without changing JSON or target files (3.03025ms)
+✔ clean check does not invent affected profiles or claim project verification (2.115167ms)
+✔ plans exact, adapted, and retired changes without writing (1.649ms)
+✔ apply is idempotent and preserves the declared adaptation (1.518042ms)
+✔ a changed adaptation baseline reports adaptation_conflict (0.8835ms)
+✔ missing dependencies and path traversal are rejected (1.041625ms)
+✔ dirty target changes block apply (0.917792ms)
+✔ apply rolls back earlier writes when a later write fails (1.066292ms)
+✔ profile-owned adaptations require their declared markers (0.856292ms)
+✔ a skill cannot be synchronized in both source directions (0.731041ms)
+✔ an unclassified same-name difference is reported (1.047041ms)
+✔ a file patch replays only against its registered source baseline (19.948083ms)
+✔ active excluded and profile-only unclassified entries cannot hide from coverage (1.316125ms)
+✔ platform package paths are covered and exact synchronization is repeatable (3.076833ms)
+✔ entry references resolve against the planned tree and missing references block writes (2.025875ms)
+✔ identical unclassified copies still need a maintenance owner (1.011875ms)
+✔ Python interpreter caches do not enter profile source or create repeated drift (1.429458ms)
+✔ Node runtime contract exposes a vendored YAML parser for distributed scripts (4.862125ms)
+Cloning into '/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-gitlink-Ni3uRd/super/apps/backend/billing-service'...
+done.
+HEAD is now at cdf4a50 init child
+Cloning into '/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-gitlink-ndFUWx/super/apps/backend/billing-service'...
+done.
+Reset branch 'main'
+✔ YAML aliases are rejected before a repository manifest is materialized (3.513959ms)
+✔ repository mode public seam is executable by Node (0.353666ms)
+✔ vendored XML parser rejects DOCTYPE and preserves scalar text (2.690042ms)
+✔ implementation path policy preserves harness and external-repository boundaries (0.351917ms)
+✔ repository_scope git-submodule is a first-class layout distinct from harness-apps (905.328458ms)
+✔ Node lifecycle registry verifier preserves the published semantic baseline (198.944959ms)
+✔ public skill export preserves its portable manifest and blocks workstation paths (458.263167ms)
+✔ evidence index writes pending and checkpointed Node records with legacy failure semantics (316.028375ms)
+✔ unknown layer is rejected (18.962542ms)
+✔ shadow registry cannot be marked as runtime consumed (9.656166ms)
+✔ alias that collides with another id is rejected (8.682ms)
+✔ missing Cursor runtime root is rejected (6.954916ms)
+✔ skill invocation contract is required and derives impact triggers (16.760625ms)
+✔ typed dependency metadata rejects unregistered skills (7.635417ms)
+✔ nested SKILL.md requires an external_skills source registration (7.048083ms)
+✔ context-required typed dependencies reject cycles (6.896208ms)
+✔ 实现合同编译器合同不得重复 typed dependency 事实 (12.249666ms)
+✔ platform aliases resolve lifecycle external runtime entries (8.043333ms)
+✔ deprecated research alias resolves to yss-research in lifecycle routes (6.933083ms)
+✔ lifecycle route with an unregistered skill is rejected (6.746667ms)
+✔ prototype design route requires independent prototype-review (6.659416ms)
+✔ deprecated skills require migration and cleanup metadata (6.151166ms)
+✔ code-review route without specialist supporting skills is rejected (7.666584ms)
+✔ code-review route without review_standards_route is rejected (7.997666ms)
+✔ code-review route cannot replace the unique default review skill (6.927125ms)
+✔ code-review route accepts specialist check inputs on the unique skill (6.67075ms)
+✔ code-review route without finding_disposition is rejected (6.746542ms)
+✔ code-review route cannot let the reviewer write implementation (6.253333ms)
+✔ code-review route forbids mandatory waiver of triggered gates (6.390458ms)
+✔ review_input without finding disposition completion flags is rejected (6.2795ms)
+✔ frontend conditional routes require registered skills (6.212792ms)
+✔ tracked projections absent from the lock cannot escape synchronization checks (0.615458ms)
+✔ obsolete canonical residues fail even when they are not in the lock (0.068083ms)
+✔ physical canonical skills must be present in the lock (0.065209ms)
+✔ Cursor is a first-class shared skill projection root (0.067208ms)
+✔ nested SKILL.md files cannot bypass external skill registration (0.064833ms)
+✔ yss-ui 业务项目清单覆盖 13 个精选 app skills 与项目级 MCP 配置 (1.227458ms)
+✔ yss-ui 上游清单拒绝重复 canonical 与缺失 hash (0.309084ms)
+✔ 战略设计上游清单固定公共技能集合与 Git revision (0.18975ms)
+ℹ tests 144
+ℹ suites 0
+ℹ pass 144
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 229973.450542
+$ pnpm --dir .template-source/tooling/node check:vendor (221ms)
+
+> yss-template-node-tooling@1.0.0 check:vendor /Users/zhudaoming/.codex/worktrees/lifecycle-core-verification/yss-spec-project-template/.template-source/tooling/node
+> node scripts/build-vendor.mjs --check
+
+
+[skills]
+$ scripts/sync-profile-skills --check --profile=all (468ms)
+profile skills: design, backend, frontend
+模式：只读检查
+受影响 profile：无
+已有问题：0 项（含冲突、缺失依赖与未登记差异）
+本次未发现同步差异或问题；不代表项目验证已通过。
+文件差异、分类与 SHA-256 继续使用现有 --json 报告；本摘要不判断下游项目兼容性。
+$ scripts/sync-skills --check (89ms)
+skill projections are synchronized
+$ scripts/update-skill-lock --check (100ms)
+skills-lock.json matches distributed skills
+$ node --test tests/skill-sync-efficiency.test.mjs (286ms)
+✔ write-mode Skill sync skips identical projections and repairs raw structure or mode drift (214.508709ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 252.870584
+$ scripts/verify-skill-registry (100ms)
+技能路由注册表校验通过（schema v3，active，80 个共享，2 个平台，0 个两阶段退役入口）
+$ scripts/verify-skill-governance (70ms)
+技能规范冲突扫描通过（1 个兼容 alias，13 个 YSS UI 前端 skills）
+$ scripts/verify-upstream-skill-source --source=iloveZzz/yss-harness-design-agent --source-root=submodules/yss-harness-design-agent (59ms)
+上游 iloveZzz/yss-harness-design-agent@6c9e47c3863f3f998443f7e5cc723ae750e21d1f 及其 skill hashes 验证通过
+$ node --test .agents/skills/yss-skill-source-index-refresh/scripts/refresh-yss-skill-index.test.mjs (966ms)
+✔ writes Node-labelled generated indexes (339.827209ms)
+✔ keeps generation-specific component path sets (0.422792ms)
+✔ writes a source-backed MyBatis capability matrix without absolute paths (43.625917ms)
+✔ source freshness is scoped to the indexed component subtree (219.791041ms)
+✔ records Maven lineage and platform signals and validates the exact component tree (290.06675ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 934.053917
+$ node --test .agents/skills/yss-repository/tests/profile-routing.test.mjs (96ms)
+✔ repository router exposes exactly the registered profile entry points (20.397625ms)
+✔ normative persistence skills do not contain business-specific templates or production source mirrors (1.102542ms)
+✔ code review wires Repository and MyBatis with registered backend scope (0.848417ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 63.834625
+
+[tactical-design]
+$ node .agents/skills/yss-technical-design/scripts/generate-schema.mjs --check (36ms)
+技术设计分支 Schema 已同步
+$ node .agents/skills/yss-technical-design/tests/run-scenarios.mjs (1959ms)
+技术设计场景通过：30 项（MVC、DDD、兼容、架构、承接、切片与漂移）
+$ node --test .agents/skills/yss-technical-design/tests/engineering-scenarios.mjs (1944ms)
+✔ domain-driven engineering-only preserves real architecture without invented domain models (360.994917ms)
+✔ layered-mvc engineering-only preserves real architecture without invented domain models (326.379417ms)
+✔ engineering branch rejects domain/catalog/path/unit/write-mode/evidence/seam bypasses (984.016042ms)
+✔ compiler cannot downgrade domain impact to engineering-only (177.879625ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1910.300291
+$ node --check .agents/skills/yss-tactical-design/scripts/validate-tactical-design.mjs (30ms)
+$ node --check .agents/skills/yss-tactical-design/tests/run-scenarios.mjs (29ms)
+$ node .agents/skills/yss-tactical-design/tests/run-scenarios.mjs (532ms)
+DDD tactical design scenarios passed
+
+[contracts]
+$ scripts/verify-yss-dto-openapi-profile (44ms)
+YSS DTO OpenAPI wire profile 验证通过
+$ scripts/verify-yss-dto-openapi-scenarios (93ms)
+YSS DTO OpenAPI wire-shape scenarios passed
+$ scripts/verify-openapi-yaml-first-scenarios (856ms)
+OpenAPI YAML-first 场景验证通过
+OpenAPI Draft validation record scenarios passed
+$ scripts/verify-openapi-json-handoff-scenarios (51ms)
+OpenAPI YAML-first JSON handoff scenarios passed
+
+[collaboration]
+$ scripts/verify-digital-human-roles (78ms)
+数字人角色注册表校验通过（6 个角色，7 个协作组，3 个运行时）
+$ scripts/verify-digital-human-roles-scenarios (231ms)
+数字人角色压力场景验证通过
+$ scripts/verify-approval-record --history .template-spec/templates/approval-record-template.yaml (68ms)
+会签记录结构校验通过（不构成放行）
+$ scripts/verify-subagent-task-package-scenarios (3859ms)
+数字人全生命周期任务包压力场景验证通过
+$ scripts/verify-digital-human-task-package-scenarios (3898ms)
+数字人全生命周期任务包压力场景验证通过
+$ .template-source/scripts/verify-historical-task-package .template-source/evidence/maintenance/digital-human-task-package-review-task.yaml (142ms)
+历史任务包结构校验通过；不构成当前放行
+$ .template-source/scripts/verify-historical-task-package .template-source/evidence/maintenance/lifecycle-ticket-transition-review-task-package.yaml (141ms)
+历史任务包结构校验通过；不构成当前放行
+$ node --test tests/read-only-intake.test.mjs (2363ms)
+✔ read-only v2 requires no checkpoint and preserves v1 constraints (653.101625ms)
+✔ observed completion with no command is explicitly not-executed (455.103708ms)
+✔ real execution logs validate; source refs cannot impersonate a command log (279.119708ms)
+✔ runner detects additions, modifications and deletions despite empty changed_files (502.294375ms)
+✔ runtime evidence rejects traversal, absolute paths, and symlink escape (21.063417ms)
+✔ declared verification cannot be silently replaced; ignored changes are observed (105.569333ms)
+✔ exit code and stream bytes must match the recorded execution (247.241916ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2328.698667
+
+[lifecycle]
+$ node --test scripts/fixtures/stage-tracking/tracking.test.mjs (3024ms)
+✔ new Plan: unique parent, inline item, no slice; check and plan are read-only (167.061125ms)
+✔ Design entry uses checkpoint and never engineering parent (150.496875ms)
+✔ existing Spec entry preserves approvals and records entry stage, not historical completion (79.74325ms)
+✔ independent item has no duplicate progress; definition drift fails (150.939667ms)
+✔ completion requires mapped, current evidence and frozen source digests (289.226583ms)
+✔ refresh propagates only to dependents and retains previous evidence (80.599542ms)
+✔ blocked dependency prevents start; unrelated work remains valid (286.412542ms)
+✔ missing items block migration instead of inventing owner or acceptance (3.37275ms)
+✔ legacy project accepted; enabled missing checkpoint ref rejected at transition (3.163167ms)
+✔ transition requires current unit closure and persisted state (225.142375ms)
+✔ stage item cannot receive implementation readiness (207.992792ms)
+✔ migration rejects source drift and altered plan; failed writes roll back (14.35775ms)
+✔ migration protects symlink paths and profile boundaries (2.596417ms)
+✔ remote tracker stays pending; local requires no remote issue (78.654208ms)
+✔ CLI check/plan/apply roundtrip and meaningful exit codes (374.0495ms)
+✔ deferral needs independent record and remains non-completed (288.742625ms)
+✔ public transition entry cannot bypass tracking with a claimed WER (11.97625ms)
+✔ dispatch rejects missing registration and permits independent pending work (219.428167ms)
+✔ checkpoint schema embeds the canonical stage tracking schema exactly (0.315667ms)
+✔ source changes during apply are detected and preserved while own writes roll back (7.192666ms)
+✔ migration preserves existing stable feature IDs independently of folder slugs (146.735417ms)
+✔ a quoted stage-work-item moved under issues still cannot become an implementation ticket (2.267ms)
+✔ manual checkpoint edits cannot bypass required owner splitting (148.006666ms)
+ℹ tests 23
+ℹ suites 0
+ℹ pass 23
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2990.409208
+$ node --test .template-source/tooling/node/test/decision-continuation.test.mjs (3491ms)
+✔ ordinary engineering work reuses explicit authorization through public approval and CLI (444.643125ms)
+✔ product design can continue after independent review without a repeated human reply (76.567958ms)
+✔ source approval continuation is verified by all three dedicated receivers (817.761625ms)
+✔ Plan entry consumes continuation and still blocks incomplete checks (167.4325ms)
+✔ implementation continuation preserves contract, repository and write-path checks (214.596792ms)
+✔ conflicting direct decision and continuation references are rejected (1.888916ms)
+✔ no reply and revoked source authorization cannot continue (141.919ms)
+✔ new scope, new target and side effects cannot inherit authorization (6.441625ms)
+✔ material changes and unclassified changes require a decision (142.387917ms)
+✔ new risk, quality reduction or changed authorization cannot be labelled cosmetic (298.261334ms)
+✔ self review, wrong expertise, missing comparisons and stale verification block (282.502625ms)
+✔ external policy unknown, missing approvals and changed policy cannot be waived (358.990333ms)
+✔ suggestions do not block, unresolved defects and missing evidence do (283.287375ms)
+✔ formatting refresh requires new current review but not another source reply (140.204959ms)
+✔ older receivers without continuation capability reject rather than silently approve (3.806333ms)
+✔ one review bundle retains explicit per-check outcomes and rejects duplicates (11.756292ms)
+ℹ tests 16
+ℹ suites 0
+ℹ pass 16
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3456.212959
+$ scripts/verify-user-decision-scenarios (3306ms)
+PASS 真实单项回复通过，CLI 校验通过
+PASS 无回复保持等待
+PASS rejected 不放行
+PASS changes-requested 不放行
+PASS unclear 不放行
+PASS revoked 不放行
+PASS 数字人代答无效
+PASS 默认选项和无反对意见不能代替原始消息
+PASS 记录原文与来源不一致无效
+PASS 缺失来源和仅 Agent 摘要无效
+PASS 来源篡改被拒绝
+PASS 未展示当前请求不能批准
+PASS 展示前回复无效
+PASS 错误版本及批准依据变化重新确认
+PASS 额外依据变化重新确认，无关文件不影响
+PASS 同版本范围可重复使用且不按时间过期
+PASS 范围扩大和错误事项无效
+PASS 提问者指定负责人有效，未指定代答无效
+PASS 多项继续无效，明确全部或部分批准有效
+PASS 明确询问全部事项后的紧邻确认有效，普通多项展示仍需写明全部
+PASS 不能把其他对话的同意嫁接为当前批准
+PASS 无 reply-to 的完整相邻会话导出可复用
+PASS 生物人会签者必须与原始回复者一致
+PASS 相反原文不能被 Agent 归一化成批准
+PASS 完整历史展示无需重发模板消息
+PASS 同一事项分批批准保留已批准范围
+PASS 撤回后不能复用旧批准
+PASS 默认生物人门禁纳入解析和 checkpoint
+PASS 历史数字人记录可读但不能关闭关键门禁
+PASS 等待期间可保存状态但不能流转依赖工作
+PASS 实施批准绑定切片、合同、仓库、路径和基线
+用户决定场景验证通过：31 组
+$ scripts/verify-context-contract --root . --json (63ms)
+{
+  "result": "completed",
+  "context_ref": "CONTEXT.md",
+  "context_schema_version": 1,
+  "document_digest": "sha256:887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559",
+  "referenced_terms_digest": "sha256:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "term_refs": [],
+  "context_snapshot": {
+    "context_ref": "CONTEXT.md",
+    "context_schema_version": 1,
+    "document_digest": "sha256:887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559",
+    "referenced_terms_digest": "sha256:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "term_refs": []
+  },
+  "process_term_count": 93,
+  "business_term_count": 0
+}
+$ scripts/verify-context-contract-scenarios (350ms)
+CONTEXT Contract 场景验证通过
+$ node scripts/verify-business-language-scenarios (59ms)
+本体业务角色通俗语言场景验证通过
+$ scripts/verify-context-reconciliation-scenarios (772ms)
+Context reconciliation scenarios passed
+$ node scripts/verify-script-performance-scenarios (1327ms)
+schema 批量差分、重新读取、日志脱敏、超时、取消与进程树清理通过
+$ scripts/verify-grill-with-docs-context-scenarios (1135ms)
+grill-with-docs Context Contract scenarios passed
+$ scripts/verify-strategic-context-import-scenarios (620ms)
+Strategic context import scenarios passed
+$ scripts/verify-lifecycle-registry (230ms)
+生命周期注册表验证通过（active）
+$ scripts/verify-lifecycle-context-query-scenarios (570ms)
+生命周期按需上下文查询场景验证通过
+$ scripts/verify-lifecycle-operator-scenarios (297ms)
+生命周期只读入口与模板场景验证通过
+$ scripts/verify-lifecycle-checkpoint .template-spec/process/templates/lifecycle-checkpoint-template.yaml (136ms)
+生命周期 checkpoint 验证通过
+$ scripts/verify-frontend-implementation-evidence --allow-template .template-spec/process/templates/frontend-implementation-plan-template.yaml (124ms)
+前端实现还原 plan 验证通过
+$ scripts/verify-frontend-implementation-evidence --allow-template .template-spec/process/templates/frontend-implementation-verification-template.yaml (126ms)
+前端实现还原 verification 验证通过
+$ scripts/verify-frontend-implementation-evidence-scenarios (2034ms)
+Frontend implementation evidence v2 scenarios passed
+$ scripts/verify-scaffold-architecture-decisions --allow-template .template-spec/process/templates/scaffold-architecture-decisions-template.yaml (139ms)
+脚手架架构选择记录验证通过
+$ scripts/verify-scaffold-architecture-decision-scenarios (1227ms)
+脚手架架构选择场景验证通过
+$ scripts/verify-lifecycle-scenarios (440ms)
+六类生命周期压力场景验证通过
+$ scripts/verify-lifecycle-transition-scenarios (6091ms)
+生命周期转换压力场景验证通过
+$ node scripts/verify-plan-spec-entry-scenarios (1188ms)
+Plan → Spec 无状态绕过与默认加载检查通过
+$ scripts/verify-frontend-scaffold-generator-scenarios (999ms)
+前端脚手架受控生成场景验证通过
+Data Quality bundled baseline / source binding / no-write rejection scenarios passed
+$ node --test tests/lifecycle-query-freshness.test.mjs (276ms)
+✔ display changes invalidate content binding without changing published semantics (88.174416ms)
+✔ identical queries bind deterministically, different queries bind independently (71.745167ms)
+✔ source changes during a query fail instead of mixing snapshots (24.216458ms)
+✔ an invalid identity fails even without an execution scope marker (0.213833ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 241.253208
+
+[maintenance]
+$ scripts/verify-maintenance-checkpoint .template-source/evidence/maintenance/yss-tactical-design-l3-checkpoint-2026-08-27.yaml (47ms)
+模板维护 checkpoint 验证通过（L3，最低 L3，release-ready）
+$ scripts/verify-maintenance-intensity-scenarios (929ms)
+模板维护 L1/L2/L3 强度场景验证通过
+$ node scripts/verify-maintenance-review-workflow-scenarios (397ms)
+模板维护审查两轮收敛场景验证通过
+
+[existing-project-delivery]
+$ scripts/verify-existing-backend-architecture-scenarios (2701ms)
+✔ domain-driven: existing identity has no fabricated generator or H2 claim (0.584584ms)
+✔ layered-mvc: existing identity has no fabricated generator or H2 claim (0.063334ms)
+✔ existing original evidence cannot be replaced by three matching objects (0.519042ms)
+✔ unknown source, profile and disguised generator fail closed (0.085083ms)
+✔ domain-driven: compiles a real on-disk existing Git/Maven identity; input changes stale (615.904458ms)
+✔ layered-mvc: compiles a real on-disk existing Git/Maven identity; input changes stale (563.508875ms)
+✔ existing profiles resolve concrete Web and Application execution references (525.712542ms)
+✔ raw evidence drift, self-review, missing source files and actual POM conflicts are rejected (847.501917ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2634.793917
+$ scripts/verify-delivery-preflight-scenarios (18603ms)
+PASS 缺少输入是退出码 2 的协议错误
+PASS 空对象与未知阶段不能取得 ready
+PASS 缺失原始资产一次汇总，未来构建不阻断 prepare
+PASS 拟初始化目标可诊断但不能猜测仓库身份
+PASS 模板源不能冒充产品交付来源
+PASS 合法身份与根词汇可独立承接
+PASS 自洽摘要不能把空原始观测提升为可承接
+PASS 摘要自洽但错误 OpenAPI 版本仍拒绝
+PASS 前提内容改变标记 stale
+PASS 路径越界和 symlink 拒绝
+PASS 已有交付构建 shape 与原始制品核对通过
+PASS 制品内容变化使构建不可承接
+PASS 只读预检不执行记录中的命令，缺交付依据仍为尚不可判定
+PASS 明确无 UI 影响必须有原因，不能静默免检
+PASS synthetic 战略源可先导出，不依赖未来后端合同或包
+PASS v5 既有 UI 导出 CLI 缺清单拒绝且不写输出
+PASS v5 战略 CLI 通过源预检后正常导出，原始来源保持不变
+PASS 导出不能用另一来源清单通过预检
+PASS 后端 CLI 对既有身份 v2 在任何写入前强制预检
+PASS backend 分流通过已绑定包承接战略来源，不要求复制源资产
+PASS synthetic domain-driven 原始工程可完整核验且不伪造 profile 支持
+PASS synthetic layered-mvc 原始工程可完整核验且不伪造 profile 支持
+delivery-preflight scenarios: 22 passed
+✔ synthetic domain-driven: only original local approval permits a bounded implementation delta (1814.891042ms)
+✔ synthetic layered-mvc: only original local approval permits a bounded implementation delta (5977.016625ms)
+✔ synthetic: approved status, fake countersignature and missing required source proof cannot establish permission (632.360833ms)
+✔ synthetic: out-of-scope edits, replaced source basis and stale approved contract bytes are rejected (942.355833ms)
+✔ synthetic: a self-consistent replacement original reference cannot reuse the previous approval (860.7165ms)
+✔ synthetic: technical-design CLI rejects caller-invented execution JSON (541.735209ms)
+✔ synthetic existing v2 rejects serialized array sections and absent required source references before approval (1578.296333ms)
+✔ synthetic historical delivery v1 minimal Slice fixture retains its existing approval semantics (415.896792ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 12833.935667
+✔ real Python schema batch finishes without stdin EOF and preserves Unicode, large input and invalid results (112.65525ms)
+✔ truncated byte frame fails with an explicit protocol error (115.503625ms)
+✔ a nonresponsive interpreter is bounded by the schema timeout (203.981ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 491.362041
+$ scripts/verify-existing-ui-baseline-scenarios (34546ms)
+✔ 既有 UI 验证真实文件闭包并拒绝源码/锁文件/构建/API/截图篡改 (716.606958ms)
+✔ 既有 UI 拒绝未知版本、UI 变更和自洽但跨来源 capture (279.052333ms)
+✔ Handoff v5 既有基线从源导出、离线只读验包、前端导入 v2 预检草案 (2715.574583ms)
+✔ Handoff v5 原型仍验证离线原型；v4 原版本保持，未知版本拒绝 (3298.061917ms)
+✔ 真实用户决定必须覆盖既有 manifest 当前原字节；结构批准不能代替 (701.128875ms)
+✔ 重算包内摘要不能复用旧用户批准；UI=true 不能走既有分支 (555.137583ms)
+✔ 前端 v2 预检与 v3 接收实际执行；跨类型、悬空 case、协议降级拒绝 (8413.258209ms)
+✔ 自洽摘要不能掩盖 build/source、API operation 与截图 viewport 冲突 (272.500958ms)
+✔ v5 既有基线与后端交付联合接收会执行真实 HTTP 五字段探测 (10420.08975ms)
+✔ 固定 Vite 代理映射保留真实前缀 URL；错误 prefix、未绑定配置与任意 rewrite 拒绝 (362.95775ms)
+✔ 真实战略专职 policy 使用产品设计聚合门禁；ready-for-human 原字节确认可导出且状态改写失效 (4609.586041ms)
+✔ 既有 UI 全目录作为已验证观测文件集：源删除后可验包，治理悬空引用仍拒绝 (2135.27725ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 34482.750291
+
+[implementation]
+$ scripts/verify-implementation-path-scenarios (33ms)
+实现项目路径策略压力场景验证通过
+$ scripts/verify-repository-scope-scenarios (1353ms)
+named stress unknown_scope: PASS
+named stress layout_mismatch: PASS
+named stress same_origin_url: PASS
+named stress copy_source_into_harness: PASS
+named stress missing_git_entry_mode: PASS
+named stress empty_gitlink_as_regular_dir: PASS
+named stress declared_harness_apps_actual_gitlink: PASS
+named stress detached_head_as_regular_dir: PASS
+named stress force_overlay_mount: PASS
+实现仓库 repository_scope 压力场景验证通过
+Cloning into '/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-gitlink-GX0xM9/super/apps/backend/billing-service'...
+done.
+HEAD is now at 99c18a4 init child
+Cloning into '/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-gitlink-wROXlU/super/apps/backend/billing-service'...
+done.
+Reset branch 'main'
+$ scripts/verify-scaffold-generator-scenarios (1857ms)
+YSS 脚手架生成器受控生成场景验证通过
+$ node --test scripts/fixtures/backend-scaffold/platform-scenarios.test.mjs (5790ms)
+🚀 开始生成项目: platform-service
+📦 基础包名: com.yss.platform
+📁 输出目录: /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-platform-matrix-P1XceK/output
+
+📁 创建项目目录结构...
+  ✓ platform-service-domain
+  ✓ platform-service-application
+  ✓ platform-service-infrastructure
+  ✓ platform-service-adapter
+  ✓ platform-service-bootstrap
+  ✓ platform-service-adapter/platform-service-web
+  ✓ db
+
+📝 生成 Maven POM 文件...
+  ✓ 父级 pom.xml
+  ✓ domain pom.xml
+  ✓ application pom.xml
+  ✓ infrastructure pom.xml
+  ✓ adapter pom.xml
+  ✓ web pom.xml
+  ✓ bootstrap pom.xml
+
+☕ 生成机械启动入口...
+  ✓ PlatformServiceApplication.java
+  ✓ ArchitectureRulesTest.java
+
+⚙️  生成配置文件...
+  ✓ application.yml
+  ✓ application-scaffold-local.yml
+  ✓ test H2 configuration
+  ✓ logback-spring.xml
+
+🗃️  保留数据库目录布局...
+  ✓ db/（业务 schema 和初始化数据由批准切片合同生成）
+
+📚 生成项目文档...
+  ✓ README.md
+  ✓ .yss/scaffold-generation.json
+
+✅ 工程文件生成完成，等待受控 Maven 验证
+📂 项目位置: /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-platform-matrix-P1XceK/output/platform-service
+
+🎯 下一步:
+  cd /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-platform-matrix-P1XceK/output/platform-service
+  ./mvnw validate
+  ./mvnw test
+  ./mvnw package
+  ./mvnw spring-boot:run -pl platform-service-bootstrap
+✔ candidate rendering only: domain-driven spring-boot-2.7-jdk8 (661.409416ms)
+🚀 开始生成项目: platform-service
+📦 基础包名: com.yss.platform
+📁 输出目录: /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-platform-matrix-7N0U2e/output
+
+📁 创建项目目录结构...
+  ✓ platform-service-domain
+  ✓ platform-service-application
+  ✓ platform-service-infrastructure
+  ✓ platform-service-adapter
+  ✓ platform-service-bootstrap
+  ✓ platform-service-adapter/platform-service-web
+  ✓ db
+
+📝 生成 Maven POM 文件...
+  ✓ 父级 pom.xml
+  ✓ domain pom.xml
+  ✓ application pom.xml
+  ✓ infrastructure pom.xml
+  ✓ adapter pom.xml
+  ✓ web pom.xml
+  ✓ bootstrap pom.xml
+
+☕ 生成机械启动入口...
+  ✓ PlatformServiceApplication.java
+  ✓ ArchitectureRulesTest.java
+
+⚙️  生成配置文件...
+  ✓ application.yml
+  ✓ application-scaffold-local.yml
+  ✓ test H2 configuration
+  ✓ logback-spring.xml
+
+🗃️  保留数据库目录布局...
+  ✓ db/（业务 schema 和初始化数据由批准切片合同生成）
+
+📚 生成项目文档...
+  ✓ README.md
+  ✓ .yss/scaffold-generation.json
+
+✅ 工程文件生成完成，等待受控 Maven 验证
+📂 项目位置: /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-platform-matrix-7N0U2e/output/platform-service
+
+🎯 下一步:
+  cd /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-platform-matrix-7N0U2e/output/platform-service
+  ./mvnw validate
+  ./mvnw test
+  ./mvnw package
+  ./mvnw spring-boot:run -pl platform-service-bootstrap
+✔ candidate rendering only: domain-driven spring-boot-3.5-jdk17 (600.677166ms)
+🚀 开始生成项目: platform-service
+📦 基础包名: com.yss.platform
+📁 输出目录: /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-platform-matrix-867jFm/output
+
+📁 创建项目目录结构...
+  ✓ platform-service-domain
+  ✓ platform-service-application
+  ✓ platform-service-infrastructure
+  ✓ platform-service-adapter
+  ✓ platform-service-bootstrap
+  ✓ platform-service-adapter/platform-service-web
+  ✓ db
+
+📝 生成 Maven POM 文件...
+  ✓ 父级 pom.xml
+  ✓ domain pom.xml
+  ✓ application pom.xml
+  ✓ infrastructure pom.xml
+  ✓ adapter pom.xml
+  ✓ web pom.xml
+  ✓ bootstrap pom.xml
+
+☕ 生成机械启动入口...
+  ✓ PlatformServiceApplication.java
+  ✓ ArchitectureRulesTest.java
+
+⚙️  生成配置文件...
+  ✓ application.yml
+  ✓ application-scaffold-local.yml
+  ✓ test H2 configuration
+  ✓ logback-spring.xml
+
+🗃️  保留数据库目录布局...
+  ✓ db/（业务 schema 和初始化数据由批准切片合同生成）
+
+📚 生成项目文档...
+  ✓ README.md
+  ✓ .yss/scaffold-generation.json
+
+✅ 工程文件生成完成，等待受控 Maven 验证
+📂 项目位置: /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-platform-matrix-867jFm/output/platform-service
+
+🎯 下一步:
+  cd /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-platform-matrix-867jFm/output/platform-service
+  ./mvnw validate
+  ./mvnw test
+  ./mvnw package
+  ./mvnw spring-boot:run -pl platform-service-bootstrap
+✔ candidate rendering only: domain-driven spring-boot-3.5-jdk21 (588.989666ms)
+{
+  "status": "generated",
+  "project_root": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-platform-matrix-3VLVC2/output/platform-service",
+  "modules": [
+    "server",
+    "service",
+    "repository",
+    "adapter",
+    "client",
+    "feign-client"
+  ]
+}
+✔ candidate rendering only: layered-mvc spring-boot-2.7-jdk8 (572.976959ms)
+{
+  "status": "generated",
+  "project_root": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-platform-matrix-gfdnY8/output/platform-service",
+  "modules": [
+    "server",
+    "service",
+    "repository",
+    "adapter",
+    "client",
+    "feign-client"
+  ]
+}
+✔ candidate rendering only: layered-mvc spring-boot-3.5-jdk17 (583.824208ms)
+{
+  "status": "generated",
+  "project_root": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-platform-matrix-LMTsc1/output/platform-service",
+  "modules": [
+    "server",
+    "service",
+    "repository",
+    "adapter",
+    "client",
+    "feign-client"
+  ]
+}
+✔ candidate rendering only: layered-mvc spring-boot-3.5-jdk21 (577.022208ms)
+✔ unsupported component platform never synthesizes a binding: domain-driven spring-boot-4.1-jdk17 (72.320125ms)
+✔ unsupported component platform never synthesizes a binding: domain-driven spring-boot-4.1-jdk21 (71.634708ms)
+✔ unsupported component platform never synthesizes a binding: layered-mvc spring-boot-4.1-jdk17 (70.572667ms)
+✔ unsupported component platform never synthesizes a binding: layered-mvc spring-boot-4.1-jdk21 (71.420084ms)
+✔ v2 scaffold schema rejects a platform binding without the normalized component line (79.244041ms)
+✔ production fail-closed and zero writes: domain-driven (554.818875ms)
+✔ production fail-closed and zero writes: layered-mvc (551.084792ms)
+✔ version, digest, namespace, YSS coordinates and decision mismatches are rejected (1.265584ms)
+✔ runtime dependencies require startup module, proper scope and exact independent Boot BOM (3.670042ms)
+✔ packaged runtime jar must contain every runtime artifact (0.261375ms)
+✔ integration evidence rejects skipped tests and missing optional Feign coverage (0.650125ms)
+✔ verified compatibility binds report bytes and every portable evidence artifact (9.0375ms)
+✔ multiple exact patches coexist without rebinding earlier contracts (0.44825ms)
+✔ component capabilities are nested by registry capability id and uncertified profiles stay closed (1.065459ms)
+✔ Boot 3 catalog parser rejects drift in candidate and platform-managed bindings (3.320917ms)
+✔ artifact resolution evidence binds catalog coordinates and bytes (2.51775ms)
+✔ component adoption, platform generation and retirement evidence expose stable failure codes (1.333958ms)
+✔ component capability resolver returns exact serializable bindings and fails closed (1.725458ms)
+✔ component capability resolver rejects coordinate conflicts and evidence drift (1.390292ms)
+✔ resolved SNAPSHOT, POM/JAR digests and source tree are mandatory for verified components (1.223667ms)
+✔ resolveBackendPlatform loads the catalog beneath an explicit root (1.235958ms)
+✔ backend-platforms require-profile exposes nested component blockers and exits non-zero (78.482916ms)
+{
+  "status": "generated",
+  "project_root": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-platform-resume-lWdp47/output/platform-service",
+  "modules": [
+    "server",
+    "service",
+    "repository",
+    "adapter",
+    "client",
+    "feign-client"
+  ]
+}
+✔ resume never regenerates or accepts changed files, extra source or changed contracts (519.908583ms)
+ℹ tests 29
+ℹ suites 0
+ℹ pass 29
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5755.21575
+$ node --test .agents/skills/yss-ddd-scaffold-generator/scripts/scaffold-generator.test.mjs (8342ms)
+✔ 生成批准的服务级 target profile 骨架，并写入带设计门禁的 Manifest v4 (631.676375ms)
+✔ 数据影响为 required 时绑定数据架构后可生成 DDD 后端 (618.333167ms)
+✔ API 影响为 required 时绑定同字节 Draft、Validation、Review 和 Freeze 后可生成 DDD 后端 (682.538875ms)
+✔ 缺少设计门禁时在写文件前拒绝 DDD 新生成 (138.298708ms)
+✔ 技术和数据设计齐全但缺少 API Decision 时在写文件前拒绝 DDD 新生成 (132.31225ms)
+✔ API Draft、Validation、Review 或工程批准漂移时均在零写入状态阻断 DDD (2195.9305ms)
+✔ schema v3 只读兼容但禁止用于 DDD 新生成 (64.680292ms)
+✔ schema v1 scaffold contract is unsupported and is never upgraded (64.203458ms)
+﹣ 一键工作流只有在真实 Maven 三命令全部通过后才报告完成 (0.239125ms) # 缺少受控 YSS Maven 仓库环境，真实 Wrapper 验证由 L3 环境门禁执行
+✔ 显式 Maven 坐标贯穿批准合同、生成参数、全部 POM 和生成清单 (589.806667ms)
+✔ 生成工程声明命名仓库 profile、target DDD 依赖边界和构建门禁 (588.798291ms)
+✔ 生成工程固定平台 profile、Wrapper checksum，并把调试日志隔离到 local 配置 (595.3765ms)
+✔ initialize-only 在写文件前拒绝任何已存在目标和 --force (660.948917ms)
+✔ 拒绝基础包名与批准合同不一致 (129.4735ms)
+✔ 合同 project_name、profile 和 allowed_write_paths 必须约束实际输出 (384.369875ms)
+✔ initialize-only 拒绝以 --force 覆盖 .gitmodules 登记的挂载点 (61.103917ms)
+Cloning into '/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-gitlink-eaJmjy/super/apps/backend/billing-service'...
+done.
+HEAD is now at 41f407c init child
+✔ 拒绝在 detached HEAD 子仓工作树内当成普通目录生成 (402.951958ms)
+✔ --force 覆盖真实 gitlink 不得走普通目录覆盖路径 (218.930875ms)
+[开始] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-verifier-PNJErx/project/mvnw validate
+[完成] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-verifier-PNJErx/project/mvnw (4ms, exit=0)
+[开始] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-verifier-PNJErx/project/mvnw test
+[失败] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-verifier-PNJErx/project/mvnw (3ms, exit=2)
+[开始] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-verifier-PNJErx/project/mvnw package
+[完成] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-verifier-PNJErx/project/mvnw (3ms, exit=0)
+✔ 验证器记录三条 wrapper 命令的成功和失败证据 (15.771042ms)
+[开始] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-repository-failure-5V2O9i/project/mvnw validate
+[失败] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-repository-failure-5V2O9i/project/mvnw (3ms, exit=1)
+[开始] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-repository-failure-5V2O9i/project/mvnw test
+[失败] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-repository-failure-5V2O9i/project/mvnw (3ms, exit=1)
+[开始] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-repository-failure-5V2O9i/project/mvnw package
+[失败] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-repository-failure-5V2O9i/project/mvnw (3ms, exit=1)
+✔ 验证器把内部仓库解析失败与编译失败分开报告 (12.931541ms)
+[开始] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-build-failure-hpGl54/project/mvnw validate
+[完成] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-build-failure-hpGl54/project/mvnw (4ms, exit=0)
+[开始] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-build-failure-hpGl54/project/mvnw test
+[完成] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-build-failure-hpGl54/project/mvnw (3ms, exit=0)
+[开始] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-build-failure-hpGl54/project/mvnw package
+[失败] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-build-failure-hpGl54/project/mvnw (3ms, exit=1)
+[开始] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-build-failure-ikgrwA/project/mvnw validate
+[完成] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-build-failure-ikgrwA/project/mvnw (3ms, exit=0)
+[开始] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-build-failure-ikgrwA/project/mvnw test
+[完成] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-build-failure-ikgrwA/project/mvnw (3ms, exit=0)
+[开始] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-build-failure-ikgrwA/project/mvnw package
+[失败] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-build-failure-ikgrwA/project/mvnw (3ms, exit=1)
+✔ 验证器单独标记 Java 编译失败和 Bootstrap 主类缺失 (24.32ms)
+[开始] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-verifier-success-n0X6so/project/mvnw validate
+[完成] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-verifier-success-n0X6so/project/mvnw (3ms, exit=0)
+[开始] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-verifier-success-n0X6so/project/mvnw test
+[完成] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-verifier-success-n0X6so/project/mvnw (3ms, exit=0)
+[开始] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-verifier-success-n0X6so/project/mvnw package
+[完成] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-verifier-success-n0X6so/project/mvnw (3ms, exit=0)
+✔ 验证器在全部 Maven 命令成功时通过并保留日志引用 (12.109333ms)
+✔ 历史 Manifest v3 只读校验仍在缺少受控仓库环境时先于 Maven 阻断 (1.785958ms)
+✔ Manifest schema v1 is unsupported and verifier never executes its wrapper (1.457625ms)
+[开始] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-redaction-XIgruR/project/mvnw validate
+[完成] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-redaction-XIgruR/project/mvnw (3ms, exit=0)
+[开始] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-redaction-XIgruR/project/mvnw test
+[完成] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-redaction-XIgruR/project/mvnw (3ms, exit=0)
+[开始] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-redaction-XIgruR/project/mvnw package
+[完成] /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-scaffold-redaction-XIgruR/project/mvnw (3ms, exit=0)
+✔ 验证日志会脱敏 Maven 仓库凭据 (12.6295ms)
+ℹ tests 25
+ℹ suites 0
+ℹ pass 24
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 1
+ℹ todo 0
+ℹ duration_ms 8309.316291
+$ node --test .agents/skills/yss-layered-mvc-scaffold-generator/scripts/scaffold-generator.test.mjs (11450ms)
+✔ 数据分析初始化生成 H2 六模块和独立治理信封 (2961.912708ms)
+✔ 数据分析 Profile 缺少 CONTEXT handoff 或独立 Git 合同时零写入阻断 (129.034959ms)
+✔ 旧数据库和 Mock 参数在写入前被拒绝 (110.925959ms)
+✔ 统一 Project Scaffold Contract v4 可生成 Layered MVC 后端并保留设计门禁 (598.253375ms)
+✔ 数据影响为 required 时绑定数据架构后可生成 Layered MVC 后端 (590.529125ms)
+✔ API 影响为 required 时绑定同字节 Draft、Validation、Review 和 Freeze 后可生成 Layered MVC 后端 (643.505083ms)
+✔ 缺少设计门禁时在写文件前拒绝 Layered MVC 新生成 (129.4505ms)
+✔ 技术和数据设计齐全但缺少 API Decision 时在写文件前拒绝 Layered MVC 新生成 (126.657416ms)
+✔ API Draft、Validation、Review 或工程批准异常时均在零写入状态阻断 Layered MVC (2139.960958ms)
+✔ schema v3 只读兼容但禁止用于 Layered MVC 新生成 (60.585291ms)
+﹣ 可选离线 Maven 可行性检查（不替代受控仓库验收） (0.079958ms) # SKIP
+✔ 生成 h2 基础 Profile (577.108958ms)
+✔ 能力闭包 basic (583.211958ms)
+✔ 能力闭包 adapter (595.272709ms)
+✔ 能力闭包 client (594.829792ms)
+✔ 能力闭包 feign (597.755958ms)
+✔ 能力闭包 combined (602.295ms)
+✔ 选择缺失、digest 漂移和非空目标均阻断 (313.310042ms)
+ℹ tests 18
+ℹ suites 0
+ℹ pass 17
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 1
+ℹ todo 0
+ℹ duration_ms 11416.793334
+$ node --test scripts/lib/legacy-backend-scaffold-audit.test.mjs (95ms)
+✔ 未修改的历史 v3 机械骨架可进入恢复对账但不会自动批准 (11.700333ms)
+✔ 额外业务代码保留并标记 premature-implementation-detected (4.081291ms)
+✔ 历史生成文件摘要漂移时保持 blocked (3.322542ms)
+✔ 审计器拒绝将 v4 当作历史恢复输入 (2.504208ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 62.463125
+$ node --test scripts/lib/api-contract-decision.test.mjs (415ms)
+✔ API not-applicable 决定必须绑定影响评估、原因和可读证据 (260.694542ms)
+✔ API Decision 或影响评估原始字节漂移即失效 (65.248875ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 381.832125
+$ scripts/verify-frontend-scaffold-generator-scenarios (999ms)
+[复用] scripts/verify-frontend-scaffold-generator-scenarios
+前端脚手架受控生成场景验证通过
+Data Quality bundled baseline / source binding / no-write rejection scenarios passed
+$ scripts/verify-prototype-backend-scaffold-scenarios (49ms)
+原型到后端脚手架及后续 YSS 代码生成压力场景验证通过
+$ scripts/verify-matt-yss-integration-scenarios (4219ms)
+Matt/YSS 集成压力场景验证通过
+$ scripts/verify-yss-implementation-contract-compiler-scenarios (46505ms)
+YSS implementation contract compiler stage 7 scenarios passed
+✔ combines narrow recipes once and preserves deterministic output (11.670875ms)
+✔ does not promote conditional or component dependencies without explicit input (0.922625ms)
+✔ loads only explicitly satisfied context-conditional dependencies (0.589ms)
+✔ requires a platform binding for every backend component capability (0.844041ms)
+✔ public compiler entry preserves stable component error codes (9.212584ms)
+✔ rejects recipes that reference skills and context-required cycles (2.438625ms)
+✔ rejects removed ids and schema v1 without compatibility (0.201542ms)
+✔ marks digest drift stale and validates v2 execution evidence (10.12875ms)
+✔ marks legacy component contracts without component bindings stale (1.288958ms)
+✔ current lifecycle scaffold contract delegates platform facts to the catalog (0.421416ms)
+✔ registered component imports and Maven artifacts discover omitted auxiliary skills on their own platform (308.47375ms)
+✔ HTTP and DTO are discovered without reported skill impacts (270.756416ms)
+✔ renamed controller, annotated interface and local composed annotation stay in coverage (186.636209ms)
+✔ missing one rule and duplicate rows cannot masquerade as complete skill review (178.81325ms)
+✔ rule-level N/A is allowed for absent pagination, never for the required use-case boundary (137.29225ms)
+✔ missing semantics, stale rule and evidence cannot pass (143.604166ms)
+✔ baseline can be clean and lacks business Spec but never authorizes implementation (173.168417ms)
+✔ baseline evidence binds current code and filesystem modes (165.204625ms)
+✔ domain-driven: discover violation → remediation → fresh independent protocol → full reconciliation (220.41725ms)
+✔ layered-mvc: discover violation → remediation → fresh independent protocol → full reconciliation (170.645042ms)
+✔ keeps registered boot2-java8, manual streaming endpoints need no CRUD metadata (127.8495ms)
+✔ keeps registered boot3-java17, manual streaming endpoints need no CRUD metadata (137.93725ms)
+✔ MyBatis from mapper XML is detected without Java Mapper naming (126.712416ms)
+✔ empty or unparsed business scope cannot claim conformance (118.05925ms)
+✔ unknown external annotation requires source-bound responsibility evidence (162.93775ms)
+✔ exact registered platform rejects wrong Validation namespace without upgrading JDK (131.690208ms)
+✔ comment and string type names are not architecture dependencies (111.935709ms)
+✔ persistence cannot import Web DTO even when behavioral assertions are green (107.671ms)
+✔ CLI compilation is read-only and can audit without a Slice or scaffold manifest (215.462791ms)
+✔ unclassified existing type is a coverage gap, not an automatic N/A (105.161084ms)
+✔ changed source index or wire profile invalidates the locked skill even when SKILL.md is unchanged (139.112ms)
+✔ an empty, skipped or historical test report cannot prove first slice behavior (5.208916ms)
+✔ matrix subset excludes unrequested candidates without calling them passed (167.888833ms)
+✔ reduced historical v2 is readable but never executable (903.294416ms)
+✔ v3 verification separates structural reading from real bound approval and freshness (2221.831333ms)
+✔ responsibility bindings accept renamed types and require no unused persistence/page adapter (613.36975ms)
+✔ independent Standards and Spec record covers every applicable skill (2674.622417ms)
+✔ review refuses omitted skill (2012.291792ms)
+✔ review refuses self review (1807.010875ms)
+✔ review refuses stale candidate (1770.50325ms)
+✔ review refuses missing rule evidence (1825.224791ms)
+✔ review refuses tests green but standards violation (1838.285542ms)
+✔ review refuses stale verification bytes (1817.254458ms)
+✔ workflow cannot complete review without persisted review inputs (0.38225ms)
+✔ actual impact skills cannot be marked not-applicable (1803.133167ms)
+✔ untracked executable mode is part of candidate identity (1770.78325ms)
+✔ v2 migration preserves old bytes and extra evidence, reduces fields, and never inherits approval (953.654333ms)
+ℹ {"v1_fields":31,"v2_fields":23,"reduction":0.25806451612903225}
+✔ preparation generates all digests and rejects conflicting sources; actual review governs consumption (496.55575ms)
+✔ both API versions reject mismatched Drafts, unresolved review findings, missing evidence and stale versions (1646.593625ms)
+✔ design/backend/frontend receivers expose identical review and task constraints using original YAML (2635.679541ms)
+✔ a validation operation rejects changed bytes and additions, and the next operation reads fresh input (4.091666ms)
+✔ child dependency receipts reject missing, conflicting, and changed sources including policy/schema/message bytes (6.702667ms)
+✔ stages isolate immutable parsed values, purposes, roots, units and read-only state; cancellation rejects success (0.652834ms)
+✔ branded execution context rejects serialization, another root, read-only upgrade and reuse after its stage (1608.742125ms)
+✔ strict YAML and schema batching preserve duplicates, precision, array order, options and error order (75.833292ms)
+✔ review is compact, retains acceptance, and never authorizes execution; task retains every constraint (1874.222542ms)
+✔ all lifecycle asset groups remain readable and preserve unclassified constraints without granting execution (2781.63025ms)
+✔ review keeps its summary byte budget while retaining all mandatory global constraints; task includes verification cwd and evidence (1151.615083ms)
+✔ current completion rejects legacy, unrelated, tampered, stale and uncovered execution evidence (21872.602666ms)
+✔ research closes on current evidence, continuation requires bound authorization, repository identity cannot be spoofed (271.824833ms)
+✔ focused task includes unit and universal acceptance, preserves constraints and offers full reference (1774.296458ms)
+✔ recovery view binds task and contract, refuses unknown or mismatched task and remains readonly (1201.018917ms)
+✔ frozen Ticket keeps tracker updates outside the requirement binding and rejects changed requirements (2412.730708ms)
+✔ low risk applicability comes from lifecycle rules; frontend existing baseline cannot hide UI changes (1967.246042ms)
+✔ preparation reports independent missing sources together and blocked drafts remain diagnostic-only (907.631167ms)
+✔ review reads each aliased source once and exposes missing explanations without repeating acceptance (1058.046167ms)
+✔ registered cross-repo preparation and approved dispatch keep same-name paths and cwd distinct (9185.738375ms)
+✔ cross-repo execution result rejects same-name evidence substitution and missing joint dependencies (28331.828458ms)
+✔ existing UI baseline is fully verified and cannot replace new UI design evidence (1209.730625ms)
+✔ preparation blocks compiler basis changes during a single invocation (1191.849333ms)
+✔ v3 inherits constraints once and refuses task scope expansion and omitted acceptance (275.035917ms)
+✔ preparation reuses Ticket facts, renders persisted YAML and refuses source drift (475.895083ms)
+✔ MVC v3 requires real approval bindings and independent review before execution (8601.710875ms)
+✔ backend and frontend receiving distributions read the same authoritative v3 constraints (1473.821666ms)
+✔ conditional contracts and source bindings never turn missing information into not-applicable (610.626333ms)
+✔ explicit v2 migration preserves effective scope, rejects conflicts and never inherits approval (387.814125ms)
+✔ frontend and cross-repository extensions preserve required inputs and order (271.474084ms)
+✔ diff reports byte changes, array order and unknown upstream history without granting continuation (6.610167ms)
+✔ DDD design remains a single bound source with its slice-specific invariants visible (136.893125ms)
+✔ stage work item cannot be disguised as the implementation contract ticket (67.796333ms)
+ℹ tests 80
+ℹ suites 0
+ℹ pass 80
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 46422.831208
+$ scripts/generate-yss-skill-boundaries --check (75ms)
+YSS skill boundaries are current
+$ scripts/audit-yss-backend-skills --check (65ms)
+backend skill audit passed: 28 candidates (keep=25, enhance=3, merge-ready=0, deprecated=0, remove-ready=0)
+$ scripts/verify-retired-skill-ids (303ms)
+retired skill ids are absent from active assets
+$ scripts/verify-yss-ui-scenarios (41ms)
+YSS UI governance scenarios passed
+$ scripts/verify-yss-prototype-contract-scenarios (416ms)
+YSS prototype profile contract scenarios passed
+$ node --test .agents/skills/yss-prototype-stage/tests/antd-reference.test.mjs (75ms)
+✔ reference collection distinguishes exact evidence from minor fallback and refuses fabricated coverage (3.2635ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 43.875833
+$ node .agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs validate-evidence .template-spec/design/templates/prototype-evidence-template.yaml --allow-template (52ms)
+prototype evidence passed
+$ node .agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs validate .template-spec/design/templates/visual-baseline-template.yaml --allow-template (42ms)
+Visual Baseline validate passed
+$ node --test tests/contract-review-preparation.test.mjs (1650ms)
+✔ default Slice review retains v2 global and nested unknown constraints (503.630417ms)
+✔ default Slice review retains v3 global and nested unknown constraints (911.830542ms)
+✔ mechanical preparation keeps versions, risks, unknown constraints, and grants no approval (1.88475ms)
+✔ missing originals and decisions give actionable gaps without fabricated approval (0.94025ms)
+✔ stale source bindings remain visible in preparation (1.507209ms)
+✔ same version changed bytes is a conflict (1.137291ms)
+✔ valid original decision remains unapproved; stale reply source produces a gap (133.439417ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1617.902125
+
+[governance-release]
+$ scripts/verify-governance-release (38ms)
+
+[candidate-integrity]
+$ scripts/verify-strategic-handoff-tools-lock --require-committed (35ms)
+candidate/release 要求战略交接工具来自已提交 revision；当前 lock 为 working-tree
+
+[research-evidence]
+$ node .agents/skills/yss-research/tests/run-scenarios.mjs (265ms)
+YSS research scenarios passed (8)
+
+[document-writing]
+$ node .agents/skills/i-have-adhd/tests/verify-integration.mjs (116ms)
+PASS: actual resolver excludes code-only, includes document output, does not persist condition or approve the contract.
+PASS: source, license metadata, 4 projections, 9 callers, scope and readable writing inputs. Model output quality not measured.
+模板核验失败: 检查失败: scripts/verify-strategic-handoff-tools-lock --require-committed

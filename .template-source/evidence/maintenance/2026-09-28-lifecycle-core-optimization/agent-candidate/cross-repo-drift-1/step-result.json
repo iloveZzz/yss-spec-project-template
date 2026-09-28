@@ -1,0 +1,34 @@
+{
+  "step": "main",
+  "started_at": "2026-09-28T09:03:11Z",
+  "elapsed_seconds": 57.23,
+  "exit_code": 0,
+  "timeout": false,
+  "assertion_failures": [],
+  "runtime_errors": [],
+  "tool_calls": 12,
+  "usage": [
+    {
+      "input_tokens": 221105,
+      "cached_input_tokens": 183040,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 1806,
+      "reasoning_output_tokens": 168
+    }
+  ],
+  "automatic_result": "passed",
+  "semantic_review": "pending",
+  "trace": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-core-eval-irs_5jqm/agent-candidate/cross-repo-drift-1/trace.jsonl",
+  "write_scope": {
+    "status": "passed",
+    "allowed_writes": [
+      "assessment.json"
+    ],
+    "changed_paths": [
+      "assessment.json"
+    ],
+    "violations": [],
+    "scope": "Final file/symlink differences; excludes .git, __pycache__, .eval-tmp and command log; not a sandbox or transient-write audit"
+  },
+  "turn_completed": true
+}

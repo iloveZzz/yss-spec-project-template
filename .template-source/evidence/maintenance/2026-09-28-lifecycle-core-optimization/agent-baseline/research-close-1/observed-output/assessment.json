@@ -1,0 +1,5 @@
+{
+  "closed": false,
+  "next_route": null,
+  "reason": "研究包验证通过，但当前模板仓缺少正式落盘研究独立结束的流转能力，不能判定闭合。yss-project.yaml 声明 schema_version=1、repository_mode=template-source；research/source.txt 第一行 version=1 支持 claim-001，结论仅适用于本地合成样本。本轮实际执行 node .agents/skills/yss-research/scripts/validate-research-package.mjs research/demo-research-brief.md research/demo-evidence.yaml，退出码为 0，stdout 与旧记录一致，stderr 为空。research/state.json 到 verification.json，以及验证记录到简报、证据、校验器、stdout、stderr 的六项 SHA-256 绑定全部匹配；context_reconciliation 的 not-applicable 附有模板维护研究不涉及业务词汇变更的原因。然而 .template-spec/process/lifecycle-registry.yaml 未登记模板研究工作单元，scripts/lib/lifecycle-transition.mjs 也没有对应终点。带 research/state.json 实际调用 validateNextRoute('work-unit.maintenance-research', null, state, {root: process.cwd()})，作为独立研究结束能力探测，返回 blocked、illegal-next-route、known_current_work_unit；该探测 ID 当前未注册。对已注册的 work-unit.entry-triage 调用同一校验器并传入 null，也返回 blocked、illegal-next-route、allowed_next_route。研究包校验成功不能替代正式流转通过。独立结束能力仍未完成；本轮仅评估并保持 next_route=null，不进入产品 Plan 或实施，不修改旧研究记录、来源、合同、规则或实现，不提交 Git。全部证据仅为隔离评测测试数据，不构成真实批准或生产研究结论；未访问外网或生产。"
+}

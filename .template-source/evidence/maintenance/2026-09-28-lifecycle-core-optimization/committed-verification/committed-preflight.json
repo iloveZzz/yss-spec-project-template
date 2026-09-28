@@ -1,0 +1,42 @@
+[
+  {
+    "command": [
+      "node",
+      "scripts/sync-skills",
+      "--check"
+    ],
+    "exit_code": 0,
+    "stdout": "skill projections are synchronized\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "node",
+      "scripts/update-skill-lock",
+      "--check"
+    ],
+    "exit_code": 0,
+    "stdout": "skills-lock.json matches distributed skills\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "node",
+      "scripts/sync-profile-skills",
+      "--check"
+    ],
+    "exit_code": 0,
+    "stdout": "profile skills: design, backend, frontend\n模式：只读检查\n受影响 profile：无\n已有问题：0 项（含冲突、缺失依赖与未登记差异）\n本次未发现同步差异或问题；不代表项目验证已通过。\n文件差异、分类与 SHA-256 继续使用现有 --json 报告；本摘要不判断下游项目兼容性。\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "node",
+      "scripts/verify-strategic-handoff-tools-lock",
+      "--require-committed"
+    ],
+    "exit_code": 0,
+    "stdout": "战略交接工具 lock 验证通过：template-root，source_state=committed\n",
+    "stderr": ""
+  }
+]

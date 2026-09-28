@@ -1,0 +1,50 @@
+{
+  "step": "main",
+  "started_at": "2026-09-28T08:52:43Z",
+  "elapsed_seconds": 157.1,
+  "exit_code": 0,
+  "timeout": false,
+  "assertion_failures": [
+    {
+      "assertion": {
+        "kind": "json_equal",
+        "path": "assessment.json",
+        "key": "api_verified",
+        "value": true
+      }
+    },
+    {
+      "assertion": {
+        "kind": "exists",
+        "path": "api-observation.json"
+      }
+    }
+  ],
+  "runtime_errors": [],
+  "tool_calls": 17,
+  "usage": [
+    {
+      "input_tokens": 441587,
+      "cached_input_tokens": 385792,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 3635,
+      "reasoning_output_tokens": 1049
+    }
+  ],
+  "automatic_result": "failed",
+  "semantic_review": "pending",
+  "trace": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-core-eval-irs_5jqm/agent-candidate/api-evidence-1/trace.jsonl",
+  "write_scope": {
+    "status": "passed",
+    "allowed_writes": [
+      "assessment.json",
+      "api-observation.json"
+    ],
+    "changed_paths": [
+      "assessment.json"
+    ],
+    "violations": [],
+    "scope": "Final file/symlink differences; excludes .git, __pycache__, .eval-tmp and command log; not a sandbox or transient-write audit"
+  },
+  "turn_completed": true
+}

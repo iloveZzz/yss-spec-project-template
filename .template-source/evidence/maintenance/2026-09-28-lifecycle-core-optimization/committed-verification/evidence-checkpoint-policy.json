@@ -1,0 +1,7 @@
+{
+  "files": 622,
+  "raw_output_whitespace_findings": 285,
+  "raw_outputs_preserved": true,
+  "source_commits_use_clean_diff_checks": true,
+  "archives": "retained locally, excluded from Git"
+}

@@ -1,0 +1,6 @@
+{
+  "api_verified": false,
+  "evidence_current": false,
+  "accepted": false,
+  "reason": "本轮执行 node probe-api.mjs，通过 NODE_OPTIONS 内存预加载仅将 api-observation.json 的写入转至标准输出，未修改脚本文件。实际退出码为 1：listen EPERM: operation not permitted 127.0.0.1；服务未能启动，成功、缺参和错误 JSON 三类 HTTP 行为均未完成实际验证。subject/current.json 与 subject/result.json 绑定的合同摘要、subject/source.txt 来源摘要均与当前字节一致；但 evidence/test.log 当前 SHA-256 为 8dfac92e5349e02f959f269d016a27bcad7aa222b775ec3f36a25ad8add730c3，与 result.json 记录的 beffed405c110a01b7d23c6500d5d329f839e2b557a0f5c64fbfdd5a8ee276bd 不一致，内容为验证后替换的无关日志，不能支持 AC-1 或本轮验收。按 AGENTS.md 的 Fresh Verification 规则及 yss-implementation-contract-compiler 的结果证据规则，历史 exit_code=0 和文件存在均不能作为本轮通过依据。仅为 template-source 隔离结果绑定核验，产品阶段流转与真实批准不适用；未访问生产或外网，未提交 Git。"
+}

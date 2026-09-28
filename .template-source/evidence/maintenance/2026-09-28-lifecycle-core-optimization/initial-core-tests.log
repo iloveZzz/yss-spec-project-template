@@ -1,0 +1,31 @@
+✔ current completion rejects legacy, unrelated, tampered, stale and uncovered execution evidence (13732.279708ms)
+✖ research closes on current evidence, continuation requires bound authorization, repository identity cannot be spoofed (32.788708ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 1
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 13794.612125
+
+✖ failing tests:
+
+test at scripts/fixtures/lifecycle-core/research.test.mjs:10:1
+✖ research closes on current evidence, continuation requires bound authorization, repository identity cannot be spoofed (32.788708ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  1 !== 0
+  
+      at TestContext.<anonymous> (file:///Users/zhudaoming/Projects/yss-spec-project-template/scripts/fixtures/lifecycle-core/research.test.mjs:20:95)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.start (node:internal/test_runner/test:1262:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

@@ -1,0 +1,8 @@
+{
+  "command": "scripts/verify-template-fast --changed-file .template-source/evidence/maintenance/2026-09-28-official-spec-research/official-spec-research-brief.md --concurrency 1",
+  "exit_code": 0,
+  "executed_at": "2026-09-28T05:36:57.934601+00:00",
+  "duration_ms": 252960,
+  "evidence_ref": ".template-source/evidence/maintenance/2026-09-28-official-spec-research/verification/template-fast.log",
+  "scope": "explicit research-only changed path; not whole dirty workspace or release"
+}

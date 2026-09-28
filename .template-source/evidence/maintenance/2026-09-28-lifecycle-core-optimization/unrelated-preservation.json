@@ -1,0 +1,425 @@
+{
+  "scope": "Initial root llm-wiki tree and preexisting modified/untracked llm-wiki files in receiving profiles; generated locks are synchronized separately.",
+  "checks": [
+    {
+      "path": "submodules/yss-harness-design-agent/.agents/skills/llm-wiki/SKILL.md",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.agents/skills/llm-wiki/assets/CLAUDE.md.template",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.agents/skills/llm-wiki/references/compile.md",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.agents/skills/llm-wiki/references/ingest.md",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.agents/skills/llm-wiki/references/lint.md",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.agents/skills/llm-wiki/references/query.md",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.agents/skills/llm-wiki/references/schema.md",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.agents/skills/llm-wiki/references/writing.md",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.agents/skills/llm-wiki/scripts/advise.mjs",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.agents/skills/llm-wiki/scripts/advise.test.mjs",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.agents/skills/llm-wiki/scripts/extract.mjs",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.agents/skills/llm-wiki/scripts/extract.test.mjs",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.agents/skills/llm-wiki/scripts/inventory.mjs",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.agents/skills/llm-wiki/scripts/inventory.test.mjs",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.agents/skills/llm-wiki/scripts/lint-wikilinks.mjs",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.agents/skills/llm-wiki/scripts/lint-wikilinks.test.mjs",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.agents/skills/llm-wiki/references/transactions.md",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.agents/skills/llm-wiki/scripts/core.mjs",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.agents/skills/llm-wiki/scripts/feedback.mjs",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.agents/skills/llm-wiki/scripts/migrate.mjs",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.agents/skills/llm-wiki/scripts/query.mjs",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.agents/skills/llm-wiki/scripts/regressions.test.mjs",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.agents/skills/llm-wiki/scripts/sources.mjs",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.agents/skills/llm-wiki/scripts/transaction.mjs",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.agents/skills/llm-wiki/scripts/v2.test.mjs",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.agents/skills/llm-wiki/SKILL.md",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.agents/skills/llm-wiki/assets/CLAUDE.md.template",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.agents/skills/llm-wiki/references/compile.md",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.agents/skills/llm-wiki/references/ingest.md",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.agents/skills/llm-wiki/references/lint.md",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.agents/skills/llm-wiki/references/query.md",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.agents/skills/llm-wiki/references/schema.md",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.agents/skills/llm-wiki/references/writing.md",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.agents/skills/llm-wiki/scripts/advise.mjs",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.agents/skills/llm-wiki/scripts/advise.test.mjs",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.agents/skills/llm-wiki/scripts/extract.mjs",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.agents/skills/llm-wiki/scripts/extract.test.mjs",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.agents/skills/llm-wiki/scripts/inventory.mjs",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.agents/skills/llm-wiki/scripts/inventory.test.mjs",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.agents/skills/llm-wiki/scripts/lint-wikilinks.mjs",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.agents/skills/llm-wiki/scripts/lint-wikilinks.test.mjs",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.agents/skills/llm-wiki/references/transactions.md",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.agents/skills/llm-wiki/scripts/core.mjs",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.agents/skills/llm-wiki/scripts/feedback.mjs",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.agents/skills/llm-wiki/scripts/migrate.mjs",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.agents/skills/llm-wiki/scripts/query.mjs",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.agents/skills/llm-wiki/scripts/regressions.test.mjs",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.agents/skills/llm-wiki/scripts/sources.mjs",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.agents/skills/llm-wiki/scripts/transaction.mjs",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.agents/skills/llm-wiki/scripts/v2.test.mjs",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.agents/skills/llm-wiki/SKILL.md",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.agents/skills/llm-wiki/assets/CLAUDE.md.template",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.agents/skills/llm-wiki/references/compile.md",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.agents/skills/llm-wiki/references/ingest.md",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.agents/skills/llm-wiki/references/lint.md",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.agents/skills/llm-wiki/references/query.md",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.agents/skills/llm-wiki/references/schema.md",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.agents/skills/llm-wiki/references/writing.md",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.agents/skills/llm-wiki/scripts/advise.mjs",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.agents/skills/llm-wiki/scripts/advise.test.mjs",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.agents/skills/llm-wiki/scripts/extract.mjs",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.agents/skills/llm-wiki/scripts/extract.test.mjs",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.agents/skills/llm-wiki/scripts/inventory.mjs",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.agents/skills/llm-wiki/scripts/inventory.test.mjs",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.agents/skills/llm-wiki/scripts/lint-wikilinks.mjs",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.agents/skills/llm-wiki/scripts/lint-wikilinks.test.mjs",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.agents/skills/llm-wiki/references/transactions.md",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.agents/skills/llm-wiki/scripts/core.mjs",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.agents/skills/llm-wiki/scripts/feedback.mjs",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.agents/skills/llm-wiki/scripts/migrate.mjs",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.agents/skills/llm-wiki/scripts/query.mjs",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.agents/skills/llm-wiki/scripts/regressions.test.mjs",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.agents/skills/llm-wiki/scripts/sources.mjs",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.agents/skills/llm-wiki/scripts/transaction.mjs",
+      "unchanged": true
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.agents/skills/llm-wiki/scripts/v2.test.mjs",
+      "unchanged": true
+    },
+    {
+      "path": ".agents/skills/llm-wiki/SKILL.md",
+      "unchanged": true
+    },
+    {
+      "path": ".agents/skills/llm-wiki/assets/CLAUDE.md.template",
+      "unchanged": true
+    },
+    {
+      "path": ".agents/skills/llm-wiki/assets/fixtures/broken-wiki/wiki/CLAUDE.md",
+      "unchanged": true
+    },
+    {
+      "path": ".agents/skills/llm-wiki/assets/fixtures/broken-wiki/wiki/index.md",
+      "unchanged": true
+    },
+    {
+      "path": ".agents/skills/llm-wiki/assets/fixtures/broken-wiki/wiki/log.md",
+      "unchanged": true
+    },
+    {
+      "path": ".agents/skills/llm-wiki/assets/fixtures/broken-wiki/wiki/\u5b58\u5728\u7684\u9875.md",
+      "unchanged": true
+    },
+    {
+      "path": ".agents/skills/llm-wiki/references/compile.md",
+      "unchanged": true
+    },
+    {
+      "path": ".agents/skills/llm-wiki/references/discover.md",
+      "unchanged": true
+    },
+    {
+      "path": ".agents/skills/llm-wiki/references/ingest.md",
+      "unchanged": true
+    },
+    {
+      "path": ".agents/skills/llm-wiki/references/lint.md",
+      "unchanged": true
+    },
+    {
+      "path": ".agents/skills/llm-wiki/references/query.md",
+      "unchanged": true
+    },
+    {
+      "path": ".agents/skills/llm-wiki/references/schema.md",
+      "unchanged": true
+    },
+    {
+      "path": ".agents/skills/llm-wiki/references/transactions.md",
+      "unchanged": true
+    },
+    {
+      "path": ".agents/skills/llm-wiki/references/writing.md",
+      "unchanged": true
+    },
+    {
+      "path": ".agents/skills/llm-wiki/scripts/advise.mjs",
+      "unchanged": true
+    },
+    {
+      "path": ".agents/skills/llm-wiki/scripts/advise.test.mjs",
+      "unchanged": true
+    },
+    {
+      "path": ".agents/skills/llm-wiki/scripts/core.mjs",
+      "unchanged": true
+    },
+    {
+      "path": ".agents/skills/llm-wiki/scripts/extract.mjs",
+      "unchanged": true
+    },
+    {
+      "path": ".agents/skills/llm-wiki/scripts/extract.test.mjs",
+      "unchanged": true
+    },
+    {
+      "path": ".agents/skills/llm-wiki/scripts/feedback.mjs",
+      "unchanged": true
+    },
+    {
+      "path": ".agents/skills/llm-wiki/scripts/inventory.mjs",
+      "unchanged": true
+    },
+    {
+      "path": ".agents/skills/llm-wiki/scripts/inventory.test.mjs",
+      "unchanged": true
+    },
+    {
+      "path": ".agents/skills/llm-wiki/scripts/lint-wikilinks.mjs",
+      "unchanged": true
+    },
+    {
+      "path": ".agents/skills/llm-wiki/scripts/lint-wikilinks.test.mjs",
+      "unchanged": true
+    },
+    {
+      "path": ".agents/skills/llm-wiki/scripts/migrate.mjs",
+      "unchanged": true
+    },
+    {
+      "path": ".agents/skills/llm-wiki/scripts/query.mjs",
+      "unchanged": true
+    },
+    {
+      "path": ".agents/skills/llm-wiki/scripts/regressions.test.mjs",
+      "unchanged": true
+    },
+    {
+      "path": ".agents/skills/llm-wiki/scripts/sources.mjs",
+      "unchanged": true
+    },
+    {
+      "path": ".agents/skills/llm-wiki/scripts/transaction.mjs",
+      "unchanged": true
+    },
+    {
+      "path": ".agents/skills/llm-wiki/scripts/v2.test.mjs",
+      "unchanged": true
+    }
+  ]
+}

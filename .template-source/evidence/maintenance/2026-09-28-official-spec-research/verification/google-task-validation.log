@@ -1,0 +1,3 @@
+数字人任务包验证失败: verification_results.0: Additional properties are not allowed ('log_ref', 'observed_at', 'scope' were unexpected)
+verification_results.0: 'executed_at' is a required property
+verification_results.0: 'evidence_ref' is a required property
