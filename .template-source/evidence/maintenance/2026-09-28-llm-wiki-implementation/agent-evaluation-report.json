@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "status": "incomplete",
+  "maximum_agent_starts": 20,
+  "actual_agent_starts": 1,
+  "completed_turns": 0,
+  "baseline_attempted": [
+    "query-general"
+  ],
+  "baseline_unattempted": [
+    "query-body-alias",
+    "query-cross-page",
+    "query-drift",
+    "query-missing-external",
+    "query-injection",
+    "operation-init",
+    "operation-migrate-refresh",
+    "operation-unconfirmed-ingest",
+    "operation-resume"
+  ],
+  "candidate_attempted": [],
+  "candidate_unattempted": [
+    "query-general",
+    "query-body-alias",
+    "query-cross-page",
+    "query-drift",
+    "query-missing-external",
+    "query-injection",
+    "operation-init",
+    "operation-migrate-refresh",
+    "operation-unconfirmed-ingest",
+    "operation-resume"
+  ],
+  "reason": "The gpt-6-sol model is not supported when using this Codex CLI with the ChatGPT account.",
+  "runtime_error_evidence": "agent-baseline/query-general-1/trace.jsonl",
+  "configuration": {
+    "suite_sha256": "6a249bd76a7d98c802cf8d4baf93ac3a8c2fa6ebd9cc526ba9e02e15f0c8c5cc",
+    "model": "gpt-6-sol",
+    "reasoning_effort": "high",
+    "repetitions": 1,
+    "max_turns_each": 10,
+    "timeout_seconds": 180,
+    "max_seconds_each": 1800,
+    "runner": ".template-source/scripts/skills-agent-eval.py",
+    "no_retries": true
+  },
+  "retry_performed": false,
+  "automatic_expansion_performed": false,
+  "correctness_comparison": null,
+  "source_support_comparison": null,
+  "input_tokens": null,
+  "output_tokens": null,
+  "read_bytes": null,
+  "tool_calls": null,
+  "elapsed_comparison": null,
+  "human_roundtrips": null,
+  "money": null,
+  "reliability_directional_result": "deterministic regressions passed; no completed real-agent observations",
+  "efficiency_verified": false,
+  "maintenance_ready": false,
+  "next_step": "需要实际支持所选模型的运行时，以及对因启动失败而重试/重新安排配对预算的明确决定；不得自动扩到21次。"
+}

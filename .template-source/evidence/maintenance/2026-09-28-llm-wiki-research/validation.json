@@ -1,0 +1,16 @@
+{
+  "verifiedAt": "2026-09-28T03:15:02.951734+00:00",
+  "command": [
+    "node",
+    ".agents/skills/yss-research/scripts/validate-research-package.mjs",
+    ".template-source/evidence/maintenance/2026-09-28-llm-wiki-research/llm-wiki-research-brief.md",
+    ".template-source/evidence/maintenance/2026-09-28-llm-wiki-research/llm-wiki-evidence.yaml"
+  ],
+  "exitCode": 0,
+  "elapsedSeconds": 0.03757099999347702,
+  "stdout": "YSS research package valid (technical-evidence, 13 claims, 26 evidence items, 12 searches)\n",
+  "stderr": "",
+  "localReportLinksChecked": 20,
+  "missingLocalLinks": [],
+  "scope": "Research package only; no skill implementation or release verification"
+}

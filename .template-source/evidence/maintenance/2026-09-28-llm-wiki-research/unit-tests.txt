@@ -1,0 +1,26 @@
+✔ advise reports one-way links, missing terms, unreferenced raw, and suspects without failing lint (9.06775ms)
+✔ advise CLI exits 0 and prints JSON (36.183834ms)
+✔ concept-table.md is infrastructure and does not fail lint as an orphan (2.93775ms)
+✔ skill-names lists shared and platform keys, sorted, without hashes (6.483333ms)
+✔ skill-names rejects a whole-file dump of a non-object (0.249458ms)
+✔ declared extract kinds stay the documented set (0.749542ms)
+✔ hash-sources fills sha256; drift is empty until live file changes (18.607292ms)
+✔ unmapped candidates are listed without scanning the tree (0.136125ms)
+✔ drift CLI exits 0 when sources changed and prints JSON (45.361959ms)
+✔ status CLI exits 0 and lists unmapped candidates (44.844917ms)
+✔ broken fixture fails on dangling wikilink (4.339166ms)
+✔ complete wiki passes wikilink, index, and source-section checks (1.78675ms)
+✔ cross-path wikilink fails instead of being ignored (1.0445ms)
+✔ manifest sha256 mismatch is stale (1.952958ms)
+✔ closed manifest passes listing, id, sourceIds, profile, and rawPath checks (1.253083ms)
+✔ open manifest fails unlisted article, id mismatch, unknown source, profile kind, and rawPath (2.101458ms)
+✔ derived source requires a known extract.kind (2.485959ms)
+✔ document rawPath must exist on disk (1.969458ms)
+ℹ tests 18
+ℹ suites 0
+ℹ pass 18
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 155.342875

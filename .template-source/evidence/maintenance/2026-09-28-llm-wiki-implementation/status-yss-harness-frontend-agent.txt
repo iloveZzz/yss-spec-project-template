@@ -1,0 +1,26 @@
+ M .agents/skills/llm-wiki/SKILL.md
+ M .agents/skills/llm-wiki/assets/CLAUDE.md.template
+ M .agents/skills/llm-wiki/references/compile.md
+ M .agents/skills/llm-wiki/references/ingest.md
+ M .agents/skills/llm-wiki/references/lint.md
+ M .agents/skills/llm-wiki/references/query.md
+ M .agents/skills/llm-wiki/references/schema.md
+ M .agents/skills/llm-wiki/references/writing.md
+ M .agents/skills/llm-wiki/scripts/advise.mjs
+ M .agents/skills/llm-wiki/scripts/advise.test.mjs
+ M .agents/skills/llm-wiki/scripts/extract.mjs
+ M .agents/skills/llm-wiki/scripts/extract.test.mjs
+ M .agents/skills/llm-wiki/scripts/inventory.mjs
+ M .agents/skills/llm-wiki/scripts/inventory.test.mjs
+ M .agents/skills/llm-wiki/scripts/lint-wikilinks.mjs
+ M .agents/skills/llm-wiki/scripts/lint-wikilinks.test.mjs
+ M skills-lock.json
+?? .agents/skills/llm-wiki/references/transactions.md
+?? .agents/skills/llm-wiki/scripts/core.mjs
+?? .agents/skills/llm-wiki/scripts/feedback.mjs
+?? .agents/skills/llm-wiki/scripts/migrate.mjs
+?? .agents/skills/llm-wiki/scripts/query.mjs
+?? .agents/skills/llm-wiki/scripts/regressions.test.mjs
+?? .agents/skills/llm-wiki/scripts/sources.mjs
+?? .agents/skills/llm-wiki/scripts/transaction.mjs
+?? .agents/skills/llm-wiki/scripts/v2.test.mjs

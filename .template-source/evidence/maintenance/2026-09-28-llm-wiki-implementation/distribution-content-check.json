@@ -1,0 +1,25 @@
+{
+  "real_wiki_unchanged": true,
+  "cli": [
+    {
+      "cli": "create-yss-strategic-design",
+      "sourceState": "working-tree",
+      "skill_files_matched": 30
+    },
+    {
+      "cli": "create-yss-harness-backend",
+      "sourceState": "working-tree",
+      "skill_files_matched": 30
+    },
+    {
+      "cli": "create-yss-harness-frontend",
+      "sourceState": "working-tree",
+      "skill_files_matched": 30
+    },
+    {
+      "cli": "create-yss-spec",
+      "sourceState": "working-tree",
+      "skill_files_matched": 30
+    }
+  ]
+}

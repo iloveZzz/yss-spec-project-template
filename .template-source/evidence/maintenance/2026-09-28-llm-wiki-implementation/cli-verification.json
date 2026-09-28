@@ -1,0 +1,116 @@
+[
+  {
+    "repo": "submodules/create-yss-strategic-design",
+    "command": [
+      "node",
+      "scripts/sync-template.mjs",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-design-agent",
+      "WORKTREE"
+    ],
+    "exit": 0,
+    "seconds": 0.18,
+    "log": "cli-design-sync-template.txt"
+  },
+  {
+    "repo": "submodules/create-yss-strategic-design",
+    "command": [
+      "node",
+      "scripts/sync-template.mjs",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-design-agent",
+      "WORKTREE",
+      "--check"
+    ],
+    "exit": 0,
+    "seconds": 0.14,
+    "log": "cli-design-sync-template-check.txt"
+  },
+  {
+    "repo": "submodules/create-yss-strategic-design",
+    "command": [
+      "node",
+      "scripts/verify-bundle.mjs"
+    ],
+    "exit": 0,
+    "seconds": 0.08,
+    "log": "cli-design-verify-bundle.txt"
+  },
+  {
+    "repo": "submodules/create-yss-harness-backend",
+    "command": [
+      "node",
+      "scripts/sync-template.mjs",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-backend-agent",
+      "WORKTREE"
+    ],
+    "exit": 0,
+    "seconds": 0.32,
+    "log": "cli-backend-sync-template.txt"
+  },
+  {
+    "repo": "submodules/create-yss-harness-backend",
+    "command": [
+      "node",
+      "scripts/sync-template.mjs",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-backend-agent",
+      "WORKTREE",
+      "--check"
+    ],
+    "exit": 0,
+    "seconds": 0.23,
+    "log": "cli-backend-sync-template-check.txt"
+  },
+  {
+    "repo": "submodules/create-yss-harness-backend",
+    "command": [
+      "node",
+      "scripts/verify-bundle.mjs"
+    ],
+    "exit": 0,
+    "seconds": 0.1,
+    "log": "cli-backend-verify-bundle.txt"
+  },
+  {
+    "repo": "submodules/create-yss-harness-frontend",
+    "command": [
+      "node",
+      "scripts/sync-template.mjs",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-frontend-agent",
+      "WORKTREE"
+    ],
+    "exit": 0,
+    "seconds": 0.38,
+    "log": "cli-frontend-sync-template.txt"
+  },
+  {
+    "repo": "submodules/create-yss-harness-frontend",
+    "command": [
+      "node",
+      "scripts/sync-template.mjs",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-frontend-agent",
+      "WORKTREE",
+      "--check"
+    ],
+    "exit": 0,
+    "seconds": 0.25,
+    "log": "cli-frontend-sync-template-check.txt"
+  },
+  {
+    "repo": "submodules/create-yss-harness-frontend",
+    "command": [
+      "node",
+      "scripts/verify-bundle.mjs"
+    ],
+    "exit": 0,
+    "seconds": 0.12,
+    "log": "cli-frontend-verify-bundle.txt"
+  },
+  {
+    "repo": "submodules/create-yss-spec",
+    "command": [
+      "node",
+      "scripts/sync-template.js"
+    ],
+    "exit": 0,
+    "log": "cli-spec-sync-template.txt"
+  }
+]

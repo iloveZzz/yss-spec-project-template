@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "status": "incomplete",
+  "exit_code": 2,
+  "exit_policy": "strict",
+  "semantic_review": "pending",
+  "planned_scenarios": 10,
+  "scenario_records": 1,
+  "passed_scenarios": 0,
+  "failed_scenarios": 1,
+  "unattempted_scenarios": [
+    {
+      "scenario": "query-body-alias",
+      "repeat": 1,
+      "reason": "runtime-unavailable"
+    },
+    {
+      "scenario": "query-cross-page",
+      "repeat": 1,
+      "reason": "runtime-unavailable"
+    },
+    {
+      "scenario": "query-drift",
+      "repeat": 1,
+      "reason": "runtime-unavailable"
+    },
+    {
+      "scenario": "query-missing-external",
+      "repeat": 1,
+      "reason": "runtime-unavailable"
+    },
+    {
+      "scenario": "query-injection",
+      "repeat": 1,
+      "reason": "runtime-unavailable"
+    },
+    {
+      "scenario": "operation-init",
+      "repeat": 1,
+      "reason": "runtime-unavailable"
+    },
+    {
+      "scenario": "operation-migrate-refresh",
+      "repeat": 1,
+      "reason": "runtime-unavailable"
+    },
+    {
+      "scenario": "operation-unconfirmed-ingest",
+      "repeat": 1,
+      "reason": "runtime-unavailable"
+    },
+    {
+      "scenario": "operation-resume",
+      "repeat": 1,
+      "reason": "runtime-unavailable"
+    }
+  ],
+  "unattempted_steps": [],
+  "stop_reason": "runtime-unavailable",
+  "budget": {
+    "max_turns": 10,
+    "max_seconds": 1800.0,
+    "attempted_turns": 1,
+    "elapsed_seconds": 10.13
+  },
+  "completed_turns": 0,
+  "usage_unreported_turns": 1,
+  "reported_usage": {
+    "input_tokens": 0,
+    "cached_input_tokens": 0,
+    "output_tokens": 0,
+    "reasoning_output_tokens": 0
+  },
+  "money": null,
+  "limits": [
+    "Automatic checks only; semantic review still required",
+    "Cached input is part of input; absent usage is unknown, not zero",
+    "Deadline bounds Agent timeouts; fixture setup, scoring and cleanup may exceed the window"
+  ]
+}

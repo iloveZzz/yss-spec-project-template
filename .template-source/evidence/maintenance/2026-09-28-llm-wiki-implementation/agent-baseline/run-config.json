@@ -1,0 +1,17 @@
+{
+  "runtime": "/Users/zhudaoming/.local/bin/codex",
+  "runtime_sha256": "b973d440acac501fd2594a43e7ca9ce41e0a65b9dfb28d0d7a7837c99e1261e3",
+  "runner_sha256": "07811ab30d5f683126920eb45d470554f6ddc6c48b13faaf701ee110223bd90f",
+  "model": "gpt-6-sol",
+  "reasoning_effort": "high",
+  "repetitions": 1,
+  "suite_sha256": "6a249bd76a7d98c802cf8d4baf93ac3a8c2fa6ebd9cc526ba9e02e15f0c8c5cc",
+  "source": "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-28-llm-wiki-implementation/baseline",
+  "variant": "baseline",
+  "python_dependencies": null,
+  "python_runtime": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+  "exit_policy": "strict",
+  "max_turns": 10,
+  "max_seconds": 1800.0,
+  "per_turn_timeout_seconds": 180
+}

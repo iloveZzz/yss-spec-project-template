@@ -1,0 +1,1570 @@
+{
+  "schema_version": 1,
+  "profiles": [
+    "design",
+    "backend",
+    "frontend"
+  ],
+  "changes": [
+    {
+      "profile": "design",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/llm-wiki/SKILL.md",
+      "before_sha256": "6633e57ceb41c51ab9e265b7dadeb57cfa58475ee48e64ef9292ba336760385d",
+      "after_sha256": "1594b44d0871700075f7c13aa0cb7bdea34c90a3a6fa16f29c0721536dc94edb"
+    },
+    {
+      "profile": "design",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/llm-wiki/assets/CLAUDE.md.template",
+      "before_sha256": "60f756cdef57ce890d65bc965b588e8a09503184ff55f9e3d9609cbb40b654f6",
+      "after_sha256": "9f488ae57b4b72b041feac96fb7858813b7d630b786836ea38dc47f0191ca98e"
+    },
+    {
+      "profile": "design",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/llm-wiki/references/compile.md",
+      "before_sha256": "516d154e67450bac8475b6088ca38ff0feb52682a2b06fb6ae7871541bbb089e",
+      "after_sha256": "cad9587c5f38d5d7d0a53d64bc22d9e0a81551c98e73722ff3e5ddfeec4a24b4"
+    },
+    {
+      "profile": "design",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/llm-wiki/references/ingest.md",
+      "before_sha256": "188fa89752be386025189d4e9be758925b99731fb5f5eae018436954c800f3f0",
+      "after_sha256": "a49b0aeedbb442bb1402245c4effec2ff32f514ed0a50c02a9fe66e71d445f12"
+    },
+    {
+      "profile": "design",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/llm-wiki/references/lint.md",
+      "before_sha256": "82ceed19186125ce166a3e1b5dea09c46d339e4880c935c34c801ec8af602d71",
+      "after_sha256": "4f6f5ff0e86b6b314c9268a9945e051b46cab84445d8e8d9033846b032d84fe6"
+    },
+    {
+      "profile": "design",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/llm-wiki/references/query.md",
+      "before_sha256": "33271b45622f18e0e01b1b24b37b6c7475ff26d7a782dec2e556e78a530c2908",
+      "after_sha256": "a62e234b6bcd81ed11a0a88e13c9d8d219106d0be14925f92bf5ae32bf080145"
+    },
+    {
+      "profile": "design",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/llm-wiki/references/schema.md",
+      "before_sha256": "85e6765916f88b7f93e1183755f2b245768d1974fcc841cd6a27df8094659a17",
+      "after_sha256": "84ad615d6a585643403e4d5282fc135c3d44627d5736a794a75279a22fd713e8"
+    },
+    {
+      "profile": "design",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/llm-wiki/references/transactions.md",
+      "before_sha256": null,
+      "after_sha256": "4719f98346e1cd697ca497d256911d57e4a1be0c22b44158b958fcaa7e1796ed"
+    },
+    {
+      "profile": "design",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/llm-wiki/references/writing.md",
+      "before_sha256": "999770fcdd752a4e8ffe8c19f300c711cac6290daa8da7663d678f0738902347",
+      "after_sha256": "5d9dbfdf6865e55fd94c74a3c5aa7cb6875dcca0ffaa5c2aafb5d507affd6490"
+    },
+    {
+      "profile": "design",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/llm-wiki/scripts/advise.mjs",
+      "before_sha256": "c278dddfce2b19d143298dc9496a7f2d36d213ff0b62ceadfba0883a74cfd9e1",
+      "after_sha256": "7d9eef8f72ffb18718a80121877ab3b5cb95d7a8ea5204136c730881fc4f61d5"
+    },
+    {
+      "profile": "design",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/llm-wiki/scripts/advise.test.mjs",
+      "before_sha256": "1d5e4a4c8a0213e447cd7e04ee45b0ab4a7c9ce59ce2997192830b35386ed34d",
+      "after_sha256": "c5f48e0106412f426f76a0667dd991609bec8ffc00db3318e90716862b66f8f0"
+    },
+    {
+      "profile": "design",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/llm-wiki/scripts/core.mjs",
+      "before_sha256": null,
+      "after_sha256": "705020f50fccdef3403af890ccbe42782ee03eedfb17debee74318087b4bce9b"
+    },
+    {
+      "profile": "design",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/llm-wiki/scripts/extract.mjs",
+      "before_sha256": "6caa36c906e6b1c10e9e63c036849d4dad41137d4b3ee52ec936decadff28ea1",
+      "after_sha256": "496742d4127d5f04f470a1340b344c87f792fc048c3d6f2940317fbcad8af1b9"
+    },
+    {
+      "profile": "design",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/llm-wiki/scripts/feedback.mjs",
+      "before_sha256": null,
+      "after_sha256": "ad7d3d9d1f15bcec2fed5e2ca722fee37d0d31d5532592fd7f2b7696f36c044c"
+    },
+    {
+      "profile": "design",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/llm-wiki/scripts/inventory.mjs",
+      "before_sha256": "fd4a9194589490076f824669fea55681c669d8d0fbf4d10f2508968364eb89e8",
+      "after_sha256": "f132f8f2eb71564557621299f1b2a3f040ff771d30f5abb9b1a8c2a91a3d6ee4"
+    },
+    {
+      "profile": "design",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/llm-wiki/scripts/inventory.test.mjs",
+      "before_sha256": "53a9c08059180a1175f7386b016e6ca1b53aa6933eecd6559a6d45166336343a",
+      "after_sha256": "424882b020ece45f7c7aca8dbd908c489fff519b14617c5cd8496141f03fc68c"
+    },
+    {
+      "profile": "design",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/llm-wiki/scripts/lint-wikilinks.mjs",
+      "before_sha256": "e5de65d74a51129a277e6b06308b1770b81d7fbe4803cf7522d81f64fea4d49d",
+      "after_sha256": "f5963a83c652f3620221c57f256a51dec05525574f8826770825e66134bda201"
+    },
+    {
+      "profile": "design",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/llm-wiki/scripts/lint-wikilinks.test.mjs",
+      "before_sha256": "c2f3da3f177d9922d33b40933c981df7b13b80f2fc7eedaa9231b1d7564841c8",
+      "after_sha256": "78c95cf9922b79380647e9cfe1278677110a73fb3f6572ec635e3a7d32ef280e"
+    },
+    {
+      "profile": "design",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/llm-wiki/scripts/migrate.mjs",
+      "before_sha256": null,
+      "after_sha256": "859cee1766883e74dae04efa06032417f9a4e8af976635876f04d8eaca4028c2"
+    },
+    {
+      "profile": "design",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/llm-wiki/scripts/query.mjs",
+      "before_sha256": null,
+      "after_sha256": "b2116e51915dd54254451f97a151c333d111a3c66f6c0d82188d91e62e42c3f0"
+    },
+    {
+      "profile": "design",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/llm-wiki/scripts/regressions.test.mjs",
+      "before_sha256": null,
+      "after_sha256": "5b0554c9841e75260cde60475914d23366341d9a11bc4e47423119ed0bf4f68d"
+    },
+    {
+      "profile": "design",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/llm-wiki/scripts/sources.mjs",
+      "before_sha256": null,
+      "after_sha256": "2b86974251177a4ea85bf35f754a1e8e58521129bb35f4db3403d94352e65a22"
+    },
+    {
+      "profile": "design",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/llm-wiki/scripts/transaction.mjs",
+      "before_sha256": null,
+      "after_sha256": "e95cca12cfc461daedc28c28eeee7d09b6105cc6a88a007afa659cc828b8a9d8"
+    },
+    {
+      "profile": "design",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/llm-wiki/scripts/v2.test.mjs",
+      "before_sha256": null,
+      "after_sha256": "6cc9b0dfd25e8afedd107202d5013df7d4352ba7d741da828104956dd4b56085"
+    },
+    {
+      "profile": "backend",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/llm-wiki/SKILL.md",
+      "before_sha256": "6633e57ceb41c51ab9e265b7dadeb57cfa58475ee48e64ef9292ba336760385d",
+      "after_sha256": "1594b44d0871700075f7c13aa0cb7bdea34c90a3a6fa16f29c0721536dc94edb"
+    },
+    {
+      "profile": "backend",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/llm-wiki/assets/CLAUDE.md.template",
+      "before_sha256": "60f756cdef57ce890d65bc965b588e8a09503184ff55f9e3d9609cbb40b654f6",
+      "after_sha256": "9f488ae57b4b72b041feac96fb7858813b7d630b786836ea38dc47f0191ca98e"
+    },
+    {
+      "profile": "backend",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/llm-wiki/references/compile.md",
+      "before_sha256": "516d154e67450bac8475b6088ca38ff0feb52682a2b06fb6ae7871541bbb089e",
+      "after_sha256": "cad9587c5f38d5d7d0a53d64bc22d9e0a81551c98e73722ff3e5ddfeec4a24b4"
+    },
+    {
+      "profile": "backend",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/llm-wiki/references/ingest.md",
+      "before_sha256": "188fa89752be386025189d4e9be758925b99731fb5f5eae018436954c800f3f0",
+      "after_sha256": "a49b0aeedbb442bb1402245c4effec2ff32f514ed0a50c02a9fe66e71d445f12"
+    },
+    {
+      "profile": "backend",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/llm-wiki/references/lint.md",
+      "before_sha256": "82ceed19186125ce166a3e1b5dea09c46d339e4880c935c34c801ec8af602d71",
+      "after_sha256": "4f6f5ff0e86b6b314c9268a9945e051b46cab84445d8e8d9033846b032d84fe6"
+    },
+    {
+      "profile": "backend",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/llm-wiki/references/query.md",
+      "before_sha256": "33271b45622f18e0e01b1b24b37b6c7475ff26d7a782dec2e556e78a530c2908",
+      "after_sha256": "a62e234b6bcd81ed11a0a88e13c9d8d219106d0be14925f92bf5ae32bf080145"
+    },
+    {
+      "profile": "backend",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/llm-wiki/references/schema.md",
+      "before_sha256": "85e6765916f88b7f93e1183755f2b245768d1974fcc841cd6a27df8094659a17",
+      "after_sha256": "84ad615d6a585643403e4d5282fc135c3d44627d5736a794a75279a22fd713e8"
+    },
+    {
+      "profile": "backend",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/llm-wiki/references/transactions.md",
+      "before_sha256": null,
+      "after_sha256": "4719f98346e1cd697ca497d256911d57e4a1be0c22b44158b958fcaa7e1796ed"
+    },
+    {
+      "profile": "backend",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/llm-wiki/references/writing.md",
+      "before_sha256": "999770fcdd752a4e8ffe8c19f300c711cac6290daa8da7663d678f0738902347",
+      "after_sha256": "5d9dbfdf6865e55fd94c74a3c5aa7cb6875dcca0ffaa5c2aafb5d507affd6490"
+    },
+    {
+      "profile": "backend",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/llm-wiki/scripts/advise.mjs",
+      "before_sha256": "c278dddfce2b19d143298dc9496a7f2d36d213ff0b62ceadfba0883a74cfd9e1",
+      "after_sha256": "7d9eef8f72ffb18718a80121877ab3b5cb95d7a8ea5204136c730881fc4f61d5"
+    },
+    {
+      "profile": "backend",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/llm-wiki/scripts/advise.test.mjs",
+      "before_sha256": "1d5e4a4c8a0213e447cd7e04ee45b0ab4a7c9ce59ce2997192830b35386ed34d",
+      "after_sha256": "c5f48e0106412f426f76a0667dd991609bec8ffc00db3318e90716862b66f8f0"
+    },
+    {
+      "profile": "backend",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/llm-wiki/scripts/core.mjs",
+      "before_sha256": null,
+      "after_sha256": "705020f50fccdef3403af890ccbe42782ee03eedfb17debee74318087b4bce9b"
+    },
+    {
+      "profile": "backend",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/llm-wiki/scripts/extract.mjs",
+      "before_sha256": "6caa36c906e6b1c10e9e63c036849d4dad41137d4b3ee52ec936decadff28ea1",
+      "after_sha256": "496742d4127d5f04f470a1340b344c87f792fc048c3d6f2940317fbcad8af1b9"
+    },
+    {
+      "profile": "backend",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/llm-wiki/scripts/feedback.mjs",
+      "before_sha256": null,
+      "after_sha256": "ad7d3d9d1f15bcec2fed5e2ca722fee37d0d31d5532592fd7f2b7696f36c044c"
+    },
+    {
+      "profile": "backend",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/llm-wiki/scripts/inventory.mjs",
+      "before_sha256": "fd4a9194589490076f824669fea55681c669d8d0fbf4d10f2508968364eb89e8",
+      "after_sha256": "f132f8f2eb71564557621299f1b2a3f040ff771d30f5abb9b1a8c2a91a3d6ee4"
+    },
+    {
+      "profile": "backend",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/llm-wiki/scripts/inventory.test.mjs",
+      "before_sha256": "53a9c08059180a1175f7386b016e6ca1b53aa6933eecd6559a6d45166336343a",
+      "after_sha256": "424882b020ece45f7c7aca8dbd908c489fff519b14617c5cd8496141f03fc68c"
+    },
+    {
+      "profile": "backend",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/llm-wiki/scripts/lint-wikilinks.mjs",
+      "before_sha256": "e5de65d74a51129a277e6b06308b1770b81d7fbe4803cf7522d81f64fea4d49d",
+      "after_sha256": "f5963a83c652f3620221c57f256a51dec05525574f8826770825e66134bda201"
+    },
+    {
+      "profile": "backend",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/llm-wiki/scripts/lint-wikilinks.test.mjs",
+      "before_sha256": "c2f3da3f177d9922d33b40933c981df7b13b80f2fc7eedaa9231b1d7564841c8",
+      "after_sha256": "78c95cf9922b79380647e9cfe1278677110a73fb3f6572ec635e3a7d32ef280e"
+    },
+    {
+      "profile": "backend",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/llm-wiki/scripts/migrate.mjs",
+      "before_sha256": null,
+      "after_sha256": "859cee1766883e74dae04efa06032417f9a4e8af976635876f04d8eaca4028c2"
+    },
+    {
+      "profile": "backend",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/llm-wiki/scripts/query.mjs",
+      "before_sha256": null,
+      "after_sha256": "b2116e51915dd54254451f97a151c333d111a3c66f6c0d82188d91e62e42c3f0"
+    },
+    {
+      "profile": "backend",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/llm-wiki/scripts/regressions.test.mjs",
+      "before_sha256": null,
+      "after_sha256": "5b0554c9841e75260cde60475914d23366341d9a11bc4e47423119ed0bf4f68d"
+    },
+    {
+      "profile": "backend",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/llm-wiki/scripts/sources.mjs",
+      "before_sha256": null,
+      "after_sha256": "2b86974251177a4ea85bf35f754a1e8e58521129bb35f4db3403d94352e65a22"
+    },
+    {
+      "profile": "backend",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/llm-wiki/scripts/transaction.mjs",
+      "before_sha256": null,
+      "after_sha256": "e95cca12cfc461daedc28c28eeee7d09b6105cc6a88a007afa659cc828b8a9d8"
+    },
+    {
+      "profile": "backend",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/llm-wiki/scripts/v2.test.mjs",
+      "before_sha256": null,
+      "after_sha256": "6cc9b0dfd25e8afedd107202d5013df7d4352ba7d741da828104956dd4b56085"
+    },
+    {
+      "profile": "frontend",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/llm-wiki/SKILL.md",
+      "before_sha256": "6633e57ceb41c51ab9e265b7dadeb57cfa58475ee48e64ef9292ba336760385d",
+      "after_sha256": "1594b44d0871700075f7c13aa0cb7bdea34c90a3a6fa16f29c0721536dc94edb"
+    },
+    {
+      "profile": "frontend",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/llm-wiki/assets/CLAUDE.md.template",
+      "before_sha256": "60f756cdef57ce890d65bc965b588e8a09503184ff55f9e3d9609cbb40b654f6",
+      "after_sha256": "9f488ae57b4b72b041feac96fb7858813b7d630b786836ea38dc47f0191ca98e"
+    },
+    {
+      "profile": "frontend",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/llm-wiki/references/compile.md",
+      "before_sha256": "516d154e67450bac8475b6088ca38ff0feb52682a2b06fb6ae7871541bbb089e",
+      "after_sha256": "cad9587c5f38d5d7d0a53d64bc22d9e0a81551c98e73722ff3e5ddfeec4a24b4"
+    },
+    {
+      "profile": "frontend",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/llm-wiki/references/ingest.md",
+      "before_sha256": "188fa89752be386025189d4e9be758925b99731fb5f5eae018436954c800f3f0",
+      "after_sha256": "a49b0aeedbb442bb1402245c4effec2ff32f514ed0a50c02a9fe66e71d445f12"
+    },
+    {
+      "profile": "frontend",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/llm-wiki/references/lint.md",
+      "before_sha256": "82ceed19186125ce166a3e1b5dea09c46d339e4880c935c34c801ec8af602d71",
+      "after_sha256": "4f6f5ff0e86b6b314c9268a9945e051b46cab84445d8e8d9033846b032d84fe6"
+    },
+    {
+      "profile": "frontend",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/llm-wiki/references/query.md",
+      "before_sha256": "33271b45622f18e0e01b1b24b37b6c7475ff26d7a782dec2e556e78a530c2908",
+      "after_sha256": "a62e234b6bcd81ed11a0a88e13c9d8d219106d0be14925f92bf5ae32bf080145"
+    },
+    {
+      "profile": "frontend",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/llm-wiki/references/schema.md",
+      "before_sha256": "85e6765916f88b7f93e1183755f2b245768d1974fcc841cd6a27df8094659a17",
+      "after_sha256": "84ad615d6a585643403e4d5282fc135c3d44627d5736a794a75279a22fd713e8"
+    },
+    {
+      "profile": "frontend",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/llm-wiki/references/transactions.md",
+      "before_sha256": null,
+      "after_sha256": "4719f98346e1cd697ca497d256911d57e4a1be0c22b44158b958fcaa7e1796ed"
+    },
+    {
+      "profile": "frontend",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/llm-wiki/references/writing.md",
+      "before_sha256": "999770fcdd752a4e8ffe8c19f300c711cac6290daa8da7663d678f0738902347",
+      "after_sha256": "5d9dbfdf6865e55fd94c74a3c5aa7cb6875dcca0ffaa5c2aafb5d507affd6490"
+    },
+    {
+      "profile": "frontend",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/llm-wiki/scripts/advise.mjs",
+      "before_sha256": "c278dddfce2b19d143298dc9496a7f2d36d213ff0b62ceadfba0883a74cfd9e1",
+      "after_sha256": "7d9eef8f72ffb18718a80121877ab3b5cb95d7a8ea5204136c730881fc4f61d5"
+    },
+    {
+      "profile": "frontend",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/llm-wiki/scripts/advise.test.mjs",
+      "before_sha256": "1d5e4a4c8a0213e447cd7e04ee45b0ab4a7c9ce59ce2997192830b35386ed34d",
+      "after_sha256": "c5f48e0106412f426f76a0667dd991609bec8ffc00db3318e90716862b66f8f0"
+    },
+    {
+      "profile": "frontend",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/llm-wiki/scripts/core.mjs",
+      "before_sha256": null,
+      "after_sha256": "705020f50fccdef3403af890ccbe42782ee03eedfb17debee74318087b4bce9b"
+    },
+    {
+      "profile": "frontend",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/llm-wiki/scripts/extract.mjs",
+      "before_sha256": "6caa36c906e6b1c10e9e63c036849d4dad41137d4b3ee52ec936decadff28ea1",
+      "after_sha256": "496742d4127d5f04f470a1340b344c87f792fc048c3d6f2940317fbcad8af1b9"
+    },
+    {
+      "profile": "frontend",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/llm-wiki/scripts/feedback.mjs",
+      "before_sha256": null,
+      "after_sha256": "ad7d3d9d1f15bcec2fed5e2ca722fee37d0d31d5532592fd7f2b7696f36c044c"
+    },
+    {
+      "profile": "frontend",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/llm-wiki/scripts/inventory.mjs",
+      "before_sha256": "fd4a9194589490076f824669fea55681c669d8d0fbf4d10f2508968364eb89e8",
+      "after_sha256": "f132f8f2eb71564557621299f1b2a3f040ff771d30f5abb9b1a8c2a91a3d6ee4"
+    },
+    {
+      "profile": "frontend",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/llm-wiki/scripts/inventory.test.mjs",
+      "before_sha256": "53a9c08059180a1175f7386b016e6ca1b53aa6933eecd6559a6d45166336343a",
+      "after_sha256": "424882b020ece45f7c7aca8dbd908c489fff519b14617c5cd8496141f03fc68c"
+    },
+    {
+      "profile": "frontend",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/llm-wiki/scripts/lint-wikilinks.mjs",
+      "before_sha256": "e5de65d74a51129a277e6b06308b1770b81d7fbe4803cf7522d81f64fea4d49d",
+      "after_sha256": "f5963a83c652f3620221c57f256a51dec05525574f8826770825e66134bda201"
+    },
+    {
+      "profile": "frontend",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/llm-wiki/scripts/lint-wikilinks.test.mjs",
+      "before_sha256": "c2f3da3f177d9922d33b40933c981df7b13b80f2fc7eedaa9231b1d7564841c8",
+      "after_sha256": "78c95cf9922b79380647e9cfe1278677110a73fb3f6572ec635e3a7d32ef280e"
+    },
+    {
+      "profile": "frontend",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/llm-wiki/scripts/migrate.mjs",
+      "before_sha256": null,
+      "after_sha256": "859cee1766883e74dae04efa06032417f9a4e8af976635876f04d8eaca4028c2"
+    },
+    {
+      "profile": "frontend",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/llm-wiki/scripts/query.mjs",
+      "before_sha256": null,
+      "after_sha256": "b2116e51915dd54254451f97a151c333d111a3c66f6c0d82188d91e62e42c3f0"
+    },
+    {
+      "profile": "frontend",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/llm-wiki/scripts/regressions.test.mjs",
+      "before_sha256": null,
+      "after_sha256": "5b0554c9841e75260cde60475914d23366341d9a11bc4e47423119ed0bf4f68d"
+    },
+    {
+      "profile": "frontend",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/llm-wiki/scripts/sources.mjs",
+      "before_sha256": null,
+      "after_sha256": "2b86974251177a4ea85bf35f754a1e8e58521129bb35f4db3403d94352e65a22"
+    },
+    {
+      "profile": "frontend",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/llm-wiki/scripts/transaction.mjs",
+      "before_sha256": null,
+      "after_sha256": "e95cca12cfc461daedc28c28eeee7d09b6105cc6a88a007afa659cc828b8a9d8"
+    },
+    {
+      "profile": "frontend",
+      "skill": "llm-wiki",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/llm-wiki/scripts/v2.test.mjs",
+      "before_sha256": null,
+      "after_sha256": "6cc9b0dfd25e8afedd107202d5013df7d4352ba7d741da828104956dd4b56085"
+    }
+  ],
+  "classifications": [
+    {
+      "profile": "design",
+      "skill": "competitive-intelligence",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "diagnosing-bugs",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "domain-modeling",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "grill-with-docs",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "grilling",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "handoff",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "i-have-adhd",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "llm-wiki",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "maintaining-skills",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "resolving-merge-conflicts",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "to-spec",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "to-tickets",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "wayfinder",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "writing-for-agents",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "yss-research",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "code-review",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "product-design",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "triage",
+      "classification": "adapted"
+    },
+    {
+      "profile": "design",
+      "skill": "yss-antd-design",
+      "classification": "retired"
+    },
+    {
+      "profile": "design",
+      "skill": "yss-antdv-next-design",
+      "classification": "retired"
+    },
+    {
+      "profile": "design",
+      "skill": "grill-me",
+      "classification": "retired"
+    },
+    {
+      "profile": "design",
+      "skill": "ask-matt",
+      "classification": "local-only"
+    },
+    {
+      "profile": "design",
+      "skill": "yss-strategic-design",
+      "classification": "local-only"
+    },
+    {
+      "profile": "design",
+      "skill": "yss-product-lifecycle",
+      "classification": "local-only"
+    },
+    {
+      "profile": "design",
+      "skill": "harness-orchestrator",
+      "classification": "excluded"
+    },
+    {
+      "profile": "design",
+      "skill": "yss-technical-design",
+      "classification": "excluded"
+    },
+    {
+      "profile": "design",
+      "skill": "yss-tactical-design",
+      "classification": "excluded"
+    },
+    {
+      "profile": "design",
+      "skill": "prototype-review",
+      "classification": "upstream"
+    },
+    {
+      "profile": "design",
+      "skill": "yss-prototype-stage",
+      "classification": "upstream"
+    },
+    {
+      "profile": "design",
+      "skill": "yss-design-system",
+      "classification": "upstream"
+    },
+    {
+      "profile": "design",
+      "skill": "yss-stage-decision",
+      "classification": "upstream"
+    },
+    {
+      "profile": "backend",
+      "skill": "alibaba-java-code-style",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "archify",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "codebase-design",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "cross-repo-implementation-routing",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "diagnosing-bugs",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "grilling",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "handoff",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "i-have-adhd",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "implement",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "implementation-repo-onboarding",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "improve-codebase-architecture",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "java-backend-commit",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "llm-wiki",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "lombok",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "maintaining-skills",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "mapstruct",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "resolving-merge-conflicts",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "tdd",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "to-questionnaire",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "to-spec",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "to-tickets",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "using-git-worktrees",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "writing-for-agents",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-application",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-cache",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-domain",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-exception",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-resilience4j",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-security-algorithm",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-up-springboot3",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-skill-source-index-refresh",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-userinfo",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-validation",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-web-controller",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-research",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-ddd-scaffold-generator",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-layered-mvc-scaffold-generator",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-dto",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "code-review",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-mybatis",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-repository",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-backend-spec-review",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "competitive-intelligence",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "domain-modeling",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "grill-with-docs",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "setup-matt-pocock-skills",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "wait-what",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "wayfinder",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-audit-log",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-distributed-id",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-excel-mvc",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-openapi-draft-review",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-technical-design",
+      "classification": "adapted"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-tactical-design",
+      "classification": "adapted"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-implementation-contract-compiler",
+      "classification": "adapted"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-openapi-governance",
+      "classification": "adapted"
+    },
+    {
+      "profile": "backend",
+      "skill": "prototype",
+      "classification": "adapted"
+    },
+    {
+      "profile": "backend",
+      "skill": "triage",
+      "classification": "adapted"
+    },
+    {
+      "profile": "backend",
+      "skill": "research",
+      "classification": "retired"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-antd-design",
+      "classification": "retired"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-antdv-next-design",
+      "classification": "retired"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-mvc-design",
+      "classification": "retired"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-mvc-data-analysis-project-initializer",
+      "classification": "retired"
+    },
+    {
+      "profile": "backend",
+      "skill": "grill-me",
+      "classification": "retired"
+    },
+    {
+      "profile": "backend",
+      "skill": "architecture-agent",
+      "classification": "local-only"
+    },
+    {
+      "profile": "backend",
+      "skill": "backend-agent",
+      "classification": "local-only"
+    },
+    {
+      "profile": "backend",
+      "skill": "harness-orchestrator",
+      "classification": "local-only"
+    },
+    {
+      "profile": "backend",
+      "skill": "test-agent",
+      "classification": "local-only"
+    },
+    {
+      "profile": "backend",
+      "skill": "frontend-agent",
+      "classification": "excluded"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-product-lifecycle",
+      "classification": "excluded"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-stage-decision",
+      "classification": "excluded"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-ui",
+      "classification": "excluded"
+    },
+    {
+      "profile": "frontend",
+      "skill": "archify",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "codebase-design",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "cross-repo-implementation-routing",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "diagnosing-bugs",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "file-export-download",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "formily-foundation",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "formily-linkage-effects",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "formily-mode-slot-detail",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "formily-step-flow",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "grilling",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "handoff",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "i-have-adhd",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "implement",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "implementation-repo-onboarding",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "improve-codebase-architecture",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "llm-wiki",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "maintaining-skills",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "prototype",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "resolving-merge-conflicts",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "tdd",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "theme-token-usage",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "to-questionnaire",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "to-spec",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "to-tickets",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "using-git-worktrees",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "writing-for-agents",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-frontend-scaffold-generator",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yedit-table-usage",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-hook",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-ui-business-page-generation",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "ytable-usage",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "ytree-usage",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-research",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-design-system",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "code-review",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "competitive-intelligence",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "domain-modeling",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "grill-with-docs",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "setup-matt-pocock-skills",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "wait-what",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "wayfinder",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-formily",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-formily-schema-generator",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-ui",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "product-design",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "data-analytics",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "frontend-commit",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-implementation-contract-compiler",
+      "classification": "adapted"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-openapi-governance",
+      "classification": "adapted"
+    },
+    {
+      "profile": "frontend",
+      "skill": "prototype-review",
+      "classification": "adapted"
+    },
+    {
+      "profile": "frontend",
+      "skill": "triage",
+      "classification": "adapted"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-api-integration",
+      "classification": "adapted"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-openapi-draft-review",
+      "classification": "adapted"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-skill-source-index-refresh",
+      "classification": "adapted"
+    },
+    {
+      "profile": "frontend",
+      "skill": "research",
+      "classification": "retired"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-antd-design",
+      "classification": "retired"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-antdv-next-design",
+      "classification": "retired"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-components",
+      "classification": "retired"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-microapp-commit",
+      "classification": "retired"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-page-module-development",
+      "classification": "retired"
+    },
+    {
+      "profile": "frontend",
+      "skill": "component-selection-imports",
+      "classification": "retired"
+    },
+    {
+      "profile": "frontend",
+      "skill": "page-form-module",
+      "classification": "retired"
+    },
+    {
+      "profile": "frontend",
+      "skill": "page-list-module",
+      "classification": "retired"
+    },
+    {
+      "profile": "frontend",
+      "skill": "page-skeleton",
+      "classification": "retired"
+    },
+    {
+      "profile": "frontend",
+      "skill": "vue3-best-practices",
+      "classification": "retired"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-use-table-height",
+      "classification": "retired"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-use-tree-height",
+      "classification": "retired"
+    },
+    {
+      "profile": "frontend",
+      "skill": "grill-me",
+      "classification": "retired"
+    },
+    {
+      "profile": "frontend",
+      "skill": "architecture-agent",
+      "classification": "local-only"
+    },
+    {
+      "profile": "frontend",
+      "skill": "frontend-agent",
+      "classification": "local-only"
+    },
+    {
+      "profile": "frontend",
+      "skill": "harness-orchestrator",
+      "classification": "local-only"
+    },
+    {
+      "profile": "frontend",
+      "skill": "test-agent",
+      "classification": "local-only"
+    },
+    {
+      "profile": "frontend",
+      "skill": "backend-agent",
+      "classification": "excluded"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-product-lifecycle",
+      "classification": "excluded"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-stage-decision",
+      "classification": "excluded"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-tactical-design",
+      "classification": "excluded"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-technical-design",
+      "classification": "excluded"
+    }
+  ],
+  "issues": [],
+  "counts": {
+    "updated": 45,
+    "added": 27
+  }
+}

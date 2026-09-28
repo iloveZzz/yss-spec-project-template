@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "deterministic_tests": {
+    "tests": 70,
+    "passed": 70,
+    "failed": 0,
+    "log": "unit-tests.txt"
+  },
+  "baseline_tests": {
+    "tests": 18,
+    "passed": 18,
+    "log": "baseline-unit-tests.txt"
+  },
+  "counterexamples_against_old": {
+    "tests": 12,
+    "failed_as_expected": 12,
+    "log": "baseline-regressions.txt"
+  },
+  "template_verification": {
+    "command": "scripts/verify-template-fast",
+    "requested_profile": "fast",
+    "effective_profile": "release",
+    "exit": 0,
+    "passed_checks": 94,
+    "environment": {
+      "node": "24.21.0",
+      "npm": "11.19.0",
+      "path_prefix": "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin"
+    },
+    "log": "verify-template-fast-final.txt",
+    "earlier_environment_failure": "verify-template-fast.txt"
+  },
+  "final_checks": [
+    {
+      "command": [
+        "scripts/sync-skills",
+        "--check"
+      ],
+      "exit": 0,
+      "log": "projection-check-final.txt"
+    },
+    {
+      "command": [
+        "scripts/update-skill-lock",
+        "--check"
+      ],
+      "exit": 0,
+      "log": "lock-check-final.txt"
+    },
+    {
+      "command": [
+        "scripts/verify-skill-governance"
+      ],
+      "exit": 0,
+      "log": "skill-governance-final.txt"
+    },
+    {
+      "command": [
+        "scripts/sync-profile-skills",
+        "--check",
+        "--profile=all",
+        "--json"
+      ],
+      "exit": 0,
+      "log": "profile-check-final.json"
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit": 0,
+      "log": "diff-check.txt"
+    },
+    {
+      "command": "compare final canonical to frozen candidate and actual wiki to original",
+      "exit": 0
+    }
+  ],
+  "profile_checks": "profile-verification-final.json",
+  "cli_checks": "cli-verification.json",
+  "spec_snapshot_check": "cli-spec-snapshot-check.json",
+  "real_wiki_unchanged": true,
+  "candidate_matches_final_skill": true,
+  "real_agent_comparison": "incomplete",
+  "efficiency_verified": false,
+  "implementation_ready": false,
+  "release_ready": false,
+  "committed_source_release_integration": "not-performed",
+  "publication": "not-performed"
+}

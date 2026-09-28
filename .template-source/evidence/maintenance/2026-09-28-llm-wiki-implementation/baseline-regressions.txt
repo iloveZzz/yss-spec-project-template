@@ -1,0 +1,690 @@
+✖ regression: hash observes without clearing drift or rewriting the manifest (28.565916ms)
+✖ regression: deletion permits structure-only maintenance but is never current (4.797667ms)
+✖ regression: an external snapshot is not an online unchanged source (4.1755ms)
+✖ regression: either ownership flag protects and mismatch is reported (7.344ms)
+✖ regression: rejects unknown schema (3.666917ms)
+✖ regression: rejects duplicate source IDs (7.175167ms)
+✖ regression: rejects empty source reference (24.097167ms)
+✖ regression: rejects unknown enum (9.815041ms)
+✖ regression: rejects escaping raw path (6.634042ms)
+✖ regression: empty source heading fails (2.638125ms)
+✖ regression: symlink outside wiki cannot be read as raw (2.831208ms)
+✖ regression: explicit factual dependencies propagate, ordinary links do not (3.399042ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 0
+ℹ fail 12
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 157.980792
+
+✖ failing tests:
+
+test at .agents/skills/llm-wiki/scripts/regressions.test.mjs:20:1
+✖ regression: hash observes without clearing drift or rewriting the manifest (28.565916ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  ... Skipped lines
+  
+  + Buffer(500) [Uint8Array] [
+  - Buffer(331) [Uint8Array] [
+      123,
+  +   10,
+  +   32,
+  +   32,
+      34,
+      115,
+      99,
+      104,
+      101,
+  ...
+      58,
+  +   32,
+      49,
+      44,
+  +   10,
+  +   32,
+  +   32,
+      34,
+      112,
+      114,
+      111,
+      102,
+  ...
+      58,
+  +   32,
+      34,
+      100,
+      111,
+      99,
+      117,
+  ...
+      44,
+  +   10,
+  +   32,
+  +   32,
+      34,
+      99,
+      111,
+      109,
+      112,
+  ...
+      58,
+  +   32,
+      34,
+      50,
+      48,
+      50,
+      54,
+      45,
+      48,
+  +   57,
+  -   49,
+      45,
+  +   50,
+  +   56,
+  +   84,
+      48,
+  +   51,
+  +   58,
+  +   51,
+  +   56,
+  +   58,
+  +   48,
+      49,
+  +   46,
+  +   51,
+  +   50,
+  +   48,
+  +   90,
+      34,
+      44,
+  +   10,
+  +   32,
+  +   32,
+      34,
+      115,
+      111,
+      117,
+      114,
+  ...
+      58,
+  +   32,
+      91,
+  +   10,
+  +   32,
+  +   32,
+  +   32,
+  +   32,
+      123,
+  +   10,
+  +   32,
+  +   32,
+  +   32,
+  +   32,
+  +   32,
+  +   32,
+      34,
+      105,
+      100,
+      34,
+      58,
+  +   32,
+      34,
+      115,
+      111,
+      117,
+      114,
+  ...
+      44,
+  +   10,
+  +   32,
+  +   32,
+  +   32,
+  +   32,
+  +   32,
+  +   32,
+      34,
+      107,
+      105,
+      110,
+      100,
+      34,
+      58,
+  +   32,
+      34,
+      100,
+      111,
+      99,
+      117,
+  ...
+      44,
+  +   10,
+  +   32,
+  +   32,
+  +   32,
+  +   32,
+  +   32,
+  +   32,
+      34,
+      108,
+      105,
+      118,
+      101,
+  ...
+      58,
+  +   32,
+      34,
+      115,
+      111,
+      117,
+      114,
+  ...
+      44,
+  +   10,
+  +   32,
+  +   32,
+  +   32,
+  +   32,
+  +   32,
+  +   32,
+      34,
+      114,
+      97,
+      119,
+      80,
+  ...
+      58,
+  +   32,
+      34,
+      114,
+      97,
+      119,
+      47,
+  ...
+      44,
+  +   10,
+  +   32,
+  +   32,
+  +   32,
+  +   32,
+  +   32,
+  +   32,
+      34,
+      115,
+      104,
+      97,
+      50,
+  ...
+      58,
+  +   32,
+      34,
+  +   55,
+  +   102,
+      56,
+  +   98,
+  +   49,
+  +   100,
+  -   54,
+      102,
+      99,
+  -   50,
+  -   56,
+      52,
+      54,
+  +   54,
+  -   49,
+  -   100,
+  -   51,
+  -   53,
+  -   55,
+  -   52,
+  -   50,
+      98,
+  +   54,
+  -   97,
+  -   99,
+      50,
+  +   52,
+  -   49,
+      57,
+      102,
+  +   48,
+  -   52,
+  -   50,
+      54,
+  +   99,
+  +   98,
+  -   102,
+  -   100,
+      101,
+  -   56,
+      53,
+  +   53,
+  -   52,
+      99,
+  +   57,
+  +   49,
+  -   97,
+  -   98,
+      55,
+  +   52,
+  -   98,
+  -   51,
+  -   48,
+  -   50,
+  -   97,
+  -   99,
+  -   48,
+  -   55,
+      100,
+  -   56,
+  -   48,
+      102,
+      50,
+  -   50,
+      53,
+  +   55,
+      56,
+  +   101,
+  -   48,
+      55,
+      55,
+  +   53,
+  +   52,
+  +   100,
+      97,
+  +   55,
+      57,
+  +   51,
+  +   102,
+      100,
+  +   101,
+  +   100,
+  +   50,
+  +   52,
+  +   52,
+  +   101,
+  +   102,
+  +   53,
+  +   99,
+  +   98,
+      97,
+      50,
+  +   97,
+  +   51,
+  -   50,
+  -   50,
+      56,
+  +   102,
+      49,
+  -   57,
+      34,
+  +   10,
+  +   32,
+  +   32,
+  +   32,
+  +   32,
+      125,
+  +   10,
+  +   32,
+  +   32,
+      93,
+      44,
+  +   10,
+  +   32,
+  +   32,
+      34,
+      97,
+      114,
+      116,
+      105,
+  ...
+      58,
+  +   32,
+      91,
+  +   10,
+  +   32,
+  +   32,
+  +   32,
+  +   32,
+      123,
+  +   10,
+  +   32,
+  +   32,
+  +   32,
+  +   32,
+  +   32,
+  +   32,
+      34,
+      105,
+      100,
+      34,
+      58,
+  +   32,
+      34,
+      65,
+      108,
+      112,
+      104,
+  ...
+      44,
+  +   10,
+  +   32,
+  +   32,
+  +   32,
+  +   32,
+  +   32,
+  +   32,
+      34,
+      102,
+      105,
+      108,
+      101,
+      34,
+      58,
+  +   32,
+      34,
+      119,
+      105,
+      107,
+      105,
+  ...
+      44,
+  +   10,
+  +   32,
+  +   32,
+  +   32,
+  +   32,
+  +   32,
+  +   32,
+      34,
+      115,
+      111,
+      117,
+      114,
+  ...
+      58,
+  +   32,
+      91,
+  +   10,
+  +   32,
+  +   32,
+  +   32,
+  +   32,
+  +   32,
+  +   32,
+  +   32,
+  +   32,
+      34,
+      115,
+      111,
+      117,
+      114,
+  ...
+      34,
+  +   10,
+  +   32,
+  +   32,
+  +   32,
+  +   32,
+  +   32,
+  +   32,
+      93,
+      44,
+  +   10,
+  +   32,
+  +   32,
+  +   32,
+  +   32,
+  +   32,
+  +   32,
+      34,
+      104,
+      117,
+      109,
+      97,
+  ...
+      58,
+  +   32,
+      102,
+      97,
+      108,
+      115,
+      101,
+  +   10,
+  +   32,
+  +   32,
+  +   32,
+  +   32,
+      125,
+  +   10,
+  +   32,
+  +   32,
+      93,
+  +   44,
+  +   10,
+  +   32,
+  +   32,
+  +   34,
+  +   103,
+  +   105,
+  +   116,
+  +   67,
+  +   111,
+  +   109,
+  +   109,
+  +   105,
+  +   116,
+  +   34,
+  +   58,
+  +   32,
+  +   34,
+  +   34,
+  +   10,
+      125,
+  +   10
+    ]
+  
+      at TestContext.<anonymous> (file:///Users/zhudaoming/Projects/yss-spec-project-template/.agents/skills/llm-wiki/scripts/regressions.test.mjs:20:282)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: <Buffer 7b 0a 20 20 22 73 63 68 65 6d 61 56 65 72 73 69 6f 6e 22 3a 20 31 2c 0a 20 20 22 70 72 6f 66 69 6c 65 22 3a 20 22 64 6f 63 75 6d 65 6e 74 73 22 2c 0a ... 450 more bytes>,
+    expected: <Buffer 7b 22 73 63 68 65 6d 61 56 65 72 73 69 6f 6e 22 3a 31 2c 22 70 72 6f 66 69 6c 65 22 3a 22 64 6f 63 75 6d 65 6e 74 73 22 2c 22 63 6f 6d 70 69 6c 65 64 ... 281 more bytes>,
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at .agents/skills/llm-wiki/scripts/regressions.test.mjs:21:1
+✖ regression: deletion permits structure-only maintenance but is never current (4.797667ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  false !== true
+  
+      at TestContext.<anonymous> (file:///Users/zhudaoming/Projects/yss-spec-project-template/.agents/skills/llm-wiki/scripts/regressions.test.mjs:21:171)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at .agents/skills/llm-wiki/scripts/regressions.test.mjs:22:1
+✖ regression: an external snapshot is not an online unchanged source (4.1755ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + [
+  +   'source'
+  + ]
+  - []
+  
+      at TestContext.<anonymous> (file:///Users/zhudaoming/Projects/yss-spec-project-template/.agents/skills/llm-wiki/scripts/regressions.test.mjs:22:191)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ 'source' ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at .agents/skills/llm-wiki/scripts/regressions.test.mjs:23:1
+✖ regression: either ownership flag protects and mismatch is reported (7.344ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(r.humanOwned.includes('Alpha'))
+  
+      at TestContext.<anonymous> (file:///Users/zhudaoming/Projects/yss-spec-project-template/.agents/skills/llm-wiki/scripts/regressions.test.mjs:23:273)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at .agents/skills/llm-wiki/scripts/regressions.test.mjs:30:4
+✖ regression: rejects unknown schema (3.666917ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///Users/zhudaoming/Projects/yss-spec-project-template/.agents/skills/llm-wiki/scripts/regressions.test.mjs:30:106)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at .agents/skills/llm-wiki/scripts/regressions.test.mjs:30:4
+✖ regression: rejects duplicate source IDs (7.175167ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///Users/zhudaoming/Projects/yss-spec-project-template/.agents/skills/llm-wiki/scripts/regressions.test.mjs:30:106)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at .agents/skills/llm-wiki/scripts/regressions.test.mjs:30:4
+✖ regression: rejects empty source reference (24.097167ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///Users/zhudaoming/Projects/yss-spec-project-template/.agents/skills/llm-wiki/scripts/regressions.test.mjs:30:106)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at .agents/skills/llm-wiki/scripts/regressions.test.mjs:30:4
+✖ regression: rejects unknown enum (9.815041ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///Users/zhudaoming/Projects/yss-spec-project-template/.agents/skills/llm-wiki/scripts/regressions.test.mjs:30:106)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at .agents/skills/llm-wiki/scripts/regressions.test.mjs:30:4
+✖ regression: rejects escaping raw path (6.634042ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///Users/zhudaoming/Projects/yss-spec-project-template/.agents/skills/llm-wiki/scripts/regressions.test.mjs:30:106)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at .agents/skills/llm-wiki/scripts/regressions.test.mjs:31:1
+✖ regression: empty source heading fails (2.638125ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///Users/zhudaoming/Projects/yss-spec-project-template/.agents/skills/llm-wiki/scripts/regressions.test.mjs:31:148)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at .agents/skills/llm-wiki/scripts/regressions.test.mjs:32:1
+✖ regression: symlink outside wiki cannot be read as raw (2.831208ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///Users/zhudaoming/Projects/yss-spec-project-template/.agents/skills/llm-wiki/scripts/regressions.test.mjs:32:240)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at .agents/skills/llm-wiki/scripts/regressions.test.mjs:33:1
+✖ regression: explicit factual dependencies propagate, ordinary links do not (3.399042ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok((await drift(f)).articles.includes('Beta'))
+  
+      at TestContext.<anonymous> (file:///Users/zhudaoming/Projects/yss-spec-project-template/.agents/skills/llm-wiki/scripts/regressions.test.mjs:33:402)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

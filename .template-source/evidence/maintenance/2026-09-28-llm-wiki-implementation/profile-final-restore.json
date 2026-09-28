@@ -1,0 +1,164 @@
+[
+  {
+    "profile": "design",
+    "skill": "llm-wiki",
+    "classification": "exact",
+    "status": "updated",
+    "path": ".agents/skills/llm-wiki/scripts/advise.mjs",
+    "before_sha256": "c278dddfce2b19d143298dc9496a7f2d36d213ff0b62ceadfba0883a74cfd9e1",
+    "after_sha256": "5e9c2982e684fccc23dd77676a84cc1d418dcf7a518cbc22d4958aae147e0e19"
+  },
+  {
+    "profile": "design",
+    "skill": "llm-wiki",
+    "classification": "exact",
+    "status": "added",
+    "path": ".agents/skills/llm-wiki/scripts/core.mjs",
+    "before_sha256": null,
+    "after_sha256": "04518852d0e2a69843ecb2288c49db381b0cbbd252c1820d2db6432ec046cf77"
+  },
+  {
+    "profile": "design",
+    "skill": "llm-wiki",
+    "classification": "exact",
+    "status": "updated",
+    "path": ".agents/skills/llm-wiki/scripts/extract.mjs",
+    "before_sha256": "6caa36c906e6b1c10e9e63c036849d4dad41137d4b3ee52ec936decadff28ea1",
+    "after_sha256": "19fe895ea10018caa409bc6171fe1ebf9b32726551bcea674c224fa201956df3"
+  },
+  {
+    "profile": "design",
+    "skill": "llm-wiki",
+    "classification": "exact",
+    "status": "added",
+    "path": ".agents/skills/llm-wiki/scripts/query.mjs",
+    "before_sha256": null,
+    "after_sha256": "10741d617087b15561c3d9d1656a1a8af38237a677f7705dbcf6504587a5c3e8"
+  },
+  {
+    "profile": "design",
+    "skill": "llm-wiki",
+    "classification": "exact",
+    "status": "added",
+    "path": ".agents/skills/llm-wiki/scripts/transaction.mjs",
+    "before_sha256": null,
+    "after_sha256": "3a5063f0eb4fdb58308e1a2bd3046bc8c67ff3ad50acadd20855803567938c6d"
+  },
+  {
+    "profile": "design",
+    "skill": "llm-wiki",
+    "classification": "exact",
+    "status": "added",
+    "path": ".agents/skills/llm-wiki/scripts/v2.test.mjs",
+    "before_sha256": null,
+    "after_sha256": "f776dd6e5188d4f98dec5ab8a2f2cd65dc31411e31c8ed33c6d70048439773ca"
+  },
+  {
+    "profile": "backend",
+    "skill": "llm-wiki",
+    "classification": "exact",
+    "status": "updated",
+    "path": ".agents/skills/llm-wiki/scripts/advise.mjs",
+    "before_sha256": "c278dddfce2b19d143298dc9496a7f2d36d213ff0b62ceadfba0883a74cfd9e1",
+    "after_sha256": "5e9c2982e684fccc23dd77676a84cc1d418dcf7a518cbc22d4958aae147e0e19"
+  },
+  {
+    "profile": "backend",
+    "skill": "llm-wiki",
+    "classification": "exact",
+    "status": "added",
+    "path": ".agents/skills/llm-wiki/scripts/core.mjs",
+    "before_sha256": null,
+    "after_sha256": "04518852d0e2a69843ecb2288c49db381b0cbbd252c1820d2db6432ec046cf77"
+  },
+  {
+    "profile": "backend",
+    "skill": "llm-wiki",
+    "classification": "exact",
+    "status": "updated",
+    "path": ".agents/skills/llm-wiki/scripts/extract.mjs",
+    "before_sha256": "6caa36c906e6b1c10e9e63c036849d4dad41137d4b3ee52ec936decadff28ea1",
+    "after_sha256": "19fe895ea10018caa409bc6171fe1ebf9b32726551bcea674c224fa201956df3"
+  },
+  {
+    "profile": "backend",
+    "skill": "llm-wiki",
+    "classification": "exact",
+    "status": "added",
+    "path": ".agents/skills/llm-wiki/scripts/query.mjs",
+    "before_sha256": null,
+    "after_sha256": "10741d617087b15561c3d9d1656a1a8af38237a677f7705dbcf6504587a5c3e8"
+  },
+  {
+    "profile": "backend",
+    "skill": "llm-wiki",
+    "classification": "exact",
+    "status": "added",
+    "path": ".agents/skills/llm-wiki/scripts/transaction.mjs",
+    "before_sha256": null,
+    "after_sha256": "3a5063f0eb4fdb58308e1a2bd3046bc8c67ff3ad50acadd20855803567938c6d"
+  },
+  {
+    "profile": "backend",
+    "skill": "llm-wiki",
+    "classification": "exact",
+    "status": "added",
+    "path": ".agents/skills/llm-wiki/scripts/v2.test.mjs",
+    "before_sha256": null,
+    "after_sha256": "f776dd6e5188d4f98dec5ab8a2f2cd65dc31411e31c8ed33c6d70048439773ca"
+  },
+  {
+    "profile": "frontend",
+    "skill": "llm-wiki",
+    "classification": "exact",
+    "status": "updated",
+    "path": ".agents/skills/llm-wiki/scripts/advise.mjs",
+    "before_sha256": "c278dddfce2b19d143298dc9496a7f2d36d213ff0b62ceadfba0883a74cfd9e1",
+    "after_sha256": "5e9c2982e684fccc23dd77676a84cc1d418dcf7a518cbc22d4958aae147e0e19"
+  },
+  {
+    "profile": "frontend",
+    "skill": "llm-wiki",
+    "classification": "exact",
+    "status": "added",
+    "path": ".agents/skills/llm-wiki/scripts/core.mjs",
+    "before_sha256": null,
+    "after_sha256": "04518852d0e2a69843ecb2288c49db381b0cbbd252c1820d2db6432ec046cf77"
+  },
+  {
+    "profile": "frontend",
+    "skill": "llm-wiki",
+    "classification": "exact",
+    "status": "updated",
+    "path": ".agents/skills/llm-wiki/scripts/extract.mjs",
+    "before_sha256": "6caa36c906e6b1c10e9e63c036849d4dad41137d4b3ee52ec936decadff28ea1",
+    "after_sha256": "19fe895ea10018caa409bc6171fe1ebf9b32726551bcea674c224fa201956df3"
+  },
+  {
+    "profile": "frontend",
+    "skill": "llm-wiki",
+    "classification": "exact",
+    "status": "added",
+    "path": ".agents/skills/llm-wiki/scripts/query.mjs",
+    "before_sha256": null,
+    "after_sha256": "10741d617087b15561c3d9d1656a1a8af38237a677f7705dbcf6504587a5c3e8"
+  },
+  {
+    "profile": "frontend",
+    "skill": "llm-wiki",
+    "classification": "exact",
+    "status": "added",
+    "path": ".agents/skills/llm-wiki/scripts/transaction.mjs",
+    "before_sha256": null,
+    "after_sha256": "3a5063f0eb4fdb58308e1a2bd3046bc8c67ff3ad50acadd20855803567938c6d"
+  },
+  {
+    "profile": "frontend",
+    "skill": "llm-wiki",
+    "classification": "exact",
+    "status": "added",
+    "path": ".agents/skills/llm-wiki/scripts/v2.test.mjs",
+    "before_sha256": null,
+    "after_sha256": "f776dd6e5188d4f98dec5ab8a2f2cd65dc31411e31c8ed33c6d70048439773ca"
+  }
+]

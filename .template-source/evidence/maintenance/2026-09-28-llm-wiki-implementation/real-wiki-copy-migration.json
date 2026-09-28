@@ -1,0 +1,619 @@
+{
+  "preview": {
+    "changed": true,
+    "readOnly": true,
+    "writes": [
+      ".wiki-backups/manifest-v1-68ff9632ef9f0ea224d8cece6bcb271b3bbc630993b9e3374a3a1e41496a4437.json",
+      ".wiki-manifest.json",
+      "wiki/log.md"
+    ]
+  },
+  "applied": {
+    "id": "1185742df1c9a9f44bb33631",
+    "phase": "finalized",
+    "changed": true,
+    "backup": ".wiki-backups/manifest-v1-68ff9632ef9f0ea224d8cece6bcb271b3bbc630993b9e3374a3a1e41496a4437.json",
+    "remaining": "unverified; migration does not compile articles"
+  },
+  "structure": {
+    "ok": true,
+    "errors": [],
+    "counts": {
+      "articles": 23,
+      "links": 200
+    }
+  },
+  "sourceStates": [
+    {
+      "id": "AGENTS.md",
+      "state": "stale",
+      "reason": "effective-content-changed",
+      "originalDigest": "f77514f041b4d77f5d9ea2e2d7c2d6d863f00ce9e922e71c99430c1196503c08",
+      "effectiveDigest": "f77514f041b4d77f5d9ea2e2d7c2d6d863f00ce9e922e71c99430c1196503c08",
+      "rawDigest": "50664f9718582cefc5db0a4c2cebed371406d45437377a19ea7144ac12a4382b",
+      "inputDigests": {
+        "AGENTS.md": "f77514f041b4d77f5d9ea2e2d7c2d6d863f00ce9e922e71c99430c1196503c08"
+      },
+      "snapshotIntegrity": "intact",
+      "onlineCurrentness": "local",
+      "missing": [],
+      "version": {
+        "effectiveDigest": "f77514f041b4d77f5d9ea2e2d7c2d6d863f00ce9e922e71c99430c1196503c08",
+        "rawDigest": "50664f9718582cefc5db0a4c2cebed371406d45437377a19ea7144ac12a4382b",
+        "extractorVersion": "identity-v1"
+      }
+    },
+    {
+      "id": "CONTEXT.md",
+      "state": "stale",
+      "reason": "effective-content-changed",
+      "originalDigest": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559",
+      "effectiveDigest": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559",
+      "rawDigest": "9cc9947c69fdf2b55dc5d148182ce113922dcedf7d6839e2b330391ec7f71d47",
+      "inputDigests": {
+        "CONTEXT.md": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559"
+      },
+      "snapshotIntegrity": "intact",
+      "onlineCurrentness": "local",
+      "missing": [],
+      "version": {
+        "effectiveDigest": "887289e07ded3e50030b961925036dd5484c23d315e1a1be381c68ddfcc09559",
+        "rawDigest": "9cc9947c69fdf2b55dc5d148182ce113922dcedf7d6839e2b330391ec7f71d47",
+        "extractorVersion": "identity-v1"
+      }
+    },
+    {
+      "id": "README.md",
+      "state": "stale",
+      "reason": "effective-content-changed",
+      "originalDigest": "fb49f14694da0882326900c642ccf94ba6423d5b6b3160c36cdd44deb011b55e",
+      "effectiveDigest": "fb49f14694da0882326900c642ccf94ba6423d5b6b3160c36cdd44deb011b55e",
+      "rawDigest": "400b3a6d0417b7a9a5a8e79925694a26a6214de536338453c2158ee4f72694fc",
+      "inputDigests": {
+        "README.md": "fb49f14694da0882326900c642ccf94ba6423d5b6b3160c36cdd44deb011b55e"
+      },
+      "snapshotIntegrity": "intact",
+      "onlineCurrentness": "local",
+      "missing": [],
+      "version": {
+        "effectiveDigest": "fb49f14694da0882326900c642ccf94ba6423d5b6b3160c36cdd44deb011b55e",
+        "rawDigest": "400b3a6d0417b7a9a5a8e79925694a26a6214de536338453c2158ee4f72694fc",
+        "extractorVersion": "identity-v1"
+      }
+    },
+    {
+      "id": "yss-project.yaml",
+      "state": "current",
+      "reason": "local-content-matches",
+      "originalDigest": "dae2ddacbb024ba25b70a18830fc26ab7d3dcd8aaa361cc8b3767d68307f98af",
+      "effectiveDigest": "dae2ddacbb024ba25b70a18830fc26ab7d3dcd8aaa361cc8b3767d68307f98af",
+      "rawDigest": "dae2ddacbb024ba25b70a18830fc26ab7d3dcd8aaa361cc8b3767d68307f98af",
+      "inputDigests": {
+        "yss-project.yaml": "dae2ddacbb024ba25b70a18830fc26ab7d3dcd8aaa361cc8b3767d68307f98af"
+      },
+      "snapshotIntegrity": "intact",
+      "onlineCurrentness": "local",
+      "missing": [],
+      "version": {
+        "effectiveDigest": "dae2ddacbb024ba25b70a18830fc26ab7d3dcd8aaa361cc8b3767d68307f98af",
+        "rawDigest": "dae2ddacbb024ba25b70a18830fc26ab7d3dcd8aaa361cc8b3767d68307f98af",
+        "extractorVersion": "identity-v1"
+      }
+    },
+    {
+      "id": "lifecycle-registry.yaml",
+      "state": "stale",
+      "reason": "effective-content-changed",
+      "originalDigest": "e301b1d2cfe7f1e52c99f64d36c04e3395737deae2e00713401a90685a683bef",
+      "effectiveDigest": "e301b1d2cfe7f1e52c99f64d36c04e3395737deae2e00713401a90685a683bef",
+      "rawDigest": "188e0b47781394d8f79c2334cb36e9873d65f8142dab84fdb22e899611b2595d",
+      "inputDigests": {
+        ".template-spec/process/lifecycle-registry.yaml": "e301b1d2cfe7f1e52c99f64d36c04e3395737deae2e00713401a90685a683bef"
+      },
+      "snapshotIntegrity": "intact",
+      "onlineCurrentness": "local",
+      "missing": [],
+      "version": {
+        "effectiveDigest": "e301b1d2cfe7f1e52c99f64d36c04e3395737deae2e00713401a90685a683bef",
+        "rawDigest": "188e0b47781394d8f79c2334cb36e9873d65f8142dab84fdb22e899611b2595d",
+        "extractorVersion": "identity-v1"
+      }
+    },
+    {
+      "id": "harness-process-tailoring.md",
+      "state": "stale",
+      "reason": "effective-content-changed",
+      "originalDigest": "33de8e7fe924ba4ab7db0739ab2c194b1abfd46fce299e6d36591741582b4be2",
+      "effectiveDigest": "33de8e7fe924ba4ab7db0739ab2c194b1abfd46fce299e6d36591741582b4be2",
+      "rawDigest": "32fb449879d3352654165c3b4b147f11e51e27119f5bcbfd9c5f089e5a1bec9f",
+      "inputDigests": {
+        ".template-spec/process/harness-process-tailoring.md": "33de8e7fe924ba4ab7db0739ab2c194b1abfd46fce299e6d36591741582b4be2"
+      },
+      "snapshotIntegrity": "intact",
+      "onlineCurrentness": "local",
+      "missing": [],
+      "version": {
+        "effectiveDigest": "33de8e7fe924ba4ab7db0739ab2c194b1abfd46fce299e6d36591741582b4be2",
+        "rawDigest": "32fb449879d3352654165c3b4b147f11e51e27119f5bcbfd9c5f089e5a1bec9f",
+        "extractorVersion": "identity-v1"
+      }
+    },
+    {
+      "id": "maintenance-intensity.yaml",
+      "state": "current",
+      "reason": "local-content-matches",
+      "originalDigest": "6338e218860416a2a2ca9c187b5589bc1140b967dbac5f3ecea906adfb588a0f",
+      "effectiveDigest": "6338e218860416a2a2ca9c187b5589bc1140b967dbac5f3ecea906adfb588a0f",
+      "rawDigest": "6338e218860416a2a2ca9c187b5589bc1140b967dbac5f3ecea906adfb588a0f",
+      "inputDigests": {
+        ".template-source/process/maintenance-intensity.yaml": "6338e218860416a2a2ca9c187b5589bc1140b967dbac5f3ecea906adfb588a0f"
+      },
+      "snapshotIntegrity": "intact",
+      "onlineCurrentness": "local",
+      "missing": [],
+      "version": {
+        "effectiveDigest": "6338e218860416a2a2ca9c187b5589bc1140b967dbac5f3ecea906adfb588a0f",
+        "rawDigest": "6338e218860416a2a2ca9c187b5589bc1140b967dbac5f3ecea906adfb588a0f",
+        "extractorVersion": "identity-v1"
+      }
+    },
+    {
+      "id": "implementation-repo-integration.md",
+      "state": "stale",
+      "reason": "effective-content-changed",
+      "originalDigest": "411b100254eb7b9135d511a3d5cc91a096cd85d49ec60ca6fab0104067ec9d84",
+      "effectiveDigest": "411b100254eb7b9135d511a3d5cc91a096cd85d49ec60ca6fab0104067ec9d84",
+      "rawDigest": "d7b18d59252e6e642e8f68d501d2291512619c65872e81555f605eff7dc97f4c",
+      "inputDigests": {
+        ".template-spec/process/implementation-repo-integration.md": "411b100254eb7b9135d511a3d5cc91a096cd85d49ec60ca6fab0104067ec9d84"
+      },
+      "snapshotIntegrity": "intact",
+      "onlineCurrentness": "local",
+      "missing": [],
+      "version": {
+        "effectiveDigest": "411b100254eb7b9135d511a3d5cc91a096cd85d49ec60ca6fab0104067ec9d84",
+        "rawDigest": "d7b18d59252e6e642e8f68d501d2291512619c65872e81555f605eff7dc97f4c",
+        "extractorVersion": "identity-v1"
+      }
+    },
+    {
+      "id": "skills-maintenance.md",
+      "state": "stale",
+      "reason": "effective-content-changed",
+      "originalDigest": "03207985fff5db02d40f47b0e1e69e84ec30b8c55dd50e7e37da131b3cdd5c99",
+      "effectiveDigest": "03207985fff5db02d40f47b0e1e69e84ec30b8c55dd50e7e37da131b3cdd5c99",
+      "rawDigest": "173be59008236d9bd50f80c472d1eb6d94e3d48b2ded40378aff821f99336237",
+      "inputDigests": {
+        ".template-source/agents/skills-maintenance.md": "03207985fff5db02d40f47b0e1e69e84ec30b8c55dd50e7e37da131b3cdd5c99"
+      },
+      "snapshotIntegrity": "intact",
+      "onlineCurrentness": "local",
+      "missing": [],
+      "version": {
+        "effectiveDigest": "03207985fff5db02d40f47b0e1e69e84ec30b8c55dd50e7e37da131b3cdd5c99",
+        "rawDigest": "173be59008236d9bd50f80c472d1eb6d94e3d48b2ded40378aff821f99336237",
+        "extractorVersion": "identity-v1"
+      }
+    },
+    {
+      "id": "yss-skill-registry.yaml",
+      "state": "stale",
+      "reason": "effective-content-changed",
+      "originalDigest": "856ae1d9cad9e902fc7bda3d8a12d692b838d00ccad5477d8f960c13359b02a7",
+      "effectiveDigest": "856ae1d9cad9e902fc7bda3d8a12d692b838d00ccad5477d8f960c13359b02a7",
+      "rawDigest": "95136b6d42c7f021b457311a9bd60c77d7a56933cdd0425a7c0039e39222eef6",
+      "inputDigests": {
+        ".template-spec/agents/yss-skill-registry.yaml": "856ae1d9cad9e902fc7bda3d8a12d692b838d00ccad5477d8f960c13359b02a7"
+      },
+      "snapshotIntegrity": "intact",
+      "onlineCurrentness": "local",
+      "missing": [],
+      "version": {
+        "effectiveDigest": "856ae1d9cad9e902fc7bda3d8a12d692b838d00ccad5477d8f960c13359b02a7",
+        "rawDigest": "95136b6d42c7f021b457311a9bd60c77d7a56933cdd0425a7c0039e39222eef6",
+        "extractorVersion": "identity-v1"
+      }
+    },
+    {
+      "id": "issue-tracker.md",
+      "state": "stale",
+      "reason": "effective-content-changed",
+      "originalDigest": "eafc47435c1504607e403420cea7ebd6bade42d1559edeea399721f5048c63cc",
+      "effectiveDigest": "eafc47435c1504607e403420cea7ebd6bade42d1559edeea399721f5048c63cc",
+      "rawDigest": "9adb671c7b15b30e4c3ca622d8c8633b6f51554fff0fe91dc6e670e2592b4231",
+      "inputDigests": {
+        ".template-spec/agents/issue-tracker.md": "eafc47435c1504607e403420cea7ebd6bade42d1559edeea399721f5048c63cc"
+      },
+      "snapshotIntegrity": "intact",
+      "onlineCurrentness": "local",
+      "missing": [],
+      "version": {
+        "effectiveDigest": "eafc47435c1504607e403420cea7ebd6bade42d1559edeea399721f5048c63cc",
+        "rawDigest": "9adb671c7b15b30e4c3ca622d8c8633b6f51554fff0fe91dc6e670e2592b4231",
+        "extractorVersion": "identity-v1"
+      }
+    },
+    {
+      "id": "triage-labels.md",
+      "state": "stale",
+      "reason": "effective-content-changed",
+      "originalDigest": "fae3c1d018392d77ea098112251aaf377ba51b07b31164a99bb70d541bb2ed9d",
+      "effectiveDigest": "fae3c1d018392d77ea098112251aaf377ba51b07b31164a99bb70d541bb2ed9d",
+      "rawDigest": "fae3c1d018392d77ea098112251aaf377ba51b07b31164a99bb70d541bb2ed9d",
+      "inputDigests": {
+        ".template-spec/agents/triage-labels.md": "fae3c1d018392d77ea098112251aaf377ba51b07b31164a99bb70d541bb2ed9d"
+      },
+      "snapshotIntegrity": "intact",
+      "onlineCurrentness": "local",
+      "missing": [],
+      "version": {
+        "effectiveDigest": "fae3c1d018392d77ea098112251aaf377ba51b07b31164a99bb70d541bb2ed9d",
+        "rawDigest": "fae3c1d018392d77ea098112251aaf377ba51b07b31164a99bb70d541bb2ed9d",
+        "extractorVersion": "identity-v1"
+      }
+    },
+    {
+      "id": "create-yss-spec-repository-mode-contract",
+      "state": "stale",
+      "reason": "effective-content-changed",
+      "originalDigest": "da98819c60eb71e1f29a4e2ee854161ef02a1d4bc2228d059fc6ed752bbfc0c4",
+      "effectiveDigest": "da98819c60eb71e1f29a4e2ee854161ef02a1d4bc2228d059fc6ed752bbfc0c4",
+      "rawDigest": "e1aaa85b352929d6acfc298ee02efbc0af408075ae995de75d728126407848d6",
+      "inputDigests": {
+        ".template-source/contracts/create-yss-spec-repository-mode-contract.md": "da98819c60eb71e1f29a4e2ee854161ef02a1d4bc2228d059fc6ed752bbfc0c4"
+      },
+      "snapshotIntegrity": "intact",
+      "onlineCurrentness": "local",
+      "missing": [],
+      "version": {
+        "effectiveDigest": "da98819c60eb71e1f29a4e2ee854161ef02a1d4bc2228d059fc6ed752bbfc0c4",
+        "rawDigest": "e1aaa85b352929d6acfc298ee02efbc0af408075ae995de75d728126407848d6",
+        "extractorVersion": "identity-v1"
+      }
+    },
+    {
+      "id": "spec-template.md",
+      "state": "stale",
+      "reason": "effective-content-changed",
+      "originalDigest": "7594fbab61504e33f6fa9b25ca0da006441191f8eef01c1ff2984ed67b4c1dcf",
+      "effectiveDigest": "7594fbab61504e33f6fa9b25ca0da006441191f8eef01c1ff2984ed67b4c1dcf",
+      "rawDigest": "c68a3b2acf907297a58e5f8719063d3695b419aa22a9708f27516119d5c6b122",
+      "inputDigests": {
+        ".template-spec/templates/spec-template.md": "7594fbab61504e33f6fa9b25ca0da006441191f8eef01c1ff2984ed67b4c1dcf"
+      },
+      "snapshotIntegrity": "intact",
+      "onlineCurrentness": "local",
+      "missing": [],
+      "version": {
+        "effectiveDigest": "7594fbab61504e33f6fa9b25ca0da006441191f8eef01c1ff2984ed67b4c1dcf",
+        "rawDigest": "c68a3b2acf907297a58e5f8719063d3695b419aa22a9708f27516119d5c6b122",
+        "extractorVersion": "identity-v1"
+      }
+    },
+    {
+      "id": "vertical-slice-ticket-template.md",
+      "state": "stale",
+      "reason": "effective-content-changed",
+      "originalDigest": "1b820d128660b538adc07f1c7074fc499ffa919ef67c13b10996ec31d21a0fde",
+      "effectiveDigest": "1b820d128660b538adc07f1c7074fc499ffa919ef67c13b10996ec31d21a0fde",
+      "rawDigest": "0c3d625ca8b20a726ff8a5ff90cc681f51f99c09de1187df653a43bd8a83cfc2",
+      "inputDigests": {
+        ".template-spec/templates/vertical-slice-ticket-template.md": "1b820d128660b538adc07f1c7074fc499ffa919ef67c13b10996ec31d21a0fde"
+      },
+      "snapshotIntegrity": "intact",
+      "onlineCurrentness": "local",
+      "missing": [],
+      "version": {
+        "effectiveDigest": "1b820d128660b538adc07f1c7074fc499ffa919ef67c13b10996ec31d21a0fde",
+        "rawDigest": "0c3d625ca8b20a726ff8a5ff90cc681f51f99c09de1187df653a43bd8a83cfc2",
+        "extractorVersion": "identity-v1"
+      }
+    },
+    {
+      "id": "skills-lock.json",
+      "state": "stale",
+      "reason": "raw-not-aligned",
+      "originalDigest": "25d8034e2c4e62e7fee0414c5a4b0e96a4782b9cc2df8214062c0e8a5f1568f1",
+      "effectiveDigest": "ff76ed86e88fd69fbe4e7feaad0cc7e6e1a41b51c826332c153e079d1bdc74d1",
+      "rawDigest": "b53dca82bf09cd3dc2e7c767d732af2f3b8d666f5d3748d83f81bc8dcd34377d",
+      "inputDigests": {
+        "skills-lock.json": "25d8034e2c4e62e7fee0414c5a4b0e96a4782b9cc2df8214062c0e8a5f1568f1"
+      },
+      "snapshotIntegrity": "intact",
+      "onlineCurrentness": "local",
+      "missing": [],
+      "version": {
+        "effectiveDigest": "ff76ed86e88fd69fbe4e7feaad0cc7e6e1a41b51c826332c153e079d1bdc74d1",
+        "rawDigest": "b53dca82bf09cd3dc2e7c767d732af2f3b8d666f5d3748d83f81bc8dcd34377d",
+        "extractorVersion": "skill-names:1:"
+      }
+    }
+  ],
+  "articleStates": [
+    {
+      "id": "模板总览",
+      "state": "stale",
+      "reason": "dependency-changed",
+      "articleDigest": "58102136b76a5140647894f2c39cd4e2f58d718a412c0646cab2d517618883cb",
+      "sourceIds": [
+        "AGENTS.md",
+        "CONTEXT.md",
+        "README.md",
+        "yss-project.yaml"
+      ],
+      "humanOwned": false
+    },
+    {
+      "id": "仓库身份与路由",
+      "state": "stale",
+      "reason": "dependency-changed",
+      "articleDigest": "d397ee2a8c388961d9866e5d5f0ca3332641d7b8c1cdc8cc0d1e074590858d4e",
+      "sourceIds": [
+        "AGENTS.md",
+        "create-yss-spec-repository-mode-contract",
+        "yss-project.yaml"
+      ],
+      "humanOwned": false
+    },
+    {
+      "id": "Agent入口规则",
+      "state": "stale",
+      "reason": "dependency-changed",
+      "articleDigest": "24897d22914febc6d852e0c3da7e908546a85db69eb388a2220ea0b436b8a0d5",
+      "sourceIds": [
+        "AGENTS.md",
+        "CONTEXT.md"
+      ],
+      "humanOwned": false
+    },
+    {
+      "id": "产品研发生命周期",
+      "state": "stale",
+      "reason": "dependency-changed",
+      "articleDigest": "2239cf80b8ac00d1024581859d0d13f2932f3d7fcb009b9b5653717ccdaf07bd",
+      "sourceIds": [
+        "AGENTS.md",
+        "harness-process-tailoring.md",
+        "lifecycle-registry.yaml"
+      ],
+      "humanOwned": false
+    },
+    {
+      "id": "条件强制门禁",
+      "state": "stale",
+      "reason": "dependency-changed",
+      "articleDigest": "0aa7a7ce223819d576c357f937d77dca899955952c9d761c75b09442cde9ad9d",
+      "sourceIds": [
+        "AGENTS.md",
+        "harness-process-tailoring.md",
+        "lifecycle-registry.yaml"
+      ],
+      "humanOwned": false
+    },
+    {
+      "id": "影响面分诊与流程裁剪",
+      "state": "stale",
+      "reason": "dependency-changed",
+      "articleDigest": "5728e2f7f05adfda69376af91840c81cbedb313127f5bdb5f9a79195c923d129",
+      "sourceIds": [
+        "AGENTS.md",
+        "harness-process-tailoring.md",
+        "lifecycle-registry.yaml"
+      ],
+      "humanOwned": false
+    },
+    {
+      "id": "模板维护流程",
+      "state": "stale",
+      "reason": "dependency-changed",
+      "articleDigest": "6f5a1b4fc89f7bd08fc94ee83c551a40f646f80ce112a4599302a2934d7aeeda",
+      "sourceIds": [
+        "AGENTS.md",
+        "harness-process-tailoring.md",
+        "maintenance-intensity.yaml"
+      ],
+      "humanOwned": false
+    },
+    {
+      "id": "Spec基线",
+      "state": "stale",
+      "reason": "dependency-changed",
+      "articleDigest": "60089d69093c68fb45c5e53f36df3aef8499f383b49d69362cfcad5d0e8ab20e",
+      "sourceIds": [
+        "AGENTS.md",
+        "CONTEXT.md",
+        "lifecycle-registry.yaml",
+        "spec-template.md"
+      ],
+      "humanOwned": false
+    },
+    {
+      "id": "SpecDelta",
+      "state": "stale",
+      "reason": "dependency-changed",
+      "articleDigest": "f78fd98134673ac0c2934dd51fddd00453031da2f83b5b3f97db2ce1b51a5dd2",
+      "sourceIds": [
+        "AGENTS.md",
+        "CONTEXT.md",
+        "lifecycle-registry.yaml"
+      ],
+      "humanOwned": false
+    },
+    {
+      "id": "OpenAPI契约",
+      "state": "stale",
+      "reason": "dependency-changed",
+      "articleDigest": "043c4c7ade0c67d2b993a59f41c84679a835f363a447a07e82b2e76f309e68ca",
+      "sourceIds": [
+        "AGENTS.md",
+        "CONTEXT.md",
+        "lifecycle-registry.yaml"
+      ],
+      "humanOwned": false
+    },
+    {
+      "id": "产品设计影响与原型",
+      "state": "stale",
+      "reason": "dependency-changed",
+      "articleDigest": "889f2b6df605b0882238dc6658fa8da04dbdb31e5d17e4ab6042bbb4e71ae5a1",
+      "sourceIds": [
+        "AGENTS.md",
+        "CONTEXT.md",
+        "lifecycle-registry.yaml"
+      ],
+      "humanOwned": false
+    },
+    {
+      "id": "垂直切片Ticket",
+      "state": "stale",
+      "reason": "dependency-changed",
+      "articleDigest": "c93f1f7495cd94afd183f7cccc70d137a65dd49ff073d7ec6d690e198a3f7233",
+      "sourceIds": [
+        "AGENTS.md",
+        "CONTEXT.md",
+        "issue-tracker.md",
+        "lifecycle-registry.yaml",
+        "triage-labels.md",
+        "vertical-slice-ticket-template.md"
+      ],
+      "humanOwned": false
+    },
+    {
+      "id": "切片实现合同",
+      "state": "stale",
+      "reason": "dependency-changed",
+      "articleDigest": "e511153bf50ac3c853d52b9abadc2ccdffb6429f9479d91140316862e4848943",
+      "sourceIds": [
+        "AGENTS.md",
+        "CONTEXT.md",
+        "lifecycle-registry.yaml"
+      ],
+      "humanOwned": false
+    },
+    {
+      "id": "YSS路由与合同编译",
+      "state": "stale",
+      "reason": "dependency-changed",
+      "articleDigest": "b39c380b312f88fbbdab2b40d14ea99b87f72a2eb0cc09f03d4991c466ee8b2a",
+      "sourceIds": [
+        "AGENTS.md",
+        "CONTEXT.md"
+      ],
+      "humanOwned": false
+    },
+    {
+      "id": "YSS工程技能体系",
+      "state": "stale",
+      "reason": "dependency-changed",
+      "articleDigest": "144bad45e6dbe41ce4f3739285f15688757d5738ce02f94b4f46c994e5cf723e",
+      "sourceIds": [
+        "CONTEXT.md",
+        "skills-lock.json",
+        "skills-maintenance.md",
+        "yss-skill-registry.yaml"
+      ],
+      "humanOwned": false
+    },
+    {
+      "id": "Matt技能体系",
+      "state": "stale",
+      "reason": "dependency-changed",
+      "articleDigest": "c660a5e1fdbc6d4416c732ac25bdcfbd0a4a916375a023a4ffe1c90c650ab288",
+      "sourceIds": [
+        "AGENTS.md",
+        "CONTEXT.md",
+        "skills-lock.json",
+        "skills-maintenance.md"
+      ],
+      "humanOwned": false
+    },
+    {
+      "id": "技能投影与锁定",
+      "state": "stale",
+      "reason": "dependency-changed",
+      "articleDigest": "6d266d3170f6baa7290e88297a2c196de883220548e04f38c39fa9adec700c42",
+      "sourceIds": [
+        "AGENTS.md",
+        "skills-lock.json",
+        "skills-maintenance.md",
+        "yss-skill-registry.yaml"
+      ],
+      "humanOwned": false
+    },
+    {
+      "id": "实现仓库与跨仓库契约",
+      "state": "stale",
+      "reason": "dependency-changed",
+      "articleDigest": "4e59b8f2f1b6dac00f0d2b07487acf5e813b2bcff0b47082a6ea266114051c48",
+      "sourceIds": [
+        "AGENTS.md",
+        "implementation-repo-integration.md"
+      ],
+      "humanOwned": false
+    },
+    {
+      "id": "LLM Wiki",
+      "state": "stale",
+      "reason": "dependency-changed",
+      "articleDigest": "7822229be9ce24105f7ddda177761354091c55e04a279e739e69047df28d5741",
+      "sourceIds": [
+        "AGENTS.md",
+        "CONTEXT.md",
+        "skills-maintenance.md",
+        "yss-skill-registry.yaml"
+      ],
+      "humanOwned": false
+    },
+    {
+      "id": "Ticket与流程状态",
+      "state": "stale",
+      "reason": "dependency-changed",
+      "articleDigest": "8276dc920617e025bbc2633837c9ad58f03df27260129b5f177ffc6c028d65e0",
+      "sourceIds": [
+        "AGENTS.md",
+        "CONTEXT.md",
+        "issue-tracker.md",
+        "triage-labels.md"
+      ],
+      "humanOwned": false
+    },
+    {
+      "id": "Fresh验证与独立审查",
+      "state": "stale",
+      "reason": "dependency-changed",
+      "articleDigest": "ed6762c684308b47f3bd7d76253da7b4e5d27fc7bed6b509d7154ff743dd5a1b",
+      "sourceIds": [
+        "AGENTS.md",
+        "CONTEXT.md",
+        "harness-process-tailoring.md",
+        "maintenance-intensity.yaml"
+      ],
+      "humanOwned": false
+    },
+    {
+      "id": "模板发布门禁与验证",
+      "state": "stale",
+      "reason": "dependency-changed",
+      "articleDigest": "e7931ece6532c5f503113c0da4273aff90f00c4ac1e2939f7ec87f24107e5a15",
+      "sourceIds": [
+        "AGENTS.md",
+        "README.md",
+        "harness-process-tailoring.md",
+        "skills-maintenance.md"
+      ],
+      "humanOwned": false
+    },
+    {
+      "id": "复盘与权威资产修订",
+      "state": "stale",
+      "reason": "dependency-changed",
+      "articleDigest": "362bf2f50c7f288e2f5edaa9a0ad453347f0faafee0882842a0ef10dfd47de7c",
+      "sourceIds": [
+        "AGENTS.md",
+        "CONTEXT.md",
+        "lifecycle-registry.yaml"
+      ],
+      "humanOwned": false
+    }
+  ]
+}

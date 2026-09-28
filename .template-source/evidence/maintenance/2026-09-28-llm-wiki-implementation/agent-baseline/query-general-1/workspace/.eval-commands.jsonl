@@ -1,0 +1,4 @@
+{"tool": "git", "args": ["-c", "safe.bareRepository=explicit", "-c", "core.hooksPath=/dev/null", "-c", "core.fsmonitor=false", "rev-parse", "HEAD"]}
+{"tool": "git", "args": ["-c", "safe.bareRepository=explicit", "config", "--null", "--get", "core.fsmonitor"]}
+{"tool": "git", "args": ["-c", "safe.bareRepository=explicit", "-c", "core.hooksPath=/dev/null", "-c", "core.fsmonitor=false", "remote", "-v"]}
+{"tool": "git", "args": ["-c", "safe.bareRepository=explicit", "-c", "core.hooksPath=/dev/null", "-c", "core.fsmonitor=false", "status", "--porcelain"]}

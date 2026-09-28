@@ -1,0 +1,149 @@
+{
+  "authorization": "授权提交git",
+  "scope": "llm-wiki implementation, research evidence, consumers and existing local snapshots",
+  "submodule_commits": [
+    {
+      "repo": "submodules/yss-harness-design-agent",
+      "before": "0e1f9407e6d7915bb6c293f228257e691ef9dc9d",
+      "commit": "8dbfac7b218d6fd3dc1c84bb9b17d9d4a5c30dac",
+      "root_gitlink_at_checkpoint": "98b2d5682b1ded9f35b9773929006d225bc0c305"
+    },
+    {
+      "repo": "submodules/yss-harness-backend-agent",
+      "before": "a390405ef24536756a7b93c016bd77fd46739e09",
+      "commit": "e8e1b93c26ae1dbf120da3d45a184d41985428fb",
+      "root_gitlink_at_checkpoint": "cbded26aea8b4104f87b2377922bc3416befb0a6"
+    },
+    {
+      "repo": "submodules/yss-harness-frontend-agent",
+      "before": "793c92aa59f7ebaaf3e853c66a5feaf194d987cc",
+      "commit": "bda4a791b70d33637d8bded5b158d14a90b26825",
+      "root_gitlink_at_checkpoint": "2aa574462cb55815421e03cd394da02e06d9948c"
+    },
+    {
+      "repo": "submodules/create-yss-strategic-design",
+      "before": "0a9ece0922510f13c27cfde26cfa2d12dd3141b4",
+      "commit": "c4c2e57a7c5f1d9e58a3e0a99f78621b34846861",
+      "initial_commit": "011ab208e26f6144e9dfaf23df0a2d8b240ebba5",
+      "merged_parallel_commit": "8a990a1f36f32b8566e71f68210e8ac935911036",
+      "snapshot_source_commit": "8dbfac7b218d6fd3dc1c84bb9b17d9d4a5c30dac",
+      "merge_commit": "2dde0847f12d42cbecca31108701ed1e4110dc00",
+      "root_gitlink_at_checkpoint": "c4c2e57a7c5f1d9e58a3e0a99f78621b34846861"
+    },
+    {
+      "repo": "submodules/create-yss-harness-backend",
+      "before": "f76735ec9b0a0dc47738d79d67f5918f89e7dbc8",
+      "commit": "a53875e900e13a4d6858de70ec8cd581be6a9f34",
+      "initial_commit": "c734f6f0381bbeac220cd90cf69551fe065cdab5",
+      "merged_parallel_commit": "0026b9faeec743f5e3c5d723dac4513b986081c2",
+      "snapshot_source_commit": "e8e1b93c26ae1dbf120da3d45a184d41985428fb",
+      "merge_commit": "b6ea2fb96c7705f93dd6599523cbed31b2b0c006",
+      "root_gitlink_at_checkpoint": "a53875e900e13a4d6858de70ec8cd581be6a9f34"
+    },
+    {
+      "repo": "submodules/create-yss-harness-frontend",
+      "before": "31d554abf24dec320d8e6a76e24c960464e1959c",
+      "commit": "2bcc8ae419540dfc3732aca6d83fa72553eebfa4",
+      "initial_commit": "1946ea66545d899ed288debeef6dc610e84a1efd",
+      "merged_parallel_commit": "b2b7e4a962d14a01f87c4751223cb0644c9def7c",
+      "snapshot_source_commit": "bda4a791b70d33637d8bded5b158d14a90b26825",
+      "merge_commit": "abd81b9335b1cce1ba514e5e0f6655d37246991f",
+      "root_gitlink_at_checkpoint": "2bcc8ae419540dfc3732aca6d83fa72553eebfa4"
+    }
+  ],
+  "root_commit": "containing commit; resolve via git log for this file",
+  "push": "not-performed",
+  "publication": "not-performed",
+  "implementation_ready": false,
+  "real_agent_comparison": "incomplete",
+  "cli_snapshot_source_state": "three specialist snapshots regenerated from committed Agent sources; legacy local snapshot remains working-tree",
+  "source_digest_match": true,
+  "staged_diff_check": {
+    "source_exit": 0,
+    "all_files_exit": 2,
+    "raw_log_whitespace_findings": 30,
+    "raw_logs_preserved": [
+      ".template-source/evidence/maintenance/2026-09-28-llm-wiki-implementation/baseline-regressions.txt",
+      ".template-source/evidence/maintenance/2026-09-28-llm-wiki-implementation/verify-template-fast-final.txt",
+      ".template-source/evidence/maintenance/2026-09-28-llm-wiki-implementation/verify-template-fast.txt"
+    ]
+  },
+  "parallel_merge_verification": [
+    {
+      "repo": "submodules/create-yss-strategic-design",
+      "commit": "2dde0847f12d42cbecca31108701ed1e4110dc00",
+      "merged": "8a990a1f36f32b8566e71f68210e8ac935911036",
+      "source": "8dbfac7b218d6fd3dc1c84bb9b17d9d4a5c30dac",
+      "checks": "passed",
+      "source_state": "committed"
+    },
+    {
+      "repo": "submodules/create-yss-harness-backend",
+      "commit": "b6ea2fb96c7705f93dd6599523cbed31b2b0c006",
+      "merged": "0026b9faeec743f5e3c5d723dac4513b986081c2",
+      "source": "e8e1b93c26ae1dbf120da3d45a184d41985428fb",
+      "checks": "passed",
+      "source_state": "committed"
+    },
+    {
+      "repo": "submodules/create-yss-harness-frontend",
+      "commit": "abd81b9335b1cce1ba514e5e0f6655d37246991f",
+      "merged": "b2b7e4a962d14a01f87c4751223cb0644c9def7c",
+      "source": "bda4a791b70d33637d8bded5b158d14a90b26825",
+      "checks": "passed",
+      "source_state": "committed"
+    }
+  ],
+  "parallel_snapshot_content_check": [
+    {
+      "repo": "submodules/create-yss-strategic-design",
+      "commit": "c4c2e57a7c5f1d9e58a3e0a99f78621b34846861",
+      "changed_entries": 101,
+      "only_wiki_and_lock_changed": true,
+      "retired_baseline_preserved": true,
+      "transition_baseline_preserved": true,
+      "verification": "sync check and bundle passed",
+      "baseline_source": "8a990a1f36f32b8566e71f68210e8ac935911036"
+    },
+    {
+      "repo": "submodules/create-yss-harness-backend",
+      "commit": "a53875e900e13a4d6858de70ec8cd581be6a9f34",
+      "changed_entries": 101,
+      "only_wiki_and_lock_changed": true,
+      "retired_baseline_preserved": true,
+      "transition_baseline_preserved": true,
+      "verification": "sync check and bundle passed",
+      "baseline_source": "0026b9faeec743f5e3c5d723dac4513b986081c2"
+    },
+    {
+      "repo": "submodules/create-yss-harness-frontend",
+      "commit": "2bcc8ae419540dfc3732aca6d83fa72553eebfa4",
+      "changed_entries": 101,
+      "only_wiki_and_lock_changed": true,
+      "retired_baseline_preserved": true,
+      "transition_baseline_preserved": true,
+      "verification": "sync check and bundle passed",
+      "baseline_source": "b2b7e4a962d14a01f87c4751223cb0644c9def7c"
+    }
+  ],
+  "snapshot_tests": [
+    {
+      "repo": "create-yss-strategic-design",
+      "command": "pnpm test",
+      "exit": 0
+    },
+    {
+      "repo": "create-yss-harness-backend",
+      "command": "pnpm test",
+      "exit": 0
+    },
+    {
+      "repo": "create-yss-harness-frontend",
+      "command": "pnpm test",
+      "exit": 0
+    }
+  ],
+  "root_parent_before_checkpoint": "24e225b6786724372ff14503fcbedcbd3302a4ef",
+  "concurrent_work_preserved": true,
+  "verification_scope_note": "The 94-check implementation report predates concurrent lifecycle commits. This Git checkpoint rechecked unchanged llm-wiki bytes, snapshot content and ancestry, plus all three CLI test suites; it does not claim a new full release verification."
+}

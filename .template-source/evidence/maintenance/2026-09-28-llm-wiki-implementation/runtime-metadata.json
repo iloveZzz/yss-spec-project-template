@@ -1,0 +1,16 @@
+{
+  "configured_model": "gpt-6-astra",
+  "configured_reasoning_effort": "xhigh",
+  "cached_model_slugs": [
+    "gpt-6-astra",
+    "gpt-6-sol",
+    "gpt-6-luna",
+    "gpt-reserve",
+    "gpt-5.6-sol",
+    "gpt-5.6-terra",
+    "gpt-5.6-luna",
+    "gpt-5.5",
+    "codex-auto-review"
+  ],
+  "cache_is_not_runtime_validation": true
+}
