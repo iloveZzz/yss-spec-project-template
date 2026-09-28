@@ -1,0 +1,73 @@
+{
+  "execution": {
+    "mode": "read_only",
+    "selected": {},
+    "transition": null,
+    "work_unit_route": null
+  },
+  "lifecycle": {
+    "artifacts": [],
+    "evidence": [],
+    "gates": [],
+    "stage": null,
+    "work_unit": null
+  },
+  "query": {
+    "include": [],
+    "mode": "route",
+    "stage": null,
+    "work_unit": null
+  },
+  "references": [
+    ".agents/skills/yss-strategic-design/references/orchestration-contract.yaml",
+    ".template-spec/agents/yss-skill-registry.yaml",
+    ".template-spec/process/lifecycle-registry.yaml",
+    "yss-project.yaml"
+  ],
+  "schema_version": 1,
+  "skills": [],
+  "sources": {
+    "lifecycle_registry": {
+      "ref": ".template-spec/process/lifecycle-registry.yaml",
+      "semantic_sha256": "530c9388729a5ffa89e78f71e1f076217847827e7ddc53615846de7ff2e28edb",
+      "sha256": "94dc10e10698c653d556e9aa97ce93c4eae55990ba1ec712532bbd42f1896310",
+      "status": "active"
+    },
+    "orchestration_contract": {
+      "ref": ".agents/skills/yss-strategic-design/references/orchestration-contract.yaml",
+      "sha256": "5ae9792b40790f4013cb704d7ad9d58aa1071adc875d11b997f97723a73fba84"
+    },
+    "read_set": [
+      {
+        "ref": ".agents/skills/yss-strategic-design/references/orchestration-contract.yaml",
+        "sha256": "5ae9792b40790f4013cb704d7ad9d58aa1071adc875d11b997f97723a73fba84"
+      },
+      {
+        "ref": ".template-spec/agents/yss-skill-registry.yaml",
+        "sha256": "c9fd14ca0b5f669f93ddaae6da303e2127c525c8d43e486ea5c30c7c6a95c266"
+      },
+      {
+        "ref": ".template-spec/process/lifecycle-registry-baseline.json",
+        "sha256": "26ba2589d560422b83bb1508bbb036a283c3c25e32fdf1273f6c8101b7eebc24"
+      },
+      {
+        "ref": ".template-spec/process/lifecycle-registry.yaml",
+        "sha256": "94dc10e10698c653d556e9aa97ce93c4eae55990ba1ec712532bbd42f1896310"
+      },
+      {
+        "ref": "yss-project.yaml",
+        "sha256": "dae2ddacbb024ba25b70a18830fc26ab7d3dcd8aaa361cc8b3767d68307f98af"
+      }
+    ],
+    "repository_identity": {
+      "ref": "yss-project.yaml",
+      "sha256": "dae2ddacbb024ba25b70a18830fc26ab7d3dcd8aaa361cc8b3767d68307f98af"
+    },
+    "skill_registry": {
+      "ref": ".template-spec/agents/yss-skill-registry.yaml",
+      "sha256": "c9fd14ca0b5f669f93ddaae6da303e2127c525c8d43e486ea5c30c7c6a95c266",
+      "status": "active"
+    }
+  },
+  "context_sha256": "4c8396d57df7ee6abbd1647c46520244a2e0648c1d0d108d52368cd2c59678b7"
+}

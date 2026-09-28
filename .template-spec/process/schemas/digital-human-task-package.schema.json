@@ -31,13 +31,28 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "strategic_handoff_consumption": { "type": "object" },
-        "approved_spec": { "type": "object" },
-        "context_reconciliation": { "type": "object" },
-        "technical_design": { "type": "object" },
-        "data_architecture_decision": { "type": "object" },
-        "api_contract_decision": { "type": "object" },
-        "engineering_contract_approval_ref": { "type": "string", "minLength": 1 }
+        "strategic_handoff_consumption": {
+          "type": "object"
+        },
+        "approved_spec": {
+          "type": "object"
+        },
+        "context_reconciliation": {
+          "type": "object"
+        },
+        "technical_design": {
+          "type": "object"
+        },
+        "data_architecture_decision": {
+          "type": "object"
+        },
+        "api_contract_decision": {
+          "type": "object"
+        },
+        "engineering_contract_approval_ref": {
+          "type": "string",
+          "minLength": 1
+        }
       }
     },
     "plan_review_ref": {
@@ -57,7 +72,10 @@
       "minLength": 1
     },
     "schema_version": {
-      "const": 1
+      "enum": [
+        1,
+        2
+      ]
     },
     "frontend_delivery": {
       "type": "object",
@@ -181,7 +199,8 @@
           "enum": [
             "lifecycle-work-unit",
             "slice-implementation",
-            "template-maintenance"
+            "template-maintenance",
+            "read-only-intake"
           ]
         },
         "contract_id": {
@@ -343,7 +362,7 @@
     },
     "allowed_write_paths": {
       "type": "array",
-      "minItems": 1,
+      "minItems": 0,
       "uniqueItems": true,
       "items": {
         "type": "string",
@@ -369,7 +388,7 @@
     },
     "expected_evidence_files": {
       "type": "array",
-      "minItems": 1,
+      "minItems": 0,
       "uniqueItems": true,
       "items": {
         "type": "string",
@@ -378,7 +397,7 @@
     },
     "verification_commands": {
       "type": "array",
-      "minItems": 1,
+      "minItems": 0,
       "items": {
         "type": "string",
         "minLength": 1
@@ -423,6 +442,10 @@
           "stderr_ref": {
             "type": "string",
             "minLength": 1
+          },
+          "evidence_digest": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
           }
         }
       }
@@ -677,6 +700,16 @@
     "checkpoint_ref": {
       "type": "string",
       "minLength": 1
+    },
+    "verification_status": {
+      "enum": [
+        "not-executed",
+        "executed"
+      ]
+    },
+    "observation_ref": {
+      "type": "string",
+      "pattern": "^run:"
     }
   },
   "allOf": [
@@ -764,6 +797,127 @@
         "required": [
           "review_context"
         ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "schema_version": {
+            "const": 1
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "contract": {
+            "properties": {
+              "kind": {
+                "enum": [
+                  "lifecycle-work-unit",
+                  "slice-implementation",
+                  "template-maintenance"
+                ]
+              }
+            }
+          },
+          "allowed_write_paths": {
+            "minItems": 1
+          },
+          "expected_evidence_files": {
+            "minItems": 1
+          },
+          "verification_commands": {
+            "minItems": 1
+          }
+        }
+      },
+      "else": {
+        "required": [
+          "verification_status"
+        ],
+        "properties": {
+          "execution_state": {
+            "const": "Explorer"
+          },
+          "work_unit_id": {
+            "enum": [
+              "work-unit.entry-triage",
+              "work-unit.harness-entry"
+            ]
+          },
+          "allowed_write_paths": {
+            "maxItems": 0
+          },
+          "contract": {
+            "properties": {
+              "kind": {
+                "const": "read-only-intake"
+              }
+            },
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "maintenance_ref"
+                  ]
+                },
+                {
+                  "required": [
+                    "slice_contract_ref"
+                  ]
+                },
+                {
+                  "required": [
+                    "lifecycle_ref"
+                  ]
+                }
+              ]
+            }
+          },
+          "result": {
+            "properties": {
+              "changed_files": {
+                "maxItems": 0
+              },
+              "changed_artifacts": {
+                "maxItems": 0
+              },
+              "next_route": {
+                "type": "null"
+              }
+            }
+          },
+          "stage_id": {
+            "enum": [
+              "stage.entry-triage",
+              "stage.harness-entry"
+            ]
+          }
+        },
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "checkpoint_ref"
+              ]
+            },
+            {
+              "required": [
+                "review_context"
+              ]
+            },
+            {
+              "required": [
+                "review_input"
+              ]
+            },
+            {
+              "required": [
+                "user_decisions"
+              ]
+            }
+          ]
+        }
       }
     }
   ]

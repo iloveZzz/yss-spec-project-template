@@ -15,6 +15,9 @@ import {validateExistingUiBaseline} from '../../lib/existing-ui-baseline.mjs';
 const compactModule=new URL('../../lib/contract-views.mjs',import.meta.url);
 const compactView=fs.existsSync(compactModule)?(await import(compactModule)).viewContract:null;
 const scenario=process.argv[2]||'mvc';
+if(scenario==='query'){
+ const {queryLifecycleContext}=await import('../../lib/lifecycle-context-query.mjs');begin();const start=performance.now();const output=queryLifecycleContext({mode:'route',workUnitId:'work-unit.entry-triage',include:['context_engineering']});const elapsed_ms=performance.now()-start,profile=end();console.log(JSON.stringify({scenario,result:'passed',elapsed_ms,main:profile,output_bytes:Buffer.byteLength(JSON.stringify(output)),runtime_tokens:null}));process.exit(0);
+}
 const f=scenario==='cross-repo'?crossRepoFixture():scenario==='ddd'?approvedFixture('domain-driven'):pilotFixture();
 try {
  if(scenario==='no-api'){

@@ -1,3 +1,4 @@
+import { validateReadOnlyIntake } from './read-only-intake.mjs';
 import { assertTrackingEntry } from './stage-tracking.mjs';
 import { normalizeSliceContract } from './slice-contract.mjs';
 import { assertSliceV3TaskPackage } from './slice-task-package.mjs';
@@ -17,7 +18,7 @@ import { LEGACY_TASK_PACKAGE_SCHEMA, TASK_PACKAGE_SCHEMA, validateTaskPackageSch
 
 export { LEGACY_TASK_PACKAGE_SCHEMA, TASK_PACKAGE_SCHEMA, validateTaskPackageSchema };
 export const TASK_PACKAGE_REGISTRY_REF = ".template-spec/agents/digital-human-roles.yaml";
-export const CONTRACT_KINDS = new Set(["lifecycle-work-unit", "slice-implementation", "template-maintenance"]);
+export const CONTRACT_KINDS = new Set(["lifecycle-work-unit", "slice-implementation", "template-maintenance", "read-only-intake"]);
 export const EXECUTION_STATES = new Set(["Explorer", "Drafter", "Worker", "Reviewer", "Verifier"]);
 export const WORKFLOW_STATUSES = new Set(["not-started", "active", "paused", "resolved", "failed"]);
 
@@ -203,8 +204,14 @@ function validateContract(value, registry, lifecycle) {
   if (value.execution_state === "Worker") assertImplementationDecision({ slice_contract_ref: contract.slice_contract_ref, vertical_slice_ticket_ref: slice.lifecycle_refs.ticket, user_decisions: value.user_decisions });
 }
 
-export function validateTaskPackage(value, { rolesDoc, lifecycleDoc } = {}) {
+export function validateTaskPackage(value, { rolesDoc, lifecycleDoc, root = ROOT, runDir } = {}) {
   validateTaskPackageSchema(value);
+  if (value.schema_version === 2) {
+    enforceHarnessTaskScope(value, { root });
+    const registry = rolesDoc || loadDigitalHumanRoles();
+    validateSkillSource(value, registry);
+    return validateReadOnlyIntake(value, { root, runDir, roles: registry, lifecycle: lifecycleDoc || loadRegistry() });
+  }
   enforceHarnessTaskScope(value);
   const intake = value.execution_state === "Explorer" && value.allowed_write_paths.length === 0 && ["work-unit.entry-triage", "work-unit.harness-entry"].includes(value.work_unit_id);
   if (!intake) {

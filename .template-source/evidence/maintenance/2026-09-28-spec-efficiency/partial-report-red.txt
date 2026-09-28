@@ -1,0 +1,35 @@
+[开始] node -e "console.log(123)"
+[完成] node -e "console.log(123)" (32ms, exit=0)
+[开始] node -e "setTimeout(()=>{},10000)"
+✖ actual logs, deduplication, failures and wall time are distinct (35.285333ms)
+[失败] node -e "setTimeout(()=>{},10000)" (102ms, exit=130)
+✔ interruption preserves partial execution and marks remaining checks (102.897709ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 1
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 186.145333
+
+✖ failing tests:
+
+test at tests/verification-report.test.mjs:8:1
+✖ actual logs, deduplication, failures and wall time are distinct (35.285333ms)
+  AssertionError [ERR_ASSERTION]: partial reports must preserve observed execution counts
+      at onResult (file:///Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template/tests/verification-report.test.mjs:11:150)
+      at worker (file:///Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template/scripts/lib/template-verification-runner.mjs:119:9)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Promise.all (index 0)
+      at async runGroups (file:///Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template/scripts/lib/template-verification-runner.mjs:124:3)
+      at async TestContext.<anonymous> (file:///Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template/tests/verification-report.test.mjs:11:6)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

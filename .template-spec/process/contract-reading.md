@@ -44,3 +44,15 @@ v2 的 `openapi` 是唯一 Draft 绑定，`draft_review` 只存 `ref/digest`，F
 成功返回前复核所有登记原字节、目录枚举及不存在项。技术设计子进程自行验证批准，再返回依赖清单；父进程合并读取集合，读取矛盾、遗漏报告或异常均阻断。此清单不是批准上下文。品牌上下文不能序列化、跨仓或从只读升级；在阶段中生成的上下文结束后失效。调用者可传入 `AbortSignal`，已收到的撤回事件须中止当前操作；下一次边界始终重新读取当前批准和回复。未接入读取追踪的消费者保留原检查，不共享结果。
 
 P1 可回用原 `slice-contract` 阅读入口；P2 可回退阶段调用与本次改动的读取适配，恢复完整重复检查；P3 可停止创建 v2，但已生成 v2 的读取能力必须保留。回退后重新验证当前来源和批准，不恢复历史通过状态。
+
+## 默认派发与审阅材料
+
+提供该查询入口的聚合与战略模板中，派发首先用 `scripts/query-lifecycle-context` 一次组合 mode、stage、work-unit 与必要合同子树（`--mode`、`--stage`、`--work-unit`、`--include`）。结果 `sources.lifecycle_registry.sha256` 绑定原始注册表字节，`context_sha256` 绑定规范化查询、实际返回内容及来源；旧 `semantic_sha256` 只绑定稳定 ID 语义。旧结果缺少新增绑定时重新查询，不视作可复用。身份、执行范围和查询来源在同一 `validation-phase` 内读取，返回前变化则失败。
+
+专职交付 Profile 的阶段与 mode 继续由其现有 harness-profile 和主控入口解析，不假定未分发的查询命令存在。实现者默认读取指定 `--unit` 的 `task` 视图，审阅者默认读取 `review`；不要先整读 YAML 再重复生成相同视图。身份、版本、写边界、验收、停止条件、风险与未知约束均须保留，需要追溯时展开 `full`。一次执行边界内可复用未变来源；恢复、交接、实现、合并及发布重新核验。Context Plan 的原始 v2 字段为 `common.context_plan`，原始 v3 为 `scope.context_plan`；`common.context_plan` 在 v3 运行时只是归一化别名，不是修改原 YAML 的位置。
+
+```sh
+scripts/contract prepare-review <前资产> <后资产> --kind <类型> [--unit <ID>] [--decision <原决定.yaml>] --json
+```
+
+输出来源字节绑定、差异、完整约束、原决定与缺口及恢复动作。`approval_reusable: false`、`execution_allowed: false` 固定不授予批准或执行权；语义等价、风险接受、原回复真实性和批准延续由原审查及决定验证器处理。缺少原决定标记未提供，不能据此沿用批准。

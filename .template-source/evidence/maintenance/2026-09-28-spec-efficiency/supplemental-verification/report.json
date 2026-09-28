@@ -1,0 +1,1535 @@
+{
+  "kind": "supplemental-verification",
+  "status": "passed",
+  "input_sha256": "fe87afa55a2314576e349fd3a97317421091776907513d7cf32a40b696c54b86",
+  "input_after_sha256": "fe87afa55a2314576e349fd3a97317421091776907513d7cf32a40b696c54b86",
+  "wall_ms": 13797.312666,
+  "rows": [
+    {
+      "command": [
+        "node",
+        "scripts/verify-template-verification-scenarios"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 336.3042499999999,
+      "error": null,
+      "stdout_ref": "0.stdout",
+      "stderr_ref": "0.stderr"
+    },
+    {
+      "command": [
+        "node",
+        "scripts/verify-template-cache-scenarios"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 414.0533750000002,
+      "error": null,
+      "stdout_ref": "1.stdout",
+      "stderr_ref": "1.stderr"
+    },
+    {
+      "command": [
+        "node",
+        "--test",
+        ".template-source/scripts/tests/template-ci.test.mjs"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 2445.9967079999997,
+      "error": null,
+      "stdout_ref": "2.stdout",
+      "stderr_ref": "2.stderr"
+    },
+    {
+      "command": [
+        "node",
+        "--test",
+        "tests/verification-selection.test.mjs",
+        "tests/verification-report.test.mjs"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 248.75175000000036,
+      "error": null,
+      "stdout_ref": "3.stdout",
+      "stderr_ref": "3.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/lib/user-decision.mjs"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 30.57366600000023,
+      "error": null,
+      "stdout_ref": "4.stdout",
+      "stderr_ref": "4.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/verify-user-decision"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 23.54675000000043,
+      "error": null,
+      "stdout_ref": "5.stdout",
+      "stderr_ref": "5.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/verify-user-decision-scenarios"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 23.10633400000006,
+      "error": null,
+      "stdout_ref": "6.stdout",
+      "stderr_ref": "6.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/sync-skills"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 21.829749999999876,
+      "error": null,
+      "stdout_ref": "7.stdout",
+      "stderr_ref": "7.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/update-skill-lock"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 22.26299999999992,
+      "error": null,
+      "stdout_ref": "8.stdout",
+      "stderr_ref": "8.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/verify-upstream-skill-source"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 21.54308300000048,
+      "error": null,
+      "stdout_ref": "9.stdout",
+      "stderr_ref": "9.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/lib/skill-supply-chain.mjs"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 22.233374999999796,
+      "error": null,
+      "stdout_ref": "10.stdout",
+      "stderr_ref": "10.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/lib/profile-skill-sync.mjs"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 21.45783300000039,
+      "error": null,
+      "stdout_ref": "11.stdout",
+      "stderr_ref": "11.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/sync-profile-skills"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 21.24487500000032,
+      "error": null,
+      "stdout_ref": "12.stdout",
+      "stderr_ref": "12.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        ".agents/skills/yss-skill-source-index-refresh/scripts/refresh-yss-skill-index.mjs"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 21.863499999999476,
+      "error": null,
+      "stdout_ref": "13.stdout",
+      "stderr_ref": "13.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        ".agents/skills/yss-skill-source-index-refresh/scripts/refresh-yss-skill-index.test.mjs"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 21.7485829999996,
+      "error": null,
+      "stdout_ref": "14.stdout",
+      "stderr_ref": "14.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        ".agents/skills/yss-repository/tests/profile-routing.test.mjs"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 23.123583000000508,
+      "error": null,
+      "stdout_ref": "15.stdout",
+      "stderr_ref": "15.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/generate-lifecycle-artifacts"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 21.108625000000757,
+      "error": null,
+      "stdout_ref": "16.stdout",
+      "stderr_ref": "16.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/verify-lifecycle-registry"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 21.809457999999722,
+      "error": null,
+      "stdout_ref": "17.stdout",
+      "stderr_ref": "17.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/verify-lifecycle-checkpoint"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 23.32483300000058,
+      "error": null,
+      "stdout_ref": "18.stdout",
+      "stderr_ref": "18.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/lib/context-contract.mjs"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 23.07429200000024,
+      "error": null,
+      "stdout_ref": "19.stdout",
+      "stderr_ref": "19.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/verify-context-contract"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 22.054917000000387,
+      "error": null,
+      "stdout_ref": "20.stdout",
+      "stderr_ref": "20.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/verify-context-contract-scenarios"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 22.118666999999732,
+      "error": null,
+      "stdout_ref": "21.stdout",
+      "stderr_ref": "21.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/verify-business-language-scenarios"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 22.763207999999395,
+      "error": null,
+      "stdout_ref": "22.stdout",
+      "stderr_ref": "22.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/query-lifecycle-context"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 23.09875000000011,
+      "error": null,
+      "stdout_ref": "23.stdout",
+      "stderr_ref": "23.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/lib/lifecycle-context-query.mjs"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 22.559916999999587,
+      "error": null,
+      "stdout_ref": "24.stdout",
+      "stderr_ref": "24.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/verify-lifecycle-context-query-scenarios"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 21.54124999999931,
+      "error": null,
+      "stdout_ref": "25.stdout",
+      "stderr_ref": "25.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/verify-context-reconciliation"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 21.07433300000048,
+      "error": null,
+      "stdout_ref": "26.stdout",
+      "stderr_ref": "26.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/verify-context-reconciliation-scenarios"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 22.32325000000037,
+      "error": null,
+      "stdout_ref": "27.stdout",
+      "stderr_ref": "27.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/verify-grill-with-docs-context-scenarios"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 22.21295800000007,
+      "error": null,
+      "stdout_ref": "28.stdout",
+      "stderr_ref": "28.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/verify-strategic-context-import"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 21.48004200000014,
+      "error": null,
+      "stdout_ref": "29.stdout",
+      "stderr_ref": "29.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/verify-strategic-context-import-scenarios"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 22.11254100000042,
+      "error": null,
+      "stdout_ref": "30.stdout",
+      "stderr_ref": "30.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/verify-frontend-implementation-evidence"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 21.442000000000007,
+      "error": null,
+      "stdout_ref": "31.stdout",
+      "stderr_ref": "31.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/verify-scaffold-architecture-decisions"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 22.24474999999984,
+      "error": null,
+      "stdout_ref": "32.stdout",
+      "stderr_ref": "32.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/verify-scaffold-architecture-decision-scenarios"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 21.302166999999827,
+      "error": null,
+      "stdout_ref": "33.stdout",
+      "stderr_ref": "33.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/lib/task-package-schema.mjs"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 22.569542000000183,
+      "error": null,
+      "stdout_ref": "34.stdout",
+      "stderr_ref": "34.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/lib/json-schema.mjs"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 21.573708000000806,
+      "error": null,
+      "stdout_ref": "35.stdout",
+      "stderr_ref": "35.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/lib/task-package.mjs"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 21.950917000000118,
+      "error": null,
+      "stdout_ref": "36.stdout",
+      "stderr_ref": "36.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/lib/maintenance-review.mjs"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 21.715542000000823,
+      "error": null,
+      "stdout_ref": "37.stdout",
+      "stderr_ref": "37.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/lib/maintenance-intensity.mjs"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 20.907624999999825,
+      "error": null,
+      "stdout_ref": "38.stdout",
+      "stderr_ref": "38.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/lib/template-verification.mjs"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 21.827624999999898,
+      "error": null,
+      "stdout_ref": "39.stdout",
+      "stderr_ref": "39.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/run-template-verification"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 22.24383299999954,
+      "error": null,
+      "stdout_ref": "40.stdout",
+      "stderr_ref": "40.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/verify-maintenance-checkpoint"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 21.771749999999884,
+      "error": null,
+      "stdout_ref": "41.stdout",
+      "stderr_ref": "41.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/verify-maintenance-review-record"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 21.59937500000069,
+      "error": null,
+      "stdout_ref": "42.stdout",
+      "stderr_ref": "42.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/verify-maintenance-intensity-scenarios"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 21.38037499999973,
+      "error": null,
+      "stdout_ref": "43.stdout",
+      "stderr_ref": "43.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/verify-skill-registry"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 21.752124999999978,
+      "error": null,
+      "stdout_ref": "44.stdout",
+      "stderr_ref": "44.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/lib/implementation-contract-compiler.mjs"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 21.185499999999593,
+      "error": null,
+      "stdout_ref": "45.stdout",
+      "stderr_ref": "45.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/lib/backend-scaffold-prerequisites.mjs"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 21.50683400000071,
+      "error": null,
+      "stdout_ref": "46.stdout",
+      "stderr_ref": "46.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/lib/api-contract-decision.mjs"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 22.523207999999613,
+      "error": null,
+      "stdout_ref": "47.stdout",
+      "stderr_ref": "47.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/lib/openapi-draft-validation.mjs"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 22.655499999999847,
+      "error": null,
+      "stdout_ref": "48.stdout",
+      "stderr_ref": "48.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/lib/api-contract-decision.test.mjs"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 22.4243749999996,
+      "error": null,
+      "stdout_ref": "49.stdout",
+      "stderr_ref": "49.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/verify-openapi-draft-validation-record"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 20.878709000000526,
+      "error": null,
+      "stdout_ref": "50.stdout",
+      "stderr_ref": "50.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/lib/legacy-backend-scaffold-audit.mjs"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 22.56787499999973,
+      "error": null,
+      "stdout_ref": "51.stdout",
+      "stderr_ref": "51.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/lib/legacy-backend-scaffold-audit.test.mjs"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 22.649374999999964,
+      "error": null,
+      "stdout_ref": "52.stdout",
+      "stderr_ref": "52.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/audit-legacy-backend-scaffold"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 22.927291999999397,
+      "error": null,
+      "stdout_ref": "53.stdout",
+      "stderr_ref": "53.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/fixtures/backend-scaffold/design-prerequisites.mjs"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 24.535291999999572,
+      "error": null,
+      "stdout_ref": "54.stdout",
+      "stderr_ref": "54.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/fixtures/backend-scaffold/attach-design-prerequisites.mjs"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 22.49712499999987,
+      "error": null,
+      "stdout_ref": "55.stdout",
+      "stderr_ref": "55.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/generate-yss-skill-boundaries"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 21.785291000000143,
+      "error": null,
+      "stdout_ref": "56.stdout",
+      "stderr_ref": "56.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/audit-yss-backend-skills"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 20.633958999999777,
+      "error": null,
+      "stdout_ref": "57.stdout",
+      "stderr_ref": "57.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/verify-retired-skill-ids"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 21.40379099999973,
+      "error": null,
+      "stdout_ref": "58.stdout",
+      "stderr_ref": "58.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/verify-skill-governance"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 22.768667000000278,
+      "error": null,
+      "stdout_ref": "59.stdout",
+      "stderr_ref": "59.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/verify-upstream-skill-source"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 21.31316699999934,
+      "error": null,
+      "stdout_ref": "60.stdout",
+      "stderr_ref": "60.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/lib/skill-supply-chain.mjs"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 21.58600000000024,
+      "error": null,
+      "stdout_ref": "61.stdout",
+      "stderr_ref": "61.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/verify-yss-dto-openapi-profile"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 22.278166999999485,
+      "error": null,
+      "stdout_ref": "62.stdout",
+      "stderr_ref": "62.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/verify-yss-dto-openapi-scenarios"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 21.164082999999664,
+      "error": null,
+      "stdout_ref": "63.stdout",
+      "stderr_ref": "63.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/verify-digital-human-roles"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 23.542084000000614,
+      "error": null,
+      "stdout_ref": "64.stdout",
+      "stderr_ref": "64.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/verify-digital-human-roles-scenarios"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 23.834749999999985,
+      "error": null,
+      "stdout_ref": "65.stdout",
+      "stderr_ref": "65.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/verify-approval-record"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 21.824125000000095,
+      "error": null,
+      "stdout_ref": "66.stdout",
+      "stderr_ref": "66.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/lib/lifecycle-transition.mjs"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 21.624500000000808,
+      "error": null,
+      "stdout_ref": "67.stdout",
+      "stderr_ref": "67.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/lib/backend-scaffold-prerequisites.mjs"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 22.157665999999153,
+      "error": null,
+      "stdout_ref": "68.stdout",
+      "stderr_ref": "68.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/lib/api-contract-decision.mjs"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 22.320834000000104,
+      "error": null,
+      "stdout_ref": "69.stdout",
+      "stderr_ref": "69.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/lib/openapi-draft-validation.mjs"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 22.132792000000336,
+      "error": null,
+      "stdout_ref": "70.stdout",
+      "stderr_ref": "70.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/lib/api-contract-decision.test.mjs"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 20.522874999999658,
+      "error": null,
+      "stdout_ref": "71.stdout",
+      "stderr_ref": "71.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/verify-openapi-draft-validation-record"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 22.77850000000035,
+      "error": null,
+      "stdout_ref": "72.stdout",
+      "stderr_ref": "72.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/lib/legacy-backend-scaffold-audit.mjs"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 22.438750000000255,
+      "error": null,
+      "stdout_ref": "73.stdout",
+      "stderr_ref": "73.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/lib/legacy-backend-scaffold-audit.test.mjs"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 21.66541700000016,
+      "error": null,
+      "stdout_ref": "74.stdout",
+      "stderr_ref": "74.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/audit-legacy-backend-scaffold"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 21.436625000000276,
+      "error": null,
+      "stdout_ref": "75.stdout",
+      "stderr_ref": "75.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/fixtures/backend-scaffold/design-prerequisites.mjs"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 21.59754200000043,
+      "error": null,
+      "stdout_ref": "76.stdout",
+      "stderr_ref": "76.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/fixtures/backend-scaffold/attach-design-prerequisites.mjs"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 23.01441700000032,
+      "error": null,
+      "stdout_ref": "77.stdout",
+      "stderr_ref": "77.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/verify-lifecycle-scenarios"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 21.225749999999607,
+      "error": null,
+      "stdout_ref": "78.stdout",
+      "stderr_ref": "78.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/verify-lifecycle-transition-scenarios"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 21.603125000000546,
+      "error": null,
+      "stdout_ref": "79.stdout",
+      "stderr_ref": "79.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/verify-frontend-scaffold-generator-scenarios"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 21.37445899999966,
+      "error": null,
+      "stdout_ref": "80.stdout",
+      "stderr_ref": "80.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        ".agents/skills/yss-frontend-scaffold-generator/scripts/generate_scaffold.mjs"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 20.999416999999994,
+      "error": null,
+      "stdout_ref": "81.stdout",
+      "stderr_ref": "81.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        ".agents/skills/yss-frontend-scaffold-generator/scripts/run_scaffold_verification.mjs"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 20.435709000000315,
+      "error": null,
+      "stdout_ref": "82.stdout",
+      "stderr_ref": "82.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        ".agents/skills/yss-frontend-scaffold-generator/scripts/generate_and_verify_scaffold.mjs"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 21.588291000000027,
+      "error": null,
+      "stdout_ref": "83.stdout",
+      "stderr_ref": "83.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/verify-matt-yss-integration-scenarios"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 22.005458000000544,
+      "error": null,
+      "stdout_ref": "84.stdout",
+      "stderr_ref": "84.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/verify-prototype-backend-scaffold-scenarios"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 21.18541600000026,
+      "error": null,
+      "stdout_ref": "85.stdout",
+      "stderr_ref": "85.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/verify-yss-implementation-contract-compiler-scenarios"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 20.796291999999994,
+      "error": null,
+      "stdout_ref": "86.stdout",
+      "stderr_ref": "86.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/verify-yss-prototype-contract-scenarios"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 21.0337499999996,
+      "error": null,
+      "stdout_ref": "87.stdout",
+      "stderr_ref": "87.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/verify-openapi-yaml-first-scenarios"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 21.096833999999944,
+      "error": null,
+      "stdout_ref": "88.stdout",
+      "stderr_ref": "88.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/verify-openapi-json-handoff-scenarios"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 22.80974999999944,
+      "error": null,
+      "stdout_ref": "89.stdout",
+      "stderr_ref": "89.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/verify-repository-scope-scenarios"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 22.615334000000075,
+      "error": null,
+      "stdout_ref": "90.stdout",
+      "stderr_ref": "90.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/export-yss-skills"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 21.46270900000036,
+      "error": null,
+      "stdout_ref": "91.stdout",
+      "stderr_ref": "91.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/verify-digital-human-task-package"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 20.73191599999973,
+      "error": null,
+      "stdout_ref": "92.stdout",
+      "stderr_ref": "92.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/verify-digital-human-task-package-scenarios"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 21.19733400000041,
+      "error": null,
+      "stdout_ref": "93.stdout",
+      "stderr_ref": "93.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/verify-subagent-task-package"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 21.015625,
+      "error": null,
+      "stdout_ref": "94.stdout",
+      "stderr_ref": "94.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/verify-subagent-task-package-scenarios"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 22.87433299999975,
+      "error": null,
+      "stdout_ref": "95.stdout",
+      "stderr_ref": "95.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/verify-template-verification-scenarios"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 21.677083999999923,
+      "error": null,
+      "stdout_ref": "96.stdout",
+      "stderr_ref": "96.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/lib/maintenance-review-workflow.mjs"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 21.75566699999945,
+      "error": null,
+      "stdout_ref": "97.stdout",
+      "stderr_ref": "97.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/lib/maintenance-candidate.mjs"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 22.52258299999994,
+      "error": null,
+      "stdout_ref": "98.stdout",
+      "stderr_ref": "98.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/lib/template-commit-cache.mjs"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 22.303000000000793,
+      "error": null,
+      "stdout_ref": "99.stdout",
+      "stderr_ref": "99.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/prepare-maintenance-review"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 20.986707999999453,
+      "error": null,
+      "stdout_ref": "100.stdout",
+      "stderr_ref": "100.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/evaluate-maintenance-review-round"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 21.623207999999977,
+      "error": null,
+      "stdout_ref": "101.stdout",
+      "stderr_ref": "101.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/cache-template-commit"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 21.740125000000262,
+      "error": null,
+      "stdout_ref": "102.stdout",
+      "stderr_ref": "102.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/capture-maintenance-candidate"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 23.221583000000464,
+      "error": null,
+      "stdout_ref": "103.stdout",
+      "stderr_ref": "103.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/inspect-maintenance-candidate"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 21.114458000000013,
+      "error": null,
+      "stdout_ref": "104.stdout",
+      "stderr_ref": "104.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/verify-maintenance-review-workflow-scenarios"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 21.23370800000066,
+      "error": null,
+      "stdout_ref": "105.stdout",
+      "stderr_ref": "105.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--check",
+        "scripts/verify-template-cache-scenarios"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 22.259291000000303,
+      "error": null,
+      "stdout_ref": "106.stdout",
+      "stderr_ref": "106.stderr"
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 186.62029100000018,
+      "error": null,
+      "stdout_ref": "107.stdout",
+      "stderr_ref": "107.stderr"
+    },
+    {
+      "command": [
+        "scripts/sync-profile-skills",
+        "--check",
+        "--profile=all"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 326.14145800000006,
+      "error": null,
+      "stdout_ref": "108.stdout",
+      "stderr_ref": "108.stderr"
+    },
+    {
+      "command": [
+        "scripts/sync-skills",
+        "--check"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 94.59262500000023,
+      "error": null,
+      "stdout_ref": "109.stdout",
+      "stderr_ref": "109.stderr"
+    },
+    {
+      "command": [
+        "scripts/update-skill-lock",
+        "--check"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 93.0372499999994,
+      "error": null,
+      "stdout_ref": "110.stdout",
+      "stderr_ref": "110.stderr"
+    },
+    {
+      "command": [
+        "scripts/sync-strategic-handoff-tools",
+        "--check"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 192.33637499999986,
+      "error": null,
+      "stdout_ref": "111.stdout",
+      "stderr_ref": "111.stderr"
+    },
+    {
+      "command": [
+        "node",
+        ".agents/skills/yss-research/scripts/validate-research-package.mjs",
+        ".template-source/evidence/maintenance/2026-09-28-spec-efficiency/efficiency-research-brief.md",
+        ".template-source/evidence/maintenance/2026-09-28-spec-efficiency/efficiency-evidence.yaml"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 27.10266600000068,
+      "error": null,
+      "stdout_ref": "112.stdout",
+      "stderr_ref": "112.stderr"
+    },
+    {
+      "command": [
+        "scripts/verify-digital-human-task-package-scenarios"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template/submodules/yss-harness-design-agent",
+      "exit_code": 0,
+      "duration_ms": 1976.4458329999998,
+      "error": null,
+      "stdout_ref": "113.stdout",
+      "stderr_ref": "113.stderr"
+    },
+    {
+      "command": [
+        "scripts/verify-digital-human-task-package-scenarios"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template/submodules/yss-harness-backend-agent",
+      "exit_code": 0,
+      "duration_ms": 1955.8495829999993,
+      "error": null,
+      "stdout_ref": "114.stdout",
+      "stderr_ref": "114.stderr"
+    },
+    {
+      "command": [
+        "scripts/verify-digital-human-task-package-scenarios"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template/submodules/yss-harness-frontend-agent",
+      "exit_code": 0,
+      "duration_ms": 1676.7814170000001,
+      "error": null,
+      "stdout_ref": "115.stdout",
+      "stderr_ref": "115.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "scripts/query-lifecycle-context",
+        "--mode",
+        "route"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template/submodules/yss-harness-design-agent",
+      "exit_code": 0,
+      "duration_ms": 63.72195799999827,
+      "error": null,
+      "stdout_ref": "116.stdout",
+      "stderr_ref": "116.stderr"
+    },
+    {
+      "command": [
+        "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+        "--test",
+        "tests/efficiency-distribution.test.mjs"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/spec-efficiency/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 563.4014169999991,
+      "error": null,
+      "stdout_ref": "117.stdout",
+      "stderr_ref": "117.stderr"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+#!/usr/bin/env node
+import { parseArgs } from 'node:util';
+import { ROOT } from './lib/lifecycle-registry.mjs';
+import { loadTaskPackage, validateTaskPackage } from './lib/task-package.mjs';
+import { observeReadOnlyIntake } from './lib/read-only-intake.mjs';
+try {
+  const {values,positionals} = parseArgs({options:{task:{type:'string'},'run-dir':{type:'string'},'timeout-ms':{type:'string',default:'0'}},allowPositionals:true});
+  if(!values.task||!values['run-dir'])throw Error('需要 --task 和仓库外新目录 --run-dir；命令放在 -- 之后');
+  const {value}=loadTaskPackage(values.task);validateTaskPackage(value);
+  if(value.schema_version!==2||value.workflow_status!=='active')throw Error('只接受 active 的只读 v2 任务');
+  const result=await observeReadOnlyIntake(value,{root:ROOT,runDir:values['run-dir'],command:positionals[0],args:positionals.slice(1),timeoutMs:Number(values['timeout-ms'])});
+  validateTaskPackage(result,{runDir:values['run-dir']});
+  process.stdout.write(JSON.stringify(result,null,2)+'\n');if(result.workflow_status!=='resolved')process.exitCode=1;
+}catch(error){process.stderr.write(error.message+'\n');process.exitCode=1;}

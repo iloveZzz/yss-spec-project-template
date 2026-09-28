@@ -1,6 +1,6 @@
 import { loadExecutionScope, assertScopeWorkUnit, scopedNextRoutes } from './lifecycle-execution-scope.mjs';
 import { createHash } from "node:crypto";
-import { readFileSync } from "node:fs";
+import { readFileSync, withValidationPhase, validationDependencies } from "./validation-phase.mjs";
 import path from "node:path";
 import { parseDocument } from "../vendor/yaml.mjs";
 import { ROOT, loadRegistry, semanticDigest, validateRegistry } from "./lifecycle-registry.mjs";
@@ -63,11 +63,19 @@ function selectedSkills(route, skillRegistry) {
   return skillRegistry.skills.filter((skill) => ids.has(skill.id));
 }
 
-export function queryLifecycleContext({ mode, stageId, workUnitId, include = [] } = {}) {
+export function queryLifecycleContext(options = {}) {
+  return withValidationPhase({ root: ROOT, purpose: "lifecycle-context-query", readOnly: true }, () => querySnapshot(options));
+}
+
+function querySnapshot({ mode, stageId, workUnitId, include = [] } = {}) {
   if (!mode && !stageId && !workUnitId && include.length === 0) {
     throw new TypeError("至少提供 --mode、--stage、--work-unit 或 --include 之一");
   }
 
+  const identity = loadYaml("yss-project.yaml", "仓库身份");
+  if (identity.schema_version !== 1 || !["template-source", "project-instance"].includes(identity.repository_mode)) {
+    throw new TypeError("仓库身份或版本无效");
+  }
   const scope = loadExecutionScope();
   if (workUnitId) assertScopeWorkUnit(workUnitId, { readOnly: true });
   const lifecycle = validateRegistry(loadRegistry());
@@ -114,9 +122,11 @@ export function queryLifecycleContext({ mode, stageId, workUnitId, include = [] 
       work_unit: workUnitId ?? null,
     },
     sources: {
+      repository_identity: { ref: "yss-project.yaml", sha256: sha256(read("yss-project.yaml")) },
       lifecycle_registry: {
         ref: LIFECYCLE_REGISTRY_REF,
         semantic_sha256: semanticDigest(lifecycle),
+        sha256: sha256(read(LIFECYCLE_REGISTRY_REF)),
         status: lifecycle.status,
       },
       orchestration_contract: {
@@ -152,5 +162,7 @@ export function queryLifecycleContext({ mode, stageId, workUnitId, include = [] 
   result.references = [...collectPathReferences(result), LIFECYCLE_REGISTRY_REF, ORCHESTRATION_CONTRACT_REF, SKILL_REGISTRY_REF]
     .filter((value, index, all) => all.indexOf(value) === index)
     .sort();
-  return canonicalize(result);
+  result.sources.read_set = validationDependencies().files.map(row=>({ref:path.relative(ROOT,row.file).split(path.sep).join("/"),sha256:row.digest})).sort((a,b)=>a.ref.localeCompare(b.ref,"en"));
+  const canonical = canonicalize(result);
+  return { ...canonical, context_sha256: sha256(JSON.stringify(canonical)) };
 }

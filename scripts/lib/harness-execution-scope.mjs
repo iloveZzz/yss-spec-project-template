@@ -33,7 +33,7 @@ function activeProfile(root) {
 export function enforceHarnessTaskScope(task,{root=ROOT}={}) {
   const scope=loadExecutionScope(root);
   if(scope) {
-    assertScopeWorkUnit(task.contract?.kind==='slice-implementation'?'work-unit.slice-implementation':task.work_unit_id,{root});
+    assertScopeWorkUnit(task.contract?.kind==='slice-implementation'?'work-unit.slice-implementation':task.work_unit_id,{root,readOnly:task.contract?.kind==='read-only-intake'});
     ensure(task.role_id!=='role.frontend-engineer','后端职责不允许派发前端实现');
     ensure(task.allowed_write_paths.every(ref=>!/^apps\/frontend(?:\/|$)/.test(ref)),'禁止写入前端工程');
   }

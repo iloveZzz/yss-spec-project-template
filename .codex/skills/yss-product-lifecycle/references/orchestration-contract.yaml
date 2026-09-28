@@ -1031,7 +1031,11 @@ wayfinder_mode:
   template_source_use: only-when-template-evolution-is-long-running
 
 context_engineering:
-  contract_field: slice_contract.common.context_plan
+  contract_field: slice_contract.common.context_plan # 仅运行时归一化读取别名
+  raw_v2_contract_field: slice_contract.common.context_plan
+  raw_v3_contract_field: slice_contract.scope.context_plan
+  dispatch_reading: implementation-task-view-or-review-view
+  reading_reference: .template-spec/process/contract-reading.md
   required_context: [CONTEXT.md, approved-spec, current-slice-contract, applicable-adr-or-baseline]
   on_demand_context: [specialist-references, implementation-repository-files, historical-evidence]
   stop_rule: minimal-sufficient-evidence

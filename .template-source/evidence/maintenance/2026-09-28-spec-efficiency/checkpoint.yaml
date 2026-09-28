@@ -1,0 +1,78 @@
+{
+  "schema_version": 2,
+  "intensity": "L3",
+  "classification_reason": "核心验证选择与报告、来源绑定及只读权限合同变化，涉及三个专职消费者和四个 CLI。",
+  "triggers": [
+    "core-validator",
+    "permission-boundary",
+    "cross-repo-contract"
+  ],
+  "changed_assets": [
+    "scripts/lib/lifecycle-context-query.mjs",
+    "scripts/lib/read-only-intake.mjs",
+    "scripts/lib/task-package.mjs",
+    ".template-spec/process/schemas/digital-human-task-package.schema.json",
+    "scripts/lib/contract-views.mjs",
+    "scripts/run-template-verification",
+    "scripts/lib/verification-selection.mjs",
+    "scripts/lib/verification-report.mjs",
+    ".template-source/process/template-verification-profiles.yaml",
+    "scripts/fixtures/contract-efficiency",
+    "scripts/sync-strategic-handoff-tools",
+    ".agents/skills/yss-research/SKILL.md",
+    ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml",
+    "submodules/create-yss-spec/src/template/asset-runtime.js",
+    "submodules/yss-harness-design-agent/scripts/lib/lifecycle-registry.mjs"
+  ],
+  "verification_evidence": [
+    {
+      "kind": "self-check",
+      "command": "self-check.md",
+      "result": "pass",
+      "evidence_ref": ".template-source/evidence/maintenance/2026-09-28-spec-efficiency/self-check.md"
+    },
+    {
+      "kind": "fresh-verification",
+      "command": "node --test tests/lifecycle-query-freshness.test.mjs tests/read-only-intake.test.mjs tests/contract-review-preparation.test.mjs tests/verification-selection.test.mjs tests/verification-report.test.mjs tests/efficiency-distribution.test.mjs",
+      "result": "pass",
+      "evidence_ref": ".template-source/evidence/maintenance/2026-09-28-spec-efficiency/focused-tests.txt"
+    },
+    {
+      "kind": "relevant-check",
+      "command": "node scripts/fixtures/contract-efficiency/distribution-smoke.mjs /tmp/yss-distribution-current.json",
+      "result": "pass",
+      "evidence_ref": ".template-source/evidence/maintenance/2026-09-28-spec-efficiency/distribution-smoke.json"
+    },
+    {
+      "kind": "relevant-check",
+      "command": "同一候选短路径预热 3 次、30 次测量及每策略 3 次顺序对照",
+      "result": "pass",
+      "evidence_ref": ".template-source/evidence/maintenance/2026-09-28-spec-efficiency/selection-measurement/comparison.json"
+    },
+    {
+      "kind": "relevant-check",
+      "command": "node scripts/fixtures/contract-efficiency/measure.mjs /tmp/yss-query-measure-final.json 30 query",
+      "result": "pass",
+      "evidence_ref": ".template-source/evidence/maintenance/2026-09-28-spec-efficiency/query-measurement.json"
+    },
+    {
+      "kind": "relevant-check",
+      "command": "supplemental-verification/report.json 中 118 条实际命令",
+      "result": "pass",
+      "evidence_ref": ".template-source/evidence/maintenance/2026-09-28-spec-efficiency/supplemental-verification/report.json"
+    },
+    {
+      "kind": "relevant-check",
+      "command": "full-followups/report.json 中 4 条实际补跑命令；不覆盖完整来源门禁失败",
+      "result": "pass",
+      "evidence_ref": ".template-source/evidence/maintenance/2026-09-28-spec-efficiency/full-followups/report.json"
+    }
+  ],
+  "review_mode": "self-check",
+  "escalation": "L3：最终全量 96 条唯一命令中 95 通过，固定提交来源门禁失败，4 条后续命令独立补跑通过；完整失败见相邻 full-verification/report.json。未授权提交，保持 implementation-ready，不是 release-ready。",
+  "target_state": "implementation-ready",
+  "current_state": "implementation-ready",
+  "verification_profile": "fast",
+  "review_round": 0,
+  "candidate_digest": null
+}

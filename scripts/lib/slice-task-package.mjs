@@ -31,7 +31,7 @@ function compile(binding,{root=ROOT,work_unit_id,task_id,actor_id,runtime_id,exe
     task_id,work_unit_id,actor_id,runtime_id,execution_state,workflow_status:'not-started',stage_id:'stage.vertical-slice-implementation',
     contract:{kind:'slice-implementation',contract_id:contract.contract_id,contract_version:contract.contract_version,status:'issued',contract_ref:binding.ref,slice_contract_ref:binding.ref,gate_refs:[binding.approval_ref]},
     inputs:[binding.ref,...new Set(Object.values(contract.lifecycle_refs))],
-    objective:`${unit.behavior}（执行目录：${unit.project_root}；完整约束读取 ${binding.ref}）`,
+    objective:`${unit.behavior}（执行目录：${unit.project_root}；默认消费 ${binding.ref} 的 task 视图并指定 ${work_unit_id}，追溯时展开 full）`,
     allowed_write_paths:unit.allowed_write_paths,forbidden_actions:[...unit.work_unit.forbidden_patterns,'来源过期、越界、缺证据、验证失败或新增影响时停止并回交'],
     expected_outputs:[unit.behavior],expected_evidence_files:unit.work_unit.expected_evidence,verification_commands:unit.work_unit.verification_commands,verification_results:[],
     downstream_consumers:unit.downstream_consumers||['role.lifecycle-orchestrator'],convergence:{parent_work_unit:'work-unit.slice-implementation',convergence_ref:unit.convergence_ref||binding.approval_ref,conflict_escalation:'返回生命周期主控'},user_decisions:decisions

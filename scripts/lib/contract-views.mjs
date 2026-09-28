@@ -66,12 +66,15 @@ function view(ref,{root=process.cwd(),kind,profile='review',unit_id}={}){
   const loaded=readSliceContract(ref,{root,diagnostic:true});binding=loaded.binding;blockers.push(...declaredBlockers(loaded.raw));
   const legacy=renderSliceContractView(ref,{root,unit_id:profile==='task'?unit_id:undefined});
   checks.push('Slice 结构及绑定来源');
-  if(legacy.diagnostic_only){content={诊断:legacy.blockers};blockers=legacy.blockers.map(b=>b.reason);}
+  if(legacy.diagnostic_only){content={诊断:legacy.blockers,未校验的原合同:loaded.raw};blockers=legacy.blockers.map(b=>b.reason);}
   else if(profile==='full')content={权威合同:loaded.raw,完整视图:legacy};
   else if(profile==='review'){
    content={...legacy.summary,验收:legacy.acceptance,实施范围:{工程:loaded.raw.scope?.project_roots||legacy.constraints.project_roots,允许写入:loaded.raw.scope?.allowed_write_paths||legacy.constraints.allowed_write_paths},关键约束:loaded.raw.scope?.forbidden_patterns||legacy.constraints.forbidden_patterns,停止条件:'来源或批准过期、越界、缺证据、验证失败、drift / violation / new_impacts 时停止并回交。'};
    for(const key of ['risks','risk_acceptance','blockers','pending_decisions','constraints'])if(loaded.raw[key])content[key]=loaded.raw[key];
    for(const [label,pattern]of [['风险',/风险/],['关键取舍',/取舍/],['待决定事项',/待|决定/],['变化',/变化|变更/]])if(!Object.keys(content).some(k=>pattern.test(k)))content[label]='来源未说明，审阅时核实。';
+   const reviewKnown=new Set(['schema_version','contract_id','contract_version','slice_id','status','basis','scope','common','lifecycle_refs','applicability','resolution','acceptance','verification','work_units','extensions','ticket_policy']);
+   content.未分类约束=Object.fromEntries(Object.entries(loaded.raw).filter(([key])=>!reviewKnown.has(key)));
+   content.专项约束=loaded.raw.extensions;content.适用性=loaded.raw.applicability;
    const extensions=loaded.raw.extensions||{};
    for(const [name,extension]of Object.entries(extensions))for(const [key,value]of Object.entries(extension))if(/risk|constraint|decision|block|exception|unknown/.test(key))content[`${name}.${key}`]=value;
   }else{
@@ -106,4 +109,46 @@ export function diffContract(beforeRef,afterRef,{root=process.cwd(),beforeRoot=r
  const walk=(a,b,p)=>{if(JSON.stringify(a)===JSON.stringify(b))return;if(object(a)&&object(b)){for(const key of new Set([...Object.keys(a),...Object.keys(b)]))walk(a[key],b[key],p?`${p}.${key}`:key);}else changes.push({path:p,before:a??null,after:b??null,category:metadata.test(p.split('.').at(-1))?'binding-change':'requires-review'});};
  walk(before.raw,after.raw,'');const source_checks=[...references(before.raw,beforeRoot).map(x=>({...x,side:'before'})),...references(after.raw,root).map(x=>({...x,side:'after'}))];
  return{read_only:true,approval_reusable:false,execution_allowed:false,before:{ref:beforeRef,digest:hash(before.bytes)},after:{ref:afterRef,digest:hash(after.bytes)},bytes_changed:!before.bytes.equals(after.bytes),changes,source_checks,decision_impact:'必须按当前差异和授权延续协议核验；无法读取旧来源时影响未知。'};
+}
+
+/** Mechanical review material only; original decisions and semantic review remain authoritative. */
+export function prepareContractReview(beforeRef, afterRef, options = {}) {
+  const root = options.root || process.cwd();
+  return withValidationPhase({root,purpose:'prepare-contract-review',readOnly:true}, () => {
+    validateKind(options.kind);
+    const gaps = [];
+    const gap = (code, source_ref, reason, recovery) => gaps.push({code,source_ref,reason,recovery});
+    const readView = (ref, side, sourceRoot) => {
+      try {
+        const value = viewContract(ref,{...options,root:sourceRoot,profile:'full'});
+        for(const blocker of value.blockers)gap('SOURCE_INVALID',ref,blocker,'恢复当前权威来源并重新校验');
+        return value;
+      } catch(error) { gap('SOURCE_UNREADABLE',ref,`${side}: ${error.message}`,'提供可读取的原始资产；不推断历史内容');return null; }
+    };
+    const before = readView(beforeRef,'before',options.beforeRoot||root), after = readView(afterRef,'after',root);
+    if(before?.binding.id && after?.binding.id && before.binding.id!==after.binding.id)gap('IDENTITY_CONFLICT',afterRef,'前后资产 ID 不一致','选择同一资产的前后版本');
+    if(before?.binding.version && before.binding.version===after?.binding.version && before.binding.digest!==after.binding.digest)gap('VERSION_CONFLICT',afterRef,'相同版本包含不同字节','形成新候选版本并重新核验');
+    let diff = null;
+    if(before&&after)try{diff=diffContract(beforeRef,afterRef,options);}catch(error){gap('DIFF_UNAVAILABLE',afterRef,error.message,'先修复来源绑定与版本冲突');}
+    let originalDecision = null;
+    if(options.decision_ref) {
+      try {
+        const loaded=load(options.decision_ref,root);
+        schema(loaded.raw,'.template-spec/process/schemas/user-decision.schema.json');
+        originalDecision={ref:options.decision_ref,digest:hash(loaded.bytes),record:loaded.raw};
+        for(const row of references(loaded.raw,root))if(!row.current)gap('DECISION_SOURCE_STALE',row.ref,row.error||'原决定来源摘要不匹配','恢复原决定快照；不得重绑旧回复');
+      }catch(error){gap('DECISION_UNAVAILABLE',options.decision_ref,error.message,'提供有效的原始决定；本材料不能替代用户回复');}
+    }
+    if(!options.decision_ref)gaps.push({code:'DECISION_NOT_PROVIDED',source_ref:null,reason:'未提供原决定，不能判断批准延续',recovery:'需要沿用批准时提供原决定及原始回复来源',blocking:false});
+    return {
+      schema_version:1,kind:'contract-review-preparation',read_only:true,execution_allowed:false,
+      approval_reusable:false,approval_validity:'not-checked',semantic_equivalence:'requires-independent-review',
+      before:before?.binding||null,after:after?.binding||null,original_decision:originalDecision,
+      decision_status:options.decision_ref?(originalDecision?'requires-validation':'missing-or-invalid'):'not-provided',
+      source_views:{before:before?.content||null,after:after?.content||null},diff,gaps,
+      review_required:['business_scope','acceptance','contract_commitments','authorization','risk_acceptance','quality','external_commitments'],
+      next_action:gaps.some(x=>x.blocking!==false)?'repair-source-gaps':'independent-semantic-review',
+      blockers:gaps.filter(x=>x.blocking!==false).map(item=>item.reason)
+    };
+  });
 }

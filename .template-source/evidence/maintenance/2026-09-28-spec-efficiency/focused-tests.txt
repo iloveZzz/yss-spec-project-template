@@ -1,0 +1,41 @@
+✔ mechanical preparation keeps versions, risks, unknown constraints, and grants no approval (7.259834ms)
+✔ missing originals and decisions give actionable gaps without fabricated approval (1.258125ms)
+✔ stale source bindings remain visible in preparation (2.21075ms)
+✔ same version changed bytes is a conflict (1.601083ms)
+✔ valid original decision remains unapproved; stale reply source produces a gap (150.216542ms)
+✔ all maintained task consumers accept intake and preserve empty writes (520.921958ms)
+✔ four current CLI snapshots include the read-only producer and consumer (9.082958ms)
+✔ design query parsing and binding use the same phase snapshot (43.153417ms)
+✔ display changes invalidate content binding without changing published semantics (90.785792ms)
+✔ identical queries bind deterministically, different queries bind independently (71.123541ms)
+✔ source changes during a query fail instead of mixing snapshots (21.819792ms)
+✔ an invalid identity fails even without an execution scope marker (0.21125ms)
+✔ read-only v2 requires no checkpoint and preserves v1 constraints (623.605917ms)
+✔ observed completion with no command is explicitly not-executed (403.75275ms)
+✔ real execution logs validate; source refs cannot impersonate a command log (254.920292ms)
+✔ runner detects additions, modifications and deletions despite empty changed_files (446.44825ms)
+✔ runtime evidence rejects traversal, absolute paths, and symlink escape (16.6575ms)
+✔ declared verification cannot be silently replaced; ignored changes are observed (88.541416ms)
+✔ exit code and stream bytes must match the recorded execution (219.434917ms)
+[开始] node -e "console.log(123)"
+[完成] node -e "console.log(123)" (35ms, exit=0)
+[开始] node -e "process.exit(7)"
+[失败] node -e "process.exit(7)" (31ms, exit=7)
+[开始] node -e "setTimeout(()=>{},10000)"
+✔ actual logs, deduplication, failures and wall time are distinct (69.951208ms)
+[失败] node -e "setTimeout(()=>{},10000)" (102ms, exit=130)
+✔ interruption preserves partial execution and marks remaining checks (102.752542ms)
+✔ shadow executes exactly legacy; explains unrelated scenario exclusions (31.306667ms)
+✔ unknown, mixed, executable, core, projection outside pilot, lock and release fail safe (44.526542ms)
+✔ path sets cover add delete rename untracked; candidate and release cannot hide actual paths (5.79125ms)
+✔ dependency closure and cycles/unknown dependency fail closed (5.278459ms)
+✔ qualification binds configuration and source bytes; no automatic expansion (6.091375ms)
+✔ missing dependency declaration retains the original check (3.86525ms)
+ℹ tests 27
+ℹ suites 0
+ℹ pass 27
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2116.071458

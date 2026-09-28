@@ -42,6 +42,8 @@ Do not silently promote an exploratory request solely because more rigor would b
 
 Use a background Agent when the runtime supports it and the reading can proceed independently while other useful work continues. Otherwise research in the current Agent. Delegation is an execution optimization, not a trust signal.
 
+Read-only intake uses task-package schema v2 with `contract.kind: read-only-intake`, `Explorer`, a registered intake work unit and an empty write set. Use `scripts/prepare-read-only-intake` and `scripts/run-read-only-intake`; the dispatcher keeps task and execution evidence outside the repository. No maintenance checkpoint is needed for research intake. No executed commands means `verification_status: not-executed`, not verified. Formal asset writes require owner impact analysis and a new formal task package. See `.template-spec/process/subagent-collaboration.md`.
+
 Lifecycle dispatches must use the repository's structured task package, write isolation, role binding, and handoff contract. The owner receiving the result remains responsible for verifying material claims before consuming them.
 
 ## Evidence-audited workflow

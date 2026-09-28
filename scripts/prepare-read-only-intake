@@ -1,0 +1,16 @@
+#!/usr/bin/env node
+import fs from 'node:fs';
+import path from 'node:path';
+import {parseArgs} from 'node:util';
+import {ROOT} from './lib/lifecycle-registry.mjs';
+import {loadTaskPackage,generateTaskPackageDefaults,validateTaskPackage} from './lib/task-package.mjs';
+try {
+ const {values}=parseArgs({options:{input:{type:'string'},output:{type:'string'}}});
+ if(!values.input||!values.output)throw Error('用法: prepare-read-only-intake --input <来源选择.json|yaml> --output <仓库外/task.json>');
+ const {value:input}=loadTaskPackage(values.input);
+ const output=path.resolve(values.output),parent=fs.realpathSync(path.dirname(output)),root=fs.realpathSync(ROOT);
+ if(parent===root||parent.startsWith(root+path.sep))throw Error('任务包必须保存于仓库外运行目录');
+ const task=generateTaskPackageDefaults(input.role_id,{...input,schema_version:2,execution_state:'Explorer',workflow_status:'active',allowed_write_paths:[],expected_evidence_files:[],verification_commands:input.verification_commands||[],verification_results:[],verification_status:'not-executed',contract:{...input.contract,kind:'read-only-intake',status:'issued'}});
+ validateTaskPackage(task);
+ fs.writeFileSync(output,JSON.stringify(task,null,2)+'\n',{flag:'wx'});process.stdout.write(output+'\n');
+}catch(error){process.stderr.write(error.message+'\n');process.exitCode=1;}

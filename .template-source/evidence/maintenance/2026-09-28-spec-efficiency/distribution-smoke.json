@@ -1,0 +1,52 @@
+{
+  "kind": "development-distribution-smoke",
+  "status": "passed",
+  "input_sha256": "fe87afa55a2314576e349fd3a97317421091776907513d7cf32a40b696c54b86",
+  "release_ready": false,
+  "rows": [
+    {
+      "package": "create-yss-spec",
+      "source": ".",
+      "source_state": "working-tree",
+      "template_commit": "79c405998388ee1b13e166377cdfc3bfaa9f0c14",
+      "package_install_init_sync": "passed",
+      "reader": "passed",
+      "review_preparation": "passed",
+      "intake_producer_runner_consumer": "passed",
+      "release_ready": false
+    },
+    {
+      "package": "create-yss-harness-design",
+      "source": "submodules/yss-harness-design-agent",
+      "source_state": "working-tree",
+      "template_commit": "15953d4f0191b06e026df285a95f4535d3243151",
+      "package_install_init_sync": "passed",
+      "reader": "passed",
+      "review_preparation": "passed",
+      "intake_producer_runner_consumer": "passed",
+      "release_ready": false
+    },
+    {
+      "package": "create-yss-harness-backend",
+      "source": "submodules/yss-harness-backend-agent",
+      "source_state": "working-tree",
+      "template_commit": "b840b9d91f40a62d2b06a05b3d889b7dcd45a7c5",
+      "package_install_init_sync": "passed",
+      "reader": "passed",
+      "review_preparation": "passed",
+      "intake_producer_runner_consumer": "passed",
+      "release_ready": false
+    },
+    {
+      "package": "create-yss-harness-frontend",
+      "source": "submodules/yss-harness-frontend-agent",
+      "source_state": "working-tree",
+      "template_commit": "5ce79a29a34fd2e59052ca381c52ef3437960a4b",
+      "package_install_init_sync": "passed",
+      "reader": "passed",
+      "review_preparation": "passed",
+      "intake_producer_runner_consumer": "passed",
+      "release_ready": false
+    }
+  ]
+}

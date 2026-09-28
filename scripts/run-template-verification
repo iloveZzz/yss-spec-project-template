@@ -1,12 +1,15 @@
 #!/usr/bin/env node
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdtempSync, rmSync } from "node:fs";
+import { existsSync, mkdtempSync, rmSync, mkdirSync, realpathSync, writeFileSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { parseArgs } from "node:util";
 import { assertRequiredFiles, planTemplateVerification, ROOT } from "./lib/template-verification.mjs";
 import { printResults, runGroups } from "./lib/template-verification-runner.mjs";
 
+import {verificationInputDigest,resolveVerificationScope,createVerificationReport,finalizeVerificationReport,saveVerificationReport} from './lib/verification-report.mjs';
+let report, reportDir, logRoot, mode, beforeDigest, started, controller=new AbortController();
+const interrupt=()=>controller.abort();process.on('SIGINT',interrupt);process.on('SIGTERM',interrupt);
 function git(args) {
   const result = spawnSync("git", args, { cwd: ROOT, encoding: "utf8" });
   if (result.status !== 0) throw new TypeError(result.stderr.trim() || `git ${args.join(" ")} 执行失败`);
@@ -15,16 +18,18 @@ function git(args) {
 
 function collectChangedFiles(base) {
   const files = new Set();
-  const collect = (source) => source.split("\n").map((line) => line.trim()).filter(Boolean).forEach((file) => files.add(file));
-  if (base) collect(git(["diff", "--name-only", "--diff-filter=ACDMRTUXB", `${base}...HEAD`]));
-  collect(git(["diff", "--name-only", "--diff-filter=ACDMRTUXB"]));
-  collect(git(["diff", "--cached", "--name-only", "--diff-filter=ACDMRTUXB"]));
-  collect(git(["ls-files", "--others", "--exclude-standard"]));
+  const collect = (source) => source.split("\0").filter(Boolean).forEach((file) => files.add(file));
+  if (base) collect(git(["diff", "--name-only", "-z", "--no-renames", "--diff-filter=ACDMRTUXB", `${base}...HEAD`]));
+  collect(git(["diff", "--name-only", "-z", "--no-renames", "--diff-filter=ACDMRTUXB"]));
+  collect(git(["diff", "--cached", "--name-only", "-z", "--no-renames", "--diff-filter=ACDMRTUXB"]));
+  collect(git(["ls-files", "-z", "--others", "--exclude-standard"]));
   return [...files];
 }
 
 function runValidator(command, args) {
+  const begin=performance.now();
   const result = spawnSync(command, args, { cwd: ROOT, encoding: "utf8" });
+  if(report){const index=report.results.length,stdoutFile=path.join(logRoot,`post-${index}.stdout`),stderrFile=path.join(logRoot,`post-${index}.stderr`);mkdirSync(logRoot,{recursive:true});writeFileSync(stdoutFile,result.stdout||'');writeFileSync(stderrFile,result.stderr||'');report.results.push({id:`post.${index}`,group:'postchecks',command:JSON.stringify([command,...args]),code:result.status??1,duration_ms:Math.round(performance.now()-begin),stdoutFile,stderrFile,reused:false});if(reportDir)saveVerificationReport(reportDir,report);}
   if (result.status !== 0) throw new TypeError(result.stderr.trim() || `${command} 校验失败`);
 }
 
@@ -34,6 +39,8 @@ try {
       profile: { type: "string", default: "fast" },
       base: { type: "string" },
       "changed-file": { type: "string", multiple: true },
+      selection: {type:"string"},
+      "report-dir": {type:"string"},
       plan: { type: "boolean", default: false },
       json: { type: "boolean", default: false },
       concurrency: { type: "string" },
@@ -43,8 +50,20 @@ try {
     strict: true
   });
   const explicit = values["changed-file"] || [];
-  const plan = planTemplateVerification({ profile: values.profile, changedFiles: explicit.length > 0 ? explicit : collectChangedFiles(values.base) });
+  const scope=resolveVerificationScope({profile:values.profile,explicit,actual:collectChangedFiles(values.base)});
+  let plan = planTemplateVerification({ profile: values.profile, changedFiles: scope.files, ...(values.selection?{selection:values.selection}:{}) });
+  scope.base=values.base||null;
+  if(values.profile==='candidate'&&!values.base){plan=planTemplateVerification({profile:'release',changedFiles:scope.files,...(values.selection?{selection:values.selection}:{})});plan.requested_profile='candidate';plan.escalation_reason='未指定候选基线，使用全量验证防止遗漏已提交改动';}
+  plan.scope=scope;
+  if(values['report-dir']) {
+    reportDir=path.resolve(values['report-dir']);
+    if(existsSync(reportDir))throw Error('report-dir 必须为新目录，防止覆盖历史证据');
+    const parent=realpathSync(path.dirname(reportDir));
+    if(parent===ROOT||parent.startsWith(ROOT+path.sep))throw Error('report-dir 必须位于仓库外；验证完成后再归档证据');
+    mkdirSync(reportDir);
+  }
   if (values.plan) {
+    if(reportDir)saveVerificationReport(reportDir,{kind:"template-verification-plan",status:"not-executed",plan});
     process.stdout.write(`${JSON.stringify(plan, null, values.json ? 2 : 0)}\n`);
     process.exit(0);
   }
@@ -52,22 +71,22 @@ try {
   const major = Number(process.versions.node.split(".")[0]);
   if (major < 22 || major >= 27) throw new TypeError("模板工具需要 Node >=22 <27");
   assertRequiredFiles(plan);
-  const before = git(["status", "--porcelain=v1", "-z"]);
+  beforeDigest=verificationInputDigest(ROOT);
   const modeResult = spawnSync("scripts/repository-mode", [], { cwd: ROOT, encoding: "utf8" });
   if (modeResult.status !== 0) throw new TypeError(modeResult.stderr.trim() || "仓库身份校验失败");
   const concurrency = Number(values.concurrency || plan.max_concurrency);
   if (!Number.isInteger(concurrency) || concurrency < 1 || concurrency > 4) throw new TypeError("concurrency 必须为 1..4");
 
+  mode=modeResult.stdout.trim();started=performance.now();
+  report=createVerificationReport(plan,{root:ROOT,inputDigest:beforeDigest,concurrency,scope});
+  if(reportDir)saveVerificationReport(reportDir,report);
+  process.stderr.write(`验证 selection: ${plan.selection.requested} -> ${plan.selection.effective}，范围: ${scope.kind}\n`);
   process.stderr.write(`模板核验 profile: ${plan.requested_profile} -> ${plan.effective_profile}\n`);
   if (plan.escalation_reason) process.stderr.write(`自动升级原因: ${plan.escalation_reason}\n`);
-  const logRoot = mkdtempSync(path.join(os.tmpdir(), "yss-template-verification-"));
-  let groups;
-  try {
-    groups = await runGroups(plan, modeResult.stdout.trim(), concurrency, { cwd: ROOT, logRoot });
-    await printResults(groups);
-  } finally {
-    rmSync(logRoot, { recursive: true, force: true });
-  }
+  logRoot = reportDir ? path.join(reportDir,'logs') : mkdtempSync(path.join(os.tmpdir(), "yss-template-verification-"));
+  const groups = await runGroups(plan, mode, concurrency, { cwd: ROOT, logRoot, signal:controller.signal, onResult:row=>{report.results.push(row);if(reportDir)saveVerificationReport(reportDir,report);} });
+  await printResults(groups);
+  if(controller.signal.aborted)throw Error('验证被中断');
   const failed = groups.flatMap((group) => group.results).find((result) => result.code !== 0);
   if (failed) throw new TypeError(`检查失败: ${failed.command}`);
 
@@ -83,10 +102,17 @@ try {
   for (const checkpoint of values.checkpoint || []) runValidator("scripts/verify-maintenance-checkpoint", [checkpoint]);
   for (const taskPackage of values["task-package"] || []) runValidator("scripts/verify-digital-human-task-package", [taskPackage]);
   runValidator("git", ["diff", "--check"]);
-  const after = git(["status", "--porcelain=v1", "-z"]);
-  if (after !== before) throw new TypeError("核验命令修改了工作树；检查必须只读");
+  if (verificationInputDigest(ROOT) !== beforeDigest) throw new TypeError("核验命令修改了工作树；检查必须只读");
+  finalizeVerificationReport(report,{status:'passed',wallMs:Math.round(performance.now()-started),repositoryMode:mode});
   process.stdout.write(`模板核验通过（${plan.effective_profile}）\n`);
 } catch (error) {
+  if(report)finalizeVerificationReport(report,{status:controller.signal.aborted?'interrupted':'failed',error:error.message,wallMs:Math.round(performance.now()-started),repositoryMode:mode});
   process.stderr.write(`模板核验失败: ${error.message}\n`);
   process.exitCode = 1;
+}
+finally {
+  if(report)try{report.input_after_sha256=verificationInputDigest(ROOT);report.input_drift=report.input_after_sha256!==beforeDigest;if(report.input_drift){report.status='failed';report.error=[report.error,'验证输入变化，必须重新生成计划'].filter(Boolean).join('; ');process.exitCode=1;}}catch(error){report.status='failed';report.error=[report.error,error.message].filter(Boolean).join('; ');process.exitCode=1;}
+  if(reportDir&&report)saveVerificationReport(reportDir,report);
+  if(logRoot&&!reportDir)rmSync(logRoot,{recursive:true,force:true});
+  process.off('SIGINT',interrupt);process.off('SIGTERM',interrupt);
 }

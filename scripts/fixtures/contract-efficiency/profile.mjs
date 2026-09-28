@@ -6,13 +6,13 @@ import { registerHooks, syncBuiltinESMExports } from 'node:module';
 import { performance } from 'node:perf_hooks';
 import path from 'node:path';
 const key=Symbol.for('yss.contract.measurement');
-const fresh=()=>({reads:0,read_ms:0,hashes:0,hash_ms:0,parses:0,parse_ms:0,schema_requests:0,executed_schema_jobs:0,spawns:{},paths:{}});
+const fresh=()=>({reads:0,read_bytes:0,read_ms:0,hashes:0,hash_ms:0,parses:0,parse_ms:0,schema_requests:0,executed_schema_jobs:0,spawns:{},paths:{}});
 let active=process.env.YSS_CONTRACT_PROFILE_CHILD==='1'?fresh():null;
 const read=fs.readFileSync,write=fs.writeFileSync,hash=crypto.createHash,spawn=child.spawnSync;
 globalThis[key]=(ms)=>{if(active){active.parses++;active.parse_ms+=ms;}};
 globalThis[Symbol.for('yss.contract.schema-requests')]=(count)=>{if(active)active.schema_requests+=count;};
 registerHooks({load(url,context,next){const result=next(url,context);if(url.endsWith('/scripts/vendor/yaml.mjs'))return{...result,source:String(result.source)+`\nconst __originalParse=parseDocument; parseDocument=function(...args){const t=performance.now();try{return __originalParse(...args);}finally{globalThis[Symbol.for('yss.contract.measurement')]?.(performance.now()-t);}};\n`};if(url.endsWith('/scripts/lib/json-schema.mjs'))return{...result,source:String(result.source)+`\nconst __originalSchema=validateJsonSchemas; validateJsonSchemas=function(items,...args){globalThis[Symbol.for('yss.contract.schema-requests')]?.(items.length);return __originalSchema(items,...args);};\n`};return result;}});
-fs.readFileSync=function(file,...args){const t=performance.now();try{return read.call(this,file,...args);}finally{if(active){active.reads++;active.read_ms+=performance.now()-t;active.paths[String(file)]=(active.paths[String(file)]||0)+1;}}};
+fs.readFileSync=function(file,...args){const t=performance.now();try{const value=read.call(this,file,...args);if(active)active.read_bytes+=Buffer.isBuffer(value)?value.length:Buffer.byteLength(value);return value;}finally{if(active){active.reads++;active.read_ms+=performance.now()-t;active.paths[String(file)]=(active.paths[String(file)]||0)+1;}}};
 crypto.createHash=function(...args){const t=performance.now(),value=hash.apply(this,args);if(active){active.hashes++;active.hash_ms+=performance.now()-t;}for(const method of ['update','digest']){const original=value[method];value[method]=function(...values){const start=performance.now();try{return original.apply(this,values);}finally{if(active)active.hash_ms+=performance.now()-start;}};}return value;};
 child.spawnSync=function(command,args,options={}){const measured=active;let forwarded=args,opts=options;
  if(active&&String(command).includes('python')&&options.input){try{const jobs=JSON.parse(String(options.input));if(Array.isArray(jobs)&&jobs.every(job=>job.schemaPath))active.executed_schema_jobs+=jobs.length;}catch{}}

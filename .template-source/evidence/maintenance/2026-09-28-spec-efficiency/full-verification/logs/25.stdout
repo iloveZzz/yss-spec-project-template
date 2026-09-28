@@ -1,0 +1,12 @@
+✔ domain-driven engineering-only preserves real architecture without invented domain models (399.953625ms)
+✔ layered-mvc engineering-only preserves real architecture without invented domain models (342.892ms)
+✔ engineering branch rejects domain/catalog/path/unit/write-mode/evidence/seam bypasses (1037.892708ms)
+✔ compiler cannot downgrade domain impact to engineering-only (204.445ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2052.463333

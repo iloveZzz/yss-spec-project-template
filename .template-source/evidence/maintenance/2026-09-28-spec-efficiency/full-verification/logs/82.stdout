@@ -1,0 +1,10 @@
+✔ API not-applicable 决定必须绑定影响评估、原因和可读证据 (266.183375ms)
+✔ API Decision 或影响评估原始字节漂移即失效 (67.290334ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 391.12675

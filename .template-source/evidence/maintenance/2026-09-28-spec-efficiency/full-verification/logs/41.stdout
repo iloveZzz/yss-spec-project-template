@@ -1,0 +1,15 @@
+✔ read-only v2 requires no checkpoint and preserves v1 constraints (712.06425ms)
+✔ observed completion with no command is explicitly not-executed (425.1155ms)
+✔ real execution logs validate; source refs cannot impersonate a command log (284.478917ms)
+✔ runner detects additions, modifications and deletions despite empty changed_files (514.537542ms)
+✔ runtime evidence rejects traversal, absolute paths, and symlink escape (19.202875ms)
+✔ declared verification cannot be silently replaced; ignored changes are observed (102.105417ms)
+✔ exit code and stream bytes must match the recorded execution (258.846458ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2382.924625

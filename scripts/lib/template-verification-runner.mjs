@@ -30,23 +30,28 @@ class ResourceLocks {
   }
 }
 
-export function runCommandToFiles(command, { cwd, environment = process.env, logRoot, sequence }) {
+export function runCommandToFiles(command, { cwd, environment = process.env, logRoot, sequence, signal }) {
   mkdirSync(logRoot, { recursive: true });
   const stdoutFile = path.join(logRoot, `${sequence}.stdout`);
   const stderrFile = path.join(logRoot, `${sequence}.stderr`);
   return new Promise((resolve) => {
     const started = performance.now();
     process.stderr.write(`[开始] ${command}\n`);
-    const child = spawn(command, { cwd, shell: true, env: environment, stdio: ["ignore", "pipe", "pipe"] });
-    let spawnError = "";
+    const child = spawn(command, { cwd, shell: true, env: environment, stdio: ["ignore", "pipe", "pipe"], detached: process.platform !== "win32" });
+    let spawnError = "", cancelled = false, escalation;
+    const kill = sig => {try {if (process.platform === 'win32') child.kill(sig); else process.kill(-child.pid,sig);} catch(error){if(error.code!=='ESRCH')throw error;}};
+    const abort = () => {cancelled=true;kill('SIGTERM');escalation=setTimeout(()=>kill('SIGKILL'),1000);};
+    signal?.addEventListener('abort',abort,{once:true});if(signal?.aborted)abort();
     const stdoutDone = pipeline(child.stdout, createWriteStream(stdoutFile));
     const stderrDone = pipeline(child.stderr, createWriteStream(stderrFile));
     child.on("error", (error) => { spawnError = `${error.message}\n`; });
     child.on("close", async (code) => {
+      clearTimeout(escalation);signal?.removeEventListener('abort',abort);
+      if(cancelled)kill('SIGKILL');
       const streams = await Promise.allSettled([stdoutDone, stderrDone]);
       const streamError = streams.find((result) => result.status === "rejected")?.reason;
       const duration_ms = Math.round(performance.now() - started);
-      const exitCode = code ?? 1;
+      const exitCode = cancelled ? 130 : code ?? 1;
       process.stderr.write(`[${exitCode === 0 && !streamError ? "完成" : "失败"}] ${command} (${duration_ms}ms, exit=${exitCode})\n`);
       resolve({ command, code: streamError ? 1 : exitCode, duration_ms, stdoutFile, stderrFile, error: spawnError || streamError?.message || "" });
     });
@@ -58,6 +63,8 @@ export async function runGroups(plan, repositoryMode, concurrency, {
   environment = process.env,
   execute = runCommandToFiles,
   logRoot,
+  signal,
+  onResult = () => {},
 } = {}) {
   const grouped = new Map(plan.groups.map((group) => [group, []]));
   const resourcesByExecution = new Map();
@@ -91,11 +98,8 @@ export async function runGroups(plan, repositoryMode, concurrency, {
     if (cached) return { promise: cached, reused: true };
     const sequence = executionSequence;
     executionSequence += 1;
-    const promise = resourceLocks.run(resourcesByExecution.get(key), () => execute(item.command, {
-      cwd,
-      environment,
-      logRoot,
-      sequence,
+    const promise = resourceLocks.run(resourcesByExecution.get(key), () => signal?.aborted ? {command:item.command,code:130,skipped:true,duration_ms:0,error:'interrupted'} : execute(item.command, {
+      cwd, environment, logRoot, sequence, signal,
     }));
     executions.set(key, promise);
     return { promise, reused: false };
@@ -107,10 +111,12 @@ export async function runGroups(plan, repositoryMode, concurrency, {
       const job = jobs[cursor];
       cursor += 1;
       for (const item of job.commands) {
-        if (failedGroups.has(job.group)) break;
+        if (failedGroups.has(job.group) || signal?.aborted) break;
         const execution = executeOnce(item);
         const result = await execution.promise;
-        groupResults.get(job.group).push({ ...result, index: item.index, reused: execution.reused });
+        const row = { ...result, id:item.id, group:job.group, index: item.index, reused: execution.reused };
+        groupResults.get(job.group).push(row);
+        onResult(row);
         if (result.code !== 0) failedGroups.add(job.group);
       }
     }
