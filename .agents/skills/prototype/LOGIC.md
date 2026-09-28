@@ -11,7 +11,7 @@ Because it's one file with nothing to install, you can hand it to a non-develope
 - "I want to feel out what the API should look like before writing it."
 - Anything where someone wants to **press buttons and watch state change**.
 
-If the question is "what should this look like" — wrong branch. Use [UI.md](UI.md).
+产品视觉问题回到当前生命周期产品设计阶段，本试验只验证逻辑与状态。
 
 ## Process
 

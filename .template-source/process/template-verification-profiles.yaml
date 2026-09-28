@@ -185,7 +185,7 @@ syntax_files:
   - scripts/verify-lifecycle-context-query-scenarios
   - scripts/verify-context-reconciliation
   - scripts/verify-context-reconciliation-scenarios
-  - scripts/verify-grill-with-docs-context-scenarios
+  - scripts/verify-plan-requirements-context-scenarios
   - scripts/verify-strategic-context-import
   - scripts/verify-strategic-context-import-scenarios
   - scripts/verify-frontend-implementation-evidence
@@ -641,7 +641,7 @@ groups:
         id: check.fbcca7d04b9634fc
       - run: node scripts/verify-script-performance-scenarios
         id: check.7752ee8d6f74f638
-      - run: scripts/verify-grill-with-docs-context-scenarios
+      - run: scripts/verify-plan-requirements-context-scenarios
         id: check.14755c909a41ebee
       - run: scripts/verify-strategic-context-import-scenarios
         id: check.220f79ecb19875df

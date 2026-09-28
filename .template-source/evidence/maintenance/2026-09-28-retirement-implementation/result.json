@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "kind": "retirement-implementation-result",
+  "implementation_status": "implemented",
+  "release_status": "not-ready",
+  "maintenance_level": "L3",
+  "context_reconciliation": {
+    "status": "not-applicable",
+    "reason": "template-source 通用模板维护，无产品资产批准或流转"
+  },
+  "aggregate_verification": {
+    "report": "verification-closure/report.json",
+    "status": "failed",
+    "passed_commands": 96,
+    "failed_commands": 1,
+    "unexecuted_commands": 4,
+    "input_drift": false,
+    "failure": "working-tree source rejected by --require-committed"
+  },
+  "supplemental_verification": [
+    {
+      "command": "node scripts/verify-template-verification-scenarios",
+      "exit_code": 0,
+      "log": "validation/verification-scenarios-fixed.log",
+      "note": "修正退役脚本更名后的测试清单；design 对应场景也通过"
+    },
+    {
+      "command": "node scripts/verify-template-cache-scenarios",
+      "exit_code": 0,
+      "log": "validation/cache-scenarios.log"
+    },
+    {
+      "command": "node --test .template-source/scripts/tests/template-ci.test.mjs",
+      "exit_code": 0,
+      "log": "validation/template-ci-bundled-npm.log",
+      "npm": "11.19.0 bundled with Node 24.21.0"
+    },
+    {
+      "command": "node --test tests/verification-selection.test.mjs tests/verification-report.test.mjs",
+      "exit_code": 0,
+      "log": "validation/verification-report.log"
+    }
+  ],
+  "local_checks": {
+    "node_tooling_tests": {
+      "passed": 147,
+      "failed": 0
+    },
+    "spec_complete_suite": {
+      "passed": 200,
+      "failed": 1,
+      "failure": "package prepack requires committed snapshot"
+    },
+    "spec_final_distribution_regressions": {
+      "passed": 11,
+      "failed": 0
+    },
+    "design_package_tests": {
+      "passed": 1,
+      "failed": 0
+    },
+    "backend_package_tests": {
+      "passed": 1,
+      "failed": 0
+    },
+    "frontend_package_tests": {
+      "passed": 2,
+      "failed": 0
+    },
+    "public_export_skills": 33,
+    "invariants": "validation/final-invariants.json"
+  },
+  "known_environment_limit": "全局 npm 12.1.0 的 npm pack --json 输出与既有发布测试断言不兼容；使用 Node 自带 npm 11.19.0 后 5/5 通过，未修改全局配置或放宽发布断言。",
+  "authorization_boundary": [
+    "no delivery commit",
+    "no push",
+    "no npm publish",
+    "no existing instance migration",
+    "no global plugin uninstall"
+  ],
+  "snapshots": [
+    {
+      "repository": "create-yss-spec",
+      "templateCommit": "a18c289d9f31664d0de34a6fa3f877c689a0d525",
+      "sourceState": "working-tree",
+      "snapshotHash": "51af9a630706955c0860ebb880ca2bdd2927de8c9b42846cd106c3e4889093ed"
+    },
+    {
+      "repository": "create-yss-strategic-design",
+      "templateCommit": "98b2d5682b1ded9f35b9773929006d225bc0c305",
+      "sourceState": "working-tree",
+      "snapshotHash": "b74c156a9f2ccf1e04a6c884efdef6f4863db909e1cc0d42f31e287acfb0f467"
+    },
+    {
+      "repository": "create-yss-harness-backend",
+      "templateCommit": "cbded26aea8b4104f87b2377922bc3416befb0a6",
+      "sourceState": "working-tree",
+      "snapshotHash": "20410af165c2b35e58fefefc6c506a4c0f048dea83746d3c41b4f49b03d1a249"
+    },
+    {
+      "repository": "create-yss-harness-frontend",
+      "templateCommit": "2aa574462cb55815421e03cd394da02e06d9948c",
+      "sourceState": "working-tree",
+      "snapshotHash": "18314ec8d402d5c860b2f863df97287a9dac787bb44e2449409df98c731e0258"
+    }
+  ]
+}

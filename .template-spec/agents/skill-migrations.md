@@ -98,3 +98,18 @@ DDD 脚手架的 Parent 工程约束由 `yss-ddd-scaffold-generator/references/e
 - 独立低保真评审：`prototype-review`
 
 已关闭的 Prototype Evidence schema v1/v2/v3、旧 artifact ID、AntD CLI、浏览器验证和确认记录只读保留。在途 UI 工作迁移到 Prototype Evidence schema v4、Visual Baseline schema v1 与 `artifact.prototype-deliverable` 后再关闭门禁；无 UI 影响不创建空包。不得创建同名兼容目录或删除历史证据。
+
+## 2026-09-28 入口收敛
+
+以下旧 Skill ID 已硬退役：新调用返回 `skill-retired` 和迁移提示，不能自动执行替代入口或改变阶段状态。历史证据只读保留。
+
+| 旧入口 | 承接位置 |
+|---|---|
+| wait-what | 普通解释对话，按文档写作规范或 i-have-adhd 调整表达 |
+| grill-with-docs | 当前生命周期的 work-unit.plan-requirements，保留 Context 校验、对账和退出判定 |
+| to-questionnaire | 当前生命周期外部输入问卷，保留 external-input-required 与答案回流合同 |
+| improve-codebase-architecture | codebase-design 显式架构审计模式及可选 HTML 报告 |
+
+Data Analytics 平台包从本模板及 frontend 分发退出；不卸载用户另装插件。frontend-commit / java-backend-commit 保留专项入口并读取内部 git-commit-core。prototype 仅做逻辑与状态试验；正式 UI 由生命周期产品设计阶段承接。
+
+存量实例先预览同步计划。只按旧版本基线移除未修改的受管文件，用户修改保留并报告冲突；不自动迁移历史审批、问卷或快照。

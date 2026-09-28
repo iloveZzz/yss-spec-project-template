@@ -20,7 +20,7 @@ const virtualTicketDecomposition = "result_schema: workflow-execution-result-v1\
 
 function validateMattContract(data) {
   const formal = data.entry_routing?.formal_user_entry;
-  ensure(includesAll(formal?.skills, ["setup-matt-pocock-skills", "grill-with-docs", "to-spec", "to-tickets", "implement"]) && formal?.action === "lifecycle-validate-and-accept" && formal?.lifecycle_artifact_write === "conditional-explicit-user-entry" && formal?.return_to_orchestrator === "required", "正式用户入口缺少生命周期预检与回交约束");
+  ensure(includesAll(formal?.skills, ["setup-matt-pocock-skills", "to-spec", "to-tickets", "implement"]) && formal?.action === "lifecycle-validate-and-accept" && formal?.lifecycle_artifact_write === "conditional-explicit-user-entry" && formal?.return_to_orchestrator === "required", "正式用户入口缺少生命周期预检与回交约束");
   const setup = data.setup_readiness;
   ensure(setup?.missing_action === "needs-human" && setup?.requested_skill === "setup-matt-pocock-skills" && setup?.resume_route === "setup-readiness" && setup?.lifecycle_may_invoke_setup === false, "setup 缺失时未限制为显式用户入口暂停");
   ensure(includesAll(setup?.preserves, ["lifecycle.status", "gate.status", "ticket.role"]) && setup?.legacy_artifacts_detected?.action === "migration-check" && setup.legacy_artifacts_detected.setup === "forbidden" && setup.legacy_artifacts_detected.write === "paused", "setup 暂停或旧资产迁移暂停契约不完整");
@@ -41,11 +41,11 @@ function validateMattContract(data) {
 
 function validateInvocationBoundary(data) {
   const boundary = data.matt_invocation_boundary;
-  const expectedUserInvoked = ["grill-with-docs", "handoff", "implement", "improve-codebase-architecture", "setup-matt-pocock-skills", "to-questionnaire", "to-spec", "to-tickets", "triage", "wait-what", "wayfinder"];
+  const expectedUserInvoked = ["handoff", "implement", "setup-matt-pocock-skills", "to-spec", "to-tickets", "triage", "wayfinder"];
   const expectedModelInvoked = ["code-review", "codebase-design", "diagnosing-bugs", "domain-modeling", "grilling", "prototype", "resolving-merge-conflicts", "tdd", "writing-for-agents", "yss-research"];
   const expectedLifecycleModelInvoked = ["code-review", "codebase-design", "diagnosing-bugs", "domain-modeling", "grilling", "prototype", "tdd", "yss-research"];
   ensure(JSON.stringify(boundary?.user_invoked_skills) === JSON.stringify(expectedUserInvoked), "Matt user-invoked skills 清单不完整或已漂移");
-  ensure(JSON.stringify(boundary?.lifecycle_managed_user_entries) === JSON.stringify(["setup-matt-pocock-skills", "grill-with-docs", "to-spec", "to-tickets", "implement"]), "生命周期管理的显式用户入口清单不完整");
+  ensure(JSON.stringify(boundary?.lifecycle_managed_user_entries) === JSON.stringify(["setup-matt-pocock-skills", "to-spec", "to-tickets", "implement"]), "生命周期管理的显式用户入口清单不完整");
   ensure(boundary?.lifecycle_may_invoke_user_invoked === false && boundary?.formal_artifact_owner === "explicit-user-entry", "生命周期仍可能自动调用 user-invoked skill 或产出其正式资产");
   ensure(JSON.stringify(boundary?.model_invoked_skills) === JSON.stringify(expectedModelInvoked) && JSON.stringify(boundary?.lifecycle_allowed_model_invoked_skills) === JSON.stringify(expectedLifecycleModelInvoked) && boundary?.continuous_orchestration === "compatibility-prepare-and-validate-only", "Matt invocation inventory 或生命周期 model-invoked 白名单不完整");
   ensure(JSON.stringify(data.skill_source_contract?.source_revisions_required) === JSON.stringify(["mattpocock/skills", "iloveZzz/yss-ui"]) && data.skill_source_contract?.adaptation_ref_required_when_effective_diff === true && data.skill_source_contract?.retired_shared_skills?.includes("batch-grill-me"), "上游来源或退役 skill 供应链契约不完整");
@@ -479,7 +479,7 @@ export function runScenario(name) {
     }
     let metadataRejected = false;
     try {
-      validateInvocationMetadata(data.matt_invocation_boundary, (skill) => skill === "grill-with-docs" ? read(`.agents/skills/${skill}/SKILL.md`).replace("disable-model-invocation: true\n", "") : read(`.agents/skills/${skill}/SKILL.md`));
+      validateInvocationMetadata(data.matt_invocation_boundary, (skill) => skill === "to-spec" ? read(`.agents/skills/${skill}/SKILL.md`).replace("disable-model-invocation: true\n", "") : read(`.agents/skills/${skill}/SKILL.md`));
     } catch { metadataRejected = true; }
     ensure(metadataRejected, "user-invoked front matter 变异未被 baseline oracle 拒绝");
     const mutations = [

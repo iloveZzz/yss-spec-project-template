@@ -7,7 +7,7 @@ description: 编排 YSS 研发全生命周期；当阶段、产物、门禁或 S
 
 合同阅读：`scripts/contract view`；见 `.template-spec/process/contract-reading.md`。
 
-主控识别请求、身份及可信阶段，计算 frontier 并派发、验收工作单元；专项 Skill 执行与独立审查。
+主控识别请求、身份和阶段，计算 frontier、派发并验收工作单元。
 
 文档按 `document_writing` 条件调用 `i-have-adhd`，并传递 `.template-spec/process/document-writing.md` 规范。
 
@@ -70,8 +70,8 @@ Plan 入口读取 `.template-spec/plan/README.md` 和 `.template-spec/process/pl
 
 1. 从真实资产重建当前状态，查询当前 mode、stage、work-unit 及必要合同子树。
 2. 评估影响面、上游新鲜度、门禁和阻塞，选择第一个未阻塞工作单元；不把 `not-applicable` 当作豁免。
-3. 原生工作单元由主控持有正式资产；专项工作通过结构化任务包派发，只调用编排合同允许的 model-invoked skill。
-4. `grill-with-docs`、`to-spec`、`to-tickets`、`implement` 等兼容入口只可由用户显式调用。主控先预检输入、路径和门禁；入口按 `matt_invocation_boundary` 写入其产物并回交验收，不批准或改变 Ticket 就绪状态。原生资产仍归主控。
+3. 原生工作单元由主控持有正式资产；专项按结构化任务包派发，只调用合同允许的 model-invoked skill。
+4. `to-spec`、`to-tickets`、`implement` 等兼容入口只可由用户显式调用。主控先预检输入、路径和门禁；入口按 `matt_invocation_boundary` 写入其产物并回交验收，不批准或改变 Ticket 就绪状态。原生资产仍归主控。
 5. 先对照用户目标逐项验收，检查遗漏诉求、错误假设与尚未解决的问题，再验收 `Workflow Execution Result`：工作单元、合同、允许写路径、`context_reconciliation`、证据、实际验证、延期 seam、漂移和下一路由必须可核验。实现派发额外绑定当前 Slice Implementation Contract v3；其他阶段不得伪造该合同。
 6. 在授权边界内继续下一工作单元；遇到人工决定、新授权、证据冲突、专项失败或合并/发布结论时暂停。暂停不得阻断无依赖的独立工作。
 
@@ -79,7 +79,7 @@ Plan 入口读取 `.template-spec/plan/README.md` 和 `.template-spec/process/pl
 
 ## 面向业务角色
 
-默认使用业务语言推进：
+使用业务语言推进：
 
 `机会与目标 → 业务故事 → 责任与交接 → 规则、例子与疑问 → 可验收需求 → 页面验证 → 业务任务 → 交接研发`
 
@@ -89,12 +89,12 @@ Plan → Spec（含正式草稿、恢复与显式 `to-spec`）写入前，按 `.
 
 ## 结果与暂停
 
-咨询直接回答；工作单元保留完整结果，对外仅展示当前决定所需信息。
+咨询直接回答；工作单元完整留证，对外展示当前决定。
 
 工作单元结果至少包含：模式、仓库身份、当前阶段和工作单元、影响面、资产与门禁状态、证据、新鲜度、Ticket/垂直切片/合同状态、`ready-for-agent` 结论、阻塞项、本轮动作、下一工作单元、暂停或继续理由、Ticket 同步和 Git checkpoint 判断。
 
 暂停会签时追加门禁 ID、`role_id`、`runtime_id`、会签文件路径、推荐答案和恢复动作；恢复前运行适用验证器。只有同一候选快照通过全部适用审查轴与 fresh verification，才能提出合并、发布或完成结论；发布仍须生物人决定。
 
-专项合同加载索引见 `references/orchestration.md`。
-
 Plan / Spec / Design 追踪按 `.template-spec/process/stage-tracking.md`。
+
+需求澄清读 [对账](references/plan-requirements.md)；外部输入读 [问卷](references/external-input-questionnaire.md)。

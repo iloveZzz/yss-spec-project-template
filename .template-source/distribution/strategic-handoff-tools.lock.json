@@ -2,8 +2,8 @@
   "schema_version": 1,
   "target_id": "template-root",
   "source_repository": "yss-spec-project-template",
-  "source_revision": "83c5f3b4b6f289deb6005fc007b17b2a86a3f933",
-  "source_state": "committed",
+  "source_revision": "a18c289d9f31664d0de34a6fa3f877c689a0d525",
+  "source_state": "working-tree",
   "transformation_set": [
     "identity"
   ],
@@ -85,7 +85,8 @@
     "scripts/fixtures/strategic-handoff/fixture.mjs": "sha256:c07a5f9692d05b39ec5f4713dbec66a7b796d6e5358841123aa5ad9d62afc0ef",
     "scripts/fixtures/strategic-handoff/source-roles.json": "sha256:39770e6f44f66c7c295efb459f09be3cab85a892b842446e7b765ffa4f2e7145",
     "scripts/fixtures/user-decision/build-fixture.mjs": "sha256:0aa49bd3eb10a504094bc1c9855543b652cc68b1e9e94d7d043586a4cd05e0ef",
-    "scripts/instantiate-harness": "sha256:9c04c89e33ca1320e573b609d3863a16541f6e93659b725cb3bd3c484f07c733",
+    "scripts/generate-yss-skill-boundaries": "sha256:77180bcd65d648f7fdca7ed859c8765df46550d479e7a9a49d460d0448349f25",
+    "scripts/instantiate-harness": "sha256:f5708ef3f25504c3847a049b6a2cbd3164fac0d6f643819756216f7f539a115a",
     "scripts/lib/api-contract-decision.mjs": "sha256:48d1b35d017177e83b8ce72c589dd1e4d73d899dbb2b87281116f637f4ce2d1f",
     "scripts/lib/approved-execution-context.mjs": "sha256:7489d0da0e69655dcf873f977413790f122162cf4b18628096528dbb8277c48d",
     "scripts/lib/backend-architecture.mjs": "sha256:9d03ab2bbe62358f08d5f69103991ca7f120e333179500ab2dad01e46e23ae54",
@@ -116,10 +117,10 @@
     "scripts/lib/lifecycle-execution-scope.mjs": "sha256:59907ff74c550573a9389d49ed80007a05dec0c810948ea1e1e55cbc30d27bb2",
     "scripts/lib/maintenance-candidate.mjs": "sha256:4c5c89e66bd71383d8e99a7711370728d0fcf463644977a2af3b14b496dd1ffd",
     "scripts/lib/openapi-draft-validation.mjs": "sha256:d37ca46115227b8f32fdf8a394086094aac602fbdd77815762a63ad0d39c9bba",
-    "scripts/lib/read-only-intake.mjs": "sha256:de89992861b819e13ab8cbea372083eebf6a87578d13ec1888130724f5dbe396",
+    "scripts/lib/read-only-intake.mjs": "sha256:049d414d064f098a0a7c49a7d1e541cc2a17f9a3613e151b5370b81c0b033b64",
     "scripts/lib/scaffold-local-database.mjs": "sha256:66d47c11698b36ff57e4f37577c6f83ea3a6590f4b9ab6862833bd991fde3662",
-    "scripts/lib/skill-registry.mjs": "sha256:54532fa4ca31b6f3964b7214b67ac7e31f6721fe2a28ef056b4a907f731e3abc",
-    "scripts/lib/skill-supply-chain.mjs": "sha256:7cf8caff5226b50cae7d492c7353c19aea3df917539a21ab2c322c8155337611",
+    "scripts/lib/skill-registry.mjs": "sha256:0e9d5b5ca0a94579ac672a2144383bb20f9f5a94234c8f437039a0b673c544ad",
+    "scripts/lib/skill-supply-chain.mjs": "sha256:d67470908a20997c3d485b6a1b8bdb2b6d553f62721657688f57d5e9f8deb233",
     "scripts/lib/slice-applicability.mjs": "sha256:c899fd31a39e3a4237a4a21e13c5fa718b319b792b6365b23b602cf792281e1c",
     "scripts/lib/slice-contract-preparation.mjs": "sha256:04a26120a8a04fdb1fcf6153f587a2faa7b0733d8d35b5c6df0682a340ff5061",
     "scripts/lib/slice-contract-views.mjs": "sha256:2e572b6ee93014fb145cbb286bc42f4dbebcc210288e60858e4b90f6c548fb6d",
@@ -168,8 +169,8 @@
     "scripts/verify-strategic-handoff-consumption": "sha256:9ab43edbcf48ab6677ca7389e959a557d52939455ed309e5306391aa48ef0b10",
     "scripts/verify-strategic-handoff-package-scenarios": "sha256:7b7e85b1d6d809173c2cc64eefbd78df9a44e5cf3b2c6e0802d537834f33c341",
     "scripts/verify-strategic-handoff-tools-lock": "sha256:7b413ccc4ab4dc606113ec9e3f51ddac0d2045a761b18130483a70118c566d9b",
-    ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml": "sha256:47103aaf83bdf210e62718fbc2d02320e183fd8528eb871ebaacd12ad8eafb0e",
-    ".template-spec/agents/yss-skill-registry.yaml": "sha256:856ae1d9cad9e902fc7bda3d8a12d692b838d00ccad5477d8f960c13359b02a7"
+    ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml": "sha256:90f16d61973700b73fd6908ee93b7eef4c00d6cf2d8cdb4ef874ed8329d6b5c4",
+    ".template-spec/agents/yss-skill-registry.yaml": "sha256:68fb6acd2912244b0fe86b15f5ca67bc4237ef785e70ef681fc42b54ea328cc4"
   },
   "effective_files": {
     ".template-spec/agents/backend-architecture-profiles.md": "sha256:a10045a32a1738d2ab0fb602bcca2adc21c26ebcc14e508e8e6d9468d0b009cd",
@@ -249,7 +250,8 @@
     "scripts/fixtures/strategic-handoff/fixture.mjs": "sha256:c07a5f9692d05b39ec5f4713dbec66a7b796d6e5358841123aa5ad9d62afc0ef",
     "scripts/fixtures/strategic-handoff/source-roles.json": "sha256:39770e6f44f66c7c295efb459f09be3cab85a892b842446e7b765ffa4f2e7145",
     "scripts/fixtures/user-decision/build-fixture.mjs": "sha256:0aa49bd3eb10a504094bc1c9855543b652cc68b1e9e94d7d043586a4cd05e0ef",
-    "scripts/instantiate-harness": "sha256:9c04c89e33ca1320e573b609d3863a16541f6e93659b725cb3bd3c484f07c733",
+    "scripts/generate-yss-skill-boundaries": "sha256:77180bcd65d648f7fdca7ed859c8765df46550d479e7a9a49d460d0448349f25",
+    "scripts/instantiate-harness": "sha256:f5708ef3f25504c3847a049b6a2cbd3164fac0d6f643819756216f7f539a115a",
     "scripts/lib/api-contract-decision.mjs": "sha256:48d1b35d017177e83b8ce72c589dd1e4d73d899dbb2b87281116f637f4ce2d1f",
     "scripts/lib/approved-execution-context.mjs": "sha256:7489d0da0e69655dcf873f977413790f122162cf4b18628096528dbb8277c48d",
     "scripts/lib/backend-architecture.mjs": "sha256:9d03ab2bbe62358f08d5f69103991ca7f120e333179500ab2dad01e46e23ae54",
@@ -280,10 +282,10 @@
     "scripts/lib/lifecycle-execution-scope.mjs": "sha256:59907ff74c550573a9389d49ed80007a05dec0c810948ea1e1e55cbc30d27bb2",
     "scripts/lib/maintenance-candidate.mjs": "sha256:4c5c89e66bd71383d8e99a7711370728d0fcf463644977a2af3b14b496dd1ffd",
     "scripts/lib/openapi-draft-validation.mjs": "sha256:d37ca46115227b8f32fdf8a394086094aac602fbdd77815762a63ad0d39c9bba",
-    "scripts/lib/read-only-intake.mjs": "sha256:de89992861b819e13ab8cbea372083eebf6a87578d13ec1888130724f5dbe396",
+    "scripts/lib/read-only-intake.mjs": "sha256:049d414d064f098a0a7c49a7d1e541cc2a17f9a3613e151b5370b81c0b033b64",
     "scripts/lib/scaffold-local-database.mjs": "sha256:66d47c11698b36ff57e4f37577c6f83ea3a6590f4b9ab6862833bd991fde3662",
-    "scripts/lib/skill-registry.mjs": "sha256:54532fa4ca31b6f3964b7214b67ac7e31f6721fe2a28ef056b4a907f731e3abc",
-    "scripts/lib/skill-supply-chain.mjs": "sha256:7cf8caff5226b50cae7d492c7353c19aea3df917539a21ab2c322c8155337611",
+    "scripts/lib/skill-registry.mjs": "sha256:0e9d5b5ca0a94579ac672a2144383bb20f9f5a94234c8f437039a0b673c544ad",
+    "scripts/lib/skill-supply-chain.mjs": "sha256:d67470908a20997c3d485b6a1b8bdb2b6d553f62721657688f57d5e9f8deb233",
     "scripts/lib/slice-applicability.mjs": "sha256:c899fd31a39e3a4237a4a21e13c5fa718b319b792b6365b23b602cf792281e1c",
     "scripts/lib/slice-contract-preparation.mjs": "sha256:04a26120a8a04fdb1fcf6153f587a2faa7b0733d8d35b5c6df0682a340ff5061",
     "scripts/lib/slice-contract-views.mjs": "sha256:2e572b6ee93014fb145cbb286bc42f4dbebcc210288e60858e4b90f6c548fb6d",
@@ -332,7 +334,7 @@
     "scripts/verify-strategic-handoff-consumption": "sha256:9ab43edbcf48ab6677ca7389e959a557d52939455ed309e5306391aa48ef0b10",
     "scripts/verify-strategic-handoff-package-scenarios": "sha256:7b7e85b1d6d809173c2cc64eefbd78df9a44e5cf3b2c6e0802d537834f33c341",
     "scripts/verify-strategic-handoff-tools-lock": "sha256:7b413ccc4ab4dc606113ec9e3f51ddac0d2045a761b18130483a70118c566d9b",
-    ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml": "sha256:47103aaf83bdf210e62718fbc2d02320e183fd8528eb871ebaacd12ad8eafb0e",
-    ".template-spec/agents/yss-skill-registry.yaml": "sha256:856ae1d9cad9e902fc7bda3d8a12d692b838d00ccad5477d8f960c13359b02a7"
+    ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml": "sha256:90f16d61973700b73fd6908ee93b7eef4c00d6cf2d8cdb4ef874ed8329d6b5c4",
+    ".template-spec/agents/yss-skill-registry.yaml": "sha256:68fb6acd2912244b0fe86b15f5ca67bc4237ef785e70ef681fc42b54ea328cc4"
   }
 }

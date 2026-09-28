@@ -4,7 +4,7 @@
 
 ## 边界
 
-- `docs/` 是模板实例分发面的候选来源；模板源审查记录和其他治理资产不进入实例。`.nvmrc` 与根 `.gitignore` 同属分发面。
+- `.template-spec/` 是模板实例治理资产的候选来源，`docs/` 用于实例按需创建的产品资产；模板源审查记录和其他治理资产不进入实例。`.nvmrc` 与根 `.gitignore` 同属分发面。
 - `.template-source/` 是模板源治理区：保存模板维护的审查、研究、跨仓契约、发布路线、派生证据和源仓库 LLM Wiki 编译树。
 - 源仓库 wiki-root 为 `.template-source/wiki`；新 `project-instance` 不附带该编译树。
 - 外部 CLI 按显式分发清单构建快照；新项目不应出现 `.template-source/`、维护环境配置或已经从 `docs/` 迁出的源仓库文件。
@@ -42,3 +42,7 @@ scripts/verify-template
 ```
 
 `<archive-commit>` 必须是已经存在、可追溯且包含 13 个原始文件最终内容的 40 位 Git commit；未获得 Git 提交授权时只能保留 `pending` 索引，不能执行 `git rm`。
+
+## 历史路线说明
+
+`roadmap/next-major-template-governance.md` 是保留原字节的历史规划，不再提供当前发布操作或阻塞判断。现行维护遵循 `process/maintenance-intensity.yaml`、`process/github-workflows.md` 和 `.template-spec/process/harness-process-tailoring.md`。其中模板/CLI 固定版本联调与冲突保护仍在每次实际发布时核验，不以旧草案的历史通过说明代替当前证据。原始路线与批准不改写为已完成或已发布。

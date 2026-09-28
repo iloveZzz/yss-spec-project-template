@@ -26,33 +26,9 @@
 
 ---
 
-## AI 四种角色
+## 方案比较与审查
 
-### 方案生成器
-```python
-delegate_task(
-    goal="为'[功能]'生成 3 种技术方案并做 trade-off 对比",
-    context="评估维度：复杂度/安全/性能/扩展性/契合度/开发成本"
-)
-```
-
-### 预审者 — 六维度审查
-```python
-delegate_task(
-    goal="从可扩展性、安全性、性能、可靠性、可维护性、成本六个维度预审此方案",
-    context="每个维度打分 1-5，评分<3 给出替代方案"
-)
-```
-
-### ADR 记录者
-```python
-delegate_task(
-    goal="根据技术讨论记录，自动生成 ADR",
-    context="使用 .template-spec/templates/adr-template.md 模板"
-)
-```
-
----
+存在真实取舍时比较候选方案，按业务风险说明依据，不固定方案数量或评分阈值。审查和批准只消费生命周期注册表及流程裁剪规则；本说明不增加架构师签字或进入实现的独立条件。ADR 仅记录难以回滚、非显而易见且存在真实取舍的决定。
 
 ## 六维度审查清单 (39项)
 
@@ -71,7 +47,7 @@ delegate_task(
 
 ## Deep Module 治理
 
-当出现模块难改、测试 seam 不清晰、逻辑散落、Agent 难以理解代码路径时，优先使用 `improve-codebase-architecture` 和 `codebase-design`。
+当出现模块难改、测试 seam 不清晰、逻辑散落、Agent 难以理解代码路径时，优先使用 `codebase-design` 的显式架构审计模式。
 
 落地产物：
 
@@ -82,10 +58,3 @@ delegate_task(
 架构讨论必须使用统一术语：`module`、`interface`、`seam`、`adapter`、`depth`、`leverage`、`locality`。
 
 ---
-
-## AI-Human Loop
-
-```
-需求 → AI 3方案对比 → 架构师选方向 → AI 详细方案
-→ AI 六维预审 → 架构师签字 → ADR 记录 → 进入实现
-```

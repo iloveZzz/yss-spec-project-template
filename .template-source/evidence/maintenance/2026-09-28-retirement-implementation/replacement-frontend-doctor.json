@@ -1,0 +1,17 @@
+{
+  "label": "replacement-frontend-doctor",
+  "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+  "argv": [
+    "node",
+    "/private/tmp/yss-retirement-implementation-o63zsznx/installed/node_modules/create-yss-harness-frontend/bin/create-yss-harness-frontend.js",
+    "doctor",
+    "--target-dir",
+    "/private/tmp/yss-retirement-implementation-o63zsznx/frontend-smoke",
+    "--json"
+  ],
+  "started_at": "2026-09-28T10:01:56.268103+00:00",
+  "exit_code": 0,
+  "duration_seconds": 1.266,
+  "stdout": "replacement-frontend-doctor.stdout.log",
+  "stderr": "replacement-frontend-doctor.stderr.log"
+}

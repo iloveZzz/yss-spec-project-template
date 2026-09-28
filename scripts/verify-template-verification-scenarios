@@ -26,7 +26,7 @@ const releaseBaseline = [
   "scripts/verify-context-contract --root . --json",
   "scripts/verify-context-contract-scenarios",
   "scripts/verify-context-reconciliation-scenarios",
-  "scripts/verify-grill-with-docs-context-scenarios",
+  "scripts/verify-plan-requirements-context-scenarios",
   "scripts/verify-strategic-context-import-scenarios",
   "scripts/verify-lifecycle-checkpoint .template-spec/process/templates/lifecycle-checkpoint-template.yaml",
   "scripts/verify-frontend-implementation-evidence --allow-template .template-spec/process/templates/frontend-implementation-plan-template.yaml",

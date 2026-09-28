@@ -7,7 +7,7 @@ Matt skills 决定如何工作；YSS 生命周期决定是否允许推进；YSS 
 ## 入口与仓库身份裁决
 
 - 所有入口先读取 `yss-project.yaml`。缺失、解析失败、schema 不支持或 `repository_mode` 非法时，停止路由并进入 migration-check。
-- **直接调用生命周期管理的 Matt user-invoked skill**（`setup-matt-pocock-skills`、`grill-with-docs`、`to-spec`、`to-tickets`、`implement`）时，用户仍是正式资产的创建者；生命周期先校验前置条件，再接受结果并重新计算阶段、门禁和状态。其他 user-invoked skill 同样不得由生命周期自动调用；只有在其专属适配合同存在时才进入 YSS 流程。
+- **直接调用生命周期管理的 Matt user-invoked skill**（`setup-matt-pocock-skills`、`to-spec`、`to-tickets`、`implement`）时，用户仍是正式资产的创建者；生命周期先校验前置条件，再接受结果并重新计算阶段、门禁和状态。其他 user-invoked skill 同样不得由生命周期自动调用；只有在其专属适配合同存在时才进入 YSS 流程。
 - **直接调用 `yss-product-lifecycle`** 时，不机械嵌套调用任何 Matt user-invoked skill；编排器直接使用原生工作单元和允许的 model-invoked 原语。Matt user-invoked skill 保持显式兼容入口，生命周期负责准备、校验并验收其结果。
 - `template-source` 只允许进入模板维护流程。命中 `to-spec`、`to-tickets`、`implement`、Release 或 Retrospective 时返回 `blocked`，原因是 `template-source-product-artifact-forbidden`；`setup-matt-pocock-skills` 不得为具体产品生成 Spec、prototype、OpenAPI 或垂直切片 Ticket。
 - `project-instance` 才允许进入产品 Plan → Spec → 设计 → 契约 → Ticket → 实现 → Release / Retrospective 链路。
@@ -15,8 +15,8 @@ Matt skills 决定如何工作；YSS 生命周期决定是否允许推进；YSS 
 | 情形 | Matt flow | 生命周期验收 |
 |---|---|---|
 | 首次启用或配置缺失 | `setup-matt-pocock-skills`（用户显式） | `needs-human`，说明缺失项；用户完成 setup 后重新计算 readiness |
-| 需求澄清 | `grill-with-docs`（用户显式）或 `grilling`、`domain-modeling`（生命周期原语） | 按退出判定检查未决项和回流 |
-| 信息在其他人手中 | `to-questionnaire` | 使用 `external-input-required` 暂停；答案回流后记录 response、重新分类影响面，再进入 `grill-with-docs` 或 `to-spec` |
+| 需求澄清 | 原生 `work-unit.plan-requirements`，按需使用 `grilling`、`domain-modeling`（生命周期原语） | 按退出判定检查未决项和回流 |
+| 信息在其他人手中 | 生命周期外部输入问卷 | 使用 `external-input-required` 暂停；答案回流后记录 response、重新分类影响面，再进入 `work-unit.plan-requirements` 或 `to-spec` |
 | 大型模糊工作 | `wayfinder`（可选） | 仅在跨会话 / 跨 Agent 或 frontier 不清晰时启用；map 真正完成后 `handoff → to-spec` |
 | 技术或战略事实 | `yss-research`（`research` 为 deprecated alias） | `technical-evidence` 核验一手技术资料；`strategy-evidence` 为领域战略和阶段决策提供可审计证据；研究包不得自行修改或批准下游资产 |
 | runnable 问题 | `prototype` | 生成单文件可分享 HTML，保留 `prototype/<name>` 分支作为主来源；必须 source/return handoff 和结论回填，只能作为阶段 4 输入，不得替代低保真评审、H1/H2 档位路由、schema v4 验证和用户确认 |
@@ -27,7 +27,7 @@ Matt skills 决定如何工作；YSS 生命周期决定是否允许推进；YSS 
 | 审查 | `code-review` | 唯一默认代码审查入口；审查者独立且不得写实现；Standards 消费 Spec、仓库治理规则、Slice `required_skills` 和 YSS / Alibaba 专项检查输入；finding 按合同分流修复或 stale 回 实现合同编译器 |
 | 跨上下文 | `handoff` | 保存来源、阶段、未决项、命令和下一责任人 |
 | 阶段边界 | 生命周期 phase-boundary 合同 | 按 `Continue → /clear → /handoff → subagent → /compact` 选择上下文动作；只记录证据，不扩展生命周期状态 |
-| 解释未落地 | `wait-what` | 只重新解释当前结论，不改变阶段、门禁、Ticket 或 `ready-for-agent` |
+| 解释未落地 | 普通对话与文档写作规范 | 只重新解释当前结论，不改变阶段、门禁、Ticket 或 `ready-for-agent` |
 | 人工步骤 | 人工 checkpoint | 记录 Agent 无法替代的点击、审批、凭据和迁移步骤；秘密值必须隐藏并脱敏 |
 | 编写 Agent 文档 | `writing-for-agents`；维护 skill 时使用 `maintaining-skills` | 共享 skill 只改 `.agents/skills`；流程文档保持简体中文 |
 
@@ -66,7 +66,7 @@ blocking_signals: []
 
 | Matt flow | 进入条件 | 生命周期结果 |
 |---|---|---|
-| `to-spec`（用户显式） | Plan work unit 或 `grill-with-docs` 已满足退出条件，且不存在未回流 runnable blocker；用户问题、MVP/非目标、成功标准、测试 seam 和术语审查均有证据 | 生命周期只准备/验收；Spec 初稿为 `ready-for-human`，不等于批准 |
+| `to-spec`（用户显式） | Plan work unit 或 `work-unit.plan-requirements` 已满足退出条件，且不存在未回流 runnable blocker；用户问题、MVP/非目标、成功标准、测试 seam 和术语审查均有证据 | 生命周期只准备/验收；Spec 初稿为 `ready-for-human`，不等于批准 |
 | `to-tickets`（用户显式） | OpenAPI Freeze 或 `no-api-impact` 记录、必要门禁、垂直切片范围和阻塞边均已明确 | 生命周期只准备/验收；只能生成垂直切片 Ticket，初始统一为 `ready-for-human`；必须留下 `ticket_decomposition_result_ref` 和 `vertical_slice_ticket_ref` |
 | `implement`（用户显式） | `ready-for-agent` 公式、Ticket 正式化结果、垂直切片引用/类型/状态、Contract 已批准/持久化/版本一致、Build Architecture Checklist、实现仓库/分支/CI/验证命令/回滚点，以及后端 Contract（适用时）均满足 | 生命周期只准备/验收；单会话实现同样适用，不得绕过门禁；父 Ticket、`ready-for-human` 切片或跳过 Ticket 正式化的 `next_route` 必须 `blocked` |
 

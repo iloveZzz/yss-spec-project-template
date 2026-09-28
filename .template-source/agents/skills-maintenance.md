@@ -31,7 +31,7 @@
 
 当前 Matt 快照为 `0ab1b63a410a03d3627979a109c8695de27af954`。模板按 YSS capability 白名单收录上游 Skill；已退役的通用路由、个人工作流、教学、练习、写作实验和专项迁移 Skill 不再随 project-instance 分发。
 
-本轮升级还将生命周期适配固定为：阶段边界只写可选 `phase_boundary` 证据；`to-questionnaire` 使用 `external-input-required` 暂停并在答案回流后重新分类影响面；Matt `prototype` 的单文件 HTML 只作为回流输入，YSS 原型仍须完成低保真评审、H1/H2 档位路由、Prototype Evidence schema v4、Visual Baseline schema v1 验证和用户确认。人工 checkpoint 与 `diagnosing-bugs` 的输出必须脱敏，`wait-what` 不改变生命周期状态。
+本轮升级还将生命周期适配固定为：阶段边界只写可选 `phase_boundary` 证据；生命周期外部输入问卷 使用 `external-input-required` 暂停并在答案回流后重新分类影响面；Matt `prototype` 的单文件 HTML 只作为回流输入，YSS 原型仍须完成低保真评审、H1/H2 档位路由、Prototype Evidence schema v4、Visual Baseline schema v1 验证和用户确认。人工 checkpoint 与 `diagnosing-bugs` 的输出必须脱敏，重新解释当前结论只调整表达，不改变生命周期状态。
 
 ## 维护流程
 

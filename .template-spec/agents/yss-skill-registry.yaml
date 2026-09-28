@@ -190,6 +190,10 @@ recipes:
   - { id: frontend.vue3-scaffold, capabilities: [scaffold.frontend-vue3] }
   - { id: backend.springboot3-migration, capabilities: [migration.springboot3, quality.java-code-style] }
 skill_dependencies:
+  frontend-commit:
+    - { skill: git-commit-core, type: context-required }
+  java-backend-commit:
+    - { skill: git-commit-core, type: context-required }
   yss-backend-spec-review:
     - { skill: alibaba-java-code-style, type: context-required }
     - { skill: yss-implementation-contract-compiler, type: coordination-only }
@@ -361,12 +365,6 @@ skills:
     instance_default_discoverable: true
     aliases: []
     impacts: [discovery]
-  - id: grill-with-docs
-    layer: compatibility
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [discovery]
   - id: grilling
     layer: core
     maturity: supported
@@ -391,12 +389,6 @@ skills:
     instance_default_discoverable: true
     aliases: []
     impacts: [lifecycle]
-  - id: improve-codebase-architecture
-    layer: compatibility
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [quality]
   - id: llm-wiki
     layer: core
     maturity: verified
@@ -457,12 +449,6 @@ skills:
     instance_default_discoverable: true
     aliases: []
     impacts: [quality]
-  - id: to-questionnaire
-    layer: maintainer-only
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [discovery]
   - id: to-spec
     layer: compatibility
     maturity: supported
@@ -482,12 +468,6 @@ skills:
     aliases: []
     impacts: [lifecycle]
   - id: using-git-worktrees
-    layer: maintainer-only
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [setup]
-  - id: wait-what
     layer: maintainer-only
     maturity: supported
     instance_default_discoverable: false
@@ -751,6 +731,12 @@ skills:
     instance_default_discoverable: false
     aliases: []
     impacts: [frontend]
+  - id: git-commit-core
+    layer: maintainer-only
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [template-maintenance]
   - id: frontend-commit
     layer: maintainer-only
     maturity: supported
@@ -788,11 +774,6 @@ skills:
     aliases: []
     impacts: [frontend]
 platform_skills:
-  - id: data-analytics
-    root: .codex/skills
-    layer: maintainer-only
-    instance_default_discoverable: false
-    aliases: []
   - id: product-design
     root: .codex/skills
     layer: specialist

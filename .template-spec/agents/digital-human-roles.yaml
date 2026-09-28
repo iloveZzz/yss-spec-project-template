@@ -76,7 +76,7 @@ roles:
     title: YSS 需求经理
     stages: [ stage.plan, stage.spec-architecture ]
     draft_artifact_ids: [ artifact.plan-record, artifact.spec ]
-    core_skills: [ grilling, domain-modeling, yss-research, competitive-intelligence, grill-with-docs ]
+    core_skills: [ grilling, domain-modeling, yss-research, competitive-intelligence ]
     forbidden_skills: [ yss-ui, yss-domain, yss-web-controller, yss-repository, yss-ddd-scaffold-generator, yss-layered-mvc-scaffold-generator, yss-frontend-scaffold-generator, implement, tdd ]
     description: >-
       Own Plan language, users, MVP, non-goals, success criteria, test seams, and Spec prose. Propose CONTEXT.md glossary entries. Do not freeze visual prototypes, OpenAPI, or code. Do not guess unconfirmed business rules. Hand off to the orchestrator when the frontier is empty.

@@ -2,7 +2,7 @@
 
 > AI 辅助生成，人工审核补充。
 > 建议配套产物：`competitive-matrix-template.md` 用于横向功能矩阵，本模板用于深度分析和 Spec 前置输入。
-> 使用 `grill-with-docs` 时，请把稳定术语同步沉淀到 `CONTEXT.md`，只有出现难以回滚、非显而易见且存在真实取舍的决策时才新增 ADR。
+> 使用 `work-unit.plan-requirements` 时，请把稳定术语同步沉淀到 `CONTEXT.md`，只有出现难以回滚、非显而易见且存在真实取舍的决策时才新增 ADR。
 
 ## 0. 文档信息
 
@@ -250,7 +250,7 @@ flowchart LR
 ## 11. 建议下一步
 
 1. [补充调研 / 用户访谈 / 厂商验证]
-2. [进入 grill-with-docs 继续澄清的问题]
+2. [进入 work-unit.plan-requirements 继续澄清的问题]
 3. [生成 Spec]
 4. [判断是否需要 OpenAPI / 垂直切片 issue]
 

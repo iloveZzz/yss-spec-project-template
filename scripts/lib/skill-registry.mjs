@@ -65,7 +65,8 @@ export function loadSkillRegistry(filePath = DEFAULT_REGISTRY) {
 export function resolveSkillForNewUse(registry, requestedId) {
   requireString(requestedId, "requested skill id");
   if (OBSOLETE.has(requestedId)) {
-    const replacementSkill = requestedId === "grill-me" ? "grilling" : null;
+    const lifecycleOwner = ["harness-orchestrator", "yss-strategic-design", "yss-product-lifecycle"].find(id => registry.skills?.some(skill => skill.id === id));
+    const replacementSkill = ({ "grill-me": "grilling", "wait-what": "i-have-adhd", "grill-with-docs": lifecycleOwner, "to-questionnaire": lifecycleOwner, "improve-codebase-architecture": "codebase-design" })[requestedId] ?? null;
     throw new SkillLifecycleError(
       SKILL_LIFECYCLE_FAILURE_CODES.retired,
       replacementSkill

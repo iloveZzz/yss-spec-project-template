@@ -28,7 +28,7 @@ YSS 模板工程是一套可版本化的研发治理系统。它用仓库身份�
 
 ## 4. Harness 产品线
 
-模板工程按研发责任边界提供综合、战略、后端、前端入口；既有通用研发实例继续核对原固定版本。选型、CLI 支持与默认写入行为集中维护在[用户手册的 CLI 能力与写入方式](../user-guide/用户手册.md#cli-能力与写入方式)。具体生命周期边界由对应实例的 profile 和生命周期注册表决定。
+模板工程按研发责任边界提供综合、战略、后端、前端入口；既有通用研发实例继续核对原固定版本。选型、CLI 支持与默认写入行为集中维护在[用户手册的 CLI 能力与写入方式](../../.template-spec/user-guide/用户手册.md#cli-能力与写入方式)。具体生命周期边界由对应实例的 profile 和生命周期注册表决定。
 
 每条产品线使用独立的 profile、metadata 和固定模板 commit。CLI 之间遇到其他产品线的 metadata 时必须 fail closed，不能自动接管。
 
@@ -54,7 +54,7 @@ YSS 模板工程是一套可版本化的研发治理系统。它用仓库身份�
 
 ## 6. 模板源与实例分发边界
 
-模板实例分发面包含根规则、`CONTEXT.md`、共享 skills、`docs/` 中的实例流程资产和共享验证脚本。CLI 从固定模板 commit 构建 bundled snapshot，并在 metadata 中保存模板身份和版本。
+模板实例分发面包含根规则、`CONTEXT.md`、按需选择的共享 skills、`.template-spec/` 中的治理资产和共享验证脚本；`docs/` 保存实例按需产生的产品资产。CLI 从固定模板 commit 构建 bundled snapshot，并在 metadata 中保存模板身份和版本。
 
 `.template-source/` 是模板源治理区，保存维护证据、研究记录、源仓 ADR、跨仓契约、发布路线和模板源 Wiki。该目录不进入 `project-instance`，避免把模板维护历史误当成产品研发资产。
 
@@ -63,7 +63,7 @@ YSS 模板工程是一套可版本化的研发治理系统。它用仓库身份�
 1. **分级**：根据 `.template-source/process/maintenance-intensity.yaml` 计算 L1、L2 或 L3；未知 trigger 先更新策略。
 2. **更新权威资产**：修改对应的单一事实来源，避免在说明文档中复制规则。
 3. **生成投影**：涉及 skills 时同步 Agent roots 和 `skills-lock.json`；涉及生命周期结构时同步派生视图；涉及实例分发时构建固定 commit 的 CLI 快照。
-4. **Fresh verification**：实现内循环执行 `scripts/verify-template-fast` 并默认停在 `implementation-ready`；准备审查时执行 candidate 核验和首次完整 `scripts/verify-template`，跨仓 CLI 还要执行固定 commit 的集成测试和打包校验。
+4. **Fresh verification**：实现内循环执行 `scripts/verify-template-fast` 并默认停在 `implementation-ready`；PR 执行 candidate 核验；正式发布前执行完整 `scripts/verify-template`，跨仓 CLI 还要执行固定 commit 的集成测试和打包校验。
 5. **审查与发布**：L1/L2/L3 日常使用维护者自检，不强制冻结候选或独立审查；分级只决定验证强度。正式发布前执行完整 `scripts/verify-template` 和固定版本生成器集成。GitHub CI 边界见 `github-workflows.md`。
 6. **发布与回滚**：先发布或提交子仓，再更新父仓 gitlink；跨仓版本、验证命令、发布顺序和回滚点必须可以重建。
 
@@ -76,7 +76,7 @@ YSS 模板工程是一套可版本化的研发治理系统。它用仓库身份�
 | 判断仓库身份和下一阶段 | `yss-product-lifecycle` |
 | 修改或退役共享 skill | `maintaining-skills` |
 | 模板实现内循环 | `scripts/verify-template-fast` |
-| 准备模板审查候选 | `scripts/verify-template-candidate`、`scripts/prepare-maintenance-review` |
+| PR 验证 | `scripts/verify-template-candidate`；独立审查另按显式选择执行 |
 | 校验根模板发布候选 | `scripts/verify-template` |
 | 同步共享 skill 投影 | `scripts/sync-skills` |
 | 校验 skills lock | `scripts/update-skill-lock --check` |

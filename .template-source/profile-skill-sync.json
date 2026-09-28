@@ -16,9 +16,6 @@
           "id": "domain-modeling"
         },
         {
-          "id": "grill-with-docs"
-        },
-        {
           "id": "grilling"
         },
         {
@@ -149,7 +146,11 @@
       "retired": [
         "yss-antd-design",
         "yss-antdv-next-design",
-        "grill-me"
+        "grill-me",
+        "wait-what",
+        "grill-with-docs",
+        "to-questionnaire",
+        "improve-codebase-architecture"
       ],
       "reference_roots": [
         ".codex/skills/product-design"
@@ -189,9 +190,6 @@
           "id": "implementation-repo-onboarding"
         },
         {
-          "id": "improve-codebase-architecture"
-        },
-        {
           "id": "java-backend-commit"
         },
         {
@@ -211,9 +209,6 @@
         },
         {
           "id": "tdd"
-        },
-        {
-          "id": "to-questionnaire"
         },
         {
           "id": "to-spec"
@@ -291,13 +286,7 @@
           "id": "domain-modeling"
         },
         {
-          "id": "grill-with-docs"
-        },
-        {
           "id": "setup-matt-pocock-skills"
-        },
-        {
-          "id": "wait-what"
         },
         {
           "id": "wayfinder"
@@ -313,6 +302,9 @@
         },
         {
           "id": "yss-openapi-draft-review"
+        },
+        {
+          "id": "git-commit-core"
         }
       ],
       "adapted": [
@@ -348,7 +340,7 @@
           "id": "yss-implementation-contract-compiler",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/backend/yss-implementation-contract-compiler.patch",
-          "source_tree_sha256": "d7f5ed8db9075c6ec947652fe268943868a23b4aafc972ce52313e769ac1dc2e"
+          "source_tree_sha256": "2e242470e1a0addb1e228d3f14ec26f7f3f87ccebe0b1efa434a61aac3db8d34"
         },
         {
           "id": "yss-openapi-governance",
@@ -360,7 +352,7 @@
           "id": "prototype",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/backend/prototype.patch",
-          "source_tree_sha256": "b9cefa9d9d8074e60170da0b48a75bf5b2929fa373e4ac771406582ca26f0954"
+          "source_tree_sha256": "183070a5a092d658968edd65e032d0b317205108ece8c7fba5229c7e956aaa47"
         },
         {
           "id": "triage",
@@ -474,7 +466,11 @@
         "yss-antdv-next-design",
         "yss-mvc-design",
         "yss-mvc-data-analysis-project-initializer",
-        "grill-me"
+        "grill-me",
+        "wait-what",
+        "grill-with-docs",
+        "to-questionnaire",
+        "improve-codebase-architecture"
       ],
       "reference_roots": []
     },
@@ -524,9 +520,6 @@
           "id": "implementation-repo-onboarding"
         },
         {
-          "id": "improve-codebase-architecture"
-        },
-        {
           "id": "llm-wiki"
         },
         {
@@ -543,9 +536,6 @@
         },
         {
           "id": "theme-token-usage"
-        },
-        {
-          "id": "to-questionnaire"
         },
         {
           "id": "to-spec"
@@ -596,13 +586,7 @@
           "id": "domain-modeling"
         },
         {
-          "id": "grill-with-docs"
-        },
-        {
           "id": "setup-matt-pocock-skills"
-        },
-        {
-          "id": "wait-what"
         },
         {
           "id": "wayfinder"
@@ -622,12 +606,10 @@
           "target": ".codex/skills/product-design"
         },
         {
-          "id": "data-analytics",
-          "source": ".codex/skills/data-analytics",
-          "target": ".codex/skills/data-analytics"
+          "id": "frontend-commit"
         },
         {
-          "id": "frontend-commit"
+          "id": "git-commit-core"
         }
       ],
       "adapted": [
@@ -635,7 +617,7 @@
           "id": "yss-implementation-contract-compiler",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/frontend/yss-implementation-contract-compiler.patch",
-          "source_tree_sha256": "d7f5ed8db9075c6ec947652fe268943868a23b4aafc972ce52313e769ac1dc2e"
+          "source_tree_sha256": "2e242470e1a0addb1e228d3f14ec26f7f3f87ccebe0b1efa434a61aac3db8d34"
         },
         {
           "id": "yss-openapi-governance",
@@ -767,11 +749,14 @@
         "vue3-best-practices",
         "yss-use-table-height",
         "yss-use-tree-height",
-        "grill-me"
+        "grill-me",
+        "wait-what",
+        "grill-with-docs",
+        "to-questionnaire",
+        "improve-codebase-architecture"
       ],
       "reference_roots": [
-        ".codex/skills/product-design",
-        ".codex/skills/data-analytics"
+        ".codex/skills/product-design"
       ]
     }
   },

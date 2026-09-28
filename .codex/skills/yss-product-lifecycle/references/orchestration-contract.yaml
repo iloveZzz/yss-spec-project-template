@@ -168,7 +168,7 @@ entry_routing:
   invalid_manifest:
     action: migration-check
   formal_user_entry:
-    skills: [setup-matt-pocock-skills, grill-with-docs, to-spec, to-tickets, implement]
+    skills: [setup-matt-pocock-skills, to-spec, to-tickets, implement]
     action: lifecycle-validate-and-accept
     lifecycle_artifact_write: conditional-explicit-user-entry
     return_to_orchestrator: required
@@ -297,8 +297,8 @@ task_package:
 # may prepare, validate and accept their results, but cannot invoke them or create
 # their formal artifacts on their behalf.
 matt_invocation_boundary:
-  user_invoked_skills: [grill-with-docs, handoff, implement, improve-codebase-architecture, setup-matt-pocock-skills, to-questionnaire, to-spec, to-tickets, triage, wait-what, wayfinder]
-  lifecycle_managed_user_entries: [setup-matt-pocock-skills, grill-with-docs, to-spec, to-tickets, implement]
+  user_invoked_skills: [handoff, implement, setup-matt-pocock-skills, to-spec, to-tickets, triage, wayfinder]
+  lifecycle_managed_user_entries: [setup-matt-pocock-skills, to-spec, to-tickets, implement]
   model_invoked_skills: [code-review, codebase-design, diagnosing-bugs, domain-modeling, grilling, prototype, resolving-merge-conflicts, tdd, writing-for-agents, yss-research]
   lifecycle_allowed_model_invoked_skills: [code-review, codebase-design, diagnosing-bugs, domain-modeling, grilling, prototype, tdd, yss-research]
   lifecycle_may_invoke_user_invoked: false

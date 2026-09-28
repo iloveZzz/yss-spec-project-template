@@ -9,27 +9,15 @@
 ## 项目结构
 
 ```text
-├── .agents/                 ← 跨 Agent 共享 skills 的权威内容
-├── .codex/                  ← Codex skills 投影与平台专属 skills
-├── .cursor/                 ← Cursor skills 投影
-├── .pi/                     ← Pi skills 投影与平台专属 skills
-├── AGENTS.md                ← AI 指令
-├── CONTEXT.md               ← 领域词汇表
-├── yss-project.yaml         ← 仓库身份清单
-├── docs/
-│   ├── api/                 ← OpenAPI 3.1 契约
-│   ├── adr/                 ← 架构决策记录
-│   ├── requirements/        ← Spec / 用户故事 / 需求草案 / 垂直切片
-│   ├── plan/                ← 战略规划与 Spec 上游输入
-│   ├── design/              ← 产品设计、原型、交互说明和状态矩阵
-│   ├── architecture/        ← 架构设计与审查模板
-│   ├── releases/            ← 发布说明
-│   ├── implementation/      ← 实施方案、上线记录和回滚方案
-│   ├── testing/             ← 测试策略和验证记录
-│   ├── agents/              ← Agent 协作规范、Ticket/Triage/领域文档约定
-│   ├── templates/           ← 通用文档模板
-│   └── process/             ← 生命周期、裁剪、Scrum 和技能治理说明
-└── scripts/                 ← 模板轻量校验脚本
+├── .agents/skills/          ← 共享技能权威内容
+├── .codex/、.cursor/、.pi/  ← 技能投影与平台专属能力
+├── AGENTS.md                ← Agent 入口规则
+├── CONTEXT.md               ← 唯一业务词汇表
+├── yss-project.yaml         ← 仓库身份
+├── .template-spec/          ← 可复用流程、门禁、契约与文档模板
+├── .template-source/        ← 模板维护、分发工具和历史证据（不进入实例）
+├── docs/                    ← 项目实例按需创建的 Plan、Spec、设计、Ticket 与交付证据
+└── scripts/                 ← 合同与流程验证工具
 ```
 
 项目需要生成度量、外部实现仓库记录或其他临时产物时再按需创建对应目录。前后端实现仓库接入规则见 `.template-spec/process/implementation-repo-integration.md`。
@@ -37,9 +25,9 @@
 ## Quickstart
 
 1. 先读取 `yss-project.yaml`，按 `repository_mode` 选择模板维护或产品研发生命周期。
-2. 必读入口为 `AGENTS.md` 与 `CONTEXT.md`；流程事实分别以生命周期映射和裁剪指南为准。
+2. 必读入口为 `AGENTS.md` 与 `CONTEXT.md`；流程事实以生命周期注册表和裁剪指南为准。
 3. `template-source` 修改后先按 `maintenance-intensity.yaml` 判定 L1 / L2 / L3，默认用 `scripts/verify-template-fast` 达到 `implementation-ready`；L3 日常采用维护者自检，正式发布前执行完整门禁；只有共享 skill 变更才运行 `scripts/sync-skills` 和 `scripts/update-skill-lock`。
-4. `project-instance` 默认从 `yss-product-lifecycle` 的 `route` 模式开始，再由原生 `work-unit.*` 推进 Plan、Spec、产品设计、工程契约和 Ticket 正式化；`grill-with-docs`、`to-spec`、`to-tickets`、`implement` 仅作为用户显式调用的兼容入口。
+4. `project-instance` 默认从 `yss-product-lifecycle` 的 `route` 模式开始，再由原生 `work-unit.*` 推进 Plan、Spec、产品设计、工程契约和 Ticket 正式化；`to-spec`、`to-tickets`、`implement` 仅作为用户显式调用的兼容入口。
 5. 实现仓库接入、YSS 路由、独立审查、fresh verification 和 Git checkpoint 以 `AGENTS.md` 的硬门禁为准。
 
 YSS skills 的公开发布投影维护在 [iloveZzz/yss-spec-dev-skills](https://github.com/iloveZzz/yss-spec-dev-skills)，发布清单和导出命令见 [skills 维护说明](./.template-source/agents/skills-maintenance.md)。
@@ -95,7 +83,7 @@ scripts/verify-template-fast
 - 示例 OpenAPI YAML 是否可解析。
 - Git diff 是否存在空白错误。
 
-显式准备审查候选时执行 `scripts/verify-template-candidate`；首次正式冻结前和最终发布前执行不可裁剪的 `scripts/verify-template`。
+PR 执行 `scripts/verify-template-candidate`；main 与正式发布前执行不可裁剪的 `scripts/verify-template`。独立审查和候选冻结仅在显式采用旧兼容协议时执行。
 
 ## 关键文档
 

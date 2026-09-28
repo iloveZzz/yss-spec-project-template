@@ -1,0 +1,17 @@
+{
+  "label": "replacement-backend-doctor",
+  "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+  "argv": [
+    "node",
+    "/private/tmp/yss-retirement-implementation-o63zsznx/installed/node_modules/create-yss-harness-backend/bin/create-yss-harness-backend.js",
+    "doctor",
+    "--target-dir",
+    "/private/tmp/yss-retirement-implementation-o63zsznx/backend-smoke",
+    "--json"
+  ],
+  "started_at": "2026-09-28T10:01:55.120594+00:00",
+  "exit_code": 0,
+  "duration_seconds": 1.041,
+  "stdout": "replacement-backend-doctor.stdout.log",
+  "stderr": "replacement-backend-doctor.stderr.log"
+}

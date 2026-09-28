@@ -131,7 +131,7 @@ tracker 选择和冲突按 `.template-spec/agents/issue-tracker.md` 裁决：已
 
 Decision ticket 产生决策，不是实现切片，不得标记 `ready-for-agent`。
 
-## `grill-with-docs` 退出判定
+## `work-unit.plan-requirements` 退出判定
 
 进入 `to-spec` 前必须区分已确认项与未决项，并确认用户、问题、MVP、非目标、成功标准、术语/ADR 候选和测试 seam。事实问题走 `yss-research`；需 runnable 反馈的问题走 `handoff → prototype → handoff`。存在未回流 blocker 时不得进入 Spec baseline。
 
@@ -139,7 +139,7 @@ Prototype 回流必须有可核验证据：来源 handoff、prototype 资产或�
 
 Matt `prototype` 的回流还必须注明 `prototype_branch`，并保留单文件 HTML 主来源；该结果只能作为 YSS 原型输入，仍须完成阶段 4 的低保真评审、H1/H2 档位路由、schema v4 验证和用户确认，不得用 throwaway prototype 替代。
 
-`to-questionnaire` 未收到答案时使用 `external-input-required` 暂停，记录问卷、接收人、所需输出和恢复路由；收到答案后记录 response、重新分类影响面和更新后的权威资产，再回到 `grill-with-docs` 或 `to-spec`。
+生命周期外部输入问卷 未收到答案时使用 `external-input-required` 暂停，记录问卷、接收人、所需输出和恢复路由；收到答案后记录 response、重新分类影响面和更新后的权威资产，再回到 `work-unit.plan-requirements` 或 `to-spec`。
 
 Release 与 Retrospective 属于生命周期编排器拥有的工作单元。发布和复盘前都必须重新取得 fresh verification；发布还需要发布/回滚证据和独立审查，复盘还需要复盘记录和治理回流判断，再回流权威资产。
 

@@ -38,7 +38,7 @@ const lines = [
   "",
   "| Recipe | Capabilities |",
   "| --- | --- |",
-  ...registry.recipes.map((item) => `| \`${item.id}\` | ${item.capabilities.map((capability) => `\`${capability}\``).join(", ")} |`),
+  ...registry.recipes.filter((item) => item.maturity !== "deprecated").map((item) => `| \`${item.id}\` | ${item.capabilities.map((capability) => `\`${capability}\``).join(", ")} |`),
   "",
   "## Impact Entry Mapping",
   "",

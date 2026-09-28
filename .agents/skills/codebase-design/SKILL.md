@@ -116,3 +116,7 @@ Use `archify` only when the user or the governing YSS contract explicitly asks f
 
 - **Deepening a cluster given its dependencies** — see [DEEPENING.md](DEEPENING.md): dependency categories, seam discipline, and replace-don't-layer testing.
 - **Exploring alternative interfaces** — see [DESIGN-IT-TWICE.md](DESIGN-IT-TWICE.md): spin up parallel sub-agents to design the interface several radically different ways, then compare on depth, locality, and seam placement.
+
+## 显式架构审计
+
+用户明确要求评估维护成本、模块边界或可测试性时，读取 [架构审计](references/architecture-audit.md)。输出有证据的重构候选；只有用户已授权实现范围后才能修改代码。普通术语咨询不自动扫描仓库或发起重构。

@@ -19,6 +19,16 @@ export function intakeEvidencePath(ref, { root, runDir }) {
   ensure(fs.statSync(file).isFile(), '证据必须为文件');
   return file;
 }
+// Stream large preserved evidence archives instead of allocating the whole file.
+export function fileDigest(file) {
+  const hash = createHash('sha256'), buffer = Buffer.allocUnsafe(1024 * 1024);
+  const fd = fs.openSync(file, 'r');
+  try {
+    let size;
+    while ((size = fs.readSync(fd, buffer, 0, buffer.length, null)) !== 0) hash.update(buffer.subarray(0, size));
+    return `sha256:${hash.digest('hex')}`;
+  } finally { fs.closeSync(fd); }
+}
 /** Final observable repository files, including ignored and untracked files; never follow links. */
 export function intakeSnapshot(root) {
   const result = spawnSync('git', ['ls-files', '-z', '--cached', '--others'], { cwd: root, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 });
@@ -34,7 +44,7 @@ export function intakeSnapshot(root) {
         const head = spawnSync('git', ['rev-parse', 'HEAD'], { cwd: file, encoding: 'utf8' });
         ensure(nested.status === 0 && head.status === 0, `子仓不可观测: ${ref}`);
         rows[ref] = { kind: 'gitlink', head: head.stdout.trim(), files: intakeSnapshot(file) };
-      } else rows[ref] = { kind: stat.isSymbolicLink() ? 'link' : 'file', mode: stat.mode, digest: digest(stat.isSymbolicLink() ? fs.readlinkSync(file) : fs.readFileSync(file)) };
+      } else rows[ref] = { kind: stat.isSymbolicLink() ? 'link' : 'file', mode: stat.mode, digest: stat.isSymbolicLink() ? digest(fs.readlinkSync(file)) : fileDigest(file) };
     } catch (error) { if (error.code === 'ENOENT') rows[ref] = null; else throw error; }
   }
   const head=spawnSync('git',['rev-parse','--verify','HEAD'],{cwd:root,encoding:'utf8'});

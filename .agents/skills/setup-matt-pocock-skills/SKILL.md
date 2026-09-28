@@ -73,7 +73,7 @@ If the root `CONTEXT.md` is missing, initialize it with `context_schema_version:
 Show the user a draft of:
 
 - The `## Agent skills` block to add to `AGENTS.md`
-- The contents of `.template-spec/agents/issue-tracker.md`, `.template-spec/agents/domain.md`, and `.template-spec/agents/triage-labels.md` (the last only when `triage` is installed)
+- The contents of `.template-spec/agents/issue-tracker.md`, 根 `CONTEXT.md` 的消费规则, and `.template-spec/agents/triage-labels.md` (the last only when `triage` is installed)
 
 Let them edit before writing.
 
@@ -101,7 +101,7 @@ The block:
 
 ### Domain docs
 
-[one-line summary: one root `CONTEXT.md`, with bounded contexts represented inside its business glossary]. See `.template-spec/agents/domain.md`.
+[one-line summary: one root `CONTEXT.md`, with bounded contexts represented inside its business glossary]. See 根 `CONTEXT.md` 的消费规则.
 ```
 
 Include the `### Triage labels` sub-block, and write `.template-spec/agents/triage-labels.md`, only when `triage` is installed and Section B ran. When it isn't, both are omitted.
@@ -112,7 +112,7 @@ Then write the docs files using the seed templates in this skill folder as a sta
 - [issue-tracker-gitlab.md](./issue-tracker-gitlab.md) — GitLab issue tracker
 - [issue-tracker-local.md](./issue-tracker-local.md) — local-markdown issue tracker
 - [triage-labels.md](./triage-labels.md) — label mapping (only if `triage` is installed)
-- [domain.md](./domain.md) — domain doc consumer rules + layout
+- 根 `CONTEXT.md` 文首合同与消费规则 — domain doc consumer rules + layout
 
 For an unsupported tracker request, stop and require a YSS tracker-contract extension; do not write an unsupported platform into `.template-spec/agents/issue-tracker.md`.
 

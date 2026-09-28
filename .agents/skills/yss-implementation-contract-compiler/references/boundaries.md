@@ -65,9 +65,6 @@
 | `backend.mvc-service-behavior` | `layer.mvc-service`, `quality.java-code-style` |
 | `backend.mvc-persistence-mybatis` | `layer.mvc-persistence`, `framework.mybatis`, `codegen.mapstruct`, `codegen.lombok`, `quality.java-code-style` |
 | `backend.mvc-http-api` | `layer.mvc-web`, `contract.dto-wire`, `contract.request-validation`, `contract.error-mapping`, `codegen.mapstruct`, `codegen.lombok`, `quality.java-code-style` |
-| `backend.domain-behavior` | `layer.domain`, `layer.application`, `quality.java-code-style` |
-| `backend.persistence-mybatis` | `layer.persistence`, `framework.mybatis`, `codegen.mapstruct`, `codegen.lombok`, `quality.java-code-style` |
-| `backend.http-api` | `layer.web-adapter`, `contract.dto-wire`, `contract.request-validation`, `contract.error-mapping`, `codegen.mapstruct`, `codegen.lombok`, `quality.java-code-style` |
 | `backend.current-user-context` | `component.current-user-context`, `contract.dto-wire` |
 | `backend.cached-current-user` | `component.current-user-context`, `component.cache`, `contract.dto-wire` |
 | `backend.audit-event` | `component.audit-log`, `component.current-user-context`, `contract.dto-wire` |
@@ -108,6 +105,8 @@
 
 | Skill | Dependency | Type | Condition |
 | --- | --- | --- | --- |
+| `frontend-commit` | `git-commit-core` | `context-required` | — |
+| `java-backend-commit` | `git-commit-core` | `context-required` | — |
 | `yss-backend-spec-review` | `alibaba-java-code-style` | `context-required` | — |
 | `yss-backend-spec-review` | `yss-implementation-contract-compiler` | `coordination-only` | — |
 | `yss-backend-spec-review` | `code-review` | `review-only` | — |

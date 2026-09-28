@@ -1,0 +1,4290 @@
+{
+  "captured_at": "2026-09-28T10:28:29.022827+00:00",
+  "excludes": "evidence archives; recorded separately to avoid self-reference",
+  "repositories": [
+    {
+      "repository": ".",
+      "head": "a18c289d9f31664d0de34a6fa3f877c689a0d525",
+      "branch": "main",
+      "changes": [
+        {
+          "path": ".agents/skills/codebase-design/SKILL.md",
+          "state": "file",
+          "sha256": "55219edb521607cab763f7dae7f9510e2b7a0a91ee4d7da2b5db7d5849376e52",
+          "bytes": 7547
+        },
+        {
+          "path": ".agents/skills/codebase-design/references/HTML-REPORT.md",
+          "state": "file",
+          "sha256": "0b0936104158abeef7246ff6cbabefa4dc055f17589f2833f2d93001421910a1",
+          "bytes": 6685
+        },
+        {
+          "path": ".agents/skills/codebase-design/references/architecture-audit.md",
+          "state": "file",
+          "sha256": "48debe3fb1d55fcc9244213102d860df8cef8dc5afd2b5a82147d4012198842d",
+          "bytes": 6189
+        },
+        {
+          "path": ".agents/skills/frontend-commit/SKILL.md",
+          "state": "file",
+          "sha256": "a767184f6e4a0ed36f290685f44cdf554dd313609ad4d762871ed6de810f7fa2",
+          "bytes": 1942
+        },
+        {
+          "path": ".agents/skills/git-commit-core/SKILL.md",
+          "state": "file",
+          "sha256": "6ed21d57222bbf1d84c47c6f3bd515441e710d0a7917798de7d805aa5926d5c7",
+          "bytes": 1937
+        },
+        {
+          "path": ".agents/skills/grill-with-docs/SKILL.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".agents/skills/grill-with-docs/agents/openai.yaml",
+          "state": "deleted"
+        },
+        {
+          "path": ".agents/skills/improve-codebase-architecture/HTML-REPORT.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".agents/skills/improve-codebase-architecture/SKILL.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".agents/skills/improve-codebase-architecture/agents/openai.yaml",
+          "state": "deleted"
+        },
+        {
+          "path": ".agents/skills/java-backend-commit/SKILL.md",
+          "state": "file",
+          "sha256": "94deab2531bd2932647116d58bb02cbeadfb85151323cebf4cd1b02b129f4a18",
+          "bytes": 2137
+        },
+        {
+          "path": ".agents/skills/prototype/LOGIC.md",
+          "state": "file",
+          "sha256": "2d89f03b3514a5cfd0a37aa7bf817cc129df2500edc20b0706ca9cb238f211ae",
+          "bytes": 6107
+        },
+        {
+          "path": ".agents/skills/prototype/SKILL.md",
+          "state": "file",
+          "sha256": "dd709aedaacb433d65840dfcec570e82a639ee53aaf72c237be8df2462e3375c",
+          "bytes": 791
+        },
+        {
+          "path": ".agents/skills/prototype/UI.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".agents/skills/setup-matt-pocock-skills/SKILL.md",
+          "state": "file",
+          "sha256": "c9f900395aa3cf2a643d3b6b639641813deea074844d6c9aef32dbd1c1f84b2c",
+          "bytes": 7842
+        },
+        {
+          "path": ".agents/skills/setup-matt-pocock-skills/domain.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".agents/skills/to-questionnaire/SKILL.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".agents/skills/to-questionnaire/agents/openai.yaml",
+          "state": "deleted"
+        },
+        {
+          "path": ".agents/skills/wait-what/SKILL.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".agents/skills/wait-what/agents/openai.yaml",
+          "state": "deleted"
+        },
+        {
+          "path": ".agents/skills/yss-implementation-contract-compiler/references/boundaries.md",
+          "state": "file",
+          "sha256": "ef38226fc774cc30ea295f5d6cf0b1137c51a090ec9ffc5c56ea7e2536e615a1",
+          "bytes": 13177
+        },
+        {
+          "path": ".agents/skills/yss-product-lifecycle/SKILL.md",
+          "state": "file",
+          "sha256": "1cace532144bae364b9d55a6ecf9f9b68e008b01fdc2599494210c9596a10f5d",
+          "bytes": 8145
+        },
+        {
+          "path": ".agents/skills/yss-product-lifecycle/references/external-input-questionnaire.md",
+          "state": "file",
+          "sha256": "7dc64bcac2c872f76773bea08bc165e498657aab519e24c1eb94aa0afe911680",
+          "bytes": 1427
+        },
+        {
+          "path": ".agents/skills/yss-product-lifecycle/references/matt-yss-adapter.md",
+          "state": "file",
+          "sha256": "50ac903f94829281e0d5fbc034f8127c071166b4c8a1beb3d3f1f9ad84c6da3b",
+          "bytes": 14645
+        },
+        {
+          "path": ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml",
+          "state": "file",
+          "sha256": "90f16d61973700b73fd6908ee93b7eef4c00d6cf2d8cdb4ef874ed8329d6b5c4",
+          "bytes": 74416
+        },
+        {
+          "path": ".agents/skills/yss-product-lifecycle/references/orchestration.md",
+          "state": "file",
+          "sha256": "258777bb7baa681df945cca81846f9486955b7e00b1e25e54acbbba426f2bb0b",
+          "bytes": 26376
+        },
+        {
+          "path": ".agents/skills/yss-product-lifecycle/references/plan-requirements.md",
+          "state": "file",
+          "sha256": "04350517b5a0392a1de137d2bf7d530f27b31097c134d7371f45ddd3c6d4b8c2",
+          "bytes": 1737
+        },
+        {
+          "path": ".agents/skills/yss-product-lifecycle/references/state-model.md",
+          "state": "file",
+          "sha256": "5e28fe9aaf01609f7d32c1c47a63ec2ffad6bff3dea1f7fe7e564b8249407674",
+          "bytes": 10914
+        },
+        {
+          "path": ".codex/skills/data-analytics/.app.json",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/.codex-plugin/plugin.json",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/.gitignore",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/.mcp.json",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/AGENTS.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/DEPENDENCIES.MD",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/README.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/assets/datascience-artifact-widget.html",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/assets/datascience-artifact-widget.html.gz.b64.part001",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/assets/datascience-artifact-widget.html.gz.b64.part002",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/assets/datascience-artifact-widget.html.gz.b64.part003",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/assets/datascience-artifact-widget.html.gz.b64.part004",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/assets/datascience-artifact-widget.html.gz.b64.part005",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/assets/datascience-artifact-widget.html.gz.b64.part006",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/assets/datascience-chart-widget.html",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/assets/datascience-chart-widget.html.gz.b64.part001",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/assets/datascience-chart-widget.html.gz.b64.part002",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/assets/datascience-chart-widget.html.gz.b64.part003",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/assets/datascience-chart-widget.html.gz.b64.part004",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/assets/datascience-chart-widget.html.gz.b64.part005",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/assets/datascience-chart-widget.html.gz.b64.part006",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/assets/datascience-chart-widget.html.gz.b64.part007",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/assets/datascience-small.svg",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/assets/datascience-table-widget.html",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/assets/datascience-table-widget.html.gz.b64.part001",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/assets/datascience-table-widget.html.gz.b64.part002",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/assets/datascience-table-widget.html.gz.b64.part003",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/assets/datascience-table-widget.html.gz.b64.part004",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/assets/datascience.png",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/assets/datascience.svg",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/mcp/server.cjs",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/package-lock.json",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/package.json",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/scripts/normalize-widget-assets.mjs",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/analyze-data-quality/SKILL.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/analyze-data-quality/agents/openai.yaml",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/analyze-data-quality/references/quality-checks.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-dashboard/SKILL.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-dashboard/agents/openai.yaml",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-dashboard/specifications/bi-platform-dashboard.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-dashboard/specifications/html-dashboard.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-dashboard/specifications/mcp-artifact-dashboard.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-dashboard/specifications/streamlit-dashboard.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/SKILL.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/agents/openai.yaml",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/assets/executive-report-shell.html",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/assets/technical-report-shell.html",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/report-to-google-doc/SKILL.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/report-to-google-doc/agents/openai.yaml",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/report-to-google-doc/scripts/report_to_google_doc/__init__.py",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/report-to-google-doc/scripts/report_to_google_doc/cli.py",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/report-to-google-doc/scripts/report_to_google_doc/constants.py",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/report-to-google-doc/scripts/report_to_google_doc/docx_writer.py",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/report-to-google-doc/scripts/report_to_google_doc/html_parser.py",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/report-to-google-doc/scripts/report_to_google_doc/model.py",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/report-to-google-doc/scripts/report_to_google_doc/plan.py",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/report-to-google-doc/scripts/report_to_google_doc/quality.py",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/report-to-google-doc/scripts/report_to_google_doc/rendering.py",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/report-to-google-doc/scripts/report_to_google_doc/table_utils.py",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/report-to-google-doc/scripts/report_to_google_doc/utils.py",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/report-to-google-doc/scripts/report_to_google_doc_plan.py",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/report-to-google-doc/tests/test_delivery_plan.py",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/report-to-google-slides/SKILL.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/report-to-google-slides/agents/openai.yaml",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/report-to-google-slides/scripts/report_to_google_slides.py",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/report-to-pdf/SKILL.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/report-to-pdf/agents/openai.yaml",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/specifications/executive-report.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/specifications/mcp-app-report.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/specifications/technical-report.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/design-kpis/SKILL.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/design-kpis/agents/openai.yaml",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/gather-business-context/SKILL.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/gather-business-context/agents/openai.yaml",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/index/SKILL.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/index/agents/openai.yaml",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/jupyter-notebooks/SKILL.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/jupyter-notebooks/agents/openai.yaml",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/kpi-reporting/SKILL.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/kpi-reporting/agents/openai.yaml",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/kpi-reporting/references/report-templates.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/market-sizing/SKILL.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/market-sizing/agents/openai.yaml",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/metric-diagnostics/SKILL.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/metric-diagnostics/agents/openai.yaml",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/product-business-analysis/SKILL.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/product-business-analysis/agents/openai.yaml",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/spreadsheets/SKILL.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/spreadsheets/agents/openai.yaml",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/spreadsheets/assets/file-spreadsheet.png",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/spreadsheets/charts.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/spreadsheets/references/artifact_tool_api.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/spreadsheets/style_guidelines.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/user-context/SKILL.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/user-context/agents/openai.yaml",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/user-context/plugin-author-config/automation-config.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/user-context/plugin-author-config/source-category-config.json",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/user-context/plugin-author-config/user-context-config.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/user-context/references/automation.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/user-context/references/onboarding-examples.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/user-context/references/onboarding-state-template.json",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/user-context/references/onboarding.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/user-context/references/semantic-layer/connector-playbook.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/user-context/references/semantic-layer/setup.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/user-context/references/semantic-layer/skill-template.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/user-context/references/semantic-layer/source-intake.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/user-context/references/semantic-layer/weekly-polling-automation.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/user-context/references/source-category-runtime.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/user-context/scripts/data_analytics_preflight.py",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/user-context/scripts/init_user_context_state.py",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/user-context/scripts/reset_user_context_state.py",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/user-context/scripts/validate_user_context_preflight.py",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/user-context/tests/test_state_helpers.py",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/validate-data/SKILL.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/validate-data/agents/openai.yaml",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/validate-data/references/validation-methods.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/visualize-data/SKILL.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/visualize-data/agents/openai.yaml",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/visualize-data/references/seaborn-templates.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/DESIGN.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app-core.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/App.tsx",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/analytics-layout.test.mjs",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/charting/ChartFrame.tsx",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/charting/ChartLegend.tsx",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/charting/ChartRenderer.tsx",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/charting/ChartTooltip.tsx",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/charting/chart-app-helpers.tsx",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/charting/chart-capabilities.ts",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/charting/chart-compatibility.ts",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/charting/chart-contract.ts",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/charting/chart-theme.ts",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/charting/chart-tokens.css",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/charting/chart-transforms.ts",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/fonts/SystemSansVariableVF.woff2",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/imageExport.ts",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/layout/AnalyticsLayoutCanvas.tsx",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/layout/RichMarkdown.tsx",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/layout/analyticsLayoutCore.ts",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/main.tsx",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/scripts/chart_contract.py",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/scripts/check_analytics_app_runtime_links.py",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/scripts/design_contract.py",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/scripts/package_utils.py",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/scripts/tests/test_package_utils.py",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/styles.css",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/tables/DataTable.d.ts",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/tables/DataTable.jsx",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/tables/data-table.css",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/tokens.css",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/types.ts",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/codex-style-contract.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/datascience-artifact-widget.html",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/datascience-artifact-widget.jsx",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/datascience-chart-widget.css",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/datascience-chart-widget.html",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/datascience-chart-widget.js",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/datascience-table-widget.css",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/datascience-table-widget.html",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/datascience-table-widget.js",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/mcp-host.js",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/recharts-config.js",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/recharts-renderer.jsx",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/sql-source-view.css",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/sql-source-view.js",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/styles/codex-theme.css",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/table-renderer.jsx",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/tests/chart-transforms.test.mjs",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/tests/funnel-smoke.html",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/tests/inline-widget-compare.html",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/tests/mcp-server.test.mjs",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/tests/native-style-contract.test.mjs",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/tests/recharts-config.test.mjs",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/tests/recharts-renderer.test.mjs",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/tests/rich-markdown.test.mjs",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/tests/widget-render-harness.html",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/tsconfig.json",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/vite.config.ts",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/git-commit-core",
+          "state": "symlink",
+          "sha256": "7f9d988adaf7cf1e2ea6ceea399356f4245ef151e9dc6e5158f5b852366bd9ff",
+          "bytes": 36
+        },
+        {
+          "path": ".codex/skills/grill-with-docs",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/improve-codebase-architecture",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/to-questionnaire",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/wait-what",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/yss-product-lifecycle/SKILL.md",
+          "state": "file",
+          "sha256": "1cace532144bae364b9d55a6ecf9f9b68e008b01fdc2599494210c9596a10f5d",
+          "bytes": 8145
+        },
+        {
+          "path": ".codex/skills/yss-product-lifecycle/references/external-input-questionnaire.md",
+          "state": "file",
+          "sha256": "7dc64bcac2c872f76773bea08bc165e498657aab519e24c1eb94aa0afe911680",
+          "bytes": 1427
+        },
+        {
+          "path": ".codex/skills/yss-product-lifecycle/references/matt-yss-adapter.md",
+          "state": "file",
+          "sha256": "50ac903f94829281e0d5fbc034f8127c071166b4c8a1beb3d3f1f9ad84c6da3b",
+          "bytes": 14645
+        },
+        {
+          "path": ".codex/skills/yss-product-lifecycle/references/orchestration-contract.yaml",
+          "state": "file",
+          "sha256": "90f16d61973700b73fd6908ee93b7eef4c00d6cf2d8cdb4ef874ed8329d6b5c4",
+          "bytes": 74416
+        },
+        {
+          "path": ".codex/skills/yss-product-lifecycle/references/orchestration.md",
+          "state": "file",
+          "sha256": "258777bb7baa681df945cca81846f9486955b7e00b1e25e54acbbba426f2bb0b",
+          "bytes": 26376
+        },
+        {
+          "path": ".codex/skills/yss-product-lifecycle/references/plan-requirements.md",
+          "state": "file",
+          "sha256": "04350517b5a0392a1de137d2bf7d530f27b31097c134d7371f45ddd3c6d4b8c2",
+          "bytes": 1737
+        },
+        {
+          "path": ".codex/skills/yss-product-lifecycle/references/state-model.md",
+          "state": "file",
+          "sha256": "5e28fe9aaf01609f7d32c1c47a63ec2ffad6bff3dea1f7fe7e564b8249407674",
+          "bytes": 10914
+        },
+        {
+          "path": ".cursor/skills/git-commit-core",
+          "state": "symlink",
+          "sha256": "7f9d988adaf7cf1e2ea6ceea399356f4245ef151e9dc6e5158f5b852366bd9ff",
+          "bytes": 36
+        },
+        {
+          "path": ".cursor/skills/grill-with-docs",
+          "state": "deleted"
+        },
+        {
+          "path": ".cursor/skills/improve-codebase-architecture",
+          "state": "deleted"
+        },
+        {
+          "path": ".cursor/skills/to-questionnaire",
+          "state": "deleted"
+        },
+        {
+          "path": ".cursor/skills/wait-what",
+          "state": "deleted"
+        },
+        {
+          "path": ".pi/skills/git-commit-core",
+          "state": "symlink",
+          "sha256": "7f9d988adaf7cf1e2ea6ceea399356f4245ef151e9dc6e5158f5b852366bd9ff",
+          "bytes": 36
+        },
+        {
+          "path": ".pi/skills/grill-with-docs",
+          "state": "deleted"
+        },
+        {
+          "path": ".pi/skills/improve-codebase-architecture",
+          "state": "deleted"
+        },
+        {
+          "path": ".pi/skills/to-questionnaire",
+          "state": "deleted"
+        },
+        {
+          "path": ".pi/skills/wait-what",
+          "state": "deleted"
+        },
+        {
+          "path": ".template-source/README.md",
+          "state": "file",
+          "sha256": "5bbcbdd50e9739fb8ab92ee9e83fd5873c052606f6ce769c8225a836589cc6dd",
+          "bytes": 3868
+        },
+        {
+          "path": ".template-source/agents/skills-maintenance.md",
+          "state": "file",
+          "sha256": "18311b8097dc3900f0cba2cdf9cc0589a822900c4af8381502603db73a738e37",
+          "bytes": 11524
+        },
+        {
+          "path": ".template-source/distribution/strategic-handoff-tools.lock.json",
+          "state": "file",
+          "sha256": "187e584b3bec8e50d94af9d0846b6fa5a634559eafa2d163825f73d252f67709",
+          "bytes": 42942
+        },
+        {
+          "path": ".template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+          "state": "file",
+          "sha256": "db2932a7f8e1281a470511251f836116fdf5b271aab27089b38d9279e5bbac33",
+          "bytes": 2328
+        },
+        {
+          "path": ".template-source/process/github-workflows.md",
+          "state": "file",
+          "sha256": "ba73a17c0510ab9dc43e57af8ce266541a6d7da10a447f0b363a486c44db6a36",
+          "bytes": 5615
+        },
+        {
+          "path": ".template-source/process/template-engineering-overview.md",
+          "state": "file",
+          "sha256": "af64690fe9b52b1589ca7da7d6ac3bf8f0ca332d919f757576783034c768b3c6",
+          "bytes": 7092
+        },
+        {
+          "path": ".template-source/process/template-verification-profiles.yaml",
+          "state": "file",
+          "sha256": "06868346dd93b7947920edb9b604ddaa94d286f4a455a746bc05d5ec09fc528e",
+          "bytes": 33071
+        },
+        {
+          "path": ".template-source/profile-skill-patches/backend/prototype.patch",
+          "state": "file",
+          "sha256": "250f9c2f64f15dbe8e0900d13c1ff0da66149d9b88304aeac2fc5f98ad1939ef",
+          "bytes": 9149
+        },
+        {
+          "path": ".template-source/profile-skill-patches/backend/yss-implementation-contract-compiler.patch",
+          "state": "file",
+          "sha256": "306071538f9ce3b768114855d755023a56c46e0dd5dd4949983ba0cd2213882b",
+          "bytes": 79398
+        },
+        {
+          "path": ".template-source/profile-skill-patches/frontend/yss-implementation-contract-compiler.patch",
+          "state": "file",
+          "sha256": "a7489f3802df3cadcba697754d45fa6ff7a7f247c58b28d7a807210591ba3941",
+          "bytes": 89621
+        },
+        {
+          "path": ".template-source/profile-skill-sync.json",
+          "state": "file",
+          "sha256": "ed724606db7d4ee3e43bc5888bdfa11de343bd8ad0d72bb4283edc71fd6714ae",
+          "bytes": 20257
+        },
+        {
+          "path": ".template-source/tooling/node/test/retirement.test.mjs",
+          "state": "file",
+          "sha256": "fe2cf77d3c4df2483d7d7c80790966f343b1261235c6c8619e9d263e377f59d3",
+          "bytes": 2198
+        },
+        {
+          "path": ".template-source/wiki/wiki/Matt技能体系.md",
+          "state": "file",
+          "sha256": "3821f88955c4c1d641e4c75215915683ba9a613d0e29a1e075cedb747f9588b0",
+          "bytes": 2502
+        },
+        {
+          "path": ".template-source/wiki/wiki/Spec基线.md",
+          "state": "file",
+          "sha256": "bf51d902e3dab704ae557dbfcbe3f72f6e9ca5a699b7cf429a3cf774971b9a6f",
+          "bytes": 3292
+        },
+        {
+          "path": ".template-source/wiki/wiki/产品研发生命周期.md",
+          "state": "file",
+          "sha256": "e7d429ecf4e193291f85e5b9ecf06cbbe2482efea2a03abd051688605f5ac105",
+          "bytes": 3142
+        },
+        {
+          "path": ".template-source/wiki/wiki/影响面分诊与流程裁剪.md",
+          "state": "file",
+          "sha256": "30eda4eb99e08db9fe3664efc9c510958083155319f3527254a70b62a0cb289e",
+          "bytes": 3064
+        },
+        {
+          "path": ".template-spec/agents/README.md",
+          "state": "file",
+          "sha256": "e28e52ee1eccff3b53ea6e355aaee60446a13ec880b36efca9aa0d25256ff370",
+          "bytes": 1371
+        },
+        {
+          "path": ".template-spec/agents/digital-human-roles.yaml",
+          "state": "file",
+          "sha256": "fc1e093bc4708f175e69cd6d961ea12854f66835a9cb3d9a15b4ef7dd0657c00",
+          "bytes": 16727
+        },
+        {
+          "path": ".template-spec/agents/domain.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".template-spec/agents/skill-migrations.md",
+          "state": "file",
+          "sha256": "6a989f3aae88123143836cb0016191d310569138e3b193201bb1988e9dfd73a9",
+          "bytes": 9904
+        },
+        {
+          "path": ".template-spec/agents/yss-skill-registry.yaml",
+          "state": "file",
+          "sha256": "68fb6acd2912244b0fe86b15f5ca67bc4237ef785e70ef681fc42b54ea328cc4",
+          "bytes": 33716
+        },
+        {
+          "path": ".template-spec/architecture/README.md",
+          "state": "file",
+          "sha256": "f38769354bfa6a10180c2b0e202e4878e06700ea7bbbda422c5cd8845b59485c",
+          "bytes": 3617
+        },
+        {
+          "path": ".template-spec/plan/templates/competitive-analysis-template.md",
+          "state": "file",
+          "sha256": "39f12209a40ab49a2848e34d1f85571306895ef593ef12f1b4891e2353853037",
+          "bytes": 6450
+        },
+        {
+          "path": "AGENTS.md",
+          "state": "file",
+          "sha256": "6b26f6f3a93d20280efe42f339129bfe007e84f8f950fb4ef6d06f49fa13f024",
+          "bytes": 9905
+        },
+        {
+          "path": "CONTEXT.md",
+          "state": "file",
+          "sha256": "a27ab85f4c733a609948fba4bc5dafa074453ae16d32ceebc773d12fdbffe6b7",
+          "bytes": 24562
+        },
+        {
+          "path": "README.md",
+          "state": "file",
+          "sha256": "c02a76c8afbdbd7d87c10454bea35b00d2c9b30018f832520381cdcb3499827e",
+          "bytes": 8324
+        },
+        {
+          "path": "scripts/generate-yss-skill-boundaries",
+          "state": "file",
+          "sha256": "77180bcd65d648f7fdca7ed859c8765df46550d479e7a9a49d460d0448349f25",
+          "bytes": 3179
+        },
+        {
+          "path": "scripts/instantiate-harness",
+          "state": "file",
+          "sha256": "f5708ef3f25504c3847a049b6a2cbd3164fac0d6f643819756216f7f539a115a",
+          "bytes": 556
+        },
+        {
+          "path": "scripts/lib/read-only-intake.mjs",
+          "state": "file",
+          "sha256": "049d414d064f098a0a7c49a7d1e541cc2a17f9a3613e151b5370b81c0b033b64",
+          "bytes": 11824
+        },
+        {
+          "path": "scripts/lib/scenario-checks.mjs",
+          "state": "file",
+          "sha256": "2aede1ba5fbb4da7ca1e59c116394cbdcd624f71c52b9012fd04aac1215c853c",
+          "bytes": 47753
+        },
+        {
+          "path": "scripts/lib/skill-registry.mjs",
+          "state": "file",
+          "sha256": "0e9d5b5ca0a94579ac672a2144383bb20f9f5a94234c8f437039a0b673c544ad",
+          "bytes": 48281
+        },
+        {
+          "path": "scripts/lib/skill-supply-chain.mjs",
+          "state": "file",
+          "sha256": "d67470908a20997c3d485b6a1b8bdb2b6d553f62721657688f57d5e9f8deb233",
+          "bytes": 23952
+        },
+        {
+          "path": "scripts/sync-strategic-handoff-tools",
+          "state": "file",
+          "sha256": "f345254829f5944acfd3cc647f6a33e3e057db80f5196efa409c09b6d60b09c0",
+          "bytes": 18119
+        },
+        {
+          "path": "scripts/verify-grill-with-docs-context-scenarios",
+          "state": "deleted"
+        },
+        {
+          "path": "scripts/verify-plan-requirements-context-scenarios",
+          "state": "file",
+          "sha256": "0c4cc8193e42e0160bd5d7a912a4bddb9c818211a0a508fc35b922fc2341985a",
+          "bytes": 1086
+        },
+        {
+          "path": "scripts/verify-retired-skill-ids",
+          "state": "file",
+          "sha256": "f3542a8d3f04a661db9b96bd05c8ef02928286907c0e1143e35e21bf76cfecb3",
+          "bytes": 6016
+        },
+        {
+          "path": "scripts/verify-template-verification-scenarios",
+          "state": "file",
+          "sha256": "ae2ae81c2af4b2f6709815e7df6cec53fb729f3f964fbf770aca2d158dc68d2f",
+          "bytes": 11115
+        },
+        {
+          "path": "skills-lock.json",
+          "state": "file",
+          "sha256": "5e886d3605f1516b9c6f7b4249595337d3c18c335b551157c07d9dadd0cac225",
+          "bytes": 40973
+        }
+      ]
+    },
+    {
+      "repository": "submodules/yss-harness-design-agent",
+      "head": "98b2d5682b1ded9f35b9773929006d225bc0c305",
+      "branch": "main",
+      "changes": [
+        {
+          "path": ".agents/skills/ask-matt/SKILL.md",
+          "state": "file",
+          "sha256": "0f7d6851eff95eda7d1582683da83e24ac167c4c216bb4b6763772687dd07a16",
+          "bytes": 1437
+        },
+        {
+          "path": ".agents/skills/grill-with-docs/SKILL.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".agents/skills/grill-with-docs/agents/openai.yaml",
+          "state": "deleted"
+        },
+        {
+          "path": ".agents/skills/yss-strategic-design/SKILL.md",
+          "state": "file",
+          "sha256": "ce545554a3b091058bd86b0bfe296e8944d635422e1a750580f224dd3a936540",
+          "bytes": 15584
+        },
+        {
+          "path": ".agents/skills/yss-strategic-design/references/external-input-questionnaire.md",
+          "state": "file",
+          "sha256": "7dc64bcac2c872f76773bea08bc165e498657aab519e24c1eb94aa0afe911680",
+          "bytes": 1427
+        },
+        {
+          "path": ".agents/skills/yss-strategic-design/references/matt-yss-adapter.md",
+          "state": "file",
+          "sha256": "03d20dcfdc596339be8ef9607f68a69f0fa752674035f1269dde51d8781388b7",
+          "bytes": 12111
+        },
+        {
+          "path": ".agents/skills/yss-strategic-design/references/orchestration-contract.yaml",
+          "state": "file",
+          "sha256": "4172e58280d56eb1b13d9048b8381ee4558e363c80f053973cc651ce55a8a960",
+          "bytes": 29523
+        },
+        {
+          "path": ".agents/skills/yss-strategic-design/references/orchestration.md",
+          "state": "file",
+          "sha256": "1ea32d9c353d9414b61a184e98dd7baa9a9a6a00ba1942f131e8987771e0e1e0",
+          "bytes": 12161
+        },
+        {
+          "path": ".agents/skills/yss-strategic-design/references/plan-requirements.md",
+          "state": "file",
+          "sha256": "8f43b6eea7b84638218cc05217cc70629fe368107482ec0048218bbedbd810ff",
+          "bytes": 1736
+        },
+        {
+          "path": ".agents/skills/yss-strategic-design/references/state-model.md",
+          "state": "file",
+          "sha256": "34bea41bc90c885de3e7f4026f604939501cee14a0912f58f980ae2b04e159b3",
+          "bytes": 6583
+        },
+        {
+          "path": ".codex/skills/grill-with-docs",
+          "state": "deleted"
+        },
+        {
+          "path": ".cursor/skills/grill-with-docs",
+          "state": "deleted"
+        },
+        {
+          "path": ".pi/skills/grill-with-docs",
+          "state": "deleted"
+        },
+        {
+          "path": ".template-source/agents/skills-maintenance.md",
+          "state": "file",
+          "sha256": "c9dc9702e6f6503ac9c43a00f256f72a2eae58506cd6bc88e30e585893699415",
+          "bytes": 7322
+        },
+        {
+          "path": ".template-source/distribution/strategic-handoff-tools.lock.json",
+          "state": "file",
+          "sha256": "b780983e3a3d0479e2b0a691ea1efa0cf1a07000021372521baa34af8e7e7b7e",
+          "bytes": 36912
+        },
+        {
+          "path": ".template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+          "state": "file",
+          "sha256": "eb78cb454eb7b5da5e766e9b28033b56d33f66614e57f67114e78d37da91e241",
+          "bytes": 1097
+        },
+        {
+          "path": ".template-source/process/template-verification-profiles.yaml",
+          "state": "file",
+          "sha256": "c589b016e6e69ca596ff3270084f3015f6dcf14bb0127851968944f291ce3f0b",
+          "bytes": 11898
+        },
+        {
+          "path": ".template-source/wiki/wiki/Agent入口规则.md",
+          "state": "file",
+          "sha256": "06c94220f7bcfe17c708b1f1a1c4b6dca0ac70da5bf77dc92241ff577f4299ef",
+          "bytes": 3982
+        },
+        {
+          "path": ".template-source/wiki/wiki/Matt技能体系.md",
+          "state": "file",
+          "sha256": "ffdec50e68663e76ba72b82b26e0accd8a7d62498e5a31c4440ae3fbac4c18cc",
+          "bytes": 2566
+        },
+        {
+          "path": ".template-source/wiki/wiki/Spec基线.md",
+          "state": "file",
+          "sha256": "bf51d902e3dab704ae557dbfcbe3f72f6e9ca5a699b7cf429a3cf774971b9a6f",
+          "bytes": 3292
+        },
+        {
+          "path": ".template-source/wiki/wiki/产品研发生命周期.md",
+          "state": "file",
+          "sha256": "f1a922ea55bad108661e27887035ac17ada154d09c0ed404963d73b104ecdc9d",
+          "bytes": 3116
+        },
+        {
+          "path": ".template-source/wiki/wiki/影响面分诊与流程裁剪.md",
+          "state": "file",
+          "sha256": "30eda4eb99e08db9fe3664efc9c510958083155319f3527254a70b62a0cb289e",
+          "bytes": 3064
+        },
+        {
+          "path": ".template-spec/agents/README.md",
+          "state": "file",
+          "sha256": "1211f27c0540b03815b3356cf32bac9d70c32c0b0554936aa0cc024b9462d204",
+          "bytes": 1245
+        },
+        {
+          "path": ".template-spec/agents/digital-human-roles.yaml",
+          "state": "file",
+          "sha256": "4e991e13711a99622e727ed6e14d2ddb15a6fd791233f13c3f38e57e439c7679",
+          "bytes": 10093
+        },
+        {
+          "path": ".template-spec/agents/domain.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".template-spec/agents/skill-migrations.md",
+          "state": "file",
+          "sha256": "84937ac09ac862f72014b74e53fdc66f2ffaf5108d74e2de9ac5c623eccd19bf",
+          "bytes": 2699
+        },
+        {
+          "path": ".template-spec/agents/yss-skill-registry.yaml",
+          "state": "file",
+          "sha256": "c931b50d8bacc15112b18c5e73db33fd5600e92c2d743695d213b3dc03f8b9ed",
+          "bytes": 12760
+        },
+        {
+          "path": ".template-spec/architecture/README.md",
+          "state": "file",
+          "sha256": "3686459719f549491bed2bde41fab36310ef499865106549540b14d6d2dd0940",
+          "bytes": 3612
+        },
+        {
+          "path": ".template-spec/plan/templates/competitive-analysis-template.md",
+          "state": "file",
+          "sha256": "7ba4ef6f7cbf027c27741f31c666bb4f6d6229e25c68ce88264e7ab240cb02dd",
+          "bytes": 6430
+        },
+        {
+          "path": "AGENTS.md",
+          "state": "file",
+          "sha256": "96de5485266d65140c02a89eceb111f28367c1136a4abe55f1800c9c36f14190",
+          "bytes": 8523
+        },
+        {
+          "path": "CONTEXT.md",
+          "state": "file",
+          "sha256": "004d1a46d58013404a8de8f8c6e4316d87ef148c9b85da6caaf85e1737fee36e",
+          "bytes": 21461
+        },
+        {
+          "path": "scripts/instantiate-harness",
+          "state": "file",
+          "sha256": "f5708ef3f25504c3847a049b6a2cbd3164fac0d6f643819756216f7f539a115a",
+          "bytes": 556
+        },
+        {
+          "path": "scripts/lib/read-only-intake.mjs",
+          "state": "file",
+          "sha256": "049d414d064f098a0a7c49a7d1e541cc2a17f9a3613e151b5370b81c0b033b64",
+          "bytes": 11824
+        },
+        {
+          "path": "scripts/lib/scenario-checks.mjs",
+          "state": "file",
+          "sha256": "f3ddd6818696ea2c9fdc92174d1b9175d0575ad5c38fab24de9b0f79ae917930",
+          "bytes": 35100
+        },
+        {
+          "path": "scripts/lib/skill-supply-chain.mjs",
+          "state": "file",
+          "sha256": "7a531d800139d6d7815c303b45ea771c0033ac0523129e0e6b459e3353e25f2c",
+          "bytes": 13712
+        },
+        {
+          "path": "scripts/verify-grill-with-docs-context-scenarios",
+          "state": "deleted"
+        },
+        {
+          "path": "scripts/verify-plan-requirements-context-scenarios",
+          "state": "file",
+          "sha256": "48caaa5fd2824da4ea2f885df1a9bd242ba53b364c2ef4bce2d3ae5901acabd6",
+          "bytes": 1084
+        },
+        {
+          "path": "scripts/verify-template-verification-scenarios",
+          "state": "file",
+          "sha256": "f42845a38f5434073103395f9671a28119bb59ce28185c8ddd22ca8b7d5ed273",
+          "bytes": 4305
+        },
+        {
+          "path": "skills-lock.json",
+          "state": "file",
+          "sha256": "8fa9b738b2728710d7b228ff4c635d915956f59d6734a72a283e827e16fa873d",
+          "bytes": 12842
+        }
+      ]
+    },
+    {
+      "repository": "submodules/yss-harness-backend-agent",
+      "head": "cbded26aea8b4104f87b2377922bc3416befb0a6",
+      "branch": "main",
+      "changes": [
+        {
+          "path": ".agents/skills/codebase-design/SKILL.md",
+          "state": "file",
+          "sha256": "55219edb521607cab763f7dae7f9510e2b7a0a91ee4d7da2b5db7d5849376e52",
+          "bytes": 7547
+        },
+        {
+          "path": ".agents/skills/codebase-design/references/HTML-REPORT.md",
+          "state": "file",
+          "sha256": "0b0936104158abeef7246ff6cbabefa4dc055f17589f2833f2d93001421910a1",
+          "bytes": 6685
+        },
+        {
+          "path": ".agents/skills/codebase-design/references/architecture-audit.md",
+          "state": "file",
+          "sha256": "48debe3fb1d55fcc9244213102d860df8cef8dc5afd2b5a82147d4012198842d",
+          "bytes": 6189
+        },
+        {
+          "path": ".agents/skills/git-commit-core/SKILL.md",
+          "state": "file",
+          "sha256": "6ed21d57222bbf1d84c47c6f3bd515441e710d0a7917798de7d805aa5926d5c7",
+          "bytes": 1937
+        },
+        {
+          "path": ".agents/skills/grill-with-docs/SKILL.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".agents/skills/grill-with-docs/agents/openai.yaml",
+          "state": "deleted"
+        },
+        {
+          "path": ".agents/skills/harness-orchestrator/SKILL.md",
+          "state": "file",
+          "sha256": "fc33687d623998be01926ae106fdac9158f4a412c24c716e646a0c2acce77ff5",
+          "bytes": 6300
+        },
+        {
+          "path": ".agents/skills/harness-orchestrator/references/external-input-questionnaire.md",
+          "state": "file",
+          "sha256": "7dc64bcac2c872f76773bea08bc165e498657aab519e24c1eb94aa0afe911680",
+          "bytes": 1427
+        },
+        {
+          "path": ".agents/skills/harness-orchestrator/references/plan-requirements.md",
+          "state": "file",
+          "sha256": "31ae696c4815c5e76b47dfb3f31be5a2cd055c1bad5b9b0f5255edd2ee4db2f7",
+          "bytes": 1748
+        },
+        {
+          "path": ".agents/skills/improve-codebase-architecture/HTML-REPORT.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".agents/skills/improve-codebase-architecture/SKILL.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".agents/skills/improve-codebase-architecture/agents/openai.yaml",
+          "state": "deleted"
+        },
+        {
+          "path": ".agents/skills/java-backend-commit/SKILL.md",
+          "state": "file",
+          "sha256": "94deab2531bd2932647116d58bb02cbeadfb85151323cebf4cd1b02b129f4a18",
+          "bytes": 2137
+        },
+        {
+          "path": ".agents/skills/setup-matt-pocock-skills/SKILL.md",
+          "state": "file",
+          "sha256": "c9f900395aa3cf2a643d3b6b639641813deea074844d6c9aef32dbd1c1f84b2c",
+          "bytes": 7842
+        },
+        {
+          "path": ".agents/skills/setup-matt-pocock-skills/domain.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".agents/skills/to-questionnaire/SKILL.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".agents/skills/to-questionnaire/agents/openai.yaml",
+          "state": "deleted"
+        },
+        {
+          "path": ".agents/skills/wait-what/SKILL.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".agents/skills/wait-what/agents/openai.yaml",
+          "state": "deleted"
+        },
+        {
+          "path": ".agents/skills/yss-implementation-contract-compiler/references/boundaries.md",
+          "state": "file",
+          "sha256": "7174eceb8b5a73a5b962b427b19eafb93008ff0320087a8c393cdcc24c7fd7e7",
+          "bytes": 12617
+        },
+        {
+          "path": ".codex/skills/git-commit-core",
+          "state": "symlink",
+          "sha256": "7f9d988adaf7cf1e2ea6ceea399356f4245ef151e9dc6e5158f5b852366bd9ff",
+          "bytes": 36
+        },
+        {
+          "path": ".codex/skills/grill-with-docs",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/improve-codebase-architecture",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/to-questionnaire",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/wait-what",
+          "state": "deleted"
+        },
+        {
+          "path": ".cursor/skills/git-commit-core",
+          "state": "symlink",
+          "sha256": "7f9d988adaf7cf1e2ea6ceea399356f4245ef151e9dc6e5158f5b852366bd9ff",
+          "bytes": 36
+        },
+        {
+          "path": ".cursor/skills/grill-with-docs",
+          "state": "deleted"
+        },
+        {
+          "path": ".cursor/skills/improve-codebase-architecture",
+          "state": "deleted"
+        },
+        {
+          "path": ".cursor/skills/to-questionnaire",
+          "state": "deleted"
+        },
+        {
+          "path": ".cursor/skills/wait-what",
+          "state": "deleted"
+        },
+        {
+          "path": ".pi/skills/git-commit-core",
+          "state": "symlink",
+          "sha256": "7f9d988adaf7cf1e2ea6ceea399356f4245ef151e9dc6e5158f5b852366bd9ff",
+          "bytes": 36
+        },
+        {
+          "path": ".pi/skills/grill-with-docs",
+          "state": "deleted"
+        },
+        {
+          "path": ".pi/skills/improve-codebase-architecture",
+          "state": "deleted"
+        },
+        {
+          "path": ".pi/skills/to-questionnaire",
+          "state": "deleted"
+        },
+        {
+          "path": ".pi/skills/wait-what",
+          "state": "deleted"
+        },
+        {
+          "path": ".template-source/agents/skills-maintenance.md",
+          "state": "file",
+          "sha256": "c5bfcf2400adb22a80545407f33f2da8420d170a3545d4e912dd2928b7086c77",
+          "bytes": 7522
+        },
+        {
+          "path": ".template-source/distribution/strategic-handoff-tools.lock.json",
+          "state": "file",
+          "sha256": "5ef8e5c9106788fde4d3b34b4b74af37093afdf9b9eeefee8734d1680d43fc24",
+          "bytes": 43342
+        },
+        {
+          "path": ".template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+          "state": "file",
+          "sha256": "29453f712c4098742cb3d4b95854f69e925e35e0fcbd7917b4b82f1cd152c83c",
+          "bytes": 1215
+        },
+        {
+          "path": ".template-source/wiki/wiki/Agent入口规则.md",
+          "state": "file",
+          "sha256": "473fd39f836d7ee2203e7f3f0f8964f9e7941172605b4273c87c60e4ca54d73e",
+          "bytes": 3638
+        },
+        {
+          "path": ".template-source/wiki/wiki/Matt技能体系.md",
+          "state": "file",
+          "sha256": "caa1279513cf833fc3c23bb46872ad1eb9e70b2429d38b90bcabaf7f410d2b3c",
+          "bytes": 1599
+        },
+        {
+          "path": ".template-source/wiki/wiki/Spec基线.md",
+          "state": "file",
+          "sha256": "67ce27813f4c9b2c1d759151215b017529665df436b0f60015f7536488c0216e",
+          "bytes": 1657
+        },
+        {
+          "path": ".template-source/wiki/wiki/产品研发生命周期.md",
+          "state": "file",
+          "sha256": "d8e4b588be304f06d475a3ed10609668901eeb955466cdef25397d085e2863d7",
+          "bytes": 2424
+        },
+        {
+          "path": ".template-source/wiki/wiki/影响面分诊与流程裁剪.md",
+          "state": "file",
+          "sha256": "e021ae4f7856844b2c3f54508dca809a7562d1cfcdd1d8003bb8db20876b3170",
+          "bytes": 3900
+        },
+        {
+          "path": ".template-spec/agents/README.md",
+          "state": "file",
+          "sha256": "e41b78e57bcf7c843c78b4a00c98a510175a653dd85230f7c7d708e36341cc0a",
+          "bytes": 1255
+        },
+        {
+          "path": ".template-spec/agents/domain.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".template-spec/agents/skill-migrations.md",
+          "state": "file",
+          "sha256": "f8053de16b6f6e3e341d37c861d6a8ddc0e275cee9a1c256673ad4b728f22ae7",
+          "bytes": 6563
+        },
+        {
+          "path": ".template-spec/agents/yss-skill-registry.yaml",
+          "state": "file",
+          "sha256": "76bf2654debd7f0d16e376a49d4e0fde9bc195af9bdf9eb3470c2737e5c836a9",
+          "bytes": 29492
+        },
+        {
+          "path": ".template-spec/architecture/README.md",
+          "state": "file",
+          "sha256": "bfebf5a09ca081a5782356388953cf035e597df8f7460470f72940483170ba5a",
+          "bytes": 3617
+        },
+        {
+          "path": ".template-spec/discovery/templates/competitive-analysis-template.md",
+          "state": "file",
+          "sha256": "7ba4ef6f7cbf027c27741f31c666bb4f6d6229e25c68ce88264e7ab240cb02dd",
+          "bytes": 6430
+        },
+        {
+          "path": ".template-spec/process/harness-profile.yaml",
+          "state": "file",
+          "sha256": "ff938a69431e31eb9977f3a1503ee07423b5118edf22d99e801b8289da162e60",
+          "bytes": 4040
+        },
+        {
+          "path": "AGENTS.md",
+          "state": "file",
+          "sha256": "2a9f7cfd33360588c7f4b39040cbb870dbebdbd6476924e76c33e268629e87f3",
+          "bytes": 10621
+        },
+        {
+          "path": "CONTEXT.md",
+          "state": "file",
+          "sha256": "2d825597ae9e77ad66a1cb823c5da364d5615b9acb097e1cf53a3a277fd34cef",
+          "bytes": 21958
+        },
+        {
+          "path": "scripts/generate-yss-skill-boundaries",
+          "state": "file",
+          "sha256": "77180bcd65d648f7fdca7ed859c8765df46550d479e7a9a49d460d0448349f25",
+          "bytes": 3179
+        },
+        {
+          "path": "scripts/instantiate-harness",
+          "state": "file",
+          "sha256": "f5708ef3f25504c3847a049b6a2cbd3164fac0d6f643819756216f7f539a115a",
+          "bytes": 556
+        },
+        {
+          "path": "scripts/lib/read-only-intake.mjs",
+          "state": "file",
+          "sha256": "049d414d064f098a0a7c49a7d1e541cc2a17f9a3613e151b5370b81c0b033b64",
+          "bytes": 11824
+        },
+        {
+          "path": "scripts/lib/skill-registry.mjs",
+          "state": "file",
+          "sha256": "0e9d5b5ca0a94579ac672a2144383bb20f9f5a94234c8f437039a0b673c544ad",
+          "bytes": 48281
+        },
+        {
+          "path": "scripts/lib/skill-supply-chain.mjs",
+          "state": "file",
+          "sha256": "d67470908a20997c3d485b6a1b8bdb2b6d553f62721657688f57d5e9f8deb233",
+          "bytes": 23952
+        },
+        {
+          "path": "skills-lock.json",
+          "state": "file",
+          "sha256": "6a89473a85d9bad79329d856871332e1af10f3735266b7ebe38c27e58122cfa2",
+          "bytes": 28843
+        }
+      ]
+    },
+    {
+      "repository": "submodules/yss-harness-frontend-agent",
+      "head": "2aa574462cb55815421e03cd394da02e06d9948c",
+      "branch": "main",
+      "changes": [
+        {
+          "path": ".agents/skills/codebase-design/SKILL.md",
+          "state": "file",
+          "sha256": "55219edb521607cab763f7dae7f9510e2b7a0a91ee4d7da2b5db7d5849376e52",
+          "bytes": 7547
+        },
+        {
+          "path": ".agents/skills/codebase-design/references/HTML-REPORT.md",
+          "state": "file",
+          "sha256": "0b0936104158abeef7246ff6cbabefa4dc055f17589f2833f2d93001421910a1",
+          "bytes": 6685
+        },
+        {
+          "path": ".agents/skills/codebase-design/references/architecture-audit.md",
+          "state": "file",
+          "sha256": "48debe3fb1d55fcc9244213102d860df8cef8dc5afd2b5a82147d4012198842d",
+          "bytes": 6189
+        },
+        {
+          "path": ".agents/skills/frontend-commit/SKILL.md",
+          "state": "file",
+          "sha256": "a767184f6e4a0ed36f290685f44cdf554dd313609ad4d762871ed6de810f7fa2",
+          "bytes": 1942
+        },
+        {
+          "path": ".agents/skills/git-commit-core/SKILL.md",
+          "state": "file",
+          "sha256": "6ed21d57222bbf1d84c47c6f3bd515441e710d0a7917798de7d805aa5926d5c7",
+          "bytes": 1937
+        },
+        {
+          "path": ".agents/skills/grill-with-docs/SKILL.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".agents/skills/grill-with-docs/agents/openai.yaml",
+          "state": "deleted"
+        },
+        {
+          "path": ".agents/skills/harness-orchestrator/SKILL.md",
+          "state": "file",
+          "sha256": "ef82add8cf786343a7065a516d7c8be284bd69acd52d40f13e7ecf119c56e0ce",
+          "bytes": 4307
+        },
+        {
+          "path": ".agents/skills/harness-orchestrator/references/external-input-questionnaire.md",
+          "state": "file",
+          "sha256": "7dc64bcac2c872f76773bea08bc165e498657aab519e24c1eb94aa0afe911680",
+          "bytes": 1427
+        },
+        {
+          "path": ".agents/skills/harness-orchestrator/references/plan-requirements.md",
+          "state": "file",
+          "sha256": "31ae696c4815c5e76b47dfb3f31be5a2cd055c1bad5b9b0f5255edd2ee4db2f7",
+          "bytes": 1748
+        },
+        {
+          "path": ".agents/skills/improve-codebase-architecture/HTML-REPORT.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".agents/skills/improve-codebase-architecture/SKILL.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".agents/skills/improve-codebase-architecture/agents/openai.yaml",
+          "state": "deleted"
+        },
+        {
+          "path": ".agents/skills/prototype/LOGIC.md",
+          "state": "file",
+          "sha256": "2d89f03b3514a5cfd0a37aa7bf817cc129df2500edc20b0706ca9cb238f211ae",
+          "bytes": 6107
+        },
+        {
+          "path": ".agents/skills/prototype/SKILL.md",
+          "state": "file",
+          "sha256": "dd709aedaacb433d65840dfcec570e82a639ee53aaf72c237be8df2462e3375c",
+          "bytes": 791
+        },
+        {
+          "path": ".agents/skills/prototype/UI.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".agents/skills/setup-matt-pocock-skills/SKILL.md",
+          "state": "file",
+          "sha256": "c9f900395aa3cf2a643d3b6b639641813deea074844d6c9aef32dbd1c1f84b2c",
+          "bytes": 7842
+        },
+        {
+          "path": ".agents/skills/setup-matt-pocock-skills/domain.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".agents/skills/to-questionnaire/SKILL.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".agents/skills/to-questionnaire/agents/openai.yaml",
+          "state": "deleted"
+        },
+        {
+          "path": ".agents/skills/wait-what/SKILL.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".agents/skills/wait-what/agents/openai.yaml",
+          "state": "deleted"
+        },
+        {
+          "path": ".agents/skills/yss-implementation-contract-compiler/references/boundaries.md",
+          "state": "file",
+          "sha256": "06e4dfd966602994e79d9e40e93bf63d8bab0dae09699125c05233d0637f7235",
+          "bytes": 4002
+        },
+        {
+          "path": ".codex/skills/data-analytics/.app.json",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/.codex-plugin/plugin.json",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/.gitignore",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/.mcp.json",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/AGENTS.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/DEPENDENCIES.MD",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/README.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/assets/datascience-artifact-widget.html",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/assets/datascience-artifact-widget.html.gz.b64.part001",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/assets/datascience-artifact-widget.html.gz.b64.part002",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/assets/datascience-artifact-widget.html.gz.b64.part003",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/assets/datascience-artifact-widget.html.gz.b64.part004",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/assets/datascience-artifact-widget.html.gz.b64.part005",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/assets/datascience-artifact-widget.html.gz.b64.part006",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/assets/datascience-chart-widget.html",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/assets/datascience-chart-widget.html.gz.b64.part001",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/assets/datascience-chart-widget.html.gz.b64.part002",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/assets/datascience-chart-widget.html.gz.b64.part003",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/assets/datascience-chart-widget.html.gz.b64.part004",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/assets/datascience-chart-widget.html.gz.b64.part005",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/assets/datascience-chart-widget.html.gz.b64.part006",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/assets/datascience-chart-widget.html.gz.b64.part007",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/assets/datascience-small.svg",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/assets/datascience-table-widget.html",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/assets/datascience-table-widget.html.gz.b64.part001",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/assets/datascience-table-widget.html.gz.b64.part002",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/assets/datascience-table-widget.html.gz.b64.part003",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/assets/datascience-table-widget.html.gz.b64.part004",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/assets/datascience.png",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/assets/datascience.svg",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/mcp/server.cjs",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/package-lock.json",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/package.json",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/scripts/normalize-widget-assets.mjs",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/analyze-data-quality/SKILL.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/analyze-data-quality/agents/openai.yaml",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/analyze-data-quality/references/quality-checks.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-dashboard/SKILL.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-dashboard/agents/openai.yaml",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-dashboard/specifications/bi-platform-dashboard.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-dashboard/specifications/html-dashboard.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-dashboard/specifications/mcp-artifact-dashboard.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-dashboard/specifications/streamlit-dashboard.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/SKILL.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/agents/openai.yaml",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/assets/executive-report-shell.html",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/assets/technical-report-shell.html",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/report-to-google-doc/SKILL.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/report-to-google-doc/agents/openai.yaml",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/report-to-google-doc/scripts/report_to_google_doc/__init__.py",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/report-to-google-doc/scripts/report_to_google_doc/cli.py",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/report-to-google-doc/scripts/report_to_google_doc/constants.py",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/report-to-google-doc/scripts/report_to_google_doc/docx_writer.py",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/report-to-google-doc/scripts/report_to_google_doc/html_parser.py",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/report-to-google-doc/scripts/report_to_google_doc/model.py",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/report-to-google-doc/scripts/report_to_google_doc/plan.py",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/report-to-google-doc/scripts/report_to_google_doc/quality.py",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/report-to-google-doc/scripts/report_to_google_doc/rendering.py",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/report-to-google-doc/scripts/report_to_google_doc/table_utils.py",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/report-to-google-doc/scripts/report_to_google_doc/utils.py",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/report-to-google-doc/scripts/report_to_google_doc_plan.py",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/report-to-google-doc/tests/test_delivery_plan.py",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/report-to-google-slides/SKILL.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/report-to-google-slides/agents/openai.yaml",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/report-to-google-slides/scripts/report_to_google_slides.py",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/report-to-pdf/SKILL.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/report-to-pdf/agents/openai.yaml",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/specifications/executive-report.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/specifications/mcp-app-report.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/build-report/specifications/technical-report.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/design-kpis/SKILL.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/design-kpis/agents/openai.yaml",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/gather-business-context/SKILL.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/gather-business-context/agents/openai.yaml",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/index/SKILL.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/index/agents/openai.yaml",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/jupyter-notebooks/SKILL.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/jupyter-notebooks/agents/openai.yaml",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/kpi-reporting/SKILL.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/kpi-reporting/agents/openai.yaml",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/kpi-reporting/references/report-templates.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/market-sizing/SKILL.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/market-sizing/agents/openai.yaml",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/metric-diagnostics/SKILL.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/metric-diagnostics/agents/openai.yaml",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/product-business-analysis/SKILL.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/product-business-analysis/agents/openai.yaml",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/spreadsheets/SKILL.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/spreadsheets/agents/openai.yaml",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/spreadsheets/assets/file-spreadsheet.png",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/spreadsheets/charts.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/spreadsheets/references/artifact_tool_api.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/spreadsheets/style_guidelines.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/user-context/SKILL.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/user-context/agents/openai.yaml",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/user-context/plugin-author-config/automation-config.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/user-context/plugin-author-config/source-category-config.json",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/user-context/plugin-author-config/user-context-config.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/user-context/references/automation.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/user-context/references/onboarding-examples.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/user-context/references/onboarding-state-template.json",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/user-context/references/onboarding.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/user-context/references/semantic-layer/connector-playbook.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/user-context/references/semantic-layer/setup.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/user-context/references/semantic-layer/skill-template.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/user-context/references/semantic-layer/source-intake.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/user-context/references/semantic-layer/weekly-polling-automation.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/user-context/references/source-category-runtime.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/user-context/scripts/data_analytics_preflight.py",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/user-context/scripts/init_user_context_state.py",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/user-context/scripts/reset_user_context_state.py",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/user-context/scripts/validate_user_context_preflight.py",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/user-context/tests/test_state_helpers.py",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/validate-data/SKILL.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/validate-data/agents/openai.yaml",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/validate-data/references/validation-methods.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/visualize-data/SKILL.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/visualize-data/agents/openai.yaml",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/skills/visualize-data/references/seaborn-templates.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/DESIGN.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app-core.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/App.tsx",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/analytics-layout.test.mjs",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/charting/ChartFrame.tsx",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/charting/ChartLegend.tsx",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/charting/ChartRenderer.tsx",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/charting/ChartTooltip.tsx",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/charting/chart-app-helpers.tsx",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/charting/chart-capabilities.ts",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/charting/chart-compatibility.ts",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/charting/chart-contract.ts",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/charting/chart-theme.ts",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/charting/chart-tokens.css",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/charting/chart-transforms.ts",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/fonts/SystemSansVariableVF.woff2",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/imageExport.ts",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/layout/AnalyticsLayoutCanvas.tsx",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/layout/RichMarkdown.tsx",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/layout/analyticsLayoutCore.ts",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/main.tsx",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/scripts/chart_contract.py",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/scripts/check_analytics_app_runtime_links.py",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/scripts/design_contract.py",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/scripts/package_utils.py",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/scripts/tests/test_package_utils.py",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/styles.css",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/tables/DataTable.d.ts",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/tables/DataTable.jsx",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/tables/data-table.css",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/tokens.css",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/analytics-app/types.ts",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/codex-style-contract.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/datascience-artifact-widget.html",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/datascience-artifact-widget.jsx",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/datascience-chart-widget.css",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/datascience-chart-widget.html",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/datascience-chart-widget.js",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/datascience-table-widget.css",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/datascience-table-widget.html",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/datascience-table-widget.js",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/mcp-host.js",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/recharts-config.js",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/recharts-renderer.jsx",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/sql-source-view.css",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/sql-source-view.js",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/styles/codex-theme.css",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/src/table-renderer.jsx",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/tests/chart-transforms.test.mjs",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/tests/funnel-smoke.html",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/tests/inline-widget-compare.html",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/tests/mcp-server.test.mjs",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/tests/native-style-contract.test.mjs",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/tests/recharts-config.test.mjs",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/tests/recharts-renderer.test.mjs",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/tests/rich-markdown.test.mjs",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/tests/widget-render-harness.html",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/tsconfig.json",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/data-analytics/vite.config.ts",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/git-commit-core",
+          "state": "symlink",
+          "sha256": "7f9d988adaf7cf1e2ea6ceea399356f4245ef151e9dc6e5158f5b852366bd9ff",
+          "bytes": 36
+        },
+        {
+          "path": ".codex/skills/grill-with-docs",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/improve-codebase-architecture",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/to-questionnaire",
+          "state": "deleted"
+        },
+        {
+          "path": ".codex/skills/wait-what",
+          "state": "deleted"
+        },
+        {
+          "path": ".cursor/skills/git-commit-core",
+          "state": "symlink",
+          "sha256": "7f9d988adaf7cf1e2ea6ceea399356f4245ef151e9dc6e5158f5b852366bd9ff",
+          "bytes": 36
+        },
+        {
+          "path": ".cursor/skills/grill-with-docs",
+          "state": "deleted"
+        },
+        {
+          "path": ".cursor/skills/improve-codebase-architecture",
+          "state": "deleted"
+        },
+        {
+          "path": ".cursor/skills/to-questionnaire",
+          "state": "deleted"
+        },
+        {
+          "path": ".cursor/skills/wait-what",
+          "state": "deleted"
+        },
+        {
+          "path": ".pi/skills/git-commit-core",
+          "state": "symlink",
+          "sha256": "7f9d988adaf7cf1e2ea6ceea399356f4245ef151e9dc6e5158f5b852366bd9ff",
+          "bytes": 36
+        },
+        {
+          "path": ".pi/skills/grill-with-docs",
+          "state": "deleted"
+        },
+        {
+          "path": ".pi/skills/improve-codebase-architecture",
+          "state": "deleted"
+        },
+        {
+          "path": ".pi/skills/to-questionnaire",
+          "state": "deleted"
+        },
+        {
+          "path": ".pi/skills/wait-what",
+          "state": "deleted"
+        },
+        {
+          "path": ".template-source/agents/skills-maintenance.md",
+          "state": "file",
+          "sha256": "c5bfcf2400adb22a80545407f33f2da8420d170a3545d4e912dd2928b7086c77",
+          "bytes": 7522
+        },
+        {
+          "path": ".template-source/distribution/strategic-handoff-tools.lock.json",
+          "state": "file",
+          "sha256": "d2350adceaae55f61bc8333d503842610e8a84736815e7bfedc6dc1297490fdd",
+          "bytes": 41618
+        },
+        {
+          "path": ".template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+          "state": "file",
+          "sha256": "fd37e92896eb951a2ce001d4e499d201384e33dd30c7bc2dfe72fe17fe0ca43a",
+          "bytes": 859
+        },
+        {
+          "path": ".template-source/wiki/wiki/Agent入口规则.md",
+          "state": "file",
+          "sha256": "473fd39f836d7ee2203e7f3f0f8964f9e7941172605b4273c87c60e4ca54d73e",
+          "bytes": 3638
+        },
+        {
+          "path": ".template-source/wiki/wiki/Matt技能体系.md",
+          "state": "file",
+          "sha256": "caa1279513cf833fc3c23bb46872ad1eb9e70b2429d38b90bcabaf7f410d2b3c",
+          "bytes": 1599
+        },
+        {
+          "path": ".template-source/wiki/wiki/Spec基线.md",
+          "state": "file",
+          "sha256": "67ce27813f4c9b2c1d759151215b017529665df436b0f60015f7536488c0216e",
+          "bytes": 1657
+        },
+        {
+          "path": ".template-source/wiki/wiki/产品研发生命周期.md",
+          "state": "file",
+          "sha256": "d8e4b588be304f06d475a3ed10609668901eeb955466cdef25397d085e2863d7",
+          "bytes": 2424
+        },
+        {
+          "path": ".template-source/wiki/wiki/影响面分诊与流程裁剪.md",
+          "state": "file",
+          "sha256": "e021ae4f7856844b2c3f54508dca809a7562d1cfcdd1d8003bb8db20876b3170",
+          "bytes": 3900
+        },
+        {
+          "path": ".template-spec/agents/README.md",
+          "state": "file",
+          "sha256": "e41b78e57bcf7c843c78b4a00c98a510175a653dd85230f7c7d708e36341cc0a",
+          "bytes": 1255
+        },
+        {
+          "path": ".template-spec/agents/domain.md",
+          "state": "deleted"
+        },
+        {
+          "path": ".template-spec/agents/skill-migrations.md",
+          "state": "file",
+          "sha256": "6048f8fa340d1cbcb26d538b15f3421ca50a5cb54d6ef80fa5ec860d3e48c2d9",
+          "bytes": 7450
+        },
+        {
+          "path": ".template-spec/agents/yss-skill-registry.yaml",
+          "state": "file",
+          "sha256": "17795137373a23769d00f50f32cf2926f48ffe21b95cc26032d02ade44ccd38f",
+          "bytes": 16772
+        },
+        {
+          "path": ".template-spec/architecture/README.md",
+          "state": "file",
+          "sha256": "bfebf5a09ca081a5782356388953cf035e597df8f7460470f72940483170ba5a",
+          "bytes": 3617
+        },
+        {
+          "path": ".template-spec/discovery/templates/competitive-analysis-template.md",
+          "state": "file",
+          "sha256": "7ba4ef6f7cbf027c27741f31c666bb4f6d6229e25c68ce88264e7ab240cb02dd",
+          "bytes": 6430
+        },
+        {
+          "path": ".template-spec/process/harness-profile.yaml",
+          "state": "file",
+          "sha256": "bd602f32f04b4e61ba41e580c8ea0520edf7d59881d7cd62509ac421dd725263",
+          "bytes": 3833
+        },
+        {
+          "path": "AGENTS.md",
+          "state": "file",
+          "sha256": "588b767183edc3f5ffbdce01dc85bbdf8a819ab725aba2375c3fe49d556e81f3",
+          "bytes": 10252
+        },
+        {
+          "path": "CONTEXT.md",
+          "state": "file",
+          "sha256": "b15a23a85cda01dfd013568feedbdd790a2d6d6f6b9f3dcb4b88a10ec2ee929f",
+          "bytes": 22211
+        },
+        {
+          "path": "scripts/generate-yss-skill-boundaries",
+          "state": "file",
+          "sha256": "77180bcd65d648f7fdca7ed859c8765df46550d479e7a9a49d460d0448349f25",
+          "bytes": 3179
+        },
+        {
+          "path": "scripts/instantiate-harness",
+          "state": "file",
+          "sha256": "f5708ef3f25504c3847a049b6a2cbd3164fac0d6f643819756216f7f539a115a",
+          "bytes": 556
+        },
+        {
+          "path": "scripts/lib/read-only-intake.mjs",
+          "state": "file",
+          "sha256": "049d414d064f098a0a7c49a7d1e541cc2a17f9a3613e151b5370b81c0b033b64",
+          "bytes": 11824
+        },
+        {
+          "path": "scripts/lib/skill-registry.mjs",
+          "state": "file",
+          "sha256": "0e9d5b5ca0a94579ac672a2144383bb20f9f5a94234c8f437039a0b673c544ad",
+          "bytes": 48281
+        },
+        {
+          "path": "scripts/lib/skill-supply-chain.mjs",
+          "state": "file",
+          "sha256": "d67470908a20997c3d485b6a1b8bdb2b6d553f62721657688f57d5e9f8deb233",
+          "bytes": 23952
+        },
+        {
+          "path": "skills-lock.json",
+          "state": "file",
+          "sha256": "a445c490ad4d1e82b9ead60095184e55170d5887e2f99b7bb5e595d2a0088e4c",
+          "bytes": 31116
+        }
+      ]
+    },
+    {
+      "repository": "submodules/create-yss-spec",
+      "head": "b8dc7c5b4244da02b5089649b243447b070f18d9",
+      "branch": "main",
+      "changes": [
+        {
+          "path": "src/template/asset-runtime.js",
+          "state": "file",
+          "sha256": "8e09acb6c13718498b1bc7a41278305eb988d4134529368de6eb009d1e73120f",
+          "bytes": 10299
+        },
+        {
+          "path": "tests/slim-distribution.test.js",
+          "state": "file",
+          "sha256": "6b04d388ce268c5f1cb62b1c03b6725c4b1861a7d60ea7f526b4122bdf112fe4",
+          "bytes": 15803
+        }
+      ]
+    },
+    {
+      "repository": "submodules/create-yss-strategic-design",
+      "head": "d421c69dbcdc45ef94536ccc2d27f36508f65292",
+      "branch": "main",
+      "changes": [
+        {
+          "path": "cli-core.lock.json",
+          "state": "file",
+          "sha256": "0249a4fa0dce85075b56b2b33d8cc7b669726947be83e9658dfdf8b045f84cc3",
+          "bytes": 3320
+        },
+        {
+          "path": "template.snapshot.json",
+          "state": "file",
+          "sha256": "77382effc327cd0c181ae206021d19f1086e869093fd54dd2495fc31171c2e93",
+          "bytes": 453705
+        },
+        {
+          "path": "template/blobs/004d1a46d58013404a8de8f8c6e4316d87ef148c9b85da6caaf85e1737fee36e",
+          "state": "file",
+          "sha256": "004d1a46d58013404a8de8f8c6e4316d87ef148c9b85da6caaf85e1737fee36e",
+          "bytes": 21461
+        },
+        {
+          "path": "template/blobs/0237f664692b553d831100d7ec7b80d37fe3458768c9aae440bb0e73e53c9d8c",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/03d20dcfdc596339be8ef9607f68a69f0fa752674035f1269dde51d8781388b7",
+          "state": "file",
+          "sha256": "03d20dcfdc596339be8ef9607f68a69f0fa752674035f1269dde51d8781388b7",
+          "bytes": 12111
+        },
+        {
+          "path": "template/blobs/049d414d064f098a0a7c49a7d1e541cc2a17f9a3613e151b5370b81c0b033b64",
+          "state": "file",
+          "sha256": "049d414d064f098a0a7c49a7d1e541cc2a17f9a3613e151b5370b81c0b033b64",
+          "bytes": 11824
+        },
+        {
+          "path": "template/blobs/0b0eedf3f89e2fa19fe2e1a73bbfccf624a805bb68c9b8ab968c10e3873d8714",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/0f7d6851eff95eda7d1582683da83e24ac167c4c216bb4b6763772687dd07a16",
+          "state": "file",
+          "sha256": "0f7d6851eff95eda7d1582683da83e24ac167c4c216bb4b6763772687dd07a16",
+          "bytes": 1437
+        },
+        {
+          "path": "template/blobs/1211f27c0540b03815b3356cf32bac9d70c32c0b0554936aa0cc024b9462d204",
+          "state": "file",
+          "sha256": "1211f27c0540b03815b3356cf32bac9d70c32c0b0554936aa0cc024b9462d204",
+          "bytes": 1245
+        },
+        {
+          "path": "template/blobs/1ea32d9c353d9414b61a184e98dd7baa9a9a6a00ba1942f131e8987771e0e1e0",
+          "state": "file",
+          "sha256": "1ea32d9c353d9414b61a184e98dd7baa9a9a6a00ba1942f131e8987771e0e1e0",
+          "bytes": 12161
+        },
+        {
+          "path": "template/blobs/2d27bded1f6dce67cd29d10641f7c9cd9bb93897f68e2de2e6fe48563cc08ee6",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/34bea41bc90c885de3e7f4026f604939501cee14a0912f58f980ae2b04e159b3",
+          "state": "file",
+          "sha256": "34bea41bc90c885de3e7f4026f604939501cee14a0912f58f980ae2b04e159b3",
+          "bytes": 6583
+        },
+        {
+          "path": "template/blobs/4172e58280d56eb1b13d9048b8381ee4558e363c80f053973cc651ce55a8a960",
+          "state": "file",
+          "sha256": "4172e58280d56eb1b13d9048b8381ee4558e363c80f053973cc651ce55a8a960",
+          "bytes": 29523
+        },
+        {
+          "path": "template/blobs/443556fa38987bd65316dc90b5981cee7c6c0b561117ff29daf44b1dd3811b82",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/48caaa5fd2824da4ea2f885df1a9bd242ba53b364c2ef4bce2d3ae5901acabd6",
+          "state": "file",
+          "sha256": "48caaa5fd2824da4ea2f885df1a9bd242ba53b364c2ef4bce2d3ae5901acabd6",
+          "bytes": 1084
+        },
+        {
+          "path": "template/blobs/4e991e13711a99622e727ed6e14d2ddb15a6fd791233f13c3f38e57e439c7679",
+          "state": "file",
+          "sha256": "4e991e13711a99622e727ed6e14d2ddb15a6fd791233f13c3f38e57e439c7679",
+          "bytes": 10093
+        },
+        {
+          "path": "template/blobs/5963017f28a2526ebf8de36ca73fc651d4cb3506606f8f3b6e22c6038a787405",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/5ae9792b40790f4013cb704d7ad9d58aa1071adc875d11b997f97723a73fba84",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/7a531d800139d6d7815c303b45ea771c0033ac0523129e0e6b459e3353e25f2c",
+          "state": "file",
+          "sha256": "7a531d800139d6d7815c303b45ea771c0033ac0523129e0e6b459e3353e25f2c",
+          "bytes": 13712
+        },
+        {
+          "path": "template/blobs/7ba4ef6f7cbf027c27741f31c666bb4f6d6229e25c68ce88264e7ab240cb02dd",
+          "state": "file",
+          "sha256": "7ba4ef6f7cbf027c27741f31c666bb4f6d6229e25c68ce88264e7ab240cb02dd",
+          "bytes": 6430
+        },
+        {
+          "path": "template/blobs/7dc64bcac2c872f76773bea08bc165e498657aab519e24c1eb94aa0afe911680",
+          "state": "file",
+          "sha256": "7dc64bcac2c872f76773bea08bc165e498657aab519e24c1eb94aa0afe911680",
+          "bytes": 1427
+        },
+        {
+          "path": "template/blobs/84937ac09ac862f72014b74e53fdc66f2ffaf5108d74e2de9ac5c623eccd19bf",
+          "state": "file",
+          "sha256": "84937ac09ac862f72014b74e53fdc66f2ffaf5108d74e2de9ac5c623eccd19bf",
+          "bytes": 2699
+        },
+        {
+          "path": "template/blobs/85659ffc187effac05021f6324a41f502d13fb3ce6fdca90eef43ed2ecf8e48d",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/86df84d82bc315341676fc623777a021e08f08eed90cb5c87f397e81092d7aae",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/8da0f98a4e7886109e5feea48d8f193bc8b9f6f09f592ee6b2dbb2ceb687abdb",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/8f43b6eea7b84638218cc05217cc70629fe368107482ec0048218bbedbd810ff",
+          "state": "file",
+          "sha256": "8f43b6eea7b84638218cc05217cc70629fe368107482ec0048218bbedbd810ff",
+          "bytes": 1736
+        },
+        {
+          "path": "template/blobs/8fa9b738b2728710d7b228ff4c635d915956f59d6734a72a283e827e16fa873d",
+          "state": "file",
+          "sha256": "8fa9b738b2728710d7b228ff4c635d915956f59d6734a72a283e827e16fa873d",
+          "bytes": 12842
+        },
+        {
+          "path": "template/blobs/94cd0ab161fb468a836349f5ed482ba58ce8e709a05c57ce533d739dbd35cca9",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/96de5485266d65140c02a89eceb111f28367c1136a4abe55f1800c9c36f14190",
+          "state": "file",
+          "sha256": "96de5485266d65140c02a89eceb111f28367c1136a4abe55f1800c9c36f14190",
+          "bytes": 8523
+        },
+        {
+          "path": "template/blobs/b3d01eb311bc1dd703eab58a9babcd3dbdd12dfad3ef18b22a0b74e265357bc0",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/c755a6b4c912e21d3bbd3d77c76be3cb64c7a192b426da8f0c4e71b7ec1de8d1",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/c931b50d8bacc15112b18c5e73db33fd5600e92c2d743695d213b3dc03f8b9ed",
+          "state": "file",
+          "sha256": "c931b50d8bacc15112b18c5e73db33fd5600e92c2d743695d213b3dc03f8b9ed",
+          "bytes": 12760
+        },
+        {
+          "path": "template/blobs/c9aed08f1093eeb69c62247ab1308505e7ba13ead8a815b6fea2d54a45853d8f",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/c9fd14ca0b5f669f93ddaae6da303e2127c525c8d43e486ea5c30c7c6a95c266",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/ce50637a80951c85e22b3aff897d6bd74db008513009da81da149a803292db59",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/ce545554a3b091058bd86b0bfe296e8944d635422e1a750580f224dd3a936540",
+          "state": "file",
+          "sha256": "ce545554a3b091058bd86b0bfe296e8944d635422e1a750580f224dd3a936540",
+          "bytes": 15584
+        },
+        {
+          "path": "template/blobs/d1b1499324d99d4bee0de1bd6209f5a25dfa475bcef19f9051c53856d17940ee",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/de89992861b819e13ab8cbea372083eebf6a87578d13ec1888130724f5dbe396",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/e0167de45a10f0755ea9b76788dbd6670bc46daeb162ac62497baf8479344d5e",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/e4971132a0f33f8d052aef1616f11db741d6dc9223da7cf5197aded6b43c77a4",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/e851a4175a12d17a8fd5e7b7fe346982cb9637c1999d6762cc8c638d05856195",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/f3ddd6818696ea2c9fdc92174d1b9175d0575ad5c38fab24de9b0f79ae917930",
+          "state": "file",
+          "sha256": "f3ddd6818696ea2c9fdc92174d1b9175d0575ad5c38fab24de9b0f79ae917930",
+          "bytes": 35100
+        },
+        {
+          "path": "template/blobs/f42845a38f5434073103395f9671a28119bb59ce28185c8ddd22ca8b7d5ed273",
+          "state": "file",
+          "sha256": "f42845a38f5434073103395f9671a28119bb59ce28185c8ddd22ca8b7d5ed273",
+          "bytes": 4305
+        },
+        {
+          "path": "template/blobs/f83265b8fd6357b265bfe5d0397805733d35fa29938d46794c2208f9383d9841",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/fcd75ef9acaf6a9ad6c88157e7f54a766a247fd8f95c5a5bde68be3fb45cda2b",
+          "state": "deleted"
+        }
+      ]
+    },
+    {
+      "repository": "submodules/create-yss-harness-backend",
+      "head": "8cdcc3e59cf03190bab4e6533fdd9d5fbdf7011d",
+      "branch": "main",
+      "changes": [
+        {
+          "path": "cli-core.lock.json",
+          "state": "file",
+          "sha256": "0249a4fa0dce85075b56b2b33d8cc7b669726947be83e9658dfdf8b045f84cc3",
+          "bytes": 3320
+        },
+        {
+          "path": "template.snapshot.json",
+          "state": "file",
+          "sha256": "2635faf97ea8a59f3014a9823b7d11c770e0f7814120313185c94b9103b070e6",
+          "bytes": 1275977
+        },
+        {
+          "path": "template/blobs/049d414d064f098a0a7c49a7d1e541cc2a17f9a3613e151b5370b81c0b033b64",
+          "state": "file",
+          "sha256": "049d414d064f098a0a7c49a7d1e541cc2a17f9a3613e151b5370b81c0b033b64",
+          "bytes": 11824
+        },
+        {
+          "path": "template/blobs/07f03c2db5c0cfe85c315d071a76806ab795b4fbb6743aafb151f023f3aacf87",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/0e9d5b5ca0a94579ac672a2144383bb20f9f5a94234c8f437039a0b673c544ad",
+          "state": "file",
+          "sha256": "0e9d5b5ca0a94579ac672a2144383bb20f9f5a94234c8f437039a0b673c544ad",
+          "bytes": 48281
+        },
+        {
+          "path": "template/blobs/2a9f7cfd33360588c7f4b39040cbb870dbebdbd6476924e76c33e268629e87f3",
+          "state": "file",
+          "sha256": "2a9f7cfd33360588c7f4b39040cbb870dbebdbd6476924e76c33e268629e87f3",
+          "bytes": 10621
+        },
+        {
+          "path": "template/blobs/2d825597ae9e77ad66a1cb823c5da364d5615b9acb097e1cf53a3a277fd34cef",
+          "state": "file",
+          "sha256": "2d825597ae9e77ad66a1cb823c5da364d5615b9acb097e1cf53a3a277fd34cef",
+          "bytes": 21958
+        },
+        {
+          "path": "template/blobs/31ae696c4815c5e76b47dfb3f31be5a2cd055c1bad5b9b0f5255edd2ee4db2f7",
+          "state": "file",
+          "sha256": "31ae696c4815c5e76b47dfb3f31be5a2cd055c1bad5b9b0f5255edd2ee4db2f7",
+          "bytes": 1748
+        },
+        {
+          "path": "template/blobs/34dfe293d488708ff5f66ae8db9343c26bcb1b4242bd3909c7c06a4f63ee951a",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/355b2c2f7a00d2ea37260e50cb28140f8f28f78fe27b0fc28963aa016fb6366c",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/3e7562859cecc199e5bcfb1c589d9a0d1b486e989724247c0a61009b71c6775d",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/3ec661af8fc7063b650518c95ab775bbeabaefce38b89acaf6da2f749168f37e",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/48debe3fb1d55fcc9244213102d860df8cef8dc5afd2b5a82147d4012198842d",
+          "state": "file",
+          "sha256": "48debe3fb1d55fcc9244213102d860df8cef8dc5afd2b5a82147d4012198842d",
+          "bytes": 6189
+        },
+        {
+          "path": "template/blobs/50db70cebf06cf833e21efd776f0ecce6095fd3e36826f31100920b697813bd7",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/54532fa4ca31b6f3964b7214b67ac7e31f6721fe2a28ef056b4a907f731e3abc",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/5508901ffeef64b3fb59dd97efd55f5c848b178eb87a470d612f01c466f34b62",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/55219edb521607cab763f7dae7f9510e2b7a0a91ee4d7da2b5db7d5849376e52",
+          "state": "file",
+          "sha256": "55219edb521607cab763f7dae7f9510e2b7a0a91ee4d7da2b5db7d5849376e52",
+          "bytes": 7547
+        },
+        {
+          "path": "template/blobs/655eb50b46fff555603ae95281197d0cfd9ac54e658f755e66e3d0aa0e91ea2e",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/69cabbe65b60b5a509967dc0ae6e5e7dbac6c95181508cf88b07679bbe07994f",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/6a89473a85d9bad79329d856871332e1af10f3735266b7ebe38c27e58122cfa2",
+          "state": "file",
+          "sha256": "6a89473a85d9bad79329d856871332e1af10f3735266b7ebe38c27e58122cfa2",
+          "bytes": 28843
+        },
+        {
+          "path": "template/blobs/6ed21d57222bbf1d84c47c6f3bd515441e710d0a7917798de7d805aa5926d5c7",
+          "state": "file",
+          "sha256": "6ed21d57222bbf1d84c47c6f3bd515441e710d0a7917798de7d805aa5926d5c7",
+          "bytes": 1937
+        },
+        {
+          "path": "template/blobs/7174eceb8b5a73a5b962b427b19eafb93008ff0320087a8c393cdcc24c7fd7e7",
+          "state": "file",
+          "sha256": "7174eceb8b5a73a5b962b427b19eafb93008ff0320087a8c393cdcc24c7fd7e7",
+          "bytes": 12617
+        },
+        {
+          "path": "template/blobs/76bf2654debd7f0d16e376a49d4e0fde9bc195af9bdf9eb3470c2737e5c836a9",
+          "state": "file",
+          "sha256": "76bf2654debd7f0d16e376a49d4e0fde9bc195af9bdf9eb3470c2737e5c836a9",
+          "bytes": 29492
+        },
+        {
+          "path": "template/blobs/77180bcd65d648f7fdca7ed859c8765df46550d479e7a9a49d460d0448349f25",
+          "state": "file",
+          "sha256": "77180bcd65d648f7fdca7ed859c8765df46550d479e7a9a49d460d0448349f25",
+          "bytes": 3179
+        },
+        {
+          "path": "template/blobs/7ba4ef6f7cbf027c27741f31c666bb4f6d6229e25c68ce88264e7ab240cb02dd",
+          "state": "file",
+          "sha256": "7ba4ef6f7cbf027c27741f31c666bb4f6d6229e25c68ce88264e7ab240cb02dd",
+          "bytes": 6430
+        },
+        {
+          "path": "template/blobs/7cf8caff5226b50cae7d492c7353c19aea3df917539a21ab2c322c8155337611",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/7dc64bcac2c872f76773bea08bc165e498657aab519e24c1eb94aa0afe911680",
+          "state": "file",
+          "sha256": "7dc64bcac2c872f76773bea08bc165e498657aab519e24c1eb94aa0afe911680",
+          "bytes": 1427
+        },
+        {
+          "path": "template/blobs/94cd0ab161fb468a836349f5ed482ba58ce8e709a05c57ce533d739dbd35cca9",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/94deab2531bd2932647116d58bb02cbeadfb85151323cebf4cd1b02b129f4a18",
+          "state": "file",
+          "sha256": "94deab2531bd2932647116d58bb02cbeadfb85151323cebf4cd1b02b129f4a18",
+          "bytes": 2137
+        },
+        {
+          "path": "template/blobs/9697665cd518207a5804ee8e5a3012a459728e99e1747b00737253a2a68ad2f1",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/9e8a06c38c8842eea8d4922cb9d1ead8e3ace647bab259b943c994a1b4742bc2",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/a3b51e92fae55c821c2b8817f7e749d15e1152e5c06824a3bd8867e28e95b6e6",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/ab6ab7e8f71cdc4e28d28032f7c11cbebf4b86fef930ad72692550b762c1a10e",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/af9eae3f60282b74a3554b8fa02cb4b1811f69d02f5a3c0be82e408c76d58508",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/b36d6aee66f6d9327aa25492ab0e2309f6dc5983b0681ac19f9188615c8a1eb2",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/b9f2a54547e9ed6268a1ffe3f8d69cb40371a63a8f697c86c6eedc13ef474083",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/bfebf5a09ca081a5782356388953cf035e597df8f7460470f72940483170ba5a",
+          "state": "file",
+          "sha256": "bfebf5a09ca081a5782356388953cf035e597df8f7460470f72940483170ba5a",
+          "bytes": 3617
+        },
+        {
+          "path": "template/blobs/c8cb20f68ebf0edb4e497bc11ae5fcaa196004e661cd189015b04f4109ced7f1",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/c9f900395aa3cf2a643d3b6b639641813deea074844d6c9aef32dbd1c1f84b2c",
+          "state": "file",
+          "sha256": "c9f900395aa3cf2a643d3b6b639641813deea074844d6c9aef32dbd1c1f84b2c",
+          "bytes": 7842
+        },
+        {
+          "path": "template/blobs/d1b1499324d99d4bee0de1bd6209f5a25dfa475bcef19f9051c53856d17940ee",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/d67470908a20997c3d485b6a1b8bdb2b6d553f62721657688f57d5e9f8deb233",
+          "state": "file",
+          "sha256": "d67470908a20997c3d485b6a1b8bdb2b6d553f62721657688f57d5e9f8deb233",
+          "bytes": 23952
+        },
+        {
+          "path": "template/blobs/d931fa046614860da14ed1e36ea2aa892ddabded70fcb869d7d886db3ca55de1",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/de89992861b819e13ab8cbea372083eebf6a87578d13ec1888130724f5dbe396",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/ded684412671dd5fdc0cc10d453564950e6d47717672ab00a70e725935dfc85b",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/dfb73f79d2f1dff222d45480653b4d7d013eaefd78dd6f9d2ac18ad2048107d5",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/e41b78e57bcf7c843c78b4a00c98a510175a653dd85230f7c7d708e36341cc0a",
+          "state": "file",
+          "sha256": "e41b78e57bcf7c843c78b4a00c98a510175a653dd85230f7c7d708e36341cc0a",
+          "bytes": 1255
+        },
+        {
+          "path": "template/blobs/e4971132a0f33f8d052aef1616f11db741d6dc9223da7cf5197aded6b43c77a4",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/efa8fa419bdb514dbeb883f09d23dbc981481aac2848e63d119823384a42076c",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/f748c2f590881d47db6ed99fee6e4ba5023ddf86e6b2dd7a04c96c32aef20308",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/f8053de16b6f6e3e341d37c861d6a8ddc0e275cee9a1c256673ad4b728f22ae7",
+          "state": "file",
+          "sha256": "f8053de16b6f6e3e341d37c861d6a8ddc0e275cee9a1c256673ad4b728f22ae7",
+          "bytes": 6563
+        },
+        {
+          "path": "template/blobs/fc33687d623998be01926ae106fdac9158f4a412c24c716e646a0c2acce77ff5",
+          "state": "file",
+          "sha256": "fc33687d623998be01926ae106fdac9158f4a412c24c716e646a0c2acce77ff5",
+          "bytes": 6300
+        },
+        {
+          "path": "template/blobs/ff938a69431e31eb9977f3a1503ee07423b5118edf22d99e801b8289da162e60",
+          "state": "file",
+          "sha256": "ff938a69431e31eb9977f3a1503ee07423b5118edf22d99e801b8289da162e60",
+          "bytes": 4040
+        }
+      ]
+    },
+    {
+      "repository": "submodules/create-yss-harness-frontend",
+      "head": "97b19fad7b8935650fb7e654259f6bfd8c753a58",
+      "branch": "main",
+      "changes": [
+        {
+          "path": "cli-core.lock.json",
+          "state": "file",
+          "sha256": "0249a4fa0dce85075b56b2b33d8cc7b669726947be83e9658dfdf8b045f84cc3",
+          "bytes": 3320
+        },
+        {
+          "path": "template.snapshot.json",
+          "state": "file",
+          "sha256": "0d05e942154a70f4b2a3db0abcc5ded38482d3e5fd0ee5f9de5f2c3655d0b431",
+          "bytes": 1442458
+        },
+        {
+          "path": "template/blobs/00dd8ff4e41ac898065ca004d585c83aae51d1c922ccd250efa1d53c6a94334f",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/02059c26176877bbc06e7cb28d3fb0b149d93499d209b05c84b1f2764ac72557",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/0411f159d47c9bd64cb26e4d912293eeb6f81e42c9a52b993f75fee885652114",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/0479cd70225abbe44d33c1d4949eb68d4c28ce9d77b794603192d38ce777a615",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/049d414d064f098a0a7c49a7d1e541cc2a17f9a3613e151b5370b81c0b033b64",
+          "state": "file",
+          "sha256": "049d414d064f098a0a7c49a7d1e541cc2a17f9a3613e151b5370b81c0b033b64",
+          "bytes": 11824
+        },
+        {
+          "path": "template/blobs/05f9dc1e66083e7e4ec0a2420468b8a5f4e411e8fe4b60508e077063a2f71bcf",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/06e4dfd966602994e79d9e40e93bf63d8bab0dae09699125c05233d0637f7235",
+          "state": "file",
+          "sha256": "06e4dfd966602994e79d9e40e93bf63d8bab0dae09699125c05233d0637f7235",
+          "bytes": 4002
+        },
+        {
+          "path": "template/blobs/073d72ffc9e428b161c97d257cf1bd1edafd7e62382442ff987f6787b08888a1",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/0794de75582b431812a17562f95c91ee7f7e3b9740434d66bf49b39a27276449",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/07c79faf9b0e907612ad19f3fdcc166afe59042649b4d554ad01d69e2b20a799",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/07f03c2db5c0cfe85c315d071a76806ab795b4fbb6743aafb151f023f3aacf87",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/0adc04cf098db2860fee85326f589621fcde481fbc8f00024d7ac9ceaccccd05",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/0c46dc595577db9fe09927116eb8d9209893a5732182efd48a7ef44f3dd96516",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/0e0eef71fdda78d9c33efe93a47aabd5818b67b8f495ecc95134a2749e3f1387",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/0e9d5b5ca0a94579ac672a2144383bb20f9f5a94234c8f437039a0b673c544ad",
+          "state": "file",
+          "sha256": "0e9d5b5ca0a94579ac672a2144383bb20f9f5a94234c8f437039a0b673c544ad",
+          "bytes": 48281
+        },
+        {
+          "path": "template/blobs/10877383fa450b5859902f94b1bd6350419f6382e6dcdb6027c2beb75200b490",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/12359f6d83689fd7c3075babf2318e5f7357000cc7e3316024ea46720b845692",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/12d6e6f80babc522d71eca2a98a5789ecdc4bcb9edbd4d806628aab9c0ad521a",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/15d6ea58a67171dc0f7634b2559163963f2dcf16cfef86adfafd346d8159acd7",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/16d9fe1da80bec60fc4dd811b1004479f0eed21832575b656e73180b59c2c57b",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/170f0b56ac8782b0a65d0930bc4720624836c0b4f427e9bbcc3b3094e5f248c0",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/17795137373a23769d00f50f32cf2926f48ffe21b95cc26032d02ade44ccd38f",
+          "state": "file",
+          "sha256": "17795137373a23769d00f50f32cf2926f48ffe21b95cc26032d02ade44ccd38f",
+          "bytes": 16772
+        },
+        {
+          "path": "template/blobs/19cd14effdc793621ebe0a0480df5d290a0a4a6c694fbcd50ccd4db8dd2d11b3",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/1b4ad1af0b3322bb3c3ea20d09df3f425944362610b4dd15d321dc1186f261ec",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/1c2636b9de5f6e7868921d4fb39459a5a013887151f3158933de556ebe4a7508",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/2016869eed6efd28f4f1e6980695b9c5c4dcb34afff77cf867ec828eac8f6e84",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/22e7df938dd3789539b407ddb78043f8b4d9c43053cb5dc609ab7d9908917e6e",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/241ae40c35243e298811c6a7c27c312a65a9edc16b4aea96e1cc524011abd2e8",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/26aa6645b416a410c1ee929d0103af506f17981319e2306ac01081e4d93bf33b",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/27d741a01ba993492f7d6301f1d4216cf5437385e996d683526417163aae8e91",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/290113f7383d333922e236aacbed5952e9a0338581c2f5664488d635011592ed",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/2959bda2ad709db9c0c29758c13ccf3e1d0f47f62992578a8cb617fe21bb19f3",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/29fd0361f2cb204df774f4995382f9936d1f97fe0b18852af9ef102966490fdf",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/2aa4dec4c2c681df8d336e0f1d7b8d8302b5ea56af9fe937fba70f491101065e",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/2ae98d3cabda5ff24d2c628cca183186e0a18d4a9daf3f95cfc8520aaf262f26",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/2b3539c358663af517281f3706e4d2d524ade85c7507435c61e2a89e83c3e511",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/2d89f03b3514a5cfd0a37aa7bf817cc129df2500edc20b0706ca9cb238f211ae",
+          "state": "file",
+          "sha256": "2d89f03b3514a5cfd0a37aa7bf817cc129df2500edc20b0706ca9cb238f211ae",
+          "bytes": 6107
+        },
+        {
+          "path": "template/blobs/2e688aaabe9b1098c579a1e11e3e566013060f113e6b22a8a589632b54943601",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/30570ef56231df6123634ff656484269acd141207848ef9a31a4a4ed9a453ae0",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/31ae696c4815c5e76b47dfb3f31be5a2cd055c1bad5b9b0f5255edd2ee4db2f7",
+          "state": "file",
+          "sha256": "31ae696c4815c5e76b47dfb3f31be5a2cd055c1bad5b9b0f5255edd2ee4db2f7",
+          "bytes": 1748
+        },
+        {
+          "path": "template/blobs/337c5484a770e67ba1836398ab5d2a0d1f409b7e5e6235845105a56ebeee8e99",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/339ebf2169a624667f47bb27645018de7f08fcb7523d9a268263ccdc51ece142",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/3440c9039d199bf0f61906d203e710a390228e69ec5d911b082055b04b26ada7",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/3456a2711d7a282009a9e44d02b75ec198633b9b8518a812c871ad0af1a40fd1",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/349cb14fcd02967896d80c4efc0bdf7d02eb264bd9dbc51a244752bc997ab51e",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/355b2c2f7a00d2ea37260e50cb28140f8f28f78fe27b0fc28963aa016fb6366c",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/37bb6b4c190d14dae10d0457998a0356f473968988ba2469c4fe7c49414a069e",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/3a1c5e6c52a1877942b8ef8654247fbe1c4a82f6df8ef464dc99983fc72cd6fb",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/3a543e058ff2532ba0a21aa7a3fb7d8efa04034869c019977d6c98c6aba67a96",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/3ae00bde7ebdf1e12ebc79eeefe84b3d5a4e7d73d5fb071f7bd18dabde7398e4",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/3b38752e64f329efdf627e79a2920929603f73479c631537bdf13ec453f02a3c",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/3cf6a5d6d6e7f8b0708524a880373fab272e2034baa91e62261256adad2e5f2a",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/3e7562859cecc199e5bcfb1c589d9a0d1b486e989724247c0a61009b71c6775d",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/3ec661af8fc7063b650518c95ab775bbeabaefce38b89acaf6da2f749168f37e",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/3f3bb98ebe61e1df2aad1fc8d38484e21fabc033237b4e5bbb437df050acec3a",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/400df0fecfbb6329be806d8fafeae9fd2b721c41af251e9455a92db1f3b0b7a5",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/40e19a32b0bad7bb32f635452449fb782badd21f3c900918457056044588c193",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/4294c80f6291f85fb4759d933cfc312eb6ea5031d5960ccb77e716a8f12bd924",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/43494b72f2b1ca063b775ba114130ae85d378bf3b3f6257a2e0e44e4830863a1",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/43cd1ec9abbc6975dd7bb52f53413a48e5a52a110e00ce414a73f0d1468cba7b",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/441ef8773daa477ae2dac5deacf7b37110e9a2a49c08c73bc128c967d090f4e5",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/4533a3af9cbb20ad8a5f99ec9932704ee1135485440e500ea119f3674758f831",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/45e73df66ea593d9c55c4f26799354e55cb4fce42ad24683b667891fa60b99fb",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/469cfea56b9ee797269f1229fa4a40a028d6290e332f48056090c38379b95a50",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/48671947d359a5b0d5bc4b3a0d1de9e3eb12519723410b2028cc94e6684e24ed",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/48debe3fb1d55fcc9244213102d860df8cef8dc5afd2b5a82147d4012198842d",
+          "state": "file",
+          "sha256": "48debe3fb1d55fcc9244213102d860df8cef8dc5afd2b5a82147d4012198842d",
+          "bytes": 6189
+        },
+        {
+          "path": "template/blobs/498041f447b46bf12e8b3b16a99e6bf172eb09f180736727a5f806106d2d22b8",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/4a91a4da7b2a90c01aef4a1a0cf472597294ac062ab7e01633b4c40840e8602f",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/4b649f6e233726b7181bdfd8ea115524a7ebd37fd30ee6436beeb6f02d9fdad0",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/4bb6a6622c7b09df2d5eef4233435445ba95f57e18445e4151bd4180acb3f458",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/4c1066934a7f745157e5de2cf8124d18bef1de912185e30c700f4b7470e264dd",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/4c18e4ec662d0df1cf127e31f4fbda5ce6500f9d8571c2d343755f3898302ad6",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/4cfaf599edebb52a63e8a917e611ad1183966b2294a3c758be0671ec6b954db4",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/4db606e7589907a5e1a526b2d27fc8026d9f2928bf56303b1bc3e308dec4187a",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/4e2ef68d03dbae60b9f46bbd6b787f05b0b921802a70e9b799ad27d50e49de05",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/4fc217e372ee50012dd6e1a6708b62b322bd01dba0e853e5e770898f323516e5",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/52b53004b36efd9e25c937cc082d2ba061db898571d1d65e0a368797607834ee",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/534c0a9bb0ada3370b4f44e018344c7e4aa1b46c73127c54d1403b243b9c845d",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/542f6a04c77fa74959f281249e3e92e0eb9edeb2d9194a5170d05fb03ca19fe5",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/54532fa4ca31b6f3964b7214b67ac7e31f6721fe2a28ef056b4a907f731e3abc",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/5508901ffeef64b3fb59dd97efd55f5c848b178eb87a470d612f01c466f34b62",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/55219edb521607cab763f7dae7f9510e2b7a0a91ee4d7da2b5db7d5849376e52",
+          "state": "file",
+          "sha256": "55219edb521607cab763f7dae7f9510e2b7a0a91ee4d7da2b5db7d5849376e52",
+          "bytes": 7547
+        },
+        {
+          "path": "template/blobs/56719c2de8c6e8f4ef1b86c0ed747c1e730018753b5e51f54b4dc991438a6157",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/588b767183edc3f5ffbdce01dc85bbdf8a819ab725aba2375c3fe49d556e81f3",
+          "state": "file",
+          "sha256": "588b767183edc3f5ffbdce01dc85bbdf8a819ab725aba2375c3fe49d556e81f3",
+          "bytes": 10252
+        },
+        {
+          "path": "template/blobs/5aef84c2ef514dd2a7268433abd3ee8e47b35f42b60e0b5f7430ec4937f4f06a",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/5bfb00709fa8de9e6ce66df49e1b62fad62cf020ff72cdfa6826d17675706273",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/5bfb03689f6f880a61084f14ed5e03cc1744d6e8cd00d9159ee332df0a62552a",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/5cd42d3ae7bcd62af869c38d60f917b29b34379deb7b2490f6fa8bdeccd7ae2d",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/5f833d32265c9827e8fe0cc1bb9320b6f099865e90c00cda4d5e5f4c1f5ba7bf",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/5fe185a33ccf731bee04aa255afd5f5c4c040413d6e4fafecdba10cb711c645d",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/6048f8fa340d1cbcb26d538b15f3421ca50a5cb54d6ef80fa5ec860d3e48c2d9",
+          "state": "file",
+          "sha256": "6048f8fa340d1cbcb26d538b15f3421ca50a5cb54d6ef80fa5ec860d3e48c2d9",
+          "bytes": 7450
+        },
+        {
+          "path": "template/blobs/60877adbb64f095b66bdbcfa934b2cdcbfaed7eb2f9509e6269af9f6364831eb",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/615359718a17e2b70d82b14b40a3bc50bae85e05eaf706844c5b90d274c42f3e",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/62254e54765fb5f444936f1d07eacd666d5a38615ceccf548448d0fa679d848b",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/625790f7dc12cf1720b8300186f5de3a217d48679c4a87242d173d65f8694a96",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/6432c990952f1b81b1eb1633fc8aaeed1bdfc9a584c2d78289d37a90c9244254",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/6459508500d5de13b64739a413517387dcba2c45a4ea9291663175b539053660",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/66dcf6f97b0df00c1ba40a2bbf56c4aa40a2b4454e9bc750800ed58cb47514c2",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/6799366b39e0081aebc0da5990fb1c8e995e07d0a6f4bc6ba09bda25055d6404",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/6831f74a5d759848bdc3258bb3894e918d8ec35edf9519b4e7ec37da35815020",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/68c42136a7c61e81f11644b5fb8d421b68524642f4ed50811b18bd915fdbd7b6",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/69cabbe65b60b5a509967dc0ae6e5e7dbac6c95181508cf88b07679bbe07994f",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/6ac31ea480ececaf876f59dcdaf4b4489f35203b2d035a2816df1c1b098780c8",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/6ac6d2fb39bff905265bb21786f9d5d5bb90e7b373334b2e03cf505a604afe98",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/6b15ff0fae344ec3fb067a9d29a4229ff2711fca8c8e6125c7aba8f25a347439",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/6ed21d57222bbf1d84c47c6f3bd515441e710d0a7917798de7d805aa5926d5c7",
+          "state": "file",
+          "sha256": "6ed21d57222bbf1d84c47c6f3bd515441e710d0a7917798de7d805aa5926d5c7",
+          "bytes": 1937
+        },
+        {
+          "path": "template/blobs/735bf709bde74d653981b3900f95bcbe35b29a8d65c3c2dc9af302dc4c92124a",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/7376a891ed25f362ee4238c1e861ce6dbb7467336319784dcd736ae1dc9cd7af",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/73abcf5ebf8ca7218877c53fc35ea57c11a71e764b9e8f33923e451df340c577",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/75e2b8c1047094baca4748de54f3513c04bd7c03f4704c332343325b174e6db7",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/77180bcd65d648f7fdca7ed859c8765df46550d479e7a9a49d460d0448349f25",
+          "state": "file",
+          "sha256": "77180bcd65d648f7fdca7ed859c8765df46550d479e7a9a49d460d0448349f25",
+          "bytes": 3179
+        },
+        {
+          "path": "template/blobs/780e3438c499888609ac3527dced90ce3507b90f137f12290b4dc9a3dfa90851",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/790e3169bc19b046fe55ba1da6d13b976c28363c8c00462a2195fe5faf260910",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/79d461828a9c841acf025dff91255bc17d77b1b4db4a601f9056c0bf7bdb7557",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/7ab09b4a770e11308546e217cd6d3dd44cef4fd810ba461bac3fc56cb0deee6a",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/7ba4ef6f7cbf027c27741f31c666bb4f6d6229e25c68ce88264e7ab240cb02dd",
+          "state": "file",
+          "sha256": "7ba4ef6f7cbf027c27741f31c666bb4f6d6229e25c68ce88264e7ab240cb02dd",
+          "bytes": 6430
+        },
+        {
+          "path": "template/blobs/7cf8caff5226b50cae7d492c7353c19aea3df917539a21ab2c322c8155337611",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/7d2f7cfdf3726bd5930970547c878d3809e455dffcadb57ac36a47637140fb86",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/7dc64bcac2c872f76773bea08bc165e498657aab519e24c1eb94aa0afe911680",
+          "state": "file",
+          "sha256": "7dc64bcac2c872f76773bea08bc165e498657aab519e24c1eb94aa0afe911680",
+          "bytes": 1427
+        },
+        {
+          "path": "template/blobs/7e30674d368016afc64386906ef10b4b21b146f7fbf899a66db958b21c9b6ea6",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/7ea2e1f72b5131e91d46963908c7d7eacec03eca7901d0a4100f02b2d33a2750",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/80bc92bcbb8971b687dabfe512e169770daa47a45244bfac3ac678a83d5fe541",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/817e3dd16c07211a13484593d1602a197bc9ab23e4f9e4e0d0188efa8b1cd6c1",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/822e8472db2870e5cee4d2b0597f1fb6439f0c51734bc48889de0c6d37b828d5",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/83275f4c627fefb4937c6a5c13be3160859c46144f91a8870cfe92fc26ea4840",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/833b70bcc178bf0273fefcd09d5079de22b96ba8de8b149d07ef86694f82d91c",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/8509f20395380b57f51ed0da1543e3beaf601d1da025f3601c6c32d916c33231",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/856a628358a5f9d83210ee54cf678ff0581ba143172a40aeaf2c5c23e336c0ab",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/86471ecc3eab3ef3bfc4155e2d0eee15804e5e6e14842431d07767d23e4ec629",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/86b69a79d9cef5b665084a3dcb5b19aa7a06e52ec9f76b986132774591e3ae93",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/86fedf49dc91be8b74d071ca5363dce285a3a489051c98b1c44344936fe4b08f",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/89b5a1673d5d696db1fb98bd1668367e70f986df658e734c3a01e2e971484e64",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/8bcc9b01c2fc0f6e4ee8df46077219907b3db4c29432534c758c64e4e0b57785",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/8c98a9a453c27250b68a92a51ad198b8295217b0840ee53eafabda12cd5a8656",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/8dbd3a6afebe5d92c125f2176e94bac6e5ac6d6207728cee301850959c1a885a",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/8ec146ec6940336a689b71f4b1384361fc7e1a38d8b751894209ec72de94c9f9",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/8f42f2bf40c20d94cf99870e70e5727b83ccee523928578ba11c05163af9cefc",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/94cd0ab161fb468a836349f5ed482ba58ce8e709a05c57ce533d739dbd35cca9",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/955f593b4b0b643e8c36d3869753b30508fb429b82df40abfbe156e929921e9b",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/958a6780f900999ec4b430ec599d7ee463df698732d58c6a113e27138c8e8384",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/9705cd36b7eba1c63514ef9676c60ff3d125d25cbc380c3d6c3082f0c73051a4",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/9875864cd54816aebcbc60dfb3c06681d17505a6abe8bbbb666aea7cf73fb434",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/98dfd03920f11ca870be7bf2d6f2b3d6f9ebe043c1188e7863ffebf551064884",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/9951ec967fcde015ca52a609125d91021116d9c27fbdf3ea7d68b64be69810f3",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/9985c82df0bb7ba7433a59fe2b17c1c84293e1f551ea835d135e3be1fc1a189b",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/9af212cfc711f7c825f27868c1349ecd43c31bef113f0aa8e911eb2518be62fd",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/9b13e50e1d06da61fc134912d1733623ec2badd015395968b5af4d0b9e37dd77",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/9b4991dd3bbc052cf644ad185b07a3e34c6a5820787eff890d5693d332115f2a",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/9dd84f8affbf8a75f0d641fafe3502fce614fa41161987e9fa1a183eff3cfc19",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/9e8a06c38c8842eea8d4922cb9d1ead8e3ace647bab259b943c994a1b4742bc2",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/9e8bac2c6e8f32fc88a8697cb3c320576b2ad5d20a43b506a81d6ba7c2f9311e",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/9f1527dbf113734ab85b8c9b2f9869c801e72411fb26cee997914d247ad4c2dc",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/9f9aba81c68aaa67e6e33766c683f619d5db0b346a3daf470e9339504bd31c0a",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/a25137907a705f5415679fd71995b0b4375d726581dc07e518c67c9df42c9143",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/a2a97a49fb6adb830354162602bd2ddd773726e10dcccf3ada9c2758220eabc9",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/a3b51e92fae55c821c2b8817f7e749d15e1152e5c06824a3bd8867e28e95b6e6",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/a445c490ad4d1e82b9ead60095184e55170d5887e2f99b7bb5e595d2a0088e4c",
+          "state": "file",
+          "sha256": "a445c490ad4d1e82b9ead60095184e55170d5887e2f99b7bb5e595d2a0088e4c",
+          "bytes": 31116
+        },
+        {
+          "path": "template/blobs/a563d7ab15f526cc99cc51d078dd03d188ae519a6ad51546973e24f0d0367748",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/a6f5f07b1027c887739abaa2ee6f2337d0b33a51961750d42baafd6fb4bdcae6",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/a7329dae357b2a58984372aa35e90833cc547f834461a6d5773e927f4a16da21",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/a767184f6e4a0ed36f290685f44cdf554dd313609ad4d762871ed6de810f7fa2",
+          "state": "file",
+          "sha256": "a767184f6e4a0ed36f290685f44cdf554dd313609ad4d762871ed6de810f7fa2",
+          "bytes": 1942
+        },
+        {
+          "path": "template/blobs/ab6ab7e8f71cdc4e28d28032f7c11cbebf4b86fef930ad72692550b762c1a10e",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/acae19b192ba7aa11d58892ef2ab9a59c1285fd9a3c6b207472814616275c01f",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/ae25a4a41e42aa256fbaf3b6b5eb024fda3863067f43dac72900df4b9688a758",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/af55f9c4ba9eae99f049c027d475ca42b448024c1beba914f0ccd02a853ef87f",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/af9eae3f60282b74a3554b8fa02cb4b1811f69d02f5a3c0be82e408c76d58508",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/b13d144b45c7af199b0f4619700615a482d467e62c65749a946e3443cba6193a",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/b15a23a85cda01dfd013568feedbdd790a2d6d6f6b9f3dcb4b88a10ec2ee929f",
+          "state": "file",
+          "sha256": "b15a23a85cda01dfd013568feedbdd790a2d6d6f6b9f3dcb4b88a10ec2ee929f",
+          "bytes": 22211
+        },
+        {
+          "path": "template/blobs/b303c9b70225d6d6f58570cb7c8e2096a11bb90640c09bc1f1516a9c0c26f9ff",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/b4d844f53ef355635ed57f6e0e1566ed9b2daf698262e6e173363a817fcf318d",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/b5873052fe61ba4db9ef6b9073d4dc4ead768dbda3328638ae99a59976760560",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/ba7b0c45db810323c3b3d716f9802b63625132392f44f62bb4f7790c3cd2ccf1",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/bd2c58fc15d756eaaef9c20dc276300aa4547d557f2e8009712813f7b230a7aa",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/bd602f32f04b4e61ba41e580c8ea0520edf7d59881d7cd62509ac421dd725263",
+          "state": "file",
+          "sha256": "bd602f32f04b4e61ba41e580c8ea0520edf7d59881d7cd62509ac421dd725263",
+          "bytes": 3833
+        },
+        {
+          "path": "template/blobs/bd8aa713c4c94c59cb312946b62b8fca176f9106d144bb1051d368ea6b219b4e",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/bdad0c40931a998c237b67de34578e2cb63b18566b25e5708d2a8f8adc9c8c2b",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/bfebf5a09ca081a5782356388953cf035e597df8f7460470f72940483170ba5a",
+          "state": "file",
+          "sha256": "bfebf5a09ca081a5782356388953cf035e597df8f7460470f72940483170ba5a",
+          "bytes": 3617
+        },
+        {
+          "path": "template/blobs/c13b1c8fdf0b6439b17355ca2492d32823fdb00737c445f1e077b18741106ea5",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/c34436f4bfcaf931f9d4b71c30fb279b0c52f5405ef2ab3b198019394a70a992",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/c6159f1ba504811f4a38f0d5a0fe412b9ec65df5a90d52d97192e759940dc612",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/c7339b7b1b1421b7788c72a75c8f913633c30ca37ac3552d056aa514fa7891fc",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/c8a4f478ed706e5b30a6cb497dec6797bd4a54451d12d24d01444299d3d9ace2",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/c8cb20f68ebf0edb4e497bc11ae5fcaa196004e661cd189015b04f4109ced7f1",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/c9f900395aa3cf2a643d3b6b639641813deea074844d6c9aef32dbd1c1f84b2c",
+          "state": "file",
+          "sha256": "c9f900395aa3cf2a643d3b6b639641813deea074844d6c9aef32dbd1c1f84b2c",
+          "bytes": 7842
+        },
+        {
+          "path": "template/blobs/cb83208ebcfcdb97f933fd8f18add10307ba80fc25a33807a90209052c2c1fb8",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/cc29f7a6094d564961f77259952c6b5e5017d2add550095961dce00997cb1fd4",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/ccc0365111ab75cb77da9136f2ec9e9fcd6929a745edf597a0b5f726b591f43f",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/cf478380c571b7ef2fa4dd7b1d56622605c17c4a5fd1b91062f3825157d038a2",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/d040a7d642cba64d6e794324f89a5e4d2f50ae56af3ab4f814af68304fca5ecd",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/d0b803bebd410ca7e20a88a3acb2595ea1c09813c7b734331c02f0ce0d34cf6a",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/d1b1499324d99d4bee0de1bd6209f5a25dfa475bcef19f9051c53856d17940ee",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/d26af4a35a4dd1d5253a5747c5501d2814cdb1ccea74cfb7342ffe5a29740717",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/d3b1730fefd8c21814932f11ab36a8c30e4a9e4c3db5bed60deb0cda0022f8b3",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/d3cff616da72a5bbbf1410ef21a75c5428f2d2633305a1a230973dc8ac3e3b9e",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/d3dc0729c8e58eca0331e2c14f90a48c420a9c6d5b185fbf333b6a42ceb14fc1",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/d41d4e27aba97c388db4c3968d6cb2763a11f6dd008375c036af043c7f73b6db",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/d505825a712dc326ba6be92d0cce4ef14e1a8b37a1807597c4d586787a678bf3",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/d67470908a20997c3d485b6a1b8bdb2b6d553f62721657688f57d5e9f8deb233",
+          "state": "file",
+          "sha256": "d67470908a20997c3d485b6a1b8bdb2b6d553f62721657688f57d5e9f8deb233",
+          "bytes": 23952
+        },
+        {
+          "path": "template/blobs/d6dc11d5d7a181b4a367da53a7b60c004573359a8258f6279d7d31a09c61d6b7",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/da6f3350a1e395fbd6aef18f6e4d57a3e0b264a2ded01dfe7d94cf5d52af9ea9",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/dae507314c60ee4e11c0e17a19303b04ac2cdd60e86e5ee45d7b3bdcd8cb72ee",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/db4b91e7a7d5749c25662aeebbefcb043cd2a502f6c79f9bb5113e3c8c4ba298",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/dd709aedaacb433d65840dfcec570e82a639ee53aaf72c237be8df2462e3375c",
+          "state": "file",
+          "sha256": "dd709aedaacb433d65840dfcec570e82a639ee53aaf72c237be8df2462e3375c",
+          "bytes": 791
+        },
+        {
+          "path": "template/blobs/de89992861b819e13ab8cbea372083eebf6a87578d13ec1888130724f5dbe396",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/ded684412671dd5fdc0cc10d453564950e6d47717672ab00a70e725935dfc85b",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/dfdaffb9e0b54f37c807825314a2cb4ec33d6ef0966018d5d52bb7a57cfbaebe",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/dfdd5f20c80920ade5ed6caa881c63a859fa2ea0a0ec85df2a9c088f39352034",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/e14d479007a1a9169a488dc601c95e2dc57ca118ea7d82343dc700ae05d2d992",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/e2b7b3055bfa3a411d7fa2570026e477f7aa3eaaa7520fbd2b08d90583ae351f",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/e2ca04434be54acdee2f5df582ef8038fadf582bbcc99be0d2e27737ff8ed096",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/e2e52d04865d8bd0d9c2260f6d83e4f8b801d149499618b7f67a6928736206eb",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/e41b78e57bcf7c843c78b4a00c98a510175a653dd85230f7c7d708e36341cc0a",
+          "state": "file",
+          "sha256": "e41b78e57bcf7c843c78b4a00c98a510175a653dd85230f7c7d708e36341cc0a",
+          "bytes": 1255
+        },
+        {
+          "path": "template/blobs/e4971132a0f33f8d052aef1616f11db741d6dc9223da7cf5197aded6b43c77a4",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/e63e61dd591f4006a60bb4f3efa2bc5359edb0afccc489fcb518636eb4d7fb36",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/e6f4ab3deaa9d818a6b3b0e3ea69d1ce4b6928bba2a9460225b79d94732a609b",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/e7ea13d9c56fb4d7e8e40429c08b87036579a91732cea86875acd86cd94fa549",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/e8f206d15407af5799f0887c132790f54cd9f28707ee41e9d4bfad5c369ff34f",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/e90a94d0750cf0d06c8553a59b51e90a2612783087e3c72f7b22618a34463d88",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/ebf74db3265da64f2119f8d404279833ebf1896dacc63a1adfef5aa885f7f08d",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/ef82add8cf786343a7065a516d7c8be284bd69acd52d40f13e7ecf119c56e0ce",
+          "state": "file",
+          "sha256": "ef82add8cf786343a7065a516d7c8be284bd69acd52d40f13e7ecf119c56e0ce",
+          "bytes": 4307
+        },
+        {
+          "path": "template/blobs/efa8fa419bdb514dbeb883f09d23dbc981481aac2848e63d119823384a42076c",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/f069793792a1961798cf8364b37f6cd7196c8d7e7653633ceeb1dc494e0874e3",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/f06bc09556b47a6d2a856421d400d7128419611111c541433a74efa28c521a62",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/f3ce92b699725374f7a2a88af884802c77c147076441933c9ac7b5f2cd965a2d",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/f3db1b8cfe4e73cf15a46abaabe8cbc46ae8eccd1fca8996e411f85cc1310df1",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/f419da66e0eb28dad2a40213faa6c9d09287c77708ea67bce940678ae34bb1e1",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/f7a5e9a0895568698334d266c314ea6b60444a2bd67337b7be94d9ebb3f33c4d",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/f86d1e08037bcce86e1f7cfcfaeb23090beba63722764b889dc5f57a0aacd3bd",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/f8dc77066c77086f9fdce6ed88702311ecdd7d1b7ebda694181f4778b5e9d3f4",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/fb7ab0deafe0d33ec3b436192944a5aa3d01bbf0fee1fecb1abcb6115adfec6c",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/fd74362b0eabc26f3812fcf120bf553fcd377694c188665aa38410e07b64645a",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/fd97b284f0b8f92079895c982b7b837d03375ec10ddf9ba00f763034bcfadcb1",
+          "state": "deleted"
+        },
+        {
+          "path": "template/blobs/fdb19f2253dc6bf47f5b1d8f363f309041e3206032854924296434b0c8f1435b",
+          "state": "deleted"
+        }
+      ]
+    }
+  ]
+}

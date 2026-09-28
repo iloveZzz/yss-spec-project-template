@@ -1,0 +1,25 @@
+{
+  "label": "replacement-frontend-init",
+  "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+  "argv": [
+    "node",
+    "/private/tmp/yss-retirement-implementation-o63zsznx/installed/node_modules/create-yss-harness-frontend/bin/create-yss-harness-frontend.js",
+    "init",
+    "--target-dir",
+    "/private/tmp/yss-retirement-implementation-o63zsznx/frontend-smoke",
+    "--project-name",
+    "retirement-smoke",
+    "--business-domain",
+    "verification",
+    "--team-size",
+    "1",
+    "--issue-tracker",
+    "local-markdown",
+    "--json"
+  ],
+  "started_at": "2026-09-28T09:58:45.065713+00:00",
+  "exit_code": 0,
+  "duration_seconds": 55.074,
+  "stdout": "replacement-frontend-init.stdout.log",
+  "stderr": "replacement-frontend-init.stderr.log"
+}

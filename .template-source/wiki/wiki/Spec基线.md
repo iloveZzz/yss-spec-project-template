@@ -2,7 +2,7 @@
 
 Spec 是记录用户问题、解决方案、用户故事、关键决策、验收标准和测试 seam 的产品研发规格。新资产统一使用 Spec；过时称谓只出现在迁移指南或明确标注的旧项目上下文。它是 [[产品研发生命周期]] 进入实现前的核心需求资产，不是可以直接编码的 Ticket。
 
-新功能或较大变更先进入 `yss-product-lifecycle` 的原生 Discovery / 需求分析工作单元；`grill-with-docs` 与 `to-spec` 只是用户显式兼容入口。Spec 基线与产品设计影响的完整判定以生命周期注册表和 [[影响面分诊与流程裁剪]] 为准，不以兼容入口替代原生工作单元。`work-unit.spec-synthesis` 的输入是已确认的 Discovery 记录和测试 seam，产出 Spec、产品总体设计和功能架构；内容完整后进入 `ready-for-human`，下游推进仍需 `gate.spec-baseline-approved`。
+新功能或较大变更先进入 `yss-product-lifecycle` 的原生 Discovery / 需求分析工作单元；`to-spec` 只是用户显式兼容入口。Spec 基线与产品设计影响的完整判定以生命周期注册表和 [[影响面分诊与流程裁剪]] 为准，不以兼容入口替代原生工作单元。`work-unit.spec-synthesis` 的输入是已确认的 Discovery 记录和测试 seam，产出 Spec、产品总体设计和功能架构；内容完整后进入 `ready-for-human`，下游推进仍需 `gate.spec-baseline-approved`。
 
 模板 `.template-spec/templates/spec-template.md` 的 frontmatter 含 `pipeline`、`stage`、`status`、`owner`；`status` 默认 `ready-for-human`，`stage` 默认 `open`，`owner` 默认 `ai`。正文先挂功能父 Ticket，再写问题陈述、解决方案、用户故事、功能需求、非功能需求、验收标准（gherkin）、产品总体设计 / 功能架构、OpenAPI 影响、DDD 影响判断、测试决策、AI / 人工审查点、非目标范围和风险。Local 路径约定为 `docs/.scratch/<feature>/spec.md`，父 Ticket 为 `docs/.scratch/<feature>/parent-ticket.md`。
 
