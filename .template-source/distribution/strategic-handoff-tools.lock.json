@@ -2,7 +2,7 @@
   "schema_version": 1,
   "target_id": "template-root",
   "source_repository": "yss-spec-project-template",
-  "source_revision": "6c3f6c14c80fc940f5ee3f4ad618f53425cc401c",
+  "source_revision": "429d92b87a43d13fa18d2a248f47f02a27cc4fb4",
   "source_state": "committed",
   "transformation_set": [
     "identity"
@@ -97,7 +97,7 @@
     "scripts/lib/context-contract.mjs": "sha256:4c674b02875b96f6bd8d8022c010423744cb7b82abe2a60e844ff74dd74e2220",
     "scripts/lib/context-reconciliation.mjs": "sha256:20ef9e5a43c96d15bd201a2c769f62d45b1af0e65cd3b84ea15b8c68893802a6",
     "scripts/lib/contract-source.mjs": "sha256:57d271e9be9b8ccb171671be3e244c0a148da00b93bc67400d0c27c7e9148fe2",
-    "scripts/lib/contract-views.mjs": "sha256:37d85acde58bdb9b91d2fd4162c4be1401889efac2ecb1354e430ec74042e8d3",
+    "scripts/lib/contract-views.mjs": "sha256:694d4fd94f4ecf50a9d6408ebc845ed70f02f5c673bf59f636370f8b1216df94",
     "scripts/lib/decision-continuation.mjs": "sha256:fbd544e0468ef7df19e6e69e33fd39d9fd419fc785ef606ec82f45edca9b70c1",
     "scripts/lib/delivery-preflight.mjs": "sha256:ccf908d513dfeb607f39f15e47c92dde3496342c6f6181f7bc2e97f467268b4f",
     "scripts/lib/existing-backend-architecture.mjs": "sha256:62ccf0726329aa6a75e018804b5c2e52041465c0e8bf72723aa14bb25ff58f27",
@@ -256,7 +256,7 @@
     "scripts/lib/context-contract.mjs": "sha256:4c674b02875b96f6bd8d8022c010423744cb7b82abe2a60e844ff74dd74e2220",
     "scripts/lib/context-reconciliation.mjs": "sha256:20ef9e5a43c96d15bd201a2c769f62d45b1af0e65cd3b84ea15b8c68893802a6",
     "scripts/lib/contract-source.mjs": "sha256:57d271e9be9b8ccb171671be3e244c0a148da00b93bc67400d0c27c7e9148fe2",
-    "scripts/lib/contract-views.mjs": "sha256:37d85acde58bdb9b91d2fd4162c4be1401889efac2ecb1354e430ec74042e8d3",
+    "scripts/lib/contract-views.mjs": "sha256:694d4fd94f4ecf50a9d6408ebc845ed70f02f5c673bf59f636370f8b1216df94",
     "scripts/lib/decision-continuation.mjs": "sha256:fbd544e0468ef7df19e6e69e33fd39d9fd419fc785ef606ec82f45edca9b70c1",
     "scripts/lib/delivery-preflight.mjs": "sha256:ccf908d513dfeb607f39f15e47c92dde3496342c6f6181f7bc2e97f467268b4f",
     "scripts/lib/existing-backend-architecture.mjs": "sha256:62ccf0726329aa6a75e018804b5c2e52041465c0e8bf72723aa14bb25ff58f27",
