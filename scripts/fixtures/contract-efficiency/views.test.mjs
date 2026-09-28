@@ -30,12 +30,16 @@ test('all lifecycle asset groups remain readable and preserve unclassified const
  }finally{f.cleanup();}
 });
 
-test('compact review achieves the byte target without hiding required review information; task includes verification cwd and evidence',async()=>{
+test('review keeps its summary byte budget while retaining all mandatory global constraints; task includes verification cwd and evidence',async()=>{
  const {viewContract}=await import('../../lib/contract-views.mjs');const {renderSliceContractView}=await import('../../lib/slice-contract-views.mjs');
  const f=pilotFixture();try{
  f.write('slice.yaml',stringify({slice_contract:f.contract}));
  const original=renderSliceContractView('slice.yaml',{root:f.root}),review=viewContract('slice.yaml',{root:f.root,kind:'slice'}),task=viewContract('slice.yaml',{root:f.root,kind:'slice',profile:'task',unit_id:'work-unit.slice-backend'});
- assert.ok(Buffer.byteLength(review.markdown)<=Buffer.byteLength(original.markdown)*.3);
+ // Mandatory constraints cannot be omitted to satisfy a presentation-only byte budget.
+ assert.deepEqual(review.content.全局约束,original.constraints);
+ const constraintBytes=Buffer.byteLength(JSON.stringify(original.constraints,null,2));
+ assert.ok(Buffer.byteLength(review.markdown)-constraintBytes<=Buffer.byteLength(original.markdown)*.3);
+ assert.ok(Buffer.byteLength(review.markdown)<Buffer.byteLength(original.markdown));
  for(const text of ['提交完整材料','无新增审批规则','AC-1','关键取舍','风险','待决定','来源或批准过期'])assert.ok(review.markdown.includes(text),text);
  for(const text of [f.project,'./mvnw test','results/test.log','test-seam.failure','yss-web-controller','不得绕过持久化约束'])assert.ok(task.markdown.includes(text),text);
  }finally{f.cleanup();}
