@@ -74,6 +74,8 @@ function view(ref,{root=process.cwd(),kind,profile='review',unit_id}={}){
    for(const [label,pattern]of [['风险',/风险/],['关键取舍',/取舍/],['待决定事项',/待|决定/],['变化',/变化|变更/]])if(!Object.keys(content).some(k=>pattern.test(k)))content[label]='来源未说明，审阅时核实。';
    const reviewKnown=new Set(['schema_version','contract_id','contract_version','slice_id','status','basis','scope','common','lifecycle_refs','applicability','resolution','acceptance','verification','work_units','extensions','ticket_policy']);
    content.未分类约束=Object.fromEntries(Object.entries(loaded.raw).filter(([key])=>!reviewKnown.has(key)));
+   // Normalization preserves raw v2 common / v3 scope, including nested unknown constraints.
+   content.全局约束=legacy.constraints;
    content.专项约束=loaded.raw.extensions;content.适用性=loaded.raw.applicability;
    const extensions=loaded.raw.extensions||{};
    for(const [name,extension]of Object.entries(extensions))for(const [key,value]of Object.entries(extension))if(/risk|constraint|decision|block|exception|unknown/.test(key))content[`${name}.${key}`]=value;
