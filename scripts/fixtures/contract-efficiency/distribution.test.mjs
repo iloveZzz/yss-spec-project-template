@@ -3,8 +3,18 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
+import {createHash} from 'node:crypto';
 import {pilotFixture} from '../slice-contract-v3/pilot-fixture.mjs';
 import {stringify} from '../../vendor/yaml.mjs';
+test('every receiving template matches the effective bytes in its shared tool lock',()=>{
+ for(const receiver of ['.','submodules/yss-harness-design-agent','submodules/yss-harness-backend-agent','submodules/yss-harness-frontend-agent']){
+  const lock=JSON.parse(fs.readFileSync(path.join(receiver,'.template-source/distribution/strategic-handoff-tools.lock.json')));
+  for(const [ref,expected] of Object.entries(lock.effective_files)){
+   const actual=`sha256:${createHash('sha256').update(fs.readFileSync(path.join(receiver,ref))).digest('hex')}`;
+   assert.equal(actual,expected,`${receiver}/${ref}: projected bytes differ from lock`);
+  }
+ }
+});
 test('design/backend/frontend receivers expose identical review and task constraints using original YAML',()=>{
  const f=pilotFixture();try{
  f.write('slice.yaml',stringify({slice_contract:f.contract}));

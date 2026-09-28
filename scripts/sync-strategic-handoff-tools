@@ -95,7 +95,7 @@ for(const name of ['create-yss-spec']) {
 for(const target of targets){
  if(!existsSync(path.join(root,target,'.git')))continue;
  if(!check){const state=inspectWorkingTreeScope(root,{project_root:target,repository_scope:'git-submodule',checkout_state:'attached-branch'});if(!state.writable)throw new Error(`${target}: ${state.violation}`);}
- if(!target.endsWith('design-agent'))for(const ref of sliceExecutionRefs)sync(path.join(root,ref),path.join(root,target,ref));
+ if(!target.endsWith('design-agent'))for(const ref of sliceExecutionRefs)sync(path.join(root,ref),path.join(root,target,ref),transformationFor(target,ref));
  if(!target.endsWith('design-agent'))for(const ref of ['scripts/verify-frontend-delivery-scenarios','scripts/fixtures/backend-delivery/revision-server.mjs'])sync(path.join(root,ref),path.join(root,target,ref));
  if(target.endsWith('backend-agent'))for(const ref of ['scripts/fixtures/existing-backend/scenarios.test.mjs','scripts/verify-existing-backend-architecture-scenarios','scripts/lib/implementation-contract-compiler.mjs','scripts/lib/technical-design-boundary.mjs',...backendPlatformRefs])sync(path.join(root,ref),path.join(root,target,ref));
  if(target.endsWith('backend-agent'))sync(path.join(root,visualSource),path.join(root,target,visualWire),'backend-wire-library');
