@@ -1,0 +1,3 @@
+# Keep raw command output byte-for-byte, including whitespace emitted by tools.
+*.stdout -whitespace
+*.stderr -whitespace
