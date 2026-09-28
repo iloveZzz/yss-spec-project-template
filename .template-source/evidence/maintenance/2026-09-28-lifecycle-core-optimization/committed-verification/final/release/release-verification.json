@@ -1,0 +1,187 @@
+{
+  "schema_version": 1,
+  "requested_commit": "07d7fa19931cf05f45eaf6505dca1af236efac24",
+  "status": "passed",
+  "started_at": "2026-09-28T09:55:50.222Z",
+  "commands": [
+    {
+      "command": "scripts/repository-mode",
+      "args": [],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/lifecycle-core-verification/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 35,
+      "log": "01.log"
+    },
+    {
+      "command": "scripts/verify-template",
+      "args": [
+        "--concurrency",
+        "1"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/lifecycle-core-verification/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 697997,
+      "log": "02.log"
+    },
+    {
+      "command": "git",
+      "args": [
+        "clone",
+        "--shared",
+        "--no-checkout",
+        "/Users/zhudaoming/.codex/worktrees/lifecycle-core-verification/yss-spec-project-template/submodules/create-yss-spec",
+        "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-template-release-7GuJVb/cli"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/lifecycle-core-verification/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 685,
+      "log": "03.log"
+    },
+    {
+      "command": "git",
+      "args": [
+        "checkout",
+        "--detach",
+        "b8dc7c5b4244da02b5089649b243447b070f18d9"
+      ],
+      "cwd": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-template-release-7GuJVb/cli",
+      "exit_code": 0,
+      "duration_ms": 1388,
+      "log": "04.log"
+    },
+    {
+      "command": "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+      "args": [
+        "scripts/sync-template.js"
+      ],
+      "cwd": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-template-release-7GuJVb/cli",
+      "exit_code": 0,
+      "duration_ms": 60563,
+      "log": "05.log"
+    },
+    {
+      "command": "npm",
+      "args": [
+        "pack",
+        "--ignore-scripts",
+        "--json"
+      ],
+      "cwd": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-template-release-7GuJVb/cli",
+      "exit_code": 0,
+      "duration_ms": 4277,
+      "log": "06.log"
+    },
+    {
+      "command": "npm",
+      "args": [
+        "install",
+        "--prefix",
+        "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-template-release-7GuJVb/consumer",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund",
+        "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-template-release-7GuJVb/cli/create-yss-spec-3.5.2.tgz"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/lifecycle-core-verification/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 22538,
+      "log": "07.log"
+    },
+    {
+      "command": "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+      "args": [
+        "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-template-release-7GuJVb/consumer/node_modules/create-yss-spec/bin/create-yss-spec.js",
+        "--target-dir",
+        "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-template-release-7GuJVb/instance",
+        "--project-name",
+        "CI release verification",
+        "--business-domain",
+        "模板发布验收",
+        "--team-size",
+        "3",
+        "--agent-runtime",
+        "codex"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/lifecycle-core-verification/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 1223,
+      "log": "08.log"
+    },
+    {
+      "command": "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+      "args": [
+        "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-template-release-7GuJVb/instance/scripts/sync-skills",
+        "--check"
+      ],
+      "cwd": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-template-release-7GuJVb/instance",
+      "exit_code": 0,
+      "duration_ms": 45,
+      "log": "09.log"
+    },
+    {
+      "command": "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+      "args": [
+        "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-template-release-7GuJVb/instance/scripts/update-skill-lock",
+        "--check"
+      ],
+      "cwd": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-template-release-7GuJVb/instance",
+      "exit_code": 0,
+      "duration_ms": 44,
+      "log": "10.log"
+    },
+    {
+      "command": "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+      "args": [
+        "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-template-release-7GuJVb/consumer/node_modules/create-yss-spec/bin/create-yss-spec.js",
+        "sync",
+        "--target-dir",
+        "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-template-release-7GuJVb/instance",
+        "--dry-run"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/lifecycle-core-verification/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 207,
+      "log": "11.log"
+    },
+    {
+      "command": "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+      "args": [
+        "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-template-release-7GuJVb/consumer/node_modules/create-yss-spec/bin/create-yss-spec.js",
+        "sync",
+        "--target-dir",
+        "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-template-release-7GuJVb/instance"
+      ],
+      "cwd": "/Users/zhudaoming/.codex/worktrees/lifecycle-core-verification/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 267,
+      "log": "12.log"
+    }
+  ],
+  "publication": "not-performed",
+  "template_commit": "07d7fa19931cf05f45eaf6505dca1af236efac24",
+  "generator_commit": "b8dc7c5b4244da02b5089649b243447b070f18d9",
+  "submodules": "8cdcc3e59cf03190bab4e6533fdd9d5fbdf7011d submodules/create-yss-harness-backend (heads/codex/lifecycle-core-verification)\n 97b19fad7b8935650fb7e654259f6bfd8c753a58 submodules/create-yss-harness-frontend (heads/codex/lifecycle-core-verification)\n b8dc7c5b4244da02b5089649b243447b070f18d9 submodules/create-yss-spec (heads/codex/lifecycle-core-verification)\n d421c69dbcdc45ef94536ccc2d27f36508f65292 submodules/create-yss-strategic-design (heads/codex/lifecycle-core-verification)\n cbded26aea8b4104f87b2377922bc3416befb0a6 submodules/yss-harness-backend-agent (heads/codex/lifecycle-core-verification)\n 98b2d5682b1ded9f35b9773929006d225bc0c305 submodules/yss-harness-design-agent (heads/codex/lifecycle-core-verification)\n 2aa574462cb55815421e03cd394da02e06d9948c submodules/yss-harness-frontend-agent (heads/codex/lifecycle-core-verification)",
+  "generated_snapshot": {
+    "schemaVersion": 1,
+    "templateName": "yss-spec-project-template",
+    "templateSource": "github:iloveZzz/yss-spec-project-template",
+    "templateRepository": "https://github.com/iloveZzz/yss-spec-project-template.git",
+    "requestedRef": "07d7fa19931cf05f45eaf6505dca1af236efac24",
+    "templateCommit": "07d7fa19931cf05f45eaf6505dca1af236efac24",
+    "sourceState": "committed",
+    "manifestHash": "08a47c580dbe9c3b5a3b9470e1d5916069133d89c3f83bc2b30224b35bf6605f",
+    "encodedPaths": {
+      ".agents/skills/yss-frontend-scaffold-generator/assets/data-quality-v1/.gitignore": ".agents/skills/yss-frontend-scaffold-generator/assets/data-quality-v1/__yss_dotfile__.gitignore",
+      ".codex/skills/data-analytics/.gitignore": ".codex/skills/data-analytics/__yss_dotfile__.gitignore",
+      ".codex/skills/product-design/.npmignore": ".codex/skills/product-design/__yss_dotfile__.npmignore",
+      ".codex/skills/product-design/templates/prototype/.npmrc": ".codex/skills/product-design/templates/prototype/__yss_dotfile__.npmrc",
+      ".codex/skills/yss-frontend-scaffold-generator/assets/data-quality-v1/.gitignore": ".codex/skills/yss-frontend-scaffold-generator/assets/data-quality-v1/__yss_dotfile__.gitignore",
+      ".cursor/skills/yss-frontend-scaffold-generator/assets/data-quality-v1/.gitignore": ".cursor/skills/yss-frontend-scaffold-generator/assets/data-quality-v1/__yss_dotfile__.gitignore",
+      ".gitignore": "__yss_dotfile__.gitignore",
+      ".pi/skills/yss-frontend-scaffold-generator/assets/data-quality-v1/.gitignore": ".pi/skills/yss-frontend-scaffold-generator/assets/data-quality-v1/__yss_dotfile__.gitignore"
+    },
+    "snapshotHash": "503db7e4c103e00d92f73d5d601064c016d4e70d9733ce1160125bfd3d05d91a",
+    "generatedAt": "2026-09-28T10:08:30.658Z"
+  },
+  "finished_at": "2026-09-28T10:09:17.926Z"
+}

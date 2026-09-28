@@ -1,0 +1,43 @@
+[
+  {
+    "command": [
+      "node",
+      "scripts/update-skill-lock",
+      "--check"
+    ],
+    "exit_code": 0,
+    "stdout": "skills-lock.json matches distributed skills\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "node",
+      "scripts/verify-upstream-skill-source",
+      "--source=iloveZzz/yss-harness-design-agent",
+      "--source-root=submodules/yss-harness-design-agent"
+    ],
+    "exit_code": 0,
+    "stdout": "上游 iloveZzz/yss-harness-design-agent@98b2d5682b1ded9f35b9773929006d225bc0c305 及其 skill hashes 验证通过\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "node",
+      "scripts/sync-profile-skills",
+      "--check"
+    ],
+    "exit_code": 0,
+    "stdout": "profile skills: design, backend, frontend\n模式：只读检查\n受影响 profile：无\n已有问题：0 项（含冲突、缺失依赖与未登记差异）\n本次未发现同步差异或问题；不代表项目验证已通过。\n文件差异、分类与 SHA-256 继续使用现有 --json 报告；本摘要不判断下游项目兼容性。\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "node",
+      "--test",
+      "scripts/fixtures/contract-efficiency/distribution.test.mjs"
+    ],
+    "exit_code": 0,
+    "stdout": "✔ every receiving template matches the effective bytes in its shared tool lock (13.947708ms)\n✔ design/backend/frontend receivers expose identical review and task constraints using original YAML (1841.503ms)\nℹ tests 2\nℹ suites 0\nℹ pass 2\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 1909.597083\n",
+    "stderr": ""
+  }
+]

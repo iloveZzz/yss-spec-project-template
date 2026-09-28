@@ -1,0 +1,48 @@
+{
+  "verified_source": "07d7fa19931cf05f45eaf6505dca1af236efac24",
+  "repositories": [
+    {
+      "repository": ".",
+      "head": "07d7fa19931cf05f45eaf6505dca1af236efac24"
+    },
+    {
+      "repository": "submodules/create-yss-strategic-design",
+      "head": "d421c69dbcdc45ef94536ccc2d27f36508f65292"
+    },
+    {
+      "repository": "submodules/yss-harness-design-agent",
+      "head": "98b2d5682b1ded9f35b9773929006d225bc0c305"
+    },
+    {
+      "repository": "submodules/yss-harness-backend-agent",
+      "head": "cbded26aea8b4104f87b2377922bc3416befb0a6"
+    },
+    {
+      "repository": "submodules/yss-harness-frontend-agent",
+      "head": "2aa574462cb55815421e03cd394da02e06d9948c"
+    },
+    {
+      "repository": "submodules/create-yss-spec",
+      "head": "b8dc7c5b4244da02b5089649b243447b070f18d9"
+    },
+    {
+      "repository": "submodules/create-yss-harness-frontend",
+      "head": "97b19fad7b8935650fb7e654259f6bfd8c753a58"
+    },
+    {
+      "repository": "submodules/create-yss-harness-backend",
+      "head": "8cdcc3e59cf03190bab4e6533fdd9d5fbdf7011d"
+    }
+  ],
+  "root_history": [
+    "07d7fa19931cf05f45eaf6505dca1af236efac24 chore(skills): refresh committed design source provenance",
+    "aa597676ea6435f483a517f68ce3d9d87bd8e2c5 docs(evidence): preserve lifecycle research and bounded evaluation traces",
+    "b11a8d12364ce13f5b43ed76ce83e852458bae3f chore(distribution): pin verified lifecycle projection snapshots",
+    "adde1acf4ac4f012efd3a9f29cb63b42bf42f930 feat(llm-wiki): 落地可信编译与增量事务工作流",
+    "24e225b6786724372ff14503fcbedcbd3302a4ef chore(distribution): pin corrected execution tool projections",
+    "83c5f3b4b6f289deb6005fc007b17b2a86a3f933 fix(distribution): apply backend wire transforms to execution tools",
+    "fb524de41d41d0d64e2f57cf7790c506642fe363 chore(distribution): pin committed lifecycle CLI snapshots",
+    "9e9abf162d532c16c0292bba21f68d8c17f29d9e chore(distribution): bind lifecycle tools to committed sources",
+    "bda19943b3b7eb3c4f88510863aeee0987b9f736 fix(lifecycle): close research and bind task acceptance evidence"
+  ]
+}

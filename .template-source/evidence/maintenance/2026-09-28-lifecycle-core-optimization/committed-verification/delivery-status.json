@@ -1,0 +1,59 @@
+{
+  "kind": "template-maintenance-delivery-status",
+  "recorded_at": "2026-09-28T10:10:50.889751+00:00",
+  "repository_mode": "template-source",
+  "intensity": "L3",
+  "target_state": "implementation-ready",
+  "current_state": "implementation-ready",
+  "implementation_ready": true,
+  "readiness_scope": "已实现正确性修复、显式 task focused 视图、Skill 和分发同步；不包含 focused 默认推广或全部 Agent 场景通过结论。",
+  "source_commit": "07d7fa19931cf05f45eaf6505dca1af236efac24",
+  "verification_profile_actual": "release",
+  "review_mode": "maintainer-self-check",
+  "independent_review_claimed": false,
+  "context_reconciliation": {
+    "status": "not-applicable",
+    "reason": "模板维护，没有产品词汇或批准迁移。"
+  },
+  "fresh_verification": {
+    "status": "passed",
+    "report_ref": "final/release/release-verification.json",
+    "outer_commands": 12,
+    "all_exit_codes_zero": true,
+    "node": "v24.21.0",
+    "npm": "11.19.0",
+    "isolated_checkout": "/Users/zhudaoming/.codex/worktrees/lifecycle-core-verification/yss-spec-project-template",
+    "clean_checkout_before_and_after": true,
+    "full_input_digest_check_passed": true,
+    "syntax_checks": 103,
+    "source_delta_after_verified_commit": []
+  },
+  "regression_fixes": [
+    "backend slice execution tool projection now applies its registered wire import transform",
+    "design upstream manifest and skills lock bind the real committed revision; all four imported trees are unchanged"
+  ],
+  "agent_evaluation": {
+    "new_sessions_this_turn": 0,
+    "previous_total_sessions": 16,
+    "api_ui_incomplete": true,
+    "final_snapshot_agent_reverified": false
+  },
+  "adoption": {
+    "focused_default": false,
+    "default_task_layout": "legacy",
+    "decision": "只交付正确性修复和显式试用；效率默认推广未采纳。"
+  },
+  "git": {
+    "committed": true,
+    "pushed": false,
+    "published": false,
+    "evidence_commit": "containing commit; resolve from git log for this file"
+  },
+  "legacy_assets_migrated": false,
+  "historical_delivery_status_ref": "../delivery-status.json",
+  "limits": [
+    "API/UI 真实 Agent 与恢复对照仍未闭合；已有轨迹保持未完成。",
+    "原工作区 CodeGraph 大文件未处理；完整验证来自干净隔离检出。",
+    "三个大体积冻结归档在本地保留并有摘要，未加入 Git。"
+  ]
+}

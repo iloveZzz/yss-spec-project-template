@@ -1,0 +1,13 @@
+[发布验证] scripts/repository-mode 
+[发布验证] scripts/verify-template --concurrency 1
+[发布验证] git clone --shared --no-checkout /Users/zhudaoming/.codex/worktrees/lifecycle-core-verification/yss-spec-project-template/submodules/create-yss-spec /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-template-release-7GuJVb/cli
+[发布验证] git checkout --detach b8dc7c5b4244da02b5089649b243447b070f18d9
+[发布验证] /Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node scripts/sync-template.js
+[发布验证] npm pack --ignore-scripts --json
+[发布验证] npm install --prefix /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-template-release-7GuJVb/consumer --ignore-scripts --no-audit --no-fund /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-template-release-7GuJVb/cli/create-yss-spec-3.5.2.tgz
+[发布验证] /Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-template-release-7GuJVb/consumer/node_modules/create-yss-spec/bin/create-yss-spec.js --target-dir /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-template-release-7GuJVb/instance --project-name CI release verification --business-domain 模板发布验收 --team-size 3 --agent-runtime codex
+[发布验证] /Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-template-release-7GuJVb/instance/scripts/sync-skills --check
+[发布验证] /Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-template-release-7GuJVb/instance/scripts/update-skill-lock --check
+[发布验证] /Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-template-release-7GuJVb/consumer/node_modules/create-yss-spec/bin/create-yss-spec.js sync --target-dir /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-template-release-7GuJVb/instance --dry-run
+[发布验证] /Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-template-release-7GuJVb/consumer/node_modules/create-yss-spec/bin/create-yss-spec.js sync --target-dir /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-template-release-7GuJVb/instance
+模板全量与生成器集成通过: 07d7fa19931cf05f45eaf6505dca1af236efac24；兼容矩阵由 workflow 汇总，尚未发布。

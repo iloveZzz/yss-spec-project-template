@@ -1,0 +1,8 @@
+updated skills-lock.json with 3 shared skills and 0 platform skills
+项目实例校验通过
+初始化完成
+输出目录：/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-template-release-7GuJVb/instance
+下一步建议：
+1. cd /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-template-release-7GuJVb/instance
+2. 如需版本管理，可执行 git init
+3. 检查 AGENTS.md、README 和 .template-spec 目录是否符合预期；docs 将在首次项目产出时创建
