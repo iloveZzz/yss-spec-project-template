@@ -2,11 +2,12 @@
 import { existsSync, readFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import path from "node:path";
-import { parseArgs } from "node:util";
+import { parseArgs, isDeepStrictEqual } from "node:util";
 import { fileURLToPath } from "node:url";
 import { parseDocument } from "./vendor/yaml.mjs";
 import { validateVisualBaseline } from "../.agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs";
 import { enforceFrontendDelivery } from "./lib/frontend-delivery-boundary.mjs";
+import {safe,hash} from './lib/strategic-handoff-io.mjs';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const schemaPath = path.join(repoRoot, ".template-spec/process/schemas/frontend-implementation-evidence.schema.json");
@@ -56,6 +57,25 @@ try {
     if (value.kind === "plan" && value.baseline_case_ids.some((id) => !selectedCaseIds.includes(id))) throw new TypeError("baseline_case_ids 必须属于选定 Visual Baseline cases");
   }
   if (!values["allow-template"] && value.kind === "verification") {
+    const bound = (ref,digest) => {
+      const bytes=readFileSync(safe(root,ref));
+      if(hash(bytes)!==digest)throw new TypeError(`前端证据摘要不一致: ${ref}`);
+      return bytes;
+    };
+    if(!value.implementation_plan || value.interaction_results.some(x=>typeof x==='string'))throw new TypeError('legacy-interaction-binding-missing: 历史交互文字可读；当前完成须重新验证并绑定实施计划与结构化交互证据');
+    const plan=parseDocument(bound(value.implementation_plan.ref,value.implementation_plan.digest).toString(),{uniqueKeys:true}).toJS({maxAliasCount:0});
+    const planSchema=spawnSync('python3',['-c',validator,schemaPath],{cwd:repoRoot,encoding:'utf8',input:JSON.stringify(plan)});
+    if(planSchema.status!==0 || plan.kind!=='plan'||plan.template!==false||plan.status!=='approved'||!isDeepStrictEqual(plan.visual_baseline,value.visual_baseline)||!isDeepStrictEqual(plan.route_and_page_inventory,value.route_and_page_inventory)||!isDeepStrictEqual(plan.pnpm_commands,value.pnpm_commands)||plan.spec_ref!==value.spec_ref||plan.prototype_ref!==value.prototype_ref)throw new TypeError('前端实施计划未批准或与当前验证范围不一致');
+    const states=new Set(), cases=new Set(), pairs=new Set();
+    for(const interaction of value.interaction_results){
+      if(interaction.result!=='pass')throw new TypeError('前端交互验证未通过，构建成功不能替代交互验收');
+      if(!plan.state_cases.includes(interaction.state)||!value.visual_baseline.case_ids.includes(interaction.case_id))throw new TypeError('前端交互不属于已批准计划');
+      const pair=JSON.stringify([interaction.case_id,interaction.state]);if(pairs.has(pair))throw new TypeError('前端交互结果重复');pairs.add(pair);
+      bound(interaction.evidence_ref,interaction.evidence_digest);states.add(interaction.state);cases.add(interaction.case_id);
+    }
+    if(plan.state_cases.some(state=>!states.has(state))||value.visual_baseline.case_ids.some(id=>!cases.has(id)))throw new TypeError('前端交互验收覆盖缺失');
+    if(!value.console_evidence)throw new TypeError('前端 console 证据缺失');
+    bound(value.console_evidence.ref,value.console_evidence.digest);
     if (value.console_warning_check !== "pass") throw new TypeError("前端验证必须通过 console warning 检查");
     if (value.uncovered_differences.length > 0) throw new TypeError("存在未解释视觉差异，不能通过前端实现还原验证");
     if (value.independent_review?.status !== "approved") throw new TypeError("前端验证必须通过独立 UI fidelity review");
@@ -66,8 +86,11 @@ try {
       if (item.result !== "pass" || item.uncovered_difference !== false) throw new TypeError(`${item.case_id} 存在未通过或未解释差异`);
       for (const field of ["baseline_image_ref", "implementation_image_ref", "diff_ref"]) if (!existsSync(path.resolve(root, item[field]))) throw new TypeError(`${item.case_id}.${field} 不可读取`);
       if (item.mask_ref !== "not-applicable" && !existsSync(path.resolve(root, item.mask_ref))) throw new TypeError(`${item.case_id}.mask_ref 不可读取`);
+      bound(item.implementation_image_ref,item.implementation_image_digest);bound(item.diff_ref,item.diff_digest);
     }
     if (value.actual_verification.some((item) => item.exit_code !== 0)) throw new TypeError("pnpm fresh verification 存在非零退出码");
+    if(value.pnpm_commands.some(command=>!value.actual_verification.some(row=>row.command===command)))throw new TypeError('pnpm 验证命令覆盖缺失');
+    for(const row of value.actual_verification){if(!Number.isFinite(Date.parse(row.executed_at)))throw new TypeError('实际执行时间无效');bound(row.evidence_ref,row.evidence_digest);}
   }
   process.stdout.write(`前端实现还原 ${value.kind} 验证通过\n`);
 } catch (error) {

@@ -78,4 +78,6 @@ node scripts/validate-research-package.mjs <slug>-research-brief.md <slug>-evide
 
 In `template-source`, save reusable maintenance research under the existing `.template-source/evidence/maintenance/` convention. In `project-instance`, use the project research/evidence convention and bind any decision-bearing output from the lifecycle asset that consumes it.
 
+模板中正式落盘的研究使用 `work-unit.maintenance-research`，按 `.template-spec/process/research-completion.md` 记录当前验证并收尾；结束研究不授予维护或产品批准。仅回传结论的只读分诊继续使用既有 read-only-intake v2，不伪装成正式研究闭包。
+
 If sources are unavailable or conflict, state the limitation. Ordinary gaps lower confidence; a missing or mismatched source for a decision-bearing claim prevents that claim from being treated as established.

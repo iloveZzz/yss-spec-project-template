@@ -340,6 +340,12 @@ artifacts:
     trigger: 发布后或阶段性完成后满足复盘触发条件。
 
 work_units:
+  - id: work-unit.maintenance-research
+    name: 模板维护研究
+    scope: template-source
+    input: 已明确范围的技术或策略研究请求。
+    output: 研究简报、证据台账和绑定当前输入的验证记录。
+    completion: 当前研究包校验通过、执行阻断关闭；独立结束或在已授权范围内继续模板维护。
   - id: work-unit.entry-triage
     name: 入口分诊
     scope: template-source

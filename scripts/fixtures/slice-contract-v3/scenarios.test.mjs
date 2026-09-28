@@ -1,3 +1,4 @@
+import {bindSyntheticEvidence} from './evidence-fixture.mjs';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import fs from 'node:fs';
@@ -106,6 +107,7 @@ test('MVC v3 requires real approval bindings and independent review before execu
     const result={schema_version:2,status:'implemented',work_unit_id:'work-unit.slice-backend',architecture_identity:f.identity,consumed_contract:{contract_id:f.contract.contract_id,contract_version:f.contract.contract_version,registry_digest:f.contract.resolution.registry_digest,compiler_contract_digest:f.contract.resolution.compiler_contract_digest,component_bindings_digest:f.contract.resolution.component_bindings_digest},changed_files:[{path:'src/main/java/Example.java'}],evidence_files:[{path:'results/test.log'}],verification_results:[{command:'./mvnw test',cwd:f.project,exit_code:0,executed_at:'2026-09-16T00:00:00Z'}],new_impacts:[]};
     f.write('results/test.log','Synthetic actual-exit-code mechanism evidence; not a Maven run.');
     const current={root:f.root,registry:loadSkillRegistry(),compilerContract:loadCompilerContract(),approved_slice:approved.binding};
+    bindSyntheticEvidence(result,f.contract,current);
     assert.equal(validateExecutionResult(result,f.contract,current).status,'accepted');
     assert.equal(validateExecutionResult({...result,evidence_files:[]},f.contract,current).status,'blocked');
     assert.equal(validateExecutionResult({...result,changed_files:[{path:'src/main/java-escape/Bad.java'}]},f.contract,current).status,'blocked');

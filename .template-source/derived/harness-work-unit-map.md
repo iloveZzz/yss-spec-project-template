@@ -5,6 +5,7 @@
 
 | 稳定 ID | 范围 | 工作单元 | 输入 | 输出 | 完成条件 |
 |---|---|---|---|---|---|
+| `work-unit.maintenance-research` | template-source | 模板维护研究 | 已明确范围的技术或策略研究请求。 | 研究简报、证据台账和绑定当前输入的验证记录。 | 当前研究包校验通过、执行阻断关闭；独立结束或在已授权范围内继续模板维护。 |
 | `work-unit.entry-triage` | template-source | 入口分诊 | 用户请求、仓库身份。 | 影响面与最近可信阶段。 | 身份和影响面可解释。 |
 | `work-unit.ssot-update` | template-source | 单一事实源更新 | 变更合同。 | 权威文档或脚本。 | 其他投影可由脚本生成。 |
 | `work-unit.skill-projection-sync` | template-source | 技能投影同步 | .agents/skills。 | Agent root 投影、skills lock。 | --check 通过。 |

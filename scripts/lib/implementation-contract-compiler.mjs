@@ -1,4 +1,5 @@
 import { resolveBackendPlatform, resolveComponentCapabilities } from "./backend-platform.mjs";
+import { executionEvidenceBlockers } from './execution-evidence.mjs';
 import { safe } from './strategic-handoff-io.mjs';
 import { selectSliceWorkUnit, normalizeSliceContract, withinSlicePath } from './slice-contract.mjs';
 import { createApprovedExecutionContext, createApprovedRecompilationContext, assertApprovedExecutionContext } from './approved-execution-context.mjs';
@@ -349,6 +350,7 @@ export function validateExecutionResult(result, contract, current) {
     else if (item.exit_code !== 0) blockers.push("verification-failed");
   }
   if(contract.schema_version===3) {
+    blockers.push(...executionEvidenceBlockers(result, contract, {...current, root: current.root || ROOT}));
     const unit=contract.work_units.find(item=>item.id===result.work_unit_id);
     if(!unit)blockers.push('work-unit-mismatch');
     else {

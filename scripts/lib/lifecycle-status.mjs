@@ -16,7 +16,7 @@ function source(root, ref) {
 }
 
 /** Read-only projection; checkpoint, registry and orchestration remain authoritative. */
-export function lifecycleStatus({ root, checkpointRef }) {
+export function lifecycleStatus({ root, checkpointRef, taskPackageRef }) {
   if (!root || !checkpointRef) throw new TypeError('root and checkpoint are required');
   root = path.resolve(root);
   const identity = source(root, 'yss-project.yaml').value;
@@ -76,10 +76,36 @@ export function lifecycleStatus({ root, checkpointRef }) {
     check('stage-tracking', 'not-checked', [checkpointRef], '未登记追踪；按实例既有兼容或显式迁移入口处理，不自动补建');
   }
   if (value.status === 'blocked' && !diagnostics.some(x => x.severity === 'error')) issue('reason-missing', 'checkpoint 已标 blocked，原因未登记', checkpointRef, '补齐真实阻塞原因');
+  let taskSource, task, contractSource;
+  const recovery = {sequence: ['read-status', 'inspect-actual-result', 'verify-current-inputs', 'continue-or-reroute'], task_package_ref: taskPackageRef ?? null, contract_view: null, result_refs: [], prechecks: [], verification_items: [], checks: 'read-only; execution and approval not evaluated'};
+  if(taskPackageRef) {
+    try {
+      taskSource=source(root,taskPackageRef);task=taskSource.value;
+      if(task.work_unit_id!==value.next_work_unit && task.convergence?.parent_work_unit!==value.next_work_unit)throw Error('任务包与 checkpoint 工作单元不一致');
+      if(!['not-started','active','paused','resolved','failed'].includes(task.workflow_status))throw Error('任务运行状态未知');
+      recovery.prechecks.push({status:'not-checked',cwd:root,command:['node','scripts/verify-digital-human-task-package',taskPackageRef]});
+      if(task.contract?.kind==='slice-implementation') {
+        contractSource=source(root,task.contract.slice_contract_ref);
+        const c=contractSource.value.slice_contract||contractSource.value;
+        if(c.contract_id!==task.contract.contract_id||c.contract_version!==task.contract.contract_version)throw Error('任务与当前合同版本不一致');
+        recovery.contract_view={cwd:root,command:['node','scripts/contract','view',task.contract.slice_contract_ref,'--kind','slice','--profile','task','--unit',task.work_unit_id]};
+        const approval=task.contract.gate_refs?.[0];
+        recovery.prechecks.push({status:'not-checked',cwd:root,command:['node','scripts/slice-contract','verify',task.contract.slice_contract_ref,'--unit',task.work_unit_id,...(approval?['--approval-ref',approval]:[])],approval_scope:approval?'current-approval-required':'not-checked: approval reference missing'});
+        if(c.schema_version===3){
+          const unit=c.work_units?.find(x=>x.id===task.work_unit_id);
+          if(!unit)throw Error('当前合同不存在该工作单元');
+          recovery.verification_items=Object.entries(c.verification||{}).filter(([id,check])=>unit.verification_refs?.includes(id)||check.required_for_all===true).map(([id,check])=>({id,...check,status:'not-checked'}));
+        }
+      }
+      recovery.result_refs=[...new Set([...(task.result?.evidence_refs||[]),...(task.verification_results||[]).map(x=>x.evidence_ref)].filter(Boolean))];
+      for(const ref of recovery.result_refs)readFileSync(safeTrackingPath(root,ref));
+      check('task-recovery','passed',[taskPackageRef,...recovery.result_refs],'仅读取任务身份、状态和结果引用；继续前仍须正式验收');
+    } catch(error) {issue('task-recovery-invalid',error.message,taskPackageRef,'核对任务身份与实际结果，再执行适用预检');}
+  }
   const blockers = [...new Set(diagnostics.filter(x => x.severity === 'error').map(x => x.message))];
   const next_step = {
     action_type: 'verify', work_unit: value.next_work_unit ?? null, cwd: root,
-    command: null, input_refs: [checkpointRef],
+    command: null, input_refs: [checkpointRef,...(taskPackageRef?[taskPackageRef]:[])],
     prerequisites: ['核验当前来源、Context、适用门禁与决定或延续', '核对当前范围、任务结果和允许写路径；输入变化时重验'],
   };
   let next_action;
@@ -89,10 +115,10 @@ export function lifecycleStatus({ root, checkpointRef }) {
   } else if (value.status === 'paused-human-gate') {
     next_step.action_type = 'wait';
     next_action = '核对当前会签责任方、资产与决定范围；满足已登记恢复条件后复验';
-  } else if (activeItems.some(item => item.progress === 'running')) {
+  } else if (activeItems.some(item => item.progress === 'running') || task?.workflow_status === 'active') {
     next_step.action_type = 'inspect';
     next_action = '核对运行中任务身份与实际结果；状态未知时不得重复派发';
-  } else if (activeItems.length && activeItems.every(item => item.progress === 'completed')) {
+  } else if ((activeItems.length && activeItems.every(item => item.progress === 'completed')) || task?.workflow_status === 'resolved') {
     next_step.action_type = 'inspect';
     next_action = '核验已有完成证据并重算下一工作单元，不直接重做';
   } else {
@@ -105,7 +131,7 @@ export function lifecycleStatus({ root, checkpointRef }) {
   return {
     schema_version: 1, read_only: true, stage: value.stage, checkpoint_status: value.status,
     work_unit: value.next_work_unit ?? null, owner, blockers, next_action,
-    execution_authorization: 'not-evaluated', verification_scope, diagnostics, next_step,
-    source_digests: { checkpoint: { ref: checkpointRef, digest: checkpoint.digest }, registry: { ref: registryRef, digest: registry.digest }, orchestration: { ref: contractRef, digest: contract.digest } },
+    execution_authorization: 'not-evaluated', verification_scope, diagnostics, next_step, recovery,
+    source_digests: { checkpoint: { ref: checkpointRef, digest: checkpoint.digest }, registry: { ref: registryRef, digest: registry.digest }, orchestration: { ref: contractRef, digest: contract.digest }, ...(taskSource?{task:{ref:taskPackageRef,digest:taskSource.digest}}:{}), ...(contractSource?{slice_contract:{ref:task.contract.slice_contract_ref,digest:contractSource.digest}}:{}) },
   };
 }

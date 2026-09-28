@@ -13,7 +13,7 @@ description: 编排 YSS 研发全生命周期；当阶段、产物、门禁或 S
 
 ## 事实源与按需加载
 
-先读 `yss-project.yaml`、`CONTEXT.md`、相关 ADR、父 Ticket/checkpoint 和当前资产，按需加载合同子树：
+先读 `yss-project.yaml`、`AGENTS.md`、`CONTEXT.md` 和当前任务视图；按需加载命中的合同子树：
 
 | 事实 | 权威来源 |
 |---|---|

@@ -1,0 +1,13 @@
+#!/usr/bin/env node
+import {parseArgs} from 'node:util';
+import path from 'node:path';
+import {readRepositoryMode} from './lib/repository-mode.mjs';
+import {recordResearchVerification} from './lib/maintenance-research.mjs';
+try {
+  const {values, positionals} = parseArgs({allowPositionals: true, options: {root: {type: 'string'}, output: {type: 'string'}}, strict: true});
+  const root = path.resolve(values.root || '.');
+  if (readRepositoryMode(root) !== 'template-source' || positionals.length !== 2 || !values.output) throw Error('用法: verify-maintenance-research <brief> <evidence> --output <新目录> [--root <模板根>]');
+  const result = recordResearchVerification(root, ...positionals, values.output);
+  process.stdout.write(JSON.stringify(result, null, 2) + '\n');
+  if (result.exit_code !== 0) process.exitCode = 1;
+} catch (error) { process.stderr.write(error.message + '\n'); process.exitCode = 1; }

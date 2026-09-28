@@ -59,8 +59,9 @@ function markdown(view){
  return lines.join('\n\n')+'\n';
 }
 export function viewContract(ref,options={}){return withValidationPhase({root:options.root,purpose:'contract-view',slice_id:ref,work_unit_id:options.unit_id,readOnly:true},()=>view(ref,options));}
-function view(ref,{root=process.cwd(),kind,profile='review',unit_id}={}){
+function view(ref,{root=process.cwd(),kind,profile='review',unit_id,task_layout='legacy'}={}){
  validateKind(kind);if(!['review','task','full'].includes(profile))throw new TypeError(`未知阅读档位 ${profile}`);
+ if(!['legacy','focused'].includes(task_layout))throw new TypeError(`未知 task layout ${task_layout}`);
  let binding,content,checks=['可读取'],blockers=[],sourceChecks=[];
  if(kind==='slice'){
   const loaded=readSliceContract(ref,{root,diagnostic:true});binding=loaded.binding;blockers.push(...declaredBlockers(loaded.raw));
@@ -85,6 +86,13 @@ function view(ref,{root=process.cwd(),kind,profile='review',unit_id}={}){
    content={当前任务:units[0].work_unit||units[0],全局约束:legacy.constraints,专项约束:legacy.extensions,编译约束:loaded.raw.resolution,适用性:loaded.raw.applicability,验收:legacy.acceptance,上游引用:Object.fromEntries(Object.entries(loaded.sources).map(([k,v])=>[k,{ref:v.ref,version:v.version}])),停止条件:'来源或批准过期、越界、缺证据、验证失败、drift / violation / new_impacts 时停止并回交。'};
    const known=new Set(['schema_version','contract_id','contract_version','slice_id','status','basis','scope','applicability','resolution','acceptance','verification','work_units','extensions','ticket_policy']);
    content.其他约束=Object.fromEntries(Object.entries(loaded.raw).filter(([k])=>!known.has(k)));
+   if(task_layout==='focused' && loaded.raw.schema_version===3){
+    const task=units[0].work_unit||units[0];
+    const ids=new Set([...(task.acceptance_refs||[]),...(task.verification||[]).flatMap(v=>v.acceptance_refs||[])]);
+    content={当前任务:task,验收:Object.fromEntries(Object.entries(legacy.acceptance).filter(([id])=>ids.has(id))),全局约束:{...legacy.constraints,verification_commands:task.verification_commands,expected_evidence_files:task.expected_evidence},专项约束:legacy.extensions,编译约束:loaded.raw.resolution,适用性:loaded.raw.applicability,上游引用:content.上游引用,其他约束:content.其他约束,停止条件:content.停止条件,
+     恢复动作:['读取主 tracker 或当前任务包，核对实际运行结果；运行状态未知时不重复派发','复验当前来源、批准和适用门禁；失效时回交，不能沿用旧完成结论'],
+     完整验收引用:{ref,digest:binding.digest,profile:'full',omitted_acceptance_ids:Object.keys(legacy.acceptance).filter(id=>!ids.has(id))}};
+   }
   }
  }else{
   const {bytes,raw}=load(ref,root);binding={ref,id:raw.contract_id||raw.technical_design_id||raw.decision_id||raw.request?.request_id||raw.handoff_id||raw.baseline_id||raw.spec_id||raw.plan_id||raw.id||null,version:raw.contract_version||raw.decision_version||raw.handoff_version||raw.version||null,digest:hash(bytes)};

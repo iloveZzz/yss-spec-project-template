@@ -7,6 +7,8 @@ description: "编译或重验 YSS Slice Implementation Contract、最小 Skill �
 
 已有生命周期资产优先用 `scripts/contract view <资产> --kind <类型>` 阅读；执行任务用 `--profile task --unit <ID>`，绑定与校验明细用 `--profile full`。视图不授予执行权限，仍按本 Skill 的原始来源和批准门禁处理。类型、准备和迁移见 `.template-spec/process/contract-reading.md`。
 
+Slice v3 的当前执行结果须按 `references/yss-skill-execution-result.md` 绑定验收、验证项、合同原字节、实际证据和执行来源；`legacy-evidence-binding-missing` 表示历史可读但不能据此完成当前任务，不补造历史执行信息。
+
 阶段 7 的实现合同编译器。它把已批准的生命周期资产、垂直切片、capability 和窄 Recipe 编译为 `Slice Implementation Contract` v3 草案；不批准合同、不写业务代码、不设置 `ready-for-agent`。
 
 文档输出时按 `lifecycle-document-output` 条件调用 `i-have-adhd`，读取 `.template-spec/process/document-writing.md`；作用域仅限当前产物，派发时传递条件及引用。

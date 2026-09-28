@@ -14,6 +14,8 @@ import { loadApprovalRecord, validateApprovalRecord } from "./approval-record.mj
 import { validateBackendReview } from "./backend-review.mjs";
 import { validateJsonSchema } from "./json-schema.mjs";
 import { ROOT } from "./lifecycle-registry.mjs";
+import { readRepositoryMode } from './repository-mode.mjs';
+import { validateResearchCompletion } from './maintenance-research.mjs';
 
 const IMPLEMENTATION_WORK_UNIT = "work-unit.slice-implementation";
 const TICKET_DECOMPOSITION_WORK_UNIT = "work-unit.ticket-decomposition";
@@ -28,6 +30,7 @@ function deepFreeze(value) {
 }
 
 const NEXT_ROUTES = deepFreeze({
+  "work-unit.maintenance-research": ["work-unit.ssot-update"],
   "work-unit.entry-triage": ["work-unit.plan-opportunity", "work-unit.plan-requirements"],
   "work-unit.ssot-update": ["work-unit.skill-projection-sync", "work-unit.intensity-aware-verification-v2"],
   "work-unit.skill-projection-sync": ["work-unit.template-snapshot-build", "work-unit.intensity-aware-verification-v2"],
@@ -303,6 +306,21 @@ function validateTicketReference(ref, trackerKind) {
  * by `validateWorkflowExecutionResult` before this function is called.
  */
 export function validateNextRoute(currentWorkUnit, nextRoute, decisionState, options = {}) {
+  let entryRoutes;
+  if (currentWorkUnit === 'work-unit.entry-triage' || currentWorkUnit === 'work-unit.maintenance-research' || nextRoute === 'work-unit.maintenance-research') {
+    try {
+      const mode = readRepositoryMode(options.root || ROOT);
+      if (currentWorkUnit === 'work-unit.entry-triage') entryRoutes = mode === 'template-source'
+        ? ['work-unit.maintenance-research', 'work-unit.ssot-update'] : NEXT_ROUTES[currentWorkUnit];
+      if ((currentWorkUnit === 'work-unit.maintenance-research' || nextRoute === 'work-unit.maintenance-research') && mode !== 'template-source') throw Error('template-research-requires-template-source');
+      if (currentWorkUnit === 'work-unit.maintenance-research') {
+        assertScopeTransition(currentWorkUnit, nextRoute, decisionState, options);
+        if (nextRoute !== null && nextRoute !== 'work-unit.ssot-update') return blockedResult([BLOCKING_SIGNALS.invalidRoute]);
+        validateResearchCompletion(decisionState, {root: options.root || ROOT, continuing: nextRoute !== null});
+        return allowedResult(decisionState.evidence_refs);
+      }
+    } catch (error) { return blockedResult(['maintenance-research-boundary'], [error.message]); }
+  }
   try { assertTrackingTransition(currentWorkUnit, nextRoute, decisionState, { root: options.root || ROOT }); }
   catch (error) { return blockedResult(['stage-tracking-blocked'], [error.message]); }
   try { assertScopeTransition(currentWorkUnit, nextRoute, decisionState, options); }
@@ -320,7 +338,7 @@ export function validateNextRoute(currentWorkUnit, nextRoute, decisionState, opt
     try { enforceFrontendDelivery(decisionState, { root: options.root, phase: nextRoute === IMPLEMENTATION_WORK_UNIT ? "implementation" : "inputs" }); }
     catch (error) { return blockedResult(["frontend-delivery-blocked"], [error.message]); }
   }
-  const routes = NEXT_ROUTES[currentWorkUnit] && scopedNextRoutes(currentWorkUnit, NEXT_ROUTES[currentWorkUnit], options);
+  const routes = NEXT_ROUTES[currentWorkUnit] && scopedNextRoutes(currentWorkUnit, entryRoutes || NEXT_ROUTES[currentWorkUnit], options);
   if (!routes) return blockedResult([BLOCKING_SIGNALS.invalidRoute], ["known_current_work_unit"]);
   if (nextRoute === REPOSITORY_PREPARATION_WORK_UNIT && !["work-unit.technical-analysis", SERVICE_INITIALIZATION_WORK_UNIT].includes(currentWorkUnit)) {
     return blockedResult([BLOCKING_SIGNALS.technicalAnalysisRequired], ["work-unit.technical-analysis predecessor"]);

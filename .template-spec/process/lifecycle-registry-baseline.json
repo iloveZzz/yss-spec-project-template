@@ -121,6 +121,7 @@
     "work-unit.intensity-aware-review-v2",
     "work-unit.intensity-aware-verification",
     "work-unit.intensity-aware-verification-v2",
+    "work-unit.maintenance-research",
     "work-unit.plan-opportunity",
     "work-unit.plan-requirements",
     "work-unit.prototype-design",
@@ -248,6 +249,7 @@
     "work-unit.stage-decision": "9a43c029438849337d1ddead2b4f0ca1d1c3482c279265e2b1db3088cbff6048",
     "work-unit.technical-analysis": "57bb8cab7b0ef2eff43d848914bdd9297ec582570d11c0639dda3227a383726a",
     "work-unit.template-snapshot-build": "48463092d1c644f5a5fc4f1c188ba662d7984085b8b04b1fbff450ef8c682939",
-    "work-unit.ticket-decomposition": "d239bd6855ea3cc8d448892af8bff62f5531499774eed58761288374b4c3d2cc"
+    "work-unit.ticket-decomposition": "d239bd6855ea3cc8d448892af8bff62f5531499774eed58761288374b4c3d2cc",
+    "work-unit.maintenance-research": "ee03d6217e4225b453fe9a7f55718c3403769aa3b3993c28e8aedc6c6a3febec"
   }
 }

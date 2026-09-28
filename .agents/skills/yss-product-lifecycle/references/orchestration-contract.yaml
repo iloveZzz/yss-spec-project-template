@@ -323,6 +323,18 @@ lifecycle_native_entries:
     implement: lifecycle-validate-and-accept
 
 work_unit_routes:
+  work-unit.maintenance-research:
+    native: {source: yss-product-lifecycle, skill: yss-research, invocation_mode: model-invoked}
+    primary_skill: yss-research
+    supporting_skills: []
+    skills: [yss-research]
+    applies_when: template_source_persisted_research
+    not_applicable_reason: project_instance_or_no_persisted_research
+    repository_mode: template-source
+    completion_validator: scripts/verify-maintenance-research
+    terminal_allowed: true
+    next_routes: [work-unit.ssot-update]
+    continuation_requires: bound_user_maintenance_authorization
   work-unit.plan-opportunity:
     native: {source: yss-product-lifecycle, skill: yss-product-lifecycle, invocation_mode: model-invoked}
     primary_skill: yss-product-lifecycle

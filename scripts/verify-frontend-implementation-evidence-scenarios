@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync } from "node:fs";
+import {hash} from './lib/strategic-handoff-io.mjs';
 import os from "node:os";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
@@ -48,9 +49,23 @@ const run = (name, value, expected, pattern) => {
   const result = spawnSync("scripts/verify-frontend-implementation-evidence", ["--root", root, path.join(root, file)], { cwd: repoRoot, encoding: "utf8" });
   if (result.status !== expected || (pattern && !pattern.test(`${result.stdout}${result.stderr}`))) throw new Error(`${name} unexpected\n${result.stdout}${result.stderr}`);
 };
+// Synthetic mechanism fixtures: these strings are not browser-run evidence.
+const bind=ref=>({ref,digest:hash(readFileSync(path.join(root,ref)))});
+verification.implementation_plan=bind(write('plan.json',plan));
+verification.console_evidence=bind(write('verification/console.json','[]'));
+verification.interaction_results=visual_baseline.case_ids.map(case_id=>{const b=bind(write(`verification/${case_id}.json`,{synthetic:true,state:'normal',result:'pass'}));return {case_id,state:'normal',result:'pass',evidence_ref:b.ref,evidence_digest:b.digest};});
+for(const row of verification.actual_verification)row.evidence_digest=bind(row.evidence_ref).digest;
+for(const row of verification.case_results){row.implementation_image_digest=bind(row.implementation_image_ref).digest;row.diff_digest=bind(row.diff_ref).digest;}
 run("valid-plan", plan, 0);
 run("valid-verification", verification, 0);
 run("missing-case", { ...verification, case_results: verification.case_results.slice(0, 1) }, 1, /一一对应/);
 run("unexplained", { ...verification, uncovered_differences: ["间距偏差"], difference_owner: "frontend" }, 1, /未解释视觉差异/);
 run("nonzero", { ...verification, actual_verification: [{ ...verification.actual_verification[0], exit_code: 1 }] }, 1, /非零退出码/);
+run('interaction-failed-build-passed',{...verification,interaction_results:verification.interaction_results.map((x,i)=>i?x:{...x,result:'failed'})},1,/交互验证未通过/);
+run('historical-interaction',{...verification,interaction_results:['normal passed']},1,/legacy-interaction-binding-missing/);
+run('interaction-coverage-missing',{...verification,interaction_results:verification.interaction_results.slice(0,1)},1,/覆盖缺失/);
+run('console-blocked',{...verification,console_warning_check:'blocked'},1,/console warning/);
+run('command-coverage-missing',{...verification,actual_verification:[{...verification.actual_verification[0],command:'pnpm build'}]},1,/命令覆盖缺失/);
+write(verification.interaction_results[0].evidence_ref,'substituted interaction');
+run('interaction-tampered',verification,1,/摘要不一致/);
 process.stdout.write("Frontend implementation evidence v2 scenarios passed\n");

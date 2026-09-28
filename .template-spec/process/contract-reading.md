@@ -39,6 +39,10 @@ v2 的 `openapi` 是唯一 Draft 绑定，`draft_review` 只存 `ref/digest`，F
 
 ## 验证阶段与回退
 
+Slice v3 的任务聚焦布局可显式试用 `scripts/contract view <资产> --kind slice --profile task --unit <ID> --task-layout focused`。默认仍为 `legacy`，推广取决于受控对照结果。聚焦布局展示当前工作单元及其验证项关联的验收（包括 `required_for_all`），保留全局、专项和未知约束，并给出完整验收原文件引用。v2 保留原布局，不根据缺失引用裁剪。
+
+恢复入口 `scripts/lifecycle-status --checkpoint <ref> --task <task-package-ref>` 增量返回只读 `recovery`：任务引用、合同 task 视图命令、实际结果引用及恢复顺序。引用由调用方显式选择，不扫描目录猜任务；运行中、未知或版本不符不能重复派发。`not-checked` 和 `execution_authorization: not-evaluated` 保持原义。
+
 预检、准备、派发各自建立私有验证阶段。阶段绑定根目录、用途、切片、工作单元、只读状态；只在本次操作内共享输入和纯校验结果。原始输入不可变，返回给调用者的是独立副本。相同 schema、输入和格式选项复用；外部 `$ref` 未追踪的校验不享受结果复用。Python 引擎、同步 API 和技术设计 Node 边界保留。
 
 成功返回前复核所有登记原字节、目录枚举及不存在项。技术设计子进程自行验证批准，再返回依赖清单；父进程合并读取集合，读取矛盾、遗漏报告或异常均阻断。此清单不是批准上下文。品牌上下文不能序列化、跨仓或从只读升级；在阶段中生成的上下文结束后失效。调用者可传入 `AbortSignal`，已收到的撤回事件须中止当前操作；下一次边界始终重新读取当前批准和回复。未接入读取追踪的消费者保留原检查，不共享结果。
@@ -56,3 +60,11 @@ scripts/contract prepare-review <前资产> <后资产> --kind <类型> [--unit 
 ```
 
 输出来源字节绑定、差异、完整约束、原决定与缺口及恢复动作。`approval_reusable: false`、`execution_allowed: false` 固定不授予批准或执行权；语义等价、风险接受、原回复真实性和批准延续由原审查及决定验证器处理。缺少原决定标记未提供，不能据此沿用批准。
+
+## 当前前端交互证据
+
+模板正式研究的路由、实际验证及收尾见 [研究收尾协议](research-completion.md)。
+
+前端 verification schema v2 保留读取历史交互文字；正式完成校验要求 `implementation_plan: {ref, digest}` 绑定当前批准计划，`interaction_results` 使用 `{case_id, state, result, evidence_ref, evidence_digest}`，覆盖计划全部 state_cases 和选定 case_id。只有 `result: pass` 可继续。console、实现截图、视觉差异与实际命令日志均须绑定当前字节摘要，命令必须覆盖计划中的 pnpm_commands。
+
+历史文字报告返回 `legacy-interaction-binding-missing`；先重验计划与批准，再真实执行交互、console、截图及适用命令并另存新报告，不给旧报告补造通过记录。摘要校验不证明交互语义，实际浏览器轨迹和独立前端审查仍按既有边界执行。

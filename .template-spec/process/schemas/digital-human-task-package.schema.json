@@ -622,6 +622,42 @@
         "checkpoint_ref": {
           "type": "string",
           "minLength": 1
+        },
+        "research_verification": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "ref",
+            "digest"
+          ],
+          "properties": {
+            "ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "digest": {
+              "type": "string",
+              "pattern": "^sha256:[0-9a-f]{64}$"
+            }
+          }
+        },
+        "maintenance_authorization": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "ref",
+            "digest"
+          ],
+          "properties": {
+            "ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "digest": {
+              "type": "string",
+              "pattern": "^sha256:[0-9a-f]{64}$"
+            }
+          }
         }
       }
     },

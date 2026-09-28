@@ -1,3 +1,4 @@
+import {bindSyntheticEvidence} from './evidence-fixture.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -99,10 +100,12 @@ test('cross-repo execution result rejects same-name evidence substitution and mi
   const {binding}=f.approve(),current={root:f.root,approved_slice:binding,registry:loadSkillRegistry(),compilerContract:loadCompilerContract()};
   f.write('peer/results/test.log','synthetic peer result');f.write('project/results/test.log','synthetic source result');f.write('project/results/joint.log','synthetic joint result');
   const result={schema_version:2,status:'implemented',work_unit_id:'work-unit.peer',architecture_identity:f.contract.basis.peer_registration?JSON.parse(fs.readFileSync(path.join(f.root,'peer-registration.json'),'utf8')).architecture_identity:undefined,consumed_contract:{contract_id:f.contract.contract_id,contract_version:f.contract.contract_version,registry_digest:f.contract.resolution.registry_digest,compiler_contract_digest:f.contract.resolution.compiler_contract_digest},changed_files:[{path:'src/main/java/Example.java',project_root:f.peer}],evidence_files:[{path:'results/test.log',project_root:f.peer}],verification_results:[{command:'./mvnw test',cwd:f.peer,exit_code:0,executed_at:'2026-09-16T00:00:00Z'}],new_impacts:[]};
+  bindSyntheticEvidence(result,f.contract,current);
   const accepted=validateExecutionResult(result,f.contract,current);assert.equal(accepted.status,'accepted',JSON.stringify(accepted));
   assert.ok(validateExecutionResult({...result,changed_files:[{path:'src/main/java/Example.java',project_root:f.project}]},f.contract,current).blockers.includes('changed-file-repository-mismatch'));
   assert.ok(validateExecutionResult({...result,evidence_files:[{path:'results/test.log',project_root:f.project}]},f.contract,current).blockers.includes('expected-evidence-missing'));
   const joint={...result,work_unit_id:'work-unit.slice-backend',architecture_identity:f.identity,changed_files:[],evidence_files:[{path:'results/test.log',project_root:f.project},{path:'results/joint.log',project_root:f.project}],verification_results:[{command:'./mvnw test',cwd:f.project,exit_code:0,executed_at:'2026-09-16T00:00:00Z'},{command:'node integration.mjs',cwd:f.project,dependency_roots:[f.peer],exit_code:0,executed_at:'2026-09-16T00:00:00Z'}]};
+  bindSyntheticEvidence(joint,f.contract,current);
   assert.equal(validateExecutionResult(joint,f.contract,current).status,'accepted');
   delete joint.verification_results[1].dependency_roots;
   assert.ok(validateExecutionResult(joint,f.contract,current).blockers.includes('verification-coverage-or-cwd-missing'));

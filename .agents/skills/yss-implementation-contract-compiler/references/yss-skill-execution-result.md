@@ -71,6 +71,20 @@ execution_result:
 
 专项 skill 自报 `implemented` 不等于最终通过，生命周期编排器和独立 Reviewer 必须复核。
 
+## Slice v3 的当前证据绑定
+
+Execution Result 保持 schema v2，新增 `evidence_binding_version: 1`，`consumed_contract.contract_digest` 为已批准 Slice 文件的原始字节 SHA-256。每条 `verification_results` 记录唯一 `verification_id`、对应验证项的完整 `acceptance_refs`、`evidence_refs`，以及实际 `command`、`cwd`、整数 `exit_code`、`executed_at`。跨仓继续携带原有 `dependency_roots`。
+
+每个 `evidence_files` 对象携带 `path`、原字节 `digest` 和稳定验收 ID `behavior_ref`；跨仓必须保留 `project_root`。同一文件覆盖多个验收时，分别登记各验收关联。验证记录引用的证据必须覆盖其全部验收和原合同的预期文件，不能用无关文件替换。
+
+`source_bindings` 记录本次验证实际消费的来源：`{path, digest, project_root?}`，至少覆盖本轮 `changed_files`。已删除文件使用 `{path, deleted: true, digest: null, project_root?}` 并核对当前不存在。未声明依赖不在此检查的覆盖范围内，执行者须完整登记测试输入，交付边界仍执行 Fresh Verification。采集当前摘要不能把旧运行变成新运行；结果必须来自本次实际验证。
+
+未写 `project_root` 时来源路径以当前工作单元的实现目录解析；显式目录必须是该工作单元或验证项登记的依赖仓库。证据文件继续遵循既有单仓 Harness 根、跨仓实现根约定。
+
+当前验收重读合同、证据和来源字节；缺少绑定返回 `legacy-evidence-binding-missing`。历史记录可读取，不批量修改；恢复时先复验原合同与批准，再重新运行适用验证并另存结果。旧 Slice v2 仍走既有兼容路径，不自动迁移合同。
+
+绑定检查只证明关联、覆盖与字节一致性；真实 API 行为、浏览器交互、截图与 console、业务规则仍由对应测试和专项审查判断。UI 构建通过不替代前端实现还原验证。
+
 `verification_results` 不得为空，每项必须包含非空 `command`、`result` 和 `executed_at`。路径校验按完整目录边界判断，`apps/backend/project1-escape` 不属于 `apps/backend/project1/`；Harness 内路径还必须通过项目路径策略。完整重路由时旧合同必须标记 `stale`，新合同版本递增并保留旧合同引用、失效原因和触发器。
 
 后端独立审查在既有 constraint_results 中消费稳定规则 ID、规则/代码/证据摘要与完整适用性集合；输入增加 scope_kind 与 standards_coverage_ref/digest。见 yss-backend-spec-review/references/standards-coverage.md。实现者结果不代替独立 code-review；历史未携带新字段的报告只读兼容。

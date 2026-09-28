@@ -4,8 +4,8 @@ import path from 'node:path';
 import { lifecycleStatus } from './lib/lifecycle-status.mjs';
 
 try {
-  const { values } = parseArgs({ strict: true, options: { root: { type: 'string' }, checkpoint: { type: 'string' } } });
-  const result = lifecycleStatus({ root: path.resolve(values.root ?? '.'), checkpointRef: values.checkpoint });
+  const { values } = parseArgs({ strict: true, options: { root: { type: 'string' }, checkpoint: { type: 'string' }, task: {type: 'string'} } });
+  const result = lifecycleStatus({ root: path.resolve(values.root ?? '.'), checkpointRef: values.checkpoint, taskPackageRef: values.task });
   process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
   if (result.blockers.length) process.exitCode = 1;
 } catch (error) {
