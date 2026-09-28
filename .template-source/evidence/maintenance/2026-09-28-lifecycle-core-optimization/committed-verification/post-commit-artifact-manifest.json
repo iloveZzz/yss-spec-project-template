@@ -1,5 +1,5 @@
 {
-  "saved_and_reopened_at": "2026-09-28T10:10:51.069683+00:00",
+  "saved_and_reopened_at": "2026-09-28T10:12:27.782246+00:00",
   "files": [
     {
       "ref": "agent-baseline/api-evidence-1/fixture-manifest.json",
@@ -867,8 +867,8 @@
     },
     {
       "ref": "committed-delivery.md",
-      "sha256": "51079340696fd4814641244722354bc47fca6fc49d5c880ec21c5a5f827b899d",
-      "bytes": 2993,
+      "sha256": "1d2da7beb2e5cdfcb7e3ff96d5178b5aca2c30f582fb21323e269e0b9dba5a9f",
+      "bytes": 3119,
       "retained_locally_only": false
     },
     {
@@ -993,14 +993,44 @@
     },
     {
       "ref": "committed-verification/delivery-status.json",
-      "sha256": "7ccc52363ea33dbbe5d4adeecc59d96f0121d5c27d73811b85e1b0d361b267aa",
-      "bytes": 2412,
+      "sha256": "d015ad31f43ac3a7d4f42291f6332398e9d3a3d6fc6e3cdcbf31ea821b3304f4",
+      "bytes": 2618,
       "retained_locally_only": false
     },
     {
       "ref": "committed-verification/evidence-checkpoint-policy.json",
       "sha256": "329d3181893d4d72466461ff86a785dff3fba5b9860b6798e59cee4f460467f5",
       "bytes": 194,
+      "retained_locally_only": false
+    },
+    {
+      "ref": "committed-verification/final-active-run.json",
+      "sha256": "357ab0df6d478f051fabc7cbcc464f45ec73546421c5d86077149feec88501c3",
+      "bytes": 715,
+      "retained_locally_only": false
+    },
+    {
+      "ref": "committed-verification/final-commit-map.json",
+      "sha256": "e828f92b98a3c40fa232fadb30cbec81a63ec1dfb645f9f0174a24f2b10be18e",
+      "bytes": 2121,
+      "retained_locally_only": false
+    },
+    {
+      "ref": "committed-verification/final-plan.json",
+      "sha256": "14200c89cf77035d01469e8970aa14f3e479e2d4af6678cdf9253b6245f9ae11",
+      "bytes": 94390,
+      "retained_locally_only": false
+    },
+    {
+      "ref": "committed-verification/final-source-preflight.json",
+      "sha256": "c3f45e84595380b5e59f4d0fd3130119e81f09581675eba748f0b96d432193d9",
+      "bytes": 1599,
+      "retained_locally_only": false
+    },
+    {
+      "ref": "committed-verification/final-source.json",
+      "sha256": "3a132ec67cbd29a3a659b249dae965cf50540b74d94296adf3b990bc3b88471b",
+      "bytes": 307,
       "retained_locally_only": false
     },
     {
@@ -1085,36 +1115,6 @@
       "ref": "committed-verification/final/release/release-verification.json",
       "sha256": "2a66f8cb768bc5aad99728e16959431b48e0cf4fbc3c2027585c47a40ec871b8",
       "bytes": 8456,
-      "retained_locally_only": false
-    },
-    {
-      "ref": "committed-verification/final-active-run.json",
-      "sha256": "357ab0df6d478f051fabc7cbcc464f45ec73546421c5d86077149feec88501c3",
-      "bytes": 715,
-      "retained_locally_only": false
-    },
-    {
-      "ref": "committed-verification/final-commit-map.json",
-      "sha256": "e828f92b98a3c40fa232fadb30cbec81a63ec1dfb645f9f0174a24f2b10be18e",
-      "bytes": 2121,
-      "retained_locally_only": false
-    },
-    {
-      "ref": "committed-verification/final-plan.json",
-      "sha256": "14200c89cf77035d01469e8970aa14f3e479e2d4af6678cdf9253b6245f9ae11",
-      "bytes": 94390,
-      "retained_locally_only": false
-    },
-    {
-      "ref": "committed-verification/final-source-preflight.json",
-      "sha256": "c3f45e84595380b5e59f4d0fd3130119e81f09581675eba748f0b96d432193d9",
-      "bytes": 1599,
-      "retained_locally_only": false
-    },
-    {
-      "ref": "committed-verification/final-source.json",
-      "sha256": "3a132ec67cbd29a3a659b249dae965cf50540b74d94296adf3b990bc3b88471b",
-      "bytes": 307,
       "retained_locally_only": false
     },
     {
@@ -1244,6 +1244,12 @@
       "retained_locally_only": false
     },
     {
+      "ref": "committed-verification/workspace-concurrency.json",
+      "sha256": "2c8e6da8c10294867b872f3f3e07d3cc79d210f4da8d130daf46c1c88c636843",
+      "bytes": 19596,
+      "retained_locally_only": false
+    },
+    {
       "ref": "committed-verification/worktree-preparation.json",
       "sha256": "5fae38e15dd51de8ba297631c2c2462b8a1a1cf8325685624454aefb3b503f29",
       "bytes": 2609,
@@ -1277,6 +1283,12 @@
       "ref": "evidence-index.md",
       "sha256": "ff809ebc95cef9bf6ec829e386fc5ba298befec7a40ae6813e7224f123fe5761",
       "bytes": 3065,
+      "retained_locally_only": false
+    },
+    {
+      "ref": "fresh-verification-location.json",
+      "sha256": "af855ea66c5e517dd61b15c6c7d4c46dd4838224700906321522e261f8dd883a",
+      "bytes": 215,
       "retained_locally_only": false
     },
     {
@@ -3353,12 +3365,6 @@
       "ref": "fresh-verification/original-workspace/console.log",
       "sha256": "11f07852dc9a7c7b73d4c17e00ecda457acb2c1a14ebb9f7c4d8ed5eaf21347e",
       "bytes": 65,
-      "retained_locally_only": false
-    },
-    {
-      "ref": "fresh-verification-location.json",
-      "sha256": "af855ea66c5e517dd61b15c6c7d4c46dd4838224700906321522e261f8dd883a",
-      "bytes": 215,
       "retained_locally_only": false
     },
     {

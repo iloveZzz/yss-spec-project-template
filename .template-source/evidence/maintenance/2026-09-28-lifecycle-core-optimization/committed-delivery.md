@@ -19,7 +19,7 @@
 - 固定来源：`07d7fa19931cf05f45eaf6505dca1af236efac24`，Node `v24.21.0`，npm `11.19.0`。
 - `scripts/verify-template --concurrency 1` 全量通过，包含 103 项语法检查及输入摘要不漂移检查。
 - 固定生成器 `b8dc7c5b4244da02b5089649b243447b070f18d9` 完成打包、临时安装、实例初始化、Skill 投影／锁检查及同步演练；12 个外层步骤全部退出码为 0。
-- 校验前后隔离检出保持干净。主仓相对已验证来源的后续变化只允许本目录证据记录。
+- 校验前后隔离检出保持干净。从被验证提交到本轮交付提交之间，只有本目录证据变化。主工作区另有并行技能退役改动，未纳入本轮提交或验证；此次结论仅适用于上述固定提交。
 - 结果：[完整报告](committed-verification/final/release/release-verification.json)、[当前状态](committed-verification/delivery-status.json)。
 
 本轮没有执行推送、npm 发布或全局 CLI 安装；此结果不宣称跨 Node／OS 兼容矩阵或真实 Agent API／UI 对照已完成。原始失败和未完成记录均保留。

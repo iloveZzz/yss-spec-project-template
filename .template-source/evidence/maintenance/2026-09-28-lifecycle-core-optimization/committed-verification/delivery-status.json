@@ -6,7 +6,7 @@
   "target_state": "implementation-ready",
   "current_state": "implementation-ready",
   "implementation_ready": true,
-  "readiness_scope": "已实现正确性修复、显式 task focused 视图、Skill 和分发同步；不包含 focused 默认推广或全部 Agent 场景通过结论。",
+  "readiness_scope": "仅针对固定提交 07d7fa19931cf05f45eaf6505dca1af236efac24 的正确性修复、显式 task focused 视图、Skill 和分发同步；不覆盖并行未提交退役改动，也不包含 focused 默认推广或全部 Agent 场景通过结论。",
   "source_commit": "07d7fa19931cf05f45eaf6505dca1af236efac24",
   "verification_profile_actual": "release",
   "review_mode": "maintainer-self-check",
@@ -55,5 +55,7 @@
     "API/UI 真实 Agent 与恢复对照仍未闭合；已有轨迹保持未完成。",
     "原工作区 CodeGraph 大文件未处理；完整验证来自干净隔离检出。",
     "三个大体积冻结归档在本地保留并有摘要，未加入 Git。"
-  ]
+  ],
+  "current_workspace_verified": false,
+  "concurrent_workspace_changes_ref": "workspace-concurrency.json"
 }
