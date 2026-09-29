@@ -1,3 +1,4 @@
+import {finalizeReading} from './reading-view-bundle.mjs';
 import { existsSync, readFileSync, writeFileSync, mkdirSync, renameSync, unlinkSync, statSync, openSync, closeSync } from 'node:fs';
 import path from 'node:path';
 import { parseDocument, stringify } from '../vendor/yaml.mjs';
@@ -116,7 +117,7 @@ export function planTracking(root, { checkpoint_ref, items = [], refresh = false
   const payload = { schema_version: 1, root, input, gaps, observed, changes };
   return { ...payload, plan_id: sha256(JSON.stringify(payload)).slice(7) };
 }
-export function applyTracking(root, plan, { afterWrite } = {}) {
+function applyTrackingSources(root, plan, { afterWrite } = {}) {
   root = path.resolve(root); identity(root);
   if (plan.root !== root || plan.schema_version !== 1 || !/^[a-f0-9]{64}$/.test(plan.plan_id)) throw new Error('tracking-plan-identity-invalid');
   const { plan_id, ...payload } = plan;
@@ -173,4 +174,10 @@ export function applyTracking(root, plan, { afterWrite } = {}) {
     writeFileSync(path.join(transactionPath, 'failure.json'), json({ error: error.message, recovery_conflicts: conflicts }));
     throw new Error(`${error.message}; tracking-rollback-${conflicts.length ? `conflict:${conflicts.join(',')}` : 'complete'}`);
   }
+}
+
+// Finalize after the source transaction has committed; presentation failure never rolls it back.
+export function applyTracking(root,plan,options={}){
+ const result=applyTrackingSources(root,plan,options);
+ return finalizeReading(root,plan.input.checkpoint_ref,result);
 }

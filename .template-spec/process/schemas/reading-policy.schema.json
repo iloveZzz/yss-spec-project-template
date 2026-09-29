@@ -1,0 +1,10 @@
+{
+ "$schema":"https://json-schema.org/draft/2020-12/schema",
+ "title":"阅读材料启用策略",
+ "type":"object","additionalProperties":false,
+ "required":["schema_version","mode","checkpoints"],
+ "properties":{
+  "schema_version":{"const":1},"mode":{"enum":["manual","managed"]},
+  "checkpoints":{"type":"array","uniqueItems":true,"items":{"type":"string","pattern":"^docs/\\.scratch/[a-z0-9][a-z0-9-]*/[^/]+\\.(yaml|json)$"}}
+ }
+}

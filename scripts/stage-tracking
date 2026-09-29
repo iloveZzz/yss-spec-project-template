@@ -21,5 +21,6 @@ try {
     result = command === 'check' ? checkTracking(root, values.checkpoint) : planTracking(root, { checkpoint_ref: values.checkpoint, items: input, refresh: values.refresh });
     if (result.status === 'blocked' || (result.status === 'missing-checkpoint' && result.enabled)) process.exitCode = 1;
   }
+  if(result.reading_update?.status==='failed')process.exitCode=1;
   process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
 } catch (error) { process.stderr.write(`${error.message}\n`); process.exitCode = 1; }

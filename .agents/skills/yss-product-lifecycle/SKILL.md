@@ -5,7 +5,7 @@ description: 编排 YSS 研发全生命周期；当阶段、产物、门禁或 S
 
 # YSS Product Lifecycle
 
-合同阅读：`scripts/contract view`；见 `.template-spec/process/contract-reading.md`。
+合同阅读与托管更新：`scripts/contract view|render|check-views`；见 `.template-spec/process/contract-reading.md`。
 
 主控识别请求、身份和阶段，计算 frontier、派发并验收工作单元。
 

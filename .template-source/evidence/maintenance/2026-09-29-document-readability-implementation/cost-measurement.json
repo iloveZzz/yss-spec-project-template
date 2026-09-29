@@ -1,0 +1,54 @@
+{
+  "scope": "同一合成 v2 fixture 的首次及重复 fresh 调用；耗时不含模块加载；读取数仅统计 validation-phase 追踪文件，不是系统 I/O 总数；不是 token 或真实 Agent 成本测量。",
+  "node": "v24.21.0",
+  "rows": [
+    {
+      "run": 0,
+      "elapsed_ms": 78.18,
+      "markdown_bytes": 6608,
+      "json_bytes": 12511,
+      "source_bytes": 5426,
+      "tracked_unique_file_reads": 2
+    },
+    {
+      "run": 1,
+      "elapsed_ms": 72.86,
+      "markdown_bytes": 6608,
+      "json_bytes": 12511,
+      "source_bytes": 5426,
+      "tracked_unique_file_reads": 2
+    },
+    {
+      "run": 2,
+      "elapsed_ms": 69.84,
+      "markdown_bytes": 6608,
+      "json_bytes": 12511,
+      "source_bytes": 5426,
+      "tracked_unique_file_reads": 2
+    },
+    {
+      "run": 3,
+      "elapsed_ms": 67.56,
+      "markdown_bytes": 6608,
+      "json_bytes": 12511,
+      "source_bytes": 5426,
+      "tracked_unique_file_reads": 2
+    },
+    {
+      "run": 4,
+      "elapsed_ms": 66.11,
+      "markdown_bytes": 6608,
+      "json_bytes": 12511,
+      "source_bytes": 5426,
+      "tracked_unique_file_reads": 2
+    },
+    {
+      "run": 5,
+      "elapsed_ms": 63.35,
+      "markdown_bytes": 6608,
+      "json_bytes": 12511,
+      "source_bytes": 5426,
+      "tracked_unique_file_reads": 2
+    }
+  ]
+}

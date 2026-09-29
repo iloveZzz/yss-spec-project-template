@@ -1,0 +1,4 @@
+# 实际人工阅读试验通过前，新实例保持手动；存量实例由 contract plan-enable/apply-enable 显式登记。
+schema_version: 1
+mode: manual
+checkpoints: []

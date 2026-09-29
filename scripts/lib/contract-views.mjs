@@ -1,10 +1,18 @@
+import {readingCheckpointsForAsset,checkReadingViews} from './reading-view-bundle.mjs';
 import {readFileSync,withValidationPhase} from './validation-phase.mjs';
 import {safe,hash,schema} from './strategic-handoff-io.mjs';
 import {parseSliceYaml,readSliceContract} from './slice-contract.mjs';
 import {renderSliceContractView,diffSliceContracts} from './slice-contract-views.mjs';
+import {renderReadingMarkdown} from './reading-view-markdown.mjs';
+import {readingDiff,renderReadingDiff} from './reading-view-diff.mjs';
+import {adaptReading} from './reading-view-adapters.mjs';
+import {readingViewModel} from './reading-view-model.mjs';
 
 // This is a presentation adapter table, never a lifecycle or approval registry.
 export const contractKinds=Object.freeze({
+ 'domain-strategy':'.template-spec/process/schemas/domain-strategy-reading.schema.json',
+ 'stage-decision-package':'.template-spec/process/schemas/stage-decision-package-reading.schema.json',
+ checkpoint:'.template-spec/process/schemas/lifecycle-checkpoint.schema.json','tracking-migration':null,
  slice:null,plan:null,spec:null,'product-design':null,'prototype-confirmation':null,'visual-baseline':null,
  'technical-design':'.agents/skills/yss-technical-design/references/technical-design.schema.json',
  'api-decision':'.template-spec/process/schemas/api-contract-decision.schema.json',
@@ -17,11 +25,11 @@ export const contractKinds=Object.freeze({
 });
 const object=v=>v&&typeof v==='object'&&!Array.isArray(v);
 const stringify=v=>typeof v==='string'?v:JSON.stringify(v,null,2);
-const metadata=/^(schema_version|kind|digest|sha256|subject_digest|.*_digest|.*_sha256|resolution|basis|inputs|sources|artifact_bindings|current_version)$/;
+const metadata=/^(schema_version|digest|sha256|subject_digest|document_digest|referenced_terms_digest)$/;
 function display(value){
  if(Array.isArray(value))return value.map(display);
  if(!object(value))return value;
- return Object.fromEntries(Object.entries(value).filter(([key])=>!metadata.test(key)).map(([k,v])=>[k,display(v)]));
+ return Object.fromEntries(Object.entries(value).map(([k,v])=>[k,display(v)]));
 }
 function validateKind(kind){if(!Object.hasOwn(contractKinds,kind))throw new TypeError(`未知合同类型 ${kind}；可用：${Object.keys(contractKinds).join(', ')}`);}
 function load(ref,root){
@@ -53,16 +61,17 @@ function declaredBlockers(value,prefix=''){
  return rows;
 }
 function markdown(view){
+ if(['domain-strategy','stage-decision-package','checkpoint','tracking-migration'].includes(view.kind))return renderReadingMarkdown(view);
  const lines=[`# ${view.kind} · ${view.binding.id||view.binding.ref}`,`版本：${view.binding.version||'源资产未声明'}；权威文件：${view.binding.ref}`,`摘要：${view.binding.digest}`,`检查：${view.checks.join('；')}。批准有效性未核验；本视图不授予执行权限。`];
  for(const [name,value]of Object.entries(view.content))if(value!==undefined)lines.push(`## ${name}`,stringify(value));
  if(view.blockers.length)lines.push('## 阻断与未决检查',...view.blockers.map(x=>`- ${x}`));
  return lines.join('\n\n')+'\n';
 }
 export function viewContract(ref,options={}){return withValidationPhase({root:options.root,purpose:'contract-view',slice_id:ref,work_unit_id:options.unit_id,readOnly:true},()=>view(ref,options));}
-function view(ref,{root=process.cwd(),kind,profile='review',unit_id,task_layout='legacy'}={}){
+function view(ref,{root=process.cwd(),kind,profile='review',unit_id,task_layout='legacy',include_reading_model=false}={}){
  validateKind(kind);if(!['review','task','full'].includes(profile))throw new TypeError(`未知阅读档位 ${profile}`);
  if(!['legacy','focused'].includes(task_layout))throw new TypeError(`未知 task layout ${task_layout}`);
- let binding,content,checks=['可读取'],blockers=[],sourceChecks=[];
+ let sourceRaw,binding,content,checks=['可读取'],blockers=[],sourceChecks=[];
  if(kind==='slice'){
   const loaded=readSliceContract(ref,{root,diagnostic:true});binding=loaded.binding;blockers.push(...declaredBlockers(loaded.raw));
   const legacy=renderSliceContractView(ref,{root,unit_id:profile==='task'?unit_id:undefined});
@@ -95,7 +104,7 @@ function view(ref,{root=process.cwd(),kind,profile='review',unit_id,task_layout=
    }
   }
  }else{
-  const {bytes,raw}=load(ref,root);binding={ref,id:raw.contract_id||raw.technical_design_id||raw.decision_id||raw.request?.request_id||raw.handoff_id||raw.baseline_id||raw.spec_id||raw.plan_id||raw.id||null,version:raw.contract_version||raw.decision_version||raw.handoff_version||raw.version||null,digest:hash(bytes)};
+  const {bytes,raw}=load(ref,root);sourceRaw=raw;binding={ref,schema_version:raw.schema_version??null,id:raw.contract_id||raw.feature_id||raw.domain_strategy_id||raw.stage_decision_id||raw.technical_design_id||raw.decision_id||raw.request?.request_id||raw.handoff_id||raw.baseline_id||raw.spec_id||raw.plan_id||raw.id||null,version:raw.contract_version||raw.domain_version||raw.package_version||raw.decision_version||raw.handoff_version||raw.version||null,digest:hash(bytes)};
   blockers.push(...declaredBlockers(raw));
   let schemaRef=contractKinds[kind];if(kind==='api-decision'&&raw.schema_version===2)schemaRef='.template-spec/process/schemas/api-contract-decision-v2.schema.json';
   if(kind==='frontend-acceptance'&&[1,3].includes(raw.schema_version))schemaRef=`.template-spec/process/schemas/frontend-delivery-acceptance${raw.schema_version===1?'-v1':'-v3'}.schema.json`;
@@ -103,7 +112,7 @@ function view(ref,{root=process.cwd(),kind,profile='review',unit_id,task_layout=
   else checks.push('结构与批准未核验，按资产所有者规则继续');
   sourceChecks=references(raw,root);if(sourceChecks.length)checks.push(`核对 ${sourceChecks.length} 项可识别来源摘要；其余语义由资产所有者核验`);for(const source of sourceChecks)if(!source.current)blockers.push(`来源不可读或过期：${source.ref}`);
   // Unknown business fields remain visible. Only well-known machine metadata is hidden.
-  content=profile==='full'?{权威合同:raw,来源核对:sourceChecks}:display(raw);
+  content=profile==='full'?{权威合同:raw,来源核对:sourceChecks}:adaptReading(kind,display(raw),{root,ref,blockers});
   if(kind==='api-decision'&&raw.schema_version===2&&raw.draft_review){try{const review=load(raw.draft_review.ref,root).raw;content.实际审查记录=profile==='full'?review:display(review);if(review.result!=='approved'||!Array.isArray(review.blocking_findings)||review.blocking_findings.length)blockers.push('OpenAPI Draft Review 实际记录未批准或有阻断');if(review.draft_ref!==raw.openapi?.ref||review.draft_digest!==raw.openapi?.digest)blockers.push('Draft Review 未绑定当前 OpenAPI');}catch(error){blockers.push(error.message);}}
   if(profile==='task'){
    if(raw.work_units){if(!unit_id)throw new TypeError('含工作单元的合同必须指定 --unit');const matches=raw.work_units.filter(x=>x.id===unit_id);if(matches.length!==1)throw new TypeError(`工作单元缺失或不唯一: ${unit_id}`);content.work_units=matches;}
@@ -111,14 +120,14 @@ function view(ref,{root=process.cwd(),kind,profile='review',unit_id,task_layout=
    content.约束分类='保留未分类字段；本视图只允许阅读，执行影响由资产所有者核验。';
   }
  }
- const view={read_only:true,execution_allowed:false,kind,profile,binding,checks,approval_validity:'not-checked',content,blockers};view.markdown=markdown(view);return view;
+ const view={read_only:true,execution_allowed:false,kind,profile,binding,checks,approval_validity:'not-checked',content,blockers};if(include_reading_model&&['domain-strategy','stage-decision-package','checkpoint','tracking-migration'].includes(kind))view.reading_model=readingViewModel(view,sourceRaw);view.markdown=markdown(view);return view;
 }
 export function diffContract(beforeRef,afterRef,{root=process.cwd(),beforeRoot=root,kind}={}){
  validateKind(kind);if(kind==='slice')return diffSliceContracts(beforeRef,afterRef,{root,beforeRoot});
  const before=load(beforeRef,beforeRoot),after=load(afterRef,root),changes=[];
  const walk=(a,b,p)=>{if(JSON.stringify(a)===JSON.stringify(b))return;if(object(a)&&object(b)){for(const key of new Set([...Object.keys(a),...Object.keys(b)]))walk(a[key],b[key],p?`${p}.${key}`:key);}else changes.push({path:p,before:a??null,after:b??null,category:metadata.test(p.split('.').at(-1))?'binding-change':'requires-review'});};
  walk(before.raw,after.raw,'');const source_checks=[...references(before.raw,beforeRoot).map(x=>({...x,side:'before'})),...references(after.raw,root).map(x=>({...x,side:'after'}))];
- return{read_only:true,approval_reusable:false,execution_allowed:false,before:{ref:beforeRef,digest:hash(before.bytes)},after:{ref:afterRef,digest:hash(after.bytes)},bytes_changed:!before.bytes.equals(after.bytes),changes,source_checks,decision_impact:'必须按当前差异和授权延续协议核验；无法读取旧来源时影响未知。'};
+ const result={read_only:true,approval_reusable:false,execution_allowed:false,before:{ref:beforeRef,digest:hash(before.bytes)},after:{ref:afterRef,digest:hash(after.bytes)},bytes_changed:!before.bytes.equals(after.bytes),changes,source_checks,decision_impact:'必须按当前差异和授权延续协议核验；无法读取旧来源时影响未知。',semantic_changes:readingDiff(before.raw,after.raw)};result.markdown=renderReadingDiff(result);return result;
 }
 
 /** Mechanical review material only; original decisions and semantic review remain authoritative. */
@@ -135,6 +144,10 @@ export function prepareContractReview(beforeRef, afterRef, options = {}) {
         return value;
       } catch(error) { gap('SOURCE_UNREADABLE',ref,`${side}: ${error.message}`,'提供可读取的原始资产；不推断历史内容');return null; }
     };
+    for(const checkpoint of readingCheckpointsForAsset(root,afterRef,options.kind)){
+      const reading=checkReadingViews(root,checkpoint);
+      if(reading.blockers.length)gap('READING_VIEWS_STALE',checkpoint,reading.blockers.join('; '),reading.recovery);
+    }
     const before = readView(beforeRef,'before',options.beforeRoot||root), after = readView(afterRef,'after',root);
     if(before?.binding.id && after?.binding.id && before.binding.id!==after.binding.id)gap('IDENTITY_CONFLICT',afterRef,'前后资产 ID 不一致','选择同一资产的前后版本');
     if(before?.binding.version && before.binding.version===after?.binding.version && before.binding.digest!==after.binding.digest)gap('VERSION_CONFLICT',afterRef,'相同版本包含不同字节','形成新候选版本并重新核验');

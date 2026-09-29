@@ -1,0 +1,35 @@
+[
+  {
+    "kind": "domain-strategy",
+    "ref": "docs/.scratch/data-integration-platform/plan/domain-strategy.yaml",
+    "exit_code": 0,
+    "source_before_sha256": "9e67f293deb551bfde39bda11f2341af899bd9935fb60aaf2b3d4c1f4bf94139",
+    "source_after_sha256": "9e67f293deb551bfde39bda11f2341af899bd9935fb60aaf2b3d4c1f4bf94139",
+    "source_bytes_unchanged": true,
+    "render_bytes": 26946,
+    "diagnostic_only": false,
+    "stderr": ""
+  },
+  {
+    "kind": "stage-decision-package",
+    "ref": "docs/.scratch/data-integration-platform/plan/stage-decision-package.yaml",
+    "exit_code": 1,
+    "source_before_sha256": "d36c0e3f12b573b4c048a3a193ec29111630953982aefb600feec4b6f6a1ef7e",
+    "source_after_sha256": "d36c0e3f12b573b4c048a3a193ec29111630953982aefb600feec4b6f6a1ef7e",
+    "source_bytes_unchanged": true,
+    "render_bytes": 22019,
+    "diagnostic_only": true,
+    "stderr": ""
+  },
+  {
+    "kind": "checkpoint",
+    "ref": "docs/.scratch/data-integration-platform/checkpoint.yaml",
+    "exit_code": 1,
+    "source_before_sha256": "aa2aac2f4aedfdcec1fd494c055f3b154cde28b36e15bffa01670105788bf748",
+    "source_after_sha256": "aa2aac2f4aedfdcec1fd494c055f3b154cde28b36e15bffa01670105788bf748",
+    "source_bytes_unchanged": true,
+    "render_bytes": 22123,
+    "diagnostic_only": true,
+    "stderr": ""
+  }
+]

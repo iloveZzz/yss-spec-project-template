@@ -1,3 +1,4 @@
+import {assertReadingTransition} from './reading-view-bundle.mjs';
 import { assertTrackingTransition } from './stage-tracking.mjs';
 import { assertScopeTransition, assertScopeImpacts, assertScopeWorkUnit, scopedNextRoutes } from './lifecycle-execution-scope.mjs';
 // Wire capability marker: profile-local readiness rules are not interchangeable.
@@ -321,6 +322,8 @@ export function validateNextRoute(currentWorkUnit, nextRoute, decisionState, opt
       }
     } catch (error) { return blockedResult(['maintenance-research-boundary'], [error.message]); }
   }
+  try { assertReadingTransition(options.root || ROOT, decisionState, currentWorkUnit); }
+  catch(error){ return blockedResult(['reading-views-stale'],[error.message]); }
   try { assertTrackingTransition(currentWorkUnit, nextRoute, decisionState, { root: options.root || ROOT }); }
   catch (error) { return blockedResult(['stage-tracking-blocked'], [error.message]); }
   try { assertScopeTransition(currentWorkUnit, nextRoute, decisionState, options); }

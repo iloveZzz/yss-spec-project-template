@@ -623,6 +623,9 @@ groups:
         id: check.read-only-intake
   lifecycle:
     commands:
+      - run: node --test scripts/fixtures/reading-views/*.test.mjs
+        when: template-source
+        id: check.document-reading-views
       - run: node --test scripts/fixtures/stage-tracking/tracking.test.mjs
         when: template-source
         id: check.92a3623cf3550ba8

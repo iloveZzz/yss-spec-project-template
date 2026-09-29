@@ -1,13 +1,25 @@
 #!/usr/bin/env node
 import path from 'node:path';
+import {readFileSync,writeFileSync} from 'node:fs';
+import {safe} from './lib/strategic-handoff-io.mjs';
+import {renderReadingBundle,checkReadingViews,readingCheckpointsForAsset,saveReadingComparison,planEnableReading,applyEnableReading} from './lib/reading-view-bundle.mjs';
 import {viewContract,diffContract,prepareContractReview} from './lib/contract-views.mjs';
 try{
  const args=process.argv.slice(2),mode=args.shift(),options={},positional=[];
- for(let i=0;i<args.length;i++){const arg=args[i];if(arg==='--json')options.json=true;else if(arg.startsWith('--')){const key=arg.slice(2);if(!['kind','profile','unit','root','before-root','decision','task-layout'].includes(key)||!args[i+1]||args[i+1].startsWith('--'))throw Error(`未知或缺值参数 ${arg}`);options[key]=args[++i];}else positional.push(arg);}
- const config={kind:options.kind,root:path.resolve(options.root||process.cwd()),profile:options.profile||'review',unit_id:options.unit,task_layout:options['task-layout']||'legacy',beforeRoot:options['before-root']?path.resolve(options['before-root']):undefined,decision_ref:options.decision};
+ for(let i=0;i<args.length;i++){const arg=args[i];if(arg==='--json')options.json=true;else if(arg==='--model')options.model=true;else if(arg.startsWith('--')){const key=arg.slice(2);if(!['kind','profile','unit','root','before-root','decision','task-layout','checkpoint','output'].includes(key)||!args[i+1]||args[i+1].startsWith('--'))throw Error(`未知或缺值参数 ${arg}`);options[key]=args[++i];}else positional.push(arg);}
+ const config={kind:options.kind,include_reading_model:options.model===true,root:path.resolve(options.root||process.cwd()),profile:options.profile||'review',unit_id:options.unit,task_layout:options['task-layout']||'legacy',beforeRoot:options['before-root']?path.resolve(options['before-root']):undefined,decision_ref:options.decision};
+ if(['render','check-views','plan-enable','apply-enable'].includes(mode)){
+  if(mode==='apply-enable'?positional.length!==1:!options.checkpoint||positional.length)throw Error('reading-command-arguments-invalid');
+  const result=mode==='render'?renderReadingBundle(config.root,options.checkpoint):mode==='check-views'?checkReadingViews(config.root,options.checkpoint):mode==='plan-enable'?planEnableReading(config.root,options.checkpoint):applyEnableReading(config.root,JSON.parse(readFileSync(safe(config.root,positional[0]),'utf8')));
+  if(mode==='plan-enable'&&options.output)writeFileSync(safe(config.root,options.output,{missing:true}),JSON.stringify(result,null,2)+'\n',{flag:'wx'});
+  process.stdout.write(JSON.stringify(result,null,2)+'\n');if(result.blockers?.length||result.reading_update?.status==='failed')process.exitCode=1;
+ }else{
  if(!options.kind)throw Error('必须用 --kind 明确资产类型');
  if(!['view','diff','prepare-review'].includes(mode)||positional.length!==(mode==='view'?1:2))throw Error('用法: contract view <资产> --kind <类型> [--profile review|task|full] [--unit <ID>] [--json] | diff|prepare-review <旧资产> <新资产> --kind <类型> [--decision <原决定>]');
+ if(mode==='prepare-review')for(const checkpoint of readingCheckpointsForAsset(config.root,positional[1],config.kind))renderReadingBundle(config.root,checkpoint);
  const result=mode==='view'?viewContract(positional[0],config):mode==='prepare-review'?prepareContractReview(positional[0],positional[1],config):diffContract(positional[0],positional[1],config);
+ if(mode==='prepare-review'&&options.checkpoint&&!result.blockers?.length)result.saved_comparison=saveReadingComparison(config.root,options.checkpoint,result);
  process.stdout.write(options.json||!result.markdown?JSON.stringify(result,null,2)+'\n':result.markdown);
  if(result.blockers?.length)process.exitCode=1;
+ }
 }catch(error){process.stderr.write(error.message+'\n');process.exitCode=1;}

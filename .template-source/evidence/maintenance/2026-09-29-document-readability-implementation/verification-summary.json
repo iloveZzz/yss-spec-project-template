@@ -1,0 +1,224 @@
+{
+  "scope": "local implementation and working-tree distribution; no release claim",
+  "branch": "codex/document-readability",
+  "implementation_root": "/Users/zhudaoming/.codex/worktrees/document-readability/yss-spec-project-template",
+  "root_head": "e1503a536b92b3e0a74182632f0690cc5601de62",
+  "focused": {
+    "tests": 51,
+    "pass": 51,
+    "fail": 0,
+    "log": "/Users/zhudaoming/.codex/tmp/document-readability-20260929/focused-closure.log"
+  },
+  "main_cli": {
+    "tests": 202,
+    "pass": 201,
+    "fail": 1,
+    "log": "/Users/zhudaoming/.codex/tmp/document-readability-20260929/main-cli-tests-final.log"
+  },
+  "minimal_cli": {
+    "tests": 11,
+    "pass": 11,
+    "fail": 0,
+    "log": "/Users/zhudaoming/.codex/tmp/document-readability-20260929/cli-reading-regression.log"
+  },
+  "profile_checks": [
+    {
+      "profile": "yss-harness-design-agent",
+      "command": "scripts/verify-lifecycle-transition-scenarios",
+      "exit_code": 0,
+      "log": "/Users/zhudaoming/.codex/tmp/document-readability-20260929/yss-harness-design-agent-verify-lifecycle-transition-scenarios.log"
+    },
+    {
+      "profile": "yss-harness-design-agent",
+      "command": "scripts/verify-skill-governance",
+      "exit_code": 0,
+      "log": "/Users/zhudaoming/.codex/tmp/document-readability-20260929/yss-harness-design-agent-verify-skill-governance.log"
+    },
+    {
+      "profile": "yss-harness-design-agent",
+      "command": "scripts/verify-strategic-handoff-tools-lock",
+      "exit_code": 0,
+      "log": "/Users/zhudaoming/.codex/tmp/document-readability-20260929/yss-harness-design-agent-verify-strategic-handoff-tools-lock.log"
+    },
+    {
+      "profile": "yss-harness-backend-agent",
+      "command": "scripts/verify-lifecycle-transition-scenarios",
+      "exit_code": 0,
+      "log": "/Users/zhudaoming/.codex/tmp/document-readability-20260929/yss-harness-backend-agent-verify-lifecycle-transition-scenarios.log"
+    },
+    {
+      "profile": "yss-harness-backend-agent",
+      "command": "scripts/verify-skill-governance",
+      "exit_code": 0,
+      "log": "/Users/zhudaoming/.codex/tmp/document-readability-20260929/yss-harness-backend-agent-verify-skill-governance.log"
+    },
+    {
+      "profile": "yss-harness-backend-agent",
+      "command": "scripts/verify-strategic-handoff-tools-lock",
+      "exit_code": 0,
+      "log": "/Users/zhudaoming/.codex/tmp/document-readability-20260929/yss-harness-backend-agent-verify-strategic-handoff-tools-lock.log"
+    },
+    {
+      "profile": "yss-harness-frontend-agent",
+      "command": "scripts/verify-lifecycle-transition-scenarios",
+      "exit_code": 0,
+      "log": "/Users/zhudaoming/.codex/tmp/document-readability-20260929/yss-harness-frontend-agent-verify-lifecycle-transition-scenarios.log"
+    },
+    {
+      "profile": "yss-harness-frontend-agent",
+      "command": "scripts/verify-skill-governance",
+      "exit_code": 0,
+      "log": "/Users/zhudaoming/.codex/tmp/document-readability-20260929/yss-harness-frontend-agent-verify-skill-governance.log"
+    },
+    {
+      "profile": "yss-harness-frontend-agent",
+      "command": "scripts/verify-strategic-handoff-tools-lock",
+      "exit_code": 0,
+      "log": "/Users/zhudaoming/.codex/tmp/document-readability-20260929/yss-harness-frontend-agent-verify-strategic-handoff-tools-lock.log"
+    }
+  ],
+  "postchecks": [
+    {
+      "command": [
+        "node",
+        "scripts/verify-template-verification-scenarios"
+      ],
+      "exit_code": 0,
+      "log": "/Users/zhudaoming/.codex/tmp/document-readability-20260929/postcheck-0.log"
+    },
+    {
+      "command": [
+        "node",
+        "scripts/verify-template-cache-scenarios"
+      ],
+      "exit_code": 0,
+      "log": "/Users/zhudaoming/.codex/tmp/document-readability-20260929/postcheck-1.log"
+    },
+    {
+      "command": [
+        "node",
+        "--test",
+        ".template-source/scripts/tests/template-ci.test.mjs"
+      ],
+      "exit_code": 0,
+      "log": "/Users/zhudaoming/.codex/tmp/document-readability-20260929/postcheck-2.log"
+    },
+    {
+      "command": [
+        "node",
+        "--test",
+        "tests/verification-selection.test.mjs",
+        "tests/verification-report.test.mjs"
+      ],
+      "exit_code": 0,
+      "log": "/Users/zhudaoming/.codex/tmp/document-readability-20260929/postcheck-3.log"
+    }
+  ],
+  "package_smoke": [
+    {
+      "cli": "create-yss-spec",
+      "version": "3.5.3",
+      "source_state": "working-tree",
+      "pack": "create-yss-spec-3.5.3.tgz",
+      "installed_entrypoint": "/Users/zhudaoming/.codex/tmp/document-readability-20260929/package-smoke-r3/create-yss-spec/node_modules/.bin/create-yss-spec",
+      "instance": "/Users/zhudaoming/.codex/tmp/document-readability-20260929/package-smoke-r3/create-yss-spec/instance",
+      "default": "manual",
+      "explicit_enable": "current",
+      "repeat": "unchanged",
+      "manual_map": "preserved",
+      "diagnostics": []
+    },
+    {
+      "cli": "create-yss-harness-design",
+      "version": "0.8.10",
+      "source_state": "working-tree",
+      "pack": "create-yss-harness-design-0.8.10.tgz",
+      "installed_entrypoint": "/Users/zhudaoming/.codex/tmp/document-readability-20260929/package-smoke-r3/create-yss-strategic-design/node_modules/.bin/create-yss-harness-design",
+      "instance": "/Users/zhudaoming/.codex/tmp/document-readability-20260929/package-smoke-r3/create-yss-strategic-design/instance",
+      "default": "manual",
+      "explicit_enable": "current",
+      "repeat": "unchanged",
+      "manual_map": "preserved",
+      "diagnostics": []
+    },
+    {
+      "cli": "create-yss-harness-backend",
+      "version": "0.4.14",
+      "source_state": "working-tree",
+      "pack": "create-yss-harness-backend-0.4.14.tgz",
+      "installed_entrypoint": "/Users/zhudaoming/.codex/tmp/document-readability-20260929/package-smoke-r3/create-yss-harness-backend/node_modules/.bin/create-yss-harness-backend",
+      "instance": "/Users/zhudaoming/.codex/tmp/document-readability-20260929/package-smoke-r3/create-yss-harness-backend/instance",
+      "default": "manual",
+      "explicit_enable": "current",
+      "repeat": "unchanged",
+      "manual_map": "preserved",
+      "diagnostics": []
+    },
+    {
+      "cli": "create-yss-harness-frontend",
+      "version": "0.3.14",
+      "source_state": "working-tree",
+      "pack": "create-yss-harness-frontend-0.3.14.tgz",
+      "installed_entrypoint": "/Users/zhudaoming/.codex/tmp/document-readability-20260929/package-smoke-r3/create-yss-harness-frontend/node_modules/.bin/create-yss-harness-frontend",
+      "instance": "/Users/zhudaoming/.codex/tmp/document-readability-20260929/package-smoke-r3/create-yss-harness-frontend/instance",
+      "default": "manual",
+      "explicit_enable": "current",
+      "repeat": "unchanged",
+      "manual_map": "preserved",
+      "diagnostics": []
+    }
+  ],
+  "template_verification": {
+    "requested_profile": "fast",
+    "effective_profile": "release",
+    "status": "failed",
+    "input_drift": false,
+    "completed_checks": 98,
+    "failed": [
+      {
+        "command": "scripts/verify-strategic-handoff-tools-lock --require-committed",
+        "exit_code": 1
+      }
+    ],
+    "unexecuted": [
+      {
+        "id": "check.1f905d7e659c8525",
+        "command": "node scripts/verify-template-verification-scenarios",
+        "reason": "failure-or-interruption"
+      },
+      {
+        "id": "check.e970cf29c7cd81e3",
+        "command": "node scripts/verify-template-cache-scenarios",
+        "reason": "failure-or-interruption"
+      },
+      {
+        "id": "check.af45fd40af913057",
+        "command": "node --test .template-source/scripts/tests/template-ci.test.mjs",
+        "reason": "failure-or-interruption"
+      },
+      {
+        "id": "check.verification-selection",
+        "command": "node --test tests/verification-selection.test.mjs tests/verification-report.test.mjs",
+        "reason": "failure-or-interruption"
+      }
+    ],
+    "report": "/Users/zhudaoming/.codex/tmp/document-readability-20260929/verification-closure/report.json"
+  },
+  "primary_preservation": {
+    "checked_files": 33,
+    "differences_from_planning_baseline": [],
+    "implementation_root": "/Users/zhudaoming/.codex/worktrees/document-readability/yss-spec-project-template",
+    "primary_root": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "note": "No edits in primary from this task; baseline drift may belong to concurrent work and is preserved."
+  },
+  "human_trial": {
+    "status": "awaiting-answers-and-timings",
+    "acknowledgement": "是的",
+    "answers_received": 0,
+    "default_mode": "manual"
+  },
+  "schema_migration": "assessed; v2/v3 retained, no v4 migration",
+  "git_commit": "not-performed",
+  "push": "not-performed",
+  "publication": "not-performed"
+}

@@ -68,3 +68,38 @@ scripts/contract prepare-review <前资产> <后资产> --kind <类型> [--unit 
 前端 verification schema v2 保留读取历史交互文字；正式完成校验要求 `implementation_plan: {ref, digest}` 绑定当前批准计划，`interaction_results` 使用 `{case_id, state, result, evidence_ref, evidence_digest}`，覆盖计划全部 state_cases 和选定 case_id。只有 `result: pass` 可继续。console、实现截图、视觉差异与实际命令日志均须绑定当前字节摘要，命令必须覆盖计划中的 pnpm_commands。
 
 历史文字报告返回 `legacy-interaction-binding-missing`；先重验计划与批准，再真实执行交互、console、截图及适用命令并另存新报告，不给旧报告补造通过记录。摘要校验不证明交互语义，实际浏览器轨迹和独立前端审查仍按既有边界执行。
+
+## 首批中文阅读页与显式托管
+
+`domain-strategy`、`stage-decision-package`、`checkpoint`、`tracking-migration` 提供专用中文 Markdown。业务原文、稳定 ID、枚举、失败条件、零值、未知字段均保留；旧类型继续使用原有兼容布局。`--json` 保留原接口字段，首批四类可用 `--model --json` 显式获取 `reading_model`；默认不附逐字段索引以减少 Agent 读取成本；`source_pointer` 只用于可直接对应原字段的条目，其他条目使用 `content_pointer`，不冒充原文位置。
+
+源文件是唯一可编辑事实。阅读页是来源快照，不证明当前批准或执行权；`blockers: []` 只表示未登记阻塞。检查点阶段和工作项进度分别展示。原始 Markdown 文档仍由作者维护，JSON/YAML 的机器绑定不因阅读层改写。
+
+```sh
+# 只读预览；只读检查不创建文件
+scripts/contract view <原资产> --kind domain-strategy
+scripts/contract view <历史迁移plan.json> --kind tracking-migration
+scripts/contract check-views --checkpoint docs/.scratch/<feature>/checkpoint.yaml
+
+# 先审阅启用计划，再显式应用；不覆盖已有计划
+scripts/contract plan-enable --checkpoint docs/.scratch/<feature>/checkpoint.yaml --output reading-enable.json
+scripts/contract apply-enable reading-enable.json
+
+# 手动重建，或完成直接源编辑后调用
+scripts/contract render --checkpoint docs/.scratch/<feature>/checkpoint.yaml
+
+# 正式差异记录可明确保存；相同内容幂等，历史报告不追随源覆盖
+scripts/contract prepare-review <旧资产> <新资产> --kind domain-strategy --checkpoint docs/.scratch/<feature>/checkpoint.yaml --json
+```
+
+策略由 `reading-policy.yaml` 持有；缺失或 `manual` 保留旧行为。实际人工阅读试验通过前，模板默认 `manual`。`apply-enable` 只将计划绑定的 checkpoint 登记为托管；其他功能不会被自动接管。领域与阶段决策页消费 checkpoint.artifacts 中对应 `artifact.domain-strategy`、`artifact.stage-decision-package` 的明确 ref；不扫描目录推断资产。其他未来资产保留原入口。
+
+输出放在功能目录 `reading/`：`status.review.md`、对应合同审阅页、`.manifest.json`；正式差异放在 `reading/changes/`。`map.md` 只维护 `YSS-READING:BEGIN/END` 标记范围，保留外部人工正文。manifest 只存依赖、代码与输出摘要和生成诊断，不保存可复用批准。
+
+`check-views` 核对源字节、明确引用、术语、schema、生成器依赖、输出和导航块；只读且不重建。`current` 表示呈现一致性，不代表业务门禁通过；`diagnostics` 中原资产的阻断仍由资产所有者处理。正式准备 API 对托管过期包返回缺口；CLI `prepare-review` 在准备前重建，实际流转代码再次只读检查。`lifecycle-status` 只报告阅读可用性。
+
+生成使用排他锁、恢复日志、逐文件原子替换，manifest 最后提交。人工改动、同名非托管文件、符号链接、坏 manifest 或导航块会保留并报冲突。先保存人工改动，再恢复对应旧生成物及 manifest 后重建；不提供覆盖式 force。检测到历史输出已不再登记时要求人工确认处置，不静默删除。
+
+阶段追踪事务成功后调用共同 `finalizeReading`；`source_operation: applied` 与 `reading_update.status: failed` 可以同时出现。此时源已应用，只修复阅读冲突并运行 render，不能为了补阅读页重做源事务。进程中断后的生成日志只恢复仍匹配本轮字节的派生文件；他人改动会留下恢复冲突。
+
+迁移预览核对计划、内嵌 after 和 Base64 备份摘要；缺少匹配备份时显示“无法比较旧内容”，不以当前文件替代。单文件解码预览上限 2 MiB，超出时返回诊断，不截断或执行内容。receipt 只说明原事务状态。差异按已有稳定 ID 对齐，数组重排独立显示；`binding-change` 和 `unclassified` 仍须审阅，不自动沿用批准。

@@ -1,3 +1,4 @@
+import {checkReadingViews} from './reading-view-bundle.mjs';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
@@ -132,6 +133,7 @@ export function lifecycleStatus({ root, checkpointRef, taskPackageRef }) {
     schema_version: 1, read_only: true, stage: value.stage, checkpoint_status: value.status,
     work_unit: value.next_work_unit ?? null, owner, blockers, next_action,
     execution_authorization: 'not-evaluated', verification_scope, diagnostics, next_step, recovery,
+    reading_views: checkReadingViews(root,checkpointRef),
     source_digests: { checkpoint: { ref: checkpointRef, digest: checkpoint.digest }, registry: { ref: registryRef, digest: registry.digest }, orchestration: { ref: contractRef, digest: contract.digest }, ...(taskSource?{task:{ref:taskPackageRef,digest:taskSource.digest}}:{}), ...(contractSource?{slice_contract:{ref:task.contract.slice_contract_ref,digest:contractSource.digest}}:{}) },
   };
 }
