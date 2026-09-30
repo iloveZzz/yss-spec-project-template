@@ -1,0 +1,161 @@
+{
+  "read_only_baseline_backup": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-tickets-baseline-cdi76y_n",
+  "preserved_dirty_files": [
+    "submodules/yss-harness-design-agent/.agents/skills/to-spec/SKILL.md",
+    "submodules/yss-harness-backend-agent/.agents/skills/to-spec/SKILL.md",
+    "submodules/yss-harness-frontend-agent/.agents/skills/to-spec/SKILL.md",
+    "submodules/yss-harness-frontend-agent/.agents/skills/yss-prototype-stage/SKILL.md"
+  ],
+  "proof": "现有目标内容等于本轮修改前 canonical，增量追加业务衔接；同步应用仍检查 before_sha256",
+  "changes": [
+    {
+      "profile": "design",
+      "skill": "to-spec",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/to-spec/SKILL.md",
+      "before_sha256": "d77aa11511dd61e74d62282e82964b17970af2c890773b84d9fa75e976070dd6",
+      "after_sha256": "d1c661e47bcc9c56325369beeb2763941fce8f371751783efae5f986ae8f7c0c"
+    },
+    {
+      "profile": "design",
+      "skill": "to-tickets",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/to-tickets/SKILL.md",
+      "before_sha256": "8c798a63c332eb6f0947df623ee7b7a6529f98dcb96286d02e28a39b4f815f0c",
+      "after_sha256": "fe5731adf833e3cfb4ca8c7b600f19f1515ed967f91279249d5a6b23e006c670"
+    },
+    {
+      "profile": "backend",
+      "skill": "to-spec",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/to-spec/SKILL.md",
+      "before_sha256": "d77aa11511dd61e74d62282e82964b17970af2c890773b84d9fa75e976070dd6",
+      "after_sha256": "d1c661e47bcc9c56325369beeb2763941fce8f371751783efae5f986ae8f7c0c"
+    },
+    {
+      "profile": "backend",
+      "skill": "to-tickets",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/to-tickets/SKILL.md",
+      "before_sha256": "8c798a63c332eb6f0947df623ee7b7a6529f98dcb96286d02e28a39b4f815f0c",
+      "after_sha256": "fe5731adf833e3cfb4ca8c7b600f19f1515ed967f91279249d5a6b23e006c670"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-technical-design",
+      "classification": "adapted",
+      "status": "updated",
+      "path": ".agents/skills/yss-technical-design/SKILL.md",
+      "before_sha256": "cdba9aad7f89e31a4dd4ed2c99cc5c9efcd71b69d4b81c41a6c53ae1545ec934",
+      "after_sha256": "2eebf535282136bbfdea78884a7220c3250e10ebb21b40daf376300fef8c6652"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-implementation-contract-compiler",
+      "classification": "adapted",
+      "status": "updated",
+      "path": ".agents/skills/yss-implementation-contract-compiler/SKILL.md",
+      "before_sha256": "8b82d45741676c5a513f0affa67724d465387cba99f0580f9b7aec648f465b91",
+      "after_sha256": "d4ccec7728213a3848ebb012cb2e9881c84f12e352977dab0f6607e2127c03a9"
+    },
+    {
+      "profile": "frontend",
+      "skill": "to-spec",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/to-spec/SKILL.md",
+      "before_sha256": "d77aa11511dd61e74d62282e82964b17970af2c890773b84d9fa75e976070dd6",
+      "after_sha256": "d1c661e47bcc9c56325369beeb2763941fce8f371751783efae5f986ae8f7c0c"
+    },
+    {
+      "profile": "frontend",
+      "skill": "to-tickets",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/to-tickets/SKILL.md",
+      "before_sha256": "8c798a63c332eb6f0947df623ee7b7a6529f98dcb96286d02e28a39b4f815f0c",
+      "after_sha256": "fe5731adf833e3cfb4ca8c7b600f19f1515ed967f91279249d5a6b23e006c670"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/yss-prototype-stage/SKILL.md",
+      "before_sha256": "3ff2b4eeda865e1e0dca254f876039d6cb5df93b17caeeb8a6ee6fb2bb95f3b9",
+      "after_sha256": "c42ad0dc3aa3d7b713d92b986310bcb1a8dd9dc1f00c585ae0af88f42f3c9da0"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-implementation-contract-compiler",
+      "classification": "adapted",
+      "status": "updated",
+      "path": ".agents/skills/yss-implementation-contract-compiler/SKILL.md",
+      "before_sha256": "81f994b918058f82cac062da01e99cf0b54763af2eacafb0b6d6f989d7e552b4",
+      "after_sha256": "b201afa02b228ca07ec924477288679f2b87f5617764eb075c070744c317569f"
+    }
+  ],
+  "entry_route_refresh": {
+    "proof": "目标字节与本轮既有编辑快照完全相等，按 before_sha256 应用，未放宽其他 dirty 路径",
+    "changes": [
+      {
+        "profile": "design",
+        "skill": "to-spec",
+        "classification": "exact",
+        "status": "updated",
+        "path": ".agents/skills/to-spec/SKILL.md",
+        "before_sha256": "d1c661e47bcc9c56325369beeb2763941fce8f371751783efae5f986ae8f7c0c",
+        "after_sha256": "2d85e780f34f4c47aebde118b82b37aa0259348ee21a86643c6458db56e45e81"
+      },
+      {
+        "profile": "design",
+        "skill": "to-tickets",
+        "classification": "exact",
+        "status": "updated",
+        "path": ".agents/skills/to-tickets/SKILL.md",
+        "before_sha256": "fe5731adf833e3cfb4ca8c7b600f19f1515ed967f91279249d5a6b23e006c670",
+        "after_sha256": "e893a7a823e13607ed1f62730bdcee0b0e1e9d0bcb65651c87d866cc82d72a9e"
+      },
+      {
+        "profile": "backend",
+        "skill": "to-spec",
+        "classification": "exact",
+        "status": "updated",
+        "path": ".agents/skills/to-spec/SKILL.md",
+        "before_sha256": "d1c661e47bcc9c56325369beeb2763941fce8f371751783efae5f986ae8f7c0c",
+        "after_sha256": "2d85e780f34f4c47aebde118b82b37aa0259348ee21a86643c6458db56e45e81"
+      },
+      {
+        "profile": "backend",
+        "skill": "to-tickets",
+        "classification": "exact",
+        "status": "updated",
+        "path": ".agents/skills/to-tickets/SKILL.md",
+        "before_sha256": "fe5731adf833e3cfb4ca8c7b600f19f1515ed967f91279249d5a6b23e006c670",
+        "after_sha256": "e893a7a823e13607ed1f62730bdcee0b0e1e9d0bcb65651c87d866cc82d72a9e"
+      },
+      {
+        "profile": "frontend",
+        "skill": "to-spec",
+        "classification": "exact",
+        "status": "updated",
+        "path": ".agents/skills/to-spec/SKILL.md",
+        "before_sha256": "d1c661e47bcc9c56325369beeb2763941fce8f371751783efae5f986ae8f7c0c",
+        "after_sha256": "2d85e780f34f4c47aebde118b82b37aa0259348ee21a86643c6458db56e45e81"
+      },
+      {
+        "profile": "frontend",
+        "skill": "to-tickets",
+        "classification": "exact",
+        "status": "updated",
+        "path": ".agents/skills/to-tickets/SKILL.md",
+        "before_sha256": "fe5731adf833e3cfb4ca8c7b600f19f1515ed967f91279249d5a6b23e006c670",
+        "after_sha256": "e893a7a823e13607ed1f62730bdcee0b0e1e9d0bcb65651c87d866cc82d72a9e"
+      }
+    ]
+  }
+}

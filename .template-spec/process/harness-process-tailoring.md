@@ -91,7 +91,7 @@ review_round: 0 | 1 | 2
 candidate_digest: null | <sha256>
 ```
 
-使用 `scripts/verify-maintenance-checkpoint <file>` 或通过 stdin 传入 YAML / JSON 做只读校验。日常 `implementation-ready` 使用 fast、`review_round: 0`、`candidate_digest: null`。L2 必须有 counterexample、fresh-verification、self-check；L3 必须有 fresh-verification、self-check；这些证据不得因“待审”而跳过。L1 至少有 relevant-check。
+使用 `scripts/verify-maintenance-checkpoint <file>` 或通过 stdin 传入 YAML / JSON 做只读校验。日常 `implementation-ready` 使用 fast、`review_round: 0`、`candidate_digest: null`。L2 必须有 counterexample、fresh-verification、self-check；L3 必须有 fresh-verification、self-check；命中 `maintenance-intensity.yaml.counterexample_triggers` 的每项风险还必须有对应实际 counterexample；这些证据不得因“待审”而跳过。L1 至少有 relevant-check。
 
 自检路径的 `release-ready` 使用 release、`review_round: 0`、`candidate_digest: null`，并提供恰好一条 `final-release-verification`，其 command 为 `scripts/verify-template`。该 checkpoint 只表示维护验证就绪，不代替 GitHub 发布前集成证据或实际发布授权。
 
@@ -104,3 +104,9 @@ Worktree 候选使用 `scripts/capture-maintenance-candidate --output <目录>` 
 固定远程模板输入可使用 `scripts/cache-template-commit --repository <remote-url> --commit <40位commit>`。缓存键仅由 URL 与 commit 构成，每次命中仍复核 metadata 和 Git object hash；缓存目录不进入 Git 或正式证据。
 
 `focused-independent-review` 与 `formal-independent-review` 的 `command` 必须引用可读取的审查结论。L1/L2/L3 日常新记录使用维护者自检；仅主动选择独立审查时创建对应记录；历史 L3 正式记录继续使用 `.template-source/process/schemas/maintenance-review-record.schema.json` 并只读兼容，仍须带 `legacy_formal_review: true`、审查身份和明确通过结论。审查请求、实施者自述、否定裁决、伪造或非规范候选流、无效任务包、未关闭 findings 或 symlink 越界证据都会被拒绝。可用 `scripts/verify-maintenance-review-record` 单独校验历史记录。
+
+### 定向高风险反例
+
+触发集合仅由 `.template-source/process/maintenance-intensity.yaml` 维护；当前包括权限边界、生命周期门禁和发布语义。每个命中 trigger 的 `counterexample` 条目填写 `trigger`、`run_ref`、实际 `command` 和 `result: pass`。运行记录绑定拒绝断言、原命令非零结果、日志 SHA-256、输入引用及摘要、起止时间；反例测试自身成功退出 0。文字 `pass`、未执行命令、缺日志或输入漂移均不满足要求。
+
+可用 `scripts/verify-maintenance-risk-scenarios --output .template-source/evidence/maintenance/<本轮>/counterexamples` 执行三个最小拒绝场景，保存真实记录；具体修改仍应补充受影响行为的定向场景。核验只读保存记录，不执行其中的命令。这是可审计执行证据，不是密码学运行证明或业务批准。未命中上述风险的 L3 不新增反例要求。历史文件以 `scripts/verify-maintenance-checkpoint --history <file>` 兼容查看，不回写原批准，不用历史结果证明当前交付。

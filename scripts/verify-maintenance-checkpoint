@@ -3,10 +3,13 @@ import { parseArgs } from "node:util";
 import { loadMaintenanceCheckpoint, validateMaintenanceCheckpoint } from "./lib/maintenance-intensity.mjs";
 
 try {
-  const { positionals } = parseArgs({ allowPositionals: true, strict: true });
+  const { positionals, values } = parseArgs({ allowPositionals: true, strict: true, options: {history:{type:"boolean"}, help:{type:"boolean"}} });
+  if(values.help)process.stdout.write("用法: scripts/verify-maintenance-checkpoint [--history] <checkpoint.yaml|json|->\n当前校验退出码 0=通过、1=失败；--history 仅兼容历史记录，不证明当前交付。\n");
+  else {
   if (positionals.length > 1) throw new TypeError("用法: scripts/verify-maintenance-checkpoint [checkpoint.yaml|checkpoint.json|-]");
-  const result = validateMaintenanceCheckpoint(loadMaintenanceCheckpoint(positionals[0] ?? "-"));
-  process.stdout.write(`模板维护 checkpoint 验证通过（${result.intensity}，最低 ${result.minimum_intensity}，${result.current_state}）\n`);
+  const result = validateMaintenanceCheckpoint(loadMaintenanceCheckpoint(positionals[0] ?? "-"), {history:values.history});
+  process.stdout.write(`${values.history ? "历史兼容只读；不证明当前交付。" : ""}模板维护 checkpoint 验证通过（${result.intensity}，最低 ${result.minimum_intensity}，${result.current_state}）\n`);
+  }
 } catch (error) {
   process.stderr.write(`模板维护 checkpoint 验证失败: ${error.message}\n`);
   process.exitCode = 1;

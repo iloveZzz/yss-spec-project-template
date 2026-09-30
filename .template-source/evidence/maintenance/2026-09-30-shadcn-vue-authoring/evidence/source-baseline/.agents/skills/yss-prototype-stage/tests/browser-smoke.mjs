@@ -1,0 +1,77 @@
+// Template adapter smoke test; this is not a product prototype approval.
+import assert from "node:assert/strict";
+import { mkdtemp, mkdir, cp, writeFile } from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
+import { pathToFileURL } from "node:url";
+import { prepareFlowPrototype, prepareStaticPrototype } from "../scripts/prototype-contract.mjs";
+
+const { chromium } = await import(process.env.YSS_PLAYWRIGHT_MODULE || "playwright");
+const temp = await mkdtemp(path.join(os.tmpdir(), "yss-offline-browser-"));
+const source = path.join(temp, "source");
+await mkdir(path.join(source, ".template-spec/design/tokens"), { recursive: true });
+await cp(new URL("../../../../DESIGN.md", import.meta.url), path.join(source, "DESIGN.md"));
+await cp(new URL("../../../../.template-spec/design/tokens/variables.css", import.meta.url), path.join(source, ".template-spec/design/tokens/variables.css"));
+const root = path.join(source, "docs/.scratch/fixture/design/prototypes");
+await prepareFlowPrototype({ projectRoot: source, root, feature: "fixture" });
+const portable = path.join(temp, "portable");
+await cp(root, portable, { recursive: true });
+const browser = await chromium.launch(process.env.YSS_BROWSER_CHANNEL ? { channel: process.env.YSS_BROWSER_CHANNEL } : {});
+const results = [];
+try {
+  const context = await browser.newContext({ offline: true, viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1, reducedMotion: "reduce", locale: "zh-CN", timezoneId: "Asia/Shanghai" });
+  const page = await context.newPage();
+  const failures = [];
+  page.on("pageerror", error => failures.push(error.message));
+  page.on("console", message => { if (["warning", "error"].includes(message.type())) failures.push(message.text()); });
+  page.on("requestfailed", request => failures.push(`${request.url()}: ${request.failure()?.errorText}`));
+  page.on("request", request => { if (/^https?:/.test(request.url())) failures.push(`unexpected network: ${request.url()}`); });
+  const url = pathToFileURL(path.join(portable, "index.html")).href;
+  for (const width of [1440, 390]) {
+    await page.setViewportSize({ width, height: width === 390 ? 844 : 900 });
+    await page.goto("about:blank");
+    await page.goto(`${url}#scenario=failure`);
+    await page.locator("#content").fill("长中文输入与待保存内容，失败后必须完整保留。");
+    await page.locator("#save").click();
+    assert.equal(await page.locator("body").getAttribute("data-state"), "error");
+    assert.equal(await page.locator("#content").inputValue(), "长中文输入与待保存内容，失败后必须完整保留。");
+    await page.locator("#retry").click();
+    assert.equal(await page.locator("body").getAttribute("data-state"), "success");
+    assert.equal(await page.locator("#retry").isVisible(), false);
+    assert.equal(await page.evaluate(() => document.activeElement.id), "save");
+    await page.locator("summary").click();
+    await page.locator("#reset").click();
+    assert.equal(await page.locator("#content").inputValue(), "失败后应保留的输入");
+    await page.locator("#scenario").selectOption("no-permission");
+    assert.equal(await page.locator("#save").isDisabled(), true);
+    assert.equal(await page.locator("#content").getAttribute("readonly"), "");
+    await page.locator("#scenario").selectOption("conflict");
+    await page.locator("#save").click();
+    assert.equal(await page.locator("body").getAttribute("data-state"), "conflict");
+    await page.locator("#reload").click();
+    assert.equal(await page.locator("#content").inputValue(), "重新加载的最新内容");
+    await page.locator("#scenario").selectOption("primary");
+    await page.locator("#content").focus();
+    await page.keyboard.press("Tab");
+    assert.equal(await page.evaluate(() => document.activeElement.id), "save");
+    await page.keyboard.press("Enter");
+    assert.equal(await page.locator("body").getAttribute("data-state"), "success");
+    const layout = await page.evaluate(() => ({ overflow: document.documentElement.scrollWidth > innerWidth, height: getComputedStyle(document.querySelector("#save")).minHeight, color: getComputedStyle(document.querySelector("#save")).backgroundColor, reducedMotion: matchMedia("(prefers-reduced-motion: reduce)").matches }));
+    assert.equal(layout.overflow, false);
+    assert.equal(layout.height, "32px");
+    assert.equal(layout.color, "rgb(36, 91, 219)");
+    assert.equal(layout.reducedMotion, true);
+    const screenshot = path.join(temp, `h2-${width}.png`);
+    await page.screenshot({ path: screenshot, animations: "disabled" });
+    results.push({ width, layout, screenshot, scenarios: ["failure-retry-input-preserved", "reset", "no-permission", "conflict-reload", "keyboard-submit"], result: "passed" });
+  }
+  const h1Root = path.join(source, "docs/.scratch/visual-fixture/design/prototypes");
+  await prepareStaticPrototype({ projectRoot: source, root: h1Root, feature: "visual-fixture" });
+  await page.goto(pathToFileURL(path.join(h1Root, "index.html")).href);
+  assert.equal(await page.locator("h1").innerText(), "visual-fixture");
+  assert.deepEqual(failures, []);
+  const report = { result: "passed", browser: browser.version(), operating_system: process.platform, delivery: "file://, isolated directory, offline=true", console_and_resource_failures: failures, results, scope: "template starter smoke, not product QA or user approval" };
+  const output = path.join(temp, "browser-result.json");
+  await writeFile(output, JSON.stringify(report, null, 2));
+  process.stdout.write(`${output}\n`);
+} finally { await browser.close(); }

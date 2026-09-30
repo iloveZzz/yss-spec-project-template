@@ -1,3 +1,5 @@
+import { businessTicketVersion, businessAuthoringEnabled, businessSetRef, checkBusinessTickets, businessSyncDiagnostics, summarizeBusinessImplementation } from './business-tickets.mjs';
+import { orchestrationRef } from './governance-io.mjs';
 import {checkReadingViews} from './reading-view-bundle.mjs';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
@@ -23,7 +25,7 @@ export function lifecycleStatus({ root, checkpointRef, taskPackageRef }) {
   const identity = source(root, 'yss-project.yaml').value;
   if (identity.schema_version !== 1 || identity.repository_mode !== 'project-instance') throw new TypeError('生命周期状态仅适用于 project-instance');
   const registryRef = '.template-spec/process/lifecycle-registry.yaml';
-  const contractRef = '.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml';
+  const contractRef = orchestrationRef(root);
   const checkpoint = source(root, checkpointRef), registry = source(root, registryRef), contract = source(root, contractRef);
   const value = checkpoint.value;
   if (value.schema_version !== 1 || value.repository_mode !== 'project-instance') throw new TypeError('checkpoint 身份或版本无效');
@@ -103,6 +105,15 @@ export function lifecycleStatus({ root, checkpointRef, taskPackageRef }) {
       check('task-recovery','passed',[taskPackageRef,...recovery.result_refs],'仅读取任务身份、状态和结果引用；继续前仍须正式验收');
     } catch(error) {issue('task-recovery-invalid',error.message,taskPackageRef,'核对任务身份与实际结果，再执行适用预检');}
   }
+  const setRef=businessSetRef(value);
+  const business = setRef ? checkBusinessTickets({root,setRef,mode:'draft'}) : {status:businessTicketVersion(root)===1?(businessAuthoringEnabled(root)?'missing':'strategic-consumption-not-checked'):'legacy-unassessed',tickets:[],diagnostics:[]};
+  for(const item of business.diagnostics)issue(item.code,item.message,item.source_ref,item.recovery);
+  for(const item of businessSyncDiagnostics(root,setRef,business))issue(item.code,'已声明同步的业务集合引用或摘要过期',item.ref,'重新核对视图引用，不自动修复历史批准');
+  const registered=value.artifacts?.['artifact.business-ticket-set'];
+  const actual=business.inputs?.find(item=>item.ref===setRef)?.digest;
+  if(registered?.digest && registered.digest!==actual)issue('business-sync-stale','业务集合已登记同步但摘要过期',setRef,'重验受影响来源与引用，保留历史批准');
+  if(business.status==='missing'&&!['stage.entry-triage','stage.plan','stage.spec-architecture'].includes(value.stage))issue('business-decomposition-missing','Spec 后业务拆分尚未登记',checkpointRef,'补齐业务草案与覆盖，并回到业务正式化');
+  check('business-decomposition',business.status,[setRef].filter(Boolean),'结构与来源只读检查；不证明批准或实现资格');
   const blockers = [...new Set(diagnostics.filter(x => x.severity === 'error').map(x => x.message))];
   const next_step = {
     action_type: 'verify', work_unit: value.next_work_unit ?? null, cwd: root,
@@ -129,7 +140,10 @@ export function lifecycleStatus({ root, checkpointRef, taskPackageRef }) {
     try { readFileSync(safeTrackingPath(root, script)); next_step.command = ['node', script, checkpointRef]; }
     catch { issue('precheck-unavailable', `预检入口不可读: ${script}`, script, '补齐当前实例工具后执行预检', 'warning'); }
   }
+  const implementationArtifact=value.artifacts?.['artifact.vertical-slice-ticket'];
+  const implementationCoverage=setRef && implementationArtifact?.ref?.endsWith('.md')?summarizeBusinessImplementation({root,setRef,sliceRefs:[implementationArtifact.ref]}):null;
   return {
+    decomposition: {business, implementation: {status:implementationArtifact?'recorded':'not-recorded',recorded_status:implementationArtifact?.status??null,ref:implementationArtifact?.ref??null,coverage:implementationCoverage}, readiness:{status:'not-evaluated',reason:'阶段工作完成不替代批准与实现就绪校验'}},
     schema_version: 1, read_only: true, stage: value.stage, checkpoint_status: value.status,
     work_unit: value.next_work_unit ?? null, owner, blockers, next_action,
     execution_authorization: 'not-evaluated', verification_scope, diagnostics, next_step, recovery,

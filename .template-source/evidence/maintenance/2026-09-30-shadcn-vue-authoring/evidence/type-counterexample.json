@@ -1,0 +1,16 @@
+{
+  "fixture": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-vue-type-counterexample-YxwRWZ",
+  "status": "reproduced-and-fixed",
+  "records": [
+    {
+      "name": "before",
+      "outcome": "accepted",
+      "outsideTypeRecorded": false
+    },
+    {
+      "name": "after",
+      "outcome": "rejected",
+      "error": "Build failed with 1 error:\nentry.ts:1:42: ERROR: [plugin: bounded-authoring] [@vue/compiler-sfc] Failed to resolve import source \"../outside\".\n\n/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-vue-type-counterexample-YxwRWZ/author/App.vue\n1  |  <script setup lang=\"ts\">import type {Props} from \"../outside\";import{Button}from\"@/components/ui/button\";defineProps<Props>();</script><template><Button>example</Button></template>\n   |                                                                                                                       ^^^^^"
+    }
+  ]
+}

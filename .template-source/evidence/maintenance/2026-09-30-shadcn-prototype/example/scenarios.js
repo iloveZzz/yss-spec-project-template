@@ -1,0 +1,1 @@
+window.prototypeScenarios = [{"id":"primary","label":"正常"},{"id":"empty","label":"空数据"},{"id":"loading","label":"加载中"},{"id":"failure","label":"保存失败"},{"id":"no-permission","label":"无编辑权限"},{"id":"conflict","label":"并发冲突"}];

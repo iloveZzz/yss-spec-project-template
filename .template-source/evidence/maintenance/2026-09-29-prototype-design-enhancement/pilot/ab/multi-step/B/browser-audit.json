@@ -1,0 +1,595 @@
+{
+  "task": "multi-step",
+  "side": "B",
+  "status": "inspected-partial-output",
+  "html_sha256": "5caf24bea28634f4823f031808005648e8c3a6bf6bf91cd2a706327f301f43d4",
+  "browser": "151.0.7922.34",
+  "delivery": "file:// offline=true",
+  "turn_completed": false,
+  "missing_resources": [
+    "tokens.css",
+    "design-tokens.css",
+    "data.js",
+    "app.js"
+  ],
+  "observations": [
+    {
+      "scene": "primary",
+      "width": 1440,
+      "height": 900,
+      "text": "跳到资料填写\nYSS / 资料填写\n低保真交互草案 · 本地模拟\n方案预览\nA 页内分步\nB 独立步骤 · 建议\nC 分区渐进\n场景\n正常提交\n提交失败与重试\n重置场景\n比较 3 个候选与选定建议 · 尚无用户选择\n\n资料 / 填写\n\n填写资料\n\n填写资料信息与用途，检查无误后提交。\n\n当前预览：B · 独立步骤\n\n资料名称、负责人、用途均为必填项。\n\n1. 填写资料\n资料名称 （必填）\n负责人 （必填）\n\n已填入给定资料的名称与负责人，可在此修改。\n\n2. 填写用途\n用途 （必填）\n\n给定资料未提供用途，请自行填写。\n\n3. 检查并提交\n\n请核对以下内容，需要调整时可返回修改。\n\n修改资料\n修改用途\n取消填写\n上一步\n下一步：填写用途\n\n提交仅演示本地反馈，关闭或刷新页面后不保留填写内容。\n\n给定资料\n\n只读参考 · 不随表单修改\n\n数据样本\nM-001\nM-002 · 长名称\nM-003 · 负责人为空\n\n切换样本将开始一次新的填写。数据来自本地 fixture。",
+      "overflow": false,
+      "body_attributes": {},
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "A 页内分步",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "B 独立步骤 · 建议",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "C 分区渐进",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "SELECT",
+          "id": "scenario",
+          "text": "正常提交\n提交失败与重试",
+          "disabled": false,
+          "value": "primary"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "reset",
+          "text": "重置场景",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "INPUT",
+          "id": "name",
+          "text": "",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "tag": "INPUT",
+          "id": "owner",
+          "text": "",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "tag": "TEXTAREA",
+          "id": "purpose",
+          "text": "",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "修改资料",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "修改用途",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "cancel",
+          "text": "取消填写",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "back",
+          "text": "上一步",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "next",
+          "text": "下一步：填写用途",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "SELECT",
+          "id": "sample",
+          "text": "M-001\nM-002 · 长名称\nM-003 · 负责人为空",
+          "disabled": false,
+          "value": "M-001"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "keep-editing",
+          "text": "继续填写",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "confirm-action",
+          "text": "",
+          "disabled": false,
+          "value": ""
+        }
+      ],
+      "focus": {
+        "tag": "A",
+        "id": "",
+        "outline": "none"
+      },
+      "reset": "not-tested",
+      "issues": [
+        {
+          "type": "requestfailed",
+          "url": "file:///Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-29-prototype-design-enhancement/pilot/ab/multi-step/B/tokens.css",
+          "failure": {
+            "errorText": "net::ERR_FILE_NOT_FOUND"
+          }
+        },
+        {
+          "type": "error",
+          "message": "Failed to load resource: net::ERR_FILE_NOT_FOUND"
+        },
+        {
+          "type": "requestfailed",
+          "url": "file:///Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-29-prototype-design-enhancement/pilot/ab/multi-step/B/design-tokens.css",
+          "failure": {
+            "errorText": "net::ERR_FILE_NOT_FOUND"
+          }
+        },
+        {
+          "type": "error",
+          "message": "Failed to load resource: net::ERR_FILE_NOT_FOUND"
+        },
+        {
+          "type": "requestfailed",
+          "url": "file:///Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-29-prototype-design-enhancement/pilot/ab/multi-step/B/data.js",
+          "failure": {
+            "errorText": "net::ERR_FILE_NOT_FOUND"
+          }
+        },
+        {
+          "type": "error",
+          "message": "Failed to load resource: net::ERR_FILE_NOT_FOUND"
+        },
+        {
+          "type": "requestfailed",
+          "url": "file:///Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-29-prototype-design-enhancement/pilot/ab/multi-step/B/app.js",
+          "failure": {
+            "errorText": "net::ERR_FILE_NOT_FOUND"
+          }
+        },
+        {
+          "type": "error",
+          "message": "Failed to load resource: net::ERR_FILE_NOT_FOUND"
+        }
+      ],
+      "screenshot": "primary-1440.png"
+    },
+    {
+      "scene": "failure",
+      "width": 1440,
+      "height": 900,
+      "text": "跳到资料填写\nYSS / 资料填写\n低保真交互草案 · 本地模拟\n方案预览\nA 页内分步\nB 独立步骤 · 建议\nC 分区渐进\n场景\n正常提交\n提交失败与重试\n重置场景\n比较 3 个候选与选定建议 · 尚无用户选择\n\n资料 / 填写\n\n填写资料\n\n填写资料信息与用途，检查无误后提交。\n\n当前预览：B · 独立步骤\n\n资料名称、负责人、用途均为必填项。\n\n1. 填写资料\n资料名称 （必填）\n负责人 （必填）\n\n已填入给定资料的名称与负责人，可在此修改。\n\n2. 填写用途\n用途 （必填）\n\n给定资料未提供用途，请自行填写。\n\n3. 检查并提交\n\n请核对以下内容，需要调整时可返回修改。\n\n修改资料\n修改用途\n取消填写\n上一步\n下一步：填写用途\n\n提交仅演示本地反馈，关闭或刷新页面后不保留填写内容。\n\n给定资料\n\n只读参考 · 不随表单修改\n\n数据样本\nM-001\nM-002 · 长名称\nM-003 · 负责人为空\n\n切换样本将开始一次新的填写。数据来自本地 fixture。",
+      "overflow": false,
+      "body_attributes": {},
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "A 页内分步",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "B 独立步骤 · 建议",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "C 分区渐进",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "SELECT",
+          "id": "scenario",
+          "text": "正常提交\n提交失败与重试",
+          "disabled": false,
+          "value": "primary"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "reset",
+          "text": "重置场景",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "INPUT",
+          "id": "name",
+          "text": "",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "tag": "INPUT",
+          "id": "owner",
+          "text": "",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "tag": "TEXTAREA",
+          "id": "purpose",
+          "text": "",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "修改资料",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "修改用途",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "cancel",
+          "text": "取消填写",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "back",
+          "text": "上一步",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "next",
+          "text": "下一步：填写用途",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "SELECT",
+          "id": "sample",
+          "text": "M-001\nM-002 · 长名称\nM-003 · 负责人为空",
+          "disabled": false,
+          "value": "M-001"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "keep-editing",
+          "text": "继续填写",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "confirm-action",
+          "text": "",
+          "disabled": false,
+          "value": ""
+        }
+      ],
+      "focus": {
+        "tag": "BUTTON",
+        "id": "",
+        "outline": "none"
+      },
+      "reset": "not-tested",
+      "issues": [],
+      "screenshot": "failure-1440.png"
+    },
+    {
+      "scene": "primary",
+      "width": 390,
+      "height": 844,
+      "text": "跳到资料填写\nYSS / 资料填写\n低保真交互草案 · 本地模拟\n方案预览\nA 页内分步\nB 独立步骤 · 建议\nC 分区渐进\n场景\n正常提交\n提交失败与重试\n重置场景\n比较 3 个候选与选定建议 · 尚无用户选择\n\n资料 / 填写\n\n填写资料\n\n填写资料信息与用途，检查无误后提交。\n\n当前预览：B · 独立步骤\n\n资料名称、负责人、用途均为必填项。\n\n1. 填写资料\n资料名称 （必填）\n负责人 （必填）\n\n已填入给定资料的名称与负责人，可在此修改。\n\n2. 填写用途\n用途 （必填）\n\n给定资料未提供用途，请自行填写。\n\n3. 检查并提交\n\n请核对以下内容，需要调整时可返回修改。\n\n修改资料\n修改用途\n取消填写\n上一步\n下一步：填写用途\n\n提交仅演示本地反馈，关闭或刷新页面后不保留填写内容。\n\n给定资料\n\n只读参考 · 不随表单修改\n\n数据样本\nM-001\nM-002 · 长名称\nM-003 · 负责人为空\n\n切换样本将开始一次新的填写。数据来自本地 fixture。",
+      "overflow": false,
+      "body_attributes": {},
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "A 页内分步",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "B 独立步骤 · 建议",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "C 分区渐进",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "SELECT",
+          "id": "scenario",
+          "text": "正常提交\n提交失败与重试",
+          "disabled": false,
+          "value": "primary"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "reset",
+          "text": "重置场景",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "INPUT",
+          "id": "name",
+          "text": "",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "tag": "INPUT",
+          "id": "owner",
+          "text": "",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "tag": "TEXTAREA",
+          "id": "purpose",
+          "text": "",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "修改资料",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "修改用途",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "cancel",
+          "text": "取消填写",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "back",
+          "text": "上一步",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "next",
+          "text": "下一步：填写用途",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "SELECT",
+          "id": "sample",
+          "text": "M-001\nM-002 · 长名称\nM-003 · 负责人为空",
+          "disabled": false,
+          "value": "M-001"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "keep-editing",
+          "text": "继续填写",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "confirm-action",
+          "text": "",
+          "disabled": false,
+          "value": ""
+        }
+      ],
+      "focus": {
+        "tag": "BUTTON",
+        "id": "",
+        "outline": "none"
+      },
+      "reset": "not-tested",
+      "issues": [],
+      "screenshot": "primary-390.png"
+    },
+    {
+      "scene": "failure",
+      "width": 390,
+      "height": 844,
+      "text": "跳到资料填写\nYSS / 资料填写\n低保真交互草案 · 本地模拟\n方案预览\nA 页内分步\nB 独立步骤 · 建议\nC 分区渐进\n场景\n正常提交\n提交失败与重试\n重置场景\n比较 3 个候选与选定建议 · 尚无用户选择\n\n资料 / 填写\n\n填写资料\n\n填写资料信息与用途，检查无误后提交。\n\n当前预览：B · 独立步骤\n\n资料名称、负责人、用途均为必填项。\n\n1. 填写资料\n资料名称 （必填）\n负责人 （必填）\n\n已填入给定资料的名称与负责人，可在此修改。\n\n2. 填写用途\n用途 （必填）\n\n给定资料未提供用途，请自行填写。\n\n3. 检查并提交\n\n请核对以下内容，需要调整时可返回修改。\n\n修改资料\n修改用途\n取消填写\n上一步\n下一步：填写用途\n\n提交仅演示本地反馈，关闭或刷新页面后不保留填写内容。\n\n给定资料\n\n只读参考 · 不随表单修改\n\n数据样本\nM-001\nM-002 · 长名称\nM-003 · 负责人为空\n\n切换样本将开始一次新的填写。数据来自本地 fixture。",
+      "overflow": false,
+      "body_attributes": {},
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "A 页内分步",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "B 独立步骤 · 建议",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "C 分区渐进",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "SELECT",
+          "id": "scenario",
+          "text": "正常提交\n提交失败与重试",
+          "disabled": false,
+          "value": "primary"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "reset",
+          "text": "重置场景",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "INPUT",
+          "id": "name",
+          "text": "",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "tag": "INPUT",
+          "id": "owner",
+          "text": "",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "tag": "TEXTAREA",
+          "id": "purpose",
+          "text": "",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "修改资料",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "修改用途",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "cancel",
+          "text": "取消填写",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "back",
+          "text": "上一步",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "next",
+          "text": "下一步：填写用途",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "SELECT",
+          "id": "sample",
+          "text": "M-001\nM-002 · 长名称\nM-003 · 负责人为空",
+          "disabled": false,
+          "value": "M-001"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "keep-editing",
+          "text": "继续填写",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "confirm-action",
+          "text": "",
+          "disabled": false,
+          "value": ""
+        }
+      ],
+      "focus": {
+        "tag": "BUTTON",
+        "id": "",
+        "outline": "none"
+      },
+      "reset": "not-tested",
+      "issues": [],
+      "screenshot": "failure-390.png"
+    }
+  ],
+  "behavior_coverage": "unverified; loading a partial page does not prove business behavior"
+}

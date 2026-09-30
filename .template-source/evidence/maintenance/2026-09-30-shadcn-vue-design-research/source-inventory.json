@@ -1,0 +1,618 @@
+[
+  {
+    "path": "LICENSE",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/LICENSE",
+    "digest": "sha256:69f84f4ad77be299dbf42d03d7fd862ab3ab05546c6e573c6c7c875b0168a94d",
+    "bytes": 1063,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/content/docs/01.introduction.md",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/content/docs/01.introduction.md",
+    "digest": "sha256:ce14677ba5229fd30434c0fa762a0f3c9f2bd3f65fb0886079f5085394f6b10d",
+    "bytes": 4511,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/content/docs/04.theming.md",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/content/docs/04.theming.md",
+    "digest": "sha256:3e9e0c9fc5f7c0ec4e2ae1979b951f34950e955226b77f5bb81ccdefeb90f322",
+    "bytes": 12731,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/content/docs/11.legacy.md",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/content/docs/11.legacy.md",
+    "digest": "sha256:c964afea0fa3781b737d66747fada121012637a1fa9c899c44d683db0633ef3f",
+    "bytes": 358,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/content/docs/components/alert-dialog.md",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/content/docs/components/alert-dialog.md",
+    "digest": "sha256:a28b32523be43336f30234a0637259772ca34f6c42e90d521cb76cae88b853f1",
+    "bytes": 2183,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/content/docs/components/alert.md",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/content/docs/components/alert.md",
+    "digest": "sha256:0a1617baf0df1fe5004f016d57b5df394fdb44add9fee346fc1f5a9aaa8eb5fb",
+    "bytes": 1165,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/content/docs/components/breadcrumb.md",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/content/docs/components/breadcrumb.md",
+    "digest": "sha256:77e0847371ba342499ae067ba6f0c01243d2e2fcce1ef65fe41e0f6fb5a002e7",
+    "bytes": 4547,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/content/docs/components/button.md",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/content/docs/components/button.md",
+    "digest": "sha256:420844e69c6c7165e352913a5cb3ed4862090b57094aaf8f2f68eef5b99d9859",
+    "bytes": 4218,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/content/docs/components/calendar.md",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/content/docs/components/calendar.md",
+    "digest": "sha256:c52f1fa043531a6d1dd113caa7e1dfab3051302a42c11fcd1882a73b7fd7eec6",
+    "bytes": 6649,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/content/docs/components/card.md",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/content/docs/components/card.md",
+    "digest": "sha256:abd0cfaa8edecbb67edef8a3c91a1d6b7a8546ae99766ff0efea3d6621c77c55",
+    "bytes": 1232,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/content/docs/components/chart.md",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/content/docs/components/chart.md",
+    "digest": "sha256:27aaba2be343c87771dddffd72dbbbee066fdf87c3f8849a3ad6df92f3e087fb",
+    "bytes": 13996,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/content/docs/components/combobox.md",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/content/docs/components/combobox.md",
+    "digest": "sha256:5d9fe857f7b5d79e1288e4050207bb4d91b4b0161867b68282791562c34b05f8",
+    "bytes": 6004,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/content/docs/components/command.md",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/content/docs/components/command.md",
+    "digest": "sha256:4d8f25edac4e6aead781a0d4cefddc27a1ca76edba2caca8d6f2b05fa774a926",
+    "bytes": 1891,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/content/docs/components/data-table.md",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/content/docs/components/data-table.md",
+    "digest": "sha256:94b3f15fd8094bd97b23a7ec48e667401e8a4aaed97c29774eec50da8e276ee0",
+    "bytes": 34113,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/content/docs/components/date-picker.md",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/content/docs/components/date-picker.md",
+    "digest": "sha256:1cc1b9582f1e9ec1c1e2eddacf5ea2c8432cce1a50868080036ecf2bd2f292ce",
+    "bytes": 1726,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/content/docs/components/dialog.md",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/content/docs/components/dialog.md",
+    "digest": "sha256:f3dce2693e60040f7f3fc7dc51facfe637238618df205d6f8f66e045346496dd",
+    "bytes": 3417,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/content/docs/components/drawer.md",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/content/docs/components/drawer.md",
+    "digest": "sha256:bdd13803dd7ce2fff3ec660e0cceb8768fb80ea812befaa29f2d2cd618b282f6",
+    "bytes": 2451,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/content/docs/components/dropdown-menu.md",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/content/docs/components/dropdown-menu.md",
+    "digest": "sha256:543ab8a85e178087487384555ef2aeaaecada9ed14e29c322a844fcf95356dfb",
+    "bytes": 1740,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/content/docs/components/empty.md",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/content/docs/components/empty.md",
+    "digest": "sha256:0579abd077d7f6b670c9851890e41d62bdeb05b7991a7d2179c9514788373088",
+    "bytes": 4500,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/content/docs/components/field.md",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/content/docs/components/field.md",
+    "digest": "sha256:ad69ce0093db6bed2de56a1fdb274838a402840154260acf49a4f522fe27f03d",
+    "bytes": 9761,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/content/docs/components/input-group.md",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/content/docs/components/input-group.md",
+    "digest": "sha256:2b27490b360e6ea6674c8935141e7456dabad40474a4b62df16ec3b0118ba86c",
+    "bytes": 7205,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/content/docs/components/item.md",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/content/docs/components/item.md",
+    "digest": "sha256:df94d40b047aed571fd5e3c5a30e29a9149d619b32a56f97b8c299a62ebc6abe",
+    "bytes": 7041,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/content/docs/components/native-select.md",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/content/docs/components/native-select.md",
+    "digest": "sha256:353d20f6b25fb0be443cd34c04655ecbd864360bf4fc2b1ebe3bbb5e99faee7c",
+    "bytes": 6334,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/content/docs/components/pagination.md",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/content/docs/components/pagination.md",
+    "digest": "sha256:16c18caa0bedc011751ec384eb9961ab5a8132553cb47781a08b8345853e8e3f",
+    "bytes": 1941,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/content/docs/components/popover.md",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/content/docs/components/popover.md",
+    "digest": "sha256:7a1b93b6f0e736bd9b52c669386e0000e832dc4c98f77b87feeae1145b0827db",
+    "bytes": 1276,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/content/docs/components/range-calendar.md",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/content/docs/components/range-calendar.md",
+    "digest": "sha256:69e6b1c8bb58dbe29611472facc9a70566f7f4196a9b45acbcdbce8aee8d7b2a",
+    "bytes": 1555,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/content/docs/components/resizable.md",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/content/docs/components/resizable.md",
+    "digest": "sha256:e461094ee651ed16086e1b0f0b95179e21d76d8a7860f882630d83f5a3ea1a3d",
+    "bytes": 1371,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/content/docs/components/scroll-area.md",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/content/docs/components/scroll-area.md",
+    "digest": "sha256:a67e43a88b1e4425b678015ed7f4f1d672f13fdb5875c39d0ca9da2f33ca9b6a",
+    "bytes": 1680,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/content/docs/components/select.md",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/content/docs/components/select.md",
+    "digest": "sha256:1f77087a99eab09897a2a5275c5b9f0c7e5a8d89c9161d410e64b6e066b56929",
+    "bytes": 1947,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/content/docs/components/sheet.md",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/content/docs/components/sheet.md",
+    "digest": "sha256:7e81ff24a394f5700feed08238206b1c3ec6ef4407f2fc7e161342f22fc9b88e",
+    "bytes": 1587,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/content/docs/components/sidebar.md",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/content/docs/components/sidebar.md",
+    "digest": "sha256:d573d5a932add26d21d62ac18592c05eba6084f70057e9299b5e2102ef0c85e5",
+    "bytes": 21083,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/content/docs/components/skeleton.md",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/content/docs/components/skeleton.md",
+    "digest": "sha256:4e9008a51a075783603045c3e61ec7a33ae2592decf8861d4d0500de35b0b904",
+    "bytes": 926,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/content/docs/components/sonner.md",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/content/docs/components/sonner.md",
+    "digest": "sha256:ea5ac7c7ade470480b4b0cdd415a414f3c7c9025f8bb1d1713b2eccaf7f9a7b5",
+    "bytes": 1824,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/content/docs/components/spinner.md",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/content/docs/components/spinner.md",
+    "digest": "sha256:1322830611e1e64b85f09cdefd657862c2ba01c84a90c8ca3cb4da48008cde4a",
+    "bytes": 2379,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/content/docs/components/stepper.md",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/content/docs/components/stepper.md",
+    "digest": "sha256:3ec72590fcffacaf40b263646987e8bfb0b7e4f87b45740d3ca57b7b2b14ce0d",
+    "bytes": 2167,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/content/docs/components/table.md",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/content/docs/components/table.md",
+    "digest": "sha256:ef79230e687bf04ea86a7c8882fe23c3fd0423781f688306f3b415264be05781",
+    "bytes": 1667,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/content/docs/components/tabs.md",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/content/docs/components/tabs.md",
+    "digest": "sha256:663c5739e6d99554bea1fd51c7c86d274d7b0f62414d65964146c1f6a5839a10",
+    "bytes": 1614,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/content/docs/components/toast.md",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/content/docs/components/toast.md",
+    "digest": "sha256:07d8136d67c354762d6260f6d0f98cfea021897f54579d722aa93c8826f37791",
+    "bytes": 523,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/content/docs/components/tooltip.md",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/content/docs/components/tooltip.md",
+    "digest": "sha256:707916c51490c000810ab89f98b5bcc5d5eead1816128e482a2840eba106454d",
+    "bytes": 1415,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/content/docs/skills.md",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/content/docs/skills.md",
+    "digest": "sha256:b666499f5bbb0717fe601b53c237c9d7c0880e4e5263e54f186a77ebf2d35992",
+    "bytes": 3172,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/package.json",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/package.json",
+    "digest": "sha256:a96aca64ecff838a3543291a869a2c935b202095d0d2e9e20b8238f6837558ba",
+    "bytes": 2892,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/registry/bases/reka/ui/button/index.ts",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/registry/bases/reka/ui/button/index.ts",
+    "digest": "sha256:f6b5d87de2c8d1e24f7631fe49e59f93e6fe30921d8c4b53ab754cdf20b00f2b",
+    "bytes": 1252,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/registry/bases/reka/ui/sidebar/SidebarProvider.vue",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/registry/bases/reka/ui/sidebar/SidebarProvider.vue",
+    "digest": "sha256:09dde4175613f3dea717e073ebea8c9d249f90b9bcfcb612e16addb9e414e909",
+    "bytes": 2378,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/registry/bases/reka/ui/sidebar/utils.ts",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/registry/bases/reka/ui/sidebar/utils.ts",
+    "digest": "sha256:a3a513f361a265333805bb64cb8c6312ed6ea69bf181666fc5318055aeb0fa93",
+    "bytes": 666,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/registry/new-york-v4/ui/button/index.ts",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/registry/new-york-v4/ui/button/index.ts",
+    "digest": "sha256:1710820182b3f7c91823da7f4f516026a124ec86f7a3a10a96fb55e518f12b41",
+    "bytes": 1987,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/registry/new-york-v4/ui/sidebar/SidebarProvider.vue",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/registry/new-york-v4/ui/sidebar/SidebarProvider.vue",
+    "digest": "sha256:09dde4175613f3dea717e073ebea8c9d249f90b9bcfcb612e16addb9e414e909",
+    "bytes": 2378,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/registry/new-york-v4/ui/sidebar/utils.ts",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/registry/new-york-v4/ui/sidebar/utils.ts",
+    "digest": "sha256:a3a513f361a265333805bb64cb8c6312ed6ea69bf181666fc5318055aeb0fa93",
+    "bytes": 666,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/styles/reka-luma/ui/button/index.ts",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/styles/reka-luma/ui/button/index.ts",
+    "digest": "sha256:76b041e34027e136288e8fbb04c0f87cccdf05064e14dc95c4922d74b0f8585a",
+    "bytes": 2474,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/styles/reka-luma/ui/sidebar/SidebarProvider.vue",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/styles/reka-luma/ui/sidebar/SidebarProvider.vue",
+    "digest": "sha256:6053b3fcac3184cc4e875b86aa108ba492f74067b5d173a230db76cf518b9bd5",
+    "bytes": 2378,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/styles/reka-luma/ui/sidebar/utils.ts",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/styles/reka-luma/ui/sidebar/utils.ts",
+    "digest": "sha256:11349757d703f10f8158dc9186362e2ca279b90e6dd09b4010ae198142b9065c",
+    "bytes": 666,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/styles/reka-lyra/ui/button/index.ts",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/styles/reka-lyra/ui/button/index.ts",
+    "digest": "sha256:61be54b60beaa0a112677c2b3ed9ea00c568195e617ff1a91e4d0568e0772af9",
+    "bytes": 2589,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/styles/reka-lyra/ui/sidebar/SidebarProvider.vue",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/styles/reka-lyra/ui/sidebar/SidebarProvider.vue",
+    "digest": "sha256:6053b3fcac3184cc4e875b86aa108ba492f74067b5d173a230db76cf518b9bd5",
+    "bytes": 2378,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/styles/reka-lyra/ui/sidebar/utils.ts",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/styles/reka-lyra/ui/sidebar/utils.ts",
+    "digest": "sha256:11349757d703f10f8158dc9186362e2ca279b90e6dd09b4010ae198142b9065c",
+    "bytes": 666,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/styles/reka-maia/ui/button/index.ts",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/styles/reka-maia/ui/button/index.ts",
+    "digest": "sha256:3c4b25672a1bd8f1af6d749ed7d17fb86bf1f223735cefa7ca7565af2392e7a8",
+    "bytes": 2432,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/styles/reka-maia/ui/sidebar/SidebarProvider.vue",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/styles/reka-maia/ui/sidebar/SidebarProvider.vue",
+    "digest": "sha256:6053b3fcac3184cc4e875b86aa108ba492f74067b5d173a230db76cf518b9bd5",
+    "bytes": 2378,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/styles/reka-maia/ui/sidebar/utils.ts",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/styles/reka-maia/ui/sidebar/utils.ts",
+    "digest": "sha256:11349757d703f10f8158dc9186362e2ca279b90e6dd09b4010ae198142b9065c",
+    "bytes": 666,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/styles/reka-mira/ui/button/index.ts",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/styles/reka-mira/ui/button/index.ts",
+    "digest": "sha256:a70ad178c9dc0dff185147bf47e7097875900b5a163adf0970128d17e752956c",
+    "bytes": 2742,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/styles/reka-mira/ui/sidebar/SidebarProvider.vue",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/styles/reka-mira/ui/sidebar/SidebarProvider.vue",
+    "digest": "sha256:6053b3fcac3184cc4e875b86aa108ba492f74067b5d173a230db76cf518b9bd5",
+    "bytes": 2378,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/styles/reka-mira/ui/sidebar/utils.ts",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/styles/reka-mira/ui/sidebar/utils.ts",
+    "digest": "sha256:11349757d703f10f8158dc9186362e2ca279b90e6dd09b4010ae198142b9065c",
+    "bytes": 666,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/styles/reka-nova/ui/button/index.ts",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/styles/reka-nova/ui/button/index.ts",
+    "digest": "sha256:22802c293ea7e558307703f0db450bbdee3d2adb4b2bf48ebff287fed1a3f265",
+    "bytes": 2853,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/styles/reka-nova/ui/sidebar/SidebarProvider.vue",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/styles/reka-nova/ui/sidebar/SidebarProvider.vue",
+    "digest": "sha256:6053b3fcac3184cc4e875b86aa108ba492f74067b5d173a230db76cf518b9bd5",
+    "bytes": 2378,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/styles/reka-nova/ui/sidebar/utils.ts",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/styles/reka-nova/ui/sidebar/utils.ts",
+    "digest": "sha256:11349757d703f10f8158dc9186362e2ca279b90e6dd09b4010ae198142b9065c",
+    "bytes": 666,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/styles/reka-rhea/ui/button/index.ts",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/styles/reka-rhea/ui/button/index.ts",
+    "digest": "sha256:56c0319c3ecc3f80eefb5e542034a489dcc17e02fdc3f2ddbb4cfc3b284bc079",
+    "bytes": 2519,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/styles/reka-rhea/ui/sidebar/SidebarProvider.vue",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/styles/reka-rhea/ui/sidebar/SidebarProvider.vue",
+    "digest": "sha256:6053b3fcac3184cc4e875b86aa108ba492f74067b5d173a230db76cf518b9bd5",
+    "bytes": 2378,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/styles/reka-rhea/ui/sidebar/utils.ts",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/styles/reka-rhea/ui/sidebar/utils.ts",
+    "digest": "sha256:11349757d703f10f8158dc9186362e2ca279b90e6dd09b4010ae198142b9065c",
+    "bytes": 666,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/styles/reka-sera/ui/button/index.ts",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/styles/reka-sera/ui/button/index.ts",
+    "digest": "sha256:6404166d04e8aa95b779924dc10c19b0713bd053a949770a66b6fb02bcaf05a2",
+    "bytes": 2484,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/styles/reka-sera/ui/sidebar/SidebarProvider.vue",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/styles/reka-sera/ui/sidebar/SidebarProvider.vue",
+    "digest": "sha256:6053b3fcac3184cc4e875b86aa108ba492f74067b5d173a230db76cf518b9bd5",
+    "bytes": 2378,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/styles/reka-sera/ui/sidebar/utils.ts",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/styles/reka-sera/ui/sidebar/utils.ts",
+    "digest": "sha256:11349757d703f10f8158dc9186362e2ca279b90e6dd09b4010ae198142b9065c",
+    "bytes": 666,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/styles/reka-vega/ui/button/index.ts",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/styles/reka-vega/ui/button/index.ts",
+    "digest": "sha256:b84cb403528392f2d6609c0724a28c64257ae02a30606ec6bc188ed52b8934b0",
+    "bytes": 2847,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/styles/reka-vega/ui/sidebar/SidebarProvider.vue",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/styles/reka-vega/ui/sidebar/SidebarProvider.vue",
+    "digest": "sha256:6053b3fcac3184cc4e875b86aa108ba492f74067b5d173a230db76cf518b9bd5",
+    "bytes": 2378,
+    "status": "ok"
+  },
+  {
+    "path": "apps/v4/styles/reka-vega/ui/sidebar/utils.ts",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/styles/reka-vega/ui/sidebar/utils.ts",
+    "digest": "sha256:11349757d703f10f8158dc9186362e2ca279b90e6dd09b4010ae198142b9065c",
+    "bytes": 666,
+    "status": "ok"
+  },
+  {
+    "path": "deprecated/www/src/registry/default/ui/button/index.ts",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/deprecated/www/src/registry/default/ui/button/index.ts",
+    "digest": "sha256:656442adb22af6aeaaace1267c46444b0bde69ed91095ef3a1c442ecf8ecaaf5",
+    "bytes": 1478,
+    "status": "ok"
+  },
+  {
+    "path": "deprecated/www/src/registry/default/ui/sidebar/SidebarProvider.vue",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/deprecated/www/src/registry/default/ui/sidebar/SidebarProvider.vue",
+    "digest": "sha256:18b15a9f8bf3d0070972b6e0bdbdeedb05a3b8631aaed34b094f6f60283233a9",
+    "bytes": 2346,
+    "status": "ok"
+  },
+  {
+    "path": "deprecated/www/src/registry/default/ui/sidebar/utils.ts",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/deprecated/www/src/registry/default/ui/sidebar/utils.ts",
+    "digest": "sha256:a3a513f361a265333805bb64cb8c6312ed6ea69bf181666fc5318055aeb0fa93",
+    "bytes": 666,
+    "status": "ok"
+  },
+  {
+    "path": "deprecated/www/src/registry/new-york/ui/button/index.ts",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/deprecated/www/src/registry/new-york/ui/button/index.ts",
+    "digest": "sha256:26eef7169dd921bb1ebd2c5c014b3790e40c135656c49a9ab59022c5fbc753ed",
+    "bytes": 1503,
+    "status": "ok"
+  },
+  {
+    "path": "deprecated/www/src/registry/new-york/ui/sidebar/SidebarProvider.vue",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/deprecated/www/src/registry/new-york/ui/sidebar/SidebarProvider.vue",
+    "digest": "sha256:18b15a9f8bf3d0070972b6e0bdbdeedb05a3b8631aaed34b094f6f60283233a9",
+    "bytes": 2346,
+    "status": "ok"
+  },
+  {
+    "path": "deprecated/www/src/registry/new-york/ui/sidebar/utils.ts",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/deprecated/www/src/registry/new-york/ui/sidebar/utils.ts",
+    "digest": "sha256:a3a513f361a265333805bb64cb8c6312ed6ea69bf181666fc5318055aeb0fa93",
+    "bytes": 666,
+    "status": "ok"
+  },
+  {
+    "path": "packages/cli/test/fixtures/frameworks/nuxt/components/ui/button/index.ts",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/packages/cli/test/fixtures/frameworks/nuxt/components/ui/button/index.ts",
+    "digest": "sha256:edbff78b4c8bedca842a562f27780863de1d842e8fb39729ddaad3e12cdc5494",
+    "bytes": 1200,
+    "status": "ok"
+  },
+  {
+    "path": "packages/module/playground/components/ui/button/index.ts",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/packages/module/playground/components/ui/button/index.ts",
+    "digest": "sha256:348cbcc0ef90be5c0e2b1242c48d8604d8c15fae921ebd5d9685469031be54b8",
+    "bytes": 1377,
+    "status": "ok"
+  },
+  {
+    "path": "packages/module/test/fixtures/multi-dir/components/ui/button/index.ts",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/packages/module/test/fixtures/multi-dir/components/ui/button/index.ts",
+    "digest": "sha256:d3707af714f67cbe2fdd4b31aa400942acfe684f07f99e2abd00b4b8dd3024d8",
+    "bytes": 49,
+    "status": "ok"
+  },
+  {
+    "path": "skills/shadcn-vue/SKILL.md",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/skills/shadcn-vue/SKILL.md",
+    "digest": "sha256:88b43308172f3dbaa31956b08998f68c3fd0a9fa9bc2cec680de62147b8e3737",
+    "bytes": 15812,
+    "status": "ok"
+  },
+  {
+    "path": "skills/shadcn-vue/cli.md",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/skills/shadcn-vue/cli.md",
+    "digest": "sha256:6b7f3853c4a01e9cea8de967b0598592deb422557178396e111d26daf2a87c5e",
+    "bytes": 12861,
+    "status": "ok"
+  },
+  {
+    "path": "skills/shadcn-vue/customization.md",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/skills/shadcn-vue/customization.md",
+    "digest": "sha256:052c5fd6eb05f27cd1b95d272e7d83afa2c248fd2c7e64e724231c566387c9ef",
+    "bytes": 5820,
+    "status": "ok"
+  },
+  {
+    "path": "skills/shadcn-vue/mcp.md",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/skills/shadcn-vue/mcp.md",
+    "digest": "sha256:35c0d9e5c43cfc8ade7ab030b8c3099d7c304fe9449f1610afd0a4fed674ef44",
+    "bytes": 2356,
+    "status": "ok"
+  },
+  {
+    "path": "skills/shadcn-vue/rules/composition.md",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/skills/shadcn-vue/rules/composition.md",
+    "digest": "sha256:dcf9022f7bc47081ab1e303a443bbc846097714fc56e69db2aaa1426c2924be0",
+    "bytes": 4303,
+    "status": "ok"
+  },
+  {
+    "path": "skills/shadcn-vue/rules/forms.md",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/skills/shadcn-vue/rules/forms.md",
+    "digest": "sha256:6525dd15816f8d4c2063bf300e9fa4b7de41d69a25475ae156ea3157ff133f51",
+    "bytes": 4946,
+    "status": "ok"
+  },
+  {
+    "path": "skills/shadcn-vue/rules/icons.md",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/skills/shadcn-vue/rules/icons.md",
+    "digest": "sha256:266290cb408dd4a6f78fdf96599e80e86ef790a5afa32a99c2ea3f2d4a571712",
+    "bytes": 1998,
+    "status": "ok"
+  },
+  {
+    "path": "skills/shadcn-vue/rules/styling.md",
+    "url": "https://raw.githubusercontent.com/unovue/shadcn-vue/67c9a3926dc0a854507b325c6337ff2210d16379/skills/shadcn-vue/rules/styling.md",
+    "digest": "sha256:0acd23e105925b5630bec79798e67ed2a5470d09bd563bcb276dd407997634ef",
+    "bytes": 3794,
+    "status": "ok"
+  }
+]

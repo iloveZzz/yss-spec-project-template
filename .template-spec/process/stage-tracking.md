@@ -62,3 +62,9 @@ apply 复验项目身份、计划摘要、全部观察文件及源证据摘要�
 不同负责人和被其他项依赖的工作会自动拆分；独立验收使用 `split_reasons: [independent-acceptance]`。登记只创建 pending 项，不能把输入文件当成已通过的验收证据。启用项目缺少 checkpoint 时，check 返回非零退出码；先审阅并应用登记计划，再进入阶段写入。
 
 已显式启用的阅读包在 `stage-tracking apply` 源事务成功后更新；人工直接编辑 checkpoint 后运行 `scripts/contract render --checkpoint <ref>`。阅读页失败不会回滚已应用的源事务，按结果中的 `reading_update.recovery` 修复。map 人工正文与生成导航块分开维护；详见 [合同阅读](contract-reading.md)。
+
+## 输入与状态的生命周期
+
+一次性 `--items` 输入和未正式化的证据草稿优先放在系统临时工作区；持久 checkpoint 是当前机器状态源，父 Ticket 保留五态与引用入口。输入一旦被批准记录、正式证据或冻结包引用，即作为正式资产保留。已有迁移备份与回执支持恢复及幂等，不能因重复内容被清理。
+
+新父 Ticket 不重复维护阶段、阻塞和下一工作单元；`scripts/lifecycle-status` 与 `scripts/stage-tracking check` 均按需只读。阅读包继续显式启用，默认 `manual`。旧票改造与草稿归档遵循 [功能资产整理](feature-assets.md)，不调用 apply 来修正历史冲突。

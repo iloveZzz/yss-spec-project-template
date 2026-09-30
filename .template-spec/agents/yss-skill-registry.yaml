@@ -277,6 +277,7 @@ skill_dependencies:
     - { skill: yss-openapi-governance, type: context-conditional, when: regeneration }
 invocation_contract:
   schema_version: 2
+  runtime_metadata_version: 1
   scope: discovery-only
   required_fields: [invocation_mode, trigger_conditions, exclusion_conditions, primary_output]
   allowed_invocation_modes: [user, model, both]
@@ -311,6 +312,46 @@ invocation_contract:
       trigger_conditions: [impact:prototype]
       exclusion_conditions: [no-product-design-impact]
       primary_output: artifact.prototype-deliverable
+    git-commit-core:
+      invocation_mode: user
+      trigger_conditions: [public-commit-entry-dependency]
+      exclusion_conditions: [standalone-task-selection]
+      primary_output: internal-commit-contract
+    frontend-commit:
+      invocation_mode: both
+      trigger_conditions: [frontend-commit-assistance]
+      exclusion_conditions: [no-commit-related-request]
+      primary_output: frontend-commit-guidance
+    java-backend-commit:
+      invocation_mode: both
+      trigger_conditions: [backend-commit-assistance]
+      exclusion_conditions: [no-commit-related-request]
+      primary_output: backend-commit-guidance
+    prototype:
+      invocation_mode: both
+      trigger_conditions: [prototype-request]
+      exclusion_conditions: [production-implementation-request]
+      primary_output: prototype-evidence
+    writing-for-agents:
+      invocation_mode: both
+      trigger_conditions: [agent-document-writing]
+      exclusion_conditions: [unrelated-document]
+      primary_output: agent-document
+    using-git-worktrees:
+      invocation_mode: both
+      trigger_conditions: [authorized-workspace-task]
+      exclusion_conditions: [outside-authorized-scope]
+      primary_output: workspace-guidance
+    yss-skill-source-index-refresh:
+      invocation_mode: both
+      trigger_conditions: [authorized-source-index-maintenance]
+      exclusion_conditions: [outside-authorized-scope]
+      primary_output: source-index-evidence
+    handoff:
+      invocation_mode: user
+      trigger_conditions: [explicit-handoff-request]
+      exclusion_conditions: [no-handoff-request]
+      primary_output: session-handoff
 agent_runtime_roots:
   codex: .codex/skills
   cursor: .cursor/skills

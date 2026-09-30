@@ -1,0 +1,12 @@
+{
+  "root": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-workbench-browser-8eE8Tc/antd",
+  "current": {
+    "errors": [
+      "原型必须使用 offline-html adapter schema v4 / html-css-js 或 react-shadcn-prebuilt / runtime_build_required=false；React AntD 已退役，仅允许只读 legacy 校验"
+    ]
+  },
+  "legacy": {
+    "errors": []
+  },
+  "seal": "原型必须使用 offline-html adapter schema v4 / html-css-js 或 react-shadcn-prebuilt / runtime_build_required=false；React AntD 已退役，仅允许只读 legacy 校验"
+}

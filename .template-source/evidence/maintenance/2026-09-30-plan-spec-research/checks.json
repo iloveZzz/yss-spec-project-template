@@ -1,0 +1,22 @@
+[
+  {
+    "command": [
+      "node",
+      "scripts/verify-plan-spec-entry-scenarios"
+    ],
+    "exit_code": 0,
+    "duration_ms": 2118,
+    "stdout": "Plan → Spec 无状态绕过与默认加载检查通过\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "node",
+      "scripts/verify-plan-requirements-context-scenarios"
+    ],
+    "exit_code": 0,
+    "duration_ms": 1220,
+    "stdout": "plan-requirements Context Contract scenarios passed\n",
+    "stderr": ""
+  }
+]

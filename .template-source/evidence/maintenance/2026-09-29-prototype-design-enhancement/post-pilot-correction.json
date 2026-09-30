@@ -1,0 +1,29 @@
+{
+  "reason": "preserve-small-change candidate changed a fixed query-area layout at narrow viewport",
+  "pilot_raw_unchanged": true,
+  "agent_retries": 0,
+  "scope": "clarify existing keep-items in current QA; no new lifecycle gate",
+  "files": [
+    {
+      "path": ".agents/skills/yss-prototype-stage/SKILL.md",
+      "before_sha256": "3426877845c5f841c5c9f8cc38fc18a2fad73c52018462b5588f91c5548b9481",
+      "after_sha256": "6a979ac2663149348223d8cd001335f5bb272a42dff7950e1c18d42e93b85f65"
+    },
+    {
+      "path": ".agents/skills/yss-design-system/references/enterprise-craft.md",
+      "before_sha256": "1a84b010a0eb7bbfd7a832b071ab747c22c6265aa76f930ac9e988d6af8f16b6",
+      "after_sha256": "11c4f9cdfa55185268a1f81168c6ad76736388e7e394862fbe7f0320b31375f5"
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.agents/skills/yss-prototype-stage/SKILL.md",
+      "before_sha256": "bf59a67b441fbb9b32fcddd66aa6b1303a203351af1c83dbd2dd368915868d4e",
+      "after_sha256": "d2fcc2f331e8e62a9842d809d65924644b071ed88761cdd0cea4006fa4da120a"
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.agents/skills/yss-design-system/references/enterprise-craft.md",
+      "before_sha256": "1a84b010a0eb7bbfd7a832b071ab747c22c6265aa76f930ac9e988d6af8f16b6",
+      "after_sha256": "11c4f9cdfa55185268a1f81168c6ad76736388e7e394862fbe7f0320b31375f5"
+    }
+  ],
+  "agent_effect_after_correction": "not-evaluated; 12-start budget exhausted"
+}

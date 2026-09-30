@@ -1,0 +1,230 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-09-29T13:07:05.105449+00:00",
+  "user_instruction": "取消多平台验证测试",
+  "scope": "Stop queued and active native Agent evaluations across Codex, Pi and Cursor; preserve existing evidence. Non-platform implementation and CLI integration remain in scope.",
+  "stop_markers": [
+    "/Users/zhudaoming/.codex/artifacts/yss-skills-full-2026-09-29/batches/auxiliary-baseline-closed/STOP",
+    "/Users/zhudaoming/.codex/artifacts/yss-skills-full-2026-09-29/batches/auxiliary-baseline/STOP",
+    "/Users/zhudaoming/.codex/artifacts/yss-skills-full-2026-09-29/batches/frontend-baseline-closed/STOP",
+    "/Users/zhudaoming/.codex/artifacts/yss-skills-full-2026-09-29/batches/backend-baseline-closed/STOP",
+    "/Users/zhudaoming/.codex/artifacts/yss-skills-full-2026-09-29/batches/engineering-baseline-closed/STOP",
+    "/Users/zhudaoming/.codex/artifacts/yss-skills-full-2026-09-29/batches/lifecycle-baseline-closed/STOP"
+  ],
+  "root_pids": [
+    2302,
+    2383,
+    3310,
+    4273,
+    5122,
+    5123,
+    5124,
+    5152,
+    5153,
+    5154,
+    5167,
+    5174,
+    5656,
+    5957,
+    5975
+  ],
+  "descendant_pids": [
+    3319,
+    3310,
+    5968,
+    5664,
+    5656,
+    5098,
+    4278,
+    4273,
+    5983,
+    5957,
+    5646,
+    5165,
+    5123,
+    5669,
+    5166,
+    5124,
+    5671,
+    5186,
+    5153,
+    5702,
+    5185,
+    5154,
+    5674,
+    5193,
+    5174,
+    5990,
+    5975
+  ],
+  "signals": [
+    {
+      "pid": 2302,
+      "signal": "SIGINT",
+      "role": "evaluation-coordinator-or-runner"
+    },
+    {
+      "pid": 2383,
+      "signal": "SIGINT",
+      "role": "evaluation-coordinator-or-runner"
+    },
+    {
+      "pid": 3310,
+      "signal": "SIGINT",
+      "role": "evaluation-coordinator-or-runner"
+    },
+    {
+      "pid": 4273,
+      "signal": "SIGINT",
+      "role": "evaluation-coordinator-or-runner"
+    },
+    {
+      "pid": 5122,
+      "signal": "SIGINT",
+      "role": "evaluation-coordinator-or-runner"
+    },
+    {
+      "pid": 5123,
+      "signal": "SIGINT",
+      "role": "evaluation-coordinator-or-runner"
+    },
+    {
+      "pid": 5124,
+      "signal": "SIGINT",
+      "role": "evaluation-coordinator-or-runner"
+    },
+    {
+      "pid": 5152,
+      "signal": "SIGINT",
+      "role": "evaluation-coordinator-or-runner"
+    },
+    {
+      "pid": 5153,
+      "signal": "SIGINT",
+      "role": "evaluation-coordinator-or-runner"
+    },
+    {
+      "pid": 5154,
+      "signal": "SIGINT",
+      "role": "evaluation-coordinator-or-runner"
+    },
+    {
+      "pid": 5167,
+      "signal": "SIGINT",
+      "role": "evaluation-coordinator-or-runner"
+    },
+    {
+      "pid": 5174,
+      "signal": "SIGINT",
+      "role": "evaluation-coordinator-or-runner"
+    },
+    {
+      "pid": 5656,
+      "signal": "SIGINT",
+      "role": "evaluation-coordinator-or-runner"
+    },
+    {
+      "pid": 5957,
+      "signal": "SIGINT",
+      "role": "evaluation-coordinator-or-runner"
+    },
+    {
+      "pid": 5975,
+      "signal": "SIGINT",
+      "role": "evaluation-coordinator-or-runner"
+    },
+    {
+      "pid": 3319,
+      "signal": "SIGINT",
+      "role": "evaluation-descendant"
+    },
+    {
+      "pid": 5968,
+      "signal": "SIGINT",
+      "role": "evaluation-descendant"
+    },
+    {
+      "pid": 5664,
+      "signal": "SIGINT",
+      "role": "evaluation-descendant"
+    },
+    {
+      "pid": 5098,
+      "signal": "SIGINT",
+      "role": "evaluation-descendant"
+    },
+    {
+      "pid": 4278,
+      "signal": "SIGINT",
+      "role": "evaluation-descendant"
+    },
+    {
+      "pid": 5983,
+      "signal": "SIGINT",
+      "role": "evaluation-descendant"
+    },
+    {
+      "pid": 5646,
+      "signal": "SIGINT",
+      "role": "evaluation-descendant"
+    },
+    {
+      "pid": 5165,
+      "signal": "SIGINT",
+      "role": "evaluation-descendant"
+    },
+    {
+      "pid": 5669,
+      "signal": "SIGINT",
+      "role": "evaluation-descendant"
+    },
+    {
+      "pid": 5166,
+      "signal": "SIGINT",
+      "role": "evaluation-descendant"
+    },
+    {
+      "pid": 5671,
+      "signal": "SIGINT",
+      "role": "evaluation-descendant"
+    },
+    {
+      "pid": 5186,
+      "signal": "SIGINT",
+      "role": "evaluation-descendant"
+    },
+    {
+      "pid": 5702,
+      "signal": "SIGINT",
+      "role": "evaluation-descendant"
+    },
+    {
+      "pid": 5185,
+      "signal": "SIGINT",
+      "role": "evaluation-descendant"
+    },
+    {
+      "pid": 5674,
+      "signal": "SIGINT",
+      "role": "evaluation-descendant"
+    },
+    {
+      "pid": 5193,
+      "signal": "SIGINT",
+      "role": "evaluation-descendant"
+    },
+    {
+      "pid": 5990,
+      "signal": "SIGINT",
+      "role": "evaluation-descendant"
+    }
+  ],
+  "git_commit_authorized": false,
+  "confirmed_no_running_evaluation_processes_at": "2026-09-29T13:08:01.492995+00:00",
+  "budget_at_cancellation": {
+    "attempts": 57,
+    "settled_attempts": 57,
+    "reserved_attempts": 0,
+    "agent_seconds": 4173.24
+  }
+}

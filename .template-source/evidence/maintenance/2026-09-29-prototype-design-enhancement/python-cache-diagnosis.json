@@ -1,0 +1,8 @@
+{
+  "first_isolated_failure": "Python tests created two ignored .pyc files; source hashes unchanged",
+  "files": [
+    ".template-source/scripts/tests/__pycache__/test_skills_agent_eval.cpython-312.pyc",
+    ".template-source/scripts/__pycache__/skills-agent-eval.cpython-312.pyc"
+  ],
+  "action": "keep first report; rerun with PYTHONDONTWRITEBYTECODE=1; do not change verifier or source"
+}

@@ -88,6 +88,7 @@
 | `artifact.frontend-implementation-plan` | 前端实现还原计划 | `stage.ticket-formalization` | UI 影响切片提升 ready-for-agent 前。 |
 | `artifact.frontend-implementation-verification` | 前端实现还原验证记录 | `stage.verification-release-retrospective` | UI 影响切片完成实现并准备合并、发布或阶段完成。 |
 | `artifact.retrospective` | 复盘记录 | `stage.verification-release-retrospective` | 发布后或阶段性完成后满足复盘触发条件。 |
+| `artifact.business-ticket-set` | 业务 Ticket 集 | `stage.spec-architecture` | Spec 同步起草、Design 校准和战略业务正式化；不依赖实现工程，不授予实现资格。 |
 
 ### 2.3 执行证据
 

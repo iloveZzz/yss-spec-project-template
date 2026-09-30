@@ -1,0 +1,201 @@
+{
+  "kind": "plan-spec-task-scope-fresh-verification",
+  "started_at": "2026-09-30T04:18:55.016Z",
+  "status": "failed",
+  "scope": "explicit task source and distribution inputs; not complete-candidate verification",
+  "release_ready": false,
+  "source_state": "working-tree",
+  "excluded": [
+    ".codegraph runtime caches",
+    "unrelated .template-source/evidence",
+    "node_modules and interpreter caches"
+  ],
+  "results": [
+    {
+      "command": "node",
+      "args": [
+        "--test",
+        ".template-source/tooling/node/test/plan-spec-quality.test.mjs"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "duration_ms": 407.91029100000003,
+      "error": null
+    },
+    {
+      "command": "pnpm",
+      "args": [
+        "--dir",
+        ".template-source/tooling/node",
+        "check:vendor"
+      ],
+      "cwd": ".",
+      "exit_code": 1,
+      "duration_ms": 329.50145799999996,
+      "error": null
+    },
+    {
+      "command": "node",
+      "args": [
+        "scripts/verify-plan-spec-entry-scenarios"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "duration_ms": 1817.666209,
+      "error": null
+    },
+    {
+      "command": "node",
+      "args": [
+        "scripts/verify-plan-requirements-context-scenarios"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "duration_ms": 1080.516708,
+      "error": null
+    },
+    {
+      "command": "node",
+      "args": [
+        "scripts/verify-context-reconciliation-scenarios"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "duration_ms": 797.2097500000004,
+      "error": null
+    },
+    {
+      "command": "node",
+      "args": [
+        "scripts/verify-user-decision-scenarios"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "duration_ms": 3234.989667,
+      "error": null
+    },
+    {
+      "command": "node",
+      "args": [
+        "scripts/sync-profile-skills",
+        "--profile",
+        "all",
+        "--check"
+      ],
+      "cwd": ".",
+      "exit_code": 1,
+      "duration_ms": 320.98012500000004,
+      "error": null
+    },
+    {
+      "command": "node",
+      "args": [
+        "scripts/sync-strategic-handoff-tools",
+        "--check"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "duration_ms": 617.0191249999989,
+      "error": null
+    },
+    {
+      "command": "node",
+      "args": [
+        "scripts/sync-skills",
+        "--check"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "duration_ms": 82.1977079999997,
+      "error": null
+    },
+    {
+      "command": "node",
+      "args": [
+        "scripts/verify-upstream-skill-source",
+        "--source=iloveZzz/yss-harness-design-agent",
+        "--source-root=submodules/yss-harness-design-agent"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "duration_ms": 49.980125000000044,
+      "error": null
+    },
+    {
+      "command": "node",
+      "args": [
+        ".agents/skills/i-have-adhd/tests/verify-integration.mjs"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "duration_ms": 107.2377090000009,
+      "error": null
+    },
+    {
+      "command": "node",
+      "args": [
+        "--test",
+        "--test-concurrency=1",
+        "tests/plan-spec-distribution.test.js",
+        "tests/init-cli.test.js",
+        "tests/sync-command-modular.test.js",
+        "tests/cli-entrypoint.test.js"
+      ],
+      "cwd": "submodules/create-yss-spec",
+      "exit_code": 0,
+      "duration_ms": 21494.598625,
+      "error": null
+    },
+    {
+      "command": "node",
+      "args": [
+        ".template-source/evidence/maintenance/2026-09-30-plan-spec-iteration/distribution-smoke.mjs",
+        "/tmp/plan-spec-frozen-fresh-20260930/distribution.json"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "duration_ms": 106643.953625,
+      "error": null
+    },
+    {
+      "command": "node",
+      "args": [
+        "scripts/test-with-plugin-clis.mjs",
+        "test/plugin-build.test.mjs"
+      ],
+      "cwd": ".template-source/tooling/node",
+      "exit_code": 0,
+      "duration_ms": 24865.674667000014,
+      "error": null
+    },
+    {
+      "command": "git",
+      "args": [
+        "diff",
+        "--check",
+        "--",
+        ".agents/skills/to-spec",
+        ".agents/skills/yss-stage-decision",
+        ".agents/skills/yss-product-lifecycle/references/plan-requirements.md",
+        ".template-spec/plan/templates/plan-template.md",
+        ".template-spec/templates/spec-template.md",
+        ".template-spec/templates/spec-delta-template.md",
+        ".template-spec/templates/examples/lifecycle-writing-examples.md",
+        ".template-source/tooling/node",
+        ".template-source/agents/strategic-design-skills-integration.md",
+        "scripts/sync-strategic-handoff-tools",
+        "scripts/vendor"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "duration_ms": 16.53579200000968,
+      "error": null
+    }
+  ],
+  "input_sha256": "0bd80d279732250db1a4de53fb7070b6ec42d1948171bd5ad4c34bb61abe7061",
+  "input_count": 12368,
+  "input_after_sha256": "0bd80d279732250db1a4de53fb7070b6ec42d1948171bd5ad4c34bb61abe7061",
+  "input_drift": false,
+  "changed_inputs": [],
+  "finished_at": "2026-09-30T04:21:38.213Z"
+}

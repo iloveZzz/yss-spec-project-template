@@ -1,0 +1,44 @@
+[
+  {
+    "name": "spec",
+    "init": 0,
+    "config_build": 0,
+    "manifest_schema": 1,
+    "clean_migration": {
+      "exit": 0,
+      "preserved_custom": null
+    },
+    "custom_migration": {
+      "exit": 1,
+      "preserved_custom": true
+    }
+  },
+  {
+    "name": "design",
+    "init": 0,
+    "config_build": 0,
+    "manifest_schema": 1,
+    "clean_migration": {
+      "exit": 0,
+      "preserved_custom": null
+    },
+    "custom_migration": {
+      "exit": 1,
+      "preserved_custom": true
+    }
+  },
+  {
+    "name": "frontend",
+    "init": 0,
+    "config_build": 0,
+    "manifest_schema": 1,
+    "clean_migration": {
+      "exit": 0,
+      "preserved_custom": null
+    },
+    "custom_migration": {
+      "exit": 1,
+      "preserved_custom": true
+    }
+  }
+]

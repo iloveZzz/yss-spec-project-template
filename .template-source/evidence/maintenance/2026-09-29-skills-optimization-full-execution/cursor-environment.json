@@ -1,0 +1,13 @@
+{
+  "runtime": "cursor",
+  "version": "2026.09.28-64d2043",
+  "binary": "/Users/zhudaoming/.local/share/cursor-agent/versions/2026.09.28-64d2043/cursor-agent",
+  "isolation": "private temporary HOME/config/data and existing account credentials only; no personal skills/config imported",
+  "status_probe": "reported isAuthenticated=true (credential presence only)",
+  "actual_model_status": "authentication-rejected-before-completed-turn",
+  "credential_state": "existing access and refresh JWT expired; no existing cursor-api-key in scoped keychain entry",
+  "user_reply": "暂时无法登录，保留 Cursor 未完成项",
+  "decision": "No further Cursor model attempts until user explicitly reports restored authentication. Keep Cursor required coverage incomplete, do not substitute other runtime evidence.",
+  "retained_failures": "/Users/zhudaoming/.codex/artifacts/yss-skills-full-2026-09-29/runs/cursor-preflight-baseline",
+  "secrets_archived": false
+}

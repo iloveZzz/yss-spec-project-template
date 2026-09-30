@@ -1,0 +1,50 @@
+[
+  {
+    "path": ".",
+    "head": "e1503a536b92b3e0a74182632f0690cc5601de62",
+    "status": " M .agents/skills/maintaining-skills/references/authoring.md\n M .agents/skills/writing-for-agents/SKILL-MECHANICS.md\n M .template-source/distribution/strategic-handoff-tools.lock.json\n M .template-source/scripts/skills-agent-eval.md\n M .template-source/scripts/skills-agent-eval.py\n M .template-source/scripts/tests/test_skills_agent_eval.py\n M .template-source/tooling/node/test/skill-registry.test.mjs\n M .template-spec/agents/yss-skill-registry.yaml\n M scripts/lib/skill-registry.mjs\n M scripts/sync-strategic-handoff-tools\n M skills-lock.json\n m submodules/yss-harness-backend-agent\n m submodules/yss-harness-design-agent\n m submodules/yss-harness-frontend-agent\n?? .agents/skills/git-commit-core/agents/\n?? .template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/\n?? .template-source/evidence/maintenance/2026-09-29-skills-optimization-full-execution/\n?? .template-source/evidence/maintenance/2026-09-29-skills-optimization-implementation/\n?? .template-source/evidence/maintenance/2026-09-29-skills-optimization-plan/\n?? .template-source/tooling/node/test/skill-discovery.test.mjs\n?? scripts/inspect-skill-discovery\n?? scripts/lib/skill-discovery.mjs\n",
+    "tracked_diff_sha256": "b7a41c8bcbc49a2fb580514e9280d881db5e8b36f854570bc9d7c23dcea15c5c"
+  },
+  {
+    "path": "submodules/create-yss-harness-backend",
+    "head": "9d4c2781f56427d128719d78f2ea167dfba9c11b",
+    "status": "",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "submodules/create-yss-harness-frontend",
+    "head": "b3ef184677d3d1c50da7363a7d57c4a84eb21b1f",
+    "status": "",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "submodules/create-yss-spec",
+    "head": "e2c0a33c6e6c6559e6ba17b0c323818a45c96d88",
+    "status": "",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "submodules/create-yss-strategic-design",
+    "head": "ba50066a5ea8fa19975aed7399b4a9845f139a41",
+    "status": "",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "submodules/yss-harness-backend-agent",
+    "head": "58bb9fed2da50b6f53f50d155aca7234299b0f96",
+    "status": " M .agents/skills/maintaining-skills/references/authoring.md\n M .agents/skills/writing-for-agents/SKILL-MECHANICS.md\n M .template-source/distribution/strategic-handoff-tools.lock.json\n M .template-spec/agents/yss-skill-registry.yaml\n M scripts/lib/skill-registry.mjs\n M skills-lock.json\n?? .agents/skills/git-commit-core/agents/\n?? scripts/inspect-skill-discovery\n?? scripts/lib/skill-discovery.mjs\n",
+    "tracked_diff_sha256": "9b15cd63c45d3ffe7cd466ff034aa615b5e46b5bdcc625bf7669967d5166536f"
+  },
+  {
+    "path": "submodules/yss-harness-design-agent",
+    "head": "ed8865b79dbe1cb59277fe643c3cb27139674530",
+    "status": " M .agents/skills/maintaining-skills/references/authoring.md\n M .agents/skills/writing-for-agents/SKILL-MECHANICS.md\n M .template-source/distribution/strategic-handoff-tools.lock.json\n M .template-spec/agents/yss-skill-registry.yaml\n M scripts/lib/skill-registry.mjs\n M skills-lock.json\n?? scripts/inspect-skill-discovery\n?? scripts/lib/skill-discovery.mjs\n",
+    "tracked_diff_sha256": "394f3426d6f8b6752a7f56814d59777fc0a71427b60c0863775d06180edf2158"
+  },
+  {
+    "path": "submodules/yss-harness-frontend-agent",
+    "head": "83d37bb5889267d6ad451dbb704203d4300124ef",
+    "status": " M .agents/skills/maintaining-skills/references/authoring.md\n M .agents/skills/writing-for-agents/SKILL-MECHANICS.md\n M .template-source/distribution/strategic-handoff-tools.lock.json\n M .template-spec/agents/yss-skill-registry.yaml\n M scripts/lib/skill-registry.mjs\n M skills-lock.json\n?? .agents/skills/git-commit-core/agents/\n?? scripts/inspect-skill-discovery\n?? scripts/lib/skill-discovery.mjs\n",
+    "tracked_diff_sha256": "b9b1a1e5056fb16430c158f8708ec3b0fb1423b8e6e9b9688ab66f3062b03d10"
+  }
+]

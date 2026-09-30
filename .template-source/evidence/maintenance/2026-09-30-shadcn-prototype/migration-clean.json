@@ -1,0 +1,16 @@
+[
+  {
+    "name": "design",
+    "exit_code": 0,
+    "old_builder_absent": true,
+    "old_collector_absent": true,
+    "new_builder_present": true
+  },
+  {
+    "name": "spec",
+    "exit_code": 0,
+    "old_builder_absent": true,
+    "old_collector_absent": true,
+    "new_builder_present": true
+  }
+]

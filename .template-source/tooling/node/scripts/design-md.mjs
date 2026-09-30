@@ -26,7 +26,25 @@ function resolveValue(value, frontmatter) {
 
 function projectedCssVariables(frontmatter) {
   const components = frontmatter.components;
+  const kebab = key => key.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`);
+  const resolve = value => typeof value === "string" ? value.replace(/\{(colors|typography|rounded|spacing)\.([\w-]+)\}/g, (_, group, key) => {
+    const target = frontmatter[group][key];
+    if (typeof target === "object") fail("CSS 标量不能引用完整排版对象");
+    return target;
+  }) : value;
+  const roles = {};
+  for (const group of ["colors", "typography", "rounded", "spacing", "components"]) {
+    for (const [name, value] of Object.entries(frontmatter[group])) {
+      if (typeof value !== "object") roles[`yss-${group}-${name}`] = resolve(value);
+      else for (const [property, scalar] of Object.entries(value)) {
+        // A component typography reference expands to its named typography role.
+        if (property === "typography") continue;
+        roles[`yss-${group}-${name}-${kebab(property)}`] = resolve(scalar);
+      }
+    }
+  }
   return {
+    ...roles,
     "yss-color-primary-control": resolveValue(components["button-primary"].backgroundColor, frontmatter),
     "yss-color-primary-control-hover": resolveValue(components["button-primary-hover"].backgroundColor, frontmatter),
     "yss-color-on-primary": resolveValue(components["button-primary"].textColor, frontmatter),
@@ -220,6 +238,8 @@ function main() {
       writeAlgorithmProjections(toolchain);
       writeCssProjection(frontmatter);
     }
+    // Visual role aliases do not require rerunning a production theme algorithm.
+    if (args.includes("--write-css") && !args.includes("--write")) writeCssProjection(frontmatter);
     if (args.includes("--write-manifest")) writeProjectionManifest();
     return;
   }

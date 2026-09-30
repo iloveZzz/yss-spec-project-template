@@ -1,0 +1,66 @@
+✔ ordinary: 完整样本及预登记反例 (24.62775ms)
+✔ complex: 完整样本及预登记反例 (5.8175ms)
+✔ high-risk: 完整样本及预登记反例 (6.066542ms)
+✔ 只读、确定性、报告绑定所有输入摘要；不写批准状态 (10.734167ms)
+✔ 计划未知目标合法；引用权威 statement 不另造合同字段 (7.500417ms)
+✔ 验收允许显式待补 Q；不宣称已覆盖 (6.011458ms)
+✔ GFM 中文表头、转义竖线、行内代码与 Markdown 来源链接 (7.252875ms)
+✔ 代码块、引用块与标注示例中的 ID 不混入正式需求 (8.716417ms)
+✔ 旧格式仅尽力识别；无发现不等于合格 (4.217541ms)
+✔ 新格式不能默默跳过没有 ID 表的章节 (5.871042ms)
+✔ frontmatter 重复键、未闭合或解析失败退出 2 (7.6355ms)
+✔ 本地准确章节定位；不存在的伪锚点不能通过 (9.822375ms)
+✔ 外部 URL 保留未评估，不联网猜关联 (6.658542ms)
+✔ 符号链接越界及越界路径不可被隐式读取 (3.532292ms)
+✔ 源文档及其来源读取期间漂移均退出 2 (11.477042ms)
+✔ diff 按 ID 增删改和引用变化；原始字节可精确重建新输入 (9.574875ms)
+✔ 重排保留 ID；链接目标变化不被标签文本掩盖 (10.123375ms)
+✔ 没有旧基线时明确无法比较，不能伪造空基线 (3.578041ms)
+✔ Slice 追溯消费现有 acceptance/source/locator 和 verification 引用，不执行命令 (6.925667ms)
+✔ 离线副本无 node_modules 可运行，stdout JSON 与退出码稳定 (126.07975ms)
+✖ 模板其他条件项也需不适用原因，示例行保持排除 (9.91325ms)
+✖ 轻量 Plan 基线未知也必须给出补齐项 (6.192083ms)
+ℹ tests 22
+ℹ suites 0
+ℹ pass 20
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 354.54675
+
+✖ failing tests:
+
+test at .template-source/tooling/node/test/plan-spec-quality.test.mjs:154:1
+✖ 模板其他条件项也需不适用原因，示例行保持排除 (9.91325ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(codes(result).includes('NA_REASON'))
+  
+      at TestContext.<anonymous> (file:///Users/zhudaoming/Projects/yss-spec-project-template/.template-source/tooling/node/test/plan-spec-quality.test.mjs:156:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at .template-source/tooling/node/test/plan-spec-quality.test.mjs:158:1
+✖ 轻量 Plan 基线未知也必须给出补齐项 (6.192083ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(codes(result).includes('UNKNOWN_BASELINE'))
+  
+      at TestContext.<anonymous> (file:///Users/zhudaoming/Projects/yss-spec-project-template/.template-source/tooling/node/test/plan-spec-quality.test.mjs:163:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

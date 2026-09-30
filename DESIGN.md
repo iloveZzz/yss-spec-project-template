@@ -77,6 +77,23 @@ spacing:
   xxl: 48px
 
 components:
+  workspace-header:
+    height: 48px
+    backgroundColor: "{colors.surface}"
+    typography: "{typography.body}"
+  workspace-sidebar:
+    width: 240px
+    backgroundColor: "{colors.surface}"
+  workspace-sidebar-collapsed:
+    width: 64px
+  workspace-tabs:
+    height: 32px
+    backgroundColor: "{colors.surface}"
+  workspace-detail:
+    width: 384px
+    backgroundColor: "{colors.surface}"
+  workspace-title:
+    typography: "{typography.heading-md}"
   separator:
     backgroundColor: "{colors.border}"
     height: 1px
@@ -226,7 +243,7 @@ components:
 
 YSS is an enterprise UI system for dense, scannable work surfaces: tables, forms, filters, workflows and operational feedback. This file is the normative source for visual tokens and component visual variants. Product behavior remains in Spec, interaction specifications and state matrices.
 
-The default theme adopts Data Quality global tokens on the Ant Design v6 design foundation: light mode, primary #3371ff, body 14px, controls 32/24/40px, radii 6/4/8px and card padding 20px. Compact and dark modes are opt-in. Data Quality runs Vue 3 + Ant Design Vue 4.2.6 + YSS UI; that runtime version is distinct from the design foundation. Client-specific JSP themes and page-local glass effects are not defaults. Prototypes use HTML/CSS/JavaScript with local token CSS. Production applications use the target implementation contract and lockfile; prototype visuals do not establish production component API compatibility.
+The production default theme adopts Data Quality global tokens on the Ant Design v6 design foundation: light mode, primary #3371ff, body 14px, controls 32/24/40px, radii 6/4/8px and card padding 20px. Production compact remains opt-in. New high-fidelity prototypes default to light compact using the named variants below; comfortable remains available. Existing page changes preserve their approved density and layout. Dark assets are historical references, unverified against the current specification, and are outside the default prototype route. Data Quality runs Vue 3 + Ant Design Vue 4.2.6 + YSS UI; that runtime version is distinct from the design foundation. Client-specific JSP themes and page-local glass effects are not defaults. New high-fidelity prototypes primarily use prebuilt shadcn-vue + Vue 3 with local token CSS. React authoring libraries and generation routes are retired; sealed React evidence is read-only legacy. Native HTML/CSS/JavaScript remains the lightweight route. Use registered components for product controls and task-specific compositions; upstream Blocks do not override these tokens or approved behavior. Production applications use the target implementation contract and lockfile; prototype visuals do not establish production component API compatibility.
 
 ## Colors
 
@@ -238,7 +255,9 @@ Use the system font stack, 14px body text and 400/600 weights. Use `caption` onl
 
 ## Layout
 
-Use a 4px spacing grid and the spacing tokens above. Use the default 32px control variant directly in HTML prototypes. The explicit compact variant uses 28px; small and large controls use 24px and 40px. When production uses an Ant Design theme algorithm, keep its seed `controlHeight` at 32px and apply compact once; never seed 28px and compact again. Page, container and overlay surfaces form the base three-layer model. On narrow screens, toolbars and filters reflow or collapse; table overflow is restricted to the table container.
+New enterprise prototypes use an application shell with module navigation, grouped sidebar, closable page Tags and a full-width work area. Page Tags are navigation controls with a subtle primary tint and border for the current page, separate activation and close buttons, and no Tab underline. Reserve Tabs for views within a page; their active state uses primary text and an indicator without a filled pill. The existing workspace-tabs roles continue to size and color the Tag strip. Collapsed sidebar items remain centered with a visible current-page marker and inverse Tooltips; tooltip bodies and arrows share the same surface. Shell dimensions come from the workspace component roles above. At 1200px and above the sidebar starts expanded; from 768px to 1199px it starts collapsed; below 768px navigation uses a modal Sheet. A selected list detail occupies the workspace-detail role on wide desktop and a Sheet below 1200px; no empty detail column is reserved. Forms retain a bounded reading width within the fluid workspace. Use one main vertical work-area scroll, an independent detail scroll where needed and localized table overflow. Workspace page titles use workspace-title; avoid repeating a large decorative title above task controls. These are prototype defaults, not an automatic migration of approved or production pages.
+
+Use a 4px spacing grid and the spacing tokens above. New prototypes use the named compact control variant (28px) on desktop, the ordinary variant (32px) on narrow screens, and body typography (14px) throughout. Comfortable uses the ordinary control and card variants. Compact uses card-compact padding on desktop and spacing.sm on narrow screens. Small and large control variants remain 24px and 40px. These named prototype variants are not the full production tokens.compact.json algorithm result; do not apply a compact algorithm to them. When production uses an Ant Design theme algorithm, keep its seed `controlHeight` at 32px and apply compact once; never seed 28px and compact again. Page, container and overlay surfaces form the base three-layer model. On narrow screens, toolbars and filters reflow or collapse; table overflow is restricted to the table container.
 
 ## Elevation & Depth
 
@@ -250,12 +269,12 @@ Controls use `rounded.md` (6px); cards and overlays use `rounded.lg` (8px); comp
 
 ## Components
 
-The component keys above describe default visual variants and explicitly named optional sizes, not business states. Default controls use a 32px computed height, 14px body type, pale semantic feedback surfaces and visible focus rings. Required implementation states include hover, focus, active, disabled, loading, error, empty, readonly, no-permission, conflict and success. Define those behavior and acceptance details in the lifecycle state-matrix and prototype evidence assets.
+The component keys above describe default visual variants and explicitly named optional sizes, not business states. The ordinary control variant uses a 32px computed height; prototype density selects the named variant as described in Layout. All variants retain body typography, pale semantic feedback surfaces and visible focus rings. Validate actual target size and spacing, keyboard operation and focus; control height alone does not establish accessibility. Required implementation states include hover, focus, active, disabled, loading, error, empty, readonly, no-permission, conflict and success. Define those behavior and acceptance details in the lifecycle state-matrix and prototype evidence assets.
 
 ## Do's and Don'ts
 
 - Do consume tokens through ConfigProvider, CSS variables or the target component library theme.
-- Do use the verified derived dark/compact token snapshot for HTML; production theme algorithms remain implementation-specific.
+- Do use local CSS projected from this specification for prototypes; production theme algorithms remain implementation-specific. Dark snapshots are historical and require new derivation and validation before adoption.
 - Do verify desktop (`1440x900`), mobile (`390x844`) and impacted intermediate viewports.
 - Do provide visible feedback for save, submit, publish, export and retry actions.
 - Don’t use marketing hero layouts, large gradients or decorative cards in operational pages.

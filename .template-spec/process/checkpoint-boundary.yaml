@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "derived_from": ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml",
+  "phase_boundary": {
+    "choices": [
+      "continue",
+      "clear",
+      "handoff",
+      "subagent",
+      "compact"
+    ],
+    "precedence": [
+      "continue",
+      "clear",
+      "handoff",
+      "subagent",
+      "compact"
+    ],
+    "invariants": [
+      "does-not-force-clear",
+      "preserves-lifecycle-state"
+    ],
+    "evidence": {
+      "required": [
+        "decision",
+        "reason"
+      ],
+      "conditional": {
+        "handoff": [
+          "source_ref",
+          "destination_ref"
+        ],
+        "subagent": [
+          "task_package_ref",
+          "convergence_ref"
+        ],
+        "compact": [
+          "next_phase"
+        ]
+      }
+    },
+    "preserves": [
+      "lifecycle.status",
+      "gate.status",
+      "ticket.role"
+    ]
+  },
+  "checkpoint_policy": {
+    "strategy": "consolidated",
+    "flush_on": [
+      "stage_exit",
+      "human_pause",
+      "handoff",
+      "implementation_entry",
+      "merge",
+      "release"
+    ],
+    "flush_immediately_on": [
+      "blocked",
+      "responsibility_changed",
+      "asset_approval"
+    ],
+    "preserve_stage_causality": true,
+    "required_stage_trace_fields": [
+      "stage",
+      "upstream_refs",
+      "artifact_refs",
+      "gate_decisions",
+      "downstream_impacts"
+    ],
+    "project_instance_stage_exit_requires_context_reconciliation": true
+  }
+}

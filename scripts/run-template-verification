@@ -33,9 +33,11 @@ function runValidator(command, args) {
   if (result.status !== 0) throw new TypeError(result.stderr.trim() || `${command} 校验失败`);
 }
 
+async function main() {
 try {
   const { values } = parseArgs({
     options: {
+      help: { type: "boolean", default: false },
       profile: { type: "string", default: "fast" },
       base: { type: "string" },
       "changed-file": { type: "string", multiple: true },
@@ -49,6 +51,10 @@ try {
     },
     strict: true
   });
+  if (values.help) {
+    process.stdout.write('用法: scripts/verify-template[-fast|-candidate] [--base <commit>] [--plan --json] [--report-dir <仓库外新目录>] [--concurrency 1..4]\n--plan 只输出计划，不执行验证；退出码 0 表示计划输出完成或适用检查通过，1 表示失败。\n');
+    return;
+  }
   const explicit = values["changed-file"] || [];
   const scope=resolveVerificationScope({profile:values.profile,explicit,actual:collectChangedFiles(values.base)});
   let plan = planTemplateVerification({ profile: values.profile, changedFiles: scope.files, ...(values.selection?{selection:values.selection}:{}) });
@@ -65,7 +71,7 @@ try {
   if (values.plan) {
     if(reportDir)saveVerificationReport(reportDir,{kind:"template-verification-plan",status:"not-executed",plan});
     process.stdout.write(`${JSON.stringify(plan, null, values.json ? 2 : 0)}\n`);
-    process.exit(0);
+    return;
   }
 
   const major = Number(process.versions.node.split(".")[0]);
@@ -116,3 +122,6 @@ finally {
   if(logRoot&&!reportDir)rmSync(logRoot,{recursive:true,force:true});
   process.off('SIGINT',interrupt);process.off('SIGTERM',interrupt);
 }
+}
+process.stdout.on('error', error => { process.stderr.write(`输出失败: ${error.message}\n`); process.exitCode = 1; });
+await main();

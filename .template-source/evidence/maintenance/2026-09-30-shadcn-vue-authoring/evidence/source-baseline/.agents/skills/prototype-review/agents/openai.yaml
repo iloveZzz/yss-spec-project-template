@@ -1,0 +1,4 @@
+interface:
+  display_name: "Prototype Review"
+  short_description: "Gate UI prototypes before Spec calibration"
+  default_prompt: "Use $prototype-review to review prototype readiness before Spec calibration and OpenAPI Draft."

@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { realpathSync } from 'node:fs';
 import { assertUserDecisionRequirement, decisionDigest, decisionIO } from "../../../../scripts/lib/user-decision.mjs";
 import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
@@ -176,7 +177,7 @@ function validateProfileV4(data, errors, allowTemplate) {
     const facts = evidence.prototype_library_facts;
     required(facts, "applicable", "profile_evidence.flow_review.prototype_library_facts", errors);
     requiredString(facts, "component_basis", "profile_evidence.flow_review.prototype_library_facts", errors);
-    if (["html-css-js", "react-antd-prebuilt"].includes(facts?.component_basis)) {
+    if (["html-css-js", "react-antd-prebuilt", "react-shadcn-prebuilt", "vue-shadcn-prebuilt"].includes(facts?.component_basis)) {
       if (implementation?.runtime_build_required !== false || implementation?.framework !== facts.component_basis || (facts.component_basis === "html-css-js" && facts.applicable !== false)) errors.push("HTML H2 必须声明无组件 Provider、无运行时构建及 html-css-js framework");
       if (data.browser_delivery?.delivery_contract !== "offline-html-v1") errors.push("HTML H2 缺少 offline-html-v1 交付证据");
       for (const field of ["scenario_replay_ref", "scenario_reset_result"]) requiredString(evidence, field, "profile_evidence.flow_review", errors);
@@ -187,18 +188,22 @@ function validateProfileV4(data, errors, allowTemplate) {
       requiredString(facts, "build_provenance_ref", "prototype_library_facts", errors);
       requiredString(implementation, "selection_reason", "prototype_implementation", errors);
     }
+    if (["react-shadcn-prebuilt", "vue-shadcn-prebuilt"].includes(facts?.component_basis)) {
+      if (facts.applicable !== true || facts.library_package !== (facts.component_basis === "vue-shadcn-prebuilt" ? "shadcn-vue" : "shadcn/ui") || (!allowTemplate && !/^[a-f0-9]{40}$/.test(facts.registry_revision ?? ""))) errors.push("shadcn 使用固定源码 revision，不能用 CLI 版本冒充组件版本");
+      requiredString(facts, "build_provenance_ref", "prototype_library_facts", errors);
+    }
     if (facts?.applicable === true) {
       for (const field of ["source", "manifest_ref", "manifest_digest", "canonical_design_digest", "project_token_baseline_digest"]) requiredString(facts, field, "profile_evidence.flow_review.prototype_library_facts", errors);
       requireArray(facts, "components_covered", "profile_evidence.flow_review.prototype_library_facts", errors, { nonEmpty: true });
       if (facts.component_basis === "react-antd-6" && facts.actual_antd_version !== undefined) {
         if (!allowTemplate && !antdSemver.test(facts.actual_antd_version ?? "")) errors.push("H2 actual_antd_version 必须是明确 antd 6.x semver");
-      } else {
+      } else if (!["react-shadcn-prebuilt", "vue-shadcn-prebuilt"].includes(facts.component_basis)) {
         for (const field of ["library_package", "library_version"]) requiredString(facts, field, "profile_evidence.flow_review.prototype_library_facts", errors);
         if (!allowTemplate && !exactSemver.test(facts.library_version ?? "")) errors.push("H2 library_version 必须是明确 semver");
         if (facts.component_basis === "vue-antdv-next" && facts.library_package !== "antdv-next") errors.push("vue-antdv-next 必须使用 antdv-next package");
         if (facts.component_basis === "react-antd-6" && (facts.library_package !== "antd" || (!allowTemplate && !antdSemver.test(facts.library_version ?? "")))) errors.push("react-antd-6 必须使用明确的 antd 6.x 版本");
       }
-      if (!["fact-pack", "cli-run"].includes(facts.source)) errors.push("H2 prototype_library_facts.source 必须为 fact-pack/cli-run");
+      if (!["fact-pack", "cli-run", ...(["react-shadcn-prebuilt", "vue-shadcn-prebuilt"].includes(facts.component_basis) ? ["source-snapshot"] : [])].includes(facts.source)) errors.push("H2 prototype_library_facts.source 必须为 fact-pack/cli-run；shadcn 使用 source-snapshot");
       if (!allowTemplate && facts.project_token_baseline_digest !== data.design_baseline.project_token_baseline_digest) errors.push("H2 fact pack 的项目 Token digest 已失效");
       if (!allowTemplate && facts.canonical_design_digest !== data.design_baseline.canonical_design_digest) errors.push("H2 fact pack 的 DESIGN.md digest 已失效");
       if (!allowTemplate && facts.new_api_uncertainty !== false) errors.push("H2 fact pack 存在新 API 疑问，必须增量查询");
@@ -222,8 +227,8 @@ export function validatePrototypeEvidence(data, { allowTemplate = false, allowLe
   }
   if (data.schema_version !== 4) return { errors: ["schema_version 必须为 4"], warnings };
   const oldBasis = data.profile_evidence?.flow_review?.prototype_library_facts?.component_basis;
-  if (["vue-antdv-next", "react-antd-6"].includes(oldBasis)) {
-    if (!allowLegacy && !allowTemplate) errors.push("Provider 已退役；旧证据仅 --allow-legacy 只读检查，在途需迁移 HTML");
+  if (["vue-antdv-next", "react-antd-6", "react-antd-prebuilt", "react-shadcn-prebuilt"].includes(oldBasis)) {
+    if (!allowLegacy && !allowTemplate) errors.push("Provider 已退役；旧证据仅 --allow-legacy 只读检查，在途需迁移 Vue 或原生 HTML");
     else warnings.push("历史 Provider 证据只读，不代表当前原型通过");
   }
   validateCommonV4(data, errors, allowTemplate);
@@ -243,16 +248,16 @@ export async function prepareStaticPrototype(options) {
 }
 
 export async function prepareFlowPrototype(options) {
-  if (options.targetAntdVersion || options.libraryVersion || options.factPackRef || (options.componentBasis && options.componentBasis !== "html-css-js")) throw new TypeError("原型 Provider 已退役；请迁移到 html-css-js 离线交付，历史原型保持只读");
+  if (options.targetAntdVersion || options.libraryVersion || options.factPackRef || (options.componentBasis && options.componentBasis !== "html-css-js")) throw new TypeError("原型 Provider 已退役；新原型使用 build-shadcn-vue-prototype 或 html-css-js 离线交付，历史原型保持只读");
   return prepareOfflineHtml({ ...options, profile: "H2" });
 }
 
 export const preparePrototype = prepareFlowPrototype;
 
-export async function validatePrototypeProject({ root, profile = "H2", componentBasis, targetAntdVersion }) {
+export async function validatePrototypeProject({ root, profile = "H2", componentBasis, targetAntdVersion, allowLegacy = false, projectRoot }) {
   if (!Object.hasOwn(PROFILE_KIND, profile)) return { errors: ["prototype_profile 必须为 H1/H2"] };
-  if (targetAntdVersion || (componentBasis && !["html-css-js", "react-antd-prebuilt"].includes(componentBasis))) return { errors: ["旧 Provider 项目不进入当前生成路线；请保留历史快照并迁移"] };
-  const result = await validateOfflineHtml(root, profile);
+  if (targetAntdVersion || (componentBasis && !["html-css-js", "vue-shadcn-prebuilt", ...(allowLegacy ? ["react-antd-prebuilt", "react-shadcn-prebuilt"] : [])].includes(componentBasis))) return { errors: ["旧 Provider 项目不进入当前生成路线；请保留历史快照并迁移"] };
+  const result = await validateOfflineHtml(root, profile, { allowLegacy, projectRoot });
   if (componentBasis && !result.errors.length) {
     const manifest = JSON.parse(await readFile(path.join(root, "yss-prototype-adapter.json"), "utf8"));
     if (manifest.component_basis !== componentBasis) result.errors.push("componentBasis 与原型 manifest 不一致");
@@ -283,11 +288,11 @@ async function main(argv) {
   const parsed = args(argv);
   const command = parsed._[0];
   if (command === "prepare-static") {
-    process.stdout.write(`${JSON.stringify(await prepareStaticPrototype({ projectRoot: parsed["project-root"], root: parsed.root, feature: parsed.feature, pattern: parsed.pattern }), null, 2)}\n`);
+    process.stdout.write(`${JSON.stringify(await prepareStaticPrototype({ projectRoot: parsed["project-root"], root: parsed.root, feature: parsed.feature, pattern: parsed.pattern, density: parsed.density, scenarios: parsed.scenarios, title: parsed.title }), null, 2)}\n`);
     return;
   }
   if (["prepare", "prepare-flow"].includes(command)) {
-    process.stdout.write(`${JSON.stringify(await prepareFlowPrototype({ projectRoot: parsed["project-root"], root: parsed.root, feature: parsed.feature, pattern: parsed.pattern, componentBasis: parsed["component-basis"], libraryVersion: parsed["library-version"], targetAntdVersion: parsed["target-antd-version"], pnpmVersion: parsed["pnpm-version"], factPackRef: parsed["fact-pack-ref"] }), null, 2)}\n`);
+    process.stdout.write(`${JSON.stringify(await prepareFlowPrototype({ projectRoot: parsed["project-root"], root: parsed.root, feature: parsed.feature, pattern: parsed.pattern, density: parsed.density, scenarios: parsed.scenarios, title: parsed.title, componentBasis: parsed["component-basis"], libraryVersion: parsed["library-version"], targetAntdVersion: parsed["target-antd-version"], pnpmVersion: parsed["pnpm-version"], factPackRef: parsed["fact-pack-ref"] }), null, 2)}\n`);
     return;
   }
   if (command === "seal-project") {
@@ -295,13 +300,13 @@ async function main(argv) {
     return;
   }
   if (command === "validate-project") {
-    const result = await validatePrototypeProject({ root: parsed.root, profile: parsed.profile ?? "H2", componentBasis: parsed["component-basis"], libraryVersion: parsed["library-version"], targetAntdVersion: parsed["target-antd-version"] });
+    const result = await validatePrototypeProject({ root: parsed.root, profile: parsed.profile ?? "H2", componentBasis: parsed["component-basis"], libraryVersion: parsed["library-version"], targetAntdVersion: parsed["target-antd-version"], allowLegacy: Boolean(parsed["allow-legacy"]), projectRoot: parsed["project-root"] });
     if (result.errors.length > 0) throw new TypeError(result.errors.join("\n"));
     process.stdout.write("prototype project contract passed\n");
     return;
   }
   if (command === "validate-evidence") {
-    const result = validatePrototypeEvidence(await loadYaml(parsed._[1]), { allowTemplate: Boolean(parsed["allow-template"]), allowLegacy: Boolean(parsed["allow-legacy"]) });
+    const result = validatePrototypeEvidence(await loadYaml(parsed._[1]), { allowTemplate: Boolean(parsed["allow-template"]), allowLegacy: Boolean(parsed["allow-legacy"]), projectRoot: parsed["project-root"] });
     if (result.errors.length > 0) throw new TypeError(result.errors.join("\n"));
     process.stdout.write(`prototype evidence passed${result.warnings.length ? ` with warnings: ${result.warnings.join(", ")}` : ""}\n`);
     return;
@@ -309,4 +314,4 @@ async function main(argv) {
   throw new TypeError("usage: prototype-contract.mjs prepare-static|prepare-flow|seal-project|validate-project|validate-evidence ...");
 }
 
-if (import.meta.url === pathToFileURL(process.argv[1]).href) main(process.argv.slice(2)).catch((error) => { process.stderr.write(`${error.message}\n`); process.exitCode = 1; });
+if (process.argv[1] && existsSync(process.argv[1]) && import.meta.url === pathToFileURL(realpathSync(process.argv[1])).href) main(process.argv.slice(2)).catch((error) => { process.stderr.write(`${error.message}\n`); process.exitCode = 1; });

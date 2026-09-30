@@ -1,0 +1,107 @@
+{
+  "task": "preserve-small-change",
+  "side": "A",
+  "status": "inspected-partial-output",
+  "html_sha256": "66dbe87f64ca105128cd23e01091ac61bb8da61002235462fee550c7de14a59c",
+  "browser": "151.0.7922.34",
+  "delivery": "file:// offline=true",
+  "turn_completed": false,
+  "missing_resources": [],
+  "observations": [
+    {
+      "scene": "primary",
+      "width": 1440,
+      "height": 900,
+      "text": "资料查询\n名称或编号查询重置查询\n\n共 3 条\n\n编号\t资料名称\t负责人\t状态\nM-001\t季度经营分析资料\t张明\t待核对\nM-002\t跨部门业务协作与异常处理说明（长名称示例）\t李华\t待核对\nM-003\t归档清单\t未填写\t待处理\n重置场景",
+      "overflow": false,
+      "body_attributes": {},
+      "controls": [
+        {
+          "tag": "INPUT",
+          "id": "query",
+          "text": "",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "查询",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "重置查询",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "reset-scenario",
+          "text": "重置场景",
+          "disabled": false,
+          "value": ""
+        }
+      ],
+      "focus": {
+        "tag": "INPUT",
+        "id": "query",
+        "outline": "solid"
+      },
+      "reset": "input-restored",
+      "issues": [],
+      "screenshot": "primary-1440.png"
+    },
+    {
+      "scene": "primary",
+      "width": 390,
+      "height": 844,
+      "text": "资料查询\n名称或编号\n查询\n重置查询\n\n共 3 条\n\n编号\t资料名称\t负责人\t状态\nM-001\t季度经营分析资料\t张明\t待核对\nM-002\t跨部门业务协作与异常处理说明（长名称示例）\t李华\t待核对\nM-003\t归档清单\t未填写\t待处理\n重置场景",
+      "overflow": false,
+      "body_attributes": {},
+      "controls": [
+        {
+          "tag": "INPUT",
+          "id": "query",
+          "text": "",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "查询",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "重置查询",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "reset-scenario",
+          "text": "重置场景",
+          "disabled": false,
+          "value": ""
+        }
+      ],
+      "focus": {
+        "tag": "BUTTON",
+        "id": "",
+        "outline": "solid"
+      },
+      "reset": "input-restored",
+      "issues": [],
+      "screenshot": "primary-390.png"
+    }
+  ],
+  "behavior_coverage": "unverified; loading a partial page does not prove business behavior"
+}

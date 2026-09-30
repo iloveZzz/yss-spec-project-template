@@ -1,0 +1,25 @@
+{
+  "status": "pass",
+  "checked_files": [
+    ".template-source/evidence/maintenance/2026-09-30-enterprise-workspace/tokens.css",
+    ".template-source/evidence/maintenance/2026-09-30-enterprise-workspace/review/workspace/index.html",
+    ".template-source/evidence/maintenance/2026-09-30-enterprise-workspace/review/glass/index.html",
+    ".template-source/evidence/maintenance/2026-09-30-enterprise-workspace/review/comfortable/index.html",
+    ".template-source/evidence/maintenance/2026-09-30-enterprise-workspace/review/workspace/index.html",
+    ".template-source/evidence/maintenance/2026-09-30-enterprise-workspace/review/workspace/index.html",
+    ".template-source/evidence/maintenance/2026-09-30-enterprise-workspace/comparison/index.html",
+    ".template-source/evidence/maintenance/2026-09-30-enterprise-workspace/patterns/index.html",
+    ".template-source/evidence/maintenance/2026-09-30-enterprise-workspace/low-fidelity.html",
+    ".template-source/evidence/maintenance/2026-09-30-enterprise-workspace/interaction.md",
+    ".template-source/evidence/maintenance/2026-09-30-enterprise-workspace/manual-qa.md",
+    ".template-source/evidence/maintenance/2026-09-30-enterprise-workspace/report.md",
+    ".template-source/evidence/maintenance/2026-09-30-enterprise-workspace/patterns/tokens.css",
+    ".template-source/evidence/maintenance/2026-09-30-enterprise-workspace/patterns/list-detail/index.html",
+    ".template-source/evidence/maintenance/2026-09-30-enterprise-workspace/patterns/multi-step/index.html",
+    ".template-source/evidence/maintenance/2026-09-30-enterprise-workspace/patterns/approval/index.html",
+    ".template-source/evidence/maintenance/2026-09-30-enterprise-workspace/patterns/conflict/index.html",
+    ".template-source/evidence/maintenance/2026-09-30-enterprise-workspace/patterns/analysis/index.html",
+    ".template-source/evidence/maintenance/2026-09-30-enterprise-workspace/patterns/workspace/index.html",
+    ".template-source/evidence/maintenance/2026-09-30-enterprise-workspace/patterns/component-states/index.html"
+  ]
+}

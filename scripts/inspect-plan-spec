@@ -1,0 +1,32 @@
+#!/usr/bin/env node
+import { inspectPlanSpec, renderReport } from './lib/plan-spec-quality.mjs';
+const help = `只读 Plan / Spec 诊断（不改变阶段、批准或就绪状态）
+inspect-plan-spec check --root <项目根> [--plan <Plan>] [--spec <Spec>] [--slice <Slice YAML>] [--json]
+inspect-plan-spec diff --root <项目根> --before <旧Spec> --after <新Spec> [--json]
+check 至少指定 Plan、Spec 之一；--slice 可重复。路径相对项目根，来源不联网、不扫描。
+退出码 0：诊断执行完成（可有发现）；2：输入、解析或新鲜度不足。
+`;
+const argv = process.argv.slice(2);
+if (argv.includes('--help') || argv.includes('-h')) { process.stdout.write(help); }
+else {
+  const options = { command: argv.shift(), slices: [] };
+  try {
+    while (argv.length) {
+      const flag = argv.shift();
+      if (flag === '--json') { options.json = true; continue; }
+      if (!['--root', '--plan', '--spec', '--before', '--after', '--slice'].includes(flag)) throw new Error(`不支持参数 ${flag}`);
+      const value = argv.shift();
+      if (!value || value.startsWith('--')) throw new Error(`${flag} 缺少值`);
+      if (flag === '--slice') options.slices.push(value);
+      else { const key = flag.slice(2); if (options[key]) throw new Error(`${flag} 不允许重复`); options[key] = value; }
+    }
+    if (options.command === 'check' && (options.before || options.after) || options.command === 'diff' && (options.plan || options.spec || options.slices.length)) throw new Error('参数不适用于当前命令');
+    const { report, exitCode } = await inspectPlanSpec(options);
+    process.stdout.write(options.json ? `${JSON.stringify(report, null, 2)}\n` : renderReport(report));
+    process.exitCode = exitCode;
+  } catch (error) {
+    const message = { tool: 'inspect-plan-spec', tool_version: '1.0.0', diagnostic_only: true, execution: 'incomplete', findings: [{ code: 'INPUT_ARGUMENT', location: { file: '.', line: 1, column: 1 }, item_id: null, message: error.message, recovery: '查看 --help 并修正参数。' }] };
+    process.stdout.write(process.argv.includes('--json') ? `${JSON.stringify(message, null, 2)}\n` : `${error.message}\n${help}`);
+    process.exitCode = 2;
+  }
+}

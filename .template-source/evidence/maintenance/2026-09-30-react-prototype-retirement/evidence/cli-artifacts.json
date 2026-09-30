@@ -1,0 +1,95 @@
+{
+  "checked": [
+    {
+      "cli": "create-yss-spec",
+      "path": ".agents/skills/yss-prototype-stage/scripts/build-shadcn-vue-prototype.mjs",
+      "sha256": "9a8695ae5d172525b59c9d05aa637ecd755e5a12a40ec78c0da2659dfffd1377"
+    },
+    {
+      "cli": "create-yss-spec",
+      "path": ".agents/skills/yss-prototype-stage/assets/shadcn-vue-authoring/ui/select/Select.vue",
+      "sha256": "0a100251a7ad449679f49b078f613492940b05de92f744e8ca072fa6acadf8fa"
+    },
+    {
+      "cli": "create-yss-spec",
+      "path": ".agents/skills/yss-prototype-stage/assets/shadcn-vue-authoring/registry-manifest.json",
+      "sha256": "d5b5a5ec68ea50139eda2951666038ff34e2aa8503ef94da44c6ccbb24bd4864"
+    },
+    {
+      "cli": "create-yss-spec",
+      "path": ".agents/skills/yss-prototype-stage/assets/vue-business-patterns/ListDetail.vue",
+      "sha256": "6e419db5c71060abaebbfa313bb5d3ddeaa24cbd966c19742b5f3b2d5f7bbfb7"
+    },
+    {
+      "cli": "create-yss-spec",
+      "path": ".agents/skills/yss-prototype-stage/assets/vue-business-patterns/Conflict.vue",
+      "sha256": "71b5625e3749508a2e3615b6dc256583da5a80c9a73223700992cd8ce1d7577a"
+    },
+    {
+      "cli": "create-yss-spec",
+      "path": ".agents/skills/yss-prototype-stage/assets/shadcn-vue-authoring/theme.css",
+      "sha256": "62f67ae55039aed5844db9ba6baa0056885369240b0bfebe150f9ecbc7b38dd7"
+    },
+    {
+      "cli": "create-yss-strategic-design",
+      "path": ".agents/skills/yss-prototype-stage/scripts/build-shadcn-vue-prototype.mjs",
+      "sha256": "9a8695ae5d172525b59c9d05aa637ecd755e5a12a40ec78c0da2659dfffd1377"
+    },
+    {
+      "cli": "create-yss-strategic-design",
+      "path": ".agents/skills/yss-prototype-stage/assets/shadcn-vue-authoring/ui/select/Select.vue",
+      "sha256": "0a100251a7ad449679f49b078f613492940b05de92f744e8ca072fa6acadf8fa"
+    },
+    {
+      "cli": "create-yss-strategic-design",
+      "path": ".agents/skills/yss-prototype-stage/assets/shadcn-vue-authoring/registry-manifest.json",
+      "sha256": "d5b5a5ec68ea50139eda2951666038ff34e2aa8503ef94da44c6ccbb24bd4864"
+    },
+    {
+      "cli": "create-yss-strategic-design",
+      "path": ".agents/skills/yss-prototype-stage/assets/vue-business-patterns/ListDetail.vue",
+      "sha256": "6e419db5c71060abaebbfa313bb5d3ddeaa24cbd966c19742b5f3b2d5f7bbfb7"
+    },
+    {
+      "cli": "create-yss-strategic-design",
+      "path": ".agents/skills/yss-prototype-stage/assets/vue-business-patterns/Conflict.vue",
+      "sha256": "71b5625e3749508a2e3615b6dc256583da5a80c9a73223700992cd8ce1d7577a"
+    },
+    {
+      "cli": "create-yss-strategic-design",
+      "path": ".agents/skills/yss-prototype-stage/assets/shadcn-vue-authoring/theme.css",
+      "sha256": "62f67ae55039aed5844db9ba6baa0056885369240b0bfebe150f9ecbc7b38dd7"
+    },
+    {
+      "cli": "create-yss-harness-frontend",
+      "path": ".agents/skills/yss-prototype-stage/scripts/build-shadcn-vue-prototype.mjs",
+      "sha256": "9a8695ae5d172525b59c9d05aa637ecd755e5a12a40ec78c0da2659dfffd1377"
+    },
+    {
+      "cli": "create-yss-harness-frontend",
+      "path": ".agents/skills/yss-prototype-stage/assets/shadcn-vue-authoring/ui/select/Select.vue",
+      "sha256": "0a100251a7ad449679f49b078f613492940b05de92f744e8ca072fa6acadf8fa"
+    },
+    {
+      "cli": "create-yss-harness-frontend",
+      "path": ".agents/skills/yss-prototype-stage/assets/shadcn-vue-authoring/registry-manifest.json",
+      "sha256": "d5b5a5ec68ea50139eda2951666038ff34e2aa8503ef94da44c6ccbb24bd4864"
+    },
+    {
+      "cli": "create-yss-harness-frontend",
+      "path": ".agents/skills/yss-prototype-stage/assets/vue-business-patterns/ListDetail.vue",
+      "sha256": "6e419db5c71060abaebbfa313bb5d3ddeaa24cbd966c19742b5f3b2d5f7bbfb7"
+    },
+    {
+      "cli": "create-yss-harness-frontend",
+      "path": ".agents/skills/yss-prototype-stage/assets/vue-business-patterns/Conflict.vue",
+      "sha256": "71b5625e3749508a2e3615b6dc256583da5a80c9a73223700992cd8ce1d7577a"
+    },
+    {
+      "cli": "create-yss-harness-frontend",
+      "path": ".agents/skills/yss-prototype-stage/assets/shadcn-vue-authoring/theme.css",
+      "sha256": "62f67ae55039aed5844db9ba6baa0056885369240b0bfebe150f9ecbc7b38dd7"
+    }
+  ],
+  "retired_react_entries": "absent in all three current snapshots"
+}

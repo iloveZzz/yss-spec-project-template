@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "kind": "maintenance-research-verification",
+  "inputs": {
+    "brief": {
+      "ref": ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/skills-research-brief.md",
+      "digest": "sha256:6506cfb884aa3c0731ea3c197213c10f5554e0b6dd2254e4ddddd727f14527d9"
+    },
+    "evidence": {
+      "ref": ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/skills-evidence.yaml",
+      "digest": "sha256:a25c580dd10e0c30b161095e49ed7f28c2ebaced96bca062ea07696f562f59b9"
+    },
+    "validator": {
+      "ref": ".agents/skills/yss-research/scripts/validate-research-package.mjs",
+      "digest": "sha256:5e4e437d54e67cce9dd380974744605bd149c71939c5f01e3ea4719c79911d0f"
+    }
+  },
+  "command": [
+    "node",
+    ".agents/skills/yss-research/scripts/validate-research-package.mjs",
+    ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/skills-research-brief.md",
+    ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/skills-evidence.yaml"
+  ],
+  "started_at": "2026-09-28T15:18:19.742Z",
+  "completed_at": "2026-09-28T15:18:19.774Z",
+  "exit_code": 0,
+  "stdout": {
+    "ref": ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/verification/stdout.log",
+    "digest": "sha256:9fbaad56263f46f2d0d8eda9fbc1dc47298156b3aa2597de7bcf5035d1dedc79"
+  },
+  "stderr": {
+    "ref": ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/verification/stderr.log",
+    "digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

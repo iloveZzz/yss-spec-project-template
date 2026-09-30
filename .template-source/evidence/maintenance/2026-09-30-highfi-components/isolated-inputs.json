@@ -1,0 +1,603 @@
+{
+  "source_root": "/Users/zhudaoming/Projects/yss-spec-project-template",
+  "validation_root": "/Users/zhudaoming/.codex/worktrees/prototype-design-verification/yss-spec-project-template",
+  "scoped_source_files": [
+    {
+      "ref": ".agents/skills/.strategic-design-skills-manifest.json",
+      "sha256": "4ec28eecc521965f1968ecd45b927336eac8ec0517f3505340265223e10c595e"
+    },
+    {
+      "ref": ".agents/skills/prototype-review/SKILL.md",
+      "sha256": "c4dd1ae929ba6dab84ff7e2cfcbd3ab038c0a3f9be17d786eacb42bc96a12b7a"
+    },
+    {
+      "ref": ".agents/skills/prototype-review/references/component-qa.md",
+      "sha256": "c7bf5b0b1ff05e3828394848b93da4a7866956e0f2d564bf31e4b009ae6ef8ce"
+    },
+    {
+      "ref": ".agents/skills/yss-design-system/SKILL.md",
+      "sha256": "cc25b94d0d2126891ea2ad2e4a5baa48f42b9a7612044fc65a90ebe8fed2e957"
+    },
+    {
+      "ref": ".agents/skills/yss-design-system/references/page-composition.md",
+      "sha256": "18a2bd5beb08791d707562429304cd6d57bd4b4280b08598c8b0b8bf0d858ce9"
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/SKILL.md",
+      "sha256": "3ff2b4eeda865e1e0dca254f876039d6cb5df93b17caeeb8a6ee6fb2bb95f3b9"
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/assets/business-patterns/analysis.tsx",
+      "sha256": "f8aa0415870ab7f0920176ba8af1e69b7bb54caf30a57542e1153def4f3c0d51"
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/assets/business-patterns/approval.tsx",
+      "sha256": "4e52bb58d9a9f8407a291b8cd7a681d83c54637a0ad874ba6526127e379f19af"
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/assets/business-patterns/component-states.config.json",
+      "sha256": "3f2e07658e8ee9f18b0fd6d5d7d9faa3ccada8016084b90b67e2ba3246aabe68"
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/assets/business-patterns/component-states.tsx",
+      "sha256": "09345ba452c8075169985646e65b214038c3534d070e2345c978c81177c0e317"
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/assets/business-patterns/conflict.tsx",
+      "sha256": "4802fd7c51900f5346895360fe3d819289882fbf03d4b3eab7eff3bbe499eaf2"
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/assets/business-patterns/list-detail.tsx",
+      "sha256": "322eac815c8669988cfc8fac57f9855f14f836f815a3007760ad753837afa0b3"
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/assets/business-patterns/multi-step.tsx",
+      "sha256": "cee4e74f37c8b678beaefb865f485288817192068dfdbcdccab467bf973e5dd8"
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/assets/business-patterns/patterns.css",
+      "sha256": "901a9af3ef11a9cfd54c3f03517eeb2864e9ea25a4fb0430591e3c4113f2556b"
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/assets/business-patterns/shared.tsx",
+      "sha256": "50ea32e80c10d1262e2d23591e8df92d07532f5bca6e99f97ab36159f4d9dde5"
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/assets/shadcn-authoring/registry-manifest.json",
+      "sha256": "369217961048eef6cd6d6ee188fd9f9244e49cdb34804ab7660726c4cbd82aa9"
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/assets/shadcn-authoring/theme.css",
+      "sha256": "a60cba9503ff30b22c0538bec00229eca57fa52df7dec6928056a3c126083106"
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/assets/shadcn-authoring/ui/alert.tsx",
+      "sha256": "d03dcae5cdb63c381c1144ca9a0c49ba0e46466967d7deb94662034042acb034"
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/assets/shadcn-authoring/ui/breadcrumb.tsx",
+      "sha256": "c75fcd3d9e8470188bc0dd4b27a2b26fff3ad42b9c9c534a953dc090ae2cba33"
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/assets/shadcn-authoring/ui/card.tsx",
+      "sha256": "ef8305b12c3112dab42a4708b41b1ebcc042fa5ab4c20f039da8d45b09ed5059"
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/assets/shadcn-authoring/ui/dropdown-menu.tsx",
+      "sha256": "d954efb735f13734751207ad22cb0cddd7f6ec53c59d16675d103dae08cb61fb"
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/assets/shadcn-authoring/ui/empty.tsx",
+      "sha256": "54f529ccf72c18c4b5abd5586a7cf1f2a4c8d207aac366029d66ed095cb2965d"
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/assets/shadcn-authoring/ui/field.tsx",
+      "sha256": "4a4d17fcb933513f637f9f7e2daf5d8348f7de086b29738337dec7e6dd1819a0"
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/assets/shadcn-authoring/ui/input-group.tsx",
+      "sha256": "e379899ac50d6cabc9d9eb1668f265176951c62b1fe83a6f23ee97fe8074d526"
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/assets/shadcn-authoring/ui/pagination.tsx",
+      "sha256": "224843c4f509e8b8c9848adefa43d1491846f0851138fa9b51cc6ba1319c5653"
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/assets/shadcn-authoring/ui/separator.tsx",
+      "sha256": "ad7d5403fe337160e41dbf04147896e448ae3a747b8d06660d627d74d60021bc"
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/assets/shadcn-authoring/ui/sheet.tsx",
+      "sha256": "ea473d38a26a9b0b879e5a13139899ad45e9782e896b3fa205c7763a6c506876"
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/assets/shadcn-authoring/ui/skeleton.tsx",
+      "sha256": "f51ce0fcd31e5c31437382e80ea0af94b4fc3d64221d27091d36824546780a43"
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/assets/shadcn-authoring/ui/spinner.tsx",
+      "sha256": "5d040fc49cb54c0296070644053b5a8840ddbfca89a430546bf308df3fffad65"
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/assets/shadcn-authoring/ui/tooltip.tsx",
+      "sha256": "611e4305879b2773eafe76bf3c5caa69d8e47367fd97887a71634a27828f4433"
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/references/business-patterns.md",
+      "sha256": "ef8e77d6f5e5207465de1b8334f18667f181d7e1010fea27373c5c8aa22a76be"
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/references/component-recipes.md",
+      "sha256": "83131e15d474e3acb76de87fccbbe8acc8ed3738290af62823ce64ac9cf2b751"
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/references/shadcn-integration.md",
+      "sha256": "3247e650a77197082ae87b51f5026e3038000f2bb60562aeb57ed9b4c8850203"
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/scripts/export-business-patterns.mjs",
+      "sha256": "3c0f3290683d714db4265338bd764f731dc608d3195ae2384167686a03be5ecf"
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/tests/compact-theme-browser.mjs",
+      "sha256": "19dc137228b66f9d7ee6a273708467098af3d3b5e7c387b7548d1234912d5c5c"
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/tests/components-browser.mjs",
+      "sha256": "c53e360694915d93ad79dd8391c07ac757bac85c9849c4d63030c23c86923067"
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/tests/shadcn-source.test.mjs",
+      "sha256": "e629801be0c14e63dab59b3c81faccc8b728bbb309064b988a09c7a958a56710"
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/tests/zoom-browser.mjs",
+      "sha256": "d47cf30acd909f8f04ee218c411a3a7dbe9d5ae5e9d0c82aef8dc46b145d72fd"
+    },
+    {
+      "ref": ".template-source/design/design-system-sync.yaml",
+      "sha256": "67ce72acd847d6557d3e96e25d06ec7d5105a14601e468e7623d4f4ef6a65bf4"
+    },
+    {
+      "ref": ".template-source/design/preview-dark.html",
+      "sha256": "6cf734b8c1072f4639e061b8ca417097cb7f66ae8582dcea759a6412ae05f986"
+    },
+    {
+      "ref": ".template-source/design/preview.css",
+      "sha256": "865713b4cc045e33c82a3b92b12b1eef93cf313fc23a6728d354c44aa05c1953"
+    },
+    {
+      "ref": ".template-source/design/preview.html",
+      "sha256": "497f10526effdb579f1d40bd97b22de673c78b512e33d5be4e09e5f7f07c3d08"
+    },
+    {
+      "ref": ".template-source/design/preview.js",
+      "sha256": "f913183b5030016c9f3e003a82441ed03afa0b1e07c25341ed7d68cd5b5d3aa2"
+    },
+    {
+      "ref": ".template-source/profile-skill-sync.json",
+      "sha256": "e4c897227fb83875c63c1f39e7c9f4551f7d1dd519aa6c5b4b695fd2c52f01f3"
+    },
+    {
+      "ref": ".template-source/tooling/node/scripts/design-md.mjs",
+      "sha256": "dbac2e909ceb18b910dddabfdfa930c78b23991cccb8e56c7f35b61960ea249a"
+    },
+    {
+      "ref": ".template-source/tooling/node/test/design-preview-browser.mjs",
+      "sha256": "283c0a27284fc2e5c6bc7e865205da6a73d59b917c6c4572c6e2e20ff192b0d7"
+    },
+    {
+      "ref": ".template-spec/design/README.md",
+      "sha256": "c697d823695dbb49577813522dea791430032db22a8893e17199f3da6623c8b8"
+    },
+    {
+      "ref": ".template-spec/design/design.md",
+      "sha256": "89a9a1f30b9a1ecbd66008c386961e664c8f234c8bc010b9cb9ca2f3c282aac1"
+    },
+    {
+      "ref": ".template-spec/design/templates/prototype-evidence-template.yaml",
+      "sha256": "496d1d3e510d0bf5df1d9158bf94608d06dd81a54da9b7b123e183c054136873"
+    },
+    {
+      "ref": ".template-spec/design/templates/prototype-review-checklist.md",
+      "sha256": "790884f1edc158d1453fe0bb95009599bc2da050ec17a47d8c6ca6b34d93530e"
+    },
+    {
+      "ref": ".template-spec/design/tokens/.design-md-projection.json",
+      "sha256": "450bc597789ffceddb23d53d04f932b1f831c37c8f875a8aace5bf36aa5f25a3"
+    },
+    {
+      "ref": ".template-spec/design/tokens/variables.css",
+      "sha256": "f8619314678bc3bb13d00e5457df2f1d2379c3b59b1cb1ed7fae2fac9aa86b1e"
+    },
+    {
+      "ref": "DESIGN.md",
+      "sha256": "418a1dde90e1b0e5c8551ea7e78126ceb738654b542185355d9d08b0dcbe73f4"
+    },
+    {
+      "ref": "submodules/yss-harness-design-agent/.agents/skills/prototype-review/SKILL.md",
+      "sha256": "246f0ddd1d1c49276fd40caf71ea6fd2b115fd8e836444acdf011ce2f58c68a3"
+    },
+    {
+      "ref": "submodules/yss-harness-design-agent/.agents/skills/prototype-review/references/component-qa.md",
+      "sha256": "c7bf5b0b1ff05e3828394848b93da4a7866956e0f2d564bf31e4b009ae6ef8ce"
+    },
+    {
+      "ref": "submodules/yss-harness-design-agent/.agents/skills/yss-design-system/SKILL.md",
+      "sha256": "e27fe28418271fb5b85d7db33053748958ee09f1b59e29dbf30ceb9fa93a6a1d"
+    },
+    {
+      "ref": "submodules/yss-harness-design-agent/.agents/skills/yss-design-system/references/page-composition.md",
+      "sha256": "18a2bd5beb08791d707562429304cd6d57bd4b4280b08598c8b0b8bf0d858ce9"
+    },
+    {
+      "ref": "submodules/yss-harness-design-agent/.agents/skills/yss-prototype-stage/SKILL.md",
+      "sha256": "df3958fae8cb7c9fbc2f5f2f0722d32ccf3b48503022174d48c7b365dc5f9504"
+    },
+    {
+      "ref": "submodules/yss-harness-design-agent/.agents/skills/yss-prototype-stage/assets/business-patterns/analysis.tsx",
+      "sha256": "f8aa0415870ab7f0920176ba8af1e69b7bb54caf30a57542e1153def4f3c0d51"
+    },
+    {
+      "ref": "submodules/yss-harness-design-agent/.agents/skills/yss-prototype-stage/assets/business-patterns/approval.tsx",
+      "sha256": "4e52bb58d9a9f8407a291b8cd7a681d83c54637a0ad874ba6526127e379f19af"
+    },
+    {
+      "ref": "submodules/yss-harness-design-agent/.agents/skills/yss-prototype-stage/assets/business-patterns/component-states.config.json",
+      "sha256": "3f2e07658e8ee9f18b0fd6d5d7d9faa3ccada8016084b90b67e2ba3246aabe68"
+    },
+    {
+      "ref": "submodules/yss-harness-design-agent/.agents/skills/yss-prototype-stage/assets/business-patterns/component-states.tsx",
+      "sha256": "09345ba452c8075169985646e65b214038c3534d070e2345c978c81177c0e317"
+    },
+    {
+      "ref": "submodules/yss-harness-design-agent/.agents/skills/yss-prototype-stage/assets/business-patterns/conflict.tsx",
+      "sha256": "4802fd7c51900f5346895360fe3d819289882fbf03d4b3eab7eff3bbe499eaf2"
+    },
+    {
+      "ref": "submodules/yss-harness-design-agent/.agents/skills/yss-prototype-stage/assets/business-patterns/list-detail.tsx",
+      "sha256": "322eac815c8669988cfc8fac57f9855f14f836f815a3007760ad753837afa0b3"
+    },
+    {
+      "ref": "submodules/yss-harness-design-agent/.agents/skills/yss-prototype-stage/assets/business-patterns/multi-step.tsx",
+      "sha256": "cee4e74f37c8b678beaefb865f485288817192068dfdbcdccab467bf973e5dd8"
+    },
+    {
+      "ref": "submodules/yss-harness-design-agent/.agents/skills/yss-prototype-stage/assets/business-patterns/patterns.css",
+      "sha256": "901a9af3ef11a9cfd54c3f03517eeb2864e9ea25a4fb0430591e3c4113f2556b"
+    },
+    {
+      "ref": "submodules/yss-harness-design-agent/.agents/skills/yss-prototype-stage/assets/business-patterns/shared.tsx",
+      "sha256": "50ea32e80c10d1262e2d23591e8df92d07532f5bca6e99f97ab36159f4d9dde5"
+    },
+    {
+      "ref": "submodules/yss-harness-design-agent/.agents/skills/yss-prototype-stage/assets/shadcn-authoring/registry-manifest.json",
+      "sha256": "369217961048eef6cd6d6ee188fd9f9244e49cdb34804ab7660726c4cbd82aa9"
+    },
+    {
+      "ref": "submodules/yss-harness-design-agent/.agents/skills/yss-prototype-stage/assets/shadcn-authoring/theme.css",
+      "sha256": "a60cba9503ff30b22c0538bec00229eca57fa52df7dec6928056a3c126083106"
+    },
+    {
+      "ref": "submodules/yss-harness-design-agent/.agents/skills/yss-prototype-stage/assets/shadcn-authoring/ui/alert.tsx",
+      "sha256": "d03dcae5cdb63c381c1144ca9a0c49ba0e46466967d7deb94662034042acb034"
+    },
+    {
+      "ref": "submodules/yss-harness-design-agent/.agents/skills/yss-prototype-stage/assets/shadcn-authoring/ui/breadcrumb.tsx",
+      "sha256": "c75fcd3d9e8470188bc0dd4b27a2b26fff3ad42b9c9c534a953dc090ae2cba33"
+    },
+    {
+      "ref": "submodules/yss-harness-design-agent/.agents/skills/yss-prototype-stage/assets/shadcn-authoring/ui/card.tsx",
+      "sha256": "ef8305b12c3112dab42a4708b41b1ebcc042fa5ab4c20f039da8d45b09ed5059"
+    },
+    {
+      "ref": "submodules/yss-harness-design-agent/.agents/skills/yss-prototype-stage/assets/shadcn-authoring/ui/dropdown-menu.tsx",
+      "sha256": "d954efb735f13734751207ad22cb0cddd7f6ec53c59d16675d103dae08cb61fb"
+    },
+    {
+      "ref": "submodules/yss-harness-design-agent/.agents/skills/yss-prototype-stage/assets/shadcn-authoring/ui/empty.tsx",
+      "sha256": "54f529ccf72c18c4b5abd5586a7cf1f2a4c8d207aac366029d66ed095cb2965d"
+    },
+    {
+      "ref": "submodules/yss-harness-design-agent/.agents/skills/yss-prototype-stage/assets/shadcn-authoring/ui/field.tsx",
+      "sha256": "4a4d17fcb933513f637f9f7e2daf5d8348f7de086b29738337dec7e6dd1819a0"
+    },
+    {
+      "ref": "submodules/yss-harness-design-agent/.agents/skills/yss-prototype-stage/assets/shadcn-authoring/ui/input-group.tsx",
+      "sha256": "e379899ac50d6cabc9d9eb1668f265176951c62b1fe83a6f23ee97fe8074d526"
+    },
+    {
+      "ref": "submodules/yss-harness-design-agent/.agents/skills/yss-prototype-stage/assets/shadcn-authoring/ui/pagination.tsx",
+      "sha256": "224843c4f509e8b8c9848adefa43d1491846f0851138fa9b51cc6ba1319c5653"
+    },
+    {
+      "ref": "submodules/yss-harness-design-agent/.agents/skills/yss-prototype-stage/assets/shadcn-authoring/ui/separator.tsx",
+      "sha256": "ad7d5403fe337160e41dbf04147896e448ae3a747b8d06660d627d74d60021bc"
+    },
+    {
+      "ref": "submodules/yss-harness-design-agent/.agents/skills/yss-prototype-stage/assets/shadcn-authoring/ui/sheet.tsx",
+      "sha256": "ea473d38a26a9b0b879e5a13139899ad45e9782e896b3fa205c7763a6c506876"
+    },
+    {
+      "ref": "submodules/yss-harness-design-agent/.agents/skills/yss-prototype-stage/assets/shadcn-authoring/ui/skeleton.tsx",
+      "sha256": "f51ce0fcd31e5c31437382e80ea0af94b4fc3d64221d27091d36824546780a43"
+    },
+    {
+      "ref": "submodules/yss-harness-design-agent/.agents/skills/yss-prototype-stage/assets/shadcn-authoring/ui/spinner.tsx",
+      "sha256": "5d040fc49cb54c0296070644053b5a8840ddbfca89a430546bf308df3fffad65"
+    },
+    {
+      "ref": "submodules/yss-harness-design-agent/.agents/skills/yss-prototype-stage/assets/shadcn-authoring/ui/tooltip.tsx",
+      "sha256": "611e4305879b2773eafe76bf3c5caa69d8e47367fd97887a71634a27828f4433"
+    },
+    {
+      "ref": "submodules/yss-harness-design-agent/.agents/skills/yss-prototype-stage/references/business-patterns.md",
+      "sha256": "ef8e77d6f5e5207465de1b8334f18667f181d7e1010fea27373c5c8aa22a76be"
+    },
+    {
+      "ref": "submodules/yss-harness-design-agent/.agents/skills/yss-prototype-stage/references/component-recipes.md",
+      "sha256": "83131e15d474e3acb76de87fccbbe8acc8ed3738290af62823ce64ac9cf2b751"
+    },
+    {
+      "ref": "submodules/yss-harness-design-agent/.agents/skills/yss-prototype-stage/references/shadcn-integration.md",
+      "sha256": "3247e650a77197082ae87b51f5026e3038000f2bb60562aeb57ed9b4c8850203"
+    },
+    {
+      "ref": "submodules/yss-harness-design-agent/.agents/skills/yss-prototype-stage/scripts/export-business-patterns.mjs",
+      "sha256": "3c0f3290683d714db4265338bd764f731dc608d3195ae2384167686a03be5ecf"
+    },
+    {
+      "ref": "submodules/yss-harness-design-agent/.agents/skills/yss-prototype-stage/tests/compact-theme-browser.mjs",
+      "sha256": "19dc137228b66f9d7ee6a273708467098af3d3b5e7c387b7548d1234912d5c5c"
+    },
+    {
+      "ref": "submodules/yss-harness-design-agent/.agents/skills/yss-prototype-stage/tests/components-browser.mjs",
+      "sha256": "c53e360694915d93ad79dd8391c07ac757bac85c9849c4d63030c23c86923067"
+    },
+    {
+      "ref": "submodules/yss-harness-design-agent/.agents/skills/yss-prototype-stage/tests/shadcn-source.test.mjs",
+      "sha256": "e629801be0c14e63dab59b3c81faccc8b728bbb309064b988a09c7a958a56710"
+    },
+    {
+      "ref": "submodules/yss-harness-design-agent/.agents/skills/yss-prototype-stage/tests/zoom-browser.mjs",
+      "sha256": "d47cf30acd909f8f04ee218c411a3a7dbe9d5ae5e9d0c82aef8dc46b145d72fd"
+    },
+    {
+      "ref": "submodules/yss-harness-design-agent/.template-source/design/design-system-sync.yaml",
+      "sha256": "67ce72acd847d6557d3e96e25d06ec7d5105a14601e468e7623d4f4ef6a65bf4"
+    },
+    {
+      "ref": "submodules/yss-harness-design-agent/.template-source/design/preview-dark.html",
+      "sha256": "6cf734b8c1072f4639e061b8ca417097cb7f66ae8582dcea759a6412ae05f986"
+    },
+    {
+      "ref": "submodules/yss-harness-design-agent/.template-source/design/preview.css",
+      "sha256": "865713b4cc045e33c82a3b92b12b1eef93cf313fc23a6728d354c44aa05c1953"
+    },
+    {
+      "ref": "submodules/yss-harness-design-agent/.template-source/design/preview.html",
+      "sha256": "497f10526effdb579f1d40bd97b22de673c78b512e33d5be4e09e5f7f07c3d08"
+    },
+    {
+      "ref": "submodules/yss-harness-design-agent/.template-source/tooling/node/scripts/design-md.mjs",
+      "sha256": "dbac2e909ceb18b910dddabfdfa930c78b23991cccb8e56c7f35b61960ea249a"
+    },
+    {
+      "ref": "submodules/yss-harness-design-agent/.template-spec/design/README.md",
+      "sha256": "c697d823695dbb49577813522dea791430032db22a8893e17199f3da6623c8b8"
+    },
+    {
+      "ref": "submodules/yss-harness-design-agent/.template-spec/design/design.md",
+      "sha256": "89a9a1f30b9a1ecbd66008c386961e664c8f234c8bc010b9cb9ca2f3c282aac1"
+    },
+    {
+      "ref": "submodules/yss-harness-design-agent/.template-spec/design/templates/prototype-evidence-template.yaml",
+      "sha256": "496d1d3e510d0bf5df1d9158bf94608d06dd81a54da9b7b123e183c054136873"
+    },
+    {
+      "ref": "submodules/yss-harness-design-agent/.template-spec/design/tokens/.design-md-projection.json",
+      "sha256": "450bc597789ffceddb23d53d04f932b1f831c37c8f875a8aace5bf36aa5f25a3"
+    },
+    {
+      "ref": "submodules/yss-harness-design-agent/.template-spec/design/tokens/variables.css",
+      "sha256": "f8619314678bc3bb13d00e5457df2f1d2379c3b59b1cb1ed7fae2fac9aa86b1e"
+    },
+    {
+      "ref": "submodules/yss-harness-design-agent/DESIGN.md",
+      "sha256": "418a1dde90e1b0e5c8551ea7e78126ceb738654b542185355d9d08b0dcbe73f4"
+    },
+    {
+      "ref": "submodules/yss-harness-frontend-agent/.agents/skills/prototype-review/SKILL.md",
+      "sha256": "59abcc54a9bf633907ddef3fe51a9ce25a50fc22170e180e0e851c6dd7a83d8b"
+    },
+    {
+      "ref": "submodules/yss-harness-frontend-agent/.agents/skills/prototype-review/references/component-qa.md",
+      "sha256": "c7bf5b0b1ff05e3828394848b93da4a7866956e0f2d564bf31e4b009ae6ef8ce"
+    },
+    {
+      "ref": "submodules/yss-harness-frontend-agent/.agents/skills/yss-design-system/SKILL.md",
+      "sha256": "cc25b94d0d2126891ea2ad2e4a5baa48f42b9a7612044fc65a90ebe8fed2e957"
+    },
+    {
+      "ref": "submodules/yss-harness-frontend-agent/.agents/skills/yss-design-system/references/page-composition.md",
+      "sha256": "18a2bd5beb08791d707562429304cd6d57bd4b4280b08598c8b0b8bf0d858ce9"
+    },
+    {
+      "ref": "submodules/yss-harness-frontend-agent/.agents/skills/yss-prototype-stage/SKILL.md",
+      "sha256": "3ff2b4eeda865e1e0dca254f876039d6cb5df93b17caeeb8a6ee6fb2bb95f3b9"
+    },
+    {
+      "ref": "submodules/yss-harness-frontend-agent/.agents/skills/yss-prototype-stage/assets/business-patterns/analysis.tsx",
+      "sha256": "f8aa0415870ab7f0920176ba8af1e69b7bb54caf30a57542e1153def4f3c0d51"
+    },
+    {
+      "ref": "submodules/yss-harness-frontend-agent/.agents/skills/yss-prototype-stage/assets/business-patterns/approval.tsx",
+      "sha256": "4e52bb58d9a9f8407a291b8cd7a681d83c54637a0ad874ba6526127e379f19af"
+    },
+    {
+      "ref": "submodules/yss-harness-frontend-agent/.agents/skills/yss-prototype-stage/assets/business-patterns/component-states.config.json",
+      "sha256": "3f2e07658e8ee9f18b0fd6d5d7d9faa3ccada8016084b90b67e2ba3246aabe68"
+    },
+    {
+      "ref": "submodules/yss-harness-frontend-agent/.agents/skills/yss-prototype-stage/assets/business-patterns/component-states.tsx",
+      "sha256": "09345ba452c8075169985646e65b214038c3534d070e2345c978c81177c0e317"
+    },
+    {
+      "ref": "submodules/yss-harness-frontend-agent/.agents/skills/yss-prototype-stage/assets/business-patterns/conflict.tsx",
+      "sha256": "4802fd7c51900f5346895360fe3d819289882fbf03d4b3eab7eff3bbe499eaf2"
+    },
+    {
+      "ref": "submodules/yss-harness-frontend-agent/.agents/skills/yss-prototype-stage/assets/business-patterns/list-detail.tsx",
+      "sha256": "322eac815c8669988cfc8fac57f9855f14f836f815a3007760ad753837afa0b3"
+    },
+    {
+      "ref": "submodules/yss-harness-frontend-agent/.agents/skills/yss-prototype-stage/assets/business-patterns/multi-step.tsx",
+      "sha256": "cee4e74f37c8b678beaefb865f485288817192068dfdbcdccab467bf973e5dd8"
+    },
+    {
+      "ref": "submodules/yss-harness-frontend-agent/.agents/skills/yss-prototype-stage/assets/business-patterns/patterns.css",
+      "sha256": "901a9af3ef11a9cfd54c3f03517eeb2864e9ea25a4fb0430591e3c4113f2556b"
+    },
+    {
+      "ref": "submodules/yss-harness-frontend-agent/.agents/skills/yss-prototype-stage/assets/business-patterns/shared.tsx",
+      "sha256": "50ea32e80c10d1262e2d23591e8df92d07532f5bca6e99f97ab36159f4d9dde5"
+    },
+    {
+      "ref": "submodules/yss-harness-frontend-agent/.agents/skills/yss-prototype-stage/assets/shadcn-authoring/registry-manifest.json",
+      "sha256": "369217961048eef6cd6d6ee188fd9f9244e49cdb34804ab7660726c4cbd82aa9"
+    },
+    {
+      "ref": "submodules/yss-harness-frontend-agent/.agents/skills/yss-prototype-stage/assets/shadcn-authoring/theme.css",
+      "sha256": "a60cba9503ff30b22c0538bec00229eca57fa52df7dec6928056a3c126083106"
+    },
+    {
+      "ref": "submodules/yss-harness-frontend-agent/.agents/skills/yss-prototype-stage/assets/shadcn-authoring/ui/alert.tsx",
+      "sha256": "d03dcae5cdb63c381c1144ca9a0c49ba0e46466967d7deb94662034042acb034"
+    },
+    {
+      "ref": "submodules/yss-harness-frontend-agent/.agents/skills/yss-prototype-stage/assets/shadcn-authoring/ui/breadcrumb.tsx",
+      "sha256": "c75fcd3d9e8470188bc0dd4b27a2b26fff3ad42b9c9c534a953dc090ae2cba33"
+    },
+    {
+      "ref": "submodules/yss-harness-frontend-agent/.agents/skills/yss-prototype-stage/assets/shadcn-authoring/ui/card.tsx",
+      "sha256": "ef8305b12c3112dab42a4708b41b1ebcc042fa5ab4c20f039da8d45b09ed5059"
+    },
+    {
+      "ref": "submodules/yss-harness-frontend-agent/.agents/skills/yss-prototype-stage/assets/shadcn-authoring/ui/dropdown-menu.tsx",
+      "sha256": "d954efb735f13734751207ad22cb0cddd7f6ec53c59d16675d103dae08cb61fb"
+    },
+    {
+      "ref": "submodules/yss-harness-frontend-agent/.agents/skills/yss-prototype-stage/assets/shadcn-authoring/ui/empty.tsx",
+      "sha256": "54f529ccf72c18c4b5abd5586a7cf1f2a4c8d207aac366029d66ed095cb2965d"
+    },
+    {
+      "ref": "submodules/yss-harness-frontend-agent/.agents/skills/yss-prototype-stage/assets/shadcn-authoring/ui/field.tsx",
+      "sha256": "4a4d17fcb933513f637f9f7e2daf5d8348f7de086b29738337dec7e6dd1819a0"
+    },
+    {
+      "ref": "submodules/yss-harness-frontend-agent/.agents/skills/yss-prototype-stage/assets/shadcn-authoring/ui/input-group.tsx",
+      "sha256": "e379899ac50d6cabc9d9eb1668f265176951c62b1fe83a6f23ee97fe8074d526"
+    },
+    {
+      "ref": "submodules/yss-harness-frontend-agent/.agents/skills/yss-prototype-stage/assets/shadcn-authoring/ui/pagination.tsx",
+      "sha256": "224843c4f509e8b8c9848adefa43d1491846f0851138fa9b51cc6ba1319c5653"
+    },
+    {
+      "ref": "submodules/yss-harness-frontend-agent/.agents/skills/yss-prototype-stage/assets/shadcn-authoring/ui/separator.tsx",
+      "sha256": "ad7d5403fe337160e41dbf04147896e448ae3a747b8d06660d627d74d60021bc"
+    },
+    {
+      "ref": "submodules/yss-harness-frontend-agent/.agents/skills/yss-prototype-stage/assets/shadcn-authoring/ui/sheet.tsx",
+      "sha256": "ea473d38a26a9b0b879e5a13139899ad45e9782e896b3fa205c7763a6c506876"
+    },
+    {
+      "ref": "submodules/yss-harness-frontend-agent/.agents/skills/yss-prototype-stage/assets/shadcn-authoring/ui/skeleton.tsx",
+      "sha256": "f51ce0fcd31e5c31437382e80ea0af94b4fc3d64221d27091d36824546780a43"
+    },
+    {
+      "ref": "submodules/yss-harness-frontend-agent/.agents/skills/yss-prototype-stage/assets/shadcn-authoring/ui/spinner.tsx",
+      "sha256": "5d040fc49cb54c0296070644053b5a8840ddbfca89a430546bf308df3fffad65"
+    },
+    {
+      "ref": "submodules/yss-harness-frontend-agent/.agents/skills/yss-prototype-stage/assets/shadcn-authoring/ui/tooltip.tsx",
+      "sha256": "611e4305879b2773eafe76bf3c5caa69d8e47367fd97887a71634a27828f4433"
+    },
+    {
+      "ref": "submodules/yss-harness-frontend-agent/.agents/skills/yss-prototype-stage/references/business-patterns.md",
+      "sha256": "ef8e77d6f5e5207465de1b8334f18667f181d7e1010fea27373c5c8aa22a76be"
+    },
+    {
+      "ref": "submodules/yss-harness-frontend-agent/.agents/skills/yss-prototype-stage/references/component-recipes.md",
+      "sha256": "83131e15d474e3acb76de87fccbbe8acc8ed3738290af62823ce64ac9cf2b751"
+    },
+    {
+      "ref": "submodules/yss-harness-frontend-agent/.agents/skills/yss-prototype-stage/references/shadcn-integration.md",
+      "sha256": "3247e650a77197082ae87b51f5026e3038000f2bb60562aeb57ed9b4c8850203"
+    },
+    {
+      "ref": "submodules/yss-harness-frontend-agent/.agents/skills/yss-prototype-stage/scripts/export-business-patterns.mjs",
+      "sha256": "3c0f3290683d714db4265338bd764f731dc608d3195ae2384167686a03be5ecf"
+    },
+    {
+      "ref": "submodules/yss-harness-frontend-agent/.agents/skills/yss-prototype-stage/tests/compact-theme-browser.mjs",
+      "sha256": "19dc137228b66f9d7ee6a273708467098af3d3b5e7c387b7548d1234912d5c5c"
+    },
+    {
+      "ref": "submodules/yss-harness-frontend-agent/.agents/skills/yss-prototype-stage/tests/components-browser.mjs",
+      "sha256": "c53e360694915d93ad79dd8391c07ac757bac85c9849c4d63030c23c86923067"
+    },
+    {
+      "ref": "submodules/yss-harness-frontend-agent/.agents/skills/yss-prototype-stage/tests/shadcn-source.test.mjs",
+      "sha256": "e629801be0c14e63dab59b3c81faccc8b728bbb309064b988a09c7a958a56710"
+    },
+    {
+      "ref": "submodules/yss-harness-frontend-agent/.agents/skills/yss-prototype-stage/tests/zoom-browser.mjs",
+      "sha256": "d47cf30acd909f8f04ee218c411a3a7dbe9d5ae5e9d0c82aef8dc46b145d72fd"
+    },
+    {
+      "ref": "submodules/yss-harness-frontend-agent/.template-source/design/design-system-sync.yaml",
+      "sha256": "67ce72acd847d6557d3e96e25d06ec7d5105a14601e468e7623d4f4ef6a65bf4"
+    },
+    {
+      "ref": "submodules/yss-harness-frontend-agent/.template-source/design/preview-dark.html",
+      "sha256": "6cf734b8c1072f4639e061b8ca417097cb7f66ae8582dcea759a6412ae05f986"
+    },
+    {
+      "ref": "submodules/yss-harness-frontend-agent/.template-source/design/preview.css",
+      "sha256": "865713b4cc045e33c82a3b92b12b1eef93cf313fc23a6728d354c44aa05c1953"
+    },
+    {
+      "ref": "submodules/yss-harness-frontend-agent/.template-source/design/preview.html",
+      "sha256": "497f10526effdb579f1d40bd97b22de673c78b512e33d5be4e09e5f7f07c3d08"
+    },
+    {
+      "ref": "submodules/yss-harness-frontend-agent/.template-source/tooling/node/scripts/design-md.mjs",
+      "sha256": "dbac2e909ceb18b910dddabfdfa930c78b23991cccb8e56c7f35b61960ea249a"
+    },
+    {
+      "ref": "submodules/yss-harness-frontend-agent/.template-spec/design/README.md",
+      "sha256": "c697d823695dbb49577813522dea791430032db22a8893e17199f3da6623c8b8"
+    },
+    {
+      "ref": "submodules/yss-harness-frontend-agent/.template-spec/design/design.md",
+      "sha256": "89a9a1f30b9a1ecbd66008c386961e664c8f234c8bc010b9cb9ca2f3c282aac1"
+    },
+    {
+      "ref": "submodules/yss-harness-frontend-agent/.template-spec/design/templates/prototype-evidence-template.yaml",
+      "sha256": "496d1d3e510d0bf5df1d9158bf94608d06dd81a54da9b7b123e183c054136873"
+    },
+    {
+      "ref": "submodules/yss-harness-frontend-agent/.template-spec/design/tokens/.design-md-projection.json",
+      "sha256": "450bc597789ffceddb23d53d04f932b1f831c37c8f875a8aace5bf36aa5f25a3"
+    },
+    {
+      "ref": "submodules/yss-harness-frontend-agent/.template-spec/design/tokens/variables.css",
+      "sha256": "f8619314678bc3bb13d00e5457df2f1d2379c3b59b1cb1ed7fae2fac9aa86b1e"
+    },
+    {
+      "ref": "submodules/yss-harness-frontend-agent/DESIGN.md",
+      "sha256": "418a1dde90e1b0e5c8551ea7e78126ceb738654b542185355d9d08b0dcbe73f4"
+    }
+  ],
+  "unrelated_work": "preserved, not overlaid"
+}

@@ -6,6 +6,7 @@
   <meta name="theme-color" content="#1d1d1d">
   <title>YSS Design System · Dark Compact Preview</title>
   <link rel="stylesheet" href="./preview.css">
+  <link rel="stylesheet" href="../../.template-spec/design/tokens/variables.dark.css">
 </head>
 <body>
   <main class="app-shell">
@@ -13,17 +14,17 @@
       <div class="page-title-group">
         <div class="eyebrow">YSS DESIGN SYSTEM</div>
         <div class="title-line">
-          <h1>组件与状态预览</h1>
-          <span class="density-chip">暗色 · 32px</span>
+          <h1>主题与组件状态展示</h1>
+          <span class="density-chip">历史暗色 · 未验证</span>
         </div>
-        <p class="page-description">darkAlgorithm · YSS 项目主题覆盖</p>
+        <p class="page-description">历史快照：未完成当前规范验证，不作为新原型推荐主题</p>
       </div>
       <div class="heading-actions">
         <nav class="mode-switch" aria-label="主题预览">
           <a href="./preview.html">明亮</a>
           <a href="./preview-dark.html" aria-current="page">暗色</a>
         </nav>
-        <button class="button button-primary" type="button" data-primary-action>发布规范</button>
+        <button class="button button-primary" type="button" data-primary-action>演示提交</button>
         <button class="button" type="button" disabled title="当前没有待提交的变更">提交</button>
       </div>
     </header>
@@ -59,7 +60,7 @@
           </div>
         </form>
         <div class="notice notice-info filter-feedback" role="status">
-          <span>显式暗色模式，仍保留 14px 正文、32px 控件和清晰的状态层级。</span>
+          <span>历史暗色快照，仅用于来源参考；字号、密度、对比度及状态组合尚未完成当前规范验证。</span>
         </div>
       </div>
     </section>
@@ -71,7 +72,7 @@
           <span class="panel-description">状态使用浅色语义面，不使用高饱和整块填充</span>
         </div>
         <div class="table-actions">
-          <button class="button" type="button">导出</button>
+          <button class="button" type="button" disabled title="展示页未实现导出结果">导出（未模拟）</button>
           <button class="button button-primary" type="button" data-dialog-trigger>新建任务</button>
         </div>
       </div>
@@ -94,12 +95,12 @@
             </tr>
           </thead>
           <tbody>
-            <tr data-record data-status="success" data-search="示例任务 yss-1024" aria-selected="true">
+            <tr data-record data-status="success" data-search="示例任务 yss-1024" data-selected="true">
               <td><span class="cell-main">示例任务</span><span class="cell-sub">YSS-1024 · 设计系统核验</span></td>
               <td><span class="status-label status-success" data-row-status>已完成</span></td>
               <td>陈墨</td>
               <td>2026-09-02 09:30</td>
-              <td><button class="link-action" type="button">查看</button></td>
+              <td><button class="link-action" type="button" disabled title="展示页未实现资料详情">查看（未模拟）</button></td>
             </tr>
             <tr data-record data-status="processing" data-search="加载中的任务 yss-1025">
               <td><span class="cell-main">加载中的任务</span><span class="cell-sub">YSS-1025 · Token 同步</span></td>
@@ -164,11 +165,11 @@
       <button class="dialog-close" type="button" aria-label="关闭弹窗" data-dialog-close>关闭</button>
     </div>
     <div class="dialog-body">
-      <p>草稿只保存当前页面配置，不会触发正式发布或外部副作用。</p>
+      <p>这里只演示弹窗与操作反馈；关闭或重置会清除演示状态，不创建业务资料。</p>
     </div>
     <div class="dialog-footer">
       <button class="button" type="button" data-dialog-close>取消</button>
-      <button class="button button-primary" type="button" data-dialog-close>确认创建</button>
+      <button class="button button-primary" type="button" data-dialog-confirm>完成演示</button>
     </div>
   </dialog>
 

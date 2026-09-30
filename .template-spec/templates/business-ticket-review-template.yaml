@@ -1,0 +1,11 @@
+schema_version: 1
+kind: business-ticket-review
+result: blocked
+subject_ref: docs/.scratch/<feature>/business-ticket-set.yaml
+subject_digest: sha256:<raw-bytes>
+drafter: <drafter-runtime-id>
+reviewer: <independent-reviewer-runtime-id>
+evidence:
+  - ref: docs/.scratch/<feature>/verification/business-ticket-review.md
+    version: v1
+    digest: sha256:<raw-bytes>

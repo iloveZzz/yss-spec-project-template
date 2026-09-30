@@ -1,0 +1,64 @@
+[
+  {
+    "name": "spec",
+    "command": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-spec/bin/create-yss-spec.js",
+      "--project-name",
+      "shadcn-spec",
+      "--business-domain",
+      "prototype-verification",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-shadcn-20260930-9nc6xp5u/instances/spec",
+      "--no-example-docs",
+      "--agent-runtime",
+      "codex"
+    ],
+    "exit_code": 0,
+    "target": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-shadcn-20260930-9nc6xp5u/instances/spec",
+    "ensure_exit_code": 0,
+    "new_builder": true,
+    "retired_builder_absent": true,
+    "fixed_components": true
+  },
+  {
+    "name": "design",
+    "command": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-strategic-design/bin/create-yss-harness-design.js",
+      "init",
+      "--project-name",
+      "shadcn-design",
+      "--business-domain",
+      "prototype-verification",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-shadcn-20260930-9nc6xp5u/instances/design",
+      "--no-example-docs"
+    ],
+    "exit_code": 0,
+    "target": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-shadcn-20260930-9nc6xp5u/instances/design",
+    "new_builder": true,
+    "retired_builder_absent": true,
+    "fixed_components": true
+  },
+  {
+    "name": "frontend",
+    "command": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-frontend/bin/create-yss-harness-frontend.js",
+      "init",
+      "--project-name",
+      "shadcn-frontend",
+      "--business-domain",
+      "prototype-verification",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-shadcn-20260930-9nc6xp5u/instances/frontend",
+      "--no-example-docs"
+    ],
+    "exit_code": 0,
+    "target": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-shadcn-20260930-9nc6xp5u/instances/frontend",
+    "new_builder": true,
+    "retired_builder_absent": true,
+    "fixed_components": true
+  }
+]

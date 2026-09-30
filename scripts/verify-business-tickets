@@ -1,0 +1,11 @@
+#!/usr/bin/env node
+import { parseArgs } from 'node:util';
+import { checkBusinessTickets, summarizeBusinessImplementation } from './lib/business-tickets.mjs';
+try {
+  const {values,positionals}=parseArgs({allowPositionals:true,options:{root:{type:'string'},mode:{type:'string',default:'draft'},json:{type:'boolean'},review:{type:'string'},'slice-ticket':{type:'string',multiple:true}}});
+  if(positionals.length!==1)throw new Error('用法: verify-business-tickets <集合.yaml> --root <项目> --mode draft|formal [--json]');
+  const result=checkBusinessTickets({root:values.root||process.cwd(),setRef:positionals[0],mode:values.mode,reviewRef:values.review});
+  if(values['slice-ticket'])result.implementation_coverage=summarizeBusinessImplementation({root:values.root||process.cwd(),setRef:positionals[0],sliceRefs:values['slice-ticket']});
+  process.stdout.write(values.json?`${JSON.stringify(result,null,2)}\n`:`业务 Ticket ${result.status}（${result.mode}）；不授予实现权限\n${result.diagnostics.map(x=>`${x.code}: ${x.message} [${x.source_ref}]`).join('\n')}\n`);
+  process.exitCode=result.status==='passed'&&result.implementation_coverage?.status!=='blocked'?0:1;
+} catch(error){process.stderr.write(`${error.message}\n`);process.exitCode=2;}

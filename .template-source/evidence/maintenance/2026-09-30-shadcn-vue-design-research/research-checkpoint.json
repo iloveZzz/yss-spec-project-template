@@ -1,0 +1,25 @@
+{
+  "schema_version": 2,
+  "intensity": "L1",
+  "classification_reason": "仅正式研究文本、来源与诊断证据；无Skill/规范/生成语义修改。implementation-ready仅表示研究资产已可供下游消费，不表示增强实现完成。",
+  "triggers": [
+    "textual-only"
+  ],
+  "changed_assets": [
+    ".template-source/evidence/maintenance/2026-09-30-shadcn-vue-design-research"
+  ],
+  "verification_evidence": [
+    {
+      "kind": "relevant-check",
+      "command": "node .agents/skills/yss-research/scripts/validate-research-package.mjs .template-source/evidence/maintenance/2026-09-30-shadcn-vue-design-research/shadcn-vue-design-research-brief.md .template-source/evidence/maintenance/2026-09-30-shadcn-vue-design-research/shadcn-vue-design-evidence.yaml",
+      "result": "pass"
+    }
+  ],
+  "review_mode": "self-check",
+  "escalation": "none; 若采纳生成行为增强另走L3",
+  "target_state": "implementation-ready",
+  "current_state": "implementation-ready",
+  "verification_profile": "fast",
+  "review_round": 0,
+  "candidate_digest": null
+}

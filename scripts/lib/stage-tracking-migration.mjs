@@ -57,6 +57,7 @@ export function planTracking(root, { checkpoint_ref, items = [], refresh = false
     checkpoint.feature_id = feature;
     checkpoint.mode = 'orchestrate'; checkpoint.status = 'running';
     checkpoint.stage = items[0]?.stage || 'stage.plan';
+    if(checkpoint.stage_trace)checkpoint.stage_trace.stage=checkpoint.stage;
     checkpoint.next_work_unit = items[0]?.work_unit || 'work-unit.plan-requirements';
   }
   checkpoint.feature_id ??= feature;

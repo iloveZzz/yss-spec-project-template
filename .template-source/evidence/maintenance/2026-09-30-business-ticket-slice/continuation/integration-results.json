@@ -1,0 +1,656 @@
+[
+  {
+    "label": "spec-pack",
+    "args": [
+      "npm",
+      "pack",
+      "--ignore-scripts",
+      "--json",
+      "--pack-destination",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/packs"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-spec",
+    "exit_code": 0,
+    "expected": 0,
+    "seconds": 4.37
+  },
+  {
+    "label": "spec-install",
+    "args": [
+      "npm",
+      "install",
+      "--prefix",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/install-spec",
+      "--ignore-scripts",
+      "--no-audit",
+      "--no-fund",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/packs/create-yss-spec-3.5.3.tgz"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "exit_code": 0,
+    "expected": 0,
+    "seconds": 3.64
+  },
+  {
+    "label": "spec-init",
+    "args": [
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/install-spec/node_modules/.bin/create-yss-spec",
+      "--agent-runtime",
+      "codex",
+      "--project-name",
+      "Business Ticket Fixture",
+      "--business-domain",
+      "模板合成验收",
+      "--team-size",
+      "3",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/instance-spec"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "exit_code": 0,
+    "expected": 0,
+    "seconds": 0.65
+  },
+  {
+    "label": "spec-assets-stage.spec-architecture",
+    "args": [
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/install-spec/node_modules/.bin/create-yss-spec",
+      "assets",
+      "ensure",
+      "stage.spec-architecture",
+      "--apply",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/instance-spec"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "exit_code": 0,
+    "expected": 0,
+    "seconds": 0.64
+  },
+  {
+    "label": "spec-assets-stage.product-design",
+    "args": [
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/install-spec/node_modules/.bin/create-yss-spec",
+      "assets",
+      "ensure",
+      "stage.product-design",
+      "--apply",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/instance-spec"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "exit_code": 0,
+    "expected": 0,
+    "seconds": 0.99
+  },
+  {
+    "label": "spec-assets-stage.system-data-engineering",
+    "args": [
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/install-spec/node_modules/.bin/create-yss-spec",
+      "assets",
+      "ensure",
+      "stage.system-data-engineering",
+      "--apply",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/instance-spec"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "exit_code": 0,
+    "expected": 0,
+    "seconds": 0.73
+  },
+  {
+    "label": "spec-assets-repeat",
+    "args": [
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/install-spec/node_modules/.bin/create-yss-spec",
+      "assets",
+      "ensure",
+      "stage.spec-architecture",
+      "--apply",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/instance-spec"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "exit_code": 0,
+    "expected": 0,
+    "seconds": 0.64
+  },
+  {
+    "label": "spec-sync",
+    "args": [
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/install-spec/node_modules/.bin/create-yss-spec",
+      "sync",
+      "--apply",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/instance-spec"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "exit_code": 0,
+    "expected": 0,
+    "seconds": 0.43
+  },
+  {
+    "label": "spec-sync-repeat",
+    "args": [
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/install-spec/node_modules/.bin/create-yss-spec",
+      "sync",
+      "--apply",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/instance-spec"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "exit_code": 0,
+    "expected": 0,
+    "seconds": 0.43
+  },
+  {
+    "label": "spec-legacy-sync",
+    "args": [
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/install-spec/node_modules/.bin/create-yss-spec",
+      "sync",
+      "--apply",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/instance-spec"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "exit_code": 0,
+    "expected": 0,
+    "seconds": 0.43
+  },
+  {
+    "label": "spec-legacy-diagnostic",
+    "args": [
+      "node",
+      "--input-type=module",
+      "-e",
+      "import {businessTicketVersion} from \"file:///private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/instance-spec/scripts/lib/business-tickets.mjs\"; if(businessTicketVersion(\"/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/instance-spec\")!==null)process.exit(1); console.log('legacy-unassessed; automatic migration not performed');"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "exit_code": 0,
+    "expected": 0,
+    "seconds": 0.04
+  },
+  {
+    "label": "spec-conflict-visible",
+    "args": [
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/install-spec/node_modules/.bin/create-yss-spec",
+      "sync",
+      "--apply",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/instance-spec"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "exit_code": 0,
+    "expected": 0,
+    "seconds": 0.61
+  },
+  {
+    "label": "spec-fixture",
+    "args": [
+      "node",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/spec-fixture.mjs"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "exit_code": 0,
+    "expected": 0,
+    "seconds": 0.08
+  },
+  {
+    "label": "spec-business-formal",
+    "args": [
+      "node",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/instance-spec/scripts/verify-business-tickets",
+      "source/tickets.yaml",
+      "--root",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/instance-spec",
+      "--mode",
+      "formal",
+      "--json"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "exit_code": 0,
+    "expected": 0,
+    "seconds": 0.14
+  },
+  {
+    "label": "design-pack",
+    "args": [
+      "npm",
+      "pack",
+      "--ignore-scripts",
+      "--json",
+      "--pack-destination",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/packs"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-strategic-design",
+    "exit_code": 0,
+    "expected": 0,
+    "seconds": 0.56
+  },
+  {
+    "label": "design-install",
+    "args": [
+      "npm",
+      "install",
+      "--prefix",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/install-design",
+      "--ignore-scripts",
+      "--no-audit",
+      "--no-fund",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/packs/create-yss-harness-design-0.8.10.tgz"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "exit_code": 0,
+    "expected": 0,
+    "seconds": 0.62
+  },
+  {
+    "label": "design-init",
+    "args": [
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/install-design/node_modules/.bin/create-yss-harness-design",
+      "--project-name",
+      "Business Ticket Fixture",
+      "--business-domain",
+      "模板合成验收",
+      "--team-size",
+      "3",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/instance-design"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "exit_code": 0,
+    "expected": 0,
+    "seconds": 23.6
+  },
+  {
+    "label": "design-sync",
+    "args": [
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/install-design/node_modules/.bin/create-yss-harness-design",
+      "sync",
+      "--apply",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/instance-design"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "exit_code": 0,
+    "expected": 0,
+    "seconds": 2.01
+  },
+  {
+    "label": "design-sync-repeat",
+    "args": [
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/install-design/node_modules/.bin/create-yss-harness-design",
+      "sync",
+      "--apply",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/instance-design"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "exit_code": 0,
+    "expected": 0,
+    "seconds": 1.81
+  },
+  {
+    "label": "design-legacy-sync",
+    "args": [
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/install-design/node_modules/.bin/create-yss-harness-design",
+      "sync",
+      "--apply",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/instance-design"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "exit_code": 0,
+    "expected": 0,
+    "seconds": 2.8
+  },
+  {
+    "label": "design-legacy-diagnostic",
+    "args": [
+      "node",
+      "--input-type=module",
+      "-e",
+      "import {businessTicketVersion} from \"file:///private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/instance-design/scripts/lib/business-tickets.mjs\"; if(businessTicketVersion(\"/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/instance-design\")!==null)process.exit(1); console.log('legacy-unassessed; automatic migration not performed');"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "exit_code": 0,
+    "expected": 0,
+    "seconds": 0.05
+  },
+  {
+    "label": "design-conflict-visible",
+    "args": [
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/install-design/node_modules/.bin/create-yss-harness-design",
+      "sync",
+      "--apply",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/instance-design"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "exit_code": 0,
+    "expected": 0,
+    "seconds": 2.76
+  },
+  {
+    "label": "design-fixture",
+    "args": [
+      "node",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/design-fixture.mjs"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "exit_code": 0,
+    "expected": 0,
+    "seconds": 0.11
+  },
+  {
+    "label": "design-business-formal",
+    "args": [
+      "node",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/instance-design/scripts/verify-business-tickets",
+      "source/tickets.yaml",
+      "--root",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/instance-design",
+      "--mode",
+      "formal",
+      "--json"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "exit_code": 0,
+    "expected": 0,
+    "seconds": 0.13
+  },
+  {
+    "label": "backend-pack",
+    "args": [
+      "npm",
+      "pack",
+      "--ignore-scripts",
+      "--json",
+      "--pack-destination",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/packs"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-backend",
+    "exit_code": 0,
+    "expected": 0,
+    "seconds": 0.9
+  },
+  {
+    "label": "backend-install",
+    "args": [
+      "npm",
+      "install",
+      "--prefix",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/install-backend",
+      "--ignore-scripts",
+      "--no-audit",
+      "--no-fund",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/packs/create-yss-harness-backend-0.4.14.tgz"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "exit_code": 0,
+    "expected": 0,
+    "seconds": 1.34
+  },
+  {
+    "label": "backend-init",
+    "args": [
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/install-backend/node_modules/.bin/create-yss-harness-backend",
+      "--project-name",
+      "Business Ticket Fixture",
+      "--business-domain",
+      "模板合成验收",
+      "--team-size",
+      "3",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/instance-backend"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "exit_code": 0,
+    "expected": 0,
+    "seconds": 42.1
+  },
+  {
+    "label": "backend-sync",
+    "args": [
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/install-backend/node_modules/.bin/create-yss-harness-backend",
+      "sync",
+      "--apply",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/instance-backend"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "exit_code": 0,
+    "expected": 0,
+    "seconds": 2.3
+  },
+  {
+    "label": "backend-sync-repeat",
+    "args": [
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/install-backend/node_modules/.bin/create-yss-harness-backend",
+      "sync",
+      "--apply",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/instance-backend"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "exit_code": 0,
+    "expected": 0,
+    "seconds": 2.24
+  },
+  {
+    "label": "backend-legacy-sync",
+    "args": [
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/install-backend/node_modules/.bin/create-yss-harness-backend",
+      "sync",
+      "--apply",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/instance-backend"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "exit_code": 0,
+    "expected": 0,
+    "seconds": 2.27
+  },
+  {
+    "label": "backend-legacy-diagnostic",
+    "args": [
+      "node",
+      "--input-type=module",
+      "-e",
+      "import {businessTicketVersion} from \"file:///private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/instance-backend/scripts/lib/business-tickets.mjs\"; if(businessTicketVersion(\"/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/instance-backend\")!==null)process.exit(1); console.log('legacy-unassessed; automatic migration not performed');"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "exit_code": 0,
+    "expected": 0,
+    "seconds": 0.04
+  },
+  {
+    "label": "backend-conflict-visible",
+    "args": [
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/install-backend/node_modules/.bin/create-yss-harness-backend",
+      "sync",
+      "--apply",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/instance-backend"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "exit_code": 0,
+    "expected": 0,
+    "seconds": 2.29
+  },
+  {
+    "label": "backend-fixture",
+    "args": [
+      "node",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/backend-fixture.mjs"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "exit_code": 0,
+    "expected": 0,
+    "seconds": 0.08
+  },
+  {
+    "label": "backend-business-formal",
+    "args": [
+      "node",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/instance-backend/scripts/verify-business-tickets",
+      "source/tickets.yaml",
+      "--root",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/instance-backend",
+      "--mode",
+      "formal",
+      "--json"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "exit_code": 0,
+    "expected": 0,
+    "seconds": 0.12
+  },
+  {
+    "label": "frontend-pack",
+    "args": [
+      "npm",
+      "pack",
+      "--ignore-scripts",
+      "--json",
+      "--pack-destination",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/packs"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-frontend",
+    "exit_code": 0,
+    "expected": 0,
+    "seconds": 0.92
+  },
+  {
+    "label": "frontend-install",
+    "args": [
+      "npm",
+      "install",
+      "--prefix",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/install-frontend",
+      "--ignore-scripts",
+      "--no-audit",
+      "--no-fund",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/packs/create-yss-harness-frontend-0.3.14.tgz"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "exit_code": 0,
+    "expected": 0,
+    "seconds": 0.8
+  },
+  {
+    "label": "frontend-init",
+    "args": [
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/install-frontend/node_modules/.bin/create-yss-harness-frontend",
+      "--project-name",
+      "Business Ticket Fixture",
+      "--business-domain",
+      "模板合成验收",
+      "--team-size",
+      "3",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/instance-frontend"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "exit_code": 0,
+    "expected": 0,
+    "seconds": 57.36
+  },
+  {
+    "label": "frontend-sync",
+    "args": [
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/install-frontend/node_modules/.bin/create-yss-harness-frontend",
+      "sync",
+      "--apply",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/instance-frontend"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "exit_code": 0,
+    "expected": 0,
+    "seconds": 28.07
+  },
+  {
+    "label": "frontend-sync-repeat",
+    "args": [
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/install-frontend/node_modules/.bin/create-yss-harness-frontend",
+      "sync",
+      "--apply",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/instance-frontend"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "exit_code": 0,
+    "expected": 0,
+    "seconds": 18.69
+  },
+  {
+    "label": "frontend-legacy-sync",
+    "args": [
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/install-frontend/node_modules/.bin/create-yss-harness-frontend",
+      "sync",
+      "--apply",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/instance-frontend"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "exit_code": 0,
+    "expected": 0,
+    "seconds": 9.64
+  },
+  {
+    "label": "frontend-legacy-diagnostic",
+    "args": [
+      "node",
+      "--input-type=module",
+      "-e",
+      "import {businessTicketVersion} from \"file:///private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/instance-frontend/scripts/lib/business-tickets.mjs\"; if(businessTicketVersion(\"/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/instance-frontend\")!==null)process.exit(1); console.log('legacy-unassessed; automatic migration not performed');"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "exit_code": 0,
+    "expected": 0,
+    "seconds": 0.05
+  },
+  {
+    "label": "frontend-conflict-visible",
+    "args": [
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/install-frontend/node_modules/.bin/create-yss-harness-frontend",
+      "sync",
+      "--apply",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/instance-frontend"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "exit_code": 0,
+    "expected": 0,
+    "seconds": 7.6
+  },
+  {
+    "label": "frontend-fixture",
+    "args": [
+      "node",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/frontend-fixture.mjs"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "exit_code": 0,
+    "expected": 0,
+    "seconds": 0.08
+  },
+  {
+    "label": "frontend-business-formal",
+    "args": [
+      "node",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/instance-frontend/scripts/verify-business-tickets",
+      "source/tickets.yaml",
+      "--root",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/instance-frontend",
+      "--mode",
+      "formal",
+      "--json"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "exit_code": 0,
+    "expected": 0,
+    "seconds": 0.15
+  }
+]

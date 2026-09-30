@@ -1,0 +1,155 @@
+{
+  "task": "dense-analysis",
+  "side": "B",
+  "status": "inspected-partial-output",
+  "html_sha256": "d61fd13b3629e9144ffce4a1863018edda4735b99c1fd15ba103c803ad7e4378",
+  "browser": "151.0.7922.34",
+  "delivery": "file:// offline=true",
+  "turn_completed": false,
+  "missing_resources": [
+    "contract.css",
+    "scenarios.js"
+  ],
+  "observations": [
+    {
+      "scene": "primary",
+      "width": 1440,
+      "height": 900,
+      "text": "跳至资料名称筛选\n资料检查\n检查分析\n资料检查分析\n\n查看检查结果，按资料名称快速定位。\n\n总检查\n240\n异常\n9\n待处理\n6\n\n全部资料汇总，不随名称筛选变化\n\n资料明细\n逐项查看检查结果\n资料名称\n查询\n重置筛选\n\n显示全部 3 项资料\n\n资料检查明细，包含名称、检查数量、异常数量、负责人、状态和更新时间。\n资料名称\t检查数量\t异常数量\t负责人\t状态\t更新时间\n“未提供”表示负责人信息为空\n共 3 项资料\n设计草案\n场景：primary\n重置场景",
+      "overflow": false,
+      "body_attributes": {
+        "data-scenario": "primary"
+      },
+      "controls": [
+        {
+          "tag": "INPUT",
+          "id": "name-filter",
+          "text": "",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "查询",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "clear-filter",
+          "text": "重置筛选",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "empty-reset",
+          "text": "重置筛选",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "reset-scenario",
+          "text": "重置场景",
+          "disabled": false,
+          "value": ""
+        }
+      ],
+      "focus": {
+        "tag": "A",
+        "id": "",
+        "outline": "solid"
+      },
+      "reset": "not-tested",
+      "issues": [
+        {
+          "type": "requestfailed",
+          "url": "file:///Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-29-prototype-design-enhancement/pilot/ab/dense-analysis/B/contract.css",
+          "failure": {
+            "errorText": "net::ERR_FILE_NOT_FOUND"
+          }
+        },
+        {
+          "type": "error",
+          "message": "Failed to load resource: net::ERR_FILE_NOT_FOUND"
+        },
+        {
+          "type": "requestfailed",
+          "url": "file:///Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-29-prototype-design-enhancement/pilot/ab/dense-analysis/B/scenarios.js",
+          "failure": {
+            "errorText": "net::ERR_FILE_NOT_FOUND"
+          }
+        },
+        {
+          "type": "error",
+          "message": "Failed to load resource: net::ERR_FILE_NOT_FOUND"
+        },
+        {
+          "type": "pageerror",
+          "message": "Cannot read properties of undefined (reading 'summary')"
+        }
+      ],
+      "screenshot": "primary-1440.png"
+    },
+    {
+      "scene": "primary",
+      "width": 390,
+      "height": 844,
+      "text": "跳至资料名称筛选\n资料检查\n检查分析\n资料检查分析\n\n查看检查结果，按资料名称快速定位。\n\n总检查\n240\n异常\n9\n待处理\n6\n\n全部资料汇总，不随名称筛选变化\n\n资料明细\n逐项查看检查结果\n资料名称\n查询\n重置筛选\n\n显示全部 3 项资料\n\n左右滑动查看全部列 →\n资料检查明细，包含名称、检查数量、异常数量、负责人、状态和更新时间。\n资料名称\t检查数量\t异常数量\t负责人\t状态\t更新时间\n“未提供”表示负责人信息为空\n共 3 项资料\n设计草案\n场景：primary\n重置场景",
+      "overflow": false,
+      "body_attributes": {
+        "data-scenario": "primary"
+      },
+      "controls": [
+        {
+          "tag": "INPUT",
+          "id": "name-filter",
+          "text": "",
+          "disabled": false,
+          "readOnly": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "查询",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "clear-filter",
+          "text": "重置筛选",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "empty-reset",
+          "text": "重置筛选",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "reset-scenario",
+          "text": "重置场景",
+          "disabled": false,
+          "value": ""
+        }
+      ],
+      "focus": {
+        "tag": "INPUT",
+        "id": "name-filter",
+        "outline": "solid"
+      },
+      "reset": "not-tested",
+      "issues": [],
+      "screenshot": "primary-390.png"
+    }
+  ],
+  "behavior_coverage": "unverified; loading a partial page does not prove business behavior"
+}

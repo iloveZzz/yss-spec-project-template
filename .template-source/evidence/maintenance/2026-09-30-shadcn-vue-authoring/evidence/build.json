@@ -1,0 +1,20 @@
+{
+  "fixture": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-vue-build-GApHdO/fixture",
+  "toolchain": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-vue-toolchain-7lp2s7cn",
+  "results": [
+    {
+      "page": "list-detail",
+      "root": "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-30-shadcn-vue-authoring/comparisons/list-detail",
+      "result": {
+        "errors": []
+      }
+    },
+    {
+      "page": "multi-step",
+      "root": "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-30-shadcn-vue-authoring/comparisons/multi-step",
+      "result": {
+        "errors": []
+      }
+    }
+  ]
+}

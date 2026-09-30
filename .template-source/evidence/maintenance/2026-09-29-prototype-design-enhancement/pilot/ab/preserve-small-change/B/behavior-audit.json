@@ -1,0 +1,28 @@
+{
+  "task": "preserve-small-change",
+  "side": "B",
+  "checks": [
+    {
+      "width": 1440,
+      "query": "passed",
+      "empty_state": "passed",
+      "reset_query": "passed",
+      "enter_submit": "passed",
+      "reset_scene": "passed",
+      "column_order": "passed",
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "query": "passed",
+      "empty_state": "passed",
+      "reset_query": "passed",
+      "enter_submit": "passed",
+      "reset_scene": "passed",
+      "column_order": "passed",
+      "overflow": false
+    }
+  ],
+  "scope": "Browser behavior only; does not reverse timeout failure or provide user visual acceptance.",
+  "status": "passed"
+}

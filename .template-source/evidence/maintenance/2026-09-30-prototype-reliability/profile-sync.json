@@ -1,0 +1,1134 @@
+{
+  "verified_existing_copies": [
+    {
+      "profile": "frontend",
+      "id": "yss-prototype-stage",
+      "files": 48
+    },
+    {
+      "profile": "frontend",
+      "id": "yss-design-system",
+      "files": 13
+    },
+    {
+      "profile": "frontend",
+      "id": "prototype-review",
+      "files": 2
+    }
+  ],
+  "schema_version": 1,
+  "profiles": [
+    "design",
+    "frontend"
+  ],
+  "changes": [
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/yss-prototype-stage/SKILL.md",
+      "before_sha256": "a32968897ad8501801470074b6820f0b3bc0970f9080abb79062e4708b8c8ac5",
+      "after_sha256": "8a0cb7bac386580de662a613f45bbd27ea3dfa1f6b920af5f1ad84e1ecf86762"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/yss-prototype-stage/assets/business-patterns/analysis.config.json",
+      "before_sha256": null,
+      "after_sha256": "9c4bd507eac222f3f1ed7fba50af5cdfd9441e1b836357184c23a516b0c8e357"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/yss-prototype-stage/assets/business-patterns/analysis.scenarios.json",
+      "before_sha256": null,
+      "after_sha256": "5591cea8fb9adc4986b8f19bc5102d6fb83e5076f329a31802ccded616c2dccd"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/yss-prototype-stage/assets/business-patterns/analysis.tsx",
+      "before_sha256": null,
+      "after_sha256": "9cc4c2d69be551fae55a806ae3b22e54cca8cf510a02b9bede2ce5b9c799234a"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/yss-prototype-stage/assets/business-patterns/approval.config.json",
+      "before_sha256": null,
+      "after_sha256": "bc84674ced3a2a97dde853b4550b350043ed6b8c66326286feac17be1c2068fd"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/yss-prototype-stage/assets/business-patterns/approval.scenarios.json",
+      "before_sha256": null,
+      "after_sha256": "f61e6b1db04bfc5743082019f125c3d627224c31eb003edcdd3948325ee11c0a"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/yss-prototype-stage/assets/business-patterns/approval.tsx",
+      "before_sha256": null,
+      "after_sha256": "dea8eb5a7de9de68f4cf474db873909a0e1230be6d84763dece7748d2e9e6d68"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/yss-prototype-stage/assets/business-patterns/conflict.config.json",
+      "before_sha256": null,
+      "after_sha256": "465759e20697da4eb01727e71103129f9c8b834eadb665ff27b27f2626dbd74c"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/yss-prototype-stage/assets/business-patterns/conflict.scenarios.json",
+      "before_sha256": null,
+      "after_sha256": "b5981bd621fcbc68cf2ee246485a3c67dd3858478ad478d55fc9aa563bbf1828"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/yss-prototype-stage/assets/business-patterns/conflict.tsx",
+      "before_sha256": null,
+      "after_sha256": "0d478cb4b497b523665007ea64c4bfe072be8f4bda99ac9654044834eede588c"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/yss-prototype-stage/assets/business-patterns/list-detail.config.json",
+      "before_sha256": null,
+      "after_sha256": "1b59a5117b4f0845b284a7141979f37e2df6a82b1715ba56694b6071e294c5a6"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/yss-prototype-stage/assets/business-patterns/list-detail.scenarios.json",
+      "before_sha256": null,
+      "after_sha256": "5da5ae1309028b479a0251892f7d0168d482be18811fac8e215f10aa39aee31b"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/yss-prototype-stage/assets/business-patterns/list-detail.tsx",
+      "before_sha256": null,
+      "after_sha256": "4708c733afbfe1930f45f387743d1256760eaf704d2abb334d0c2fa9ba9c4d20"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/yss-prototype-stage/assets/business-patterns/multi-step.config.json",
+      "before_sha256": null,
+      "after_sha256": "0a1ad6ca2c64f91056847e0312148ff98689d6f41373aa85c7f2cadcd69d23a4"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/yss-prototype-stage/assets/business-patterns/multi-step.scenarios.json",
+      "before_sha256": null,
+      "after_sha256": "3f837285023a7b092564d5c97c536e7dcd9a6dac375e34e86a949029ce9c3630"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/yss-prototype-stage/assets/business-patterns/multi-step.tsx",
+      "before_sha256": null,
+      "after_sha256": "db5ae827bec0877a5f72e75467a4fec04214b8e70959ba560745f23852ba54a2"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/yss-prototype-stage/assets/business-patterns/patterns.css",
+      "before_sha256": null,
+      "after_sha256": "aeeb7def3f223bf1de9624335db4f9d19c2b6fe57e79c68487a3f56cba9d53e5"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/yss-prototype-stage/assets/business-patterns/shared.tsx",
+      "before_sha256": null,
+      "after_sha256": "37b05dd2f98e2f995ea1bdbe2d4142c22b8e18e85e8d53558e78f6184f95d9a0"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/yss-prototype-stage/assets/comparison/comparison.js",
+      "before_sha256": "e480ab3fc73b26e5946c4c02c4c72a9b5ccdf662515eab20587bd405c0e30b26",
+      "after_sha256": "819eee8631dc2caf168c74434ae9bb8c2c0530862edf3c8071be389d6ea3c377"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/yss-prototype-stage/assets/low-fidelity-exercise/app.js",
+      "before_sha256": null,
+      "after_sha256": "2e7b4d6ed08bd3e185b163e87944c334ea0c3906bdc6e8ac1255d9386c2f99b8"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/yss-prototype-stage/assets/low-fidelity-exercise/index.html",
+      "before_sha256": null,
+      "after_sha256": "f40444a2ac1b4b5a33573000b4f25300e320ebc2cde4f93c4637f42bc84dd776"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/yss-prototype-stage/assets/low-fidelity-exercise/styles.css",
+      "before_sha256": null,
+      "after_sha256": "9b577784328dc10cee3bac3849cc7921c15c576e486da2115ba61ba766877db4"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/yss-prototype-stage/assets/native-workbench/app.js",
+      "before_sha256": "60624679edf39d586d7f456193f8d6945d51b972d25551c0020cb328e6e7dbf2",
+      "after_sha256": "20304658f01c9d6b9a625903d3e5cba45f0b1e38c96546f59c6477400a31c832"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/yss-prototype-stage/assets/native-workbench/scenarios.json",
+      "before_sha256": null,
+      "after_sha256": "8d13a2af8bafa62e581efec80eac17aafe71a8df4d2734b58dcaa42374e94292"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/yss-prototype-stage/assets/native-workbench/styles.css",
+      "before_sha256": "9e4991b64b771ae4d7256854bc94d84680eafe4bdc911bd4127254cf5cbbf800",
+      "after_sha256": "5355f971dd8ead98663973a451aabbb0ec524b6c1ee9161b4f3a86dd77502cdd"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/yss-prototype-stage/assets/offline-html/app.js",
+      "before_sha256": "fff5efc3a882269202d1acf12ec81efa96752e957b5a830ce81fdbb858c1881a",
+      "after_sha256": "ac4254503fd4077e26ec074db0169e1c192bf363a015c241913b77fa7921f873"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/yss-prototype-stage/assets/offline-html/scenarios.json",
+      "before_sha256": null,
+      "after_sha256": "5ce42f5687ee95e4f31a838f1e63b467a2de87c1a38e06d87bbf5dce34853a1a"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/yss-prototype-stage/assets/scenario-runtime.js",
+      "before_sha256": null,
+      "after_sha256": "b2837245e0e3e8a072c1b612338c352a6474fbae4f07a135705510258bb5f25b"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/yss-prototype-stage/assets/shadcn-authoring/registry-manifest.json",
+      "before_sha256": "c01261c36f97900349715b12115f466d7ff9eb4e3539c07a77c565da3eca92a4",
+      "after_sha256": "42b8609e1e9df6d7af80b2c2509cfb592aec1c1e1f53a41625c4ff52a8368e9b"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/yss-prototype-stage/assets/shadcn-authoring/theme.css",
+      "before_sha256": "1a3d1df814b0ef1f905832b9a765a4bfcbe93b9fcff3818df1d48f92bade5e3e",
+      "after_sha256": "a8d263f786db92c7086cb1c56845e38739472f5e5c2ee77649806d9cb834d2a4"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/yss-prototype-stage/assets/shadcn-authoring/ui/alert-dialog.tsx",
+      "before_sha256": null,
+      "after_sha256": "b3dfb83e54ed8c82071df5289e5149628bf573458fc2da2d62f93f8380041b28"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/yss-prototype-stage/assets/shadcn-authoring/ui/checkbox.tsx",
+      "before_sha256": null,
+      "after_sha256": "ba0ac64064e2d8fa7299d53e9e84b9a4772fef8dd4cf6170c56d3030a1d69941"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/yss-prototype-stage/assets/shadcn-authoring/ui/tabs.tsx",
+      "before_sha256": null,
+      "after_sha256": "e1df6e2f95ece373ca909c1d54b8ba8cf4c47dd425c1784bbb9a01c38dd0936b"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/yss-prototype-stage/assets/shadcn-authoring/ui/textarea.tsx",
+      "before_sha256": null,
+      "after_sha256": "5cafcfeeee29534f449387a16b585f5923d2faab1a0cdc50a874416b175f59ce"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/yss-prototype-stage/assets/shadcn-authoring/workbench.tsx",
+      "before_sha256": "c29f45085765441cb9dfb5bf90d249701970e10128aef9d3500f59a3e4f69399",
+      "after_sha256": "0d478cb4b497b523665007ea64c4bfe072be8f4bda99ac9654044834eede588c"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/yss-prototype-stage/references/business-patterns.md",
+      "before_sha256": null,
+      "after_sha256": "480f3bf3d1bce586c1fa5ff8cc9f5814f3541de20036f8a3cf3a4fc615706f31"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/yss-prototype-stage/references/comparison-tool.md",
+      "before_sha256": "9bdcbd8497c2a2c48755d1bad018268e74151ed235a4acb498e9585258016578",
+      "after_sha256": "773e067a3cd5bf97ca7fa271656780425953f145989c29b607c62e5363da0c32"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/yss-prototype-stage/references/concept-comparison.md",
+      "before_sha256": "c8e9c7140be8ad4176e0420f67720cf5f9c810af902382ddbeaf816ea27afbf3",
+      "after_sha256": "446a0a8e287afba811900de3145c3a6dfd2ffe5e5f1e5f40eeea7fba8d800dcd"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/yss-prototype-stage/references/low-fidelity-exercise.md",
+      "before_sha256": null,
+      "after_sha256": "21bc3a37aea894ad18ac7301fa6dcc21ddc889e370a6994af5c5e53a5a1891ae"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/yss-prototype-stage/references/shadcn-integration.md",
+      "before_sha256": "b6f10e69135940f15fd8961b90bfd46f032d4d7e36cf5f0884b0e4257fb4b982",
+      "after_sha256": "a38caf7fb29763d9c32fff11fe28177dfb5ea3bc500aca89ed9c0e002f762bea"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/yss-prototype-stage/scripts/build-shadcn-prototype.mjs",
+      "before_sha256": "bf9e9900a7451e7ca7086c8c25d11fa12bd6287b513a9d2191b7659b41201232",
+      "after_sha256": "ecc7f41f262cb98a1159ad8083a20cef82bf4501970cd51a60cb705b7bd74caa"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/yss-prototype-stage/scripts/export-business-patterns.mjs",
+      "before_sha256": null,
+      "after_sha256": "1290f84bf3c65ee655214c0e46fea677af7e15061f0e8bf247352480b1d66668"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/yss-prototype-stage/scripts/export-low-fidelity-exercise.mjs",
+      "before_sha256": null,
+      "after_sha256": "7c00eefa5c2ba8e6afc5549226f73e0b245aea8104895a260220017fe1fba609"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/yss-prototype-stage/scripts/offline-html.mjs",
+      "before_sha256": "5b7c3d87ca936592d1fe38caa6783c439bfa2a2021614e8f09e932defed97dc9",
+      "after_sha256": "990274027e987dc531b62fb85d7422d795b6caa40b744d1b57824e911375bb07"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/yss-prototype-stage/scripts/prototype-comparison.mjs",
+      "before_sha256": "e0c968408a996674c893bf58585df134ab85bd6dd824d640b6e2dcac4626b31b",
+      "after_sha256": "116cb0936c349fc300b15c340035c0f94cafa39083345ee86833eece9ff3bbbd"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs",
+      "before_sha256": "73803f81783de6d9a69875bf64c61e8401ee6fe6cc69683108b6e7b39c66ad33",
+      "after_sha256": "9b6aa3e37cbce71eae9178ef1952baa64ae96b7e53630c657471a5f333a0c07e"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/yss-prototype-stage/scripts/scenario-contract.mjs",
+      "before_sha256": null,
+      "after_sha256": "b1f78651f32e5e41e406a571969e7624b30d3d874a8338f095c8b968bf0acf20"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/yss-prototype-stage/tests/comparison-browser-smoke.mjs",
+      "before_sha256": "49505d52c22ee7a151b84b416beb8809b0d27dccde15c57ece5da2753f1ce8f4",
+      "after_sha256": "e4a66477fff264b0daa0d9773dec38204f99101db87dd0575302379c4ff45071"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/yss-prototype-stage/tests/comparison-fixture.mjs",
+      "before_sha256": "c16108255c3c7ab62fe69d6d5e347fc3b4e02933934e80305ad68fef8b554524",
+      "after_sha256": "dc81b099a5785f24fc274ec65535ea3dfa3279a85fb6643d4e121e9c5f500f76"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/yss-prototype-stage/tests/comparison.test.mjs",
+      "before_sha256": "f7c4d3c39207c8b95f4c1b78bc27fb18e3b3809de6464ef17340c8cae7b4b086",
+      "after_sha256": "9c85f1d4eae08c7e938db4bbbb2584bb4f524e9a98893e4a126ba53cbe2f2ace"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/yss-prototype-stage/tests/patterns-browser.mjs",
+      "before_sha256": null,
+      "after_sha256": "724caf00aa45ee153b11da38f161770c04250e44f7ce7d7bb8cbc124ce075f7a"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/yss-prototype-stage/tests/reliability.test.mjs",
+      "before_sha256": null,
+      "after_sha256": "bfba34fcde9900de6f3b49bf2268e891107626a4a72aba4292be5f415580c7b6"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/yss-prototype-stage/tests/run-scenarios.mjs",
+      "before_sha256": "5199ca99ef51b34307f359bb09d1a30f4dac429f167f001795815b670e2b63b0",
+      "after_sha256": "81b83d66e3d60888777ec76a96ab3aaf820f840a411a5e655e19975a239cd7bb"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/yss-prototype-stage/tests/shadcn-source.test.mjs",
+      "before_sha256": "f519b4fec9ab83a6414bb90eca5d4f445c5036ecf083dba75e903de26fb9d33c",
+      "after_sha256": "bc265ee5a93d7f4c60696578e2c8b8822843d1e84ce98b12a8246849afbacd3d"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/yss-prototype-stage/tests/workbench-smoke.mjs",
+      "before_sha256": "12cd2cd3d7598c4e206e3e5fb30df2912fecccd9cfaab72f7d24d3bcb0a7eadf",
+      "after_sha256": "341e11d3222cee0882b2176679b1b9ae9eb0606d3b17d6f86b135b7a1448a655"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact",
+      "status": "added",
+      "path": ".agents/skills/yss-prototype-stage/tests/zoom-browser.mjs",
+      "before_sha256": null,
+      "after_sha256": "489d93ba0cb7f7c195c09417ed6bcb1942286f7daac4b77ab5f3eb6e6a5b3d5d"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-design-system",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/yss-design-system/assets/enterprise-craft/app.js",
+      "before_sha256": "23217ab58fb34b33b86bded23a2405edf2ae19ab3be902ba123325a25fb60823",
+      "after_sha256": "c420980ec8d14c591161e0b6fa819de6255a8bf8921b2046f7af4e8edf3f94f4"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-design-system",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/yss-design-system/assets/enterprise-craft/scenarios.js",
+      "before_sha256": "5a36f5c60d410f507c7440139f0c86cae5be2a87a18703ddad6e567ebe5b2547",
+      "after_sha256": "0e84ca820ff7d7befc6429068ef8624d4d673940066c75433d1017bc717b6dd4"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-design-system",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/yss-design-system/references/enterprise-craft.md",
+      "before_sha256": "11c4f9cdfa55185268a1f81168c6ad76736388e7e394862fbe7f0320b31375f5",
+      "after_sha256": "8dccbabbed75a54f43d80723a796817f6d713073b8149a368bacf665e283d1a9"
+    },
+    {
+      "profile": "frontend",
+      "skill": "prototype-review",
+      "classification": "adapted",
+      "status": "updated",
+      "path": ".agents/skills/prototype-review/SKILL.md",
+      "before_sha256": "13102d0e9eabb25fd9984bbefdbcc580490811c738768a33422ee70fd76a0c7c",
+      "after_sha256": "aeb75ca7562b2923f16940fe9e99aa62d476aa6c47914b503225e3e1c2ac006c"
+    }
+  ],
+  "classifications": [
+    {
+      "profile": "design",
+      "skill": "competitive-intelligence",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "diagnosing-bugs",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "domain-modeling",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "grilling",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "handoff",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "i-have-adhd",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "llm-wiki",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "maintaining-skills",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "resolving-merge-conflicts",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "to-spec",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "to-tickets",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "wayfinder",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "writing-for-agents",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "yss-research",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "code-review",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "product-design",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "triage",
+      "classification": "adapted"
+    },
+    {
+      "profile": "design",
+      "skill": "yss-antd-design",
+      "classification": "retired"
+    },
+    {
+      "profile": "design",
+      "skill": "yss-antdv-next-design",
+      "classification": "retired"
+    },
+    {
+      "profile": "design",
+      "skill": "grill-me",
+      "classification": "retired"
+    },
+    {
+      "profile": "design",
+      "skill": "wait-what",
+      "classification": "retired"
+    },
+    {
+      "profile": "design",
+      "skill": "grill-with-docs",
+      "classification": "retired"
+    },
+    {
+      "profile": "design",
+      "skill": "to-questionnaire",
+      "classification": "retired"
+    },
+    {
+      "profile": "design",
+      "skill": "improve-codebase-architecture",
+      "classification": "retired"
+    },
+    {
+      "profile": "design",
+      "skill": "ask-matt",
+      "classification": "local-only"
+    },
+    {
+      "profile": "design",
+      "skill": "yss-strategic-design",
+      "classification": "local-only"
+    },
+    {
+      "profile": "design",
+      "skill": "yss-product-lifecycle",
+      "classification": "local-only"
+    },
+    {
+      "profile": "design",
+      "skill": "harness-orchestrator",
+      "classification": "excluded"
+    },
+    {
+      "profile": "design",
+      "skill": "yss-technical-design",
+      "classification": "excluded"
+    },
+    {
+      "profile": "design",
+      "skill": "yss-tactical-design",
+      "classification": "excluded"
+    },
+    {
+      "profile": "design",
+      "skill": "prototype-review",
+      "classification": "upstream"
+    },
+    {
+      "profile": "design",
+      "skill": "yss-prototype-stage",
+      "classification": "upstream"
+    },
+    {
+      "profile": "design",
+      "skill": "yss-design-system",
+      "classification": "upstream"
+    },
+    {
+      "profile": "design",
+      "skill": "yss-stage-decision",
+      "classification": "upstream"
+    },
+    {
+      "profile": "frontend",
+      "skill": "archify",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "codebase-design",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "cross-repo-implementation-routing",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "diagnosing-bugs",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "file-export-download",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "formily-foundation",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "formily-linkage-effects",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "formily-mode-slot-detail",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "formily-step-flow",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "grilling",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "handoff",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "i-have-adhd",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "implement",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "implementation-repo-onboarding",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "llm-wiki",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "maintaining-skills",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "prototype",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "resolving-merge-conflicts",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "tdd",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "theme-token-usage",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "to-spec",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "to-tickets",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "using-git-worktrees",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "writing-for-agents",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-frontend-scaffold-generator",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yedit-table-usage",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-hook",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-ui-business-page-generation",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "ytable-usage",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "ytree-usage",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-research",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-design-system",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "code-review",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "competitive-intelligence",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "domain-modeling",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "setup-matt-pocock-skills",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "wayfinder",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-formily",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-formily-schema-generator",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-ui",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "product-design",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "frontend-commit",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "git-commit-core",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-implementation-contract-compiler",
+      "classification": "adapted"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-openapi-governance",
+      "classification": "adapted"
+    },
+    {
+      "profile": "frontend",
+      "skill": "prototype-review",
+      "classification": "adapted"
+    },
+    {
+      "profile": "frontend",
+      "skill": "triage",
+      "classification": "adapted"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-api-integration",
+      "classification": "adapted"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-openapi-draft-review",
+      "classification": "adapted"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-skill-source-index-refresh",
+      "classification": "adapted"
+    },
+    {
+      "profile": "frontend",
+      "skill": "research",
+      "classification": "retired"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-antd-design",
+      "classification": "retired"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-antdv-next-design",
+      "classification": "retired"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-components",
+      "classification": "retired"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-microapp-commit",
+      "classification": "retired"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-page-module-development",
+      "classification": "retired"
+    },
+    {
+      "profile": "frontend",
+      "skill": "component-selection-imports",
+      "classification": "retired"
+    },
+    {
+      "profile": "frontend",
+      "skill": "page-form-module",
+      "classification": "retired"
+    },
+    {
+      "profile": "frontend",
+      "skill": "page-list-module",
+      "classification": "retired"
+    },
+    {
+      "profile": "frontend",
+      "skill": "page-skeleton",
+      "classification": "retired"
+    },
+    {
+      "profile": "frontend",
+      "skill": "vue3-best-practices",
+      "classification": "retired"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-use-table-height",
+      "classification": "retired"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-use-tree-height",
+      "classification": "retired"
+    },
+    {
+      "profile": "frontend",
+      "skill": "grill-me",
+      "classification": "retired"
+    },
+    {
+      "profile": "frontend",
+      "skill": "wait-what",
+      "classification": "retired"
+    },
+    {
+      "profile": "frontend",
+      "skill": "grill-with-docs",
+      "classification": "retired"
+    },
+    {
+      "profile": "frontend",
+      "skill": "to-questionnaire",
+      "classification": "retired"
+    },
+    {
+      "profile": "frontend",
+      "skill": "improve-codebase-architecture",
+      "classification": "retired"
+    },
+    {
+      "profile": "frontend",
+      "skill": "architecture-agent",
+      "classification": "local-only"
+    },
+    {
+      "profile": "frontend",
+      "skill": "frontend-agent",
+      "classification": "local-only"
+    },
+    {
+      "profile": "frontend",
+      "skill": "harness-orchestrator",
+      "classification": "local-only"
+    },
+    {
+      "profile": "frontend",
+      "skill": "test-agent",
+      "classification": "local-only"
+    },
+    {
+      "profile": "frontend",
+      "skill": "backend-agent",
+      "classification": "excluded"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-product-lifecycle",
+      "classification": "excluded"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-stage-decision",
+      "classification": "excluded"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-tactical-design",
+      "classification": "excluded"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-technical-design",
+      "classification": "excluded"
+    }
+  ],
+  "issues": [],
+  "applied": 60,
+  "counts": {
+    "updated": 25,
+    "added": 35
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "source_audit": "owner-reviewed-fixed-source",
+  "claims": 14,
+  "evidence_items": 36,
+  "searches": 18,
+  "external_sources_fetched": 33,
+  "local_baseline_drift": false,
+  "local_links_valid": true,
+  "effectiveness_experiments": "not-executed",
+  "scope": "research-assets-only",
+  "notes": [
+    "Stars 为仓库累积值，不是技能效果",
+    "不把旧 issue 当当前缺陷",
+    "未复制第三方技能到 active skill roots",
+    "未修改现有 Skill、锁、投影或业务资产"
+  ],
+  "github_evidence_pinned": true
+}

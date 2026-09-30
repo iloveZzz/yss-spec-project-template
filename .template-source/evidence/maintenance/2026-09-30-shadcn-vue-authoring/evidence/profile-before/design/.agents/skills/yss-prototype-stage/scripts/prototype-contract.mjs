@@ -1,0 +1,317 @@
+#!/usr/bin/env node
+import { realpathSync } from 'node:fs';
+import { assertUserDecisionRequirement, decisionDigest, decisionIO } from "../../../../scripts/lib/user-decision.mjs";
+import { existsSync } from "node:fs";
+import { readFile } from "node:fs/promises";
+import { prepareOfflineHtml, validateOfflineHtml, sealOfflineHtml } from "./offline-html.mjs";
+import path from "node:path";
+import { pathToFileURL } from "node:url";
+import { parseDocument } from "../../../../scripts/vendor/yaml.mjs";
+
+const nonEmpty = (value) => typeof value === "string" && value.trim().length > 0;
+const object = (value) => value && typeof value === "object" && !Array.isArray(value);
+const antdSemver = /^6\.[0-9]+\.[0-9]+(?:-[0-9A-Za-z.-]+)?$/;
+const exactSemver = /^[0-9]+\.[0-9]+\.[0-9]+(?:-[0-9A-Za-z.-]+)?$/;
+const PROFILE_KIND = { H1: "visual-review", H2: "flow-review" };
+const PROFILE_BLOCK = { H1: "visual_review", H2: "flow_review" };
+
+function required(data, field, parent, errors) {
+  if (!object(data) || data[field] === undefined || data[field] === null) errors.push(`${parent}.${field} 缺失`);
+}
+
+function requiredString(data, field, parent, errors) {
+  required(data, field, parent, errors);
+  if (object(data) && data[field] !== undefined && !nonEmpty(data[field])) errors.push(`${parent}.${field} 必须是非空字符串`);
+}
+
+function requireArray(data, field, parent, errors, { nonEmpty: mustHaveValue = false } = {}) {
+  required(data, field, parent, errors);
+  if (object(data) && !Array.isArray(data[field])) errors.push(`${parent}.${field} 必须是数组`);
+  else if (mustHaveValue && Array.isArray(data?.[field]) && data[field].length === 0) errors.push(`${parent}.${field} 必须是非空数组`);
+}
+
+function requiredPassed(data, field, parent, errors, allowTemplate) {
+  requiredString(data, field, parent, errors);
+  if (!allowTemplate && object(data) && nonEmpty(data[field]) && !["passed", "approved"].includes(data[field])) errors.push(`${parent}.${field} 必须为 passed/approved`);
+}
+
+function validateConditionalCheck(check, parent, errors, allowTemplate) {
+  for (const field of ["applicable", "result", "evidence_ref"]) required(check, field, parent, errors);
+  if (!object(check)) return;
+  if (typeof check.applicable !== "boolean") errors.push(`${parent}.applicable 必须是 boolean`);
+  if (check.applicable === true) requiredPassed(check, "result", parent, errors, allowTemplate);
+  if (check.applicable === false && !allowTemplate && check.result !== "not-applicable") errors.push(`${parent}.result 必须为 not-applicable`);
+  requiredString(check, "evidence_ref", parent, errors);
+}
+
+function validateCommonV4(data, errors, allowTemplate) {
+  for (const field of ["feature", "prototype_ref", "prototype_profile", "profile_kind", "profile_decision", "upstream_refs", "source_visual", "design_baseline", "visual_baseline", "browser_delivery", "design_qa", "profile_evidence", "implementation_handoff", "review", "user_confirmation", "gaps", "blockers"]) required(data, field, "root", errors);
+  requiredString(data, "feature", "root", errors);
+  requiredString(data, "prototype_ref", "root", errors);
+  if (!Object.hasOwn(PROFILE_KIND, data.prototype_profile)) errors.push("root.prototype_profile 必须为 H1/H2；真实组件验证不属于原型档位");
+  if (PROFILE_KIND[data.prototype_profile] !== data.profile_kind) errors.push("root.profile_kind 必须与 prototype_profile 匹配");
+
+  const decision = data.profile_decision;
+  requiredString(decision, "decision_to_inform", "profile_decision", errors);
+  requireArray(decision, "risk_assumptions", "profile_decision", errors, { nonEmpty: true });
+  requireArray(decision, "trigger_results", "profile_decision", errors, { nonEmpty: true });
+  requiredString(decision, "calculated_profile", "profile_decision", errors);
+  if (object(decision) && decision.calculated_profile !== data.prototype_profile && decision.override?.applied !== true) errors.push("profile_decision.calculated_profile 与选择档位不同时必须记录 override");
+  if (object(decision?.override)) {
+    for (const field of ["applied", "direction", "reason", "evidence_ref"]) required(decision.override, field, "profile_decision.override", errors);
+  } else errors.push("profile_decision.override 缺失");
+
+  const upstream = data.upstream_refs;
+  for (const field of ["spec_ref", "interaction_spec_ref", "low_fidelity_ref", "state_matrix_ref", "prototype_review_ref"]) requiredString(upstream, field, "upstream_refs", errors);
+  const visual = data.source_visual;
+  for (const field of ["ideation_status", "selected_ref", "reuse_reason"]) requiredString(visual, field, "source_visual", errors);
+  if (object(visual) && !["required", "not-applicable"].includes(visual.ideation_status)) errors.push("source_visual.ideation_status 必须为 required/not-applicable");
+
+  if (visual?.kind !== undefined) {
+    if (!["design-system", "visual-reference"].includes(visual.kind)) errors.push("source_visual.kind 必须为 design-system/visual-reference");
+    const expectedMode = visual.kind === "design-system" ? "design-contract" : "visual-comparison";
+    if (data.design_qa?.mode !== expectedMode) errors.push("design_qa.mode 与 source_visual.kind 不一致");
+    if (visual.kind === "design-system" && visual.selected_ref !== "DESIGN.md") errors.push("规范直出必须以 DESIGN.md 为规范依据，不能用自身截图自证");
+    if (!allowTemplate && visual.kind === "visual-reference" && visual.selected_ref === data.prototype_ref) errors.push("视觉还原目标不得引用原型自身");
+  }
+  if (data.browser_delivery?.delivery_contract === "offline-html-v1") {
+    requiredString(data.browser_delivery, "resource_manifest_ref", "browser_delivery", errors);
+    requiredString(data.browser_delivery, "offline_verification_ref", "browser_delivery", errors);
+    requiredPassed(data.browser_delivery, "offline_verification_result", "browser_delivery", errors, allowTemplate);
+    if (visual?.kind === undefined) errors.push("离线 HTML 证据必须声明 source_visual.kind");
+  }
+
+  const baseline = data.design_baseline;
+  requiredString(baseline, "canonical_design_ref", "design_baseline", errors);
+  requiredString(baseline, "canonical_design_digest", "design_baseline", errors);
+  if (object(baseline) && baseline.canonical_design_ref !== "DESIGN.md" && !(allowTemplate && /<[^>]+>/.test(baseline.canonical_design_ref ?? ""))) errors.push("design_baseline.canonical_design_ref 必须为 DESIGN.md");
+  requiredString(baseline, "project_design_ref", "design_baseline", errors);
+  requireArray(baseline, "project_token_refs", "design_baseline", errors, { nonEmpty: true });
+  requiredString(baseline, "project_token_baseline_digest", "design_baseline", errors);
+  required(baseline, "project_override_reviewed", "design_baseline", errors);
+  if (!allowTemplate && baseline?.project_override_reviewed !== true) errors.push("design_baseline.project_override_reviewed 必须为 true");
+
+  const visualBaseline = data.visual_baseline;
+  for (const field of ["manifest_ref", "baseline_id", "version", "digest", "status", "case_ids"]) required(visualBaseline, field, "visual_baseline", errors);
+  for (const field of ["manifest_ref", "baseline_id", "version", "digest", "status"]) requiredString(visualBaseline, field, "visual_baseline", errors);
+  requireArray(visualBaseline, "case_ids", "visual_baseline", errors, { nonEmpty: true });
+  if (!allowTemplate && visualBaseline?.status !== "approved") errors.push("visual_baseline.status 必须为 approved");
+  if (!allowTemplate && !/^visual-baseline\.[a-z0-9][a-z0-9-]*$/.test(visualBaseline?.baseline_id ?? "")) errors.push("visual_baseline.baseline_id 非法");
+  if (!allowTemplate && !/^v[1-9][0-9]*$/.test(visualBaseline?.version ?? "")) errors.push("visual_baseline.version 必须形如 v1");
+  if (!allowTemplate && !/^sha256:[a-f0-9]{64}$/.test(visualBaseline?.digest ?? "")) errors.push("visual_baseline.digest 必须为 sha256 摘要");
+
+  const browser = data.browser_delivery;
+  for (const field of ["delivery_kind", "entry_ref", "rendered_nonblank", "prototype_digest", "viewports", "console_result", "console_ref"]) required(browser, field, "browser_delivery", errors);
+  requiredString(browser, "delivery_kind", "browser_delivery", errors);
+  requiredString(browser, "entry_ref", "browser_delivery", errors);
+  requiredString(browser, "prototype_digest", "browser_delivery", errors);
+  requireArray(browser, "viewports", "browser_delivery", errors, { nonEmpty: true });
+  if (!allowTemplate && browser?.rendered_nonblank !== true) errors.push("browser_delivery.rendered_nonblank 必须为 true");
+  if (!allowTemplate) requiredPassed(browser, "console_result", "browser_delivery", errors, allowTemplate);
+  for (const requiredViewport of ["desktop", "narrow"]) {
+    const viewport = Array.isArray(browser?.viewports) ? browser.viewports.find((item) => item?.name === requiredViewport) : null;
+    if (!viewport) errors.push(`browser_delivery.viewports 缺少 ${requiredViewport}`);
+    else {
+      requiredString(viewport, "size", `browser_delivery.viewports.${requiredViewport}`, errors);
+      requireArray(viewport, "case_ids", `browser_delivery.viewports.${requiredViewport}`, errors, { nonEmpty: true });
+      if (!allowTemplate) requiredPassed(viewport, "result", `browser_delivery.viewports.${requiredViewport}`, errors, allowTemplate);
+    }
+  }
+
+  const qa = data.design_qa;
+  requiredString(qa, "report_ref", "design_qa", errors);
+  if (nonEmpty(qa?.report_ref) && !/^docs\/\.scratch\/[^/]+\/verification\/design-qa\.md$/.test(qa.report_ref) && !(allowTemplate && /<[^>]+>/.test(qa.report_ref))) errors.push("design_qa.report_ref 必须是 feature 级 verification/design-qa.md");
+  if (!allowTemplate) requiredPassed(qa, "result", "design_qa", errors, allowTemplate);
+  for (const axis of ["visual", "layout", "interaction", "content", "accessibility", "cross_platform"]) if (!allowTemplate) requiredPassed(qa?.axes, axis, "design_qa.axes", errors, allowTemplate); else required(qa?.axes, axis, "design_qa.axes", errors);
+
+  const handoff = data.implementation_handoff;
+  if (handoff?.prototype_code_reusable !== false) errors.push("implementation_handoff.prototype_code_reusable 必须为 false");
+  requireArray(handoff, "production_component_assumptions", "implementation_handoff", errors);
+  requireArray(handoff, "verification_targets", "implementation_handoff", errors);
+  if (Array.isArray(handoff?.verification_targets)) {
+    for (const [index, target] of handoff.verification_targets.entries()) {
+      requiredString(target, "behavior", `implementation_handoff.verification_targets.${index}`, errors);
+      requiredString(target, "target_stage", `implementation_handoff.verification_targets.${index}`, errors);
+      if (!allowTemplate && !["frontend-implementation-plan", "frontend-implementation-verification"].includes(target?.target_stage)) errors.push(`implementation_handoff.verification_targets.${index}.target_stage 必须属于前端实现阶段`);
+    }
+  }
+
+  if (!Array.isArray(data.gaps)) errors.push("root.gaps 必须是数组");
+  if (!Array.isArray(data.blockers)) errors.push("root.blockers 必须是数组");
+  if (!allowTemplate && Array.isArray(data.blockers) && data.blockers.length > 0) errors.push("存在 blockers，不能通过原型验证");
+  if (!allowTemplate) {
+    requiredPassed(data.review, "result", "review", errors, allowTemplate);
+    requiredString(data.review, "review_ref", "review", errors);
+    requiredPassed(data.user_confirmation, "result", "user_confirmation", errors, allowTemplate);
+    for (const field of ["confirmation_ref", "confirmed_decision"]) requiredString(data.user_confirmation, field, "user_confirmation", errors);
+    requireArray(data.user_confirmation, "operable_scope", "user_confirmation", errors, { nonEmpty: true });
+    requireArray(data.user_confirmation, "simulations_or_gaps", "user_confirmation", errors);
+  }
+
+  for (const legacy of ["prototype_stack", "visual_semantic_mapping", "antd", "browser_verification", "accessibility_verification"]) if (data[legacy] !== undefined) errors.push(`schema v4 禁止旧字段 root.${legacy}`);
+}
+
+function validateProfileV4(data, errors, allowTemplate) {
+  const blocks = object(data.profile_evidence) ? Object.keys(data.profile_evidence) : [];
+  const expected = PROFILE_BLOCK[data.prototype_profile];
+  if (blocks.length !== 1 || blocks[0] !== expected) errors.push(`profile_evidence 必须且只能包含 ${expected}`);
+  const evidence = data.profile_evidence?.[expected];
+  if (!object(evidence)) return;
+  if (data.prototype_profile === "H1") {
+    if (evidence.runtime_build_required !== false) errors.push("H1 runtime_build_required 必须为 false");
+    for (const field of ["key_interactions_result", "keyboard_result", "focus_result", "contrast_result"]) requiredPassed(evidence, field, "profile_evidence.visual_review", errors, allowTemplate);
+    validateConditionalCheck(evidence.zoom_200, "profile_evidence.visual_review.zoom_200", errors, allowTemplate);
+    validateConditionalCheck(evidence.reduced_motion, "profile_evidence.visual_review.reduced_motion", errors, allowTemplate);
+    for (const forbidden of ["package_manifest_ref", "lockfile_ref", "antd", "prototype_library_facts", "actual_antd_version"]) if (evidence[forbidden] !== undefined) errors.push(`H1 禁止字段 ${forbidden}`);
+  }
+  if (data.prototype_profile === "H2") {
+    const implementation = evidence.implementation;
+    for (const field of ["framework", "runtime_build_required"]) required(implementation, field, "profile_evidence.flow_review.implementation", errors);
+    if (implementation?.runtime_build_required === true) {
+      for (const field of ["package_manager", "package_manifest_ref", "lockfile_ref", "build_command"]) requiredString(implementation, field, "profile_evidence.flow_review.implementation", errors);
+      requiredPassed(implementation, "build_result", "profile_evidence.flow_review.implementation", errors, allowTemplate);
+    }
+    for (const field of ["main_flow_result", "exceptional_state_result", "keyboard_result", "focus_result", "contrast_result", "zoom_200_result", "reduced_motion_result"]) requiredPassed(evidence, field, "profile_evidence.flow_review", errors, allowTemplate);
+    requiredString(evidence, "exceptional_state_ref", "profile_evidence.flow_review", errors);
+    validateConditionalCheck(evidence.visual_regression, "profile_evidence.flow_review.visual_regression", errors, allowTemplate);
+    const facts = evidence.prototype_library_facts;
+    required(facts, "applicable", "profile_evidence.flow_review.prototype_library_facts", errors);
+    requiredString(facts, "component_basis", "profile_evidence.flow_review.prototype_library_facts", errors);
+    if (["html-css-js", "react-antd-prebuilt", "react-shadcn-prebuilt"].includes(facts?.component_basis)) {
+      if (implementation?.runtime_build_required !== false || implementation?.framework !== facts.component_basis || (facts.component_basis === "html-css-js" && facts.applicable !== false)) errors.push("HTML H2 必须声明无组件 Provider、无运行时构建及 html-css-js framework");
+      if (data.browser_delivery?.delivery_contract !== "offline-html-v1") errors.push("HTML H2 缺少 offline-html-v1 交付证据");
+      for (const field of ["scenario_replay_ref", "scenario_reset_result"]) requiredString(evidence, field, "profile_evidence.flow_review", errors);
+      requiredPassed(evidence, "scenario_reset_result", "profile_evidence.flow_review", errors, allowTemplate);
+    }
+    if (facts?.component_basis === "react-antd-prebuilt") {
+      if (facts.applicable !== true || facts.library_package !== "antd" || !antdSemver.test(facts.library_version ?? "")) errors.push("真实 AntD 预构建需要实际 antd 精确版本");
+      requiredString(facts, "build_provenance_ref", "prototype_library_facts", errors);
+      requiredString(implementation, "selection_reason", "prototype_implementation", errors);
+    }
+    if (facts?.component_basis === "react-shadcn-prebuilt") {
+      if (facts.applicable !== true || facts.library_package !== "shadcn/ui" || (!allowTemplate && !/^[a-f0-9]{40}$/.test(facts.registry_revision ?? ""))) errors.push("shadcn 使用固定源码 revision，不能用 CLI 版本冒充组件版本");
+      requiredString(facts, "build_provenance_ref", "prototype_library_facts", errors);
+    }
+    if (facts?.applicable === true) {
+      for (const field of ["source", "manifest_ref", "manifest_digest", "canonical_design_digest", "project_token_baseline_digest"]) requiredString(facts, field, "profile_evidence.flow_review.prototype_library_facts", errors);
+      requireArray(facts, "components_covered", "profile_evidence.flow_review.prototype_library_facts", errors, { nonEmpty: true });
+      if (facts.component_basis === "react-antd-6" && facts.actual_antd_version !== undefined) {
+        if (!allowTemplate && !antdSemver.test(facts.actual_antd_version ?? "")) errors.push("H2 actual_antd_version 必须是明确 antd 6.x semver");
+      } else if (facts.component_basis !== "react-shadcn-prebuilt") {
+        for (const field of ["library_package", "library_version"]) requiredString(facts, field, "profile_evidence.flow_review.prototype_library_facts", errors);
+        if (!allowTemplate && !exactSemver.test(facts.library_version ?? "")) errors.push("H2 library_version 必须是明确 semver");
+        if (facts.component_basis === "vue-antdv-next" && facts.library_package !== "antdv-next") errors.push("vue-antdv-next 必须使用 antdv-next package");
+        if (facts.component_basis === "react-antd-6" && (facts.library_package !== "antd" || (!allowTemplate && !antdSemver.test(facts.library_version ?? "")))) errors.push("react-antd-6 必须使用明确的 antd 6.x 版本");
+      }
+      if (!["fact-pack", "cli-run", ...(facts.component_basis === "react-shadcn-prebuilt" ? ["source-snapshot"] : [])].includes(facts.source)) errors.push("H2 prototype_library_facts.source 必须为 fact-pack/cli-run；shadcn 使用 source-snapshot");
+      if (!allowTemplate && facts.project_token_baseline_digest !== data.design_baseline.project_token_baseline_digest) errors.push("H2 fact pack 的项目 Token digest 已失效");
+      if (!allowTemplate && facts.canonical_design_digest !== data.design_baseline.canonical_design_digest) errors.push("H2 fact pack 的 DESIGN.md digest 已失效");
+      if (!allowTemplate && facts.new_api_uncertainty !== false) errors.push("H2 fact pack 存在新 API 疑问，必须增量查询");
+    }
+    for (const forbidden of ["real_component_verified", "implementation_repo_ref", "component_library_version", "harness_ref", "story_refs"]) if (evidence[forbidden] !== undefined) errors.push(`H2 原型禁止生产组件字段 ${forbidden}`);
+  }
+}
+
+export function prototypeDecisionSnapshot(data) {
+  return { prototype_ref: data.prototype_ref, prototype_digest: data.browser_delivery?.prototype_digest, visual_baseline: data.visual_baseline, design_baseline: data.design_baseline, upstream_refs: data.upstream_refs, operable_scope: data.user_confirmation?.operable_scope, simulations_or_gaps: data.user_confirmation?.simulations_or_gaps };
+}
+
+export function validatePrototypeEvidence(data, { allowTemplate = false, allowLegacy = false, ...decisionOptions } = {}) {
+  const errors = [];
+  const warnings = [];
+  if (!object(data)) return { errors: ["原型证据必须是对象"], warnings };
+  if ([1, 2, 3].includes(data.schema_version)) {
+    if (!allowLegacy) errors.push(`schema_version ${data.schema_version} 是只读旧证据；在途工作关闭 check.prototype-verified 前必须迁移到 4`);
+    else warnings.push(`legacy prototype evidence schema v${data.schema_version}; read-only`);
+    return { errors, warnings };
+  }
+  if (data.schema_version !== 4) return { errors: ["schema_version 必须为 4"], warnings };
+  const oldBasis = data.profile_evidence?.flow_review?.prototype_library_facts?.component_basis;
+  if (["vue-antdv-next", "react-antd-6", "react-antd-prebuilt"].includes(oldBasis)) {
+    if (!allowLegacy && !allowTemplate) errors.push("Provider 已退役；旧证据仅 --allow-legacy 只读检查，在途需迁移 HTML");
+    else warnings.push("历史 Provider 证据只读，不代表当前原型通过");
+  }
+  validateCommonV4(data, errors, allowTemplate);
+  validateProfileV4(data, errors, allowTemplate);
+  if (!allowTemplate && errors.length === 0) {
+    try {
+      const confirmation = data.user_confirmation;
+      assertUserDecisionRequirement({ boundary: "gate.product-design-approved", subject_ref: confirmation.decision_subject_ref, scope: confirmation.operable_scope, user_decision_ref: confirmation.user_decision_ref }, decisionOptions);
+      if (decisionDigest(decisionIO(decisionOptions).document(confirmation.decision_subject_ref)) !== decisionDigest(prototypeDecisionSnapshot(data))) throw new TypeError("user-decision-stale: 原型与用户所见快照不一致");
+    } catch (error) { errors.push(error.message); }
+  }
+  return { errors, warnings };
+}
+
+export async function prepareStaticPrototype(options) {
+  return prepareOfflineHtml({ ...options, profile: "H1" });
+}
+
+export async function prepareFlowPrototype(options) {
+  if (options.targetAntdVersion || options.libraryVersion || options.factPackRef || (options.componentBasis && options.componentBasis !== "html-css-js")) throw new TypeError("原型 Provider 已退役；新原型使用 build-shadcn-prototype 或 html-css-js 离线交付，历史原型保持只读");
+  return prepareOfflineHtml({ ...options, profile: "H2" });
+}
+
+export const preparePrototype = prepareFlowPrototype;
+
+export async function validatePrototypeProject({ root, profile = "H2", componentBasis, targetAntdVersion, allowLegacy = false, projectRoot }) {
+  if (!Object.hasOwn(PROFILE_KIND, profile)) return { errors: ["prototype_profile 必须为 H1/H2"] };
+  if (targetAntdVersion || (componentBasis && !["html-css-js", "react-shadcn-prebuilt", ...(allowLegacy ? ["react-antd-prebuilt"] : [])].includes(componentBasis))) return { errors: ["旧 Provider 项目不进入当前生成路线；请保留历史快照并迁移"] };
+  const result = await validateOfflineHtml(root, profile, { allowLegacy, projectRoot });
+  if (componentBasis && !result.errors.length) {
+    const manifest = JSON.parse(await readFile(path.join(root, "yss-prototype-adapter.json"), "utf8"));
+    if (manifest.component_basis !== componentBasis) result.errors.push("componentBasis 与原型 manifest 不一致");
+  }
+  return result;
+}
+
+function args(argv) {
+  const result = { _: [] };
+  for (let index = 0; index < argv.length; index += 1) {
+    const item = argv[index];
+    if (!item.startsWith("--")) { result._.push(item); continue; }
+    const key = item.slice(2);
+    const value = argv[index + 1];
+    if (!value || value.startsWith("--")) result[key] = true;
+    else { result[key] = value; index += 1; }
+  }
+  return result;
+}
+
+async function loadYaml(file) {
+  const document = parseDocument(await readFile(file, "utf8"), { uniqueKeys: true });
+  if (document.errors.length > 0) throw new TypeError(document.errors[0].message);
+  return document.toJS({ maxAliasCount: 0 });
+}
+
+async function main(argv) {
+  const parsed = args(argv);
+  const command = parsed._[0];
+  if (command === "prepare-static") {
+    process.stdout.write(`${JSON.stringify(await prepareStaticPrototype({ projectRoot: parsed["project-root"], root: parsed.root, feature: parsed.feature, pattern: parsed.pattern, density: parsed.density, scenarios: parsed.scenarios, title: parsed.title }), null, 2)}\n`);
+    return;
+  }
+  if (["prepare", "prepare-flow"].includes(command)) {
+    process.stdout.write(`${JSON.stringify(await prepareFlowPrototype({ projectRoot: parsed["project-root"], root: parsed.root, feature: parsed.feature, pattern: parsed.pattern, density: parsed.density, scenarios: parsed.scenarios, title: parsed.title, componentBasis: parsed["component-basis"], libraryVersion: parsed["library-version"], targetAntdVersion: parsed["target-antd-version"], pnpmVersion: parsed["pnpm-version"], factPackRef: parsed["fact-pack-ref"] }), null, 2)}\n`);
+    return;
+  }
+  if (command === "seal-project") {
+    process.stdout.write(`${JSON.stringify(await sealOfflineHtml(parsed.root, parsed.profile ?? "H2"), null, 2)}\n`);
+    return;
+  }
+  if (command === "validate-project") {
+    const result = await validatePrototypeProject({ root: parsed.root, profile: parsed.profile ?? "H2", componentBasis: parsed["component-basis"], libraryVersion: parsed["library-version"], targetAntdVersion: parsed["target-antd-version"], allowLegacy: Boolean(parsed["allow-legacy"]), projectRoot: parsed["project-root"] });
+    if (result.errors.length > 0) throw new TypeError(result.errors.join("\n"));
+    process.stdout.write("prototype project contract passed\n");
+    return;
+  }
+  if (command === "validate-evidence") {
+    const result = validatePrototypeEvidence(await loadYaml(parsed._[1]), { allowTemplate: Boolean(parsed["allow-template"]), allowLegacy: Boolean(parsed["allow-legacy"]), projectRoot: parsed["project-root"] });
+    if (result.errors.length > 0) throw new TypeError(result.errors.join("\n"));
+    process.stdout.write(`prototype evidence passed${result.warnings.length ? ` with warnings: ${result.warnings.join(", ")}` : ""}\n`);
+    return;
+  }
+  throw new TypeError("usage: prototype-contract.mjs prepare-static|prepare-flow|seal-project|validate-project|validate-evidence ...");
+}
+
+if (process.argv[1] && existsSync(process.argv[1]) && import.meta.url === pathToFileURL(realpathSync(process.argv[1])).href) main(process.argv.slice(2)).catch((error) => { process.stderr.write(`${error.message}\n`); process.exitCode = 1; });

@@ -1,0 +1,233 @@
+{
+  "scope": "same input/state/viewport, before and after maintainer changes; visual approval pending",
+  "rows": [
+    {
+      "width": 1440,
+      "mode": "list-detail",
+      "variant": "before",
+      "scenario": "primary",
+      "metrics": {
+        "font": "14px",
+        "pageOverflow": false
+      }
+    },
+    {
+      "width": 1440,
+      "mode": "list-detail",
+      "variant": "after",
+      "scenario": "primary",
+      "metrics": {
+        "font": "14px",
+        "pageOverflow": false
+      }
+    },
+    {
+      "width": 1440,
+      "mode": "multi-step",
+      "variant": "before",
+      "scenario": "primary",
+      "metrics": {
+        "font": "14px",
+        "pageOverflow": false
+      }
+    },
+    {
+      "width": 1440,
+      "mode": "multi-step",
+      "variant": "after",
+      "scenario": "primary",
+      "metrics": {
+        "font": "14px",
+        "pageOverflow": false
+      }
+    },
+    {
+      "width": 1440,
+      "mode": "approval",
+      "variant": "before",
+      "scenario": "primary",
+      "metrics": {
+        "font": "14px",
+        "pageOverflow": false
+      }
+    },
+    {
+      "width": 1440,
+      "mode": "approval",
+      "variant": "after",
+      "scenario": "primary",
+      "metrics": {
+        "font": "14px",
+        "pageOverflow": false
+      }
+    },
+    {
+      "width": 1440,
+      "mode": "conflict",
+      "variant": "before",
+      "scenario": "primary",
+      "metrics": {
+        "font": "14px",
+        "pageOverflow": false
+      }
+    },
+    {
+      "width": 1440,
+      "mode": "conflict",
+      "variant": "after",
+      "scenario": "primary",
+      "metrics": {
+        "font": "14px",
+        "pageOverflow": false
+      }
+    },
+    {
+      "width": 1440,
+      "mode": "analysis",
+      "variant": "before",
+      "scenario": "primary",
+      "metrics": {
+        "font": "14px",
+        "pageOverflow": false
+      }
+    },
+    {
+      "width": 1440,
+      "mode": "analysis",
+      "variant": "after",
+      "scenario": "primary",
+      "metrics": {
+        "font": "14px",
+        "pageOverflow": false
+      }
+    },
+    {
+      "width": 390,
+      "mode": "list-detail",
+      "variant": "before",
+      "scenario": "primary",
+      "metrics": {
+        "font": "14px",
+        "pageOverflow": false
+      }
+    },
+    {
+      "width": 390,
+      "mode": "list-detail",
+      "variant": "after",
+      "scenario": "primary",
+      "metrics": {
+        "font": "14px",
+        "pageOverflow": false
+      }
+    },
+    {
+      "width": 390,
+      "mode": "multi-step",
+      "variant": "before",
+      "scenario": "primary",
+      "metrics": {
+        "font": "14px",
+        "pageOverflow": false
+      }
+    },
+    {
+      "width": 390,
+      "mode": "multi-step",
+      "variant": "after",
+      "scenario": "primary",
+      "metrics": {
+        "font": "14px",
+        "pageOverflow": false
+      }
+    },
+    {
+      "width": 390,
+      "mode": "approval",
+      "variant": "before",
+      "scenario": "primary",
+      "metrics": {
+        "font": "14px",
+        "pageOverflow": false
+      }
+    },
+    {
+      "width": 390,
+      "mode": "approval",
+      "variant": "after",
+      "scenario": "primary",
+      "metrics": {
+        "font": "14px",
+        "pageOverflow": false
+      }
+    },
+    {
+      "width": 390,
+      "mode": "conflict",
+      "variant": "before",
+      "scenario": "primary",
+      "metrics": {
+        "font": "14px",
+        "pageOverflow": false
+      }
+    },
+    {
+      "width": 390,
+      "mode": "conflict",
+      "variant": "after",
+      "scenario": "primary",
+      "metrics": {
+        "font": "14px",
+        "pageOverflow": false
+      }
+    },
+    {
+      "width": 390,
+      "mode": "analysis",
+      "variant": "before",
+      "scenario": "primary",
+      "metrics": {
+        "font": "14px",
+        "pageOverflow": false
+      }
+    },
+    {
+      "width": 390,
+      "mode": "analysis",
+      "variant": "after",
+      "scenario": "primary",
+      "metrics": {
+        "font": "14px",
+        "pageOverflow": false
+      }
+    },
+    {
+      "width": 1440,
+      "mode": "list-detail",
+      "variant": "before",
+      "scenario": "primary",
+      "state": "detail M-001"
+    },
+    {
+      "width": 1440,
+      "mode": "list-detail",
+      "variant": "after",
+      "scenario": "primary",
+      "state": "detail M-001"
+    },
+    {
+      "width": 390,
+      "mode": "list-detail",
+      "variant": "before",
+      "scenario": "primary",
+      "state": "detail M-001"
+    },
+    {
+      "width": 390,
+      "mode": "list-detail",
+      "variant": "after",
+      "scenario": "primary",
+      "state": "detail M-001"
+    }
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "scenario": "approval-permission",
+  "variant": "baseline",
+  "repeat": 1,
+  "elapsed_seconds": 302.69,
+  "exit_code": null,
+  "timeout": true,
+  "assertion_failures": [
+    {
+      "assertion": {
+        "kind": "exists",
+        "path": "drafts/index.html"
+      }
+    },
+    {
+      "assertion": {
+        "kind": "exists",
+        "path": "drafts/design.md"
+      }
+    }
+  ],
+  "runtime_errors": [],
+  "tool_calls": 12,
+  "usage": [],
+  "automatic_result": "failed",
+  "semantic_review": "pending",
+  "trace": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-enhancement-20260929-nqu8lb1k/baseline-results-v2/approval-permission-1/trace.jsonl",
+  "steps": [
+    {
+      "step": "main",
+      "started_at": "2026-09-29T15:44:05Z",
+      "elapsed_seconds": 300.82,
+      "exit_code": null,
+      "timeout": true,
+      "assertion_failures": [
+        {
+          "assertion": {
+            "kind": "exists",
+            "path": "drafts/index.html"
+          }
+        },
+        {
+          "assertion": {
+            "kind": "exists",
+            "path": "drafts/design.md"
+          }
+        }
+      ],
+      "runtime_errors": [],
+      "tool_calls": 12,
+      "usage": [],
+      "automatic_result": "failed",
+      "semantic_review": "pending",
+      "trace": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-enhancement-20260929-nqu8lb1k/baseline-results-v2/approval-permission-1/trace.jsonl",
+      "write_scope": {
+        "status": "passed",
+        "allowed_writes": [
+          "drafts/"
+        ],
+        "changed_paths": [
+          "drafts/data.js",
+          "drafts/design-tokens.css",
+          "drafts/sources.json",
+          "drafts/tokens.css"
+        ],
+        "violations": [],
+        "scope": "Final file/symlink differences; excludes .git, __pycache__, .eval-tmp and command log; not a sandbox or transient-write audit"
+      },
+      "git_audit": {
+        "status": "not-checked"
+      },
+      "skill_reads": [
+        {
+          "skill": "yss-prototype-stage",
+          "path": ".agents/skills/yss-prototype-stage/SKILL.md",
+          "status": "observed-read",
+          "scope": "successful explicit tool read; may be partial; native auto-injected bodies need separate evidence"
+        },
+        {
+          "skill": "yss-design-system",
+          "path": ".agents/skills/yss-design-system/SKILL.md",
+          "status": "observed-read",
+          "scope": "successful explicit tool read; may be partial; native auto-injected bodies need separate evidence"
+        }
+      ],
+      "turn_completed": false
+    }
+  ],
+  "unattempted_steps": [],
+  "stop_reason": null
+}

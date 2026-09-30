@@ -1,6 +1,7 @@
 ---
 tracker:
   lifecycle_tracking_version: 1
+  business_ticket_version: 1
   platform: local-markdown
   root: docs/.scratch
   legacy_roots:
@@ -56,7 +57,7 @@ docs/.scratch/<feature>/
 └── issues/01-<slug>.md
 ```
 
-- `parent-ticket.md` 汇总 Spec、设计、契约、门禁、阻塞边和阶段证据。
+- `parent-ticket.md` 保存 Ticket 五态、业务说明、Spec / 设计 / 契约及会签入口，并明确引用实际 checkpoint。阶段、门禁摘要、阻塞与下一工作单元通过 `scripts/lifecycle-status` 按需读取，不另填第二张状态表。批准依据仍在批准记录中。
 - `issues/01-<slug>.md` 等文件是垂直切片或 Wayfinder 子 Ticket；不得把多个 Ticket 合并成一个文件。
 - 每个 Ticket 在顶部附近使用 `Status:` 记录 Matt 五态之一：`needs-triage`、`needs-info`、`ready-for-agent`、`ready-for-human`、`wontfix`。
 - 评论和对话追加在 `## Comments` 下；状态变化必须保留原因、证据引用和下一步。
@@ -142,3 +143,11 @@ Ticket 是默认 triage surface。MR / PR 是否纳入 triage 取决于当前平
 新初始化默认启用 `tracker.lifecycle_tracking_version: 1`。已有项目的 attach / sync 保留原配置；缺省保持旧模式，按 [阶段工作追踪](../process/stage-tracking.md) 执行 check → plan → apply。
 
 Plan / Spec / Design 的小工作记录在 checkpoint.stage_tracking；独立工作项使用 `work-items/<id>.md`，不占用业务票 / 实现切片的 `issues/`。执行进度只由 checkpoint 保存，父票和 map 引用；阶段工作项不得设置 `ready-for-agent`。
+
+## 业务拆分版本
+
+新项目 business_ticket_version: 1，按 `../process/business-tickets.md` 执行。每票位于功能包 business-tickets/，business-ticket-set.yaml 汇总引用与覆盖；issues/ 保留实现 Slice。缺少版本的旧实例进入兼容诊断，显式迁移前不自动启用；同步保留用户配置。
+
+## 父 Ticket 精简与临时输入
+
+新父 Ticket 使用引用式模板。旧票先保存原文和精确差异，只迁移明确指定文件；发现与 checkpoint 冲突时报告双方值，不修改 checkpoint 或自动裁决。清理规则、外部计划与恢复操作见 [功能资产整理](../process/feature-assets.md)。

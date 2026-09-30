@@ -1,0 +1,230 @@
+{
+  "bundles": [
+    {
+      "bundle": "review/workspace",
+      "authored_files": 20,
+      "registry_revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "lock_digest": "sha256:cd42274ba31bbd1cd29218fefe4e61744cf14ee2c33f9eaefe200dad69be9ebf",
+      "source_match": true,
+      "token_match": true
+    },
+    {
+      "bundle": "review/glass",
+      "authored_files": 20,
+      "registry_revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "lock_digest": "sha256:cd42274ba31bbd1cd29218fefe4e61744cf14ee2c33f9eaefe200dad69be9ebf",
+      "source_match": true,
+      "token_match": true
+    },
+    {
+      "bundle": "review/comfortable",
+      "authored_files": 20,
+      "registry_revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "lock_digest": "sha256:cd42274ba31bbd1cd29218fefe4e61744cf14ee2c33f9eaefe200dad69be9ebf",
+      "source_match": true,
+      "token_match": true
+    },
+    {
+      "bundle": "patterns/list-detail",
+      "authored_files": 11,
+      "registry_revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "lock_digest": "sha256:cd42274ba31bbd1cd29218fefe4e61744cf14ee2c33f9eaefe200dad69be9ebf",
+      "source_match": true,
+      "token_match": true
+    },
+    {
+      "bundle": "patterns/multi-step",
+      "authored_files": 11,
+      "registry_revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "lock_digest": "sha256:cd42274ba31bbd1cd29218fefe4e61744cf14ee2c33f9eaefe200dad69be9ebf",
+      "source_match": true,
+      "token_match": true
+    },
+    {
+      "bundle": "patterns/approval",
+      "authored_files": 11,
+      "registry_revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "lock_digest": "sha256:cd42274ba31bbd1cd29218fefe4e61744cf14ee2c33f9eaefe200dad69be9ebf",
+      "source_match": true,
+      "token_match": true
+    },
+    {
+      "bundle": "patterns/conflict",
+      "authored_files": 11,
+      "registry_revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "lock_digest": "sha256:cd42274ba31bbd1cd29218fefe4e61744cf14ee2c33f9eaefe200dad69be9ebf",
+      "source_match": true,
+      "token_match": true
+    },
+    {
+      "bundle": "patterns/analysis",
+      "authored_files": 11,
+      "registry_revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "lock_digest": "sha256:cd42274ba31bbd1cd29218fefe4e61744cf14ee2c33f9eaefe200dad69be9ebf",
+      "source_match": true,
+      "token_match": true
+    },
+    {
+      "bundle": "patterns/workspace",
+      "authored_files": 20,
+      "registry_revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "lock_digest": "sha256:cd42274ba31bbd1cd29218fefe4e61744cf14ee2c33f9eaefe200dad69be9ebf",
+      "source_match": true,
+      "token_match": true
+    },
+    {
+      "bundle": "patterns/component-states",
+      "authored_files": 11,
+      "registry_revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "lock_digest": "sha256:cd42274ba31bbd1cd29218fefe4e61744cf14ee2c33f9eaefe200dad69be9ebf",
+      "source_match": true,
+      "token_match": true
+    }
+  ],
+  "cli_files": [
+    {
+      "cli": "create-yss-spec",
+      "path": "DESIGN.md",
+      "sha256": "ce13059af0680856b65829617042fd01e5e7620fb6cb9a366a835e396dc883c8",
+      "source_state": "working-tree"
+    },
+    {
+      "cli": "create-yss-spec",
+      "path": ".template-spec/design/tokens/variables.css",
+      "sha256": "27d99eb028db32d185372db8c780f7899fb58d35bfaa89334c9df0598a842b6d",
+      "source_state": "working-tree"
+    },
+    {
+      "cli": "create-yss-spec",
+      "path": ".agents/skills/yss-prototype-stage/assets/vue-business-patterns/Workspace.vue",
+      "sha256": "a1c175bbdbffc4aad7eac936f93aaa37893aeec91fbc3fadbb0a66841be42627",
+      "source_state": "working-tree"
+    },
+    {
+      "cli": "create-yss-spec",
+      "path": ".agents/skills/yss-prototype-stage/assets/vue-business-patterns/workspace-model.js",
+      "sha256": "5791a5c7a37cbc7e49946dcd8866838d84c09830df5ad50b69d49eb58de0e4bc",
+      "source_state": "working-tree"
+    },
+    {
+      "cli": "create-yss-spec",
+      "path": ".agents/skills/yss-prototype-stage/assets/vue-business-patterns/workspace.scenarios.json",
+      "sha256": "b34ef35d2abc70ed2089b13de2fa8e7fea38e02bc4315d82e67af5d152ad3ab3",
+      "source_state": "working-tree"
+    },
+    {
+      "cli": "create-yss-spec",
+      "path": ".agents/skills/yss-prototype-stage/references/enterprise-workspace.md",
+      "sha256": "312735624a05b9967fbf728f06fc90e9a05b2a01a40fb1f9fe1f5c55f7e1b264",
+      "source_state": "working-tree"
+    },
+    {
+      "cli": "create-yss-spec",
+      "path": ".agents/skills/yss-prototype-stage/tests/workspace.test.mjs",
+      "sha256": "ed4e893b9a7361b3a3466b2be97e6c760729b96b13fdbed3601184b70a55ccf0",
+      "source_state": "working-tree"
+    },
+    {
+      "cli": "create-yss-spec",
+      "path": ".agents/skills/yss-prototype-stage/assets/shadcn-vue-authoring/registry-manifest.json",
+      "sha256": "d5b5a5ec68ea50139eda2951666038ff34e2aa8503ef94da44c6ccbb24bd4864",
+      "source_state": "working-tree"
+    },
+    {
+      "cli": "create-yss-strategic-design",
+      "path": "DESIGN.md",
+      "sha256": "ce13059af0680856b65829617042fd01e5e7620fb6cb9a366a835e396dc883c8",
+      "source_state": "working-tree"
+    },
+    {
+      "cli": "create-yss-strategic-design",
+      "path": ".template-spec/design/tokens/variables.css",
+      "sha256": "27d99eb028db32d185372db8c780f7899fb58d35bfaa89334c9df0598a842b6d",
+      "source_state": "working-tree"
+    },
+    {
+      "cli": "create-yss-strategic-design",
+      "path": ".agents/skills/yss-prototype-stage/assets/vue-business-patterns/Workspace.vue",
+      "sha256": "a1c175bbdbffc4aad7eac936f93aaa37893aeec91fbc3fadbb0a66841be42627",
+      "source_state": "working-tree"
+    },
+    {
+      "cli": "create-yss-strategic-design",
+      "path": ".agents/skills/yss-prototype-stage/assets/vue-business-patterns/workspace-model.js",
+      "sha256": "5791a5c7a37cbc7e49946dcd8866838d84c09830df5ad50b69d49eb58de0e4bc",
+      "source_state": "working-tree"
+    },
+    {
+      "cli": "create-yss-strategic-design",
+      "path": ".agents/skills/yss-prototype-stage/assets/vue-business-patterns/workspace.scenarios.json",
+      "sha256": "b34ef35d2abc70ed2089b13de2fa8e7fea38e02bc4315d82e67af5d152ad3ab3",
+      "source_state": "working-tree"
+    },
+    {
+      "cli": "create-yss-strategic-design",
+      "path": ".agents/skills/yss-prototype-stage/references/enterprise-workspace.md",
+      "sha256": "312735624a05b9967fbf728f06fc90e9a05b2a01a40fb1f9fe1f5c55f7e1b264",
+      "source_state": "working-tree"
+    },
+    {
+      "cli": "create-yss-strategic-design",
+      "path": ".agents/skills/yss-prototype-stage/tests/workspace.test.mjs",
+      "sha256": "ed4e893b9a7361b3a3466b2be97e6c760729b96b13fdbed3601184b70a55ccf0",
+      "source_state": "working-tree"
+    },
+    {
+      "cli": "create-yss-strategic-design",
+      "path": ".agents/skills/yss-prototype-stage/assets/shadcn-vue-authoring/registry-manifest.json",
+      "sha256": "d5b5a5ec68ea50139eda2951666038ff34e2aa8503ef94da44c6ccbb24bd4864",
+      "source_state": "working-tree"
+    },
+    {
+      "cli": "create-yss-harness-frontend",
+      "path": "DESIGN.md",
+      "sha256": "ce13059af0680856b65829617042fd01e5e7620fb6cb9a366a835e396dc883c8",
+      "source_state": "working-tree"
+    },
+    {
+      "cli": "create-yss-harness-frontend",
+      "path": ".template-spec/design/tokens/variables.css",
+      "sha256": "27d99eb028db32d185372db8c780f7899fb58d35bfaa89334c9df0598a842b6d",
+      "source_state": "working-tree"
+    },
+    {
+      "cli": "create-yss-harness-frontend",
+      "path": ".agents/skills/yss-prototype-stage/assets/vue-business-patterns/Workspace.vue",
+      "sha256": "a1c175bbdbffc4aad7eac936f93aaa37893aeec91fbc3fadbb0a66841be42627",
+      "source_state": "working-tree"
+    },
+    {
+      "cli": "create-yss-harness-frontend",
+      "path": ".agents/skills/yss-prototype-stage/assets/vue-business-patterns/workspace-model.js",
+      "sha256": "5791a5c7a37cbc7e49946dcd8866838d84c09830df5ad50b69d49eb58de0e4bc",
+      "source_state": "working-tree"
+    },
+    {
+      "cli": "create-yss-harness-frontend",
+      "path": ".agents/skills/yss-prototype-stage/assets/vue-business-patterns/workspace.scenarios.json",
+      "sha256": "b34ef35d2abc70ed2089b13de2fa8e7fea38e02bc4315d82e67af5d152ad3ab3",
+      "source_state": "working-tree"
+    },
+    {
+      "cli": "create-yss-harness-frontend",
+      "path": ".agents/skills/yss-prototype-stage/references/enterprise-workspace.md",
+      "sha256": "312735624a05b9967fbf728f06fc90e9a05b2a01a40fb1f9fe1f5c55f7e1b264",
+      "source_state": "working-tree"
+    },
+    {
+      "cli": "create-yss-harness-frontend",
+      "path": ".agents/skills/yss-prototype-stage/tests/workspace.test.mjs",
+      "sha256": "ed4e893b9a7361b3a3466b2be97e6c760729b96b13fdbed3601184b70a55ccf0",
+      "source_state": "working-tree"
+    },
+    {
+      "cli": "create-yss-harness-frontend",
+      "path": ".agents/skills/yss-prototype-stage/assets/shadcn-vue-authoring/registry-manifest.json",
+      "sha256": "d5b5a5ec68ea50139eda2951666038ff34e2aa8503ef94da44c6ccbb24bd4864",
+      "source_state": "working-tree"
+    }
+  ]
+}

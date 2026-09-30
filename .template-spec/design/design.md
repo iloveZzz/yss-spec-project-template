@@ -35,17 +35,17 @@
 
 ## 原型设计依据的优先级
 
-当前原型以项目根 `DESIGN.md` 为视觉规范源，`.template-spec/design/design.md` 解释治理规则，`.template-spec/design/tokens/*` 是派生实现视图。需要真实 AntD 控件辅助评审时，上游资料只提供组件事实，不覆盖项目规范；在 `prototype-evidence.yaml` 中记录根规范与 Token digest，不把上游默认直接写回项目实现。
+当前原型以项目根 `DESIGN.md` 为视觉规范源，`.template-spec/design/design.md` 解释治理规则，`.template-spec/design/tokens/*` 是派生实现视图。使用 shadcn-vue 或 shadcn/ui 组件辅助评审时，上游资料只提供组件事实，不覆盖项目规范；在 `prototype-evidence.yaml` 中记录根规范与 Token digest，不把上游默认直接写回项目实现。
 
 项目覆盖与官方默认的差异直接读取根 `DESIGN.md` 并用 `design-md diff` 核验；本文件不复制差异值。上游预设色板可以保留其自身颜色谱，但**色板预设 ≠ 品牌 seed**。
 
 Codex `$design-qa` 的 Colors/tokens 与 Fonts/typography 对照必须以根 `DESIGN.md` 为 source visual truth，并用 `.template-spec/design/tokens/*` 复核实际投影；不得回退到上游默认或历史品牌值。执行清单见 `.agents/skills/yss-design-system/references/design-qa-theme.md`。
 
-原型 H1/H2 默认使用 `html-css-js`，以本地 Token CSS 保留 YSS 企业后台视觉语言；复杂交互影响评审结论时可按集成说明选用 `react-antd-prebuilt`。生产实现只在目标工程按 lockfile 核验组件 API；原型阶段不调用 `yss-ui`。已有项目中冻结的组件库原型及其事实证据保持只读；模板不再预置 Antdv Next fact pack，也不生成新的 Provider 事实包。
+高保真 H1/H2 优先使用 `vue-shadcn-prebuilt`，`react-shadcn-prebuilt` 仅历史只读，轻量局部修改可保留 `html-css-js`；二者以本地 Token CSS 保留 YSS 企业后台视觉语言。React AntD 原型生成路线已退役。生产实现只在目标工程按 lockfile 核验组件 API；原型阶段不调用 `yss-ui`。已有项目中冻结的组件库原型及其事实证据保持只读；模板不再预置 Antdv Next fact pack，也不生成新的 Provider 事实包。
 
 ### HTML 与生产主题的映射
 
-HTML 直接使用 DESIGN.md 当前默认尺寸与主题 CSS，不要求 ConfigProvider 或组件库算法。生产库若使用 `defaultAlgorithm`、`darkAlgorithm`、`compactAlgorithm`，仍按其版本合同执行，避免把 compact 结果当 seed 再压缩。暗色能力只在派生 Token 和浏览器状态均核验后声明。
+HTML 直接使用 DESIGN.md 中已选择的组件变体与主题 CSS，不要求 ConfigProvider 或组件库算法。新高保真原型默认选择已有紧凑变体，窄屏使用普通控件；既有页面保持当前密度。共享主题与核验规则见 `.agents/skills/yss-design-system/references/prototype-default-theme.md`。生产库若使用 `defaultAlgorithm`、`darkAlgorithm`、`compactAlgorithm`，仍按其版本合同执行，避免把 compact 结果当 seed 再压缩。暗色能力只在派生 Token 和浏览器状态均核验后声明。
 
 ## 设计原则
 
@@ -128,9 +128,9 @@ HTML 直接使用 DESIGN.md 当前默认尺寸与主题 CSS，不要求 ConfigPr
 - 表单、筛选区、工具栏、表格和详情页应优先使用密集但有节奏的布局。
 - 不使用任意 magic number；如确需新增尺寸，应先判断是否要扩展 token。
 
-### 默认密度与可选紧凑密度
+### 原型默认密度与生产主题边界
 
-原型和前端工程默认采用 Data Quality 全局主题：浅色、14px 正文、32px 控件、20px Card 内距，不默认开启 compact。下表仅用于明确选择紧凑模式的页面；紧凑模式消费 `tokens.compact.json`，不得再次压缩。
+新高保真原型默认浅色 compact，桌面使用根 `DESIGN.md` 的命名紧凑控件和 Card 变体，窄屏使用普通控件与窄屏间距角色；正文始终使用 body。comfortable 保留普通变体。既有页面局部修改遵守保持项。生产默认主题与可选算法仍按实现合同消费，不由原型密度推导。
 
 | 场景 | Padding | Margin / Gap | 说明 |
 | --- | --- | --- | --- |
@@ -141,7 +141,7 @@ HTML 直接使用 DESIGN.md 当前默认尺寸与主题 CSS，不要求 ConfigPr
 | 表格 / 列表 | 容器 `0` 或 `spacing.sm` | 工具栏与表格 `spacing.xs` | 表格内部 cell padding 使用组件紧凑规格，不用页面 CSS 逐列覆盖 |
 | Modal / Drawer | `spacing.md` | 内容区块 `spacing.sm`；操作区 `spacing.xs` | 复杂多步流程不塞入 Modal，改用独立页面或 Drawer 分区 |
 
-紧凑模式的计算值以 `.template-spec/design/tokens/tokens.compact.json` 为准，它来自 `.template-spec/design/tokens/theme.json` 的 seed 叠加一次 compact algorithm。业务页面只消费计算后的语义层级，不复制外部样例中的 `.m-*` / `.p-*` utility class，也不再次缩放。
+原型命名紧凑变体不等于生产 `tokens.compact.json` 的完整算法结果；原型仅使用 `DESIGN.md` 派生的角色变量，不应用生产 compact algorithm。生产显式紧凑主题才消费对应计算快照，且只应用一次算法。页面不照抄上游 utility 尺寸。
 
 Margin 使用规则：组件自身默认不声明外部 margin，兄弟元素之间优先由父级 `gap` 管理；只有文档流语义或无法使用布局容器时才使用 margin，并仍限定在 `spacing.*` 阶梯内。禁止用负 margin 修补布局。
 
@@ -157,24 +157,13 @@ Margin 使用规则：组件自身默认不声明外部 margin，兄弟元素之
 
 ### 圆角
 
-| Token | 值 | 用途 |
-| --- | --- | --- |
-| `borderRadiusXS` | 2 | 极小元素 |
-| `borderRadiusSM` | 4 | 小标签、小控件 |
-| `borderRadius` | 6 | 默认控件圆角 |
-| `borderRadiusLG` | 8 | Card、大容器 / 浮层 |
+控件引用 `rounded.sm/md`，容器引用 `rounded.lg`；具体值仅在根 `DESIGN.md` 维护。
 
 保持“控件圆角小于或等于容器圆角”：控件使用 `rounded.sm/md`，Card 与普通容器使用 `rounded.lg`。更大的 panel 圆角属于局部产品扩展，不作为紧凑型默认值；确需使用时必须先登记规范角色，不能让同一页面任意混用。实现时以根 `DESIGN.md` 与 `.template-spec/design/tokens/tokens.default.json` 为默认基线。
 
 ### 动效
 
-| Token | 值 | 用途 |
-| --- | --- | --- |
-| `motionDurationFast` | `0.1s` | hover、focus、press |
-| `motionDurationMid` | `0.2s` | 折叠、淡入淡出、控件内部状态 |
-| `motionDurationSlow` | `0.3s` | Modal、Drawer 等表层变化 |
-| `motionEaseInOut` | `cubic-bezier(0.645, 0.045, 0.355, 1)` | 默认进出场 |
-| `motionEaseOut` | `cubic-bezier(0.215, 0.61, 0.355, 1)` | 出场 / 展开 |
+消费现有派生 Token 的 `motionDurationFast/Mid/Slow` 与 `motionEaseInOut/Out` 角色，分别用于即时反馈、内部状态与浮层变化；不在治理文档复制数值。
 
 动效规则：
 
@@ -193,7 +182,7 @@ Margin 使用规则：组件自身默认不声明外部 margin，兄弟元素之
 | Menu | 选中态使用淡蓝背景 + 主色文本，保证导航位置明确 |
 | Tabs | 激活态使用主色文本 + Provider semantic indicator，不使用背景填充 |
 | Table | 表头使用浅表面色和 600 字重；默认不做斑马纹，hover 再强调行 |
-| Tag | 用于分类标签，不用于关键状态或错误提示 |
+| Tag | 用于分类或已打开页面导航；页面 Tag 激活与关闭动作分开，当前项使用主色浅底和描边。不用于关键状态或错误提示 |
 | Alert | 用于语义反馈，状态由图标、浅色背景和文案共同表达 |
 | Badge | 可表达紧凑状态点，但不能替代可读文本 |
 | Tooltip | 用于补充解释，黑色反相浮层，位置交给框架处理 |
@@ -217,13 +206,13 @@ Margin 使用规则：组件自身默认不声明外部 margin，兄弟元素之
 
 | 档位 | 用途 | 技术边界 | 最低验证 |
 |---|---|---|---|
-| H1 `visual-review` | 布局、密度、层级、文案和少量关键交互 | 语义 HTML/CSS/最小 JS 或设计工具导出；无需 Node、package、lockfile 或 AntD CLI | desktop/narrow 非空渲染、项目 Token、console、关键交互、基础键盘/焦点/对比度；zoom/reduced-motion 按影响 |
-| H2 `flow-review` | 主流程、权限、失败恢复、复杂联动和冲突 | 浏览器可运行流程；默认 HTML/CSS/JavaScript 离线资源包，场景可重复触发和重置 | H1 共同证据 + 主流程、关键异常、zoom/reduced-motion；视觉回归按风险 |
+| H1 `visual-review` | 布局、密度、层级、文案和少量关键交互 | shadcn-vue 离线预构建，或轻量原生 HTML/设计工具导出；接收者无需 Node、package、lockfile 或组件 CLI | desktop/narrow 非空渲染、项目 Token、console、关键交互、基础键盘/焦点/对比度；zoom/reduced-motion 按影响 |
+| H2 `flow-review` | 主流程、权限、失败恢复、复杂联动和冲突 | 浏览器可运行流程；主要使用 shadcn-vue 预构建离线资源包，场景可重复触发和重置 | H1 共同证据 + 主流程、关键异常、zoom/reduced-motion；视觉回归按风险 |
 
-- H1 不得为了“显得完整”创建空 `package.json`、lockfile 或 AntD 证据。H2 不得声明真实目标组件已验证。
+- H1 不得为了“显得完整”创建空 `package.json`、lockfile 或空组件证据。H2 不得声明真实目标组件已验证。
 - 原型中识别出的生产组件假设与待验行为写入 `implementation_handoff`，由 `frontend_implementation_plan` 和 `frontend_implementation_verification` 承接；不得在原型阶段引入 `yss-ui`、目标 lockfile 或 Storybook。
 - 新视觉方向、信息架构不确定或有多个合理方案时执行三方案 ideation；复用已批准视觉模式时记录 source visual 与 `not-applicable` 理由。
-- 默认使用 Data Quality 的32px控件与20px Card内距，紧凑模式显式选择；页面 padding、gap、Card 圆角、Card padding 和控件高度必须在浏览器计算样式中可复核。
+- 新原型默认使用根 `DESIGN.md` 的 compact 命名变体，comfortable 可显式选择；页面 padding、gap、Card 圆角、Card padding 和控件高度必须在浏览器计算样式中可复核。
 - Design QA、浏览器验证和视觉目标使用同一视口与同一状态；默认 desktop `1440×900`、narrow `390×844`。
 - Design QA 统一覆盖 visual、layout、interaction、content、accessibility、cross-platform 六轴，不再复制第二份检查清单。
 - 交付包包含所有实际使用的本地资源和 Token 副本，登记摘要；复制到独立目录后以 `file://` 无网络复验。模板结构检查不替代浏览器证据。
@@ -261,16 +250,18 @@ Margin 使用规则：组件自身默认不声明外部 margin，兄弟元素之
 - 表格密集场景应明确移动端替代形态，如卡片列表、关键列优先或详情抽屉。
 - 文字不得溢出按钮、标签、表头、卡片和弹窗。
 
-## 前端实现建议
+## 历史来源与适用实现说明
 
-如果前端使用 React + Ant Design：
+以下 React AntD 说明仅用于历史来源或明确采用该运行时的生产实现；该原型生成路线已经退役，不能作为新原型指南。生产 Vue/YSS 继续使用自身实现合同与主题映射。
+
+如果已批准的生产实现使用 React + Ant Design：
 
 - 使用 `ConfigProvider` 注入 `.template-spec/design/tokens/theme.json` 中的 theme 配置。
 - 默认采用 Data Quality 浅色与 32px 控件；仅显式紧凑模式使用 `compactAlgorithm`；暗色工作界面组合 `darkAlgorithm` 与 `compactAlgorithm`。seed 与计算结果分别从 `theme.json`、`tokens.compact.json` 读取。
 - 组件样式优先通过 Ant Design token、component token、CSS variables 或主题算法表达。
 - 消息、通知、Modal 静态方法应使用 `App`、hook API 或 context holder，避免主题上下文丢失。
 - 暗色模式使用 `darkAlgorithm` 或 `.template-spec/design/tokens/variables.dark.css`，不要手工反转颜色。本轮只同步了暗色的字体栈和圆角 seed；完整暗色色板仍是历史算法结果，启用暗色前应再派生一次。
-- 紧凑模式默认使用 `compactAlgorithm` 或 `.template-spec/design/tokens/tokens.compact.json`，不要逐组件压缩高度；选择紧凑模式的原型交付物按紧凑 token 验收实际 padding、gap、Card 圆角和控件高度。
+- 紧凑模式默认使用 `compactAlgorithm` 或 `.template-spec/design/tokens/tokens.compact.json`，不要逐组件压缩高度；这不适用于新原型的命名 compact 变体。
 
 H1/H2 原型使用 HTML/CSS/JavaScript：
 
@@ -295,20 +286,24 @@ H1/H2 原型使用 HTML/CSS/JavaScript：
 - 表单字段、筛选条件、表格列、批量操作、详情字段是否能反推 API schema。
 - 主操作是否唯一且清楚，次级操作是否降级。
 - 是否存在硬编码颜色、任意间距、重复自造控件或与系统冲突的交互。
-- 是否覆盖关键响应式断点。
+- 是否覆盖关键响应式断点、实际点击区域及相邻间距；是否验证 Field 错误关联、InputGroup 内层样式、Sheet/Menu 焦点及分页选择一致性。
 - Codex `$design-qa` 是否按项目覆盖对照主色、错误色、背景、文本、圆角和字体栈。
 
-## 后续落地 TODO
+## 当前能力导航与待办
 
-- 将 `.template-spec/design/tokens/theme.json` 作为 Data Quality 默认主题接入原型主题配置。
-- 将 `.template-spec/design/tokens/variables.css` 中的 `--brand-*` 与运行时别名纳入项目 token 管理。
-- 如果项目启用暗色模式，用 `darkAlgorithm` 按新 seed 重派生 `.template-spec/design/tokens/tokens.dark.json`，并补充截图验收。
-- 让 H1/H2 原型适配器默认接入项目 Token，并在浏览器证据中记录实际计算后的 padding、gap、Card 圆角和控件高度。
+- H1/H2 已默认接入根 `DESIGN.md` 派生的本地 CSS、规范及资源摘要；见设计系统技能 `references/prototype-default-theme.md` 与 `references/shadcn-vue-integration.md`。
+- 构建、来源摘要及浏览器计算样式检查已有工具；页面仍须执行适用六轴 QA，不能用工具存在代替结果。
+- 主题与组件状态展示入口：`.template-source/design/preview.html`；不是可批准的产品原型。组件及页面配方见原型技能 `references/component-recipes.md`。
+- 暗色快照保留历史参考入口，未完成当前规范验证。未来启用需按当前 seed 重派生并补齐截图、对比度与交互验收，本轮不执行。
 
 ## HTML 原型补充基线
 
 参见 `.agents/skills/yss-prototype-stage/references/html-prototype-practices.md`。复用现有六轴 QA 与 Visual Baseline，新增能力只补充其执行方式，不另建交接文档。原生语义优先，弹窗与自定义控件的 ARIA 属性必须对应真实键盘/焦点行为。样式采用项目 Token，关键反馈保留可读文本，场景重置后再采集浏览器证据。
 
-## AntD 条件预构建
+## shadcn-vue 主要路线
 
-高保真默认原生 HTML；简化模拟影响关键评审结论时，按原型技能的 `references/antd-integration.md` 条件使用 `react-antd-prebuilt`。交付格式与视觉权威不变；React 仅作为随包浏览器运行时，作者依赖与构建工具不交付给接收者。
+高保真按原型技能的 `references/shadcn-vue-integration.md` 优先使用 `vue-shadcn-prebuilt`，`react-shadcn-prebuilt` 仅历史只读；简单局部修改可保留原生 HTML。交付格式与视觉权威不变；Vue 作为随包浏览器运行时，作者依赖与构建工具不交付给接收者。
+
+## 企业原型应用壳
+
+新企业高保真默认使用根 DESIGN 的 workspace 角色：模块、分组侧栏、可关闭页面 Tag 和流式工作区，标题采用 workspace-title。表单内部保留阅读宽度，详情按选择出现，窄屏使用 Sheet，旧批准页面仍遵守保持项。页面 Tag 使用导航语义及 aria-current，页内视图切换才使用 Tabs；收起导航的图标居中，提示框及箭头使用一致的反相表面。多页缓存仅保留当前文档内存；关闭修改页须确认，场景切换/重置销毁全部临时状态。原型技能 `references/enterprise-workspace.md` 提供作者接口和教学场景；不改变生产默认主题或增加生命周期门禁。

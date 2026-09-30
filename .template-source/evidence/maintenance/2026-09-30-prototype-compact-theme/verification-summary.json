@@ -1,0 +1,27 @@
+{
+  "engineering": "passed scoped browser, build, density and CLI checks",
+  "full_verification": "blocked",
+  "requested_profile": "fast",
+  "effective_profile": "release",
+  "input_drift": false,
+  "original_results": 95,
+  "original_passes": 93,
+  "resolved_failure": {
+    "command": "node --test .agents/skills/yss-prototype-stage/tests/antd-reference.test.mjs",
+    "cause": "empty retired directory left in reused isolated verification checkout; actual source had no directory",
+    "source_changed": false,
+    "recheck": "retirement-recheck.log",
+    "result": "pass"
+  },
+  "remaining_blocker": {
+    "command": "scripts/verify-strategic-handoff-tools-lock --require-committed",
+    "cause": "pre-existing shared handoff tool source_state=working-tree, including unrelated skill discovery changes",
+    "result": "blocked",
+    "source_modified_to_bypass": false
+  },
+  "target_state": "implementation-ready",
+  "target_reached": false,
+  "git_delivery": "not-performed",
+  "visual_quality": "awaiting user feedback",
+  "agent_trial": "not restarted"
+}

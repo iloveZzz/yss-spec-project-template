@@ -1,0 +1,15 @@
+{
+  "kind": "fixture-draft-source-snapshot",
+  "approval": false,
+  "sources": {
+    "yss-project.yaml": "dae2ddacbb024ba25b70a18830fc26ab7d3dcd8aaa361cc8b3767d68307f98af",
+    "CONTEXT.md": "a27ab85f4c733a609948fba4bc5dafa074453ae16d32ceebc773d12fdbffe6b7",
+    "DESIGN.md": "e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec",
+    "fixture/brief.md": "49d27692bc16845fcd65aaa7a3943ce80b1b784d8e8e8c3c9a96cf8a2b73fd7f",
+    "fixture/data.json": "02fffe1ab4682ea87448a173d86057021802ccfcbc38fe28558d6396a660feb6",
+    ".template-spec/design/design.md": "b285bdbef1e0495b5b7982f92ca03f9fe72b241353b1213103924a2f428df65f",
+    ".template-spec/design/tokens/variables.css": "028c24f9e935f5c4b1392d131a4cd13482e6572a2ced4360ffa833aa3fbeaf66",
+    ".agents/skills/yss-prototype-stage/SKILL.md": "3426877845c5f841c5c9f8cc38fc18a2fad73c52018462b5588f91c5548b9481",
+    ".agents/skills/yss-design-system/SKILL.md": "0451815009635651ebc4b32721e1464684ca346cbfe3ec51ce60f429209c4e2e"
+  }
+}

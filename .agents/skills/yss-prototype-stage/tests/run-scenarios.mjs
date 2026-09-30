@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import assert from "node:assert/strict";
-import { buildDecisionFixture } from "../../../../scripts/fixtures/user-decision/build-fixture.mjs";
+import { buildDecisionFixture } from "../../../../scripts/lib/testing/user-decision-fixture.mjs";
 import { mkdtemp, mkdir, readFile, writeFile, rm, cp, symlink } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -176,13 +176,24 @@ assert(validatePrototypeEvidence(incompleteFlow).errors.some(message => message.
 const prebuiltEvidence = structuredClone(htmlEvidence);
 Object.assign(prebuiltEvidence.profile_evidence.flow_review.implementation, { framework: "react-antd-prebuilt", selection_reason: "日期与受控表单影响评审结论" });
 prebuiltEvidence.profile_evidence.flow_review.prototype_library_facts = { applicable: true, component_basis: "react-antd-prebuilt", library_package: "antd", library_version: "6.6.4", source: "fact-pack", manifest_ref: "reference/manifest.json", manifest_digest: "sha256:" + "c".repeat(64), canonical_design_digest: prebuiltEvidence.design_baseline.canonical_design_digest, project_token_baseline_digest: prebuiltEvidence.design_baseline.project_token_baseline_digest, new_api_uncertainty: false, components_covered: ["Table", "Select"], build_provenance_ref: "build-provenance.json" };
-assert.deepEqual(validatePrototypeEvidence(prebuiltEvidence).errors, []);
+assert(validatePrototypeEvidence(prebuiltEvidence).errors.some(x => x.includes("已退役")));
+assert.deepEqual(validatePrototypeEvidence(prebuiltEvidence, {allowLegacy: true}).errors, []);
 for (const field of ["build_provenance_ref", "library_version"]) {
   const invalid = structuredClone(prebuiltEvidence); delete invalid.profile_evidence.flow_review.prototype_library_facts[field];
   assert(validatePrototypeEvidence(invalid).errors.length > 0);
 }
 const noPrebuiltReason = structuredClone(prebuiltEvidence); delete noPrebuiltReason.profile_evidence.flow_review.implementation.selection_reason;
 assert(validatePrototypeEvidence(noPrebuiltReason).errors.some(x => x.includes("selection_reason")));
+
+const shadcnEvidence = structuredClone(htmlEvidence);
+shadcnEvidence.profile_evidence.flow_review.implementation.framework = "react-shadcn-prebuilt";
+shadcnEvidence.profile_evidence.flow_review.prototype_library_facts = { ...prebuiltEvidence.profile_evidence.flow_review.prototype_library_facts, component_basis: "react-shadcn-prebuilt", library_package: "shadcn/ui", source: "source-snapshot", registry_revision: "d".repeat(40) };
+delete shadcnEvidence.profile_evidence.flow_review.prototype_library_facts.library_version;
+assert(validatePrototypeEvidence(shadcnEvidence).errors.some(x=>x.includes("已退役")));
+assert.deepEqual(validatePrototypeEvidence(shadcnEvidence,{allowLegacy:true}).errors, []);
+const vueEvidence=structuredClone(shadcnEvidence);vueEvidence.profile_evidence.flow_review.implementation.framework="vue-shadcn-prebuilt";Object.assign(vueEvidence.profile_evidence.flow_review.prototype_library_facts,{component_basis:"vue-shadcn-prebuilt",library_package:"shadcn-vue"});
+assert.deepEqual(validatePrototypeEvidence(vueEvidence).errors, []);
+for (const field of ["registry_revision", "build_provenance_ref"]) {const invalid=structuredClone(vueEvidence);delete invalid.profile_evidence.flow_review.prototype_library_facts[field];assert(validatePrototypeEvidence(invalid).errors.length);}
 
 function pngHeader(width, height) {
   const value = Buffer.alloc(24);
@@ -231,3 +242,9 @@ await writeFile(path.join(bundleRoot, "capture/unregistered.log"), "unexpected\n
 assert((await validateVisualBaseline(sealed, { bundleRoot })).errors.some((message) => message.includes("未登记 payload")));
 
 process.stdout.write("YSS prototype profile contract scenarios passed\n");
+
+// Review-only comparison behavior is part of the prototype contract regression entry.
+await import("./comparison.test.mjs");
+
+// Shared scenario and freshness regressions run through the registered entrypoint.
+await import("./reliability.test.mjs");

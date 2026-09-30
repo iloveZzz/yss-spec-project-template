@@ -15,7 +15,139 @@ evaluation = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(evaluation)
 
 
+class SharedBudgetChecks(unittest.TestCase):
+    def test_attempts_and_seconds_accumulate_across_process_instances(self):
+        with tempfile.TemporaryDirectory() as directory:
+            ledger = Path(directory) / 'budget.json'
+            first = evaluation.RunBudget(2, 10, ledger)
+            self.assertEqual(first.reserve(8), 8)
+            first.finish(3)
+            second = evaluation.RunBudget(2, 10, ledger)
+            self.assertEqual(second.reserve(9), 7)
+            second.finish(2)
+            with self.assertRaises(evaluation.BudgetExhausted): evaluation.RunBudget(2, 10, ledger).reserve(1)
+            data = json.loads(ledger.read_text())
+            self.assertEqual(len(data['attempts']), 2)
+            self.assertEqual(sum(row['elapsed_seconds'] for row in data['attempts']), 5)
+
+    def test_crash_reservation_stays_charged_and_limits_cannot_be_raised(self):
+        with tempfile.TemporaryDirectory() as directory:
+            ledger = Path(directory) / 'budget.json'
+            evaluation.RunBudget(24, 10, ledger).reserve(10)
+            with self.assertRaises(evaluation.BudgetExhausted): evaluation.RunBudget(24, 10, ledger).reserve(1)
+            with self.assertRaisesRegex(ValueError, 'cannot change'): evaluation.RunBudget(25, 20, ledger).reserve(1)
+
+    def test_provider_configuration_preserves_routing_and_rejects_unknown_settings(self):
+        with tempfile.TemporaryDirectory() as directory:
+            config = Path(directory) / 'config.toml'
+            config.write_text('model_provider="custom"\n[model_providers.custom]\nname="OpenAI"\nwire_api="responses"\nrequires_openai_auth=true\n')
+            flags, binding = evaluation.codex_provider_flags(config)
+            self.assertIn('model_provider="custom"', flags)
+            self.assertIn('model_providers.custom.requires_openai_auth=true', flags)
+            self.assertEqual(binding['provider'], 'custom')
+            config.write_text(config.read_text() + 'experimental_auth="secret"\n')
+            with self.assertRaisesRegex(ValueError, 'unsupported fields'): evaluation.codex_provider_flags(config)
+
+    def test_pi_trace_counts_cache_once_and_requires_successful_assistant_completion(self):
+        message = {'type': 'message_end', 'message': {'role': 'assistant', 'content': [{'type': 'text', 'text': 'answer'}], 'stopReason': 'stop', 'usage': {'input': 7, 'cacheRead': 10, 'cacheWrite': 3, 'output': 2}}}
+        rows = evaluation.normalize_events([message, {'type': 'agent_end'}], 'pi')
+        self.assertEqual(next(row['usage'] for row in rows if 'usage' in row), {'input_tokens': 20, 'cached_input_tokens': 10, 'cache_write_input_tokens': 3, 'output_tokens': 2})
+        self.assertEqual(rows[-1]['type'], 'turn.completed')
+        message['message']['stopReason'] = 'error'
+        rows = evaluation.normalize_events([message, {'type': 'agent_end'}], 'pi')
+        self.assertTrue(any(row['type'] == 'error' for row in rows))
+        self.assertFalse(any(row['type'] == 'turn.completed' for row in rows))
+
+    def test_cursor_unknown_terminal_event_and_unmapped_usage_are_not_success_or_zero(self):
+        self.assertFalse(any(row['type'] == 'turn.completed' for row in evaluation.normalize_events([{'type': 'assistant', 'message': {'content': []}}], 'cursor')))
+        rows = evaluation.normalize_events([{'type': 'result', 'subtype': 'error', 'is_error': True}], 'cursor')
+        self.assertEqual(rows[0]['type'], 'error')
+        rows = evaluation.normalize_events([{'type': 'result', 'subtype': 'success', 'usage': {'unknown': 999}}], 'cursor')
+        self.assertEqual(rows[-1]['type'], 'turn.completed')
+        self.assertFalse(any('usage' in row for row in rows))
+
+    def test_cursor_existing_credentials_are_private_and_not_in_command(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory); home = root / 'home'; home.mkdir()
+            args = SimpleNamespace(runtime='cursor', cursor_auth_from_keychain=True, model='fixture-model')
+            env = {'HOME': str(home), 'CURSOR_API_KEY': 'unrelated-provider-key'}
+            replies = [SimpleNamespace(returncode=0, stdout='access-fixture-only\n'), SimpleNamespace(returncode=0, stdout='refresh-fixture-only\n'), SimpleNamespace(returncode=0, stdout='{"isAuthenticated":true}')]
+            with mock.patch.object(evaluation.sys, 'platform', 'darwin'), mock.patch.object(evaluation.subprocess, 'run', side_effect=replies):
+                command = evaluation.runtime_command(args, Path('/fixture/cursor'), root, root, env)
+            auth = home / '.cursor/auth.json'
+            self.assertEqual(auth.stat().st_mode & 0o777, 0o600)
+            self.assertEqual(json.loads(auth.read_text()), {'accessToken': 'access-fixture-only', 'refreshToken': 'refresh-fixture-only'})
+            self.assertNotIn('access-fixture-only', ' '.join(command))
+            self.assertEqual(env['AGENT_CLI_CREDENTIAL_STORE'], 'file')
+            self.assertNotIn('CURSOR_API_KEY', env)
+
+
+class RealGitAndReadChecks(unittest.TestCase):
+    def test_failed_or_unknown_cursor_read_is_not_positive_evidence(self):
+        for outcome in [False, None, 'true', 1]:
+            event = {'type': 'item.completed', 'item': {'runtime_tool': {
+                'type': 'tool_call', 'subtype': 'completed', 'tool_call': {'readToolCall': {
+                    'args': {'path': '.agents/skills/example/SKILL.md'}, 'result': {'success': outcome}
+                }}
+            }}}
+            self.assertEqual(evaluation.skill_reads([event]), [])
+
+    def test_local_commit_is_measured_and_unrelated_staging_survives(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory); env = os.environ.copy()
+            definition = {'baseline_files': {'target.txt': 'old', 'notes/unrelated.txt': 'old'}, 'changes': {'target.txt': 'new', 'notes/unrelated.txt': 'keep'}, 'staged_paths': ['notes/unrelated.txt']}
+            before = evaluation.prepare_fixture_git(root, definition, env)
+            evaluation.git_output(root, env, ['commit', '-qm', 'test: target only', '--', 'target.txt'])
+            audit = evaluation.inspect_git(root, env, before)
+            self.assertEqual(audit['committed_paths'], ['target.txt'])
+            self.assertEqual(len(audit['new_commits']), 1)
+            self.assertIn('M  notes/unrelated.txt', audit['after']['status'])
+            self.assertEqual(audit['after']['remotes'], [])
+            failures = evaluation.assertions({'git_audit': audit, 'assertions': [{'kind': 'git_commit_count', 'value': 1}, {'kind': 'git_committed_paths', 'value': ['target.txt']}, {'kind': 'git_status_contains', 'value': 'M  notes/unrelated.txt'}, {'kind': 'git_preserved_index_paths', 'value': ['notes/unrelated.txt']}]}, root, [], '')
+            self.assertEqual(failures, [])
+            with self.assertRaisesRegex(ValueError, 'existing repository'): evaluation.prepare_fixture_git(root, definition, env)
+
+
+    def test_amending_fixture_baseline_is_not_an_authorized_new_commit(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory); env = os.environ.copy()
+            before = evaluation.prepare_fixture_git(root, {'baseline_files': {'target.txt': 'old'}, 'changes': {'target.txt': 'new'}}, env)
+            evaluation.git_output(root, env, ['commit', '--amend', '-qm', 'test: unauthorized amendment', '--', 'target.txt'])
+            audit = evaluation.inspect_git(root, env, before)
+            self.assertEqual(audit['status'], 'violation')
+            self.assertFalse(audit['lineage_preserved'])
+
+    def test_codex_real_git_keeps_sandbox_under_official_approval_mode(self):
+        args = SimpleNamespace(runtime='codex', model='test', reasoning_effort='high')
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            command = evaluation.runtime_command(args, root / 'codex', root, root, {'YSS_EVAL_REAL_GIT': '1'})
+            self.assertIn('--approve-for-me', command)
+            self.assertNotIn('--sandbox', command)
+            self.assertNotIn('--dangerously-bypass-approvals-and-sandbox', command)
+
+    def test_failed_reads_and_mentions_do_not_prove_skill_selection(self):
+        path = '.agents/skills/git-commit-core/SKILL.md'
+        events = [{'type': 'item.completed', 'item': {'type': 'agent_message', 'text': path}}, {'type': 'item.completed', 'item': {'type': 'command_execution', 'command': 'rg --files ' + path, 'exit_code': 0}}, {'type': 'item.completed', 'item': {'type': 'command_execution', 'command': 'cat ' + path, 'exit_code': 1}}]
+        self.assertEqual(evaluation.skill_reads(events), [])
+        self.assertEqual(evaluation.shell_read_arguments("echo 'cat " + path + "'"), [])
+        self.assertEqual(evaluation.shell_read_arguments("/bin/zsh -lc 'nl -ba " + path + "'"), ['-ba', path])
+        events.append({'type': 'item.completed', 'item': {'type': 'command_execution', 'command': 'cat ' + path, 'exit_code': 0}})
+        self.assertEqual(evaluation.skill_reads(events)[0]['skill'], 'git-commit-core')
+
+    def test_pi_read_arguments_join_by_tool_call_id(self):
+        events = [{'type': 'tool_execution_start', 'toolCallId': 'read1', 'toolName': 'read', 'args': {'path': '.pi/skills/writing-for-agents/SKILL.md'}}, {'type': 'tool_execution_end', 'toolCallId': 'read1', 'toolName': 'read', 'isError': False}]
+        self.assertEqual(evaluation.skill_reads(evaluation.normalize_events(events, 'pi'))[0]['skill'], 'writing-for-agents')
+
+
 class ResultChecks(unittest.TestCase):
+    def test_missing_usage_metrics_stay_unknown_while_observed_zero_is_preserved(self):
+        self.assertIsNone(evaluation.reported_usage([])['input_tokens'])
+        result = evaluation.reported_usage([{'usage': [{'input_tokens': 7, 'cached_input_tokens': 0}]}])
+        self.assertEqual(result['input_tokens'], 7)
+        self.assertEqual(result['cached_input_tokens'], 0)
+        self.assertIsNone(result['cache_write_input_tokens'])
+
     def test_json_non_objects_and_boolean_type_mismatch_fail_closed(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -78,10 +210,15 @@ class WorkspaceChecks(unittest.TestCase):
             (source / "AGENTS.md").write_text("original authoritative policy\n")
             (source / ".template-spec").mkdir()
             (source / ".template-spec" / "registry.yaml").write_text("current registry")
+            (source / '.template-source/agents').mkdir(parents=True)
+            (source / '.template-source/agents/skills-maintenance.md').write_text('source-owned maintenance navigation')
+            (source / 'package.json').write_text('{"scripts":{"test":"existing-command"}}')
             metadata = evaluation.prepare_workspace(source, workspace, {"required_paths": ["AGENTS.md", ".template-spec/registry.yaml"]})
             self.assertTrue((workspace / "AGENTS.md").read_text().startswith("original authoritative policy\n"))
             self.assertIn("fixture", (workspace / "AGENTS.md").read_text())
             self.assertEqual((workspace / ".template-spec/registry.yaml").read_text(), "current registry")
+            self.assertEqual((workspace / '.template-source/agents/skills-maintenance.md').read_text(), 'source-owned maintenance navigation')
+            self.assertTrue((workspace / 'package.json').is_file())
             self.assertNotEqual(metadata["source_rules_sha256"], metadata["effective_rules_sha256"])
 
     def test_missing_required_source_fails_before_execution(self):

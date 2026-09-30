@@ -136,7 +136,7 @@ function validateCommon(value, registry, lifecycle) {
   return workUnit;
 }
 
-function validateContract(value, registry, lifecycle) {
+function validateContract(value, registry, lifecycle, { history = false } = {}) {
   const contract = value.contract;
   const implementationWorkUnit = "work-unit.slice-implementation";
   const workUnit = lifecycle.work_units.find((item) => item.id === value.work_unit_id);
@@ -160,6 +160,7 @@ function validateContract(value, registry, lifecycle) {
     if (!existsSync(checkpointPath)) fail(`维护 checkpoint 不存在: ${contract.maintenance_ref}`);
     const checkpoint = maintenanceValidators.loadMaintenanceCheckpoint(contract.maintenance_ref);
     maintenanceValidators.validateMaintenanceCheckpoint(checkpoint, {
+      history,
       allowPendingReview: value.execution_state === "Reviewer" && value.workflow_status !== "resolved"
     });
     if (checkpoint.schema_version === 2 && value.execution_state === "Reviewer") {
@@ -204,7 +205,7 @@ function validateContract(value, registry, lifecycle) {
   if (value.execution_state === "Worker") assertImplementationDecision({ slice_contract_ref: contract.slice_contract_ref, vertical_slice_ticket_ref: slice.lifecycle_refs.ticket, user_decisions: value.user_decisions });
 }
 
-export function validateTaskPackage(value, { rolesDoc, lifecycleDoc, root = ROOT, runDir } = {}) {
+function validateTaskPackageInternal(value, { rolesDoc, lifecycleDoc, root = ROOT, runDir, history = false } = {}) {
   validateTaskPackageSchema(value);
   if (value.schema_version === 2) {
     enforceHarnessTaskScope(value, { root });
@@ -220,8 +221,18 @@ export function validateTaskPackage(value, { rolesDoc, lifecycleDoc, root = ROOT
   const registry = rolesDoc || loadDigitalHumanRoles();
   const lifecycle = lifecycleDoc || loadRegistry();
   validateCommon(value, registry, lifecycle);
-  validateContract(value, registry, lifecycle);
+  validateContract(value, registry, lifecycle, { history });
   return value;
+}
+
+export function validateTaskPackage(value, options = {}) {
+  return validateTaskPackageInternal(value, {...options, history:false});
+}
+
+export function validateHistoricalMaintenanceTaskPackage(value) {
+  if(repositoryMode !== 'template-source' || value.schema_version !== 1 || value.contract?.kind !== 'template-maintenance')fail('历史兼容仅适用于模板维护 schema v1 任务包');
+  validateTaskPackageInternal(value, {history:true});
+  return {status:'historical-only',execution_authorization:'not-evaluated'};
 }
 
 export function generateTaskPackageDefaults(roleId, overrides = {}, { rolesDoc } = {}) {

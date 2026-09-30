@@ -77,7 +77,7 @@ Git 动作分别保存 `commit_authorized`、`commit_scope`、`commit_authorizat
 
 ## 状态块
 
-状态块位于主 tracker 的功能父 Ticket，并使用 `.template-spec/process/templates/lifecycle-checkpoint-template.yaml` 的结构化形状和 `lifecycle-checkpoint.schema.json` 校验；Local Markdown 使用 `docs/.scratch/<feature>/parent-ticket.md`，可将完整 checkpoint 保存在 `docs/.scratch/<feature>/gates/lifecycle-checkpoint.yaml` 后由父 Ticket 引用，远程 tracker 使用 Issue 并在本地功能包保留引用。平台不可用时才位于 stage checkpoint。只保存索引、状态、引用和因果关系：
+父 Ticket 是主 tracker 的追踪入口。新功能将机器状态持久化在实际 checkpoint 文件，由父 Ticket 明确引用；使用 `.template-spec/process/templates/lifecycle-checkpoint-template.yaml` 的结构及原 schema 校验。阶段、阻塞和下一工作单元通过 `scripts/lifecycle-status --root <项目> --checkpoint <ref>` 查询，阶段工作进度通过 `scripts/stage-tracking check` 查询。父 Ticket 保留 Ticket 五态、业务说明、资产和会签入口，不另填机器状态表；批准记录仍是批准依据。远程 tracker 同样引用本地 checkpoint，不自动生成阅读包。以下字段示意位于 checkpoint，不再复制到父 Ticket：
 
 ```yaml
 lifecycle:
@@ -111,7 +111,7 @@ pause:
 
 - 当前只支持 `schema_version: 1`，支持版本列表以 `orchestration-contract.yaml` 为准。
 - 版本缺失、解析失败或版本不在支持列表时，必须暂停并进入迁移检查；不得按 v1 猜测、覆盖或降级写回。
-- 主 tracker 的父 Ticket 状态块优先作为主索引；Local Markdown 的 `docs/.scratch/<feature>/parent-ticket.md` 是主载体，远程 Issue 只是显式选择远程 tracker 时的主载体。根 `.scratch/` 与 `docs/requirements/tickets/` 只作为旧路径迁移来源。stage checkpoint 只在选定平台不可用时降级。两者版本或内容冲突时，不做字段级静默合并：读取真实资产重建新状态，保留旧块引用和迁移记录，再由人工确认主载体。
+- 旧父 Ticket 内嵌状态块继续只读兼容；不按标题批量迁移。改造前保存原文并展示精确差异，明确既有 checkpoint 路径。双方字段冲突时列出两侧原值，保留原始证据，不自动裁定、不回写 checkpoint、不改变 Ticket 五态或批准状态。由已授权的单项迁移将父 Ticket 改为引用入口；业务状态纠偏单独处理。根 `.scratch/` 与 `docs/requirements/tickets/` 仍只作旧路径迁移来源。
 - 不得用旧版本状态覆盖较新版本。迁移记录至少包含来源版本、目标版本、来源载体、冲突、真实资产证据、迁移人和时间。
 
 ## Resume

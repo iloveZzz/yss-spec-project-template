@@ -1,3 +1,5 @@
+import { assertBusinessApprovalBasis } from './business-ticket-lifecycle.mjs';
+import { assertBusinessTicketTransition, assertImplementationTicket } from './business-tickets.mjs';
 import {assertReadingTransition} from './reading-view-bundle.mjs';
 import { assertTrackingTransition } from './stage-tracking.mjs';
 import { assertScopeTransition, assertScopeImpacts, assertScopeWorkUnit, scopedNextRoutes } from './lifecycle-execution-scope.mjs';
@@ -44,8 +46,9 @@ const NEXT_ROUTES = deepFreeze({
   "work-unit.plan-requirements": ["work-unit.domain-strategy-design", "work-unit.stage-decision", "work-unit.spec-synthesis"],
   "work-unit.domain-strategy-design": ["work-unit.stage-decision", "work-unit.spec-synthesis"],
   "work-unit.stage-decision": ["work-unit.spec-synthesis"],
-  "work-unit.spec-synthesis": ["work-unit.prototype-design-v2", "work-unit.technical-analysis"],
-  "work-unit.prototype-design-v2": ["work-unit.technical-analysis"],
+  "work-unit.spec-synthesis": ["work-unit.prototype-design-v2", "work-unit.business-ticket-formalization", "work-unit.technical-analysis"],
+  "work-unit.prototype-design-v2": ["work-unit.business-ticket-formalization", "work-unit.technical-analysis"],
+  "work-unit.business-ticket-formalization": ["work-unit.technical-analysis"],
   "work-unit.technical-analysis": [REPOSITORY_PREPARATION_WORK_UNIT],
   [REPOSITORY_PREPARATION_WORK_UNIT]: [SERVICE_INITIALIZATION_WORK_UNIT, TICKET_DECOMPOSITION_WORK_UNIT],
   [SERVICE_INITIALIZATION_WORK_UNIT]: [REPOSITORY_PREPARATION_WORK_UNIT],
@@ -322,6 +325,8 @@ export function validateNextRoute(currentWorkUnit, nextRoute, decisionState, opt
       }
     } catch (error) { return blockedResult(['maintenance-research-boundary'], [error.message]); }
   }
+  try { assertBusinessTicketTransition(options.root || ROOT, currentWorkUnit, nextRoute, decisionState); assertBusinessApprovalBasis(options.root || ROOT, decisionState, {required:currentWorkUnit === 'work-unit.business-ticket-formalization'}); }
+  catch(error) { return blockedResult(["business-ticket-blocked"],[error.message]); }
   try { assertReadingTransition(options.root || ROOT, decisionState, currentWorkUnit); }
   catch(error){ return blockedResult(['reading-views-stale'],[error.message]); }
   try { assertTrackingTransition(currentWorkUnit, nextRoute, decisionState, { root: options.root || ROOT }); }
@@ -504,10 +509,11 @@ function validateDecisionBoundary(workUnit, state, options) {
 export function validateTicketFormalization(state, { exists = existsSync, read = (ref) => readFileSync(ref, "utf8"), ...decisionOptions } = {}) {
   if ((state?.tracker_kind ?? "local-markdown") === "local-markdown" && state?.vertical_slice_ticket?.ref && isReadable(state.vertical_slice_ticket.ref, exists)) {
     try {
+      assertImplementationTicket(read(state.vertical_slice_ticket.ref),state.vertical_slice_ticket.ref);
       const header = read(state.vertical_slice_ticket.ref).match(/^---\r?\n([\s\S]*?)\r?\n---/);
       const kind = header ? parseDocument(header[1], { uniqueKeys: true }).toJS({ maxAliasCount: 0 })?.kind : null;
       if (kind === "stage-work-item") return blockedResult(["stage-work-item-not-implementable"], ["vertical-slice-ticket required"]);
-    } catch { return blockedResult(["ticket-content-unreadable"], ["readable vertical slice content"]); }
+    } catch(error) { return blockedResult([error.message.includes("stage-work-item")?"stage-work-item-not-implementable":error.message.includes("business-ticket")?"business-ticket-not-implementable":"ticket-content-unreadable"], [error.message]); }
   }
   try { enforceFrontendDelivery(state, { root: decisionOptions.root, phase: "implementation" }); }
   catch (error) { return blockedResult(["frontend-delivery-blocked"], [error.message]); }

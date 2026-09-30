@@ -7,12 +7,16 @@ Use this reference when changing a skill's trigger, prompt structure or runtime 
 - Front-load the distinctive capability and triggering task. Put implementation inventories, output formats and background in the body. Avoid universal triggers such as every code edit or every database mention.
 - Keep a working narrow description unchanged when shortening would lose its boundary. There is no universal character or line limit in this guidance.
 - For explicitly invoked compatibility entries, preserve existing invocation metadata and include `policy.allow_implicit_invocation: false` in `agents/openai.yaml` for Codex. Keep any existing interface and dependency metadata. This policy controls implicit selection, not authorization to perform external actions.
+- Where the YSS registry opts into `invocation_contract.runtime_metadata_version: 1`, validate Codex `agents/openai.yaml` against the effective registry mode: `user` requires boolean `allow_implicit_invocation: false`; `model`/`both` permit the host default (omitted) or explicit `true`. Keep internal dependencies explicit-only, and retain action authorization in the public caller. Older registries without this marker remain compatible; a discovered entry is not proof of actual selection or enforcement on another host.
 - Keep source, projection and compatibility entry identities distinct. Do not delete generated runtime roots just because the current client also discovers the canonical root.
 
 ## Instructions
 
 - State the necessary inputs, result, fragile invariants and completion evidence. Let the agent choose routine steps within the authorized scope.
 - Put conditional examples and detailed variants in named reference sections; explain when to read each. Keep essential permission and correctness constraints visible in the entry.
+- Audit entry characters/bytes as well as lines: dense paragraphs can cost more context than a longer code example. Use size to prioritize inspection, not as a universal acceptance limit or a proxy for measured token savings.
+- Make each reference reachable from the entry with a concrete task condition. Do not replace a large entry with an instruction to read every reference; preserve the smallest useful route for the current task, including its prerequisites and stop conditions.
+- When moving detail, preserve conditions and examples, repair relative links and heading references, and state the command working directory. Check profile adaptations and packaged copies as well as the canonical entry; entry reduction alone does not prove lower total task context or better Agent decisions.
 - Reference the owning repository rule rather than repeating a second policy. Remove unavailable tool names and unregistered skill dependencies; describe the capability and fallback instead.
 - Preserve support for other models and runtimes. Do not encode a model name, reasoning effort or assumed tool availability into shared workflow rules unless the task is specifically a runtime configuration change.
 
@@ -25,3 +29,5 @@ Run the checks warranted by the change and the repository policy. After success,
 ## Sources
 
 Authoring guidance reviewed on 2026-09-16: [OpenAI's Astra Skills guidance](https://developers.openai.com/blog/rethinking-skills-and-prompts-for-gpt-6-astra) and [Codex Skills documentation](https://developers.openai.com/codex/skills). These support concise discovery and conditional loading; repository-specific gates remain local decisions.
+
+本仓模板维护的定向反例与历史兼容按 `.template-spec/process/harness-process-tailoring.md` 及其引用的维护强度策略执行；不要把自检级别替代为新的通用人工批准要求。

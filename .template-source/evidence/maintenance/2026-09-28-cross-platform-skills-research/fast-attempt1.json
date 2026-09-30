@@ -1,0 +1,20 @@
+{
+  "command": "scripts/verify-template-fast",
+  "exit_code": 1,
+  "log_ref": ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/verify-template-fast-attempt1.txt",
+  "checks": {
+    "python_tests": 26,
+    "python_failed": 0,
+    "node_tests": 147,
+    "node_failed": 0
+  },
+  "failure": "核验命令修改了工作树；检查必须只读",
+  "observed_log_created_at": "2026-09-28T23:18:33+08:00",
+  "observed_log_completed_at": "2026-09-28T23:23:09+08:00",
+  "concurrent_writes": [
+    "research-result.json",
+    "task.json",
+    "self-check.json"
+  ],
+  "diagnosis": "首轮验证期间主控仍在生成研究收尾文件；验证器对全部非忽略文件取内容摘要，判为输入漂移。Git状态仅包含本研究目录，三个Agent子仓均干净。需冻结研究输入后重跑，不把147项测试通过作为整体通过。"
+}

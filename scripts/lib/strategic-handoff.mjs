@@ -1,3 +1,4 @@
+import { BUSINESS_TICKET_CAPABILITY, checkBusinessTickets, assertBusinessDeferredApprovals } from './business-tickets.mjs';
 import { scopedConsumerCapabilities } from './strategic-handoff-routing.mjs';
 import { existsSync, lstatSync, readFileSync } from './validation-phase.mjs';
 import { mkdirSync, mkdtempSync, renameSync, rmSync, cpSync } from 'node:fs';
@@ -194,8 +195,20 @@ export async function inspectSource(root, handoffRef) {
   const explicitlyReviewed=(gate)=>(roles.gate_policy.digital_human_review||[]).some(rule=>rule.gate===gate)||(roles.gate_policy.dual_digital_human||[]).some(rule=>rule.gate===gate)||(roles.gate_policy.biological_human||[]).includes(gate);
   const terminalGate=currentPlan||explicitlyReviewed('gate.strategic-design-handoff-approved')?'gate.strategic-design-handoff-approved':'gate.stage-decision-package-approved';
   const expectedGates={domain_strategy_ref:currentPlan?'gate.plan-approved':'gate.domain-strategy-approved',stage_decision_package_ref:currentPlan?'gate.plan-approved':'gate.stage-decision-package-approved',spec_ref:'gate.spec-baseline-approved',prototype_ref:currentPlan?'gate.product-design-approved':'gate.user-confirmation',visual_baseline_ref:currentPlan?'gate.product-design-approved':'gate.user-confirmation',business_ticket_set_ref:currentPlan?'gate.plan-approved':terminalGate,handoff:terminalGate};
+  const setSource=read(safe(root,handoff.source.business_ticket_set_ref.persisted_ref));
+  if(setSource?.kind==='business-ticket-set')ensure(roles.user_decision_policy.required_capabilities?.includes(BUSINESS_TICKET_CAPABILITY),'新业务集合缺少批准策略能力声明');
+  let business;
+  if (roles.user_decision_policy.required_capabilities?.includes(BUSINESS_TICKET_CAPABILITY)) {
+    expectedGates.business_ticket_set_ref=terminalGate;
+    business=checkBusinessTickets({root,setRef:handoff.source.business_ticket_set_ref.persisted_ref,mode:'formal'});
+    ensure(business.status==='passed',`业务 Ticket 未正式化: ${business.diagnostics.map(x=>x.code).join(', ')}`);
+    const setBinding=handoff.source.business_ticket_set_ref,specBinding=handoff.source.spec_ref;
+    ensure(business.id===setBinding.id&&business.version===setBinding.version,'业务集合身份或版本与交接不一致');
+    ensure(business.spec.ref===specBinding.persisted_ref&&business.spec.version===specBinding.version&&business.spec.digest===hash(readFileSync(safe(root,specBinding.persisted_ref))),'业务集合未绑定当前交接 Spec');
+  }
   expectedGates.existing_ui_baseline_ref=expectedGates.prototype_ref;
   const bindings={...handoff.source,handoff:{id:handoff.handoff_id,version:handoff.handoff_version,persisted_ref:handoffRef,status:'approved'}};
+  const businessProofRefs=[];
   for(const [key,ref] of Object.entries(bindings)) {
     const approval=config.approvals[key];
     ensure(approval,`缺少资产批准绑定: ${key}`);
@@ -213,9 +226,11 @@ export async function inspectSource(root, handoffRef) {
     const record=sourceApprovalRecord(read(safe(root,approval.record_ref)),approval.gate_id);
     if(key==='existing_ui_baseline_ref')ensure(record.subject_ref===`${ref.persisted_ref}/${ref.manifest_ref}`,'既有 UI 用户决定必须以当前 manifest 为批准主体');
     await sourceApproval(record,roles,root);
+    businessProofRefs.push(approval.record_ref,record.user_decision_ref,record.continuation_ref,record.decision_reuse_ref);
     ensure(record.gate_id===approval.gate_id,`批准门禁不匹配: ${key}`);
     ensure((record.artifact_bindings || []).some(x=>x.id===(ref.id||ref.baseline_id) && x.version===ref.version && x.digest===actual),`批准记录未绑定当前资产: ${key}`);
   }
+  if(business)assertBusinessDeferredApprovals(business,businessProofRefs);
   if (roles.user_decision_policy.required_capabilities?.includes('strategic-decision-reuse-v1')) {
     const record=sourceApprovalRecord(read(safe(root,config.approvals.handoff.record_ref)),config.approvals.handoff.gate_id);
     const scope=read(safe(root,record.subject_ref));
@@ -233,18 +248,24 @@ export async function inspectSource(root, handoffRef) {
     const receipt=previewFiles(root,config.prototype);
     ensure(uiBaselineCaseIds(handoff).every(id=>receipt.case_ids.includes(id)), '离线验证未覆盖视觉基线 case');
   }
-  return {handoff,config,indexes,strategy,stage};
+  return {handoff,config,indexes,strategy,stage,business};
 }
 
 function collect(root, handoffRef, handoff, config) {
   const collected=new Map(), queue=[handoffRef,'CONTEXT.md','.template-spec/agents/digital-human-roles.yaml',...Object.values(handoff.source).map(x=>x.persisted_ref),...Object.values(config.approvals).map(x=>x.record_ref),...handoff.evidence_and_version_digests,...config.additional_files];
+  const roles=sourceApprovalPolicy(read(safe(root,'.template-spec/agents/digital-human-roles.yaml')));
+  if(roles.user_decision_policy.required_capabilities?.includes(BUSINESS_TICKET_CAPABILITY)) {
+    const report=checkBusinessTickets({root,setRef:handoff.source.business_ticket_set_ref.persisted_ref,mode:'formal'});
+    ensure(report.status==='passed','业务 Ticket 导出前来源已变化');
+    queue.push(...report.inputs.map(item=>item.ref));
+  }
   if(config.prototype)queue.push(config.prototype.preview_root,config.prototype.verification_ref);
   if(config.prototype?.profile==='H2')queue.push(config.prototype.source_root,config.prototype.lock_ref);
   const symbolic=config.reference_map || {};
   const enqueue=ref=> { if(symbolic[ref])queue.push(symbolic[ref]); else if(/^https?:\/\//i.test(ref))return; else if(ref.startsWith('evidence.'))throw new TypeError(`未解析 evidence ID: ${ref}`); else if(ref.includes('/') || /\.(?:md|yaml|json|html|png|txt|log)$/.test(ref))queue.push(ref); };
   function refs(value,key='') {
     if(Array.isArray(value)) { if(key==='evidence_refs') value.forEach(enqueue); else value.forEach(v=>refs(v,key)); }
-    else if(value && typeof value==='object') for(const [k,v]of Object.entries(value)) { if(['approval_ref','persisted_ref','user_decision_ref','decision_reuse_ref','continuation_ref','plan_continuation_ref','scope_ref','subject_ref','delivery_ref'].includes(k)&&typeof v==='string')enqueue(v); else if(k==='ref'&&typeof v==='string'&&!/^[a-z]+:\/\//i.test(v))enqueue(v); else refs(v,k); }
+    else if(value && typeof value==='object') for(const [k,v]of Object.entries(value)) { if(['approval_ref','persisted_ref','user_decision_ref','decision_reuse_ref','continuation_ref','plan_continuation_ref','scope_ref','subject_ref','delivery_ref','review_ref'].includes(k)&&typeof v==='string')enqueue(v); else if(k==='ref'&&typeof v==='string'&&!/^[a-z]+:\/\//i.test(v))enqueue(v); else refs(v,k); }
   }
   let totalBytes = 0;
   while(queue.length) {
@@ -421,7 +442,7 @@ export async function importBundle({bundle,targetRoot}) {
       const equal=actual&&['term','meaning','english_identifier','context_id','forbidden_aliases'].every(key=>own(expected[key],actual[key]));
       terms.push({operation,term_ref:expected.term_ref,expected,current:actual||null,status:operation==='deprecated'?(actual?'pending':'matched'):(equal?'matched':actual?'conflict':'pending')});
     }
-    const rows=[...b.indexes.rules.map(x=>({source_id:x.rule_id,source_digest:x.source_digest,kind:'rule'})),...b.indexes.scenarios.filter(x=>x.critical).map(x=>({source_id:x.scenario_id,source_digest:x.source_digest,kind:'scenario'}))].map(x=>({...x,disposition:'pending',tactical_refs:[],test_seam_refs:[],evidence_refs:[],dependent_slice_refs:[],dependency_status:'unknown'}));
+    const rows=[...b.indexes.rules.map(x=>({source_id:x.rule_id,source_digest:x.source_digest,kind:'rule'})),...b.indexes.scenarios.filter(x=>x.critical).map(x=>({source_id:x.scenario_id,source_digest:x.source_digest,kind:'scenario'})),...(b.business?.tickets||[]).map(x=>({source_id:x.id,source_digest:x.source_digest,kind:'business-ticket',business_ticket_ref:`${rel}/package/payload/files/${x.ref}`}))].map(x=>({...x,disposition:'pending',tactical_refs:[],test_seam_refs:[],evidence_refs:[],dependent_slice_refs:[],dependency_status:'unknown'}));
     mkdirSync(path.dirname(dest),{recursive:true});const stage=mkdtempSync(path.join(path.dirname(dest),'.import-staging-'));
     try {
       cpSync(b.root,path.join(stage,'package'),{recursive:true,errorOnExist:true,force:false});
@@ -452,13 +473,13 @@ export async function importBundle({bundle,targetRoot}) {
         schema(receipt,fromDelivery?'.template-spec/process/schemas/strategic-handoff-import-receipt-v3.schema.json':'.template-spec/process/schemas/strategic-handoff-import-receipt.schema.json');
         write(stage,'import-receipt.json',json(receipt));
         write(stage,'context-reconciliation-draft.json',json({schema_version:2,status:'draft',import_receipt_ref:`${rel}/import-receipt.json`,target_context_digest:context.document_digest,route_ids:selected.map(route=>route.route_id),terms}));
-        write(stage,'upstream-change-impact.json',json({schema_version:2,previous_bundle:b.manifest.previous_bundle,routes:selected.map(route=>({route_id:route.route_id,capability:route.capability,activation:route.activation,changed_source_ids:[...b.changes.updated,...b.changes.removed],added_source_ids:b.changes.added,status:'requires-lifecycle-reconciliation'})),policy:'mark-only-known-dependent-contracts-stale; unknown-dependency-or-design-basis-change-blocks-all'}));
+        write(stage,'upstream-change-impact.json',json({schema_version:2,previous_bundle:b.manifest.previous_bundle,...(b.business?{business_ticket_set_ref:`${rel}/package/payload/files/${b.handoff.source.business_ticket_set_ref.persisted_ref}`,business_ticket_status:'requires-current-source-and-dependency-reconciliation',business_ticket_ids:b.business.tickets.map(t=>t.id)}:{}),routes:selected.map(route=>({route_id:route.route_id,capability:route.capability,activation:route.activation,changed_source_ids:[...b.changes.updated,...b.changes.removed],added_source_ids:b.changes.added,status:'requires-lifecycle-reconciliation'})),policy:'mark-only-known-dependent-contracts-stale; unknown-dependency-or-design-basis-change-blocks-all'}));
         const backendRoute=b.handoff.consumer_routes.find(route=>route.capability==='backend-technical-design');
         const frontendRoute=b.handoff.consumer_routes.find(route=>route.capability==='frontend-engineering-design');
         const coordinationRoute=b.handoff.consumer_routes.find(route=>route.capability==='delivery-coordination');
         if(capabilities.includes('backend-technical-design')&&backendRoute.activation!=='not-applicable')write(stage,'backend-technical-traceability-draft.json',json({schema_version:2,route_id:backendRoute.route_id,import_receipt_ref:`${rel}/import-receipt.json`,bundle_digest:b.manifest.bundle_digest,rows}));
         if(capabilities.includes('frontend-engineering-design')&&frontendRoute.activation!=='not-applicable'){
-          const preflight={schema_version:b.handoff.schema_version===5?2:1,status:'draft',route_id:frontendRoute.route_id,capability:frontendRoute.capability,import_receipt_ref:`${rel}/import-receipt.json`,bundle_digest:b.manifest.bundle_digest,context_reconciliation_ref:'',...(b.handoff.schema_version===5?{ui_baseline_kind:uiBaselineKind(b.handoff),ui_baseline_ref:`${rel}/package/payload/files/${uiBaselineRef(b.handoff).persisted_ref}/${uiBaselineRef(b.handoff).manifest_ref}`}:{visual_baseline_ref:`${rel}/package/payload/files/${uiBaselineRef(b.handoff).persisted_ref}/${uiBaselineRef(b.handoff).manifest_ref}`}),source_rule_refs:rows.map(row=>row.source_id),backend_dependency:{mode:backendRoute.activation==='not-applicable'?'not-applicable':'required',route_id:backendRoute.route_id,...(backendRoute.activation==='not-applicable'?{reason:backendRoute.reason,impact_refs:backendRoute.impact_refs,evidence_refs:backendRoute.evidence_refs}:{})},ready_for_agent:false};
+          const preflight={schema_version:b.handoff.schema_version===5?2:1,status:'draft',route_id:frontendRoute.route_id,capability:frontendRoute.capability,import_receipt_ref:`${rel}/import-receipt.json`,bundle_digest:b.manifest.bundle_digest,context_reconciliation_ref:'',...(b.handoff.schema_version===5?{ui_baseline_kind:uiBaselineKind(b.handoff),ui_baseline_ref:`${rel}/package/payload/files/${uiBaselineRef(b.handoff).persisted_ref}/${uiBaselineRef(b.handoff).manifest_ref}`}:{visual_baseline_ref:`${rel}/package/payload/files/${uiBaselineRef(b.handoff).persisted_ref}/${uiBaselineRef(b.handoff).manifest_ref}`}),source_rule_refs:rows.filter(row=>row.kind!=='business-ticket').map(row=>row.source_id),backend_dependency:{mode:backendRoute.activation==='not-applicable'?'not-applicable':'required',route_id:backendRoute.route_id,...(backendRoute.activation==='not-applicable'?{reason:backendRoute.reason,impact_refs:backendRoute.impact_refs,evidence_refs:backendRoute.evidence_refs}:{})},ready_for_agent:false};
           schema(preflight,b.handoff.schema_version===5?'.template-spec/process/schemas/frontend-strategic-preflight-v2.schema.json':'.template-spec/process/schemas/frontend-strategic-preflight.schema.json');
           write(stage,'frontend-strategic-preflight-draft.json',json(preflight));write(stage,'frontend-traceability-draft.json',json({schema_version:1,route_id:frontendRoute.route_id,import_receipt_ref:`${rel}/import-receipt.json`,bundle_digest:b.manifest.bundle_digest,rows:rows.map(({tactical_refs,test_seam_refs,...row})=>({...row,frontend_case_refs:[]}))}));
         }

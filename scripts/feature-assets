@@ -1,0 +1,23 @@
+#!/usr/bin/env node
+import fs from 'node:fs';
+import path from 'node:path';
+import { parseArgs } from 'node:util';
+import { inspectAssets, planAssets, applyAssets, restoreAssets } from './lib/feature-assets.mjs';
+try {
+  const {values,positionals}=parseArgs({allowPositionals:true,strict:true,options:{root:{type:'string'},checkpoint:{type:'string'},candidate:{type:'string',multiple:true},'archive-dir':{type:'string'},plan:{type:'string'},receipt:{type:'string'},json:{type:'boolean'},help:{type:'boolean'}}});
+  if(values.help) process.stdout.write('feature-assets inspect|plan --root <project> --checkpoint <ref> [--candidate <ref> ... --archive-dir <external-dir>] [--json]\nfeature-assets apply --root <project> --plan <external-plan.json>\nfeature-assets restore --root <project> --receipt <external-receipt.json>\nplan writes JSON to stdout only; apply never grants lifecycle approval.\n');
+  else {
+    if(!values.root||positionals.length!==1)throw Error('explicit-root-and-command-required');
+    const root=path.resolve(values.root),command=positionals[0];let result;
+    if(command==='inspect') result=inspectAssets({root,checkpoint:values.checkpoint});
+    else if(command==='plan')result=planAssets({root,checkpoint:values.checkpoint,candidates:values.candidate,archiveDir:values['archive-dir']});
+    else if(command==='apply'){
+      const ref=fs.realpathSync(values.plan),realRoot=fs.realpathSync(root);
+      if(ref===realRoot||ref.startsWith(realRoot+path.sep))throw Error('plan-must-be-outside-project');
+      result=applyAssets({root,plan:JSON.parse(fs.readFileSync(ref,'utf8'))});
+    } else if(command==='restore')result=restoreAssets({root,receiptRef:values.receipt});
+    else throw Error('unknown-command');
+    process.stdout.write(JSON.stringify(result,null,2)+'\n');
+    if(result.status==='partial')process.exitCode=1;
+  }
+} catch(error) {process.stderr.write(error.message+'\n');process.exitCode=2;}

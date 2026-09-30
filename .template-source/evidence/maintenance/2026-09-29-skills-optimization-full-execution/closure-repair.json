@@ -1,0 +1,39 @@
+{
+  "kind": "fixture-input-closure-repair",
+  "changes": [
+    {
+      "previous": "/Users/zhudaoming/.codex/artifacts/yss-skills-full-2026-09-29/full-scenarios.json",
+      "previous_sha256": "9d248d71de3a8e4f1bdb7d5c3fa4e27cc1643e09b605cc6c719d2a24f6811294",
+      "new": "/Users/zhudaoming/.codex/artifacts/yss-skills-full-2026-09-29/full-scenarios-closed.json",
+      "new_sha256": "51a4cce76e8a577e7cce9344533b94772698ca16a68f712d9d5a706285d7e8f7"
+    },
+    {
+      "previous": "/Users/zhudaoming/.codex/artifacts/yss-skills-full-2026-09-29/lifecycle-scenarios.json",
+      "previous_sha256": "ad899feab78776d752209d2aa76858903ca8ab1c409e402564fccef69053a0ef",
+      "new": "/Users/zhudaoming/.codex/artifacts/yss-skills-full-2026-09-29/lifecycle-scenarios-closed.json",
+      "new_sha256": "db94defef75f4f4036db5d2b5b717bb1e0064354447af185629f74014ec353c1"
+    },
+    {
+      "previous": "/Users/zhudaoming/.codex/artifacts/yss-skills-full-2026-09-29/invocation-scenarios-v2.json",
+      "previous_sha256": "96a40facf50f95f83a41e716d625b40dc7c78111df941d2ed049f4805bfa201b",
+      "new": "/Users/zhudaoming/.codex/artifacts/yss-skills-full-2026-09-29/invocation-scenarios-v2-closed.json",
+      "new_sha256": "f6ce7982065d88040a073e84ba5544fc672cb407a73641b4214c1730252ec1be"
+    },
+    {
+      "previous": "/Users/zhudaoming/.codex/artifacts/yss-skills-full-2026-09-29/boundaries-scenarios.json",
+      "previous_sha256": "54682c80c33d579f3e0b3b5fe272c1d4ee16753b072a437955a454442c60b20d",
+      "new": "/Users/zhudaoming/.codex/artifacts/yss-skills-full-2026-09-29/boundaries-scenarios-closed.json",
+      "new_sha256": "6b5f599073fc0349c51d585da73e0477e1ccb65ebbe3268f0a716cf54316199e"
+    },
+    {
+      "previous": "/Users/zhudaoming/.codex/artifacts/yss-skills-full-2026-09-29/pi-boundaries-scenarios.json",
+      "previous_sha256": "a3c7ce272f05eafde98e95e34e098e35c8fb45d4ec8e8fd19627c6f3f22eab9b",
+      "new": "/Users/zhudaoming/.codex/artifacts/yss-skills-full-2026-09-29/pi-boundaries-scenarios-closed.json",
+      "new_sha256": "69d1373878e70ce89c7a2a056b3dcf3576c670c498767000ac8b151f0d7bdc95"
+    }
+  ],
+  "reason": "Native baseline consultation located omitted .template-source/scripts/skills-agent-eval.py and profile-skill-sync.json. Copy all frozen .template-source resources, not selectively cropped subfolders; apply equal input closure to both variants. Historical evidence remains excluded unless explicitly needed. Original runs retained and not counted as source regressions.",
+  "agent_prompt_changed": false,
+  "python_dependencies": "/Users/zhudaoming/.codex/artifacts/yss-skills-full-2026-09-29/python-dependencies",
+  "interrupted_batch": "auxiliary-baseline; allow in-flight cases to finish, no new scheduling"
+}

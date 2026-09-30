@@ -1,0 +1,65 @@
+{
+  "successful_read_commands": [
+    {
+      "command": "/bin/zsh -lc 'cat .agents/skills/yss-prototype-stage/SKILL.md && cat .agents/skills/yss-design-system/SKILL.md'",
+      "paths": [
+        ".agents/skills/yss-design-system/SKILL.md",
+        ".agents/skills/yss-prototype-stage/SKILL.md"
+      ]
+    },
+    {
+      "command": "/bin/zsh -lc 'pwd && cat yss-project.yaml && cat fixture/brief.md && cat CONTEXT.md && cat DESIGN.md'",
+      "paths": []
+    },
+    {
+      "command": "/bin/zsh -lc 'cat DESIGN.md && cat fixture/data.json'",
+      "paths": []
+    },
+    {
+      "command": "/bin/zsh -lc 'cat .template-spec/design/design.md && cat .agents/skills/yss-prototype-stage/references/concept-comparison.md && cat .agents/skills/yss-prototype-stage/references/comparison-tool.md'",
+      "paths": [
+        ".agents/skills/yss-prototype-stage/references/comparison-tool.md",
+        ".agents/skills/yss-prototype-stage/references/concept-comparison.md"
+      ]
+    },
+    {
+      "command": "/bin/zsh -lc 'cat .template-spec/process/document-writing.md .agents/skills/yss-prototype-stage/references/html-prototype-practices.md .agents/skills/yss-design-system/references/enterprise-craft.md'",
+      "paths": [
+        ".agents/skills/yss-design-system/references/enterprise-craft.md",
+        ".agents/skills/yss-prototype-stage/references/html-prototype-practices.md"
+      ]
+    },
+    {
+      "command": "/bin/zsh -lc 'cat .template-spec/design/tokens/variables.css .agents/skills/yss-prototype-stage/references/prototype-profile-routing.md .agents/skills/yss-design-system/references/design-system.md'",
+      "paths": [
+        ".agents/skills/yss-design-system/references/design-system.md",
+        ".agents/skills/yss-prototype-stage/references/prototype-profile-routing.md"
+      ]
+    },
+    {
+      "command": "/bin/zsh -lc \"tail -25 CONTEXT.md && sed -n '70,140p' .template-spec/design/design.md\"",
+      "paths": []
+    },
+    {
+      "command": "/bin/zsh -lc 'cat .agents/skills/yss-prototype-stage/references/product-design-adapter.md'",
+      "paths": [
+        ".agents/skills/yss-prototype-stage/references/product-design-adapter.md"
+      ]
+    }
+  ],
+  "failed_commands": [
+    {
+      "command": "/bin/zsh -lc 'rg --files fixture drafts .template-spec/design/tokens docs/adr .agents/skills/yss-prototype-stage/references .agents/skills/yss-design-system/references && cat .template-spec/process/document-writing.md'",
+      "exit_code": 2,
+      "output": "rg: drafts: No such file or directory (os error 2)\nrg: docs/adr: No such file or directory (os error 2)\nfixture/brief.md\nfixture/data.json\n.template-spec/design/tokens/variables.dark.css\n.template-spec/design/tokens/tokens.dark.json\n.template-spec/design/tokens/tokens.compact.json\n.template-spec/design/tokens/variables.css\n.template-spec/design/tokens/theme.json\n.template-spec/design/tokens/tokens.default.json\n.agents/skills/yss-prototype-stage/references/prototype-profile-routing.md\n.agents/skills/yss-prototype-stage/references/antd-integration.md\n.agents/skills/yss-prototype-stage/references/html-prototype-practices.md\n.agents/skills/yss-prototype-stage/references/existing-ui-entry.md\n.agents/skills/yss-prototype-stage/references/comparison-tool.md\n.agents/skills/yss-prototype-stage/references/concept-comparison.md\n.agents/skills/yss-prototype-stage/references/product-design-adapter.md\n.agents/skills/yss-prototype-stage/references/antd-component-catalog.json\n.agents/skills/yss-design-system/references/design-qa-theme.md\n.agents/skills/yss-design-system/references/data-quality-theme.md\n.agents/skills/yss-design-system/references/design-system.md\n.agents/skills/yss-design-system/references/enterprise-craft.md\n"
+    },
+    {
+      "command": "/bin/zsh -lc \"sed -n '1,48p' .agents/skills/yss-prototype-stage/references/prototype-profile-routing.md && tail -12 CONTEXT.md && rg -n '\\\"colorFillAlter\\\"|\\\"colorBgContainerDisabled\\\"|\\\"colorText\\\"|\\\"colorBgLayout\\\"' .template-spec/design/tokens/tokens.default.json && rg --files -g 'AGENTS.md' -g '\"'!node_modules'\"' fixture\"",
+      "exit_code": 1,
+      "output": "# 原型档位路由与 Designer Skills 适配\n\n本合同是 `artifact.prototype-deliverable` 的档位选择单一入口。生命周期只依赖 `prototype_profile` 和统一证据，不感知渲染器内部结构。\n\n## 选择算法\n\n先读取已批准 Spec、交互说明、低保真、状态矩阵和独立 `prototype-review`。按下列确定性规则选择，最高命中档位优先；无命中或证据不充分时使用 H2。人工可以直接升级，降级必须写明已关闭的触发风险与证据。\n\n| 档位 | 名称 | 命中条件 | 默认适配器 |\n|---|---|---|---|\n| H1 | `visual-review` | 仅需确认布局、密度、层级、文案或少量关键交互；不涉及多页面导航、复杂联动、权限、恢复、冲突或真实组件差异 | 语义 HTML + 项目 Token CSS + 最小 JavaScript；可使用设计工具导出，但必须有浏览器可复验入口 |\n| H2 | `flow-review` | 多页面/路由、复杂表单联动、权限体验、失败恢复、并发冲突或需要可操作主流程测试 | HTML/CSS/JavaScript 可操作流程；默认离线资源包，保持同等流程和异常验收 |\n\n真实 YSS/AntDV 组件行为、lockfile、props、slots、events 或 Storybook 状态不是第三种原型档位。它们属于前端实现计划、已批准切片的生产实现与实现还原验证。原型中发现的相关不确定性写入 `implementation_handoff`，不得为解决它调用 `yss-ui` 或把实现仓组件代码引入原型。\n\n## 共同资产\n\n- `decision_to_inform`：本轮原型要支持的具体决策。\n- `risk_assumptions` 与 `trigger_results`：机器可读档位来源。\n- Spec、交互说明、状态矩阵、设计系统与低保真评审引用。\n- 浏览器入口、产物 digest、desktop/narrow 非空渲染、console 结果，以及由 `case_id` 定位的 Visual Baseline Bundle。\n- 统一 Design QA 六轴：visual、layout、interaction、content、accessibility、cross-platform。\n- 独立原型评审引用、用户确认、blockers 和 gaps。\n- `implementation_handoff`：只记录生产组件假设、待验证事项和目标阶段，不提前执行生产组件核验。\n\n机器优先采集版本、digest、视口、截图、console 与扫描结果；人只填写决策、风险解释、允许差异和用户确认。PNG 基准图统一使用 sRGB、DPR 1，关闭动画并隐藏光标；长页面使用固定滚动分段，full-page 只可作总览。每张图不超过 5 MiB，整包不超过 100 MiB。不得把同一事实复制到多个段落。\n\n`visual-baseline.yaml` 是模型与实现验证的唯一图片索引。每个 case 必须绑定 route、page、state、viewport、theme、locale、data scenario、PNG digest、语义引用和允许差异；至少覆盖 1440x900 与 390x844。原型用户确认时冻结版本，后续变更创建新版本并使依赖的实现计划与 Slice Contract `stale`，禁止覆盖旧版本。\n\n## 档位证据\n\n### H1\n\n- 浏览器不依赖 Node/runtime build；原型目录不得伪造 `package.json`、lockfile 或 AntD 查询段。\n- 至少验证一个或少量关键交互，以及基础键盘、焦点和对比度。\n- 200% zoom 与 reduced motion 只在影响面命中时要求；视觉回归和真实组件 story 不强制。\n\n### H2\n\n- 主流程与关键 failure / no-permission / conflict 状态可操作。\n- 验证键盘、焦点、对比度、200% zoom、reduced motion；按风险决定视觉回归。\n- 默认 `component_basis=html-css-js`、`runtime_build_required=false`、`prototype_library_facts.applicable=false`，不创建 package、lockfile 或空事实包。\n- 场景使用现有 `case_id/data_scenario` 对应状态矩阵；固定初始输入与结果，提供切换、深链接和重置，验证失败后的输入保留、重试、权限边界及冲突恢复。\n- `offline-html-v1` 交付包记录所有本地资源及摘要；断开网络后通过 `file://` 从独立目录复验，保存 console、资源、交互和截图结果。静态扫描不能替代浏览器行为证明。\n\n### 实现阶段交接\n\n- 若原型结论依赖真实 YSS/AntDV 组件能力，在 `implementation_handoff.production_component_assumptions` 中记录假设，在 `verification_targets` 中写明待验证行为。\n| 仓库身份清单 | 显式声明仓库身份和清单结构版本的机器可读资产。 | — | 不承载项目名称、团队规模、Tracker 或其他易变业务配置。 |\n| 聚合门禁 | 汇总适用自动检查和独立专业审查后，对当前资产与范围作一次批准或验收；权威定义见生命周期注册表。 | — | 内部检查失败仍阻断；有效批准只在相关依据、范围或授权变化时失效。 |\n| 授权延续 | 原始用户批准明确覆盖当前边界、资产范围和决定依据时，经独立审查与当前验证继续推进。 | — | 不产生新的用户回复；未知或实质变化、撤回和外部强制审批缺失不能延续。证据格式见用户决定协议。 |\n| 内部检查 | 以 `check.*` 登记的自动前置核验、计算状态或独立专业审查；作为聚合门禁输入，不单独请求用户批准。 | — | 不等于省略检查或允许起草者自审。 |\n| 交付验收 | 对当前交付候选的独立审查、实际验证和回滚证据作出验收结论。 | — | 不授予实际合并、推送或发布权限；这些动作另按授权范围执行。 |\n\n## 业务术语\n\n`project-instance` 在本节新增产品对象。每一行必须有 PascalCase `英文标识`；缺该列视为统一业务词汇未冻结。模板源不放虚构业务行。\n\n| 术语 | 含义 | 英文标识 | 适用业务责任区 | 避免 / 备注 |\n|---|---|---|---|---|\n49:  \"colorBgLayout\": \"#f0f2f5\",\n50:  \"colorText\": \"rgba(0, 0, 0, 0.88)\",\n451:  \"colorFillAlter\": \"rgba(0,0,0,0.02)\",\n452:  \"colorBgContainerDisabled\": \"rgba(0,0,0,0.04)\",\n"
+    }
+  ],
+  "truncated_trace_lines": 0,
+  "tool_output_bytes": 168542,
+  "scope": "Tool-output byte count is not total source bytes read or token usage; multi-file and partial reads need trace inspection."
+}

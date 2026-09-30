@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>资料填写 · 低保真交互草案</title>
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="design-tokens.css">
+  <link rel="stylesheet" href="styles.css">
+  <script src="data.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#workspace">跳到资料填写</a>
+  <header class="app-header"><strong>YSS <span class="header-divider">/</span> 资料填写</strong><span class="muted">低保真交互草案 · 本地模拟</span></header>
+
+  <aside class="review-tools" aria-label="设计评测工具">
+    <div class="review-row">
+      <strong>方案预览</strong>
+      <div class="candidate-switch" role="group" aria-label="步骤组织候选">
+        <button type="button" data-candidate="inline" aria-pressed="false">A 页内分步</button>
+        <button type="button" data-candidate="wizard" aria-pressed="true">B 独立步骤 · 建议</button>
+        <button type="button" data-candidate="progressive" aria-pressed="false">C 分区渐进</button>
+      </div>
+      <div class="scenario-tools">
+        <label for="scenario">场景</label>
+        <select id="scenario"><option value="primary">正常提交</option><option value="failure">提交失败与重试</option></select>
+        <button id="reset" type="button">重置场景</button>
+      </div>
+    </div>
+    <details class="comparison">
+      <summary>比较 3 个候选与选定建议 <span class="muted">· 尚无用户选择</span></summary>
+      <div class="candidate-grid">
+        <article><h2>A · 页内分步</h2><div class="wire wire-inline" aria-hidden="true"><span>① 资料</span><span>② 用途</span><span>③ 检查</span></div><p>三个区段在同一页依次解锁，方便看全貌。</p><p class="muted">代价：窄屏滚动更长，提交入口离首屏更远。</p></article>
+        <article><h2>B · 独立步骤（建议）</h2><div class="wire wire-wizard" aria-hidden="true"><span>① → ② → ③</span><span>当前步骤内容</span></div><p>每次聚焦一步，返回修改保留全部输入。</p><p class="muted">代价：需要切换步骤；用检查页统一核对。</p></article>
+        <article><h2>C · 分区渐进</h2><div class="wire wire-progressive" aria-hidden="true"><span>① 已填摘要</span><span>② 当前区段</span><span>③ 待展开</span></div><p>完成后收起为摘要，兼顾上下文与页面长度。</p><p class="muted">代价：展开和收起改变页面位置，需要观察焦点。</p></article>
+      </div>
+      <p>建议优先试用 B：任务有明确的“资料 → 用途 → 检查”顺序，独立步骤更容易辨认当前动作。三案必填项、提交时点与失败恢复一致；切换预览保留输入，不记录批准。</p>
+    </details>
+    <p id="scenario-note" class="caption"></p>
+    <p id="tool-status" role="status" class="caption" hidden></p>
+  </aside>
+
+  <main id="workspace" tabindex="-1">
+    <div class="page-heading"><div><p class="eyebrow">资料 / 填写</p><h1>填写资料</h1><p class="muted">填写资料信息与用途，检查无误后提交。</p></div><p id="preview-label" class="caption">当前预览：B · 独立步骤</p></div>
+    <div class="work-layout">
+      <section class="sheet" aria-label="资料填写流程">
+        <nav aria-label="填写进度"><ol class="steps" id="steps"></ol></nav>
+        <div id="notice" hidden></div>
+        <form id="form" novalidate>
+          <p class="required-note">资料名称、负责人、用途均为必填项。</p>
+          <div class="sections" id="sections">
+            <section class="step-panel" id="panel-0" aria-labelledby="heading-0">
+              <div class="panel-heading"><h2 id="heading-0" tabindex="-1">1. 填写资料</h2><span class="panel-state" id="state-0"></span></div>
+              <div class="collapsed-summary" id="summary-0"></div>
+              <div class="panel-body" id="body-0">
+                <div class="field"><label for="name">资料名称 <span class="required">（必填）</span></label><input id="name" name="name" type="text" required aria-describedby="name-error"><p class="field-error" id="name-error" hidden></p></div>
+                <div class="field"><label for="owner">负责人 <span class="required">（必填）</span></label><input id="owner" name="owner" type="text" required aria-describedby="owner-error"><p class="field-error" id="owner-error" hidden></p></div>
+                <p class="caption">已填入给定资料的名称与负责人，可在此修改。</p>
+              </div>
+            </section>
+            <section class="step-panel" id="panel-1" aria-labelledby="heading-1">
+              <div class="panel-heading"><h2 id="heading-1" tabindex="-1">2. 填写用途</h2><span class="panel-state" id="state-1"></span></div>
+              <div class="collapsed-summary" id="summary-1"></div>
+              <div class="panel-body" id="body-1">
+                <div class="field"><label for="purpose">用途 <span class="required">（必填）</span></label><textarea id="purpose" name="purpose" rows="5" required placeholder="请填写这份资料的用途" aria-describedby="purpose-help purpose-error"></textarea><p class="caption" id="purpose-help">给定资料未提供用途，请自行填写。</p><p class="field-error" id="purpose-error" hidden></p></div>
+              </div>
+            </section>
+            <section class="step-panel" id="panel-2" aria-labelledby="heading-2">
+              <div class="panel-heading"><h2 id="heading-2" tabindex="-1">3. 检查并提交</h2><span class="panel-state" id="state-2"></span></div>
+              <div class="collapsed-summary" id="summary-2"></div>
+              <div class="panel-body" id="body-2">
+                <p class="muted">请核对以下内容，需要调整时可返回修改。</p>
+                <dl class="review-values" id="review-values"></dl>
+                <div class="review-edits"><button type="button" data-edit="0">修改资料</button><button type="button" data-edit="1">修改用途</button></div>
+              </div>
+            </section>
+          </div>
+          <footer class="actions">
+            <button id="cancel" type="button">取消填写</button>
+            <div class="forward-actions"><button id="back" type="button">上一步</button><button id="next" class="primary" type="submit">下一步：填写用途</button></div>
+          </footer>
+          <p class="local-note caption">提交仅演示本地反馈，关闭或刷新页面后不保留填写内容。</p>
+        </form>
+        <section id="result" tabindex="-1" hidden></section>
+      </section>
+
+      <aside class="source-panel" aria-labelledby="source-heading">
+        <h2 id="source-heading">给定资料</h2>
+        <p class="caption">只读参考 · 不随表单修改</p>
+        <div class="sample-switch"><label for="sample">数据样本</label><select id="sample"><option value="M-001">M-001</option><option value="M-002">M-002 · 长名称</option><option value="M-003">M-003 · 负责人为空</option></select></div>
+        <dl id="source-values" class="source-values"></dl>
+        <p class="caption">切换样本将开始一次新的填写。数据来自本地 fixture。</p>
+      </aside>
+    </div>
+  </main>
+
+  <dialog id="confirm-dialog" aria-labelledby="dialog-title" aria-describedby="dialog-description">
+    <h2 id="dialog-title"></h2><p id="dialog-description"></p>
+    <div class="dialog-actions"><button id="keep-editing" type="button" autofocus>继续填写</button><button id="confirm-action" class="primary" type="button"></button></div>
+  </dialog>
+  <noscript><p class="no-script">此草案需要浏览器启用 JavaScript；所有脚本均在本地。</p></noscript>
+</body>
+</html>

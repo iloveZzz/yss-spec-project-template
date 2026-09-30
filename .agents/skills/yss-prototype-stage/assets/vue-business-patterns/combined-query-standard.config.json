@@ -1,0 +1,6 @@
+{
+  "schema_version": 1,
+  "title": "组合查询",
+  "entry": "combined-query-standard.ts",
+  "scenarios": "combined-query.scenarios.json"
+}

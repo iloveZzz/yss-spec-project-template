@@ -1,0 +1,77 @@
+{
+  "schema_version": 4,
+  "feature": "analysis",
+  "pattern": "workbench",
+  "prototype_profile": "H2",
+  "profile_kind": "flow-review",
+  "component_basis": "react-shadcn-prebuilt",
+  "runtime_build_required": false,
+  "entry": "index.html",
+  "design_source": {
+    "path": "DESIGN.md",
+    "digest": "sha256:e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+  },
+  "token_source": {
+    "path": ".template-spec/design/tokens/variables.css",
+    "digest": "sha256:028c24f9e935f5c4b1392d131a4cd13482e6572a2ced4360ffa833aa3fbeaf66"
+  },
+  "files": {
+    "app.js": "sha256:7dde8fe8fa0f32953891e34f9cfb408bd1062c9a5f925ec0c8057e45e7466ff5",
+    "authoring-source.tsx": "sha256:9cc4c2d69be551fae55a806ae3b22e54cca8cf510a02b9bede2ce5b9c799234a",
+    "authoring-sources/analysis.tsx": "sha256:9cc4c2d69be551fae55a806ae3b22e54cca8cf510a02b9bede2ce5b9c799234a",
+    "authoring-sources/patterns.css": "sha256:aeeb7def3f223bf1de9624335db4f9d19c2b6fe57e79c68487a3f56cba9d53e5",
+    "authoring-sources/shared.tsx": "sha256:37b05dd2f98e2f995ea1bdbe2d4142c22b8e18e85e8d53558e78f6184f95d9a0",
+    "build-provenance.json": "sha256:b4a87e6932fcac47b27022e365e3c2e2b35acd27e68c3d5fff0168714d9dace2",
+    "component-sources/alert-dialog.tsx": "sha256:b3dfb83e54ed8c82071df5289e5149628bf573458fc2da2d62f93f8380041b28",
+    "component-sources/badge.tsx": "sha256:13a9380dfff853ee730c14a52df49f22aecd31f40f2998d7c1e7ec458b6e1650",
+    "component-sources/button.tsx": "sha256:79dd6f75f8136394442202d6b8b922fb269eaad0a5dba579397c9d5b41f893bb",
+    "component-sources/checkbox.tsx": "sha256:ba0ac64064e2d8fa7299d53e9e84b9a4772fef8dd4cf6170c56d3030a1d69941",
+    "component-sources/cn.ts": "sha256:64fc84c1be627f0d586fb4ba64d824a1604f44282381f5bae68cdf86e10bb6ec",
+    "component-sources/dialog.tsx": "sha256:2ade6074e5fad0a4eb171ead44c43d3301a3c83d186d7236fb1fdbea80ee556b",
+    "component-sources/input.tsx": "sha256:0c9457181f6ddc80969bcf854e92c362903a55b6e889fbef3fd85343ecc4af5b",
+    "component-sources/label.tsx": "sha256:344bde38b8531615dbf8e14af3895517c24d8ef6ce56ddeda7e2e6fe4b5d0c00",
+    "component-sources/select.tsx": "sha256:962830436bd0b7ee50e556f0747e277d6a86869ed27d167516346b15f26309d8",
+    "component-sources/table.tsx": "sha256:bd1a9fc83a5a2149e504038e274bb7e5a0351af59f6896df52ac4d5b439695ac",
+    "component-sources/tabs.tsx": "sha256:e1df6e2f95ece373ca909c1d54b8ba8cf4c47dd425c1784bbb9a01c38dd0936b",
+    "component-sources/textarea.tsx": "sha256:5cafcfeeee29534f449387a16b585f5923d2faab1a0cdc50a874416b175f59ce",
+    "index.html": "sha256:31d2bb3d59a558add3a4abed530dc35b341ffca1c9752dccd56904623f99ca3c",
+    "registry-manifest.json": "sha256:42b8609e1e9df6d7af80b2c2509cfb592aec1c1e1f53a41625c4ff52a8368e9b",
+    "scenario-runtime.js": "sha256:b2837245e0e3e8a072c1b612338c352a6474fbae4f07a135705510258bb5f25b",
+    "scenarios.js": "sha256:c7e2ba46d771c67830579926a7588ff19b86bb36f3074d61712a729d17fd94d2",
+    "scenarios.json": "sha256:5591cea8fb9adc4986b8f19bc5102d6fb83e5076f329a31802ccded616c2dccd",
+    "styles.css": "sha256:c68c16bf6725ad23c1c7075347f27a9c6368e3218bcac2946da1ae06c06a39ee",
+    "THIRD-PARTY-NOTICES.txt": "sha256:82468b078e17a58d39f0504aec0ea8310ae99416c3de163528f11f2795f7ca4d",
+    "token-theme.css": "sha256:a8d263f786db92c7086cb1c56845e38739472f5e5c2ee77649806d9cb834d2a4",
+    "tokens.css": "sha256:028c24f9e935f5c4b1392d131a4cd13482e6572a2ced4360ffa833aa3fbeaf66"
+  },
+  "build_provenance": {
+    "packages": {
+      "react": "19.3.0",
+      "react-dom": "19.3.0",
+      "radix-ui": "1.6.7",
+      "lucide-react": "1.48.0",
+      "class-variance-authority": "0.7.1",
+      "clsx": "2.1.1",
+      "tailwind-merge": "3.7.0",
+      "esbuild": "0.28.2",
+      "tailwindcss": "4.3.3",
+      "@tailwindcss/cli": "4.3.3"
+    },
+    "lock_digest": "sha256:a2e23d45b83fe160dc48d87fadf1a07960056b61af4d011b81d9e60297f63b80",
+    "source_digest": "sha256:9cc4c2d69be551fae55a806ae3b22e54cca8cf510a02b9bede2ce5b9c799234a",
+    "theme_digest": "sha256:a8d263f786db92c7086cb1c56845e38739472f5e5c2ee77649806d9cb834d2a4",
+    "registry_digest": "sha256:42b8609e1e9df6d7af80b2c2509cfb592aec1c1e1f53a41625c4ff52a8368e9b",
+    "registry_revision": "db2db460a26fa84fb65c8d903b213925fbdee9ed",
+    "support_source_digests": {
+      "cn.ts": "sha256:64fc84c1be627f0d586fb4ba64d824a1604f44282381f5bae68cdf86e10bb6ec"
+    },
+    "authored_files": {
+      "authoring-sources/analysis.tsx": "sha256:9cc4c2d69be551fae55a806ae3b22e54cca8cf510a02b9bede2ce5b9c799234a",
+      "authoring-sources/shared.tsx": "sha256:37b05dd2f98e2f995ea1bdbe2d4142c22b8e18e85e8d53558e78f6184f95d9a0",
+      "authoring-sources/patterns.css": "sha256:aeeb7def3f223bf1de9624335db4f9d19c2b6fe57e79c68487a3f56cba9d53e5"
+    },
+    "format": "iife",
+    "browser_runtime": "react",
+    "toolchain_required_by_recipient": false
+  }
+}

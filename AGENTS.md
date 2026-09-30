@@ -45,7 +45,7 @@
 - 先按 `.template-spec/process/harness-process-tailoring.md` 判定影响面和最近可信阶段，再由 `yss-product-lifecycle` 执行 `.template-spec/process/lifecycle-registry.yaml`；阅读导航见 `.template-spec/process/lifecycle-artifact-map.md`。
 - 命中门禁必须完成；仅未命中时记录带原因的 `not-applicable`，不得生成空文档或混淆门禁、产物、工作单元、证据。安全 / 权限写入普通 Spec、契约、架构、验收和 seam，按实际影响触发门禁。
 - 新功能和较大变更先进入 Plan；`to-spec`、`to-tickets`、`implement` 仅为用户显式兼容入口。API 变更先形成 OpenAPI 3.1 Draft，审查后 Freeze，再实现。
-- Spec Delta 只记冻结基线的高风险行为差异。OpenAPI Freeze 或无 API 影响记录后拆窄垂直切片，禁止仅按技术层横拆。
+- Spec 综合同时起草业务 Ticket 集，Design 校准同一组 ID；业务正式化后战略交接或技术分析，协议见 `.template-spec/process/business-tickets.md`。业务票不授予实现资格。Spec Delta 只记冻结基线的高风险行为差异。OpenAPI Freeze 或无 API 影响记录后拆窄垂直切片，禁止仅按技术层横拆。
 - `seam-deferred` 必须记录风险、责任人、后续 Ticket、验证计划和目标版本或发布日期。
 
 ## 6. Ticket 与状态

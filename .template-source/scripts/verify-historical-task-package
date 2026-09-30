@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { parseArgs } from "node:util";
 import { readFileSync } from "node:fs";
-import { loadTaskPackage, validateTaskPackage } from "../../scripts/lib/task-package.mjs";
+import { loadTaskPackage, validateHistoricalMaintenanceTaskPackage } from "../../scripts/lib/task-package.mjs";
 
 try {
   const { positionals } = parseArgs({ allowPositionals: true, strict: true });
@@ -16,7 +16,7 @@ try {
   const migrations = baseline.migrations ?? {};
   const currentWorkUnit = migrations[value.work_unit_id] ?? value.work_unit_id;
   const currentParent = migrations[value.convergence?.parent_work_unit] ?? value.convergence?.parent_work_unit;
-  validateTaskPackage({
+  validateHistoricalMaintenanceTaskPackage({
     ...value,
     work_unit_id: currentWorkUnit,
     convergence: { ...value.convergence, parent_work_unit: currentParent },

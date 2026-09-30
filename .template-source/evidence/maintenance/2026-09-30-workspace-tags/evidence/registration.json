@@ -1,0 +1,12 @@
+{
+  "head": "8c391219086663dee3db8f23f25017540ce0ed58",
+  "scope": "工作区 Tag 导航、收起菜单、页内 Tabs 和对应技能/投影",
+  "intensity": "L3",
+  "context_reconciliation": {
+    "status": "not-applicable",
+    "reason": "template-source 维护，不新增产品业务词汇"
+  },
+  "source_backup_sha256": "dad50cb1947233a2c891046f0614f38d79066872712a2d779b108efdc1f23962",
+  "preview_backup_sha256": "d952da435c6fb498605d208f125e6d4c6e1eac903e67c1827746ba9287393045",
+  "preservation": "只更新未批准 review/patterns；原密封 comparison 与历史验证记录只读"
+}

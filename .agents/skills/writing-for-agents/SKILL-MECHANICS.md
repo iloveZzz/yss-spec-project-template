@@ -1,22 +1,31 @@
 # Skill mechanics
 
-The skill-specific branch of [`writing-for-agents`](SKILL.md): what changes when the document is a skill — frontmatter, the invocation choice, and router skills. Everything else about writing it is the universal reference in `SKILL.md`.
+Read this reference when designing a skill's invocation policy or shared dependencies. The host repository owns authorization and lifecycle rules; runtime metadata expresses only the capabilities that the installed host actually supports.
 
-## Invocation
+## Keep the decisions separate
 
-Two choices, trading the two loads:
+- **Discovery** makes an entry available through a catalog, description or explicit command. Keep the required `name` and `description` even when automatic selection is disabled.
+- **Automatic selection** lets the model choose a relevant entry. A precise description helps selection; it does not grant permission to run commands or change files.
+- **Explicit invocation** follows the host's supported user entry. Do not assume that a natural-language mention and a slash command behave identically on every host.
+- **Reading dependencies** loads an authorized reference or shared contract. Disabling automatic selection does not by itself make that file unreadable.
+- **Executing actions** still requires the repository's current scope, prerequisites and user authorization. Reading a commit contract does not authorize a commit.
 
-- A **model-invoked** skill keeps a `description`, so the agent can fire it autonomously — and other skills can reach it. You can still type its name: model-invocation always _includes_ user reach; a description only ever adds agent discovery, never removes the human's. The description is the skill's top-level context pointer, forced to stay loaded at all times — permanent context load in exchange for discoverability. A model-invoked skill whose content is all reference is also one home for shared reference: another skill can invoke it, so reference needed by several skills lives in one place. Mechanics: omit `disable-model-invocation`, and write a model-facing description carrying the trigger branches (the pointer-writing rules in `SKILL.md` apply in full).
-- A **user-invoked** skill strips the description from the agent's reach: only the human typing its name can invoke it, and no other skill can. Zero context load, but it spends cognitive load — you are the index that must remember it exists. Mechanics: set `disable-model-invocation: true`; the `description` becomes human-facing — a one-line summary, trigger lists stripped.
+## Express policy for the target host
 
-Pick model-invocation only when the agent must reach the skill on its own, or another skill must. If it only ever fires by hand, make it user-invoked and pay no context load.
+`description`, `disable-model-invocation` and `agents/openai.yaml` are not interchangeable controls. The frontmatter field is interpreted by hosts that support it; Codex has its own `policy.allow_implicit_invocation` metadata. A generated projection proves that files were distributed, not that another host enforces the same policy.
 
-Shared reference that two user-invoked skills both need can live in neither — with no descriptions, neither can fire the other. Push it to a plain file outside the skill system: external reference any skill can point at.
+For YSS registry and metadata consistency, use [the maintained authoring contract](../maintaining-skills/references/authoring.md). Preserve existing interface and dependency metadata. Verify the actual installed host's catalog and invocation behavior; record unsupported or unknown capabilities instead of treating an ignored field as enforcement.
 
-## Splitting by invocation
+Do not claim that a description is always loaded, that explicit-only skills have zero context cost, or that a policy field is a filesystem sandbox. Measure observable reads and runtime usage for the task being optimized, and leave absent telemetry unknown.
 
-The invocation cut of splitting (the sequence cut lives in `SKILL.md`): split off a model-invoked skill when you have a distinct leading word that should trigger it on its own — a trigger word you actually use in your prompts — or another skill must reach it. You pay context load for the new always-loaded description, so that independent reach has to be worth it.
+## Share references without adding unintended entry points
 
-## Router skills
+An authorized public skill may read an internal contract by its registered path while that internal skill remains excluded from independent automatic selection. The YSS commit skills use this pattern with `git-commit-core`. Retain the public caller's action-authorization boundary and the dependency's ownership and distribution rules.
 
-When user-invoked skills multiply past what you can remember, that piled-up cognitive load is cured by a **router skill**: one user-invoked skill that names the others and when to reach for each, so the human has one skill to remember instead of many. It can only hint, never fire them: user-invoked skills have no description, so nothing but the human can reach them.
+Put shared material in a plain reference file or an internal skill according to its ownership and consumers. Neither location requires a new automatic workflow. Preserve the dependency closure, and do not publish a second copy that can drift independently.
+
+## Split and route by responsibility
+
+Create a separate discoverable skill when it has a distinct task, trigger and useful outcome. Move conditional detail into references when it serves the same task. Avoid mechanical splits based on leading words, length or assumptions about permanent context load.
+
+A router can explain which entry or reference applies. It must preserve host-specific explicit-invocation requirements and the repository's approval boundaries; routing alone cannot grant execution authority. Check a natural-language positive, a nearby non-trigger, explicit invocation and any affected dependency or authorization boundary.

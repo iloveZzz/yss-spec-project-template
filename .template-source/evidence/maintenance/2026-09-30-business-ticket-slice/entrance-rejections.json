@@ -1,0 +1,306 @@
+{
+  "status": "passed",
+  "synthetic": true,
+  "results": [
+    {
+      "kind": "business-ticket",
+      "entry": "approval",
+      "result": "rejected",
+      "diagnostic": "business-ticket-not-implementable: 业务 Ticket 不能作为实现 Slice"
+    },
+    {
+      "kind": "business-ticket",
+      "entry": "execution",
+      "result": "rejected",
+      "diagnostic": "business-ticket-not-implementable: 业务 Ticket 不能作为实现 Slice"
+    },
+    {
+      "kind": "business-ticket",
+      "entry": "CLI verify",
+      "exit_code": 1,
+      "result": "rejected",
+      "diagnostic": "business-ticket-not-implementable: 业务 Ticket 不能作为实现 Slice"
+    },
+    {
+      "kind": "business-ticket",
+      "entry": "compilation",
+      "result": "rejected",
+      "blockers": [
+        {
+          "code": "TICKET_NOT_IMPLEMENTABLE",
+          "field": "basis.ticket",
+          "source_ref": null,
+          "responsibility": "agent",
+          "recovery": "核对所列来源并补齐细化后重新准备",
+          "reason": "business-ticket-not-implementable: 业务 Ticket 不能作为实现 Slice"
+        },
+        {
+          "code": "SLICE_INPUT_MISSING",
+          "field": "slice.contract_id",
+          "source_ref": null,
+          "responsibility": "agent",
+          "recovery": "优先从 Ticket / checkpoint 整理；只补缺失的切片细化",
+          "reason": "缺少切片必要输入"
+        },
+        {
+          "code": "SLICE_INPUT_MISSING",
+          "field": "slice.contract_version",
+          "source_ref": null,
+          "responsibility": "agent",
+          "recovery": "优先从 Ticket / checkpoint 整理；只补缺失的切片细化",
+          "reason": "缺少切片必要输入"
+        },
+        {
+          "code": "SLICE_INPUT_MISSING",
+          "field": "slice.slice_id",
+          "source_ref": null,
+          "responsibility": "agent",
+          "recovery": "优先从 Ticket / checkpoint 整理；只补缺失的切片细化",
+          "reason": "缺少切片必要输入"
+        },
+        {
+          "code": "SLICE_INPUT_MISSING",
+          "field": "slice.scope",
+          "source_ref": null,
+          "responsibility": "agent",
+          "recovery": "优先从 Ticket / checkpoint 整理；只补缺失的切片细化",
+          "reason": "缺少切片必要输入"
+        },
+        {
+          "code": "SLICE_INPUT_MISSING",
+          "field": "slice.applicability",
+          "source_ref": null,
+          "responsibility": "agent",
+          "recovery": "优先从 Ticket / checkpoint 整理；只补缺失的切片细化",
+          "reason": "缺少切片必要输入"
+        },
+        {
+          "code": "SLICE_INPUT_MISSING",
+          "field": "slice.verification",
+          "source_ref": null,
+          "responsibility": "agent",
+          "recovery": "优先从 Ticket / checkpoint 整理；只补缺失的切片细化",
+          "reason": "缺少切片必要输入"
+        },
+        {
+          "code": "SLICE_INPUT_MISSING",
+          "field": "slice.work_units",
+          "source_ref": null,
+          "responsibility": "agent",
+          "recovery": "优先从 Ticket / checkpoint 整理；只补缺失的切片细化",
+          "reason": "缺少切片必要输入"
+        },
+        {
+          "code": "SLICE_INPUT_MISSING",
+          "field": "scope.impacted_areas",
+          "source_ref": null,
+          "responsibility": "professional-review",
+          "recovery": "先确认影响与既有授权范围；不能从目录猜测",
+          "reason": "影响与授权范围未确定"
+        },
+        {
+          "code": "SLICE_INPUT_MISSING",
+          "field": "scope.allowed_write_paths",
+          "source_ref": null,
+          "responsibility": "user-decision",
+          "recovery": "先确认影响与既有授权范围；不能从目录猜测",
+          "reason": "影响与授权范围未确定"
+        },
+        {
+          "code": "SLICE_SOURCE_MISSING",
+          "field": "basis.spec",
+          "source_ref": null,
+          "responsibility": "agent",
+          "recovery": "绑定已有当前资产；不能用空文档替代",
+          "reason": "缺少必要来源"
+        },
+        {
+          "code": "SLICE_SOURCE_MISSING",
+          "field": "basis.engineering_baseline",
+          "source_ref": null,
+          "responsibility": "agent",
+          "recovery": "绑定已有当前资产；不能用空文档替代",
+          "reason": "缺少必要来源"
+        },
+        {
+          "code": "SLICE_SOURCE_MISSING",
+          "field": "basis.implementation_repository",
+          "source_ref": null,
+          "responsibility": "agent",
+          "recovery": "绑定已有当前资产；不能用空文档替代",
+          "reason": "缺少必要来源"
+        },
+        {
+          "code": "SLICE_SOURCE_MISSING",
+          "field": "basis.build_architecture_checklist",
+          "source_ref": null,
+          "responsibility": "agent",
+          "recovery": "绑定已有当前资产；不能用空文档替代",
+          "reason": "缺少必要来源"
+        },
+        {
+          "code": "SLICE_SOURCE_MISSING",
+          "field": "basis.architecture_review",
+          "source_ref": null,
+          "responsibility": "agent",
+          "recovery": "绑定已有当前资产；不能用空文档替代",
+          "reason": "缺少必要来源"
+        }
+      ]
+    },
+    {
+      "kind": "stage-work-item",
+      "entry": "approval",
+      "result": "rejected",
+      "diagnostic": "stage-work-item 不能作为实现 Ticket"
+    },
+    {
+      "kind": "stage-work-item",
+      "entry": "execution",
+      "result": "rejected",
+      "diagnostic": "stage-work-item 不能作为实现 Ticket"
+    },
+    {
+      "kind": "stage-work-item",
+      "entry": "CLI verify",
+      "exit_code": 1,
+      "result": "rejected",
+      "diagnostic": "stage-work-item 不能作为实现 Ticket"
+    },
+    {
+      "kind": "stage-work-item",
+      "entry": "compilation",
+      "result": "rejected",
+      "blockers": [
+        {
+          "code": "TICKET_NOT_IMPLEMENTABLE",
+          "field": "basis.ticket",
+          "source_ref": null,
+          "responsibility": "agent",
+          "recovery": "核对所列来源并补齐细化后重新准备",
+          "reason": "stage-work-item 不能作为实现 Ticket"
+        },
+        {
+          "code": "STAGE_WORK_ITEM_NOT_IMPLEMENTABLE",
+          "field": "basis.ticket",
+          "source_ref": null,
+          "responsibility": "agent",
+          "recovery": "核对所列来源并补齐细化后重新准备",
+          "reason": "stage-work-item 不能作为实现 Ticket"
+        },
+        {
+          "code": "SLICE_INPUT_MISSING",
+          "field": "slice.contract_id",
+          "source_ref": null,
+          "responsibility": "agent",
+          "recovery": "优先从 Ticket / checkpoint 整理；只补缺失的切片细化",
+          "reason": "缺少切片必要输入"
+        },
+        {
+          "code": "SLICE_INPUT_MISSING",
+          "field": "slice.contract_version",
+          "source_ref": null,
+          "responsibility": "agent",
+          "recovery": "优先从 Ticket / checkpoint 整理；只补缺失的切片细化",
+          "reason": "缺少切片必要输入"
+        },
+        {
+          "code": "SLICE_INPUT_MISSING",
+          "field": "slice.slice_id",
+          "source_ref": null,
+          "responsibility": "agent",
+          "recovery": "优先从 Ticket / checkpoint 整理；只补缺失的切片细化",
+          "reason": "缺少切片必要输入"
+        },
+        {
+          "code": "SLICE_INPUT_MISSING",
+          "field": "slice.scope",
+          "source_ref": null,
+          "responsibility": "agent",
+          "recovery": "优先从 Ticket / checkpoint 整理；只补缺失的切片细化",
+          "reason": "缺少切片必要输入"
+        },
+        {
+          "code": "SLICE_INPUT_MISSING",
+          "field": "slice.applicability",
+          "source_ref": null,
+          "responsibility": "agent",
+          "recovery": "优先从 Ticket / checkpoint 整理；只补缺失的切片细化",
+          "reason": "缺少切片必要输入"
+        },
+        {
+          "code": "SLICE_INPUT_MISSING",
+          "field": "slice.verification",
+          "source_ref": null,
+          "responsibility": "agent",
+          "recovery": "优先从 Ticket / checkpoint 整理；只补缺失的切片细化",
+          "reason": "缺少切片必要输入"
+        },
+        {
+          "code": "SLICE_INPUT_MISSING",
+          "field": "slice.work_units",
+          "source_ref": null,
+          "responsibility": "agent",
+          "recovery": "优先从 Ticket / checkpoint 整理；只补缺失的切片细化",
+          "reason": "缺少切片必要输入"
+        },
+        {
+          "code": "SLICE_INPUT_MISSING",
+          "field": "scope.impacted_areas",
+          "source_ref": null,
+          "responsibility": "professional-review",
+          "recovery": "先确认影响与既有授权范围；不能从目录猜测",
+          "reason": "影响与授权范围未确定"
+        },
+        {
+          "code": "SLICE_INPUT_MISSING",
+          "field": "scope.allowed_write_paths",
+          "source_ref": null,
+          "responsibility": "user-decision",
+          "recovery": "先确认影响与既有授权范围；不能从目录猜测",
+          "reason": "影响与授权范围未确定"
+        },
+        {
+          "code": "SLICE_SOURCE_MISSING",
+          "field": "basis.spec",
+          "source_ref": null,
+          "responsibility": "agent",
+          "recovery": "绑定已有当前资产；不能用空文档替代",
+          "reason": "缺少必要来源"
+        },
+        {
+          "code": "SLICE_SOURCE_MISSING",
+          "field": "basis.engineering_baseline",
+          "source_ref": null,
+          "responsibility": "agent",
+          "recovery": "绑定已有当前资产；不能用空文档替代",
+          "reason": "缺少必要来源"
+        },
+        {
+          "code": "SLICE_SOURCE_MISSING",
+          "field": "basis.implementation_repository",
+          "source_ref": null,
+          "responsibility": "agent",
+          "recovery": "绑定已有当前资产；不能用空文档替代",
+          "reason": "缺少必要来源"
+        },
+        {
+          "code": "SLICE_SOURCE_MISSING",
+          "field": "basis.build_architecture_checklist",
+          "source_ref": null,
+          "responsibility": "agent",
+          "recovery": "绑定已有当前资产；不能用空文档替代",
+          "reason": "缺少必要来源"
+        },
+        {
+          "code": "SLICE_SOURCE_MISSING",
+          "field": "basis.architecture_review",
+          "source_ref": null,
+          "responsibility": "agent",
+          "recovery": "绑定已有当前资产；不能用空文档替代",
+          "reason": "缺少必要来源"
+        }
+      ]
+    }
+  ]
+}

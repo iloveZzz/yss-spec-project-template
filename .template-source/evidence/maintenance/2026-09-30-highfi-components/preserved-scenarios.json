@@ -1,0 +1,27 @@
+[
+  {
+    "path": ".agents/skills/yss-prototype-stage/assets/business-patterns/analysis.scenarios.json",
+    "unchanged": true,
+    "sha256": "5591cea8fb9adc4986b8f19bc5102d6fb83e5076f329a31802ccded616c2dccd"
+  },
+  {
+    "path": ".agents/skills/yss-prototype-stage/assets/business-patterns/list-detail.scenarios.json",
+    "unchanged": true,
+    "sha256": "5da5ae1309028b479a0251892f7d0168d482be18811fac8e215f10aa39aee31b"
+  },
+  {
+    "path": ".agents/skills/yss-prototype-stage/assets/business-patterns/approval.scenarios.json",
+    "unchanged": true,
+    "sha256": "f61e6b1db04bfc5743082019f125c3d627224c31eb003edcdd3948325ee11c0a"
+  },
+  {
+    "path": ".agents/skills/yss-prototype-stage/assets/business-patterns/conflict.scenarios.json",
+    "unchanged": true,
+    "sha256": "b5981bd621fcbc68cf2ee246485a3c67dd3858478ad478d55fc9aa563bbf1828"
+  },
+  {
+    "path": ".agents/skills/yss-prototype-stage/assets/business-patterns/multi-step.scenarios.json",
+    "unchanged": true,
+    "sha256": "3f837285023a7b092564d5c97c536e7dcd9a6dac375e34e86a949029ce9c3630"
+  }
+]

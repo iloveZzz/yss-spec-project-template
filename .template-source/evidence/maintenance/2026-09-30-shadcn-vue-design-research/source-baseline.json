@@ -1,0 +1,169 @@
+{
+  "captured_at": "2026-09-30T03:42:37.658286+00:00",
+  "repository_mode": "template-source",
+  "git_head": "8c391219086663dee3db8f23f25017540ce0ed58",
+  "scope": "只新增本研究目录；不修改 Skills、规范、投影、锁或旧证据",
+  "files": [
+    {
+      "ref": ".agents/skills/yss-design-system/references/design-system.md",
+      "digest": "sha256:218f13dc3c258ad5b9360f4a01f68666895491fce806c211821e4a78246b9fa0"
+    },
+    {
+      "ref": ".agents/skills/yss-design-system/references/prototype-default-theme.md",
+      "digest": "sha256:be30662b69283f385f51c8eda1f9391dad0ea9babdb5d119d5627c698c0e291a"
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/assets/prototype-theme.css",
+      "digest": "sha256:75662cbcb7c6acfbfef0b89a3f63f3f02a49da070599a711acaa2dcd15d5c572"
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/assets/shadcn-authoring/package.json",
+      "digest": "sha256:9b90885188bb0ace41dd08b00d9c1d1e036f94129599f2b267714c2705bd2cd8"
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/assets/shadcn-authoring/registry-manifest.json",
+      "digest": "sha256:42b8609e1e9df6d7af80b2c2509cfb592aec1c1e1f53a41625c4ff52a8368e9b"
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/assets/shadcn-authoring/theme.css",
+      "digest": "sha256:48bff49d74202725dbc0ecb00608be9a573a597b6467164e2a7073109b9cc834"
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/references/business-patterns.md",
+      "digest": "sha256:737d51a3eb088879974302e44c0515aa6c11444c0f55eef402e0c17b9fbf5dca"
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/references/shadcn-integration.md",
+      "digest": "sha256:ccff53a7d39dbc7c7f736b99882ed8dcba97363fc01d91858ce257da222a82c8"
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/scripts/build-shadcn-prototype.mjs",
+      "digest": "sha256:86dc1369967bafd6166ea96e4655c0ab49f17794f2419ebac9ee201d23d76a1b"
+    },
+    {
+      "ref": ".agents/skills/yss-research/scripts/validate-research-package.mjs",
+      "digest": "sha256:5e4e437d54e67cce9dd380974744605bd149c71939c5f01e3ea4719c79911d0f"
+    },
+    {
+      "ref": ".template-source/design/design-system-sync.yaml",
+      "digest": "sha256:5f3a533567220689a6df33d2d94458d9e3830a4eadac33ea7d341acddda8eeac"
+    },
+    {
+      "ref": ".template-source/design/preview-dark.html",
+      "digest": "sha256:8ff0dd8cf96b3e7be329a8efc309171c71ff7be645a9f8efe372254bb1a5147f"
+    },
+    {
+      "ref": ".template-source/design/preview.css",
+      "digest": "sha256:a64de8c92af47589312781791985198c528f962a23f85dd3219446623afff765"
+    },
+    {
+      "ref": ".template-source/design/preview.html",
+      "digest": "sha256:b495c730c7709fab6aa69dbec9f4b68dc9a6a6efb90c305152fffdfe44c81ce7"
+    },
+    {
+      "ref": ".template-source/design/preview.js",
+      "digest": "sha256:f8cf9dd48c9689f6725cf18fc3d6a3a94fcade67698a4cbb854ab106b8b61fa3"
+    },
+    {
+      "ref": ".template-source/profile-skill-sync.json",
+      "digest": "sha256:cf3b37d78d9d452d60b17eeabc3619c301232c28614ca48d13f54caf22f84c1c"
+    },
+    {
+      "ref": ".template-spec/design/README.md",
+      "digest": "sha256:32bc5a647eeee2e855ad069ba1b146fb2f69a2716f089f25647ee03da662dcc7"
+    },
+    {
+      "ref": ".template-spec/design/design.md",
+      "digest": "sha256:eea51f0827b92ecb500f089d7c7a0b6c41385f4404ef4e66273ba229d3fa4348"
+    },
+    {
+      "ref": ".template-spec/design/diagrams/README.md",
+      "digest": "sha256:11d05960ad19c7cea6b6a6d69cf4dda6bf258d5eda6e018f8bf3680d8f071100"
+    },
+    {
+      "ref": ".template-spec/design/schemas/visual-baseline.schema.json",
+      "digest": "sha256:2c21d6fc64872f1c6e949de5eebab07cc569bb6065c49bb0687ac50061a07b99"
+    },
+    {
+      "ref": ".template-spec/design/templates/examples/model-publishing-interaction.example.md",
+      "digest": "sha256:1f1db4b94e57aa047d42688910e6a19eb4a8bf99918f25ed2c4a1f412ac65076"
+    },
+    {
+      "ref": ".template-spec/design/templates/examples/model-publishing-state-matrix.example.md",
+      "digest": "sha256:41779dbf25e9a84c4784fbe23b026cbf3ef904c8bff88249cd0e0a7c003e6d70"
+    },
+    {
+      "ref": ".template-spec/design/templates/interaction-spec-template.md",
+      "digest": "sha256:161502e959a49f1e6b5381506124c855f67e2ca6dbbb225482aabcc593c43a34"
+    },
+    {
+      "ref": ".template-spec/design/templates/product-overview-design-template.md",
+      "digest": "sha256:c254660d685bf1ba9fbe81cb970adbe2ec0a79122aa516378cad4541a8b10f84"
+    },
+    {
+      "ref": ".template-spec/design/templates/prototype-confirmation-template.md",
+      "digest": "sha256:de9d26688e1aa83aa13992603227d9fe0e7e7c068d86b7536e03249eacf9512d"
+    },
+    {
+      "ref": ".template-spec/design/templates/prototype-evidence-template.yaml",
+      "digest": "sha256:6f49e6564e0a78c0d8d1f344f1350b71a85d6bf712d5d0c76c16e646f262c2f0"
+    },
+    {
+      "ref": ".template-spec/design/templates/prototype-review-checklist.md",
+      "digest": "sha256:4fcdadeea2524fb1c5dd308156c37daa5c680c1e6f10343bcaa229bf6fa7ed20"
+    },
+    {
+      "ref": ".template-spec/design/templates/state-matrix-template.md",
+      "digest": "sha256:5037b3ca1ca8dd56d22e7a0911126fe30f1617149ebc81d166e7d64a4bc3e13c"
+    },
+    {
+      "ref": ".template-spec/design/templates/visual-baseline-template.yaml",
+      "digest": "sha256:fd43497e1f80fdb63f0180755b87bad7786be2cb055e412fef3bd13ada7a9ef9"
+    },
+    {
+      "ref": ".template-spec/design/tokens/.design-md-projection.json",
+      "digest": "sha256:7715897b61be01a5f7eae08815d1a95818c2ef8d994873452057f2b3099242da"
+    },
+    {
+      "ref": ".template-spec/design/tokens/theme.json",
+      "digest": "sha256:740f80c2c55763564ac5e1cf4159e0d5f0965548d53e0eb0de0ff380e74f0a93"
+    },
+    {
+      "ref": ".template-spec/design/tokens/tokens.compact.json",
+      "digest": "sha256:1a943c1354487addc67e399ededc122337d278a9ff61cb12d36a2f8202e26d9c"
+    },
+    {
+      "ref": ".template-spec/design/tokens/tokens.dark.json",
+      "digest": "sha256:826391c5dafaef4d924003052bcfa9b38943e589120b0ff740214a12c9981ae1"
+    },
+    {
+      "ref": ".template-spec/design/tokens/tokens.default.json",
+      "digest": "sha256:4e6446ee85195e3a75676a763cb8be2c625dc86b2b0676cbc8b45b2221135a71"
+    },
+    {
+      "ref": ".template-spec/design/tokens/variables.css",
+      "digest": "sha256:f8619314678bc3bb13d00e5457df2f1d2379c3b59b1cb1ed7fae2fac9aa86b1e"
+    },
+    {
+      "ref": ".template-spec/design/tokens/variables.dark.css",
+      "digest": "sha256:38132db701cd1e9793b6320baba20645a2cf577edc75b25aadb211f65bf05767"
+    },
+    {
+      "ref": ".template-spec/process/research-completion.md",
+      "digest": "sha256:3adfcd90d7f25f1fc7c989862d9ee1e39c4a8a4afb68d90784ebe56ca320991e"
+    },
+    {
+      "ref": "CONTEXT.md",
+      "digest": "sha256:a27ab85f4c733a609948fba4bc5dafa074453ae16d32ceebc773d12fdbffe6b7"
+    },
+    {
+      "ref": "DESIGN.md",
+      "digest": "sha256:e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+    },
+    {
+      "ref": "yss-project.yaml",
+      "digest": "sha256:dae2ddacbb024ba25b70a18830fc26ab7d3dcd8aaa361cc8b3767d68307f98af"
+    }
+  ],
+  "git_status": " M .agents/skills/.strategic-design-skills-manifest.json\n M .agents/skills/maintaining-skills/references/authoring.md\n M .agents/skills/prototype-review/SKILL.md\n M .agents/skills/to-spec/SKILL.md\n M .agents/skills/writing-for-agents/SKILL-MECHANICS.md\n M .agents/skills/yss-design-system/SKILL.md\n M .agents/skills/yss-design-system/references/design-system.md\n M .agents/skills/yss-product-lifecycle/references/plan-requirements.md\n M .agents/skills/yss-prototype-stage/SKILL.md\n D .agents/skills/yss-prototype-stage/assets/antd-authoring/package.json\n D .agents/skills/yss-prototype-stage/assets/antd-authoring/pnpm-lock.yaml\n D .agents/skills/yss-prototype-stage/assets/antd-authoring/workbench.jsx\n M .agents/skills/yss-prototype-stage/assets/native-workbench/app.js\n M .agents/skills/yss-prototype-stage/assets/native-workbench/index.html\n M .agents/skills/yss-prototype-stage/assets/native-workbench/styles.css\n M .agents/skills/yss-prototype-stage/assets/offline-html/app.js\n D .agents/skills/yss-prototype-stage/references/antd-component-catalog.json\n D .agents/skills/yss-prototype-stage/references/antd-integration.md\n M .agents/skills/yss-prototype-stage/references/product-design-adapter.md\n M .agents/skills/yss-prototype-stage/references/prototype-profile-routing.md\n D .agents/skills/yss-prototype-stage/scripts/build-antd-prototype.mjs\n D .agents/skills/yss-prototype-stage/scripts/collect-antd-reference.mjs\n M .agents/skills/yss-prototype-stage/scripts/offline-html.mjs\n M .agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs\n M .agents/skills/yss-prototype-stage/tests/antd-reference.test.mjs\n M .agents/skills/yss-prototype-stage/tests/run-scenarios.mjs\n M .agents/skills/yss-prototype-stage/tests/workbench-smoke.mjs\n M .agents/skills/yss-stage-decision/SKILL.md\n M .codex/skills/prototype-review/SKILL.md\n M .codex/skills/yss-design-system/SKILL.md\n M .codex/skills/yss-design-system/references/design-system.md\n M .codex/skills/yss-product-lifecycle/references/plan-requirements.md\n M .template-source/agents/strategic-design-skills-integration.md\n M .template-source/distribution/strategic-handoff-tools.lock.json\n M .template-source/evidence/maintenance/2026-09-29-document-readability-design/plan.md\n M .template-source/profile-skill-sync.json\n M .template-source/scripts/skills-agent-eval.md\n M .template-source/scripts/skills-agent-eval.py\n M .template-source/scripts/tests/test_skills_agent_eval.py\n M .template-source/tooling/node/package.json\n M .template-source/tooling/node/pnpm-lock.yaml\n M .template-source/tooling/node/scripts/build-vendor.mjs\n M .template-source/tooling/node/scripts/design-md.mjs\n M .template-source/tooling/node/test/skill-registry.test.mjs\n M .template-spec/agents/yss-skill-registry.yaml\n M .template-spec/design/README.md\n M .template-spec/design/design.md\n M .template-spec/design/templates/examples/model-publishing-interaction.example.md\n M .template-spec/design/templates/interaction-spec-template.md\n M .template-spec/design/templates/prototype-evidence-template.yaml\n M .template-spec/design/templates/prototype-review-checklist.md\n M .template-spec/design/tokens/.design-md-projection.json\n M .template-spec/design/tokens/variables.css\n M .template-spec/plan/templates/plan-template.md\n M .template-spec/templates/examples/lifecycle-writing-examples.md\n M .template-spec/templates/spec-delta-template.md\n M .template-spec/templates/spec-template.md\n M scripts/lib/skill-registry.mjs\n M scripts/sync-strategic-handoff-tools\n M scripts/vendor/NOTICES.md\n M scripts/vendor/manifest.json\n M skills-lock.json\n m submodules/create-yss-harness-backend\n m submodules/create-yss-harness-frontend\n m submodules/create-yss-spec\n m submodules/create-yss-strategic-design\n m submodules/yss-harness-backend-agent\n m submodules/yss-harness-design-agent\n m submodules/yss-harness-frontend-agent\n?? .agents/skills/git-commit-core/agents/\n?? .agents/skills/yss-design-system/assets/\n?? .agents/skills/yss-design-system/references/enterprise-craft.md\n?? .agents/skills/yss-design-system/references/prototype-default-theme.md\n?? .agents/skills/yss-design-system/scripts/export-craft-examples.mjs\n?? .agents/skills/yss-prototype-stage/assets/business-patterns/\n?? .agents/skills/yss-prototype-stage/assets/comparison/\n?? .agents/skills/yss-prototype-stage/assets/low-fidelity-exercise/\n?? .agents/skills/yss-prototype-stage/assets/native-workbench/scenarios.json\n?? .agents/skills/yss-prototype-stage/assets/offline-html/scenarios.json\n?? .agents/skills/yss-prototype-stage/assets/prototype-theme.css\n?? .agents/skills/yss-prototype-stage/assets/scenario-runtime.js\n?? .agents/skills/yss-prototype-stage/assets/shadcn-authoring/\n?? .agents/skills/yss-prototype-stage/references/business-patterns.md\n?? .agents/skills/yss-prototype-stage/references/comparison-tool.md\n?? .agents/skills/yss-prototype-stage/references/concept-comparison.md\n?? .agents/skills/yss-prototype-stage/references/low-fidelity-exercise.md\n?? .agents/skills/yss-prototype-stage/references/shadcn-integration.md\n?? .agents/skills/yss-prototype-stage/scripts/build-shadcn-prototype.mjs\n?? .agents/skills/yss-prototype-stage/scripts/export-business-patterns.mjs\n?? .agents/skills/yss-prototype-stage/scripts/export-low-fidelity-exercise.mjs\n?? .agents/skills/yss-prototype-stage/scripts/prototype-comparison.mjs\n?? .agents/skills/yss-prototype-stage/scripts/scenario-contract.mjs\n?? .agents/skills/yss-prototype-stage/tests/compact-theme-browser.mjs\n?? .agents/skills/yss-prototype-stage/tests/comparison-browser-smoke.mjs\n?? .agents/skills/yss-prototype-stage/tests/comparison-fixture.mjs\n?? .agents/skills/yss-prototype-stage/tests/comparison.test.mjs\n?? .agents/skills/yss-prototype-stage/tests/patterns-browser.mjs\n?? .agents/skills/yss-prototype-stage/tests/reliability.test.mjs\n?? .agents/skills/yss-prototype-stage/tests/shadcn-source.test.mjs\n?? .agents/skills/yss-prototype-stage/tests/zoom-browser.mjs\n?? .codex/skills/yss-design-system/assets/\n?? .codex/skills/yss-design-system/references/enterprise-craft.md\n?? .codex/skills/yss-design-system/references/prototype-default-theme.md\n?? .codex/skills/yss-design-system/scripts/export-craft-examples.mjs\n?? .template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/\n?? .template-source/evidence/maintenance/2026-09-29-prototype-design-enhancement/\n?? .template-source/evidence/maintenance/2026-09-29-prototype-skills-research/\n?? .template-source/evidence/maintenance/2026-09-29-skills-optimization-full-execution/\n?? .template-source/evidence/maintenance/2026-09-29-skills-optimization-implementation/\n?? .template-source/evidence/maintenance/2026-09-29-skills-optimization-plan/\n?? .template-source/evidence/maintenance/2026-09-30-plan-spec-iteration/\n?? .template-source/evidence/maintenance/2026-09-30-plan-spec-research/\n?? .template-source/evidence/maintenance/2026-09-30-prototype-compact-theme/\n?? .template-source/evidence/maintenance/2026-09-30-prototype-reliability/\n?? .template-source/evidence/maintenance/2026-09-30-shadcn-prototype/\n?? .template-source/tooling/node/test/plan-spec-quality.test.mjs\n?? .template-source/tooling/node/test/skill-discovery.test.mjs\n?? .template-source/tooling/node/vendor-entry-markdown.mjs\n?? .template-spec/process/plan-spec-quality.md\n?? .template-spec/templates/examples/plan-spec/\n?? scripts/inspect-plan-spec\n?? scripts/inspect-skill-discovery\n?? scripts/lib/plan-spec-markdown.mjs\n?? scripts/lib/plan-spec-quality.mjs\n?? scripts/lib/skill-discovery.mjs\n?? scripts/vendor/markdown.mjs\n"
+}

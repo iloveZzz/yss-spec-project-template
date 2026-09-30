@@ -1,0 +1,83 @@
+{
+  "observed_at": "2026-09-30T08:04:43.285632+00:00",
+  "scope": "recheck-after-packaging-not-a-source-freeze",
+  "checked_source_files": 35,
+  "drift": [
+    {
+      "ref": "submodules/create-yss-spec/template.snapshot.json",
+      "expected": "2b063940802fc72c696da93139016c3bec77ab1cd288fb3a867651777395c71a",
+      "actual": "b3bafe99fb66d165fc6584e6c06d446806d3127b2e6779bb13c1daace4d90637"
+    },
+    {
+      "ref": "submodules/create-yss-strategic-design/template.snapshot.json",
+      "expected": "c9c23ae0cb95933b3192579910048e2039d7d79fc9e65f3604f553f022ad110f",
+      "actual": "5b9b6a1064e02bc27d608b41c9fac3eac5a977ec42ba65be098d1c901af4162d"
+    },
+    {
+      "ref": "submodules/create-yss-harness-frontend/template.snapshot.json",
+      "expected": "378f04328d3042bc4896baa13aa8938cc91b13aa4483c1ca6a0770631db024d6",
+      "actual": "77ea13e9069d75d6f5eeed39265e8aaa2f364ed0eae0c0f4c5746af3040bb1f8"
+    }
+  ],
+  "profile_snapshots": [
+    {
+      "profile": "spec",
+      "changed_fields": [
+        "generatedAt",
+        "snapshotHash"
+      ],
+      "content_or_mode_changes": 0,
+      "example_paths": []
+    },
+    {
+      "profile": "design",
+      "changed_fields": [
+        "files",
+        "snapshotHash",
+        "transitionBaselines",
+        "transitionBaselinesHash"
+      ],
+      "content_or_mode_changes": 766,
+      "example_paths": [
+        ".pi/skills/yss-prototype-stage/scripts/prototype-contract.mjs",
+        ".codex/skills/yss-prototype-stage/assets/shadcn-vue-authoring/ui/card/CardDescription.vue",
+        ".pi/skills/yss-prototype-stage/assets/shadcn-vue-authoring/ui/pagination/PaginationNext.vue",
+        ".codex/skills/yss-prototype-stage/assets/shadcn-vue-authoring/ui/dialog/DialogOverlay.vue",
+        ".pi/skills/yss-prototype-stage/assets/shadcn-vue-authoring/ui/field/FieldSeparator.vue",
+        ".pi/skills/yss-prototype-stage/assets/shadcn-vue-authoring/ui/empty/Empty.vue",
+        ".cursor/skills/yss-prototype-stage/assets/shadcn-vue-authoring/ui/button/index.ts",
+        ".cursor/skills/yss-prototype-stage/assets/shadcn-vue-authoring/ui/breadcrumb/BreadcrumbSeparator.vue",
+        ".agents/skills/yss-prototype-stage/assets/shadcn-vue-authoring/ui/pagination/PaginationNext.vue",
+        ".pi/skills/yss-prototype-stage/assets/shadcn-vue-authoring/ui/tabs/index.ts"
+      ]
+    },
+    {
+      "profile": "backend",
+      "changed_fields": [],
+      "content_or_mode_changes": 0,
+      "example_paths": []
+    },
+    {
+      "profile": "frontend",
+      "changed_fields": [
+        "files",
+        "snapshotHash",
+        "transitionBaselines",
+        "transitionBaselinesHash"
+      ],
+      "content_or_mode_changes": 766,
+      "example_paths": [
+        ".pi/skills/yss-prototype-stage/scripts/prototype-contract.mjs",
+        ".pi/skills/yss-prototype-stage/assets/shadcn-vue-authoring/ui/pagination/PaginationNext.vue",
+        ".codex/skills/yss-prototype-stage/assets/shadcn-vue-authoring/ui/dialog/DialogOverlay.vue",
+        ".pi/skills/yss-prototype-stage/assets/shadcn-vue-authoring/ui/empty/Empty.vue",
+        ".agents/skills/yss-prototype-stage/assets/shadcn-vue-authoring/ui/pagination/PaginationNext.vue",
+        ".agents/skills/yss-prototype-stage/assets/shadcn-vue-authoring/ui/table/TableRow.vue",
+        ".pi/skills/yss-prototype-stage/assets/shadcn-vue-authoring/ui/table/index.ts",
+        ".cursor/skills/yss-prototype-stage/assets/shadcn-vue-authoring/ui/table/TableCell.vue",
+        ".codex/skills/yss-prototype-stage/assets/shadcn-vue-authoring/ui/sheet/index.ts",
+        ".agents/skills/yss-prototype-stage/assets/vue-business-patterns/list-detail-glass.ts"
+      ]
+    }
+  ]
+}

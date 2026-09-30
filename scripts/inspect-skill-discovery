@@ -1,0 +1,24 @@
+#!/usr/bin/env node
+import path from 'node:path';
+import { readFileSync } from 'node:fs';
+import { inspectSkill, observeRuntime, assessDiscovery } from './lib/skill-discovery.mjs';
+import { parseDocument } from './vendor/yaml.mjs';
+
+try {
+  const args = {};
+  for (let index = 2; index < process.argv.length; index += 2) {
+    const key = process.argv[index], value = process.argv[index + 1];
+    if (!['--runtime', '--binary', '--cwd', '--pi-loader', '--pi-agent-dir', '--selections', '--required'].includes(key) || !value || value.startsWith('--')) throw new Error(`invalid argument: ${key}`);
+    args[key.slice(2)] = value;
+  }
+  if (!['codex', 'pi', 'cursor'].includes(args.runtime) || !args.binary) throw new Error('--runtime codex|pi|cursor and --binary are required');
+  const cwd = path.resolve(args.cwd ?? '.');
+  const document = parseDocument(readFileSync(path.join(cwd, '.template-spec/agents/yss-skill-registry.yaml'), 'utf8'), { uniqueKeys: true, maxAliasCount: 0 });
+  if (document.errors.length) throw new Error('invalid registry');
+  const registry = document.toJS({ maxAliasCount: 0 });
+  const registered = registry.skills.map((item) => inspectSkill(path.join(cwd, '.agents/skills', item.id, 'SKILL.md')));
+  const observation = await observeRuntime({ runtime: args.runtime, binary: args.binary, cwd, piLoader: args['pi-loader'], piAgentDir: args['pi-agent-dir'] });
+  const assessment = assessDiscovery({ registered, observation, expected: { runtime: args.runtime, version: observation.version, cwd }, required: (args.required ?? '').split(',').filter(Boolean), selections: args.selections ? JSON.parse(readFileSync(args.selections, 'utf8')) : [] });
+  process.stdout.write(JSON.stringify({ schema_version: 1, registered, observation, assessment }, null, 2) + '\n');
+  if (assessment.status === 'blocked' || observation.status !== 'observed' || observation.errors?.some((item) => args.runtime === 'codex' || item.type === 'error')) process.exitCode = 2;
+} catch (error) { process.stderr.write(error.message + '\n'); process.exitCode = 2; }

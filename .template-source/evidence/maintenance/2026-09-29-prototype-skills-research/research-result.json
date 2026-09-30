@@ -1,0 +1,70 @@
+{
+  "result_schema": "workflow-execution-result-v1",
+  "work_unit": "work-unit.maintenance-research",
+  "workflow_reference": ".template-spec/process/research-completion.md",
+  "result": "completed",
+  "skill": "yss-research",
+  "changed_files": [
+    ".template-source/evidence/maintenance/2026-09-29-prototype-skills-research/checkpoint.json",
+    ".template-source/evidence/maintenance/2026-09-29-prototype-skills-research/fast-verification-summary.json",
+    ".template-source/evidence/maintenance/2026-09-29-prototype-skills-research/fast-verification/logs/0.stderr",
+    ".template-source/evidence/maintenance/2026-09-29-prototype-skills-research/fast-verification/logs/0.stdout",
+    ".template-source/evidence/maintenance/2026-09-29-prototype-skills-research/fast-verification/logs/1.stderr",
+    ".template-source/evidence/maintenance/2026-09-29-prototype-skills-research/fast-verification/logs/1.stdout",
+    ".template-source/evidence/maintenance/2026-09-29-prototype-skills-research/fast-verification/logs/2.stderr",
+    ".template-source/evidence/maintenance/2026-09-29-prototype-skills-research/fast-verification/logs/2.stdout",
+    ".template-source/evidence/maintenance/2026-09-29-prototype-skills-research/fast-verification/logs/3.stderr",
+    ".template-source/evidence/maintenance/2026-09-29-prototype-skills-research/fast-verification/logs/3.stdout",
+    ".template-source/evidence/maintenance/2026-09-29-prototype-skills-research/fast-verification/logs/4.stderr",
+    ".template-source/evidence/maintenance/2026-09-29-prototype-skills-research/fast-verification/logs/4.stdout",
+    ".template-source/evidence/maintenance/2026-09-29-prototype-skills-research/fast-verification/logs/post-5.stderr",
+    ".template-source/evidence/maintenance/2026-09-29-prototype-skills-research/fast-verification/logs/post-5.stdout",
+    ".template-source/evidence/maintenance/2026-09-29-prototype-skills-research/fast-verification/report.json",
+    ".template-source/evidence/maintenance/2026-09-29-prototype-skills-research/local-baseline.json",
+    ".template-source/evidence/maintenance/2026-09-29-prototype-skills-research/prototype-skills-evidence.yaml",
+    ".template-source/evidence/maintenance/2026-09-29-prototype-skills-research/prototype-skills-research-brief.md",
+    ".template-source/evidence/maintenance/2026-09-29-prototype-skills-research/repo-metrics.json",
+    ".template-source/evidence/maintenance/2026-09-29-prototype-skills-research/research-result.json",
+    ".template-source/evidence/maintenance/2026-09-29-prototype-skills-research/research-scope.md",
+    ".template-source/evidence/maintenance/2026-09-29-prototype-skills-research/self-check.json",
+    ".template-source/evidence/maintenance/2026-09-29-prototype-skills-research/source-fingerprints.json",
+    ".template-source/evidence/maintenance/2026-09-29-prototype-skills-research/task.json",
+    ".template-source/evidence/maintenance/2026-09-29-prototype-skills-research/verification-final/stderr.log",
+    ".template-source/evidence/maintenance/2026-09-29-prototype-skills-research/verification-final/stdout.log",
+    ".template-source/evidence/maintenance/2026-09-29-prototype-skills-research/verification-final/verification.json",
+    ".template-source/evidence/maintenance/2026-09-29-prototype-skills-research/verification/stderr.log",
+    ".template-source/evidence/maintenance/2026-09-29-prototype-skills-research/verification/stdout.log",
+    ".template-source/evidence/maintenance/2026-09-29-prototype-skills-research/verification/verification.json"
+  ],
+  "changed_artifacts": [
+    ".template-source/evidence/maintenance/2026-09-29-prototype-skills-research/prototype-skills-research-brief.md",
+    ".template-source/evidence/maintenance/2026-09-29-prototype-skills-research/prototype-skills-evidence.yaml"
+  ],
+  "evidence_refs": [
+    ".template-source/evidence/maintenance/2026-09-29-prototype-skills-research/research-scope.md",
+    ".template-source/evidence/maintenance/2026-09-29-prototype-skills-research/prototype-skills-research-brief.md",
+    ".template-source/evidence/maintenance/2026-09-29-prototype-skills-research/prototype-skills-evidence.yaml",
+    ".template-source/evidence/maintenance/2026-09-29-prototype-skills-research/verification-final/verification.json",
+    ".template-source/evidence/maintenance/2026-09-29-prototype-skills-research/local-baseline.json",
+    ".template-source/evidence/maintenance/2026-09-29-prototype-skills-research/source-fingerprints.json",
+    ".template-source/evidence/maintenance/2026-09-29-prototype-skills-research/repo-metrics.json",
+    ".template-source/evidence/maintenance/2026-09-29-prototype-skills-research/self-check.json",
+    ".template-source/evidence/maintenance/2026-09-29-prototype-skills-research/fast-verification-summary.json"
+  ],
+  "context_reconciliation": {
+    "status": "not-applicable",
+    "ref": ".template-source/evidence/maintenance/2026-09-29-prototype-skills-research/research-scope.md",
+    "reason": "template-source 研究已消费根 CONTEXT，无业务术语变更、产品批准或流转。"
+  },
+  "research_verification": {
+    "ref": ".template-source/evidence/maintenance/2026-09-29-prototype-skills-research/verification-final/verification.json",
+    "digest": "sha256:e0999f934777d88ed877536437d5d665becb0fbf38b2b5e4342a36e7d54a609f"
+  },
+  "deferred_seams": [],
+  "drift": [],
+  "violation": [],
+  "new_impacts": [],
+  "stale_candidates": [],
+  "blocking_signals": [],
+  "next_route": null
+}

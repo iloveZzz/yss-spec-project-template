@@ -31,7 +31,7 @@ scripts/query-lifecycle-context --mode route --stage stage.plan --work-unit work
 
 `--include` 接受合同顶层键，非法键或 ID 失败。细节按需读 `references/orchestration.md` 及其索引，证据充分即停止加载。
 
-按 `execution_efficiency` 合并查询、复用未变资料并验证当前资产；产品流转不重跑模板套件。词汇对账、恢复核验及门禁不变，执行细节见 `references/orchestration.md`。
+按 `execution_efficiency` 合并查询、复用未变资料；仍核验当前资产、词汇和门禁，产品流转不重跑模板套件。
 
 ## 入口与模式
 
@@ -40,9 +40,9 @@ scripts/query-lifecycle-context --mode route --stage stage.plan --work-unit work
 3. 按合同 `request_triage` 选择 `route`、`orchestrate`、`resume`、`audit`；明确行动请求无需模式关键字，意图不明时只读 `route`。`modes`、门禁及授权边界仍适用。
 4. `project-instance` 按生命周期注册表推进；`template-source` 只走模板维护流程。
 
-Plan 入口读取 `.template-spec/plan/README.md` 和 `.template-spec/process/plan-migration.md`，核查战略输入与退出条件。关键未决项阻断 Spec；其他未决项记录责任人、解决时点和接收方。只用 Plan 标识；旧阶段不兼容解析，历史批准不自动沿用。
+Plan 入口读取 `.template-spec/plan/README.md` 和 `.template-spec/process/plan-migration.md`，核查战略输入与退出条件。关键未决项阻断 Spec；其余记录责任人、解决时点和接收方。只用 Plan 标识；旧阶段不兼容解析，历史批准不自动沿用。
 
-理解、澄清与纠错见 [请求分诊协议](references/request-triage.md)；用 `scripts/query-lifecycle-context --include request_triage` 查询合同。先查上下文和证据，只问影响下一动作的缺口，不按问题长度追问。
+分诊见 [协议](references/request-triage.md) 与 `--include request_triage`。先查证据，只问影响下一动作的缺口，不按问题长度追问。
 
 ## 不可越过的边界
 
@@ -91,10 +91,16 @@ Plan → Spec（含正式草稿、恢复与显式 `to-spec`）写入前，按 `.
 
 咨询直接回答；工作单元完整留证，对外展示当前决定。
 
-工作单元结果至少包含：模式、仓库身份、当前阶段和工作单元、影响面、资产与门禁状态、证据、新鲜度、Ticket/垂直切片/合同状态、`ready-for-agent` 结论、阻塞项、本轮动作、下一工作单元、暂停或继续理由、Ticket 同步和 Git checkpoint 判断。
+结果包含：模式、仓库身份、阶段/工作单元、影响面、资产/门禁/Ticket/Slice/合同状态、证据及新鲜度、`ready-for-agent`、阻塞、本轮动作、下一单元、暂停/继续理由、Ticket 同步和 Git checkpoint。
 
 暂停会签时追加门禁 ID、`role_id`、`runtime_id`、会签文件路径、推荐答案和恢复动作；恢复前运行适用验证器。只有同一候选快照通过全部适用审查轴与 fresh verification，才能提出合并、发布或完成结论；发布仍须生物人决定。
 
 Plan / Spec / Design 追踪按 `.template-spec/process/stage-tracking.md`。
 
 需求澄清读 [对账](references/plan-requirements.md)；外部输入读 [问卷](references/external-input-questionnaire.md)。
+
+Spec 起草业务票，Design 校准后正式化；无设计影响直接正式化，研发再细化 Slice。按 `.template-spec/process/business-tickets.md` 检查覆盖和批准；业务票不授予实现资格。
+
+## 功能资产整理
+
+父 Ticket 保留五态和追踪入口，阶段、阻塞与下一工作单元引用实际 checkpoint 并按需查询，批准记录仍负责批准依据。临时工作项输入与未正式化草稿使用临时工作区；引用后按正式资产保留。清理只用 `.template-spec/process/feature-assets.md` 的显式候选计划，不因无引用或内容重复直接删文件，也不借整理推进阶段。旧票只迁移已指定文件并保存原文和精确差异，状态冲突报告双方原值。

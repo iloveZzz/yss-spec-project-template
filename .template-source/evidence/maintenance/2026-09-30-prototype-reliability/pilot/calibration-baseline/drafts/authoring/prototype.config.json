@@ -1,0 +1,6 @@
+{
+  "schema_version": 1,
+  "title": "资料维护",
+  "entry": "main.tsx",
+  "scenarios": "scenarios.json"
+}

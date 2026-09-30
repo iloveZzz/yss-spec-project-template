@@ -1,0 +1,239 @@
+{
+  "final_implementation_matches_pilot_input": true,
+  "implementation_files": [
+    {
+      "path": ".agents/skills/yss-prototype-stage/SKILL.md",
+      "candidate_sha256": "3426877845c5f841c5c9f8cc38fc18a2fad73c52018462b5588f91c5548b9481",
+      "current_sha256": "3426877845c5f841c5c9f8cc38fc18a2fad73c52018462b5588f91c5548b9481",
+      "same": true
+    },
+    {
+      "path": ".agents/skills/yss-prototype-stage/references/product-design-adapter.md",
+      "candidate_sha256": "46e9fed37880954ab0fce5eb42deb20d204c6777592853dd0a0ab7c69a76998f",
+      "current_sha256": "46e9fed37880954ab0fce5eb42deb20d204c6777592853dd0a0ab7c69a76998f",
+      "same": true
+    },
+    {
+      "path": ".agents/skills/yss-prototype-stage/references/concept-comparison.md",
+      "candidate_sha256": "c8e9c7140be8ad4176e0420f67720cf5f9c810af902382ddbeaf816ea27afbf3",
+      "current_sha256": "c8e9c7140be8ad4176e0420f67720cf5f9c810af902382ddbeaf816ea27afbf3",
+      "same": true
+    },
+    {
+      "path": ".agents/skills/yss-prototype-stage/references/comparison-tool.md",
+      "candidate_sha256": "9bdcbd8497c2a2c48755d1bad018268e74151ed235a4acb498e9585258016578",
+      "current_sha256": "9bdcbd8497c2a2c48755d1bad018268e74151ed235a4acb498e9585258016578",
+      "same": true
+    },
+    {
+      "path": ".agents/skills/yss-prototype-stage/references/prototype-profile-routing.md",
+      "candidate_sha256": "a8d1ebddb2daeeeabf6aebefcd53e5b7f956c27be98ee46cc8f1ca5e13b068fa",
+      "current_sha256": "a8d1ebddb2daeeeabf6aebefcd53e5b7f956c27be98ee46cc8f1ca5e13b068fa",
+      "same": true
+    },
+    {
+      "path": ".agents/skills/yss-prototype-stage/tests/comparison.test.mjs",
+      "candidate_sha256": "f7c4d3c39207c8b95f4c1b78bc27fb18e3b3809de6464ef17340c8cae7b4b086",
+      "current_sha256": "f7c4d3c39207c8b95f4c1b78bc27fb18e3b3809de6464ef17340c8cae7b4b086",
+      "same": true
+    },
+    {
+      "path": ".agents/skills/yss-prototype-stage/tests/run-scenarios.mjs",
+      "candidate_sha256": "8575ef3b927ffc406e4846d42304161bf7ef3d3c2ad0515b6302d479b602cc20",
+      "current_sha256": "8575ef3b927ffc406e4846d42304161bf7ef3d3c2ad0515b6302d479b602cc20",
+      "same": true
+    },
+    {
+      "path": ".agents/skills/yss-prototype-stage/tests/comparison-fixture.mjs",
+      "candidate_sha256": "c16108255c3c7ab62fe69d6d5e347fc3b4e02933934e80305ad68fef8b554524",
+      "current_sha256": "c16108255c3c7ab62fe69d6d5e347fc3b4e02933934e80305ad68fef8b554524",
+      "same": true
+    },
+    {
+      "path": ".agents/skills/yss-prototype-stage/tests/comparison-browser-smoke.mjs",
+      "candidate_sha256": "49505d52c22ee7a151b84b416beb8809b0d27dccde15c57ece5da2753f1ce8f4",
+      "current_sha256": "49505d52c22ee7a151b84b416beb8809b0d27dccde15c57ece5da2753f1ce8f4",
+      "same": true
+    },
+    {
+      "path": ".agents/skills/yss-prototype-stage/scripts/offline-html.mjs",
+      "candidate_sha256": "597bdc4fff49936d5d63d616ee095de3541d72b99f4ab05d8ae78286be9479ea",
+      "current_sha256": "597bdc4fff49936d5d63d616ee095de3541d72b99f4ab05d8ae78286be9479ea",
+      "same": true
+    },
+    {
+      "path": ".agents/skills/yss-prototype-stage/scripts/prototype-comparison.mjs",
+      "candidate_sha256": "e0c968408a996674c893bf58585df134ab85bd6dd824d640b6e2dcac4626b31b",
+      "current_sha256": "e0c968408a996674c893bf58585df134ab85bd6dd824d640b6e2dcac4626b31b",
+      "same": true
+    },
+    {
+      "path": ".agents/skills/yss-prototype-stage/assets/comparison/index.html",
+      "candidate_sha256": "0ba2c841bc7b0cf457d08bb1965a333adeeef6d33fa16709e85ed448eee8b529",
+      "current_sha256": "0ba2c841bc7b0cf457d08bb1965a333adeeef6d33fa16709e85ed448eee8b529",
+      "same": true
+    },
+    {
+      "path": ".agents/skills/yss-prototype-stage/assets/comparison/comparison.css",
+      "candidate_sha256": "c5f5f6667590627c21025b6872d0402b8b2ecdac8a6e593cee7ba408c2d5abd5",
+      "current_sha256": "c5f5f6667590627c21025b6872d0402b8b2ecdac8a6e593cee7ba408c2d5abd5",
+      "same": true
+    },
+    {
+      "path": ".agents/skills/yss-prototype-stage/assets/comparison/review-ready.js",
+      "candidate_sha256": "9b052a4af2a42e1c7387e4d4e3bb743f82e5366cd69fc44e64f0f6b72299d977",
+      "current_sha256": "9b052a4af2a42e1c7387e4d4e3bb743f82e5366cd69fc44e64f0f6b72299d977",
+      "same": true
+    },
+    {
+      "path": ".agents/skills/yss-prototype-stage/assets/comparison/comparison.js",
+      "candidate_sha256": "e480ab3fc73b26e5946c4c02c4c72a9b5ccdf662515eab20587bd405c0e30b26",
+      "current_sha256": "e480ab3fc73b26e5946c4c02c4c72a9b5ccdf662515eab20587bd405c0e30b26",
+      "same": true
+    },
+    {
+      "path": ".agents/skills/yss-design-system/SKILL.md",
+      "candidate_sha256": "0451815009635651ebc4b32721e1464684ca346cbfe3ec51ce60f429209c4e2e",
+      "current_sha256": "0451815009635651ebc4b32721e1464684ca346cbfe3ec51ce60f429209c4e2e",
+      "same": true
+    },
+    {
+      "path": ".agents/skills/yss-design-system/references/enterprise-craft.md",
+      "candidate_sha256": "1a84b010a0eb7bbfd7a832b071ab747c22c6265aa76f930ac9e988d6af8f16b6",
+      "current_sha256": "1a84b010a0eb7bbfd7a832b071ab747c22c6265aa76f930ac9e988d6af8f16b6",
+      "same": true
+    },
+    {
+      "path": ".agents/skills/yss-design-system/scripts/export-craft-examples.mjs",
+      "candidate_sha256": "4484c4012645c2b23b515cc783393bff643e7935691017d668a3ecd16ec3f7c8",
+      "current_sha256": "4484c4012645c2b23b515cc783393bff643e7935691017d668a3ecd16ec3f7c8",
+      "same": true
+    },
+    {
+      "path": ".agents/skills/yss-design-system/assets/enterprise-craft/index.html",
+      "candidate_sha256": "5c6121e96a3d51b7600187626f3df4663389dad08246d25a93796c6c9668a1f5",
+      "current_sha256": "5c6121e96a3d51b7600187626f3df4663389dad08246d25a93796c6c9668a1f5",
+      "same": true
+    },
+    {
+      "path": ".agents/skills/yss-design-system/assets/enterprise-craft/styles.css",
+      "candidate_sha256": "0f96c33668a03651a17d4e0c970bd8bf55d8fb9db2d84608602d8a6e62ec49c9",
+      "current_sha256": "0f96c33668a03651a17d4e0c970bd8bf55d8fb9db2d84608602d8a6e62ec49c9",
+      "same": true
+    },
+    {
+      "path": ".agents/skills/yss-design-system/assets/enterprise-craft/scenarios.js",
+      "candidate_sha256": "5a36f5c60d410f507c7440139f0c86cae5be2a87a18703ddad6e567ebe5b2547",
+      "current_sha256": "5a36f5c60d410f507c7440139f0c86cae5be2a87a18703ddad6e567ebe5b2547",
+      "same": true
+    },
+    {
+      "path": ".agents/skills/yss-design-system/assets/enterprise-craft/app.js",
+      "candidate_sha256": "23217ab58fb34b33b86bded23a2405edf2ae19ab3be902ba123325a25fb60823",
+      "current_sha256": "23217ab58fb34b33b86bded23a2405edf2ae19ab3be902ba123325a25fb60823",
+      "same": true
+    },
+    {
+      "path": ".agents/skills/prototype-review/SKILL.md",
+      "candidate_sha256": "6454add931f9ccff5b236fb6c3ca095dd97af30a3ba35f9268eca355ba8cd12f",
+      "current_sha256": "6454add931f9ccff5b236fb6c3ca095dd97af30a3ba35f9268eca355ba8cd12f",
+      "same": true
+    },
+    {
+      "path": ".template-spec/design/templates/interaction-spec-template.md",
+      "candidate_sha256": "161502e959a49f1e6b5381506124c855f67e2ca6dbbb225482aabcc593c43a34",
+      "current_sha256": "161502e959a49f1e6b5381506124c855f67e2ca6dbbb225482aabcc593c43a34",
+      "same": true
+    },
+    {
+      "path": ".template-spec/design/templates/prototype-review-checklist.md",
+      "candidate_sha256": "4fcdadeea2524fb1c5dd308156c37daa5c680c1e6f10343bcaa229bf6fa7ed20",
+      "current_sha256": "4fcdadeea2524fb1c5dd308156c37daa5c680c1e6f10343bcaa229bf6fa7ed20",
+      "same": true
+    },
+    {
+      "path": ".agents/skills/.strategic-design-skills-manifest.json",
+      "candidate_sha256": "5b49437afc5cb822e0ebf95151d2ad6d88cbbec1de4d51e81687709c366ef367",
+      "current_sha256": "5b49437afc5cb822e0ebf95151d2ad6d88cbbec1de4d51e81687709c366ef367",
+      "same": true
+    },
+    {
+      "path": ".template-source/profile-skill-sync.json",
+      "candidate_sha256": "577b2bfad3efc94866fcf20c7f4ef5fc5207f910397ae1a7288ae7a1ac8014fb",
+      "current_sha256": "577b2bfad3efc94866fcf20c7f4ef5fc5207f910397ae1a7288ae7a1ac8014fb",
+      "same": true
+    },
+    {
+      "path": ".template-source/agents/strategic-design-skills-integration.md",
+      "candidate_sha256": "8bdf71bf62176a60bcd0bda82af93d75f6502df975ed80646bca555169e2ab2f",
+      "current_sha256": "8bdf71bf62176a60bcd0bda82af93d75f6502df975ed80646bca555169e2ab2f",
+      "same": true
+    },
+    {
+      "path": "skills-lock.json",
+      "candidate_sha256": "5860368c75887ee0913f3b32f1d34080a777e879b35c9902f7a6ae1ecf6cd1ad",
+      "current_sha256": "5860368c75887ee0913f3b32f1d34080a777e879b35c9902f7a6ae1ecf6cd1ad",
+      "same": true
+    }
+  ],
+  "initial_unrelated_hashed_files": [
+    {
+      "path": ".agents/skills/maintaining-skills/references/authoring.md",
+      "unchanged": true
+    },
+    {
+      "path": ".agents/skills/writing-for-agents/SKILL-MECHANICS.md",
+      "unchanged": true
+    },
+    {
+      "path": ".template-source/distribution/strategic-handoff-tools.lock.json",
+      "unchanged": true
+    },
+    {
+      "path": ".template-source/scripts/skills-agent-eval.md",
+      "unchanged": true
+    },
+    {
+      "path": ".template-source/scripts/skills-agent-eval.py",
+      "unchanged": true
+    },
+    {
+      "path": ".template-source/scripts/tests/test_skills_agent_eval.py",
+      "unchanged": true
+    },
+    {
+      "path": ".template-source/tooling/node/test/skill-registry.test.mjs",
+      "unchanged": true
+    },
+    {
+      "path": ".template-spec/agents/yss-skill-registry.yaml",
+      "unchanged": true
+    },
+    {
+      "path": "scripts/lib/skill-registry.mjs",
+      "unchanged": true
+    },
+    {
+      "path": "scripts/sync-strategic-handoff-tools",
+      "unchanged": true
+    },
+    {
+      "path": ".agents/skills/git-commit-core/agents/openai.yaml",
+      "unchanged": true
+    },
+    {
+      "path": ".template-source/tooling/node/test/skill-discovery.test.mjs",
+      "unchanged": true
+    },
+    {
+      "path": "scripts/inspect-skill-discovery",
+      "unchanged": true
+    },
+    {
+      "path": "scripts/lib/skill-discovery.mjs",
+      "unchanged": true
+    }
+  ],
+  "unrelated_all_unchanged": true,
+  "note": "Historical maintenance evidence was not in the Agent snapshot and was not written by this task; initial status preserved separately."
+}

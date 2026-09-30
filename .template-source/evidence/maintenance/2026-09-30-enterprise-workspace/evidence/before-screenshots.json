@@ -1,0 +1,52 @@
+{
+  "chromium-list-detail-1440.png": {
+    "source": ".template-source/evidence/maintenance/2026-09-30-react-prototype-retirement/screenshots/chromium-list-detail-1440.png",
+    "sha256": "7925972e25a9fc3d077bf98b115a92fd081953f43c5eecc027875a677db61d14",
+    "status": "historical comparison input, not current verification"
+  },
+  "chromium-list-detail-390.png": {
+    "source": ".template-source/evidence/maintenance/2026-09-30-react-prototype-retirement/screenshots/chromium-list-detail-390.png",
+    "sha256": "ade1a48749adaa6094422a5341b5b666a8c3d1236d95d0034d0e9f80dd567e2c",
+    "status": "historical comparison input, not current verification"
+  },
+  "chromium-multi-step-1440.png": {
+    "source": ".template-source/evidence/maintenance/2026-09-30-react-prototype-retirement/screenshots/chromium-multi-step-1440.png",
+    "sha256": "5bc761877599b890dc73849685a94d768b3e66563842612db8e68a182b90d381",
+    "status": "historical comparison input, not current verification"
+  },
+  "chromium-multi-step-390.png": {
+    "source": ".template-source/evidence/maintenance/2026-09-30-react-prototype-retirement/screenshots/chromium-multi-step-390.png",
+    "sha256": "d8376fae3b9345833ccc4c0d0d02e42cdcfcaf1fd3b482ce0a89a6b16498c385",
+    "status": "historical comparison input, not current verification"
+  },
+  "chromium-approval-1440.png": {
+    "source": ".template-source/evidence/maintenance/2026-09-30-react-prototype-retirement/screenshots/chromium-approval-1440.png",
+    "sha256": "ee1d777eb4266c7a812becf84a693f248e92e4a58314253b97e30c569c2b1269",
+    "status": "historical comparison input, not current verification"
+  },
+  "chromium-approval-390.png": {
+    "source": ".template-source/evidence/maintenance/2026-09-30-react-prototype-retirement/screenshots/chromium-approval-390.png",
+    "sha256": "9039eda91d460936eda3fd02f85188bcd76e139e24f3d4c0188cce54eb372b90",
+    "status": "historical comparison input, not current verification"
+  },
+  "chromium-conflict-1440.png": {
+    "source": ".template-source/evidence/maintenance/2026-09-30-react-prototype-retirement/screenshots/chromium-conflict-1440.png",
+    "sha256": "21426412fc4f09ecbffb3c07d48f81870e1b0377ba51e8df7dff3d7971a54ebd",
+    "status": "historical comparison input, not current verification"
+  },
+  "chromium-conflict-390.png": {
+    "source": ".template-source/evidence/maintenance/2026-09-30-react-prototype-retirement/screenshots/chromium-conflict-390.png",
+    "sha256": "a5cd6cfca6dbc8afba9b965d2a775e8bd8b9c7793240b78b49ada03bc69e0315",
+    "status": "historical comparison input, not current verification"
+  },
+  "chromium-analysis-1440.png": {
+    "source": ".template-source/evidence/maintenance/2026-09-30-react-prototype-retirement/screenshots/chromium-analysis-1440.png",
+    "sha256": "c730f0d0c32bb3bb230fea7d6c75e11e88522952421f0e85f3fbbc84ad003302",
+    "status": "historical comparison input, not current verification"
+  },
+  "chromium-analysis-390.png": {
+    "source": ".template-source/evidence/maintenance/2026-09-30-react-prototype-retirement/screenshots/chromium-analysis-390.png",
+    "sha256": "ab17c4e15dc707f992c2f7b4cb5bb67b0e7381e4fbb84ca45e255d92a743d96d",
+    "status": "historical comparison input, not current verification"
+  }
+}

@@ -79,8 +79,12 @@ export function verifyTemplateRelease({ root, commit, output }) {
     report.generated_snapshot = snapshot;
     // npm 只用于包消费者验收；维护测试仍统一由 pnpm 驱动。
     run('npm', ['pack', '--ignore-scripts', '--json'], cli);
-    const packed = JSON.parse(readFileSync(path.join(output, report.commands.at(-1).log), 'utf8'));
+    const packReport = JSON.parse(readFileSync(path.join(output, report.commands.at(-1).log), 'utf8'));
+    assert.ok(packReport && typeof packReport === 'object', 'npm pack 必须返回 JSON 记录');
+    const packed = Array.isArray(packReport) ? packReport : Object.values(packReport);
     assert.equal(packed.length, 1);
+    assert.equal(typeof packed[0]?.filename, 'string', 'npm pack 缺少包文件名');
+    assert.equal(path.basename(packed[0].filename), packed[0].filename, 'npm pack 文件名不得越界');
     const consumer = path.join(scratch, 'consumer');
     run('npm', ['install', '--prefix', consumer, '--ignore-scripts', '--no-audit', '--no-fund', path.join(cli, packed[0].filename)]);
     const entry = path.join(consumer, 'node_modules/create-yss-spec/bin/create-yss-spec.js');

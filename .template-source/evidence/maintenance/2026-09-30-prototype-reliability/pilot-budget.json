@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "max_turns": 14,
+  "max_seconds": 12600.0,
+  "attempts": [
+    {
+      "id": "addb7d94-c506-4451-93ff-bd0bb86034fd",
+      "reserved_seconds": 900,
+      "status": "finished",
+      "started_at": 1790733620.835406,
+      "elapsed_seconds": 616.2126837920514
+    }
+  ]
+}

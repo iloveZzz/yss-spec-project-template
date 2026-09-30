@@ -1,0 +1,30 @@
+{
+  "packages": {
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "radix-ui": "1.6.7",
+    "lucide-react": "1.48.0",
+    "class-variance-authority": "0.7.1",
+    "clsx": "2.1.1",
+    "tailwind-merge": "3.7.0",
+    "esbuild": "0.28.2",
+    "tailwindcss": "4.3.3",
+    "@tailwindcss/cli": "4.3.3"
+  },
+  "lock_digest": "sha256:a2e23d45b83fe160dc48d87fadf1a07960056b61af4d011b81d9e60297f63b80",
+  "source_digest": "sha256:808f50feb5771fc351c9d0744fa9ee9793dc9b190b7c6720a5573f055549111d",
+  "theme_digest": "sha256:a8d263f786db92c7086cb1c56845e38739472f5e5c2ee77649806d9cb834d2a4",
+  "registry_digest": "sha256:42b8609e1e9df6d7af80b2c2509cfb592aec1c1e1f53a41625c4ff52a8368e9b",
+  "registry_revision": "db2db460a26fa84fb65c8d903b213925fbdee9ed",
+  "support_source_digests": {
+    "cn.ts": "sha256:64fc84c1be627f0d586fb4ba64d824a1604f44282381f5bae68cdf86e10bb6ec"
+  },
+  "authored_files": {
+    "authoring-sources/list-detail.tsx": "sha256:808f50feb5771fc351c9d0744fa9ee9793dc9b190b7c6720a5573f055549111d",
+    "authoring-sources/shared.tsx": "sha256:37b05dd2f98e2f995ea1bdbe2d4142c22b8e18e85e8d53558e78f6184f95d9a0",
+    "authoring-sources/patterns.css": "sha256:aeeb7def3f223bf1de9624335db4f9d19c2b6fe57e79c68487a3f56cba9d53e5"
+  },
+  "format": "iife",
+  "browser_runtime": "react",
+  "toolchain_required_by_recipient": false
+}

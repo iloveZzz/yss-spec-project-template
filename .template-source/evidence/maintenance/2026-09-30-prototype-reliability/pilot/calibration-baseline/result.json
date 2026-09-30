@@ -1,0 +1,134 @@
+{
+  "scenario": "calibration",
+  "variant": "baseline",
+  "repeat": 1,
+  "elapsed_seconds": 620.3,
+  "exit_code": 0,
+  "timeout": false,
+  "assertion_failures": [
+    {
+      "assertion": {
+        "kind": "node",
+        "code": "await import('./fixture/qa.mjs')"
+      },
+      "stderr": "node:url:1024\n  validateString(path, 'path');\n  ^\n\nTypeError [ERR_INVALID_ARG_TYPE]: The \"path\" argument must be of type string. Received undefined\n    at pathToFileURL (node:url:1024:3)\n    at file:///private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-reliability-lj22xn8m/pilot-runs/calibration-baseline/calibration-1/workspace/.agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs:316:25\n    at ModuleJob.run (node:internal/modules/esm/module_job:561:25)\n    at async node:internal/modules/esm/loader:647:26\n    at async file:///private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-reliability-lj22xn8m/pilot-runs/calibration-baseline/calibration-1/workspace/[eval1]:1:1 {\n  code: 'ERR_INVALID_ARG_TYPE'\n}\n\nNode.js v24.21.0\n"
+    }
+  ],
+  "runtime_errors": [],
+  "tool_calls": 32,
+  "usage": [
+    {
+      "input_tokens": 1469767,
+      "cached_input_tokens": 1368832,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 18358,
+      "reasoning_output_tokens": 4943
+    }
+  ],
+  "automatic_result": "failed",
+  "semantic_review": "pending",
+  "trace": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-reliability-lj22xn8m/pilot-runs/calibration-baseline/calibration-1/trace.jsonl",
+  "steps": [
+    {
+      "step": "main",
+      "started_at": "2026-09-30T02:00:20Z",
+      "elapsed_seconds": 617.45,
+      "exit_code": 0,
+      "timeout": false,
+      "assertion_failures": [
+        {
+          "assertion": {
+            "kind": "node",
+            "code": "await import('./fixture/qa.mjs')"
+          },
+          "stderr": "node:url:1024\n  validateString(path, 'path');\n  ^\n\nTypeError [ERR_INVALID_ARG_TYPE]: The \"path\" argument must be of type string. Received undefined\n    at pathToFileURL (node:url:1024:3)\n    at file:///private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-reliability-lj22xn8m/pilot-runs/calibration-baseline/calibration-1/workspace/.agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs:316:25\n    at ModuleJob.run (node:internal/modules/esm/module_job:561:25)\n    at async node:internal/modules/esm/loader:647:26\n    at async file:///private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-reliability-lj22xn8m/pilot-runs/calibration-baseline/calibration-1/workspace/[eval1]:1:1 {\n  code: 'ERR_INVALID_ARG_TYPE'\n}\n\nNode.js v24.21.0\n"
+        }
+      ],
+      "runtime_errors": [],
+      "tool_calls": 32,
+      "usage": [
+        {
+          "input_tokens": 1469767,
+          "cached_input_tokens": 1368832,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 18358,
+          "reasoning_output_tokens": 4943
+        }
+      ],
+      "automatic_result": "failed",
+      "semantic_review": "pending",
+      "trace": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-reliability-lj22xn8m/pilot-runs/calibration-baseline/calibration-1/trace.jsonl",
+      "write_scope": {
+        "status": "passed",
+        "allowed_writes": [
+          "drafts/"
+        ],
+        "changed_paths": [
+          "drafts/.template-spec/design/tokens/variables.css",
+          "drafts/authoring/main.tsx",
+          "drafts/authoring/prototype.config.json",
+          "drafts/authoring/scenarios.json",
+          "drafts/authoring/styles.css",
+          "drafts/build.log",
+          "drafts/design.md",
+          "drafts/docs/.scratch/pilot/design/prototypes/THIRD-PARTY-NOTICES.txt",
+          "drafts/docs/.scratch/pilot/design/prototypes/app.js",
+          "drafts/docs/.scratch/pilot/design/prototypes/authoring-source.tsx",
+          "drafts/docs/.scratch/pilot/design/prototypes/authoring-sources/main.tsx",
+          "drafts/docs/.scratch/pilot/design/prototypes/authoring-sources/styles.css",
+          "drafts/docs/.scratch/pilot/design/prototypes/build-provenance.json",
+          "drafts/docs/.scratch/pilot/design/prototypes/component-sources/alert-dialog.tsx",
+          "drafts/docs/.scratch/pilot/design/prototypes/component-sources/badge.tsx",
+          "drafts/docs/.scratch/pilot/design/prototypes/component-sources/button.tsx",
+          "drafts/docs/.scratch/pilot/design/prototypes/component-sources/checkbox.tsx",
+          "drafts/docs/.scratch/pilot/design/prototypes/component-sources/cn.ts",
+          "drafts/docs/.scratch/pilot/design/prototypes/component-sources/dialog.tsx",
+          "drafts/docs/.scratch/pilot/design/prototypes/component-sources/input.tsx",
+          "drafts/docs/.scratch/pilot/design/prototypes/component-sources/label.tsx",
+          "drafts/docs/.scratch/pilot/design/prototypes/component-sources/select.tsx",
+          "drafts/docs/.scratch/pilot/design/prototypes/component-sources/table.tsx",
+          "drafts/docs/.scratch/pilot/design/prototypes/component-sources/tabs.tsx",
+          "drafts/docs/.scratch/pilot/design/prototypes/component-sources/textarea.tsx",
+          "drafts/docs/.scratch/pilot/design/prototypes/index.html",
+          "drafts/docs/.scratch/pilot/design/prototypes/registry-manifest.json",
+          "drafts/docs/.scratch/pilot/design/prototypes/scenario-runtime.js",
+          "drafts/docs/.scratch/pilot/design/prototypes/scenarios.js",
+          "drafts/docs/.scratch/pilot/design/prototypes/scenarios.json",
+          "drafts/docs/.scratch/pilot/design/prototypes/styles.css",
+          "drafts/docs/.scratch/pilot/design/prototypes/token-theme.css",
+          "drafts/docs/.scratch/pilot/design/prototypes/tokens.css",
+          "drafts/docs/.scratch/pilot/design/prototypes/yss-prototype-adapter.json",
+          "drafts/final-qa.log",
+          "drafts/input-digests.json",
+          "drafts/project-snapshot/.template-spec/design/tokens/variables.css",
+          "drafts/project-snapshot/DESIGN.md",
+          "drafts/qa-after-documentation.log",
+          "drafts/qa.log",
+          "drafts/verify-final.mjs"
+        ],
+        "violations": [],
+        "scope": "Final file/symlink differences; excludes .git, __pycache__, .eval-tmp and command log; not a sandbox or transient-write audit"
+      },
+      "git_audit": {
+        "status": "not-checked"
+      },
+      "skill_reads": [
+        {
+          "skill": "yss-prototype-stage",
+          "path": ".agents/skills/yss-prototype-stage/SKILL.md",
+          "status": "observed-read",
+          "scope": "successful explicit tool read; may be partial; native auto-injected bodies need separate evidence"
+        },
+        {
+          "skill": "yss-design-system",
+          "path": ".agents/skills/yss-design-system/SKILL.md",
+          "status": "observed-read",
+          "scope": "successful explicit tool read; may be partial; native auto-injected bodies need separate evidence"
+        }
+      ],
+      "turn_completed": true
+    }
+  ],
+  "unattempted_steps": [],
+  "stop_reason": null
+}

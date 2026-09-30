@@ -1,0 +1,52 @@
+[
+  {
+    "repo": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "checked": 7855,
+    "changed": [
+      ".template-source/evidence/maintenance/2026-09-29-document-readability-design/plan.md"
+    ],
+    "missing": []
+  },
+  {
+    "repo": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-design-agent",
+    "checked": 370,
+    "changed": [],
+    "missing": []
+  },
+  {
+    "repo": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-backend-agent",
+    "checked": 79,
+    "changed": [],
+    "missing": []
+  },
+  {
+    "repo": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-frontend-agent",
+    "checked": 354,
+    "changed": [],
+    "missing": []
+  },
+  {
+    "repo": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-spec",
+    "checked": 4,
+    "changed": [],
+    "missing": []
+  },
+  {
+    "repo": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-strategic-design",
+    "checked": 348,
+    "changed": [],
+    "missing": []
+  },
+  {
+    "repo": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-backend",
+    "checked": 80,
+    "changed": [],
+    "missing": []
+  },
+  {
+    "repo": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-frontend",
+    "checked": 349,
+    "changed": [],
+    "missing": []
+  }
+]

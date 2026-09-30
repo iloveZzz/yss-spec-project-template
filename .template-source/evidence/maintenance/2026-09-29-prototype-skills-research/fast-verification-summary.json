@@ -1,0 +1,41 @@
+{
+  "status": "passed",
+  "scope": "limited-research-files",
+  "observed_at": "2026-09-29T15:01:36.236538+00:00",
+  "source_report": "/tmp/yss-prototype-skills-research-20260929/fast-verification/report.json",
+  "archived_report": ".template-source/evidence/maintenance/2026-09-29-prototype-skills-research/fast-verification/report.json",
+  "results": [
+    {
+      "id": "check.8cd499a929b8a5a4",
+      "code": 0,
+      "duration_ms": 56
+    },
+    {
+      "id": "check.3c6d62ea49a55255",
+      "code": 0,
+      "duration_ms": 427
+    },
+    {
+      "id": "check.44ea73f718bcecec",
+      "code": 0,
+      "duration_ms": 1569
+    },
+    {
+      "id": "check.71586a7291afee4f",
+      "code": 0,
+      "duration_ms": 278188
+    },
+    {
+      "id": "check.637af2529c59dfe5",
+      "code": 0,
+      "duration_ms": 295
+    },
+    {
+      "id": "post.5",
+      "code": 0,
+      "duration_ms": 105
+    }
+  ],
+  "post_fast_change": "只补通用 design/可选 ideate 的范围说明、两条本地来源及当前研究闭包记录；已再次执行研究包校验及任务包接收验证；未重复与文档无关的 160 项 Node 工具测试。",
+  "not_a_full_dirty_worktree_or_release_verification": true
+}

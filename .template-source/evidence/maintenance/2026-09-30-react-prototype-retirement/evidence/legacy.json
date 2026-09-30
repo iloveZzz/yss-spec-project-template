@@ -1,0 +1,26 @@
+[
+  {
+    "root": ".template-source/evidence/maintenance/2026-09-30-prototype-glass-study/comparisons/list-detail/variants/standard",
+    "normal": "rejected",
+    "legacy": "passed-read-only",
+    "seal": "rejected"
+  },
+  {
+    "root": ".template-source/evidence/maintenance/2026-09-30-prototype-glass-study/comparisons/list-detail/variants/glass",
+    "normal": "rejected",
+    "legacy": "passed-read-only",
+    "seal": "rejected"
+  },
+  {
+    "root": ".template-source/evidence/maintenance/2026-09-30-prototype-glass-study/comparisons/multi-step/variants/standard",
+    "normal": "rejected",
+    "legacy": "passed-read-only",
+    "seal": "rejected"
+  },
+  {
+    "root": ".template-source/evidence/maintenance/2026-09-30-prototype-glass-study/comparisons/multi-step/variants/glass",
+    "normal": "rejected",
+    "legacy": "passed-read-only",
+    "seal": "rejected"
+  }
+]

@@ -75,7 +75,7 @@ roles:
     contract_version: 1
     title: YSS 需求经理
     stages: [ stage.plan, stage.spec-architecture ]
-    draft_artifact_ids: [ artifact.plan-record, artifact.spec ]
+    draft_artifact_ids: [ artifact.plan-record, artifact.spec, artifact.business-ticket-set ]
     core_skills: [ grilling, domain-modeling, yss-research, competitive-intelligence ]
     forbidden_skills: [ yss-ui, yss-domain, yss-web-controller, yss-repository, yss-ddd-scaffold-generator, yss-layered-mvc-scaffold-generator, yss-frontend-scaffold-generator, implement, tdd ]
     description: >-
@@ -87,7 +87,7 @@ roles:
     contract_version: 1
     title: YSS 产品经理
     stages: [ stage.plan, stage.spec-architecture, stage.product-design, stage.verification-release-retrospective ]
-    draft_artifact_ids: [ artifact.product-overview, artifact.functional-architecture, artifact.interaction-spec, artifact.state-matrix, artifact.prototype-confirmation-v2 ]
+    draft_artifact_ids: [ artifact.business-ticket-set, artifact.product-overview, artifact.functional-architecture, artifact.interaction-spec, artifact.state-matrix, artifact.prototype-confirmation-v2 ]
     core_skills: [ yss-design-system, yss-prototype-stage, prototype-review, yss-research, competitive-intelligence ]
     forbidden_skills: [ yss-ui, yss-domain, yss-repository, yss-web-controller, yss-ddd-scaffold-generator, yss-layered-mvc-scaffold-generator, implement, tdd ]
     description: >-

@@ -58,132 +58,15 @@ Only proceed to Step 1b if you have no native worktree tool available.
 
 ### 1b. Git Worktree Fallback
 
-**Only use this if Step 1a does not apply** — you have no native worktree tool available. Create a worktree manually using git.
+仅无原生工具且创建已获授权时，读取 [手工 Git worktree 创建](references/git-fallback.md)。目录遵循用户偏好，项目内目录先核验忽略规则；创建失败保留当前 checkout 和隔离边界。
 
-#### Directory Selection
+## Steps 2–3: Setup and baseline
 
-Follow this priority order. Explicit user preference always beats observed filesystem state.
+进入新建或已有隔离工作区后，读取 [项目准备与基线验证](references/setup-and-baseline.md)，选择项目声明的依赖与测试命令。已有失败应记录并区分，不得称基线干净。
 
-1. **Check your instructions for a declared worktree directory preference.** If the user has already specified one, use it without asking.
+## 排查
 
-2. **Check for an existing project-local worktree directory:**
-   ```bash
-   ls -d .worktrees 2>/dev/null     # Preferred (hidden)
-   ls -d worktrees 2>/dev/null      # Alternative
-   ```
-   If found, use it. If both exist, `.worktrees` wins.
-
-3. **If there is no other guidance available**, default to `.worktrees/` at the project root.
-
-#### Safety Verification (project-local directories only)
-
-**MUST verify directory is ignored before creating worktree:**
-
-```bash
-git check-ignore -q .worktrees 2>/dev/null || git check-ignore -q worktrees 2>/dev/null
-```
-
-**If NOT ignored:** Add the chosen directory to .gitignore within the authorized setup scope, verify it is ignored, then proceed. Leave that edit uncommitted unless Git commit authorization already covers it.
-
-**Why critical:** Prevents accidentally committing worktree contents to repository.
-
-#### Create the Worktree
-
-```bash
-# Determine path based on chosen location
-path="$LOCATION/$BRANCH_NAME"
-
-git worktree add "$path" -b "$BRANCH_NAME"
-cd "$path"
-```
-
-**Isolation failure:** If worktree creation is blocked, report the actual error and preserve the current checkout. Use another already authorized isolated location when available; ask only if proceeding would change the requested isolation boundary. Do not silently begin implementation in the original checkout.
-
-## Step 2: Project Setup
-
-Auto-detect and run appropriate setup:
-
-```bash
-# Node.js: inspect packageManager, lockfile and project instructions first.
-# In a pnpm project, use the recorded version and frozen lockfile:
-# pnpm install --frozen-lockfile
-# Use npm/yarn only when the repository actually declares them.
-
-# Rust
-if [ -f Cargo.toml ]; then cargo build; fi
-
-# Python
-if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-if [ -f pyproject.toml ]; then poetry install; fi
-
-# Go
-if [ -f go.mod ]; then go mod download; fi
-```
-
-## Step 3: Verify Clean Baseline
-
-Run tests to ensure workspace starts clean:
-
-```bash
-# Use project-appropriate command
-pnpm test / cargo test / pytest / go test ./... # select the declared project runner
-```
-
-**If tests fail:** Record the existing failure and investigate within the authorized scope. Ask only if a new decision or access is needed; do not label the baseline clean.
-
-**If tests pass:** Report ready.
-
-### Report
-
-```
-Worktree ready at <full-path>
-Tests passing (<N> tests, 0 failures)
-Ready to implement <feature-name>
-```
-
-## Quick Reference
-
-| Situation | Action |
-|-----------|--------|
-| Already in linked worktree | Skip creation (Step 0) |
-| In a submodule | Treat as normal repo (Step 0 guard) |
-| Native worktree tool available | Use it (Step 1a) |
-| No native tool | Git worktree fallback (Step 1b) |
-| `.worktrees/` exists | Use it (verify ignored) |
-| `worktrees/` exists | Use it (verify ignored) |
-| Both exist | Use `.worktrees/` |
-| Neither exists | Check instruction file, then default `.worktrees/` |
-| Directory not ignored | Add to .gitignore; commit only when authorized |
-| Permission error on create | Report failure; preserve the requested isolation boundary |
-| Tests fail during baseline | Record failures; continue authorized diagnosis |
-| No package.json/Cargo.toml | Skip dependency install |
-
-## Common Mistakes
-
-### Fighting the harness
-
-- **Problem:** Using `git worktree add` when the platform already provides isolation
-- **Fix:** Step 0 detects existing isolation. Step 1a defers to native tools.
-
-### Skipping detection
-
-- **Problem:** Creating a nested worktree inside an existing one
-- **Fix:** Always run Step 0 before creating anything
-
-### Skipping ignore verification
-
-- **Problem:** Worktree contents get tracked, pollute git status
-- **Fix:** Always use `git check-ignore` before creating project-local worktree
-
-### Assuming directory location
-
-- **Problem:** Creates inconsistency, violates project conventions
-- **Fix:** Follow priority: explicit instructions > existing project-local directory > default
-
-### Proceeding with failing tests
-
-- **Problem:** Can't distinguish new bugs from pre-existing issues
-- **Fix:** Distinguish baseline failures from new defects; ask only for a missing decision
+遇到目录选择、嵌套工作树、忽略规则或基线失败时，读取 [常见错误速查](references/troubleshooting.md)。
 
 ## Red Flags
 

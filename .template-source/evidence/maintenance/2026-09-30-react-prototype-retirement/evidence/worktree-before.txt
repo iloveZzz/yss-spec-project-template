@@ -1,0 +1,234 @@
+ M .agents/skills/.strategic-design-skills-manifest.json
+ M .agents/skills/maintaining-skills/references/authoring.md
+ M .agents/skills/prototype-review/SKILL.md
+ M .agents/skills/to-spec/SKILL.md
+ M .agents/skills/to-tickets/SKILL.md
+ M .agents/skills/writing-for-agents/SKILL-MECHANICS.md
+ M .agents/skills/yss-design-system/SKILL.md
+ M .agents/skills/yss-design-system/references/data-quality-theme.md
+ M .agents/skills/yss-design-system/references/design-qa-theme.md
+ M .agents/skills/yss-design-system/references/design-system.md
+ M .agents/skills/yss-implementation-contract-compiler/SKILL.md
+ M .agents/skills/yss-product-lifecycle/SKILL.md
+ M .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml
+ M .agents/skills/yss-product-lifecycle/references/plan-requirements.md
+ M .agents/skills/yss-prototype-stage/SKILL.md
+ D .agents/skills/yss-prototype-stage/assets/antd-authoring/package.json
+ D .agents/skills/yss-prototype-stage/assets/antd-authoring/pnpm-lock.yaml
+ D .agents/skills/yss-prototype-stage/assets/antd-authoring/workbench.jsx
+ M .agents/skills/yss-prototype-stage/assets/native-workbench/app.js
+ M .agents/skills/yss-prototype-stage/assets/native-workbench/index.html
+ M .agents/skills/yss-prototype-stage/assets/native-workbench/styles.css
+ M .agents/skills/yss-prototype-stage/assets/offline-html/app.js
+ D .agents/skills/yss-prototype-stage/references/antd-component-catalog.json
+ D .agents/skills/yss-prototype-stage/references/antd-integration.md
+ M .agents/skills/yss-prototype-stage/references/product-design-adapter.md
+ M .agents/skills/yss-prototype-stage/references/prototype-profile-routing.md
+ D .agents/skills/yss-prototype-stage/scripts/build-antd-prototype.mjs
+ D .agents/skills/yss-prototype-stage/scripts/collect-antd-reference.mjs
+ M .agents/skills/yss-prototype-stage/scripts/offline-html.mjs
+ M .agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs
+ M .agents/skills/yss-prototype-stage/tests/antd-reference.test.mjs
+ M .agents/skills/yss-prototype-stage/tests/run-scenarios.mjs
+ M .agents/skills/yss-prototype-stage/tests/workbench-smoke.mjs
+ M .agents/skills/yss-stage-decision/SKILL.md
+ M .agents/skills/yss-technical-design/SKILL.md
+ M .codex/skills/prototype-review/SKILL.md
+ M .codex/skills/yss-design-system/SKILL.md
+ M .codex/skills/yss-design-system/references/data-quality-theme.md
+ M .codex/skills/yss-design-system/references/design-qa-theme.md
+ M .codex/skills/yss-design-system/references/design-system.md
+ M .codex/skills/yss-product-lifecycle/SKILL.md
+ M .codex/skills/yss-product-lifecycle/references/orchestration-contract.yaml
+ M .codex/skills/yss-product-lifecycle/references/plan-requirements.md
+ M .template-source/agents/strategic-design-skills-integration.md
+ M .template-source/derived/harness-work-unit-map.md
+ M .template-source/design/design-system-sync.yaml
+ M .template-source/design/preview-dark.html
+ M .template-source/design/preview.css
+ M .template-source/design/preview.html
+ M .template-source/design/preview.js
+ M .template-source/distribution/strategic-handoff-tools.lock.json
+ M .template-source/evidence/maintenance/2026-09-29-document-readability-design/plan.md
+ M .template-source/plugins/yss-backend-delivery/build.mjs
+ M .template-source/process/maintenance-intensity.yaml
+ M .template-source/process/template-verification-profiles.yaml
+ M .template-source/profile-skill-patches/backend/yss-implementation-contract-compiler.patch
+ M .template-source/profile-skill-patches/frontend/yss-implementation-contract-compiler.patch
+ M .template-source/profile-skill-sync.json
+ M .template-source/scripts/lib/template-release.mjs
+ M .template-source/scripts/skills-agent-eval.md
+ M .template-source/scripts/skills-agent-eval.py
+ M .template-source/scripts/tests/test_skills_agent_eval.py
+ M .template-source/scripts/verify-historical-task-package
+ M .template-source/tooling/node/package.json
+ M .template-source/tooling/node/pnpm-lock.yaml
+ M .template-source/tooling/node/scripts/build-vendor.mjs
+ M .template-source/tooling/node/scripts/design-md.mjs
+ M .template-source/tooling/node/test/plugin-build.test.mjs
+ M .template-source/tooling/node/test/skill-registry.test.mjs
+ M .template-spec/agents/digital-human-roles.yaml
+ M .template-spec/agents/issue-tracker.md
+ M .template-spec/agents/yss-skill-registry.yaml
+ M .template-spec/design/README.md
+ M .template-spec/design/design.md
+ M .template-spec/design/templates/examples/model-publishing-interaction.example.md
+ M .template-spec/design/templates/interaction-spec-template.md
+ M .template-spec/design/templates/prototype-evidence-template.yaml
+ M .template-spec/design/templates/prototype-review-checklist.md
+ M .template-spec/design/tokens/.design-md-projection.json
+ M .template-spec/design/tokens/variables.css
+ M .template-spec/plan/templates/plan-template.md
+ M .template-spec/process/harness-process-tailoring.md
+ M .template-spec/process/lifecycle-artifact-map.md
+ M .template-spec/process/lifecycle-registry-baseline.json
+ M .template-spec/process/lifecycle-registry.yaml
+ M .template-spec/process/schemas/lifecycle-checkpoint.schema.json
+ M .template-spec/process/strategic-handoff-package.md
+ M .template-spec/process/templates/stage-checkpoint-template.md
+ M .template-spec/templates/examples/lifecycle-writing-examples.md
+ M .template-spec/templates/local-parent-ticket-template.md
+ M .template-spec/templates/spec-delta-template.md
+ M .template-spec/templates/spec-template.md
+ M .template-spec/templates/vertical-slice-ticket-template.md
+ M AGENTS.md
+ M CONTEXT.md
+ M DESIGN.md
+ M scripts/fixtures/stage-tracking/tracking.test.mjs
+ M scripts/fixtures/strategic-handoff/fixture.mjs
+ M scripts/lib/lifecycle-status.mjs
+ M scripts/lib/lifecycle-transition.mjs
+ M scripts/lib/maintenance-intensity.mjs
+ M scripts/lib/skill-registry.mjs
+ M scripts/lib/slice-contract-preparation.mjs
+ M scripts/lib/slice-contract.mjs
+ M scripts/lib/stage-tracking-migration.mjs
+ M scripts/lib/stage-tracking.mjs
+ M scripts/lib/strategic-handoff-consumption.mjs
+ M scripts/lib/strategic-handoff-io.mjs
+ M scripts/lib/strategic-handoff.mjs
+ M scripts/lib/task-package.mjs
+ M scripts/lib/user-decision-reuse.mjs
+ M scripts/lifecycle-status
+ M scripts/query-lifecycle-context
+ M scripts/run-template-verification
+ M scripts/sync-strategic-handoff-tools
+ M scripts/vendor/NOTICES.md
+ M scripts/vendor/manifest.json
+ M scripts/verify-approval-record
+ M scripts/verify-context-contract
+ M scripts/verify-digital-human-task-package
+ M scripts/verify-frontend-delivery-scenarios
+ M scripts/verify-lifecycle-checkpoint
+ M scripts/verify-maintenance-checkpoint
+ M scripts/verify-maintenance-intensity-scenarios
+ M scripts/verify-template-verification-scenarios
+ M skills-lock.json
+ M submodules/create-yss-harness-backend
+ M submodules/create-yss-harness-frontend
+ M submodules/create-yss-spec
+ M submodules/create-yss-strategic-design
+ M submodules/yss-harness-backend-agent
+ M submodules/yss-harness-design-agent
+ M submodules/yss-harness-frontend-agent
+?? .agents/skills/git-commit-core/agents/
+?? .agents/skills/prototype-review/references/
+?? .agents/skills/yss-design-system/assets/
+?? .agents/skills/yss-design-system/references/enterprise-craft.md
+?? .agents/skills/yss-design-system/references/page-composition.md
+?? .agents/skills/yss-design-system/references/prototype-default-theme.md
+?? .agents/skills/yss-design-system/scripts/export-craft-examples.mjs
+?? .agents/skills/yss-prototype-stage/assets/business-patterns/
+?? .agents/skills/yss-prototype-stage/assets/comparison/
+?? .agents/skills/yss-prototype-stage/assets/low-fidelity-exercise/
+?? .agents/skills/yss-prototype-stage/assets/native-workbench/scenarios.json
+?? .agents/skills/yss-prototype-stage/assets/offline-html/scenarios.json
+?? .agents/skills/yss-prototype-stage/assets/prototype-theme.css
+?? .agents/skills/yss-prototype-stage/assets/scenario-runtime.js
+?? .agents/skills/yss-prototype-stage/assets/shadcn-authoring/
+?? .agents/skills/yss-prototype-stage/assets/shadcn-vue-authoring/
+?? .agents/skills/yss-prototype-stage/assets/vue-business-patterns/
+?? .agents/skills/yss-prototype-stage/references/business-patterns.md
+?? .agents/skills/yss-prototype-stage/references/comparison-tool.md
+?? .agents/skills/yss-prototype-stage/references/component-recipes.md
+?? .agents/skills/yss-prototype-stage/references/concept-comparison.md
+?? .agents/skills/yss-prototype-stage/references/low-fidelity-exercise.md
+?? .agents/skills/yss-prototype-stage/references/shadcn-integration.md
+?? .agents/skills/yss-prototype-stage/references/shadcn-vue-integration.md
+?? .agents/skills/yss-prototype-stage/scripts/build-shadcn-prototype.mjs
+?? .agents/skills/yss-prototype-stage/scripts/build-shadcn-vue-prototype.mjs
+?? .agents/skills/yss-prototype-stage/scripts/export-business-patterns.mjs
+?? .agents/skills/yss-prototype-stage/scripts/export-low-fidelity-exercise.mjs
+?? .agents/skills/yss-prototype-stage/scripts/export-vue-patterns.mjs
+?? .agents/skills/yss-prototype-stage/scripts/prototype-comparison.mjs
+?? .agents/skills/yss-prototype-stage/scripts/scenario-contract.mjs
+?? .agents/skills/yss-prototype-stage/tests/compact-theme-browser.mjs
+?? .agents/skills/yss-prototype-stage/tests/comparison-browser-smoke.mjs
+?? .agents/skills/yss-prototype-stage/tests/comparison-fixture.mjs
+?? .agents/skills/yss-prototype-stage/tests/comparison.test.mjs
+?? .agents/skills/yss-prototype-stage/tests/components-browser.mjs
+?? .agents/skills/yss-prototype-stage/tests/patterns-browser.mjs
+?? .agents/skills/yss-prototype-stage/tests/reliability.test.mjs
+?? .agents/skills/yss-prototype-stage/tests/shadcn-source.test.mjs
+?? .agents/skills/yss-prototype-stage/tests/shadcn-vue.test.mjs
+?? .agents/skills/yss-prototype-stage/tests/zoom-browser.mjs
+?? .codex/skills/prototype-review/references/
+?? .codex/skills/yss-design-system/assets/
+?? .codex/skills/yss-design-system/references/enterprise-craft.md
+?? .codex/skills/yss-design-system/references/page-composition.md
+?? .codex/skills/yss-design-system/references/prototype-default-theme.md
+?? .codex/skills/yss-design-system/scripts/export-craft-examples.mjs
+?? .template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/
+?? .template-source/evidence/maintenance/2026-09-29-prototype-design-enhancement/
+?? .template-source/evidence/maintenance/2026-09-29-prototype-skills-research/
+?? .template-source/evidence/maintenance/2026-09-29-skills-optimization-full-execution/
+?? .template-source/evidence/maintenance/2026-09-29-skills-optimization-implementation/
+?? .template-source/evidence/maintenance/2026-09-29-skills-optimization-plan/
+?? .template-source/evidence/maintenance/2026-09-30-business-ticket-slice/
+?? .template-source/evidence/maintenance/2026-09-30-flow-hardening/
+?? .template-source/evidence/maintenance/2026-09-30-highfi-components/
+?? .template-source/evidence/maintenance/2026-09-30-plan-spec-iteration/
+?? .template-source/evidence/maintenance/2026-09-30-plan-spec-research/
+?? .template-source/evidence/maintenance/2026-09-30-prototype-compact-theme/
+?? .template-source/evidence/maintenance/2026-09-30-prototype-glass-study/
+?? .template-source/evidence/maintenance/2026-09-30-prototype-reliability/
+?? .template-source/evidence/maintenance/2026-09-30-react-prototype-retirement/
+?? .template-source/evidence/maintenance/2026-09-30-shadcn-prototype/
+?? .template-source/evidence/maintenance/2026-09-30-shadcn-vue-authoring/
+?? .template-source/evidence/maintenance/2026-09-30-shadcn-vue-design-research/
+?? .template-source/tooling/node/test/design-preview-browser.mjs
+?? .template-source/tooling/node/test/plan-spec-quality.test.mjs
+?? .template-source/tooling/node/test/skill-discovery.test.mjs
+?? .template-source/tooling/node/vendor-entry-markdown.mjs
+?? .template-spec/process/business-tickets.md
+?? .template-spec/process/checkpoint-boundary.yaml
+?? .template-spec/process/plan-spec-quality.md
+?? .template-spec/process/project-ci.md
+?? .template-spec/process/schemas/business-tickets-v1.schema.json
+?? .template-spec/templates/business-ticket-review-template.yaml
+?? .template-spec/templates/business-ticket-set-template.yaml
+?? .template-spec/templates/business-ticket-template.md
+?? .template-spec/templates/examples/plan-spec/
+?? scripts/fixtures/business-tickets/
+?? scripts/inspect-plan-spec
+?? scripts/inspect-skill-discovery
+?? scripts/lib/business-ticket-lifecycle.mjs
+?? scripts/lib/business-tickets.mjs
+?? scripts/lib/checkpoint-boundary.mjs
+?? scripts/lib/governance-io.mjs
+?? scripts/lib/maintenance-counterexample.mjs
+?? scripts/lib/plan-spec-markdown.mjs
+?? scripts/lib/plan-spec-quality.mjs
+?? scripts/lib/project-ci-install.mjs
+?? scripts/lib/project-governance.mjs
+?? scripts/lib/skill-discovery.mjs
+?? scripts/project-ci
+?? scripts/project-ci-transition
+?? scripts/vendor/markdown.mjs
+?? scripts/verify-business-tickets
+?? scripts/verify-maintenance-risk-scenarios
+?? tests/checkpoint-boundary.test.mjs
+?? tests/flow-verification-routing.test.mjs
+?? tests/maintenance-counterexample.test.mjs
+?? tests/plan-spec-template-contract.test.mjs
+?? tests/project-ci.test.mjs

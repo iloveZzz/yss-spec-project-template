@@ -1,0 +1,274 @@
+[
+  {
+    "label": "root-sync",
+    "args": [
+      "node",
+      "scripts/sync-strategic-handoff-tools"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "exit_code": 0,
+    "seconds": 0.73
+  },
+  {
+    "label": "design-generate-lifecycle-artifacts",
+    "args": [
+      "node",
+      "scripts/generate-lifecycle-artifacts"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-design-agent",
+    "exit_code": 0,
+    "seconds": 0.06
+  },
+  {
+    "label": "design-sync-skills",
+    "args": [
+      "node",
+      "scripts/sync-skills"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-design-agent",
+    "exit_code": 0,
+    "seconds": 0.07
+  },
+  {
+    "label": "design-update-skill-lock",
+    "args": [
+      "node",
+      "scripts/update-skill-lock"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-design-agent",
+    "exit_code": 0,
+    "seconds": 0.09
+  },
+  {
+    "label": "design-verify-lifecycle-registry",
+    "args": [
+      "node",
+      "scripts/verify-lifecycle-registry"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-design-agent",
+    "exit_code": 0,
+    "seconds": 0.24
+  },
+  {
+    "label": "design-verify-harness-profile",
+    "args": [
+      "node",
+      "scripts/verify-harness-profile"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-design-agent",
+    "exit_code": 0,
+    "seconds": 0.08
+  },
+  {
+    "label": "backend-generate-lifecycle-artifacts",
+    "args": [
+      "node",
+      "scripts/generate-lifecycle-artifacts"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-backend-agent",
+    "exit_code": 0,
+    "seconds": 0.05
+  },
+  {
+    "label": "backend-sync-skills",
+    "args": [
+      "node",
+      "scripts/sync-skills"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-backend-agent",
+    "exit_code": 0,
+    "seconds": 0.05
+  },
+  {
+    "label": "backend-update-skill-lock",
+    "args": [
+      "node",
+      "scripts/update-skill-lock"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-backend-agent",
+    "exit_code": 0,
+    "seconds": 0.13
+  },
+  {
+    "label": "backend-verify-lifecycle-registry",
+    "args": [
+      "node",
+      "scripts/verify-lifecycle-registry"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-backend-agent",
+    "exit_code": 0,
+    "seconds": 0.23
+  },
+  {
+    "label": "backend-verify-harness-profile",
+    "args": [
+      "node",
+      "scripts/verify-harness-profile"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-backend-agent",
+    "exit_code": 0,
+    "seconds": 0.06
+  },
+  {
+    "label": "frontend-generate-lifecycle-artifacts",
+    "args": [
+      "node",
+      "scripts/generate-lifecycle-artifacts"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-frontend-agent",
+    "exit_code": 0,
+    "seconds": 0.05
+  },
+  {
+    "label": "frontend-sync-skills",
+    "args": [
+      "node",
+      "scripts/sync-skills"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-frontend-agent",
+    "exit_code": 0,
+    "seconds": 0.05
+  },
+  {
+    "label": "frontend-update-skill-lock",
+    "args": [
+      "node",
+      "scripts/update-skill-lock"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-frontend-agent",
+    "exit_code": 0,
+    "seconds": 0.17
+  },
+  {
+    "label": "frontend-verify-lifecycle-registry",
+    "args": [
+      "node",
+      "scripts/verify-lifecycle-registry"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-frontend-agent",
+    "exit_code": 0,
+    "seconds": 0.22
+  },
+  {
+    "label": "frontend-verify-harness-profile",
+    "args": [
+      "node",
+      "scripts/verify-harness-profile"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-frontend-agent",
+    "exit_code": 0,
+    "seconds": 0.06
+  },
+  {
+    "label": "design-core",
+    "args": [
+      "node",
+      "scripts/sync-core.mjs",
+      "/Users/zhudaoming/Projects/yss-spec-project-template",
+      "WORKTREE"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-strategic-design",
+    "exit_code": 0,
+    "seconds": 0.07
+  },
+  {
+    "label": "design-template",
+    "args": [
+      "node",
+      "scripts/sync-template.mjs",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-design-agent",
+      "WORKTREE"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-strategic-design",
+    "exit_code": 0,
+    "seconds": 0.27
+  },
+  {
+    "label": "design-bundle",
+    "args": [
+      "node",
+      "scripts/verify-bundle.mjs"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-strategic-design",
+    "exit_code": 0,
+    "seconds": 0.09
+  },
+  {
+    "label": "backend-core",
+    "args": [
+      "node",
+      "scripts/sync-core.mjs",
+      "/Users/zhudaoming/Projects/yss-spec-project-template",
+      "WORKTREE"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-backend",
+    "exit_code": 0,
+    "seconds": 0.06
+  },
+  {
+    "label": "backend-template",
+    "args": [
+      "node",
+      "scripts/sync-template.mjs",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-backend-agent",
+      "WORKTREE"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-backend",
+    "exit_code": 0,
+    "seconds": 0.34
+  },
+  {
+    "label": "backend-bundle",
+    "args": [
+      "node",
+      "scripts/verify-bundle.mjs"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-backend",
+    "exit_code": 0,
+    "seconds": 0.11
+  },
+  {
+    "label": "frontend-core",
+    "args": [
+      "node",
+      "scripts/sync-core.mjs",
+      "/Users/zhudaoming/Projects/yss-spec-project-template",
+      "WORKTREE"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-frontend",
+    "exit_code": 0,
+    "seconds": 0.07
+  },
+  {
+    "label": "frontend-template",
+    "args": [
+      "node",
+      "scripts/sync-template.mjs",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-frontend-agent",
+      "WORKTREE"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-frontend",
+    "exit_code": 0,
+    "seconds": 0.41
+  },
+  {
+    "label": "frontend-bundle",
+    "args": [
+      "node",
+      "scripts/verify-bundle.mjs"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-frontend",
+    "exit_code": 0,
+    "seconds": 0.12
+  },
+  {
+    "label": "spec-template",
+    "args": [
+      "node",
+      "scripts/sync-template.js"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-spec",
+    "exit_code": 0,
+    "seconds": 2.91
+  }
+]

@@ -1,3 +1,4 @@
+import { assertImplementationTicket, assertSliceBusinessSources } from './business-tickets.mjs';
 import {readContractSource,contractSourceMetadata} from './contract-source.mjs';
 import {sliceRepositories} from './slice-repositories.mjs';
 import { sliceCheckApplicability } from './slice-applicability.mjs';
@@ -57,6 +58,7 @@ function prepare({root=process.cwd(),ticket_ref,checkpoint_ref,sources={},refine
   try {
     let ticketText='',ticket={},saved={};
     try {ticketText=read(ticket_ref).toString('utf8');ticket=metadata(ticketText);}catch(error){report.blockers.push({code:'SLICE_SOURCE_UNREADABLE',field:'basis.ticket',source_ref:ticket_ref,reason:error.message});}
+    try { assertImplementationTicket(ticketText,ticket_ref); } catch(error) { report.blockers.push({code:'TICKET_NOT_IMPLEMENTABLE',field:'basis.ticket',reason:error.message}); }
     if (ticket.kind === 'stage-work-item' || /\/work-items\//.test(ticket_ref || '')) report.blockers.push({code:'STAGE_WORK_ITEM_NOT_IMPLEMENTABLE',field:'basis.ticket',reason:'stage-work-item 不能作为实现 Ticket'});
     if(checkpoint_ref)try {saved=parseSliceYaml(read(checkpoint_ref));}catch(error){report.blockers.push({code:'SLICE_SOURCE_UNREADABLE',field:'checkpoint',source_ref:checkpoint_ref,reason:error.message});}
     const fromTicket=ticket.slice_implementation || {};
@@ -72,6 +74,7 @@ function prepare({root=process.cwd(),ticket_ref,checkpoint_ref,sources={},refine
     const selected=mergeFacts(lifecycleSources(saved,report),mergeFacts(input.sources || {},sources,'sources',report),'sources',report);
     if(selected.ticket && (typeof selected.ticket==='string'?selected.ticket:selected.ticket.ref)!==ticket_ref)throw new TypeError('Ticket 来源冲突');
     selected.ticket=selected.ticket || {ref:ticket_ref};
+    if (ticket.business_ticket_set_ref) selected.business_ticket_set ??= {ref:ticket.business_ticket_set_ref};
     if(input.scope?.risk_level){selected.lifecycle_registry??={ref:'.template-spec/process/lifecycle-registry.yaml'};selected.process_tailoring??={ref:'.template-spec/process/harness-process-tailoring.md'};}
     if(!selected.context&&fs.existsSync(safe(root,'CONTEXT.md',{missing:true})))selected.context={ref:'CONTEXT.md'};
     const basis={},seen=new Map();
@@ -94,6 +97,7 @@ function prepare({root=process.cwd(),ticket_ref,checkpoint_ref,sources={},refine
     for(const key of ['spec','ticket','engineering_baseline','implementation_repository','build_architecture_checklist',...extraRequired,...(!input.scope?.risk_level?['architecture_review']:[])])if(!selected[key])report.blockers.push({code:'SLICE_SOURCE_MISSING',field:`basis.${key}`,reason:'缺少必要来源',responsibility:'agent',recovery:'绑定已有当前资产；不能用空文档替代'});
     contract.basis=basis;
     if(report.blockers.length){report.checks.push({check:'dependent-compilation',result:'not-executed',reason:'来源或输入存在独立阻断'});throw Object.assign(new Error('依赖未就绪'),{code:'SLICE_DEPENDENCIES_UNAVAILABLE'});}
+    try { assertSliceBusinessSources({root,ticketText,setBinding:basis.business_ticket_set}); } catch(error) { report.blockers.push({code:'BUSINESS_SOURCE_BLOCKED',field:'basis.business_ticket_set',reason:error.message}); }
     const sourceDoc=key=>basis[key]?metadata(read(resolveSliceBasis({basis},key).ref).toString('utf8')):{};
     const registration=sourceDoc('implementation_repository'),baseline=sourceDoc('engineering_baseline');
     const registeredRoot=registration.local_worktree?(registration.project_root&&registration.project_root!=='.'?path.resolve(registration.local_worktree,registration.project_root):registration.local_worktree):undefined;
@@ -131,7 +135,9 @@ function prepare({root=process.cwd(),ticket_ref,checkpoint_ref,sources={},refine
     } else compiled=compileDefaultImplementationContract({...compileBase,recipeIds:input.recipe_ids||[],requiredCapabilities:[...new Set([...(input.required_capabilities||[]),...componentCapabilities])],architecture_identity,architecture_evidence,technical_design:bound('technical_design'),...(bound('frontend_delivery')?{frontend_delivery:{acceptance_ref:bound('frontend_delivery').ref,digest:bound('frontend_delivery').digest}}:{}),...(approved_slice?{approved_slice}:{})});
     if(compiled.compiler_contract_digest!==digest(compilerRules).slice(7))throw new TypeError('编译规则来源冲突：准备期间发生变化');
     const resolution=Object.fromEntries(['required_capabilities','required_skills','recipe_ids','conditions','registry_digest','compiler_contract_digest','architecture_identity','component_bindings','component_bindings_digest'].filter(key=>compiled[key]!==undefined).map(key=>[key,compiled[key]]));
-    contract={schema_version:3,ticket_policy:{mode:'frozen-requirements',state_owner:'tracker-or-task-package'},contract_id:input.contract_id,contract_version:input.contract_version,slice_id:input.slice_id,status:'draft',basis,scope,applicability,resolution,acceptance:input.acceptance||markdownAcceptance(ticketText),verification:input.verification,work_units:input.work_units,...(input.extensions?{extensions:input.extensions}:{})};
+    const businessAcceptance=basis.business_ticket_set&&Array.isArray(ticket.acceptance_refs)
+      ? Object.fromEntries(ticket.acceptance_refs.map(id=>[id,{source:'spec',locator:id}])) : undefined;
+    contract={schema_version:3,ticket_policy:{mode:'frozen-requirements',state_owner:'tracker-or-task-package'},contract_id:input.contract_id,contract_version:input.contract_version,slice_id:input.slice_id,status:'draft',basis,scope,applicability,resolution,acceptance:input.acceptance||businessAcceptance||markdownAcceptance(ticketText),verification:input.verification,work_units:input.work_units,...(input.extensions?{extensions:input.extensions}:{})};
     report.reason_chains=compiled.reason_chains;
     for(const reason of compiled.readiness_blockers||[])report.blockers.push({reason});
     normalizeSliceContract(contract,{root});
@@ -144,7 +150,7 @@ function prepare({root=process.cwd(),ticket_ref,checkpoint_ref,sources={},refine
       if(refinements[field]!==undefined)origins.push({kind:'agent-refinement'});
       if(field==='scope'&&registeredRoot&&!input.scope?.project_roots)origins.push({kind:'repository-registration',ref:resolveSliceBasis({basis},'implementation_repository').ref});
       if(field==='scope'&&input.extensions?.cross_repo?.repository_bindings)for(const keys of Object.values(input.extensions.cross_repo.repository_bindings))origins.push({kind:'repository-registration',ref:resolveSliceBasis({basis},keys.implementation_repository).ref});
-      if(field==='acceptance'&&!input.acceptance)origins.push({kind:'ticket-acceptance',ref:ticket_ref});
+      if(field==='acceptance'&&!input.acceptance)origins.push(businessAcceptance?{kind:'business-spec-acceptance',ref:resolveSliceBasis({basis},'spec').ref,selection_ref:ticket_ref}:{kind:'ticket-acceptance',ref:ticket_ref});
       if(field==='applicability'&&scope.risk_level)origins.push({kind:'lifecycle-rule',ref:resolveSliceBasis({basis},'lifecycle_registry').ref});
       report.provenance.push({target:field,origins,requires_professional_review:true});
     }

@@ -338,6 +338,10 @@ artifacts:
     name: 复盘记录
     stage: stage.verification-release-retrospective
     trigger: 发布后或阶段性完成后满足复盘触发条件。
+  - id: artifact.business-ticket-set
+    name: 业务 Ticket 集
+    stage: stage.spec-architecture
+    trigger: Spec 同步起草、Design 校准和战略业务正式化；不依赖实现工程，不授予实现资格。
 
 work_units:
   - id: work-unit.maintenance-research
@@ -428,18 +432,18 @@ work_units:
     name: Spec 综合
     scope: project-instance
     input: 已确认的 Plan 记录和测试 seam。
-    output: Spec、产品总体设计和功能架构。
-    completion: Spec 内容完整并进入 ready-for-human；下游推进仍需 gate.spec-baseline-approved。
+    output: Spec、产品总体设计、功能架构及业务 Ticket 草案集合。
+    completion: Spec 和业务 Ticket 草案可审查，FR/AC 覆盖与依赖可读取；进入 ready-for-human，下游推进仍需 gate.spec-baseline-approved。
   - id: work-unit.prototype-design-v2
     name: 原型设计与验证
     scope: project-instance
     input: Spec、产品设计影响和状态矩阵。
     output: 交互说明、低保真、状态矩阵、H1/H2 原型交付物、统一 Design QA、档位验证证据与前端实现交接事项。
-    completion: 低保真评审、schema v4 原型交付物验证和用户确认门禁均通过；Visual Baseline Bundle 和生产组件待验事项已交接到前端实现计划。
+    completion: 低保真评审、schema v4 原型交付物验证和用户确认门禁均通过；Visual Baseline Bundle 和生产组件待验事项已交接到前端实现计划。 同步校准业务 Ticket，复用稳定 ID，随后进入业务正式化。
   - id: work-unit.technical-analysis
     name: 技术分析与契约冻结
     scope: project-instance
-    input: Spec、原型、API/数据/工程影响面；新建后端的架构与平台候选，或既有工程当前登记的架构与平台配置。
+    input: 已正式化业务 Ticket 集及 Spec、原型、API/数据/工程影响面；新建后端的架构与平台候选，或既有工程当前登记的架构与平台配置。
     output: 新建后端的 DDD / MVC 与精确 Spring Boot 版本用户决定，或既有工程复用核验；OpenAPI、数据架构、按确认架构形成的 DDD / MVC 技术设计合同、工程基线、架构审查和 Slice 合同草案。
     completion: 新建后端的 gate.backend-architecture-platform-approved 已通过，既有工程已核验复用并记录该门禁不适用；命中契约已冻结；无 API 影响有可读记录；所有后端交付均有批准且当前的 Technical Design；数据影响为真时数据架构已批准，否则有可核验的不适用记录；架构、规则与场景承接无未解释冲突；gate.engineering-contract-approved 通过。
   - id: work-unit.implementation-repository-preparation
@@ -457,7 +461,7 @@ work_units:
   - id: work-unit.ticket-decomposition
     name: 垂直切片 Ticket 正式化
     scope: project-instance
-    input: 冻结 Spec、设计、契约和阻塞关系。
+    input: 已正式化业务 Ticket、冻结 Spec、设计、契约、当前实现仓库准备和阻塞关系。
     output: 更新既有功能父 Ticket 的关联、形成垂直切片和批准的 Slice Implementation Contract。
     completion: 切片可独立验证；生命周期复算后才能 ready-for-agent。
   - id: work-unit.slice-implementation
@@ -490,6 +494,12 @@ work_units:
     input: 已审查候选、发布窗口和回滚点。
     output: 发布/回滚证据和复盘记录。
     completion: 人工发布裁决、fresh verification 和治理回流均完成。
+  - id: work-unit.business-ticket-formalization
+    name: 业务 Ticket 正式化
+    scope: project-instance
+    input: 当前 Spec、适用的产品设计批准、业务 Ticket 草案集合和独立专业审查。
+    output: 可追溯 FR/AC、规则、场景与设计的业务 Ticket 集；保持 ready-for-human。
+    completion: 当前业务覆盖完整，无阻断未决项；既有批准或授权延续有效，专业审查当前。战略交接或技术分析可继续，不授予 ready-for-agent。
 checks:
   - id: check.frontend-delivery-inputs-verified
     name: 前端联合输入核验

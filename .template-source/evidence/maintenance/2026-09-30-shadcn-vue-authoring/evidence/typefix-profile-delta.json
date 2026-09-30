@@ -1,0 +1,26 @@
+[
+  {
+    "profile": "design",
+    "path": ".agents/skills/yss-prototype-stage/scripts/build-shadcn-vue-prototype.mjs"
+  },
+  {
+    "profile": "design",
+    "path": ".agents/skills/yss-prototype-stage/tests/shadcn-vue.test.mjs"
+  },
+  {
+    "profile": "design",
+    "path": ".agents/skills/yss-prototype-stage/references/business-patterns.md"
+  },
+  {
+    "profile": "frontend",
+    "path": ".agents/skills/yss-prototype-stage/scripts/build-shadcn-vue-prototype.mjs"
+  },
+  {
+    "profile": "frontend",
+    "path": ".agents/skills/yss-prototype-stage/tests/shadcn-vue.test.mjs"
+  },
+  {
+    "profile": "frontend",
+    "path": ".agents/skills/yss-prototype-stage/references/business-patterns.md"
+  }
+]

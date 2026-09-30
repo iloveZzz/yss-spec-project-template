@@ -1,0 +1,29 @@
+{
+  "schema_version": 4,
+  "feature": "list-detail-fixture",
+  "pattern": "workbench",
+  "prototype_profile": "H2",
+  "profile_kind": "flow-review",
+  "component_basis": "html-css-js",
+  "runtime_build_required": false,
+  "entry": "index.html",
+  "design_source": {
+    "path": "DESIGN.md",
+    "digest": "sha256:e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+  },
+  "token_source": {
+    "path": ".template-spec/design/tokens/variables.css",
+    "digest": "sha256:028c24f9e935f5c4b1392d131a4cd13482e6572a2ced4360ffa833aa3fbeaf66"
+  },
+  "input_sources": {
+    "fixture/brief.md": "sha256:7e1837f1fa6b6e81a5f80a0649f0fcaf6ff2298e0e289d5d6499eaea9672466f",
+    "fixture/data.json": "sha256:02fffe1ab4682ea87448a173d86057021802ccfcbc38fe28558d6396a660feb6",
+    "CONTEXT.md": "sha256:a27ab85f4c733a609948fba4bc5dafa074453ae16d32ceebc773d12fdbffe6b7",
+    ".template-spec/design/tokens/tokens.default.json": "sha256:4e6446ee85195e3a75676a763cb8be2c625dc86b2b0676cbc8b45b2221135a71"
+  },
+  "fixture_only": true,
+  "delivery_contract": "offline-html-v1",
+  "browser_verification": "not-run",
+  "user_confirmation": "not-requested",
+  "files": {}
+}

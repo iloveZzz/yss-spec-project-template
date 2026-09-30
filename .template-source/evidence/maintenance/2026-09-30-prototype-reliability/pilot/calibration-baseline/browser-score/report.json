@@ -1,0 +1,22 @@
+{
+  "scope": "diagnostic rerun with visible alert locator; no Agent restart or artifact repairs",
+  "task": "calibration",
+  "completed": true,
+  "results": [
+    {
+      "width": 1440,
+      "status": "passed",
+      "automated_scope": "query-detail-edit-failure-retry-reset"
+    },
+    {
+      "width": 390,
+      "status": "passed",
+      "automated_scope": "query-detail-edit-failure-retry-reset"
+    }
+  ],
+  "checks": {
+    "layout": 2,
+    "behavior": 2
+  },
+  "errors": []
+}

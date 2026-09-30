@@ -1,0 +1,13 @@
+[
+  {
+    "id": "release-without-final-verification",
+    "command": [
+      "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+      "scripts/verify-maintenance-checkpoint",
+      ".template-source/evidence/maintenance/2026-09-30-flow-hardening/counterexamples-frozen/release-semantics.input.json"
+    ],
+    "exit_code": 1,
+    "stdout": "",
+    "stderr": "模板维护 checkpoint 验证失败: release-ready 缺少 final-release-verification 证据\n"
+  }
+]

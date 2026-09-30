@@ -1,0 +1,63 @@
+{
+  "schema_version": 4,
+  "feature": "shadcn",
+  "pattern": "workbench",
+  "prototype_profile": "H2",
+  "profile_kind": "flow-review",
+  "component_basis": "react-shadcn-prebuilt",
+  "runtime_build_required": false,
+  "entry": "index.html",
+  "design_source": {
+    "path": "DESIGN.md",
+    "digest": "sha256:e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+  },
+  "token_source": {
+    "path": ".template-spec/design/tokens/variables.css",
+    "digest": "sha256:028c24f9e935f5c4b1392d131a4cd13482e6572a2ced4360ffa833aa3fbeaf66"
+  },
+  "files": {
+    "app.js": "sha256:d5956a560c96cbe2f221d7e59723b748a985dc88cd933cf3b2f6d70825ffee44",
+    "authoring-source.tsx": "sha256:c29f45085765441cb9dfb5bf90d249701970e10128aef9d3500f59a3e4f69399",
+    "build-provenance.json": "sha256:cdd5e5972c99ef019af3b6ca283ca41638584dc81f058ea7ae82636e1186dcfc",
+    "component-sources/badge.tsx": "sha256:13a9380dfff853ee730c14a52df49f22aecd31f40f2998d7c1e7ec458b6e1650",
+    "component-sources/button.tsx": "sha256:79dd6f75f8136394442202d6b8b922fb269eaad0a5dba579397c9d5b41f893bb",
+    "component-sources/cn.ts": "sha256:64fc84c1be627f0d586fb4ba64d824a1604f44282381f5bae68cdf86e10bb6ec",
+    "component-sources/dialog.tsx": "sha256:2ade6074e5fad0a4eb171ead44c43d3301a3c83d186d7236fb1fdbea80ee556b",
+    "component-sources/input.tsx": "sha256:0c9457181f6ddc80969bcf854e92c362903a55b6e889fbef3fd85343ecc4af5b",
+    "component-sources/label.tsx": "sha256:344bde38b8531615dbf8e14af3895517c24d8ef6ce56ddeda7e2e6fe4b5d0c00",
+    "component-sources/select.tsx": "sha256:962830436bd0b7ee50e556f0747e277d6a86869ed27d167516346b15f26309d8",
+    "component-sources/table.tsx": "sha256:bd1a9fc83a5a2149e504038e274bb7e5a0351af59f6896df52ac4d5b439695ac",
+    "index.html": "sha256:ed99c48baaed266aa1b17c0b3fa7ec0dde649621817ce001ccd9101d037b1cac",
+    "registry-manifest.json": "sha256:c01261c36f97900349715b12115f466d7ff9eb4e3539c07a77c565da3eca92a4",
+    "scenarios.js": "sha256:f7630942f3e313269a48783d5b5216a6f4dc0131c27f12712aa309b070546990",
+    "styles.css": "sha256:1a3f2a40a7db5945899b743e4af0d5d925bb9f78935ad4241e4578d15466c5ce",
+    "THIRD-PARTY-NOTICES.txt": "sha256:82468b078e17a58d39f0504aec0ea8310ae99416c3de163528f11f2795f7ca4d",
+    "token-theme.css": "sha256:1a3d1df814b0ef1f905832b9a765a4bfcbe93b9fcff3818df1d48f92bade5e3e",
+    "tokens.css": "sha256:028c24f9e935f5c4b1392d131a4cd13482e6572a2ced4360ffa833aa3fbeaf66"
+  },
+  "build_provenance": {
+    "packages": {
+      "react": "19.3.0",
+      "react-dom": "19.3.0",
+      "radix-ui": "1.6.7",
+      "lucide-react": "1.48.0",
+      "class-variance-authority": "0.7.1",
+      "clsx": "2.1.1",
+      "tailwind-merge": "3.7.0",
+      "esbuild": "0.28.2",
+      "tailwindcss": "4.3.3",
+      "@tailwindcss/cli": "4.3.3"
+    },
+    "lock_digest": "sha256:a2e23d45b83fe160dc48d87fadf1a07960056b61af4d011b81d9e60297f63b80",
+    "source_digest": "sha256:c29f45085765441cb9dfb5bf90d249701970e10128aef9d3500f59a3e4f69399",
+    "theme_digest": "sha256:1a3d1df814b0ef1f905832b9a765a4bfcbe93b9fcff3818df1d48f92bade5e3e",
+    "registry_digest": "sha256:c01261c36f97900349715b12115f466d7ff9eb4e3539c07a77c565da3eca92a4",
+    "registry_revision": "db2db460a26fa84fb65c8d903b213925fbdee9ed",
+    "support_source_digests": {
+      "cn.ts": "sha256:64fc84c1be627f0d586fb4ba64d824a1604f44282381f5bae68cdf86e10bb6ec"
+    },
+    "format": "iife",
+    "browser_runtime": "react",
+    "toolchain_required_by_recipient": false
+  }
+}

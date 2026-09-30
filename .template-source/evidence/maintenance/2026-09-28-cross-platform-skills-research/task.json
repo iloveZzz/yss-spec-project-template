@@ -1,0 +1,165 @@
+{
+  "schema_version": 1,
+  "role_id": "role.requirements-manager",
+  "skill_source": {
+    "registry_ref": ".template-spec/agents/digital-human-roles.yaml",
+    "defaults_ref": "taskPackageDefaults(role.requirements-manager)",
+    "core_skills": [
+      "grilling",
+      "domain-modeling",
+      "yss-research",
+      "competitive-intelligence"
+    ],
+    "forbidden_skills": [
+      "yss-ui",
+      "yss-domain",
+      "yss-web-controller",
+      "yss-repository",
+      "yss-ddd-scaffold-generator",
+      "yss-layered-mvc-scaffold-generator",
+      "yss-frontend-scaffold-generator",
+      "implement",
+      "tdd"
+    ]
+  },
+  "task_id": "cross-platform-skills-research-20260928",
+  "work_unit_id": "work-unit.maintenance-research",
+  "actor_id": "root.research-owner",
+  "runtime_id": "runtime.generic",
+  "execution_state": "Drafter",
+  "workflow_status": "resolved",
+  "contract": {
+    "kind": "template-maintenance",
+    "contract_id": "cross-platform-skills-research-20260928",
+    "contract_version": 1,
+    "status": "issued",
+    "contract_ref": ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/research-scope.md",
+    "maintenance_ref": ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/checkpoint.json"
+  },
+  "inputs": [
+    "yss-project.yaml",
+    "CONTEXT.md",
+    ".agents/skills/yss-research/SKILL.md",
+    ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/research-scope.md"
+  ],
+  "objective": "基于一手规范和当前仓库证据形成跨平台 Skills 差距分析，不实施调整或授予批准。",
+  "allowed_write_paths": [
+    ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research"
+  ],
+  "forbidden_actions": [
+    "修改 Skill、锁、投影、注册表或产品资产",
+    "提交、推送、发布",
+    "将静态或历史证据作为当前运行时通过"
+  ],
+  "expected_outputs": [
+    ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/skills-research-brief.md",
+    ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/skills-evidence.yaml"
+  ],
+  "expected_evidence_files": [
+    ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/skills-evidence.yaml"
+  ],
+  "verification_commands": [
+    "node .agents/skills/yss-research/scripts/validate-research-package.mjs .template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/skills-research-brief.md .template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/skills-evidence.yaml"
+  ],
+  "verification_results": [
+    {
+      "command": "node .agents/skills/yss-research/scripts/validate-research-package.mjs .template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/skills-research-brief.md .template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/skills-evidence.yaml",
+      "exit_code": 0,
+      "executed_at": "2026-09-28T15:18:19.742Z",
+      "evidence_ref": ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/verification/verification.json",
+      "stdout_ref": ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/verification/stdout.log",
+      "stderr_ref": ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/verification/stderr.log"
+    }
+  ],
+  "downstream_consumers": [
+    "模板维护者",
+    "yss-product-lifecycle",
+    "maintaining-skills"
+  ],
+  "convergence": {
+    "parent_work_unit": "work-unit.maintenance-research",
+    "convergence_ref": ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/research-scope.md",
+    "conflict_escalation": "回交主控，缩窄来源不支持的结论"
+  },
+  "result": {
+    "result_schema": "workflow-execution-result-v1",
+    "work_unit": "work-unit.maintenance-research",
+    "workflow_reference": ".template-spec/process/research-completion.md",
+    "result": "completed",
+    "skill": "yss-research",
+    "changed_files": [
+      ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/audit-inventory.py",
+      ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/checkpoint.json",
+      ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/checks.json",
+      ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/fast-attempt1.json",
+      ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/fast-final/logs/0.stderr",
+      ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/fast-final/logs/0.stdout",
+      ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/fast-final/logs/1.stderr",
+      ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/fast-final/logs/1.stdout",
+      ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/fast-final/logs/2.stderr",
+      ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/fast-final/logs/2.stdout",
+      ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/fast-final/logs/3.stderr",
+      ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/fast-final/logs/3.stdout",
+      ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/fast-final/logs/4.stderr",
+      ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/fast-final/logs/4.stdout",
+      ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/fast-final/logs/post-5.stderr",
+      ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/fast-final/logs/post-5.stdout",
+      ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/fast-final/logs/post-6.stderr",
+      ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/fast-final/logs/post-6.stdout",
+      ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/fast-final/logs/post-7.stderr",
+      ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/fast-final/logs/post-7.stdout",
+      ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/fast-final/report.json",
+      ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/fast-verification-summary.json",
+      ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/inventory.json",
+      ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/official-source-fingerprints.json",
+      ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/research-result.json",
+      ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/research-scope.md",
+      ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/self-check.json",
+      ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/session-observation.md",
+      ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/skills-evidence.yaml",
+      ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/skills-research-brief.md",
+      ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/sync-profile-skills.txt",
+      ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/sync-skills.txt",
+      ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/task.json",
+      ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/update-skill-lock.txt",
+      ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/verification/stderr.log",
+      ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/verification/stdout.log",
+      ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/verification/verification.json",
+      ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/verify-skill-governance.txt",
+      ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/verify-skill-registry.txt",
+      ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/verify-template-fast-attempt1.txt",
+      ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/verify-template-fast-final.txt"
+    ],
+    "changed_artifacts": [
+      ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/skills-research-brief.md",
+      ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/skills-evidence.yaml"
+    ],
+    "evidence_refs": [
+      ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/research-scope.md",
+      ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/skills-research-brief.md",
+      ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/skills-evidence.yaml",
+      ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/inventory.json",
+      ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/checks.json",
+      ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/verification/verification.json",
+      ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/self-check.json",
+      ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/fast-attempt1.json",
+      ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/fast-verification-summary.json"
+    ],
+    "context_reconciliation": {
+      "status": "not-applicable",
+      "ref": ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/research-scope.md",
+      "reason": "template-source维护研究，已消费根CONTEXT；无业务术语或产品批准/流转。"
+    },
+    "research_verification": {
+      "ref": ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/verification/verification.json",
+      "digest": "sha256:dcb3b6d6eb50fb5e18b3b3383975cc99aed1b189f362b484456cff2890993a9c"
+    },
+    "deferred_seams": [],
+    "drift": [],
+    "violation": [],
+    "new_impacts": [],
+    "stale_candidates": [],
+    "blocking_signals": [],
+    "next_route": null
+  }
+}

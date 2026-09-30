@@ -1,0 +1,8 @@
+{
+  "result": "changed",
+  "files": 4234,
+  "changed": [
+    "template.snapshot.json"
+  ],
+  "method": "repeat supported sync-template and compare exact snapshot/blob bytes"
+}

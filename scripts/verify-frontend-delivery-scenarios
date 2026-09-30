@@ -62,6 +62,12 @@ test('战略与后端交付联合接收：便携、真实服务、拒绝不完�
   [source,backend,frontend].forEach(root=>mkdirSync(root,{recursive:true}));
   if(backendTools)cpSync(backendTools,backend,{recursive:true});
   if(frontendTools)cpSync(frontendTools,frontend,{recursive:true});
+  // This scenario explicitly models a historical v4 handoff / v2 Slice project.
+  // Do not inherit the opt-in version of a freshly generated project into it.
+  for(const root of [backend,frontend]) {
+    const tracker=path.join(root,'.template-spec/agents/issue-tracker.md');
+    if(existsSync(tracker))writeFileSync(tracker,readFileSync(tracker,'utf8').replace(/^\s*business_ticket_version: 1\r?\n/m,''));
+  }
   const f=await fixture(source,{handoffVersion:4});
   await t.test('旧 Spec 摘要阻断战略交付，恢复源字节后可继续',async()=>{
     const specRef=path.join(source,'source/spec.md'), original=readFileSync(specRef);

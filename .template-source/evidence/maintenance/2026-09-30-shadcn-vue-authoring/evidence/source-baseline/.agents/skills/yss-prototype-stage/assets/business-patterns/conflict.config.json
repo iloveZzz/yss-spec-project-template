@@ -1,0 +1,6 @@
+{
+  "schema_version": 1,
+  "title": "冲突与恢复",
+  "entry": "conflict.tsx",
+  "scenarios": "conflict.scenarios.json"
+}

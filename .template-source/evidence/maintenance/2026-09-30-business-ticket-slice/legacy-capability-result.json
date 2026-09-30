@@ -1,0 +1,14 @@
+{
+  "old_profile_revision": "77dcb2e4a1c69b28e42f1fe94dc932a9a469163a",
+  "old_tool_command": [
+    "node",
+    "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-delivery-rc5sezwi/previous-design-tool/scripts/strategic-handoff",
+    "verify",
+    "--bundle",
+    "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-delivery-rc5sezwi/capability-package"
+  ],
+  "exit_code": 1,
+  "rejection": "{\"result\":\"blocked\",\"error\":\"接收工具不支持源用户决定策略，请升级工具后验包\"}\n",
+  "new_package_export": "passed",
+  "input_type": "synthetic-fixture"
+}

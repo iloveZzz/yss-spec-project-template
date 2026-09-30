@@ -26,17 +26,17 @@ description: Use when a YSS feature has product-design impact on a primary flow,
 
 ## 执行顺序
 
-1. 形成交互说明、低保真与状态矩阵；状态至少包含事件、转换、guard、动作与可退出路径。
+1. 形成简短设计输入（用户任务、保持项、可调整项、状态与适用 Token），再整理内容优先级、长度变化、数据来源和动作结果。形成交互说明、低保真与状态矩阵；状态至少包含事件、转换、guard、动作与可退出路径。信息架构或交互不确定时，先按 [方案比较方法](references/concept-comparison.md) 比较三个候选并取得用户选择，再进入低保真评审。
 2. 完成独立 `prototype-review`，提取仍需由原型回答的风险。
-3. 计算并记录 `prototype_profile`。新视觉方向或信息架构不确定时比较三个候选方案并由用户选择；可用低保真或 HTML 比较，图片 ideation 按需使用。已有规范和页面模式足够时记录 `not-applicable`、规范依据与理由。
-4. H1 使用 `prototype-contract.mjs prepare-static`；H2 默认使用 `prepare-flow`，条件真实组件路线使用 `build-antd-prototype.mjs`。二者都交付 `index.html` 与本地 CSS/JS/资源。按 `references/product-design-adapter.md` 完成场景、离线复验和 `seal-project`，不把 starter 示例当作业务验收。
+3. 计算并记录 `prototype_profile`。仅视觉方向仍未确定时比较三个高保真候选并由用户选择，保持已评审行为；已解决的问题不重复探索。已有规范和页面模式足够时记录 `not-applicable`、规范依据与理由。发现行为变化，返回受影响的低保真评审。
+4. 高保真 H1/H2 优先使用 `build-shadcn-vue-prototype.mjs --profile H1|H2`（Vue 3 + shadcn-vue）；React 作者路线已退役，旧包仅显式 legacy 只读校验；轻量原生路线分别使用 `prototype-contract.mjs prepare-static` / `prepare-flow`。二者都交付 `index.html` 与本地 CSS/JS/资源。按 `references/product-design-adapter.md` 完成场景、离线复验和 `seal-project`，不把 starter 示例当作业务验收。
 5. 自动采集版本、digest、视口、截图、console 与扫描结果。截图按 `route + page + state + viewport + theme + locale + data_scenario` 写入 `Visual Baseline Bundle`，执行 `visual-baseline-contract.mjs seal` 后由 feature 级 schema v4 `prototype-evidence.yaml` 引用；人工只补决策、风险、允许差异和用户确认。
-6. 以统一六轴 Design QA 和档位验证矩阵完成浏览器/无障碍验证。用户确认后才可校准 Spec、分析 API 影响或进入 实现合同编译器 readiness。
+6. 完整构建后集中检查桌面/窄屏，统一修整并复验受影响场景；对明确的保持项与原页面做同视口、同状态的前后核对，不能仅凭操作仍可用判定布局已保持，窄屏适配也不得扩大本次变更范围；迭代预算耗尽仍有关键缺陷时保留阻塞，不以轮次数代替通过。以统一六轴 Design QA 和档位验证矩阵完成浏览器/无障碍验证。用户确认后才可校准 Spec、分析 API 影响或进入 实现合同编译器 readiness。
 
 ## 档位边界
 
-- H1 `visual-review`：浏览器可复验的 HTML/CSS/少量 JS 或设计工具导出；不得要求 `package.json`、lockfile、Node 或 AntD CLI。
-- H2 `flow-review`：默认使用 `html-css-js`，主流程与关键异常状态可操作；场景可重复触发并重置。制作阶段允许必要工具，接收者无需安装 Node 或组件库，也不依赖网络。复杂控件只模拟当前决策需要的行为；简化会改变关键结论时，按 AntD 集成说明选择预构建真实控件；仍无法支撑的部分列为 gap 并回到设计澄清。
+- H1 `visual-review`：浏览器可复验的 HTML/CSS/少量 JS 或设计工具导出；不得要求接收者安装 `package.json`、lockfile、Node 或组件 CLI。
+- H2 `flow-review`：新高保真优先使用 `vue-shadcn-prebuilt`（`react-shadcn-prebuilt` 仅历史只读），轻量路线使用 `html-css-js`，主流程与关键异常状态可操作；场景可重复触发并重置。制作阶段允许必要工具，接收者无需安装 Node 或组件库，也不依赖网络。复杂控件只模拟当前决策需要的行为；简化会改变关键结论时，按 shadcn 集成说明补齐组件行为；仍无法支撑的部分列为 gap 并回到设计澄清。
 - 原型代码默认 throwaway；可复用的是项目 Token、组件语义映射、状态、测试场景和验收标准。任何源码进入生产仍需 实现合同编译器、Slice Contract 和 TDD。
 - 原型阶段不得调用 `yss-ui`，不得读取生产组件 API 来制造“真实组件原型”。需要核验真实 YSS/AntDV 组件的事项写入 `implementation_handoff`，由前端实现计划、已批准切片的实现和实现还原验证负责。
 
@@ -51,6 +51,17 @@ Design QA 合并 visual、layout、interaction、content、accessibility、cross
 `check.prototype-reviewed` 和 `check.prototype-verified` 是 `gate.product-design-approved` 的内部检查；独立评审和验证通过后，按生命周期用户决定协议核验当前范围。已有明确授权且决定依据不变时用 `continuation_ref` 延续；新的业务体验取舍、范围或重要风险仍由用户确认。档位选择属于验证输入，不单独请求批准，也不授权实现。
 
 ## 按需读取
+
+- 搜索选择或纯日期区间任务：读 [搜索与日期配方](references/search-date-patterns.md)；验证时读 [统一入口](references/prototype-verification.md)。
+- 新流程、陌生角色或复杂恢复仍有可用性疑问：读 [条件式用户研究](references/usability-research.md)，把待验证问题转为可观察任务。
+
+- 新企业高保真默认使用 [应用壳与多页工作区](references/enterprise-workspace.md)：登记真实导航页面，切换保留草稿，关闭按 dirty 状态确认，场景重置全量清空；既有批准页面仍遵守保持项。
+
+- 选择或接入高保真组件时，按 [任务→页面组合→组件配方](references/component-recipes.md) 读取适用条件、依赖、状态、键盘、焦点和窄屏规则；只用已登记组件，不自动覆盖 preset。
+
+- 新高保真页面默认选择根规范的紧凑变体；既有页面保持当前密度，详见 `yss-design-system/references/prototype-default-theme.md` 与 [Vue 组件集成](references/shadcn-vue-integration.md)。
+- 完整任务模式与低保真演练：按需读取 [业务模式](references/business-patterns.md)、[低保真演练](references/low-fidelity-exercise.md)；不替换已确认页面的保持项。
+- 内容规划、信息架构/交互或视觉候选比较：[concept-comparison.md](references/concept-comparison.md)；需要离线切换候选时读 [comparison-tool.md](references/comparison-tool.md)。
 
 - 档位、上游融合与迁移：[prototype-profile-routing.md](references/prototype-profile-routing.md)
 - 离线渲染适配与命令：[product-design-adapter.md](references/product-design-adapter.md)
@@ -70,6 +81,14 @@ Design QA 合并 visual、layout、interaction、content、accessibility、cross
 
 确认 UI、交互、状态和权限体验均无改动的跨仓既有工程，读取 [既有 UI 分支](references/existing-ui-entry.md)，使用 existing-ui-baseline v1 和当前真实用户确认。任何 UI 改动回到上面的原型流程；输入核验不授予实现权限。
 
-## AntD 组件补充
+## 高保真组件路线
 
-消费 [组件集成说明](references/antd-integration.md) 与 [组件索引](references/antd-component-catalog.json)：默认原生 HTML，复杂交互确实影响评审结论时记录理由并选 `react-antd-prebuilt`。`--pattern workbench` 提供查询列表、详情、编辑和失败恢复 starter；真实 AntD 在独立作者目录按固定 lock 预构建，交付包仍离线运行、接收者无需 Node。两条路线统一根 DESIGN.md、六轴 QA、场景重置及当前用户确认，不恢复 Provider 技能、不证明生产 YSS 组件兼容。
+新页面优先 [shadcn-vue + Vue 3](references/shadcn-vue-integration.md)，真实 Select、菜单、Sheet 等承担产品交互；不能只给原生控件套主题就称组件化。按任务借鉴 Blocks 的组合，保持项目 Token 与已评审行为。React 作者依赖与生成入口已移除；[历史包](references/shadcn-integration.md)只读保留，原生 HTML 用于轻量修改或明确例外；不混用两套组件 API。生产 Vue/YSS 合同不变。
+
+## 业务草案校准
+
+按 `.template-spec/process/business-tickets.md` 执行 Spec 业务草案、Design 校准与业务正式化。业务票放在 `business-tickets/`，集合引用进入 Spec / map / checkpoint；业务票不授予实现资格。实现票仍在 `issues/`，受工程准备、当前 Slice 合同批准和完整就绪检查约束。 Design 按页面、状态及失败恢复路径校准现有业务 Ticket，保持稳定 ID。等义细化核验既有授权延续；范围、规则或验收变化返回战略决定。原型完成后回交业务正式化，不直接请求实现仓库。
+
+## 浏览器与草稿生命周期
+
+本地自动化浏览器使用 [临时会话模块](scripts/browser-session.mjs)，用法及中断边界见 [资源生命周期](references/resource-lifecycle.md)。配置目录放系统临时目录，正式截图和详细报告仍写原证据路径；摘要默认标准输出，仅在明确指定路径时保存。未正式化草稿使用临时工作区；已被批准、验证或交接引用的文件按正式资产保留。

@@ -5,6 +5,7 @@
   "historical_sha256": "5aa3194ec5b8d781a7705b049359644c3f18e09c33b9383d19675c5d0e2ab9bc",
   "published_ids": [
     "artifact.architecture-review",
+    "artifact.business-ticket-set",
     "artifact.data-architecture",
     "artifact.discovery-record",
     "artifact.domain-strategy",
@@ -108,6 +109,7 @@
     "stage.vertical-slice-implementation",
     "work-unit.attach-sync-integration",
     "work-unit.backend-delivery",
+    "work-unit.business-ticket-formalization",
     "work-unit.code-review",
     "work-unit.discovery-opportunity",
     "work-unit.discovery-requirements",
@@ -147,6 +149,7 @@
   },
   "semantic_sha256_by_id": {
     "artifact.architecture-review": "55e32428ee07475ac57f91f53f410dcf182ddaa3aa56187e8f4ba56968142e08",
+    "artifact.business-ticket-set": "662bb45eddfa31e9ec72ea44c4fd59559c0941e09992edd61ebc9f02bdafd2c3",
     "artifact.data-architecture": "6ed995295f4e99f953d90d739e9a6d1fc36cc0a50757ec34da39165872ca8731",
     "artifact.domain-strategy": "3eb281af20f0106d836ec2816f0e524754f4f49e24abc2deb1c0daed1d9a918d",
     "artifact.engineering-baseline": "0706c5d26e062fe33324e2cedaf50887cb4618770dddb1802d4f8cf80dfbb330",
@@ -229,6 +232,7 @@
     "stage.vertical-slice-implementation": "a24a5a6e2d5a6ccf0561f43818883cd285a42e209a4f47509b6f18e7ced68344",
     "work-unit.attach-sync-integration": "b57d0324e98146e834ba04e05c364b3cb107753ea2f31ae22560932c1dc3c0d9",
     "work-unit.backend-delivery": "7d800c190102c66b782179c1985d0f470b47b940549d90eb3103aee02acb0230",
+    "work-unit.business-ticket-formalization": "88a8283c96a03d45fb6a805c6300f0def6019aad57759b654b173867e28c1f82",
     "work-unit.code-review": "40371458e91f90995f87c2a15f09117b0971d16baf6471089a20a215020acb01",
     "work-unit.domain-strategy-design": "748a901446f94c6b5226266e0e21d700e46629826c141bc9527c32619f563b4a",
     "work-unit.entry-triage": "4735f7b335ce72b602890aab470ef1dfc40f574802bc236db8fc18976da81fed",
@@ -236,20 +240,20 @@
     "work-unit.implementation-repository-preparation": "c2f930ed2f5bb76214fa520d967eca47a44f003894ed971479ab0ced77b9007f",
     "work-unit.intensity-aware-review-v2": "be0c488ff39c192c8724395ee224844c9f68cddb749c6335255e226759103e59",
     "work-unit.intensity-aware-verification-v2": "3747058bc5574521bd8317c62d4684867de8a27a21e3471e42dcb9f226e05524",
+    "work-unit.maintenance-research": "ee03d6217e4225b453fe9a7f55718c3403769aa3b3993c28e8aedc6c6a3febec",
     "work-unit.plan-opportunity": "3953e4b05794038237c698bfd7233a90d4bd0ea904c22718f399ad6dc00dbfb3",
     "work-unit.plan-requirements": "ce9a5d6b59d501c09851e60426294c5ad47dd2ae6b4019b867d80a162bb213d2",
-    "work-unit.prototype-design-v2": "f40355b838f3a2926513ac42f44e2eb5e854a3e28f9d8f83fd1f0e5c9ca44293",
+    "work-unit.prototype-design-v2": "5389f7dd306998cc463f91d4c4f97644b15ff37388397bc82d4ce37e2bb284bd",
     "work-unit.release-and-retrospective": "a87cdd47918a249629f7cdc9874420b441bd64c28860dc3910ca217be7ebaad6",
     "work-unit.release-and-rollback": "2c26da7b1133a588e1d098a91aad399c270dab12224c3b1c12a4c79e99da5905",
     "work-unit.service-project-initialization": "a2142c0555f1ba54e888e9daa21ee36cfaead8444eb8255003031bb22cf5636b",
     "work-unit.skill-projection-sync": "da8bb5f347cc01d56bd85e9eecdaf1c2a33584ed040239672b2e6cf973f4dd6a",
     "work-unit.slice-implementation": "c33b625587d636afa47142862df003d704f82b4ee4e8f79f5bf6a6c3747fcee4",
-    "work-unit.spec-synthesis": "ce6c6d556dec93517ac525be6bbf59f4e0962f0882378b785b84db75b41a0527",
+    "work-unit.spec-synthesis": "e31e02b837fc8eaf36b376794c02663ac19a8224946213733bac7b4d801fc9ac",
     "work-unit.ssot-update": "f52e42205478e19529746af16aa75f863d2a238f481cebb157192bdf928ca27f",
     "work-unit.stage-decision": "9a43c029438849337d1ddead2b4f0ca1d1c3482c279265e2b1db3088cbff6048",
-    "work-unit.technical-analysis": "57bb8cab7b0ef2eff43d848914bdd9297ec582570d11c0639dda3227a383726a",
+    "work-unit.technical-analysis": "665c362d0c6a53bbfee1fd8505a410dbb427eb73b099842630b39f9b2dfdf2d6",
     "work-unit.template-snapshot-build": "48463092d1c644f5a5fc4f1c188ba662d7984085b8b04b1fbff450ef8c682939",
-    "work-unit.ticket-decomposition": "d239bd6855ea3cc8d448892af8bff62f5531499774eed58761288374b4c3d2cc",
-    "work-unit.maintenance-research": "ee03d6217e4225b453fe9a7f55718c3403769aa3b3993c28e8aedc6c6a3febec"
+    "work-unit.ticket-decomposition": "ba60f023386e394a82283dd54eff5b8cfa88b7c52a395f04975d670811a8662f"
   }
 }

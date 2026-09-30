@@ -17,6 +17,56 @@ function compilerContract() {
   return parseDocument(source, { maxAliasCount: 0, uniqueKeys: true }).toJS({ maxAliasCount: 0 });
 }
 
+function metadataSource(data, overrides = {}) {
+  return (id) => {
+    if (Object.hasOwn(overrides, id)) return overrides[id];
+    const skill = data.skills.find((item) => item.id === id);
+    const mode = data.invocation_contract.overrides[id]?.invocation_mode
+      ?? data.invocation_contract.layer_defaults[skill.layer].invocation_mode;
+    return mode === 'user' ? 'policy:\n  allow_implicit_invocation: false\n' : null;
+  };
+}
+
+test('opted-in runtime policy rejects implicit selection for an explicit entry', () => {
+  const data = registry();
+  data.invocation_contract.runtime_metadata_version = 1;
+  assert.throws(() => validateSkillRegistry(data, {
+    skillMetadata: metadataSource(data, { 'to-spec': 'policy:\n  allow_implicit_invocation: true\n' }),
+  }), /to-spec.*allow_implicit_invocation/);
+});
+
+test('opted-in runtime policy requires explicit false instead of missing metadata', () => {
+  const data = registry();
+  data.invocation_contract.runtime_metadata_version = 1;
+  assert.throws(() => validateSkillRegistry(data, {
+    skillMetadata: metadataSource(data, { 'to-spec': null }),
+  }), /to-spec.*allow_implicit_invocation/);
+});
+
+test('runtime policy rejects non-boolean metadata and accidental suppression of model entries', () => {
+  const data = registry();
+  data.invocation_contract.runtime_metadata_version = 1;
+  for (const value of ['"false"', 'null', '[]', 'false']) {
+    assert.throws(() => validateSkillRegistry(data, {
+      skillMetadata: metadataSource(data, { tdd: `policy:\n  allow_implicit_invocation: ${value}\n` }),
+    }), /tdd.*allow_implicit_invocation/);
+  }
+});
+
+test('runtime metadata policy is additive for existing registries and accepts host default true', () => {
+  const data = registry();
+  delete data.invocation_contract.runtime_metadata_version;
+  assert.doesNotThrow(() => validateSkillRegistry(data, { skillMetadata: () => null }));
+  data.invocation_contract.runtime_metadata_version = 1;
+  assert.doesNotThrow(() => validateSkillRegistry(data, { skillMetadata: metadataSource(data) }));
+});
+
+test('unknown runtime metadata policy versions fail closed', () => {
+  const data = registry();
+  data.invocation_contract.runtime_metadata_version = 999;
+  assert.throws(() => validateSkillRegistry(data), /runtime_metadata_version/);
+});
+
 test("unknown layer is rejected", () => {
   const data = registry();
   data.skills = data.skills.map((skill) => skill.id === "tdd" ? { ...skill, layer: "misc" } : skill);
@@ -330,4 +380,20 @@ test("frontend conditional routes require registered skills", () => {
   assert.throws(() => validateSkillRegistry(data, {
     lifecycleContract: { work_unit_routes: { "work-unit.slice-implementation": route } }
   }), /前端条件路由引用了未登记技能/);
+});
+
+
+test('Pi invocation metadata rejects missing restrictions and non-boolean flags in all profiles', async () => {
+  for (const prefix of ['', 'submodules/yss-harness-backend-agent/', 'submodules/yss-harness-design-agent/', 'submodules/yss-harness-frontend-agent/']) {
+    const module = await import(path.join(ROOT, prefix, 'scripts/lib/skill-registry.mjs'));
+    const data = module.loadSkillRegistry();
+    const source = (id) => readFileSync(path.join(ROOT, prefix, '.agents/skills', id, 'SKILL.md'), 'utf8');
+    assert.doesNotThrow(() => module.validateSkillRegistry(data, { skillMetadata: metadataSource(data), skillSource: source }));
+    for (const value of ['false', '"true"', 'null']) {
+      assert.throws(() => module.validateSkillRegistry(data, {
+        skillMetadata: metadataSource(data),
+        skillSource: (id) => id === 'handoff' ? source(id).replace('disable-model-invocation: true', `disable-model-invocation: ${value}`) : source(id),
+      }), /handoff.*disable-model-invocation/);
+    }
+  }
 });

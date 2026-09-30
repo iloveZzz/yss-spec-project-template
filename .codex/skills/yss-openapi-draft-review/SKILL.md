@@ -20,16 +20,7 @@ Use this skill after OpenAPI Draft creation and before Engineering Baseline / YS
 
 ## Review Flow
 
-1. Recompute the Draft SHA-256 and verify `<feature>-validation.yaml`. The record must bind a pnpm-lockfile-pinned Redocly version, the exact lint command, exit code, execution time and readable evidence; its structural checks and lint must all pass. Custom parser evidence may supplement this record but cannot replace locked Redocly lint.
-2. Build a P0 traceability matrix from Spec functional requirements and interaction actions to OpenAPI paths, schemas, errors, and contract tests. Each UI action must map to a stable `operationId` and `x-yss-action-key` or an equivalent traceability entry. For P0 write/configuration models and read models that affect a key interaction, trace the exact property path, type/nesting, operation-specific requiredness, nullable/default/enum/format rules, source locator and error/test seam.
-3. Check page action coverage: every action has `actionKey`, endpoint or explicit non-goal, state transition, idempotency/concurrency rule, and error codes. When the Spec explicitly changes authentication or authorization behavior, trace that behavior through the same matrix.
-4. Check object lifecycle coverage: manage/maintain/configure/create/update/archive/retry/cancel/publish/export/create-draft semantics have endpoints or explicit scope downgrades.
-   When create/update or other lifecycle operations share one schema, verify that omission and requiredness semantics match for every operation; otherwise require split schemas or an explicit conditional contract. For credentials, distinguish create, update, masked readback, omit-to-preserve and explicit-clear behavior instead of imposing a universal required rule.
-5. Check YSS API baseline: REST shape, `x-yss-response-wrapper` values `SingleResult|MultiResult|PageResult`, `YssResultMeta` plus `allOf` concrete schemas, and stable DTO/schema names. The Java generic notation is a review shorthand only; it must not appear as an OpenAPI type or `$ref`.
-6. Check DTO wire shape against the profile: `success` is boolean, `dataType` is `string|null`, `code` is only `string|integer|null`, list/page `data` is an array, and single `data` points to the endpoint schema with explicit nullability. Check response/request direction separately.
-7. Check pagination input: only `pageIndex/pageSize/orderBy/orderDirection/groupBy` are client fields; `orderDirection` is `ASC|DESC`; `orderBy` / `groupBy` use endpoint whitelists; `offset`, `needTotalCount`, and `tempTotalCount` are negative assertions. `totalPages` is mapper-dependent and cannot enter a shared schema without fresh wire evidence.
-8. Check error contracts: field-level errors, model-level errors, disabled reasons, gate failures, and conflict responses. When the Spec explicitly changes authentication or authorization behavior, include its `401` / `403` and resource-filtering semantics here.
-9. Output a persistent review artifact under `docs/.scratch/<feature>/architecture/` or update the existing one.
+开始语义审查时读取 [P0 追踪与审查步骤](references/semantic-review.md)，逐项覆盖当前 Spec / UI 命中的字段、操作、错误和测试 seam。当前 SHA 与锁定 lint 证据通过后才可能得出 Approved。
 
 ## Automation Boundary
 
@@ -58,42 +49,4 @@ Block if any of these are true:
 
 ## Output Contract
 
-```markdown
-### Review Result
-<Approved / Blocked>
-
-### Structural Validation
-<Passed / Blocked; validation record, Draft SHA-256, locked Redocly version, command and evidence>
-
-### Semantic Review
-<Passed / Blocked; P0 field traceability and remaining semantic findings>
-
-### Blocking Findings
-- <file:line grounded finding>
-
-### Non-Blocking Suggestions
-- <can wait until architecture/design>
-
-### Contract Coverage
-- <P0 requirement -> endpoint/schema/error/test mapping summary>
-- <P0 field source -> operationId/schema/property path/shape/requiredness/constraints/error/test mapping summary>
-
-### YSS Baseline
-- <`x-yss-response-wrapper` map and `YssResultMeta` / `allOf` conformance>
-- <profile version, concrete `data` schemas, nullability, request/response direction and computed-field evidence>
-- <DDD boundary implications, implementation feasibility>
-
-### Contract Test Checklist
-- <wrapper meta fields: success/code/message/tips/dataType, including code string/integer/null cases>
-- <single object, non-page list empty array, page empty array and page boundary cases>
-- <PageQuery allowed fields, ASC/DESC and endpoint whitelist; negative assertions for offset/needTotalCount/tempTotalCount>
-- <target HTTP mapper identity and computed-field fixture, if totalPages or another getter is included>
-- <minimum contract tests before OpenAPI Freeze>
-
-### Next Action
-- <return to OpenAPI Draft / enter Engineering Baseline / architecture design / request YAML-to-JSON export after Freeze>
-```
-
-`Review Result` 只有在 `Structural Validation` 与 `Semantic Review` 均为 `Passed` 时才能是 `Approved`；不使用 `Conditionally Approved` 或 `Semantic Approved` 作为顶层结论。
-
-Prefer `.template-spec/api/templates/openapi-draft-review-checklist.md` when a tabular checklist is useful.
+形成持久化结论时读取 [审查输出契约](references/review-output.md)。`Review Result` 仅在 `Structural Validation` 和 `Semantic Review` 均为 `Passed` 时可为 `Approved`；否则 `Blocked`，不使用条件批准。

@@ -25,16 +25,46 @@
     "service_project_initialization": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["project_id", "contract_ref", "contract_digest", "project_root", "context_handoff_digest"],
+      "required": [
+        "project_id",
+        "contract_ref",
+        "contract_digest",
+        "project_root",
+        "context_handoff_digest"
+      ],
       "properties": {
-        "project_id": { "type": "string", "minLength": 1 },
-        "contract_ref": { "type": "string", "minLength": 1 },
-        "contract_digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
-        "project_root": { "type": "string", "minLength": 1 },
-        "context_handoff_digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
-        "manifest_ref": { "type": "string", "minLength": 1 },
-        "verification_ref": { "type": "string", "minLength": 1 },
-        "result_ref": { "type": "string", "minLength": 1 }
+        "project_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "contract_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "contract_digest": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "project_root": {
+          "type": "string",
+          "minLength": 1
+        },
+        "context_handoff_digest": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "manifest_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "verification_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "result_ref": {
+          "type": "string",
+          "minLength": 1
+        }
       }
     },
     "plan_continuation_ref": {
@@ -126,6 +156,10 @@
               "items": {
                 "type": "string"
               }
+            },
+            "digest": {
+              "type": "string",
+              "pattern": "^sha256:[a-f0-9]{64}$"
             }
           }
         }
@@ -238,10 +272,168 @@
       "pattern": "^work-unit\\.[a-z0-9][a-z0-9-]*$"
     },
     "phase_boundary": {
-      "type": "object"
+      "type": "object",
+      "required": [
+        "decision",
+        "reason"
+      ],
+      "properties": {
+        "decision": {
+          "enum": [
+            "continue",
+            "clear",
+            "handoff",
+            "subagent",
+            "compact"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "destination_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "task_package_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "convergence_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "next_phase": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "decision": {
+                "const": "handoff"
+              }
+            },
+            "required": [
+              "decision"
+            ]
+          },
+          "then": {
+            "required": [
+              "source_ref",
+              "destination_ref"
+            ],
+            "properties": {
+              "source_ref": {
+                "type": "string",
+                "minLength": 1
+              },
+              "destination_ref": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "decision": {
+                "const": "subagent"
+              }
+            },
+            "required": [
+              "decision"
+            ]
+          },
+          "then": {
+            "required": [
+              "task_package_ref",
+              "convergence_ref"
+            ],
+            "properties": {
+              "task_package_ref": {
+                "type": "string",
+                "minLength": 1
+              },
+              "convergence_ref": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "decision": {
+                "const": "compact"
+              }
+            },
+            "required": [
+              "decision"
+            ]
+          },
+          "then": {
+            "required": [
+              "next_phase"
+            ],
+            "properties": {
+              "next_phase": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      ]
     },
     "stage_trace": {
-      "type": "object"
+      "type": "object",
+      "required": [
+        "stage",
+        "upstream_refs",
+        "artifact_refs",
+        "gate_decisions",
+        "downstream_impacts"
+      ],
+      "properties": {
+        "stage": {
+          "type": "string",
+          "pattern": "^stage\\.[a-z0-9-]+$"
+        },
+        "upstream_refs": {
+          "type": "array"
+        },
+        "artifact_refs": {
+          "type": "array"
+        },
+        "gate_decisions": {
+          "type": "array"
+        },
+        "downstream_impacts": {
+          "type": "array"
+        },
+        "completed_work_unit": {
+          "type": "string"
+        }
+      }
     },
     "ticket_sync": {
       "type": "object",

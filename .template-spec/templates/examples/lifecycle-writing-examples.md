@@ -136,3 +136,19 @@
 | T4 | 验证段 | seam 明确，未臆造工程命令 |
 | T5 | 状态段 | 两项阻塞均展示，未只保留一个下一步 |
 | T6 | 范围、验证及状态段 | 状态未提前推进；未扩大范围 |
+
+## 4. 附件提交校验的来源、稳定 ID 与变更追溯
+
+以下配套文件全部是虚构输入，仅供模板和诊断练习；不代表产品决定、测量结果或已批准资产。前文 S1–S7 与“读取失败行为待确认”的限制在固定来源表中保留，不能把样本中的数字当成生产承诺。
+
+| 目的 | 可读资产 |
+|---|---|
+| 原始输入与保真基线 | [附件业务输入](plan-spec/ordinary-source.md) |
+| Plan 指标未知但有补齐动作 | [轻量 Plan](plan-spec/ordinary-plan.md) |
+| 来源 → FR → AC → 未决项 | [附件 Spec](plan-spec/ordinary-valid.md) |
+| 有意缺陷：重复 ID、断链、来源缺失 | [附件反例](plan-spec/ordinary-defective.md) |
+| 复杂状态、并发和恢复未知 | [状态输入](plan-spec/complex-source.md)、[状态 Spec](plan-spec/complex-valid.md)、[反例](plan-spec/complex-defective.md) |
+| 冻结基线上的权限变化 | [权限输入](plan-spec/high-risk-source.md)、[旧基线](plan-spec/high-risk-before.md)、[候选新 Spec](plan-spec/high-risk-valid.md)、[反例](plan-spec/high-risk-defective.md) |
+| 预登记发现与样本类别 | [样本清单](plan-spec/expectations.json) |
+
+附件案例的变化练习：若将 FR-002 的“一次列出全部缺失名称”改成“仅显示一项”，应同时审查 S3 和 AC-001。`diff` 能展示原文字节、FR 和 AC 引用的变化，但不能决定业务含义等价，也不能据此继续使用原批准。读取附件清单失败的行为仍为 Q-001，不能由成功路径的测试例子擅自确定。

@@ -23,3 +23,7 @@ levels:
       - historical-important-escape
       - aggregate-behavior-change
       - release-candidate
+counterexample_triggers:
+  - permission-boundary
+  - lifecycle-gate
+  - release-semantics

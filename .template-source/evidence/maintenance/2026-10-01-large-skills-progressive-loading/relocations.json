@@ -1,0 +1,518 @@
+[
+  {
+    "skill": "wayfinder",
+    "profile": "canonical",
+    "before_chars": 12029,
+    "after_chars": 3519,
+    "frontmatter_sha256": "b1cf91b9858b704c11baba631fa349354acfd92dda90ec87af48cc9f0c2a27f9",
+    "references": [
+      "map-format.md",
+      "ticket-types.md",
+      "scope-and-frontier.md",
+      "chart-map.md",
+      "work-map.md"
+    ],
+    "moves": [
+      {
+        "reference": "map-format.md",
+        "original_sha256": "d2733cd8547cf58572ad26dde685ae40f17df7183c448be38197334c9bc1c006",
+        "payload_sha256": "8738c2ff4e2aa55e2f7cd21ac0925a8b519a0ac4db32fa72a13ec38f416c538b",
+        "prefix": "# 决策地图与 Ticket 结构\n\n仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。仓库脚本与 pnpm 命令从当前登记的项目根目录执行。\n\n",
+        "source_marker": "### The map body"
+      },
+      {
+        "reference": "ticket-types.md",
+        "original_sha256": "e77fb26ea0b772b083b9e581566d0175ac3ad0b4fcc773cc63c7045740147375",
+        "payload_sha256": "e77fb26ea0b772b083b9e581566d0175ac3ad0b4fcc773cc63c7045740147375",
+        "prefix": "# 决策 Ticket 类型\n\n仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。仓库脚本与 pnpm 命令从当前登记的项目根目录执行。\n\n",
+        "source_marker": "## Ticket Types"
+      },
+      {
+        "reference": "scope-and-frontier.md",
+        "original_sha256": "0e2441c663b9e4de7fef0a4c116b74d13793841a4bca503975cd42b86b9146ee",
+        "payload_sha256": "0e2441c663b9e4de7fef0a4c116b74d13793841a4bca503975cd42b86b9146ee",
+        "prefix": "# 范围与决策前沿\n\n仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。仓库脚本与 pnpm 命令从当前登记的项目根目录执行。\n\n",
+        "source_marker": "## Fog of war"
+      },
+      {
+        "reference": "chart-map.md",
+        "original_sha256": "c26f5d888e01857ab123df2a1259e7ecd263d3c3b95bb73cd1b9d8359bfc83b0",
+        "payload_sha256": "c26f5d888e01857ab123df2a1259e7ecd263d3c3b95bb73cd1b9d8359bfc83b0",
+        "prefix": "# 建立决策地图\n\n仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。仓库脚本与 pnpm 命令从当前登记的项目根目录执行。\n\n",
+        "source_marker": "### Chart the map"
+      },
+      {
+        "reference": "work-map.md",
+        "original_sha256": "d3a1cd18abf22aa496cd4f12a6afe95f2c42ef4e51425e1a4c764dadb4d1d51e",
+        "payload_sha256": "d3a1cd18abf22aa496cd4f12a6afe95f2c42ef4e51425e1a4c764dadb4d1d51e",
+        "prefix": "# 推进决策地图\n\n仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。仓库脚本与 pnpm 命令从当前登记的项目根目录执行。\n\n",
+        "source_marker": "### Work through the map"
+      }
+    ]
+  },
+  {
+    "skill": "archify",
+    "profile": "canonical",
+    "before_chars": 11848,
+    "after_chars": 5712,
+    "frontmatter_sha256": "ebf1f5734416bfccdc88c37dcb673775b6614194f6b64e2ca885e9f49fbdaf09",
+    "references": [
+      "authoring-workflow.md",
+      "upstream-updates.md",
+      "authoring-notes.md",
+      "delivery-workflow.md"
+    ],
+    "moves": [
+      {
+        "reference": "authoring-workflow.md",
+        "original_sha256": "99918ff2fa92c844ffd2667389d19ce9779a53ffc44967aad39753696a6accbb",
+        "payload_sha256": "99918ff2fa92c844ffd2667389d19ce9779a53ffc44967aad39753696a6accbb",
+        "prefix": "# 图表候选生成与验证\n\n仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。Skill 自带的 bin/scripts 命令从 Skill 根目录执行；明确注明 repository root 的包装命令仍从项目根目录执行。\n\n",
+        "source_marker": "## Fast authoring path"
+      },
+      {
+        "reference": "upstream-updates.md",
+        "original_sha256": "004f27c4eee1f288e5509c7b89ba6e08212e4ff3b52ef9644c9093450c668bba",
+        "payload_sha256": "004f27c4eee1f288e5509c7b89ba6e08212e4ff3b52ef9644c9093450c668bba",
+        "prefix": "# 非 YSS 更新提示\n\n仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。Skill 自带的 bin/scripts 命令从 Skill 根目录执行；明确注明 repository root 的包装命令仍从项目根目录执行。\n\n",
+        "source_marker": "## Update awareness"
+      },
+      {
+        "reference": "authoring-notes.md",
+        "original_sha256": "6d2e0e14eabbd26def2dbe9ce63d90b76d2ce5e4e72fc2f0f2d2f457276b8277",
+        "payload_sha256": "5ccddacd080867928466f0cbbbed5e16cabf6c1c77b80bb4a20fd54dad5aafd9",
+        "prefix": "# 特定布局说明\n\n仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。Skill 自带的 bin/scripts 命令从 Skill 根目录执行；明确注明 repository root 的包装命令仍从项目根目录执行。\n\n",
+        "source_marker": "Do not read `renderers/shared/geometry.mjs`"
+      },
+      {
+        "reference": "delivery-workflow.md",
+        "original_sha256": "05312fdfd16f97a2787494fa44daf84594aef52257dd3329d4ab98de104bc06c",
+        "payload_sha256": "05312fdfd16f97a2787494fa44daf84594aef52257dd3329d4ab98de104bc06c",
+        "prefix": "# 图表交付执行\n\n仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。Skill 自带的 bin/scripts 命令从 Skill 根目录执行；明确注明 repository root 的包装命令仍从项目根目录执行。\n\n",
+        "source_marker": "## Delivery"
+      }
+    ]
+  },
+  {
+    "skill": "code-review",
+    "profile": "canonical",
+    "before_chars": 11164,
+    "after_chars": 6701,
+    "frontmatter_sha256": "c94c63f9fc424e6305bf0d6b5b3676003a0897788a5700e0b7441c71b10bb3d1",
+    "references": [
+      "smell-baseline.md",
+      "review-axis-checklists.md",
+      "legacy-convergence.md"
+    ],
+    "moves": [
+      {
+        "reference": "smell-baseline.md",
+        "original_sha256": "0c7441b8e940ef1ee0b70a0c0dd8e37db72ca43e77245756f58f2090a13aeae1",
+        "payload_sha256": "0c7441b8e940ef1ee0b70a0c0dd8e37db72ca43e77245756f58f2090a13aeae1",
+        "prefix": "# Fowler smell baseline\n\n仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。仓库脚本与 pnpm 命令从当前登记的项目根目录执行。\n\n",
+        "source_marker": "On top of whatever the repo documents"
+      },
+      {
+        "reference": "review-axis-checklists.md",
+        "original_sha256": "7007a579b125edbb9b21a64f26f34478f7775e049c26db9ea62d842258544ec7",
+        "payload_sha256": "7007a579b125edbb9b21a64f26f34478f7775e049c26db9ea62d842258544ec7",
+        "prefix": "# 审查轴检查提纲\n\n仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。仓库脚本与 pnpm 命令从当前登记的项目根目录执行。\n\n",
+        "source_marker": "**Standards sub-agent prompt**"
+      },
+      {
+        "reference": "legacy-convergence.md",
+        "original_sha256": "55df4027e673325e56ca2d96c74cd04c2cb7f8e2a2bc293c43e5d6ea379562a4",
+        "payload_sha256": "55df4027e673325e56ca2d96c74cd04c2cb7f8e2a2bc293c43e5d6ea379562a4",
+        "prefix": "# 历史候选两轮收敛合同\n\n仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。仓库脚本与 pnpm 命令从当前登记的项目根目录执行。\n\n",
+        "source_marker": "For template-maintenance task packages carrying `review_round`"
+      }
+    ]
+  },
+  {
+    "skill": "ytable-usage",
+    "profile": "canonical",
+    "before_chars": 9281,
+    "after_chars": 3965,
+    "frontmatter_sha256": "1bff623b0d71ae1fecae0530ad117c989936c06eedfda5205a774fcd7af18f4a",
+    "references": [
+      "table-pagination-examples.md",
+      "selection-and-batch.md"
+    ],
+    "moves": [
+      {
+        "reference": "table-pagination-examples.md",
+        "original_sha256": "42ab8909fcee6caf0c1d3ba468bedaa36990a911462a189f71f66220b02c112d",
+        "payload_sha256": "42ab8909fcee6caf0c1d3ba468bedaa36990a911462a189f71f66220b02c112d",
+        "prefix": "# YTable 列表与远程分页示例\n\n仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。示例代码属于目标工程，模块相对导入按所示文件位置解析。\n\n",
+        "source_marker": "## 标准代码骨架"
+      },
+      {
+        "reference": "selection-and-batch.md",
+        "original_sha256": "3d3bf1775200f417455f24f546d029ef726a8efc2811304cb59c1b0b716a24ea",
+        "payload_sha256": "3d3bf1775200f417455f24f546d029ef726a8efc2811304cb59c1b0b716a24ea",
+        "prefix": "# YTable 多选与批量操作\n\n仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。示例代码属于目标工程，模块相对导入按所示文件位置解析。\n\n",
+        "source_marker": "## 表格多选与批量操作标准模式"
+      }
+    ]
+  },
+  {
+    "skill": "diagnosing-bugs",
+    "profile": "canonical",
+    "before_chars": 9171,
+    "after_chars": 2844,
+    "frontmatter_sha256": "4829f3372ae16a8ca8d4b200b0e77a655e5a72f2851b0c54a19a4e0715c8714e",
+    "references": [
+      "feedback-loop.md",
+      "investigation.md"
+    ],
+    "moves": [
+      {
+        "reference": "feedback-loop.md",
+        "original_sha256": "1271cf477d06f74f6b487e4d021ab3664df5abfcf4b851a53604790ff6d30813",
+        "payload_sha256": "1271cf477d06f74f6b487e4d021ab3664df5abfcf4b851a53604790ff6d30813",
+        "prefix": "# 构造诊断反馈循环\n\n仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。Skill 自带的 bin/scripts 命令从 Skill 根目录执行；明确注明 repository root 的包装命令仍从项目根目录执行。\n\n",
+        "source_marker": "## Phase 1 — Build a feedback loop"
+      },
+      {
+        "reference": "investigation.md",
+        "original_sha256": "e5a6d27211cb4590cfff49aa764c81c3d43f0721b8d9f98d7201d0d31f0b3a16",
+        "payload_sha256": "e5a6d27211cb4590cfff49aa764c81c3d43f0721b8d9f98d7201d0d31f0b3a16",
+        "prefix": "# 诊断调查与探针\n\n仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。Skill 自带的 bin/scripts 命令从 Skill 根目录执行；明确注明 repository root 的包装命令仍从项目根目录执行。\n\n",
+        "source_marker": "## Phase 2 — Reproduce + minimise"
+      }
+    ]
+  },
+  {
+    "skill": "yss-openapi-draft-review",
+    "profile": "canonical",
+    "before_chars": 8907,
+    "after_chars": 4481,
+    "frontmatter_sha256": "8c5ae0724c5fb004c2b7b2c73e899a03e8dc777149e4413be7d2e56c40f04e93",
+    "references": [
+      "semantic-review.md",
+      "review-output.md"
+    ],
+    "moves": [
+      {
+        "reference": "semantic-review.md",
+        "original_sha256": "cf255d6299ac7a7ec3405101f59af0f65b4f8be0485116d2f67153fe9b146259",
+        "payload_sha256": "cf255d6299ac7a7ec3405101f59af0f65b4f8be0485116d2f67153fe9b146259",
+        "prefix": "# OpenAPI Draft 语义审查\n\n仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。仓库脚本与 pnpm 命令从当前登记的项目根目录执行。\n\n",
+        "source_marker": "## Review Flow"
+      },
+      {
+        "reference": "review-output.md",
+        "original_sha256": "6d247f5ab443b8dfeb604263a33b99b309f872649eb38f5a05333c9e6e119fc4",
+        "payload_sha256": "6d247f5ab443b8dfeb604263a33b99b309f872649eb38f5a05333c9e6e119fc4",
+        "prefix": "# OpenAPI Draft 审查输出\n\n仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。仓库脚本与 pnpm 命令从当前登记的项目根目录执行。\n\n",
+        "source_marker": "## Output Contract"
+      }
+    ]
+  },
+  {
+    "skill": "using-git-worktrees",
+    "profile": "canonical",
+    "before_chars": 7996,
+    "after_chars": 3781,
+    "frontmatter_sha256": "4547422fcb05b9429a22fb40ae2cba543b2f2aac1560c3dff10f96f7e91479c3",
+    "references": [
+      "git-fallback.md",
+      "setup-and-baseline.md",
+      "troubleshooting.md"
+    ],
+    "moves": [
+      {
+        "reference": "git-fallback.md",
+        "original_sha256": "03431faab01e5970d2e535c0692dffd408430a85c1e1177aebf0f790ce4bc3f7",
+        "payload_sha256": "03431faab01e5970d2e535c0692dffd408430a85c1e1177aebf0f790ce4bc3f7",
+        "prefix": "# 手工 Git worktree 创建\n\n仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。Git、依赖安装和测试命令从当前仓库或选定的工作树根目录执行。\n\n",
+        "source_marker": "### 1b. Git Worktree Fallback"
+      },
+      {
+        "reference": "setup-and-baseline.md",
+        "original_sha256": "7dd7a0bd00e534de73f6cc48d0ced3787ccf588f9b784ba0cc301cbc12076619",
+        "payload_sha256": "7dd7a0bd00e534de73f6cc48d0ced3787ccf588f9b784ba0cc301cbc12076619",
+        "prefix": "# 项目准备与基线验证\n\n仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。Git、依赖安装和测试命令从当前仓库或选定的工作树根目录执行。\n\n",
+        "source_marker": "## Step 2: Project Setup"
+      },
+      {
+        "reference": "troubleshooting.md",
+        "original_sha256": "14760d25c9064bfa7df793e2b0b11195b12fe5d658f977733151287b2022cb94",
+        "payload_sha256": "14760d25c9064bfa7df793e2b0b11195b12fe5d658f977733151287b2022cb94",
+        "prefix": "# 工作树常见错误\n\n仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。Git、依赖安装和测试命令从当前仓库或选定的工作树根目录执行。\n\n",
+        "source_marker": "## Quick Reference"
+      }
+    ]
+  },
+  {
+    "skill": "yss-ddd-scaffold-generator",
+    "profile": "canonical",
+    "before_chars": 7750,
+    "after_chars": 5324,
+    "frontmatter_sha256": "33fe3c7633feaf6e6d8538d98566a28bfbe703d293059df35cc8410c041cb58d",
+    "references": [
+      "platform-selection.md",
+      "generation-workflow.md",
+      "engineering-checks.md"
+    ],
+    "moves": [
+      {
+        "reference": "platform-selection.md",
+        "original_sha256": "09b42299f41d17f459fc30f76c89948eb6d3e8bcf9bbfcdf377199d4ef99de0a",
+        "payload_sha256": "09b42299f41d17f459fc30f76c89948eb6d3e8bcf9bbfcdf377199d4ef99de0a",
+        "prefix": "# DDD 脚手架平台选择\n\n仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。Skill 自带的 bin/scripts 命令从 Skill 根目录执行；明确注明 repository root 的包装命令仍从项目根目录执行。\n\n",
+        "source_marker": "## Spring Boot / Java 平台选择"
+      },
+      {
+        "reference": "generation-workflow.md",
+        "original_sha256": "fabbc3a6487232a54ffe1da350597c25cbaed41771ae61ad8961e612075d1210",
+        "payload_sha256": "fabbc3a6487232a54ffe1da350597c25cbaed41771ae61ad8961e612075d1210",
+        "prefix": "# DDD 受控生成与验证\n\n仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。Skill 自带的 bin/scripts 命令从 Skill 根目录执行；明确注明 repository root 的包装命令仍从项目根目录执行。\n\n",
+        "source_marker": "## 优先流程"
+      }
+    ]
+  },
+  {
+    "skill": "setup-matt-pocock-skills",
+    "profile": "canonical",
+    "before_chars": 7668,
+    "after_chars": 2712,
+    "frontmatter_sha256": "f753839c6c574b6caf3915d29c202401fd71602aa788b846af6ad9bf152d12b2",
+    "references": [
+      "configuration-decisions.md",
+      "write-configuration.md"
+    ],
+    "moves": [
+      {
+        "reference": "configuration-decisions.md",
+        "original_sha256": "69070284ceddba849a0dcdd54e28f1c9c3e173ee3b3e4e0114f49ad621ea6e86",
+        "payload_sha256": "69070284ceddba849a0dcdd54e28f1c9c3e173ee3b3e4e0114f49ad621ea6e86",
+        "prefix": "# 工程技能配置决定\n\n仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。仓库脚本与 pnpm 命令从当前登记的项目根目录执行。\n\n",
+        "source_marker": "### 2. Present findings and ask"
+      },
+      {
+        "reference": "write-configuration.md",
+        "original_sha256": "5cd5c711c501efbaaf092e53c34bca649af8444eb9d7190e4e8af83ab1a2c13a",
+        "payload_sha256": "0ad76ed5339e7c429a3ca7d88ee158570802a812f2b379be911deee5036c7977",
+        "prefix": "# 配置写入与种子模板\n\n仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。仓库脚本与 pnpm 命令从当前登记的项目根目录执行。\n\n",
+        "source_marker": "### 4. Write"
+      }
+    ]
+  },
+  {
+    "skill": "yss-openapi-governance",
+    "profile": "canonical",
+    "before_chars": 7627,
+    "after_chars": 3885,
+    "frontmatter_sha256": "111f2c5243d38e15ada36f9b63c72b6b01019fc570121f80c9948c7bd8ecbe2a",
+    "references": [
+      "locked-toolchain.md",
+      "governance-workflow.md"
+    ],
+    "moves": [
+      {
+        "reference": "locked-toolchain.md",
+        "original_sha256": "9898ad59c1d86cd831cba7f3cc526e809bd392fe121a3738789795f34b9033d3",
+        "payload_sha256": "9898ad59c1d86cd831cba7f3cc526e809bd392fe121a3738789795f34b9033d3",
+        "prefix": "# OpenAPI 锁定工具链\n\n仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。仓库脚本与 pnpm 命令从当前登记的项目根目录执行。\n\n",
+        "source_marker": "## 受控工具链"
+      },
+      {
+        "reference": "governance-workflow.md",
+        "original_sha256": "4aebdabbb09f2e63919fac738cf8e79d4e1808abac42d38dcd9400a429cc6d94",
+        "payload_sha256": "51a7139b09996964a4fcebcb3d76022499b982d8e7993cbddbe538ed1b8bfa11",
+        "prefix": "# OpenAPI 治理步骤\n\n仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。仓库脚本与 pnpm 命令从当前登记的项目根目录执行。\n\n",
+        "source_marker": "## 治理流程"
+      }
+    ]
+  },
+  {
+    "skill": "yss-ui-business-page-generation",
+    "profile": "canonical",
+    "before_chars": 7617,
+    "after_chars": 6286,
+    "frontmatter_sha256": "2d0cce0924e44b81fe1d48cb34031341f58988764684e17a1c35c386704449ef",
+    "references": [
+      "page-layout-example.md",
+      "page-composition-example.md"
+    ],
+    "moves": [
+      {
+        "reference": "page-layout-example.md",
+        "original_sha256": "b1b669cfd0df8e006c6adbcd8a1fcf00e1956e8f2dbbf18298c72733872ce9a4",
+        "payload_sha256": "b1b669cfd0df8e006c6adbcd8a1fcf00e1956e8f2dbbf18298c72733872ce9a4",
+        "prefix": "# 页面目录与组合示例\n\n仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。示例代码属于目标工程，模块相对导入按所示文件位置解析。\n\n",
+        "source_marker": "## 标准代码骨架"
+      },
+      {
+        "reference": "page-composition-example.md",
+        "original_sha256": "bd2b24b0f43c12b5074459ab431e6e4da281113a13ec5a2384a7884f84a3156b",
+        "payload_sha256": "bd2b24b0f43c12b5074459ab431e6e4da281113a13ec5a2384a7884f84a3156b",
+        "prefix": "# 页面组合示例\n\n仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。示例代码属于目标工程，模块相对导入按所示文件位置解析。\n\n",
+        "source_marker": "## 最小组合示例"
+      }
+    ]
+  },
+  {
+    "skill": "yedit-table-usage",
+    "profile": "canonical",
+    "before_chars": 7395,
+    "after_chars": 3010,
+    "frontmatter_sha256": "6118dac97e5b137489a70ec302be2e7ce08f50d10b0961e12f895d82640832cf",
+    "references": [
+      "editable-table-example.md",
+      "select-and-filter-examples.md"
+    ],
+    "moves": [
+      {
+        "reference": "editable-table-example.md",
+        "original_sha256": "b540f2af33892d1c3fa1d720640b82d02a0a48943d6d19bc3681a2f783e6ac20",
+        "payload_sha256": "b540f2af33892d1c3fa1d720640b82d02a0a48943d6d19bc3681a2f783e6ac20",
+        "prefix": "# YEditTable 组合示例\n\n仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。示例代码属于目标工程，模块相对导入按所示文件位置解析。\n\n",
+        "source_marker": "## 标准代码骨架"
+      },
+      {
+        "reference": "select-and-filter-examples.md",
+        "original_sha256": "34b3cdae73e74870f261479e5dc5eae84059d755a1f84a7142b8ea4064c1d682",
+        "payload_sha256": "34b3cdae73e74870f261479e5dc5eae84059d755a1f84a7142b8ea4064c1d682",
+        "prefix": "# YEditTable Select 与筛选示例\n\n仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。示例代码属于目标工程，模块相对导入按所示文件位置解析。\n\n",
+        "source_marker": "## Select 值类型边界"
+      }
+    ]
+  },
+  {
+    "skill": "yss-hook",
+    "profile": "canonical",
+    "before_chars": 7318,
+    "after_chars": 3581,
+    "frontmatter_sha256": "4baf976a9624c696a4fdc34f3e37c7694906e714cf2965522b66b72d74aca43c",
+    "references": [
+      "list-pagination.md",
+      "async-actions.md",
+      "polling.md"
+    ],
+    "moves": [
+      {
+        "reference": "list-pagination.md",
+        "original_sha256": "f942675436b5b3f893e8347157b93cd540708d642c5de7605f0066006418990a",
+        "payload_sha256": "c06b26ce5f7095d5032aae8993b462db2669a40b50f1c233ff60bdb69550563c",
+        "prefix": "# 列表与分页 Hook\n\n仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。示例代码属于目标工程，模块相对导入按所示文件位置解析。\n\n",
+        "source_marker": "## 2. 列表 / 分页 Hook"
+      },
+      {
+        "reference": "async-actions.md",
+        "original_sha256": "fb360a65871cbf6d3c30d595afb0971239f929ca55c034885258756edb3bf1e6",
+        "payload_sha256": "91ea1a573cc8e3754f0227568198c77e05343e44762d6f80239c91d010c015f9",
+        "prefix": "# 异步动作与竞态\n\n仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。示例代码属于目标工程，模块相对导入按所示文件位置解析。\n\n",
+        "source_marker": "## 4. 单一异步动作：`useLoading`"
+      },
+      {
+        "reference": "polling.md",
+        "original_sha256": "cc4020e51f7300f1da31d3ecfea702ce802aa1453547bf4ec7e9b1adc1a44232",
+        "payload_sha256": "310d753f530135723043dcc952fe82bb74e893f8775f1edfd185a46c5c0b4abc",
+        "prefix": "# 轮询调度\n\n仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。示例代码属于目标工程，模块相对导入按所示文件位置解析。\n\n",
+        "source_marker": "## 6. 轮询：`usePollingTask`"
+      }
+    ]
+  },
+  {
+    "skill": "yss-implementation-contract-compiler",
+    "profile": "canonical",
+    "before_chars": 7089,
+    "after_chars": 6119,
+    "frontmatter_sha256": "4f72ca6a1c7e88e16adf3d2b55e761922a0c698ca676ddf29f2ce10a0489cbf2",
+    "references": [
+      "scaffold-compilation.md"
+    ],
+    "moves": [
+      {
+        "reference": "scaffold-compilation.md",
+        "original_sha256": "c748ccbc8c8ae6a056a86135accdc9a38773165de47fb721cdda2db8f7d836b3",
+        "payload_sha256": "c748ccbc8c8ae6a056a86135accdc9a38773165de47fb721cdda2db8f7d836b3",
+        "prefix": "# 脚手架合同编译\n\n仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。仓库脚本与 pnpm 命令从当前登记的项目根目录执行。\n\n",
+        "source_marker": "- 阶段 5 若命中交付面且无已有工程"
+      }
+    ]
+  },
+  {
+    "skill": "yss-openapi-draft-review",
+    "profile": "frontend",
+    "before_chars": 9022,
+    "after_chars": 4596,
+    "frontmatter_sha256": "8c5ae0724c5fb004c2b7b2c73e899a03e8dc777149e4413be7d2e56c40f04e93",
+    "references": [
+      "semantic-review.md",
+      "review-output.md"
+    ],
+    "moves": [
+      {
+        "reference": "semantic-review.md",
+        "original_sha256": "cf255d6299ac7a7ec3405101f59af0f65b4f8be0485116d2f67153fe9b146259",
+        "payload_sha256": "cf255d6299ac7a7ec3405101f59af0f65b4f8be0485116d2f67153fe9b146259",
+        "prefix": "# OpenAPI Draft 语义审查\n\n仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。仓库脚本与 pnpm 命令从当前登记的项目根目录执行。\n\n",
+        "source_marker": "## Review Flow"
+      },
+      {
+        "reference": "review-output.md",
+        "original_sha256": "6d247f5ab443b8dfeb604263a33b99b309f872649eb38f5a05333c9e6e119fc4",
+        "payload_sha256": "6d247f5ab443b8dfeb604263a33b99b309f872649eb38f5a05333c9e6e119fc4",
+        "prefix": "# OpenAPI Draft 审查输出\n\n仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。仓库脚本与 pnpm 命令从当前登记的项目根目录执行。\n\n",
+        "source_marker": "## Output Contract"
+      }
+    ]
+  },
+  {
+    "skill": "yss-openapi-governance",
+    "profile": "frontend",
+    "before_chars": 7525,
+    "after_chars": 5018,
+    "frontmatter_sha256": "7aeff95770fb92d73d0f32a1044c1bb2d1057a153eac1f02f9fd5e45d8d7994e",
+    "references": [
+      "locked-toolchain.md",
+      "governance-workflow.md"
+    ],
+    "moves": [
+      {
+        "reference": "locked-toolchain.md",
+        "original_sha256": "9898ad59c1d86cd831cba7f3cc526e809bd392fe121a3738789795f34b9033d3",
+        "payload_sha256": "9898ad59c1d86cd831cba7f3cc526e809bd392fe121a3738789795f34b9033d3",
+        "prefix": "# OpenAPI 锁定工具链\n\n仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。仓库脚本与 pnpm 命令从当前登记的项目根目录执行。\n\n",
+        "source_marker": "## 受控工具链"
+      },
+      {
+        "reference": "governance-workflow.md",
+        "original_sha256": "3bef14c2301312b616009fb95e9af5c4738e5bb330c53e90ed4d0df238b5998b",
+        "payload_sha256": "6d5ccb81368661bdec4ce715ad21d887836885232c2c220ddd75a0ce843e2560",
+        "prefix": "# OpenAPI 治理步骤\n\n仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。仓库脚本与 pnpm 命令从当前登记的项目根目录执行。\n\n",
+        "source_marker": "## 治理流程"
+      }
+    ]
+  },
+  {
+    "skill": "yss-openapi-governance",
+    "profile": "backend",
+    "before_chars": 7023,
+    "after_chars": 3664,
+    "frontmatter_sha256": "111f2c5243d38e15ada36f9b63c72b6b01019fc570121f80c9948c7bd8ecbe2a",
+    "references": [
+      "locked-toolchain.md",
+      "governance-workflow.md"
+    ],
+    "moves": [
+      {
+        "reference": "locked-toolchain.md",
+        "original_sha256": "9898ad59c1d86cd831cba7f3cc526e809bd392fe121a3738789795f34b9033d3",
+        "payload_sha256": "9898ad59c1d86cd831cba7f3cc526e809bd392fe121a3738789795f34b9033d3",
+        "prefix": "# OpenAPI 锁定工具链\n\n仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。仓库脚本与 pnpm 命令从当前登记的项目根目录执行。\n\n",
+        "source_marker": "## 受控工具链"
+      },
+      {
+        "reference": "governance-workflow.md",
+        "original_sha256": "124c721d5c0bb0d3f484cfaa257998e90027d1c59a5f50d41c11ef279d2dba55",
+        "payload_sha256": "036387a6ee1cbc9fbe68fb910185e54dacd5dac1e90521cf1d58a702eab33738",
+        "prefix": "# OpenAPI 治理步骤\n\n仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。仓库脚本与 pnpm 命令从当前登记的项目根目录执行。\n\n",
+        "source_marker": "## 治理流程"
+      }
+    ]
+  }
+]

@@ -1,0 +1,25 @@
+{
+  "schema_version": 4,
+  "feature": "material-query-small-change",
+  "prototype_profile": "H1",
+  "profile_kind": "visual-review",
+  "component_basis": "html-css-js",
+  "runtime_build_required": false,
+  "entry": "index.html",
+  "design_source": {
+    "path": "DESIGN.md",
+    "digest": "sha256:e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+  },
+  "token_source": {
+    "path": ".template-spec/design/tokens/variables.css",
+    "digest": "sha256:028c24f9e935f5c4b1392d131a4cd13482e6572a2ced4360ffa833aa3fbeaf66"
+  },
+  "fixture_sources": {
+    "fixture/brief.md": "sha256:991f63614d30d26fca31ce7538eb58ef90290d252ea3dcdfbee263a995080b04",
+    "fixture/existing.html": "sha256:14d09ae7217451fc71d2f3f4f42cbdac2e4e35f261459ee8985fb44586061972",
+    "fixture/data.json": "sha256:02fffe1ab4682ea87448a173d86057021802ccfcbc38fe28558d6396a660feb6",
+    "CONTEXT.md": "sha256:a27ab85f4c733a609948fba4bc5dafa074453ae16d32ceebc773d12fdbffe6b7"
+  },
+  "scope": "test-data-only; disposable design draft; no real approval",
+  "files": {}
+}

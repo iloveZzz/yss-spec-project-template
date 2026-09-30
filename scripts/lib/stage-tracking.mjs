@@ -2,6 +2,7 @@ import { readFileSync, existsSync, lstatSync, realpathSync } from 'node:fs';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
 import { parseDocument } from '../vendor/yaml.mjs';
+import { assertCheckpointBoundary } from './checkpoint-boundary.mjs';
 import { validateJsonSchema } from './json-schema.mjs';
 
 export const TRACKER_REF = '.template-spec/agents/issue-tracker.md';
@@ -12,6 +13,8 @@ export const STAGE_WORK_UNITS = Object.freeze({
   'work-unit.stage-decision': 'stage.plan',
   'work-unit.spec-synthesis': 'stage.spec-architecture',
   'work-unit.prototype-design-v2': 'stage.product-design',
+  'work-unit.prototype-design': 'stage.product-design',
+  'work-unit.business-ticket-formalization': 'stage.product-design',
 });
 export const sha256 = bytes => `sha256:${createHash('sha256').update(bytes).digest('hex')}`;
 export function parseYaml(bytes) {
@@ -72,11 +75,13 @@ export function refreshTracking(root, checkpoint) {
   return { checkpoint: next, stale_item_ids: changed };
 }
 export function assertStageTracking(checkpoint, { root, checkpointRef, currentWorkUnit, nextWorkUnit, transition = false, entering = false, now = new Date() } = {}) {
+  const workUnits={...STAGE_WORK_UNITS,...(isDesign(root)?{'work-unit.business-ticket-formalization':'stage.ticket-formalization'}:{})};
   const identity = parseYaml(readTracking(root, 'yss-project.yaml'));
   if (identity?.schema_version !== 1 || !['template-source', 'project-instance'].includes(identity.repository_mode)) throw new Error('tracking-repository-identity-invalid');
+  if ((transition || entering) && checkpoint?.stage) assertCheckpointBoundary(checkpoint, { root });
   const config = trackerConfig(root);
   const tracking = checkpoint?.stage_tracking;
-  const relevant = STAGE_WORK_UNITS[currentWorkUnit] || STAGE_WORK_UNITS[nextWorkUnit] || ['stage.plan', 'stage.spec-architecture', 'stage.product-design'].includes(checkpoint?.stage);
+  const relevant = workUnits[currentWorkUnit] || workUnits[nextWorkUnit] || ['stage.plan', 'stage.spec-architecture', 'stage.product-design'].includes(checkpoint?.stage);
   if (!tracking) {
     if (identity.repository_mode === 'project-instance' && config.lifecycle_tracking_version === 1 && relevant) throw new Error('stage-tracking-required');
     return { status: 'not-applicable', stale_item_ids: [] };
@@ -104,7 +109,7 @@ export function assertStageTracking(checkpoint, { root, checkpointRef, currentWo
   for (const item of tracking.items) {
     if (index.has(item.id)) throw new Error(`tracking-duplicate-id: ${item.id}`);
     index.set(item.id, item);
-    if (!stages.has(item.stage) || !units.has(item.work_unit) || STAGE_WORK_UNITS[item.work_unit] !== item.stage) throw new Error(`tracking-stage-work-unit-mismatch: ${item.id}`);
+    if (!stages.has(item.stage) || !units.has(item.work_unit) || workUnits[item.work_unit] !== item.stage) throw new Error(`tracking-stage-work-unit-mismatch: ${item.id}`);
     if (allowed && !allowed.includes(item.work_unit)) throw new Error(`tracking-profile-work-unit-forbidden: ${item.id}`);
     if (item.split_reasons.length && !item.definition_ref) throw new Error(`tracking-independent-item-required: ${item.id}`);
     if (item.definition_ref) {
@@ -143,12 +148,12 @@ export function assertStageTracking(checkpoint, { root, checkpointRef, currentWo
   }
   const stale = trackingDrift(root, tracking);
   if (stale.some(id => ['running', 'completed'].includes(index.get(id).progress))) throw new Error(`tracking-stale-completion: ${stale.join(',')}`);
-  if (entering && STAGE_WORK_UNITS[nextWorkUnit] && !tracking.items.some(i => i.work_unit === nextWorkUnit)) throw new Error('tracking-entry-work-item-required');
-  if (transition && STAGE_WORK_UNITS[currentWorkUnit]) {
+  if (entering && workUnits[nextWorkUnit] && !tracking.items.some(i => i.work_unit === nextWorkUnit)) throw new Error('tracking-entry-work-item-required');
+  if (transition && workUnits[currentWorkUnit]) {
     const items = tracking.items.filter(i => i.work_unit === currentWorkUnit);
     if (!items.length) throw new Error('tracking-current-work-item-required');
     if (items.some(i => !['completed', 'cancelled'].includes(i.progress) && !i.deferred)) throw new Error('tracking-current-work-incomplete');
-    if (STAGE_WORK_UNITS[currentWorkUnit] !== STAGE_WORK_UNITS[nextWorkUnit] && tracking.items.some(i => i.stage === STAGE_WORK_UNITS[currentWorkUnit] && !['completed', 'cancelled'].includes(i.progress) && !i.deferred)) throw new Error('tracking-stage-incomplete');
+    if (workUnits[currentWorkUnit] !== workUnits[nextWorkUnit] && tracking.items.some(i => i.stage === workUnits[currentWorkUnit] && !['completed', 'cancelled'].includes(i.progress) && !i.deferred)) throw new Error('tracking-stage-incomplete');
   }
   return { status: 'valid', stale_item_ids: stale };
 }

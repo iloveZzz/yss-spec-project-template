@@ -1,0 +1,9 @@
+{
+  "checked_at": "2026-09-30T03:51:16.952878+00:00",
+  "inputs_checked": 40,
+  "input_drift": false,
+  "drift_paths": [],
+  "local_links_checked": 18,
+  "broken_links": [],
+  "interpretation": "Only declared research inputs checked; unrelated dirty work preserved, not globally certified."
+}

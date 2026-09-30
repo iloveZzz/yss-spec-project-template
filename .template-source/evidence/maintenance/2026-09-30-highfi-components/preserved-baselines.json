@@ -1,0 +1,25 @@
+{
+  "design_frontmatter_unchanged": true,
+  "files": [
+    {
+      "path": ".agents/skills/yss-prototype-stage/assets/shadcn-authoring/package.json",
+      "sha256": "9b90885188bb0ace41dd08b00d9c1d1e036f94129599f2b267714c2705bd2cd8",
+      "unchanged": true
+    },
+    {
+      "path": ".agents/skills/yss-prototype-stage/assets/shadcn-authoring/pnpm-lock.yaml",
+      "sha256": "a2e23d45b83fe160dc48d87fadf1a07960056b61af4d011b81d9e60297f63b80",
+      "unchanged": true
+    },
+    {
+      "path": ".template-spec/design/tokens/tokens.dark.json",
+      "sha256": "826391c5dafaef4d924003052bcfa9b38943e589120b0ff740214a12c9981ae1",
+      "unchanged": true
+    },
+    {
+      "path": ".template-spec/design/tokens/variables.dark.css",
+      "sha256": "38132db701cd1e9793b6320baba20645a2cf577edc75b25aadb211f65bf05767",
+      "unchanged": true
+    }
+  ]
+}

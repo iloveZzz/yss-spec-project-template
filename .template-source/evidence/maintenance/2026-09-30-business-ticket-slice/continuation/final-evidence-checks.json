@@ -1,0 +1,38 @@
+{
+  "observed_at": "2026-09-30T14:17:09.582287+00:00",
+  "checks": [
+    {
+      "command": "scripts/verify-maintenance-checkpoint .template-source/evidence/maintenance/2026-09-30-business-ticket-slice/continuation/maintenance-checkpoint.json",
+      "exit_code": 0,
+      "stdout": "模板维护 checkpoint 验证通过（L3，最低 L3，implementation-ready）"
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    },
+    {
+      "command": ".template-source/scripts/evidence-index --check",
+      "exit_code": 0,
+      "stdout": "证据索引验证通过（complete）"
+    },
+    {
+      "command": "python3 /private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/verify-source-alignment.py",
+      "exit_code": 0,
+      "implementation_source_unchanged": true,
+      "head_changes": 0,
+      "evidence_file_changes": 23
+    },
+    {
+      "command": "python3 /private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-continuation-yja_ylhz/verify-package-evidence.py",
+      "exit_code": 0,
+      "packages_matched": 4,
+      "integration_commands": 44,
+      "scoped_inputs_unchanged": 39
+    },
+    {
+      "check": "report local links and raw archive SHA-256",
+      "passed": true
+    }
+  ],
+  "boundary": "The final source alignment lists report/evidence additions only. The original full-profile result remains exit 1; no publication was performed."
+}

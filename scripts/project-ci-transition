@@ -1,0 +1,13 @@
+#!/usr/bin/env node
+// Loaded only for an actual transition. Stage-selective instances need not install
+// future stage capabilities until a checkpoint claims their transition.
+import path from 'node:path';
+import { pathToFileURL } from 'node:url';
+import { readDocument, safeFile } from './lib/governance-io.mjs';
+try {
+  if(process.argv.length!==3)throw new Error('需要 checkpoint 根相对路径');
+  const root=process.cwd(),ref=process.argv[2],checkpoint=readDocument(root,ref);
+  const {validateNextRoute}=await import(pathToFileURL(safeFile(root,'scripts/lib/lifecycle-transition.mjs')).href);
+  const result=validateNextRoute(checkpoint.stage_trace?.completed_work_unit,checkpoint.next_work_unit,{...checkpoint,checkpoint_ref:ref},{root});
+  process.stdout.write(JSON.stringify(result)+'\n');if(result.result!=='allowed')process.exitCode=1;
+}catch(error){process.stderr.write(`${error.code||''} ${error.message}\n`);process.exitCode=/MODULE_NOT_FOUND/.test(error.code||'')?2:1;}

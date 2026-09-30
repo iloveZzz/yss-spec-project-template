@@ -19,6 +19,10 @@ compatibility_patterns:
   - .agents/skills/**/scripts/**
   - submodules/**
 core_escalation_patterns:
+  - scripts/lib/project-governance.mjs
+  - scripts/lib/checkpoint-boundary.mjs
+  - scripts/lib/governance-io.mjs
+  - scripts/lib/maintenance-counterexample.mjs
   - .github/**
   - .template-source/scripts/verify-template-release.mjs
   - .template-source/scripts/lib/template-release.mjs
@@ -57,6 +61,11 @@ core_escalation_patterns:
   - scripts/lib/read-only-intake.mjs
   - scripts/run-read-only-intake
 required_files:
+  - scripts/project-ci
+  - scripts/project-ci-transition
+  - .template-spec/process/project-ci.md
+  - scripts/lib/project-governance.mjs
+  - scripts/lib/project-ci-install.mjs
   - .template-spec/process/schemas/user-decision.schema.json
   - .template-spec/process/templates/user-decision-template.yaml
   - .agents/skills/yss-product-lifecycle/references/user-decisions.md
@@ -265,6 +274,30 @@ syntax_files:
   - scripts/verify-maintenance-review-workflow-scenarios
   - scripts/verify-template-cache-scenarios
 routing:
+  - patterns: [scripts/project-ci*, scripts/lib/project-*.mjs, scripts/lib/governance-io.mjs, scripts/lib/checkpoint-boundary.mjs, tests/project-ci.test.mjs, .template-spec/process/project-ci.md, .template-spec/process/checkpoint-boundary.yaml]
+    groups: [lifecycle]
+  - patterns: [scripts/lib/maintenance-counterexample.mjs, scripts/verify-maintenance-risk-scenarios, tests/maintenance-counterexample.test.mjs]
+    groups: [maintenance]
+  - patterns:
+      - .template-spec/plan/**
+      - .template-spec/templates/spec-template.md
+      - .template-spec/templates/spec-delta-template.md
+      - .template-spec/templates/examples/plan-spec/**
+      - .template-spec/templates/examples/lifecycle-writing-examples.md
+      - .template-spec/process/plan-spec-quality.md
+      - .template-spec/process/document-writing.md
+      - scripts/inspect-plan-spec
+      - scripts/lib/plan-spec-*.mjs
+    groups: [plan-spec-content]
+  - patterns:
+      - .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml
+      - .template-spec/process/schemas/lifecycle-checkpoint.schema.json
+      - .template-spec/process/templates/lifecycle-checkpoint-template.yaml
+      - .template-spec/process/templates/stage-checkpoint-template.md
+      - scripts/verify-lifecycle-checkpoint
+      - scripts/lib/checkpoint-boundary.mjs
+      - tests/checkpoint-boundary.test.mjs
+    groups: [lifecycle]
   - patterns:
       - tests/backend-platforms.test.mjs
       - tests/implementation-contract-compiler.test.mjs
@@ -453,6 +486,14 @@ routing:
     groups:
       - implementation
   - patterns:
+      - scripts/feature-assets
+      - scripts/lib/feature-assets.mjs
+      - tests/feature-assets.test.mjs
+      - tests/browser-session.test.mjs
+      - .agents/skills/yss-prototype-stage/scripts/browser-session.mjs
+    groups:
+      - feature-assets
+  - patterns:
       - scripts/**
     groups:
       - hygiene
@@ -471,6 +512,19 @@ routing:
     groups:
       - document-writing
 groups:
+  feature-assets:
+    commands:
+      - run: node --test tests/feature-assets.test.mjs tests/browser-session.test.mjs
+        when: template-source
+        id: check.feature-assets
+  business-tickets:
+    commands:
+      - run: node --test scripts/fixtures/business-tickets/*.test.mjs
+        id: check.business-ticket-contract
+  plan-spec-content:
+    commands:
+      - run: node --test .template-source/tooling/node/test/plan-spec-quality.test.mjs tests/plan-spec-template-contract.test.mjs
+      - run: node .agents/skills/i-have-adhd/tests/verify-integration.mjs
   cli-sync:
     commands:
       - run: node --test submodules/create-yss-spec/tests/sync-fast-smoke.test.js
@@ -623,6 +677,7 @@ groups:
         id: check.read-only-intake
   lifecycle:
     commands:
+      - run: node --test tests/checkpoint-boundary.test.mjs tests/flow-verification-routing.test.mjs tests/project-ci.test.mjs
       - run: node --test scripts/fixtures/reading-views/*.test.mjs
         when: template-source
         id: check.document-reading-views
@@ -682,7 +737,9 @@ groups:
         id: check.lifecycle-query-freshness
   maintenance:
     commands:
-      - run: scripts/verify-maintenance-checkpoint
+      - run: node --test tests/maintenance-counterexample.test.mjs
+        id: check.maintenance-counterexample
+      - run: scripts/verify-maintenance-checkpoint --history
           .template-source/evidence/maintenance/yss-tactical-design-l3-checkpoint-2026-08-27.yaml
         when: template-source
         id: check.7bb9adbe9bce5e99
@@ -734,7 +791,7 @@ groups:
         id: check.842384deeb868cce
       - run: scripts/verify-yss-prototype-contract-scenarios
         id: check.2c43904888dff190
-      - run: node --test .agents/skills/yss-prototype-stage/tests/antd-reference.test.mjs
+      - run: node --test .agents/skills/yss-prototype-stage/tests/verification-entry.test.mjs
         id: check.3a2236d542e47171
       - run: node .agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs validate-evidence
           .template-spec/design/templates/prototype-evidence-template.yaml --allow-template

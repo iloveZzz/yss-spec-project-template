@@ -68,21 +68,9 @@ description: "生成或改造完整 YSS UI CRUD、列表、表单、详情或左
 - 页面包含导出、报表、模板或附件下载时必须遵循 `file-export-download`，使用 `handleBlobResponse(res.data, res.headers)`，并检查生成方法是否已包含 `responseType: 'blob'`。
 - 若用户给出旧项目路径或截图，开发前必须先提取 UI/交互验收清单；交付前逐项对照，不允许只实现字段和接口。
 
-## 标准代码骨架
+## 页面骨架
 
-```text
-src/views/{module-name}/
-├── index.vue
-├── constant.ts
-├── style.less
-├── hooks/
-│   ├── use{Module}List.ts
-│   └── use{Module}Form.ts
-├── type.ts              # 独立类型较多时增加
-└── components/          # 多个私有视图时增加
-    ├── {Module}Table.vue
-    └── {Module}Modal.vue
-```
+首次建立页面目录时，读取 [页面目录与组合示例](references/page-layout-example.md)。
 
 ## 生成流程
 
@@ -94,52 +82,7 @@ src/views/{module-name}/
 6. 对 API 请求使用 Orval 真实生成类型和导出，在 hooks 内封装 loading、分页映射和失败后状态；错误 Toast 由 mutator 统一处理。
 7. 交付前检查导入来源、真实组件 API、分页字段、Formily schema 层级、主题 Token、查询按钮右下角布局、表格工具栏、样式作用域、删除确认和原型对照清单。
 
-## 最小组合示例
-
-```vue
-<script setup lang="ts">
-import { ref } from 'vue';
-import { YButton, YCard, YTable } from '@yss-ui/components';
-import { useTableHeight } from '@yss-ui/hooks';
-import { TABLE_COLUMNS } from './constant';
-import { useRuleList } from './hooks/useRuleList';
-
-const emit = defineEmits<{ create: [] }>();
-const tableAreaRef = ref<HTMLDivElement>();
-const { tableHeight, isReady } = useTableHeight(tableAreaRef, { withPagination: true, withToolbar: true });
-const { loading, dataList, pagination, handlePageChange } = useRuleList();
-
-/** 打开新增表单，实际项目中由表单 Hook 实现。 */
-const openCreate = (): void => {
-  emit('create');
-};
-</script>
-
-<template>
-  <YCard class="page-card">
-    <div ref="tableAreaRef" class="table-area">
-      <YTable
-        v-if="isReady"
-        :height="tableHeight"
-        :data="dataList"
-        :columns="TABLE_COLUMNS"
-        :loading="loading"
-        pageable
-        v-model:pagination="pagination"
-        @page-change="handlePageChange"
-      >
-        <template #toolbar-right>
-          <YButton type="primary" @click="openCreate">新增</YButton>
-        </template>
-      </YTable>
-    </div>
-  </YCard>
-</template>
-
-<style scoped lang="less">
-@import './style.less';
-</style>
-```
+需要组合 YCard、YTable 与高度 Hook 时，读取 [页面组合示例](references/page-composition-example.md)；API 与分页细则仍按实际命中的专项 Skill。
 
 ## 交付检查清单
 

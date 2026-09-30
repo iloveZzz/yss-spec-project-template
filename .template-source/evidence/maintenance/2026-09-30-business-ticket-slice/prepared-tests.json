@@ -1,0 +1,30 @@
+[
+  {
+    "package": "create-yss-spec",
+    "command": "npm run test:prepared",
+    "exit_code": 1,
+    "seconds": 100.4,
+    "log": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-delivery-rc5sezwi/create-yss-spec-prepared.log"
+  },
+  {
+    "package": "create-yss-strategic-design",
+    "command": "npm run test:prepared",
+    "exit_code": 0,
+    "seconds": 61.24,
+    "log": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-delivery-rc5sezwi/create-yss-strategic-design-prepared.log"
+  },
+  {
+    "package": "create-yss-harness-backend",
+    "command": "npm run test:prepared",
+    "exit_code": 0,
+    "seconds": 79.72,
+    "log": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-delivery-rc5sezwi/create-yss-harness-backend-prepared.log"
+  },
+  {
+    "package": "create-yss-harness-frontend",
+    "command": "npm run test:prepared",
+    "exit_code": 0,
+    "seconds": 128.27,
+    "log": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-business-delivery-rc5sezwi/create-yss-harness-frontend-prepared.log"
+  }
+]

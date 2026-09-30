@@ -1,0 +1,36 @@
+[
+  {
+    "name": "spec",
+    "init_exit_code": 0,
+    "target": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-enhancement-20260929-nqu8lb1k/cli-instances/spec",
+    "ensure_exit_code": 0,
+    "delivered": {
+      ".agents/skills/yss-prototype-stage/scripts/prototype-comparison.mjs": true,
+      ".agents/skills/yss-prototype-stage/assets/comparison/index.html": true,
+      ".agents/skills/yss-design-system/assets/enterprise-craft/index.html": false,
+      ".agents/skills/yss-design-system/scripts/export-craft-examples.mjs": false
+    }
+  },
+  {
+    "name": "design",
+    "init_exit_code": 1,
+    "target": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-enhancement-20260929-nqu8lb1k/cli-instances/design",
+    "delivered": {
+      ".agents/skills/yss-prototype-stage/scripts/prototype-comparison.mjs": false,
+      ".agents/skills/yss-prototype-stage/assets/comparison/index.html": false,
+      ".agents/skills/yss-design-system/assets/enterprise-craft/index.html": false,
+      ".agents/skills/yss-design-system/scripts/export-craft-examples.mjs": false
+    }
+  },
+  {
+    "name": "frontend",
+    "init_exit_code": 1,
+    "target": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-enhancement-20260929-nqu8lb1k/cli-instances/frontend",
+    "delivered": {
+      ".agents/skills/yss-prototype-stage/scripts/prototype-comparison.mjs": false,
+      ".agents/skills/yss-prototype-stage/assets/comparison/index.html": false,
+      ".agents/skills/yss-design-system/assets/enterprise-craft/index.html": false,
+      ".agents/skills/yss-design-system/scripts/export-craft-examples.mjs": false
+    }
+  }
+]

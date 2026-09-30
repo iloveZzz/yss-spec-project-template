@@ -1,0 +1,30 @@
+schema_version: 2
+intensity: L3
+classification_reason: 页面 Tag 导航改变生成组件语义，伴随三个现有技能配方和分发更新。
+triggers: [generation-semantics, aggregate-behavior-change]
+changed_assets:
+  - DESIGN.md
+  - .agents/skills/yss-prototype-stage
+  - .agents/skills/yss-design-system
+  - .agents/skills/prototype-review
+  - .template-spec/design
+  - skills-lock.json
+  - submodules/yss-harness-design-agent
+  - submodules/yss-harness-frontend-agent
+  - submodules/create-yss-spec
+  - submodules/create-yss-strategic-design
+  - submodules/create-yss-harness-frontend
+verification_evidence:
+  - kind: self-check
+    command: .template-source/evidence/maintenance/2026-09-30-workspace-tags/report.md
+    result: pass
+  - kind: fresh-verification
+    command: .template-source/evidence/maintenance/2026-09-30-workspace-tags/evidence/verification-final-summary.json
+    result: pass
+review_mode: self-check
+escalation: 本轮显式范围 fast 通过；浏览器人工复验和整体既有 committed 来源锁仍待闭合，不声明工程阶段完成。
+target_state: implementation-ready
+current_state: needs-human
+verification_profile: fast
+review_round: 0
+candidate_digest: null

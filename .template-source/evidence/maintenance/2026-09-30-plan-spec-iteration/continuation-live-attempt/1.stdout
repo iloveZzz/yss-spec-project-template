@@ -1,0 +1,4 @@
+
+> yss-template-node-tooling@1.0.0 check:vendor /Users/zhudaoming/Projects/yss-spec-project-template/.template-source/tooling/node
+> node scripts/build-vendor.mjs --check
+

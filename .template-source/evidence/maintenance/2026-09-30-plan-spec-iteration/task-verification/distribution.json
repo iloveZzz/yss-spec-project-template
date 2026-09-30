@@ -1,0 +1,62 @@
+{
+  "kind": "plan-spec-working-tree-distribution",
+  "source_state": "working-tree",
+  "status": "passed",
+  "fixed_commit_delivery": false,
+  "publication": "not-performed",
+  "scratch": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/plan-spec-distribution-IpWI0v",
+  "results": [
+    {
+      "package": "create-yss-spec",
+      "version": "3.5.3",
+      "snapshot": "2aca5ad8c0bff615d9d516c443be5546826ac28f7f8bec9fe9603d28fe858353",
+      "package_sha256": "5e6d8b0bf9bd4dd49e5cb8240ee612b771c731adb609e8550787983888a7ef94",
+      "install": "offline",
+      "init": "passed",
+      "byte_identity": "passed",
+      "check_diff": "passed",
+      "legacy": "unevaluated-as-designed",
+      "repeat_readonly": "passed",
+      "sync_preview": "passed"
+    },
+    {
+      "package": "create-yss-harness-design",
+      "version": "0.8.10",
+      "snapshot": "35107cb65ead3a180dec562fca9f68d153c9ff71091812f238e012a8d0a4cf2b",
+      "package_sha256": "26e1a5dd020a55c3c7561e60e5d16e18f762ee988d6eb90f91c12bcba427c27a",
+      "install": "offline",
+      "init": "passed",
+      "byte_identity": "passed",
+      "check_diff": "passed",
+      "legacy": "unevaluated-as-designed",
+      "repeat_readonly": "passed",
+      "sync_preview": "passed"
+    },
+    {
+      "package": "create-yss-harness-backend",
+      "version": "0.4.14",
+      "snapshot": "c391da31b0dd4c19f2bb2d82b64f60aab9cc5295d48ff4a6cd3e11f4d59daa24",
+      "package_sha256": "9699505583a0cbb22d11f1c455cc557f1e7c699e71fc8475e74c4f3a171280b4",
+      "install": "offline",
+      "init": "passed",
+      "byte_identity": "passed",
+      "check_diff": "passed",
+      "legacy": "unevaluated-as-designed",
+      "repeat_readonly": "passed",
+      "sync_preview": "passed"
+    },
+    {
+      "package": "create-yss-harness-frontend",
+      "version": "0.3.14",
+      "snapshot": "4bcc2e873fd70d38315f44f0c685dfed23a9cfebe04fea6020fa0f63a0c181f6",
+      "package_sha256": "afd49666b33da6d584b868a7d568eb56e5194cfa99251e0868a222937f23d774",
+      "install": "offline",
+      "init": "passed",
+      "byte_identity": "passed",
+      "check_diff": "passed",
+      "legacy": "unevaluated-as-designed",
+      "repeat_readonly": "passed",
+      "sync_preview": "passed"
+    }
+  ]
+}

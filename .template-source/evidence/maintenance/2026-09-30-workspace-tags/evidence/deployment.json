@@ -1,0 +1,11 @@
+{
+  "target": "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-30-enterprise-workspace",
+  "replaced": [
+    "review",
+    "patterns"
+  ],
+  "original_archive": "preview-before.tar.gz",
+  "additional_rollback": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-tag-replaced-drafts-j1lvxpen",
+  "sealed_comparison": "unchanged",
+  "approval": "未批准教学预览，本轮更新不代表用户视觉确认"
+}

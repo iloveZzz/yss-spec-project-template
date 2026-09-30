@@ -1,0 +1,26 @@
+{
+  "checked_at": "2026-09-29T10:30:08.980856+00:00",
+  "plan_version": "v1",
+  "plan_status": "finalized",
+  "plan_sha256": "a98dedd14508b2f6a3871b4650d6681fd4f90a3ecd44512744d87f43a6f495b3",
+  "worklist_sha256": "f4cd418dcb4792c75bddd7bff3e65aa5298337a528a7d0b8b870548a4a44ee42",
+  "confirmed_decisions": [
+    "Q1",
+    "Q2",
+    "Q3",
+    "Q4",
+    "Q5",
+    "Q6",
+    "Q7"
+  ],
+  "pending_decisions": [],
+  "future_execution_decisions": [
+    "校准后基于实测数据确认全量预算"
+  ],
+  "worklist_rows": 213,
+  "changed_skill_entries": [],
+  "missing_local_links": [],
+  "trailing_whitespace_lines": [],
+  "verification_scope": "计划保存回读、引用、决定状态、213项清单及入口摘要核对；未执行实施验证或真实模型评测。",
+  "result": "passed"
+}

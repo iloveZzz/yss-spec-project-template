@@ -1,0 +1,135 @@
+{
+  "root": {
+    "changed": [
+      ".agents/skills/.strategic-design-skills-manifest.json",
+      ".agents/skills/to-spec/SKILL.md",
+      ".agents/skills/yss-product-lifecycle/references/plan-requirements.md",
+      ".agents/skills/yss-stage-decision/SKILL.md",
+      ".codex/skills/yss-product-lifecycle/references/plan-requirements.md",
+      ".template-source/agents/strategic-design-skills-integration.md",
+      ".template-source/distribution/strategic-handoff-tools.lock.json",
+      ".template-source/tooling/node/package.json",
+      ".template-source/tooling/node/pnpm-lock.yaml",
+      ".template-source/tooling/node/scripts/build-vendor.mjs",
+      ".template-spec/plan/templates/plan-template.md",
+      ".template-spec/templates/examples/lifecycle-writing-examples.md",
+      ".template-spec/templates/spec-delta-template.md",
+      ".template-spec/templates/spec-template.md",
+      "scripts/sync-strategic-handoff-tools",
+      "scripts/vendor/NOTICES.md",
+      "scripts/vendor/manifest.json",
+      "skills-lock.json"
+    ],
+    "missing": [],
+    "baseline_count": 10287
+  },
+  "create-yss-strategic-design": {
+    "changed": [
+      "template.snapshot.json"
+    ],
+    "missing": [
+      "template/blobs/3387bb91afd2f6d1275a0bb443be1a4bc5c7821890b1dd983ddf59f72ec4ec1d",
+      "template/blobs/3f4060b8a3c4675e58acd71d6395cf39eed23f43d8369ea51c4ec74dcabc998d",
+      "template/blobs/4573fa8f636ff3097d5ea312d9c473259787a3c249555353916b3f359d51aef9",
+      "template/blobs/54ee36f9ddba106624134e0e02dc12effd02f4b7a7309fa445a00aaafaa2aa23",
+      "template/blobs/57c1b53df5b7c7d05d4d82f20177b99e5de3afdae0f1fb5191ac5348bce13eef",
+      "template/blobs/82887a944acfac443ad9329fc4fab5277b13b8d39d8e2c36cc04228e9ec83839",
+      "template/blobs/8f43b6eea7b84638218cc05217cc70629fe368107482ec0048218bbedbd810ff",
+      "template/blobs/abcf9407675e49ecc398629de10bc73e7f064131af5e393dd10cc03c062647d0",
+      "template/blobs/eba35bcc98b266be1bbfcce9d8786d09eaf919f53fc7ecd15febc9546d124803",
+      "template/blobs/eff685cdbe2036efbdd3a6fde8e714a6ca7e05af61c395e373f483049e096d4d"
+    ],
+    "baseline_count": 611
+  },
+  "yss-harness-design-agent": {
+    "changed": [
+      ".agents/skills/to-spec/SKILL.md",
+      ".agents/skills/yss-stage-decision/SKILL.md",
+      ".agents/skills/yss-strategic-design/references/plan-requirements.md",
+      ".template-source/distribution/strategic-handoff-tools.lock.json",
+      ".template-spec/plan/templates/plan-template.md",
+      ".template-spec/templates/examples/lifecycle-writing-examples.md",
+      ".template-spec/templates/spec-delta-template.md",
+      ".template-spec/templates/spec-template.md",
+      "scripts/vendor/NOTICES.md",
+      "scripts/vendor/manifest.json",
+      "skills-lock.json"
+    ],
+    "missing": [],
+    "baseline_count": 901
+  },
+  "yss-harness-backend-agent": {
+    "changed": [
+      ".agents/skills/harness-orchestrator/references/plan-requirements.md",
+      ".agents/skills/to-spec/SKILL.md",
+      ".template-source/distribution/strategic-handoff-tools.lock.json",
+      ".template-spec/templates/examples/lifecycle-writing-examples.md",
+      ".template-spec/templates/spec-delta-template.md",
+      ".template-spec/templates/spec-template.md",
+      "scripts/vendor/NOTICES.md",
+      "scripts/vendor/manifest.json",
+      "skills-lock.json"
+    ],
+    "missing": [],
+    "baseline_count": 1290
+  },
+  "yss-harness-frontend-agent": {
+    "changed": [
+      ".agents/skills/harness-orchestrator/references/plan-requirements.md",
+      ".agents/skills/to-spec/SKILL.md",
+      ".template-source/distribution/strategic-handoff-tools.lock.json",
+      ".template-spec/templates/examples/lifecycle-writing-examples.md",
+      ".template-spec/templates/spec-delta-template.md",
+      ".template-spec/templates/spec-template.md",
+      "scripts/vendor/NOTICES.md",
+      "scripts/vendor/manifest.json",
+      "skills-lock.json"
+    ],
+    "missing": [],
+    "baseline_count": 1483
+  },
+  "create-yss-spec": {
+    "changed": [
+      "scripts/sync-template.js",
+      "src/template/asset-runtime.js"
+    ],
+    "missing": [],
+    "baseline_count": 143
+  },
+  "create-yss-harness-frontend": {
+    "changed": [
+      "template.snapshot.json"
+    ],
+    "missing": [
+      "template/blobs/10d12f0d4c7c148afd74876d057afebdf0a97b65a21cdf2b67ca14a3ce804115",
+      "template/blobs/1e32401b66e360dd0fe1402340f351d11f891abf6496d16a67945e3311cac170",
+      "template/blobs/31ae696c4815c5e76b47dfb3f31be5a2cd055c1bad5b9b0f5255edd2ee4db2f7",
+      "template/blobs/3387bb91afd2f6d1275a0bb443be1a4bc5c7821890b1dd983ddf59f72ec4ec1d",
+      "template/blobs/3f4060b8a3c4675e58acd71d6395cf39eed23f43d8369ea51c4ec74dcabc998d",
+      "template/blobs/54ee36f9ddba106624134e0e02dc12effd02f4b7a7309fa445a00aaafaa2aa23",
+      "template/blobs/abcf9407675e49ecc398629de10bc73e7f064131af5e393dd10cc03c062647d0",
+      "template/blobs/eba35bcc98b266be1bbfcce9d8786d09eaf919f53fc7ecd15febc9546d124803"
+    ],
+    "baseline_count": 1155
+  },
+  "create-yss-harness-backend": {
+    "changed": [
+      "template.snapshot.json"
+    ],
+    "missing": [
+      "template/blobs/0e9d5b5ca0a94579ac672a2144383bb20f9f5a94234c8f437039a0b673c544ad",
+      "template/blobs/10d12f0d4c7c148afd74876d057afebdf0a97b65a21cdf2b67ca14a3ce804115",
+      "template/blobs/31ae696c4815c5e76b47dfb3f31be5a2cd055c1bad5b9b0f5255edd2ee4db2f7",
+      "template/blobs/3387bb91afd2f6d1275a0bb443be1a4bc5c7821890b1dd983ddf59f72ec4ec1d",
+      "template/blobs/3f4060b8a3c4675e58acd71d6395cf39eed23f43d8369ea51c4ec74dcabc998d",
+      "template/blobs/54ee36f9ddba106624134e0e02dc12effd02f4b7a7309fa445a00aaafaa2aa23",
+      "template/blobs/76bf2654debd7f0d16e376a49d4e0fde9bc195af9bdf9eb3470c2737e5c836a9",
+      "template/blobs/92c656bc1997fd679a4b057eca51cd7a9ff37207e5d3edcda237e84348a3d416",
+      "template/blobs/abcf9407675e49ecc398629de10bc73e7f064131af5e393dd10cc03c062647d0",
+      "template/blobs/b06995d062b45ba3a776127cae491a9d3fec9250df14a2b0a0f634f71842601e",
+      "template/blobs/b4c54a0aaad3f6eddefde6d06770a0e401fbb8fc6a8f49ce18af816bd144d14d",
+      "template/blobs/eba35bcc98b266be1bbfcce9d8786d09eaf919f53fc7ecd15febc9546d124803"
+    ],
+    "baseline_count": 958
+  }
+}

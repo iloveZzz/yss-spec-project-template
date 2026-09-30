@@ -1,0 +1,26 @@
+/* 复用 fixture/existing.html 的样式；不重定布局、字号或组件外观。 */
+body {
+  font: var(--brand-font-size)/var(--brand-line-height) var(--brand-font-family);
+  color: var(--brand-color-text);
+  background: var(--brand-color-bg-layout);
+}
+main {
+  padding: var(--brand-size);
+  background: var(--brand-color-bg-container);
+}
+td, th { padding: var(--brand-size-sm); text-align: left; }
+td { white-space: nowrap; }
+button, input { font: inherit; min-height: var(--yss-control-height); }
+
+/* 唯一变化的业务列：名称完整呈现，在可用宽度内折行。 */
+table { max-width: 100%; }
+td:nth-child(2) { white-space: normal; overflow-wrap: anywhere; }
+.table-scroll { max-width: 100%; overflow-x: auto; }
+input { max-width: 100%; box-sizing: border-box; }
+
+/* 场景工具独立于查询；焦点使用已有项目变体。 */
+.prototype-tools { margin: var(--brand-size); }
+:focus-visible {
+  outline: calc(var(--brand-line-width) * 2) solid var(--yss-color-primary-control);
+  outline-offset: var(--brand-line-width);
+}

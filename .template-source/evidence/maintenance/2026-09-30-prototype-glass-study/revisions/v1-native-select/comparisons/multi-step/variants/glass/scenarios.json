@@ -1,0 +1,188 @@
+{
+  "schema_version": 1,
+  "scenarios": [
+    {
+      "id": "primary",
+      "label": "正常",
+      "state_ref": ".agents/skills/yss-prototype-stage/references/business-patterns.md",
+      "initial_data": {
+        "rows": [
+          {
+            "id": "M-001",
+            "name": "季度经营分析资料",
+            "owner": "张明",
+            "status": "已更新",
+            "version": 1
+          },
+          {
+            "id": "M-002",
+            "name": "跨部门业务协作与异常处理说明（长名称示例）",
+            "owner": "李华",
+            "status": "待核对",
+            "version": 1
+          },
+          {
+            "id": "M-003",
+            "name": "归档清单",
+            "owner": "王宁",
+            "status": "已更新",
+            "version": 1
+          }
+        ],
+        "server_rows": [
+          {
+            "id": "M-001",
+            "name": "服务端最新资料名称",
+            "owner": "最新负责人",
+            "status": "已更新",
+            "version": 2
+          },
+          {
+            "id": "M-002",
+            "name": "服务端最新资料名称",
+            "owner": "最新负责人",
+            "status": "待核对",
+            "version": 2
+          },
+          {
+            "id": "M-003",
+            "name": "服务端最新资料名称",
+            "owner": "最新负责人",
+            "status": "已更新",
+            "version": 2
+          }
+        ],
+        "content": "待编辑内容",
+        "server_content": "重新加载的最新内容",
+        "outcome": "success",
+        "form": {
+          "name": "",
+          "owner": "",
+          "note": ""
+        }
+      }
+    },
+    {
+      "id": "failure",
+      "label": "保存失败",
+      "state_ref": ".agents/skills/yss-prototype-stage/references/business-patterns.md",
+      "initial_data": {
+        "rows": [
+          {
+            "id": "M-001",
+            "name": "季度经营分析资料",
+            "owner": "张明",
+            "status": "已更新",
+            "version": 1
+          },
+          {
+            "id": "M-002",
+            "name": "跨部门业务协作与异常处理说明（长名称示例）",
+            "owner": "李华",
+            "status": "待核对",
+            "version": 1
+          },
+          {
+            "id": "M-003",
+            "name": "归档清单",
+            "owner": "王宁",
+            "status": "已更新",
+            "version": 1
+          }
+        ],
+        "server_rows": [
+          {
+            "id": "M-001",
+            "name": "服务端最新资料名称",
+            "owner": "最新负责人",
+            "status": "已更新",
+            "version": 2
+          },
+          {
+            "id": "M-002",
+            "name": "服务端最新资料名称",
+            "owner": "最新负责人",
+            "status": "待核对",
+            "version": 2
+          },
+          {
+            "id": "M-003",
+            "name": "服务端最新资料名称",
+            "owner": "最新负责人",
+            "status": "已更新",
+            "version": 2
+          }
+        ],
+        "content": "待编辑内容",
+        "server_content": "重新加载的最新内容",
+        "outcome": "failure",
+        "form": {
+          "name": "",
+          "owner": "",
+          "note": ""
+        }
+      }
+    },
+    {
+      "id": "no-permission",
+      "label": "无编辑权限",
+      "state_ref": ".agents/skills/yss-prototype-stage/references/business-patterns.md",
+      "initial_data": {
+        "rows": [
+          {
+            "id": "M-001",
+            "name": "季度经营分析资料",
+            "owner": "张明",
+            "status": "已更新",
+            "version": 1
+          },
+          {
+            "id": "M-002",
+            "name": "跨部门业务协作与异常处理说明（长名称示例）",
+            "owner": "李华",
+            "status": "待核对",
+            "version": 1
+          },
+          {
+            "id": "M-003",
+            "name": "归档清单",
+            "owner": "王宁",
+            "status": "已更新",
+            "version": 1
+          }
+        ],
+        "server_rows": [
+          {
+            "id": "M-001",
+            "name": "服务端最新资料名称",
+            "owner": "最新负责人",
+            "status": "已更新",
+            "version": 2
+          },
+          {
+            "id": "M-002",
+            "name": "服务端最新资料名称",
+            "owner": "最新负责人",
+            "status": "待核对",
+            "version": 2
+          },
+          {
+            "id": "M-003",
+            "name": "服务端最新资料名称",
+            "owner": "最新负责人",
+            "status": "已更新",
+            "version": 2
+          }
+        ],
+        "content": "待编辑内容",
+        "server_content": "重新加载的最新内容",
+        "outcome": "no-permission",
+        "form": {
+          "name": "",
+          "owner": "",
+          "note": ""
+        }
+      }
+    }
+  ]
+}

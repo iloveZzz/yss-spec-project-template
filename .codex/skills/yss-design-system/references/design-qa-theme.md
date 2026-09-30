@@ -7,7 +7,7 @@
 - 规范：根 `DESIGN.md`
 - 治理说明：`.template-spec/design/design.md`
 - Token 投影：`.template-spec/design/tokens/theme.json`、`.template-spec/design/tokens/tokens.default.json`、`.template-spec/design/tokens/variables.css`
-- 主题选择：默认采用根 `DESIGN.md` 的 Data Quality 浅色主题；仅显式暗色 / 紧凑模式使用对应的 `tokens.dark.json` / `variables.dark.css` / `tokens.compact.json`，以实际消费文件记录摘要。
+- 主题选择：新原型默认浅色 compact，从根 `DESIGN.md` 的命名变体与 variables.css 选择密度；comfortable 使用普通变体，不消费生产 tokens.compact.json 算法结果。生产主题按实现合同选择。暗色只保留未验证历史快照入口，启用前重新派生与核验；摘要登记实际消费文件。
 - 实现截图：当前原型或页面在同一 viewport / 主题 / 状态下的渲染
 
 官方 `https://ant.design/design.md` 只是上游默认。项目覆盖与官方不同时，以根 `DESIGN.md` 为准；本清单不复制规范值。

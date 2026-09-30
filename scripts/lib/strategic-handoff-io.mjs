@@ -17,6 +17,10 @@ export function withSourceContextSnapshot(root, action) {
   roots.add(path.resolve(root));
   return sourceContextSnapshots.run(roots, action);
 }
+export function sourceContextRef(root, ref) {
+  return ref === 'CONTEXT.md' && sourceContextSnapshots.getStore()?.has(path.resolve(root))
+    ? 'source-context.snapshot.md' : ref;
+}
 export const ensure = (condition, message) => { if (!condition) throw new TypeError(message); };
 export const canonical = value => Array.isArray(value) ? value.map(canonical) : value && typeof value === 'object' ? Object.fromEntries(Object.keys(value).sort().map(k => [k, canonical(value[k])])) : value;
 export const hash = bytes => `sha256:${createHash('sha256').update(bytes).digest('hex')}`;
@@ -35,7 +39,7 @@ export function relative(ref) {
 }
 export function safe(root, ref, { missing = false } = {}) {
   relative(ref);
-  if (ref === 'CONTEXT.md' && sourceContextSnapshots.getStore()?.has(path.resolve(root))) ref = 'source-context.snapshot.md';
+  ref = sourceContextRef(root, ref);
   let current = path.resolve(root);
   ensure(!existsSync(current) || !lstatSync(current).isSymbolicLink(), `根目录不能是 symlink: ${root}`);
   for (const part of ref.split('/')) {
@@ -79,7 +83,7 @@ export function archive(command, source, destination) {
 export function sourceApprovalPolicy(source) {
   const roles=structuredClone(source);
   roles.user_decision_policy ||= {gates:[]};
-  ensure(!(roles.user_decision_policy.required_capabilities || []).some(id => id !== 'strategic-decision-reuse-v1'), '接收工具不支持源用户决定策略，请升级工具后验包');
+  ensure(!(roles.user_decision_policy.required_capabilities || []).some(id => !['strategic-decision-reuse-v1','business-ticket-approval-v1'].includes(id)), '接收工具不支持源用户决定策略，请升级工具后验包');
   const policy=roles.gate_policy;
   // Dedicated receivers may predate check_reviews. Mirror source check-review
   // rules into their existing digital review lookup without changing source bytes.

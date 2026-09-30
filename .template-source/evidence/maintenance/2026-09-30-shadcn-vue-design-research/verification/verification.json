@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "kind": "maintenance-research-verification",
+  "inputs": {
+    "brief": {
+      "ref": ".template-source/evidence/maintenance/2026-09-30-shadcn-vue-design-research/shadcn-vue-design-research-brief.md",
+      "digest": "sha256:5df02b5e363db621063858b3516670462c05c2b79506d57c7d00ab98f2a59224"
+    },
+    "evidence": {
+      "ref": ".template-source/evidence/maintenance/2026-09-30-shadcn-vue-design-research/shadcn-vue-design-evidence.yaml",
+      "digest": "sha256:db7f2d0db900ae51aefb11e44a28b1ceb9fbd0b3286f6a9e435d580da272039e"
+    },
+    "validator": {
+      "ref": ".agents/skills/yss-research/scripts/validate-research-package.mjs",
+      "digest": "sha256:5e4e437d54e67cce9dd380974744605bd149c71939c5f01e3ea4719c79911d0f"
+    }
+  },
+  "command": [
+    "node",
+    ".agents/skills/yss-research/scripts/validate-research-package.mjs",
+    ".template-source/evidence/maintenance/2026-09-30-shadcn-vue-design-research/shadcn-vue-design-research-brief.md",
+    ".template-source/evidence/maintenance/2026-09-30-shadcn-vue-design-research/shadcn-vue-design-evidence.yaml"
+  ],
+  "started_at": "2026-09-30T03:51:16.815Z",
+  "completed_at": "2026-09-30T03:51:16.850Z",
+  "exit_code": 0,
+  "stdout": {
+    "ref": ".template-source/evidence/maintenance/2026-09-30-shadcn-vue-design-research/verification/stdout.log",
+    "digest": "sha256:75f63bed11343c2274a5bcdc669eb2db07ca53c24c0444c13820603a40d7256b"
+  },
+  "stderr": {
+    "ref": ".template-source/evidence/maintenance/2026-09-30-shadcn-vue-design-research/verification/stderr.log",
+    "digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

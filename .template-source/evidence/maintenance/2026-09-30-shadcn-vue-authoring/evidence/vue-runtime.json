@@ -1,0 +1,35 @@
+{
+  "status": "passed",
+  "rows": [
+    {
+      "engine": "chromium",
+      "check": "teleport reset and Vue framework error boundary",
+      "status": "passed"
+    },
+    {
+      "engine": "webkit",
+      "check": "teleport reset and Vue framework error boundary",
+      "status": "passed"
+    },
+    {
+      "check": "comfortable + no-config H1 starter",
+      "width": 1440,
+      "style": {
+        "height": 32,
+        "expected": 32,
+        "font": "14px"
+      },
+      "status": "passed"
+    },
+    {
+      "check": "comfortable + no-config H1 starter",
+      "width": 390,
+      "style": {
+        "height": 32,
+        "expected": 32,
+        "font": "14px"
+      },
+      "status": "passed"
+    }
+  ]
+}

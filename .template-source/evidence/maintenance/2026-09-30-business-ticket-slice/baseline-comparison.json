@@ -1,0 +1,155 @@
+[
+  {
+    "repository": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "baseline_dirty_files": 1607,
+    "unchanged": 1586,
+    "changed": [
+      ".agents/skills/.strategic-design-skills-manifest.json",
+      ".agents/skills/to-spec/SKILL.md",
+      ".agents/skills/yss-prototype-stage/SKILL.md",
+      ".template-source/distribution/strategic-handoff-tools.lock.json",
+      ".template-source/evidence/maintenance/2026-09-30-flow-hardening/implementation.md",
+      ".template-source/process/template-verification-profiles.yaml",
+      ".template-source/profile-skill-sync.json",
+      ".template-spec/process/schemas/lifecycle-checkpoint.schema.json",
+      ".template-spec/templates/spec-template.md",
+      "scripts/lib/checkpoint-boundary.mjs",
+      "scripts/lib/lifecycle-status.mjs",
+      "scripts/lib/maintenance-counterexample.mjs",
+      "scripts/lib/project-ci-install.mjs",
+      "scripts/lib/project-governance.mjs",
+      "scripts/lib/stage-tracking.mjs",
+      "scripts/sync-strategic-handoff-tools",
+      "scripts/verify-lifecycle-checkpoint",
+      "scripts/verify-maintenance-risk-scenarios",
+      "skills-lock.json",
+      "tests/maintenance-counterexample.test.mjs",
+      "tests/project-ci.test.mjs"
+    ],
+    "now_absent": []
+  },
+  {
+    "repository": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-strategic-design",
+    "baseline_dirty_files": 168,
+    "unchanged": 157,
+    "changed": [
+      "template.snapshot.json"
+    ],
+    "now_absent": [
+      "template/blobs/37452bb7e537a42f5d7cdb1155c44b5b125812fe3517e1e6ae50862ad5c5ab11",
+      "template/blobs/42f91575ea6594b17c74371f38809fe32015cb80de90b4e951931de191471289",
+      "template/blobs/5bc1004f548648cf3045e02dfbead0ba11ae211d14553f516921e54844c66b22",
+      "template/blobs/762c5b9c10fdf850c5b1cfc08ac239a5572132ab126f580323aa36c1fedeb066",
+      "template/blobs/8d6867764ff020ea91c80334f59dabd897b82f61bf58f6d1cebe265e19b46518",
+      "template/blobs/bf5db8ade26c0341fddb9a3381a1b32efe67bb858e7e120b6eda2fee12d24e47",
+      "template/blobs/d0a54229680734304726e8d6c2445630994d5c016519c19d8ded67bd491637f0",
+      "template/blobs/d77aa11511dd61e74d62282e82964b17970af2c890773b84d9fa75e976070dd6",
+      "template/blobs/da623071f54eec6eede65d33c3ce4f72e5b2738066d5da09ed91e6398c1e8bca",
+      "template/blobs/df3958fae8cb7c9fbc2f5f2f0722d32ccf3b48503022174d48c7b365dc5f9504"
+    ]
+  },
+  {
+    "repository": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-design-agent",
+    "baseline_dirty_files": 189,
+    "unchanged": 178,
+    "changed": [
+      ".agents/skills/to-spec/SKILL.md",
+      ".agents/skills/yss-prototype-stage/SKILL.md",
+      ".template-source/distribution/strategic-handoff-tools.lock.json",
+      ".template-spec/process/schemas/lifecycle-checkpoint.schema.json",
+      ".template-spec/templates/spec-template.md",
+      "scripts/lib/checkpoint-boundary.mjs",
+      "scripts/lib/lifecycle-status.mjs",
+      "scripts/lib/project-ci-install.mjs",
+      "scripts/lib/project-governance.mjs",
+      "scripts/lib/stage-tracking.mjs",
+      "skills-lock.json"
+    ],
+    "now_absent": []
+  },
+  {
+    "repository": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-backend-agent",
+    "baseline_dirty_files": 51,
+    "unchanged": 41,
+    "changed": [
+      ".agents/skills/to-spec/SKILL.md",
+      ".template-source/distribution/strategic-handoff-tools.lock.json",
+      ".template-spec/process/schemas/lifecycle-checkpoint.schema.json",
+      ".template-spec/templates/spec-template.md",
+      "scripts/lib/checkpoint-boundary.mjs",
+      "scripts/lib/lifecycle-status.mjs",
+      "scripts/lib/project-ci-install.mjs",
+      "scripts/lib/project-governance.mjs",
+      "scripts/lib/stage-tracking.mjs",
+      "skills-lock.json"
+    ],
+    "now_absent": []
+  },
+  {
+    "repository": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-frontend-agent",
+    "baseline_dirty_files": 174,
+    "unchanged": 163,
+    "changed": [
+      ".agents/skills/to-spec/SKILL.md",
+      ".agents/skills/yss-prototype-stage/SKILL.md",
+      ".template-source/distribution/strategic-handoff-tools.lock.json",
+      ".template-spec/process/schemas/lifecycle-checkpoint.schema.json",
+      ".template-spec/templates/spec-template.md",
+      "scripts/lib/checkpoint-boundary.mjs",
+      "scripts/lib/lifecycle-status.mjs",
+      "scripts/lib/project-ci-install.mjs",
+      "scripts/lib/project-governance.mjs",
+      "scripts/lib/stage-tracking.mjs",
+      "skills-lock.json"
+    ],
+    "now_absent": []
+  },
+  {
+    "repository": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-spec",
+    "baseline_dirty_files": 4,
+    "unchanged": 3,
+    "changed": [
+      "src/template/asset-runtime.js"
+    ],
+    "now_absent": []
+  },
+  {
+    "repository": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-frontend",
+    "baseline_dirty_files": 168,
+    "unchanged": 157,
+    "changed": [
+      "template.snapshot.json"
+    ],
+    "now_absent": [
+      "template/blobs/37452bb7e537a42f5d7cdb1155c44b5b125812fe3517e1e6ae50862ad5c5ab11",
+      "template/blobs/3ff2b4eeda865e1e0dca254f876039d6cb5df93b17caeeb8a6ee6fb2bb95f3b9",
+      "template/blobs/42f91575ea6594b17c74371f38809fe32015cb80de90b4e951931de191471289",
+      "template/blobs/5bc1004f548648cf3045e02dfbead0ba11ae211d14553f516921e54844c66b22",
+      "template/blobs/6ee58670b29fc20686da1f136d3b6e652db26093ea6050537512ef9e71a55715",
+      "template/blobs/762c5b9c10fdf850c5b1cfc08ac239a5572132ab126f580323aa36c1fedeb066",
+      "template/blobs/8d6867764ff020ea91c80334f59dabd897b82f61bf58f6d1cebe265e19b46518",
+      "template/blobs/bf5db8ade26c0341fddb9a3381a1b32efe67bb858e7e120b6eda2fee12d24e47",
+      "template/blobs/d0a54229680734304726e8d6c2445630994d5c016519c19d8ded67bd491637f0",
+      "template/blobs/d77aa11511dd61e74d62282e82964b17970af2c890773b84d9fa75e976070dd6"
+    ]
+  },
+  {
+    "repository": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-backend",
+    "baseline_dirty_files": 51,
+    "unchanged": 41,
+    "changed": [
+      "template.snapshot.json"
+    ],
+    "now_absent": [
+      "template/blobs/37452bb7e537a42f5d7cdb1155c44b5b125812fe3517e1e6ae50862ad5c5ab11",
+      "template/blobs/42f91575ea6594b17c74371f38809fe32015cb80de90b4e951931de191471289",
+      "template/blobs/5bc1004f548648cf3045e02dfbead0ba11ae211d14553f516921e54844c66b22",
+      "template/blobs/762c5b9c10fdf850c5b1cfc08ac239a5572132ab126f580323aa36c1fedeb066",
+      "template/blobs/8d6867764ff020ea91c80334f59dabd897b82f61bf58f6d1cebe265e19b46518",
+      "template/blobs/98392f488053c82515a9f49ae34f28dca3d8b91c09175e5385898a848d41568f",
+      "template/blobs/bf5db8ade26c0341fddb9a3381a1b32efe67bb858e7e120b6eda2fee12d24e47",
+      "template/blobs/d0a54229680734304726e8d6c2445630994d5c016519c19d8ded67bd491637f0",
+      "template/blobs/d77aa11511dd61e74d62282e82964b17970af2c890773b84d9fa75e976070dd6"
+    ]
+  }
+]

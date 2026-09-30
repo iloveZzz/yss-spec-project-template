@@ -1,0 +1,14 @@
+{
+  "status": "passed",
+  "exit_code": 0,
+  "command": "scripts/verify-template-fast --report-dir <external-temp>/fast-final --checkpoint .template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/checkpoint.json --task-package .template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/task.json",
+  "report_ref": ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/fast-final/report.json",
+  "report_sha256": "fbab5c08cdf5c6629a04e54783d290e530ac3ff49643dfc4cdb8c3a67f84c62c",
+  "started_at": "2026-09-28T15:24:31.264Z",
+  "finished_at": "2026-09-28T15:28:47.585Z",
+  "input_sha256": "bcfe7fe07b3946d434705ae98b5c96ae07638288974a65f98201f37acd1846fd",
+  "input_after_sha256": "bcfe7fe07b3946d434705ae98b5c96ae07638288974a65f98201f37acd1846fd",
+  "input_drift": false,
+  "archive_note": "本报告及日志在核验完成后归档；原报告保留原始临时日志路径，归档副本位于fast-final/logs。归档后仅更新研究结果中的证据与文件清单，并重新验证任务包；未修改被审计技能或研究正文/台账。",
+  "earlier_attempt_ref": ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/fast-attempt1.json"
+}

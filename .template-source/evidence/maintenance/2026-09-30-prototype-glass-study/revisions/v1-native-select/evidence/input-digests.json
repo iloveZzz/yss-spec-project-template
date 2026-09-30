@@ -1,0 +1,15 @@
+{
+  "DESIGN.md": "418a1dde90e1b0e5c8551ea7e78126ceb738654b542185355d9d08b0dcbe73f4",
+  "CONTEXT.md": "a1bd2d8c69d0f057f5d95f311f8a6c387f2aa00060761a53e692a75c2e1c7b07",
+  ".template-spec/design/tokens/variables.css": "f8619314678bc3bb13d00e5457df2f1d2379c3b59b1cb1ed7fae2fac9aa86b1e",
+  ".agents/skills/yss-prototype-stage/assets/prototype-theme.css": "75662cbcb7c6acfbfef0b89a3f63f3f02a49da070599a711acaa2dcd15d5c572",
+  ".agents/skills/yss-prototype-stage/assets/shadcn-authoring/theme.css": "a60cba9503ff30b22c0538bec00229eca57fa52df7dec6928056a3c126083106",
+  ".agents/skills/yss-prototype-stage/scripts/build-shadcn-prototype.mjs": "86dc1369967bafd6166ea96e4655c0ab49f17794f2419ebac9ee201d23d76a1b",
+  ".agents/skills/yss-prototype-stage/scripts/prototype-comparison.mjs": "528b827ec73f1e0790f966e021a22d5c2b75b2aae0684e41cc8d7e84c80945f1",
+  ".agents/skills/yss-prototype-stage/assets/business-patterns/multi-step.tsx": "cee4e74f37c8b678beaefb865f485288817192068dfdbcdccab467bf973e5dd8",
+  ".agents/skills/yss-prototype-stage/assets/business-patterns/shared.tsx": "50ea32e80c10d1262e2d23591e8df92d07532f5bca6e99f97ab36159f4d9dde5",
+  ".agents/skills/yss-prototype-stage/assets/business-patterns/list-detail.scenarios.json": "5da5ae1309028b479a0251892f7d0168d482be18811fac8e215f10aa39aee31b",
+  ".agents/skills/yss-prototype-stage/assets/business-patterns/list-detail.tsx": "322eac815c8669988cfc8fac57f9855f14f836f815a3007760ad753837afa0b3",
+  ".agents/skills/yss-prototype-stage/assets/business-patterns/multi-step.scenarios.json": "3f837285023a7b092564d5c97c536e7dcd9a6dac375e34e86a949029ce9c3630",
+  ".agents/skills/yss-prototype-stage/assets/business-patterns/patterns.css": "901a9af3ef11a9cfd54c3f03517eeb2864e9ea25a4fb0430591e3c4113f2556b"
+}

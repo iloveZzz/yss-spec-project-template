@@ -35,7 +35,7 @@ design_baseline:
   canonical_design_digest: <sha256>
   project_design_ref: .template-spec/design/design.md
   project_token_refs:
-    # 默认 Data Quality 浅色；显式暗色 / 紧凑模式改为实际消费的对应快照，并同步摘要和视觉基线 cases[].theme。
+    # 原型默认浅色 compact 使用 DESIGN 命名变体，不切换为生产 tokens.compact.json；登记实际 CSS、密度与摘要。历史暗色快照未验证。
     - .template-spec/design/tokens/theme.json
     - .template-spec/design/tokens/tokens.default.json
     - .template-spec/design/tokens/variables.css
@@ -69,6 +69,8 @@ browser_delivery:
   console_result: pending
   console_ref: <path-to-console-output-or-none>
 design_qa:
+  # 同一 report_ref 内记录 320 CSS px 重排、实际 200% 缩放、目标区域/焦点遮挡、读屏版本与未执行项。
+  # 验证运行 report.json 经该报告引用；首次截图待审，自动扫描/模拟观察不替代用户研究。
   mode: design-contract # visual-reference 对应 visual-comparison
   report_ref: docs/.scratch/<feature>/verification/design-qa.md
   result: pending
@@ -80,7 +82,7 @@ design_qa:
     accessibility: pending
     cross_platform: pending
 profile_evidence:
-  # H1 只保留 visual_review；不得包含 package/lockfile/AntD 字段。
+  # H1 只保留 visual_review；不得包含 package/lockfile/组件来源 字段。
   # visual_review:
   #   runtime_build_required: false
   #   key_interactions_result: pending
@@ -91,7 +93,7 @@ profile_evidence:
   #   reduced_motion: {applicable: false, result: not-applicable, evidence_ref: not-applicable}
   flow_review:
     implementation:
-      framework: html-css-js
+      framework: vue-shadcn-prebuilt
       runtime_build_required: false
     scenario_replay_ref: <case-id-and-data-scenario-action-evidence>
     scenario_reset_result: pending
@@ -108,8 +110,19 @@ profile_evidence:
       result: pending
       evidence_ref: <snapshot-result-ref>
     prototype_library_facts:
-      applicable: false
-      component_basis: html-css-js
+      applicable: true
+      component_basis: vue-shadcn-prebuilt
+      source: source-snapshot
+      library_package: shadcn-vue
+      registry_revision: <40-char-upstream-revision>
+      manifest_ref: <registry-manifest-ref>
+      manifest_digest: <registry-manifest-digest>
+      build_provenance_ref: <build-provenance-ref>
+      components_covered: [<actual-components>]
+      canonical_design_digest: <same-as-design-baseline>
+      project_token_baseline_digest: <same-as-design-baseline>
+      new_api_uncertainty: false
+      # 原生轻量路线改为 applicable: false / component_basis: html-css-js，删除其余来源字段。
 implementation_handoff:
   prototype_code_reusable: false
   production_component_assumptions:

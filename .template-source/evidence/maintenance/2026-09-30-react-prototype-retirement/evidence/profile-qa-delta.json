@@ -1,0 +1,26 @@
+[
+  {
+    "profile": "design",
+    "path": ".agents/skills/yss-prototype-stage/tests/components-browser.mjs",
+    "before": "db496bb2f3a239b72abd017844c17c89b3b47ecdc50339d6ee29ebf36e863e4a",
+    "after": "57402b4a77b181095b2202e6b69dd981c9435ee5f992b468f56890ce2dd53a7e"
+  },
+  {
+    "profile": "design",
+    "path": ".agents/skills/yss-prototype-stage/tests/compact-theme-browser.mjs",
+    "before": "e2211f6c6a5f6acf36992cff0cb91bb52d1c9b6c3a40018ae2b059f85c4b9e68",
+    "after": "17fd8f2574c5ada3c37988c0e9c68a6e3b6b51c5bb771dd35375aade5009b497"
+  },
+  {
+    "profile": "frontend",
+    "path": ".agents/skills/yss-prototype-stage/tests/components-browser.mjs",
+    "before": "db496bb2f3a239b72abd017844c17c89b3b47ecdc50339d6ee29ebf36e863e4a",
+    "after": "57402b4a77b181095b2202e6b69dd981c9435ee5f992b468f56890ce2dd53a7e"
+  },
+  {
+    "profile": "frontend",
+    "path": ".agents/skills/yss-prototype-stage/tests/compact-theme-browser.mjs",
+    "before": "e2211f6c6a5f6acf36992cff0cb91bb52d1c9b6c3a40018ae2b059f85c4b9e68",
+    "after": "17fd8f2574c5ada3c37988c0e9c68a6e3b6b51c5bb771dd35375aade5009b497"
+  }
+]

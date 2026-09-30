@@ -1,0 +1,35 @@
+[
+  {
+    "name": "design",
+    "command": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-strategic-design/bin/create-yss-harness-design.js",
+      "sync",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-shadcn-20260930-9nc6xp5u/migration/design",
+      "--force",
+      "--prune",
+      "--apply"
+    ],
+    "exit_code": 1,
+    "customized_retired_file_preserved": true,
+    "unchanged_retired_collector_removed": false,
+    "new_builder_present": false
+  },
+  {
+    "name": "spec",
+    "command": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-spec/bin/create-yss-spec.js",
+      "sync",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-shadcn-20260930-9nc6xp5u/migration/spec",
+      "--force",
+      "--prune"
+    ],
+    "exit_code": 1,
+    "customized_retired_file_preserved": true,
+    "unchanged_retired_collector_removed": false,
+    "new_builder_present": false
+  }
+]

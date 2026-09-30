@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>资料查询</title>
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main>
+    <h1>资料查询</h1>
+    <form>
+      <label>名称或编号<input id="query"></label><button type="submit">查询</button><button type="reset">重置查询</button>
+    </form>
+    <p id="count" role="status" aria-live="polite" aria-atomic="true"></p>
+    <div class="table-container" role="region" aria-label="资料查询结果" tabindex="0">
+      <table>
+        <thead><tr><th scope="col">编号</th><th scope="col">资料名称</th><th scope="col">负责人</th><th scope="col">状态</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </main>
+  <aside aria-label="原型场景控制">
+    <button id="reset-scenario" type="button">重置场景</button>
+  </aside>
+  <script src="scenarios.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

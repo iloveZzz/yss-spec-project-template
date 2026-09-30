@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "max_turns": 12,
+  "max_seconds": 3600.0,
+  "attempts": [
+    {
+      "id": "c04f52c9-52aa-4aaa-862f-1f458c31d3e8",
+      "reserved_seconds": 300,
+      "status": "finished",
+      "started_at": 1790696040.214211,
+      "elapsed_seconds": 300.03278708300786
+    },
+    {
+      "id": "4a5c9363-7368-4e94-9ee7-6eafa225c0a4",
+      "reserved_seconds": 300,
+      "status": "finished",
+      "started_at": 1790696342.59202,
+      "elapsed_seconds": 300.0169348749914
+    },
+    {
+      "id": "7a3142d4-ebe4-48bd-b5c0-fd849a37008f",
+      "reserved_seconds": 300,
+      "status": "finished",
+      "started_at": 1790696645.129379,
+      "elapsed_seconds": 300.0157156669884
+    },
+    {
+      "id": "56f5a163-4229-4d0c-bb0c-62787b23bc72",
+      "reserved_seconds": 300,
+      "status": "finished",
+      "started_at": 1790696824.26571,
+      "elapsed_seconds": 300.0250539170229
+    },
+    {
+      "id": "f8d421e6-5845-4540-9a10-0348c2e88ac6",
+      "reserved_seconds": 300,
+      "status": "finished",
+      "started_at": 1790696958.4749389,
+      "elapsed_seconds": 300.01344729203265
+    },
+    {
+      "id": "4c909212-dcd2-4198-b375-8a76218bc06d",
+      "reserved_seconds": 300,
+      "status": "finished",
+      "started_at": 1790697127.481525,
+      "elapsed_seconds": 300.03043554199394
+    },
+    {
+      "id": "e7e6f21d-3e7e-441b-98ea-0ceb4f4374d0",
+      "reserved_seconds": 300,
+      "status": "finished",
+      "started_at": 1790697261.185927,
+      "elapsed_seconds": 300.0194478330086
+    },
+    {
+      "id": "ddd0c302-2efc-44ef-bb46-1038e6fbd7de",
+      "reserved_seconds": 300,
+      "status": "finished",
+      "started_at": 1790697430.137619,
+      "elapsed_seconds": 300.0219793750439
+    },
+    {
+      "id": "c99268a0-8e36-4a40-9e1b-7d7ac361a637",
+      "reserved_seconds": 300,
+      "status": "finished",
+      "started_at": 1790697563.753473,
+      "elapsed_seconds": 300.02940141700674
+    },
+    {
+      "id": "7ef700d5-a1cb-4822-afcf-8dfde79f32ff",
+      "reserved_seconds": 300,
+      "status": "finished",
+      "started_at": 1790697738.974357,
+      "elapsed_seconds": 300.02321995794773
+    },
+    {
+      "id": "2aac706e-ec42-4c98-807b-6d87cc914747",
+      "reserved_seconds": 300,
+      "status": "finished",
+      "started_at": 1790698041.552598,
+      "elapsed_seconds": 300.0221799580031
+    },
+    {
+      "id": "b32705ae-f50e-45f9-bbd0-f03a7f556c07",
+      "reserved_seconds": 299.7493970829528,
+      "status": "finished",
+      "started_at": 1790698343.314083,
+      "elapsed_seconds": 299.77620108396513
+    }
+  ]
+}

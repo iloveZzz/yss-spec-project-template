@@ -8,7 +8,8 @@
 - `.template-source/design/design-system-sync.yaml`：主模板与可独立分发的战略设计模板之间的共享章节版本与 SHA-256 同步摘要。
 - `.template-spec/design/design.md`：YSS 设计治理、双轨运行时、生命周期和验证说明；不与规范源重复定义 token。
 - `.template-spec/design/tokens/`：随仓库保存的主题、亮色 / 暗色 / 紧凑 token 和 CSS 变量快照，后续实现不得依赖本机 Downloads 目录或原始 Less。
-- 默认工作界面密度：`theme.json` 使用 default algorithm，与 Data Quality 的 32px 控件、14px 正文、20px Card 内距一致；仅显式紧凑模式叠加一次 compact algorithm；暗色紧凑模式组合 dark 与 compact algorithm，禁止重复压缩。
+- 新原型默认浅色 compact，按根 `DESIGN.md` 的命名变体选择桌面、窄屏与 comfortable；生产默认主题及可选 compact 算法与原型密度分别管理。暗色仅保留历史快照入口，未完成当前规范验证。
+- `.template-source/design/preview.html`：模板维护仓内的主题与组件状态展示（不随产品实例分发），支持密度切换和本地演示；原型技能另提供可运行组件展示及五类页面模式。
 
 Token 或组件视觉变体变更必须先修改 `DESIGN.md`，再更新派生快照；治理说明不得复制具体值。业务状态、API、权限和交互验收继续使用 Spec、交互说明及状态矩阵。
 
@@ -25,7 +26,7 @@ Token 或组件视觉变体变更必须先修改 `DESIGN.md`，再更新派生�
 - 表单、表格、弹窗、抽屉、步骤流等交互说明。
 - loading、empty、error、readonly、disabled、no-permission、conflict 等状态矩阵。
 - 页面字段、筛选条件、操作按钮和权限规则。
-- 原型交付物默认路径为 `docs/.scratch/<feature>/design/prototypes/index.html`，交付为离线资源包。H1/H2 默认采用 HTML/CSS/JavaScript；H2 的复杂交互影响评审结论时，可按集成说明选择真实 AntD 预构建，接收者无需 Node。真实 Vue 3 + YSS UI/AntDV 组件只在批准后的前端实现和实现还原验证中使用。产出后必须记录 Prototype Evidence schema v4、Visual Baseline schema v1、根 `DESIGN.md` digest 与 Token digest，并获得用户确认。
+- 原型交付物默认路径为 `docs/.scratch/<feature>/design/prototypes/index.html`，交付为离线资源包。高保真 H1/H2 优先采用 shadcn-vue + Vue 3 预构建，React 作者库已移除，旧包仅历史只读，轻量局部修改可用原生 HTML，接收者无需 Node。React AntD 原型生成路线已退役，历史证据只读。真实 Vue 3 + YSS UI/AntDV 组件只在批准后的前端实现和实现还原验证中使用。产出后必须记录 Prototype Evidence schema v4、Visual Baseline schema v1、根 `DESIGN.md` digest 与 Token digest，并获得用户确认。
 
 这些资产用于反推 API 影响、契约草案、OpenAPI 请求 / 响应字段、错误结构、分页筛选、权限状态和前端验收标准。
 
@@ -58,3 +59,7 @@ docs/.scratch/<feature>/design/prototypes/
 docs/.scratch/<feature>/architecture/diagrams/
 docs/.scratch/<feature>/plan/diagrams/
 ```
+
+## 企业工作区原型
+
+新企业页面使用原型技能的 `references/enterprise-workspace.md`；五类 Vue 模式、统一多页工作区和组件状态页由 export-vue-patterns.mjs 导出。密度与应用壳尺寸以根 DESIGN 为准。构建、模型单测与浏览器/人工离线验收分别记录，不能相互替代。

@@ -1,0 +1,1055 @@
+{
+  "schema_version": 1,
+  "attempts": 24,
+  "agent_seconds": 1586.5893010011641,
+  "active_reservations": 0,
+  "budget": {
+    "max_attempts": 24,
+    "max_agent_seconds": 2700
+  },
+  "runtime_metrics": {
+    "codex": {
+      "attempts": 15,
+      "automatic_passes": 14,
+      "average_seconds_successful": 64.62714285714286,
+      "median_seconds_successful": 59.39,
+      "max_seconds_successful": 166.98,
+      "reported_usage": {
+        "input_tokens": 2075915,
+        "cached_input_tokens": 1651328,
+        "cache_write_input_tokens": null,
+        "output_tokens": 21965
+      },
+      "timing_scope": "case process elapsed; global ledger agent_seconds is authoritative for budget"
+    },
+    "pi": {
+      "attempts": 9,
+      "automatic_passes": 9,
+      "average_seconds_successful": 72.65666666666667,
+      "median_seconds_successful": 86.73,
+      "max_seconds_successful": 151.22,
+      "reported_usage": {
+        "input_tokens": 798742,
+        "cached_input_tokens": 590728,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 24138
+      },
+      "timing_scope": "case process elapsed; global ledger agent_seconds is authoritative for budget"
+    },
+    "cursor": {
+      "attempts": 0,
+      "automatic_passes": 0,
+      "average_seconds_successful": null,
+      "median_seconds_successful": null,
+      "max_seconds_successful": null,
+      "reported_usage": null,
+      "timing_scope": "case process elapsed; global ledger agent_seconds is authoritative for budget"
+    }
+  },
+  "rows": [
+    {
+      "batch": "codex-baseline-first",
+      "scenario": "frontend-commit-advice",
+      "variant": "baseline",
+      "runtime": "codex",
+      "attempts": 1,
+      "automatic_result": "failed",
+      "write_scope": [
+        "passed"
+      ],
+      "runtime_errors": [
+        {
+          "type": "item.completed",
+          "item": {
+            "id": "item_0",
+            "type": "error",
+            "message": "Code Mode is unavailable because failed to spawn code-mode host /Users/zhudaoming/.local/bin/codex-code-mode-host: host executable was not found. Code mode will fail closed; enable `features.code_mode_host` and install `codex-code-mode-host`."
+          }
+        }
+      ],
+      "usage": {
+        "input_tokens": 46405,
+        "cached_input_tokens": 34432,
+        "cache_write_input_tokens": null,
+        "output_tokens": 903
+      },
+      "tool_calls": 0,
+      "observed_skill_reads": [],
+      "shell_output_bytes": null,
+      "result_ref": "calibration/codex-baseline-first/frontend-commit-advice-1/result.json",
+      "result_sha256": "157f692f1f82b0207c633a8cd2b3218059d7c42fce32268cfded239b8a160976",
+      "semantic_review": {
+        "reviewer": "primary-maintainer/self-check",
+        "independent_review": false,
+        "coverage": "bounded calibration only; not full Q5 validation",
+        "action_boundary": "no persistent fixture source write observed; no authorized-write workflow tested",
+        "status": "not-valid-behavior-evidence",
+        "note": "Host startup failed; answer alone is not skill execution."
+      },
+      "case_process_seconds": 44.03
+    },
+    {
+      "batch": "codex-baseline-rest",
+      "scenario": "agent-document-advice",
+      "variant": "baseline",
+      "runtime": "codex",
+      "attempts": 1,
+      "automatic_result": "passed",
+      "write_scope": [
+        "passed"
+      ],
+      "runtime_errors": [],
+      "usage": {
+        "input_tokens": 174160,
+        "cached_input_tokens": 139648,
+        "cache_write_input_tokens": null,
+        "output_tokens": 1403
+      },
+      "tool_calls": 8,
+      "observed_skill_reads": [
+        {
+          "path": ".agents/skills/writing-for-agents/SKILL.md",
+          "trace_line": 9,
+          "method": "successful-shell-read"
+        },
+        {
+          "path": ".agents/skills/i-have-adhd/SKILL.md",
+          "trace_line": 9,
+          "method": "successful-shell-read"
+        }
+      ],
+      "shell_output_bytes": 98639,
+      "result_ref": "calibration/codex-baseline-rest/agent-document-advice-1/result.json",
+      "result_sha256": "ab4b1270022caa43e4fdac14f8072a795c455db146f08f33e1158bf90f843527",
+      "semantic_review": {
+        "reviewer": "primary-maintainer/self-check",
+        "independent_review": false,
+        "coverage": "bounded calibration only; not full Q5 validation",
+        "action_boundary": "no persistent fixture source write observed; no authorized-write workflow tested",
+        "status": "bounded-readonly-outcome-and-route-observed",
+        "note": "Expected entry read and requested readonly answer observed; no real mutation/resume workflow tested."
+      },
+      "case_process_seconds": 66.31
+    },
+    {
+      "batch": "codex-baseline-rest",
+      "scenario": "explicit-compatibility",
+      "variant": "baseline",
+      "runtime": "codex",
+      "attempts": 1,
+      "automatic_result": "passed",
+      "write_scope": [
+        "passed"
+      ],
+      "runtime_errors": [],
+      "usage": {
+        "input_tokens": 178471,
+        "cached_input_tokens": 141824,
+        "cache_write_input_tokens": null,
+        "output_tokens": 1194
+      },
+      "tool_calls": 10,
+      "observed_skill_reads": [
+        {
+          "path": ".agents/skills/yss-product-lifecycle/SKILL.md",
+          "trace_line": 5,
+          "method": "successful-shell-read"
+        },
+        {
+          "path": ".agents/skills/to-spec/SKILL.md",
+          "trace_line": 24,
+          "method": "successful-shell-read"
+        }
+      ],
+      "shell_output_bytes": 85016,
+      "result_ref": "calibration/codex-baseline-rest/explicit-compatibility-1/result.json",
+      "result_sha256": "dea15c88f7c83b754436e87faaf0f65c1b792d061e0dc262ad4f438220a11c14",
+      "semantic_review": {
+        "reviewer": "primary-maintainer/self-check",
+        "independent_review": false,
+        "coverage": "bounded calibration only; not full Q5 validation",
+        "action_boundary": "no persistent fixture source write observed; no authorized-write workflow tested",
+        "status": "bounded-readonly-outcome-and-route-observed",
+        "note": "Expected entry read and requested readonly answer observed; no real mutation/resume workflow tested."
+      },
+      "case_process_seconds": 59.16
+    },
+    {
+      "batch": "codex-baseline-rest",
+      "scenario": "handoff-neighbor-negative",
+      "variant": "baseline",
+      "runtime": "codex",
+      "attempts": 1,
+      "automatic_result": "passed",
+      "write_scope": [
+        "passed"
+      ],
+      "runtime_errors": [],
+      "usage": {
+        "input_tokens": 23790,
+        "cached_input_tokens": 12288,
+        "cache_write_input_tokens": null,
+        "output_tokens": 291
+      },
+      "tool_calls": 0,
+      "observed_skill_reads": [],
+      "shell_output_bytes": null,
+      "result_ref": "calibration/codex-baseline-rest/handoff-neighbor-negative-1/result.json",
+      "result_sha256": "f9eade72d311de28ebecc1cddd7d67a4f2e3e532724864864fc7ee48d3fedf1a",
+      "semantic_review": {
+        "reviewer": "primary-maintainer/self-check",
+        "independent_review": false,
+        "coverage": "bounded calibration only; not full Q5 validation",
+        "action_boundary": "no persistent fixture source write observed; no authorized-write workflow tested",
+        "status": "unrelated-negative-control-passed",
+        "note": "No skill read/tool call observed. Prompt is far from intended trigger and does not satisfy planned near-neighbor coverage."
+      },
+      "case_process_seconds": 21.52
+    },
+    {
+      "batch": "codex-baseline-rest",
+      "scenario": "internal-core-neighbor-negative",
+      "variant": "baseline",
+      "runtime": "codex",
+      "attempts": 1,
+      "automatic_result": "passed",
+      "write_scope": [
+        "passed"
+      ],
+      "runtime_errors": [],
+      "usage": {
+        "input_tokens": 23780,
+        "cached_input_tokens": 12288,
+        "cache_write_input_tokens": null,
+        "output_tokens": 390
+      },
+      "tool_calls": 0,
+      "observed_skill_reads": [],
+      "shell_output_bytes": null,
+      "result_ref": "calibration/codex-baseline-rest/internal-core-neighbor-negative-1/result.json",
+      "result_sha256": "4856ae49754852c1a6b19fb727600ffcf6369ba6d96f8963c033dc6f937dca29",
+      "semantic_review": {
+        "reviewer": "primary-maintainer/self-check",
+        "independent_review": false,
+        "coverage": "bounded calibration only; not full Q5 validation",
+        "action_boundary": "no persistent fixture source write observed; no authorized-write workflow tested",
+        "status": "unrelated-negative-control-passed",
+        "note": "No skill read/tool call observed. Prompt is far from intended trigger and does not satisfy planned near-neighbor coverage."
+      },
+      "case_process_seconds": 23.43
+    },
+    {
+      "batch": "codex-baseline-rest",
+      "scenario": "workspace-authorized-scope",
+      "variant": "baseline",
+      "runtime": "codex",
+      "attempts": 1,
+      "automatic_result": "passed",
+      "write_scope": [
+        "passed"
+      ],
+      "runtime_errors": [],
+      "usage": {
+        "input_tokens": 94466,
+        "cached_input_tokens": 68480,
+        "cache_write_input_tokens": null,
+        "output_tokens": 1219
+      },
+      "tool_calls": 5,
+      "observed_skill_reads": [
+        {
+          "path": ".agents/skills/using-git-worktrees/SKILL.md",
+          "trace_line": 7,
+          "method": "successful-shell-read"
+        }
+      ],
+      "shell_output_bytes": 50441,
+      "result_ref": "calibration/codex-baseline-rest/workspace-authorized-scope-1/result.json",
+      "result_sha256": "19b5d34c4974aa5226a1ab46cff742efc65ce373fe514e12fb86b90b7256fdc6",
+      "semantic_review": {
+        "reviewer": "primary-maintainer/self-check",
+        "independent_review": false,
+        "coverage": "bounded calibration only; not full Q5 validation",
+        "action_boundary": "no persistent fixture source write observed; no authorized-write workflow tested",
+        "status": "bounded-readonly-outcome-and-route-observed",
+        "note": "Expected entry read and requested readonly answer observed; no real mutation/resume workflow tested."
+      },
+      "case_process_seconds": 52.14
+    },
+    {
+      "batch": "codex-candidate",
+      "scenario": "agent-document-advice",
+      "variant": "candidate",
+      "runtime": "codex",
+      "attempts": 1,
+      "automatic_result": "passed",
+      "write_scope": [
+        "passed"
+      ],
+      "runtime_errors": [],
+      "usage": {
+        "input_tokens": 131184,
+        "cached_input_tokens": 91008,
+        "cache_write_input_tokens": null,
+        "output_tokens": 1725
+      },
+      "tool_calls": 11,
+      "observed_skill_reads": [
+        {
+          "path": ".agents/skills/writing-for-agents/SKILL.md",
+          "trace_line": 7,
+          "method": "successful-shell-read"
+        },
+        {
+          "path": ".agents/skills/i-have-adhd/SKILL.md",
+          "trace_line": 9,
+          "method": "successful-shell-read"
+        }
+      ],
+      "shell_output_bytes": 113983,
+      "result_ref": "calibration/codex-candidate/agent-document-advice-1/result.json",
+      "result_sha256": "923373d403edf284a72b927085cdd9a2380fb087c060a2288e52aaedb4d7e610",
+      "semantic_review": {
+        "reviewer": "primary-maintainer/self-check",
+        "independent_review": false,
+        "coverage": "bounded calibration only; not full Q5 validation",
+        "action_boundary": "no persistent fixture source write observed; no authorized-write workflow tested",
+        "status": "bounded-readonly-outcome-and-route-observed",
+        "note": "Expected entry read and requested readonly answer observed; no real mutation/resume workflow tested."
+      },
+      "case_process_seconds": 72.67
+    },
+    {
+      "batch": "codex-candidate",
+      "scenario": "explicit-compatibility",
+      "variant": "candidate",
+      "runtime": "codex",
+      "attempts": 1,
+      "automatic_result": "passed",
+      "write_scope": [
+        "passed"
+      ],
+      "runtime_errors": [],
+      "usage": {
+        "input_tokens": 322556,
+        "cached_input_tokens": 292608,
+        "cache_write_input_tokens": null,
+        "output_tokens": 1253
+      },
+      "tool_calls": 13,
+      "observed_skill_reads": [
+        {
+          "path": ".agents/skills/yss-product-lifecycle/SKILL.md",
+          "trace_line": 9,
+          "method": "successful-shell-read"
+        },
+        {
+          "path": ".agents/skills/to-spec/SKILL.md",
+          "trace_line": 21,
+          "method": "successful-shell-read"
+        }
+      ],
+      "shell_output_bytes": 58897,
+      "result_ref": "calibration/codex-candidate/explicit-compatibility-1/result.json",
+      "result_sha256": "765fb633d33f0cff4fa2f6eb04682858f58f4139fe01df96d1771697f3993ec0",
+      "semantic_review": {
+        "reviewer": "primary-maintainer/self-check",
+        "independent_review": false,
+        "coverage": "bounded calibration only; not full Q5 validation",
+        "action_boundary": "no persistent fixture source write observed; no authorized-write workflow tested",
+        "status": "bounded-readonly-outcome-and-route-observed",
+        "note": "Expected entry read and requested readonly answer observed; no real mutation/resume workflow tested."
+      },
+      "case_process_seconds": 65.55
+    },
+    {
+      "batch": "codex-candidate",
+      "scenario": "frontend-commit-advice",
+      "variant": "candidate",
+      "runtime": "codex",
+      "attempts": 1,
+      "automatic_result": "passed",
+      "write_scope": [
+        "passed"
+      ],
+      "runtime_errors": [],
+      "usage": {
+        "input_tokens": 127148,
+        "cached_input_tokens": 95872,
+        "cache_write_input_tokens": null,
+        "output_tokens": 1374
+      },
+      "tool_calls": 15,
+      "observed_skill_reads": [
+        {
+          "path": ".agents/skills/frontend-commit/SKILL.md",
+          "trace_line": 7,
+          "method": "successful-shell-read"
+        },
+        {
+          "path": ".agents/skills/git-commit-core/SKILL.md",
+          "trace_line": 12,
+          "method": "successful-shell-read"
+        }
+      ],
+      "shell_output_bytes": 85189,
+      "result_ref": "calibration/codex-candidate/frontend-commit-advice-1/result.json",
+      "result_sha256": "5d441e777665402689d80654b4ebf8b7ccd683a802bb1372b4f5895efca4e70d",
+      "semantic_review": {
+        "reviewer": "primary-maintainer/self-check",
+        "independent_review": false,
+        "coverage": "bounded calibration only; not full Q5 validation",
+        "action_boundary": "no persistent fixture source write observed; no authorized-write workflow tested",
+        "status": "bounded-advice-and-shared-reference-observed",
+        "note": "Public frontend entry and git-commit-core were read; advice preserved no-commit authorization. No actual Vue diff/front-end project in fixture. No authorized commit workflow evidence."
+      },
+      "case_process_seconds": 59.62
+    },
+    {
+      "batch": "codex-candidate",
+      "scenario": "handoff-neighbor-negative",
+      "variant": "candidate",
+      "runtime": "codex",
+      "attempts": 1,
+      "automatic_result": "passed",
+      "write_scope": [
+        "passed"
+      ],
+      "runtime_errors": [],
+      "usage": {
+        "input_tokens": 23772,
+        "cached_input_tokens": 12288,
+        "cache_write_input_tokens": null,
+        "output_tokens": 330
+      },
+      "tool_calls": 0,
+      "observed_skill_reads": [],
+      "shell_output_bytes": null,
+      "result_ref": "calibration/codex-candidate/handoff-neighbor-negative-1/result.json",
+      "result_sha256": "27e282b1927ad6cca73eaabaeee4e28a2c3cca56a8f1a07d840a4f90022964c7",
+      "semantic_review": {
+        "reviewer": "primary-maintainer/self-check",
+        "independent_review": false,
+        "coverage": "bounded calibration only; not full Q5 validation",
+        "action_boundary": "no persistent fixture source write observed; no authorized-write workflow tested",
+        "status": "unrelated-negative-control-passed",
+        "note": "No skill read/tool call observed. Prompt is far from intended trigger and does not satisfy planned near-neighbor coverage."
+      },
+      "case_process_seconds": 20.93
+    },
+    {
+      "batch": "codex-candidate",
+      "scenario": "internal-core-neighbor-negative",
+      "variant": "candidate",
+      "runtime": "codex",
+      "attempts": 1,
+      "automatic_result": "passed",
+      "write_scope": [
+        "passed"
+      ],
+      "runtime_errors": [],
+      "usage": {
+        "input_tokens": 23764,
+        "cached_input_tokens": 12288,
+        "cache_write_input_tokens": null,
+        "output_tokens": 432
+      },
+      "tool_calls": 0,
+      "observed_skill_reads": [],
+      "shell_output_bytes": null,
+      "result_ref": "calibration/codex-candidate/internal-core-neighbor-negative-1/result.json",
+      "result_sha256": "dd20b558f05ff89502c7277f6bb706d2cbdf2baa9d05daad643e64f48c67bced",
+      "semantic_review": {
+        "reviewer": "primary-maintainer/self-check",
+        "independent_review": false,
+        "coverage": "bounded calibration only; not full Q5 validation",
+        "action_boundary": "no persistent fixture source write observed; no authorized-write workflow tested",
+        "status": "unrelated-negative-control-passed",
+        "note": "No skill read/tool call observed. Prompt is far from intended trigger and does not satisfy planned near-neighbor coverage."
+      },
+      "case_process_seconds": 24.48
+    },
+    {
+      "batch": "codex-candidate",
+      "scenario": "workspace-authorized-scope",
+      "variant": "candidate",
+      "runtime": "codex",
+      "attempts": 1,
+      "automatic_result": "passed",
+      "write_scope": [
+        "passed"
+      ],
+      "runtime_errors": [],
+      "usage": {
+        "input_tokens": 87060,
+        "cached_input_tokens": 61952,
+        "cache_write_input_tokens": null,
+        "output_tokens": 1270
+      },
+      "tool_calls": 6,
+      "observed_skill_reads": [
+        {
+          "path": ".agents/skills/using-git-worktrees/SKILL.md",
+          "trace_line": 7,
+          "method": "successful-shell-read"
+        }
+      ],
+      "shell_output_bytes": 49934,
+      "result_ref": "calibration/codex-candidate/workspace-authorized-scope-1/result.json",
+      "result_sha256": "0716a6c760a95846b17a61e4f10a5bb3f8ddc85dc80281ad747aadd8bd36fb82",
+      "semantic_review": {
+        "reviewer": "primary-maintainer/self-check",
+        "independent_review": false,
+        "coverage": "bounded calibration only; not full Q5 validation",
+        "action_boundary": "no persistent fixture source write observed; no authorized-write workflow tested",
+        "status": "bounded-readonly-outcome-and-route-observed",
+        "note": "Expected entry read and requested readonly answer observed; no real mutation/resume workflow tested."
+      },
+      "case_process_seconds": 58.53
+    },
+    {
+      "batch": "codex-invocation-reference-baseline",
+      "scenario": "invocation-reference-boundary",
+      "variant": "baseline",
+      "runtime": "codex",
+      "attempts": 1,
+      "automatic_result": "passed",
+      "write_scope": [
+        "passed"
+      ],
+      "runtime_errors": [],
+      "usage": {
+        "input_tokens": 338309,
+        "cached_input_tokens": 277760,
+        "cache_write_input_tokens": null,
+        "output_tokens": 4035
+      },
+      "tool_calls": 15,
+      "observed_skill_reads": [
+        {
+          "path": ".agents/skills/yss-research/SKILL.md",
+          "trace_line": 8,
+          "method": "successful-shell-read"
+        },
+        {
+          "path": ".agents/skills/code-review/SKILL.md",
+          "trace_line": 8,
+          "method": "successful-shell-read"
+        },
+        {
+          "path": ".agents/skills/writing-for-agents/SKILL.md",
+          "trace_line": 10,
+          "method": "successful-shell-read"
+        },
+        {
+          "path": ".agents/skills/writing-for-agents/SKILL-MECHANICS.md",
+          "trace_line": 10,
+          "method": "successful-shell-read"
+        },
+        {
+          "path": ".agents/skills/i-have-adhd/SKILL.md",
+          "trace_line": 14,
+          "method": "successful-shell-read"
+        },
+        {
+          "path": ".agents/skills/to-spec/SKILL.md",
+          "trace_line": 27,
+          "method": "successful-shell-read"
+        },
+        {
+          "path": ".agents/skills/writing-for-agents/SKILL-MECHANICS.md",
+          "trace_line": 27,
+          "method": "successful-shell-read"
+        }
+      ],
+      "shell_output_bytes": 166435,
+      "result_ref": "calibration/codex-invocation-reference-baseline/invocation-reference-boundary-1/result.json",
+      "result_sha256": "3dcc2c412cf5e4f5a38015c3c5ece597c3954345cd3f7bc18f4a7f879ee91653",
+      "semantic_review": {
+        "reviewer": "primary-maintainer/self-check",
+        "independent_review": false,
+        "coverage": "bounded calibration only; not full Q5 validation",
+        "action_boundary": "no persistent fixture source write observed; no authorized-write workflow tested",
+        "status": "bounded-source-correctness-review-passed",
+        "note": "Baseline model identified false absolute mechanics; candidate recognized corrected separation of selection, reference reading and actions. Single pair, no cost-improvement claim."
+      },
+      "case_process_seconds": 150.76
+    },
+    {
+      "batch": "codex-invocation-reference-candidate",
+      "scenario": "invocation-reference-boundary",
+      "variant": "candidate-v2",
+      "runtime": "codex",
+      "attempts": 1,
+      "automatic_result": "passed",
+      "write_scope": [
+        "passed"
+      ],
+      "runtime_errors": [],
+      "usage": {
+        "input_tokens": 358784,
+        "cached_input_tokens": 302592,
+        "cache_write_input_tokens": null,
+        "output_tokens": 4659
+      },
+      "tool_calls": 18,
+      "observed_skill_reads": [
+        {
+          "path": ".agents/skills/writing-for-agents/SKILL-MECHANICS.md",
+          "trace_line": 14,
+          "method": "successful-shell-read"
+        },
+        {
+          "path": ".agents/skills/writing-for-agents/SKILL.md",
+          "trace_line": 14,
+          "method": "successful-shell-read"
+        },
+        {
+          "path": ".agents/skills/yss-research/SKILL.md",
+          "trace_line": 16,
+          "method": "successful-shell-read"
+        },
+        {
+          "path": ".agents/skills/i-have-adhd/SKILL.md",
+          "trace_line": 28,
+          "method": "successful-shell-read"
+        }
+      ],
+      "shell_output_bytes": 167954,
+      "result_ref": "calibration/codex-invocation-reference-candidate/invocation-reference-boundary-1/result.json",
+      "result_sha256": "05336d1a69ee88c6477dede6ea18cb4794faca083445910080439f964113d139",
+      "semantic_review": {
+        "reviewer": "primary-maintainer/self-check",
+        "independent_review": false,
+        "coverage": "bounded calibration only; not full Q5 validation",
+        "action_boundary": "no persistent fixture source write observed; no authorized-write workflow tested",
+        "status": "bounded-source-correctness-review-passed",
+        "note": "Baseline model identified false absolute mechanics; candidate recognized corrected separation of selection, reference reading and actions. Single pair, no cost-improvement claim."
+      },
+      "case_process_seconds": 166.98
+    },
+    {
+      "batch": "codex-paired-baseline-first",
+      "scenario": "frontend-commit-advice",
+      "variant": "baseline",
+      "runtime": "codex",
+      "attempts": 1,
+      "automatic_result": "passed",
+      "write_scope": [
+        "passed"
+      ],
+      "runtime_errors": [],
+      "usage": {
+        "input_tokens": 122266,
+        "cached_input_tokens": 96000,
+        "cache_write_input_tokens": null,
+        "output_tokens": 1487
+      },
+      "tool_calls": 9,
+      "observed_skill_reads": [
+        {
+          "path": ".agents/skills/frontend-commit/SKILL.md",
+          "trace_line": 7,
+          "method": "successful-shell-read"
+        },
+        {
+          "path": ".agents/skills/git-commit-core/SKILL.md",
+          "trace_line": 11,
+          "method": "successful-shell-read"
+        }
+      ],
+      "shell_output_bytes": 27741,
+      "result_ref": "calibration/codex-paired-baseline-first/frontend-commit-advice-1/result.json",
+      "result_sha256": "2e790ffadb5a720ccc15e3160f5a4ed8cf912e3e6590a9b8d5d340a647785f48",
+      "semantic_review": {
+        "reviewer": "primary-maintainer/self-check",
+        "independent_review": false,
+        "coverage": "bounded calibration only; not full Q5 validation",
+        "action_boundary": "no persistent fixture source write observed; no authorized-write workflow tested",
+        "status": "bounded-advice-and-shared-reference-observed",
+        "note": "Public frontend entry and git-commit-core were read; advice preserved no-commit authorization. No actual Vue diff/front-end project in fixture. No authorized commit workflow evidence."
+      },
+      "case_process_seconds": 62.7
+    },
+    {
+      "batch": "cursor-preflight",
+      "scenario": "frontend-commit-advice",
+      "variant": "baseline",
+      "runtime": "cursor",
+      "attempts": 0,
+      "automatic_result": "failed",
+      "write_scope": [],
+      "runtime_errors": [
+        {
+          "type": "RuntimeError",
+          "message": "Cursor authentication unavailable in isolated HOME",
+          "phase": "fixture-or-execution"
+        }
+      ],
+      "usage": null,
+      "tool_calls": 0,
+      "observed_skill_reads": [],
+      "shell_output_bytes": null,
+      "result_ref": "calibration/cursor-preflight/frontend-commit-advice-1/result.json",
+      "result_sha256": "d8529a3d25848616f6aabf64406ef909a3cb0434c57d09456e856d660d811796",
+      "semantic_review": {
+        "reviewer": "primary-maintainer/self-check",
+        "independent_review": false,
+        "coverage": "bounded calibration only; not full Q5 validation",
+        "action_boundary": "no persistent fixture source write observed; no authorized-write workflow tested",
+        "status": "not-valid-behavior-evidence",
+        "note": "Isolated Cursor HOME cannot authenticate; no model launch."
+      },
+      "case_process_seconds": 0
+    },
+    {
+      "batch": "pi-baseline-first",
+      "scenario": "frontend-commit-advice",
+      "variant": "baseline",
+      "runtime": "pi",
+      "attempts": 1,
+      "automatic_result": "passed",
+      "write_scope": [
+        "passed"
+      ],
+      "runtime_errors": [],
+      "usage": {
+        "input_tokens": 192204,
+        "cached_input_tokens": 158856,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 4705
+      },
+      "tool_calls": 14,
+      "observed_skill_reads": [
+        {
+          "path": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-skills-implementation-w6dd3k2z/calibration/pi-baseline-first/frontend-commit-advice-1/workspace/.pi/skills/frontend-commit/SKILL.md",
+          "trace_line": 219,
+          "method": "pi-read-request; verify corresponding result",
+          "tool_result_success": true
+        },
+        {
+          "path": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-skills-implementation-w6dd3k2z/calibration/pi-baseline-first/frontend-commit-advice-1/workspace/.pi/skills/git-commit-core/SKILL.md",
+          "trace_line": 510,
+          "method": "pi-read-request; verify corresponding result",
+          "tool_result_success": true
+        }
+      ],
+      "shell_output_bytes": null,
+      "result_ref": "calibration/pi-baseline-first/frontend-commit-advice-1/result.json",
+      "result_sha256": "f3c997e2be58ad52b261607eb29964fc03d2d3815803bafe3d2ff7d136316eb3",
+      "semantic_review": {
+        "reviewer": "primary-maintainer/self-check",
+        "independent_review": false,
+        "coverage": "bounded calibration only; not full Q5 validation",
+        "action_boundary": "no persistent fixture source write observed; no authorized-write workflow tested",
+        "status": "bounded-advice-and-shared-reference-observed",
+        "note": "Public frontend entry and git-commit-core were read; advice preserved no-commit authorization. No actual Vue diff/front-end project in fixture. No authorized commit workflow evidence."
+      },
+      "case_process_seconds": 109.5
+    },
+    {
+      "batch": "pi-baseline-paired",
+      "scenario": "agent-document-advice",
+      "variant": "baseline",
+      "runtime": "pi",
+      "attempts": 1,
+      "automatic_result": "passed",
+      "write_scope": [
+        "passed"
+      ],
+      "runtime_errors": [],
+      "usage": {
+        "input_tokens": 100529,
+        "cached_input_tokens": 76312,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 3836
+      },
+      "tool_calls": 8,
+      "observed_skill_reads": [
+        {
+          "path": ".pi/skills/writing-for-agents/SKILL.md",
+          "trace_line": 166,
+          "method": "pi-read-request; verify corresponding result",
+          "tool_result_success": true
+        }
+      ],
+      "shell_output_bytes": null,
+      "result_ref": "calibration/pi-baseline-paired/agent-document-advice-1/result.json",
+      "result_sha256": "175360f81084b67162c788fac1c39054337ebda9856c8424accb9940c8242898",
+      "semantic_review": {
+        "reviewer": "primary-maintainer/self-check",
+        "independent_review": false,
+        "coverage": "bounded calibration only; not full Q5 validation",
+        "action_boundary": "no persistent fixture source write observed; no authorized-write workflow tested",
+        "status": "bounded-readonly-outcome-and-route-observed",
+        "note": "Expected entry read and requested readonly answer observed; no real mutation/resume workflow tested."
+      },
+      "case_process_seconds": 106.43
+    },
+    {
+      "batch": "pi-baseline-paired",
+      "scenario": "explicit-compatibility",
+      "variant": "baseline",
+      "runtime": "pi",
+      "attempts": 1,
+      "automatic_result": "passed",
+      "write_scope": [
+        "passed"
+      ],
+      "runtime_errors": [],
+      "usage": {
+        "input_tokens": 66323,
+        "cached_input_tokens": 45280,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 1720
+      },
+      "tool_calls": 4,
+      "observed_skill_reads": [],
+      "shell_output_bytes": null,
+      "result_ref": "calibration/pi-baseline-paired/explicit-compatibility-1/result.json",
+      "result_sha256": "a898737c2deabe6925446be5eb3a9a1ea66d1f0445c49f6787831f0b85cb2e30",
+      "semantic_review": {
+        "reviewer": "primary-maintainer/self-check",
+        "independent_review": false,
+        "coverage": "bounded calibration only; not full Q5 validation",
+        "action_boundary": "no persistent fixture source write observed; no authorized-write workflow tested",
+        "status": "outcome-only-native-explicit-unverified",
+        "note": "Correct template-source refusal. to-spec body not read. Natural-language skill name is not Pi /skill: invocation evidence."
+      },
+      "case_process_seconds": 43.19
+    },
+    {
+      "batch": "pi-baseline-paired",
+      "scenario": "handoff-neighbor-negative",
+      "variant": "baseline",
+      "runtime": "pi",
+      "attempts": 1,
+      "automatic_result": "passed",
+      "write_scope": [
+        "passed"
+      ],
+      "runtime_errors": [],
+      "usage": {
+        "input_tokens": 14955,
+        "cached_input_tokens": 1336,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 544
+      },
+      "tool_calls": 0,
+      "observed_skill_reads": [],
+      "shell_output_bytes": null,
+      "result_ref": "calibration/pi-baseline-paired/handoff-neighbor-negative-1/result.json",
+      "result_sha256": "bf8b9b4263618343894e6d683e87b5a95059f3da35efaf3677d3043289178465",
+      "semantic_review": {
+        "reviewer": "primary-maintainer/self-check",
+        "independent_review": false,
+        "coverage": "bounded calibration only; not full Q5 validation",
+        "action_boundary": "no persistent fixture source write observed; no authorized-write workflow tested",
+        "status": "unrelated-negative-control-passed",
+        "note": "No skill read/tool call observed. Prompt is far from intended trigger and does not satisfy planned near-neighbor coverage."
+      },
+      "case_process_seconds": 14.98
+    },
+    {
+      "batch": "pi-candidate-paired",
+      "scenario": "agent-document-advice",
+      "variant": "candidate",
+      "runtime": "pi",
+      "attempts": 1,
+      "automatic_result": "passed",
+      "write_scope": [
+        "passed"
+      ],
+      "runtime_errors": [],
+      "usage": {
+        "input_tokens": 134480,
+        "cached_input_tokens": 110216,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 3127
+      },
+      "tool_calls": 17,
+      "observed_skill_reads": [],
+      "shell_output_bytes": null,
+      "result_ref": "calibration/pi-candidate-paired/agent-document-advice-1/result.json",
+      "result_sha256": "43060632acfca8d275a0275f2ee484eca2d5d4154bd97bf6afb17535beed95b9",
+      "semantic_review": {
+        "reviewer": "primary-maintainer/self-check",
+        "independent_review": false,
+        "coverage": "bounded calibration only; not full Q5 validation",
+        "action_boundary": "no persistent fixture source write observed; no authorized-write workflow tested",
+        "status": "incomplete-routing-and-fixture-invalid",
+        "note": "Expected writing-for-agents and CONTEXT reads absent; omitted source governance guide caused false missing-file advice. Cannot attribute to source regression."
+      },
+      "case_process_seconds": 87.18
+    },
+    {
+      "batch": "pi-candidate-paired",
+      "scenario": "explicit-compatibility",
+      "variant": "candidate",
+      "runtime": "pi",
+      "attempts": 1,
+      "automatic_result": "passed",
+      "write_scope": [
+        "passed"
+      ],
+      "runtime_errors": [],
+      "usage": {
+        "input_tokens": 62598,
+        "cached_input_tokens": 46816,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 1561
+      },
+      "tool_calls": 4,
+      "observed_skill_reads": [],
+      "shell_output_bytes": null,
+      "result_ref": "calibration/pi-candidate-paired/explicit-compatibility-1/result.json",
+      "result_sha256": "97f7ada3803f497645254e5c30324cbbf48c3b357bb71cccc0adad7a630b0c07",
+      "semantic_review": {
+        "reviewer": "primary-maintainer/self-check",
+        "independent_review": false,
+        "coverage": "bounded calibration only; not full Q5 validation",
+        "action_boundary": "no persistent fixture source write observed; no authorized-write workflow tested",
+        "status": "outcome-only-native-explicit-unverified",
+        "note": "Correct template-source refusal. to-spec body not read. Natural-language skill name is not Pi /skill: invocation evidence."
+      },
+      "case_process_seconds": 37.92
+    },
+    {
+      "batch": "pi-candidate-paired",
+      "scenario": "frontend-commit-advice",
+      "variant": "candidate",
+      "runtime": "pi",
+      "attempts": 1,
+      "automatic_result": "passed",
+      "write_scope": [
+        "passed"
+      ],
+      "runtime_errors": [],
+      "usage": {
+        "input_tokens": 121013,
+        "cached_input_tokens": 93008,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 3330
+      },
+      "tool_calls": 10,
+      "observed_skill_reads": [
+        {
+          "path": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-skills-implementation-w6dd3k2z/calibration/pi-candidate-paired/frontend-commit-advice-1/workspace/.pi/skills/frontend-commit/SKILL.md",
+          "trace_line": 137,
+          "method": "pi-read-request; verify corresponding result",
+          "tool_result_success": true
+        },
+        {
+          "path": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-skills-implementation-w6dd3k2z/calibration/pi-candidate-paired/frontend-commit-advice-1/workspace/.pi/skills/git-commit-core/SKILL.md",
+          "trace_line": 338,
+          "method": "pi-read-request; verify corresponding result",
+          "tool_result_success": true
+        }
+      ],
+      "shell_output_bytes": null,
+      "result_ref": "calibration/pi-candidate-paired/frontend-commit-advice-1/result.json",
+      "result_sha256": "4e37659064323b37a850f8e4faa0917b134d38f15ec4a8927a98f6fe72be8d3f",
+      "semantic_review": {
+        "reviewer": "primary-maintainer/self-check",
+        "independent_review": false,
+        "coverage": "bounded calibration only; not full Q5 validation",
+        "action_boundary": "no persistent fixture source write observed; no authorized-write workflow tested",
+        "status": "bounded-advice-and-shared-reference-observed",
+        "note": "Public frontend entry and git-commit-core were read; advice preserved no-commit authorization. No actual Vue diff/front-end project in fixture. No authorized commit workflow evidence."
+      },
+      "case_process_seconds": 86.73
+    },
+    {
+      "batch": "pi-candidate-paired",
+      "scenario": "handoff-neighbor-negative",
+      "variant": "candidate",
+      "runtime": "pi",
+      "attempts": 1,
+      "automatic_result": "passed",
+      "write_scope": [
+        "passed"
+      ],
+      "runtime_errors": [],
+      "usage": {
+        "input_tokens": 14884,
+        "cached_input_tokens": 1336,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 539
+      },
+      "tool_calls": 0,
+      "observed_skill_reads": [],
+      "shell_output_bytes": null,
+      "result_ref": "calibration/pi-candidate-paired/handoff-neighbor-negative-1/result.json",
+      "result_sha256": "a5a528824402436dec78bbcebe29aaad892c1393bced39aa47f2f10115250b97",
+      "semantic_review": {
+        "reviewer": "primary-maintainer/self-check",
+        "independent_review": false,
+        "coverage": "bounded calibration only; not full Q5 validation",
+        "action_boundary": "no persistent fixture source write observed; no authorized-write workflow tested",
+        "status": "unrelated-negative-control-passed",
+        "note": "No skill read/tool call observed. Prompt is far from intended trigger and does not satisfy planned near-neighbor coverage."
+      },
+      "case_process_seconds": 16.76
+    },
+    {
+      "batch": "pi-full-input-diagnostic",
+      "scenario": "agent-document-advice",
+      "variant": "candidate-v2-full-unpaired",
+      "runtime": "pi",
+      "attempts": 1,
+      "automatic_result": "passed",
+      "write_scope": [
+        "passed"
+      ],
+      "runtime_errors": [],
+      "usage": {
+        "input_tokens": 91756,
+        "cached_input_tokens": 57568,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 4776
+      },
+      "tool_calls": 9,
+      "observed_skill_reads": [
+        {
+          "path": ".pi/skills/writing-for-agents/SKILL.md",
+          "trace_line": 96,
+          "method": "pi-read-request; verify corresponding result",
+          "tool_result_success": true
+        }
+      ],
+      "shell_output_bytes": null,
+      "result_ref": "calibration/pi-full-input-diagnostic/agent-document-advice-1/result.json",
+      "result_sha256": "03d491b384f6bbbb58170c635afc548eefba47a81b55ab3ad8aee37f2bb6079c",
+      "semantic_review": {
+        "reviewer": "primary-maintainer/self-check",
+        "independent_review": false,
+        "coverage": "bounded calibration only; not full Q5 validation",
+        "action_boundary": "no persistent fixture source write observed; no authorized-write workflow tested",
+        "status": "bounded-outcome-and-route-observed-unpaired",
+        "note": "Complete-input diagnostic read .pi/skills/writing-for-agents/SKILL.md, writing reference and CONTEXT.md with successful tool results. No source-missing assertion. One unpaired run cannot prove stable routing or efficiency."
+      },
+      "case_process_seconds": 151.22
+    }
+  ],
+  "money": null,
+  "limits": [
+    "24 startup attempts reached; no more model calls before Q7 full-budget decision",
+    "Automatic pass is not semantic acceptance",
+    "Cache reads are included in input totals; missing telemetry remains null",
+    "Provider hash was added to Pi run-config only for final unpaired diagnostic; earlier configurations cannot retroactively receive full binding",
+    "Single pairs and warm caches cannot establish efficiency improvement",
+    "CLI fixture uses stubs and readonly prompts, not OS proof of absence of every external side effect"
+  ],
+  "full_budget_proposal": {
+    "status": "requires-user-decision-per-Q7",
+    "max_additional_attempts": 1200,
+    "max_additional_agent_seconds": 129600,
+    "per_attempt_seconds": 300,
+    "codex_minimum_without_reuse": 852,
+    "calculation": "213 isolated environment groups x 2 positive/near-negative x 2 baseline/candidate",
+    "remaining_attempt_allowance": 348,
+    "allowance_use": "host differences, explicit/internal/auth boundaries, multi-step flows and retries",
+    "money": null,
+    "not_a_guarantee": "Stop at first cap; unresolved coverage remains incomplete."
+  }
+}

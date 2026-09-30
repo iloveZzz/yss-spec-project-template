@@ -4,6 +4,8 @@ import { fileURLToPath } from "node:url";
 import { parseDocument } from "../vendor/yaml.mjs";
 import { validateMaintenanceReviewEvidence } from "./maintenance-review.mjs";
 
+import { validateCounterexample } from "./maintenance-counterexample.mjs";
+
 const LEVELS = ["L1", "L2", "L3"];
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const INTENSITY_POLICY = path.join(root, ".template-source/process/maintenance-intensity.yaml");
@@ -40,7 +42,8 @@ function loadTriggerLevels() {
   }
   const map = new Map(pairs);
   ensure(map.size === pairs.length, "维护强度策略包含重复 trigger");
-  return { defaultLevel: policy.default_level, map };
+  ensure(Array.isArray(policy.counterexample_triggers) && policy.counterexample_triggers.every(x => map.has(x)), "反例触发策略无效");
+  return { defaultLevel: policy.default_level, map, counterexamples: policy.counterexample_triggers };
 }
 
 const triggerLevels = loadTriggerLevels();
@@ -99,7 +102,12 @@ export function validateMaintenanceCheckpoint(data, options = {}) {
     ensure(kinds.has(required), `${data.intensity} 缺少 ${required} 证据`);
   }
   ensure(REVIEW_MODES[data.intensity].has(data.review_mode), `${data.intensity} 不允许 review_mode=${data.review_mode}`);
-  return { intensity: data.intensity, minimum_intensity: minimum, current_state: data.schema_version === 2 ? data.current_state : "release-ready" };
+  if (!options.history) for (const trigger of data.triggers.filter(x => triggerLevels.counterexamples.includes(x))) {
+    const records = data.verification_evidence.filter(x => x.kind === "counterexample" && x.trigger === trigger);
+    ensure(records.length > 0, `${trigger} 缺少定向 counterexample 运行证据`);
+    for (const evidence of records) validateCounterexample(evidence, { root: options.baseDir || root, trigger });
+  }
+  return { historical_only: options.history === true, execution_authorization: "not-evaluated", intensity: data.intensity, minimum_intensity: minimum, current_state: options.history ? "historical-only" : data.schema_version === 2 ? data.current_state : "release-ready" };
 }
 
 function validateCheckpointState(data, evidenceKinds, reviewKind) {

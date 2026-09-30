@@ -1,0 +1,389 @@
+{
+  "kind": "synthetic-format-comparison",
+  "limitations": [
+    "前版表达由相同虚构规则机械转换，非真实用户写作试验。",
+    "时间为诊断运行耗时，不是填写或审阅时间；不计算 Token 和效率提升。"
+  ],
+  "rows": [
+    {
+      "family": "ordinary",
+      "variant": "valid",
+      "before": {
+        "exit_code": 0,
+        "findings": [],
+        "unevaluated": [
+          {
+            "code": "LEGACY_OR_UNKNOWN_PROFILE",
+            "location": {
+              "file": "before/ordinary-valid.md",
+              "line": 1,
+              "column": 1
+            },
+            "item_id": null,
+            "message": "未声明支持的 content_profile；仅尽力检查已识别 ID 与显式引用，缺字段不解释为缺陷或内容合格。",
+            "recovery": "人工审阅原文；按需明确选择范围并补齐可定位输入后重跑。"
+          }
+        ],
+        "diagnostic_ms": 3.3299999999999983
+      },
+      "after": {
+        "exit_code": 0,
+        "findings": [],
+        "unevaluated": [],
+        "diagnostic_ms": 10.574209000000003
+      },
+      "preserved_field_values": true,
+      "before_sha256": "b0d05536a43e8add112078b07272f9e5e0140ac7e03e9892fecbf69b3ec7326b",
+      "after_sha256": "966689cc31bdd277b07ec3b623509ef988d31bdea5d88df891afaae766eb5eb9"
+    },
+    {
+      "family": "ordinary",
+      "variant": "defective",
+      "before": {
+        "exit_code": 0,
+        "findings": [
+          {
+            "code": "DUPLICATE_ID",
+            "location": {
+              "file": "before/ordinary-defective.md",
+              "line": 9,
+              "column": 1
+            },
+            "item_id": "FR-001",
+            "message": "ID 重复 2 次",
+            "recovery": "消除重复并修复所有关联；不要因排序重编号。"
+          },
+          {
+            "code": "DUPLICATE_ID",
+            "location": {
+              "file": "before/ordinary-defective.md",
+              "line": 10,
+              "column": 1
+            },
+            "item_id": "FR-001",
+            "message": "ID 重复 2 次",
+            "recovery": "消除重复并修复所有关联；不要因排序重编号。"
+          }
+        ],
+        "unevaluated": [
+          {
+            "code": "LEGACY_OR_UNKNOWN_PROFILE",
+            "location": {
+              "file": "before/ordinary-defective.md",
+              "line": 1,
+              "column": 1
+            },
+            "item_id": null,
+            "message": "未声明支持的 content_profile；仅尽力检查已识别 ID 与显式引用，缺字段不解释为缺陷或内容合格。",
+            "recovery": "人工审阅原文；按需明确选择范围并补齐可定位输入后重跑。"
+          }
+        ],
+        "diagnostic_ms": 1.396917000000002
+      },
+      "after": {
+        "exit_code": 2,
+        "findings": [
+          {
+            "code": "DUPLICATE_ID",
+            "location": {
+              "file": ".template-spec/templates/examples/plan-spec/ordinary-defective.md",
+              "line": 13,
+              "column": 1
+            },
+            "item_id": "FR-001",
+            "message": "ID 重复 2 次",
+            "recovery": "消除重复并修复所有关联；不要因排序重编号。"
+          },
+          {
+            "code": "DUPLICATE_ID",
+            "location": {
+              "file": ".template-spec/templates/examples/plan-spec/ordinary-defective.md",
+              "line": 14,
+              "column": 1
+            },
+            "item_id": "FR-001",
+            "message": "ID 重复 2 次",
+            "recovery": "消除重复并修复所有关联；不要因排序重编号。"
+          },
+          {
+            "code": "INPUT_UNREADABLE",
+            "location": {
+              "file": ".template-spec/templates/examples/plan-spec/ordinary-defective.md",
+              "line": 13,
+              "column": 1
+            },
+            "item_id": "FR-001",
+            "message": "无法读取 .template-spec/templates/examples/plan-spec/missing-source.md: ENOENT: no such file or directory, realpath '/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/plan-spec-formats-yoSKbq/.template-spec/templates/examples/plan-spec/missing-source.md'",
+            "recovery": "补齐或修正显式输入路径；不得猜测替代来源。"
+          },
+          {
+            "code": "REFERENCE_MISMATCH",
+            "location": {
+              "file": ".template-spec/templates/examples/plan-spec/ordinary-defective.md",
+              "line": 15,
+              "column": 1
+            },
+            "item_id": "FR-003",
+            "message": "AC-002 没有反向关联本需求",
+            "recovery": "核对需求与验收引用并同时修正。"
+          },
+          {
+            "code": "DANGLING_REFERENCE",
+            "location": {
+              "file": ".template-spec/templates/examples/plan-spec/ordinary-defective.md",
+              "line": 25,
+              "column": 10
+            },
+            "item_id": "AC-001",
+            "message": "需求引用 指向不存在的 FR-002",
+            "recovery": "恢复条目或修正引用；不得猜测映射。"
+          },
+          {
+            "code": "DANGLING_REFERENCE",
+            "location": {
+              "file": ".template-spec/templates/examples/plan-spec/ordinary-defective.md",
+              "line": 26,
+              "column": 10
+            },
+            "item_id": "AC-002",
+            "message": "需求引用 指向不存在的 FR-099",
+            "recovery": "恢复条目或修正引用；不得猜测映射。"
+          }
+        ],
+        "unevaluated": [
+          {
+            "code": "AMBIGUOUS_REFERENCE",
+            "location": {
+              "file": ".template-spec/templates/examples/plan-spec/ordinary-defective.md",
+              "line": 1,
+              "column": 1
+            },
+            "item_id": "AC-001",
+            "message": "引用 FR-001 重复，无法唯一追溯。",
+            "recovery": "人工审阅原文；按需明确选择范围并补齐可定位输入后重跑。"
+          }
+        ],
+        "diagnostic_ms": 2.964374999999997
+      },
+      "preserved_field_values": true,
+      "before_sha256": "de2286aafa797a503975921c50355cc889359886a9f489b8bb9be386ecb9825e",
+      "after_sha256": "2ddf1bb2f69f71effb53dff5b374134c8289c1de4ac526c04ab2b17ccd75c296"
+    },
+    {
+      "family": "complex",
+      "variant": "valid",
+      "before": {
+        "exit_code": 0,
+        "findings": [],
+        "unevaluated": [
+          {
+            "code": "LEGACY_OR_UNKNOWN_PROFILE",
+            "location": {
+              "file": "before/complex-valid.md",
+              "line": 1,
+              "column": 1
+            },
+            "item_id": null,
+            "message": "未声明支持的 content_profile；仅尽力检查已识别 ID 与显式引用，缺字段不解释为缺陷或内容合格。",
+            "recovery": "人工审阅原文；按需明确选择范围并补齐可定位输入后重跑。"
+          }
+        ],
+        "diagnostic_ms": 1.090416999999995
+      },
+      "after": {
+        "exit_code": 0,
+        "findings": [],
+        "unevaluated": [],
+        "diagnostic_ms": 2.418625000000006
+      },
+      "preserved_field_values": true,
+      "before_sha256": "b67ec63604ca6954e670a59443e88d5592dbf77140f580ac7859b7baf2bcbeb5",
+      "after_sha256": "dff1bcaef02a64a1706a893d4d3c647eba75d91a11b8e3faf9522cdd12fa2e36"
+    },
+    {
+      "family": "complex",
+      "variant": "defective",
+      "before": {
+        "exit_code": 0,
+        "findings": [],
+        "unevaluated": [
+          {
+            "code": "LEGACY_OR_UNKNOWN_PROFILE",
+            "location": {
+              "file": "before/complex-defective.md",
+              "line": 1,
+              "column": 1
+            },
+            "item_id": null,
+            "message": "未声明支持的 content_profile；仅尽力检查已识别 ID 与显式引用，缺字段不解释为缺陷或内容合格。",
+            "recovery": "人工审阅原文；按需明确选择范围并补齐可定位输入后重跑。"
+          }
+        ],
+        "diagnostic_ms": 0.7984590000000082
+      },
+      "after": {
+        "exit_code": 0,
+        "findings": [
+          {
+            "code": "NA_REASON",
+            "location": {
+              "file": ".template-spec/templates/examples/plan-spec/complex-defective.md",
+              "line": 19,
+              "column": 1
+            },
+            "item_id": null,
+            "message": "条件项声明不适用但缺少原因",
+            "recovery": "补充 not-applicable：具体原因。"
+          },
+          {
+            "code": "AC_MISSING",
+            "location": {
+              "file": ".template-spec/templates/examples/plan-spec/complex-defective.md",
+              "line": 15,
+              "column": 1
+            },
+            "item_id": "FR-003",
+            "message": "需求没有验收引用或明确待补项",
+            "recovery": "关联 AC 或待补 Q，并由原有门禁处理未决项。"
+          },
+          {
+            "code": "SOURCE_LOCATOR",
+            "location": {
+              "file": ".template-spec/templates/examples/plan-spec/complex-defective.md",
+              "line": 15,
+              "column": 40
+            },
+            "item_id": "FR-003",
+            "message": "来源 .template-spec/templates/examples/plan-spec/complex-source.md 的 id:C999 匹配 0 处",
+            "recovery": "修正已有条目 ID 或准确章节名；歧义定位不能自动选择。"
+          },
+          {
+            "code": "REFERENCE_MISMATCH",
+            "location": {
+              "file": ".template-spec/templates/examples/plan-spec/complex-defective.md",
+              "line": 28,
+              "column": 1
+            },
+            "item_id": "AC-004",
+            "message": "FR-003 未引用本验收",
+            "recovery": "核对双向关联。"
+          }
+        ],
+        "unevaluated": [],
+        "diagnostic_ms": 2.083749999999995
+      },
+      "preserved_field_values": true,
+      "before_sha256": "15f8b6951034c1a0d58f62779f5b686d78991f8ee06343c9926c600115a46c0e",
+      "after_sha256": "fcbba9d85882bb43a2bf0b41a42b1e943194067583094c8948baee3e2a66e426"
+    },
+    {
+      "family": "high-risk",
+      "variant": "valid",
+      "before": {
+        "exit_code": 0,
+        "findings": [],
+        "unevaluated": [
+          {
+            "code": "LEGACY_OR_UNKNOWN_PROFILE",
+            "location": {
+              "file": "before/high-risk-valid.md",
+              "line": 1,
+              "column": 1
+            },
+            "item_id": null,
+            "message": "未声明支持的 content_profile；仅尽力检查已识别 ID 与显式引用，缺字段不解释为缺陷或内容合格。",
+            "recovery": "人工审阅原文；按需明确选择范围并补齐可定位输入后重跑。"
+          }
+        ],
+        "diagnostic_ms": 2.1597500000000025
+      },
+      "after": {
+        "exit_code": 0,
+        "findings": [],
+        "unevaluated": [],
+        "diagnostic_ms": 2.558209000000005
+      },
+      "preserved_field_values": true,
+      "before_sha256": "f4da7b70d7b47b48c848ae7e2c3e11fef8c988dba68496d00f78eb4c89d656bc",
+      "after_sha256": "88605e864b1e992fe12ab48972e8bfc46f2dd284456895dff084fafd629cbb5c"
+    },
+    {
+      "family": "high-risk",
+      "variant": "defective",
+      "before": {
+        "exit_code": 0,
+        "findings": [],
+        "unevaluated": [
+          {
+            "code": "LEGACY_OR_UNKNOWN_PROFILE",
+            "location": {
+              "file": "before/high-risk-defective.md",
+              "line": 1,
+              "column": 1
+            },
+            "item_id": null,
+            "message": "未声明支持的 content_profile；仅尽力检查已识别 ID 与显式引用，缺字段不解释为缺陷或内容合格。",
+            "recovery": "人工审阅原文；按需明确选择范围并补齐可定位输入后重跑。"
+          }
+        ],
+        "diagnostic_ms": 1.0563750000000027
+      },
+      "after": {
+        "exit_code": 0,
+        "findings": [
+          {
+            "code": "REQUIRED_FIELD",
+            "location": {
+              "file": ".template-spec/templates/examples/plan-spec/high-risk-defective.md",
+              "line": 20,
+              "column": 22
+            },
+            "item_id": "NFR-001",
+            "message": "适用条件/负载 为空或占位符",
+            "recovery": "填写已有依据；未知值关联未决项及补齐动作。"
+          },
+          {
+            "code": "REQUIRED_FIELD",
+            "location": {
+              "file": ".template-spec/templates/examples/plan-spec/high-risk-defective.md",
+              "line": 20,
+              "column": 48
+            },
+            "item_id": "NFR-001",
+            "message": "验证方法 为空或占位符",
+            "recovery": "填写已有依据；未知值关联未决项及补齐动作。"
+          },
+          {
+            "code": "UNKNOWN_TARGET",
+            "location": {
+              "file": ".template-spec/templates/examples/plan-spec/high-risk-defective.md",
+              "line": 20,
+              "column": 1
+            },
+            "item_id": "NFR-001",
+            "message": "目标未知且未关联未决项",
+            "recovery": "关联 Q ID，保留候选状态、负责人和补齐动作。"
+          },
+          {
+            "code": "TARGET_STATUS",
+            "location": {
+              "file": ".template-spec/templates/examples/plan-spec/high-risk-defective.md",
+              "line": 20,
+              "column": 1
+            },
+            "item_id": "NFR-001",
+            "message": "未知目标标记为已确认",
+            "recovery": "核对真实决定；未知目标保持候选状态。"
+          }
+        ],
+        "unevaluated": [],
+        "diagnostic_ms": 2.5058329999999955
+      },
+      "preserved_field_values": true,
+      "before_sha256": "24945ad34910e5ad171d8d02661bc1d85c88356577301f43421b8909fb5c78b3",
+      "after_sha256": "75d162b4c1729c34064a494a7bb5be245af0c8503e1ea26f43ec10c707ff612f"
+    }
+  ],
+  "status": "passed",
+  "scratch": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/plan-spec-formats-yoSKbq"
+}

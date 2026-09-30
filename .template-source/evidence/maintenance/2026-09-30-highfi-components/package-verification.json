@@ -1,0 +1,104 @@
+[
+  {
+    "mode": "list-detail",
+    "portable_integrity": "passed",
+    "current_design_tokens": "passed"
+  },
+  {
+    "mode": "multi-step",
+    "portable_integrity": "passed",
+    "current_design_tokens": "passed"
+  },
+  {
+    "mode": "approval",
+    "portable_integrity": "passed",
+    "current_design_tokens": "passed"
+  },
+  {
+    "mode": "conflict",
+    "portable_integrity": "passed",
+    "current_design_tokens": "passed"
+  },
+  {
+    "mode": "analysis",
+    "portable_integrity": "passed",
+    "current_design_tokens": "passed"
+  },
+  {
+    "mode": "component-states",
+    "portable_integrity": "passed",
+    "current_design_tokens": "passed"
+  },
+  {
+    "name": "spec",
+    "case": "v2",
+    "status": "passed",
+    "exit": 0
+  },
+  {
+    "name": "spec",
+    "case": "legacy-opt-in",
+    "status": "passed",
+    "exit": 0
+  },
+  {
+    "name": "spec",
+    "case": "legacy-default-reject",
+    "status": "passed",
+    "exit": 1
+  },
+  {
+    "name": "spec",
+    "case": "legacy-seal-reject",
+    "status": "passed",
+    "exit": 1
+  },
+  {
+    "name": "design",
+    "case": "v2",
+    "status": "passed",
+    "exit": 0
+  },
+  {
+    "name": "design",
+    "case": "legacy-opt-in",
+    "status": "passed",
+    "exit": 0
+  },
+  {
+    "name": "design",
+    "case": "legacy-default-reject",
+    "status": "passed",
+    "exit": 1
+  },
+  {
+    "name": "design",
+    "case": "legacy-seal-reject",
+    "status": "passed",
+    "exit": 1
+  },
+  {
+    "name": "frontend",
+    "case": "v2",
+    "status": "passed",
+    "exit": 0
+  },
+  {
+    "name": "frontend",
+    "case": "legacy-opt-in",
+    "status": "passed",
+    "exit": 0
+  },
+  {
+    "name": "frontend",
+    "case": "legacy-default-reject",
+    "status": "passed",
+    "exit": 1
+  },
+  {
+    "name": "frontend",
+    "case": "legacy-seal-reject",
+    "status": "passed",
+    "exit": 1
+  }
+]

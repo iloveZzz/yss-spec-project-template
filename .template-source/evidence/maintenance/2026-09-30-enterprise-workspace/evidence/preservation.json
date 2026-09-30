@@ -1,0 +1,21 @@
+{
+  "tracked_files_with_diff_changes": [
+    ".agents/skills/.strategic-design-skills-manifest.json",
+    ".agents/skills/prototype-review/SKILL.md",
+    ".agents/skills/yss-design-system/SKILL.md",
+    ".agents/skills/yss-prototype-stage/SKILL.md",
+    ".agents/skills/yss-prototype-stage/tests/antd-reference.test.mjs",
+    ".codex/skills/prototype-review/SKILL.md",
+    ".codex/skills/yss-design-system/SKILL.md",
+    ".template-source/design/design-system-sync.yaml",
+    ".template-source/profile-skill-sync.json",
+    ".template-spec/design/README.md",
+    ".template-spec/design/design.md",
+    ".template-spec/design/tokens/.design-md-projection.json",
+    ".template-spec/design/tokens/variables.css",
+    "DESIGN.md",
+    "skills-lock.json"
+  ],
+  "out_of_scope_patch_changes": [],
+  "boundary": "root tracked diff; profile existing content replayed with three-way checked delta; only task-owned draft/backups archived"
+}

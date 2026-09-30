@@ -88,7 +88,7 @@
 执行规则：
 
 - 间距只使用 `spacing.*`，不要补写未登记的中间值。
-- 默认采用 Data Quality 浅色、32px 控件；仅显式紧凑模式叠加一次 compact algorithm；seed 与计算结果从规范源和派生快照读取，不得二次 compact。
+- 原型新页面默认使用 [紧凑主题](prototype-default-theme.md) 中的根规范命名变体；生产主题仍按其合同，compact algorithm 仅显式选择时应用一次。
 - 表单、筛选区、工具栏、表格、详情页使用密集但有节奏的布局。
 - 控件圆角不得明显大于容器圆角。
 - 不使用任意 magic number；确需新增尺寸时，先说明为什么 token 不够。
@@ -179,7 +179,7 @@
 
 ## 前端落地
 
-React + Ant Design：
+历史来源或明确采用 React + Ant Design 的生产实现（新原型已退役此路线）：
 
 - 使用 `ConfigProvider` 注入主题。
 - 默认采用 Data Quality 浅色与 32px 控件；仅显式紧凑模式使用 `theme.compactAlgorithm`；暗色紧凑模式组合 `theme.darkAlgorithm` 与 `theme.compactAlgorithm`，不手工反转色值或逐组件压缩。
@@ -218,7 +218,7 @@ YSS UI / Vue：
 
 - 是否消费 token，而不是硬编码颜色和尺寸。
 - 是否以 semantic token 表达颜色、圆角、阴影和状态层级。
-- 是否使用当前 `DESIGN.md` 与所选主题快照的排版、控件和间距值；默认使用 default，仅显式紧凑模式使用 compact，且没有重复 compact。
+- 是否使用当前 `DESIGN.md` 与所选主题快照的排版、控件和间距值；原型按登记密度使用根规范命名变体，生产按合同选择算法快照，没有重复 compact。
 - 是否保留 hover、focus、active、disabled、loading、empty、error 状态。
 - 是否只保留一个 single primary action，并让每个关键操作提供 interaction feedback。
 - 是否在目标字号和背景下复核 accessibility contrast。

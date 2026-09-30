@@ -1,0 +1,17 @@
+{
+  "read_only": true,
+  "results": [
+    {
+      "status": "passed",
+      "trigger": "permission-boundary"
+    },
+    {
+      "status": "passed",
+      "trigger": "lifecycle-gate"
+    },
+    {
+      "status": "passed",
+      "trigger": "release-semantics"
+    }
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "schema_version": 4,
+  "feature": "pilot",
+  "pattern": "workbench",
+  "prototype_profile": "H2",
+  "profile_kind": "flow-review",
+  "component_basis": "react-shadcn-prebuilt",
+  "runtime_build_required": false,
+  "entry": "index.html",
+  "design_source": {
+    "path": "DESIGN.md",
+    "digest": "sha256:e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec"
+  },
+  "token_source": {
+    "path": ".template-spec/design/tokens/variables.css",
+    "digest": "sha256:028c24f9e935f5c4b1392d131a4cd13482e6572a2ced4360ffa833aa3fbeaf66"
+  },
+  "files": {
+    "app.js": "sha256:66fecdb9ba85f84693314c46e0073c4e696e5af21234cf535a070f902986f2a7",
+    "authoring-source.tsx": "sha256:08eb33e44bb2e7fb1a5de6eba7844c5fd554505b3cb7423b79842deff02aa94e",
+    "authoring-sources/main.tsx": "sha256:08eb33e44bb2e7fb1a5de6eba7844c5fd554505b3cb7423b79842deff02aa94e",
+    "authoring-sources/styles.css": "sha256:a30e46f35fed5e60098dbd6121c21bded625f1113ad594488d34d0cd897a20c1",
+    "build-provenance.json": "sha256:724cbb7c95bdec1ac2386481b66b272b8c6745f00d1f5da6fecb837a9a8a8a4a",
+    "component-sources/alert-dialog.tsx": "sha256:b3dfb83e54ed8c82071df5289e5149628bf573458fc2da2d62f93f8380041b28",
+    "component-sources/badge.tsx": "sha256:13a9380dfff853ee730c14a52df49f22aecd31f40f2998d7c1e7ec458b6e1650",
+    "component-sources/button.tsx": "sha256:79dd6f75f8136394442202d6b8b922fb269eaad0a5dba579397c9d5b41f893bb",
+    "component-sources/checkbox.tsx": "sha256:ba0ac64064e2d8fa7299d53e9e84b9a4772fef8dd4cf6170c56d3030a1d69941",
+    "component-sources/cn.ts": "sha256:64fc84c1be627f0d586fb4ba64d824a1604f44282381f5bae68cdf86e10bb6ec",
+    "component-sources/dialog.tsx": "sha256:2ade6074e5fad0a4eb171ead44c43d3301a3c83d186d7236fb1fdbea80ee556b",
+    "component-sources/input.tsx": "sha256:0c9457181f6ddc80969bcf854e92c362903a55b6e889fbef3fd85343ecc4af5b",
+    "component-sources/label.tsx": "sha256:344bde38b8531615dbf8e14af3895517c24d8ef6ce56ddeda7e2e6fe4b5d0c00",
+    "component-sources/select.tsx": "sha256:962830436bd0b7ee50e556f0747e277d6a86869ed27d167516346b15f26309d8",
+    "component-sources/table.tsx": "sha256:bd1a9fc83a5a2149e504038e274bb7e5a0351af59f6896df52ac4d5b439695ac",
+    "component-sources/tabs.tsx": "sha256:e1df6e2f95ece373ca909c1d54b8ba8cf4c47dd425c1784bbb9a01c38dd0936b",
+    "component-sources/textarea.tsx": "sha256:5cafcfeeee29534f449387a16b585f5923d2faab1a0cdc50a874416b175f59ce",
+    "index.html": "sha256:c53e78b3fc9d5d8ab463775d5d0c266c0d3d18c903860f2d80632b834f67ce43",
+    "registry-manifest.json": "sha256:42b8609e1e9df6d7af80b2c2509cfb592aec1c1e1f53a41625c4ff52a8368e9b",
+    "scenario-runtime.js": "sha256:b2837245e0e3e8a072c1b612338c352a6474fbae4f07a135705510258bb5f25b",
+    "scenarios.js": "sha256:56057cd5935eafb6fb583831a77966a61be86c5fa18915eaf6d9fc2d87700873",
+    "scenarios.json": "sha256:b42442e9fe9d68f2de1198692b2bba910a901bc8ce1639f1e3668c0ca1bf3355",
+    "styles.css": "sha256:07588411f78ca89a3ce68806399e661ed5854604860df4853c6832f3404c48cd",
+    "THIRD-PARTY-NOTICES.txt": "sha256:224b310781a01c26e3a15181538051f3443c971308b417ecc9c0f432bafab516",
+    "token-theme.css": "sha256:a8d263f786db92c7086cb1c56845e38739472f5e5c2ee77649806d9cb834d2a4",
+    "tokens.css": "sha256:028c24f9e935f5c4b1392d131a4cd13482e6572a2ced4360ffa833aa3fbeaf66"
+  },
+  "build_provenance": {
+    "packages": {
+      "react": "19.3.0",
+      "react-dom": "19.3.0",
+      "radix-ui": "1.6.7",
+      "lucide-react": "1.48.0",
+      "class-variance-authority": "0.7.1",
+      "clsx": "2.1.1",
+      "tailwind-merge": "3.7.0",
+      "esbuild": "0.28.2",
+      "tailwindcss": "4.3.3",
+      "@tailwindcss/cli": "4.3.3"
+    },
+    "lock_digest": "sha256:a2e23d45b83fe160dc48d87fadf1a07960056b61af4d011b81d9e60297f63b80",
+    "source_digest": "sha256:08eb33e44bb2e7fb1a5de6eba7844c5fd554505b3cb7423b79842deff02aa94e",
+    "theme_digest": "sha256:a8d263f786db92c7086cb1c56845e38739472f5e5c2ee77649806d9cb834d2a4",
+    "registry_digest": "sha256:42b8609e1e9df6d7af80b2c2509cfb592aec1c1e1f53a41625c4ff52a8368e9b",
+    "registry_revision": "db2db460a26fa84fb65c8d903b213925fbdee9ed",
+    "support_source_digests": {
+      "cn.ts": "sha256:64fc84c1be627f0d586fb4ba64d824a1604f44282381f5bae68cdf86e10bb6ec"
+    },
+    "authored_files": {
+      "authoring-sources/main.tsx": "sha256:08eb33e44bb2e7fb1a5de6eba7844c5fd554505b3cb7423b79842deff02aa94e",
+      "authoring-sources/styles.css": "sha256:a30e46f35fed5e60098dbd6121c21bded625f1113ad594488d34d0cd897a20c1"
+    },
+    "format": "iife",
+    "browser_runtime": "react",
+    "toolchain_required_by_recipient": false
+  }
+}

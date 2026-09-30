@@ -1,0 +1,70 @@
+{
+  "kind": "plan-spec-working-tree-distribution",
+  "source_state": "working-tree",
+  "status": "passed",
+  "fixed_commit_delivery": false,
+  "publication": "not-performed",
+  "scratch": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/plan-spec-distribution-Nzc6mm",
+  "results": [
+    {
+      "package": "create-yss-spec",
+      "version": "3.5.3",
+      "snapshot": "a0dafaf7f38cd48422ff186576b2624613c0eb73d06786ed56b2da05cb28d3c1",
+      "package_sha256": "2aa312d5e4b2a115110311c3dcd126f4d81eb9623da4e74cb24e83d4fbcd8778",
+      "install": "offline",
+      "init": "passed",
+      "byte_identity": "passed",
+      "check_diff": "passed",
+      "partial_diff": "unassessed-as-designed",
+      "malformed_slice": "exit-2-as-designed",
+      "legacy": "unevaluated-as-designed",
+      "repeat_readonly": "passed",
+      "sync_preview": "passed"
+    },
+    {
+      "package": "create-yss-harness-design",
+      "version": "0.8.10",
+      "snapshot": "b6e312ccad73725546948a9337c7bc4f0ac654c03c0475a16f51a587a9b61af5",
+      "package_sha256": "c6b1915c7081fc581f9e41fe37e4108045efedf60a5e5f50728c797f2a2e0a2d",
+      "install": "offline",
+      "init": "passed",
+      "byte_identity": "passed",
+      "check_diff": "passed",
+      "partial_diff": "unassessed-as-designed",
+      "malformed_slice": "exit-2-as-designed",
+      "legacy": "unevaluated-as-designed",
+      "repeat_readonly": "passed",
+      "sync_preview": "passed"
+    },
+    {
+      "package": "create-yss-harness-backend",
+      "version": "0.4.14",
+      "snapshot": "520a0e1a5db8ad6d8449612d98e1b8ee81be175bde11687ed686eef51ed39c51",
+      "package_sha256": "6dd2b988fede8345e99bffcb858687b3293d8d6aeefddc2d48b6091a0eb68286",
+      "install": "offline",
+      "init": "passed",
+      "byte_identity": "passed",
+      "check_diff": "passed",
+      "partial_diff": "unassessed-as-designed",
+      "malformed_slice": "exit-2-as-designed",
+      "legacy": "unevaluated-as-designed",
+      "repeat_readonly": "passed",
+      "sync_preview": "passed"
+    },
+    {
+      "package": "create-yss-harness-frontend",
+      "version": "0.3.14",
+      "snapshot": "44371306a14ea4ef0ebf315a4d50b898e47d1340c92d5cc4510fb73a5deb6577",
+      "package_sha256": "5a19baf78fc70a1baa7a03a28dca852d9de9d5d1787845d1d6520b27329f362f",
+      "install": "offline",
+      "init": "passed",
+      "byte_identity": "passed",
+      "check_diff": "passed",
+      "partial_diff": "unassessed-as-designed",
+      "malformed_slice": "exit-2-as-designed",
+      "legacy": "unevaluated-as-designed",
+      "repeat_readonly": "passed",
+      "sync_preview": "passed"
+    }
+  ]
+}

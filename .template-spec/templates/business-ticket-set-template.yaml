@@ -1,0 +1,16 @@
+schema_version: 1
+kind: business-ticket-set
+id: business-ticket-set.<feature>
+version: v1
+status: draft
+spec:
+  ref: docs/.scratch/<feature>/spec.md
+  version: v1
+  digest: sha256:<raw-bytes>
+tickets:
+  - id: BT-001
+    ref: docs/.scratch/<feature>/business-tickets/BT-001.md
+    version: v1
+    digest: sha256:<raw-bytes>
+coverage_deferred: []
+review_ref: docs/.scratch/<feature>/verification/business-ticket-review.yaml

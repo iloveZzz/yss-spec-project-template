@@ -1,0 +1,113 @@
+{
+  "scope": "read-only legacy preview diagnostic; not full QA",
+  "rows": [
+    {
+      "mode": "preview",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "styles": {
+        "bgToken": "",
+        "textToken": "",
+        "bodyBg": "rgba(0, 0, 0, 0)",
+        "font": "16px Times",
+        "fontSize": "16px",
+        "buttonBg": "rgb(36, 91, 219)",
+        "buttonHeight": "32px",
+        "overflow": false,
+        "densityText": "默认模式 · 32px"
+      },
+      "failed": [
+        {
+          "url": "file:///Users/zhudaoming/Projects/yss-spec-project-template/.template-source/design/tokens/variables.css",
+          "error": "net::ERR_FILE_NOT_FOUND"
+        }
+      ],
+      "errors": [
+        "Failed to load resource: net::ERR_FILE_NOT_FOUND"
+      ]
+    },
+    {
+      "mode": "preview",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "styles": {
+        "bgToken": "",
+        "textToken": "",
+        "bodyBg": "rgba(0, 0, 0, 0)",
+        "font": "16px Times",
+        "fontSize": "16px",
+        "buttonBg": "rgb(36, 91, 219)",
+        "buttonHeight": "32px",
+        "overflow": false,
+        "densityText": "默认模式 · 32px"
+      },
+      "failed": [
+        {
+          "url": "file:///Users/zhudaoming/Projects/yss-spec-project-template/.template-source/design/tokens/variables.css",
+          "error": "net::ERR_FILE_NOT_FOUND"
+        }
+      ],
+      "errors": [
+        "Failed to load resource: net::ERR_FILE_NOT_FOUND"
+      ]
+    },
+    {
+      "mode": "preview-dark",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "styles": {
+        "bgToken": "",
+        "textToken": "",
+        "bodyBg": "rgba(0, 0, 0, 0)",
+        "font": "16px Times",
+        "fontSize": "16px",
+        "buttonBg": "rgb(36, 91, 219)",
+        "buttonHeight": "32px",
+        "overflow": false,
+        "densityText": "暗色 · 32px"
+      },
+      "failed": [
+        {
+          "url": "file:///Users/zhudaoming/Projects/yss-spec-project-template/.template-source/design/tokens/variables.css",
+          "error": "net::ERR_FILE_NOT_FOUND"
+        }
+      ],
+      "errors": [
+        "Failed to load resource: net::ERR_FILE_NOT_FOUND"
+      ]
+    },
+    {
+      "mode": "preview-dark",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "styles": {
+        "bgToken": "",
+        "textToken": "",
+        "bodyBg": "rgba(0, 0, 0, 0)",
+        "font": "16px Times",
+        "fontSize": "16px",
+        "buttonBg": "rgb(36, 91, 219)",
+        "buttonHeight": "32px",
+        "overflow": false,
+        "densityText": "暗色 · 32px"
+      },
+      "failed": [
+        {
+          "url": "file:///Users/zhudaoming/Projects/yss-spec-project-template/.template-source/design/tokens/variables.css",
+          "error": "net::ERR_FILE_NOT_FOUND"
+        }
+      ],
+      "errors": [
+        "Failed to load resource: net::ERR_FILE_NOT_FOUND"
+      ]
+    }
+  ]
+}

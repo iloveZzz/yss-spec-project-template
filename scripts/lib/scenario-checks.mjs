@@ -209,6 +209,7 @@ const profiles = {
       ".template-spec/templates/openapi-spec-template.yaml",
       ".agents/skills/yss-openapi-governance/SKILL.md",
       ".agents/skills/yss-openapi-draft-review/SKILL.md",
+      ".agents/skills/yss-openapi-draft-review/references/semantic-review.md",
       ".template-spec/api/templates/openapi-draft-review-checklist.md",
       ".template-spec/api/templates/openapi-draft-validation-record-template.yaml",
       ".template-spec/process/schemas/openapi-draft-validation-record.schema.json",
@@ -219,7 +220,8 @@ const profiles = {
       [".template-spec/templates/openapi-spec-template.yaml", "openapi: 3.1.0"],
       [".agents/skills/yss-openapi-governance/SKILL.md", "property path"],
       [".agents/skills/yss-openapi-draft-review/SKILL.md", "Structural Validation"],
-      [".agents/skills/yss-openapi-draft-review/SKILL.md", "omit-to-preserve"],
+      [".agents/skills/yss-openapi-draft-review/SKILL.md", "(references/semantic-review.md)"],
+      [".agents/skills/yss-openapi-draft-review/references/semantic-review.md", "omit-to-preserve"],
       [".template-spec/api/templates/openapi-draft-review-checklist.md", "P0 字段级追踪矩阵"],
       [".template-spec/api/templates/openapi-draft-review-checklist.md", "Create / Update requiredness"],
       [".template-spec/process/schemas/openapi-draft-validation-record.schema.json", "openapi-draft-validation"],
@@ -238,13 +240,15 @@ const profiles = {
       ".agents/skills/yss-dto/SKILL.md",
       ".agents/skills/yss-openapi-governance/SKILL.md",
       ".agents/skills/yss-openapi-draft-review/SKILL.md",
+      ".agents/skills/yss-openapi-draft-review/references/semantic-review.md",
       ".template-spec/api/templates/openapi-draft-review-checklist.md",
       "scripts/verify-yss-dto-openapi-profile"
     ],
     markers: [
       [".agents/skills/yss-dto/SKILL.md", "x-yss-response-wrapper"],
       [".agents/skills/yss-openapi-governance/SKILL.md", "verify-yss-dto-openapi-profile"],
-      [".agents/skills/yss-openapi-draft-review/SKILL.md", "offset`, `needTotalCount`, and `tempTotalCount"],
+      [".agents/skills/yss-openapi-draft-review/SKILL.md", "(references/semantic-review.md)"],
+      [".agents/skills/yss-openapi-draft-review/references/semantic-review.md", "offset`, `needTotalCount`, and `tempTotalCount"],
       [".template-spec/api/templates/openapi-draft-review-checklist.md", "DTO wire shape"]
     ]
   }

@@ -1,0 +1,52 @@
+{
+  "status": "passed",
+  "mechanism": "chrome.tabs.setZoom/getZoom in isolated test profile",
+  "rows": [
+    {
+      "mode": "list-detail",
+      "zoom": 2,
+      "status": "passed",
+      "geometry": {
+        "width": 378,
+        "dpr": 2
+      }
+    },
+    {
+      "mode": "multi-step",
+      "zoom": 2,
+      "status": "passed",
+      "geometry": {
+        "width": 378,
+        "dpr": 2
+      }
+    },
+    {
+      "mode": "approval",
+      "zoom": 2,
+      "status": "passed",
+      "geometry": {
+        "width": 378,
+        "dpr": 2
+      }
+    },
+    {
+      "mode": "conflict",
+      "zoom": 2,
+      "status": "passed",
+      "geometry": {
+        "width": 378,
+        "dpr": 2
+      }
+    },
+    {
+      "mode": "analysis",
+      "zoom": 2,
+      "status": "passed",
+      "geometry": {
+        "width": 378,
+        "dpr": 2
+      }
+    }
+  ],
+  "errors": []
+}

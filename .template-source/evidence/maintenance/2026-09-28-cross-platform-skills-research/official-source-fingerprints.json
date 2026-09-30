@@ -1,0 +1,22 @@
+[
+  {
+    "url": "https://raw.githubusercontent.com/google-gemini/gemini-cli/bb523741c7429a44d03e964bc124c7c92df59d5f/packages/core/src/skills/skillLoader.ts",
+    "sha256": "0162e9f4c6c9e57a2a8b604383f6a52e4e4f0192cf7dd757b0dc05e6a00d8db9",
+    "line_count": 192
+  },
+  {
+    "url": "https://raw.githubusercontent.com/google-gemini/gemini-cli/bb523741c7429a44d03e964bc124c7c92df59d5f/packages/core/src/skills/skillManager.ts",
+    "sha256": "0e13ed68e7d76725d95342428c12e4a823c06e75a89654cbb4ee079b4297d613",
+    "line_count": 213
+  },
+  {
+    "url": "https://raw.githubusercontent.com/google-gemini/gemini-cli/bb523741c7429a44d03e964bc124c7c92df59d5f/packages/core/src/tools/activate-skill.ts",
+    "sha256": "db3e993cba2a33b8597c2c5331eca06b96b265bdcc4b8a79619906ab9c92d8ce",
+    "line_count": 209
+  },
+  {
+    "url": "https://raw.githubusercontent.com/google-gemini/gemini-cli/bb523741c7429a44d03e964bc124c7c92df59d5f/packages/cli/src/services/SkillCommandLoader.ts",
+    "sha256": "e72a2cace9dc1b17827c1716bc02aa9f78c14d95cccd500a6b6a1bd5c275590b",
+    "line_count": 57
+  }
+]

@@ -3,11 +3,14 @@ import { parseArgs } from "node:util";
 import { loadTaskPackage, validateTaskPackage } from "./lib/task-package.mjs";
 
 try {
-  const { positionals, values } = parseArgs({ options: { "run-dir": { type: "string" } }, allowPositionals: true, strict: true });
+  const { positionals, values } = parseArgs({ options: { help:{type:"boolean"}, "run-dir": { type: "string" } }, allowPositionals: true, strict: true });
+  if(values.help)process.stdout.write("用法: scripts/verify-digital-human-task-package <任务包.yaml> [--run-dir <结果目录>]\n0=当前任务包检查通过，1=失败；不派发或重复执行任务。\n");
+  else {
   if (positionals.length !== 1) throw new TypeError("用法: scripts/verify-digital-human-task-package <task-package.yaml|task-package.json>");
   const { value } = loadTaskPackage(positionals[0]);
   validateTaskPackage(value, { runDir: values["run-dir"] });
   process.stdout.write("数字人任务包验证通过\n");
+  }
 } catch (error) {
   process.stderr.write(`数字人任务包验证失败: ${error.message}\n`);
   process.exitCode = 1;

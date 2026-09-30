@@ -1,0 +1,46 @@
+{
+  "fictional": true,
+  "human_trial": "pending",
+  "families": [
+    {
+      "id": "ordinary",
+      "source": "ordinary-source.md",
+      "valid": "ordinary-valid.md",
+      "defective": "ordinary-defective.md",
+      "expected_defect_codes": [
+        "DUPLICATE_ID",
+        "DANGLING_REFERENCE",
+        "REFERENCE_MISMATCH",
+        "INPUT_UNREADABLE"
+      ],
+      "defective_exit_code": 2,
+      "preservation_review": "原始规则、否定、量词、例外、非目标与未知项逐项核对；不作为真实业务批准"
+    },
+    {
+      "id": "complex",
+      "source": "complex-source.md",
+      "valid": "complex-valid.md",
+      "defective": "complex-defective.md",
+      "expected_defect_codes": [
+        "AC_MISSING",
+        "SOURCE_LOCATOR",
+        "NA_REASON"
+      ],
+      "defective_exit_code": 0,
+      "preservation_review": "原始规则、否定、量词、例外、非目标与未知项逐项核对；不作为真实业务批准"
+    },
+    {
+      "id": "high-risk",
+      "source": "high-risk-source.md",
+      "valid": "high-risk-valid.md",
+      "defective": "high-risk-defective.md",
+      "expected_defect_codes": [
+        "REQUIRED_FIELD",
+        "UNKNOWN_TARGET",
+        "TARGET_STATUS"
+      ],
+      "defective_exit_code": 0,
+      "preservation_review": "原始规则、否定、量词、例外、非目标与未知项逐项核对；不作为真实业务批准"
+    }
+  ]
+}

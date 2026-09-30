@@ -56,3 +56,13 @@
 ## 2026-09-20 Skills 规范整改固定来源
 
 本轮公共四项技能固定到战略源仓 `83d7bce7eab1adf16e02a419717c94fa8ba84f43`。当前 revision 与摘要以 `.agents/skills/.strategic-design-skills-manifest.json` 为准；上文提交号保留为历史记录。父模板保留生命周期主控薄适配，消费 profile 同步来源清单与锁。Agent 评测、75 项整改对账和后续 CLI 固定版本交付记录见 `.template-source/evidence/maintenance/2026-09-20-openai-skills-implementation/`。
+
+## 2026-09-29 原型设计增强工作版本
+
+本轮按已批准模板维护范围更新内容规划、候选比较、企业后台示例与离线评审工具。共享变化已重放到战略设计源仓，保留各 profile 编排与交接差异；manifest 使用 `source_state=working-tree` 并绑定当前源树摘要。未提交、推送或发布，不能把该状态解释为固定提交发布来源。维护证据见 `.template-source/evidence/maintenance/2026-09-29-prototype-design-enhancement/`。
+
+2026-09-30 原型渲染器调整：用户明确采用原版 shadcn/ui，允许原型运行 React。高保真 H1/H2 主要使用固定源码的 shadcn 离线预构建；移除 React AntD 作者入口、采集器和目录，仅保留显式 legacy 只读校验。规范权威、生产 Vue/YSS 技术栈、Evidence v4、Visual Baseline v1 不变。维护证据见 `.template-source/evidence/maintenance/2026-09-30-shadcn-prototype/`。
+
+## Plan / Spec 内容增强（2026-09-30）
+
+共享 `yss-stage-decision` 成功标准及取舍写作规则先在战略源仓演进，再同步父模板；仍使用 v3 合同的 statement 与 decision，不升级 schema。维护阶段继续使用 `source_state=working-tree` 和源树摘要，固定提交交付须在另行授权提交后刷新。只读诊断、模板与证据见 `.template-spec/process/plan-spec-quality.md` 及 `.template-source/evidence/maintenance/2026-09-30-plan-spec-iteration/`。

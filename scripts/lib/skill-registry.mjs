@@ -156,6 +156,9 @@ function sameStringSet(left, right) {
 function validateInvocationContract(registry, skill) {
   const contract = registry.invocation_contract;
   requireObject(contract, "invocation_contract");
+  if (contract.runtime_metadata_version !== undefined && contract.runtime_metadata_version !== 1) {
+    fail('invocation_contract.runtime_metadata_version 必须为 1；省略时保持历史声明校验');
+  }
   if (contract.schema_version !== 2) fail("invocation_contract.schema_version 必须为 2；v1 已停止支持");
   if (contract.scope !== "discovery-only") fail("invocation_contract.scope 必须限定为 discovery-only");
   requireStringArray(contract.required_fields, "invocation_contract.required_fields", { nonEmpty: true });
@@ -202,6 +205,38 @@ function validateInvocationContract(registry, skill) {
   const impactTriggers = skill.impacts.map((impact) => `impact:${impact}`);
   if (!impactTriggers.every((trigger) => effective.trigger_conditions.includes(trigger))) {
     fail(`${skill.id} 的调用契约必须覆盖其 impacts 触发条件`);
+  }
+}
+
+function validateInvocationMetadata(registry, skill, source, skillMd) {
+  // Opt in through the registry so existing instances keep their declared contract.
+  if (registry.invocation_contract.runtime_metadata_version !== 1) return;
+  let metadata = {};
+  if (source !== null && source !== undefined) {
+    const document = parseDocument(source, { maxAliasCount: 0, uniqueKeys: true });
+    if (document.errors.length) fail(`${skill.id} 的 agents/openai.yaml 无效: ${document.errors[0].message}`);
+    metadata = document.toJS({ maxAliasCount: 0 });
+    requireObject(metadata, `${skill.id}.agents/openai.yaml`);
+  }
+  if (metadata.policy !== undefined) requireObject(metadata.policy, `${skill.id}.policy`);
+  const declared = metadata.policy?.allow_implicit_invocation;
+  if (declared !== undefined && typeof declared !== 'boolean') {
+    fail(`${skill.id}.allow_implicit_invocation 必须为布尔值`);
+  }
+  const expected = effectiveInvocationContract(registry, skill).invocation_mode !== 'user';
+  if (skillMd !== undefined) {
+    const match = skillMd.match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/);
+    if (!match) fail(`${skill.id} 的 SKILL.md 缺少 frontmatter`);
+    const document = parseDocument(match[1], { maxAliasCount: 0, uniqueKeys: true });
+    if (document.errors.length) fail(`${skill.id} 的 frontmatter 无效`);
+    const header = document.toJS({ maxAliasCount: 0 });
+    requireObject(header, `${skill.id}.frontmatter`);
+    const disabled = header['disable-model-invocation'];
+    if (disabled !== undefined && typeof disabled !== 'boolean') fail(`${skill.id}.disable-model-invocation 必须为布尔值`);
+    if ((disabled ?? false) === expected) fail(`${skill.id}.disable-model-invocation 与注册表调用意图不一致`);
+  }
+  if ((declared ?? true) !== expected) {
+    fail(`${skill.id}.allow_implicit_invocation 与注册表调用意图不一致，应为 ${expected}`);
   }
 }
 
@@ -296,7 +331,7 @@ function validateCodeReviewRoute(route, resolve) {
   validateFindingDisposition(standards.finding_disposition);
 }
 
-export function validateSkillRegistry(registry, { lock, compilerContract, lifecycleContract, skillSource, externalSkillSource, nestedSkillSources, backendPlatforms } = {}) {
+export function validateSkillRegistry(registry, { lock, compilerContract, lifecycleContract, skillSource, skillMetadata, externalSkillSource, nestedSkillSources, backendPlatforms } = {}) {
   if (!registry || typeof registry !== "object" || Array.isArray(registry)) fail("技能路由注册表必须是对象");
   if (registry.schema_version !== 3) fail("schema_version 必须为 3；v1/v2 已停止支持，请迁移 provider 与两阶段退役合同");
   if (registry.registry_id !== "yss.skill-routing") fail("registry_id 必须为 yss.skill-routing");
@@ -366,6 +401,7 @@ export function validateSkillRegistry(registry, { lock, compilerContract, lifecy
       fail(`${skill.id} impacts 不能为空`);
     }
     validateInvocationContract(registry, skill);
+    if (skillMetadata) validateInvocationMetadata(registry, skill, skillMetadata(skill.id), skillSource?.(skill.id));
   }
   for (const skill of skills) {
     if (skill.maturity === "deprecated") {
@@ -701,6 +737,10 @@ export function validateDefaultSkillRegistry() {
     compilerContract,
     lifecycleContract: yamlFromFile(LIFECYCLE_CONTRACT, "生命周期编排合同"),
     skillSource: (id) => readFileSync(path.join(ROOT, ".agents/skills", id, "SKILL.md"), "utf8"),
+    skillMetadata: (id) => {
+      const file = path.join(ROOT, '.agents/skills', id, 'agents/openai.yaml');
+      return existsSync(file) ? readFileSync(file, 'utf8') : null;
+    },
     externalSkillSource: (source) => readFileSync(path.join(ROOT, source), "utf8"),
     nestedSkillSources: nestedSkillPaths().map((source) => `.agents/skills/${source}`)
   });

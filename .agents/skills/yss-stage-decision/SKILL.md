@@ -34,6 +34,8 @@ Plan 的目标与退出条件由 `.template-spec/process/lifecycle-registry.yaml
 6. 生成 schema v3 `domain_strategy` 和 `stage_decision_package`，使用稳定规则、场景、决定、假设、约束、成功标准、测试 seam 和 downstream mapping ID，并以 `context_snapshot` 绑定根 `CONTEXT.md`、术语身份、完整文档 digest、引用术语 digest和证据。
 7. 运行 Schema、唯一性、悬空引用、根路径、术语引用、digest、语义一致性和传播验证；发现关键冲突时返回 `blocked`，不得生成 `approved` 包。v2 仅只读；修改或重发必须使用 `scripts/migrate-contract-v3.mjs` 显式迁移为 `draft` 并重新批准。v1 字符串引用先用 `scripts/migrate-context-references.mjs` 迁移到 v2；歧义引用不得猜测。
 
+Plan 成功标准在既有 `success_criteria[].statement` 细化指标定义、基线或未知原因、目标及确认状态、观测窗口、数据来源、验证方式和补齐动作；Plan 引用 `success-criterion.*`。关键取舍复用 `decision.*`，记录真实候选、理由、代价和重新考虑条件，不凑备选数量。表达和诊断见 `.template-spec/process/plan-spec-quality.md`；诊断不批准或阻断阶段，不扩展合同 schema。
+
 ## 控制面引用
 
 - 用户决定遵循 [用户决定协议](../yss-product-lifecycle/references/user-decisions.md)：决定必须绑定资产、版本、范围和证据；范围、风险、摘要或失效条件变化后重新确认。

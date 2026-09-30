@@ -1,0 +1,298 @@
+{
+  "schema_version": 1,
+  "scenarios": [
+    {
+      "id": "primary",
+      "label": "正常",
+      "state_ref": ".agents/skills/yss-prototype-stage/references/search-date-patterns.md",
+      "initial_data": {
+        "fixture": "维护教学示例，非产品 Spec",
+        "referenceDate": "2024-02-15",
+        "name": "",
+        "ownerId": "",
+        "range": {
+          "start": "",
+          "end": ""
+        },
+        "optionState": "ready",
+        "options": [
+          {
+            "id": "U-001",
+            "name": "张明"
+          },
+          {
+            "id": "U-002",
+            "name": "张明"
+          },
+          {
+            "id": "U-003",
+            "name": "李华（跨部门业务协作与异常恢复负责人长名称示例）"
+          },
+          {
+            "id": "U-004",
+            "name": "停用负责人",
+            "disabled": true
+          }
+        ],
+        "rows": [
+          {
+            "id": "M-001",
+            "name": "季度资料",
+            "ownerId": "U-001",
+            "date": "2024-02-29"
+          },
+          {
+            "id": "M-002",
+            "name": "跨部门协作说明",
+            "ownerId": "U-002",
+            "date": "2024-03-01"
+          },
+          {
+            "id": "M-003",
+            "name": "归档清单",
+            "ownerId": "U-001",
+            "date": "2024-12-31"
+          }
+        ]
+      }
+    },
+    {
+      "id": "empty",
+      "label": "空结果",
+      "state_ref": ".agents/skills/yss-prototype-stage/references/search-date-patterns.md",
+      "initial_data": {
+        "fixture": "维护教学示例，非产品 Spec",
+        "referenceDate": "2024-02-15",
+        "name": "",
+        "ownerId": "",
+        "range": {
+          "start": "",
+          "end": ""
+        },
+        "optionState": "ready",
+        "options": [],
+        "rows": []
+      }
+    },
+    {
+      "id": "loading",
+      "label": "加载中",
+      "state_ref": ".agents/skills/yss-prototype-stage/references/search-date-patterns.md",
+      "initial_data": {
+        "fixture": "维护教学示例，非产品 Spec",
+        "referenceDate": "2024-02-15",
+        "name": "",
+        "ownerId": "U-001",
+        "range": {
+          "start": "",
+          "end": ""
+        },
+        "optionState": "loading",
+        "options": [
+          {
+            "id": "U-001",
+            "name": "张明"
+          },
+          {
+            "id": "U-002",
+            "name": "张明"
+          },
+          {
+            "id": "U-003",
+            "name": "李华（跨部门业务协作与异常恢复负责人长名称示例）"
+          },
+          {
+            "id": "U-004",
+            "name": "停用负责人",
+            "disabled": true
+          }
+        ],
+        "rows": [
+          {
+            "id": "M-001",
+            "name": "季度资料",
+            "ownerId": "U-001",
+            "date": "2024-02-29"
+          },
+          {
+            "id": "M-002",
+            "name": "跨部门协作说明",
+            "ownerId": "U-002",
+            "date": "2024-03-01"
+          },
+          {
+            "id": "M-003",
+            "name": "归档清单",
+            "ownerId": "U-001",
+            "date": "2024-12-31"
+          }
+        ]
+      }
+    },
+    {
+      "id": "failure",
+      "label": "失败恢复",
+      "state_ref": ".agents/skills/yss-prototype-stage/references/search-date-patterns.md",
+      "initial_data": {
+        "fixture": "维护教学示例，非产品 Spec",
+        "referenceDate": "2024-02-15",
+        "name": "",
+        "ownerId": "U-001",
+        "range": {
+          "start": "",
+          "end": ""
+        },
+        "optionState": "failure",
+        "options": [
+          {
+            "id": "U-001",
+            "name": "张明"
+          },
+          {
+            "id": "U-002",
+            "name": "张明"
+          },
+          {
+            "id": "U-003",
+            "name": "李华（跨部门业务协作与异常恢复负责人长名称示例）"
+          },
+          {
+            "id": "U-004",
+            "name": "停用负责人",
+            "disabled": true
+          }
+        ],
+        "rows": [
+          {
+            "id": "M-001",
+            "name": "季度资料",
+            "ownerId": "U-001",
+            "date": "2024-02-29"
+          },
+          {
+            "id": "M-002",
+            "name": "跨部门协作说明",
+            "ownerId": "U-002",
+            "date": "2024-03-01"
+          },
+          {
+            "id": "M-003",
+            "name": "归档清单",
+            "ownerId": "U-001",
+            "date": "2024-12-31"
+          }
+        ]
+      }
+    },
+    {
+      "id": "no-permission",
+      "label": "无编辑权限",
+      "state_ref": ".agents/skills/yss-prototype-stage/references/search-date-patterns.md",
+      "initial_data": {
+        "fixture": "维护教学示例，非产品 Spec",
+        "referenceDate": "2024-02-15",
+        "name": "",
+        "ownerId": "",
+        "range": {
+          "start": "",
+          "end": ""
+        },
+        "optionState": "ready",
+        "options": [
+          {
+            "id": "U-001",
+            "name": "张明"
+          },
+          {
+            "id": "U-002",
+            "name": "张明"
+          },
+          {
+            "id": "U-003",
+            "name": "李华（跨部门业务协作与异常恢复负责人长名称示例）"
+          },
+          {
+            "id": "U-004",
+            "name": "停用负责人",
+            "disabled": true
+          }
+        ],
+        "rows": [
+          {
+            "id": "M-001",
+            "name": "季度资料",
+            "ownerId": "U-001",
+            "date": "2024-02-29"
+          },
+          {
+            "id": "M-002",
+            "name": "跨部门协作说明",
+            "ownerId": "U-002",
+            "date": "2024-03-01"
+          },
+          {
+            "id": "M-003",
+            "name": "归档清单",
+            "ownerId": "U-001",
+            "date": "2024-12-31"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid-value",
+      "label": "非法历史编号",
+      "state_ref": ".agents/skills/yss-prototype-stage/references/search-date-patterns.md",
+      "initial_data": {
+        "fixture": "维护教学示例，非产品 Spec",
+        "referenceDate": "2024-02-15",
+        "name": "",
+        "ownerId": "missing",
+        "range": {
+          "start": "",
+          "end": ""
+        },
+        "optionState": "ready",
+        "options": [
+          {
+            "id": "U-001",
+            "name": "张明"
+          },
+          {
+            "id": "U-002",
+            "name": "张明"
+          },
+          {
+            "id": "U-003",
+            "name": "李华（跨部门业务协作与异常恢复负责人长名称示例）"
+          },
+          {
+            "id": "U-004",
+            "name": "停用负责人",
+            "disabled": true
+          }
+        ],
+        "rows": [
+          {
+            "id": "M-001",
+            "name": "季度资料",
+            "ownerId": "U-001",
+            "date": "2024-02-29"
+          },
+          {
+            "id": "M-002",
+            "name": "跨部门协作说明",
+            "ownerId": "U-002",
+            "date": "2024-03-01"
+          },
+          {
+            "id": "M-003",
+            "name": "归档清单",
+            "ownerId": "U-001",
+            "date": "2024-12-31"
+          }
+        ]
+      }
+    }
+  ]
+}

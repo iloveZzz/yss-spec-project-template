@@ -1,0 +1,287 @@
+[
+  {
+    "repo": "anthropics/skills",
+    "path": "skills/frontend-design/SKILL.md",
+    "url": "https://raw.githubusercontent.com/anthropics/skills/8a1541c4a3ffa5a20a5a91de0dcf3f0bab1d1ef4/skills/frontend-design/SKILL.md",
+    "bytes": 9390,
+    "sha256": "d91970639e9f5c37682ac7ab60094d35f1c7c1f38d731bd56396563aee10c1d3",
+    "observed_at": "2026-09-29"
+  },
+  {
+    "repo": "anthropics/skills",
+    "path": "skills/frontend-design/LICENSE.txt",
+    "url": "https://raw.githubusercontent.com/anthropics/skills/8a1541c4a3ffa5a20a5a91de0dcf3f0bab1d1ef4/skills/frontend-design/LICENSE.txt",
+    "bytes": 10174,
+    "sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594",
+    "observed_at": "2026-09-29"
+  },
+  {
+    "repo": "Dammyjay93/interface-design",
+    "path": ".claude/skills/interface-design/SKILL.md",
+    "url": "https://raw.githubusercontent.com/Dammyjay93/interface-design/2f9be3206855bcb2d1d0af262c8bae25cba6658d/.claude/skills/interface-design/SKILL.md",
+    "bytes": 29614,
+    "sha256": "720b31a31276e899fbe3006a33cbfeaceb77a73ba4c27b80d29afd38c8b7b208",
+    "observed_at": "2026-09-29"
+  },
+  {
+    "repo": "Dammyjay93/interface-design",
+    "path": ".claude/skills/interface-design/references/principles.md",
+    "url": "https://raw.githubusercontent.com/Dammyjay93/interface-design/2f9be3206855bcb2d1d0af262c8bae25cba6658d/.claude/skills/interface-design/references/principles.md",
+    "error": "HTTP Error 404: Not Found",
+    "observed_at": "2026-09-29"
+  },
+  {
+    "repo": "Dammyjay93/interface-design",
+    "path": ".claude/skills/interface-design/references/validation.md",
+    "url": "https://raw.githubusercontent.com/Dammyjay93/interface-design/2f9be3206855bcb2d1d0af262c8bae25cba6658d/.claude/skills/interface-design/references/validation.md",
+    "error": "HTTP Error 404: Not Found",
+    "observed_at": "2026-09-29"
+  },
+  {
+    "repo": "google-labs-code/stitch-skills",
+    "path": "README.md",
+    "url": "https://raw.githubusercontent.com/google-labs-code/stitch-skills/0337446dadde6f8c94210444e2aa9d546126480f/README.md",
+    "bytes": 11076,
+    "sha256": "350b366bf9880cacf9a37447c89248a158d0d96ea6054beac15842877c164a12",
+    "observed_at": "2026-09-29"
+  },
+  {
+    "repo": "google-labs-code/stitch-skills",
+    "path": "plugins/stitch-utilities/skills/enhance-prompt/SKILL.md",
+    "url": "https://raw.githubusercontent.com/google-labs-code/stitch-skills/0337446dadde6f8c94210444e2aa9d546126480f/plugins/stitch-utilities/skills/enhance-prompt/SKILL.md",
+    "bytes": 6640,
+    "sha256": "ccb200c798072438b642b1fa6a5c515563159e2fab3d56e813d76d8afa9a7ce6",
+    "observed_at": "2026-09-29"
+  },
+  {
+    "repo": "google-labs-code/stitch-skills",
+    "path": "plugins/stitch-utilities/skills/design-md/SKILL.md",
+    "url": "https://raw.githubusercontent.com/google-labs-code/stitch-skills/0337446dadde6f8c94210444e2aa9d546126480f/plugins/stitch-utilities/skills/design-md/SKILL.md",
+    "bytes": 7654,
+    "sha256": "eb15f44646528f3a087ce023329ae699c1b6e803662af68338e1eb1c0406b59b",
+    "observed_at": "2026-09-29"
+  },
+  {
+    "repo": "google-labs-code/stitch-skills",
+    "path": "plugins/stitch-utilities/skills/stitch-loop/SKILL.md",
+    "url": "https://raw.githubusercontent.com/google-labs-code/stitch-skills/0337446dadde6f8c94210444e2aa9d546126480f/plugins/stitch-utilities/skills/stitch-loop/SKILL.md",
+    "bytes": 10328,
+    "sha256": "05f39ecf81b0664872e6f3d6be01c53cf8c1f8b9ef14c741fe01d1ac424ce634",
+    "observed_at": "2026-09-29"
+  },
+  {
+    "repo": "google-labs-code/design.md",
+    "path": "README.md",
+    "url": "https://raw.githubusercontent.com/google-labs-code/design.md/9bf8eae67128b6cc55ad9bf86665767deb4c11cd/README.md",
+    "bytes": 13148,
+    "sha256": "0cb9242992168cccfb79585000612c90c5c3e054d66d1ff90672dcc51288e91d",
+    "observed_at": "2026-09-29"
+  },
+  {
+    "repo": "vercel-labs/agent-skills",
+    "path": "skills/web-design-guidelines/SKILL.md",
+    "url": "https://raw.githubusercontent.com/vercel-labs/agent-skills/063bee94c3f4df8453406c830b0a7df0f2860278/skills/web-design-guidelines/SKILL.md",
+    "bytes": 1231,
+    "sha256": "f4647ca866a3accf763777f83e7682954f0187cd6bea7eea0399796652414e8f",
+    "observed_at": "2026-09-29"
+  },
+  {
+    "repo": "vercel-labs/web-interface-guidelines",
+    "path": "command.md",
+    "url": "https://raw.githubusercontent.com/vercel-labs/web-interface-guidelines/e3d624baaf29dc1fc645aff3e38f03e564d2d6b1/command.md",
+    "bytes": 7760,
+    "sha256": "5a775e6411f790f518dbc9c1fa7c50a89e6873502d9a3530a6eb223a590bcfe8",
+    "observed_at": "2026-09-29"
+  },
+  {
+    "repo": "pbakaus/impeccable",
+    "path": ".github/skills/impeccable/SKILL.md",
+    "url": "https://raw.githubusercontent.com/pbakaus/impeccable/114ea1d3838fca73b253af45f873b9c4f5f213c8/.github/skills/impeccable/SKILL.md",
+    "bytes": 12115,
+    "sha256": "90d2e6b6309c8cd86964f14783b382da70a9061766069e7f809ceadc82c97e7e",
+    "observed_at": "2026-09-29"
+  },
+  {
+    "repo": "pbakaus/impeccable",
+    "path": ".github/skills/impeccable/reference/operate.md",
+    "url": "https://raw.githubusercontent.com/pbakaus/impeccable/114ea1d3838fca73b253af45f873b9c4f5f213c8/.github/skills/impeccable/reference/operate.md",
+    "bytes": 4145,
+    "sha256": "a9d2203acd45ca33a13d5c68b02b23ed512425ac15f0e8438318ed124b43729d",
+    "observed_at": "2026-09-29"
+  },
+  {
+    "repo": "pbakaus/impeccable",
+    "path": ".github/skills/impeccable/reference/critique.md",
+    "url": "https://raw.githubusercontent.com/pbakaus/impeccable/114ea1d3838fca73b253af45f873b9c4f5f213c8/.github/skills/impeccable/reference/critique.md",
+    "bytes": 42766,
+    "sha256": "8ff60b8b5369d364f732f8de10479a39294e65341b3e0b6497b21de5c8e34b2d",
+    "observed_at": "2026-09-29"
+  },
+  {
+    "repo": "pbakaus/impeccable",
+    "path": ".github/skills/impeccable/reference/shape.md",
+    "url": "https://raw.githubusercontent.com/pbakaus/impeccable/114ea1d3838fca73b253af45f873b9c4f5f213c8/.github/skills/impeccable/reference/shape.md",
+    "bytes": 3547,
+    "sha256": "a55f016c046cb6a27c55bd7f346375aeb506a755c4fbca19a5f92dbd42309c23",
+    "observed_at": "2026-09-29"
+  },
+  {
+    "repo": "Leonxlnx/taste-skill",
+    "path": "skills/taste-skill/SKILL.md",
+    "url": "https://raw.githubusercontent.com/Leonxlnx/taste-skill/ce26fc25c0e5e8cab638f883de62d9a86ee5e45b/skills/taste-skill/SKILL.md",
+    "bytes": 87253,
+    "sha256": "aa194351b246b8b4799099d4ed7b033d29eab6e6e3d58d8d2172978be7b3ec89",
+    "observed_at": "2026-09-29"
+  },
+  {
+    "repo": "Leonxlnx/taste-skill",
+    "path": "CHANGELOG.md",
+    "url": "https://raw.githubusercontent.com/Leonxlnx/taste-skill/ce26fc25c0e5e8cab638f883de62d9a86ee5e45b/CHANGELOG.md",
+    "bytes": 8272,
+    "sha256": "55a81cbf8d45c5ca064b21d4ce61792e8d973c525cf2a65ee3e2c65f28b16f3b",
+    "observed_at": "2026-09-29"
+  },
+  {
+    "repo": "Owl-Listener/designer-skills",
+    "path": "README.md",
+    "url": "https://raw.githubusercontent.com/Owl-Listener/designer-skills/9a6930cf84a822eb458624bd11c61aac5bbdf224/README.md",
+    "bytes": 17374,
+    "sha256": "37c64e067825fa8b05d3bb5ffc6ac741cd937a10b7954bcd0dfeacc0416ffb69",
+    "observed_at": "2026-09-29"
+  },
+  {
+    "repo": "rjs/shaping-skills",
+    "path": "README.md",
+    "url": "https://raw.githubusercontent.com/rjs/shaping-skills/23e32c1ee2293595906d0d55f44424427afa7bac/README.md",
+    "bytes": 3799,
+    "sha256": "86a6ce1aa590778c8a1d520c616b42d421c59c1f105dafe1f3bdf180082f5c94",
+    "observed_at": "2026-09-29"
+  },
+  {
+    "repo": "rjs/shaping-skills",
+    "path": "breadboarding/SKILL.md",
+    "url": "https://raw.githubusercontent.com/rjs/shaping-skills/23e32c1ee2293595906d0d55f44424427afa7bac/breadboarding/SKILL.md",
+    "error": "HTTP Error 404: Not Found",
+    "observed_at": "2026-09-29"
+  },
+  {
+    "repo": "nextlevelbuilder/ui-ux-pro-max-skill",
+    "path": "src/ui-ux-pro-max/templates/base/skill-content.md",
+    "url": "https://raw.githubusercontent.com/nextlevelbuilder/ui-ux-pro-max-skill/09170eec67eefd46a7ae85de61b40c194020f997/src/ui-ux-pro-max/templates/base/skill-content.md",
+    "bytes": 26501,
+    "sha256": "f4a6ccac8552024baa7543420ba96f0587e7234f52a3c2216a576a9f1bf944e4",
+    "observed_at": "2026-09-29"
+  },
+  {
+    "repo": "nextlevelbuilder/ui-ux-pro-max-skill",
+    "path": "src/ui-ux-pro-max/scripts/search.py",
+    "url": "https://raw.githubusercontent.com/nextlevelbuilder/ui-ux-pro-max-skill/09170eec67eefd46a7ae85de61b40c194020f997/src/ui-ux-pro-max/scripts/search.py",
+    "bytes": 9373,
+    "sha256": "d54e648fe0ec2932cac66684220cc17be4bd4b4eba1d23d3195d509d398db374",
+    "observed_at": "2026-09-29"
+  },
+  {
+    "repo": "emilkowalski/skills",
+    "path": "README.md",
+    "url": "https://raw.githubusercontent.com/emilkowalski/skills/d16ebe60d09a5ba2afcb7054ede9d0a10c9f6128/README.md",
+    "bytes": 4239,
+    "sha256": "c1ffaeb84dbeb2862f7a18e3bfd01e90a1f64b421b9c84c9942733de59b23449",
+    "observed_at": "2026-09-29"
+  },
+  {
+    "repo": "Owl-Listener/designer-skills",
+    "path": "prototyping-testing/skills/parallel-concepts/SKILL.md",
+    "url": "https://raw.githubusercontent.com/Owl-Listener/designer-skills/9a6930cf84a822eb458624bd11c61aac5bbdf224/prototyping-testing/skills/parallel-concepts/SKILL.md",
+    "bytes": 3714,
+    "sha256": "6e6350577164b59ae88ad22a21a26a45076cf4584634c71b696bfdc6d9277fee",
+    "observed_at": "2026-09-29"
+  },
+  {
+    "repo": "Owl-Listener/designer-skills",
+    "path": "prototyping-testing/skills/concept-selection/SKILL.md",
+    "url": "https://raw.githubusercontent.com/Owl-Listener/designer-skills/9a6930cf84a822eb458624bd11c61aac5bbdf224/prototyping-testing/skills/concept-selection/SKILL.md",
+    "bytes": 3434,
+    "sha256": "ae29edc8d905a313e9c806fbdaf2c94406522bae72fcfd01f747ea770fdc8afd",
+    "observed_at": "2026-09-29"
+  },
+  {
+    "repo": "Owl-Listener/designer-skills",
+    "path": "prototyping-testing/skills/test-scenario/SKILL.md",
+    "url": "https://raw.githubusercontent.com/Owl-Listener/designer-skills/9a6930cf84a822eb458624bd11c61aac5bbdf224/prototyping-testing/skills/test-scenario/SKILL.md",
+    "bytes": 1735,
+    "sha256": "7edd991b38eac9d06d5b8b0bddd97a1cf4b468dc60fbc772f2c81bb47f9a2c80",
+    "observed_at": "2026-09-29"
+  },
+  {
+    "repo": "Owl-Listener/designer-skills",
+    "path": "prototyping-testing/skills/click-test-plan/SKILL.md",
+    "url": "https://raw.githubusercontent.com/Owl-Listener/designer-skills/9a6930cf84a822eb458624bd11c61aac5bbdf224/prototyping-testing/skills/click-test-plan/SKILL.md",
+    "bytes": 1703,
+    "sha256": "39ae7fedc7d9cb8cf0ea390403345639c05bdd1e4f64175def3e42464f3939ef",
+    "observed_at": "2026-09-29"
+  },
+  {
+    "repo": "Owl-Listener/designer-skills",
+    "path": "prototyping-testing/commands/explore-options.md",
+    "url": "https://raw.githubusercontent.com/Owl-Listener/designer-skills/9a6930cf84a822eb458624bd11c61aac5bbdf224/prototyping-testing/commands/explore-options.md",
+    "bytes": 2089,
+    "sha256": "3b6988aa4cad3cc4910052a737bac2814360676618b3a35528023b632d478332",
+    "observed_at": "2026-09-29"
+  },
+  {
+    "repo": "rjs/shaping-skills",
+    "path": "breadboarding/skill.md",
+    "url": "https://raw.githubusercontent.com/rjs/shaping-skills/23e32c1ee2293595906d0d55f44424427afa7bac/breadboarding/skill.md",
+    "bytes": 60999,
+    "sha256": "0c4e56a9ee5bc17a9cf911b63a384bf81262c4337507a572876cdea9546ca175",
+    "observed_at": "2026-09-29"
+  },
+  {
+    "repo": "yhassy/wireframe-skill",
+    "path": "wireframe-designer.md",
+    "url": "https://raw.githubusercontent.com/yhassy/wireframe-skill/948d4331343b18d913d5bc502da72ed0c5f19101/wireframe-designer.md",
+    "bytes": 21162,
+    "sha256": "b74c0203f795b24cfbaebec783a51af3e3f8c11d6f909130c33214309b3f9f77",
+    "observed_at": "2026-09-29"
+  },
+  {
+    "repo": "yhassy/wireframe-skill",
+    "path": "SKILL.md",
+    "url": "https://raw.githubusercontent.com/yhassy/wireframe-skill/948d4331343b18d913d5bc502da72ed0c5f19101/SKILL.md",
+    "bytes": 13823,
+    "sha256": "e0a734c45367c55150fc2175ec6522cc8739918aaa111845f214de44ace41129",
+    "observed_at": "2026-09-29"
+  },
+  {
+    "repo": "JimmySadek/wireframe-doc",
+    "path": "SKILL.md",
+    "url": "https://raw.githubusercontent.com/JimmySadek/wireframe-doc/8364b2442f937fdeaa779ed6b7ad58c0aa51f203/SKILL.md",
+    "bytes": 25417,
+    "sha256": "91ecc23bc31b414816ec239e7f8cd1ed304316031cf81fc077fd46b93a166e2f",
+    "observed_at": "2026-09-29"
+  },
+  {
+    "repo": "JimmySadek/wireframe-doc",
+    "path": "assets/render-template.html",
+    "url": "https://raw.githubusercontent.com/JimmySadek/wireframe-doc/8364b2442f937fdeaa779ed6b7ad58c0aa51f203/assets/render-template.html",
+    "bytes": 43771,
+    "sha256": "13890e63aa3549b4a633f4df2680b50928576b96ac2814887409baa2ab1a81de",
+    "observed_at": "2026-09-29"
+  },
+  {
+    "repo": "emilkowalski/skills",
+    "path": "skills/prototype/SKILL.md",
+    "url": "https://raw.githubusercontent.com/emilkowalski/skills/d16ebe60d09a5ba2afcb7054ede9d0a10c9f6128/skills/prototype/SKILL.md",
+    "bytes": 7830,
+    "sha256": "bba39c955eb1871c5a02733976ceec5d0324198e0812e667604756489c89f7b9",
+    "observed_at": "2026-09-29"
+  },
+  {
+    "repo": "emilkowalski/skills",
+    "path": "skills/emil-design-eng/SKILL.md",
+    "url": "https://raw.githubusercontent.com/emilkowalski/skills/d16ebe60d09a5ba2afcb7054ede9d0a10c9f6128/skills/emil-design-eng/SKILL.md",
+    "bytes": 27123,
+    "sha256": "ffbe68e6007fb42cb8149f089b400a1ca007d59ba23e8948e2be4476f3175939",
+    "observed_at": "2026-09-29"
+  }
+]

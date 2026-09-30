@@ -1,0 +1,8 @@
+{
+  "task": "preserve-small-change",
+  "side": "B",
+  "checks": [],
+  "scope": "Browser behavior only; does not reverse timeout failure or provide user visual acceptance.",
+  "status": "failed",
+  "error": "Expected values to be strictly equal:\n\n0 !== 3\n"
+}

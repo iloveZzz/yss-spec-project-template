@@ -1,3 +1,4 @@
+import { assertImplementationTicket, assertSliceBusinessSources, businessTicketVersion } from './business-tickets.mjs';
 import {validateExistingUiBaseline} from './existing-ui-baseline.mjs';
 import {sliceRepositories} from './slice-repositories.mjs';
 import { sliceCheckApplicability } from './slice-applicability.mjs';
@@ -5,6 +6,7 @@ import fs, {validationMemo} from './validation-phase.mjs';
 import path from 'node:path';
 import { parseDocument } from '../vendor/yaml.mjs';
 import { safe, hash, digest, schema } from './strategic-handoff-io.mjs';
+import { parseContent } from './plan-spec-markdown.mjs';
 
 const parseCache=Symbol('slice-yaml');
 const originals = new WeakMap();
@@ -86,6 +88,14 @@ function locate(text, locator) {
     requireThat(start>=1&&end>=start&&end<=lines.length,`定位范围无效: ${locator}`);
     return lines.slice(start-1,end).join('\n');
   }
+  if (/^AC-[A-Za-z0-9][A-Za-z0-9._-]*$/.test(locator)) {
+    const parsed=parseContent(text);
+    if(parsed.supported) {
+      const matches=parsed.entries.filter(entry=>entry.kind==='AC'&&entry.id===locator);
+      requireThat(matches.length===1,`验收 ID 缺失或不唯一: ${locator}`);
+      return lines.slice(matches[0].position.start.line-1,matches[0].position.end.line).join('\n');
+    }
+  }
   const body=text.replace(/^---\r?\n[\s\S]*?\r?\n---(?:\r?\n|$)/,'');
   const matches=body.split('\n').filter(line=>line.includes(locator));
   requireThat(matches.length===1, `定位缺失或不唯一: ${locator}`);
@@ -102,11 +112,13 @@ export function normalizeSliceContract(document, options = {}) {
   const raw = sourceSliceContract(document);
   requireThat(raw && [2,3].includes(raw.schema_version), 'Slice Implementation Contract schema v1 已停止支持；需要 schema v2 或 v3');
   if (raw.schema_version === 2) {
+    requireThat(options.historicalReadOnly || businessTicketVersion(options.root || process.cwd())!==1,'BUSINESS_SLICE_V3_REQUIRED: 新业务拆分规则的实现必须使用 v3；v2 保留历史读取');
     const ref = raw.lifecycle_refs?.ticket;
     if (ref) {
       requireThat(!/\/work-items\//.test(ref), 'stage-work-item 不能作为实现 Ticket');
       const file = safe(options.root || process.cwd(), ref, { missing: true });
       if (fs.existsSync(file)) {
+        assertImplementationTicket(fs.readFileSync(file,'utf8'),ref);
         const header = fs.readFileSync(file, 'utf8').match(/^---\r?\n([\s\S]*?)\r?\n---/);
         requireThat(!header || parseSliceYaml(header[1])?.kind !== 'stage-work-item', 'stage-work-item 不能作为实现 Ticket');
       }
@@ -116,6 +128,8 @@ export function normalizeSliceContract(document, options = {}) {
   schema(raw,'.template-spec/process/schemas/slice-implementation-contract-v3.schema.json');
   const sources=readSliceSources(raw,options), refs=Object.fromEntries(Object.entries(sources).map(([key,item])=>[key,item.ref]));
   requireKeys(refs,['spec','ticket','engineering_baseline','implementation_repository','build_architecture_checklist'],'依据');
+  assertImplementationTicket(sources.ticket.text,refs.ticket);
+  assertSliceBusinessSources({root:options.root || process.cwd(),ticketText:sources.ticket.text,setBinding:sources.business_ticket_set,acceptance:raw.acceptance,specBinding:sources.spec});
   const ticketHeader = sources.ticket.text.match(/^---\r?\n([\s\S]*?)\r?\n---/);
   requireThat(!/\/work-items\//.test(refs.ticket) && (!ticketHeader || parseSliceYaml(ticketHeader[1])?.kind !== 'stage-work-item'), 'stage-work-item 不能作为实现 Ticket');
   if(!raw.applicability.checks)requireKeys(refs,['architecture_review'],'依据');
@@ -211,7 +225,7 @@ export function normalizeSliceContract(document, options = {}) {
 }
 export function readSliceContract(ref,{root=process.cwd(),diagnostic=false}={}) {
   const bytes=fs.readFileSync(safe(root,ref)),raw=sourceSliceContract(parseSliceYaml(bytes));
-  const contract=diagnostic&&raw.status==='blocked'?null:normalizeSliceContract(raw,{root});
+  const contract=diagnostic&&raw.status==='blocked'?null:normalizeSliceContract(raw,{root,historicalReadOnly:diagnostic&&raw.schema_version===2});
   return {contract,raw,sources:structuredClone(sourceSnapshots.get(contract)||{}),binding:{ref,id:raw.contract_id,version:raw.contract_version,digest:hash(bytes)}};
 }
 

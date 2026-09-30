@@ -1,0 +1,30 @@
+{
+  "status": "failed",
+  "active": {
+    "engine": "chromium",
+    "width": 1440,
+    "mode": "standard",
+    "name": "multi-step"
+  },
+  "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n26 !== 28\n\n    at file:///Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-30-prototype-glass-study/verify-browser.mjs:26:53",
+  "results": [
+    {
+      "engine": "chromium",
+      "width": 1440,
+      "mode": "standard",
+      "name": "list-detail",
+      "status": "passed",
+      "style": {
+        "body": "14px",
+        "bodyToken": "14px",
+        "height": 28,
+        "heightToken": "28px",
+        "radius": "6px",
+        "blur": "none",
+        "background": "rgb(255, 255, 255)"
+      },
+      "offline": "context-offline + http-block"
+    }
+  ],
+  "errors": []
+}

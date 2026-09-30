@@ -1,10 +1,10 @@
 # YSS HTML 原型适配器
 
-H1/H2 表示验证深度，不表示低/高保真。统一消费 Prototype Evidence schema v4 与 Visual Baseline schema v1。默认 `html-css-js`，接收者可离线打开；生产组件验证仍归下游 `yss-ui`，原型阶段不得调用。
+H1/H2 表示验证深度，不表示低/高保真。统一消费 Prototype Evidence schema v4 与 Visual Baseline schema v1。高保真主要采用 `vue-shadcn-prebuilt`，简单局部修改可用 `html-css-js`，接收者可离线打开；生产组件验证仍归下游 `yss-ui`，原型阶段不得调用。
 
 ## 构建与交付
 
-在项目实例中，低保真和状态矩阵评审通过后运行；模板源仅在临时 fixture 测试生成器：
+在项目实例中，低保真和状态矩阵评审通过后，优先按 [shadcn 集成](shadcn-vue-integration.md) 构建高保真；以下为保留的原生轻量路线。模板源仅在临时 fixture 测试生成器：
 
 ```bash
 node .agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs prepare-flow \
@@ -40,7 +40,7 @@ node .agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs validate-
 
 ## 统一 QA 与离线复验
 
-六轴仍为 visual/layout/interaction/content/accessibility/cross-platform，写同一份 feature 级 `verification/design-qa.md`。原生语义优先；弹窗按适用行为验证初始焦点、Tab、Escape 和关闭后的焦点去向。ARIA 属性或自动扫描不替代键盘实操。
+六轴仍为 visual/layout/interaction/content/accessibility/cross-platform，写同一份 feature 级 `verification/design-qa.md`。原生语义优先；弹窗按适用行为验证初始焦点、Tab、Escape 和关闭后的焦点去向。ARIA 属性或自动扫描不替代键盘实操。按 `yss-design-system/references/search-date-theme.md` 增加 320 CSS px 重排、真实点击区域、焦点遮挡及按人群风险选择的读屏记录；与实际 200% 缩放分别留证。维护检查使用 [统一验证入口](prototype-verification.md)。
 
 复制资源包到脱离源仓的目录，以 `file://` 且无网络运行，检查所有采用的场景、资源加载、console、键盘、焦点、200% zoom/reduced motion。证据写 `delivery_contract=offline-html-v1`、`resource_manifest_ref`、`offline_verification_ref/result`。机器静态检查通过只代表结构可检查。
 
@@ -54,6 +54,12 @@ node .agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs sea
 
 从 manifest 的 `case_id` 读取语义与截图，不依赖 glob；视觉回归按风险采用，首次生成基线不声称已有回归通过。六轴 QA、独立评审、用户确认和生产实现隔离保持原合同。
 
-## 条件 AntD 路线
+## shadcn 主要路线
 
-已确认复杂交互需要真实组件时，按 [AntD 集成](antd-integration.md) 使用 `react-antd-prebuilt`；这是作者侧预构建，接收者仍无需 Node，所有资源离线随包。默认 `html-css-js` 保持原生实现。组件库知识仅作为本阶段设计事实，不取代根 DESIGN.md 或授权生产实现。
+按 [shadcn 集成](shadcn-vue-integration.md) 使用 `vue-shadcn-prebuilt`。组件源码固定 revision，作者侧预构建；H1/H2 均交付离线 HTML 资源包。原生路线用于轻量改动及已有模式。React AntD 不再生成，旧证据通过显式 legacy 选项只读核验。
+
+## 候选比较
+
+已有本地候选需要原尺寸切换时使用 [独立比较工具](comparison-tool.md)。比较包属于评审辅助，不属于已批准原型；其 manifest 不取代 Prototype Evidence v4 或 Visual Baseline v1。高保真页面层级与状态表达按 `yss-design-system/references/enterprise-craft.md` 检查，同批查看桌面/窄屏，统一修整后复验。关键 finding 未关闭时保持阻塞。
+
+React 作者依赖、组件源码和生成入口已退役，历史批准包仅显式 `--allow-legacy` 只读核验，不重新封存。见 [历史路线](shadcn-integration.md)。

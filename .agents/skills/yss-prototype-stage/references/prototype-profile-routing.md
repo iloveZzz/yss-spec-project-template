@@ -8,8 +8,8 @@
 
 | 档位 | 名称 | 命中条件 | 默认适配器 |
 |---|---|---|---|
-| H1 | `visual-review` | 仅需确认布局、密度、层级、文案或少量关键交互；不涉及多页面导航、复杂联动、权限、恢复、冲突或真实组件差异 | 语义 HTML + 项目 Token CSS + 最小 JavaScript；可使用设计工具导出，但必须有浏览器可复验入口 |
-| H2 | `flow-review` | 多页面/路由、复杂表单联动、权限体验、失败恢复、并发冲突或需要可操作主流程测试 | HTML/CSS/JavaScript 可操作流程；默认离线资源包，保持同等流程和异常验收 |
+| H1 | `visual-review` | 仅需确认布局、密度、层级、文案或少量关键交互；不涉及多页面导航、复杂联动、权限、恢复、冲突或真实组件差异 | shadcn-vue + 项目 Token 离线预构建；轻量页面可使用原生 HTML 或设计工具导出，必须有浏览器可复验入口 |
+| H2 | `flow-review` | 多页面/路由、复杂表单联动、权限体验、失败恢复、并发冲突或需要可操作主流程测试 | shadcn-vue 可操作流程；轻量页面可用原生 HTML，同等流程和异常验收，交付离线资源包 |
 
 真实 YSS/AntDV 组件行为、lockfile、props、slots、events 或 Storybook 状态不是第三种原型档位。它们属于前端实现计划、已批准切片的生产实现与实现还原验证。原型中发现的相关不确定性写入 `implementation_handoff`，不得为解决它调用 `yss-ui` 或把实现仓组件代码引入原型。
 
@@ -31,7 +31,7 @@
 
 ### H1
 
-- 浏览器不依赖 Node/runtime build；原型目录不得伪造 `package.json`、lockfile 或 AntD 查询段。
+- 浏览器不依赖 Node/runtime build；原型目录不得伪造 `package.json`、lockfile 或空组件查询段。
 - 至少验证一个或少量关键交互，以及基础键盘、焦点和对比度。
 - 200% zoom 与 reduced motion 只在影响面命中时要求；视觉回归和真实组件 story 不强制。
 
@@ -39,7 +39,7 @@
 
 - 主流程与关键 failure / no-permission / conflict 状态可操作。
 - 验证键盘、焦点、对比度、200% zoom、reduced motion；按风险决定视觉回归。
-- 默认 `component_basis=html-css-js`、`runtime_build_required=false`、`prototype_library_facts.applicable=false`，不创建 package、lockfile 或空事实包。
+- 高保真优先 `component_basis=vue-shadcn-prebuilt`，来源见 [shadcn 集成](shadcn-vue-integration.md)。原生轻量路线使用 `html-css-js` 且 `prototype_library_facts.applicable=false`；两者 `runtime_build_required=false`，交付目录不放 package 或 lockfile。
 - 场景使用现有 `case_id/data_scenario` 对应状态矩阵；固定初始输入与结果，提供切换、深链接和重置，验证失败后的输入保留、重试、权限边界及冲突恢复。
 - `offline-html-v1` 交付包记录所有本地资源及摘要；断开网络后通过 `file://` 从独立目录复验，保存 console、资源、交互和截图结果。静态扫描不能替代浏览器行为证明。
 
@@ -51,7 +51,9 @@
 
 ## 条件 ideation
 
-新视觉方向、信息架构不确定或存在多个合理布局时比较三个候选方案，由用户选择后构建。可用低保真、HTML 或按需 `product-design:ideate`；不把 ImageGen 当作所有原型的前置依赖。已批准模式或当前设计规范足以约束页面时，记录 `not-applicable`、来源与理由。
+信息架构或交互存在实质不确定性时，在独立低保真评审之前按 [方案比较方法](concept-comparison.md) 比较三个候选并取得用户选择。通过评审后，只有视觉方向仍未确定时比较高保真候选；保持已批准行为，行为变化返回受影响评审。候选保持同一任务、数据、保真度与制作深度，比较前明确硬约束与取舍标准；换色不算交互方案。记录选择代价、落选理由及重新考虑条件，沿用现有用户决定协议，不另立批准门禁。
+
+可用语义草图、HTML 或按需 `product-design:ideate`；离线比较用 [评审工具](comparison-tool.md)，不把 ImageGen 当作所有原型的前置依赖。已批准模式或当前设计规范足以约束页面时，记录 `not-applicable`、来源与理由；已解决的问题不重复探索。
 
 `source_visual.kind=design-system` 引用 `DESIGN.md`，走规范直出和 `design-contract` QA；`visual-reference` 引用独立视觉稿，走 `visual-comparison` QA。两者都要求统一六轴 QA 和用户确认；首版截图只在确认后成为后续回归基线。
 
@@ -77,4 +79,6 @@
 
 采纳的外部方法与适用边界见 [HTML 原型实践](html-prototype-practices.md)；不安装上游整包或引入第二套状态、QA、交接体系。
 
-真实组件确有评审价值时，H2 可条件使用 `react-antd-prebuilt`，仍交付离线 HTML 资源包；启用条件、版本与验证见 [AntD 集成](antd-integration.md)。
+React AntD 预构建也已退役；旧证据与资源仅显式 legacy 只读校验，不封存新版本。高保真主要路线与迁移说明见 [shadcn 集成](shadcn-vue-integration.md)。
+
+React 作者依赖、组件源码和生成入口已退役，历史批准包仅显式 `--allow-legacy` 只读核验，不重新封存。见 [历史路线](shadcn-integration.md)。

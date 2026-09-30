@@ -1,0 +1,10 @@
+{
+  "status": "pass",
+  "source": "/Users/zhudaoming/Projects/yss-spec-project-template",
+  "copy": "/private/tmp/yss-large-skills-20261001/frozen-workspace",
+  "compared_paths": 25380,
+  "excluded_runtime_cache": "仅排除 .codegraph 的运行时索引缓存；4 个受 Git 管理的 .codegraph/.gitignore 已保留并核验",
+  "differences": [],
+  "frozen-source-manifest_sha256": "b7b15517746f5bd654a18f326fbfb471f54883eca71a6b6556b2fea025fc1c7d",
+  "frozen-copy-manifest_sha256": "b7b15517746f5bd654a18f326fbfb471f54883eca71a6b6556b2fea025fc1c7d"
+}

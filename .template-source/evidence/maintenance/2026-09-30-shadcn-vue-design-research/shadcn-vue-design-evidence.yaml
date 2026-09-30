@@ -1,0 +1,919 @@
+{
+  "schema_version": 1,
+  "profile": "technical-evidence",
+  "mode": "evidence-audited",
+  "scope": {
+    "topic": "shadcn-vue components and YSS high-fidelity skill/design maintenance",
+    "audience": "current user and prototype/design/review skill maintainers",
+    "time_horizon": "2026-09-30 observation; source revisions pinned",
+    "research_questions": [
+      "哪些组件/组合值得采用",
+      "当前React路线能否承接增强",
+      "两个design目录哪些资产过时或损坏",
+      "哪些上游规则不适合离线场景"
+    ],
+    "inclusion_criteria": [
+      "官方文档与固定源码",
+      "当前仓库字节和浏览器记录",
+      "W3C说明及反证"
+    ],
+    "exclusion_criteria": [
+      "未核验社区registry或二手转载",
+      "仅据Star判断质量",
+      "将研究当成批准或效果试点"
+    ]
+  },
+  "ownership": {
+    "research_owner": "yss-research",
+    "downstream_owner": "yss-prototype-stage / yss-design-system / prototype-review",
+    "decision_ref": null
+  },
+  "search_log": [
+    {
+      "id": "search-001",
+      "channel": "official-web",
+      "query_or_corpus": "https://shadcn-vue.com/docs/components; introduction; theming; data-table; skills; legacy; GitHub navigation",
+      "searched_at": "2026-09-30",
+      "result": "results-found"
+    },
+    {
+      "id": "search-002",
+      "channel": "official-web",
+      "query_or_corpus": "sidebar first open and retry; field; toast; combobox page body extraction",
+      "searched_at": "2026-09-30",
+      "result": "access-failed"
+    },
+    {
+      "id": "search-003",
+      "channel": "official-web",
+      "query_or_corpus": "https://reka-ui.com/docs/overview/accessibility",
+      "searched_at": "2026-09-30",
+      "result": "access-failed"
+    },
+    {
+      "id": "search-004",
+      "channel": "GitHub API",
+      "query_or_corpus": "unovue/shadcn-vue repository, dev commit and recursive tree; fixed revision raw selected docs/skills/sidebar sources; 88 files",
+      "searched_at": "2026-09-30",
+      "result": "results-found"
+    },
+    {
+      "id": "search-005",
+      "channel": "GitHub API",
+      "query_or_corpus": "shadcn-ui/ui fixed db2db460... recursive tree and 12 raw candidate files; import/dependency countercheck",
+      "searched_at": "2026-09-30",
+      "result": "results-found"
+    },
+    {
+      "id": "search-006",
+      "channel": "local-source",
+      "query_or_corpus": "two design directories, root DESIGN, canonical prototype skill/build/theme/registry, profile-skill-sync; digest inventory",
+      "searched_at": "2026-09-30",
+      "result": "results-found"
+    },
+    {
+      "id": "search-007",
+      "channel": "Chromium file://",
+      "query_or_corpus": "preview.html and preview-dark.html at 1440x900 and390x844; block HTTP(S); computed styles/request failures",
+      "searched_at": "2026-09-30",
+      "result": "results-found"
+    },
+    {
+      "id": "search-008",
+      "channel": "local-source-countercheck",
+      "query_or_corpus": "root has compact variants; AntD production source still valid; dark limitation explicitly documented; preview is a showcase; new builder copies local Token",
+      "searched_at": "2026-09-30",
+      "result": "results-found"
+    },
+    {
+      "id": "search-009",
+      "channel": "local-filesystem",
+      "query_or_corpus": "three missing paths in local-path-check.json; independent agent relative Markdown link check found1 valid link,0 broken",
+      "searched_at": "2026-09-30",
+      "result": "results-found"
+    },
+    {
+      "id": "search-010",
+      "channel": "official-standard",
+      "query_or_corpus": "W3C WCAG22 Understanding target-size-minimum, including exceptions",
+      "searched_at": "2026-09-30",
+      "result": "results-found"
+    },
+    {
+      "id": "search-011",
+      "channel": "scope-exclusion",
+      "query_or_corpus": "community registries, aggregator posts and Star-only quality inference excluded from decision support",
+      "searched_at": "2026-09-30",
+      "result": "excluded"
+    }
+  ],
+  "evidence_items": [
+    {
+      "id": "evidence-001",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-documentation",
+      "source_ref": "https://github.com/unovue/shadcn-vue/blob/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/content/docs/01.introduction.md",
+      "locator": "Open Code / Composition / Distribution",
+      "stance": "support",
+      "observed_at": "2026-09-30",
+      "observation": "官方分发可修改组件源码并提供组合方式，不是只消费一个封闭组件包。",
+      "limitations": [
+        "只支持本次固定来源和声明范围，不代表完整浏览器验收。"
+      ]
+    },
+    {
+      "id": "evidence-002",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-documentation",
+      "source_ref": "https://github.com/unovue/shadcn-vue/blob/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/content/docs/11.legacy.md",
+      "locator": "lines 2-6",
+      "stance": "support",
+      "observed_at": "2026-09-30",
+      "observation": "当前文档为Tailwind v4，v3通过legacy入口访问。",
+      "limitations": [
+        "只支持本次固定来源和声明范围，不代表完整浏览器验收。"
+      ]
+    },
+    {
+      "id": "evidence-003",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code",
+      "source_ref": ".agents/skills/yss-prototype-stage/scripts/build-shadcn-prototype.mjs",
+      "locator": "buildShadcnPrototype lines 28-55,77-89",
+      "stance": "support",
+      "observed_at": "2026-09-30",
+      "observation": "当前配置、扩展名、JSX/IIFE、固定依赖和Token拷贝；没有Vue SFC编译；默认density为compact。",
+      "limitations": [
+        "只支持本次固定来源和声明范围，不代表完整浏览器验收。"
+      ]
+    },
+    {
+      "id": "evidence-004",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-documentation",
+      "source_ref": "https://github.com/unovue/shadcn-vue/blob/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/content/docs/components/field.md",
+      "locator": "Anatomy; Responsive Layout; Validation and Errors; Accessibility",
+      "stance": "support",
+      "observed_at": "2026-09-30",
+      "observation": "Field组合label/control/help/error；提供响应式方向和invalid标记。",
+      "limitations": [
+        "只支持本次固定来源和声明范围，不代表完整浏览器验收。"
+      ]
+    },
+    {
+      "id": "evidence-005",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-documentation",
+      "source_ref": "https://github.com/unovue/shadcn-vue/blob/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/content/docs/components/sheet.md",
+      "locator": "description / Usage",
+      "stance": "support",
+      "observed_at": "2026-09-30",
+      "observation": "Sheet使用Dialog结构补充主内容；适合研究详情侧栏模式。",
+      "limitations": [
+        "只支持本次固定来源和声明范围，不代表完整浏览器验收。"
+      ]
+    },
+    {
+      "id": "evidence-006",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-documentation",
+      "source_ref": "https://github.com/unovue/shadcn-vue/blob/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/content/docs/components/empty.md",
+      "locator": "Usage / API Reference",
+      "stance": "support",
+      "observed_at": "2026-09-30",
+      "observation": "Empty包含标题、描述与后续动作结构。",
+      "limitations": [
+        "只支持本次固定来源和声明范围，不代表完整浏览器验收。"
+      ]
+    },
+    {
+      "id": "evidence-007",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-documentation",
+      "source_ref": "https://github.com/unovue/shadcn-vue/blob/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/content/docs/components/data-table.md",
+      "locator": "Introduction / Installation / Table of Contents",
+      "stance": "support",
+      "observed_at": "2026-09-30",
+      "observation": "表格是Table与TanStack组合指南；当前文档明确使用v9，需定义筛选、排序、分页、行选择等行为。",
+      "limitations": [
+        "只支持本次固定来源和声明范围，不代表完整浏览器验收。"
+      ]
+    },
+    {
+      "id": "evidence-008",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-documentation",
+      "source_ref": "https://github.com/unovue/shadcn-vue/blob/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/content/docs/components/date-picker.md",
+      "locator": "Installation / Usage",
+      "stance": "support",
+      "observed_at": "2026-09-30",
+      "observation": "日期示例组合Popover和Calendar，并导入internationalized/date；不是React API。",
+      "limitations": [
+        "只支持本次固定来源和声明范围，不代表完整浏览器验收。"
+      ]
+    },
+    {
+      "id": "evidence-009",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-documentation",
+      "source_ref": "https://github.com/unovue/shadcn-vue/blob/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/content/docs/components/chart.md",
+      "locator": "Component / Installation",
+      "stance": "support",
+      "observed_at": "2026-09-30",
+      "observation": "Vue图表使用Unovis，并有额外依赖和主题变量。",
+      "limitations": [
+        "只支持本次固定来源和声明范围，不代表完整浏览器验收。"
+      ]
+    },
+    {
+      "id": "evidence-010",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "source-code",
+      "source_ref": "https://github.com/shadcn-ui/ui/blob/db2db460a26fa84fb65c8d903b213925fbdee9ed/apps/v4/registry/new-york-v4/ui/chart.tsx",
+      "locator": "imports; also calendar.tsx imports in react-source-inventory.json",
+      "stance": "support",
+      "observed_at": "2026-09-30",
+      "observation": "React图表使用Recharts；Calendar源码使用react-day-picker，依赖与Vue示例不同。",
+      "limitations": [
+        "只支持本次固定来源和声明范围，不代表完整浏览器验收。"
+      ]
+    },
+    {
+      "id": "evidence-011",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code",
+      "source_ref": ".agents/skills/yss-prototype-stage/assets/shadcn-authoring/registry-manifest.json",
+      "locator": "components array",
+      "stance": "support",
+      "observed_at": "2026-09-30",
+      "observation": "当前固定11组件，revision db2db460a26fa84fb65c8d903b213925fbdee9ed；有来源和digest。",
+      "limitations": [
+        "只支持本次固定来源和声明范围，不代表完整浏览器验收。"
+      ]
+    },
+    {
+      "id": "evidence-012",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "source-code",
+      "source_ref": "https://github.com/shadcn-ui/ui/blob/db2db460a26fa84fb65c8d903b213925fbdee9ed/apps/v4/registry/new-york-v4/ui/combobox.tsx",
+      "locator": "imports; associated fixed tree and 12-file inventory",
+      "stance": "support",
+      "observed_at": "2026-09-30",
+      "observation": "固定React Combobox引用@base-ui/react；Sidebar引用hooks/use-mobile；Command用cmdk；Sonner用next-themes和sonner。",
+      "limitations": [
+        "伴随文件独立URL与摘要见react-source-inventory.json；未安装候选或验证依赖兼容。"
+      ]
+    },
+    {
+      "id": "evidence-013",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "source-code",
+      "source_ref": "https://github.com/unovue/shadcn-vue/blob/67c9a3926dc0a854507b325c6337ff2210d16379/skills/shadcn-vue/SKILL.md",
+      "locator": "Principles; Critical Rules; Workflow; Current Project Context",
+      "stance": "support",
+      "observed_at": "2026-09-30",
+      "observation": "包含组件选择、组合与语义颜色，同时要求latest CLI、registry探测和preset流程。",
+      "limitations": [
+        "外部Skill作为研究资料，没有执行其中命令；不覆盖本仓指令。"
+      ]
+    },
+    {
+      "id": "evidence-014",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "source-code",
+      "source_ref": "https://github.com/unovue/shadcn-vue/blob/67c9a3926dc0a854507b325c6337ff2210d16379/skills/shadcn-vue/rules/forms.md",
+      "locator": "Choosing form controls; Field validation",
+      "stance": "support",
+      "observed_at": "2026-09-30",
+      "observation": "按输入任务区分控件并提供字段invalid/disabled结构。",
+      "limitations": [
+        "只支持本次固定来源和声明范围，不代表完整浏览器验收。"
+      ]
+    },
+    {
+      "id": "evidence-015",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "source-code",
+      "source_ref": "https://github.com/unovue/shadcn-vue/blob/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/registry/new-york-v4/ui/sidebar/SidebarProvider.vue",
+      "locator": "defaultOpen; setOpen",
+      "stance": "support",
+      "observed_at": "2026-09-30",
+      "observation": "组件默认读取cookie；setOpen写cookie以持久化展开状态。",
+      "limitations": [
+        "未在YSS包运行此组件，不宣称现有包已经泄漏场景状态。"
+      ]
+    },
+    {
+      "id": "evidence-016",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "source-code",
+      "source_ref": "https://github.com/shadcn-ui/ui/blob/db2db460a26fa84fb65c8d903b213925fbdee9ed/apps/v4/registry/new-york-v4/ui/sidebar.tsx",
+      "locator": "setOpen",
+      "stance": "support",
+      "observed_at": "2026-09-30",
+      "observation": "React同revision Sidebar也写cookie，且依赖额外hook。",
+      "limitations": [
+        "只支持本次固定来源和声明范围，不代表完整浏览器验收。"
+      ]
+    },
+    {
+      "id": "evidence-017",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code",
+      "source_ref": "DESIGN.md",
+      "locator": "Overview lines 229; Layout 241; compact variants 211-221",
+      "stance": "support",
+      "observed_at": "2026-09-30",
+      "observation": "根规范正文要求HTML原型默认32px/compact显式，已有28px紧凑及16px Card命名变体。",
+      "limitations": [
+        "只支持本次固定来源和声明范围，不代表完整浏览器验收。"
+      ]
+    },
+    {
+      "id": "evidence-018",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code",
+      "source_ref": ".template-spec/design/design.md",
+      "locator": "lines 48,133,226; README.md:11; evidence-template:38",
+      "stance": "support",
+      "observed_at": "2026-09-30",
+      "observation": "新主题段落说新原型默认compact，后文仍说原型默认32px；模板注释把显式compact与生产快照相关联。",
+      "limitations": [
+        "只支持本次固定来源和声明范围，不代表完整浏览器验收。"
+      ]
+    },
+    {
+      "id": "evidence-019",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code",
+      "source_ref": ".template-source/design/preview.css",
+      "locator": "line 1 and body rule",
+      "stance": "support",
+      "observed_at": "2026-09-30",
+      "observation": "Token import解析到不存在的维护区tokens目录，body依赖缺失字体变量。",
+      "limitations": [
+        "只支持本次固定来源和声明范围，不代表完整浏览器验收。"
+      ]
+    },
+    {
+      "id": "evidence-020",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "original-measurement",
+      "source_ref": ".template-source/evidence/maintenance/2026-09-30-shadcn-vue-design-research/preview-browser.json",
+      "locator": "rows[0..3]",
+      "stance": "support",
+      "observed_at": "2026-09-30",
+      "observation": "Chromium主仓旧明/暗预览×1440/390均记录Token加载ERR_FILE_NOT_FOUND；body计算font为16px Times、Token空。",
+      "limitations": [
+        "只读浏览器诊断，非完整QA；没有验证新原型模式包。"
+      ]
+    },
+    {
+      "id": "evidence-021",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code",
+      "source_ref": ".template-source/profile-skill-sync.json",
+      "locator": "design shared lines 118-124 and frontend shared 712-718",
+      "stance": "support",
+      "observed_at": "2026-09-30",
+      "observation": "preview资源登记缺preview.js；两个目标profile的JS缺失见local-path-check.json。",
+      "limitations": [
+        "只支持本次固定来源和声明范围，不代表完整浏览器验收。"
+      ]
+    },
+    {
+      "id": "evidence-022",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "filesystem-observation",
+      "source_ref": ".template-source/evidence/maintenance/2026-09-30-shadcn-vue-design-research/local-path-check.json",
+      "locator": "three exists:false records",
+      "stance": "support",
+      "observed_at": "2026-09-30",
+      "observation": "主仓错误Token路径及两个profile预览JS当前均不存在。",
+      "limitations": [
+        "只支持本次固定来源和声明范围，不代表完整浏览器验收。"
+      ]
+    },
+    {
+      "id": "evidence-023",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code",
+      "source_ref": ".template-source/design/preview-dark.html",
+      "locator": "stylesheet line 8; compared .template-spec/design/tokens/variables.css:407-447 and variables.dark.css:31-41",
+      "stance": "support",
+      "observed_at": "2026-09-30",
+      "observation": "暗色入口只引用preview.css；普通variables.css的dark块与独立暗色快照表面值不同。",
+      "limitations": [
+        "只支持本次固定来源和声明范围，不代表完整浏览器验收。"
+      ]
+    },
+    {
+      "id": "evidence-024",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code",
+      "source_ref": ".template-spec/design/design.md",
+      "locator": "lines 158-177,266-285,301-306",
+      "stance": "support",
+      "observed_at": "2026-09-30",
+      "observation": "仍列具体圆角/动效数值、条件React AntD指南和已具备能力的TODO；需要澄清适用范围。",
+      "limitations": [
+        "只支持本次固定来源和声明范围，不代表完整浏览器验收。"
+      ]
+    },
+    {
+      "id": "evidence-025",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code",
+      "source_ref": ".template-source/design/preview.js",
+      "locator": "lines 51-69; preview.html:74,102",
+      "stance": "support",
+      "observed_at": "2026-09-30",
+      "observation": "重试后按钮改名但监听未替换；若干控件没有对应业务处理，重置只恢复筛选。",
+      "limitations": [
+        "只支持本次固定来源和声明范围，不代表完整浏览器验收。"
+      ]
+    },
+    {
+      "id": "evidence-026",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-standard-explanation",
+      "source_ref": "https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html",
+      "locator": "Success Criterion; Size requirement; Spacing",
+      "stance": "support",
+      "observed_at": "2026-09-30",
+      "observation": "最低目标尺寸24×24 CSS px；有间距及其他例外；仅控件高度不足以证明合规。",
+      "limitations": [
+        "说明文档不是本仓浏览器合规证明。"
+      ]
+    },
+    {
+      "id": "evidence-027",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-documentation",
+      "source_ref": "https://github.com/unovue/shadcn-vue/blob/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/content/docs/components/toast.md",
+      "locator": "lines 10-16",
+      "stance": "support",
+      "observed_at": "2026-09-30",
+      "observation": "Toast被标记deprecated，指向Sonner与旧文档。",
+      "limitations": [
+        "只支持本次固定来源和声明范围，不代表完整浏览器验收。"
+      ]
+    },
+    {
+      "id": "evidence-101",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code",
+      "source_ref": ".agents/skills/yss-prototype-stage/references/shadcn-integration.md",
+      "locator": "lines 1-13",
+      "stance": "counter",
+      "observed_at": "2026-09-30",
+      "observation": "用户已选择React原型；已固定来源、主题映射与11组件；研究Vue文档不证明必须切框架。",
+      "limitations": [
+        "只支持本次固定来源和声明范围，不代表完整浏览器验收。"
+      ]
+    },
+    {
+      "id": "evidence-102",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "source-code",
+      "source_ref": "https://github.com/unovue/shadcn-vue/blob/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/content/docs/components/data-table.md",
+      "locator": "Introduction",
+      "stance": "counter",
+      "observed_at": "2026-09-30",
+      "observation": "不同数据表的要求和数据源不同；组件指南不提供所有业务行为，不能以组件数量推断设计收益。",
+      "limitations": [
+        "只支持本次固定来源和声明范围，不代表完整浏览器验收。"
+      ]
+    },
+    {
+      "id": "evidence-103",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "source-code",
+      "source_ref": "https://github.com/shadcn-ui/ui/blob/db2db460a26fa84fb65c8d903b213925fbdee9ed/apps/v4/registry/new-york-v4/ui/combobox.tsx",
+      "locator": "imports plus associated fixed candidate inventory",
+      "stance": "counter",
+      "observed_at": "2026-09-30",
+      "observation": "同名组件或同revision仍可能引入新原语/依赖；源码可获取不等于当前构建已支持。",
+      "limitations": [
+        "只支持本次固定来源和声明范围，不代表完整浏览器验收。"
+      ]
+    },
+    {
+      "id": "evidence-104",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code",
+      "source_ref": ".agents/skills/yss-prototype-stage/references/shadcn-integration.md",
+      "locator": "来源与适配 / 构建 / QA",
+      "stance": "counter",
+      "observed_at": "2026-09-30",
+      "observation": "本仓固定源码与依赖，项目DESIGN权威，独立作者目录；不按latest自动升级；与上游通用工作流边界不同。",
+      "limitations": [
+        "只支持本次固定来源和声明范围，不代表完整浏览器验收。"
+      ]
+    },
+    {
+      "id": "evidence-105",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code",
+      "source_ref": "DESIGN.md",
+      "locator": "components.button-compact / card-compact",
+      "stance": "counter",
+      "observed_at": "2026-09-30",
+      "observation": "紧凑值已存在；默认密度冲突不证明要重做Token色板。",
+      "limitations": [
+        "只支持本次固定来源和声明范围，不代表完整浏览器验收。"
+      ]
+    },
+    {
+      "id": "evidence-106",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code",
+      "source_ref": ".agents/skills/yss-prototype-stage/scripts/build-shadcn-prototype.mjs",
+      "locator": "lines 77-89; local registry list",
+      "stance": "counter",
+      "observed_at": "2026-09-30",
+      "observation": "新包复制正确Token路径；Sidebar不在当前登记范围；旧预览失败不能扩展到全部新原型。",
+      "limitations": [
+        "只支持本次固定来源和声明范围，不代表完整浏览器验收。"
+      ]
+    },
+    {
+      "id": "evidence-107",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code",
+      "source_ref": ".template-source/design/preview.js",
+      "locator": "entire file exists in root; source-baseline digest",
+      "stance": "counter",
+      "observed_at": "2026-09-30",
+      "observation": "主仓脚本存在；缺失发生在同步范围和两个profile，不是源码脚本完全不存在。",
+      "limitations": [
+        "只支持本次固定来源和声明范围，不代表完整浏览器验收。"
+      ]
+    },
+    {
+      "id": "evidence-108",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code",
+      "source_ref": ".template-spec/design/design.md",
+      "locator": "lines 25,48,272,305",
+      "stance": "counter",
+      "observed_at": "2026-09-30",
+      "observation": "治理已明示暗色未按新seed完整重派生，并要求Token及浏览器核验后声明。",
+      "limitations": [
+        "只支持本次固定来源和声明范围，不代表完整浏览器验收。"
+      ]
+    },
+    {
+      "id": "evidence-109",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code",
+      "source_ref": "DESIGN.md",
+      "locator": "Overview; production runtime boundary",
+      "stance": "counter",
+      "observed_at": "2026-09-30",
+      "observation": "生产Vue/YSS和AntD设计来源仍有效；不能将所有AntD文档或历史快照删除。",
+      "limitations": [
+        "只支持本次固定来源和声明范围，不代表完整浏览器验收。"
+      ]
+    },
+    {
+      "id": "evidence-110",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code",
+      "source_ref": ".template-source/design/preview.html",
+      "locator": "page title lines 7,17",
+      "stance": "counter",
+      "observed_at": "2026-09-30",
+      "observation": "此页自称组件与状态预览；展示动作不完整不必视作真实产品业务缺陷，但不能作为完整H2样例。",
+      "limitations": [
+        "只支持本次固定来源和声明范围，不代表完整浏览器验收。"
+      ]
+    },
+    {
+      "id": "evidence-111",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-standard-explanation",
+      "source_ref": "https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html",
+      "locator": "Exceptions",
+      "stance": "counter",
+      "observed_at": "2026-09-30",
+      "observation": "存在spacing/equivalent/inline/user-agent/essential例外；24px或44px不能变成不加解释的全局硬编码。",
+      "limitations": [
+        "只支持本次固定来源和声明范围，不代表完整浏览器验收。"
+      ]
+    },
+    {
+      "id": "evidence-112",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "source-code",
+      "source_ref": "https://github.com/unovue/shadcn-vue/blob/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/content/docs/components/combobox.md",
+      "locator": "Popover and Command usage compared skills/rules/styling.md",
+      "stance": "counter",
+      "observed_at": "2026-09-30",
+      "observation": "上游实例仍包含尺寸类/手工class等写法；Skill偏好和所有示例未完全统一，不能照抄成库API硬约束。",
+      "limitations": [
+        "只支持本次固定来源和声明范围，不代表完整浏览器验收。"
+      ]
+    }
+  ],
+  "claims": [
+    {
+      "id": "claim-001",
+      "claim_kind": "technical-fact",
+      "statement_kind": "fact",
+      "statement": "shadcn-vue是源码分发/组合体系；当前React作者工具未实现Vue SFC适配，不能直接使用Vue源码。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-001",
+        "evidence-002",
+        "evidence-003"
+      ],
+      "counter_signal_refs": [
+        "evidence-101"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-002",
+      "claim_kind": "technical-fact",
+      "statement_kind": "inference-and-recommendation",
+      "statement": "Field、反馈和详情等组合可作为YSS模式增强候选；实际质量收益尚未验证。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-004",
+        "evidence-005",
+        "evidence-006",
+        "evidence-007"
+      ],
+      "counter_signal_refs": [
+        "evidence-102",
+        "evidence-101"
+      ],
+      "audit_status": "partially-supported",
+      "confidence": "medium",
+      "disposition": "qualify"
+    },
+    {
+      "id": "claim-003",
+      "claim_kind": "technical-fact",
+      "statement_kind": "fact",
+      "statement": "Data Table指南、日期与图表存在框架和依赖差异，不能按同名组件推断React兼容。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-007",
+        "evidence-008",
+        "evidence-009",
+        "evidence-010"
+      ],
+      "counter_signal_refs": [
+        "evidence-103"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-004",
+      "claim_kind": "technical-fact",
+      "statement_kind": "fact",
+      "statement": "当前只登记11组件，固定React源码可供扩展，但Combobox/Sidebar/Command/Sonner等需新增或适配依赖。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-003",
+        "evidence-011",
+        "evidence-012"
+      ],
+      "counter_signal_refs": [
+        "evidence-103"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-005",
+      "claim_kind": "technical-fact",
+      "statement_kind": "inference-and-recommendation",
+      "statement": "官方Skill的选择/组合方法可借鉴，但latest、registry和preset流程不能无条件移入本仓。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-013",
+        "evidence-014"
+      ],
+      "counter_signal_refs": [
+        "evidence-104",
+        "evidence-112"
+      ],
+      "audit_status": "partially-supported",
+      "confidence": "medium",
+      "disposition": "qualify"
+    },
+    {
+      "id": "claim-006",
+      "claim_kind": "technical-fact",
+      "statement_kind": "fact",
+      "statement": "两种Sidebar源码有cookie持久化；采用时需覆盖场景隔离，不能仅依赖禁localStorage。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-015",
+        "evidence-016"
+      ],
+      "counter_signal_refs": [
+        "evidence-106"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-007",
+      "claim_kind": "technical-fact",
+      "statement_kind": "fact",
+      "statement": "根规范及旧治理默认32px，与当前作者工具默认compact存在适用范围冲突。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-003",
+        "evidence-017",
+        "evidence-018"
+      ],
+      "counter_signal_refs": [
+        "evidence-105"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-008",
+      "claim_kind": "technical-fact",
+      "statement_kind": "fact",
+      "statement": "主仓旧设计预览Token路径缺失；四个浏览器组合产生资源错误和计算样式退化。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-019",
+        "evidence-020",
+        "evidence-022"
+      ],
+      "counter_signal_refs": [
+        "evidence-106"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-009",
+      "claim_kind": "technical-fact",
+      "statement_kind": "fact",
+      "statement": "profile同步未覆盖preview.js，当前design/frontend目标脚本均缺失。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-021",
+        "evidence-022"
+      ],
+      "counter_signal_refs": [
+        "evidence-107"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-010",
+      "claim_kind": "technical-fact",
+      "statement_kind": "fact",
+      "statement": "暗色预览加载链和当前派生状态不足以支持已验证暗色能力。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-023",
+        "evidence-020"
+      ],
+      "counter_signal_refs": [
+        "evidence-108"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-011",
+      "claim_kind": "technical-fact",
+      "statement_kind": "inference-and-recommendation",
+      "statement": "治理含条件React AntD说明、重复数值及过时TODO，需要按当前适用范围整理；不能全部删除AntD来源。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-024",
+        "evidence-018"
+      ],
+      "counter_signal_refs": [
+        "evidence-109",
+        "evidence-104"
+      ],
+      "audit_status": "partially-supported",
+      "confidence": "medium",
+      "disposition": "qualify"
+    },
+    {
+      "id": "claim-012",
+      "claim_kind": "technical-fact",
+      "statement_kind": "fact",
+      "statement": "旧展示预览存在不完整/误导动作，不能直接当成完整H2任务样例。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-025"
+      ],
+      "counter_signal_refs": [
+        "evidence-110"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-013",
+      "claim_kind": "technical-fact",
+      "statement_kind": "fact",
+      "statement": "紧凑样式必须检查实际命中区域与间距，仅28px控件高度不能证明目标尺寸合规。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-026"
+      ],
+      "counter_signal_refs": [
+        "evidence-111"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    }
+  ],
+  "source_gaps": [
+    "部分官方网页正文提取失败；改读固定官方源码，不声称页面交互已实测。",
+    "未安装/编译/运行shadcn-vue和新增React候选。",
+    "未运行新的真实Agent对照，视觉收益待用户确认。",
+    "浏览器诊断只覆盖旧预览4组合，未重复完整QA。"
+  ],
+  "audit_summary": {
+    "status": "complete",
+    "audited_claim_ids": [
+      "claim-001",
+      "claim-002",
+      "claim-003",
+      "claim-004",
+      "claim-005",
+      "claim-006",
+      "claim-007",
+      "claim-008",
+      "claim-009",
+      "claim-010",
+      "claim-011",
+      "claim-012",
+      "claim-013"
+    ],
+    "notes": [
+      "建议的收益表述已限定，未把未运行的候选写成可用组件。",
+      "root复核独立只读Agent的重要源码发现；研究Agent不充当批准者。",
+      "结构校验不等于独立事实认证或实现验证。"
+    ]
+  }
+}

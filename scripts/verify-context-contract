@@ -3,12 +3,15 @@ import { parseArgs } from "node:util";
 import { parseContextContract, resolveContextTermRefs } from "./lib/context-contract.mjs";
 
 try {
-  const { values } = parseArgs({ options: { root: { type: "string", default: process.cwd() }, "allowed-context": { type: "string", multiple: true }, "term-ref": { type: "string", multiple: true }, json: { type: "boolean", default: false } }, strict: true });
+  const { values } = parseArgs({ options: { help:{type:"boolean"}, root: { type: "string", default: process.cwd() }, "allowed-context": { type: "string", multiple: true }, "term-ref": { type: "string", multiple: true }, json: { type: "boolean", default: false } }, strict: true });
+  if(values.help)process.stdout.write("用法: scripts/verify-context-contract [--root <项目>] [--term-ref Global/术语] [--json]\n0=词汇合同校验通过，1=失败；不代表业务批准。\n");
+  else {
   const contract = parseContextContract({ root: values.root, allowedContextIds: values["allowed-context"] });
   const resolved = resolveContextTermRefs(contract, values["term-ref"] || []);
   const contextSnapshot = { context_ref: contract.context_ref, context_schema_version: contract.context_schema_version, document_digest: contract.document_digest, referenced_terms_digest: resolved.referenced_terms_digest, term_refs: resolved.terms.map((term) => term.term_ref) };
   const result = { result: "completed", ...contextSnapshot, context_snapshot: contextSnapshot, process_term_count: contract.process_terms, business_term_count: contract.business_terms.length };
   process.stdout.write(`${JSON.stringify(result, null, values.json ? 2 : 0)}\n`);
+  }
 } catch (error) {
   process.stderr.write(`${JSON.stringify({ result: "blocked", reason_code: error.code || "context-contract-invalid", errors: error.problems || [error.message] }, null, 2)}\n`);
   process.exitCode = 1;

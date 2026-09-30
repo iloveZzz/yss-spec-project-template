@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 Scaffold the per-repo configuration that the engineering skills assume:
 
-- **Issue tracker** — where issues live (GitHub by default; local markdown is also supported out of the box)
+- **Issue tracker** — where issues live (Local Markdown by default; GitHub and GitLab require an explicit project choice)
 - **Triage labels** — the strings used for the five canonical triage roles
 - **Domain docs** — where `CONTEXT.md` and ADRs live, and the consumer rules for reading them
 
@@ -31,42 +31,7 @@ Look at the current repo to understand its starting state. Read whatever exists;
 
 ### 2. Present findings and ask
 
-Summarise what's present and what's missing. Then take the sections in order — one section, one answer, then the next.
-
-Lead each section with the recommended answer so the user can accept it in a word. Give a one-line explainer only when the choice genuinely branches; skip Section B entirely when `triage` isn't installed.
-
-**Section A — Issue tracker.**
-
-> Explainer: The "issue tracker" is where issues live for this repo. Skills like `to-tickets`, `triage`, and `to-spec` read from and write to it — they need to know whether to call `gh issue create`, write a markdown file under `docs/.scratch/`, or follow some other workflow you describe. Pick the place you actually track work for this repo.
-
-Path resolution is configuration-first: every Local-aware skill must read the
-persisted `tracker.root` from `.template-spec/agents/issue-tracker.md` before resolving an
-artifact path. If the field is absent, use `docs/.scratch` as the default. Do
-not infer a tracker or replace the configured root from `git remote`; the legacy
-`.scratch/` and `docs/requirements/tickets/` roots are read-only migration
-sources.
-
-The supported tracker choices in this template are exactly `local-markdown`, `github`, and `gitlab`. A `git remote` may be displayed as code-host context only; it must not choose or rank a tracker. Ask for one explicit project choice, with Local Markdown as the template default:
-
-- **Local markdown (recommended)** — issues live as files under `docs/.scratch/<feature>/` in this repo.
-- **GitHub** — use GitHub Issues and the `gh` CLI only when the user explicitly selects GitHub.
-- **GitLab** — use GitLab Issues and the [`glab`](https://gitlab.com/gitlab-org/cli) CLI only when the user explicitly selects GitLab.
-
-Do not offer an `Other` tracker or write an unsupported platform into the project configuration; extending the YSS tracker contract must happen before adding another platform.
-
-Record the choice in `.template-spec/agents/issue-tracker.md`. The GitHub and GitLab templates carry a "PRs as a request surface" flag, defaulted **off** — leave it off and don't raise it; a user who wants external PRs in the triage queue can flip the flag in the file later.
-
-**Section B — Triage label vocabulary.** Skip this section entirely if the `triage` skill isn't installed (exploration told you) — an uninstalled skill needs no labels.
-
-If it is installed, ask exactly one question:
-
-> Do you want to keep the default triage labels? (recommended: **yes**)
-
-The defaults are the five canonical roles, each label string equal to its name: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. On **yes**, write them as-is. Only if the user says no — usually because their tracker already uses other names (e.g. `bug:triage` for `needs-triage`) — collect the overrides so `triage` applies existing labels instead of creating duplicates.
-
-**Section C — Business vocabulary and decisions.** The layout does not branch: every YSS Git repository has exactly one case-sensitive `CONTEXT.md` at its root. Multiple business responsibility areas share that glossary and are distinguished by each business term's `适用业务责任区` and stable `<ContextId>/<EnglishIdentifier>` reference. ADRs live under root `docs/adr/` and are created lazily when the first qualifying decision is accepted.
-
-If the root `CONTEXT.md` is missing, initialize it with `context_schema_version: 1`, the process-term table (`术语 | 含义 | 英文标识 | 避免 / 备注`) and the business-term table (`术语 | 含义 | 英文标识 | 适用业务责任区 | 避免 / 备注`). Do not invent business terms during setup. If a lowercase, nested, duplicate, or mapped context layout exists, stop and report `migration-required`; do not preserve or extend it as a second supported layout.
+需要确认 tracker、triage 标签或根词汇布局时，读取 [配置决定](references/configuration-decisions.md)，按条件逐项确认。Tracker 只允许 `local-markdown`、`github`、`gitlab`；默认 Local Markdown，不从 remote 推断。嵌套、重复或大小写错误的 CONTEXT 布局返回 `migration-required`。
 
 ### 3. Confirm and edit
 
@@ -79,42 +44,7 @@ Let them edit before writing.
 
 ### 4. Write
 
-**Pick the file to edit:**
-
-- If `AGENTS.md` exists, edit it.
-- If it is missing, ask before creating it.
-
-If an `## Agent skills` block already exists in the chosen file, update its contents in-place rather than appending a duplicate. Don't overwrite user edits to the surrounding sections.
-
-The block:
-
-```markdown
-## Agent skills
-
-### Issue tracker
-
-[one-line summary of where issues are tracked]. See `.template-spec/agents/issue-tracker.md`.
-
-### Triage labels
-
-[one-line summary of the label vocabulary]. See `.template-spec/agents/triage-labels.md`.
-
-### Domain docs
-
-[one-line summary: one root `CONTEXT.md`, with bounded contexts represented inside its business glossary]. See 根 `CONTEXT.md` 的消费规则.
-```
-
-Include the `### Triage labels` sub-block, and write `.template-spec/agents/triage-labels.md`, only when `triage` is installed and Section B ran. When it isn't, both are omitted.
-
-Then write the docs files using the seed templates in this skill folder as a starting point:
-
-- [issue-tracker-github.md](./issue-tracker-github.md) — GitHub issue tracker
-- [issue-tracker-gitlab.md](./issue-tracker-gitlab.md) — GitLab issue tracker
-- [issue-tracker-local.md](./issue-tracker-local.md) — local-markdown issue tracker
-- [triage-labels.md](./triage-labels.md) — label mapping (only if `triage` is installed)
-- 根 `CONTEXT.md` 文首合同与消费规则 — domain doc consumer rules + layout
-
-For an unsupported tracker request, stop and require a YSS tracker-contract extension; do not write an unsupported platform into `.template-spec/agents/issue-tracker.md`.
+草案已展示且用户确认后，读取 [配置写入与模板](references/write-configuration.md)。只更新已有区块并保留周围用户内容；不存在 AGENTS.md 时先取得创建授权。
 
 ### 5. Done
 

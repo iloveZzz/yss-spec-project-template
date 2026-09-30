@@ -14,7 +14,7 @@
 | Plan | `<实际 Plan 资产引用>` | 按当前项目范围填写 |
 | 原型阶段合同 / 视觉来源 | `yss-prototype-stage`；`source_visual.kind=design-system` 或 `visual-reference` | 默认 DESIGN.md 规范直出；独立视觉稿才条件使用 Product Design focused skill |
 | 原型 / 线框图 | `<链接或导出图片路径>` | Excalidraw / Figma / Penpot / tldraw / Axure / Markdown |
-| H1/H2 原型交付物 | `docs/.scratch/<feature>/design/prototypes/index.html` 与本地资源 | 低保真评审后按档位补齐；默认原生 HTML，复杂控件影响评审结论时选择 AntD 预构建；产出后须用户确认 |
+| H1/H2 原型交付物 | `docs/.scratch/<feature>/design/prototypes/index.html` 与本地资源 | 低保真评审后按档位补齐；高保真主要使用 shadcn/ui 预构建，轻量局部修改可用原生 HTML；产出后须用户确认 |
 | 原型验证清单 | `docs/.scratch/<feature>/verification/prototype-evidence.yaml` | 记录 schema v4 档位、浏览器、统一 Design QA、Visual Baseline case、条件组件证据和阻塞项 |
 | 现有 API 草案 | `docs/.scratch/<feature>/api/<feature>.yaml` | 可选；通常应先完成产品设计和 Spec 校准 |
 
@@ -108,7 +108,7 @@
 - 每个表格列、筛选条件、表单字段、抽屉、弹窗和按钮都有数据来源或契约反推说明。
 - 设计可以拆成独立可演示的垂直切片。
 - 低保真评审通过后，记录档位触发与待确认决定；H1 覆盖视觉和少量交互，H2 覆盖主流程/关键异常。
-- H2 仅在复杂交互影响评审结论且选用 `react-antd-prebuilt` 时，记录精确组件版本、选择理由与预构建来源；H1 不创建组件库证据。任何原型档位都不得调用 `yss-ui` 或声明已验证真实生产组件。
+- H2 采用 `vue-shadcn-prebuilt` 时，记录固定组件源码 revision、依赖锁和预构建来源；H1 不创建组件库证据。任何原型档位都不得调用 `yss-ui` 或声明已验证真实生产组件。
 
 ## 9. 决策与未决问题
 

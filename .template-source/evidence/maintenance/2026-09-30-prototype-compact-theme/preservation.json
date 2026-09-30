@@ -1,0 +1,20 @@
+{
+  "checked_at": "2026-09-30T03:21:04.021566+00:00",
+  "outside_scope_changes_observed_late": [
+    ".template-spec/templates/spec-delta-template.md",
+    "scripts/vendor/NOTICES.md",
+    ".template-spec/templates/spec-template.md",
+    ".template-source/tooling/node/scripts/build-vendor.mjs",
+    ".agents/skills/to-spec/SKILL.md",
+    ".agents/skills/yss-product-lifecycle/references/plan-requirements.md",
+    ".template-source/tooling/node/package.json",
+    ".template-source/tooling/node/pnpm-lock.yaml",
+    "scripts/vendor/manifest.json",
+    ".template-spec/plan/templates/plan-template.md"
+  ],
+  "action": "preserved without modifying; these paths were not written by this theme task",
+  "scope_source_drift": [],
+  "delivery_input_drift": [],
+  "root_DESIGN_unchanged": true,
+  "git_delivery": "not-performed"
+}

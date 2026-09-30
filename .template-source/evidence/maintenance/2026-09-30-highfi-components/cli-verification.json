@@ -1,0 +1,128 @@
+[
+  {
+    "name": "spec",
+    "init": 0,
+    "config_build": 0,
+    "manifest_schema": 1,
+    "clean_migration": {
+      "exit": 0,
+      "preserved_custom": null
+    },
+    "custom_migration": {
+      "exit": 1,
+      "preserved_custom": true
+    },
+    "repeat_sync": "unchanged bytes",
+    "components": [
+      "alert",
+      "alert-dialog",
+      "badge",
+      "breadcrumb",
+      "button",
+      "card",
+      "checkbox",
+      "dialog",
+      "dropdown-menu",
+      "empty",
+      "field",
+      "input",
+      "input-group",
+      "label",
+      "pagination",
+      "select",
+      "separator",
+      "sheet",
+      "skeleton",
+      "spinner",
+      "table",
+      "tabs",
+      "textarea",
+      "tooltip"
+    ],
+    "maintenance_preview": "not distributed to project instances; verified in root/design/frontend template-source outputs"
+  },
+  {
+    "name": "design",
+    "init": 0,
+    "config_build": 0,
+    "manifest_schema": 1,
+    "clean_migration": {
+      "exit": 0,
+      "preserved_custom": null
+    },
+    "custom_migration": {
+      "exit": 1,
+      "preserved_custom": true
+    },
+    "repeat_sync": "unchanged bytes",
+    "components": [
+      "alert",
+      "alert-dialog",
+      "badge",
+      "breadcrumb",
+      "button",
+      "card",
+      "checkbox",
+      "dialog",
+      "dropdown-menu",
+      "empty",
+      "field",
+      "input",
+      "input-group",
+      "label",
+      "pagination",
+      "select",
+      "separator",
+      "sheet",
+      "skeleton",
+      "spinner",
+      "table",
+      "tabs",
+      "textarea",
+      "tooltip"
+    ],
+    "maintenance_preview": "not distributed to project instances; verified in root/design/frontend template-source outputs"
+  },
+  {
+    "name": "frontend",
+    "init": 0,
+    "config_build": 0,
+    "manifest_schema": 1,
+    "clean_migration": {
+      "exit": 0,
+      "preserved_custom": null
+    },
+    "custom_migration": {
+      "exit": 1,
+      "preserved_custom": true
+    },
+    "repeat_sync": "unchanged bytes",
+    "components": [
+      "alert",
+      "alert-dialog",
+      "badge",
+      "breadcrumb",
+      "button",
+      "card",
+      "checkbox",
+      "dialog",
+      "dropdown-menu",
+      "empty",
+      "field",
+      "input",
+      "input-group",
+      "label",
+      "pagination",
+      "select",
+      "separator",
+      "sheet",
+      "skeleton",
+      "spinner",
+      "table",
+      "tabs",
+      "textarea",
+      "tooltip"
+    ],
+    "maintenance_preview": "not distributed to project instances; verified in root/design/frontend template-source outputs"
+  }
+]

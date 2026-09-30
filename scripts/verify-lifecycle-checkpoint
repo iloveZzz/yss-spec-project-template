@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import { assertBusinessApprovalBasis } from './lib/business-ticket-lifecycle.mjs';
+import { assertBusinessCheckpoint } from './lib/business-tickets.mjs';
 import { assertStageTracking } from './lib/stage-tracking.mjs';
 import { readFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
@@ -9,6 +11,7 @@ import { parseDocument } from "./vendor/yaml.mjs";
 import { assertCheckpointApprovals, assertCheckpointUserDecisions } from "./lib/approval-record.mjs";
 import { loadExecutionScope, assertScopeWorkUnit, verifyDeliveryTerminal } from './lib/lifecycle-execution-scope.mjs';
 import { assertPlanCheckpoint } from "./lib/plan-spec-entry.mjs";
+import { assertCheckpointBoundary } from './lib/checkpoint-boundary.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const schemaPath = path.join(root, ".template-spec/process/schemas/lifecycle-checkpoint.schema.json");
@@ -17,6 +20,9 @@ import json
 import sys
 from jsonschema import Draft202012Validator
 schema = json.load(open(sys.argv[1], encoding="utf-8"))
+if sys.argv[2] == 'history':
+    for key in ['phase_boundary', 'stage_trace']:
+        schema['properties'][key] = {'type': 'object'}
 value = json.load(sys.stdin)
 errors = sorted(Draft202012Validator(schema).iter_errors(value), key=lambda error: list(error.absolute_path))
 for error in errors:
@@ -26,14 +32,21 @@ sys.exit(1 if errors else 0)
 `;
 
 try {
-  const { positionals } = parseArgs({ allowPositionals: true, strict: true });
+  const { positionals, values } = parseArgs({ options: { history:{type:'boolean'},help:{type:'boolean'} }, allowPositionals: true, strict: true });
+  if(values.help){process.stdout.write('用法: scripts/verify-lifecycle-checkpoint [--history] <checkpoint.yaml|json>\n默认核验当前记录；--history 仅检查历史结构，不证明当前批准或流转。退出码 0=检查完成，1=失败。\n');}
+  else {
   if (positionals.length !== 1) throw new TypeError("用法: scripts/verify-lifecycle-checkpoint <checkpoint.yaml|checkpoint.json>");
   const sourcePath = path.resolve(positionals[0]);
   const document = parseDocument(readFileSync(sourcePath, "utf8"), { maxAliasCount: 0, uniqueKeys: true });
   if (document.errors.length) throw new TypeError(document.errors[0].message);
   const value = document.toJS({ maxAliasCount: 0 });
-  const result = spawnSync("python3", ["-c", validator, schemaPath], { cwd: root, encoding: "utf8", input: JSON.stringify(value) });
+  const result = spawnSync("python3", ["-c", validator, schemaPath,values.history?'history':'current'], { cwd: root, encoding: "utf8", input: JSON.stringify(value) });
   if (result.status !== 0) throw new TypeError(`${result.stdout}${result.stderr}`.trim());
+  if(values.history) process.stdout.write('历史兼容结构检查完成；不证明当前批准或流转，execution_authorization=not-evaluated\n');
+  else {
+  assertCheckpointBoundary(value,{root});
+  assertBusinessCheckpoint(root,value);
+  assertBusinessApprovalBasis(root,value,{required:['work-unit.technical-analysis','work-unit.strategic-design-handoff','work-unit.implementation-repository-preparation','work-unit.ticket-decomposition','work-unit.slice-implementation'].includes(value.next_work_unit)});
   if(loadExecutionScope(root)) {
     if(value.status==='completed') {
       if(value.next_work_unit!==null)throw new TypeError('后端终点不得继续其他工作单元');
@@ -53,6 +66,8 @@ try {
   }
   if (value.repository_mode === "template-source" && value.context_reconciliation?.status !== "not-applicable") throw new TypeError("template-source context_reconciliation 必须为 not-applicable");
   process.stdout.write("生命周期 checkpoint 验证通过\n");
+  }
+  }
 } catch (error) {
   process.stderr.write(`生命周期 checkpoint 验证失败: ${error.message}\n`);
   process.exitCode = 1;

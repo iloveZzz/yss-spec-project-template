@@ -1,0 +1,215 @@
+[
+  {
+    "name": "spec",
+    "commands": [
+      {
+        "command": [
+          "node",
+          "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-enhancement-20260929-nqu8lb1k/cli-instances/spec/.agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs",
+          "prepare-flow",
+          "--project-root",
+          "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-enhancement-20260929-nqu8lb1k/cli-instances/spec",
+          "--root",
+          "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-enhancement-20260929-nqu8lb1k/cli-instances/spec/docs/.scratch/qa-a/design/prototypes",
+          "--feature",
+          "qa-a"
+        ],
+        "exit_code": 0
+      },
+      {
+        "command": [
+          "node",
+          "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-enhancement-20260929-nqu8lb1k/cli-instances/spec/.agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs",
+          "prepare-flow",
+          "--project-root",
+          "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-enhancement-20260929-nqu8lb1k/cli-instances/spec",
+          "--root",
+          "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-enhancement-20260929-nqu8lb1k/cli-instances/spec/docs/.scratch/qa-b/design/prototypes",
+          "--feature",
+          "qa-b"
+        ],
+        "exit_code": 0
+      },
+      {
+        "command": [
+          "node",
+          "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-enhancement-20260929-nqu8lb1k/cli-instances/spec/.agents/skills/yss-prototype-stage/scripts/prototype-comparison.mjs",
+          "prepare",
+          "--project-root",
+          "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-enhancement-20260929-nqu8lb1k/cli-instances/spec",
+          "--feature",
+          "qa",
+          "--input",
+          "comparison-input.json"
+        ],
+        "exit_code": 0
+      },
+      {
+        "command": [
+          "node",
+          "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-enhancement-20260929-nqu8lb1k/cli-instances/spec/.agents/skills/yss-prototype-stage/scripts/prototype-comparison.mjs",
+          "validate",
+          "--root",
+          "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-enhancement-20260929-nqu8lb1k/cli-instances/spec/docs/.scratch/qa/design/comparisons/delivery",
+          "--project-root",
+          "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-enhancement-20260929-nqu8lb1k/cli-instances/spec"
+        ],
+        "exit_code": 0
+      },
+      {
+        "command": [
+          "node",
+          "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-enhancement-20260929-nqu8lb1k/cli-instances/spec/.agents/skills/yss-design-system/scripts/export-craft-examples.mjs",
+          "--project-root",
+          "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-enhancement-20260929-nqu8lb1k/cli-instances/spec",
+          "--output",
+          "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-enhancement-20260929-nqu8lb1k/cli-example-exports/spec"
+        ],
+        "exit_code": 0
+      }
+    ],
+    "result": "passed"
+  },
+  {
+    "name": "design",
+    "commands": [
+      {
+        "command": [
+          "node",
+          "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-enhancement-20260929-nqu8lb1k/cli-instances/design/.agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs",
+          "prepare-flow",
+          "--project-root",
+          "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-enhancement-20260929-nqu8lb1k/cli-instances/design",
+          "--root",
+          "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-enhancement-20260929-nqu8lb1k/cli-instances/design/docs/.scratch/qa-a/design/prototypes",
+          "--feature",
+          "qa-a"
+        ],
+        "exit_code": 0
+      },
+      {
+        "command": [
+          "node",
+          "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-enhancement-20260929-nqu8lb1k/cli-instances/design/.agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs",
+          "prepare-flow",
+          "--project-root",
+          "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-enhancement-20260929-nqu8lb1k/cli-instances/design",
+          "--root",
+          "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-enhancement-20260929-nqu8lb1k/cli-instances/design/docs/.scratch/qa-b/design/prototypes",
+          "--feature",
+          "qa-b"
+        ],
+        "exit_code": 0
+      },
+      {
+        "command": [
+          "node",
+          "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-enhancement-20260929-nqu8lb1k/cli-instances/design/.agents/skills/yss-prototype-stage/scripts/prototype-comparison.mjs",
+          "prepare",
+          "--project-root",
+          "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-enhancement-20260929-nqu8lb1k/cli-instances/design",
+          "--feature",
+          "qa",
+          "--input",
+          "comparison-input.json"
+        ],
+        "exit_code": 0
+      },
+      {
+        "command": [
+          "node",
+          "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-enhancement-20260929-nqu8lb1k/cli-instances/design/.agents/skills/yss-prototype-stage/scripts/prototype-comparison.mjs",
+          "validate",
+          "--root",
+          "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-enhancement-20260929-nqu8lb1k/cli-instances/design/docs/.scratch/qa/design/comparisons/delivery",
+          "--project-root",
+          "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-enhancement-20260929-nqu8lb1k/cli-instances/design"
+        ],
+        "exit_code": 0
+      },
+      {
+        "command": [
+          "node",
+          "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-enhancement-20260929-nqu8lb1k/cli-instances/design/.agents/skills/yss-design-system/scripts/export-craft-examples.mjs",
+          "--project-root",
+          "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-enhancement-20260929-nqu8lb1k/cli-instances/design",
+          "--output",
+          "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-enhancement-20260929-nqu8lb1k/cli-example-exports/design"
+        ],
+        "exit_code": 0
+      }
+    ],
+    "result": "passed"
+  },
+  {
+    "name": "frontend",
+    "commands": [
+      {
+        "command": [
+          "node",
+          "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-enhancement-20260929-nqu8lb1k/cli-instances/frontend/.agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs",
+          "prepare-flow",
+          "--project-root",
+          "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-enhancement-20260929-nqu8lb1k/cli-instances/frontend",
+          "--root",
+          "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-enhancement-20260929-nqu8lb1k/cli-instances/frontend/docs/.scratch/qa-a/design/prototypes",
+          "--feature",
+          "qa-a"
+        ],
+        "exit_code": 0
+      },
+      {
+        "command": [
+          "node",
+          "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-enhancement-20260929-nqu8lb1k/cli-instances/frontend/.agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs",
+          "prepare-flow",
+          "--project-root",
+          "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-enhancement-20260929-nqu8lb1k/cli-instances/frontend",
+          "--root",
+          "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-enhancement-20260929-nqu8lb1k/cli-instances/frontend/docs/.scratch/qa-b/design/prototypes",
+          "--feature",
+          "qa-b"
+        ],
+        "exit_code": 0
+      },
+      {
+        "command": [
+          "node",
+          "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-enhancement-20260929-nqu8lb1k/cli-instances/frontend/.agents/skills/yss-prototype-stage/scripts/prototype-comparison.mjs",
+          "prepare",
+          "--project-root",
+          "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-enhancement-20260929-nqu8lb1k/cli-instances/frontend",
+          "--feature",
+          "qa",
+          "--input",
+          "comparison-input.json"
+        ],
+        "exit_code": 0
+      },
+      {
+        "command": [
+          "node",
+          "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-enhancement-20260929-nqu8lb1k/cli-instances/frontend/.agents/skills/yss-prototype-stage/scripts/prototype-comparison.mjs",
+          "validate",
+          "--root",
+          "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-enhancement-20260929-nqu8lb1k/cli-instances/frontend/docs/.scratch/qa/design/comparisons/delivery",
+          "--project-root",
+          "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-enhancement-20260929-nqu8lb1k/cli-instances/frontend"
+        ],
+        "exit_code": 0
+      },
+      {
+        "command": [
+          "node",
+          "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-enhancement-20260929-nqu8lb1k/cli-instances/frontend/.agents/skills/yss-design-system/scripts/export-craft-examples.mjs",
+          "--project-root",
+          "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-enhancement-20260929-nqu8lb1k/cli-instances/frontend",
+          "--output",
+          "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-enhancement-20260929-nqu8lb1k/cli-example-exports/frontend"
+        ],
+        "exit_code": 0
+      }
+    ],
+    "result": "passed"
+  }
+]

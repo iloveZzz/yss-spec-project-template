@@ -1,0 +1,12 @@
+{
+  "scope": "raw Agent artifact; no repairs",
+  "task": "calibration",
+  "completed": false,
+  "results": [],
+  "checks": {
+    "layout": 1,
+    "behavior": 0
+  },
+  "errors": [],
+  "failure": "locator.waitFor: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText(/保存失败|提交失败|请求失败/).first() to be visible\u001b[22m\n\u001b[2m    63 × locator resolved to hidden <option value=\"failure\">保存失败</option>\u001b[22m\n"
+}

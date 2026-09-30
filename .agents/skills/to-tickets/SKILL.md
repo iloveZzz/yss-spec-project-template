@@ -1,105 +1,39 @@
 ---
 name: to-tickets
-description: "显式调用时，将已确认的 Plan 或 Spec 拆成带依赖的垂直切片 Ticket，并按配置的 tracker 持久化。"
+description: 显式按当前生命周期拆分 Ticket；Spec/Design 起草业务票，研发侧承接业务票细化实现 Slice。
 disable-model-invocation: true
 ---
 
 # To Tickets
 
-Break an explicitly requested, confirmed plan or Spec into tracer-bullet Ticket drafts. Before any formal write, return to the active lifecycle orchestrator for repository identity, current inputs, allowed paths and applicable gates. Template-source maintenance does not create product Tickets. The explicit entry may write its prepared artifacts only within that preflight contract and returns them to the orchestrator for validation and acceptance; it cannot approve a Slice Contract or decide readiness.
+本兼容入口仅由用户显式调用。写入前回交当前生命周期主控，核验仓库身份、当前输入、允许路径和适用门禁。`template-source` 不生成产品票；起草者不批准 Slice 合同、不设置 `ready-for-agent`。保留 mattpocock 上游来源与锁定记录，采用以下 YSS 阶段适配。
 
-If the issue tracker or triage label vocabulary is missing, tell the user to run `/setup-matt-pocock-skills`; do not invoke another user-invoked skill yourself.
+## 先确定输出类型
 
-## Process
+按 `.template-spec/process/business-tickets.md` 和当前工作单元选择一种输出；目录是否存在不决定路线。
 
-### 1. Gather context
+| 当前范围 | 输出与依据 | 工程前置 |
+|---|---|---|
+| Spec / 产品设计 | 业务 Ticket 草案或校准；按用户行为、可验收结果、FR/AC、适用规则和场景拆分 | 不需要实现仓库、OpenAPI Freeze 或构建命令 |
+| 研发 | 消费正式业务集合，细化窄垂直实现 Slice；保留业务 Ticket 和原始 FR/AC 引用 | 技术分析可起草；正式化仍需当前工程契约及仓库准备 |
 
-Work from whatever is already in the conversation context. If the user passes a reference (a spec path, an issue number or URL) as an argument, fetch it and read its full body and comments.
+独立 Design profile 只允许第一种输出，完成业务正式化后进入战略交接。全生命周期使用本地已确认资产，不导出再导入自己的包。
 
-### 2. Explore the codebase (optional)
+## 起草与校准
 
-If you have not already explored the codebase, do so to understand the current state of the code. Ticket titles and descriptions should use the project's domain glossary vocabulary, and respect ADRs in the area you're touching.
+1. 读取已有 Spec、根 `CONTEXT.md`、当前决定、集合及相关设计。先复用稳定 ID，再根据真实范围增删或细化；不重新生成一套票。
+2. 业务票用 `.template-spec/templates/business-ticket-template.md`，每票一个 `business-tickets/BT-<id>.md`。集合用 `business-ticket-set-template.yaml`，只保存引用、版本、摘要和覆盖处置。依赖表达业务前后置，禁止按 Controller / Service / Repository 分票，也不机械地一条 FR 一票。
+3. Design 按页面流、状态、失败和恢复路径校准。无产品设计影响时记录依据；不生成空原型。未决项保留责任人、解决时点及是否阻断，延期遵守既有决定协议。
+4. 研发输出用 `.template-spec/templates/vertical-slice-ticket-template.md`，放入 `issues/`；一个业务票可细化为多个 Slice。实现票保留 `kind: vertical-slice-ticket`、业务集合和业务票来源以及原始 AC 引用。
 
-Look for opportunities to prefactor the code to make the implementation easier. "Make the change easy, then make the easy change."
+仅研发细化时按需查看已登记工程及 ADR。每个实现 Slice 贯通本次行为命中的技术层、可独立验证；不因模板枚举 schema / API / UI 就引入未命中的技术层。必要的机械重构按 expand → 分批迁移 → contract 排序；无法独立保持绿色的批次须明确共享集成验证边界，不能声称各批已独立完成。
 
-### 3. Draft vertical slices
+## 审阅与回交
 
-Break the work into **tracer bullet** tickets.
+展示每票的业务结果、范围、验收、依赖与未决项，以及集合覆盖情况。按实际缺口提问；等义细化沿既有授权延续协议核验，范围、规则或验收实质变化返回原决定边界。拆分本身不增加常规人工批准节点。
 
-<vertical-slice-rules>
+业务草案运行 `scripts/verify-business-tickets <集合> --mode draft`；正式化使用 `--mode formal`，并消费已有 Spec / 适用产品设计批准及当前独立专业审查。结构检查不代替语义审查或真实批准。阶段工作项完成、业务正式化和实现就绪分别回报。
 
-- Each slice cuts a narrow but COMPLETE path through every layer (schema, API, UI, tests) — vertical, NOT a horizontal slice of one layer
-- A completed slice is demoable or verifiable on its own
-- Each slice is sized to fit in a single fresh context window
-- Any prefactoring should be done first
+主 tracker 以 `.template-spec/agents/issue-tracker.md` 为准，不从 Git remote 猜测。配置缺失时回交主控处理，不自动调用其他显式 Skill。远程不可用或未获发布授权时保留本地待发布草案；远程发布需用户明确授权。业务票保持 `draft` / `ready-for-human`，实现票只有主控完成正式门禁和当前合同批准后才可 `ready-for-agent`。
 
-</vertical-slice-rules>
-
-Give each ticket its **blocking edges** — the other tickets that must complete before it can start. A ticket with no dependency edges still needs a current approved Slice Contract and all applicable implementation gates before it can start.
-
-**Wide refactors are the exception to vertical slicing.** A **wide refactor** is one mechanical change — rename a column, retype a shared symbol — whose **blast radius** fans across the whole codebase, so a single edit breaks thousands of call sites at once and no vertical slice can land green. Don't force it into a tracer bullet; sequence it as **expand–contract**. First expand: add the new form beside the old so nothing breaks. Then migrate the call sites over in batches sized by blast radius (per package, per directory), each batch its own ticket blocked by the expand, keeping CI green batch to batch because the old form still exists. Finally contract: delete the old form once no caller remains, in a ticket blocked by every migrate batch. When even the batches can't stay green alone, keep the sequence but let them share an integration branch that all block a final integrate-and-verify ticket — green is promised only there.
-
-### 4. Quiz the user
-
-Present the proposed breakdown as a numbered list. For each ticket, show:
-
-- **Title**: short descriptive name
-- **Blocked by**: which other tickets (if any) must complete first
-- **What it delivers**: the end-to-end behaviour this ticket makes work
-
-Ask the user:
-
-- Does the granularity feel right? (too coarse / too fine)
-- Are the blocking edges correct — does each ticket only depend on tickets that genuinely gate it?
-- Should any tickets be merged or split further?
-
-Reuse an existing approval that covers this same breakdown. Ask only about unresolved scope, granularity or dependency decisions; return accepted drafts and evidence to the orchestrator.
-
-### 5. Publish the tickets to the configured tracker
-
-Publish the approved tickets. **How** depends on the tracker `/setup-matt-pocock-skills` configured — the tickets are the same either way, only the shape of the blocking edges changes:
-
-- **Local files** → write one file per ticket under `docs/.scratch/<feature-slug>/issues/<NN>-<slug>.md`, numbered from `01` in dependency order (blockers first). Each file's "Blocked by" lists the numbers/titles it depends on. Use the per-ticket file template below — one ticket per file, never a single combined file.
-- **A real issue tracker (GitHub, Linear, …)** → publish one issue per ticket in dependency order (blockers first) so each ticket's blocking edges can reference real identifiers. Use the platform's native blocking / sub-issue relationship where it has one; otherwise set each ticket's "Blocked by" to the blocking issues. Keep drafts `ready-for-human`. Only the orchestrator may mark a narrow slice `ready-for-agent` after checking its current approved contract and applicable gates. Publishing to a remote tracker requires explicit authorization for that action.
-
-Work the **frontier**: any ticket whose blockers are all done. For a purely linear chain that means top to bottom.
-
-Do NOT close or modify any parent issue.
-
-<local-ticket-template>
-
-# <NN> — <Ticket title>
-
-**What to build:** the end-to-end behaviour this ticket makes work, from the user's perspective — not a layer-by-layer implementation list.
-
-**Blocked by:** the numbers/titles of the tickets that gate this one, or "None — readiness still requires contract and gate verification".
-
-**Status:** ready-for-human
-
-- [ ] Acceptance criterion 1
-- [ ] Acceptance criterion 2
-
-</local-ticket-template>
-
-<issue-template>
-
-## Parent
-
-A reference to the parent issue on the tracker (if the source was an existing issue, otherwise omit this section).
-
-## What to build
-
-The end-to-end behaviour this ticket makes work, from the user's perspective — not layer-by-layer implementation.
-
-## Acceptance criteria
-
-- [ ] Criterion 1
-- [ ] Criterion 2
-
-## Blocked by
-
-- A reference to each blocking ticket, or "None — readiness still requires contract and gate verification".
-
-</issue-template>
-
-In either form, avoid specific file paths or code snippets — they go stale fast. Exception: if a prototype produced a snippet that encodes a decision more precisely than prose can (state machine, reducer, schema, type shape), inline it and note briefly that it came from a prototype. Trim to the decision-rich parts — not a working demo, just the important bits.
+Spec、map 与父 Ticket 引用同一集合，不复制正文。本入口回交证据及待同步内容，由主控维护父 Ticket 状态；不得自行关闭父票或宣布功能完成。

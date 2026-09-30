@@ -118,6 +118,9 @@
           "source": ".template-source/design/preview.css"
         },
         {
+          "source": ".template-source/design/preview.js"
+        },
+        {
           "source": ".template-source/design/preview.html"
         },
         {
@@ -125,6 +128,15 @@
         },
         {
           "source": ".template-source/tooling/node/test/design-md.test.mjs"
+        },
+        {
+          "source": "scripts/verify-prototype-design"
+        },
+        {
+          "source": "scripts/verify-yss-prototype-contract-scenarios"
+        },
+        {
+          "source": "scripts/lib/testing/user-decision-fixture.mjs"
         }
       ],
       "upstream": [
@@ -340,13 +352,13 @@
           "id": "yss-implementation-contract-compiler",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/backend/yss-implementation-contract-compiler.patch",
-          "source_tree_sha256": "2e242470e1a0addb1e228d3f14ec26f7f3f87ccebe0b1efa434a61aac3db8d34"
+          "source_tree_sha256": "a55b7b60d1c0a4e2d614106453d5816b1e54415792132fd78579930d89d0b5d9"
         },
         {
           "id": "yss-openapi-governance",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/backend/yss-openapi-governance.patch",
-          "source_tree_sha256": "7e7a02cc92340d8d1804130b4a78e749aed68f029538bad91428179ccd2cc2d8"
+          "source_tree_sha256": "4b1dfa83e2f97112113a341e7c5d90a034597727bdd51789211058159583e60b"
         },
         {
           "id": "prototype",
@@ -617,19 +629,19 @@
           "id": "yss-implementation-contract-compiler",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/frontend/yss-implementation-contract-compiler.patch",
-          "source_tree_sha256": "2e242470e1a0addb1e228d3f14ec26f7f3f87ccebe0b1efa434a61aac3db8d34"
+          "source_tree_sha256": "a55b7b60d1c0a4e2d614106453d5816b1e54415792132fd78579930d89d0b5d9"
         },
         {
           "id": "yss-openapi-governance",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/frontend/yss-openapi-governance.patch",
-          "source_tree_sha256": "7e7a02cc92340d8d1804130b4a78e749aed68f029538bad91428179ccd2cc2d8"
+          "source_tree_sha256": "4b1dfa83e2f97112113a341e7c5d90a034597727bdd51789211058159583e60b"
         },
         {
           "id": "prototype-review",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/frontend/prototype-review.patch",
-          "source_tree_sha256": "caf814e6224ba21b84e87fd30c6846dafc4647d44663ccfdc6a7f48a4f965e21"
+          "source_tree_sha256": "a4c55ace9893dce312645f4f9a200adf6ba28cb2879e317403f12e10ebf990cc"
         },
         {
           "id": "triage",
@@ -647,7 +659,7 @@
           "id": "yss-openapi-draft-review",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/frontend/yss-openapi-draft-review.patch",
-          "source_tree_sha256": "5e9586fdc6cc3d17ca67e18d8b82021994a78174b3438968f1b4b5f00414e32d"
+          "source_tree_sha256": "8deb68a2315c6d11467f1317c5d5dc293576e2e09b2622a7990a712317d9bd85"
         },
         {
           "id": "yss-skill-source-index-refresh",
@@ -712,6 +724,9 @@
           "source": ".template-source/design/preview.css"
         },
         {
+          "source": ".template-source/design/preview.js"
+        },
+        {
           "source": ".template-source/design/preview.html"
         },
         {
@@ -719,6 +734,15 @@
         },
         {
           "source": ".template-source/tooling/node/test/design-md.test.mjs"
+        },
+        {
+          "source": "scripts/verify-prototype-design"
+        },
+        {
+          "source": "scripts/verify-yss-prototype-contract-scenarios"
+        },
+        {
+          "source": "scripts/lib/testing/user-decision-fixture.mjs"
         }
       ],
       "upstream": [],

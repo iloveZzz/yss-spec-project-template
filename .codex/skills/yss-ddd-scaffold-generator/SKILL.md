@@ -23,27 +23,11 @@ description: 用于生成完整的 YSS DDD 多模块后端脚手架。当用户�
 
 ## Spring Boot / Java 平台选择
 
-调用本技能前由生命周期编排器展示 `scripts/backend-platforms` 的精确版本清单及兼容状态，并通过 `gate.backend-architecture-platform-approved` 把架构、Spring Boot、Java 和 YSS 父 POM/BOM 合并展示、取得真实用户确认；生成器不提问、不猜版本、不使用 `x` 或 `latest`。已有批准且当前的选择展示摘要后复用；既有工程核验并复用登记值，不触发该门禁。
-
-- 精确候选版本与可选状态只读取 `scripts/backend-platforms` 和共享平台清单，不在此复制版本表；候选不等于可生成。
-- 独立子项目可继承主项目组合或覆盖，必须逐项目确认（允许一次确认明确列出的项目）；同一 Maven Reactor 使用一个平台。
-- 只开放共享兼容清单中已有真实 YSS 构建、依赖和启动证据的组合。缺少兼容父 POM、BOM、starter 或相应能力证据即 `blocked`；不替换官方组件、不降级回退。
-- 新生成合同必须有 `platform_configuration` v2，与架构决策、Maven 坐标及兼容条目摘要一致。Boot、Java、YSS 坐标或依赖配方变化时回生命周期重新确认并编译合同；仅追加同配置验证记录不重复确认，仍核验证据有效性。
-- Spring MVC、Servlet、Validation、Jackson 和 starter 坐标消费共享平台清单；Java 下限和允许组合由当前平台条目决定。Jakarta 转换不包括 `javax.sql` 等 Java SE API。
-- 平台候选维护验证产物标记 `platform_verification=candidate`，不能交给业务生成、升级完成等级或进入首切片验证。测试夹具不证明 YSS 兼容。
-
-版本清单、合同字段、候选验证和支持晋级规则见 仓库共享合同 `.template-spec/engineering/backend-platforms.md`。
+核验新工程平台时读取 [平台选择与证据](references/platform-selection.md)。只消费生命周期经 `gate.backend-architecture-platform-approved` 取得的真实用户确认和当前 `platform_configuration` v2；以 `scripts/backend-platforms` 的已验证可选组合为准。生成器不提问、不默认、不降级；缺证据即 `blocked`。
 
 ## 优先流程
 
-1. 确认服务级 `scaffold_request_id`、已通过 `gate.backend-architecture-platform-approved` 的 `domain-driven` 架构与精确 Spring Boot 版本选择及 digest、项目名、基础包名、Maven 项目坐标、父 POM GAV、YSS Components BOM 版本、输出目录和批准 Profile。Java `base_package` 与 Maven `group_id` 是两个独立输入，不得相互推导；脚手架发生在 Ticket 正式化前，不使用 `slice_id` 伪造切片身份。
-   Harness 内输出目录必须是 `apps/backend/` 容器，生成器再以 `project_name` 创建 `apps/backend/<project>/`；禁止使用 `app/backend/`、`app/frontend/` 或把 `apps/backend/` 之外的容器根当作后端项目根。
-2. 优先运行 `node scripts/generate_and_verify_scaffold.mjs`，在同一个受控工作流中生成骨架并执行真实 Maven 验证。`generate_scaffold.mjs` 只是底层生成原语，单独返回 0 不代表脚手架完成。
-3. 检查生成的模块名、POM、机械启动入口、基础配置文件和包路径。
-4. 受控工作流必须在生成项目根目录实际执行 `./mvnw validate`、`./mvnw test` 和 `./mvnw package`；三条命令全部返回 0 后才能报告完成。
-5. 三条 Wrapper 命令通过只得到 `empty-scaffold-verified`。如需声称已满足下游技能的首切片就绪条件，必须使用 `node scripts/run_first_slice_verification.mjs` 校验批准且版本当前的 Slice Implementation Contract、完整分层产物、当前合同 freshness 与根 Wrapper；只有验证器成功更新 Manifest 后才得到 `first-slice-verified`。
-
-受控验证命令由本 skill 的 `node scripts/run_scaffold_verification.mjs` 固定执行；验证器先检查 `.yss/scaffold-generation.json` 的合同元数据和 Wrapper、Java、项目级 Maven settings/profile、仓库凭据是否就绪，再在指定 evidence 目录写入每条命令的 stdout/stderr、`exit_code`、`failure_category`、耗时、执行时间和 `scaffold-verification.json`。仓库或凭据失败归为 `repository-access`，与 `project-model`、`compilation`、`bootstrap-entrypoint`、`test-failure`、`packaging` 分开；任何一条命令失败或未执行都必须阻断。
+合同与输出范围通过后，运行生成器前读取 [受控生成与验证](references/generation-workflow.md)。入口为 `scripts/generate_and_verify_scaffold.mjs`；根 `./mvnw validate/test/package` 必须真实执行并全部成功，仅获得 `empty-scaffold-verified`。首切片等级另由 `run_first_slice_verification.mjs` 核验。
 
 ## 推荐命令
 
@@ -60,6 +44,8 @@ description: 用于生成完整的 YSS DDD 多模块后端脚手架。当用户�
 - `*-bootstrap` 下可被 Spring Boot Maven Plugin 发现的机械 `*Application` 启动入口
 - 基础配置、机械模板、构建脚本
 
+生成前预检与生成后内容验收须读取 [工程内容检查](references/engineering-checks.md)，并消费既有 [工程基线](references/engineering-baseline.md)。凭据仅从安全环境注入，日志须脱敏。
+
 ## 使用约束
 
 - 先在生命周期批准的脚手架受控生成合同下生成骨架，再做业务化定制；不要直接把脚手架当最终代码交付。
@@ -67,10 +53,7 @@ description: 用于生成完整的 YSS DDD 多模块后端脚手架。当用户�
 - 若目标工程已经存在，直接返回 `unsupported`。旧项目继续按原工程维护；需要现代化时单独立项、先评估再逐切片迁移，不属于本 skill。
 - 输出目录必须显式指定；目标工程目录必须不存在，`--force` 永久拒绝。
 - Harness 内多项目布局必须使用 `apps/backend/<project>/`；`apps/backend/` 只能是生成器的父容器，`app/backend/`、`app/frontend/` 及其子路径一律拒绝。`git-submodule` gitlink、空挂载点、detached HEAD 工作树不得覆盖生成，即使传入 `--force` 也不得当成普通目录，且不得走「请显式传入 `--force`」普通目录覆盖 / rename 路径。`--output-dir` 指向 detached HEAD 子仓时不得 mkdir、staging 或生成工程。先 `git submodule update --init` 并在子仓附加分支工作树内生成。维护生成器时按 [守卫顺序](references/generator-maintenance.md) 检查，不能将 gitlink 当普通目录。
-- 不要在 skill 里硬编码用户业务字段或真实连接信息。
-- 生成后要检查依赖关系是否仍符合分层约束。
 - 生成时的工程基线由本 skill 的 `references/engineering-baseline.md` 持有并绑定摘要；它不是独立 Skill。生成后必须回到 实现合同编译器，并按批准切片加载 `yss-domain`、`yss-application`、`yss-repository`、`yss-mybatis`、`yss-web-controller`、`yss-dto`、`yss-exception`、`yss-validation`、`mapstruct`、`lombok`、`alibaba-java-code-style` 等实际命中的行为 skill。
-- 验证数据库固定 H2，生产数据库 `not-bound`；后续存储接入按批准的切片合同执行。
 - 生成后的后端工程必须使用项目根目录 `./mvnw ...` 执行构建、测试、运行和 CI 验证；不得在 README、实施记录、Ticket、Review 或 Release 中默认写裸 `mvn ...`。既有仓库确实无法使用 wrapper 时，必须记录受控例外。
 - 原型确认后，`scaffold_status=required` 才能进入本 skill；本 skill 的生成边界是工程结构、POM、配置、Wrapper 和机械模板，不是业务实现。
 - 脚手架合同必须携带 `contract_id`、`contract_version`、实现合同编译器 draft 引用、生命周期批准引用、持久化引用、当前版本、允许写路径、预期证据文件和验证命令；字段缺失或版本过期时阻断。
@@ -82,10 +65,6 @@ description: 用于生成完整的 YSS DDD 多模块后端脚手架。当用户�
 - 严禁把领域规则、状态机、权限、事务、复杂查询、错误映射、业务字段或用户可见行为塞进脚手架生成步骤。`./mvnw validate`、输出目录存在或“生成成功”都不等于生命周期批准、架构放行或 `ready-for-agent`。
 - 生命周期脚手架生成必须关闭 `--with-example`，不得把 User CRUD 或业务字段当作样板。生成器严格 `initialize-only`：非空目标、`--force`、旧项目迁移和当前模板升级一律 `unsupported`。未来若支持同一 Target Profile 内的模板升级，必须另行设计和批准，当前不预留可执行承诺。
 - 脚手架完成后，所有后续生成的后端代码必须回到 `yss-implementation-contract-compiler`，消费批准且版本当前的 Slice Implementation Contract 和对应 YSS skill；业务行为使用 `behavior-tdd`，机械生成才使用 `controlled-generation`。
-- `.mvn/settings.xml` 只能通过 `${env.MAVEN_REPO_USERNAME}` 和 `${env.MAVEN_REPO_PASSWORD}` 读取 Maven 仓库凭据；内部仓库构建前由 CI 或本地安全环境注入变量，禁止把 Maven 仓库用户名、明文密码或 Maven 加密密码写入 skill、模板或生成工程。
-- `.mvn/maven.config` 必须显式加载项目级 `.mvn/settings.xml` 并激活 `yss-internal`；仓库 URL 来自 `YSS_MAVEN_REPOSITORY_URL`，凭据来自 `MAVEN_REPO_USERNAME` / `MAVEN_REPO_PASSWORD`。预检缺失时先于 Maven 执行阻断，日志必须脱敏。
-- Domain POM 不得依赖 YSS DTO/Exception、Web Validation、Swagger 或 Jackson；DTO/Exception/OpenAPI 注解属于 Web。MapStruct 统一 `componentModel="spring"`，父 POM 负责 processor 与 `lombok-mapstruct-binding`。
-- 生成工程必须携带 ArchUnit、Maven Enforcer 和 Wrapper checksum；DEBUG 与 MyBatis stdout SQL 只能进入 `application-local.yml`。
 - 涉及 API 契约时，先确认 `docs/.scratch/<feature>/api/<feature>.yaml` 中的 OpenAPI Draft / Freeze 状态；不要用脚手架生成结果反向替代产品契约设计。
 
 ## 按需读取

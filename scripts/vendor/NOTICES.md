@@ -10,6 +10,34 @@ These generated Node runtime bundles contain the following packages:
   - license: MIT
   - integrity: sha512-N6//FLET/tXYNM/F6ABca1oH6fWB+KlTt909Le28WMDBk8oaT4vY17DCrwg2MvmuqUKt3Ni4N5dGJ/EoBgcO6A==
   - source: https://github.com/NaturalIntelligence/anynum
+- bail@2.0.2
+  - license: MIT
+  - integrity: sha512-0xO6mYd7JB2YesxDKplafRpsiOzPt9V02ddPCLbY1xYGPOX24NTyN50qnUxgCPcSoYMhKpAuBTjQoRZCAkUDRw==
+  - source: wooorm/bail
+- ccount@2.0.1
+  - license: MIT
+  - integrity: sha512-eyrF0jiFpY+3drT6383f1qhkbGsLSifNAjA61IUjZjmLCWjItY6LB9ft9YhoDgwfmclB2zhu51Lc7+95b8NRAg==
+  - source: wooorm/ccount
+- character-entities@2.0.2
+  - license: MIT
+  - integrity: sha512-shx7oQ0Awen/BRIdkjkvz54PnEEI/EjwXDSIZp86/KKdbafHh1Df/RYGBhn4hbe2+uKC9FnT5UCEdyPz3ai9hQ==
+  - source: wooorm/character-entities
+- decode-named-character-reference@1.3.0
+  - license: MIT
+  - integrity: sha512-GtpQYB283KrPp6nRw50q3U9/VfOutZOe103qlN7BPP6Ad27xYnOIWv4lPzo8HCAL+mMZofJ9KEy30fq6MfaK6Q==
+  - source: wooorm/decode-named-character-reference
+- devlop@1.1.0
+  - license: MIT
+  - integrity: sha512-RWmIqhcFf1lRYBvNmr7qTNuyCt/7/ns2jbpp1+PalgE/rDQcBT0fioSMUpJ93irlUhC5hrg4cYqe6U+0ImW0rA==
+  - source: wooorm/devlop
+- escape-string-regexp@5.0.0
+  - license: MIT
+  - integrity: sha512-/veY75JbMK4j1yjvuUxuVsiS/hr/4iHs9FTT6cgTexxdE0Ly/glccBAkloH/DofkjRbZU3bnoj38mOmhkZ0lHw==
+  - source: sindresorhus/escape-string-regexp
+- extend@3.0.2
+  - license: MIT
+  - integrity: sha512-fjquC59cD7CyW6urNXK0FBufkZcoiGG80wTuPujX590cB5Ttln20E2UB4S/WARVqhXffZl2LNgS+gQdPIIim/g==
+  - source: https://github.com/justmoon/node-extend.git
 - fast-xml-builder@1.3.1
   - license: MIT
   - integrity: sha512-pIM/1n3ntFXKYrUZwW7QCK0gAW7XY+wzj1YMIV3tLDvPj/V+zTGJK5e3/4WJfwj0qWw2ElNXiTixda/R+3YSug==
@@ -18,18 +46,222 @@ These generated Node runtime bundles contain the following packages:
   - license: MIT
   - integrity: sha512-9IGxMqvqLOnqP+Egi1nqDHKv5k8aZ7r9n558enxcucmyVGEBNPAU+MOg/8jPIS7rO7sSq4gFm1/nHtiaubMruw==
   - source: git+https://github.com/NaturalIntelligence/fast-xml-parser.git
+- is-plain-obj@4.1.0
+  - license: MIT
+  - integrity: sha512-+Pgi+vMuUNkJyExiMBt5IlFoMyKnr5zhJ4Uspz58WOhBF5QoIZkFyNHIbBAtHwzVAgk5RtndVNsDRN61/mmDqg==
+  - source: sindresorhus/is-plain-obj
 - is-unsafe@2.0.0
   - license: MIT
   - integrity: sha512-2LdV822R+wmI86unXA93WCFpL6g+av8ynWk0nrHyJqGop5VoocYsSLFgN8jrfalT6iGeLNM4KXuVSsULP53kEA==
   - source: https://github.com/NaturalIntelligence/is-unsafe
+- longest-streak@3.1.0
+  - license: MIT
+  - integrity: sha512-9Ri+o0JYgehTaVBBDoMqIl8GXtbWg711O3srftcHhZ0dqnETqLaoIK0x17fUw9rFSlK/0NlsKe0Ahhyl5pXE2g==
+  - source: wooorm/longest-streak
+- markdown-table@3.0.4
+  - license: MIT
+  - integrity: sha512-wiYz4+JrLyb/DqW2hkFJxP7Vd7JuTDm77fvbM8VfEQdmSMqcImWeeRbHwZjBjIFki/VaMK2BhFi7oUUZeM5bqw==
+  - source: wooorm/markdown-table
+- mdast-util-find-and-replace@3.0.2
+  - license: MIT
+  - integrity: sha512-Tmd1Vg/m3Xz43afeNxDIhWRtFZgM2VLyaf4vSTYwudTyeuTneoL3qtWMA5jeLyz/O1vDJmmV4QuScFCA2tBPwg==
+  - source: syntax-tree/mdast-util-find-and-replace
+- mdast-util-from-markdown@2.0.3
+  - license: MIT
+  - integrity: sha512-W4mAWTvSlKvf8L6J+VN9yLSqQ9AOAAvHuoDAmPkz4dHf553m5gVj2ejadHJhoJmcmxEnOv6Pa8XJhpxE93kb8Q==
+  - source: syntax-tree/mdast-util-from-markdown
+- mdast-util-gfm@3.1.0
+  - license: MIT
+  - integrity: sha512-0ulfdQOM3ysHhCJ1p06l0b0VKlhU0wuQs3thxZQagjcjPrlFRqY215uZGHHJan9GEAXd9MbfPjFJz+qMkVR6zQ==
+  - source: syntax-tree/mdast-util-gfm
+- mdast-util-gfm-autolink-literal@2.0.1
+  - license: MIT
+  - integrity: sha512-5HVP2MKaP6L+G6YaxPNjuL0BPrq9orG3TsrZ9YXbA3vDw/ACI4MEsnoDpn6ZNm7GnZgtAcONJyPhOP8tNJQavQ==
+  - source: syntax-tree/mdast-util-gfm-autolink-literal
+- mdast-util-gfm-footnote@2.1.0
+  - license: MIT
+  - integrity: sha512-sqpDWlsHn7Ac9GNZQMeUzPQSMzR6Wv0WKRNvQRg0KqHh02fpTz69Qc1QSseNX29bhz1ROIyNyxExfawVKTm1GQ==
+  - source: syntax-tree/mdast-util-gfm-footnote
+- mdast-util-gfm-strikethrough@2.0.1
+  - license: MIT
+  - integrity: sha512-OuJHqvr455pwu2OaOrir7dbzqs4jlWKOtlu9L6GjcIjjQwNyw02VntQsr/Ek6/A13vgnXfUhBekWRUP1OkNivw==
+  - source: syntax-tree/mdast-util-gfm-strikethrough
+- mdast-util-gfm-table@2.0.0
+  - license: MIT
+  - integrity: sha512-78UEvebzz/rJIxLvE7ZtDd/vIQ0RHv+3Mh5DR96p7cS7HsBhYIICDBCu8csTNWNO6tBWfqXPWekRuj2FNOGOZg==
+  - source: syntax-tree/mdast-util-gfm-table
+- mdast-util-gfm-task-list-item@2.0.0
+  - license: MIT
+  - integrity: sha512-IrtvNvjxC1o06taBAVJznEnkiHxLFTzgonUdy8hzFVeDun0uTjxxrRGVaNFqkU1wJR3RBPEfsxmU6jDWPofrTQ==
+  - source: syntax-tree/mdast-util-gfm-task-list-item
+- mdast-util-phrasing@4.1.0
+  - license: MIT
+  - integrity: sha512-TqICwyvJJpBwvGAMZjj4J2n0X8QWp21b9l0o7eXyVJ25YNWYbJDVIyD1bZXE6WtV6RmKJVYmQAKWa0zWOABz2w==
+  - source: syntax-tree/mdast-util-phrasing
+- mdast-util-to-markdown@2.1.3
+  - license: MIT
+  - integrity: sha512-wgyJtgUkUcdU7zci7uuwc/tzoAhm0TswWhaXuvnWolqug+8jY7bgNkBBL0dYBnHgc/tHL7lCzRdPsdUxUKKBqw==
+  - source: syntax-tree/mdast-util-to-markdown
+- mdast-util-to-string@4.0.0
+  - license: MIT
+  - integrity: sha512-0H44vDimn51F0YwvxSJSm0eCDOJTRlmN0R1yBh4HLj9wiV1Dn0QoXGbvFAWj2hSItVTlCmBF1hqKlIyUBVFLPg==
+  - source: syntax-tree/mdast-util-to-string
+- micromark@4.0.3
+  - license: MIT
+  - integrity: sha512-oGYfQzHSG5dOMovQcJ3fyTmZlWAWpi0XA0sJwJs+i6OT88o1+Jtw/8z0CmdowSLxGhhFK89rQ/oXph/wN02PNw==
+  - source: https://github.com/micromark/micromark/tree/main/packages/micromark
+- micromark-core-commonmark@2.0.4
+  - license: MIT
+  - integrity: sha512-wxEeE8v8XVvOrxn1TZj74qYhAtTQsSqufHVS3uNVyT1MupXxhyaHk8/9xDNPh9BmL77QNDgWTkZ3RsYHB2ry7w==
+  - source: https://github.com/micromark/micromark/tree/main/packages/micromark-core-commonmark
+- micromark-extension-gfm@3.0.0
+  - license: MIT
+  - integrity: sha512-vsKArQsicm7t0z2GugkCKtZehqUm31oeGBV/KVSorWSy8ZlNAv7ytjFhvaryUiCUJYqs+NoE6AFhpQvBTM6Q4w==
+  - source: micromark/micromark-extension-gfm
+- micromark-extension-gfm-autolink-literal@2.1.0
+  - license: MIT
+  - integrity: sha512-oOg7knzhicgQ3t4QCjCWgTmfNhvQbDDnJeVu9v81r7NltNCVmhPy1fJRX27pISafdjL+SVc4d3l48Gb6pbRypw==
+  - source: micromark/micromark-extension-gfm-autolink-literal
+- micromark-extension-gfm-footnote@2.1.0
+  - license: MIT
+  - integrity: sha512-/yPhxI1ntnDNsiHtzLKYnE3vf9JZ6cAisqVDauhp4CEHxlb4uoOTxOCJ+9s51bIB8U1N1FJ1RXOKTIlD5B/gqw==
+  - source: micromark/micromark-extension-gfm-footnote
+- micromark-extension-gfm-strikethrough@2.1.0
+  - license: MIT
+  - integrity: sha512-ADVjpOOkjz1hhkZLlBiYA9cR2Anf8F4HqZUO6e5eDcPQd0Txw5fxLzzxnEkSkfnD0wziSGiv7sYhk/ktvbf1uw==
+  - source: micromark/micromark-extension-gfm-strikethrough
+- micromark-extension-gfm-table@2.1.2
+  - license: MIT
+  - integrity: sha512-pRzm4kDTu0MjlmBkxmS9yYhw60nncfcEwu9NNdPFSQEFXS95ZKyIIyTSHu/o3ReBUrLKYEq+7YaXCRn/bPB4MA==
+  - source: micromark/micromark-extension-gfm-table
+- micromark-extension-gfm-tagfilter@2.0.0
+  - license: MIT
+  - integrity: sha512-xHlTOmuCSotIA8TW1mDIM6X2O1SiX5P9IuDtqGonFhEK0qgRI4yeC6vMxEV2dgyr2TiD+2PQ10o+cOhdVAcwfg==
+  - source: micromark/micromark-extension-gfm-tagfilter
+- micromark-extension-gfm-task-list-item@2.1.0
+  - license: MIT
+  - integrity: sha512-qIBZhqxqI6fjLDYFTBIa4eivDMnP+OZqsNwmQ3xNLE4Cxwc+zfQEfbs6tzAo2Hjq+bh6q5F+Z8/cksrLFYWQQw==
+  - source: micromark/micromark-extension-gfm-task-list-item
+- micromark-factory-destination@2.0.1
+  - license: MIT
+  - integrity: sha512-Xe6rDdJlkmbFRExpTOmRj9N3MaWmbAgdpSrBQvCFqhezUn4AHqJHbaEnfbVYYiexVSs//tqOdY/DxhjdCiJnIA==
+  - source: https://github.com/micromark/micromark/tree/main/packages/micromark-factory-destination
+- micromark-factory-label@2.0.1
+  - license: MIT
+  - integrity: sha512-VFMekyQExqIW7xIChcXn4ok29YE3rnuyveW3wZQWWqF4Nv9Wk5rgJ99KzPvHjkmPXF93FXIbBp6YdW3t71/7Vg==
+  - source: https://github.com/micromark/micromark/tree/main/packages/micromark-factory-label
+- micromark-factory-space@2.1.0
+  - license: MIT
+  - integrity: sha512-fS8hnLIjnjvdQIj39Geug8wWsR0HrYZ43KShKxNfwT7t2LOHo/LbWZEzEaSOjwtjdCsjoE6syHhonEzW0zv0+Q==
+  - source: https://github.com/micromark/micromark/tree/main/packages/micromark-factory-space
+- micromark-factory-title@2.0.1
+  - license: MIT
+  - integrity: sha512-5bZ+3CjhAd9eChYTHsjy6TGxpOFSKgKKJPJxr293jTbfry2KDoWkhBb6TcPVB4NmzaPhMs1Frm9AZH7OD4Cjzw==
+  - source: https://github.com/micromark/micromark/tree/main/packages/micromark-factory-title
+- micromark-factory-whitespace@2.0.1
+  - license: MIT
+  - integrity: sha512-Ob0nuZ3PKt/n0hORHyvoD9uZhr+Za8sFoP+OnMcnWK5lngSzALgQYKMr9RJVOWLqQYuyn6ulqGWSXdwf6F80lQ==
+  - source: https://github.com/micromark/micromark/tree/main/packages/micromark-factory-whitespace
+- micromark-util-character@2.1.1
+  - license: MIT
+  - integrity: sha512-wv8tdUTJ3thSFFFJKtpYKOYiGP2+v96Hvk4Tu8KpCAsTMs6yi+nVmGh1syvSCsaxz45J6Jbw+9DD6g97+NV67Q==
+  - source: https://github.com/micromark/micromark/tree/main/packages/micromark-util-character
+- micromark-util-chunked@2.0.1
+  - license: MIT
+  - integrity: sha512-QUNFEOPELfmvv+4xiNg2sRYeS/P84pTW0TCgP5zc9FpXetHY0ab7SxKyAQCNCc1eK0459uoLI1y5oO5Vc1dbhA==
+  - source: https://github.com/micromark/micromark/tree/main/packages/micromark-util-chunked
+- micromark-util-classify-character@2.0.1
+  - license: MIT
+  - integrity: sha512-K0kHzM6afW/MbeWYWLjoHQv1sgg2Q9EccHEDzSkxiP/EaagNzCm7T/WMKZ3rjMbvIpvBiZgwR3dKMygtA4mG1Q==
+  - source: https://github.com/micromark/micromark/tree/main/packages/micromark-util-classify-character
+- micromark-util-combine-extensions@2.0.1
+  - license: MIT
+  - integrity: sha512-OnAnH8Ujmy59JcyZw8JSbK9cGpdVY44NKgSM7E9Eh7DiLS2E9RNQf0dONaGDzEG9yjEl5hcqeIsj4hfRkLH/Bg==
+  - source: https://github.com/micromark/micromark/tree/main/packages/micromark-util-combine-extensions
+- micromark-util-decode-numeric-character-reference@2.0.2
+  - license: MIT
+  - integrity: sha512-ccUbYk6CwVdkmCQMyr64dXz42EfHGkPQlBj5p7YVGzq8I7CtjXZJrubAYezf7Rp+bjPseiROqe7G6foFd+lEuw==
+  - source: https://github.com/micromark/micromark/tree/main/packages/micromark-util-decode-numeric-character-reference
+- micromark-util-decode-string@2.0.1
+  - license: MIT
+  - integrity: sha512-nDV/77Fj6eH1ynwscYTOsbK7rR//Uj0bZXBwJZRfaLEJ1iGBR6kIfNmlNqaqJf649EP0F3NWNdeJi03elllNUQ==
+  - source: https://github.com/micromark/micromark/tree/main/packages/micromark-util-decode-string
+- micromark-util-edit-map@1.0.0
+  - license: MIT
+  - integrity: sha512-Pa2ljlsEL6sVwFaYeyrOLSYbQt73JvGbPOYFq+9AElXiSnfI5Q4465RRZ1sHv7lDjDOnGRDDaqPXqClqWK/q1Q==
+  - source: https://github.com/micromark/micromark/tree/main/packages/micromark-util-edit-map
+- micromark-util-encode@2.0.1
+  - license: MIT
+  - integrity: sha512-c3cVx2y4KqUnwopcO9b/SCdo2O67LwJJ/UyqGfbigahfegL9myoEFoDYZgkT7f36T0bLrM9hZTAaAyH+PCAXjw==
+  - source: https://github.com/micromark/micromark/tree/main/packages/micromark-util-encode
+- micromark-util-html-tag-name@2.0.1
+  - license: MIT
+  - integrity: sha512-2cNEiYDhCWKI+Gs9T0Tiysk136SnR13hhO8yW6BGNyhOC4qYFnwF1nKfD3HFAIXA5c45RrIG1ub11GiXeYd1xA==
+  - source: https://github.com/micromark/micromark/tree/main/packages/micromark-util-html-tag-name
+- micromark-util-normalize-identifier@2.0.1
+  - license: MIT
+  - integrity: sha512-sxPqmo70LyARJs0w2UclACPUUEqltCkJ6PhKdMIDuJ3gSf/Q+/GIe3WKl0Ijb/GyH9lOpUkRAO2wp0GVkLvS9Q==
+  - source: https://github.com/micromark/micromark/tree/main/packages/micromark-util-normalize-identifier
+- micromark-util-resolve-all@2.0.1
+  - license: MIT
+  - integrity: sha512-VdQyxFWFT2/FGJgwQnJYbe1jjQoNTS4RjglmSjTUlpUMa95Htx9NHeYW4rGDJzbjvCsl9eLjMQwGeElsqmzcHg==
+  - source: https://github.com/micromark/micromark/tree/main/packages/micromark-util-resolve-all
+- micromark-util-sanitize-uri@2.0.1
+  - license: MIT
+  - integrity: sha512-9N9IomZ/YuGGZZmQec1MbgxtlgougxTodVwDzzEouPKo3qFWvymFHWcnDi2vzV1ff6kas9ucW+o3yzJK9YB1AQ==
+  - source: https://github.com/micromark/micromark/tree/main/packages/micromark-util-sanitize-uri
+- micromark-util-subtokenize@2.1.0
+  - license: MIT
+  - integrity: sha512-XQLu552iSctvnEcgXw6+Sx75GflAPNED1qx7eBJ+wydBb2KCbRZe+NwvIEEMM83uml1+2WSXpBAcp9IUCgCYWA==
+  - source: https://github.com/micromark/micromark/tree/main/packages/micromark-util-subtokenize
 - path-expression-matcher@1.6.2
   - license: MIT
   - integrity: sha512-enSlaiat05iasnzmgNxRj8reFdj3puY2QpNgP1aPIaVfT6nn9ICuPoFlKHk8EN22HcwewshO+mN2DGbkCEOtqQ==
   - source: https://github.com/NaturalIntelligence/path-expression-matcher
+- remark-gfm@4.0.1
+  - license: MIT
+  - integrity: sha512-1quofZ2RQ9EWdeN34S79+KExV1764+wCUGop5CPL1WGdD0ocPpu91lzPGbwWMECpEpd42kJGQwzRfyov9j4yNg==
+  - source: remarkjs/remark-gfm
+- remark-parse@11.0.0
+  - license: MIT
+  - integrity: sha512-FCxlKLNGknS5ba/1lmpYijMUzX2esxW5xQqjWxw2eHFfS2MSdaHVINFmhjo+qN1WhZhNimq0dZATN9pH0IDrpA==
+  - source: https://github.com/remarkjs/remark/tree/main/packages/remark-parse
 - strnum@2.4.2
   - license: MIT
   - integrity: sha512-rDG3Ah4TV0k1hWvLSzkZtMmLN9+eS+h3knq4MP6A42Y3Yh5qGNnOUs1jJkoSr8FG5dsL28c7KgkIBzSEykqtuw==
   - source: https://github.com/NaturalIntelligence/strnum
+- trough@2.2.0
+  - license: MIT
+  - integrity: sha512-tmMpK00BjZiUyVyvrBK7knerNgmgvcV/KLVyuma/SC+TQN167GrMRciANTz09+k3zW8L8t60jWO1GpfkZdjTaw==
+  - source: wooorm/trough
+- unified@11.0.5
+  - license: MIT
+  - integrity: sha512-xKvGhPWw3k84Qjh8bI3ZeJjqnyadK+GEFtazSfZv/rKeTkTjOJho6mFqh2SM96iIcZokxiOpg78GazTSg8+KHA==
+  - source: unifiedjs/unified
+- unist-util-is@6.0.1
+  - license: MIT
+  - integrity: sha512-LsiILbtBETkDz8I9p1dQ0uyRUWuaQzd/cuEeS1hoRSyW5E5XGmTzlwY1OrNzzakGowI9Dr/I8HVaw4hTtnxy8g==
+  - source: syntax-tree/unist-util-is
+- unist-util-stringify-position@4.0.0
+  - license: MIT
+  - integrity: sha512-0ASV06AAoKCDkS2+xw5RXJywruurpbC4JZSm7nr7MOt1ojAzvyyaO+UxZf18j8FCF6kmzCZKcAgN/yu2gm2XgQ==
+  - source: syntax-tree/unist-util-stringify-position
+- unist-util-visit@5.1.0
+  - license: MIT
+  - integrity: sha512-m+vIdyeCOpdr/QeQCu2EzxX/ohgS8KbnPDgFni4dQsfSCtpz8UqDyY5GjRru8PDKuYn7Fq19j1CQ+nJSsGKOzg==
+  - source: syntax-tree/unist-util-visit
+- unist-util-visit-parents@6.0.2
+  - license: MIT
+  - integrity: sha512-goh1s1TBrqSqukSc8wrjwWhL0hiJxgA8m4kFxGlQ+8FYQ3C/m11FcTs4YYem7V664AhHVvgoQLk890Ssdsr2IQ==
+  - source: syntax-tree/unist-util-visit-parents
+- vfile@6.0.3
+  - license: MIT
+  - integrity: sha512-KzIbH/9tXat2u30jf+smMwFCsno4wHVdNmzFyL+T/L3UGqqk6JKfVqOFOZEpZSHADH1k40ab6NUIXZq422ov3Q==
+  - source: vfile/vfile
+- vfile-message@4.0.3
+  - license: MIT
+  - integrity: sha512-QTHzsGd1EhbZs4AsQ20JX1rC3cOlt/IWJruk893DfLRr57lcnOeMaWG4K0JrRta4mIJZKth2Au3mM3u03/JWKw==
+  - source: vfile/vfile-message
 - xml-naming@0.3.0
   - license: MIT
   - integrity: sha512-ghig2TBE/H11aOVgmahA3MhimvkBr6JIYknH/Dhdk10nXwdbIqBJsbfMxpvFPG8bAw77gN29aQWvKpmVoPlvPQ==
@@ -38,8 +270,13 @@ These generated Node runtime bundles contain the following packages:
   - license: ISC
   - integrity: sha512-2AvhNX3mb8zd6Zy7INTtSpl1F15HW6Wnqj0srWlkKLcpYl/gMIMJiyuGq2KeI2YFxUPjdlB+3Lc10seMLtL4cA==
   - source: github:eemeli/yaml
+- zwitch@2.0.4
+  - license: MIT
+  - integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==
+  - source: wooorm/zwitch
 
 ## Bundle SHA-256
 
 - yaml.mjs: sha256:58c510627769ef4e75e90bcf410d63ba33e64b46bc9cfc53149839d5ccb1709b
 - xml.mjs: sha256:bab9b35f123c30198a7597422ca0baa9f207c0e536b41f2c478c6fd6b7fdfc79
+- markdown.mjs: sha256:e11d4cbcc75212bac94f99cd3218395d2c3f9f87e1b2d74c008b0c0740c4f836

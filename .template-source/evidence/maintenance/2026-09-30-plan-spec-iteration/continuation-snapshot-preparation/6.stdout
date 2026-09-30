@@ -1,0 +1,12 @@
+profile skills: design, backend, frontend
+模式：只读检查
+受影响 profile：design, frontend
+design 变更技能：无（请查看资产差异或问题）
+frontend 变更技能：无（请查看资产差异或问题）
+已有问题：0 项（含冲突、缺失依赖与未登记差异）
+updated: 2
+design: updated: .template-source/tooling/node/scripts/design-md.mjs
+frontend: updated: .template-source/tooling/node/scripts/design-md.mjs
+后续同步一致性检查（待执行；有差异或冲突时先处理）：scripts/sync-profile-skills --check --profile 'design' --profile 'frontend'
+本仓 Skill 治理验证（待执行）：scripts/verify-skill-governance
+文件差异、分类与 SHA-256 继续使用现有 --json 报告；本摘要不判断下游项目兼容性。

@@ -35,7 +35,7 @@ const releaseBaseline = [
   "scripts/verify-digital-human-task-package-scenarios",
   ".template-source/scripts/verify-historical-task-package .template-source/evidence/maintenance/digital-human-task-package-review-task.yaml",
   ".template-source/scripts/verify-historical-task-package .template-source/evidence/maintenance/lifecycle-ticket-transition-review-task-package.yaml",
-  "scripts/verify-maintenance-checkpoint .template-source/evidence/maintenance/yss-tactical-design-l3-checkpoint-2026-08-27.yaml",
+  "scripts/verify-maintenance-checkpoint --history .template-source/evidence/maintenance/yss-tactical-design-l3-checkpoint-2026-08-27.yaml",
   "scripts/verify-lifecycle-scenarios",
   "scripts/verify-lifecycle-transition-scenarios",
   "scripts/verify-maintenance-intensity-scenarios",

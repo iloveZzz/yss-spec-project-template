@@ -1,0 +1,30 @@
+{
+  "schema_version": 2,
+  "intensity": "L1",
+  "classification_reason": "只新增技术研究、来源台账与验证记录，不改 Agent 行为或发布资产",
+  "triggers": [
+    "textual-only"
+  ],
+  "changed_assets": [
+    ".template-source/evidence/maintenance/2026-09-29-prototype-skills-research/"
+  ],
+  "verification_evidence": [
+    {
+      "kind": "relevant-check",
+      "command": "node .agents/skills/yss-research/scripts/validate-research-package.mjs .template-source/evidence/maintenance/2026-09-29-prototype-skills-research/prototype-skills-research-brief.md .template-source/evidence/maintenance/2026-09-29-prototype-skills-research/prototype-skills-evidence.yaml",
+      "result": "pass"
+    },
+    {
+      "kind": "self-check",
+      "command": ".template-source/evidence/maintenance/2026-09-29-prototype-skills-research/self-check.json",
+      "result": "pass"
+    }
+  ],
+  "review_mode": "self-check",
+  "escalation": "none",
+  "target_state": "implementation-ready",
+  "current_state": "implementation-ready",
+  "verification_profile": "fast",
+  "review_round": 0,
+  "candidate_digest": null
+}

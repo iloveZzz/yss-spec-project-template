@@ -1,0 +1,180 @@
+{
+  "schema_version": 2,
+  "scenario_digests": {
+    "primary": "sha256:74424928494a6c80d3e843ca679f5e2c144887b9c56850291143991f2ef47713",
+    "empty": "sha256:28645b5b79f03d5b4634ffd5a092a154c92a1228915d8a6c807e12c9a032a454",
+    "loading": "sha256:7c5b4183c721e19c7d18ee6faa6f3dcd759180e89e56762ce5e31b5b3e67e2a4",
+    "no-permission": "sha256:fff82805a6b94d6ea01ee3120da7e8d84a8e925e17d5c4209615f61977b8bb0e"
+  },
+  "purpose": "review-only",
+  "comparison_id": "list-detail",
+  "title": "查询与详情 · 外观对照",
+  "variants": [
+    {
+      "id": "standard",
+      "label": "标准精修",
+      "entry": "variants/standard/index.html",
+      "source_root": "docs/.scratch/list-detail-standard/design/prototypes",
+      "cases": [
+        "primary",
+        "empty",
+        "loading",
+        "no-permission"
+      ]
+    },
+    {
+      "id": "glass",
+      "label": "轻玻璃",
+      "entry": "variants/glass/index.html",
+      "source_root": "docs/.scratch/list-detail-glass/design/prototypes",
+      "cases": [
+        "primary",
+        "empty",
+        "loading",
+        "no-permission"
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "id": "primary",
+      "label": "正常",
+      "scenario": "primary"
+    },
+    {
+      "id": "empty",
+      "label": "空数据",
+      "scenario": "empty"
+    },
+    {
+      "id": "loading",
+      "label": "加载中",
+      "scenario": "loading"
+    },
+    {
+      "id": "no-permission",
+      "label": "无编辑权限",
+      "scenario": "no-permission"
+    }
+  ],
+  "bindings": [
+    {
+      "source_ref": "docs/.scratch/glass-study/design/comparison-record.md",
+      "snapshot": "sources/comparison-record.md",
+      "digest": "sha256:565194ef3f6e8beb4174ddb5a89081f9d77cc82e9ca31689ad4b7f2cd5f8389a"
+    },
+    {
+      "source_ref": "docs/.scratch/glass-study/design/list-detail.scenarios.json",
+      "snapshot": "sources/scenarios.json",
+      "digest": "sha256:5da5ae1309028b479a0251892f7d0168d482be18811fac8e215f10aa39aee31b"
+    },
+    {
+      "source_ref": "DESIGN.md",
+      "snapshot": "sources/DESIGN.md",
+      "digest": "sha256:418a1dde90e1b0e5c8551ea7e78126ceb738654b542185355d9d08b0dcbe73f4"
+    },
+    {
+      "source_ref": ".template-spec/design/tokens/variables.css",
+      "snapshot": "sources/tokens.css",
+      "digest": "sha256:f8619314678bc3bb13d00e5457df2f1d2379c3b59b1cb1ed7fae2fac9aa86b1e"
+    }
+  ],
+  "files": {
+    "comparison-data.js": "sha256:b579906924c7103e6983aba9c56b6600ddbe1ce6bac5bbdccb962452c2e83906",
+    "comparison.css": "sha256:c5f5f6667590627c21025b6872d0402b8b2ecdac8a6e593cee7ba408c2d5abd5",
+    "comparison.js": "sha256:819eee8631dc2caf168c74434ae9bb8c2c0530862edf3c8071be389d6ea3c377",
+    "index.html": "sha256:0ba2c841bc7b0cf457d08bb1965a333adeeef6d33fa16709e85ed448eee8b529",
+    "sources/comparison-record.md": "sha256:565194ef3f6e8beb4174ddb5a89081f9d77cc82e9ca31689ad4b7f2cd5f8389a",
+    "sources/DESIGN.md": "sha256:418a1dde90e1b0e5c8551ea7e78126ceb738654b542185355d9d08b0dcbe73f4",
+    "sources/scenarios.json": "sha256:5da5ae1309028b479a0251892f7d0168d482be18811fac8e215f10aa39aee31b",
+    "sources/tokens.css": "sha256:f8619314678bc3bb13d00e5457df2f1d2379c3b59b1cb1ed7fae2fac9aa86b1e",
+    "variants/glass/app.js": "sha256:4ba09f9597bb9413c58c269eb365ff2070e985e6e96aafc20339339d9ab83ab9",
+    "variants/glass/authoring-source.tsx": "sha256:fccadbcdecb1f7c5985b45c6394c3608ff66f7c8688e542b7dda18121dfad7a4",
+    "variants/glass/authoring-sources/glass.ts": "sha256:5bde7d14c858fe517c5dea1aff4f7530b8f7e9b65b93e9b4225deb93915fd5b3",
+    "variants/glass/authoring-sources/list-detail-glass.tsx": "sha256:fccadbcdecb1f7c5985b45c6394c3608ff66f7c8688e542b7dda18121dfad7a4",
+    "variants/glass/authoring-sources/list-detail.tsx": "sha256:d4649a2a49a505a1d9e9f7630be28e82b20522ed9717615535922c4879da725f",
+    "variants/glass/authoring-sources/patterns.css": "sha256:901a9af3ef11a9cfd54c3f03517eeb2864e9ea25a4fb0430591e3c4113f2556b",
+    "variants/glass/authoring-sources/refinement.css": "sha256:3bbc9ab425a49a4f95a38ef54ece5a92192d4367dd1ee7547dd335b7a7fa27a4",
+    "variants/glass/authoring-sources/shared.tsx": "sha256:9e4024a2742e67da7b8fb5d2572f9e4383b99e1c71d74f3811033537f5036519",
+    "variants/glass/build-provenance.json": "sha256:c2f5ee7ced47c3197170a16815eaddc9dc12e53c865211ce506367b876603889",
+    "variants/glass/component-sources/alert-dialog.tsx": "sha256:b3dfb83e54ed8c82071df5289e5149628bf573458fc2da2d62f93f8380041b28",
+    "variants/glass/component-sources/alert.tsx": "sha256:d03dcae5cdb63c381c1144ca9a0c49ba0e46466967d7deb94662034042acb034",
+    "variants/glass/component-sources/badge.tsx": "sha256:13a9380dfff853ee730c14a52df49f22aecd31f40f2998d7c1e7ec458b6e1650",
+    "variants/glass/component-sources/breadcrumb.tsx": "sha256:c75fcd3d9e8470188bc0dd4b27a2b26fff3ad42b9c9c534a953dc090ae2cba33",
+    "variants/glass/component-sources/button.tsx": "sha256:79dd6f75f8136394442202d6b8b922fb269eaad0a5dba579397c9d5b41f893bb",
+    "variants/glass/component-sources/card.tsx": "sha256:ef8305b12c3112dab42a4708b41b1ebcc042fa5ab4c20f039da8d45b09ed5059",
+    "variants/glass/component-sources/checkbox.tsx": "sha256:ba0ac64064e2d8fa7299d53e9e84b9a4772fef8dd4cf6170c56d3030a1d69941",
+    "variants/glass/component-sources/cn.ts": "sha256:64fc84c1be627f0d586fb4ba64d824a1604f44282381f5bae68cdf86e10bb6ec",
+    "variants/glass/component-sources/dialog.tsx": "sha256:2ade6074e5fad0a4eb171ead44c43d3301a3c83d186d7236fb1fdbea80ee556b",
+    "variants/glass/component-sources/dropdown-menu.tsx": "sha256:d954efb735f13734751207ad22cb0cddd7f6ec53c59d16675d103dae08cb61fb",
+    "variants/glass/component-sources/empty.tsx": "sha256:54f529ccf72c18c4b5abd5586a7cf1f2a4c8d207aac366029d66ed095cb2965d",
+    "variants/glass/component-sources/field.tsx": "sha256:4a4d17fcb933513f637f9f7e2daf5d8348f7de086b29738337dec7e6dd1819a0",
+    "variants/glass/component-sources/input-group.tsx": "sha256:e379899ac50d6cabc9d9eb1668f265176951c62b1fe83a6f23ee97fe8074d526",
+    "variants/glass/component-sources/input.tsx": "sha256:0c9457181f6ddc80969bcf854e92c362903a55b6e889fbef3fd85343ecc4af5b",
+    "variants/glass/component-sources/label.tsx": "sha256:344bde38b8531615dbf8e14af3895517c24d8ef6ce56ddeda7e2e6fe4b5d0c00",
+    "variants/glass/component-sources/pagination.tsx": "sha256:224843c4f509e8b8c9848adefa43d1491846f0851138fa9b51cc6ba1319c5653",
+    "variants/glass/component-sources/select.tsx": "sha256:962830436bd0b7ee50e556f0747e277d6a86869ed27d167516346b15f26309d8",
+    "variants/glass/component-sources/separator.tsx": "sha256:ad7d5403fe337160e41dbf04147896e448ae3a747b8d06660d627d74d60021bc",
+    "variants/glass/component-sources/sheet.tsx": "sha256:ea473d38a26a9b0b879e5a13139899ad45e9782e896b3fa205c7763a6c506876",
+    "variants/glass/component-sources/skeleton.tsx": "sha256:f51ce0fcd31e5c31437382e80ea0af94b4fc3d64221d27091d36824546780a43",
+    "variants/glass/component-sources/spinner.tsx": "sha256:5d040fc49cb54c0296070644053b5a8840ddbfca89a430546bf308df3fffad65",
+    "variants/glass/component-sources/table.tsx": "sha256:bd1a9fc83a5a2149e504038e274bb7e5a0351af59f6896df52ac4d5b439695ac",
+    "variants/glass/component-sources/tabs.tsx": "sha256:e1df6e2f95ece373ca909c1d54b8ba8cf4c47dd425c1784bbb9a01c38dd0936b",
+    "variants/glass/component-sources/textarea.tsx": "sha256:5cafcfeeee29534f449387a16b585f5923d2faab1a0cdc50a874416b175f59ce",
+    "variants/glass/component-sources/tooltip.tsx": "sha256:611e4305879b2773eafe76bf3c5caa69d8e47367fd97887a71634a27828f4433",
+    "variants/glass/index.html": "sha256:f19bf2317c4c5adbaa2b713847110c98e99281131b5f26f1d8637fa5f9ea81b0",
+    "variants/glass/registry-manifest.json": "sha256:369217961048eef6cd6d6ee188fd9f9244e49cdb34804ab7660726c4cbd82aa9",
+    "variants/glass/scenario-runtime.js": "sha256:b2837245e0e3e8a072c1b612338c352a6474fbae4f07a135705510258bb5f25b",
+    "variants/glass/scenarios.js": "sha256:c5c9368426f4efc681260d680e4392e553d9994d1d2dcc33970d6fd89916cbb6",
+    "variants/glass/scenarios.json": "sha256:5da5ae1309028b479a0251892f7d0168d482be18811fac8e215f10aa39aee31b",
+    "variants/glass/styles.css": "sha256:1034a34ea72f395ab61719ff25540e5169a5739b5dc22221af80a1f4b81b7c15",
+    "variants/glass/THIRD-PARTY-NOTICES.txt": "sha256:82468b078e17a58d39f0504aec0ea8310ae99416c3de163528f11f2795f7ca4d",
+    "variants/glass/token-theme.css": "sha256:bff6ed47d66c897ef967d025f02d26d39bb598124dd0afc9e7205489e7ac71c2",
+    "variants/glass/tokens.css": "sha256:f8619314678bc3bb13d00e5457df2f1d2379c3b59b1cb1ed7fae2fac9aa86b1e",
+    "variants/glass/yss-prototype-adapter.json": "sha256:f30384c99f0e081f10b21adfc8b19b30146a29ba24087970520c4b532c06d9be",
+    "variants/standard/app.js": "sha256:470d8c579efdb067fbb03d6b6f25a1fce53c476261a667c3a6cbdb37ac604603",
+    "variants/standard/authoring-source.tsx": "sha256:bcaf1690d460e1f3a74af3446b861846fa1771e5e3438200a78500d681c0064f",
+    "variants/standard/authoring-sources/list-detail-standard.tsx": "sha256:bcaf1690d460e1f3a74af3446b861846fa1771e5e3438200a78500d681c0064f",
+    "variants/standard/authoring-sources/list-detail.tsx": "sha256:d4649a2a49a505a1d9e9f7630be28e82b20522ed9717615535922c4879da725f",
+    "variants/standard/authoring-sources/patterns.css": "sha256:901a9af3ef11a9cfd54c3f03517eeb2864e9ea25a4fb0430591e3c4113f2556b",
+    "variants/standard/authoring-sources/refinement.css": "sha256:3bbc9ab425a49a4f95a38ef54ece5a92192d4367dd1ee7547dd335b7a7fa27a4",
+    "variants/standard/authoring-sources/shared.tsx": "sha256:9e4024a2742e67da7b8fb5d2572f9e4383b99e1c71d74f3811033537f5036519",
+    "variants/standard/authoring-sources/standard.ts": "sha256:c22c44d867641c4098bb5c516d62c3dac23efc319486d65cb4f40717570ed567",
+    "variants/standard/build-provenance.json": "sha256:01dc9af3444f1027afcff8b5f010b8563e9f8767069f9baf5813ad288a7ec5ea",
+    "variants/standard/component-sources/alert-dialog.tsx": "sha256:b3dfb83e54ed8c82071df5289e5149628bf573458fc2da2d62f93f8380041b28",
+    "variants/standard/component-sources/alert.tsx": "sha256:d03dcae5cdb63c381c1144ca9a0c49ba0e46466967d7deb94662034042acb034",
+    "variants/standard/component-sources/badge.tsx": "sha256:13a9380dfff853ee730c14a52df49f22aecd31f40f2998d7c1e7ec458b6e1650",
+    "variants/standard/component-sources/breadcrumb.tsx": "sha256:c75fcd3d9e8470188bc0dd4b27a2b26fff3ad42b9c9c534a953dc090ae2cba33",
+    "variants/standard/component-sources/button.tsx": "sha256:79dd6f75f8136394442202d6b8b922fb269eaad0a5dba579397c9d5b41f893bb",
+    "variants/standard/component-sources/card.tsx": "sha256:ef8305b12c3112dab42a4708b41b1ebcc042fa5ab4c20f039da8d45b09ed5059",
+    "variants/standard/component-sources/checkbox.tsx": "sha256:ba0ac64064e2d8fa7299d53e9e84b9a4772fef8dd4cf6170c56d3030a1d69941",
+    "variants/standard/component-sources/cn.ts": "sha256:64fc84c1be627f0d586fb4ba64d824a1604f44282381f5bae68cdf86e10bb6ec",
+    "variants/standard/component-sources/dialog.tsx": "sha256:2ade6074e5fad0a4eb171ead44c43d3301a3c83d186d7236fb1fdbea80ee556b",
+    "variants/standard/component-sources/dropdown-menu.tsx": "sha256:d954efb735f13734751207ad22cb0cddd7f6ec53c59d16675d103dae08cb61fb",
+    "variants/standard/component-sources/empty.tsx": "sha256:54f529ccf72c18c4b5abd5586a7cf1f2a4c8d207aac366029d66ed095cb2965d",
+    "variants/standard/component-sources/field.tsx": "sha256:4a4d17fcb933513f637f9f7e2daf5d8348f7de086b29738337dec7e6dd1819a0",
+    "variants/standard/component-sources/input-group.tsx": "sha256:e379899ac50d6cabc9d9eb1668f265176951c62b1fe83a6f23ee97fe8074d526",
+    "variants/standard/component-sources/input.tsx": "sha256:0c9457181f6ddc80969bcf854e92c362903a55b6e889fbef3fd85343ecc4af5b",
+    "variants/standard/component-sources/label.tsx": "sha256:344bde38b8531615dbf8e14af3895517c24d8ef6ce56ddeda7e2e6fe4b5d0c00",
+    "variants/standard/component-sources/pagination.tsx": "sha256:224843c4f509e8b8c9848adefa43d1491846f0851138fa9b51cc6ba1319c5653",
+    "variants/standard/component-sources/select.tsx": "sha256:962830436bd0b7ee50e556f0747e277d6a86869ed27d167516346b15f26309d8",
+    "variants/standard/component-sources/separator.tsx": "sha256:ad7d5403fe337160e41dbf04147896e448ae3a747b8d06660d627d74d60021bc",
+    "variants/standard/component-sources/sheet.tsx": "sha256:ea473d38a26a9b0b879e5a13139899ad45e9782e896b3fa205c7763a6c506876",
+    "variants/standard/component-sources/skeleton.tsx": "sha256:f51ce0fcd31e5c31437382e80ea0af94b4fc3d64221d27091d36824546780a43",
+    "variants/standard/component-sources/spinner.tsx": "sha256:5d040fc49cb54c0296070644053b5a8840ddbfca89a430546bf308df3fffad65",
+    "variants/standard/component-sources/table.tsx": "sha256:bd1a9fc83a5a2149e504038e274bb7e5a0351af59f6896df52ac4d5b439695ac",
+    "variants/standard/component-sources/tabs.tsx": "sha256:e1df6e2f95ece373ca909c1d54b8ba8cf4c47dd425c1784bbb9a01c38dd0936b",
+    "variants/standard/component-sources/textarea.tsx": "sha256:5cafcfeeee29534f449387a16b585f5923d2faab1a0cdc50a874416b175f59ce",
+    "variants/standard/component-sources/tooltip.tsx": "sha256:611e4305879b2773eafe76bf3c5caa69d8e47367fd97887a71634a27828f4433",
+    "variants/standard/index.html": "sha256:f19bf2317c4c5adbaa2b713847110c98e99281131b5f26f1d8637fa5f9ea81b0",
+    "variants/standard/registry-manifest.json": "sha256:369217961048eef6cd6d6ee188fd9f9244e49cdb34804ab7660726c4cbd82aa9",
+    "variants/standard/scenario-runtime.js": "sha256:b2837245e0e3e8a072c1b612338c352a6474fbae4f07a135705510258bb5f25b",
+    "variants/standard/scenarios.js": "sha256:c5c9368426f4efc681260d680e4392e553d9994d1d2dcc33970d6fd89916cbb6",
+    "variants/standard/scenarios.json": "sha256:5da5ae1309028b479a0251892f7d0168d482be18811fac8e215f10aa39aee31b",
+    "variants/standard/styles.css": "sha256:1034a34ea72f395ab61719ff25540e5169a5739b5dc22221af80a1f4b81b7c15",
+    "variants/standard/THIRD-PARTY-NOTICES.txt": "sha256:82468b078e17a58d39f0504aec0ea8310ae99416c3de163528f11f2795f7ca4d",
+    "variants/standard/token-theme.css": "sha256:bff6ed47d66c897ef967d025f02d26d39bb598124dd0afc9e7205489e7ac71c2",
+    "variants/standard/tokens.css": "sha256:f8619314678bc3bb13d00e5457df2f1d2379c3b59b1cb1ed7fae2fac9aa86b1e",
+    "variants/standard/yss-prototype-adapter.json": "sha256:fb494ad1737715fbaf0021c1a496ef0618ebc8271226bb263bca9189a272a62a"
+  }
+}

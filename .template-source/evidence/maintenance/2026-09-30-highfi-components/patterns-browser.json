@@ -1,0 +1,1359 @@
+{
+  "scope": "maintenance fixtures",
+  "result": "passed",
+  "engines": [
+    {
+      "engine": "chromium",
+      "version": "151.0.7922.34",
+      "network": "offline=true"
+    },
+    {
+      "engine": "webkit",
+      "version": "26.5",
+      "network": "HTTP(S) blocked by routing; WebKit offline flag rejects file navigation"
+    }
+  ],
+  "cases": [
+    {
+      "engine": "chromium",
+      "mode": "list-detail",
+      "width": 1440,
+      "scenario": "primary",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "mode": "list-detail",
+      "width": 1440,
+      "scenario": "empty",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "mode": "list-detail",
+      "width": 1440,
+      "scenario": "loading",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "mode": "list-detail",
+      "width": 1440,
+      "scenario": "no-permission",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "mode": "list-detail",
+      "width": 1440,
+      "status": "passed",
+      "checks": [
+        "state-results",
+        "keyboard",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "mode": "multi-step",
+      "width": 1440,
+      "scenario": "primary",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "mode": "multi-step",
+      "width": 1440,
+      "scenario": "failure",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "mode": "multi-step",
+      "width": 1440,
+      "scenario": "no-permission",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "mode": "multi-step",
+      "width": 1440,
+      "status": "passed",
+      "checks": [
+        "state-results",
+        "keyboard",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "mode": "approval",
+      "width": 1440,
+      "scenario": "primary",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "mode": "approval",
+      "width": 1440,
+      "scenario": "empty",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "mode": "approval",
+      "width": 1440,
+      "scenario": "failure",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "mode": "approval",
+      "width": 1440,
+      "scenario": "no-permission",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "mode": "approval",
+      "width": 1440,
+      "status": "passed",
+      "checks": [
+        "state-results",
+        "keyboard",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "mode": "conflict",
+      "width": 1440,
+      "scenario": "primary",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "mode": "conflict",
+      "width": 1440,
+      "scenario": "failure",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "mode": "conflict",
+      "width": 1440,
+      "scenario": "no-permission",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "mode": "conflict",
+      "width": 1440,
+      "scenario": "conflict",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "mode": "conflict",
+      "width": 1440,
+      "status": "passed",
+      "checks": [
+        "state-results",
+        "keyboard",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "mode": "analysis",
+      "width": 1440,
+      "scenario": "primary",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "mode": "analysis",
+      "width": 1440,
+      "scenario": "empty",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "mode": "analysis",
+      "width": 1440,
+      "scenario": "loading",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "mode": "analysis",
+      "width": 1440,
+      "status": "passed",
+      "checks": [
+        "state-results",
+        "keyboard",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "mode": "lowfi-single",
+      "width": 1440,
+      "status": "passed"
+    },
+    {
+      "engine": "chromium",
+      "mode": "lowfi-batch",
+      "width": 1440,
+      "status": "passed"
+    },
+    {
+      "engine": "chromium",
+      "mode": "lowfi-queue",
+      "width": 1440,
+      "status": "passed"
+    },
+    {
+      "engine": "chromium",
+      "mode": "list-detail",
+      "width": 390,
+      "scenario": "primary",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "mode": "list-detail",
+      "width": 390,
+      "scenario": "empty",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "mode": "list-detail",
+      "width": 390,
+      "scenario": "loading",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "mode": "list-detail",
+      "width": 390,
+      "scenario": "no-permission",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "mode": "list-detail",
+      "width": 390,
+      "status": "passed",
+      "checks": [
+        "state-results",
+        "keyboard",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "mode": "multi-step",
+      "width": 390,
+      "scenario": "primary",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "mode": "multi-step",
+      "width": 390,
+      "scenario": "failure",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "mode": "multi-step",
+      "width": 390,
+      "scenario": "no-permission",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "mode": "multi-step",
+      "width": 390,
+      "status": "passed",
+      "checks": [
+        "state-results",
+        "keyboard",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "mode": "approval",
+      "width": 390,
+      "scenario": "primary",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "mode": "approval",
+      "width": 390,
+      "scenario": "empty",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "mode": "approval",
+      "width": 390,
+      "scenario": "failure",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "mode": "approval",
+      "width": 390,
+      "scenario": "no-permission",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "mode": "approval",
+      "width": 390,
+      "status": "passed",
+      "checks": [
+        "state-results",
+        "keyboard",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "mode": "conflict",
+      "width": 390,
+      "scenario": "primary",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "mode": "conflict",
+      "width": 390,
+      "scenario": "failure",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "mode": "conflict",
+      "width": 390,
+      "scenario": "no-permission",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "mode": "conflict",
+      "width": 390,
+      "scenario": "conflict",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "mode": "conflict",
+      "width": 390,
+      "status": "passed",
+      "checks": [
+        "state-results",
+        "keyboard",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "mode": "analysis",
+      "width": 390,
+      "scenario": "primary",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "mode": "analysis",
+      "width": 390,
+      "scenario": "empty",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "mode": "analysis",
+      "width": 390,
+      "scenario": "loading",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "mode": "analysis",
+      "width": 390,
+      "status": "passed",
+      "checks": [
+        "state-results",
+        "keyboard",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "mode": "lowfi-single",
+      "width": 390,
+      "status": "passed"
+    },
+    {
+      "engine": "chromium",
+      "mode": "lowfi-batch",
+      "width": 390,
+      "status": "passed"
+    },
+    {
+      "engine": "chromium",
+      "mode": "lowfi-queue",
+      "width": 390,
+      "status": "passed"
+    },
+    {
+      "engine": "webkit",
+      "mode": "list-detail",
+      "width": 1440,
+      "scenario": "primary",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "mode": "list-detail",
+      "width": 1440,
+      "scenario": "empty",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "mode": "list-detail",
+      "width": 1440,
+      "scenario": "loading",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "mode": "list-detail",
+      "width": 1440,
+      "scenario": "no-permission",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "mode": "list-detail",
+      "width": 1440,
+      "status": "passed",
+      "checks": [
+        "state-results",
+        "keyboard",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "mode": "multi-step",
+      "width": 1440,
+      "scenario": "primary",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "mode": "multi-step",
+      "width": 1440,
+      "scenario": "failure",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "mode": "multi-step",
+      "width": 1440,
+      "scenario": "no-permission",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "mode": "multi-step",
+      "width": 1440,
+      "status": "passed",
+      "checks": [
+        "state-results",
+        "keyboard",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "mode": "approval",
+      "width": 1440,
+      "scenario": "primary",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "mode": "approval",
+      "width": 1440,
+      "scenario": "empty",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "mode": "approval",
+      "width": 1440,
+      "scenario": "failure",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "mode": "approval",
+      "width": 1440,
+      "scenario": "no-permission",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "mode": "approval",
+      "width": 1440,
+      "status": "passed",
+      "checks": [
+        "state-results",
+        "keyboard",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "mode": "conflict",
+      "width": 1440,
+      "scenario": "primary",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "mode": "conflict",
+      "width": 1440,
+      "scenario": "failure",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "mode": "conflict",
+      "width": 1440,
+      "scenario": "no-permission",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "mode": "conflict",
+      "width": 1440,
+      "scenario": "conflict",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "mode": "conflict",
+      "width": 1440,
+      "status": "passed",
+      "checks": [
+        "state-results",
+        "keyboard",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "mode": "analysis",
+      "width": 1440,
+      "scenario": "primary",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "mode": "analysis",
+      "width": 1440,
+      "scenario": "empty",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "mode": "analysis",
+      "width": 1440,
+      "scenario": "loading",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "mode": "analysis",
+      "width": 1440,
+      "status": "passed",
+      "checks": [
+        "state-results",
+        "keyboard",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "mode": "lowfi-single",
+      "width": 1440,
+      "status": "passed"
+    },
+    {
+      "engine": "webkit",
+      "mode": "lowfi-batch",
+      "width": 1440,
+      "status": "passed"
+    },
+    {
+      "engine": "webkit",
+      "mode": "lowfi-queue",
+      "width": 1440,
+      "status": "passed"
+    },
+    {
+      "engine": "webkit",
+      "mode": "list-detail",
+      "width": 390,
+      "scenario": "primary",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "mode": "list-detail",
+      "width": 390,
+      "scenario": "empty",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "mode": "list-detail",
+      "width": 390,
+      "scenario": "loading",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "mode": "list-detail",
+      "width": 390,
+      "scenario": "no-permission",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "mode": "list-detail",
+      "width": 390,
+      "status": "passed",
+      "checks": [
+        "state-results",
+        "keyboard",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "mode": "multi-step",
+      "width": 390,
+      "scenario": "primary",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "mode": "multi-step",
+      "width": 390,
+      "scenario": "failure",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "mode": "multi-step",
+      "width": 390,
+      "scenario": "no-permission",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "mode": "multi-step",
+      "width": 390,
+      "status": "passed",
+      "checks": [
+        "state-results",
+        "keyboard",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "mode": "approval",
+      "width": 390,
+      "scenario": "primary",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "mode": "approval",
+      "width": 390,
+      "scenario": "empty",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "mode": "approval",
+      "width": 390,
+      "scenario": "failure",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "mode": "approval",
+      "width": 390,
+      "scenario": "no-permission",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "mode": "approval",
+      "width": 390,
+      "status": "passed",
+      "checks": [
+        "state-results",
+        "keyboard",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "mode": "conflict",
+      "width": 390,
+      "scenario": "primary",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "mode": "conflict",
+      "width": 390,
+      "scenario": "failure",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "mode": "conflict",
+      "width": 390,
+      "scenario": "no-permission",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "mode": "conflict",
+      "width": 390,
+      "scenario": "conflict",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "mode": "conflict",
+      "width": 390,
+      "status": "passed",
+      "checks": [
+        "state-results",
+        "keyboard",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "mode": "analysis",
+      "width": 390,
+      "scenario": "primary",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "mode": "analysis",
+      "width": 390,
+      "scenario": "empty",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "mode": "analysis",
+      "width": 390,
+      "scenario": "loading",
+      "status": "passed",
+      "checks": [
+        "declared-state",
+        "repeated-reset",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "mode": "analysis",
+      "width": 390,
+      "status": "passed",
+      "checks": [
+        "state-results",
+        "keyboard",
+        "contrast",
+        "reduced-motion",
+        "layout"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "mode": "lowfi-single",
+      "width": 390,
+      "status": "passed"
+    },
+    {
+      "engine": "webkit",
+      "mode": "lowfi-batch",
+      "width": 390,
+      "status": "passed"
+    },
+    {
+      "engine": "webkit",
+      "mode": "lowfi-queue",
+      "width": 390,
+      "status": "passed"
+    }
+  ],
+  "artifacts": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-patterns-browser-HD1yqk"
+}

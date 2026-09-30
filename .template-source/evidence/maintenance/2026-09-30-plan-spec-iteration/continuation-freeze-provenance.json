@@ -1,0 +1,175 @@
+{
+  "kind": "frozen-working-tree-verification-inputs",
+  "fixed_commit_delivery": false,
+  "source_root": "/Users/zhudaoming/Projects/yss-spec-project-template",
+  "snapshot_root": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/plan-spec-frozen-0f0hftk0/workspace",
+  "base_heads": {
+    "root": "8c391219086663dee3db8f23f25017540ce0ed58",
+    "yss-harness-design-agent": "77dcb2e4a1c69b28e42f1fe94dc932a9a469163a",
+    "yss-harness-backend-agent": "2a1685a6e5d7d6628f9d87f1c9de80fb7a66eb20",
+    "yss-harness-frontend-agent": "1492d92dee4dc1981e80c9bc840fd73a117aa947",
+    "create-yss-spec": "7fcf905ac5767954910e6ddf817200af467fe5c9",
+    "create-yss-strategic-design": "ede1de31385427b85d88d5a4f582a48a93c23e7b",
+    "create-yss-harness-backend": "6352302b34fc5bd80da055256ba45d3b964a8c82",
+    "create-yss-harness-frontend": "4f6f4d80fc0e9131e1529cd15760f8e41645ba82"
+  },
+  "input_count": 12368,
+  "restored_from_original_backup": [
+    ".agents/skills/yss-prototype-stage/assets/business-patterns/analysis.tsx",
+    ".agents/skills/yss-prototype-stage/assets/business-patterns/approval.tsx",
+    ".agents/skills/yss-prototype-stage/assets/business-patterns/conflict.tsx",
+    ".agents/skills/yss-prototype-stage/assets/business-patterns/list-detail.tsx",
+    ".agents/skills/yss-prototype-stage/assets/business-patterns/multi-step.tsx",
+    ".agents/skills/yss-prototype-stage/assets/business-patterns/shared.tsx",
+    ".agents/skills/yss-prototype-stage/assets/shadcn-authoring/registry-manifest.json",
+    ".template-source/profile-skill-sync.json",
+    ".template-spec/design/design.md",
+    ".template-spec/design/README.md",
+    ".template-spec/design/templates/prototype-evidence-template.yaml"
+  ],
+  "runner_correction": ".template-source/evidence/maintenance/2026-09-30-plan-spec-iteration/verify-task-scope.mjs",
+  "dependency_runtime": "local pnpm frozen-lockfile offline install",
+  "original_worktree_modified": false,
+  "additional_backup_inputs": [
+    {
+      "file": "submodules/yss-harness-design-agent/.template-source/tooling/node/pnpm-lock.yaml",
+      "sha256": "827f64ab6d3bdc80110c0505ba78ab576a60541006fc029213704c839e1e544e"
+    },
+    {
+      "file": "submodules/yss-harness-design-agent/.template-source/tooling/node/vendor-entry-yaml.mjs",
+      "sha256": "d1f2d6438eaf82a8674c4252d9907ee4f22ce76a802484aea268da32a64fcd14"
+    },
+    {
+      "file": "submodules/yss-harness-design-agent/.template-source/tooling/node/package.json",
+      "sha256": "4b762b79f02fb9d89a5f4a4523ce52b973a3ca607f6dfb43f031b0aed0add244"
+    },
+    {
+      "file": "submodules/yss-harness-design-agent/.template-source/tooling/node/vendor-entry-xml.mjs",
+      "sha256": "37464d49259eafd3fae7cbe0a54810fb81d80cccda035340957ebc9318c23ed8"
+    },
+    {
+      "file": "submodules/yss-harness-design-agent/.template-source/tooling/node/test/skill-registry.test.mjs",
+      "sha256": "c422b25defb2a6dada2a31f7c8b45d1704e5160561b91d25e7e8a0f6c05193ba"
+    },
+    {
+      "file": "submodules/yss-harness-design-agent/.template-source/tooling/node/test/runtime-contract.test.mjs",
+      "sha256": "3fe2e4015cff3de4a0d98e6c6e6ec472631cfca9aaebb7df0f753c51414b3072"
+    },
+    {
+      "file": "submodules/yss-harness-design-agent/.template-source/tooling/node/test/digital-human-roles.test.mjs",
+      "sha256": "f1ed3826f268a8008ffedb537f2aaba9f072c86660f7d5d67371759f953d70fc"
+    },
+    {
+      "file": "submodules/yss-harness-design-agent/.template-source/tooling/node/test/design-md.test.mjs",
+      "sha256": "6344c861be7aa09969c45d262f83f6588ef4ba68eb239924f762f5c8e858dfeb"
+    },
+    {
+      "file": "submodules/yss-harness-design-agent/.template-source/tooling/node/test/harness-skill-scope.test.mjs",
+      "sha256": "6aa01738379c36f407faa197e33e04214ef57260c1e1a6034938a4f04e172186"
+    },
+    {
+      "file": "submodules/yss-harness-design-agent/.template-source/tooling/node/test/skill-supply-chain.test.mjs",
+      "sha256": "24247ed1ef123894d859fad04eff0fe337a2821588abb9f960c5d08bedea2bf8"
+    },
+    {
+      "file": "submodules/yss-harness-design-agent/.template-source/tooling/node/scripts/build-vendor.mjs",
+      "sha256": "8d084a1c00f7042d8092096b27fe9f19aaf11f0d17e0dab386ba4841d9b31d19"
+    },
+    {
+      "file": "submodules/yss-harness-design-agent/.template-source/tooling/node/scripts/design-md.mjs",
+      "sha256": "dbac2e909ceb18b910dddabfdfa930c78b23991cccb8e56c7f35b61960ea249a"
+    },
+    {
+      "file": "submodules/yss-harness-frontend-agent/.template-source/tooling/node/pnpm-lock.yaml",
+      "sha256": "827f64ab6d3bdc80110c0505ba78ab576a60541006fc029213704c839e1e544e"
+    },
+    {
+      "file": "submodules/yss-harness-frontend-agent/.template-source/tooling/node/vendor-entry-yaml.mjs",
+      "sha256": "d1f2d6438eaf82a8674c4252d9907ee4f22ce76a802484aea268da32a64fcd14"
+    },
+    {
+      "file": "submodules/yss-harness-frontend-agent/.template-source/tooling/node/package.json",
+      "sha256": "47f7c0c0e75c4ea283850b1bf56be66af02fc5528fed4b6f8b6f9746e35e8dc2"
+    },
+    {
+      "file": "submodules/yss-harness-frontend-agent/.template-source/tooling/node/vendor-entry-xml.mjs",
+      "sha256": "37464d49259eafd3fae7cbe0a54810fb81d80cccda035340957ebc9318c23ed8"
+    },
+    {
+      "file": "submodules/yss-harness-frontend-agent/.template-source/tooling/node/test/openapi-wire-source.test.mjs",
+      "sha256": "665fa8269bcd60f11a85e63d4c7ee0fb10d98e04e5954884b42fb04f74befa9a"
+    },
+    {
+      "file": "submodules/yss-harness-frontend-agent/.template-source/tooling/node/test/skill-registry.test.mjs",
+      "sha256": "941d35f685c75ee4fd37801556feb979badb9d1879d807533b022ca1ce7c848c"
+    },
+    {
+      "file": "submodules/yss-harness-frontend-agent/.template-source/tooling/node/test/runtime-contract.test.mjs",
+      "sha256": "da7dbeef1a0a97c10f85fba86ea453d1060efbfd52284646dedac132175210ac"
+    },
+    {
+      "file": "submodules/yss-harness-frontend-agent/.template-source/tooling/node/test/digital-human-roles.test.mjs",
+      "sha256": "fa84daf7f80103616bad6f27122296c0bc12ff9199058e2df5c353d6c44c604f"
+    },
+    {
+      "file": "submodules/yss-harness-frontend-agent/.template-source/tooling/node/test/design-md.test.mjs",
+      "sha256": "6344c861be7aa09969c45d262f83f6588ef4ba68eb239924f762f5c8e858dfeb"
+    },
+    {
+      "file": "submodules/yss-harness-frontend-agent/.template-source/tooling/node/test/harness-skill-scope.test.mjs",
+      "sha256": "a57c6dca59911e46ff470009c2cbe41614126c151045293168387b2b15f19931"
+    },
+    {
+      "file": "submodules/yss-harness-frontend-agent/.template-source/tooling/node/test/skill-supply-chain.test.mjs",
+      "sha256": "24247ed1ef123894d859fad04eff0fe337a2821588abb9f960c5d08bedea2bf8"
+    },
+    {
+      "file": "submodules/yss-harness-frontend-agent/.template-source/tooling/node/scripts/build-vendor.mjs",
+      "sha256": "8d084a1c00f7042d8092096b27fe9f19aaf11f0d17e0dab386ba4841d9b31d19"
+    },
+    {
+      "file": "submodules/yss-harness-frontend-agent/.template-source/tooling/node/scripts/design-md.mjs",
+      "sha256": "dbac2e909ceb18b910dddabfdfa930c78b23991cccb8e56c7f35b61960ea249a"
+    },
+    {
+      "file": "submodules/yss-harness-backend-agent/.template-source/tooling/node/pnpm-lock.yaml",
+      "sha256": "827f64ab6d3bdc80110c0505ba78ab576a60541006fc029213704c839e1e544e"
+    },
+    {
+      "file": "submodules/yss-harness-backend-agent/.template-source/tooling/node/vendor-entry-yaml.mjs",
+      "sha256": "d1f2d6438eaf82a8674c4252d9907ee4f22ce76a802484aea268da32a64fcd14"
+    },
+    {
+      "file": "submodules/yss-harness-backend-agent/.template-source/tooling/node/package.json",
+      "sha256": "47f7c0c0e75c4ea283850b1bf56be66af02fc5528fed4b6f8b6f9746e35e8dc2"
+    },
+    {
+      "file": "submodules/yss-harness-backend-agent/.template-source/tooling/node/vendor-entry-xml.mjs",
+      "sha256": "37464d49259eafd3fae7cbe0a54810fb81d80cccda035340957ebc9318c23ed8"
+    },
+    {
+      "file": "submodules/yss-harness-backend-agent/.template-source/tooling/node/test/skill-registry.test.mjs",
+      "sha256": "09ab056f0cbd4a3ab75b39810eb12da46d9b812421235c15bfbe52459b34ed29"
+    },
+    {
+      "file": "submodules/yss-harness-backend-agent/.template-source/tooling/node/test/runtime-contract.test.mjs",
+      "sha256": "fc9722f9bd0b222d81ca199ea7d1038422ac6241392091d2c950f0ce749d8d91"
+    },
+    {
+      "file": "submodules/yss-harness-backend-agent/.template-source/tooling/node/test/digital-human-roles.test.mjs",
+      "sha256": "66f00356701146f5f01dba23d2b1d2a2f52024f2db70c4606d520be3abe9bb4e"
+    },
+    {
+      "file": "submodules/yss-harness-backend-agent/.template-source/tooling/node/test/harness-skill-scope.test.mjs",
+      "sha256": "a57c6dca59911e46ff470009c2cbe41614126c151045293168387b2b15f19931"
+    },
+    {
+      "file": "submodules/yss-harness-backend-agent/.template-source/tooling/node/test/skill-supply-chain.test.mjs",
+      "sha256": "c783dfe8dde6cc8bb214d0b51fba6a05917c21d866c98bb1c523e61e62d07c2a"
+    },
+    {
+      "file": "submodules/yss-harness-backend-agent/.template-source/tooling/node/scripts/build-vendor.mjs",
+      "sha256": "8d084a1c00f7042d8092096b27fe9f19aaf11f0d17e0dab386ba4841d9b31d19"
+    }
+  ]
+}

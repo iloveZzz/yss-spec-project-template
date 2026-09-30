@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "kind": "maintenance-research-verification",
+  "inputs": {
+    "brief": {
+      "ref": ".template-source/evidence/maintenance/2026-09-30-plan-spec-research/plan-spec-research-brief.md",
+      "digest": "sha256:fd3c7605ec3cabf263b7125cab72862d7dd93d556f365636478223866d363f62"
+    },
+    "evidence": {
+      "ref": ".template-source/evidence/maintenance/2026-09-30-plan-spec-research/plan-spec-evidence.yaml",
+      "digest": "sha256:3fc71b732d32a460706b90ab4b9c309f62cf7176a31eb93b5c338836bed05f6b"
+    },
+    "validator": {
+      "ref": ".agents/skills/yss-research/scripts/validate-research-package.mjs",
+      "digest": "sha256:5e4e437d54e67cce9dd380974744605bd149c71939c5f01e3ea4719c79911d0f"
+    }
+  },
+  "command": [
+    "node",
+    ".agents/skills/yss-research/scripts/validate-research-package.mjs",
+    ".template-source/evidence/maintenance/2026-09-30-plan-spec-research/plan-spec-research-brief.md",
+    ".template-source/evidence/maintenance/2026-09-30-plan-spec-research/plan-spec-evidence.yaml"
+  ],
+  "started_at": "2026-09-30T02:25:52.947Z",
+  "completed_at": "2026-09-30T02:25:52.978Z",
+  "exit_code": 0,
+  "stdout": {
+    "ref": ".template-source/evidence/maintenance/2026-09-30-plan-spec-research/verification/stdout.log",
+    "digest": "sha256:974cb5c8ac8cc33a3b0d01dec4a00f76c68fae3d02b684c9604eca2dabb3479d"
+  },
+  "stderr": {
+    "ref": ".template-source/evidence/maintenance/2026-09-30-plan-spec-research/verification/stderr.log",
+    "digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

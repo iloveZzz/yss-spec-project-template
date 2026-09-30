@@ -45,3 +45,7 @@ schema v1 战术合同只按 DDD 显式兼容读取；使用 `--legacy-ddd`，�
 ## 后端脚手架平台承接
 
 消费生命周期已确认的架构与 `platform_configuration` v2；不得自行选择、批准或静默升级 Boot/Java。平台清单执行 `scripts/backend-platforms` 查询；只允许已验证 YSS 组合，新生成缺少配置或证据即阻断。决定、合同、Manifest 与下游架构身份须绑定同一平台及兼容摘要。详见 仓库共享合同 `.template-spec/engineering/backend-platforms.md`。
+
+## 业务拆分输入
+
+按 `.template-spec/process/business-tickets.md` 执行 Spec 业务草案、Design 校准与业务正式化。业务票放在 `business-tickets/`，集合引用进入 Spec / map / checkpoint；业务票不授予实现资格。实现票仍在 `issues/`，受工程准备、当前 Slice 合同批准和完整就绪检查约束。 核验业务票与原 FR/AC、适用规则和场景对应关系。可在技术分析中起草实现 Slice；既有工程事实须当前核验，新工程按批准的脚手架合同生成机械骨架。工程前置未闭合时保持待满足，不把它写为 not-applicable。

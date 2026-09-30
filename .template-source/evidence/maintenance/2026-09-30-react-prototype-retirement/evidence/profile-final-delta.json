@@ -1,0 +1,38 @@
+[
+  {
+    "profile": "design",
+    "path": ".agents/skills/yss-prototype-stage/tests/components-browser.mjs",
+    "before": "57402b4a77b181095b2202e6b69dd981c9435ee5f992b468f56890ce2dd53a7e",
+    "after": "57402b4a77b181095b2202e6b69dd981c9435ee5f992b468f56890ce2dd53a7e"
+  },
+  {
+    "profile": "design",
+    "path": ".agents/skills/yss-prototype-stage/tests/compact-theme-browser.mjs",
+    "before": "17fd8f2574c5ada3c37988c0e9c68a6e3b6b51c5bb771dd35375aade5009b497",
+    "after": "17fd8f2574c5ada3c37988c0e9c68a6e3b6b51c5bb771dd35375aade5009b497"
+  },
+  {
+    "profile": "design",
+    "path": ".agents/skills/yss-prototype-stage/assets/shadcn-vue-authoring/theme.css",
+    "before": "a60cba9503ff30b22c0538bec00229eca57fa52df7dec6928056a3c126083106",
+    "after": "62f67ae55039aed5844db9ba6baa0056885369240b0bfebe150f9ecbc7b38dd7"
+  },
+  {
+    "profile": "frontend",
+    "path": ".agents/skills/yss-prototype-stage/tests/components-browser.mjs",
+    "before": "57402b4a77b181095b2202e6b69dd981c9435ee5f992b468f56890ce2dd53a7e",
+    "after": "57402b4a77b181095b2202e6b69dd981c9435ee5f992b468f56890ce2dd53a7e"
+  },
+  {
+    "profile": "frontend",
+    "path": ".agents/skills/yss-prototype-stage/tests/compact-theme-browser.mjs",
+    "before": "17fd8f2574c5ada3c37988c0e9c68a6e3b6b51c5bb771dd35375aade5009b497",
+    "after": "17fd8f2574c5ada3c37988c0e9c68a6e3b6b51c5bb771dd35375aade5009b497"
+  },
+  {
+    "profile": "frontend",
+    "path": ".agents/skills/yss-prototype-stage/assets/shadcn-vue-authoring/theme.css",
+    "before": "a60cba9503ff30b22c0538bec00229eca57fa52df7dec6928056a3c126083106",
+    "after": "62f67ae55039aed5844db9ba6baa0056885369240b0bfebe150f9ecbc7b38dd7"
+  }
+]

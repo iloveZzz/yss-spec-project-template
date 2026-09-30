@@ -1,0 +1,40 @@
+{
+  "created_at": "2026-09-29T13:16:18.869122+00:00",
+  "native_evaluation_status": "cancelled-by-user",
+  "files": [
+    {
+      "path": "/Users/zhudaoming/.codex/artifacts/yss-skills-full-2026-09-29/full-scenarios-closed.json",
+      "sha256": "51a4cce76e8a577e7cce9344533b94772698ca16a68f712d9d5a706285d7e8f7"
+    },
+    {
+      "path": "/Users/zhudaoming/.codex/artifacts/yss-skills-full-2026-09-29/invocation-scenarios-v3-closed.json",
+      "sha256": "2c5f5d7258b107f32a43c7104f07021ed20784c678d630851eae7e1a8bc3f165"
+    },
+    {
+      "path": "/Users/zhudaoming/.codex/artifacts/yss-skills-full-2026-09-29/lifecycle-scenarios-v2-closed.json",
+      "sha256": "7e6911ca3764bc64780ee0ba89f64bd59a5e14e7365ecabeab098ca7e2a9d360"
+    },
+    {
+      "path": "/Users/zhudaoming/.codex/artifacts/yss-skills-full-2026-09-29/boundaries-scenarios-closed.json",
+      "sha256": "6b5f599073fc0349c51d585da73e0477e1ccb65ebbe3268f0a716cf54316199e"
+    },
+    {
+      "path": "/Users/zhudaoming/.codex/artifacts/yss-skills-full-2026-09-29/pi-boundaries-scenarios-closed.json",
+      "sha256": "69d1373878e70ce89c7a2a056b3dcf3576c670c498767000ac8b151f0d7bdc95"
+    },
+    {
+      "path": "/Users/zhudaoming/.codex/artifacts/yss-skills-full-2026-09-29/lifecycle-offline-v2-validation.json",
+      "sha256": "c8817864ab0e6f9dbca3d2756f8fd80136b9998e850bea355c7ef37a1fed9fff"
+    },
+    {
+      "path": "/Users/zhudaoming/.codex/artifacts/yss-skills-full-2026-09-29/evaluation-cancellation-summary.json",
+      "sha256": "b46455b12ccb9a6e223f78e552eabced333bdeeb5047b37b7f51a093b59e833f"
+    }
+  ],
+  "limitations": [
+    "426 cases prepared does not establish scenario validity or complete semantic review",
+    "Source-index near-negative incorrectly prohibits useful read-only source consultation; invalid negative, not a Skill behavior failure",
+    "Lifecycle v2 fixture passes offline checkpoint validation; no final paired native run after cancellation",
+    "Invocation v3 protects unrelated Git index blobs; paired native runs cancelled"
+  ]
+}

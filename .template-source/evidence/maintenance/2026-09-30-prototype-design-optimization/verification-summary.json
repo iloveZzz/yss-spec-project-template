@@ -1,0 +1,51 @@
+{
+  "status": "blocked",
+  "target": "implementation-ready",
+  "specialized": {
+    "status": "passed",
+    "contract_tests": 22,
+    "browser_records": 234,
+    "source_digest": "sha256:33c41f30592bb5deda3c2d65e06e0c863059a3a8986ef99262e3c13623788304",
+    "package_digest": "sha256:ec7624897f816430eef75cfe5aa1b4367f42ae357ca141266d5a124f49db5359"
+  },
+  "packaged_browser_records": {
+    "spec": 90,
+    "design": 90,
+    "frontend": 90
+  },
+  "additional_timezone_browser_records": 72,
+  "supplemental_checks": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-design-opt-20260930-jlcnh890/fixed-supplemental-checks.json",
+  "full": {
+    "status": "failed",
+    "report": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-design-opt-20260930-jlcnh890/template-fixed-01/report.json",
+    "passed_command_results": 102,
+    "failed_command_results": 1,
+    "input_drift": false,
+    "unexecuted": [
+      {
+        "id": "check.1f905d7e659c8525",
+        "command": "node scripts/verify-template-verification-scenarios",
+        "reason": "failure-or-interruption"
+      },
+      {
+        "id": "check.e970cf29c7cd81e3",
+        "command": "node scripts/verify-template-cache-scenarios",
+        "reason": "failure-or-interruption"
+      },
+      {
+        "id": "check.af45fd40af913057",
+        "command": "node --test .template-source/scripts/tests/template-ci.test.mjs",
+        "reason": "failure-or-interruption"
+      },
+      {
+        "id": "check.verification-selection",
+        "command": "node --test tests/verification-selection.test.mjs tests/verification-report.test.mjs",
+        "reason": "failure-or-interruption"
+      }
+    ]
+  },
+  "human_visual_approval": "not-performed",
+  "screen_reader": "not-performed",
+  "user_and_agent_trial": "not-performed",
+  "commit_push_publish_migration": "not-performed"
+}

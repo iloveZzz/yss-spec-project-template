@@ -1,0 +1,427 @@
+{
+  "task": "approval-permission",
+  "side": "B",
+  "status": "inspected-partial-output",
+  "html_sha256": "b4e43d9e4b31969a5bc4be44a59da8d7954c17a336e9a40c880837e0d1585e91",
+  "browser": "151.0.7922.34",
+  "delivery": "file:// offline=true",
+  "turn_completed": false,
+  "missing_resources": [
+    "tokens.css",
+    "contract-tokens.css",
+    "scenarios.js",
+    "app.js"
+  ],
+  "observations": [
+    {
+      "scene": "primary",
+      "width": 1440,
+      "height": 900,
+      "text": "跳到资料核对\n低保真候选 · 尚未选择\n预览方案\nA · 逐项队列\nB · 核对列表\nC · 按阻断分组\n初始场景\n审核员 · 可确认\n观察员 · 只读\n重置场景\n候选比较与建议：优先评估 B；预览不代表选择\n\n审批与权限 / 资料核对\n\n资料核对\n\n逐项核对或选择多项确认，缺负责人项需先补充负责人。\n\n固定资料快照 · 2026-09-29\n\n设计草案：所有确认仅在当前页面模拟，重置后恢复；不产生真实审批。\n\n选择全部未确认项\n清空选择\n确认所选\n\n核对数、错误数按给定资料展示；错误数是否阻断确认尚未定义，本草案不据此增加阻断规则。\n\n三案均为待比较草案 · 浏览器验收未完成",
+      "overflow": false,
+      "body_attributes": {
+        "data-default-variant": "a"
+      },
+      "controls": [
+        {
+          "tag": "SELECT",
+          "id": "variant",
+          "text": "A · 逐项队列\nB · 核对列表\nC · 按阻断分组",
+          "disabled": false,
+          "value": "a"
+        },
+        {
+          "tag": "SELECT",
+          "id": "scenario",
+          "text": "审核员 · 可确认\n观察员 · 只读",
+          "disabled": false,
+          "value": "primary"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "reset",
+          "text": "重置场景",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "INPUT",
+          "id": "select-all",
+          "text": "",
+          "disabled": false,
+          "readOnly": false,
+          "value": "on"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "clear-selection",
+          "text": "清空选择",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "batch-confirm",
+          "text": "确认所选",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "关闭",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "返回资料",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "取消，继续核对",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "commit-confirm",
+          "text": "确认",
+          "disabled": false,
+          "value": ""
+        }
+      ],
+      "focus": {
+        "tag": "A",
+        "id": "",
+        "outline": "none"
+      },
+      "reset": "not-tested",
+      "issues": [
+        {
+          "type": "requestfailed",
+          "url": "file:///Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-29-prototype-design-enhancement/pilot/ab/approval-permission/B/tokens.css",
+          "failure": {
+            "errorText": "net::ERR_FILE_NOT_FOUND"
+          }
+        },
+        {
+          "type": "error",
+          "message": "Failed to load resource: net::ERR_FILE_NOT_FOUND"
+        },
+        {
+          "type": "requestfailed",
+          "url": "file:///Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-29-prototype-design-enhancement/pilot/ab/approval-permission/B/contract-tokens.css",
+          "failure": {
+            "errorText": "net::ERR_FILE_NOT_FOUND"
+          }
+        },
+        {
+          "type": "error",
+          "message": "Failed to load resource: net::ERR_FILE_NOT_FOUND"
+        },
+        {
+          "type": "requestfailed",
+          "url": "file:///Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-29-prototype-design-enhancement/pilot/ab/approval-permission/B/scenarios.js",
+          "failure": {
+            "errorText": "net::ERR_FILE_NOT_FOUND"
+          }
+        },
+        {
+          "type": "error",
+          "message": "Failed to load resource: net::ERR_FILE_NOT_FOUND"
+        },
+        {
+          "type": "requestfailed",
+          "url": "file:///Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-29-prototype-design-enhancement/pilot/ab/approval-permission/B/app.js",
+          "failure": {
+            "errorText": "net::ERR_FILE_NOT_FOUND"
+          }
+        },
+        {
+          "type": "error",
+          "message": "Failed to load resource: net::ERR_FILE_NOT_FOUND"
+        }
+      ],
+      "screenshot": "primary-1440.png"
+    },
+    {
+      "scene": "no-permission",
+      "width": 1440,
+      "height": 900,
+      "text": "跳到资料核对\n低保真候选 · 尚未选择\n预览方案\nA · 逐项队列\nB · 核对列表\nC · 按阻断分组\n初始场景\n审核员 · 可确认\n观察员 · 只读\n重置场景\n候选比较与建议：优先评估 B；预览不代表选择\n\n审批与权限 / 资料核对\n\n资料核对\n\n逐项核对或选择多项确认，缺负责人项需先补充负责人。\n\n固定资料快照 · 2026-09-29\n\n设计草案：所有确认仅在当前页面模拟，重置后恢复；不产生真实审批。\n\n选择全部未确认项\n清空选择\n确认所选\n\n核对数、错误数按给定资料展示；错误数是否阻断确认尚未定义，本草案不据此增加阻断规则。\n\n三案均为待比较草案 · 浏览器验收未完成",
+      "overflow": false,
+      "body_attributes": {
+        "data-default-variant": "a"
+      },
+      "controls": [
+        {
+          "tag": "SELECT",
+          "id": "variant",
+          "text": "A · 逐项队列\nB · 核对列表\nC · 按阻断分组",
+          "disabled": false,
+          "value": "a"
+        },
+        {
+          "tag": "SELECT",
+          "id": "scenario",
+          "text": "审核员 · 可确认\n观察员 · 只读",
+          "disabled": false,
+          "value": "primary"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "reset",
+          "text": "重置场景",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "INPUT",
+          "id": "select-all",
+          "text": "",
+          "disabled": false,
+          "readOnly": false,
+          "value": "on"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "clear-selection",
+          "text": "清空选择",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "batch-confirm",
+          "text": "确认所选",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "关闭",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "返回资料",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "取消，继续核对",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "commit-confirm",
+          "text": "确认",
+          "disabled": false,
+          "value": ""
+        }
+      ],
+      "focus": {
+        "tag": "SELECT",
+        "id": "variant",
+        "outline": "none"
+      },
+      "reset": "not-tested",
+      "issues": [],
+      "screenshot": "no-permission-1440.png"
+    },
+    {
+      "scene": "primary",
+      "width": 390,
+      "height": 844,
+      "text": "跳到资料核对\n低保真候选 · 尚未选择\n预览方案\nA · 逐项队列\nB · 核对列表\nC · 按阻断分组\n初始场景\n审核员 · 可确认\n观察员 · 只读\n重置场景\n候选比较与建议：优先评估 B；预览不代表选择\n\n审批与权限 / 资料核对\n\n资料核对\n\n逐项核对或选择多项确认，缺负责人项需先补充负责人。\n\n固定资料快照 · 2026-09-29\n\n设计草案：所有确认仅在当前页面模拟，重置后恢复；不产生真实审批。\n\n选择全部未确认项\n清空选择\n确认所选\n\n核对数、错误数按给定资料展示；错误数是否阻断确认尚未定义，本草案不据此增加阻断规则。\n\n三案均为待比较草案 · 浏览器验收未完成",
+      "overflow": false,
+      "body_attributes": {
+        "data-default-variant": "a"
+      },
+      "controls": [
+        {
+          "tag": "SELECT",
+          "id": "variant",
+          "text": "A · 逐项队列\nB · 核对列表\nC · 按阻断分组",
+          "disabled": false,
+          "value": "a"
+        },
+        {
+          "tag": "SELECT",
+          "id": "scenario",
+          "text": "审核员 · 可确认\n观察员 · 只读",
+          "disabled": false,
+          "value": "primary"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "reset",
+          "text": "重置场景",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "INPUT",
+          "id": "select-all",
+          "text": "",
+          "disabled": false,
+          "readOnly": false,
+          "value": "on"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "clear-selection",
+          "text": "清空选择",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "batch-confirm",
+          "text": "确认所选",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "关闭",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "返回资料",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "取消，继续核对",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "commit-confirm",
+          "text": "确认",
+          "disabled": false,
+          "value": ""
+        }
+      ],
+      "focus": {
+        "tag": "SELECT",
+        "id": "scenario",
+        "outline": "none"
+      },
+      "reset": "not-tested",
+      "issues": [],
+      "screenshot": "primary-390.png"
+    },
+    {
+      "scene": "no-permission",
+      "width": 390,
+      "height": 844,
+      "text": "跳到资料核对\n低保真候选 · 尚未选择\n预览方案\nA · 逐项队列\nB · 核对列表\nC · 按阻断分组\n初始场景\n审核员 · 可确认\n观察员 · 只读\n重置场景\n候选比较与建议：优先评估 B；预览不代表选择\n\n审批与权限 / 资料核对\n\n资料核对\n\n逐项核对或选择多项确认，缺负责人项需先补充负责人。\n\n固定资料快照 · 2026-09-29\n\n设计草案：所有确认仅在当前页面模拟，重置后恢复；不产生真实审批。\n\n选择全部未确认项\n清空选择\n确认所选\n\n核对数、错误数按给定资料展示；错误数是否阻断确认尚未定义，本草案不据此增加阻断规则。\n\n三案均为待比较草案 · 浏览器验收未完成",
+      "overflow": false,
+      "body_attributes": {
+        "data-default-variant": "a"
+      },
+      "controls": [
+        {
+          "tag": "SELECT",
+          "id": "variant",
+          "text": "A · 逐项队列\nB · 核对列表\nC · 按阻断分组",
+          "disabled": false,
+          "value": "a"
+        },
+        {
+          "tag": "SELECT",
+          "id": "scenario",
+          "text": "审核员 · 可确认\n观察员 · 只读",
+          "disabled": false,
+          "value": "primary"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "reset",
+          "text": "重置场景",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "INPUT",
+          "id": "select-all",
+          "text": "",
+          "disabled": false,
+          "readOnly": false,
+          "value": "on"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "clear-selection",
+          "text": "清空选择",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "batch-confirm",
+          "text": "确认所选",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "关闭",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "返回资料",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "取消，继续核对",
+          "disabled": false,
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "commit-confirm",
+          "text": "确认",
+          "disabled": false,
+          "value": ""
+        }
+      ],
+      "focus": {
+        "tag": "BUTTON",
+        "id": "reset",
+        "outline": "none"
+      },
+      "reset": "not-tested",
+      "issues": [],
+      "screenshot": "no-permission-390.png"
+    }
+  ],
+  "behavior_coverage": "unverified; loading a partial page does not prove business behavior"
+}

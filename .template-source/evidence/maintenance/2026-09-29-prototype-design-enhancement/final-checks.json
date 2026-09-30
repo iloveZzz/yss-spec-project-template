@@ -1,0 +1,80 @@
+[
+  {
+    "command": [
+      "scripts/verify-maintenance-checkpoint",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-29-prototype-design-enhancement/checkpoint.json"
+    ],
+    "exit_code": 0,
+    "stdout": "模板维护 checkpoint 验证通过（L3，最低 L3，implementation-ready）\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "scripts/sync-profile-skills",
+      "--check",
+      "--profile=all"
+    ],
+    "exit_code": 0,
+    "stdout": "profile skills: design, backend, frontend\n模式：只读检查\n受影响 profile：无\n已有问题：0 项（含冲突、缺失依赖与未登记差异）\n本次未发现同步差异或问题；不代表项目验证已通过。\n文件差异、分类与 SHA-256 继续使用现有 --json 报告；本摘要不判断下游项目兼容性。\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "scripts/verify-upstream-skill-source",
+      "--source=iloveZzz/yss-harness-design-agent",
+      "--source-root=submodules/yss-harness-design-agent"
+    ],
+    "exit_code": 0,
+    "stdout": "上游 iloveZzz/yss-harness-design-agent@77dcb2e4a1c69b28e42f1fe94dc932a9a469163a 及其 skill hashes 验证通过\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      ".template-source/scripts/evidence-index",
+      "--check"
+    ],
+    "exit_code": 0,
+    "stdout": "证据索引验证通过（complete）\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "diff",
+      "--check",
+      "--",
+      ".agents/skills/yss-prototype-stage/SKILL.md",
+      ".agents/skills/yss-prototype-stage/references/product-design-adapter.md",
+      ".agents/skills/yss-prototype-stage/references/concept-comparison.md",
+      ".agents/skills/yss-prototype-stage/references/comparison-tool.md",
+      ".agents/skills/yss-prototype-stage/references/prototype-profile-routing.md",
+      ".agents/skills/yss-prototype-stage/tests/comparison.test.mjs",
+      ".agents/skills/yss-prototype-stage/tests/run-scenarios.mjs",
+      ".agents/skills/yss-prototype-stage/tests/comparison-fixture.mjs",
+      ".agents/skills/yss-prototype-stage/tests/comparison-browser-smoke.mjs",
+      ".agents/skills/yss-prototype-stage/scripts/offline-html.mjs",
+      ".agents/skills/yss-prototype-stage/scripts/prototype-comparison.mjs",
+      ".agents/skills/yss-prototype-stage/assets/comparison/index.html",
+      ".agents/skills/yss-prototype-stage/assets/comparison/comparison.css",
+      ".agents/skills/yss-prototype-stage/assets/comparison/review-ready.js",
+      ".agents/skills/yss-prototype-stage/assets/comparison/comparison.js",
+      ".agents/skills/yss-design-system/SKILL.md",
+      ".agents/skills/yss-design-system/references/enterprise-craft.md",
+      ".agents/skills/yss-design-system/scripts/export-craft-examples.mjs",
+      ".agents/skills/yss-design-system/assets/enterprise-craft/index.html",
+      ".agents/skills/yss-design-system/assets/enterprise-craft/styles.css",
+      ".agents/skills/yss-design-system/assets/enterprise-craft/scenarios.js",
+      ".agents/skills/yss-design-system/assets/enterprise-craft/app.js",
+      ".agents/skills/prototype-review/SKILL.md",
+      ".template-spec/design/templates/interaction-spec-template.md",
+      ".template-spec/design/templates/prototype-review-checklist.md",
+      ".agents/skills/.strategic-design-skills-manifest.json",
+      ".template-source/profile-skill-sync.json",
+      ".template-source/agents/strategic-design-skills-integration.md",
+      "skills-lock.json"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  }
+]

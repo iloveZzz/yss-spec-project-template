@@ -1,0 +1,27 @@
+{
+  "task_id": "skills-optimization-calibration",
+  "work_unit": "template-maintenance-evaluation",
+  "contract": "synthetic-fixture-only; not a lifecycle handoff",
+  "actor": "isolated-evaluation-runtime",
+  "runtime_ids": [
+    "codex",
+    "cursor",
+    "pi"
+  ],
+  "execution_state": "Explorer",
+  "coordinator": "current-thread-main",
+  "input_sources": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-skills-implementation-w6dd3k2z/evaluation-sources",
+  "allowed_write_paths": [],
+  "forbidden": [
+    "real Git mutation",
+    "user configuration changes",
+    "outside fixture reads by the model",
+    "network or installed-package actions by model",
+    "treat synthetic data as approval"
+  ],
+  "max_attempts": 24,
+  "max_agent_seconds": 2700,
+  "per_turn_seconds": 300,
+  "result_consumer": "main maintainer semantic review",
+  "formal_lifecycle_task_package": "not-applicable: no lifecycle work unit dispatched"
+}

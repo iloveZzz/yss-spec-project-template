@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "status": "failed",
+  "exit_code": 1,
+  "exit_policy": "strict",
+  "semantic_review": "pending",
+  "planned_scenarios": 1,
+  "scenario_records": 1,
+  "passed_scenarios": 0,
+  "failed_scenarios": 1,
+  "unattempted_scenarios": [],
+  "unattempted_steps": [],
+  "stop_reason": null,
+  "budget": {
+    "max_turns": 14,
+    "max_seconds": 12600.0,
+    "shared_ledger": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-reliability-lj22xn8m/pilot-budget.json",
+    "attempted_turns": 1,
+    "elapsed_seconds": 620.34
+  },
+  "completed_turns": 1,
+  "usage_unreported_turns": 0,
+  "reported_usage": {
+    "input_tokens": 1469767,
+    "cached_input_tokens": 1368832,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 18358,
+    "reasoning_output_tokens": 4943
+  },
+  "money": null,
+  "limits": [
+    "Automatic checks only; semantic review still required",
+    "Cached input is part of input; absent usage is unknown, not zero",
+    "Deadline bounds Agent timeouts; fixture setup, scoring and cleanup may exceed the window"
+  ]
+}

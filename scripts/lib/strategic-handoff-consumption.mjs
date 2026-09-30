@@ -47,7 +47,7 @@ export async function verifyConsumption(data,{root=process.cwd(),sliceRef,consum
       }
       for(const term of current.handoff.context_delta.deprecated)ensure(!context.terms_by_ref.has(term.term_ref),`目标尚未处理废弃术语: ${term.term_ref}`);
       ensure(Array.isArray(binding.rows),'缺少逐条承接 rows');
-      const known=new Map([...current.indexes.rules.map(x=>[x.rule_id,x]),...current.indexes.scenarios.filter(x=>x.critical).map(x=>[x.scenario_id,x])]);
+      const known=new Map([...current.indexes.rules.map(x=>[x.rule_id,x]),...current.indexes.scenarios.filter(x=>x.critical).map(x=>[x.scenario_id,x]),...(current.business?.tickets||[]).map(x=>[x.id,x])]);
       const rows=new Map();for(const row of binding.rows){ensure(!rows.has(row.source_id),`重复承接: ${row.source_id}`);rows.set(row.source_id,row);}
       const issues=[], blocked=new Set();let all=false;
       const mark=(id,reason,row)=>{issues.push({source_id:id,reason});if(row?.dependency_status!=='known'||!list(row.dependent_slice_refs))all=true;else row.dependent_slice_refs.forEach(x=>blocked.add(x));};
@@ -75,8 +75,20 @@ export async function verifyConsumption(data,{root=process.cwd(),sliceRef,consum
           ensure(present(row.reason)&&list(row.evidence_refs),`不适用缺少依据: ${id}`);row.evidence_refs.forEach(ref=>safe(root,ref));
         }else {ensure(['pending','conflict'].includes(row.disposition),`非法承接状态: ${id}`);mark(id,row.disposition,row);}
       }
+      for(const ticket of current.business?.tickets||[]) {
+        const row=rows.get(ticket.id);
+        for(const source of ticket.source_refs||[])if(known.has(source.locator)) {
+          const mapped=rows.get(source.locator);
+          if(!row||row.dependency_status!=='known'||!mapped||mapped.dependency_status!=='known'||!row.dependent_slice_refs?.every(ref=>mapped.dependent_slice_refs?.includes(ref)))mark(ticket.id,'business-rule-scenario-dependency-incomplete',row);
+        }
+      }
       for(const[id,row]of rows)if(!known.has(id))mark(id,'removed-or-unknown-source',row);
-      for(const key of new Set(['spec_ref','business_ticket_set_ref',...uiBaselineSourceKeys(original.handoff),...uiBaselineSourceKeys(current.handoff)]))if(original.handoff.source[key]?.digest!==current.handoff.source[key]?.digest){all=true;issues.push({source_id:key,reason:'upstream-asset-stale'});}
+      if(current.business && original.business) {
+        const before=new Map(original.business.tickets.map(t=>[t.id,t.source_digest]));
+        for(const ticket of current.business.tickets)if(before.get(ticket.id)!==ticket.source_digest)mark(ticket.id,'business-ticket-stale',rows.get(ticket.id));
+        if(digest(current.business.coverage_deferred)!==digest(original.business.coverage_deferred)){all=true;issues.push({source_id:'business-ticket-coverage',reason:'deferred-scope-stale'});}
+      }
+      for(const key of new Set(['spec_ref','business_ticket_set_ref',...uiBaselineSourceKeys(original.handoff),...uiBaselineSourceKeys(current.handoff)]))if(!(key==='business_ticket_set_ref'&&current.business&&original.business)&&original.handoff.source[key]?.digest!==current.handoff.source[key]?.digest){all=true;issues.push({source_id:key,reason:'upstream-asset-stale'});}
       // Rule changes can be scoped to declared dependencies. Boundary/decision or
       // runnable-prototype changes need the tactical contract rebound as a whole.
       const stageKeys=['package_version','approval','domain_strategy_ref'];

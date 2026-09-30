@@ -1,0 +1,70 @@
+{
+  "successful_read_commands": [
+    {
+      "command": "/bin/zsh -lc 'cat yss-project.yaml CONTEXT.md DESIGN.md fixture/brief.md fixture/data.json .agents/skills/yss-prototype-stage/SKILL.md .agents/skills/yss-design-system/SKILL.md'",
+      "paths": [
+        ".agents/skills/yss-design-system/SKILL.md",
+        ".agents/skills/yss-prototype-stage/SKILL.md"
+      ]
+    },
+    {
+      "command": "/bin/zsh -lc 'cat fixture/brief.md fixture/data.json DESIGN.md'",
+      "paths": []
+    },
+    {
+      "command": "/bin/zsh -lc 'cat .agents/skills/yss-prototype-stage/SKILL.md .template-spec/process/document-writing.md .agents/skills/yss-design-system/references/enterprise-craft.md .agents/skills/yss-design-system/references/design-system.md'",
+      "paths": [
+        ".agents/skills/yss-design-system/references/design-system.md",
+        ".agents/skills/yss-design-system/references/enterprise-craft.md",
+        ".agents/skills/yss-prototype-stage/SKILL.md"
+      ]
+    },
+    {
+      "command": "/bin/zsh -lc 'cat .template-spec/design/design.md .agents/skills/yss-prototype-stage/references/concept-comparison.md .agents/skills/yss-prototype-stage/references/prototype-profile-routing.md .agents/skills/yss-prototype-stage/references/product-design-adapter.md'",
+      "paths": [
+        ".agents/skills/yss-prototype-stage/references/concept-comparison.md",
+        ".agents/skills/yss-prototype-stage/references/product-design-adapter.md",
+        ".agents/skills/yss-prototype-stage/references/prototype-profile-routing.md"
+      ]
+    },
+    {
+      "command": "/bin/zsh -lc 'cat .agents/skills/yss-prototype-stage/references/concept-comparison.md .agents/skills/yss-prototype-stage/references/comparison-tool.md .agents/skills/yss-prototype-stage/references/prototype-profile-routing.md'",
+      "paths": [
+        ".agents/skills/yss-prototype-stage/references/comparison-tool.md",
+        ".agents/skills/yss-prototype-stage/references/concept-comparison.md",
+        ".agents/skills/yss-prototype-stage/references/prototype-profile-routing.md"
+      ]
+    },
+    {
+      "command": "/bin/zsh -lc 'cat .agents/skills/yss-prototype-stage/references/product-design-adapter.md'",
+      "paths": [
+        ".agents/skills/yss-prototype-stage/references/product-design-adapter.md"
+      ]
+    },
+    {
+      "command": "/bin/zsh -lc \"sed -n '1,220p' .template-spec/design/design.md\"",
+      "paths": []
+    },
+    {
+      "command": "/bin/zsh -lc 'cat .template-spec/design/tokens/variables.css'",
+      "paths": []
+    },
+    {
+      "command": "/bin/zsh -lc \"mkdir -p drafts && python3 - <<'PY'\nfrom pathlib import Path\nimport re, json, hashlib, shutil\nroot=Path('.')\nout=Path('drafts')\nshutil.copyfile(root/'.template-spec/design/tokens/variables.css',out/'tokens.css')\nshutil.copyfile(root/'fixture/data.json',out/'data.json')\ndata=json.loads((root/'fixture/data.json').read_text())\n(out/'scenarios.js').write_text('/* 给定数据逐值复制；用途未提供，保持空值。 */\\\\nwindow.FIXTURE = '+json.dumps({'records':data,'scenarios':['primary','failure']},ensure_ascii=False,indent=2)+';\\\\n')\n# 从根规范机械提取原始角色；不修改仓库规范或派生快照。\nfront=(root/'DESIGN.md').read_text().split('---')[1]\nsection=''; role=''; pairs=[]\nfor line in front.splitlines():\n    m=re.match(r'\"'^(colors|typography|rounded|spacing|components):$'\"',line)\n    if m: section=m[1]; continue\n    if section not in ['colors','typography','rounded','spacing']: continue\n    m=re.match(r'\"'^  (['\"\\\\w-]+):\\\\s*(.*)\"'$'\"',line)\n    if m:\n        role=m[1]; value=m[2].strip()\n        if value: pairs.append((f'--draft-{section}-{role}',value.strip('\\\\\\\"\\\\'')))\n        continue\n    m=re.match(r'\"'^    (['\"\\\\w-]+):\\\\s*(.+)\"'$'\"',line)\n    if m and section=='typography': pairs.append((f'--draft-{section}-{role}-{m[1]}',m[2].strip().strip('\\\\\\\"\\\\'')))\n(out/'contract-tokens.css').write_text('/* 由根 DESIGN.md 的 colors / typography / rounded / spacing 派生。\\\\n   仅用于本草案，保留 tokens.css 原始副本；规范角色优先。 */\\\\n:root {\\\\n'+''.join(f'  {key}: {value};\\\\n' for key,value in pairs)+'}\\\\n')\nsources=['yss-project.yaml','CONTEXT.md','DESIGN.md','fixture/brief.md','fixture/data.json','.template-spec/design/design.md','.template-spec/design/tokens/variables.css','.agents/skills/yss-prototype-stage/SKILL.md','.agents/skills/yss-design-system/SKILL.md']\n(out/'sources.json').write_text(json.dumps({'kind':'fixture-draft-source-snapshot','approval':False,'sources':{p:hashlib.sha256((root/p).read_bytes()).hexdigest() for p in sources}},ensure_ascii=False,indent=2)+'\\\\n')\nprint('Created local token copies, fixture data, and source digests in drafts/.')\nPY\"",
+      "paths": [
+        ".agents/skills/yss-design-system/SKILL.md",
+        ".agents/skills/yss-prototype-stage/SKILL.md"
+      ]
+    }
+  ],
+  "failed_commands": [
+    {
+      "command": "/bin/zsh -lc \"sed -n '1,150p' .template-spec/process/document-writing.md && tail -n 45 CONTEXT.md && rg --files fixture drafts .template-spec/design/tokens docs/adr\"",
+      "exit_code": 2,
+      "output": "# 研发文档中文写作规范\n\n起草或修订生命周期文档时，先读本规范的共用写法，再按阶段查阅第 3 节；发送进度与会签提示时读取第 4 节。按当前写入范围应用，正文、摘要和结构化信息应保持同一语义。\n\n[Plan、Spec、Ticket 写作对照](../templates/examples/lifecycle-writing-examples.md)提供同一事实输入下的改写样例；示例不构成真实需求或批准。\n\n## 1. 适用范围与保留项\n\n适用于研究结论、Plan、Spec、产品设计说明、工程契约的解释正文、Ticket、审查、发布和复盘。聊天中的进度通知按第 4 节处理。\n\n本文件是生命周期文档的共用写作规范。生命周期身份、门禁、资产所有权、批准和状态由根 `AGENTS.md` 指定的权威资产决定；标准术语消费根 `CONTEXT.md`。本规范约束表达，不新增阶段、审批或业务规则。\n\n写作调整应保留这些内容的原意：主体、触发条件、规则、例外、量词、范围、非目标、数值及单位、证据引用、未决项、责任人、时点和依赖。稳定 ID、API 标识、schema、metadata、版本及批准记录按原合同保存。已经冻结的内容若需要改变行为，应回交资产所有者处理，不作为润色顺手修改。\n\n## 2. 共用写法\n\n### 先回答读者当前需要判断的问题\n\n开头说明业务问题、本次结论或交付行为。必要背景紧接其后，让读者知道结论为什么成立。正式模板要求的 metadata 和身份信息仍保留；表达顺序的建议不能自行覆盖校验器要求的结构。\n\n只在内容较长或需要导航时添加摘要。摘要引用正文，不另写一套范围和状态；维护时检查二者一致。\n\n### 用主体、条件和结果表达需求\n\n把“提升效率”“完善体验”等目标落实到具体场景：谁在什么情况下做什么，系统产生什么可观察结果。保留支持判断的业务动机，不把所有文字都拆成短句或编号。\n\n输入没有规则时，记录待确认问题；不要为了让句子具体而补出时限、阈值、错误码或默认行为。重要缺口交回拥有该决定的工作单元。非阻断细节按既有流程记录责任人、解决时点和接收方。\n\n### 让确定程度与证据一致\n\n事实给出处；推断说明依据；方案使用建议语气；假设写明如何验证。章节开头已明确整段是假设或建议时，无须每句重复标签。\n\n保留表达真实不确定性的“尚未确认”“可能”“取决于”。只有测试失败现象时，报告现象和下一项诊断，不编造原因；只有期望收益时，写目标和验证方法，不写成已实现收益。估算需有执行者、依据、范围和条件；无依据时不填精确工期。\n\n### 让每段承担一项用途\n\n一段解释一个问题、一项规则或一个取舍。顺序动作使用编号；同类规则、状态或选项比较使用表格；因果和取舍使用连贯段落。列表长度、段落数量和总字数按内容决定。\n\n删除只有态度、没有事实或决定的修饰句。技术术语、业务术语和必要限定词保持准确，不使用同义词轮换制造变化。评价文档看它是否明确、可信和可执行，不追求模拟人的口头习惯或降低 AI 检测分数。\n\n### 复用上游事实，交代本阶段新增内容\n\n引用上游规则的可定位位置和必要版本，本阶段写新增细化、适用范围和交接。直接决定本地验收的条件可以在场景中重述，并绑定同一规则 ID；以一致性核验控制漂移。\n\n不要用“详见相关文档”代替必要信息。引用不可读或版本不明时按现有合同处理。条件项只在流程允许时记录带原因的 `not-applicable`；命中的要求和必要异常场景应完整展示。\n\n## 3. 各阶段怎么写\n\n| 阶段 | 正文优先回答 | 本阶段需要写具体的内容 |\n|---|---|---|\n| 研究 | 已知什么，证据支持到哪里？ | 结论与来源、反证、限制分开；建议与事实区分 |\n| Plan | 谁遇到什么问题，本期为什么这样取舍？ | 业务故事、MVP / 非目标、优先级依据、成功标准的确认情况、关键未决项 |\n| Spec | 什么条件下，系统必须怎样表现？ | 规则与验收对应；按影响面覆盖成功、拒绝、边界、状态变化和恢复 |\n| 产品设计 | 用户如何完成任务，失败后如何继续？ | 入口、操作、反馈、状态和恢复路径；引用 Spec，保留设计待确认项 |\n| 工程契约 | 实现必须遵守什么，哪些地方有取舍？ | 精确协议与解释正文配合；标识、版本、范围及约束保持可核验 |\n| Ticket | 本切片交付什么，如何证明完成？ | 窄而完整的行为、依赖、验收、公共测试 seam、当前合同及验证证据 |\n| 审查 | 哪个具体条件下存在什么问题？ | 定位、触发条件、影响、依据与修复建议；推测和已复现问题分开 |\n| 发布 / 复盘 | 验证了什么，还剩什么风险或决定？ | 实际验证范围、未覆盖部分、发布决定或失误机制与改进行动 |\n\n这些指引帮助填写既有模板，不新增必填字段、阶段或门禁。Plan 不提前承诺详细 API 和工程实现；Spec 的例子不代替完整规则；Ticket 不重新设计已冻结行为。\n\n## 4. 进度与会签提示\n\n仅在用户询问状态、阶段切换或出现阻塞时，简短展示四项信息：**当前阶段、当前阻塞、谁处理、下一动作**。可以用一句话或四行表达，不要求表格。普通问题直接回答；其他进度更新只说明本轮有意义的变化，状态未变时不重复整套说明。\n\n状态读取已有 checkpoint 和适用验证结果，不建立或要求用户填写另一套状态文件。未核验的阶段或阻塞情况写“待核验”；只有当前适用证据支持时才能写“无阻塞”。证据过期应明确指出过期输入及恢复动作，不能沿用历史通过结论。责任人按已有登记填写，缺失写“未登记”，不自行指派；下一动作说明如何补齐登记或核验。\n\n默认只展示当前需要处理的事项，证据路径按需展开。查看状态本身不改文件，也不触发全套验证；推进阶段时仍执行原有适用校验。已授权且 Agent 可以完成的动作继续执行，避免把操作转交用户。\n\n请求决定时展示当前版本、推荐方案及理由、实质选项和取舍、风险、批准范围与后续动作，遵守既有用户决定协议。可以突出当前最重要的问题，但所有影响决定的阻塞和选项都应可见。一次回复需要多个相互独立的决定时，分别说明各自影响。\n\n示例：“规则说明已补齐。成功标准仍缺统计口径，负责人需在 Plan 进入 Spec 前确认；当前材料尚不能支持流转。”这类表述需要实际资产支持，不能成为固定的完成话术。\n\n## 5. 起草与修订时的检查\n\n1. 确认文档读者、当前阶段、权威输入和允许改动的范围；区分从事实起草与对既有正文作等义改写。\n2. 起草时按本阶段的问题组织内容；修订时先列出必须保留的规则和约束，再调整文字。\n3. 对照输入检查有无新增承诺、规则丢失、范围扩大、责任转移或不确定性被抹去。发现源资产冲突时记录并回交，不自行选一个版本。\n4. 检查正文、摘要、表格和状态是否一致；验证适用的引用、结构和合同。自检结论不代替独立审查或批准。\n\n规则、例外、证据或状态变化属于实质差异，不能被“字数减少”抵消。不要只用禁用词扫描或模型给自己的分数判断效果。\n\n生成阅读材料使用 [合同阅读入口](contract-reading.md)。业务解释写入权威资产或人工 Markdown；不要手改 `reading/*.review.md`、manifest 或 map 的工具标记块。源编辑完成后更新已启用的阅读包，批准仍引用原资产及其摘要。\n| 执行证据 | 用于证明工作单元结果、门禁裁决或完成结论的可读取引用和实际验证记录。 | — | 口头声明、计划执行的命令或无法解析的引用不构成执行证据。 |\n| 单一事实来源（Single Source of Truth） | 对某一类流程事实拥有唯一定义权的权威资产。 | — | 其他资产只引用或解释，不重复定义同一规则。 |\n| 战略交接快照包 | 将批准的战略资产及证据冻结为可离线验证的完整目录或 ZIP，并提供规则和场景的派生索引。 | — | 源规则由战略方维护；包内快照与索引不成为目标仓词汇权威。 |\n| 后端交付包 | 将后端当前切片的战略基线、冻结接口、批准合同及构建、部署和验证证据绑定为可独立接收的交付快照。 | — | 验包通过不代表真实服务当前可用，也不代表前端已获准实现。 |\n| 前端联合接收 | 前端对战略交接快照与后端交付包进行版本、词汇、场景、接口和运行条件核验的过程。 | — | 输入就绪允许准备实现计划和合同；写代码仍需批准且当前的 Slice Implementation Contract。 |\n| 技术设计合同 | 按已确认架构统一记录共同输入、规则与场景承接、对应设计及审查证据的合同。 | — | 技术设计由通用入口组织，领域建模与传统分层是可选分支，生命周期负责批准。 |\n| 战术承接记录 | 将源规则和关键场景关联到所选架构的设计落点、测试 seam、处置结论及依赖切片的结构化记录。 | — | 延期登记不等于依赖切片可实现；冲突回交战略方，未知依赖扩大阻断。 |\n| 流程模板资产 | 可被不同项目复用的文档模板、技能说明、校验脚本、流程规范和目录占位文件。 | — | 不包含某个具体产品的 Spec、设计、OpenAPI 或 Ticket。 |\n| 模板维护流程 | 用于评估影响、修改权威资产、同步投影、执行压力验证并审查模板演进的工作流。 | — | 面向模板源仓库，不默认生成具体产品的 Spec、原型、OpenAPI 或垂直切片 Ticket。 |\n| 模板发布门禁 | 模板源发布前必须通过的结构、技能同步、流程语义和压力场景验证集合。 | — | 不等同于只检查文件存在、Markdown 链接或 YAML 语法。 |\n| Harness 工程 | 串联研发生命周期阶段、门禁、产物、Agent/Skill 编排和追踪证据的工程化治理载体。 | — | 不等同于单个 CI 流水线或零散提示词集合。 |\n| YSS 研发操作系统 | 由生命周期控制、通用工作流、YSS 专项技能、证据反馈和技能供应链共同构成的可版本化研发治理体系。 | — | 不等同于单个主控 skill、某个 Agent 客户端或运行时代码平台。 |\n| 生命周期注册表 | 结构化定义主阶段、门禁、产物、工作单元、证据及其稳定标识和关系的机器可读权威资产。 | — | Markdown 地图、数量说明和验证 fixture 是其派生产物，不应分别维护同一结构事实。 |\n| 生命周期编排器 | 持有阶段、影响面、产物状态、门禁裁决、工作单元路由和恢复条件的研发流程控制平面。 | — | 不替代专项技能执行业务实现，也不以文件存在或执行者自述宣布完成。 |\n| 前端实现还原验证 | 证明生产前端相对冻结 Spec、交互说明、状态矩阵和原型交付物不存在未解释差异的独立验证。 | — | 不是绝对像素复刻、普通 type-check 或原型评审；UI 影响切片需覆盖关键视觉、状态、交互和工程证据。 |\n| 生命周期稳定 ID | 以对象类型命名空间和英文标识唯一指向一个生命周期对象的兼容身份。 | — | 中文名称、展示顺序和数量可以变化；已发布 ID 不得复用来表达另一种语义。 |\n| 派生产物 | 根据生命周期注册表确定性生成的结构表、数量、索引、依赖图或测试 fixture。 | — | 不承载需要人工解释的原理、取舍或实践建议，禁止脱离注册表分别维护。 |\n| 核心技能（Core Skill） | 默认可发现、负责生命周期控制或通用研发入口的稳定技能。 | — | 不包含只在特定技术影响下才需要的专项实现规则。 |\n| 专项技能（Specialist Skill） | 由 实现合同编译器 根据影响面和实现合同按需选择的前端、后端、OpenAPI 或组件技能。 | — | 不作为所有任务的平级默认入口。 |\n| 试验技能 | 尚未达到项目默认支持成熟度的技能。 | — | 只在明确试验范围内使用，不进入 实现合同编译器 默认技能闭包。 |\n| 显式兼容入口 | 为已有用户操作习惯保留的 user-invoked 工作流入口，写入前由生命周期编排器预检，结果回交其验收。 | — | 不是默认路径、过时别名或可以越过门禁的第二套生命周期。 |\n| 技能成熟度 | 描述技能从 `draft`、`verified`、`supported` 到 `deprecated` 的治理状态。 | — | 不等同于文件存在、已被投影或能够安装。 |\n| 技能注册表 | 记录技能身份、别名、分层、适用影响面、成熟度、默认可发现性和 Agent 运行时入口的机器可读路由资产。 | — | 不替代 `skills-lock.json` 的来源、hash 和投影完整性职责。当前 `.template-spec/agents/yss-skill-registry.yaml` 为 `active`，实现合同编译器、生命周期编排器和实例发现面必须消费通过校验的 canonical 技能及其 alias 解析结果。 |\n| LLM Wiki | 由 `raw/`、`wiki/` 与 `.wiki-manifest.json` 组成的本地持久知识库。 | — | 不是 `yss-research` 一次性研究包，也不替代权威源。`ingest` 只把用户点名的外源或已落盘研究笔记编进 IR，不改 live 权威文件。 |\n| 生态发布清单 | 关联模板 schema 与 commit、CLI 版本与快照、公开技能来源与导出 hash 的跨仓发布证据。 | — | 不要求尚未生成的仓库 commit 互相循环引用。 |\n| 研发管理仓库 | 承载 Spec、OpenAPI、架构、Ticket、验证、发布和复盘等研发管理资产的仓库。 | — | 不等同于前端 / 后端代码 monorepo。 |\n| 实现仓库 | 承载前端、后端或其他运行时代码及其 Git、CI、MR / PR、测试命令和发布流水线的仓库。 | — | 不要把实现仓库的源码所有权混入研发管理仓库。 |\n| Git 子模块分层接入 | 将前端 / 后端实现仓以 Git submodule（gitlink，mode `160000`）挂到 `project-instance` 的 `apps/` 布局下，并登记 `repository_scope: git-submodule`。 | — | 不得与 `harness-apps` 同源 monorepo 或无 gitlink 的 `external-repository` 混用；禁止把实现源码复制进 Harness 冒充 submodule。 |\n| 跨仓库契约变更 | 需要两个或多个独立仓库协同实现、验证和按顺序发布的共享契约变化。 | — | 任一参与仓库未完成契约对齐和集成验证时，不得单独声称整体可发布。 |\n| 模板源仓库（`template-source`） | 承载 `yss-spec-project-template` 权威模板资产及其演进规则的仓库身份。 | — | 只管理可复用模板，不承载某个具体产品的研发生命周期资产。 |\n| 模板实例仓库（`project-instance`） | 由模板初始化后生成、承载某个具体产品研发生命周期资产的仓库身份。 | — | 不作为通用流程模板的权威来源。 |\n| 模板实例分发面 | 模板源中应随 CLI 快照进入 `project-instance` 的共享生命周期、模板、用户指南和验证资产集合。 | — | 不包含模板源审查、研究、发布路线、源仓库专属 ADR 或源仓库 LLM Wiki 编译树。 |\n| 模板源治理区 | 仅供 `template-source` 使用、保存审查证据、研究记录、跨仓契约、发布路线、源仓库治理决策和源仓库 LLM Wiki 编译树的归档区域。 | — | 不随 CLI 分发；不等于产品实例的研发管理资产。`wiki-root` 为 `.template-source/wiki`。 |\n| 仓库身份清单 | 显式声明仓库身份和清单结构版本的机器可读资产。 | — | 不承载项目名称、团队规模、Tracker 或其他易变业务配置。 |\n| 聚合门禁 | 汇总适用自动检查和独立专业审查后，对当前资产与范围作一次批准或验收；权威定义见生命周期注册表。 | — | 内部检查失败仍阻断；有效批准只在相关依据、范围或授权变化时失效。 |\n| 授权延续 | 原始用户批准明确覆盖当前边界、资产范围和决定依据时，经独立审查与当前验证继续推进。 | — | 不产生新的用户回复；未知或实质变化、撤回和外部强制审批缺失不能延续。证据格式见用户决定协议。 |\n| 内部检查 | 以 `check.*` 登记的自动前置核验、计算状态或独立专业审查；作为聚合门禁输入，不单独请求用户批准。 | — | 不等于省略检查或允许起草者自审。 |\n| 交付验收 | 对当前交付候选的独立审查、实际验证和回滚证据作出验收结论。 | — | 不授予实际合并、推送或发布权限；这些动作另按授权范围执行。 |\n\n## 业务术语\n\n`project-instance` 在本节新增产品对象。每一行必须有 PascalCase `英文标识`；缺该列视为统一业务词汇未冻结。模板源不放虚构业务行。\n\n| 术语 | 含义 | 英文标识 | 适用业务责任区 | 避免 / 备注 |\n|---|---|---|---|---|\nrg: drafts: No such file or directory (os error 2)\nrg: docs/adr: No such file or directory (os error 2)\nfixture/brief.md\nfixture/data.json\n.template-spec/design/tokens/variables.dark.css\n.template-spec/design/tokens/tokens.dark.json\n.template-spec/design/tokens/tokens.compact.json\n.template-spec/design/tokens/variables.css\n.template-spec/design/tokens/theme.json\n.template-spec/design/tokens/tokens.default.json\n"
+    }
+  ],
+  "truncated_trace_lines": 0,
+  "tool_output_bytes": 212230,
+  "scope": "Tool-output byte count is not total source bytes read or token usage; multi-file and partial reads need trace inspection."
+}

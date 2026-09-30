@@ -1,0 +1,2387 @@
+[
+  {
+    "task": "list-detail",
+    "side": "A",
+    "status": "missing-html",
+    "behavior_coverage": "unverified"
+  },
+  {
+    "task": "multi-step",
+    "side": "B",
+    "status": "inspected-partial-output",
+    "html_sha256": "5caf24bea28634f4823f031808005648e8c3a6bf6bf91cd2a706327f301f43d4",
+    "browser": "151.0.7922.34",
+    "delivery": "file:// offline=true",
+    "turn_completed": false,
+    "missing_resources": [
+      "tokens.css",
+      "design-tokens.css",
+      "data.js",
+      "app.js"
+    ],
+    "observations": [
+      {
+        "scene": "primary",
+        "width": 1440,
+        "height": 900,
+        "text": "跳到资料填写\nYSS / 资料填写\n低保真交互草案 · 本地模拟\n方案预览\nA 页内分步\nB 独立步骤 · 建议\nC 分区渐进\n场景\n正常提交\n提交失败与重试\n重置场景\n比较 3 个候选与选定建议 · 尚无用户选择\n\n资料 / 填写\n\n填写资料\n\n填写资料信息与用途，检查无误后提交。\n\n当前预览：B · 独立步骤\n\n资料名称、负责人、用途均为必填项。\n\n1. 填写资料\n资料名称 （必填）\n负责人 （必填）\n\n已填入给定资料的名称与负责人，可在此修改。\n\n2. 填写用途\n用途 （必填）\n\n给定资料未提供用途，请自行填写。\n\n3. 检查并提交\n\n请核对以下内容，需要调整时可返回修改。\n\n修改资料\n修改用途\n取消填写\n上一步\n下一步：填写用途\n\n提交仅演示本地反馈，关闭或刷新页面后不保留填写内容。\n\n给定资料\n\n只读参考 · 不随表单修改\n\n数据样本\nM-001\nM-002 · 长名称\nM-003 · 负责人为空\n\n切换样本将开始一次新的填写。数据来自本地 fixture。",
+        "overflow": false,
+        "body_attributes": {},
+        "controls": [
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "A 页内分步",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "B 独立步骤 · 建议",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "C 分区渐进",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "SELECT",
+            "id": "scenario",
+            "text": "正常提交\n提交失败与重试",
+            "disabled": false,
+            "value": "primary"
+          },
+          {
+            "tag": "BUTTON",
+            "id": "reset",
+            "text": "重置场景",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "INPUT",
+            "id": "name",
+            "text": "",
+            "disabled": false,
+            "readOnly": false,
+            "value": ""
+          },
+          {
+            "tag": "INPUT",
+            "id": "owner",
+            "text": "",
+            "disabled": false,
+            "readOnly": false,
+            "value": ""
+          },
+          {
+            "tag": "TEXTAREA",
+            "id": "purpose",
+            "text": "",
+            "disabled": false,
+            "readOnly": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "修改资料",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "修改用途",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "cancel",
+            "text": "取消填写",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "back",
+            "text": "上一步",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "next",
+            "text": "下一步：填写用途",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "SELECT",
+            "id": "sample",
+            "text": "M-001\nM-002 · 长名称\nM-003 · 负责人为空",
+            "disabled": false,
+            "value": "M-001"
+          },
+          {
+            "tag": "BUTTON",
+            "id": "keep-editing",
+            "text": "继续填写",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "confirm-action",
+            "text": "",
+            "disabled": false,
+            "value": ""
+          }
+        ],
+        "focus": {
+          "tag": "A",
+          "id": "",
+          "outline": "none"
+        },
+        "reset": "not-tested",
+        "issues": [
+          {
+            "type": "requestfailed",
+            "url": "file:///Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-29-prototype-design-enhancement/pilot/ab/multi-step/B/tokens.css",
+            "failure": {
+              "errorText": "net::ERR_FILE_NOT_FOUND"
+            }
+          },
+          {
+            "type": "error",
+            "message": "Failed to load resource: net::ERR_FILE_NOT_FOUND"
+          },
+          {
+            "type": "requestfailed",
+            "url": "file:///Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-29-prototype-design-enhancement/pilot/ab/multi-step/B/design-tokens.css",
+            "failure": {
+              "errorText": "net::ERR_FILE_NOT_FOUND"
+            }
+          },
+          {
+            "type": "error",
+            "message": "Failed to load resource: net::ERR_FILE_NOT_FOUND"
+          },
+          {
+            "type": "requestfailed",
+            "url": "file:///Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-29-prototype-design-enhancement/pilot/ab/multi-step/B/data.js",
+            "failure": {
+              "errorText": "net::ERR_FILE_NOT_FOUND"
+            }
+          },
+          {
+            "type": "error",
+            "message": "Failed to load resource: net::ERR_FILE_NOT_FOUND"
+          },
+          {
+            "type": "requestfailed",
+            "url": "file:///Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-29-prototype-design-enhancement/pilot/ab/multi-step/B/app.js",
+            "failure": {
+              "errorText": "net::ERR_FILE_NOT_FOUND"
+            }
+          },
+          {
+            "type": "error",
+            "message": "Failed to load resource: net::ERR_FILE_NOT_FOUND"
+          }
+        ],
+        "screenshot": "primary-1440.png"
+      },
+      {
+        "scene": "failure",
+        "width": 1440,
+        "height": 900,
+        "text": "跳到资料填写\nYSS / 资料填写\n低保真交互草案 · 本地模拟\n方案预览\nA 页内分步\nB 独立步骤 · 建议\nC 分区渐进\n场景\n正常提交\n提交失败与重试\n重置场景\n比较 3 个候选与选定建议 · 尚无用户选择\n\n资料 / 填写\n\n填写资料\n\n填写资料信息与用途，检查无误后提交。\n\n当前预览：B · 独立步骤\n\n资料名称、负责人、用途均为必填项。\n\n1. 填写资料\n资料名称 （必填）\n负责人 （必填）\n\n已填入给定资料的名称与负责人，可在此修改。\n\n2. 填写用途\n用途 （必填）\n\n给定资料未提供用途，请自行填写。\n\n3. 检查并提交\n\n请核对以下内容，需要调整时可返回修改。\n\n修改资料\n修改用途\n取消填写\n上一步\n下一步：填写用途\n\n提交仅演示本地反馈，关闭或刷新页面后不保留填写内容。\n\n给定资料\n\n只读参考 · 不随表单修改\n\n数据样本\nM-001\nM-002 · 长名称\nM-003 · 负责人为空\n\n切换样本将开始一次新的填写。数据来自本地 fixture。",
+        "overflow": false,
+        "body_attributes": {},
+        "controls": [
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "A 页内分步",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "B 独立步骤 · 建议",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "C 分区渐进",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "SELECT",
+            "id": "scenario",
+            "text": "正常提交\n提交失败与重试",
+            "disabled": false,
+            "value": "primary"
+          },
+          {
+            "tag": "BUTTON",
+            "id": "reset",
+            "text": "重置场景",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "INPUT",
+            "id": "name",
+            "text": "",
+            "disabled": false,
+            "readOnly": false,
+            "value": ""
+          },
+          {
+            "tag": "INPUT",
+            "id": "owner",
+            "text": "",
+            "disabled": false,
+            "readOnly": false,
+            "value": ""
+          },
+          {
+            "tag": "TEXTAREA",
+            "id": "purpose",
+            "text": "",
+            "disabled": false,
+            "readOnly": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "修改资料",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "修改用途",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "cancel",
+            "text": "取消填写",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "back",
+            "text": "上一步",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "next",
+            "text": "下一步：填写用途",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "SELECT",
+            "id": "sample",
+            "text": "M-001\nM-002 · 长名称\nM-003 · 负责人为空",
+            "disabled": false,
+            "value": "M-001"
+          },
+          {
+            "tag": "BUTTON",
+            "id": "keep-editing",
+            "text": "继续填写",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "confirm-action",
+            "text": "",
+            "disabled": false,
+            "value": ""
+          }
+        ],
+        "focus": {
+          "tag": "BUTTON",
+          "id": "",
+          "outline": "none"
+        },
+        "reset": "not-tested",
+        "issues": [],
+        "screenshot": "failure-1440.png"
+      },
+      {
+        "scene": "primary",
+        "width": 390,
+        "height": 844,
+        "text": "跳到资料填写\nYSS / 资料填写\n低保真交互草案 · 本地模拟\n方案预览\nA 页内分步\nB 独立步骤 · 建议\nC 分区渐进\n场景\n正常提交\n提交失败与重试\n重置场景\n比较 3 个候选与选定建议 · 尚无用户选择\n\n资料 / 填写\n\n填写资料\n\n填写资料信息与用途，检查无误后提交。\n\n当前预览：B · 独立步骤\n\n资料名称、负责人、用途均为必填项。\n\n1. 填写资料\n资料名称 （必填）\n负责人 （必填）\n\n已填入给定资料的名称与负责人，可在此修改。\n\n2. 填写用途\n用途 （必填）\n\n给定资料未提供用途，请自行填写。\n\n3. 检查并提交\n\n请核对以下内容，需要调整时可返回修改。\n\n修改资料\n修改用途\n取消填写\n上一步\n下一步：填写用途\n\n提交仅演示本地反馈，关闭或刷新页面后不保留填写内容。\n\n给定资料\n\n只读参考 · 不随表单修改\n\n数据样本\nM-001\nM-002 · 长名称\nM-003 · 负责人为空\n\n切换样本将开始一次新的填写。数据来自本地 fixture。",
+        "overflow": false,
+        "body_attributes": {},
+        "controls": [
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "A 页内分步",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "B 独立步骤 · 建议",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "C 分区渐进",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "SELECT",
+            "id": "scenario",
+            "text": "正常提交\n提交失败与重试",
+            "disabled": false,
+            "value": "primary"
+          },
+          {
+            "tag": "BUTTON",
+            "id": "reset",
+            "text": "重置场景",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "INPUT",
+            "id": "name",
+            "text": "",
+            "disabled": false,
+            "readOnly": false,
+            "value": ""
+          },
+          {
+            "tag": "INPUT",
+            "id": "owner",
+            "text": "",
+            "disabled": false,
+            "readOnly": false,
+            "value": ""
+          },
+          {
+            "tag": "TEXTAREA",
+            "id": "purpose",
+            "text": "",
+            "disabled": false,
+            "readOnly": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "修改资料",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "修改用途",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "cancel",
+            "text": "取消填写",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "back",
+            "text": "上一步",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "next",
+            "text": "下一步：填写用途",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "SELECT",
+            "id": "sample",
+            "text": "M-001\nM-002 · 长名称\nM-003 · 负责人为空",
+            "disabled": false,
+            "value": "M-001"
+          },
+          {
+            "tag": "BUTTON",
+            "id": "keep-editing",
+            "text": "继续填写",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "confirm-action",
+            "text": "",
+            "disabled": false,
+            "value": ""
+          }
+        ],
+        "focus": {
+          "tag": "BUTTON",
+          "id": "",
+          "outline": "none"
+        },
+        "reset": "not-tested",
+        "issues": [],
+        "screenshot": "primary-390.png"
+      },
+      {
+        "scene": "failure",
+        "width": 390,
+        "height": 844,
+        "text": "跳到资料填写\nYSS / 资料填写\n低保真交互草案 · 本地模拟\n方案预览\nA 页内分步\nB 独立步骤 · 建议\nC 分区渐进\n场景\n正常提交\n提交失败与重试\n重置场景\n比较 3 个候选与选定建议 · 尚无用户选择\n\n资料 / 填写\n\n填写资料\n\n填写资料信息与用途，检查无误后提交。\n\n当前预览：B · 独立步骤\n\n资料名称、负责人、用途均为必填项。\n\n1. 填写资料\n资料名称 （必填）\n负责人 （必填）\n\n已填入给定资料的名称与负责人，可在此修改。\n\n2. 填写用途\n用途 （必填）\n\n给定资料未提供用途，请自行填写。\n\n3. 检查并提交\n\n请核对以下内容，需要调整时可返回修改。\n\n修改资料\n修改用途\n取消填写\n上一步\n下一步：填写用途\n\n提交仅演示本地反馈，关闭或刷新页面后不保留填写内容。\n\n给定资料\n\n只读参考 · 不随表单修改\n\n数据样本\nM-001\nM-002 · 长名称\nM-003 · 负责人为空\n\n切换样本将开始一次新的填写。数据来自本地 fixture。",
+        "overflow": false,
+        "body_attributes": {},
+        "controls": [
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "A 页内分步",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "B 独立步骤 · 建议",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "C 分区渐进",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "SELECT",
+            "id": "scenario",
+            "text": "正常提交\n提交失败与重试",
+            "disabled": false,
+            "value": "primary"
+          },
+          {
+            "tag": "BUTTON",
+            "id": "reset",
+            "text": "重置场景",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "INPUT",
+            "id": "name",
+            "text": "",
+            "disabled": false,
+            "readOnly": false,
+            "value": ""
+          },
+          {
+            "tag": "INPUT",
+            "id": "owner",
+            "text": "",
+            "disabled": false,
+            "readOnly": false,
+            "value": ""
+          },
+          {
+            "tag": "TEXTAREA",
+            "id": "purpose",
+            "text": "",
+            "disabled": false,
+            "readOnly": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "修改资料",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "修改用途",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "cancel",
+            "text": "取消填写",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "back",
+            "text": "上一步",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "next",
+            "text": "下一步：填写用途",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "SELECT",
+            "id": "sample",
+            "text": "M-001\nM-002 · 长名称\nM-003 · 负责人为空",
+            "disabled": false,
+            "value": "M-001"
+          },
+          {
+            "tag": "BUTTON",
+            "id": "keep-editing",
+            "text": "继续填写",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "confirm-action",
+            "text": "",
+            "disabled": false,
+            "value": ""
+          }
+        ],
+        "focus": {
+          "tag": "BUTTON",
+          "id": "",
+          "outline": "none"
+        },
+        "reset": "not-tested",
+        "issues": [],
+        "screenshot": "failure-390.png"
+      }
+    ],
+    "behavior_coverage": "unverified; loading a partial page does not prove business behavior"
+  },
+  {
+    "task": "approval-permission",
+    "side": "A",
+    "status": "missing-html",
+    "behavior_coverage": "unverified"
+  },
+  {
+    "task": "conflict-recovery",
+    "side": "B",
+    "status": "inspected-partial-output",
+    "html_sha256": "15eab1cf85797932060cb3329173232fa87021e4d05fe7e879f774fce931589f",
+    "browser": "151.0.7922.34",
+    "delivery": "file:// offline=true",
+    "turn_completed": false,
+    "missing_resources": [
+      "design-tokens.css",
+      "scenarios.js",
+      "app.js"
+    ],
+    "observations": [
+      {
+        "scene": "primary",
+        "width": 1440,
+        "height": 900,
+        "text": "跳转到资料详情\nY\n资料管理\n资料工作台\n2026年9月29日\n\n资料管理\n/\n资料详情\n\n资料详情\n查看资料信息，更新名称与负责人\n资料\n3 条\n名称与负责人可编辑\n核对信息仅供查看\n\n基本信息\n资料名称\n完整名称会显示在资料详情中。\n负责人 （可留空）\n未填写时显示“未设置”。\ni\n本次仅修改名称与负责人，核对信息保持不变。\n\n修改完成后保存。\n\n取消\n保存修改\n核对信息\n只读\n资料状态\n核对项数\n项\n异常项数\n项\n更新时间\n设计草案\n仅本地演示\n评测场景\n正常保存\n保存失败与重试\n并发冲突与恢复\n重置场景\n\n数据来自固定测试样本 · 操作不会写入真实系统",
+        "overflow": false,
+        "body_attributes": {},
+        "controls": [
+          {
+            "tag": "BUTTON",
+            "id": "reload-button",
+            "text": "重新加载当前版本",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "INPUT",
+            "id": "name-input",
+            "text": "",
+            "disabled": false,
+            "readOnly": false,
+            "value": ""
+          },
+          {
+            "tag": "INPUT",
+            "id": "owner-input",
+            "text": "",
+            "disabled": false,
+            "readOnly": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "cancel-button",
+            "text": "取消",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "save-button",
+            "text": "保存修改",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "edit-button",
+            "text": "编辑资料",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "restore-button",
+            "text": "将本地草稿填回表单",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "SELECT",
+            "id": "scenario-select",
+            "text": "正常保存\n保存失败与重试\n并发冲突与恢复",
+            "disabled": false,
+            "value": "primary"
+          },
+          {
+            "tag": "BUTTON",
+            "id": "reset-button",
+            "text": "重置场景",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "dialog-cancel",
+            "text": "继续编辑",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "dialog-confirm",
+            "text": "",
+            "disabled": false,
+            "value": ""
+          }
+        ],
+        "focus": {
+          "tag": "A",
+          "id": "",
+          "outline": "solid"
+        },
+        "reset": "not-tested",
+        "issues": [
+          {
+            "type": "requestfailed",
+            "url": "file:///Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-29-prototype-design-enhancement/pilot/ab/conflict-recovery/B/design-tokens.css",
+            "failure": {
+              "errorText": "net::ERR_FILE_NOT_FOUND"
+            }
+          },
+          {
+            "type": "error",
+            "message": "Failed to load resource: net::ERR_FILE_NOT_FOUND"
+          },
+          {
+            "type": "requestfailed",
+            "url": "file:///Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-29-prototype-design-enhancement/pilot/ab/conflict-recovery/B/scenarios.js",
+            "failure": {
+              "errorText": "net::ERR_FILE_NOT_FOUND"
+            }
+          },
+          {
+            "type": "error",
+            "message": "Failed to load resource: net::ERR_FILE_NOT_FOUND"
+          },
+          {
+            "type": "requestfailed",
+            "url": "file:///Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-29-prototype-design-enhancement/pilot/ab/conflict-recovery/B/app.js",
+            "failure": {
+              "errorText": "net::ERR_FILE_NOT_FOUND"
+            }
+          },
+          {
+            "type": "error",
+            "message": "Failed to load resource: net::ERR_FILE_NOT_FOUND"
+          }
+        ],
+        "screenshot": "primary-1440.png"
+      },
+      {
+        "scene": "failure",
+        "width": 1440,
+        "height": 900,
+        "text": "跳转到资料详情\nY\n资料管理\n资料工作台\n2026年9月29日\n\n资料管理\n/\n资料详情\n\n资料详情\n查看资料信息，更新名称与负责人\n资料\n3 条\n名称与负责人可编辑\n核对信息仅供查看\n\n基本信息\n资料名称\n完整名称会显示在资料详情中。\n负责人 （可留空）\n未填写时显示“未设置”。\ni\n本次仅修改名称与负责人，核对信息保持不变。\n\n修改完成后保存。\n\n取消\n保存修改\n核对信息\n只读\n资料状态\n核对项数\n项\n异常项数\n项\n更新时间\n设计草案\n仅本地演示\n评测场景\n正常保存\n保存失败与重试\n并发冲突与恢复\n重置场景\n\n数据来自固定测试样本 · 操作不会写入真实系统",
+        "overflow": false,
+        "body_attributes": {},
+        "controls": [
+          {
+            "tag": "BUTTON",
+            "id": "reload-button",
+            "text": "重新加载当前版本",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "INPUT",
+            "id": "name-input",
+            "text": "",
+            "disabled": false,
+            "readOnly": false,
+            "value": ""
+          },
+          {
+            "tag": "INPUT",
+            "id": "owner-input",
+            "text": "",
+            "disabled": false,
+            "readOnly": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "cancel-button",
+            "text": "取消",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "save-button",
+            "text": "保存修改",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "edit-button",
+            "text": "编辑资料",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "restore-button",
+            "text": "将本地草稿填回表单",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "SELECT",
+            "id": "scenario-select",
+            "text": "正常保存\n保存失败与重试\n并发冲突与恢复",
+            "disabled": false,
+            "value": "primary"
+          },
+          {
+            "tag": "BUTTON",
+            "id": "reset-button",
+            "text": "重置场景",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "dialog-cancel",
+            "text": "继续编辑",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "dialog-confirm",
+            "text": "",
+            "disabled": false,
+            "value": ""
+          }
+        ],
+        "focus": {
+          "tag": "INPUT",
+          "id": "name-input",
+          "outline": "solid"
+        },
+        "reset": "not-tested",
+        "issues": [],
+        "screenshot": "failure-1440.png"
+      },
+      {
+        "scene": "conflict",
+        "width": 1440,
+        "height": 900,
+        "text": "跳转到资料详情\nY\n资料管理\n资料工作台\n2026年9月29日\n\n资料管理\n/\n资料详情\n\n资料详情\n查看资料信息，更新名称与负责人\n资料\n3 条\n名称与负责人可编辑\n核对信息仅供查看\n\n基本信息\n资料名称\n完整名称会显示在资料详情中。\n负责人 （可留空）\n未填写时显示“未设置”。\ni\n本次仅修改名称与负责人，核对信息保持不变。\n\n修改完成后保存。\n\n取消\n保存修改\n核对信息\n只读\n资料状态\n核对项数\n项\n异常项数\n项\n更新时间\n设计草案\n仅本地演示\n评测场景\n正常保存\n保存失败与重试\n并发冲突与恢复\n重置场景\n\n数据来自固定测试样本 · 操作不会写入真实系统",
+        "overflow": false,
+        "body_attributes": {},
+        "controls": [
+          {
+            "tag": "BUTTON",
+            "id": "reload-button",
+            "text": "重新加载当前版本",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "INPUT",
+            "id": "name-input",
+            "text": "",
+            "disabled": false,
+            "readOnly": false,
+            "value": ""
+          },
+          {
+            "tag": "INPUT",
+            "id": "owner-input",
+            "text": "",
+            "disabled": false,
+            "readOnly": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "cancel-button",
+            "text": "取消",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "save-button",
+            "text": "保存修改",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "edit-button",
+            "text": "编辑资料",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "restore-button",
+            "text": "将本地草稿填回表单",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "SELECT",
+            "id": "scenario-select",
+            "text": "正常保存\n保存失败与重试\n并发冲突与恢复",
+            "disabled": false,
+            "value": "primary"
+          },
+          {
+            "tag": "BUTTON",
+            "id": "reset-button",
+            "text": "重置场景",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "dialog-cancel",
+            "text": "继续编辑",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "dialog-confirm",
+            "text": "",
+            "disabled": false,
+            "value": ""
+          }
+        ],
+        "focus": {
+          "tag": "INPUT",
+          "id": "owner-input",
+          "outline": "solid"
+        },
+        "reset": "not-tested",
+        "issues": [],
+        "screenshot": "conflict-1440.png"
+      },
+      {
+        "scene": "primary",
+        "width": 390,
+        "height": 844,
+        "text": "跳转到资料详情\nY\n资料管理\n2026年9月29日\n\n资料管理\n/\n资料详情\n\n资料详情\n资料\n3 条\n\n基本信息\n资料名称\n完整名称会显示在资料详情中。\n负责人 （可留空）\n未填写时显示“未设置”。\ni\n本次仅修改名称与负责人，核对信息保持不变。\n\n修改完成后保存。\n\n取消\n保存修改\n核对信息\n只读\n资料状态\n核对项数\n项\n异常项数\n项\n更新时间\n设计草案\n仅本地演示\n评测场景\n正常保存\n保存失败与重试\n并发冲突与恢复\n重置场景\n\n数据来自固定测试样本 · 操作不会写入真实系统",
+        "overflow": false,
+        "body_attributes": {},
+        "controls": [
+          {
+            "tag": "BUTTON",
+            "id": "reload-button",
+            "text": "重新加载当前版本",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "INPUT",
+            "id": "name-input",
+            "text": "",
+            "disabled": false,
+            "readOnly": false,
+            "value": ""
+          },
+          {
+            "tag": "INPUT",
+            "id": "owner-input",
+            "text": "",
+            "disabled": false,
+            "readOnly": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "cancel-button",
+            "text": "取消",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "save-button",
+            "text": "保存修改",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "edit-button",
+            "text": "编辑资料",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "restore-button",
+            "text": "将本地草稿填回表单",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "SELECT",
+            "id": "scenario-select",
+            "text": "正常保存\n保存失败与重试\n并发冲突与恢复",
+            "disabled": false,
+            "value": "primary"
+          },
+          {
+            "tag": "BUTTON",
+            "id": "reset-button",
+            "text": "重置场景",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "dialog-cancel",
+            "text": "继续编辑",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "dialog-confirm",
+            "text": "",
+            "disabled": false,
+            "value": ""
+          }
+        ],
+        "focus": {
+          "tag": "BUTTON",
+          "id": "cancel-button",
+          "outline": "solid"
+        },
+        "reset": "not-tested",
+        "issues": [],
+        "screenshot": "primary-390.png"
+      },
+      {
+        "scene": "failure",
+        "width": 390,
+        "height": 844,
+        "text": "跳转到资料详情\nY\n资料管理\n2026年9月29日\n\n资料管理\n/\n资料详情\n\n资料详情\n资料\n3 条\n\n基本信息\n资料名称\n完整名称会显示在资料详情中。\n负责人 （可留空）\n未填写时显示“未设置”。\ni\n本次仅修改名称与负责人，核对信息保持不变。\n\n修改完成后保存。\n\n取消\n保存修改\n核对信息\n只读\n资料状态\n核对项数\n项\n异常项数\n项\n更新时间\n设计草案\n仅本地演示\n评测场景\n正常保存\n保存失败与重试\n并发冲突与恢复\n重置场景\n\n数据来自固定测试样本 · 操作不会写入真实系统",
+        "overflow": false,
+        "body_attributes": {},
+        "controls": [
+          {
+            "tag": "BUTTON",
+            "id": "reload-button",
+            "text": "重新加载当前版本",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "INPUT",
+            "id": "name-input",
+            "text": "",
+            "disabled": false,
+            "readOnly": false,
+            "value": ""
+          },
+          {
+            "tag": "INPUT",
+            "id": "owner-input",
+            "text": "",
+            "disabled": false,
+            "readOnly": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "cancel-button",
+            "text": "取消",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "save-button",
+            "text": "保存修改",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "edit-button",
+            "text": "编辑资料",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "restore-button",
+            "text": "将本地草稿填回表单",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "SELECT",
+            "id": "scenario-select",
+            "text": "正常保存\n保存失败与重试\n并发冲突与恢复",
+            "disabled": false,
+            "value": "primary"
+          },
+          {
+            "tag": "BUTTON",
+            "id": "reset-button",
+            "text": "重置场景",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "dialog-cancel",
+            "text": "继续编辑",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "dialog-confirm",
+            "text": "",
+            "disabled": false,
+            "value": ""
+          }
+        ],
+        "focus": {
+          "tag": "BUTTON",
+          "id": "save-button",
+          "outline": "solid"
+        },
+        "reset": "not-tested",
+        "issues": [],
+        "screenshot": "failure-390.png"
+      },
+      {
+        "scene": "conflict",
+        "width": 390,
+        "height": 844,
+        "text": "跳转到资料详情\nY\n资料管理\n2026年9月29日\n\n资料管理\n/\n资料详情\n\n资料详情\n资料\n3 条\n\n基本信息\n资料名称\n完整名称会显示在资料详情中。\n负责人 （可留空）\n未填写时显示“未设置”。\ni\n本次仅修改名称与负责人，核对信息保持不变。\n\n修改完成后保存。\n\n取消\n保存修改\n核对信息\n只读\n资料状态\n核对项数\n项\n异常项数\n项\n更新时间\n设计草案\n仅本地演示\n评测场景\n正常保存\n保存失败与重试\n并发冲突与恢复\n重置场景\n\n数据来自固定测试样本 · 操作不会写入真实系统",
+        "overflow": false,
+        "body_attributes": {},
+        "controls": [
+          {
+            "tag": "BUTTON",
+            "id": "reload-button",
+            "text": "重新加载当前版本",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "INPUT",
+            "id": "name-input",
+            "text": "",
+            "disabled": false,
+            "readOnly": false,
+            "value": ""
+          },
+          {
+            "tag": "INPUT",
+            "id": "owner-input",
+            "text": "",
+            "disabled": false,
+            "readOnly": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "cancel-button",
+            "text": "取消",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "save-button",
+            "text": "保存修改",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "edit-button",
+            "text": "编辑资料",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "restore-button",
+            "text": "将本地草稿填回表单",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "SELECT",
+            "id": "scenario-select",
+            "text": "正常保存\n保存失败与重试\n并发冲突与恢复",
+            "disabled": false,
+            "value": "primary"
+          },
+          {
+            "tag": "BUTTON",
+            "id": "reset-button",
+            "text": "重置场景",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "dialog-cancel",
+            "text": "继续编辑",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "dialog-confirm",
+            "text": "",
+            "disabled": false,
+            "value": ""
+          }
+        ],
+        "focus": {
+          "tag": "SELECT",
+          "id": "scenario-select",
+          "outline": "solid"
+        },
+        "reset": "not-tested",
+        "issues": [],
+        "screenshot": "conflict-390.png"
+      }
+    ],
+    "behavior_coverage": "unverified; loading a partial page does not prove business behavior"
+  },
+  {
+    "task": "dense-analysis",
+    "side": "A",
+    "status": "missing-html",
+    "behavior_coverage": "unverified"
+  },
+  {
+    "task": "preserve-small-change",
+    "side": "B",
+    "status": "inspected-partial-output",
+    "html_sha256": "aee47dc2efe88f6341054c9e629c7e39305f6c00da84a380a1483c716ea96423",
+    "browser": "151.0.7922.34",
+    "delivery": "file:// offline=true",
+    "turn_completed": false,
+    "missing_resources": [],
+    "observations": [
+      {
+        "scene": "primary",
+        "width": 1440,
+        "height": 900,
+        "text": "资料查询\n名称或编号查询重置查询\n\n共 3 条\n\n编号\t资料名称\t负责人\t状态\nM-001\t季度经营分析资料\t张明\t待核对\nM-002\t跨部门业务协作与异常处理说明（长名称示例）\t李华\t待核对\nM-003\t归档清单\t未填写\t待处理\n评测场景：primary 重置场景",
+        "overflow": false,
+        "body_attributes": {},
+        "controls": [
+          {
+            "tag": "INPUT",
+            "id": "query",
+            "text": "",
+            "disabled": false,
+            "readOnly": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "查询",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "重置查询",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "reset-scenario",
+            "text": "重置场景",
+            "disabled": false,
+            "value": ""
+          }
+        ],
+        "focus": {
+          "tag": "INPUT",
+          "id": "query",
+          "outline": "solid"
+        },
+        "reset": "input-restored",
+        "issues": [],
+        "screenshot": "primary-1440.png"
+      },
+      {
+        "scene": "primary",
+        "width": 390,
+        "height": 844,
+        "text": "资料查询\n名称或编号查询重置查询\n\n共 3 条\n\n编号\t资料名称\t负责人\t状态\nM-001\t季度经营分析资料\t张明\t待核对\nM-002\t跨部门业务协作与异常处理说明（长名称示例）\t李华\t待核对\nM-003\t归档清单\t未填写\t待处理\n已重置场景：primary 重置场景",
+        "overflow": false,
+        "body_attributes": {},
+        "controls": [
+          {
+            "tag": "INPUT",
+            "id": "query",
+            "text": "",
+            "disabled": false,
+            "readOnly": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "查询",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "重置查询",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "reset-scenario",
+            "text": "重置场景",
+            "disabled": false,
+            "value": ""
+          }
+        ],
+        "focus": {
+          "tag": "BODY",
+          "id": "",
+          "outline": "none"
+        },
+        "reset": "input-restored",
+        "issues": [],
+        "screenshot": "primary-390.png"
+      }
+    ],
+    "behavior_coverage": "unverified; loading a partial page does not prove business behavior"
+  },
+  {
+    "task": "list-detail",
+    "side": "B",
+    "status": "missing-html",
+    "behavior_coverage": "unverified"
+  },
+  {
+    "task": "multi-step",
+    "side": "A",
+    "status": "inspected-partial-output",
+    "html_sha256": "aa7a4f431df1e28cde8567c17af18b669dcecb6a6364faf2f19e1297ba2f8080",
+    "browser": "151.0.7922.34",
+    "delivery": "file:// offline=true",
+    "turn_completed": false,
+    "missing_resources": [
+      "app.js"
+    ],
+    "observations": [
+      {
+        "scene": "primary",
+        "width": 1440,
+        "height": 900,
+        "text": "跳至表单\n多步骤表单 · 交互草案\n低保真 / 尚未选择方案\n设计说明\n场景\n正常提交\n首次提交失败 → 重试\n给定资料\n重置场景\n\n评测操作：切换方案、资料或场景会清除本次输入。全部提交结果均为本地模拟。\n\nA · 页内分步建议\nB · 独立步骤\nC · 分区渐进\n\n比较依据与建议（尚非用户选择）\n可丢弃设计评测 fixture · 未连接服务 · 未作真实批准 · 浏览器验收待外部执行",
+        "overflow": false,
+        "body_attributes": {
+          "data-default-candidate": "a"
+        },
+        "controls": [
+          {
+            "tag": "SELECT",
+            "id": "scenario",
+            "text": "正常提交\n首次提交失败 → 重试",
+            "disabled": false,
+            "value": "primary"
+          },
+          {
+            "tag": "SELECT",
+            "id": "record",
+            "text": "",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "reset",
+            "text": "重置场景",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "A · 页内分步建议",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "B · 独立步骤",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "C · 分区渐进",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "discard",
+            "text": "放弃并退出",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "keep-editing",
+            "text": "继续填写",
+            "disabled": false,
+            "value": ""
+          }
+        ],
+        "focus": {
+          "tag": "A",
+          "id": "",
+          "outline": "solid"
+        },
+        "reset": "not-tested",
+        "issues": [
+          {
+            "type": "requestfailed",
+            "url": "file:///Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-29-prototype-design-enhancement/pilot/ab/multi-step/A/app.js",
+            "failure": {
+              "errorText": "net::ERR_FILE_NOT_FOUND"
+            }
+          },
+          {
+            "type": "error",
+            "message": "Failed to load resource: net::ERR_FILE_NOT_FOUND"
+          }
+        ],
+        "screenshot": "primary-1440.png"
+      },
+      {
+        "scene": "failure",
+        "width": 1440,
+        "height": 900,
+        "text": "跳至表单\n多步骤表单 · 交互草案\n低保真 / 尚未选择方案\n设计说明\n场景\n正常提交\n首次提交失败 → 重试\n给定资料\n重置场景\n\n评测操作：切换方案、资料或场景会清除本次输入。全部提交结果均为本地模拟。\n\nA · 页内分步建议\nB · 独立步骤\nC · 分区渐进\n\n比较依据与建议（尚非用户选择）\n可丢弃设计评测 fixture · 未连接服务 · 未作真实批准 · 浏览器验收待外部执行",
+        "overflow": false,
+        "body_attributes": {
+          "data-default-candidate": "a"
+        },
+        "controls": [
+          {
+            "tag": "SELECT",
+            "id": "scenario",
+            "text": "正常提交\n首次提交失败 → 重试",
+            "disabled": false,
+            "value": "primary"
+          },
+          {
+            "tag": "SELECT",
+            "id": "record",
+            "text": "",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "reset",
+            "text": "重置场景",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "A · 页内分步建议",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "B · 独立步骤",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "C · 分区渐进",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "discard",
+            "text": "放弃并退出",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "keep-editing",
+            "text": "继续填写",
+            "disabled": false,
+            "value": ""
+          }
+        ],
+        "focus": {
+          "tag": "A",
+          "id": "",
+          "outline": "solid"
+        },
+        "reset": "not-tested",
+        "issues": [],
+        "screenshot": "failure-1440.png"
+      },
+      {
+        "scene": "primary",
+        "width": 390,
+        "height": 844,
+        "text": "跳至表单\n多步骤表单 · 交互草案\n低保真 / 尚未选择方案\n设计说明\n场景\n正常提交\n首次提交失败 → 重试\n给定资料\n重置场景\n\n评测操作：切换方案、资料或场景会清除本次输入。全部提交结果均为本地模拟。\n\nA · 页内分步建议\nB · 独立步骤\nC · 分区渐进\n\n比较依据与建议（尚非用户选择）\n可丢弃设计评测 fixture · 未连接服务 · 未作真实批准 · 浏览器验收待外部执行",
+        "overflow": false,
+        "body_attributes": {
+          "data-default-candidate": "a"
+        },
+        "controls": [
+          {
+            "tag": "SELECT",
+            "id": "scenario",
+            "text": "正常提交\n首次提交失败 → 重试",
+            "disabled": false,
+            "value": "primary"
+          },
+          {
+            "tag": "SELECT",
+            "id": "record",
+            "text": "",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "reset",
+            "text": "重置场景",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "A · 页内分步建议",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "B · 独立步骤",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "C · 分区渐进",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "discard",
+            "text": "放弃并退出",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "keep-editing",
+            "text": "继续填写",
+            "disabled": false,
+            "value": ""
+          }
+        ],
+        "focus": {
+          "tag": "SELECT",
+          "id": "scenario",
+          "outline": "solid"
+        },
+        "reset": "not-tested",
+        "issues": [],
+        "screenshot": "primary-390.png"
+      },
+      {
+        "scene": "failure",
+        "width": 390,
+        "height": 844,
+        "text": "跳至表单\n多步骤表单 · 交互草案\n低保真 / 尚未选择方案\n设计说明\n场景\n正常提交\n首次提交失败 → 重试\n给定资料\n重置场景\n\n评测操作：切换方案、资料或场景会清除本次输入。全部提交结果均为本地模拟。\n\nA · 页内分步建议\nB · 独立步骤\nC · 分区渐进\n\n比较依据与建议（尚非用户选择）\n可丢弃设计评测 fixture · 未连接服务 · 未作真实批准 · 浏览器验收待外部执行",
+        "overflow": false,
+        "body_attributes": {
+          "data-default-candidate": "a"
+        },
+        "controls": [
+          {
+            "tag": "SELECT",
+            "id": "scenario",
+            "text": "正常提交\n首次提交失败 → 重试",
+            "disabled": false,
+            "value": "primary"
+          },
+          {
+            "tag": "SELECT",
+            "id": "record",
+            "text": "",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "reset",
+            "text": "重置场景",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "A · 页内分步建议",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "B · 独立步骤",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "C · 分区渐进",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "discard",
+            "text": "放弃并退出",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "keep-editing",
+            "text": "继续填写",
+            "disabled": false,
+            "value": ""
+          }
+        ],
+        "focus": {
+          "tag": "SELECT",
+          "id": "record",
+          "outline": "solid"
+        },
+        "reset": "not-tested",
+        "issues": [],
+        "screenshot": "failure-390.png"
+      }
+    ],
+    "behavior_coverage": "unverified; loading a partial page does not prove business behavior"
+  },
+  {
+    "task": "approval-permission",
+    "side": "B",
+    "status": "inspected-partial-output",
+    "html_sha256": "b4e43d9e4b31969a5bc4be44a59da8d7954c17a336e9a40c880837e0d1585e91",
+    "browser": "151.0.7922.34",
+    "delivery": "file:// offline=true",
+    "turn_completed": false,
+    "missing_resources": [
+      "tokens.css",
+      "contract-tokens.css",
+      "scenarios.js",
+      "app.js"
+    ],
+    "observations": [
+      {
+        "scene": "primary",
+        "width": 1440,
+        "height": 900,
+        "text": "跳到资料核对\n低保真候选 · 尚未选择\n预览方案\nA · 逐项队列\nB · 核对列表\nC · 按阻断分组\n初始场景\n审核员 · 可确认\n观察员 · 只读\n重置场景\n候选比较与建议：优先评估 B；预览不代表选择\n\n审批与权限 / 资料核对\n\n资料核对\n\n逐项核对或选择多项确认，缺负责人项需先补充负责人。\n\n固定资料快照 · 2026-09-29\n\n设计草案：所有确认仅在当前页面模拟，重置后恢复；不产生真实审批。\n\n选择全部未确认项\n清空选择\n确认所选\n\n核对数、错误数按给定资料展示；错误数是否阻断确认尚未定义，本草案不据此增加阻断规则。\n\n三案均为待比较草案 · 浏览器验收未完成",
+        "overflow": false,
+        "body_attributes": {
+          "data-default-variant": "a"
+        },
+        "controls": [
+          {
+            "tag": "SELECT",
+            "id": "variant",
+            "text": "A · 逐项队列\nB · 核对列表\nC · 按阻断分组",
+            "disabled": false,
+            "value": "a"
+          },
+          {
+            "tag": "SELECT",
+            "id": "scenario",
+            "text": "审核员 · 可确认\n观察员 · 只读",
+            "disabled": false,
+            "value": "primary"
+          },
+          {
+            "tag": "BUTTON",
+            "id": "reset",
+            "text": "重置场景",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "INPUT",
+            "id": "select-all",
+            "text": "",
+            "disabled": false,
+            "readOnly": false,
+            "value": "on"
+          },
+          {
+            "tag": "BUTTON",
+            "id": "clear-selection",
+            "text": "清空选择",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "batch-confirm",
+            "text": "确认所选",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "关闭",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "返回资料",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "取消，继续核对",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "commit-confirm",
+            "text": "确认",
+            "disabled": false,
+            "value": ""
+          }
+        ],
+        "focus": {
+          "tag": "A",
+          "id": "",
+          "outline": "none"
+        },
+        "reset": "not-tested",
+        "issues": [
+          {
+            "type": "requestfailed",
+            "url": "file:///Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-29-prototype-design-enhancement/pilot/ab/approval-permission/B/tokens.css",
+            "failure": {
+              "errorText": "net::ERR_FILE_NOT_FOUND"
+            }
+          },
+          {
+            "type": "error",
+            "message": "Failed to load resource: net::ERR_FILE_NOT_FOUND"
+          },
+          {
+            "type": "requestfailed",
+            "url": "file:///Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-29-prototype-design-enhancement/pilot/ab/approval-permission/B/contract-tokens.css",
+            "failure": {
+              "errorText": "net::ERR_FILE_NOT_FOUND"
+            }
+          },
+          {
+            "type": "error",
+            "message": "Failed to load resource: net::ERR_FILE_NOT_FOUND"
+          },
+          {
+            "type": "requestfailed",
+            "url": "file:///Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-29-prototype-design-enhancement/pilot/ab/approval-permission/B/scenarios.js",
+            "failure": {
+              "errorText": "net::ERR_FILE_NOT_FOUND"
+            }
+          },
+          {
+            "type": "error",
+            "message": "Failed to load resource: net::ERR_FILE_NOT_FOUND"
+          },
+          {
+            "type": "requestfailed",
+            "url": "file:///Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-29-prototype-design-enhancement/pilot/ab/approval-permission/B/app.js",
+            "failure": {
+              "errorText": "net::ERR_FILE_NOT_FOUND"
+            }
+          },
+          {
+            "type": "error",
+            "message": "Failed to load resource: net::ERR_FILE_NOT_FOUND"
+          }
+        ],
+        "screenshot": "primary-1440.png"
+      },
+      {
+        "scene": "no-permission",
+        "width": 1440,
+        "height": 900,
+        "text": "跳到资料核对\n低保真候选 · 尚未选择\n预览方案\nA · 逐项队列\nB · 核对列表\nC · 按阻断分组\n初始场景\n审核员 · 可确认\n观察员 · 只读\n重置场景\n候选比较与建议：优先评估 B；预览不代表选择\n\n审批与权限 / 资料核对\n\n资料核对\n\n逐项核对或选择多项确认，缺负责人项需先补充负责人。\n\n固定资料快照 · 2026-09-29\n\n设计草案：所有确认仅在当前页面模拟，重置后恢复；不产生真实审批。\n\n选择全部未确认项\n清空选择\n确认所选\n\n核对数、错误数按给定资料展示；错误数是否阻断确认尚未定义，本草案不据此增加阻断规则。\n\n三案均为待比较草案 · 浏览器验收未完成",
+        "overflow": false,
+        "body_attributes": {
+          "data-default-variant": "a"
+        },
+        "controls": [
+          {
+            "tag": "SELECT",
+            "id": "variant",
+            "text": "A · 逐项队列\nB · 核对列表\nC · 按阻断分组",
+            "disabled": false,
+            "value": "a"
+          },
+          {
+            "tag": "SELECT",
+            "id": "scenario",
+            "text": "审核员 · 可确认\n观察员 · 只读",
+            "disabled": false,
+            "value": "primary"
+          },
+          {
+            "tag": "BUTTON",
+            "id": "reset",
+            "text": "重置场景",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "INPUT",
+            "id": "select-all",
+            "text": "",
+            "disabled": false,
+            "readOnly": false,
+            "value": "on"
+          },
+          {
+            "tag": "BUTTON",
+            "id": "clear-selection",
+            "text": "清空选择",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "batch-confirm",
+            "text": "确认所选",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "关闭",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "返回资料",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "取消，继续核对",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "commit-confirm",
+            "text": "确认",
+            "disabled": false,
+            "value": ""
+          }
+        ],
+        "focus": {
+          "tag": "SELECT",
+          "id": "variant",
+          "outline": "none"
+        },
+        "reset": "not-tested",
+        "issues": [],
+        "screenshot": "no-permission-1440.png"
+      },
+      {
+        "scene": "primary",
+        "width": 390,
+        "height": 844,
+        "text": "跳到资料核对\n低保真候选 · 尚未选择\n预览方案\nA · 逐项队列\nB · 核对列表\nC · 按阻断分组\n初始场景\n审核员 · 可确认\n观察员 · 只读\n重置场景\n候选比较与建议：优先评估 B；预览不代表选择\n\n审批与权限 / 资料核对\n\n资料核对\n\n逐项核对或选择多项确认，缺负责人项需先补充负责人。\n\n固定资料快照 · 2026-09-29\n\n设计草案：所有确认仅在当前页面模拟，重置后恢复；不产生真实审批。\n\n选择全部未确认项\n清空选择\n确认所选\n\n核对数、错误数按给定资料展示；错误数是否阻断确认尚未定义，本草案不据此增加阻断规则。\n\n三案均为待比较草案 · 浏览器验收未完成",
+        "overflow": false,
+        "body_attributes": {
+          "data-default-variant": "a"
+        },
+        "controls": [
+          {
+            "tag": "SELECT",
+            "id": "variant",
+            "text": "A · 逐项队列\nB · 核对列表\nC · 按阻断分组",
+            "disabled": false,
+            "value": "a"
+          },
+          {
+            "tag": "SELECT",
+            "id": "scenario",
+            "text": "审核员 · 可确认\n观察员 · 只读",
+            "disabled": false,
+            "value": "primary"
+          },
+          {
+            "tag": "BUTTON",
+            "id": "reset",
+            "text": "重置场景",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "INPUT",
+            "id": "select-all",
+            "text": "",
+            "disabled": false,
+            "readOnly": false,
+            "value": "on"
+          },
+          {
+            "tag": "BUTTON",
+            "id": "clear-selection",
+            "text": "清空选择",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "batch-confirm",
+            "text": "确认所选",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "关闭",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "返回资料",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "取消，继续核对",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "commit-confirm",
+            "text": "确认",
+            "disabled": false,
+            "value": ""
+          }
+        ],
+        "focus": {
+          "tag": "SELECT",
+          "id": "scenario",
+          "outline": "none"
+        },
+        "reset": "not-tested",
+        "issues": [],
+        "screenshot": "primary-390.png"
+      },
+      {
+        "scene": "no-permission",
+        "width": 390,
+        "height": 844,
+        "text": "跳到资料核对\n低保真候选 · 尚未选择\n预览方案\nA · 逐项队列\nB · 核对列表\nC · 按阻断分组\n初始场景\n审核员 · 可确认\n观察员 · 只读\n重置场景\n候选比较与建议：优先评估 B；预览不代表选择\n\n审批与权限 / 资料核对\n\n资料核对\n\n逐项核对或选择多项确认，缺负责人项需先补充负责人。\n\n固定资料快照 · 2026-09-29\n\n设计草案：所有确认仅在当前页面模拟，重置后恢复；不产生真实审批。\n\n选择全部未确认项\n清空选择\n确认所选\n\n核对数、错误数按给定资料展示；错误数是否阻断确认尚未定义，本草案不据此增加阻断规则。\n\n三案均为待比较草案 · 浏览器验收未完成",
+        "overflow": false,
+        "body_attributes": {
+          "data-default-variant": "a"
+        },
+        "controls": [
+          {
+            "tag": "SELECT",
+            "id": "variant",
+            "text": "A · 逐项队列\nB · 核对列表\nC · 按阻断分组",
+            "disabled": false,
+            "value": "a"
+          },
+          {
+            "tag": "SELECT",
+            "id": "scenario",
+            "text": "审核员 · 可确认\n观察员 · 只读",
+            "disabled": false,
+            "value": "primary"
+          },
+          {
+            "tag": "BUTTON",
+            "id": "reset",
+            "text": "重置场景",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "INPUT",
+            "id": "select-all",
+            "text": "",
+            "disabled": false,
+            "readOnly": false,
+            "value": "on"
+          },
+          {
+            "tag": "BUTTON",
+            "id": "clear-selection",
+            "text": "清空选择",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "batch-confirm",
+            "text": "确认所选",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "关闭",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "返回资料",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "取消，继续核对",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "commit-confirm",
+            "text": "确认",
+            "disabled": false,
+            "value": ""
+          }
+        ],
+        "focus": {
+          "tag": "BUTTON",
+          "id": "reset",
+          "outline": "none"
+        },
+        "reset": "not-tested",
+        "issues": [],
+        "screenshot": "no-permission-390.png"
+      }
+    ],
+    "behavior_coverage": "unverified; loading a partial page does not prove business behavior"
+  },
+  {
+    "task": "conflict-recovery",
+    "side": "A",
+    "status": "missing-html",
+    "behavior_coverage": "unverified"
+  },
+  {
+    "task": "dense-analysis",
+    "side": "B",
+    "status": "inspected-partial-output",
+    "html_sha256": "d61fd13b3629e9144ffce4a1863018edda4735b99c1fd15ba103c803ad7e4378",
+    "browser": "151.0.7922.34",
+    "delivery": "file:// offline=true",
+    "turn_completed": false,
+    "missing_resources": [
+      "contract.css",
+      "scenarios.js"
+    ],
+    "observations": [
+      {
+        "scene": "primary",
+        "width": 1440,
+        "height": 900,
+        "text": "跳至资料名称筛选\n资料检查\n检查分析\n资料检查分析\n\n查看检查结果，按资料名称快速定位。\n\n总检查\n240\n异常\n9\n待处理\n6\n\n全部资料汇总，不随名称筛选变化\n\n资料明细\n逐项查看检查结果\n资料名称\n查询\n重置筛选\n\n显示全部 3 项资料\n\n资料检查明细，包含名称、检查数量、异常数量、负责人、状态和更新时间。\n资料名称\t检查数量\t异常数量\t负责人\t状态\t更新时间\n“未提供”表示负责人信息为空\n共 3 项资料\n设计草案\n场景：primary\n重置场景",
+        "overflow": false,
+        "body_attributes": {
+          "data-scenario": "primary"
+        },
+        "controls": [
+          {
+            "tag": "INPUT",
+            "id": "name-filter",
+            "text": "",
+            "disabled": false,
+            "readOnly": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "查询",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "clear-filter",
+            "text": "重置筛选",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "empty-reset",
+            "text": "重置筛选",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "reset-scenario",
+            "text": "重置场景",
+            "disabled": false,
+            "value": ""
+          }
+        ],
+        "focus": {
+          "tag": "A",
+          "id": "",
+          "outline": "solid"
+        },
+        "reset": "not-tested",
+        "issues": [
+          {
+            "type": "requestfailed",
+            "url": "file:///Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-29-prototype-design-enhancement/pilot/ab/dense-analysis/B/contract.css",
+            "failure": {
+              "errorText": "net::ERR_FILE_NOT_FOUND"
+            }
+          },
+          {
+            "type": "error",
+            "message": "Failed to load resource: net::ERR_FILE_NOT_FOUND"
+          },
+          {
+            "type": "requestfailed",
+            "url": "file:///Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-29-prototype-design-enhancement/pilot/ab/dense-analysis/B/scenarios.js",
+            "failure": {
+              "errorText": "net::ERR_FILE_NOT_FOUND"
+            }
+          },
+          {
+            "type": "error",
+            "message": "Failed to load resource: net::ERR_FILE_NOT_FOUND"
+          },
+          {
+            "type": "pageerror",
+            "message": "Cannot read properties of undefined (reading 'summary')"
+          }
+        ],
+        "screenshot": "primary-1440.png"
+      },
+      {
+        "scene": "primary",
+        "width": 390,
+        "height": 844,
+        "text": "跳至资料名称筛选\n资料检查\n检查分析\n资料检查分析\n\n查看检查结果，按资料名称快速定位。\n\n总检查\n240\n异常\n9\n待处理\n6\n\n全部资料汇总，不随名称筛选变化\n\n资料明细\n逐项查看检查结果\n资料名称\n查询\n重置筛选\n\n显示全部 3 项资料\n\n左右滑动查看全部列 →\n资料检查明细，包含名称、检查数量、异常数量、负责人、状态和更新时间。\n资料名称\t检查数量\t异常数量\t负责人\t状态\t更新时间\n“未提供”表示负责人信息为空\n共 3 项资料\n设计草案\n场景：primary\n重置场景",
+        "overflow": false,
+        "body_attributes": {
+          "data-scenario": "primary"
+        },
+        "controls": [
+          {
+            "tag": "INPUT",
+            "id": "name-filter",
+            "text": "",
+            "disabled": false,
+            "readOnly": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "查询",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "clear-filter",
+            "text": "重置筛选",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "empty-reset",
+            "text": "重置筛选",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "reset-scenario",
+            "text": "重置场景",
+            "disabled": false,
+            "value": ""
+          }
+        ],
+        "focus": {
+          "tag": "INPUT",
+          "id": "name-filter",
+          "outline": "solid"
+        },
+        "reset": "not-tested",
+        "issues": [],
+        "screenshot": "primary-390.png"
+      }
+    ],
+    "behavior_coverage": "unverified; loading a partial page does not prove business behavior"
+  },
+  {
+    "task": "preserve-small-change",
+    "side": "A",
+    "status": "inspected-partial-output",
+    "html_sha256": "66dbe87f64ca105128cd23e01091ac61bb8da61002235462fee550c7de14a59c",
+    "browser": "151.0.7922.34",
+    "delivery": "file:// offline=true",
+    "turn_completed": false,
+    "missing_resources": [],
+    "observations": [
+      {
+        "scene": "primary",
+        "width": 1440,
+        "height": 900,
+        "text": "资料查询\n名称或编号查询重置查询\n\n共 3 条\n\n编号\t资料名称\t负责人\t状态\nM-001\t季度经营分析资料\t张明\t待核对\nM-002\t跨部门业务协作与异常处理说明（长名称示例）\t李华\t待核对\nM-003\t归档清单\t未填写\t待处理\n重置场景",
+        "overflow": false,
+        "body_attributes": {},
+        "controls": [
+          {
+            "tag": "INPUT",
+            "id": "query",
+            "text": "",
+            "disabled": false,
+            "readOnly": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "查询",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "重置查询",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "reset-scenario",
+            "text": "重置场景",
+            "disabled": false,
+            "value": ""
+          }
+        ],
+        "focus": {
+          "tag": "INPUT",
+          "id": "query",
+          "outline": "solid"
+        },
+        "reset": "input-restored",
+        "issues": [],
+        "screenshot": "primary-1440.png"
+      },
+      {
+        "scene": "primary",
+        "width": 390,
+        "height": 844,
+        "text": "资料查询\n名称或编号\n查询\n重置查询\n\n共 3 条\n\n编号\t资料名称\t负责人\t状态\nM-001\t季度经营分析资料\t张明\t待核对\nM-002\t跨部门业务协作与异常处理说明（长名称示例）\t李华\t待核对\nM-003\t归档清单\t未填写\t待处理\n重置场景",
+        "overflow": false,
+        "body_attributes": {},
+        "controls": [
+          {
+            "tag": "INPUT",
+            "id": "query",
+            "text": "",
+            "disabled": false,
+            "readOnly": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "查询",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "text": "重置查询",
+            "disabled": false,
+            "value": ""
+          },
+          {
+            "tag": "BUTTON",
+            "id": "reset-scenario",
+            "text": "重置场景",
+            "disabled": false,
+            "value": ""
+          }
+        ],
+        "focus": {
+          "tag": "BUTTON",
+          "id": "",
+          "outline": "solid"
+        },
+        "reset": "input-restored",
+        "issues": [],
+        "screenshot": "primary-390.png"
+      }
+    ],
+    "behavior_coverage": "unverified; loading a partial page does not prove business behavior"
+  }
+]

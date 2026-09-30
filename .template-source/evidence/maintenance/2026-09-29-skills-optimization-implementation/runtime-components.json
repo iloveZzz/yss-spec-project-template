@@ -1,0 +1,36 @@
+{
+  "components": [
+    {
+      "path": "/Applications/ChatGPT.app/Contents/Resources/codex-cli/bin/codex",
+      "sha256": "50ab38ba21d0d9f8346f32f41848382f15b556190f3c7a07e885a4fb73e379c8"
+    },
+    {
+      "path": "/Applications/ChatGPT.app/Contents/Resources/codex-cli/bin/codex-code-mode-host",
+      "sha256": "4c39893666a166addd217df78f158c5975f69b598404a9f86ff0df0f3da43f6d"
+    },
+    {
+      "path": "/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex",
+      "sha256": "3e11ccc743e8198a5ef84fb57c89941d845b0ea0302485ed1fbac2f0821aca5a"
+    },
+    {
+      "path": "/Users/zhudaoming/.local/lib/node_modules/@earendil-works/pi-coding-agent/dist/bundle/cli.js",
+      "sha256": "e6d7fcf36a239cf3746e67ddf4222081ac01a601b85a3ee688bdfe9c161d754c"
+    },
+    {
+      "path": "/Users/zhudaoming/.local/share/cursor-agent/versions/2026.09.28-64d2043/index.js",
+      "sha256": "0d0c83f5478c3dcd806cb9697123cee3f548005fbcd3acafe31f102d659f5a7b"
+    }
+  ],
+  "codex_version": "0.158.0-alpha.2.1",
+  "codex_model": "gpt-6-astra",
+  "codex_provider": "custom/OpenAI/responses",
+  "codex_reasoning": "xhigh",
+  "pi_version": "0.85.1",
+  "pi_model": "ark-code-latest",
+  "pi_provider": "agent-plan",
+  "pi_thinking": "high",
+  "cursor_version": "2026.09.28-64d2043",
+  "cursor_model": "composer-2[fast=true]",
+  "cursor_isolated_auth": "unavailable in preflight",
+  "token_prices": "unknown"
+}

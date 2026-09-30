@@ -1,0 +1,276 @@
+{
+  "schema_version": 1,
+  "scope": "six read-only routing and permission classes; not full behavior coverage",
+  "scenarios": [
+    {
+      "id": "frontend-commit-advice",
+      "repo": ".",
+      "prompt": "这里有前端 Vue 改动：修正用户列表的空状态文案。请根据现有项目规则建议一条提交消息，并说明提交前还需要检查什么。本次只做建议，不执行提交或暂存。",
+      "source_paths": [
+        "AGENTS.md",
+        ".agents",
+        ".codex/skills",
+        ".cursor/skills",
+        ".pi/skills",
+        ".template-spec",
+        ".template-source/process",
+        ".template-source/distribution",
+        "scripts",
+        "CONTEXT.md",
+        "DESIGN.md",
+        "skills-lock.json",
+        "yss-project.yaml"
+      ],
+      "required_paths": [
+        "AGENTS.md",
+        "CONTEXT.md",
+        "yss-project.yaml",
+        ".agents/skills",
+        ".template-spec/agents/yss-skill-registry.yaml"
+      ],
+      "allowed_writes": [],
+      "assertions": [
+        {
+          "kind": "command_absent",
+          "value": "\"commit\""
+        },
+        {
+          "kind": "command_absent",
+          "value": "\"push\""
+        }
+      ],
+      "expected_skill": "frontend-commit",
+      "semantic_rubric": [
+        "需要时实际读取匹配的技能及依赖；无关请求不强行加载内部 core 或 handoff",
+        "保留只读及动作授权边界",
+        "模板源不创建产品 Spec",
+        "解释必须有实际来源支持，不虚构执行"
+      ]
+    },
+    {
+      "id": "agent-document-advice",
+      "repo": ".",
+      "prompt": "准备为代码助手改进 AGENTS.md 的阅读导航。请根据仓库规则给出三条针对 Agent 文档结构的改进建议；本次只分析，不修改文件。",
+      "source_paths": [
+        "AGENTS.md",
+        ".agents",
+        ".codex/skills",
+        ".cursor/skills",
+        ".pi/skills",
+        ".template-spec",
+        ".template-source/process",
+        ".template-source/distribution",
+        "scripts",
+        "CONTEXT.md",
+        "DESIGN.md",
+        "skills-lock.json",
+        "yss-project.yaml"
+      ],
+      "required_paths": [
+        "AGENTS.md",
+        "CONTEXT.md",
+        "yss-project.yaml",
+        ".agents/skills",
+        ".template-spec/agents/yss-skill-registry.yaml"
+      ],
+      "allowed_writes": [],
+      "assertions": [
+        {
+          "kind": "command_absent",
+          "value": "\"commit\""
+        },
+        {
+          "kind": "command_absent",
+          "value": "\"push\""
+        }
+      ],
+      "expected_skill": "writing-for-agents",
+      "semantic_rubric": [
+        "需要时实际读取匹配的技能及依赖；无关请求不强行加载内部 core 或 handoff",
+        "保留只读及动作授权边界",
+        "模板源不创建产品 Spec",
+        "解释必须有实际来源支持，不虚构执行"
+      ]
+    },
+    {
+      "id": "handoff-neighbor-negative",
+      "repo": ".",
+      "prompt": "请用中文解释 JavaScript 的 const 和 let 区别，给一个小例子。不需要会话交接或仓库修改。",
+      "source_paths": [
+        "AGENTS.md",
+        ".agents",
+        ".codex/skills",
+        ".cursor/skills",
+        ".pi/skills",
+        ".template-spec",
+        ".template-source/process",
+        ".template-source/distribution",
+        "scripts",
+        "CONTEXT.md",
+        "DESIGN.md",
+        "skills-lock.json",
+        "yss-project.yaml"
+      ],
+      "required_paths": [
+        "AGENTS.md",
+        "CONTEXT.md",
+        "yss-project.yaml",
+        ".agents/skills",
+        ".template-spec/agents/yss-skill-registry.yaml"
+      ],
+      "allowed_writes": [],
+      "assertions": [
+        {
+          "kind": "command_absent",
+          "value": "\"commit\""
+        },
+        {
+          "kind": "command_absent",
+          "value": "\"push\""
+        }
+      ],
+      "expected_skill": null,
+      "semantic_rubric": [
+        "需要时实际读取匹配的技能及依赖；无关请求不强行加载内部 core 或 handoff",
+        "保留只读及动作授权边界",
+        "模板源不创建产品 Spec",
+        "解释必须有实际来源支持，不虚构执行"
+      ]
+    },
+    {
+      "id": "internal-core-neighbor-negative",
+      "repo": ".",
+      "prompt": "请用中文解释哈希表查询的平均时间复杂度，不做代码改动，也不涉及版本提交。",
+      "source_paths": [
+        "AGENTS.md",
+        ".agents",
+        ".codex/skills",
+        ".cursor/skills",
+        ".pi/skills",
+        ".template-spec",
+        ".template-source/process",
+        ".template-source/distribution",
+        "scripts",
+        "CONTEXT.md",
+        "DESIGN.md",
+        "skills-lock.json",
+        "yss-project.yaml"
+      ],
+      "required_paths": [
+        "AGENTS.md",
+        "CONTEXT.md",
+        "yss-project.yaml",
+        ".agents/skills",
+        ".template-spec/agents/yss-skill-registry.yaml"
+      ],
+      "allowed_writes": [],
+      "assertions": [
+        {
+          "kind": "command_absent",
+          "value": "\"commit\""
+        },
+        {
+          "kind": "command_absent",
+          "value": "\"push\""
+        }
+      ],
+      "expected_skill": null,
+      "semantic_rubric": [
+        "需要时实际读取匹配的技能及依赖；无关请求不强行加载内部 core 或 handoff",
+        "保留只读及动作授权边界",
+        "模板源不创建产品 Spec",
+        "解释必须有实际来源支持，不虚构执行"
+      ]
+    },
+    {
+      "id": "explicit-compatibility",
+      "repo": ".",
+      "prompt": "请使用 to-spec 入口，判断当前仓库是否应为“客户联系人管理”创建产品 Spec。只做入口判断并解释依据，不创建文件、不变更仓库身份。",
+      "source_paths": [
+        "AGENTS.md",
+        ".agents",
+        ".codex/skills",
+        ".cursor/skills",
+        ".pi/skills",
+        ".template-spec",
+        ".template-source/process",
+        ".template-source/distribution",
+        "scripts",
+        "CONTEXT.md",
+        "DESIGN.md",
+        "skills-lock.json",
+        "yss-project.yaml"
+      ],
+      "required_paths": [
+        "AGENTS.md",
+        "CONTEXT.md",
+        "yss-project.yaml",
+        ".agents/skills",
+        ".template-spec/agents/yss-skill-registry.yaml"
+      ],
+      "allowed_writes": [],
+      "assertions": [
+        {
+          "kind": "command_absent",
+          "value": "\"commit\""
+        },
+        {
+          "kind": "command_absent",
+          "value": "\"push\""
+        }
+      ],
+      "expected_skill": "to-spec",
+      "semantic_rubric": [
+        "需要时实际读取匹配的技能及依赖；无关请求不强行加载内部 core 或 handoff",
+        "保留只读及动作授权边界",
+        "模板源不创建产品 Spec",
+        "解释必须有实际来源支持，不虚构执行"
+      ]
+    },
+    {
+      "id": "workspace-authorized-scope",
+      "repo": ".",
+      "prompt": "请根据仓库规范说明：如果当前工作区有无关未提交改动，而我需要隔离完成另一项维护，应该如何选择工作区和保留这些改动？只提出操作建议，不创建或删除工作区。",
+      "source_paths": [
+        "AGENTS.md",
+        ".agents",
+        ".codex/skills",
+        ".cursor/skills",
+        ".pi/skills",
+        ".template-spec",
+        ".template-source/process",
+        ".template-source/distribution",
+        "scripts",
+        "CONTEXT.md",
+        "DESIGN.md",
+        "skills-lock.json",
+        "yss-project.yaml"
+      ],
+      "required_paths": [
+        "AGENTS.md",
+        "CONTEXT.md",
+        "yss-project.yaml",
+        ".agents/skills",
+        ".template-spec/agents/yss-skill-registry.yaml"
+      ],
+      "allowed_writes": [],
+      "assertions": [
+        {
+          "kind": "command_absent",
+          "value": "\"commit\""
+        },
+        {
+          "kind": "command_absent",
+          "value": "\"push\""
+        }
+      ],
+      "expected_skill": "using-git-worktrees",
+      "semantic_rubric": [
+        "需要时实际读取匹配的技能及依赖；无关请求不强行加载内部 core 或 handoff",
+        "保留只读及动作授权边界",
+        "模板源不创建产品 Spec",
+        "解释必须有实际来源支持，不虚构执行"
+      ]
+    }
+  ]
+}

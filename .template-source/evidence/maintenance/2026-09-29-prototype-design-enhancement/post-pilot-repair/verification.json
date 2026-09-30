@@ -1,0 +1,121 @@
+{
+  "status": "passed",
+  "scope": "Maintainer repair copy; not an Agent run or A/B result",
+  "rows": [
+    {
+      "width": 1440,
+      "query_region_geometry": "identical-to-original",
+      "query_empty_reset": "passed",
+      "expected": [
+        {
+          "tag": "INPUT",
+          "text": "",
+          "x": 94,
+          "y": 105.5,
+          "width": 162,
+          "height": 38
+        },
+        {
+          "tag": "BUTTON",
+          "text": "查询",
+          "x": 256,
+          "y": 108.5,
+          "width": 44,
+          "height": 32
+        },
+        {
+          "tag": "BUTTON",
+          "text": "重置查询",
+          "x": 300,
+          "y": 108.5,
+          "width": 72,
+          "height": 32
+        }
+      ],
+      "actual": [
+        {
+          "tag": "INPUT",
+          "text": "",
+          "x": 94,
+          "y": 105.5,
+          "width": 162,
+          "height": 38
+        },
+        {
+          "tag": "BUTTON",
+          "text": "查询",
+          "x": 256,
+          "y": 108.5,
+          "width": 44,
+          "height": 32
+        },
+        {
+          "tag": "BUTTON",
+          "text": "重置查询",
+          "x": 300,
+          "y": 108.5,
+          "width": 72,
+          "height": 32
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "query_region_geometry": "identical-to-original",
+      "query_empty_reset": "passed",
+      "expected": [
+        {
+          "tag": "INPUT",
+          "text": "",
+          "x": 94,
+          "y": 105.5,
+          "width": 162,
+          "height": 38
+        },
+        {
+          "tag": "BUTTON",
+          "text": "查询",
+          "x": 256,
+          "y": 108.5,
+          "width": 44,
+          "height": 32
+        },
+        {
+          "tag": "BUTTON",
+          "text": "重置查询",
+          "x": 24,
+          "y": 143.5,
+          "width": 72,
+          "height": 32
+        }
+      ],
+      "actual": [
+        {
+          "tag": "INPUT",
+          "text": "",
+          "x": 94,
+          "y": 105.5,
+          "width": 162,
+          "height": 38
+        },
+        {
+          "tag": "BUTTON",
+          "text": "查询",
+          "x": 256,
+          "y": 108.5,
+          "width": 44,
+          "height": 32
+        },
+        {
+          "tag": "BUTTON",
+          "text": "重置查询",
+          "x": 24,
+          "y": 143.5,
+          "width": 72,
+          "height": 32
+        }
+      ]
+    }
+  ],
+  "errors": []
+}

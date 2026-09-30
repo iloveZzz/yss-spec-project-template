@@ -1,0 +1,68 @@
+{
+  "result_schema": "workflow-execution-result-v1",
+  "work_unit": "work-unit.maintenance-research",
+  "workflow_reference": ".template-spec/process/research-completion.md",
+  "result": "completed",
+  "skill": "yss-research",
+  "repository_mode": "template-source",
+  "changed_files": [
+    ".template-source/evidence/maintenance/2026-09-30-plan-spec-research/checks.json",
+    ".template-source/evidence/maintenance/2026-09-30-plan-spec-research/plan-spec-evidence.yaml",
+    ".template-source/evidence/maintenance/2026-09-30-plan-spec-research/plan-spec-research-brief.md",
+    ".template-source/evidence/maintenance/2026-09-30-plan-spec-research/quality-probe.json",
+    ".template-source/evidence/maintenance/2026-09-30-plan-spec-research/source-baseline.json",
+    ".template-source/evidence/maintenance/2026-09-30-plan-spec-research/source-freshness.json",
+    ".template-source/evidence/maintenance/2026-09-30-plan-spec-research/verification"
+  ],
+  "changed_artifacts": [
+    ".template-source/evidence/maintenance/2026-09-30-plan-spec-research/plan-spec-research-brief.md",
+    ".template-source/evidence/maintenance/2026-09-30-plan-spec-research/plan-spec-evidence.yaml"
+  ],
+  "evidence_refs": [
+    ".template-source/evidence/maintenance/2026-09-30-plan-spec-research/verification/verification.json",
+    ".template-source/evidence/maintenance/2026-09-30-plan-spec-research/plan-spec-research-brief.md",
+    ".template-source/evidence/maintenance/2026-09-30-plan-spec-research/plan-spec-evidence.yaml",
+    "CONTEXT.md",
+    ".template-source/evidence/maintenance/2026-09-30-plan-spec-research/checks.json",
+    ".template-source/evidence/maintenance/2026-09-30-plan-spec-research/quality-probe.json",
+    ".template-source/evidence/maintenance/2026-09-30-plan-spec-research/source-freshness.json"
+  ],
+  "verification_results": [
+    {
+      "command": [
+        "node",
+        "scripts/verify-plan-spec-entry-scenarios"
+      ],
+      "exit_code": 0,
+      "duration_ms": 2118,
+      "stdout": "Plan → Spec 无状态绕过与默认加载检查通过\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "scripts/verify-plan-requirements-context-scenarios"
+      ],
+      "exit_code": 0,
+      "duration_ms": 1220,
+      "stdout": "plan-requirements Context Contract scenarios passed\n",
+      "stderr": ""
+    }
+  ],
+  "research_verification": {
+    "ref": ".template-source/evidence/maintenance/2026-09-30-plan-spec-research/verification/verification.json",
+    "digest": "sha256:c9d6fab79cb519a92d04343c7857006c13d6058d454e1b852ea0217c0b329a02"
+  },
+  "context_reconciliation": {
+    "status": "not-applicable",
+    "ref": "CONTEXT.md",
+    "reason": "template-source研究不产生业务术语、不批准或流转产品资产；根合同已读取并执行验证"
+  },
+  "deferred_seams": [],
+  "drift": [],
+  "violation": [],
+  "new_impacts": [],
+  "stale_candidates": [],
+  "blocking_signals": [],
+  "next_route": null
+}

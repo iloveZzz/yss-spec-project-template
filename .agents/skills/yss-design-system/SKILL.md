@@ -29,12 +29,20 @@ description: 建立或核验 YSS 设计系统、主题 Token 与页面视觉一�
 5. 若是前端实现阶段，配合 `yss-ui`、`yss-ui-business-page-generation`、`yss-formily` 及实际命中的组件专项，但本技能负责风格与体验一致性门禁。
 6. 若发现视觉 Token 或组件变体不足，先更新根 `DESIGN.md` 并重新生成投影；只有治理、流程或验收说明不足时才更新 `.template-spec/design/design.md`。
 
+新建高保真原型默认选择根规范已有的紧凑组件变体，按需读取 [原型默认主题](references/prototype-default-theme.md)；此选择不改变生产主题默认值或既有批准页面。
+
+需要构建或评审企业后台页面层级、密度、表单反馈时，按需读取 [企业后台设计方法与示例](references/enterprise-craft.md)。示例演示同 Token 下的结构改进，不新增视觉规范或产品需求。
+
+需要调整页面分组、字段反馈、详情侧栏或紧凑工具栏时，读取 [页面组合与主题适配](references/page-composition.md)。
+
+新企业原型的模块、侧栏、页签和分栏使用根规范 workspace 角色；工作区充分利用宽度，窄屏导航改用 Sheet。缓存、草稿与场景重置由原型技能 `references/enterprise-workspace.md` 承担，不由主题定义业务状态。
+
 ## 核心基线
 
 - UI 定位：中后台、数据密集、表单密集、流程密集、可扫描、低装饰。
 - 颜色：使用 `DESIGN.md` 的 `colors.*`；品牌 seed 与高对比主控件变体是不同角色，不得用 seed 绕过 `components.button-primary*`。
 - 排版：使用 `DESIGN.md` 的 `typography.*`，状态不能只靠字重表达。
-- 密度：使用 `DESIGN.md` 的组件高度与 `spacing.*`；默认采用 Data Quality 浅色、32px 控件；仅显式紧凑模式应用一次 compact algorithm，不手工二次压缩。
+- 密度：使用 `DESIGN.md` 的组件高度与 `spacing.*`；生产默认采用 Data Quality 浅色和根规范普通控件；新高保真原型选择命名紧凑变体，窄屏采用普通控件。生产 compact algorithm 仅显式选择时应用一次。
 - 圆角：使用 `rounded.*`，控件、容器和 pill 角色不得用页面级 magic number 替代。
 - 运行时换肤：短名 CSS 变量必须指向 `--brand-*`，不要再维护第二套色值。
 - 表面层级：页面背景、内容容器、浮层三层模型。
@@ -52,7 +60,7 @@ description: 建立或核验 YSS 设计系统、主题 Token 与页面视觉一�
 - 不硬编码表面色、边框色、状态色；优先使用 token 或主题变量。
 - 交互原型中的每个可点击主动作都必须给出 interaction feedback：状态变化、禁用原因、成功或失败反馈至少覆盖其一。
 - accessibility：品牌 Seed 保持 `colors.primary`；实际文字/背景组合不满足 WCAG 2.2 AA 时，优先使用 `components.*` 中的高对比变体或 `ConfigProvider` component token 调整，并验证 default/hover/active/disabled/focus、键盘焦点、200% zoom、reduced motion 与目标尺寸，不新增页面级特例色。
-- 离线原型直接消费所选主题的派生值；默认使用 default 快照，显式紧凑模式才使用 compact 快照，避免重复 compact。生产组件库的主题算法由其实现合同约束；暗色启用前必须核验当前派生 Token 与浏览器截图。
+- 离线原型直接消费所选主题的派生值；原型主题从 variables.css 的根规范命名变体选择密度，正文仍遵循 typography.body；生产算法快照按已选模式使用，避免重复 compact。生产组件库的主题算法由其实现合同约束；暗色启用前必须核验当前派生 Token 与浏览器截图。
 - 原型使用语义 HTML、项目主题变量与当前行为合同；生产实现不得依赖组件库内部 DOM、生成类名或未记录 API。
 - 不用 Tag 表达关键错误、阻断或审批状态；关键状态必须有可读文本和语义反馈。
 - 不让按钮、标签、表头、弹窗、卡片中的文字溢出或遮挡。
@@ -73,7 +81,7 @@ description: 建立或核验 YSS 设计系统、主题 Token 与页面视觉一�
 
 - 是否通过 `ConfigProvider`、CSS variables 或项目 token 消费主题。
 - 是否将颜色、圆角、阴影和状态样式绑定到 semantic token，而不是复制表面色和交互色。
-- 是否使用当前 `DESIGN.md` 和所选主题派生快照中的控件、排版与间距值；默认使用 default，仅显式紧凑模式使用 compact，且没有重复 compact。
+- 是否使用当前 `DESIGN.md` 和所选主题派生快照中的控件、排版与间距值；原型已登记 compact/comfortable 密度，生产按当前合同选择算法快照，且没有重复 compact。
 - 是否使用 YSS UI / Ant Design 的语义组件，而不是自造同类组件。
 - 是否保留 hover、focus、active、disabled、loading、error、empty 状态。
 - 是否为可提交、导出、保存、发布、审批等操作提供明确的 interaction feedback 与不可逆操作确认。
@@ -93,6 +101,8 @@ description: 建立或核验 YSS 设计系统、主题 Token 与页面视觉一�
 | 原型交接前的六轴 QA | 规范直出由 YSS adapter 按 design-contract 验收；独立视觉稿才条件使用 design-qa 比对，项目 Token 优先 |
 | 原型渲染适配 | `yss-prototype-stage/references/product-design-adapter.md`；H1/H2 统一 HTML 交付、分别验证视觉与可操作流程；不得调用 `yss-ui` |
 | API 契约 / 接入 | `yss-openapi-governance` / `yss-api-integration` |
+
+搜索选择、日期范围、320 CSS px 重排或读屏风险检查时，按需读取 [搜索日期主题与无障碍](references/search-date-theme.md)，并入现有六轴 QA。
 
 ## 更新设计系统
 

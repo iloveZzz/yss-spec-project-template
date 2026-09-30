@@ -54,8 +54,11 @@ function closure(root, plan) {
     }
   }
   // Use the repository's pinned parser; regex import scanning mistakes JSDoc and examples for code.
-  const entries = [...selected].filter(ref => /\.[cm]?[jt]s$/.test(ref)
-    || readFileSync(safe(root, ref)).subarray(0, 23).toString().startsWith('#!/usr/bin/env node'));
+  // Browser authoring sources are copied as data, not executed as Node entrypoints.
+  // Their framework-specific graph is verified by the prototype authoring builder.
+  const browserSource = ref => /^\.agents\/skills\/yss-prototype-stage\/assets\/(?:shadcn-vue-authoring|vue-business-patterns)\//.test(ref);
+  const entries = [...selected].filter(ref => !browserSource(ref) && (/\.[cm]?[jt]s$/.test(ref)
+    || readFileSync(safe(root, ref)).subarray(0, 23).toString().startsWith('#!/usr/bin/env node')));
   const { metafile } = inspectModules({ absWorkingDir: root, entryPoints: entries, bundle: true,
     write: false, outdir: '.plugin-module-analysis', platform: 'node', format: 'esm', packages: 'external',
     metafile: true, logLevel: 'silent' });

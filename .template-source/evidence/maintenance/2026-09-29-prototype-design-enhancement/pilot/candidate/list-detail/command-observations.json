@@ -1,0 +1,97 @@
+{
+  "successful_read_commands": [
+    {
+      "command": "/bin/zsh -lc 'cat yss-project.yaml CONTEXT.md DESIGN.md fixture/brief.md .agents/skills/yss-prototype-stage/SKILL.md .agents/skills/yss-design-system/SKILL.md'",
+      "paths": [
+        ".agents/skills/yss-design-system/SKILL.md",
+        ".agents/skills/yss-prototype-stage/SKILL.md"
+      ]
+    },
+    {
+      "command": "/bin/zsh -lc 'cat fixture/brief.md DESIGN.md'",
+      "paths": []
+    },
+    {
+      "command": "/bin/zsh -lc 'cat .agents/skills/yss-prototype-stage/references/product-design-adapter.md .agents/skills/yss-prototype-stage/references/html-prototype-practices.md .agents/skills/yss-design-system/references/enterprise-craft.md'",
+      "paths": [
+        ".agents/skills/yss-design-system/references/enterprise-craft.md",
+        ".agents/skills/yss-prototype-stage/references/html-prototype-practices.md",
+        ".agents/skills/yss-prototype-stage/references/product-design-adapter.md"
+      ]
+    },
+    {
+      "command": "/bin/zsh -lc 'cat fixture/data.json .template-spec/design/design.md .agents/skills/yss-prototype-stage/references/prototype-profile-routing.md .agents/skills/yss-prototype-stage/references/concept-comparison.md'",
+      "paths": [
+        ".agents/skills/yss-prototype-stage/references/concept-comparison.md",
+        ".agents/skills/yss-prototype-stage/references/prototype-profile-routing.md"
+      ]
+    },
+    {
+      "command": "/bin/zsh -lc 'cat .template-spec/design/tokens/variables.css .template-spec/design/tokens/tokens.default.json .template-spec/process/document-writing.md .agents/skills/yss-design-system/references/design-system.md'",
+      "paths": [
+        ".agents/skills/yss-design-system/references/design-system.md"
+      ]
+    },
+    {
+      "command": "/bin/zsh -lc \"sed -n '90,230p' CONTEXT.md && sed -n '1,45p' .agents/skills/yss-prototype-stage/SKILL.md\"",
+      "paths": [
+        ".agents/skills/yss-prototype-stage/SKILL.md"
+      ]
+    },
+    {
+      "command": "/bin/zsh -lc 'cat .agents/skills/yss-prototype-stage/references/prototype-profile-routing.md .agents/skills/yss-prototype-stage/references/concept-comparison.md .agents/skills/yss-design-system/references/enterprise-craft.md'",
+      "paths": [
+        ".agents/skills/yss-design-system/references/enterprise-craft.md",
+        ".agents/skills/yss-prototype-stage/references/concept-comparison.md",
+        ".agents/skills/yss-prototype-stage/references/prototype-profile-routing.md"
+      ]
+    },
+    {
+      "command": "/bin/zsh -lc 'cat .agents/skills/yss-prototype-stage/references/product-design-adapter.md .agents/skills/yss-prototype-stage/references/html-prototype-practices.md .template-spec/process/document-writing.md'",
+      "paths": [
+        ".agents/skills/yss-prototype-stage/references/html-prototype-practices.md",
+        ".agents/skills/yss-prototype-stage/references/product-design-adapter.md"
+      ]
+    },
+    {
+      "command": "/bin/zsh -lc 'cat .template-spec/design/tokens/variables.css'",
+      "paths": []
+    },
+    {
+      "command": "/bin/zsh -lc \"sed -n '1,100p' .agents/skills/yss-prototype-stage/scripts/offline-html.mjs && sed -n '210,365p' .agents/skills/yss-prototype-stage/scripts/offline-html.mjs\"",
+      "paths": [
+        ".agents/skills/yss-prototype-stage/scripts/offline-html.mjs"
+      ]
+    },
+    {
+      "command": "/bin/zsh -lc \"sed -n '99,140p' .agents/skills/yss-prototype-stage/scripts/offline-html.mjs && sed -n '1,65p' .template-spec/design/tokens/tokens.default.json\"",
+      "paths": [
+        ".agents/skills/yss-prototype-stage/scripts/offline-html.mjs"
+      ]
+    },
+    {
+      "command": "/bin/zsh -lc \"mkdir -p drafts && node --input-type=module <<'NODE'\nimport { readFileSync, writeFileSync, copyFileSync } from 'node:fs';\nimport { createHash } from 'node:crypto';\nimport { parseDocument } from './scripts/vendor/yaml.mjs';\nconst design = readFileSync('DESIGN.md', 'utf8');\nconst source = parseDocument(design.split('---')[1]).toJS();\nconst vars = [];\nfor (const section of ['colors','typography','rounded','spacing','components']) {\n  const visit = (obj, path) => {\n    for (const [key, value] of Object.entries(obj)) {\n      const name = [...path, key].join('-').replace(/[A-Z]/g, c => '-' + c.toLowerCase());\n      if (value && typeof value === 'object') visit(value, [...path,key]);\n      else if (typeof value \"'!== '\"'string' || \"'!value.includes('\"'{')) vars.push(\"'`  --design-${name}: ${value};`);\n    }\n  };\n  visit(source[section], [section]);\n}\nwriteFileSync('\"'drafts/design-tokens.css', '/* Derived locally from root DESIGN.md. Source unchanged. */\\\\n:root {\\\\n' + vars.join('\\\\n') + '\\\\n}\\\\n');\ncopyFileSync('.template-spec/design/tokens/variables.css', 'drafts/tokens.css');\nconst data = readFileSync('fixture/data.json');\ncopyFileSync('fixture/data.json','drafts/data.json');\nwriteFileSync('drafts/scenarios.js', '/* Fixture data snapshot; ordinary script for offline file access. */\\\\nwindow.FIXTURE_RECORDS = ' + data.toString().trim() + ';\\\\nwindow.FIXTURE_SCENARIOS = [\\\"primary\\\", \\\"no-permission\\\"];\\\\n');\nconst sha = bytes => 'sha256:' + createHash('sha256').update(bytes).digest('hex');\nwriteFileSync('drafts/yss-prototype-adapter.json', JSON.stringify({schema_version:4,feature:'list-detail',pattern:'workbench',prototype_profile:'H2',profile_kind:'flow-review',component_basis:'html-css-js',runtime_build_required:false,entry:'index.html',design_source:{path:'DESIGN.md',digest:sha(design)},token_source:{path:'.template-spec/design/tokens/variables.css',digest:sha(readFileSync('drafts/tokens.css'))},fixture_data_source:{path:'fixture/data.json',digest:sha(data)},fixture_only:true,approval_status:'not-requested',files:{}},null,2)+'\\\\n');\nconsole.log('Created local Token copies, fixture data snapshot, and draft adapter manifest.');\nNODE\"",
+      "paths": []
+    }
+  ],
+  "failed_commands": [
+    {
+      "command": "/bin/zsh -lc 'rg --files fixture drafts .agents/skills/yss-prototype-stage/references .agents/skills/yss-design-system/references .template-spec/design/tokens 2>/dev/null'",
+      "exit_code": 2,
+      "output": ".template-spec/design/tokens/variables.dark.css\n.template-spec/design/tokens/tokens.dark.json\n.template-spec/design/tokens/tokens.compact.json\n.template-spec/design/tokens/variables.css\n.template-spec/design/tokens/theme.json\n.template-spec/design/tokens/tokens.default.json\n.agents/skills/yss-prototype-stage/references/prototype-profile-routing.md\n.agents/skills/yss-prototype-stage/references/antd-integration.md\n.agents/skills/yss-prototype-stage/references/html-prototype-practices.md\n.agents/skills/yss-prototype-stage/references/existing-ui-entry.md\n.agents/skills/yss-prototype-stage/references/comparison-tool.md\n.agents/skills/yss-prototype-stage/references/concept-comparison.md\n.agents/skills/yss-prototype-stage/references/product-design-adapter.md\n.agents/skills/yss-prototype-stage/references/antd-component-catalog.json\n.agents/skills/yss-design-system/references/design-qa-theme.md\n.agents/skills/yss-design-system/references/data-quality-theme.md\n.agents/skills/yss-design-system/references/design-system.md\n.agents/skills/yss-design-system/references/enterprise-craft.md\nfixture/brief.md\nfixture/data.json\n"
+    },
+    {
+      "command": "/bin/zsh -lc \"sed -n '1,28p' .agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs && sed -n '230,275p' .agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs && rg -n 'writeFile|mkdir|prepareHtml|tokens.css|tokens|canonical|prepare' .agents/skills/yss-prototype-stage/scripts/lib/html-prototype-adapter.mjs\"",
+      "exit_code": 2,
+      "output": "#!/usr/bin/env node\nimport { assertUserDecisionRequirement, decisionDigest, decisionIO } from \"../../../../scripts/lib/user-decision.mjs\";\nimport { existsSync } from \"node:fs\";\nimport { readFile } from \"node:fs/promises\";\nimport { prepareOfflineHtml, validateOfflineHtml, sealOfflineHtml } from \"./offline-html.mjs\";\nimport path from \"node:path\";\nimport { pathToFileURL } from \"node:url\";\nimport { parseDocument } from \"../../../../scripts/vendor/yaml.mjs\";\n\nconst nonEmpty = (value) => typeof value === \"string\" && value.trim().length > 0;\nconst object = (value) => value && typeof value === \"object\" && !Array.isArray(value);\nconst antdSemver = /^6\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z.-]+)?$/;\nconst exactSemver = /^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z.-]+)?$/;\nconst PROFILE_KIND = { H1: \"visual-review\", H2: \"flow-review\" };\nconst PROFILE_BLOCK = { H1: \"visual_review\", H2: \"flow_review\" };\n\nfunction required(data, field, parent, errors) {\n  if (!object(data) || data[field] === undefined || data[field] === null) errors.push(`${parent}.${field} 缺失`);\n}\n\nfunction requiredString(data, field, parent, errors) {\n  required(data, field, parent, errors);\n  if (object(data) && data[field] !== undefined && !nonEmpty(data[field])) errors.push(`${parent}.${field} 必须是非空字符串`);\n}\n\nfunction requireArray(data, field, parent, errors, { nonEmpty: mustHaveValue = false } = {}) {\n  required(data, field, parent, errors);\n  if (object(data) && !Array.isArray(data[field])) errors.push(`${parent}.${field} 必须是数组`);\n  validateProfileV4(data, errors, allowTemplate);\n  if (!allowTemplate && errors.length === 0) {\n    try {\n      const confirmation = data.user_confirmation;\n      assertUserDecisionRequirement({ boundary: \"gate.product-design-approved\", subject_ref: confirmation.decision_subject_ref, scope: confirmation.operable_scope, user_decision_ref: confirmation.user_decision_ref }, decisionOptions);\n      if (decisionDigest(decisionIO(decisionOptions).document(confirmation.decision_subject_ref)) !== decisionDigest(prototypeDecisionSnapshot(data))) throw new TypeError(\"user-decision-stale: 原型与用户所见快照不一致\");\n    } catch (error) { errors.push(error.message); }\n  }\n  return { errors, warnings };\n}\n\nexport async function prepareStaticPrototype(options) {\n  return prepareOfflineHtml({ ...options, profile: \"H1\" });\n}\n\nexport async function prepareFlowPrototype(options) {\n  if (options.targetAntdVersion || options.libraryVersion || options.factPackRef || (options.componentBasis && options.componentBasis !== \"html-css-js\")) throw new TypeError(\"原型 Provider 已退役；请迁移到 html-css-js 离线交付，历史原型保持只读\");\n  return prepareOfflineHtml({ ...options, profile: \"H2\" });\n}\n\nexport const preparePrototype = prepareFlowPrototype;\n\nexport async function validatePrototypeProject({ root, profile = \"H2\", componentBasis, targetAntdVersion }) {\n  if (!Object.hasOwn(PROFILE_KIND, profile)) return { errors: [\"prototype_profile 必须为 H1/H2\"] };\n  if (targetAntdVersion || (componentBasis && ![\"html-css-js\", \"react-antd-prebuilt\"].includes(componentBasis))) return { errors: [\"旧 Provider 项目不进入当前生成路线；请保留历史快照并迁移\"] };\n  const result = await validateOfflineHtml(root, profile);\n  if (componentBasis && !result.errors.length) {\n    const manifest = JSON.parse(await readFile(path.join(root, \"yss-prototype-adapter.json\"), \"utf8\"));\n    if (manifest.component_basis !== componentBasis) result.errors.push(\"componentBasis 与原型 manifest 不一致\");\n  }\n  return result;\n}\n\nfunction args(argv) {\n  const result = { _: [] };\n  for (let index = 0; index < argv.length; index += 1) {\n    const item = argv[index];\n    if (!item.startsWith(\"--\")) { result._.push(item); continue; }\n    const key = item.slice(2);\n    const value = argv[index + 1];\n    if (!value || value.startsWith(\"--\")) result[key] = true;\n    else { result[key] = value; index += 1; }\n  }\n  return result;\n}\n\nrg: .agents/skills/yss-prototype-stage/scripts/lib/html-prototype-adapter.mjs: IO error for operation on .agents/skills/yss-prototype-stage/scripts/lib/html-prototype-adapter.mjs: No such file or directory (os error 2)\n"
+    },
+    {
+      "command": "/bin/zsh -lc 'node .agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs prepare-flow --project-root . --root drafts --feature list-detail --pattern workbench'",
+      "exit_code": 1,
+      "output": "原型目录必须精确匹配 /private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-prototype-enhancement-20260929-nqu8lb1k/candidate-results/list-detail-1/workspace/docs/.scratch/list-detail/design/prototypes\n"
+    }
+  ],
+  "truncated_trace_lines": 0,
+  "tool_output_bytes": 248113,
+  "scope": "Tool-output byte count is not total source bytes read or token usage; multi-file and partial reads need trace inspection."
+}
