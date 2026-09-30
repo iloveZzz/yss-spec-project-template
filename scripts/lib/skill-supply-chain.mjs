@@ -148,7 +148,7 @@ function loadStrategicDesignSkillManifest() {
 }
 function git(args) { return spawnSync("git", args, { cwd: ROOT, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }); }
 function trackedPaths() {
-  const result = git(["ls-files", "-z"]);
+  const result = git(["ls-files", "-z", "--", ...PROJECTION_ROOTS]);
   if (result.status !== 0) throw new TypeError("无法读取 Git 受跟踪路径");
   const paths = new Set();
   for (const file of result.stdout.split("\0").filter(Boolean)) {
