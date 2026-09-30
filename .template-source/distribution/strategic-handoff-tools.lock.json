@@ -2,7 +2,7 @@
   "schema_version": 1,
   "target_id": "template-root",
   "source_repository": "yss-spec-project-template",
-  "source_revision": "b0737188ff1089df242f9ac9693c0fc1cda35d20",
+  "source_revision": "b11efea19f21dfd1cc670aa6638d374dd45f2736",
   "source_state": "committed",
   "transformation_set": [
     "identity"
@@ -172,7 +172,7 @@
     "scripts/lib/scaffold-local-database.mjs": "sha256:66d47c11698b36ff57e4f37577c6f83ea3a6590f4b9ab6862833bd991fde3662",
     "scripts/lib/skill-discovery.mjs": "sha256:8a5faf0977a3b59c261368cf19670500b6e5c54d9a3b0d24f6939cc107487940",
     "scripts/lib/skill-registry.mjs": "sha256:963e2f2f1faae4195ff1db05428374a763d7c614f1015e16a5cb6744db7582e5",
-    "scripts/lib/skill-supply-chain.mjs": "sha256:d67470908a20997c3d485b6a1b8bdb2b6d553f62721657688f57d5e9f8deb233",
+    "scripts/lib/skill-supply-chain.mjs": "sha256:06a70aae2ac40faf7c78c2d63683460accf90c6a5e3e57da099408710cf28391",
     "scripts/lib/slice-applicability.mjs": "sha256:c899fd31a39e3a4237a4a21e13c5fa718b319b792b6365b23b602cf792281e1c",
     "scripts/lib/slice-contract-preparation.mjs": "sha256:1a3923ae2c03df5369c8d55a9c4149eea4f02758ca2db3591475ae312de676ef",
     "scripts/lib/slice-contract-views.mjs": "sha256:2e572b6ee93014fb145cbb286bc42f4dbebcc210288e60858e4b90f6c548fb6d",
@@ -400,7 +400,7 @@
     "scripts/lib/scaffold-local-database.mjs": "sha256:66d47c11698b36ff57e4f37577c6f83ea3a6590f4b9ab6862833bd991fde3662",
     "scripts/lib/skill-discovery.mjs": "sha256:8a5faf0977a3b59c261368cf19670500b6e5c54d9a3b0d24f6939cc107487940",
     "scripts/lib/skill-registry.mjs": "sha256:963e2f2f1faae4195ff1db05428374a763d7c614f1015e16a5cb6744db7582e5",
-    "scripts/lib/skill-supply-chain.mjs": "sha256:d67470908a20997c3d485b6a1b8bdb2b6d553f62721657688f57d5e9f8deb233",
+    "scripts/lib/skill-supply-chain.mjs": "sha256:06a70aae2ac40faf7c78c2d63683460accf90c6a5e3e57da099408710cf28391",
     "scripts/lib/slice-applicability.mjs": "sha256:c899fd31a39e3a4237a4a21e13c5fa718b319b792b6365b23b602cf792281e1c",
     "scripts/lib/slice-contract-preparation.mjs": "sha256:1a3923ae2c03df5369c8d55a9c4149eea4f02758ca2db3591475ae312de676ef",
     "scripts/lib/slice-contract-views.mjs": "sha256:2e572b6ee93014fb145cbb286bc42f4dbebcc210288e60858e4b90f6c548fb6d",
