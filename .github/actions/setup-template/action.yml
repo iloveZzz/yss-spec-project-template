@@ -19,7 +19,6 @@ runs:
         git submodule sync -- \
           submodules/yss-harness-design-agent \
           submodules/create-yss-strategic-design \
-          submodules/create-yss-harness-dev \
           submodules/yss-harness-backend-agent \
           submodules/yss-harness-frontend-agent \
           submodules/create-yss-harness-backend \
@@ -28,7 +27,6 @@ runs:
         git -c protocol.version=2 submodule update --init --depth=1 -- \
           submodules/yss-harness-design-agent \
           submodules/create-yss-strategic-design \
-          submodules/create-yss-harness-dev \
           submodules/yss-harness-backend-agent \
           submodules/yss-harness-frontend-agent \
           submodules/create-yss-harness-backend \
@@ -44,6 +42,15 @@ runs:
         version: 10.15.0
     - shell: bash
       run: pnpm --dir .template-source/tooling/node install --frozen-lockfile
+    - name: Prepare prototype author tooling
+      if: inputs.submodules == 'true'
+      shell: bash
+      run: |
+        prototype_toolchain="$RUNNER_TEMP/yss-prototype-author"
+        mkdir -p "$prototype_toolchain"
+        cp .agents/skills/yss-prototype-stage/assets/shadcn-vue-authoring/{package.json,pnpm-lock.yaml} "$prototype_toolchain/"
+        pnpm --dir "$prototype_toolchain" install --frozen-lockfile --ignore-scripts
+        echo "YSS_VUE_TOOLCHAIN=$prototype_toolchain" >> "$GITHUB_ENV"
     - if: inputs.python == 'true'
       uses: actions/setup-python@v5
       with:
