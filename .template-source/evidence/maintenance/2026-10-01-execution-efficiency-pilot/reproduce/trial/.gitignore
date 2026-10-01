@@ -1,0 +1,5 @@
+node_modules/
+out/
+.nx/
+.moon/cache/
+inputs/ignored.json

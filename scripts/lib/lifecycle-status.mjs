@@ -6,6 +6,7 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { parseDocument } from '../vendor/yaml.mjs';
 import { safeTrackingPath, trackingDrift } from './stage-tracking.mjs';
+import { loadLifecyclePresenter } from './lifecycle-presentation.mjs';
 
 const sha = bytes => `sha256:${createHash('sha256').update(bytes).digest('hex')}`;
 function parse(bytes) {
@@ -52,7 +53,7 @@ export function lifecycleStatus({ root, checkpointRef, taskPackageRef }) {
   if (value.next_work_unit && !workUnit) issue('unknown-work-unit', `未知下一工作单元: ${value.next_work_unit}`, registryRef, '按注册表核对下一工作单元');
   if (workUnit && workUnit.id !== 'work-unit.entry-triage' && !contract.value.work_unit_routes?.[workUnit.id]) issue('missing-route', `缺少执行路由: ${workUnit.id}`, contractRef, '修复当前合同路由后重验');
   check('stage-and-route', diagnostics.some(x => ['unknown-stage', 'unknown-work-unit', 'missing-route'].includes(x.code)) ? 'failed' : 'passed', [registryRef, contractRef], '仅检查身份与路由存在，不计算完整 frontier');
-  if (value.context_reconciliation?.status === 'blocked') issue('context-blocked', 'Context reconciliation blocked', checkpointRef, '修复词汇对账并执行适用校验');
+  if (value.context_reconciliation?.status === 'blocked') issue('context-blocked', '术语对账受阻', checkpointRef, '修复词汇对账并执行适用校验');
   check('context-reconciliation', value.context_reconciliation?.status === 'blocked' ? 'failed' : 'not-checked', [value.context_reconciliation?.ref].filter(Boolean), '读取登记状态；当前对账内容和摘要仍须由原验证器核验');
   for (const [id, gate] of Object.entries(value.gates ?? {})) {
     if (['blocked', 'stale'].includes(gate?.status)) issue('gate-blocked', `${id}: ${gate.status}`, checkpointRef, '核对受影响依据和当前批准');
@@ -142,7 +143,21 @@ export function lifecycleStatus({ root, checkpointRef, taskPackageRef }) {
   }
   const implementationArtifact=value.artifacts?.['artifact.vertical-slice-ticket'];
   const implementationCoverage=setRef && implementationArtifact?.ref?.endsWith('.md')?summarizeBusinessImplementation({root,setRef,sliceRefs:[implementationArtifact.ref]}):null;
+  const presenter = loadLifecyclePresenter(root);
+  const statusNames = { routing: '正在确定下一步', running: '正在推进', blocked: '受阻', 'paused-human-gate': '等待会签', completed: '记录为已完成，仍需核验' };
+  const readable = text => presenter.text(text, {trace: false}).replace(/: (blocked|stale)$/, (_, status) => status === 'blocked' ? '：受阻' : '：依据已过期，需重新核验');
+  const presentation = {
+    read_only: true, execution_allowed: false, approval_validity: 'not-checked',
+    stage: value.stage ? presenter.label(value.stage, {trace: false}) : '未登记',
+    checkpoint_status: Object.hasOwn(statusNames, value.status) ? statusNames[value.status] : `未识别状态（${value.status ?? '未登记'}）`,
+    work_unit: value.next_work_unit ? presenter.label(value.next_work_unit, {trace: false}) : '未登记',
+    owner: presenter.text(owner, {trace: false}), blockers: blockers.map(readable),
+    expected_output: workUnit ? readable(workUnit.public_output ?? workUnit.output ?? '产出说明未登记') : null,
+    next_action: readable(next_action), sources: presenter.sources, warnings: presenter.warnings,
+    names: presenter.catalog({stage: value.stage, work_unit: value.next_work_unit, owner, gates: value.gates, artifacts: value.artifacts}),
+  };
   return {
+    presentation,
     decomposition: {business, implementation: {status:implementationArtifact?'recorded':'not-recorded',recorded_status:implementationArtifact?.status??null,ref:implementationArtifact?.ref??null,coverage:implementationCoverage}, readiness:{status:'not-evaluated',reason:'阶段工作完成不替代批准与实现就绪校验'}},
     schema_version: 1, read_only: true, stage: value.stage, checkpoint_status: value.status,
     work_unit: value.next_work_unit ?? null, owner, blockers, next_action,

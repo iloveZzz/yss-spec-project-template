@@ -152,5 +152,5 @@ test('one review bundle retains explicit per-check outcomes and rejects duplicat
   const ref = f.save('bundle.json', bundle); assert.equal(validateApprovalRecordFile(ref, { requireApproved: true }).length, 2);
   bundle.reviews[1].decision = 'rejected'; f.save('bundle.json', bundle); assert.throws(() => validateApprovalRecordFile(ref, { requireApproved: true }), /必须为 approved/);
   bundle.reviews[1] = bundle.reviews[0]; f.save('bundle.json', bundle); assert.throws(() => validateApprovalRecordFile(ref), /重复/);
-  bundle.reviews = []; f.save('bundle.json', bundle); assert.throws(() => validateApprovalRecordFile(ref), /不能为空/);
+  bundle.reviews = []; f.save('bundle.json', bundle); assert.throws(() => validateApprovalRecordFile(ref), /reviews: \[\] should be non-empty/);
 }));

@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "gate_id": "gate.delivery-accepted",
+  "decision": "approved",
+  "actor_kind": "digital-human",
+  "role_id": "role.test-engineer",
+  "runtime_id": "runtime.generic",
+  "principal_ref": "instance:counterexample",
+  "biological_veto": true
+}

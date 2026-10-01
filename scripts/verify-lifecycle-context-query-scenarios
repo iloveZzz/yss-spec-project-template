@@ -87,6 +87,14 @@ assert.throws(() => queryLifecycleContext({ workUnitId: "work-unit.discovery-req
 assert.match(first.sources.lifecycle_registry.semantic_sha256, /^[0-9a-f]{64}$/);
 assert.match(first.sources.orchestration_contract.sha256, /^[0-9a-f]{64}$/);
 const prototype = queryLifecycleContext({ stageId: 'stage.product-design', workUnitId: 'work-unit.prototype-design-v2' });
+const decision = queryLifecycleContext({stageId:'stage.plan',workUnitId:'work-unit.stage-decision'});
+assert.equal(decision.presentation.names['work-unit.stage-decision'].name, '方案决策包综合');
+assert.equal(decision.presentation.names['check.stage-decision-package-approved'].name, '方案决策包评审');
+assert.equal(decision.presentation.names['role.requirements-manager'].name, '需求经理');
+assert.equal(decision.lifecycle.work_unit.id, 'work-unit.stage-decision');
+assert.equal(decision.presentation.execution_allowed, false);
+assert.equal(decision.presentation.approval_validity, 'not-checked');
+assert.ok(decision.sources.read_set.some(row => row.ref === '.template-spec/agents/digital-human-roles.yaml'));
 assert.equal(prototype.execution.work_unit_route.evidence_schema_version, 4);
 assert.match(prototype.lifecycle.work_unit.completion, /schema v4/);
 assert.throws(() => queryLifecycleContext({ workUnitId: "work-unit.prototype-design" }), /未知工作单元/);

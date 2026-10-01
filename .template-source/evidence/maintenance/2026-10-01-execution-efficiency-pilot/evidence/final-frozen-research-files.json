@@ -1,0 +1,402 @@
+[
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/scope.md",
+    "sha256": "3949b8e0a8ce2976cf9c33509edf933d8d85b00ac3ef9883c5c42efb025af679"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/pilot-research-brief.md",
+    "sha256": "b2138bebaa3175fe4f04c52049be5026034b8c1c1baa1ea44ad8da82620f65cf"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/verification-notes.md",
+    "sha256": "63656217c3292a0d68266c724794b162ef340b5124f9a4a5ff7d2c50fdc6266f"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/pilot-evidence.yaml",
+    "sha256": "c088692430e2de61113f2d06302387874d401267871797b0b8ab819ffe0b8a66"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/research-checkpoint.json",
+    "sha256": "23398ce5c7eda8d534cb08587431272ad30cf39ca8c7a4a2048b5a1255964d23"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/owner-task.json",
+    "sha256": "6349b5426691f4c013cc6196910679555a623955f7a83f45452d5e73b8622f88"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/completion.json",
+    "sha256": "ebf9165ea1d4489c7b1dba318f15c32a25af03e4e57f7897afaac75be4e05ab9"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/verification-final/stderr.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/verification-final/stdout.log",
+    "sha256": "7f9dd2a6e5a54b11f488446a4653c291f890bc3a82958932d0baad4397e06c78"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/verification-final/verification.json",
+    "sha256": "0ea2ae978f30c9f03ecb31891e549806d1bf9b33cdf188a0ac4d60116c7b5b7b"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/reproduce/bootstrap.py",
+    "sha256": "14c25d8fb3cb181b550d50aff6a9096e23681326d54a5915c2a7c923af47da9e"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/reproduce/measure-prep.py",
+    "sha256": "9968b2fb3c8f7829af24c8ccdb45c7efdf6b77558dd14ce0cefbde3b5c6dc89e"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/reproduce/README.md",
+    "sha256": "d66344b73f6f71d3423b2d9c2caa987302e79f9b3a83b4b7e20a2015c3829894"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/reproduce/prepare-profile.mjs",
+    "sha256": "5b4baf51829e8aec52a725d4dbee03cd1322384e96cd671102212af3d2e7ccb8"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/reproduce/dependency-mutation.py",
+    "sha256": "89e672714e1b4ad68c25b90c19fa8d0f49249554e4992a19fc9525a03a4a4b7d"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/reproduce/schema-audit.mjs",
+    "sha256": "f9d4d09a38c28dc4b572c245d9deae236425362ce70c14589188b49e576723ef"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/reproduce/framework-trial.py",
+    "sha256": "296ed325c23a808732ad6419b43e9fa2d9464578d25a194c126e44459c54ca85"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/reproduce/schema-real-formats.mjs",
+    "sha256": "1934e7961c60860f7b340d828ce968bf5cc50b01e163573eaca5a6ef4005f847"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/verification-frozen-dependency-failed/report.json",
+    "sha256": "fde7f04a1904da9683204e37d4002435d8b97706f6a35ab276bc02c7adc12d2a"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/evidence/framework-protocol.json",
+    "sha256": "799a41624423a11499635594410d18767a4ec11f5decfb9a3a7689a266ebad4b"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/evidence/dependency-baseline.stdout",
+    "sha256": "0b54ee8b67568aca5d688a331410dfe2a35745bf82d9dacb519fa01f05901dce"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/evidence/main-snapshot-comparison.json",
+    "sha256": "fac4dac77b6619daea33f14a7c03420ea3697fe0d1843c6def2353532dfe8bbd"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/evidence/framework-correctness-nx-local.json",
+    "sha256": "9b14e7cd41f4b1ac07ee17b91eeb60222a168852dcf1ff60d9439e0d97fcb8d9"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/evidence/prepared-tests.stdout",
+    "sha256": "73e21db8d087cb71342a7b54a130e2411a8f7abde65247cc8cc11c4e56235c17"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/evidence/framework-correctness.json",
+    "sha256": "ab6509424ddcba8ddf68c75d81cc2efed1783ae1441c8125ffca60df936c987c"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/evidence/framework-correctness-raw.json",
+    "sha256": "cd98474bb3fae0f0b971ba78515af56f649d91cd38d142db61897faf26a73f2f"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/evidence/prep-0.jsonl",
+    "sha256": "33ffbd94361435238886389679e1dd890a0a9acc72b4fba30986a5389c51e884"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/evidence/framework-benchmark.json",
+    "sha256": "943b93784bc55e4d68e71841b7b75dfbfa96d6de94f95ff3ca585ee7a1934679"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/evidence/schema-audit.json",
+    "sha256": "33e79a0e3da2f92d1762580c73eb6d860e3be909ae4fb255ed489a11bd303bb7"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/evidence/dependency-plans.json",
+    "sha256": "ca65d57173fa85769a969461cac79843b43a597071c1157ea8506c85cd48a8f3"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/evidence/attempt1-invalidity.json",
+    "sha256": "be98e577259025d7f600ca45ae34ca30d886636f54fb8cff3c1cccb6aa5d8326"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/evidence/prepared-tests.json",
+    "sha256": "80bd5ad8c56b28caa4609259c581f9b9990ff874f379c96a9b70a555034d97ef"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/evidence/prep-2.jsonl",
+    "sha256": "f5be0bb2a88bb5de7dc2cb43ec4c4858951c51c08bf031d67eaf1ae026d13361"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/evidence/acceptance.json",
+    "sha256": "4b217ef9738633b9d035a618ff651427ef2e3b0bea95a7c587ed63b184ade8e0"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/evidence/preparation-results.json",
+    "sha256": "b62e964b1645eaa1dadfd88d119b8da783f0e9c9f9ca5baec5fca0c194f038cf"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/evidence/attempt1-framework-summary.json",
+    "sha256": "df4d2279a0efd992af62fc8cb7b41f5f1b6f3a10b07be8819de997e5d5480dc3"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/evidence/schema-real-formats.json",
+    "sha256": "8b9b7a964e4ec69d139d497afe15cbe477b633c6a668dd44b87f2f4766020f9a"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/evidence/prepared-tests.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/evidence/dependency-baseline.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/evidence/prep-1.jsonl",
+    "sha256": "da7783fa56899aace43739de7743453ba70b11dde65de219379f4b2095007890"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/evidence/python-format-environment.json",
+    "sha256": "65f29b46ce1fb80c9aeaabd20f44b79b3d3df143cb06a7dbb5a662197251e2c3"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/evidence/dependency-mutant-semantic-check.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/evidence/source-freshness.json",
+    "sha256": "46c7eb168195e9fc5278e6d0dfce59b726a8ddb417b889e51251728d394300e6"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/evidence/baseline.json",
+    "sha256": "e187f81755f77c8b0a77113509f27ef1763056d7363efd4f0fa55080a96a5e3d"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/evidence/attempt1-framework-benchmark.json",
+    "sha256": "9775f707512b814b47475b50fdc6ecffec756bcaf28db7218aa56e747d2bb3a3"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/evidence/dependency-mutation.json",
+    "sha256": "f32c1f10c92f385ec8ab24c4bf89ee18c794b7bd6e4aa0ce02c2e1cf243a8084"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/evidence/dependency-mutant-selected-hygiene.stdout",
+    "sha256": "297c94998e6bd6b9fb4730b44069aac04a4c1eab8c67cf230419e366cff3663f"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/evidence/dependency-restored.stdout",
+    "sha256": "e8aa7befaa2bd099b1425e32a2cb413661a51cafd8eeb7efeee44614f41ebea4"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/evidence/dependency-restored.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/evidence/dependency-mutant-selected-hygiene.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/evidence/framework-summary.json",
+    "sha256": "665c7872e2cdc59dd73049fe23aeca93fb315ecd135e77e2a0907174b8663968"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/evidence/dependency-mutant-semantic-check.stdout",
+    "sha256": "c8ef634cba1afc384fd1aa28c808547dac51e466ae45d945efe763166ee92efc"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/evidence/schema-audit.stdout",
+    "sha256": "6f8380a4b3b37edbf4c4fe1a7a83c3dda63df5fc30437fa70bed0c1e0a8a2e0f"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/verification/stderr.log",
+    "sha256": "1f68d135968bde67c6d4368ba4856fb3ce48c5c0e5a697b722c6ed1c5b17030b"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/verification/stdout.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/verification/verification.json",
+    "sha256": "ebb9c09f5a13e035ae67887b3586f3532cc92f3a66188edde3f91f233344e87f"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/verification-closed/stderr.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/verification-closed/stdout.log",
+    "sha256": "7f9dd2a6e5a54b11f488446a4653c291f890bc3a82958932d0baad4397e06c78"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/verification-closed/verification.json",
+    "sha256": "59aca2a4fb6e10b5f8bdf79f93d26d67b679ba936abc9dfee16f2c16dc8de10a"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/verification-live-failed/report.json",
+    "sha256": "1f41b050463bae5ef3c657fd5f78745bd03365372ff3e92873c9c99fecbbbfe6"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/reproduce/tools/pnpm-lock.yaml",
+    "sha256": "2005ff741c503a2c0f4be4096ac8ed2aab09fb2705a90731818061d446122dcc"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/reproduce/tools/package.json",
+    "sha256": "499830b091e7f3739a0ed733ac1c601b1460d01eaef3dbcdd2b52082d6f80137"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/reproduce/trial/hash-ignored.mjs",
+    "sha256": "0e23196eb2109458d881031bc0c9bb9594e99afee012641cc7e561718e63e058"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/reproduce/trial/nx.json",
+    "sha256": "5a8669cb78923ec4ab3aa815038f0c39f537a9b1d72762b9e8e5748d79996f55"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/reproduce/trial/project.json",
+    "sha256": "cd3e994742cf0383f217779bf281be4fb15a3b01d5095183a5261e939b67d036"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/reproduce/trial/moon.yml",
+    "sha256": "c57706a2b33f370a38ada4b43a1d36cdb37ca847b45d8f861486cd9eb10f1274"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/reproduce/trial/runner.mjs",
+    "sha256": "d7d366ad7ad75274ec484760bfa811611d5ccbc04ae4201e4ce05ae329199a05"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/reproduce/trial/.gitignore",
+    "sha256": "2b77b64df2d22a0a0ab40d5e434866e1bfcca825253c390bbea371659027f54c"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/reproduce/trial/package.json",
+    "sha256": "c804416b7a2158d8eb75ba9c81deab30f17cf374e7f767c4f7ebd587cfdbbfed"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/reproduce/trial/task.mjs",
+    "sha256": "d4bab189c516abb3d6f1b0803b26b6dbc89d3ada588afeb4d6d2aaaf9ec97c43"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/reproduce/trial/.moon/workspace.yml",
+    "sha256": "dba21ec12ed43c6c83d08ea1e8718b8ee1ee8a6b0a211e559834e332ecb64c06"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/reproduce/trial/inputs/runtime.json",
+    "sha256": "2167de9e710edba0fe830321c8196cb6725e5ca435a45f6d5ecfeb2ef3bba001"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/reproduce/trial/inputs/lock.json",
+    "sha256": "499830b091e7f3739a0ed733ac1c601b1460d01eaef3dbcdd2b52082d6f80137"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/reproduce/trial/inputs/source.json",
+    "sha256": "e187f81755f77c8b0a77113509f27ef1763056d7363efd4f0fa55080a96a5e3d"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/reproduce/trial/inputs/reference.json",
+    "sha256": "9b5e1a35f0847196fa466ae875f59e5992508c2b762b489a873461d14330bc77"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/reproduce/trial/inputs/data.json",
+    "sha256": "3fe8ac668b05942f1fb9b05c55cbf2c010d5ea9c7c7d80ebe66cac17f9bcb19a"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/reproduce/trial/inputs/ignored.json",
+    "sha256": "a050ef06ea542b8fd8781f1e945f9adcd03c7ae5190719e66ba826e2059fce12"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/reproduce/trial/inputs/schema.json",
+    "sha256": "6829323d4dcce05d8073efb2f5e1a0c9c3b35514b2a7fd81827bf411559ca657"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/verification-frozen-dependency-failed/logs/0.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/verification-frozen-dependency-failed/logs/4.stdout",
+    "sha256": "bf9d8157e5e60908e3ad9b75ef2edf451c68be9bd2274959cd867dd90d162bbf"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/verification-frozen-dependency-failed/logs/2.stderr",
+    "sha256": "6ab30f6a101ed4c658acdbfc727321ce596a0c45cab5c8ba716b810182077e80"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/verification-frozen-dependency-failed/logs/2.stdout",
+    "sha256": "67ca764adfdbf03910a714a16cec5f9ea77eff997e6da6951fe14eb2ce30e89e"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/verification-frozen-dependency-failed/logs/4.stderr",
+    "sha256": "b96b4dd42f5711ba0567b92bc5a6edbdedf14ccfbd1b33af8990394dccb80793"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/verification-frozen-dependency-failed/logs/0.stdout",
+    "sha256": "297c94998e6bd6b9fb4730b44069aac04a4c1eab8c67cf230419e366cff3663f"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/verification-frozen-dependency-failed/logs/1.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/verification-frozen-dependency-failed/logs/3.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/verification-frozen-dependency-failed/logs/3.stdout",
+    "sha256": "7d73b7d0285a8451d1adeb27e6a2648b85867674f923bf3331fa9dd4b1e4215b"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/verification-frozen-dependency-failed/logs/1.stdout",
+    "sha256": "c755905af37b37456411691b7f714d3643ccb9012b1a7853311ba7ccedd533da"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/verification-live-failed/logs/post-5.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/verification-live-failed/logs/0.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/verification-live-failed/logs/4.stdout",
+    "sha256": "a48e78efa7c68dec7f75dcb1f511bf46bb5e5fab0f7e15f2dd2964b92804d128"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/verification-live-failed/logs/2.stderr",
+    "sha256": "156e6c940f33190b9bca17e427340541510e5702477a5eb96170bee75a897e73"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/verification-live-failed/logs/2.stdout",
+    "sha256": "67ca764adfdbf03910a714a16cec5f9ea77eff997e6da6951fe14eb2ce30e89e"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/verification-live-failed/logs/4.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/verification-live-failed/logs/post-5.stdout",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/verification-live-failed/logs/0.stdout",
+    "sha256": "297c94998e6bd6b9fb4730b44069aac04a4c1eab8c67cf230419e366cff3663f"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/verification-live-failed/logs/1.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/verification-live-failed/logs/3.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/verification-live-failed/logs/3.stdout",
+    "sha256": "41b22b7bd00692acb5643b622511f77c994223774ece6897023ac2fb07434807"
+  },
+  {
+    "path": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/verification-live-failed/logs/1.stdout",
+    "sha256": "c755905af37b37456411691b7f714d3643ccb9012b1a7853311ba7ccedd533da"
+  }
+]

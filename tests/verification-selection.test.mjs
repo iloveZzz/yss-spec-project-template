@@ -6,6 +6,7 @@ import path from 'node:path';
 import {planTemplateVerification,loadVerificationProfiles,ROOT} from '../scripts/lib/template-verification.mjs';
 import {selectionBindings} from '../scripts/lib/verification-selection.mjs';
 import {resolveVerificationScope} from '../scripts/lib/verification-report.mjs';
+import {spawnSync} from 'node:child_process';
 const pilot='.agents/skills/yss-research/SKILL.md';
 test('shadow executes exactly legacy; explains unrelated scenario exclusions',()=>{
  const legacy=planTemplateVerification({changedFiles:[pilot],selection:'legacy'}),shadow=planTemplateVerification({changedFiles:[pilot],selection:'shadow'});
@@ -41,3 +42,35 @@ test('qualification binds configuration and source bytes; no automatic expansion
 });
 
 test('missing dependency declaration retains the original check',()=>{const config=loadVerificationProfiles();const check=config.groups.skills.commands.find(x=>x.inputs_complete);delete check.depends_on;assert.ok(planTemplateVerification({changedFiles:[pilot],config}).selection.candidate.some(x=>x.id===check.id));});
+
+test('Schema 和 phase 变化升级完整验证，业务票源码选择合同测试', () => {
+  for (const file of ['scripts/lib/json-schema.mjs', 'scripts/lib/validation-phase.mjs']) {
+    const plan = planTemplateVerification({ changedFiles: [file] });
+    assert.equal(plan.effective_profile, 'release', file);
+    assert.ok(plan.commands.some(item => item.command.includes('schema-rejection.test.mjs')));
+  }
+  const plan = planTemplateVerification({ changedFiles: ['scripts/lib/business-tickets.mjs'] });
+  assert.ok(plan.commands.some(item => item.command.includes('fixtures/business-tickets/')));
+});
+
+test('选中的 Schema 行为测试能发现全部接受的错误实现', t => {
+  const plan = planTemplateVerification({ changedFiles: ['scripts/lib/json-schema.mjs'] });
+  const selected = plan.commands.find(item => item.command.includes('schema-rejection.test.mjs'));
+  assert.ok(selected, '必须选择实际拒绝行为测试');
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'selection-mutant-'));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  for (const ref of ['scripts/lib/json-schema.mjs', 'scripts/lib/validation-phase.mjs', 'scripts/fixtures/contract-efficiency/schema-rejection.test.mjs']) {
+    fs.mkdirSync(path.dirname(path.join(root, ref)), { recursive: true });
+    fs.copyFileSync(path.join(ROOT, ref), path.join(root, ref));
+  }
+  const env = { ...process.env }; delete env.NODE_TEST_CONTEXT;
+  const run = () => spawnSync(process.execPath, ['--test', 'scripts/fixtures/contract-efficiency/schema-rejection.test.mjs'], { cwd: root, env, encoding: 'utf8' });
+  assert.equal(run().status, 0);
+  const file = path.join(root, 'scripts/lib/json-schema.mjs'), original = fs.readFileSync(file, 'utf8');
+  const changed = original.replace('return jobs.map((_,i)=>structuredClone(cached.get(i)));', "return jobs.map(() => ({valid: true, error: ''}));");
+  assert.notEqual(changed, original);
+  fs.writeFileSync(file, changed);
+  assert.notEqual(run().status, 0, '错误实现必须被实际测试拒绝');
+  fs.writeFileSync(file, original);
+  assert.equal(run().status, 0);
+});

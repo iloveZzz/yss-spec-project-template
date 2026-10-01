@@ -1,0 +1,35 @@
+{
+  "status": "implementation-verified-release-blocked",
+  "single_full_profile_passed": false,
+  "full_attempt": {
+    "executed": 71,
+    "planned": 110,
+    "input_drift": false,
+    "failures": [
+      "pnpm --dir .template-source/tooling/node test",
+      "node --test scripts/fixtures/reading-views/*.test.mjs",
+      "scripts/verify-matt-yss-integration-scenarios",
+      "scripts/verify-strategic-handoff-tools-lock --require-committed"
+    ]
+  },
+  "supplement": {
+    "executed": 43,
+    "input_stable": true,
+    "unexecuted": [],
+    "initial_failures": [
+      "scripts/generate-yss-skill-boundaries --check",
+      "scripts/verify-yss-prototype-contract-scenarios"
+    ]
+  },
+  "closed_findings": [
+    "Schema-first diagnostics and valid approval fixtures: 26 tests passed",
+    "JSON writing fixture: 17 reading tests passed",
+    "Skill entry size 8189 bytes: integration scenario passed",
+    "Generated boundaries refreshed; profile sync and 17 profile tests passed",
+    "Pinned author toolchain: prototype report 4 passed"
+  ],
+  "release_blocker": "strategic-handoff-tools lock source_state=working-tree; committed revision required",
+  "publication": "not-performed",
+  "git_commit": "not-performed",
+  "instance_migration": "not-applied"
+}

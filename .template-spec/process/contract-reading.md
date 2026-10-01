@@ -1,6 +1,6 @@
 # 合同阅读、准备与显式迁移
 
-本文件描述工具入口；阶段、批准和执行门禁仍由 `.template-spec/process/lifecycle-registry.yaml` 及资产所有者定义。YAML 是权威文件，视图不能编辑、批准合同或授予执行权限。
+本文件描述工具入口；阶段、批准和执行门禁仍由 `.template-spec/process/lifecycle-registry.yaml` 及资产所有者定义。显式引用的源资产是权威文件，视图不能编辑、批准合同或授予执行权限。五类生命周期资产的新建 JSON 与旧 YAML 兼容规则见 [结构化资产](structured-assets.md)；Slice 等本轮未迁移合同继续使用原格式。
 
 ```sh
 scripts/contract view <资产> --kind <类型> [--profile review|task|full] [--unit <ID>] [--json]

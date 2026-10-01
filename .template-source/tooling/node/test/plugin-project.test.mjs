@@ -6,6 +6,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
+import { materializeTestPlugin } from '../scripts/tooling-fixture.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../..');
 const BUILD = path.join(ROOT, '.template-source/plugins/yss-backend-delivery/build.mjs');
@@ -19,7 +20,7 @@ test('fixed CLI initializes, binds and resumes a separate governance project wit
   const dir = realpathSync(mkdtempSync(path.join(tmpdir(), 'yss m3 ')));
   t.after(() => rmSync(dir, { recursive: true, force: true }));
   const build = path.join(dir, 'build', 'yss-backend-delivery');
-  success(run(BUILD, ['--output', build], dir));
+  materializeTestPlugin({ sourceRoot: ROOT, output: build, build: () => success(run(BUILD, ['--output', build], dir)) });
   const plugin = path.join(dir, 'relocated', 'yss-backend-delivery');
   cpSync(build, plugin, { recursive: true }); rmSync(build, { recursive: true });
   const entry = path.join(plugin, 'scripts/plugin.mjs');

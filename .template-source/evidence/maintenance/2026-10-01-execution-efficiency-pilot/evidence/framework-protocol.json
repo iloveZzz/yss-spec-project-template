@@ -1,0 +1,22 @@
+{
+  "samples": 21,
+  "warmups": 2,
+  "workloads": {
+    "tiny": [
+      "schema",
+      "query"
+    ],
+    "daily": [
+      "schema",
+      "query",
+      "checks"
+    ]
+  },
+  "regimes": [
+    "cold-cache",
+    "hot-cache",
+    "input-change"
+  ],
+  "guard": "all tools check output manifest SHA256, current input hashes and mode after execution; checksum mismatch exits86; graph schema->query->checks",
+  "execution": "serial randomized tool order; fresh CLI processes; daemon off; local only; filesystem warm; p95 nearest-rank; cold resets task cache not OS page cache; equal weights declared; all source frozen"
+}

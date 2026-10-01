@@ -1,4 +1,5 @@
 import { assertApprovalUserDecision } from './user-decision-reuse.mjs';
+import { parseAsset, validateAssetStructure } from './structured-assets.mjs';
 import { existsSync, readFileSync } from './validation-phase.mjs';
 import path from "node:path";
 import { parseDocument } from "../vendor/yaml.mjs";
@@ -31,9 +32,8 @@ function yamlFromFile(filePath, label) {
     if (error.code === "ENOENT") fail(`缺少${label}: ${filePath}`);
     throw error;
   }
-  const document = parseDocument(source, { maxAliasCount: 0, uniqueKeys: true });
-  if (document.errors.length > 0) fail(`无法解析${label}: ${document.errors[0].message}`);
-  const value = document.toJS({ maxAliasCount: 0 });
+  const value = parseAsset(source, filePath);
+  validateAssetStructure(value, 'approval-record');
   if (!value || typeof value !== "object" || Array.isArray(value)) fail(`${label}必须是对象`);
   return value;
 }
@@ -79,6 +79,7 @@ export function resolveApprovalRef(approvalRef, fromFile = ROOT) {
 }
 
 export function validateApprovalRecord(record, { rolesDoc, requireApproved = false, ...decisionOptions } = {}) {
+  validateAssetStructure(record, 'approval-record');
   if (!record || typeof record !== "object" || Array.isArray(record)) fail("会签记录必须是对象");
   if (record.schema_version !== 1) fail("会签记录 schema_version 必须为 1");
   requireString(record.gate_id, "gate_id");

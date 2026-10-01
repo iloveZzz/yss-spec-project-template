@@ -1,0 +1,16 @@
+{
+  "status": "passed",
+  "archive_entries": 8985,
+  "archive_symlinks": 5,
+  "archive_sha256": "266855b935bfbca03275bc6ca7bed09362f09bfccd8f4ba432944b3d157ee3cb",
+  "json_and_document_links": "passed",
+  "owned_diff_check": "passed",
+  "original_untracked_files_unchanged": 111,
+  "runtime_implementation_matches_measured_source": true,
+  "concurrent_profile_delta_preserved": [
+    ".template-source/process/template-verification-profiles.yaml"
+  ],
+  "default_mode": "legacy",
+  "benchmark_resumed": false,
+  "scope": "Artifact integrity and scoped read-only checks; no new long-running verification after user stop."
+}

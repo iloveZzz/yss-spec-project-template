@@ -1,4 +1,6 @@
 import { validateReadOnlyIntake } from './read-only-intake.mjs';
+import { parseAsset } from './structured-assets.mjs';
+import { assertAssetTransactionIdle } from './asset-transactions.mjs';
 import { assertTrackingEntry } from './stage-tracking.mjs';
 import { normalizeSliceContract } from './slice-contract.mjs';
 import { assertSliceV3TaskPackage } from './slice-task-package.mjs';
@@ -56,7 +58,7 @@ function assertReadableEvidenceRef(value, field) {
 export function loadTaskPackage(filePath) {
   const sourcePath = path.resolve(filePath);
   if (!existsSync(sourcePath)) fail(`任务包不存在: ${filePath}`);
-  const value = parseYaml(readFileSync(sourcePath, "utf8"), "任务包");
+  const value = parseAsset(readFileSync(sourcePath), sourcePath);
   if (!value || typeof value !== "object" || Array.isArray(value)) fail("任务包必须是对象");
   return { value, sourcePath };
 }
@@ -226,6 +228,7 @@ function validateTaskPackageInternal(value, { rolesDoc, lifecycleDoc, root = ROO
 }
 
 export function validateTaskPackage(value, options = {}) {
+  assertAssetTransactionIdle(ROOT);
   return validateTaskPackageInternal(value, {...options, history:false});
 }
 

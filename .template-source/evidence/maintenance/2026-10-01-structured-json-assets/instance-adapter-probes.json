@@ -1,0 +1,20 @@
+{
+  "baseline": {
+    "exit_code": 0,
+    "stderr": "",
+    "stdout": "{\n  \"result\": \"completed\",\n  \"contract\": \"/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-json-repair-g6izcivh/instance-pilot/docs/.scratch/data-integration-module/verification/adapter-baseline.json\"\n}\n",
+    "variant": "baseline"
+  },
+  "duplicate-source": {
+    "exit_code": 1,
+    "stderr": "阶段决策包校验失败: test_seams.0.source_refs: ['scenario.register-and-verify-connection', 'invariant.connection-verified-before-use', 'invariant.credentials-never-plaintext', 'scenario.register-and-verify-connection'] has non-unique elements\n",
+    "stdout": "",
+    "variant": "duplicate-source"
+  },
+  "mapping-note": {
+    "exit_code": 1,
+    "stderr": "阶段决策包校验失败: downstream_mapping.0: Additional properties are not allowed ('note' was unexpected)\n",
+    "stdout": "",
+    "variant": "mapping-note"
+  }
+}

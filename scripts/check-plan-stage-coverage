@@ -1,0 +1,12 @@
+#!/usr/bin/env node
+import fs from 'node:fs';
+import path from 'node:path';
+import {parseArgs} from 'node:util';
+import {planStageCoverage} from './lib/plan-stage-coverage.mjs';
+try {
+ const {values}=parseArgs({options:{root:{type:'string'},plan:{type:'string'},decisions:{type:'string'},package:{type:'string'},mapping:{type:'string'},output:{type:'string'}}});
+ if(!values.plan||!values.decisions||!values.package)throw Error('需要 --plan <md> --decisions <md> --package <json|yaml> [--mapping <json>]');
+ const result=planStageCoverage(path.resolve(values.root||process.cwd()),{plan_ref:values.plan,decisions_ref:values.decisions,package_ref:values.package,mapping_ref:values.mapping});
+ const text=JSON.stringify(result,null,2)+'\n';if(values.output)fs.writeFileSync(values.output,text,{flag:'wx'});process.stdout.write(text);
+ if(result.coverage_status!=='complete')process.exitCode=1;
+}catch(error){process.stderr.write(JSON.stringify({status:'unassessed',error:error.message})+'\n');process.exitCode=1;}

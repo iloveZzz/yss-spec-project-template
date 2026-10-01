@@ -1,0 +1,11 @@
+# 本轮验证边界
+
+正式三方基准378样本及每样本执行计数核验通过；带摘要核验的正确性矩阵48项通过。原始moon篡改遗漏和第一轮Nx冷缓存条件错误分别保留，未混入最终验收。
+
+冻结副本 fast 实际运行 passed，墙钟 248.286 秒，input_drift=false，命令见verification-frozen-fast-standalone/report.json。对应日志在本目录归档，报告stdoutFile/stderrFile仍保留执行时仓库外路径，可按文件名在归档logs中定位。此运行使用PYTHONDONTWRITEBYTECODE=1，覆盖固定SHA和冻结的研究资产与工具链回归；冻结研究文件的复制摘要另有记录；不是发布验证。
+
+冻结前已完成报告口径收窄和任务包引用修正。运行后仅做结果归档、复盘、闭包记录同步，以及报告中基准/最终fast依赖拓扑的文字澄清；随后重新执行研究包、任务包、checkpoint专项校验。共享工作区此前因input_drift=true失败仍保留，不改称通过；固定副本结果不证明动态工作区整体输入稳定。生产代码、路由、依赖与源契约没有更改，不为归档文字重复跑同一工具链组。
+
+早期研究包校验因counter evidence stance登记不符失败，保留verification/，修正后通过。早期任务包收尾因source-freshness路径缺evidence/失败，引用已修正后重验。候选性能不达标与研究工作完成是两个独立结论。
+
+最终固定副本使用独立锁定安装的依赖，185项Node测试、39项Python测试及vendor闭包检查通过。此前使用依赖软链接的固定副本失败记录见verification-frozen-dependency-failed；其input_drift=false仍不足以宣布验证通过。

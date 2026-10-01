@@ -1,0 +1,13 @@
+{
+  "original_untracked_count": 111,
+  "changed_original_paths": [],
+  "main_head": "8fc0122a9e417a91c62cfe78afc1c0cb70ca56d6",
+  "owned_differences_from_measured": [
+    ".template-source/evidence/maintenance/2026-10-01-fast-execution-optimization/progress.json",
+    ".template-source/evidence/maintenance/2026-10-01-fast-execution-optimization/scope.md",
+    ".template-source/evidence/maintenance/2026-10-01-fast-execution-optimization/self-check.md",
+    ".template-source/process/template-verification-profiles.yaml"
+  ],
+  "shared_profile_delta": "concurrent-owned-profile-delta.patch in raw-evidence.tar.gz",
+  "reason": "Final user-facing evidence changed locally; another task added structured-assets routing and formatting to the same profiles file. Preserved both changes; no overwrite or shared-workspace full-validation claim."
+}

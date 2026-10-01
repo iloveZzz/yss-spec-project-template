@@ -1,0 +1,25 @@
+{
+  "schema_version": 2,
+  "intensity": "L1",
+  "classification_reason": "仅正式研究资产和复现证据，未改执行语义；implementation-ready仅指研究材料可消费。",
+  "triggers": [
+    "textual-only"
+  ],
+  "changed_assets": [
+    ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-research"
+  ],
+  "verification_evidence": [
+    {
+      "kind": "relevant-check",
+      "command": "node .agents/skills/yss-research/scripts/validate-research-package.mjs .template-source/evidence/maintenance/2026-10-01-execution-efficiency-research/execution-efficiency-research-brief.md .template-source/evidence/maintenance/2026-10-01-execution-efficiency-research/execution-efficiency-evidence.yaml",
+      "result": "pass"
+    }
+  ],
+  "review_mode": "self-check",
+  "escalation": "none; 后续验证器/执行图语义采纳另作影响分析",
+  "target_state": "implementation-ready",
+  "current_state": "implementation-ready",
+  "verification_profile": "fast",
+  "review_round": 0,
+  "candidate_digest": null
+}

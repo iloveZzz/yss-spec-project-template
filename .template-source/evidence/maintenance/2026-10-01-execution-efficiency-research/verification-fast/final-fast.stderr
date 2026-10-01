@@ -1,0 +1,17 @@
+验证 selection: shadow -> shadow，范围: complete-candidate
+模板核验 profile: fast -> fast
+[开始] scripts/verify-governance-layout
+[完成] scripts/verify-governance-layout (62ms, exit=0)
+[开始] .template-source/scripts/evidence-index --check
+[完成] .template-source/scripts/evidence-index --check (431ms, exit=0)
+[开始] python3 -m unittest discover -s .template-source/scripts/tests -p 'test_skills_agent_eval.py'
+[完成] python3 -m unittest discover -s .template-source/scripts/tests -p 'test_skills_agent_eval.py' (3509ms, exit=0)
+[开始] pnpm --dir .template-source/tooling/node test
+[完成] pnpm --dir .template-source/tooling/node test (320927ms, exit=0)
+[开始] pnpm --dir .template-source/tooling/node check:vendor
+[完成] pnpm --dir .template-source/tooling/node check:vendor (366ms, exit=0)
+.......................................
+----------------------------------------------------------------------
+Ran 39 tests in 3.266s
+
+OK

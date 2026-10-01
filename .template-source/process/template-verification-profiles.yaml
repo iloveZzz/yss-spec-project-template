@@ -19,6 +19,8 @@ compatibility_patterns:
   - .agents/skills/**/scripts/**
   - submodules/**
 core_escalation_patterns:
+  - scripts/lib/json-schema.mjs
+  - scripts/lib/validation-phase.mjs
   - scripts/lib/project-governance.mjs
   - scripts/lib/checkpoint-boundary.mjs
   - scripts/lib/governance-io.mjs
@@ -274,10 +276,10 @@ syntax_files:
   - scripts/verify-maintenance-review-workflow-scenarios
   - scripts/verify-template-cache-scenarios
 routing:
-  - patterns: [scripts/project-ci*, scripts/lib/project-*.mjs, scripts/lib/governance-io.mjs, scripts/lib/checkpoint-boundary.mjs, tests/project-ci.test.mjs, .template-spec/process/project-ci.md, .template-spec/process/checkpoint-boundary.yaml]
-    groups: [lifecycle]
-  - patterns: [scripts/lib/maintenance-counterexample.mjs, scripts/verify-maintenance-risk-scenarios, tests/maintenance-counterexample.test.mjs]
-    groups: [maintenance]
+  - patterns: [ scripts/project-ci*, scripts/lib/project-*.mjs, scripts/lib/governance-io.mjs, scripts/lib/checkpoint-boundary.mjs, tests/project-ci.test.mjs, .template-spec/process/project-ci.md, .template-spec/process/checkpoint-boundary.yaml ]
+    groups: [ lifecycle ]
+  - patterns: [ scripts/lib/maintenance-counterexample.mjs, scripts/verify-maintenance-risk-scenarios, tests/maintenance-counterexample.test.mjs ]
+    groups: [ maintenance ]
   - patterns:
       - .template-spec/plan/**
       - .template-spec/templates/spec-template.md
@@ -288,7 +290,7 @@ routing:
       - .template-spec/process/document-writing.md
       - scripts/inspect-plan-spec
       - scripts/lib/plan-spec-*.mjs
-    groups: [plan-spec-content]
+    groups: [ plan-spec-content ]
   - patterns:
       - .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml
       - .template-spec/process/schemas/lifecycle-checkpoint.schema.json
@@ -297,7 +299,7 @@ routing:
       - scripts/verify-lifecycle-checkpoint
       - scripts/lib/checkpoint-boundary.mjs
       - tests/checkpoint-boundary.test.mjs
-    groups: [lifecycle]
+    groups: [ lifecycle ]
   - patterns:
       - tests/backend-platforms.test.mjs
       - tests/implementation-contract-compiler.test.mjs
@@ -498,6 +500,22 @@ routing:
     groups:
       - hygiene
   - patterns:
+      - scripts/lib/business-tickets.mjs
+      - scripts/fixtures/business-tickets/**
+    groups:
+      - business-tickets
+  - patterns:
+      - scripts/fixtures/contract-efficiency/**
+      - scripts/fixtures/delivery-preflight/json-schema-framing.test.mjs
+      - scripts/fixtures/structured-assets/**
+      - scripts/lib/structured-assets.mjs
+      - scripts/lib/asset-*.mjs
+      - scripts/lib/plan-stage-coverage.mjs
+      - scripts/check-plan-stage-coverage
+      - .template-spec/process/structured-assets.md
+    groups:
+      - schema-runtime
+  - patterns:
       - .agents/skills/yss-research/**
       - .codex/skills/yss-research/**
       - .cursor/skills/yss-research/**
@@ -512,6 +530,12 @@ routing:
     groups:
       - document-writing
 groups:
+  schema-runtime:
+    commands:
+      - run: node --test scripts/fixtures/structured-assets/*.test.mjs
+        id: check.structured-assets
+      - run: node --test scripts/fixtures/contract-efficiency/schema-rejection.test.mjs scripts/fixtures/contract-efficiency/security.test.mjs scripts/fixtures/contract-efficiency/phase.test.mjs scripts/fixtures/delivery-preflight/json-schema-framing.test.mjs
+        id: check.schema-runtime
   feature-assets:
     commands:
       - run: node --test tests/feature-assets.test.mjs tests/browser-session.test.mjs
@@ -581,7 +605,7 @@ groups:
       - run: .template-source/scripts/evidence-index --check
         when: template-source
         id: check.3c6d62ea49a55255
-      - run: python3 -m unittest discover -s .template-source/scripts/tests -p 'test_skills_agent_eval.py'
+      - run: python3 -m unittest discover -s .template-source/scripts/tests -p 'test_skills_agent_eval.py' -v
         when: template-source
         id: check.44ea73f718bcecec
       - run: pnpm --dir .template-source/tooling/node test
@@ -606,8 +630,7 @@ groups:
         id: check.022dccdddca70b70
       - run: scripts/verify-skill-governance
         id: check.93d2af5732ccdd96
-      - run: scripts/verify-upstream-skill-source --source=iloveZzz/yss-harness-design-agent
-          --source-root=submodules/yss-harness-design-agent
+      - run: scripts/verify-upstream-skill-source --source=iloveZzz/yss-harness-design-agent --source-root=submodules/yss-harness-design-agent
         when: template-source
         id: check.a74d7c2cc539e456
       - run: node --test .agents/skills/yss-skill-source-index-refresh/scripts/refresh-yss-skill-index.test.mjs
@@ -664,12 +687,10 @@ groups:
         id: check.ffe328872703d3c0
       - run: scripts/verify-digital-human-task-package-scenarios
         id: check.b593997f977be2c5
-      - run: .template-source/scripts/verify-historical-task-package
-          .template-source/evidence/maintenance/digital-human-task-package-review-task.yaml
+      - run: .template-source/scripts/verify-historical-task-package .template-source/evidence/maintenance/digital-human-task-package-review-task.yaml
         when: template-source
         id: check.bc3b0b47660e8fa8
-      - run: .template-source/scripts/verify-historical-task-package
-          .template-source/evidence/maintenance/lifecycle-ticket-transition-review-task-package.yaml
+      - run: .template-source/scripts/verify-historical-task-package .template-source/evidence/maintenance/lifecycle-ticket-transition-review-task-package.yaml
         when: template-source
         id: check.e91bd0e1ad7ead2b
       - run: node --test tests/read-only-intake.test.mjs
@@ -711,16 +732,13 @@ groups:
         id: check.aafa7bdc8a88bf84
       - run: scripts/verify-lifecycle-checkpoint .template-spec/process/templates/lifecycle-checkpoint-template.yaml
         id: check.56ea690765beec6f
-      - run: scripts/verify-frontend-implementation-evidence --allow-template
-          .template-spec/process/templates/frontend-implementation-plan-template.yaml
+      - run: scripts/verify-frontend-implementation-evidence --allow-template .template-spec/process/templates/frontend-implementation-plan-template.yaml
         id: check.058e2e3f6c3cf54b
-      - run: scripts/verify-frontend-implementation-evidence --allow-template
-          .template-spec/process/templates/frontend-implementation-verification-template.yaml
+      - run: scripts/verify-frontend-implementation-evidence --allow-template .template-spec/process/templates/frontend-implementation-verification-template.yaml
         id: check.f8325b4489484a22
       - run: scripts/verify-frontend-implementation-evidence-scenarios
         id: check.67adfa48ba9308b2
-      - run: scripts/verify-scaffold-architecture-decisions --allow-template
-          .template-spec/process/templates/scaffold-architecture-decisions-template.yaml
+      - run: scripts/verify-scaffold-architecture-decisions --allow-template .template-spec/process/templates/scaffold-architecture-decisions-template.yaml
         id: check.bbef469ead80be51
       - run: scripts/verify-scaffold-architecture-decision-scenarios
         id: check.66e3685569009833
@@ -739,8 +757,7 @@ groups:
     commands:
       - run: node --test tests/maintenance-counterexample.test.mjs
         id: check.maintenance-counterexample
-      - run: scripts/verify-maintenance-checkpoint --history
-          .template-source/evidence/maintenance/yss-tactical-design-l3-checkpoint-2026-08-27.yaml
+      - run: scripts/verify-maintenance-checkpoint --history .template-source/evidence/maintenance/yss-tactical-design-l3-checkpoint-2026-08-27.yaml
         when: template-source
         id: check.7bb9adbe9bce5e99
       - run: scripts/verify-maintenance-intensity-scenarios
@@ -793,11 +810,9 @@ groups:
         id: check.2c43904888dff190
       - run: node --test .agents/skills/yss-prototype-stage/tests/verification-entry.test.mjs
         id: check.3a2236d542e47171
-      - run: node .agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs validate-evidence
-          .template-spec/design/templates/prototype-evidence-template.yaml --allow-template
+      - run: node .agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs validate-evidence .template-spec/design/templates/prototype-evidence-template.yaml --allow-template
         id: check.7126152a480689b5
-      - run: node .agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs validate
-          .template-spec/design/templates/visual-baseline-template.yaml --allow-template
+      - run: node .agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs validate .template-spec/design/templates/visual-baseline-template.yaml --allow-template
         id: check.f96c759bbc30d99e
       - run: node --test tests/contract-review-preparation.test.mjs
         when: template-source

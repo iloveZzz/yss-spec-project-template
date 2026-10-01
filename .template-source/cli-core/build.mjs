@@ -16,6 +16,19 @@ import {
 import { yaml, PROFILE, loadBundle } from "./bundle.mjs";
 import { familyFor } from "./family.mjs";
 const CORE_PATH = ".template-source/cli-core";
+const UPGRADE_SKILL = ".agents/skills/yss-harness-upgrade";
+const UPGRADE_PROTOCOL = ".template-spec/process/harness-upgrade.md";
+function upgradeResources(root) {
+  if (!fs.existsSync(path.join(root, UPGRADE_SKILL))) return {};
+  const files = {};
+  for (const ref of Object.keys(inventory(path.join(root, UPGRADE_SKILL)))) {
+    let bytes = fs.readFileSync(path.join(root, UPGRADE_SKILL, ref));
+    if (ref === 'SKILL.md') bytes = Buffer.from(bytes.toString().replace('../../../.template-spec/process/harness-upgrade.md', 'protocol.md'));
+    files[ref] = bytes;
+  }
+  files['protocol.md'] = fs.readFileSync(path.join(root, UPGRADE_PROTOCOL));
+  return files;
+}
 function archive(source, ref, consume, paths = []) {
   const revision = execFileSync(
     "git",
@@ -79,13 +92,21 @@ export function verifyCore(packageRoot) {
       lock.coreVersion,
     "核心版本漂移",
   );
+  if (lock.upgradeResources) ensure(JSON.stringify(inventory(path.join(packageRoot,'resources/upgrade-skill'))) === JSON.stringify(lock.upgradeResources), '升级技能资源漂移');
   return lock;
 }
 export function syncCore(source, ref, packageRoot, check = false) {
+  const paths = [CORE_PATH];
+  for (const candidate of [UPGRADE_SKILL, UPGRADE_PROTOCOL]) {
+    if (ref === 'WORKTREE') { if (fs.existsSync(path.join(source,candidate))) paths.push(candidate); }
+    else { try { execFileSync('git',['-C',source,'cat-file','-e',`${ref}:${candidate}`],{stdio:'ignore'}); paths.push(candidate); } catch {} }
+  }
   return archive(source, ref, (root, revision, sourceState) => {
     const sourceRoot = path.join(root, CORE_PATH),
       files = inventory(sourceRoot),
       coreVersion = readJson(sourceRoot, "package.json").version;
+    const resources = upgradeResources(root);
+    const resourceInventory = Object.fromEntries(Object.entries(resources).sort(([a],[b])=>a<b?-1:1).map(([ref,bytes])=>[ref,{digest:hash(bytes),mode:0o644}]));
     const lock = {
       schemaVersion: 1,
       sourceRepository:
@@ -97,6 +118,7 @@ export function syncCore(source, ref, packageRoot, check = false) {
       protocolVersion: 1,
       files,
       digest: hash(JSON.stringify(files)),
+      ...(Object.keys(resources).length ? {upgradeResources:resourceInventory} : {}),
     };
     if (check) {
       ensure(
@@ -118,8 +140,12 @@ export function syncCore(source, ref, packageRoot, check = false) {
         entry.mode,
       );
     write(packageRoot, "cli-core.lock.json", json(lock));
+    if (Object.keys(resources).length) {
+      fs.rmSync(path.join(packageRoot,'resources/upgrade-skill'),{recursive:true,force:true});
+      for (const [ref,bytes] of Object.entries(resources)) write(packageRoot,`resources/upgrade-skill/${ref}`,bytes);
+    }
     return lock;
-  }, [CORE_PATH]);
+  }, paths);
 }
 function selected(ref, m) {
   const top = ref.split("/")[0],

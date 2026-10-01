@@ -5,13 +5,15 @@ import path from 'node:path';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
+import { measureTestBuild } from '../scripts/tooling-fixture.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../..');
 const BUILD = path.join(ROOT, '.template-source/plugins/yss-backend-delivery/build.mjs');
 const NAME = 'yss-backend-delivery';
 function run(file, args, cwd) {
-  return spawnSync(process.execPath, [file, ...args], { cwd, encoding: 'utf8', timeout: 60000,
+  const execute = () => spawnSync(process.execPath, [file, ...args], { cwd, encoding: 'utf8', timeout: 60000,
     env: { ...process.env, NODE_PATH: '', NODE_OPTIONS: '' } });
+  return file === BUILD ? measureTestBuild(args[args.indexOf('--output') + 1], execute) : execute();
 }
 
 test('generated development plugin is portable, deterministic and fails closed on corruption', async t => {

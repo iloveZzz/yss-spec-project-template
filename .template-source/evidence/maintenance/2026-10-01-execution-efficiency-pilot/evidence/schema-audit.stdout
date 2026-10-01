@@ -1,0 +1,40 @@
+{
+  "summary": {
+    "official-core": {
+      "tests": 1190,
+      "decision_mismatches": 36,
+      "diagnostic_mismatches": 494,
+      "python_exceptions": 5,
+      "ajv_compile_errors": 11,
+      "python_expected_mismatches": 5,
+      "ajv_expected_mismatches": 32
+    },
+    "official-format": {
+      "tests": 874,
+      "decision_mismatches": 278,
+      "diagnostic_mismatches": 439,
+      "python_exceptions": 0,
+      "ajv_compile_errors": 0,
+      "python_expected_mismatches": 275,
+      "ajv_expected_mismatches": 141
+    },
+    "repository": {
+      "tests": 47,
+      "decision_mismatches": 0,
+      "diagnostic_mismatches": 46,
+      "python_exceptions": 0,
+      "ajv_compile_errors": 0,
+      "python_expected_mismatches": 0,
+      "ajv_expected_mismatches": 0
+    }
+  },
+  "excluded": 54,
+  "inventory": 51,
+  "compileFailed": [
+    {
+      "schema": ".template-spec/process/schemas/subagent-task-package.schema.json",
+      "compiled": false,
+      "error": "can't resolve reference digital-human-task-package.schema.json from id https://yss.dev/schemas/subagent-task-package.schema.json"
+    }
+  ]
+}

@@ -93,7 +93,7 @@ test('approval cannot be reused by changing evidence and recomputing checkpoint 
  const id='gate.delivery-accepted';f.registry.gates[0].id=id;
  const gate=f.state.gates[f.gateId];f.state.gates={[id]:gate};
  f.save('package.json',{gate_id:id,basis:gate.basis});
- f.save('approval.json',{drafter_principal_ref:'synthetic.worker',principal_ref:'synthetic.reviewer',subject_ref:'package.json',subject_digest:f.asset('package.json').digest});
+ f.save('approval.json',{schema_version:1,gate_id:id,decision:'approved',actor_kind:'digital-human',role_id:'role.test-engineer',runtime_id:'runtime.generic',drafter_principal_ref:'synthetic.worker',principal_ref:'synthetic.reviewer',subject_ref:'package.json',subject_digest:f.asset('package.json').digest});
  gate.subject_ref='package.json';gate.approval_ref='approval.json';gate.basis.push(f.asset('package.json'),f.asset('approval.json'));
  const verify=()=>assertGateChecks(id,f.state,{root:f.dir,registry:f.registry});assert.equal(verify().result,'passed');
  f.save('evidence.txt','different outcome');const changed=f.asset('evidence.txt');f.state.checks[f.checkId].basis=[changed];gate.basis[0]=changed;

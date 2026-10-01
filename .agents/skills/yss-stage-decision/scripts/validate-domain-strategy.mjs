@@ -1,10 +1,13 @@
 #!/usr/bin/env node
 import { readFile } from "node:fs/promises";
+import path from "node:path";
+import { assertAssetTransactionIdle, assertCurrentAssetReference } from "../../../../scripts/lib/asset-transactions.mjs";
 import process from "node:process";
 import { parseArgs } from "node:util";
 import { parseDocument } from "../../../../scripts/vendor/yaml.mjs";
 import { loadApprovalRecord, resolveApprovalRef, validateApprovalRecord } from "../../../../scripts/lib/approval-record.mjs";
 import { verifyContextSnapshot } from "../../../../scripts/lib/context-contract.mjs";
+import { parseAsset, validateAssetStructure } from '../../../../scripts/lib/structured-assets.mjs';
 
 import { extractTraceability } from "../../../../scripts/lib/strategic-handoff-rules.mjs";
 
@@ -49,6 +52,7 @@ function requireArray(object, field, path, errors, min = 0, itemKind = "string")
 }
 
 function validate(data, contextRoot) {
+  validateAssetStructure(data, 'domain-strategy');
   const errors = [];
   if (data?.traceability_version !== undefined) { try { extractTraceability(data); } catch(error) { errors.push(error.message); } }
   if (!data || typeof data !== "object" || Array.isArray(data)) return ["合同必须是对象"];
@@ -210,11 +214,11 @@ const file = positionals[0];
 if (!file) fail(["用法: validate-domain-strategy.mjs <contract.yaml> [--root <project-root>]"]);
 else {
   try {
+    assertAssetTransactionIdle(values.root);
+    assertCurrentAssetReference(values.root, path.relative(path.resolve(values.root), path.resolve(file)));
     const source = await readFile(file, "utf8");
-    const document = parseDocument(source, { maxAliasCount: 0, uniqueKeys: true });
-    if (document.errors.length) fail([document.errors[0].message]);
-    else {
-      const errors = validate(document.toJS({ maxAliasCount: 0 }), values.root);
+    {
+      const errors = validate(parseAsset(source, file), values.root);
       if (errors.length) fail(errors);
       else process.stdout.write(JSON.stringify({ result: "completed", contract: file }, null, 2) + "\n");
     }

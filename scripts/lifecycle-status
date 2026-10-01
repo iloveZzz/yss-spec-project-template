@@ -3,17 +3,20 @@ import { parseArgs } from 'node:util';
 import path from 'node:path';
 import { checkProjectGovernance } from './lib/project-governance.mjs';
 import { lifecycleStatus } from './lib/lifecycle-status.mjs';
+import { renderLifecycleStatus } from './lib/lifecycle-presentation.mjs';
 
 try {
-  const { values } = parseArgs({ strict: true, options: { root: { type: 'string' }, checkpoint: { type: 'string' }, task: {type: 'string'}, preflight: {type:'boolean'}, help:{type:'boolean'} } });
-  if(values.help)process.stdout.write('用法: scripts/lifecycle-status --root <项目> [--checkpoint <根相对路径>] [--task <任务包>] [--preflight]\n普通查询不执行预检；--preflight 复验当前证据，仅提供恢复动作，不批准或派发。普通查询退出码保持 0/1；预检 0=通过、1=失败、2=输入或能力异常。\n');
+  const { values } = parseArgs({ strict: true, options: { root: { type: 'string' }, checkpoint: { type: 'string' }, task: {type: 'string'}, preflight: {type:'boolean'}, help:{type:'boolean'}, format: {type:'string', default:'json'} } });
+  if (!['json', 'text'].includes(values.format)) throw Error('--format 仅支持 json 或 text');
+  if (values.preflight && values.format === 'text') throw Error('--preflight 使用 JSON 诊断；中文状态阅读请单独调用 --format text');
+  if(values.help)process.stdout.write('用法: scripts/lifecycle-status --root <项目> [--checkpoint <根相对路径>] [--task <任务包>] [--preflight] [--format json|text]\n普通查询不执行预检；--preflight 复验当前证据，仅提供恢复动作，不批准或派发。普通查询退出码保持 0/1；预检 0=通过、1=失败、2=输入或能力异常。\n');
   else if(values.preflight) {
     if(!values.checkpoint&&!values.task)throw new Error('--preflight 必须指定 --checkpoint 或 --task');
     const {report,exitCode}=checkProjectGovernance({root:path.resolve(values.root??'.'),checkpointRef:values.checkpoint,taskRef:values.task,recovery:true});
     process.stdout.write(JSON.stringify(report,null,2)+'\n');process.exitCode=exitCode;
   } else {
   const result = lifecycleStatus({ root: path.resolve(values.root ?? '.'), checkpointRef: values.checkpoint, taskPackageRef: values.task });
-  process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+  process.stdout.write(values.format === 'text' ? renderLifecycleStatus(result) : `${JSON.stringify(result, null, 2)}\n`);
   if (result.blockers.length) process.exitCode = 1;
   }
 } catch (error) {

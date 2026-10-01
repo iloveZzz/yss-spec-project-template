@@ -1,0 +1,116 @@
+{
+  "target": "median reduction>=20%, declared probes no misses, p95 no regression",
+  "performance": [
+    {
+      "workload": "tiny",
+      "regime": "cold-cache",
+      "tool": "nx",
+      "reduction_percent": -107.04474574442249,
+      "median_reduction_at_least20": false,
+      "p95_no_regression": false,
+      "performance_pass": false
+    },
+    {
+      "workload": "tiny",
+      "regime": "cold-cache",
+      "tool": "moon",
+      "reduction_percent": -75.35303070263724,
+      "median_reduction_at_least20": false,
+      "p95_no_regression": false,
+      "performance_pass": false
+    },
+    {
+      "workload": "tiny",
+      "regime": "hot-cache",
+      "tool": "nx",
+      "reduction_percent": -20.55166365145191,
+      "median_reduction_at_least20": false,
+      "p95_no_regression": false,
+      "performance_pass": false
+    },
+    {
+      "workload": "tiny",
+      "regime": "hot-cache",
+      "tool": "moon",
+      "reduction_percent": 42.23598163352139,
+      "median_reduction_at_least20": true,
+      "p95_no_regression": true,
+      "performance_pass": true
+    },
+    {
+      "workload": "tiny",
+      "regime": "input-change",
+      "tool": "nx",
+      "reduction_percent": -105.534337162099,
+      "median_reduction_at_least20": false,
+      "p95_no_regression": false,
+      "performance_pass": false
+    },
+    {
+      "workload": "tiny",
+      "regime": "input-change",
+      "tool": "moon",
+      "reduction_percent": -74.33758818705458,
+      "median_reduction_at_least20": false,
+      "p95_no_regression": false,
+      "performance_pass": false
+    },
+    {
+      "workload": "daily",
+      "regime": "cold-cache",
+      "tool": "nx",
+      "reduction_percent": -59.92001044150903,
+      "median_reduction_at_least20": false,
+      "p95_no_regression": false,
+      "performance_pass": false
+    },
+    {
+      "workload": "daily",
+      "regime": "cold-cache",
+      "tool": "moon",
+      "reduction_percent": -37.60928190829964,
+      "median_reduction_at_least20": false,
+      "p95_no_regression": false,
+      "performance_pass": false
+    },
+    {
+      "workload": "daily",
+      "regime": "hot-cache",
+      "tool": "nx",
+      "reduction_percent": 33.931818823962864,
+      "median_reduction_at_least20": true,
+      "p95_no_regression": true,
+      "performance_pass": true
+    },
+    {
+      "workload": "daily",
+      "regime": "hot-cache",
+      "tool": "moon",
+      "reduction_percent": 69.16082868173692,
+      "median_reduction_at_least20": true,
+      "p95_no_regression": true,
+      "performance_pass": true
+    },
+    {
+      "workload": "daily",
+      "regime": "input-change",
+      "tool": "nx",
+      "reduction_percent": -59.33284259989615,
+      "median_reduction_at_least20": false,
+      "p95_no_regression": false,
+      "performance_pass": false
+    },
+    {
+      "workload": "daily",
+      "regime": "input-change",
+      "tool": "moon",
+      "reduction_percent": -36.86102506019333,
+      "median_reduction_at_least20": false,
+      "p95_no_regression": false,
+      "performance_pass": false
+    }
+  ],
+  "guarded_probes_all_pass": true,
+  "overall": "not-accepted-for-general-replacement",
+  "scope": "finite pilot matrices, not universal no-missed-check proof"
+}

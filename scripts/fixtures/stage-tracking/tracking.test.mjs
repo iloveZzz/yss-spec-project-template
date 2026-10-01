@@ -8,8 +8,8 @@ import { stringify } from '../../vendor/yaml.mjs';
 import { assertStageTracking, assertTrackingTransition, parseYaml, binding, refreshTracking, sha256 } from '../../lib/stage-tracking.mjs';
 import { planTracking, applyTracking, checkTracking } from '../../lib/stage-tracking-migration.mjs';
 const repo = path.resolve(import.meta.dirname, '../../..');
-const checkpointRef = 'docs/.scratch/demo/checkpoint.yaml';
-function put(root, ref, value) { const p = path.join(root, ref); mkdirSync(path.dirname(p), { recursive: true }); writeFileSync(p, typeof value === 'string' ? value : stringify(value)); }
+const checkpointRef = 'docs/.scratch/demo/checkpoint.json';
+function put(root, ref, value) { const p = path.join(root, ref); mkdirSync(path.dirname(p), { recursive: true }); writeFileSync(p, typeof value === 'string' ? value : ref.endsWith('.json') ? JSON.stringify(value, null, 2) : stringify(value)); }
 function fixture({ design = false, enabled = false, platform = 'local-markdown' } = {}) {
   const root = mkdtempSync(path.join(os.tmpdir(), 'yss-stage-tracking-'));
   for (const ref of ['.template-spec/process/checkpoint-boundary.yaml', '.template-spec/process/schemas/stage-tracking.schema.json', '.template-spec/process/schemas/lifecycle-checkpoint.schema.json', '.template-spec/process/templates/lifecycle-checkpoint-template.yaml', '.template-spec/process/lifecycle-registry.yaml']) put(root, ref, readFileSync(path.join(repo, ref), 'utf8'));

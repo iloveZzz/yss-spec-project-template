@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "kind": "maintenance-research-verification",
+  "inputs": {
+    "brief": {
+      "ref": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/pilot-research-brief.md",
+      "digest": "sha256:8ceda7ace4eb659f6dd8376a49eafdb1e2dbde5ff475c92a9b0e98644df3343b"
+    },
+    "evidence": {
+      "ref": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/pilot-evidence.yaml",
+      "digest": "sha256:01d118986e0f5b844fa9f1d1fd22bd6930d32c8d1ba70e5020d410e466a3bf98"
+    },
+    "validator": {
+      "ref": ".agents/skills/yss-research/scripts/validate-research-package.mjs",
+      "digest": "sha256:5e4e437d54e67cce9dd380974744605bd149c71939c5f01e3ea4719c79911d0f"
+    }
+  },
+  "command": [
+    "node",
+    ".agents/skills/yss-research/scripts/validate-research-package.mjs",
+    ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/pilot-research-brief.md",
+    ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/pilot-evidence.yaml"
+  ],
+  "started_at": "2026-10-01T01:26:18.404Z",
+  "completed_at": "2026-10-01T01:26:18.430Z",
+  "exit_code": 1,
+  "stdout": {
+    "ref": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/verification/stdout.log",
+    "digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "stderr": {
+    "ref": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/verification/stderr.log",
+    "digest": "sha256:1f68d135968bde67c6d4368ba4856fb3ce48c5c0e5a697b722c6ed1c5b17030b"
+  }
+}

@@ -5,12 +5,13 @@ import path from 'node:path';
 import { tmpdir } from 'node:os';
 import { spawnSync } from 'node:child_process';
 import { build } from '../../../plugins/yss-product-design/build.mjs';
+import { measureTestBuild } from '../scripts/tooling-fixture.mjs';
 
 test('design plugin uses pinned design CLI and a bounded project-local lifecycle', async t => {
   const dir = fs.realpathSync(fs.mkdtempSync(path.join(tmpdir(), 'yss-product-design-test-')));
   t.after(() => fs.rmSync(dir, { recursive: true, force: true }));
   const plugin = path.join(dir, 'plugin/yss-product-design'), target = path.join(dir, '设计 治理');
-  await build({ output: plugin });
+  await measureTestBuild(plugin, () => build({ output: plugin }));
   const call = (command, args = [], env = {}) => spawnSync(process.execPath, [path.join(plugin, 'scripts/plugin.mjs'), command, ...args], {
     encoding: 'utf8', timeout: 120000, maxBuffer: 16 * 1024 * 1024, env: { ...process.env, ...env } });
   const ok = r => { assert.equal(r.status, 0, r.stderr); return JSON.parse(r.stdout); };

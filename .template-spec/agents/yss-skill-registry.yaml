@@ -8,7 +8,7 @@ description: >-
 canonical_content_root: .agents/skills
 instance_distribution:
   schema_version: 1
-  initial_skills: [yss-product-lifecycle, yss-research, i-have-adhd]
+  initial_skills: [yss-product-lifecycle, yss-research, i-have-adhd, yss-harness-upgrade]
   runtimes: [codex, cursor, pi]
   projection_roots: { codex: .codex/skills, cursor: .cursor/skills, pi: .pi/skills }
   dependency_types_for_ensure: [context-required, context-conditional]
@@ -205,6 +205,8 @@ skill_dependencies:
   yss-openapi-governance:
     - { skill: i-have-adhd, type: context-conditional, when: lifecycle-document-output }
   yss-stage-decision:
+    - { skill: i-have-adhd, type: context-conditional, when: lifecycle-document-output }
+  yss-harness-upgrade:
     - { skill: i-have-adhd, type: context-conditional, when: lifecycle-document-output }
   yss-research:
     - { skill: i-have-adhd, type: context-conditional, when: lifecycle-document-output }
@@ -466,6 +468,12 @@ skills:
     instance_default_discoverable: true
     aliases: []
     impacts: [prototype]
+  - id: yss-harness-upgrade
+    layer: core
+    maturity: supported
+    instance_default_discoverable: true
+    aliases: []
+    impacts: [lifecycle]
   - id: yss-research
     layer: core
     maturity: supported

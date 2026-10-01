@@ -24,8 +24,8 @@
     {
       "upstream": "yss-stage-decision",
       "canonical": "yss-stage-decision",
-      "upstream_hash": "9e06107a37c2251b454bde7e258f2e462ba5fe766f9fabe9e7f76419b60f5c98"
+      "upstream_hash": "77fa3075f90966821881998ff5fa9d674672bd2568e70b8d877402efeb360453"
     }
   ],
-  "source_state": "committed"
+  "source_state": "working-tree"
 }

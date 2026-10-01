@@ -200,6 +200,18 @@ try {
   await writeFile(packageFile, packageSource);
   const packagePass = run(packageValidator, packageFile, temporaryRoot);
   if (packagePass.status !== 0) throw new Error(`valid v3 stage decision package should pass: ${packagePass.stderr}`);
+  for (const format of ['yaml', 'json']) {
+    for (const [name, mutate, pattern] of [
+      ['record-note', p => {p.test_seams[0].note='undeclared';}, /Additional properties/],
+      ['mapping-note', p => {p.downstream_mapping[0].note='undeclared';}, /Additional properties/],
+      ['duplicate-source', p => p.test_seams[0].source_refs.push(p.test_seams[0].source_refs[0]), /non-unique/]
+    ]) {
+      const value = parseYaml(packageSource); mutate(value);
+      const file = join(temporaryRoot, `${name}.${format}`);
+      await writeFile(file, JSON.stringify(value, null, 2));
+      expectBlocked(run(packageValidator, file, temporaryRoot), pattern, `${name} ${format}`);
+    }
+  }
 
   const bundleFile = join(temporaryRoot, "plan-review-bundle.json");
   const bundledDomainValue = parseYaml(domainSource);
@@ -265,7 +277,7 @@ try {
   const wrongArrayValue = parseYaml(packageSource);
   wrongArrayValue.target_users = [42];
   await writeFile(packageWrongArray, JSON.stringify(wrongArrayValue, null, 2));
-  expectBlocked(run(packageValidator, packageWrongArray, temporaryRoot), /target_users\[0\]/, "package non-string array item");
+  expectBlocked(run(packageValidator, packageWrongArray, temporaryRoot), /target_users(?:\[0\]|\.0)/, "package non-string array item");
 } finally {
   await rm(temporaryRoot, { recursive: true, force: true });
 }

@@ -1,0 +1,34 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "--test-concurrency=1",
+    "test/decision-continuation.test.mjs",
+    "test/design-md.test.mjs",
+    "test/digital-human-roles.test.mjs",
+    "test/lifecycle-controls.test.mjs",
+    "test/plan-spec-quality.test.mjs",
+    "test/plugin-build.test.mjs",
+    "test/plugin-design-consumption.test.mjs",
+    "test/plugin-entry-migration.test.mjs",
+    "test/plugin-preparation.test.mjs",
+    "test/plugin-project.test.mjs",
+    "test/plugin-scope.test.mjs",
+    "test/plugin-terminal.test.mjs",
+    "test/product-design-plugin.test.mjs",
+    "test/profile-skill-sync.test.mjs",
+    "test/retirement.test.mjs",
+    "test/runtime-contract.test.mjs",
+    "test/skill-discovery.test.mjs",
+    "test/skill-registry.test.mjs",
+    "test/skill-supply-chain.test.mjs",
+    "test/yss-ui-skill-integration.test.mjs"
+  ],
+  "cwd": "/tmp/yss-execution-pilot-20261001/source/.template-source/tooling/node",
+  "exit_code": 0,
+  "wall_ms": 242618.2629999821,
+  "prepared_env_keys": [
+    "YSS_BACKEND_PLUGIN_CLI_ROOT",
+    "YSS_DESIGN_PLUGIN_CLI_ROOT"
+  ]
+}

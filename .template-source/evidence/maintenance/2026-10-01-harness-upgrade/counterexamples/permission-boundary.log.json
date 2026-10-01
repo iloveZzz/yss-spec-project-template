@@ -1,0 +1,13 @@
+[
+  {
+    "id": "vetoed-approval",
+    "command": [
+      "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+      "scripts/verify-approval-record",
+      ".template-source/evidence/maintenance/2026-10-01-harness-upgrade/counterexamples/permission-boundary.input.json"
+    ],
+    "exit_code": 1,
+    "stdout": "",
+    "stderr": "会签记录校验失败: gate.delivery-accepted 已被生物人否决，不能标为 approved\n"
+  }
+]

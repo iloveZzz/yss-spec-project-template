@@ -1,0 +1,50 @@
+{
+  "schema_version": 2,
+  "intensity": "L3",
+  "classification_reason": "同家族实例迁移的生成语义、跨仓分发及权限边界；仅本轮专项验收，整仓集成状态见 verification.json。",
+  "triggers": [
+    "generation-semantics",
+    "cross-repo-contract",
+    "permission-boundary"
+  ],
+  "changed_assets": [
+    ".agents/skills/yss-harness-upgrade",
+    ".template-source/cli-core",
+    "scripts/sync-harness-upgrade",
+    "submodules/create-yss-spec",
+    "submodules/create-yss-strategic-design",
+    "submodules/create-yss-harness-backend",
+    "submodules/create-yss-harness-frontend"
+  ],
+  "verification_evidence": [
+    {
+      "kind": "fresh-verification",
+      "command": "node --test --test-name-pattern=迁移 .template-source/cli-core/tests/cli.test.mjs .template-source/cli-core/tests/migration-version.test.mjs",
+      "result": "pass"
+    },
+    {
+      "kind": "fresh-verification",
+      "command": "local development tarball install and public migrate plan/apply/rollback; logs in verification.json",
+      "result": "pass"
+    },
+    {
+      "kind": "self-check",
+      "command": "维护者按 implementation.md 检查路径、计划重建、事务恢复、原件校验和授权范围",
+      "result": "pass"
+    },
+    {
+      "kind": "counterexample",
+      "trigger": "permission-boundary",
+      "command": "scripts/verify-maintenance-risk-scenarios --output .template-source/evidence/maintenance/2026-10-01-harness-upgrade/counterexamples-final",
+      "result": "pass",
+      "run_ref": ".template-source/evidence/maintenance/2026-10-01-harness-upgrade/counterexamples-final/permission-boundary.run.json"
+    }
+  ],
+  "review_mode": "self-check",
+  "escalation": "整仓 fast 自动升级 release，Node tooling tests 失败且共享输入漂移；不宣布整仓通过或可发布。",
+  "target_state": "implementation-ready",
+  "current_state": "implementation-ready",
+  "verification_profile": "fast",
+  "review_round": 0,
+  "candidate_digest": null
+}

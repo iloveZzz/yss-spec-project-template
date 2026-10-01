@@ -97,14 +97,28 @@ export function execute(bundle, target, opts) {
     else if (!before || same(before, baseline) || (record?.legacyUnproven && before?.digest === baseline?.digest)) action=before?'update':'add';
     else if (!record?.legacyUnproven && same(after, baseline)) action='preserve';
     else action='conflict';
+    const resolution = opts.migrationResolutions?.[ref];
+    let merged;
+    if (resolution) {
+      ensure(action === 'conflict' && baseline && !record?.legacyUnproven, `不能合并非可信冲突: ${ref}`, 'CONFLICT');
+      ensure(resolution.beforeDigest === before?.digest && resolution.templateDigest === after?.digest, `冲突决议已过期: ${ref}`, 'CONCURRENT');
+      ensure(['preserve','merge'].includes(resolution.action), `未知冲突决议: ${ref}`);
+      if (resolution.action === 'preserve') action = 'preserve';
+      else {
+        ensure(typeof resolution.contentBase64 === 'string', `缺少合并内容: ${ref}`);
+        merged = Buffer.from(resolution.contentBase64, 'base64');
+        action = 'update';
+      }
+    }
     if (action === 'conflict') conflicts.push(ref);
     if (next && !userOwned(ref,f)) managedFiles[ref] = {
-      baseline:after,lastApplied:action==='preserve'?before:after,ownership:ref==='skills-lock.json'?'generated':'managed',
+      baseline:after,lastApplied:action==='preserve'?before:merged?{type:'file',digest:hash(merged),mode:before.mode}:after,ownership:ref==='skills-lock.json'?'generated':'managed',
       ...(record?.legacyUnproven && action==='preserve' ? {legacyUnproven:true} : {}),
     };
-    if (['update','add','delete'].includes(action) || (action==='conflict' && canForce)) operations.push({path:ref,before,after,bytes:next?.bytes});
+    if (['update','add','delete'].includes(action) || (action==='conflict' && canForce)) operations.push({path:ref,before,after:merged?{type:'file',digest:hash(merged),mode:before.mode}:after,bytes:merged || next?.bytes});
     changes.push({path:ref,action,...(reason?{reason}:{})});
   }
+  for (const ref of Object.keys(opts.migrationResolutions || {})) ensure(changes.some(c=>c.path===ref) && !conflicts.includes(ref), `未消费的冲突决议: ${ref}`, 'CONFLICT');
   for (const operation of layout.deletions) {
     guardNestedRepository(target, operation.path);
     ensure(!protectedLinks.some((x) => operation.path === x || operation.path.startsWith(x + "/")), `受保护 gitlink: ${operation.path}`, "PROTECTED");
@@ -124,6 +138,7 @@ export function execute(bundle, target, opts) {
     coreVersion: core.coreVersion,
     changes,
     conflicts,
+    conflictDetails: conflicts.map(ref=>({path:ref,beforeDigest:observed.get(ref)?.digest,templateDigest:files.get(ref)?.baseline?.digest,resolutionSupported:Boolean(meta?.managedFiles?.[ref]?.baseline && !meta.managedFiles[ref].legacyUnproven)})),
     backupPath: null,
   };
   if (conflicts.length && !canForce)
@@ -144,7 +159,7 @@ export function execute(bundle, target, opts) {
   const beforeIdentity = new Map(
     watched.map((ref) => [ref, descriptor(target, ref)]),
   );
-  const transactionId = randomUUID();
+  const transactionId = opts.migrationId || randomUUID();
   const metadata = {
     lastTransactionId: transactionId,
     metadataSchemaVersion: 2,
@@ -164,10 +179,10 @@ export function execute(bundle, target, opts) {
     ...(meta?.legacyRetainedFiles?.length ? {legacyRetainedFiles:meta.legacyRetainedFiles} : {}),
     baselineDigest: hash(JSON.stringify(managedFiles)),
     initializedAt: meta?.initializedAt || new Date().toISOString(),
-    lastSyncedAt: new Date().toISOString(),
+    lastSyncedAt: opts.migrationTime || new Date().toISOString(),
   };
   prepareGenerated(bundle, target, operations, metadata, observed);
-  if (!operations.length && meta && !meta.legacy && meta.snapshotHash === snapshot.snapshotHash && meta.coreDigest === core.digest && meta.cliVersion === pkg.version) return {...result,status:'applied',message:'受管资产已是当前版本，无需写入'};
+  if (!operations.length && meta && !meta.legacy && meta.snapshotHash === snapshot.snapshotHash && meta.coreDigest === core.digest && meta.cliVersion === pkg.version) return opts.captureMigration ? opts.captureMigration([], result) : {...result,status:'applied',message:'受管资产已是当前版本，无需写入'};
   metadata.baselineDigest = hash(JSON.stringify(metadata.managedFiles));
   const bytes = Buffer.from(json(metadata));
   operations.push({
@@ -176,6 +191,7 @@ export function execute(bundle, target, opts) {
     after: { type: "file", digest: hash(bytes), mode: 0o644 },
     bytes,
   });
+  if (opts.captureMigration) return opts.captureMigration(operations, result);
   // Metadata is last. Identity files already applied by this transaction have their new expected digest.
   const opMap = new Map(operations.map((x) => [x.path, x]));
   const validate = (operation) => {

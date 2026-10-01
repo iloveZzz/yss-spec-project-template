@@ -1,0 +1,46 @@
+{
+  "query": "topic:task-runner language:Rust",
+  "url": "https://api.github.com/search/repositories?q=topic%3Atask-runner%20language%3ARust&sort=stars&per_page=8",
+  "items": [
+    {
+      "name": "moonrepo/moon",
+      "url": "https://github.com/moonrepo/moon",
+      "description": "A build system and monorepo management tool for the web ecosystem, written in Rust."
+    },
+    {
+      "name": "sagiegurari/cargo-make",
+      "url": "https://github.com/sagiegurari/cargo-make",
+      "description": "Rust task runner and build tool."
+    },
+    {
+      "name": "jacobdeichert/mask",
+      "url": "https://github.com/jacobdeichert/mask",
+      "description": "🎭 A CLI task runner defined by a simple markdown file"
+    },
+    {
+      "name": "sigoden/argc",
+      "url": "https://github.com/sigoden/argc",
+      "description": "A Bash CLI framework, also a Bash command runner."
+    },
+    {
+      "name": "amethyst/shred",
+      "url": "https://github.com/amethyst/shred",
+      "description": "Shared resource dispatcher"
+    },
+    {
+      "name": "ali77gh/bake-rs",
+      "url": "https://github.com/ali77gh/bake-rs",
+      "description": "Simple and easy to use \"script runner\" written in Rust."
+    },
+    {
+      "name": "nur-taskrunner/nur",
+      "url": "https://github.com/nur-taskrunner/nur",
+      "description": "nur - a taskrunner based on nu shell"
+    },
+    {
+      "name": "sagebind/rote",
+      "url": "https://github.com/sagebind/rote",
+      "description": "Automate everything."
+    }
+  ]
+}

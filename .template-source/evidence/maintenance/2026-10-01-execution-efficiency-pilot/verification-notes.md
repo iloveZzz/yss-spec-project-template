@@ -1,0 +1,11 @@
+# 验证说明
+
+共享工作区fast运行247.119秒，所有6条命令exit0、185项Node与39项Python测试通过，但最终input_drift=true，整体failed，不能作为通过记录。失败报告完整保留在verification-live-failed。
+
+早期intake快照与运行后快照相比，研究目录外只有CodeGraph db、shm和daemon.log的摘要变化；不是精确fast开始/结束文件清单，因此只能作为动态索引干扰线索，不能确认全部漂移原因。源HEAD保持8fc0122a9e417a91c62cfe78afc1c0cb70ca56d6、跟踪源码无改动。
+
+后续将同一SHA和研究资产冻结到已有隔离Git副本，省去该副本没有的动态索引，PYTHONDONTWRITEBYTECODE=1避免测试生成pycache；核验命令和检查集保持fast本身选择的结果。输出继续在仓库外。冻结副本结果只覆盖其绑定输入，不改写共享工作区失败状态。
+
+收尾包曾因counter evidence stance及source-freshness引用缺evidence/失败；已在重跑前修正并专项重验。正式报告的日期差异和input-change边界按只读复核意见收窄。
+
+第一次冻结副本input_drift=false且185项Node/39项Python通过，但check:vendor因node_modules符号链接下依赖路径不在预期闭包而失败。移除仅试点副本的符号链接，以同一锁文件独立安装后，定向check:vendor通过；随后重新执行完整fast。原始主工作区依赖未改。

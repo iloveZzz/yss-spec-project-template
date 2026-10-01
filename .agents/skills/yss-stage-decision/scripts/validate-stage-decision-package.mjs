@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 import { readFile } from "node:fs/promises";
+import path from "node:path";
+import { assertAssetTransactionIdle, assertCurrentAssetReference } from "../../../../scripts/lib/asset-transactions.mjs";
 import { createHash } from "node:crypto";
 import { resolve } from "node:path";
 import process from "node:process";
@@ -7,6 +9,7 @@ import { parseArgs } from "node:util";
 import { parseDocument } from "../../../../scripts/vendor/yaml.mjs";
 import { loadApprovalRecord, resolveApprovalRef, validateApprovalRecord } from "../../../../scripts/lib/approval-record.mjs";
 import { verifyContextSnapshot } from "../../../../scripts/lib/context-contract.mjs";
+import { parseAsset, validateAssetStructure } from '../../../../scripts/lib/structured-assets.mjs';
 
 const required = ["schema_version", "stage_decision_id", "package_version", "status", "problem_statement", "target_users", "mvp", "non_goals", "success_criteria", "test_seams", "confirmed_decisions", "assumptions", "constraints", "unresolved_items", "context_snapshot", "domain_strategy_ref", "impact_assessment", "downstream_mapping", "evidence_refs", "approval"];
 const idPattern = /^stage-decision\.[a-z0-9][a-z0-9-]*$/;
@@ -25,6 +28,7 @@ function canonical(value) { if (Array.isArray(value)) return value.map(canonical
 function digest(value) { return `sha256:${createHash("sha256").update(JSON.stringify(canonical(value))).digest("hex")}`; }
 
 async function validate(data, contextRoot) {
+  validateAssetStructure(data, 'stage-decision-package');
   const errors = [];
   if (!data || typeof data !== "object" || Array.isArray(data)) return ["合同必须是对象"];
   if (data.schema_version === 1) return ["migration-required: stage decision package v1 必须迁移到 v2 context_snapshot"];
@@ -143,11 +147,11 @@ const file = positionals[0];
 if (!file) fail(["用法: validate-stage-decision-package.mjs <package.yaml> [--root <project-root>]"]);
 else {
   try {
+    assertAssetTransactionIdle(values.root);
+    assertCurrentAssetReference(values.root, path.relative(path.resolve(values.root), path.resolve(file)));
     const source = await readFile(file, "utf8");
-    const document = parseDocument(source, { maxAliasCount: 0, uniqueKeys: true });
-    if (document.errors.length) fail([document.errors[0].message]);
-    else {
-      const errors = await validate(document.toJS({ maxAliasCount: 0 }), values.root);
+    {
+      const errors = await validate(parseAsset(source, file), values.root);
       if (errors.length) fail(errors);
       else process.stdout.write(JSON.stringify({ result: "completed", contract: file }, null, 2) + "\n");
     }

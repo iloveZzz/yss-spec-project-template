@@ -1,0 +1,3223 @@
+{
+  "schema_version": 1,
+  "kind": "full-fast-tooling-benchmark",
+  "status": "failed",
+  "root": "/private/tmp/yss-fast-optimization-20261001/source",
+  "harness_sha256": "c6295322fc51993ce3610fc0048131ebc6292e80ef2d6ae9b680869a8735951a",
+  "head": "8fc0122a9e417a91c62cfe78afc1c0cb70ca56d6",
+  "pairs_per_state": 21,
+  "seed": 20261001,
+  "scenario": ".template-source/tooling/node/test/plugin-project.test.mjs",
+  "input_change_ref": ".template-source/plugins/yss-backend-delivery/README.md",
+  "cache_policy": "No persistent task/artifact cache in either mode. first-run clears owned preparation by construction; repeat preserves source; input-change modifies the same declared source bytes before both members. OS page cache is uncontrolled.",
+  "samples": [
+    {
+      "state": "first-run",
+      "pair": 0,
+      "mode": "optimized",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "optimized",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/first-run-00-optimized"
+      ],
+      "exit_code": 0,
+      "wall_ms": 194334.92745796684,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/first-run-00-optimized/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 4,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "first-run",
+      "pair": 0,
+      "mode": "legacy",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "legacy",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/first-run-00-legacy"
+      ],
+      "exit_code": 0,
+      "wall_ms": 268463.3445829968,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/first-run-00-legacy/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 6,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "first-run",
+      "pair": 1,
+      "mode": "legacy",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "legacy",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/first-run-01-legacy"
+      ],
+      "exit_code": 0,
+      "wall_ms": 266932.9531250405,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/first-run-01-legacy/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 6,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "first-run",
+      "pair": 1,
+      "mode": "optimized",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "optimized",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/first-run-01-optimized"
+      ],
+      "exit_code": 0,
+      "wall_ms": 196494.46875002468,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/first-run-01-optimized/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 4,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "first-run",
+      "pair": 2,
+      "mode": "legacy",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "legacy",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/first-run-02-legacy"
+      ],
+      "exit_code": 0,
+      "wall_ms": 266884.98291699216,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/first-run-02-legacy/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 6,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "first-run",
+      "pair": 2,
+      "mode": "optimized",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "optimized",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/first-run-02-optimized"
+      ],
+      "exit_code": 0,
+      "wall_ms": 193547.87362500792,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/first-run-02-optimized/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 4,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "first-run",
+      "pair": 3,
+      "mode": "legacy",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "legacy",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/first-run-03-legacy"
+      ],
+      "exit_code": 0,
+      "wall_ms": 265197.79804203426,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/first-run-03-legacy/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 6,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "first-run",
+      "pair": 3,
+      "mode": "optimized",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "optimized",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/first-run-03-optimized"
+      ],
+      "exit_code": 0,
+      "wall_ms": 195015.3333329945,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/first-run-03-optimized/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 4,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "first-run",
+      "pair": 4,
+      "mode": "optimized",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "optimized",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/first-run-04-optimized"
+      ],
+      "exit_code": 0,
+      "wall_ms": 193221.54312499333,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/first-run-04-optimized/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 4,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "first-run",
+      "pair": 4,
+      "mode": "legacy",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "legacy",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/first-run-04-legacy"
+      ],
+      "exit_code": 0,
+      "wall_ms": 354696.09233300434,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/first-run-04-legacy/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 6,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "first-run",
+      "pair": 5,
+      "mode": "optimized",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "optimized",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/first-run-05-optimized"
+      ],
+      "exit_code": 0,
+      "wall_ms": 274623.32199997036,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/first-run-05-optimized/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 4,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "first-run",
+      "pair": 5,
+      "mode": "legacy",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "legacy",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/first-run-05-legacy"
+      ],
+      "exit_code": 0,
+      "wall_ms": 265263.0764580099,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/first-run-05-legacy/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 6,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "first-run",
+      "pair": 6,
+      "mode": "optimized",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "optimized",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/first-run-06-optimized"
+      ],
+      "exit_code": 0,
+      "wall_ms": 193453.8428329979,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/first-run-06-optimized/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 4,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "first-run",
+      "pair": 6,
+      "mode": "legacy",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "legacy",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/first-run-06-legacy"
+      ],
+      "exit_code": 0,
+      "wall_ms": 266319.89245902514,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/first-run-06-legacy/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 6,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "first-run",
+      "pair": 7,
+      "mode": "optimized",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "optimized",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/first-run-07-optimized"
+      ],
+      "exit_code": 0,
+      "wall_ms": 192154.70937499776,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/first-run-07-optimized/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 4,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "first-run",
+      "pair": 7,
+      "mode": "legacy",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "legacy",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/first-run-07-legacy"
+      ],
+      "exit_code": 0,
+      "wall_ms": 264548.71699999785,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/first-run-07-legacy/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 6,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "first-run",
+      "pair": 8,
+      "mode": "optimized",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "optimized",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/first-run-08-optimized"
+      ],
+      "exit_code": 0,
+      "wall_ms": 194529.50399997644,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/first-run-08-optimized/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 4,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "first-run",
+      "pair": 8,
+      "mode": "legacy",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "legacy",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/first-run-08-legacy"
+      ],
+      "exit_code": 0,
+      "wall_ms": 271247.36429098994,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/first-run-08-legacy/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 6,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "first-run",
+      "pair": 9,
+      "mode": "optimized",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "optimized",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/first-run-09-optimized"
+      ],
+      "exit_code": 0,
+      "wall_ms": 198934.2264169827,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/first-run-09-optimized/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 4,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "first-run",
+      "pair": 9,
+      "mode": "legacy",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "legacy",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/first-run-09-legacy"
+      ],
+      "exit_code": 0,
+      "wall_ms": 290590.3014159994,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/first-run-09-legacy/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 6,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "first-run",
+      "pair": 10,
+      "mode": "optimized",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "optimized",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/first-run-10-optimized"
+      ],
+      "exit_code": 0,
+      "wall_ms": 195326.8405830022,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/first-run-10-optimized/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 4,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "first-run",
+      "pair": 10,
+      "mode": "legacy",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "legacy",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/first-run-10-legacy"
+      ],
+      "exit_code": 0,
+      "wall_ms": 297488.4449579986,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/first-run-10-legacy/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 6,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "first-run",
+      "pair": 11,
+      "mode": "legacy",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "legacy",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/first-run-11-legacy"
+      ],
+      "exit_code": 0,
+      "wall_ms": 590246.1315419641,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/first-run-11-legacy/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 6,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "first-run",
+      "pair": 11,
+      "mode": "optimized",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "optimized",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/first-run-11-optimized"
+      ],
+      "exit_code": 0,
+      "wall_ms": 664669.3935830262,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/first-run-11-optimized/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 4,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "first-run",
+      "pair": 12,
+      "mode": "legacy",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "legacy",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/first-run-12-legacy"
+      ],
+      "exit_code": 0,
+      "wall_ms": 378928.0106660444,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/first-run-12-legacy/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 6,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "first-run",
+      "pair": 12,
+      "mode": "optimized",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "optimized",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/first-run-12-optimized"
+      ],
+      "exit_code": 0,
+      "wall_ms": 252692.65812501544,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/first-run-12-optimized/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 4,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "first-run",
+      "pair": 13,
+      "mode": "optimized",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "optimized",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/first-run-13-optimized"
+      ],
+      "exit_code": 0,
+      "wall_ms": 203991.40933295712,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/first-run-13-optimized/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 4,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "first-run",
+      "pair": 13,
+      "mode": "legacy",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "legacy",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/first-run-13-legacy"
+      ],
+      "exit_code": 0,
+      "wall_ms": 299570.0113750063,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/first-run-13-legacy/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 6,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "first-run",
+      "pair": 14,
+      "mode": "legacy",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "legacy",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/first-run-14-legacy"
+      ],
+      "exit_code": 0,
+      "wall_ms": 281257.9669589759,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/first-run-14-legacy/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 6,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "first-run",
+      "pair": 14,
+      "mode": "optimized",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "optimized",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/first-run-14-optimized"
+      ],
+      "exit_code": 0,
+      "wall_ms": 194655.68804199575,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/first-run-14-optimized/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 4,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "first-run",
+      "pair": 15,
+      "mode": "optimized",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "optimized",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/first-run-15-optimized"
+      ],
+      "exit_code": 0,
+      "wall_ms": 281117.24204197526,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/first-run-15-optimized/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 4,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "first-run",
+      "pair": 15,
+      "mode": "legacy",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "legacy",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/first-run-15-legacy"
+      ],
+      "exit_code": 0,
+      "wall_ms": 297893.8772089896,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/first-run-15-legacy/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 6,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "first-run",
+      "pair": 16,
+      "mode": "legacy",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "legacy",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/first-run-16-legacy"
+      ],
+      "exit_code": 0,
+      "wall_ms": 274738.4365829639,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/first-run-16-legacy/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 6,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "first-run",
+      "pair": 16,
+      "mode": "optimized",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "optimized",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/first-run-16-optimized"
+      ],
+      "exit_code": 0,
+      "wall_ms": 193332.39287498873,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/first-run-16-optimized/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 4,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "first-run",
+      "pair": 17,
+      "mode": "legacy",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "legacy",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/first-run-17-legacy"
+      ],
+      "exit_code": 0,
+      "wall_ms": 266783.20558404084,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/first-run-17-legacy/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 6,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "first-run",
+      "pair": 17,
+      "mode": "optimized",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "optimized",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/first-run-17-optimized"
+      ],
+      "exit_code": 0,
+      "wall_ms": 193419.00300001726,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/first-run-17-optimized/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 4,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "first-run",
+      "pair": 18,
+      "mode": "legacy",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "legacy",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/first-run-18-legacy"
+      ],
+      "exit_code": 0,
+      "wall_ms": 270817.22620897926,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/first-run-18-legacy/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 6,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "first-run",
+      "pair": 18,
+      "mode": "optimized",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "optimized",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/first-run-18-optimized"
+      ],
+      "exit_code": 0,
+      "wall_ms": 194286.4358749939,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/first-run-18-optimized/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 4,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "first-run",
+      "pair": 19,
+      "mode": "optimized",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "optimized",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/first-run-19-optimized"
+      ],
+      "exit_code": 0,
+      "wall_ms": 193008.62662500003,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/first-run-19-optimized/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 4,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "first-run",
+      "pair": 19,
+      "mode": "legacy",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "legacy",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/first-run-19-legacy"
+      ],
+      "exit_code": 0,
+      "wall_ms": 267072.86629098235,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/first-run-19-legacy/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 6,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "first-run",
+      "pair": 20,
+      "mode": "legacy",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "legacy",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/first-run-20-legacy"
+      ],
+      "exit_code": 0,
+      "wall_ms": 267139.3007080187,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/first-run-20-legacy/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 6,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "first-run",
+      "pair": 20,
+      "mode": "optimized",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "optimized",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/first-run-20-optimized"
+      ],
+      "exit_code": 0,
+      "wall_ms": 196125.38562499685,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/first-run-20-optimized/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 4,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "repeat",
+      "pair": 0,
+      "mode": "optimized",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "optimized",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/repeat-00-optimized"
+      ],
+      "exit_code": 0,
+      "wall_ms": 194306.20691599324,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/repeat-00-optimized/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 4,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "repeat",
+      "pair": 0,
+      "mode": "legacy",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "legacy",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/repeat-00-legacy"
+      ],
+      "exit_code": 0,
+      "wall_ms": 270538.3640829823,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/repeat-00-legacy/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 6,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "repeat",
+      "pair": 1,
+      "mode": "optimized",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "optimized",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/repeat-01-optimized"
+      ],
+      "exit_code": 0,
+      "wall_ms": 195536.8824999896,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/repeat-01-optimized/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 4,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "repeat",
+      "pair": 1,
+      "mode": "legacy",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "legacy",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/repeat-01-legacy"
+      ],
+      "exit_code": 0,
+      "wall_ms": 266773.8945420133,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/repeat-01-legacy/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 6,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "repeat",
+      "pair": 2,
+      "mode": "optimized",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "optimized",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/repeat-02-optimized"
+      ],
+      "exit_code": 0,
+      "wall_ms": 191986.7454590276,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/repeat-02-optimized/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 4,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "repeat",
+      "pair": 2,
+      "mode": "legacy",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "legacy",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/repeat-02-legacy"
+      ],
+      "exit_code": 0,
+      "wall_ms": 264529.77845899295,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/repeat-02-legacy/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 6,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "repeat",
+      "pair": 3,
+      "mode": "legacy",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "legacy",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/repeat-03-legacy"
+      ],
+      "exit_code": 0,
+      "wall_ms": 265357.42558405036,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/repeat-03-legacy/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 6,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "repeat",
+      "pair": 3,
+      "mode": "optimized",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "optimized",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/repeat-03-optimized"
+      ],
+      "exit_code": 0,
+      "wall_ms": 193268.23854196118,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/repeat-03-optimized/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 4,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "repeat",
+      "pair": 4,
+      "mode": "legacy",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "legacy",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/repeat-04-legacy"
+      ],
+      "exit_code": 0,
+      "wall_ms": 267613.31712501124,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/repeat-04-legacy/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 6,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "repeat",
+      "pair": 4,
+      "mode": "optimized",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "optimized",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/repeat-04-optimized"
+      ],
+      "exit_code": 0,
+      "wall_ms": 195072.58337497478,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/repeat-04-optimized/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 4,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "repeat",
+      "pair": 5,
+      "mode": "legacy",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "legacy",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/repeat-05-legacy"
+      ],
+      "exit_code": 0,
+      "wall_ms": 266166.1972909933,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/repeat-05-legacy/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 6,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "repeat",
+      "pair": 5,
+      "mode": "optimized",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "optimized",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/repeat-05-optimized"
+      ],
+      "exit_code": 0,
+      "wall_ms": 195382.12254201062,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/repeat-05-optimized/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 4,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "repeat",
+      "pair": 6,
+      "mode": "optimized",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "optimized",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/repeat-06-optimized"
+      ],
+      "exit_code": 0,
+      "wall_ms": 197731.75212502247,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/repeat-06-optimized/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 4,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "repeat",
+      "pair": 6,
+      "mode": "legacy",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "legacy",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/repeat-06-legacy"
+      ],
+      "exit_code": 0,
+      "wall_ms": 282130.1810830482,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/repeat-06-legacy/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 6,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "repeat",
+      "pair": 7,
+      "mode": "legacy",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "legacy",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/repeat-07-legacy"
+      ],
+      "exit_code": 0,
+      "wall_ms": 274251.95004197303,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/repeat-07-legacy/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 6,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "repeat",
+      "pair": 7,
+      "mode": "optimized",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "optimized",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/repeat-07-optimized"
+      ],
+      "exit_code": 0,
+      "wall_ms": 198210.11245797854,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/repeat-07-optimized/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 4,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "repeat",
+      "pair": 8,
+      "mode": "legacy",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "legacy",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/repeat-08-legacy"
+      ],
+      "exit_code": 0,
+      "wall_ms": 268147.4024160416,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/repeat-08-legacy/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 6,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "repeat",
+      "pair": 8,
+      "mode": "optimized",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "optimized",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/repeat-08-optimized"
+      ],
+      "exit_code": 0,
+      "wall_ms": 193739.3912919797,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/repeat-08-optimized/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 4,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "repeat",
+      "pair": 9,
+      "mode": "optimized",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "optimized",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/repeat-09-optimized"
+      ],
+      "exit_code": 0,
+      "wall_ms": 193736.76750005689,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/repeat-09-optimized/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 4,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "repeat",
+      "pair": 9,
+      "mode": "legacy",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "legacy",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/repeat-09-legacy"
+      ],
+      "exit_code": 0,
+      "wall_ms": 265895.82112501375,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/repeat-09-legacy/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 6,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "repeat",
+      "pair": 10,
+      "mode": "legacy",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "legacy",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/repeat-10-legacy"
+      ],
+      "exit_code": 0,
+      "wall_ms": 266373.8127090037,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/repeat-10-legacy/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 6,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "repeat",
+      "pair": 10,
+      "mode": "optimized",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "optimized",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/repeat-10-optimized"
+      ],
+      "exit_code": 0,
+      "wall_ms": 193884.94250003714,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/repeat-10-optimized/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 4,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "repeat",
+      "pair": 11,
+      "mode": "legacy",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "legacy",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/repeat-11-legacy"
+      ],
+      "exit_code": 0,
+      "wall_ms": 280235.2328330162,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/repeat-11-legacy/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 6,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "repeat",
+      "pair": 11,
+      "mode": "optimized",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "optimized",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/repeat-11-optimized"
+      ],
+      "exit_code": 0,
+      "wall_ms": 208625.7852499839,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/repeat-11-optimized/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 4,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "repeat",
+      "pair": 12,
+      "mode": "legacy",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "legacy",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/repeat-12-legacy"
+      ],
+      "exit_code": 0,
+      "wall_ms": 287492.72787501104,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/repeat-12-legacy/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 6,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "repeat",
+      "pair": 12,
+      "mode": "optimized",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "optimized",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/repeat-12-optimized"
+      ],
+      "exit_code": 0,
+      "wall_ms": 212005.358791037,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/repeat-12-optimized/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 4,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    },
+    {
+      "state": "repeat",
+      "pair": 13,
+      "mode": "optimized",
+      "command": [
+        "/private/tmp/yss-fast-optimization-20261001/source/scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/tooling/node/test/plugin-project.test.mjs",
+        "--tooling-mode",
+        "optimized",
+        "--concurrency",
+        "2",
+        "--report-dir",
+        "/private/tmp/yss-fast-optimization-20261001/formal/repeat-13-optimized"
+      ],
+      "exit_code": 0,
+      "wall_ms": 216499.40708401846,
+      "source_sha256": "3506f40b06a7fa154f40ab3961966a9c3e300a4ed4a09f050ddf34e5f3be842a",
+      "report_ref": "/private/tmp/yss-fast-optimization-20261001/formal/repeat-13-optimized/report.json",
+      "verification_input_sha256": "a1a03240ae5c3b29ac1d5919453ac7d791aae28688e072a2cdfa498ba0e5339e",
+      "successful_plugin_builds": 4,
+      "node_tests": 194,
+      "python_tests": 39,
+      "input_drift": false,
+      "valid": true
+    }
+  ],
+  "summary": [
+    {
+      "state": "first-run",
+      "median_ms": {
+        "legacy": 270817.22620897926,
+        "optimized": 194655.68804199575
+      },
+      "p95_ms": {
+        "legacy": 378928.0106660444,
+        "optimized": 281117.24204197526
+      },
+      "reduction_percent": 28.122855858590246,
+      "pass": true
+    }
+  ],
+  "test_identities": [
+    {
+      "file": ".template-source/tooling/node/test/decision-continuation.test.mjs",
+      "parents": [],
+      "name": "Plan entry consumes continuation and still blocks incomplete checks",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/decision-continuation.test.mjs",
+      "parents": [],
+      "name": "conflicting direct decision and continuation references are rejected",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/decision-continuation.test.mjs",
+      "parents": [],
+      "name": "external policy unknown, missing approvals and changed policy cannot be waived",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/decision-continuation.test.mjs",
+      "parents": [],
+      "name": "formatting refresh requires new current review but not another source reply",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/decision-continuation.test.mjs",
+      "parents": [],
+      "name": "implementation continuation preserves contract, repository and write-path checks",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/decision-continuation.test.mjs",
+      "parents": [],
+      "name": "material changes and unclassified changes require a decision",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/decision-continuation.test.mjs",
+      "parents": [],
+      "name": "new risk, quality reduction or changed authorization cannot be labelled cosmetic",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/decision-continuation.test.mjs",
+      "parents": [],
+      "name": "new scope, new target and side effects cannot inherit authorization",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/decision-continuation.test.mjs",
+      "parents": [],
+      "name": "no reply and revoked source authorization cannot continue",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/decision-continuation.test.mjs",
+      "parents": [],
+      "name": "older receivers without continuation capability reject rather than silently approve",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/decision-continuation.test.mjs",
+      "parents": [],
+      "name": "one review bundle retains explicit per-check outcomes and rejects duplicates",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/decision-continuation.test.mjs",
+      "parents": [],
+      "name": "ordinary engineering work reuses explicit authorization through public approval and CLI",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/decision-continuation.test.mjs",
+      "parents": [],
+      "name": "product design can continue after independent review without a repeated human reply",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/decision-continuation.test.mjs",
+      "parents": [],
+      "name": "self review, wrong expertise, missing comparisons and stale verification block",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/decision-continuation.test.mjs",
+      "parents": [],
+      "name": "source approval continuation is verified by all three dedicated receivers",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/decision-continuation.test.mjs",
+      "parents": [],
+      "name": "suggestions do not block, unresolved defects and missing evidence do",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/design-md.test.mjs",
+      "parents": [],
+      "name": "DESIGN.md passes local and pinned upstream lint",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/design-md.test.mjs",
+      "parents": [],
+      "name": "DESIGN.md projection manifest is current",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/design-md.test.mjs",
+      "parents": [],
+      "name": "cross-repository design sync digest matches DESIGN.md",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/digital-human-roles.test.mjs",
+      "parents": [],
+      "name": "approval records reject the wrong signer and approved countersign gates need approval_ref",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/digital-human-roles.test.mjs",
+      "parents": [],
+      "name": "digital human roles are runtime-agnostic and grok is only an adapter",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/lifecycle-controls.test.mjs",
+      "parents": [],
+      "name": "N/A requires explicit applicability, explanation and current evidence",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/lifecycle-controls.test.mjs",
+      "parents": [],
+      "name": "a bare passed flag and unbound evidence cannot close a check",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/lifecycle-controls.test.mjs",
+      "parents": [],
+      "name": "approval cannot be reused by changing evidence and recomputing checkpoint hashes",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/lifecycle-controls.test.mjs",
+      "parents": [],
+      "name": "automatic evidence passes without another human approval, missing and failed checks block",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/lifecycle-controls.test.mjs",
+      "parents": [],
+      "name": "delivery acceptance does not require a release decision; runtime actions still require human authorization",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/lifecycle-controls.test.mjs",
+      "parents": [],
+      "name": "evidence drift and aggregate omissions cannot reuse approval",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/lifecycle-controls.test.mjs",
+      "parents": [],
+      "name": "professional checks require current subject, matching scope and an independent reviewer",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/lifecycle-controls.test.mjs",
+      "parents": [],
+      "name": "published lifecycle IDs migrate without changing retained semantics or accepting retired prose references",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/lifecycle-controls.test.mjs",
+      "parents": [],
+      "name": "registry distinguishes seven approval gates from internal checks and rejects cycles",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/lifecycle-controls.test.mjs",
+      "parents": [],
+      "name": "retired approvals remain readable but cannot approve new gates",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plan-spec-quality.test.mjs",
+      "parents": [],
+      "name": "GFM 中文表头、转义竖线、行内代码与 Markdown 来源链接",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plan-spec-quality.test.mjs",
+      "parents": [],
+      "name": "Slice YAML 解析失败退出 2；有效但不支持的 schema 单独未评估",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plan-spec-quality.test.mjs",
+      "parents": [],
+      "name": "Slice 追溯消费现有 acceptance/source/locator 和 verification 引用，不执行命令",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plan-spec-quality.test.mjs",
+      "parents": [],
+      "name": "complex: 完整样本及预登记反例",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plan-spec-quality.test.mjs",
+      "parents": [],
+      "name": "diff 对无法提取的章节明确未评估，不把解析缺口当作删除",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plan-spec-quality.test.mjs",
+      "parents": [],
+      "name": "diff 按 ID 增删改和引用变化；原始字节可精确重建新输入",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plan-spec-quality.test.mjs",
+      "parents": [],
+      "name": "frontmatter 重复键、未闭合或解析失败退出 2",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plan-spec-quality.test.mjs",
+      "parents": [],
+      "name": "high-risk: 完整样本及预登记反例",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plan-spec-quality.test.mjs",
+      "parents": [],
+      "name": "ordinary: 完整样本及预登记反例",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plan-spec-quality.test.mjs",
+      "parents": [],
+      "name": "代码块、引用块与标注示例中的 ID 不混入正式需求",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plan-spec-quality.test.mjs",
+      "parents": [],
+      "name": "只读、确定性、报告绑定所有输入摘要；不写批准状态",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plan-spec-quality.test.mjs",
+      "parents": [],
+      "name": "外部 URL 保留未评估，不联网猜关联",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plan-spec-quality.test.mjs",
+      "parents": [],
+      "name": "新格式不能默默跳过没有 ID 表的章节",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plan-spec-quality.test.mjs",
+      "parents": [],
+      "name": "旧格式仅尽力识别；无发现不等于合格",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plan-spec-quality.test.mjs",
+      "parents": [],
+      "name": "本地准确章节定位；不存在的伪锚点不能通过",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plan-spec-quality.test.mjs",
+      "parents": [],
+      "name": "模板其他条件项也需不适用原因，示例行保持排除",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plan-spec-quality.test.mjs",
+      "parents": [],
+      "name": "没有旧基线时明确无法比较，不能伪造空基线",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plan-spec-quality.test.mjs",
+      "parents": [],
+      "name": "源文档及其来源读取期间漂移均退出 2",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plan-spec-quality.test.mjs",
+      "parents": [],
+      "name": "离线副本无 node_modules 可运行，stdout JSON 与退出码稳定",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plan-spec-quality.test.mjs",
+      "parents": [],
+      "name": "符号链接越界及越界路径不可被隐式读取",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plan-spec-quality.test.mjs",
+      "parents": [],
+      "name": "计划未知目标合法；引用权威 statement 不另造合同字段",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plan-spec-quality.test.mjs",
+      "parents": [],
+      "name": "轻量 Plan 基线未知也必须给出补齐项",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plan-spec-quality.test.mjs",
+      "parents": [],
+      "name": "重排保留 ID；链接目标变化不被标签文本掩盖",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plan-spec-quality.test.mjs",
+      "parents": [],
+      "name": "验收允许显式待补 Q；不宣称已覆盖",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plugin-build.test.mjs",
+      "parents": [],
+      "name": "generated development plugin is portable, deterministic and fails closed on corruption",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plugin-build.test.mjs",
+      "parents": [
+        "generated development plugin is portable, deterministic and fails closed on corruption"
+      ],
+      "name": "all source, generated entry and external dependency provenance is retained",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plugin-build.test.mjs",
+      "parents": [
+        "generated development plugin is portable, deterministic and fails closed on corruption"
+      ],
+      "name": "existing output is preserved and symlink parents are rejected",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plugin-build.test.mjs",
+      "parents": [
+        "generated development plugin is portable, deterministic and fails closed on corruption"
+      ],
+      "name": "missing, altered, executable-mode and directory replacements are rejected",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plugin-build.test.mjs",
+      "parents": [
+        "generated development plugin is portable, deterministic and fails closed on corruption"
+      ],
+      "name": "moved artifact runs verification and real Plan query from an unrelated cwd",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plugin-build.test.mjs",
+      "parents": [
+        "generated development plugin is portable, deterministic and fails closed on corruption"
+      ],
+      "name": "same source yields identical lock regardless of output directory",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plugin-build.test.mjs",
+      "parents": [
+        "generated development plugin is portable, deterministic and fails closed on corruption"
+      ],
+      "name": "undeclared file and symlink cannot join the artifact",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plugin-design-consumption.test.mjs",
+      "parents": [],
+      "name": "backend plugin receives Handoff v5 without bypassing engineering or implementation gates",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plugin-design-consumption.test.mjs",
+      "parents": [],
+      "name": "consumer mapping preserves dedicated backend identity and rejects unknown wire IDs or out-of-profile targets",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plugin-design-consumption.test.mjs",
+      "parents": [
+        "backend plugin receives Handoff v5 without bypassing engineering or implementation gates"
+      ],
+      "name": "UI-only package is rejected before any import write",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plugin-design-consumption.test.mjs",
+      "parents": [
+        "backend plugin receives Handoff v5 without bypassing engineering or implementation gates"
+      ],
+      "name": "formal directory import selects only backend responsibility and maps wire entry",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plugin-design-consumption.test.mjs",
+      "parents": [
+        "backend plugin receives Handoff v5 without bypassing engineering or implementation gates"
+      ],
+      "name": "registered 0.2 project migrates while retaining receipt and business data",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plugin-design-consumption.test.mjs",
+      "parents": [
+        "backend plugin receives Handoff v5 without bypassing engineering or implementation gates"
+      ],
+      "name": "reuse and duplicate import reverify immutable source without approving it",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plugin-design-consumption.test.mjs",
+      "parents": [
+        "backend plugin receives Handoff v5 without bypassing engineering or implementation gates"
+      ],
+      "name": "tampered receipt and package cannot be resumed",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plugin-design-consumption.test.mjs",
+      "parents": [
+        "backend plugin receives Handoff v5 without bypassing engineering or implementation gates"
+      ],
+      "name": "transport ZIP imports into another governance root with the existing v2 receipt contract",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plugin-entry-migration.test.mjs",
+      "parents": [],
+      "name": "single entry and explicit M4 migration preserve project assets and fail closed",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plugin-entry-migration.test.mjs",
+      "parents": [
+        "single entry and explicit M4 migration preserve project assets and fail closed"
+      ],
+      "name": "entry hands off to the bound local orchestrator without granting stage approval",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plugin-entry-migration.test.mjs",
+      "parents": [
+        "single entry and explicit M4 migration preserve project assets and fail closed"
+      ],
+      "name": "known M4 source migrates and retains all original business evidence",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plugin-entry-migration.test.mjs",
+      "parents": [
+        "single entry and explicit M4 migration preserve project assets and fail closed"
+      ],
+      "name": "preview is read-only and stale plans cannot apply",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plugin-entry-migration.test.mjs",
+      "parents": [
+        "single entry and explicit M4 migration preserve project assets and fail closed"
+      ],
+      "name": "unknown identity, drift and completed projects reject migration",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plugin-entry-migration.test.mjs",
+      "parents": [
+        "single entry and explicit M4 migration preserve project assets and fail closed"
+      ],
+      "name": "verification failure rolls back original bytes without discarding the backup",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plugin-preparation.test.mjs",
+      "parents": [],
+      "name": "a directory containing identical bytes cannot replace a bound project file",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plugin-preparation.test.mjs",
+      "parents": [],
+      "name": "missing and symlinked source resources cannot enter the inventory",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plugin-preparation.test.mjs",
+      "parents": [],
+      "name": "missing or retired dependencies fail closed at the public planning command",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plugin-preparation.test.mjs",
+      "parents": [],
+      "name": "planning includes prototype review and conditional backend dependencies without granting readiness",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plugin-preparation.test.mjs",
+      "parents": [],
+      "name": "project check allows project-owned Context changes but blocks contract drift",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plugin-preparation.test.mjs",
+      "parents": [],
+      "name": "registered platform aliases stay explicit external prerequisites instead of copied canonical skills",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plugin-preparation.test.mjs",
+      "parents": [],
+      "name": "source change is detected even if the project keeps an older valid-looking contract",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plugin-preparation.test.mjs",
+      "parents": [],
+      "name": "template-source targets and invalid Context cannot pass project version checks",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plugin-preparation.test.mjs",
+      "parents": [],
+      "name": "unknown work units and replaced orchestrators cannot produce a plan",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plugin-project.test.mjs",
+      "parents": [],
+      "name": "fixed CLI initializes, binds and resumes a separate governance project without overwriting user work",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plugin-project.test.mjs",
+      "parents": [
+        "fixed CLI initializes, binds and resumes a separate governance project without overwriting user work"
+      ],
+      "name": "M4 queries use scoped local routes and reject release, missing checkpoint and unapproved dispatch",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plugin-project.test.mjs",
+      "parents": [
+        "fixed CLI initializes, binds and resumes a separate governance project without overwriting user work"
+      ],
+      "name": "a new process binds to project-local rules and accepts project-owned Context edits",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plugin-project.test.mjs",
+      "parents": [
+        "fixed CLI initializes, binds and resumes a separate governance project without overwriting user work"
+      ],
+      "name": "actual offline CLI initialization succeeds, uses fixed provenance and does not initialize Git",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plugin-project.test.mjs",
+      "parents": [
+        "fixed CLI initializes, binds and resumes a separate governance project without overwriting user work"
+      ],
+      "name": "compatible existing governance binds by writing only the new receipt",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plugin-project.test.mjs",
+      "parents": [
+        "fixed CLI initializes, binds and resumes a separate governance project without overwriting user work"
+      ],
+      "name": "core drift cannot be hidden by rewriting local managed-file hashes",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plugin-project.test.mjs",
+      "parents": [
+        "fixed CLI initializes, binds and resumes a separate governance project without overwriting user work"
+      ],
+      "name": "initializer failure preserves an existing empty target and cleans only its staging directory",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plugin-project.test.mjs",
+      "parents": [
+        "fixed CLI initializes, binds and resumes a separate governance project without overwriting user work"
+      ],
+      "name": "nonempty code directories and plans made stale by user files cannot be overwritten",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plugin-project.test.mjs",
+      "parents": [
+        "fixed CLI initializes, binds and resumes a separate governance project without overwriting user work"
+      ],
+      "name": "public dry-run lists writes while leaving target and backend unchanged",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plugin-project.test.mjs",
+      "parents": [
+        "fixed CLI initializes, binds and resumes a separate governance project without overwriting user work"
+      ],
+      "name": "wrong template and plugin versions fail closed without migration or writes",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plugin-scope.test.mjs",
+      "parents": [],
+      "name": "approved read-only inspection context cannot be used as implementation authority",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plugin-scope.test.mjs",
+      "parents": [],
+      "name": "backend scope keeps product design while forbidding frontend implementation and release routes",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plugin-scope.test.mjs",
+      "parents": [],
+      "name": "dispatch and compiler deny frontend roles and recipes; project paths cannot supply permission",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plugin-scope.test.mjs",
+      "parents": [],
+      "name": "missing or forged terminal cannot close a lifecycle or restart implementation",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plugin-scope.test.mjs",
+      "parents": [],
+      "name": "scope does not bypass Plan approval, formal Ticket, implementation approval or code review",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plugin-scope.test.mjs",
+      "parents": [],
+      "name": "scope opt-in cannot silently disappear or accept a custom work-unit allowlist",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plugin-scope.test.mjs",
+      "parents": [],
+      "name": "unscoped projects retain their existing route and cannot select the scoped terminal",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/plugin-terminal.test.mjs",
+      "parents": [],
+      "name": "real validators close a synthetic backend package, preserve the terminal across resume and reject stale review/source",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/product-design-plugin.test.mjs",
+      "parents": [],
+      "name": "design plugin uses pinned design CLI and a bounded project-local lifecycle",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/product-design-plugin.test.mjs",
+      "parents": [
+        "design plugin uses pinned design CLI and a bounded project-local lifecycle"
+      ],
+      "name": "core drift and unrelated family metadata cannot be hidden by local metadata changes",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/product-design-plugin.test.mjs",
+      "parents": [
+        "design plugin uses pinned design CLI and a bounded project-local lifecycle"
+      ],
+      "name": "exact existing instance binds only a receipt and preserves business content",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/product-design-plugin.test.mjs",
+      "parents": [
+        "design plugin uses pinned design CLI and a bounded project-local lifecycle"
+      ],
+      "name": "initializer errors preserve an empty target and remove only staging",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/product-design-plugin.test.mjs",
+      "parents": [
+        "design plugin uses pinned design CLI and a bounded project-local lifecycle"
+      ],
+      "name": "plan is read-only; application creates a distinct design instance",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/product-design-plugin.test.mjs",
+      "parents": [
+        "design plugin uses pinned design CLI and a bounded project-local lifecycle"
+      ],
+      "name": "public entry resolves an actual readable local master and current contracts",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/product-design-plugin.test.mjs",
+      "parents": [
+        "design plugin uses pinned design CLI and a bounded project-local lifecycle"
+      ],
+      "name": "resume, path escapes and fake terminal records fail closed",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/product-design-plugin.test.mjs",
+      "parents": [
+        "design plugin uses pinned design CLI and a bounded project-local lifecycle"
+      ],
+      "name": "stale initialization plans preserve newly created user work",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/profile-skill-sync.test.mjs",
+      "parents": [],
+      "name": "Python interpreter caches do not enter profile source or create repeated drift",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/profile-skill-sync.test.mjs",
+      "parents": [],
+      "name": "a changed adaptation baseline reports adaptation_conflict",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/profile-skill-sync.test.mjs",
+      "parents": [],
+      "name": "a file patch replays only against its registered source baseline",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/profile-skill-sync.test.mjs",
+      "parents": [],
+      "name": "a skill cannot be synchronized in both source directions",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/profile-skill-sync.test.mjs",
+      "parents": [],
+      "name": "active excluded and profile-only unclassified entries cannot hide from coverage",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/profile-skill-sync.test.mjs",
+      "parents": [],
+      "name": "an unclassified same-name difference is reported",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/profile-skill-sync.test.mjs",
+      "parents": [],
+      "name": "apply is idempotent and preserves the declared adaptation",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/profile-skill-sync.test.mjs",
+      "parents": [],
+      "name": "apply rolls back earlier writes when a later write fails",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/profile-skill-sync.test.mjs",
+      "parents": [],
+      "name": "clean check does not invent affected profiles or claim project verification",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/profile-skill-sync.test.mjs",
+      "parents": [],
+      "name": "dirty target changes block apply",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/profile-skill-sync.test.mjs",
+      "parents": [],
+      "name": "entry references resolve against the planned tree and missing references block writes",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/profile-skill-sync.test.mjs",
+      "parents": [],
+      "name": "identical unclassified copies still need a maintenance owner",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/profile-skill-sync.test.mjs",
+      "parents": [],
+      "name": "missing dependencies and path traversal are rejected",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/profile-skill-sync.test.mjs",
+      "parents": [],
+      "name": "plans exact, adapted, and retired changes without writing",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/profile-skill-sync.test.mjs",
+      "parents": [],
+      "name": "platform package paths are covered and exact synchronization is repeatable",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/profile-skill-sync.test.mjs",
+      "parents": [],
+      "name": "profile-owned adaptations require their declared markers",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/profile-skill-sync.test.mjs",
+      "parents": [],
+      "name": "text preview retains changes and conflict diagnostics without changing JSON or target files",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/retirement.test.mjs",
+      "parents": [],
+      "name": "legacy initializer rejects before creating or overwriting a target",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/retirement.test.mjs",
+      "parents": [],
+      "name": "retired entries reject new use without mutating the registry",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/retirement.test.mjs",
+      "parents": [],
+      "name": "streamed intake hashing preserves the exact digest across chunk boundaries",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/runtime-contract.test.mjs",
+      "parents": [],
+      "name": "Node lifecycle registry verifier preserves the published semantic baseline",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/runtime-contract.test.mjs",
+      "parents": [],
+      "name": "Node runtime contract exposes a vendored YAML parser for distributed scripts",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/runtime-contract.test.mjs",
+      "parents": [],
+      "name": "YAML aliases are rejected before a repository manifest is materialized",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/runtime-contract.test.mjs",
+      "parents": [],
+      "name": "evidence index writes pending and checkpointed Node records with legacy failure semantics",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/runtime-contract.test.mjs",
+      "parents": [],
+      "name": "implementation path policy preserves harness and external-repository boundaries",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/runtime-contract.test.mjs",
+      "parents": [],
+      "name": "public skill export preserves its portable manifest and blocks workstation paths",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/runtime-contract.test.mjs",
+      "parents": [],
+      "name": "repository mode public seam is executable by Node",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/runtime-contract.test.mjs",
+      "parents": [],
+      "name": "repository_scope git-submodule is a first-class layout distinct from harness-apps",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/runtime-contract.test.mjs",
+      "parents": [],
+      "name": "vendored XML parser rejects DOCTYPE and preserves scalar text",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/skill-discovery.test.mjs",
+      "parents": [],
+      "name": "actual selections are checked even when not listed as required",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/skill-discovery.test.mjs",
+      "parents": [],
+      "name": "malformed catalog and hung host fail closed within the observation deadline",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/skill-discovery.test.mjs",
+      "parents": [],
+      "name": "required selections bind host cwd version dependency closure and effective policy",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/skill-discovery.test.mjs",
+      "parents": [],
+      "name": "resource equality includes scripts and policy, not just entry bytes",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/skill-discovery.test.mjs",
+      "parents": [],
+      "name": "runtime start failure is not an empty successful catalog",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/skill-discovery.test.mjs",
+      "parents": [],
+      "name": "symlink projection works but cycles and escaping resources cannot establish equality",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/skill-discovery.test.mjs",
+      "parents": [],
+      "name": "unrelated personal entries do not block and selected different resources do",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/skill-registry.test.mjs",
+      "parents": [],
+      "name": "Pi invocation metadata rejects missing restrictions and non-boolean flags in all profiles",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/skill-registry.test.mjs",
+      "parents": [],
+      "name": "alias that collides with another id is rejected",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/skill-registry.test.mjs",
+      "parents": [],
+      "name": "code-review route accepts specialist check inputs on the unique skill",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/skill-registry.test.mjs",
+      "parents": [],
+      "name": "code-review route cannot let the reviewer write implementation",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/skill-registry.test.mjs",
+      "parents": [],
+      "name": "code-review route cannot replace the unique default review skill",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/skill-registry.test.mjs",
+      "parents": [],
+      "name": "code-review route forbids mandatory waiver of triggered gates",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/skill-registry.test.mjs",
+      "parents": [],
+      "name": "code-review route without finding_disposition is rejected",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/skill-registry.test.mjs",
+      "parents": [],
+      "name": "code-review route without review_standards_route is rejected",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/skill-registry.test.mjs",
+      "parents": [],
+      "name": "code-review route without specialist supporting skills is rejected",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/skill-registry.test.mjs",
+      "parents": [],
+      "name": "context-required typed dependencies reject cycles",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/skill-registry.test.mjs",
+      "parents": [],
+      "name": "deprecated research alias resolves to yss-research in lifecycle routes",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/skill-registry.test.mjs",
+      "parents": [],
+      "name": "deprecated skills require migration and cleanup metadata",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/skill-registry.test.mjs",
+      "parents": [],
+      "name": "frontend conditional routes require registered skills",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/skill-registry.test.mjs",
+      "parents": [],
+      "name": "lifecycle route with an unregistered skill is rejected",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/skill-registry.test.mjs",
+      "parents": [],
+      "name": "missing Cursor runtime root is rejected",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/skill-registry.test.mjs",
+      "parents": [],
+      "name": "nested SKILL.md requires an external_skills source registration",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/skill-registry.test.mjs",
+      "parents": [],
+      "name": "opted-in runtime policy rejects implicit selection for an explicit entry",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/skill-registry.test.mjs",
+      "parents": [],
+      "name": "opted-in runtime policy requires explicit false instead of missing metadata",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/skill-registry.test.mjs",
+      "parents": [],
+      "name": "platform aliases resolve lifecycle external runtime entries",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/skill-registry.test.mjs",
+      "parents": [],
+      "name": "prototype design route requires independent prototype-review",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/skill-registry.test.mjs",
+      "parents": [],
+      "name": "review_input without finding disposition completion flags is rejected",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/skill-registry.test.mjs",
+      "parents": [],
+      "name": "runtime metadata policy is additive for existing registries and accepts host default true",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/skill-registry.test.mjs",
+      "parents": [],
+      "name": "runtime policy rejects non-boolean metadata and accidental suppression of model entries",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/skill-registry.test.mjs",
+      "parents": [],
+      "name": "shadow registry cannot be marked as runtime consumed",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/skill-registry.test.mjs",
+      "parents": [],
+      "name": "skill invocation contract is required and derives impact triggers",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/skill-registry.test.mjs",
+      "parents": [],
+      "name": "typed dependency metadata rejects unregistered skills",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/skill-registry.test.mjs",
+      "parents": [],
+      "name": "unknown layer is rejected",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/skill-registry.test.mjs",
+      "parents": [],
+      "name": "unknown runtime metadata policy versions fail closed",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/skill-registry.test.mjs",
+      "parents": [],
+      "name": "实现合同编译器合同不得重复 typed dependency 事实",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/skill-supply-chain.test.mjs",
+      "parents": [],
+      "name": "Cursor is a first-class shared skill projection root",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/skill-supply-chain.test.mjs",
+      "parents": [],
+      "name": "large unrelated Git inventories preserve unlocked projection diagnostics",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/skill-supply-chain.test.mjs",
+      "parents": [],
+      "name": "nested SKILL.md files cannot bypass external skill registration",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/skill-supply-chain.test.mjs",
+      "parents": [],
+      "name": "obsolete canonical residues fail even when they are not in the lock",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/skill-supply-chain.test.mjs",
+      "parents": [],
+      "name": "physical canonical skills must be present in the lock",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/skill-supply-chain.test.mjs",
+      "parents": [],
+      "name": "tracked projections absent from the lock cannot escape synchronization checks",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/tooling-execution.test.mjs",
+      "parents": [],
+      "name": "manifest、运行时指纹和输入摘要不能跨准备上下文复用",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/tooling-execution.test.mjs",
+      "parents": [],
+      "name": "产物删除、篡改、权限与符号链接变化均失败，恢复后可以复制",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/tooling-execution.test.mjs",
+      "parents": [],
+      "name": "单次运行产物按字节、权限与类型复制，各测试修改互不影响",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/tooling-execution.test.mjs",
+      "parents": [],
+      "name": "单独运行无准备上下文时真实构建，构建失败不会被当作通过",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/tooling-execution.test.mjs",
+      "parents": [],
+      "name": "取消外层测试进程时不遗留内部监督进程启动的孙进程",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/tooling-execution.test.mjs",
+      "parents": [],
+      "name": "并发运行消费同一准备产物时拥有独立副本与日志",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/tooling-execution.test.mjs",
+      "parents": [],
+      "name": "源码、Schema、外部引用、lock 和 pins 变化使准备产物失效",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/tooling-execution.test.mjs",
+      "parents": [],
+      "name": "进程监督保留退出码和日志，失败后可继续真实执行",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/tooling-execution.test.mjs",
+      "parents": [],
+      "name": "进程超时和取消返回失败且停止子进程组",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/yss-ui-skill-integration.test.mjs",
+      "parents": [],
+      "name": "yss-ui 上游清单拒绝重复 canonical 与缺失 hash",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/yss-ui-skill-integration.test.mjs",
+      "parents": [],
+      "name": "yss-ui 业务项目清单覆盖 13 个精选 app skills 与项目级 MCP 配置",
+      "count": 1
+    },
+    {
+      "file": ".template-source/tooling/node/test/yss-ui-skill-integration.test.mjs",
+      "parents": [],
+      "name": "战略设计上游清单固定公共技能集合与 Git revision",
+      "count": 1
+    }
+  ],
+  "runtime": {
+    "node": "v24.21.0",
+    "executable": "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+    "platform": "darwin",
+    "arch": "arm64",
+    "python": "[\"/private/tmp/yss-fast-optimization-20261001/python-env/bin/python3\", \"3.12.1 (v3.12.1:2305ca5144, Dec  7 2023, 17:23:38) [Clang 13.0.0 (clang-1300.0.29.30)]\", \"4.26.0\"]"
+  },
+  "python_test_identities": [
+    {
+      "id": "test_skills_agent_eval.BatchChecks.test_budget_rejects_invalid_values_and_caps_remaining_timeout",
+      "count": 1
+    },
+    {
+      "id": "test_skills_agent_eval.BatchChecks.test_missing_completed_turn_stops_batch_and_keeps_unknown_usage",
+      "count": 1
+    },
+    {
+      "id": "test_skills_agent_eval.BatchChecks.test_setup_cannot_remove_required_input_before_agent",
+      "count": 1
+    },
+    {
+      "id": "test_skills_agent_eval.BatchChecks.test_strict_pass_fail_and_report_only_exit_policies",
+      "count": 1
+    },
+    {
+      "id": "test_skills_agent_eval.BatchChecks.test_total_deadline_stops_following_runs",
+      "count": 1
+    },
+    {
+      "id": "test_skills_agent_eval.BatchChecks.test_turn_budget_records_unattempted_steps_and_scenarios",
+      "count": 1
+    },
+    {
+      "id": "test_skills_agent_eval.ExecutionChecks.test_assertion_io_and_node_timeout_are_recorded",
+      "count": 1
+    },
+    {
+      "id": "test_skills_agent_eval.ExecutionChecks.test_completed_turn_does_not_hide_artifact_assertion_failure",
+      "count": 1
+    },
+    {
+      "id": "test_skills_agent_eval.ExecutionChecks.test_declared_write_scope_rejects_extra_writes_and_preserves_legacy_status",
+      "count": 1
+    },
+    {
+      "id": "test_skills_agent_eval.ExecutionChecks.test_interrupt_stops_process_group_and_retains_step_result",
+      "count": 1
+    },
+    {
+      "id": "test_skills_agent_eval.ExecutionChecks.test_invalid_json_shape_retains_step_result_and_usage",
+      "count": 1
+    },
+    {
+      "id": "test_skills_agent_eval.ExecutionChecks.test_malformed_runtime_event_is_recorded_without_losing_result",
+      "count": 1
+    },
+    {
+      "id": "test_skills_agent_eval.ExecutionChecks.test_missing_completed_turn_and_timeout_are_failures",
+      "count": 1
+    },
+    {
+      "id": "test_skills_agent_eval.ExecutionChecks.test_write_scope_readonly_directory_boundary_deletion_and_symlink",
+      "count": 1
+    },
+    {
+      "id": "test_skills_agent_eval.RealGitAndReadChecks.test_amending_fixture_baseline_is_not_an_authorized_new_commit",
+      "count": 1
+    },
+    {
+      "id": "test_skills_agent_eval.RealGitAndReadChecks.test_codex_real_git_keeps_sandbox_under_official_approval_mode",
+      "count": 1
+    },
+    {
+      "id": "test_skills_agent_eval.RealGitAndReadChecks.test_failed_or_unknown_cursor_read_is_not_positive_evidence",
+      "count": 1
+    },
+    {
+      "id": "test_skills_agent_eval.RealGitAndReadChecks.test_failed_reads_and_mentions_do_not_prove_skill_selection",
+      "count": 1
+    },
+    {
+      "id": "test_skills_agent_eval.RealGitAndReadChecks.test_local_commit_is_measured_and_unrelated_staging_survives",
+      "count": 1
+    },
+    {
+      "id": "test_skills_agent_eval.RealGitAndReadChecks.test_pi_read_arguments_join_by_tool_call_id",
+      "count": 1
+    },
+    {
+      "id": "test_skills_agent_eval.ResultChecks.test_artifact_paths_cannot_escape_fixture",
+      "count": 1
+    },
+    {
+      "id": "test_skills_agent_eval.ResultChecks.test_existing_evidence_is_not_overwritten",
+      "count": 1
+    },
+    {
+      "id": "test_skills_agent_eval.ResultChecks.test_json_non_objects_and_boolean_type_mismatch_fail_closed",
+      "count": 1
+    },
+    {
+      "id": "test_skills_agent_eval.ResultChecks.test_missing_and_invalid_artifacts_fail_closed",
+      "count": 1
+    },
+    {
+      "id": "test_skills_agent_eval.ResultChecks.test_missing_usage_metrics_stay_unknown_while_observed_zero_is_preserved",
+      "count": 1
+    },
+    {
+      "id": "test_skills_agent_eval.ResultChecks.test_route_field_is_distinct_from_explanatory_mention",
+      "count": 1
+    },
+    {
+      "id": "test_skills_agent_eval.SharedBudgetChecks.test_attempts_and_seconds_accumulate_across_process_instances",
+      "count": 1
+    },
+    {
+      "id": "test_skills_agent_eval.SharedBudgetChecks.test_crash_reservation_stays_charged_and_limits_cannot_be_raised",
+      "count": 1
+    },
+    {
+      "id": "test_skills_agent_eval.SharedBudgetChecks.test_cursor_existing_credentials_are_private_and_not_in_command",
+      "count": 1
+    },
+    {
+      "id": "test_skills_agent_eval.SharedBudgetChecks.test_cursor_unknown_terminal_event_and_unmapped_usage_are_not_success_or_zero",
+      "count": 1
+    },
+    {
+      "id": "test_skills_agent_eval.SharedBudgetChecks.test_pi_trace_counts_cache_once_and_requires_successful_assistant_completion",
+      "count": 1
+    },
+    {
+      "id": "test_skills_agent_eval.SharedBudgetChecks.test_provider_configuration_preserves_routing_and_rejects_unknown_settings",
+      "count": 1
+    },
+    {
+      "id": "test_skills_agent_eval.WorkspaceChecks.test_current_rules_and_layout_are_preserved",
+      "count": 1
+    },
+    {
+      "id": "test_skills_agent_eval.WorkspaceChecks.test_fixture_cannot_replace_rules_or_escape_via_symlink",
+      "count": 1
+    },
+    {
+      "id": "test_skills_agent_eval.WorkspaceChecks.test_manifest_records_symlink_without_reading_external_content",
+      "count": 1
+    },
+    {
+      "id": "test_skills_agent_eval.WorkspaceChecks.test_missing_required_source_fails_before_execution",
+      "count": 1
+    },
+    {
+      "id": "test_skills_agent_eval.WorkspaceChecks.test_multistep_requires_unique_ids_and_reuses_workspace",
+      "count": 1
+    },
+    {
+      "id": "test_skills_agent_eval.WorkspaceChecks.test_offline_dependencies_work_without_user_site_and_are_fingerprinted",
+      "count": 1
+    },
+    {
+      "id": "test_skills_agent_eval.WorkspaceChecks.test_required_source_must_be_copied_before_fixture_injection",
+      "count": 1
+    }
+  ],
+  "error": "KeyboardInterrupt('signal 15')",
+  "source_restored": true
+}

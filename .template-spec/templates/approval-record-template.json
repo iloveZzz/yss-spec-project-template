@@ -1,0 +1,23 @@
+{
+  "actor_kind": "digital-human",
+  "approval_scope": [],
+  "biological_veto": false,
+  "continuation_ref": null,
+  "countersigner_role_ids": [
+    "role.product-manager"
+  ],
+  "decision": "approved",
+  "drafter_principal_ref": null,
+  "drafter_role_id": "role.requirements-manager",
+  "evidence_refs": [],
+  "gate_id": "gate.spec-baseline-approved",
+  "notes": "会签必须可读取；起草者不得出现在 countersigner_role_ids。运行时表情/reaction 无效。",
+  "principal_ref": "instance:role.product-manager",
+  "role_id": "role.product-manager",
+  "runtime_id": "runtime.generic",
+  "runtime_instance_ref": "runtime.generic:role.product-manager",
+  "schema_version": 1,
+  "subject_digest": null,
+  "subject_ref": null,
+  "user_decision_ref": null
+}

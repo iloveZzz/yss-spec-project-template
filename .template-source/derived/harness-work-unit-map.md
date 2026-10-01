@@ -17,7 +17,7 @@
 | `work-unit.plan-opportunity` | project-instance | 机会调研 | 用户问题、市场/竞品事实需求和现有上下文。 | Plan 机会结论、证据、替代方案和关键假设。 | 机会继续/停止建议可审查；事实已 research 或记录为假设。 |
 | `work-unit.plan-requirements` | project-instance | 需求分析 | 机会结论、用户反馈和领域词汇。 | 用户、MVP、非目标、成功标准、测试 seam 和未决项。 | frontier 清空；用户确认；无 runnable blocker。 |
 | `work-unit.domain-strategy-design` | project-instance | 业务边界与协作梳理 | 已澄清的业务故事、业务词汇、约束和现有协作关系。 | 业务板块、业务责任区、协作与交接关系、统一业务词汇、已发生的业务事实、待确认的关键业务对象和不可违反的业务规则。 | 边界、语义方向、规则所有权和关键场景可审查；无未解释冲突。 |
-| `work-unit.stage-decision` | project-instance | 方案决策包综合 | Plan、业务边界与规则设计以及产品经理负责的商业约束输入。 | 带版本、digest、证据和下游映射的方案决策包。 | 必填字段、引用、影响面和下游消费验证通过；批准门禁完成。 |
+| `work-unit.stage-decision` | project-instance | 方案决策包综合 | Plan、业务边界与规则设计以及产品经理负责的商业约束输入。 | 汇总规划结论、业务边界和商业约束，形成带版本、内容摘要、证据及后续 Spec 使用关系的方案决策包。 | 必填字段、引用、影响面和下游消费验证通过；批准门禁完成。 |
 | `work-unit.spec-synthesis` | project-instance | Spec 综合 | 已确认的 Plan 记录和测试 seam。 | Spec、产品总体设计、功能架构及业务 Ticket 草案集合。 | Spec 和业务 Ticket 草案可审查，FR/AC 覆盖与依赖可读取；进入 ready-for-human，下游推进仍需 gate.spec-baseline-approved。 |
 | `work-unit.prototype-design-v2` | project-instance | 原型设计与验证 | Spec、产品设计影响和状态矩阵。 | 交互说明、低保真、状态矩阵、H1/H2 原型交付物、统一 Design QA、档位验证证据与前端实现交接事项。 | 低保真评审、schema v4 原型交付物验证和用户确认门禁均通过；Visual Baseline Bundle 和生产组件待验事项已交接到前端实现计划。 同步校准业务 Ticket，复用稳定 ID，随后进入业务正式化。 |
 | `work-unit.technical-analysis` | project-instance | 技术分析与契约冻结 | 已正式化业务 Ticket 集及 Spec、原型、API/数据/工程影响面；新建后端的架构与平台候选，或既有工程当前登记的架构与平台配置。 | 新建后端的 DDD / MVC 与精确 Spring Boot 版本用户决定，或既有工程复用核验；OpenAPI、数据架构、按确认架构形成的 DDD / MVC 技术设计合同、工程基线、架构审查和 Slice 合同草案。 | 新建后端的 gate.backend-architecture-platform-approved 已通过，既有工程已核验复用并记录该门禁不适用；命中契约已冻结；无 API 影响有可读记录；所有后端交付均有批准且当前的 Technical Design；数据影响为真时数据架构已批准，否则有可核验的不适用记录；架构、规则与场景承接无未解释冲突；gate.engineering-contract-approved 通过。 |

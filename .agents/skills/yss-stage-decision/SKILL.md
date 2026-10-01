@@ -38,6 +38,9 @@ Plan 成功标准在既有 `success_criteria[].statement` 细化指标定义、�
 
 ## 控制面引用
 
+- 新建领域战略、阶段决策包使用 JSON；存量 YAML 保持只读兼容，显式迁移见 `.template-spec/process/structured-assets.md`。使用 `scripts/contract plan-write/apply-write` 结构化落盘，不对合同作字符串拼接。校验器必须执行权威 Schema 后再检查跨文件语义。
+- 复用 Plan 原始决定编号，不自行重排；批准前用 `scripts/check-plan-stage-coverage` 生成绑定 Plan、决定记录和阶段包摘要的逐项对照证据，非目标使用显式映射。无法提取、缺项或映射歧义必须补齐；语义等价仍由独立评审确认，覆盖检查不构成批准。
+
 - 用户决定遵循 [用户决定协议](../yss-product-lifecycle/references/user-decisions.md)：决定必须绑定资产、版本、范围和证据；范围、风险、摘要或失效条件变化后重新确认。
 - checkpoint 是唯一机器状态源，业务 Ticket 只保存追踪引用，不复制阶段状态。
 - 每次批准、重发和消费者流转前执行 `context_reconciliation`，核验 `CONTEXT.md` 的全文与引用术语双摘要。

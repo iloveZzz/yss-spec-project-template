@@ -4,6 +4,11 @@ import {readFileSync,writeFileSync} from 'node:fs';
 import {safe} from './lib/strategic-handoff-io.mjs';
 import {renderReadingBundle,checkReadingViews,readingCheckpointsForAsset,saveReadingComparison,planEnableReading,applyEnableReading} from './lib/reading-view-bundle.mjs';
 import {viewContract,diffContract,prepareContractReview} from './lib/contract-views.mjs';
+import {isAssetCommand,runAssetCommand} from './lib/asset-command.mjs';
+if(isAssetCommand(process.argv[2])) {
+ try { process.stdout.write(JSON.stringify(runAssetCommand(process.argv.slice(2)),null,2)+'\n'); }
+ catch(error) { process.stderr.write(JSON.stringify({status:'blocked',error:error.message})+'\n');process.exitCode=1; }
+} else {
 try{
  const args=process.argv.slice(2),mode=args.shift(),options={},positional=[];
  for(let i=0;i<args.length;i++){const arg=args[i];if(arg==='--json')options.json=true;else if(arg==='--model')options.model=true;else if(arg.startsWith('--')){const key=arg.slice(2);if(!['kind','profile','unit','root','before-root','decision','task-layout','checkpoint','output'].includes(key)||!args[i+1]||args[i+1].startsWith('--'))throw Error(`未知或缺值参数 ${arg}`);options[key]=args[++i];}else positional.push(arg);}
@@ -23,3 +28,4 @@ try{
  if(result.blockers?.length)process.exitCode=1;
  }
 }catch(error){process.stderr.write(error.message+'\n');process.exitCode=1;}
+}

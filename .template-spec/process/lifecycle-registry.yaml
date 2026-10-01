@@ -98,6 +98,7 @@ evidence:
     description: 聚合、Entity、Value Object、不变量、状态机、一致性、Gateway 与 API 隔离的结构化评审结果。
   - id: evidence.stage-decision-package
     name: 阶段决策包验证证据
+    public_name: 方案决策包验证证据
     description: 阶段决策包的 Schema、引用、语义一致性、影响传播和下游消费验证结果。
   - id: evidence.maintenance-intensity-checkpoint
     name: 模板维护强度 checkpoint
@@ -427,7 +428,7 @@ work_units:
     completion: 必填字段、引用、影响面和下游消费验证通过；批准门禁完成。
     public_name: 方案决策包综合
     public_input: Plan、业务边界与规则设计以及产品经理负责的商业约束输入。
-    public_output: 带版本、digest、证据和下游映射的方案决策包。
+    public_output: 汇总规划结论、业务边界和商业约束，形成带版本、内容摘要、证据及后续 Spec 使用关系的方案决策包。
   - id: work-unit.spec-synthesis
     name: Spec 综合
     scope: project-instance
@@ -524,6 +525,7 @@ checks:
       - evidence.approval-record
   - id: check.stage-decision-package-approved
     name: 阶段决策包评审
+    public_name: 方案决策包评审
     stage: stage.plan
     trigger: Plan 到 Spec 入口需要稳定的阶段决策合同。
     evidence:

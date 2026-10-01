@@ -1,0 +1,42 @@
+{
+  "fixed_commit": "8fc0122a9e417a91c62cfe78afc1c0cb70ca56d6",
+  "main_head_at_archive": "8fc0122a9e417a91c62cfe78afc1c0cb70ca56d6",
+  "frozen_source_tracked_diff": "",
+  "frozen_source_status": "?? .template-source/tooling/node/node_modules\n",
+  "dependency_note": "Only untracked node_modules symlink supplies pinned tooling dependencies; no tracked source edits remain.",
+  "node": "v24.21.0",
+  "python": "Python 3.12.1",
+  "pnpm": "10.15.0",
+  "third_party": {
+    "@moonrepo/cli": "2.5.6",
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1",
+    "nx": "23.2.1"
+  },
+  "test_suite_commit": "5b0ee1613e45fcc2bddac00e07c19cd49b00d8a8",
+  "trial_files": {
+    "trial/hash-ignored.mjs": "0e23196eb2109458d881031bc0c9bb9594e99afee012641cc7e561718e63e058",
+    "trial/nx.json": "5a8669cb78923ec4ab3aa815038f0c39f537a9b1d72762b9e8e5748d79996f55",
+    "trial/project.json": "cd3e994742cf0383f217779bf281be4fb15a3b01d5095183a5261e939b67d036",
+    "trial/moon.yml": "c57706a2b33f370a38ada4b43a1d36cdb37ca847b45d8f861486cd9eb10f1274",
+    "trial/runner.mjs": "d7d366ad7ad75274ec484760bfa811611d5ccbc04ae4201e4ce05ae329199a05",
+    "trial/.gitignore": "2b77b64df2d22a0a0ab40d5e434866e1bfcca825253c390bbea371659027f54c",
+    "trial/package.json": "c804416b7a2158d8eb75ba9c81deab30f17cf374e7f767c4f7ebd587cfdbbfed",
+    "trial/task.mjs": "d4bab189c516abb3d6f1b0803b26b6dbc89d3ada588afeb4d6d2aaaf9ec97c43",
+    "trial/.moon/workspace.yml": "dba21ec12ed43c6c83d08ea1e8718b8ee1ee8a6b0a211e559834e332ecb64c06",
+    "trial/inputs/runtime.json": "2167de9e710edba0fe830321c8196cb6725e5ca435a45f6d5ecfeb2ef3bba001",
+    "trial/inputs/lock.json": "499830b091e7f3739a0ed733ac1c601b1460d01eaef3dbcdd2b52082d6f80137",
+    "trial/inputs/source.json": "e187f81755f77c8b0a77113509f27ef1763056d7363efd4f0fa55080a96a5e3d",
+    "trial/inputs/reference.json": "9b5e1a35f0847196fa466ae875f59e5992508c2b762b489a873461d14330bc77",
+    "trial/inputs/data.json": "3fe8ac668b05942f1fb9b05c55cbf2c010d5ea9c7c7d80ebe66cac17f9bcb19a",
+    "trial/inputs/ignored.json": "a050ef06ea542b8fd8781f1e945f9adcd03c7ae5190719e66ba826e2059fce12",
+    "trial/inputs/schema.json": "6829323d4dcce05d8073efb2f5e1a0c9c3b35514b2a7fd81827bf411559ca657"
+  },
+  "final_verification_dependencies": {
+    "mode": "standalone pnpm install --frozen-lockfile",
+    "node_modules_symlink": false,
+    "pnpm_lock_sha256": "f33282763202552cc7ff0e0540bbc80f9081dd0487564222bbb13f25e03081c0",
+    "install_exit_code": 0,
+    "check_vendor_after_install_exit_code": 0
+  }
+}

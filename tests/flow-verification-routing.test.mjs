@@ -49,3 +49,17 @@ test('输出失败不返回成功',t=>{
     assert.notEqual(r.status,0);assert.match(r.stderr,/输出|EBADF|write/i);
   }finally{closeSync(fd);}
 });
+
+test('tooling 模式显式可选，串行限制传播且 release 强制 legacy', () => {
+  const plan = (file, mode, concurrency = '4') => {
+    const r = spawnSync(process.execPath, ['scripts/run-template-verification', '--plan', '--json', '--changed-file', file,
+      '--tooling-mode', mode, '--concurrency', concurrency], { encoding: 'utf8', maxBuffer: 4 * 1024 * 1024 });
+    assert.equal(r.status, 0, r.stderr); return JSON.parse(r.stdout);
+  };
+  assert.equal(plan('.template-source/tooling/node/test/plugin-project.test.mjs', 'optimized').tooling.effective_mode, 'optimized');
+  assert.equal(plan('.template-source/tooling/node/test/plugin-project.test.mjs', 'optimized', '1').tooling.test_concurrency, 1);
+  assert.equal(plan('scripts/lib/json-schema.mjs', 'optimized').tooling.effective_mode, 'legacy');
+  assert.equal(plan('scripts/lib/json-schema.mjs', 'optimized', '4').tooling.verification_concurrency, 1);
+  const bad = spawnSync(process.execPath, ['scripts/run-template-verification', '--plan', '--tooling-mode', 'unknown'], { encoding: 'utf8' });
+  assert.notEqual(bad.status, 0);
+});

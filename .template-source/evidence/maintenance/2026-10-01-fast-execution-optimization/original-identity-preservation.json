@@ -1,0 +1,20 @@
+{
+  "original_count": 185,
+  "current_count": 194,
+  "missing": {},
+  "added": {
+    "单次运行产物按字节、权限与类型复制，各测试修改互不影响": 1,
+    "并发运行消费同一准备产物时拥有独立副本与日志": 1,
+    "源码、Schema、外部引用、lock 和 pins 变化使准备产物失效": 1,
+    "产物删除、篡改、权限与符号链接变化均失败，恢复后可以复制": 1,
+    "manifest、运行时指纹和输入摘要不能跨准备上下文复用": 1,
+    "单独运行无准备上下文时真实构建，构建失败不会被当作通过": 1,
+    "进程监督保留退出码和日志，失败后可继续真实执行": 1,
+    "进程超时和取消返回失败且停止子进程组": 1,
+    "取消外层测试进程时不遗留内部监督进程启动的孙进程": 1
+  },
+  "historical_source_ref": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot/evidence/prepared-tests.stdout",
+  "historical_source_sha256": "73e21db8d087cb71342a7b54a130e2411a8f7abde65247cc8cc11c4e56235c17",
+  "current_source_ref": "full-verification-v6/tooling/metrics.json",
+  "identity_scope": "Historical name/count preservation; formal legacy vs optimized additionally compares file, parent names, test name, count and result. Existing test bodies were retained except initial preparation wrappers and timing instrumentation."
+}

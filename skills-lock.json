@@ -753,6 +753,18 @@
           ".pi/skills"
         ]
       },
+      "yss-harness-upgrade": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-harness-upgrade/SKILL.md",
+        "effectiveHash": "1ca31a3a701cfd560116f6c3d355357b080889c58a9468d2bad39051a2545262",
+        "targets": [
+          ".agents/skills",
+          ".codex/skills",
+          ".cursor/skills",
+          ".pi/skills"
+        ]
+      },
       "yss-hook": {
         "source": "project",
         "sourceType": "local",
@@ -769,7 +781,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-implementation-contract-compiler/SKILL.md",
-        "effectiveHash": "c957b2230c8db7d1724cf1c592d9d4661e561eabefd8a4a612bdc903b1ad377f",
+        "effectiveHash": "ef7778cad116b9bc1a59290ad99cdacc9ddc85c26ff608d5e9db3ca0451adfc2",
         "targets": [
           ".agents/skills",
           ".codex/skills",
@@ -829,7 +841,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-product-lifecycle/SKILL.md",
-        "effectiveHash": "3b53105bc8e5ab7c49e3482ba1a4cad8e344512e560424bd2c66ca334bed4414",
+        "effectiveHash": "19fc768b7e60c7efdbdca3ffb2494a3067eac1c1c93c0cb5a2df4022b9d27be0",
         "targets": [
           ".agents/skills",
           ".codex/skills",
@@ -919,9 +931,9 @@
         "source": "iloveZzz/yss-harness-design-agent",
         "sourceType": "git-submodule",
         "skillPath": ".agents/skills/yss-stage-decision/SKILL.md",
-        "effectiveHash": "cc741295a158d3166e9b0ef351538c50f2921f52d808da31782c401b6d7d873a",
+        "effectiveHash": "fa738fba485549181534419336eb266506d282b2cb8cf720c3375f62b5d70444",
         "sourceRevision": "d754260a597df6bc342f2411ccfd5bcf94a307e9",
-        "upstreamHash": "9e06107a37c2251b454bde7e258f2e462ba5fe766f9fabe9e7f76419b60f5c98",
+        "upstreamHash": "77fa3075f90966821881998ff5fa9d674672bd2568e70b8d877402efeb360453",
         "adaptationRef": ".template-source/agents/strategic-design-skills-integration.md",
         "targets": [
           ".agents/skills",

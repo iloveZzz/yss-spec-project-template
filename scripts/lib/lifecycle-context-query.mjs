@@ -5,6 +5,7 @@ import path from "node:path";
 import { parseDocument } from "../vendor/yaml.mjs";
 import { ROOT, loadRegistry, semanticDigest, validateRegistry } from "./lifecycle-registry.mjs";
 import { loadSkillRegistry } from "./skill-registry.mjs";
+import { loadLifecyclePresenter } from './lifecycle-presentation.mjs';
 
 const LIFECYCLE_REGISTRY_REF = ".template-spec/process/lifecycle-registry.yaml";
 const ORCHESTRATION_CONTRACT_REF = ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml";
@@ -159,6 +160,12 @@ function querySnapshot({ mode, stageId, workUnitId, include = [] } = {}) {
     },
     skills: selectedSkills(route, skillRegistry),
   };
+  const presenter = loadLifecyclePresenter(ROOT);
+  result.presentation = { read_only: true, execution_allowed: false, approval_validity: 'not-checked',
+    names: presenter.catalog(result.lifecycle), sources: presenter.sources, warnings: presenter.warnings };
+  // Include role and transition references from the requested contract subtrees as well.
+  Object.assign(result.presentation.names, presenter.catalog(result.execution));
+  Object.assign(result.presentation.names, presenter.catalog(presenter.roleIds));
   result.references = [...collectPathReferences(result), LIFECYCLE_REGISTRY_REF, ORCHESTRATION_CONTRACT_REF, SKILL_REGISTRY_REF]
     .filter((value, index, all) => all.indexOf(value) === index)
     .sort();

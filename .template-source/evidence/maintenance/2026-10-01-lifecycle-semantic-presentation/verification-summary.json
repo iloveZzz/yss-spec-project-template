@@ -1,0 +1,105 @@
+{
+  "maintenance_intensity": "L2",
+  "triggers": [
+    "local-rule",
+    "non-core-validator"
+  ],
+  "verification_status": "focused-verified-full-incomplete",
+  "review_mode": "self-check",
+  "counterexamples": [
+    "unknown-id",
+    "approved-suffix-is-not-approval",
+    "business-text-and-path-preserved",
+    "display-source-drift",
+    "readonly-source-preservation"
+  ],
+  "sources": [
+    {
+      "ref": ".agents/skills/yss-product-lifecycle/SKILL.md",
+      "sha256": "7402aeee01716c0db7df8032db8efdae32fccdb8e7f8ad25f1feb8d7f0bf0518"
+    },
+    {
+      "ref": ".codex/skills/yss-product-lifecycle/SKILL.md",
+      "sha256": "7402aeee01716c0db7df8032db8efdae32fccdb8e7f8ad25f1feb8d7f0bf0518"
+    },
+    {
+      "ref": ".template-source/derived/harness-work-unit-map.md",
+      "sha256": "1b5a1f7d8f51f8663178ee847feeedaca1bdd03f120082899c336d7ec461bc1a"
+    },
+    {
+      "ref": ".template-source/distribution/strategic-handoff-tools.lock.json",
+      "sha256": "7a4dbe5ab4a27779fc8d7b59c0755f70ffe02477f17c2abdd3a99577dec0d146"
+    },
+    {
+      "ref": ".template-spec/process/document-writing.md",
+      "sha256": "6433e7229ff232d79b25edb8a5cc43923b77df1cfe7d6c76c148e47d9bd38d26"
+    },
+    {
+      "ref": ".template-spec/process/lifecycle-artifact-map.md",
+      "sha256": "680027cf088b0cdf624355f49fd174bf358444050218411a33f96a6bd879c817"
+    },
+    {
+      "ref": ".template-spec/process/lifecycle-registry.yaml",
+      "sha256": "ed053006b666b5222ac3577159bcae6f8ae1e6c4bae2aed119bcd2d8397ce98c"
+    },
+    {
+      "ref": "scripts/fixtures/reading-views/bundle.test.mjs",
+      "sha256": "0d370b86205c193398e95617d2379d0baf30af0315d6bc6604a6501a5819cf3b"
+    },
+    {
+      "ref": "scripts/fixtures/reading-views/reading.test.mjs",
+      "sha256": "455df015df2a42696755e1d86c96de54106fd3814cda64f9be4ea33acdce3c5e"
+    },
+    {
+      "ref": "scripts/lib/contract-views.mjs",
+      "sha256": "f88b6f5da3fea534717f58b833da3e8f1fa4d6c04f2e4ff9a754618316ef555c"
+    },
+    {
+      "ref": "scripts/lib/lifecycle-context-query.mjs",
+      "sha256": "7f0fb61d95a0560a9320604fd0803fdfd92d5c4a8a644673bcdb02cb64b8a43f"
+    },
+    {
+      "ref": "scripts/lib/lifecycle-status.mjs",
+      "sha256": "36171deaef46fc93ca317edd82ecee0d3e54a8c1e9edf095dfcb62c3ab56697a"
+    },
+    {
+      "ref": "scripts/lib/reading-view-bundle.mjs",
+      "sha256": "2aab86301d37ffb95fbbc1136bf8989411b0f594aa8246ea3df0552d952b4772"
+    },
+    {
+      "ref": "scripts/lib/reading-view-markdown.mjs",
+      "sha256": "5b55e76271831f4c957f4991ba12f99e2245767ae8ab8a20188dcc0cf6b68e11"
+    },
+    {
+      "ref": "scripts/lifecycle-status",
+      "sha256": "ba1f351de913f1528ce99a024b93a17e10201d0efb873e56b001beb77be44d98"
+    },
+    {
+      "ref": "scripts/sync-strategic-handoff-tools",
+      "sha256": "5c0b919a8e6f95333a46f0741e9b28dcf803890557b4f6e8492b11595411e3f3"
+    },
+    {
+      "ref": "scripts/verify-business-language-scenarios",
+      "sha256": "1c5fa5b19c85c219a2adb99ef64ba38fdaf3205d9681f6e85be9dd532325e8ae"
+    },
+    {
+      "ref": "scripts/verify-lifecycle-context-query-scenarios",
+      "sha256": "a7bb02961a20505b35efd369d7ec1966fada7677d7648f328b4e0a26cb74c65d"
+    },
+    {
+      "ref": "scripts/verify-lifecycle-operator-scenarios",
+      "sha256": "f527e4f6d4f29c9438b114466464257b0311fe50cd5080389872c6968f9e6b57"
+    },
+    {
+      "ref": "skills-lock.json",
+      "sha256": "749bcabe5ecc282bd7514eb61c6465cbd31b018ef994d694cd5ac7f59059927f"
+    },
+    {
+      "ref": "scripts/lib/lifecycle-presentation.mjs",
+      "sha256": "9de4290e8cb5b1239b741dda382048447fc2ee7cf331b712046afb5316696b04"
+    }
+  ],
+  "git_actions": [],
+  "existing_instance_migration": "not-performed",
+  "real_agent_replay": "not-performed"
+}

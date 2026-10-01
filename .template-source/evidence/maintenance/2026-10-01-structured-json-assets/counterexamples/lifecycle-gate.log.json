@@ -1,0 +1,13 @@
+[
+  {
+    "id": "handoff-without-evidence",
+    "command": [
+      "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+      "scripts/verify-lifecycle-checkpoint",
+      ".template-source/evidence/maintenance/2026-10-01-structured-json-assets/counterexamples/lifecycle-gate.input.json"
+    ],
+    "exit_code": 1,
+    "stdout": "",
+    "stderr": "生命周期 checkpoint 验证失败: phase_boundary: 'source_ref' is a required property\nphase_boundary: 'destination_ref' is a required property\n"
+  }
+]

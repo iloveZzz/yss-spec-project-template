@@ -1,8 +1,11 @@
 import { readDocument, fileBinding } from './governance-io.mjs';
+import { assertAssetTransactionIdle, assertCurrentAssetReference } from './asset-transactions.mjs';
 
 /** Validate existing lifecycle context evidence; never grants approval. */
 export function assertCheckpointBoundary(value, {root, history=false}={}) {
   if(history) return {status:'historical-only',execution_authorization:'not-evaluated'};
+  assertAssetTransactionIdle(root);
+  if(value.stage_tracking?.checkpoint_ref)assertCurrentAssetReference(root,value.stage_tracking.checkpoint_ref);
   const canonical='.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml';
   const contract=readDocument(root,fileBinding(root,canonical)?canonical:'.template-spec/process/checkpoint-boundary.yaml');
   const registry=readDocument(root,'.template-spec/process/lifecycle-registry.yaml');

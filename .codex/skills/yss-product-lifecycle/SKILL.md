@@ -7,27 +7,27 @@ description: 编排 YSS 研发全生命周期；当阶段、产物、门禁或 S
 
 合同阅读与托管更新：`scripts/contract view|render|check-views`；见 `.template-spec/process/contract-reading.md`。
 
-文档按 `document_writing` 条件调用 `i-have-adhd`，并传递 `.template-spec/process/document-writing.md` 规范。
+五类机器资产默认 JSON；读写、迁移及恢复须遵循 `.template-spec/process/structured-assets.md`。
 
-## 事实源与按需加载
+文档及进度按 `document_writing` 调用 `i-have-adhd`，遵循 `.template-spec/process/document-writing.md`；正文用中文名称与动作，编号按需追踪。
 
-先读 `yss-project.yaml`、`AGENTS.md`、`CONTEXT.md` 和当前任务视图，按需加载合同子树：
+## 事实源
+
+先读 `yss-project.yaml`、`AGENTS.md`、`CONTEXT.md` 和当前任务视图，按需读合同：
 
 | 事实 | 权威来源 |
 |---|---|
-| 阶段、聚合门禁、内部检查、产物、工作单元、证据和稳定 ID | `.template-spec/process/lifecycle-registry.yaml` |
-| 执行模式、流转、readiness、暂停、结果和授权语义 | `references/orchestration-contract.yaml` |
-| Skill 身份、capability、依赖和路由 | `.template-spec/agents/yss-skill-registry.yaml` |
+| 阶段、门禁、产物、工作单元、证据及 ID | `.template-spec/process/lifecycle-registry.yaml` |
+| 执行、流转和授权合同 | `references/orchestration-contract.yaml` |
+| Skill 身份、能力、依赖和路由 | `.template-spec/agents/yss-skill-registry.yaml` |
 | 数字人角色、运行时和会签策略 | `.template-spec/agents/digital-human-roles.yaml` |
-| 影响面、裁剪和模板维护强度 | `.template-spec/process/harness-process-tailoring.md`、`.template-source/process/maintenance-intensity.yaml` |
-
-查询合同：
+| 影响面、裁剪与维护强度 | `.template-spec/process/harness-process-tailoring.md`、`.template-source/process/maintenance-intensity.yaml` |
 
 ```bash
 scripts/query-lifecycle-context --mode route --stage stage.plan --work-unit work-unit.plan-requirements --include execution_efficiency
 ```
 
-`--include` 接受合同顶层键，非法键或 ID 失败。按需读 `references/orchestration.md` 及索引，证据充分即停止加载。
+`--include` 接受合同顶层键，非法输入失败。详见 `references/orchestration.md`。
 
 按 `execution_efficiency` 合并查询、复用未变资料；仍核验当前资产、词汇和门禁，产品流转不重跑模板套件。
 
@@ -71,15 +71,11 @@ Plan 入口读取 `.template-spec/plan/README.md` 和 `.template-spec/process/pl
 3. 原生工作单元由主控持有正式资产；专项按结构化任务包派发，只调用合同允许的 model-invoked skill。
 4. `to-spec`、`to-tickets`、`implement` 等兼容入口只可由用户显式调用。主控预检输入、路径和门禁；入口按 `matt_invocation_boundary` 写入其产物并回交验收，不批准或改变 Ticket 就绪状态。原生资产仍归主控。
 5. 先逐项验收用户目标、遗漏、错误假设和未决问题，再验收 `Workflow Execution Result`：工作单元、合同、允许写路径、`context_reconciliation`、证据、实际验证、延期 seam、漂移和下一路由必须可核验。实现派发额外绑定当前 Slice Implementation Contract v3；其他阶段不得伪造该合同。
-6. 在授权边界内继续下一工作单元；遇到人工决定、新授权、证据冲突、专项失败或合并/发布结论时暂停。暂停不得阻断无依赖的独立工作。
+6. 在授权边界内继续下一工作单元；遇到人工决定、新授权、证据冲突、专项失败或合并/发布结论时暂停。暂停不得阻断独立工作。
 
 每个 `project-instance` 工作单元批准或流转前，回写稳定术语到唯一根 `CONTEXT.md`，并生成通过校验的 `context_reconciliation`。候选术语、错误路径、摘要漂移或未决冲突必须阻断。质量标准只由 `engineering-baseline` 定义一次；高风险影响按裁剪合同补充反证和残余风险。
 
 ## 面向业务角色
-
-使用业务语言推进：
-
-`机会与目标 → 业务故事 → 责任与交接 → 规则、例子与疑问 → 可验收需求 → 页面验证 → 业务任务 → 交接研发`
 
 澄清目标、流程、责任、规则、范围和验收例子。业务总览引用权威资产，展示状态、未决项、责任人和下一步，不复制正文或新增门禁。
 
@@ -87,11 +83,9 @@ Plan → Spec（含正式草稿、恢复与显式 `to-spec`）写入前，按 `.
 
 ## 结果与暂停
 
-咨询直接回答；工作单元留证并展示当前决定。
+结构化结果保留模式、仓库身份、阶段/工作单元、影响面、资产/门禁/Ticket/Slice/合同状态、证据新鲜度、就绪、阻塞、本轮动作、下一单元、暂停理由、Ticket 同步和 Git checkpoint；用户说明按中文写作规范呈现。
 
-结果包含：模式、仓库身份、阶段/工作单元、影响面、资产/门禁/Ticket/Slice/合同状态、证据及新鲜度、`ready-for-agent`、阻塞、本轮动作、下一单元、暂停/继续理由、Ticket 同步和 Git checkpoint。
-
-暂停会签时追加门禁 ID、`role_id`、`runtime_id`、会签文件路径、推荐答案和恢复动作；恢复前运行适用验证器。只有同一候选快照通过全部适用审查轴与 fresh verification，才能提出合并、发布或完成结论；发布仍须生物人决定。
+会签记录保留门禁 ID、`role_id`、`runtime_id`、文件路径、推荐答案和恢复动作；用户提示解释待决定事项与责任方。恢复前运行适用验证器。同一候选通过适用审查与 fresh verification 才可提出完成、合并或发布结论；发布仍须生物人决定。
 
 Plan / Spec / Design 追踪按 `.template-spec/process/stage-tracking.md`。
 
@@ -102,3 +96,5 @@ Spec 起草业务票，Design 校准后正式化；无设计影响直接正式�
 ## 功能资产整理
 
 整理与旧票迁移先读 `.template-spec/process/feature-assets.md`，只按显式候选计划处理，保留状态、批准依据和原文；不得推进阶段。临时输入与草稿放临时工作区，引用后按正式资产保留。
+
+既有 YSS 实例的模板版本升级、旧治理布局迁移或升级恢复路由到 `yss-harness-upgrade`，按 `.template-spec/process/harness-upgrade.md` 执行；不由升级动作推进产品阶段或重写历史批准。

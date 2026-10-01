@@ -1,0 +1,296 @@
+[
+  {
+    "tool": "nx",
+    "case": "unchanged",
+    "pass": true,
+    "detail": {
+      "tool": "nx",
+      "ms": 328.5933749866672,
+      "exit": 0,
+      "executed": [],
+      "outputs": {
+        "schema": "21e3635795b35587e4faa17f79c24423bddf060a197fc6d04f9bb8cc85d5b840",
+        "query": "f060e4677f82b8c71de1bfc4f2a603ff77c752bc91560a0ec5f19d95da217327",
+        "checks": "b6e964eb7c3d12c8babe22255512432f52046fe8a2180fb03e38c24e41d172b2"
+      }
+    }
+  },
+  {
+    "tool": "nx",
+    "case": "data-change",
+    "pass": true,
+    "detail": {
+      "tool": "nx",
+      "ms": 835.4466670425609,
+      "exit": 0,
+      "executed": [
+        "schema",
+        "query",
+        "checks"
+      ],
+      "outputs": {
+        "schema": "cb9796d5bc30ccfed2896a33e2ad897e20060160ec4de84d3a966db918d1890e",
+        "query": "19447bd0df264f462f942b9db080f717d1aef3671a5a333161983d82355628a4",
+        "checks": "0559e85e174796f3dcb1177f84fb2d5bf9e4922438ea2d40973d862433422a88"
+      }
+    }
+  },
+  {
+    "tool": "nx",
+    "case": "schema-change",
+    "pass": true,
+    "detail": {
+      "tool": "nx",
+      "ms": 802.8565000277013,
+      "exit": 0,
+      "executed": [
+        "schema",
+        "query",
+        "checks"
+      ],
+      "outputs": {
+        "schema": "85e0918c04d9bf78b0b06df1d58417bcd7da8ef60f7388d5f74184333042cdbe",
+        "query": "00ea13a5e5a40b552138de387d0944f8ead75a9994f6f144afa0b66255bb7a10",
+        "checks": "8e3b6387b6bf03fa9f215af3a6aa36e2f03898db1a290a4e7faccc9f4bcc4edd"
+      }
+    }
+  },
+  {
+    "tool": "nx",
+    "case": "reference-change",
+    "pass": true,
+    "detail": {
+      "tool": "nx",
+      "ms": 792.9123329813592,
+      "exit": 0,
+      "executed": [
+        "schema",
+        "query",
+        "checks"
+      ],
+      "outputs": {
+        "schema": "e697d4cea4e9eafa3a847cc7d1c191c1b0980c8ec13c280508f2139e4e5d57f3",
+        "query": "002465a9ece8500b38735d63067f2022792eba165531d6ccd192c626a16c359d",
+        "checks": "459d2d1936cf12e73ee02815f41ab02a252efe94d35cdb56ad0a4fd8d467841c"
+      }
+    }
+  },
+  {
+    "tool": "nx",
+    "case": "lock-change",
+    "pass": true,
+    "detail": {
+      "tool": "nx",
+      "ms": 799.8436249908991,
+      "exit": 0,
+      "executed": [
+        "schema",
+        "query",
+        "checks"
+      ],
+      "outputs": {
+        "schema": "3181c3e2a9c2292011b527d37d619dd029fc9ba418bd3baa4d42296d41e73e5a",
+        "query": "8ef2be3c481803816f3ebd45b615e2ae9469c3891abf81ed1705199673530871",
+        "checks": "a2840271fc0c8c1df2b429547bf3333b4f0c07d78328be7ac6dc07baf17f6b2a"
+      }
+    }
+  },
+  {
+    "tool": "nx",
+    "case": "runtime-change",
+    "pass": true,
+    "detail": {
+      "tool": "nx",
+      "ms": 808.9404579950497,
+      "exit": 0,
+      "executed": [
+        "schema",
+        "query",
+        "checks"
+      ],
+      "outputs": {
+        "schema": "d80de1605d1ed9975589c2b6434e1cb27bfcda586323f55b08992f662f08ba5f",
+        "query": "b1e19c90d70f1799752d4cac216d94a4edc118859fc691de5421e90ad19808cc",
+        "checks": "210aee357237778ad428a9119022be80d6d5fbdbe64b96b805845ad88adc5058"
+      }
+    }
+  },
+  {
+    "tool": "nx",
+    "case": "ignored-change",
+    "pass": true,
+    "detail": {
+      "tool": "nx",
+      "ms": 802.758542005904,
+      "exit": 0,
+      "executed": [
+        "schema",
+        "query",
+        "checks"
+      ],
+      "outputs": {
+        "schema": "c07d34e026ac9b34858874bb60b5aa18d10cdf91fe9a3a61335e1bf27d91a705",
+        "query": "b2da5407fb377c0294681ca22fd21a44480fc3dd1692d06ac5cb2d7a28a43ada",
+        "checks": "526fa488b7c3d7f01c577906690fcab21bd9b32e4952e349f5a48cc6c330b383"
+      }
+    }
+  },
+  {
+    "tool": "nx",
+    "case": "script-change",
+    "pass": true,
+    "detail": {
+      "tool": "nx",
+      "ms": 788.8892500195652,
+      "exit": 0,
+      "executed": [
+        "schema",
+        "query",
+        "checks"
+      ],
+      "outputs": {
+        "schema": "21e3635795b35587e4faa17f79c24423bddf060a197fc6d04f9bb8cc85d5b840",
+        "query": "f060e4677f82b8c71de1bfc4f2a603ff77c752bc91560a0ec5f19d95da217327",
+        "checks": "b6e964eb7c3d12c8babe22255512432f52046fe8a2180fb03e38c24e41d172b2"
+      }
+    }
+  },
+  {
+    "tool": "nx",
+    "case": "environment-change",
+    "pass": true,
+    "detail": {
+      "tool": "nx",
+      "ms": 842.1834160108119,
+      "exit": 0,
+      "executed": [
+        "schema",
+        "query",
+        "checks"
+      ],
+      "outputs": {
+        "schema": "ef247d904ca3358097bd9009b3880780a1192333b988b806f5d729e1799c2cd8",
+        "query": "f118eee603a8b24b977b59a324111f13ab2b128891de354908cbce06acf97356",
+        "checks": "e5d8af22dcc26189e22ad6852d3e9d28cdfc13a364ee4041afe5ab2e5c38a66d"
+      }
+    }
+  },
+  {
+    "tool": "nx",
+    "case": "output-deletion",
+    "pass": true,
+    "detail": {
+      "tool": "nx",
+      "ms": 322.68537499476224,
+      "exit": 0,
+      "executed": [],
+      "outputs": {
+        "schema": "21e3635795b35587e4faa17f79c24423bddf060a197fc6d04f9bb8cc85d5b840",
+        "query": "f060e4677f82b8c71de1bfc4f2a603ff77c752bc91560a0ec5f19d95da217327",
+        "checks": "b6e964eb7c3d12c8babe22255512432f52046fe8a2180fb03e38c24e41d172b2"
+      }
+    }
+  },
+  {
+    "tool": "nx",
+    "case": "output-tamper",
+    "pass": true,
+    "detail": {
+      "tool": "nx",
+      "ms": 323.4656249987893,
+      "exit": 0,
+      "executed": [],
+      "outputs": {
+        "schema": "21e3635795b35587e4faa17f79c24423bddf060a197fc6d04f9bb8cc85d5b840",
+        "query": "f060e4677f82b8c71de1bfc4f2a603ff77c752bc91560a0ec5f19d95da217327",
+        "checks": "b6e964eb7c3d12c8babe22255512432f52046fe8a2180fb03e38c24e41d172b2"
+      }
+    }
+  },
+  {
+    "tool": "nx",
+    "case": "ignored-missing",
+    "pass": true,
+    "detail": {
+      "tool": "nx",
+      "ms": 447.0870830118656,
+      "exit": 130,
+      "executed": [
+        "schema"
+      ],
+      "outputs": {
+        "schema": "21e3635795b35587e4faa17f79c24423bddf060a197fc6d04f9bb8cc85d5b840",
+        "query": "f060e4677f82b8c71de1bfc4f2a603ff77c752bc91560a0ec5f19d95da217327",
+        "checks": "b6e964eb7c3d12c8babe22255512432f52046fe8a2180fb03e38c24e41d172b2"
+      }
+    }
+  },
+  {
+    "tool": "nx",
+    "case": "failure-1",
+    "pass": true,
+    "detail": {
+      "tool": "nx",
+      "ms": 455.4870830033906,
+      "exit": 130,
+      "executed": [
+        "schema"
+      ],
+      "outputs": {
+        "schema": "21e3635795b35587e4faa17f79c24423bddf060a197fc6d04f9bb8cc85d5b840",
+        "query": "f060e4677f82b8c71de1bfc4f2a603ff77c752bc91560a0ec5f19d95da217327",
+        "checks": "b6e964eb7c3d12c8babe22255512432f52046fe8a2180fb03e38c24e41d172b2"
+      }
+    }
+  },
+  {
+    "tool": "nx",
+    "case": "failure-2",
+    "pass": true,
+    "detail": {
+      "tool": "nx",
+      "ms": 448.353958025109,
+      "exit": 130,
+      "executed": [
+        "schema"
+      ],
+      "outputs": {
+        "schema": "21e3635795b35587e4faa17f79c24423bddf060a197fc6d04f9bb8cc85d5b840",
+        "query": "f060e4677f82b8c71de1bfc4f2a603ff77c752bc91560a0ec5f19d95da217327",
+        "checks": "b6e964eb7c3d12c8babe22255512432f52046fe8a2180fb03e38c24e41d172b2"
+      }
+    }
+  },
+  {
+    "tool": "nx",
+    "case": "recovery",
+    "pass": true,
+    "detail": {
+      "tool": "nx",
+      "ms": 318.89683299232274,
+      "exit": 0,
+      "executed": [],
+      "outputs": {
+        "schema": "21e3635795b35587e4faa17f79c24423bddf060a197fc6d04f9bb8cc85d5b840",
+        "query": "f060e4677f82b8c71de1bfc4f2a603ff77c752bc91560a0ec5f19d95da217327",
+        "checks": "b6e964eb7c3d12c8babe22255512432f52046fe8a2180fb03e38c24e41d172b2"
+      }
+    }
+  },
+  {
+    "tool": "nx",
+    "case": "unrelated-readme",
+    "pass": true,
+    "detail": {
+      "tool": "nx",
+      "ms": 332.5148749863729,
+      "exit": 0,
+      "executed": [],
+      "outputs": {
+        "schema": "21e3635795b35587e4faa17f79c24423bddf060a197fc6d04f9bb8cc85d5b840",
+        "query": "f060e4677f82b8c71de1bfc4f2a603ff77c752bc91560a0ec5f19d95da217327",
+        "checks": "b6e964eb7c3d12c8babe22255512432f52046fe8a2180fb03e38c24e41d172b2"
+      }
+    }
+  }
+]

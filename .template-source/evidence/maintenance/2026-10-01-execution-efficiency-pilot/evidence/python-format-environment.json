@@ -1,0 +1,14 @@
+{
+  "jsonschema_version": "4.26.0",
+  "registered_formats": [
+    "date",
+    "email",
+    "idn-email",
+    "idn-hostname",
+    "ipv4",
+    "ipv6",
+    "regex",
+    "time",
+    "uuid"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "kind": "maintenance-research-verification",
+  "inputs": {
+    "brief": {
+      "ref": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-research/execution-efficiency-research-brief.md",
+      "digest": "sha256:0909dc1d736420ae33746b9006dc323a930e51efe370fe1b1965080fa4e57b45"
+    },
+    "evidence": {
+      "ref": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-research/execution-efficiency-evidence.yaml",
+      "digest": "sha256:fcef072de02cf47ef11bb79e667e4fa3ef635d95ed6cfd51d0b8ac4ed617ac59"
+    },
+    "validator": {
+      "ref": ".agents/skills/yss-research/scripts/validate-research-package.mjs",
+      "digest": "sha256:5e4e437d54e67cce9dd380974744605bd149c71939c5f01e3ea4719c79911d0f"
+    }
+  },
+  "command": [
+    "node",
+    ".agents/skills/yss-research/scripts/validate-research-package.mjs",
+    ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-research/execution-efficiency-research-brief.md",
+    ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-research/execution-efficiency-evidence.yaml"
+  ],
+  "started_at": "2026-10-01T00:26:56.904Z",
+  "completed_at": "2026-10-01T00:26:56.936Z",
+  "exit_code": 0,
+  "stdout": {
+    "ref": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-research/verification/stdout.log",
+    "digest": "sha256:fe47cd32b470ca490f59c8258b9eb33ac8d123f667e166a9ec26bdaa3b5591f6"
+  },
+  "stderr": {
+    "ref": ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-research/verification/stderr.log",
+    "digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

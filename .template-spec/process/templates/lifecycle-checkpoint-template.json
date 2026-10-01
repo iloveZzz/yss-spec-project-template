@@ -1,0 +1,48 @@
+{
+  "artifacts": {},
+  "blockers": [],
+  "context_reconciliation": {
+    "evidence_refs": [],
+    "reason": "等待当前工作单元完成稳定术语回写与核对",
+    "ref": null,
+    "status": "pending"
+  },
+  "gates": {},
+  "git_checkpoint": {
+    "required": false,
+    "status": "not-applicable"
+  },
+  "human_review": {
+    "not_applicable": [],
+    "required": false,
+    "required_decisions": [],
+    "status": "not-applicable",
+    "user_decisions": []
+  },
+  "mode": "route",
+  "next_work_unit": "work-unit.plan-opportunity",
+  "phase_boundary": {
+    "decision": "continue",
+    "reason": "initial routing"
+  },
+  "repository_mode": "project-instance",
+  "rollback": [],
+  "schema_version": 1,
+  "stage": "stage.entry-triage",
+  "stage_trace": {
+    "artifact_refs": [],
+    "downstream_impacts": [],
+    "gate_decisions": [],
+    "stage": "stage.entry-triage",
+    "upstream_refs": []
+  },
+  "status": "routing",
+  "ticket_sync": {
+    "refs": [],
+    "status": "pending"
+  },
+  "verification": {
+    "commands": [],
+    "evidence_refs": []
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "non_goals": [
+    {
+      "source_line": 112,
+      "source_text": "国产库（达梦 / Kingbase / openGauss）",
+      "target_index": 1,
+      "target_text": "国产库（达梦 / Kingbase / openGauss）不进首版；须在下版立项或范围变更时重新评估"
+    },
+    {
+      "source_line": 113,
+      "source_text": "引入第二个同步引擎（Flink CDC）",
+      "target_index": 0,
+      "target_text": "不新建第二个同步引擎：不引入 Flink CDC（CDC 目标为关系库直写时使用 SeaTunnel CDC）"
+    },
+    {
+      "source_line": 114,
+      "source_text": "断点续传",
+      "target_index": 2,
+      "target_text": "断点续传不对外承诺；若做需先明确是\"文件级跳过\"还是\"字节级续传\""
+    },
+    {
+      "source_line": 115,
+      "source_text": "exactly-once / XA 事务",
+      "target_index": 3,
+      "target_text": "不做 XA / exactly-once：一致性承诺为 at-least-once，必须写出去重口径"
+    },
+    {
+      "source_line": 116,
+      "source_text": "失败告警外发（邮件/钉钉/企微）、监控大盘",
+      "target_index": 4,
+      "target_text": "失败告警外发（邮件/钉钉/企微）与监控大盘不进首版，首版先保证失败可见"
+    },
+    {
+      "source_line": 117,
+      "source_text": "SSO / LDAP、多租户、对外云服务",
+      "target_index": 5,
+      "target_text": "不做 SSO / LDAP、多租户、对外云服务（定位为私有化内网工具）"
+    }
+  ],
+  "package_digest": "sha256:2a9fb2c59dc94da14c33f15fb4308ddcc76b3ef841fb83868cb4eeea66808208",
+  "plan_digest": "sha256:9042740a93a4f0b07b8c7210cd6289b73c52e64609e7561352df5ab6dece09bd"
+}

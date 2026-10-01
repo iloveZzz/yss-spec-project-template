@@ -14,14 +14,15 @@ const scalar=value=>value===null?'null':String(value);
 function textLines(value,indent=''){
   return scalar(value).split(/\r?\n/).map((line,index)=>`${index?'\n'+indent+'> ':''}${escapeMarkdown(line)}`).join('');
 }
-export function renderReadingValue(value,depth=0){
-  if(value===null||typeof value!=='object')return textLines(value);
+export function renderReadingValue(value,depth=0,names={}){
+  const named=value=>typeof value==='string'&&Object.hasOwn(names,value)?`${names[value].name}（${value}）`:value;
+  if(value===null||typeof value!=='object')return textLines(named(value));
   const entries=Object.entries(value);
   if(!entries.length)return Array.isArray(value)?'[]（来源明确为空）':'{}（来源明确为空）';
   return entries.map(([key,child])=>{
-    if(Array.isArray(value)&&(child===null||typeof child!=='object'))return '- '+textLines(child).replace(/\n/g,'\n  ');
-    const label=Array.isArray(value)?`第 ${Number(key)+1} 项`:escapeMarkdown(readingLabels[key]||key);
-    const rendered=renderReadingValue(child,depth+1).split('\n');
+    if(Array.isArray(value)&&(child===null||typeof child!=='object'))return '- '+textLines(named(child)).replace(/\n/g,'\n  ');
+    const label=Array.isArray(value)?`第 ${Number(key)+1} 项`:escapeMarkdown(Object.hasOwn(readingLabels,key)?readingLabels[key]:named(key));
+    const rendered=renderReadingValue(child,depth+1,names).split('\n');
     return child!==null&&typeof child==='object'&&Object.keys(child).length?`- **${label}**：\n${rendered.map(line=>'  '+line).join('\n')}`:`- **${label}**：${rendered[0]}${rendered.slice(1).map(line=>'\n  '+line).join('')}`;
   }).join('\n');
 }
@@ -32,8 +33,9 @@ export function renderReadingMarkdown(view){
     '本页为来源快照；当前有效性需重新检查。批准有效性未核验；本视图不授予执行权限。',
     `检查范围：${view.checks.map(escapeMarkdown).join('；')}`];
   for(const [key,value]of Object.entries(view.content))if(value!==undefined){
-    lines.push(`## ${readingLabels[key]||escapeMarkdown(key)}`,key==='正文'&&typeof value==='string'?value:renderReadingValue(value));
+    lines.push(`## ${readingLabels[key]||escapeMarkdown(key)}`,key==='正文'&&typeof value==='string'?value:renderReadingValue(value,0,view.presentation?.names));
   }
+  if(view.presentation?.warnings.length)lines.push('## 名称来源提示',...view.presentation.warnings.map(escapeMarkdown));
   if(view.blockers.length)lines.push('## 阻断与未决检查',...view.blockers.map(item=>`- ${escapeMarkdown(item)}`));
   return lines.join('\n\n')+'\n';
 }

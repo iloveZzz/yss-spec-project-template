@@ -55,6 +55,9 @@
           "id": "product-design",
           "source": ".codex/skills/product-design",
           "target": ".codex/skills/product-design"
+        },
+        {
+          "id": "yss-harness-upgrade"
         }
       ],
       "adapted": [
@@ -317,6 +320,9 @@
         },
         {
           "id": "git-commit-core"
+        },
+        {
+          "id": "yss-harness-upgrade"
         }
       ],
       "adapted": [
@@ -352,7 +358,7 @@
           "id": "yss-implementation-contract-compiler",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/backend/yss-implementation-contract-compiler.patch",
-          "source_tree_sha256": "a55b7b60d1c0a4e2d614106453d5816b1e54415792132fd78579930d89d0b5d9"
+          "source_tree_sha256": "f9858f7c3d8bc328f9751bb32f0d38194c10cdbbbac5d38124866d9c222fe366"
         },
         {
           "id": "yss-openapi-governance",
@@ -622,6 +628,9 @@
         },
         {
           "id": "git-commit-core"
+        },
+        {
+          "id": "yss-harness-upgrade"
         }
       ],
       "adapted": [
@@ -629,7 +638,7 @@
           "id": "yss-implementation-contract-compiler",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/frontend/yss-implementation-contract-compiler.patch",
-          "source_tree_sha256": "a55b7b60d1c0a4e2d614106453d5816b1e54415792132fd78579930d89d0b5d9"
+          "source_tree_sha256": "f9858f7c3d8bc328f9751bb32f0d38194c10cdbbbac5d38124866d9c222fe366"
         },
         {
           "id": "yss-openapi-governance",

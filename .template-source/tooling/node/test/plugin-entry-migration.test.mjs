@@ -7,6 +7,7 @@ import { gunzipSync } from 'node:zlib';
 import { spawnSync } from 'node:child_process';
 import { projectOperations as api } from '../../../plugins/yss-backend-delivery/project.mjs';
 import { migrationApply } from '../../../plugins/yss-backend-delivery/migration.mjs';
+import { materializeTestPlugin } from '../scripts/tooling-fixture.mjs';
 
 const ROOT = path.resolve(import.meta.dirname, '../../../..');
 const SOURCE = path.join(ROOT, '.template-source/plugins/yss-backend-delivery');
@@ -16,7 +17,7 @@ test('single entry and explicit M4 migration preserve project assets and fail cl
   const plugin = path.join(dir, 'plugin/yss-backend-delivery'), target = path.join(dir, 'project');
   const run = (file, args) => spawnSync(process.execPath, [file, ...args], { cwd: dir, encoding: 'utf8', timeout: 120000, maxBuffer: 32 * 1024 * 1024 });
   const ok = result => { assert.equal(result.status, 0, result.stderr); return JSON.parse(result.stdout); };
-  ok(run(path.join(SOURCE, 'build.mjs'), ['--output', plugin]));
+  materializeTestPlugin({ sourceRoot: ROOT, output: plugin, build: () => ok(run(path.join(SOURCE, 'build.mjs'), ['--output', plugin])) });
   const command = (name, args = []) => run(path.join(plugin, 'scripts/plugin.mjs'), [name, ...args]);
   const put = (ref, value) => { const file = path.join(dir, ref); fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, typeof value === 'string' ? value : JSON.stringify(value)); return file; };
   const plan = ok(command('project-plan', ['--target-dir', target, '--project-name', '迁移机制测试', '--business-domain', '合成测试', '--team-size', '3', '--issue-tracker', 'github']));

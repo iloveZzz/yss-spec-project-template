@@ -9,6 +9,7 @@ import { finalizeDelivery } from '../../../../scripts/lib/strategic-handoff.mjs'
 import { gunzipSync } from 'node:zlib';
 import { projectOperations as api } from '../../../plugins/yss-backend-delivery/project.mjs';
 import { consumerEntry } from '../../../../scripts/lib/strategic-handoff-routing.mjs';
+import { materializeTestPlugin } from '../scripts/tooling-fixture.mjs';
 
 const ROOT = path.resolve(import.meta.dirname, '../../../..');
 test('consumer mapping preserves dedicated backend identity and rejects unknown wire IDs or out-of-profile targets', t => {
@@ -32,7 +33,7 @@ test('backend plugin receives Handoff v5 without bypassing engineering or implem
   const plugin = path.join(dir, 'plugin/yss-backend-delivery'), target = path.join(dir, 'backend-governance');
   const run = (file, args) => spawnSync(process.execPath, [file, ...args], { encoding: 'utf8', timeout: 120000, maxBuffer: 32 * 1024 * 1024 });
   const ok = r => { assert.equal(r.status, 0, r.stderr); return JSON.parse(r.stdout); };
-  ok(run(path.join(ROOT, '.template-source/plugins/yss-backend-delivery/build.mjs'), ['--output', plugin]));
+  materializeTestPlugin({ sourceRoot: ROOT, output: plugin, build: () => ok(run(path.join(ROOT, '.template-source/plugins/yss-backend-delivery/build.mjs'), ['--output', plugin])) });
   const call = (command, args = []) => run(path.join(plugin, 'scripts/plugin.mjs'), [command, ...args]);
   const put = (ref, data) => { const file = path.join(dir, ref); fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, typeof data === 'string' ? data : JSON.stringify(data)); return file; };
   const plan = ok(call('project-plan', ['--target-dir', target, '--project-name', '合成接收验证', '--business-domain', '测试', '--team-size', '1', '--issue-tracker', 'github']));

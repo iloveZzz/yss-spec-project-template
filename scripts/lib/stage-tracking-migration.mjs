@@ -1,4 +1,6 @@
 import {finalizeReading} from './reading-view-bundle.mjs';
+import {runAssetTransaction,assertAssetTransactionIdle,assertCurrentAssetReference} from './asset-transactions.mjs';
+import {parseAsset} from './structured-assets.mjs';
 import { existsSync, readFileSync, writeFileSync, mkdirSync, renameSync, unlinkSync, statSync, openSync, closeSync } from 'node:fs';
 import path from 'node:path';
 import { parseDocument, stringify } from '../vendor/yaml.mjs';
@@ -27,17 +29,20 @@ function definition(item, checkpointRef) {
   return `---\n${stringify(fields)}---\n# ${item.title}\n\n负责人：${item.owner}\n\n${item.scope}\n\n## 验收\n\n${item.acceptance.map(x => `- ${x}`).join('\n')}\n\n当前进度、依赖与完成证据以 ${checkpointRef} 中的 ${item.id} 为准。\n`;
 }
 export function checkTracking(root, checkpointRef) {
+  assertAssetTransactionIdle(root);assertCurrentAssetReference(root,checkpointRef);
   identity(root);
   const feature = featureFrom(checkpointRef);
   const config = trackerConfig(root);
   if (!existsSync(safeTrackingPath(root, checkpointRef))) return { status: 'missing-checkpoint', feature_id: feature, enabled: config.lifecycle_tracking_version === 1 };
-  const checkpoint = parseYaml(readTracking(root, checkpointRef));
+  const checkpoint = parseAsset(readTracking(root, checkpointRef),checkpointRef);
   try {
     const result = assertStageTracking(checkpoint, { root, checkpointRef });
     return { ...result, feature_id: checkpoint.feature_id || feature, enabled: config.lifecycle_tracking_version === 1, migration_required: !checkpoint.stage_tracking };
   } catch (error) { return { status: 'blocked', feature_id: feature, enabled: config.lifecycle_tracking_version === 1, error: error.message, migration_required: !checkpoint.stage_tracking }; }
 }
 export function planTracking(root, { checkpoint_ref, items = [], refresh = false } = {}) {
+  assertAssetTransactionIdle(root);assertCurrentAssetReference(root,checkpoint_ref);
+  if (!checkpoint_ref?.endsWith('.json')) throw new Error('ASSET_MIGRATION_REQUIRED: stage-tracking writes require an explicit JSON checkpoint');
   root = path.resolve(root); identity(root);
   const feature = featureFrom(checkpoint_ref);
   trackerConfig(root);
@@ -50,9 +55,10 @@ export function planTracking(root, { checkpoint_ref, items = [], refresh = false
   for (const ref of ['yss-project.yaml', 'CONTEXT.md', TRACKER_REF, '.template-spec/process/lifecycle-registry.yaml', '.template-spec/process/schemas/stage-tracking.schema.json', '.template-spec/process/harness-profile.yaml', checkpoint_ref]) watch(ref);
   const exists = observed[checkpoint_ref] !== null;
   let checkpoint;
-  if (exists) checkpoint = parseYaml(readTracking(root, checkpoint_ref));
+  if (exists) checkpoint = parseAsset(readTracking(root, checkpoint_ref), checkpoint_ref);
   else {
-    const template = '.template-spec/process/templates/lifecycle-checkpoint-template.yaml'; watch(template);
+    const preferred = '.template-spec/process/templates/lifecycle-checkpoint-template.json';
+    const template = existsSync(safeTrackingPath(root,preferred))?preferred:'.template-spec/process/templates/lifecycle-checkpoint-template.yaml'; watch(template);
     checkpoint = parseYaml(readTracking(root, template));
     checkpoint.feature_id = feature;
     checkpoint.mode = 'orchestrate'; checkpoint.status = 'running';
@@ -141,6 +147,7 @@ function applyTrackingSources(root, plan, { afterWrite } = {}) {
   const backups = plan.changes.map(c => ({ ref: c.ref, before: c.before, bytes: c.before ? readFileSync(safeTrackingPath(root, c.ref)).toString('base64') : null }));
   writeFileSync(path.join(transactionPath, 'backup.json'), json(backups), { flag: 'wx' });
   writeFileSync(path.join(transactionPath, 'plan.json'), json(plan), { flag: 'wx' });
+  return runAssetTransaction(root,plan.changes,()=>{
   const written = [], temporary = new Set();
   try {
     for (const [ref, before] of Object.entries(plan.observed)) if (JSON.stringify(descriptor(root, ref)) !== JSON.stringify(before)) throw new Error('tracking-concurrent-change');
@@ -175,6 +182,7 @@ function applyTrackingSources(root, plan, { afterWrite } = {}) {
     writeFileSync(path.join(transactionPath, 'failure.json'), json({ error: error.message, recovery_conflicts: conflicts }));
     throw new Error(`${error.message}; tracking-rollback-${conflicts.length ? `conflict:${conflicts.join(',')}` : 'complete'}`);
   }
+  });
 }
 
 // Finalize after the source transaction has committed; presentation failure never rolls it back.

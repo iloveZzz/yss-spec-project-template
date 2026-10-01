@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "kind": "asset-migration-plan",
+  "checkpoint_ref": "docs/.scratch/data-integration-module/checkpoint.yaml",
+  "sources": {
+    "docs/.scratch/data-integration-module/checkpoint.yaml": "sha256:45abd16a0b49f68ec1dee20c1f005c2e9117bf8b02575dd84c4e60dc08b483ac",
+    "docs/.scratch/data-integration-module/domain/domain-strategy-v3.yaml": "sha256:a7560bfc6d8426781df77c2885891de2dba05fed49a3ba9785e818383dfd67ce",
+    "docs/.scratch/data-integration-module/gates/domain-strategy-approval.yaml": "sha256:fa5ed794f8421d8d0b53d0484ab910611c67974d7ad261c889b229b9298e9df2",
+    "docs/.scratch/data-integration-module/stage-decision/stage-decision-package-v3.yaml": "sha256:2a9fb2c59dc94da14c33f15fb4308ddcc76b3ef841fb83868cb4eeea66808208",
+    "docs/.scratch/data-integration-module/verification/work-unit.stage-decision/task-package-round2.json": "sha256:1d241ac8f53235f40acca181e3045a4c7e0ca55396ae6cb45985a4c7a4c9300d"
+  },
+  "blockers": [
+    {
+      "code": "comment-review-required",
+      "comments": [
+        {
+          "location": "<root>.problem_statement",
+          "text": " 修订血缘：\n   v1 → 初稿；test_seams.statement 误用中文描述句而非可执行 seam 标识符，且新增了合同未声明的 note 字段。\n   v2 → 把 13 条 seam statement 改为 kebab-case 标识符（语义修复正确），但仍保留 note 字段（违反 recordV3 additionalProperties:false）。\n   v3 → 处置 stage-decision 第 1 轮独立评审 SD-01~SD-13：\n        SD-01 补齐 Plan §4 六项非目标中遗漏的 4 项（国产库 D14、断点续传、失败告警外发与监控大盘、SSO/LDAP 与多租户与对外云服务）；\n        SD-02 按 Plan 决定记录的真实编号 D1–D16 重排 confirmed_decisions，补回 D5/D11/D12/D13/D14，K7/K8 改用非 D 编号 slug；\n        SD-03 删除 record 上的 note 字段（恢复为合同允许的 id/statement/source_refs/evidence_refs/status）；\n        SD-04 修正与 Plan D10 矛盾的 non_goal 表述（首版自带 db-scheduler，不依赖既有调度平台）；\n        SD-05 移除无依据的 target_user「数据治理相关角色」；\n        SD-06 approval.persisted_ref / current_version 绑定到当前版本；\n        SD-07 删除被就地改写、原摘要不可复现的 v1 历史副本，并在台账如实留痕；\n        SD-08~SD-13 细化 target_version、补来源与缺失 source_refs 等。"
+        }
+      ],
+      "ref": "docs/.scratch/data-integration-module/stage-decision/stage-decision-package-v3.yaml"
+    },
+    {
+      "code": "missing-reference",
+      "ref": "docs/.scratch/data-integration-module/gates/stage-decision-package-approval.yaml"
+    },
+    {
+      "code": "approval-rebind-required",
+      "reason": "Candidate bytes do not inherit the source approval; issue independent current evidence.",
+      "ref": "docs/.scratch/data-integration-module/domain/domain-strategy-v3.json"
+    },
+    {
+      "code": "approval-rebind-required",
+      "reason": "Candidate bytes do not inherit the source approval; issue independent current evidence.",
+      "ref": "docs/.scratch/data-integration-module/gates/domain-strategy-approval.json"
+    }
+  ],
+  "history_policy": "preserve-original-bytes",
+  "plan_id": "fc5fa1d610ffbf6f703ae3d47fd1fc2898ae2e7a6694d702ea07d04d400a96e1",
+  "candidates": [
+    {
+      "source_ref": "docs/.scratch/data-integration-module/domain/domain-strategy-v3.yaml",
+      "ref": "docs/.scratch/data-integration-module/domain/domain-strategy-v3.json",
+      "kind": "domain-strategy",
+      "source_digest": "sha256:a7560bfc6d8426781df77c2885891de2dba05fed49a3ba9785e818383dfd67ce"
+    },
+    {
+      "source_ref": "docs/.scratch/data-integration-module/gates/domain-strategy-approval.yaml",
+      "ref": "docs/.scratch/data-integration-module/gates/domain-strategy-approval.json",
+      "kind": "approval-record",
+      "source_digest": "sha256:fa5ed794f8421d8d0b53d0484ab910611c67974d7ad261c889b229b9298e9df2"
+    },
+    {
+      "source_ref": "docs/.scratch/data-integration-module/stage-decision/stage-decision-package-v3.yaml",
+      "ref": "docs/.scratch/data-integration-module/stage-decision/stage-decision-package-v3.json",
+      "kind": "stage-decision-package",
+      "source_digest": "sha256:2a9fb2c59dc94da14c33f15fb4308ddcc76b3ef841fb83868cb4eeea66808208"
+    },
+    {
+      "source_ref": "docs/.scratch/data-integration-module/checkpoint.yaml",
+      "ref": "docs/.scratch/data-integration-module/checkpoint.json",
+      "kind": "checkpoint",
+      "source_digest": "sha256:45abd16a0b49f68ec1dee20c1f005c2e9117bf8b02575dd84c4e60dc08b483ac"
+    }
+  ],
+  "apply_status": "blocked-not-applied"
+}

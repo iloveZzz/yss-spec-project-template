@@ -1,0 +1,22 @@
+{
+  "scripts/contract": "sha256:287755e5c0156a6ff8d15d2b00bdb784848b17fae6c5c5a6cb6964650fe1ad9b",
+  "scripts/check-plan-stage-coverage": "sha256:c38fcbb0fcd9fa61414543bfba67329d3e60a1716f73f52edf52466ea392b0e8",
+  "scripts/lib/structured-assets.mjs": "sha256:203a43bcf2e812850cb1e35c0635b43240c2473876ec1b2a2ce003ef20e0b2e9",
+  "scripts/lib/asset-transactions.mjs": "sha256:c296441e646b171317b8d230286c4f47e8ff9ca5367d8ffd0b8667c7830d403f",
+  "scripts/lib/asset-migration.mjs": "sha256:28cf89a2ce7c49190d6ab236bedc15377fd26fab1943e984c4664b2dd6dd3559",
+  "scripts/lib/asset-command.mjs": "sha256:97a578e64090f79e298d382281f1e16247195696033ad104e512adc5559be771",
+  "scripts/lib/plan-stage-coverage.mjs": "sha256:1d3766b6ad94eb1e4e204c9e6c1865281d71fd322c9c340b904a9f5e2500b218",
+  "scripts/lib/json-schema.mjs": "sha256:c2992f55adb5b4469b8dd74ed08583a89907d731ec19be815e4c5625e7146bf4",
+  "scripts/lib/approval-record.mjs": "sha256:7708f6035ce00507e015803f3166f382132386524662bc86c3a17ebeefc87a63",
+  "scripts/lib/task-package.mjs": "sha256:d2526e42cfed260d49cbb2ace25a322f76735d89be90eb86e9a334d2a1d0478b",
+  "scripts/lib/checkpoint-boundary.mjs": "sha256:01dfc99ad3a036124e1b44c0183ce6b36d6f997e4512ee4a0678da80b1becf13",
+  "scripts/lib/stage-tracking-migration.mjs": "sha256:af7371352821cc640d64b723d7fdb0c2b6d1c61b9f0e6a6e27caaefc820f2f82",
+  "scripts/verify-lifecycle-checkpoint": "sha256:3a245793e1310afdb433a8a44ce03c128cc2918fddbe43ec0f684e4d3d088111",
+  ".agents/skills/yss-stage-decision/scripts/validate-domain-strategy.mjs": "sha256:4c32f695f09009adffe9a80c95e45423d90cdc543286cc06db82d9230de37833",
+  ".agents/skills/yss-stage-decision/scripts/validate-stage-decision-package.mjs": "sha256:58001ed13564898652b7f5f4b6efaaf3697c208e0e31a76e4ec08d7dc79cd768",
+  ".agents/skills/yss-product-lifecycle/SKILL.md": "sha256:0838561161db17b4da18bf0778d0cd869425a44c664e0c5f4e9b64a82e681ca2",
+  ".agents/skills/yss-stage-decision/SKILL.md": "sha256:accf5c58b2483aaaab423b4b4e9e17452b97b940aeb7e8c55c50b861fecb96fb",
+  ".template-spec/process/structured-assets.md": "sha256:58f6c175b34e4b1b68b82029a490d3824d369d940db6575a93b437ee4abde28d",
+  ".template-spec/process/schemas/approval-record.schema.json": "sha256:c1f632e56cd0b4ede5d40227f7525939b787cdf74305eff3077c83db35e4096e",
+  "submodules/create-yss-spec/src/template/asset-runtime.js": "sha256:37d3d00967bd697dce79c5fcb2d8ba15d510907e21688c5c4693a609715549e6"
+}

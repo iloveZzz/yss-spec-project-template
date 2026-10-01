@@ -50,6 +50,7 @@ function build(root,checkpoint){
   for(const asset of assets){
    bindReferences(parseSliceYaml(bytes(root,asset.ref)));
    const view=viewContract(asset.ref,{root,kind:asset.kind});
+   bindReferences(view.presentation);
    diagnostics.push(...view.blockers.map(reason=>({ref:asset.ref,reason})));
    const name=asset.kind==='checkpoint'?'status':asset.kind;
    outputs[`${loc.directory}/${name}.review.md`]=view.markdown;

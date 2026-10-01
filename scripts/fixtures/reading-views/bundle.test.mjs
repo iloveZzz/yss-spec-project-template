@@ -41,6 +41,18 @@ test('input drift during write aborts mixed bundle and preserves concurrent edit
   assert.equal(existsSync(path.join(f.root,manifest)),false);assert.equal(readFileSync(path.join(f.root,cp),'utf8'),'schema_version: 9\n');
  }finally{f.cleanup();}
 });
+
+test('adding or changing project display names invalidates the reading bundle',async()=>{
+ const {renderReadingBundle,checkReadingViews}=await import('../../lib/reading-view-bundle.mjs');const f=setup();try{
+  renderReadingBundle(f.root,cp);
+  const ref='.template-spec/process/lifecycle-registry.yaml';f.put(ref,readFileSync(path.join(repo,ref),'utf8'));
+  assert.notEqual(checkReadingViews(f.root,cp,{required:true}).status,'current');
+  renderReadingBundle(f.root,cp);
+  assert.equal(checkReadingViews(f.root,cp,{required:true}).status,'current');
+  f.put(ref,readFileSync(path.join(f.root,ref),'utf8').replace('name: 入口分诊','name: 名称已变'));
+  assert.notEqual(checkReadingViews(f.root,cp,{required:true}).status,'current');
+ }finally{f.cleanup();}
+});
 test('preparation rejects a stale managed bundle through the public API',async()=>{
  const {prepareContractReview}=await import('../../lib/contract-views.mjs');const f=setup();try{
   assert.equal(f.cli('plan-enable','--checkpoint',cp,'--output','enable.json').status,0);assert.equal(f.cli('apply-enable','enable.json').status,0);
@@ -50,10 +62,11 @@ test('preparation rejects a stale managed bundle through the public API',async()
 });
 
 test('successful tracking source transaction survives a presentation conflict and is not reapplied',async()=>{
+ const cp='docs/.scratch/demo/working-checkpoint.json';
  const {planTracking,applyTracking}=await import('../../lib/stage-tracking-migration.mjs');const {parseYaml}=await import('../../lib/stage-tracking.mjs');const f=setup();try{
   for(const ref of ['.template-spec/process/schemas/stage-tracking.schema.json','.template-spec/process/lifecycle-registry.yaml'])f.put(ref,readFileSync(path.join(repo,ref),'utf8'));
   f.put('.template-spec/agents/issue-tracker.md','---\ntracker:\n  platform: local-markdown\n---\n# Tracker\n');
-  const c=JSON.parse(readFileSync(path.join(repo,'scripts/fixtures/reading-views/checkpoint.json'),'utf8'));c.stage='stage.plan';c.next_work_unit='work-unit.plan-requirements';f.put(cp,c);
+  const c=JSON.parse(readFileSync(path.join(repo,'scripts/fixtures/reading-views/checkpoint.json'),'utf8'));c.stage='stage.plan';c.next_work_unit='work-unit.plan-requirements';f.put(cp,JSON.stringify(c));
   assert.equal(f.cli('plan-enable','--checkpoint',cp,'--output','enable.json').status,0);assert.equal(f.cli('apply-enable','enable.json').status,0);
   f.put('docs/.scratch/demo/reading/status.review.md','人工补充，不得覆盖');
   const plan=planTracking(f.root,{checkpoint_ref:cp,items:[{id:'review-rules',title:'规则',owner:'负责人',scope:'规则范围',stage:'stage.plan',work_unit:'work-unit.plan-requirements',acceptance:['确认失败场景']}]});

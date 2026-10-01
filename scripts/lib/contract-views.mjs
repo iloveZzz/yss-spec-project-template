@@ -4,6 +4,7 @@ import {safe,hash,schema} from './strategic-handoff-io.mjs';
 import {parseSliceYaml,readSliceContract} from './slice-contract.mjs';
 import {renderSliceContractView,diffSliceContracts} from './slice-contract-views.mjs';
 import {renderReadingMarkdown} from './reading-view-markdown.mjs';
+import {loadLifecyclePresenter} from './lifecycle-presentation.mjs';
 import {readingDiff,renderReadingDiff} from './reading-view-diff.mjs';
 import {adaptReading} from './reading-view-adapters.mjs';
 import {readingViewModel} from './reading-view-model.mjs';
@@ -120,7 +121,12 @@ function view(ref,{root=process.cwd(),kind,profile='review',unit_id,task_layout=
    content.约束分类='保留未分类字段；本视图只允许阅读，执行影响由资产所有者核验。';
   }
  }
- const view={read_only:true,execution_allowed:false,kind,profile,binding,checks,approval_validity:'not-checked',content,blockers};if(include_reading_model&&['domain-strategy','stage-decision-package','checkpoint','tracking-migration'].includes(kind))view.reading_model=readingViewModel(view,sourceRaw);view.markdown=markdown(view);return view;
+ const view={read_only:true,execution_allowed:false,kind,profile,binding,checks,approval_validity:'not-checked',content,blockers};
+ if(['domain-strategy','stage-decision-package','checkpoint'].includes(kind)) {
+  const presenter=loadLifecyclePresenter(root);
+  view.presentation={names:presenter.catalog(content),sources:presenter.sources,warnings:presenter.warnings};
+ }
+ if(include_reading_model&&['domain-strategy','stage-decision-package','checkpoint','tracking-migration'].includes(kind))view.reading_model=readingViewModel(view,sourceRaw);view.markdown=markdown(view);return view;
 }
 export function diffContract(beforeRef,afterRef,{root=process.cwd(),beforeRoot=root,kind}={}){
  validateKind(kind);if(kind==='slice')return diffSliceContracts(beforeRef,afterRef,{root,beforeRoot});

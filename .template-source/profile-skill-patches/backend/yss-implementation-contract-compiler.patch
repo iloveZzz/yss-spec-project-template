@@ -191,7 +191,7 @@
  | `domain-impact` | `layer.domain`, `layer.application` |
  | `tactical-domain-impact` | `architecture.tactical-domain` |
  | `persistence-impact` | `layer.persistence` |
-@@ -105,32 +112,21 @@
+@@ -105,33 +112,22 @@
  
  | Skill | Dependency | Type | Condition |
  | --- | --- | --- | --- |
@@ -208,6 +208,7 @@
  | `yss-implementation-contract-compiler` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
  | `yss-openapi-governance` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
 -| `yss-stage-decision` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
+ | `yss-harness-upgrade` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
  | `yss-research` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
 -| `yss-product-lifecycle` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
 -| `code-review` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
@@ -229,7 +230,7 @@
  | `yss-tactical-design` | `domain-modeling` | `coordination-only` | — |
  | `yss-tactical-design` | `yss-openapi-draft-review` | `review-only` | `api-impact` |
  | `yss-tactical-design` | `yss-repository` | `component-dependency` | `data-impact` |
-@@ -154,12 +150,8 @@
+@@ -155,12 +151,8 @@
  | `yss-validation` | `yss-exception` | `component-dependency` | — |
  | `yss-security-algorithm` | `yss-exception` | `component-dependency` | — |
  | `yss-exception` | `yss-dto` | `context-required` | — |

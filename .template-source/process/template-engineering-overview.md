@@ -83,6 +83,16 @@ YSS 模板工程是一套可版本化的研发治理系统。它用仓库身份�
 | 校验生命周期注册表 | `scripts/verify-lifecycle-registry` |
 | 校验维护 checkpoint | `scripts/verify-maintenance-checkpoint <file>` |
 
+### 工具链测试执行模式
+
+`scripts/verify-template-fast --tooling-mode optimized --report-dir <仓库外新目录>` 可试运行单次准备复用与受控并行。当前默认仍为 `legacy`；完整 fast 的三档成对性能验收和正确性反例全部通过后，才切换默认值。显式 `--tooling-mode legacy` 使用原准备路径；release 强制 legacy，并将外层验证和内部测试都限制为串行，避免 Git 状态敏感检查相互干扰。其他 profile 的 `--concurrency 1` 也同时限制内部测试为串行。
+
+两种模式均执行完整测试集合，每次重新准备固定 CLI。优化模式仅在本次运行内复制后端插件构建产物，消费测试各自持有独立副本；构建器本身仍真实构建。Handoff 接收、入口迁移、项目接入、产品设计插件四个测试文件最多使用两个 worker；其他文件及新增文件默认串行。失败、取消、产物或输入漂移不能作为成功复用。
+
+报告目录中的 `tooling/metrics.json` 保存 CLI 准备、插件构建与复制、测试身份及执行次数、退出码、日志路径和清理耗时。`pnpm --dir .template-source/tooling/node test` 保持全量入口，默认 legacy；直接诊断可设置 `YSS_TOOLING_MODE=optimized`、`YSS_TOOLING_CONCURRENCY=1|2` 和指向仓库外新目录的 `YSS_TOOLING_REPORT_DIR`。单个受监督进程默认 600000 毫秒超时，可用 `YSS_TOOLING_TIMEOUT_MS` 设置 1–600000 毫秒；超时与取消分别保留 124、130。
+
+`.template-source/scripts/benchmark-tooling.py --root <仓库外独立副本> --output <仓库外新目录> --pairs 3|21` 重放完整 fast 的首次、重复、输入变化场景。它会在独立副本中的后端插件 README 追加输入变化标记并在结束时恢复，使插件实际构建产物也随输入变化，不能指向当前开发仓库。不存在跨运行产物缓存；首次/重复场景的 OS 页缓存未受控。样本须包含完整进程墙钟时间、逐项相同的测试身份及实际执行次数，最终每档 21 对分别判断中位数至少减少 20% 且 p95 不回退。
+
 ## 9. 权威阅读地图
 
 | 问题 | 权威资产 |

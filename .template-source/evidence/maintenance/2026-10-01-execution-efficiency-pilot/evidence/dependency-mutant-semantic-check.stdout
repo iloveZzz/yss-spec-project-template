@@ -1,0 +1,43 @@
+✖ strict YAML and schema batching preserve duplicates, precision, array order, options and error order (61.8355ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 119.194875
+
+✖ failing tests:
+
+test at scripts/fixtures/contract-efficiency/security.test.mjs:47:1
+✖ strict YAML and schema batching preserve duplicates, precision, array order, options and error order (61.8355ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    [
+  -   false,
+      true,
+  +   true,
+  +   true,
+  +   true
+  -   false,
+  -   false
+    ]
+  
+      at file:///private/tmp/yss-execution-pilot-20261001/source/scripts/fixtures/contract-efficiency/security.test.mjs:54:49
+      at file:///private/tmp/yss-execution-pilot-20261001/source/scripts/lib/validation-phase.mjs:70:47
+      at AsyncLocalStorage.run (node:internal/async_local_storage/async_context_frame:65:14)
+      at withValidationPhase (file:///private/tmp/yss-execution-pilot-20261001/source/scripts/lib/validation-phase.mjs:70:16)
+      at TestContext.<anonymous> (file:///private/tmp/yss-execution-pilot-20261001/source/scripts/fixtures/contract-efficiency/security.test.mjs:52:6)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.start (node:internal/test_runner/test:1262:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ true, true, true, true ],
+    expected: [ false, true, false, false ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }

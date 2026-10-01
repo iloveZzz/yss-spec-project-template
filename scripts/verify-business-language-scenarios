@@ -3,6 +3,8 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { loadRegistry, renderLifecycleStructure, renderWorkUnits, semanticDigest, validateRegistry } from "./lib/lifecycle-registry.mjs";
+import {loadLifecyclePresenter, createLifecyclePresenter} from './lib/lifecycle-presentation.mjs';
+import {renderReadingValue} from './lib/reading-view-markdown.mjs';
 
 const ROOT = path.resolve(import.meta.dirname, "..");
 const PUBLIC_FILES = [
@@ -53,4 +55,26 @@ const invalidPresentation = structuredClone(registryContract);
 invalidPresentation.artifacts[0].public_name = "";
 assert.throws(() => validateRegistry(invalidPresentation, { baseline: null }), /public_name 必须是非空字符串/);
 
-process.stdout.write("本体业务角色通俗语言场景验证通过\n");
+const presenter = loadLifecyclePresenter(ROOT);
+assert.deepEqual(presenter.warnings, []);
+let count = 0;
+for (const collection of ['stages','gates','checks','artifacts','work_units','evidence']) {
+  for (const record of registryContract[collection]) {
+    assert.equal(presenter.describe(record.id).name, record.public_name ?? record.name);
+    assert.equal(presenter.describe(record.id).known, true);
+    count++;
+  }
+}
+for (const id of presenter.roleIds) { assert.equal(presenter.describe(id).known, true); count++; }
+assert.equal(presenter.label('role.requirements-manager', {trace:false}), '需求经理');
+assert.equal(presenter.label('check.stage-decision-package-approved', {trace:false}), '方案决策包评审');
+assert.doesNotMatch(presenter.label('check.stage-decision-package-approved', {trace:false}), /已批准|已通过/);
+assert.equal(presenter.label('work-unit.future', {trace:false}), '名称未识别（work-unit.future）');
+assert.equal(presenter.text('docs/artifact.spec.yaml'), 'docs/artifact.spec.yaml', '文件路径不可被名称替换');
+assert.equal(presenter.text('artifact.spec-extra'), '名称未识别（artifact.spec-extra）', '不能用已知 ID 的前缀误译未知 ID');
+assert.equal(createLifecyclePresenter({artifacts:[{id:'artifact.a',name:'旧名',public_name:'新名'}]}).describe('artifact.a').name,'新名');
+assert.equal(renderReadingValue('toString'), 'toString', '普通业务文本不可命中对象原型属性');
+assert.equal(renderReadingValue('constructor'), 'constructor');
+assert.equal(renderReadingValue({toString:'原始业务规则'}), '- **toString**：原始业务规则');
+assert.deepEqual(createLifecyclePresenter({}, {roles:[null, {id:17}]}).roleIds, []);
+process.stdout.write(`本体业务角色通俗语言场景验证通过；覆盖 ${count} 个名称\n`);

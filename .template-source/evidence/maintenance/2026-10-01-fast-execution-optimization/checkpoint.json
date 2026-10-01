@@ -1,0 +1,60 @@
+{
+  "schema_version": 2,
+  "intensity": "L3",
+  "classification_reason": "核心检查依赖与测试执行行为变更，修复实际 Schema 漏检。冻结的本轮运行时实现已验证；人工停止三档性能验收，保持 legacy 默认。implementation-ready 仅指本轮实现，不表示性能目标通过、共享主工作区全量集成或可发布。",
+  "triggers": [
+    "core-validator",
+    "historical-important-escape",
+    "aggregate-behavior-change"
+  ],
+  "changed_assets": [
+    ".template-source/evidence/maintenance/2026-10-01-fast-execution-optimization/progress.json",
+    ".template-source/evidence/maintenance/2026-10-01-fast-execution-optimization/scope.md",
+    ".template-source/evidence/maintenance/2026-10-01-fast-execution-optimization/self-check.md",
+    ".template-source/process/template-engineering-overview.md",
+    ".template-source/process/template-verification-profiles.yaml",
+    ".template-source/scripts/benchmark-tooling.py",
+    ".template-source/tooling/node/scripts/test-with-plugin-clis.mjs",
+    ".template-source/tooling/node/scripts/tooling-fixture.mjs",
+    ".template-source/tooling/node/scripts/tooling-process.mjs",
+    ".template-source/tooling/node/scripts/tooling-reporter.mjs",
+    ".template-source/tooling/node/test/plugin-build.test.mjs",
+    ".template-source/tooling/node/test/plugin-design-consumption.test.mjs",
+    ".template-source/tooling/node/test/plugin-entry-migration.test.mjs",
+    ".template-source/tooling/node/test/plugin-project.test.mjs",
+    ".template-source/tooling/node/test/product-design-plugin.test.mjs",
+    ".template-source/tooling/node/test/tooling-execution.test.mjs",
+    "scripts/fixtures/contract-efficiency/schema-rejection.test.mjs",
+    "scripts/run-template-verification",
+    "tests/flow-verification-routing.test.mjs",
+    "tests/verification-selection.test.mjs"
+  ],
+  "verification_evidence": [
+    {
+      "kind": "fresh-verification",
+      "command": "scripts/verify-template --concurrency 1",
+      "result": "pass",
+      "evidence_ref": ".template-source/evidence/maintenance/2026-10-01-fast-execution-optimization/verification/report.json",
+      "scope": "冻结的本轮完整实际改动；213 条记录，211 唯一命令，2 复用；input_drift=false。fast/candidate 计划均升级 release；与限定性能重放范围分开。"
+    },
+    {
+      "kind": "self-check",
+      "command": "self-check.md and results.md; compare measured source inputs and workspace preservation",
+      "result": "pass"
+    },
+    {
+      "kind": "relevant-check",
+      "command": "node --test (final-directed.log); optimized full fast --concurrency 1; actual benchmark cancellation probe",
+      "result": "pass",
+      "evidence_ref": "raw-evidence.tar.gz",
+      "scope": "30 项定向检查通过；21 文件串行且测试身份一致；完整验证后的基准控制器小改动经实际 SIGTERM RED/GREEN 验证。性能验收未完成不列为通过证据。"
+    }
+  ],
+  "review_mode": "self-check",
+  "escalation": "none; performance acceptance incomplete by explicit human stop, legacy retained",
+  "target_state": "implementation-ready",
+  "current_state": "implementation-ready",
+  "verification_profile": "fast",
+  "review_round": 0,
+  "candidate_digest": null
+}

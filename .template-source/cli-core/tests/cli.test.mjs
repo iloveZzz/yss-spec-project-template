@@ -115,6 +115,27 @@ function fixture(t, side = "backend") {
   };
   return { root, pkg, target, family, run, bundle, files };
 }
+test("迁移计划不写项目，应用后可整体回退且保留业务改动", t => {
+  const f = fixture(t);
+  assert.equal(f.run('init').status, 0);
+  const rule = path.join(f.target, '.template-spec/process/rule.md');
+  const metadata = fs.readFileSync(path.join(f.target, f.family.metadataFile));
+  put(f.target, 'src/business.txt', 'uncommitted business');
+  f.bundle({'.template-spec/process/rule.md':'rule v2\n'});
+  const plan = path.join(f.root, 'upgrade.json');
+  const preview = f.run('migrate', 'plan', '--output', plan, '--archive-dir', path.join(f.root,'archive'));
+  assert.equal(preview.status, 0, preview.stderr);
+  assert.equal(fs.readFileSync(rule,'utf8'), 'rule v1\n');
+  assert.deepEqual(fs.readFileSync(path.join(f.target,f.family.metadataFile)),metadata);
+  const applied = f.run('migrate','apply','--plan',plan);
+  assert.equal(applied.status,0,applied.stderr);
+  assert.equal(fs.readFileSync(rule,'utf8'),'rule v2\n');
+  const rollback = f.run('migrate','rollback','--apply');
+  assert.equal(rollback.status,0,rollback.stderr);
+  assert.equal(fs.readFileSync(rule,'utf8'),'rule v1\n');
+  assert.deepEqual(fs.readFileSync(path.join(f.target,f.family.metadataFile)),metadata);
+  assert.equal(fs.readFileSync(path.join(f.target,'src/business.txt'),'utf8'),'uncommitted business');
+});
 test("两家族从离线固定包创建空目录实例，记录新版基线并保留可执行 mode", (t) => {
   for (const side of ["backend", "frontend"]) {
     const f = fixture(t, side);
@@ -972,4 +993,73 @@ test('tracker remains project-owned on sync and force; new init enables stage tr
   x.bundle({ '.template-spec/agents/issue-tracker.md': old.replace('  platform:', '  lifecycle_tracking_version: 1\n  platform:') });
   assert.equal(x.run('sync', '--apply', '--force').status, 0);
   assert.equal(fs.readFileSync(path.join(x.target, '.template-spec/agents/issue-tracker.md'), 'utf8'), old);
+});
+
+test('三家族迁移拒绝漂移和重签篡改；冲突仅接受逐项决议', t => {
+  for(const side of ['design','backend','frontend']) {
+    const f=fixture(t,side);assert.equal(f.run('init').status,0);
+    const rule='.template-spec/process/rule.md',file=path.join(f.target,rule);
+    f.bundle({[rule]:'rule v2\n'});fs.writeFileSync(file,'local customization\n');
+    const plan=path.join(f.root,'plan.json'),archive=path.join(f.root,'archive');
+    const blocked=f.run('migrate','plan','--output',plan,'--archive-dir',archive);
+    assert.equal(blocked.status,1);assert.equal(blocked.data.code,'CONFLICT');assert.equal(fs.existsSync(plan),false);
+    const resolutions=path.join(f.root,'resolutions.json');
+    put(f.root,'resolutions.json',json({[rule]:{action:'merge',beforeDigest:hash('local customization\n'),templateDigest:hash('rule v2\n'),contentBase64:Buffer.from('merged customization v2\n').toString('base64')}}));
+    const p=f.run('migrate','plan','--output',plan,'--archive-dir',archive,'--resolutions',resolutions);assert.equal(p.status,0,p.stderr);
+    const original=fs.readFileSync(plan);
+    const edited=JSON.parse(original);edited.operations.find(o=>o.path===rule).contentBase64=Buffer.from('tampered\n').toString('base64');edited.operations.find(o=>o.path===rule).after.digest=hash('tampered\n');delete edited.planDigest;edited.planDigest=hash(JSON.stringify(edited));fs.writeFileSync(plan,json(edited));
+    assert.equal(f.run('migrate','apply','--plan',plan).status,1);assert.equal(fs.readFileSync(file,'utf8'),'local customization\n');
+    fs.writeFileSync(plan,original);put(f.target,'business-note.txt','new work');
+    const stale=f.run('migrate','apply','--plan',plan);assert.equal(stale.status,1);assert.equal(stale.data.code,'STALE_PLAN');fs.unlinkSync(path.join(f.target,'business-note.txt'));
+    const applied=f.run('migrate','apply','--plan',plan);assert.equal(applied.status,0,applied.stderr);assert.equal(fs.readFileSync(file,'utf8'),'merged customization v2\n');
+    assert.equal(f.run('migrate','apply','--plan',plan).data.reused,true);
+    fs.writeFileSync(file,'later work');const refused=f.run('migrate','rollback','--apply');assert.equal(refused.status,1);assert.equal(fs.readFileSync(file,'utf8'),'later work');
+    fs.writeFileSync(file,'merged customization v2\n');
+    const count=fs.readdirSync(path.join(f.target,'.yss-harness-state',side,'transactions')).length;
+    assert.equal(f.run('migrate','rollback').status,0);assert.equal(fs.readdirSync(path.join(f.target,'.yss-harness-state',side,'transactions')).length,count);
+    assert.equal(f.run('migrate','rollback','--apply').status,0);assert.equal(fs.readFileSync(file,'utf8'),'local customization\n');
+  }
+});
+
+test('迁移进程中断后可恢复，回退前完整检查归档', t => {
+  const f=fixture(t);assert.equal(f.run('init').status,0);
+  const rule='.template-spec/process/rule.md',file=path.join(f.target,rule),before=fs.readFileSync(path.join(f.target,f.family.metadataFile));
+  f.bundle({[rule]:'rule v2\n'});
+  const plan=path.join(f.root,'plan.json'),archive=path.join(f.root,'archive');
+  assert.equal(f.run('migrate','plan','--output',plan,'--archive-dir',archive).status,0);
+  const hook=path.join(f.root,'crash.mjs');
+  fs.writeFileSync(hook,`import fs from 'node:fs';import {syncBuiltinESMExports} from 'node:module';const rename=fs.renameSync;fs.renameSync=(a,b)=>{rename(a,b);if(b===${JSON.stringify(file)})process.exit(73)};syncBuiltinESMExports();`);
+  const crashed=spawnSync(process.execPath,['--import',hook,path.join(f.pkg,'bin.mjs'),'migrate','apply','--plan',plan,'--target-dir',f.target,'--json'],{encoding:'utf8'});
+  assert.equal(crashed.status,73,crashed.stderr);
+  assert.equal(f.run('migrate','recover').status,0);
+  const recovered=f.run('migrate','recover','--apply');assert.equal(recovered.status,0,recovered.stderr);
+  assert.equal(fs.readFileSync(file,'utf8'),'rule v1\n');assert.deepEqual(fs.readFileSync(path.join(f.target,f.family.metadataFile)),before);
+  assert.equal(f.run('migrate','recover','--apply').status,0);
+  const next=path.join(f.root,'next.json'),nextArchive=path.join(f.root,'next-archive');
+  assert.equal(f.run('migrate','plan','--output',next,'--archive-dir',nextArchive).status,0);
+  assert.equal(f.run('migrate','apply','--plan',next).status,0);
+  const p=JSON.parse(fs.readFileSync(next)),i=p.operations.findIndex(o=>o.before);
+  fs.writeFileSync(path.join(nextArchive,'before',String(i)),'damaged backup');
+  const rejected=f.run('migrate','rollback','--apply');assert.equal(rejected.status,1);assert.equal(fs.readFileSync(file,'utf8'),'rule v2\n');
+});
+
+test('迁移只读入口、受保护路径及回退中断恢复', t => {
+ const f=fixture(t);assert.equal(f.run('init').status,0);
+ let before=tree(f.target);
+ for(const command of ['status','recover'])assert.equal(f.run('migrate',command).status,0);
+ assert.deepEqual(tree(f.target),before);
+ const rule='.template-spec/process/rule.md',file=path.join(f.target,rule);f.bundle({[rule]:'rule v2\n'});
+ fs.renameSync(file,file+'.saved');fs.symlinkSync(file+'.saved',file);before=tree(f.target);
+ assert.equal(f.run('migrate','plan','--output',path.join(f.root,'link.json')).status,1);assert.deepEqual(tree(f.target),before);
+ fs.unlinkSync(file);fs.renameSync(file+'.saved',file);
+ put(f.target,'.template-spec/.git/config','');before=tree(f.target);
+ assert.equal(f.run('migrate','plan','--output',path.join(f.root,'nested.json')).status,1);assert.deepEqual(tree(f.target),before);fs.rmSync(path.join(f.target,'.template-spec/.git'),{recursive:true});
+ const plan=path.join(f.root,'plan.json');assert.equal(f.run('migrate','plan','--output',plan,'--archive-dir',path.join(f.root,'archive')).status,0);assert.equal(f.run('migrate','apply','--plan',plan).status,0);
+ const after=fs.readFileSync(path.join(f.target,f.family.metadataFile));
+ const hook=path.join(f.root,'crash-rollback.mjs');fs.writeFileSync(hook,`import fs from 'node:fs';import {syncBuiltinESMExports} from 'node:module';const rename=fs.renameSync;fs.renameSync=(a,b)=>{rename(a,b);if(b===${JSON.stringify(file)})process.exit(73)};syncBuiltinESMExports();`);
+ const crash=spawnSync(process.execPath,['--import',hook,path.join(f.pkg,'bin.mjs'),'migrate','rollback','--apply','--target-dir',f.target,'--json'],{encoding:'utf8'});assert.equal(crash.status,73,crash.stderr);
+ before=tree(f.target);assert.equal(f.run('migrate','recover').status,0);assert.deepEqual(tree(f.target),before);
+ assert.equal(f.run('migrate','recover','--apply').status,0);assert.equal(fs.readFileSync(file,'utf8'),'rule v2\n');assert.deepEqual(fs.readFileSync(path.join(f.target,f.family.metadataFile)),after);
+ assert.equal(f.run('migrate','rollback','--apply').status,0);assert.equal(fs.readFileSync(file,'utf8'),'rule v1\n');
+ assert.equal(f.run('migrate','rollback','--apply').status,1);
 });

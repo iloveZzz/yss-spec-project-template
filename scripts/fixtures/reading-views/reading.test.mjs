@@ -25,9 +25,14 @@ test('领域阅读保留失败、例外、未知约束及零值，输出可读 M
 
 test('checkpoint keeps declared state separate from unchecked approval and empty blockers',()=>{
  const f=readingFixture();try{
+  for(const ref of ['.template-spec/process/lifecycle-registry.yaml','.template-spec/agents/digital-human-roles.yaml'])f.put(ref,readFileSync(path.join(repo,ref),'utf8'));
   f.put('docs/.scratch/demo/checkpoint.yaml',JSON.parse(readFileSync(path.join(repo,'scripts/fixtures/reading-views/checkpoint.json'),'utf8')));
   const r=f.cli('view','docs/.scratch/demo/checkpoint.yaml','--kind','checkpoint');assert.equal(r.status,0,r.stderr+r.stdout);
   assert.match(r.stdout,/未登记阻塞/);assert.match(r.stdout,/不等于可执行/);assert.match(r.stdout,/work-unit.plan-opportunity/);
+  assert.match(r.stdout,/机会调研（work-unit.plan-opportunity）/);
+  const v=JSON.parse(f.cli('view','docs/.scratch/demo/checkpoint.yaml','--kind','checkpoint','--json').stdout);
+  assert.equal(v.content.next_work_unit,'work-unit.plan-opportunity');
+  assert.equal(v.execution_allowed,false);
  }finally{f.cleanup();}
 });
 

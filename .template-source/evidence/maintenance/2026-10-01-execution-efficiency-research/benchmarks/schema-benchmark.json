@@ -1,0 +1,139 @@
+{
+  "method": "one warmup then 3 serial samples; wall time including Node launch/import/validation; 20 distinct task payloads from real v1 schema, 6 mutation classes; standalone generation excluded",
+  "schema": ".template-spec/process/schemas/digital-human-task-package.schema.json",
+  "samples_ms": {
+    "python-single": [
+      1372.5359999807552,
+      1377.7868329780176,
+      1353.5436249803752
+    ],
+    "python-batch": [
+      115.86270795669407,
+      117.47212498448789,
+      112.17466701054946
+    ],
+    "ajv-compile": [
+      85.42958297766745,
+      85.81125002820045,
+      83.70512496912852
+    ],
+    "ajv-standalone": [
+      36.61412495421246,
+      36.876833997666836,
+      36.55924997292459
+    ]
+  },
+  "p50_ms": {
+    "python-single": 1372.5359999807552,
+    "python-batch": 115.86270795669407,
+    "ajv-compile": 85.42958297766745,
+    "ajv-standalone": 36.61412495421246
+  },
+  "outputs": {
+    "ajv-compile": {
+      "mode": "ajv-compile",
+      "results": [
+        true,
+        false,
+        false,
+        true,
+        false,
+        false,
+        true,
+        false,
+        false,
+        true,
+        false,
+        false,
+        true,
+        false,
+        false,
+        true,
+        false,
+        false,
+        true,
+        false
+      ]
+    },
+    "python-single": {
+      "mode": "python-single",
+      "results": [
+        true,
+        false,
+        false,
+        true,
+        false,
+        false,
+        true,
+        false,
+        false,
+        true,
+        false,
+        false,
+        true,
+        false,
+        false,
+        true,
+        false,
+        false,
+        true,
+        false
+      ]
+    },
+    "python-batch": {
+      "mode": "python-batch",
+      "results": [
+        true,
+        false,
+        false,
+        true,
+        false,
+        false,
+        true,
+        false,
+        false,
+        true,
+        false,
+        false,
+        true,
+        false,
+        false,
+        true,
+        false,
+        false,
+        true,
+        false
+      ]
+    },
+    "ajv-standalone": {
+      "mode": "ajv-standalone",
+      "results": [
+        true,
+        false,
+        false,
+        true,
+        false,
+        false,
+        true,
+        false,
+        false,
+        true,
+        false,
+        false,
+        true,
+        false,
+        false,
+        true,
+        false,
+        false,
+        true,
+        false
+      ]
+    }
+  },
+  "decision_parity": true,
+  "versions": {
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1"
+  }
+}

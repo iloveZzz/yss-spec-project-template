@@ -46,13 +46,14 @@ try {
       plan: { type: "boolean", default: false },
       json: { type: "boolean", default: false },
       concurrency: { type: "string" },
+      "tooling-mode": { type: "string" },
       checkpoint: { type: "string", multiple: true },
       "task-package": { type: "string", multiple: true }
     },
     strict: true
   });
   if (values.help) {
-    process.stdout.write('用法: scripts/verify-template[-fast|-candidate] [--base <commit>] [--plan --json] [--report-dir <仓库外新目录>] [--concurrency 1..4]\n--plan 只输出计划，不执行验证；退出码 0 表示计划输出完成或适用检查通过，1 表示失败。\n');
+    process.stdout.write('用法: scripts/verify-template[-fast|-candidate] [--base <commit>] [--plan --json] [--report-dir <仓库外新目录>] [--concurrency 1..4] [--tooling-mode legacy|optimized]\n--concurrency 1 同时限制内部测试并行度；release 强制 legacy 且整体串行。\n--plan 只输出计划，不执行验证；退出码 0 表示计划输出完成或适用检查通过，1 表示失败。\n');
     return;
   }
   const explicit = values["changed-file"] || [];
@@ -61,6 +62,15 @@ try {
   scope.base=values.base||null;
   if(values.profile==='candidate'&&!values.base){plan=planTemplateVerification({profile:'release',changedFiles:scope.files,...(values.selection?{selection:values.selection}:{})});plan.requested_profile='candidate';plan.escalation_reason='未指定候选基线，使用全量验证防止遗漏已提交改动';}
   plan.scope=scope;
+  const requestedConcurrency = Number(values.concurrency || plan.max_concurrency);
+  if (!Number.isInteger(requestedConcurrency) || requestedConcurrency < 1 || requestedConcurrency > 4) throw new TypeError("concurrency 必须为 1..4");
+  const concurrency = plan.effective_profile === 'release' ? 1 : requestedConcurrency;
+  const requestedMode = values['tooling-mode'] || 'legacy';
+  if (!['legacy', 'optimized'].includes(requestedMode)) throw new TypeError('tooling-mode 必须为 legacy 或 optimized');
+  const effectiveMode = plan.effective_profile === 'release' ? 'legacy' : requestedMode;
+  plan.tooling = { requested_mode: requestedMode, effective_mode: effectiveMode, verification_concurrency: concurrency,
+    test_concurrency: effectiveMode === 'legacy' ? 1 : Math.min(2, concurrency),
+    reason: plan.effective_profile === 'release' ? 'release-full-serial' : values['tooling-mode'] ? 'explicit' : 'qualification-pending' };
   if(values['report-dir']) {
     reportDir=path.resolve(values['report-dir']);
     if(existsSync(reportDir))throw Error('report-dir 必须为新目录，防止覆盖历史证据');
@@ -80,8 +90,6 @@ try {
   beforeDigest=verificationInputDigest(ROOT);
   const modeResult = spawnSync("scripts/repository-mode", [], { cwd: ROOT, encoding: "utf8" });
   if (modeResult.status !== 0) throw new TypeError(modeResult.stderr.trim() || "仓库身份校验失败");
-  const concurrency = Number(values.concurrency || plan.max_concurrency);
-  if (!Number.isInteger(concurrency) || concurrency < 1 || concurrency > 4) throw new TypeError("concurrency 必须为 1..4");
 
   mode=modeResult.stdout.trim();started=performance.now();
   report=createVerificationReport(plan,{root:ROOT,inputDigest:beforeDigest,concurrency,scope});
@@ -90,7 +98,10 @@ try {
   process.stderr.write(`模板核验 profile: ${plan.requested_profile} -> ${plan.effective_profile}\n`);
   if (plan.escalation_reason) process.stderr.write(`自动升级原因: ${plan.escalation_reason}\n`);
   logRoot = reportDir ? path.join(reportDir,'logs') : mkdtempSync(path.join(os.tmpdir(), "yss-template-verification-"));
-  const groups = await runGroups(plan, mode, concurrency, { cwd: ROOT, logRoot, signal:controller.signal, onResult:row=>{report.results.push(row);if(reportDir)saveVerificationReport(reportDir,report);} });
+  const environment = { ...process.env, PYTHONDONTWRITEBYTECODE: '1', YSS_TOOLING_MODE: effectiveMode,
+    YSS_TOOLING_CONCURRENCY: String(plan.tooling.test_concurrency),
+    ...(reportDir ? { YSS_TOOLING_REPORT_DIR: path.join(reportDir, 'tooling') } : {}) };
+  const groups = await runGroups(plan, mode, concurrency, { cwd: ROOT, environment, logRoot, signal:controller.signal, onResult:row=>{report.results.push(row);if(reportDir)saveVerificationReport(reportDir,report);} });
   await printResults(groups);
   if(controller.signal.aborted)throw Error('验证被中断');
   const failed = groups.flatMap((group) => group.results).find((result) => result.code !== 0);

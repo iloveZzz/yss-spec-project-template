@@ -1,0 +1,6 @@
+这是升级技能的只读行为验收。读取 ../task.json、根 yss-project.yaml、CONTEXT.md；检查可用 .agents/skills，按必要引用阅读。禁止写文件、真实迁移或网络。逐个判断以下用户请求，给出应选技能（或无需）、最先需要的诊断/命令、授权边界和不应执行的动作，回复严格 JSON 数组，字段 id,skill,commands,boundary。不得把五个请求当作真实执行授权。
+1 用户说“把旧 create-yss-spec 项目升级到我指定的固定版本，保留本地定制”。
+2 用户说“旧工程同步后还残留 docs 治理目录，帮我挪到新布局；新旧同名文件内容不同”。
+3 用户只问“帮我把业务服务从 Spring Boot 2 升级到 3，数据库也要迁移”。
+4 用户说“create-yss-harness-frontend 上一次迁移中断了，继续处理”，不知道后续有没有修改。
+5 用户说“回退刚才成功的 create-yss-harness-backend 升级”，并说明升级后某个受管文件又被手改。
