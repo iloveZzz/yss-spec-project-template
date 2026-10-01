@@ -27,6 +27,19 @@ export function packageContract(root) {
   verifyCore(root);loadBundle(root);
   success(run('init',[...init,'--dry-run']));assert.equal(fs.existsSync(target),false);
   success(run('init',init));
+  const upgrade='yss-harness-upgrade',protocol='.template-spec/process/harness-upgrade.md';
+  const checkUpgrade=()=>{
+   const lock=JSON.parse(fs.readFileSync(path.join(target,'skills-lock.json')));
+   assert.ok(lock.skills.shared[upgrade]);
+   for(const base of ['.agents/skills',...lock.projectionRoots])for(const ref of ['SKILL.md','references/cli-families.md'])assert.ok(fs.existsSync(path.join(target,base,upgrade,ref)));
+   assert.ok(fs.existsSync(path.join(target,protocol)));
+  };
+  checkUpgrade();
+  // Reproduce an older instance whose managed baseline did not include this skill.
+  const oldMeta=JSON.parse(fs.readFileSync(path.join(target,family.metadataFile)));
+  for(const ref of Object.keys(oldMeta.managedFiles))if(ref.includes('/'+upgrade+'/')||ref===protocol){fs.rmSync(path.join(target,ref),{force:true});delete oldMeta.managedFiles[ref];}
+  oldMeta.baselineDigest=hash(JSON.stringify(oldMeta.managedFiles));fs.writeFileSync(path.join(target,family.metadataFile),JSON.stringify(oldMeta,null,2)+'\n');
+  const oldLock=JSON.parse(fs.readFileSync(path.join(target,'skills-lock.json')));delete oldLock.skills.shared[upgrade];fs.writeFileSync(path.join(target,'skills-lock.json'),JSON.stringify(oldLock,null,2)+'\n');
   const readme=path.join(target,'README.md'),context=path.join(target,'CONTEXT.md'),metadata=path.join(target,family.metadataFile);
   fs.writeFileSync(readme,'# 用户文档\n');
   const contextBefore=fs.readFileSync(context);
@@ -36,6 +49,7 @@ export function packageContract(root) {
   success(run('sync',['--plan','--prune']));
   assert.deepEqual(fs.readFileSync(metadata),before);assert.equal(journalCount(),count);
   success(run('sync',['--apply','--prune']));
+  checkUpgrade();
   assert.equal(fs.readFileSync(readme,'utf8'),'# 用户文档\n');assert.deepEqual(fs.readFileSync(context),contextBefore);
   before=fs.readFileSync(metadata);success(run('sync',['--apply']));assert.deepEqual(fs.readFileSync(metadata),before);
   if(family.side==='design') {
