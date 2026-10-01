@@ -7,13 +7,11 @@ description: 编排 YSS 研发全生命周期；当阶段、产物、门禁或 S
 
 合同阅读与托管更新：`scripts/contract view|render|check-views`；见 `.template-spec/process/contract-reading.md`。
 
-主控识别请求、身份和阶段，计算 frontier、派发并验收工作单元。
-
 文档按 `document_writing` 条件调用 `i-have-adhd`，并传递 `.template-spec/process/document-writing.md` 规范。
 
 ## 事实源与按需加载
 
-先读 `yss-project.yaml`、`AGENTS.md`、`CONTEXT.md` 和当前任务视图；按需加载命中的合同子树：
+先读 `yss-project.yaml`、`AGENTS.md`、`CONTEXT.md` 和当前任务视图，按需加载合同子树：
 
 | 事实 | 权威来源 |
 |---|---|
@@ -23,26 +21,26 @@ description: 编排 YSS 研发全生命周期；当阶段、产物、门禁或 S
 | 数字人角色、运行时和会签策略 | `.template-spec/agents/digital-human-roles.yaml` |
 | 影响面、裁剪和模板维护强度 | `.template-spec/process/harness-process-tailoring.md`、`.template-source/process/maintenance-intensity.yaml` |
 
-用 `scripts/query-lifecycle-context` 查询合同：
+查询合同：
 
 ```bash
 scripts/query-lifecycle-context --mode route --stage stage.plan --work-unit work-unit.plan-requirements --include execution_efficiency
 ```
 
-`--include` 接受合同顶层键，非法键或 ID 失败。细节按需读 `references/orchestration.md` 及其索引，证据充分即停止加载。
+`--include` 接受合同顶层键，非法键或 ID 失败。按需读 `references/orchestration.md` 及索引，证据充分即停止加载。
 
 按 `execution_efficiency` 合并查询、复用未变资料；仍核验当前资产、词汇和门禁，产品流转不重跑模板套件。
 
 ## 入口与模式
 
 1. 严格解析 `yss-project.yaml`，不得按目录、Git remote 或占位符猜仓库身份。
-2. 判定影响面和最近可信阶段；阶段完成必须同时满足内容、审查结论、上游新鲜度和可读证据，文件存在不代表通过。
+2. 判定影响面和最近可信阶段；完成须满足内容、审查、上游新鲜度和可读证据，文件存在不代表通过。
 3. 按合同 `request_triage` 选择 `route`、`orchestrate`、`resume`、`audit`；明确行动请求无需模式关键字，意图不明时只读 `route`。`modes`、门禁及授权边界仍适用。
 4. `project-instance` 按生命周期注册表推进；`template-source` 只走模板维护流程。
 
-Plan 入口读取 `.template-spec/plan/README.md` 和 `.template-spec/process/plan-migration.md`，核查战略输入与退出条件。关键未决项阻断 Spec；其余记录责任人、解决时点和接收方。只用 Plan 标识；旧阶段不兼容解析，历史批准不自动沿用。
+Plan 入口读取 `.template-spec/plan/README.md` 和 `.template-spec/process/plan-migration.md`，核查战略输入与退出条件。关键未决项阻断 Spec；其余记录责任人、解决时点和接收方。只用 Plan 标识，旧阶段不解析，历史批准不自动沿用。
 
-分诊见 [协议](references/request-triage.md) 与 `--include request_triage`。先查证据，只问影响下一动作的缺口，不按问题长度追问。
+分诊见 [协议](references/request-triage.md) 与 `--include request_triage`。先查证据，只问下一动作所需缺口，不按问题长度追问。
 
 ## 不可越过的边界
 
@@ -56,7 +54,7 @@ Plan 入口读取 `.template-spec/plan/README.md` 和 `.template-spec/process/pl
 
 聚合批准见 `gate_consolidation`。普通功能默认一个独立审查者，按能力缺口、冲突或外部制度增员；相邻检查组合审查、逐项留证。
 
-项目职责与后端终点见 `execution_scopes`；恢复、编译和派发必须复验。保留产品设计门禁，后端交付不等于业务完成或发布。
+职责与后端终点见 `execution_scopes`，恢复、编译和派发须复验。保留产品设计门禁，后端交付不等于业务完成或发布。
 
 ### 用户决定
 
@@ -71,8 +69,8 @@ Plan 入口读取 `.template-spec/plan/README.md` 和 `.template-spec/process/pl
 1. 从真实资产重建当前状态，查询当前 mode、stage、work-unit 及必要合同子树。
 2. 评估影响面、上游新鲜度、门禁和阻塞，选择第一个未阻塞工作单元；不把 `not-applicable` 当作豁免。
 3. 原生工作单元由主控持有正式资产；专项按结构化任务包派发，只调用合同允许的 model-invoked skill。
-4. `to-spec`、`to-tickets`、`implement` 等兼容入口只可由用户显式调用。主控先预检输入、路径和门禁；入口按 `matt_invocation_boundary` 写入其产物并回交验收，不批准或改变 Ticket 就绪状态。原生资产仍归主控。
-5. 先对照用户目标逐项验收，检查遗漏诉求、错误假设与尚未解决的问题，再验收 `Workflow Execution Result`：工作单元、合同、允许写路径、`context_reconciliation`、证据、实际验证、延期 seam、漂移和下一路由必须可核验。实现派发额外绑定当前 Slice Implementation Contract v3；其他阶段不得伪造该合同。
+4. `to-spec`、`to-tickets`、`implement` 等兼容入口只可由用户显式调用。主控预检输入、路径和门禁；入口按 `matt_invocation_boundary` 写入其产物并回交验收，不批准或改变 Ticket 就绪状态。原生资产仍归主控。
+5. 先逐项验收用户目标、遗漏、错误假设和未决问题，再验收 `Workflow Execution Result`：工作单元、合同、允许写路径、`context_reconciliation`、证据、实际验证、延期 seam、漂移和下一路由必须可核验。实现派发额外绑定当前 Slice Implementation Contract v3；其他阶段不得伪造该合同。
 6. 在授权边界内继续下一工作单元；遇到人工决定、新授权、证据冲突、专项失败或合并/发布结论时暂停。暂停不得阻断无依赖的独立工作。
 
 每个 `project-instance` 工作单元批准或流转前，回写稳定术语到唯一根 `CONTEXT.md`，并生成通过校验的 `context_reconciliation`。候选术语、错误路径、摘要漂移或未决冲突必须阻断。质量标准只由 `engineering-baseline` 定义一次；高风险影响按裁剪合同补充反证和残余风险。
@@ -83,13 +81,13 @@ Plan 入口读取 `.template-spec/plan/README.md` 和 `.template-spec/process/pl
 
 `机会与目标 → 业务故事 → 责任与交接 → 规则、例子与疑问 → 可验收需求 → 页面验证 → 业务任务 → 交接研发`
 
-按当前决策澄清目标、流程、责任、规则、范围和验收例子。业务方案总览引用权威资产，展示状态、未决项、责任人和下一步；不复制正文或新增门禁。
+澄清目标、流程、责任、规则、范围和验收例子。业务总览引用权威资产，展示状态、未决项、责任人和下一步，不复制正文或新增门禁。
 
 Plan → Spec（含正式草稿、恢复与显式 `to-spec`）写入前，按 `.template-spec/plan/entry-review.md` 持久化审阅包并运行 `node scripts/verify-plan-spec-entry <state.yaml>`。检查默认 pending，缺项、过期或无真实回复即阻断；独立调研可继续。
 
 ## 结果与暂停
 
-咨询直接回答；工作单元完整留证，对外展示当前决定。
+咨询直接回答；工作单元留证并展示当前决定。
 
 结果包含：模式、仓库身份、阶段/工作单元、影响面、资产/门禁/Ticket/Slice/合同状态、证据及新鲜度、`ready-for-agent`、阻塞、本轮动作、下一单元、暂停/继续理由、Ticket 同步和 Git checkpoint。
 
@@ -103,4 +101,4 @@ Spec 起草业务票，Design 校准后正式化；无设计影响直接正式�
 
 ## 功能资产整理
 
-父 Ticket 保留五态和追踪入口，阶段、阻塞与下一工作单元引用实际 checkpoint 并按需查询，批准记录仍负责批准依据。临时工作项输入与未正式化草稿使用临时工作区；引用后按正式资产保留。清理只用 `.template-spec/process/feature-assets.md` 的显式候选计划，不因无引用或内容重复直接删文件，也不借整理推进阶段。旧票只迁移已指定文件并保存原文和精确差异，状态冲突报告双方原值。
+整理与旧票迁移先读 `.template-spec/process/feature-assets.md`，只按显式候选计划处理，保留状态、批准依据和原文；不得推进阶段。临时输入与草稿放临时工作区，引用后按正式资产保留。

@@ -829,7 +829,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-product-lifecycle/SKILL.md",
-        "effectiveHash": "6e65e28433b9c1d1dfc9938a44b5b270ede75fdfce6fe7cdafa2ab354d3d07ed",
+        "effectiveHash": "3b53105bc8e5ab7c49e3482ba1a4cad8e344512e560424bd2c66ca334bed4414",
         "targets": [
           ".agents/skills",
           ".codex/skills",
