@@ -1,0 +1,18 @@
+✔ registry distinguishes seven approval gates from internal checks and rejects cycles (13.15825ms)
+✔ published lifecycle IDs migrate without changing retained semantics or accepting retired prose references (14.95875ms)
+✔ automatic evidence passes without another human approval, missing and failed checks block (22.450167ms)
+✔ N/A requires explicit applicability, explanation and current evidence (5.447667ms)
+✔ evidence drift and aggregate omissions cannot reuse approval (8.749209ms)
+✔ a bare passed flag and unbound evidence cannot close a check (3.25375ms)
+✔ retired approvals remain readable but cannot approve new gates (175.226459ms)
+✔ delivery acceptance does not require a release decision; runtime actions still require human authorization (2.296709ms)
+✔ professional checks require current subject, matching scope and an independent reviewer (479.062167ms)
+✔ approval cannot be reused by changing evidence and recomputing checkpoint hashes (163.021292ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 959.784

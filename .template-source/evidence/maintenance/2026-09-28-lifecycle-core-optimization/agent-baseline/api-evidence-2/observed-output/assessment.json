@@ -1,6 +1,0 @@
-{
-  "api_verified": false,
-  "evidence_current": false,
-  "accepted": false,
-  "reason": "本轮仅为 test-data-only 结果绑定核验，不构成生产批准。已在当前仓库执行 node probe-api.mjs；为仅写指定输出，通过 Node 预加载将脚本的 api-observation.json 写入转到标准输出，未修改脚本、HTTP 请求或断言。命令实际退出码为 1，错误为 listen EPERM: operation not permitted 127.0.0.1，服务未启动，成功、缺参和错误 JSON 三种行为均未完成实测，不能以源码推断通过。subject/current.json 和 subject/result.json 的合同摘要与 subject/contract.json 一致，subject/source.txt 的来源摘要亦一致；但 evidence/test.log 的实际 SHA-256 为 8dfac92e5349e02f959f269d016a27bcad7aa222b775ec3f36a25ad8add730c3，与 subject/result.json 绑定的 beffed405c110a01b7d23c6500d5d329f839e2b557a0f5c64fbfdd5a8ee276bd 不一致。日志内容为无关的替换说明，没有实际 API 请求和响应证据。即使命令、cwd 和 AC-1 引用匹配，已提交的 exit_code=0 也不能替代本轮 Fresh Verification。按 AGENTS.md 第 10 节及 yss-product-lifecycle 的结果核验要求，证据绑定失效，本轮不予验收。核验输入前后摘要一致；仅写 assessment.json，未提交 Git、未访问外网或生产。"
-}

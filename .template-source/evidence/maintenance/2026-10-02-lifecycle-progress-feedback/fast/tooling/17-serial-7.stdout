@@ -1,0 +1,17 @@
+✔ planning includes prototype review and conditional backend dependencies without granting readiness (109.303167ms)
+✔ project check allows project-owned Context changes but blocks contract drift (120.693792ms)
+✔ source change is detected even if the project keeps an older valid-looking contract (65.025292ms)
+✔ a directory containing identical bytes cannot replace a bound project file (65.245083ms)
+✔ missing or retired dependencies fail closed at the public planning command (89.160166ms)
+✔ registered platform aliases stay explicit external prerequisites instead of copied canonical skills (60.724834ms)
+✔ unknown work units and replaced orchestrators cannot produce a plan (85.713166ms)
+✔ missing and symlinked source resources cannot enter the inventory (105.254917ms)
+✔ template-source targets and invalid Context cannot pass project version checks (112.6235ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 862.364042

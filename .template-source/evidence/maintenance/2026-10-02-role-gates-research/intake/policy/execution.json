@@ -1,0 +1,9 @@
+{
+  "command": "[\"node\",\"/tmp/yss-role-gates-research-20261002/policy-count.mjs\"]",
+  "exit_code": 0,
+  "duration_ms": 55,
+  "executed_at": "2026-10-02T04:30:10.145Z",
+  "termination": null,
+  "stdout_digest": "sha256:ceaa5d439de5365b29fe618e6ceb5a386e73f0c39bf1622690a9937133f4d58f",
+  "stderr_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

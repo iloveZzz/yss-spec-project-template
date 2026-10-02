@@ -1,0 +1,19 @@
+▶ fixed CLI initializes, binds and resumes a separate governance project without overwriting user work
+  ✔ public dry-run lists writes while leaving target and backend unchanged (1405.481875ms)
+  ✔ actual offline CLI initialization succeeds, uses fixed provenance and does not initialize Git (3089.03525ms)
+  ✔ a new process binds to project-local rules and accepts project-owned Context edits (1338.594125ms)
+  ✔ M4 queries use scoped local routes and reject release, missing checkpoint and unapproved dispatch (6520.352291ms)
+  ✔ core drift cannot be hidden by rewriting local managed-file hashes (1110.678834ms)
+  ✔ wrong template and plugin versions fail closed without migration or writes (2271.445542ms)
+  ✔ compatible existing governance binds by writing only the new receipt (2606.883875ms)
+  ✔ nonempty code directories and plans made stale by user files cannot be overwritten (3507.4205ms)
+  ✔ initializer failure preserves an existing empty target and cleans only its staging directory (3092.837208ms)
+✔ fixed CLI initializes, binds and resumes a separate governance project without overwriting user work (42356.995667ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 42429.606333

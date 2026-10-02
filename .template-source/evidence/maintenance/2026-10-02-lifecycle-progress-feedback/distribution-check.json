@@ -1,0 +1,538 @@
+{
+  "schema_version": 1,
+  "purpose": "read-only-final-distribution-and-original-dirty-preservation-check",
+  "completed_at": "2026-10-02T09:08:59.589Z",
+  "command": [
+    "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+    "/tmp/yss-lifecycle-feedback-distribution-check.mjs"
+  ],
+  "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+  "source_root": "/Users/zhudaoming/Projects/yss-spec-project-template",
+  "baseline_root": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-lifecycle-feedback-before-e6jwyibl",
+  "exit_code": 0,
+  "duration_ms": 121,
+  "read_only_source": true,
+  "changed_source_files": [],
+  "evidence_output": "/tmp/yss-lifecycle-feedback-distribution-check.json",
+  "limits": [
+    "working-tree snapshots; not committed-source release evidence",
+    "consultation; not independent code-review"
+  ],
+  "summary": {
+    "total": 65,
+    "passed": 65,
+    "failed": 0,
+    "input_error": null
+  },
+  "snapshots": [
+    {
+      "package": "create-yss-spec",
+      "source_state": "working-tree",
+      "template_commit": "96fc6c6e5362e0df17ab203768d9eb14f1102e49"
+    },
+    {
+      "package": "create-yss-harness-backend",
+      "source_state": "working-tree",
+      "template_commit": "82476138edcc4e8cd3aef981ddb64de609c54771"
+    },
+    {
+      "package": "create-yss-harness-frontend",
+      "source_state": "working-tree",
+      "template_commit": "f3f66eabda6ec585a1247b59ce34db979c3c784c"
+    },
+    {
+      "package": "create-yss-strategic-design",
+      "source_state": "working-tree",
+      "template_commit": "fbe4084276a8fe9a8f59e58481f2913133346eaf"
+    }
+  ],
+  "checks": [
+    {
+      "id": "snapshot-final-source-bytes",
+      "package": "create-yss-spec",
+      "ref": "scripts/lifecycle-status",
+      "actual_sha256": "8b66527cfa8ce51fd74e274c4fae2b6f2b9cad59f911837d9cdf9bdec2602e6a",
+      "expected_sha256": "8b66527cfa8ce51fd74e274c4fae2b6f2b9cad59f911837d9cdf9bdec2602e6a",
+      "status": "passed"
+    },
+    {
+      "id": "snapshot-final-source-bytes",
+      "package": "create-yss-spec",
+      "ref": "scripts/lib/lifecycle-status.mjs",
+      "actual_sha256": "bc4ac0393992067babf076a9ecdf10d380a2d8b7d9772c0cfca65c096d0e26d3",
+      "expected_sha256": "bc4ac0393992067babf076a9ecdf10d380a2d8b7d9772c0cfca65c096d0e26d3",
+      "status": "passed"
+    },
+    {
+      "id": "snapshot-final-source-bytes",
+      "package": "create-yss-spec",
+      "ref": "scripts/lib/lifecycle-presentation.mjs",
+      "actual_sha256": "681c7401c489dee6193a6982d62c7b0e8e3dc785204e6bbc39b964cb8b14103c",
+      "expected_sha256": "681c7401c489dee6193a6982d62c7b0e8e3dc785204e6bbc39b964cb8b14103c",
+      "status": "passed"
+    },
+    {
+      "id": "snapshot-final-source-bytes",
+      "package": "create-yss-spec",
+      "ref": ".template-spec/process/document-writing.md",
+      "actual_sha256": "3b19be72706ca692c824681f2dd28aad7e409f716efa8eccd38ff3934a084639",
+      "expected_sha256": "3b19be72706ca692c824681f2dd28aad7e409f716efa8eccd38ff3934a084639",
+      "status": "passed"
+    },
+    {
+      "id": "snapshot-final-source-bytes",
+      "package": "create-yss-spec",
+      "ref": ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml",
+      "actual_sha256": "2a1e879bb3162f7fdfb9b4c73f3be6920438e5b7f184801b09777e27a282b58e",
+      "expected_sha256": "2a1e879bb3162f7fdfb9b4c73f3be6920438e5b7f184801b09777e27a282b58e",
+      "status": "passed"
+    },
+    {
+      "id": "user-progress-report-policy",
+      "package": "create-yss-spec",
+      "ref": ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml",
+      "owner": "yss-product-lifecycle",
+      "status": "passed"
+    },
+    {
+      "id": "snapshot-final-source-bytes",
+      "package": "create-yss-spec",
+      "ref": ".agents/skills/yss-product-lifecycle/SKILL.md",
+      "actual_sha256": "fd8aa15e1e4e1888dd08f88f7b425dba24299598e8b1465391ca63c6c2750b71",
+      "expected_sha256": "fd8aa15e1e4e1888dd08f88f7b425dba24299598e8b1465391ca63c6c2750b71",
+      "status": "passed"
+    },
+    {
+      "id": "controller-progress-guidance",
+      "package": "create-yss-spec",
+      "ref": ".agents/skills/yss-product-lifecycle/SKILL.md",
+      "status": "passed"
+    },
+    {
+      "id": "snapshot-blob-hash",
+      "package": "create-yss-harness-backend",
+      "ref": "scripts/lifecycle-status",
+      "actual_sha256": "8b66527cfa8ce51fd74e274c4fae2b6f2b9cad59f911837d9cdf9bdec2602e6a",
+      "expected_sha256": "8b66527cfa8ce51fd74e274c4fae2b6f2b9cad59f911837d9cdf9bdec2602e6a",
+      "status": "passed"
+    },
+    {
+      "id": "snapshot-final-source-bytes",
+      "package": "create-yss-harness-backend",
+      "ref": "scripts/lifecycle-status",
+      "actual_sha256": "8b66527cfa8ce51fd74e274c4fae2b6f2b9cad59f911837d9cdf9bdec2602e6a",
+      "expected_sha256": "8b66527cfa8ce51fd74e274c4fae2b6f2b9cad59f911837d9cdf9bdec2602e6a",
+      "status": "passed"
+    },
+    {
+      "id": "snapshot-blob-hash",
+      "package": "create-yss-harness-backend",
+      "ref": "scripts/lib/lifecycle-status.mjs",
+      "actual_sha256": "bc4ac0393992067babf076a9ecdf10d380a2d8b7d9772c0cfca65c096d0e26d3",
+      "expected_sha256": "bc4ac0393992067babf076a9ecdf10d380a2d8b7d9772c0cfca65c096d0e26d3",
+      "status": "passed"
+    },
+    {
+      "id": "snapshot-final-source-bytes",
+      "package": "create-yss-harness-backend",
+      "ref": "scripts/lib/lifecycle-status.mjs",
+      "actual_sha256": "bc4ac0393992067babf076a9ecdf10d380a2d8b7d9772c0cfca65c096d0e26d3",
+      "expected_sha256": "bc4ac0393992067babf076a9ecdf10d380a2d8b7d9772c0cfca65c096d0e26d3",
+      "status": "passed"
+    },
+    {
+      "id": "snapshot-blob-hash",
+      "package": "create-yss-harness-backend",
+      "ref": "scripts/lib/lifecycle-presentation.mjs",
+      "actual_sha256": "681c7401c489dee6193a6982d62c7b0e8e3dc785204e6bbc39b964cb8b14103c",
+      "expected_sha256": "681c7401c489dee6193a6982d62c7b0e8e3dc785204e6bbc39b964cb8b14103c",
+      "status": "passed"
+    },
+    {
+      "id": "snapshot-final-source-bytes",
+      "package": "create-yss-harness-backend",
+      "ref": "scripts/lib/lifecycle-presentation.mjs",
+      "actual_sha256": "681c7401c489dee6193a6982d62c7b0e8e3dc785204e6bbc39b964cb8b14103c",
+      "expected_sha256": "681c7401c489dee6193a6982d62c7b0e8e3dc785204e6bbc39b964cb8b14103c",
+      "status": "passed"
+    },
+    {
+      "id": "snapshot-blob-hash",
+      "package": "create-yss-harness-backend",
+      "ref": ".template-spec/process/document-writing.md",
+      "actual_sha256": "3b19be72706ca692c824681f2dd28aad7e409f716efa8eccd38ff3934a084639",
+      "expected_sha256": "3b19be72706ca692c824681f2dd28aad7e409f716efa8eccd38ff3934a084639",
+      "status": "passed"
+    },
+    {
+      "id": "snapshot-final-source-bytes",
+      "package": "create-yss-harness-backend",
+      "ref": ".template-spec/process/document-writing.md",
+      "actual_sha256": "3b19be72706ca692c824681f2dd28aad7e409f716efa8eccd38ff3934a084639",
+      "expected_sha256": "3b19be72706ca692c824681f2dd28aad7e409f716efa8eccd38ff3934a084639",
+      "status": "passed"
+    },
+    {
+      "id": "snapshot-blob-hash",
+      "package": "create-yss-harness-backend",
+      "ref": ".agents/skills/harness-orchestrator/references/orchestration-contract.yaml",
+      "actual_sha256": "5fe82ef12ae77a93045a1f63a4ce0ff598665da0aee2b3167e817b832d958f1f",
+      "expected_sha256": "5fe82ef12ae77a93045a1f63a4ce0ff598665da0aee2b3167e817b832d958f1f",
+      "status": "passed"
+    },
+    {
+      "id": "snapshot-final-source-bytes",
+      "package": "create-yss-harness-backend",
+      "ref": ".agents/skills/harness-orchestrator/references/orchestration-contract.yaml",
+      "actual_sha256": "5fe82ef12ae77a93045a1f63a4ce0ff598665da0aee2b3167e817b832d958f1f",
+      "expected_sha256": "5fe82ef12ae77a93045a1f63a4ce0ff598665da0aee2b3167e817b832d958f1f",
+      "status": "passed"
+    },
+    {
+      "id": "user-progress-report-policy",
+      "package": "create-yss-harness-backend",
+      "ref": ".agents/skills/harness-orchestrator/references/orchestration-contract.yaml",
+      "owner": "harness-orchestrator",
+      "status": "passed"
+    },
+    {
+      "id": "snapshot-blob-hash",
+      "package": "create-yss-harness-backend",
+      "ref": ".agents/skills/harness-orchestrator/SKILL.md",
+      "actual_sha256": "d9c71e13b9636871d875a867ffa25ac1ed2f8b6e8b2d60210c4521cd55ecf523",
+      "expected_sha256": "d9c71e13b9636871d875a867ffa25ac1ed2f8b6e8b2d60210c4521cd55ecf523",
+      "status": "passed"
+    },
+    {
+      "id": "snapshot-final-source-bytes",
+      "package": "create-yss-harness-backend",
+      "ref": ".agents/skills/harness-orchestrator/SKILL.md",
+      "actual_sha256": "d9c71e13b9636871d875a867ffa25ac1ed2f8b6e8b2d60210c4521cd55ecf523",
+      "expected_sha256": "d9c71e13b9636871d875a867ffa25ac1ed2f8b6e8b2d60210c4521cd55ecf523",
+      "status": "passed"
+    },
+    {
+      "id": "controller-progress-guidance",
+      "package": "create-yss-harness-backend",
+      "ref": ".agents/skills/harness-orchestrator/SKILL.md",
+      "status": "passed"
+    },
+    {
+      "id": "original-retirement-history",
+      "package": "create-yss-harness-backend",
+      "count": 2034,
+      "status": "passed"
+    },
+    {
+      "id": "original-transition-history",
+      "package": "create-yss-harness-backend",
+      "count": 947,
+      "status": "passed"
+    },
+    {
+      "id": "snapshot-blob-hash",
+      "package": "create-yss-harness-frontend",
+      "ref": "scripts/lifecycle-status",
+      "actual_sha256": "8b66527cfa8ce51fd74e274c4fae2b6f2b9cad59f911837d9cdf9bdec2602e6a",
+      "expected_sha256": "8b66527cfa8ce51fd74e274c4fae2b6f2b9cad59f911837d9cdf9bdec2602e6a",
+      "status": "passed"
+    },
+    {
+      "id": "snapshot-final-source-bytes",
+      "package": "create-yss-harness-frontend",
+      "ref": "scripts/lifecycle-status",
+      "actual_sha256": "8b66527cfa8ce51fd74e274c4fae2b6f2b9cad59f911837d9cdf9bdec2602e6a",
+      "expected_sha256": "8b66527cfa8ce51fd74e274c4fae2b6f2b9cad59f911837d9cdf9bdec2602e6a",
+      "status": "passed"
+    },
+    {
+      "id": "snapshot-blob-hash",
+      "package": "create-yss-harness-frontend",
+      "ref": "scripts/lib/lifecycle-status.mjs",
+      "actual_sha256": "bc4ac0393992067babf076a9ecdf10d380a2d8b7d9772c0cfca65c096d0e26d3",
+      "expected_sha256": "bc4ac0393992067babf076a9ecdf10d380a2d8b7d9772c0cfca65c096d0e26d3",
+      "status": "passed"
+    },
+    {
+      "id": "snapshot-final-source-bytes",
+      "package": "create-yss-harness-frontend",
+      "ref": "scripts/lib/lifecycle-status.mjs",
+      "actual_sha256": "bc4ac0393992067babf076a9ecdf10d380a2d8b7d9772c0cfca65c096d0e26d3",
+      "expected_sha256": "bc4ac0393992067babf076a9ecdf10d380a2d8b7d9772c0cfca65c096d0e26d3",
+      "status": "passed"
+    },
+    {
+      "id": "snapshot-blob-hash",
+      "package": "create-yss-harness-frontend",
+      "ref": "scripts/lib/lifecycle-presentation.mjs",
+      "actual_sha256": "681c7401c489dee6193a6982d62c7b0e8e3dc785204e6bbc39b964cb8b14103c",
+      "expected_sha256": "681c7401c489dee6193a6982d62c7b0e8e3dc785204e6bbc39b964cb8b14103c",
+      "status": "passed"
+    },
+    {
+      "id": "snapshot-final-source-bytes",
+      "package": "create-yss-harness-frontend",
+      "ref": "scripts/lib/lifecycle-presentation.mjs",
+      "actual_sha256": "681c7401c489dee6193a6982d62c7b0e8e3dc785204e6bbc39b964cb8b14103c",
+      "expected_sha256": "681c7401c489dee6193a6982d62c7b0e8e3dc785204e6bbc39b964cb8b14103c",
+      "status": "passed"
+    },
+    {
+      "id": "snapshot-blob-hash",
+      "package": "create-yss-harness-frontend",
+      "ref": ".template-spec/process/document-writing.md",
+      "actual_sha256": "3b19be72706ca692c824681f2dd28aad7e409f716efa8eccd38ff3934a084639",
+      "expected_sha256": "3b19be72706ca692c824681f2dd28aad7e409f716efa8eccd38ff3934a084639",
+      "status": "passed"
+    },
+    {
+      "id": "snapshot-final-source-bytes",
+      "package": "create-yss-harness-frontend",
+      "ref": ".template-spec/process/document-writing.md",
+      "actual_sha256": "3b19be72706ca692c824681f2dd28aad7e409f716efa8eccd38ff3934a084639",
+      "expected_sha256": "3b19be72706ca692c824681f2dd28aad7e409f716efa8eccd38ff3934a084639",
+      "status": "passed"
+    },
+    {
+      "id": "snapshot-blob-hash",
+      "package": "create-yss-harness-frontend",
+      "ref": ".agents/skills/harness-orchestrator/references/orchestration-contract.yaml",
+      "actual_sha256": "79f21df478fa49f1d6cfe2881a2f66a02c54e2323d303ee72f3628ae7a67bb70",
+      "expected_sha256": "79f21df478fa49f1d6cfe2881a2f66a02c54e2323d303ee72f3628ae7a67bb70",
+      "status": "passed"
+    },
+    {
+      "id": "snapshot-final-source-bytes",
+      "package": "create-yss-harness-frontend",
+      "ref": ".agents/skills/harness-orchestrator/references/orchestration-contract.yaml",
+      "actual_sha256": "79f21df478fa49f1d6cfe2881a2f66a02c54e2323d303ee72f3628ae7a67bb70",
+      "expected_sha256": "79f21df478fa49f1d6cfe2881a2f66a02c54e2323d303ee72f3628ae7a67bb70",
+      "status": "passed"
+    },
+    {
+      "id": "user-progress-report-policy",
+      "package": "create-yss-harness-frontend",
+      "ref": ".agents/skills/harness-orchestrator/references/orchestration-contract.yaml",
+      "owner": "harness-orchestrator",
+      "status": "passed"
+    },
+    {
+      "id": "snapshot-blob-hash",
+      "package": "create-yss-harness-frontend",
+      "ref": ".agents/skills/harness-orchestrator/SKILL.md",
+      "actual_sha256": "88ebb6892c1ca524f48b36f1ac6d72b647d1fdd263050675262560a3804e0c36",
+      "expected_sha256": "88ebb6892c1ca524f48b36f1ac6d72b647d1fdd263050675262560a3804e0c36",
+      "status": "passed"
+    },
+    {
+      "id": "snapshot-final-source-bytes",
+      "package": "create-yss-harness-frontend",
+      "ref": ".agents/skills/harness-orchestrator/SKILL.md",
+      "actual_sha256": "88ebb6892c1ca524f48b36f1ac6d72b647d1fdd263050675262560a3804e0c36",
+      "expected_sha256": "88ebb6892c1ca524f48b36f1ac6d72b647d1fdd263050675262560a3804e0c36",
+      "status": "passed"
+    },
+    {
+      "id": "controller-progress-guidance",
+      "package": "create-yss-harness-frontend",
+      "ref": ".agents/skills/harness-orchestrator/SKILL.md",
+      "status": "passed"
+    },
+    {
+      "id": "original-retirement-history",
+      "package": "create-yss-harness-frontend",
+      "count": 2747,
+      "status": "passed"
+    },
+    {
+      "id": "original-transition-history",
+      "package": "create-yss-harness-frontend",
+      "count": 991,
+      "status": "passed"
+    },
+    {
+      "id": "snapshot-blob-hash",
+      "package": "create-yss-strategic-design",
+      "ref": "scripts/lifecycle-status",
+      "actual_sha256": "8b66527cfa8ce51fd74e274c4fae2b6f2b9cad59f911837d9cdf9bdec2602e6a",
+      "expected_sha256": "8b66527cfa8ce51fd74e274c4fae2b6f2b9cad59f911837d9cdf9bdec2602e6a",
+      "status": "passed"
+    },
+    {
+      "id": "snapshot-final-source-bytes",
+      "package": "create-yss-strategic-design",
+      "ref": "scripts/lifecycle-status",
+      "actual_sha256": "8b66527cfa8ce51fd74e274c4fae2b6f2b9cad59f911837d9cdf9bdec2602e6a",
+      "expected_sha256": "8b66527cfa8ce51fd74e274c4fae2b6f2b9cad59f911837d9cdf9bdec2602e6a",
+      "status": "passed"
+    },
+    {
+      "id": "snapshot-blob-hash",
+      "package": "create-yss-strategic-design",
+      "ref": "scripts/lib/lifecycle-status.mjs",
+      "actual_sha256": "bc4ac0393992067babf076a9ecdf10d380a2d8b7d9772c0cfca65c096d0e26d3",
+      "expected_sha256": "bc4ac0393992067babf076a9ecdf10d380a2d8b7d9772c0cfca65c096d0e26d3",
+      "status": "passed"
+    },
+    {
+      "id": "snapshot-final-source-bytes",
+      "package": "create-yss-strategic-design",
+      "ref": "scripts/lib/lifecycle-status.mjs",
+      "actual_sha256": "bc4ac0393992067babf076a9ecdf10d380a2d8b7d9772c0cfca65c096d0e26d3",
+      "expected_sha256": "bc4ac0393992067babf076a9ecdf10d380a2d8b7d9772c0cfca65c096d0e26d3",
+      "status": "passed"
+    },
+    {
+      "id": "snapshot-blob-hash",
+      "package": "create-yss-strategic-design",
+      "ref": "scripts/lib/lifecycle-presentation.mjs",
+      "actual_sha256": "681c7401c489dee6193a6982d62c7b0e8e3dc785204e6bbc39b964cb8b14103c",
+      "expected_sha256": "681c7401c489dee6193a6982d62c7b0e8e3dc785204e6bbc39b964cb8b14103c",
+      "status": "passed"
+    },
+    {
+      "id": "snapshot-final-source-bytes",
+      "package": "create-yss-strategic-design",
+      "ref": "scripts/lib/lifecycle-presentation.mjs",
+      "actual_sha256": "681c7401c489dee6193a6982d62c7b0e8e3dc785204e6bbc39b964cb8b14103c",
+      "expected_sha256": "681c7401c489dee6193a6982d62c7b0e8e3dc785204e6bbc39b964cb8b14103c",
+      "status": "passed"
+    },
+    {
+      "id": "snapshot-blob-hash",
+      "package": "create-yss-strategic-design",
+      "ref": ".template-spec/process/document-writing.md",
+      "actual_sha256": "3b19be72706ca692c824681f2dd28aad7e409f716efa8eccd38ff3934a084639",
+      "expected_sha256": "3b19be72706ca692c824681f2dd28aad7e409f716efa8eccd38ff3934a084639",
+      "status": "passed"
+    },
+    {
+      "id": "snapshot-final-source-bytes",
+      "package": "create-yss-strategic-design",
+      "ref": ".template-spec/process/document-writing.md",
+      "actual_sha256": "3b19be72706ca692c824681f2dd28aad7e409f716efa8eccd38ff3934a084639",
+      "expected_sha256": "3b19be72706ca692c824681f2dd28aad7e409f716efa8eccd38ff3934a084639",
+      "status": "passed"
+    },
+    {
+      "id": "snapshot-blob-hash",
+      "package": "create-yss-strategic-design",
+      "ref": ".agents/skills/yss-strategic-design/references/orchestration-contract.yaml",
+      "actual_sha256": "86d8eb9de9f8efb07a9b5c69783b4cdd326e3d1877c70877f50ca5be8bbad768",
+      "expected_sha256": "86d8eb9de9f8efb07a9b5c69783b4cdd326e3d1877c70877f50ca5be8bbad768",
+      "status": "passed"
+    },
+    {
+      "id": "snapshot-final-source-bytes",
+      "package": "create-yss-strategic-design",
+      "ref": ".agents/skills/yss-strategic-design/references/orchestration-contract.yaml",
+      "actual_sha256": "86d8eb9de9f8efb07a9b5c69783b4cdd326e3d1877c70877f50ca5be8bbad768",
+      "expected_sha256": "86d8eb9de9f8efb07a9b5c69783b4cdd326e3d1877c70877f50ca5be8bbad768",
+      "status": "passed"
+    },
+    {
+      "id": "user-progress-report-policy",
+      "package": "create-yss-strategic-design",
+      "ref": ".agents/skills/yss-strategic-design/references/orchestration-contract.yaml",
+      "owner": "yss-strategic-design",
+      "status": "passed"
+    },
+    {
+      "id": "snapshot-blob-hash",
+      "package": "create-yss-strategic-design",
+      "ref": ".agents/skills/yss-strategic-design/SKILL.md",
+      "actual_sha256": "8608294d04a09825de17231d9349de9173f77e6b5b79c950c26e03b8ff2761da",
+      "expected_sha256": "8608294d04a09825de17231d9349de9173f77e6b5b79c950c26e03b8ff2761da",
+      "status": "passed"
+    },
+    {
+      "id": "snapshot-final-source-bytes",
+      "package": "create-yss-strategic-design",
+      "ref": ".agents/skills/yss-strategic-design/SKILL.md",
+      "actual_sha256": "8608294d04a09825de17231d9349de9173f77e6b5b79c950c26e03b8ff2761da",
+      "expected_sha256": "8608294d04a09825de17231d9349de9173f77e6b5b79c950c26e03b8ff2761da",
+      "status": "passed"
+    },
+    {
+      "id": "controller-progress-guidance",
+      "package": "create-yss-strategic-design",
+      "ref": ".agents/skills/yss-strategic-design/SKILL.md",
+      "status": "passed"
+    },
+    {
+      "id": "original-retirement-history",
+      "package": "create-yss-strategic-design",
+      "count": 837,
+      "status": "passed"
+    },
+    {
+      "id": "original-transition-history",
+      "package": "create-yss-strategic-design",
+      "count": 718,
+      "status": "passed"
+    },
+    {
+      "id": "original-dirty-bytes-preserved",
+      "ref": ".agents/skills/yss-product-lifecycle/references/matt-yss-adapter.md",
+      "actual_sha256": "784cb2da23701c9c3eba72f91c191fae67345fed10ad6078154990245c517843",
+      "expected_sha256": "784cb2da23701c9c3eba72f91c191fae67345fed10ad6078154990245c517843",
+      "status": "passed"
+    },
+    {
+      "id": "original-dirty-bytes-preserved",
+      "ref": ".codex/skills/yss-product-lifecycle/references/matt-yss-adapter.md",
+      "actual_sha256": "784cb2da23701c9c3eba72f91c191fae67345fed10ad6078154990245c517843",
+      "expected_sha256": "784cb2da23701c9c3eba72f91c191fae67345fed10ad6078154990245c517843",
+      "status": "passed"
+    },
+    {
+      "id": "original-dirty-bytes-preserved",
+      "ref": "scripts/lib/lifecycle-context-query.mjs",
+      "actual_sha256": "7f65a8bd3d37ff6ba710eaf11d6b0078c2a1df2844cd0194e91c41c391be3654",
+      "expected_sha256": "7f65a8bd3d37ff6ba710eaf11d6b0078c2a1df2844cd0194e91c41c391be3654",
+      "status": "passed"
+    },
+    {
+      "id": "original-dirty-bytes-preserved",
+      "ref": "scripts/query-lifecycle-context",
+      "actual_sha256": "74e8f8c9e99d2b5b9e06dae470ef9317fb45b18e97620e8bb4d462e1ea5a22e1",
+      "expected_sha256": "74e8f8c9e99d2b5b9e06dae470ef9317fb45b18e97620e8bb4d462e1ea5a22e1",
+      "status": "passed"
+    },
+    {
+      "id": "original-dirty-bytes-preserved",
+      "ref": "submodules/create-yss-spec/src/template/instance-runtime.js",
+      "actual_sha256": "cf49a0a3a0efb4623d5cb376ebded267e944f308e8375fe97edc461daa077173",
+      "expected_sha256": "cf49a0a3a0efb4623d5cb376ebded267e944f308e8375fe97edc461daa077173",
+      "status": "passed"
+    },
+    {
+      "id": "original-dirty-bytes-preserved",
+      "ref": "submodules/create-yss-spec/tests/slim-distribution.test.js",
+      "actual_sha256": "9993286f7752c65547c0549613cbf6d2f91cb3008aaab4011bbe55ad49728697",
+      "expected_sha256": "9993286f7752c65547c0549613cbf6d2f91cb3008aaab4011bbe55ad49728697",
+      "status": "passed"
+    },
+    {
+      "id": "original-controller-append-only",
+      "ref": "submodules/yss-harness-backend-agent/.agents/skills/harness-orchestrator/SKILL.md",
+      "before_sha256": "eafc0b18e40e5378444882a95cb9e288bec259914ce2986f9b2a004c3e34aca6",
+      "appended_marker": true,
+      "status": "passed"
+    },
+    {
+      "id": "original-controller-append-only",
+      "ref": "submodules/yss-harness-frontend-agent/.agents/skills/harness-orchestrator/SKILL.md",
+      "before_sha256": "b8cfd813bbc64ce5dea83fd52ebfe72c351d581279d6ce3b500d48b2cdceb41a",
+      "appended_marker": true,
+      "status": "passed"
+    },
+    {
+      "id": "original-controller-append-only",
+      "ref": "submodules/yss-harness-design-agent/.agents/skills/yss-strategic-design/SKILL.md",
+      "before_sha256": "778eac002924430fd1d27bdaa99ab2d126d6f293b0af740123e8471c6dcc8bd2",
+      "appended_marker": true,
+      "status": "passed"
+    }
+  ]
+}

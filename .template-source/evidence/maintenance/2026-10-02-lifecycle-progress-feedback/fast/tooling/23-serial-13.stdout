@@ -1,0 +1,15 @@
+✔ resource equality includes scripts and policy, not just entry bytes (6.105833ms)
+✔ symlink projection works but cycles and escaping resources cannot establish equality (1.879292ms)
+✔ required selections bind host cwd version dependency closure and effective policy (2.710667ms)
+✔ unrelated personal entries do not block and selected different resources do (1.232333ms)
+✔ actual selections are checked even when not listed as required (1.499208ms)
+✔ runtime start failure is not an empty successful catalog (2.016125ms)
+✔ malformed catalog and hung host fail closed within the observation deadline (80.248083ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 139.067708

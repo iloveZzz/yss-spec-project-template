@@ -1,0 +1,1 @@
+Additional properties are not allowed ('pause' was unexpected)

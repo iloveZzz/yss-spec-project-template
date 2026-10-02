@@ -1,0 +1,25 @@
+{
+  "review_mode": "worktree",
+  "review_base_ref": "96fc6c6e5362e0df17ab203768d9eb14f1102e49",
+  "candidate_digest": "0af1552c48b9a40a62a6583adc49dbbe1b3e58fe77372b3f0df2696d75c75cf1",
+  "framing_valid": true,
+  "tracked_diff_matches_stream": true,
+  "untracked_matches_reconstructed_tree": [
+    {
+      "ref": ".template-source/tooling/node/test/lifecycle-status-feedback.test.mjs",
+      "mode": 33188,
+      "kind": "R",
+      "sha256": "78945f43814c5e76e5caad4cf345329fe4cb8b50f85d66f8ee56a68f6e7c6ac7"
+    }
+  ],
+  "reviewed_file_digests": {
+    "scripts/lib/lifecycle-status.mjs": "bc4ac0393992067babf076a9ecdf10d380a2d8b7d9772c0cfca65c096d0e26d3",
+    "scripts/lib/lifecycle-presentation.mjs": "681c7401c489dee6193a6982d62c7b0e8e3dc785204e6bbc39b964cb8b14103c",
+    "scripts/lifecycle-status": "8b66527cfa8ce51fd74e274c4fae2b6f2b9cad59f911837d9cdf9bdec2602e6a",
+    ".template-source/tooling/node/test/lifecycle-status-feedback.test.mjs": "78945f43814c5e76e5caad4cf345329fe4cb8b50f85d66f8ee56a68f6e7c6ac7",
+    ".template-spec/process/schemas/lifecycle-checkpoint.schema.json": "9af96f6994593cb86febe4cfbde74fcbd1400d23704bde83c63da385559f9d4d",
+    ".template-spec/process/schemas/digital-human-task-package.schema.json": "78ee716f228660fa07666974ab51d69306e4d510ffbca0c31d9d9c05005bb976",
+    ".agents/skills/yss-product-lifecycle/references/state-model.md": "cc4691bbba69abe3756d16630b1e58fd643afd7a271ef84c88bf9d5e71eb9cd6",
+    ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml": "2a1e879bb3162f7fdfb9b4c73f3be6920438e5b7f184801b09777e27a282b58e"
+  }
+}

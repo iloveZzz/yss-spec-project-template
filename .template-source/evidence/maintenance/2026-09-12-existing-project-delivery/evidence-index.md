@@ -6,7 +6,7 @@
 |---|---|
 |plan.md / compatibility.md|已授权范围、版本策略和完成边界|
 |maven-adapters-04.json / maven-*-04.log|两类既有 Maven 适配器实际测试和打包；前几次失败保留|
-|preflight/result.json / preflight/profile-verification/|只读预检、批准后增量、安装职责及分发回归；各轮与未完成项分开记录|
+|preflight/result.json / preflight/profile-verification/|只读预检、批准后增量、安装职责及分发回归；各轮与未完成项分开记录。该子树已整体归档，见 [归档索引](../../archive-index.json) 的 `2026-10-02-b1-profile-verification` 批次|
 |ui-handoff/|既有 UI 来源、v5/v2/v3 协议及源码策略回归|
 |task-package-v2-tests-06.log|Slice v2、整数/字符串版本隔离、真实派发路径和失效负例|
 |strategic-distribution-02.log|四个 CLI 真初始化；旧战略包移除源后跨接收方核验/导入/对账/合同消费|
@@ -16,6 +16,8 @@
 |verify-template-fast-02.log|新预检及既有架构/原型回归执行；真实源策略测试快照被退役ID检查误报，已单独修复并复验；committed 发布来源检查仍不满足|
 |retired-skill-check-02.log|仅将完整源策略回归 fixture 从活跃技能路由扫描中区分；物理退役技能检查保留|
 |baseline-java-launch.json / baseline-port-forward.json|原真实 Java 服务与原隔离数据库恢复记录；端口转发只转发到原容器，不伪造数据库或探针响应|
+
+`preflight/` 子树（sync07 / sync09 / sync10 各轮及聚合原件）已按退役计划整体归档：105 个文件、12,744,298 字节，归档包摘要与逐文件清单见 [归档索引](../../archive-index.json) 的 `2026-10-02-b1-profile-verification` 批次。下文列出 `preflight/profile-verification/...` 的条目均可从该归档按原相对目录解包恢复；`sync10/verify.py` 与 `sync09/cli-results.json` 的相对读取关系在解包后保持成立。归档不改变历史结论，也不代表未完成项已关闭。
 
 真实产品资产位于隔离试验根 `/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm`：
 

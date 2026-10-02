@@ -1,0 +1,237 @@
+{
+  "presentation": {
+    "read_only": true,
+    "execution_allowed": false,
+    "approval_validity": "not-checked",
+    "stage": "独立验证",
+    "next_stage": "待核验",
+    "next_stage_reason": "未登记下一工作单元；需核验当前阶段验收与终点，不能据此判定完成",
+    "checkpoint_status": "记录为已完成，仍需核验",
+    "work_unit": "未登记",
+    "owner": "未登记",
+    "blockers": [],
+    "issues": [],
+    "pending_verification": [
+      {
+        "id": "next-stage-association",
+        "reason": "未登记下一工作单元；需核验当前阶段验收与终点，不能据此判定完成",
+        "refs": []
+      },
+      {
+        "id": "context-reconciliation",
+        "reason": "读取登记状态；当前对账内容和摘要仍须由原验证器核验",
+        "refs": []
+      },
+      {
+        "id": "registered-gates",
+        "reason": "仅读取已登记状态；适用性未登记、待处理或记录缺失时不能判定门禁通过；不核验完整批准",
+        "refs": [
+          "docs/.scratch/case/checkpoint.json"
+        ]
+      },
+      {
+        "id": "artifact-digests",
+        "reason": "未核验批准资产原字节摘要；恢复时运行资产所有者的适用预检",
+        "refs": []
+      },
+      {
+        "id": "approval-validity",
+        "reason": "未核验真实决定、延续、外部审批及完整执行授权",
+        "refs": [
+          "docs/.scratch/case/checkpoint.json"
+        ]
+      },
+      {
+        "id": "stage-tracking",
+        "reason": "未登记追踪；按实例既有兼容或显式迁移入口处理，不自动补建",
+        "refs": [
+          "docs/.scratch/case/checkpoint.json"
+        ]
+      },
+      {
+        "id": "business-decomposition",
+        "reason": "结构与来源只读检查；不证明批准或实现资格",
+        "refs": []
+      }
+    ],
+    "continue_conditions": [
+      "核验当前来源、Context、适用门禁与决定或延续",
+      "核对当前范围、任务结果和允许写路径；输入变化时重验",
+      "由主控验收当前证据并核验授权后决定继续或重新路由"
+    ],
+    "expected_output": null,
+    "next_action": "复核当前阶段验收与下一动作",
+    "sources": [
+      {
+        "ref": ".template-spec/process/lifecycle-registry.yaml",
+        "digest": "sha256:1e27af3e5793a91342f073c9b527173b2d9c35bb2edd4b48c5fb1fc4b9d223ba"
+      },
+      {
+        "ref": ".template-spec/agents/digital-human-roles.yaml",
+        "digest": "sha256:14b512686f0ef57addb94cb99a465272421eb030ae0e832d30c0c6a85f7217cb"
+      }
+    ],
+    "warnings": [],
+    "names": {
+      "stage.verification": {
+        "id": "stage.verification",
+        "name": "独立验证",
+        "known": true
+      }
+    }
+  },
+  "decomposition": {
+    "business": {
+      "status": "legacy-unassessed",
+      "tickets": [],
+      "diagnostics": []
+    },
+    "implementation": {
+      "status": "not-recorded",
+      "recorded_status": null,
+      "ref": null,
+      "coverage": null
+    },
+    "readiness": {
+      "status": "not-evaluated",
+      "reason": "阶段工作完成不替代批准与实现就绪校验"
+    }
+  },
+  "schema_version": 1,
+  "read_only": true,
+  "stage": "stage.verification",
+  "next_stage": null,
+  "next_stage_reason": "未登记下一工作单元；需核验当前阶段验收与终点，不能据此判定完成",
+  "next_stage_source_refs": [],
+  "checkpoint_status": "completed",
+  "work_unit": null,
+  "owner": "未登记",
+  "blockers": [],
+  "next_action": "复核当前阶段验收与下一动作",
+  "execution_authorization": "not-evaluated",
+  "verification_scope": [
+    {
+      "id": "registered-blockers",
+      "status": "passed",
+      "refs": [
+        "docs/.scratch/case/checkpoint.json"
+      ],
+      "reason": "仅读取已登记阻塞，不代表完整就绪"
+    },
+    {
+      "id": "next-stage-association",
+      "status": "not-checked",
+      "refs": [],
+      "reason": "未登记下一工作单元；需核验当前阶段验收与终点，不能据此判定完成"
+    },
+    {
+      "id": "stage-and-route",
+      "status": "passed",
+      "refs": [
+        ".template-spec/process/lifecycle-registry.yaml",
+        ".agents/skills/harness-orchestrator/references/orchestration-contract.yaml"
+      ],
+      "reason": "仅检查身份与路由存在，不计算完整 frontier"
+    },
+    {
+      "id": "context-reconciliation",
+      "status": "not-checked",
+      "refs": [],
+      "reason": "读取登记状态；当前对账内容和摘要仍须由原验证器核验"
+    },
+    {
+      "id": "registered-gates",
+      "status": "not-checked",
+      "refs": [
+        "docs/.scratch/case/checkpoint.json"
+      ],
+      "reason": "仅读取已登记状态；适用性未登记、待处理或记录缺失时不能判定门禁通过；不核验完整批准"
+    },
+    {
+      "id": "evidence-readable",
+      "status": "passed",
+      "refs": [],
+      "reason": "仅检查已引用证据可读，不证明证据完整或当前有效"
+    },
+    {
+      "id": "artifact-digests",
+      "status": "not-checked",
+      "refs": [],
+      "reason": "未核验批准资产原字节摘要；恢复时运行资产所有者的适用预检"
+    },
+    {
+      "id": "approval-validity",
+      "status": "not-checked",
+      "refs": [
+        "docs/.scratch/case/checkpoint.json"
+      ],
+      "reason": "未核验真实决定、延续、外部审批及完整执行授权"
+    },
+    {
+      "id": "stage-tracking",
+      "status": "not-checked",
+      "refs": [
+        "docs/.scratch/case/checkpoint.json"
+      ],
+      "reason": "未登记追踪；按实例既有兼容或显式迁移入口处理，不自动补建"
+    },
+    {
+      "id": "business-decomposition",
+      "status": "legacy-unassessed",
+      "refs": [],
+      "reason": "结构与来源只读检查；不证明批准或实现资格"
+    }
+  ],
+  "diagnostics": [],
+  "next_step": {
+    "action_type": "verify",
+    "work_unit": null,
+    "cwd": "/private/tmp/yss-lifecycle-followup-profile-audit/fixtures/frontend",
+    "command": [
+      "node",
+      "scripts/verify-lifecycle-checkpoint",
+      "docs/.scratch/case/checkpoint.json"
+    ],
+    "input_refs": [
+      "docs/.scratch/case/checkpoint.json"
+    ],
+    "prerequisites": [
+      "核验当前来源、Context、适用门禁与决定或延续",
+      "核对当前范围、任务结果和允许写路径；输入变化时重验"
+    ]
+  },
+  "recovery": {
+    "sequence": [
+      "read-status",
+      "inspect-actual-result",
+      "verify-current-inputs",
+      "continue-or-reroute"
+    ],
+    "task_package_ref": null,
+    "contract_view": null,
+    "result_refs": [],
+    "prechecks": [],
+    "verification_items": [],
+    "checks": "read-only; execution and approval not evaluated"
+  },
+  "reading_views": {
+    "status": "manual",
+    "read_only": true,
+    "execution_allowed": false,
+    "blockers": []
+  },
+  "source_digests": {
+    "checkpoint": {
+      "ref": "docs/.scratch/case/checkpoint.json",
+      "digest": "sha256:1eb3065e15c566ac17c03db9145e7a12dd4829f77247365e5f00abf96080c598"
+    },
+    "registry": {
+      "ref": ".template-spec/process/lifecycle-registry.yaml",
+      "digest": "sha256:1e27af3e5793a91342f073c9b527173b2d9c35bb2edd4b48c5fb1fc4b9d223ba"
+    },
+    "orchestration": {
+      "ref": ".agents/skills/harness-orchestrator/references/orchestration-contract.yaml",
+      "digest": "sha256:79f21df478fa49f1d6cfe2881a2f66a02c54e2323d303ee72f3628ae7a67bb70"
+    }
+  }
+}

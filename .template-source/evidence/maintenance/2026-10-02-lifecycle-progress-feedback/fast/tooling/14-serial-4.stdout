@@ -1,0 +1,17 @@
+✔ text explains the recorded next stage without claiming approval or entry permission (46.81725ms)
+✔ missing or conflicting recorded stage relations remain unverified, including a missing next unit (77.892292ms)
+✔ unknown next units and cancelled work items cannot establish a next stage (45.207542ms)
+✔ a next work unit in the same stage explains that current-stage work remains (22.960667ms)
+✔ registered blockers retain individual responsibility, evidence and repair steps in text (45.836833ms)
+✔ pending and failed gate registrations are visible without guessing whether they apply (98.82ms)
+✔ blocked and stale gates remain blockers when a contradictory applicability flag is false (41.84025ms)
+✔ CLI text output is read-only and lists human pause recovery and verification boundaries (125.916ms)
+✔ CLI query failures respect a parsed text format and keep JSON and preflight boundaries (672.218625ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1254.933583

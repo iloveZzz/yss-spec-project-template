@@ -1,0 +1,17 @@
+▶ design plugin uses pinned design CLI and a bounded project-local lifecycle
+  ✔ plan is read-only; application creates a distinct design instance (12503.111833ms)
+  ✔ public entry resolves an actual readable local master and current contracts (1206.313042ms)
+  ✔ resume, path escapes and fake terminal records fail closed (1752.500209ms)
+  ✔ core drift and unrelated family metadata cannot be hidden by local metadata changes (451.782375ms)
+  ✔ exact existing instance binds only a receipt and preserves business content (1232.8545ms)
+  ✔ stale initialization plans preserve newly created user work (703.826958ms)
+  ✔ initializer errors preserve an empty target and remove only staging (751.345958ms)
+✔ design plugin uses pinned design CLI and a bounded project-local lifecycle (20214.8975ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 20267.012416

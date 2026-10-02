@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "role_id": "role.requirements-manager",
+  "skill_source": {
+    "registry_ref": ".template-spec/agents/digital-human-roles.yaml",
+    "defaults_ref": "taskPackageDefaults(role.requirements-manager)",
+    "core_skills": [
+      "grilling",
+      "domain-modeling",
+      "yss-research",
+      "competitive-intelligence"
+    ],
+    "forbidden_skills": [
+      "yss-ui",
+      "yss-domain",
+      "yss-web-controller",
+      "yss-repository",
+      "yss-ddd-scaffold-generator",
+      "yss-layered-mvc-scaffold-generator",
+      "yss-frontend-scaffold-generator",
+      "implement",
+      "tdd"
+    ]
+  },
+  "task_id": "maintenance-research.role-gates.20261002",
+  "work_unit_id": "work-unit.maintenance-research",
+  "actor_id": "agent.role-gates.root",
+  "runtime_id": "runtime.generic",
+  "execution_state": "Drafter",
+  "workflow_status": "active",
+  "contract": {
+    "kind": "template-maintenance",
+    "contract_id": "research.role-gates.20261002",
+    "contract_version": 3,
+    "status": "issued",
+    "contract_ref": ".template-source/evidence/maintenance/2026-10-02-role-gates-research/owner-impact-analysis.json",
+    "maintenance_ref": ".template-source/evidence/maintenance/2026-10-02-role-gates-research/research-checkpoint.json"
+  },
+  "inputs": [
+    "CONTEXT.md",
+    ".template-source/evidence/maintenance/2026-10-02-role-gates-research/owner-impact-analysis.json",
+    ".template-source/evidence/maintenance/2026-10-02-role-gates-research/source-manifest.json",
+    ".template-source/evidence/maintenance/2026-10-02-role-gates-research/intake-manifest.json"
+  ],
+  "objective": "综合只读研究材料，写正式研究简报和证据台账；核验重要结论、当前绑定和研究收尾，不批准或执行后续重构。",
+  "allowed_write_paths": [
+    ".template-source/evidence/maintenance/2026-10-02-role-gates-research/"
+  ],
+  "forbidden_actions": [
+    "二手转述和 AI 摘要不作为决定证据",
+    "不把静态 gate/check 数量视作人工停顿",
+    "不把当前结构检查视作真实业务效能测量",
+    "不把历史评测当当前 Fresh Verification",
+    "不更改现有事实源、Skill、投影、子仓、批准及 Ticket"
+  ],
+  "expected_outputs": [
+    "role-gates-research-brief.md",
+    "role-gates-evidence.yaml",
+    "绑定本轮输入的研究验证与 Workflow Execution Result"
+  ],
+  "expected_evidence_files": [
+    ".template-source/evidence/maintenance/2026-10-02-role-gates-research/role-gates-research-brief.md",
+    ".template-source/evidence/maintenance/2026-10-02-role-gates-research/role-gates-evidence.yaml",
+    ".template-source/evidence/maintenance/2026-10-02-role-gates-research/verification-3/verification.json"
+  ],
+  "verification_commands": [
+    "node scripts/verify-maintenance-research .template-source/evidence/maintenance/2026-10-02-role-gates-research/role-gates-research-brief.md .template-source/evidence/maintenance/2026-10-02-role-gates-research/role-gates-evidence.yaml --output .template-source/evidence/maintenance/2026-10-02-role-gates-research/verification-3"
+  ],
+  "verification_results": [],
+  "downstream_consumers": [
+    "模板维护决策者",
+    "yss-product-lifecycle"
+  ],
+  "convergence": {
+    "parent_work_unit": "work-unit.maintenance-research",
+    "convergence_ref": ".template-source/evidence/maintenance/2026-10-02-role-gates-research/owner-impact-analysis.json",
+    "conflict_escalation": "回交维护者确认采纳范围，不自动改变现有流程"
+  }
+}

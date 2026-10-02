@@ -1,0 +1,2039 @@
+{
+  "schema": "yss.link-closure/v1",
+  "roundCount": 259,
+  "linkCount": 1802,
+  "rows": [
+    {
+      "round": "reviews",
+      "files": 2648,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-28-spec-efficiency-review",
+      "files": 1289,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-30-shadcn-vue-authoring",
+      "files": 932,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-28-lifecycle-core-optimization",
+      "files": 598,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-28-spec-efficiency",
+      "files": 583,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-30-highfi-components",
+      "files": 310,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-30-prototype-reliability",
+      "files": 266,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-28-llm-wiki-implementation",
+      "files": 243,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-30-prototype-compact-theme",
+      "files": 243,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-29-prototype-design-enhancement",
+      "files": 215,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-30-plan-spec-iteration",
+      "files": 168,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "manual-refresh-2026-09-06",
+      "files": 127,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-12-existing-project-delivery",
+      "files": 116,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-10-script-performance-optimization",
+      "files": 115,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-10-script-performance-audit",
+      "files": 102,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "cli-identity-upgrade-2026-09-06",
+      "files": 90,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-20-openai-skills-implementation",
+      "files": 89,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-10-01-execution-efficiency-pilot",
+      "files": 79,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-30-business-ticket-slice",
+      "files": 69,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-28-official-spec-research",
+      "files": 56,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "dedicated-cli-implementation-2026-09-07",
+      "files": 50,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-30-flow-hardening",
+      "files": 48,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-10-01-structured-json-assets",
+      "files": 47,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-30-shadcn-prototype",
+      "files": 44,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-10-01-execution-efficiency-research",
+      "files": 32,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-26-lifecycle-optimization",
+      "files": 31,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "antdv-next-p0-facts",
+      "files": 29,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-30-workspace-tags",
+      "files": 27,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-10-01-harness-upgrade",
+      "files": 27,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "skill-scope-audit-2026-09-08",
+      "files": 27,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-12-subproject-cli-upgrade",
+      "files": 25,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "technical-design-cli-families-2026-09-08",
+      "files": 24,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-10-01-large-skills-progressive-loading",
+      "files": 23,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-30-shadcn-vue-design-research",
+      "files": 22,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-10-01-fast-execution-optimization",
+      "files": 22,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "data-quality-theme-scaffold-2026-09-15",
+      "files": 22,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-29-document-readability-implementation",
+      "files": 21,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-29-skills-optimization-full-execution",
+      "files": 19,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-16-slice-contract-efficiency",
+      "files": 17,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-28-retirement-implementation",
+      "files": 16,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-16-astra-skills",
+      "files": 15,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-27-lifecycle-evaluation-hardening",
+      "files": 15,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-29-prototype-skills-research",
+      "files": 14,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-29-skills-optimization-implementation",
+      "files": 14,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "cli-sync-upgrade-2026-09-05",
+      "files": 12,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-10-lifecycle-writing",
+      "files": 11,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-10-adhd-integration",
+      "files": 10,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-28-llm-wiki-research",
+      "files": 10,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-30-plan-spec-research",
+      "files": 8,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "technical-design-branches-2026-09-08",
+      "files": 8,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-11-strategic-design-preparation",
+      "files": 7,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-16-backend-platform-hardening",
+      "files": 7,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-23-skill-sync-efficiency",
+      "files": 7,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "strategic-data-quality-theme-2026-09-15",
+      "files": 7,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-28-retirement-plan",
+      "files": 6,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-10-01-lifecycle-semantic-presentation",
+      "files": 6,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-09-plan",
+      "files": 4,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-10-script-performance-followup",
+      "files": 4,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-16-backend-platforms",
+      "files": 4,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-20-openai-skills-audit",
+      "files": 4,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-30-prototype-design-optimization",
+      "files": 4,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-10-01-upgrade-skill-distribution",
+      "files": 4,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "github-workflows-2026-09-10",
+      "files": 4,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-11-strategic-responsibility-confirmation",
+      "files": 3,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-29-document-readability-design",
+      "files": 3,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "backend-delivery-candidate-round5",
+      "files": 3,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "cli-delivery-2026-09-22",
+      "files": 3,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "request-triage-2026-09-10",
+      "files": 3,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-10-plan-entry",
+      "files": 2,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-11-strategic-handoff-v4-path-sync",
+      "files": 2,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-23-yss-backend-component-skills",
+      "files": 2,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-24-template-slimming",
+      "files": 2,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-25-lifecycle-audit",
+      "files": 2,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "user-decision-protocol-2026-09-05",
+      "files": 2,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-10-lifecycle-performance",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-11-profile-skill-sync",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-18-yss-backend-components",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-24-antdv-next-fact-pack-cleanup",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "adr-retirement-design-cli-noop-sync-2026-08-31.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "adr-retirement-fresh-verification-2026-08-31.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "adr-retirement-l3-contract-2026-08-31.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "agents-md-slimming-l3-checkpoint-2026-09-05.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "antd-prototype-integration-research-brief.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "antdv-next-ai-skill-framework-2026-09-04-evidence.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "antdv-next-ai-skill-framework-2026-09-04-research-brief.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "archify-integration-cross-repo-contract-2026-09-01.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "archify-integration-final-release-verification-2026-09-01.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "archify-integration-green-2026-09-01.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "archify-integration-initial-release-verification-2026-09-01.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "archify-integration-l3-checkpoint-2026-09-01.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "archify-integration-l3-release-checkpoint-2026-09-01.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "archify-integration-l3-review-checkpoint-2026-09-01.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "archify-integration-l3-review-checkpoint-round2-2026-09-01.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "archify-integration-pressure-2026-09-01.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "archify-integration-red-2026-09-01.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "archify-integration-refactor-2026-09-01.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "archify-integration-round2-initial-release-verification-2026-09-01.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "awesome-design-md-adoption-2026-09-05-evidence.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "awesome-design-md-adoption-2026-09-05-research-brief.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "awesome-design-md-internal-gap-analysis-2026-09-05.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "awesome-design-md-internal-gap-analysis-task-2026-09-05.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "awesome-design-md-p0-green-2026-09-05.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "awesome-design-md-p0-l3-checkpoint-2026-09-05.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "awesome-design-md-p0-red-2026-09-05.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "awesome-design-md-research-delegation-l1-checkpoint-2026-09-05.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "backend-delivery-cross-repo-contract-2026-09-02.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "backend-delivery-final-release-verification-2026-09-02.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "backend-delivery-green-2026-09-02.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "backend-delivery-initial-release-verification-2026-09-02.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "backend-delivery-l3-checkpoint-2026-09-02.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "backend-delivery-red-2026-09-02.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "backend-delivery-refactor-2026-09-02.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "backend-delivery-submodule-diff-2026-09-02.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "backend-design-gate-l3-checkpoint-2026-09-14.json",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "backend-engineer-plugin-fresh-verification-2026-09-02.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "backend-engineer-plugin-l3-checkpoint-2026-09-02.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "backend-harness-scope-decision-2026-09-01.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "backend-profiles-h2-checkpoint-2026-09-05.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "backend-profiles-h2-design-2026-09-05.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "backend-skill-control-plane-v2-l3-checkpoint-2026-09-04.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "business-language-l3-checkpoint-2026-09-05.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "cli-instance-distribution-boundary-l3-checkpoint-2026-09-10.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "cli-version-bump-l3-checkpoint-2026-09-04.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "context-contract-l3-checkpoint-2026-09-04.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "context-contract-l3-red-green-2026-09-04.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "create-yss-harness-b03-reproduction-2026-08-31.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "create-yss-harness-review-l3-pending-2026-08-31.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "data-quality-theme-scaffold-l3-checkpoint-2026-09-15.json",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "design-md-l3-checkpoint-2026-09-02.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "digital-human-roles-l3-review-request-2026-08-26.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "digital-human-task-package-formal-independent-review-2026-08-27.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "digital-human-task-package-l3-checkpoint-2026-08-27.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "digital-human-task-package-review-task.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "distribution-boundary-l2-checkpoint-2026-08-24.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "distribution-boundary-l2-counterexample-2026-08-24.txt",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "distribution-boundary-l2-fresh-verification-2026-08-24.txt",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "distribution-boundary-l2-review-request-2026-08-24.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "gate-consolidation-2026-09-10",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "gate-consolidation-l3-checkpoint-2026-09-10.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "git-submodule-scope-green-2026-08-24.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "git-submodule-scope-l3-checkpoint.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "git-submodule-scope-l3-review-request-2026-08-24.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "git-submodule-scope-l3-review-request-revision-2026-08-24.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "git-submodule-scope-l3-review-request-writable-api-2026-08-24.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "git-submodule-scope-l3-review-request-writable-oracle-2026-08-24.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "git-submodule-scope-l3-review-request-write-misread-2026-08-24.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "git-submodule-scope-oracle-implementer-measurement-2026-08-24.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "git-submodule-scope-red-2026-08-24.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "git-submodule-scope-review-findings-2026-08-24.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "git-submodule-scope-review-findings-oracle-2026-08-24.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "git-submodule-scope-review-findings-revision-2026-08-24.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "git-submodule-scope-review-findings-writable-api-2026-08-24.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "git-submodule-scope-revision-green-2026-08-24.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "git-submodule-scope-revision-red-2026-08-24.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "git-submodule-scope-writable-api-green-2026-08-24.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "git-submodule-scope-writable-api-red-2026-08-24.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "git-submodule-scope-write-misread-green-2026-08-24.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "git-submodule-scope-write-misread-red-2026-08-24.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "github-submission-2026-09-05.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "html-prototype-research-2026-09-14-research-brief.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "implementation-repository-preparation-l3-checkpoint-2026-09-08.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "lifecycle-ticket-transition-formal-independent-review-2026-08-27.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "lifecycle-ticket-transition-green-2026-08-27.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "lifecycle-ticket-transition-l3-checkpoint-2026-08-27.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "lifecycle-ticket-transition-pressure-2026-08-27.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "lifecycle-ticket-transition-red-2026-08-27.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "lifecycle-ticket-transition-refactor-2026-08-27.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "lifecycle-ticket-transition-review-contract.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "lifecycle-ticket-transition-review-task-package.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "openapi-draft-validation-l3-checkpoint-2026-09-10.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "persistence-skills-hardcoding-removal-l3-checkpoint-2026-09-09.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "prototype-profile-routing-l3-checkpoint-2026-09-04.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "remove-unsupported-agent-platforms-l3-checkpoint-2026-09-04.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "research-antd-cli-skills-prototype-integration-2026-08-23.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "research-git-submodule-layered-integration-2026-08-24.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "research-grok-bot-role-collaboration-2026-08-26.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "research-high-fidelity-prototype-antdv6-audit-2026-09-01.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "research-maven-command-priority-2026-09-03.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "research-prototype-profile-routing-2026-09-04.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "research-prototype-profile-routing-evidence-2026-09-04.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "research-yss-research-enhancement-2026-09-03.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "runtime-projection-retirement-l3-checkpoint-2026-09-10.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "scaffold-architecture-selection-l3-checkpoint-2026-09-05.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "skill-surface-retirement-l3-checkpoint-2026-09-05.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "strategic-data-quality-theme-l3-checkpoint-2026-09-15.json",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "strategic-design-cli-sync-l3-checkpoint-2026-09-04.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "strategic-design-skill-consumption-l3-checkpoint-2026-09-04.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "strategic-handoff-package-implementation.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "template-engineering-status-2026-08-30.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "template-verification-efficiency-l3-checkpoint-2026-08-31.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "template-verification-efficiency-l3-needs-human-checkpoint-2026-09-01.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "template-verification-efficiency-l3-review-checkpoint-2026-09-01.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "template-verification-efficiency-l3-review-checkpoint-round2-2026-09-01.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "template-verification-efficiency-remediation-cycle1-release-checkpoint-2026-09-01.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "template-verification-efficiency-remediation-cycle1-review-checkpoint-2026-09-01.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "template-verification-efficiency-remediation-cycle1-verification-2026-09-01.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "template-verification-efficiency-trial-2026-08-31.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "user-guide-single-document-counterexample-2026-09-01.txt",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "user-guide-single-document-l2-checkpoint-2026-09-01.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "wave-a-skill-discovery-2026-08-22.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "yss-antd-design-l2-checkpoint-2026-08-23.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "yss-antd-design-l2-counterexample-2026-08-23.txt",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "yss-antd-design-l2-fresh-verification-2026-08-23.txt",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "yss-antd-design-l2-review-request-2026-08-23.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "yss-antdv-next-h2-default-l3-checkpoint-2026-09-05.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "yss-antdv-next-provider-p0-l3-checkpoint-2026-09-04.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "yss-ddd-scaffold-compile-analysis-checkpoint-2026-09-03.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "yss-ddd-scaffold-compile-cross-repo-contract-2026-09-03.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "yss-ddd-scaffold-compile-l3-checkpoint-2026-09-03.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "yss-ddd-scaffold-compile-red-green-2026-09-03.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "yss-ddd-scaffold-meta-baseline-analysis-2026-09-03.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "yss-ddd-scaffold-meta-baseline-task-2026-09-03.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "yss-ddd-scaffold-reference-research-2026-09-03.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "yss-ddd-scaffold-reference-research-task-2026-09-03.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "yss-ddd-scaffold-skill-alignment-2026-09-04.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "yss-ddd-scaffold-target-profile-cross-repo-verification-2026-09-03.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "yss-ddd-scaffold-target-profile-l3-checkpoint-2026-09-03.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "yss-ddd-scaffold-target-profile-red-green-2026-09-03.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "yss-default-theme-l2-checkpoint-2026-08-23.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "yss-default-theme-l2-counterexample-2026-08-23.txt",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "yss-default-theme-l2-fresh-verification-2026-08-23.txt",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "yss-default-theme-l2-review-request-2026-08-23.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "yss-design-compact-antdv6-l3-checkpoint-2026-09-05.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "yss-harness-design-agent-rename-l3-checkpoint-2026-09-04.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "yss-product-lifecycle-thin-router-l3-checkpoint-2026-09-09.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "yss-prototype-antdv6-green-2026-09-01.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "yss-prototype-antdv6-l3-checkpoint-2026-09-01.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "yss-prototype-antdv6-pressure-2026-09-01.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "yss-prototype-antdv6-red-2026-09-01.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "yss-prototype-antdv6-refactor-2026-09-01.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "yss-stage-decision-l3-checkpoint-2026-08-27.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "yss-stage-decision-l3-formal-independent-review-2026-08-27.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "yss-stage-decision-l3-green-2026-08-27.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "yss-stage-decision-l3-pressure-2026-08-27.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "yss-stage-decision-l3-red-2026-08-27.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "yss-tactical-design-formal-independent-review-2026-08-27.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "yss-tactical-design-green-2026-08-27.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "yss-tactical-design-l3-checkpoint-2026-08-27.yaml",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "yss-tactical-design-pressure-2026-08-27.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "yss-tactical-design-red-2026-08-27.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "yss-tactical-design-refactor-2026-08-27.md",
+      "files": 1,
+      "inbound": 0,
+      "sources": []
+    },
+    {
+      "round": "2026-09-30-react-prototype-retirement",
+      "files": 2315,
+      "inbound": 1,
+      "sources": [
+        ".template-source/evidence/maintenance/2026-09-30-shadcn-vue-authoring/report.md"
+      ]
+    },
+    {
+      "round": "2026-09-11-oss-landscape",
+      "files": 235,
+      "inbound": 1,
+      "sources": [
+        ".template-source/evidence/maintenance/2026-09-25-lifecycle-audit/lifecycle-skills-research-brief.md"
+      ]
+    },
+    {
+      "round": "antd-html-prototype-2026-09-15",
+      "files": 12,
+      "inbound": 1,
+      "sources": [
+        ".template-source/evidence/maintenance/antd-prototype-integration-research-brief.md"
+      ]
+    },
+    {
+      "round": "2026-09-26-lifecycle-improvement-plan",
+      "files": 4,
+      "inbound": 1,
+      "sources": [
+        ".template-source/evidence/maintenance/2026-09-26-lifecycle-improvement-implementation/implementation-report.md"
+      ]
+    },
+    {
+      "round": "2026-09-29-skills-optimization-plan",
+      "files": 4,
+      "inbound": 1,
+      "sources": [
+        ".template-source/evidence/maintenance/2026-09-29-skills-optimization-implementation/implementation-report.md"
+      ]
+    },
+    {
+      "round": "2026-09-16-approval-efficiency",
+      "files": 3,
+      "inbound": 1,
+      "sources": [
+        ".template-source/evidence/maintenance/2026-09-16-slice-contract-efficiency/implementation-design.md"
+      ]
+    },
+    {
+      "round": "antd-html-prototype-l3-checkpoint-2026-09-15.json",
+      "files": 1,
+      "inbound": 1,
+      "sources": [
+        ".template-source/evidence/maintenance/antd-html-prototype-2026-09-15/verification-summary.md"
+      ]
+    },
+    {
+      "round": "antd-prototype-integration-evidence.yaml",
+      "files": 1,
+      "inbound": 1,
+      "sources": [
+        ".template-source/evidence/maintenance/antd-prototype-integration-research-brief.md"
+      ]
+    },
+    {
+      "round": "html-prototype-research-2026-09-14-evidence.yaml",
+      "files": 1,
+      "inbound": 1,
+      "sources": [
+        ".template-source/evidence/maintenance/html-prototype-research-2026-09-14-research-brief.md"
+      ]
+    },
+    {
+      "round": "strategic-handoff-package",
+      "files": 1,
+      "inbound": 1,
+      "sources": [
+        ".template-source/evidence/maintenance/strategic-handoff-package-implementation.md"
+      ]
+    },
+    {
+      "round": "2026-09-30-prototype-glass-study",
+      "files": 518,
+      "inbound": 2,
+      "sources": [
+        ".template-source/evidence/maintenance/2026-09-30-shadcn-vue-authoring/report.md"
+      ]
+    },
+    {
+      "round": "2026-09-28-cross-platform-skills-research",
+      "files": 23,
+      "inbound": 2,
+      "sources": [
+        ".template-source/evidence/maintenance/2026-09-29-skills-optimization-plan/plan.md"
+      ]
+    },
+    {
+      "round": "dedicated-cli-design-2026-09-07",
+      "files": 3,
+      "inbound": 2,
+      "sources": [
+        ".template-source/contracts/dedicated-harness-cli-design.md"
+      ]
+    },
+    {
+      "round": "yss-ddd-scaffold-target-profile-decision-2026-09-03.md",
+      "files": 1,
+      "inbound": 2,
+      "sources": [
+        ".template-source/evidence/maintenance/yss-ddd-scaffold-compile-red-green-2026-09-03.md",
+        ".template-source/evidence/maintenance/yss-ddd-scaffold-reference-research-2026-09-03.md"
+      ]
+    },
+    {
+      "round": "2026-09-26-lifecycle-comparative-review",
+      "files": 21,
+      "inbound": 3,
+      "sources": [
+        ".template-source/evidence/maintenance/2026-09-26-lifecycle-improvement-plan/optimization-design-plan.md"
+      ]
+    },
+    {
+      "round": "backend-frontend-split",
+      "files": 14,
+      "inbound": 3,
+      "sources": [
+        ".template-source/roadmap/backend-frontend-harness-split.md"
+      ]
+    },
+    {
+      "round": "2026-09-30-enterprise-workspace",
+      "files": 2212,
+      "inbound": 4,
+      "sources": [
+        ".template-source/evidence/maintenance/2026-09-30-workspace-tags/manual-qa.md",
+        ".template-source/evidence/maintenance/2026-09-30-workspace-tags/report.md"
+      ]
+    },
+    {
+      "round": "2026-09-26-lifecycle-improvement-implementation",
+      "files": 189,
+      "inbound": 4,
+      "sources": [
+        ".template-source/evidence/maintenance/2026-09-26-lifecycle-improvement-plan/optimization-design-plan.md",
+        ".template-source/evidence/maintenance/2026-09-27-lifecycle-evaluation-hardening/implementation-report.md"
+      ]
+    }
+  ],
+  "inbound": {
+    ".template-source/evidence/maintenance/2026-09-09-plan": [],
+    ".template-source/evidence/maintenance/2026-09-10-adhd-integration": [],
+    ".template-source/evidence/maintenance/2026-09-10-lifecycle-performance": [],
+    ".template-source/evidence/maintenance/2026-09-10-lifecycle-writing": [],
+    ".template-source/evidence/maintenance/2026-09-10-plan-entry": [],
+    ".template-source/evidence/maintenance/2026-09-10-script-performance-audit": [],
+    ".template-source/evidence/maintenance/2026-09-10-script-performance-followup": [],
+    ".template-source/evidence/maintenance/2026-09-10-script-performance-optimization": [],
+    ".template-source/evidence/maintenance/2026-09-11-oss-landscape": [
+      {
+        "from": ".template-source/evidence/maintenance/2026-09-25-lifecycle-audit/lifecycle-skills-research-brief.md",
+        "line": 10,
+        "to": ".template-source/evidence/maintenance/2026-09-11-oss-landscape/oss-landscape-research-brief.md"
+      }
+    ],
+    ".template-source/evidence/maintenance/2026-09-11-profile-skill-sync": [],
+    ".template-source/evidence/maintenance/2026-09-11-strategic-design-preparation": [],
+    ".template-source/evidence/maintenance/2026-09-11-strategic-handoff-v4-path-sync": [],
+    ".template-source/evidence/maintenance/2026-09-11-strategic-responsibility-confirmation": [],
+    ".template-source/evidence/maintenance/2026-09-12-existing-project-delivery": [],
+    ".template-source/evidence/maintenance/2026-09-12-subproject-cli-upgrade": [],
+    ".template-source/evidence/maintenance/2026-09-16-approval-efficiency": [
+      {
+        "from": ".template-source/evidence/maintenance/2026-09-16-slice-contract-efficiency/implementation-design.md",
+        "line": 18,
+        "to": ".template-source/evidence/maintenance/2026-09-16-approval-efficiency/report.md"
+      }
+    ],
+    ".template-source/evidence/maintenance/2026-09-16-astra-skills": [],
+    ".template-source/evidence/maintenance/2026-09-16-backend-platform-hardening": [],
+    ".template-source/evidence/maintenance/2026-09-16-backend-platforms": [],
+    ".template-source/evidence/maintenance/2026-09-16-slice-contract-efficiency": [],
+    ".template-source/evidence/maintenance/2026-09-18-yss-backend-components": [],
+    ".template-source/evidence/maintenance/2026-09-20-openai-skills-audit": [],
+    ".template-source/evidence/maintenance/2026-09-20-openai-skills-implementation": [],
+    ".template-source/evidence/maintenance/2026-09-23-skill-sync-efficiency": [],
+    ".template-source/evidence/maintenance/2026-09-23-yss-backend-component-skills": [],
+    ".template-source/evidence/maintenance/2026-09-24-antdv-next-fact-pack-cleanup": [],
+    ".template-source/evidence/maintenance/2026-09-24-template-slimming": [],
+    ".template-source/evidence/maintenance/2026-09-25-lifecycle-audit": [],
+    ".template-source/evidence/maintenance/2026-09-26-lifecycle-comparative-review": [
+      {
+        "from": ".template-source/evidence/maintenance/2026-09-26-lifecycle-improvement-plan/optimization-design-plan.md",
+        "line": 11,
+        "to": ".template-source/evidence/maintenance/2026-09-26-lifecycle-comparative-review/lifecycle-review-research-brief.md"
+      },
+      {
+        "from": ".template-source/evidence/maintenance/2026-09-26-lifecycle-improvement-plan/optimization-design-plan.md",
+        "line": 11,
+        "to": ".template-source/evidence/maintenance/2026-09-26-lifecycle-comparative-review/lifecycle-review-evidence.yaml"
+      },
+      {
+        "from": ".template-source/evidence/maintenance/2026-09-26-lifecycle-improvement-plan/optimization-design-plan.md",
+        "line": 246,
+        "to": ".template-source/evidence/maintenance/2026-09-26-lifecycle-comparative-review/lifecycle-review-research-brief.md"
+      }
+    ],
+    ".template-source/evidence/maintenance/2026-09-26-lifecycle-improvement-implementation": [
+      {
+        "from": ".template-source/evidence/maintenance/2026-09-26-lifecycle-improvement-plan/optimization-design-plan.md",
+        "line": 3,
+        "to": ".template-source/evidence/maintenance/2026-09-26-lifecycle-improvement-implementation/implementation-report.md"
+      },
+      {
+        "from": ".template-source/evidence/maintenance/2026-09-26-lifecycle-improvement-plan/optimization-design-plan.md",
+        "line": 201,
+        "to": ".template-source/evidence/maintenance/2026-09-26-lifecycle-improvement-implementation/auth-backend-pilot-readiness.md"
+      },
+      {
+        "from": ".template-source/evidence/maintenance/2026-09-27-lifecycle-evaluation-hardening/implementation-report.md",
+        "line": 38,
+        "to": ".template-source/evidence/maintenance/2026-09-26-lifecycle-improvement-implementation/evaluation-coverage.md"
+      },
+      {
+        "from": ".template-source/evidence/maintenance/2026-09-27-lifecycle-evaluation-hardening/implementation-report.md",
+        "line": 39,
+        "to": ".template-source/evidence/maintenance/2026-09-26-lifecycle-improvement-implementation/auth-backend-pilot-readiness.md"
+      }
+    ],
+    ".template-source/evidence/maintenance/2026-09-26-lifecycle-improvement-plan": [
+      {
+        "from": ".template-source/evidence/maintenance/2026-09-26-lifecycle-improvement-implementation/implementation-report.md",
+        "line": 5,
+        "to": ".template-source/evidence/maintenance/2026-09-26-lifecycle-improvement-plan/optimization-design-plan.md"
+      }
+    ],
+    ".template-source/evidence/maintenance/2026-09-26-lifecycle-optimization": [],
+    ".template-source/evidence/maintenance/2026-09-27-lifecycle-evaluation-hardening": [],
+    ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research": [
+      {
+        "from": ".template-source/evidence/maintenance/2026-09-29-skills-optimization-plan/plan.md",
+        "line": 9,
+        "to": ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/skills-research-brief.md"
+      },
+      {
+        "from": ".template-source/evidence/maintenance/2026-09-29-skills-optimization-plan/plan.md",
+        "line": 9,
+        "to": ".template-source/evidence/maintenance/2026-09-28-cross-platform-skills-research/skills-evidence.yaml"
+      }
+    ],
+    ".template-source/evidence/maintenance/2026-09-28-lifecycle-core-optimization": [],
+    ".template-source/evidence/maintenance/2026-09-28-llm-wiki-implementation": [],
+    ".template-source/evidence/maintenance/2026-09-28-llm-wiki-research": [],
+    ".template-source/evidence/maintenance/2026-09-28-official-spec-research": [],
+    ".template-source/evidence/maintenance/2026-09-28-retirement-implementation": [],
+    ".template-source/evidence/maintenance/2026-09-28-retirement-plan": [],
+    ".template-source/evidence/maintenance/2026-09-28-spec-efficiency-review": [],
+    ".template-source/evidence/maintenance/2026-09-28-spec-efficiency": [],
+    ".template-source/evidence/maintenance/2026-09-29-document-readability-design": [],
+    ".template-source/evidence/maintenance/2026-09-29-document-readability-implementation": [],
+    ".template-source/evidence/maintenance/2026-09-29-prototype-design-enhancement": [],
+    ".template-source/evidence/maintenance/2026-09-29-prototype-skills-research": [],
+    ".template-source/evidence/maintenance/2026-09-29-skills-optimization-full-execution": [],
+    ".template-source/evidence/maintenance/2026-09-29-skills-optimization-implementation": [],
+    ".template-source/evidence/maintenance/2026-09-29-skills-optimization-plan": [
+      {
+        "from": ".template-source/evidence/maintenance/2026-09-29-skills-optimization-implementation/implementation-report.md",
+        "line": 3,
+        "to": ".template-source/evidence/maintenance/2026-09-29-skills-optimization-plan/plan.md"
+      }
+    ],
+    ".template-source/evidence/maintenance/2026-09-30-business-ticket-slice": [],
+    ".template-source/evidence/maintenance/2026-09-30-enterprise-workspace": [
+      {
+        "from": ".template-source/evidence/maintenance/2026-09-30-workspace-tags/manual-qa.md",
+        "line": 5,
+        "to": ".template-source/evidence/maintenance/2026-09-30-enterprise-workspace/review/workspace/index.html"
+      },
+      {
+        "from": ".template-source/evidence/maintenance/2026-09-30-workspace-tags/manual-qa.md",
+        "line": 5,
+        "to": ".template-source/evidence/maintenance/2026-09-30-enterprise-workspace/review/glass/index.html"
+      },
+      {
+        "from": ".template-source/evidence/maintenance/2026-09-30-workspace-tags/manual-qa.md",
+        "line": 5,
+        "to": ".template-source/evidence/maintenance/2026-09-30-enterprise-workspace/review/comfortable/index.html"
+      },
+      {
+        "from": ".template-source/evidence/maintenance/2026-09-30-workspace-tags/report.md",
+        "line": 5,
+        "to": ".template-source/evidence/maintenance/2026-09-30-enterprise-workspace/review/workspace/index.html"
+      }
+    ],
+    ".template-source/evidence/maintenance/2026-09-30-flow-hardening": [],
+    ".template-source/evidence/maintenance/2026-09-30-highfi-components": [],
+    ".template-source/evidence/maintenance/2026-09-30-plan-spec-iteration": [],
+    ".template-source/evidence/maintenance/2026-09-30-plan-spec-research": [],
+    ".template-source/evidence/maintenance/2026-09-30-prototype-compact-theme": [],
+    ".template-source/evidence/maintenance/2026-09-30-prototype-design-optimization": [],
+    ".template-source/evidence/maintenance/2026-09-30-prototype-glass-study": [
+      {
+        "from": ".template-source/evidence/maintenance/2026-09-30-shadcn-vue-authoring/report.md",
+        "line": 40,
+        "to": ".template-source/evidence/maintenance/2026-09-30-prototype-glass-study/screenshots/select-glass-1440.png"
+      },
+      {
+        "from": ".template-source/evidence/maintenance/2026-09-30-shadcn-vue-authoring/report.md",
+        "line": 40,
+        "to": ".template-source/evidence/maintenance/2026-09-30-prototype-glass-study/screenshots/chromium-multi-step-glass-390.png"
+      }
+    ],
+    ".template-source/evidence/maintenance/2026-09-30-prototype-reliability": [],
+    ".template-source/evidence/maintenance/2026-09-30-react-prototype-retirement": [
+      {
+        "from": ".template-source/evidence/maintenance/2026-09-30-shadcn-vue-authoring/report.md",
+        "line": 3,
+        "to": ".template-source/evidence/maintenance/2026-09-30-react-prototype-retirement/report.md"
+      }
+    ],
+    ".template-source/evidence/maintenance/2026-09-30-shadcn-prototype": [],
+    ".template-source/evidence/maintenance/2026-09-30-shadcn-vue-authoring": [],
+    ".template-source/evidence/maintenance/2026-09-30-shadcn-vue-design-research": [],
+    ".template-source/evidence/maintenance/2026-09-30-workspace-tags": [],
+    ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-pilot": [],
+    ".template-source/evidence/maintenance/2026-10-01-execution-efficiency-research": [],
+    ".template-source/evidence/maintenance/2026-10-01-fast-execution-optimization": [],
+    ".template-source/evidence/maintenance/2026-10-01-harness-upgrade": [],
+    ".template-source/evidence/maintenance/2026-10-01-large-skills-progressive-loading": [],
+    ".template-source/evidence/maintenance/2026-10-01-lifecycle-semantic-presentation": [],
+    ".template-source/evidence/maintenance/2026-10-01-structured-json-assets": [],
+    ".template-source/evidence/maintenance/2026-10-01-upgrade-skill-distribution": [],
+    ".template-source/evidence/maintenance/adr-retirement-design-cli-noop-sync-2026-08-31.md": [],
+    ".template-source/evidence/maintenance/adr-retirement-fresh-verification-2026-08-31.md": [],
+    ".template-source/evidence/maintenance/adr-retirement-l3-contract-2026-08-31.yaml": [],
+    ".template-source/evidence/maintenance/agents-md-slimming-l3-checkpoint-2026-09-05.md": [],
+    ".template-source/evidence/maintenance/antd-html-prototype-2026-09-15": [
+      {
+        "from": ".template-source/evidence/maintenance/antd-prototype-integration-research-brief.md",
+        "line": 54,
+        "to": ".template-source/evidence/maintenance/antd-html-prototype-2026-09-15/workbench-result.json"
+      }
+    ],
+    ".template-source/evidence/maintenance/antd-html-prototype-l3-checkpoint-2026-09-15.json": [
+      {
+        "from": ".template-source/evidence/maintenance/antd-html-prototype-2026-09-15/verification-summary.md",
+        "line": 26,
+        "to": ".template-source/evidence/maintenance/antd-html-prototype-l3-checkpoint-2026-09-15.json"
+      }
+    ],
+    ".template-source/evidence/maintenance/antd-prototype-integration-evidence.yaml": [
+      {
+        "from": ".template-source/evidence/maintenance/antd-prototype-integration-research-brief.md",
+        "line": 7,
+        "to": ".template-source/evidence/maintenance/antd-prototype-integration-evidence.yaml"
+      }
+    ],
+    ".template-source/evidence/maintenance/antd-prototype-integration-research-brief.md": [],
+    ".template-source/evidence/maintenance/antdv-next-ai-skill-framework-2026-09-04-evidence.yaml": [],
+    ".template-source/evidence/maintenance/antdv-next-ai-skill-framework-2026-09-04-research-brief.md": [],
+    ".template-source/evidence/maintenance/antdv-next-p0-facts": [],
+    ".template-source/evidence/maintenance/archify-integration-cross-repo-contract-2026-09-01.md": [],
+    ".template-source/evidence/maintenance/archify-integration-final-release-verification-2026-09-01.md": [],
+    ".template-source/evidence/maintenance/archify-integration-green-2026-09-01.md": [],
+    ".template-source/evidence/maintenance/archify-integration-initial-release-verification-2026-09-01.md": [],
+    ".template-source/evidence/maintenance/archify-integration-l3-checkpoint-2026-09-01.yaml": [],
+    ".template-source/evidence/maintenance/archify-integration-l3-release-checkpoint-2026-09-01.yaml": [],
+    ".template-source/evidence/maintenance/archify-integration-l3-review-checkpoint-2026-09-01.yaml": [],
+    ".template-source/evidence/maintenance/archify-integration-l3-review-checkpoint-round2-2026-09-01.yaml": [],
+    ".template-source/evidence/maintenance/archify-integration-pressure-2026-09-01.md": [],
+    ".template-source/evidence/maintenance/archify-integration-red-2026-09-01.md": [],
+    ".template-source/evidence/maintenance/archify-integration-refactor-2026-09-01.md": [],
+    ".template-source/evidence/maintenance/archify-integration-round2-initial-release-verification-2026-09-01.md": [],
+    ".template-source/evidence/maintenance/awesome-design-md-adoption-2026-09-05-evidence.yaml": [],
+    ".template-source/evidence/maintenance/awesome-design-md-adoption-2026-09-05-research-brief.md": [],
+    ".template-source/evidence/maintenance/awesome-design-md-internal-gap-analysis-2026-09-05.md": [],
+    ".template-source/evidence/maintenance/awesome-design-md-internal-gap-analysis-task-2026-09-05.yaml": [],
+    ".template-source/evidence/maintenance/awesome-design-md-p0-green-2026-09-05.md": [],
+    ".template-source/evidence/maintenance/awesome-design-md-p0-l3-checkpoint-2026-09-05.yaml": [],
+    ".template-source/evidence/maintenance/awesome-design-md-p0-red-2026-09-05.md": [],
+    ".template-source/evidence/maintenance/awesome-design-md-research-delegation-l1-checkpoint-2026-09-05.yaml": [],
+    ".template-source/evidence/maintenance/backend-delivery-candidate-round5": [],
+    ".template-source/evidence/maintenance/backend-delivery-cross-repo-contract-2026-09-02.md": [],
+    ".template-source/evidence/maintenance/backend-delivery-final-release-verification-2026-09-02.md": [],
+    ".template-source/evidence/maintenance/backend-delivery-green-2026-09-02.md": [],
+    ".template-source/evidence/maintenance/backend-delivery-initial-release-verification-2026-09-02.md": [],
+    ".template-source/evidence/maintenance/backend-delivery-l3-checkpoint-2026-09-02.yaml": [],
+    ".template-source/evidence/maintenance/backend-delivery-red-2026-09-02.md": [],
+    ".template-source/evidence/maintenance/backend-delivery-refactor-2026-09-02.md": [],
+    ".template-source/evidence/maintenance/backend-delivery-submodule-diff-2026-09-02.md": [],
+    ".template-source/evidence/maintenance/backend-design-gate-l3-checkpoint-2026-09-14.json": [],
+    ".template-source/evidence/maintenance/backend-engineer-plugin-fresh-verification-2026-09-02.md": [],
+    ".template-source/evidence/maintenance/backend-engineer-plugin-l3-checkpoint-2026-09-02.yaml": [],
+    ".template-source/evidence/maintenance/backend-frontend-split": [
+      {
+        "from": ".template-source/roadmap/backend-frontend-harness-split.md",
+        "line": 119,
+        "to": ".template-source/evidence/maintenance/backend-frontend-split/git-delivery.md"
+      },
+      {
+        "from": ".template-source/roadmap/backend-frontend-harness-split.md",
+        "line": 149,
+        "to": ".template-source/evidence/maintenance/backend-frontend-split/verification.md"
+      },
+      {
+        "from": ".template-source/roadmap/backend-frontend-harness-split.md",
+        "line": 149,
+        "to": ".template-source/evidence/maintenance/backend-frontend-split/checkpoint.yaml"
+      }
+    ],
+    ".template-source/evidence/maintenance/backend-harness-scope-decision-2026-09-01.md": [],
+    ".template-source/evidence/maintenance/backend-profiles-h2-checkpoint-2026-09-05.md": [],
+    ".template-source/evidence/maintenance/backend-profiles-h2-design-2026-09-05.md": [],
+    ".template-source/evidence/maintenance/backend-skill-control-plane-v2-l3-checkpoint-2026-09-04.yaml": [],
+    ".template-source/evidence/maintenance/business-language-l3-checkpoint-2026-09-05.yaml": [],
+    ".template-source/evidence/maintenance/cli-delivery-2026-09-22": [],
+    ".template-source/evidence/maintenance/cli-identity-upgrade-2026-09-06": [],
+    ".template-source/evidence/maintenance/cli-instance-distribution-boundary-l3-checkpoint-2026-09-10.yaml": [],
+    ".template-source/evidence/maintenance/cli-sync-upgrade-2026-09-05": [],
+    ".template-source/evidence/maintenance/cli-version-bump-l3-checkpoint-2026-09-04.yaml": [],
+    ".template-source/evidence/maintenance/context-contract-l3-checkpoint-2026-09-04.yaml": [],
+    ".template-source/evidence/maintenance/context-contract-l3-red-green-2026-09-04.md": [],
+    ".template-source/evidence/maintenance/create-yss-harness-b03-reproduction-2026-08-31.md": [],
+    ".template-source/evidence/maintenance/create-yss-harness-review-l3-pending-2026-08-31.yaml": [],
+    ".template-source/evidence/maintenance/data-quality-theme-scaffold-2026-09-15": [],
+    ".template-source/evidence/maintenance/data-quality-theme-scaffold-l3-checkpoint-2026-09-15.json": [],
+    ".template-source/evidence/maintenance/dedicated-cli-design-2026-09-07": [
+      {
+        "from": ".template-source/contracts/dedicated-harness-cli-design.md",
+        "line": 13,
+        "to": ".template-source/evidence/maintenance/dedicated-cli-design-2026-09-07/design-confirmation.json"
+      },
+      {
+        "from": ".template-source/contracts/dedicated-harness-cli-design.md",
+        "line": 37,
+        "to": ".template-source/evidence/maintenance/dedicated-cli-design-2026-09-07/cli-design-research-brief.md"
+      }
+    ],
+    ".template-source/evidence/maintenance/dedicated-cli-implementation-2026-09-07": [],
+    ".template-source/evidence/maintenance/design-md-l3-checkpoint-2026-09-02.yaml": [],
+    ".template-source/evidence/maintenance/digital-human-roles-l3-review-request-2026-08-26.md": [],
+    ".template-source/evidence/maintenance/digital-human-task-package-formal-independent-review-2026-08-27.md": [],
+    ".template-source/evidence/maintenance/digital-human-task-package-l3-checkpoint-2026-08-27.yaml": [],
+    ".template-source/evidence/maintenance/digital-human-task-package-review-task.yaml": [],
+    ".template-source/evidence/maintenance/distribution-boundary-l2-checkpoint-2026-08-24.yaml": [],
+    ".template-source/evidence/maintenance/distribution-boundary-l2-counterexample-2026-08-24.txt": [],
+    ".template-source/evidence/maintenance/distribution-boundary-l2-fresh-verification-2026-08-24.txt": [],
+    ".template-source/evidence/maintenance/distribution-boundary-l2-review-request-2026-08-24.md": [],
+    ".template-source/evidence/maintenance/gate-consolidation-2026-09-10": [],
+    ".template-source/evidence/maintenance/gate-consolidation-l3-checkpoint-2026-09-10.yaml": [],
+    ".template-source/evidence/maintenance/git-submodule-scope-green-2026-08-24.md": [],
+    ".template-source/evidence/maintenance/git-submodule-scope-l3-checkpoint.yaml": [],
+    ".template-source/evidence/maintenance/git-submodule-scope-l3-review-request-2026-08-24.md": [],
+    ".template-source/evidence/maintenance/git-submodule-scope-l3-review-request-revision-2026-08-24.md": [],
+    ".template-source/evidence/maintenance/git-submodule-scope-l3-review-request-writable-api-2026-08-24.md": [],
+    ".template-source/evidence/maintenance/git-submodule-scope-l3-review-request-writable-oracle-2026-08-24.md": [],
+    ".template-source/evidence/maintenance/git-submodule-scope-l3-review-request-write-misread-2026-08-24.md": [],
+    ".template-source/evidence/maintenance/git-submodule-scope-oracle-implementer-measurement-2026-08-24.md": [],
+    ".template-source/evidence/maintenance/git-submodule-scope-red-2026-08-24.md": [],
+    ".template-source/evidence/maintenance/git-submodule-scope-review-findings-2026-08-24.md": [],
+    ".template-source/evidence/maintenance/git-submodule-scope-review-findings-oracle-2026-08-24.md": [],
+    ".template-source/evidence/maintenance/git-submodule-scope-review-findings-revision-2026-08-24.md": [],
+    ".template-source/evidence/maintenance/git-submodule-scope-review-findings-writable-api-2026-08-24.md": [],
+    ".template-source/evidence/maintenance/git-submodule-scope-revision-green-2026-08-24.md": [],
+    ".template-source/evidence/maintenance/git-submodule-scope-revision-red-2026-08-24.md": [],
+    ".template-source/evidence/maintenance/git-submodule-scope-writable-api-green-2026-08-24.md": [],
+    ".template-source/evidence/maintenance/git-submodule-scope-writable-api-red-2026-08-24.md": [],
+    ".template-source/evidence/maintenance/git-submodule-scope-write-misread-green-2026-08-24.md": [],
+    ".template-source/evidence/maintenance/git-submodule-scope-write-misread-red-2026-08-24.md": [],
+    ".template-source/evidence/maintenance/github-submission-2026-09-05.md": [],
+    ".template-source/evidence/maintenance/github-workflows-2026-09-10": [],
+    ".template-source/evidence/maintenance/html-prototype-research-2026-09-14-evidence.yaml": [
+      {
+        "from": ".template-source/evidence/maintenance/html-prototype-research-2026-09-14-research-brief.md",
+        "line": 7,
+        "to": ".template-source/evidence/maintenance/html-prototype-research-2026-09-14-evidence.yaml"
+      }
+    ],
+    ".template-source/evidence/maintenance/html-prototype-research-2026-09-14-research-brief.md": [],
+    ".template-source/evidence/maintenance/implementation-repository-preparation-l3-checkpoint-2026-09-08.yaml": [],
+    ".template-source/evidence/maintenance/lifecycle-ticket-transition-formal-independent-review-2026-08-27.md": [],
+    ".template-source/evidence/maintenance/lifecycle-ticket-transition-green-2026-08-27.md": [],
+    ".template-source/evidence/maintenance/lifecycle-ticket-transition-l3-checkpoint-2026-08-27.yaml": [],
+    ".template-source/evidence/maintenance/lifecycle-ticket-transition-pressure-2026-08-27.md": [],
+    ".template-source/evidence/maintenance/lifecycle-ticket-transition-red-2026-08-27.md": [],
+    ".template-source/evidence/maintenance/lifecycle-ticket-transition-refactor-2026-08-27.md": [],
+    ".template-source/evidence/maintenance/lifecycle-ticket-transition-review-contract.yaml": [],
+    ".template-source/evidence/maintenance/lifecycle-ticket-transition-review-task-package.yaml": [],
+    ".template-source/evidence/maintenance/manual-refresh-2026-09-06": [],
+    ".template-source/evidence/maintenance/openapi-draft-validation-l3-checkpoint-2026-09-10.yaml": [],
+    ".template-source/evidence/maintenance/persistence-skills-hardcoding-removal-l3-checkpoint-2026-09-09.yaml": [],
+    ".template-source/evidence/maintenance/prototype-profile-routing-l3-checkpoint-2026-09-04.yaml": [],
+    ".template-source/evidence/maintenance/remove-unsupported-agent-platforms-l3-checkpoint-2026-09-04.yaml": [],
+    ".template-source/evidence/maintenance/request-triage-2026-09-10": [],
+    ".template-source/evidence/maintenance/research-antd-cli-skills-prototype-integration-2026-08-23.md": [],
+    ".template-source/evidence/maintenance/research-git-submodule-layered-integration-2026-08-24.md": [],
+    ".template-source/evidence/maintenance/research-grok-bot-role-collaboration-2026-08-26.md": [],
+    ".template-source/evidence/maintenance/research-high-fidelity-prototype-antdv6-audit-2026-09-01.md": [],
+    ".template-source/evidence/maintenance/research-maven-command-priority-2026-09-03.md": [],
+    ".template-source/evidence/maintenance/research-prototype-profile-routing-2026-09-04.md": [],
+    ".template-source/evidence/maintenance/research-prototype-profile-routing-evidence-2026-09-04.yaml": [],
+    ".template-source/evidence/maintenance/research-yss-research-enhancement-2026-09-03.md": [],
+    ".template-source/evidence/maintenance/reviews": [],
+    ".template-source/evidence/maintenance/runtime-projection-retirement-l3-checkpoint-2026-09-10.yaml": [],
+    ".template-source/evidence/maintenance/scaffold-architecture-selection-l3-checkpoint-2026-09-05.yaml": [],
+    ".template-source/evidence/maintenance/skill-scope-audit-2026-09-08": [],
+    ".template-source/evidence/maintenance/skill-surface-retirement-l3-checkpoint-2026-09-05.yaml": [],
+    ".template-source/evidence/maintenance/strategic-data-quality-theme-2026-09-15": [],
+    ".template-source/evidence/maintenance/strategic-data-quality-theme-l3-checkpoint-2026-09-15.json": [],
+    ".template-source/evidence/maintenance/strategic-design-cli-sync-l3-checkpoint-2026-09-04.yaml": [],
+    ".template-source/evidence/maintenance/strategic-design-skill-consumption-l3-checkpoint-2026-09-04.yaml": [],
+    ".template-source/evidence/maintenance/strategic-handoff-package-implementation.md": [],
+    ".template-source/evidence/maintenance/strategic-handoff-package": [
+      {
+        "from": ".template-source/evidence/maintenance/strategic-handoff-package-implementation.md",
+        "line": 38,
+        "to": ".template-source/evidence/maintenance/strategic-handoff-package/implementation-digests.json"
+      }
+    ],
+    ".template-source/evidence/maintenance/technical-design-branches-2026-09-08": [],
+    ".template-source/evidence/maintenance/technical-design-cli-families-2026-09-08": [],
+    ".template-source/evidence/maintenance/template-engineering-status-2026-08-30.md": [],
+    ".template-source/evidence/maintenance/template-verification-efficiency-l3-checkpoint-2026-08-31.yaml": [],
+    ".template-source/evidence/maintenance/template-verification-efficiency-l3-needs-human-checkpoint-2026-09-01.yaml": [],
+    ".template-source/evidence/maintenance/template-verification-efficiency-l3-review-checkpoint-2026-09-01.yaml": [],
+    ".template-source/evidence/maintenance/template-verification-efficiency-l3-review-checkpoint-round2-2026-09-01.yaml": [],
+    ".template-source/evidence/maintenance/template-verification-efficiency-remediation-cycle1-release-checkpoint-2026-09-01.yaml": [],
+    ".template-source/evidence/maintenance/template-verification-efficiency-remediation-cycle1-review-checkpoint-2026-09-01.yaml": [],
+    ".template-source/evidence/maintenance/template-verification-efficiency-remediation-cycle1-verification-2026-09-01.md": [],
+    ".template-source/evidence/maintenance/template-verification-efficiency-trial-2026-08-31.md": [],
+    ".template-source/evidence/maintenance/user-decision-protocol-2026-09-05": [],
+    ".template-source/evidence/maintenance/user-guide-single-document-counterexample-2026-09-01.txt": [],
+    ".template-source/evidence/maintenance/user-guide-single-document-l2-checkpoint-2026-09-01.yaml": [],
+    ".template-source/evidence/maintenance/wave-a-skill-discovery-2026-08-22.yaml": [],
+    ".template-source/evidence/maintenance/yss-antd-design-l2-checkpoint-2026-08-23.yaml": [],
+    ".template-source/evidence/maintenance/yss-antd-design-l2-counterexample-2026-08-23.txt": [],
+    ".template-source/evidence/maintenance/yss-antd-design-l2-fresh-verification-2026-08-23.txt": [],
+    ".template-source/evidence/maintenance/yss-antd-design-l2-review-request-2026-08-23.md": [],
+    ".template-source/evidence/maintenance/yss-antdv-next-h2-default-l3-checkpoint-2026-09-05.yaml": [],
+    ".template-source/evidence/maintenance/yss-antdv-next-provider-p0-l3-checkpoint-2026-09-04.yaml": [],
+    ".template-source/evidence/maintenance/yss-ddd-scaffold-compile-analysis-checkpoint-2026-09-03.yaml": [],
+    ".template-source/evidence/maintenance/yss-ddd-scaffold-compile-cross-repo-contract-2026-09-03.md": [],
+    ".template-source/evidence/maintenance/yss-ddd-scaffold-compile-l3-checkpoint-2026-09-03.yaml": [],
+    ".template-source/evidence/maintenance/yss-ddd-scaffold-compile-red-green-2026-09-03.md": [],
+    ".template-source/evidence/maintenance/yss-ddd-scaffold-meta-baseline-analysis-2026-09-03.md": [],
+    ".template-source/evidence/maintenance/yss-ddd-scaffold-meta-baseline-task-2026-09-03.yaml": [],
+    ".template-source/evidence/maintenance/yss-ddd-scaffold-reference-research-2026-09-03.md": [],
+    ".template-source/evidence/maintenance/yss-ddd-scaffold-reference-research-task-2026-09-03.yaml": [],
+    ".template-source/evidence/maintenance/yss-ddd-scaffold-skill-alignment-2026-09-04.yaml": [],
+    ".template-source/evidence/maintenance/yss-ddd-scaffold-target-profile-cross-repo-verification-2026-09-03.md": [],
+    ".template-source/evidence/maintenance/yss-ddd-scaffold-target-profile-decision-2026-09-03.md": [
+      {
+        "from": ".template-source/evidence/maintenance/yss-ddd-scaffold-compile-red-green-2026-09-03.md",
+        "line": 3,
+        "to": ".template-source/evidence/maintenance/yss-ddd-scaffold-target-profile-decision-2026-09-03.md"
+      },
+      {
+        "from": ".template-source/evidence/maintenance/yss-ddd-scaffold-reference-research-2026-09-03.md",
+        "line": 3,
+        "to": ".template-source/evidence/maintenance/yss-ddd-scaffold-target-profile-decision-2026-09-03.md"
+      }
+    ],
+    ".template-source/evidence/maintenance/yss-ddd-scaffold-target-profile-l3-checkpoint-2026-09-03.yaml": [],
+    ".template-source/evidence/maintenance/yss-ddd-scaffold-target-profile-red-green-2026-09-03.md": [],
+    ".template-source/evidence/maintenance/yss-default-theme-l2-checkpoint-2026-08-23.yaml": [],
+    ".template-source/evidence/maintenance/yss-default-theme-l2-counterexample-2026-08-23.txt": [],
+    ".template-source/evidence/maintenance/yss-default-theme-l2-fresh-verification-2026-08-23.txt": [],
+    ".template-source/evidence/maintenance/yss-default-theme-l2-review-request-2026-08-23.md": [],
+    ".template-source/evidence/maintenance/yss-design-compact-antdv6-l3-checkpoint-2026-09-05.yaml": [],
+    ".template-source/evidence/maintenance/yss-harness-design-agent-rename-l3-checkpoint-2026-09-04.yaml": [],
+    ".template-source/evidence/maintenance/yss-product-lifecycle-thin-router-l3-checkpoint-2026-09-09.yaml": [],
+    ".template-source/evidence/maintenance/yss-prototype-antdv6-green-2026-09-01.md": [],
+    ".template-source/evidence/maintenance/yss-prototype-antdv6-l3-checkpoint-2026-09-01.yaml": [],
+    ".template-source/evidence/maintenance/yss-prototype-antdv6-pressure-2026-09-01.md": [],
+    ".template-source/evidence/maintenance/yss-prototype-antdv6-red-2026-09-01.md": [],
+    ".template-source/evidence/maintenance/yss-prototype-antdv6-refactor-2026-09-01.md": [],
+    ".template-source/evidence/maintenance/yss-stage-decision-l3-checkpoint-2026-08-27.yaml": [],
+    ".template-source/evidence/maintenance/yss-stage-decision-l3-formal-independent-review-2026-08-27.md": [],
+    ".template-source/evidence/maintenance/yss-stage-decision-l3-green-2026-08-27.md": [],
+    ".template-source/evidence/maintenance/yss-stage-decision-l3-pressure-2026-08-27.md": [],
+    ".template-source/evidence/maintenance/yss-stage-decision-l3-red-2026-08-27.md": [],
+    ".template-source/evidence/maintenance/yss-tactical-design-formal-independent-review-2026-08-27.md": [],
+    ".template-source/evidence/maintenance/yss-tactical-design-green-2026-08-27.md": [],
+    ".template-source/evidence/maintenance/yss-tactical-design-l3-checkpoint-2026-08-27.yaml": [],
+    ".template-source/evidence/maintenance/yss-tactical-design-pressure-2026-08-27.md": [],
+    ".template-source/evidence/maintenance/yss-tactical-design-red-2026-08-27.md": [],
+    ".template-source/evidence/maintenance/yss-tactical-design-refactor-2026-08-27.md": []
+  }
+}

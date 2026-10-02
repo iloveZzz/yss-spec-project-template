@@ -1,0 +1,1369 @@
+diff --git a/.agents/skills/yss-product-lifecycle/SKILL.md b/.agents/skills/yss-product-lifecycle/SKILL.md
+index 2fe5a0e8849f9395223001c9f063d0dc801cfb16..da2b910a6eedac532e4a354eec5383fafd8f7e4c 100644
+--- a/.agents/skills/yss-product-lifecycle/SKILL.md
++++ b/.agents/skills/yss-product-lifecycle/SKILL.md
+@@ -5,11 +5,11 @@ description: 编排 YSS 研发全生命周期；当阶段、产物、门禁或 S
+ 
+ # YSS Product Lifecycle
+ 
+-合同阅读与托管更新：`scripts/contract view|render|check-views`；见 `.template-spec/process/contract-reading.md`。
++合同阅读与更新：`scripts/contract view|render|check-views`；见 `.template-spec/process/contract-reading.md`。
+ 
+ 五类机器资产默认 JSON；读写、迁移及恢复须遵循 `.template-spec/process/structured-assets.md`。
+ 
+-文档及进度按 `document_writing` 调用 `i-have-adhd`，遵循 `.template-spec/process/document-writing.md`；正文用中文名称与动作，编号按需追踪。
++文档及进度按 `document_writing` 调用 `i-have-adhd`，遵循 `.template-spec/process/document-writing.md`；中文说明，编号按需追踪。
+ 
+ ## 事实源
+ 
+@@ -24,10 +24,10 @@ description: 编排 YSS 研发全生命周期；当阶段、产物、门禁或 S
+ | 影响面、裁剪与维护强度 | `.template-spec/process/harness-process-tailoring.md`、`.template-source/process/maintenance-intensity.yaml` |
+ 
+ ```bash
+-scripts/query-lifecycle-context --mode route --stage stage.plan --work-unit work-unit.plan-requirements --include execution_efficiency
++scripts/query-lifecycle-context --work-unit work-unit.plan-requirements --check-skills
+ ```
+ 
+-`--include` 接受合同顶层键，非法输入失败。详见 `references/orchestration.md`。
++`--include` 限合同顶层键。调用前按 [来源与补装](references/matt-yss-adapter.md) 预检，在既有授权内补装并重验。
+ 
+ 按 `execution_efficiency` 合并查询、复用未变资料；仍核验当前资产、词汇和门禁，产品流转不重跑模板套件。
+ 
+@@ -38,9 +38,9 @@ scripts/query-lifecycle-context --mode route --stage stage.plan --work-unit work
+ 3. 按合同 `request_triage` 选择 `route`、`orchestrate`、`resume`、`audit`；明确行动请求无需模式关键字，意图不明时只读 `route`。`modes`、门禁及授权边界仍适用。
+ 4. `project-instance` 按生命周期注册表推进；`template-source` 只走模板维护流程。
+ 
+-Plan 入口读取 `.template-spec/plan/README.md` 和 `.template-spec/process/plan-migration.md`，核查战略输入与退出条件。关键未决项阻断 Spec；其余记录责任人、解决时点和接收方。只用 Plan 标识，旧阶段不解析，历史批准不自动沿用。
++Plan 入口读 `.template-spec/plan/README.md`、`.template-spec/process/plan-migration.md`，核验战略输入及退出条件。关键未决项阻断 Spec；其余记责任人、解决时点和接收方。只认 Plan 标识，不解析旧阶段，不自动沿用历史批准。
+ 
+-分诊见 [协议](references/request-triage.md) 与 `--include request_triage`。先查证据，只问下一动作所需缺口，不按问题长度追问。
++分诊见 [协议](references/request-triage.md) 与 `--include request_triage`。先查证据，只问下一动作所需缺口。
+ 
+ ## 不可越过的边界
+ 
+@@ -52,9 +52,9 @@ Plan 入口读取 `.template-spec/plan/README.md` 和 `.template-spec/process/pl
+ 
+ 不得越过命中的阶段、门禁、实现仓库准备或 Ticket 正式化。实现只接收绑定垂直切片、已批准且持久化、版本当前并通过完整 `ready-for-agent` 计算的合同；父 Ticket、`ready-for-human` 切片、`stale`、`drift`、`new_impacts`、`violation` 或缺失证据均阻断。实现仓库、脚手架、UI 还原、review input 和发布条件从对应合同子树查询，不在入口重复定义。
+ 
+-聚合批准见 `gate_consolidation`。普通功能默认一个独立审查者，按能力缺口、冲突或外部制度增员；相邻检查组合审查、逐项留证。
++聚合批准见 `gate_consolidation`。默认一名独立审查者，按能力缺口、冲突或外部制度增员；相邻检查可组合，逐项留证。
+ 
+-职责与后端终点见 `execution_scopes`，恢复、编译和派发须复验。保留产品设计门禁，后端交付不等于业务完成或发布。
++职责及后端终点见 `execution_scopes`，恢复、编译、派发须复验。保留产品设计门禁，后端交付不等于业务完成或发布。
+ 
+ ### 用户决定
+ 
+@@ -66,11 +66,11 @@ Plan 入口读取 `.template-spec/plan/README.md` 和 `.template-spec/process/pl
+ 
+ ## 有界编排循环
+ 
+-1. 从真实资产重建当前状态，查询当前 mode、stage、work-unit 及必要合同子树。
+-2. 评估影响面、上游新鲜度、门禁和阻塞，选择第一个未阻塞工作单元；不把 `not-applicable` 当作豁免。
+-3. 原生工作单元由主控持有正式资产；专项按结构化任务包派发，只调用合同允许的 model-invoked skill。
++1. 从真实资产重建状态，查询 mode、stage、work-unit 及必要合同子树。
++2. 核验影响面、上游新鲜度、门禁和阻塞，选择首个未阻塞单元；`not-applicable` 不作豁免。
++3. 主控持有原生正式资产；专项按结构化任务包派发，只调用合同允许的 model-invoked skill。
+ 4. `to-spec`、`to-tickets`、`implement` 等兼容入口只可由用户显式调用。主控预检输入、路径和门禁；入口按 `matt_invocation_boundary` 写入其产物并回交验收，不批准或改变 Ticket 就绪状态。原生资产仍归主控。
+-5. 先逐项验收用户目标、遗漏、错误假设和未决问题，再验收 `Workflow Execution Result`：工作单元、合同、允许写路径、`context_reconciliation`、证据、实际验证、延期 seam、漂移和下一路由必须可核验。实现派发额外绑定当前 Slice Implementation Contract v3；其他阶段不得伪造该合同。
++5. 先对照用户目标检查遗漏、错误假设和未决问题，再核验 `Workflow Execution Result` 的工作单元、合同、允许写路径、`context_reconciliation`、证据、实际验证、延期 seam、漂移和下一路由。实现派发另绑定当前 Slice Implementation Contract v3；其他阶段不伪造该合同。
+ 6. 在授权边界内继续下一工作单元；遇到人工决定、新授权、证据冲突、专项失败或合并/发布结论时暂停。暂停不得阻断独立工作。
+ 
+ 每个 `project-instance` 工作单元批准或流转前，回写稳定术语到唯一根 `CONTEXT.md`，并生成通过校验的 `context_reconciliation`。候选术语、错误路径、摘要漂移或未决冲突必须阻断。质量标准只由 `engineering-baseline` 定义一次；高风险影响按裁剪合同补充反证和残余风险。
+@@ -83,13 +83,13 @@ Plan → Spec（含正式草稿、恢复与显式 `to-spec`）写入前，按 `.
+ 
+ ## 结果与暂停
+ 
+-结构化结果保留模式、仓库身份、阶段/工作单元、影响面、资产/门禁/Ticket/Slice/合同状态、证据新鲜度、就绪、阻塞、本轮动作、下一单元、暂停理由、Ticket 同步和 Git checkpoint；用户说明按中文写作规范呈现。
++每轮返回或暂停，按 `user_progress_report` 说明当前阶段及依据、本轮结果、下一阶段/单元及条件、问题/阻塞、责任方、解除动作与复验、主控动作与用户决定。目标不代表获准进入；未知写“待核验”，负责人缺失写“未登记”。已授权修复继续执行，不只回 Skill 或 JSON。
+ 
+-会签记录保留门禁 ID、`role_id`、`runtime_id`、文件路径、推荐答案和恢复动作；用户提示解释待决定事项与责任方。恢复前运行适用验证器。同一候选通过适用审查与 fresh verification 才可提出完成、合并或发布结论；发布仍须生物人决定。
++发送前核对状态、证据新鲜度、阻塞与结构化结果一致；详见 [结果与友好提示](references/orchestration.md#结果与友好提示)。会签保留门禁、角色/运行时、文件、推荐答案和恢复动作。恢复先验证；完成、合并、发布须同一候选通过适用审查与 fresh verification，发布仍须生物人决定。
+ 
+-Plan / Spec / Design 追踪按 `.template-spec/process/stage-tracking.md`。
++Plan / Spec / Design 追踪见 `.template-spec/process/stage-tracking.md`。
+ 
+-需求澄清读 [对账](references/plan-requirements.md)；外部输入读 [问卷](references/external-input-questionnaire.md)。
++需求澄清读 [对账](references/plan-requirements.md)，外部输入读 [问卷](references/external-input-questionnaire.md)。
+ 
+ Spec 起草业务票，Design 校准后正式化；无设计影响直接正式化，研发再细化 Slice。按 `.template-spec/process/business-tickets.md` 检查覆盖和批准；业务票不授予实现资格。
+ 
+diff --git a/.agents/skills/yss-product-lifecycle/references/matt-yss-adapter.md b/.agents/skills/yss-product-lifecycle/references/matt-yss-adapter.md
+index f87be090b3bbc4a322cc435a0a94339acd30d745..c9a94aecd770f69fa334fd581a33fa4bad29b48b 100644
+--- a/.agents/skills/yss-product-lifecycle/references/matt-yss-adapter.md
++++ b/.agents/skills/yss-product-lifecycle/references/matt-yss-adapter.md
+@@ -1,5 +1,25 @@
+ # Matt / YSS 工作流适配
+ 
++上游来源是 [mattpocock/skills](https://github.com/mattpocock/skills)。固定提交、原始哈希和实际生效的 YSS 适配哈希以根 `skills-lock.json` 为准；补装使用模板快照中的适配版，不直接覆盖为上游最新版本。
++
++项目实例按需分发：注册表中受支持的技能可能尚未安装；改名与别名由 `.template-spec/agents/yss-skill-registry.yaml` 解析；已退役名称按 `.template-spec/agents/skill-migrations.md` 重新路由。这三种情况不能混用，也不需要把整个上游仓库装进实例。
++
++## 工作单元技能预检与补装
++
++准备调用原生工作单元的专项技能前，运行：
++
++```bash
++scripts/query-lifecycle-context --work-unit work-unit.plan-requirements --check-skills --agent-runtime codex
++```
++
++运行时只在实例登记了唯一平台时可以省略；条件依赖用重复的 `--when <条件>` 传入。查询只检查当前工作单元和已触发依赖，不加载兼容入口的纯引用或整个角色技能包。普通查询仍不证明技能已安装。
++
++`skill_readiness` 为 `ready` 时退出 0；`missing` / `blocked` 时退出 2；非法输入或查询失败退出 1。技能可用不证明阶段批准、切片资格或任务完成。
++
++收到 `missing` 后，由 Agent 执行结果中的 `remediation.plan_command`，核对新增技能、路径和依赖。已有任务授权覆盖该范围且计划无冲突时执行 `apply_command`，利用现有事务刷新锁文件并校验实例；随后重新执行同一预检，通过后才调用技能。安装 user-invoked 技能不授予调用资格。
++
++`blocked` 中的受管文件丢失、哈希／投影漂移、同名路径冲突、运行时未配置、退役或外部技能缺失必须分别处理；CLI 快照不匹配时补装计划也会拒绝。不得自动覆盖、强制同步或扩展迁移范围。旧实例只读检查现有文件，缺失时按本家族 CLI 规划同步或迁移，不自动转换分发模式。
++
+ Matt skills 决定如何工作；YSS 生命周期决定是否允许推进；YSS 专项 skills 决定如何符合工程规范。
+ 
+ 生命周期默认使用 `work_unit_routes.*.native`；下表中的 Matt flow 是 `work_unit_routes.*.compatibility` 显式兼容输入。兼容入口的正式资产由用户创建并回交生命周期验收，原生工作单元的正式资产由生命周期编排器创建。
+diff --git a/.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml b/.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml
+index bdc2ed8d9882ab978ee41d1a839f41fc47221f23..a065bb00fbdf7eee2db669863e8c9d3b1e992deb 100644
+--- a/.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml
++++ b/.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml
+@@ -11,6 +11,45 @@ document_writing:
+   artifact_ownership: unchanged
+   gate_and_status_semantics: unchanged
+ 
++user_progress_report:
++  owner: yss-product-lifecycle
++  reference: references/orchestration.md#结果与友好提示
++  writing_reference: .template-spec/process/document-writing.md#4-进度与会签提示
++  emit_on: [ controller-return, status-request, resume, stage-boundary, blocked, human-pause, handoff, completion-assessment ]
++  ordinary_progress: meaningful-changes-only
++  audience: current-feature-or-authorized-task
++  sources: [ current-checkpoint, stage-tracking, readable-assets, applicable-verification, lifecycle-registry, orchestration-contract ]
++  required_information: [ current-stage-and-work-unit, state-basis, this-turn-outcome, next-stage-and-work-unit, entry-conditions, issues-and-blockers, registered-owner, recovery-action-and-recheck, agent-next-action, user-action-if-required, evidence-freshness ]
++  structured_result_fields: [ mode, repository_mode, stage, work_unit, impacts, artifacts, gates, tickets, slices, contracts, evidence_freshness, readiness, blockers, actions_taken, next_work_unit, pause_reason, ticket_sync, git_checkpoint ]
++  presentation_is: derived-explanation-never-approval-or-execution-authorization
++  next_stage:
++    source: current-registered-work-unit-stage-association-and-validated-route
++    stage-order-as-route: forbidden
++    same_stage: explain-remaining-work-in-current-stage
++    unresolved_or_missing_route: not-verified-with-missing-input
++    terminal: explain-verified-task-or-execution-scope-endpoint
++    planned_target_is_approved_transition: false
++    include: [ expected-output, applicable-entry-conditions, unmet-preconditions ]
++  issues:
++    classification: [ blocker, nonblocking-open-question, suggestion ]
++    blocker_fields: [ problem, affected-action, source-ref, registered-owner, resolution-action, resolution-evidence, resume-verification ]
++    all_material_blockers_visible: true
++    unknown_owner: not-registered-never-auto-assigned
++    nonblocking_items: retain-owner-resolution-time-and-receiver-or-backlog-ref
++    missing_or_stale_evidence: not-verified-with-recovery-action
++    no_blockers_claim: current-applicable-verification-required
++    readonly_no_findings: no-detected-blockers-with-unchecked-scope
++  recovery:
++    authorized_agent_actions: continue-and-report-result
++    dependent_actions: wait-for-real-input-or-current-valid-approval
++    independent_authorized_work: continue
++    human_action: explain-why-needed-source-scope-options-and-resume-condition
++    commands: actual-applicable-validator-and-arguments-never-invented
++  before_send: [ current-state-matches-evidence, next-route-and-entry-conditions-explained, blockers-have-actionable-recovery, owner-is-registered-or-explicitly-missing, freshness-and-unchecked-scope-visible, user-text-matches-structured-result, authorized-work-not-shifted-to-user ]
++  template_source: maintenance-step-and-verification-target-never-product-stage
++  invalid_identity: explain-manifest-error-and-migration-check-without-guessing-stage
++  forbidden: [ skill-name-only-return, raw-json-only-user-answer, bare-blocked-without-recovery, stage-complete-from-file-existence, repeated-approval-without-new-boundary ]
++
+ backend_architecture_identity_policy:
+   source: .template-spec/agents/yss-skill-registry.yaml
+   generated_profiles: architecture_profiles
+@@ -312,6 +351,23 @@ skill_source_contract:
+   adaptation_ref_required_when_effective_diff: true
+   retired_shared_skills: [ yss-antd-design, yss-antdv-next-design, ask-matt, batch-grill-me, grill-me, dispatching-parallel-agents, loop-me, migrate-to-shoehorn, product-design-prototype, prototype-page-acceptance, scaffold-exercises, setup-pre-commit, setup-ts-deep-modules, teach, writing-beats, writing-fragments, writing-shape, yss-components, yss-dictionary, yss-jdbc, yss-log, yss-microapp-commit, yss-mvc-scaffold-generator, yss-mvc-design, yss-mvc-data-analysis-project-initializer, yss-backend-scaffold-parent, yss-page-module-development, yss-taskflow, yss-backend-scaffold-application, yss-backend-scaffold-domain, yss-backend-scaffold-infrastructure, yss-backend-scaffold-web, yss-backend-scaffold-adapter, yss-application-layer-reference, yss-domain-layer-reference, yss-infrastructure-layer-reference, yss-web-layer-reference ]
+ 
++skill_preflight:
++  command: scripts/query-lifecycle-context
++  enable_flag: --check-skills
++  scope: selected-work-unit-and-active-context-dependencies
++  readonly: true
++  statuses: [ ready, missing, blocked ]
++  exit_codes: { ready: 0, missing_or_blocked: 2, invalid_input_or_execution_error: 1 }
++  runtime_selection: explicit-or-single-registered-runtime
++  conditional_dependencies: explicit-when-triggers
++  excludes: [ compatibility-references, complete-role-skill-lists, other-work-units ]
++  installation: existing-family-cli-plan-then-apply
++  apply_requires: [ existing-task-authorization-covers-plan, no-conflicts ]
++  after_apply: rerun-current-work-unit-preflight
++  never_grants: [ skill-invocation-permission, stage-approval, ready-for-agent, completion ]
++  block_current_invocation_on: [ managed-file-missing, hash-drift, projection-drift, path-conflict, runtime-unavailable, external-skill-unavailable, retired-skill, cli-snapshot-mismatch ]
++  automatic_force_or_migration: forbidden
++
+ # 生命周期默认走原生工作单元；Matt user-invoked skill 仅保留为兼容入口。
+ lifecycle_native_entries:
+   default_entry: yss-product-lifecycle
+diff --git a/.agents/skills/yss-product-lifecycle/references/orchestration.md b/.agents/skills/yss-product-lifecycle/references/orchestration.md
+index 1dd7dcf1c97a19bb2998b52bb596c2d9d3ac91c1..f12fa65e5ce1630a39a72523ccec8e91c3c950b4 100644
+--- a/.agents/skills/yss-product-lifecycle/references/orchestration.md
++++ b/.agents/skills/yss-product-lifecycle/references/orchestration.md
+@@ -9,6 +9,8 @@
+ 5. 执行最小生命周期工作单元：主控先按 `.template-spec/process/schemas/digital-human-task-package.schema.json` 编译并校验任务包，再只实际调用允许的 model-invoked skill；原生工作单元可直接持有正式资产，Matt 兼容 user-invoked skill 仅作为 workflow reference，仍由用户显式启动。将结果归一化为 `Workflow Execution Result`，验收输出并回写状态与证据。任务包的 `contract.kind` 按工作单元选择；只有实现子任务使用 `slice-implementation` 并消费 Slice Implementation Contract，其他阶段不伪造该合同。
+ 6. 若仍在授权和自动推进边界内，回到第 3 步；否则暂停。
+ 
++第 5 步调用专项技能前，执行 `scripts/query-lifecycle-context --work-unit <当前工作单元> --check-skills`，多运行时显式指定 `--agent-runtime`，条件依赖传入 `--when`。按 `skill_preflight` 和 [来源与补装协议](matt-yss-adapter.md) 处理结果：缺失时核对现有 CLI 计划，在既有授权内安装并重新预检；漂移、冲突、缺运行时和版本不匹配暂停当前调用。纯查询、安装或预检通过均不能代替调用资格、批准或完成证据。
++
+ 不要仅输出下一个提示词后结束 `orchestrate`/`resume`。不要因进入业务代码阶段而退出主控；应把实现交给专项 skill，并在返回后继续核验。
+ 
+ 连续阶段自动推进时累积 Ticket 同步和 Git 判断证据，在阶段退出、人工暂停、handoff、进入实现、合并或发布边界集中 checkpoint。发生阻塞、责任人变化或资产需要单独批准时立即落 checkpoint，不因合并记录而丢失阶段因果关系。
+@@ -21,6 +23,22 @@
+ 
+ 上游变化按既有依赖关系使受影响资产过期，保留未受影响工作和历史记录；恢复、派发和交付边界仍执行适用 Context、决定/延续、门禁、仓库和允许写范围的校验。核验后输入变化即重验。有效授权不重复询问；未知或实质变化回交原责任方。历史实例缺 stage_tracking 时按已登记兼容和显式迁移入口处理，状态查询不自动补写。
+ 
++## 结果与友好提示
++
++按 `orchestration-contract.yaml.user_progress_report`，每轮主控返回、状态询问、恢复、阶段切换、阻塞和暂停都提供当前任务的中文说明。先回答当前在哪一步、这轮取得什么结果，再说明下一阶段或单元、进入条件及未满足项。阶段和名称读取注册表，状态来自当前 checkpoint、资产和适用验证；未核验写“待核验”，未登记负责人写“未登记”。普通过程更新只报有意义的变化，不重复整套状态。
++
++下一工作单元可能仍在当前阶段，要说明先完成哪项工作，再流转到哪里。目标阶段从注册表的工作单元归属和经过验证的路由取得；缺少路由或归属时指出缺口，不按阶段顺序猜测，不把计划目标写成“已进入”。完成当前任务或命中执行范围终点时说明终点与验证依据；没有下一单元不自动代表完成。`template-source` 展示模板维护步骤、验证目标和余项，不套用产品阶段；身份非法时解释清单问题及迁移检查动作。
++
++区分阻塞、非阻断未决项和建议。每项实质阻塞说明具体问题、阻断的动作、来源、已登记责任方、处理动作、解除证据和恢复校验。可以优先解释最关键的问题，但其他实质阻塞也要可见。非阻断项沿用已有责任人、解决时点、接收方或待办引用；缺口如实说明，不把建议变成门禁。只读查询无发现时写“未发现已登记阻塞，完整就绪仍待核验”，不得把空数组、文件存在、历史通过或退出 0 写成“无阻塞 / 可进入下一阶段”。
++
++主控先完成已授权且能够处理的补充、修复和验证，再报告结果；提示本身不是暂停理由。确需用户决定或外部输入时，解释需要什么、来自哪个合同或门禁、影响范围、推荐选项及取舍和收到回复后的恢复动作。等待只阻断依赖工作，其他已授权工作继续。命令从当前适用合同和已有验证器取得，未执行标为待执行；未知原因写当前失败现象与下一项诊断，不编造原因或修复结果。
++
++发送前逐项核对：当前阶段有依据；本轮结果可读取；下一目标和进入条件一致；阻塞有处理与复验方法；责任方已登记或明确缺失；过期、未检查和未完成事项可见；中文提示、结构化结果、Ticket 和 checkpoint 没有矛盾；未把 Agent 可执行的操作转交用户。结构化结果保留 `user_progress_report.structured_result_fields`，此说明只消费既有状态，不要求另一套状态文件或新增批准。
++
++下面是虚构的表达示例，不作为真实项目状态或批准：
++
++> 当前仍在 Plan，需求范围已补齐，成功标准的统计口径尚未确认。下一阶段是 Spec；进入前需要确认统计口径并通过当前规划审阅包的适用检查。此项阻断 Plan → Spec，负责人未登记，需要先明确该决定的负责人。收到其真实回复后，主控更新原材料并运行规划进入 Spec 的校验；已授权的独立调研继续进行。
++
+ ## 执行成本
+ 
+ 执行策略以 `orchestration-contract.yaml.execution_efficiency` 为准，通过同一次 `query-lifecycle-context` 查询取得。Plan → Spec → Ticket 的耗时应分清脚本执行、Agent 读取与编排、人工等待；没有计时记录时不把总时长归因于摘要计算。
+diff --git a/.codex/skills/yss-product-lifecycle/SKILL.md b/.codex/skills/yss-product-lifecycle/SKILL.md
+index 2fe5a0e8849f9395223001c9f063d0dc801cfb16..da2b910a6eedac532e4a354eec5383fafd8f7e4c 100644
+--- a/.codex/skills/yss-product-lifecycle/SKILL.md
++++ b/.codex/skills/yss-product-lifecycle/SKILL.md
+@@ -5,11 +5,11 @@ description: 编排 YSS 研发全生命周期；当阶段、产物、门禁或 S
+ 
+ # YSS Product Lifecycle
+ 
+-合同阅读与托管更新：`scripts/contract view|render|check-views`；见 `.template-spec/process/contract-reading.md`。
++合同阅读与更新：`scripts/contract view|render|check-views`；见 `.template-spec/process/contract-reading.md`。
+ 
+ 五类机器资产默认 JSON；读写、迁移及恢复须遵循 `.template-spec/process/structured-assets.md`。
+ 
+-文档及进度按 `document_writing` 调用 `i-have-adhd`，遵循 `.template-spec/process/document-writing.md`；正文用中文名称与动作，编号按需追踪。
++文档及进度按 `document_writing` 调用 `i-have-adhd`，遵循 `.template-spec/process/document-writing.md`；中文说明，编号按需追踪。
+ 
+ ## 事实源
+ 
+@@ -24,10 +24,10 @@ description: 编排 YSS 研发全生命周期；当阶段、产物、门禁或 S
+ | 影响面、裁剪与维护强度 | `.template-spec/process/harness-process-tailoring.md`、`.template-source/process/maintenance-intensity.yaml` |
+ 
+ ```bash
+-scripts/query-lifecycle-context --mode route --stage stage.plan --work-unit work-unit.plan-requirements --include execution_efficiency
++scripts/query-lifecycle-context --work-unit work-unit.plan-requirements --check-skills
+ ```
+ 
+-`--include` 接受合同顶层键，非法输入失败。详见 `references/orchestration.md`。
++`--include` 限合同顶层键。调用前按 [来源与补装](references/matt-yss-adapter.md) 预检，在既有授权内补装并重验。
+ 
+ 按 `execution_efficiency` 合并查询、复用未变资料；仍核验当前资产、词汇和门禁，产品流转不重跑模板套件。
+ 
+@@ -38,9 +38,9 @@ scripts/query-lifecycle-context --mode route --stage stage.plan --work-unit work
+ 3. 按合同 `request_triage` 选择 `route`、`orchestrate`、`resume`、`audit`；明确行动请求无需模式关键字，意图不明时只读 `route`。`modes`、门禁及授权边界仍适用。
+ 4. `project-instance` 按生命周期注册表推进；`template-source` 只走模板维护流程。
+ 
+-Plan 入口读取 `.template-spec/plan/README.md` 和 `.template-spec/process/plan-migration.md`，核查战略输入与退出条件。关键未决项阻断 Spec；其余记录责任人、解决时点和接收方。只用 Plan 标识，旧阶段不解析，历史批准不自动沿用。
++Plan 入口读 `.template-spec/plan/README.md`、`.template-spec/process/plan-migration.md`，核验战略输入及退出条件。关键未决项阻断 Spec；其余记责任人、解决时点和接收方。只认 Plan 标识，不解析旧阶段，不自动沿用历史批准。
+ 
+-分诊见 [协议](references/request-triage.md) 与 `--include request_triage`。先查证据，只问下一动作所需缺口，不按问题长度追问。
++分诊见 [协议](references/request-triage.md) 与 `--include request_triage`。先查证据，只问下一动作所需缺口。
+ 
+ ## 不可越过的边界
+ 
+@@ -52,9 +52,9 @@ Plan 入口读取 `.template-spec/plan/README.md` 和 `.template-spec/process/pl
+ 
+ 不得越过命中的阶段、门禁、实现仓库准备或 Ticket 正式化。实现只接收绑定垂直切片、已批准且持久化、版本当前并通过完整 `ready-for-agent` 计算的合同；父 Ticket、`ready-for-human` 切片、`stale`、`drift`、`new_impacts`、`violation` 或缺失证据均阻断。实现仓库、脚手架、UI 还原、review input 和发布条件从对应合同子树查询，不在入口重复定义。
+ 
+-聚合批准见 `gate_consolidation`。普通功能默认一个独立审查者，按能力缺口、冲突或外部制度增员；相邻检查组合审查、逐项留证。
++聚合批准见 `gate_consolidation`。默认一名独立审查者，按能力缺口、冲突或外部制度增员；相邻检查可组合，逐项留证。
+ 
+-职责与后端终点见 `execution_scopes`，恢复、编译和派发须复验。保留产品设计门禁，后端交付不等于业务完成或发布。
++职责及后端终点见 `execution_scopes`，恢复、编译、派发须复验。保留产品设计门禁，后端交付不等于业务完成或发布。
+ 
+ ### 用户决定
+ 
+@@ -66,11 +66,11 @@ Plan 入口读取 `.template-spec/plan/README.md` 和 `.template-spec/process/pl
+ 
+ ## 有界编排循环
+ 
+-1. 从真实资产重建当前状态，查询当前 mode、stage、work-unit 及必要合同子树。
+-2. 评估影响面、上游新鲜度、门禁和阻塞，选择第一个未阻塞工作单元；不把 `not-applicable` 当作豁免。
+-3. 原生工作单元由主控持有正式资产；专项按结构化任务包派发，只调用合同允许的 model-invoked skill。
++1. 从真实资产重建状态，查询 mode、stage、work-unit 及必要合同子树。
++2. 核验影响面、上游新鲜度、门禁和阻塞，选择首个未阻塞单元；`not-applicable` 不作豁免。
++3. 主控持有原生正式资产；专项按结构化任务包派发，只调用合同允许的 model-invoked skill。
+ 4. `to-spec`、`to-tickets`、`implement` 等兼容入口只可由用户显式调用。主控预检输入、路径和门禁；入口按 `matt_invocation_boundary` 写入其产物并回交验收，不批准或改变 Ticket 就绪状态。原生资产仍归主控。
+-5. 先逐项验收用户目标、遗漏、错误假设和未决问题，再验收 `Workflow Execution Result`：工作单元、合同、允许写路径、`context_reconciliation`、证据、实际验证、延期 seam、漂移和下一路由必须可核验。实现派发额外绑定当前 Slice Implementation Contract v3；其他阶段不得伪造该合同。
++5. 先对照用户目标检查遗漏、错误假设和未决问题，再核验 `Workflow Execution Result` 的工作单元、合同、允许写路径、`context_reconciliation`、证据、实际验证、延期 seam、漂移和下一路由。实现派发另绑定当前 Slice Implementation Contract v3；其他阶段不伪造该合同。
+ 6. 在授权边界内继续下一工作单元；遇到人工决定、新授权、证据冲突、专项失败或合并/发布结论时暂停。暂停不得阻断独立工作。
+ 
+ 每个 `project-instance` 工作单元批准或流转前，回写稳定术语到唯一根 `CONTEXT.md`，并生成通过校验的 `context_reconciliation`。候选术语、错误路径、摘要漂移或未决冲突必须阻断。质量标准只由 `engineering-baseline` 定义一次；高风险影响按裁剪合同补充反证和残余风险。
+@@ -83,13 +83,13 @@ Plan → Spec（含正式草稿、恢复与显式 `to-spec`）写入前，按 `.
+ 
+ ## 结果与暂停
+ 
+-结构化结果保留模式、仓库身份、阶段/工作单元、影响面、资产/门禁/Ticket/Slice/合同状态、证据新鲜度、就绪、阻塞、本轮动作、下一单元、暂停理由、Ticket 同步和 Git checkpoint；用户说明按中文写作规范呈现。
++每轮返回或暂停，按 `user_progress_report` 说明当前阶段及依据、本轮结果、下一阶段/单元及条件、问题/阻塞、责任方、解除动作与复验、主控动作与用户决定。目标不代表获准进入；未知写“待核验”，负责人缺失写“未登记”。已授权修复继续执行，不只回 Skill 或 JSON。
+ 
+-会签记录保留门禁 ID、`role_id`、`runtime_id`、文件路径、推荐答案和恢复动作；用户提示解释待决定事项与责任方。恢复前运行适用验证器。同一候选通过适用审查与 fresh verification 才可提出完成、合并或发布结论；发布仍须生物人决定。
++发送前核对状态、证据新鲜度、阻塞与结构化结果一致；详见 [结果与友好提示](references/orchestration.md#结果与友好提示)。会签保留门禁、角色/运行时、文件、推荐答案和恢复动作。恢复先验证；完成、合并、发布须同一候选通过适用审查与 fresh verification，发布仍须生物人决定。
+ 
+-Plan / Spec / Design 追踪按 `.template-spec/process/stage-tracking.md`。
++Plan / Spec / Design 追踪见 `.template-spec/process/stage-tracking.md`。
+ 
+-需求澄清读 [对账](references/plan-requirements.md)；外部输入读 [问卷](references/external-input-questionnaire.md)。
++需求澄清读 [对账](references/plan-requirements.md)，外部输入读 [问卷](references/external-input-questionnaire.md)。
+ 
+ Spec 起草业务票，Design 校准后正式化；无设计影响直接正式化，研发再细化 Slice。按 `.template-spec/process/business-tickets.md` 检查覆盖和批准；业务票不授予实现资格。
+ 
+diff --git a/.codex/skills/yss-product-lifecycle/references/matt-yss-adapter.md b/.codex/skills/yss-product-lifecycle/references/matt-yss-adapter.md
+index f87be090b3bbc4a322cc435a0a94339acd30d745..c9a94aecd770f69fa334fd581a33fa4bad29b48b 100644
+--- a/.codex/skills/yss-product-lifecycle/references/matt-yss-adapter.md
++++ b/.codex/skills/yss-product-lifecycle/references/matt-yss-adapter.md
+@@ -1,5 +1,25 @@
+ # Matt / YSS 工作流适配
+ 
++上游来源是 [mattpocock/skills](https://github.com/mattpocock/skills)。固定提交、原始哈希和实际生效的 YSS 适配哈希以根 `skills-lock.json` 为准；补装使用模板快照中的适配版，不直接覆盖为上游最新版本。
++
++项目实例按需分发：注册表中受支持的技能可能尚未安装；改名与别名由 `.template-spec/agents/yss-skill-registry.yaml` 解析；已退役名称按 `.template-spec/agents/skill-migrations.md` 重新路由。这三种情况不能混用，也不需要把整个上游仓库装进实例。
++
++## 工作单元技能预检与补装
++
++准备调用原生工作单元的专项技能前，运行：
++
++```bash
++scripts/query-lifecycle-context --work-unit work-unit.plan-requirements --check-skills --agent-runtime codex
++```
++
++运行时只在实例登记了唯一平台时可以省略；条件依赖用重复的 `--when <条件>` 传入。查询只检查当前工作单元和已触发依赖，不加载兼容入口的纯引用或整个角色技能包。普通查询仍不证明技能已安装。
++
++`skill_readiness` 为 `ready` 时退出 0；`missing` / `blocked` 时退出 2；非法输入或查询失败退出 1。技能可用不证明阶段批准、切片资格或任务完成。
++
++收到 `missing` 后，由 Agent 执行结果中的 `remediation.plan_command`，核对新增技能、路径和依赖。已有任务授权覆盖该范围且计划无冲突时执行 `apply_command`，利用现有事务刷新锁文件并校验实例；随后重新执行同一预检，通过后才调用技能。安装 user-invoked 技能不授予调用资格。
++
++`blocked` 中的受管文件丢失、哈希／投影漂移、同名路径冲突、运行时未配置、退役或外部技能缺失必须分别处理；CLI 快照不匹配时补装计划也会拒绝。不得自动覆盖、强制同步或扩展迁移范围。旧实例只读检查现有文件，缺失时按本家族 CLI 规划同步或迁移，不自动转换分发模式。
++
+ Matt skills 决定如何工作；YSS 生命周期决定是否允许推进；YSS 专项 skills 决定如何符合工程规范。
+ 
+ 生命周期默认使用 `work_unit_routes.*.native`；下表中的 Matt flow 是 `work_unit_routes.*.compatibility` 显式兼容输入。兼容入口的正式资产由用户创建并回交生命周期验收，原生工作单元的正式资产由生命周期编排器创建。
+diff --git a/.codex/skills/yss-product-lifecycle/references/orchestration-contract.yaml b/.codex/skills/yss-product-lifecycle/references/orchestration-contract.yaml
+index bdc2ed8d9882ab978ee41d1a839f41fc47221f23..a065bb00fbdf7eee2db669863e8c9d3b1e992deb 100644
+--- a/.codex/skills/yss-product-lifecycle/references/orchestration-contract.yaml
++++ b/.codex/skills/yss-product-lifecycle/references/orchestration-contract.yaml
+@@ -11,6 +11,45 @@ document_writing:
+   artifact_ownership: unchanged
+   gate_and_status_semantics: unchanged
+ 
++user_progress_report:
++  owner: yss-product-lifecycle
++  reference: references/orchestration.md#结果与友好提示
++  writing_reference: .template-spec/process/document-writing.md#4-进度与会签提示
++  emit_on: [ controller-return, status-request, resume, stage-boundary, blocked, human-pause, handoff, completion-assessment ]
++  ordinary_progress: meaningful-changes-only
++  audience: current-feature-or-authorized-task
++  sources: [ current-checkpoint, stage-tracking, readable-assets, applicable-verification, lifecycle-registry, orchestration-contract ]
++  required_information: [ current-stage-and-work-unit, state-basis, this-turn-outcome, next-stage-and-work-unit, entry-conditions, issues-and-blockers, registered-owner, recovery-action-and-recheck, agent-next-action, user-action-if-required, evidence-freshness ]
++  structured_result_fields: [ mode, repository_mode, stage, work_unit, impacts, artifacts, gates, tickets, slices, contracts, evidence_freshness, readiness, blockers, actions_taken, next_work_unit, pause_reason, ticket_sync, git_checkpoint ]
++  presentation_is: derived-explanation-never-approval-or-execution-authorization
++  next_stage:
++    source: current-registered-work-unit-stage-association-and-validated-route
++    stage-order-as-route: forbidden
++    same_stage: explain-remaining-work-in-current-stage
++    unresolved_or_missing_route: not-verified-with-missing-input
++    terminal: explain-verified-task-or-execution-scope-endpoint
++    planned_target_is_approved_transition: false
++    include: [ expected-output, applicable-entry-conditions, unmet-preconditions ]
++  issues:
++    classification: [ blocker, nonblocking-open-question, suggestion ]
++    blocker_fields: [ problem, affected-action, source-ref, registered-owner, resolution-action, resolution-evidence, resume-verification ]
++    all_material_blockers_visible: true
++    unknown_owner: not-registered-never-auto-assigned
++    nonblocking_items: retain-owner-resolution-time-and-receiver-or-backlog-ref
++    missing_or_stale_evidence: not-verified-with-recovery-action
++    no_blockers_claim: current-applicable-verification-required
++    readonly_no_findings: no-detected-blockers-with-unchecked-scope
++  recovery:
++    authorized_agent_actions: continue-and-report-result
++    dependent_actions: wait-for-real-input-or-current-valid-approval
++    independent_authorized_work: continue
++    human_action: explain-why-needed-source-scope-options-and-resume-condition
++    commands: actual-applicable-validator-and-arguments-never-invented
++  before_send: [ current-state-matches-evidence, next-route-and-entry-conditions-explained, blockers-have-actionable-recovery, owner-is-registered-or-explicitly-missing, freshness-and-unchecked-scope-visible, user-text-matches-structured-result, authorized-work-not-shifted-to-user ]
++  template_source: maintenance-step-and-verification-target-never-product-stage
++  invalid_identity: explain-manifest-error-and-migration-check-without-guessing-stage
++  forbidden: [ skill-name-only-return, raw-json-only-user-answer, bare-blocked-without-recovery, stage-complete-from-file-existence, repeated-approval-without-new-boundary ]
++
+ backend_architecture_identity_policy:
+   source: .template-spec/agents/yss-skill-registry.yaml
+   generated_profiles: architecture_profiles
+@@ -312,6 +351,23 @@ skill_source_contract:
+   adaptation_ref_required_when_effective_diff: true
+   retired_shared_skills: [ yss-antd-design, yss-antdv-next-design, ask-matt, batch-grill-me, grill-me, dispatching-parallel-agents, loop-me, migrate-to-shoehorn, product-design-prototype, prototype-page-acceptance, scaffold-exercises, setup-pre-commit, setup-ts-deep-modules, teach, writing-beats, writing-fragments, writing-shape, yss-components, yss-dictionary, yss-jdbc, yss-log, yss-microapp-commit, yss-mvc-scaffold-generator, yss-mvc-design, yss-mvc-data-analysis-project-initializer, yss-backend-scaffold-parent, yss-page-module-development, yss-taskflow, yss-backend-scaffold-application, yss-backend-scaffold-domain, yss-backend-scaffold-infrastructure, yss-backend-scaffold-web, yss-backend-scaffold-adapter, yss-application-layer-reference, yss-domain-layer-reference, yss-infrastructure-layer-reference, yss-web-layer-reference ]
+ 
++skill_preflight:
++  command: scripts/query-lifecycle-context
++  enable_flag: --check-skills
++  scope: selected-work-unit-and-active-context-dependencies
++  readonly: true
++  statuses: [ ready, missing, blocked ]
++  exit_codes: { ready: 0, missing_or_blocked: 2, invalid_input_or_execution_error: 1 }
++  runtime_selection: explicit-or-single-registered-runtime
++  conditional_dependencies: explicit-when-triggers
++  excludes: [ compatibility-references, complete-role-skill-lists, other-work-units ]
++  installation: existing-family-cli-plan-then-apply
++  apply_requires: [ existing-task-authorization-covers-plan, no-conflicts ]
++  after_apply: rerun-current-work-unit-preflight
++  never_grants: [ skill-invocation-permission, stage-approval, ready-for-agent, completion ]
++  block_current_invocation_on: [ managed-file-missing, hash-drift, projection-drift, path-conflict, runtime-unavailable, external-skill-unavailable, retired-skill, cli-snapshot-mismatch ]
++  automatic_force_or_migration: forbidden
++
+ # 生命周期默认走原生工作单元；Matt user-invoked skill 仅保留为兼容入口。
+ lifecycle_native_entries:
+   default_entry: yss-product-lifecycle
+diff --git a/.codex/skills/yss-product-lifecycle/references/orchestration.md b/.codex/skills/yss-product-lifecycle/references/orchestration.md
+index 1dd7dcf1c97a19bb2998b52bb596c2d9d3ac91c1..f12fa65e5ce1630a39a72523ccec8e91c3c950b4 100644
+--- a/.codex/skills/yss-product-lifecycle/references/orchestration.md
++++ b/.codex/skills/yss-product-lifecycle/references/orchestration.md
+@@ -9,6 +9,8 @@
+ 5. 执行最小生命周期工作单元：主控先按 `.template-spec/process/schemas/digital-human-task-package.schema.json` 编译并校验任务包，再只实际调用允许的 model-invoked skill；原生工作单元可直接持有正式资产，Matt 兼容 user-invoked skill 仅作为 workflow reference，仍由用户显式启动。将结果归一化为 `Workflow Execution Result`，验收输出并回写状态与证据。任务包的 `contract.kind` 按工作单元选择；只有实现子任务使用 `slice-implementation` 并消费 Slice Implementation Contract，其他阶段不伪造该合同。
+ 6. 若仍在授权和自动推进边界内，回到第 3 步；否则暂停。
+ 
++第 5 步调用专项技能前，执行 `scripts/query-lifecycle-context --work-unit <当前工作单元> --check-skills`，多运行时显式指定 `--agent-runtime`，条件依赖传入 `--when`。按 `skill_preflight` 和 [来源与补装协议](matt-yss-adapter.md) 处理结果：缺失时核对现有 CLI 计划，在既有授权内安装并重新预检；漂移、冲突、缺运行时和版本不匹配暂停当前调用。纯查询、安装或预检通过均不能代替调用资格、批准或完成证据。
++
+ 不要仅输出下一个提示词后结束 `orchestrate`/`resume`。不要因进入业务代码阶段而退出主控；应把实现交给专项 skill，并在返回后继续核验。
+ 
+ 连续阶段自动推进时累积 Ticket 同步和 Git 判断证据，在阶段退出、人工暂停、handoff、进入实现、合并或发布边界集中 checkpoint。发生阻塞、责任人变化或资产需要单独批准时立即落 checkpoint，不因合并记录而丢失阶段因果关系。
+@@ -21,6 +23,22 @@
+ 
+ 上游变化按既有依赖关系使受影响资产过期，保留未受影响工作和历史记录；恢复、派发和交付边界仍执行适用 Context、决定/延续、门禁、仓库和允许写范围的校验。核验后输入变化即重验。有效授权不重复询问；未知或实质变化回交原责任方。历史实例缺 stage_tracking 时按已登记兼容和显式迁移入口处理，状态查询不自动补写。
+ 
++## 结果与友好提示
++
++按 `orchestration-contract.yaml.user_progress_report`，每轮主控返回、状态询问、恢复、阶段切换、阻塞和暂停都提供当前任务的中文说明。先回答当前在哪一步、这轮取得什么结果，再说明下一阶段或单元、进入条件及未满足项。阶段和名称读取注册表，状态来自当前 checkpoint、资产和适用验证；未核验写“待核验”，未登记负责人写“未登记”。普通过程更新只报有意义的变化，不重复整套状态。
++
++下一工作单元可能仍在当前阶段，要说明先完成哪项工作，再流转到哪里。目标阶段从注册表的工作单元归属和经过验证的路由取得；缺少路由或归属时指出缺口，不按阶段顺序猜测，不把计划目标写成“已进入”。完成当前任务或命中执行范围终点时说明终点与验证依据；没有下一单元不自动代表完成。`template-source` 展示模板维护步骤、验证目标和余项，不套用产品阶段；身份非法时解释清单问题及迁移检查动作。
++
++区分阻塞、非阻断未决项和建议。每项实质阻塞说明具体问题、阻断的动作、来源、已登记责任方、处理动作、解除证据和恢复校验。可以优先解释最关键的问题，但其他实质阻塞也要可见。非阻断项沿用已有责任人、解决时点、接收方或待办引用；缺口如实说明，不把建议变成门禁。只读查询无发现时写“未发现已登记阻塞，完整就绪仍待核验”，不得把空数组、文件存在、历史通过或退出 0 写成“无阻塞 / 可进入下一阶段”。
++
++主控先完成已授权且能够处理的补充、修复和验证，再报告结果；提示本身不是暂停理由。确需用户决定或外部输入时，解释需要什么、来自哪个合同或门禁、影响范围、推荐选项及取舍和收到回复后的恢复动作。等待只阻断依赖工作，其他已授权工作继续。命令从当前适用合同和已有验证器取得，未执行标为待执行；未知原因写当前失败现象与下一项诊断，不编造原因或修复结果。
++
++发送前逐项核对：当前阶段有依据；本轮结果可读取；下一目标和进入条件一致；阻塞有处理与复验方法；责任方已登记或明确缺失；过期、未检查和未完成事项可见；中文提示、结构化结果、Ticket 和 checkpoint 没有矛盾；未把 Agent 可执行的操作转交用户。结构化结果保留 `user_progress_report.structured_result_fields`，此说明只消费既有状态，不要求另一套状态文件或新增批准。
++
++下面是虚构的表达示例，不作为真实项目状态或批准：
++
++> 当前仍在 Plan，需求范围已补齐，成功标准的统计口径尚未确认。下一阶段是 Spec；进入前需要确认统计口径并通过当前规划审阅包的适用检查。此项阻断 Plan → Spec，负责人未登记，需要先明确该决定的负责人。收到其真实回复后，主控更新原材料并运行规划进入 Spec 的校验；已授权的独立调研继续进行。
++
+ ## 执行成本
+ 
+ 执行策略以 `orchestration-contract.yaml.execution_efficiency` 为准，通过同一次 `query-lifecycle-context` 查询取得。Plan → Spec → Ticket 的耗时应分清脚本执行、Agent 读取与编排、人工等待；没有计时记录时不把总时长归因于摘要计算。
+diff --git a/.template-source/distribution/strategic-handoff-tools.lock.json b/.template-source/distribution/strategic-handoff-tools.lock.json
+index fdde18565ad39282390950c5c2963de305c0da80..2ebc38d3aa38288ffcaf58603bc1dd0b21d75bc6 100644
+--- a/.template-source/distribution/strategic-handoff-tools.lock.json
++++ b/.template-source/distribution/strategic-handoff-tools.lock.json
+@@ -2,8 +2,8 @@
+   "schema_version": 1,
+   "target_id": "template-root",
+   "source_repository": "yss-spec-project-template",
+-  "source_revision": "3cc182846b228e11252b2c98d4b0d58d79627627",
+-  "source_state": "committed",
++  "source_revision": "96fc6c6e5362e0df17ab203768d9eb14f1102e49",
++  "source_state": "working-tree",
+   "transformation_set": [
+     "identity"
+   ],
+@@ -162,9 +162,10 @@
+     "scripts/lib/harness-execution-scope.mjs": "sha256:4deb32ba90d322a9d2651adea3d0072de6f151d2c3a7f43389df790012ac0af3",
+     "scripts/lib/implementation-contract-compiler.mjs": "sha256:8ea917697708a36a5e63594a86ad321e73bdffaf89e7288ea9378642ec57aac9",
+     "scripts/lib/json-schema.mjs": "sha256:c2992f55adb5b4469b8dd74ed08583a89907d731ec19be815e4c5625e7146bf4",
++    "scripts/lib/lifecycle-context-query.mjs": "sha256:7f65a8bd3d37ff6ba710eaf11d6b0078c2a1df2844cd0194e91c41c391be3654",
+     "scripts/lib/lifecycle-execution-scope.mjs": "sha256:59907ff74c550573a9389d49ed80007a05dec0c810948ea1e1e55cbc30d27bb2",
+-    "scripts/lib/lifecycle-presentation.mjs": "sha256:9de4290e8cb5b1239b741dda382048447fc2ee7cf331b712046afb5316696b04",
+-    "scripts/lib/lifecycle-status.mjs": "sha256:36171deaef46fc93ca317edd82ecee0d3e54a8c1e9edf095dfcb62c3ab56697a",
++    "scripts/lib/lifecycle-presentation.mjs": "sha256:681c7401c489dee6193a6982d62c7b0e8e3dc785204e6bbc39b964cb8b14103c",
++    "scripts/lib/lifecycle-status.mjs": "sha256:bc4ac0393992067babf076a9ecdf10d380a2d8b7d9772c0cfca65c096d0e26d3",
+     "scripts/lib/maintenance-candidate.mjs": "sha256:4c5c89e66bd71383d8e99a7711370728d0fcf463644977a2af3b14b496dd1ffd",
+     "scripts/lib/openapi-draft-validation.mjs": "sha256:d37ca46115227b8f32fdf8a394086094aac602fbdd77815762a63ad0d39c9bba",
+     "scripts/lib/plan-spec-markdown.mjs": "sha256:e03fd0470e8b5089dc41a02552db3b0faa6b080d65159ae7114802bbb5c047b7",
+@@ -208,11 +209,12 @@
+     "scripts/lib/user-decision-reuse.mjs": "sha256:a9b700cb995987c6417bcd47712e98aab558efa26c0969ce3bbf2c803fed0be9",
+     "scripts/lib/user-decision.mjs": "sha256:bf7b9f31999d51b953e890c677e6a56d6bd8153f58fac8ba02c85c35eda2bf25",
+     "scripts/lib/validation-phase.mjs": "sha256:5a08dc611ef1ad75786c26010ebc1cb25e34c51b0d1a41db17101ffb52daf425",
+-    "scripts/lifecycle-status": "sha256:ba1f351de913f1528ce99a024b93a17e10201d0efb873e56b001beb77be44d98",
++    "scripts/lifecycle-status": "sha256:8b66527cfa8ce51fd74e274c4fae2b6f2b9cad59f911837d9cdf9bdec2602e6a",
+     "scripts/preflight-delivery": "sha256:cd83fa432847207b7167cfb5434846baff7615d5f2ffc33c7e9d4779c419f68f",
+     "scripts/prepare-read-only-intake": "sha256:ec6bbd237994218a0b93e639960c9baeb64b6bdcd0b2c27a53dbe38b611dc438",
+     "scripts/project-ci": "sha256:7fd6e9f0f9ed466cbaf6e23f9e2ffade94d0931995e15b684720890e7fd30ec5",
+     "scripts/project-ci-transition": "sha256:e74d9e776ca9b70153b31528e0f05e634144e247322d79a3bf9f2721645b8f8d",
++    "scripts/query-lifecycle-context": "sha256:74e8f8c9e99d2b5b9e06dae470ef9317fb45b18e97620e8bb4d462e1ea5a22e1",
+     "scripts/run-read-only-intake": "sha256:85996cd6f5adb126f46f5ca74ecb2e175b4b1649c8f8c2cf1d77993fb8fe2288",
+     "scripts/slice-contract": "sha256:219edfe2ba6c13feabd565411b28822e231a9cf72cbb120181dfc736324625c1",
+     "scripts/stage-tracking": "sha256:ca7ecb00b25c7de5c56b78c865ccf25d2408980bc954bb552397cb45fe355a7b",
+@@ -243,7 +245,7 @@
+     "scripts/verify-strategic-handoff-consumption": "sha256:9ab43edbcf48ab6677ca7389e959a557d52939455ed309e5306391aa48ef0b10",
+     "scripts/verify-strategic-handoff-package-scenarios": "sha256:7b7e85b1d6d809173c2cc64eefbd78df9a44e5cf3b2c6e0802d537834f33c341",
+     "scripts/verify-strategic-handoff-tools-lock": "sha256:7b413ccc4ab4dc606113ec9e3f51ddac0d2045a761b18130483a70118c566d9b",
+-    ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml": "sha256:20c957ac168e68ec59754822c0ea1a46bc8a61f9d014bda6a58a9852e9d69a2c",
++    ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml": "sha256:2a1e879bb3162f7fdfb9b4c73f3be6920438e5b7f184801b09777e27a282b58e",
+     ".template-spec/agents/yss-skill-registry.yaml": "sha256:86f2d20bc68ad668a5f89fb7a382c376cb6d489e2bbadb829ba94fa0b871c068"
+   },
+   "effective_files": {
+@@ -401,9 +403,10 @@
+     "scripts/lib/harness-execution-scope.mjs": "sha256:4deb32ba90d322a9d2651adea3d0072de6f151d2c3a7f43389df790012ac0af3",
+     "scripts/lib/implementation-contract-compiler.mjs": "sha256:8ea917697708a36a5e63594a86ad321e73bdffaf89e7288ea9378642ec57aac9",
+     "scripts/lib/json-schema.mjs": "sha256:c2992f55adb5b4469b8dd74ed08583a89907d731ec19be815e4c5625e7146bf4",
++    "scripts/lib/lifecycle-context-query.mjs": "sha256:7f65a8bd3d37ff6ba710eaf11d6b0078c2a1df2844cd0194e91c41c391be3654",
+     "scripts/lib/lifecycle-execution-scope.mjs": "sha256:59907ff74c550573a9389d49ed80007a05dec0c810948ea1e1e55cbc30d27bb2",
+-    "scripts/lib/lifecycle-presentation.mjs": "sha256:9de4290e8cb5b1239b741dda382048447fc2ee7cf331b712046afb5316696b04",
+-    "scripts/lib/lifecycle-status.mjs": "sha256:36171deaef46fc93ca317edd82ecee0d3e54a8c1e9edf095dfcb62c3ab56697a",
++    "scripts/lib/lifecycle-presentation.mjs": "sha256:681c7401c489dee6193a6982d62c7b0e8e3dc785204e6bbc39b964cb8b14103c",
++    "scripts/lib/lifecycle-status.mjs": "sha256:bc4ac0393992067babf076a9ecdf10d380a2d8b7d9772c0cfca65c096d0e26d3",
+     "scripts/lib/maintenance-candidate.mjs": "sha256:4c5c89e66bd71383d8e99a7711370728d0fcf463644977a2af3b14b496dd1ffd",
+     "scripts/lib/openapi-draft-validation.mjs": "sha256:d37ca46115227b8f32fdf8a394086094aac602fbdd77815762a63ad0d39c9bba",
+     "scripts/lib/plan-spec-markdown.mjs": "sha256:e03fd0470e8b5089dc41a02552db3b0faa6b080d65159ae7114802bbb5c047b7",
+@@ -447,11 +450,12 @@
+     "scripts/lib/user-decision-reuse.mjs": "sha256:a9b700cb995987c6417bcd47712e98aab558efa26c0969ce3bbf2c803fed0be9",
+     "scripts/lib/user-decision.mjs": "sha256:bf7b9f31999d51b953e890c677e6a56d6bd8153f58fac8ba02c85c35eda2bf25",
+     "scripts/lib/validation-phase.mjs": "sha256:5a08dc611ef1ad75786c26010ebc1cb25e34c51b0d1a41db17101ffb52daf425",
+-    "scripts/lifecycle-status": "sha256:ba1f351de913f1528ce99a024b93a17e10201d0efb873e56b001beb77be44d98",
++    "scripts/lifecycle-status": "sha256:8b66527cfa8ce51fd74e274c4fae2b6f2b9cad59f911837d9cdf9bdec2602e6a",
+     "scripts/preflight-delivery": "sha256:cd83fa432847207b7167cfb5434846baff7615d5f2ffc33c7e9d4779c419f68f",
+     "scripts/prepare-read-only-intake": "sha256:ec6bbd237994218a0b93e639960c9baeb64b6bdcd0b2c27a53dbe38b611dc438",
+     "scripts/project-ci": "sha256:7fd6e9f0f9ed466cbaf6e23f9e2ffade94d0931995e15b684720890e7fd30ec5",
+     "scripts/project-ci-transition": "sha256:e74d9e776ca9b70153b31528e0f05e634144e247322d79a3bf9f2721645b8f8d",
++    "scripts/query-lifecycle-context": "sha256:74e8f8c9e99d2b5b9e06dae470ef9317fb45b18e97620e8bb4d462e1ea5a22e1",
+     "scripts/run-read-only-intake": "sha256:85996cd6f5adb126f46f5ca74ecb2e175b4b1649c8f8c2cf1d77993fb8fe2288",
+     "scripts/slice-contract": "sha256:219edfe2ba6c13feabd565411b28822e231a9cf72cbb120181dfc736324625c1",
+     "scripts/stage-tracking": "sha256:ca7ecb00b25c7de5c56b78c865ccf25d2408980bc954bb552397cb45fe355a7b",
+@@ -482,7 +486,7 @@
+     "scripts/verify-strategic-handoff-consumption": "sha256:9ab43edbcf48ab6677ca7389e959a557d52939455ed309e5306391aa48ef0b10",
+     "scripts/verify-strategic-handoff-package-scenarios": "sha256:7b7e85b1d6d809173c2cc64eefbd78df9a44e5cf3b2c6e0802d537834f33c341",
+     "scripts/verify-strategic-handoff-tools-lock": "sha256:7b413ccc4ab4dc606113ec9e3f51ddac0d2045a761b18130483a70118c566d9b",
+-    ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml": "sha256:20c957ac168e68ec59754822c0ea1a46bc8a61f9d014bda6a58a9852e9d69a2c",
++    ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml": "sha256:2a1e879bb3162f7fdfb9b4c73f3be6920438e5b7f184801b09777e27a282b58e",
+     ".template-spec/agents/yss-skill-registry.yaml": "sha256:86f2d20bc68ad668a5f89fb7a382c376cb6d489e2bbadb829ba94fa0b871c068"
+   }
+ }
+diff --git a/.template-spec/process/document-writing.md b/.template-spec/process/document-writing.md
+index f4fbb747830e29a76d18b27445da37aac13647b7..ae4ec8f10b75b1c0c524cc52b6a6962a378b4040 100644
+--- a/.template-spec/process/document-writing.md
++++ b/.template-spec/process/document-writing.md
+@@ -73,10 +73,12 @@
+ 
+ 状态阅读可用 `scripts/lifecycle-status --root <项目> --checkpoint <ref> --format text`；默认 JSON 继续供工具读取。该查询及其中文展示均不授予执行或批准权限。
+ 
+-仅在用户询问状态、阶段切换或出现阻塞时，简短展示四项信息：**当前阶段、当前阻塞、谁处理、下一动作**。可以用一句话或四行表达，不要求表格。普通问题直接回答；其他进度更新只说明本轮有意义的变化，状态未变时不重复整套说明。
++生命周期主控每轮返回或暂停，以及用户询问状态、恢复、阶段切换或出现阻塞时，简短说明：**当前阶段与本轮结果、下一阶段或单元及进入条件、问题与阻塞、谁处理及如何解除、下一动作**。依具体内容用连贯短段落或列表，不强制表格或固定行数；输出检查以当前编排合同的 `user_progress_report` 为准。普通问题直接回答；其他进度更新只说明本轮有意义的变化，状态未变时不重复整套说明。
+ 
+ 状态读取已有 checkpoint 和适用验证结果，不建立或要求用户填写另一套状态文件。未核验的阶段或阻塞情况写“待核验”；只有当前适用证据支持时才能写“无阻塞”。证据过期应明确指出过期输入及恢复动作，不能沿用历史通过结论。责任人按已有登记填写，缺失写“未登记”，不自行指派；下一动作说明如何补齐登记或核验。
+ 
++下一单元仍属当前阶段时说明剩余工作；拟进入的下一阶段附进入条件，不把目标写成已获准流转。阻塞逐项说明影响、来源、责任方、处理动作、解除证据和恢复检查；未决项与建议按实际影响表达。只读查询的未发现不等于已核验无阻塞，缺少下一路由不等于完成。模板源展示维护步骤和验证目标，阶段、批准和完成结论仍由原权威合同裁决。
++
+ 默认只展示当前需要处理的事项，证据路径按需展开。查看状态本身不改文件，也不触发全套验证；推进阶段时仍执行原有适用校验。已授权且 Agent 可以完成的动作继续执行，避免把操作转交用户。
+ 
+ 请求决定时展示当前版本、推荐方案及理由、实质选项和取舍、风险、批准范围与后续动作，遵守既有用户决定协议。可以突出当前最重要的问题，但所有影响决定的阻塞和选项都应可见。一次回复需要多个相互独立的决定时，分别说明各自影响。
+diff --git a/scripts/lib/lifecycle-context-query.mjs b/scripts/lib/lifecycle-context-query.mjs
+index 622a07a40f315cf12309ea4da04d0f05c5276b92..95ebb211fea7f6dbfd0a2c9f006fe96e8e74fea2 100644
+--- a/scripts/lib/lifecycle-context-query.mjs
++++ b/scripts/lib/lifecycle-context-query.mjs
+@@ -1,6 +1,8 @@
+ import { loadExecutionScope, assertScopeWorkUnit, scopedNextRoutes } from './lifecycle-execution-scope.mjs';
+ import { createHash } from "node:crypto";
+-import { readFileSync, withValidationPhase, validationDependencies } from "./validation-phase.mjs";
++import { readFileSync, existsSync, lstatSync, readdirSync, withValidationPhase, validationDependencies } from "./validation-phase.mjs";
++import { realpathSync } from "node:fs";
++import { OBSOLETE } from "./skill-supply-chain.mjs";
+ import path from "node:path";
+ import { parseDocument } from "../vendor/yaml.mjs";
+ import { ROOT, loadRegistry, semanticDigest, validateRegistry } from "./lifecycle-registry.mjs";
+@@ -10,6 +12,8 @@ import { loadLifecyclePresenter } from './lifecycle-presentation.mjs';
+ const LIFECYCLE_REGISTRY_REF = ".template-spec/process/lifecycle-registry.yaml";
+ const ORCHESTRATION_CONTRACT_REF = ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml";
+ const SKILL_REGISTRY_REF = ".template-spec/agents/yss-skill-registry.yaml";
++// Governed projections retain the specialist query's existing output contract.
++const QUERY_PROFILE = 'lifecycle';
+ 
+ function read(relativePath) {
+   return readFileSync(path.join(ROOT, relativePath), "utf8");
+@@ -68,7 +72,157 @@ export function queryLifecycleContext(options = {}) {
+   return withValidationPhase({ root: ROOT, purpose: "lifecycle-context-query", readOnly: true }, () => querySnapshot(options));
+ }
+ 
+-function querySnapshot({ mode, stageId, workUnitId, include = [] } = {}) {
++// Availability is an observation, not permission to install, invoke or approve.
++export function inspectWorkUnitSkills({ root = ROOT, registry, route, agentRuntime, when = [] }) {
++  const issues = [], missing = [], required = new Set();
++  const report = (code, skill, ref, message) => issues.push({ code, skill: skill ?? null, ref, message });
++  const definitions = [...(registry.skills ?? []), ...(registry.external_skills ?? [])];
++  const externalIds = new Set((registry.external_skills ?? []).map(skill => skill.id));
++  const aliases = new Map(definitions.flatMap(skill => (skill.aliases ?? []).map(alias => [alias, skill.id])));
++  const roots = registry.agent_runtime_roots ?? registry.instance_distribution?.projection_roots ?? {};
++  const dependencies = registry.skill_dependencies ?? {};
++  function visit(requested) {
++    const id = aliases.get(requested) ?? requested;
++    if (required.has(id)) return;
++    required.add(id);
++    const definition = definitions.find(skill => skill.id === id);
++    if (OBSOLETE.has(id) || definition?.maturity === 'deprecated') {
++      report('skill-retired', id, '.template-spec/agents/skill-migrations.md',
++        definition?.replacement_skill ? '技能已停止新用法；请使用 ' + definition.replacement_skill : '技能已退役；按迁移说明重新路由');
++      return;
++    }
++    if (!definition || (!externalIds.has(id) && !/^[a-z][a-z0-9-]+$/.test(id))) {
++      report('skill-unknown', id, SKILL_REGISTRY_REF, '路由使用未登记的技能');
++      return;
++    }
++    if (externalIds.has(id)) {
++      report('external-skill-required', id, SKILL_REGISTRY_REF, '外部技能须核验实际运行时能力，不能通过共享技能补装代替');
++      return;
++    }
++    for (const dependency of dependencies[id] ?? []) {
++      if (dependency.type === 'context-required' ||
++          (dependency.type === 'context-conditional' && when.includes(dependency.when))) visit(dependency.skill);
++    }
++  }
++  [
++    route?.primary_skill,
++    route?.native?.invocation_mode === 'reference' ? null : route?.native?.skill,
++    ...(route?.supporting_skills ?? []), ...(route?.skills ?? []),
++  ].filter(Boolean).forEach(visit);
++  function readJson(ref) {
++    const file = path.join(root, ref);
++    if (!existsSync(file)) return null;
++    const value = JSON.parse(readFileSync(file, 'utf8'));
++    if (!value || typeof value !== 'object' || Array.isArray(value)) throw new TypeError(ref + ' 必须是 JSON 对象');
++    return value;
++  }
++  const lock = readJson('skills-lock.json');
++  const metadata = readJson('.yss-template.json');
++  const selected = metadata?.distribution?.mode === 'selected' ? metadata.distribution : null;
++  const registeredRuntimes = selected?.runtimes ??
++    Object.keys(roots).filter(runtime => lock?.projectionRoots?.includes(roots[runtime]));
++  if (!agentRuntime && registeredRuntimes.length === 1) agentRuntime = registeredRuntimes[0];
++  if (agentRuntime && !Object.hasOwn(roots, agentRuntime)) throw new TypeError('未知 Agent 运行时: ' + agentRuntime);
++  if (!agentRuntime) report('runtime-required', null, '.yss-template.json', '请用 --agent-runtime 明确指定运行时；只在登记了唯一运行时时自动选择');
++  else if (!registeredRuntimes.includes(agentRuntime)) report('runtime-not-installed', null, '.yss-template.json', '所选运行时未登记；先核对运行时安装范围');
++  if (!lock?.skills?.shared || !Array.isArray(lock.projectionRoots)) report('skill-lock-invalid', null, 'skills-lock.json', '技能锁缺失或结构不支持；先恢复锁文件或规划迁移');
++  if (selected && (!Array.isArray(selected.installedSkills) || !Array.isArray(selected.runtimes) ||
++      JSON.stringify([...selected.runtimes.map(runtime => roots[runtime])].sort()) !== JSON.stringify([...(lock?.projectionRoots ?? [])].sort()))) {
++    report('distribution-lock-drift', null, '.yss-template.json', '实例元数据与技能锁的运行时或安装清单不一致');
++  }
++  const inside = (file, directory) => file === directory || file.startsWith(directory + path.sep);
++  const realRoot = realpathSync(root);
++  function stat(file) {
++    // existsSync observes absence; lstat also identifies occupied dangling links.
++    existsSync(file);
++    return lstatSync(file, { throwIfNoEntry: false });
++  }
++  function checkedTreeHash(directory, canonical, projection = false) {
++    const info = stat(directory);
++    if (!info) return null;
++    const resolved = realpathSync(directory);
++    if (!inside(resolved, realRoot) || (projection && info.isSymbolicLink() && resolved !== realpathSync(canonical)) ||
++        (!projection && info.isSymbolicLink()) || (!info.isDirectory() && !info.isSymbolicLink())) {
++      throw new TypeError('技能目录或投影链接无效: ' + directory);
++    }
++    const files = [];
++    function walk(current, prefix = '') {
++      for (const entry of readdirSync(current, { withFileTypes: true })) {
++        if (entry.name === '.DS_Store' || entry.name === '__pycache__' || /\.(iml|pyc|pyo)$/.test(entry.name)) continue;
++        const file = path.join(current, entry.name), ref = prefix ? prefix + '/' + entry.name : entry.name;
++        const entryInfo = stat(file), real = realpathSync(file);
++        if (!inside(real, resolved)) throw new TypeError('技能文件链接越界: ' + ref);
++        if (entryInfo.isDirectory()) walk(file, ref);
++        else if (entryInfo.isFile() || entryInfo.isSymbolicLink()) files.push([ref, file]);
++        else throw new TypeError('技能包含不支持的文件类型: ' + ref);
++      }
++    }
++    walk(directory);
++    const digest = createHash('sha256');
++    for (const [ref, file] of files.sort(([left], [right]) => left.localeCompare(right))) {
++      const bytes = readFileSync(file);
++      const normalized = bytes.includes(0) ? bytes : Buffer.from(bytes.toString('utf8').replaceAll('\r\n', '\n'));
++      digest.update(ref).update('\0').update(normalized).update('\0');
++    }
++    return digest.digest('hex');
++  }
++  for (const id of [...required].sort()) {
++    if (issues.some(issue => issue.skill === id)) continue;
++    const canonicalRef = '.agents/skills/' + id;
++    const canonical = path.join(root, canonicalRef);
++    const record = lock?.skills?.shared?.[id];
++    const declared = selected?.installedSkills?.includes(id);
++    if (!stat(canonical)) {
++      const managed = Object.keys(metadata?.managedFiles ?? {}).some(ref => ref.startsWith(canonicalRef + '/'));
++      if (record || declared || managed) report('managed-skill-missing', id, canonicalRef, '已登记或受管技能文件丢失；先核对 sync 计划，不能当作未安装补装');
++      else {
++        const occupied = Object.entries(roots).find(([runtime, ref]) => registeredRuntimes.includes(runtime) && stat(path.join(root, ref, id)));
++        if (occupied) report('skill-path-conflict', id, occupied[1] + '/' + id, '同名投影路径已存在但未登记，拒绝覆盖');
++        else missing.push(id);
++      }
++      continue;
++    }
++    if (!record) {
++      report('skill-path-conflict', id, canonicalRef, '同名技能路径存在但未登记，拒绝覆盖');
++      continue;
++    }
++    if (selected && !declared) report('distribution-lock-drift', id, '.yss-template.json', '技能锁与实例安装清单不一致');
++    try {
++      const hash = checkedTreeHash(canonical, canonical);
++      if (!existsSync(path.join(canonical, 'SKILL.md'))) report('managed-skill-missing', id, canonicalRef + '/SKILL.md', '已登记技能缺少入口文件');
++      if (hash !== record.effectiveHash) report('skill-hash-drift', id, canonicalRef, 'canonical 技能内容与锁定有效哈希不一致');
++      const projectionRef = agentRuntime && roots[agentRuntime];
++      if (projectionRef) {
++        if (!lock.projectionRoots.includes(projectionRef) || !record.targets?.includes(projectionRef) || !record.targets?.includes('.agents/skills')) {
++          report('projection-lock-drift', id, 'skills-lock.json', '所选运行时投影目标与技能锁不一致');
++        }
++        const projection = path.join(root, projectionRef, id);
++        if (checkedTreeHash(projection, canonical, true) !== hash) report('projection-drift', id, projectionRef + '/' + id, '运行时投影缺失或与 canonical 内容不一致');
++      }
++    } catch (error) {
++      report('skill-path-invalid', id, canonicalRef, error.message);
++    }
++  }
++  const canEnsure = metadata?.metadataSchemaVersion === 3 && selected && metadata.templateName === 'create-yss-spec';
++  const commandArgs = ['create-yss-spec', 'skills', 'ensure', ...missing.sort(), ...when.flatMap(trigger => ['--when', trigger]), '--target-dir', root];
++  const quote = value => /^[a-zA-Z0-9_./:-]+$/.test(value) ? value : "'" + value.replaceAll("'", "'\\''") + "'";
++  const command = mode => [...commandArgs, mode].map(quote).join(' ');
++  return {
++    read_only: true, execution_allowed: false, agent_runtime: agentRuntime ?? null,
++    required_skills: [...required].sort(), missing_skills: missing,
++    status: issues.length ? 'blocked' : missing.length ? 'missing' : 'ready',
++    issues,
++    remediation: missing.length && !issues.length ? canEnsure
++      ? { plan_command: command('--plan'), apply_command: command('--apply'), authorization: 'existing-task-scope-required', recheck_required: true }
++      : { plan_command: null, apply_command: null, message: '此实例没有可用的 v3 按需补装元数据；按本家族 CLI 规划同步或迁移，保持现有分发模式' }
++      : null,
++  };
++}
++
++function querySnapshot({ mode, stageId, workUnitId, include = [], checkSkills = false, agentRuntime, when = [] } = {}) {
++  if (checkSkills && !workUnitId) throw new TypeError('--check-skills 必须指定 --work-unit');
++  if (!checkSkills && (agentRuntime !== undefined || when.length)) throw new TypeError('--agent-runtime 和 --when 必须与 --check-skills 一起使用');
++  if (!Array.isArray(when) || when.some(trigger => typeof trigger !== 'string' || !/^[a-z][a-z0-9-]+$/.test(trigger))) throw new TypeError('--when 必须是有效的条件触发项');
+   if (!mode && !stageId && !workUnitId && include.length === 0) {
+     throw new TypeError("至少提供 --mode、--stage、--work-unit 或 --include 之一");
+   }
+@@ -77,15 +231,15 @@ function querySnapshot({ mode, stageId, workUnitId, include = [] } = {}) {
+   if (identity.schema_version !== 1 || !["template-source", "project-instance"].includes(identity.repository_mode)) {
+     throw new TypeError("仓库身份或版本无效");
+   }
+-  const scope = loadExecutionScope();
+-  if (workUnitId) assertScopeWorkUnit(workUnitId, { readOnly: true });
++  const scope = QUERY_PROFILE === 'lifecycle' ? loadExecutionScope() : null;
++  if (workUnitId && QUERY_PROFILE === 'lifecycle') assertScopeWorkUnit(workUnitId, { readOnly: true });
+   const lifecycle = validateRegistry(loadRegistry());
+   const orchestration = loadYaml(ORCHESTRATION_CONTRACT_REF, "生命周期编排合同");
+   const skillRegistry = loadSkillRegistry();
+   const planUnit = ['work-unit.plan-opportunity', 'work-unit.plan-requirements', 'work-unit.domain-strategy-design', 'work-unit.stage-decision', 'work-unit.spec-synthesis'].includes(workUnitId);
+   const loadPlan = ['stage.plan', 'stage.spec-architecture'].includes(stageId) || planUnit;
+   stageId ??= planUnit ? 'stage.plan' : undefined;
+-  include = [...include, 'gate_consolidation'];
++  if (QUERY_PROFILE === 'lifecycle') include = [...include, 'gate_consolidation'];
+   if (loadPlan) include = [...include, 'planning', 'grill_exit'];
+   const stage = selectById(lifecycle.stages, stageId, "阶段");
+   const workUnit = selectById(lifecycle.work_units, workUnitId, "工作单元");
+@@ -97,19 +251,19 @@ function querySnapshot({ mode, stageId, workUnitId, include = [] } = {}) {
+   }
+ 
+   const route = workUnitId ? orchestration.work_unit_routes?.[workUnitId] ?? null : null;
+-  if (workUnit?.scope === "project-instance" && workUnit.id !== "work-unit.entry-triage" && !route) {
++  if (QUERY_PROFILE === 'lifecycle' && workUnit?.scope === "project-instance" && workUnit.id !== "work-unit.entry-triage" && !route) {
+     throw new TypeError(`项目工作单元缺少执行路由: ${workUnit.id}`);
+   }
+-  if (workUnit?.scope === "project-instance" && workUnit.id !== "work-unit.entry-triage" && !Object.hasOwn(orchestration.transition_graph?.routes ?? {}, workUnit.id)) {
++  if (QUERY_PROFILE === 'lifecycle' && workUnit?.scope === "project-instance" && workUnit.id !== "work-unit.entry-triage" && !Object.hasOwn(orchestration.transition_graph?.routes ?? {}, workUnit.id)) {
+     throw new TypeError(`项目工作单元缺少流转路由: ${workUnit.id}`);
+   }
+   const gates = lifecycle.gates.filter((gate) => gate.stage === stageId || (loadPlan && gate.stage === 'stage.plan'));
+-  const checks = lifecycle.checks.filter(check => check.stage === stageId || gates.some(gate => gate.requires_checks?.includes(check.id)));
++  const checks = QUERY_PROFILE === 'lifecycle' ? lifecycle.checks.filter(check => check.stage === stageId || gates.some(gate => gate.requires_checks?.includes(check.id))) : [];
+   const artifacts = lifecycle.artifacts.filter((artifact) => artifact.stage === stageId || (loadPlan && artifact.stage === 'stage.plan'));
+   const evidenceIds = new Set([...gates, ...checks].flatMap((gate) => gate.evidence ?? []));
+   const selected = Object.fromEntries(normalizedIncludes.map((key) => [key, orchestration[key]]));
+   const transition = workUnitId ? {
+-    next: scopedNextRoutes(workUnitId, orchestration.transition_graph?.routes?.[workUnitId] ?? []),
++    next: QUERY_PROFILE === 'lifecycle' ? scopedNextRoutes(workUnitId, orchestration.transition_graph?.routes?.[workUnitId] ?? []) : orchestration.transition_graph?.routes?.[workUnitId] ?? [],
+     forbidden_shortcuts: (orchestration.transition_graph?.forbidden_shortcuts ?? [])
+       .filter((edge) => edge.from === workUnitId || edge.to === workUnitId),
+   } : null;
+@@ -143,10 +297,10 @@ function querySnapshot({ mode, stageId, workUnitId, include = [] } = {}) {
+     lifecycle: {
+       artifacts,
+       evidence: lifecycle.evidence.filter((item) => evidenceIds.has(item.id)).map(({ public_description, ...item }) => ({
+-        ...item, description: public_description ?? item.description
++        ...item, ...(QUERY_PROFILE === 'lifecycle' ? { description: public_description ?? item.description } : public_description ? { public_description } : {})
+       })),
+       gates,
+-      checks,
++      ...(QUERY_PROFILE === 'lifecycle' ? { checks } : {}),
+       stage,
+       work_unit: workUnit,
+     },
+@@ -160,12 +314,19 @@ function querySnapshot({ mode, stageId, workUnitId, include = [] } = {}) {
+     },
+     skills: selectedSkills(route, skillRegistry),
+   };
++  if (checkSkills) {
++    result.query.check_skills = true;
++    result.query.when = [...new Set(when)].sort();
++    result.skill_readiness = inspectWorkUnitSkills({ registry: skillRegistry, route, agentRuntime, when: result.query.when });
++  }
++  if (QUERY_PROFILE === 'lifecycle') {
+   const presenter = loadLifecyclePresenter(ROOT);
+   result.presentation = { read_only: true, execution_allowed: false, approval_validity: 'not-checked',
+     names: presenter.catalog(result.lifecycle), sources: presenter.sources, warnings: presenter.warnings };
+   // Include role and transition references from the requested contract subtrees as well.
+   Object.assign(result.presentation.names, presenter.catalog(result.execution));
+   Object.assign(result.presentation.names, presenter.catalog(presenter.roleIds));
++  }
+   result.references = [...collectPathReferences(result), LIFECYCLE_REGISTRY_REF, ORCHESTRATION_CONTRACT_REF, SKILL_REGISTRY_REF]
+     .filter((value, index, all) => all.indexOf(value) === index)
+     .sort();
+diff --git a/scripts/lib/lifecycle-presentation.mjs b/scripts/lib/lifecycle-presentation.mjs
+index 5c86fe5d2199a7dff779f5b8af13e1e78569a153..9ae2b9bbe0ad1e2c0a0d4c5fb74c2b1fac232e99 100644
+--- a/scripts/lib/lifecycle-presentation.mjs
++++ b/scripts/lib/lifecycle-presentation.mjs
+@@ -64,13 +64,18 @@ export function loadLifecyclePresenter(root) {
+ export function renderLifecycleStatus(result) {
+   const view = result.presentation;
+   if (!view) throw Error('缺少状态阅读信息');
++  const ownerNote = issue => ({'work-unit': '（工作单元负责人；问题责任方待确认）', 'checkpoint-pause': '（暂停记录责任方；问题责任方待确认）'}[issue.owner_scope] ?? '');
+   return [
+     `当前阶段：${view.stage}。登记状态：${view.checkpoint_status}。`,
++    `下一阶段（路由目标）：${view.next_stage ?? '待核验'}。${view.next_stage_reason ?? '阶段归属未核验；不代表已批准或可进入'}。`,
+     `当前阻塞：${view.blockers.length ? view.blockers.join('；') : '未登记阻塞；完整就绪与批准仍待核验'}。`,
++    ...(view.issues ?? []).map((issue, index) => `${index + 1}. ${issue.severity === 'error' ? '阻塞' : '待核验问题'}：${issue.message}\n   负责人：${issue.owner}${ownerNote(issue)}；来源：${issue.source_ref ?? '未登记'}\n   处理：${issue.recovery}`),
+     `负责人：${view.owner}。`,
+     `下一项工作：${view.work_unit}。`,
+     ...(view.expected_output ? [`预期产出：${view.expected_output}`] : []),
+     `下一动作：${view.next_action}。`,
++    ...(view.pending_verification?.length ? [`待核验：${view.pending_verification.map(item => item.reason).join('；')}。`] : []),
++    ...(view.continue_conditions?.length ? [`继续条件：${view.continue_conditions.join('；')}。`] : []),
+     ...view.warnings,
+     '本次为只读查询，未核验完整批准或执行授权。',
+   ].join('\n') + '\n';
+diff --git a/scripts/lib/lifecycle-status.mjs b/scripts/lib/lifecycle-status.mjs
+index c76afe2fcd619720deb1168ddcea4447b0581d93..173603060bcd2ab16f86c2ef1968005738bc88ca 100644
+--- a/scripts/lib/lifecycle-status.mjs
++++ b/scripts/lib/lifecycle-status.mjs
+@@ -15,50 +15,97 @@ function parse(bytes) {
+   return document.toJS({ maxAliasCount: 0 });
+ }
+ function source(root, ref) {
+-  const bytes = readFileSync(safeTrackingPath(root, ref));
+-  return { value: parse(bytes), digest: sha(bytes) };
++  try {
++    const bytes = readFileSync(safeTrackingPath(root, ref));
++    return { value: parse(bytes), digest: sha(bytes) };
++  } catch (error) {
++    error.lifecycle_input_ref ??= ref;
++    throw error;
++  }
+ }
+ 
+ /** Read-only projection; checkpoint, registry and orchestration remain authoritative. */
+ export function lifecycleStatus({ root, checkpointRef, taskPackageRef }) {
+   if (!root || !checkpointRef) throw new TypeError('root and checkpoint are required');
+   root = path.resolve(root);
+-  const identity = source(root, 'yss-project.yaml').value;
+-  if (identity.schema_version !== 1 || identity.repository_mode !== 'project-instance') throw new TypeError('生命周期状态仅适用于 project-instance');
++  let identity;
++  try {
++    identity = source(root, 'yss-project.yaml').value;
++    if (identity.schema_version !== 1 || identity.repository_mode !== 'project-instance') throw new TypeError('生命周期状态仅适用于 project-instance');
++  } catch (error) {
++    error.lifecycle_input_ref ??= 'yss-project.yaml';
++    error.lifecycle_input_kind = identity?.schema_version === 1 && identity?.repository_mode === 'template-source' ? 'template-source' : 'manifest';
++    throw error;
++  }
+   const registryRef = '.template-spec/process/lifecycle-registry.yaml';
+   const contractRef = orchestrationRef(root);
+   const checkpoint = source(root, checkpointRef), registry = source(root, registryRef), contract = source(root, contractRef);
+   const value = checkpoint.value;
++  const registeredText = value => typeof value === 'string' && value.trim() ? value : null;
+   if (value.schema_version !== 1 || value.repository_mode !== 'project-instance') throw new TypeError('checkpoint 身份或版本无效');
+   const items = value.stage_tracking?.items ?? [];
+   if (!Array.isArray(items)) throw new TypeError('阶段追踪 items 必须为数组');
+   const activeItems = items.filter(item => item.work_unit === value.next_work_unit && item.progress !== 'cancelled');
+-  const owner = value.pause?.owner_or_authority ?? activeItems.find(item => item.progress !== 'completed')?.owner ?? '未登记';
++  const pauseOwner = registeredText(value.pause?.owner_or_authority);
++  const workUnitOwner = registeredText(activeItems.find(item => item.progress !== 'completed')?.owner);
++  const owner = pauseOwner ?? workUnitOwner ?? '未登记';
++  const defaultOwnerScope = pauseOwner ? 'checkpoint-pause' : workUnitOwner ? 'work-unit' : 'not-recorded';
+   const diagnostics = [], verification_scope = [];
+   const check = (id, status, refs, reason) => verification_scope.push({ id, status, refs, reason });
+-  const issue = (code, message, source_ref, recovery, severity = 'error') => diagnostics.push({ code, message, source_ref, owner, recovery, severity });
++  const issue = (code, message, source_ref, recovery, severity = 'error', issueOwner = owner, ownerScope = defaultOwnerScope) => diagnostics.push({ code, message, source_ref, owner: issueOwner, owner_scope: issueOwner === '未登记' ? 'not-recorded' : ownerScope, recovery, severity });
+   if (!Object.hasOwn(value, 'blockers')) {
+     issue('registered-blockers-missing', 'checkpoint 缺少 blockers；不能据此判定无已登记阻塞', checkpointRef, '核对原始状态并补齐真实阻塞记录后重验');
+   } else if (!Array.isArray(value.blockers)) {
+     issue('registered-blockers-invalid', 'checkpoint.blockers 必须为数组；当前登记不可核验', checkpointRef, '修复阻塞记录类型，保留原有阻塞内容后重验');
+   } else {
+     for (const item of value.blockers) {
+-      issue('registered-blocker', typeof item === 'string' ? item : JSON.stringify(item), checkpointRef, '按原阻塞证据处理并复验');
++      const record = item && typeof item === 'object' && !Array.isArray(item) ? item : {};
++      issue('registered-blocker', registeredText(item) ?? registeredText(record.message) ?? registeredText(record.reason) ?? '已登记阻塞，具体问题尚未说明', registeredText(record.source_ref) ?? checkpointRef, registeredText(record.recovery) ?? '核对原阻塞记录、责任方和证据，明确处理动作后复验', 'error', registeredText(record.owner) ?? owner, registeredText(record.owner) ? 'issue' : defaultOwnerScope);
+     }
+   }
+   check('registered-blockers', diagnostics.length ? 'failed' : 'passed', [checkpointRef], '仅读取已登记阻塞，不代表完整就绪');
+   const stage = registry.value.stages?.find(item => item.id === value.stage);
+   const workUnit = registry.value.work_units?.find(item => item.id === value.next_work_unit);
++  // Only explicit recorded associations identify a target stage. Stage order is not a route.
++  const stageAssociations = workUnit ? [
++    ...(registeredText(workUnit?.stage) ? [{stage: workUnit.stage, ref: registryRef}] : []),
++    ...activeItems.filter(item => registeredText(item.stage)).map(item => ({stage: item.stage, ref: checkpointRef})),
++  ] : [];
++  const stageIds = [...new Set(stageAssociations.map(item => item.stage))];
++  const nextStage = stageIds.length === 1 && registry.value.stages?.some(item => item.id === stageIds[0]) ? stageIds[0] : null;
++  const nextStageReason = !value.next_work_unit ? '未登记下一工作单元；需核验当前阶段验收与终点，不能据此判定完成'
++    : stageIds.length > 1 ? '下一工作单元的已登记阶段归属存在冲突；核对权威记录后重验'
++    : stageIds.length === 1 && !nextStage ? '下一工作单元的阶段归属未在注册表中识别；核对当前来源后重验'
++    : !nextStage ? '下一工作单元尚未登记阶段归属；核验当前路由与阶段追踪后确认'
++    : nextStage === value.stage ? '下一工作单元仍在当前阶段，先完成当前单元并验收，再核验后续流转；不代表已批准或可进入'
++    : '来自下一工作单元的已登记阶段归属，仅为路由目标，不代表已批准或可进入';
++  check('next-stage-association', nextStage ? 'passed' : 'not-checked', [...new Set(stageAssociations.map(item => item.ref))], nextStageReason);
++  if (stageIds.length > 1 || (stageIds.length === 1 && !nextStage)) issue('next-stage-unverifiable', nextStageReason, checkpointRef, '核对下一工作单元的已登记阶段归属并执行适用预检，不按阶段顺序猜目标', 'warning');
+   if (!stage) issue('unknown-stage', `未知阶段: ${value.stage}`, registryRef, '按注册表核对当前阶段');
+   if (value.next_work_unit && !workUnit) issue('unknown-work-unit', `未知下一工作单元: ${value.next_work_unit}`, registryRef, '按注册表核对下一工作单元');
+   if (workUnit && workUnit.id !== 'work-unit.entry-triage' && !contract.value.work_unit_routes?.[workUnit.id]) issue('missing-route', `缺少执行路由: ${workUnit.id}`, contractRef, '修复当前合同路由后重验');
+   check('stage-and-route', diagnostics.some(x => ['unknown-stage', 'unknown-work-unit', 'missing-route'].includes(x.code)) ? 'failed' : 'passed', [registryRef, contractRef], '仅检查身份与路由存在，不计算完整 frontier');
+   if (value.context_reconciliation?.status === 'blocked') issue('context-blocked', '术语对账受阻', checkpointRef, '修复词汇对账并执行适用校验');
+   check('context-reconciliation', value.context_reconciliation?.status === 'blocked' ? 'failed' : 'not-checked', [value.context_reconciliation?.ref].filter(Boolean), '读取登记状态；当前对账内容和摘要仍须由原验证器核验');
+-  for (const [id, gate] of Object.entries(value.gates ?? {})) {
+-    if (['blocked', 'stale'].includes(gate?.status)) issue('gate-blocked', `${id}: ${gate.status}`, checkpointRef, '核对受影响依据和当前批准');
++  const gateNames = {blocked: '受阻', stale: '依据已过期', pending: '等待处理', failed: '未通过', 'ready-for-human': '等待会签', 'not-evaluated': '尚未评估'};
++  const gates = value.gates && typeof value.gates === 'object' && !Array.isArray(value.gates) ? Object.entries(value.gates) : [];
++  if (!Object.hasOwn(value, 'gates') || !value.gates || typeof value.gates !== 'object' || Array.isArray(value.gates)) issue('gates-unverifiable', '门禁登记缺失或格式不可核验', checkpointRef, '核对原始门禁记录并执行正式预检', 'warning');
++  for (const [id, gate] of gates) {
++    const status = gateNames[gate?.status];
++    const hardBlocked = ['blocked', 'stale'].includes(gate?.status);
++    const failed = hardBlocked || (['pending', 'failed', 'ready-for-human', 'not-evaluated'].includes(gate?.status) && gate?.applicable === true);
++    if (status) {
++      const blocked = hardBlocked || (failed && gate?.applicable !== false);
++      const reason = registeredText(gate?.reason);
++      const applicability = hardBlocked && gate?.applicable === false ? '；登记状态与适用性标记冲突，需正式预检' : blocked ? '' : '；适用性与当前处理要求待核验';
++      const recovery = registeredText(gate?.recovery) ?? (['pending', 'ready-for-human'].includes(gate?.status) ? '核对适用范围、当前资产和已登记责任方；取得所需真实决定或有效延续后复验' : '核对适用范围、失败原因或过期依据，修复并重验受影响检查与批准');
++      issue(blocked ? 'gate-blocked' : 'gate-unverified', `${id}：${status}${reason ? `；${reason}` : ''}${applicability}`, checkpointRef, hardBlocked && gate?.applicable === false ? `${recovery}；保留阻断状态，核对冲突登记并执行正式预检` : recovery, blocked ? 'error' : 'warning', registeredText(gate?.owner) ?? owner, registeredText(gate?.owner) ? 'issue' : defaultOwnerScope);
++    } else if (!['approved', 'not-applicable'].includes(gate?.status)) {
++      issue('gate-unverified', `${id}：登记状态未识别，适用性与处理要求待核验`, checkpointRef, '保留原记录，核对门禁状态与适用性后执行正式预检', 'warning', registeredText(gate?.owner) ?? owner, registeredText(gate?.owner) ? 'issue' : defaultOwnerScope);
++    }
+   }
+-  check('registered-gates', diagnostics.some(x => x.code === 'gate-blocked') ? 'failed' : 'passed', [checkpointRef], '仅检查登记的 blocked/stale 标志');
++  const gateDiagnostics = diagnostics.filter(x => ['gate-blocked', 'gate-unverified', 'gates-unverifiable'].includes(x.code));
++  check('registered-gates', gateDiagnostics.some(x => x.severity === 'error') ? 'failed' : gateDiagnostics.length || !gates.length ? 'not-checked' : 'passed', [checkpointRef], '仅读取已登记状态；适用性未登记、待处理或记录缺失时不能判定门禁通过；不核验完整批准');
+   const evidenceRefs = [value.context_reconciliation?.ref, ...Object.values(value.artifacts ?? {}).filter(item => item?.status === 'approved').map(item => item.ref)].filter(Boolean);
+   for (const ref of evidenceRefs) {
+     try { readFileSync(safeTrackingPath(root, ref)); }
+@@ -149,17 +196,21 @@ export function lifecycleStatus({ root, checkpointRef, taskPackageRef }) {
+   const presentation = {
+     read_only: true, execution_allowed: false, approval_validity: 'not-checked',
+     stage: value.stage ? presenter.label(value.stage, {trace: false}) : '未登记',
++    next_stage: nextStage ? presenter.label(nextStage, {trace: false}) : '待核验', next_stage_reason: readable(nextStageReason),
+     checkpoint_status: Object.hasOwn(statusNames, value.status) ? statusNames[value.status] : `未识别状态（${value.status ?? '未登记'}）`,
+     work_unit: value.next_work_unit ? presenter.label(value.next_work_unit, {trace: false}) : '未登记',
+     owner: presenter.text(owner, {trace: false}), blockers: blockers.map(readable),
++    issues: diagnostics.map(item => ({code: item.code, severity: item.severity, message: readable(item.message), source_ref: item.source_ref, owner: presenter.text(item.owner, {trace: false}), owner_scope: item.owner_scope, recovery: readable(item.recovery)})),
++    pending_verification: verification_scope.filter(item => !['passed', 'failed'].includes(item.status)).map(item => ({id: item.id, reason: readable(item.reason), refs: item.refs})),
++    continue_conditions: [...(registeredText(value.pause?.resume_condition) ? [readable(value.pause.resume_condition)] : []), ...next_step.prerequisites.map(readable), ...(blockers.length ? ['逐项处理当前阻塞，并由适用验证器确认恢复条件满足'] : []), '由主控验收当前证据并核验授权后决定继续或重新路由'],
+     expected_output: workUnit ? readable(workUnit.public_output ?? workUnit.output ?? '产出说明未登记') : null,
+     next_action: readable(next_action), sources: presenter.sources, warnings: presenter.warnings,
+-    names: presenter.catalog({stage: value.stage, work_unit: value.next_work_unit, owner, gates: value.gates, artifacts: value.artifacts}),
++    names: presenter.catalog({stage: value.stage, next_stage: nextStage, work_unit: value.next_work_unit, owner, gates: value.gates, artifacts: value.artifacts}),
+   };
+   return {
+     presentation,
+     decomposition: {business, implementation: {status:implementationArtifact?'recorded':'not-recorded',recorded_status:implementationArtifact?.status??null,ref:implementationArtifact?.ref??null,coverage:implementationCoverage}, readiness:{status:'not-evaluated',reason:'阶段工作完成不替代批准与实现就绪校验'}},
+-    schema_version: 1, read_only: true, stage: value.stage, checkpoint_status: value.status,
++    schema_version: 1, read_only: true, stage: value.stage, next_stage: nextStage, next_stage_reason: nextStageReason, next_stage_source_refs: [...new Set(stageAssociations.map(item => item.ref))], checkpoint_status: value.status,
+     work_unit: value.next_work_unit ?? null, owner, blockers, next_action,
+     execution_authorization: 'not-evaluated', verification_scope, diagnostics, next_step, recovery,
+     reading_views: checkReadingViews(root,checkpointRef),
+diff --git a/scripts/lifecycle-status b/scripts/lifecycle-status
+index c8e4586173a420164dbb120c384708d060337536..2a54d7673ab86f9735abc77f1db211c9a967a069 100755
+--- a/scripts/lifecycle-status
++++ b/scripts/lifecycle-status
+@@ -5,8 +5,10 @@ import { checkProjectGovernance } from './lib/project-governance.mjs';
+ import { lifecycleStatus } from './lib/lifecycle-status.mjs';
+ import { renderLifecycleStatus } from './lib/lifecycle-presentation.mjs';
+ 
++let parsedValues;
+ try {
+   const { values } = parseArgs({ strict: true, options: { root: { type: 'string' }, checkpoint: { type: 'string' }, task: {type: 'string'}, preflight: {type:'boolean'}, help:{type:'boolean'}, format: {type:'string', default:'json'} } });
++  parsedValues = values;
+   if (!['json', 'text'].includes(values.format)) throw Error('--format 仅支持 json 或 text');
+   if (values.preflight && values.format === 'text') throw Error('--preflight 使用 JSON 诊断；中文状态阅读请单独调用 --format text');
+   if(values.help)process.stdout.write('用法: scripts/lifecycle-status --root <项目> [--checkpoint <根相对路径>] [--task <任务包>] [--preflight] [--format json|text]\n普通查询不执行预检；--preflight 复验当前证据，仅提供恢复动作，不批准或派发。普通查询退出码保持 0/1；预检 0=通过、1=失败、2=输入或能力异常。\n');
+@@ -20,7 +22,30 @@ try {
+   if (result.blockers.length) process.exitCode = 1;
+   }
+ } catch (error) {
+-  process.stdout.write(`${JSON.stringify({ schema_version: 1, read_only: true, blockers: [error.message], owner: '未登记', next_action: `核查状态输入：${error.message}`, execution_authorization: 'not-evaluated', verification_scope: [{ id: 'status-input', status: 'failed', refs: [], reason: error.message }], diagnostics: [{ code: 'status-input-invalid', severity: 'error', message: error.message, source_ref: null, owner: '未登记', recovery: '修复输入后重新读取状态' }], next_step: { action_type: 'repair', command: null, input_refs: [], prerequisites: ['提供有效项目根和 checkpoint 引用'] } }, null, 2)}\n`);
++  const failure = { schema_version: 1, read_only: true, blockers: [error.message], owner: '未登记', next_action: `核查状态输入：${error.message}`, execution_authorization: 'not-evaluated', verification_scope: [{ id: 'status-input', status: 'failed', refs: [], reason: error.message }], diagnostics: [{ code: 'status-input-invalid', severity: 'error', message: error.message, source_ref: null, owner: '未登记', recovery: '修复输入后重新读取状态' }], next_step: { action_type: 'repair', command: null, input_refs: [], prerequisites: ['提供有效项目根和 checkpoint 引用'] } };
++  if (parsedValues?.format === 'text' && !parsedValues.preflight) {
++    const sourceRef = error.lifecycle_input_ref ?? parsedValues.checkpoint ?? null;
++    const templateSource = error.lifecycle_input_kind === 'template-source';
++    const manifestFailure = error.lifecycle_input_kind === 'manifest' || sourceRef === 'yss-project.yaml';
++    const missingInput = error.message === 'root and checkpoint are required';
++    const problem = templateSource ? '当前为 template-source 模板源仓库，产品生命周期状态查询不适用'
++      : manifestFailure ? `仓库身份输入无法核验：${error.message}`
++      : missingInput ? '缺少项目根或 checkpoint 引用，当前阶段无法核验'
++      : `状态输入无法核验：${error.message}`;
++    const recovery = templateSource ? '按 maintaining-skills 和维护强度合同走模板维护路由；不得更改真实仓库身份以绕过限制'
++      : manifestFailure ? '先核对 yss-project.yaml 的真实内容、schema 和 repository_mode；文件缺失、损坏或不支持时进入迁移检查，不猜测或伪造身份'
++      : missingInput ? '提供真实项目根及根相对 checkpoint 引用；核对来源后重新查询'
++      : '核对已标明的状态来源、路径和原始内容，恢复可读的真实输入并执行适用预检，再重新查询';
++    process.stdout.write(renderLifecycleStatus({presentation: {
++      stage: '待核验', checkpoint_status: '查询失败', next_stage: '待核验', next_stage_reason: '当前输入不可核验，不推断下一阶段、已完成或可进入',
++      blockers: [problem], owner: '未登记', work_unit: '待核验', expected_output: null, next_action: recovery, warnings: [],
++      issues: [{severity: 'error', message: problem, source_ref: sourceRef, owner: '未登记', owner_scope: 'not-recorded', recovery}],
++      pending_verification: [{reason: '仓库身份、当前阶段、来源和问题责任方尚未核验'}],
++      continue_conditions: ['真实身份与状态输入可读，并通过适用预检后，由主控重新核验范围与授权并决定路由'],
++    }}));
++  } else {
++    process.stdout.write(`${JSON.stringify(failure, null, 2)}\n`);
++  }
+   process.exitCode = process.argv.includes('--preflight') ? 2 : 1;
+ }
+ 
+diff --git a/scripts/query-lifecycle-context b/scripts/query-lifecycle-context
+index b8a0ba75c72d8943e0eeef1006dfaee232192ec8..da90bb8f3023242bec08e6db68edc1409025596f 100755
+--- a/scripts/query-lifecycle-context
++++ b/scripts/query-lifecycle-context
+@@ -10,18 +10,25 @@ try {
+       stage: { type: "string" },
+       "work-unit": { type: "string" },
+       include: { type: "string", multiple: true },
++      "check-skills": { type: "boolean" },
++      "agent-runtime": { type: "string" },
++      when: { type: "string", multiple: true },
+     },
+     strict: true,
+   });
+-  if(values.help)process.stdout.write('用法: scripts/query-lifecycle-context [--mode route] [--stage stage.plan] [--work-unit work-unit.plan-opportunity] [--include <资产>]\n只读查询，不证明批准；退出码 0=查询完成、1=输入或执行失败。\n');
++  if(values.help)process.stdout.write('用法: scripts/query-lifecycle-context [--mode route] [--stage stage.plan] [--work-unit work-unit.plan-opportunity] [--include <资产>] [--check-skills [--agent-runtime codex|cursor|pi] [--when <条件>]]\n只读查询，不证明批准；退出码 0=查询完成（启用技能预检时表示技能可用）、1=输入或执行失败、2=启用预检且技能未就绪。\n');
+   else {
+   const result = queryLifecycleContext({
+     mode: values.mode,
+     stageId: values.stage,
+     workUnitId: values["work-unit"],
+     include: values.include ?? [],
++    checkSkills: values["check-skills"] ?? false,
++    agentRuntime: values["agent-runtime"],
++    when: values.when ?? [],
+   });
+   process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
++  if (result.skill_readiness && result.skill_readiness.status !== 'ready') process.exitCode = 2;
+   }
+ } catch (error) {
+   process.stderr.write(`${error.message}\n`);
+diff --git a/scripts/sync-strategic-handoff-tools b/scripts/sync-strategic-handoff-tools
+index efaca43aa83d029beb802ed62e9f2c3b2d839b25..93951ad8d8c408c85363d8325025a2cebb1f8e1c 100755
+--- a/scripts/sync-strategic-handoff-tools
++++ b/scripts/sync-strategic-handoff-tools
+@@ -14,6 +14,7 @@ shared.push('scripts/lib/user-decision-reuse.mjs','scripts/lib/user-decision.mjs
+ shared.push('scripts/lib/decision-continuation.mjs');
+ shared.push('scripts/lib/structured-assets.mjs','scripts/lib/asset-transactions.mjs','scripts/lib/asset-migration.mjs','scripts/lib/asset-command.mjs','scripts/lib/plan-stage-coverage.mjs','scripts/check-plan-stage-coverage','.template-spec/process/structured-assets.md','.template-spec/process/schemas/approval-record.schema.json','.template-spec/process/templates/lifecycle-checkpoint-template.json','.template-spec/templates/approval-record-template.json');
+ shared.push('scripts/lib/lifecycle-presentation.mjs');
++shared.push('scripts/query-lifecycle-context','scripts/lib/lifecycle-context-query.mjs');
+ shared.push('scripts/lib/testing/user-decision-fixture.mjs');
+ shared.push('.template-spec/process/research-completion.md');
+ shared.push('scripts/lib/backend-platform-provenance.mjs','scripts/lib/backend-platform.mjs','scripts/lib/backend-platform-verification.mjs','scripts/lib/scaffold-local-database.mjs','scripts/vendor/xml.mjs','.template-spec/engineering/backend-platforms.json','.template-spec/engineering/backend-platforms.md','.template-spec/process/schemas/project-scaffold-contract.schema.json','.template-spec/process/schemas/scaffold-architecture-decisions.schema.json','scripts/verify-scaffold-architecture-decisions','scripts/backend-platforms','.template-spec/agents/backend-architecture-profiles.md','scripts/fixtures/backend-scaffold/platform-fixture.mjs','scripts/fixtures/backend-scaffold/design-prerequisites.mjs');
+@@ -26,13 +27,22 @@ let differences=[];
+ function replaceExactly(bytes,from,to,name){const content=bytes.toString();const count=content.split(from).length-1;if(count!==1)throw new Error(`${name} 转换基线失效，预期 1 处，实际 ${count} 处`);return Buffer.from(content.replace(from,to));}
+ const visualSource='.agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs',visualWire='scripts/lib/visual-baseline-contract.mjs';
+ const transformations={
++ 'design-query-runtime':bytes=>replaceExactly(replaceExactly(bytes,'.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml','.agents/skills/yss-strategic-design/references/orchestration-contract.yaml','design-query-runtime'),"const QUERY_PROFILE = 'lifecycle';","const QUERY_PROFILE = 'specialist';",'design-query-profile'),
++ 'implementation-query-runtime':bytes=>replaceExactly(replaceExactly(bytes,'.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml','.agents/skills/harness-orchestrator/references/orchestration-contract.yaml','implementation-query-runtime'),"const QUERY_PROFILE = 'lifecycle';","const QUERY_PROFILE = 'specialist';",'implementation-query-profile'),
+  'backend-wire-library':bytes=>replaceExactly(replaceExactly(bytes,'../../../../scripts/vendor/yaml.mjs','../vendor/yaml.mjs','backend-wire-yaml'),'../../../../scripts/lib/validation-phase.mjs','./validation-phase.mjs','backend-wire-phase'),
+  identity:bytes=>bytes,
+  'backend-wire-runtime':bytes=>replaceExactly(bytes,'../../.agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs','./visual-baseline-contract.mjs','backend-wire-runtime'),
+  'backend-wire-command':bytes=>replaceExactly(bytes,'../.agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs','./lib/visual-baseline-contract.mjs','backend-wire-command'),
+  'backend-wire-fixture':bytes=>replaceExactly(bytes,'../../../.agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs','../../lib/visual-baseline-contract.mjs','backend-wire-fixture'),
+ };
+-function transformationFor(target,ref){if(!target.endsWith('yss-harness-backend-agent'))return'identity';if(['scripts/lib/ui-baseline.mjs','scripts/lib/delivery-preflight.mjs'].includes(ref))return'backend-wire-runtime';if(['scripts/verify-strategic-context-import-scenarios','scripts/verify-frontend-implementation-evidence'].includes(ref))return'backend-wire-command';if(ref==='scripts/fixtures/strategic-handoff/fixture.mjs')return'backend-wire-fixture';return'identity';}
++function transformationFor(target,ref){
++ if(target!=='.'&&ref==='scripts/lib/lifecycle-context-query.mjs')return target.endsWith('design-agent')?'design-query-runtime':'implementation-query-runtime';
++ if(!target.endsWith('yss-harness-backend-agent'))return'identity';
++ if(['scripts/lib/ui-baseline.mjs','scripts/lib/delivery-preflight.mjs'].includes(ref))return'backend-wire-runtime';
++ if(['scripts/verify-strategic-context-import-scenarios','scripts/verify-frontend-implementation-evidence'].includes(ref))return'backend-wire-command';
++ if(ref==='scripts/fixtures/strategic-handoff/fixture.mjs')return'backend-wire-fixture';
++ return'identity';
++}
+ function sync(source,dest,transformation='identity'){const bytes=transformations[transformation](readFileSync(source));if(!existsSync(dest)||!bytes.equals(readFileSync(dest))){differences.push(path.relative(root,dest));if(!check){mkdirSync(path.dirname(dest),{recursive:true});writeFileSync(dest,bytes);}}if(!check&&path.basename(path.dirname(dest))==='scripts'&&!path.extname(dest))chmodSync(dest,0o755);}
+ const digestBytes=bytes=>`sha256:${createHash('sha256').update(bytes).digest('hex')}`;
+ shared.push('scripts/lib/lifecycle-execution-scope.mjs');
+@@ -66,15 +76,41 @@ sliceExecutionRefs.push('scripts/lib/execution-evidence.mjs');
+ sliceExecutionRefs.push('scripts/verify-frontend-implementation-evidence','.template-spec/process/schemas/frontend-implementation-evidence.schema.json','.template-spec/process/templates/frontend-implementation-verification-template.yaml');
+ const routingSource=readFileSync(path.join(root,routingContractRef));
+ const consumerRoutes=parseDocument(routingSource.toString(),{uniqueKeys:true}).toJS({maxAliasCount:0}).consumer_entry_routes;
++const skillPreflight=parseDocument(routingSource.toString(),{uniqueKeys:true}).toJS({maxAliasCount:0}).skill_preflight;
++const userProgressReport=parseDocument(routingSource.toString(),{uniqueKeys:true}).toJS({maxAliasCount:0}).user_progress_report;
+ if(!consumerRoutes)throw new Error('源主控缺少 consumer_entry_routes');
++if(!userProgressReport)throw new Error('源主控缺少 user_progress_report');
+ function targetRoutingRef(targetRoot){return targetRoot===root?routingContractRef:targetRoot.endsWith('design-agent')?'.agents/skills/yss-strategic-design/references/orchestration-contract.yaml':'.agents/skills/harness-orchestrator/references/orchestration-contract.yaml';}
+ function projectedRouting(targetRoot){
+  const bytes=readFileSync(path.join(targetRoot,targetRoutingRef(targetRoot))),document=parseDocument(bytes.toString(),{uniqueKeys:true});
+  if(document.errors.length)throw new Error('目标主控不可读');
+- if(JSON.stringify(document.toJS({maxAliasCount:0}).consumer_entry_routes)===JSON.stringify(consumerRoutes))return bytes;
+- document.set('consumer_entry_routes',consumerRoutes);return Buffer.from(document.toString());
++ const current=document.toJS({maxAliasCount:0});
++ const progress={...userProgressReport,owner:targetRoot.endsWith('design-agent')?'yss-strategic-design':'harness-orchestrator',reference:userProgressReport.writing_reference};
++ if(JSON.stringify(current.consumer_entry_routes)===JSON.stringify(consumerRoutes)&&JSON.stringify(current.skill_preflight)===JSON.stringify(skillPreflight)&&JSON.stringify(current.user_progress_report)===JSON.stringify(progress))return bytes;
++ document.set('consumer_entry_routes',consumerRoutes);
++ document.set('skill_preflight',skillPreflight);
++ document.set('user_progress_report',progress);
++ return Buffer.from(document.toString());
+ }
+ function syncRouting(targetRoot){const dest=path.join(targetRoot,targetRoutingRef(targetRoot)),bytes=projectedRouting(targetRoot);if(!bytes.equals(readFileSync(dest))){differences.push(path.relative(root,dest));if(!check)writeFileSync(dest,bytes);}}
++function syncOwnerPreflight(targetRoot){
++ const owner=targetRoot.endsWith('design-agent')?'yss-strategic-design':'harness-orchestrator';
++ const ref='.agents/skills/'+owner+'/SKILL.md',dest=path.join(targetRoot,ref),marker='<!-- SKILL_PREFLIGHT_ROUTE -->';
++ const guidance=marker+'\n专项技能调用前，运行 `scripts/query-lifecycle-context --work-unit <当前工作单元> --check-skills`；多运行时指定 `--agent-runtime`，条件用 `--when`。按合同 `skill_preflight` 处理缺失、漂移与冲突，在既有授权内核对补装计划、应用后重验。预检不授予执行或批准。Matt 上游为 https://github.com/mattpocock/skills，生效版本以根 `skills-lock.json` 为准。\n';
++ const old=readFileSync(dest,'utf8'),pattern=new RegExp(marker+'\\n[^\\n]*(?:\\n|$)');
++ if(old.includes(marker)&&!pattern.test(old))throw new Error('技能预检路由标记内容不明: '+dest);
++ const bytes=Buffer.from(old.includes(marker)?old.replace(pattern,guidance):old.trimEnd()+'\n\n'+guidance);
++ if(!bytes.equals(Buffer.from(old))){differences.push(path.relative(root,dest));if(!check)writeFileSync(dest,bytes);}
++}
++function syncOwnerProgress(targetRoot){
++ const owner=targetRoot.endsWith('design-agent')?'yss-strategic-design':'harness-orchestrator';
++ const ref='.agents/skills/'+owner+'/SKILL.md',dest=path.join(targetRoot,ref),marker='<!-- USER_PROGRESS_REPORT -->';
++ const guidance=marker+'\n每轮返回或暂停按合同 `user_progress_report` 给出中文状态：当前阶段与本轮结果、下一阶段/单元与进入条件、问题/阻塞、已登记责任方、解除动作及复验、主控下一动作与用户待决定项。未知写“待核验”，负责人缺失写“未登记”；目标不代表批准，已授权工作继续执行。发送前核对证据、状态及结构化结果一致；写法见 `.template-spec/process/document-writing.md`。\n';
++ const old=readFileSync(dest,'utf8'),pattern=new RegExp(marker+'\\n[^\\n]*(?:\\n|$)');
++ if(old.includes(marker)&&!pattern.test(old))throw new Error('状态输出路由标记内容不明: '+dest);
++ const bytes=Buffer.from(old.includes(marker)?old.replace(pattern,guidance):old.trimEnd()+'\n\n'+guidance);
++ if(!bytes.equals(Buffer.from(old))){differences.push(path.relative(root,dest));if(!check)writeFileSync(dest,bytes);}
++}
+ const registryRef='.template-spec/agents/yss-skill-registry.yaml';
+ const sourceRegistry=parseDocument(readFileSync(path.join(root,registryRef),'utf8'),{uniqueKeys:true});
+ if(sourceRegistry.errors.length)throw new Error('源技能注册表不可读');
+@@ -123,6 +159,8 @@ for(const target of targets){
+  if(target.endsWith('backend-agent'))sync(path.join(root,visualSource),path.join(root,target,visualWire),'backend-wire-library');
+  syncExistingProfiles(path.join(root,target));
+  syncRouting(path.join(root,target));
++ syncOwnerPreflight(path.join(root,target));
++ syncOwnerProgress(path.join(root,target));
+  for(const ref of new Set(shared))sync(path.join(root,ref),path.join(root,target,ref),transformationFor(target,ref));
+  lock(target,path.join(root,target));
+ }
+diff --git a/scripts/verify-lifecycle-context-query-scenarios b/scripts/verify-lifecycle-context-query-scenarios
+index 68cec2d3cc23651e5af9573a0cca786d66a3abc0..8221a94d0c6b73ac57f55311dc29d6ef28b6d69d 100755
+--- a/scripts/verify-lifecycle-context-query-scenarios
++++ b/scripts/verify-lifecycle-context-query-scenarios
+@@ -4,7 +4,10 @@ import { readFileSync } from "node:fs";
+ import { spawnSync } from "node:child_process";
+ import path from "node:path";
+ import { fileURLToPath } from "node:url";
+-import { queryLifecycleContext } from "./lib/lifecycle-context-query.mjs";
++import { queryLifecycleContext, inspectWorkUnitSkills } from "./lib/lifecycle-context-query.mjs";
++import fs from "node:fs";
++import os from "node:os";
++import { treeHash } from "./lib/skill-supply-chain.mjs";
+ import { loadRegistry, validateRegistry } from "./lib/lifecycle-registry.mjs";
+ 
+ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+@@ -53,6 +56,26 @@ const triageSkill = readFileSync(path.join(ROOT, '.agents/skills/triage/SKILL.md
+ assert.match(triageSkill, /disable-model-invocation: true/);
+ assert.doesNotMatch(triageSkill, /trust them and apply the role directly|ready for a human to merge/);
+ 
++// 用户提示合同可按需加载，不改变查询权限、阶段门禁或执行路由。
++const progressQuery = queryLifecycleContext({ ...query, include: ['user_progress_report'] });
++const progress = progressQuery.execution.selected.user_progress_report;
++assert.deepEqual(progressQuery.lifecycle, first.lifecycle);
++assert.deepEqual(progressQuery.skills, first.skills);
++assert.deepEqual(progressQuery.execution.transition, first.execution.transition);
++assert.equal(progressQuery.execution.mode, 'read_only');
++assert.equal('user_progress_report' in first.execution.selected, false);
++for (const trigger of ['controller-return', 'blocked', 'human-pause', 'resume']) assert.ok(progress.emit_on.includes(trigger), trigger);
++for (const field of ['next-stage-and-work-unit', 'entry-conditions', 'issues-and-blockers', 'recovery-action-and-recheck']) assert.ok(progress.required_information.includes(field), field);
++assert.equal(progress.next_stage.planned_target_is_approved_transition, false);
++assert.equal(progress.next_stage['stage-order-as-route'], 'forbidden');
++assert.equal(progress.issues.no_blockers_claim, 'current-applicable-verification-required');
++assert.equal(progress.issues.unknown_owner, 'not-registered-never-auto-assigned');
++assert.equal(progress.recovery.authorized_agent_actions, 'continue-and-report-result');
++assert.equal(progress.template_source, 'maintenance-step-and-verification-target-never-product-stage');
++const controller = readFileSync(path.join(ROOT, '.agents/skills/yss-product-lifecycle/SKILL.md'), 'utf8');
++assert.ok(controller.includes('`user_progress_report`'));
++assert.ok(Buffer.byteLength(controller) <= 8192, '主控入口保持 8KB 预算，条件细节放在引用中');
++
+ assert.deepEqual(first, second, "同一查询必须产生确定性结果");
+ // 合并调用须保留原来三次查询的路由、阶段和技能信息。
+ const modeOnly = queryLifecycleContext({ mode: query.mode });
+@@ -142,4 +165,122 @@ for (const marker of [
+   "### 外部副作用与 Git",
+ ]) assert.match(skill, new RegExp(marker.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+ 
+-process.stdout.write("生命周期按需上下文查询场景验证通过\n");
++// Small real filesystem fixtures exercise readiness without changing template inputs.
++const readinessRoot = fs.mkdtempSync(path.join(os.tmpdir(), "yss-skill-ready-' "));
++try {
++  const fixtureRegistry = {
++    agent_runtime_roots: { codex: '.codex/skills', cursor: '.cursor/skills', pi: '.pi/skills' },
++    skills: ['main', 'needed', 'conditional', 'compat', 'reviewer'].map(id => ({ id, maturity: 'supported', aliases: id === 'main' ? ['main-alias'] : [] })),
++    external_skills: [{ id: 'external-demo' }, { id: 'product-design:index' }],
++    skill_dependencies: {
++      main: [{ skill: 'needed', type: 'context-required' }, { skill: 'conditional', type: 'context-conditional', when: 'api-impact' }, { skill: 'reviewer', type: 'review-only' }],
++      needed: [{ skill: 'main', type: 'context-required' }],
++    },
++  };
++  const fixtureLock = { version: 3, projectionRoots: ['.codex/skills'], skills: { shared: {} } };
++  const fixtureMetadata = { metadataSchemaVersion: 3, templateName: 'create-yss-spec',
++    distribution: { mode: 'selected', runtimes: ['codex'], installedSkills: [] }, managedFiles: {} };
++  const save = () => {
++    fs.writeFileSync(path.join(readinessRoot, 'skills-lock.json'), JSON.stringify(fixtureLock));
++    fs.writeFileSync(path.join(readinessRoot, '.yss-template.json'), JSON.stringify(fixtureMetadata));
++  };
++  function install(id) {
++    const source = path.join(readinessRoot, '.agents/skills', id), projection = path.join(readinessRoot, '.codex/skills', id);
++    fs.mkdirSync(source, { recursive: true });
++    fs.writeFileSync(path.join(source, 'SKILL.md'), '---\nname: ' + id + '\n---\nFixture\n');
++    fs.mkdirSync(path.dirname(projection), { recursive: true });
++    fs.cpSync(source, projection, { recursive: true });
++    fixtureLock.skills.shared[id] = { effectiveHash: treeHash(source), targets: ['.agents/skills', '.codex/skills'] };
++    fixtureMetadata.distribution.installedSkills.push(id);
++    save();
++  }
++  const fixtureRoute = { primary_skill: 'main-alias', supporting_skills: ['needed'], compatibility: { invocation_mode: 'reference', skill: 'compat' } };
++  const inspect = (overrides = {}) => inspectWorkUnitSkills({ root: readinessRoot, registry: fixtureRegistry, route: fixtureRoute, ...overrides });
++  install('main');
++  const untouched = treeHash(readinessRoot), missing = inspect();
++  assert.equal(missing.status, 'missing');
++  assert.equal(missing.agent_runtime, 'codex');
++  assert.deepEqual(missing.required_skills, ['main', 'needed']);
++  assert.deepEqual(missing.missing_skills, ['needed']);
++  assert.equal(missing.execution_allowed, false);
++  assert.match(missing.remediation.plan_command, /skills ensure needed/);
++  assert.match(missing.remediation.apply_command, /--apply$/);
++  assert.equal(treeHash(readinessRoot), untouched, 'readiness must remain read-only');
++  install('needed');
++  assert.equal(inspect().status, 'ready');
++  assert.deepEqual(inspect(), inspect(), 'repeat readiness is deterministic');
++  const conditional = inspect({ when: ['api-impact'] });
++  assert.deepEqual(conditional.missing_skills, ['conditional']);
++  assert.match(conditional.remediation.plan_command, /--when api-impact/);
++  assert.equal(inspect().required_skills.includes('reviewer'), false);
++  assert.equal(inspect().required_skills.includes('compat'), false);
++  assert.equal(inspect({ route: { native: { invocation_mode: 'reference', skill: 'compat' } } }).required_skills.length, 0);
++  assert.equal(inspect({ route: { primary_skill: ['grill', 'me'].join('-') } }).issues[0].code, 'skill-retired');
++  assert.equal(inspect({ route: { primary_skill: 'unknown-demo' } }).issues[0].code, 'skill-unknown');
++  assert.equal(inspect({ route: { primary_skill: 'external-demo' } }).issues[0].code, 'external-skill-required');
++  assert.equal(inspect({ route: { supporting_skills: ['product-design:index'] } }).issues[0].code, 'external-skill-required');
++  assert.throws(() => inspect({ agentRuntime: 'unknown' }), /未知 Agent/);
++  assert.equal(inspect({ agentRuntime: 'cursor' }).status, 'blocked');
++
++  const source = path.join(readinessRoot, '.agents/skills/needed'), projection = path.join(readinessRoot, '.codex/skills/needed');
++  fs.appendFileSync(path.join(source, 'SKILL.md'), 'drift');
++  assert.equal(inspect().issues.some(issue => issue.code === 'skill-hash-drift'), true);
++  fs.copyFileSync(path.join(projection, 'SKILL.md'), path.join(source, 'SKILL.md'));
++  fs.appendFileSync(path.join(projection, 'SKILL.md'), 'projection drift');
++  assert.equal(inspect().issues.some(issue => issue.code === 'projection-drift'), true);
++  fs.copyFileSync(path.join(source, 'SKILL.md'), path.join(projection, 'SKILL.md'));
++  fs.rmSync(projection, { recursive: true });
++  assert.equal(inspect().status, 'blocked', 'missing registered projection must not be an install candidate');
++  fs.symlinkSync(source, projection);
++  assert.equal(inspect().status, 'ready', 'managed projection symlinks remain supported');
++  fs.unlinkSync(projection);
++  fs.symlinkSync(os.tmpdir(), projection);
++  assert.equal(inspect().issues.some(issue => issue.code === 'skill-path-invalid'), true);
++  fs.unlinkSync(projection);
++  fs.cpSync(source, projection, { recursive: true });
++
++  const conditionalDir = path.join(readinessRoot, '.agents/skills/conditional');
++  const conditionalProjection = path.join(readinessRoot, '.codex/skills/conditional');
++  fs.mkdirSync(conditionalProjection, { recursive: true });
++  assert.equal(inspect({ when: ['api-impact'] }).issues.some(issue => issue.code === 'skill-path-conflict'), true);
++  fs.rmSync(conditionalProjection, { recursive: true });
++  fs.mkdirSync(conditionalDir, { recursive: true });
++  assert.equal(inspect({ when: ['api-impact'] }).issues.some(issue => issue.code === 'skill-path-conflict'), true);
++  fs.rmSync(conditionalDir, { recursive: true });
++  delete fixtureLock.skills.shared.needed;
++  save();
++  assert.equal(inspect().issues.some(issue => issue.code === 'skill-path-conflict'), true);
++  fixtureLock.skills.shared.needed = { effectiveHash: treeHash(source), targets: ['.agents/skills', '.codex/skills'] };
++  fixtureMetadata.distribution.installedSkills = ['main'];
++  save();
++  assert.equal(inspect().issues.some(issue => issue.code === 'distribution-lock-drift'), true);
++  fixtureMetadata.distribution.installedSkills.push('needed');
++  fixtureMetadata.distribution.runtimes.push('cursor');
++  fixtureLock.projectionRoots.push('.cursor/skills');
++  save();
++  assert.equal(inspect().issues.some(issue => issue.code === 'runtime-required'), true);
++  fixtureMetadata.distribution.runtimes = ['codex'];
++  fixtureLock.projectionRoots = ['.codex/skills'];
++  save();
++  fs.rmSync(source, { recursive: true });
++  assert.equal(inspect().issues.some(issue => issue.code === 'managed-skill-missing'), true);
++  delete fixtureLock.skills.shared.needed;
++  fixtureMetadata.distribution.installedSkills = ['main'];
++  fixtureMetadata.managedFiles['.agents/skills/needed/SKILL.md'] = { type: 'copy' };
++  save();
++  assert.equal(inspect().issues.some(issue => issue.code === 'managed-skill-missing'), true);
++  fixtureMetadata.managedFiles = {};
++  fs.rmSync(projection, { recursive: true });
++  fixtureMetadata.metadataSchemaVersion = 2;
++  save();
++  assert.equal(inspect().status, 'missing');
++  assert.equal(inspect().remediation.apply_command, null, 'legacy instances must not receive automatic migration or v3 install commands');
++  assert.equal(inspect({ agentRuntime: 'codex' }).status, 'missing');
++  assert.throws(() => queryLifecycleContext({ checkSkills: true }), /必须指定/);
++  assert.throws(() => queryLifecycleContext({ ...query, agentRuntime: 'codex' }), /一起使用/);
++  assert.throws(() => queryLifecycleContext({ ...query, checkSkills: true, when: ['invalid trigger'] }), /有效的条件/);
++  assert.equal('skill_readiness' in first, false, 'ordinary query retains its existing shape');
++} finally {
++  fs.rmSync(readinessRoot, { recursive: true, force: true });
++}
++process.stdout.write("生命周期按需上下文查询与技能预检场景验证通过\n");
+diff --git a/skills-lock.json b/skills-lock.json
+index 0bd42c0c65f5889dd017518c7908fd0c2dab9b4d..5a6d4ae5daedc9bf82a1a2fb4ab051b907313548 100644
+--- a/skills-lock.json
++++ b/skills-lock.json
+@@ -841,7 +841,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/yss-product-lifecycle/SKILL.md",
+-        "effectiveHash": "19fc768b7e60c7efdbdca3ffb2494a3067eac1c1c93c0cb5a2df4022b9d27be0",
++        "effectiveHash": "4554ec2a1a2417ad6a1485a88fe4934ece662e2dc0e0d3708189f12d41b2ea6a",
+         "targets": [
+           ".agents/skills",
+           ".codex/skills",
+diff --git a/submodules/create-yss-harness-backend b/submodules/create-yss-harness-backend
+--- a/submodules/create-yss-harness-backend
++++ b/submodules/create-yss-harness-backend
+@@ -1 +1 @@
+-Subproject commit 04b05e342149f8fe868f3cfbc15d0b049b3e860e
++Subproject commit 04b05e342149f8fe868f3cfbc15d0b049b3e860e-dirty
+diff --git a/submodules/create-yss-harness-frontend b/submodules/create-yss-harness-frontend
+--- a/submodules/create-yss-harness-frontend
++++ b/submodules/create-yss-harness-frontend
+@@ -1 +1 @@
+-Subproject commit 4466b163d0e2d87cd7b22a98cc67e52293638389
++Subproject commit 4466b163d0e2d87cd7b22a98cc67e52293638389-dirty
+diff --git a/submodules/create-yss-spec b/submodules/create-yss-spec
+--- a/submodules/create-yss-spec
++++ b/submodules/create-yss-spec
+@@ -1 +1 @@
+-Subproject commit f7a734c7c8b42b124e7d5e695c959dbae343aea7
++Subproject commit f7a734c7c8b42b124e7d5e695c959dbae343aea7-dirty
+diff --git a/submodules/create-yss-strategic-design b/submodules/create-yss-strategic-design
+--- a/submodules/create-yss-strategic-design
++++ b/submodules/create-yss-strategic-design
+@@ -1 +1 @@
+-Subproject commit 08d5787f86d19b1352ce508280b1c2ca6c216683
++Subproject commit 08d5787f86d19b1352ce508280b1c2ca6c216683-dirty
+diff --git a/submodules/yss-harness-backend-agent b/submodules/yss-harness-backend-agent
+--- a/submodules/yss-harness-backend-agent
++++ b/submodules/yss-harness-backend-agent
+@@ -1 +1 @@
+-Subproject commit 82476138edcc4e8cd3aef981ddb64de609c54771
++Subproject commit 82476138edcc4e8cd3aef981ddb64de609c54771-dirty
+diff --git a/submodules/yss-harness-design-agent b/submodules/yss-harness-design-agent
+--- a/submodules/yss-harness-design-agent
++++ b/submodules/yss-harness-design-agent
+@@ -1 +1 @@
+-Subproject commit fbe4084276a8fe9a8f59e58481f2913133346eaf
++Subproject commit fbe4084276a8fe9a8f59e58481f2913133346eaf-dirty
+diff --git a/submodules/yss-harness-frontend-agent b/submodules/yss-harness-frontend-agent
+--- a/submodules/yss-harness-frontend-agent
++++ b/submodules/yss-harness-frontend-agent
+@@ -1 +1 @@
+-Subproject commit f3f66eabda6ec585a1247b59ce34db979c3c784c
++Subproject commit f3f66eabda6ec585a1247b59ce34db979c3c784c-dirty

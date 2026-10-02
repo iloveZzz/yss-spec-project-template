@@ -1,0 +1,20 @@
+{
+  "schema": "yss.evidence-archive-index/v1",
+  "archive_dir": "/Users/zhudaoming/Documents/yss-template-evidence-archive",
+  "batches": [
+    {
+      "batch": "2026-10-02-b1-profile-verification",
+      "head": "60b5acca332a05fc09de647ff18c0c3fb0fa87a7",
+      "created_at_utc": "2026-10-02T16:03:24.239Z",
+      "units": [
+        ".template-source/evidence/maintenance/2026-09-12-existing-project-delivery/preflight"
+      ],
+      "archive": "2026-10-02-b1-profile-verification.tar.gz",
+      "archive_sha256": "beddfe8cdf66521b7d4cbede4758d01304a1abf997dd62554b631d4a62ad8167",
+      "archive_bytes": 1739877,
+      "memberCount": 105,
+      "memberBytes": 12744298,
+      "restore": "tar -xzf 2026-10-02-b1-profile-verification.tar.gz -C <repo root>"
+    }
+  ]
+}

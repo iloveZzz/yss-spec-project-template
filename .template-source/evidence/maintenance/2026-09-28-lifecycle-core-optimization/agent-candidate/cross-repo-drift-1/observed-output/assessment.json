@@ -1,6 +1,0 @@
-{
-  "drift_detected": true,
-  "can_continue": false,
-  "affected_repository": "repo-b",
-  "reason": "本轮按 repositories.json 登记的项目根路径读取两个 source.txt，并对原始字节重新计算 SHA-256。repo-a 的实际摘要与绑定摘要一致（sha256:0fe2dc495dd18a4628b48f3b106f798a406f64581c4ac1a6bcf9f994eb434a79）；repo-b/source.txt 的绑定摘要为 sha256:56515e3200b7704f22f4fe1fa03cbe38b1c4e292bd13b27033c8b659a0a05a7b，实际摘要为 sha256:9bf478bb4ce67bf6c64e3241e72469e3900c87d91376a638c7d473786e9d99f8，已发生来源漂移。依据 AGENTS.md 第 7、10 节及 yss-implementation-contract-compiler 的 drift 阻断规则，依赖 repo-b 的旧验证不能复用，相关合同应视为 stale，须重新路由并取得当前有效绑定及 Fresh Verification 后才能继续。repo-a 的摘要一致不能抵消 repo-b 的漂移，也不单独证明整体验证通过。本轮仅完成隔离样本的摘要核验，未改写来源或旧绑定，未执行真实构建、集成验证或发布；测试批准不作为真实批准。"
-}

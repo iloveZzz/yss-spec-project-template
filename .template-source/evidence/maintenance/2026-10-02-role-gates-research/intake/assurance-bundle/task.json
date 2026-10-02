@@ -1,0 +1,75 @@
+{
+  "schema_version": 2,
+  "role_id": "role.test-engineer",
+  "skill_source": {
+    "registry_ref": ".template-spec/agents/digital-human-roles.yaml",
+    "defaults_ref": "taskPackageDefaults(role.test-engineer)",
+    "core_skills": [
+      "tdd",
+      "diagnosing-bugs",
+      "code-review",
+      "alibaba-java-code-style",
+      "yss-ui",
+      "yss-design-system",
+      "yss-ui-business-page-generation",
+      "yss-domain",
+      "yss-application",
+      "yss-repository",
+      "yss-web-controller",
+      "yss-dto",
+      "mapstruct",
+      "lombok"
+    ],
+    "forbidden_skills": [
+      "yss-ddd-scaffold-generator",
+      "yss-layered-mvc-scaffold-generator",
+      "yss-frontend-scaffold-generator",
+      "implement",
+      "to-spec"
+    ]
+  },
+  "task_id": "intake.role-gates.assurance",
+  "work_unit_id": "work-unit.entry-triage",
+  "actor_id": "agent.role-gates.assurance",
+  "runtime_id": "runtime.generic",
+  "contract": {
+    "kind": "read-only-intake",
+    "contract_id": "research.role-gates.assurance",
+    "contract_version": 1,
+    "status": "issued",
+    "contract_ref": ".agents/skills/yss-research/SKILL.md"
+  },
+  "inputs": [
+    "yss-project.yaml",
+    "CONTEXT.md",
+    ".template-spec/agents/digital-human-roles.yaml",
+    ".template-spec/process/lifecycle-registry.yaml",
+    ".template-spec/process/subagent-collaboration.md",
+    ".agents/skills/yss-research/SKILL.md"
+  ],
+  "objective": "核查会签校验、身份独立性、摘要新鲜度和真实用户决定的执行力度；执行现有相关测试或仓库外最小探针；回传保障与漏洞边界",
+  "forbidden_actions": [
+    "禁止修改仓库任何文件及子仓",
+    "禁止批准、更新 Ticket 或流转阶段",
+    "禁止提交推送发布",
+    "不得把独立 Agent 身份等同于事实可信"
+  ],
+  "expected_outputs": [
+    "来源定位、观察与推断、反证、实际验证与限制；聊天回传，不写正式资产"
+  ],
+  "verification_commands": [],
+  "downstream_consumers": [
+    "root research owner"
+  ],
+  "convergence": {
+    "parent_work_unit": "work-unit.entry-triage",
+    "convergence_ref": ".agents/skills/yss-research/SKILL.md",
+    "conflict_escalation": "回交主控核实，不自行改事实源"
+  },
+  "execution_state": "Explorer",
+  "workflow_status": "active",
+  "allowed_write_paths": [],
+  "expected_evidence_files": [],
+  "verification_results": [],
+  "verification_status": "not-executed"
+}

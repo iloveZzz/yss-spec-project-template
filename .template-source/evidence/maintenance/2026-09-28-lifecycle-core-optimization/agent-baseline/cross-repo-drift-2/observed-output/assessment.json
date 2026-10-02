@@ -1,6 +1,0 @@
-{
-  "drift_detected": true,
-  "can_continue": false,
-  "affected_repository": "repo-b",
-  "reason": "已按 repositories.json 的两个登记项目根读取 source.txt 原始字节并重算 SHA-256。repo-a 实际摘要与绑定一致：sha256:0fe2dc495dd18a4628b48f3b106f798a406f64581c4ac1a6bcf9f994eb434a79。repo-b 旧绑定为 sha256:56515e3200b7704f22f4fe1fa03cbe38b1c4e292bd13b27033c8b659a0a05a7b，实际摘要为 sha256:9bf478bb4ce67bf6c64e3241e72469e3900c87d91376a638c7d473786e9d99f8，确认来源漂移。依据 AGENTS.md 第 7、10 节及 yss-implementation-contract-compiler 的漂移规则，依赖该来源的旧绑定与验证证据已过期，不能复用于当前跨仓状态；需重新核对受影响合同并完成当前来源的 Fresh Verification 后再评估继续。本轮仅完成隔离样本摘要核验，未修改来源或旧绑定，未执行真实构建或交付验证。"
-}

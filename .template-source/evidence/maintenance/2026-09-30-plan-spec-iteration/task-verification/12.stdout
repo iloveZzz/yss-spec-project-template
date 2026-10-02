@@ -1,4 +1,0 @@
-create-yss-spec: pack/install/init/byte-identity/check/diff/legacy/repeat/sync passed
-create-yss-harness-design: pack/install/init/byte-identity/check/diff/legacy/repeat/sync passed
-create-yss-harness-backend: pack/install/init/byte-identity/check/diff/legacy/repeat/sync passed
-create-yss-harness-frontend: pack/install/init/byte-identity/check/diff/legacy/repeat/sync passed

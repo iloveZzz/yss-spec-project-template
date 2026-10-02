@@ -1,0 +1,17 @@
+import fs from 'node:fs';
+import {createHash} from 'node:crypto';
+import {validateApprovalRecord,validateApprovalRecordFile} from '/Users/zhudaoming/Projects/yss-spec-project-template/scripts/lib/approval-record.mjs';
+const dir='/tmp/yss-role-gates-research-20261002/probe-fixtures';
+const subject=`${dir}/bundle-role-subject.json`;fs.writeFileSync(subject,JSON.stringify({synthetic:true}));
+const base={schema_version:1,decision:'approved',actor_kind:'digital-human',runtime_id:'runtime.generic',principal_ref:'instance:one-reviewer',drafter_principal_ref:'instance:other',subject_ref:subject,subject_digest:createHash('sha256').update(fs.readFileSync(subject)).digest('hex'),approval_scope:['synthetic.api'],evidence_refs:[subject]};
+const api={...base,gate_id:'check.openapi-draft-reviewed',role_id:'role.frontend-engineer'};
+const baseline={...base,gate_id:'check.engineering-baseline-accepted',role_id:'role.test-engineer'};
+let errors=0;
+function run(name,want,fn){let accepted=false,error=null;try{fn();accepted=true;}catch(e){error=e.message;}let ok=accepted===want;errors+=ok?0:1;console.log(JSON.stringify({name,expected_accept:want,accepted,ok,error}));}
+run('api-row-frontend-valid',true,()=>validateApprovalRecord(api,{requireApproved:true}));
+run('baseline-row-tester-valid',true,()=>validateApprovalRecord(baseline,{requireApproved:true}));
+function bundle(rows){const doc={schema_version:1,kind:'review-bundle',bundle_id:'review-bundle.api-baseline',task_id:'synthetic.bundle-role',work_unit_id:'work-unit.code-review',review_session_id:'synthetic.session',role_id:rows[0].role_id,runtime_id:rows[0].runtime_id,principal_ref:rows[0].principal_ref,reviews:rows};const file=`${dir}/bundle-api-baseline.json`;fs.writeFileSync(file,JSON.stringify(doc));return file;}
+run('one-principal-two-roles-one-bundle-rejected',false,()=>validateApprovalRecordFile(bundle([api,baseline]),{requireApproved:true}));
+run('one-tester-for-both-checks-rejected',false,()=>validateApprovalRecordFile(bundle([{...api,role_id:'role.test-engineer'},baseline]),{requireApproved:true}));
+run('one-frontend-for-both-checks-rejected',false,()=>validateApprovalRecordFile(bundle([api,{...baseline,role_id:'role.frontend-engineer'}]),{requireApproved:true}));
+console.log(JSON.stringify({cases:5,failed:errors,synthetic_only:true}));process.exitCode=errors?1:0;

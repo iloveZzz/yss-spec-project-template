@@ -1,0 +1,957 @@
+{
+  "schema_version": 1,
+  "profile": "technical-evidence",
+  "mode": "evidence-audited",
+  "scope": {
+    "audience": "模板维护者和流程决策者",
+    "time_horizon": "2026-10-02 当前根模板与下一轮维护决策",
+    "research_questions": [
+      "角色数量是否等于必要签字或独立运行时数量？",
+      "实际校验哪些保障，哪些路径只核验记录？",
+      "哪些串行步骤或重复证据有可定位摩擦？",
+      "外部原始研究如何限定收益与负例？",
+      "保留、合并、剔除与试点的推荐边界？"
+    ],
+    "inclusion_criteria": [
+      "当前根模板权威配置、直接执行消费者与现有测试",
+      "本轮真实只读执行与仓库外反例探针",
+      "既有 Agent 对照原始摘要及其限制",
+      "官方工程资料、原始论文、原始 DevOps 报告与标准"
+    ],
+    "exclusion_criteria": [
+      "二手转述和 AI 摘要不作为决定证据",
+      "不把静态 gate/check 数量视作人工停顿",
+      "不把当前结构检查视作真实业务效能测量",
+      "不把历史评测当当前 Fresh Verification",
+      "不更改现有事实源、Skill、投影、子仓、批准及 Ticket"
+    ],
+    "topic": "多角色会签与门禁的独特保障、摩擦、保留/合并/删除边界",
+    "research_constraints": [
+      "复审不建议全轴重跑作为默认或兜底；先分析变化，明确受影响结论、相关行为和依赖。",
+      "首轮全部适用审查覆盖单独定义，复审保留当前候选绑定、独立审查、缺陷闭环与真实授权。"
+    ]
+  },
+  "ownership": {
+    "research_owner": "yss-research",
+    "downstream_owner": "yss-product-lifecycle / template-maintenance owner",
+    "decision_ref": null
+  },
+  "search_log": [
+    {
+      "id": "search-001",
+      "channel": "local-memory",
+      "query_or_corpus": "MEMORY.md official research and prior gate consolidation routing",
+      "searched_at": "2026-10-02",
+      "result": "results-found"
+    },
+    {
+      "id": "search-002",
+      "channel": "repository",
+      "query_or_corpus": "yss-project.yaml; CONTEXT.md; current role/registry/tailoring/writing/subagent contracts",
+      "searched_at": "2026-10-02",
+      "result": "results-found"
+    },
+    {
+      "id": "search-003",
+      "channel": "CodeGraph",
+      "query_or_corpus": "prepare/run intake, task-package, approval-record, lifecycle-controls, maintenance-research, research validator",
+      "searched_at": "2026-10-02",
+      "result": "results-found"
+    },
+    {
+      "id": "search-004",
+      "channel": "local execution",
+      "query_or_corpus": "policy-count.mjs via read-only intake dispatcher",
+      "searched_at": "2026-10-02",
+      "result": "results-found"
+    },
+    {
+      "id": "search-005",
+      "channel": "local execution",
+      "query_or_corpus": "13 assurance probes + 28 existing role/continuation/aggregate tests",
+      "searched_at": "2026-10-02",
+      "result": "results-found"
+    },
+    {
+      "id": "search-006",
+      "channel": "local execution",
+      "query_or_corpus": "5 bundle role intersection probes",
+      "searched_at": "2026-10-02",
+      "result": "results-found"
+    },
+    {
+      "id": "search-007",
+      "channel": "historical corpus",
+      "query_or_corpus": "2026-09-26 original Agent comparison report + evaluation-summary.json",
+      "searched_at": "2026-10-02",
+      "result": "results-found"
+    },
+    {
+      "id": "search-008",
+      "channel": "web search/open",
+      "query_or_corpus": "DORA streamline approval, original 2019 PDF; NIST SP800-218 PW2/PW7",
+      "searched_at": "2026-10-02",
+      "result": "results-found"
+    },
+    {
+      "id": "search-009",
+      "channel": "web primary",
+      "query_or_corpus": "Anthropic effective agents and multi-agent research benefits/constraints",
+      "searched_at": "2026-10-02",
+      "result": "results-found"
+    },
+    {
+      "id": "search-010",
+      "channel": "web original paper",
+      "query_or_corpus": "Scaling 2512.08296v3; Why MAS fail 2503.13657v3; source version, appendix sample/negative results",
+      "searched_at": "2026-10-02",
+      "result": "results-found"
+    },
+    {
+      "id": "search-011",
+      "channel": "source-policy exclusions",
+      "query_or_corpus": "Secondary reposts, aggregator/AI summaries, AgentCoder static code gains not used for lifecycle causal claims",
+      "searched_at": "2026-10-02",
+      "result": "excluded"
+    },
+    {
+      "id": "search-012",
+      "channel": "cross-thread intake independently verified",
+      "query_or_corpus": "Read current canonical code-review 55/61 and orchestration95/97; open fixed Matt upstream code-review d81f3a; inspect skills-lock sources revision",
+      "searched_at": "2026-10-02",
+      "result": "results-found"
+    }
+  ],
+  "evidence_items": [
+    {
+      "id": "evidence-001",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code-or-registry",
+      "source_ref": ".template-spec/process/lifecycle-registry.yaml",
+      "locator": "gates:158-222; work_units:347 onward; checks:504 onward",
+      "stance": "support",
+      "observed_at": "2026-10-02",
+      "evidence_date": "2026-10-02",
+      "observation": "当前根表登记8阶段、7gate、14check；30产物、25工作单元、23证据。",
+      "limitations": [
+        "来源直接支持所述观察；不外推未核查场景。"
+      ],
+      "source_binding": {
+        "snapshot_ref": ".template-source/evidence/maintenance/2026-10-02-role-gates-research/source-snapshot/source-004.txt",
+        "digest": "sha256:ed053006b666b5222ac3577159bcae6f8ae1e6c4bae2aed119bcd2d8397ce98c"
+      }
+    },
+    {
+      "id": "evidence-002",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code-or-registry",
+      "source_ref": ".template-spec/agents/digital-human-roles.yaml",
+      "locator": "roles; gate_policy:175-261; user_decision_policy:264 onward",
+      "stance": "support",
+      "observed_at": "2026-10-02",
+      "evidence_date": "2026-10-02",
+      "observation": "6业务角色、主控另列；7gate和14check全部分类，5gate另有用户决定或延续要求。",
+      "limitations": [
+        "来源直接支持所述观察；不外推未核查场景。"
+      ],
+      "source_binding": {
+        "snapshot_ref": ".template-source/evidence/maintenance/2026-10-02-role-gates-research/source-snapshot/source-003.txt",
+        "digest": "sha256:bb58c93594e41c6b701c0a693480a8f805e5ee4c5fa6b0433adbebfaa1d2c2c5"
+      }
+    },
+    {
+      "id": "evidence-003",
+      "source_level": "direct-experience",
+      "visibility": "internal",
+      "source_class": "execution-log",
+      "source_ref": ".template-source/evidence/maintenance/2026-10-02-role-gates-research/intake/policy/stdout.log",
+      "locator": "counts, gatePolicy, userDecisionPolicy, gates, checks",
+      "stance": "support",
+      "observed_at": "2026-10-02",
+      "evidence_date": "2026-10-02",
+      "observation": "当前统计命令exit0，登记 counts 与分类如表；55ms只为子命令。",
+      "limitations": [
+        "静态登记不是实际执行次数；无真实用户等待数据。"
+      ]
+    },
+    {
+      "id": "evidence-004",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code-or-registry",
+      "source_ref": ".template-spec/process/harness-process-tailoring.md",
+      "locator": "template-source维护强度表与裁剪矩阵",
+      "stance": "support",
+      "observed_at": "2026-10-02",
+      "evidence_date": "2026-10-02",
+      "observation": "模板日常L1/L2/L3不强制独立审查或候选冻结；小改及未命中影响面可裁剪。",
+      "limitations": [
+        "来源直接支持所述观察；不外推未核查场景。"
+      ],
+      "source_binding": {
+        "snapshot_ref": ".template-source/evidence/maintenance/2026-10-02-role-gates-research/source-snapshot/source-005.txt",
+        "digest": "sha256:6d67b41c8b9e99c91c2965edbe14b731f7bb98a2e6ddb8594befc82ebae329f0"
+      }
+    },
+    {
+      "id": "evidence-005",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code-or-registry",
+      "source_ref": ".agents/skills/yss-product-lifecycle/references/user-decisions.md",
+      "locator": "已批准范围内连续推进与组合审查",
+      "stance": "support",
+      "observed_at": "2026-10-02",
+      "evidence_date": "2026-10-02",
+      "observation": "原回复可复用，continuation保留独立review、当前subject/basis、原快照语义比较；外部制度与实质变化仍适用。",
+      "limitations": [
+        "来源直接支持所述观察；不外推未核查场景。"
+      ],
+      "source_binding": {
+        "snapshot_ref": ".template-source/evidence/maintenance/2026-10-02-role-gates-research/source-snapshot/source-013.txt",
+        "digest": "sha256:8c9fd3abf3ebc7db787b154e1b63eda93e20974c7721adab9ded913bcf64f4a9"
+      }
+    },
+    {
+      "id": "evidence-006",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code-or-registry",
+      "source_ref": ".template-spec/agents/digital-human-roles.yaml",
+      "locator": "check_reviews:243-257",
+      "stance": "support",
+      "observed_at": "2026-10-02",
+      "evidence_date": "2026-10-02",
+      "observation": "OpenAPI Draft仅frontend-engineer，engineering baseline仅test-engineer，两集合无交集。",
+      "limitations": [
+        "来源直接支持所述观察；不外推未核查场景。"
+      ],
+      "source_binding": {
+        "snapshot_ref": ".template-source/evidence/maintenance/2026-10-02-role-gates-research/source-snapshot/source-003.txt",
+        "digest": "sha256:bb58c93594e41c6b701c0a693480a8f805e5ee4c5fa6b0433adbebfaa1d2c2c5"
+      }
+    },
+    {
+      "id": "evidence-007",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code-or-registry",
+      "source_ref": "scripts/lib/approval-record.mjs",
+      "locator": "reviewBundleRows:45-57",
+      "stance": "support",
+      "observed_at": "2026-10-02",
+      "evidence_date": "2026-10-02",
+      "observation": "bundle所有行role/runtime/principal都须匹配包身份，role差异拒绝。",
+      "limitations": [
+        "来源直接支持所述观察；不外推未核查场景。"
+      ],
+      "source_binding": {
+        "snapshot_ref": ".template-source/evidence/maintenance/2026-10-02-role-gates-research/source-snapshot/source-014.txt",
+        "digest": "sha256:7708f6035ce00507e015803f3166f382132386524662bc86c3a17ebeefc87a63"
+      }
+    },
+    {
+      "id": "evidence-008",
+      "source_level": "direct-experience",
+      "visibility": "internal",
+      "source_class": "execution-log",
+      "source_ref": ".template-source/evidence/maintenance/2026-10-02-role-gates-research/intake/assurance-bundle/stdout.log",
+      "locator": "5 named cases + cases:5, failed:0",
+      "stance": "support",
+      "observed_at": "2026-10-02",
+      "evidence_date": "2026-10-02",
+      "observation": "单条FE/QA分别合法；同principal不同role组合拒绝；单一QA或FE覆盖两项均拒绝。",
+      "limitations": [
+        "synthetic场景；证明同一个包不可覆盖，不证明必须不同Agent。"
+      ]
+    },
+    {
+      "id": "evidence-009",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code-or-registry",
+      "source_ref": ".agents/skills/yss-product-lifecycle/references/orchestration.md",
+      "locator": "必须暂停:109-117 与 聚合门禁和检查证据:148-156",
+      "stance": "support",
+      "observed_at": "2026-10-02",
+      "evidence_date": "2026-10-02",
+      "observation": "暂停条目包含数字人会签等待和即将作出完成结论，统一要求一个问题；后文允许测试角色验收，阶段完成不请求发布。",
+      "limitations": [
+        "当前文本存在误读风险；没有本轮真实轨迹频率统计。"
+      ],
+      "source_binding": {
+        "snapshot_ref": ".template-source/evidence/maintenance/2026-10-02-role-gates-research/source-snapshot/source-012.txt",
+        "digest": "sha256:6313cdbe9cf432a9c950c88d9c4021560125cfb57d1a9eab72a9ea8c7c676192"
+      }
+    },
+    {
+      "id": "evidence-010",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code-or-registry",
+      "source_ref": "scripts/lib/approval-record.mjs",
+      "locator": "validateApprovalRecordFile:143-156; assertApprovedGateHasValidApproval:159-175; assertCheckpointApprovals:178-185",
+      "stance": "support",
+      "observed_at": "2026-10-02",
+      "evidence_date": "2026-10-02",
+      "observation": "bundle严格文件路径有额外独立身份/subject摘要检查，单条和direct helper路径不相同；完整checkpoint先调用assertGateChecks。",
+      "limitations": [
+        "来源直接支持所述观察；不外推未核查场景。"
+      ],
+      "source_binding": {
+        "snapshot_ref": ".template-source/evidence/maintenance/2026-10-02-role-gates-research/source-snapshot/source-014.txt",
+        "digest": "sha256:7708f6035ce00507e015803f3166f382132386524662bc86c3a17ebeefc87a63"
+      }
+    },
+    {
+      "id": "evidence-011",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code-or-registry",
+      "source_ref": "scripts/lib/lifecycle-controls.mjs",
+      "locator": "assertGateChecks:17-26,46-55,65-82",
+      "stance": "support",
+      "observed_at": "2026-10-02",
+      "evidence_date": "2026-10-02",
+      "observation": "完整门禁核验当前证据摘要、适用检查、范围和独立身份、审阅包完整依据。",
+      "limitations": [
+        "来源直接支持所述观察；不外推未核查场景。"
+      ],
+      "source_binding": {
+        "snapshot_ref": ".template-source/evidence/maintenance/2026-10-02-role-gates-research/source-snapshot/source-015.txt",
+        "digest": "sha256:75b0ef8b3d1b57535d28c374aae34d870745c72a833e0221af5c37ebe24a0564"
+      }
+    },
+    {
+      "id": "evidence-012",
+      "source_level": "direct-experience",
+      "visibility": "internal",
+      "source_class": "execution-log",
+      "source_ref": ".template-source/evidence/maintenance/2026-10-02-role-gates-research/intake/assurance/stdout.log",
+      "locator": "13 probes; nested node --test TAP 28 tests",
+      "stance": "support",
+      "observed_at": "2026-10-02",
+      "evidence_date": "2026-10-02",
+      "observation": "单条/直接helper接受声明的自签/错误摘要synthetic记录，完整checkpoint拒绝；用户回复冒充和字节漂移拒绝；28现有测试全部通过。",
+      "limitations": [
+        "未证明正常checkpoint可绕过；没有外部身份认证或生产验证。"
+      ]
+    },
+    {
+      "id": "evidence-013",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code-or-registry",
+      "source_ref": "scripts/lib/backend-review.mjs",
+      "locator": "validate backend review candidate, actor/instance, Standards/Spec, verification machine rows",
+      "stance": "support",
+      "observed_at": "2026-10-02",
+      "evidence_date": "2026-10-02",
+      "observation": "审查绑定当前批准合同、Git候选、独立实例、规范覆盖和实际命令证据。",
+      "limitations": [
+        "检查记录与当前输入的一致性；未度量真实缺陷识别效果。"
+      ],
+      "source_binding": {
+        "snapshot_ref": ".template-source/evidence/maintenance/2026-10-02-role-gates-research/source-snapshot/source-018.txt",
+        "digest": "sha256:ca0bba7a3ab60e07bee838d6646c672582ee9ed73e8b063cacc86a53e80140a8"
+      }
+    },
+    {
+      "id": "evidence-014",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code-or-registry",
+      "source_ref": "scripts/lib/user-decision.mjs",
+      "locator": "source capture identity note:41; request/response binding:81-154",
+      "stance": "support",
+      "observed_at": "2026-10-02",
+      "evidence_date": "2026-10-02",
+      "observation": "核验展示、原始回复、用户/数字人、指向与摘要；明确capture不是身份签名。",
+      "limitations": [
+        "本地捕获自洽不等于可信平台作者认证。"
+      ],
+      "source_binding": {
+        "snapshot_ref": ".template-source/evidence/maintenance/2026-10-02-role-gates-research/source-snapshot/source-016.txt",
+        "digest": "sha256:bf7b9f31999d51b953e890c677e6a56d6bd8153f58fac8ba02c85c35eda2bf25"
+      }
+    },
+    {
+      "id": "evidence-015",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "original-experiment-dataset",
+      "source_ref": ".template-source/evidence/maintenance/2026-09-26-lifecycle-improvement-implementation/evaluation-summary.json",
+      "locator": "variants.baseline/candidate; timing_limits; limitations",
+      "stance": "support",
+      "observed_at": "2026-10-02",
+      "evidence_date": "2026-09-26",
+      "observation": "历史48运行双方22/24；3851.89→3996.67s；397→396工具；fixture无实时人类回复。",
+      "limitations": [
+        "历史版本比较，非当前角色门禁组合A/B。",
+        "两次重复、顺序与环境限制，不能因果或显著性外推。",
+        "所读为实验执行者保存的原始汇总数据；本轮未重跑48次或逐条重新审计全部原始轨迹。"
+      ],
+      "source_binding": {
+        "snapshot_ref": ".template-source/evidence/maintenance/2026-10-02-role-gates-research/source-snapshot/source-027.txt",
+        "digest": "sha256:3ea4b4a1402346f52bd599ab1d2fc799d2895df691c438ac21e202f11cfdeaa9"
+      }
+    },
+    {
+      "id": "evidence-016",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-report",
+      "source_ref": "https://dora.dev/research/2019/dora-report/2019-dora-accelerate-state-of-devops-report.pdf",
+      "locator": "印刷页48-52 Change Management",
+      "stance": "support",
+      "observed_at": "2026-10-02",
+      "evidence_date": "2019",
+      "observation": "重型外部审批与较差交付表现相关，未找到其降低失败率的支持；推荐团队评审和自动化。",
+      "limitations": [
+        "组织调查关联，非YSS门禁控制实验；不否定必要业务决定。"
+      ]
+    },
+    {
+      "id": "evidence-017",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-report",
+      "source_ref": "https://nvlpubs.nist.gov/nistpubs/specialpublications/nist.sp.800-218.pdf",
+      "locator": "PW.2.1 printed p12; PW.7 printed p14",
+      "stance": "support",
+      "observed_at": "2026-10-02",
+      "evidence_date": "2022-02",
+      "observation": "支持合格且未参与设计人员和/或工具检查设计，按标准执行代码review/analysis并记录问题。",
+      "limitations": [
+        "标准建议；不表明本项目已采纳的法律或组织要求。"
+      ]
+    },
+    {
+      "id": "evidence-018",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-report",
+      "source_ref": "https://www.anthropic.com/engineering/building-effective-agents",
+      "locator": "When and when not; Prompt chaining; Evaluator-optimizer; Appendix1 coding agents",
+      "stance": "support",
+      "observed_at": "2026-10-02",
+      "evidence_date": "2024-12-19",
+      "observation": "建议复杂度随可测收益增加，程序gate检查、清晰评价标准、系统需求审查。",
+      "limitations": [
+        "第一方工程经验非控制实验；文章声明工具实践已演进。"
+      ]
+    },
+    {
+      "id": "evidence-019",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-report",
+      "source_ref": "https://www.anthropic.com/engineering/multi-agent-research-system",
+      "locator": "Benefits: internal research eval, token consumption, context/dependency fit",
+      "stance": "support",
+      "observed_at": "2026-10-02",
+      "evidence_date": "2025-06-13",
+      "observation": "内部研究eval相对单Agent提升90.2%；多Agent约15倍chat token；依赖多、共享上下文任务适配较差。",
+      "limitations": [
+        "研究任务/内部评测；15倍比较对象是chat，不是single-agent。"
+      ]
+    },
+    {
+      "id": "evidence-020",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "original-paper",
+      "source_ref": "https://arxiv.org/html/2512.08296v3",
+      "locator": "Abstract; §4.1; §4.5; Data Availability; AppendixF Table16",
+      "stance": "support",
+      "observed_at": "2026-10-02",
+      "evidence_date": "2026-04-08",
+      "observation": "260配置6benchmark中协作收益异质，金融+80.8%、顺序规划−70.0%；软件/终端每配置20实例。",
+      "limitations": [
+        "不能混用v1的180/4与旧回归值。",
+        "软件样本小/CI宽，工具因素在聚类修正后不稳，不能外推YSS精确收益。"
+      ]
+    },
+    {
+      "id": "evidence-021",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "original-paper",
+      "source_ref": "https://arxiv.org/html/2503.13657v3",
+      "locator": "Abstract; MAST taxonomy; discussion; Appendix",
+      "stance": "support",
+      "observed_at": "2026-10-02",
+      "evidence_date": "2025-10-26",
+      "observation": "7框架1600余标注轨迹识别14失败类，包括重复、未共享信息、提前结束、缺失/错误验证。",
+      "limitations": [
+        "跨框架任务不一致，非当前项目重构对照实验。"
+      ]
+    },
+    {
+      "id": "evidence-counter-001",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code-or-registry",
+      "source_ref": ".template-spec/agents/digital-human-roles.yaml",
+      "locator": "gate_policy.review_execution; user_decision_policy continuation",
+      "stance": "counter",
+      "observed_at": "2026-10-02",
+      "evidence_date": "2026-10-02",
+      "observation": "数量是登记类型，适用性、合并和授权延续可以减少实际动作。",
+      "limitations": [
+        "来源直接支持所述观察；不外推未核查场景。"
+      ],
+      "source_binding": {
+        "snapshot_ref": ".template-source/evidence/maintenance/2026-10-02-role-gates-research/source-snapshot/source-003.txt",
+        "digest": "sha256:bb58c93594e41c6b701c0a693480a8f805e5ee4c5fa6b0433adbebfaa1d2c2c5"
+      }
+    },
+    {
+      "id": "evidence-counter-002",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code-or-registry",
+      "source_ref": ".agents/skills/yss-product-lifecycle/references/user-decisions.md",
+      "locator": "continuation review payload; external_decisions",
+      "stance": "counter",
+      "observed_at": "2026-10-02",
+      "evidence_date": "2026-10-02",
+      "observation": "延续仍需独立语义比较和当前证据，实质变更或外部要求保留用户决定。",
+      "limitations": [
+        "来源直接支持所述观察；不外推未核查场景。"
+      ],
+      "source_binding": {
+        "snapshot_ref": ".template-source/evidence/maintenance/2026-10-02-role-gates-research/source-snapshot/source-013.txt",
+        "digest": "sha256:8c9fd3abf3ebc7db787b154e1b63eda93e20974c7721adab9ded913bcf64f4a9"
+      }
+    },
+    {
+      "id": "evidence-counter-003",
+      "source_level": "direct-experience",
+      "visibility": "internal",
+      "source_class": "execution-log",
+      "source_ref": ".template-source/evidence/maintenance/2026-10-02-role-gates-research/intake/assurance-bundle/stdout.log",
+      "locator": "first two accepted cases",
+      "stance": "counter",
+      "observed_at": "2026-10-02",
+      "evidence_date": "2026-10-02",
+      "observation": "FE和QA两条记录分别合法，可通过多个文件记录；同包失败不等于必须两个不同Agent。",
+      "limitations": [
+        "来源直接支持所述观察；不外推未核查场景。"
+      ]
+    },
+    {
+      "id": "evidence-counter-004",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code-or-registry",
+      "source_ref": ".agents/skills/yss-product-lifecycle/references/orchestration.md",
+      "locator": "stage boundary Continue and delivery:36,156",
+      "stance": "counter",
+      "observed_at": "2026-10-02",
+      "evidence_date": "2026-10-02",
+      "observation": "阶段首选Continue，验收可由测试角色完成；限制对强暂停文字的解释。",
+      "limitations": [
+        "来源直接支持所述观察；不外推未核查场景。"
+      ],
+      "source_binding": {
+        "snapshot_ref": ".template-source/evidence/maintenance/2026-10-02-role-gates-research/source-snapshot/source-012.txt",
+        "digest": "sha256:6313cdbe9cf432a9c950c88d9c4021560125cfb57d1a9eab72a9ea8c7c676192"
+      }
+    },
+    {
+      "id": "evidence-counter-005",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code-or-registry",
+      "source_ref": "scripts/lib/lifecycle-controls.mjs",
+      "locator": "assertGateChecks:65-78",
+      "stance": "counter",
+      "observed_at": "2026-10-02",
+      "evidence_date": "2026-10-02",
+      "observation": "完整checkpoint有独立身份与摘要覆盖校验，拒绝本轮synthetic自签。",
+      "limitations": [
+        "来源直接支持所述观察；不外推未核查场景。"
+      ],
+      "source_binding": {
+        "snapshot_ref": ".template-source/evidence/maintenance/2026-10-02-role-gates-research/source-snapshot/source-015.txt",
+        "digest": "sha256:75b0ef8b3d1b57535d28c374aae34d870745c72a833e0221af5c37ebe24a0564"
+      }
+    },
+    {
+      "id": "evidence-counter-006",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code-or-registry",
+      "source_ref": "scripts/lib/approval-record.mjs",
+      "locator": "validateApprovalRecordFile:143-156",
+      "stance": "counter",
+      "observed_at": "2026-10-02",
+      "evidence_date": "2026-10-02",
+      "observation": "单条入口保障较弱，不能把完整门禁的强保障扩张到所有入口。",
+      "limitations": [
+        "来源直接支持所述观察；不外推未核查场景。"
+      ],
+      "source_binding": {
+        "snapshot_ref": ".template-source/evidence/maintenance/2026-10-02-role-gates-research/source-snapshot/source-014.txt",
+        "digest": "sha256:7708f6035ce00507e015803f3166f382132386524662bc86c3a17ebeefc87a63"
+      }
+    },
+    {
+      "id": "evidence-counter-007",
+      "source_level": "direct-experience",
+      "visibility": "internal",
+      "source_class": "source-code-or-registry",
+      "source_ref": ".template-source/evidence/maintenance/2026-09-26-lifecycle-improvement-implementation/evaluation-summary.json",
+      "locator": "median and scenario breakdown; limitations",
+      "stance": "counter",
+      "observed_at": "2026-10-02",
+      "evidence_date": "2026-09-26",
+      "observation": "历史候选中位数141.44→137.32，部分场景更快；整体+3.8%不能证明稳定退化。",
+      "limitations": [
+        "来源直接支持所述观察；不外推未核查场景。"
+      ],
+      "source_binding": {
+        "snapshot_ref": ".template-source/evidence/maintenance/2026-10-02-role-gates-research/source-snapshot/source-027.txt",
+        "digest": "sha256:3ea4b4a1402346f52bd599ab1d2fc799d2895df691c438ac21e202f11cfdeaa9"
+      }
+    },
+    {
+      "id": "evidence-counter-008",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-report",
+      "source_ref": "https://dora.dev/research/2019/dora-report/2019-dora-accelerate-state-of-devops-report.pdf",
+      "locator": "printed p51 CAB strategic business role",
+      "stance": "counter",
+      "observed_at": "2026-10-02",
+      "evidence_date": "2019",
+      "observation": "DORA保留跨团队协调和重要业务风险取舍的批准作用。",
+      "limitations": [
+        "来源直接支持所述观察；不外推未核查场景。"
+      ]
+    },
+    {
+      "id": "evidence-counter-009",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-report",
+      "source_ref": "https://www.anthropic.com/engineering/multi-agent-research-system",
+      "locator": "Benefits breadth-first research",
+      "stance": "counter",
+      "observed_at": "2026-10-02",
+      "evidence_date": "2025-06-13",
+      "observation": "独立并行研究取得特定内部评测正向收益；简单优先不等于禁用多Agent。",
+      "limitations": [
+        "来源直接支持所述观察；不外推未核查场景。"
+      ]
+    },
+    {
+      "id": "evidence-counter-010",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "original-paper",
+      "source_ref": "https://arxiv.org/html/2512.08296v3",
+      "locator": "§4.1 Finance positive; AppendixF confidence intervals",
+      "stance": "counter",
+      "observed_at": "2026-10-02",
+      "evidence_date": "2026-04-08",
+      "observation": "可分解金融任务有大幅收益；小软件样本、预算/任务条件限制泛化。",
+      "limitations": [
+        "来源直接支持所述观察；不外推未核查场景。"
+      ]
+    },
+    {
+      "id": "evidence-counter-011",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "original-paper",
+      "source_ref": "https://arxiv.org/html/2503.13657v3",
+      "locator": "discussion on design and verification improvements",
+      "stance": "counter",
+      "observed_at": "2026-10-02",
+      "evidence_date": "2025-10-26",
+      "observation": "失败类型研究建议改进系统设计和验证，未证明移除审查能提高YSS质量。",
+      "limitations": [
+        "来源直接支持所述观察；不外推未核查场景。"
+      ]
+    },
+    {
+      "id": "evidence-022",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "canonical-skill",
+      "source_ref": ".agents/skills/code-review/SKILL.md",
+      "source_binding": {
+        "snapshot_ref": ".template-source/evidence/maintenance/2026-10-02-role-gates-research/source-snapshot/source-028.txt",
+        "digest": "sha256:13bf6bf59d4cfb07124a1fd923a1984541584a30d315a9e675841400aab15e14"
+      },
+      "locator": "ordinary Reviewer:12,51; scoped re-review:55,61; historical convergence:59",
+      "stance": "support",
+      "observed_at": "2026-10-02",
+      "evidence_date": "2026-10-02",
+      "observation": "普通YSS审查修复仅重跑受影响结论及依赖，未影响项有依据复用，全部证据重绑当前候选；历史合同按原约定。",
+      "limitations": [
+        "未测当前真实任务返工频率或耗时。"
+      ]
+    },
+    {
+      "id": "evidence-023",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "upstream-source-code",
+      "source_ref": "https://raw.githubusercontent.com/mattpocock/skills/d81f3a183412e71a5b1e84ca21bc1a35eea03a60/skills/engineering/code-review/SKILL.md",
+      "locator": "two parallel axes:5-9; tool-covered/heuristic handling:30-32,49-57; aggregation:60-72",
+      "stance": "support",
+      "observed_at": "2026-10-02",
+      "evidence_date": "2026-09-29",
+      "observation": "固定revision上游仍是双轴并行subagents；区分硬标准与启发式建议，工具已覆盖项跳过，逐轴呈现。YSS skills-lock锁定另一个revision，不能说上游该版本已采用。",
+      "limitations": [
+        "仅当前读到的固定源码设计；不作为有效性控制实验。"
+      ]
+    },
+    {
+      "id": "evidence-counter-012",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "canonical-skill",
+      "source_ref": ".agents/skills/code-review/SKILL.md",
+      "locator": "55,59,61,63",
+      "stance": "counter",
+      "observed_at": "2026-10-02",
+      "observation": "定向复审仍须重绑当前摘要，未知影响、drift或明确历史冻结合同不能随意复用。",
+      "limitations": [
+        "保持版本与适用合同的边界，不能泛化为一切修复免审。"
+      ]
+    }
+  ],
+  "claims": [
+    {
+      "id": "claim-001",
+      "claim_kind": "technical-fact",
+      "statement": "当前根模板登记6业务角色、主控另列、7聚合门禁与14检查；登记数量不能作为实际人工停顿或实例数。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-001",
+        "evidence-002",
+        "evidence-003"
+      ],
+      "counter_signal_refs": [
+        "evidence-counter-001"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-002",
+      "claim_kind": "technical-fact",
+      "statement": "已有政策支持一负责人/默认一独立reviewer、相邻合并、授权复用及模板维护裁剪；用户决定仍是适用横切条件。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-002",
+        "evidence-004",
+        "evidence-005"
+      ],
+      "counter_signal_refs": [
+        "evidence-counter-002"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-003",
+      "claim_kind": "technical-fact",
+      "statement": "OpenAPI Draft与工程基线审查的角色集合无交集，bundle的same-role规则使一个合法bundle无法覆盖两项；未证明必须两个不同Agent。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-006",
+        "evidence-007",
+        "evidence-008"
+      ],
+      "counter_signal_refs": [
+        "evidence-counter-003"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-004",
+      "claim_kind": "technical-fact",
+      "statement": "当前暂停文字与已允许自动推进/数字人验收存在误读风险；真实多问次数与发生率尚未测量。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-009"
+      ],
+      "counter_signal_refs": [
+        "evidence-counter-004"
+      ],
+      "audit_status": "partially-supported",
+      "confidence": "medium",
+      "disposition": "qualify"
+    },
+    {
+      "id": "claim-005",
+      "claim_kind": "technical-fact",
+      "statement": "单条、组合包、direct helper与完整checkpoint的当前批准保障不同；本轮探针复现弱入口接受自签/错误摘要，同时完整checkpoint拒绝，未证明完整流程绕过。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-010",
+        "evidence-011",
+        "evidence-012"
+      ],
+      "counter_signal_refs": [
+        "evidence-counter-005"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-006",
+      "claim_kind": "technical-fact",
+      "statement": "完整根门禁、代码审查与用户决定具有可执行的摘要/范围/独立记录保障；本地Schema/hash自洽不构成外部身份认证或真实审查质量证明。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-011",
+        "evidence-013",
+        "evidence-014"
+      ],
+      "counter_signal_refs": [
+        "evidence-counter-006"
+      ],
+      "audit_status": "supported",
+      "confidence": "medium",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-007",
+      "claim_kind": "technical-fact",
+      "statement": "历史48运行两侧各22/24，候选总耗时+3.76%且人工等待未测；不能据此证明当前会签提效或稳定退化。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-015"
+      ],
+      "counter_signal_refs": [
+        "evidence-counter-007"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-008",
+      "claim_kind": "technical-fact",
+      "statement": "DORA原报告支持团队评审/自动验证替代重型外部变更审批；SSDF支持合格审查及工具与问题闭环，未要求固定数字人职称数量。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-016",
+        "evidence-017"
+      ],
+      "counter_signal_refs": [
+        "evidence-counter-008"
+      ],
+      "audit_status": "supported",
+      "confidence": "medium",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-009",
+      "claim_kind": "technical-fact",
+      "statement": "Anthropic一手经验支持按可测收益增加复杂度及按任务并行；其研究系统收益和token比较不能外推成软件会签收益。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-018",
+        "evidence-019"
+      ],
+      "counter_signal_refs": [
+        "evidence-counter-009"
+      ],
+      "audit_status": "supported",
+      "confidence": "medium",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-010",
+      "claim_kind": "technical-fact",
+      "statement": "Scaling v3受控benchmark显示多Agent收益有任务和拓扑差异，含正向和负向；软件样本和统计限制禁止推导本项目精确收益或通用开关。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-020"
+      ],
+      "counter_signal_refs": [
+        "evidence-counter-010"
+      ],
+      "audit_status": "supported",
+      "confidence": "medium",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-011",
+      "claim_kind": "technical-fact",
+      "statement": "MAST原始轨迹研究识别重复、协作失配及缺失/错误验证等失败模式；职称/SOP遵循本身不能作为当前项目可靠性证明。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-021",
+        "evidence-014"
+      ],
+      "counter_signal_refs": [
+        "evidence-counter-011"
+      ],
+      "audit_status": "partially-supported",
+      "confidence": "medium",
+      "disposition": "qualify"
+    },
+    {
+      "id": "claim-012",
+      "claim_kind": "technical-fact",
+      "statement": "当前普通YSS修复复审口径存在文本不一致：canonical code-review允许受影响结论/依赖定向复审，orchestration仍要求全轴及UI任意修复全轴；潜在额外成本未测量。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-009",
+        "evidence-022"
+      ],
+      "counter_signal_refs": [
+        "evidence-counter-012"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    }
+  ],
+  "source_gaps": [
+    "没有当前真实项目逐门禁缺陷识别、误阻断、人工等待和实例/token成本的配对数据。",
+    "未验证外部消息平台作者真实性；synthetic capture仅校验本地绑定。",
+    "暂停误读的实际发生频率needs-deeper-research；只发布限定文本风险。",
+    "根工作树有并发维护的既有dirty输入；研究快照不证明子仓、CLI、实例、发布完整就绪。"
+  ],
+  "audit_summary": {
+    "status": "complete",
+    "audited_claim_ids": [
+      "claim-001",
+      "claim-002",
+      "claim-003",
+      "claim-004",
+      "claim-005",
+      "claim-006",
+      "claim-007",
+      "claim-008",
+      "claim-009",
+      "claim-010",
+      "claim-011",
+      "claim-012"
+    ],
+    "notes": [
+      "每项决定性事实由当前来源、实际日志或公共一手资料支持，counter signal已逐项记录。",
+      "重构优先级为主控设计推断；不作为已批准生命周期决定。",
+      "结构验证不验证网页事实，不把测试数量或会签数量当效能指标。",
+      "MEMORY只帮助定位历史路由；当前政策/历史数字均重新读源验证。",
+      "历史实验原始汇总属于原始数据集 primary；初次校验因仅标 direct-experience 被拒，失败日志保留于 verification/，不修改数值或将其升级为当前试验。",
+      "修复后的建议已收窄为受影响结论及依赖复审，不推荐摘要变化、UI修复或新影响自动触发整包全轴复审。"
+    ]
+  }
+}

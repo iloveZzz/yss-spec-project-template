@@ -1,0 +1,138 @@
+{
+  "schema": "yss.evidence-archive-verify/v1",
+  "batch": "2026-10-02-b2-lifecycle-core-optimization",
+  "verified_at_utc": "2026-10-02T16:03:54.191Z",
+  "archive": "/Users/zhudaoming/Documents/yss-template-evidence-archive/2026-10-02-b2-lifecycle-core-optimization.tar.gz",
+  "archive_sha256": "35caa1b19859bb3df4203bd36b7ed57b95a8d7ad3058822b5fa434dc89f8dc4e",
+  "extract_dir": "/Users/zhudaoming/Documents/yss-template-evidence-archive/_verify/2026-10-02-b2-lifecycle-core-optimization",
+  "memberCount": 598,
+  "checked": 598,
+  "result": "pass",
+  "problems": [],
+  "readback": [
+    {
+      "path": ".template-source/evidence/maintenance/2026-09-28-lifecycle-core-optimization/agent-baseline/api-evidence-1/fixture-manifest.json",
+      "ok": true
+    },
+    {
+      "path": ".template-source/evidence/maintenance/2026-09-28-lifecycle-core-optimization/agent-baseline/api-evidence-1/observed-output/assessment.json",
+      "ok": true
+    },
+    {
+      "path": ".template-source/evidence/maintenance/2026-09-28-lifecycle-core-optimization/agent-baseline/api-evidence-1/result.json",
+      "ok": true
+    },
+    {
+      "path": ".template-source/evidence/maintenance/2026-09-28-lifecycle-core-optimization/agent-baseline/api-evidence-1/step-input-manifest.json",
+      "ok": true
+    },
+    {
+      "path": ".template-source/evidence/maintenance/2026-09-28-lifecycle-core-optimization/agent-baseline/api-evidence-1/step-result.json",
+      "ok": true
+    },
+    {
+      "path": ".template-source/evidence/maintenance/2026-09-28-lifecycle-core-optimization/agent-baseline/api-evidence-2/fixture-manifest.json",
+      "ok": true
+    },
+    {
+      "path": ".template-source/evidence/maintenance/2026-09-28-lifecycle-core-optimization/agent-baseline/api-evidence-2/observed-output/assessment.json",
+      "ok": true
+    },
+    {
+      "path": ".template-source/evidence/maintenance/2026-09-28-lifecycle-core-optimization/agent-baseline/api-evidence-2/result.json",
+      "ok": true
+    },
+    {
+      "path": ".template-source/evidence/maintenance/2026-09-28-lifecycle-core-optimization/agent-baseline/api-evidence-2/step-input-manifest.json",
+      "ok": true
+    },
+    {
+      "path": ".template-source/evidence/maintenance/2026-09-28-lifecycle-core-optimization/agent-baseline/api-evidence-2/step-result.json",
+      "ok": true
+    },
+    {
+      "path": ".template-source/evidence/maintenance/2026-09-28-lifecycle-core-optimization/agent-baseline/cross-repo-drift-1/fixture-manifest.json",
+      "ok": true
+    },
+    {
+      "path": ".template-source/evidence/maintenance/2026-09-28-lifecycle-core-optimization/agent-baseline/cross-repo-drift-1/observed-output/assessment.json",
+      "ok": true
+    },
+    {
+      "path": ".template-source/evidence/maintenance/2026-09-28-lifecycle-core-optimization/agent-baseline/cross-repo-drift-1/result.json",
+      "ok": true
+    },
+    {
+      "path": ".template-source/evidence/maintenance/2026-09-28-lifecycle-core-optimization/agent-baseline/cross-repo-drift-1/step-input-manifest.json",
+      "ok": true
+    },
+    {
+      "path": ".template-source/evidence/maintenance/2026-09-28-lifecycle-core-optimization/agent-baseline/cross-repo-drift-1/step-result.json",
+      "ok": true
+    },
+    {
+      "path": ".template-source/evidence/maintenance/2026-09-28-lifecycle-core-optimization/agent-baseline/cross-repo-drift-2/fixture-manifest.json",
+      "ok": true
+    },
+    {
+      "path": ".template-source/evidence/maintenance/2026-09-28-lifecycle-core-optimization/agent-baseline/cross-repo-drift-2/observed-output/assessment.json",
+      "ok": true
+    },
+    {
+      "path": ".template-source/evidence/maintenance/2026-09-28-lifecycle-core-optimization/agent-baseline/cross-repo-drift-2/result.json",
+      "ok": true
+    },
+    {
+      "path": ".template-source/evidence/maintenance/2026-09-28-lifecycle-core-optimization/agent-baseline/cross-repo-drift-2/step-input-manifest.json",
+      "ok": true
+    },
+    {
+      "path": ".template-source/evidence/maintenance/2026-09-28-lifecycle-core-optimization/agent-baseline/cross-repo-drift-2/step-result.json",
+      "ok": true
+    },
+    {
+      "path": ".template-source/evidence/maintenance/2026-09-28-lifecycle-core-optimization/agent-baseline/research-close-1/fixture-manifest.json",
+      "ok": true
+    },
+    {
+      "path": ".template-source/evidence/maintenance/2026-09-28-lifecycle-core-optimization/agent-baseline/research-close-1/observed-output/assessment.json",
+      "ok": true
+    },
+    {
+      "path": ".template-source/evidence/maintenance/2026-09-28-lifecycle-core-optimization/agent-baseline/research-close-1/result.json",
+      "ok": true
+    },
+    {
+      "path": ".template-source/evidence/maintenance/2026-09-28-lifecycle-core-optimization/agent-baseline/research-close-1/step-input-manifest.json",
+      "ok": true
+    },
+    {
+      "path": ".template-source/evidence/maintenance/2026-09-28-lifecycle-core-optimization/agent-baseline/research-close-1/step-result.json",
+      "ok": true
+    },
+    {
+      "path": ".template-source/evidence/maintenance/2026-09-28-lifecycle-core-optimization/agent-baseline/research-close-2/fixture-manifest.json",
+      "ok": true
+    },
+    {
+      "path": ".template-source/evidence/maintenance/2026-09-28-lifecycle-core-optimization/agent-baseline/research-close-2/observed-output/assessment.json",
+      "ok": true
+    },
+    {
+      "path": ".template-source/evidence/maintenance/2026-09-28-lifecycle-core-optimization/agent-baseline/research-close-2/result.json",
+      "ok": true
+    },
+    {
+      "path": ".template-source/evidence/maintenance/2026-09-28-lifecycle-core-optimization/agent-baseline/research-close-2/step-input-manifest.json",
+      "ok": true
+    },
+    {
+      "path": ".template-source/evidence/maintenance/2026-09-28-lifecycle-core-optimization/agent-baseline/research-close-2/step-result.json",
+      "ok": true
+    },
+    {
+      "path": ".template-source/evidence/maintenance/2026-09-28-lifecycle-core-optimization/agent-baseline/run-config.json",
+      "ok": true
+    }
+  ]
+}

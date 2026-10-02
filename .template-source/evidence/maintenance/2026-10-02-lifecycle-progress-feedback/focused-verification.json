@@ -1,0 +1,89 @@
+[
+  {
+    "command": [
+      "node",
+      "--test",
+      ".template-source/tooling/node/test/lifecycle-status-feedback.test.mjs"
+    ],
+    "exit_code": 0,
+    "duration_ms": 1396,
+    "stdout_ref": ".template-source/evidence/maintenance/2026-10-02-lifecycle-progress-feedback/logs/focused-0.stdout.log",
+    "stderr_ref": ".template-source/evidence/maintenance/2026-10-02-lifecycle-progress-feedback/logs/focused-0.stderr.log"
+  },
+  {
+    "command": [
+      "node",
+      "scripts/verify-lifecycle-operator-scenarios"
+    ],
+    "exit_code": 0,
+    "duration_ms": 409,
+    "stdout_ref": ".template-source/evidence/maintenance/2026-10-02-lifecycle-progress-feedback/logs/focused-1.stdout.log",
+    "stderr_ref": ".template-source/evidence/maintenance/2026-10-02-lifecycle-progress-feedback/logs/focused-1.stderr.log"
+  },
+  {
+    "command": [
+      "node",
+      "scripts/verify-lifecycle-context-query-scenarios"
+    ],
+    "exit_code": 0,
+    "duration_ms": 729,
+    "stdout_ref": ".template-source/evidence/maintenance/2026-10-02-lifecycle-progress-feedback/logs/focused-2.stdout.log",
+    "stderr_ref": ".template-source/evidence/maintenance/2026-10-02-lifecycle-progress-feedback/logs/focused-2.stderr.log"
+  },
+  {
+    "command": [
+      "node",
+      "scripts/verify-lifecycle-scenarios"
+    ],
+    "exit_code": 0,
+    "duration_ms": 464,
+    "stdout_ref": ".template-source/evidence/maintenance/2026-10-02-lifecycle-progress-feedback/logs/focused-3.stdout.log",
+    "stderr_ref": ".template-source/evidence/maintenance/2026-10-02-lifecycle-progress-feedback/logs/focused-3.stderr.log"
+  },
+  {
+    "command": [
+      "node",
+      "scripts/sync-profile-skills",
+      "--check",
+      "--profile",
+      "all"
+    ],
+    "exit_code": 0,
+    "duration_ms": 602,
+    "stdout_ref": ".template-source/evidence/maintenance/2026-10-02-lifecycle-progress-feedback/logs/focused-4.stdout.log",
+    "stderr_ref": ".template-source/evidence/maintenance/2026-10-02-lifecycle-progress-feedback/logs/focused-4.stderr.log"
+  },
+  {
+    "command": [
+      "node",
+      "scripts/sync-strategic-handoff-tools",
+      "--check"
+    ],
+    "exit_code": 0,
+    "duration_ms": 429,
+    "stdout_ref": ".template-source/evidence/maintenance/2026-10-02-lifecycle-progress-feedback/logs/focused-5.stdout.log",
+    "stderr_ref": ".template-source/evidence/maintenance/2026-10-02-lifecycle-progress-feedback/logs/focused-5.stderr.log"
+  },
+  {
+    "command": [
+      "node",
+      "scripts/sync-skills",
+      "--check"
+    ],
+    "exit_code": 0,
+    "duration_ms": 93,
+    "stdout_ref": ".template-source/evidence/maintenance/2026-10-02-lifecycle-progress-feedback/logs/focused-6.stdout.log",
+    "stderr_ref": ".template-source/evidence/maintenance/2026-10-02-lifecycle-progress-feedback/logs/focused-6.stderr.log"
+  },
+  {
+    "command": [
+      "node",
+      "scripts/update-skill-lock",
+      "--check"
+    ],
+    "exit_code": 0,
+    "duration_ms": 101,
+    "stdout_ref": ".template-source/evidence/maintenance/2026-10-02-lifecycle-progress-feedback/logs/focused-7.stdout.log",
+    "stderr_ref": ".template-source/evidence/maintenance/2026-10-02-lifecycle-progress-feedback/logs/focused-7.stderr.log"
+  }
+]

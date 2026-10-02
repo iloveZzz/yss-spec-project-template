@@ -1,0 +1,517 @@
+{
+  "execution": {
+    "mode": null,
+    "plan_checks": [
+      {
+        "evidence_refs": [],
+        "id": "goals",
+        "status": "pending"
+      },
+      {
+        "evidence_refs": [],
+        "id": "scope_and_priority",
+        "status": "pending"
+      },
+      {
+        "evidence_refs": [],
+        "id": "boundaries_and_rules",
+        "status": "pending"
+      },
+      {
+        "evidence_refs": [],
+        "id": "open_questions",
+        "status": "pending"
+      },
+      {
+        "evidence_refs": [],
+        "id": "handoff",
+        "status": "pending"
+      },
+      {
+        "evidence_refs": [],
+        "id": "context_reconciliation",
+        "status": "pending"
+      },
+      {
+        "evidence_refs": [],
+        "id": "grill_exit",
+        "status": "pending"
+      }
+    ],
+    "selected": {
+      "gate_consolidation": {
+        "acceptance_does_not_authorize": [
+          "merge",
+          "push",
+          "release",
+          "production_change"
+        ],
+        "adjacent_reviews": "one_bundle_with_explicit_per_check_outcomes",
+        "api_freeze": "atomic_with_engineering_contract_approval_same_version",
+        "check_failure": "blocks_aggregate_gate",
+        "check_policy": ".template-spec/agents/digital-human-roles.yaml",
+        "checks": "automatic_or_independent_review_without_separate_user_decision",
+        "continuation_protocol": "references/user-decisions.md",
+        "default_review": "one_owner_one_independent_reviewer",
+        "extra_reviewers": "uncovered_expertise_conflict_or_external_requirement",
+        "historical_gate_records": "read_only_no_automatic_approval_migration",
+        "invalidation": "affected_dependencies_or_authorization_change_only",
+        "plan_decision_boundary": "gate.plan-approved",
+        "readiness": "computed_after_current_approved_contract_and_all_applicable_preconditions",
+        "reuse": "unchanged_approval_or_verified_approved_scope_continuation",
+        "source": ".template-spec/process/lifecycle-registry.yaml",
+        "suggestions": "recorded_backlog_without_blocking",
+        "verifier": "scripts/verify-lifecycle-checkpoint"
+      },
+      "grill_exit": {
+        "facts_resolved_or_routed": {
+          "external_decision": "external-input-required",
+          "runnable_question": "handoff-prototype-handoff",
+          "technical_fact": "yss-research"
+        },
+        "output": "plan-evidence",
+        "required": [
+          "frontier_empty",
+          "facts_resolved_or_routed",
+          "decisions_confirmed",
+          "shared_understanding_confirmed",
+          "no_unresolved_runnable_blocker"
+        ],
+        "user_confirmation_required": true
+      },
+      "planning": {
+        "check_policy": ".template-spec/process/lifecycle-registry.yaml",
+        "critical_open_questions": "block-before-spec",
+        "default_check_status": "pending",
+        "deferred_details": "excluded-from-frontier-only-after-user-confirms-deferral",
+        "deferred_details_require": [
+          "noncritical_reason",
+          "owner",
+          "resolution_point",
+          "downstream_recipient"
+        ],
+        "downstream": "work-unit.spec-synthesis",
+        "entry_validator": "scripts/verify-plan-spec-entry",
+        "exit_policy": ".template-spec/process/lifecycle-registry.yaml",
+        "formal_spec_draft_requires_passed_entry": true,
+        "frontier_scope": "current-plan-decisions",
+        "implementation_authorized": false,
+        "migration_policy": ".template-spec/process/plan-migration.md",
+        "record": "artifact.plan-record",
+        "reuse_requires": [
+          "source_ref",
+          "current_version",
+          "applicable_scope",
+          "reason"
+        ],
+        "review_contract": ".template-spec/plan/entry-review.md",
+        "stage": "stage.plan",
+        "template": ".template-spec/plan/templates/plan-template.md"
+      }
+    },
+    "transition": {
+      "forbidden_shortcuts": [
+        {
+          "from": "work-unit.spec-synthesis",
+          "to": "work-unit.implementation-repository-preparation"
+        },
+        {
+          "from": "work-unit.spec-synthesis",
+          "to": "work-unit.slice-implementation"
+        }
+      ],
+      "next": [
+        "work-unit.prototype-design-v2",
+        "work-unit.technical-analysis",
+        "work-unit.business-ticket-formalization"
+      ]
+    },
+    "work_unit_route": {
+      "applies_when": "new_feature_or_behavior_change",
+      "compatibility": {
+        "formal_artifact_owner": "explicit-user-entry",
+        "invocation_mode": "reference",
+        "skill": "to-spec",
+        "source": "mattpocock/skills"
+      },
+      "human_gate": "spec-baseline",
+      "native": {
+        "invocation_mode": "model-invoked",
+        "skill": "yss-product-lifecycle",
+        "source": "yss-product-lifecycle"
+      },
+      "not_applicable_reason": "existing_frozen_spec_is_current",
+      "primary_skill": "yss-product-lifecycle",
+      "skills": [
+        "domain-modeling"
+      ],
+      "supporting_skills": [
+        "domain-modeling"
+      ]
+    }
+  },
+  "lifecycle": {
+    "artifacts": [
+      {
+        "id": "artifact.domain-strategy",
+        "name": "DDD 战略设计",
+        "public_name": "业务边界与规则设计",
+        "public_trigger": "新产品/模块、跨责任区协作、业务词汇冲突、责任边界或关键规则变化。",
+        "stage": "stage.plan",
+        "trigger": "新产品/模块、跨上下文功能、统一语言冲突、服务边界或核心规则变化。"
+      },
+      {
+        "id": "artifact.stage-decision-package",
+        "name": "阶段决策包",
+        "public_name": "方案决策包",
+        "stage": "stage.plan",
+        "trigger": "Plan 到 Spec 入口需要结构化上游决策。"
+      },
+      {
+        "id": "artifact.plan-record",
+        "name": "Plan 记录",
+        "stage": "stage.plan",
+        "trigger": "新问题或边界不清。"
+      },
+      {
+        "id": "artifact.parent-ticket",
+        "name": "功能父 Ticket",
+        "stage": "stage.plan",
+        "trigger": "每个功能首次进入 Plan 或最近可信接入阶段时建立，正式化时复用；Design profile 不创建工程父 Ticket。"
+      }
+    ],
+    "checks": [
+      {
+        "evidence": [
+          "evidence.domain-strategy-review",
+          "evidence.approval-record"
+        ],
+        "id": "check.domain-strategy-approved",
+        "name": "业务边界与规则评审",
+        "public_name": "业务边界与规则评审",
+        "public_trigger": "需要确定业务板块、业务责任区、统一业务词汇、协作关系或关键规则。",
+        "stage": "stage.plan",
+        "trigger": "存在 DDD 战略设计影响或需要确定领域边界、统一语言和核心规则。"
+      },
+      {
+        "evidence": [
+          "evidence.stage-decision-package",
+          "evidence.approval-record"
+        ],
+        "id": "check.stage-decision-package-approved",
+        "name": "阶段决策包评审",
+        "public_name": "方案决策包评审",
+        "requires_checks": [
+          "check.domain-strategy-approved"
+        ],
+        "stage": "stage.plan",
+        "trigger": "Plan 到 Spec 入口需要稳定的阶段决策合同。"
+      }
+    ],
+    "evidence": [
+      {
+        "description": "业务板块、业务责任区、统一业务词汇、协作与交接关系、关键场景和不可违反规则的结构化评审结果。",
+        "id": "evidence.domain-strategy-review",
+        "name": "DDD 战略设计评审证据",
+        "public_name": "业务边界与规则评审证据"
+      },
+      {
+        "description": "阶段决策包的 Schema、引用、语义一致性、影响传播和下游消费验证结果。",
+        "id": "evidence.stage-decision-package",
+        "name": "阶段决策包验证证据",
+        "public_name": "方案决策包验证证据"
+      },
+      {
+        "description": "对需要人工批准的 Spec、设计、契约或发布裁决的可追溯记录。",
+        "id": "evidence.approval-record",
+        "name": "人工批准记录"
+      }
+    ],
+    "gates": [
+      {
+        "evidence": [
+          "evidence.approval-record"
+        ],
+        "id": "gate.plan-approved",
+        "name": "Plan 批准",
+        "requires_checks": [
+          "check.domain-strategy-approved",
+          "check.stage-decision-package-approved"
+        ],
+        "stage": "stage.plan",
+        "trigger": "Plan 结论进入 Spec；汇总战略检查，核验当前规划范围的原始批准或有效授权延续。"
+      }
+    ],
+    "stage": {
+      "exit_criteria": "命中的战略与阶段决策检查通过，用户统一批准当前 Plan；影响业务边界、关键规则或 MVP 的问题已解决，其他未决项有责任人和解决时点；下游可进入 Spec，不代表可实现。",
+      "goal": "确认目标、业务边界、关键规则、MVP / 非目标、优先级和交接责任，为 Spec 提供战略输入；按影响面探索并复用仍有效的结论。",
+      "id": "stage.plan",
+      "name": "Plan（战略规划）",
+      "spec_entry": {
+        "check_impacts": {
+          "check.domain-strategy-approved": "domain_strategy",
+          "check.stage-decision-package-approved": "stage_decision"
+        },
+        "gate_impacts": {
+          "gate.plan-approved": "plan"
+        },
+        "required_checks": [
+          "goals",
+          "scope_and_priority",
+          "boundaries_and_rules",
+          "open_questions",
+          "handoff",
+          "context_reconciliation",
+          "grill_exit"
+        ]
+      }
+    },
+    "work_unit": {
+      "completion": "Spec 和业务 Ticket 草案可审查，FR/AC 覆盖与依赖可读取；进入 ready-for-human，下游推进仍需 gate.spec-baseline-approved。",
+      "id": "work-unit.spec-synthesis",
+      "input": "已确认的 Plan 记录和测试 seam。",
+      "name": "Spec 综合",
+      "output": "Spec、产品总体设计、功能架构及业务 Ticket 草案集合。",
+      "scope": "project-instance"
+    }
+  },
+  "presentation": {
+    "approval_validity": "not-checked",
+    "execution_allowed": false,
+    "names": {
+      "artifact.domain-strategy": {
+        "id": "artifact.domain-strategy",
+        "known": true,
+        "name": "业务边界与规则设计"
+      },
+      "artifact.parent-ticket": {
+        "id": "artifact.parent-ticket",
+        "known": true,
+        "name": "功能父 Ticket"
+      },
+      "artifact.plan-record": {
+        "id": "artifact.plan-record",
+        "known": true,
+        "name": "Plan 记录"
+      },
+      "artifact.stage-decision-package": {
+        "id": "artifact.stage-decision-package",
+        "known": true,
+        "name": "方案决策包"
+      },
+      "check.domain-strategy-approved": {
+        "id": "check.domain-strategy-approved",
+        "known": true,
+        "name": "业务边界与规则评审"
+      },
+      "check.stage-decision-package-approved": {
+        "id": "check.stage-decision-package-approved",
+        "known": true,
+        "name": "方案决策包评审"
+      },
+      "evidence.approval-record": {
+        "id": "evidence.approval-record",
+        "known": true,
+        "name": "人工批准记录"
+      },
+      "evidence.domain-strategy-review": {
+        "id": "evidence.domain-strategy-review",
+        "known": true,
+        "name": "业务边界与规则评审证据"
+      },
+      "evidence.stage-decision-package": {
+        "id": "evidence.stage-decision-package",
+        "known": true,
+        "name": "方案决策包验证证据"
+      },
+      "gate.plan-approved": {
+        "id": "gate.plan-approved",
+        "known": true,
+        "name": "Plan 批准"
+      },
+      "gate.spec-baseline-approved": {
+        "id": "gate.spec-baseline-approved",
+        "known": true,
+        "name": "Spec 基线批准"
+      },
+      "role.backend-engineer": {
+        "id": "role.backend-engineer",
+        "known": true,
+        "name": "后端工程师"
+      },
+      "role.frontend-engineer": {
+        "id": "role.frontend-engineer",
+        "known": true,
+        "name": "前端工程师"
+      },
+      "role.lifecycle-orchestrator": {
+        "id": "role.lifecycle-orchestrator",
+        "known": true,
+        "name": "主控数字人"
+      },
+      "role.product-manager": {
+        "id": "role.product-manager",
+        "known": true,
+        "name": "产品经理"
+      },
+      "role.project-manager": {
+        "id": "role.project-manager",
+        "known": true,
+        "name": "项目经理"
+      },
+      "role.requirements-manager": {
+        "id": "role.requirements-manager",
+        "known": true,
+        "name": "需求经理"
+      },
+      "role.test-engineer": {
+        "id": "role.test-engineer",
+        "known": true,
+        "name": "测试工程师"
+      },
+      "stage.plan": {
+        "id": "stage.plan",
+        "known": true,
+        "name": "Plan（战略规划）"
+      },
+      "work-unit.business-ticket-formalization": {
+        "id": "work-unit.business-ticket-formalization",
+        "known": true,
+        "name": "业务 Ticket 正式化"
+      },
+      "work-unit.implementation-repository-preparation": {
+        "id": "work-unit.implementation-repository-preparation",
+        "known": true,
+        "name": "实现仓库准备"
+      },
+      "work-unit.prototype-design-v2": {
+        "id": "work-unit.prototype-design-v2",
+        "known": true,
+        "name": "原型设计与验证"
+      },
+      "work-unit.slice-implementation": {
+        "id": "work-unit.slice-implementation",
+        "known": true,
+        "name": "垂直切片实现"
+      },
+      "work-unit.spec-synthesis": {
+        "id": "work-unit.spec-synthesis",
+        "known": true,
+        "name": "Spec 综合"
+      },
+      "work-unit.technical-analysis": {
+        "id": "work-unit.technical-analysis",
+        "known": true,
+        "name": "技术分析与契约冻结"
+      }
+    },
+    "read_only": true,
+    "sources": [
+      {
+        "digest": "sha256:ed053006b666b5222ac3577159bcae6f8ae1e6c4bae2aed119bcd2d8397ce98c",
+        "ref": ".template-spec/process/lifecycle-registry.yaml"
+      },
+      {
+        "digest": "sha256:bb58c93594e41c6b701c0a693480a8f805e5ee4c5fa6b0433adbebfaa1d2c2c5",
+        "ref": ".template-spec/agents/digital-human-roles.yaml"
+      }
+    ],
+    "warnings": []
+  },
+  "query": {
+    "include": [
+      "gate_consolidation",
+      "grill_exit",
+      "planning"
+    ],
+    "mode": null,
+    "stage": "stage.plan",
+    "work_unit": "work-unit.spec-synthesis"
+  },
+  "references": [
+    ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml",
+    ".template-spec/agents/digital-human-roles.yaml",
+    ".template-spec/agents/yss-skill-registry.yaml",
+    ".template-spec/plan/entry-review.md",
+    ".template-spec/plan/templates/plan-template.md",
+    ".template-spec/process/lifecycle-registry.yaml",
+    ".template-spec/process/plan-migration.md",
+    "references/user-decisions.md",
+    "yss-project.yaml"
+  ],
+  "schema_version": 1,
+  "skills": [
+    {
+      "aliases": [],
+      "id": "domain-modeling",
+      "impacts": [
+        "discovery"
+      ],
+      "instance_default_discoverable": true,
+      "layer": "core",
+      "maturity": "supported"
+    },
+    {
+      "aliases": [],
+      "id": "yss-product-lifecycle",
+      "impacts": [
+        "lifecycle"
+      ],
+      "instance_default_discoverable": true,
+      "layer": "core",
+      "maturity": "supported"
+    }
+  ],
+  "sources": {
+    "lifecycle_registry": {
+      "ref": ".template-spec/process/lifecycle-registry.yaml",
+      "semantic_sha256": "07751d42018156351ad07e9499e55f3a78ccaf4e0e3d5b693537e946c0249eb6",
+      "sha256": "ed053006b666b5222ac3577159bcae6f8ae1e6c4bae2aed119bcd2d8397ce98c",
+      "status": "active"
+    },
+    "orchestration_contract": {
+      "ref": ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml",
+      "sha256": "2a1e879bb3162f7fdfb9b4c73f3be6920438e5b7f184801b09777e27a282b58e"
+    },
+    "read_set": [
+      {
+        "ref": ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml",
+        "sha256": "2a1e879bb3162f7fdfb9b4c73f3be6920438e5b7f184801b09777e27a282b58e"
+      },
+      {
+        "ref": ".template-spec/agents/digital-human-roles.yaml",
+        "sha256": "bb58c93594e41c6b701c0a693480a8f805e5ee4c5fa6b0433adbebfaa1d2c2c5"
+      },
+      {
+        "ref": ".template-spec/agents/yss-skill-registry.yaml",
+        "sha256": "86f2d20bc68ad668a5f89fb7a382c376cb6d489e2bbadb829ba94fa0b871c068"
+      },
+      {
+        "ref": ".template-spec/process/lifecycle-registry-baseline-v1.json",
+        "sha256": "5aa3194ec5b8d781a7705b049359644c3f18e09c33b9383d19675c5d0e2ab9bc"
+      },
+      {
+        "ref": ".template-spec/process/lifecycle-registry-baseline.json",
+        "sha256": "8d0d5f13369b1217a060b5fd5038cdc699b80653433d753e9ccb316cfd1bf1ca"
+      },
+      {
+        "ref": ".template-spec/process/lifecycle-registry.yaml",
+        "sha256": "ed053006b666b5222ac3577159bcae6f8ae1e6c4bae2aed119bcd2d8397ce98c"
+      },
+      {
+        "ref": "yss-project.yaml",
+        "sha256": "dae2ddacbb024ba25b70a18830fc26ab7d3dcd8aaa361cc8b3767d68307f98af"
+      }
+    ],
+    "repository_identity": {
+      "ref": "yss-project.yaml",
+      "sha256": "dae2ddacbb024ba25b70a18830fc26ab7d3dcd8aaa361cc8b3767d68307f98af"
+    },
+    "skill_registry": {
+      "ref": ".template-spec/agents/yss-skill-registry.yaml",
+      "sha256": "86f2d20bc68ad668a5f89fb7a382c376cb6d489e2bbadb829ba94fa0b871c068",
+      "status": "active"
+    }
+  },
+  "context_sha256": "17af51075aa226085a4d5732c480dc9619ba2868ecdecb405065b53f2efdedd8"
+}

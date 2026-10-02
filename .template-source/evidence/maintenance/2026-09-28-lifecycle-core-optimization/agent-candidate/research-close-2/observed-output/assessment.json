@@ -1,5 +1,0 @@
-{
-  "closed": true,
-  "next_route": null,
-  "reason": "本隔离 fixture 的正式研究可以在模板仓独立结束。根 yss-project.yaml 经当前解析器确认为 template-source；lifecycle-registry.yaml、yss-product-lifecycle 编排合同及 research-completion.md 允许 work-unit.maintenance-research 在验证通过后以 next_route:null 收尾，无须进入产品 Plan 或实施，也无须取得继续维护的授权。已实际读取 research/source.txt，第一行 version=1 支持 claim-001；反证检索和结论仅限本地合成样本。research/run/verification.json 的命令、起止时间、退出码和日志有效，其自身、简报、证据台账、当前校验器及 stdout/stderr 共六处 SHA-256 绑定均匹配。2026-09-28T08:52:01.385Z 至 08:52:01.413Z 实际执行 node .agents/skills/yss-research/scripts/validate-research-package.mjs research/demo-research-brief.md research/demo-evidence.yaml，退出码 0，输出确认 1 条结论、1 项证据和 2 条检索记录有效，stderr 为空；随后调用当前 scripts/lib/lifecycle-transition.mjs 的 validateNextRoute('work-unit.maintenance-research', null, state, {root: process.cwd()})，使用 research/state.json 原始状态，返回 allowed，blocking_signals 和 missing_requirements 均为空。该流转校验还重新执行了当前研究包校验器；Context 不适用说明可读且有原因，证据引用齐全，五类执行阻断列表为空。研究目录所有文件核验前后摘要一致。此判定仅表示测试研究收尾条件通过，不构成真实批准、维护完成、实现或发布授权；未访问外网或生产，未验证样本之外的事实，未修改旧研究记录或提交 Git。"
-}

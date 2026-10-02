@@ -1,0 +1,11 @@
+✔ DESIGN.md passes local and pinned upstream lint (2002.478125ms)
+✔ DESIGN.md projection manifest is current (63.274583ms)
+✔ cross-repository design sync digest matches DESIGN.md (0.3795ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2111.984416

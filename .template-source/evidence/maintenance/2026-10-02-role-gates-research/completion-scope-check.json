@@ -1,0 +1,8 @@
+{
+  "executed_at": "2026-10-02T04:54:03.540277+00:00",
+  "result": "pass",
+  "current_source_bindings": 29,
+  "changed_scope": ".template-source/evidence/maintenance/2026-10-02-role-gates-research",
+  "baseline_outside_scope_preserved": true,
+  "scope": "本轮研究资产与原工作区状态，不是整库发布验证"
+}

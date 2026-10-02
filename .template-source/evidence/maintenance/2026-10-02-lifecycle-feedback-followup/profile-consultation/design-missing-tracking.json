@@ -1,0 +1,242 @@
+{
+  "presentation": {
+    "read_only": true,
+    "execution_allowed": false,
+    "approval_validity": "not-checked",
+    "stage": "入口分诊",
+    "next_stage": "待核验",
+    "next_stage_reason": "下一工作单元尚未登记阶段归属；核验当前路由与阶段追踪后确认",
+    "checkpoint_status": "正在确定下一步",
+    "work_unit": "机会调研",
+    "owner": "未登记",
+    "blockers": [],
+    "issues": [],
+    "pending_verification": [
+      {
+        "id": "next-stage-association",
+        "reason": "下一工作单元尚未登记阶段归属；核验当前路由与阶段追踪后确认",
+        "refs": []
+      },
+      {
+        "id": "context-reconciliation",
+        "reason": "读取登记状态；当前对账内容和摘要仍须由原验证器核验",
+        "refs": []
+      },
+      {
+        "id": "registered-gates",
+        "reason": "仅读取已登记状态；适用性未登记、待处理或记录缺失时不能判定门禁通过；不核验完整批准",
+        "refs": [
+          "docs/.scratch/case/checkpoint.json"
+        ]
+      },
+      {
+        "id": "artifact-digests",
+        "reason": "未核验批准资产原字节摘要；恢复时运行资产所有者的适用预检",
+        "refs": []
+      },
+      {
+        "id": "approval-validity",
+        "reason": "未核验真实决定、延续、外部审批及完整执行授权",
+        "refs": [
+          "docs/.scratch/case/checkpoint.json"
+        ]
+      },
+      {
+        "id": "stage-tracking",
+        "reason": "未登记追踪；按实例既有兼容或显式迁移入口处理，不自动补建",
+        "refs": [
+          "docs/.scratch/case/checkpoint.json"
+        ]
+      },
+      {
+        "id": "business-decomposition",
+        "reason": "结构与来源只读检查；不证明批准或实现资格",
+        "refs": []
+      }
+    ],
+    "continue_conditions": [
+      "核验当前来源、Context、适用门禁与决定或延续",
+      "核对当前范围、任务结果和允许写路径；输入变化时重验",
+      "由主控验收当前证据并核验授权后决定继续或重新路由"
+    ],
+    "expected_output": "Plan 机会结论、证据、替代方案和关键假设。",
+    "next_action": "先核验当前输入及适用门禁，再由主控恢复 机会调研",
+    "sources": [
+      {
+        "ref": ".template-spec/process/lifecycle-registry.yaml",
+        "digest": "sha256:447f3ebb326670b98658abf9a0c576d393556d124fb0c1632111f003385c8f7a"
+      },
+      {
+        "ref": ".template-spec/agents/digital-human-roles.yaml",
+        "digest": "sha256:73aa44a3fd72273ed6549db443f235ec7e845d4e2434abf826f669d821320c32"
+      }
+    ],
+    "warnings": [],
+    "names": {
+      "stage.entry-triage": {
+        "id": "stage.entry-triage",
+        "name": "入口分诊",
+        "known": true
+      },
+      "work-unit.plan-opportunity": {
+        "id": "work-unit.plan-opportunity",
+        "name": "机会调研",
+        "known": true
+      }
+    }
+  },
+  "decomposition": {
+    "business": {
+      "status": "legacy-unassessed",
+      "tickets": [],
+      "diagnostics": []
+    },
+    "implementation": {
+      "status": "not-recorded",
+      "recorded_status": null,
+      "ref": null,
+      "coverage": null
+    },
+    "readiness": {
+      "status": "not-evaluated",
+      "reason": "阶段工作完成不替代批准与实现就绪校验"
+    }
+  },
+  "schema_version": 1,
+  "read_only": true,
+  "stage": "stage.entry-triage",
+  "next_stage": null,
+  "next_stage_reason": "下一工作单元尚未登记阶段归属；核验当前路由与阶段追踪后确认",
+  "next_stage_source_refs": [],
+  "checkpoint_status": "routing",
+  "work_unit": "work-unit.plan-opportunity",
+  "owner": "未登记",
+  "blockers": [],
+  "next_action": "先核验当前输入及适用门禁，再由主控恢复 work-unit.plan-opportunity",
+  "execution_authorization": "not-evaluated",
+  "verification_scope": [
+    {
+      "id": "registered-blockers",
+      "status": "passed",
+      "refs": [
+        "docs/.scratch/case/checkpoint.json"
+      ],
+      "reason": "仅读取已登记阻塞，不代表完整就绪"
+    },
+    {
+      "id": "next-stage-association",
+      "status": "not-checked",
+      "refs": [],
+      "reason": "下一工作单元尚未登记阶段归属；核验当前路由与阶段追踪后确认"
+    },
+    {
+      "id": "stage-and-route",
+      "status": "passed",
+      "refs": [
+        ".template-spec/process/lifecycle-registry.yaml",
+        ".agents/skills/yss-strategic-design/references/orchestration-contract.yaml"
+      ],
+      "reason": "仅检查身份与路由存在，不计算完整 frontier"
+    },
+    {
+      "id": "context-reconciliation",
+      "status": "not-checked",
+      "refs": [],
+      "reason": "读取登记状态；当前对账内容和摘要仍须由原验证器核验"
+    },
+    {
+      "id": "registered-gates",
+      "status": "not-checked",
+      "refs": [
+        "docs/.scratch/case/checkpoint.json"
+      ],
+      "reason": "仅读取已登记状态；适用性未登记、待处理或记录缺失时不能判定门禁通过；不核验完整批准"
+    },
+    {
+      "id": "evidence-readable",
+      "status": "passed",
+      "refs": [],
+      "reason": "仅检查已引用证据可读，不证明证据完整或当前有效"
+    },
+    {
+      "id": "artifact-digests",
+      "status": "not-checked",
+      "refs": [],
+      "reason": "未核验批准资产原字节摘要；恢复时运行资产所有者的适用预检"
+    },
+    {
+      "id": "approval-validity",
+      "status": "not-checked",
+      "refs": [
+        "docs/.scratch/case/checkpoint.json"
+      ],
+      "reason": "未核验真实决定、延续、外部审批及完整执行授权"
+    },
+    {
+      "id": "stage-tracking",
+      "status": "not-checked",
+      "refs": [
+        "docs/.scratch/case/checkpoint.json"
+      ],
+      "reason": "未登记追踪；按实例既有兼容或显式迁移入口处理，不自动补建"
+    },
+    {
+      "id": "business-decomposition",
+      "status": "legacy-unassessed",
+      "refs": [],
+      "reason": "结构与来源只读检查；不证明批准或实现资格"
+    }
+  ],
+  "diagnostics": [],
+  "next_step": {
+    "action_type": "verify",
+    "work_unit": "work-unit.plan-opportunity",
+    "cwd": "/private/tmp/yss-lifecycle-followup-profile-audit/fixtures/design",
+    "command": [
+      "node",
+      "scripts/verify-lifecycle-checkpoint",
+      "docs/.scratch/case/checkpoint.json"
+    ],
+    "input_refs": [
+      "docs/.scratch/case/checkpoint.json"
+    ],
+    "prerequisites": [
+      "核验当前来源、Context、适用门禁与决定或延续",
+      "核对当前范围、任务结果和允许写路径；输入变化时重验"
+    ]
+  },
+  "recovery": {
+    "sequence": [
+      "read-status",
+      "inspect-actual-result",
+      "verify-current-inputs",
+      "continue-or-reroute"
+    ],
+    "task_package_ref": null,
+    "contract_view": null,
+    "result_refs": [],
+    "prechecks": [],
+    "verification_items": [],
+    "checks": "read-only; execution and approval not evaluated"
+  },
+  "reading_views": {
+    "status": "manual",
+    "read_only": true,
+    "execution_allowed": false,
+    "blockers": []
+  },
+  "source_digests": {
+    "checkpoint": {
+      "ref": "docs/.scratch/case/checkpoint.json",
+      "digest": "sha256:7c8ea46f36ba027c54a3de4e014bd6a0a4a28953f9c7c167e3251226eb3ac37f"
+    },
+    "registry": {
+      "ref": ".template-spec/process/lifecycle-registry.yaml",
+      "digest": "sha256:447f3ebb326670b98658abf9a0c576d393556d124fb0c1632111f003385c8f7a"
+    },
+    "orchestration": {
+      "ref": ".agents/skills/yss-strategic-design/references/orchestration-contract.yaml",
+      "digest": "sha256:86d8eb9de9f8efb07a9b5c69783b4cdd326e3d1877c70877f50ca5be8bbad768"
+    }
+  }
+}

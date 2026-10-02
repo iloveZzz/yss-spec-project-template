@@ -1,6 +1,0 @@
-{
-  "api_verified": false,
-  "evidence_current": false,
-  "accepted": false,
-  "reason": "本轮已实际执行 node probe-api.mjs，进程退出码为 1，监听 127.0.0.1 时发生 listen EPERM；成功、缺参和错误 JSON 三种 HTTP 行为均未完成验证，不能判定 API 通过或行为失败。为遵守只写 assessment.json 的限制，运行时仅将探针的 api-observation.json 写入转向标准输出并补充响应正文断言，未修改来源文件或 HTTP 行为；因监听失败，未产生观测结果。subject/contract.json 与 subject/source.txt 的实际摘要均匹配提交记录，但 evidence/test.log 的实际摘要 sha256:8dfac92e5349e02f959f269d016a27bcad7aa222b775ec3f36a25ad8add730c3 不匹配 subject/result.json 记录的 sha256:beffed405c110a01b7d23c6500d5d329f839e2b557a0f5c64fbfdd5a8ee276bd，且日志内容为替换后的无关文本。已实际调用仓库 scripts/lib/execution-evidence.mjs 的 executionEvidenceBlockers，返回 evidence-digest-mismatch，校验进程退出码为 1。根据 AGENTS.md 的 Fresh Verification 要求及 yss-product-lifecycle 的结果验收规则，历史退出码 0 和文件存在不能用于本轮验收，因此拒绝接受现有结果。仓库身份为 template-source，本次仅核验隔离结果绑定样本，context_reconciliation 不适用；没有生产批准。"
-}

@@ -39,7 +39,7 @@
 
 共享工作区的重验检测到原型 / 设计源文件并行变化。最终在仓库外临时副本按已记录摘要固定输入，保留全部本轮实现与分发内容；变化文件的旧字节只在临时副本中从开工备份恢复，未回写共享工作区。另补齐 profile 既有文档工具和本地 pnpm 离线依赖。[输入来源记录](continuation-freeze-provenance.json) 可追溯恢复来源；[48 项一致性核对](continuation-live-comparison.json) 确认本轮核心源文件、profile 文件和四套 CLI 快照索引与共享工作区一致。新增并行原型内容不在本轮已验证结论内。
 
-插件构建曾出现临时目录清理 `ENOTEMPTY`，单独复跑时又因遗漏既有固定 CLI 测试包装器被拒绝。改用仓库包装器后，最终 7 个插件构建测试通过。共享工作区漂移及副本准备失败的原始报告分别保留在 [工作区重验](continuation-live-attempt/report.json) 和 [副本准备重验](continuation-snapshot-preparation/report.json)，未覆盖为成功。
+插件构建曾出现临时目录清理 `ENOTEMPTY`，单独复跑时又因遗漏既有固定 CLI 测试包装器被拒绝。改用仓库包装器后，最终 7 个插件构建测试通过。共享工作区漂移及副本准备失败的原始报告已完整归档，可用 [归档索引](../../archive-index.json) 中 `2026-10-02-b3-plan-spec-inputs` 批次的 `continuation-live-attempt/report.json` 与 `continuation-snapshot-preparation/report.json` 解包恢复，未覆盖为成功。
 
 ## 整库核验的未闭合项
 

@@ -1,0 +1,17 @@
+✔ consumer mapping preserves dedicated backend identity and rejects unknown wire IDs or out-of-profile targets (35.034ms)
+▶ backend plugin receives Handoff v5 without bypassing engineering or implementation gates
+  ✔ formal directory import selects only backend responsibility and maps wire entry (8298.24525ms)
+  ✔ reuse and duplicate import reverify immutable source without approving it (14031.497542ms)
+  ✔ transport ZIP imports into another governance root with the existing v2 receipt contract (16247.996709ms)
+  ✔ tampered receipt and package cannot be resumed (7131.027375ms)
+  ✔ UI-only package is rejected before any import write (16400.818542ms)
+  ✔ registered 0.2 project migrates while retaining receipt and business data (21141.038459ms)
+✔ backend plugin receives Handoff v5 without bypassing engineering or implementation gates (128139.874417ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 128266.041208

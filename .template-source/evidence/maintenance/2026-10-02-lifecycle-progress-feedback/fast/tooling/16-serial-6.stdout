@@ -1,0 +1,16 @@
+▶ generated development plugin is portable, deterministic and fails closed on corruption
+  ✔ moved artifact runs verification and real Plan query from an unrelated cwd (523.231584ms)
+  ✔ all source, generated entry and external dependency provenance is retained (25.77025ms)
+  ✔ same source yields identical lock regardless of output directory (9800.305458ms)
+  ✔ existing output is preserved and symlink parents are rejected (83.900916ms)
+  ✔ missing, altered, executable-mode and directory replacements are rejected (497.538875ms)
+  ✔ undeclared file and symlink cannot join the artifact (134.75875ms)
+✔ generated development plugin is portable, deterministic and fails closed on corruption (21748.262875ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 21799.492334

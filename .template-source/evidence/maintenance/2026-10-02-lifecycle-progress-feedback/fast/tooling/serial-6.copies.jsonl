@@ -1,0 +1,4 @@
+{"kind":"plugin-build","output":"/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-plugin-test-clis-pINJZY/test-temp/serial-6/yss plugin m2 TyvBsh/first/yss-backend-delivery","duration_ms":10370.790959,"code":0,"exit_code":0}
+{"kind":"plugin-build","output":"/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-plugin-test-clis-pINJZY/test-temp/serial-6/yss plugin m2 TyvBsh/second/yss-backend-delivery","duration_ms":9799.564790999999,"code":0,"exit_code":0}
+{"kind":"plugin-build","output":"/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-plugin-test-clis-pINJZY/test-temp/serial-6/yss plugin m2 TyvBsh/detached/yss-backend-delivery","duration_ms":42.249667000000045,"code":1,"exit_code":1}
+{"kind":"plugin-build","output":"/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-plugin-test-clis-pINJZY/test-temp/serial-6/yss plugin m2 TyvBsh/link/yss-backend-delivery","duration_ms":40.963583000000654,"code":1,"exit_code":1}

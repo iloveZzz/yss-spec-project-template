@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "kind": "maintenance-research-verification",
+  "inputs": {
+    "brief": {
+      "ref": ".template-source/evidence/maintenance/2026-10-02-role-gates-research/role-gates-research-brief.md",
+      "digest": "sha256:0b0fdc9d70ecf590e5b77db4c860c026903ff9a78ce053c87025278dae94b7f2"
+    },
+    "evidence": {
+      "ref": ".template-source/evidence/maintenance/2026-10-02-role-gates-research/role-gates-evidence.yaml",
+      "digest": "sha256:f171e4bd2885a836b3e4393ce3fa9ac3e443b3cc19f979a9ca2d48643b8aff3a"
+    },
+    "validator": {
+      "ref": ".agents/skills/yss-research/scripts/validate-research-package.mjs",
+      "digest": "sha256:5e4e437d54e67cce9dd380974744605bd149c71939c5f01e3ea4719c79911d0f"
+    }
+  },
+  "command": [
+    "node",
+    ".agents/skills/yss-research/scripts/validate-research-package.mjs",
+    ".template-source/evidence/maintenance/2026-10-02-role-gates-research/role-gates-research-brief.md",
+    ".template-source/evidence/maintenance/2026-10-02-role-gates-research/role-gates-evidence.yaml"
+  ],
+  "started_at": "2026-10-02T04:52:19.918Z",
+  "completed_at": "2026-10-02T04:52:19.952Z",
+  "exit_code": 0,
+  "stdout": {
+    "ref": ".template-source/evidence/maintenance/2026-10-02-role-gates-research/verification-3/stdout.log",
+    "digest": "sha256:6a41ceea07f781aad59981775f21369a22e939e2fb7ff940f6a5b599b1122143"
+  },
+  "stderr": {
+    "ref": ".template-source/evidence/maintenance/2026-10-02-role-gates-research/verification-3/stderr.log",
+    "digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

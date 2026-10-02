@@ -1,0 +1,1939 @@
+{
+  "schema": "yss.machine-evidence-inventory/v1",
+  "captured_at_utc": "2026-10-02T16:04:30.690Z",
+  "head": "60b5acca332a05fc09de647ff18c0c3fb0fa87a7",
+  "note": "post-batch re-measurement restricted to .template-source/evidence (baseline scope)",
+  "totals": {
+    "indexed": 14864,
+    "present": 14137,
+    "pendingDeletion": 727,
+    "trackedBytes": 371671141,
+    "machineFiles": 2211,
+    "machineBytes": 59345424
+  },
+  "duplicateSummary": {
+    "groups": 75,
+    "extraCopies": 303,
+    "extraBytes": 2985186
+  },
+  "groups": [
+    {
+      "name": "maintenance/2026-09-12-existing-project-delivery",
+      "machineFiles": 57,
+      "machineBytes": 8129970,
+      "allFiles": 84,
+      "allBytes": 8236438
+    },
+    {
+      "name": "maintenance/2026-09-30-prototype-reliability",
+      "machineFiles": 70,
+      "machineBytes": 5330587,
+      "allFiles": 266,
+      "allBytes": 37347976
+    },
+    {
+      "name": "maintenance/2026-09-10-script-performance-audit",
+      "machineFiles": 75,
+      "machineBytes": 3214891,
+      "allFiles": 102,
+      "allBytes": 6739110
+    },
+    {
+      "name": "maintenance/2026-09-30-plan-spec-iteration",
+      "machineFiles": 21,
+      "machineBytes": 3213915,
+      "allFiles": 71,
+      "allBytes": 3286358
+    },
+    {
+      "name": "maintenance/2026-09-10-script-performance-optimization",
+      "machineFiles": 67,
+      "machineBytes": 3097841,
+      "allFiles": 115,
+      "allBytes": 4916556
+    },
+    {
+      "name": "maintenance/2026-09-26-lifecycle-improvement-implementation",
+      "machineFiles": 126,
+      "machineBytes": 2614113,
+      "allFiles": 189,
+      "allBytes": 67167737
+    },
+    {
+      "name": "maintenance/2026-10-01-fast-execution-optimization",
+      "machineFiles": 15,
+      "machineBytes": 2306809,
+      "allFiles": 22,
+      "allBytes": 9568276
+    },
+    {
+      "name": "maintenance/2026-09-29-skills-optimization-implementation",
+      "machineFiles": 12,
+      "machineBytes": 2296366,
+      "allFiles": 14,
+      "allBytes": 2309719
+    },
+    {
+      "name": "maintenance/2026-09-30-prototype-compact-theme",
+      "machineFiles": 45,
+      "machineBytes": 2253628,
+      "allFiles": 243,
+      "allBytes": 6874053
+    },
+    {
+      "name": "maintenance/2026-09-29-prototype-design-enhancement",
+      "machineFiles": 92,
+      "machineBytes": 2204834,
+      "allFiles": 215,
+      "allBytes": 31030572
+    },
+    {
+      "name": "maintenance/2026-09-29-skills-optimization-full-execution",
+      "machineFiles": 18,
+      "machineBytes": 2044290,
+      "allFiles": 19,
+      "allBytes": 2048697
+    },
+    {
+      "name": "maintenance/2026-09-30-enterprise-workspace",
+      "machineFiles": 99,
+      "machineBytes": 2011441,
+      "allFiles": 2212,
+      "allBytes": 15080980
+    },
+    {
+      "name": "maintenance/2026-10-01-execution-efficiency-pilot",
+      "machineFiles": 46,
+      "machineBytes": 2008419,
+      "allFiles": 79,
+      "allBytes": 2102394
+    },
+    {
+      "name": "maintenance/2026-09-30-react-prototype-retirement",
+      "machineFiles": 139,
+      "machineBytes": 1764021,
+      "allFiles": 2315,
+      "allBytes": 13218374
+    },
+    {
+      "name": "maintenance/2026-09-20-openai-skills-implementation",
+      "machineFiles": 68,
+      "machineBytes": 1567286,
+      "allFiles": 89,
+      "allBytes": 2046731
+    },
+    {
+      "name": "maintenance/2026-09-28-spec-efficiency-review",
+      "machineFiles": 34,
+      "machineBytes": 1498575,
+      "allFiles": 1289,
+      "allBytes": 15447052
+    },
+    {
+      "name": "maintenance/2026-09-30-highfi-components",
+      "machineFiles": 47,
+      "machineBytes": 1215178,
+      "allFiles": 310,
+      "allBytes": 7711681
+    },
+    {
+      "name": "maintenance/reviews",
+      "machineFiles": 116,
+      "machineBytes": 1200519,
+      "allFiles": 2648,
+      "allBytes": 72547337
+    },
+    {
+      "name": "maintenance/2026-09-30-prototype-glass-study",
+      "machineFiles": 73,
+      "machineBytes": 1128378,
+      "allFiles": 518,
+      "allBytes": 9617357
+    },
+    {
+      "name": "maintenance/2026-09-30-shadcn-vue-authoring",
+      "machineFiles": 68,
+      "machineBytes": 963261,
+      "allFiles": 932,
+      "allBytes": 5658444
+    },
+    {
+      "name": "maintenance/2026-09-28-retirement-implementation",
+      "machineFiles": 14,
+      "machineBytes": 734599,
+      "allFiles": 16,
+      "allBytes": 739571
+    },
+    {
+      "name": "maintenance/2026-10-01-large-skills-progressive-loading",
+      "machineFiles": 20,
+      "machineBytes": 636138,
+      "allFiles": 23,
+      "allBytes": 648491
+    },
+    {
+      "name": "maintenance/2026-10-01-structured-json-assets",
+      "machineFiles": 44,
+      "machineBytes": 592471,
+      "allFiles": 47,
+      "allBytes": 602305
+    },
+    {
+      "name": "maintenance/2026-09-11-oss-landscape",
+      "machineFiles": 130,
+      "machineBytes": 590072,
+      "allFiles": 235,
+      "allBytes": 4766209
+    },
+    {
+      "name": "maintenance/2026-09-28-cross-platform-skills-research",
+      "machineFiles": 12,
+      "machineBytes": 554590,
+      "allFiles": 23,
+      "allBytes": 616625
+    },
+    {
+      "name": "maintenance/2026-09-30-business-ticket-slice",
+      "machineFiles": 57,
+      "machineBytes": 543084,
+      "allFiles": 69,
+      "allBytes": 4192432
+    },
+    {
+      "name": "maintenance/2026-09-28-spec-efficiency",
+      "machineFiles": 9,
+      "machineBytes": 539587,
+      "allFiles": 583,
+      "allBytes": 751123
+    },
+    {
+      "name": "maintenance/2026-09-28-llm-wiki-implementation",
+      "machineFiles": 38,
+      "machineBytes": 370526,
+      "allFiles": 243,
+      "allBytes": 17941932
+    },
+    {
+      "name": "maintenance/2026-09-16-astra-skills",
+      "machineFiles": 11,
+      "machineBytes": 340498,
+      "allFiles": 15,
+      "allBytes": 357486
+    },
+    {
+      "name": "maintenance/2026-09-20-openai-skills-audit",
+      "machineFiles": 3,
+      "machineBytes": 320234,
+      "allFiles": 4,
+      "allBytes": 374092
+    },
+    {
+      "name": "maintenance/2026-09-30-shadcn-prototype",
+      "machineFiles": 21,
+      "machineBytes": 314757,
+      "allFiles": 44,
+      "allBytes": 1071845
+    },
+    {
+      "name": "maintenance/2026-10-01-execution-efficiency-research",
+      "machineFiles": 22,
+      "machineBytes": 310590,
+      "allFiles": 32,
+      "allBytes": 586298
+    },
+    {
+      "name": "maintenance/2026-09-30-flow-hardening",
+      "machineFiles": 46,
+      "machineBytes": 307354,
+      "allFiles": 48,
+      "allBytes": 312796
+    },
+    {
+      "name": "maintenance/2026-09-28-llm-wiki-research",
+      "machineFiles": 6,
+      "machineBytes": 257163,
+      "allFiles": 10,
+      "allBytes": 304017
+    },
+    {
+      "name": "maintenance/antdv-next-p0-facts",
+      "machineFiles": 28,
+      "machineBytes": 253242,
+      "allFiles": 29,
+      "allBytes": 255336
+    },
+    {
+      "name": "maintenance/2026-09-16-slice-contract-efficiency",
+      "machineFiles": 13,
+      "machineBytes": 247374,
+      "allFiles": 17,
+      "allBytes": 290804
+    },
+    {
+      "name": "maintenance/2026-09-26-lifecycle-comparative-review",
+      "machineFiles": 17,
+      "machineBytes": 239465,
+      "allFiles": 21,
+      "allBytes": 291313
+    },
+    {
+      "name": "maintenance/2026-09-28-official-spec-research",
+      "machineFiles": 28,
+      "machineBytes": 209731,
+      "allFiles": 56,
+      "allBytes": 291983
+    },
+    {
+      "name": "maintenance/2026-10-01-lifecycle-semantic-presentation",
+      "machineFiles": 4,
+      "machineBytes": 186234,
+      "allFiles": 6,
+      "allBytes": 195145
+    },
+    {
+      "name": "maintenance/2026-09-30-workspace-tags",
+      "machineFiles": 11,
+      "machineBytes": 183744,
+      "allFiles": 27,
+      "allBytes": 3798711
+    },
+    {
+      "name": "maintenance/2026-10-01-harness-upgrade",
+      "machineFiles": 24,
+      "machineBytes": 151947,
+      "allFiles": 27,
+      "allBytes": 200206
+    },
+    {
+      "name": "maintenance/2026-09-28-retirement-plan",
+      "machineFiles": 5,
+      "machineBytes": 132348,
+      "allFiles": 6,
+      "allBytes": 158261
+    },
+    {
+      "name": "maintenance/2026-09-29-prototype-skills-research",
+      "machineFiles": 12,
+      "machineBytes": 110047,
+      "allFiles": 14,
+      "allBytes": 134503
+    },
+    {
+      "name": "maintenance/2026-09-30-shadcn-vue-design-research",
+      "machineFiles": 13,
+      "machineBytes": 105409,
+      "allFiles": 22,
+      "allBytes": 568043
+    },
+    {
+      "name": "maintenance/manual-refresh-2026-09-06",
+      "machineFiles": 55,
+      "machineBytes": 71629,
+      "allFiles": 127,
+      "allBytes": 3384264
+    },
+    {
+      "name": "maintenance/2026-09-26-lifecycle-optimization",
+      "machineFiles": 11,
+      "machineBytes": 62120,
+      "allFiles": 31,
+      "allBytes": 205099
+    },
+    {
+      "name": "maintenance/2026-09-12-subproject-cli-upgrade",
+      "machineFiles": 23,
+      "machineBytes": 49294,
+      "allFiles": 25,
+      "allBytes": 56899
+    },
+    {
+      "name": "maintenance/cli-identity-upgrade-2026-09-06",
+      "machineFiles": 39,
+      "machineBytes": 48898,
+      "allFiles": 90,
+      "allBytes": 606546
+    },
+    {
+      "name": "maintenance/2026-09-16-backend-platform-hardening",
+      "machineFiles": 5,
+      "machineBytes": 46560,
+      "allFiles": 7,
+      "allBytes": 54667
+    },
+    {
+      "name": "maintenance/dedicated-cli-implementation-2026-09-07",
+      "machineFiles": 17,
+      "machineBytes": 41416,
+      "allFiles": 50,
+      "allBytes": 231742
+    },
+    {
+      "name": "maintenance/2026-09-27-lifecycle-evaluation-hardening",
+      "machineFiles": 8,
+      "machineBytes": 38792,
+      "allFiles": 15,
+      "allBytes": 151992
+    },
+    {
+      "name": "maintenance/2026-09-29-document-readability-design",
+      "machineFiles": 2,
+      "machineBytes": 35855,
+      "allFiles": 3,
+      "allBytes": 78820
+    },
+    {
+      "name": "maintenance/data-quality-theme-scaffold-2026-09-15",
+      "machineFiles": 8,
+      "machineBytes": 32817,
+      "allFiles": 22,
+      "allBytes": 362266
+    },
+    {
+      "name": "maintenance/dedicated-cli-design-2026-09-07",
+      "machineFiles": 2,
+      "machineBytes": 29853,
+      "allFiles": 3,
+      "allBytes": 36488
+    },
+    {
+      "name": "maintenance/strategic-data-quality-theme-2026-09-15",
+      "machineFiles": 5,
+      "machineBytes": 29821,
+      "allFiles": 7,
+      "allBytes": 82904
+    },
+    {
+      "name": "maintenance/2026-09-30-plan-spec-research",
+      "machineFiles": 7,
+      "machineBytes": 28797,
+      "allFiles": 8,
+      "allBytes": 43647
+    },
+    {
+      "name": "maintenance/2026-09-29-document-readability-implementation",
+      "machineFiles": 9,
+      "machineBytes": 28710,
+      "allFiles": 21,
+      "allBytes": 56752
+    },
+    {
+      "name": "maintenance/2026-09-25-lifecycle-audit",
+      "machineFiles": 1,
+      "machineBytes": 27065,
+      "allFiles": 2,
+      "allBytes": 38760
+    },
+    {
+      "name": "maintenance/antdv-next-ai-skill-framework-2026-09-04-evidence.yaml",
+      "machineFiles": 1,
+      "machineBytes": 26246,
+      "allFiles": 1,
+      "allBytes": 26246
+    },
+    {
+      "name": "maintenance/antd-prototype-integration-evidence.yaml",
+      "machineFiles": 1,
+      "machineBytes": 22131,
+      "allFiles": 1,
+      "allBytes": 22131
+    },
+    {
+      "name": "maintenance/2026-09-11-strategic-responsibility-confirmation",
+      "machineFiles": 2,
+      "machineBytes": 20983,
+      "allFiles": 3,
+      "allBytes": 24946
+    },
+    {
+      "name": "maintenance/cli-delivery-2026-09-22",
+      "machineFiles": 1,
+      "machineBytes": 20896,
+      "allFiles": 3,
+      "allBytes": 49053
+    },
+    {
+      "name": "maintenance/html-prototype-research-2026-09-14-evidence.yaml",
+      "machineFiles": 1,
+      "machineBytes": 20646,
+      "allFiles": 1,
+      "allBytes": 20646
+    },
+    {
+      "name": "maintenance/awesome-design-md-adoption-2026-09-05-evidence.yaml",
+      "machineFiles": 1,
+      "machineBytes": 19334,
+      "allFiles": 1,
+      "allBytes": 19334
+    },
+    {
+      "name": "maintenance/2026-09-18-yss-backend-components",
+      "machineFiles": 1,
+      "machineBytes": 18355,
+      "allFiles": 1,
+      "allBytes": 18355
+    },
+    {
+      "name": "maintenance/2026-09-16-approval-efficiency",
+      "machineFiles": 2,
+      "machineBytes": 16533,
+      "allFiles": 3,
+      "allBytes": 19815
+    },
+    {
+      "name": "maintenance/2026-09-26-lifecycle-improvement-plan",
+      "machineFiles": 3,
+      "machineBytes": 16385,
+      "allFiles": 4,
+      "allBytes": 45930
+    },
+    {
+      "name": "maintenance/2026-09-10-adhd-integration",
+      "machineFiles": 4,
+      "machineBytes": 15747,
+      "allFiles": 10,
+      "allBytes": 36727
+    },
+    {
+      "name": "reviews/index.yaml",
+      "machineFiles": 1,
+      "machineBytes": 15566,
+      "allFiles": 1,
+      "allBytes": 15566
+    },
+    {
+      "name": "maintenance/2026-09-10-lifecycle-writing",
+      "machineFiles": 5,
+      "machineBytes": 14650,
+      "allFiles": 11,
+      "allBytes": 49111
+    },
+    {
+      "name": "maintenance/antd-html-prototype-2026-09-15",
+      "machineFiles": 5,
+      "machineBytes": 10187,
+      "allFiles": 12,
+      "allBytes": 296912
+    },
+    {
+      "name": "maintenance/2026-09-16-backend-platforms",
+      "machineFiles": 2,
+      "machineBytes": 9577,
+      "allFiles": 4,
+      "allBytes": 15921
+    },
+    {
+      "name": "maintenance/technical-design-cli-families-2026-09-08",
+      "machineFiles": 3,
+      "machineBytes": 8665,
+      "allFiles": 24,
+      "allBytes": 111087
+    },
+    {
+      "name": "maintenance/technical-design-branches-2026-09-08",
+      "machineFiles": 2,
+      "machineBytes": 6326,
+      "allFiles": 8,
+      "allBytes": 69120
+    },
+    {
+      "name": "maintenance/research-prototype-profile-routing-evidence-2026-09-04.yaml",
+      "machineFiles": 1,
+      "machineBytes": 6264,
+      "allFiles": 1,
+      "allBytes": 6264
+    },
+    {
+      "name": "maintenance/2026-09-09-plan",
+      "machineFiles": 2,
+      "machineBytes": 5813,
+      "allFiles": 4,
+      "allBytes": 10863
+    },
+    {
+      "name": "maintenance/2026-09-23-skill-sync-efficiency",
+      "machineFiles": 6,
+      "machineBytes": 4736,
+      "allFiles": 7,
+      "allBytes": 6961
+    },
+    {
+      "name": "maintenance/backend-frontend-split",
+      "machineFiles": 6,
+      "machineBytes": 4448,
+      "allFiles": 14,
+      "allBytes": 78701
+    },
+    {
+      "name": "maintenance/2026-09-11-strategic-design-preparation",
+      "machineFiles": 2,
+      "machineBytes": 4438,
+      "allFiles": 7,
+      "allBytes": 36981
+    },
+    {
+      "name": "maintenance/strategic-data-quality-theme-l3-checkpoint-2026-09-15.json",
+      "machineFiles": 1,
+      "machineBytes": 4131,
+      "allFiles": 1,
+      "allBytes": 4131
+    },
+    {
+      "name": "maintenance/template-verification-efficiency-remediation-cycle1-release-checkpoint-2026-09-01.yaml",
+      "machineFiles": 1,
+      "machineBytes": 3949,
+      "allFiles": 1,
+      "allBytes": 3949
+    },
+    {
+      "name": "maintenance/2026-09-10-script-performance-followup",
+      "machineFiles": 2,
+      "machineBytes": 3834,
+      "allFiles": 4,
+      "allBytes": 10303
+    },
+    {
+      "name": "maintenance/awesome-design-md-internal-gap-analysis-task-2026-09-05.yaml",
+      "machineFiles": 1,
+      "machineBytes": 3685,
+      "allFiles": 1,
+      "allBytes": 3685
+    },
+    {
+      "name": "maintenance/2026-10-01-upgrade-skill-distribution",
+      "machineFiles": 3,
+      "machineBytes": 3447,
+      "allFiles": 4,
+      "allBytes": 5033
+    },
+    {
+      "name": "maintenance/yss-ddd-scaffold-target-profile-l3-checkpoint-2026-09-03.yaml",
+      "machineFiles": 1,
+      "machineBytes": 3423,
+      "allFiles": 1,
+      "allBytes": 3423
+    },
+    {
+      "name": "maintenance/strategic-handoff-package",
+      "machineFiles": 1,
+      "machineBytes": 3421,
+      "allFiles": 1,
+      "allBytes": 3421
+    },
+    {
+      "name": "maintenance/yss-ddd-scaffold-reference-research-task-2026-09-03.yaml",
+      "machineFiles": 1,
+      "machineBytes": 3413,
+      "allFiles": 1,
+      "allBytes": 3413
+    },
+    {
+      "name": "maintenance/yss-ddd-scaffold-meta-baseline-task-2026-09-03.yaml",
+      "machineFiles": 1,
+      "machineBytes": 3329,
+      "allFiles": 1,
+      "allBytes": 3329
+    },
+    {
+      "name": "maintenance/backend-delivery-l3-checkpoint-2026-09-02.yaml",
+      "machineFiles": 1,
+      "machineBytes": 3300,
+      "allFiles": 1,
+      "allBytes": 3300
+    },
+    {
+      "name": "maintenance/cli-sync-upgrade-2026-09-05",
+      "machineFiles": 2,
+      "machineBytes": 3217,
+      "allFiles": 12,
+      "allBytes": 71359
+    },
+    {
+      "name": "maintenance/digital-human-task-package-review-task.yaml",
+      "machineFiles": 1,
+      "machineBytes": 3188,
+      "allFiles": 1,
+      "allBytes": 3188
+    },
+    {
+      "name": "maintenance/template-verification-efficiency-l3-needs-human-checkpoint-2026-09-01.yaml",
+      "machineFiles": 1,
+      "machineBytes": 3068,
+      "allFiles": 1,
+      "allBytes": 3068
+    },
+    {
+      "name": "maintenance/template-verification-efficiency-l3-review-checkpoint-round2-2026-09-01.yaml",
+      "machineFiles": 1,
+      "machineBytes": 3066,
+      "allFiles": 1,
+      "allBytes": 3066
+    },
+    {
+      "name": "maintenance/template-verification-efficiency-remediation-cycle1-review-checkpoint-2026-09-01.yaml",
+      "machineFiles": 1,
+      "machineBytes": 3055,
+      "allFiles": 1,
+      "allBytes": 3055
+    },
+    {
+      "name": "maintenance/2026-09-10-plan-entry",
+      "machineFiles": 1,
+      "machineBytes": 3039,
+      "allFiles": 2,
+      "allBytes": 7116
+    },
+    {
+      "name": "maintenance/archify-integration-l3-release-checkpoint-2026-09-01.yaml",
+      "machineFiles": 1,
+      "machineBytes": 3017,
+      "allFiles": 1,
+      "allBytes": 3017
+    },
+    {
+      "name": "maintenance/backend-design-gate-l3-checkpoint-2026-09-14.json",
+      "machineFiles": 1,
+      "machineBytes": 2990,
+      "allFiles": 1,
+      "allBytes": 2990
+    },
+    {
+      "name": "maintenance/yss-antdv-next-provider-p0-l3-checkpoint-2026-09-04.yaml",
+      "machineFiles": 1,
+      "machineBytes": 2928,
+      "allFiles": 1,
+      "allBytes": 2928
+    },
+    {
+      "name": "maintenance/backend-delivery-candidate-round5",
+      "machineFiles": 1,
+      "machineBytes": 2908,
+      "allFiles": 3,
+      "allBytes": 18401
+    },
+    {
+      "name": "maintenance/skill-surface-retirement-l3-checkpoint-2026-09-05.yaml",
+      "machineFiles": 1,
+      "machineBytes": 2892,
+      "allFiles": 1,
+      "allBytes": 2892
+    },
+    {
+      "name": "maintenance/2026-09-24-template-slimming",
+      "machineFiles": 1,
+      "machineBytes": 2812,
+      "allFiles": 2,
+      "allBytes": 6831
+    },
+    {
+      "name": "maintenance/prototype-profile-routing-l3-checkpoint-2026-09-04.yaml",
+      "machineFiles": 1,
+      "machineBytes": 2691,
+      "allFiles": 1,
+      "allBytes": 2691
+    },
+    {
+      "name": "maintenance/archify-integration-l3-review-checkpoint-round2-2026-09-01.yaml",
+      "machineFiles": 1,
+      "machineBytes": 2683,
+      "allFiles": 1,
+      "allBytes": 2683
+    },
+    {
+      "name": "maintenance/yss-design-compact-antdv6-l3-checkpoint-2026-09-05.yaml",
+      "machineFiles": 1,
+      "machineBytes": 2609,
+      "allFiles": 1,
+      "allBytes": 2609
+    },
+    {
+      "name": "maintenance/template-verification-efficiency-l3-review-checkpoint-2026-09-01.yaml",
+      "machineFiles": 1,
+      "machineBytes": 2604,
+      "allFiles": 1,
+      "allBytes": 2604
+    },
+    {
+      "name": "maintenance/lifecycle-ticket-transition-review-task-package.yaml",
+      "machineFiles": 1,
+      "machineBytes": 2595,
+      "allFiles": 1,
+      "allBytes": 2595
+    },
+    {
+      "name": "maintenance/context-contract-l3-checkpoint-2026-09-04.yaml",
+      "machineFiles": 1,
+      "machineBytes": 2563,
+      "allFiles": 1,
+      "allBytes": 2563
+    },
+    {
+      "name": "maintenance/antd-html-prototype-l3-checkpoint-2026-09-15.json",
+      "machineFiles": 1,
+      "machineBytes": 2528,
+      "allFiles": 1,
+      "allBytes": 2528
+    },
+    {
+      "name": "maintenance/backend-skill-control-plane-v2-l3-checkpoint-2026-09-04.yaml",
+      "machineFiles": 1,
+      "machineBytes": 2508,
+      "allFiles": 1,
+      "allBytes": 2508
+    },
+    {
+      "name": "maintenance/scaffold-architecture-selection-l3-checkpoint-2026-09-05.yaml",
+      "machineFiles": 1,
+      "machineBytes": 2453,
+      "allFiles": 1,
+      "allBytes": 2453
+    },
+    {
+      "name": "maintenance/yss-antdv-next-h2-default-l3-checkpoint-2026-09-05.yaml",
+      "machineFiles": 1,
+      "machineBytes": 2447,
+      "allFiles": 1,
+      "allBytes": 2447
+    },
+    {
+      "name": "maintenance/gate-consolidation-l3-checkpoint-2026-09-10.yaml",
+      "machineFiles": 1,
+      "machineBytes": 2424,
+      "allFiles": 1,
+      "allBytes": 2424
+    },
+    {
+      "name": "maintenance/persistence-skills-hardcoding-removal-l3-checkpoint-2026-09-09.yaml",
+      "machineFiles": 1,
+      "machineBytes": 2416,
+      "allFiles": 1,
+      "allBytes": 2416
+    },
+    {
+      "name": "maintenance/digital-human-task-package-l3-checkpoint-2026-08-27.yaml",
+      "machineFiles": 1,
+      "machineBytes": 2379,
+      "allFiles": 1,
+      "allBytes": 2379
+    },
+    {
+      "name": "maintenance/request-triage-2026-09-10",
+      "machineFiles": 2,
+      "machineBytes": 2352,
+      "allFiles": 3,
+      "allBytes": 5951
+    },
+    {
+      "name": "maintenance/awesome-design-md-p0-l3-checkpoint-2026-09-05.yaml",
+      "machineFiles": 1,
+      "machineBytes": 2349,
+      "allFiles": 1,
+      "allBytes": 2349
+    },
+    {
+      "name": "maintenance/2026-09-11-strategic-handoff-v4-path-sync",
+      "machineFiles": 1,
+      "machineBytes": 2346,
+      "allFiles": 2,
+      "allBytes": 7196
+    },
+    {
+      "name": "maintenance/data-quality-theme-scaffold-l3-checkpoint-2026-09-15.json",
+      "machineFiles": 1,
+      "machineBytes": 2326,
+      "allFiles": 1,
+      "allBytes": 2326
+    },
+    {
+      "name": "maintenance/archify-integration-l3-review-checkpoint-2026-09-01.yaml",
+      "machineFiles": 1,
+      "machineBytes": 2299,
+      "allFiles": 1,
+      "allBytes": 2299
+    },
+    {
+      "name": "maintenance/yss-ddd-scaffold-compile-l3-checkpoint-2026-09-03.yaml",
+      "machineFiles": 1,
+      "machineBytes": 2281,
+      "allFiles": 1,
+      "allBytes": 2281
+    },
+    {
+      "name": "maintenance/yss-stage-decision-l3-checkpoint-2026-08-27.yaml",
+      "machineFiles": 1,
+      "machineBytes": 2237,
+      "allFiles": 1,
+      "allBytes": 2237
+    },
+    {
+      "name": "maintenance/yss-prototype-antdv6-l3-checkpoint-2026-09-01.yaml",
+      "machineFiles": 1,
+      "machineBytes": 2105,
+      "allFiles": 1,
+      "allBytes": 2105
+    },
+    {
+      "name": "reviews/llm-wiki-adapt-i1-i5-l2-checkpoint-2026-08-23.yaml",
+      "machineFiles": 1,
+      "machineBytes": 2073,
+      "allFiles": 1,
+      "allBytes": 2073
+    },
+    {
+      "name": "maintenance/skill-scope-audit-2026-09-08",
+      "machineFiles": 1,
+      "machineBytes": 2060,
+      "allFiles": 27,
+      "allBytes": 2023793
+    },
+    {
+      "name": "maintenance/2026-09-23-yss-backend-component-skills",
+      "machineFiles": 1,
+      "machineBytes": 2058,
+      "allFiles": 2,
+      "allBytes": 3891
+    },
+    {
+      "name": "maintenance/2026-09-24-antdv-next-fact-pack-cleanup",
+      "machineFiles": 1,
+      "machineBytes": 2051,
+      "allFiles": 1,
+      "allBytes": 2051
+    },
+    {
+      "name": "maintenance/implementation-repository-preparation-l3-checkpoint-2026-09-08.yaml",
+      "machineFiles": 1,
+      "machineBytes": 2046,
+      "allFiles": 1,
+      "allBytes": 2046
+    },
+    {
+      "name": "maintenance/2026-09-11-profile-skill-sync",
+      "machineFiles": 1,
+      "machineBytes": 2006,
+      "allFiles": 1,
+      "allBytes": 2006
+    },
+    {
+      "name": "maintenance/template-verification-efficiency-l3-checkpoint-2026-08-31.yaml",
+      "machineFiles": 1,
+      "machineBytes": 2006,
+      "allFiles": 1,
+      "allBytes": 2006
+    },
+    {
+      "name": "maintenance/yss-product-lifecycle-thin-router-l3-checkpoint-2026-09-09.yaml",
+      "machineFiles": 1,
+      "machineBytes": 1972,
+      "allFiles": 1,
+      "allBytes": 1972
+    },
+    {
+      "name": "maintenance/business-language-l3-checkpoint-2026-09-05.yaml",
+      "machineFiles": 1,
+      "machineBytes": 1963,
+      "allFiles": 1,
+      "allBytes": 1963
+    },
+    {
+      "name": "maintenance/create-yss-harness-review-l3-pending-2026-08-31.yaml",
+      "machineFiles": 1,
+      "machineBytes": 1934,
+      "allFiles": 1,
+      "allBytes": 1934
+    },
+    {
+      "name": "maintenance/git-submodule-scope-l3-checkpoint.yaml",
+      "machineFiles": 1,
+      "machineBytes": 1896,
+      "allFiles": 1,
+      "allBytes": 1896
+    },
+    {
+      "name": "maintenance/yss-default-theme-l2-checkpoint-2026-08-23.yaml",
+      "machineFiles": 1,
+      "machineBytes": 1883,
+      "allFiles": 1,
+      "allBytes": 1883
+    },
+    {
+      "name": "maintenance/archify-integration-l3-checkpoint-2026-09-01.yaml",
+      "machineFiles": 1,
+      "machineBytes": 1870,
+      "allFiles": 1,
+      "allBytes": 1870
+    },
+    {
+      "name": "maintenance/2026-09-30-prototype-design-optimization",
+      "machineFiles": 1,
+      "machineBytes": 1856,
+      "allFiles": 4,
+      "allBytes": 20250
+    },
+    {
+      "name": "maintenance/lifecycle-ticket-transition-l3-checkpoint-2026-08-27.yaml",
+      "machineFiles": 1,
+      "machineBytes": 1853,
+      "allFiles": 1,
+      "allBytes": 1853
+    },
+    {
+      "name": "maintenance/yss-antd-design-l2-checkpoint-2026-08-23.yaml",
+      "machineFiles": 1,
+      "machineBytes": 1842,
+      "allFiles": 1,
+      "allBytes": 1842
+    },
+    {
+      "name": "maintenance/yss-tactical-design-l3-checkpoint-2026-08-27.yaml",
+      "machineFiles": 1,
+      "machineBytes": 1814,
+      "allFiles": 1,
+      "allBytes": 1814
+    },
+    {
+      "name": "reviews/context-bilingual-stems-l2-checkpoint-2026-08-24.yaml",
+      "machineFiles": 1,
+      "machineBytes": 1804,
+      "allFiles": 1,
+      "allBytes": 1804
+    },
+    {
+      "name": "maintenance/yss-ddd-scaffold-skill-alignment-2026-09-04.yaml",
+      "machineFiles": 1,
+      "machineBytes": 1778,
+      "allFiles": 1,
+      "allBytes": 1778
+    },
+    {
+      "name": "maintenance/github-workflows-2026-09-10",
+      "machineFiles": 1,
+      "machineBytes": 1757,
+      "allFiles": 4,
+      "allBytes": 54409
+    },
+    {
+      "name": "maintenance/cli-version-bump-l3-checkpoint-2026-09-04.yaml",
+      "machineFiles": 1,
+      "machineBytes": 1742,
+      "allFiles": 1,
+      "allBytes": 1742
+    },
+    {
+      "name": "maintenance/strategic-design-skill-consumption-l3-checkpoint-2026-09-04.yaml",
+      "machineFiles": 1,
+      "machineBytes": 1741,
+      "allFiles": 1,
+      "allBytes": 1741
+    },
+    {
+      "name": "maintenance/runtime-projection-retirement-l3-checkpoint-2026-09-10.yaml",
+      "machineFiles": 1,
+      "machineBytes": 1738,
+      "allFiles": 1,
+      "allBytes": 1738
+    },
+    {
+      "name": "maintenance/cli-instance-distribution-boundary-l3-checkpoint-2026-09-10.yaml",
+      "machineFiles": 1,
+      "machineBytes": 1706,
+      "allFiles": 1,
+      "allBytes": 1706
+    },
+    {
+      "name": "maintenance/openapi-draft-validation-l3-checkpoint-2026-09-10.yaml",
+      "machineFiles": 1,
+      "machineBytes": 1690,
+      "allFiles": 1,
+      "allBytes": 1690
+    },
+    {
+      "name": "reviews/llm-wiki-p12-l2-checkpoint-2026-08-23.yaml",
+      "machineFiles": 1,
+      "machineBytes": 1654,
+      "allFiles": 1,
+      "allBytes": 1654
+    },
+    {
+      "name": "maintenance/distribution-boundary-l2-checkpoint-2026-08-24.yaml",
+      "machineFiles": 1,
+      "machineBytes": 1543,
+      "allFiles": 1,
+      "allBytes": 1543
+    },
+    {
+      "name": "maintenance/adr-retirement-l3-contract-2026-08-31.yaml",
+      "machineFiles": 1,
+      "machineBytes": 1509,
+      "allFiles": 1,
+      "allBytes": 1509
+    },
+    {
+      "name": "maintenance/wave-a-skill-discovery-2026-08-22.yaml",
+      "machineFiles": 1,
+      "machineBytes": 1490,
+      "allFiles": 1,
+      "allBytes": 1490
+    },
+    {
+      "name": "maintenance/backend-engineer-plugin-l3-checkpoint-2026-09-02.yaml",
+      "machineFiles": 1,
+      "machineBytes": 1382,
+      "allFiles": 1,
+      "allBytes": 1382
+    },
+    {
+      "name": "maintenance/design-md-l3-checkpoint-2026-09-02.yaml",
+      "machineFiles": 1,
+      "machineBytes": 1382,
+      "allFiles": 1,
+      "allBytes": 1382
+    },
+    {
+      "name": "reviews/llm-wiki-p0-l2-checkpoint-2026-08-23.yaml",
+      "machineFiles": 1,
+      "machineBytes": 1352,
+      "allFiles": 1,
+      "allBytes": 1352
+    },
+    {
+      "name": "maintenance/2026-09-29-skills-optimization-plan",
+      "machineFiles": 2,
+      "machineBytes": 1313,
+      "allFiles": 4,
+      "allBytes": 94319
+    },
+    {
+      "name": "reviews/llm-wiki-ingest-l2-checkpoint-2026-08-23.yaml",
+      "machineFiles": 1,
+      "machineBytes": 1296,
+      "allFiles": 1,
+      "allBytes": 1296
+    },
+    {
+      "name": "maintenance/yss-harness-design-agent-rename-l3-checkpoint-2026-09-04.yaml",
+      "machineFiles": 1,
+      "machineBytes": 1294,
+      "allFiles": 1,
+      "allBytes": 1294
+    },
+    {
+      "name": "maintenance/user-guide-single-document-l2-checkpoint-2026-09-01.yaml",
+      "machineFiles": 1,
+      "machineBytes": 1124,
+      "allFiles": 1,
+      "allBytes": 1124
+    },
+    {
+      "name": "maintenance/remove-unsupported-agent-platforms-l3-checkpoint-2026-09-04.yaml",
+      "machineFiles": 1,
+      "machineBytes": 1097,
+      "allFiles": 1,
+      "allBytes": 1097
+    },
+    {
+      "name": "maintenance/strategic-design-cli-sync-l3-checkpoint-2026-09-04.yaml",
+      "machineFiles": 1,
+      "machineBytes": 982,
+      "allFiles": 1,
+      "allBytes": 982
+    },
+    {
+      "name": "maintenance/yss-ddd-scaffold-compile-analysis-checkpoint-2026-09-03.yaml",
+      "machineFiles": 1,
+      "machineBytes": 921,
+      "allFiles": 1,
+      "allBytes": 921
+    },
+    {
+      "name": "maintenance/awesome-design-md-research-delegation-l1-checkpoint-2026-09-05.yaml",
+      "machineFiles": 1,
+      "machineBytes": 744,
+      "allFiles": 1,
+      "allBytes": 744
+    },
+    {
+      "name": "maintenance/user-decision-protocol-2026-09-05",
+      "machineFiles": 1,
+      "machineBytes": 713,
+      "allFiles": 2,
+      "allBytes": 4749
+    },
+    {
+      "name": "maintenance/lifecycle-ticket-transition-review-contract.yaml",
+      "machineFiles": 1,
+      "machineBytes": 103,
+      "allFiles": 1,
+      "allBytes": 103
+    },
+    {
+      "name": "maintenance/2026-09-10-lifecycle-performance",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 6043
+    },
+    {
+      "name": "maintenance/adr-retirement-design-cli-noop-sync-2026-08-31.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 2001
+    },
+    {
+      "name": "maintenance/adr-retirement-fresh-verification-2026-08-31.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 2404
+    },
+    {
+      "name": "maintenance/agents-md-slimming-l3-checkpoint-2026-09-05.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 6370
+    },
+    {
+      "name": "maintenance/antd-prototype-integration-research-brief.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 8350
+    },
+    {
+      "name": "maintenance/antdv-next-ai-skill-framework-2026-09-04-research-brief.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 21235
+    },
+    {
+      "name": "maintenance/archify-integration-cross-repo-contract-2026-09-01.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 4805
+    },
+    {
+      "name": "maintenance/archify-integration-final-release-verification-2026-09-01.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 1338
+    },
+    {
+      "name": "maintenance/archify-integration-green-2026-09-01.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 1230
+    },
+    {
+      "name": "maintenance/archify-integration-initial-release-verification-2026-09-01.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 1671
+    },
+    {
+      "name": "maintenance/archify-integration-pressure-2026-09-01.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 1407
+    },
+    {
+      "name": "maintenance/archify-integration-red-2026-09-01.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 811
+    },
+    {
+      "name": "maintenance/archify-integration-refactor-2026-09-01.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 1368
+    },
+    {
+      "name": "maintenance/archify-integration-round2-initial-release-verification-2026-09-01.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 1218
+    },
+    {
+      "name": "maintenance/awesome-design-md-adoption-2026-09-05-research-brief.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 15573
+    },
+    {
+      "name": "maintenance/awesome-design-md-internal-gap-analysis-2026-09-05.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 19164
+    },
+    {
+      "name": "maintenance/awesome-design-md-p0-green-2026-09-05.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 1783
+    },
+    {
+      "name": "maintenance/awesome-design-md-p0-red-2026-09-05.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 780
+    },
+    {
+      "name": "maintenance/backend-delivery-cross-repo-contract-2026-09-02.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 2739
+    },
+    {
+      "name": "maintenance/backend-delivery-final-release-verification-2026-09-02.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 352
+    },
+    {
+      "name": "maintenance/backend-delivery-green-2026-09-02.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 486
+    },
+    {
+      "name": "maintenance/backend-delivery-initial-release-verification-2026-09-02.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 255
+    },
+    {
+      "name": "maintenance/backend-delivery-red-2026-09-02.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 318
+    },
+    {
+      "name": "maintenance/backend-delivery-refactor-2026-09-02.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 263
+    },
+    {
+      "name": "maintenance/backend-delivery-submodule-diff-2026-09-02.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 5682
+    },
+    {
+      "name": "maintenance/backend-engineer-plugin-fresh-verification-2026-09-02.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 2230
+    },
+    {
+      "name": "maintenance/backend-harness-scope-decision-2026-09-01.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 3848
+    },
+    {
+      "name": "maintenance/backend-profiles-h2-checkpoint-2026-09-05.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 4639
+    },
+    {
+      "name": "maintenance/backend-profiles-h2-design-2026-09-05.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 4308
+    },
+    {
+      "name": "maintenance/context-contract-l3-red-green-2026-09-04.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 3065
+    },
+    {
+      "name": "maintenance/create-yss-harness-b03-reproduction-2026-08-31.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 1313
+    },
+    {
+      "name": "maintenance/digital-human-roles-l3-review-request-2026-08-26.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 2238
+    },
+    {
+      "name": "maintenance/digital-human-task-package-formal-independent-review-2026-08-27.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 2921
+    },
+    {
+      "name": "maintenance/distribution-boundary-l2-counterexample-2026-08-24.txt",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 4745
+    },
+    {
+      "name": "maintenance/distribution-boundary-l2-fresh-verification-2026-08-24.txt",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 4501
+    },
+    {
+      "name": "maintenance/distribution-boundary-l2-review-request-2026-08-24.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 1471
+    },
+    {
+      "name": "maintenance/gate-consolidation-2026-09-10",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 1862
+    },
+    {
+      "name": "maintenance/git-submodule-scope-green-2026-08-24.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 692
+    },
+    {
+      "name": "maintenance/git-submodule-scope-l3-review-request-2026-08-24.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 1645
+    },
+    {
+      "name": "maintenance/git-submodule-scope-l3-review-request-revision-2026-08-24.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 1521
+    },
+    {
+      "name": "maintenance/git-submodule-scope-l3-review-request-writable-api-2026-08-24.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 1364
+    },
+    {
+      "name": "maintenance/git-submodule-scope-l3-review-request-writable-oracle-2026-08-24.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 3115
+    },
+    {
+      "name": "maintenance/git-submodule-scope-l3-review-request-write-misread-2026-08-24.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 1319
+    },
+    {
+      "name": "maintenance/git-submodule-scope-oracle-implementer-measurement-2026-08-24.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 2179
+    },
+    {
+      "name": "maintenance/git-submodule-scope-red-2026-08-24.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 1408
+    },
+    {
+      "name": "maintenance/git-submodule-scope-review-findings-2026-08-24.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 1915
+    },
+    {
+      "name": "maintenance/git-submodule-scope-review-findings-oracle-2026-08-24.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 840
+    },
+    {
+      "name": "maintenance/git-submodule-scope-review-findings-revision-2026-08-24.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 1000
+    },
+    {
+      "name": "maintenance/git-submodule-scope-review-findings-writable-api-2026-08-24.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 1285
+    },
+    {
+      "name": "maintenance/git-submodule-scope-revision-green-2026-08-24.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 1029
+    },
+    {
+      "name": "maintenance/git-submodule-scope-revision-red-2026-08-24.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 892
+    },
+    {
+      "name": "maintenance/git-submodule-scope-writable-api-green-2026-08-24.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 1204
+    },
+    {
+      "name": "maintenance/git-submodule-scope-writable-api-red-2026-08-24.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 1361
+    },
+    {
+      "name": "maintenance/git-submodule-scope-write-misread-green-2026-08-24.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 656
+    },
+    {
+      "name": "maintenance/git-submodule-scope-write-misread-red-2026-08-24.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 582
+    },
+    {
+      "name": "maintenance/github-submission-2026-09-05.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 2042
+    },
+    {
+      "name": "maintenance/html-prototype-research-2026-09-14-research-brief.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 7416
+    },
+    {
+      "name": "maintenance/lifecycle-ticket-transition-formal-independent-review-2026-08-27.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 1280
+    },
+    {
+      "name": "maintenance/lifecycle-ticket-transition-green-2026-08-27.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 814
+    },
+    {
+      "name": "maintenance/lifecycle-ticket-transition-pressure-2026-08-27.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 1019
+    },
+    {
+      "name": "maintenance/lifecycle-ticket-transition-red-2026-08-27.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 489
+    },
+    {
+      "name": "maintenance/lifecycle-ticket-transition-refactor-2026-08-27.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 666
+    },
+    {
+      "name": "maintenance/research-antd-cli-skills-prototype-integration-2026-08-23.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 24221
+    },
+    {
+      "name": "maintenance/research-git-submodule-layered-integration-2026-08-24.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 16125
+    },
+    {
+      "name": "maintenance/research-grok-bot-role-collaboration-2026-08-26.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 8910
+    },
+    {
+      "name": "maintenance/research-high-fidelity-prototype-antdv6-audit-2026-09-01.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 27081
+    },
+    {
+      "name": "maintenance/research-maven-command-priority-2026-09-03.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 13223
+    },
+    {
+      "name": "maintenance/research-prototype-profile-routing-2026-09-04.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 6336
+    },
+    {
+      "name": "maintenance/research-yss-research-enhancement-2026-09-03.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 5071
+    },
+    {
+      "name": "maintenance/strategic-handoff-package-implementation.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 5316
+    },
+    {
+      "name": "maintenance/template-engineering-status-2026-08-30.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 5668
+    },
+    {
+      "name": "maintenance/template-verification-efficiency-remediation-cycle1-verification-2026-09-01.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 3352
+    },
+    {
+      "name": "maintenance/template-verification-efficiency-trial-2026-08-31.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 1813
+    },
+    {
+      "name": "maintenance/user-guide-single-document-counterexample-2026-09-01.txt",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 640
+    },
+    {
+      "name": "maintenance/yss-antd-design-l2-counterexample-2026-08-23.txt",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 1421
+    },
+    {
+      "name": "maintenance/yss-antd-design-l2-fresh-verification-2026-08-23.txt",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 1943
+    },
+    {
+      "name": "maintenance/yss-antd-design-l2-review-request-2026-08-23.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 1034
+    },
+    {
+      "name": "maintenance/yss-ddd-scaffold-compile-cross-repo-contract-2026-09-03.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 2179
+    },
+    {
+      "name": "maintenance/yss-ddd-scaffold-compile-red-green-2026-09-03.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 2850
+    },
+    {
+      "name": "maintenance/yss-ddd-scaffold-meta-baseline-analysis-2026-09-03.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 14086
+    },
+    {
+      "name": "maintenance/yss-ddd-scaffold-reference-research-2026-09-03.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 32454
+    },
+    {
+      "name": "maintenance/yss-ddd-scaffold-target-profile-cross-repo-verification-2026-09-03.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 5029
+    },
+    {
+      "name": "maintenance/yss-ddd-scaffold-target-profile-decision-2026-09-03.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 3808
+    },
+    {
+      "name": "maintenance/yss-ddd-scaffold-target-profile-red-green-2026-09-03.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 4326
+    },
+    {
+      "name": "maintenance/yss-default-theme-l2-counterexample-2026-08-23.txt",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 2401
+    },
+    {
+      "name": "maintenance/yss-default-theme-l2-fresh-verification-2026-08-23.txt",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 3408
+    },
+    {
+      "name": "maintenance/yss-default-theme-l2-review-request-2026-08-23.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 1484
+    },
+    {
+      "name": "maintenance/yss-prototype-antdv6-green-2026-09-01.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 478
+    },
+    {
+      "name": "maintenance/yss-prototype-antdv6-pressure-2026-09-01.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 508
+    },
+    {
+      "name": "maintenance/yss-prototype-antdv6-red-2026-09-01.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 477
+    },
+    {
+      "name": "maintenance/yss-prototype-antdv6-refactor-2026-09-01.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 613
+    },
+    {
+      "name": "maintenance/yss-stage-decision-l3-formal-independent-review-2026-08-27.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 1619
+    },
+    {
+      "name": "maintenance/yss-stage-decision-l3-green-2026-08-27.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 711
+    },
+    {
+      "name": "maintenance/yss-stage-decision-l3-pressure-2026-08-27.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 683
+    },
+    {
+      "name": "maintenance/yss-stage-decision-l3-red-2026-08-27.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 567
+    },
+    {
+      "name": "maintenance/yss-tactical-design-formal-independent-review-2026-08-27.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 1498
+    },
+    {
+      "name": "maintenance/yss-tactical-design-green-2026-08-27.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 411
+    },
+    {
+      "name": "maintenance/yss-tactical-design-pressure-2026-08-27.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 575
+    },
+    {
+      "name": "maintenance/yss-tactical-design-red-2026-08-27.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 592
+    },
+    {
+      "name": "maintenance/yss-tactical-design-refactor-2026-08-27.md",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 568
+    },
+    {
+      "name": "reviews/context-bilingual-stems-counterexample-2026-08-24.txt",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 1687
+    },
+    {
+      "name": "reviews/context-bilingual-stems-fresh-verification-2026-08-24.txt",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 1107
+    },
+    {
+      "name": "reviews/llm-wiki-adapt-i1-i5-counterexample-2026-08-23.txt",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 1326
+    },
+    {
+      "name": "reviews/llm-wiki-adapt-i1-i5-fresh-verification-2026-08-23.txt",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 4661
+    },
+    {
+      "name": "reviews/llm-wiki-ingest-fresh-verification-2026-08-23.txt",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 3627
+    },
+    {
+      "name": "reviews/llm-wiki-ingest-lint-counterexample-2026-08-23.txt",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 1271
+    },
+    {
+      "name": "reviews/llm-wiki-p0-fresh-verification-2026-08-23.txt",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 2143
+    },
+    {
+      "name": "reviews/llm-wiki-p0-manifest-closure-counterexample-2026-08-23.txt",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 870
+    },
+    {
+      "name": "reviews/llm-wiki-p12-counterexample-2026-08-23.txt",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 559
+    },
+    {
+      "name": "reviews/llm-wiki-p12-fresh-verification-2026-08-23.txt",
+      "machineFiles": 0,
+      "machineBytes": 0,
+      "allFiles": 1,
+      "allBytes": 772
+    }
+  ]
+}

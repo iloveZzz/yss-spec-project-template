@@ -1,0 +1,15 @@
+▶ single entry and explicit M4 migration preserve project assets and fail closed
+  ✔ entry hands off to the bound local orchestrator without granting stage approval (5106.675209ms)
+  ✔ unknown identity, drift and completed projects reject migration (4380.972625ms)
+  ✔ preview is read-only and stale plans cannot apply (5968.505917ms)
+  ✔ verification failure rolls back original bytes without discarding the backup (7755.447708ms)
+  ✔ known M4 source migrates and retains all original business evidence (9886.107167ms)
+✔ single entry and explicit M4 migration preserve project assets and fail closed (79583.57475ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 79661.855333
