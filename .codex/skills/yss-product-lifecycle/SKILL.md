@@ -52,8 +52,7 @@ Plan 入口读 `.template-spec/plan/README.md`、`.template-spec/process/plan-mi
 
 不得越过命中的阶段、门禁、实现仓库准备或 Ticket 正式化。实现只接收绑定垂直切片、已批准且持久化、版本当前并通过完整 `ready-for-agent` 计算的合同；父 Ticket、`ready-for-human` 切片、`stale`、`drift`、`new_impacts`、`violation` 或缺失证据均阻断。实现仓库、脚手架、UI 还原、review input 和发布条件从对应合同子树查询，不在入口重复定义。
 
-批准与能力审查见 `gate_consolidation`；复审按 `review_input.rereview`，首轮完整、修复定向、当前候选重绑定，未知先调查。
-聚合批准见 `gate_consolidation`。默认一名独立审查者，按能力缺口、冲突或外部制度增员；相邻检查可组合，逐项留证。
+按 `gate_consolidation` 默认一名独立审查者，按能力缺口、冲突或外部制度增员；相邻检查组合、逐项留证。复审按 `review_input.rereview` 首轮完整、修复定向、当前候选重绑定，未知先调查。
 
 职责及后端终点见 `execution_scopes`，恢复、编译、派发须复验。保留产品设计门禁，后端交付不等于业务完成或发布。
 
@@ -84,7 +83,7 @@ Plan → Spec 写入前按 `.template-spec/plan/entry-review.md` 持久化审阅
 
 ## 结果与暂停
 
-每轮返回或暂停，按 `user_progress_report` 说明当前阶段及依据、本轮结果、下一阶段/单元及条件、问题/阻塞、责任方、解除动作与复验、主控动作与用户决定。目标不代表获准进入；未知写“待核验”，负责人缺失写“未登记”。已授权修复继续执行，不只回 Skill 或 JSON。
+每轮返回或暂停按 `user_progress_report` 说明当前阶段与依据、本轮结果、下一阶段/单元及条件、问题/阻塞、责任方、解除与复验、主控动作和用户决定。未知写“待核验”，负责人缺失写“未登记”；目标不代表批准，已授权修复继续。
 
 结构化结果按 `workflow_execution_result` 与 `references/state-model.md` 记录状态、证据新鲜度、阻塞、动作、路由和 Ticket / Git checkpoint。
 
