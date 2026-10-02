@@ -140,6 +140,12 @@
         },
         {
           "source": "scripts/lib/testing/user-decision-fixture.mjs"
+        },
+        {
+          "source": ".template-spec/plan/templates/competitive-matrix-template.md"
+        },
+        {
+          "source": ".template-spec/plan/templates/competitive-analysis-template.md"
         }
       ],
       "upstream": [
@@ -463,6 +469,12 @@
         },
         {
           "source": ".agents/skills/yss-tactical-design/references/strategic-handoff-routing.md"
+        },
+        {
+          "source": ".template-spec/plan/templates/competitive-matrix-template.md"
+        },
+        {
+          "source": ".template-spec/plan/templates/competitive-analysis-template.md"
         }
       ],
       "upstream": [],
@@ -752,6 +764,12 @@
         },
         {
           "source": "scripts/lib/testing/user-decision-fixture.mjs"
+        },
+        {
+          "source": ".template-spec/plan/templates/competitive-matrix-template.md"
+        },
+        {
+          "source": ".template-spec/plan/templates/competitive-analysis-template.md"
         }
       ],
       "upstream": [],

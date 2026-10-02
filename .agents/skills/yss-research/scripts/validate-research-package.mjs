@@ -33,7 +33,7 @@ function readEvidence(file) {
   }
 }
 
-function validate(briefFile, evidenceFile) {
+async function validate(briefFile, evidenceFile) {
   if (!briefFile || !evidenceFile) fail("usage: validate-research-package.mjs <brief.md> <evidence.yaml>");
   const briefPath = path.resolve(briefFile);
   const evidencePath = path.resolve(evidenceFile);
@@ -116,11 +116,15 @@ function validate(briefFile, evidenceFile) {
     if (claim.decision_bearing && !audited.has(id)) fail(`audit_summary is missing decision-bearing claim: ${id}`);
     if (claim.decision_bearing && claim.audit_status === "not-audited") fail(`${id} remains not-audited`);
   });
+  if (Object.hasOwn(data, "competitive_analysis")) {
+    const { validateCompetitiveAnalysis } = await import('./lib/competitive-analysis.mjs');
+    validateCompetitiveAnalysis(data, evidencePath);
+  }
   return { claims: claims.size, evidence: evidence.size, searches: searches.size, profile: data.profile };
 }
 
 try {
-  const result = validate(process.argv[2], process.argv[3]);
+  const result = await validate(process.argv[2], process.argv[3]);
   process.stdout.write(`YSS research package valid (${result.profile}, ${result.claims} claims, ${result.evidence} evidence items, ${result.searches} searches)\n`);
 } catch (error) {
   process.stderr.write(`YSS research package invalid: ${error.message}\n`);

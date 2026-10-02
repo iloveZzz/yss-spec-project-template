@@ -7,6 +7,7 @@ import { spawnSync } from "node:child_process";
 import { buildDecisionFixture, buildImplementationFixture } from "./fixtures/user-decision/build-fixture.mjs";
 import { validateUserDecision, assertUserDecisionRequirement, assertImplementationDecision, decisionDigest, renderDecisionRequest } from "./lib/user-decision.mjs";
 import { validateApprovalRecord, assertCheckpointApprovals, assertCheckpointUserDecisions } from "./lib/approval-record.mjs";
+import { approvalExpectationFromSubject } from "./lib/approval-current.mjs";
 import { validateNextRoute } from "./lib/lifecycle-transition.mjs";
 import { loadDigitalHumanRoles, countersignRuleForGate, collectCountersignGateIds } from "./lib/digital-human-roles.mjs";
 
@@ -16,6 +17,16 @@ let count = 0;
 const check = (name, fn) => { fn(); count++; process.stdout.write(`PASS ${name}\n`); };
 const fixture = (name, opts) => buildDecisionFixture(path.join(root, name), opts);
 const verify = (f) => validateUserDecision(f.record, { expected: [f.requirement] });
+function currentFixture(name, boundary) {
+  const dir=path.join(root,name);const f=fixture(name,{boundary});
+  const basisRef=f.write('review-evidence.log','synthetic independent comparison');
+  const basis=[{ref:basisRef,digest:decisionDigest(readFileSync(basisRef)).slice(7)}];
+  f.write('subject.md',JSON.stringify({gate_id:boundary,approval_scope:f.requirement.scope,basis,drafter_principal_ref:'synthetic.drafter'}));
+  f.record.request.items[0].subject.digest=decisionDigest(readFileSync(f.requirement.subject_ref));f.present();f.record.responses=[];f.respond();f.save();
+  const expected=approvalExpectationFromSubject(boundary,f.requirement.subject_ref,{root:dir});
+  return {...f,basis,expected,context:{requireApproved:true,root:dir,expected},current:{subject_ref:f.requirement.subject_ref,subject_digest:decisionDigest(readFileSync(f.requirement.subject_ref)).slice(7),drafter_principal_ref:'synthetic.drafter',basis,approval_scope:f.requirement.scope,user_decision_ref:f.ref}};
+}
+
 const deny = (f, code) => assert.throws(() => verify(f), (error) => error.code === code, code);
 check("真实单项回复通过，CLI 校验通过", () => {
   const f = fixture("single"); verify(f);
@@ -63,10 +74,10 @@ check("无 reply-to 的完整相邻会话导出可复用", () => {
   source.ref = ref; source.digest = decisionDigest(readFileSync(ref)); verify(f);
 });
 check("生物人会签者必须与原始回复者一致", () => {
-  const f = fixture("human-approval", { boundary: "gate.product-design-approved" });
+  const f = currentFixture("human-approval", "gate.product-design-approved");
   const record = { schema_version: 1, gate_id: "gate.product-design-approved", decision: "approved", actor_kind: "biological-human", role_id: "role.biological-human", runtime_id: "runtime.generic", principal_ref: "person.requester", subject_ref: f.requirement.subject_ref, approval_scope: f.requirement.scope, user_decision_ref: f.ref };
-  validateApprovalRecord(record, { requireApproved: true });
-  assert.throws(() => validateApprovalRecord({ ...record, principal_ref: "person.someone-else" }, { requireApproved: true }), /user-decision-responder-mismatch/);
+  Object.assign(record,f.current); validateApprovalRecord(record, f.context);
+  assert.throws(() => validateApprovalRecord({ ...record, principal_ref: "person.someone-else" }, f.context), /user-decision-responder-mismatch/);
 });
 check("相反原文不能被 Agent 归一化成批准", () => { const f = fixture("false-approval"); f.record.responses = []; f.respond({ text: "不同意，需要修改", decision: "approved" }); deny(f, "user-decision-ambiguous"); });
 check("完整历史展示无需重发模板消息", () => {
@@ -90,8 +101,8 @@ check("默认生物人门禁纳入解析和 checkpoint", () => {
 });
 check("历史数字人记录可读但不能关闭关键门禁", () => {
   const record = { schema_version: 1, gate_id: "gate.spec-baseline-approved", decision: "approved", actor_kind: "digital-human", role_id: "role.product-manager", runtime_id: "runtime.generic", principal_ref: "instance:product" };
-  validateApprovalRecord(record); assert.throws(() => validateApprovalRecord(record, { requireApproved: true }), /user-decision/);
-  const f = fixture("approval"); Object.assign(record, { subject_ref: f.requirement.subject_ref, approval_scope: f.requirement.scope, user_decision_ref: f.ref }); validateApprovalRecord(record, { requireApproved: true });
+  validateApprovalRecord(record,{history:true}); assert.throws(() => validateApprovalRecord(record, { requireApproved: true }), /APPROVAL_CONTEXT_REQUIRED/);
+  const f = currentFixture("approval","gate.spec-baseline-approved"); Object.assign(record, f.current); validateApprovalRecord(record, f.context);
 });
 check("等待期间可保存状态但不能流转依赖工作", () => {
   const f = fixture("workflow", { boundary: "gate.plan-approved" }); const state = { user_decisions: [f.requirement] };

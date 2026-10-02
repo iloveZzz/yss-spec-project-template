@@ -1,3 +1,4 @@
+import { assertNodeVersion } from "./runtime-store.mjs";
 import { runMigration } from "./migration-adapter.mjs";
 import { createInterface } from "node:readline/promises";
 import { doctor } from "./verification.mjs";
@@ -87,6 +88,7 @@ export async function main(packageRoot, argv = process.argv.slice(2)) {
   packageRoot = path.resolve(packageRoot);
   const wantsJson = argv.includes("--json");
   try {
+    assertNodeVersion();
     if (argv[0] === "migrate") {
       const result = runMigration(packageRoot, argv.slice(1));
       process.stdout.write(json(result));

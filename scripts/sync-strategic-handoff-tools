@@ -12,8 +12,10 @@ const targets=['submodules/yss-harness-design-agent','submodules/yss-harness-bac
 const shared=['scripts/strategic-consumer-entry','scripts/strategic-handoff','scripts/verify-strategic-handoff-consumption','scripts/verify-strategic-handoff-package-scenarios','scripts/verify-strategic-context-import','scripts/verify-strategic-context-import-scenarios','scripts/lib/context-contract.mjs','.template-spec/process/strategic-handoff-package.md','.template-spec/process/schemas/strategic-design-handoff.schema.json',...readdirSync(path.join(root,'scripts/lib')).filter(x=>x.startsWith('strategic-handoff-')||x==='strategic-handoff.mjs').map(x=>`scripts/lib/${x}`),...readdirSync(path.join(root,'.template-spec/process/schemas')).filter(x=>x.startsWith('strategic-handoff-')).map(x=>`.template-spec/process/schemas/${x}`),...readdirSync(path.join(root,'scripts/fixtures/strategic-handoff')).map(x=>`scripts/fixtures/strategic-handoff/${x}`)];
 shared.push('scripts/lib/user-decision-reuse.mjs','scripts/lib/user-decision.mjs','.template-spec/process/schemas/user-decision.schema.json','.template-spec/process/schemas/review-bundle.schema.json','scripts/fixtures/user-decision/build-fixture.mjs','scripts/lib/command-runner.mjs','scripts/lib/json-schema.mjs','scripts/lib/context-reconciliation.mjs','scripts/verify-context-reconciliation');
 shared.push('scripts/lib/decision-continuation.mjs');
+shared.push('scripts/lib/approval-record.mjs','scripts/lib/approval-current.mjs','scripts/lib/approval-record-io.mjs','scripts/lib/approval-consumption.mjs','scripts/lib/approval-checkpoint-discovery.mjs','scripts/lib/lifecycle-controls.mjs','scripts/lib/review-capabilities.mjs','scripts/lib/review-package.mjs','scripts/prepare-review-package','.template-spec/templates/review-bundle-template.yaml','.template-spec/templates/approval-record-template.yaml');
 shared.push('scripts/lib/structured-assets.mjs','scripts/lib/asset-transactions.mjs','scripts/lib/asset-migration.mjs','scripts/lib/asset-command.mjs','scripts/lib/plan-stage-coverage.mjs','scripts/check-plan-stage-coverage','.template-spec/process/structured-assets.md','.template-spec/process/schemas/approval-record.schema.json','.template-spec/process/templates/lifecycle-checkpoint-template.json','.template-spec/templates/approval-record-template.json');
-shared.push('scripts/lib/lifecycle-presentation.mjs');
+shared.push('scripts/lib/lifecycle-presentation.mjs','.template-spec/process/schemas/approval-context.schema.json');
+shared.push('scripts/query-lifecycle-context','scripts/lib/lifecycle-context-query.mjs');
 shared.push('scripts/lib/testing/user-decision-fixture.mjs');
 shared.push('.template-spec/process/research-completion.md');
 shared.push('scripts/lib/backend-platform-provenance.mjs','scripts/lib/backend-platform.mjs','scripts/lib/backend-platform-verification.mjs','scripts/lib/scaffold-local-database.mjs','scripts/vendor/xml.mjs','.template-spec/engineering/backend-platforms.json','.template-spec/engineering/backend-platforms.md','.template-spec/process/schemas/project-scaffold-contract.schema.json','.template-spec/process/schemas/scaffold-architecture-decisions.schema.json','scripts/verify-scaffold-architecture-decisions','scripts/backend-platforms','.template-spec/agents/backend-architecture-profiles.md','scripts/fixtures/backend-scaffold/platform-fixture.mjs','scripts/fixtures/backend-scaffold/design-prerequisites.mjs');
@@ -26,13 +28,22 @@ let differences=[];
 function replaceExactly(bytes,from,to,name){const content=bytes.toString();const count=content.split(from).length-1;if(count!==1)throw new Error(`${name} 转换基线失效，预期 1 处，实际 ${count} 处`);return Buffer.from(content.replace(from,to));}
 const visualSource='.agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs',visualWire='scripts/lib/visual-baseline-contract.mjs';
 const transformations={
+ 'design-query-runtime':bytes=>replaceExactly(replaceExactly(bytes,'.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml','.agents/skills/yss-strategic-design/references/orchestration-contract.yaml','design-query-runtime'),"const QUERY_PROFILE = 'lifecycle';","const QUERY_PROFILE = 'specialist';",'design-query-profile'),
+ 'implementation-query-runtime':bytes=>replaceExactly(replaceExactly(bytes,'.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml','.agents/skills/harness-orchestrator/references/orchestration-contract.yaml','implementation-query-runtime'),"const QUERY_PROFILE = 'lifecycle';","const QUERY_PROFILE = 'specialist';",'implementation-query-profile'),
  'backend-wire-library':bytes=>replaceExactly(replaceExactly(bytes,'../../../../scripts/vendor/yaml.mjs','../vendor/yaml.mjs','backend-wire-yaml'),'../../../../scripts/lib/validation-phase.mjs','./validation-phase.mjs','backend-wire-phase'),
  identity:bytes=>bytes,
  'backend-wire-runtime':bytes=>replaceExactly(bytes,'../../.agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs','./visual-baseline-contract.mjs','backend-wire-runtime'),
  'backend-wire-command':bytes=>replaceExactly(bytes,'../.agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs','./lib/visual-baseline-contract.mjs','backend-wire-command'),
  'backend-wire-fixture':bytes=>replaceExactly(bytes,'../../../.agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs','../../lib/visual-baseline-contract.mjs','backend-wire-fixture'),
 };
-function transformationFor(target,ref){if(!target.endsWith('yss-harness-backend-agent'))return'identity';if(['scripts/lib/ui-baseline.mjs','scripts/lib/delivery-preflight.mjs'].includes(ref))return'backend-wire-runtime';if(['scripts/verify-strategic-context-import-scenarios','scripts/verify-frontend-implementation-evidence'].includes(ref))return'backend-wire-command';if(ref==='scripts/fixtures/strategic-handoff/fixture.mjs')return'backend-wire-fixture';return'identity';}
+function transformationFor(target,ref){
+ if(target!=='.'&&ref==='scripts/lib/lifecycle-context-query.mjs')return target.endsWith('design-agent')?'design-query-runtime':'implementation-query-runtime';
+ if(!target.endsWith('yss-harness-backend-agent'))return'identity';
+ if(['scripts/lib/ui-baseline.mjs','scripts/lib/delivery-preflight.mjs'].includes(ref))return'backend-wire-runtime';
+ if(['scripts/verify-strategic-context-import-scenarios','scripts/verify-frontend-implementation-evidence'].includes(ref))return'backend-wire-command';
+ if(ref==='scripts/fixtures/strategic-handoff/fixture.mjs')return'backend-wire-fixture';
+ return'identity';
+}
 function sync(source,dest,transformation='identity'){const bytes=transformations[transformation](readFileSync(source));if(!existsSync(dest)||!bytes.equals(readFileSync(dest))){differences.push(path.relative(root,dest));if(!check){mkdirSync(path.dirname(dest),{recursive:true});writeFileSync(dest,bytes);}}if(!check&&path.basename(path.dirname(dest))==='scripts'&&!path.extname(dest))chmodSync(dest,0o755);}
 const digestBytes=bytes=>`sha256:${createHash('sha256').update(bytes).digest('hex')}`;
 shared.push('scripts/lib/lifecycle-execution-scope.mjs');
@@ -42,6 +53,7 @@ shared.push('scripts/vendor/yaml.mjs','scripts/vendor/manifest.json','scripts/ve
 shared.push('scripts/inspect-plan-spec','scripts/lib/plan-spec-markdown.mjs','scripts/lib/plan-spec-quality.mjs','scripts/vendor/markdown.mjs','.template-spec/process/plan-spec-quality.md','.template-spec/plan/templates/plan-template.md','.template-spec/templates/spec-template.md','.template-spec/templates/spec-delta-template.md',...readdirSync(path.join(root,'.template-spec/templates/examples/plan-spec')).map(name=>`.template-spec/templates/examples/plan-spec/${name}`));
 shared.push('scripts/stage-tracking','scripts/lib/stage-tracking.mjs','scripts/lib/stage-tracking-migration.mjs','.template-spec/process/stage-tracking.md','.template-spec/process/schemas/stage-tracking.schema.json');
 shared.push('scripts/contract','scripts/api-contract-decision','scripts/lib/contract-views.mjs','scripts/lib/contract-source.mjs','scripts/lib/validation-phase.mjs','scripts/lib/slice-contract-views.mjs','scripts/lib/api-contract-decision.mjs','scripts/lib/openapi-draft-validation.mjs','.template-spec/process/schemas/api-contract-decision.schema.json','.template-spec/process/schemas/api-contract-decision-v2.schema.json','.template-spec/process/schemas/openapi-draft-validation-record.schema.json','.template-spec/process/contract-reading.md');
+shared.push('scripts/runtime-store','scripts/lib/runtime-store.mjs','.template-spec/process/runtime-storage.md');
 shared.push('scripts/prepare-read-only-intake','scripts/run-read-only-intake','scripts/lib/read-only-intake.mjs','scripts/lib/task-package-schema.mjs','scripts/lib/harness-execution-scope.mjs','scripts/verify-digital-human-task-package','.template-spec/process/subagent-collaboration.md');
 // Read-only wire schemas do not grant the stage-decision authoring capability.
 for(const kind of ['domain-strategy','stage-decision-package']){
@@ -58,6 +70,8 @@ if(!existsSync(path.join(root,checkpointWire))||!checkpointBytes.equals(readFile
 shared.push('scripts/verify-context-contract','scripts/verify-approval-record',checkpointWire,'scripts/project-ci','scripts/project-ci-transition','scripts/lib/project-ci-install.mjs','scripts/lib/project-governance.mjs','scripts/lib/governance-io.mjs','scripts/lib/checkpoint-boundary.mjs','scripts/lifecycle-status','scripts/lib/lifecycle-status.mjs','.template-spec/process/project-ci.md');
 shared.push('scripts/verify-business-tickets','scripts/lib/business-tickets.mjs','scripts/lib/business-ticket-lifecycle.mjs','.template-spec/process/business-tickets.md','.template-spec/process/schemas/business-tickets-v1.schema.json','.template-spec/templates/business-ticket-template.md','.template-spec/templates/business-ticket-set-template.yaml','.template-spec/templates/business-ticket-review-template.yaml',...readdirSync(path.join(root,'scripts/fixtures/business-tickets')).map(name=>`scripts/fixtures/business-tickets/${name}`));
 shared.push('scripts/feature-assets','scripts/lib/feature-assets.mjs','.template-spec/process/feature-assets.md','.template-spec/templates/local-parent-ticket-template.md');
+// CLI core owns the runtime store; copies remain generated portable modules.
+sync(path.join(root,'.template-source/cli-core/runtime-store.mjs'),path.join(root,'scripts/lib/runtime-store.mjs'));
 const sharedRefs=[...new Set(shared)].sort();
 const sliceExecutionRefs=['scripts/generate-yss-skill-boundaries','scripts/lib/backend-delivery-terminal.mjs','scripts/complete-backend-delivery','scripts/dispatch-slice-task','scripts/lib/backend-standards-coverage.mjs','scripts/backend-standards-coverage','scripts/lib/backend-review.mjs','scripts/lib/slice-execution-preflight.mjs','scripts/slice-contract','scripts/lib/slice-contract-preparation.mjs','scripts/lib/slice-contract-views.mjs','scripts/lib/slice-task-package.mjs','scripts/lib/implementation-contract-compiler.mjs','scripts/lib/skill-registry.mjs','scripts/lib/skill-supply-chain.mjs','scripts/lib/technical-design-boundary.mjs'];
 const backendPlatformRefs=['scripts/verify-backend-platform-matrix','scripts/fixtures/backend-scaffold/generate-candidate.mjs','scripts/fixtures/backend-scaffold/platform-scenarios.test.mjs','scripts/verify-scaffold-architecture-decision-scenarios','scripts/verify-scaffold-generator-scenarios'];
@@ -66,15 +80,41 @@ sliceExecutionRefs.push('scripts/lib/execution-evidence.mjs');
 sliceExecutionRefs.push('scripts/verify-frontend-implementation-evidence','.template-spec/process/schemas/frontend-implementation-evidence.schema.json','.template-spec/process/templates/frontend-implementation-verification-template.yaml');
 const routingSource=readFileSync(path.join(root,routingContractRef));
 const consumerRoutes=parseDocument(routingSource.toString(),{uniqueKeys:true}).toJS({maxAliasCount:0}).consumer_entry_routes;
+const skillPreflight=parseDocument(routingSource.toString(),{uniqueKeys:true}).toJS({maxAliasCount:0}).skill_preflight;
+const userProgressReport=parseDocument(routingSource.toString(),{uniqueKeys:true}).toJS({maxAliasCount:0}).user_progress_report;
 if(!consumerRoutes)throw new Error('源主控缺少 consumer_entry_routes');
+if(!userProgressReport)throw new Error('源主控缺少 user_progress_report');
 function targetRoutingRef(targetRoot){return targetRoot===root?routingContractRef:targetRoot.endsWith('design-agent')?'.agents/skills/yss-strategic-design/references/orchestration-contract.yaml':'.agents/skills/harness-orchestrator/references/orchestration-contract.yaml';}
 function projectedRouting(targetRoot){
  const bytes=readFileSync(path.join(targetRoot,targetRoutingRef(targetRoot))),document=parseDocument(bytes.toString(),{uniqueKeys:true});
  if(document.errors.length)throw new Error('目标主控不可读');
- if(JSON.stringify(document.toJS({maxAliasCount:0}).consumer_entry_routes)===JSON.stringify(consumerRoutes))return bytes;
- document.set('consumer_entry_routes',consumerRoutes);return Buffer.from(document.toString());
+ const current=document.toJS({maxAliasCount:0});
+ const progress={...userProgressReport,owner:targetRoot.endsWith('design-agent')?'yss-strategic-design':'harness-orchestrator',reference:userProgressReport.writing_reference};
+ if(JSON.stringify(current.consumer_entry_routes)===JSON.stringify(consumerRoutes)&&JSON.stringify(current.skill_preflight)===JSON.stringify(skillPreflight)&&JSON.stringify(current.user_progress_report)===JSON.stringify(progress))return bytes;
+ document.set('consumer_entry_routes',consumerRoutes);
+ document.set('skill_preflight',skillPreflight);
+ document.set('user_progress_report',progress);
+ return Buffer.from(document.toString());
 }
 function syncRouting(targetRoot){const dest=path.join(targetRoot,targetRoutingRef(targetRoot)),bytes=projectedRouting(targetRoot);if(!bytes.equals(readFileSync(dest))){differences.push(path.relative(root,dest));if(!check)writeFileSync(dest,bytes);}}
+function syncOwnerPreflight(targetRoot){
+ const owner=targetRoot.endsWith('design-agent')?'yss-strategic-design':'harness-orchestrator';
+ const ref='.agents/skills/'+owner+'/SKILL.md',dest=path.join(targetRoot,ref),marker='<!-- SKILL_PREFLIGHT_ROUTE -->';
+ const guidance=marker+'\n专项技能调用前，运行 `scripts/query-lifecycle-context --work-unit <当前工作单元> --check-skills`；多运行时指定 `--agent-runtime`，条件用 `--when`。按合同 `skill_preflight` 处理缺失、漂移与冲突，在既有授权内核对补装计划、应用后重验。预检不授予执行或批准。Matt 上游为 https://github.com/mattpocock/skills，生效版本以根 `skills-lock.json` 为准。\n';
+ const old=readFileSync(dest,'utf8'),pattern=new RegExp(marker+'\\n[^\\n]*(?:\\n|$)');
+ if(old.includes(marker)&&!pattern.test(old))throw new Error('技能预检路由标记内容不明: '+dest);
+ const bytes=Buffer.from(old.includes(marker)?old.replace(pattern,guidance):old.trimEnd()+'\n\n'+guidance);
+ if(!bytes.equals(Buffer.from(old))){differences.push(path.relative(root,dest));if(!check)writeFileSync(dest,bytes);}
+}
+function syncOwnerProgress(targetRoot){
+ const owner=targetRoot.endsWith('design-agent')?'yss-strategic-design':'harness-orchestrator';
+ const ref='.agents/skills/'+owner+'/SKILL.md',dest=path.join(targetRoot,ref),marker='<!-- USER_PROGRESS_REPORT -->';
+ const guidance=marker+'\n每轮返回或暂停按合同 `user_progress_report` 给出中文状态：当前阶段与本轮结果、下一阶段/单元与进入条件、问题/阻塞、已登记责任方、解除动作及复验、主控下一动作与用户待决定项。未知写“待核验”，负责人缺失写“未登记”；目标不代表批准，已授权工作继续执行。发送前核对证据、状态及结构化结果一致；写法见 `.template-spec/process/document-writing.md`。\n';
+ const old=readFileSync(dest,'utf8'),pattern=new RegExp(marker+'\\n[^\\n]*(?:\\n|$)');
+ if(old.includes(marker)&&!pattern.test(old))throw new Error('状态输出路由标记内容不明: '+dest);
+ const bytes=Buffer.from(old.includes(marker)?old.replace(pattern,guidance):old.trimEnd()+'\n\n'+guidance);
+ if(!bytes.equals(Buffer.from(old))){differences.push(path.relative(root,dest));if(!check)writeFileSync(dest,bytes);}
+}
 const registryRef='.template-spec/agents/yss-skill-registry.yaml';
 const sourceRegistry=parseDocument(readFileSync(path.join(root,registryRef),'utf8'),{uniqueKeys:true});
 if(sourceRegistry.errors.length)throw new Error('源技能注册表不可读');
@@ -90,7 +130,7 @@ function projectedRegistry(targetRoot){
 function syncExistingProfiles(targetRoot){const dest=path.join(targetRoot,registryRef),bytes=projectedRegistry(targetRoot);if(!bytes.equals(readFileSync(dest))){differences.push(path.relative(root,dest));if(!check)writeFileSync(dest,bytes);}}
 
 const revision=spawnSync('git',['-C',root,'rev-parse','HEAD'],{encoding:'utf8'}).stdout.trim();
-const scopedState=spawnSync('git',['-C',root,'status','--porcelain=v1','--untracked-files=all','--','scripts/sync-strategic-handoff-tools',registryRef,routingContractRef,visualSource,...sharedRefs,...sliceExecutionRefs,...backendPlatformRefs],{encoding:'utf8'}).stdout.trim();
+const scopedState=spawnSync('git',['-C',root,'status','--porcelain=v1','--untracked-files=all','--','scripts/sync-strategic-handoff-tools','.template-source/cli-core/runtime-store.mjs',registryRef,routingContractRef,visualSource,...sharedRefs,...sliceExecutionRefs,...backendPlatformRefs],{encoding:'utf8'}).stdout.trim();
 const sourceState=scopedState?'working-tree':'committed';
 function expectedLock(target,targetRoot){
  const lockedRefs=[...new Set([...sharedRefs,...(target==='.'||!target.endsWith('design-agent')?sliceExecutionRefs:[]),...(target==='.'||target.endsWith('backend-agent')?backendPlatformRefs:[])])].sort();
@@ -101,7 +141,7 @@ function expectedLock(target,targetRoot){
  effectiveFiles[targetRoutingRef(targetRoot)]=digestBytes(target==='.'?routingSource:projectedRouting(targetRoot));
  sourceFiles[registryRef]=digestBytes(readFileSync(path.join(root,registryRef)));
  effectiveFiles[registryRef]=digestBytes(target==='.'?readFileSync(path.join(root,registryRef)):projectedRegistry(targetRoot));
- return {schema_version:1,target_id:target==='.'?'template-root':path.basename(target),source_repository:'yss-spec-project-template',source_revision:revision,source_state:sourceState,transformation_set:[...new Set([...lockedRefs.map(ref=>transformationFor(target,ref)),...(target.endsWith('backend-agent')?['backend-wire-library']:[])])].sort(),source_files:sourceFiles,effective_files:effectiveFiles};
+ return {schema_version:1,target_id:target==='.'?'template-root':path.basename(target),source_repository:'yss-spec-project-template',source_revision:revision,source_state:sourceState,transformation_set:[...new Set([...lockedRefs.map(ref=>transformationFor(target,ref)),...(target.endsWith('backend-agent')?['backend-wire-library']:[])])].sort(),source_files:{...sourceFiles,'.template-source/cli-core/runtime-store.mjs':digestBytes(readFileSync(path.join(root,'.template-source/cli-core/runtime-store.mjs')))},effective_files:effectiveFiles};
 }
 function lock(target,targetRoot){const ref='.template-source/distribution/strategic-handoff-tools.lock.json',dest=path.join(targetRoot,ref),bytes=Buffer.from(`${JSON.stringify(expectedLock(target,targetRoot),null,2)}\n`);if(!existsSync(dest)||!bytes.equals(readFileSync(dest))){differences.push(path.relative(root,dest));if(!check){mkdirSync(path.dirname(dest),{recursive:true});writeFileSync(dest,bytes);}}}
 // CLI core owns the portable external-command runner. Only create-yss-spec still consumes
@@ -113,6 +153,7 @@ for(const name of ['create-yss-spec']) {
  if(!existsSync(path.join(root,target,'.git')))continue;
  if(!check){const state=inspectWorkingTreeScope(root,{project_root:target,repository_scope:'git-submodule',checkout_state:'attached-branch'});if(!state.writable)throw new Error(`${target}: ${state.violation}`);}
  sync(path.join(root,'.template-source/cli-core/command-runner.mjs'),path.join(root,target,'src/command-runner.mjs'));
+ sync(path.join(root,'.template-source/cli-core/runtime-store.mjs'),path.join(root,target,'src/runtime-store.mjs'));
 }
 for(const target of targets){
  if(!existsSync(path.join(root,target,'.git')))continue;
@@ -123,6 +164,8 @@ for(const target of targets){
  if(target.endsWith('backend-agent'))sync(path.join(root,visualSource),path.join(root,target,visualWire),'backend-wire-library');
  syncExistingProfiles(path.join(root,target));
  syncRouting(path.join(root,target));
+ syncOwnerPreflight(path.join(root,target));
+ syncOwnerProgress(path.join(root,target));
  for(const ref of new Set(shared))sync(path.join(root,ref),path.join(root,target,ref),transformationFor(target,ref));
  lock(target,path.join(root,target));
 }

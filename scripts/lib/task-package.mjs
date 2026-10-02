@@ -1,3 +1,4 @@
+import { compileWorkUnitReviewCapabilities, compileReviewCapabilities, validateReviewTaskBinding } from './review-capabilities.mjs';
 import { validateReadOnlyIntake } from './read-only-intake.mjs';
 import { parseAsset } from './structured-assets.mjs';
 import { assertAssetTransactionIdle } from './asset-transactions.mjs';
@@ -69,6 +70,12 @@ function validateSkillSource(value, registry) {
   if (value.skill_source.defaults_ref !== `taskPackageDefaults(${value.role_id})`) fail(`skill_source.defaults_ref 必须为 taskPackageDefaults(${value.role_id})`);
   if (!equalArrays(value.skill_source.core_skills, defaults.core_skills)) fail("skill_source.core_skills 必须与角色注册表完全一致");
   if (!equalArrays(value.skill_source.forbidden_skills, defaults.forbidden_skills)) fail("skill_source.forbidden_skills 必须与角色注册表完全一致");
+  if (value.skill_source.review_skills !== undefined || value.review_context?.capability_ids) {
+    const compiled = value.review_context?.capability_ids
+      ? compileReviewCapabilities({ checkIds:value.review_context.check_ids,roleId:value.role_id,executionState:value.execution_state,rolesDoc:registry })
+      : compileWorkUnitReviewCapabilities({workUnitId:value.work_unit_id,roleId:value.role_id,executionState:value.execution_state,rolesDoc:registry});
+    if (!equalArrays(value.skill_source.review_skills, compiled.review_skills)) fail("skill_source.review_skills 必须由权威能力政策编译");
+  }
 }
 
 function validateCommon(value, registry, lifecycle) {
@@ -83,9 +90,13 @@ function validateCommon(value, registry, lifecycle) {
   if (!WORKFLOW_STATUSES.has(value.workflow_status)) fail(`workflow_status 无效: ${value.workflow_status}`);
   if (value.stage_id) {
     if (!lifecycle.stages.some((stage) => stage.id === value.stage_id)) fail(`未知 stage_id: ${value.stage_id}`);
-    if (!roleDefaults.stages.includes(value.stage_id)) fail(`role_id 未覆盖 stage_id: ${value.role_id} -> ${value.stage_id}`);
+    const reviewStages = value.review_context?.capability_ids
+      ? compileReviewCapabilities({ checkIds: value.review_context.check_ids, roleId: value.role_id, executionState: value.execution_state, rolesDoc: registry, registry: lifecycle }).review_stages
+      : roleDefaults.stages;
+    if (!reviewStages.includes(value.stage_id)) fail(`role_id 未覆盖 stage_id: ${value.role_id} -> ${value.stage_id}`);
   }
   validateSkillSource(value, registry);
+  if (value.review_context?.capability_ids) validateReviewTaskBinding(value, { rolesDoc: registry, registry: lifecycle, root: ROOT });
   for (const allowed of value.allowed_write_paths) assertSafeRelativePath(allowed, "allowed_write_paths 条目");
   if (value.execution_state === "Reviewer" && value.review_context.implementation_actor_id === value.actor_id) fail("Reviewer 必须与实现者使用不同 actor_id");
   const commands = new Set(value.verification_commands);
@@ -239,7 +250,12 @@ export function validateHistoricalMaintenanceTaskPackage(value) {
 }
 
 export function generateTaskPackageDefaults(roleId, overrides = {}, { rolesDoc } = {}) {
-  const defaults = taskPackageDefaults(roleId, rolesDoc || loadDigitalHumanRoles());
+  const registry = rolesDoc || loadDigitalHumanRoles();
+  const defaults = taskPackageDefaults(roleId, registry);
+  const review = overrides.review_context?.capability_ids
+    ? compileReviewCapabilities({ checkIds: overrides.review_context.check_ids, roleId, executionState: overrides.execution_state, rolesDoc: registry })
+    : ["Reviewer","Verifier"].includes(overrides.execution_state) && registry.gate_policy.digital_human_review_work_units?.some(row=>row.work_unit===overrides.work_unit_id)
+      ? compileWorkUnitReviewCapabilities({workUnitId:overrides.work_unit_id,roleId,executionState:overrides.execution_state,rolesDoc:registry}) : null;
   return {
     schema_version: 1,
     role_id: defaults.role_id,
@@ -247,7 +263,8 @@ export function generateTaskPackageDefaults(roleId, overrides = {}, { rolesDoc }
       registry_ref: TASK_PACKAGE_REGISTRY_REF,
       defaults_ref: `taskPackageDefaults(${roleId})`,
       core_skills: defaults.core_skills,
-      forbidden_skills: defaults.forbidden_skills
+      forbidden_skills: defaults.forbidden_skills,
+      ...(review ? { review_skills: review.review_skills } : {})
     },
     ...overrides
   };

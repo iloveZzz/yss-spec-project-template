@@ -51,18 +51,55 @@ try {
   valid.review.open_items = [{ id: 'q-detail', critical: false, runnable_blocker: false, status: 'deferred', noncritical_reason: '不影响范围或关键规则', owner: '测试负责人', resolution_point: 'Spec 评审前', downstream_recipient: '测试需求负责人', evidence_refs: ['plan.md'] }];
   valid.reapprove();
   assert.equal(assertPlanSpecEntry(valid.state, { root: valid.root }).result, 'allowed', '用户确认后的非关键延期可通过');
+  // Define consumer authority from raw Plan bytes before creating synthetic records.
+  const checkScope = ['feature.demo'];
+  const checkDrafter = 'test-only.requirements-drafter';
+  const checkBasis = [{ ref: 'plan.md', digest: decisionDigest(readFileSync(path.join(valid.root, 'plan.md'))).replace(/^sha256:/, '') }];
+  const internalApprovals = new Map();
   for (const [gateId, impact] of Object.entries({ 'check.domain-strategy-approved': 'domain_strategy', 'check.stage-decision-package-approved': 'stage_decision' })) {
-    const subjectRef = path.join(valid.root, 'plan.md');
-    const reply = buildDecisionFixture(path.join(valid.root, impact), { boundary: gateId, subjectRef });
+    const subjectRef = path.join(valid.root, `${impact}-review.json`);
+    valid.write(subjectRef, { schema_version: 1, kind: 'internal-check-review', gate_id: gateId, approval_scope: checkScope, basis: checkBasis, drafter_principal_ref: checkDrafter });
+    const subjectDigest = decisionDigest(readFileSync(subjectRef));
+    const reply = buildDecisionFixture(path.join(valid.root, impact), { boundary: gateId, subjectRef, scope: checkScope });
     const rule = countersignRuleForGate(loadDigitalHumanRoles().gate_policy, gateId);
     const approvalRef = path.join(valid.root, `${impact}.json`);
-    valid.write(approvalRef, { schema_version: 1, gate_id: gateId, decision: 'approved', actor_kind: 'digital-human', role_id: rule.countersigners[0], runtime_id: 'runtime.skill-projection', principal_ref: 'test-only.reviewer', subject_ref: subjectRef, approval_scope: ['feature.demo'], user_decision_ref: reply.ref });
+    const record = { schema_version: 1, gate_id: gateId, decision: 'approved', actor_kind: 'digital-human', role_id: rule.countersigners[0], runtime_id: 'runtime.skill-projection', principal_ref: 'test-only.reviewer', subject_ref: subjectRef, subject_digest: subjectDigest, approval_scope: checkScope, basis: checkBasis, drafter_role_id: rule.drafter, drafter_principal_ref: checkDrafter, user_decision_ref: reply.ref };
+    valid.write(approvalRef, record);
+    internalApprovals.set(gateId, { approvalRef, record });
     valid.review.impacts[impact] = true;
-    valid.review.internal_checks[gateId] = { status: 'approved', approval_ref: approvalRef, subject_ref: subjectRef, approval_scope: ['feature.demo'], evidence_refs: [approvalRef, subjectRef] };
+    valid.review.internal_checks[gateId] = { status: 'approved', approval_ref: approvalRef, subject_ref: subjectRef, subject_digest: subjectDigest, approval_scope: [...checkScope], basis: structuredClone(checkBasis), drafter_principal_ref: checkDrafter, review_package: true, evidence_refs: [approvalRef, subjectRef, 'plan.md'] };
     for (const ref of [approvalRef, subjectRef]) if (!valid.review.basis.some(asset => asset.ref === ref)) valid.review.basis.push({ ref, digest: decisionDigest(readFileSync(ref)) });
   }
   valid.reapprove();
   assert.equal(assertPlanSpecEntry(valid.state, { root: valid.root }).result, 'allowed', '命中门禁、真实回复来源与当前资产绑定均通过');
+  const currentReview = structuredClone(valid.review);
+  for (const [gateId, { approvalRef, record }] of internalApprovals) {
+    for (const [name, mutate, expected] of [
+      ['缺少独立原始依据', gate => { gate.evidence_refs = gate.evidence_refs.filter(ref => ref !== 'plan.md'); }, /APPROVAL_CONTEXT_REQUIRED/],
+      ['消费范围篡改', gate => { gate.approval_scope = ['feature.other']; }, /会签资产或范围不匹配/],
+      ['消费主体摘要过期', gate => { gate.subject_digest = `sha256:${'0'.repeat(64)}`; }, /APPROVAL_CURRENT_INVALID/],
+      ['批准依据摘要篡改', (_gate, approval) => { approval.basis[0].digest = '0'.repeat(64); }, /APPROVAL_CURRENT_INVALID/],
+      ['消费起草者篡改', gate => { gate.drafter_principal_ref = 'test-only.other-drafter'; }, /APPROVAL_CURRENT_INVALID/],
+      ['批准缺少起草者', (_gate, approval) => { delete approval.drafter_principal_ref; }, /APPROVAL_CURRENT_INVALID/],
+      ['起草者自签', (_gate, approval) => { approval.principal_ref = checkDrafter; }, /APPROVAL_CURRENT_INVALID/],
+    ]) {
+      const invalidRecord = structuredClone(record);
+      try {
+        mutate(valid.review.internal_checks[gateId], invalidRecord);
+        valid.write(approvalRef, invalidRecord);
+        // Keep the outer Plan bytes current so this assertion exercises the internal approval boundary.
+        valid.review.basis.find(asset => asset.ref === approvalRef).digest = decisionDigest(readFileSync(approvalRef));
+        valid.reapprove();
+        assert.throws(() => assertPlanSpecEntry(valid.state, { root: valid.root }), expected, `${gateId}: ${name}`);
+        process.stdout.write(`PASS 内部批准拒绝: ${gateId}: ${name}\n`);
+      } finally {
+        valid.write(approvalRef, record);
+        Object.assign(valid.review, structuredClone(currentReview));
+        valid.reapprove();
+      }
+    }
+  }
+  assert.equal(assertPlanSpecEntry(valid.state, { root: valid.root }).result, 'allowed', '反例恢复后两项影响检查仍允许合法进入 Spec');
   valid.review.internal_checks['check.domain-strategy-approved'].approval_scope = ['feature.other']; valid.reapprove();
   assert.throws(() => assertPlanSpecEntry(valid.state, { root: valid.root }), /会签资产或范围不匹配/);
   for (const [name, mutate] of mutations) {

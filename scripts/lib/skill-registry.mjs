@@ -254,12 +254,12 @@ function validateFindingDisposition(disposition) {
   if (disposition.intensity["product-slice"] !== "slice-contract") fail("产品切片审查强度必须绑定 slice-contract");
   if (disposition.intensity["template-maintenance"] !== "L1-L2-L3") fail("模板维护审查强度必须绑定 L1-L2-L3");
   if (disposition.reviewer_write_implementation !== "forbidden") fail("审查者不得写实现");
-  const repair = disposition.repair_then_full_rereview;
-  requireObject(repair, "finding_disposition.repair_then_full_rereview");
-  requireStringSet(repair.kinds, ["violation", "machine_check_failure", "blank_applicable_row", "missing_evidence"], "finding_disposition.repair_then_full_rereview.kinds");
+  const repair = disposition.repair_then_targeted_rereview;
+  requireObject(repair, "finding_disposition.repair_then_targeted_rereview");
+  requireStringSet(repair.kinds, ["violation", "machine_check_failure", "blank_applicable_row", "missing_evidence"], "finding_disposition.repair_then_targeted_rereview.kinds");
   if (repair.actor !== "implementer") fail("violation 类 finding 必须由实现者修复");
   if (repair.on_original_contract !== true) fail("violation 类 finding 必须在原合同允许路径内修复");
-  if (repair.then !== "recapture_candidate_and_rerun_all_axes") fail("修复后必须重新捕获候选并全轴复审");
+  if (repair.then !== "compare_diff_map_affected_conclusions_behavior_dependencies_rereview_and_rebind") fail("修复后必须分析差异并定向复审受影响结论、行为及依赖，重绑当前候选");
   const stale = disposition.stale_and_reroute;
   requireObject(stale, "finding_disposition.stale_and_reroute");
   requireStringSet(stale.kinds, ["drift", "new_impacts", "required_skills_mismatch"], "finding_disposition.stale_and_reroute.kinds");

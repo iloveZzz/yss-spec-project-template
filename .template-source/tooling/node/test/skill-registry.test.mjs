@@ -214,11 +214,11 @@ function findingDisposition(overrides = {}) {
       "template-maintenance": "L1-L2-L3"
     },
     reviewer_write_implementation: "forbidden",
-    repair_then_full_rereview: {
+    repair_then_targeted_rereview: {
       kinds: ["violation", "machine_check_failure", "blank_applicable_row", "missing_evidence"],
       actor: "implementer",
       on_original_contract: true,
-      then: "recapture_candidate_and_rerun_all_axes"
+      then: "compare_diff_map_affected_conclusions_behavior_dependencies_rereview_and_rebind"
     },
     stale_and_reroute: {
       kinds: ["drift", "new_impacts", "required_skills_mismatch"],

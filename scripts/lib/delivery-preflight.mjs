@@ -1,3 +1,4 @@
+import {approvalExpectationForBoundAsset} from './approval-consumption.mjs';
 import { normalizeSliceContract, sourceSliceContract, parseSliceYaml } from './slice-contract.mjs';
 import { assertExistingSliceStructure, createApprovedExecutionContext, verifySliceContractApproval } from './approved-execution-context.mjs';
 import path from 'node:path';
@@ -122,7 +123,7 @@ async function approved(root,binding,gates) {
   ensure(binding.approval_ref&&binding.id&&binding.version,'缺少当前资产 id/version/approval_ref');
   const record=read(safe(root,binding.approval_ref));
   const roles=sourceApprovalPolicy(read(safe(root,'.template-spec/agents/digital-human-roles.yaml')));
-  validateApprovalRecord(record,{rolesDoc:roles,requireApproved:true,root,read:ref=>readFileSync(safe(root,path.relative(root,ref).split(path.sep).join('/')))});
+  validateApprovalRecord(record,{rolesDoc:roles,requireApproved:true,root,read:ref=>readFileSync(safe(root,path.relative(root,ref).split(path.sep).join('/'))),expected:approvalExpectationForBoundAsset(record.gate_id,binding,{root})});
   ensure(gates.includes(record.gate_id),'资产批准使用错误门禁');
   ensure(record.artifact_bindings?.some(x=>x.id===binding.id&&x.version===binding.version&&x.digest===binding.digest),'stale: 批准未绑定当前资产身份、版本及字节');
 }

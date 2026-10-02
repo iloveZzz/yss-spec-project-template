@@ -112,10 +112,25 @@ test('MVC v3 requires real approval bindings and independent review before execu
     assert.equal(validateExecutionResult({...result,evidence_files:[]},f.contract,current).status,'blocked');
     assert.equal(validateExecutionResult({...result,changed_files:[{path:'src/main/java-escape/Bad.java'}]},f.contract,current).status,'blocked');
     const review={...approved.review,principal_ref:approved.review.drafter_principal_ref};f.write('v3-review.json',review);
-    assert.throws(()=>createApprovedExecutionContext(approved.binding,{root:f.root}),/INDEPENDENT/);
+    assert.throws(()=>createApprovedExecutionContext(approved.binding,{root:f.root}),/INDEPENDENT|APPROVAL_CURRENT_INVALID.*(独立|自签)/);
     f.write('v3-review.json',approved.review);
     approved.decision.record.responses=[];approved.decision.save();
     assert.throws(()=>createApprovedExecutionContext(approved.binding,{root:f.root}),/response-required/);
+  }finally{f.cleanup();}
+});
+
+test('Slice professional review consumes bundle identity before granting execution',async()=>{
+  const {pilotFixture}=await import('./pilot-fixture.mjs');
+  const {verifySliceContractApproval}=await import('../../lib/approved-execution-context.mjs');
+  const f=pilotFixture();try {
+    const approved=f.approve(),row={...approved.review,evidence_refs:approved.review.basis.map(asset=>asset.ref)};
+    const bundle={schema_version:1,kind:'review-bundle',bundle_id:'review-bundle.synthetic-slice',task_id:'task.synthetic-slice-review',work_unit_id:'work-unit.slice-backend',review_session_id:'session.synthetic-slice-review',role_id:row.role_id,runtime_id:row.runtime_id,principal_ref:row.principal_ref,reviews:[row]};
+    f.write('v3-review.json',bundle);
+    assert.equal(verifySliceContractApproval(approved.binding,{root:f.root}).contract.status,'approved');
+    for(const [field,value]of [['role_id','role.product-manager'],['runtime_id','runtime.codex'],['principal_ref','synthetic.other-reviewer']]) {
+      f.write('v3-review.json',{...bundle,[field]:value});
+      assert.throws(()=>verifySliceContractApproval(approved.binding,{root:f.root}),/APPROVAL_BUNDLE_INVALID/);
+    }
   }finally{f.cleanup();}
 });
 

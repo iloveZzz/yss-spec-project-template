@@ -35,14 +35,16 @@ export async function handoffFixture(root,{kind='existing-ui-baseline',backend=t
  const roles=read(path.join(root,'.template-spec/agents/digital-human-roles.yaml'));
  // Use the source's current product-design approval gate; never manufacture another gate.
  roles.user_decision_policy.gates=[productGate];f.put('.template-spec/agents/digital-human-roles.yaml',roles);
- // Sign legacy fixture bindings before adding the current user-decision binding.
- f.sign();
  approvals.existing_ui_baseline_ref={record_ref:'approvals/existing-ui.json',gate_id:productGate,digest_kind:'sha256-bytes'};
- const ref='existing-ui/existing-ui-baseline.json',scope=['feature.supplier'];
- const d=buildDecisionFixture(path.join(root,'decisions/ui'),{subjectRef:path.join(root,ref),boundary:productGate,scope});
- const relative=ref=>path.relative(root,ref).split(path.sep).join('/');d.record.request.items[0].subject.ref=ref;d.record.request.requester_source.ref=relative(d.record.request.requester_source.ref);d.present();d.record.responses=[];d.respond();d.record.request.presented_source.ref=relative(d.record.request.presented_source.ref);d.record.responses[0].source.ref=relative(d.record.responses[0].source.ref);d.save();
- f.put('approvals/existing-ui.json',{schema_version:1,gate_id:productGate,decision:'approved',actor_kind:'biological-human',role_id:'role.biological-human',runtime_id:'runtime.generic',principal_ref:'person.requester',subject_ref:ref,approval_scope:scope,user_decision_ref:relative(d.ref),artifact_bindings:[{id:b.data.baseline_id,version:'v1',digest:source.existing_ui_baseline_ref.digest}]});
- const save=()=>{f.put('handoff.yaml',f.handoff);const approval=read(path.join(root,approvals.handoff.record_ref));approval.artifact_bindings[0].digest=hash(readFileSync(path.join(root,'handoff.yaml')));f.put(approvals.handoff.record_ref,approval);};save();
+ // The same product review freezes the existing manifest's current raw bytes.
+ f.sign();
+ const save=()=>{
+  f.put('handoff.yaml',f.handoff);
+  const approval=read(path.join(root,approvals.handoff.record_ref)),subject=read(path.join(root,approval.subject_ref));
+  const current=hash(readFileSync(path.join(root,'handoff.yaml')));
+  subject.basis=subject.basis.map(asset=>asset.ref==='handoff.yaml'?{...asset,digest:current.slice(7)}:asset);f.put(approval.subject_ref,subject);
+  approval.subject_digest=hash(readFileSync(path.join(root,approval.subject_ref))).slice(7);approval.basis=subject.basis;approval.artifact_bindings[0].digest=current;f.put(approvals.handoff.record_ref,approval);
+ };save();
  return {...f,baseline:b,save};
 }
 
@@ -56,14 +58,20 @@ export async function dedicatedDesignHandoffFixture(root) {
  const {package_export,status,...delivery}=f.handoff;
  f.put('delivery-content.json',delivery);
  const asset=(ref,version,boundary)=>({ref,version,boundary,digest:hash(readFileSync(path.join(root,ref)))});
- f.put('delivery-scope.json',{schema_version:1,kind:'strategic-delivery-scope',delivery_ref:'delivery-content.json',assets:[asset('delivery-content.json','v1','gate.strategic-design-handoff-approved'),...Object.entries(f.handoff.source).map(([key,ref])=>asset(key==='existing_ui_baseline_ref'?`${ref.persisted_ref}/${ref.manifest_ref}`:ref.persisted_ref,ref.version,approvals[key].gate_id))]});
+ const scope={schema_version:1,kind:'strategic-delivery-scope',gate_id:'gate.strategic-design-handoff-approved',approval_scope:['feature.supplier'],drafter_principal_ref:'synthetic-requirements-drafter',delivery_ref:'delivery-content.json',assets:[asset('delivery-content.json','v1','gate.strategic-design-handoff-approved'),...Object.entries(f.handoff.source).map(([key,ref])=>asset(key==='existing_ui_baseline_ref'?`${ref.persisted_ref}/${ref.manifest_ref}`:ref.persisted_ref,ref.version,approvals[key].gate_id))]};
+ scope.basis=scope.assets.map(({ref,digest})=>({ref,digest:digest.slice(7)}));
+ f.put('delivery-scope.json',scope);
+ approvals.handoff.approval_context={subject_ref:'delivery-scope.json',approval_scope:scope.approval_scope,basis:scope.basis,drafter_principal_ref:scope.drafter_principal_ref};
  f.put('handoff.yaml',f.handoff);
  for(const [key,approval]of Object.entries(approvals)) {
   const record=read(path.join(root,approval.record_ref));record.gate_id=approval.gate_id;
   if(approval.gate_id==='gate.strategic-design-handoff-approved')record.role_id='role.requirements-manager';
-  if(key==='handoff')record.artifact_bindings[0].digest=hash(readFileSync(path.join(root,'handoff.yaml')));
+  if(key==='handoff') {
+   const current=hash(readFileSync(path.join(root,'handoff.yaml')));
+   Object.assign(record,{subject_ref:'delivery-scope.json',subject_digest:hash(readFileSync(path.join(root,'delivery-scope.json'))).slice(7),basis:[...scope.basis,{ref:'handoff.yaml',digest:current.slice(7)}]});record.artifact_bindings[0].digest=current;
+  }
   if(roles.user_decision_policy.gates.includes(record.gate_id)) {
-   const ref=key==='handoff'?'delivery-scope.json':key==='existing_ui_baseline_ref'?'existing-ui/existing-ui-baseline.json':f.handoff.source[key].persisted_ref;
+   const ref=record.subject_ref;
    const d=buildDecisionFixture(path.join(root,'current-decisions',key),{subjectRef:path.join(root,ref),boundary:record.gate_id,scope:['feature.supplier']});
    const relative=ref=>path.relative(root,ref).split(path.sep).join('/');d.record.request.items[0].subject.ref=ref;d.record.request.requester_source.ref=relative(d.record.request.requester_source.ref);d.present();d.record.responses=[];d.respond();d.record.request.presented_source.ref=relative(d.record.request.presented_source.ref);d.record.responses[0].source.ref=relative(d.record.responses[0].source.ref);d.save();
    Object.assign(record,{subject_ref:ref,approval_scope:['feature.supplier'],user_decision_ref:relative(d.ref)});

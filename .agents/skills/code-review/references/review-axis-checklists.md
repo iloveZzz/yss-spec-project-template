@@ -2,6 +2,8 @@
 
 仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。仓库脚本与 pnpm 命令从当前登记的项目根目录执行。
 
+首轮完整覆盖每个适用轴。复审任务额外传入旧 / 新候选差异、受影响结论与行为、直接 / 传递依赖和待复验清单；下列提纲按该清单使用，未受影响结论保留比较证据并绑定当前候选。摘要变化、UI 或 `new_impacts` 不自动选择全部提纲；未知影响先调查。
+
 **Standards sub-agent prompt** — include:
 
 - The full candidate manifest, captured candidate, `candidate_digest`, diff/inventory commands and commit list. For Worktree candidates, explicitly include every untracked file.

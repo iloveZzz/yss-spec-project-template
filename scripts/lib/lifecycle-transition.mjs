@@ -1,3 +1,4 @@
+import {approvalExpectationForBoundAsset} from './approval-consumption.mjs';
 import { assertBusinessApprovalBasis } from './business-ticket-lifecycle.mjs';
 import { assertBusinessTicketTransition, assertImplementationTicket } from './business-tickets.mjs';
 import {assertReadingTransition} from './reading-view-bundle.mjs';
@@ -233,7 +234,7 @@ function backendDesignPrerequisitesReady(prerequisites, exists, root, projectId)
       ? prerequisites.engineering_contract_approval_ref
       : path.resolve(root, prerequisites.engineering_contract_approval_ref);
     const approval = loadApprovalRecord(approvalFile, 'gate.engineering-contract-approved');
-    validateApprovalRecord(approval, { requireApproved: true, root });
+    validateApprovalRecord(approval, { requireApproved: true, root, expected: approvalExpectationForBoundAsset('gate.engineering-contract-approved',prerequisites.technical_design,{root}) });
     if (approval.gate_id !== "gate.engineering-contract-approved" || !approval.approval_scope?.includes(projectId)) return false;
     if (!approvalHasBinding(approval, technical.expected) || !approvalHasBinding(approval, data.expected)) return false;
     if (!approvalHasBinding(approval, { id: api.decision.decision_id, version: api.decision.decision_version, digest: prerequisites.api_contract_decision.digest })) return false;

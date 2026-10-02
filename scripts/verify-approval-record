@@ -1,17 +1,25 @@
 #!/usr/bin/env node
-import { parseArgs } from "node:util";
-import { validateApprovalRecordFile } from "./lib/approval-record.mjs";
-
+import path from 'node:path';
+import {parseArgs} from 'node:util';
+import {ROOT} from './lib/lifecycle-registry.mjs';
+import {withValidationPhase} from './lib/validation-phase.mjs';
+import {approvalIO} from './lib/approval-record-io.mjs';
+import {validateAssetStructure} from './lib/structured-assets.mjs';
+import {validateApprovalRecordFile} from './lib/approval-record.mjs';
 try {
-  const { positionals, values } = parseArgs({ allowPositionals: true, strict: true, options: { help: {type:"boolean"}, "require-approved": { type: "boolean" }, history: { type: "boolean" } } });
-  if(values.help)process.stdout.write("用法: scripts/verify-approval-record [--require-approved | --history] <record.yaml>\n默认当前校验；--history 只读历史结构，不放行。0=相应检查通过，1=失败。\n");
+  const {positionals,values}=parseArgs({allowPositionals:true,strict:true,options:{help:{type:'boolean'},'require-approved':{type:'boolean'},history:{type:'boolean'},checkpoint:{type:'string'},root:{type:'string'}}});
+  if(values.help) process.stdout.write('用法: scripts/verify-approval-record [--require-approved] [--root <project>] [--checkpoint <current checkpoint>] <record.yaml|json>\n--history 仅检查历史结构，不放行；不能与当前上下文选项组合。v1当前批准须有checkpoint；v2可使用正式任务的独立当前绑定。0=相应检查通过，1=失败。\n');
   else {
-  if (positionals.length !== 1) throw new TypeError("用法: scripts/verify-approval-record [--require-approved | --history] <approval-record.yaml>");
-  if (values.history && values["require-approved"]) throw new TypeError("--history 不能用于当前批准校验");
-  validateApprovalRecordFile(positionals[0], { requireApproved: !values.history });
-  process.stdout.write(!values.history ? "会签及当前用户决定校验通过\n" : "会签记录结构校验通过（不构成放行）\n");
+    if(positionals.length!==1) throw new TypeError('需要一个批准记录路径');
+    if(values.history&&(values['require-approved']||values.checkpoint)) throw new TypeError('--history 不能用于当前批准校验');
+    const root=path.resolve(values.root || ROOT), file=path.resolve(positionals[0]);
+    const verify=()=>{
+      let checkpoint;
+      if(values.checkpoint) {checkpoint=approvalIO({root}).document(path.resolve(values.checkpoint));validateAssetStructure(checkpoint,'checkpoint');}
+      validateApprovalRecordFile(file,{root,checkpoint,history:values.history===true,requireApproved:!values.history});
+    };
+    if(values.history) verify();
+    else withValidationPhase({root,purpose:'approval-cli-current',readOnly:true},verify);
+    process.stdout.write(values.history?'历史兼容结构检查完成；execution_authorization=not-evaluated\n':'会签当前绑定及适用用户决定校验通过；不授予执行或发布\n');
   }
-} catch (error) {
-  process.stderr.write(`会签记录校验失败: ${error.message}\n`);
-  process.exitCode = 1;
-}
+} catch(error) {process.stderr.write(`会签记录校验失败: ${error.message}\n`);process.exitCode=1;}

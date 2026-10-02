@@ -5,8 +5,10 @@ import { checkProjectGovernance } from './lib/project-governance.mjs';
 import { lifecycleStatus } from './lib/lifecycle-status.mjs';
 import { renderLifecycleStatus } from './lib/lifecycle-presentation.mjs';
 
+let parsedValues;
 try {
   const { values } = parseArgs({ strict: true, options: { root: { type: 'string' }, checkpoint: { type: 'string' }, task: {type: 'string'}, preflight: {type:'boolean'}, help:{type:'boolean'}, format: {type:'string', default:'json'} } });
+  parsedValues = values;
   if (!['json', 'text'].includes(values.format)) throw Error('--format 仅支持 json 或 text');
   if (values.preflight && values.format === 'text') throw Error('--preflight 使用 JSON 诊断；中文状态阅读请单独调用 --format text');
   if(values.help)process.stdout.write('用法: scripts/lifecycle-status --root <项目> [--checkpoint <根相对路径>] [--task <任务包>] [--preflight] [--format json|text]\n普通查询不执行预检；--preflight 复验当前证据，仅提供恢复动作，不批准或派发。普通查询退出码保持 0/1；预检 0=通过、1=失败、2=输入或能力异常。\n');
@@ -20,7 +22,30 @@ try {
   if (result.blockers.length) process.exitCode = 1;
   }
 } catch (error) {
-  process.stdout.write(`${JSON.stringify({ schema_version: 1, read_only: true, blockers: [error.message], owner: '未登记', next_action: `核查状态输入：${error.message}`, execution_authorization: 'not-evaluated', verification_scope: [{ id: 'status-input', status: 'failed', refs: [], reason: error.message }], diagnostics: [{ code: 'status-input-invalid', severity: 'error', message: error.message, source_ref: null, owner: '未登记', recovery: '修复输入后重新读取状态' }], next_step: { action_type: 'repair', command: null, input_refs: [], prerequisites: ['提供有效项目根和 checkpoint 引用'] } }, null, 2)}\n`);
+  const failure = { schema_version: 1, read_only: true, blockers: [error.message], owner: '未登记', next_action: `核查状态输入：${error.message}`, execution_authorization: 'not-evaluated', verification_scope: [{ id: 'status-input', status: 'failed', refs: [], reason: error.message }], diagnostics: [{ code: 'status-input-invalid', severity: 'error', message: error.message, source_ref: null, owner: '未登记', recovery: '修复输入后重新读取状态' }], next_step: { action_type: 'repair', command: null, input_refs: [], prerequisites: ['提供有效项目根和 checkpoint 引用'] } };
+  if (parsedValues?.format === 'text' && !parsedValues.preflight) {
+    const sourceRef = error.lifecycle_input_ref ?? parsedValues.checkpoint ?? null;
+    const templateSource = error.lifecycle_input_kind === 'template-source';
+    const manifestFailure = error.lifecycle_input_kind === 'manifest' || sourceRef === 'yss-project.yaml';
+    const missingInput = error.message === 'root and checkpoint are required';
+    const problem = templateSource ? '当前为 template-source 模板源仓库，产品生命周期状态查询不适用'
+      : manifestFailure ? `仓库身份输入无法核验：${error.message}`
+      : missingInput ? '缺少项目根或 checkpoint 引用，当前阶段无法核验'
+      : `状态输入无法核验：${error.message}`;
+    const recovery = templateSource ? '按 maintaining-skills 和维护强度合同走模板维护路由；不得更改真实仓库身份以绕过限制'
+      : manifestFailure ? '先核对 yss-project.yaml 的真实内容、schema 和 repository_mode；文件缺失、损坏或不支持时进入迁移检查，不猜测或伪造身份'
+      : missingInput ? '提供真实项目根及根相对 checkpoint 引用；核对来源后重新查询'
+      : '核对已标明的状态来源、路径和原始内容，恢复可读的真实输入并执行适用预检，再重新查询';
+    process.stdout.write(renderLifecycleStatus({presentation: {
+      stage: '待核验', checkpoint_status: '查询失败', next_stage: '待核验', next_stage_reason: '当前输入不可核验，不推断下一阶段、已完成或可进入',
+      blockers: [problem], owner: '未登记', work_unit: '待核验', expected_output: null, next_action: recovery, warnings: [],
+      issues: [{severity: 'error', message: problem, source_ref: sourceRef, owner: '未登记', owner_scope: 'not-recorded', recovery}],
+      pending_verification: [{reason: '仓库身份、当前阶段、来源和问题责任方尚未核验'}],
+      continue_conditions: ['真实身份与状态输入可读，并通过适用预检后，由主控重新核验范围与授权并决定路由'],
+    }}));
+  } else {
+    process.stdout.write(`${JSON.stringify(failure, null, 2)}\n`);
+  }
   process.exitCode = process.argv.includes('--preflight') ? 2 : 1;
 }
 

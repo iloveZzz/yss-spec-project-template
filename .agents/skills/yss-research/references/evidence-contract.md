@@ -37,6 +37,14 @@ The package names its downstream owner and optional decision reference. It does 
 
 The evidence file uses JSON syntax, which is valid YAML 1.2, so validation is portable and dependency-free.
 
+## 竞品附属产物
+
+现有 evidence v1 可选增加 `competitive_analysis`，合同见 [competitive-analysis.md](competitive-analysis.md)。不含扩展的历史包保持原校验行为；`search_log`、`evidence_items`、`claims` 仍是唯一台账。完整 JSON Schema 校验后，检查比较覆盖、Claim 引用、状态条件、选定文件和工具管理区一致性。
+
+`yss-research` 持有研究包，`competitive-intelligence` 执行专项分析。审计模式保留 brief / evidence 双文件，按 `matrix / report / both` 追加功能矩阵和深度报告；附属报告不能替代简报。确定的能力状态必须引用适用范围内的已审计 Claim；未知必须记录原因和补证计划。`none-found` 不能证明不支持。
+
+矩阵和报告共用结构化结果，工具只更新唯一完整管理区，区外分析正文保留。历史文件没有管理区时拒绝覆盖。正式收尾条件追加选定产物及新增校验依赖的摘要；当前字节漂移后旧验证失效。机械一致性不替代来源语义审核，研究产物不授予下游批准。
+
 ## Design provenance
 
 The Search Log, evidence passport, and claim-source alignment concepts are adapted from [Academic Research Skills](https://github.com/Imbad0202/academic-research-skills). This YSS contract omits academic writing, publication, fixed agent teams, and cross-model review machinery, and retains YSS lifecycle ownership boundaries.

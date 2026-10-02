@@ -10,6 +10,7 @@ import { buildPlanFixture } from '../../../../scripts/fixtures/user-decision/pla
 import { assertPlanSpecEntry } from '../../../../scripts/lib/plan-spec-entry.mjs';
 import { assertUserDecisionRequirement, assertWorkUnitUserDecision, assertImplementationDecision, decisionDigest } from '../../../../scripts/lib/user-decision.mjs';
 import { validateApprovalRecord, validateApprovalRecordFile, assertCheckpointUserDecisions } from '../../../../scripts/lib/approval-record.mjs';
+import { approvalExpectationFromSubject } from '../../../../scripts/lib/approval-current.mjs';
 import { loadDigitalHumanRoles } from '../../../../scripts/lib/digital-human-roles.mjs';
 
 // Synthetic approvals only; never used to capture a real user's decision.
@@ -21,12 +22,13 @@ function fixture(run, boundary = 'gate.engineering-contract-approved') {
     const before = asset(save('approved-snapshot.md', '已批准范围：只读查询，遵守现有 API 和质量基线。'));
     const external = { status: 'confirmed', requirements: [] };
     const externalRef = save('external.json', external);
-    const subject = asset(save('candidate.json', { gate_id: boundary, change: '范围内工程细化' }));
+    const verification = asset(save('verification.txt', 'pnpm test exited 0 (synthetic fixture)'));
+    const subject = asset(save('candidate.json', { gate_id: boundary, change: '范围内工程细化', approval_scope:['feature.demo'],basis:[verification],drafter_principal_ref:'synthetic.worker' }));
     const decisionBasis = Object.fromEntries(['business_scope', 'acceptance', 'contract_commitments', 'authorization', 'risk_acceptance', 'quality', 'external_commitments'].map(key => [key, [`frozen:${key}`]]));
     const mandate = { schema_version: 1, kind: 'delivery-authorization', basis: [before], external_policy: asset(externalRef), targets: [{ boundary, subject_ref: subject.ref, scope: ['feature.demo'], decision_basis: decisionBasis }] };
     const mandateRef = save('mandate.json', mandate);
     const source = buildDecisionFixture(root, { boundary: 'delivery-scope', subjectRef: mandateRef });
-    const basis = [asset(save('verification.txt', 'pnpm test exited 0 (synthetic fixture)'))];
+    const basis = [verification];
     const review = { decision: 'approved', role_id: ['gate.spec-baseline-approved', 'gate.plan-approved'].includes(boundary) ? 'role.product-manager' : 'role.test-engineer', runtime_id: 'runtime.generic', principal_ref: 'synthetic.reviewer', drafter_principal_ref: 'synthetic.worker', classification: 'implementation-detail', material_changes: [], findings: [], boundary, scope: ['feature.demo'], subject, basis, decision_basis: decisionBasis, reason: '对照原授权，当前差异不改变已批准的决定依据', comparison: { before, after: subject } };
     const reviewRef = save('review.json', review);
     const proof = { schema_version: 1, kind: 'approved-scope-continuation-v1', boundary, scope: ['feature.demo'], subject, basis, source: source.requirement, review: asset(reviewRef) };
@@ -41,7 +43,7 @@ function fixture(run, boundary = 'gate.engineering-contract-approved') {
 
 test('ordinary engineering work reuses explicit authorization through public approval and CLI', () => fixture(f => {
   assert.equal(f.verify().continued, true);
-  validateApprovalRecord({ schema_version: 1, gate_id: f.requirement.boundary, decision: 'approved', actor_kind: 'digital-human', role_id: 'role.test-engineer', runtime_id: 'runtime.generic', principal_ref: 'synthetic.reviewer', drafter_principal_ref: 'synthetic.worker', subject_ref: f.subject.ref, approval_scope: f.requirement.scope, continuation_ref: f.requirement.continuation_ref }, { requireApproved: true });
+  validateApprovalRecord({ schema_version: 1, gate_id: f.requirement.boundary, decision: 'approved', actor_kind: 'digital-human', role_id: 'role.test-engineer', runtime_id: 'runtime.generic', principal_ref: 'synthetic.reviewer', drafter_principal_ref: 'synthetic.worker', subject_ref: f.subject.ref, subject_digest:f.asset(f.subject.ref).digest.slice(7), basis:f.basis.map(x=>({ref:x.ref,digest:x.digest.slice(7)})), approval_scope: f.requirement.scope, continuation_ref: f.requirement.continuation_ref }, { requireApproved: true, root:f.root,expected:approvalExpectationFromSubject(f.requirement.boundary,f.subject.ref,{root:f.root}) });
   const existingBackendReuse = [{ boundary: 'gate.backend-architecture-platform-approved', reason: '既有工程复用当前登记架构与固定工程基线中的实际 Spring Boot 版本' }];
   assertWorkUnitUserDecision('work-unit.technical-analysis', { user_decisions: [f.requirement], user_decision_not_applicable: existingBackendReuse });
   assertCheckpointUserDecisions({ repository_mode: 'project-instance', status: 'running', stage_trace: { completed_work_unit: 'work-unit.technical-analysis' }, human_review: { user_decisions: [f.requirement], not_applicable: existingBackendReuse } });
@@ -50,14 +52,14 @@ test('ordinary engineering work reuses explicit authorization through public app
   assert.equal(cli.status, 0, cli.stderr);
 }));
 test('product design can continue after independent review without a repeated human reply', () => fixture(f => {
-  validateApprovalRecord({ schema_version: 1, gate_id: f.requirement.boundary, decision: 'approved', actor_kind: 'digital-human', role_id: 'role.test-engineer', runtime_id: 'runtime.generic', principal_ref: 'synthetic.reviewer', drafter_principal_ref: 'synthetic.worker', subject_ref: f.subject.ref, approval_scope: f.requirement.scope, continuation_ref: f.requirement.continuation_ref }, { requireApproved: true });
+  validateApprovalRecord({ schema_version: 1, gate_id: f.requirement.boundary, decision: 'approved', actor_kind: 'digital-human', role_id: 'role.test-engineer', runtime_id: 'runtime.generic', principal_ref: 'synthetic.reviewer', drafter_principal_ref: 'synthetic.worker', subject_ref: f.subject.ref, subject_digest:f.asset(f.subject.ref).digest.slice(7), basis:f.basis.map(x=>({ref:x.ref,digest:x.digest.slice(7)})), approval_scope: f.requirement.scope, continuation_ref: f.requirement.continuation_ref }, { requireApproved: true, root:f.root,expected:approvalExpectationFromSubject(f.requirement.boundary,f.subject.ref,{root:f.root}) });
 }, 'gate.product-design-approved'));
 test('source approval continuation is verified by all three dedicated receivers', () => fixture(f => {
-  const record = { schema_version: 1, gate_id: f.requirement.boundary, decision: 'approved', actor_kind: 'digital-human', role_id: 'role.test-engineer', runtime_id: 'runtime.generic', principal_ref: 'synthetic.reviewer', drafter_principal_ref: 'synthetic.worker', subject_ref: f.subject.ref, approval_scope: f.requirement.scope, continuation_ref: f.requirement.continuation_ref };
-  const input = f.save('source-approval.json', { record, roles: loadDigitalHumanRoles() });
+  const record = { schema_version: 1, gate_id: f.requirement.boundary, decision: 'approved', actor_kind: 'digital-human', role_id: 'role.test-engineer', runtime_id: 'runtime.generic', principal_ref: 'synthetic.reviewer', drafter_principal_ref: 'synthetic.worker', subject_ref: f.subject.ref, subject_digest:f.asset(f.subject.ref).digest.slice(7), basis:f.basis.map(x=>({ref:x.ref,digest:x.digest.slice(7)})), approval_scope: f.requirement.scope, continuation_ref: f.requirement.continuation_ref };
+  const input = f.save('source-approval.json', { record, currentAssetRef:f.subject.ref, roles: loadDigitalHumanRoles() });
   for (const profile of ['design', 'backend', 'frontend']) {
     const moduleUrl = new URL(`../../../../submodules/yss-harness-${profile}-agent/scripts/lib/strategic-handoff.mjs`, import.meta.url).href;
-    const code = `import {readFileSync} from 'node:fs'; import {sourceApproval} from ${JSON.stringify(moduleUrl)}; const {record,roles}=JSON.parse(readFileSync(process.argv[1])); await sourceApproval(record,roles,process.argv[2]);`;
+    const code = `import {readFileSync} from 'node:fs'; import {sourceApproval} from ${JSON.stringify(moduleUrl)}; const {record,roles,currentAssetRef}=JSON.parse(readFileSync(process.argv[1])); await sourceApproval(record,roles,process.argv[2],currentAssetRef);`;
     const result = spawnSync(process.execPath, ['--input-type=module', '-e', code, input, f.root], { encoding: 'utf8' });
     assert.equal(result.status, 0, `${profile}: ${result.stderr}`);
     const revoked = structuredClone(f.source.record); revoked.responses = [];
@@ -149,8 +151,12 @@ test('older receivers without continuation capability reject rather than silentl
 test('one review bundle retains explicit per-check outcomes and rejects duplicates', () => fixture(f => {
   const record = id => ({ schema_version: 1, gate_id: id, decision: 'approved', actor_kind: 'digital-human', role_id: 'role.test-engineer', runtime_id: 'runtime.generic', principal_ref: 'synthetic.reviewer', drafter_principal_ref: 'synthetic.worker', subject_ref: f.subject.ref, subject_digest: f.subject.digest.slice(7), approval_scope: ['feature.continuation'], evidence_refs: [f.subject.ref] });
   const bundle = { schema_version: 1, kind: 'review-bundle', bundle_id: 'review-bundle.plan', task_id: 'task.plan-review.continuation', work_unit_id: 'work-unit.plan-requirements', review_session_id: 'review-session.plan.continuation', role_id: 'role.test-engineer', runtime_id: 'runtime.generic', principal_ref: 'synthetic.reviewer', reviews: [record('check.design-reviewed'), record('check.architecture-reviewed')] };
-  const ref = f.save('bundle.json', bundle); assert.equal(validateApprovalRecordFile(ref, { requireApproved: true }).length, 2);
-  bundle.reviews[1].decision = 'rejected'; f.save('bundle.json', bundle); assert.throws(() => validateApprovalRecordFile(ref, { requireApproved: true }), /必须为 approved/);
-  bundle.reviews[1] = bundle.reviews[0]; f.save('bundle.json', bundle); assert.throws(() => validateApprovalRecordFile(ref), /重复/);
-  bundle.reviews = []; f.save('bundle.json', bundle); assert.throws(() => validateApprovalRecordFile(ref), /reviews: \[\] should be non-empty/);
+  // The independently prepared checkpoint defines the review scope before signing.
+  const candidate=JSON.parse(readFileSync(f.subject.ref));candidate.approval_scope=['feature.continuation'];f.save('candidate.json',candidate);
+  const expected = ['check.design-reviewed','check.architecture-reviewed'].map(boundary=>approvalExpectationFromSubject(boundary,f.subject.ref,{root:f.root,review_package:false}));
+  for(const row of bundle.reviews){row.subject_digest=f.asset(f.subject.ref).digest.slice(7);row.basis=f.basis.map(x=>({ref:x.ref,digest:x.digest.slice(7)}));}
+  const ref = f.save('bundle.json', bundle); assert.equal(validateApprovalRecordFile(ref, { requireApproved: true, root:f.root,expected }).length, 2);
+  bundle.reviews[1].decision = 'rejected'; f.save('bundle.json', bundle); assert.throws(() => validateApprovalRecordFile(ref, { requireApproved: true, root:f.root,expected }), /必须为 approved/);
+  bundle.reviews[1] = bundle.reviews[0]; f.save('bundle.json', bundle); assert.throws(() => validateApprovalRecordFile(ref,{history:true}), /重复/);
+  bundle.reviews = []; f.save('bundle.json', bundle); assert.throws(() => validateApprovalRecordFile(ref,{history:true}), /not valid under any|non-empty/);
 }));

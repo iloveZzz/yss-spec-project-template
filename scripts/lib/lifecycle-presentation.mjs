@@ -64,13 +64,18 @@ export function loadLifecyclePresenter(root) {
 export function renderLifecycleStatus(result) {
   const view = result.presentation;
   if (!view) throw Error('缺少状态阅读信息');
+  const ownerNote = issue => ({'work-unit': '（工作单元负责人；问题责任方待确认）', 'checkpoint-pause': '（暂停记录责任方；问题责任方待确认）'}[issue.owner_scope] ?? '');
   return [
     `当前阶段：${view.stage}。登记状态：${view.checkpoint_status}。`,
+    `下一阶段（路由目标）：${view.next_stage ?? '待核验'}。${view.next_stage_reason ?? '阶段归属未核验；不代表已批准或可进入'}。`,
     `当前阻塞：${view.blockers.length ? view.blockers.join('；') : '未登记阻塞；完整就绪与批准仍待核验'}。`,
+    ...(view.issues ?? []).map((issue, index) => `${index + 1}. ${issue.severity === 'error' ? '阻塞' : '待核验问题'}：${issue.message}\n   负责人：${issue.owner}${ownerNote(issue)}；来源：${issue.source_ref ?? '未登记'}\n   处理：${issue.recovery}`),
     `负责人：${view.owner}。`,
     `下一项工作：${view.work_unit}。`,
     ...(view.expected_output ? [`预期产出：${view.expected_output}`] : []),
     `下一动作：${view.next_action}。`,
+    ...(view.pending_verification?.length ? [`待核验：${view.pending_verification.map(item => item.reason).join('；')}。`] : []),
+    ...(view.continue_conditions?.length ? [`继续条件：${view.continue_conditions.join('；')}。`] : []),
     ...view.warnings,
     '本次为只读查询，未核验完整批准或执行授权。',
   ].join('\n') + '\n';

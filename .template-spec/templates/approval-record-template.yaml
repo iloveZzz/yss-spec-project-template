@@ -1,6 +1,6 @@
-schema_version: 1
+schema_version: 2
 gate_id: gate.spec-baseline-approved
-decision: approved
+decision: pending
 actor_kind: digital-human
 role_id: role.product-manager
 runtime_id: runtime.generic
@@ -22,3 +22,9 @@ continuation_ref: null
 subject_digest: null
 # 专业检查必须与起草者为不同执行实例；不仅仅比较职称。
 drafter_principal_ref: null
+
+# 新批准使用能力审查任务；只读 intake v2 不得作为正式审查任务。
+review_task_ref: null
+review_task_digest: null
+capability_ids: []
+basis: []

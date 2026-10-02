@@ -22,11 +22,15 @@
 
 正式门禁的会签由 `gate_policy.digital_human_review` / `dual_digital_human` / `biological_human` 定义；内部专业审查由 `check_reviews` 定义，自动检查由 `automatic_checks` 定义。每项的起草者与会签人只读取 YAML，不在本文复制名单。
 
+专业审查按 YAML `review_capabilities` 和检查策略的 `capability_ids` 选择具备能力的独立执行者；角色是职责边界，不能用另一个职称替代能力或独立身份。正式 v1 审查任务的 `review_context` 绑定当前检查 / 能力、候选、策略、范围、依据摘要和审查 / 起草主体；`skill_source.review_skills` 从能力表编译，只供 Reviewer / Verifier 只读审查，角色核心技能和禁止技能不变。能力定义不在本文重复维护。
+
 Plan、产品设计、工程契约统一呈现适用检查后批准。`gate.delivery-accepted` 由测试角色进行交付验收，实际合并或发布仍须另有生物人授权。内部检查不独立请求用户决定；检查失败仍阻断聚合门禁。专业审查可在同一工作单元完成多个检查项，但必须保留逐项结论、资产摘要与独立执行者身份。
 
-会签写入 `docs/.scratch/<feature>/gates/<gate-id>-approval.yaml`，形状见 `.template-spec/templates/approval-record-template.yaml`。恢复前运行 `scripts/verify-approval-record --require-approved`。错误会签只能得到 `blocked`，不能把门禁标成 `approved`。Checkpoint 里会签桶门禁为 `approved` 时必须有可读 `approval_ref`。
+会签写入 `docs/.scratch/<feature>/gates/<gate-id>-approval.yaml`，新记录使用 schema v2，形状见 `.template-spec/templates/approval-record-template.yaml`。专业记录绑定 `review_task_ref/digest`、`capability_ids` 与 `basis`，相邻检查可组合为 schema v2 `review-bundle` 并逐项记录。恢复前运行 `scripts/verify-approval-record --require-approved --checkpoint <current checkpoint>`；当前期望上下文由消费 checkpoint / 任务建立，不能反向复制会签记录。错误会签只能得到 `blocked`，不能把门禁标成 `approved`。Checkpoint 里会签桶门禁为 `approved` 时必须有可读 `approval_ref`。历史记录可用 `--history` 只读查看，不放行当前执行；旧消费者须拒绝 v2 并升级。
 
 `paused-human-gate` 表示等待指定会签人；`user_decision_policy` 命中的关键决定同时强制真实用户回复，数字人审查不能代答。请求展示、原始回复证据、复用和恢复规则见 [用户决定协议](../../.agents/skills/yss-product-lifecycle/references/user-decisions.md)。
+
+专业等待由主控自主派发、等待并继续无依赖工作；验证失败修复或路由。未知影响先调查，缺真实决定或新授权才展示材料后询问。首轮覆盖全部适用检查；修复后按差异、受影响结论 / 行为及依赖定向复审并绑定当前候选，不因摘要变化、UI 影响或 `new_impacts` 默认重跑全轴。
 
 主控默认兼任项目经理，直到 `dual_hat_split_when`（`cross-repo-load` 或 `responsibility-conflict`）要求分体。
 

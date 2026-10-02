@@ -41,6 +41,9 @@ const visualBaselineRef = { baseline_id: sealedBaseline.baseline_id, version: se
  put('evidence/offline.log','Synthetic fixture for CLI tests; not product verification.');
  const previewDigest=digest(files(root,'preview').map(ref=>({path:path.posix.relative('preview',ref),sha256:hash(readFileSync(path.join(root,ref)))})));
  put('evidence/offline.json',{network_mode:'offline',exit_code:0,command:'synthetic fixture',executed_at:'2026-09-05T00:00:00Z',preview_digest:previewDigest,case_ids:['primary-desktop','primary-narrow'],evidence_refs:['evidence/offline.log']});
+ const bound=ref=>({ref,digest:hash(readFileSync(path.join(root,ref))).slice(7)});
+ const drafter='synthetic-requirements-drafter';
+ const approvalContext=subjectRef=>({subject_ref:subjectRef,approval_scope:['feature.supplier'],basis:[bound('evidence/offline.log')],drafter_principal_ref:drafter,review_package:!['source/strategy.yaml','source/stage.yaml'].includes(subjectRef)});
  const baseStrategy=read(new URL('./base-strategy.json',import.meta.url));
  const routed=handoffVersion>=4;
  const strategy={...baseStrategy,schema_version:routed?3:2,domain_strategy_id:'domain-strategy.supplier',domain_version:'v1',status:'approved',contexts:baseStrategy.contexts,traceability_version:1,rule_catalog:[{rule_id:'rule.complete',statement:'申请材料必须完整',responsible_context:'SupplierManagement',status:'confirmed',...(routed?{evidence_refs:['evidence/offline.log']}:{})}],scenarios:[{scenario_id:'scenario.submit',actor:'supplier',preconditions:['draft'],commands:['Submit'],rules:['申请材料必须完整'],rule_refs:['rule.complete'],events:['Submitted'],success_results:['已提交'],failure_results:['缺材料拒绝'],responsible_context:'SupplierManagement',consumers:[],status:'confirmed',critical:true,...(routed?{evidence_refs:['evidence/offline.log']}:{})}],invariants:[{invariant_id:'invariant.complete',statement:'申请材料必须完整',rule_ref:'rule.complete',responsible_context:'SupplierManagement',scenario_refs:['scenario.submit'],verification_method:'test',...(routed?{evidence_refs:['evidence/offline.log']}:{})}],context_snapshot:snapshot,evidence_refs:['evidence/offline.log']};
@@ -48,7 +51,8 @@ const visualBaselineRef = { baseline_id: sealedBaseline.baseline_id, version: se
    {mapping_id:'mapping.backend-complete',source_refs:['rule.complete','scenario.submit'],consumer_capability:'backend-technical-design',impacts:['backend','api','data'].filter(key=>impacts[key]),propagation:(impacts.backend||impacts.api||impacts.data)?'direct':'not-applicable',reapproval_condition:'后端、API 或数据影响变化',evidence_refs:['evidence/offline.log']},
    {mapping_id:'mapping.frontend-complete',source_refs:['scenario.submit'],consumer_capability:'frontend-engineering-design',impacts:['frontend','ui'].filter(key=>impacts[key]),propagation:(impacts.frontend||impacts.ui)?'direct':'not-applicable',reapproval_condition:'前端或 UI 影响变化',evidence_refs:['evidence/offline.log']}
  ].map(item=>({...item,impacts:item.impacts.length?item.impacts:['none']}));
- strategy.approval={approval_ref:currentPlan?'approvals/plan-checks.yaml':'approvals/domain_strategy_ref.yaml',approver:'role.product-manager',persisted_ref:'source/strategy.yaml',current_version:'v1'};
+ strategy.approval={approval_ref:currentPlan?'approvals/plan-checks.yaml':'approvals/domain_strategy_ref.yaml',approver:'role.product-manager',persisted_ref:'source/strategy.yaml',current_version:'v1',approval_context:approvalContext(currentPlan?'source/strategy.yaml':'source/review-packages/domain_strategy_ref.json')};
+ Object.assign(strategy,{approval_scope:['feature.supplier'],basis:[bound('evidence/offline.log')],drafter_principal_ref:drafter});
  strategy.subdomains.forEach(x=>x.evidence_refs=['evidence/offline.log']);
  put('source/strategy.yaml',strategy);
  const stage={...read(new URL('./base-stage.json',import.meta.url)),schema_version:routed?3:2,stage_decision_id:'stage-decision.supplier',package_version:'v1',status:'approved',domain_strategy_ref:{domain_strategy_id:strategy.domain_strategy_id,domain_version:'v1',status:'approved',persisted_ref:'source/strategy.yaml',digest:digest(strategy)},context_snapshot:snapshot,unresolved_items:[],impact_assessment:impacts};
@@ -61,7 +65,8 @@ const visualBaselineRef = { baseline_id: sealedBaseline.baseline_id, version: se
    stage.constraints=[record('constraint.preserve-context','保留 SupplierManagement 边界',['rule.complete'])];
    stage.downstream_mapping=strategy.downstream_mapping.map(({mapping_id,source_refs,consumer_capability,propagation,reapproval_condition,evidence_refs})=>({mapping_id,source_refs,consumer_capability,propagation,reapproval_condition,evidence_refs}));
  }
- stage.approval={approval_ref:currentPlan?'approvals/plan-checks.yaml':'approvals/stage_decision_package_ref.yaml',approver:'role.product-manager',persisted_ref:'source/stage.yaml',current_version:'v1'};stage.evidence_refs=['evidence/offline.log'];
+ stage.approval={approval_ref:currentPlan?'approvals/plan-checks.yaml':'approvals/stage_decision_package_ref.yaml',approver:'role.product-manager',persisted_ref:'source/stage.yaml',current_version:'v1',approval_context:approvalContext(currentPlan?'source/stage.yaml':'source/review-packages/stage_decision_package_ref.json')};stage.evidence_refs=['evidence/offline.log'];
+ Object.assign(stage,{approval_scope:['feature.supplier'],basis:[bound('evidence/offline.log')],drafter_principal_ref:drafter});
  put('source/stage.yaml',stage);put('source/spec.md','# 供应商提交\n');put('source/tickets.yaml',{status:'approved'});
  const ref=(id,p,kind)=>({id,version:'v1',status:'approved',persisted_ref:p,digest:kind==='canonical-json'?digest(read(path.join(root,p))):hash(readFileSync(path.join(root,p)))});
  if(businessTickets) {
@@ -97,24 +102,36 @@ const visualBaselineRef = { baseline_id: sealedBaseline.baseline_id, version: se
  const relative=ref=>path.relative(root,ref).split(path.sep).join('/');
  const decisionFor=(key,boundary,subjectRef)=>{const d=buildDecisionFixture(path.join(root,'decisions',key),{subjectRef:path.join(root,subjectRef),boundary,scope:['feature.supplier']});d.record.request.items[0].subject.ref=subjectRef;d.record.request.requester_source.ref=relative(d.record.request.requester_source.ref);d.present();d.record.responses=[];d.respond();d.record.request.presented_source.ref=relative(d.record.request.presented_source.ref);d.record.responses[0].source.ref=relative(d.record.responses[0].source.ref);d.save();return relative(d.ref);};
  const sign=()=>{
-   put('handoff.yaml',handoff);
    const planRef='source/plan-review-package.json',productRef='source/product-design-review-package.json';
+   const gateFor=key=>approvals[key]?.gate_id||gates[key];
+   const subjectFor=key=>gateFor(key)==='gate.plan-approved'?planRef:gateFor(key)==='gate.product-design-approved'?productRef:`source/review-packages/${key}.json`;
+   const fileFor=key=>key==='handoff'?'handoff.yaml':['visual_baseline_ref','existing_ui_baseline_ref'].includes(key)?`${sourceRefs[key].persisted_ref}/${sourceRefs[key].manifest_ref}`:sourceRefs[key].persisted_ref;
+   for(const key of Object.keys(sourceRefs))sourceRefs[key].approval_context={...approvalContext(subjectFor(key)),basis:[bound('evidence/offline.log'),bound(fileFor(key))]};
+   // The handoff contains this descriptor. Its own hash is bound in the separate
+   // review package, rather than embedded in the bytes it is meant to describe.
+   approvals.handoff.approval_context=approvalContext(subjectFor('handoff'));
+   put('handoff.yaml',handoff);
+   const packageFor=(gateId,keys,kind='approval-review-package')=>({schema_version:1,kind,gate_id:gateId,approval_scope:['feature.supplier'],drafter_principal_ref:drafter,basis:[bound('evidence/offline.log'),...keys.map(key=>bound(fileFor(key)))],assets:keys.filter(key=>key!=='handoff').map(key=>sourceRefs[key])});
+   for(const key of [...Object.keys(sourceRefs),'handoff']) {
+     const subjectRef=subjectFor(key);
+     if(![planRef,productRef].includes(subjectRef))put(subjectRef,packageFor(gateFor(key),[key]));
+   }
    if(currentPlan){
-     put(planRef,{schema_version:1,kind:'plan-review-package',assets:(businessTickets?['domain_strategy_ref','stage_decision_package_ref']:['domain_strategy_ref','stage_decision_package_ref','business_ticket_set_ref']).map(key=>sourceRefs[key])});
-     put(productRef,{schema_version:1,kind:'product-design-review-package',assets:['prototype_ref','visual_baseline_ref'].map(key=>sourceRefs[key])});
-     const row=(gateId,subjectRef)=>({schema_version:1,gate_id:gateId,decision:'approved',actor_kind:'digital-human',role_id:'role.product-manager',runtime_id:'runtime.generic',principal_ref:'synthetic-plan-reviewer',drafter_role_id:'role.requirements-manager',drafter_principal_ref:'synthetic-requirements-drafter',subject_ref:subjectRef,subject_digest:hash(readFileSync(path.join(root,subjectRef))).slice(7),approval_scope:['feature.supplier'],evidence_refs:['evidence/offline.log']});
+     put(planRef,packageFor('gate.plan-approved',businessTickets?['domain_strategy_ref','stage_decision_package_ref']:['domain_strategy_ref','stage_decision_package_ref','business_ticket_set_ref'],'plan-review-package'));
+     put(productRef,packageFor('gate.product-design-approved',['prototype_ref','visual_baseline_ref','existing_ui_baseline_ref'].filter(key=>sourceRefs[key]),'product-design-review-package'));
+     const row=(gateId,subjectRef)=>({schema_version:1,gate_id:gateId,decision:'approved',actor_kind:'digital-human',role_id:'role.product-manager',runtime_id:'runtime.generic',principal_ref:'synthetic-plan-reviewer',drafter_role_id:'role.requirements-manager',drafter_principal_ref:drafter,subject_ref:subjectRef,subject_digest:bound(subjectRef).digest,approval_scope:['feature.supplier'],basis:[bound('evidence/offline.log'),bound(subjectRef)],evidence_refs:['evidence/offline.log']});
      put('approvals/plan-checks.yaml',{schema_version:1,kind:'review-bundle',bundle_id:'review-bundle.plan',task_id:'task.plan-review.supplier',work_unit_id:'work-unit.plan-requirements',review_session_id:'review-session.plan.supplier',role_id:'role.product-manager',runtime_id:'runtime.generic',principal_ref:'synthetic-plan-reviewer',reviews:[row('check.domain-strategy-approved','source/strategy.yaml'),row('check.stage-decision-package-approved','source/stage.yaml')]});
    }
    const decisions=currentPlan?{
      'gate.plan-approved':decisionFor('plan','gate.plan-approved',planRef),
-     'gate.spec-baseline-approved':decisionFor('spec','gate.spec-baseline-approved','source/spec.md'),
+     'gate.spec-baseline-approved':decisionFor('spec','gate.spec-baseline-approved',subjectFor('spec_ref')),
      'gate.product-design-approved':decisionFor('product','gate.product-design-approved',productRef)
    }:{};
    for(const[key,approval]of Object.entries(approvals)){
      const asset=key==='handoff'?{id:handoff.handoff_id,version:handoff.handoff_version,digest:hash(readFileSync(path.join(root,'handoff.yaml')))}:sourceRefs[key];
      const rule=countersignRuleForGate(roles.gate_policy,approval.gate_id);
-     const subjectRef=approval.gate_id==='gate.plan-approved'?planRef:approval.gate_id==='gate.product-design-approved'?productRef:key==='handoff'?'handoff.yaml':asset.persisted_ref;
-     put(approval.record_ref,{schema_version:1,gate_id:approval.gate_id,decision:'approved',actor_kind:rule.bucket==='biological_human'?'biological-human':'digital-human',role_id:rule.countersigners[0],runtime_id:'runtime.generic',principal_ref:rule.bucket==='biological_human'?'person.requester':approval.gate_id==='gate.plan-approved'?'synthetic-plan-reviewer':'synthetic-maintenance-fixture',...(rule.drafter?{drafter_role_id:rule.drafter}:{}),...(approval.gate_id==='gate.plan-approved'?{review_session_id:'review-session.plan.supplier',review_bundle_ref:'approvals/plan-checks.yaml'}:{}),...(decisions[approval.gate_id]?{subject_ref:subjectRef,approval_scope:['feature.supplier'],user_decision_ref:decisions[approval.gate_id]}:{}),artifact_bindings:[{id:asset.id||asset.baseline_id,version:asset.version,digest:asset.digest}]});
+     const subjectRef=subjectFor(key),subject=read(path.join(root,subjectRef));
+     put(approval.record_ref,{schema_version:1,gate_id:approval.gate_id,decision:'approved',actor_kind:rule.bucket==='biological_human'?'biological-human':'digital-human',role_id:rule.countersigners[0],runtime_id:'runtime.generic',principal_ref:rule.bucket==='biological_human'?'person.requester':approval.gate_id==='gate.plan-approved'?'synthetic-plan-reviewer':'synthetic-maintenance-fixture',drafter_principal_ref:drafter,subject_ref:subjectRef,subject_digest:bound(subjectRef).digest,approval_scope:['feature.supplier'],basis:subject.basis,evidence_refs:['evidence/offline.log'],...(rule.drafter?{drafter_role_id:rule.drafter}:{}),...(approval.gate_id==='gate.plan-approved'?{review_session_id:'review-session.plan.supplier',review_bundle_ref:'approvals/plan-checks.yaml'}:{}),...(decisions[approval.gate_id]?{user_decision_ref:decisions[approval.gate_id]}:{}),artifact_bindings:[{id:asset.id||asset.baseline_id,version:asset.version,digest:asset.digest}]});
    }
  };
  sign();return{handoff,strategy,stage,put,sign,snapshot};

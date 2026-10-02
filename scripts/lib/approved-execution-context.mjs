@@ -1,3 +1,4 @@
+import {approvalExpectationForCheckpoint,approvalExpectationForBoundAsset} from './approval-consumption.mjs';
 import {validateJsonSchemas} from './json-schema.mjs';
 import { assertScopeSlice, assertScopeWorkUnit } from './lifecycle-execution-scope.mjs';
 import { selectSliceWorkUnit, normalizeSliceContract, sourceSliceContract, parseSliceYaml } from './slice-contract.mjs';
@@ -5,7 +6,7 @@ import path from 'node:path';
 import { readFileSync, inValidationPhase, validationMemo, validationPhaseToken } from './validation-phase.mjs';
 import { ROOT, read, parse, safe, hash, digest, schema } from './strategic-handoff-io.mjs';
 import { countersignRuleForGate } from './digital-human-roles.mjs';
-import { validateApprovalRecord } from './approval-record.mjs';
+import { validateApprovalRecord, loadApprovalRecord } from './approval-record.mjs';
 import { assertImplementationDecision } from './user-decision.mjs';
 import { loadSkillRegistry } from './skill-registry.mjs';
 
@@ -52,7 +53,7 @@ export function verifySliceContractApproval(binding,{root=process.cwd(),contract
     assertImplementationDecision({...review.implementation,user_decisions:review.user_decisions||[]},{...ioFor(root),rolesDoc:roles});
   } else {
     // Historical source profiles that declared this a countersign gate retain their policy.
-    validateApprovalRecord(approval,{...ioFor(root),rolesDoc:roles,requireApproved:true});
+    validateApprovalRecord(approval,{...ioFor(root),rolesDoc:roles,requireApproved:true,expected:approvalExpectationForBoundAsset(gateId,binding,{...ioFor(root),review_package:false})});
     check(approval.gate_id===gateId&&approval.artifact_bindings?.some(item=>item.id===contract.contract_id&&item.version===contract.contract_version&&item.digest===binding.digest),'EXECUTION_APPROVAL_SCOPE','源会签未绑定当前 Slice 的身份、版本和字节');
   }
   if(contract.schema_version===3) verifySliceProfessionalReview(approval,{...binding,id:contract.contract_id,version:contract.contract_version},roles,root);
@@ -144,14 +145,15 @@ function verifySliceProfessionalReview(approval,binding,roles,root) {
     if(!/\.(yaml|yml|json)$/.test(ref))continue;
     const record=read(safe(root,ref));
     const rows=record.kind==='review-bundle'?record.reviews:[record];
-    for(const row of rows || []) {
-      if(row.gate_id!=='check.design-reviewed'||row.subject_ref!==binding.ref)continue;
-      validateApprovalRecord(row,{...ioFor(root),rolesDoc:roles,requireApproved:true});
+    if(!(rows || []).some(row=>row.gate_id==='check.design-reviewed'&&row.subject_ref===binding.ref))continue;
+    // Loading the selected conclusion validates the entire container and carries
+    // its task/session identity into the same current-approval kernel.
+    const row=loadApprovalRecord(safe(root,ref),'check.design-reviewed',ioFor(root));
+      validateApprovalRecord(row,{...ioFor(root),rolesDoc:roles,requireApproved:true,expected:approvalExpectationForCheckpoint('check.design-reviewed',approval.checks?.['check.design-reviewed'],{...ioFor(root),review_package:false})});
       check(row.drafter_principal_ref&&row.principal_ref!==row.drafter_principal_ref,'EXECUTION_REVIEW_NOT_INDEPENDENT','Slice 工程审查必须独立于起草者');
       check(row.subject_digest===binding.digest.slice(7)&&row.artifact_bindings?.some(x=>x.id===binding.id&&x.version===binding.version&&x.digest===binding.digest),'EXECUTION_REVIEW_STALE','Slice 工程审查未绑定当前合同');
       check(Array.isArray(row.findings)&&row.findings.every(x=>x.kind==='suggestion'?!!x.follow_up:['requirement-violation','missing-evidence','important-risk'].includes(x.kind)&&x.status==='resolved'),'EXECUTION_REVIEW_BLOCKED','Slice 工程审查有未关闭问题');
       found=true;
-    }
   }
   check(found,'EXECUTION_REVIEW_REQUIRED','Slice v3 缺少当前合同的独立工程审查');
 }

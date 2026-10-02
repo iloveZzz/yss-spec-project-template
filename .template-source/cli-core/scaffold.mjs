@@ -1,7 +1,9 @@
 // Maintainer entry: create only an empty thin CLI working directory.
+import { assertNodeVersion } from "./runtime-store.mjs";
 import * as fs from "node:fs";
 import path from "node:path";
 import { ensure, write, json, stat } from "./io.mjs";
+assertNodeVersion();
 const [side, output] = process.argv.slice(2);
 ensure(
   ["backend", "frontend"].includes(side) && output,
@@ -22,7 +24,7 @@ write(
     description: `创建和同步 YSS ${side} 专职 Harness 治理项目`,
     type: "module",
     license: "UNLICENSED",
-    engines: { node: ">=22 <27" },
+    engines: { node: ">=22.13 <27" },
     packageManager: "pnpm@10.15.0",
     repository: {
       type: "git",
@@ -91,7 +93,7 @@ test('固定包契约、真实模板计划零写入和旧实例拒绝',t=>{
 write(
   root,
   ".github/workflows/ci.yml",
-  `name: CLI\non: [push, pull_request, workflow_dispatch]\njobs:\n  verify:\n    runs-on: ubuntu-latest\n    strategy:\n      matrix:\n        node: [22, 24, 26]\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-node@v4\n        with:\n          node-version: \u0024{{ matrix.node }}\n      - uses: pnpm/action-setup@v4\n        with:\n          version: 10.15.0\n      - run: pnpm test\n      - run: pnpm verify-bundle\n      - run: npm pack\n      - run: |\n          mkdir -p /tmp/cli-consumer\n          npm install --prefix /tmp/cli-consumer --ignore-scripts ./\u0024(npm pkg get name | tr -d '\"')-\u0024(npm pkg get version | tr -d '\"').tgz\n          /tmp/cli-consumer/node_modules/.bin/${name} init --target-dir /tmp/harness-instance --project-name ci --json\n          /tmp/cli-consumer/node_modules/.bin/${name} sync --target-dir /tmp/harness-instance --json\n`,
+  `name: CLI\non: [push, pull_request, workflow_dispatch]\njobs:\n  verify:\n    runs-on: ubuntu-latest\n    strategy:\n      matrix:\n        node: ['22.13.0', 24, 26]\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-node@v4\n        with:\n          node-version: \u0024{{ matrix.node }}\n      - uses: pnpm/action-setup@v4\n        with:\n          version: 10.15.0\n      - run: pnpm test\n      - run: pnpm verify-bundle\n      - run: npm pack\n      - run: |\n          mkdir -p /tmp/cli-consumer\n          npm install --prefix /tmp/cli-consumer --ignore-scripts ./\u0024(npm pkg get name | tr -d '\"')-\u0024(npm pkg get version | tr -d '\"').tgz\n          /tmp/cli-consumer/node_modules/.bin/${name} init --target-dir /tmp/harness-instance --project-name ci --json\n          /tmp/cli-consumer/node_modules/.bin/${name} sync --target-dir /tmp/harness-instance --json\n`,
 );
 write(root, ".gitignore", "node_modules/\n*.tgz\n.DS_Store\n");
 write(

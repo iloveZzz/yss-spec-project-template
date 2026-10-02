@@ -9,6 +9,8 @@
 5. 执行最小生命周期工作单元：主控先按 `.template-spec/process/schemas/digital-human-task-package.schema.json` 编译并校验任务包，再只实际调用允许的 model-invoked skill；原生工作单元可直接持有正式资产，Matt 兼容 user-invoked skill 仅作为 workflow reference，仍由用户显式启动。将结果归一化为 `Workflow Execution Result`，验收输出并回写状态与证据。任务包的 `contract.kind` 按工作单元选择；只有实现子任务使用 `slice-implementation` 并消费 Slice Implementation Contract，其他阶段不伪造该合同。
 6. 若仍在授权和自动推进边界内，回到第 3 步；否则暂停。
 
+第 5 步调用专项技能前，执行 `scripts/query-lifecycle-context --work-unit <当前工作单元> --check-skills`，多运行时显式指定 `--agent-runtime`，条件依赖传入 `--when`。按 `skill_preflight` 和 [来源与补装协议](matt-yss-adapter.md) 处理结果：缺失时核对现有 CLI 计划，在既有授权内安装并重新预检；漂移、冲突、缺运行时和版本不匹配暂停当前调用。纯查询、安装或预检通过均不能代替调用资格、批准或完成证据。
+
 不要仅输出下一个提示词后结束 `orchestrate`/`resume`。不要因进入业务代码阶段而退出主控；应把实现交给专项 skill，并在返回后继续核验。
 
 连续阶段自动推进时累积 Ticket 同步和 Git 判断证据，在阶段退出、人工暂停、handoff、进入实现、合并或发布边界集中 checkpoint。发生阻塞、责任人变化或资产需要单独批准时立即落 checkpoint，不因合并记录而丢失阶段因果关系。
@@ -20,6 +22,28 @@
 恢复按合同 `execution_efficiency.recovery` 执行：读取当前 checkpoint、阶段工作项、任务包和真实结果，先识别运行中任务、已有完成证据及操作已完成但尚未登记的情况。运行中或结果未知时核对原任务身份，不因缺少摘要再次派发；已有完成证据须先复核新鲜度，再计算下一单元。外部动作缺可查询结果时报告缺口，不能重做副作用。
 
 上游变化按既有依赖关系使受影响资产过期，保留未受影响工作和历史记录；恢复、派发和交付边界仍执行适用 Context、决定/延续、门禁、仓库和允许写范围的校验。核验后输入变化即重验。有效授权不重复询问；未知或实质变化回交原责任方。历史实例缺 stage_tracking 时按已登记兼容和显式迁移入口处理，状态查询不自动补写。
+
+## 结果与友好提示
+
+按 `orchestration-contract.yaml.user_progress_report`，每轮主控返回、状态询问、恢复、阶段切换、阻塞和暂停都提供当前任务的中文说明。先回答当前在哪一步、这轮取得什么结果，再说明下一阶段或单元、进入条件及未满足项。阶段和名称读取注册表，状态来自当前 checkpoint、资产和适用验证；未核验写“待核验”，未登记负责人写“未登记”。普通过程更新只报有意义的变化，不重复整套状态。
+
+下一工作单元可能仍在当前阶段，要说明先完成哪项工作，再流转到哪里。目标阶段从注册表的工作单元归属和经过验证的路由取得；缺少路由或归属时指出缺口，不按阶段顺序猜测，不把计划目标写成“已进入”。完成当前任务或命中执行范围终点时说明终点与验证依据；没有下一单元不自动代表完成。`template-source` 展示模板维护步骤、验证目标和余项，不套用产品阶段；身份非法时解释清单问题及迁移检查动作。
+
+区分阻塞、非阻断未决项和建议。每项实质阻塞说明具体问题、阻断的动作、来源、已登记责任方、处理动作、解除证据和恢复校验。可以优先解释最关键的问题，但其他实质阻塞也要可见。非阻断项沿用已有责任人、解决时点、接收方或待办引用；缺口如实说明，不把建议变成门禁。只读查询无发现时写“未发现已登记阻塞，完整就绪仍待核验”，不得把空数组、文件存在、历史通过或退出 0 写成“无阻塞 / 可进入下一阶段”。
+
+主控先完成已授权且能够处理的补充、修复和验证，再报告结果；提示本身不是暂停理由。确需用户决定或外部输入时，解释需要什么、来自哪个合同或门禁、影响范围、推荐选项及取舍和收到回复后的恢复动作。等待只阻断依赖工作，其他已授权工作继续。命令从当前适用合同和已有验证器取得，未执行标为待执行；未知原因写当前失败现象与下一项诊断，不编造原因或修复结果。
+
+发送前逐项核对：当前阶段有依据；本轮结果可读取；下一目标和进入条件一致；阻塞有处理与复验方法；责任方已登记或明确缺失；过期、未检查和未完成事项可见；中文提示、结构化结果、Ticket 和 checkpoint 没有矛盾；未把 Agent 可执行的操作转交用户。结构化结果保留 `user_progress_report.structured_result_fields`，此说明只消费既有状态，不要求另一套状态文件或新增批准。
+
+下面是虚构的表达示例，不作为真实项目状态或批准：
+
+> 当前仍在 Plan，需求范围已补齐，成功标准的统计口径尚未确认。下一阶段是 Spec；进入前需要确认统计口径并通过当前规划审阅包的适用检查。此项阻断 Plan → Spec，负责人未登记，需要先明确该决定的负责人。收到其真实回复后，主控更新原材料并运行规划进入 Spec 的校验；已授权的独立调研继续进行。
+
+## 运行记录与留存
+
+按 `.template-spec/process/runtime-storage.md` 保存普通执行事件和日志。`scripts/runtime-store inspect` 用于定位运行、保护原因和过期日志，`export` 形成可独立核验的文件包。正式 checkpoint、合同、批准、用户决定和恢复事务仍以原文件为权威；数据库索引或历史通过记录不能推进阶段、改变 Ticket 状态或授予执行资格。
+
+中断恢复先核对原运行身份、命令结果和仍保留的日志；存储异常或记录缺失不能触发重复执行已完成的命令。待恢复运行、被正式引用或受保护的材料保留。清理仅通过显式 `plan-gc` / `apply-gc` 完成，不在查询、恢复或阶段流转时自动清理。
 
 ## 执行成本
 
@@ -87,12 +111,12 @@ tracker 选择和冲突按 `.template-spec/agents/issue-tracker.md` 裁决：已
 ## 审查与验证
 
 - 调用 `code-review` 前先固定 review input：`review_mode`、`review_base_ref`、`implementation_candidate_ref`、`candidate_snapshot_ref`、`candidate_digest`、Spec/Ticket、Slice Implementation Contract、Build Architecture Checklist 和 YSS Skill Execution Result 引用。`committed` 模式审查不可变 `HEAD`；`worktree` 模式一次捕获 committed、staged、unstaged 和 untracked 内容。必须按 `orchestration-contract.yaml.review_input` 的 manifest 按模式必填字段及 `yss-worktree-candidate-v1` 字节流（raw path、uint64 big-endian 长度、tracked/untracked record）计算 SHA-256，所有参与审查者（人数按 `orchestration-contract.yaml.gate_consolidation`） 必须消费同一不可变快照。返回后或完成 checkpoint 摘要变化时返回 `blocked`，由编排器决定重新审查。候选为空、漏项或 fixed point 不可解析时阻断。
-- 小改动和中等变更可由同一独立执行者完成 `code-review` 与 fresh verification，并在同一报告中分别记录 findings、命令、结果和残余风险。
-- 该执行者必须独立于实现者；新模块、高风险变更、职责冲突或需双人控制时，Reviewer 与 Verifier 分开。
+- 小改动和中等变更可由同一具备所需能力的独立执行者完成 `code-review` 与 fresh verification，并在同一报告中分别记录 findings、命令、结果和残余风险。专业任务按角色表 `review_capabilities` 和检查策略编译 `review_context`、`skill_source.review_skills`，当前候选、策略、范围、依据和独立主体均须可核验；不在流程正文另定义能力表。
+- 该执行者必须独立于实现者；新模块、高风险变更、职责冲突或需双人控制时，Reviewer 与 Verifier 分开。按能力覆盖缺口、专业结论冲突或外部制度增加专家，是与此分离要求不同的条件。
 - `code-review` 是唯一默认代码审查 skill。GitLab、CI、Sonar、Alibaba Java 与 YSS 前端 / 后端 skill 作为仓库规则或专项检查输入接入 Standards 轴，由 `review_standards_route` 按影响面编译；不再叠加第二个通用审查 skill。漏掉合同 `required_skills`、适用报告行空白、mandatory `violation` 未关闭或可机器检查规则既无工具结果也无原文引用时，不得 `completed`。
-- 产品切片与模板维护共用 finding 分类；产品切片执行下述候选审查闭环，模板维护按 `.template-spec/process/harness-process-tailoring.md` 的 L1 / L2 / L3 验证强度闭合，不自动冻结候选或全轴复审。`violation`、机器检查失败、适用行空白由实现者在原合同路径修复，再重新捕获候选并全轴复审。`drift`、`new_impacts`、`required_skills` 与真实影响不一致时合同 `stale`，回 实现合同编译器 或更早阶段，禁止在旧合同上继续编码。审查者不得写实现。`not-applicable` 仅当影响面未命中；命中后 mandatory 不得豁免，只允许修复或完整 `seam-deferred`。禁止为日常 Alibaba / YSS 新增生物人豁免门禁。
+- 产品切片与模板维护共用 finding 分类；产品切片执行下述候选审查闭环，模板维护按 `.template-spec/process/harness-process-tailoring.md` 的 L1 / L2 / L3 验证强度闭合，不自动冻结候选或全轴复审。`violation`、机器检查失败、适用行空白由实现者在原合同路径修复，比较旧 / 新候选差异及受影响结论、行为和依赖，再捕获候选、定向复审 / 验证并重绑定。`drift`、`new_impacts`、`required_skills` 与真实影响不一致时合同 `stale`，先调查实际影响再回 实现合同编译器 或更早阶段更新受影响合同，禁止在旧合同上继续编码；不把这些信号升级为全轴默认或兜底。审查者不得写实现。`not-applicable` 仅当影响面未命中；命中后 mandatory 不得豁免，只允许修复或完整 `seam-deferred`。禁止为日常 Alibaba / YSS 新增生物人豁免门禁。
 - 独立 Reviewer 必须与实现者不同实例，并在能执行已登记 `pnpm` / `./mvnw` 的运行时中审查。模板源 `.cursor/environment.json` 只服务模板校验，不替代实现仓审查运行时。不为此再创建第二个 Cloud 审查环境或 `/code-review` skill。
-- UI 影响切片将 `UI fidelity` 作为 `code-review` 的条件第三轴；任何修复都会使候选摘要失效，必须重新捕获候选并重跑 Standards、Spec、UI fidelity 和 fresh verification。
+- UI 影响切片首轮将 `UI fidelity` 作为 `code-review` 的条件第三轴，完成全部适用检查。修复后依实际差异及行为 / 依赖判断应复验的视觉、状态、规范或验收结论；UI 影响或摘要变化不自动触发所有轴。未知影响先调查并阻断依赖事项。未受影响项须有可读比较依据证明条件、依据和依赖未变，全部消费结论重新绑定当前候选与实际验证，历史报告不改写。
 
 ## Git 授权
 
@@ -104,15 +128,14 @@ tracker 选择和冲突按 `.template-spec/agents/issue-tracker.md` 裁决：已
 
 关键决定使用 [真实用户回复协议](user-decisions.md)，消费角色注册表的 `user_decision_policy`。会签前先形成可审阅资产；恢复、阶段流转、实施派发和发布时校验原始回复及当前资产摘要。普通会签的数字人审查与用户决定分别保留，关键决定不得以数字人会签、无反对意见或超时放行。等待只阻断依赖事项；新的 `user_decisions` 引用通过 Workflow Execution Result、checkpoint 和任务包传递。
 
-## 必须暂停
+## 按阻塞原因处理
 
-- 注册表中的聚合门禁等待会签裁决（数字人或生物人，以 `.template-spec/agents/digital-human-roles.yaml` 的 `gate_policy` 为准）。暂停输出必须包含：门禁 ID、指定 `role_id`、`runtime_id`、会签文件路径。恢复前执行 `scripts/verify-approval-record --require-approved`；角色错误、起草者自签或生物人门禁被数字人关闭时返回 `blocked`，不得标 `approved`。
-- 需要目标仓库、外部凭据、发布窗口或其他新授权。
-- 状态与证据冲突且无法可靠重建。
-- 专项 skill 失败或返回不可验收结果。
-- 即将作出可合并、可发布或完成结论。
+- 专业审查等待：按角色表的检查 / 能力策略自主派发任务，已有运行中任务先核对身份，不重复派发；等待结果并继续无依赖工作。会签仍保留门禁 ID、指定 `role_id`、`runtime_id`、会签文件和证据。恢复前执行 `scripts/verify-approval-record --require-approved --checkpoint <current checkpoint>`；消费者提供当前期望上下文，不能从记录反向填充。能力缺失、起草者自签、上下文过期或生物人门禁被数字人关闭时返回 `blocked`，不得标 `approved`。
+- 验证失败、证据冲突或专项结果不可验收：调查、修复、补证据或重新路由；只阻断依赖该结果的动作。专业任务未完成不等于需要用户回答。
+- 未知影响：先调查变化的行为、结论和依赖，确认复审范围和决定变化后再处理；不得默认全轴复审，也不得用扩大检查代替影响分析。
+- 真实决定、新授权或无法自主取得的必要输入缺失：先完成可独立执行检查与可审阅资产，再展示版本、差异、风险、范围及恢复动作，向提问者或其明确指定负责人询问。无真实回复保持等待；多个独立的当前决定可合并提问，不强制每次一个问题。
 
-暂停输出：门禁、指定会签 `role_id`、`runtime_id`、会签文件路径、证据、推荐答案、一个问题、恢复动作。
+暂停记录按原因保留证据、责任方、恢复条件和下一动作；只在需要真实决定或输入时展示问题与建议。提出完成、可合并或可发布结论先完成适用审查与 fresh verification，不因此另建暂停；实际合并、推送、发布仍检查既有外部动作授权。
 
 ## Context Plan 与质量基线
 

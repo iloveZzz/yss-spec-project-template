@@ -9,7 +9,7 @@
 - CLI 只管理 manifest 声明的研发管理资产，不接管前后端运行时代码、业务目录、用户文件或 `.git`。
 - `.gitmodules`、gitlink（mode `160000`）以及 `apps/` 下已挂载的实现仓工作树是用户资产，不属于受管文件；`attach` / `sync` 不得创建、覆盖或删除它们。
 - 通过模板快照和 40 位 `templateCommit` 使每次初始化、升级和回滚可追踪。
-- 新模板快照的实例门禁以 Node `>=22 <27` 运行；不得执行 `npm install`、`pnpm install` 或维护侧 vendor 构建。`scripts/vendor/` 必须随快照分发且可离线使用。
+- 新模板快照的实例门禁以 Node `>=22.13 <27` 运行；不得执行 `npm install`、`pnpm install` 或维护侧 vendor 构建。`scripts/vendor/` 必须随快照分发且可离线使用。
 - 快照使用显式分发 allowlist 构建，不再等于 Git 跟踪树的隐式子集。根规则、共享 skills/projections、`docs/` 中的实例流程资产、`scripts/` 中的共享校验入口及 `scripts/vendor/` 属于分发面；根 `package.json`、`.cursor/environment.json`、模板源 CI、`.template-source/**`、源仓库 ADR、`wiki/`、`docs/reviews/` 和其他未登记顶层资源属于模板源资产。`.nvmrc` 与根 `.gitignore` 的公共规则区属于分发面。README 仅在 `init` 时生成，随后归项目维护；误入旧实例的文件默认只报告，显式执行 `sync --prune` 时才可按旧 baseline 备份并清理。
 
 ## 生命周期接口
@@ -90,7 +90,7 @@ CLI 必须遵循本契约的固定映射：旧 Spec / Ticket skill 和模板入�
 | sync | 新增、更新、冲突、迁移、README 所有权交接和删除报告完整；force 只作用于受管文件 |
 | sync --prune | 预览、安全删除、修改保留、外部备份、回滚和幂等均通过 |
 | post-sync | 三个门禁全部 fresh 通过；失败时文件和 metadata 回滚 |
-| Node 运行时迁移 | Node 22 / 24 下 init、attach dry-run/apply、sync 都无需安装依赖；缺失或不兼容 Node 必须 fail closed 且回滚 |
+| Node 运行时迁移 | Node 22.13 / 24 / 26 下 init、attach dry-run/apply、sync 都无需安装依赖；缺失或不兼容 Node 必须 fail closed 且回滚 |
 | 遗留 Ruby | 新快照无活动 Ruby 脚本；既有实例遗留 `.rb` 仅 `remove-report`，不静默删除 |
 | 发布包 | 固定 commit 下 `npm test` 和 `npm pack --dry-run` 通过，包内含 `template.snapshot.json` |
 

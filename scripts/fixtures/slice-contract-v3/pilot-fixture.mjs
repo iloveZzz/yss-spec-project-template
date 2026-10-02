@@ -6,6 +6,7 @@ import { buildDecisionFixture } from '../user-decision/build-fixture.mjs';
 import { prepareSliceImplementationContract } from '../../lib/slice-contract-preparation.mjs';
 import { normalizeSliceContract } from '../../lib/slice-contract.mjs';
 import { stringify } from '../../vendor/yaml.mjs';
+import { hash } from '../../lib/strategic-handoff-io.mjs';
 
 export function pilotFixture() {
   const f=approvedFixture();
@@ -28,9 +29,12 @@ export function pilotFixture() {
     const scope={kind:'implementation-scope',slices:[{ticket_ref:ticket,contract:{ref:binding.ref,version:binding.version,digest:binding.digest},repositories:n.common.project_roots,allowed_write_paths:n.common.allowed_write_paths,baselines:[{...f.bindings.engineering_baseline,version:'v1'}]}]};
     f.write('v3-scope.json',scope);
     const decision=buildDecisionFixture(path.join(f.root,'v3-decision'),{boundary:'implementation-scope',scope:[ticket],subjectRef:path.join(f.root,'v3-scope.json')});
-    const review={schema_version:1,gate_id:'check.design-reviewed',decision:'approved',actor_kind:'digital-human',role_id:'role.test-engineer',runtime_id:'runtime.generic',principal_ref:'synthetic.slice-reviewer',drafter_principal_ref:'synthetic.slice-drafter',subject_ref:binding.ref,subject_digest:binding.digest.slice(7),artifact_bindings:[{id:binding.id,version:binding.version,digest:binding.digest}],findings:[]};
+    const evidence=f.write('v3-review.log','Synthetic independent engineering review; never real pilot evidence.');
+    const basis=[{ref:evidence.ref,digest:evidence.digest.slice(7)},{ref:ticket,digest:hash(fs.readFileSync(path.join(f.root,ticket))).slice(7)},{ref:f.bindings.engineering_baseline.ref,digest:f.bindings.engineering_baseline.digest.slice(7)}];
+    const current={subject_ref:binding.ref,subject_digest:binding.digest.slice(7),approval_scope:[contract.slice_id],basis,drafter_principal_ref:'synthetic.slice-drafter',approval_ref:'v3-review.json'};
+    const review={schema_version:1,gate_id:'check.design-reviewed',decision:'approved',actor_kind:'digital-human',role_id:'role.test-engineer',runtime_id:'runtime.generic',principal_ref:'synthetic.slice-reviewer',drafter_principal_ref:current.drafter_principal_ref,subject_ref:binding.ref,subject_digest:binding.digest.slice(7),approval_scope:current.approval_scope,basis,artifact_bindings:[{id:binding.id,version:binding.version,digest:binding.digest}],findings:[]};
     f.write('v3-review.json',review);
-    const checkpoint={...structuredClone(f.checkpoint),gates:{'gate.slice-contract-approved':{status:'approved',reason:'Synthetic v3 mechanism approval only',subject_ref:binding.ref,evidence_refs:['v3-review.json']}},human_review:{implementation:{slice_contract_ref:binding.ref,vertical_slice_ticket_ref:ticket},user_decisions:[decision.requirement]}};
+    const checkpoint={...structuredClone(f.checkpoint),checks:{'check.design-reviewed':{status:'approved',...current,evidence_refs:[evidence.ref]}},gates:{'gate.slice-contract-approved':{status:'approved',reason:'Synthetic v3 mechanism approval only',subject_ref:binding.ref,evidence_refs:['v3-review.json']}},human_review:{implementation:{slice_contract_ref:binding.ref,vertical_slice_ticket_ref:ticket},user_decisions:[decision.requirement]}};
     f.write(binding.approval_ref,checkpoint);
     return {binding,review,checkpoint,decision,scope};
   }

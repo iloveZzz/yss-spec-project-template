@@ -1,4 +1,5 @@
 {
+  "$id": "https://yss.example/schemas/delivery-preflight-input.schema.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "type": "object",
   "additionalProperties": false,
@@ -151,6 +152,9 @@
         "approval_ref": {
           "type": "string",
           "minLength": 1
+        },
+        "approval_context": {
+          "$ref": "approval-context.schema.json"
         }
       }
     }

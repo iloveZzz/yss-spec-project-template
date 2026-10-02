@@ -172,6 +172,41 @@ stage_groups:
     stage: stage.verification-release-retrospective
     members: [ role.lifecycle-orchestrator, role.project-manager, role.test-engineer, role.product-manager ]
 
+# 职称继续用于导航；正式专业审查按能力绑定同一独立实例，不授予实现权限。
+review_capabilities:
+  - id: capability.business-rules
+    name: 业务边界与规则审查
+    eligible_roles: [role.product-manager]
+    review_skills: [domain-modeling, yss-stage-decision]
+  - id: capability.spec-acceptance
+    name: Spec 范围与验收审查
+    eligible_roles: [role.product-manager]
+    review_skills: [code-review]
+  - id: capability.prototype-assurance
+    name: 原型与体验审查
+    eligible_roles: [role.frontend-engineer, role.test-engineer]
+    review_skills: [prototype-review, yss-design-system]
+  - id: capability.openapi-contract
+    name: OpenAPI Draft 契约与客户端适配审查
+    eligible_roles: [role.frontend-engineer, role.test-engineer]
+    review_skills: [yss-openapi-draft-review]
+  - id: capability.technical-design
+    name: 技术设计与架构审查
+    eligible_roles: [role.backend-engineer, role.test-engineer]
+    review_skills: [yss-technical-design]
+  - id: capability.engineering-baseline
+    name: 工程基线与验证审查
+    eligible_roles: [role.test-engineer]
+    review_skills: [code-review]
+  - id: capability.engineering-acceptance
+    name: 工程契约聚合审查
+    eligible_roles: [role.test-engineer, role.product-manager]
+    review_skills: [code-review]
+  - id: capability.implementation-assurance
+    name: 实现与交付证据审查
+    eligible_roles: [role.test-engineer]
+    review_skills: [code-review]
+
 gate_policy:
   # countersigners 是可胜任该边界的候选角色，不是必须集齐的签字名单。
   review_execution:
@@ -188,29 +223,34 @@ gate_policy:
     gate.backend-architecture-platform-approved: [role.backend-engineer]
     gate.engineering-contract-approved: [role.backend-engineer, role.test-engineer]
     implementation-scope: [role.test-engineer]
-  default_if_unlisted: biological-human
+  default_if_unlisted: reject-unlisted
   evidence_only: []
   orchestrator:
     - gate.slice-contract-approved
   digital_human_review:
     - gate: gate.delivery-accepted
+      capability_ids: [capability.implementation-assurance]
       countersigners:
         - role.test-engineer
   digital_human_review_work_units:
     - work_unit: work-unit.code-review
+      capability_ids: [capability.implementation-assurance]
       countersigners:
         - role.test-engineer
       implementer_must_differ: true
   dual_digital_human:
     - gate: gate.plan-approved
+      capability_ids: [capability.business-rules]
       drafter: role.requirements-manager
       countersigners:
         - role.product-manager
     - gate: gate.spec-baseline-approved
+      capability_ids: [capability.spec-acceptance]
       drafter: role.requirements-manager
       countersigners:
         - role.product-manager
     - gate: gate.engineering-contract-approved
+      capability_ids: [capability.engineering-acceptance]
       drafter: role.backend-engineer
       countersigners:
         - role.test-engineer
@@ -229,33 +269,41 @@ gate_policy:
     - check.openapi-frozen
   check_reviews:
     - gate: check.domain-strategy-approved
+      capability_ids: [capability.business-rules]
       drafter: role.requirements-manager
       countersigners:
         - role.product-manager
     - gate: check.stage-decision-package-approved
+      capability_ids: [capability.business-rules]
       drafter: role.requirements-manager
       countersigners:
         - role.product-manager
     - gate: check.prototype-reviewed
+      capability_ids: [capability.prototype-assurance]
       drafter: role.product-manager
       countersigners:
         - role.frontend-engineer
     - gate: check.openapi-draft-reviewed
+      capability_ids: [capability.openapi-contract]
       drafter: role.backend-engineer
       countersigners:
         - role.frontend-engineer
     - gate: check.design-reviewed
+      capability_ids: [capability.technical-design]
       countersigners:
         - role.backend-engineer
         - role.test-engineer
     - gate: check.architecture-reviewed
+      capability_ids: [capability.technical-design]
       countersigners:
         - role.backend-engineer
         - role.test-engineer
     - gate: check.engineering-baseline-accepted
+      capability_ids: [capability.engineering-baseline]
       countersigners:
         - role.test-engineer
     - gate: check.frontend-implementation-verified
+      capability_ids: [capability.implementation-assurance]
       drafter: role.frontend-engineer
       countersigners:
         - role.test-engineer

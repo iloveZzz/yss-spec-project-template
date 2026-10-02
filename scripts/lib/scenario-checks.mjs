@@ -83,7 +83,7 @@ function validateInvocationBoundary(data) {
   ensure(includesAll(reviewScope?.sources, ["candidate-project-root", "implementation-repository-registry", "slice-project-roots", "allowed-write-paths"]) && includesAll(reviewScope?.include, ["project-itself", "registered-backend-development-projects"]) && includesAll(reviewScope?.exclude, ["frontend-projects", "unrelated-submodules", "vendor", "unregistered-directories"]) && reviewScope?.fixed_apps_backend_assumption === "forbidden", "后端审查范围未绑定本体项目与已登记后端研发项目，或仍固定为 apps/backend");
   const disposition = reviewRoute?.review_standards_route?.finding_disposition;
   ensure(includesAll(disposition?.same_loop_for, ["product-slice", "template-maintenance"]) && disposition?.reviewer_write_implementation === "forbidden", "审查 finding 闭环未同时覆盖产品切片与模板维护，或允许审查者写实现");
-  ensure(includesAll(disposition?.repair_then_full_rereview?.kinds, ["violation", "machine_check_failure", "blank_applicable_row", "missing_evidence"]) && disposition?.repair_then_full_rereview?.actor === "implementer" && disposition?.repair_then_full_rereview?.then === "recapture_candidate_and_rerun_all_axes", "violation 类 finding 未要求实现者修复后全轴复审");
+  ensure(includesAll(disposition?.repair_then_targeted_rereview?.kinds, ["violation", "machine_check_failure", "blank_applicable_row", "missing_evidence"]) && disposition?.repair_then_targeted_rereview?.actor === "implementer" && disposition?.repair_then_targeted_rereview?.then === "compare_diff_map_affected_conclusions_behavior_dependencies_rereview_and_rebind", "violation 类 finding 未要求实现者修复后定向复审及重绑定");
   ensure(includesAll(disposition?.stale_and_reroute?.kinds, ["drift", "new_impacts", "required_skills_mismatch"]) && disposition?.stale_and_reroute?.continue_coding_on_old_contract === "forbidden" && disposition?.stale_and_reroute?.next === "compiler-or-earlier-lifecycle", "drift / new_impacts 未要求合同 stale 并回 实现合同编译器");
   ensure(disposition?.exemption_policy?.not_applicable === "impact_not_triggered_only" && disposition?.exemption_policy?.mandatory_waiver === "forbidden" && includesAll(disposition?.exemption_policy?.allowed_exits, ["repair", "seam-deferred-complete"]) && disposition?.exemption_policy?.new_human_waiver_gate === "forbidden", "审查豁免策略允许未命中以外的 not-applicable 或 mandatory 豁免");
   ensure(data.review_input?.unique_default_skill === "code-review" && data.review_input?.second_generic_review_skill === "forbidden" && data.review_input?.completed_requires_specialist_coverage === true && data.review_input?.finding_disposition_required === true && data.review_input?.completed_requires_no_open_mandatory_violations === true && data.review_input?.completed_requires_no_blank_applicable_rows === true && data.review_input?.reviewer_write_implementation === "forbidden" && includesAll(data.review_input?.standards_sources, ["slice_contract_required_skills", "specialist_check_inputs", "review_report_template"]), "review_input 未强制专项检查覆盖或 finding 闭环完成条件");
@@ -362,26 +362,39 @@ export function runScenario(name) {
       evidence_refs: [apiEvidenceRef],
       reason: "测试切片不新增或修改 API、消息契约或集成接口",
     });
+    // Bind current raw inputs before creating synthetic approval evidence.
+    const engineeringScope = ["backend"];
+    const engineeringDrafter = "synthetic-backend-drafter";
+    const engineeringBasis = [technicalDesignRef, dataArchitectureDecisionRef, apiContractDecisionFile, apiImpactFile, path.join(planFixture.root, apiEvidenceRef)].map(ref => ({ ref, digest: decisionDigest(readFileSync(ref)).replace(/^sha256:/, "") }));
     planFixture.write("engineering-contract-package.json", {
       schema_version: 1,
       kind: "engineering-contract-package",
       project_id: "backend",
+      gate_id: "gate.engineering-contract-approved",
+      approval_scope: engineeringScope,
+      drafter_principal_ref: engineeringDrafter,
+      basis: engineeringBasis,
       technical_design: { ref: technicalDesignRef, version: "v1", digest: decisionDigest(readFileSync(technicalDesignRef)) },
       data_architecture_decision: { ref: dataArchitectureDecisionRef, version: "v1", digest: decisionDigest(readFileSync(dataArchitectureDecisionRef)), impact: "not-applicable" },
       api_contract_decision: { ref: apiContractDecisionRef, version: "v1", digest: decisionDigest(readFileSync(apiContractDecisionFile)), impact: "not-applicable" },
     });
-    const engineeringDecision = buildDecisionFixture(path.join(planFixture.root, "engineering-contract-decision"), { boundary: "gate.engineering-contract-approved", scope: ["backend"], subjectRef: engineeringPackageRef });
+    const engineeringDigest = decisionDigest(readFileSync(engineeringPackageRef));
+    const engineeringContext = { subject_ref: engineeringPackageRef, subject_digest: engineeringDigest, approval_scope: engineeringScope, drafter_principal_ref: engineeringDrafter, basis: engineeringBasis };
+    const engineeringDecision = buildDecisionFixture(path.join(planFixture.root, "engineering-contract-decision"), { boundary: "gate.engineering-contract-approved", scope: engineeringScope, subjectRef: engineeringPackageRef });
     planFixture.write("engineering-contract-approval.json", {
       schema_version: 1,
       gate_id: "gate.engineering-contract-approved",
       decision: "approved",
       actor_kind: "digital-human",
-      role_id: "role.product-manager",
+      role_id: "role.test-engineer",
       runtime_id: "runtime.generic",
-      principal_ref: "synthetic-product-reviewer",
+      principal_ref: "synthetic-test-reviewer",
       subject_ref: engineeringPackageRef,
-      approval_scope: ["backend"],
+      subject_digest: engineeringDigest,
+      approval_scope: engineeringScope,
+      basis: engineeringBasis,
       drafter_role_id: "role.backend-engineer",
+      drafter_principal_ref: engineeringDrafter,
       user_decision_ref: engineeringDecision.ref,
       artifact_bindings: [
         { id: "technical-design.demo", version: "v1", digest: decisionDigest(readFileSync(technicalDesignRef)) },
@@ -405,7 +418,7 @@ export function runScenario(name) {
           project_root: "/workspace/backend",
           repository_scope: "external-repository",
           design_prerequisites: {
-            technical_design: { ref: technicalDesignRef, version: "v1", digest: decisionDigest(readFileSync(technicalDesignRef)) },
+            technical_design: { ref: technicalDesignRef, version: "v1", digest: decisionDigest(readFileSync(technicalDesignRef)), approval_context: structuredClone(engineeringContext) },
             data_architecture_decision: { ref: dataArchitectureDecisionRef, version: "v1", digest: decisionDigest(readFileSync(dataArchitectureDecisionRef)), impact: "not-applicable" },
             api_contract_decision: { ref: apiContractDecisionRef, version: "v1", digest: decisionDigest(readFileSync(apiContractDecisionFile)), impact: "not-applicable" },
             engineering_contract_approval_ref: engineeringApprovalRef,
@@ -435,6 +448,33 @@ export function runScenario(name) {
       delivery_impacts: { backend: true, frontend: false },
       implementation_repository_preparation: validRepositoryPreparation,
     };
+    validateWorkflowExecutionResult(validImplementationResult, data.workflow_execution_result, data.work_unit_routes, { root: planFixture.root });
+    const assertEngineeringRejected = (name, payload) => {
+      let failure;
+      try { validateWorkflowExecutionResult(payload, data.workflow_execution_result, data.work_unit_routes, { root: planFixture.root }); }
+      catch (error) { failure = error; }
+      ensure(failure?.message.includes("backend-design-prerequisites-missing"), `工程批准反例未被正确拒绝: ${name}: ${failure?.message ?? "未拒绝"}`);
+      process.stdout.write(`PASS Matt 工程批准拒绝: ${name}\n`);
+    };
+    for (const [name, mutate] of [
+      ["缺少独立消费上下文", binding => { delete binding.approval_context; }],
+      ["消费范围篡改", binding => { binding.approval_context.approval_scope = ["other-backend"]; }],
+      ["消费依据摘要篡改", binding => { binding.approval_context.basis[0].digest = `sha256:${"0".repeat(64)}`; }],
+    ]) {
+      const invalid = structuredClone(validImplementationResult);
+      mutate(invalid.implementation_repository_preparation.projects[0].design_prerequisites.technical_design);
+      assertEngineeringRejected(name, invalid);
+    }
+    const currentEngineeringRecord = JSON.parse(readFileSync(engineeringApprovalRef, "utf8"));
+    for (const [name, mutate] of [
+      ["批准主体摘要过期", record => { record.subject_digest = `sha256:${"0".repeat(64)}`; }],
+      ["缺少独立起草者身份", record => { delete record.drafter_principal_ref; }],
+      ["起草者自签", record => { record.principal_ref = engineeringDrafter; }],
+    ]) {
+      const invalid = structuredClone(currentEngineeringRecord); mutate(invalid);
+      try { planFixture.write("engineering-contract-approval.json", invalid); assertEngineeringRejected(name, validImplementationResult); }
+      finally { planFixture.write("engineering-contract-approval.json", currentEngineeringRecord); }
+    }
     validateWorkflowExecutionResult(validImplementationResult, data.workflow_execution_result, data.work_unit_routes, { root: planFixture.root });
     for (const mutate of [
       (item) => { item.vertical_slice_ticket_role = "ready-for-human"; },

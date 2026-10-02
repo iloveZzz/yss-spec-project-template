@@ -1,3 +1,4 @@
+import {findApprovalCheckpoint} from './approval-checkpoint-discovery.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
@@ -72,7 +73,10 @@ export function validateAssetSemantics(root, ref, kind) {
     args = [file, '--root', root];
   } else {
     tool = { checkpoint: 'scripts/verify-lifecycle-checkpoint', 'task-package': 'scripts/verify-digital-human-task-package', 'approval-record': 'scripts/verify-approval-record' }[kind];
-    args = kind === 'approval-record' ? [value.decision === 'approved' || value.kind === 'review-bundle' ? '--require-approved' : '--history', file] : [file];
+    if(kind==='approval-record') {
+      const current=value.decision==='approved'||value.kind==='review-bundle';
+      args=current&&value.schema_version!==2?['--require-approved','--checkpoint',findApprovalCheckpoint(root,ref),file]:[current?'--require-approved':'--history',file];
+    } else args=[file];
   }
   ensure(exists(safeFile(root, tool)), `ASSET_CONSUMER_MISSING: ${tool}`);
   const result = spawnSync(process.execPath, [path.join(root, tool), ...args], { cwd: root, encoding: 'utf8', timeout: 60000, maxBuffer: 8 * 1024 * 1024 });

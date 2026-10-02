@@ -5,11 +5,11 @@ description: 编排 YSS 研发全生命周期；当阶段、产物、门禁或 S
 
 # YSS Product Lifecycle
 
-合同阅读与托管更新：`scripts/contract view|render|check-views`；见 `.template-spec/process/contract-reading.md`。
+合同阅读与更新：`scripts/contract view|render|check-views`；见 `.template-spec/process/contract-reading.md`。
 
 五类机器资产默认 JSON；读写、迁移及恢复须遵循 `.template-spec/process/structured-assets.md`。
 
-文档及进度按 `document_writing` 调用 `i-have-adhd`，遵循 `.template-spec/process/document-writing.md`；正文用中文名称与动作，编号按需追踪。
+文档及进度按 `document_writing` 调用 `i-have-adhd`，遵循 `.template-spec/process/document-writing.md`；中文说明，编号按需追踪。
 
 ## 事实源
 
@@ -24,10 +24,10 @@ description: 编排 YSS 研发全生命周期；当阶段、产物、门禁或 S
 | 影响面、裁剪与维护强度 | `.template-spec/process/harness-process-tailoring.md`、`.template-source/process/maintenance-intensity.yaml` |
 
 ```bash
-scripts/query-lifecycle-context --mode route --stage stage.plan --work-unit work-unit.plan-requirements --include execution_efficiency
+scripts/query-lifecycle-context --work-unit work-unit.plan-requirements --check-skills
 ```
 
-`--include` 接受合同顶层键，非法输入失败。详见 `references/orchestration.md`。
+`--include` 限合同顶层键。调用前按 [来源与补装](references/matt-yss-adapter.md) 预检，在既有授权内补装并重验。
 
 按 `execution_efficiency` 合并查询、复用未变资料；仍核验当前资产、词汇和门禁，产品流转不重跑模板套件。
 
@@ -38,9 +38,9 @@ scripts/query-lifecycle-context --mode route --stage stage.plan --work-unit work
 3. 按合同 `request_triage` 选择 `route`、`orchestrate`、`resume`、`audit`；明确行动请求无需模式关键字，意图不明时只读 `route`。`modes`、门禁及授权边界仍适用。
 4. `project-instance` 按生命周期注册表推进；`template-source` 只走模板维护流程。
 
-Plan 入口读取 `.template-spec/plan/README.md` 和 `.template-spec/process/plan-migration.md`，核查战略输入与退出条件。关键未决项阻断 Spec；其余记录责任人、解决时点和接收方。只用 Plan 标识，旧阶段不解析，历史批准不自动沿用。
+Plan 入口读 `.template-spec/plan/README.md`、`.template-spec/process/plan-migration.md`，核验战略输入及退出条件。关键未决项阻断 Spec；其余记责任人、解决时点和接收方。只认 Plan 标识，不解析旧阶段，不自动沿用历史批准。
 
-分诊见 [协议](references/request-triage.md) 与 `--include request_triage`。先查证据，只问下一动作所需缺口，不按问题长度追问。
+分诊见 [协议](references/request-triage.md) 与 `--include request_triage`。先查证据，只问下一动作所需缺口。
 
 ## 不可越过的边界
 
@@ -52,13 +52,14 @@ Plan 入口读取 `.template-spec/plan/README.md` 和 `.template-spec/process/pl
 
 不得越过命中的阶段、门禁、实现仓库准备或 Ticket 正式化。实现只接收绑定垂直切片、已批准且持久化、版本当前并通过完整 `ready-for-agent` 计算的合同；父 Ticket、`ready-for-human` 切片、`stale`、`drift`、`new_impacts`、`violation` 或缺失证据均阻断。实现仓库、脚手架、UI 还原、review input 和发布条件从对应合同子树查询，不在入口重复定义。
 
-聚合批准见 `gate_consolidation`。普通功能默认一个独立审查者，按能力缺口、冲突或外部制度增员；相邻检查组合审查、逐项留证。
+批准与能力审查见 `gate_consolidation`；复审按 `review_input.rereview`，首轮完整、修复定向、当前候选重绑定，未知先调查。
+聚合批准见 `gate_consolidation`。默认一名独立审查者，按能力缺口、冲突或外部制度增员；相邻检查可组合，逐项留证。
 
-职责与后端终点见 `execution_scopes`，恢复、编译和派发须复验。保留产品设计门禁，后端交付不等于业务完成或发布。
+职责及后端终点见 `execution_scopes`，恢复、编译、派发须复验。保留产品设计门禁，后端交付不等于业务完成或发布。
 
 ### 用户决定
 
-按角色表 `user_decision_policy` 和 `references/user-decisions.md` 先展示可审阅资产、范围、风险及后续动作，再取得提问者或其指定生物人的原始回复。数字人、超时和默认项不能代答。已有授权优先用 `continuation_ref` 核验延续；未知/实质变化或强制审批缺失才重新决定。缺陷和缺证据阻断，建议记待办；合同、验证及外部动作授权仍须满足。
+按角色表 `user_decision_policy` 和 `references/user-decisions.md` 先展示资产、范围、风险及后续动作，再取得提问者或其指定生物人的原始回复。数字人、超时和默认项不能代答。优先核验 `continuation_ref`；未知影响先调查，实质变化或强制审批缺失后重新决定。缺陷和缺证据阻断，建议记待办；合同、验证及外部授权仍适用。
 
 ### 外部副作用与 Git
 
@@ -66,35 +67,37 @@ Plan 入口读取 `.template-spec/plan/README.md` 和 `.template-spec/process/pl
 
 ## 有界编排循环
 
-1. 从真实资产重建当前状态，查询当前 mode、stage、work-unit 及必要合同子树。
-2. 评估影响面、上游新鲜度、门禁和阻塞，选择第一个未阻塞工作单元；不把 `not-applicable` 当作豁免。
-3. 原生工作单元由主控持有正式资产；专项按结构化任务包派发，只调用合同允许的 model-invoked skill。
+1. 从真实资产重建状态，查询 mode、stage、work-unit 及必要合同子树。
+2. 核验影响面、上游新鲜度、门禁和阻塞，选择首个未阻塞单元；`not-applicable` 不作豁免。
+3. 主控持有原生正式资产；专项按结构化任务包派发，只调用合同允许的 model-invoked skill。
 4. `to-spec`、`to-tickets`、`implement` 等兼容入口只可由用户显式调用。主控预检输入、路径和门禁；入口按 `matt_invocation_boundary` 写入其产物并回交验收，不批准或改变 Ticket 就绪状态。原生资产仍归主控。
 5. 先逐项验收用户目标、遗漏、错误假设和未决问题，再验收 `Workflow Execution Result`：工作单元、合同、允许写路径、`context_reconciliation`、证据、实际验证、延期 seam、漂移和下一路由必须可核验。实现派发额外绑定当前 Slice Implementation Contract v3；其他阶段不得伪造该合同。
-6. 在授权边界内继续下一工作单元；遇到人工决定、新授权、证据冲突、专项失败或合并/发布结论时暂停。暂停不得阻断独立工作。
+6. 按 `blocking_disposition` 自主处理阻塞；缺真实决定或新授权才展示资产后询问。独立工作继续，完成结论不新增暂停。
 
-每个 `project-instance` 工作单元批准或流转前，回写稳定术语到唯一根 `CONTEXT.md`，并生成通过校验的 `context_reconciliation`。候选术语、错误路径、摘要漂移或未决冲突必须阻断。质量标准只由 `engineering-baseline` 定义一次；高风险影响按裁剪合同补充反证和残余风险。
+`project-instance` 批准或流转前按根 `AGENTS.md` 完成术语回写与 `context_reconciliation`；候选术语、错误路径、摘要漂移或冲突阻断。质量标准由 `engineering-baseline` 唯一定义，高风险反证按裁剪合同。
 
 ## 面向业务角色
 
 澄清目标、流程、责任、规则、范围和验收例子。业务总览引用权威资产，展示状态、未决项、责任人和下一步，不复制正文或新增门禁。
 
-Plan → Spec（含正式草稿、恢复与显式 `to-spec`）写入前，按 `.template-spec/plan/entry-review.md` 持久化审阅包并运行 `node scripts/verify-plan-spec-entry <state.yaml>`。检查默认 pending，缺项、过期或无真实回复即阻断；独立调研可继续。
+Plan → Spec 写入前按 `.template-spec/plan/entry-review.md` 持久化审阅包，执行 `node scripts/verify-plan-spec-entry <state.yaml>`；缺项、过期或无真实回复阻断，独立调研继续。
 
 ## 结果与暂停
 
-结构化结果保留模式、仓库身份、阶段/工作单元、影响面、资产/门禁/Ticket/Slice/合同状态、证据新鲜度、就绪、阻塞、本轮动作、下一单元、暂停理由、Ticket 同步和 Git checkpoint；用户说明按中文写作规范呈现。
+每轮返回或暂停，按 `user_progress_report` 说明当前阶段及依据、本轮结果、下一阶段/单元及条件、问题/阻塞、责任方、解除动作与复验、主控动作与用户决定。目标不代表获准进入；未知写“待核验”，负责人缺失写“未登记”。已授权修复继续执行，不只回 Skill 或 JSON。
 
-会签记录保留门禁 ID、`role_id`、`runtime_id`、文件路径、推荐答案和恢复动作；用户提示解释待决定事项与责任方。恢复前运行适用验证器。同一候选通过适用审查与 fresh verification 才可提出完成、合并或发布结论；发布仍须生物人决定。
+结构化结果按 `workflow_execution_result` 与 `references/state-model.md` 记录状态、证据新鲜度、阻塞、动作、路由和 Ticket / Git checkpoint。
 
-Plan / Spec / Design 追踪按 `.template-spec/process/stage-tracking.md`。
+发送前核对状态、证据新鲜度、阻塞与结构化结果一致；详见 [结果与友好提示](references/orchestration.md#结果与友好提示)。会签保留门禁、角色/运行时、文件、推荐答案和恢复动作。恢复先验证；完成、合并、发布须同一候选通过适用审查与 fresh verification，发布仍须生物人决定。
 
-需求澄清读 [对账](references/plan-requirements.md)；外部输入读 [问卷](references/external-input-questionnaire.md)。
+Plan / Spec / Design 追踪见 `.template-spec/process/stage-tracking.md`。
+
+需求澄清读 [对账](references/plan-requirements.md)，外部输入读 [问卷](references/external-input-questionnaire.md)。
 
 Spec 起草业务票，Design 校准后正式化；无设计影响直接正式化，研发再细化 Slice。按 `.template-spec/process/business-tickets.md` 检查覆盖和批准；业务票不授予实现资格。
 
 ## 功能资产整理
 
-整理与旧票迁移先读 `.template-spec/process/feature-assets.md`，只按显式候选计划处理，保留状态、批准依据和原文；不得推进阶段。临时输入与草稿放临时工作区，引用后按正式资产保留。
+整理与旧票迁移按 `.template-spec/process/feature-assets.md` 和显式计划保留状态、批准依据及原文，不推进阶段。临时草稿被引用后按正式资产保留。
 
 既有 YSS 实例的模板版本升级、旧治理布局迁移或升级恢复路由到 `yss-harness-upgrade`，按 `.template-spec/process/harness-upgrade.md` 执行；不由升级动作推进产品阶段或重写历史批准。

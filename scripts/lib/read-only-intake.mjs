@@ -4,6 +4,7 @@ import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { parse } from '../vendor/yaml.mjs';
 import { runCommand } from './command-runner.mjs';
+import { assertNodeVersion, beginRuntimeRun } from './runtime-store.mjs';
 
 const ensure = (ok, message) => { if (!ok) throw new TypeError(`read-only-intake: ${message}`); };
 export const digest = value => `sha256:${createHash('sha256').update(value).digest('hex')}`;
@@ -21,7 +22,10 @@ export function intakeEvidencePath(ref, { root, runDir }) {
 }
 // Stream large preserved evidence archives instead of allocating the whole file.
 export function fileDigest(file) {
-  const hash = createHash('sha256'), buffer = Buffer.allocUnsafe(1024 * 1024);
+  return fileDigestWithBuffer(file, Buffer.allocUnsafe(1024 * 1024));
+}
+function fileDigestWithBuffer(file, buffer) {
+  const hash = createHash('sha256');
   const fd = fs.openSync(file, 'r');
   try {
     let size;
@@ -33,7 +37,8 @@ export function fileDigest(file) {
 export function intakeSnapshot(root) {
   const result = spawnSync('git', ['ls-files', '-z', '--cached', '--others'], { cwd: root, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 });
   ensure(result.status === 0, result.stderr || '无法观察仓库');
-  const rows = {};
+  // Synchronous reads share scratch space only within this snapshot, never results.
+  const rows = {}, buffer = Buffer.allocUnsafe(1024 * 1024);
   for (const ref of [...new Set(result.stdout.split('\0').filter(Boolean))].sort()) {
     const file = path.join(root, ref);
     try {
@@ -44,7 +49,7 @@ export function intakeSnapshot(root) {
         const head = spawnSync('git', ['rev-parse', 'HEAD'], { cwd: file, encoding: 'utf8' });
         ensure(nested.status === 0 && head.status === 0, `子仓不可观测: ${ref}`);
         rows[ref] = { kind: 'gitlink', head: head.stdout.trim(), files: intakeSnapshot(file) };
-      } else rows[ref] = { kind: stat.isSymbolicLink() ? 'link' : 'file', mode: stat.mode, digest: stat.isSymbolicLink() ? digest(fs.readlinkSync(file)) : fileDigest(file) };
+      } else rows[ref] = { kind: stat.isSymbolicLink() ? 'link' : 'file', mode: stat.mode, digest: stat.isSymbolicLink() ? digest(fs.readlinkSync(file)) : fileDigestWithBuffer(file, buffer) };
     } catch (error) { if (error.code === 'ENOENT') rows[ref] = null; else throw error; }
   }
   const head=spawnSync('git',['rev-parse','--verify','HEAD'],{cwd:root,encoding:'utf8'});
@@ -98,22 +103,29 @@ export function validateReadOnlyIntake(value, { root, runDir, roles, lifecycle }
   return value;
 }
 /** Runner-owned evidence is outside the repository; the child receives no new repository permissions. */
-export async function observeReadOnlyIntake(task, { root, runDir, command, args = [], timeoutMs = 0 }) {
+export async function observeReadOnlyIntake(task, { root, runDir, command, args = [], timeoutMs = 0, runtimeStore = 'off' }) {
+  assertNodeVersion();
+  ensure(['sqlite','off'].includes(runtimeStore), 'runtime-store 必须为 sqlite 或 off');
   const label = command ? JSON.stringify([command,...args]) : null;
   ensure(!command || !task.verification_commands.length || task.verification_commands.length===1 && task.verification_commands[0]===label,'执行命令与声明不一致，不得替换要求的验证');
   root = fs.realpathSync(root);
   ensure(path.isAbsolute(runDir) && !inside(root, path.resolve(runDir)), '运行目录必须位于仓库外');
   ensure(!inside(root, fs.realpathSync(path.dirname(runDir))), '运行目录父路径符号链接进入仓库');
+  ensure(!fs.existsSync(runDir), '运行目录必须为新目录');
+  const runtimeSession=beginRuntimeRun({root,kind:'read-only-intake',mode:runtimeStore,input:task,reportDir:runDir});
+  const storageErrors=[];
+  try {
   fs.mkdirSync(runDir, { recursive: false });
   runDir = fs.realpathSync(runDir);
   fs.writeFileSync(path.join(runDir,'task.json'),JSON.stringify(task,null,2)+'\n',{flag:'wx'});
   const before = intakeSnapshot(root), started = new Date().toISOString();
-  const result = command ? await runCommand(command, args, { cwd: root, timeoutMs, stdoutFile: path.join(runDir, 'stdout.log'), stderrFile: path.join(runDir, 'stderr.log') }) : null;
+  const result = command ? await runCommand(command, args, { cwd: root, timeoutMs, stdoutFile: path.join(runDir, 'stdout.log'), stderrFile: path.join(runDir, 'stderr.log'), runtimeSession }) : null;
+  if(result?.storageError)storageErrors.push(result.storageError);
   const after = intakeSnapshot(root);
   const observation = { schema_version: 1, kind: 'read-only-intake-observation', task_id: task.task_id, task_ref:'run:task.json', task_digest:digest(fs.readFileSync(path.join(runDir,'task.json'))), root, started_at: started, before, after };
   fs.writeFileSync(path.join(runDir, 'observation.json'), JSON.stringify(observation, null, 2)+'\n');
   const changed = JSON.stringify(before) !== JSON.stringify(after);
-  const completed = !changed && (!result || result.status === 0);
+  let completed = !changed && !storageErrors.length && (!result || result.status === 0);
   const output = structuredClone(task);
   output.observation_ref = 'run:observation.json';
   output.verification_status = result ? 'executed' : 'not-executed';
@@ -128,5 +140,17 @@ export async function observeReadOnlyIntake(task, { root, runDir, command, args 
   output.workflow_status = completed ? 'resolved' : 'failed';
   output.result = { result_schema: 'workflow-execution-result-v1', work_unit: task.work_unit_id, workflow_reference: task.contract.contract_ref, result: completed ? 'completed' : 'failed', skill: 'yss-research', changed_files: [], changed_artifacts: [], evidence_refs: [...task.inputs, 'run:observation.json'], context_reconciliation: {status:'not-applicable',ref:'CONTEXT.md',reason:'只读分诊，不批准资产或流转阶段'}, deferred_seams: [], drift: [], violation: changed ? ['repository-changed'] : [], new_impacts: [], stale_candidates: [], next_route: null, blocking_signals: completed ? [] : ['read-only-intake-failed'] };
   fs.writeFileSync(path.join(runDir, 'task-result.json'), JSON.stringify(output, null, 2)+'\n');
+  if(runtimeSession)try {
+    runtimeSession.recordEvent('repository-observation',{changed,started_at:started});
+    runtimeSession.registerFiles(runDir);
+    runtimeSession.finish({status:completed?'completed':'failed',exitCode:result?.status??0,report:path.join(runDir,'task-result.json')});
+    runtimeSession.pin('read-only-intake-evidence');
+  }catch(error){storageErrors.push(error.message);}
+  if(storageErrors.length){
+    output.workflow_status='failed';output.result.result='failed';output.result.blocking_signals.push('runtime-store-failed');
+    fs.writeFileSync(path.join(runDir, 'task-result.json'), JSON.stringify(output, null, 2)+'\n');
+    process.stderr.write(`运行存储异常，实际执行结果及日志已保留: ${storageErrors.join('; ')}\n`);
+  }
   return output;
+  } finally { runtimeSession?.close(); }
 }

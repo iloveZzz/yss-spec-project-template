@@ -1,3 +1,4 @@
+import { validateReviewCapabilityPolicy } from './review-capabilities.mjs';
 import { readFileSync } from './validation-phase.mjs';
 import path from "node:path";
 import { parseDocument } from "../vendor/yaml.mjs";
@@ -230,8 +231,11 @@ export function countersignRuleForGate(policy, gateId) {
     return { bucket: "biological_human", gate: gateId, countersigners: [BIOLOGICAL_ROLE_ID] };
   }
   if ((policy?.evidence_only || []).includes(gateId) || (policy?.orchestrator || []).includes(gateId)) return null;
-  if (policy?.default_if_unlisted === "biological-human" && loadRegistry().gates.some((gate) => gate.id === gateId)) {
-    return { bucket: "biological_human", gate: gateId, countersigners: [BIOLOGICAL_ROLE_ID] };
+  if ((policy?.automatic_checks || []).includes(gateId)) return null;
+  if (policy?.default_if_unlisted === 'reject-unlisted') {
+    const error = new TypeError(`GATE_POLICY_REQUIRED: 未分类门禁或检查 ${gateId}`);
+    error.code = 'GATE_POLICY_REQUIRED';
+    throw error;
   }
   return null;
 }
@@ -253,7 +257,7 @@ export function taskPackageDefaults(roleId, doc) {
   };
 }
 
-export function validateDigitalHumanRoles(doc, { skillIds, stageIds, gateIds, artifactIds, evidenceIds, workUnitIds, skillRegistry } = {}) {
+export function validateDigitalHumanRoles(doc, { skillIds, stageIds, gateIds, artifactIds, evidenceIds, workUnitIds, skillRegistry, checkIds: suppliedCheckIds } = {}) {
   if (!doc || typeof doc !== "object" || Array.isArray(doc)) fail("数字人角色注册表必须是对象");
   if (doc.schema_version !== 1) fail("schema_version 必须为 1");
   if (doc.registry_id !== "yss.digital-human-roles") fail("registry_id 必须为 yss.digital-human-roles");
@@ -323,7 +327,7 @@ export function validateDigitalHumanRoles(doc, { skillIds, stageIds, gateIds, ar
 
   const policy = doc.gate_policy;
   if (!policy || typeof policy !== "object") fail("缺少 gate_policy");
-  if (policy.default_if_unlisted !== "biological-human") fail("default_if_unlisted 必须为 biological-human");
+  if (policy.default_if_unlisted !== "reject-unlisted") fail("GATE_POLICY_REQUIRED: default_if_unlisted 必须为 reject-unlisted");
   if (policy.runtime_side_effect_approval !== "biological-human") fail("runtime_side_effect_approval 必须为 biological-human");
   if (policy.commercial_contract !== "biological-human") fail("commercial_contract 必须为 biological-human");
   if (policy.unlisted_kept_biological) {
@@ -348,7 +352,7 @@ export function validateDigitalHumanRoles(doc, { skillIds, stageIds, gateIds, ar
     if (typeof rule === "string") fail("digital_human_review 必须是含 gate 与 countersigners 的规则");
     validateSignRule(rule, { actors, gateIds, claimed, field: `digital_human_review[${index}]` });
   }
-  const checkIds = new Set(loadRegistry().checks.map(check => check.id));
+  const checkIds = suppliedCheckIds || new Set(loadRegistry().checks.map(check => check.id));
   const checkClaimed = new Set();
   for (const id of policy.automatic_checks || []) {
     if (!checkIds.has(id) || checkClaimed.has(id)) fail(`未知或重复自动检查: ${id}`);
@@ -386,6 +390,8 @@ export function validateDigitalHumanRoles(doc, { skillIds, stageIds, gateIds, ar
   for (const gate of policy.unlisted_kept_biological || []) {
     if (claimed.has(gate)) fail(`unlisted_kept_biological 与会签桶重复: ${gate}`);
   }
+
+  validateReviewCapabilityPolicy(doc, { skillIds, gateIds, checkIds });
 
   const decisions = doc.user_decision_policy;
   if (decisions?.continuation) {
@@ -425,6 +431,7 @@ export function validateDefaultDigitalHumanRoles() {
     skillIds: skillIdsFromRegistry(skills),
     stageIds: idsFromCollection(lifecycle.stages, "stages"),
     gateIds: idsFromCollection(lifecycle.gates, "gates"),
+    checkIds: idsFromCollection(lifecycle.checks, "checks"),
     artifactIds: idsFromCollection(lifecycle.artifacts, "artifacts"),
     evidenceIds: idsFromCollection(lifecycle.evidence, "evidence"),
     workUnitIds: idsFromCollection(lifecycle.work_units, "work_units"),

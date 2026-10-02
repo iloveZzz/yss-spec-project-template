@@ -192,7 +192,7 @@ test("技术和数据设计齐全但缺少 API Decision 时在写文件前拒绝
   assert.equal(existsSync(path.join(data.output, "demo-service")), false);
 });
 
-test("API Draft、Validation、Review 或工程批准漂移时均在零写入状态阻断 DDD", async (t) => {
+test("API、工程批准或独立当前批准上下文缺失及漂移时均在零写入状态阻断 DDD", async (t) => {
   const mutations = [
     ["OpenAPI YAML 摘要漂移", async (data) => writeFile(data.design.openapi.file, "\n# drift\n", { flag: "a" })],
     ["Redocly Validation 失败", async (data) => {
@@ -224,6 +224,33 @@ test("API Draft、Validation、Review 或工程批准漂移时均在零写入状
       const approval = JSON.parse(await readFile(data.design.approval.file, "utf8"));
       approval.artifact_bindings = approval.artifact_bindings.filter((item) => !item.id.startsWith("api-contract."));
       await writeFile(data.design.approval.file, `${JSON.stringify(approval, null, 2)}\n`);
+    }],
+    ["缺少独立当前批准上下文", async (data) => {
+      delete data.contract.design_prerequisites.technical_design.approval_context;
+      await writeFile(data.contractFile, `${JSON.stringify(data.contract, null, 2)}\n`);
+    }],
+    ["消费范围替换", async (data) => {
+      data.contract.design_prerequisites.technical_design.approval_context.approval_scope = ["scaffold.other", "demo-service"];
+      await writeFile(data.contractFile, `${JSON.stringify(data.contract, null, 2)}\n`);
+    }],
+    ["消费主体替换", async (data) => {
+      data.contract.design_prerequisites.technical_design.approval_context.subject_ref = data.design.data.ref;
+      await writeFile(data.contractFile, `${JSON.stringify(data.contract, null, 2)}\n`);
+    }],
+    ["当前依据摘要漂移", async (data) => {
+      data.contract.design_prerequisites.technical_design.approval_context.basis[0].digest = `sha256:${"0".repeat(64)}`;
+      await writeFile(data.contractFile, `${JSON.stringify(data.contract, null, 2)}\n`);
+    }],
+    ["当前起草主体替换", async (data) => {
+      data.contract.design_prerequisites.technical_design.approval_context.drafter_principal_ref = "other-drafter";
+      await writeFile(data.contractFile, `${JSON.stringify(data.contract, null, 2)}\n`);
+    }],
+    ["当前起草者自签", async (data) => {
+      const approval = JSON.parse(await readFile(data.design.approval.file, "utf8"));
+      approval.drafter_principal_ref = approval.principal_ref;
+      data.contract.design_prerequisites.technical_design.approval_context.drafter_principal_ref = approval.principal_ref;
+      await writeFile(data.design.approval.file, `${JSON.stringify(approval, null, 2)}\n`);
+      await writeFile(data.contractFile, `${JSON.stringify(data.contract, null, 2)}\n`);
     }],
   ];
   for (const [name, mutate] of mutations) {

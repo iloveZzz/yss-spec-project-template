@@ -690,6 +690,9 @@
             "required",
             "not-applicable"
           ]
+        },
+        "approval_context": {
+          "$ref": "approval-context.schema.json"
         }
       }
     },

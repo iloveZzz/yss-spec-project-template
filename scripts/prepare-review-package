@@ -1,0 +1,8 @@
+#!/usr/bin/env node
+import { parseArgs } from 'node:util';
+import { prepareReviewPackage } from './lib/review-package.mjs';
+try {
+  const { values } = parseArgs({ options: { root: { type: 'string' }, checkpoint: { type: 'string' }, check: { type: 'string', multiple: true }, role: { type: 'string' }, runtime: { type: 'string', default: 'runtime.generic' }, actor: { type: 'string' }, 'reviewer-principal': { type: 'string' }, 'drafter-principal': { type: 'string' }, 'implementation-actor': { type: 'string' }, 'task-id': { type: 'string' }, 'review-session': { type: 'string' }, 'work-unit': { type: 'string' }, 'output-dir': { type: 'string' }, 'previous-subject': { type: 'string' } }, strict: true });
+  const result = prepareReviewPackage({ root: values.root, checkpointRef: values.checkpoint, checkIds: values.check, roleId: values.role, runtimeId: values.runtime, actorId: values.actor, reviewerPrincipalRef: values['reviewer-principal'], drafterPrincipalRef: values['drafter-principal'], implementationActorId: values['implementation-actor'], taskId: values['task-id'], reviewSessionId: values['review-session'], workUnitId: values['work-unit'], outputDir: values['output-dir'], previousSubjectRef: values['previous-subject'] });
+  process.stdout.write(JSON.stringify(result, null, 2) + '\n');
+} catch (error) { process.stderr.write(`审阅包草案生成失败: ${error.message}\n`); process.exitCode = 1; }

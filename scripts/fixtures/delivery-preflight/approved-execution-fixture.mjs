@@ -16,7 +16,7 @@ export function approvedFixture(family='layered-mvc',{withDesign=family==='layer
  let design,technical_design;
  if(withDesign){
   design=mvcFixture(f.root);
-  f.write('registration.json',f.registration);f.write('review.md','Synthetic architecture and technical review, not product evidence.\n');
+  f.write('registration.json',f.registration);
   design.status='approved';design.architecture.project_id=f.identity.project_id;design.architecture.decision_digest=f.bindings.repository_registration.digest;
  }
  f.write('yss-project.yaml','schema_version: 1\nrepository_mode: project-instance\n');
@@ -27,8 +27,13 @@ export function approvedFixture(family='layered-mvc',{withDesign=family==='layer
   technical_design={...f.write('technical-design.json',design),id:design.technical_design_id,version:design.version};
   const designGate=['gate.engineering-contract-approved','gate.technical-design-approved'].find(gate=>countersignRuleForGate(roles.gate_policy,gate));
   if(!designGate)throw new Error('Synthetic technical fixture requires installed source approval policy');
-  const d=buildDecisionFixture(path.join(f.root,'design-decision'),{boundary:designGate,scope:[slice_id],subjectRef:path.join(f.root,technical_design.ref)});
-  const proof={schema_version:1,gate_id:designGate,decision:'approved',actor_kind:'digital-human',role_id:countersignRuleForGate(roles.gate_policy,designGate).countersigners[0],runtime_id:'runtime.generic',principal_ref:'synthetic-product-reviewer',subject_ref:path.join(f.root,technical_design.ref),approval_scope:[slice_id],user_decision_ref:d.ref,artifact_bindings:[{id:technical_design.id,version:technical_design.version,digest:technical_design.digest}]};
+  const evidence=f.write('technical-review.log','Synthetic current design comparison; not a real approval.');
+  const basis=[{ref:technical_design.ref,digest:technical_design.digest.slice(7)},{ref:evidence.ref,digest:evidence.digest.slice(7)}];
+  const subject=f.write('technical-review-package.json',{gate_id:designGate,approval_scope:[slice_id],basis,drafter_principal_ref:'synthetic-design-drafter'});
+  technical_design.approval_context={subject_ref:subject.ref,approval_scope:[slice_id],basis,drafter_principal_ref:'synthetic-design-drafter'};
+  const d=buildDecisionFixture(path.join(f.root,'design-decision'),{boundary:designGate,scope:[slice_id],subjectRef:path.join(f.root,subject.ref)});
+  d.record.request.items[0].subject.ref=subject.ref;d.present();d.record.responses=[];d.respond();d.save();
+  const proof={schema_version:1,gate_id:designGate,decision:'approved',actor_kind:'digital-human',role_id:countersignRuleForGate(roles.gate_policy,designGate).countersigners[0],runtime_id:'runtime.generic',principal_ref:'synthetic-product-reviewer',subject_ref:subject.ref,subject_digest:subject.digest.slice(7),drafter_principal_ref:'synthetic-design-drafter',basis,approval_scope:[slice_id],user_decision_ref:d.ref,artifact_bindings:[{id:technical_design.id,version:technical_design.version,digest:technical_design.digest}]};
   technical_design.approval_ref=f.write('technical-approval.json',proof).ref;
  }
  const resolution=compileDefaultImplementationContract({root:f.root,recipeIds:[family==='domain-driven'?'backend.ddd-http-api':'backend.mvc-http-api'],slice_id,architecture_identity:f.identity,architecture_evidence:f.bindings,...(technical_design?{technical_design}:{})});

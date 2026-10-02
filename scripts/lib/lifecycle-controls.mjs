@@ -1,15 +1,19 @@
-import { readFileSync } from './validation-phase.mjs';
+import { readFileSync, withValidationPhase } from './validation-phase.mjs';
 import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { parseDocument } from '../vendor/yaml.mjs';
 import { loadRegistry, ROOT } from './lifecycle-registry.mjs';
 import { loadDigitalHumanRoles, countersignRuleForGate } from './digital-human-roles.mjs';
-import { validateApprovalRecord, loadApprovalRecord } from './approval-record.mjs';
+import {loadApprovalRecord} from './approval-record-io.mjs';
+import {assertCurrentApproval, approvalExpectationFromState} from './approval-current.mjs';
 
 const fail = message => { throw new TypeError(`lifecycle-control-blocked: ${message}`); };
 
 // Checks retain their own evidence and independent review; only the aggregate requests a user decision.
-export function assertGateChecks(gateId, state, { root = ROOT, registry = loadRegistry(), rolesDoc = loadDigitalHumanRoles() } = {}) {
+export function assertGateChecks(gateId, state, options = {}) {
+  return withValidationPhase({root:options.root || ROOT,purpose:'current-gate-checks',readOnly:true},()=>validateGateChecks(gateId,state,options));
+}
+function validateGateChecks(gateId, state, { root = ROOT, registry = loadRegistry(), rolesDoc = loadDigitalHumanRoles() } = {}) {
   const gate = registry.gates.find(item => item.id === gateId);
   if (!gate) fail(`未知或已退役门禁: ${gateId}`);
   const controls = new Map(registry.checks.map(item => [item.id, item]));
@@ -47,12 +51,7 @@ export function assertGateChecks(gateId, state, { root = ROOT, registry = loadRe
     if (rule) {
       if (!refs.has(item.approval_ref) || !refs.has(item.subject_ref)) fail(`${id} 未绑定审查与资产`);
       const record = loadApprovalRecord(path.resolve(root, item.approval_ref), id);
-      if (record.gate_id !== id || record.subject_ref !== item.subject_ref) fail(`${id} 审查对象不匹配`);
-      if (!item.approval_scope?.length || JSON.stringify([...item.approval_scope].sort()) !== JSON.stringify([...(record.approval_scope || [])].sort())) fail(`${id} 审查范围不匹配`);
-      const subjectDigest = createHash('sha256').update(readFileSync(path.resolve(root, item.subject_ref))).digest('hex');
-      if (record.subject_digest !== subjectDigest) fail(`${id} 审查资产摘要不匹配`);
-      validateApprovalRecord(record, { rolesDoc, root, requireApproved: true });
-      if (!record.drafter_principal_ref || record.drafter_principal_ref === record.principal_ref) fail(`${id} 缺少独立审查身份或起草者自签`);
+      assertCurrentApproval(record,approvalExpectationFromState(id,item,{root}),{rolesDoc,registry,root});
     }
   }
   for (const id of gate.requires_checks || []) check(id);
@@ -66,16 +65,7 @@ export function assertGateChecks(gateId, state, { root = ROOT, registry = loadRe
   if (approvalRequired) {
     if (!refs.has(item.approval_ref) || !refs.has(item.subject_ref)) fail(`${gateId} 缺少已绑定批准记录和审阅包`);
     const record = loadApprovalRecord(path.resolve(root, item.approval_ref), gateId);
-    if (!record.drafter_principal_ref || record.drafter_principal_ref === record.principal_ref) fail(`${gateId} 缺少独立审查身份或起草者自签`);
-    const bytes = readFileSync(path.resolve(root, item.subject_ref));
-    if (record.subject_ref !== item.subject_ref || record.subject_digest !== createHash('sha256').update(bytes).digest('hex')) fail(`${gateId} 批准依据过期`);
-    const document = parseDocument(bytes.toString(), { uniqueKeys: true, maxAliasCount: 0 });
-    if (document.errors.length) fail(`${gateId} 审阅包不可解析`);
-    const review = document.toJS({ maxAliasCount: 0 });
-    if (review?.gate_id !== gateId || !Array.isArray(review.basis)) fail(`${gateId} 审阅包身份或依据缺失`);
-    for (const asset of item.basis.filter(asset => ![item.approval_ref, item.subject_ref].includes(asset.ref))) {
-      if (!review.basis.some(bound => bound.ref === asset.ref && bound.digest === asset.digest)) fail(`${gateId} 批准范围未覆盖证据: ${asset.ref}`);
-    }
+    assertCurrentApproval(record,approvalExpectationFromState(gateId,item,{root}),{rolesDoc,registry,root});
   }
   // Bind the aggregate approval to the exact check evidence it covers.
   for (const id of seen) for (const asset of state.checks[id].basis) {

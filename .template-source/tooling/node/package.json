@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "packageManager": "pnpm@10.15.0",
   "engines": {
-    "node": ">=22 <27"
+    "node": ">=22.13 <27"
   },
   "scripts": {
     "build:vendor": "node scripts/build-vendor.mjs",

@@ -1,3 +1,4 @@
+import {approvalExpectationForCheckpoint} from './approval-consumption.mjs';
 import path from 'node:path';
 import { verifyContextReconciliation } from './context-reconciliation.mjs';
 import { decisionIO, decisionDigest, assertUserDecisionRequirement } from './user-decision.mjs';
@@ -58,7 +59,7 @@ export function assertPlanSpecEntry(state, options = {}) {
       if (gate.status !== 'approved' || !basis.has(gate.approval_ref) || !basis.has(gate.subject_ref)) fail(`命中门禁未批准或未绑定依据: ${gateId}`);
       const record = selectApprovalRecord(io.document(gate.approval_ref), gateId);
       if (record.gate_id !== gateId || record.subject_ref !== gate.subject_ref || !gate.approval_scope?.includes(state.feature_id) || JSON.stringify([...(gate.approval_scope || [])].sort()) !== JSON.stringify([...(record.approval_scope || [])].sort())) fail(`会签资产或范围不匹配: ${gateId}`);
-      validateApprovalRecord(record, { ...options, requireApproved: true });
+      validateApprovalRecord(record, { ...options, requireApproved: true, expected: approvalExpectationForCheckpoint(gateId,{...gate,basis:[...basis.values()].filter(asset=>gate.evidence_refs?.includes(asset.ref))},options) });
     } else if (gate.status !== 'not-applicable' || !text(gate.reason)) fail(`未命中门禁须有原因和依据: ${gateId}`);
   }
   // 门禁依赖不能通过将上游标成 N/A 来跳过。

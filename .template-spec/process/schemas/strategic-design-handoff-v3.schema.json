@@ -233,6 +233,62 @@
                     "sha256-bytes",
                     "visual-baseline"
                   ]
+                },
+                "approval_context": {
+                  "type": "object",
+                  "required": [
+                    "subject_ref",
+                    "approval_scope",
+                    "basis",
+                    "drafter_principal_ref"
+                  ],
+                  "properties": {
+                    "subject_ref": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "subject_digest": {
+                      "type": "string",
+                      "pattern": "^(sha256:)?[a-f0-9]{64}$"
+                    },
+                    "approval_scope": {
+                      "type": "array",
+                      "minItems": 1,
+                      "uniqueItems": true,
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "basis": {
+                      "type": "array",
+                      "minItems": 1,
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "ref",
+                          "digest"
+                        ],
+                        "properties": {
+                          "ref": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "digest": {
+                            "type": "string",
+                            "pattern": "^(sha256:)?[a-f0-9]{64}$"
+                          }
+                        }
+                      }
+                    },
+                    "drafter_principal_ref": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "review_package": {
+                      "type": "boolean"
+                    }
+                  }
                 }
               }
             },
@@ -259,6 +315,62 @@
                     "sha256-bytes",
                     "visual-baseline"
                   ]
+                },
+                "approval_context": {
+                  "type": "object",
+                  "required": [
+                    "subject_ref",
+                    "approval_scope",
+                    "basis",
+                    "drafter_principal_ref"
+                  ],
+                  "properties": {
+                    "subject_ref": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "subject_digest": {
+                      "type": "string",
+                      "pattern": "^(sha256:)?[a-f0-9]{64}$"
+                    },
+                    "approval_scope": {
+                      "type": "array",
+                      "minItems": 1,
+                      "uniqueItems": true,
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "basis": {
+                      "type": "array",
+                      "minItems": 1,
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "ref",
+                          "digest"
+                        ],
+                        "properties": {
+                          "ref": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "digest": {
+                            "type": "string",
+                            "pattern": "^(sha256:)?[a-f0-9]{64}$"
+                          }
+                        }
+                      }
+                    },
+                    "drafter_principal_ref": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "review_package": {
+                      "type": "boolean"
+                    }
+                  }
                 }
               }
             },
@@ -285,6 +397,62 @@
                     "sha256-bytes",
                     "visual-baseline"
                   ]
+                },
+                "approval_context": {
+                  "type": "object",
+                  "required": [
+                    "subject_ref",
+                    "approval_scope",
+                    "basis",
+                    "drafter_principal_ref"
+                  ],
+                  "properties": {
+                    "subject_ref": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "subject_digest": {
+                      "type": "string",
+                      "pattern": "^(sha256:)?[a-f0-9]{64}$"
+                    },
+                    "approval_scope": {
+                      "type": "array",
+                      "minItems": 1,
+                      "uniqueItems": true,
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "basis": {
+                      "type": "array",
+                      "minItems": 1,
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "ref",
+                          "digest"
+                        ],
+                        "properties": {
+                          "ref": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "digest": {
+                            "type": "string",
+                            "pattern": "^(sha256:)?[a-f0-9]{64}$"
+                          }
+                        }
+                      }
+                    },
+                    "drafter_principal_ref": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "review_package": {
+                      "type": "boolean"
+                    }
+                  }
                 }
               }
             },
@@ -311,6 +479,62 @@
                     "sha256-bytes",
                     "visual-baseline"
                   ]
+                },
+                "approval_context": {
+                  "type": "object",
+                  "required": [
+                    "subject_ref",
+                    "approval_scope",
+                    "basis",
+                    "drafter_principal_ref"
+                  ],
+                  "properties": {
+                    "subject_ref": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "subject_digest": {
+                      "type": "string",
+                      "pattern": "^(sha256:)?[a-f0-9]{64}$"
+                    },
+                    "approval_scope": {
+                      "type": "array",
+                      "minItems": 1,
+                      "uniqueItems": true,
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "basis": {
+                      "type": "array",
+                      "minItems": 1,
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "ref",
+                          "digest"
+                        ],
+                        "properties": {
+                          "ref": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "digest": {
+                            "type": "string",
+                            "pattern": "^(sha256:)?[a-f0-9]{64}$"
+                          }
+                        }
+                      }
+                    },
+                    "drafter_principal_ref": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "review_package": {
+                      "type": "boolean"
+                    }
+                  }
                 }
               }
             },
@@ -337,6 +561,62 @@
                     "sha256-bytes",
                     "visual-baseline"
                   ]
+                },
+                "approval_context": {
+                  "type": "object",
+                  "required": [
+                    "subject_ref",
+                    "approval_scope",
+                    "basis",
+                    "drafter_principal_ref"
+                  ],
+                  "properties": {
+                    "subject_ref": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "subject_digest": {
+                      "type": "string",
+                      "pattern": "^(sha256:)?[a-f0-9]{64}$"
+                    },
+                    "approval_scope": {
+                      "type": "array",
+                      "minItems": 1,
+                      "uniqueItems": true,
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "basis": {
+                      "type": "array",
+                      "minItems": 1,
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "ref",
+                          "digest"
+                        ],
+                        "properties": {
+                          "ref": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "digest": {
+                            "type": "string",
+                            "pattern": "^(sha256:)?[a-f0-9]{64}$"
+                          }
+                        }
+                      }
+                    },
+                    "drafter_principal_ref": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "review_package": {
+                      "type": "boolean"
+                    }
+                  }
                 }
               }
             },
@@ -363,6 +643,62 @@
                     "sha256-bytes",
                     "visual-baseline"
                   ]
+                },
+                "approval_context": {
+                  "type": "object",
+                  "required": [
+                    "subject_ref",
+                    "approval_scope",
+                    "basis",
+                    "drafter_principal_ref"
+                  ],
+                  "properties": {
+                    "subject_ref": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "subject_digest": {
+                      "type": "string",
+                      "pattern": "^(sha256:)?[a-f0-9]{64}$"
+                    },
+                    "approval_scope": {
+                      "type": "array",
+                      "minItems": 1,
+                      "uniqueItems": true,
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "basis": {
+                      "type": "array",
+                      "minItems": 1,
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "ref",
+                          "digest"
+                        ],
+                        "properties": {
+                          "ref": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "digest": {
+                            "type": "string",
+                            "pattern": "^(sha256:)?[a-f0-9]{64}$"
+                          }
+                        }
+                      }
+                    },
+                    "drafter_principal_ref": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "review_package": {
+                      "type": "boolean"
+                    }
+                  }
                 }
               }
             },
@@ -389,6 +725,62 @@
                     "sha256-bytes",
                     "visual-baseline"
                   ]
+                },
+                "approval_context": {
+                  "type": "object",
+                  "required": [
+                    "subject_ref",
+                    "approval_scope",
+                    "basis",
+                    "drafter_principal_ref"
+                  ],
+                  "properties": {
+                    "subject_ref": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "subject_digest": {
+                      "type": "string",
+                      "pattern": "^(sha256:)?[a-f0-9]{64}$"
+                    },
+                    "approval_scope": {
+                      "type": "array",
+                      "minItems": 1,
+                      "uniqueItems": true,
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "basis": {
+                      "type": "array",
+                      "minItems": 1,
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "ref",
+                          "digest"
+                        ],
+                        "properties": {
+                          "ref": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "digest": {
+                            "type": "string",
+                            "pattern": "^(sha256:)?[a-f0-9]{64}$"
+                          }
+                        }
+                      }
+                    },
+                    "drafter_principal_ref": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "review_package": {
+                      "type": "boolean"
+                    }
+                  }
                 }
               }
             }
@@ -598,6 +990,62 @@
         "persisted_ref": {
           "type": "string",
           "minLength": 1
+        },
+        "approval_context": {
+          "type": "object",
+          "required": [
+            "subject_ref",
+            "approval_scope",
+            "basis",
+            "drafter_principal_ref"
+          ],
+          "properties": {
+            "subject_ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "subject_digest": {
+              "type": "string",
+              "pattern": "^(sha256:)?[a-f0-9]{64}$"
+            },
+            "approval_scope": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "basis": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "required": [
+                  "ref",
+                  "digest"
+                ],
+                "properties": {
+                  "ref": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "digest": {
+                    "type": "string",
+                    "pattern": "^(sha256:)?[a-f0-9]{64}$"
+                  }
+                }
+              }
+            },
+            "drafter_principal_ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "review_package": {
+              "type": "boolean"
+            }
+          }
         }
       }
     },
@@ -643,6 +1091,62 @@
           "items": {
             "type": "string",
             "pattern": "^[a-z0-9][a-z0-9-]*$"
+          }
+        },
+        "approval_context": {
+          "type": "object",
+          "required": [
+            "subject_ref",
+            "approval_scope",
+            "basis",
+            "drafter_principal_ref"
+          ],
+          "properties": {
+            "subject_ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "subject_digest": {
+              "type": "string",
+              "pattern": "^(sha256:)?[a-f0-9]{64}$"
+            },
+            "approval_scope": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "basis": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "required": [
+                  "ref",
+                  "digest"
+                ],
+                "properties": {
+                  "ref": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "digest": {
+                    "type": "string",
+                    "pattern": "^(sha256:)?[a-f0-9]{64}$"
+                  }
+                }
+              }
+            },
+            "drafter_principal_ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "review_package": {
+              "type": "boolean"
+            }
           }
         }
       }

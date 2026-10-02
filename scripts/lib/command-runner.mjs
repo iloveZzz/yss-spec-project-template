@@ -1,9 +1,25 @@
 import { spawn, spawnSync } from "node:child_process";
 import { appendFileSync, rmSync, writeFileSync } from "node:fs";
 import { StringDecoder } from "node:string_decoder";
+import path from "node:path";
+import { assertNodeVersion } from "./runtime-store.mjs";
 import { fileURLToPath } from "node:url";
 
-function killTree(child, signal) {
+const sessionSequences = new WeakMap();
+function runtimeLogs(session, stdoutFile, stderrFile) {
+  if (!session) return { stdoutFile, stderrFile };
+  const sequence = sessionSequences.get(session) || 0;
+  sessionSequences.set(session, sequence + 1);
+  return { stdoutFile: stdoutFile || path.join(session.runDir, `command-${sequence}.stdout`), stderrFile: stderrFile || path.join(session.runDir, `command-${sequence}.stderr`) };
+}
+function recordRuntimeResult(session, result, command, args, files) {
+  if (!session) return result;
+  try { session.recordCommand({ command: JSON.stringify([command, ...args]), ...result, stdout: undefined, stderr: undefined, ...files }); }
+  catch (error) { result.storageError = [result.storageError,error.message].filter(Boolean).join("; "); }
+  return result;
+}
+
+export function killTree(child, signal) {
   if (!child.pid) return;
   try {
     if (process.platform === "win32") spawnSync("taskkill", ["/PID", String(child.pid), "/T", "/F"], { stdio: "ignore" });
@@ -12,9 +28,10 @@ function killTree(child, signal) {
 }
 
 /** Bounded lifetime for external tools; stdout is never mixed with progress. */
-export function runCommand(command, args, { cwd, env = process.env, timeoutMs = 0, signal, stdoutFile, stderrFile, secrets = [], progress = false } = {}) {
+export function runCommand(command, args, { cwd, env = process.env, timeoutMs = 0, signal, stdoutFile, stderrFile, secrets = [], progress = false, runtimeSession } = {}) {
+  assertNodeVersion();
+  ({ stdoutFile, stderrFile } = runtimeLogs(runtimeSession, stdoutFile, stderrFile));
   if (!Number.isFinite(timeoutMs) || timeoutMs < 0) throw new TypeError("timeoutMs 必须是非负毫秒数");
-  if (signal?.aborted) return Promise.resolve({ status: 1, stdout: "", stderr: "command cancelled", termination: "cancelled", duration_ms: 0 });
   return new Promise(resolve => {
     const started = performance.now();
     const argumentSecrets = args.flatMap(value => { try { const url = new URL(value); return url.password ? [url.password, decodeURIComponent(url.password)] : []; } catch { return []; } });
@@ -22,14 +39,15 @@ export function runCommand(command, args, { cwd, env = process.env, timeoutMs = 
     const replacement = secret => secretNames.has(secret) ? `[REDACTED:${secretNames.get(secret)}]` : "[REDACTED]";
     const sensitive = [...secrets, ...argumentSecrets, ...secretNames.keys()].filter(value => typeof value === "string" && value.length > 0).sort((a, b) => b.length - a.length);
     const redact = text => sensitive.reduce((value, secret) => value.replaceAll(secret, replacement(secret)), text);
+    if (signal?.aborted) { resolve(recordRuntimeResult(runtimeSession,{status:1,stdout:"",stderr:"command cancelled",termination:"cancelled",duration_ms:0,actual_exit_code:null,actual_exit_signal:null,actual_exit_code_observed:false},redact(command),args.map(redact),{}));return; }
     if (progress) process.stderr.write(`[开始] ${redact(command + " " + args.join(" "))}\n`);
     for (const file of [stdoutFile, stderrFile]) if (file) writeFileSync(file, "");
     const child = spawn(command, args, { cwd, env, detached: process.platform !== "win32", stdio: ["ignore", "pipe", "pipe"] });
-    let termination = null, escalation, timer, errorMessage;
+    let termination = null, escalation, timer, errorMessage, logError, spawnError = false;
     const makeStream = file => {
       const decoder = new StringDecoder("utf8");
       let pending = "", captured = "";
-      const emit = text => { captured += text; if (file) appendFileSync(file, text); };
+      const emit = text => { captured += text; if (file && !logError) try { appendFileSync(file, text); } catch (error) { logError=error.message; } };
       function consume(final = false) {
         let output = "", cursor = 0;
         while (cursor < pending.length) {
@@ -57,7 +75,7 @@ export function runCommand(command, args, { cwd, env = process.env, timeoutMs = 
     if (timeoutMs) timer = setTimeout(() => cancel("timeout"), timeoutMs);
     child.stdout.on("data", bytes => stdout.write(bytes));
     child.stderr.on("data", bytes => stderr.write(bytes));
-    child.on("error", error => { errorMessage = redact(error.message); });
+    child.on("error", error => { spawnError = true; errorMessage = redact(error.message); });
     child.on("close", (code, exitSignal) => {
       clearTimeout(timer); clearTimeout(escalation);
       // A group leader can exit before its descendants close redirected streams.
@@ -67,7 +85,13 @@ export function runCommand(command, args, { cwd, env = process.env, timeoutMs = 
       const duration_ms = performance.now() - started;
       const status = termination === "timeout" ? 124 : termination ? 1 : code ?? 1;
       if (progress) process.stderr.write(`[${status === 0 ? "完成" : "失败"}] ${command} (${Math.round(duration_ms)}ms, exit=${status}${termination ? `, ${termination}` : ""})\n`);
-      resolve({ status, stdout: stdout.end(), stderr: stderr.end() + (errorMessage || ""), signal: exitSignal, termination, duration_ms });
+      const actual_exit_code_observed = !spawnError && Number.isInteger(code);
+      const result = { status, stdout: stdout.end(), stderr: stderr.end() + (errorMessage || ""), signal: exitSignal, termination, duration_ms,
+        actual_exit_code: actual_exit_code_observed ? code : null,
+        actual_exit_signal: spawnError ? null : exitSignal ?? null,
+        actual_exit_code_observed };
+      if(logError)result.storageError=logError;
+      resolve(recordRuntimeResult(runtimeSession, result, redact(command), args.map(redact), { stdoutFile, stderrFile }));
     });
   });
 }
@@ -75,12 +99,23 @@ export function runCommand(command, args, { cwd, env = process.env, timeoutMs = 
 // Synchronous API compatibility for existing generators/cache consumers. The worker
 // owns the process group and streams logs; it never updates project metadata.
 export function runCommandSync(command, args, options = {}) {
+  assertNodeVersion();
+  const { runtimeSession, ...workerOptions } = options;
+  Object.assign(workerOptions, runtimeLogs(runtimeSession, options.stdoutFile, options.stderrFile));
   const result = spawnSync(process.execPath, [fileURLToPath(import.meta.url), "--worker"], {
-    input: JSON.stringify({ command, args, options }), encoding: "utf8", maxBuffer: 64 * 1024 * 1024,
+    input: JSON.stringify({ command, args, options: workerOptions }), encoding: "utf8", maxBuffer: 64 * 1024 * 1024,
     stdio: ["pipe", "pipe", "inherit"], env: options.env ?? process.env,
   });
   if (result.error || result.status !== 0) throw new TypeError(result.error?.message || "command worker failed");
-  return JSON.parse(result.stdout);
+  const value = JSON.parse(result.stdout);
+  if (runtimeSession) {
+    // The worker already redacts output. Redact arguments before registering in the parent.
+    const env = options.env || process.env;
+    const sensitive = [...(options.secrets || []), ...Object.entries(env).filter(([key]) => /(?:PASSWORD|TOKEN|SECRET)$/.test(key) || key === "MAVEN_REPO_USERNAME").map(([, secret]) => secret), ...args.flatMap(arg => { try { const url = new URL(arg); return url.password ? [url.password, decodeURIComponent(url.password)] : []; } catch { return []; } })].filter(secret => typeof secret === "string" && secret.length).sort((a,b) => b.length - a.length);
+    const redact = text => sensitive.reduce((value, secret) => value.replaceAll(secret, "[REDACTED]"), text);
+    return recordRuntimeResult(runtimeSession, value, redact(command), args.map(redact), { stdoutFile: workerOptions.stdoutFile, stderrFile: workerOptions.stderrFile });
+  }
+  return value;
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url) && process.argv[2] === "--worker") {

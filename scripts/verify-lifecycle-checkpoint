@@ -2,7 +2,7 @@
 import { assertBusinessApprovalBasis } from './lib/business-ticket-lifecycle.mjs';
 import { assertBusinessCheckpoint } from './lib/business-tickets.mjs';
 import { assertStageTracking } from './lib/stage-tracking.mjs';
-import { readFileSync } from "node:fs";
+import { readFileSync, withValidationPhase } from "./lib/validation-phase.mjs";
 import { spawnSync } from "node:child_process";
 import path from "node:path";
 import { parseArgs } from "node:util";
@@ -38,6 +38,7 @@ try {
   if(values.help){process.stdout.write('用法: scripts/verify-lifecycle-checkpoint [--history] <checkpoint.yaml|json>\n默认核验当前记录；--history 仅检查历史结构，不证明当前批准或流转。退出码 0=检查完成，1=失败。\n');}
   else {
   if (positionals.length !== 1) throw new TypeError("用法: scripts/verify-lifecycle-checkpoint <checkpoint.yaml|checkpoint.json>");
+  const verify = () => {
   const sourcePath = path.resolve(positionals[0]);
   if(!values.history)assertCurrentAssetReference(root,path.relative(root,sourcePath));
   const value = parseAsset(readFileSync(sourcePath), sourcePath);
@@ -58,9 +59,9 @@ try {
     else if(value.mode==='resume'||value.mode==='orchestrate') assertScopeWorkUnit('work-unit.entry-triage',{root});
   }
   assertStageTracking(value, { root, checkpointRef: path.relative(root, sourcePath), nextWorkUnit: value.next_work_unit, entering: value.mode === 'resume' || value.mode === 'orchestrate' });
-  assertCheckpointApprovals(value, sourcePath);
+  assertCheckpointApprovals(value, sourcePath, {root});
   assertPlanCheckpoint(value);
-  assertCheckpointUserDecisions(value);
+  assertCheckpointUserDecisions(value,{root});
   if (value.repository_mode === "project-instance" && ["paused-human-gate", "completed"].includes(value.status)) {
     if (value.context_reconciliation?.status !== "reconciled" || !value.context_reconciliation?.ref) throw new TypeError("project-instance 在会签或完成前必须具有 reconciled context_reconciliation");
     const reconciliation = path.resolve(root, value.context_reconciliation.ref);
@@ -70,6 +71,9 @@ try {
   if (value.repository_mode === "template-source" && value.context_reconciliation?.status !== "not-applicable") throw new TypeError("template-source context_reconciliation 必须为 not-applicable");
   process.stdout.write("生命周期 checkpoint 验证通过\n");
   }
+  };
+  if(values.history) verify();
+  else withValidationPhase({root,purpose:'lifecycle-checkpoint-current',readOnly:true},verify);
   }
 } catch (error) {
   process.stderr.write(`生命周期 checkpoint 验证失败: ${error.message}\n`);

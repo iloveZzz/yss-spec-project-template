@@ -151,17 +151,22 @@ export function attachDesignPrerequisites(root, contract, { dataImpact = "not-ap
     apiDecision.reason = "当前机械后端骨架不新增或修改对外 API、消息契约或集成接口";
   }
   const api = write(root, "api-contract-decision.json", apiDecision);
+  const scope = [contract.contract_id, contract.project_name];
   const engineeringPackage = write(root, "engineering-contract-package.json", {
     schema_version: 1,
     kind: "engineering-contract-package",
+    gate_id: "gate.engineering-contract-approved",
+    approval_scope: scope,
+    drafter_principal_ref: "synthetic-backend-drafter",
+    basis: [technical,data,api,review,apiEvidence,...(openapi?[openapi]:[])].map(asset=>({ref:asset.ref,digest:asset.digest})),
     project_id: contract.project_name,
     technical_design: { ref: technical.ref, version: "v1", digest: technical.digest },
     data_architecture_decision: { ref: data.ref, version: "v1", digest: data.digest, impact: dataImpact },
     api_contract_decision: { ref: api.ref, version: "v1", digest: api.digest, impact: apiImpact },
     ...(openapi ? { frozen_openapi: { id: apiDecision.openapi.id, ref: openapi.ref, version: "v1", digest: openapi.digest } } : {}),
   });
-  const scope = [contract.contract_id, contract.project_name];
   const decision = buildDecisionFixture(path.join(root, "engineering-contract-decision"), { boundary: "gate.engineering-contract-approved", scope, subjectRef: engineeringPackage.file });
+  decision.record.request.items[0].subject.ref=engineeringPackage.ref;decision.present();decision.record.responses=[];decision.respond();decision.save();
   const rule = countersignRuleForGate(loadDigitalHumanRoles().gate_policy, "gate.engineering-contract-approved");
   const reviewer = rule.countersigners[0];
   const approval = write(root, "engineering-contract-approval.json", {
@@ -172,7 +177,9 @@ export function attachDesignPrerequisites(root, contract, { dataImpact = "not-ap
     role_id: reviewer,
     runtime_id: "runtime.generic",
     principal_ref: "synthetic-product-reviewer",
-    subject_ref: engineeringPackage.file,
+    drafter_principal_ref: "synthetic-backend-drafter",
+    subject_digest: engineeringPackage.digest.slice(7),
+    subject_ref: engineeringPackage.ref,
     approval_scope: scope,
     drafter_role_id: rule.drafter,
     user_decision_ref: decision.ref,
@@ -187,7 +194,7 @@ export function attachDesignPrerequisites(root, contract, { dataImpact = "not-ap
   contract.lifecycle_approval_ref = approval.file;
   contract.approval = { approval_ref: approval.file, approver: reviewer, persisted_ref: contract.persisted_ref, current_version: contract.contract_version };
   contract.design_prerequisites = {
-    technical_design: { ref: technical.ref, version: "v1", digest: technical.digest },
+    technical_design: { ref: technical.ref, version: "v1", digest: technical.digest, approval_context: {subject_ref:engineeringPackage.ref,approval_scope:scope,basis:read(engineeringPackage.file).basis,drafter_principal_ref:"synthetic-backend-drafter"} },
     data_architecture_decision: { ref: data.ref, version: "v1", digest: data.digest, impact: dataImpact },
     api_contract_decision: { ref: api.ref, version: "v1", digest: api.digest, impact: apiImpact },
     engineering_contract_approval_ref: approval.file,

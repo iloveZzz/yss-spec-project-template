@@ -21,7 +21,7 @@ async function approvedFile(root, binding, gate) {
   if(gate==='gate.slice-contract-approved'){verifySliceContractApproval(binding,{root});return bytes;}
   const record=read(safe(root,binding.approval_ref));
   const roles=sourceApprovalPolicy(read(safe(root,'.template-spec/agents/digital-human-roles.yaml')));
-  await sourceApproval(record,roles,root);
+  await sourceApproval(record,roles,root,binding);
   ensure((Array.isArray(gate)?gate:[gate]).includes(record.gate_id),`交付资产批准门禁不匹配: ${binding.ref}`);
   ensure(record.artifact_bindings?.some(x=>x.id===binding.id&&x.version===binding.version&&x.digest===binding.digest),`批准未绑定当前交付资产: ${binding.ref}`);
   return bytes;

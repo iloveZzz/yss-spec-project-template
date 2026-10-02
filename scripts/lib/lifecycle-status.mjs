@@ -15,50 +15,97 @@ function parse(bytes) {
   return document.toJS({ maxAliasCount: 0 });
 }
 function source(root, ref) {
-  const bytes = readFileSync(safeTrackingPath(root, ref));
-  return { value: parse(bytes), digest: sha(bytes) };
+  try {
+    const bytes = readFileSync(safeTrackingPath(root, ref));
+    return { value: parse(bytes), digest: sha(bytes) };
+  } catch (error) {
+    error.lifecycle_input_ref ??= ref;
+    throw error;
+  }
 }
 
 /** Read-only projection; checkpoint, registry and orchestration remain authoritative. */
 export function lifecycleStatus({ root, checkpointRef, taskPackageRef }) {
   if (!root || !checkpointRef) throw new TypeError('root and checkpoint are required');
   root = path.resolve(root);
-  const identity = source(root, 'yss-project.yaml').value;
-  if (identity.schema_version !== 1 || identity.repository_mode !== 'project-instance') throw new TypeError('生命周期状态仅适用于 project-instance');
+  let identity;
+  try {
+    identity = source(root, 'yss-project.yaml').value;
+    if (identity.schema_version !== 1 || identity.repository_mode !== 'project-instance') throw new TypeError('生命周期状态仅适用于 project-instance');
+  } catch (error) {
+    error.lifecycle_input_ref ??= 'yss-project.yaml';
+    error.lifecycle_input_kind = identity?.schema_version === 1 && identity?.repository_mode === 'template-source' ? 'template-source' : 'manifest';
+    throw error;
+  }
   const registryRef = '.template-spec/process/lifecycle-registry.yaml';
   const contractRef = orchestrationRef(root);
   const checkpoint = source(root, checkpointRef), registry = source(root, registryRef), contract = source(root, contractRef);
   const value = checkpoint.value;
+  const registeredText = value => typeof value === 'string' && value.trim() ? value : null;
   if (value.schema_version !== 1 || value.repository_mode !== 'project-instance') throw new TypeError('checkpoint 身份或版本无效');
   const items = value.stage_tracking?.items ?? [];
   if (!Array.isArray(items)) throw new TypeError('阶段追踪 items 必须为数组');
   const activeItems = items.filter(item => item.work_unit === value.next_work_unit && item.progress !== 'cancelled');
-  const owner = value.pause?.owner_or_authority ?? activeItems.find(item => item.progress !== 'completed')?.owner ?? '未登记';
+  const pauseOwner = registeredText(value.pause?.owner_or_authority);
+  const workUnitOwner = registeredText(activeItems.find(item => item.progress !== 'completed')?.owner);
+  const owner = pauseOwner ?? workUnitOwner ?? '未登记';
+  const defaultOwnerScope = pauseOwner ? 'checkpoint-pause' : workUnitOwner ? 'work-unit' : 'not-recorded';
   const diagnostics = [], verification_scope = [];
   const check = (id, status, refs, reason) => verification_scope.push({ id, status, refs, reason });
-  const issue = (code, message, source_ref, recovery, severity = 'error') => diagnostics.push({ code, message, source_ref, owner, recovery, severity });
+  const issue = (code, message, source_ref, recovery, severity = 'error', issueOwner = owner, ownerScope = defaultOwnerScope) => diagnostics.push({ code, message, source_ref, owner: issueOwner, owner_scope: issueOwner === '未登记' ? 'not-recorded' : ownerScope, recovery, severity });
   if (!Object.hasOwn(value, 'blockers')) {
     issue('registered-blockers-missing', 'checkpoint 缺少 blockers；不能据此判定无已登记阻塞', checkpointRef, '核对原始状态并补齐真实阻塞记录后重验');
   } else if (!Array.isArray(value.blockers)) {
     issue('registered-blockers-invalid', 'checkpoint.blockers 必须为数组；当前登记不可核验', checkpointRef, '修复阻塞记录类型，保留原有阻塞内容后重验');
   } else {
     for (const item of value.blockers) {
-      issue('registered-blocker', typeof item === 'string' ? item : JSON.stringify(item), checkpointRef, '按原阻塞证据处理并复验');
+      const record = item && typeof item === 'object' && !Array.isArray(item) ? item : {};
+      issue('registered-blocker', registeredText(item) ?? registeredText(record.message) ?? registeredText(record.reason) ?? '已登记阻塞，具体问题尚未说明', registeredText(record.source_ref) ?? checkpointRef, registeredText(record.recovery) ?? '核对原阻塞记录、责任方和证据，明确处理动作后复验', 'error', registeredText(record.owner) ?? owner, registeredText(record.owner) ? 'issue' : defaultOwnerScope);
     }
   }
   check('registered-blockers', diagnostics.length ? 'failed' : 'passed', [checkpointRef], '仅读取已登记阻塞，不代表完整就绪');
   const stage = registry.value.stages?.find(item => item.id === value.stage);
   const workUnit = registry.value.work_units?.find(item => item.id === value.next_work_unit);
+  // Only explicit recorded associations identify a target stage. Stage order is not a route.
+  const stageAssociations = workUnit ? [
+    ...(registeredText(workUnit?.stage) ? [{stage: workUnit.stage, ref: registryRef}] : []),
+    ...activeItems.filter(item => registeredText(item.stage)).map(item => ({stage: item.stage, ref: checkpointRef})),
+  ] : [];
+  const stageIds = [...new Set(stageAssociations.map(item => item.stage))];
+  const nextStage = stageIds.length === 1 && registry.value.stages?.some(item => item.id === stageIds[0]) ? stageIds[0] : null;
+  const nextStageReason = !value.next_work_unit ? '未登记下一工作单元；需核验当前阶段验收与终点，不能据此判定完成'
+    : stageIds.length > 1 ? '下一工作单元的已登记阶段归属存在冲突；核对权威记录后重验'
+    : stageIds.length === 1 && !nextStage ? '下一工作单元的阶段归属未在注册表中识别；核对当前来源后重验'
+    : !nextStage ? '下一工作单元尚未登记阶段归属；核验当前路由与阶段追踪后确认'
+    : nextStage === value.stage ? '下一工作单元仍在当前阶段，先完成当前单元并验收，再核验后续流转；不代表已批准或可进入'
+    : '来自下一工作单元的已登记阶段归属，仅为路由目标，不代表已批准或可进入';
+  check('next-stage-association', nextStage ? 'passed' : 'not-checked', [...new Set(stageAssociations.map(item => item.ref))], nextStageReason);
+  if (stageIds.length > 1 || (stageIds.length === 1 && !nextStage)) issue('next-stage-unverifiable', nextStageReason, checkpointRef, '核对下一工作单元的已登记阶段归属并执行适用预检，不按阶段顺序猜目标', 'warning');
   if (!stage) issue('unknown-stage', `未知阶段: ${value.stage}`, registryRef, '按注册表核对当前阶段');
   if (value.next_work_unit && !workUnit) issue('unknown-work-unit', `未知下一工作单元: ${value.next_work_unit}`, registryRef, '按注册表核对下一工作单元');
   if (workUnit && workUnit.id !== 'work-unit.entry-triage' && !contract.value.work_unit_routes?.[workUnit.id]) issue('missing-route', `缺少执行路由: ${workUnit.id}`, contractRef, '修复当前合同路由后重验');
   check('stage-and-route', diagnostics.some(x => ['unknown-stage', 'unknown-work-unit', 'missing-route'].includes(x.code)) ? 'failed' : 'passed', [registryRef, contractRef], '仅检查身份与路由存在，不计算完整 frontier');
   if (value.context_reconciliation?.status === 'blocked') issue('context-blocked', '术语对账受阻', checkpointRef, '修复词汇对账并执行适用校验');
   check('context-reconciliation', value.context_reconciliation?.status === 'blocked' ? 'failed' : 'not-checked', [value.context_reconciliation?.ref].filter(Boolean), '读取登记状态；当前对账内容和摘要仍须由原验证器核验');
-  for (const [id, gate] of Object.entries(value.gates ?? {})) {
-    if (['blocked', 'stale'].includes(gate?.status)) issue('gate-blocked', `${id}: ${gate.status}`, checkpointRef, '核对受影响依据和当前批准');
+  const gateNames = {blocked: '受阻', stale: '依据已过期', pending: '等待处理', failed: '未通过', 'ready-for-human': '等待会签', 'not-evaluated': '尚未评估'};
+  const gates = value.gates && typeof value.gates === 'object' && !Array.isArray(value.gates) ? Object.entries(value.gates) : [];
+  if (!Object.hasOwn(value, 'gates') || !value.gates || typeof value.gates !== 'object' || Array.isArray(value.gates)) issue('gates-unverifiable', '门禁登记缺失或格式不可核验', checkpointRef, '核对原始门禁记录并执行正式预检', 'warning');
+  for (const [id, gate] of gates) {
+    const status = gateNames[gate?.status];
+    const hardBlocked = ['blocked', 'stale'].includes(gate?.status);
+    const failed = hardBlocked || (['pending', 'failed', 'ready-for-human', 'not-evaluated'].includes(gate?.status) && gate?.applicable === true);
+    if (status) {
+      const blocked = hardBlocked || (failed && gate?.applicable !== false);
+      const reason = registeredText(gate?.reason);
+      const applicability = hardBlocked && gate?.applicable === false ? '；登记状态与适用性标记冲突，需正式预检' : blocked ? '' : '；适用性与当前处理要求待核验';
+      const recovery = registeredText(gate?.recovery) ?? (['pending', 'ready-for-human'].includes(gate?.status) ? '核对适用范围、当前资产和已登记责任方；取得所需真实决定或有效延续后复验' : '核对适用范围、失败原因或过期依据，修复并重验受影响检查与批准');
+      issue(blocked ? 'gate-blocked' : 'gate-unverified', `${id}：${status}${reason ? `；${reason}` : ''}${applicability}`, checkpointRef, hardBlocked && gate?.applicable === false ? `${recovery}；保留阻断状态，核对冲突登记并执行正式预检` : recovery, blocked ? 'error' : 'warning', registeredText(gate?.owner) ?? owner, registeredText(gate?.owner) ? 'issue' : defaultOwnerScope);
+    } else if (!['approved', 'not-applicable'].includes(gate?.status)) {
+      issue('gate-unverified', `${id}：登记状态未识别，适用性与处理要求待核验`, checkpointRef, '保留原记录，核对门禁状态与适用性后执行正式预检', 'warning', registeredText(gate?.owner) ?? owner, registeredText(gate?.owner) ? 'issue' : defaultOwnerScope);
+    }
   }
-  check('registered-gates', diagnostics.some(x => x.code === 'gate-blocked') ? 'failed' : 'passed', [checkpointRef], '仅检查登记的 blocked/stale 标志');
+  const gateDiagnostics = diagnostics.filter(x => ['gate-blocked', 'gate-unverified', 'gates-unverifiable'].includes(x.code));
+  check('registered-gates', gateDiagnostics.some(x => x.severity === 'error') ? 'failed' : gateDiagnostics.length || !gates.length ? 'not-checked' : 'passed', [checkpointRef], '仅读取已登记状态；适用性未登记、待处理或记录缺失时不能判定门禁通过；不核验完整批准');
   const evidenceRefs = [value.context_reconciliation?.ref, ...Object.values(value.artifacts ?? {}).filter(item => item?.status === 'approved').map(item => item.ref)].filter(Boolean);
   for (const ref of evidenceRefs) {
     try { readFileSync(safeTrackingPath(root, ref)); }
@@ -149,17 +196,21 @@ export function lifecycleStatus({ root, checkpointRef, taskPackageRef }) {
   const presentation = {
     read_only: true, execution_allowed: false, approval_validity: 'not-checked',
     stage: value.stage ? presenter.label(value.stage, {trace: false}) : '未登记',
+    next_stage: nextStage ? presenter.label(nextStage, {trace: false}) : '待核验', next_stage_reason: readable(nextStageReason),
     checkpoint_status: Object.hasOwn(statusNames, value.status) ? statusNames[value.status] : `未识别状态（${value.status ?? '未登记'}）`,
     work_unit: value.next_work_unit ? presenter.label(value.next_work_unit, {trace: false}) : '未登记',
     owner: presenter.text(owner, {trace: false}), blockers: blockers.map(readable),
+    issues: diagnostics.map(item => ({code: item.code, severity: item.severity, message: readable(item.message), source_ref: item.source_ref, owner: presenter.text(item.owner, {trace: false}), owner_scope: item.owner_scope, recovery: readable(item.recovery)})),
+    pending_verification: verification_scope.filter(item => !['passed', 'failed'].includes(item.status)).map(item => ({id: item.id, reason: readable(item.reason), refs: item.refs})),
+    continue_conditions: [...(registeredText(value.pause?.resume_condition) ? [readable(value.pause.resume_condition)] : []), ...next_step.prerequisites.map(readable), ...(blockers.length ? ['逐项处理当前阻塞，并由适用验证器确认恢复条件满足'] : []), '由主控验收当前证据并核验授权后决定继续或重新路由'],
     expected_output: workUnit ? readable(workUnit.public_output ?? workUnit.output ?? '产出说明未登记') : null,
     next_action: readable(next_action), sources: presenter.sources, warnings: presenter.warnings,
-    names: presenter.catalog({stage: value.stage, work_unit: value.next_work_unit, owner, gates: value.gates, artifacts: value.artifacts}),
+    names: presenter.catalog({stage: value.stage, next_stage: nextStage, work_unit: value.next_work_unit, owner, gates: value.gates, artifacts: value.artifacts}),
   };
   return {
     presentation,
     decomposition: {business, implementation: {status:implementationArtifact?'recorded':'not-recorded',recorded_status:implementationArtifact?.status??null,ref:implementationArtifact?.ref??null,coverage:implementationCoverage}, readiness:{status:'not-evaluated',reason:'阶段工作完成不替代批准与实现就绪校验'}},
-    schema_version: 1, read_only: true, stage: value.stage, checkpoint_status: value.status,
+    schema_version: 1, read_only: true, stage: value.stage, next_stage: nextStage, next_stage_reason: nextStageReason, next_stage_source_refs: [...new Set(stageAssociations.map(item => item.ref))], checkpoint_status: value.status,
     work_unit: value.next_work_unit ?? null, owner, blockers, next_action,
     execution_authorization: 'not-evaluated', verification_scope, diagnostics, next_step, recovery,
     reading_views: checkReadingViews(root,checkpointRef),

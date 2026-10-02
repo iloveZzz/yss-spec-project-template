@@ -54,10 +54,15 @@ export function fixture(family='layered-mvc'){
  const reviewGate=['check.architecture-reviewed','gate.technical-design-approved'].find(gate=>countersignRuleForGate(rolesDoc.gate_policy,gate));
  if(!reviewGate)throw new Error('Synthetic architecture fixture requires the installed source architecture review policy');
  const reviewer=countersignRuleForGate(rolesDoc.gate_policy,reviewGate).countersigners.at(-1);
- const review={schema_version:1,gate_id:reviewGate,decision:'approved',actor_kind:'digital-human',role_id:reviewer,runtime_id:'runtime.generic',principal_ref:'fixture-reviewer',artifact_bindings:[{id:baseline.id,version:baseline.version,digest:digest(baseline)}],evidence_refs:['review.md']};
- write('review.md','Synthetic boundary review fixture. Not a real approval.\n');
+ const evidence=write('architecture-review-evidence.log','Synthetic boundary review fixture. Not a real approval.\n');
+ const scope=[baseline.id,...baseline.boundary_scope], evidenceBasis=[{ref:evidence.ref,digest:evidence.digest.slice(7)}];
+ manifest.approval_context={subject_ref:'architecture-review-package.json',approval_scope:scope,basis:evidenceBasis,drafter_principal_ref:baseline.author};
+ const mb=write('manifest.json',manifest);
+ const basis=[...evidenceBasis,{ref:mb.ref,digest:mb.digest.slice(7)}];
+ const subject=write('architecture-review-package.json',{gate_id:reviewGate,approval_scope:scope,basis,drafter_principal_ref:baseline.author});
+ const review={schema_version:1,gate_id:reviewGate,decision:'approved',actor_kind:'digital-human',role_id:reviewer,runtime_id:'runtime.generic',principal_ref:'fixture-reviewer',drafter_principal_ref:baseline.author,subject_ref:subject.ref,subject_digest:subject.digest.slice(7),approval_scope:scope,basis,artifact_bindings:[{id:baseline.id,version:baseline.version,digest:digest(baseline)}],evidence_refs:['architecture-review-evidence.log']};
  baseline.boundary_review=write('review.json',review);
- const mb=write('manifest.json',manifest),bb=write('baseline.json',baseline);
+ const bb=write('baseline.json',baseline);
  const registration={schema_version:1,status:'current',...common,local_worktree:project,project_root:'.',owner:'fixture-owner',allowed_write_paths:['src','pom.xml'],repository_url:'https://example.invalid/fixture.git',verification_commands:baseline.verification_commands,architecture_evidence:{engineering_baseline:bb,manifest:mb}};
  const rb=write('registration.json',registration);
  write('.template-spec/agents/digital-human-roles.yaml',rolesBytes);

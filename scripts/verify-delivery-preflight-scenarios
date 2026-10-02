@@ -67,10 +67,27 @@ try {
   const strategic=await handoffFixture(strategicRoot);
   const ui=strategic.handoff.source.existing_ui_baseline_ref;
   const asset=(ref,extra={})=>({ref,digest:hash(readFileSync(path.join(strategicRoot,ref))),...extra});
-  const strategicInput={schema_version:1,delivery_kind:'strategic-handoff',governance_root:strategicRoot,scope:{...scope,ui_mode:'existing-baseline'},assets:{strategic_handoff:asset('handoff.yaml'),ui_baseline:asset(`${ui.persisted_ref}/${ui.manifest_ref}`,{id:ui.baseline_id,version:ui.version,approval_ref:'approvals/existing-ui.json'})}};
+  const strategicInput={schema_version:1,delivery_kind:'strategic-handoff',governance_root:strategicRoot,scope:{...scope,ui_mode:'existing-baseline'},assets:{strategic_handoff:asset('handoff.yaml'),ui_baseline:asset(`${ui.persisted_ref}/${ui.manifest_ref}`,{id:ui.baseline_id,version:ui.version,approval_ref:'approvals/existing-ui.json',approval_context:structuredClone(ui.approval_context)})}};
   test('synthetic 战略源可先导出，不依赖未来后端合同或包',()=>{
     const out=run(strategicInput,'export');assert.equal(out.result,'ready',JSON.stringify(out.checks.filter(c=>c.blocking_stages.includes('export')&&c.status!=='ready'&&c.status!=='not-applicable')));
     for(const key of ['technical_design','slice_contract','build','deployment','backend_delivery'])assert.deepEqual(check(out,key).blocking_stages,[]);
+  });
+  test('既有 UI 预检缺少独立批准上下文仍拒绝',()=>{
+    const bad=structuredClone(strategicInput);delete bad.assets.ui_baseline.approval_context;
+    const out=run(bad,'export');assert.equal(out.result,'blocked');assert.equal(out.exit_code,1);
+    assert.equal(check(out,'APPROVAL_CONTEXT_REQUIRED')?.source,`${ui.persisted_ref}/${ui.manifest_ref}`);
+  });
+  test('既有 UI 预检批准范围篡改仍拒绝',()=>{
+    const bad=structuredClone(strategicInput);bad.assets.ui_baseline.approval_context.approval_scope=['feature.other'];
+    const out=run(bad,'export');assert.equal(out.result,'blocked');assert.equal(out.exit_code,1);
+    assert.equal(check(out,'APPROVAL_CURRENT_INVALID')?.source,`${ui.persisted_ref}/${ui.manifest_ref}`);
+  });
+  test('既有 UI 预检独立依据摘要篡改仍拒绝',()=>{
+    const bad=structuredClone(strategicInput);
+    const basis=bad.assets.ui_baseline.approval_context.basis.find(item=>item.ref===`${ui.persisted_ref}/${ui.manifest_ref}`);
+    assert.ok(basis,'UI 来源描述符必须独立绑定原始 manifest');basis.digest='0'.repeat(64);
+    const out=run(bad,'export');assert.equal(out.result,'blocked');assert.equal(out.exit_code,1);
+    assert.equal(check(out,'APPROVAL_CURRENT_INVALID')?.source,`${ui.persisted_ref}/${ui.manifest_ref}`);
   });
   test('v5 既有 UI 导出 CLI 缺清单拒绝且不写输出',()=>{
     const output=path.join(root,'must-not-export');const out=spawnSync(process.execPath,[fileURLToPath(new URL('./strategic-handoff',import.meta.url)),'export','--source-root',strategicRoot,'--handoff','handoff.yaml','--output',output],{encoding:'utf8'});

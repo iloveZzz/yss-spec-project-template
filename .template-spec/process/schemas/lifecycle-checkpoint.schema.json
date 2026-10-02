@@ -224,6 +224,17 @@
             },
             "checks": {
               "type": "object"
+            },
+            "drafter_principal_ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "subject_digest": {
+              "type": "string",
+              "pattern": "^(sha256:)?[a-f0-9]{64}$"
+            },
+            "review_context": {
+              "type": "object"
             }
           }
         }

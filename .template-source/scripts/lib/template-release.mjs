@@ -1,9 +1,11 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, mkdtempSync, openSync, closeSync, readFileSync, writeFileSync, rmSync, realpathSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, openSync, closeSync, readFileSync, writeFileSync, rmSync, realpathSync, lstatSync, fstatSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { assertNodeVersion, beginRuntimeRun } from '../../cli-core/runtime-store.mjs';
+import { verificationInputDigest } from '../../../scripts/lib/verification-report.mjs';
 
 function git(root, args) {
   const result = spawnSync('git', args, { cwd: root, encoding: 'utf8' });
@@ -35,11 +37,15 @@ export function assertReleaseCheckout(root, commit) {
   return { template_commit: commit, generator_commit: match[1], submodules };
 }
 
-export function verifyTemplateRelease({ root, commit, output }) {
+export function verifyTemplateRelease({ root, commit, output, runtimeStore = 'off' }) {
+  assertNodeVersion();
+  assert.ok(['sqlite','off'].includes(runtimeStore), 'runtime-store 必须为 sqlite 或 off');
   root = realpathSync(root);
   assert.ok(path.isAbsolute(output), 'output 必须是仓库外的绝对路径');
   const requestedRelative = path.relative(root, path.resolve(output));
   assert.ok(requestedRelative.startsWith(`..${path.sep}`) || path.isAbsolute(requestedRelative), '证据目录必须在仓库外');
+  assert.equal(existsSync(output), false, '证据目录已存在，拒绝复用或覆盖历史报告');
+  const runtimeSession=beginRuntimeRun({root,kind:'template-release-verification',mode:runtimeStore,input:{commit},reportDir:output});
   mkdirSync(output, { recursive: true });
   output = realpathSync(output);
   const relative = path.relative(root, output);
@@ -56,13 +62,50 @@ export function verifyTemplateRelease({ root, commit, output }) {
       result = spawnSync(command, args, { cwd, env, stdio: ['ignore', fd, fd] });
     } finally { closeSync(fd); }
     report.commands.push({ command, args, cwd, exit_code: result.status ?? 1, duration_ms: Date.now() - started, log });
+    runtimeSession?.recordCommand({...report.commands.at(-1),stdoutFile:path.join(output,log)});
     assert.equal(result.status, 0, result.error?.message || `${command} 失败，详见 ${path.join(output, log)}`);
   };
   try {
     Object.assign(report, assertReleaseCheckout(root, commit));
     run('scripts/repository-mode', []);
     assert.equal(readFileSync(path.join(output, '01.log'), 'utf8').trim(), 'template-source', '只允许模板源发布验证');
-    run('scripts/verify-template', ['--concurrency', '1']);
+    const fullDirectory = path.join(output, 'full-verification');
+    run('scripts/verify-template', ['--concurrency', '1', '--runtime-store', runtimeStore, '--report-dir', fullDirectory]);
+    const fullFile = path.join(fullDirectory, 'report.json');
+    assert.equal(realpathSync(fullFile), fullFile, '内部全量验证报告不能使用符号链接');
+    const full = JSON.parse(readFileSync(fullFile, 'utf8'));
+    assert.equal(full.schema_version, 1, '内部全量验证报告版本不支持');
+    assert.equal(full.kind, 'template-verification-report', '内部全量验证报告类型不正确');
+    assert.equal(full.status, 'passed', '内部全量验证报告未通过');
+    assert.equal(full.root, root, '内部全量验证报告属于其它源码');
+    assert.equal(full.scope?.kind, 'complete-candidate', '内部全量验证范围不完整');
+    assert.equal(full.plan?.effective_profile, 'release', '内部全量验证必须使用 release profile');
+    assert.notEqual(full.plan?.selection?.effective, 'allowlist', '内部全量验证不得裁剪');
+    assert.deepEqual(full.plan?.selection?.omitted, [], '内部全量验证存在遗漏');
+    assert.equal(full.input_drift, false, '内部全量验证输入漂移或未核验');
+    assert.match(full.input_sha256, /^[a-f0-9]{64}$/, '内部全量验证输入摘要缺失');
+    assert.equal(full.input_after_sha256, full.input_sha256, '内部全量验证输入摘要不一致');
+    assert.equal(full.input_sha256, verificationInputDigest(root), '内部全量验证源码已漂移');
+    assert.ok(Number.isFinite(Date.parse(full.started_at)) && Number.isFinite(Date.parse(full.finished_at)), '内部全量验证尚未完成');
+    assert.ok(Array.isArray(full.unexecuted) && full.unexecuted.every(row => row.reason === 'repository-mode'), '内部全量验证存在未执行命令');
+    assert.ok(Array.isArray(full.plan.commands) && full.plan.commands.length > 0 && Array.isArray(full.results), '内部全量验证命令结果缺失');
+    for (const [index, command] of full.plan.commands.entries()) {
+      if (command.when && command.when !== 'template-source') continue;
+      const row = full.results.find(result => result.index === index);
+      assert.ok(row && row.command === command.command && row.code === 0 && !row.skipped && !row.storageError, '内部全量验证命令未通过或不完整');
+      for (const file of [row.stdoutFile, row.stderrFile]) {
+        assert.equal(typeof file, 'string', '内部全量验证日志引用缺失');
+        const actualFile = realpathSync(file);
+        assert.equal(actualFile, path.resolve(file), '内部全量验证日志不能使用符号链接');
+        const logRelative = path.relative(fullDirectory, actualFile);
+        assert.ok(logRelative && !logRelative.startsWith('..') && !path.isAbsolute(logRelative), '内部全量验证日志越界');
+        assert.ok(lstatSync(file).isFile(), '内部全量验证日志必须是普通文件');
+        const logFd = openSync(file, 'r');
+        try { assert.ok(fstatSync(logFd).isFile(), '内部全量验证日志必须是普通文件'); }
+        finally { closeSync(logFd); }
+      }
+    }
+    report.full_verification = { report: path.join(fullDirectory, 'report.json'), input_sha256: full.input_sha256, status: full.status };
     scratch = mkdtempSync(path.join(os.tmpdir(), 'yss-template-release-'));
     const cli = path.join(scratch, 'cli');
     run('git', ['clone', '--shared', '--no-checkout', path.join(root, 'submodules/create-yss-spec'), cli]);
@@ -113,6 +156,15 @@ export function verifyTemplateRelease({ root, commit, output }) {
     if (scratch) rmSync(scratch, { recursive: true, force: true });
     report.finished_at = new Date().toISOString();
     writeFileSync(path.join(output, 'release-verification.json'), `${JSON.stringify(report, null, 2)}\n`);
+    if(runtimeSession)try {
+      runtimeSession.pin('release-verification-evidence');
+      runtimeSession.registerFiles(output);
+      runtimeSession.finish({status:report.status,exitCode:report.status==='passed'?0:1,report:path.join(output,'release-verification.json')});
+    } catch(error) {
+      report.status='failed';report.error=[report.error,`运行存储异常: ${error.message}`].filter(Boolean).join('; ');
+      writeFileSync(path.join(output,'release-verification.json'),`${JSON.stringify(report,null,2)}\n`);
+      throw error;
+    } finally { runtimeSession.close(); }
   }
   return report;
 }

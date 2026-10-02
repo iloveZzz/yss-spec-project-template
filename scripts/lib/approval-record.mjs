@@ -1,205 +1,100 @@
-import { assertApprovalUserDecision } from './user-decision-reuse.mjs';
-import { parseAsset, validateAssetStructure } from './structured-assets.mjs';
-import { existsSync, readFileSync } from './validation-phase.mjs';
-import path from "node:path";
-import { parseDocument } from "../vendor/yaml.mjs";
-import {
-  BIOLOGICAL_ROLE_ID,
-  countersignRuleForGate,
-  loadDigitalHumanRoles,
-  collectCountersignGateIds
-} from "./digital-human-roles.mjs";
-import { assertGateChecks } from "./lifecycle-controls.mjs";
-import { ROOT, loadRegistry } from "./lifecycle-registry.mjs";
-import { assertUserDecisionRequirement, assertWorkUnitUserDecision, assertImplementationDecision, decisionIO, decisionDigest } from "./user-decision.mjs";
+import {withValidationPhase, readFileSync} from './validation-phase.mjs';
+import {ROOT, loadRegistry} from './lifecycle-registry.mjs';
+import {loadDigitalHumanRoles, countersignRuleForGate} from './digital-human-roles.mjs';
+import {assertGateChecks} from './lifecycle-controls.mjs';
+import {assertUserDecisionRequirement, assertWorkUnitUserDecision, assertImplementationDecision} from './user-decision.mjs';
+import {validateAssetStructure} from './structured-assets.mjs';
+import {assertCurrentApproval, approvalExpectationFromState} from './approval-current.mjs';
+import {approvalExpectedFromTask} from './review-capabilities.mjs';
+import {approvalIO, readApprovalDocument, reviewBundleRows, loadApprovalRecord, selectApprovalRecord, readApprovalHistory, resolveApprovalRef, approvalError} from './approval-record-io.mjs';
+export {assertCurrentApproval, approvalExpectationFromState, approvalExpectationFromSubject} from './approval-current.mjs';
+export {loadApprovalRecord, selectApprovalRecord, readApprovalHistory, resolveApprovalRef} from './approval-record-io.mjs';
 
-const DECISIONS = new Set(["approved", "rejected", "vetoed"]);
-const ACTOR_KINDS = new Set(["digital-human", "biological-human", "orchestrator"]);
-
-function fail(message) {
-  throw new TypeError(message);
-}
-
-function requireString(value, field) {
-  if (typeof value !== "string" || !value.trim()) fail(`${field} 不能为空`);
-}
-
-function yamlFromFile(filePath, label) {
-  let source;
-  try {
-    source = readFileSync(filePath, "utf8");
-  } catch (error) {
-    if (error.code === "ENOENT") fail(`缺少${label}: ${filePath}`);
-    throw error;
+function expectedFor(record, options) {
+  if (options.expected) return Array.isArray(options.expected) ? options.expected.find(row => row.boundary === record.gate_id) : options.expected;
+  if (options.checkpoint) {
+    const state = options.checkpoint.gates?.[record.gate_id] || options.checkpoint.checks?.[record.gate_id];
+    return approvalExpectationFromState(record.gate_id,state,options);
   }
-  const value = parseAsset(source, filePath);
-  validateAssetStructure(value, 'approval-record');
-  if (!value || typeof value !== "object" || Array.isArray(value)) fail(`${label}必须是对象`);
-  return value;
+  if (record.schema_version === 2 && record.review_task_ref) {
+    const task = approvalIO(options).document(record.review_task_ref);
+    return approvalExpectedFromTask(task,{...options,read:options.read || readFileSync,boundary:record.gate_id,reviewTaskRef:record.review_task_ref,reviewTaskDigest:record.review_task_digest});
+  }
+  return undefined;
 }
-
-export function loadApprovalRecord(filePath, gateId) {
-  return selectApprovalRecord(yamlFromFile(filePath, "会签记录"), gateId);
+export function validateApprovalRecord(record, options = {}) {
+  if (options.history === true || options.requireApproved === false) {
+    validateAssetStructure(record,'approval-record');
+    if (record.kind === 'review-bundle') reviewBundleRows(record);
+    return {bucket:'history-only',record,execution_authorization:'not-evaluated'};
+  }
+  return withValidationPhase({root:options.root || ROOT,purpose:'approval-current',readOnly:true},()=>assertCurrentApproval(record,expectedFor(record,options),options));
 }
-
-function reviewBundleRows(bundle) {
-  if (bundle?.schema_version !== 1 || bundle.kind !== "review-bundle") fail("组合审查身份无效");
-  for (const field of ["bundle_id", "task_id", "work_unit_id", "review_session_id", "role_id", "runtime_id", "principal_ref"]) requireString(bundle[field], field);
-  if (!/^review-bundle\.[a-z0-9][a-z0-9-]*$/.test(bundle.bundle_id)) fail("组合审查 bundle_id 格式非法");
-  if (!/^work-unit\.[a-z0-9][a-z0-9-]*$/.test(bundle.work_unit_id)) fail("组合审查 work_unit_id 格式非法");
-  if (!Array.isArray(bundle.reviews) || !bundle.reviews.length) fail("组合审查不能为空");
-  if (new Set(bundle.reviews.map(row => row?.gate_id)).size !== bundle.reviews.length) fail("组合审查 gate_id 重复");
-  for (const row of bundle.reviews) {
-    if (!row || typeof row !== "object" || Array.isArray(row)) fail("组合审查结论必须是对象");
-    if (row.role_id !== bundle.role_id || row.runtime_id !== bundle.runtime_id || row.principal_ref !== bundle.principal_ref) fail("组合审查必须来自同一复核角色、运行时和实例");
-    if (row.review_session_id != null && row.review_session_id !== bundle.review_session_id) fail("组合审查 review_session_id 不一致");
-  }
-  return bundle.reviews;
-}
-
-export function selectApprovalRecord(record, gateId) {
-  if (record.kind !== 'review-bundle') return record;
-  const selected = reviewBundleRows(record).filter(x => x.gate_id === gateId);
-  if (selected.length !== 1) fail('组合审查缺少当前检查的明确结论');
-  return {
-    ...selected[0],
-    review_bundle_id: record.bundle_id,
-    review_task_id: record.task_id,
-    review_work_unit_id: record.work_unit_id,
-    review_session_id: record.review_session_id
-  };
-}
-
-export function resolveApprovalRef(approvalRef, fromFile = ROOT) {
-  requireString(approvalRef, "approval_ref");
-  if (path.isAbsolute(approvalRef)) return approvalRef;
-  const fromRoot = path.join(ROOT, approvalRef);
-  if (existsSync(fromRoot)) return fromRoot;
-  return path.resolve(path.dirname(fromFile), approvalRef);
-}
-
-export function validateApprovalRecord(record, { rolesDoc, requireApproved = false, ...decisionOptions } = {}) {
-  validateAssetStructure(record, 'approval-record');
-  if (!record || typeof record !== "object" || Array.isArray(record)) fail("会签记录必须是对象");
-  if (record.schema_version !== 1) fail("会签记录 schema_version 必须为 1");
-  requireString(record.gate_id, "gate_id");
-  requireString(record.decision, "decision");
-  if (!DECISIONS.has(record.decision)) fail("decision 必须是 approved、rejected 或 vetoed");
-  requireString(record.actor_kind, "actor_kind");
-  if (!ACTOR_KINDS.has(record.actor_kind)) fail("actor_kind 无效");
-  requireString(record.role_id, "role_id");
-  requireString(record.runtime_id, "runtime_id");
-  requireString(record.principal_ref, "principal_ref");
-
-  const registry = rolesDoc || loadDigitalHumanRoles();
-  const runtimeIds = new Set((registry.runtimes || []).map((runtime) => runtime.id));
-  if (!runtimeIds.has(record.runtime_id)) fail(`未知 runtime_id: ${record.runtime_id}`);
-  if (record.actor_kind === "orchestrator") fail("编排器门禁不使用会签记录关闭");
-
-  if (!requireApproved && loadRegistry().id_policy.deprecated_ids.includes(record.gate_id)) return { bucket: "historical", gate: record.gate_id };
-  let rule = countersignRuleForGate(registry.gate_policy, record.gate_id);
-  const continuationReviewers = registry.gate_policy.continuation_reviews?.[record.gate_id];
-  if (record.continuation_ref && record.actor_kind === 'digital-human' && continuationReviewers) {
-    rule = { bucket: 'digital_human_review', gate: record.gate_id, countersigners: continuationReviewers };
-    if (!record.drafter_principal_ref || record.drafter_principal_ref === record.principal_ref) fail('延续批准必须由独立审查者核验');
-  }
-  if (!rule) fail(`${record.gate_id} 不是会签门禁；evidence_only / orchestrator 门禁不写 approval-record`);
-
-  if (requireApproved && record.decision !== "approved") {
-    fail(`${record.gate_id} 会签 decision 必须为 approved 才能关闭门禁`);
-  }
-  if (record.decision === "approved" && record.biological_veto === true) {
-    fail(`${record.gate_id} 已被生物人否决，不能标为 approved`);
-  }
-
-  if (rule.bucket === "biological_human") {
-    if (record.actor_kind !== "biological-human") fail(`${record.gate_id} 必须由生物人会签`);
-    if (record.role_id !== BIOLOGICAL_ROLE_ID) fail(`${record.gate_id} 的 role_id 必须为 ${BIOLOGICAL_ROLE_ID}`);
-    if (requireApproved) assertRecordUserDecision(record, registry, decisionOptions);
-    return rule;
-  }
-
-  if (record.actor_kind !== "digital-human") fail(`${record.gate_id} 必须由数字人会签`);
-  if (!rule.countersigners.includes(record.role_id)) {
-    fail(`${record.gate_id} 会签角色必须是 ${rule.countersigners.join(" / ")}`);
-  }
-  if (rule.drafter && record.role_id === rule.drafter) fail(`${record.gate_id} 起草者不得会签自己`);
-  if (Array.isArray(record.countersigner_role_ids) && rule.drafter && record.countersigner_role_ids.includes(rule.drafter)) {
-    fail(`${record.gate_id} 起草者不得出现在 countersigner_role_ids`);
-  }
-  if (rule.drafter && record.drafter_role_id && record.drafter_role_id !== rule.drafter) {
-    fail(`${record.gate_id} drafter_role_id 必须为 ${rule.drafter}`);
-  }
-  if (requireApproved) assertRecordUserDecision(record, registry, decisionOptions);
-  return rule;
-}
-
-function assertRecordUserDecision(record, registry, options) {
-  if (!registry.user_decision_policy.gates.includes(record.gate_id)) return;
-  const result = assertApprovalUserDecision(record, registry, options);
-  if (record.actor_kind === "biological-human" && result.validated.some((item) => item.principal_ref !== record.principal_ref)) fail("user-decision-responder-mismatch: 生物人会签者与原始回复者不一致");
-}
-
 export function validateApprovalRecordFile(filePath, options = {}) {
-  const record = yamlFromFile(filePath, "会签记录");
-  if (record.kind === 'review-bundle') {
-    return reviewBundleRows(record).map(item => {
-      const row = loadApprovalRecord(filePath, item.gate_id);
-      if (options.requireApproved) {
-        if (!row.drafter_principal_ref || row.drafter_principal_ref === row.principal_ref) fail('组合审查必须保留独立身份');
-        const io = decisionIO(options);
-        if (!row.subject_ref || decisionDigest(io.bytes(row.subject_ref)) !== `sha256:${row.subject_digest}`) fail('组合审查主体缺失或已过期');
-      }
-      return validateApprovalRecord(row, options);
-    });
-  }
-  return validateApprovalRecord(record, options);
+  if (options.history === true || options.requireApproved === false) return readApprovalHistory(filePath,options);
+  return withValidationPhase({root:options.root || ROOT,purpose:'approval-current',readOnly:true},()=>{
+    const record = readApprovalDocument(filePath,options);
+    if (record.kind !== 'review-bundle') return assertCurrentApproval(record,expectedFor(record,options),options);
+    return reviewBundleRows(record).map(row=>assertCurrentApproval(loadApprovalRecord(filePath,row.gate_id,options),expectedFor(row,options),options));
+  });
 }
-
-export function assertApprovedGateHasValidApproval(gateId, gateState, { checkpointPath } = {}) {
-  const rolesDoc = loadDigitalHumanRoles();
-  const countersignGates = new Set(collectCountersignGateIds(rolesDoc.gate_policy));
-  if (!countersignGates.has(gateId)) return;
-  if (!gateState || typeof gateState !== "object") fail(`${gateId} 缺少门禁状态`);
-  if (gateState.status !== "approved") return;
-  if (!gateState.approval_ref || !String(gateState.approval_ref).trim()) {
-    fail(`${gateId} 已 approved 但缺少 approval_ref`);
-  }
-  const resolved = resolveApprovalRef(gateState.approval_ref, checkpointPath || ROOT);
-  if (!existsSync(resolved)) fail(`${gateId} 的 approval_ref 不可读: ${gateState.approval_ref}`);
-  const record = loadApprovalRecord(resolved, gateId);
-  if (record.gate_id !== gateId) fail(`${gateId} 的会签记录 gate_id 不匹配`);
-  if (!gateState.subject_ref || gateState.subject_ref !== record.subject_ref || !gateState.approval_scope?.length || JSON.stringify([...gateState.approval_scope].sort()) !== JSON.stringify([...(record.approval_scope || [])].sort())) {
-    fail(`${gateId} user-decision-subject-mismatch: 当前门禁资产与会签范围不匹配`);
-  }
-  validateApprovalRecord(record, { rolesDoc, requireApproved: true });
+export function assertApprovedGateHasValidApproval(gateId,gateState,options = {}) {
+  const rolesDoc=options.rolesDoc || loadDigitalHumanRoles();
+  if (!countersignRuleForGate(rolesDoc.gate_policy,gateId)) return;
+  if (!gateState || typeof gateState !== 'object') approvalError('APPROVAL_CONTEXT_REQUIRED',`${gateId} 缺少门禁状态`);
+  if (gateState.status !== 'approved') return;
+  if (!gateState.approval_ref) approvalError('APPROVAL_REFERENCE_REQUIRED',`${gateId} 已 approved 但缺少 approval_ref`);
+  return withValidationPhase({root:options.root || ROOT,purpose:'approval-helper-current',readOnly:true},()=>{
+    const file=resolveApprovalRef(gateState.approval_ref,options.checkpointPath || ROOT,options);
+    // A gate assertion always consumes current authority. History options only
+    // belong to the separate history reader and cannot weaken this boundary.
+    return assertCurrentApproval(loadApprovalRecord(file,gateId,options),approvalExpectationFromState(gateId,gateState,options),{...options,rolesDoc});
+  });
 }
-
-export function assertCheckpointApprovals(checkpoint, checkpointPath) {
-  const gates = checkpoint?.gates;
-  if (!gates || typeof gates !== "object") return;
-  const known = new Set(loadRegistry().gates.map(gate => gate.id));
-  for (const [gateId, state] of Object.entries(gates)) {
-    if (!known.has(gateId)) fail(`未知或已退役门禁: ${gateId}；历史记录只读，不自动迁移批准`);
-    if (state.status === "approved") assertGateChecks(gateId, checkpoint);
-    assertApprovedGateHasValidApproval(gateId, state, { checkpointPath });
-  }
+export function assertCheckpointApprovals(checkpoint,checkpointPath,options = {}) {
+  const registry=options.registry || loadRegistry(),rolesDoc=options.rolesDoc || loadDigitalHumanRoles();
+  return withValidationPhase({root:options.root || ROOT,purpose:'checkpoint-approvals',readOnly:true},()=>{
+    const known=new Set(registry.gates.map(gate=>gate.id));
+    for (const [gateId,state] of Object.entries(checkpoint?.gates || {})) {
+      if (!known.has(gateId)) approvalError('APPROVAL_CURRENT_INVALID',`未知或已退役门禁: ${gateId}；历史记录只读，不自动迁移批准`);
+      if (state.status === 'approved') assertGateChecks(gateId,checkpoint,{...options,registry,rolesDoc});
+      assertApprovedGateHasValidApproval(gateId,state,{...options,checkpointPath,registry,rolesDoc});
+    }
+  });
 }
 
 // Called on resume/transition as well as completion; drafting while waiting stays allowed.
-export function assertCheckpointUserDecisions(checkpoint) {
+export function assertCheckpointUserDecisions(checkpoint, options = {}) {
   if (checkpoint.repository_mode !== "project-instance") return;
   const review = checkpoint.human_review || {};
   const advancing = ["running", "completed"].includes(checkpoint.status) || (checkpoint.mode === "resume" && checkpoint.status === "routing");
   if (!advancing) return;
   const state = { user_decisions: review.user_decisions || [], user_decision_not_applicable: review.not_applicable || [] };
   const completedUnit = checkpoint.stage_trace?.completed_work_unit;
-  if (completedUnit) assertWorkUnitUserDecision(completedUnit, state);
-  if (checkpoint.next_work_unit === "work-unit.slice-implementation") assertImplementationDecision({ ...review.implementation, ...state });
-  for (const requirement of review.required_decisions || []) assertUserDecisionRequirement(requirement);
-  if (review.external_input) assertUserDecisionRequirement({ ...review.external_input, boundary: "external-input" });
+  if (completedUnit) assertWorkUnitUserDecision(completedUnit, state, options);
+  if (checkpoint.next_work_unit === "work-unit.slice-implementation") assertImplementationDecision({ ...review.implementation, ...state }, options);
+  for (const requirement of review.required_decisions || []) assertUserDecisionRequirement(requirement, options);
+  if (review.external_input) assertUserDecisionRequirement({ ...review.external_input, boundary: "external-input" }, options);
   if (checkpoint.status === "completed") {
     if (checkpoint.blockers?.length || Object.values(checkpoint.gates || {}).some(gate => !["approved", "not-applicable"].includes(gate.status))) throw new TypeError("lifecycle-control-blocked: 仍有阻塞或未通过门禁，不可完成");
-    if (checkpoint.gates?.["gate.delivery-accepted"]?.status !== "approved") throw new TypeError("lifecycle-control-blocked: 阶段完成须交付验收，不等于发布授权");
+    const completionGate=loadRegistry().gates.some(gate=>gate.id==="gate.strategic-design-handoff-approved")?"gate.strategic-design-handoff-approved":"gate.delivery-accepted";
+    if (checkpoint.gates?.[completionGate]?.status !== "approved") throw new TypeError("lifecycle-control-blocked: 阶段完成须当前交付或战略交接验收，不等于发布授权");
+  }
+}
+
+// Strategic profiles retain their bounded stage-transition API while using the same current kernel.
+export function assertStrategicWorkUnitDecision(workUnit, state, options = {}) {
+  const roles=options.rolesDoc || loadDigitalHumanRoles();
+  const boundaries=workUnit==='work-unit.strategic-design-handoff' ? ['gate.strategic-design-handoff-approved'] : [...(roles.user_decision_policy.work_unit_gates?.[workUnit] || []), ...(roles.user_decision_policy.work_units?.[workUnit] ? [roles.user_decision_policy.work_units[workUnit]] : [])];
+  for(const boundary of boundaries) {
+    const gate=state.gates?.[boundary];
+    if(gate?.status==='approved') {
+      assertGateChecks(boundary,state,options);
+      assertApprovedGateHasValidApproval(boundary,gate,{...options,rolesDoc:roles});
+    } else if(workUnit==='work-unit.strategic-design-handoff') {
+      approvalError('APPROVAL_CURRENT_INVALID','strategic-gate-migration-required: '+boundary);
+    } else {
+      assertWorkUnitUserDecision(workUnit,{user_decisions:state.user_decisions || state.human_review?.user_decisions || [],user_decision_not_applicable:state.user_decision_not_applicable || state.human_review?.not_applicable || []},{...options,rolesDoc:roles});break;
+    }
   }
 }

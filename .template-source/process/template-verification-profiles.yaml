@@ -32,6 +32,13 @@ core_escalation_patterns:
   - scripts/lib/user-decision.mjs
   - scripts/lib/decision-continuation.mjs
   - scripts/lib/approval-record.mjs
+  - scripts/lib/approval-current.mjs
+  - scripts/lib/approval-record-io.mjs
+  - scripts/lib/approval-consumption.mjs
+  - scripts/lib/approval-checkpoint-discovery.mjs
+  - scripts/lib/review-capabilities.mjs
+  - scripts/lib/review-package.mjs
+  - scripts/prepare-review-package
   - scripts/lib/lifecycle-transition.mjs
   - AGENTS.md
   - yss-project.yaml
@@ -63,6 +70,13 @@ core_escalation_patterns:
   - scripts/lib/read-only-intake.mjs
   - scripts/run-read-only-intake
 required_files:
+  - .template-source/scripts/verify-runtime-windows.mjs
+  - scripts/runtime-store
+  - scripts/lib/runtime-store.mjs
+  - .template-source/cli-core/runtime-store.mjs
+  - tests/runtime-store.test.mjs
+  - tests/runtime-store-integration.test.mjs
+  - tests/runtime-store-distribution.test.mjs
   - scripts/project-ci
   - scripts/project-ci-transition
   - .template-spec/process/project-ci.md
@@ -172,6 +186,11 @@ required_files:
   - scripts/capture-maintenance-candidate
   - scripts/inspect-maintenance-candidate
 syntax_files:
+  - .template-source/scripts/verify-runtime-windows.mjs
+  - scripts/runtime-store
+  - scripts/lib/runtime-store.mjs
+  - .template-source/scripts/measure-runtime-store.mjs
+  - .template-source/cli-core/runtime-store.mjs
   - scripts/lib/user-decision.mjs
   - scripts/verify-user-decision
   - scripts/verify-user-decision-scenarios
@@ -276,6 +295,8 @@ syntax_files:
   - scripts/verify-maintenance-review-workflow-scenarios
   - scripts/verify-template-cache-scenarios
 routing:
+  - patterns: [ scripts/runtime-store, scripts/lib/runtime-store.mjs, .template-source/scripts/measure-runtime-store.mjs, .template-source/scripts/verify-runtime-windows.mjs, tests/runtime-store*.test.mjs, .template-spec/process/runtime-storage.md, .template-source/process/runtime-storage.md ]
+    groups: [ runtime-storage ]
   - patterns: [ scripts/project-ci*, scripts/lib/project-*.mjs, scripts/lib/governance-io.mjs, scripts/lib/checkpoint-boundary.mjs, tests/project-ci.test.mjs, .template-spec/process/project-ci.md, .template-spec/process/checkpoint-boundary.yaml ]
     groups: [ lifecycle ]
   - patterns: [ scripts/lib/maintenance-counterexample.mjs, scripts/verify-maintenance-risk-scenarios, tests/maintenance-counterexample.test.mjs ]
@@ -520,6 +541,12 @@ routing:
       - .codex/skills/yss-research/**
       - .cursor/skills/yss-research/**
       - .pi/skills/yss-research/**
+      - .agents/skills/competitive-intelligence/**
+      - .codex/skills/competitive-intelligence/**
+      - .cursor/skills/competitive-intelligence/**
+      - .pi/skills/competitive-intelligence/**
+      - .template-spec/plan/templates/competitive-matrix-template.md
+      - .template-spec/plan/templates/competitive-analysis-template.md
     groups:
       - research-evidence
   - patterns:
@@ -677,6 +704,9 @@ groups:
         id: check.b636f17f4fdfecf1
   collaboration:
     commands:
+      - run: node --test .template-source/tooling/node/test/approval-current.test.mjs .template-source/tooling/node/test/review-capabilities.test.mjs .template-source/tooling/node/test/approval-consumption.test.mjs
+        when: template-source
+        id: check.role-gates-current-capability
       - run: scripts/verify-digital-human-roles
         id: check.a3cc57f168071cc8
       - run: scripts/verify-digital-human-roles-scenarios
@@ -817,6 +847,11 @@ groups:
       - run: node --test tests/contract-review-preparation.test.mjs
         when: template-source
         id: check.contract-review-preparation
+  runtime-storage:
+    commands:
+      - run: node --test --test-concurrency=1 tests/runtime-store.test.mjs tests/runtime-store-integration.test.mjs tests/runtime-store-distribution.test.mjs
+        when: template-source
+        id: check.runtime-storage
   governance-release:
     commands:
       - run: scripts/verify-governance-release
@@ -840,6 +875,8 @@ groups:
     commands:
       - run: node .agents/skills/yss-research/tests/run-scenarios.mjs
         id: check.research-evidence-scenarios
+      - run: node --test .agents/skills/yss-research/tests/competitive-scenarios.test.mjs
+        id: check.competitive-evidence-scenarios
   document-writing:
     commands:
       - id: check.document-writing-integration

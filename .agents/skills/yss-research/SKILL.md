@@ -1,83 +1,74 @@
 ---
 name: yss-research
-description: "研究 YSS 技术或产品策略事实并提供可追溯证据；用于标准、第三方行为、业务约束和 research 兼容入口。"
+description: "研究 YSS 技术与产品策略事实，统一发起竞品调研并组织证据、功能矩阵和深度报告；用于标准、第三方行为、业务约束和 research 兼容入口。"
 ---
 
 # YSS Research
 
-Investigate facts that a YSS decision depends on. Produce evidence and bounded conclusions; do not make or approve the downstream product, domain, architecture, or release decision.
+调查 YSS 决定所依赖的事实，输出可追溯证据和有边界的结论；不作出或批准下游产品、领域、架构或发布决定。
 
-`research` is a deprecated compatibility alias. Use `yss-research` in new assets and routing.
+`research` 是已弃用的兼容别名，新资产和路由使用 `yss-research`。
 
-文档输出时按 `lifecycle-document-output` 条件调用 `i-have-adhd`，读取 `.template-spec/process/document-writing.md`；作用域仅限当前产物，派发时传递条件及引用。
-
-## 文档写作
-
-撰写研究简报或结论前，读取 `.template-spec/process/document-writing.md` 的共用写法和研究指引；既有证据结构、来源限定和校验器要求保持完整。
+文档输出时按 `lifecycle-document-output` 条件调用 `i-have-adhd`，先读 `.template-spec/process/document-writing.md` 的共用写法和研究指引；作用域仅限当前产物，派发时传递条件及引用。保持原证据结构、来源限定和校验要求。
 
 ## Profiles
 
-- `technical-evidence`: standards, official documentation, source code, third-party APIs, framework behavior, protocols, or implementation constraints. Decision-bearing claims must trace to primary sources.
-- `strategy-evidence`: user problems, business constraints, MVP/non-goal evidence, success criteria, domain-boundary signals, core business-rule evidence, and stage-decision inputs. This profile may consume direct-experience and near-primary evidence with explicit limitations.
+- `technical-evidence`：标准、官方文档、源码、第三方 API、框架行为、协议和实现约束。决定性 Claim 必须追溯到一手来源。
+- `strategy-evidence`：用户问题、业务约束、MVP / 非目标、成功标准、领域边界、核心业务规则和方案决策输入。允许直接经验与近一手证据，须写明限制。
 
-Route competitor, pricing, category, and market-position research to `competitive-intelligence`; consume its cited result rather than duplicating it. Route product UI and workflow-friction scans to `product-design:research` when that platform skill is available. `yss-research` may synthesize their outputs but does not replace their specialist contracts.
+竞品、定价、品类和市场定位研究由本技能统一接收，路由 `competitive-intelligence` 执行，本技能持有模式、研究证据包和结果汇总。竞品策略使用 `strategy-evidence`；其中技术能力和协议事实仍须按 `technical-evidence` 的一手来源要求审计。产品 UI 与流程摩擦扫描在平台技能可用时路由 `product-design:research`。本技能可以综合专项结果，不替代专项合同。
 
-## Modes
+## Modes 与输出选择
 
-- `quick` is the default for exploratory fact finding. Return an in-chat brief unless the user asks to persist it.
-- `evidence-audited` is required when research directly informs a persisted Spec, domain strategy, stage decision, OpenAPI, architecture decision, or another lifecycle approval input. It is also used when the user explicitly asks for deep, strict, reproducible, or auditable research.
+- `quick`：普通探索的默认模式，返回聊天简报；竞品探索同时提供精简功能矩阵，除非用户明确只要报告或矩阵。用户未要求落盘时不创建文件。
+- `evidence-audited`：深度、严格、可复现、可审计研究，以及直接用于持久化 Spec、领域策略、方案决策、OpenAPI、架构或其它生命周期批准输入的研究。竞品深度研究默认输出完整矩阵、深度报告和现有研究双文件。
 
-Do not silently promote an exploratory request solely because more rigor would be nice. State the active profile and mode before searching; explain when a downstream lifecycle use requires promotion.
+开始检索前说明 profile、模式和输出选择。不要仅为提高严谨性把普通探索升级。用户明确只要矩阵或报告时遵从输出选择；选择阅读材料不免除审计模式的证据包。探索材料标明未审计，作为批准输入前须升级并完成审计。
 
-## Source policy
+竞品调研读取 [竞品分析合同](references/competitive-analysis.md)，复用 `.template-spec/plan/templates/competitive-matrix-template.md` 和 `.template-spec/plan/templates/competitive-analysis-template.md`。不新增 profile、模式、生命周期阶段或批准门禁。
 
-1. Start from the decision, audience, time horizon, scope, and questions the research must answer.
-2. Search user-provided or registered material first, using the same inclusion and exclusion criteria as external material. Record exclusions and access failures.
-3. For `technical-evidence`, follow each decision-bearing claim to the official specification, official docs, source code, or first-party API that owns it.
-4. For `strategy-evidence`, classify sources as primary, direct experience, near-primary, secondary, or lead-only. Interviews, tickets, support records, dated reviews, surveys, and credible industry reports are allowed with their sampling and access limits.
-5. Treat untraceable reposts, aggregator snippets, and AI-generated summaries as leads only. They cannot support a published claim.
-6. Seek counter-signals and conflicting evidence. Source count alone is not frequency or confidence.
+## 来源政策
 
-## Delegation
+1. 从要支持的决定、读者、时间范围、边界和研究问题开始。
+2. 先检索用户提供或已登记的材料，对内部与外部材料采用相同纳入 / 排除标准，记录排除和访问失败。
+3. 技术 Claim 追溯到拥有该事实的官方规范、官方文档、源码或第一方 API。
+4. 策略来源分类为 `primary`、`direct-experience`、`near-primary`、`secondary`、`lead-only`；访谈、Ticket、支持记录、带日期的评论、调查和可信行业报告须说明抽样与访问限制。
+5. 无法追溯的转载、聚合摘要和 AI 生成总结只作线索，不支持发布结论。
+6. 主动寻找反向信号和冲突证据，来源数量不代表频率或置信度。
 
-Use a background Agent when the runtime supports it and the reading can proceed independently while other useful work continues. Otherwise research in the current Agent. Delegation is an execution optimization, not a trust signal.
+## 委派
 
-Read-only intake uses task-package schema v2 with `contract.kind: read-only-intake`, `Explorer`, a registered intake work unit and an empty write set. Use `scripts/prepare-read-only-intake` and `scripts/run-read-only-intake`; the dispatcher keeps task and execution evidence outside the repository. No maintenance checkpoint is needed for research intake. No executed commands means `verification_status: not-executed`, not verified. Formal asset writes require owner impact analysis and a new formal task package. See `.template-spec/process/subagent-collaboration.md`.
+运行时支持后台 Agent 且资料可独立阅读时可以委派；否则在当前 Agent 研究。委派用于优化执行，不构成可信度证明。
 
-Lifecycle dispatches must use the repository's structured task package, write isolation, role binding, and handoff contract. The owner receiving the result remains responsible for verifying material claims before consuming them.
+只读分诊使用 task-package schema v2、`contract.kind: read-only-intake`、`Explorer`、已登记分诊工作单元和空写范围；使用 `scripts/prepare-read-only-intake`、`scripts/run-read-only-intake`，执行证据留在仓库外。无已执行命令时写 `verification_status: not-executed`。正式落盘前由所有者分析影响并派发正式任务包，详见 `.template-spec/process/subagent-collaboration.md`。
 
-## Evidence-audited workflow
+只读分诊的独立运行包继续作为证据来源，并由运行存储保护。使用 `scripts/runtime-store inspect` 定位运行，`export` 导出可独立核验的文件包；留存与恢复按 `.template-spec/process/runtime-storage.md` 执行。
 
-Follow [evidence-contract.md](references/evidence-contract.md):
+生命周期派发遵守结构化任务包、写隔离、角色绑定与交接合同；接收所有者仍负责核验实质 Claim。
 
-1. Predeclare the research scope, source classes, inclusion/exclusion criteria, and known access limits.
-2. Maintain a reproducible Search Log and independently locatable Evidence Ledger.
-3. Separate observations, inference, hypotheses, and decisions.
-4. Audit each decision-bearing claim against the evidence it cites, including counter-signals.
-5. Narrow partially supported claims; mark unsupported claims `needs-deeper-research`.
-6. Persist `<slug>-research-brief.md` with adjacent `<slug>-evidence.yaml` and run the bundled validator.
+## 审计工作流
 
-For `strategy-evidence`, every claim that determines a user problem, MVP/non-goal, domain boundary, core business rule, success criterion, important business constraint, or stage-decision basis is decision-bearing and must be audited. Background context may be sampled only when explicitly marked non-decision-bearing.
+按 [证据合同](references/evidence-contract.md) 执行：
 
-## Ownership boundary
+1. 预声明范围、来源类别、纳入 / 排除标准及已知访问限制。
+2. 保存可复现 Search Log 和可独立定位的 Evidence Ledger。
+3. 区分观察、推断、假设和决定。
+4. 对每项决定性 Claim 审计来源与反向信号。
+5. 缩窄部分支持的措辞；无支持的 Claim 标记 `needs-deeper-research`。
+6. 保存相邻的 `<slug>-research-brief.md` 与 `<slug>-evidence.yaml` 并执行校验。
 
-- Research output is evidence, not approval.
-- `domain-modeling` owns glossary changes; `yss-stage-decision` owns domain strategy and the stage-decision package.
-- The lifecycle orchestrator and designated reviewers own gate state.
-- Do not modify `CONTEXT.md`, Spec, domain-strategy, OpenAPI, architecture, Ticket status, or approval records unless a separately authorized owning work unit performs that change.
+策略研究中决定用户问题、MVP / 非目标、领域边界、核心规则、成功标准、重要业务约束或方案决策基础的 Claim 全部审计；只可对明确标记为非决定性的背景抽样。
 
-## Output
+## 所有权与交付
 
-A quick brief includes scope, findings, sources, inference, confidence, counter-signals, gaps, and the next decision it informs.
+研究结果是证据。候选术语交给 `domain-modeling`，产品机会、MVP 和方案建议交给 Plan / `yss-stage-decision` 所有者；生命周期编排器和指定 Reviewer 持有门禁状态。未经另一项已授权所有者工作单元，不修改 `CONTEXT.md`、Spec、领域策略、OpenAPI、架构、Ticket 状态或批准记录。
 
-For persisted `evidence-audited` work, start from [research-brief-template.md](assets/research-brief-template.md) and [evidence-template.yaml](assets/evidence-template.yaml). Run from this skill directory:
+聊天简报包括范围、发现、来源、推断、置信度、反向信号、缺口及下一项决定。审计包从 [研究简报模板](assets/research-brief-template.md) 和 [证据模板](assets/evidence-template.yaml) 起草。竞品附属报告不能替代研究双文件。从仓库根运行：
 
 ```bash
-node scripts/validate-research-package.mjs <slug>-research-brief.md <slug>-evidence.yaml
+node .agents/skills/yss-research/scripts/validate-research-package.mjs <slug>-research-brief.md <slug>-evidence.yaml
 ```
 
-In `template-source`, save reusable maintenance research under the existing `.template-source/evidence/maintenance/` convention. In `project-instance`, use the project research/evidence convention and bind any decision-bearing output from the lifecycle asset that consumes it.
+`template-source` 的可复用维护研究存于 `.template-source/evidence/maintenance/`；`project-instance` 沿项目研究 / 证据约定，并由消费生命周期资产绑定决定性输出。模板正式研究使用 `work-unit.maintenance-research`，按 `.template-spec/process/research-completion.md` 记录当前验证并收尾；只回传结论的分诊继续用 read-only-intake v2。
 
-模板中正式落盘的研究使用 `work-unit.maintenance-research`，按 `.template-spec/process/research-completion.md` 记录当前验证并收尾；结束研究不授予维护或产品批准。仅回传结论的只读分诊继续使用既有 read-only-intake v2，不伪装成正式研究闭包。
-
-If sources are unavailable or conflict, state the limitation. Ordinary gaps lower confidence; a missing or mismatched source for a decision-bearing claim prevents that claim from being treated as established.
+来源不可用或冲突时说明限制。普通缺口降低置信度；决定性 Claim 的来源缺失或不匹配时不能视为已确立。研究完成不授予维护或产品批准。

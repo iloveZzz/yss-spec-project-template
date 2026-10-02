@@ -55,7 +55,7 @@ test('v5 finalize 生成固定不可变交付目录，支持幂等重验并拒�
  const second=await finalizeDelivery({sourceRoot:f.source,handoffRef:'handoff.yaml',zip:true});
  assert.equal(second.result,'already-packaged');assert.equal(second.bundle_digest,first.bundle_digest);
  writeFileSync(path.join(f.source,'evidence/offline.log'),'changed but still approved evidence bytes');
- await assert.rejects(()=>finalizeDelivery({sourceRoot:f.source,handoffRef:'handoff.yaml'}),/delivery-version-conflict/);
+ await assert.rejects(()=>finalizeDelivery({sourceRoot:f.source,handoffRef:'handoff.yaml'}),/delivery-version-conflict|APPROVAL_CURRENT_INVALID.*证据过期/);
 });
 test('v5 交付目录分别导入后端和前端，生成 Import Receipt v3 并保留原始 delivery record',async t=>{
  const f=await setupV5(t);const finalized=await finalizeDelivery({sourceRoot:f.source,handoffRef:'handoff.yaml'});

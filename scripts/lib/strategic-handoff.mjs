@@ -8,6 +8,7 @@ import { ensure, canonical, digest, hash, json, parse, read, safe, relative, fil
 import { parseContextSource, parseContextContract, resolveContextTermRefs } from './context-contract.mjs';
 import { countersignRuleForGate } from './digital-human-roles.mjs';
 import { validateApprovalRecord } from './approval-record.mjs';
+import {approvalExpectationForBoundAsset} from './approval-consumption.mjs';
 import { treeDigest } from './strategic-handoff-io.mjs';
 import { uiBaselineKind, uiBaselineRef, uiBaselineCaseIds, hasConsumerRoutes, validateHandoffUiBaseline } from './ui-baseline.mjs';
 import { extractTraceability, compareIndexes } from './strategic-handoff-rules.mjs';
@@ -84,8 +85,18 @@ function validateConsumerRoutes(handoff, stage) {
   }
 }
 
-export async function sourceApproval(record, roles, root) {
-  const options={rolesDoc:roles,requireApproved:true,root,read:ref=>readFileSync(safe(root,path.relative(root,ref).split(path.sep).join('/')))};
+export async function sourceApproval(record, roles, root, currentAssetBinding) {
+  const sourceGateIds = [...(roles.gate_policy.biological_human || []), ...(roles.gate_policy.product_digital_human_with_biological_veto || []), ...['dual_digital_human','digital_human_review','check_reviews'].flatMap(key => (roles.gate_policy[key] || []).map(row => row.gate))];
+  const options={rolesDoc:roles,registry:{gates:sourceGateIds.map(id=>({id})),id_policy:{deprecated_ids:[]}},requireApproved:true,root,read:ref=>readFileSync(safe(root,path.relative(root,ref).split(path.sep).join('/')))};
+  if(record.schema_version===2) {
+    // v2 tasks consume the unchanged source policies, never receiver normalization.
+    options.rolesDoc=read(safe(root,'.template-spec/agents/digital-human-roles.yaml'));
+    options.registry=read(safe(root,'.template-spec/process/lifecycle-registry.yaml'));
+    options.skillRegistry=read(safe(root,'.template-spec/agents/yss-skill-registry.yaml'));
+    const task=read(safe(root,record.review_task_ref));
+    for(const ref of ['.template-spec/process/lifecycle-registry.yaml','.template-spec/agents/yss-skill-registry.yaml']) ensure(task.review_context?.basis?.some(row=>row.ref===ref && row.digest===hash(readFileSync(safe(root,ref))).slice(7)), '源正式审查任务未冻结实际注册表: '+ref);
+    roles=options.rolesDoc;
+  }
   if (roles.user_decision_policy.gates.includes(record.gate_id)) {
     ensure(existsSync(path.join(ROOT,'scripts/lib/user-decision.mjs')), '接收工具不支持源用户决定策略，请升级工具后验包');
     const { assertApprovalUserDecision } = await import('./user-decision-reuse.mjs');
@@ -93,7 +104,7 @@ export async function sourceApproval(record, roles, root) {
   }
   // Older dedicated receivers retain their own lifecycle policy. Normalize only
   // this already-verified source approval, without granting local capabilities.
-  if (record.continuation_ref) {
+  if (record.continuation_ref && record.schema_version===1) {
     ensure(roles.user_decision_policy.gates.includes(record.gate_id), '未登记的源延续批准边界');
     const reviewers = roles.gate_policy.continuation_reviews?.[record.gate_id];
     ensure(reviewers?.includes(record.role_id) && record.drafter_principal_ref && record.drafter_principal_ref !== record.principal_ref, '源授权延续缺少独立审查身份');
@@ -102,7 +113,8 @@ export async function sourceApproval(record, roles, root) {
     policy.dual_digital_human = (policy.dual_digital_human || []).filter(x => x.gate !== record.gate_id);
     policy.digital_human_review = [...(policy.digital_human_review || []).filter(x => x.gate !== record.gate_id), { gate: record.gate_id, countersigners: reviewers }];
   }
-  validateApprovalRecord(record,options);
+  if(!currentAssetBinding)throw new TypeError('APPROVAL_CONTEXT_REQUIRED: 源批准消费需要当前资产引用');
+  validateApprovalRecord(record,{...options,expected:approvalExpectationForBoundAsset(record.gate_id,currentAssetBinding,options)});
 }
 
 function snapshot(snapshot, source) {
@@ -188,7 +200,7 @@ export async function inspectSource(root, handoffRef) {
   const sourceRoles=read(safe(root,'.template-spec/agents/digital-human-roles.yaml'));
   const roles=sourceApprovalPolicy(sourceRoles);
   for (const [artifact, version, gateId] of [[strategy,strategy.domain_version,'check.domain-strategy-approved'],[stage,stage.package_version,'check.stage-decision-package-approved']]) {
-    if(artifact.approval) { const record=sourceApprovalRecord(read(safe(root,artifact.approval.approval_ref)),gateId);await sourceApproval(record,roles,root);ensure(artifact.approval.current_version===version,'资产内置批准版本过期'); }
+    if(artifact.approval) { const record=sourceApprovalRecord(read(safe(root,artifact.approval.approval_ref)),gateId);await sourceApproval(record,roles,root,{ref:artifact.approval.persisted_ref,approval_context:artifact.approval.approval_context});ensure(artifact.approval.current_version===version,'资产内置批准版本过期'); }
   }
   // Source packages retain their published approval vocabulary. Never promote old approvals into current checkpoint gates.
   const currentPlan = (roles.gate_policy.dual_digital_human || []).some(rule => rule.gate === 'gate.plan-approved');
@@ -207,7 +219,7 @@ export async function inspectSource(root, handoffRef) {
     ensure(business.spec.ref===specBinding.persisted_ref&&business.spec.version===specBinding.version&&business.spec.digest===hash(readFileSync(safe(root,specBinding.persisted_ref))),'业务集合未绑定当前交接 Spec');
   }
   expectedGates.existing_ui_baseline_ref=expectedGates.prototype_ref;
-  const bindings={...handoff.source,handoff:{id:handoff.handoff_id,version:handoff.handoff_version,persisted_ref:handoffRef,status:'approved'}};
+  const bindings={...handoff.source,handoff:{id:handoff.handoff_id,version:handoff.handoff_version,persisted_ref:handoffRef,status:'approved',approval_context:config.approvals.handoff?.approval_context}};
   const businessProofRefs=[];
   for(const [key,ref] of Object.entries(bindings)) {
     const approval=config.approvals[key];
@@ -224,8 +236,8 @@ export async function inspectSource(root, handoffRef) {
     } else actual=bytesDigest(readFileSync(safe(root,ref.persisted_ref)),approval.digest_kind);
     if(key!=='handoff')ensure(ref.digest===actual,`源资产摘要过期: ${key}`);
     const record=sourceApprovalRecord(read(safe(root,approval.record_ref)),approval.gate_id);
-    if(key==='existing_ui_baseline_ref')ensure(record.subject_ref===`${ref.persisted_ref}/${ref.manifest_ref}`,'既有 UI 用户决定必须以当前 manifest 为批准主体');
-    await sourceApproval(record,roles,root);
+    if(key==='existing_ui_baseline_ref')ensure(record.subject_ref===(ref.approval_context?.subject_ref || `${ref.persisted_ref}/${ref.manifest_ref}`),'既有 UI 用户决定必须绑定当前 manifest 的独立批准上下文');
+    await sourceApproval(record,roles,root,{ref:['visual_baseline_ref','existing_ui_baseline_ref'].includes(key)?`${ref.persisted_ref}/${ref.manifest_ref}`:ref.persisted_ref,approval_context:ref.approval_context});
     businessProofRefs.push(approval.record_ref,record.user_decision_ref,record.continuation_ref,record.decision_reuse_ref);
     ensure(record.gate_id===approval.gate_id,`批准门禁不匹配: ${key}`);
     ensure((record.artifact_bindings || []).some(x=>x.id===(ref.id||ref.baseline_id) && x.version===ref.version && x.digest===actual),`批准记录未绑定当前资产: ${key}`);
@@ -264,8 +276,9 @@ function collect(root, handoffRef, handoff, config) {
   const symbolic=config.reference_map || {};
   const enqueue=ref=> { if(symbolic[ref])queue.push(symbolic[ref]); else if(/^https?:\/\//i.test(ref))return; else if(ref.startsWith('evidence.'))throw new TypeError(`未解析 evidence ID: ${ref}`); else if(ref.includes('/') || /\.(?:md|yaml|json|html|png|txt|log)$/.test(ref))queue.push(ref); };
   function refs(value,key='') {
+    if(value?.schema_version===2 && value.review_task_ref) queue.push('.template-spec/process/lifecycle-registry.yaml','.template-spec/agents/yss-skill-registry.yaml');
     if(Array.isArray(value)) { if(key==='evidence_refs') value.forEach(enqueue); else value.forEach(v=>refs(v,key)); }
-    else if(value && typeof value==='object') for(const [k,v]of Object.entries(value)) { if(['approval_ref','persisted_ref','user_decision_ref','decision_reuse_ref','continuation_ref','plan_continuation_ref','scope_ref','subject_ref','delivery_ref','review_ref'].includes(k)&&typeof v==='string')enqueue(v); else if(k==='ref'&&typeof v==='string'&&!/^[a-z]+:\/\//i.test(v))enqueue(v); else refs(v,k); }
+    else if(value && typeof value==='object') for(const [k,v]of Object.entries(value)) { if(['review_task_ref','policy_ref','candidate_ref','registry_ref','approval_ref','persisted_ref','user_decision_ref','decision_reuse_ref','continuation_ref','plan_continuation_ref','scope_ref','subject_ref','delivery_ref','review_ref'].includes(k)&&typeof v==='string')enqueue(v); else if(k==='ref'&&typeof v==='string'&&!/^[a-z]+:\/\//i.test(v))enqueue(v); else refs(v,k); }
   }
   let totalBytes = 0;
   while(queue.length) {

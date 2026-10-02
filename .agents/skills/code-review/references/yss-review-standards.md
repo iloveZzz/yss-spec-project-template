@@ -55,8 +55,10 @@ YSS 页面模块约定（YTable、YFormily、页面骨架等）走 Standards，�
 
 | 类型 | 动作 |
 |---|---|
-| `violation`、机器检查失败、适用行空白、`missing_evidence` | 实现者在**原合同允许路径**内修复；任何修复使候选失效，必须重新捕获并重跑 Standards、Spec、UI fidelity（若命中）和 fresh verification |
-| `drift`、`new_impacts`、`required_skills` 与真实影响不一致 | 合同标 `stale`，回 实现合同编译器 或更早生命周期阶段；禁止在旧合同上继续编码 |
+| `violation`、机器检查失败、适用行空白、`missing_evidence` | 实现者在**原合同允许路径**内修复；比较差异及受影响结论、行为和依赖，重新捕获并定向复审 / 验证，未受影响项有依据地复用并绑定当前候选 |
+| `drift`、`new_impacts`、`required_skills` 与真实影响不一致 | 合同标 `stale`，先调查实际变化及依赖，再回 实现合同编译器 或更早生命周期阶段更新受影响合同；禁止在旧合同上继续编码，不默认全轴复审 |
+
+首轮仍完整覆盖全部适用 Standards、Spec 和条件 UI fidelity。候选摘要变化、UI 影响或未知影响不构成全轴复审的默认或兜底；未知项先调查并阻断其依赖结论。复用证据必须可读，确认原检查条件、依据与依赖未变；当前完成结果重新绑定候选、合同和实际验证，不修改历史报告。
 
 `not-applicable` 仅当影响面未命中。命中后的 mandatory 不得豁免；只允许修复，或写完整 `seam-deferred`（风险、责任人、后续 Ticket、验证计划、目标版本或发布日期）。禁止为日常 Alibaba / YSS 新增生物人豁免门禁；安全 / 公共 API 仍走既有 `TODO-HUMAN-REVIEW` 与生物人门禁。
 

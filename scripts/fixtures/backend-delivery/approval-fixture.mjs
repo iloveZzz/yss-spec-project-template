@@ -35,14 +35,21 @@ export function attachArtifactApproval(root,ref,id,gate) {
  const roles=read(path.join(root,'.template-spec/agents/digital-human-roles.yaml')),rule=countersignRuleForGate(roles.gate_policy,gate);
  if(!rule)throw new Error(`Synthetic source has no approval rule for ${gate}`);
  const binding={ref,id,version:'v1',digest:hash(readFileSync(path.join(root,ref))),approval_ref:`approvals/${id}.json`};
- const biological=rule.bucket==='biological_human',supportingFiles=[];
- const proof={schema_version:1,gate_id:gate,decision:'approved',actor_kind:biological?'biological-human':'digital-human',role_id:biological?'role.biological-human':rule.countersigners.at(-1),runtime_id:'runtime.generic',principal_ref:biological?'person.requester':'synthetic-independent-reviewer',artifact_bindings:[{id,version:binding.version,digest:binding.digest}]};
+ const put=(target,value)=>{mkdirSync(path.dirname(path.join(root,target)),{recursive:true});writeFileSync(path.join(root,target),typeof value==='string'?value:json(value));};
+ const evidenceRef=`approvals/${id}-review.log`,subjectRef=`approvals/${id}-review-package.json`;
+ put(evidenceRef,'Synthetic independent current artifact review; never a real approval.');
+ const basis=[{ref,digest:binding.digest.slice(7)},{ref:evidenceRef,digest:hash(readFileSync(path.join(root,evidenceRef))).slice(7)}];
+ const current={subject_ref:subjectRef,approval_scope:[id],basis,drafter_principal_ref:'synthetic-artifact-drafter'};
+ put(subjectRef,{gate_id:gate,approval_scope:current.approval_scope,basis,drafter_principal_ref:current.drafter_principal_ref});
+ binding.approval_context=current;
+ const biological=rule.bucket==='biological_human',supportingFiles=[subjectRef,evidenceRef];
+ const proof={schema_version:1,gate_id:gate,decision:'approved',actor_kind:biological?'biological-human':'digital-human',role_id:biological?'role.biological-human':rule.countersigners.at(-1),runtime_id:'runtime.generic',principal_ref:biological?'person.requester':'synthetic-independent-reviewer',subject_ref:subjectRef,subject_digest:hash(readFileSync(path.join(root,subjectRef))).slice(7),approval_scope:current.approval_scope,basis,drafter_principal_ref:current.drafter_principal_ref,artifact_bindings:[{id,version:binding.version,digest:binding.digest}]};
  if(biological||roles.user_decision_policy.gates.includes(gate)) {
   const decisionRoot=`approvals/decision-${id}`;
-  const decision=buildDecisionFixture(path.join(root,decisionRoot),{boundary:gate,scope:[id],subjectRef:path.join(root,ref)});
+  const decision=buildDecisionFixture(path.join(root,decisionRoot),{boundary:gate,scope:[id],subjectRef:path.join(root,subjectRef)});
   const relative=value=>path.relative(root,value).split(path.sep).join('/');
-  decision.record.request.items[0].subject.ref=ref;decision.record.request.requester_source.ref=relative(decision.record.request.requester_source.ref);decision.present();decision.record.responses=[];decision.respond();decision.record.request.presented_source.ref=relative(decision.record.request.presented_source.ref);decision.record.responses[0].source.ref=relative(decision.record.responses[0].source.ref);decision.save();
-  Object.assign(proof,{subject_ref:ref,approval_scope:[id],user_decision_ref:relative(decision.ref)});supportingFiles.push(...files(root,decisionRoot));
+  decision.record.request.items[0].subject.ref=subjectRef;decision.record.request.requester_source.ref=relative(decision.record.request.requester_source.ref);decision.present();decision.record.responses=[];decision.respond();decision.record.request.presented_source.ref=relative(decision.record.request.presented_source.ref);decision.record.responses[0].source.ref=relative(decision.record.responses[0].source.ref);decision.save();
+  proof.user_decision_ref=relative(decision.ref);supportingFiles.push(...files(root,decisionRoot));
  }
  mkdirSync(path.dirname(path.join(root,binding.approval_ref)),{recursive:true});writeFileSync(path.join(root,binding.approval_ref),json(proof));
  return {binding,supportingFiles};

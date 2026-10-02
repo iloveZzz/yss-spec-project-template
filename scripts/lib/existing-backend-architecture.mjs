@@ -1,3 +1,5 @@
+import {countersignRuleForGate} from './digital-human-roles.mjs';
+import {approvalExpectationForBoundAsset} from './approval-consumption.mjs';
 import {assertApprovedExecutionContext} from './approved-execution-context.mjs';
 import {createHash} from 'node:crypto';
 import { realpathSync } from 'node:fs';
@@ -113,7 +115,8 @@ export function verifyExistingArchitecture(identity,bindings,{root,registry,exec
  const review=bound(root,baseline.boundary_review);
  const rolesFile=path.join(root,'.template-spec/agents/digital-human-roles.yaml');
  const roles=parse(readFileSync(rolesFile));
- validateApprovalRecord(review,{rolesDoc:roles,requireApproved:true,root});
+ const reviewBoundary=['check.architecture-reviewed','gate.technical-design-approved'].find(boundary=>countersignRuleForGate(roles.gate_policy,boundary));
+ validateApprovalRecord(review,{rolesDoc:roles,requireApproved:true,root,expected:approvalExpectationForBoundAsset(reviewBoundary,bindings.manifest,{root})});
  requireThat(['check.architecture-reviewed','gate.technical-design-approved'].includes(review.gate_id)&&text(baseline.id)&&text(baseline.version),'ARCH_REVIEW_MISSING','需要架构边界审查');
  const basis=existingArchitectureDigest(Object.fromEntries(Object.entries(baseline).filter(([k])=>k!=='boundary_review')));
  requireThat(review.artifact_bindings?.some(x=>x.id===baseline.id&&x.version===baseline.version&&x.digest===basis),'ARCH_REVIEW_STALE','架构审查未绑定当前基线');

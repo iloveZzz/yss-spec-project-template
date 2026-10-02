@@ -28,7 +28,7 @@ Implementation → Independent Review → Fresh Verification → Release
 5. 重新审查后优先恢复原 Ticket；仅在范围或验收目标根本变化时重建。
 6. 原 `not-applicable` 的条件被推翻时，改为 `missing` 或 `draft`。
 
-具体 `impact type → artifact/gate → direct/transitive → when` 以 `orchestration-contract.yaml` 为机器可执行事实。条件满足时，`direct` 节点直接标记 `stale`；`transitive` 节点仅在其依赖的 direct 节点发生语义变化时传播。条件不满足时保持原状态，尤其不得把 `not-applicable` 改成 `stale`。表中未列出的节点不传播；无法分类的变化暂停影响面裁决，不得猜测。
+具体 `impact type → artifact/gate → direct/transitive → when` 以 `orchestration-contract.yaml` 为机器可执行事实。条件满足时，`direct` 节点直接标记 `stale`；`transitive` 节点仅在其依赖的 direct 节点发生语义变化时传播。条件不满足时保持原状态，尤其不得把 `not-applicable` 改成 `stale`。表中未列出的节点不传播；无法分类的变化先调查行为、结论和依赖，并阻断依赖事项，不猜测或默认全轴复审。
 
 每个 `stale` 节点必须记录 `stale_by`、影响类型、证据引用和重新批准条件。重新批准 direct 节点后，逐个重新核验 transitive 节点；只有其全部受影响上游恢复为 `approved/not-applicable` 且本节点重新验证通过，才能移除 `stale`。
 

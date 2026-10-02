@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import {mkdtempSync,writeFileSync,rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import path from 'node:path';
-import {spawnSync} from 'node:child_process';
+import {spawn,spawnSync} from 'node:child_process';
 import {validateJsonSchemas} from '../../lib/json-schema.mjs';
 
 const python=spawnSync('python3',['-c','import sys; print(sys.executable)'],{encoding:'utf8'}).stdout.trim();
@@ -14,10 +14,29 @@ function fixture(t,mode='hold-open') {
  const schemaPath=path.join(root,'schema.json');writeFileSync(schemaPath,JSON.stringify({type:'object',required:['name'],properties:{name:{type:'string',const:'真实 UTF-8 原字节'}}}));
  // Keep the actual validator's stdin write end open until it exits. This reproduces
  // the sampled readall/EOF wait while leaving schema evaluation entirely real.
- writeFileSync(path.join(root,'python3'),`#!${python}\nimport sys,subprocess\npayload=sys.stdin.buffer.read()\nchild=subprocess.Popen([${JSON.stringify(python)},*sys.argv[1:]],stdin=subprocess.PIPE)\nchild.stdin.write(payload${mode==='truncate'? '[:-1]':''})\nchild.stdin.flush()\n${mode==='truncate'?'child.stdin.close()':''}\ntry:\n    code=child.wait(timeout=2)\nexcept subprocess.TimeoutExpired:\n    print('SCHEMA_EOF_WAIT_REPRO: validator waited for EOF despite complete JSON bytes',file=sys.stderr)\n    child.kill()\n    child.wait()\n    code=73\nfinally:\n    if not child.stdin.closed: child.stdin.close()\nsys.exit(code)\n`,{mode:0o755});
+ writeFileSync(path.join(root,'python3'),`#!${python}\nimport sys,subprocess\npayload=sys.stdin.buffer.read(int(sys.argv[-1]))\nchild=subprocess.Popen([${JSON.stringify(python)},*sys.argv[1:]],stdin=subprocess.PIPE)\nchild.stdin.write(payload${mode==='truncate'? '[:-1]':''})\nchild.stdin.flush()\n${mode==='truncate'?'child.stdin.close()':''}\ntry:\n    code=child.wait(timeout=2)\nexcept subprocess.TimeoutExpired:\n    print('SCHEMA_EOF_WAIT_REPRO: validator waited for EOF despite complete JSON bytes',file=sys.stderr)\n    child.kill()\n    child.wait()\n    code=73\nfinally:\n    if not child.stdin.closed: child.stdin.close()\nsys.exit(code)\n`,{mode:0o755});
  process.env.PATH=`${root}${path.delimiter}${previousPath}`;
  return {root,schemaPath};
 }
+test('transport wrapper consumes a complete UTF-8 frame while its own stdin stays open',async t=>{
+ const f=fixture(t),payload=Buffer.from('中文😀'.repeat(30000));
+ const echo="import sys; payload=sys.stdin.buffer.read(int(sys.argv[1])); sys.stdout.buffer.write(payload)";
+ const child=spawn(path.join(f.root,'python3'),['-c',echo,String(payload.length)],{stdio:['pipe','pipe','pipe'],detached:process.platform!=='win32'});
+ const output=[],errors=[];child.stdout.on('data',chunk=>output.push(chunk));child.stderr.on('data',chunk=>errors.push(chunk));child.stdin.on('error',()=>{});
+ let timer;
+ try {
+  const completed=new Promise((resolve,reject)=>{
+   child.once('error',reject);child.once('close',code=>code===0?resolve():reject(new Error(Buffer.concat(errors).toString()||`transport exited ${code}`)));
+   timer=setTimeout(()=>reject(new Error('transport waited for outer stdin EOF after receiving the complete frame')),5000);
+  });
+  child.stdin.write(payload); // Deliberately omit end(): both transport boundaries must use the byte frame.
+  await completed;assert.deepEqual(Buffer.concat(output),payload);
+ } finally {
+  clearTimeout(timer);
+  if(child.exitCode===null){if(process.platform==='win32')child.kill('SIGKILL');else try{process.kill(-child.pid,'SIGKILL');}catch(error){if(error.code!=='ESRCH')throw error;}}
+  child.stdin.destroy();
+ }
+});
 test('real Python schema batch finishes without stdin EOF and preserves Unicode, large input and invalid results',t=>{
  const f=fixture(t),large='中文😀'.repeat(30000);
  const invalidSchema=path.join(f.root,'invalid-schema.json'),verboseSchema=path.join(f.root,'verbose-schema.json');

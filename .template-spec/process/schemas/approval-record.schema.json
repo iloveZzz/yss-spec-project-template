@@ -1,23 +1,186 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://yss.dev/schemas/approval-record.schema.json",
-  "title": "YSS standalone approval record v1",
+  "title": "YSS approval record v1/v2; current authorization is verified separately",
   "type": "object",
-  "required": ["schema_version", "gate_id", "decision", "actor_kind", "role_id", "runtime_id", "principal_ref"],
+  "required": [
+    "schema_version",
+    "gate_id",
+    "decision",
+    "actor_kind",
+    "role_id",
+    "runtime_id",
+    "principal_ref"
+  ],
   "properties": {
-    "schema_version": {"const": 1},
-    "gate_id": {"type": "string", "minLength": 1},
-    "decision": {"enum": ["approved", "rejected", "vetoed"]},
-    "actor_kind": {"enum": ["digital-human", "biological-human", "orchestrator"]},
-    "role_id": {"type": "string", "minLength": 1},
-    "runtime_id": {"type": "string", "minLength": 1},
-    "principal_ref": {"type": "string", "minLength": 1},
-    "subject_ref": {"type": ["string", "null"]},
-    "subject_digest": {"type": ["string", "null"], "pattern": "^(sha256:)?[a-f0-9]{64}$"},
-    "approval_scope": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
-    "biological_veto": {"type": "boolean"},
-    "evidence_refs": {"type": "array"},
-    "countersigner_role_ids": {"type": "array", "items": {"type": "string", "minLength": 1}}
+    "schema_version": {
+      "enum": [
+        1,
+        2
+      ]
+    },
+    "gate_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "decision": {
+      "enum": [
+        "approved",
+        "rejected",
+        "vetoed",
+        "pending"
+      ]
+    },
+    "actor_kind": {
+      "enum": [
+        "digital-human",
+        "biological-human",
+        "orchestrator"
+      ]
+    },
+    "role_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "runtime_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "principal_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "subject_ref": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "subject_digest": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^(sha256:)?[a-f0-9]{64}$"
+    },
+    "approval_scope": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "biological_veto": {
+      "type": "boolean"
+    },
+    "evidence_refs": {
+      "type": "array"
+    },
+    "countersigner_role_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "drafter_principal_ref": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "basis": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "ref",
+          "digest"
+        ],
+        "properties": {
+          "ref": {
+            "type": "string",
+            "minLength": 1
+          },
+          "digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        }
+      }
+    },
+    "review_task_ref": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "review_task_digest": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "capability_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^capability\\.[a-z0-9][a-z0-9-]*$"
+      }
+    }
   },
-  "$comment": "Preserves the existing extensible record contract. Role, subject freshness, source and approval semantics are checked by approval-record.mjs."
+  "$comment": "Full structure schema retains history/draft readability. Current kernel requires nonempty independently bound subject/scope/basis/identity and current task; no history result authorizes execution.",
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "schema_version": {
+            "const": 2
+          }
+        },
+        "required": [
+          "schema_version"
+        ]
+      },
+      "then": {
+        "required": [
+          "subject_ref",
+          "subject_digest",
+          "approval_scope",
+          "basis",
+          "drafter_principal_ref",
+          "review_task_ref",
+          "review_task_digest",
+          "capability_ids"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "schema_version": {
+            "const": 1
+          }
+        },
+        "required": [
+          "schema_version"
+        ]
+      },
+      "then": {
+        "properties": {
+          "decision": {
+            "enum": [
+              "approved",
+              "rejected",
+              "vetoed"
+            ]
+          }
+        }
+      }
+    }
+  ]
 }

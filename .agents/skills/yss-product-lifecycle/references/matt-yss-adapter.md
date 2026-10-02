@@ -1,5 +1,25 @@
 # Matt / YSS 工作流适配
 
+上游来源是 [mattpocock/skills](https://github.com/mattpocock/skills)。固定提交、原始哈希和实际生效的 YSS 适配哈希以根 `skills-lock.json` 为准；补装使用模板快照中的适配版，不直接覆盖为上游最新版本。
+
+项目实例按需分发：注册表中受支持的技能可能尚未安装；改名与别名由 `.template-spec/agents/yss-skill-registry.yaml` 解析；已退役名称按 `.template-spec/agents/skill-migrations.md` 重新路由。这三种情况不能混用，也不需要把整个上游仓库装进实例。
+
+## 工作单元技能预检与补装
+
+准备调用原生工作单元的专项技能前，运行：
+
+```bash
+scripts/query-lifecycle-context --work-unit work-unit.plan-requirements --check-skills --agent-runtime codex
+```
+
+运行时只在实例登记了唯一平台时可以省略；条件依赖用重复的 `--when <条件>` 传入。查询只检查当前工作单元和已触发依赖，不加载兼容入口的纯引用或整个角色技能包。普通查询仍不证明技能已安装。
+
+`skill_readiness` 为 `ready` 时退出 0；`missing` / `blocked` 时退出 2；非法输入或查询失败退出 1。技能可用不证明阶段批准、切片资格或任务完成。
+
+收到 `missing` 后，由 Agent 执行结果中的 `remediation.plan_command`，核对新增技能、路径和依赖。已有任务授权覆盖该范围且计划无冲突时执行 `apply_command`，利用现有事务刷新锁文件并校验实例；随后重新执行同一预检，通过后才调用技能。安装 user-invoked 技能不授予调用资格。
+
+`blocked` 中的受管文件丢失、哈希／投影漂移、同名路径冲突、运行时未配置、退役或外部技能缺失必须分别处理；CLI 快照不匹配时补装计划也会拒绝。不得自动覆盖、强制同步或扩展迁移范围。旧实例只读检查现有文件，缺失时按本家族 CLI 规划同步或迁移，不自动转换分发模式。
+
 Matt skills 决定如何工作；YSS 生命周期决定是否允许推进；YSS 专项 skills 决定如何符合工程规范。
 
 生命周期默认使用 `work_unit_routes.*.native`；下表中的 Matt flow 是 `work_unit_routes.*.compatibility` 显式兼容输入。兼容入口的正式资产由用户创建并回交生命周期验收，原生工作单元的正式资产由生命周期编排器创建。
@@ -33,7 +53,7 @@ Matt skills 决定如何工作；YSS 生命周期决定是否允许推进；YSS 
 
 尽量不修改 Matt skill 以复制 YSS 规则。只有它违反模板硬门禁时才做最小兼容修改。
 
-实现合同编译器 只能返回 `draft`、`blocked` 或 `ready-for-lifecycle-review`，不得自行批准合同、设置 `ready-for-agent` 或宣布完成。`new_impacts`、`drift`、`violation`、越界路径或缺失实际验证会暂停当前工作单元，并由本编排器决定增量重路由、完整重路由或回到更早生命周期阶段。
+实现合同编译器 只能返回 `draft`、`blocked` 或 `ready-for-lifecycle-review`，不得自行批准合同、设置 `ready-for-agent` 或宣布完成。`new_impacts`、`drift`、`violation`、越界路径或缺失实际验证阻断依赖动作，由本编排器先调查实际变化及依赖，再修复、补证据或回到受影响生命周期工作单元；不因此默认全轴复审或向用户索取新决定。
 
 ## Workflow Execution Result
 
@@ -56,7 +76,7 @@ next_route: <next-work-unit-or-null>
 blocking_signals: []
 ```
 
-存在 `drift`、`new_impacts`、`violation`、`missing_evidence` 或 `stale_candidates`，以及证据缺失时，不得返回 `completed`；必须暂停并由编排器决定增量重路由、完整重路由或回到更早阶段。
+存在 `drift`、`new_impacts`、`violation`、`missing_evidence` 或 `stale_candidates`，以及证据缺失时，不得返回 `completed`；由编排器调查变化、受影响结论 / 行为及依赖，定向修复 / 重路由、复验并重绑定当前候选。专业等待自主派发并等待，缺真实决定或新授权才展示资产后询问，无依赖的已授权工作继续。
 
 实现合同编译器 状态映射为：`draft → completed`、`blocked → blocked`、`ready-for-lifecycle-review → needs-human`。这里的 `completed` 只表示 Matt 工作单元已产出可验收结果，不表示生命周期完成或可发布。
 
@@ -74,7 +94,7 @@ blocking_signals: []
 
 ## Review 候选与 Git 授权
 
-YSS 调用 `code-review` 前必须形成 review input，至少包含 `review_mode`、`review_base_ref`、`implementation_candidate_ref`、`candidate_snapshot_ref`、`candidate_digest`、`spec_ref`、`ticket_ref`、`slice_contract_ref`、`build_architecture_checklist_ref` 和 `yss_execution_result_refs`，并满足 `orchestration-contract.yaml.review_input.manifest_required_by_mode`。Standards 还必须编译 `review_standards_route`：合同 `required_skills`、影响面专项检查输入、报告模板与 `finding_disposition`；机器检查按 `run_if_present` 执行。质量标准只从 `engineering-baseline` 引用，禁止在 review input 或切片中另起一份。命中高风险影响时，review input 还要引用 Doubt-Driven 主张 / 反证记录；缺少反证或残余风险未处理时返回 `blocked`。`committed` 审查 merge-base 到不可变 `HEAD`；`worktree` 一次捕获 merge-base 到 working tree 的 committed、staged、unstaged 和 untracked 内容，使用 `yss-worktree-candidate-v1` 规定的 raw path、uint64 big-endian 长度、tracked/untracked record 和不支持条目阻断规则计算 SHA-256，让所有参与审查者（人数按 `orchestration-contract.yaml.gate_consolidation`） 消费同一不可变快照，并在返回和完成 checkpoint 复核摘要未变化。缺少输入、候选为空、专项覆盖缺失、未关闭 mandatory `violation`、适用行空白或摘要变化时返回 `blocked`，不能缩小审查范围、另起通用审查 skill、由审查者改实现，或合并不同候选的结论。`violation` 类 finding 交实现者在原合同路径修复后全轴复审；`drift` / `new_impacts` 使合同 `stale` 并回 实现合同编译器。
+YSS 调用 `code-review` 前必须形成 review input，至少包含 `review_mode`、`review_base_ref`、`implementation_candidate_ref`、`candidate_snapshot_ref`、`candidate_digest`、`spec_ref`、`ticket_ref`、`slice_contract_ref`、`build_architecture_checklist_ref` 和 `yss_execution_result_refs`，并满足 `orchestration-contract.yaml.review_input.manifest_required_by_mode`。Standards 还必须编译 `review_standards_route`：合同 `required_skills`、影响面专项检查输入、报告模板与 `finding_disposition`；机器检查按 `run_if_present` 执行。质量标准只从 `engineering-baseline` 引用，禁止在 review input 或切片中另起一份。命中高风险影响时，review input 还要引用 Doubt-Driven 主张 / 反证记录；缺少反证或残余风险未处理时返回 `blocked`。`committed` 审查 merge-base 到不可变 `HEAD`；`worktree` 一次捕获 merge-base 到 working tree 的 committed、staged、unstaged 和 untracked 内容，使用 `yss-worktree-candidate-v1` 规定的 raw path、uint64 big-endian 长度、tracked/untracked record 和不支持条目阻断规则计算 SHA-256，让所有参与审查者（人数按 `orchestration-contract.yaml.gate_consolidation`）消费同一不可变快照，并在返回和完成 checkpoint 复核摘要未变化。缺少输入、候选为空、专项覆盖缺失、未关闭 mandatory `violation`、适用行空白或摘要变化时返回 `blocked`，不能漏掉首轮适用项、另起通用审查 skill、由审查者改实现，或合并未重绑定的不同候选结论。`violation` 类 finding 交实现者在原合同路径修复，按差异、受影响结论 / 行为及依赖定向复审并重绑定；摘要变化、UI 或 `new_impacts` 不触发全轴默认或兜底，未知先调查。`drift` / `new_impacts` 使合同 `stale` 并回 实现合同编译器更新受影响合同；未受影响项须有可读比较依据才能复用。
 
 Matt `implement` 的通用提交指令不构成 YSS Git 授权。只有用户明确给出 `commit_authorized` 为 `true`、非空 `commit_scope` 和 `commit_authorization_ref` 时才能 commit；只有明确给出 `push_authorized` 为 `true`、非空 `push_scope` 和 `push_authorization_ref` 时才能 push。缺少任一字段时保持工作区不变，只输出 checkpoint 判断；不得把 `orchestrate`、实现授权、当前分支、测试通过或负责人要求解释为隐含授权。`git-submodule` 还必须按仓授权、禁止 detached HEAD 提交，并先推子仓再更新父仓 gitlink。
 

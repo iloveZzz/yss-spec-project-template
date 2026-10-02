@@ -1,4 +1,4 @@
-schema_version: 1
+schema_version: 2
 kind: review-bundle
 bundle_id: review-bundle.plan
 task_id: replace-with-plan-review-task-id
@@ -7,20 +7,29 @@ review_session_id: replace-with-stable-review-session-id
 role_id: role.product-manager
 runtime_id: runtime.generic
 principal_ref: replace-with-reviewer-instance
+review_task_ref: docs/.scratch/<feature>/reviews/task.json
+review_task_digest: replace-with-current-task-64-char-sha256
+capability_ids: [capability.business-rules]
+basis:
+- ref: replace-with-current-review-evidence
+  digest: replace-with-current-evidence-64-char-sha256
 reviews:
-- schema_version: 1
+- schema_version: 2
   gate_id: check.domain-strategy-approved
-  decision: approved
+  decision: pending
   actor_kind: digital-human
   role_id: role.product-manager
   runtime_id: runtime.generic
   principal_ref: replace-with-reviewer-instance
-  drafter_role_id: role.requirements-manager
   drafter_principal_ref: replace-with-drafter-instance
   subject_ref: docs/.scratch/<feature>/domain/domain-strategy-v1.yaml
-  subject_digest: replace-with-64-char-sha256
-  approval_scope:
-  - replace-with-feature-id
-  evidence_refs:
-  - replace-with-current-review-evidence
-notes: 本模板只用于起草。只保留实际命中的 check；同一 bundle 的所有结论必须来自同一复核任务、会话和实例。
+  subject_digest: replace-with-current-subject-64-char-sha256
+  approval_scope: [replace-with-feature-id]
+  basis:
+  - ref: replace-with-current-review-evidence
+    digest: replace-with-current-evidence-64-char-sha256
+  evidence_refs: [replace-with-current-review-evidence]
+  review_task_ref: docs/.scratch/<feature>/reviews/task.json
+  review_task_digest: replace-with-current-task-64-char-sha256
+  capability_ids: [capability.business-rules]
+notes: 由 prepare-review-package 按当前 checkpoint 起草 task、摘要、差异和覆盖。所有逐项结论必须由同一独立任务、会话和实例实际审查；pending 草案不授予批准。

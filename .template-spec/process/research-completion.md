@@ -12,6 +12,8 @@ node scripts/verify-maintenance-research <slug>-research-brief.md <slug>-evidenc
 
 命令实际调用研究包校验器，保留 stdout/stderr、退出码、起止时间及简报、台账、校验器、日志的 SHA-256；返回 `binding: {ref, digest}`。不会覆盖旧目录。失败记录保留，不能用于完成。
 
+包含 `competitive_analysis` 的新研究包还在 `inputs.competitive` 中绑定选定的矩阵、报告，以及竞品 Schema、渲染器、比较校验模块、两份模板与 JSON Schema 执行器的 `{ref, digest}`。这些引用同时写入结果的 `evidence_refs`。产物仅允许同目录相对文件名；越界或符号链接逃逸直接拒绝。接收端重新核验当前字节并重跑校验，任何绑定变化都使旧记录失效。没有扩展的旧包和历史记录保留原合同，不改写旧字节。
+
 Workflow Execution Result 在原字段之外携带 `research_verification: {ref, digest}`。`evidence_refs` 包含验证记录、简报、台账和 Context 不适用说明。`context_reconciliation.status` 为 `not-applicable` 且必须给出原因；执行阻断、drift、violation、new_impacts 和 stale_candidates 必须为空。
 
 接收端重读绑定字节，并实际重跑当前研究校验器。通过后可以 `next_route: null` 独立结束。结构校验不证明来源中的事实，也不代替主控对重要结论的来源审计；研究报告保留反证、来源缺口和结论边界。

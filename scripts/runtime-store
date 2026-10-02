@@ -1,0 +1,40 @@
+#!/usr/bin/env node
+import fs from 'node:fs';
+import path from 'node:path';
+import { parseArgs } from 'node:util';
+import { RuntimeStore, assertNodeVersion, inspectRuntimeBundle } from './lib/runtime-store.mjs';
+
+let store;
+try {
+  const { values, positionals } = parseArgs({ allowPositionals: true, options: {
+    root: { type: 'string', default: '.' }, home: { type: 'string' }, run: { type: 'string' },
+    output: { type: 'string' }, source: { type: 'string' }, plan: { type: 'string' },
+    now: { type: 'string' }, json: { type: 'boolean' }, help: { type: 'boolean' },
+    'protected-root': { type: 'string', multiple: true },
+  } });
+  assertNodeVersion();
+  if (values.help) process.stdout.write('用法: scripts/runtime-store <inspect|inventory|export|plan-gc|apply-gc|backup|restore> --root <项目> [--home <仓外绝对目录>]\nexport --run <id> --output <新目录>\nplan-gc [--now <ISO时间>] > <仓外plan.json>\napply-gc --plan <plan.json>\nbackup --output <新目录>\nrestore --source <备份目录>\n查询只读；清理仅执行显式计划；正式文件仍为权威。\n');
+  else {
+    const action = positionals[0];
+    if (positionals.length !== 1 || !['inspect', 'inventory', 'export', 'plan-gc', 'apply-gc', 'backup', 'restore'].includes(action)) throw new Error('需要有效管理动作；参见--help');
+    const options = { root: path.resolve(values.root), home: values.home, protectedRoots: values['protected-root'] };
+    let result;
+    if (action === 'inspect' && values.source) result = inspectRuntimeBundle(values.source);
+    else if (action === 'restore') {
+      if (!values.source) throw new Error('restore需要--source');
+      result = RuntimeStore.restore({ ...options, source: path.resolve(values.source) });
+    } else {
+      store = new RuntimeStore({ ...options, readOnly: ['inspect', 'inventory', 'plan-gc', 'backup'].includes(action), existingOnly: ['export', 'apply-gc'].includes(action) });
+      const now = values.now === undefined ? Date.now() : Date.parse(values.now);
+      if (!Number.isFinite(now)) throw new Error('--now时间非法');
+      if (action === 'inspect') result = store.inspect({ now });
+      if (action === 'inventory') result = store.inventory();
+      if (action === 'plan-gc') result = store.planGc({ now });
+      if (action === 'apply-gc') { if (!values.plan) throw new Error('apply-gc需要--plan'); result = store.applyGc(JSON.parse(fs.readFileSync(values.plan, 'utf8'))); }
+      if (action === 'export') { if (!values.run || !values.output) throw new Error('export需要--run和--output'); result = store.exportRun(values.run, values.output); }
+      if (action === 'backup') { if (!values.output) throw new Error('backup需要--output'); result = store.backup(values.output); }
+    }
+    process.stdout.write(JSON.stringify(result, null, 2) + '\n');
+  }
+} catch (error) { process.stderr.write(error.message + '\n'); process.exitCode = 2; }
+finally { store?.close(); }

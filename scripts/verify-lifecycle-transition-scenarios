@@ -11,6 +11,8 @@ const approval = buildImplementationFixture(temp, "docs/.scratch/demo/issues/01-
 const scaffoldApproval = buildDecisionFixture(path.join(temp, "scaffold-choice"), { boundary: "scaffold-choice", scope: ["backend", "frontend"] });
 const backendArchitectureApproval = buildDecisionFixture(path.join(temp, "backend-architecture-platform"), { boundary: "gate.backend-architecture-platform-approved", scope: ["backend", "layered-mvc", "spring-boot-2.7-jdk8@2.7.18/java8"] });
 import { validateImplementationEntry, validateImplementationRepositoriesReady, validateNextRoute, validateTicketFormalization } from "./lib/lifecycle-transition.mjs";
+import { approvalExpectationForBoundAsset } from "./lib/approval-consumption.mjs";
+import { loadApprovalRecord, validateApprovalRecord } from "./lib/approval-record.mjs";
 
 const digest = (bytes) => `sha256:${createHash("sha256").update(bytes).digest("hex")}`;
 const writeProjectFile = (ref, value) => {
@@ -38,15 +40,24 @@ const apiDecision = writeProjectFile("docs/.scratch/demo/evidence/api-contract-d
 const technicalDesign = writeProjectFile("docs/.scratch/demo/evidence/technical-design.json", { schema_version: 2, technical_design_id: "technical-design.backend", version: "v1", status: "approved" });
 const dataDecisionValue = { schema_version: 1, kind: "data-architecture-decision", decision_id: "data-architecture.backend", decision_version: "v1", status: "approved", current_version: true, impact: "not-applicable" };
 const dataDecision = writeProjectFile("docs/.scratch/demo/evidence/data-architecture-decision.json", dataDecisionValue);
+// Synthetic current authority comes from the consumer's raw assets, before the approval record exists.
+const engineeringScope = ["backend", "backend-ddd"];
+const engineeringDrafter = "synthetic-backend-drafter";
+const engineeringBasis = [technicalDesign, dataDecision, apiDecision, apiAssessment, apiEvidence].map(({ ref, digest }) => ({ ref, digest: digest.replace(/^sha256:/, "") }));
 const engineeringPackage = writeProjectFile("docs/.scratch/demo/evidence/engineering-contract-package.json", {
   schema_version: 1,
   kind: "engineering-contract-package",
   project_id: "backend",
+  gate_id: "gate.engineering-contract-approved",
+  approval_scope: engineeringScope,
+  drafter_principal_ref: engineeringDrafter,
+  basis: engineeringBasis,
   technical_design: { ref: technicalDesign.ref, version: "v1", digest: technicalDesign.digest },
   data_architecture_decision: { ref: dataDecision.ref, version: "v1", digest: dataDecision.digest, impact: "not-applicable" },
   api_contract_decision: { ref: apiDecision.ref, version: "v1", digest: apiDecision.digest, impact: "not-applicable" },
 });
-const engineeringApproval = buildDecisionFixture(path.join(temp, "engineering-contract"), { boundary: "gate.engineering-contract-approved", scope: ["backend", "backend-ddd"], subjectRef: engineeringPackage.file });
+const engineeringContext = { subject_ref: engineeringPackage.file, subject_digest: engineeringPackage.digest, approval_scope: engineeringScope, drafter_principal_ref: engineeringDrafter, basis: engineeringBasis };
+const engineeringApproval = buildDecisionFixture(path.join(temp, "engineering-contract"), { boundary: "gate.engineering-contract-approved", scope: engineeringScope, subjectRef: engineeringPackage.file });
 writeProjectFile("docs/.scratch/demo/evidence/engineering-contract-approval.json", {
   schema_version: 1,
   gate_id: "gate.engineering-contract-approved",
@@ -55,9 +66,12 @@ writeProjectFile("docs/.scratch/demo/evidence/engineering-contract-approval.json
   role_id: "role.test-engineer",
   runtime_id: "runtime.generic",
   principal_ref: "synthetic-test-reviewer",
-  subject_ref: engineeringApproval.requirement.subject_ref,
-  approval_scope: engineeringApproval.requirement.scope,
+  subject_ref: engineeringPackage.file,
+  subject_digest: engineeringPackage.digest,
+  approval_scope: engineeringScope,
+  basis: engineeringBasis,
   drafter_role_id: "role.backend-engineer",
+  drafter_principal_ref: engineeringDrafter,
   user_decision_ref: engineeringApproval.ref,
   artifact_bindings: [
     { id: "technical-design.backend", version: "v1", digest: technicalDesign.digest },
@@ -94,7 +108,7 @@ const technicalAnalysisResult = `${JSON.stringify({
   evidence_refs: ["docs/.scratch/demo/evidence/technical-analysis-result.yaml", apiDecision.ref],
 }, null, 2)}\n`;
 const backendDesignPrerequisites = {
-  technical_design: { ref: technicalDesign.ref, version: "v1", digest: technicalDesign.digest },
+  technical_design: { ref: technicalDesign.ref, version: "v1", digest: technicalDesign.digest, approval_context: structuredClone(engineeringContext) },
   data_architecture_decision: { ref: dataDecision.ref, version: "v1", digest: dataDecision.digest, impact: "not-applicable" },
   api_contract_decision: { ref: apiDecision.ref, version: "v1", digest: apiDecision.digest, impact: "not-applicable" },
   engineering_contract_approval_ref: "docs/.scratch/demo/evidence/engineering-contract-approval.json",
@@ -144,9 +158,39 @@ const validTicketState = {
   },
 };
 
+validateApprovalRecord(loadApprovalRecord(path.resolve(temp, backendDesignPrerequisites.engineering_contract_approval_ref), "gate.engineering-contract-approved"), { requireApproved: true, root: temp, expected: approvalExpectationForBoundAsset("gate.engineering-contract-approved", backendDesignPrerequisites.technical_design, { root: temp }) });
 const valid = validateTicketFormalization(validTicketState, options);
-assert.equal(valid.result, "allowed");
+assert.equal(valid.result, "allowed", JSON.stringify(valid));
 assert.equal(validateImplementationRepositoriesReady(validTicketState, options).result, "allowed");
+const assertEngineeringBlocked = (name, state) => {
+  for (const validate of [validateImplementationRepositoriesReady, validateTicketFormalization]) {
+    const result = validate(state, options);
+    assert.equal(result.result, "blocked", name);
+    assert.ok(result.blocking_signals.includes("backend-design-prerequisites-missing"), name);
+  }
+  process.stdout.write(`PASS 工程批准拒绝: ${name}\n`);
+};
+for (const [name, mutate] of [
+  ["缺少独立消费上下文", binding => { delete binding.approval_context; }],
+  ["消费范围篡改", binding => { binding.approval_context.approval_scope = ["other-backend"]; }],
+  ["消费依据摘要篡改", binding => { binding.approval_context.basis[0].digest = `sha256:${"0".repeat(64)}`; }],
+]) {
+  const invalid = structuredClone(validTicketState);
+  mutate(invalid.implementation_repository_preparation.projects[0].design_prerequisites.technical_design);
+  assertEngineeringBlocked(name, invalid);
+}
+const engineeringRecordRef = backendDesignPrerequisites.engineering_contract_approval_ref;
+const currentEngineeringRecord = JSON.parse(read(engineeringRecordRef));
+for (const [name, mutate] of [
+  ["批准主体摘要过期", record => { record.subject_digest = `sha256:${"0".repeat(64)}`; }],
+  ["缺少独立起草者身份", record => { delete record.drafter_principal_ref; }],
+  ["起草者自签", record => { record.principal_ref = engineeringDrafter; }],
+]) {
+  const invalid = structuredClone(currentEngineeringRecord); mutate(invalid);
+  try { writeProjectFile(engineeringRecordRef, invalid); assertEngineeringBlocked(name, validTicketState); }
+  finally { writeProjectFile(engineeringRecordRef, currentEngineeringRecord); }
+}
+assert.equal(validateTicketFormalization(validTicketState, options).result, "allowed", "工程批准反例恢复后仍允许合法正式化");
 const missingApiDecision = structuredClone(validTicketState);
 delete missingApiDecision.implementation_repository_preparation.projects[0].design_prerequisites.api_contract_decision;
 assert.ok(validateImplementationRepositoriesReady(missingApiDecision, options).blocking_signals.includes("backend-design-prerequisites-missing"));

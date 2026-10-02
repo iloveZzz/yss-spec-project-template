@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { createHash } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 import { parse } from '../scripts/vendor/yaml.mjs';
 
@@ -109,9 +110,17 @@ test('摘要漂移、未知批准和非法流转不能作为通过；运行中�
 });
 test('有效当前会签可通过，删除批准记录和间接依据对照基线失败',t=>{
   const f=fixture(t);tools(f);
-  f.write('docs/.scratch/a/subject.json',JSON.stringify({evidence_refs:['business.md']}));
-  const approval={schema_version:1,gate_id:'gate.delivery-accepted',decision:'approved',actor_kind:'digital-human',role_id:'role.test-engineer',runtime_id:'runtime.generic',principal_ref:'instance:test-reviewer',subject_ref:'docs/.scratch/a/subject.json',approval_scope:['fixture'],evidence_refs:['docs/.scratch/a/subject.json'],biological_veto:false};
+  const bound=ref=>({ref,digest:createHash('sha256').update(fs.readFileSync(path.join(f.root,ref))).digest('hex')});
+  const boundary='check.design-reviewed',subject_ref='docs/.scratch/a/subject.json',approval_ref='docs/.scratch/a/approval.json';
+  const current={subject_ref,approval_scope:['fixture'],basis:[bound('business.md')],drafter_principal_ref:'instance:test-drafter'};
+  f.write(subject_ref,JSON.stringify({gate_id:boundary,...current,evidence_refs:['business.md']}));
+  current.subject_digest=bound(subject_ref).digest;
+  const approval={schema_version:1,gate_id:boundary,decision:'approved',actor_kind:'digital-human',role_id:'role.test-engineer',runtime_id:'runtime.generic',principal_ref:'instance:test-reviewer',...current,evidence_refs:[subject_ref],biological_veto:false};
   f.write('docs/.scratch/a/approval.json',JSON.stringify(approval));
+  const unowned=f.run('check');assert.equal(unowned.status,1,unowned.stdout);assert.ok(JSON.parse(unowned.stdout).diagnostics.some(x=>x.code==='approval-context-required'));
+  const checkpoint=parse(fs.readFileSync('.template-spec/process/templates/lifecycle-checkpoint-template.yaml','utf8'));
+  checkpoint.checks={[boundary]:{status:'approved',applicable:true,reason:'Synthetic current independent design review; not a delivery or release approval.',...current,approval_ref,basis:[...current.basis,bound(subject_ref),bound(approval_ref)],evidence_refs:[subject_ref],evidence:{'evidence.design-review-result':[subject_ref]}}};
+  f.write('docs/.scratch/a/checkpoint.json',JSON.stringify(checkpoint));
   const valid=f.run('check');assert.equal(valid.status,0,valid.stdout);assert.ok(JSON.parse(valid.stdout).checks.some(x=>x.id==='approval'&&x.exit_code===0));
   const git=(...args)=>{const r=spawnSync('git',['-c','maintenance.auto=false','-c','gc.auto=0',...args],{cwd:f.root,encoding:'utf8'});assert.equal(r.status,0,r.stderr);return r.stdout.trim();};
   git('init','-q');git('add','.');git('-c','user.name=fixture','-c','user.email=fixture@invalid','commit','-qm','synthetic approval fixture');const base=git('rev-parse','HEAD');

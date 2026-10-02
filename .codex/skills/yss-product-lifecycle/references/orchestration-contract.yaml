@@ -11,6 +11,45 @@ document_writing:
   artifact_ownership: unchanged
   gate_and_status_semantics: unchanged
 
+user_progress_report:
+  owner: yss-product-lifecycle
+  reference: references/orchestration.md#结果与友好提示
+  writing_reference: .template-spec/process/document-writing.md#4-进度与会签提示
+  emit_on: [ controller-return, status-request, resume, stage-boundary, blocked, human-pause, handoff, completion-assessment ]
+  ordinary_progress: meaningful-changes-only
+  audience: current-feature-or-authorized-task
+  sources: [ current-checkpoint, stage-tracking, readable-assets, applicable-verification, lifecycle-registry, orchestration-contract ]
+  required_information: [ current-stage-and-work-unit, state-basis, this-turn-outcome, next-stage-and-work-unit, entry-conditions, issues-and-blockers, registered-owner, recovery-action-and-recheck, agent-next-action, user-action-if-required, evidence-freshness ]
+  structured_result_fields: [ mode, repository_mode, stage, work_unit, impacts, artifacts, gates, tickets, slices, contracts, evidence_freshness, readiness, blockers, actions_taken, next_work_unit, pause_reason, ticket_sync, git_checkpoint ]
+  presentation_is: derived-explanation-never-approval-or-execution-authorization
+  next_stage:
+    source: current-registered-work-unit-stage-association-and-validated-route
+    stage-order-as-route: forbidden
+    same_stage: explain-remaining-work-in-current-stage
+    unresolved_or_missing_route: not-verified-with-missing-input
+    terminal: explain-verified-task-or-execution-scope-endpoint
+    planned_target_is_approved_transition: false
+    include: [ expected-output, applicable-entry-conditions, unmet-preconditions ]
+  issues:
+    classification: [ blocker, nonblocking-open-question, suggestion ]
+    blocker_fields: [ problem, affected-action, source-ref, registered-owner, resolution-action, resolution-evidence, resume-verification ]
+    all_material_blockers_visible: true
+    unknown_owner: not-registered-never-auto-assigned
+    nonblocking_items: retain-owner-resolution-time-and-receiver-or-backlog-ref
+    missing_or_stale_evidence: not-verified-with-recovery-action
+    no_blockers_claim: current-applicable-verification-required
+    readonly_no_findings: no-detected-blockers-with-unchecked-scope
+  recovery:
+    authorized_agent_actions: continue-and-report-result
+    dependent_actions: wait-for-real-input-or-current-valid-approval
+    independent_authorized_work: continue
+    human_action: explain-why-needed-source-scope-options-and-resume-condition
+    commands: actual-applicable-validator-and-arguments-never-invented
+  before_send: [ current-state-matches-evidence, next-route-and-entry-conditions-explained, blockers-have-actionable-recovery, owner-is-registered-or-explicitly-missing, freshness-and-unchecked-scope-visible, user-text-matches-structured-result, authorized-work-not-shifted-to-user ]
+  template_source: maintenance-step-and-verification-target-never-product-stage
+  invalid_identity: explain-manifest-error-and-migration-check-without-guessing-stage
+  forbidden: [ skill-name-only-return, raw-json-only-user-answer, bare-blocked-without-recovery, stage-complete-from-file-existence, repeated-approval-without-new-boundary ]
+
 backend_architecture_identity_policy:
   source: .template-spec/agents/yss-skill-registry.yaml
   generated_profiles: architecture_profiles
@@ -50,6 +89,7 @@ review_verification:
   low_medium_combined_independent_executor: true
   implementer_must_be_separate: true
   split_when: [ new_module, high_risk, responsibility_conflict, dual_control_required ]
+  capability_policy_ref: .template-spec/agents/digital-human-roles.yaml
 
 checkpoint_policy:
   strategy: consolidated
@@ -256,6 +296,19 @@ task_package:
     registry_ref: .template-spec/agents/digital-human-roles.yaml
     defaults: taskPackageDefaults(role_id)
     copy_required: [ core_skills, forbidden_skills ]
+    review_skills: compiled-from-review-capabilities-for-readonly-review
+    review_execution_states: [ Reviewer, Verifier ]
+    review_skills_do_not_override: [ core_skills, forbidden_skills, allowed_write_paths ]
+  review_context:
+    source: current-consumer-checkpoint-and-review-task
+    schema_ref: .template-spec/process/schemas/digital-human-task-package.schema.json
+    capability_policy_ref: .template-spec/agents/digital-human-roles.yaml
+    applicable_to: formal-v1-professional-review
+    required: [ check_ids, capability_ids, candidate_ref, candidate_digest, policy_ref, policy_digest, reviewer_principal_ref, drafter_principal_ref, approval_scope, basis ]
+    candidate_and_policy: current-ref-and-byte-digest
+    reviewer_must_differ_from_drafter: true
+    compile_skills_from: review_capabilities
+    readonly_intake_v2: unchanged
   contract:
     kinds: [ lifecycle-work-unit, slice-implementation, template-maintenance ]
     required: [ kind, contract_id, contract_version, status, contract_ref ]
@@ -311,6 +364,23 @@ skill_source_contract:
   source_revisions_required: [ mattpocock/skills, iloveZzz/yss-ui ]
   adaptation_ref_required_when_effective_diff: true
   retired_shared_skills: [ yss-antd-design, yss-antdv-next-design, ask-matt, batch-grill-me, grill-me, dispatching-parallel-agents, loop-me, migrate-to-shoehorn, product-design-prototype, prototype-page-acceptance, scaffold-exercises, setup-pre-commit, setup-ts-deep-modules, teach, writing-beats, writing-fragments, writing-shape, yss-components, yss-dictionary, yss-jdbc, yss-log, yss-microapp-commit, yss-mvc-scaffold-generator, yss-mvc-design, yss-mvc-data-analysis-project-initializer, yss-backend-scaffold-parent, yss-page-module-development, yss-taskflow, yss-backend-scaffold-application, yss-backend-scaffold-domain, yss-backend-scaffold-infrastructure, yss-backend-scaffold-web, yss-backend-scaffold-adapter, yss-application-layer-reference, yss-domain-layer-reference, yss-infrastructure-layer-reference, yss-web-layer-reference ]
+
+skill_preflight:
+  command: scripts/query-lifecycle-context
+  enable_flag: --check-skills
+  scope: selected-work-unit-and-active-context-dependencies
+  readonly: true
+  statuses: [ ready, missing, blocked ]
+  exit_codes: { ready: 0, missing_or_blocked: 2, invalid_input_or_execution_error: 1 }
+  runtime_selection: explicit-or-single-registered-runtime
+  conditional_dependencies: explicit-when-triggers
+  excludes: [ compatibility-references, complete-role-skill-lists, other-work-units ]
+  installation: existing-family-cli-plan-then-apply
+  apply_requires: [ existing-task-authorization-covers-plan, no-conflicts ]
+  after_apply: rerun-current-work-unit-preflight
+  never_grants: [ skill-invocation-permission, stage-approval, ready-for-agent, completion ]
+  block_current_invocation_on: [ managed-file-missing, hash-drift, projection-drift, path-conflict, runtime-unavailable, external-skill-unavailable, retired-skill, cli-snapshot-mismatch ]
+  automatic_force_or_migration: forbidden
 
 # 生命周期默认走原生工作单元；Matt user-invoked skill 仅保留为兼容入口。
 lifecycle_native_entries:
@@ -555,15 +625,17 @@ work_unit_routes:
           product-slice: slice-contract
           template-maintenance: L1-L2-L3
         reviewer_write_implementation: forbidden
-        repair_then_full_rereview:
+        repair_then_targeted_rereview:
           kinds: [ violation, machine_check_failure, blank_applicable_row, missing_evidence ]
           actor: implementer
           on_original_contract: true
-          then: recapture_candidate_and_rerun_all_axes
+          then: compare_diff_map_affected_conclusions_behavior_dependencies_rereview_and_rebind
+          reuse_unaffected: readable-unchanged-conditions-basis-and-dependencies-evidence
         stale_and_reroute:
           kinds: [ drift, new_impacts, required_skills_mismatch ]
           mark_contract: stale
           continue_coding_on_old_contract: forbidden
+          impact_analysis: investigate-before-selecting-rereview-scope
           next: compiler-or-earlier-lifecycle
         exemption_policy:
           not_applicable: impact_not_triggered_only
@@ -750,7 +822,15 @@ review_input:
   completed_requires_no_blank_applicable_rows: true
   reviewer_write_implementation: forbidden
   repair_invalidates_candidate: true
-  repair_action: recapture_candidate_and_rerun_all_axes
+  repair_action: recapture_candidate_and_rereview_affected_conclusions_behavior_dependencies
+  rereview:
+    first_review: all-applicable-axes-and-specialist-checks
+    sequence: [ compare-old-and-current-candidate, map-affected-conclusions-behavior-and-dependencies, targeted-rereview-and-verification, rebind-current-candidate-and-basis ]
+    reuse_requires: [ readable-comparison-evidence, unchanged-check-conditions, unchanged-basis, unchanged-dependencies, current-candidate-binding ]
+    unknown_impact: investigate-and-block-dependent-conclusions
+    full_axis_default_or_fallback: forbidden
+    digest_ui_new_impacts_alone: insufficient-for-full-axis-rereview
+    history: preserve-old-reports-and-bind-new-consumption-evidence
   modes: [ committed, worktree ]
   committed:
     candidate_ref: HEAD
@@ -1115,8 +1195,10 @@ frontend_implementation_verification:
   on_new_impact: [ new_impacts, drift, reroute ]
 
 unknown_impact:
-  action: pause
+  action: investigate-and-block-dependent-transition
   reason_code: impact-classification-required
+  user_question: only-if-investigation-identifies-missing-real-decision-or-authorization
+  full_axis_default_or_fallback: forbidden
 
 # 每个 target 必须声明 kind、传播层级和适用条件。条件不满足时保持原状态，尤其不得把 not-applicable 改成 stale。
 impact_propagation:
@@ -1248,6 +1330,7 @@ user_decision_evidence:
 gate_consolidation:
   source: .template-spec/process/lifecycle-registry.yaml
   check_policy: .template-spec/agents/digital-human-roles.yaml
+  capability_source: .template-spec/agents/digital-human-roles.yaml#review_capabilities
   checks: automatic_or_independent_review_without_separate_user_decision
   check_failure: blocks_aggregate_gate
   plan_decision_boundary: gate.plan-approved
@@ -1257,12 +1340,25 @@ gate_consolidation:
   reuse: unchanged_approval_or_verified_approved_scope_continuation
   default_review: one_owner_one_independent_reviewer
   adjacent_reviews: one_bundle_with_explicit_per_check_outcomes
+  new_approval_and_review_bundle_schema: 2
+  current_validation: scripts/verify-approval-record --require-approved --checkpoint <current checkpoint>
+  expected_context: consumer-checkpoint-and-review-task-never-self-filled-from-record
   extra_reviewers: uncovered_expertise_conflict_or_external_requirement
   suggestions: recorded_backlog_without_blocking
   continuation_protocol: references/user-decisions.md
   invalidation: affected_dependencies_or_authorization_change_only
   historical_gate_records: read_only_no_automatic_approval_migration
   verifier: scripts/verify-lifecycle-checkpoint
+
+blocking_disposition:
+  professional_wait: autonomously-dispatch-or-inspect-existing-task-then-wait
+  verification_failure: repair-supply-evidence-or-reroute
+  unknown_impact: investigate-before-review-scope-or-decision
+  real_decision_or_new_authorization_missing: present-reviewable-assets-then-request-designated-human-response
+  unresolved_state_conflict: investigate-and-block-dependent-actions
+  independent_authorized_work: continue
+  completion_conclusion_alone: no-new-pause
+  question_count: minimum-actionable-independent-questions-may-be-batched
 
 # 项目 opt-in 只选择此权威策略，不能传入自定义工作单元白名单。
 execution_scopes:

@@ -1,3 +1,4 @@
+import {findApprovalCheckpoint} from './approval-checkpoint-discovery.mjs';
 import fs from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { parseDocument } from '../vendor/yaml.mjs';
@@ -124,7 +125,7 @@ export function checkProjectGovernance({root,base,checkpointRef,taskRef,recovery
           if(status!=='resolved')issue('task-not-resolved',`任务状态 ${status||'unknown'}；先核查原任务，禁止重复派发`,ref);
         }
       } else if(value?.gate_id&&value?.decision==='approved') {
-        run('approval','scripts/verify-approval-record',['--require-approved',ref],[ref]);
+        try { const owner=findApprovalCheckpoint(root,ref);run('approval','scripts/verify-approval-record',['--require-approved','--checkpoint',owner,ref],[ref,owner]); } catch(error) { issue('approval-context-required',error.message,ref); }
       } else if(claimed(value)) {
         // Claimed assets need an owning checkpoint; owner-specific validators are called through it.
         claimFiles.add(ref);

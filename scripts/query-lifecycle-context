@@ -10,18 +10,25 @@ try {
       stage: { type: "string" },
       "work-unit": { type: "string" },
       include: { type: "string", multiple: true },
+      "check-skills": { type: "boolean" },
+      "agent-runtime": { type: "string" },
+      when: { type: "string", multiple: true },
     },
     strict: true,
   });
-  if(values.help)process.stdout.write('用法: scripts/query-lifecycle-context [--mode route] [--stage stage.plan] [--work-unit work-unit.plan-opportunity] [--include <资产>]\n只读查询，不证明批准；退出码 0=查询完成、1=输入或执行失败。\n');
+  if(values.help)process.stdout.write('用法: scripts/query-lifecycle-context [--mode route] [--stage stage.plan] [--work-unit work-unit.plan-opportunity] [--include <资产>] [--check-skills [--agent-runtime codex|cursor|pi] [--when <条件>]]\n只读查询，不证明批准；退出码 0=查询完成（启用技能预检时表示技能可用）、1=输入或执行失败、2=启用预检且技能未就绪。\n');
   else {
   const result = queryLifecycleContext({
     mode: values.mode,
     stageId: values.stage,
     workUnitId: values["work-unit"],
     include: values.include ?? [],
+    checkSkills: values["check-skills"] ?? false,
+    agentRuntime: values["agent-runtime"],
+    when: values.when ?? [],
   });
   process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+  if (result.skill_readiness && result.skill_readiness.status !== 'ready') process.exitCode = 2;
   }
 } catch (error) {
   process.stderr.write(`${error.message}\n`);
