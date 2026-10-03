@@ -578,6 +578,9 @@ groups:
       - run: node --test tests/content-identity.test.mjs tests/drift-report.test.mjs tests/maintenance-iteration.test.mjs
         when: template-source
         id: check.drift-identity
+      - run: node --test submodules/create-yss-spec/tests/content-identity.test.js
+        when: template-source
+        id: check.cli-content-identity
       - run: scripts/sync-skills --check
         when: template-source
         id: check.skill-projection-identity
@@ -605,7 +608,7 @@ groups:
       - run: node .agents/skills/i-have-adhd/tests/verify-integration.mjs
   cli-sync:
     commands:
-      - run: node --test submodules/create-yss-spec/tests/sync-fast-smoke.test.js submodules/create-yss-spec/tests/content-identity.test.js
+      - run: node --test submodules/create-yss-spec/tests/sync-fast-smoke.test.js
         when: template-source
         id: check.517fe9954d913f53
       - run: scripts/verify-repository-scope-scenarios
