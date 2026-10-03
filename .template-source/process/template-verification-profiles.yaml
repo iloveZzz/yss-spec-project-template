@@ -70,6 +70,13 @@ core_escalation_patterns:
   - scripts/lib/read-only-intake.mjs
   - scripts/run-read-only-intake
 required_files:
+  - scripts/lib/content-identity.mjs
+  - scripts/lib/drift-report.mjs
+  - scripts/lib/checkpoint-commit.mjs
+  - scripts/advance-maintenance-iteration
+  - tests/content-identity.test.mjs
+  - tests/drift-report.test.mjs
+  - tests/maintenance-iteration.test.mjs
   - .template-source/scripts/verify-runtime-windows.mjs
   - scripts/runtime-store
   - scripts/lib/runtime-store.mjs
@@ -294,6 +301,13 @@ syntax_files:
   - scripts/inspect-maintenance-candidate
   - scripts/verify-maintenance-review-workflow-scenarios
   - scripts/verify-template-cache-scenarios
+  - scripts/lib/content-identity.mjs
+  - scripts/lib/drift-report.mjs
+  - scripts/lib/checkpoint-commit.mjs
+  - scripts/advance-maintenance-iteration
+  - tests/content-identity.test.mjs
+  - tests/drift-report.test.mjs
+  - tests/maintenance-iteration.test.mjs
 routing:
   - patterns: [ scripts/runtime-store, scripts/lib/runtime-store.mjs, .template-source/scripts/measure-runtime-store.mjs, .template-source/scripts/verify-runtime-windows.mjs, tests/runtime-store*.test.mjs, .template-spec/process/runtime-storage.md, .template-source/process/runtime-storage.md ]
     groups: [ runtime-storage ]
@@ -301,6 +315,8 @@ routing:
     groups: [ lifecycle ]
   - patterns: [ scripts/lib/maintenance-counterexample.mjs, scripts/verify-maintenance-risk-scenarios, tests/maintenance-counterexample.test.mjs ]
     groups: [ maintenance ]
+  - patterns: [ scripts/lib/content-identity.mjs, scripts/lib/drift-report.mjs, scripts/lib/checkpoint-commit.mjs, scripts/advance-maintenance-iteration, scripts/verify-project-instance, scripts/lib/skill-supply-chain.mjs, tests/content-identity.test.mjs, tests/drift-report.test.mjs, tests/maintenance-iteration.test.mjs ]
+    groups: [ drift-identity ]
   - patterns:
       - .template-spec/plan/**
       - .template-spec/templates/spec-template.md
@@ -557,6 +573,17 @@ routing:
     groups:
       - document-writing
 groups:
+  drift-identity:
+    commands:
+      - run: node --test tests/content-identity.test.mjs tests/drift-report.test.mjs tests/maintenance-iteration.test.mjs
+        when: template-source
+        id: check.drift-identity
+      - run: scripts/sync-skills --check
+        when: template-source
+        id: check.skill-projection-identity
+      - run: scripts/update-skill-lock --check
+        when: template-source
+        id: check.skill-lock-current
   schema-runtime:
     commands:
       - run: node --test scripts/fixtures/structured-assets/*.test.mjs
@@ -578,7 +605,7 @@ groups:
       - run: node .agents/skills/i-have-adhd/tests/verify-integration.mjs
   cli-sync:
     commands:
-      - run: node --test submodules/create-yss-spec/tests/sync-fast-smoke.test.js
+      - run: node --test submodules/create-yss-spec/tests/sync-fast-smoke.test.js submodules/create-yss-spec/tests/content-identity.test.js
         when: template-source
         id: check.517fe9954d913f53
       - run: scripts/verify-repository-scope-scenarios

@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { createIdentityProvider, identityEquals } from "./content-identity.mjs";
 import { cpSync, existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, readlinkSync, realpathSync, rmSync, symlinkSync, unlinkSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import path from "node:path";
@@ -178,6 +179,10 @@ export function unlockedCanonicalEntries(names, allowedNames, hasSkillMd = () =>
 export function syncSkills({ check = false, hashCache = new Map() } = {}) {
   let trackedSet;
   const tracked = ref => (trackedSet ??= trackedPaths()).has(ref);
+  // Git identities are a sound fast path: equal identity implies equal content,
+  // so the normalized content hash is only needed to arbitrate a difference.
+  let identityProvider = null;
+  const identityOf = ref => (identityProvider ??= createIdentityProvider(ROOT)).identityFor(ref).identity;
   const sourceHash = source => {
     if (!hashCache.has(source)) hashCache.set(source, treeHash(source));
     return hashCache.get(source);
@@ -207,7 +212,7 @@ export function syncSkills({ check = false, hashCache = new Map() } = {}) {
         if (info?.isSymbolicLink()) {
           if (!existsSync(target) || realpathSync(target) !== realpathSync(source)) drift.push(`projection target mismatch: ${relative(target)}`);
         } else if (!info?.isDirectory()) drift.push(`missing projection: ${relative(target)}`);
-        else if (sourceHash(source) !== treeHash(target)) drift.push(`projection drift: ${relative(target)}`);
+        else if (!identityEquals(identityOf(relative(source)), identityOf(relative(target))) && sourceHash(source) !== treeHash(target)) drift.push(`projection drift: ${relative(target)}`);
       } else if (info?.isSymbolicLink() && existsSync(target) && realpathSync(target) === realpathSync(source)) {
         continue;
       } else if (info?.isDirectory() && tracked(relative(target)) && projectionMatchesSource(source, target)) {

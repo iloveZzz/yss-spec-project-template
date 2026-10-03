@@ -1,0 +1,51 @@
+#!/usr/bin/env node
+import { spawnSync } from "node:child_process";
+import { parseArgs } from "node:util";
+import { ROOT } from "./lib/template-verification.mjs";
+import { captureMaintenanceCandidate } from "./lib/maintenance-candidate.mjs";
+import { commitCheckpoint, validateCheckpointRunId } from "./lib/checkpoint-commit.mjs";
+
+// One lean maintenance iteration: validate the run identity, capture the
+// candidate, publish a local checkpoint commit, run the mechanical gate, and
+// report machine-readable results. It never pushes, never moves a branch, and
+// never writes main. Approval stays human.
+const PROFILES = new Set(["fast", "candidate"]);
+try {
+  const { values } = parseArgs({ options: {
+    "run-id": { type: "string" },
+    base: { type: "string", default: "HEAD" },
+    output: { type: "string" },
+    plan: { type: "boolean", default: false },
+    json: { type: "boolean", default: false },
+    "skip-verify": { type: "boolean", default: false },
+    profile: { type: "string", default: "fast" },
+  }, strict: true });
+  if (!values["run-id"] || !values.output) throw new TypeError("用法: scripts/advance-maintenance-iteration --run-id <id> --output maintenance:candidates/<id> [--plan] [--json] [--profile fast|candidate]");
+  if (!PROFILES.has(values.profile)) throw new TypeError("--profile 必须是 fast 或 candidate: " + values.profile);
+  const runId = values["run-id"];
+  // Fail fast: an invalid or already-taken run id must not leave a candidate
+  // directory behind that blocks the retry.
+  validateCheckpointRunId(ROOT, runId);
+  const capture = values.plan ? { candidate_digest: null, manifest_ref: null, files: [] } : captureMaintenanceCandidate({ root: ROOT, outputDir: values.output, baseRef: values.base });
+  const checkpoint = commitCheckpoint({
+    root: ROOT,
+    runId,
+    baseRef: values.base,
+    dryRun: values.plan,
+    message: "checkpoint " + runId + "\n\nCandidate-Digest: " + (capture.candidate_digest || "plan") + "\nRun-Id: " + runId + "\n",
+  });
+  let verification = { profile: values.profile, exit_code: null, skipped: true };
+  if (!values.plan && !values["skip-verify"]) {
+    const command = values.profile === "candidate" ? ["scripts/verify-template-candidate", "--base", values.base] : ["scripts/verify-template-fast"];
+    const result = spawnSync(command[0], command.slice(1), { cwd: ROOT, encoding: "utf8", stdio: "inherit" });
+    if (result.error) throw new TypeError("机械验证无法执行: " + result.error.message);
+    verification = { profile: values.profile, exit_code: result.status, skipped: false, command: command.join(" ") };
+  }
+  const result = { run_id: runId, candidate_digest: capture.candidate_digest, manifest_ref: capture.manifest_ref, checkpoint, verification, review_required: true, approval: "human" };
+  if (values.json) process.stdout.write(JSON.stringify(result, null, 2) + "\n");
+  else process.stdout.write("迭代 " + runId + "：" + (checkpoint.commit ? "checkpoint " + checkpoint.ref + " @ " + checkpoint.commit.slice(0, 12) : "计划模式") + "；机械验证=" + (verification.skipped ? "skipped" : verification.exit_code) + "；审查与批准仍由人确认\n");
+  if (!verification.skipped && verification.exit_code !== 0) process.exitCode = 1;
+} catch (error) {
+  process.stderr.write("迭代增强失败: " + error.message + "\n");
+  process.exitCode = 1;
+}

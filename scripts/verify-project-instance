@@ -7,6 +7,7 @@ import { parseDocument } from "./vendor/yaml.mjs";
 import { loadRegistry, validateRegistry } from "./lib/lifecycle-registry.mjs";
 import { syncSkills, updateSkillLock } from "./lib/skill-supply-chain.mjs";
 import { verifyGovernanceLayout } from "./lib/governance-layout.mjs";
+import { DRIFT_EXIT, buildDriftReport, driftReportExit, expectedFromDistribution, formatDriftReport } from "./lib/drift-report.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const identityPath = path.join(root, "yss-project.yaml");
@@ -33,4 +34,21 @@ if (result.status !== 0) {
 }
 validateRegistry(loadRegistry());
 verifyGovernanceLayout(root, "project-instance");
-process.stdout.write("项目实例校验通过\n");
+const metadataPath = path.join(root, ".yss-template.json");
+if (existsSync(metadataPath)) {
+  const metadata = JSON.parse(readFileSync(metadataPath, "utf8"));
+  const report = buildDriftReport({
+    scope: "project-instance",
+    root,
+    // skills-lock.json is a rendered asset with its own update-skill-lock --check;
+    // every other managed asset — including other rendered files — is hash-gated.
+    managedFiles: Object.fromEntries(Object.entries(metadata.managedFiles ?? {}).filter(([ref, record]) => ref !== "skills-lock.json" && record.mergeStrategy !== "manual")),
+    expected: expectedFromDistribution(metadata),
+  });
+  if (process.argv.includes("--json")) process.stdout.write(JSON.stringify(report, null, 2) + "\n");
+  else process.stdout.write(formatDriftReport(report) + "\n");
+  if (driftReportExit(report) !== DRIFT_EXIT.clean) {
+    throw new TypeError("实例受管资产漂移或缺失：先运行 create-yss-spec sync 或补装后再校验");
+  }
+}
+process[process.argv.includes("--json") ? "stderr" : "stdout"].write("项目实例校验通过\n");
