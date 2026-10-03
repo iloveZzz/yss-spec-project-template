@@ -15,6 +15,7 @@ assert.ok(registry.invocation_contract.overrides['i-have-adhd'].exclusion_condit
 assert.ok(registry.invocation_contract.overrides['i-have-adhd'].exclusion_conditions.includes('user-disabled'));
 const entry=read('.agents/skills/i-have-adhd/SKILL.md');
 assert.ok(!entry.includes('disable-model-invocation: true'));
+assert.ok(entry.includes('PR / MR 描述'),'PR / MR description remains current document work');
 assert.equal(parse(read('.agents/skills/i-have-adhd/agents/openai.yaml')).policy.allow_implicit_invocation,true);
 const lock=JSON.parse(read('skills-lock.json'));
 const locked=lock.skills.shared['i-have-adhd'];
@@ -58,6 +59,9 @@ if(fs.existsSync(compiler)) {
   assert.ok(on.required_skills.includes('i-have-adhd'));
   assert.ok(!next.required_skills.includes('i-have-adhd'));
   assert.equal(on.status,'draft');
-  console.log('PASS: actual resolver excludes code-only, includes document output, does not persist condition or approve the contract.');
+  // PR / MR drafting uses the same caller-provided document condition exercised by on/next.
+  assert.deepEqual(next.required_skills,off.required_skills);
+  assert.equal(next.status,'draft');
+  console.log('PASS: actual resolver excludes code-only, includes the caller-provided document condition also used for PR / MR drafts, does not persist that condition or approve the contract. Model classification of PR / MR work is not measured.');
 } else console.log('N/A: this strategic-only template has no implementation compiler; conditional route verified in registry and orchestration contract.');
 console.log(`PASS: source, license metadata, ${locked.targets.length} projections, ${callers.length} callers, scope and readable writing inputs. Model output quality not measured.`);

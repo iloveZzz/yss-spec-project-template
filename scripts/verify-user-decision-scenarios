@@ -28,6 +28,54 @@ function currentFixture(name, boundary) {
 }
 
 const deny = (f, code) => assert.throws(() => verify(f), (error) => error.code === code, code);
+// These fixtures exercise the existing original-source and scope proof. They do
+// not parse Git commands, grant execution permission, or create an authorization API.
+const gitFixture = (action, name) => {
+  const scope = action === "commit" ? ["repo.demo:src/demo/**"] : ["repo.demo:origin:refs/heads/codex/demo"];
+  const f = fixture(`git-${action}-${name}`, { boundary: `git.${action}`, scope, subjectContent: `本轮 ${action} 候选与范围：${scope.join("；")}\n` });
+  f.record.responses = [];
+  f.respond({ text: `同意仅${action === "commit" ? "提交" : "推送"}已展示的 ${scope.join("；")} 本轮候选。`, approvedScope: [...scope] });
+  f.save();
+  return f;
+};
+check("明确范围的原始 Git 回复可归一化并复用，用户无需填写机器字段", () => {
+  for (const action of ["commit", "push"]) {
+    const f = gitFixture(action, "explicit");
+    assertUserDecisionRequirement(f.requirement);
+    assertUserDecisionRequirement(f.requirement);
+    assert.deepEqual(verify(f).validated[0].scope, f.requirement.scope);
+  }
+});
+check("Git 回复归一化仍拒绝缺少来源或批准范围字段", () => {
+  for (const field of ["source", "approved_scope"]) {
+    const f = gitFixture("commit", `missing-${field}`);
+    delete f.record.responses[0][field];
+    assert.throws(() => verify(f), /缺少必填字段|必须包含|required/);
+  }
+  const f = gitFixture("push", "missing-ref");
+  delete f.requirement.user_decision_ref;
+  assert.throws(() => assertUserDecisionRequirement(f.requirement), /user-decision-missing/);
+});
+check("Git 原始回复不可读或只有 Agent 摘要均不能复用", () => {
+  const f = gitFixture("commit", "unreadable"); f.record.responses[0].source.ref += ".missing"; deny(f, "user-decision-source-unreadable");
+  const g = gitFixture("push", "summary"); g.record.responses[0].source.kind = "agent-summary"; assert.throws(() => verify(g));
+});
+check("Git 回复来源摘要和当前候选摘要漂移均不能复用", () => {
+  const f = gitFixture("commit", "source-drift"); writeFileSync(f.record.responses[0].source.ref, "变更原文"); deny(f, "user-decision-source-changed");
+  const g = gitFixture("push", "candidate-drift"); writeFileSync(g.requirement.subject_ref, "不同推送候选\n"); deny(g, "user-decision-stale");
+});
+check("Git 回复撤回后不能复用旧授权", () => {
+  for (const action of ["commit", "push"]) {
+    const f = gitFixture(action, "revoked"); f.respond({ decision: "revoked", text: "撤回以上同意", time: "2026-09-05T01:04:00Z" }); deny(f, "user-decision-not-approved");
+  }
+});
+check("Git 归一化不能扩大原回复的仓库、文件或远端范围", () => {
+  const f = gitFixture("commit", "outside-files"); f.record.responses[0].approved_scope.push("repo.other:src/**"); deny(f, "user-decision-scope-mismatch");
+  const g = gitFixture("push", "outside-remote"); g.requirement.scope = ["repo.demo:another-remote:refs/heads/main"]; deny(g, "user-decision-subject-mismatch");
+});
+check("Git 自然语言意图不能被摘要推断为授权", () => {
+  const f = gitFixture("commit", "intent-only"); f.record.responses = []; f.respond({ text: "准备提交本轮改动", decision: "approved" }); deny(f, "user-decision-ambiguous");
+});
 check("真实单项回复通过，CLI 校验通过", () => {
   const f = fixture("single"); verify(f);
   assert.equal(spawnSync("scripts/verify-user-decision", [f.ref], { encoding: "utf8" }).status, 0);

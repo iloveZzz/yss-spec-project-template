@@ -12,4 +12,4 @@ Run typechecking regularly, single test files regularly, and the full test suite
 
 Once done, use /code-review to review the work.
 
-Do not commit or push. Implementation authorization does not include git commit/push. Natural language such as "do it and commit" is not structured Git authorization. Stop after review unless a structured Git authorization is already present.
+Git commit and push require separate explicit authorization under the existing user-decision protocol selected by root `AGENTS.md` and the lifecycle owner. The Agent may normalize a real, readable user reply that identifies the Git action and repository/change scope into the required authorization, scope and source-reference fields; do not ask the user to fill internal fields again. Implementation authorization or a generic request to continue does not authorize Git actions, and commit authorization does not authorize push. If the source is unreadable, authorization was revoked or the action exceeds its scope, do not execute that Git action; return the checkpoint judgment for the lifecycle owner.

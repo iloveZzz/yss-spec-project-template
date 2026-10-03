@@ -62,7 +62,7 @@ Plan 入口读 `.template-spec/plan/README.md`、`.template-spec/process/plan-mi
 
 ### 外部副作用与 Git
 
-生命周期批准、实现授权和自然语言意向不构成结构化 Git 授权。commit、push、远端仓库创建、发布及其他运行时外部副作用分别检查明确动作、范围和可读授权引用；缺失时保持外部状态不变。`git-submodule` 还必须遵守逐仓授权、非 detached HEAD 和先子仓后父仓 gitlink 的顺序。
+生命周期批准、实现授权和泛泛意向不构成 Git 授权。按 `references/user-decisions.md`，Agent 可整理明确动作和范围的真实回复，无需用户重填字段。commit、push 及其他外部动作分别核验；来源不可读、撤回或动作越界时不执行。`git-submodule` 仍逐仓授权、非 detached HEAD、先子仓后父仓 gitlink。
 
 ## 有界编排循环
 

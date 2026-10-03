@@ -393,6 +393,9 @@
           "source": ".template-spec/templates/examples/lifecycle-writing-examples.md"
         },
         {
+          "source": ".template-spec/templates/retro-report-template.md"
+        },
+        {
           "source": ".template-source/engineering/evidence/aliyun-artifact-resolution.json"
         },
         {
@@ -695,6 +698,9 @@
         },
         {
           "source": ".template-spec/templates/examples/lifecycle-writing-examples.md"
+        },
+        {
+          "source": ".template-spec/templates/retro-report-template.md"
         },
         {
           "source": ".template-source/engineering/evidence/aliyun-artifact-resolution.json"

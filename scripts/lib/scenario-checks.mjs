@@ -28,6 +28,7 @@ function validateMattContract(data) {
   ensure(includesAll(grill?.required, ["frontier_empty", "facts_resolved_or_routed", "decisions_confirmed", "shared_understanding_confirmed", "no_unresolved_runnable_blocker"]) && grill?.user_confirmation_required === true, "grill_exit 缺少 frontier、事实路由、决策、共同理解、用户确认或 runnable blocker 条件");
   ensure(grill?.facts_resolved_or_routed?.technical_fact === "yss-research" && grill.facts_resolved_or_routed.runnable_question === "handoff-prototype-handoff" && grill.facts_resolved_or_routed.external_decision === "external-input-required", "grill_exit 的事实、runnable 问题或外部决策路由不完整");
   const git = data.git_authorization;
+  ensure(git?.explicit_scoped_user_reply_may_be_normalized === true, "明确范围的原始用户回复未允许按既有用户决定协议归一化");
   for (const action of ["commit", "push"]) {
     const prefix = action === "commit" ? "commit" : "push";
     const rule = git?.[action];
@@ -532,6 +533,8 @@ export function runScenario(name) {
       (item) => { item.matt_invocation_boundary.user_invoked_skills.push("unexpected-user-entry"); },
       (item) => { item.setup_readiness.lifecycle_may_invoke_setup = true; },
       (item) => { item.grill_exit.user_confirmation_required = false; },
+      (item) => { delete item.git_authorization.explicit_scoped_user_reply_may_be_normalized; },
+      (item) => { item.git_authorization.explicit_scoped_user_reply_may_be_normalized = false; },
       (item) => { delete item.git_authorization.push; },
       (item) => { delete item.git_authorization.git_submodule; },
       (item) => { item.git_authorization.git_submodule.forbid_commit_on_detached_head = false; },

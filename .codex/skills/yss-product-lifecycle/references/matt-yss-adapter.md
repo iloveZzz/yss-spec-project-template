@@ -96,9 +96,9 @@ blocking_signals: []
 
 YSS 调用 `code-review` 前必须形成 review input，至少包含 `review_mode`、`review_base_ref`、`implementation_candidate_ref`、`candidate_snapshot_ref`、`candidate_digest`、`spec_ref`、`ticket_ref`、`slice_contract_ref`、`build_architecture_checklist_ref` 和 `yss_execution_result_refs`，并满足 `orchestration-contract.yaml.review_input.manifest_required_by_mode`。Standards 还必须编译 `review_standards_route`：合同 `required_skills`、影响面专项检查输入、报告模板与 `finding_disposition`；机器检查按 `run_if_present` 执行。质量标准只从 `engineering-baseline` 引用，禁止在 review input 或切片中另起一份。命中高风险影响时，review input 还要引用 Doubt-Driven 主张 / 反证记录；缺少反证或残余风险未处理时返回 `blocked`。`committed` 审查 merge-base 到不可变 `HEAD`；`worktree` 一次捕获 merge-base 到 working tree 的 committed、staged、unstaged 和 untracked 内容，使用 `yss-worktree-candidate-v1` 规定的 raw path、uint64 big-endian 长度、tracked/untracked record 和不支持条目阻断规则计算 SHA-256，让所有参与审查者（人数按 `orchestration-contract.yaml.gate_consolidation`）消费同一不可变快照，并在返回和完成 checkpoint 复核摘要未变化。缺少输入、候选为空、专项覆盖缺失、未关闭 mandatory `violation`、适用行空白或摘要变化时返回 `blocked`，不能漏掉首轮适用项、另起通用审查 skill、由审查者改实现，或合并未重绑定的不同候选结论。`violation` 类 finding 交实现者在原合同路径修复，按差异、受影响结论 / 行为及依赖定向复审并重绑定；摘要变化、UI 或 `new_impacts` 不触发全轴默认或兜底，未知先调查。`drift` / `new_impacts` 使合同 `stale` 并回 实现合同编译器更新受影响合同；未受影响项须有可读比较依据才能复用。
 
-Matt `implement` 的通用提交指令不构成 YSS Git 授权。只有用户明确给出 `commit_authorized` 为 `true`、非空 `commit_scope` 和 `commit_authorization_ref` 时才能 commit；只有明确给出 `push_authorized` 为 `true`、非空 `push_scope` 和 `push_authorization_ref` 时才能 push。缺少任一字段时保持工作区不变，只输出 checkpoint 判断；不得把 `orchestrate`、实现授权、当前分支、测试通过或负责人要求解释为隐含授权。`git-submodule` 还必须按仓授权、禁止 detached HEAD 提交，并先推子仓再更新父仓 gitlink。
+Matt `implement` 的通用提交指令不构成 YSS Git 授权。执行 commit 必须同时具备 `commit_authorized=true`、非空 `commit_scope` 和 `commit_authorization_ref`；执行 push 必须同时具备 `push_authorized=true`、非空 `push_scope` 和 `push_authorization_ref`。commit 与 push 分别检查，commit 授权不包含 push。`git-submodule` 还必须按仓授权、禁止 detached HEAD 提交，并先推子仓再更新父仓 gitlink。
 
-“然后 commit”“做完提交”“可以帮我提交”等自然语言意向本身不是结构化授权。编排器必须取得上述三个 commit 字段；不能先把意向解释成授权，再在完成时补 scope 或引用。
+按既有 [用户决定协议](user-decisions.md)，编排器可以把具体 Git 动作、仓库和改动范围明确的真实用户回复整理成上述三字段，并保留可读原始来源，不要求用户再填写内部字段。结合可读原始上下文，指向明确范围的“做完提交”可整理为 commit 授权；泛泛的“继续”、实现授权、当前分支或测试通过不能补足动作和范围。字段缺失、来源不可读、授权撤回或动作超出范围时不执行对应 Git 动作，只记录 checkpoint 判断；不得补造同意或扩大原回复范围。
 
 ## Setup readiness
 
