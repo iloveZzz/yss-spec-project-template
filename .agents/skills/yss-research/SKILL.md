@@ -69,6 +69,6 @@ description: "研究 YSS 技术与产品策略事实，统一发起竞品调研�
 node .agents/skills/yss-research/scripts/validate-research-package.mjs <slug>-research-brief.md <slug>-evidence.yaml
 ```
 
-`template-source` 的可复用维护研究存于 `.template-source/evidence/maintenance/`；`project-instance` 沿项目研究 / 证据约定，并由消费生命周期资产绑定决定性输出。模板正式研究使用 `work-unit.maintenance-research`，按 `.template-spec/process/research-completion.md` 记录当前验证并收尾；只回传结论的分诊继续用 read-only-intake v2。
+`template-source` 的可复用维护研究存于 当前工作区仓外的 `maintenance:research/<run-id>/`（用 `scripts/maintenance-path` 解析；证据引用绑定原字节摘要）；`project-instance` 沿项目研究 / 证据约定，并由消费生命周期资产绑定决定性输出。模板正式研究使用 `work-unit.maintenance-research`，按 `.template-spec/process/research-completion.md` 记录当前验证并收尾；只回传结论的分诊继续用 read-only-intake v2。
 
 来源不可用或冲突时说明限制。普通缺口降低置信度；决定性 Claim 的来源缺失或不匹配时不能视为已确立。研究完成不授予维护或产品批准。

@@ -5,7 +5,7 @@ import {createHash} from 'node:crypto';
 import {pilotFixture} from '../slice-contract-v3/pilot-fixture.mjs';
 import {readSliceContract} from '../../lib/slice-contract.mjs';
 import {validateBackendReview} from '../../lib/backend-review.mjs';
-import {captureMaintenanceCandidate} from '../../lib/maintenance-candidate.mjs';
+import {legacyReviewCandidate} from './legacy-review-candidate.mjs';
 import {validateNextRoute} from '../../lib/lifecycle-transition.mjs';
 import {compileStandardsCoverage} from '../../lib/backend-standards-coverage.mjs';
 import path from 'node:path';
@@ -14,7 +14,7 @@ const sha=x=>createHash('sha256').update(x).digest('hex');
 function fixture() {
  const f=pilotFixture(); const {binding}=f.approve();
  const contract=readSliceContract(binding.ref,{root:f.root}).contract;
- const candidate=captureMaintenanceCandidate({root:f.project,outputDir:'.template-source/evidence/maintenance/review'});
+ const candidate=legacyReviewCandidate(f.project);
  const tree=candidate.candidate_digest;
  const input={scope_kind:'change',slice_contract_ref:binding.ref,approval_ref:binding.approval_ref,project_root:f.project,review_mode:'worktree',candidate_snapshot_ref:candidate.manifest_ref,implementation_candidate_ref:'working-tree',candidate_digest:tree,implementation_actor_id:'implementer',implementation_instance_id:'worker-session',actual_skill_impacts:[]};
  f.write('checks.log','Synthetic mechanism evidence, not certification.');

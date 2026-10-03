@@ -1,9 +1,0 @@
-{
-  "status": "implementation-verified-performance-incomplete",
-  "default_mode": "legacy",
-  "phase": "user-stopped-formal-sampling",
-  "acceptance_ref": "acceptance.json",
-  "valid_formal_samples": 69,
-  "required_formal_samples": 126,
-  "not_release_evidence": true
-}

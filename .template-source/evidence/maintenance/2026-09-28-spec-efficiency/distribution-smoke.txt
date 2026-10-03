@@ -1,4 +1,0 @@
-create-yss-spec: development package/install/init/sync/read passed
-create-yss-harness-design: development package/install/init/sync/read passed
-create-yss-harness-backend: development package/install/init/sync/read passed
-create-yss-harness-frontend: development package/install/init/sync/read passed

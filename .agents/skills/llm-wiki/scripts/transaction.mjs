@@ -2,7 +2,7 @@
 import { readFile, writeFile, mkdir, rm, readdir, lstat } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { sha256, json, safePath, atomicWrite, digestFile, exists, loadManifest, validateManifest, checkPaths, ownership, sourceClosure, sourceSection, frontmatter, fail, args, cliError } from "./core.mjs";
+import { sha256, json, wikiInternalPath, wikiHistoryRoot, atomicWrite, digestFile, exists, loadManifest, validateManifest, checkPaths, ownership, sourceClosure, sourceSection, frontmatter, fail, args, cliError } from "./core.mjs";
 import { observeSource, sameVersion } from "./sources.mjs";
 import { extractLinks } from "./lint-wikilinks.mjs";
 const MANIFEST = ".wiki-manifest.json", JOURNAL = ".wiki-transaction.json", LOCK = ".wiki-lock";
@@ -16,7 +16,7 @@ function stripLinks(text) {
   return text.replace(/\[\[[^\]\n]+\]\]/g, "[[LINK]]");
 }
 async function getText(root, ref) {
-  const file = await safePath(root, ref);
+  const file = await wikiInternalPath(root, ref);
   try {
     return await readFile(file, "utf8");
   } catch (e) {
@@ -50,7 +50,7 @@ async function createPlan({ wikiRoot, repoRoot = process.cwd(), request }) {
   if (proposed.size !== (request.writes || []).length) fail("PLAN_INVALID", "duplicate writes");
   const inputs = {}, writes = [];
   const bind = async (kind, root, ref) => {
-    const p = await safePath(root, ref);
+    const p = await wikiInternalPath(root, ref);
     const digest = await digestFile(p);
     inputs[`${kind}:${ref}`] = digest;
     return p;
@@ -82,7 +82,7 @@ async function createPlan({ wikiRoot, repoRoot = process.cwd(), request }) {
   }
   for (const s of prior?.sources || []) if (!manifest.sources.some((x) => x.id === s.id)) fail("SOURCE_REMOVAL_FORBIDDEN", `retain tombstone and snapshot: ${s.id}`);
   for (const [ref, content] of proposed) {
-    await safePath(wikiRoot, ref, { write: true });
+    await wikiInternalPath(wikiRoot, ref, { write: true });
     if ([MANIFEST, "wiki/log.md", LOCK, JOURNAL].includes(ref) || ref.startsWith(".wiki-staging/")) fail("PLAN_INVALID", `reserved ${ref}`);
     if (typeof content !== "string") fail("PLAN_INVALID", "deletion or non-text content");
     const isKnown = manifest.articles.some((a) => a.file === ref) || manifest.sources.some((s) => s.rawPath === ref) || ["wiki/index.md", "wiki/CLAUDE.md", "wiki/AGENTS.md", "wiki/concept-table.md"].includes(ref) || operation === "migrate" && ref.startsWith(".wiki-backups/");
@@ -165,8 +165,8 @@ async function createPlan({ wikiRoot, repoRoot = process.cwd(), request }) {
     for (const id2 of extractLinks(content).ids) if (!manifest.articles.some((x) => x.id === id2)) fail("WIKILINK_MISSING", id2);
     if (extractLinks(content).invalid.length) fail("WIKILINK_INVALID", a.id);
   }
-  if (await exists(await safePath(wikiRoot, "wiki"))) {
-    for (const file of await readdir(await safePath(wikiRoot, "wiki"))) if (file.endsWith(".md") && !["index.md", "log.md", "claude.md", "agents.md", "soul.md", "concept-table.md"].includes(file.toLowerCase()) && !manifest.articles.some((a) => a.file === `wiki/${file}`)) fail("UNLISTED_ARTICLE", file);
+  if (await exists(await wikiInternalPath(wikiRoot, "wiki"))) {
+    for (const file of await readdir(await wikiInternalPath(wikiRoot, "wiki"))) if (file.endsWith(".md") && !["index.md", "log.md", "claude.md", "agents.md", "soul.md", "concept-table.md"].includes(file.toLowerCase()) && !manifest.articles.some((a) => a.file === `wiki/${file}`)) fail("UNLISTED_ARTICLE", file);
   }
   const index = proposed.get("wiki/index.md") ?? await getText(wikiRoot, "wiki/index.md");
   if (index === null) fail("INDEX_MISSING", "wiki/index.md");
@@ -177,14 +177,15 @@ async function createPlan({ wikiRoot, repoRoot = process.cwd(), request }) {
   proposed.set(MANIFEST, json(manifest));
   const id = request.id || sha256(JSON.stringify({ operation, inputs, proposed: [...proposed] })).slice(0, 24);
   if (!/^[a-zA-Z0-9_-]+$/.test(id)) fail("PLAN_INVALID", "id");
-  const priorLog = await getText(wikiRoot, "wiki/log.md") || "# log\n";
+  const historyRoot = await wikiHistoryRoot(wikiRoot);
+  const priorLog = historyRoot ? "# Wiki 当前运行\n" : await getText(wikiRoot, "wiki/log.md") || "# log\n";
   proposed.set("wiki/log.md", `${priorLog.trimEnd()}
 
 ## [${(request.at || (/* @__PURE__ */ new Date()).toISOString()).slice(0, 10)}] ${operation.toUpperCase()} | ${id}
 
 - Changed articles: ${[...compiled].join(", ") || "none"}
 - Remaining freshness must be read from status.
-`);
+${historyRoot ? `- 运行材料：maintenance:wiki/${sha256(path.resolve(wikiRoot))}/.wiki-staging/${id}/completed.json\n` : ""}`);
   for (const [ref, content] of proposed) {
     const old = await getText(wikiRoot, ref);
     if (old === content) continue;
@@ -204,28 +205,30 @@ async function verifyInputs(plan, options, { during = false } = {}) {
   for (const [key, expected] of Object.entries(plan.inputs)) {
     const colon = key.indexOf(":"), kind = key.slice(0, colon), ref = key.slice(colon + 1);
     if (!["repo", "wiki"].includes(kind)) fail("PLAN_INVALID", key);
-    const p = await safePath(kind === "wiki" ? options.wikiRoot : options.repoRoot, ref, { write: kind === "wiki" }), actual = await digestFile(p);
+    const p = await wikiInternalPath(kind === "wiki" ? options.wikiRoot : options.repoRoot, ref, { write: kind === "wiki" }), actual = await digestFile(p);
     const w = kind === "wiki" ? plan.writes.find((w2) => w2.path === ref) : null;
     if (actual !== expected && !(during && w && actual === w.after)) fail("PLAN_STALE", key);
   }
 }
 async function loadJournal(wikiRoot) {
-  const j = JSON.parse(await readFile(await safePath(wikiRoot, JOURNAL), "utf8"));
+  const j = JSON.parse(await readFile(await wikiInternalPath(wikiRoot, JOURNAL), "utf8"));
   if (j.schemaVersion !== 1 || !phases.includes(j.phase) || j.id !== j.plan?.id || !Array.isArray(j.applied)) fail("JOURNAL_INVALID", "invalid journal");
   validatePlan(j.plan);
   return j;
 }
 async function saveJournal(wikiRoot, j) {
-  await atomicWrite(await safePath(wikiRoot, JOURNAL, { write: true }), json(j));
+  await atomicWrite(await wikiInternalPath(wikiRoot, JOURNAL, { write: true }), json(j));
 }
 async function assertLock(wikiRoot, id) {
-  const lock = JSON.parse(await readFile(await safePath(wikiRoot, LOCK), "utf8"));
+  const lock = JSON.parse(await readFile(await wikiInternalPath(wikiRoot, LOCK), "utf8"));
   if (lock.id !== id) fail("LOCK_CONFLICT", "another writer owns the lock");
 }
 async function acquire(wikiRoot, id) {
   await mkdir(wikiRoot, { recursive: true });
   try {
-    await writeFile(await safePath(wikiRoot, LOCK, { write: true }), json({ id }), { flag: "wx" });
+    const file = await wikiInternalPath(wikiRoot, LOCK, { write: true });
+    await mkdir(path.dirname(file), { recursive: true });
+    await writeFile(file, json({ id }), { flag: "wx" });
   } catch (e) {
     if (e.code === "EEXIST") fail("LOCKED", "explicit resume/abort; never steal a lock");
     throw e;
@@ -233,15 +236,15 @@ async function acquire(wikiRoot, id) {
 }
 async function stage(wikiRoot, plan) {
   for (const [i, w] of plan.writes.entries()) {
-    await atomicWrite(await safePath(wikiRoot, `.wiki-staging/${plan.id}/${i}.txt`, { write: true }), w.content);
+    await atomicWrite(await wikiInternalPath(wikiRoot, `.wiki-staging/${plan.id}/${i}.txt`, { write: true }), w.content);
   }
 }
 async function install(options, j, w, index) {
-  const target = await safePath(options.wikiRoot, w.path, { write: true });
+  const target = await wikiInternalPath(options.wikiRoot, w.path, { write: true });
   const actual = await digestFile(target);
   if (actual !== w.before && actual !== w.after) fail("MANUAL_MODIFICATION", w.path);
   if (actual !== w.after) {
-    const content = await readFile(await safePath(options.wikiRoot, `.wiki-staging/${j.id}/${index}.txt`));
+    const content = await readFile(await wikiInternalPath(options.wikiRoot, `.wiki-staging/${j.id}/${index}.txt`));
     if (sha256(content) !== w.after) fail("STAGING_CHANGED", w.path);
     await atomicWrite(target, content);
   }
@@ -262,7 +265,7 @@ async function applyPlan({ wikiRoot, repoRoot = process.cwd(), plan, stopAfter }
     const j2 = await loadJournal(wikiRoot);
     if (j2.id === plan.id && j2.plan.digest === plan.digest) {
       if (j2.phase === "finalized") {
-        for (const w of j2.plan.writes) if (await digestFile(await safePath(wikiRoot, w.path)) !== w.after) fail("MANUAL_MODIFICATION", w.path);
+        for (const w of j2.plan.writes) if (await digestFile(await wikiInternalPath(wikiRoot, w.path)) !== w.after) fail("MANUAL_MODIFICATION", w.path);
         return { id: j2.id, phase: "finalized", replayed: true };
       }
       fail("TRANSACTION_INCOMPLETE", "use explicit resume");
@@ -281,16 +284,16 @@ async function resumeInternal({ wikiRoot, repoRoot = process.cwd(), stopAfter })
   const j = await loadJournal(wikiRoot);
   const options = { wikiRoot, repoRoot };
   if (["finalized", "aborted"].includes(j.phase)) {
-    if (await exists(await safePath(wikiRoot, LOCK))) {
+    if (await exists(await wikiInternalPath(wikiRoot, LOCK))) {
       await assertLock(wikiRoot, j.id);
-      await rm(await safePath(wikiRoot, LOCK, { write: true }));
+      await rm(await wikiInternalPath(wikiRoot, LOCK, { write: true }));
     }
     return { id: j.id, phase: j.phase, replayed: true };
   }
   await assertLock(wikiRoot, j.id);
   await verifyInputs(j.plan, options, { during: true });
   for (const [i, w] of j.plan.writes.entries()) {
-    const p = await safePath(wikiRoot, `.wiki-staging/${j.id}/${i}.txt`, { write: true });
+    const p = await wikiInternalPath(wikiRoot, `.wiki-staging/${j.id}/${i}.txt`, { write: true });
     if (!await exists(p)) await atomicWrite(p, w.content);
   }
   if (j.phase === "prepared") {
@@ -300,7 +303,7 @@ async function resumeInternal({ wikiRoot, repoRoot = process.cwd(), stopAfter })
     if (stopAfter === "applied") return { id: j.id, phase: j.phase };
   }
   if (j.phase === "applied") {
-    for (const w of j.plan.writes.filter((w2) => ![MANIFEST, "wiki/log.md"].includes(w2.path))) if (await digestFile(await safePath(wikiRoot, w.path)) !== w.after) fail("VERIFY_FAILED", w.path);
+    for (const w of j.plan.writes.filter((w2) => ![MANIFEST, "wiki/log.md"].includes(w2.path))) if (await digestFile(await wikiInternalPath(wikiRoot, w.path)) !== w.after) fail("VERIFY_FAILED", w.path);
     const candidate = j.plan.writes.find((w) => w.path === MANIFEST);
     if (candidate) {
       const errors = validateManifest(JSON.parse(candidate.content));
@@ -315,10 +318,10 @@ async function resumeInternal({ wikiRoot, repoRoot = process.cwd(), stopAfter })
     await install(options, j, w, i);
     if (stopAfter === w.path) return { id: j.id, phase: j.phase };
   }
-  await atomicWrite(await safePath(wikiRoot, `.wiki-staging/${j.id}/completed.json`, { write: true }), json({ id: j.id, digest: j.plan.digest, phase: "finalized", writes: j.plan.writes.map(({ path: path2, before, after }) => ({ path: path2, before, after })) }));
+  await atomicWrite(await wikiInternalPath(wikiRoot, `.wiki-staging/${j.id}/completed.json`, { write: true }), json({ id: j.id, digest: j.plan.digest, phase: "finalized", writes: j.plan.writes.map(({ path: path2, before, after }) => ({ path: path2, before, after })) }));
   j.phase = "finalized";
   await saveJournal(wikiRoot, j);
-  await rm(await safePath(wikiRoot, LOCK, { write: true }));
+  await rm(await wikiInternalPath(wikiRoot, LOCK, { write: true }));
   return { id: j.id, phase: j.phase };
 }
 async function abortInternal({ wikiRoot }) {
@@ -327,12 +330,12 @@ async function abortInternal({ wikiRoot }) {
   if (j.phase === "finalized") fail("TRANSACTION_FINALIZED", "cannot abort published transaction");
   await assertLock(wikiRoot, j.id);
   for (const w of j.plan.writes) {
-    const digest = await digestFile(await safePath(wikiRoot, w.path, { write: true }));
+    const digest = await digestFile(await wikiInternalPath(wikiRoot, w.path, { write: true }));
     if (digest !== w.before && digest !== w.after) fail("MANUAL_MODIFICATION", w.path);
     if (w.before !== null && (typeof w.original !== "string" || sha256(w.original) !== w.before)) fail("BACKUP_INVALID", w.path);
   }
   for (const w of [...j.plan.writes].reverse()) {
-    const p = await safePath(wikiRoot, w.path, { write: true });
+    const p = await wikiInternalPath(wikiRoot, w.path, { write: true });
     if (await digestFile(p) === w.after) {
       if (w.before === null) await rm(p);
       else await atomicWrite(p, w.original);
@@ -340,11 +343,11 @@ async function abortInternal({ wikiRoot }) {
   }
   j.phase = "aborted";
   await saveJournal(wikiRoot, j);
-  await rm(await safePath(wikiRoot, LOCK, { write: true }));
+  await rm(await wikiInternalPath(wikiRoot, LOCK, { write: true }));
   return { id: j.id, phase: j.phase };
 }
 async function exclusive(options, run) {
-  const file = await safePath(options.wikiRoot, ".wiki-runner-lock", { write: true });
+  const file = await wikiInternalPath(options.wikiRoot, ".wiki-runner-lock", { write: true });
   try {
     await writeFile(file, json({ pid: process.pid }), { flag: "wx" });
   } catch (e) {

@@ -72,7 +72,7 @@ function closure(root, plan) {
 function outputPath(output, root) {
   const resolved = path.resolve(output);
   if (path.basename(resolved) !== NAME) throw new Error(`output-name-must-be-${NAME}`);
-  if (resolved.startsWith(`${root}${path.sep}`) && !resolved.startsWith(`${root}/.template-source/cache/`)) throw new Error('output-inside-source-forbidden');
+  if (resolved.startsWith(`${root}${path.sep}`)) throw new Error('output-inside-source-forbidden');
   let cursor = path.parse(resolved).root;
   for (const part of resolved.slice(cursor.length).split(path.sep)) {
     cursor = path.join(cursor, part);
@@ -105,7 +105,7 @@ export function build({ sourceRoot = ROOT, output, cliRoot = process.env.YSS_BAC
   const top = execFileSync('git', ['-C', root, 'rev-parse', '--show-toplevel'], { encoding: 'utf8' }).trim();
   if (realpathSync(top) !== root) throw new Error('source-must-be-git-root');
   const commit = execFileSync('git', ['-C', root, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
-  const status = execFileSync('git', ['-C', root, 'status', '--porcelain', '--untracked-files=normal'], { encoding: 'utf8' });
+  const status = execFileSync('git', ['-C', root, 'status', '--porcelain', '--untracked-files=normal'], { encoding: 'utf8', maxBuffer: 32 * 1024 * 1024 });
   const source = { state: status ? 'working-tree' : 'committed', base_commit: commit,
     content_commit: status ? null : commit, distribution: 'development-only' };
   const pinBytes = readFileSync(path.join(HERE, 'cli-pin.json'));

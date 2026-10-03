@@ -1,13 +1,13 @@
 # CLI 模板家族身份与同身份升级合同
 
-状态：本轮方案已由提问者确认并授权实施；实际验证与 Git 交付另见维护证据。
+本合同定义 CLI 家族隔离和同身份升级的现行约束。
 
-本合同补充 `create-yss-spec-repository-mode-contract.md` 的跨仓身份规则。各模板的 profile 与 instantiation 仍由各自 `.template-spec/process/harness-profile.yaml` 定义。本次属于 template-source 的 L3 分发维护，触发 `cross-repo-contract`、`generation-semantics`、`release-semantics`；产品 Spec、OpenAPI、Slice Contract 和产品 context_reconciliation 为 not-applicable。
+本合同补充 `create-yss-spec-repository-mode-contract.md` 的跨仓身份规则。各模板的 profile 与 instantiation 仍由各自 `.template-spec/process/harness-profile.yaml` 定义。
 
 ## 入口与兼容
 
 - 本体 `create-yss-spec` 包保持不变。当前子项目 design/backend/frontend 统一使用公共 CLI 内核，提供 init、attach、sync、diff、doctor、recover、update/upgrade。旧 dev 仅保留身份拒绝，不恢复分发。
-- 历史范围曾限制专职模板为 repository-local。该限制由已确认的 [专职 CLI 设计 v1.1.0](dedicated-harness-cli-design.md) 定向替代：新增 backend/frontend 两包；两包拒绝旧实例，不跨 profile 迁移。旧入口仅在新包可安装并通过 smoke test 后退役。
+- [专职 CLI 设计](dedicated-harness-cli-design.md) 定义 backend/frontend 两包；两包拒绝旧实例，不跨 profile 迁移。旧入口仅在新包可安装并通过 smoke test 后退役。
 - `update` / `upgrade` 只更新 CLI 程序；不操作实例受管文件。战略及专职实例通过显式 `sync` 更新治理资产，默认预览、`--apply` 执行；不跨家族迁移。
 - 目标家族由五种 metadata 文件和已存在的 Harness profile 显式判定，不由路径、Git remote 或业务内容猜测。五种文件分别是 `.yss-template.json`、`.yss-harness-design.json`、`.yss-harness-dev.json`、`.yss-harness-backend.json`、`.yss-harness-frontend.json`。
 
@@ -24,11 +24,11 @@
 
 ## 验收和交付
 
-CLI 命令是本轮已确认的测试 seam：观察退出码、输出和目标文件状态。覆盖五家族矩阵、force/preview、实际写入拒绝、缺 metadata、非法声明、同族历史同步、失败回滚、真实 tgz 初始化及跨仓交接。配置与确定性快照不套用业务 TDD，用分发验证覆盖。
+CLI 命令是可观察的测试 seam：观察退出码、输出和目标文件状态。覆盖五家族矩阵、force/preview、实际写入拒绝、缺 metadata、非法声明、同族历史同步、失败回滚、真实 tgz 初始化及跨仓交接。配置与确定性快照不套用业务 TDD，用分发验证覆盖。
 
-版本采用兼容补丁：综合 3.1.1、研发 0.4.1、战略 0.4.1；若实施时版本已占用，则使用同一 minor 下的下一个未占用 patch。快照绑定已可获取的完整源 SHA，默认引用、文档和包内快照一致。原 dev CLI 工作树的既有 snapshot 差异留在原工作区，升级在独立工作树验证，不混入提交。
+版本、包名与固定快照以各 CLI 当前清单为准。快照绑定可获取的完整源 SHA，默认引用、文档和包内快照一致；开发 WORKTREE 结果不作为发布证据。
 
-验证顺序：CLI 回归完成后运行跨仓链路，再从固定快照生成并验收实际 tgz。不得将临时改写快照的测试与跨仓验收并行。GitHub 候选执行适用审查及分级验证，完整分发校验记录本轮日志；提交推送在展示具体变更及证据后取得本轮授权。先交付子仓，再更新父仓 gitlink，npm 发布不在本轮执行范围。
+验证顺序：CLI 回归完成后运行跨仓链路，再从固定快照生成并验收实际 tgz。不得将临时改写快照的测试与跨仓验收并行。GitHub 候选执行适用审查及分级验证，完整分发校验日志保存在仓外；提交推送在展示具体变更及证据后取得本轮授权。先交付子仓，再更新父仓 gitlink，npm 发布另行授权。
 
 旧 spec/dev 实例先保存 Git 基线，再预览并执行同族 sync；失败使用事务回滚，成功后撤销使用原基线或备份。不得用旧 CLI 强制反向同步，亦不得用战略 init --force 代替升级。
 

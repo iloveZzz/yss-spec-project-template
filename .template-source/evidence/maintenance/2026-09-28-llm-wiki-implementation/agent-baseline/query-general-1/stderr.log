@@ -1,5 +1,0 @@
-Reading additional input from stdin...
-2026-09-28T03:35:44.036783Z  WARN codex_models_manager::model_info: Unknown model gpt-6-sol is used. This will use fallback model metadata.
-2026-09-28T03:35:44.109708Z  WARN codex_models_manager::model_info: Unknown model gpt-6-sol is used. This will use fallback model metadata.
-2026-09-28T03:35:44.119930Z  WARN codex_models_manager::model_info: Unknown model gpt-6-sol is used. This will use fallback model metadata.
-2026-09-28T03:35:49.072382Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: {"type":"error","status":400,"error":{"type":"invalid_request_error","message":"The 'gpt-6-sol' model is not supported when using Codex with a ChatGPT account."}}

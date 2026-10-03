@@ -30,7 +30,7 @@ node <skill-root>/scripts/transaction.mjs apply --wiki <root> --repo <repo> --pl
 
 plan 不写 wiki；返回 sources/articles/protected/conflicts、完整 writes `{path,before,after,content,original}`、inputs 摘要和计划 digest。检查准确范围后应用。source 删除只留 tombstone 与快照，不能删 source 或 article 记录。未被编译的文章保持旧 watermark；更新 raw 不会清除它们的 stale。human-owned 自动正文修改拒绝；已显式授权链接修复时传 `linkRepairs: [articleId]`，脚本严格比较 wikilink 外所有字节，不能夹带正文变更。
 
-apply 先核验全部输入摘要，变化即 PLAN_STALE，必须重新计划。只写计划内文件；内部 `.wiki-staging/<id>/` 保存候选与完成收据，`.wiki-transaction.json` 是恢复记录，`.wiki-lock` 是事务锁，`.wiki-runner-lock` 防止并发恢复。内部文件位于同一 wiki-root，纳入写操作授权；不分发或公开其中的来源原文/备份。共享 index/log/manifest 由主控生成。manifest、日志最后发布；未完成期间查询拒绝读取混合版本。
+apply 先核验全部输入摘要，变化即 PLAN_STALE，必须重新计划。只写计划内文件；内部 `.wiki-staging/<id>/` 保存候选与完成收据，`.wiki-transaction.json` 是恢复记录，`.wiki-lock` 是事务锁，`.wiki-runner-lock` 防止并发恢复。`template-source` 的 journal、staging、锁和备份由项目 `scripts/lib/maintenance-storage.mjs` 解析到仓外 `maintenance:wiki/<wiki-id>/`；其它 wiki 沿用同一 wiki-root。这些内部文件纳入写操作授权；不分发或公开其中的来源原文/备份。共享 index/log/manifest 由主控生成。manifest、日志最后发布；未完成期间查询拒绝读取混合版本。
 
 ## 恢复和取消
 
@@ -41,7 +41,7 @@ node <skill-root>/scripts/transaction.mjs abort --wiki <root> --repo <repo>
 
 resume 只补未完成步骤、验证 staging、检查来源是否仍为原计划版本。abort 先检查全部目标，再仅恢复该事务改动；目标被人工修改时停止，绝不覆盖。真实进程崩溃若留下 runner lock，禁止自动抢占：先核实原进程已停止，展示锁和 journal，由用户明确选择清除该残留执行锁后再 resume/abort。事务锁本身由恢复流程管理，不手删以绕过冲突。
 
-相同计划重放复用完成收据，不重复追加日志。aborted 计划是终态，重新执行用新计划 ID。保留内部 journal/staging/收据用于追溯；本轮不自动清理。最终做结构 lint + status + advise，明确剩余 freshness，结构维护完成不等于所有知识 current。
+相同计划重放复用完成收据，不重复追加日志。aborted 计划是终态，重新执行用新计划 ID。保留内部 journal/staging/收据用于追溯。模板源仓内 `log.md` 只保存最新运行入口，不追加历史；详细计划、旧日志与原字节保存在仓外事务包中。最终做结构 lint + status + advise，明确剩余 freshness，结构维护完成不等于所有知识 current。
 
 ## 人工反馈
 

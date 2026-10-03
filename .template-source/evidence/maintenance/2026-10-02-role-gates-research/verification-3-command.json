@@ -1,8 +1,0 @@
-{
-  "command": "node scripts/verify-maintenance-research .template-source/evidence/maintenance/2026-10-02-role-gates-research/role-gates-research-brief.md .template-source/evidence/maintenance/2026-10-02-role-gates-research/role-gates-evidence.yaml --output .template-source/evidence/maintenance/2026-10-02-role-gates-research/verification-3",
-  "exit_code": 0,
-  "executed_at": "2026-10-02T04:52:19.848952+00:00",
-  "duration_ms": 107,
-  "stdout_ref": ".template-source/evidence/maintenance/2026-10-02-role-gates-research/verification-3-command.stdout.log",
-  "stderr_ref": ".template-source/evidence/maintenance/2026-10-02-role-gates-research/verification-3-command.stderr.log"
-}

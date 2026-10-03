@@ -1,8 +1,0 @@
-import fs from 'node:fs';
-import {parseDocument} from '/Users/zhudaoming/Projects/yss-spec-project-template/scripts/vendor/yaml.mjs';
-const root='/Users/zhudaoming/Projects/yss-spec-project-template';
-const load=p=>parseDocument(fs.readFileSync(root+'/'+p,'utf8'),{maxAliasCount:0,uniqueKeys:true}).toJS({maxAliasCount:0});
-const r=load('.template-spec/process/lifecycle-registry.yaml');
-const d=load('.template-spec/agents/digital-human-roles.yaml');
-const pick=(o,ks)=>Object.fromEntries(ks.filter(k=>k in o).map(k=>[k,o[k]]));
-console.log(JSON.stringify({identity:load('yss-project.yaml'),counts:Object.fromEntries(['stages','gates','checks','artifacts','work_units','evidence'].map(k=>[k,r[k]?.length])),roles:d.roles.map(x=>pick(x,['id','name'])),gatePolicy:d.gate_policy,userDecisionPolicy:d.user_decision_policy,gates:r.gates,checks:r.checks},null,2));

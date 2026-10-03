@@ -46,7 +46,7 @@ apps/
 - 后端：已登记项目根的 `./mvnw` 校验 / 测试；若工程已配置 Checkstyle、P3C 或 Spotless，审查时实际执行。
 - `git-submodule` 必须递归检出；空 gitlink 不得当作「没有工程」。
 - 模板源 `.cursor/environment.json` 只安装模板校验依赖（`jsonschema`、模板 `pnpm`），**不是**实现仓审查运行时。`project-instance` 与实现仓库的 Cloud / CI 环境自行包含 JDK、Maven Wrapper 和 `pnpm`。
-- 审查任务包只写证据路径；专项 skill 只读，不得写实现。审查 finding 按 `review_standards_route.finding_disposition` 分流：`violation` 交实现者修复后全轴复审；`drift` / `new_impacts` 回 实现合同编译器，不在审查会话中改代码。
+- 审查任务包只写证据路径；专项 skill 只读，不得写实现。审查 finding 按 `review_standards_route.finding_disposition` 分流：`violation` 交实现者修复后按差异、受影响结论及依赖定向复审；`drift` / `new_impacts` 回 实现合同编译器，不在审查会话中改代码。
 
 ## 1.3 `repository_scope: git-submodule`
 
@@ -74,15 +74,15 @@ apps/
 
 采用后端交付驱动前端的专职项目，按 [前后端交付与联合接收](frontend-backend-delivery.md) 执行输入校验。该条件同时进入合同编译、任务派发、生命周期实施/恢复和正式前端证据检查；原通用研发 profile 保留兼容，不能以兼容入口替专职项目跳过接收。
 
-| 影响面 | 必须绑定的记录 | 本变更结论 |
-|---|---|---|
-| Harness-only | change、文档路径、压力场景、fresh verification、checkpoint | required：模板仓库、CLI 仓库 |
-| release-only | release note、发布顺序、观察信号、rollback | required：模板 commit → CLI 包 |
-| backend-only | backend repo、分支、MR / PR、CI、API 影响 | `not-applicable`：无后端运行时代码 |
-| frontend-only | frontend repo、分支、lint / type-check / build | `not-applicable`：无前端运行时代码 |
-| contract-only | OpenAPI Draft / Freeze、消费者确认 | `not-applicable`：无 OpenAPI 变化 |
+| 影响面 | 必须绑定的记录 |
+|---|---|
+| Harness-only | change、文档路径、压力场景、fresh verification、checkpoint |
+| release-only | release note、发布顺序、观察信号、rollback |
+| backend-only | backend repo、分支、MR / PR、CI、API 影响 |
+| frontend-only | frontend repo、分支、lint / type-check / build |
+| contract-only | OpenAPI Draft / Freeze、消费者确认 |
 
-## 3. 本变更的跨仓库合同
+## 3. 跨仓库责任
 
 - 模板仓库负责 `yss-project.yaml`、流程事实源、迁移指南、技能投影、模板校验脚本和快照可发布状态。
 - CLI 仓库负责 `attach`、`sync`、受管 manifest、快照 commit、metadata、迁移计划、备份 / 回滚、端到端测试和用户说明。

@@ -1,0 +1,11 @@
+#!/usr/bin/env node
+import { resolveMaintenanceOutput } from './lib/maintenance-storage.mjs';
+import { ROOT } from './lib/template-verification.mjs';
+try {
+  const [relative] = process.argv.slice(2);
+  if (!relative) throw new TypeError('用法: scripts/maintenance-path <类别/运行ID/文件>');
+  process.stdout.write(resolveMaintenanceOutput(`maintenance:${relative}`, { root: ROOT }) + '\n');
+} catch (error) {
+  process.stderr.write(`维护路径错误: ${error.message}\n`);
+  process.exitCode = 1;
+}

@@ -9,12 +9,12 @@ import { files, hash, safe } from '../yss-backend-delivery/runtime.mjs';
 import { corePath } from '../yss-backend-delivery/pack-cli.mjs';
 
 const HERE = import.meta.dirname, ROOT = path.resolve(HERE, '../../..');
-const git = (root, ...args) => execFileSync('git', ['-C', root, ...args], { encoding: 'utf8' }).trim();
+const git = (root, ...args) => execFileSync('git', ['-C', root, ...args], { encoding: 'utf8', maxBuffer: 32 * 1024 * 1024 }).trim();
 const json = value => JSON.stringify(value, null, 2) + '\n';
 export async function build({ output, sourceRoot = path.join(ROOT, 'submodules/yss-harness-design-agent'), cliRoot = process.env.YSS_DESIGN_PLUGIN_CLI_ROOT || path.join(ROOT, 'submodules/create-yss-strategic-design') }) {
   const source = realpathSync(sourceRoot), cli = realpathSync(cliRoot), target = path.resolve(output);
   if (path.basename(target) !== identity.name || existsSync(target)) throw new Error('new-named-output-required');
-  if ((target.startsWith(ROOT + path.sep) && !target.startsWith(path.join(ROOT, '.template-source/cache/'))) || source.startsWith(target + path.sep) || cli.startsWith(target + path.sep)) throw new Error('unsafe-output');
+  if ((target.startsWith(ROOT + path.sep)) || source.startsWith(target + path.sep) || cli.startsWith(target + path.sep)) throw new Error('unsafe-output');
   let cursor = path.parse(target).root;
   for (const part of target.slice(cursor.length).split(path.sep).filter(Boolean)) { cursor = path.join(cursor, part); if (existsSync(cursor) && (lstatSync(cursor).isSymbolicLink() || !lstatSync(cursor).isDirectory())) throw new Error('unsafe-output-parent'); }
   if (git(cli, 'rev-parse', 'HEAD') !== pin.cli_commit || git(cli, 'status', '--porcelain', '--untracked-files=all')) throw new Error('cli-source-not-pinned-and-clean');

@@ -7,7 +7,6 @@ import { loadVerificationProfiles, planTemplateVerification } from "./lib/templa
 import { runCommandToFiles, runGroups } from "./lib/template-verification-runner.mjs";
 
 const releaseBaseline = [
-  ".template-source/scripts/evidence-index --check",
   "pnpm --dir .template-source/tooling/node test",
   "pnpm --dir .template-source/tooling/node check:vendor",
   "scripts/sync-skills --check",
@@ -33,9 +32,6 @@ const releaseBaseline = [
   "scripts/verify-frontend-implementation-evidence --allow-template .template-spec/process/templates/frontend-implementation-verification-template.yaml",
   "scripts/verify-subagent-task-package-scenarios",
   "scripts/verify-digital-human-task-package-scenarios",
-  ".template-source/scripts/verify-historical-task-package .template-source/evidence/maintenance/digital-human-task-package-review-task.yaml",
-  ".template-source/scripts/verify-historical-task-package .template-source/evidence/maintenance/lifecycle-ticket-transition-review-task-package.yaml",
-  "scripts/verify-maintenance-checkpoint --history .template-source/evidence/maintenance/yss-tactical-design-l3-checkpoint-2026-08-27.yaml",
   "scripts/verify-lifecycle-scenarios",
   "scripts/verify-lifecycle-transition-scenarios",
   "scripts/verify-maintenance-intensity-scenarios",
@@ -115,6 +111,22 @@ assert.match(unknown.escalation_reason, /未映射/);
 const core = planTemplateVerification({ profile: "fast", changedFiles: ["scripts/lib/template-verification.mjs"] });
 assert.equal(core.effective_profile, "release");
 assert.match(core.escalation_reason, /核心核验/);
+assert.equal(core.source_requirement, 'current', '快速检查自动升级强度时仍验证当前工作树来源');
+assert.equal(core.commands.length, release.commands.length, '自动升级不得裁剪完整验证命令');
+assert.ok(core.commands.some(x => x.command === 'scripts/verify-strategic-handoff-tools-lock'));
+assert.ok(!core.commands.some(x => x.command.endsWith('--require-committed')));
+for (const profile of ['candidate', 'release']) {
+  const strict = planTemplateVerification({profile, changedFiles: ['scripts/lib/template-verification.mjs']});
+  assert.equal(strict.source_requirement, 'committed');
+  assert.ok(strict.commands.some(x => x.command === 'scripts/verify-strategic-handoff-tools-lock --require-committed'));
+}
+assert.throws(() => loadVerificationProfiles(`
+schema_version: 1
+profiles: { fast: {}, candidate: {}, release: {} }
+groups:
+  invalid:
+    commands: [{ run: check, require_committed_for: [fast] }]
+`), /require_committed_for/);
 
 const entryRule = planTemplateVerification({ profile: "candidate", changedFiles: ["AGENTS.md"] });
 assert.equal(entryRule.effective_profile, "release", "Agent 入口规则变化必须 fail-safe 到完整门禁");

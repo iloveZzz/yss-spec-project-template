@@ -30,8 +30,8 @@ function makeRepo() {
   return { root, archiveDir, unit };
 }
 
-function run(root, args) {
-  const r = spawnSync(process.execPath, [TOOL, ...args], { cwd: root, encoding: "utf8" });
+function run(root, args, env = process.env) {
+  const r = spawnSync(process.execPath, [TOOL, ...args], { cwd: root, encoding: "utf8", env });
   return { code: r.status, stdout: r.stdout ?? "", stderr: r.stderr ?? "" };
 }
 
@@ -224,4 +224,51 @@ test("remove --dry-run reports the plan without touching the worktree", () => {
   assert.equal(r.code, 0, r.stderr);
   assert.equal(JSON.parse(r.stdout).wouldRemove, 2);
   assert.ok(fs.existsSync(path.join(ctx.root, ctx.unit, "result.json")));
+});
+
+test("template-source defaults keep archive and index outside its workspace", t => {
+  const ctx = makeRepo();
+  t.after(() => { fs.rmSync(ctx.root, {recursive:true, force:true}); fs.rmSync(ctx.archiveDir, {recursive:true, force:true}); });
+  fs.writeFileSync(path.join(ctx.root, 'yss-project.yaml'), 'schema_version: 1\nrepository_mode: template-source\n');
+  const runtimeHome = path.join(fs.realpathSync(ctx.archiveDir), 'runtime');
+  const env = {...process.env, YSS_RUNTIME_HOME: runtimeHome};
+  const packed = run(ctx.root, ['pack', 'external', '--unit', ctx.unit], env);
+  assert.equal(packed.code, 0, packed.stderr);
+  const namespace = crypto.createHash('sha256').update(fs.realpathSync(ctx.root)).digest('hex');
+  const archives = path.join(runtimeHome, namespace, 'maintenance', 'archives');
+  assert.ok(fs.existsSync(path.join(archives, 'external.tar.gz')));
+  assert.ok(fs.existsSync(path.join(archives, 'archive-index.json')));
+  assert.equal(fs.existsSync(path.join(ctx.root, '.template-source')), false);
+  const inside = run(ctx.root, ['pack', 'inside', '--unit', ctx.unit, '--archive-dir', path.join(ctx.root, 'history')], env);
+  assert.equal(inside.code, 2, inside.stderr);
+  assert.match(inside.stderr, /仓外|当前工作区/);
+});
+
+test("archive refuses escaped batch IDs and symlink unit ancestors", t => {
+  const ctx = makeRepo();
+  t.after(() => { fs.rmSync(ctx.root, {recursive:true, force:true}); fs.rmSync(ctx.archiveDir, {recursive:true, force:true}); });
+  const escaped = run(ctx.root, ['pack', '../escaped', '--unit', ctx.unit, '--archive-dir', ctx.archiveDir]);
+  assert.equal(escaped.code, 2);
+  fs.symlinkSync('evidence', path.join(ctx.root, 'alias'));
+  const linked = run(ctx.root, ['plan', 'linked', '--unit', 'alias/maintenance/round-a']);
+  assert.equal(linked.code, 2);
+  assert.match(linked.stderr, /symlink/);
+});
+
+test("verify rejects a symlink archive member before creating its extraction target", t => {
+  const ctx = makeRepo();
+  const {archive, manifest} = packAll(ctx);
+  const staged = fs.mkdtempSync(path.join(os.tmpdir(), 'archive-symlink-'));
+  const extract = path.join(staged, 'extract');
+  t.after(() => { fs.rmSync(ctx.root, {recursive:true, force:true}); fs.rmSync(ctx.archiveDir, {recursive:true, force:true}); fs.rmSync(staged, {recursive:true, force:true}); });
+  fs.mkdirSync(path.join(staged, ctx.unit), {recursive:true});
+  fs.symlinkSync('/etc/passwd', path.join(staged, ctx.unit, 'result.json'));
+  execFileSync('tar', ['-czf', archive, '-C', staged, ctx.unit + '/result.json']);
+  const record = JSON.parse(fs.readFileSync(manifest, 'utf8'));
+  record.archive_sha256 = sha(archive);
+  fs.writeFileSync(manifest, JSON.stringify(record));
+  const result = run(ctx.root, ['verify', 'b1', '--archive-dir', ctx.archiveDir, '--extract-dir', extract]);
+  assert.equal(result.code, 2);
+  assert.match(result.stderr, /regular|type|symlink/);
+  assert.equal(fs.existsSync(extract), false);
 });

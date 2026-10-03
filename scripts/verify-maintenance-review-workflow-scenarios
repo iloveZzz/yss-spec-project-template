@@ -3,6 +3,9 @@ import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import { mkdirSync, mkdtempSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
+import os from "node:os";
+import fs from "node:fs";
+import { resolveMaintenanceOutput } from "./lib/maintenance-storage.mjs";
 import { stringify } from "./vendor/yaml.mjs";
 import { evaluateMaintenanceReviewRound, generateReviewerTaskPackages } from "./lib/maintenance-review-workflow.mjs";
 import { captureMaintenanceCandidate, inspectMaintenanceCandidate } from "./lib/maintenance-candidate.mjs";
@@ -81,6 +84,9 @@ try {
   rmSync(fixtureRoot, { recursive: true, force: true });
 }
 
+const runtimeHome = fs.realpathSync(mkdtempSync(path.join(os.tmpdir(), "candidate-runtime-")));
+const previousHome = process.env.YSS_RUNTIME_HOME;
+process.env.YSS_RUNTIME_HOME = runtimeHome;
 const candidateRepo = mkdtempSync(path.join(ROOT, "scripts/fixtures/.packed-candidate-"));
 try {
   const git = (...args) => {
@@ -90,8 +96,9 @@ try {
   git("init", "-q");
   git("config", "user.email", "fixture@example.com");
   git("config", "user.name", "Fixture");
+  writeFileSync(path.join(candidateRepo, "yss-project.yaml"), "schema_version: 1\nrepository_mode: template-source\n");
   writeFileSync(path.join(candidateRepo, "tracked.txt"), "before\n");
-  git("add", "tracked.txt");
+  git("add", "tracked.txt", "yss-project.yaml");
   git("commit", "-qm", "base");
   writeFileSync(path.join(candidateRepo, "tracked.txt"), "after\n");
   writeFileSync(path.join(candidateRepo, "untracked.txt"), "packed\n");
@@ -101,25 +108,29 @@ try {
   writeFileSync(path.join(candidateRepo, "scripts/new-validator.mjs"), "export default true;\n");
   assert.throws(() => captureMaintenanceCandidate({
     root: candidateRepo,
-    outputDir: ".template-source/evidence/maintenance/reviews/rejected-candidate",
+    outputDir: "maintenance:candidates/rejected-candidate",
     baseRef: "HEAD",
     excludePaths: ["scripts/new-validator.mjs"]
-  }), /excludePaths.*维护证据/);
-  const outputDir = ".template-source/evidence/maintenance/reviews/candidate";
-  const captured = captureMaintenanceCandidate({ root: candidateRepo, outputDir, baseRef: "HEAD", excludePaths: [".template-source/evidence/maintenance/reviews/review-evidence"] });
+  }), /excludePaths.*退役/);
+  assert.throws(() => captureMaintenanceCandidate({ root: candidateRepo, outputDir: 'maintenance:candidates/rejected-legacy', excludePaths: ['.template-source/evidence/maintenance/reviews/review-evidence'] }), /excludePaths.*退役/);
+  const outputDir = "maintenance:candidates/candidate";
+  const outputPath = resolveMaintenanceOutput(outputDir, { root: candidateRepo });
+  const captured = captureMaintenanceCandidate({ root: candidateRepo, outputDir, baseRef: "HEAD" });
   assert.equal(captured.manifest.storage, "packed-stream");
-  assert.deepEqual(captured.manifest.untracked_files, ["scripts/new-validator.mjs", "untracked.txt"]);
-  assert.deepEqual(captured.manifest.excluded_paths, [outputDir, ".template-source/evidence/maintenance/reviews/review-evidence"]);
+  assert.deepEqual(captured.manifest.untracked_files, [".template-source/evidence/maintenance/reviews/review-evidence/report.md", "scripts/new-validator.mjs", "untracked.txt"]);
+  assert.deepEqual(captured.manifest.excluded_paths, []);
   assert.equal(captured.files.length, 3, "packed candidate 只保存 manifest、stream 和 tracked diff");
-  assert.deepEqual(readdirSync(path.join(candidateRepo, outputDir)).sort(), ["candidate-manifest.yaml", "candidate.bin", "tracked.diff"]);
-  const manifestPath = path.join(candidateRepo, outputDir, "candidate-manifest.yaml");
-  const inspected = inspectMaintenanceCandidate({ manifestPath });
+  assert.deepEqual(readdirSync(path.join(outputPath)).sort(), ["candidate-manifest.yaml", "candidate.bin", "tracked.diff"]);
+  const manifestPath = path.join(outputPath, "candidate-manifest.yaml");
+  const inspected = inspectMaintenanceCandidate({ manifestPath, root: candidateRepo });
   assert.equal(inspected.entries.find((entry) => entry.path === "untracked.txt").content.toString(), "packed\n");
   assert.throws(() => captureMaintenanceCandidate({ root: candidateRepo, outputDir, baseRef: "HEAD" }), /outputDir.*不存在/);
-  writeFileSync(path.join(candidateRepo, outputDir, "stale.txt"), "stale\n");
-  assert.throws(() => inspectMaintenanceCandidate({ manifestPath }), /恰好包含/);
+  writeFileSync(path.join(outputPath, "stale.txt"), "stale\n");
+  assert.throws(() => inspectMaintenanceCandidate({ manifestPath, root: candidateRepo }), /恰好包含/);
 } finally {
   rmSync(candidateRepo, { recursive: true, force: true });
+  rmSync(runtimeHome, { recursive: true, force: true });
+  if (previousHome === undefined) delete process.env.YSS_RUNTIME_HOME; else process.env.YSS_RUNTIME_HOME = previousHome;
 }
 
 process.stdout.write("模板维护审查两轮收敛场景验证通过\n");

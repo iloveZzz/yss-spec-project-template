@@ -1,6 +1,0 @@
-{
-  "submodules/create-yss-spec/src/template/asset-runtime.js": "d603a4c2f6a0204b1259c18399a93a6a055baf4946ea49e7a359f0aa3bbc40bd",
-  "submodules/create-yss-spec/src/template/instance-runtime.js": "57053645d0696be6987eb3d7bfa510010cb18f432fd6528ede7ea73cc379fb9d",
-  "submodules/create-yss-spec/tests/upgrade-skill-distribution.test.js": "30a028bf1bf1a6812a6e3bba84cc2b0dcc7c0e865987aa84e5cc91f026dd03b5",
-  ".template-source/cli-core/tests/package-contract.mjs": "ce8fcaa4e4f4498e2f4f49e86c9ab455b54c9ce386fe0911396ffe8f5eb6ff49"
-}

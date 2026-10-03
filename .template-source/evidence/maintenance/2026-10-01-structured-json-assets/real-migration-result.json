@@ -1,5 +1,0 @@
-{
-  "exit": 0,
-  "stdout": "{\n  \"status\": \"applied\",\n  \"plan_id\": \"f8b58756c57373f17d2d9f821048d61f0fb0c144f4e57f0f43ea2c7be753d889\",\n  \"changed_refs\": [\n    \"docs/probe/current.json\"\n  ],\n  \"receipt_ref\": \".yss/asset-transactions/f8b58756c57373f17d2d9f821048d61f0fb0c144f4e57f0f43ea2c7be753d889.json\",\n  \"execution_authorization\": \"not-granted\",\n  \"migration_plan_id\": \"2675f012f987b6880a2fa9788ed0b64477c9a0d945e661a3961aa35bcc1c3756\",\n  \"preserved_sources\": [\n    \"docs/probe/current.yaml\"\n  ],\n  \"rebound_json_sources\": []\n}\n",
-  "stderr": ""
-}

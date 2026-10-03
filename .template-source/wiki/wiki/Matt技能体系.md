@@ -1,21 +1,20 @@
 # Matt技能体系
 
-Matt Engineering Skills 是来自 `mattpocock/skills` 的轻量工程流程技能集合，用于澄清、Spec、Ticket、实现、TDD、诊断、审查和架构治理，不替代 [[YSS工程技能体系]]。
+Matt Engineering Skills 来自 `mattpocock/skills`，用于澄清、Spec、Ticket、实现、TDD、诊断、审查和架构治理，与 [[YSS工程技能体系]] 的专项规范共同工作。
 
-当前锁定 revision 以 `skills-lock.json` 的 `sources` 为准：`mattpocock/skills` 的 `revision` 为 `0ab1b63a410a03d3627979a109c8695de27af954`。不要抄 README 里可能过期的 hash。上游技能基线不等于项目当前生效内容；YSS 适配必须同时保留上游内容哈希、有效内容哈希和适配依据（见 [[技能投影与锁定]]）。
+上游技能基线保存可追溯 revision 与未经项目适配的内容；YSS 适配保存仓库身份、门禁、状态和授权约束。当前有效技能应同时保留上游内容哈希、有效内容哈希与适配依据。来源基线和当前生效内容按 [[技能投影与锁定]] 核对，不能从 README 中的版本描述推断当前技能内容。
 
-`to-spec` 只是用户显式兼容入口；新功能或较大变更的默认路径是 `yss-product-lifecycle` 的原生 Discovery / 需求分析工作单元，[[Spec基线]] 与产品设计影响的完整判定以生命周期注册表和裁剪规则为准（见 [[产品研发生命周期]]）。用户显式 `to-tickets` 同样只是兼容入口；正式化由生命周期原生 Ticket 工作单元完成，禁止只按 Adapter / Application / Domain / Infrastructure 横向拆分（见 [[垂直切片Ticket]]）。
+新功能与较大变更先进入 Plan，再由 `yss-product-lifecycle` 推进 Spec、工程契约和 Ticket。`to-spec`、`to-tickets`、`implement` 是用户显式兼容入口，不能建立第二套生命周期或越过门禁；垂直切片按用户行为拆窄，禁止只按技术层横拆。现行锁定技能名保留 `code-review`、`grilling`、`domain-modeling`、`tdd` 和这些显式入口。
 
-[[Agent入口规则]] 规定的强制入口包括：技术事实、标准、第三方 API 或框架行为走 `research`；竞品、市场或用户口碑走 `competitive-intelligence`；Bug、测试失败或性能回退先用 `diagnosing-bugs` 再建 `tdd`；merge / rebase 冲突走 `resolving-merge-conflicts`；架构治理、难测模块或深模块设计走 `codebase-design` 的显式审计模式；跨线程、跨仓库、上下文过长或原型结论回流走 `handoff`。
+技术事实、标准、第三方 API 与框架行为使用 `yss-research`；竞品、市场和口碑使用 `competitive-intelligence`。业务行为默认按 `tdd` 的 `behavior-tdd`，使用已确认公开 seam 逐切片实现。一次性生成、纯配置或流程文档不适用时，记录例外理由与可执行验证。
 
-业务行为默认按 `tdd` 使用已确认的公开 seam 逐切片实现。一次性生成、纯配置或流程文档不适用代码 TDD 时，必须记录例外理由和可执行验证方式。一次性一手资料走 `research`；要把研究结果落成持久 wiki 则走 [[LLM Wiki]]。旧 Matt 总入口已经硬退役；需求分诊与阶段路由统一由 `yss-product-lifecycle` 持有，仍保留的兼容入口也必须回交生命周期编排器验收。
+模板按 YSS capability 白名单收录通用技能。生命周期外部输入问卷以 `external-input-required` 暂停，答案回流后重新分类影响面；`prototype` 的单文件 HTML 是回流输入，YSS 原型仍需完成现行低保真评审、档位路由、证据合同与用户确认。人工 checkpoint 与诊断输出必须脱敏。
 
-过时技能不会保留兼容别名。已退休、personal 或由 YSS 有意排除的条目不再进入 `.agents/skills`、共享投影根或 `skills-lock.json`；其中 `wizard` 是最新上游仍存在但 YSS 当前有意排除的人工步骤技能，不应描述为上游已退休。
+维护与更新使用 `maintaining-skills`，由影响面决定验证强度；通用技能结果回交生命周期验收。持久知识库入口见 [[LLM Wiki]]，实现与审查边界见 [[Fresh验证与独立审查]]。
 
 ## 来源
 
-- `CONTEXT.md`
-- `AGENTS.md`
-- `skills-lock.json`
-- `.template-source/agents/skills-maintenance.md`
-- `wiki/raw/skills-lock-names.md`
+- `CONTEXT.md:39-43`、`CONTEXT.md:98-100`。
+- `.template-source/agents/skills-maintenance.md:18-34`、`:36-68`。
+- `AGENTS.md:43-49`、`:69-74`。
+- `skills-lock.json:56-68`、`:125-137`、`:241-253`、`:435-447`、`:465-492`（实际技能名；derived 输入）。

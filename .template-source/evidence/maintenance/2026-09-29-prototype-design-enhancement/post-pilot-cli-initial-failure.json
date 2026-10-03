@@ -1,6 +1,0 @@
-{
-  "cli": "create-yss-harness-design",
-  "exit_code": 1,
-  "reason": "未知参数: --agent-runtime",
-  "action": "root spec CLI supports this flag; specialist init retried without the unsupported flag; no source change"
-}

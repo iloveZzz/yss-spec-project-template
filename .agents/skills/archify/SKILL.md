@@ -25,10 +25,10 @@ When the current repository contains `yss-project.yaml`, these rules override th
   node .agents/skills/archify/scripts/yss-safe-deliver.mjs <type> docs/architecture/diagrams/<diagram-id>/<diagram-id>.archify.json docs/architecture/diagrams/<diagram-id>/<diagram-id>.html --quality showcase
 
   # template-source
-  node .agents/skills/archify/scripts/yss-safe-deliver.mjs <type> .template-source/evidence/maintenance/diagrams/<diagram-id>/<diagram-id>.archify.json .template-source/evidence/maintenance/diagrams/<diagram-id>/<diagram-id>.html --quality showcase
+  node .agents/skills/archify/scripts/yss-safe-deliver.mjs <type> "$(scripts/maintenance-path diagrams/<diagram-id>/<diagram-id>.archify.json)" "$(scripts/maintenance-path diagrams/<diagram-id>/<diagram-id>.html)" --quality showcase
   ```
 
-- For a `project-instance`, stable source and output must be the matching pair `docs/architecture/diagrams/<diagram-id>/<diagram-id>.archify.json` and `<diagram-id>.html`. For a `template-source`, use `.template-source/evidence/maintenance/diagrams/<diagram-id>/`. The wrapper writes `<diagram-id>.receipt.json` only after successful delivery. Temporary exploration may target the operating-system temporary directory.
+- For a `project-instance`, stable source and output must be the matching pair `docs/architecture/diagrams/<diagram-id>/<diagram-id>.archify.json` and `<diagram-id>.html`. For a `template-source`, use the current workspace's external `maintenance:diagrams/<diagram-id>/` (resolve with `scripts/maintenance-path`). The wrapper writes `<diagram-id>.receipt.json` only after successful delivery. Temporary exploration may target the operating-system temporary directory.
 - The safe wrapper rejects `--open`, non-HTML targets, symlink escapes, unrelated existing files, and stable source/output pairs outside those roots. Do not bypass it with the raw `deliver` or `preview` commands in a YSS repository.
 
 ## Fast authoring path

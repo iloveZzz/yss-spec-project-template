@@ -5,13 +5,17 @@ import { parseArgs } from 'node:util';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { readDocument, safeFile, fileBinding, digest } from './lib/governance-io.mjs';
+import {resolveMaintenanceOutput,resolveMaintenanceReference,maintenanceReference} from './lib/maintenance-storage.mjs';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+const outputFile = ref => resolveMaintenanceOutput(ref,{root});
+const binding = ref => ref.startsWith('maintenance:') ? digest(fs.readFileSync(resolveMaintenanceReference(ref,{root}))) : fileBinding(root,ref);
 try {
   const {values}=parseArgs({options:{output:{type:'string'},help:{type:'boolean'}}});
-  if(values.help)process.stdout.write('用法: scripts/verify-maintenance-risk-scenarios --output <新的根相对目录>\n运行权限、流转和发布拒绝场景，生成可绑定的实际反例记录。退出码 0=拒绝断言通过、1=失败。\n');
+  if(values.help)process.stdout.write('用法: scripts/verify-maintenance-risk-scenarios --output maintenance:research/<运行 ID>/counterexamples\n运行权限、流转和发布拒绝场景，生成可绑定的实际反例记录。退出码 0=拒绝断言通过、1=失败。\n');
   else {
     if(!values.output)throw new Error('需要 --output');
-    const destination=safeFile(root,values.output);
+    const destination=outputFile(values.output);
+    values.output=maintenanceReference(destination,{root});
     if(fs.existsSync(destination))throw new Error('证据目录已存在，保留原记录；请指定新目录');
     fs.mkdirSync(destination,{recursive:true});
     const cp=readDocument(root,'.template-spec/process/templates/lifecycle-checkpoint-template.yaml');
@@ -25,15 +29,15 @@ try {
     const records=[];
     for(const scenario of cases) {
       const inputRef=`${values.output}/${scenario.trigger}.input.json`,logRef=`${values.output}/${scenario.trigger}.log.json`,runRef=`${values.output}/${scenario.trigger}.run.json`;
-      fs.writeFileSync(safeFile(root,inputRef),JSON.stringify(scenario.input,null,2)+'\n');
-      const inputs=[...code,inputRef].sort().map(ref=>({ref,digest:fileBinding(root,ref)})),started_at=new Date().toISOString();
-      const command=[process.execPath,scenario.script,inputRef],result=spawnSync(command[0],command.slice(1),{cwd:root,encoding:'utf8',timeout:30000,maxBuffer:4*1024*1024});
+      fs.writeFileSync(outputFile(inputRef),JSON.stringify(scenario.input,null,2)+'\n');
+      const inputs=[...code,inputRef].sort().map(ref=>({ref,digest:binding(ref)})),started_at=new Date().toISOString();
+      const command=[process.execPath,scenario.script,outputFile(inputRef)],result=spawnSync(command[0],command.slice(1),{cwd:root,encoding:'utf8',timeout:30000,maxBuffer:4*1024*1024});
       if(result.error||result.status!==1||!`${result.stderr}\n${result.stdout}`.includes(scenario.expected_diagnostic))throw new Error(`${scenario.id}: 未命中预期拒绝原因: ${result.stderr}`);
       const log=[{id:scenario.id,command,exit_code:result.status,stdout:result.stdout,stderr:result.stderr}];
-      fs.writeFileSync(safeFile(root,logRef),JSON.stringify(log,null,2)+'\n');
+      fs.writeFileSync(outputFile(logRef),JSON.stringify(log,null,2)+'\n');
       const evidenceCommand=`scripts/verify-maintenance-risk-scenarios --output ${values.output}`;
-      const run={schema_version:1,kind:'maintenance-counterexample-run',trigger:scenario.trigger,command:evidenceCommand,exit_code:0,started_at,finished_at:new Date().toISOString(),assertions:[{id:scenario.id,expected:'reject',actual:'rejected',expected_diagnostic:scenario.expected_diagnostic}],inputs,input_digest:digest(JSON.stringify(inputs)),log:{ref:logRef,digest:fileBinding(root,logRef)}};
-      fs.writeFileSync(safeFile(root,runRef),JSON.stringify(run,null,2)+'\n');records.push({kind:'counterexample',trigger:scenario.trigger,command:evidenceCommand,result:'pass',run_ref:runRef});
+      const run={schema_version:1,kind:'maintenance-counterexample-run',trigger:scenario.trigger,command:evidenceCommand,exit_code:0,started_at,finished_at:new Date().toISOString(),assertions:[{id:scenario.id,expected:'reject',actual:'rejected',expected_diagnostic:scenario.expected_diagnostic}],inputs,input_digest:digest(JSON.stringify(inputs)),log:{ref:logRef,digest:binding(logRef)}};
+      fs.writeFileSync(outputFile(runRef),JSON.stringify(run,null,2)+'\n');records.push({kind:'counterexample',trigger:scenario.trigger,command:evidenceCommand,result:'pass',run_ref:runRef});
     }
     process.stdout.write(JSON.stringify({status:'passed',verification_evidence:records},null,2)+'\n');
   }

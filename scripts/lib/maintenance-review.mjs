@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import { parseDocument } from "../vendor/yaml.mjs";
 import { validateJsonSchema } from "./json-schema.mjs";
 import { validateTaskPackageSchema } from "./task-package-schema.mjs";
+import { resolveMaintenanceReference, resolveMaintenanceLocation, resolveMaintenanceBundleFile } from './maintenance-storage.mjs';
 
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const REVIEW_KIND_TO_MODE = new Map([
@@ -32,13 +33,6 @@ const REQUEST_ONLY_PATTERNS = [
   /须由(?:其他|非实施者|独立审查者).{0,40}(?:改写|给出结论|完成审查)/,
   /本条\s*result=pass\s*只表示.{0,60}不表示审查已通过/
 ];
-const LEGACY_FORMAL_REVIEW_REFS = new Set([
-  ".template-source/evidence/maintenance/digital-human-task-package-formal-independent-review-2026-08-27.md",
-  ".template-source/evidence/maintenance/git-submodule-scope-l3-review-request-writable-oracle-2026-08-24.md",
-  ".template-source/evidence/maintenance/lifecycle-ticket-transition-formal-independent-review-2026-08-27.md",
-  ".template-source/evidence/maintenance/yss-stage-decision-l3-formal-independent-review-2026-08-27.md",
-  ".template-source/evidence/maintenance/yss-tactical-design-formal-independent-review-2026-08-27.md"
-]);
 const REVIEW_RECORD_SCHEMA = path.join(ROOT, ".template-source/process/schemas/maintenance-review-record.schema.json");
 
 function ensure(condition, message) {
@@ -55,6 +49,7 @@ function parseYamlOrJson(source, label) {
 
 function resolvePortableFile(relativeRef, baseDir, label) {
   ensure(typeof relativeRef === "string" && relativeRef.trim(), `${label} 不能为空`);
+  if (relativeRef.startsWith('maintenance:')) return resolveMaintenanceReference(relativeRef, { root: baseDir });
   ensure(!path.isAbsolute(relativeRef), `${label} 必须是仓库相对路径`);
   const resolvedBase = path.resolve(baseDir);
   const resolved = path.resolve(resolvedBase, relativeRef);
@@ -68,6 +63,7 @@ function resolvePortableFile(relativeRef, baseDir, label) {
 
 function resolvePortableDirectory(relativeRef, baseDir, label) {
   ensure(typeof relativeRef === "string" && relativeRef.trim(), `${label} 不能为空`);
+  if (relativeRef.startsWith('maintenance:')) return resolveMaintenanceReference(relativeRef, { root: baseDir, directory: true });
   ensure(!path.isAbsolute(relativeRef), `${label} 必须是仓库相对路径`);
   const realBase = realpathSync(path.resolve(baseDir));
   const resolved = path.resolve(baseDir, relativeRef);
@@ -154,7 +150,7 @@ function validateWorktreeStream(stream, trackedDiff, manifest, baseDir) {
   else ensure(manifest.untracked_content_refs.length === pathBytes.length, "manifest untracked_content_refs 长度不一致");
 }
 
-function validateCandidateManifest(manifest, record, baseDir) {
+function validateCandidateManifest(manifest, record, baseDir, manifestPath) {
   for (const field of ["review_mode", "review_base_ref", "merge_base", "implementation_candidate_ref", "candidate_snapshot_ref", "candidate_digest", "tracked_diff_command", "commit_list_command"]) {
     ensure(typeof manifest[field] === "string" && manifest[field].trim(), `候选 manifest 缺少 ${field}`);
   }
@@ -169,8 +165,15 @@ function validateCandidateManifest(manifest, record, baseDir) {
     if (manifest.storage !== "packed-stream") ensure(Array.isArray(manifest.untracked_content_refs), "legacy worktree manifest 缺少 untracked_content_refs");
     ensure(typeof manifest.snapshot_stream_ref === "string" && manifest.snapshot_stream_ref.trim(), "worktree manifest 缺少 snapshot_stream_ref");
     ensure(typeof manifest.tracked_diff_ref === "string" && manifest.tracked_diff_ref.trim(), "worktree manifest 缺少 tracked_diff_ref");
-    const streamPath = resolvePortableFile(manifest.snapshot_stream_ref, baseDir, "snapshot_stream_ref");
-    const trackedDiffPath = resolvePortableFile(manifest.tracked_diff_ref, baseDir, "tracked_diff_ref");
+    const external = manifest.schema_version === 2;
+    if (external) {
+      ensure(Array.isArray(manifest.excluded_paths) && manifest.excluded_paths.length === 0, 'v2 候选不允许旧档案排除白名单');
+      ensure(manifest.reference_base === 'bundle', 'candidate reference_base 必须为 bundle');
+      ensure(manifest.workspace_id === resolveMaintenanceLocation({ root: baseDir }).workspaceId, '候选不属于当前工作区');
+    }
+    const streamPath = external ? resolveMaintenanceBundleFile(path.dirname(manifestPath), manifest.snapshot_stream_ref) : resolvePortableFile(manifest.snapshot_stream_ref, baseDir, 'snapshot_stream_ref');
+    const trackedDiffPath = external ? resolveMaintenanceBundleFile(path.dirname(manifestPath), manifest.tracked_diff_ref) : resolvePortableFile(manifest.tracked_diff_ref, baseDir, 'tracked_diff_ref');
+    if (external) ensure(path.basename(streamPath) === 'candidate.bin' && path.basename(trackedDiffPath) === 'tracked.diff' && path.dirname(streamPath) === path.dirname(manifestPath) && path.dirname(trackedDiffPath) === path.dirname(manifestPath), '候选成员必须绑定同目录规范文件');
     const stream = readFileSync(streamPath);
     const actualDigest = createHash("sha256").update(stream).digest("hex");
     ensure(actualDigest === record.candidate_digest.replace(/^sha256:/, ""), "candidate_digest 与冻结候选字节不一致");
@@ -220,7 +223,7 @@ function validateStructuredRecord(record, expectedMode, baseDir, recordRef) {
 
   const manifestPath = resolvePortableFile(record.candidate_snapshot_ref, baseDir, "candidate_snapshot_ref");
   const manifest = parseYamlOrJson(readFileSync(manifestPath, "utf8"), "候选 manifest");
-  validateCandidateManifest(manifest, record, baseDir);
+  validateCandidateManifest(manifest, record, baseDir, manifestPath);
 
   const taskPackagePath = resolvePortableFile(record.task_package_ref, baseDir, "task_package_ref");
   validateTaskPackageBinding(parseYamlOrJson(readFileSync(taskPackagePath, "utf8"), "审查任务包"), record);
@@ -236,13 +239,16 @@ function validateStructuredRecord(record, expectedMode, baseDir, recordRef) {
 export function validateMaintenanceReviewEvidence(evidence, { baseDir = ROOT } = {}) {
   const expectedMode = REVIEW_KIND_TO_MODE.get(evidence?.kind);
   ensure(expectedMode, `未知独立审查证据类型: ${evidence?.kind ?? "unknown"}`);
-  const evidencePath = resolvePortableFile(evidence.command, baseDir, `${evidence.kind}.command`);
+  if (evidence.command?.startsWith('maintenance:')) ensure(typeof evidence.evidence_digest === 'string', '仓外审查记录必须绑定 evidence_digest');
+  const evidencePath = evidence.command?.startsWith('maintenance:')
+    ? resolveMaintenanceReference(evidence.command, {root:baseDir,digest:evidence.evidence_digest})
+    : resolvePortableFile(evidence.command, baseDir, `${evidence.kind}.command`);
   const source = readFileSync(evidencePath, "utf8");
   if (/\.ya?ml$|\.json$/i.test(evidence.command)) {
     return validateStructuredRecord(parseYamlOrJson(source, "维护独立审查记录"), expectedMode, baseDir, evidence.command);
   }
   ensure(/\.md$/i.test(evidence.command), `${evidence.kind}.command 必须引用 Markdown 结论或结构化 YAML/JSON 记录`);
-  if (expectedMode === "formal-independent") ensure(LEGACY_FORMAL_REVIEW_REFS.has(evidence.command), `${evidence.command} 不在历史 L3 Markdown allowlist；新 L3 必须使用结构化记录`);
+  if (expectedMode === "formal-independent") ensure(false, 'formal-independent 必须使用结构化记录；历史 Markdown 入口已退役');
   validateReviewReportBody(source, evidence.command, { expectedMode, allowLegacyFormal: true });
   return { review_mode: expectedMode, record_ref: evidence.command, legacy: true };
 }

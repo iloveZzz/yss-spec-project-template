@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
+import { resolveMaintenanceOutput } from '../../../../scripts/lib/maintenance-storage.mjs';
 import { fileURLToPath } from 'node:url';
 
 const skillRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -12,6 +13,12 @@ const example = path.join(skillRoot, 'examples', 'web-app.architecture.json');
 
 function repository(mode = 'project-instance') {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'yss-archify-safe-'));
+  if (mode === 'template-source') {
+    fs.mkdirSync(path.join(root, 'scripts/lib'), { recursive: true });
+    for (const name of ['maintenance-storage.mjs', 'runtime-store.mjs', 'repository-mode.mjs']) fs.copyFileSync(path.resolve(skillRoot, '../../../scripts/lib', name), path.join(root, 'scripts/lib', name));
+    fs.mkdirSync(path.join(root, 'scripts/vendor'), { recursive: true });
+    fs.copyFileSync(path.resolve(skillRoot, '../../../scripts/vendor/yaml.mjs'), path.join(root, 'scripts/vendor/yaml.mjs'));
+  }
   fs.writeFileSync(path.join(root, 'yss-project.yaml'), `schema_version: 1\nrepository_mode: ${mode}\n`);
   return root;
 }
@@ -104,9 +111,9 @@ test('delivers a paired project artifact and an auditable receipt', () => {
   assert.equal(receipt.archify.validation.warnings, 0);
 });
 
-test('uses the template-source evidence root for stable maintenance diagrams', () => {
+test('uses the external workspace maintenance root for stable diagrams', () => {
   const root = repository('template-source');
-  const directory = path.join(root, '.template-source', 'evidence', 'maintenance', 'diagrams', 'workflow-map');
+  const directory = resolveMaintenanceOutput('maintenance:diagrams/workflow-map', { root });
   fs.mkdirSync(directory, { recursive: true });
   const input = path.join(directory, 'workflow-map.archify.json');
   const output = path.join(directory, 'workflow-map.html');

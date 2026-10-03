@@ -5,10 +5,13 @@ import os from 'node:os';
 import path from 'node:path';
 import {validateNextRoute} from '../../lib/lifecycle-transition.mjs';
 import {recordResearchVerification,RESEARCH_VALIDATOR} from '../../lib/maintenance-research.mjs';
+import {resolveMaintenanceReference} from '../../lib/maintenance-storage.mjs';
 import {hash} from '../../lib/strategic-handoff-io.mjs';
 import {buildDecisionFixture} from '../user-decision/build-fixture.mjs';
 
-test('research closes on current evidence, continuation requires bound authorization, repository identity cannot be spoofed',()=>{
+test('research closes on current evidence, continuation requires bound authorization, repository identity cannot be spoofed',t=>{
+ const previousHome=process.env.YSS_RUNTIME_HOME; const home=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'research-runtime-')));process.env.YSS_RUNTIME_HOME=home;
+ t.after(()=>{if(previousHome===undefined)delete process.env.YSS_RUNTIME_HOME;else process.env.YSS_RUNTIME_HOME=previousHome;fs.rmSync(home,{recursive:true,force:true});});
  const root=fs.mkdtempSync(path.join(os.tmpdir(),'research-terminal-'));
  const put=(ref,value)=>{fs.mkdirSync(path.dirname(path.join(root,ref)),{recursive:true});fs.writeFileSync(path.join(root,ref),typeof value==='string'?value:JSON.stringify(value));return{ref,digest:hash(fs.readFileSync(path.join(root,ref)))};};
  try {
@@ -18,7 +21,7 @@ test('research closes on current evidence, continuation requires bound authoriza
   ledger.search_log.forEach(s=>s.searched_at='2026-09-28');ledger.evidence_items[0].observed_at=ledger.evidence_items[0].evidence_date='2026-09-28';
   put('demo-research-brief.md',fs.readFileSync('.agents/skills/yss-research/assets/research-brief-template.md','utf8')+'\nclaim-001\n');put('demo-evidence.yaml',ledger);
   put('context.json',{status:'not-applicable',reason:'Synthetic template research'});
-  const run=recordResearchVerification(root,'demo-research-brief.md','demo-evidence.yaml','verification');assert.equal(run.exit_code,0,fs.readFileSync(path.join(root,'verification/stderr.log'),'utf8'));
+  const run=recordResearchVerification(root,'demo-research-brief.md','demo-evidence.yaml','maintenance:research/verification');assert.equal(run.exit_code,0,fs.readFileSync(resolveMaintenanceReference('maintenance:research/verification/stderr.log',{root}),'utf8'));
   const state={research_verification:run.binding,context_reconciliation:{status:'not-applicable',reason:'Template only',ref:'context.json'},evidence_refs:['context.json',run.binding.ref,'demo-research-brief.md','demo-evidence.yaml'],blocking_signals:[],drift:[],violation:[],new_impacts:[],stale_candidates:[]};
   const route=(next,s=state)=>validateNextRoute('work-unit.maintenance-research',next,s,{root});
   assert.equal(route(null).result,'allowed');

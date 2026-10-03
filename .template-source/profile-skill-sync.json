@@ -393,7 +393,7 @@
           "source": ".template-spec/templates/examples/lifecycle-writing-examples.md"
         },
         {
-          "source": ".template-source/evidence/maintenance/2026-09-18-yss-backend-components/aliyun-artifact-resolution.json"
+          "source": ".template-source/engineering/evidence/aliyun-artifact-resolution.json"
         },
         {
           "source": ".agents/skills/yss-technical-design/references/technical-design.schema.json"
@@ -697,7 +697,7 @@
           "source": ".template-spec/templates/examples/lifecycle-writing-examples.md"
         },
         {
-          "source": ".template-source/evidence/maintenance/2026-09-18-yss-backend-components/aliyun-artifact-resolution.json"
+          "source": ".template-source/engineering/evidence/aliyun-artifact-resolution.json"
         },
         {
           "source": "DESIGN.md"

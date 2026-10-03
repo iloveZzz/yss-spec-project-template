@@ -2,11 +2,11 @@ import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, readlinkSync, renameSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
+import { resolveMaintenanceOutput, resolveMaintenanceLocation, maintenanceReference, resolveMaintenanceReference, resolveMaintenanceBundleFile } from './maintenance-storage.mjs';
 import { parseDocument, stringify } from "../vendor/yaml.mjs";
 
 const MAGIC = Buffer.from("YSS-WORKTREE-CANDIDATE-V1\0", "ascii");
 const MAX_BUFFER = 512 * 1024 * 1024;
-const MAINTENANCE_EVIDENCE_ROOT = ".template-source/evidence/maintenance";
 const CANDIDATE_FILES = ["candidate-manifest.yaml", "candidate.bin", "tracked.diff"];
 
 function fail(message) { throw new TypeError(message); }
@@ -25,15 +25,6 @@ function splitNull(buffer) {
   if (start < buffer.length) result.push(buffer.subarray(start));
   return result;
 }
-function normalizeRelative(value, label) {
-  ensure(typeof value === "string" && value.trim(), `${label} 不能为空`);
-  const normalized = value.replaceAll("\\", "/").replace(/^\.\//, "").replace(/\/$/, "");
-  ensure(normalized && !path.posix.isAbsolute(normalized) && path.posix.normalize(normalized) === normalized && normalized !== ".." && !normalized.startsWith("../"), `${label} 必须是规范的仓库内相对路径`);
-  return normalized;
-}
-function isMaintenanceEvidencePath(value) {
-  return value === MAINTENANCE_EVIDENCE_ROOT || value.startsWith(`${MAINTENANCE_EVIDENCE_ROOT}/`);
-}
 function readLength(buffer, offset, bytes, label) {
   ensure(offset + bytes <= buffer.length, `packed candidate 缺少 ${label}`);
   const value = bytes === 8 ? buffer.readBigUInt64BE(offset) : BigInt(buffer.readUInt32BE(offset));
@@ -43,21 +34,14 @@ function readLength(buffer, offset, bytes, label) {
 
 export function captureMaintenanceCandidate({ root, outputDir, baseRef = "HEAD", excludePaths = [] }) {
   const repositoryRoot = path.resolve(root);
-  const outputPath = path.resolve(repositoryRoot, outputDir);
-  const outputRelative = normalizeRelative(path.relative(repositoryRoot, outputPath).replaceAll(path.sep, "/"), "outputDir");
-  ensure(isMaintenanceEvidencePath(outputRelative), `outputDir 必须位于 ${MAINTENANCE_EVIDENCE_ROOT}`);
+  const outputPath = resolveMaintenanceOutput(outputDir, { root: repositoryRoot });
+  const outputRelative = maintenanceReference(outputPath, { root: repositoryRoot });
   ensure(!existsSync(outputPath), "outputDir 必须不存在，禁止复用可能含残留文件的候选目录");
   ensure(Array.isArray(excludePaths), "excludePaths 必须是数组");
-  const explicitExclusions = excludePaths.map((value) => normalizeRelative(value, "excludePaths"));
-  for (const exclusion of explicitExclusions) ensure(isMaintenanceEvidencePath(exclusion), `excludePaths 只允许 ${MAINTENANCE_EVIDENCE_ROOT} 下的维护证据`);
-  const exclusions = [...new Set([outputRelative, ...explicitExclusions])];
+  ensure(excludePaths.length === 0, "excludePaths 已退役；新候选必须完整捕获，维护材料请保存到仓外");
   const mergeBase = git(["merge-base", baseRef, "HEAD"], repositoryRoot).trim();
   const trackedDiff = git(["diff", "--no-ext-diff", "--binary", "--full-index", mergeBase], repositoryRoot, null);
   const rawPaths = splitNull(git(["ls-files", "-z", "--others", "--exclude-standard"], repositoryRoot, null))
-    .filter((rawPath) => {
-      const value = rawPath.toString();
-      return !exclusions.some((exclusion) => value === exclusion || value.startsWith(`${exclusion}/`));
-    })
     .sort(Buffer.compare);
   ensure(trackedDiff.length > 0 || rawPaths.length > 0, "维护候选不能为空");
 
@@ -81,11 +65,13 @@ export function captureMaintenanceCandidate({ root, outputDir, baseRef = "HEAD",
   }
   const stream = Buffer.concat(parts);
   const digest = createHash("sha256").update(stream).digest("hex");
-  const streamRef = `${outputRelative}/candidate.bin`;
-  const diffRef = `${outputRelative}/tracked.diff`;
+  const streamRef = 'candidate.bin';
+  const diffRef = 'tracked.diff';
   const manifestRef = `${outputRelative}/candidate-manifest.yaml`;
   const manifest = {
-    schema_version: 1,
+    schema_version: 2,
+    reference_base: 'bundle',
+    workspace_id: resolveMaintenanceLocation({ root: repositoryRoot }).workspaceId,
     candidate_kind: "yss-worktree-candidate-v1",
     storage: "packed-stream",
     review_mode: "worktree",
@@ -99,7 +85,7 @@ export function captureMaintenanceCandidate({ root, outputDir, baseRef = "HEAD",
     untracked_diff_command: "packed in candidate.bin",
     untracked_files: untrackedFiles,
     untracked_path_bytes: untrackedPathBytes,
-    excluded_paths: exclusions,
+    excluded_paths: [],
     snapshot_stream_ref: streamRef,
     tracked_diff_ref: diffRef,
     commit_list_command: `git log ${baseRef}..HEAD --oneline`
@@ -115,10 +101,10 @@ export function captureMaintenanceCandidate({ root, outputDir, baseRef = "HEAD",
   } finally {
     if (existsSync(stagingPath)) rmSync(stagingPath, { recursive: true, force: true });
   }
-  return { candidate_digest: digest, manifest, manifest_ref: manifestRef, files: [manifestRef, streamRef, diffRef] };
+  return { candidate_digest: digest, manifest, manifest_ref: manifestRef, files: [manifestRef, `${outputRelative}/${streamRef}`, `${outputRelative}/${diffRef}`] };
 }
 
-export function inspectMaintenanceCandidate({ manifestPath }) {
+export function inspectMaintenanceCandidate({ manifestPath, root: repositoryRoot = process.cwd() }) {
   const absoluteManifest = path.resolve(manifestPath);
   const document = parseDocument(readFileSync(absoluteManifest, "utf8"), { uniqueKeys: true });
   ensure(document.errors.length === 0, document.errors[0]?.message || "candidate manifest 无法解析");
@@ -126,10 +112,18 @@ export function inspectMaintenanceCandidate({ manifestPath }) {
   ensure(manifest.storage === "packed-stream", "只支持 packed-stream candidate");
   const candidateDir = path.dirname(absoluteManifest);
   ensure(JSON.stringify(readdirSync(candidateDir).sort()) === JSON.stringify([...CANDIDATE_FILES].sort()), `packed candidate 目录必须恰好包含 ${CANDIDATE_FILES.join("、")}`);
-  const root = path.resolve(path.dirname(absoluteManifest), ...Array(manifest.candidate_snapshot_ref.split("/").length - 1).fill(".."));
-  ensure(path.resolve(root, manifest.candidate_snapshot_ref) === absoluteManifest, "candidate_snapshot_ref 未绑定当前 manifest");
-  const streamPath = path.resolve(root, manifest.snapshot_stream_ref);
-  const diffPath = path.resolve(root, manifest.tracked_diff_ref);
+  ensure([1, 2].includes(manifest.schema_version), 'candidate manifest schema 不支持');
+  const external = manifest.schema_version === 2;
+  if (external) {
+    ensure(Array.isArray(manifest.excluded_paths) && manifest.excluded_paths.length === 0, 'v2 候选不允许旧档案排除白名单');
+    ensure(manifest.reference_base === 'bundle', 'candidate reference_base 必须为 bundle');
+    ensure(manifest.workspace_id === resolveMaintenanceLocation({ root: repositoryRoot }).workspaceId, '候选不属于当前工作区');
+    ensure(resolveMaintenanceReference(manifest.candidate_snapshot_ref, { root: repositoryRoot }) === absoluteManifest, 'candidate_snapshot_ref 未绑定当前 manifest');
+  }
+  const root = external ? candidateDir : path.resolve(candidateDir, ...Array(manifest.candidate_snapshot_ref.split('/').length - 1).fill('..'));
+  if (!external) ensure(path.resolve(root, manifest.candidate_snapshot_ref) === absoluteManifest, 'candidate_snapshot_ref 未绑定当前 manifest');
+  const streamPath = external ? resolveMaintenanceBundleFile(candidateDir, manifest.snapshot_stream_ref) : path.resolve(root, manifest.snapshot_stream_ref);
+  const diffPath = external ? resolveMaintenanceBundleFile(candidateDir, manifest.tracked_diff_ref) : path.resolve(root, manifest.tracked_diff_ref);
   ensure(streamPath === path.join(candidateDir, "candidate.bin") && diffPath === path.join(candidateDir, "tracked.diff"), "packed candidate 引用必须绑定同目录规范文件");
   const stream = readFileSync(streamPath);
   ensure(createHash("sha256").update(stream).digest("hex") === manifest.candidate_digest.replace(/^sha256:/, ""), "candidate_digest 与 packed stream 不一致");

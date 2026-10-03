@@ -6,10 +6,13 @@ try {
   const { positionals, values } = parseArgs({
     allowPositionals: true,
     strict: true,
-    options: { kind: { type: "string", default: "formal-independent-review" } }
+    options: {
+      kind: { type: "string", default: "formal-independent-review" },
+      "evidence-digest": { type: "string" }
+    }
   });
-  if (positionals.length !== 1) throw new TypeError("用法: scripts/verify-maintenance-review-record [--kind focused-independent-review|formal-independent-review] <record-or-report>");
-  const result = validateMaintenanceReviewEvidence({ kind: values.kind, command: positionals[0], result: "pass" });
+  if (positionals.length !== 1) throw new TypeError("用法: scripts/verify-maintenance-review-record [--kind focused-independent-review|formal-independent-review] [--evidence-digest sha256:<digest>] <record-or-report>");
+  const result = validateMaintenanceReviewEvidence({ kind: values.kind, command: positionals[0], evidence_digest: values["evidence-digest"], result: "pass" });
   process.stdout.write(`维护独立审查证据验证通过（${result.review_mode}，${result.candidate_digest ?? "legacy"}）\n`);
 } catch (error) {
   process.stderr.write(`维护独立审查证据验证失败: ${error.message}\n`);

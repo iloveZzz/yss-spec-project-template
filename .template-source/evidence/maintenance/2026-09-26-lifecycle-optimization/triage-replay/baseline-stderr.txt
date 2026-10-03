@@ -1,7 +1,0 @@
-2026-09-25T16:14:31.505471Z  WARN codex_models_manager::model_info: Unknown model gpt-6-luna is used. This will use fallback model metadata.
-2026-09-25T16:14:31.564183Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
-2026-09-25T16:14:31.571951Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
-2026-09-25T16:14:31.577240Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
-2026-09-25T16:14:31.646328Z  WARN codex_models_manager::model_info: Unknown model gpt-6-luna is used. This will use fallback model metadata.
-2026-09-25T16:14:31.662864Z  WARN codex_models_manager::model_info: Unknown model gpt-6-luna is used. This will use fallback model metadata.
-2026-09-25T16:14:33.925463Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: {"type":"error","status":400,"error":{"type":"invalid_request_error","message":"The 'gpt-6-luna' model is not supported when using Codex with a ChatGPT account."}}

@@ -1,6 +1,0 @@
-{
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://yss.dev/schemas/subagent-task-package.schema.json",
-  "title": "YSS Subagent Task Package (compatibility alias)",
-  "$ref": "digital-human-task-package.schema.json"
-}

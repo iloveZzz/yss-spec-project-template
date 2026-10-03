@@ -1,9 +1,0 @@
-{
-  "command": "[\"node\",\"/tmp/yss-role-gates-research-20261002/assurance-probe.mjs\"]",
-  "exit_code": 0,
-  "duration_ms": 7400,
-  "executed_at": "2026-10-02T04:32:23.785Z",
-  "termination": null,
-  "stdout_digest": "sha256:7e6fc6a1a48c0ca7777a1d3f629ae2c3247539e6fdc4afffc6852f5d838cbf18",
-  "stderr_digest": "sha256:01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
-}

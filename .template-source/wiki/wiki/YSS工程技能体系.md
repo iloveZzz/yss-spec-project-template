@@ -1,23 +1,20 @@
 # YSS工程技能体系
 
-YSS skills 是本项目内置的工程规范技能，用于 DDD、UI、OpenAPI、Repository、Controller、DTO、组件和编码规范；它们不替代 [[Matt技能体系]] 的通用流程入口。
+YSS skills 是项目内置的工程规范技能，覆盖业务方案、UI、OpenAPI、后端工程、组件和编码规范。通用研发过程由 [[Matt技能体系]] 与生命周期入口协作承接，专项规则按实际影响加载。
 
-技能清单、来源、版本、哈希和投影目标以 `skills-lock.json` 为准；README 与用户指南只解释。锁文件 `version` 为 `3`，`canonicalRoot` 为 `.agents/skills`。共享技能名的派生摘录见 `wiki/raw/skills-lock-names.md`。公开发布清单 `yss-public-skills.json` 只冻结 `yss-*` 工程技能；`llm-wiki` 不在该清单中，公开仓库 `iloveZzz/yss-spec-dev-skills` 只是单向发布投影，不是新的权威来源。
+核心技能负责生命周期控制或通用研发入口，默认可发现；专项技能由实现合同编译器根据影响面和实现合同选择。技能成熟度与文件存在、投影成功或可安装分别判断，路由必须消费 active 的 `.template-spec/agents/yss-skill-registry.yaml`。注册表当前使用 schema v3，负责身份、capability、任务模式、类型化依赖、分层、别名和默认可发现性；来源、hash 和投影完整性由 `skills-lock.json` 独立持有。
 
-词汇上的分层是：核心技能默认可发现，负责生命周期控制或通用研发入口；专项技能由实现合同编译器按影响面和实现合同按需选择。`.template-spec/agents/yss-skill-registry.yaml` 已是 `status: active` 的 schema v2 单一事实源，统一持有 capability、任务模式、窄 Recipe 和五类 typed dependency；生命周期与编译器必须消费经校验的该注册表。Recipe 不直接引用 skill，也不另建第二套依赖闭包。
+后端能力按技术设计、分层实现、wire/framework 契约、组件、工程初始化、平台治理与迁移分域。现行路由包括 `yss-technical-design`、`yss-domain`、`yss-application`、`yss-repository`、`yss-web-controller` 等；组件能力有缓存、当前用户、审计、Excel、分布式 ID 和韧性控制。具体平台线与组件绑定以注册表声明为准，来源索引禁止跨平台线兜底。
 
-进入实现后，后端领域、Application、Repository / Gateway、Web / DTO 由 [[YSS路由与合同编译]] 分别路由到对应 YSS skill；涉及 POJO 样板或对象转换时必须加载 `lombok`、`mapstruct` 和 `alibaba-java-code-style`。核心 YSS skills 必须消费已批准的 [[切片实现合同]] 并返回 YSS Skill Execution Result；路径越界、证据缺失、未执行验证、`drift`、`violation` 或 `new_impacts` 阻断继续实现或触发重路由。
+类型化依赖区分 `context-required`、`context-conditional`、`coordination-only`、`review-only` 与 `component-dependency`。闭包递归展开必需上下文，条件上下文按当前条件选择，其余三类不自动扩展实现技能；去重后保留所有选择原因。注册表中的 capability 与 Recipe 供 [[YSS路由与合同编译]] 消费。
 
-脚手架生成器 `yss-ddd-scaffold-generator` / `yss-frontend-scaffold-generator` 只在 `scaffold_status=required` 且受控生成合同已批准并持久化后运行，只产生机械骨架。UI 设计与原型走 `yss-design-system` 后 `yss-prototype-stage`（见 [[产品设计影响与原型]]）。OpenAPI 治理与 Draft 审查走 `yss-openapi-governance` / `yss-openapi-draft-review`（见 [[OpenAPI契约]]）。
+现行锁定共享技能名包含 `yss-product-lifecycle`、`yss-implementation-contract-compiler`、`yss-research` 与工程专项技能。技能名派生摘录只证明清单，不用锁文件元数据变化推断技能正文发生变化。
 
-创建、修改或退役 skill 时使用 `maintaining-skills`，并按 [[模板维护流程]] 判定 L1 / L2 / L3。权威内容与投影见 [[技能投影与锁定]]。本地持久知识库走 [[LLM Wiki]]，不得把该技能误写成公开工程技能。
+维护共享技能只编辑 `.agents/skills`，使用 `maintaining-skills`，同步投影、更新锁文件并按影响面验证，见 [[技能投影与锁定]] 与 [[模板维护流程]]。公开发布清单由 `yss-public-skills.json` 冻结，`iloveZzz/yss-spec-dev-skills` 是单向发布投影。
 
 ## 来源
 
-- `AGENTS.md`
-- `CONTEXT.md`
-- `skills-lock.json`
-- `wiki/raw/skills-lock-names.md`
-- `.template-spec/agents/yss-skill-registry.yaml`
-- `.template-source/agents/skills-maintenance.md`
-- `yss-public-skills.json`
+- `CONTEXT.md:39-43`、`CONTEXT.md:95-100`。
+- `.template-spec/agents/yss-skill-registry.yaml:1-15`、`:16-57`、`:105-125`、`:136-177`。
+- `skills-lock.json:780-792`、`:840-852`、`:879-891`（实际技能名；derived 输入）。
+- `.template-source/agents/skills-maintenance.md:7-12`、`:24-30`、`:36-68`、`:112-120`。

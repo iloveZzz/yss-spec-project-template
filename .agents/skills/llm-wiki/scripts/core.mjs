@@ -1,6 +1,7 @@
 import { createHash, randomUUID } from "node:crypto";
 import { readFile, writeFile, rename, lstat, realpath, mkdir, access } from "node:fs/promises";
 import path from "node:path";
+import { pathToFileURL } from 'node:url';
 const STATES = ["current", "stale", "missing", "unverified", "archived"];
 const INFRA = /* @__PURE__ */ new Set(["index.md", "log.md", "claude.md", "agents.md", "soul.md", "concept-table.md"]);
 const sha256 = (value) => createHash("sha256").update(value).digest("hex");
@@ -68,6 +69,41 @@ async function safePath(root, ref, { write = false } = {}) {
     if (!inside(baseReal, resolved)) fail("PATH_ESCAPE", ref);
   }
   return target;
+}
+async function wikiHistoryRoot(wikiRoot) {
+  let cursor = path.resolve(wikiRoot);
+  while (true) {
+    const identity = path.join(cursor, 'yss-project.yaml');
+    if (await exists(identity)) {
+      const source = await readFile(identity, 'utf8');
+      if (!/^repository_mode:\s*template-source\s*$/m.test(source)) return null;
+      const helper = path.join(cursor, 'scripts/lib/maintenance-storage.mjs');
+      if (!await exists(helper)) fail('MAINTENANCE_STORAGE_MISSING', 'template-source requires its registered maintenance storage helper');
+      const { resolveMaintenanceOutput } = await import(pathToFileURL(helper).href);
+      return resolveMaintenanceOutput(`maintenance:wiki/${sha256(path.resolve(wikiRoot))}`, { root: cursor });
+    }
+    const parent = path.dirname(cursor);
+    if (parent === cursor) return null;
+    cursor = parent;
+  }
+}
+async function wikiInternalPath(wikiRoot, ref, options = {}) {
+  if (typeof ref === 'string' && /^\.wiki-(?:staging\/|backups\/|transaction\.json$|lock$|runner-lock$)/.test(ref)) {
+    // Validate the same relative path contract before resolving an external file.
+    if (ref.includes('\\') || ref.split('/').some(part => ['..', '.', ''].includes(part))) fail('PATH_INVALID', ref);
+    const historyRoot = await wikiHistoryRoot(wikiRoot);
+    if (historyRoot) {
+      const target = path.join(historyRoot, ref);
+      let cursor = target;
+      while (inside(historyRoot, cursor)) {
+        if (await exists(cursor) && (await lstat(cursor)).isSymbolicLink()) fail('SYMLINK_WRITE', ref);
+        if (cursor === historyRoot) break;
+        cursor = path.dirname(cursor);
+      }
+      return target;
+    }
+  }
+  return safePath(wikiRoot, ref, options);
 }
 async function atomicWrite(file, content) {
   await mkdir(path.dirname(file), { recursive: true });
@@ -204,8 +240,8 @@ async function loadManifest(wikiRoot, { repoRoot = process.cwd(), validate = tru
 async function transactionState(wikiRoot, { reader } = {}) {
   // A writer claims the lock before replacing an earlier finalized journal.
   // That interval must also block readers.
-  if (await exists(await safePath(wikiRoot, ".wiki-lock"))) return { state: "locked", incomplete: true };
-  const file = await safePath(wikiRoot, ".wiki-transaction.json");
+  if (await exists(await wikiInternalPath(wikiRoot, ".wiki-lock"))) return { state: "locked", incomplete: true };
+  const file = await wikiInternalPath(wikiRoot, ".wiki-transaction.json");
   if (!await exists(file)) return { state: "none" };
   const j = JSON.parse(reader ? (await reader(file)).toString() : await readFile(file, "utf8"));
   return { id: j.id, state: j.phase, incomplete: !["finalized", "aborted"].includes(j.phase) };
@@ -252,6 +288,8 @@ export {
   frontmatter,
   json,
   loadManifest,
+  wikiHistoryRoot,
+  wikiInternalPath,
   ownership,
   safePath,
   sha256,

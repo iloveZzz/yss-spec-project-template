@@ -1,4 +1,0 @@
-{
-  "unexpected_root_drift": [],
-  "note": "Compared all captured root files, excluding declared source and generated lock updates. Parallel untracked evidence directories were not edited."
-}

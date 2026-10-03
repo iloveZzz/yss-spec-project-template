@@ -7,6 +7,7 @@ import { normalizeSliceContract } from './slice-contract.mjs';
 import { assertSliceV3TaskPackage } from './slice-task-package.mjs';
 export { compileSliceTaskPackage, assertSliceV3TaskPackage } from './slice-task-package.mjs';
 import { existsSync, readFileSync } from "node:fs";
+import { resolveMaintenanceOutput, resolveMaintenanceReference } from "./maintenance-storage.mjs";
 import path from "node:path";
 import { parseDocument } from "../vendor/yaml.mjs";
 import { loadDigitalHumanRoles, taskPackageDefaults } from "./digital-human-roles.mjs";
@@ -40,8 +41,12 @@ function parseYaml(source, label) {
   return document.toJS({ maxAliasCount: 0 });
 }
 
-function assertSafeRelativePath(value, field) {
+function assertSafeRelativePath(value, field, { maintenance = false } = {}) {
   requireString(value, field);
+  if (value.startsWith("maintenance:")) {
+    if (!maintenance) fail("maintenance 引用仅适用于 template-maintenance 合同");
+    return resolveMaintenanceOutput(value, { root: ROOT });
+  }
   if (path.isAbsolute(value)) fail(`${field} 必须是仓库相对路径`);
   const resolved = path.resolve(ROOT, value);
   const relative = path.relative(ROOT, resolved);
@@ -49,8 +54,13 @@ function assertSafeRelativePath(value, field) {
   return resolved;
 }
 
-function assertReadableEvidenceRef(value, field) {
+function assertReadableEvidenceRef(value, field, { maintenance = false, digest } = {}) {
   requireString(value, field);
+  if (value.startsWith("maintenance:")) {
+    if (!maintenance) fail("maintenance 引用仅适用于 template-maintenance 合同");
+    resolveMaintenanceReference(value, { root: ROOT, digest });
+    return;
+  }
   if (/^https?:\/\//.test(value)) return;
   const evidencePath = assertSafeRelativePath(value, field);
   if (!existsSync(evidencePath)) fail(`${field} 不可读: ${value}`);
@@ -79,6 +89,9 @@ function validateSkillSource(value, registry) {
 }
 
 function validateCommon(value, registry, lifecycle) {
+  const maintenance = value.contract.kind === "template-maintenance";
+  const safe = (ref, field) => assertSafeRelativePath(ref, field, { maintenance });
+  const readable = (ref, field, digest) => assertReadableEvidenceRef(ref, field, { maintenance, digest });
   if (value.allowed_write_paths?.length && value.contract.kind === "lifecycle-work-unit") assertTrackingEntry(value.work_unit_id, value, { root: ROOT });
   if (value.work_unit_id === 'work-unit.spec-synthesis') assertPlanSpecEntry(value);
   const workUnit = lifecycle.work_units.find((item) => item.id === value.work_unit_id);
@@ -97,12 +110,13 @@ function validateCommon(value, registry, lifecycle) {
   }
   validateSkillSource(value, registry);
   if (value.review_context?.capability_ids) validateReviewTaskBinding(value, { rolesDoc: registry, registry: lifecycle, root: ROOT });
-  for (const allowed of value.allowed_write_paths) assertSafeRelativePath(allowed, "allowed_write_paths 条目");
+  for (const allowed of value.allowed_write_paths) safe(allowed, "allowed_write_paths 条目");
   if (value.execution_state === "Reviewer" && value.review_context.implementation_actor_id === value.actor_id) fail("Reviewer 必须与实现者使用不同 actor_id");
   const commands = new Set(value.verification_commands);
   for (const result of value.verification_results) {
     if (!commands.has(result.command)) fail(`verification_results 命令未声明: ${result.command}`);
-    assertReadableEvidenceRef(result.evidence_ref, "verification_results.evidence_ref");
+    if (result.evidence_ref.startsWith('maintenance:') && !result.evidence_digest) fail('仓外维护证据必须绑定 evidence_digest');
+    readable(result.evidence_ref, "verification_results.evidence_ref", result.evidence_digest);
   }
   const completed = value.workflow_status === "resolved" || value.result?.result === "completed";
   if (completed) {
@@ -116,12 +130,12 @@ function validateCommon(value, registry, lifecycle) {
     const reconciliation = value.result.context_reconciliation;
     const expectedReconciliationStatus = value.contract.kind === "template-maintenance" ? "not-applicable" : "reconciled";
     if (reconciliation?.status !== expectedReconciliationStatus) fail(`result=completed 时 context_reconciliation.status 必须为 ${expectedReconciliationStatus}`);
-    assertReadableEvidenceRef(reconciliation.ref, "context_reconciliation.ref");
+    readable(reconciliation.ref, "context_reconciliation.ref");
     if (!value.result.evidence_refs.includes(reconciliation.ref)) fail("context_reconciliation.ref 必须包含在 result.evidence_refs 中");
     if (expectedReconciliationStatus === "not-applicable" && !reconciliation.reason) fail("template-maintenance 的 context_reconciliation 必须说明 reason");
     const routeResult = validateNextRoute(value.result.work_unit, value.result.next_route, value.result);
     if (routeResult.result !== "allowed") fail(`Workflow Execution Result next_route 非法: ${routeResult.blocking_signals.join(", ")}`);
-    value.expected_evidence_files.forEach((ref) => assertReadableEvidenceRef(ref, "expected_evidence_files"));
+    value.expected_evidence_files.forEach((ref) => readable(ref, "expected_evidence_files"));
     if (value.verification_results.length === 0) fail("已完成任务必须包含 verification_results");
     if (value.verification_results.some((result) => result.exit_code !== 0)) fail("已完成任务的验证命令必须全部成功");
     const resultCommands = new Set(value.verification_results.map((result) => result.command));
@@ -133,13 +147,13 @@ function validateCommon(value, registry, lifecycle) {
     }
     if (value.result.result === "completed") {
       if (!Array.isArray(value.result.evidence_refs) || value.result.evidence_refs.length === 0) fail("result=completed 时 evidence_refs 不能为空");
-      value.result.evidence_refs.forEach((ref) => assertReadableEvidenceRef(ref, "result.evidence_refs"));
+      value.result.evidence_refs.forEach((ref) => readable(ref, "result.evidence_refs"));
     }
     if (Array.isArray(value.result.changed_files)) {
       for (const changed of value.result.changed_files) {
-        const changedPath = assertSafeRelativePath(changed, "changed_files 条目");
+        const changedPath = safe(changed, "changed_files 条目");
         if (!value.allowed_write_paths.some((allowed) => {
-          const allowedPath = assertSafeRelativePath(allowed, "allowed_write_paths 条目");
+          const allowedPath = safe(allowed, "allowed_write_paths 条目");
           const relative = path.relative(allowedPath, changedPath);
           return relative === "" || (relative !== ".." && !relative.startsWith(`..${path.sep}`));
         })) fail(`changed_files 超出 allowed_write_paths: ${changed}`);
@@ -156,7 +170,7 @@ function validateContract(value, registry, lifecycle, { history = false } = {}) 
   if (!CONTRACT_KINDS.has(contract.kind)) fail(`未知 contract.kind: ${contract.kind}`);
   if (!new Set(["issued", "stale", "blocked"]).has(contract.status)) fail(`contract.status 无效: ${contract.status}`);
   if (contract.status === "stale" && value.workflow_status !== "paused") fail("stale 任务包必须暂停，待主控重新路由");
-  assertReadableEvidenceRef(contract.contract_ref, "contract.contract_ref");
+  assertReadableEvidenceRef(contract.contract_ref, "contract.contract_ref", { maintenance: contract.kind === "template-maintenance" });
   if (contract.kind === "lifecycle-work-unit") {
     if (value.work_unit_id === implementationWorkUnit || value.convergence.parent_work_unit === implementationWorkUnit) {
       fail("lifecycle-work-unit 不得冒充垂直切片实现任务；实现任务必须使用 slice-implementation");
@@ -169,9 +183,9 @@ function validateContract(value, registry, lifecycle, { history = false } = {}) 
   if (contract.kind === "template-maintenance") {
     if (!maintenanceValidators) fail("project-instance 不支持 template-maintenance 任务包");
     if (contract.slice_contract_ref || contract.lifecycle_ref) fail("template-maintenance 不得携带其他合同引用");
-    const checkpointPath = assertSafeRelativePath(contract.maintenance_ref, "contract.maintenance_ref");
+    const checkpointPath = assertSafeRelativePath(contract.maintenance_ref, "contract.maintenance_ref", { maintenance: true });
     if (!existsSync(checkpointPath)) fail(`维护 checkpoint 不存在: ${contract.maintenance_ref}`);
-    const checkpoint = maintenanceValidators.loadMaintenanceCheckpoint(contract.maintenance_ref);
+    const checkpoint = maintenanceValidators.loadMaintenanceCheckpoint(checkpointPath);
     maintenanceValidators.validateMaintenanceCheckpoint(checkpoint, {
       history,
       allowPendingReview: value.execution_state === "Reviewer" && value.workflow_status !== "resolved"
@@ -185,7 +199,7 @@ function validateContract(value, registry, lifecycle, { history = false } = {}) 
       if (contract.candidate_digest !== checkpoint.candidate_digest) fail("Reviewer 任务包 candidate_digest 与 checkpoint 不一致");
       if (contract.review_round !== checkpoint.review_round) fail("Reviewer 任务包 review_round 与 checkpoint 不一致");
       if (!value.allowed_read_paths.includes(contract.maintenance_ref)) fail("allowed_read_paths 必须包含 maintenance_ref");
-      value.allowed_read_paths.forEach((ref) => assertReadableEvidenceRef(ref, "allowed_read_paths 条目"));
+      value.allowed_read_paths.forEach((ref) => assertReadableEvidenceRef(ref, "allowed_read_paths 条目", { maintenance: true }));
       contract.applicable_rule_refs.forEach((ref) => assertReadableEvidenceRef(ref, "applicable_rule_refs 条目"));
     }
     if (lifecycle.work_units.find((item) => item.id === value.work_unit_id)?.scope !== "template-source") fail("template-maintenance 必须绑定 template-source work unit");

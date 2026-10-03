@@ -1,21 +1,28 @@
 # Ticket与流程状态
 
-Ticket 是在追踪平台上承载功能生命周期或可实现工作单元的通用追踪对象；GitHub Issues / GitLab Issues 是具体平台对象名称，领域资产统一称为 Ticket。主 tracker 以 `.template-spec/agents/issue-tracker.md` 为准，当前模板默认 `local-markdown`，root 为 `docs/.scratch/`；Git remote 只用于代码托管、分支、PR / MR 和 CI，不代表 tracker 选择。
+Ticket 是追踪平台中承载功能生命周期或可实现工作单元的通用对象。主 tracker 由 `.template-spec/agents/issue-tracker.md` 持久化，当前模板默认使用 `local-markdown`，根路径为 `docs/.scratch/`。
 
-每个功能先建立功能父 Ticket，用于汇总 Spec、设计、审查、OpenAPI Freeze、阻塞项和阶段证据（见 [[Spec基线]]、[[OpenAPI契约]]、[[产品设计影响与原型]]）。功能父 Ticket 不作为 Agent 直接实现的单元；可独立验证的实现单元是 [[垂直切片Ticket]]。
+每个功能先建父 Ticket，汇总阶段资产、审查、阻塞与证据。业务 Ticket 表达用户行为和可验收结果；阶段工作项记录 Plan、Spec、Design 的有界工作；垂直切片 Ticket 承载可独立验证的实现范围。业务票与阶段工作项不授予 `ready-for-agent`，工作项进度也不替代阶段批准。
 
-Local 完整功能包写入 `docs/.scratch/<feature>/`，其中 `parent-ticket.md` 汇总阶段资产与阻塞边，`issues/01-<slug>.md` 等文件是垂直切片或 Wayfinder 子 Ticket；不得把多个 Ticket 合成一个文件。根目录 `.scratch/` 与 `docs/requirements/tickets/` 只允许只读迁移检查。选定 GitHub / GitLab 但凭据或平台暂不可用时，在 `docs/.scratch/<feature>/` 生成待发布草案，`parent-ticket.md` 保留目标平台并标记 `publication: pending` 与 `pending_publication_to`，不得自动改投另一远程平台（见 [[实现仓库与跨仓库契约]]）。
+| Ticket 状态 | 含义 |
+|---|---|
+| `needs-triage` | 等待维护者评估 |
+| `needs-info` | 等待报告者补充信息 |
+| `ready-for-agent` | 必要门禁通过、阻塞边关闭，可直接实现的垂直切片 |
+| `ready-for-human` | 资产需要指定数字人或生物人会签，或需要特权访问 |
+| `wontfix` | 不会处理 |
 
-五态见 `.template-spec/agents/triage-labels.md`：`needs-triage`、`needs-info`、`ready-for-agent`、`ready-for-human`、`wontfix`。Local 主 tracker 在 Ticket 顶部用同名 `Status:` 记录；评论追加在 `## Comments`，状态变化须保留原因、证据引用和下一步。Wayfinder 的 `claimed` / `resolved` 只是临时工作状态，不是五态，进入正式切片前必须转换为上述之一。
+Spec、设计、原型、OpenAPI Draft 与待冻结资产使用 `ready-for-human`。`to-tickets` 新建切片初始也使用这一状态；生命周期编排器核验完整就绪条件后，才能提升为 `ready-for-agent`。正式实现还需已批准、已持久化且当前的 Slice Implementation Contract，见 [[切片实现合同]]。
 
-Spec 初稿、产品设计、原型、OpenAPI Draft 和待冻结资产使用 `ready-for-human`。只有通过必要门禁、阻塞边已清除并具备直接实现条件的垂直切片 Ticket，才能使用 `ready-for-agent`（见 [[条件强制门禁]] 与 [[切片实现合同]]）。调用 `to-tickets` 时新建切片的初始 `Status:` 固定为 `ready-for-human`，须由生命周期编排器核验完整就绪公式后才能改为 `ready-for-agent`。
+Local 功能包位于 `docs/.scratch/<feature>/`。`parent-ticket.md` 引用实际 checkpoint，`issues/NN-<slug>.md` 分别保存切片或子 Ticket；顶部 `Status:` 使用五态，`## Comments` 保存状态变化原因、证据和下一步。阶段工作项按需进入 `work-items/`，业务票进入 `business-tickets/`；当前执行进度由 checkpoint 持有。冻结合同绑定的需求文件保留冻结时状态，当前执行状态继续写主 tracker。
 
-Ticket、Spec 和阶段证据按主 tracker 持久化。连续自动推进期间累积的证据，在人工暂停、handoff、进入实现、合并或发布边界集中同步范围、验证证据、风险、人工审查点、Ticket 状态和下一步（见 [[Fresh验证与独立审查]]、[[Agent入口规则]]）。Git checkpoint 只包含本轮明确范围，并说明主 tracker、同步状态、验证命令、剩余风险和下一步；获得用户授权后才提交或推送。
+Git remote 只提供代码托管信息，不改变主 tracker。明确选择的 GitHub / GitLab 暂不可用时，在 Local 功能包保留目标平台，记录 `publication: pending` 与 `pending_publication_to`，恢复后补同步。平台变化不改变门禁、阻塞关系或实现就绪语义。
+
+会签暂停、handoff、实现、合并和发布边界同步范围、证据、风险、会签点、Ticket 状态及下一步。Git checkpoint 只包含本轮范围；提交和推送须用户授权。独立审查和验证见 [[Fresh验证与独立审查]]。
 
 ## 来源
 
-- `.template-spec/agents/issue-tracker.md`
-- `.template-spec/agents/triage-labels.md`
-- `AGENTS.md`
-- `CONTEXT.md`
-- `.template-spec/process/lifecycle-registry.yaml`
+- `.template-spec/agents/issue-tracker.md:1-39`、`:41-81`、`:141-149`。
+- `.template-spec/agents/triage-labels.md:3-15`。
+- `CONTEXT.md:46-52`。
+- `AGENTS.md:51-57`、`AGENTS.md:61-67`、`AGENTS.md:88-88`。

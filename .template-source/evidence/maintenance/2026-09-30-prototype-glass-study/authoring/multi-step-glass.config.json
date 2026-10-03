@@ -1,7 +1,0 @@
-{
-  "schema_version": 1,
-  "title": "分步表单",
-  "entry": "multi-step-glass.tsx",
-  "scenarios": "multi-step.scenarios.json",
-  "density": "compact"
-}

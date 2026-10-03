@@ -102,7 +102,7 @@ try {
   report=createVerificationReport(plan,{root:ROOT,inputDigest:beforeDigest,concurrency,scope});
   if(reportDir)saveVerificationReport(reportDir,report);
   process.stderr.write(`验证 selection: ${plan.selection.requested} -> ${plan.selection.effective}，范围: ${scope.kind}\n`);
-  process.stderr.write(`模板核验 profile: ${plan.requested_profile} -> ${plan.effective_profile}\n`);
+  process.stderr.write(`模板核验 profile: ${plan.requested_profile} -> ${plan.effective_profile}，来源要求: ${plan.source_requirement}\n`);
   if (plan.escalation_reason) process.stderr.write(`自动升级原因: ${plan.escalation_reason}\n`);
   logRoot = reportDir ? path.join(reportDir,'logs') : runtimeSession ? path.join(runtimeSession.runDir, "logs") : mkdtempSync(path.join(os.tmpdir(), "yss-template-verification-"));
   const environment = { ...process.env, PYTHONDONTWRITEBYTECODE: '1', YSS_TOOLING_MODE: effectiveMode,
@@ -153,7 +153,7 @@ finally {
       try { saveVerificationReport(reportDir || runtimeSession?.runDir || logRoot,report); } catch(error) {process.stderr.write(`报告保存失败: ${error.message}\n`);}
       process.stderr.write(`运行存储异常，日志已保留: ${logRoot}\n`);
     }
-    if(report.status==='passed'&&!process.exitCode)process.stdout.write(`模板核验通过（${report.plan.effective_profile}）\n`);
+    if(report.status==='passed'&&!process.exitCode)process.stdout.write(`模板核验通过（${report.plan.requested_profile} → ${report.plan.effective_profile}，来源要求：${report.plan.source_requirement}）\n`);
   }
   try {runtimeSession?.close();}catch(error){process.stderr.write(`运行存储关闭异常: ${error.message}\n`);process.exitCode=1;}
   if(logRoot&&!reportDir&&!runtimeSession&&!storageErrors.length)rmSync(logRoot,{recursive:true,force:true});

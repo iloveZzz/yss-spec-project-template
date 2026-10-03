@@ -1,9 +1,0 @@
-{
-  "removed_after_report_archive": [
-    "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/plan-spec-distribution-IHJx5l",
-    "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/plan-spec-distribution-Nzc6mm",
-    "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/plan-spec-distribution-DsUZvF"
-  ],
-  "retained_frozen_verification_workspace": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/plan-spec-frozen-0f0hftk0/workspace",
-  "original_backup_retained": true
-}

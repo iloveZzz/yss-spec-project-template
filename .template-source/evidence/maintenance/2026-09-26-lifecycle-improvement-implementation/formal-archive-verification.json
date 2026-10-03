@@ -1,9 +1,0 @@
-{
-  "archive": "formal-agent-evaluation-evidence.tar.gz",
-  "sha256_matches": true,
-  "trace_count": 52,
-  "result_count": 48,
-  "semantic_review_count": 48,
-  "auth_json_entries": [],
-  "readable": true
-}

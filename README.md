@@ -15,7 +15,7 @@
 ├── CONTEXT.md               ← 唯一业务词汇表
 ├── yss-project.yaml         ← 仓库身份
 ├── .template-spec/          ← 可复用流程、门禁、契约与文档模板
-├── .template-source/        ← 模板维护、分发工具和历史证据（不进入实例）
+├── .template-source/        ← 现行模板维护资产与分发工具（不进入实例；运行历史存仓外）
 ├── docs/                    ← 项目实例按需创建的 Plan、Spec、设计、Ticket 与交付证据
 └── scripts/                 ← 合同与流程验证工具
 ```
@@ -73,7 +73,7 @@ main@6acc160e4e0cd062dbbbd7a1b26ae92855edf07e
 scripts/verify-template-fast
 ```
 
-快速入口按 Git 影响面执行相关检查，未映射路径或核心校验资产变化时 fail-safe 升级。它与 candidate / 发布 profile 共同检查：
+快速入口按 Git 影响面执行相关检查，未映射路径或核心校验资产变化时 fail-safe 升级为完整验证，来源仍为当前工作树，用于 `implementation-ready`。显式 candidate / 发布入口要求已提交来源。三个入口共同检查：
 
 - `yss-project.yaml`、权威流程资产和模板是否完整。
 - 共享技能投影及 `skills-lock.json` 的完整树哈希是否一致。

@@ -3,6 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseDocument } from "../vendor/yaml.mjs";
 import { validateMaintenanceReviewEvidence } from "./maintenance-review.mjs";
+import { resolveMaintenanceReference } from './maintenance-storage.mjs';
 
 import { validateCounterexample } from "./maintenance-counterexample.mjs";
 
@@ -85,6 +86,10 @@ export function validateMaintenanceCheckpoint(data, options = {}) {
     ensure(typeof evidence.kind === "string" && evidence.kind.trim(), "verification_evidence.kind 不能为空");
     ensure(typeof evidence.command === "string" && evidence.command.trim(), "verification_evidence.command 不能为空");
     ensure(evidence.result === "pass", `验证证据必须是本轮实际通过结果: ${evidence.kind ?? "unknown"}`);
+    if (evidence.evidence_ref?.startsWith('maintenance:')) {
+      ensure(typeof evidence.evidence_digest === 'string', '仓外维护证据必须绑定 evidence_digest');
+      resolveMaintenanceReference(evidence.evidence_ref, { root: options.baseDir || root, digest: evidence.evidence_digest });
+    }
     if (["focused-independent-review", "formal-independent-review"].includes(evidence.kind)) {
       validateMaintenanceReviewEvidence(evidence, options);
     }
@@ -169,7 +174,8 @@ function validateReleaseVerificationCommand(data, kind) {
 }
 
 export function loadMaintenanceCheckpoint(source) {
-  const raw = source === "-" ? readFileSync(0, "utf8") : readFileSync(source, "utf8");
+  const filename = typeof source === 'string' && source.startsWith('maintenance:') ? resolveMaintenanceReference(source, { root }) : source;
+  const raw = source === "-" ? readFileSync(0, "utf8") : readFileSync(filename, "utf8");
   const document = parseDocument(raw, { uniqueKeys: true });
   ensure(document.errors.length === 0, document.errors[0]?.message || "checkpoint 无法解析");
   return document.toJS({ maxAliasCount: 0 });

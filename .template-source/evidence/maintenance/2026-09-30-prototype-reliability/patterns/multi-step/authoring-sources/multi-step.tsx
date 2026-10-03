@@ -1,9 +1,0 @@
-import {React,useState,render,Notice,Button,Input,Label,Textarea} from './shared';
-function Page({scene}){
- const [step,setStep]=useState(1),[draft,setDraft]=useState(scene.data.form),[error,setError]=useState(''),[failed,setFailed]=useState(false),[done,setDone]=useState(false);
- function next(){if(!draft.name.trim()){setError('请输入资料名称');document.getElementById('name')?.focus();return;}setError('');setStep(2);}
- function save(){if(!draft.owner.trim()){setError('请输入负责人');document.getElementById('owner')?.focus();return;}if(scene.id==='failure'&&!failed){setFailed(true);setError('提交失败，所有步骤输入已保留，请重试。');return;}setError('');setDone(true);}
- const readonly=scene.id==='no-permission';
- return <section className="surface"><h2>步骤 {step}/2：{step===1?'资料信息':'负责人及确认'}</h2><Notice>{readonly?'当前无提交权限，可查看填写内容。':''}</Notice><fieldset disabled={readonly||done}><legend>{step===1?'基本信息':'责任与确认'}</legend>{step===1?<><Label htmlFor="name">资料名称</Label><Input id="name" value={draft.name} aria-invalid={error==='请输入资料名称'} aria-describedby={error?'form-error':undefined} onChange={e=>setDraft({...draft,name:e.target.value})}/><Label htmlFor="note">资料说明</Label><Textarea id="note" value={draft.note} onChange={e=>setDraft({...draft,note:e.target.value})}/></>:<><p>资料名称：{draft.name}</p><p>说明：{draft.note||'未填写'}</p><Label htmlFor="owner">负责人</Label><Input id="owner" value={draft.owner} aria-invalid={error==='请输入负责人'} aria-describedby={error?'form-error':undefined} onChange={e=>setDraft({...draft,owner:e.target.value})}/></>}</fieldset><div id="form-error"><Notice error>{error}</Notice></div><Notice>{done?'提交成功（本地模拟）。':''}</Notice><div className="toolbar">{step===2&&<Button variant="outline" disabled={done} onClick={()=>{setStep(1);setError('');}}>上一步</Button>}{step===1?<Button disabled={readonly||done} onClick={next}>下一步</Button>:<Button disabled={readonly||done} onClick={save}>{failed?'重试提交':'确认提交'}</Button>}</div></section>;
-}
-render(Page,'分步表单');

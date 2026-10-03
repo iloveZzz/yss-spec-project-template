@@ -1,9 +1,0 @@
-✔ real validators close a synthetic backend package, preserve the terminal across resume and reject stale review/source (30679.884416ms)
-ℹ tests 1
-ℹ suites 0
-ℹ pass 1
-ℹ fail 0
-ℹ cancelled 0
-ℹ skipped 0
-ℹ todo 0
-ℹ duration_ms 30755.127625

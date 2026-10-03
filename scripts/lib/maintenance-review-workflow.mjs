@@ -4,11 +4,13 @@ import { parseDocument } from "../vendor/yaml.mjs";
 import { generateTaskPackageDefaults } from "./task-package.mjs";
 import { loadMaintenanceCheckpoint, validateMaintenanceCheckpoint } from "./maintenance-intensity.mjs";
 import { ROOT } from "./template-verification.mjs";
+import { resolveMaintenanceReference, resolveMaintenanceOutput, maintenanceReference } from './maintenance-storage.mjs';
 
 function fail(message) { throw new TypeError(message); }
 function ensure(condition, message) { if (!condition) fail(message); }
 function safeRef(value, field) {
   ensure(typeof value === "string" && value.trim(), `${field} 不能为空`);
+  if (value.startsWith('maintenance:')) return resolveMaintenanceOutput(value, { root: ROOT });
   ensure(!path.isAbsolute(value), `${field} 必须是仓库相对路径`);
   const resolved = path.resolve(ROOT, value);
   ensure(!path.relative(ROOT, resolved).startsWith(".."), `${field} 不得越出仓库`);
@@ -21,6 +23,9 @@ function loadYaml(ref, label) {
 }
 function readableRef(value) {
   if (typeof value !== "string" || !value || /\s/.test(value) || path.isAbsolute(value)) return null;
+  if (value.startsWith('maintenance:')) {
+    try { resolveMaintenanceReference(value, { root: ROOT }); return value; } catch { return null; }
+  }
   const resolved = path.resolve(ROOT, value);
   if (path.relative(ROOT, resolved).startsWith("..") || !existsSync(resolved)) return null;
   return value;
@@ -47,13 +52,16 @@ export function generateReviewerTaskPackages({ checkpointRef, candidateRef, outp
   safeRef(outputDir, "outputDir");
   const stem = slug(path.basename(checkpointRef, path.extname(checkpointRef)));
   const applicableRuleRefs = ["AGENTS.md", "CONTEXT.md", ".template-spec/process/harness-process-tailoring.md", ".agents/skills/maintaining-skills/SKILL.md"];
-  const candidateByteRefs = [candidateRef, candidate.snapshot_stream_ref, candidate.tracked_diff_ref].map(readableRef).filter(Boolean);
+  const byteRefs = candidate.schema_version === 2
+    ? [candidateRef, ...[candidate.snapshot_stream_ref, candidate.tracked_diff_ref].map(ref => maintenanceReference(path.join(path.dirname(safeRef(candidateRef, 'candidateRef')), ref), { root: ROOT }))]
+    : [candidateRef, candidate.snapshot_stream_ref, candidate.tracked_diff_ref];
+  const candidateByteRefs = byteRefs.map(readableRef).filter(Boolean);
   const sourceEvidenceRefs = (checkpoint.verification_evidence || []).flatMap((evidence) => [readableRef(evidence.command), readableRef(evidence.evidence_ref)]).filter(Boolean);
   const allowedReadPaths = [...new Set([...candidateByteRefs, checkpointRef, ...sourceEvidenceRefs, ...applicableRuleRefs])];
   const upstreamVerificationResults = (checkpoint.verification_evidence || []).flatMap((evidence) => {
     const evidenceRef = readableRef(evidence.evidence_ref);
     if (!evidenceRef || typeof evidence.executed_at !== "string" || typeof evidence.command !== "string") return [];
-    return [{ command: evidence.command, exit_code: 0, duration_ms: Number.isInteger(evidence.duration_ms) ? evidence.duration_ms : 0, executed_at: evidence.executed_at, evidence_ref: evidenceRef }];
+    return [{ command: evidence.command, exit_code: 0, duration_ms: Number.isInteger(evidence.duration_ms) ? evidence.duration_ms : 0, executed_at: evidence.executed_at, evidence_ref: evidenceRef, ...(evidence.evidence_digest ? { evidence_digest: evidence.evidence_digest } : {}) }];
   });
   const verificationCommands = [...new Set([...upstreamVerificationResults.map((result) => result.command), "git diff --check"])];
   return AXES.map(({ axis, role, objective }) => {

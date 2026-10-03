@@ -1,48 +1,21 @@
 # 模板源治理区
 
-本目录只属于 `template-source` 仓库，不属于 CLI 生成的 `project-instance`。
+本目录属于 `template-source`，保存现行模板维护规则、CLI 核心、插件源码、分发合同、维护工具、必要工程依据和当前 Wiki 阅读视图。
 
-## 边界
+## 当前资产
 
-- `.template-spec/` 是模板实例治理资产的候选来源，`docs/` 用于实例按需创建的产品资产；模板源审查记录和其他治理资产不进入实例。`.nvmrc` 与根 `.gitignore` 同属分发面。
-- `.template-source/` 是模板源治理区：保存模板维护的审查、研究、跨仓契约、发布路线、派生证据和源仓库 LLM Wiki 编译树。
-- 源仓库 wiki-root 为 `.template-source/wiki`；新 `project-instance` 不附带该编译树。
-- 外部 CLI 按显式分发清单构建快照；新项目不应出现 `.template-source/`、维护环境配置或已经从 `docs/` 迁出的源仓库文件。
+- `.template-spec/` 持有可供项目实例消费的治理规则；根入口、词汇和视觉规范仍是各自的权威来源。
+- `agents/`、`contracts/`、`process/` 保存当前集成合同、工具边界和维护策略。
+- `cli-core/`、`plugins/`、`scripts/`、`tooling/` 保存实现、测试及固定工具依赖；有效迁移 fixture 随现行兼容能力保留。
+- `engineering/evidence/` 仅保存当前工程声明仍直接消费的必要依据，原日期、摘要和结论不改写为新验证。
+- `wiki/` 保存现行来源的阅读视图，不成为规则权威。
 
-## 归档规则
+## 维护运行材料
 
-1. RED / GREEN、压力场景、研究和独立审查证据先保留在 `evidence/reviews/`，完成 archive-source checkpoint 后由 `index.yaml` 汇总，原始文件从工作树移除但继续保存在 Git 历史或发布附件中。
-2. `evidence/reviews/index.yaml` 是当前证据清单、SHA-256 和 checkpoint 引用的唯一事实源；`pending` 只允许出现在尚未取得 archive-source checkpoint 的中间状态。
-3. 跨仓库契约进入 `contracts/`；模板源发布路线进入 `roadmap/`。路线条目必须有状态和验收证据，全部 `closed` 后才能从工作树移除。维护侧 Node 工具依赖、lockfile 和 vendor 构建位于 `tooling/node/`，不进入模板实例分发面。
-4. 仅描述模板源执行过程的派生表进入 `derived/`。
-5. 模板治理决策直接进入本仓单一事实来源、维护 checkpoint 或 roadmap；不再维护 `.template-source/adr/*.md`。历史决策保留在 Git 历史和既有 evidence 中。
+历史研究、审查、发布过程、试验副本、构建缓存和旧规划从当前工作树移除。新的运行材料统一保存到当前工作区仓外 `maintenance` 命名空间；详细路径与恢复规则见 [维护留存策略](process/runtime-storage.md)。用 `scripts/maintenance-path <类别/运行ID/文件>` 取得绝对路径，用 `maintenance:<相对路径>` 引用维护证据并绑定摘要。
 
-## 本次迁移清单
+恢复包、归档索引、报告及 Wiki 事务历史均保存在仓外。清理前核验逐文件字节、权限和恢复包完整性；已失效的计划不改写为已完成。当前 Git 历史仍可用于定位原始来源。
 
-| 模板实例分发面来源 | 模板源治理区目标 |
-|---|---|
-| `docs/implementation/create-yss-spec-repository-mode-contract.md` | `.template-source/contracts/create-yss-spec-repository-mode-contract.md` |
-| `.template-spec/process/harness-work-unit-map.md` | `.template-source/derived/harness-work-unit-map.md` |
-| `.template-spec/process/harness-optimization-backlog.md` | `.template-source/roadmap/harness-optimization-backlog.md` |
-| `docs/releases/next-major-template-governance.md` | `.template-source/roadmap/next-major-template-governance.md` |
-| `docs/reviews/*.md`（13 个） | `.template-source/evidence/reviews/index.yaml` 及其 Git archive checkpoint |
-| 其余 `docs/reviews/` 审查与证据文件 | `.template-source/evidence/reviews/`（Markdown 进入同一 archive 索引；非 Markdown 留在治理区工作树） |
-| 根目录 `wiki/` 编译树 | `.template-source/wiki/` |
+## 实例分发
 
-归档文件不进入 CLI 实例分发面，但必须能够通过索引、哈希和 checkpoint 恢复；“不进入实例”不等于“不可审计”。
-
-## 完成归档的操作顺序
-
-```bash
-# 先在保留原件的工作树上建立 archive-source checkpoint
-.template-source/scripts/evidence-index --write --archive-commit <archive-commit>
-git rm .template-source/evidence/reviews/*.md
-.template-source/scripts/evidence-index --check
-scripts/verify-template
-```
-
-`<archive-commit>` 必须是已经存在、可追溯且包含 13 个原始文件最终内容的 40 位 Git commit；未获得 Git 提交授权时只能保留 `pending` 索引，不能执行 `git rm`。
-
-## 历史路线说明
-
-`roadmap/next-major-template-governance.md` 是保留原字节的历史规划，不再提供当前发布操作或阻塞判断。现行维护遵循 `process/maintenance-intensity.yaml`、`process/github-workflows.md` 和 `.template-spec/process/harness-process-tailoring.md`。其中模板/CLI 固定版本联调与冲突保护仍在每次实际发布时核验，不以旧草案的历史通过说明代替当前证据。原始路线与批准不改写为已完成或已发布。
+外部 CLI 按显式分发清单构建固定版本快照。新 `project-instance` 不附带本目录、源仓维护环境、历史运行材料或模板源 Wiki。项目自身的产品资产按生命周期写入 `docs/`。

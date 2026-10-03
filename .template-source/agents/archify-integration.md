@@ -11,7 +11,7 @@
 ## 交付与网络边界
 
 - YSS 仓库不得运行 Archify 的 `scripts/check-update.mjs`。升级只通过 `maintaining-skills`、固定 revision、来源哈希和 fresh verification 完成。
-- 稳定交付必须使用 `.agents/skills/archify/scripts/yss-safe-deliver.mjs`。`project-instance` 只允许 `docs/architecture/diagrams/<diagram-id>/`；`template-source` 只允许 `.template-source/evidence/maintenance/diagrams/<diagram-id>/`；临时探索只允许系统临时目录。
+- 稳定交付必须使用 `.agents/skills/archify/scripts/yss-safe-deliver.mjs`。`project-instance` 只允许 `docs/architecture/diagrams/<diagram-id>/`；`template-source` 只允许 当前工作区仓外 `maintenance:diagrams/<diagram-id>/`（由 `scripts/maintenance-path` 解析）；临时探索只允许系统临时目录。
 - 稳定资产固定为 `<diagram-id>.archify.json`、`<diagram-id>.html`、`<diagram-id>.receipt.json`。安全启动器拒绝非 HTML 输出、目录逃逸、符号链接逃逸、无关文件覆盖和 `--open`。
 
 ## 更新检查

@@ -8,7 +8,7 @@
 
 竞品策略研究用 `strategy-evidence`；其中技术能力和协议 Claim 必须满足 `technical-evidence` 的一手来源要求。竞品确定状态引用 `technical-fact` Claim 时，校验器要求至少一项 `primary` 支持证据，独立于父 profile 和 `decision_bearing`；`unknown` 不作确定判断，仍须记录来源缺口与补证计划。不得把已知技术事实改标为 `background` 绕过此要求；是否属于技术能力或协议事实仍须来源语义审核。不要新增 profile 或模式。探索材料作为正式批准输入前须升级为审计包。
 
-审计模式始终保留相邻的 `<slug>-research-brief.md` 与 `<slug>-evidence.yaml`。按选择追加 `<slug>-competitive-matrix.md`、`<slug>-competitive-analysis.md`；深度报告不能替代简报。`template-source` 使用 `.template-source/evidence/maintenance/`，`project-instance` 沿项目研究 / 证据目录约定。
+审计模式始终保留相邻的 `<slug>-research-brief.md` 与 `<slug>-evidence.yaml`。按选择追加 `<slug>-competitive-matrix.md`、`<slug>-competitive-analysis.md`；深度报告不能替代简报。`template-source` 使用 当前工作区仓外的 `maintenance:research/<run-id>/`（用 `scripts/maintenance-path` 解析；证据引用绑定原字节摘要），`project-instance` 沿项目研究 / 证据目录约定。
 
 ## 2. 可选扩展接口
 

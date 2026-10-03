@@ -1,1 +1,0 @@
-skills-lock.json matches distributed skills

@@ -38,7 +38,7 @@ M3、未知来源、核心漂移或已有后端终点的项目拒绝迁移。保
 
 ## 从源码构建
 
-`node .template-source/plugins/yss-backend-delivery/build.mjs --output .template-source/cache/plugin-unified/yss-backend-delivery`
+`node .template-source/plugins/yss-backend-delivery/build.mjs --output "$(scripts/maintenance-path cache/plugin-unified/yss-backend-delivery)"`
 
 修改 identity.json、入口模板和实现后重新构建；不手改已安装缓存。首次个人市场用 plugin-creator 脚手架，迭代用该技能的 cachebuster 流程；版本修改必须在最终 bundle-lock 生成前完成。
 

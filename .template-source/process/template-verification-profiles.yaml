@@ -629,9 +629,6 @@ groups:
         id: check.8cd499a929b8a5a4
   tooling:
     commands:
-      - run: .template-source/scripts/evidence-index --check
-        when: template-source
-        id: check.3c6d62ea49a55255
       - run: python3 -m unittest discover -s .template-source/scripts/tests -p 'test_skills_agent_eval.py' -v
         when: template-source
         id: check.44ea73f718bcecec
@@ -717,12 +714,6 @@ groups:
         id: check.ffe328872703d3c0
       - run: scripts/verify-digital-human-task-package-scenarios
         id: check.b593997f977be2c5
-      - run: .template-source/scripts/verify-historical-task-package .template-source/evidence/maintenance/digital-human-task-package-review-task.yaml
-        when: template-source
-        id: check.bc3b0b47660e8fa8
-      - run: .template-source/scripts/verify-historical-task-package .template-source/evidence/maintenance/lifecycle-ticket-transition-review-task-package.yaml
-        when: template-source
-        id: check.e91bd0e1ad7ead2b
       - run: node --test tests/read-only-intake.test.mjs
         when: template-source
         id: check.read-only-intake
@@ -785,11 +776,14 @@ groups:
         id: check.lifecycle-query-freshness
   maintenance:
     commands:
+      - run: node --test scripts/fixtures/maintenance-storage/scenarios.test.mjs
+        when: template-source
+        id: check.maintenance-storage
+      - run: node --test .template-source/scripts/tests/evidence-archive.test.mjs
+        when: template-source
+        id: check.evidence-archive-fixtures
       - run: node --test tests/maintenance-counterexample.test.mjs
         id: check.maintenance-counterexample
-      - run: scripts/verify-maintenance-checkpoint --history .template-source/evidence/maintenance/yss-tactical-design-l3-checkpoint-2026-08-27.yaml
-        when: template-source
-        id: check.7bb9adbe9bce5e99
       - run: scripts/verify-maintenance-intensity-scenarios
         id: check.5fa31f4262e122b1
       - run: node scripts/verify-maintenance-review-workflow-scenarios
@@ -858,7 +852,8 @@ groups:
         id: check.010ab85199ad1140
   candidate-integrity:
     commands:
-      - run: scripts/verify-strategic-handoff-tools-lock --require-committed
+      - run: scripts/verify-strategic-handoff-tools-lock
+        require_committed_for: [candidate, release]
         when: template-source
         id: check.a047149f13d2d04e
       - run: node scripts/verify-template-verification-scenarios

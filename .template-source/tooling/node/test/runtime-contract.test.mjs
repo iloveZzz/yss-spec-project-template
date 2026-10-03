@@ -163,32 +163,3 @@ test("public skill export preserves its portable manifest and blocks workstation
     await rm(output, { recursive: true, force: true });
   }
 });
-
-test("evidence index writes pending and checkpointed Node records with legacy failure semantics", async () => {
-  const fixture = await mkdtemp(path.join(tmpdir(), "yss-evidence-index-"));
-  const review = path.join(fixture, ".template-source/evidence/reviews/sample.md");
-  const command = path.join(repositoryRoot, ".template-source/scripts/evidence-index");
-  const environment = { ...process.env, YSS_EVIDENCE_INDEX_ROOT: fixture };
-  const run = (args, options = {}) => execFileSync(command, args, { cwd: fixture, encoding: "utf8", env: environment, stdio: ["ignore", "pipe", "pipe"], ...options });
-  try {
-    await mkdir(path.dirname(review), { recursive: true });
-    await writeFile(review, "# Sample evidence\n");
-    execFileSync("git", ["init", "--quiet"], { cwd: fixture });
-    execFileSync("git", ["config", "user.email", "test@example.invalid"], { cwd: fixture });
-    execFileSync("git", ["config", "user.name", "Node fixture"], { cwd: fixture });
-    execFileSync("git", ["add", "."], { cwd: fixture });
-    execFileSync("git", ["commit", "--quiet", "-m", "archive source"], { cwd: fixture });
-    assert.match(run(["--write", "--pending"]), /pending/);
-    assert.match(run(["--check"]), /pending/);
-    await writeFile(review, "# Changed evidence\n");
-    assert.throws(() => run(["--write", "--archive-commit", "HEAD"]), /当前文件与 archive checkpoint 不一致/);
-    await writeFile(review, "# Sample evidence\n");
-    assert.match(run(["--write", "--archive-commit", "HEAD"]), /complete/);
-    execFileSync("git", ["rm", "--quiet", ".template-source/evidence/reviews/sample.md"], { cwd: fixture });
-    assert.match(run(["--check"]), /complete/);
-    const index = await readFile(path.join(fixture, ".template-source/evidence/reviews/index.yaml"), "utf8");
-    assert.match(index, /status: complete/);
-  } finally {
-    await rm(fixture, { recursive: true, force: true });
-  }
-});

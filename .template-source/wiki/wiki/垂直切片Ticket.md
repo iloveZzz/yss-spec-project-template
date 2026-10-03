@@ -1,23 +1,45 @@
 # 垂直切片Ticket
 
-垂直切片是贯穿所有受影响层、可独立验证的窄功能路径。每个功能先建立功能父 Ticket，用来汇总 Spec、设计、审查、OpenAPI Freeze、阻塞项和阶段证据；父 Ticket 本身不是 Agent 直接实现的切片。契约冻结后，由生命周期原生 `work-unit.ticket-decomposition` 拆出窄切片；用户显式 `to-tickets` 只是兼容入口。禁止只按 Adapter / Application / Domain / Infrastructure 横向拆分。
+垂直切片 Ticket 描述贯穿所有受影响层、可独立验证的窄功能行为。冻结需求保留版本与原始字节，当前状态、验收结果和执行记录由主 tracker 与任务包承载。
 
-模板 `.template-spec/templates/vertical-slice-ticket-template.md` 默认 `Status: ready-for-human`，frontmatter `status` 同值。正文必须写清要构建的端到端行为、覆盖的用户故事、OpenAPI 影响、验收标准、测试 seam、Slice Implementation Contract、阻塞关系和完成定义。它必须贯穿受影响层，不能只是某一层的横向任务。YSS active 调用 `to-tickets` 时，新建切片的初始 `Status:` 也固定为 `ready-for-human`。
+## 父 Ticket、业务票与切片
 
-Spec 初稿、产品设计、原型、OpenAPI Draft 和待冻结资产一律使用 `ready-for-human`。只有通过必要门禁、阻塞边已清除并具备直接实现条件的垂直切片，才能使用 `ready-for-agent`。五态标签为 `needs-triage`、`needs-info`、`ready-for-agent`、`ready-for-human`、`wontfix`，见 [[Ticket与流程状态]]。Ticket、Spec 和阶段证据按 `.template-spec/agents/issue-tracker.md` 选定的主 tracker 持久化；Git remote 不代表 tracker 选择。当前模板默认 `local-markdown`，根为 `docs/.scratch/`。
+每个功能先建功能父 Ticket，汇总阶段资产、审查、阻塞和证据；业务 Ticket 在 Spec 起草、Design 校准阶段形成，不授予实现资格。OpenAPI Freeze 或无 API 影响记录后再拆窄切片，禁止仅按技术层横拆。
 
-切片拆分以冻结 [[Spec基线]] 和 [[OpenAPI契约]]（或无 API 影响记录）为输入。每个切片进入实现前必须挂当前 [[切片实现合同]]：`contract_id`、`contract_version`、`contract_ref`，实现合同编译器 状态只能是 `draft / blocked / ready-for-lifecycle-review`，生命周期批准状态为 `pending / approved / rejected`。实现合同编译器 不得自行批准合同，也不得把本 Ticket 推进为 `ready-for-agent`；只有生命周期编排器核验并持久化当前版本、清除阻塞边后才能改状态。合同编译见 [[YSS路由与合同编译]]。
+`work-unit.ticket-decomposition` 输入已正式化业务 Ticket、冻结 Spec、设计、契约、当前实现仓库准备和阻塞关系，更新既有父 Ticket 并形成垂直切片和批准的 Slice Implementation Contract；生命周期复算后才能进入 `ready-for-agent`。
 
-工作单元必须写验收行为、主 / 辅 skill、`behavior-tdd` 或 `controlled-generation`、允许写路径、预期证据和验证命令。业务规则、状态机、事务、权限、错误映射、复杂查询和用户可见交互必须 `behavior-tdd`；`controlled-generation` 只覆盖机械脚手架、样板、冻结客户端或配置，并记录 exception reason。涉及后端时必须填写 Backend 合同与 skill 表，不得只写「符合 YSS」。出现 `drift`、`violation` 或非空 `new_impacts` 时暂停受影响工作单元，不得先完成代码再补合同。
+## 需求正文与冻结边界
 
-完成定义要求：实现与测试通过，调试 / 原型代码已移除，合同与 `YSS Skill Execution Result` 已回勾，实际 changed files 均在允许路径内，验证结果含执行时间，重路由状态有明确结论且合同未 `stale`。领域或架构决策变化时更新 `CONTEXT.md` / ADR，新增业务术语含 PascalCase `英文标识`，代码与契约字段能追溯到该词干。路径越界、证据缺失、未执行验证时停止实现并重新路由，见 [[条件强制门禁]] 与 [[实现仓库与跨仓库契约]]。整条链路属于 [[产品研发生命周期]] 的 Ticket 正式化与垂直切片实现阶段。
+现行切片模板的 frontmatter 默认 `status: ready-for-human`，保存业务 Ticket 集、业务票和验收引用及需求版本。正文写用户操作与交付结果、上游 Spec 规则和版本、切片边界、OpenAPI 影响、验收标准、测试 seam、合同引用与阻塞解除条件。
+
+新切片使用 Slice v3。Ticket 保存行为、验收、测试 seam 和合同引用；工作单元、Skill、写范围与验证命令在权威 YAML 保存一次。编译与批准、任务进度和 Execution Result 在现有 checkpoint、tracker 或任务包维护，不回写冻结 Ticket。
+
+冻结后 frontmatter 只代表冻结时状态，不能从它读取当前执行状态；也不能回写状态、验收勾选或执行结果。需求变化另存新版本，重新编译、审查与批准，旧文件和批准不会自动迁移。
+
+## Tracker 与实现就绪
+
+Ticket 五态为 `needs-triage`、`needs-info`、`ready-for-agent`、`ready-for-human`、`wontfix`。`ready-for-agent` 只用于必要门禁通过、阻塞边清除、可直接实现的垂直切片；Spec、设计和契约草案仍使用 `ready-for-human`。
+
+主 tracker 由 `.template-spec/agents/issue-tracker.md` 显式配置，模板默认 `local-markdown` 与 `docs/.scratch/`；Git remote 不能替代该选择。远程平台暂不可用时保留目标平台并生成待发布草案。Slice v3 的当前状态、验收与执行记录继续进入主 tracker，不改冻结需求。
+
+实现合同编译器不能批准合同或设置 `ready-for-agent`。生命周期核验并持久化当前合同、清除阻塞边，再在主 tracker 推进执行状态。UI 切片还需已校验的前端实现计划，实际项目绑定见 [[实现仓库与跨仓库契约]]。
+
+## 执行与完成证据
+
+业务行为使用 `behavior-tdd`；`controlled-generation` 只适用于机械生成，并保留例外与验证。`drift`、`violation` 或非空 `new_impacts` 出现时暂停受影响工作单元，重新路由，不能先完成代码再补合同。
+
+完成检查进入 tracker 或任务包：实现与适用测试通过、调试或原型代码移除、合同和全部工作单元执行结果已核验、实际文件在允许路径内、证据完整、验证含执行时间、重路由结论明确且合同未 `stale`。需求来源见 [[Spec基线]] 与 [[OpenAPI契约]]，执行边界见 [[切片实现合同]]。
 
 ## 来源
 
-- `CONTEXT.md`
-- `AGENTS.md`
-- `.template-spec/templates/vertical-slice-ticket-template.md`
-- `.template-spec/process/lifecycle-registry.yaml`
-- `.template-spec/agents/issue-tracker.md`
-- `.template-spec/agents/triage-labels.md`
-- `.agents/skills/yss-implementation-contract-compiler/SKILL.md`
+- `.template-spec/templates/vertical-slice-ticket-template.md`：第 12、1–7、18–22、28–85、56–75、63–67、75、87–99、121–133 行。
+
+- `CONTEXT.md`：第 63 行。
+
+- `AGENTS.md`：第 48、55、65 行。
+
+- `.template-spec/agents/issue-tracker.md`：第 15–39 行。
+
+- `.template-spec/agents/triage-labels.md`：第 3–11 行。
+
+- `.template-spec/process/lifecycle-registry.yaml`：第 462–467 行。

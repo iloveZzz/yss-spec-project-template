@@ -10,15 +10,18 @@ process.on("exit", () => rmSync(decisionTemp, { recursive: true, force: true }))
 let decisionRequirement;
 import { spawnSync } from "node:child_process";
 import { ROOT } from "./lib/lifecycle-registry.mjs";
-import { generateTaskPackageDefaults, validateTaskPackage, validateTaskPackageSet } from "./lib/task-package.mjs";
+import { generateTaskPackageDefaults, validateTaskPackage, validateTaskPackageSet, validateHistoricalMaintenanceTaskPackage } from "./lib/task-package.mjs";
 
-const contractRef = ".template-source/evidence/.task-package-slice-contract.json";
+const scenarioRoot = mkdtempSync(path.join(ROOT, "scripts/fixtures/.task-package-"));
+const scenarioRef = path.relative(ROOT, scenarioRoot).split(path.sep).join("/");
+process.on("exit", () => rmSync(scenarioRoot, { recursive: true, force: true }));
+const contractRef = `${scenarioRef}/slice-contract.json`;
 const contractFile = path.join(ROOT, contractRef);
 const templateSourceRoot = path.join(ROOT, ".template-source");
 const templateSourceExisted = existsSync(templateSourceRoot);
-const evidenceRef = ".template-source/evidence/.task-package-evidence.json";
+const evidenceRef = `${scenarioRef}/evidence.json`;
 const evidenceFile = path.join(ROOT, evidenceRef);
-const maintenanceRef = ".template-source/evidence/.task-package-maintenance.json";
+const maintenanceRef = `${scenarioRef}/maintenance.json`;
 const contract = {
   schema_version: 2,
   contract_id: "slice-todo",
@@ -163,6 +166,8 @@ try {
   [discovery, prototype, technical, tickets, review].forEach((pkg) => validateTaskPackage(pkg));
   assert.throws(() => validateTaskPackage(spec), /plan-spec-entry-blocked/, "直接派发 Spec 缺 Plan 审阅须阻断");
   validateTaskPackage(maintenance);
+  assert.deepEqual(validateHistoricalMaintenanceTaskPackage(maintenance), {status:'historical-only',execution_authorization:'not-evaluated'});
+  assert.throws(() => validateHistoricalMaintenanceTaskPackage(discovery), /仅适用于模板维护/);
   validateTaskPackage(frontend);
   assert.throws(() => validateTaskPackage({ ...frontend, user_decisions: [] }), /user-decision-scope-mismatch/, "Worker 派发前必须有当前实施范围批准");
   validateTaskPackage(backend);
@@ -182,7 +187,7 @@ try {
   contract.work_units.forEach(unit => { unit.contract_version = 2; });
   writeFixtures();
 
-  const dispatchRef = ".template-source/evidence/.task-package-dispatch.json";
+  const dispatchRef = `${scenarioRef}/dispatch.json`;
   contract.work_units[1].task_package_ref = dispatchRef;
   const dispatched = slicePackage("role.backend-engineer", "task-bound-dispatch", "work-unit.slice-backend", "apps/backend/todo/");
   writeFileSync(path.join(ROOT, dispatchRef), JSON.stringify(dispatched));
@@ -201,7 +206,7 @@ try {
   completedPlan.result = completedResult(completedPlan);
   validateTaskPackage(completedPlan);
 
-  const validFile = path.join(ROOT, ".template-source/evidence/.task-package-valid.json");
+  const validFile = path.join(ROOT, `${scenarioRef}/valid.json`);
   writeFileSync(validFile, JSON.stringify(discovery));
   for (const cli of ["scripts/verify-digital-human-task-package", "scripts/verify-subagent-task-package"]) {
     const result = spawnSync(process.execPath, [path.join(ROOT, cli), validFile], { encoding: "utf8" });
@@ -225,10 +230,10 @@ try {
   mustFail((value) => { value.execution_state = "Reviewer"; value.review_context = { implementation_actor_id: value.actor_id }; }, /不同 actor_id/, "reviewer-implementer-conflict");
   mustFail((value) => { value.workflow_status = "resolved"; value.verification_results = [{ command: "scripts/verify-template", exit_code: 0, executed_at: "now", evidence_ref: evidenceRef }]; value.result = completedResult(value, { new_impacts: ["api-change"] }); }, /new_impacts 必须为空/, "completed-new-impact");
   mustFail((value) => { value.workflow_status = "resolved"; value.verification_commands = ["scripts/verify-template", "pnpm test"]; value.verification_results = [{ command: "scripts/verify-template", exit_code: 0, executed_at: "now", evidence_ref: evidenceRef }]; value.result = completedResult(value); }, /覆盖全部 verification_commands/, "verification-command-gap");
-  mustFail((value) => { value.workflow_status = "resolved"; value.result = completedResult(value, { context_reconciliation: { status: "reconciled", ref: ".template-source/evidence/.missing.json" }, evidence_refs: [".template-source/evidence/.missing.json"] }); value.verification_results = [{ command: "scripts/verify-template", exit_code: 0, executed_at: "now", evidence_ref: evidenceRef }]; }, /不可读/, "unreadable-evidence");
+  mustFail((value) => { value.workflow_status = "resolved"; value.result = completedResult(value, { context_reconciliation: { status: "reconciled", ref: `${scenarioRef}/missing.json` }, evidence_refs: [`${scenarioRef}/missing.json`] }); value.verification_results = [{ command: "scripts/verify-template", exit_code: 0, executed_at: "now", evidence_ref: evidenceRef }]; }, /不可读/, "unreadable-evidence");
   mustFail((value) => { value.workflow_status = "resolved"; value.verification_results = [{ command: "scripts/verify-template", exit_code: 0, executed_at: "now", evidence_ref: evidenceRef }]; }, /Workflow Execution Result/, "resolved-without-result");
   mustFail((value) => { value.workflow_status = "resolved"; value.result = { result: "blocked" }; value.verification_results = [{ command: "scripts/verify-template", exit_code: 0, executed_at: "now", evidence_ref: evidenceRef }]; }, /Workflow Execution Result/, "resolved-blocked-result");
-  mustFail((value) => { value.workflow_status = "resolved"; value.verification_results = [{ command: "scripts/verify-template", exit_code: 0, executed_at: "now", evidence_ref: evidenceRef }]; value.result = completedResult(value); value.expected_evidence_files = [".template-source/evidence/.missing.json"]; }, /expected_evidence_files.*不可读/, "missing-expected-evidence");
+  mustFail((value) => { value.workflow_status = "resolved"; value.verification_results = [{ command: "scripts/verify-template", exit_code: 0, executed_at: "now", evidence_ref: evidenceRef }]; value.result = completedResult(value); value.expected_evidence_files = [`${scenarioRef}/missing.json`]; }, /expected_evidence_files.*不可读/, "missing-expected-evidence");
 
   process.stdout.write("数字人全生命周期任务包压力场景验证通过\n");
 } finally {

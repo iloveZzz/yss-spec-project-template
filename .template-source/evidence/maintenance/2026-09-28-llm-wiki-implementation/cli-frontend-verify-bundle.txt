@@ -1,1 +1,0 @@
-{"package":"create-yss-harness-frontend","core":"821509ab6f94a6bfafd57d3051d6fd16dfa99fcbbb3480356cf15cf5c59d0473","template":"533a3d6b03c725acd8599ef15559385be2b7891708af1198243ebcaf9be3778e","files":3146}

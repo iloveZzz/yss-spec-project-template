@@ -2,8 +2,7 @@
 /**
  * evidence-archive — template-source historical evidence archival tool.
  *
- * Implements the archive/restore mechanism required by the machine-evidence
- * retirement plan: pack historical evidence outside the repository, verify the
+ * Packs maintenance history outside the repository, verifies the
  * pack by full member comparison, and only then remove the originals from the
  * worktree. Every destructive step has an explicit refusal guard.
  *
@@ -20,6 +19,7 @@ import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
+import { resolveMaintenanceOutput } from '../../scripts/lib/maintenance-storage.mjs';
 
 const EXIT_REFUSE = 2;
 
@@ -43,10 +43,17 @@ function assertContained(rel, root) {
   if (typeof rel !== "string" || rel.length === 0) die("invalid member path");
   if (path.isAbsolute(rel)) die("absolute member path refused: " + rel);
   const norm = path.posix.normalize(rel);
+  if (norm !== rel || /[\\\x00-\x1f]/.test(rel) || /^[A-Za-z]:/.test(rel)) die('noncanonical member path refused: ' + rel);
   if (norm.startsWith("../") || norm === ".." || norm.includes("/../")) die("path escape refused: " + rel);
   const abs = path.resolve(root, norm);
   const rootWithSep = root.endsWith(path.sep) ? root : root + path.sep;
   if (!abs.startsWith(rootWithSep)) die("member escapes repository: " + rel);
+  let cursor = root;
+  for (const part of norm.split('/')) {
+    cursor = path.join(cursor, part);
+    try { if (fs.lstatSync(cursor).isSymbolicLink()) die('symlink not supported: ' + rel); }
+    catch (error) { if (error.code !== 'ENOENT') throw error; }
+  }
   return { rel: norm, abs };
 }
 
@@ -178,7 +185,7 @@ function cmdPack(root, args) {
     const abs = path.join(root, rel);
     const st = fs.statSync(abs);
     if (!st.isFile()) die("member is not a regular file: " + rel);
-    return { path: rel, bytes: st.size, mode: (st.mode & 0o777).toString(8).padStart(3, "0"), sha256: fileSha(abs) };
+    return { path: rel, bytes: st.size, type: 'file', mode: (st.mode & 0o777).toString(8).padStart(3, "0"), sha256: fileSha(abs) };
   });
 
   const archivePath = path.join(archiveDir, batch + ".tar.gz");
@@ -239,6 +246,19 @@ function cmdVerify(root, args) {
   const archivePath = archiveFile(archiveDir, batch);
 
   if (fileSha(archivePath) !== manifest.archive_sha256) die("archive digest does not match manifest");
+  const expectedMembers = new Set();
+  for (const member of manifest.members) {
+    assertContained(member.path, extractDir);
+    if (expectedMembers.has(member.path)) die('duplicate manifest member');
+    expectedMembers.add(member.path);
+  }
+  const names = execFileSync('tar', ['-tzf', archivePath], {encoding:'utf8', maxBuffer:1<<30}).trimEnd().split('\n');
+  const types = execFileSync('tar', ['-tvzf', archivePath], {encoding:'utf8', maxBuffer:1<<30}).trimEnd().split('\n');
+  if (types.some(line => !line.startsWith('-'))) die('not-a-file archive member; symlink refused');
+  const nameSet = new Set(names);
+  if (nameSet.size !== names.length) die('duplicate archive member');
+  for (const name of names) { assertContained(name, extractDir); if (!expectedMembers.has(name)) die('unexpected-member: ' + name); }
+  for (const name of expectedMembers) if (!nameSet.has(name)) die('missing-member: ' + name);
   if (fs.existsSync(extractDir)) die("extract dir already exists, refusing to overwrite: " + extractDir);
   fs.mkdirSync(extractDir, { recursive: true });
   execFileSync("tar", ["-xzf", archivePath, "-C", extractDir], { maxBuffer: 1 << 30 });
@@ -355,6 +375,14 @@ function cmdStatus(root, args) {
 const [cmd, ...rest] = process.argv.slice(2);
 const root = repoRoot();
 const args = parseArgs(rest);
+if (args._[0] && !/^[a-zA-Z0-9][a-zA-Z0-9._-]*$/.test(args._[0])) die('invalid batch id');
+try { if (fs.existsSync(path.join(root, 'yss-project.yaml'))) {
+  if (!args.flags['archive-dir']) args.flags['archive-dir'] = resolveMaintenanceOutput('maintenance:archives', { root });
+  if (cmd === 'pack' && !args.flags.index) args.flags.index = resolveMaintenanceOutput('maintenance:archives/archive-index.json', { root });
+  for (const flag of ['archive-dir', 'index', 'out', 'report', 'extract-dir']) {
+    if (args.flags[flag] && args.flags[flag] !== true) args.flags[flag] = resolveMaintenanceOutput(args.flags[flag], { root });
+  }
+} } catch (error) { die(error.message); }
 const commands = { plan: cmdPlan, pack: cmdPack, verify: cmdVerify, remove: cmdRemove, status: cmdStatus };
 if (!commands[cmd]) die("unknown subcommand: " + cmd);
 commands[cmd](root, args);

@@ -1,4 +1,0 @@
-*.stdout -whitespace
-*.stderr -whitespace
-*.diff -whitespace
-full-verification*.txt -whitespace

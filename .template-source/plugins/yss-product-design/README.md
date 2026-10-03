@@ -20,7 +20,7 @@ Plan → Spec / 功能架构 → 产品设计与验证 → Handoff v5 正式方�
 
 ## 构建与接收
 
-`node .template-source/plugins/yss-product-design/build.mjs --output .template-source/cache/product-design/yss-product-design`
+`node .template-source/plugins/yss-product-design/build.mjs --output "$(scripts/maintenance-path cache/product-design/yss-product-design)"`
 
 后端通过 `project-import-design --target-dir <后端治理根> --bundle <交付目录或ZIP>` 导入，再以 `project-entry --mode reuse --input <包含 import_receipt_ref 的 JSON>` 继续。目录导入使用 Import Receipt v3；运输用 package.zip 沿用现有导入协议，保留原包摘要与批准，不伪造源交付记录。
 

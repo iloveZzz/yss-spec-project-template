@@ -1,6 +1,0 @@
-[开始] git --git-dir /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-template-cache-4ElIHp/cache/.fetch-Nz9Ec0/repository.git fetch --depth=1 --no-tags /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-template-cache-4ElIHp/remote 933ccc2e85410b5f34a2a23cc46792df6bfd6b27
-[完成] git (41ms, exit=0)
-[开始] git --git-dir /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-template-cache-4ElIHp/offline-cache/.fetch-65Q1Ax/repository.git fetch --depth=1 --no-tags /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-template-cache-4ElIHp/offline 933ccc2e85410b5f34a2a23cc46792df6bfd6b27
-[失败] git (16ms, exit=128)
-[开始] git --git-dir /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-template-cache-4ElIHp/timeout-cache/.fetch-buh8Ic/repository.git fetch --depth=1 --no-tags /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-template-cache-4ElIHp/remote 933ccc2e85410b5f34a2a23cc46792df6bfd6b27
-[失败] git (103ms, exit=124, timeout)

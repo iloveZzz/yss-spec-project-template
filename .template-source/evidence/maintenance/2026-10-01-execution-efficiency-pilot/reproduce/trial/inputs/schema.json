@@ -1,1 +1,0 @@
-{"type": "object", "required": ["count", "name"], "properties": {"count": {"$ref": "file:///tmp/yss-execution-pilot-20261001/trial/inputs/reference.json"}, "name": {"type": "string"}}, "additionalProperties": false}

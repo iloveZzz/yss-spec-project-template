@@ -56,7 +56,7 @@ YSS 模板工程是一套可版本化的研发治理系统。它用仓库身份�
 
 模板实例分发面包含根规则、`CONTEXT.md`、按需选择的共享 skills、`.template-spec/` 中的治理资产和共享验证脚本；`docs/` 保存实例按需产生的产品资产。CLI 从固定模板 commit 构建 bundled snapshot，并在 metadata 中保存模板身份和版本。
 
-`.template-source/` 是模板源治理区，保存维护证据、研究记录、源仓 ADR、跨仓契约、发布路线和模板源 Wiki。该目录不进入 `project-instance`，避免把模板维护历史误当成产品研发资产。
+`.template-source/` 是模板源治理区，保存当前维护规则、跨仓契约、工具源码、必要工程依据和模板源 Wiki；运行报告、历史证据、缓存及恢复包存入仓外 maintenance 命名空间。该目录不进入 `project-instance`，避免把模板维护历史误当成产品研发资产。
 
 ## 7. 模板维护工作流
 

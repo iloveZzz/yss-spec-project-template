@@ -70,7 +70,7 @@
 
 模板维护默认停在 `implementation-ready`。L1/L2/L3 均不强制独立审查、候选冻结或三轴任务包；分级只决定验证强度。维护者自检和发布前完整验证闭合后才能成为 `release-ready`，外部生成器集成与兼容性检查仍须通过，实际发布由生物人明确发起。按需独立审查不得自审，也不得用请求代替通过结论。三个核验入口由 `.template-source/process/template-verification-profiles.yaml` 统一定义：
 
-- `scripts/verify-template-fast`：按 Git 影响面运行快速检查；未映射路径或核心核验资产变化时 fail-safe 升级为完整门禁。
+- `scripts/verify-template-fast`：按 Git 影响面运行快速检查；未映射路径或核心核验资产变化时 fail-safe 升级为完整验证，来源仍为当前工作树，支持 `implementation-ready`。验证强度升级不授予发布资格；显式 candidate / release 入口要求已提交来源。
 - `scripts/verify-template-candidate`：运行命中影响面与验证基础设施检查；PR 默认使用该入口，名称不表示必须冻结候选或提供审查任务包。
 - `scripts/verify-template`：执行不可裁剪的完整验证；main 与正式发布前运行。发布前按 `github-workflows.md` 额外验证固定版本生成器集成与兼容性，修复内循环按影响面执行。
 
@@ -103,14 +103,16 @@ candidate_digest: null | <sha256>
 
 触发项 ID 与最低等级只由 `maintenance-intensity.yaml` 维护；未知触发项必须先更新策略和场景，不能静默接受。
 
-Worktree 候选使用 `scripts/capture-maintenance-candidate --output <目录>` 捕获。新候选目录必须位于 `.template-source/evidence/maintenance/`、在捕获前不存在，并通过 staging 原子落盘；检查时该目录必须恰好包含 `candidate-manifest.yaml`、`candidate.bin` 和 `tracked.diff`。所有 untracked 路径、mode、类型和内容均已按 `yss-worktree-candidate-v1` 帧写入单一 `candidate.bin`，不得再生成逐文件 `untracked-content/000xxx` 副本。审查任务包、报告和旧候选目录可用重复的 `--exclude <仓库相对路径>` 与实现字节分离，但排除路径只允许位于 `.template-source/evidence/maintenance/`，并全部写入 manifest；`scripts/**`、`docs/**` 或其他实现 / 权威资产不能通过该接口排除。`scripts/inspect-maintenance-candidate` 只读复核摘要、清单、规范三文件和外部 `tracked.diff`；历史候选的逐文件引用继续兼容。
+Worktree 候选使用 `scripts/capture-maintenance-candidate --output <目录>` 捕获。新候选目录必须位于当前工作区仓外 `maintenance:candidates/<id>/`、在捕获前不存在，并通过 staging 原子落盘；检查时该目录必须恰好包含 `candidate-manifest.yaml`、`candidate.bin` 和 `tracked.diff`。所有 untracked 路径、mode、类型和内容均已按 `yss-worktree-candidate-v1` 帧写入单一 `candidate.bin`，不得再生成逐文件 `untracked-content/000xxx` 副本。新捕获不接受 `--exclude`；旧档案路径排除白名单已退役，维护材料在仓外，与实现字节自然分离。历史 v1 候选中的排除清单仅兼容读取，不能用于新捕获。`scripts/inspect-maintenance-candidate` 只读复核摘要、清单、规范三文件和外部 `tracked.diff`；新 manifest schema v2 使用 `reference_base: bundle` 和工作区身份，包内 stream/diff 使用相对引用；原字节流和摘要保持不变，v1 及历史逐文件引用仅兼容读取。
 
 固定远程模板输入可使用 `scripts/cache-template-commit --repository <remote-url> --commit <40位commit>`。缓存键仅由 URL 与 commit 构成，每次命中仍复核 metadata 和 Git object hash；缓存目录不进入 Git 或正式证据。
 
-`focused-independent-review` 与 `formal-independent-review` 的 `command` 必须引用可读取的审查结论。L1/L2/L3 日常新记录使用维护者自检；仅主动选择独立审查时创建对应记录；历史 L3 正式记录继续使用 `.template-source/process/schemas/maintenance-review-record.schema.json` 并只读兼容，仍须带 `legacy_formal_review: true`、审查身份和明确通过结论。审查请求、实施者自述、否定裁决、伪造或非规范候选流、无效任务包、未关闭 findings 或 symlink 越界证据都会被拒绝。可用 `scripts/verify-maintenance-review-record` 单独校验历史记录。
+`focused-independent-review` 与 `formal-independent-review` 的 `command` 必须引用可读取的审查结论。L1/L2/L3 日常新记录使用维护者自检；仅主动选择独立审查时创建对应记录；正式记录使用 `.template-source/process/schemas/maintenance-review-record.schema.json`，旧结构化记录仅兼容读取；历史专用 Markdown 白名单入口已退役。审查请求、实施者自述、否定裁决、伪造或非规范候选流、无效任务包、未关闭 findings 或 symlink 越界证据都会被拒绝。可用 `scripts/verify-maintenance-review-record` 单独校验历史记录。
 
 ### 定向高风险反例
 
 触发集合仅由 `.template-source/process/maintenance-intensity.yaml` 维护；当前包括权限边界、生命周期门禁和发布语义。每个命中 trigger 的 `counterexample` 条目填写 `trigger`、`run_ref`、实际 `command` 和 `result: pass`。运行记录绑定拒绝断言、原命令非零结果、日志 SHA-256、输入引用及摘要、起止时间；反例测试自身成功退出 0。文字 `pass`、未执行命令、缺日志或输入漂移均不满足要求。
 
-可用 `scripts/verify-maintenance-risk-scenarios --output .template-source/evidence/maintenance/<本轮>/counterexamples` 执行三个最小拒绝场景，保存真实记录；具体修改仍应补充受影响行为的定向场景。核验只读保存记录，不执行其中的命令。这是可审计执行证据，不是密码学运行证明或业务批准。未命中上述风险的 L3 不新增反例要求。历史文件以 `scripts/verify-maintenance-checkpoint --history <file>` 兼容查看，不回写原批准，不用历史结果证明当前交付。
+可用 `scripts/verify-maintenance-risk-scenarios --output maintenance:research/<本轮>/counterexamples` 执行三个最小拒绝场景，保存真实记录；具体修改仍应补充受影响行为的定向场景。核验只读保存记录，不执行其中的命令。这是可审计执行证据，不是密码学运行证明或业务批准。未命中上述风险的 L3 不新增反例要求。历史文件以 `scripts/verify-maintenance-checkpoint --history <file>` 兼容查看，不回写原批准，不用历史结果证明当前交付。
+
+维护运行输出与正式证据引用遵循[仓外维护目录与引用](../../.template-source/process/runtime-storage.md)。维护验证记录的 `maintenance:` 引用必须绑定 `evidence_digest`；项目实例和 Slice 不扩展外部路径权限。

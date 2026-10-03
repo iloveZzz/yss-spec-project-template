@@ -1,19 +1,29 @@
 # SpecDelta
 
-Spec Delta 只记录相对既有冻结 [[Spec基线]] 的 `ADDED / MODIFIED / REMOVED` 高风险行为差异，以及对应的验收场景和测试映射。它不是第二份完整 Spec，也不替代 OpenAPI 或架构资产。
+Spec Delta 记录相对既有冻结 Spec 基线的 `ADDED / MODIFIED / REMOVED` 高风险行为差异，以及对应验收场景和测试映射。它保留变化的边界，完整规格、OpenAPI 与架构资产仍分别承担各自职责。
 
-触发面很窄。全新产品、全新模块和低风险调整不生成 Spec Delta。生命周期产物 `artifact.spec-delta` 的触发条件是「已有冻结 Spec 的高风险行为变化」，归属 `stage.spec-architecture`。未命中时按 [[条件强制门禁]] 与 [[影响面分诊与流程裁剪]] 记录 `not-applicable` 及原因，不写空 Delta。明确改变认证或授权行为时，把差异当作普通行为写入本 Delta，不另开专项 Delta。
+## 适用范围
 
-模板 `.template-spec/templates/spec-delta-template.md` 用三列差异表达行为，不引入 OpenSpec CLI 或额外状态机。`ADDED` 是新增用户可见行为、API 行为、状态、权限或数据约束；`MODIFIED` 是已有行为的输入、输出、状态流、权限、错误结构、兼容性或验收标准变化；`REMOVED` 是删除或废弃已有行为、字段、入口、权限、状态或兼容路径。变更摘要还要挂相关 OpenAPI Draft / Freeze、架构 / 设计审查和 Ticket / 切片。
+`artifact.spec-delta` 属于 `stage.spec-architecture`，触发条件是已有冻结 Spec 的高风险行为变化。全新产品或全新模块不使用 Spec Delta；未命中的条件记录带原因的 `not-applicable`，不生成空文档。
 
-受影响范围按维度勾选：UI / 页面 / 交互状态，API / OpenAPI schema / 错误结构，权限 / 认证 / 授权，状态机 / 业务流程，数据模型 / Repository / 查询索引，外部系统 / 跨端协作，发布 / 回滚 / 运维，风险 / 人审点。UI 勾选不等于自动构成 [[产品设计影响与原型]]；只有主流程、导航、权限体验、异常 / 恢复、状态流转或 API 反推才需要页面流和原型校准。API 勾选后必须走 [[OpenAPI契约]] 的 Draft → 审查 → Freeze，Freeze 后变更仍要回到 API 影响分析和设计审查。
+差异必须能够回指原冻结基线，区分新增、修改和移除的行为，并绑定受影响验收场景及测试映射。基线正文见 [[Spec基线]]；Delta 只承接行为变化，不单独成为实现授权。
 
-验收场景（`SD-001` 起）映射到测试与 fresh verification：单元 / 契约 / E2E / 手工验证，并记录命令、证据路径和 `planned / passed / blocked`。这直接支撑后续 [[垂直切片Ticket]] 的验收与测试 seam，也进入 [[Fresh验证与独立审查]]。结论栏只回答是否允许进入 OpenAPI Freeze / no API impact、是否允许进入 `to-tickets`、必须带入垂直切片的约束，以及 Git checkpoint 状态；`to-tickets` 仍只是兼容入口。
+## 按影响重新路由
+
+安全或权限变化写入普通 Spec、契约、架构、验收和测试 seam，并按实际影响触发门禁。API 变化先形成 OpenAPI 3.1 Draft，审查后 Freeze，再实现；Freeze 后的变化重新进入 API 影响分析和设计审查，见 [[OpenAPI契约]]。
+
+UI 变化是否构成产品设计影响，取决于是否触及主流程、导航、权限体验、异常或恢复、状态流转、API 反推；文案、token、颜色、间距和无行为变化的孤立视觉修复不自动触发完整产品设计流程，见 [[产品设计影响与原型]]。
+
+## 下游约束
+
+OpenAPI Freeze 或无 API 影响记录后，才能把冻结范围拆成窄而可验证的 [[垂直切片Ticket]]。Spec、设计和待冻结资产使用 `ready-for-human`；只有适用门禁通过、阻塞清除且可直接实现的切片才使用 `ready-for-agent`。
+
+实现仍须消费已批准、已持久化且当前的 [[切片实现合同]]。`seam-deferred` 必须登记风险、责任人、后续 Ticket、验证计划和目标版本或发布日期；完成结论以本轮 [[Fresh验证与独立审查]] 为依据。
 
 ## 来源
 
-- `CONTEXT.md`
-- `AGENTS.md`
-- `.template-spec/templates/spec-delta-template.md`
-- `.template-spec/process/lifecycle-registry.yaml`
-- `.template-spec/templates/spec-template.md`
+- `CONTEXT.md`：第 45、54、58–59 行。
+
+- `AGENTS.md`：第 46、47、48、55–56、64、49、84 行。
+
+- `.template-spec/process/lifecycle-registry.yaml`：第 314–317 行。

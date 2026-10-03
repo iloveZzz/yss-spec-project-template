@@ -32,21 +32,25 @@
 
 ## 4. `template-source` 模板维护路由
 
+在用户已授权的模板维护范围内，继续完成受影响 Skill、投影、锁文件和分发快照的同步与适用验证；按当前影响面读取文档。首次编辑完成不等于交付完成。只有新增决定、缺失必要输入或命中既有审批边界时才暂停；提交、推送、发布仍按本仓授权规则执行。
+
 - 按“影响面 → 事实源 → 投影 / 派生 → 分级证据”维护；改 Skill 必须用 `maintaining-skills`，并按 `.template-spec/process/harness-process-tailoring.md` 判定 L1 / L2 / L3。
 - `.agents/skills` 是共享 Skill 权威目录；其他 Agent root 下的同名 Skill 是生成投影，不得手改或与 canonical 并列维护。
-- 内循环运行 `scripts/verify-template-fast`；晋级审查运行 `scripts/verify-template-candidate`；首次冻结和最终发布前运行不可裁剪的 `scripts/verify-template`。外部 `create-yss-spec` 集成未闭合不得称可发布。
+- 内循环运行 `scripts/verify-template-fast`；PR 运行 `scripts/verify-template-candidate`；main 和发布前运行不可裁剪的 `scripts/verify-template`。日常维护不强制独立审查或候选冻结，L1/L2/L3 决定验证强度；外部 `create-yss-spec` 固定版本集成未闭合不得称可发布。CI 边界见 `.template-source/process/github-workflows.md`。
 
 ## 5. `project-instance` 产品研发路由
 
-主流程：分诊 → Discovery → Spec / 功能架构 → 产品设计 → 工程契约 → Ticket → 切片 → 验证 / 发布 / 复盘。
+主流程：分诊 → Plan → Spec / 功能架构 → 产品设计 → 工程契约 → Ticket → 切片 → 验证 / 发布 / 复盘。
 
 - 先按 `.template-spec/process/harness-process-tailoring.md` 判定影响面和最近可信阶段，再由 `yss-product-lifecycle` 执行 `.template-spec/process/lifecycle-registry.yaml`；阅读导航见 `.template-spec/process/lifecycle-artifact-map.md`。
 - 命中门禁必须完成；仅未命中时记录带原因的 `not-applicable`，不得生成空文档或混淆门禁、产物、工作单元、证据。安全 / 权限写入普通 Spec、契约、架构、验收和 seam，按实际影响触发门禁。
-- 新功能和较大变更先进入 Discovery；`grill-with-docs`、`to-spec`、`to-tickets`、`implement` 仅为用户显式兼容入口。API 变更先形成 OpenAPI 3.1 Draft，审查后 Freeze，再实现。
-- Spec Delta 只记冻结基线的高风险行为差异。OpenAPI Freeze 或无 API 影响记录后拆窄垂直切片，禁止仅按技术层横拆。
+- 新功能和较大变更先进入 Plan；`to-spec`、`to-tickets`、`implement` 仅为用户显式兼容入口。API 变更先形成 OpenAPI 3.1 Draft，审查后 Freeze，再实现。
+- Spec 综合同时起草业务 Ticket 集，Design 校准同一组 ID；业务正式化后战略交接或技术分析，协议见 `.template-spec/process/business-tickets.md`。业务票不授予实现资格。Spec Delta 只记冻结基线的高风险行为差异。OpenAPI Freeze 或无 API 影响记录后拆窄垂直切片，禁止仅按技术层横拆。
 - `seam-deferred` 必须记录风险、责任人、后续 Ticket、验证计划和目标版本或发布日期。
 
 ## 6. Ticket 与状态
+
+- Plan / Spec / Design 按 `.template-spec/process/stage-tracking.md` 从阶段入口登记工作、按需拆分并在恢复 / 流转时验证；工作项进度不替代 Ticket 五态和阶段批准。
 
 - 每个功能先建父 Ticket，汇总阶段资产、审查、阻塞和证据。
 - Spec、设计、原型、OpenAPI Draft 和待冻结资产使用 `ready-for-human`；只有门禁通过、阻塞清除且可直接实现的垂直切片才能使用 `ready-for-agent`。
@@ -56,7 +60,7 @@
 
 - 实现前按 `.template-spec/process/implementation-repo-integration.md` 登记仓库、项目根、分支、CI、验证命令、回滚点；再用 `yss-implementation-contract-compiler` 编译最小 Skill 集和当前合同。
 - 无工程先确认外部仓库或输出目录。Backend `scaffold_status=required` 时，由生命周期推荐 `domain-driven` / `layered-mvc`，用户逐项目确认后路由；Frontend 用 `yss-frontend-scaffold-generator`。缺目录不改路由。
-- 脚手架仅在 `scaffold-architecture-decisions.yaml` 已确认且当前、schema v3 合同已持久化并获批准后无交互运行，只生成机械骨架。既有工程不得重选或覆盖；架构转换单独立项。
+- 脚手架仅在 `scaffold-architecture-decisions.yaml` 已确认且当前、Project Scaffold Contract schema v4 已持久化并获批准后无交互运行，只生成机械骨架。既有工程不得重选或覆盖；架构转换单独立项。
 - 正式切片只消费已批准、已持久化且当前的 Slice Implementation Contract；编译器只起草，不批准、不设置 `ready-for-agent`、不宣布完成。
 - UI 切片在 `ready-for-agent` 前须有已校验的 `frontend_implementation_plan`，实现后补 `frontend_implementation_verification`，覆盖截图 / 视觉回归、状态交互、console warning、实际 `pnpm` 退出码。
 - 前端验证优先 `pnpm`，后端优先根 `./mvnw`；缺少时记录受控例外和实际命令。
@@ -78,7 +82,9 @@
 
 - 实现者不做独立审查，Reviewer 不写实现；代码审查统一用 `code-review`。mandatory 不豁免；`violation` 修复后重审，`drift` / `new_impacts` 使合同 `stale` 并回编译器。
 - “完成 / 可合并 / 可发布”仅基于 Fresh Verification；历史结果、自述无效。
-- 会签按角色表 `gate_policy` 并经 `scripts/verify-approval-record` 核验；发布、商务承诺、运行时外部副作用仍须生物人。
+- 会签按角色表 `gate_policy` 并经 `scripts/verify-approval-record --require-approved --checkpoint <current checkpoint>` 核验；当前期望上下文由消费者的 checkpoint / 任务提供，不从会签记录反向填充。`user_decision_policy` 命中的关键决定必须先展示可审阅资产，再取得提问者或其明确指定负责人的真实回复。无回复保持等待，数字人不能代答；原始来源、范围、复用和失效见生命周期 `references/user-decisions.md`。发布、商务承诺、运行时外部副作用仍须生物人。
+- 普通功能默认一个推进负责人和一个独立审查者；候选角色列表不要求逐角色签字。相邻检查可组合审查、逐项留结论。已有范围授权按用户决定协议验证延续，未知影响先调查，确认实质决定变化后才重新决定；外部强制审批不得裁掉，缺陷和缺证据仍阻断，非阻断建议进入待办。
+- 首轮覆盖全部适用审查项；修复后按差异、受影响结论 / 行为及依赖定向复审，并重新绑定当前候选。摘要变化、UI 影响或 `new_impacts` 不触发默认全轴复审；未知影响先调查。能力与补充只读技能从角色表编译，禁止用职称代替能力或独立身份。专业审查等待由主控自主派发并等待，验证失败修复或路由；仅缺真实决定或新授权时展示资产后询问，独立工作继续。
 - 会签暂停、handoff、实现、合并、发布边界同步范围、证据、风险、会签点、Ticket 状态和下一步。Git checkpoint 只含本轮范围；提交 / 推送须用户授权。
 - 发布或阶段完成时判断复盘；架构 / 验证返工、IMPORTANT / CRITICAL finding、人工确认延期时，落中文复盘并修订事实源。
 

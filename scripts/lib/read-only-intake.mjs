@@ -34,12 +34,23 @@ function fileDigestWithBuffer(file, buffer) {
   } finally { fs.closeSync(fd); }
 }
 /** Final observable repository files, including ignored and untracked files; never follow links. */
-export function intakeSnapshot(root) {
+export function intakeSnapshot(root, { excludeIgnoredToolState = false } = {}) {
   const result = spawnSync('git', ['ls-files', '-z', '--cached', '--others'], { cwd: root, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 });
   ensure(result.status === 0, result.stderr || '无法观察仓库');
+  const refs = [...new Set(result.stdout.split('\0').filter(Boolean))].sort();
+  const ignoredToolState = new Set();
+  if (excludeIgnoredToolState) {
+    const toolRefs = refs.filter(ref => /^(?:\.codegraph|\.idea)\//.test(ref));
+    if (toolRefs.length) {
+      const ignored = spawnSync('git', ['check-ignore', '-z', '--stdin'], { cwd: root, input: toolRefs.join('\0') + '\0', encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 });
+      ensure([0, 1].includes(ignored.status), ignored.stderr || '无法识别工具运行缓存');
+      for (const ref of ignored.stdout.split('\0').filter(Boolean)) ignoredToolState.add(ref);
+    }
+  }
   // Synchronous reads share scratch space only within this snapshot, never results.
   const rows = {}, buffer = Buffer.allocUnsafe(1024 * 1024);
-  for (const ref of [...new Set(result.stdout.split('\0').filter(Boolean))].sort()) {
+  for (const ref of refs) {
+    if (ignoredToolState.has(ref)) continue;
     const file = path.join(root, ref);
     try {
       const stat = fs.lstatSync(file);
@@ -48,7 +59,7 @@ export function intakeSnapshot(root) {
         ensure(nested.status === 0 && fs.realpathSync(nested.stdout.trim()) === fs.realpathSync(file), `子仓未初始化: ${ref}`);
         const head = spawnSync('git', ['rev-parse', 'HEAD'], { cwd: file, encoding: 'utf8' });
         ensure(nested.status === 0 && head.status === 0, `子仓不可观测: ${ref}`);
-        rows[ref] = { kind: 'gitlink', head: head.stdout.trim(), files: intakeSnapshot(file) };
+        rows[ref] = { kind: 'gitlink', head: head.stdout.trim(), files: intakeSnapshot(file, { excludeIgnoredToolState }) };
       } else rows[ref] = { kind: stat.isSymbolicLink() ? 'link' : 'file', mode: stat.mode, digest: stat.isSymbolicLink() ? digest(fs.readlinkSync(file)) : fileDigestWithBuffer(file, buffer) };
     } catch (error) { if (error.code === 'ENOENT') rows[ref] = null; else throw error; }
   }

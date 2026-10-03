@@ -1,2 +1,0 @@
-PASS: actual resolver excludes code-only, includes document output, does not persist condition or approve the contract.
-PASS: source, license metadata, 4 projections, 9 callers, scope and readable writing inputs. Model output quality not measured.

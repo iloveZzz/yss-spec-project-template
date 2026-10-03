@@ -1,9 +1,0 @@
-{
-  "command": "[\"node\",\"/tmp/yss-role-gates-research-20261002/assurance-bundle-role-probe.mjs\"]",
-  "exit_code": 0,
-  "duration_ms": 995,
-  "executed_at": "2026-10-02T04:34:37.405Z",
-  "termination": null,
-  "stdout_digest": "sha256:fca3a45858933c3ba20b2a38fd738d24544b7e6c68c967cdc6ea64cdc1f6cf5e",
-  "stderr_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-}

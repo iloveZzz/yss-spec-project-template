@@ -5,6 +5,7 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, renameSync, rmSync, w
 import path from "node:path";
 import { tmpdir } from "node:os";
 import { ROOT } from "./template-verification.mjs";
+import {resolveMaintenanceOutput} from './maintenance-storage.mjs';
 
 function fail(message) { throw new TypeError(message); }
 function ensure(condition, message) { if (!condition) fail(message); }
@@ -14,7 +15,8 @@ function git(args, cwd, timeoutMs = 0, cleanupPathsOnFailure = []) {
   return result.stdout.trim();
 }
 
-export function acquireTemplateCommit({ repository, commit, cacheRoot = path.join(ROOT, ".template-source/cache/remote-templates"), allowLocal = false, timeoutMs = 0 }) {
+export function acquireTemplateCommit({ repository, commit, cacheRoot, allowLocal = false, timeoutMs = 0 }) {
+  cacheRoot = cacheRoot === undefined ? resolveMaintenanceOutput('maintenance:cache/remote-templates', {root:ROOT}) : allowLocal ? cacheRoot : resolveMaintenanceOutput(cacheRoot, {root:ROOT});
   ensure(Number.isFinite(timeoutMs) && timeoutMs >= 0, "timeoutMs 必须是非负毫秒数");
   ensure(typeof repository === "string" && repository.trim(), "repository 不能为空");
   ensure(/^[a-f0-9]{40}$/.test(commit), "模板 ref 必须是 40 位 commit");

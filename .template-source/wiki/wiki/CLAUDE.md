@@ -6,7 +6,7 @@
 
 ## 三层结构
 
-- **`raw/`** — 不可变原始源。从 live 文档拷贝，或从 live 源提取且标明出处的派生摘要。只读，不靠改 raw 来「修正」事实。
+- **`raw/`** — 当前完整来源快照或标明抽取规则的派生摘要。依据 live 通过统一事务刷新；旧字节保存在仓外恢复材料，不通过手改快照修正事实。
 - **文章（`wiki/*.md`）** — LLM 生成的知识文章。文件名（不含 `.md`）即文章 ID，必须全局唯一。使用 `[[wikilink]]` 互引。
 - **`index.md`** — 内容目录。`##` 节标题定义分类；节下列出该分类下的 `[[wikilink]]`。
 
@@ -25,4 +25,6 @@
 
 ## 操作日志
 
-`log.md` 只追加。格式：`## [YYYY-MM-DD] OPERATION | 描述`（CREATE / UPDATE / LINK / FIX / REFRESH / REBUILD / RETIRE / LINT / INGEST）。
+本模板源的 `log.md` 仅保留最新运行入口。完整计划、旧日志、迁移备份及事务收据位于当前工作区仓外 `maintenance:wiki/<wiki-id>/`。
+
+`.wiki-manifest.json` 使用 schema v2：文章消费来源版本与逐条证据，结构检查和当前性分开核验。所有写入通过 canonical `llm-wiki` 的 plan/apply 事务；历史版本只读，迁移本身不表示内容已经刷新。

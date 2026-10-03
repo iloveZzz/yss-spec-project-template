@@ -9,30 +9,15 @@
 ## 项目结构
 
 ```text
-├── .agents/                 ← 跨 Agent 共享 skills 的权威内容
-├── .claude/                 ← Claude skills 投影与平台专属 skills
-├── .codex/                  ← Codex skills 投影与平台专属 skills
-├── .cursor/                 ← Cursor skills 投影
-├── .pi/                     ← Pi skills 投影与平台专属 skills
-├── .qoder/                  ← Qoder skills 投影与平台专属 skills
-├── .trae/                   ← Trae skills 投影与平台专属 skills
-├── AGENTS.md                ← AI 指令
-├── CONTEXT.md               ← 领域词汇表
-├── yss-project.yaml         ← 仓库身份清单
-├── docs/
-│   ├── api/                 ← OpenAPI 3.1 契约
-│   ├── adr/                 ← 架构决策记录
-│   ├── requirements/        ← Spec / 用户故事 / 需求草案 / 垂直切片
-│   ├── discovery/           ← 机会探索、市场、竞品和用户材料
-│   ├── design/              ← 产品设计、原型、交互说明和状态矩阵
-│   ├── architecture/        ← 架构设计与审查模板
-│   ├── releases/            ← 发布说明
-│   ├── implementation/      ← 实施方案、上线记录和回滚方案
-│   ├── testing/             ← 测试策略和验证记录
-│   ├── agents/              ← Agent 协作规范、Ticket/Triage/领域文档约定
-│   ├── templates/           ← 通用文档模板
-│   └── process/             ← 生命周期、裁剪、Scrum 和技能治理说明
-└── scripts/                 ← 模板轻量校验脚本
+├── .agents/skills/          ← 共享技能权威内容
+├── .codex/、.cursor/、.pi/  ← 技能投影与平台专属能力
+├── AGENTS.md                ← Agent 入口规则
+├── CONTEXT.md               ← 唯一业务词汇表
+├── yss-project.yaml         ← 仓库身份
+├── .template-spec/          ← 可复用流程、门禁、契约与文档模板
+├── .template-source/        ← 现行模板维护资产与分发工具（不进入实例；运行历史存仓外）
+├── docs/                    ← 项目实例按需创建的 Plan、Spec、设计、Ticket 与交付证据
+└── scripts/                 ← 合同与流程验证工具
 ```
 
 项目需要生成度量、外部实现仓库记录或其他临时产物时再按需创建对应目录。前后端实现仓库接入规则见 `.template-spec/process/implementation-repo-integration.md`。
@@ -40,9 +25,9 @@
 ## Quickstart
 
 1. 先读取 `yss-project.yaml`，按 `repository_mode` 选择模板维护或产品研发生命周期。
-2. 必读入口为 `AGENTS.md` 与 `CONTEXT.md`；流程事实分别以生命周期映射和裁剪指南为准。
+2. 必读入口为 `AGENTS.md` 与 `CONTEXT.md`；流程事实以生命周期注册表和裁剪指南为准。
 3. `template-source` 修改后先按 `maintenance-intensity.yaml` 判定 L1 / L2 / L3，默认用 `scripts/verify-template-fast` 达到 `implementation-ready`；L3 日常采用维护者自检，正式发布前执行完整门禁；只有共享 skill 变更才运行 `scripts/sync-skills` 和 `scripts/update-skill-lock`。
-4. `project-instance` 默认从 `yss-product-lifecycle` 的 `route` 模式开始，再由原生 `work-unit.*` 推进 Discovery、Spec、产品设计、工程契约和 Ticket 正式化；`grill-with-docs`、`to-spec`、`to-tickets`、`implement` 仅作为用户显式调用的兼容入口。
+4. `project-instance` 默认从 `yss-product-lifecycle` 的 `route` 模式开始，再由原生 `work-unit.*` 推进 Plan、Spec、产品设计、工程契约和 Ticket 正式化；`to-spec`、`to-tickets`、`implement` 仅作为用户显式调用的兼容入口。
 5. 实现仓库接入、YSS 路由、独立审查、fresh verification 和 Git checkpoint 以 `AGENTS.md` 的硬门禁为准。
 
 YSS skills 的公开发布投影维护在 [iloveZzz/yss-spec-dev-skills](https://github.com/iloveZzz/yss-spec-dev-skills)，发布清单和导出命令见 [skills 维护说明](./.template-source/agents/skills-maintenance.md)。
@@ -51,9 +36,10 @@ YSS UI 组件知识同时通过项目级 MCP 配置提供；支持的客户端�
 
 ## 模板初始化 CLI
 
-`create-yss-spec` 的目标维护位置是独立 GitHub 仓库 [iloveZzz/create-yss-spec](https://github.com/iloveZzz/create-yss-spec)。本仓库不再包含 CLI 源码、测试、发布配置或开发过程记录。CLI 的使用方法已经合并到统一用户手册：
+`create-yss-spec` 的发布仓库是 [iloveZzz/create-yss-spec](https://github.com/iloveZzz/create-yss-spec)。用户从统一手册选择家族；CLI 源码、测试、打包和发布仍在各自仓库维护：
 
-- [YSS 用户手册：创建、接管和更新项目](./.template-spec/user-guide/用户手册.md#创建接管和更新项目)
+- [YSS 用户手册：CLI 能力与写入方式](./.template-spec/user-guide/用户手册.md#cli-能力与写入方式)
+- [YSS 用户手册：接管、同步与恢复](./.template-spec/user-guide/用户手册.md#接管同步与恢复)
 
 推荐入口：
 
@@ -87,7 +73,7 @@ main@6acc160e4e0cd062dbbbd7a1b26ae92855edf07e
 scripts/verify-template-fast
 ```
 
-快速入口按 Git 影响面执行相关检查，未映射路径或核心校验资产变化时 fail-safe 升级。它与 candidate / 发布 profile 共同检查：
+快速入口按 Git 影响面执行相关检查，未映射路径或核心校验资产变化时 fail-safe 升级为完整验证，来源仍为当前工作树，用于 `implementation-ready`。显式 candidate / 发布入口要求已提交来源。三个入口共同检查：
 
 - `yss-project.yaml`、权威流程资产和模板是否完整。
 - 共享技能投影及 `skills-lock.json` 的完整树哈希是否一致。
@@ -97,27 +83,26 @@ scripts/verify-template-fast
 - 示例 OpenAPI YAML 是否可解析。
 - Git diff 是否存在空白错误。
 
-显式准备审查候选时执行 `scripts/verify-template-candidate`；首次正式冻结前和最终发布前执行不可裁剪的 `scripts/verify-template`。
+PR 执行 `scripts/verify-template-candidate`；main 与正式发布前执行不可裁剪的 `scripts/verify-template`。独立审查和候选冻结仅在显式采用旧兼容协议时执行。
 
 ## 关键文档
+
+业务方可从[用户手册](./.template-spec/user-guide/用户手册.md)了解工作入口；阶段、条件门禁和完成证据以生命周期注册表及流程裁剪规则为准。
 
 | 文档 | 内容 |
 |------|------|
 | [AGENTS.md](./AGENTS.md) | 全局 AI 指令 + 工程基线入口 + Agent 协作 |
 | [.template-spec/user-guide/用户手册.md](./.template-spec/user-guide/用户手册.md) | 从首次只读检查到需求、开发、审查、发布和 CLI 操作的统一用户手册 |
-| [.template-spec/process/PDCA-SCRUM.md](./.template-spec/process/PDCA-SCRUM.md) | PDCA × Scrum × AI |
+| [阶段接入与产物复用使用手册](./.template-spec/user-guide/阶段接入与产物复用使用手册.md) | 复用上游资产，从指定入口继续；含后端交付后前端开发操作 |
 | [.template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md](./.template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md) | Matt Pocock Engineering Skills 集成与使用 |
 | [.template-spec/process/lifecycle-registry.yaml](./.template-spec/process/lifecycle-registry.yaml) | 生命周期结构事实源：主阶段、门禁、产物、工作单元、证据与稳定 ID |
 | [.template-spec/process/harness-process-tailoring.md](./.template-spec/process/harness-process-tailoring.md) | 小改动 / 中等变更 / 新模块的流程裁剪指南 |
 | [.template-source/process/template-engineering-overview.md](./.template-source/process/template-engineering-overview.md) | 模板工程定位、产品线、控制平面、分发边界与维护工作流 |
-| [.template-spec/process/harness-executive-blueprint.md](./.template-spec/process/harness-executive-blueprint.md) | 面向业务方和管理者的 Harness 一页式蓝图 |
 | [.template-spec/process/implementation-repo-integration.md](./.template-spec/process/implementation-repo-integration.md) | 外部前端 / 后端实现仓库接入与跨仓库切片绑定 |
 | [.template-spec/agents/README.md](./.template-spec/agents/README.md) | Agent 协作文档目录说明 |
 | [.template-source/agents/skills-maintenance.md](./.template-source/agents/skills-maintenance.md) | Agent skills 安装与维护 |
 | [.template-spec/user-guide/yss-ui-mcp.md](./.template-spec/user-guide/yss-ui-mcp.md) | YSS UI MCP 项目配置、全局安装边界与自检 |
-| [docs/discovery/IDEATION.md](./docs/discovery/IDEATION.md) | 机会构想方法 |
 | [.template-spec/architecture/README.md](./.template-spec/architecture/README.md) | 架构设计 + 审查清单 |
-| [docs/testing/README.md](./docs/testing/README.md) | 测试策略 |
 
 ## 核心模板
 
@@ -129,3 +114,7 @@ scripts/verify-template-fast
 | [.template-spec/templates/implementation-repo-registry-template.md](./.template-spec/templates/implementation-repo-registry-template.md) | 外部实现仓库登记 |
 | [.template-spec/templates/cross-repo-slice-template.md](./.template-spec/templates/cross-repo-slice-template.md) | 跨仓库垂直切片记录 |
 | [.template-spec/architecture/templates/architecture-deepening-template.md](./.template-spec/architecture/templates/architecture-deepening-template.md) | 架构 deepening 候选与 seam 设计 |
+
+## 按职责使用与升级
+
+[四个现行家族用户手册](.template-spec/user-guide/用户手册.md)提供选型、初始化及升级；[设备借用贯穿案例](.template-spec/user-guide/设备借用贯穿案例.md)演示战略、后端、前端与统一验收。[全部手册](.template-spec/user-guide/用户手册索引.md)给出本体和子项目入口。GitHub 当前能力、npm 发布版本与实例模板快照分别核对。

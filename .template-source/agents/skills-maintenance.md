@@ -18,7 +18,7 @@
 | `mattpocock/skills` | `0ab1b63a410a03d3627979a109c8695de27af954` / `skills/engineering` 及锁文件记录的关联路径 | 通用工程流程及关联 skills |
 | `anthropics/knowledge-work-plugins` | `sales/skills/competitive-intelligence` | 竞品与市场事实研究 |
 | `tt-a1i/archify` | `199360cc6687a7857b54dd188d4922b09e466a4b` / `archify` | 条件式、可验证的技术架构图；YSS 适配见 `.template-source/agents/archify-integration.md` |
-| `iloveZzz/yss-ui` | `.agents/skills/.yss-skills-manifest.json` 锁定的 revision / `packages/skills` | 22 个 `categories.app` 业务前端 skills；排除组件库内部 `categories.library` 和后端提交 skill，适配见 `.template-source/agents/yss-ui-skills-integration.md` |
+| `iloveZzz/yss-ui` | `.agents/skills/.yss-skills-manifest.json` 锁定的 revision / `packages/skills` | 13 个 `categories.app` 业务前端 skills；排除组件库内部 `categories.library` 和后端提交 skill，适配见 `.template-source/agents/yss-ui-skills-integration.md` |
 | 项目本地 | `.agents/skills` 或平台专属 root | YSS 适配与项目治理 skills |
 
 `skills-lock.json` 是技能清单、来源、上游哈希、当前有效内容哈希和投影目标的权威记录：
@@ -31,7 +31,7 @@
 
 当前 Matt 快照为 `0ab1b63a410a03d3627979a109c8695de27af954`。模板按 YSS capability 白名单收录上游 Skill；已退役的通用路由、个人工作流、教学、练习、写作实验和专项迁移 Skill 不再随 project-instance 分发。
 
-本轮升级还将生命周期适配固定为：阶段边界只写可选 `phase_boundary` 证据；生命周期外部输入问卷 使用 `external-input-required` 暂停并在答案回流后重新分类影响面；Matt `prototype` 的单文件 HTML 只作为回流输入，YSS 原型仍须完成低保真评审、H1/H2 档位路由、Prototype Evidence schema v4、Visual Baseline schema v1 验证和用户确认。人工 checkpoint 与 `diagnosing-bugs` 的输出必须脱敏，重新解释当前结论只调整表达，不改变生命周期状态。
+生命周期适配规则为：阶段边界只写可选 `phase_boundary` 证据；生命周期外部输入问卷 使用 `external-input-required` 暂停并在答案回流后重新分类影响面；Matt `prototype` 的单文件 HTML 只作为回流输入，YSS 原型仍须完成低保真评审、H1/H2 档位路由、Prototype Evidence schema v4、Visual Baseline schema v1 验证和用户确认。人工 checkpoint 与 `diagnosing-bugs` 的输出必须脱敏，重新解释当前结论只调整表达，不改变生命周期状态。
 
 ## 维护流程
 

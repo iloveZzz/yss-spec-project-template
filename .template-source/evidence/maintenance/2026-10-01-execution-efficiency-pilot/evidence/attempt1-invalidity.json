@@ -1,6 +1,0 @@
-{
-  "reason": "Nx23 default cache directory was per-workspace user shared cache, so clearing .nx/cache did not evict it",
-  "observed_actual_task_executions_cold": 0,
-  "action": "discard attempt1 performance conclusions; explicitly set cacheDirectory=.nx/cache; assert actual task execution count in every regime and rerun all tools",
-  "original_cache_directory": "/Users/zhudaoming/.nx/3678bbcce773f6f1/cache"
-}

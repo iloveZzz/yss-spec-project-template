@@ -60,8 +60,6 @@ const allowed = (relative, line) => relative === ".template-spec/agents/skill-mi
   || relative.includes("/.template-spec/agents/skill-migrations.md")
   || relative.startsWith(".template-source/wiki/raw/")
   || relative.endsWith(".template-source/wiki/raw/skill-migrations.md")
-  || relative.startsWith(".template-source/evidence/")
-  || relative.includes("/.template-source/evidence/")
   || relative.includes("/tests/")
   || relative.startsWith(".template-source/tooling/node/test/")
   || relative.endsWith("/skills/.yss-skills-manifest.json")
@@ -87,11 +85,11 @@ const inventory = spawnSync(
   // Filter before buffering: retained Agent workspaces can exceed spawnSync's
   // output limit without adding any active asset to this audit.
   ["ls-files", "-z", "--cached", "--others", "--exclude-standard", "--", ".",
-    ":(exclude).template-source/evidence/**", ":(exclude).codegraph/**", ":(exclude)submodules/**"],
-  { cwd: ROOT, encoding: "utf8" },
+    ":(exclude).codegraph/**", ":(exclude)submodules/**"],
+  { cwd: ROOT, encoding: "utf8", maxBuffer: 32 * 1024 * 1024 },
 );
 if (inventory.status !== 0) {
-  process.stderr.write(inventory.stderr || "无法读取 Git 文件清单\n");
+  process.stderr.write(inventory.stderr || inventory.error?.message || "无法读取 Git 文件清单\n");
   process.exit(1);
 }
 const files = inventory.stdout.split("\0").filter(Boolean).filter((relative) =>

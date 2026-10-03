@@ -1,3 +1,0 @@
-Auto-merging template.snapshot.json
-CONFLICT (content): Merge conflict in template.snapshot.json
-Automatic merge failed; fix conflicts and then commit the result.

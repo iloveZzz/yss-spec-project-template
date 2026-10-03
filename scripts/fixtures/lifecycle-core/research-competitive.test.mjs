@@ -5,9 +5,14 @@ import os from 'node:os';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {recordResearchVerification, validateResearchCompletion, RESEARCH_VALIDATOR} from '../../lib/maintenance-research.mjs';
+import {resolveMaintenanceReference} from '../../lib/maintenance-storage.mjs';
 import {hash} from '../../lib/strategic-handoff-io.mjs';
 
 function fixture(t, {render = true} = {}) {
+  const previousHome = process.env.YSS_RUNTIME_HOME;
+  const home = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'competitive-runtime-')));
+  process.env.YSS_RUNTIME_HOME = home;
+  t.after(() => { if (previousHome === undefined) delete process.env.YSS_RUNTIME_HOME; else process.env.YSS_RUNTIME_HOME = previousHome; fs.rmSync(home, {recursive:true,force:true}); });
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'competitive-completion-'));
   t.after(() => fs.rmSync(root, {recursive: true, force: true}));
   const put = (ref, bytes) => {
@@ -44,9 +49,9 @@ function fixture(t, {render = true} = {}) {
 }
 
 function runAndState(root) {
-  const run = recordResearchVerification(root, 'demo-research-brief.md', 'demo-evidence.yaml', 'verification');
-  assert.equal(run.exit_code, 0, fs.readFileSync(path.join(root, 'verification/stderr.log'), 'utf8'));
-  const record = JSON.parse(fs.readFileSync(path.join(root, run.binding.ref), 'utf8'));
+  const run = recordResearchVerification(root, 'demo-research-brief.md', 'demo-evidence.yaml', 'maintenance:research/verification');
+  assert.equal(run.exit_code, 0, fs.readFileSync(resolveMaintenanceReference('maintenance:research/verification/stderr.log', {root}), 'utf8'));
+  const record = JSON.parse(fs.readFileSync(resolveMaintenanceReference(run.binding.ref, {root}), 'utf8'));
   const refs = (record.inputs.competitive || []).map(x => x.ref);
   const state = {research_verification: run.binding, context_reconciliation: {status: 'not-applicable', reason: '模板维护固定资料测试', ref: 'context.json'},
     evidence_refs: ['context.json', run.binding.ref, 'demo-research-brief.md', 'demo-evidence.yaml', ...refs],
@@ -74,7 +79,7 @@ test('human narrative changes make a previous competitive research verification 
 test('omitted competitive bindings and changed schema cannot reuse a passed record', t => {
   const {root} = fixture(t);
   const {record, state, run} = runAndState(root);
-  const recordPath = path.join(root, run.binding.ref), original = fs.readFileSync(recordPath);
+  const recordPath = resolveMaintenanceReference(run.binding.ref, {root}), original = fs.readFileSync(recordPath);
   delete record.inputs.competitive;
   fs.writeFileSync(recordPath, JSON.stringify(record));
   const missing = structuredClone(state);

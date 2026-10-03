@@ -45,6 +45,7 @@ export function loadVerificationProfiles(source = readFileSync(PROFILE_FILE, "ut
       ensure(entry && typeof entry === "object", `检查组 ${name} 包含无效命令`);
       if(entry.id!==undefined)ensure(/^check\.[a-zA-Z0-9._-]+$/.test(entry.id),`检查组 ${name} 的 id 无效`);
       if(entry.inputs_complete!==undefined)ensure(typeof entry.inputs_complete==='boolean',`检查组 ${name} 的 inputs_complete 无效`);
+      if(entry.require_committed_for!==undefined)ensure(Array.isArray(entry.require_committed_for)&&entry.require_committed_for.every(value=>['candidate','release'].includes(value)),`检查组 ${name} 的 require_committed_for 无效`);
       if (entry.lane !== undefined) ensure(typeof entry.lane === "string" && entry.lane, `检查组 ${name} 的 lane 无效`);
       for (const field of ["resources", "parallel_unless_env", "input_patterns", "depends_on"]) {
         if (entry[field] !== undefined) ensure(Array.isArray(entry[field]) && entry[field].every((value) => typeof value === "string" && value), `检查组 ${name} 的 ${field} 无效`);
@@ -96,7 +97,7 @@ export function planTemplateVerification({ profile = "fast", changedFiles = [], 
   const commands = [];
   for (const group of orderedGroups) {
     for (const entry of config.groups[group].commands) {
-      const command = typeof entry === "string" ? entry : entry.run;
+      const command = typeof entry === "string" ? entry : `${entry.run}${entry.require_committed_for?.includes(profile) ? ' --require-committed' : ''}`;
       const when = typeof entry === "string" ? null : entry.when ?? null;
       ensure(typeof command === "string" && command, `检查组 ${group} 包含无效命令`);
       const planned = { group, command, when, id: verificationCheckId(typeof entry === "string" ? { command, when } : { ...entry, command, when }) };
@@ -109,7 +110,7 @@ export function planTemplateVerification({ profile = "fast", changedFiles = [], 
     }
   }
   const compatibilityRequired = effectiveProfile === "release" || normalized.some((file) => (config.compatibility_patterns || []).some((pattern) => matches(file, pattern)));
-  const plan = { compatibility_required: compatibilityRequired, requested_profile: profile, effective_profile: effectiveProfile, escalation_reason: escalationReason, changed_files: normalized, unknown_files: routed.unknown, groups: orderedGroups, commands, required_files: config.required_files || [], syntax_files: config.syntax_files || [], max_concurrency: config.max_concurrency || 4 };
+  const plan = { source_requirement: profile === 'fast' ? 'current' : 'committed', compatibility_required: compatibilityRequired, requested_profile: profile, effective_profile: effectiveProfile, escalation_reason: escalationReason, changed_files: normalized, unknown_files: routed.unknown, groups: orderedGroups, commands, required_files: config.required_files || [], syntax_files: config.syntax_files || [], max_concurrency: config.max_concurrency || 4 };
   return applyVerificationSelection(plan, { selection, config, root });
 }
 

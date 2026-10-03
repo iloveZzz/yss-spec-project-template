@@ -3,22 +3,24 @@ import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {safe, hash, parse, ensure} from './strategic-handoff-io.mjs';
 import {assertUserDecisionRequirement} from './user-decision.mjs';
+import {resolveMaintenanceOutput, resolveMaintenanceReference, maintenanceReference} from './maintenance-storage.mjs';
 
 export const RESEARCH_VALIDATOR = '.agents/skills/yss-research/scripts/validate-research-package.mjs';
-const binding = (root, ref) => ({ref, digest: hash(fs.readFileSync(safe(root, ref)))});
+const file = (root, ref) => ref.startsWith('maintenance:') ? resolveMaintenanceReference(ref, {root}) : safe(root, ref);
+const binding = (root, ref) => ({ref, digest: hash(fs.readFileSync(file(root, ref)))});
 function readBound(root, bound) {
   ensure(bound && binding(root, bound.ref).digest === bound.digest, 'research-evidence-stale');
-  return fs.readFileSync(safe(root, bound.ref));
+  return fs.readFileSync(file(root, bound.ref));
 }
 function execute(root, brief, evidence) {
-  return spawnSync(process.execPath, [safe(root, RESEARCH_VALIDATOR), safe(root, brief), safe(root, evidence)], {
+  return spawnSync(process.execPath, [safe(root, RESEARCH_VALIDATOR), file(root, brief), file(root, evidence)], {
     cwd: root, encoding: 'utf8', timeout: 30000, maxBuffer: 2 * 1024 * 1024,
     env: {...process.env, NODE_OPTIONS: '', NODE_PATH: ''},
   });
 }
 
 function competitiveBindings(root, evidence) {
-  const evidenceFile = safe(root, evidence);
+  const evidenceFile = file(root, evidence);
   if (!Object.hasOwn(parse(fs.readFileSync(evidenceFile)), 'competitive_analysis')) return [];
   // Load only for this extension: slim installations and legacy records need no Skill dependency.
   // Reuse the Skill's authoritative dependency list instead of defining a second list here.
@@ -32,7 +34,10 @@ function competitiveBindings(root, evidence) {
   });
   ensure(!result.error && result.status === 0, `research-competitive-inputs-invalid: ${result.stderr?.trim() || result.error?.message || result.status}`);
   return JSON.parse(result.stdout)
-    .map(file => binding(root, path.relative(root, file).split(path.sep).join('/')))
+    .map(filename => {
+      const relative = path.relative(root, filename).split(path.sep).join('/');
+      return binding(root, relative === '..' || relative.startsWith('../') ? maintenanceReference(filename, {root}) : relative);
+    })
     .sort((a, b) => a.ref.localeCompare(b.ref));
 }
 
@@ -56,7 +61,8 @@ export function recordResearchVerification(root, brief, evidence, output) {
   const inputs = {brief: binding(root, brief), evidence: binding(root, evidence), validator: binding(root, RESEARCH_VALIDATOR)};
   const competitive = competitiveBindings(root, evidence);
   if (competitive.length) inputs.competitive = competitive;
-  const dir = safe(root, output, {missing: true});
+  output = output.startsWith('maintenance:') ? output : maintenanceReference(output, {root});
+  const dir = resolveMaintenanceOutput(output, {root});
   ensure(!fs.existsSync(dir), '研究验证输出目录必须不存在');
   const started_at = new Date().toISOString(), result = execute(root, brief, evidence);
   fs.mkdirSync(dir, {recursive: true});
@@ -72,7 +78,7 @@ export function recordResearchVerification(root, brief, evidence, output) {
 
 export function validateResearchCompletion(state, {root, continuing = false}) {
   ensure(state?.context_reconciliation?.status === 'not-applicable' && state.context_reconciliation.reason?.trim(), 'research-context-reason-missing');
-  fs.readFileSync(safe(root, state.context_reconciliation.ref));
+  fs.readFileSync(file(root, state.context_reconciliation.ref));
   for (const key of ['blocking_signals', 'drift', 'violation', 'new_impacts', 'stale_candidates']) {
     ensure(Array.isArray(state[key]) && state[key].length === 0, `research-${key}-unresolved`);
   }

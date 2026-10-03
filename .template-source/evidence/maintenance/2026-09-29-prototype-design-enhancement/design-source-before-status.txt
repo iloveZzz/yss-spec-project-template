@@ -1,8 +1,0 @@
- M .agents/skills/maintaining-skills/references/authoring.md
- M .agents/skills/writing-for-agents/SKILL-MECHANICS.md
- M .template-source/distribution/strategic-handoff-tools.lock.json
- M .template-spec/agents/yss-skill-registry.yaml
- M scripts/lib/skill-registry.mjs
- M skills-lock.json
-?? scripts/inspect-skill-discovery
-?? scripts/lib/skill-discovery.mjs

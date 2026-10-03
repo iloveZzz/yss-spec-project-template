@@ -1,8 +1,0 @@
-{
-  "command": "scripts/verify-template-fast --concurrency 1",
-  "phase": "collectChangedFiles",
-  "raw_git_exit": 0,
-  "raw_git_stdout_bytes": 1163693,
-  "cause": "exceeds child_process.spawnSync default maxBuffer",
-  "resolution": "archived only this maintenance superseded draft and source backups, verified every archived file; no validator changes and no other task files touched"
-}

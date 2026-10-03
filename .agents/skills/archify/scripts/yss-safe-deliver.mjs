@@ -4,7 +4,7 @@ import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
 const skillRoot = path.resolve(scriptDirectory, '..');
@@ -93,11 +93,12 @@ function assertReplaceableReceipt(receipt) {
   if (parsed?.yssArchifyReceipt !== true) fail(`拒绝覆盖非 YSS Archify receipt: ${receipt}`);
 }
 
-function stableContract(projectRoot, mode, input, output) {
+async function stableContract(projectRoot, mode, input, output) {
   const relativeBase = mode === 'project-instance'
     ? 'docs/architecture/diagrams'
-    : '.template-source/evidence/maintenance/diagrams';
-  const base = path.join(projectRoot, relativeBase);
+    : 'maintenance:diagrams';
+  const base = mode === 'project-instance' ? path.join(projectRoot, relativeBase)
+    : (await import(pathToFileURL(path.join(projectRoot, 'scripts/lib/maintenance-storage.mjs')).href)).resolveMaintenanceOutput(relativeBase, { root: projectRoot });
   const relativeOutput = path.relative(base, output);
   const segments = relativeOutput.split(path.sep);
   if (segments.length !== 2 || !diagramIdPattern.test(segments[0])) {
@@ -139,7 +140,10 @@ const temporaryBase = fs.realpathSync(os.tmpdir());
 // parent symlink resolves into the OS temporary directory. Otherwise the
 // temporary-delivery exception could be used to escape the stable output root.
 const requestedWithinProject = requestedProjectRoot !== null;
-const isTemporary = !requestedWithinProject && isWithin(temporaryBase, output);
+const projectMode = projectRoot ? repositoryMode(projectRoot) : null;
+const templateDiagramBase = projectMode === 'template-source'
+  ? (await import(pathToFileURL(path.join(projectRoot, 'scripts/lib/maintenance-storage.mjs')).href)).resolveMaintenanceOutput('maintenance:diagrams', { root: projectRoot }) : null;
+const isTemporary = !requestedWithinProject && isWithin(temporaryBase, output) && !(templateDiagramBase && isWithin(templateDiagramBase, output));
 let mode = null;
 let receipt;
 let allowedBase;
@@ -150,7 +154,7 @@ if (isTemporary) {
 } else {
   if (!projectRoot) fail('稳定交付必须从包含 yss-project.yaml 的仓库内运行');
   mode = repositoryMode(projectRoot);
-  const contract = stableContract(projectRoot, mode, input, output);
+  const contract = await stableContract(projectRoot, mode, input, output);
   allowedBase = contract.base;
   receipt = contract.receipt;
 }
