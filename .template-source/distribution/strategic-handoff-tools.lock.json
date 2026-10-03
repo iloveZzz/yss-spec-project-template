@@ -2,8 +2,8 @@
   "schema_version": 1,
   "target_id": "template-root",
   "source_repository": "yss-spec-project-template",
-  "source_revision": "4216e45879e31b9319e99371aba54ee500e96af7",
-  "source_state": "working-tree",
+  "source_revision": "944706ee1d0d348dbd320432d7049e430860f37b",
+  "source_state": "committed",
   "transformation_set": [
     "identity"
   ],

@@ -3,7 +3,7 @@
   "source": "iloveZzz/yss-harness-design-agent",
   "source_type": "git-submodule",
   "source_root": ".agents/skills",
-  "source_revision": "4159f465477b30c64e605c4fa3ccf594b8d9ecb8",
+  "source_revision": "1db08cda684decc8f26529caa779c78eeed7e155",
   "adaptation_ref": ".template-source/agents/strategic-design-skills-integration.md",
   "skills": [
     {
