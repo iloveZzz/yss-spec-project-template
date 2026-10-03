@@ -36,9 +36,10 @@ export function classifyManagedFiles({ root, managedFiles = {}, expected = [], p
     try {
       actual = parsed && parsed.algo === SHA256 ? sha256Identity(readFileSync(path.join(root, ref))) : identity.identityFor(ref).identity;
     } catch (cause) { actual = null; error = cause.message; }
-    if (!expectedIdentity) { entries.push({ ref, kind: "ok", expected: null, actual }); continue; }
+    if (!expectedIdentity) { entries.push({ ref, kind: error ? "drifted" : "ok", expected: null, actual, ...(error ? { error } : {}) }); continue; }
     const kind = identityEquals(expectedIdentity, actual) ? "ok" : "drifted";
-    entries.push({ ref, kind, expected: expectedIdentity, actual, ...(error ? { error } : {}) });
+    const diagnosis = error ?? (actual === null ? "unreadable-or-unresolved" : null);
+    entries.push({ ref, kind, expected: expectedIdentity, actual, ...(diagnosis ? { error: diagnosis } : {}) });
   }
   for (const ref of [...expected].sort()) {
     if (recorded.has(ref) || existsSync(path.join(root, ref))) continue;

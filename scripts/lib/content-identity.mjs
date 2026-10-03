@@ -86,6 +86,9 @@ function markDirectories(target, ref) {
 }
 
 export function createIdentityProvider(root, { spawn = spawnSync } = {}) {
+  // Compare against the canonical root: on macOS a /tmp path is really
+  // /private/tmp, and a link inside the repository would otherwise look external.
+  const realRoot = realpathOrResolve(root);
   const run = (args) => spawn("git", ["-C", root, ...args], { encoding: "buffer", maxBuffer: 128 * 1024 * 1024 });
   let available = false;
   let algo = SHA256;
@@ -180,11 +183,11 @@ export function createIdentityProvider(root, { spawn = spawnSync } = {}) {
     visiting.add(resolved);
     try {
       const info = lstatSync(resolved);
-      const rel = path.relative(root, resolved).split(path.sep).join("/");
-      const inside = rel && !rel.startsWith("..") && !path.isAbsolute(rel);
-      // A link that leaves the repository is never enumerated: walking an
-      // external tree would be unbounded and would import foreign content into
-      // the identity. It is reported as unresolved instead.
+      const rel = path.relative(realRoot, resolved).split(path.sep).join("/");
+      // A link that leaves the repository (or points at the root itself) is never
+      // enumerated: walking it would be unbounded. A directory legitimately named
+      // like "..data" is still inside, so only the ".." path segment is rejected.
+      const inside = rel !== "" && rel !== ".." && !rel.startsWith("../") && !path.isAbsolute(rel);
       if (!inside) return null;
       if (info.isDirectory()) return directoryIdentity(rel, resolved).identity;
       return fileFromAbsolute(resolved, rel);
@@ -259,6 +262,10 @@ export function createIdentityProvider(root, { spawn = spawnSync } = {}) {
     directory: (ref) => directoryIdentity(ref).identity,
     equals: (left, right) => identityEquals(identityFor(left).identity, identityFor(right).identity),
   };
+}
+
+function realpathOrResolve(target) {
+  try { return realpathSync(target); } catch { return path.resolve(target); }
 }
 
 function lstatSafe(target) {

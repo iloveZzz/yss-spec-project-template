@@ -11,7 +11,6 @@ test("write-mode Skill sync skips identical projections and repairs raw structur
   try {
     mkdirSync(path.join(root, "scripts/lib"), { recursive: true });
     cpSync(path.resolve("scripts/lib/skill-supply-chain.mjs"), path.join(root, "scripts/lib/skill-supply-chain.mjs"));
-    cpSync(path.resolve("scripts/lib/content-identity.mjs"), path.join(root, "scripts/lib/content-identity.mjs"));
     const source = path.join(root, ".agents/skills/probe");
     mkdirSync(source, { recursive: true });
     writeFileSync(path.join(source, "SKILL.md"), "---\r\nname: probe\r\n---\r\n");
