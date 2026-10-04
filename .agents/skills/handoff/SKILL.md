@@ -5,7 +5,9 @@ argument-hint: "What will the next session be used for?"
 disable-model-invocation: true
 ---
 
-Write a handoff document summarising the current conversation so a fresh agent can continue the work. Save to the temporary directory of the user's OS - not the current workspace.
+Write a handoff document so a fresh agent can continue the current objective. Save to the temporary directory of the user's OS, then return its actual absolute path.
+
+Record the current objective, completed work, remaining work and blockers, existing authorization scope, and the next executable action. Distinguish verified results from planned or unexecuted checks. Preserve the references and versions needed to resume; a handoff does not grant approval, implementation, commit, push or release authority.
 
 Include a "suggested skills" section in the document, which suggests skills that the agent should invoke.
 

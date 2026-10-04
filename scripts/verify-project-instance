@@ -41,8 +41,10 @@ if (existsSync(metadataPath)) {
     scope: "project-instance",
     root,
     // skills-lock.json is a rendered asset with its own update-skill-lock --check;
-    // every other managed asset — including other rendered files — is hash-gated.
+    // Permitted customizations remain required readable files. Managed/generated
+    // assets — including other rendered files — remain hash-gated.
     managedFiles: Object.fromEntries(Object.entries(metadata.managedFiles ?? {}).filter(([ref, record]) => ref !== "skills-lock.json" && record.mergeStrategy !== "manual")),
+    allowCustomizations: true,
     expected: expectedFromDistribution(metadata),
   });
   if (process.argv.includes("--json")) process.stdout.write(JSON.stringify(report, null, 2) + "\n");

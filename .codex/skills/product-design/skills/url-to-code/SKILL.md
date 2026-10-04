@@ -14,11 +14,9 @@ Clone `<target-url>` as a real interactive, frontend-only local app or website. 
 
 ## User Context
 
-Before starting, load [$user-context](../user-context/SKILL.md) and run its preflight script when local shell access is available.
+When the workflow needs saved product or design context, load [$user-context](../user-context/SKILL.md) and follow its [conditional Preflight](../user-context/SKILL.md#preflight). Reuse the loaded result while its state paths, digests, and relevant scope are unchanged.
 
-Use saved product URLs, Figma files, screenshots, reference images, codebase paths, Storybook, tokens, design systems, brand assets, component refs, browser preferences, and share targets as grounding material when relevant.
-
-Do not inspect every saved reference. Inspect only what the current task needs.
+Use relevant saved sources and preferences as grounding material under [Saved User Context](../user-context/SKILL.md#saved-user-context). Inspect only references needed for the current task.
 
 ## Workflow
 

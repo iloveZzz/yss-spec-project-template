@@ -4,7 +4,7 @@
 
 ## 执行入口
 
-1. 接入、修改、代码生成或给出精确类名/配置前，从批准的 `platform_configuration.component_platform_line` 选择目标 Skill 的 `references/source-index.boot2-java8.md` 或 `references/source-index.boot3-java17.md`，并执行：
+1. 接入、修改、代码生成或给出精确类名/配置前，从批准的 `platform_configuration.component_platform_line` 选择目标 Skill 的 `references/source-index.boot2-java8.md` 或 `references/source-index.boot3-java17.md`。以下命令从目标组件 Skill 根目录执行：
 
    ```bash
      node ../yss-skill-source-index-refresh/scripts/check-backend-skill-source-index.mjs \

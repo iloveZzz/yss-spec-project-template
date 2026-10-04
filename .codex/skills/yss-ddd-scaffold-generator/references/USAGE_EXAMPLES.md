@@ -2,16 +2,22 @@
 
 ## 1. 准备批准合同
 
-新合同是服务级工程基线，使用 schema v4 与 `scaffold_request_id`，并把已批准的技术/数据设计、工程合同批准、架构决策、Java 包名、Maven 坐标和 Profile 分开登记：
+新合同是服务级工程基线，使用统一 Project Scaffold Contract schema v4 与 `scaffold_request_id`。以下仅展示身份、Profile 和生成策略片段；实际平台、Maven 坐标、设计与批准绑定必须来自当前已批准输入，示例值不能作为生成授权：
 
 ```json
 {
-  "schema_version": 3,
+  "schema_version": 4,
+  "kind": "project-scaffold-contract",
+  "delivery_role": "backend",
+  "scaffold_kind": "backend-ddd",
+  "repository_scope": "external-repository",
+  "init_git": false,
   "scaffold_request_id": "scaffold-metadata-service-1",
   "project_name": "metadata-service",
   "target_output_dir": "/path/to/implementation-repo",
   "base_package": "com.yss.metadata",
   "architecture_family": "domain-driven",
+  "architecture_profile": "target-domain-model",
   "generator_skill": "yss-ddd-scaffold-generator",
   "decision_ref": "scaffold-architecture-decisions.yaml",
   "decision_id": "architecture-metadata-service",
@@ -29,9 +35,10 @@
   "profiles": {
     "architecture": "target-domain-model",
     "persistence": "mybatis-plus",
-    "database": "mysql",
-    "platform": "spring-boot-2.7-jdk8",
-    "validation_namespace": "javax",
+    "verification_database": "h2",
+    "production_database": "not-bound",
+    "platform": "<approved-platform-profile>",
+    "validation_namespace": "<resolved-platform-namespace>",
     "dto_placement": "web",
     "repository": "yss-internal"
   },
@@ -49,7 +56,7 @@
 }
 ```
 
-以上只是关键片段；实际合同还必须满足 `yss-implementation-contract-compiler/references/compiler-contract.yaml` 中的完整 `scaffold_contract_schema`，引用经用户确认并由生命周期批准的 `scaffold-architecture-decisions.yaml`，再持久化为当前版本。历史 schema v2 仅用于验证器只读兼容；新生成拒绝 schema v1/v2 且不自动升级。
+完整结构以仓库 `.template-spec/process/schemas/project-scaffold-contract.schema.json` 和编译器 `project_scaffold_contract_schema` 为准，不能使用历史 `scaffold_contract_schema` v3 生成新工程。完整合同还须绑定当前 `platform_configuration` v2、用户确认且生命周期批准的架构决定，以及 `design_prerequisites` 中技术设计、数据与 API 决策、真实工程合同批准；API 有影响时绑定同一 OpenAPI YAML 原字节的 Validation、独立 Review 与 Freeze，无影响时绑定评估、原因和证据。当前批准与持久化、允许路径和验证字段仍须完整，不能直接执行这个片段。历史 Manifest v2/v3 只供只读验证与受控恢复审计；新生成拒绝旧合同且不自动升级。
 
 ## 2. 一键生成并验证
 

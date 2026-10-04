@@ -29,7 +29,7 @@
 
 **位置**: `../assets/PageQuery.java`
 
-分页查询基础类，所有需要分页的查询参数都应继承此类。
+用于 Application/Infrastructure 内部分页协作；是否继承按批准的工程 Profile 决定。公开 HTTP Page Request 默认不继承此类，只声明冻结 OpenAPI 允许的字段，再由 WebConvertor 转换，避免内部协作字段进入绑定面。
 
 **核心字段**:
 
@@ -57,11 +57,11 @@
 
 基础 DTO 抽象类，用于区分命令（写操作）和查询（读操作）对象。
 
-- **CommandDTO**: 实现 `Serializable` 接口，所有命令参数应继承此类。
-- **QueryDTO**: 继承自 `CommandDTO`，所有查询参数应继承此类。
+- **CommandDTO**: 实现 `Serializable` 接口；当前工程采用此体系时，写操作参数优先继承。
+- **QueryDTO**: 继承自 `CommandDTO`；Application/Infrastructure 内部读参数按批准 Profile 使用它或 `PageQuery`，不据此扩大公开请求字段。
 
 ## 使用场景
 
-1. **API 响应**: 所有 Controller 方法应返回 `Result` 或其子类（如 `PageResult`, `SingleResult`）。
+1. **API 响应**: 普通接口已采用 YSS wrapper 时保持 `Result` 或其派生体系。下载、流式和第三方回调按批准协议核验媒体类型、状态、Header、错误与权限边界，不强套 wrapper，也不豁免契约证据。
 2. **分页查询**: `PageQuery` 用于 Application/Infrastructure 内部协作；公开 HTTP Page Request 默认只声明冻结 OpenAPI 允许的字段，再由 WebConvertor 转换，避免内部字段被继承到绑定面。MyBatis 拦截器所需形状必须由 Query Port 集成测试证明。
 3. **参数封装**: 使用 `CommandDTO` 封装增删改参数，使用 `QueryDTO` 封装查询参数，保持代码语义清晰。

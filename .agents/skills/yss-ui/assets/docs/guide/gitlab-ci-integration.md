@@ -162,5 +162,5 @@ git push -f origin dev
 
 ## 相关文档
 
-- [发版工作流指南](./guide/release-workflow.md)
-- [Commit 规范说明](./guide/release-workflow.md#-commit-message-规范必须遵守)
+- [发版工作流指南](./release-workflow.md)
+- [Commit 规范说明](./release-workflow.md#-commit-message-规范必须遵守)

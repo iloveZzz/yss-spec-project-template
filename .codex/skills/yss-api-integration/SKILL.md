@@ -5,24 +5,22 @@ description: "在 Vue3 YSS UI 中对接 Orval API；核验生成方法、mutator
 
 # API 集成 Skill
 
-本目录是 API 集成的 canonical 技能；历史名称 `api-integration` 仅通过注册表和 实现合同编译器 alias 解析，不再维护第二份内容。
+本技能的 canonical 名称为 `yss-api-integration`。历史名称 `api-integration` 只由注册表与实现合同编译器解析，不维护第二份内容。
 
-目录、frontmatter、注册表 ID 和 实现合同编译器 canonical 闭包键均为 `yss-api-integration`；历史名称 `api-integration` 只在注册表和 实现合同编译器 alias 表中解析为本技能。
-
-## 📋 目标
+## 目标
 
 帮助 AI 正确使用基于 **Orval** 生成的 API 客户端：
 
-- ✅ 正确导入 API 函数
-- ✅ 统一错误处理与 Toast 门禁
-- ✅ Loading 状态管理
-- ✅ 长整型 ID 精度保持
-- ✅ TypeScript 类型安全
+- 正确导入 API 函数
+- 统一错误处理与 Toast 门禁
+- Loading 状态管理
+- 长整型 ID 精度保持
+- TypeScript 类型安全
 
-## 🔍 前置条件
+## 前置条件
 
 1. **契约状态已明确**：
-   - 已有生成客户端：可以直接集成。
+   - 已有生成客户端：先核验冻结契约、JSON 派生记录和真实导出，输入当前且一致时可以直接集成。
    - 新增或变更 API：必须先在 `docs/.scratch/<feature>/api/<feature>.yaml` 形成 OpenAPI Draft，经工程基线 / 架构 / Spec Delta 设计和设计审查后 Freeze。冻结的 OpenAPI YAML 是唯一权威，JSON 仅为它的受控派生物。
    - 如果接口尚未冻结、JSON 派生记录缺失或生成函数不存在，先回到 `yss-product-lifecycle` / `yss-openapi-governance`，不要手写临时路径、DTO 或响应结构。
 2. **API 已生成**：在目标前端实现仓库中，按其既有的手动代码生成命令（例如 `pnpm generate:api`）刷新 API；本 Harness 不配置、不执行该命令，也不把它加入 CI。
@@ -41,9 +39,9 @@ description: "在 Vue3 YSS UI 中对接 Orval API；核验生成方法、mutator
 ```
 
 1. 读取 `yss-openapi-governance` 产出的 OpenAPI Freeze 记录和 `docs/.scratch/<feature>/api/<feature>-json-export.md`；确认 YAML SHA-256、JSON SHA-256、Redocly CLI 版本、lockfile 引用和 JSON 校验均通过。治理 JSON 的唯一产物路径是 `docs/.scratch/<feature>/api/<feature>.json`。
-2. JSON 导出由 `yss-openapi-governance` 负责。`api-integration` 只接受该 skill 留下的派生记录；记录中的锁定 `redocly bundle` 命令是治理导出证据，不是前端集成任意重跑的入口。
+2. JSON 导出由 `yss-openapi-governance` 负责。`yss-api-integration` 只接受该 skill 留下的派生记录；记录中的锁定 `redocly bundle` 命令是治理导出证据，不是前端集成任意重跑的入口。
 3. **受控交接**：若前端实现仓库需要本地输入，批准的 Cross-repo 子合同或项目脚本只能将上述治理 JSON 原样物化为 `<frontend>/openapi/openapi.json`；物化后的 SHA-256 必须与派生记录一致。禁止从 URL、Draft YAML、后端运行时或任意本地文件临时替换输入。
-4. `api-integration` 只核对 JSON 派生记录、交接路径和 SHA-256，并把原始 JSON 交给既有前端代码生成流程；本 Harness 可只读核对目标前端的生成器配置与真实导出，但不修改该配置，不在此仓库执行生成，也不建立生成 CI 门禁。若 JSON SHA 与派生记录不一致，停止交接并回到治理流程。
+4. `yss-api-integration` 只核对 JSON 派生记录、交接路径和 SHA-256，并把原始 JSON 交给既有前端代码生成流程；本 Harness 可只读核对目标前端的生成器配置与真实导出，但不修改该配置，不在此仓库执行生成，也不建立生成 CI 门禁。若 JSON SHA 与派生记录不一致，停止交接并回到治理流程。
 5. 目标前端项目在需要时手动运行其既有生成命令、类型检查和受影响组件 / API 测试；将实际命令、结果、生成输入 SHA 和偏离写入 `YSS Skill Execution Result`。
 
 ## 真实 mutator 响应契约
@@ -81,44 +79,9 @@ pnpm generate:api
 - 不得根据文档示例假定工厂一定名为 `getApi()`；Orval `title` 配置会影响真实名称。
 - 请求/响应 DTO 必须从当前生成的 `schemas` 导入，禁止重复声明。
 
-## 标准代码骨架
+## 按需示例
 
-以微应用的真实 `getApiApi()` 产物为例：
-
-```typescript
-import { reactive, ref } from 'vue';
-import { getApiApi } from '@/api/generated/quality';
-import type { QualityBusinessRuleVO, QualityRulePage } from '@/api/generated/quality/schemas';
-
-const { pageQualityRule } = getApiApi();
-
-/** 管理质量规则列表请求和分页状态。 */
-export const useQualityRuleList = () => {
-  const loading = ref(false);
-  const dataList = ref<QualityBusinessRuleVO[]>([]);
-  const query = reactive<QualityRulePage>({ pageIndex: 1, pageSize: 20, ruleName: '' });
-  const total = ref(0);
-
-  /** 加载规则列表。 */
-  const fetchData = async (): Promise<void> => {
-    loading.value = true;
-    try {
-      const res = await pageQualityRule(query);
-      dataList.value = res.data ?? [];
-      total.value = res.totalCount ?? 0;
-    } catch {
-      dataList.value = [];
-      total.value = 0;
-    } finally {
-      loading.value = false;
-    }
-  };
-
-  return { loading, dataList, query, total, fetchData };
-};
-```
-
-> 如果所在项目已生成 `pageQualityRule` 具名导出，直接导入该函数，删除上面的工厂实例行。
+首次组织列表请求或需比较具名导出与工厂导出时，读取 [Orval 列表示例](references/orval-list-example.md)。示例中的业务名称与响应字段仅作已核验版本的用法说明，目标工程仍消费自己的冻结 DTO 和真实导出。
 
 ## 长整型与数值类型
 

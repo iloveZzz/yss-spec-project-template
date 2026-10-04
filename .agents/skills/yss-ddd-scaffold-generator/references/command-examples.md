@@ -1,5 +1,7 @@
 ## 推荐命令
 
+仅在入口所列批准合同、输出范围和平台证据已齐备时读取；命令从 Skill 根目录执行。项目坐标与平台参数使用当前批准输入，示例值不授予生成、覆盖或版本升级权限。
+
 ```bash
 node scripts/generate_and_verify_scaffold.mjs \
   --project-name my-service \

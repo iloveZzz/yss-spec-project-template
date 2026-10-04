@@ -14,11 +14,9 @@ You're tasked with translating the visual target image into a high-quality, inte
 
 ## User Context
 
-Before starting, load [$user-context](../user-context/SKILL.md) and run its preflight script when local shell access is available.
+When the workflow needs saved product or design context, load [$user-context](../user-context/SKILL.md) and follow its [conditional Preflight](../user-context/SKILL.md#preflight). Reuse the loaded result while its state paths, digests, and relevant scope are unchanged.
 
-Use saved product URLs, Figma files, screenshots, reference images, codebase paths, Storybook, tokens, design systems, brand assets, component refs, browser preferences, and share targets as grounding material when relevant.
-
-Do not inspect every saved reference. Inspect only what the current task needs.
+Use relevant saved sources and preferences as grounding material under [Saved User Context](../user-context/SKILL.md#saved-user-context). Inspect only references needed for the current task.
 
 ## Workflow
 
@@ -51,7 +49,7 @@ CRITICAL: THIS IS NOT GUIDANCE. THIS IS A CHECKLIST TO COMPLETE.
     - If text is part of an image asset, keep it in the image asset. Examples include full bleed hero images, signs, posters, packaging, storefronts, article art, and illustrations where the type belongs to the visual itself. Do not crop the background image and recreate that text with transparent text boxes, HTML, CSS, or separate overlay layers unless the source clearly shows editable UI text sitting on top of the image.
     - Do not use generic placeholders where the reference implies custom visual content.
     - Generated assets must share the same art direction, palette, rendering style, and design language as the reference mockup.
-    - The built-in Image Gen tool does not support transparent images; post-process generated assets when transparency is required.
+    - When transparency is required, use the current image tool's documented transparent-background parameter and inspect the actual output. The current built-in Image Gen contract supports `transparent_background: true` for transparent generation, background removal, or cutouts; preserve existing transparency in edits unless the user asks to change it. If another runtime lacks that parameter, report its capability limit and use only the options supported by its actual tool contract.
 
 5. Define all sections of the page. For each section, meticulously measure the layout, spacing between elements, and the size and space of the elements themselves.
 

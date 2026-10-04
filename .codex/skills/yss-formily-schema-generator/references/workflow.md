@@ -1,160 +1,41 @@
-# YssFormily Schema Conversion Workflow
+# YFormily Schema 转换工作流
 
-This reference is for converting text, images, and Figma designs into YssFormily artifacts.
+从文字、图片或 Figma 转换表单时，按当前输入读取相关部分。先由 [YFormily 场景路由](../../yss-formily/SKILL.md)选择必要专项；精确 API、三层布局、提交和错误处理仍由已安装的 `formily-foundation` 决定，联动、详情与分步由实际命中的原专项决定。
 
-## 1. Normalize the request
+公开技能包提供本工作流和所链接的公共路由、组件资料，不附带 `formily-foundation`、`formily-linkage-effects`、`formily-mode-slot-detail` 或 `formily-step-flow`。本地已安装时，原专项仍是对应规则的唯一所有者；公共路由和部分 Demo 不替代专项规范。必要专项缺失或不可读时，停止受影响的生产 schema / 渲染实现，报告缺失 Skill 与来源；从消费工程已登记的技能来源恢复，核验版本与项目基线一致并重新读取后再继续。
 
-Classify the target form first:
+## 确认用途与字段模型
 
-| Form type | Signals |
-| --- | --- |
-| 查询表单 | 筛选、搜索、重置、查询、导出 |
-| 新增表单 | 新建、创建、录入、保存 |
-| 编辑表单 | 编辑、更新、修改 |
-| 详情表单 | 查看、详情、只读、描述列表 |
-| 复合表单 | 同页同时支持新增/编辑/查看 |
+先确认目标是查询、新增、编辑、详情还是复合表单，以及输出是 schema、schema + 渲染示例，还是 schema + model + scope/effects 计划。
 
-Then decide the expected output:
+| 字段信息 | 要确认的含义 |
+|---|---|
+| key / title / type | 稳定业务字段名、显示标签与业务数据类型 |
+| component / required | 控件和已确认的必填规则 |
+| group / span | 分组位置与布局宽度 |
+| enum source / linkage | 静态或远程来源、依赖及影响的字段 |
+| custom render | 编辑 Slot 或 detail slot 的需要 |
 
-- schema only
-- schema + render snippet
-- schema + data model + scope/effects plan
+没有显式 key 时建议稳定业务名称，不使用 `input1`、`selectA`、`fieldLeft`。建议不替代冻结 DTO 和统一业务词汇。
 
-## 2. Extract a field table
+## 控件、分组与跨度
 
-Before writing schema, create a mental table with:
-
-| Item | Meaning |
-| --- | --- |
-| key | stable field name |
-| title | display label |
-| type | business data type |
-| component | YssFormily component |
-| required | whether mandatory |
-| group | section placement |
-| span | layout width |
-| enum source | static or remote |
-| linkage | depends on or affects other fields |
-| custom render | slot/detail slot needed or not |
-
-If a field key is not explicit, generate a stable domain name.
-Avoid UI-only names such as `input1`, `selectA`, `fieldLeft`.
-
-## 3. Component mapping heuristics
-
-Use these defaults:
-
-| Input clue | Preferred YssFormily component |
-| --- | --- |
-| 单行文本 | `Input` |
-| 多行说明 | `Input.TextArea` |
-| 单选下拉 | `Select` |
-| 单选按钮 | `Radio.Group` |
+| 输入线索 | 默认建议 |
+|---|---|
+| 单行 / 多行文本 | `Input` / `Input.TextArea` |
+| 单选下拉 / 单选按钮 | `Select` / `Radio.Group` |
 | 开关 | `Switch` |
-| 日期 | `DatePicker` |
-| 日期区间 | `DatePicker.RangePicker` |
+| 日期 / 日期区间 | `DatePicker` / `DatePicker.RangePicker` |
 | 数值 | `InputNumber` |
-| 多选标签 | `Select` with multiple mode |
-| 文件上传 | `Upload` |
+| 多选标签 | `Select` 多选模式 |
+| 上传 | `Upload` |
 | 可重复行 | `ArrayItems` |
 
-If the UI is clearly custom:
+SQL、代码、富文本、复杂辅助区或嵌入表格 / 树选择器等自定义输入，编辑态用 `Slot`，查看态用 `detail-*` 插槽。实际是否可用仍核验目标版本与当前 schema 注册组件。
 
-- use `Slot` for edit mode
-- use `detail-*` slot for detail mode
+页面布局映射为 `FormLayout`、栅格为 `FormGrid`、分组标题为 `GroupHeader`。纯表单底部动作可用 `AutoButtonGroup`；业务列表查询区按下一节单独处理。横向表单显式设置 `labelWidth` 与 `labelAlign: 'right'`，栅格保持响应式。
 
-Typical custom cases:
-
-- SQL editor
-- code editor
-- rich text
-- complex helper panel
-- embedded table or tree selector
-
-## 4. Layout mapping heuristics
-
-Convert visual grouping to YssFormily structure:
-
-- page-level layout -> `FormLayout`
-- grid rows and columns -> `FormGrid`
-- section title -> `GroupHeader`
-- footer actions -> `AutoButtonGroup`
-
-Use `gridSpan` when:
-
-- field is visually full width
-- long text area spans across columns
-- custom editor needs horizontal space
-
-Conservative defaults:
-
-- ordinary field: `gridSpan: 1`
-- medium-wide field: `gridSpan: 2`
-- editor-like block: `gridSpan: 3` if page is wide enough
-
-## 5. Validation extraction
-
-Confidence levels:
-
-- high confidence:
-  required star, obvious numeric/date constraints, explicit helper text
-- medium confidence:
-  common business conventions such as name required, code length hint
-- low confidence:
-  hidden uniqueness checks, server-side validation, cross-form constraints
-
-Only encode low-confidence validation if the user explicitly described it.
-
-## 6. Linkage extraction
-
-Map visible interactions into one of these:
-
-| Situation | Mechanism |
-| --- | --- |
-| 简单显隐 | `x-visible` |
-| 简单禁用 | `x-disabled` |
-| 单字段依赖更新 | `x-reactions` |
-| 调接口更新选项 | `scope` handler |
-| 多字段协同或提交兜底 | `effects` |
-
-Examples:
-
-- “选择数据源类型后才显示 JDBC 配置” -> `x-visible`
-- “切换开关后禁用描述字段” -> `x-disabled`
-- “选择省份后重置城市并更新选项” -> `x-reactions`
-- “输入编码后查重” -> `scope` or async validator
-- “提交失败统一 toast” -> `effects`
-
-## 7. Output template
-
-Preferred answer skeleton:
-
-```md
-理解
-
-假设
-
-字段模型
-
-```ts
-// schema
-...
-```
-
-```ts
-// initial model shape
-...
-```
-
-```vue
-<!-- optional render snippet -->
-...
-```
-```
-
-## 8. Schema skeleton
-
-Use this as the default starting point:
+普通字段可建议 `gridSpan: 1`，较宽字段为 `2`，宽屏编辑器可为 `3`；长文本、满宽字段和自定义编辑器的跨度必须与实际栅格列数及窄屏行为匹配，不能只复制示例数字。
 
 ```ts
 const schema: ISchema = {
@@ -163,14 +44,12 @@ const schema: ISchema = {
     layout: {
       type: 'void',
       'x-component': 'FormLayout',
-      'x-component-props': {
-        layout: 'horizontal',
-        labelWidth: 120,
-      },
+      'x-component-props': { layout: 'horizontal', labelWidth: 120, labelAlign: 'right' },
       properties: {
         grid: {
           type: 'void',
           'x-component': 'FormGrid',
+          'x-component-props': { maxColumns: 2, minColumns: 1, minWidth: 320 },
           properties: {},
         },
       },
@@ -179,62 +58,39 @@ const schema: ISchema = {
 };
 ```
 
-## 9. Query form special handling
+示例数字仅为起点，不决定目标页面的字段、列数或业务规则。
 
-When the form is clearly a search form:
+## 查询与详情的分支
 
-- keep fields compact
-- avoid excessive required rules
-- place actions in `AutoButtonGroup`
-- include `Submit` and `Reset`
-- prefer light linkage over complex `effects`
+业务查询表单保持紧凑，保留已确认的必填规则，不因常见习惯新增必填。YFormily 渲染字段，外部 YButton 查询 / 重置由 Hook 的 `handleSearch/handleReset` 维护同一参数源、回第一页并执行请求。动作区按 [业务页面查询区规则](../../yss-ui-business-page-generation/SKILL.md)核对，基础表单约束仍由已加载的 `formily-foundation` 决定；不将 schema 内 `AutoButtonGroup + Submit/Reset` 当作 CRUD 查询区默认方案。
 
-Typical query output includes:
+查询输出包含 schema、初始筛选 model 和查询 / 重置处理计划。单纯 Formily 表单提交仍可按基础规范使用 schema 内按钮组。
 
-- schema
-- initial filter model
-- submit/reset handlers through `scope`
+详情或新增 / 编辑 / 查看复合表单确认 mode，不只生成可编辑控件。默认描述列表足够时不另造渲染；富格式、数组标签、代码或富文本查看器需要自定义 detail slot 时，按 [模式与插槽路由](../../yss-formily/SKILL.md)加载已安装的 `formily-mode-slot-detail`，由原专项确定规范。
 
-## 10. Detail form special handling
+## 校验与联动的依据
 
-If the target is read-only or mixed add/edit/detail:
+| 线索 | 如何处理 |
+|---|---|
+| 明确必填标记、数值 / 日期约束或 helper 文本 | 对照需求确认含义后编码 |
+| 常见业务习惯、名称必填或长度暗示 | 保留建议与待确认项，不仅凭习惯把规则写入 schema |
+| 隐藏唯一性、服务端或跨表校验 | 只有用户 / 权威需求已明确描述时编码 |
 
-- plan `mode`
-- check whether detail mode needs custom slots
-- do not generate editable controls only
-- leverage default descriptions rendering when enough
+| 当前任务 | 首选机制 |
+|---|---|
+| 简单显隐 / 禁用 | `x-visible` / `x-disabled` 表达式 |
+| 单字段依赖更新 | `x-reactions` |
+| 调接口更新选项或跨字段事件 | `scope` |
+| 表单级多字段协同 | `effects` |
 
-Use custom detail slots only when:
+例如数据源类型控制 JDBC 配置显示、开关控制字段禁用、省份控制城市选项与失效旧值，都需要确认字段路径和实际依赖。编码查重仅在已确认需求存在时实现。客户端提交校验失败反馈使用 `onFormSubmitValidateFailed`；API reject 仍由 mutator 统一提示，不能把“提交失败统一 toast”机械映射到通用 effects 失败回调。复杂或异步联动按 [联动场景路由](../../yss-formily/SKILL.md)加载已安装的 `formily-linkage-effects`，由原专项处理初始化、合法回填、竞态和卸载。
 
-- value needs rich formatting
-- arrays should render tags
-- code or rich text should render in a viewer
+## Figma 与图片检查
 
-## 11. Figma-specific notes
+Figma 读取语义标签，不沿用 `Frame 123`、`Input / Default`、`Group 14` 等设计图层名；忽略纯装饰层，把 helper 与必填提示作为需核对的规则线索。底部按钮转成动作区，宽框编辑器结合实际空间安排满宽。
 
-When converting from Figma:
+截图先区分 placeholder 与标签，识别 Tab / 分段控制是否意味着条件区，确认大框是自定义编辑器还是 textarea。图像理解是近似的，低置信度时输出可审阅骨架并记录不确定项，不制造精确业务规则。
 
-- extract semantic labels, not layer IDs
-- ignore purely decorative layers
-- map helper text and required marks into schema rules
-- convert footer buttons into action area, not ordinary fields
-- infer full-width editors from large framed regions
+## 输出与自检
 
-Do not preserve design-only names such as:
-
-- `Frame 123`
-- `Input / Default`
-- `Group 14`
-
-Translate them into domain names and stable field keys.
-
-## 12. Image-specific notes
-
-When converting from screenshots:
-
-- distinguish placeholder text from actual label text
-- watch for tabs or segmented controls that imply conditional sections
-- identify whether a box is a custom editor or just a textarea
-- keep uncertain parts in assumptions
-
-If confidence is low, generate a clean schema baseline instead of fake precision.
+按“简短理解 → 假设 → 字段模型 → schema → 按需 model / 渲染示例”组织。JSON / TS 标识保持原样，假设与已确认规则分开。检查字段稳定、分组有业务含义、必填 / 可选和只读 / 联动与输入一致，所需 API 与插槽来自当前版本。只剩真正阻断正确性的未决问题时交回所有者；文档输出不改变原合同状态或批准。

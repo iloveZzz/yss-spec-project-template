@@ -23,11 +23,9 @@ Both modes remain UX research workflows. Do not import academic-paper writing, p
 
 ## User Context
 
-Before starting, load [$user-context](../user-context/SKILL.md) and run its preflight script when local shell access is available.
+When the workflow needs saved product or design context, load [$user-context](../user-context/SKILL.md) and follow its [conditional Preflight](../user-context/SKILL.md#preflight). Reuse the loaded result while its state paths, digests, and relevant scope are unchanged.
 
-Use saved product URLs, Figma files, screenshots, reference images, codebase paths, Storybook, tokens, design systems, brand assets, component refs, browser preferences, and share targets as grounding material when relevant.
-
-Do not inspect every saved reference. Inspect only what the current task needs.
+Use relevant saved sources and preferences as grounding material under [Saved User Context](../user-context/SKILL.md#saved-user-context). Inspect only references needed for the current task.
 
 ## Contract
 
@@ -87,10 +85,10 @@ Default to an in-chat research brief unless the user asks for another format.
 
 Include:
 
-- Executive read: the core story in 5-7 sentences.
+- Executive read: the core problem, conclusion, and evidence limits, with enough context for the current decision.
 - Ranked UX problems: for each problem, include the problem, user goal, surface, what breaks, evidence, severity, frequency signal, confidence, and recommended product move.
 - Source map: what was searched, what each source contributed, and where signal was weak.
-- Opportunity map: group recommendations into fix this week, fix this quarter, and needs deeper research.
+- Opportunity map: organize recommendations by supported priority, dependencies, and questions needing deeper research. Use scheduling dates only when supplied or confirmed; do not turn research recommendations into delivery commitments.
 
 When the user explicitly asks to persist an `evidence-audited` result, create two adjacent files named `<slug>-research-brief.md` and `<slug>-evidence.yaml`. Start from [research-brief-template.md](assets/research-brief-template.md) and [evidence-template.yaml](assets/evidence-template.yaml), then run:
 

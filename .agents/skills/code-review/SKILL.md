@@ -15,11 +15,9 @@ Review a pinned candidate: all applicable axes initially, then affected conclusi
 
 If `.template-spec/agents/issue-tracker.md` is missing, tell the user to run `/setup-matt-pocock-skills`; do not invoke another user-invoked skill yourself.
 
-文档输出时按 `lifecycle-document-output` 条件调用 `i-have-adhd`，读取 `.template-spec/process/document-writing.md`；作用域仅限当前产物，派发时传递条件及引用。
-
 ## 文档写作
 
-撰写审查报告时，读取 `.template-spec/process/document-writing.md` 的共用写法及审查指引；保留各审查轴的 findings、严重性、定位、证据及原裁决，不因压缩表达合并或降级。
+撰写审查报告时，按 `lifecycle-document-output` 条件调用 `i-have-adhd`，读取 `.template-spec/process/document-writing.md` 的共用写法及审查指引；保留各审查轴的 findings、严重性、定位、证据及原裁决，不因压缩表达合并或降级。作用域仅限当前产物，派发时传递条件及引用。
 
 ## Process
 
@@ -58,7 +56,17 @@ Standards 检查代码 diff 时读取 [Fowler smell baseline](references/smell-b
 
 仅任务包携带 `review_round`、明确采用历史冻结候选协议时，读取 [两轮收敛合同](references/legacy-convergence.md)。普通审查不因此新增候选冻结或额外审查者。
 
-Present the reports under `## Standards` and `## Spec` headings, verbatim or lightly cleaned. If UI is in scope, add `## UI fidelity` from the separate pass. Fill `.template-spec/templates/review-report-template.md` specialist tables as part of Standards evidence, not a fourth axis. Do **not** merge or rerank findings — the axes are deliberately separate (see _Why separate axes_). A YSS candidate with blank applicable specialist rows, skipped `required_skills`, or unaddressed mandatory violations is `blocked`, not `completed`. Do not close findings by writing implementation in the review session. `violation` / machine-check failure / blank applicable rows go back to the implementer on the original contract path, then compare the repair, recapture and rereview affected conclusions and dependencies; explicitly rebind unchanged evidence. `drift` / `new_impacts` / `required_skills` mismatch mark the contract `stale` and return to 实现合同编译器 to investigate affected requirements, not default to all axes. Do not keep coding on the old contract. `not-applicable` is only for untriggered impacts; mandatory gates have no waiver, only repair or a complete `seam-deferred` record.
+#### 报告与阻断
+
+按 `## Standards`、`## Spec` 分别呈现原报告或等义整理后的结论；UI 影响另列 `## UI fidelity`。专项表填写在 `.template-spec/templates/review-report-template.md` 的 Standards 证据中，不增加第四轴，也不合并或跨轴重排 findings。适用专项行空白、遗漏 `required_skills` 或 mandatory violation 未关闭时，结果为 `blocked`，不能写 `completed`。
+
+#### 修复后复审
+
+Reviewer 保持只读，将 `violation`、机器检查失败和适用行空白交回原合同路径的实施者。修复后比较差异、重新捕获候选，复审受影响结论与依赖，并明确重新绑定未受影响的证据；不在审查会话中写实现来关闭 finding。
+
+#### 合同失效与延期
+
+`drift`、`new_impacts` 或 `required_skills` 不匹配时，将合同标为 `stale` 并回到 实现合同编译器 调查受影响要求；停止使用旧合同实现，不默认全轴重审。`not-applicable` 只用于未触发影响。mandatory 门禁不能豁免；按原合同修复，或在原流程允许延期时提供完整 `seam-deferred` 记录。
 
 For Worktree mode, recapture the candidate digest after all applicable checks finish. If it differs from `candidate_digest`, mark the affected reports as reviewing a **stale candidate** and return `blocked`; the caller may start a new review against a new capture, but this invocation must not aggregate findings from different bytes. Recheck the same digest again at the completion/checkpoint boundary.
 

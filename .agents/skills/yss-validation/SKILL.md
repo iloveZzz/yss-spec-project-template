@@ -5,52 +5,46 @@ description: "接入或排查 YSS Bean Validation、校验消息与校验错误�
 
 # yss-validation
 
-Use this skill for YSS 校验组件. Keep implementation grounded in the local project and resolvable YSS backend component source.
-
-中文说明：本技能用于 YSS 校验组件。执行时优先读取源码索引，避免凭记忆猜类名、配置项或接入方式。
-
-## Source Index First
-
-- Backend source location is environment-specific; resolve it with `yss-skill-source-index-refresh/references/source-location.md`.
-- Generated index: `references/source-index.md`
-- Component path hints: `yss-microservice-components/yss-component-validation-jsr303`
-
-Read `references/source-index.md` as a path-hint index whenever the task depends on exact modules, annotations, auto configuration, properties, controllers, clients, repositories, DTOs, handlers, or troubleshooting.
-
-## Workflow
-
-1. Identify whether the task is JSR-303 annotation validation or an expression/EL parser request.
-2. Select the approved platform index and inspect the actual POM, validation message resources, consuming Controller annotations and matching exception Advice. The current module README is empty; do not treat reading it as prerequisite evidence.
-3. 当前组件仓不存在历史 `yss-component-validation-engine-parent`；表达式、LiteFlow EL 或 `ExpressParserFactory` 请求返回 `blocked`，先确认真实组件来源和生命周期影响，不以旧索引或通用知识生成实现。
-4. Keep validation failures mapped to the service/API error contract used by the local project.
-5. 消费工程基线选择 javax/jakarta，不自行升级 Java/Boot。MVC 输入校验放在 server/client，业务不变量由 service/core 验证；不生成 DDD Domain。HTTP 失败形态由 server 的合同测试验证。
-
-## Capability Split
-
-- `validation-jsr303`: currently a dependency/message-resource aggregation module; it has no local Validator, Advice, or auto-configuration Java implementation.
-- 历史 `validation-el-parser` / `ExpressParserFactory`：当前源码根不存在，状态为 `blocked`，不得作为可用 capability。
-
-## Troubleshooting Notes
-
-- If an EL/parser capability is requested, stop and resolve its actual repository/module instead of assuming the removed path.
-- If validation annotations do not fire, check controller/service validation annotations and Spring validation starter wiring before editing parser code.
-- The component README is empty; use the POM, message resources, Controller annotations, and `GlobalExceptionAdvice` as current evidence.
-- If behavior differs between expression validation and DTO validation, route the problem to the correct submodule first.
-
-## Checklist
-
-- Required dependency or starter module is present.
-- JSR-303 and unavailable expression-validation requests are not mixed in the same fix.
-- No class, parser or configuration is attributed to the absent historical module.
-- Validation errors preserve readable messages for Chinese business users.
-- Existing project conventions are reused before adding new wrappers.
-
-## Do Not
-
-- Do not invent class names or configuration keys without checking the source index.
-- Do not replace component extension points with business-local framework code.
-- Do not broaden the task into unrelated YSS components unless the user asks.
+处理 YSS Bean Validation 注解、消息资源和校验失败映射；先区分 DTO 校验与当前不可用的历史 EL/parser 请求。
 
 ## 平台与源码门禁
 
-接入、修改、代码生成或给出精确类名/配置前，读取 [后端组件平台与源码门禁](../yss-skill-source-index-refresh/references/backend-component-platform-compatibility.md)，从批准的 `platform_configuration.component_platform_line` 选择 `source-index.boot2-java8.md` 或 `source-index.boot3-java17.md`，并以 `--skill yss-validation --platform-line <line> --source-root <matching-root>` 运行统一 freshness 校验。平台线与源码根不匹配、组件 tree 不一致、组件子树 dirty、索引缺少平台信号，或 Manifest / 组件 GAV 缺少 verified 兼容证据时返回 `blocked`；不得回退另一代索引，也不在业务实现中升级、降级或替换 YSS 组件。既有工程只读分诊可继续，但不得据此宣称跨 Boot/JDK 兼容。
+接入、修改、代码生成或提供精确类名/配置前，必须读取并执行 [共享平台与源码门禁](../yss-skill-source-index-refresh/references/backend-component-platform-compatibility.md)，以 `--skill yss-validation` 校验批准的平台线及匹配源码根。缺失、错配或漂移返回 `blocked`；不跨代回退，不在业务实现中升级、降级或替换组件。只读分诊可继续，但须标注未完成源码核验，不能据此宣称跨 Boot/JDK 兼容。
+
+## 源码定位
+
+按 [源码定位策略](../yss-skill-source-index-refresh/references/source-location.md) 确认真实位置，再从 [平台索引](references/source-index.md) 定位当前任务需要的源码。`yss-microservice-components/yss-component-validation-jsr303` 仅是模块路径提示。
+
+## 工作流
+
+1. 区分 JSR-303 注解校验与表达式/EL parser 请求。
+2. 从批准平台索引核验实际 POM、校验消息资源、消费 Controller 注解及匹配的异常 Advice。当前模块 README 为空，不作为前置证据。
+3. 当前组件仓不存在历史 `yss-component-validation-engine-parent`；表达式、LiteFlow EL 或 `ExpressParserFactory` 请求返回 `blocked`，先确认真实组件来源和生命周期影响，不以旧索引或通用知识生成实现。
+4. 校验失败映射保持当前工程的 service/API 错误合同。
+5. 消费工程基线选择 javax/jakarta，不自行升级 Java/Boot。MVC 输入校验放在 server/client，业务不变量由 service/core 验证；不生成 DDD Domain。HTTP 失败形态由 server 的合同测试验证。
+
+## 能力边界
+
+- `validation-jsr303` 当前聚合依赖与消息资源，没有本地 Validator、Advice 或自动配置 Java 实现。
+- 历史 `validation-el-parser` / `ExpressParserFactory`：当前源码根不存在，状态为 `blocked`，不得作为可用 capability。
+
+## 排障
+
+- EL/parser 请求停止实施并确认真实仓库/模块，不假设已移除路径仍存在。
+- 注解未生效时先检查 Controller/service 校验注解和 Spring validation starter 装配，不先改 parser 代码。
+- 当前证据使用 POM、消息资源、Controller 注解和 `GlobalExceptionAdvice`。
+- 表达式校验与 DTO 校验行为不一致时先确认对应模块，再路由问题。
+
+## 验收
+
+- 核验所需依赖或 starter 已进入实际工程。
+- JSR-303 与不可用的表达式校验不混入同一整改。
+- 不将类、parser 或配置归给不存在的历史模块。
+- 校验错误保留中文业务用户可理解的消息。
+- 新增包装前先复用工程既有约定。
+
+## 修改边界
+
+- 类名和配置 key 先核验当前索引与源码，不凭记忆补造。
+- 使用组件已有扩展 seam，不以业务本地框架代码替换。
+- 保持当前组件任务范围；扩展到其他组件须有用户要求或重新路由依据。

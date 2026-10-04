@@ -11,11 +11,7 @@ Slice v3 的当前执行结果须按 `references/yss-skill-execution-result.md` 
 
 阶段 7 的实现合同编译器。它把已批准的生命周期资产、垂直切片、capability 和窄 Recipe 编译为 `Slice Implementation Contract` v3 草案；不批准合同、不写业务代码、不设置 `ready-for-agent`。
 
-文档输出时按 `lifecycle-document-output` 条件调用 `i-have-adhd`，读取 `.template-spec/process/document-writing.md`；作用域仅限当前产物，派发时传递条件及引用。
-
-## 文档写作
-
-撰写实现合同的解释正文和切片交接说明前，读取 `.template-spec/process/document-writing.md` 的共用写法及工程契约 / Ticket 指引；不改变结构化合同、批准状态或就绪条件。
+撰写实现合同解释正文或切片交接说明时，按 `lifecycle-document-output` 条件调用 `i-have-adhd`，读取 `.template-spec/process/document-writing.md` 的共用写法及工程契约 / Ticket 指引。作用域仅限当前产物；派发时传递条件及引用，不改变结构化合同、批准状态或就绪条件。
 
 ## 输入
 
@@ -41,7 +37,7 @@ Slice v3 的当前执行结果须按 `references/yss-skill-execution-result.md` 
 采用专职前端 profile 或显式 `frontend_delivery` 绑定时，先按 `.template-spec/process/frontend-backend-delivery.md` 实际核验战略与后端联合交付。缺任一输入只能诊断和回交；输入通过后准备计划/合同，正式实现、生成和恢复仍须当前批准的 Slice Contract 冻结接收摘要。接口或部署版本漂移时重新接收，不复用旧成功输出。
 
 - 编译器不得输出 `approved`、`ready-for-agent` 或 `completed`。
-- Registry 和编译规则保持 schema v2；新 Slice 使用 v3，v2 按原规则读取和显式迁移。schema v1 一律拒绝，不自动升级，不提供旧技能名兼容。
+- Registry 使用其权威 schema v3，编译规则保持 schema v2；新 Slice 使用 v3，旧 Slice v2 按原规则读取和显式迁移。已停止支持的 schema 一律拒绝，不自动升级，不提供未登记的旧技能名兼容。
 - `required_capabilities` 与 `required_skills` 必须同时冻结；Registry 或编译器摘要变化后合同立即 `stale`，重新编译后仍须交生命周期重新批准。
 - UI 影响按来源分支核验：新设计保持正式原型确认与 Visual Baseline；无 UI 改动才允许 `existing-ui-baseline` v1，并须当前真实基线确认及 `case_id`。任一来源缺少当前批准或摘要绑定时，不得路由页面实现。模型必须先读 manifest 与语义引用，再查看对应 PNG；禁止目录 glob 和图片独立猜义。
 - Repository/数据模型影响缺少数据架构时，不得路由持久化实现。

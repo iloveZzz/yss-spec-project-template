@@ -50,10 +50,10 @@ description: 用于生成完整的 YSS DDD 多模块后端脚手架。当用户�
 
 - 先在生命周期批准的脚手架受控生成合同下生成骨架，再做业务化定制；不要直接把脚手架当最终代码交付。
 - 永不生成 `User CRUD` 示例；`--with-example` 已禁用，业务代码必须按批准的 Slice Implementation Contract 逐切片实现。
-- 若目标工程已经存在，直接返回 `unsupported`。旧项目继续按原工程维护；需要现代化时单独立项、先评估再逐切片迁移，不属于本 skill。
-- 输出目录必须显式指定；目标工程目录必须不存在，`--force` 永久拒绝。
-- Harness 内多项目布局必须使用 `apps/backend/<project>/`；`apps/backend/` 只能是生成器的父容器，`app/backend/`、`app/frontend/` 及其子路径一律拒绝。`git-submodule` gitlink、空挂载点、detached HEAD 工作树不得覆盖生成，即使传入 `--force` 也不得当成普通目录，且不得走「请显式传入 `--force`」普通目录覆盖 / rename 路径。`--output-dir` 指向 detached HEAD 子仓时不得 mkdir、staging 或生成工程。先 `git submodule update --init` 并在子仓附加分支工作树内生成。维护生成器时按 [守卫顺序](references/generator-maintenance.md) 检查，不能将 gitlink 当普通目录。
-- 生成时的工程基线由本 skill 的 `references/engineering-baseline.md` 持有并绑定摘要；它不是独立 Skill。生成后必须回到 实现合同编译器，并按批准切片加载 `yss-domain`、`yss-application`、`yss-repository`、`yss-mybatis`、`yss-web-controller`、`yss-dto`、`yss-exception`、`yss-validation`、`mapstruct`、`lombok`、`alibaba-java-code-style` 等实际命中的行为 skill。
+- 输出目录必须显式指定，生成器严格 `initialize-only`；目标工程目录必须不存在。已有工程、非空目标、`--force`、旧项目迁移和当前模板升级均返回 `unsupported`。旧项目继续按原工程维护；现代化或未来同一 Target Profile 模板升级须另行设计、批准，当前不提供该执行能力。
+- Harness 内多项目使用 `apps/backend/<project>/`，`apps/backend/` 只作输出父容器；`app/backend/`、`app/frontend/` 及其子路径一律拒绝。
+- `git-submodule` gitlink、空挂载点和 detached HEAD 不作为普通目录覆盖或 rename，`--force` 不解除边界。`--output-dir` 指向 detached HEAD 子仓时不得 mkdir、staging 或生成；工程准备须先初始化 submodule 并在子仓附加分支工作树内生成。维护生成器时读取 [守卫顺序](references/generator-maintenance.md)。
+- 生成工程基线由本 Skill 的 `references/engineering-baseline.md` 持有并绑定摘要，不是独立 Skill。后续实现的专项路由见 [分层 Skill 路由](references/layer-skill-routing.md)，由实现合同编译器按批准切片选择实际命中的技能。
 - 生成后的后端工程必须使用项目根目录 `./mvnw ...` 执行构建、测试、运行和 CI 验证；不得在 README、实施记录、Ticket、Review 或 Release 中默认写裸 `mvn ...`。既有仓库确实无法使用 wrapper 时，必须记录受控例外。
 - 原型确认后，`scaffold_status=required` 才能进入本 skill；本 skill 的生成边界是工程结构、POM、配置、Wrapper 和机械模板，不是业务实现。
 - 脚手架合同必须携带 `contract_id`、`contract_version`、实现合同编译器 draft 引用、生命周期批准引用、持久化引用、当前版本、允许写路径、预期证据文件和验证命令；字段缺失或版本过期时阻断。
@@ -63,8 +63,7 @@ description: 用于生成完整的 YSS DDD 多模块后端脚手架。当用户�
 - 生成项目必须写入 Manifest v4 `.yss/scaffold-generation.json`，记录技术、数据与 API 设计门禁、架构选择及 digest、生成器、合同 digest、Target Profile、模块闭包、模板 digest、下游完整 当前合同 freshness、generator-owned 文件 hash、严格 `generation_policy` 和完成等级；清单缺失或不一致时不得交给后续 实现合同编译器。
 - `first-slice-verified` 只能由 `run_first_slice_verification.mjs` 写入。手工改 Manifest、只生成 Controller、只通过局部模块测试或仅有结构扫描都不能升级完成等级。
 - 严禁把领域规则、状态机、权限、事务、复杂查询、错误映射、业务字段或用户可见行为塞进脚手架生成步骤。`./mvnw validate`、输出目录存在或“生成成功”都不等于生命周期批准、架构放行或 `ready-for-agent`。
-- 生命周期脚手架生成必须关闭 `--with-example`，不得把 User CRUD 或业务字段当作样板。生成器严格 `initialize-only`：非空目标、`--force`、旧项目迁移和当前模板升级一律 `unsupported`。未来若支持同一 Target Profile 内的模板升级，必须另行设计和批准，当前不预留可执行承诺。
-- 脚手架完成后，所有后续生成的后端代码必须回到 `yss-implementation-contract-compiler`，消费批准且版本当前的 Slice Implementation Contract 和对应 YSS skill；业务行为使用 `behavior-tdd`，机械生成才使用 `controlled-generation`。
+- 脚手架完成后，所有后续后端代码必须回到 `yss-implementation-contract-compiler`，消费批准且版本当前的 Slice Implementation Contract 和适用 YSS skill；业务行为使用 `behavior-tdd`，机械生成才使用 `controlled-generation`。
 - 涉及 API 契约时，先确认 `docs/.scratch/<feature>/api/<feature>.yaml` 中的 OpenAPI Draft / Freeze 状态；不要用脚手架生成结果反向替代产品契约设计。
 
 ## 按需读取
@@ -79,7 +78,7 @@ description: 用于生成完整的 YSS DDD 多模块后端脚手架。当用户�
 ## 阶段 7 合同
 
 - 仅在实现仓库/输出目录、`scaffold_status=required` 和批准合同明确时运行。
-- 工程骨架属于 `controlled-generation`，必须记录生成器输入、预期文件和 `./mvnw ...` 编译/测试结果；不得将业务状态机、权限、事务或查询逻辑混入生成步骤。
+- 工程骨架属于 `controlled-generation`，记录生成器输入、预期文件和实际编译/测试结果。
 - 生成结果必须包含 `.yss/scaffold-generation.json`，并由验证器回勾该清单；清单与批准合同不一致时阻断。
-- `./mvnw validate`、`./mvnw test`、`./mvnw package` 必须由受控工作单元真实执行，并记录每条命令的 `exit_code`、耗时、stdout/stderr 引用和执行时间；只列命令计划、生成器成功或打印输出均视为缺失证据并阻断。
+- 三条根 Wrapper 验证必须按 [受控生成与验证](references/generation-workflow.md) 真实执行，逐条记录 `exit_code`、耗时、stdout/stderr 引用和执行时间；计划、生成器成功或打印输出不构成执行证据，缺失即阻断。
 - 生成后按统一 `YSS Skill Execution Result` 返回 changed/evidence files、实际验证结果和新增影响，再由 实现合同编译器 为业务工作单元重新路由。

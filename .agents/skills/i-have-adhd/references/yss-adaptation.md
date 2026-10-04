@@ -1,8 +1,8 @@
 # i-have-adhd 的 YSS 适配
 
-上游：`ayghri/i-have-adhd`；固定 revision：`7b9069b39972e269e61bd95c2f66ebb90cac6a02`；许可证见技能目录 `LICENSE`。
+上游：`ayghri/i-have-adhd`；固定 revision：`839872f9d1cd634fed642b4589ce7226199cc15f`；许可证见技能目录 `LICENSE`。
 
-原始文件来自 [固定版本目录](https://github.com/ayghri/i-have-adhd/tree/7b9069b39972e269e61bd95c2f66ebb90cac6a02/skills/i-have-adhd)。未经改写的来源基线保存在模板维护证据中；`upstream-files.json` 记录逐文件 SHA-256，`skills-lock.json` 记录上游目录哈希和当前技能目录哈希。基线不进入实例默认加载面。
+原始文件来自 [固定版本目录](https://github.com/ayghri/i-have-adhd/tree/839872f9d1cd634fed642b4589ce7226199cc15f/skills/i-have-adhd)。2026-10-03 核验该提交与先前 `7b9069b39972e269e61bd95c2f66ebb90cac6a02` 的技能目录树和三个文件原字节一致；本轮更新来源记录并修复 YSS 消费指引。未经改写的来源基线保存在模板维护证据中；`upstream-files.json` 记录逐文件 SHA-256，`skills-lock.json` 记录上游目录哈希和当前技能目录哈希。基线不进入实例默认加载面。
 
 | 上游行为 | YSS 适配 |
 |---|---|

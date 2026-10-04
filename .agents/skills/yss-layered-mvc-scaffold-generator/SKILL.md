@@ -43,7 +43,7 @@ description: 在生命周期已批准的脚手架合同下生成通用 YSS 分�
 
 ## 执行
 
-优先使用一键入口：
+优先使用一键入口。以下命令从 Skill 根目录执行；坐标、平台及合同参数消费当前批准输入，示例不授予生成或覆盖权限：
 
 ```bash
 node scripts/generate_and_verify_scaffold.mjs \

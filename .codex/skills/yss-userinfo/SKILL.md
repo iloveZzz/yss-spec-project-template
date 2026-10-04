@@ -5,52 +5,46 @@ description: "接入或排查 YSS CurrentUserProvider、已认证 SecurityContex
 
 # yss-userinfo
 
-Use this skill for YSS 用户信息组件. Keep implementation grounded in the local project and resolvable YSS backend component source.
-
-中文说明：本技能用于 YSS 用户信息组件。执行时优先读取源码索引，避免凭记忆猜类名、配置项或接入方式。
-
-## Source Index First
-
-- Backend source location is environment-specific; resolve it with `yss-skill-source-index-refresh/references/source-location.md`.
-- Generated index: `references/source-index.md`
-- Component path hints: `yss-microservice-components/yss-component-userinfo-starter`
-
-Read `references/source-index.md` as a path-hint index whenever the task depends on exact modules, annotations, auto configuration, properties, controllers, clients, repositories, DTOs, handlers, or troubleshooting.
-
-## Workflow
-
-1. 先按已批准平台线读取对应索引；以下当前行为针对 `boot3-java17`，Boot 2 旧工程只按其独立索引做只读分诊和迁移。
-2. Identify whether the task is authenticated current-user lookup, an explicitly trusted gateway adapter, a custom `CurrentUserProvider`, or non-REST/background fallback behavior.
-3. Read `references/source-index.md`, then inspect `CurrentUserProvider`, `SecurityContextCurrentUserProvider`, `TrustedGatewayHeaderCurrentUserProvider`, `AuthUserInfoUtil`, `DmUser`, and `DmUserDetails`.
-4. 默认使用 `SecurityContextCurrentUserProvider`，只消费 Spring Security 已认证且非 anonymous 的 `Authentication`。JWT 的 signature、issuer、audience、expiry 与算法校验必须在资源服务器认证链完成。
-5. `AuthUserInfoUtil` 是由 `CurrentUserProvider` 驱动的兼容 facade；业务代码可继续调用 `userInfo()`、`userName()`、`userCode()` 或 `currentUserJson()`，但不得自行解析 Header、JWT payload 或 Redis 身份缓存。
-6. 只有显式启用 `yss.userinfo.trusted-gateway.enabled` 且配置非空 `trusted-proxies` 时，才启用 `TrustedGatewayHeaderCurrentUserProvider`；它只接受 remote address 在 allow-list 中的请求，并且 SecurityContext 结果优先。
-7. For scheduled/background tasks, an empty provider result causes the compatibility facade to return the distinct `system` fallback; do not represent it as an authenticated system principal.
-
-## Source-Backed Notes
-
-- `SecurityContextCurrentUserProvider` supports a `UserInfo` principal and an authenticated `OAuth2AuthenticatedPrincipal`; claim mapping happens only after authentication.
-- Trusted gateway header names are `X-Username`, `X-Usercode`, and `X-LoginDisplayName`; the adapter requires a trusted proxy allow-list and a nonblank username.
-- `UserInfoAutoConfiguration` installs SecurityContext as the default and composes the optional gateway provider behind it. A project-supplied `CurrentUserProvider` remains the explicit extension seam.
-- The Boot 3 component does not parse an unverified Bearer payload and does not use Redis as an authentication fallback. Cache behavior is outside this identity provider contract.
-
-## Checklist
-
-- Required dependency or starter module is present.
-- Request context exists before relying on servlet headers.
-- Spring Security has authenticated the request before the provider reads the principal.
-- When trusted gateway mode is enabled, at least one proxy address is allow-listed and untrusted remote addresses are rejected.
-- Business code does not duplicate JWT or header parsing logic.
-- SecurityContext/gateway/background precedence and empty-result behavior are covered by tests; `system` fallback is distinguished from an authenticated system user.
-- User info propagation is tested for REST calls and async/background execution separately.
-
-## Do Not
-
-- Do not invent class names or configuration keys without checking the source index.
-- Do not replace component extension points with business-local framework code.
-- Do not treat raw `Authorization` payloads or gateway headers as authenticated identity.
-- Do not broaden the task into unrelated YSS components unless the user asks.
+处理已认证当前用户、受信网关适配、自定义 `CurrentUserProvider` 和后台空上下文；身份来源须符合当前平台契约。
 
 ## 平台与源码门禁
 
-接入、修改、代码生成或给出精确类名/配置前，读取 [后端组件平台与源码门禁](../yss-skill-source-index-refresh/references/backend-component-platform-compatibility.md)，从批准的 `platform_configuration.component_platform_line` 选择 `source-index.boot2-java8.md` 或 `source-index.boot3-java17.md`，并以 `--skill yss-userinfo --platform-line <line> --source-root <matching-root>` 运行统一 freshness 校验。平台线与源码根不匹配、组件 tree 不一致、组件子树 dirty、索引缺少平台信号，或 Manifest / 组件 GAV 缺少 verified 兼容证据时返回 `blocked`；不得回退另一代索引，也不在业务实现中升级、降级或替换 YSS 组件。既有工程只读分诊可继续，但不得据此宣称跨 Boot/JDK 兼容。
+接入、修改、代码生成或提供精确类名/配置前，必须读取并执行 [共享平台与源码门禁](../yss-skill-source-index-refresh/references/backend-component-platform-compatibility.md)，以 `--skill yss-userinfo` 校验批准的平台线及匹配源码根。缺失、错配或漂移返回 `blocked`；不跨代回退，不在业务实现中升级、降级或替换组件。只读分诊可继续，但须标注未完成源码核验，不能据此宣称跨 Boot/JDK 兼容。
+
+## 源码定位
+
+按 [源码定位策略](../yss-skill-source-index-refresh/references/source-location.md) 确认真实位置，再从 [平台索引](references/source-index.md) 定位当前任务需要的源码。`yss-microservice-components/yss-component-userinfo-starter` 仅是模块路径提示。
+
+## 工作流
+
+1. 先按已批准平台线读取对应索引；以下当前行为针对 `boot3-java17`，Boot 2 旧工程只按其独立索引做只读分诊和迁移。
+2. 区分已认证当前用户、显式受信网关、自定义 `CurrentUserProvider` 与非 REST/后台 fallback。
+3. 按所选任务核验 `CurrentUserProvider`、对应 provider、兼容 facade `AuthUserInfoUtil` 及 `DmUser` / `DmUserDetails`，不无条件读取所有实现。
+4. 默认使用 `SecurityContextCurrentUserProvider`，只消费 Spring Security 已认证且非 anonymous 的 `Authentication`。JWT 的 signature、issuer、audience、expiry 与算法校验必须在资源服务器认证链完成。
+5. `AuthUserInfoUtil` 是由 `CurrentUserProvider` 驱动的兼容 facade；业务代码可继续调用 `userInfo()`、`userName()`、`userCode()` 或 `currentUserJson()`，但不得自行解析 Header、JWT payload 或 Redis 身份缓存。
+6. 只有显式启用 `yss.userinfo.trusted-gateway.enabled` 且配置非空 `trusted-proxies` 时，才启用 `TrustedGatewayHeaderCurrentUserProvider`；它只接受 remote address 在 allow-list 中的请求，并且 SecurityContext 结果优先。
+7. 定时/后台任务的 provider 为空时，兼容 facade 返回独立的 `system` fallback；它不是已认证 system principal。
+
+## 平台行为核验
+
+- `SecurityContextCurrentUserProvider` 支持 `UserInfo` principal 与已认证的 `OAuth2AuthenticatedPrincipal`；claim 映射在认证后进行。
+- 受信网关 Header 为 `X-Username`、`X-Usercode` 和 `X-LoginDisplayName`；适配器要求可信代理 allow-list 与非空 username。
+- `UserInfoAutoConfiguration` 默认使用 SecurityContext，再组合可选网关 provider；工程自定义 `CurrentUserProvider` 是显式扩展 seam。
+- Boot 3 不解析未验证 Bearer payload，不以 Redis 作为认证 fallback；缓存行为不属于此身份 provider 合同。
+
+## 验收
+
+- 核验所需依赖或 starter 已进入实际工程。
+- 使用 Servlet Header 前核验 request context 存在。
+- Provider 读取 principal 前，Spring Security 已完成请求认证。
+- 受信网关启用时，至少一个代理地址进入 allow-list，且拒绝不可信 remote address。
+- 业务代码不重复 JWT 或 Header 解析。
+- 测试覆盖 SecurityContext/网关/后台的优先级与空结果，区分 `system` fallback 和已认证 system 用户。
+- REST 与异步/后台执行分别验证用户信息传播。
+
+## 修改边界
+
+- 类名和配置 key 先核验当前索引与源码，不凭记忆补造。
+- 使用组件已有扩展 seam，不以业务本地框架代码替换。
+- 原始 `Authorization` payload 与网关 Header 不能直接作为已认证身份。
+- 保持当前组件任务范围；扩展到其他组件须有用户要求或重新路由依据。

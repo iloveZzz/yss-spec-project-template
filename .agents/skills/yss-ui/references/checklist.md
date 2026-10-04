@@ -1,110 +1,52 @@
-# yss-ui Checklist
+# YSS UI 交付检查
 
-## 使用方式
+开发时按当前页面和影响面自检，联调时核对数据链路，交付时重新绑定当前 Slice 的实现计划、实现还原验证与实际执行证据。未命中项按原合同记录原因；命中但未验证的项保留阻塞，不能用清单勾选替代执行。
 
-- 开发阶段：按页面类型逐项自检。
-- 联调阶段：重点执行“数据链路与交互”清单。
-- 提交前：至少完成“通用基线”+ 当前页面类型清单。
+## 通用基线
 
----
+- [ ] 已从目标工程用 `pnpm why` 确认 Vue、YSS UI、AntDV、VXE 实际版本及 lockfile。
+- [ ] 组件选型符合 [组件路由](component-routing.md)，已导出的组件 / Hook / Utils 使用真实包来源；受控回退有能力缺口、版本和验证证据。
+- [ ] 使用 Vue 3 Composition API 与 `<script setup lang="ts">`，未引入不存在的 Y 前缀组件或违规 `@formily/antd*` UI。
+- [ ] 页面编排、业务 Hook、纯配置和样式按职责组织；容器的间距与可计算高度符合工程基线。
+- [ ] 适用实现已对照匹配版本的组件文档和已验证 Demo；`pending-verification` 示例不作为推荐依据。
+- [ ] loading、empty、error、disabled/no-access 和实际依赖的 selected 状态都有反馈与恢复路径。
 
-## 通用基线（所有页面必查）
+## 主题、Locale、浮层和可访问性
 
-- [ ] 已用 `pnpm why` 确认 Vue、YSS UI、AntDV、VXE 实际版本
-- [ ] 组件选型已对照 `component-routing.md`，AntDV 回退已记录原因
-- [ ] 使用 Vue 3 Composition API + `<script setup lang="ts">`
-- [ ] 优先使用 `@yss-ui/components`，缺失能力再回退 `ant-design-vue`
-- [ ] 未引入不存在的 Y 前缀组件
-- [ ] 无 `@formily/antd*` 违规导入
-- [ ] 页面容器具备统一布局（padding/margin/min-height）
-- [ ] 状态展示与危险操作颜色保持一致
-- [ ] 关键交互具备成功/失败反馈（`message`）
-- [ ] 关键实现至少对照一个 docs demo（`../assets/demos/*`）
-- [ ] 推荐 Demo 不含 `pending-verification`
+- [ ] 通过项目 ConfigProvider、YSS theme 或语义 Token 消费主题，未新增页面级主题色、任意 z-index；状态不只用颜色表达。
+- [ ] locale、时区、日期和金额格式化复用统一能力；Popup/Teleport 目标与宿主、微应用容器一致。
+- [ ] 图标按钮有可访问名称，表单 label 与错误提示有语义关联；主要动作支持键盘，Tab 顺序合理。
+- [ ] Modal/Drawer 打开后焦点合理，关闭时清理状态并恢复触发元素焦点。
+- [ ] 窄屏布局、表格横向滚动、操作收敛及实际采用的大数据 / 搜索 / 按需加载策略已验证。
 
-## 主题、Locale 与浮层
+## 列表与选择
 
-- [ ] 页面通过项目 ConfigProvider/YSS theme/语义 token 消费主题
-- [ ] 未新增页面级主题色和任意 z-index
-- [ ] locale、时区、日期和金额格式化沿用项目统一能力
-- [ ] Popup/Teleport 目标适配宿主和微应用容器
-- [ ] Modal/Drawer 关闭时清理状态并恢复触发元素焦点
+配置 YTable 时由已安装的 `ytable-usage` 核对专项规则，组件公开 API 见 [YTable 文档](../assets/docs/components/table.md)；没有多选或分页的页面不需要引入对应能力。公共包未附的专项及缺失时的停止、恢复条件见 [专项技能的可用性](quick-recipes.md#专项技能的可用性)，组件文档不能替代必要专项。
 
-## 可访问性、响应式与性能
+- [ ] 列使用 `YTableColumn` 与 `field/type`；行键配置实际业务主键和 `useKey: true`。
+- [ ] 自定义单元格与表头使用真实字段插槽，不用 `bodyCell` 分支冒充 YTable 主渲染模式；DOM 模板中的插槽按 kebab-case。
+- [ ] 远程分页使用 `pageable + v-model:pagination`，状态为 `current/pageSize/total/remote`，监听 `@page-change` 的 `{ current, pageSize }`。
+- [ ] 多选场景配置 Checkbox、受控选择和空选择禁用；批量操作成功后受控字段与可见勾选同时清空。
+- [ ] 远程查询由业务 Hook 执行，未把实例 `refresh()` 当作接口重查；危险操作使用组件确认或邻近 `Popconfirm`。
 
-- [ ] 图标按钮有可访问名称，状态不只依赖颜色
-- [ ] 表单 label、错误提示与控件建立语义关联
-- [ ] 主要操作可通过键盘完成，Tab 顺序合理
-- [ ] 窄屏布局、表格横向滚动和操作收敛已检查
-- [ ] 大数据 Table/Tree、远程搜索和复杂组件采用项目已验证的性能策略
+## 抽屉与步骤
 
----
+- [ ] 抽屉开关与当前记录有单一来源，打开前完成回填，关闭时清理临时输入，Tab 切换不引入脏数据。
+- [ ] 抽屉内列表沿用 YTable 列和分页合同；底部危险操作按批准交互设置确认，不默认使用居中 `Modal.confirm`。
+- [ ] 步骤状态有单一来源，当前实例校验成功才前进；跨步骤数据与弹层编辑回填都保留。
+- [ ] 上一步、下一步、取消与完成按钮的状态和文案正确；完成后提供反馈并进入合同约定的目标页面。
 
-## 列表页清单（YTable）
+## API、Mock、路由与菜单
 
-- [ ] 列定义使用 `YTableColumn`，主字段走 `field/type`
-- [ ] 启用 `:row-config="{ keyField: 'id' }"` 或业务主键
-- [ ] 需要选择行时已配置 `type: 'checkbox'`
-- [ ] 自定义单元格走字段插槽（如 `#status`、`#action`）
-- [ ] DOM 模板（JSP/HTML）下插槽命名使用 kebab-case（如 `#toolbar-left`）
-- [ ] 避免以 `bodyCell` 分支作为主渲染模式
-- [ ] 分页状态包含 `current/pageSize/total`
-- [ ] `@change` 中同步更新分页并触发刷新
-- [ ] 加载态与空态行为正确
+- [ ] API 经项目统一 mutator，导入当前真实生成函数与 DTO；URL 未重复拼接 `/api`。
+- [ ] 请求分页、筛选和响应映射均匹配冻结合同；Mock 路径、字段、状态码和包装复现同一 wire shape，不另定通用包装。
+- [ ] 查询回第一页，翻页保留筛选；API 失败只由 mutator 提示，Hook 维护状态与恢复，不重复错误 Toast。
+- [ ] 路由位于实际模块层级，`meta.title` 和唯一 `name` 符合页面语义；已有工程采用 `MENU_TYPE.INNER_MENU` 时，详情 / 创建页沿用其配置。
 
----
+## 实际验证与限制
 
-## 抽屉详情页清单
-
-- [ ] 抽屉开关状态单一来源（`ref<boolean>`）
-- [ ] 打开抽屉前正确设置当前记录
-- [ ] 抽屉关闭时清理临时输入/评论等状态
-- [ ] Tab 切换不引入脏数据
-- [ ] 抽屉内表格优先使用 YTable（列同样遵循 `field/type`）
-- [ ] 底部操作按钮具备确认机制（如 `Modal.confirm`）
-
----
-
-## 步骤页清单（Create/Step）
-
-- [ ] 步骤状态由单一 `currentStep` 管理
-- [ ] 第一步表单校验通过后再进入下一步
-- [ ] 步骤二列表推荐使用 YTable 承载节点信息
-- [ ] 节点编辑弹层（Drawer/Modal）保存后回填源数据
-- [ ] 上一步/下一步/取消/完成按钮状态与文案正确
-- [ ] 完成动作后有明确反馈并返回目标页面
-
----
-
-## 数据链路与联调清单（API + Mock）
-
-- [ ] API 请求通过项目统一实例（`mutator.ts`）发起
-- [ ] URL 未重复拼接 `/api` 前缀
-- [ ] 列表请求参数包含 `page/pageSize` 与筛选参数
-- [ ] Mock 路由与前端请求路径一致
-- [ ] Mock 返回结构为 `{ code, message, data: { list, total, page, pageSize } }`
-- [ ] 查询行为会重置页码到第一页
-- [ ] 分页行为会沿用筛选条件重新请求
-- [ ] 异常时正确提示并兜底空数据
-
----
-
-## 路由与菜单清单
-
-- [ ] 页面路由挂载在正确模块 `children` 下
-- [ ] `meta.title` 与页面语义一致
-- [ ] 详情/创建页使用 `menuType: MENU_TYPE.INNER_MENU`
-- [ ] 路由名称（name）语义清晰且唯一
-
----
-
-## 交付前核查清单
-
-- [ ] 关键文件已补充必要类型定义
-- [ ] 无调试输出（如 `console.info`）遗留
-- [ ] 运行格式化命令并确认无格式问题
-- [ ] 目标文件 IDE 诊断无新增错误
-- [ ] 若 lint/type-check 失败，已明确标注环境原因
-- [ ] 如需 AI 辅助生成代码，优先加载 `llms-full.txt` 上下文
-- [ ] 必要的组件测试、E2E、视觉回归已执行；未适用项记录原因
-- [ ] 浏览器 console 无新增 warning/error
+- [ ] 类型、静态检查和目标文件诊断没有新增问题；无调试输出遗留。格式检查优先使用工程现有检查模式，避免重写无关文件。
+- [ ] 适用组件测试、关键交互、E2E、响应式与视觉回归已执行，浏览器 console 无新增 warning/error。
+- [ ] `frontend_implementation_plan` / `frontend_implementation_verification` 绑定当前输入；视觉场景按 `case_id` 配对基准图、实现图、diff/mask 与差异解释。
+- [ ] 验证记录含工作目录、实际命令、退出码、环境及证据。失败报告实际现象和已确认原因；原因未知时保留未知，未执行项不写通过。
+- [ ] 文档查询按 [组件来源判定](component-routing.md#导入来源判定)选择 MCP、匹配版本的本地资料或源码，不因生成代码就预读完整 `llms-full.txt`。

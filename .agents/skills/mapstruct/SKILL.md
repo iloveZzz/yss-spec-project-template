@@ -4,6 +4,8 @@ description: "实现或排查 MapStruct DTO、PO、Domain 映射及 Lombok 集�
 ---
 # MapStruct Object Mapping
 
+只读排障先核验实际对象、工程基线和处理器配置，缺批准 Slice 时记录缺口；写入仍消费批准且当前的工作单元与允许路径。
+
 ## YSS 阶段 7 执行结果
 
 - Java、依赖与处理器版本来自工程基线，不从下面通用示例推断。Java 语法、API、处理器与测试工具均消费批准的精确平台配置；MVC 的 wire/internal 转换在 server，core/service 不依赖 client，Repository 不依赖上层 DTO。采用 Spring Bean 和构造器注入，显式映射或忽略字段；禁止通过全局 IGNORE 掩盖合同字段遗漏。

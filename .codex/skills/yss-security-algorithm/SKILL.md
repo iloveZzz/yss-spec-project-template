@@ -5,17 +5,7 @@ description: "审查、迁移或排查既有 YSS 加解密、JWT/JWK、密码编
 
 # yss-security-algorithm
 
-Use this skill as the governance, migration, and troubleshooting entry for the existing YSS 安全算法组件. Keep conclusions grounded in the local project, the approved platform catalog, and resolvable component source.
-
-中文说明：本技能用于 YSS 安全算法组件。执行时优先读取源码索引，避免凭记忆猜类名、配置项或接入方式。
-
-## Source Index First
-
-- Backend source location is environment-specific; resolve it with `yss-skill-source-index-refresh/references/source-location.md`.
-- Generated index: `references/source-index.md`
-- Component path hints: `yss-microservice-components/yss-component-security-algorithm`
-
-Read `references/source-index.md` as a path-hint index whenever the task depends on exact modules, annotations, auto configuration, properties, controllers, clients, repositories, DTOs, handlers, or troubleshooting.
+作为既有 YSS 安全算法组件的盘点、分诊、风险收敛和迁移入口。当前组件禁止新生产接入；准入结论不因源码可读或可编译而改变。
 
 ## 当前准入结论
 
@@ -25,7 +15,15 @@ Read `references/source-index.md` as a path-hint index whenever the task depends
 - 只有平台目录中的 `component.security-algorithm` 对目标架构为 `verified`，精确构件绑定仍有效，并且外部 KMS / Secret Manager、轮换撤销、兼容迁移、行为测试和安全责任人审查全部闭合后，才能通过独立决策重新开放新接入；本 Skill 不自行修改该状态。
 - 新接入请求返回 `component-new-adoption-forbidden` / `blocked-for-production`，并给出迁移或外部密钥服务方案；不得生成基于遗留工具类的生产代码。
 
-## Workflow
+## 平台与源码门禁
+
+接入、修改、代码生成或提供精确类名/配置前，必须读取并执行 [共享平台与源码门禁](../yss-skill-source-index-refresh/references/backend-component-platform-compatibility.md)，以 `--skill yss-security-algorithm` 校验批准的平台线及匹配源码根。缺失、错配或漂移返回 `blocked`；不跨代回退，不在业务实现中升级、降级或替换组件。只读分诊可继续，但须标注未完成源码核验，不能据此宣称跨 Boot/JDK 兼容。
+
+## 源码定位
+
+按 [源码定位策略](../yss-skill-source-index-refresh/references/source-location.md) 确认真实位置，再从 [平台索引](references/source-index.md) 定位当前任务需要的源码。`yss-microservice-components/yss-component-security-algorithm` 仅是模块路径提示。
+
+## 工作流
 
 1. 识别任务是新接入、既有故障、风险止血还是迁移；新接入直接按上述准入结论阻断。
 2. 读取 `references/source-index.md`，再按需检查 `CryptoType`、`SecurityCryptoUtil`、`KeyGeneratorUtils` 和 `DefaultJwtConfiguration`，记录实际算法、模式、编码、key id、密钥来源、调用方和持久化数据范围。
@@ -39,38 +37,34 @@ Read `references/source-index.md` as a path-hint index whenever the task depends
 10. JWT 必须验证 signature、issuer、audience、expiry 和允许算法，payload parsing 不能充当认证。
 11. 输出迁移清单、数据/调用方影响、回滚点、验证结果和安全审查引用；缺任一生产前提时保持 `blocked-for-production`。
 
-## Security Notes
+## 安全与兼容
 
 - Boot 2 历史实现中的硬编码 RSA 私钥、固定 key id、临时 JWK 与 noop 默认值必须视为已暴露风险并进入轮换/撤销盘点；不得把这些历史事实误写成 Boot 3 当前实现。
 - Boot 3 `Jwks` fail closed，`DefaultJwtConfiguration` 只提供 `PasswordEncoderFactories` 的 delegating encoder；JWT/JWK 必须由应用安全层或外部 KMS 提供。
 - 兼容适配器只保留公开类型和方法契约，不恢复旧密钥、旧密文解密或隐式 provider。存量兼容仍需代表性 ciphertext/JWT/password fixtures、回滚点和安全责任人审查。
-- Verify whether callers need encryption for storage, transport, signing, or compatibility; choose algorithm and key lifecycle accordingly.
-- Prefer environment/config/secret-manager backed keys for deployable code.
-- Keep plaintext, ciphertext, encoding format, and key type explicit in API contracts.
+- 区分存储加密、传输、签名与兼容需要，再按批准合同选择算法和密钥生命周期。
+- 可部署实现消费批准的受控密钥服务和 key reference，不从示例推导密钥来源。
+- API 合同明确明文/密文、编码格式和密钥类型。
 
-## Checklist
+## 验收
 
-- Required dependency or starter module is present.
-- Algorithm choice is explicit and compatible with the caller.
-- Key source and rotation story are documented for production code.
-- JWT signatures are verified with issuer/audience/expiry policy; payload parsing alone is never authentication.
-- Encoding format is clear: Base64, hex, UTF-8 string, or raw bytes.
-- Decrypt path uses the matching algorithm/key type.
-- No passwords, private keys, or long-lived secrets are added to source files.
-- If external key storage, rotation/revocation, algorithm parameters, compatibility tests, or security-owner review is missing, return `blocked-for-production` instead of generating crypto code.
-- `Jwks` without a managed source and `SecurityCryptoUtil` without an approved `SecurityCryptoProvider` both fail closed.
-- Deprecated compatibility adapters delegate to the approved provider and preserve public signatures only; they do not make the component eligible for new adoption.
-- Existing ciphertext/JWT/password compatibility is demonstrated with representative fixtures before disabling an old key or encoder.
-- Logs and verification evidence contain only key references and redacted metadata, never plaintext, private keys, seeds, shared secrets, or complete tokens.
+- 核验所需依赖或 starter 已进入实际工程。
+- 算法选择明确并与调用方兼容。
+- 生产前提包含密钥来源与轮换方案。
+- JWT 验签覆盖 issuer/audience/expiry 策略，payload 解析不构成认证。
+- 编码格式明确区分 Base64、hex、UTF-8 string 和 raw bytes。
+- 解密使用匹配算法与密钥类型。
+- 源码不新增密码、私钥或长期 secret。
+- 外部密钥存储、轮换撤销、算法参数、兼容测试或安全责任人审查缺任一项时，返回 `blocked-for-production`，不生成生产加密代码。
+- `Jwks` 缺 managed source、`SecurityCryptoUtil` 缺批准的 `SecurityCryptoProvider` 时均 fail closed。
+- Deprecated 兼容适配器只保留公开签名并委派批准 provider，不恢复新接入资格。
+- 禁用旧 key 或 encoder 前，用代表性 fixture 证明存量 ciphertext/JWT/password 兼容。
+- 日志与证据只包含 key reference 和脱敏 metadata，不包含明文、私钥、seed、shared secret 或完整 token。
 
-## Do Not
+## 修改边界
 
-- Do not invent class names or configuration keys without checking the source index.
-- Do not replace component extension points with business-local framework code.
-- Do not broaden the task into unrelated YSS components unless the user asks.
-- Do not approve a new integration because the component compiles, a source index is fresh, or an existing project already depends on it.
-- Do not copy, print, rotate in place, or reissue any key material through Agent output.
-
-## 平台与源码门禁
-
-接入、修改、代码生成或给出精确类名/配置前，读取 [后端组件平台与源码门禁](../yss-skill-source-index-refresh/references/backend-component-platform-compatibility.md)，从批准的 `platform_configuration.component_platform_line` 选择 `source-index.boot2-java8.md` 或 `source-index.boot3-java17.md`，并以 `--skill yss-security-algorithm --platform-line <line> --source-root <matching-root>` 运行统一 freshness 校验。平台线与源码根不匹配、组件 tree 不一致、组件子树 dirty、索引缺少平台信号，或 Manifest / 组件 GAV 缺少 verified 兼容证据时返回 `blocked`；不得回退另一代索引，也不在业务实现中升级、降级或替换 YSS 组件。既有工程只读分诊可继续，但不得据此宣称跨 Boot/JDK 兼容。
+- 类名和配置 key 先核验当前索引与源码，不凭记忆补造。
+- 使用组件已有扩展 seam，不以业务本地框架代码替换。
+- 保持当前组件任务范围；扩展到其他组件须有用户要求或重新路由依据。
+- 组件编译、索引 fresh 或既有工程依赖不解除新接入禁令。
+- Agent 输出不得复制、打印、就地轮换或重新签发密钥材料。

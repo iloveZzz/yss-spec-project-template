@@ -20,7 +20,8 @@ assert.equal(parse(read('.agents/skills/i-have-adhd/agents/openai.yaml')).policy
 const lock=JSON.parse(read('skills-lock.json'));
 const locked=lock.skills.shared['i-have-adhd'];
 assert.equal(locked.source,'ayghri/i-have-adhd');
-assert.equal(locked.sourceRevision,'7b9069b39972e269e61bd95c2f66ebb90cac6a02');
+assert.equal(locked.sourceRevision,'839872f9d1cd634fed642b4589ce7226199cc15f');
+assert.ok(read('.agents/skills/i-have-adhd/references/yss-adaptation.md').includes(locked.sourceRevision),'adaptation provenance follows the locked source revision');
 assert.notEqual(locked.upstreamHash,locked.effectiveHash);
 const {treeHash}=await import(pathToFileURL(path.join(root,'scripts/lib/skill-supply-chain.mjs')));
 assert.equal(treeHash(path.join(root,'.agents/skills/i-have-adhd')),locked.effectiveHash);

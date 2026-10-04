@@ -26,7 +26,7 @@ description: 建立或核验 YSS 设计系统、主题 Token 与页面视觉一�
 2. 读取已有资产：先读根 `DESIGN.md`，再读 `.template-spec/design/design.md` 和 Token 派生快照，最后按任务读取相关 Spec、交互说明、状态矩阵、OpenAPI Draft、现有页面代码。
 3. 按设计系统基线约束输出或修改产物：颜色、排版、间距、圆角、动效、组件、状态、响应式。
 4. 若是产品设计阶段，先使用 `yss-prototype-stage`；规范直出由 YSS HTML adapter 执行；存在已选视觉稿时条件使用 `product-design:index`，其他 Agent 交付等价证据。
-5. 若是前端实现阶段，配合 `yss-ui`、`yss-ui-business-page-generation`、`yss-formily` 及实际命中的组件专项，但本技能负责风格与体验一致性门禁。
+5. 若是前端实现阶段，配合 `yss-ui`、`yss-ui-business-page-generation`、`yss-formily` 及实际命中的组件专项，但本技能负责风格与体验一致性门禁。原型阶段只选择设计语义及已登记原型组件；生产组件名称、版本和 API 留给实现计划按目标仓来源核验，不在原型阶段调用 `yss-ui`。
 6. 若发现视觉 Token 或组件变体不足，先更新根 `DESIGN.md` 并重新生成投影；只有治理、流程或验收说明不足时才更新 `.template-spec/design/design.md`。
 
 新建高保真原型默认选择根规范已有的紧凑组件变体，按需读取 [原型默认主题](references/prototype-default-theme.md)；此选择不改变生产主题默认值或既有批准页面。
@@ -72,7 +72,7 @@ description: 建立或核验 YSS 设计系统、主题 Token 与页面视觉一�
 
 - 设计系统引用：明确引用根 `DESIGN.md`、治理说明 `.template-spec/design/design.md` 和所选主题的 Token 快照；原型证据记录规范与 Token 摘要。
 - 页面和模块：页面清单、布局结构、主路径、异常路径。
-- 组件选择：YSS UI / Ant Design 组件映射。
+- 组件选择：设计 / 原型记录控件语义及原型组件映射；前端实现计划按目标仓已核验版本记录 YSS UI / Ant Design 生产组件映射。原型中的语义对应关系不能作为生产 API 事实。
 - 状态矩阵：加载、空、错、禁用、只读、无权限、冲突、成功。
 - API 反推：字段、筛选、分页、动作、错误码、权限、并发或幂等规则。
 - 响应式要求：关键断点和窄屏替代形态。

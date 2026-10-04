@@ -16,7 +16,7 @@ Follow the shared Product Design routing guidance in [$index](../index/SKILL.md)
 
 ## User Context
 
-Before starting, load [$user-context](../user-context/SKILL.md) and run its preflight script when local shell access is available.
+When the workflow needs saved product or design context, load [$user-context](../user-context/SKILL.md) and follow its [conditional Preflight](../user-context/SKILL.md#preflight). Reuse the loaded result while its state paths, digests, and relevant scope are unchanged.
 
 Attach provided product URLs, Figma files, screenshots, reference images, codebase paths, Storybook, tokens, design systems, brand assets, component refs, browser preferences, and share targets to the Image Gen generations to align them to the design brief.
 
@@ -53,7 +53,7 @@ Before generating images:
 - If useful local design context exists and the user has not asked for a new style, stay within that existing direction.
 - If no useful design context exists, or the user asks for broad exploration, vary both concept and visual system.
 - For a specific component or existing surface, vary structure, interaction, hierarchy, and emphasis before varying brand style.
-- For a broad product idea, explore three meaningfully different product directions.
+- For a broad product idea, explore meaningfully different product directions using the user's requested count; default to three when exploration is needed.
 
 5. Choose target dimensions before Image Gen.
 
@@ -80,7 +80,7 @@ Before generating images:
 
 8. Attach images and mocks provided by the user to the Image Gen call along with your design brief.
 
-9. Generate 3 independent options that have distinct information hierarchy, layout strategy, interaction model, or product framing.
+9. Generate the requested number of independent options (default three when exploration is needed), with distinct information hierarchy, layout strategy, interaction model, or product framing.
 
 Rules you must follow:
 

@@ -3,187 +3,43 @@ name: yss-formily-schema-generator
 description: "从需求或设计图生成 YFormily JSON Schema 与表单代码；仅用于生产表单实现。"
 ---
 
-# YFormily Schema Generator
+# YFormily Schema 生成
 
-Use this skill to turn upstream input into downstream YFormily form artifacts.
+将文字需求、产品 / UX 说明、截图、本地图片或 Figma 设计输入转成生产表单的 `JSON Schema` / `ISchema`、推荐 model，以及按需的 scope、effects、插槽和 Vue 渲染示例。本技能设计 schema；精确组件行为由 [YFormily 路由](../yss-formily/SKILL.md)及实际命中的基础、联动、模式和分步专项决定。
 
-Supported input forms:
+## 触发与必要输入
 
-- user text descriptions
-- product or UX requirements
-- screenshots and local images
-- Figma links or node-based design references
+用户要求根据需求、原型图、截图、Figma 或业务字段生成 YFormily schema / 渲染代码时使用。这里将已提供的设计转为生产表单，不生成产品原型。
 
-Expected output forms:
+确认表单用途、目标模式（查询 / 新增 / 编辑 / 查看 / 混合）、允许输出范围和可读上游输入。正式生产实现继续消费当前批准的 Slice Implementation Contract；本技能输出不授予实现或批准资格。字段语义、校验和接口模型以已确认需求与冻结合同为准，目标组件事实以工程版本、类型和真实导出为准。
 
-- a YFormily JSON Schema or `ISchema`
-- a recommended `v-model` data shape
-- optional `scope`, `effects`, and slot plan
-- optional Vue render snippet showing how to mount `YFormily`
+转换字段、布局、校验、联动或插槽时，读取 [转换工作流](references/workflow.md)相应部分；不要求为了单一字段调整读取全部样例。
 
-This skill designs the schema.
-For implementation rules and exact YFormily behavior, also read:
+## 按输入选择方法
 
-- [yss-formily](../yss-formily/SKILL.md)
+| 输入 | 提取内容 | 不能从输入补造的内容 |
+|---|---|---|
+| 文字需求 | 用途、模式、分组、字段、必填规则、字典、联动和动作区 | 缺失的后端字典、阈值、权限和业务承诺 |
+| 截图 / 图片 | 区域、标签、控件、按钮、必填标记与可见依赖；先区分 placeholder 和标签 | 隐藏校验、异步规则、唯一性或服务端行为。只有视觉线索时输出 schema 骨架并标明不确定项 |
+| Figma 链接 / 节点 | 先发现可用设计读取能力，再提取语义标签、控件、分组、helper、必填提示、只读模式和底部动作 | 不猜工具名称或声称读取成功；能力缺失时使用已有导出 / 截图，仍不足以确认必要细节时报告访问缺口 |
 
-For conversion workflow and field mapping, read:
+按“业务意图 → 字段语义 → 已确认的校验与依赖 → 布局分组 → schema”转换，不机械照搬像素或设计图层名。合理默认只用于明确标注的控件与布局建议；业务规则缺口保持未确认。
 
-- [references/workflow.md](references/workflow.md)
+## Schema 与默认选择
 
-## Activation rules
+- 新代码使用 `YFormily`；历史 `YssFormily` 只在当前已安装兼容导出得到确认时使用。
+- 布局为 `FormLayout -> FormGrid -> 字段`，普通字段使用 `FormItem`；新建 / 编辑 / 查看可共用 schema 时优先复用。
+- 查看态按 `mode=2` 与必要的 `detail-*` 插槽处理；富输入使用 `Slot`。不依赖 React Formily UI 包，底层行为按安装的 Ant Design Vue。
+- 字段 key 稳定且有业务含义，分组反映领域语义；清楚区分已确认的必填 / 可选、联动 / 只读与待确认项，不臆造字典或隐藏异步校验。
+- 不因视觉有分组就将所有字段压平。无法推断的业务规则留在假设 / 未决项中，不转换成已确认校验。
 
-Use this skill when the request is any of the following:
+未提供其他选择时，可建议：文本 `Input`，长说明 `Input.TextArea`，布尔 `Switch`，单选 `Select` / `Radio.Group`，日期 `DatePicker`，分组 `GroupHeader`。纯 Formily 提交的底部动作可用 `AutoButtonGroup`；业务列表查询区按 `formily-foundation` 使用外部 YButton 查询 / 重置。默认建议以保守、可解释为准，不能覆盖已有代码或用户输入。
 
-- “根据需求描述生成表单 schema”
-- “根据原型图生成 YFormily”
-- “根据图片/截图还原表单”
-- “根据 Figma 生成表单 JSON Schema”
-- “把业务字段整理成 YFormily schema”
-- “输出 schema 和渲染代码”
+## 执行与输出
 
-## Core principle
+1. 确认输入来源、业务用途与模式，规范化字段列表。
+2. 选择字段类型、控件、分组和跨度，提取已确认的校验、enum 与联动；对不确定推断保留来源和假设。
+3. 生成 schema 与 model，按实际命中的 Formily 专项校验；请求代码时再生成必要的 scope、effects、插槽计划和 Vue 挂载示例。
+4. 核对稳定字段、业务分组、必填 / 可选、只读 / 联动与上游输入一致。冲突或必要细节不可读时保留缺口，回交原所有者，不能写成已确认结果。
 
-Do not mirror the visual surface blindly.
-Translate the input into a stable form model:
-
-1. business intent
-2. field semantics
-3. validation and dependency rules
-4. layout grouping
-5. YFormily schema
-
-The schema must reflect business meaning, not just pixel arrangement.
-
-## Input-specific workflow
-
-### Text requirement
-
-Extract, in order:
-
-1. form purpose
-2. mode: query, create, edit, detail, mixed
-3. sections or groups
-4. fields
-5. required rules
-6. options or dictionaries
-7. linkage rules
-8. submit and action area
-
-If some details are missing, make reasonable defaults and state the assumptions.
-
-### Screenshot or image
-
-Treat image understanding as approximate.
-First identify:
-
-- section boundaries
-- labels
-- control types
-- action buttons
-- required markers
-- visible dependency hints
-
-Infer likely field types from UI controls, but do not overclaim hidden business rules from appearance alone.
-If the image contains only visual cues and no validation semantics, generate a schema skeleton and explicitly mark uncertain fields.
-
-### Figma input
-
-When a Figma link or node is provided, discover an available design-inspection capability first. If unavailable, use supplied design exports or screenshots; report the missing access when those cannot establish a required detail. Do not invent a tool name or claim inspection succeeded.
-Extract:
-
-- field labels
-- control kinds
-- layout groups
-- helper text
-- required indicators
-- readonly versus editable patterns
-- footer actions
-
-Then convert that structure to YFormily, following local YSS conventions instead of raw design-tool naming.
-
-## Required outputs
-
-Unless the user asks for less, produce these artifacts:
-
-1. schema
-2. model shape
-3. assumptions
-4. open questions only if they block correctness
-
-If the user asks for code generation, also produce:
-
-5. `scope` plan
-6. `effects` plan if needed
-7. Vue usage snippet
-
-## Schema design rules
-
-Always align with `yss-formily`:
-
-- wrapper component for new code is `YFormily`; the historical `YssFormily` alias is accepted only when an existing installed export is verified
-- schema is `FormLayout -> FormGrid -> fields`
-- use `FormItem` for ordinary fields
-- prefer one shared schema for create/edit/detail when feasible
-- for detail rendering, plan `mode=2` and `detail-*` slots where needed
-- rich custom input uses `Slot`
-
-Do not emit schema that depends on React Formily UI packages.
-Treat Ant Design Vue semantics as the underlying component behavior.
-
-## Output quality bar
-
-A good generated schema should:
-
-- have stable field keys
-- use domain-oriented group names
-- distinguish required from optional fields
-- choose plausible component types
-- reflect obvious linkage and readonly behavior
-- leave non-inferable business rules as assumptions instead of hallucinating them
-
-## Generation sequence
-
-Follow this sequence every time:
-
-1. Classify the input source.
-2. Extract business structure.
-3. Normalize field list.
-4. Decide field types and components.
-5. Decide sections and layout spans.
-6. Identify validation, enum, and linkage requirements.
-7. Produce YFormily schema.
-8. Produce render snippet if requested.
-9. Call out assumptions and uncertain inferences.
-
-## When the input is incomplete
-
-Use these defaults unless the existing code or user input says otherwise:
-
-- text fields -> `Input`
-- long description -> `Input.TextArea`
-- boolean toggle -> `Switch`
-- single choice -> `Select` or `Radio.Group`
-- date -> `DatePicker`
-- grouped sections -> `GroupHeader`
-- footer buttons -> `AutoButtonGroup`
-
-Prefer conservative defaults over speculative complexity.
-
-## Do not do these things
-
-- Do not invent backend dictionaries that were never described.
-- Do not infer hidden async validation from visuals alone.
-- Do not flatten all fields into one group if the input clearly has sections.
-- Do not produce only a screenshot-level description when the user asked for schema.
-- Do not skip assumptions when confidence is low.
-
-## Recommended final structure
-
-When delivering a full conversion, prefer this output order:
-
-1. brief understanding
-2. assumptions
-3. field model
-4. schema
-5. optional render snippet
-6. optional next-step questions
+除非用户要求更少，返回简短理解、假设、字段 model、schema，以及真正阻断正确性的未决问题。请求代码时追加 scope 计划、必要的 effects 计划和 Vue 示例；不只描述截图，也不在低置信度时省略假设。

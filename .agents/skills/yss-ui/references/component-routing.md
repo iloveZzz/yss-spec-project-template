@@ -15,13 +15,15 @@
 | 条件构建 | `YConditionBuilder` | YSS domain component | required | 标准模型与校验边界见 `specialized-components.md` |
 | 月历 | `YMonthCalendar` | YSS domain component | required | 日期、月份、高度与事件边界见 `specialized-components.md` |
 | Cron | `YCron` | YSS domain component | required | 七段表达式边界见 `specialized-components.md` |
-| 图表 | `YssEcharts` | ECharts | required | 主题、更新和尺寸边界见 `specialized-components.md` |
+| 图表 | `YEcharts` | ECharts | required | 主题、更新和尺寸边界见 `specialized-components.md` |
 | 编辑器 | `YMonaco` / `YMonacoDiff` | Monaco | required | 按需加载和尺寸治理见 `specialized-components.md` |
 | Sheet | `YSheet` | Univer | required | Facade、释放和依赖边界见 `specialized-components.md` |
 | 输入、选择、日期 | 无独立通用 Wrapper | AntDV Input/Select/DatePicker 等 | fallback | 读取实际 AntDV 版本；服从 theme/locale/popup 规则 |
 | 浮层反馈 | 无统一 Wrapper | Modal/Drawer/Popover/Tooltip/Alert | fallback | 服从容器、焦点、销毁、z-index 规则 |
 | 服务式反馈 | 无统一 Wrapper | message/notification | fallback | 检查 App/ConfigProvider 上下文 |
 | 布局与导航 | 按项目现状 | AntDV Layout/Grid/Menu/Tabs 等 | fallback | 不复制 React Ant Design v6 API |
+
+图表名称按本地快照的 [Vue Demo 导入](../assets/demos/echarts/line.vue) 使用 `YEcharts`；文档标题中的旧名称不作为导出依据。目标工程仍须按 lockfile、类型和真实导出核验。
 
 ## 受控回退
 

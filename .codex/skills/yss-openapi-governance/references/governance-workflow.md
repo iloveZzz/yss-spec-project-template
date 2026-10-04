@@ -15,9 +15,9 @@
    - 从 `.template-spec/api/templates/openapi-draft-validation-record-template.yaml` 创建 `<feature>-validation.yaml`，记录 YAML SHA-256 与 lint 工具链；运行 `scripts/verify-openapi-draft-validation-record --root <project-root> <record>`。自定义解析脚本可以补充诊断，但不能代替锁定的 Redocly lint evidence。
    - 对每个 P0 写模型、配置模型及影响关键交互的读模型建立字段级追踪：`Spec/交互来源 → operationId → request/response schema → property path → 类型与嵌套形状 → create/update requiredness → nullable/default/enum/format → error/test seam`。数组元素使用 `items[].property` 一类稳定 property path。
    - create/update 或其他不同生命周期操作复用同一写 schema 时，逐操作证明 requiredness 与省略语义一致；若不一致，拆分 schema 或明确条件契约。凭据类字段还要说明创建、更新、掩码回显、省略保留与显式清空语义，不能仅凭字段名统一设为必填。
-   - 先运行 `scripts/verify-yss-dto-openapi-profile`，并记录 profile 版本；检查 `/api/v1/` 版本策略（或记录例外）、`x-yss-response-wrapper`、`YssResultMeta` + `allOf` 具体 schema、统一错误结构、分页、幂等 / 乐观锁和契约测试 seam。
-   - 每个响应都必须落成具体 endpoint schema：`SingleResult` 的 `data` 是具体对象或显式 nullable schema，`MultiResult` / `PageResult` 的 `data` 是数组；Java 的 `SingleResult<T>` / `PageResult<T>` 只能作为语义说明，不能直接写成 OAS type 或 `$ref`。
-   - `code` 按 profile 只允许 `string | integer | null`，`dataType` 按 profile 为 `string | null`；`offset`、`needTotalCount`、`tempTotalCount` 不得进入客户端分页输入；`totalPages` 只有目标 HTTP mapper / fixture 证明后才能进入契约。Spec 明确改变认证或授权行为时，把对应 `401` / `403`、资源过滤和错误语义作为普通 API 行为检查。
+   - 先运行 `scripts/verify-yss-dto-openapi-profile`，并记录 profile 版本；检查 `/api/v1/` 版本策略（或记录例外）。普通采用 YSS wrapper 的接口检查 `x-yss-response-wrapper`、`YssResultMeta` + `allOf` 具体 schema；下载、流式和第三方回调检查其批准媒体类型、状态、Header 和错误边界。按实际协议检查分页、幂等 / 乐观锁和契约测试 seam，不强套 wrapper 或豁免证据。
+   - 每个响应按实际协议落成具体 endpoint schema。采用 YSS wrapper 时，`SingleResult` 的 `data` 是具体对象或显式 nullable schema，`MultiResult` / `PageResult` 的 `data` 是数组；Java 的 `SingleResult<T>` / `PageResult<T>` 只能作为语义说明，不能直接写成 OAS type 或 `$ref`。
+   - 采用 YSS wrapper 时，`code` 按 profile 只允许 `string | integer | null`，`dataType` 为 `string | null`；采用 YSS 分页协议时，`offset`、`needTotalCount`、`tempTotalCount` 不得进入客户端分页输入。`totalPages` 等计算字段只有目标 HTTP mapper / fixture 证明后才能进入契约。Spec 明确改变认证或授权行为时，把对应 `401` / `403`、资源过滤和错误语义作为普通 API 行为检查。
 
 3. **独立 Draft Review 与 Freeze**
    - 将通过 verifier 且 SHA-256 与当前 YAML 一致的 validation record 交给 `yss-openapi-draft-review`。缺锁定 lint 时可以先做语义预审，但独立 Review 总结果必须为 `Blocked`；不能用“Freeze 前补 lint”支持 `Approved`。

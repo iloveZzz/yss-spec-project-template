@@ -7,7 +7,7 @@ description: Use when creating a new YSS frontend micro-application from the sta
 
 用于从标准 YSS 前端模板创建 0-1 前端微应用工程。它只在阶段 5 的 `work-unit.implementation-repository-preparation` 中消费生命周期批准、持久化且当前的 Project Scaffold Contract schema v4，执行 `controlled-generation`；不生成业务页面。
 
-## Template Source
+## 模板来源
 
 默认使用随 Skill 分发的 `assets/data-quality-v1/`，从 Data Quality 抽取工作区、主题与微应用模式，重建为通用空骨架。来源、差异、支持范围见 `references/data-quality-baseline.md`；`references/data-quality-v1.manifest.json` 是文件白名单与 SHA-256 依据。
 
@@ -17,22 +17,26 @@ description: Use when creating a new YSS frontend micro-application from the sta
 
 兼容已有 `{ repository, commit }` 合同：只有明确选择外部 Git 模板时传 `--template-checkout` 并核验 origin 与精确 40 位 commit；不再默认从私网浮动分支获取模板。
 
-## Inputs
+## 必要输入
 
 - `app_name`：应用名。
 - `microapp_name`：微应用注册名。
 - `base_route`：基础路由。
 - Project Scaffold Contract schema v4：包含用户确认的仓库 scope、目标路径、`init_git`、模板 manifest 摘要或 Git commit、应用参数、允许写路径和验证命令。
 - OpenAPI Freeze 记录：有 API 影响时提供已批准的冻结 YAML 版本和引用；无 API 影响时提供带原因的 `not-applicable`。
-- OpenAPI JSON 派生记录：`docs/.scratch/<feature>/api/<feature>-json-export.md`，包含 YAML / JSON SHA-256、Redocly CLI 版本和 lockfile 引用。
-- 冻结 JSON 产物：`docs/.scratch/<feature>/api/<feature>.json`；这是唯一允许交给既有前端代码生成流程的上游产物。
+- 有 API 影响时提供 OpenAPI JSON 派生记录：`docs/.scratch/<feature>/api/<feature>-json-export.md`，包含 YAML / JSON SHA-256、Redocly CLI 版本和 lockfile 引用。
+- 有 API 影响时提供冻结 JSON 产物：`docs/.scratch/<feature>/api/<feature>.json`；这是唯一允许交给既有前端代码生成流程的上游产物。无 API 影响时沿用带原因的 `not-applicable`，不生成占位 JSON 或 API client。
 - `target_git_url` 或 `output_dir`：目标实现仓库或本地输出目录。
 - `package_manager`：默认 pnpm。
 - `init_git`：是否初始化 Git；默认必须用户明确确认。
 
-## Workflow
+## 执行与停止条件
 
-采用专职前端 profile 或显式 `frontend_delivery` 绑定时，先按 `.template-spec/process/frontend-backend-delivery.md` 实际核验战略与后端联合交付。缺任一输入只能诊断和回交；输入通过后准备计划/合同，正式实现、生成和恢复仍须当前批准的 Slice Contract 冻结接收摘要。接口或部署版本漂移时重新接收，不复用旧成功输出。
+采用专职前端 profile 或显式 `frontend_delivery` 绑定时：
+
+- 按 `.template-spec/process/frontend-backend-delivery.md` 核验战略与后端联合交付；缺任一输入只能诊断和回交。
+- 输入通过后准备计划 / 合同；正式实现、生成和恢复仍须当前批准的 Slice Contract 冻结接收摘要。
+- 接口或部署版本漂移时重新接收，不复用旧成功输出。
 
 1. 确认当前任务已经通过 Harness 入口分诊、逐项目脚手架决定已由真实用户确认，且 schema v4 合同已由生命周期批准、持久化并保持当前。
 2. 确认目标是外部实现仓库；只有用户明确选择时才输出到 Harness 仓库的 `apps/frontend/<project>/`。`apps/frontend/` 只能作为项目容器，`app/frontend/`、`app/backend/` 及其子路径禁止作为输出位置。`git-submodule` 只能在已初始化且附加分支的子仓工作树生成；空 gitlink、detached HEAD、`--force` 覆盖挂载点不得当成普通目录。
@@ -44,7 +48,7 @@ description: Use when creating a new YSS frontend micro-application from the sta
 8. 企业 registry / 认证由目标环境用户级 npm 配置提供，禁止复制来源 `.npmrc` 或 token。实际执行并记录 `pnpm install --frozen-lockfile`、`pnpm lint:check`、`pnpm type-check`、`pnpm build`、`pnpm build:standalone` 的退出码和日志；缺失脚本只能由批准的工程基线提供替代命令。任何必需命令失败都阻断。
 9. 按 `.template-spec/templates/implementation-repo-registry-template.md` 回写前端实现仓库登记。
 
-## Expected Template Shape
+## 生成目录形态
 
 ```text
 DESIGN.md
@@ -60,7 +64,7 @@ package.json
 packages/package.json
 ```
 
-## Boundaries
+## 授权与技术边界
 
 - 不直接创建远端 Git 项目，除非用户明确要求。
 - 不保留模板 `.git` 或模板 remote；不在未获确认时执行 `git init`。
@@ -73,13 +77,13 @@ packages/package.json
 - 不把模板示例页面当作业务功能交付。
 - 生成后仍需使用 `yss-ui`、`yss-ui-business-page-generation`、`yss-api-integration` 以及实际命中的表格、树、Formily 等专项 skill 实现业务页面。
 
-## Output
+## 输出与证据
 
 - 前端工程生成位置或目标仓库信息。
 - 模板 baseline / manifest 摘要，或 Git repository / commit 证据。
 - 替换参数清单。
 - install / lint / type-check / build 命令，以及目标前端项目既有的手动客户端生成命令（如有）。
-- OpenAPI Freeze 记录、OpenAPI JSON 派生记录、JSON SHA-256 和 `openapi/openapi.json` 物化证据。
+- 有 API 影响时提供 OpenAPI Freeze 记录、OpenAPI JSON 派生记录、JSON SHA-256 和 `openapi/openapi.json` 物化证据；无 API 影响时提供带原因的 `not-applicable`。
 - Harness 实现仓库登记草案。
 - `.yss/scaffold-generation.json` Manifest v4 与 `scaffold-verification.json`。
 - 未覆盖项和 `TODO-HUMAN-REVIEW`。

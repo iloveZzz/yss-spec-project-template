@@ -13,7 +13,7 @@
  
  Use this skill after OpenAPI Draft creation and before Engineering Baseline / YSS DDD Review. It is a fail-closed contract review skill for design-time OpenAPI files under `docs/.scratch/<feature>/api/`; it does not bundle JSON or generate Orval clients.
  
-@@ -15,7 +17,7 @@
+@@ -17,7 +19,7 @@
  - `docs/.scratch/<feature>/api/<feature>-validation.yaml`，且已由 `scripts/verify-openapi-draft-validation-record` 针对当前 Draft SHA-256 验证通过。
  - Calibrated Spec.
  - Interaction spec / prototype review when UI exists.

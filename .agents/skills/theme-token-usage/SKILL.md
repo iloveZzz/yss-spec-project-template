@@ -20,12 +20,12 @@ description: "实现或修复 Vue3 YSS UI 主题、交互状态色与动态换�
 
 ## 开发前检查
 
-1. 读取当前微应用的 `packages/src/styles/variables.less`、主题 store/config 和相近页面，确认真实 Token 名称与运行时同步逻辑。
+1. 从目标工程实际的主题入口、store/config 和相近页面定位 Token 声明与同步逻辑；`variables.less` 只作为存在时的路径线索。当前 bundled 骨架使用 `packages/src/config/theme.json`、`packages/src/store/theme.ts`、`packages/src/styles/index.less` 与 `ThemeScope.vue`。
 2. 确认主应用传入的 `colorPrimary` 最终是否同步到 Ant Design ConfigProvider、YSS CSS 变量和 VXE 变量。
 3. 搜索本次改动涉及的硬编码色值，覆盖 SFC style、`style.less`、内联 `style`、`:style`、TS 配置、SVG `fill/stroke`。
 4. 区分“主题消费代码”和“主题定义代码”；禁止机械替换主题源文件中的合法默认色板。
 
-> 变量在 `:root` 中声明，不代表它会随运行时主题更新。必须同时检查主题同步代码是否写入该变量。
+> 变量在 `:root` 或应用容器中声明，不代表它会随运行时主题更新。必须同时检查主题同步代码是否写入该变量，以及消费节点是否处于相同作用域。
 
 ## Token 选择
 
@@ -65,8 +65,9 @@ box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color, #3371ff) 15%, tran
 
 ## 标准代码骨架
 
+下面只说明语义 Token 的消费方式；变量名称、fallback 与默认值须先核对目标工程。主题已由应用入口注入时，不另加不存在的 Less 导入。
+
 ```less
-@import url('@/styles/variables.less');
 
 .module-card {
   color: var(--text-color, rgba(0, 0, 0, 0.88));
@@ -94,7 +95,7 @@ box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color, #3371ff) 15%, tran
 }
 ```
 
-仅在 JS、图表或 Canvas 必须读取计算后色值时，优先使用 Ant Design Vue `theme.useToken()`；若消费微应用 CSS 变量，则通过 `getComputedStyle(document.documentElement)` 读取，不复制默认色板到业务常量。
+仅在 JS、图表或 Canvas 必须读取计算后色值时，优先使用当前 ConfigProvider 内的 Ant Design Vue `theme.useToken()`。消费 CSS 变量时，对实际获得主题变量的应用容器或其消费节点调用 `getComputedStyle()`；当前 bundled 微应用只向自己的容器同步变量，不读取或写入宿主 `documentElement`。只有已核验主题同步到文档根节点的独立应用，才从该根节点读取。不复制默认色板到业务常量。
 
 ## 验证流程
 
@@ -117,7 +118,7 @@ box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color, #3371ff) 15%, tran
 
 ## 失败兜底策略
 
-- 找不到 Token 时，先查项目 `variables.less`、主题 store/config 和 `llms-full.txt`；禁止猜测变量名。
+- 找不到 Token 时，先查项目实际主题入口、store/config 和匹配版本的文档；`variables.less` 存在时才读取，禁止猜测变量名或创建同名文件充当输入。
 - 只有颜色值但没有语义 Token 时，先在统一主题源补充语义变量和运行时同步，再在页面消费。
 - 第三方组件不跟随主题时，优先通过 ConfigProvider/component token 或其官方 CSS 变量桥接；最后才使用受控的深度样式覆盖。
 - 浏览器目标不支持 `color-mix()` 时，在主题层生成并同步明确的透明态变量；不要在各页面散落固定透明色。

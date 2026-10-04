@@ -10,7 +10,7 @@
 
 ## Executive Read
 
-Summarize the product story in 5–7 sentences.
+Summarize the core problem, conclusion, and evidence limits, with enough context for the current decision.
 
 ## Ranked UX Problems
 
@@ -22,9 +22,9 @@ Explain what was searched, what each source class contributed, exclusions, faile
 
 ## Opportunity Map
 
-### Fix This Week
+Group recommendations by supported priority, dependencies, and unresolved research. Include scheduling dates only when supplied or confirmed; recommendations do not establish delivery commitments.
 
-### Fix This Quarter
+### Recommended Actions
 
 ### Needs Deeper Research
 

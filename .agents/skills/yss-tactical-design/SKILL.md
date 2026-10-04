@@ -34,7 +34,7 @@ description: 在 YSS 技术分析阶段将批准的战略领域输入细化为�
 
 批准且版本当前的战术设计合同由 `Slice Implementation Contract` 引用，再由 `yss-domain` 使用 `behavior-tdd` 实现。`yss-domain` 不得静默重新定义聚合或不变量；发现新的 API、状态、数据或架构影响时必须返回 `new_impacts` / `drift` 并重新路由。
 
-合同、Schema、校验规则和示例见 `references/`；使用 `scripts/validate-tactical-design.mjs` 做只读验证。该 skill 不生成 Java、Repository、Controller、DTO、OpenAPI Freeze、实现 Ticket 或生产代码。
+起草 DDD `design` 时读取 [战术合同](references/tactical-design-contract.md)，按 [验证规则](references/validation-rules.md) 执行 `scripts/validate-tactical-design.mjs` 的只读校验；需要正文结构时读取 [输出模板](references/output-template.md)，不批量加载整个 references 目录。该 Skill 不生成 Java、Repository、Controller、DTO、OpenAPI Freeze、实现 Ticket 或生产代码。
 
 ## 战略交接快照包
 

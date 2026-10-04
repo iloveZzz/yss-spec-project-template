@@ -3,7 +3,7 @@ name: formily-foundation
 description: 指导 YFormily 基础表单开发；当创建或修复普通单页表单、字段校验、提交链路、查询表单布局、scope 表达式或导入边界时使用。
 ---
 
-# Formily Foundation Skill
+# YFormily 基础表单
 
 ## 触发条件
 
@@ -28,6 +28,7 @@ description: 指导 YFormily 基础表单开发；当创建或修复普通单页
 - 禁止业务层导入 `@formily/antdv`、`@formily/antd*` UI 组件。
 - 必须使用三层结构：`FormLayout -> FormGrid -> 字段`，禁止字段直接挂在根节点或单独以 `FormGrid` 作为顶层布局。
 - `Submit` 必须传 `onSubmit`，否则不触发表单提交。
+- 异步保存时 `onSubmit` 返回实际保存 Promise，以等待完成并传播 reject；`emit('submit')` 只发送事件，不能代表父回调的异步结果。
 - 标准业务列表/CRUD 查询区默认让 `YFormily` 只渲染字段；查询/重置按钮用外部 `YButton` 放在 `.xxx__search-actions`，由 hook 的 `handleSearch/handleReset` 控制分页重置和请求。
 - `AutoButtonGroup -> Submit/Reset` 仅用于纯 Formily 表单提交，不作为业务列表查询区默认方案。
 - 查询区禁止横向放“表单 + 按钮”后用大 `gap`、`align-items: flex-start` 或 `padding-top` 硬调位置；字段换行时按钮必须在搜索卡片右下角。
@@ -46,109 +47,9 @@ description: 指导 YFormily 基础表单开发；当创建或修复普通单页
   - 当前 YFormily 的 FormItem 适配层会在运行时归一化反馈：空值优先显示必填提示，非空值移除残留必填提示，多条相关消息只拼接一次。该兜底不替代正确的 Schema 校验职责拆分。
 - 分步需求默认走 `formily-step-flow`，不在本 skill 内给 `FormStep` 方案。
 
-## 标准代码骨架
+## 按需示例
 
-```vue
-<script setup lang="ts">
-import { YFormily, type ISchema } from '@yss-ui/components';
-
-/** 表单保存回调 Props。 */
-interface SaveFormProps {
-  onSave: (values: Record<string, any>) => Promise<void>;
-}
-
-/** 表单保存回调。 */
-const props = defineProps<SaveFormProps>();
-
-/** 校验通过后提交表单数据。 */
-const onSubmit = (values: Record<string, any>) => {
-  return props.onSave(values);
-};
-
-/** 基础表单 Schema。 */
-const schema: ISchema = {
-  type: 'object',
-  properties: {
-    layout: {
-      type: 'void',
-      'x-component': 'FormLayout',
-      'x-component-props': { layout: 'horizontal', labelWidth: 120, labelAlign: 'right' },
-      properties: {
-        grid: {
-          type: 'void',
-          'x-component': 'FormGrid',
-          'x-component-props': { maxColumns: 3, minColumns: 1, minWidth: 260 },
-          properties: {
-            name: { type: 'string', title: '名称', 'x-decorator': 'FormItem', 'x-component': 'Input', required: true, 'x-validator': [{ required: true, whitespace: true, message: '请输入名称' }] },
-            submit: {
-              type: 'void',
-              'x-component': 'Submit',
-              'x-content': '提交',
-              'x-component-props': { onSubmit: '{{ onSubmit }}' },
-            },
-          },
-        },
-      },
-    },
-  },
-};
-</script>
-
-<template>
-  <YFormily :schema="schema" :scope="{ onSubmit }" />
-</template>
-```
-
-## 业务查询区布局
-
-```vue
-<template>
-  <YCard class="demo-page__search-card" :padding="16">
-    <div class="demo-page__search-content">
-      <div class="demo-page__search-form">
-        <YFormily v-model="queryModel" :schema="searchSchema" />
-      </div>
-      <div class="demo-page__search-actions">
-        <YButton type="primary" @click="handleSearch">查询</YButton>
-        <YButton @click="handleReset">重置</YButton>
-      </div>
-    </div>
-  </YCard>
-</template>
-```
-
-```less
-.demo-page {
-  &__search-content {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 16px;
-  }
-
-  &__search-form {
-    width: 100%;
-    min-width: 0;
-
-    :deep(.ant-formily-form-item) {
-      margin-bottom: 0;
-    }
-
-    :deep(.ant-formily-form-grid) {
-      width: 100%;
-    }
-  }
-
-  &__search-actions {
-    display: flex;
-    width: 100%;
-    flex: 0 0 auto;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 12px;
-  }
-}
-```
+同步事件提交读取 [基础表单与提交](references/examples.md#1-基础表单与提交)；等待父回调完成的异步保存读取 [异步保存回调](references/async-save-example.md)。Orval 提交的 loading、reject 与错误提示读取 [错误处理](references/examples.md#8-orval-提交与错误处理)。实现业务列表查询区或排查窄屏按钮位置时，读取 [业务查询区布局](references/query-layout.md)。联动、模式和分步示例只在对应条件命中时读取，并服从实际命中的专项 Skill。
 
 ## 交付检查清单
 
@@ -173,4 +74,4 @@ const schema: ISchema = {
 
 ## 参考
 
-- 完整示例：`./references/examples.md`
+[示例库目录](references/examples.md#目录)按具体场景定位，不要求每次读取全部示例。

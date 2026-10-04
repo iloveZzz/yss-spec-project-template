@@ -37,13 +37,13 @@ const publicSkillsPath = path.join(root, "yss-public-skills.json");
 if (existsSync(publicSkillsPath) && JSON.parse(read(publicSkillsPath)).skills?.includes(retiredComponentsId)) failures.push("Retired yss-components remains public");
 
 const uiBody = read(path.join(skillRoot, "SKILL.md"));
-for (const marker of ["yss-hook", "YssFormily", "component-routing.md", "antdv-compatibility.md", "ConfigProvider", "accessibility"]) if (!uiBody.includes(marker)) failures.push(`YSS UI router missing marker: ${marker}`);
+for (const marker of ["yss-hook", "YFormily", "YssFormily", "component-routing.md", "antdv-compatibility.md", "ConfigProvider", "accessibility"]) if (!uiBody.includes(marker)) failures.push(`YSS UI router missing marker: ${marker}`);
 
 const routingBody = read(path.join(skillRoot, "references/component-routing.md"));
-for (const marker of ["YButton", "YCard", "YTable", "YTree", "YssFormily", "YSplitPane", "YMonthCalendar", "required", "fallback", "specialized"]) if (!routingBody.includes(marker)) failures.push(`Component routing missing marker: ${marker}`);
+for (const marker of ["YButton", "YCard", "YTable", "YTree", "YFormily", "YssFormily", "YSplitPane", "YMonthCalendar", "YEcharts", "required", "fallback", "specialized"]) if (!routingBody.includes(marker)) failures.push(`Component routing missing marker: ${marker}`);
 
 const specializedBody = read(path.join(skillRoot, "references/specialized-components.md"));
-for (const marker of ["YSplitPane", "YConditionBuilder", "YMonthCalendar", "YFileImport", "YMonaco", "YCron", "YSheet", "YssEcharts"]) if (!specializedBody.includes(marker)) failures.push(`Specialized component contract missing marker: ${marker}`);
+for (const marker of ["YSplitPane", "YConditionBuilder", "YMonthCalendar", "YFileImport", "YMonaco", "YCron", "YSheet", "YEcharts"]) if (!specializedBody.includes(marker)) failures.push(`Specialized component contract missing marker: ${marker}`);
 
 const formilyBody = read(path.join(root, ".agents/skills/yss-formily/SKILL.md"));
 for (const marker of ["formily-foundation", "formily-linkage-effects", "formily-mode-slot-detail", "formily-step-flow", "yss-ui-business-page-generation", "yss-formily-schema-generator"]) if (!formilyBody.includes(marker)) failures.push(`YFormily router missing marker: ${marker}`);
@@ -60,7 +60,9 @@ for (const filePath of filesUnder(path.join(skillRoot, "assets/demos")).filter((
   }
 }
 
-if (/<YFormily\b|\bYFormily：/.test(read(path.join(skillRoot, "references/quick-recipes.md")))) failures.push("Quick recipes still recommend YFormily alias");
+const quickRecipesBody = read(path.join(skillRoot, "references/quick-recipes.md"));
+if (!/\bYFormily\b/.test(quickRecipesBody)) failures.push("Quick recipes missing canonical YFormily name");
+if (/<YssFormily\b|\bYssFormily[：:]|新代码(?:统一)?使用\s*`?YssFormily\b/.test(quickRecipesBody)) failures.push("Quick recipes recommend legacy YssFormily for new code");
 
 if (read(path.join(skillRoot, "assets/scenario-index.md")).includes("pending-verification")) failures.push("Recommended scenario index contains pending-verification demo");
 if (failures.length > 0) {

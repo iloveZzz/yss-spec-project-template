@@ -17,11 +17,9 @@ Spec / 设计输入 → OpenAPI YAML Draft → 审查与 Freeze → JSON 派生�
 
 YSS DTO 的可复用 HTTP/JSON 映射由 `.agents/skills/yss-dto/references/openapi-wire-profile.yaml` 单一维护。它描述公开 wire shape，不是 Java 字段或 getter 清单；本 skill 必须消费 profile，不能在治理文档、feature YAML 和 JSON 中各自发明 `SingleResult`、`PageResult` 或 `PageQuery` 字段表。
 
-文档输出时按 `lifecycle-document-output` 条件调用 `i-have-adhd`，读取 `.template-spec/process/document-writing.md`；作用域仅限当前产物，派发时传递条件及引用。
+先识别当前批准协议：普通已采用 YSS wrapper 的 HTTP/JSON 接口按 wire profile 检查；下载、流式和第三方回调按批准契约检查媒体类型、状态、Header、错误及权限边界，不强套 wrapper。协议差异须有可读依据，不能以“特殊接口”为由豁免 Draft、审查、Freeze 或验证。
 
-## 文档写作
-
-编写接口说明和契约评审交接正文前，读取 `.template-spec/process/document-writing.md` 的共用写法及工程契约指引；协议标识、schema、冻结状态和验证记录按原合同保存。
+编写接口说明或契约评审交接正文时，按 `lifecycle-document-output` 条件调用 `i-have-adhd`，读取 `.template-spec/process/document-writing.md` 的共用写法及工程契约指引。作用域仅限当前产物；派发时传递条件及引用，协议标识、schema、冻结状态和验证记录按原合同保存。
 
 ## 边界与职责
 
@@ -29,7 +27,7 @@ YSS DTO 的可复用 HTTP/JSON 映射由 `.agents/skills/yss-dto/references/open
 
 - 基于冻结前的 Spec、产品设计、架构约束创建或更新 `docs/.scratch/<feature>/api/<feature>.yaml`。
 - 保证 YAML 是单一 YAML document、根节点为 `openapi: 3.1.0`，且不把 `pipeline`、`stage`、`status`、`owner` 等生命周期元数据写入 OpenAPI 根节点。
-- 按 `yss-dto` wire profile 校验 `com.yss.cloud.dto.result` canonical 包、`YssResultMeta` 公共字段、具体 wrapper schema、请求 / 响应方向和分页负向字段。
+- 采用 YSS wrapper / 分页协议时，按 `yss-dto` wire profile 校验 `com.yss.cloud.dto.result` canonical 包、`YssResultMeta` 公共字段、具体 wrapper schema、请求 / 响应方向和分页负向字段；其他批准协议记录适用性及实际契约检查。
 - 运行受项目 lockfile 约束的 lint / bundle，检查 `$ref`、operationId、响应包装、错误、分页、幂等和契约测试 seam；只有 Spec 明确改变认证或授权行为时才检查对应契约。
 - 在 `docs/.scratch/<feature>/api/<feature>-validation.yaml` 持久化结构校验记录，并用 `scripts/verify-openapi-draft-validation-record` 复核当前 YAML SHA-256、锁定的 Redocly 版本、实际命令、退出码、执行时间和证据引用。
 - 在 OpenAPI Freeze 后，用锁定的 Redocly CLI 将 YAML bundle 为 JSON，并记录可重现证据。
@@ -61,8 +59,8 @@ YSS DTO 的可复用 HTTP/JSON 映射由 `.agents/skills/yss-dto/references/open
 - P0 操作缺请求、响应、错误、并发 / 幂等规则或可验证 seam；Spec 明确的认证或授权行为没有契约表示。
 - P0 写模型、配置模型或关键交互读模型没有追到 property path、嵌套形状、requiredness、约束、来源和 test seam；跨操作复用 schema 却没有证明省略与必填语义一致。
 - `$ref` 超出允许范围，或转换器版本、lockfile、命令、输入 YAML 无法识别。
-- `scripts/verify-yss-dto-openapi-profile` 失败、profile 版本未记录，或 Draft 未按 profile 建模 `x-yss-response-wrapper`、`YssResultMeta` / `allOf` 和具体 `data` schema。
-- 新契约引入 `com.yss.cloud.dto.response`、把 Java 泛型文字当成 OAS schema、把全局 `code` 放宽为任意 object，或把 `offset` / `needTotalCount` / `tempTotalCount` 作为客户端字段。
+- `scripts/verify-yss-dto-openapi-profile` 失败、profile 版本未记录，或采用 YSS wrapper 的 Draft 响应未按 profile 建模 `x-yss-response-wrapper`、`YssResultMeta` / `allOf` 和具体 `data` schema。
+- 新的 YSS wrapper 契约引入 `com.yss.cloud.dto.response`、把 Java 泛型文字当成 OAS schema、把全局 `code` 放宽为任意 object，或采用 YSS 分页协议的接口把 `offset` / `needTotalCount` / `tempTotalCount` 作为客户端字段。
 - `totalPages`、任何 computed getter 或 Lombok / `@JsonIgnore` 推导字段没有目标 mapper identity、代表性序列化 fixture 和 contract-test / 等价 HTTP 证据。
 - Freeze 记录、YAML SHA-256、JSON SHA-256、JSON 解析 / lint 证据缺失。
 - JSON 被手工编辑，或生成结果试图反向成为 YAML 的权威来源。

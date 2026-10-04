@@ -18,14 +18,21 @@ export const DRIFT_EXIT = { clean: 0, drift: 1, usage: 2, environment: 3 };
 // Classify every recorded managed asset. "not-installed" means nothing was ever
 // recorded for an expected asset, "missing" means it was recorded and is now
 // gone, "drifted" means it was recorded and its content changed.
-export function classifyManagedFiles({ root, managedFiles = {}, expected = [], provider = null } = {}) {
+export function classifyManagedFiles({ root, managedFiles = {}, expected = [], provider = null, allowCustomizations = false } = {}) {
   const identity = provider || createIdentityProvider(root);
   const entries = [];
   const recorded = new Set(Object.keys(managedFiles));
   for (const [ref, record] of Object.entries(managedFiles).sort(([left], [right]) => (left < right ? -1 : 1))) {
     const info = lstatSafe(path.join(root, ref));
-    const expectedIdentity = normalizeRecordedIdentity(record.identity ?? record.contentHash ?? null);
+    const customizable = allowCustomizations && record.ownership === "managed-customizable";
+    const expectedIdentity = customizable ? null : normalizeRecordedIdentity(record.identity ?? record.contentHash ?? null);
     if (!info) { entries.push({ ref, kind: "missing", expected: expectedIdentity, actual: null }); continue; }
+    // Customization permits different file content, not missing, unreadable or
+    // replaced paths. Generated assets continue to require their recorded hash.
+    if (customizable && !info.isFile()) {
+      entries.push({ ref, kind: "drifted", expected: null, actual: null, error: "customizable-asset-must-be-file" });
+      continue;
+    }
     // Compare like with like: a recorded sha256 digest must be matched against a
     // freshly computed sha256, never against a differently-versioned Git identity.
     const parsed = parseIdentity(expectedIdentity);
@@ -34,9 +41,11 @@ export function classifyManagedFiles({ root, managedFiles = {}, expected = [], p
     let actual = null;
     let error = null;
     try {
-      actual = parsed && parsed.algo === SHA256 ? sha256Identity(readFileSync(path.join(root, ref))) : identity.identityFor(ref).identity;
+      // A cached Git identity cannot prove that a permitted custom file is
+      // currently readable. Read its actual bytes before accepting it.
+      actual = customizable || (parsed && parsed.algo === SHA256) ? sha256Identity(readFileSync(path.join(root, ref))) : identity.identityFor(ref).identity;
     } catch (cause) { actual = null; error = cause.message; }
-    if (!expectedIdentity) { entries.push({ ref, kind: error ? "drifted" : "ok", expected: null, actual, ...(error ? { error } : {}) }); continue; }
+    if (!expectedIdentity) { entries.push({ ref, kind: error || (customizable && actual === null) ? "drifted" : "ok", expected: null, actual, ...(error ? { error } : {}) }); continue; }
     const kind = identityEquals(expectedIdentity, actual) ? "ok" : "drifted";
     const diagnosis = error ?? (actual === null ? "unreadable-or-unresolved" : null);
     entries.push({ ref, kind, expected: expectedIdentity, actual, ...(diagnosis ? { error: diagnosis } : {}) });
@@ -53,10 +62,10 @@ export function classifyManagedFiles({ root, managedFiles = {}, expected = [], p
   return { entries, summary };
 }
 
-export function buildDriftReport({ scope, root, provider = null, managedFiles = {}, expected = [], asOf = new Date().toISOString() } = {}) {
+export function buildDriftReport({ scope, root, provider = null, managedFiles = {}, expected = [], asOf = new Date().toISOString(), allowCustomizations = false } = {}) {
   if (!["template-source", "project-instance"].includes(scope)) throw new TypeError("未知 drift-report scope: " + scope);
   const identity = provider || createIdentityProvider(root);
-  const { entries, summary } = classifyManagedFiles({ root, managedFiles, expected, provider: identity });
+  const { entries, summary } = classifyManagedFiles({ root, managedFiles, expected, provider: identity, allowCustomizations: scope === "project-instance" && allowCustomizations });
   return {
     schema_version: 1,
     kind: "drift-report",

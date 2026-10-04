@@ -22,7 +22,11 @@ description: "选择和核验 YSS Vue 生产页面组件及 Ant Design Vue 兼�
 
 ## 2. 执行前版本预检
 
-采用专职前端 profile 或显式 `frontend_delivery` 绑定时，先按 `.template-spec/process/frontend-backend-delivery.md` 实际核验战略与后端联合交付。缺任一输入只能诊断和回交；输入通过后准备计划/合同，正式实现、生成和恢复仍须当前批准的 Slice Contract 冻结接收摘要。接口或部署版本漂移时重新接收，不复用旧成功输出。
+采用专职前端 profile 或显式 `frontend_delivery` 绑定时：
+
+- 按 `.template-spec/process/frontend-backend-delivery.md` 核验战略与后端联合交付；缺任一输入只能诊断和回交。
+- 输入通过后准备计划 / 合同；正式实现、生成和恢复仍须当前批准的 Slice Contract 冻结接收摘要。
+- 接口或部署版本漂移时重新接收，不复用旧成功输出。
 
 进入实现前从前端工程根目录执行：
 
@@ -31,6 +35,8 @@ pnpm why vue @yss-ui/components @yss-ui/hooks ant-design-vue vxe-table
 ```
 
 记录实际版本、lockfile、验证命令和环境阻塞。完整策略见 `references/antdv-compatibility.md`。
+
+本次输入还包括批准合同、页面 / 交互范围和实际适用的专项技能；UI 切片使用已校验的 `frontend_implementation_plan`，实现后补 `frontend_implementation_verification`。输入缺失、摘要漂移或组件事实无法确认时，停止受影响的实现并回交原所有者。
 
 产品设计使用的 Antdv Next 或 Ant Design v6 视觉/token 语义，不等于 Vue 生产实现 API。生产代码必须使用项目安装的 Ant Design Vue 4.x API，禁止把原型 props、events、slots、hook 或组件写法当作生产合同。原型统一使用 HTML/CSS/JavaScript；原型阶段不得调用本技能。只有进入前端实现计划、已批准切片的生产实现或实现还原验证后，才从目标 lockfile、类型、本地文档和既有用法取得真实组件事实。
 

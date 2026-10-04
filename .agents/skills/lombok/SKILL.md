@@ -4,6 +4,8 @@ description: "配置或排查 Lombok 注解、构造器、Builder 和注解处�
 ---
 # Project Lombok
 
+只读排障先核验实际对象、工程基线和处理器配置，缺批准 Slice 时记录缺口；写入仍消费批准且当前的工作单元与允许路径。
+
 ## YSS 阶段 7 执行结果
 
 - 消费工程 Java 与处理器基线；Java 语法、API、处理器与测试工具消费批准的精确平台配置。MapStruct binding 进入 annotationProcessorPaths，不作为业务依赖单独引入；示例不授权升级依赖。MVC PO 的身份/敏感字段风险与 DDD 相同，不能默认全量 @Data。

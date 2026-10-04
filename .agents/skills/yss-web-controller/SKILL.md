@@ -5,13 +5,17 @@ description: "按冻结合同与稳定 Application 接口生成或重构 YSS Con
 
 # yss-web-controller
 
-## 架构分流（先执行）
+## 任务分流
 
-读取当前合同的 architecture_identity 并与工程基线、仓库登记及 Manifest 核对；再且只读取 `references/profiles/<architecture_profile>.md`。生成式分支为 target-domain-model、layered-mvc-service、mvc-data-analysis-v1；既有工程分支为 existing-domain-driven-maven、existing-layered-mvc-maven。成熟度以注册表为准，不能把 draft 称为受支持。MVC 不执行下文 DDD 专属规则，也不加载其旧分层 guide；组件、安全、批准合同、允许路径及执行证据规则仍共用。
+- 只读审计读取实际入口和现有契约，缺用例 seam、契约或批准证据时记录缺口；不要求先补 Slice、生成 Manifest 或 metadata。
+- 既有整改消费批准且当前的 Slice、冻结 API/no-impact 与稳定用例 seam；缺必要输入回实现合同编译器补齐。
+- 仅新建 CRUD 要求 Web generation contract、metadata 并调用 initialize-only 生成器。认证、回调、Cookie、下载或流式接口可手工适配，不强制 CRUD 脚本或 metadata。
+
+## 架构分流
+
+将 `architecture_identity` 与当前工程基线和仓库登记核对；仅生成式来源核对脚手架 Manifest，既有来源使用登记及独立工程观测。再且只读取 `references/profiles/<architecture_profile>.md`。生成式分支为 target-domain-model、layered-mvc-service、mvc-data-analysis-v1；既有分支为 existing-domain-driven-maven、existing-layered-mvc-maven。成熟度以注册表为准，不能把 draft 称为受支持。MVC 不执行下文 DDD 专属规则，也不加载其分层 guide；组件、安全、批准合同、允许路径及执行证据规则共用。
 
 以下 Application / Domain Gateway / Infrastructure / Web module 叙述仅适用于 target-domain-model；MVC 的 service/core/repository/server/client 所有权由所选 Profile 引用定义。
-
-本 Skill 同时支持只读审计、既有整改和新建 CRUD 生成。审计读取实际入口和现有契约，缺证据只记录缺口；整改消费批准 Slice、冻结 API/no-impact 与稳定用例 seam；仅新建 CRUD 才要求 Web generation contract、metadata 并调用 initialize-only 生成器。
 
 ## 何时使用
 
@@ -19,46 +23,9 @@ description: "按冻结合同与稳定 Application 接口生成或重构 YSS Con
 - 用户要根据冻结 OpenAPI 字段合同、metadata 和稳定 Application 接口生成 Request / Response / Controller / WebConvertor。
 - 用户要求统一 Web Adapter 风格、返回值和接口路径。
 
-手工认证、回调、Cookie、下载或流式接口适用本 Skill，但不强制使用 CRUD 脚本或 metadata。
+## 新建 CRUD 生成
 
-## 实施前置与审计边界
-
-- 只读审计可以记录用例 seam 或契约缺失。既有整改缺少批准 Slice、稳定用例 seam 或接口契约时，回实现合同编译器补齐；仅新建 CRUD 生成要求 metadata，不因缺 metadata 拒绝既有代码审计或手工接口整改。
-
-## 新建 CRUD 生成流程
-
-1. 先确认冻结 OpenAPI、批准且版本当前的 Web generation contract schema v2、Application Service 接口、metadata、基础包、模块名、领域 segment 和 web 落盘目录；合同必须绑定 Slice `contract_id` / `contract_version` / `slice_id`、`yss-dto` wire profile 引用与 digest、允许写路径、证据与验证命令。
-2. 加载并遵守 `yss-dto` 与 `yss-validation`；错误映射影响命中时再加载 `yss-exception`。
-3. 涉及 DTO / VO / CMD / Query POJO 样板代码时，加载并遵守 `lombok`。
-4. 涉及 Domain / Application Result 到 VO / DTO 或 CMD / Query 到输入模型的转换时，加载并遵守 `mapstruct`。
-5. 运行 `node scripts/generate_controller.mjs`。
-6. 生成后检查路径、命名、返回值包装、Application Service 引用、`@Valid`、Lombok 注解和 MapStruct WebConvertor 是否对齐项目。
-7. 对复杂接口做少量手工修正，不在 skill 中承诺自动覆盖全部业务逻辑。
-
-## 推荐命令
-
-```bash
-node scripts/generate_controller.mjs \
-  --metadata-file /path/metadata.json \
-  --contract-file /path/approved-web-generation-contract.json \
-  --dto-wire-profile-file /path/to/yss-dto/references/openapi-wire-profile.yaml \
-  --scaffold-manifest-file /path/service/.yss/scaffold-generation.json \
-  --base-package com.yss.demo \
-  --module-name demo \
-  --domain-segment example \
-  --web-project-dir /path/demo-adapter/demo-web \
-  --application-service-package com.yss.demo.application.service \
-  --validation-namespace <resolved-platform-namespace>
-```
-
-## 输出预期
-
-- `rest/dto/request/*CreateRequest.java`
-- `rest/dto/request/*UpdateRequest.java`
-- `rest/dto/request/*PageRequest.java`
-- `rest/dto/response/*Response.java`
-- `rest/*Controller.java`
-- `rest/convertor/*WebConvertor.java`
+仅新建 CRUD 在输入齐备后必须读取 [生成流程与命令](references/crud-generation.md)，核验 schema v2 Web generation contract、metadata、绑定的 wire profile 与允许路径，再运行 initialize-only 生成器并检查完整输出。复杂接口仍按批准合同补足实现，不以生成成功替代行为验证。
 
 ## 约束
 

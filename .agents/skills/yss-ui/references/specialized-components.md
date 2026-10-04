@@ -13,7 +13,7 @@
 - 根值是 `ConditionGroup`；叶子保持字段、操作符和值的标准模型。接口 DSL 的序列化、恢复与错误兜底放入 Hook。
 - 字段切换需要动态操作符或候选值时使用组件公开的加载入口；提交前执行公开校验。
 - 默认严格校验，只有明确允许未完成草稿时才关闭；展示态使用 `disabled`，不使用已废弃的 `readonly`。
-- 组件资料见 `../assets/component-docs/condition-builder-*`，实现前仍须核对目标项目安装版本。
+- 组件资料见 [条件构建器快照](../assets/docs/components/conditionBuilder.md)，实现前仍须核对目标项目安装版本。
 
 ## YMonthCalendar
 
@@ -27,7 +27,7 @@
 - 文件选择、预检、结果回显和最终确认组成两步流程；业务上传与校验由 `nextStep` / `finalImport` 接入。
 - 默认 `beforeUpload=false`，不能期待 `action` 自动上传；直传只通过 `upload-props.customRequest`。
 - `importResult` 展示结果，失败数据通过 `exportErrorData` 下载。弹窗配置与上传器配置保持分离。
-- 组件资料见 `../assets/component-docs/file-import-*`。
+- 组件资料见 [文件导入快照](../assets/docs/components/fileImport.md)。
 
 ## YMonaco / YMonacoDiff
 
@@ -46,7 +46,7 @@
 - 初始化后只通过公开 Facade API 修改工作簿，并通过公开保存入口取值；不得直接修改工作簿原始数据对象。
 - 卸载时释放实例，接入前确认 Univer、React、RxJS 等可选依赖及包体影响。
 
-## YssEcharts
+## YEcharts
 
 - option、更新策略和容器尺寸以目标版本手册与项目已验证实践为准。
 - 不在页面层重复原生 ECharts 初始化、销毁或 ResizeObserver 管理。

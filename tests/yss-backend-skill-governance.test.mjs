@@ -192,17 +192,17 @@ test("Boot 3 component Skill semantics match the source-backed security and fail
   assert.match(userInfo, /`yss\.userinfo\.trusted-gateway\.enabled`/);
   assert.match(userInfo, /`trusted-proxies`/);
   assert.match(userInfo, /SecurityContext[^\n]*优先/);
-  assert.match(userInfo, /does not parse an unverified Bearer payload/);
+  assert.match(userInfo, /(?:does not parse an unverified|不解析未验证) Bearer payload/);
   assert.doesNotMatch(userInfo, /lookup order[^\n]*Bearer JWT payload/);
   assert.doesNotMatch(userInfo, /JWT user-info cache key path/);
 
   const exception = skillBody("yss-exception");
-  assert.match(exception, /Unknown `Exception`, `RuntimeException`[^\n]*HTTP 500/);
-  assert.match(exception, /HTTP 413 \(`PAYLOAD_TOO_LARGE`\)/);
+  assert.match(exception, /(?:Unknown|未知) `Exception`[,、]\s*`RuntimeException`[^\n]*HTTP 500/);
+  assert.match(exception, /HTTP 413\s*[（(]`PAYLOAD_TOO_LARGE`[）)]/);
   assert.match(exception, /`ResultErrorCode\.INTERNAL_ERROR`/);
   assert.match(exception, /SLF4J logger/);
   assert.match(exception, /`X-Trace-Id`/);
-  assert.match(exception, /does not contain the raw localized exception or stack trace/);
+  assert.match(exception, /does not contain the raw localized exception or stack trace|正文不含原始 localized exception 或堆栈/);
   assert.doesNotMatch(exception, /maps BizException, unknown Exception, and RuntimeException to HTTP 400/);
   assert.doesNotMatch(exception, /direct `printStackTrace\(\)` branch/);
 

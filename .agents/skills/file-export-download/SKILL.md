@@ -31,7 +31,7 @@ description: "在 Vue3 YSS UI 中实现或修复文件下载与导出，处理 O
 
 ## 决策流程
 
-1. 在 OpenAPI 中定位导出接口，优先把成功响应声明为二进制媒体类型和 `format: binary`。
+1. 在冻结 OpenAPI 中定位导出接口，核对成功响应的二进制媒体类型和 `format: binary`。需要修改声明时回交 `yss-openapi-governance`，完成现有 Draft / Freeze 与受控 JSON 派生链后再接入。
 2. 重新生成 API 后检查生成方法，而不是凭接口名称判断：
    - 已包含 `responseType: 'blob'`：业务调用不必重复传第二参数。
    - 未包含 `responseType: 'blob'`：业务调用必须传第二参数 `{ responseType: 'blob' }`。
@@ -57,78 +57,9 @@ description: "在 Vue3 YSS UI 中实现或修复文件下载与导出，处理 O
 - 必须用独立 loading 状态防止重复导出，并在 `finally` 中恢复。
 - 不得默认传 `skipBusinessError` 或 `skipErrorHandler`；只有明确需要业务自定义错误体验时才使用。
 
-## OpenAPI 标准代码骨架
+## 按需示例
 
-```json
-{
-  "responses": {
-    "200": {
-      "description": "导出成功",
-      "headers": {
-        "Content-Disposition": {
-          "schema": { "type": "string" }
-        }
-      },
-      "content": {
-        "application/octet-stream": {
-          "schema": {
-            "type": "string",
-            "format": "binary"
-          }
-        }
-      }
-    }
-  }
-}
-```
-
-根据文件类型可将媒体类型换成 `text/csv`、`application/pdf` 或 Excel 对应类型。跨域请求若读取不到文件名，后端还必须暴露 `Content-Disposition` 响应头。
-
-## 标准代码骨架
-
-### 生成方法已包含 responseType
-
-```typescript
-import { ref } from 'vue';
-import { handleBlobResponse } from '@yss-ui/utils';
-import { downloadAccessSecret } from '@/api/generated/quality';
-
-/** 微应用 mutator 返回的文件下载响应。 */
-type BlobDownloadResponse = {
-  data: Blob;
-  headers: Record<string, string>;
-};
-
-/** 文件下载进行中状态。 */
-const downloading = ref(false);
-
-/** 下载密钥文件。 */
-const downloadFile = async (key: string): Promise<void> => {
-  if (downloading.value) return;
-
-  downloading.value = true;
-  try {
-    const res = (await downloadAccessSecret(key)) as unknown as BlobDownloadResponse;
-    handleBlobResponse(res.data, res.headers);
-  } catch {
-    // mutator 已展示错误；此处只阻止 reject 继续向 UI 事件传播。
-  } finally {
-    downloading.value = false;
-  }
-};
-```
-
-### 生成方法缺少 responseType
-
-只改调用行，其他流程保持一致：
-
-```typescript
-const res = (await downloadAccessSecret(key, {
-  responseType: 'blob',
-})) as unknown as BlobDownloadResponse;
-```
-
-若 mutator 与 Orval 返回类型已经准确声明为 `{ data: Blob; headers: ... }`，直接使用生成类型，删除不必要的类型断言。
+核对二进制响应与文件名声明时，读取 [OpenAPI 二进制响应示例](references/binary-contract-example.md)。首次接入生成方法、或需判断是否补传 Blob 选项时，读取 [下载调用示例](references/download-call-example.md)，按生成方法的真实签名选择分支。
 
 ## 响应约定
 

@@ -27,15 +27,13 @@ Hard boundary: do not implement UI, scaffold a prototype, start a server, or cre
 
 ## User Context
 
-Before starting, load [$user-context](../user-context/SKILL.md) and run its preflight script when local shell access is available.
+When the workflow needs saved product or design context, load [$user-context](../user-context/SKILL.md) and follow its [conditional Preflight](../user-context/SKILL.md#preflight). Reuse the loaded result while its state paths, digests, and relevant scope are unchanged.
 
-Use saved product URLs, Figma files, screenshots, reference images, codebase paths, Storybook, tokens, design systems, brand assets, component refs, browser preferences, and share targets as grounding material when relevant.
-
-Do not inspect every saved reference. Inspect only what the current task needs.
+Use relevant saved sources and preferences as grounding material under [Saved User Context](../user-context/SKILL.md#saved-user-context). Inspect only references needed for the current task.
 
 ## Get Context Script
 
-The following three questions should be answered by the user. Adapt the questions based on what the user has provided so far in the conversation. If some or all fields are already known, skip the questions and summarize the design brief in your own words.
+Resolve the product goal, visual source or direction, and interactivity level. Reuse supplied details and current confirmations; ask only about missing decisions. If the fields are known, summarize the design brief in your own words.
 
 The questions to answer are:
 
@@ -67,14 +65,14 @@ Interactivity level: full working form states, or a faster mostly-static mock?
 
 ## Final message
 
-1. Before proceeding to `$ideate`, `$prototype`, `$url-to-code`, or `$image-to-code`, confirm the design brief by explaining it back to the user in a pithy format as a `final` message.
+1. Reuse the exact brief already confirmed in the current thread while its scope and inputs remain current. Otherwise, before proceeding to `$ideate`, `$prototype`, `$url-to-code`, or `$image-to-code`, explain the brief back to the user as a concise `final` message for confirmation.
 
 2. Proceed only after the user confirms the design brief, unless the current thread already contains confirmation of that exact brief. If the user provides feedback, continue to refine the design brief with them.
 
-3. After the user confirms the design brief, send one short expectation-setting note before starting an involved app, prototype, clone, redesign, or build. Example confirmation message with expectations setting:
+3. After the user confirms the design brief, send a short note before starting an involved app, prototype, clone, redesign, or build. Explain the next work and how it will be checked; state any material uncertainty. Give a time estimate only when it has a stated basis, scope, and conditions. For example:
 
 ```text
-Lovely, brief locked. This kind of build usually takes about 10-15 minutes, and ambitious ones can take longer. Good moment to grab coffee or tend to something else; I'll keep moving and bring the prototype back when it is ready.
+The brief is confirmed. I'll build the agreed screens, verify their states, and compare the rendered result with the selected design before handing it back.
 ```
 
 Do not send this note for tiny static changes, quick audits, simple research, setup-only, or share-only requests.

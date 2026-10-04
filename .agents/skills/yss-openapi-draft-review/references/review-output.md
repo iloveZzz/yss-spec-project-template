@@ -4,6 +4,8 @@
 
 ## Output Contract
 
+Wrapper 与分页检查按实际协议填写：采用 YSS 协议时记录 profile 符合性；下载、流式、回调或已批准分页例外记录协议依据、适用性和实际检查，不生成空 wrapper 或用不适用跳过审查证据。
+
 ```markdown
 ### Review Result
 <Approved / Blocked>

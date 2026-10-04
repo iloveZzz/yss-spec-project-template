@@ -33,7 +33,7 @@ description: "配置或修复 YSS UI YTable 的列表查询、列、分页、行
 - 行键使用 `:row-config="{ keyField: 'id', useKey: true }"`，不臆造 `row-key` Prop。
 - 新增、导入、批量操作等主按钮直接放入 `#toolbar-right` 或 `#toolbar-left` 插槽即可自动渲染工具栏；**无需配置 `:toolbar-config="{ custom: true }"`**，避免无端展示列设置图标；**仅在业务明确需要列设置时才传入 `:toolbar-config="{ custom: true }"`**。
 - 删除、启停、发布等危险操作使用 `actionConfig.buttons[].isConfirm = true`，不默认使用 `Modal.confirm`。
-- 列配置超过 10 行时放入 `constant.ts`；需要调用组件 Hook 的操作配置使用工厂函数注入回调，禁止在 `constant.ts` 直接引用组件局部的 `openEdit/deleteItem`。
+- 纯列配置集中到 `constant.ts`；需要调用组件 Hook 的操作配置使用工厂函数注入回调，禁止在 `constant.ts` 直接引用组件局部的 `openEdit/deleteItem`。按职责和依赖拆分，不用配置行数决定拆分。
 - 远程筛选必须提供稳定 `filters`，设置 `filterMethod: () => true` 禁用本地二次过滤，并监听 `filter-change`。
 - 自适应滚动列表绑定 `:height="tableHeight"`；`pageable`、工具栏分别对应 `withPagination: true`、`withToolbar: true`。纯短表不强制引入高度 Hook。
 - `mutator.ts` 已对网络错误和 `success === false` 统一 `message.error` 并 reject。API Hook 不再检查 `success === false`，不在 `else/catch` 重复 `message.error`；用 `finally` 恢复 loading，让异常继续中断流程。
@@ -55,7 +55,7 @@ description: "配置或修复 YSS UI YTable 的列表查询、列、分页、行
 ## 交付检查清单
 
 - [ ] 分页状态和 `page-change` 参数均使用 `current/pageSize`，未使用 `currentPage`；`filter-change` 与 YTable 真实 API 一致。
-- [ ] 多选列已配置 `type: 'checkbox'`，已设置 `:row-config="{ keyField: 'xxx', useKey: true }"`，批量按钮绑定了 `selectedRowKeys.length === 0` 禁用。
+- [ ] 启用多选时，列已配置 `type: 'checkbox'`，已设置 `:row-config="{ keyField: 'xxx', useKey: true }"`，批量按钮绑定了 `selectedRowKeys.length === 0` 禁用。
 - [ ] 批量成功后，所有实际受控选择字段与表格可见勾选均已清空；内部缓存存在时已通过 `clearSelection()` 清除。
 - [ ] 未使用虚构 `request/searchParams/row-key` Props，也未把 `refresh()` 当成远程请求。
 - [ ] 工具栏、字典翻译、操作确认与高度偏移均与实际开关一致。

@@ -143,5 +143,5 @@ Keep saved context curated. Prefer a few high-value references over a dump of ev
 ## Read
 
 - Do not treat `status: not provided` as a fact.
-- Read through `scripts/user_context_preflight.py` when local shell access is available.
+- Read saved context through the conditional [Preflight](#preflight) above when local shell access is available; reuse its loaded result while the state paths, digests, and relevant scope are unchanged.
 - Use saved context as default grounding, then inspect only what the current task needs.

@@ -71,7 +71,7 @@ Use this close:
 Want to onboard Product Design with your context? Send product URLs, Figma files, screenshots, codebase paths, Storybook links, tokens, brand assets, or preferred share targets, and I'll save them for future work.
 ```
 
-Before routing to Product Design workflows, load [$user-context](../user-context/SKILL.md) and run its preflight script when local shell access is available.
+When routing needs saved product or design context, load [$user-context](../user-context/SKILL.md) and follow its [conditional Preflight](../user-context/SKILL.md#preflight). Reuse the loaded result while its state paths, digests, and relevant scope are unchanged; inspect only references needed for the current task.
 
 ## Browser Annotation Updates
 

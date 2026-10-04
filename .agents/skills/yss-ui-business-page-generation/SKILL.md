@@ -87,7 +87,7 @@ description: "生成或改造完整 YSS UI CRUD、列表、表单、详情或左
 ## 交付检查清单
 
 - [ ] 已优先复用 `@yss-ui/components`、`@yss-ui/hooks`、`@yss-ui/utils`。
-- [ ] `index.vue` 不超过 150 行，业务逻辑、常量、列配置和样式已按职责拆分。
+- [ ] `index.vue` 负责 Hook 组合、视图编排和事件转发；业务逻辑、常量、列配置和样式已按职责拆分。
 - [ ] 未出现未导出的 Y 前缀组件。
 - [ ] 未导入 `@formily/antd-v3`、`@formily/antd` 或业务层 `@formily/antdv` UI 组件。
 - [ ] `YTable` 分页字段为 `current/pageSize/total`。

@@ -1,17 +1,23 @@
 ---
 name: yss-application
-description: Use when implementing YSS application use cases, transaction boundaries, cross-aggregate orchestration, idempotency, or application-level DTO conversion.
+description: 实现或排查 YSS 用例编排、事务边界、跨聚合协作、幂等和用例层模型转换；按已登记 DDD 或 MVC 架构执行。
 ---
 
 # yss-application
 
-## 架构分流（先执行）
+## 任务分流
 
-读取当前合同的 architecture_identity 并与工程基线、仓库登记及 Manifest 核对；再且只读取 `references/profiles/<architecture_profile>.md`。生成式分支为 target-domain-model、layered-mvc-service、mvc-data-analysis-v1；既有工程分支为 existing-domain-driven-maven、existing-layered-mvc-maven。成熟度以注册表为准，不能把 draft 称为受支持。MVC 不执行下文 DDD 专属规则，也不加载其旧分层 guide；组件、安全、批准合同、允许路径及执行证据规则仍共用。
+- 只读审计先读取实际用例、工程登记和可读契约；不要求先补批准 Slice 或生成 Manifest，业务 Spec 缺失须记录。
+- 整改消费批准且当前的 Slice、已确认行为 seam 与登记的 Application/service/core 映射，保持允许写范围。
+- 新工程按生成式 Profile 消费脚手架来源，骨架生成不替代业务实现合同。
+
+## 架构分流
+
+将 `architecture_identity` 与当前工程基线和仓库登记核对；仅生成式来源核对脚手架 Manifest，既有来源使用登记及独立工程观测。再且只读取 `references/profiles/<architecture_profile>.md`。生成式分支为 target-domain-model、layered-mvc-service、mvc-data-analysis-v1；既有分支为 existing-domain-driven-maven、existing-layered-mvc-maven。成熟度以注册表为准，不能把 draft 称为受支持。
 
 以下 Application / Domain Gateway / Infrastructure / Web module 叙述仅适用于 target-domain-model；MVC 的 service/core/repository/server/client 所有权由所选 Profile 引用定义。
 
-Application 层用例编排 skill。负责协调 Domain 与 Gateway，定义事务边界和跨聚合流程，不承载核心领域规则。
+DDD 用例层协调 Domain 与 Gateway，定义事务边界和跨聚合流程，不承载核心领域规则。MVC 不执行 DDD 专属规则，也不加载其分层 guide；组件、安全、批准合同、允许路径及执行证据规则共用。
 
 ## 何时使用
 
@@ -71,4 +77,4 @@ Application 层用例编排 skill。负责协调 Domain 与 Gateway，定义事�
 
 ## 既有工程与条件适用
 
-只读审计不要求先补批准 Slice；业务 Spec 缺失须记录。整改消费批准 Slice、已确认行为 seam 与登记的 Application/service/core 映射，不要求生成 Manifest。事务、幂等、提交后副作用按实际用例评估；未命中不创建空事务、空端口或空恢复实现。DDD 的领域规则归 Domain，MVC 规则允许留在已登记 service/core。
+事务、幂等、提交后副作用按实际用例评估；未命中不创建空事务、空端口或空恢复实现。DDD 的领域规则归 Domain，MVC 规则允许留在已登记 service/core。

@@ -8,10 +8,8 @@ These rules override generic assistant defaults for Product Design work.
 
 ## Saved User Context
 
-- If `user-context.md` exists, use it by default.
-- Use saved product URLs, Figma files, screenshots, reference images, codebase paths, Storybook, tokens, design systems, brand assets, component refs, browser preferences, and share targets to ground Product Design work.
-- Ideation, prototypes, audits, clones, and critiques should match the saved product context unless the user asks for something different.
-- When a workflow needs visual grounding, attach or include relevant saved screenshots, reference images, tokens, design language, and component references in ImageGen, ideation, prototype, audit, and critique work.
+- Follow [User Context](../skills/user-context/SKILL.md#saved-user-context) for saved sources and preferences. Use its [conditional Preflight](../skills/user-context/SKILL.md#preflight) when saved context is needed, and reuse the loaded result while its state paths, digests, and relevant scope are unchanged.
+- Inspect only references needed for the current task. When visual grounding is needed, include the relevant saved images, tokens, design language, and component references in the current workflow; user-requested changes still take precedence.
 
 ## Design Brief Gate
 
@@ -19,7 +17,8 @@ These rules override generic assistant defaults for Product Design work.
 - `$get-context` can run in question mode or playback mode. If required product, visual, or interactivity details are missing, ask for them. If those details are already present, play back the brief in a pithy format before moving to the next workflow.
 - Do not proceed to ideation or implementation until the brief has been played back and either confirmed by the user or already confirmed earlier in the thread.
 - A confirmed design brief is not a visual target. Use the confirmed brief as input to `$ideate` unless the user has already provided a concrete visual source such as a URL, screenshot, image, mockup, or Figma frame.
-- After the user approves the design brief and the next step is an involved app, prototype, clone, redesign, or build, send one short expectation-setting note before starting work. Say that involved builds often take about 10-15 minutes, ambitious builds can take longer, and invite the user to grab coffee or tend to other work while Product Design keeps moving. Simpler static prototypes can be faster, often 5-10 minutes. Keep it warm and lightly playful, not apologetic or over-explanatory. Skip this note for tiny static changes, quick audits, simple research, setup-only, or share-only requests.
+- Reuse a brief already confirmed in the current thread while its scope and inputs remain current; missing or changed decisions still require a real user response.
+- After the user approves the brief and the next step is an involved app, prototype, clone, redesign, or build, briefly explain the next work, its checks, and any material uncertainty. Give a time estimate only with a stated basis, scope, and conditions. Skip this note for tiny static changes, quick audits, simple research, setup-only, or share-only requests.
 
 ## How to communicate
 

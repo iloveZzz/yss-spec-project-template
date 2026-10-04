@@ -1,18 +1,14 @@
 --- a/SKILL.md
 +++ b/SKILL.md
-@@ -9,73 +9,63 @@
+@@ -9,69 +9,63 @@
  
  Slice v3 的当前执行结果须按 `references/yss-skill-execution-result.md` 绑定验收、验证项、合同原字节、实际证据和执行来源；`legacy-evidence-binding-missing` 表示历史可读但不能据此完成当前任务，不补造历史执行信息。
  
 -阶段 7 的实现合同编译器。它把已批准的生命周期资产、垂直切片、capability 和窄 Recipe 编译为 `Slice Implementation Contract` v3 草案；不批准合同、不写业务代码、不设置 `ready-for-agent`。
 +本技能是确定性的实现合同编译器，不是生命周期主控。它消费已批准且版本当前的输入，输出 draft、blocked 或 ready-for-lifecycle-review 的合同草案，由 `harness-orchestrator` 批准、持久化并设置 ready-for-agent。
  
- 文档输出时按 `lifecycle-document-output` 条件调用 `i-have-adhd`，读取 `.template-spec/process/document-writing.md`；作用域仅限当前产物，派发时传递条件及引用。
+ 撰写实现合同解释正文或切片交接说明时，按 `lifecycle-document-output` 条件调用 `i-have-adhd`，读取 `.template-spec/process/document-writing.md` 的共用写法及工程契约 / Ticket 指引。作用域仅限当前产物；派发时传递条件及引用，不改变结构化合同、批准状态或就绪条件。
  
--## 文档写作
--
--撰写实现合同的解释正文和切片交接说明前，读取 `.template-spec/process/document-writing.md` 的共用写法及工程契约 / Ticket 指引；不改变结构化合同、批准状态或就绪条件。
--
  ## 输入
  
 -先读取 Spec、切片 Ticket、需求冻结、适用的原型确认、OpenAPI Freeze/no-impact、适用的系统/数据架构和 Design Review、Build Architecture Checklist、实现仓库和验证命令。输入缺失、未批准或 `stale` 时输出 `blocked`，交回 `yss-product-lifecycle`。
@@ -56,7 +52,8 @@
 -采用专职前端 profile 或显式 `frontend_delivery` 绑定时，先按 `.template-spec/process/frontend-backend-delivery.md` 实际核验战略与后端联合交付。缺任一输入只能诊断和回交；输入通过后准备计划/合同，正式实现、生成和恢复仍须当前批准的 Slice Contract 冻结接收摘要。接口或部署版本漂移时重新接收，不复用旧成功输出。
 -
 -- 编译器不得输出 `approved`、`ready-for-agent` 或 `completed`。
--- Registry 和编译规则保持 schema v2；新 Slice 使用 v3，v2 按原规则读取和显式迁移。schema v1 一律拒绝，不自动升级，不提供旧技能名兼容。
++- 编译器不得输出 approved、ready-for-agent 或 completed。
+ - Registry 使用其权威 schema v3，编译规则保持 schema v2；新 Slice 使用 v3，旧 Slice v2 按原规则读取和显式迁移。已停止支持的 schema 一律拒绝，不自动升级，不提供未登记的旧技能名兼容。
 -- `required_capabilities` 与 `required_skills` 必须同时冻结；Registry 或编译器摘要变化后合同立即 `stale`，重新编译后仍须交生命周期重新批准。
 -- UI 影响按来源分支核验：新设计保持正式原型确认与 Visual Baseline；无 UI 改动才允许 `existing-ui-baseline` v1，并须当前真实基线确认及 `case_id`。任一来源缺少当前批准或摘要绑定时，不得路由页面实现。模型必须先读 manifest 与语义引用，再查看对应 PNG；禁止目录 glob 和图片独立猜义。
 -- Repository/数据模型影响缺少数据架构时，不得路由持久化实现。
@@ -81,8 +78,6 @@
 -## 输出
 -
 -输出唯一 YAML 合同草案及派生报告；报告包含 capability/Recipe 解析记录、技能依赖闭包、不适用理由、阻塞项、TDD 模式、工作单元、预期证据、验证命令、人工审查点、完整重路由触发器，以及建议的 `suggested_owner_role_id`（UI 影响 → `role.frontend-engineer`，后端影响 → `role.backend-engineer`，测试/审查 → `role.test-engineer`）。自然语言说明不能替代结构化合同字段。编译器不得自行批准合同、设置 `ready-for-agent` 或关闭会签门禁；owner 建议只供主控派活。
-+- 编译器不得输出 approved、ready-for-agent 或 completed。
-+- Registry、编译器合同或 Slice Contract schema v1 一律拒绝并返回迁移提示；不自动升级，不提供旧技能名 alias。
 +- 任一 Registry/Compiler digest 变化使合同 `stale`；重新编译后仍须由 `harness-orchestrator` 再批准。
 +- 发现后端业务规则、架构、状态或持久化变化时回交后端 / 战略方，不路由本地 Domain 实现。
 +- API、状态、Visual Baseline 版本或 digest、数据模型、写路径、测试 seam 或验证命令变化时，必须返回 new_impacts / drift 并完整重路由。
@@ -1390,16 +1385,24 @@
 +前端专职合同仅填写页面工程、组件、状态管理、API 消费与测试边界。来自导入包的承接使用前端联合接收核验，不生成或执行后端技术设计。
 --- a/references/yss-skill-execution-result.md
 +++ b/references/yss-skill-execution-result.md
-@@ -1,8 +1,6 @@
- # YSS Skill Execution Result
+@@ -2,15 +2,12 @@
  
  核心 YSS skill 必须消费已批准合同版本，并返回：
--
+ 
 -后端结果顶层带与当前 resolution 完全一致的 `architecture_identity`；每条验证记录还须有整数 `exit_code`。身份缺失、Profile 未 supported、验证非零或没有执行时间均不得 accepted。
+-
+-以下为当前 Slice v3 的填写结构。后端身份复制当前 resolution；`project_root`、`dependency_roots` 仅按跨仓及来源解析合同填写。历史 Slice v2 使用末节所述兼容路径，不能把此示例当作自动迁移指令。
++以下为当前 Slice v3 的填写结构。`project_root`、`dependency_roots` 仅按跨仓及来源解析合同填写。历史 Slice v2 使用末节所述兼容路径，不能把此示例当作自动迁移指令。
  
  ```yaml
  execution_result:
-@@ -18,8 +16,6 @@
+   schema_version: 2
+   evidence_binding_version: 1
+-  architecture_identity: # 后端必须与当前 resolution 完全一致；其他工作单元按原合同
+   skill:
+   slice_id:
+   work_unit_id:
+@@ -23,8 +20,6 @@
      registry_digest:
      compiler_contract_digest:
      component_bindings_digest: # 合同含 component_bindings 时必填
@@ -1408,7 +1411,7 @@
    changed_files:
      - path:
        contract_area: common | frontend | backend | contract | cross_repo
-@@ -37,9 +33,6 @@
+@@ -51,9 +46,6 @@
        constraint:
        status: passed | failed | not-applicable
        evidence_ref:

@@ -9,6 +9,8 @@ description: "审查 YSS OpenAPI Draft 的需求覆盖、页面动作、响应�
 
 Use this skill after OpenAPI Draft creation and before Engineering Baseline / YSS DDD Review. It is a fail-closed contract review skill for design-time OpenAPI files under `docs/.scratch/<feature>/api/`; it does not bundle JSON or generate Orval clients.
 
+先辨认当前批准协议。普通采用 YSS wrapper 的 HTTP/JSON 响应消费 DTO wire profile；下载、流式和第三方回调按批准协议审查媒体类型、状态、Header、错误及权限边界，不强套 wrapper。例外须有契约依据且仍通过本技能的结构和语义审查。
+
 ## Required Inputs
 
 - OpenAPI Draft under `docs/.scratch/<feature>/api/<feature>.yaml`，作为唯一权威的单一 OAS 3.1 YAML document；生命周期元数据和 Freeze 决策位于相邻 Markdown 记录。
@@ -26,7 +28,7 @@ Use this skill after OpenAPI Draft creation and before Engineering Baseline / YS
 
 - Automated checks own YAML single-document syntax, `$ref` resolution, path-parameter consistency, OpenAPI lint, and stable machine-checkable style rules.
 - `scripts/verify-openapi-draft-validation-record` owns validation-record shape, current-byte SHA binding, locked toolchain evidence and deterministic structural rechecks. It does not decide whether a business property correctly implements the Spec.
-- `scripts/verify-yss-dto-openapi-profile` owns the reusable DTO mapping invariants; the review still checks each endpoint's concrete schema, wrapper extension and evidence.
+- `scripts/verify-yss-dto-openapi-profile` owns the reusable DTO mapping invariants; the review checks every endpoint's approved protocol, concrete schema and evidence, including the wrapper extension when the endpoint uses the YSS wrapper.
 - Human or independent semantic review owns P0 traceability, page-action coverage, error behavior, concurrency/idempotency, scope downgrades, contract-test seams, and any explicitly specified authentication or authorization behavior.
 - Fresh passing automation evidence may be referenced by the semantic review; copying the same findings into a second checklist is unnecessary.
 - Re-run structural automation only when the Draft, ruleset, or referenced schema changes.
@@ -41,9 +43,9 @@ Block if any of these are true:
 - Multiple lifecycle operations reuse one schema even though requiredness or omission semantics differ and no explicit conditional contract resolves the difference.
 - A UI action has no endpoint/non-goal mapping.
 - A configurable rule or gate lacks a source, owner, fixed/default decision, or API representation.
-- Pagination does not align with the `PageResult` profile or documented exception, or exposes `offset` / `needTotalCount` / `tempTotalCount` as client input.
-- A response omits `x-yss-response-wrapper`, uses the compatibility `com.yss.cloud.dto.response` package for a new contract, writes Java generic notation as an OAS schema, or fails `YssResultMeta` + `allOf` + concrete `data` mapping.
-- `code` is modeled as arbitrary object, `dataType` loses explicit nullability, or computed fields such as `totalPages` lack target wire evidence.
+- Pagination does not align with the `PageResult` profile or documented exception, or an endpoint using the YSS pagination protocol exposes `offset` / `needTotalCount` / `tempTotalCount` as client input.
+- An ordinary response using the YSS wrapper omits `x-yss-response-wrapper`, uses the compatibility `com.yss.cloud.dto.response` package for a new wrapper contract, writes Java generic notation as an OAS schema, or fails `YssResultMeta` + `allOf` + concrete `data` mapping.
+- In a YSS wrapper, `code` is modeled as arbitrary object or `dataType` loses explicit nullability; or computed fields such as `totalPages` lack target wire evidence.
 - An in-scope behavior lacks a contract-test seam. Select import, mapping coverage, validation, review, publish, export or optimistic-locking seams only when the Spec/API actually includes that behavior; record a reasoned not-applicable for absent operations. A read-only query does not acquire write/import/publish requirements.
 - YAML contains lifecycle frontmatter / root metadata, or the proposed JSON client input is not explicitly deferred until Freeze and governance export.
 

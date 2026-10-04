@@ -5,15 +5,13 @@ description: "审查或迁移 YSS Spring Boot 2 到 3 的依赖、Jakarta 与 Sp
 
 # yss-up-springboot3
 
-Use this skill for catalog-driven YSS backend upgrade analysis and approved migrations from an exact Spring Boot 2 platform to an exact Spring Boot 3 platform.
+本 Skill 从精确 Spring Boot 2 平台分析并执行已批准的 Spring Boot 3 迁移，不替代具体组件 Skill。源平台、目标平台和组件能力只从 `.template-spec/engineering/backend-platforms.json`、批准的 `platform_configuration`、工程 Manifest、effective POM 与实际依赖树解析，不按版本记忆或源码可编译状态推断兼容。
 
-中文说明：这个技能是平台迁移编排入口，不替代具体组件 Skill。源平台、目标平台和组件能力只从 `.template-spec/engineering/backend-platforms.json`、批准的 `platform_configuration`、工程 Manifest、effective POM 与实际依赖树解析，不按版本记忆或源码可编译状态推断兼容。
+## 何时使用
 
-## When To Use
-
-- The user asks to assess or migrate a YSS backend from Spring Boot 2 to Spring Boot 3.
-- The task mentions `javax.*` to `jakarta.*`, Spring Security migration, validation changes, Servlet API changes, Gateway/OpenFeign compatibility, or dependency BOM changes.
-- The task involves checking whether a YSS component can run on Spring Boot 3.
+- 评估或迁移 YSS 后端的 Spring Boot 2 → 3 平台。
+- 平台迁移涉及 `javax.*` → `jakarta.*`、Spring Security、Validation、Servlet、Gateway/OpenFeign 或依赖 BOM。
+- 核验 YSS 组件在指定 Spring Boot 3 平台的兼容状态。
 
 ## 准入与阻断
 
@@ -22,7 +20,7 @@ Use this skill for catalog-driven YSS backend upgrade analysis and approved migr
 - 既有工程的源码编译、单元测试或 `javax`→`jakarta` 替换不等于平台认证。没有目标架构的真实构件、启动和组件 seam 证据时不得宣称迁移完成。
 - 平台迁移不得夹带业务重构、架构族转换或组件替换。发现这些影响时返回 `new_impacts`，交实现合同编译器重新路由。
 
-## Workflow
+## 迁移流程
 
 1. 从工程登记、Manifest、父/BOM、effective POM 和依赖树冻结源 `platform_configuration`、架构 Profile、全部 YSS GAV、组件绑定及基线验证命令；缺失或相互冲突时停止。
 2. 从平台目录选择一个精确 Spring Boot 3 目标 profile，记录 compatibility id/digest；不得使用 `3.x`、`latest`、范围版本或自行拼装父/BOM。
@@ -33,22 +31,22 @@ Use this skill for catalog-driven YSS backend upgrade analysis and approved migr
 7. 使用工程根 `./mvnw` 记录 effective POM、依赖树、`validate`、`test`、`package`、随机端口启动和真实组件 seam；DDD 与 MVC 证据不可互相代替。
 8. 重新解析全部组件绑定并比较摘要；通过只表示该工程的批准迁移结果，不自动把共享平台或其他工程标记为 verified。
 
-## Common Checks
+## 适用检查
 
-- Maven BOM and plugin versions are aligned before changing code.
-- `javax.*` imports are migrated only where the target framework expects Jakarta APIs.
-- Spring Security configuration no longer depends on removed `WebSecurityConfigurerAdapter` patterns.
-- Validation annotations and exception handlers still map to the expected DTO/Result contract.
-- MyBatis interceptors, auto configurations, and starter metadata are compatible with Spring Boot 3 auto-configuration loading.
-- Tests or sample modules are updated together with framework code.
+- 改代码前核对 Maven BOM 与插件版本。
+- 仅目标框架要求 Jakarta 的 API 迁移 `javax.*` import。
+- Spring Security 配置不依赖已移除的 `WebSecurityConfigurerAdapter` 模式。
+- Validation 注解与异常处理仍映射到冻结 DTO/Result 合同。
+- MyBatis 拦截器、自动配置与 starter metadata 符合目标 Boot 3 装载机制。
+- 受影响测试或样例模块与框架代码同步。
 - Jackson 2 的 Result/PageResult、日期、枚举、nullability 和错误响应 wire fixture 与冻结 OpenAPI 一致。
 - `spring.factories` 与 `AutoConfiguration.imports` 的目标机制以真实 starter 为准，不能仅移动文件名后宣称自动配置生效。
 - 输出包含源/目标 profile、compatibility digest、组件逐项结论、阻塞项、实际命令与回滚点。
 
-## Do Not
+## 修改边界
 
-- Do not blindly rewrite all `javax.*` imports without checking whether the dependency still uses the old namespace.
-- Do not mix unrelated business refactors into migration patches.
-- Do not assume component compatibility from memory; inspect source and specialist skill indexes.
-- Do not bypass a blocked component by excluding its starter, copying component code into the service, or substituting an unapproved third-party dependency.
-- Do not execute a Boot 4 migration under this Skill or reuse Boot 3 evidence for Boot 4.
+- 先核验依赖实际命名空间，不批量替换全部 `javax.*`。
+- 迁移不夹带无关业务重构。
+- 组件兼容结论使用源码、专项索引和平台证据，不使用版本记忆。
+- 不能通过排除 starter、复制组件源码到服务或换未批准第三方依赖绕过组件阻断。
+- Boot 4 另行路由，不复用 Boot 3 证据执行其迁移。

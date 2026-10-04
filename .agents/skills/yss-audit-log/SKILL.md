@@ -7,6 +7,10 @@ description: "接入或排查 YSS AuditLog 的 SpEL 摘要、异步发布、订�
 
 用于处理 `yss-component-audit-log` 的接入、排障和代码修改。
 
+## 平台与源码门禁
+
+接入、修改、代码生成或提供精确类名/配置前，必须读取并执行 [共享平台与源码门禁](../yss-skill-source-index-refresh/references/backend-component-platform-compatibility.md)，以 `--skill yss-audit-log` 校验批准的平台线及匹配源码根。缺失、错配或漂移返回 `blocked`；不跨代回退，不在业务实现中升级、降级或替换组件。只读分诊可继续，但须标注未完成源码核验，不能据此宣称跨 Boot/JDK 兼容。
+
 ## 何时使用
 
 - 用户要求接入或修改审计日志。
@@ -31,13 +35,15 @@ description: "接入或排查 YSS AuditLog 的 SpEL 摘要、异步发布、订�
 
 ## 接入检查清单
 
+下述 Boot 3 要点是所登记平台基线的核验项；只有匹配源码门禁通过，才能作为当前精确结论。索引或源码漂移时将受影响结论标为待核验并停止精确接入指导，不借历史快照补齐。
+
 - 启动类是否启用了类似 `@EnableAuditLog` 的能力。
 - 目标方法是否是可被 AOP 代理拦截的 Spring Bean 方法。
 - `@AuditLog` 是否标在正确的方法上。
 - `boot3-java17` 的 SpEL 根上下文只暴露 ASCII key：`args` 和 `result`；例如 `#{args[0]}`、`#{result[name]}`。方法参数名不会自动进入上下文。
 - `args` 仅在 `@AuditLog(isNeedArgs = true)` 时写入，`result` 仅在 `isNeedResult = true` 时写入；表达式引用未启用的 key 属于配置错误，必须由组件 seam 测试覆盖。
 - `boot3-java17` 不再使用中文 context key，也不得把 Boot 2 的历史模板直接复制到 Boot 3。处理旧模板时先读取所选平台线索引并显式迁移。
-- `yss.audit.enabled` 是否开启；`sendSysManageEnabled` 与 `auditLogPrintEnabled` 在当前实现中不会自动阻止订阅器注册，需按源码验证，不能假设开关生效。
+- 按匹配源码核验 `yss.audit.enabled`、`sendSysManageEnabled` 与 `auditLogPrintEnabled` 是否控制订阅器注册及投递，不能从字段名或历史快照推断开关生效。
 - 审计身份由 `CurrentUserProvider` 提供；不得在审计切面中重新解析 Header 或未验签 JWT。
 
 ## 排障顺序
@@ -51,7 +57,7 @@ description: "接入或排查 YSS AuditLog 的 SpEL 摘要、异步发布、订�
 7. 异步线程池或事件发布异常是否被吞掉。
 8. 参数位置、返回值字段、异常分支是否满足摘要模板。
 
-`boot3-java17` 审计切面当前是 `@AfterReturning`，只记录成功返回；异常审计、参数脱敏、队列满丢弃、线程池关闭、重试和幂等必须单独设计并测试。组件测试至少覆盖 `#{result[name]}`、`args` / `result` 资源写入和可信身份来源。
+核验 `boot3-java17` 审计切面的 advice 与成功/异常边界；所登记平台基线使用 `@AfterReturning` 记录成功返回，源码漂移时该结论待核验。异常审计、参数脱敏、队列满丢弃、线程池关闭、重试和幂等须按当前组件能力及批准设计单独核验和测试，不能由旧基线推断已覆盖。组件测试至少覆盖 `#{result[name]}`、`args` / `result` 资源写入和可信身份来源。
 
 ## 修改约束
 
@@ -68,7 +74,3 @@ description: "接入或排查 YSS AuditLog 的 SpEL 摘要、异步发布、订�
 - 审计切面与 SpEL 解析：`assets/AuditLogAspect.java`
 - 异步发布链路：`assets/YssAuditPublishService.java`
 - 默认订阅器：`assets/YssAuditLogPrintSubscriberImpl.java`、`assets/YssAuditLogSysManagerSubscriberImpl.java`
-
-## 平台与源码门禁
-
-接入、修改、代码生成或给出精确类名/配置前，读取 [后端组件平台与源码门禁](../yss-skill-source-index-refresh/references/backend-component-platform-compatibility.md)，从批准的 `platform_configuration.component_platform_line` 选择 `source-index.boot2-java8.md` 或 `source-index.boot3-java17.md`，并以 `--skill yss-audit-log --platform-line <line> --source-root <matching-root>` 运行统一 freshness 校验。平台线与源码根不匹配、组件 tree 不一致、组件子树 dirty、索引缺少平台信号，或 Manifest / 组件 GAV 缺少 verified 兼容证据时返回 `blocked`；不得回退另一代索引，也不在业务实现中升级、降级或替换 YSS 组件。既有工程只读分诊可继续，但不得据此宣称跨 Boot/JDK 兼容。

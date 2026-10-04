@@ -7,6 +7,10 @@ description: "实现或排查 YSS Spring MVC Excel 导入导出、RequestExcel�
 
 用于处理基于注解的 Excel 导入导出能力。
 
+## 平台与源码门禁
+
+接入、修改、代码生成或提供精确类名/配置前，必须读取并执行 [共享平台与源码门禁](../yss-skill-source-index-refresh/references/backend-component-platform-compatibility.md)，以 `--skill yss-excel-mvc` 校验批准的平台线及匹配源码根。缺失、错配或漂移返回 `blocked`；不跨代回退，不在业务实现中升级、降级或替换组件。只读分诊可继续，但须标注未完成源码核验，不能据此宣称跨 Boot/JDK 兼容。
+
 ## 何时使用
 
 - 用户要新增 Excel 导入接口。
@@ -64,7 +68,3 @@ description: "实现或排查 YSS Spring MVC Excel 导入导出、RequestExcel�
 - 源码索引：`references/source-index.md`
 - 注解与返回结构：`assets/RequestExcel.java`、`assets/ResponseExcel.java`、`assets/ExcelDynamicData.java`
 - MVC 解析器：`assets/RequestFastExcelArgumentResolver.java`、`assets/ResponseFastExcelReturnValueHandler.java`
-
-## 平台与源码门禁
-
-接入、修改、代码生成或给出精确类名/配置前，读取 [后端组件平台与源码门禁](../yss-skill-source-index-refresh/references/backend-component-platform-compatibility.md)，从批准的 `platform_configuration.component_platform_line` 选择 `source-index.boot2-java8.md` 或 `source-index.boot3-java17.md`，并以 `--skill yss-excel-mvc --platform-line <line> --source-root <matching-root>` 运行统一 freshness 校验。平台线与源码根不匹配、组件 tree 不一致、组件子树 dirty、索引缺少平台信号，或 Manifest / 组件 GAV 缺少 verified 兼容证据时返回 `blocked`；不得回退另一代索引，也不在业务实现中升级、降级或替换 YSS 组件。既有工程只读分诊可继续，但不得据此宣称跨 Boot/JDK 兼容。

@@ -7,6 +7,10 @@ description: "接入或排查 YSS 分布式 ID 的 Segment、Snowflake、主键�
 
 处理 `yss-component-distributed-id` 及 Leaf 消费项目的发号、主键填充与迁移。先从批准的 `platform_configuration.component_platform_line` 选择 [源码索引](references/source-index.md)；Boot 2 的历史能力不能推定为 Boot 3 可用能力。无批准合同的既有工程故障可只读分诊，不据此改策略或宣布兼容。
 
+## 平台与源码门禁
+
+接入、修改、代码生成或提供精确类名/配置前，必须读取并执行 [共享平台与源码门禁](../yss-skill-source-index-refresh/references/backend-component-platform-compatibility.md)，以 `--skill yss-distributed-id` 校验批准的平台线及匹配源码根。缺失、错配或漂移返回 `blocked`；不跨代回退，不在业务实现中升级、降级或替换组件。只读分诊可继续，但须标注未完成源码核验，不能据此宣称跨 Boot/JDK 兼容。
+
 ## 接入决策
 
 1. 核对实际组件 GAV、平台线、依赖树及当前源码，再确定已有主键策略、注入模式和数据库约束。保持既有 Long 主键及调用方类型，策略变更单独评估数据和 API 影响。
@@ -23,7 +27,3 @@ description: "接入或排查 YSS 分布式 ID 的 Segment、Snowflake、主键�
 - 行为修改使用组件父 reactor 的根 `./mvnw` 验证启动、单条/批量主键、迁移边界和目标数据库方言；H2 不能证明生产方言。只读故障分诊与已执行验证分别记录。
 
 当前源码入口与平台差异见 [能力与迁移说明](references/README.md)。不要从 Skill 的历史示例或旧资产复制生产源码；精确类名、配置和默认值以选定平台线的当前源码为准。
-
-## 平台与源码门禁
-
-接入、修改、代码生成或给出精确类名/配置前，读取 [后端组件平台与源码门禁](../yss-skill-source-index-refresh/references/backend-component-platform-compatibility.md)，从批准的 `platform_configuration.component_platform_line` 选择 `source-index.boot2-java8.md` 或 `source-index.boot3-java17.md`，并以 `--skill yss-distributed-id --platform-line <line> --source-root <matching-root>` 运行统一 freshness 校验。平台线与源码根不匹配、组件 tree 不一致、组件子树 dirty、索引缺少平台信号，或 Manifest / 组件 GAV 缺少 verified 兼容证据时返回 `blocked`；不得回退另一代索引，也不在业务实现中升级、降级或替换 YSS 组件。既有工程只读分诊可继续，但不得据此宣称跨 Boot/JDK 兼容。

@@ -9,6 +9,10 @@ description: "实现或核验 YSS Result、PageResult、PageQuery、CommandDTO�
 
 本 skill 同时负责把中台 DTO 映射到公开 HTTP/JSON 边界。`references/openapi-wire-profile.yaml` 是可复用的机器可读映射源；OpenAPI 治理和 Draft Review 必须消费它，不得各自复制一份 wrapper 或分页字段表。
 
+## 平台与源码门禁
+
+接入、修改、代码生成或提供精确类名/配置前，必须读取并执行 [共享平台与源码门禁](../yss-skill-source-index-refresh/references/backend-component-platform-compatibility.md)，以 `--skill yss-dto` 校验批准的平台线及匹配源码根。缺失、错配或漂移返回 `blocked`；不跨代回退，不在业务实现中升级、降级或替换组件。只读分诊可继续，但须标注未完成源码核验，不能据此宣称跨 Boot/JDK 兼容。
+
 ## 所有权边界
 
 - 先消费 `architecture_identity`：DDD 的 HTTP DTO 在 Web；通用 MVC 私有 DTO 在 server、已批准公开 DTO 在 client；数据分析 MVC 公开 DTO 在 client。service/core 自有内部 Command/Query/Result，不依赖 client DTO；server 用 MapStruct 转换。共用 wire profile 不意味着共用模块路径。
@@ -28,7 +32,7 @@ description: "实现或核验 YSS Result、PageResult、PageQuery、CommandDTO�
 1. 优先沿用项目现有 DTO 体系，不重复造返回包装类。
 2. 涉及真实类名、返回结构、分页字段或排障时，先读 `references/source-index.md`，再定位源码或文档。
 3. 新 Target Profile 的 canonical 包固定为 `com.yss.cloud.dto.result`；`com.yss.cloud.dto.response` 为 `unsupported`，不得在新契约或脚手架输出中引入。检测到旧包时只报告边界，不自动改写；旧项目现代化须单独立项。
-4. 需要设计或审查 API 时，先校验 `references/openapi-wire-profile.yaml`，再把 endpoint 的具体 DTO/VO schema 组合到 wrapper；Java 泛型不是 OpenAPI schema。
+4. 需要设计或审查 API 时，先辨认已批准协议；采用 YSS wrapper 的普通 HTTP/JSON 接口校验 `references/openapi-wire-profile.yaml`，再把 endpoint 的具体 DTO/VO schema 组合到 wrapper。下载、流式和第三方回调按批准协议检查；Java 泛型不是 OpenAPI schema。
 5. 只围绕当前 DTO 结构回答，不泛化到整个微服务理论。
 
 ## 源码索引
@@ -50,11 +54,11 @@ description: "实现或核验 YSS Result、PageResult、PageQuery、CommandDTO�
 - Controller 返回优先使用项目既有的 `Result` 或派生结果对象。
 - 单对象返回优先 `SingleResult`，列表返回优先 `MultiResult`，分页返回优先 `PageResult`，前提是当前项目已采用这套体系。
 - 三种泛型结果要求 `T extends Serializable`；生成的 VO/响应类型必须满足该编译约束。
-- OpenAPI 响应以 `YssResultMeta` 表达公共字段，并用 `allOf` 叠加 endpoint-specific `data` / page 字段；每个响应声明 `x-yss-response-wrapper: SingleResult|MultiResult|PageResult`，不得把 `SingleResult<T>` 文字写成 schema。
-- wire shape 不是 Java 字段清单：`success` 为 boolean，`dataType` 为 `string|null`，`code` 只允许 `string|integer|null`；不得把全局 `code` 放宽为任意 object。
+- 采用 YSS wrapper 的普通 HTTP/JSON 响应以 `YssResultMeta` 表达公共字段，并用 `allOf` 叠加 endpoint-specific `data` / page 字段；这些响应声明 `x-yss-response-wrapper: SingleResult|MultiResult|PageResult`，不得把 `SingleResult<T>` 文字写成 schema。
+- YSS wrapper 的 wire shape 不是 Java 字段清单：`success` 为 boolean，`dataType` 为 `string|null`，`code` 只允许 `string|integer|null`；不得把该 profile 的全局 `code` 放宽为任意 object。
 - `MultiResult.data` 和 `PageResult.data` 对外是数组，空值按 `[]` 建模；`SingleResult.data` 按 endpoint schema 建模并显式处理 nullability。
 - `PageResult` 当前稳定公共字段为 `totalCount/pageSize/pageIndex/data[]`；`totalPages` 是计算 getter，只有目标 HTTP mapper / contract fixture 证明后才能进入具体契约。
-- `PageQuery` 客户端输入只允许 `pageIndex/pageSize/orderBy/orderDirection/groupBy`（后四项按 profile 的 optional / whitelist 规则）；`orderDirection` 只能是 `ASC|DESC`。`offset`、`needTotalCount`、`tempTotalCount` 是计算或内部协作字段，禁止成为客户端输入。
+- 采用 YSS 分页协议的 `PageQuery` 客户端输入只允许 `pageIndex/pageSize/orderBy/orderDirection/groupBy`（后四项按 profile 的 optional / whitelist 规则）；`orderDirection` 只能是 `ASC|DESC`。`offset`、`needTotalCount`、`tempTotalCount` 是计算或内部协作字段，禁止从内部 `PageQuery` 泄露为客户端输入。其他已批准公开分页协议按冻结字段映射，不静默改名或套用该字段表。
 - `buildSuccess(...)` 各重载设置 code 的行为并不一致；冻结契约必须测试 `success/code/message/tips/dataType`、nullability 和三种 data shape，不能只测试 data。
 <a id="dto.wire-evidence"></a>
 <!-- yss-rule {"id":"dto.wire-evidence","when":"wire","level":"mandatory","evidence":"code-and-verification"} -->
@@ -74,7 +78,7 @@ description: "实现或核验 YSS Result、PageResult、PageQuery、CommandDTO�
 - 不要把 `com.yss.cloud.dto.response` 作为新 API 的 canonical 包，也不要从 Java getter 机械生成 wire schema。
 <a id="dto.no-leak"></a>
 <!-- yss-rule {"id":"dto.no-leak","when":"pagination","level":"mandatory","evidence":"code-and-verification"} -->
-- 不要把 `offset`、`needTotalCount`、`tempTotalCount` 作为客户端分页输入；不要无证据把 `totalPages` 写入所有分页响应。
+- 采用 YSS 分页协议时，不要把内部 `offset`、`needTotalCount`、`tempTotalCount` 作为客户端输入；其他批准协议按冻结契约核验公开字段。不要无证据把 `totalPages` 写入所有分页响应。
 - 若项目已有 `SingleResult`、`PageResult`、`MultiResult` 体系，优先保持一致。
 
 ## 按需读取
@@ -90,10 +94,6 @@ description: "实现或核验 YSS Result、PageResult、PageQuery、CommandDTO�
 - DTO/VO 必须消费冻结 OpenAPI/no-impact record 和批准合同，写入合同允许路径。
 - POJO 样板可 `controlled-generation`；校验、权限输入、错误结构和序列化行为必须由对应 `behavior-tdd` 工作单元覆盖。
 - 必须加载合同要求的 `lombok`、`mapstruct` 和 `alibaba-java-code-style`，并按统一 `YSS Skill Execution Result` 返回文件、契约测试和偏离。
-
-## 平台与源码门禁
-
-接入、修改、代码生成或给出精确类名/配置前，读取 [后端组件平台与源码门禁](../yss-skill-source-index-refresh/references/backend-component-platform-compatibility.md)，从批准的 `platform_configuration.component_platform_line` 选择 `source-index.boot2-java8.md` 或 `source-index.boot3-java17.md`，并以 `--skill yss-dto --platform-line <line> --source-root <matching-root>` 运行统一 freshness 校验。平台线与源码根不匹配、组件 tree 不一致、组件子树 dirty、索引缺少平台信号，或 Manifest / 组件 GAV 缺少 verified 兼容证据时返回 `blocked`；不得回退另一代索引，也不在业务实现中升级、降级或替换 YSS 组件。既有工程只读分诊可继续，但不得据此宣称跨 Boot/JDK 兼容。
 
 ## 既有契约与特殊协议
 
