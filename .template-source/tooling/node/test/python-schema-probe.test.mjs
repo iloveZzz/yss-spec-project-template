@@ -52,3 +52,22 @@ test('未登记的外部 Schema 引用继续被离线校验拒绝',t=>{
  const probe=installSchemaProbe({root});t.after(()=>probe.close());
  assert.throws(()=>probe.withOperation({id:'external-ref',entrypoint:'validateJsonSchemas'},()=>validateJsonSchemas([{schemaPath:schema,value:1}])),/JSON_SCHEMA_OFFLINE/);
 });
+
+test('诊断重放按 UTF-8 字节帧读取，管道写端保持打开时仍保留校验结果',t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'schema-probe-frame-')),previousPath=process.env.PATH;
+ t.after(()=>{process.env.PATH=previousPath;fs.rmSync(root,{recursive:true,force:true});});
+ const python=cp.spawnSync('python3',['-c','import sys; print(sys.executable)'],{encoding:'utf8'}).stdout.trim();
+ assert.ok(python);
+ const schema=path.join(root,'valid.json'),otherSchema=path.join(root,'invalid.json'),value='中文😀'.repeat(30000);
+ fs.writeFileSync(schema,JSON.stringify({type:'string',const:value}));
+ fs.writeFileSync(otherSchema,JSON.stringify({type:'string',const:'不同值'}));
+ // Replay through real Python with its stdin writer deliberately kept open.
+ // Startup/import probes have no payload and retain their ordinary invocation.
+ fs.writeFileSync(path.join(root,'python3'),`#!${python}\nimport sys,subprocess\nif 'sys.stdin' not in sys.argv[2]:\n    sys.exit(subprocess.call([${JSON.stringify(python)},*sys.argv[1:]]))\npayload=sys.stdin.buffer.read(int(sys.argv[-1])) if len(sys.argv)>3 else sys.stdin.buffer.read()\nchild=subprocess.Popen([${JSON.stringify(python)},*sys.argv[1:]],stdin=subprocess.PIPE)\nchild.stdin.write(payload)\nchild.stdin.flush()\ntry:\n    code=child.wait(timeout=2)\nexcept subprocess.TimeoutExpired:\n    print('SCHEMA_EOF_WAIT_REPRO: diagnostic waited for stdin EOF',file=sys.stderr)\n    child.kill()\n    child.wait()\n    code=73\nfinally:\n    child.stdin.close()\nsys.exit(code)\n`,{mode:0o755});
+ process.env.PATH=`${root}${path.delimiter}${previousPath}`;
+ const probe=installSchemaProbe({root});t.after(()=>probe.close());
+ const actual=probe.withOperation({id:'held-open-frame',entrypoint:'validateJsonSchemas'},()=>validateJsonSchemas([{schemaPath:schema,value},{schemaPath:otherSchema,value}]));
+ assert.deepEqual(actual.map(row=>row.valid),[true,false]);
+ const measured=probe.measurePython(1);
+ assert.deepEqual(measured.validation.map(row=>row.samples[0].valid),[true,false]);
+});

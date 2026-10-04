@@ -52,7 +52,7 @@ export function installSchemaProbe({root=process.cwd()}={}) {
   },
   measurePython(samples=5) {
    if(!Number.isSafeInteger(samples)||samples<1||samples>20)throw Error('samples must be 1..20');
-   const run=(code,input)=>{const start=performance.now();const r=original('python3',['-c',code],{input,encoding:'utf8',timeout:30000,maxBuffer:1024*1024});if(r.error||r.status!==0)throw Error(`Python diagnostic subprocess failed: exit_code=${r.status}, ${r.error?.message||r.stderr||'no stderr'}`);return {wall_ms:performance.now()-start,stdout:r.stdout};};
+   const run=(code,input)=>{const payload=input===undefined?undefined:Buffer.from(input,'utf8'),argv=payload===undefined?['-c',code]:['-c',code,String(payload.length)];const start=performance.now();const r=original('python3',argv,{input:payload,encoding:'utf8',timeout:30000,maxBuffer:1024*1024});if(r.error||r.status!==0)throw Error(`Python diagnostic subprocess failed: exit_code=${r.status}, ${r.error?.message||r.stderr||'no stderr'}`);return {wall_ms:performance.now()-start,stdout:r.stdout};};
    const startup=[],imports=[];for(let i=0;i<samples;i++){startup.push(run('pass').wall_ms);imports.push(run('from jsonschema import Draft202012Validator, FormatChecker').wall_ms);}
    const code=String.raw`
 import sys,json,time
@@ -61,7 +61,14 @@ from jsonschema import Draft202012Validator,FormatChecker
 from referencing import Registry,Resource
 from referencing.jsonschema import DRAFT202012
 i=(time.perf_counter()-t)*1000
-x=json.load(sys.stdin)
+expected_bytes=int(sys.argv[1])
+payload=sys.stdin.buffer.read(expected_bytes)
+if len(payload)!=expected_bytes:
+    raise ValueError(f"JSON_SCHEMA_PROTOCOL: truncated input frame: expected {expected_bytes} bytes, received {len(payload)}")
+try:
+    x=json.loads(payload.decode('utf-8'))
+except (UnicodeDecodeError,json.JSONDecodeError) as error:
+    raise ValueError(f"JSON_SCHEMA_PROTOCOL: invalid UTF-8 JSON input frame: {error}") from error
 t=time.perf_counter()
 schema=json.loads(x['schemaText'])
 Draft202012Validator.check_schema(schema)
