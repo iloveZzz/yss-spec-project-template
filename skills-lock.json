@@ -18,7 +18,7 @@
       "revision": "c4d958f18cc947cb91cbe1bd48783fa4601cc18f"
     },
     "iloveZzz/yss-harness-design-agent": {
-      "revision": "61a3c5aad8c87dedf3d90445d9657b0d7a334e98"
+      "revision": "14bb090c7650e1476153de6627289a8a9c4f7236"
     },
     "ayghri/i-have-adhd": {
       "revision": "839872f9d1cd634fed642b4589ce7226199cc15f"
@@ -393,7 +393,7 @@
         "sourceType": "git-submodule",
         "skillPath": ".agents/skills/prototype-review/SKILL.md",
         "effectiveHash": "e1b3c28881d315870d40c90d2d0dcfa9a4bb6b080744257e2ca57ed98d146c41",
-        "sourceRevision": "61a3c5aad8c87dedf3d90445d9657b0d7a334e98",
+        "sourceRevision": "14bb090c7650e1476153de6627289a8a9c4f7236",
         "upstreamHash": "9c0b042760f7d741487e62eaccf55b5079a1991e5489286560e278c9642a09b0",
         "adaptationRef": ".template-source/agents/strategic-design-skills-integration.md",
         "targets": [
@@ -645,7 +645,7 @@
         "sourceType": "git-submodule",
         "skillPath": ".agents/skills/yss-design-system/SKILL.md",
         "effectiveHash": "b2d9ad48db30c4b5a6868c9b800f406f72da44ac538ce5f57ac6413d317dbba5",
-        "sourceRevision": "61a3c5aad8c87dedf3d90445d9657b0d7a334e98",
+        "sourceRevision": "14bb090c7650e1476153de6627289a8a9c4f7236",
         "upstreamHash": "3884a6b9e0a836c2c783bbe51d7737fee874662ea1964a7df545c2f1ababf4e3",
         "adaptationRef": ".template-source/agents/strategic-design-skills-integration.md",
         "targets": [
@@ -855,7 +855,7 @@
         "sourceType": "git-submodule",
         "skillPath": ".agents/skills/yss-prototype-stage/SKILL.md",
         "effectiveHash": "63b182da9538feb4a1884fee365247e4d25840952836451be5e2946c9c70f8d5",
-        "sourceRevision": "61a3c5aad8c87dedf3d90445d9657b0d7a334e98",
+        "sourceRevision": "14bb090c7650e1476153de6627289a8a9c4f7236",
         "upstreamHash": "0e82e8c0f6b5446dbe48aec8df092574ab895be303efe33d8fc8457bce98d02e",
         "adaptationRef": ".template-source/agents/strategic-design-skills-integration.md",
         "targets": [
@@ -933,7 +933,7 @@
         "sourceType": "git-submodule",
         "skillPath": ".agents/skills/yss-stage-decision/SKILL.md",
         "effectiveHash": "2f31ae2d68a543fbedc065cf3947f4c2f88165648c27f870b349ed1c90f7c5f9",
-        "sourceRevision": "61a3c5aad8c87dedf3d90445d9657b0d7a334e98",
+        "sourceRevision": "14bb090c7650e1476153de6627289a8a9c4f7236",
         "upstreamHash": "77fa3075f90966821881998ff5fa9d674672bd2568e70b8d877402efeb360453",
         "adaptationRef": ".template-source/agents/strategic-design-skills-integration.md",
         "targets": [
