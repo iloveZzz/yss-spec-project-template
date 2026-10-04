@@ -105,7 +105,10 @@ def sample(state, pair, mode):
     if expected_runtime is None:
         expected_runtime = metrics['runtime']; report['runtime'] = expected_runtime
     assert metrics['runtime'] == expected_runtime, 'runtime changed across samples'
-    assert len(metrics['executions']) == (1 if mode == 'legacy' else len(metrics['selected_files']))
+    assert len(metrics['executions']) == len(metrics['selected_files'])
+    assert all(len(item['test_files']) == 1 for item in metrics['executions'])
+    assert sorted(item['test_files'][0] for item in metrics['executions']) == sorted(metrics['selected_files'])
+    assert metrics['unexecuted_files'] == []
     assert len(metrics['copies']) == (0 if mode == 'legacy' else 3)
     assert sum('backend-plugin-build' in item['name'] for item in metrics['preparations']) == (mode == 'optimized')
     actual = identities(metrics)

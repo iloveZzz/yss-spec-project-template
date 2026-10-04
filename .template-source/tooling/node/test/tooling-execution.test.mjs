@@ -6,9 +6,48 @@ import os from 'node:os';
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { materializeTestPlugin, measureTestBuild, publishTestFixture, treeInventory } from '../scripts/tooling-fixture.mjs';
-import { runToolingProcess } from '../scripts/tooling-process.mjs';
+import { runToolingProcess, runToolingTestFilesSerial } from '../scripts/tooling-process.mjs';
 import { verificationInputDigest } from '../../../../scripts/lib/verification-report.mjs';
 const sha = bytes => createHash('sha256').update(bytes).digest('hex');
+
+test('串行全量测试按文件监督，累计耗时超过单文件预算仍完成全部身份', async t => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'tooling-file-budget-'));
+  t.after(() => fs.rmSync(dir, { recursive: true, force: true }));
+  const files = ['first', 'second'].map(name => {
+    const file = path.join(dir, `${name}.test.mjs`);
+    fs.writeFileSync(file, `import test from 'node:test';test('${name}', async () => { await new Promise(resolve => setTimeout(resolve, 700)); });`);
+    return file;
+  });
+  const rows = await runToolingTestFilesSerial(files, async (selected, label) => {
+    const row = await runToolingProcess(process.execPath, ['--test', '--test-reporter=tap', '--test-concurrency=1', ...selected], {
+      cwd: dir, logRoot: dir, name: label, timeoutMs: 1200,
+    });
+    return { ...row, test_files: selected };
+  });
+  assert.deepEqual(rows.map(row => row.code), [0, 0]);
+  assert.deepEqual(rows.flatMap(row => row.test_files), files);
+  assert.ok(rows.reduce((total, row) => total + row.duration_ms, 0) > 1200);
+  assert.ok(Date.parse(rows[1].started_at) >= Date.parse(rows[0].started_at) + rows[0].duration_ms - 2);
+  for (const [index, row] of rows.entries()) assert.match(fs.readFileSync(row.stdoutFile, 'utf8'), new RegExp(`ok 1 - ${['first', 'second'][index]}`));
+});
+
+test('串行调度保留失败与超时并继续后续文件，取消停止后续文件', async t => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'tooling-file-failure-'));
+  t.after(() => fs.rmSync(dir, { recursive: true, force: true }));
+  const scripts = ['process.exit(7)', 'setInterval(() => {}, 1000)', 'console.log("recovered")'];
+  const execute = async ([file], label, signal) => runToolingProcess(process.execPath, ['-e', file], {
+    cwd: dir, logRoot: dir, name: label, timeoutMs: 500, signal,
+  });
+  const rows = await runToolingTestFilesSerial(scripts, execute);
+  assert.deepEqual(rows.map(row => row.code), [7, 124, 0]);
+  assert.equal(rows[1].reason, 'timeout');
+  assert.match(fs.readFileSync(rows[2].stdoutFile, 'utf8'), /recovered/);
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 60);
+  const cancelled = await runToolingTestFilesSerial(scripts.slice(1), (files, label) => execute(files, `cancel-${label}`, controller.signal), { signal: controller.signal });
+  clearTimeout(timer);
+  assert.deepEqual(cancelled.map(row => row.code), [130]);
+});
 function fixture(t) {
   const dir = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'tooling-fixture-test-')));
   t.after(() => fs.rmSync(dir, { recursive: true, force: true }));

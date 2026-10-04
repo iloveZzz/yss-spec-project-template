@@ -20,9 +20,9 @@ export function installSchemaProbe({root=process.cwd()}={}) {
    const boundary=boundaries.length?boundaries.join('+'):`schema:${path.basename(job.schemaPath)}`;
    const relative=path.relative(root,job.schemaPath),schema=relative.startsWith('..')||path.isAbsolute(relative)?path.basename(job.schemaPath):relative;
    const settings={format_checker:job.formatChecker,error_style:job.errorStyle,cwd_sha256:hash(path.resolve(options.cwd||process.cwd())),timeout_ms:options.timeout};
-   const row={schema_path:schema,schema_path_sha256:hash(path.resolve(job.schemaPath)),schema_sha256:hash(job.schemaText),input_sha256:hash(job.value),options:settings,boundary};
-   row.job_sha256=hash([row.schema_path_sha256,row.schema_sha256,row.input_sha256,settings]);
-   const representativeKey=hash([schema,boundary]);
+   const row={schema_path:schema,schema_path_sha256:hash(path.resolve(job.schemaPath)),schema_sha256:hash(job.schemaText),resources_sha256:hash(job.resources||[]),input_sha256:hash(job.value),options:settings,boundary};
+   row.job_sha256=hash([row.schema_path_sha256,row.schema_sha256,row.resources_sha256,row.input_sha256,settings]);
+   const representativeKey=hash([schema,boundary,row.schema_sha256,row.resources_sha256]);
    if(!representatives.has(representativeKey))representatives.set(representativeKey,{job,row});
    return row;
   });
@@ -52,14 +52,32 @@ export function installSchemaProbe({root=process.cwd()}={}) {
   },
   measurePython(samples=5) {
    if(!Number.isSafeInteger(samples)||samples<1||samples>20)throw Error('samples must be 1..20');
-   const run=(code,input)=>{const start=performance.now();const r=original('python3',['-c',code],{input,encoding:'utf8',timeout:30000,maxBuffer:1024*1024});if(r.error||r.status!==0)throw Error('Python diagnostic subprocess failed');return {wall_ms:performance.now()-start,stdout:r.stdout};};
+   const run=(code,input)=>{const start=performance.now();const r=original('python3',['-c',code],{input,encoding:'utf8',timeout:30000,maxBuffer:1024*1024});if(r.error||r.status!==0)throw Error(`Python diagnostic subprocess failed: exit_code=${r.status}, ${r.error?.message||r.stderr||'no stderr'}`);return {wall_ms:performance.now()-start,stdout:r.stdout};};
    const startup=[],imports=[];for(let i=0;i<samples;i++){startup.push(run('pass').wall_ms);imports.push(run('from jsonschema import Draft202012Validator, FormatChecker').wall_ms);}
-   const code=`import sys,json,time\nt=time.perf_counter()\nfrom jsonschema import Draft202012Validator,FormatChecker\ni=(time.perf_counter()-t)*1000\nx=json.load(sys.stdin)\nt=time.perf_counter()\nv=Draft202012Validator(json.loads(x['schemaText']),format_checker=FormatChecker() if x['formatChecker'] else None)\nvalid=not list(v.iter_errors(x['value']))\nprint(json.dumps({'import_ms':i,'compile_and_validate_ms':(time.perf_counter()-t)*1000,'valid':valid}))`;
+   const code=String.raw`
+import sys,json,time
+t=time.perf_counter()
+from jsonschema import Draft202012Validator,FormatChecker
+from referencing import Registry,Resource
+from referencing.jsonschema import DRAFT202012
+i=(time.perf_counter()-t)*1000
+x=json.load(sys.stdin)
+t=time.perf_counter()
+schema=json.loads(x['schemaText'])
+Draft202012Validator.check_schema(schema)
+registry=Registry()
+for resource in x.get('resources', []):
+    contents=json.loads(resource['text'])
+    Draft202012Validator.check_schema(contents)
+    registry=registry.with_resource(resource['uri'],Resource.from_contents(contents,default_specification=DRAFT202012))
+v=Draft202012Validator(schema,registry=registry,format_checker=FormatChecker() if x['formatChecker'] else None)
+valid=not list(v.iter_errors(x['value']))
+print(json.dumps({'import_ms':i,'compile_and_validate_ms':(time.perf_counter()-t)*1000,'valid':valid}))
+`;
    const validation=[];
    for(const {job,row} of representatives.values()){
-    if(/"\$(?:ref|dynamicRef)"\s*:\s*"(?!#)/.test(job.schemaText)){validation.push({schema_path:row.schema_path,boundary:row.boundary,status:'excluded-external-reference'});continue;}
     const measurements=[];for(let i=0;i<samples;i++){const r=run(code,JSON.stringify(job));measurements.push({wall_ms:r.wall_ms,...JSON.parse(r.stdout)});}
-    validation.push({schema_path:row.schema_path,boundary:row.boundary,input_sha256:row.input_sha256,status:'measured',samples:measurements});
+    validation.push({schema_path:row.schema_path,boundary:row.boundary,input_sha256:row.input_sha256,resources_sha256:row.resources_sha256,status:'measured',samples:measurements});
    }
    return {samples,python_startup_ms:startup,python_with_import_ms:imports,startup_median_ms:median(startup),with_import_median_ms:median(imports),validation,note:'Standalone fresh Python processes and synthetic fixture inputs. Import and validation have internal timers; differences between wall-time medians are not exact phase attribution.'};
   },

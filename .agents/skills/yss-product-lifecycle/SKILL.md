@@ -29,7 +29,7 @@ scripts/query-lifecycle-context --work-unit work-unit.plan-requirements --check-
 
 `--include` 限合同顶层键。调用前按 [来源与补装](references/matt-yss-adapter.md) 预检，在既有授权内补装并重验。
 
-按 `execution_efficiency` 合并查询、复用未变资料；仍核验当前资产、词汇和门禁，产品流转不重跑模板套件。
+按 `execution_efficiency` 复用入口、合并查询和未变资料，核验资产与门禁；见项目 `.template-spec/process/script-execution.md`。
 
 ## 入口与模式
 

@@ -2,8 +2,8 @@
   "schema_version": 1,
   "target_id": "template-root",
   "source_repository": "yss-spec-project-template",
-  "source_revision": "5aeab2942175cd9162305f208f029417704c0dbd",
-  "source_state": "committed",
+  "source_revision": "10ffb7eb3dba243b95a63dddde3304a6253aac1f",
+  "source_state": "working-tree",
   "transformation_set": [
     "identity"
   ],
@@ -271,7 +271,7 @@
     "scripts/verify-strategic-handoff-consumption": "sha256:9ab43edbcf48ab6677ca7389e959a557d52939455ed309e5306391aa48ef0b10",
     "scripts/verify-strategic-handoff-package-scenarios": "sha256:23d8cc6c98af332a9a9593f542e19649542014d5269459061f9d114651ebfff4",
     "scripts/verify-strategic-handoff-tools-lock": "sha256:7b413ccc4ab4dc606113ec9e3f51ddac0d2045a761b18130483a70118c566d9b",
-    ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml": "sha256:f8dcf0772376de851a14f019757bcb3206e501a3ee0ff7d9414eea2ab2cc16c3",
+    ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml": "sha256:aaacf5fb348c83515f22d41ea0ecf8c8fb7c602c1eae0dd227d8fcc0612c64ec",
     ".template-spec/agents/yss-skill-registry.yaml": "sha256:86f2d20bc68ad668a5f89fb7a382c376cb6d489e2bbadb829ba94fa0b871c068",
     ".template-source/cli-core/runtime-store.mjs": "sha256:894065fb91ac05501796e8948b4015f0230deef4a72700e96c2890266310ac41"
   },
@@ -539,7 +539,7 @@
     "scripts/verify-strategic-handoff-consumption": "sha256:9ab43edbcf48ab6677ca7389e959a557d52939455ed309e5306391aa48ef0b10",
     "scripts/verify-strategic-handoff-package-scenarios": "sha256:23d8cc6c98af332a9a9593f542e19649542014d5269459061f9d114651ebfff4",
     "scripts/verify-strategic-handoff-tools-lock": "sha256:7b413ccc4ab4dc606113ec9e3f51ddac0d2045a761b18130483a70118c566d9b",
-    ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml": "sha256:f8dcf0772376de851a14f019757bcb3206e501a3ee0ff7d9414eea2ab2cc16c3",
+    ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml": "sha256:aaacf5fb348c83515f22d41ea0ecf8c8fb7c602c1eae0dd227d8fcc0612c64ec",
     ".template-spec/agents/yss-skill-registry.yaml": "sha256:86f2d20bc68ad668a5f89fb7a382c376cb6d489e2bbadb829ba94fa0b871c068"
   }
 }

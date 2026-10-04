@@ -164,6 +164,14 @@ request_triage:
     structural_checks_prove_model_accuracy: false
 
 execution_efficiency:
+  script_execution:
+    standard_operations: reuse-installed-public-entrypoints
+    entrypoint_invocation: declared-interpreter-or-executable-shebang
+    missing_capability: inspect-help-and-profile-before-adding-adapter
+    temporary_analysis: bounded-scope-outside-repository-no-new-authority
+    diagnostic_generation: synthetic-fixtures-no-real-approval-bodies
+    dependency_explanation: derive-from-current-source-and-distribution-closure
+    guidance_ref: .template-spec/process/script-execution.md
   context_query:
     strategy: combine-mode-stage-work-unit-and-required-includes
     read_scope: current-work-unit-and-triggered-impacts

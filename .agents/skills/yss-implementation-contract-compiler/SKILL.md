@@ -30,6 +30,8 @@ Slice v3 的当前执行结果须按 `references/yss-skill-execution-result.md` 
 
 完整草案使用 `scripts/slice-contract prepare` 或 `prepareSliceImplementationContract` 从已有 Ticket / checkpoint 和必要细化组装；执行前读取唯一 YAML，视图和检查报告不授予权限。
 
+来源摘要、闭包、阅读视图和校验直接复用 `slice-contract` / `contract` 入口；不再用临时脚本手工重算同一合同。工具或参数缺失按消费项目 `.template-spec/process/script-execution.md` 诊断，禁止用自写校验替代当前合同门禁。
+
 合同结构见 [slice-implementation-contract.md](references/slice-implementation-contract.md)，专项返回协议见 [yss-skill-execution-result.md](references/yss-skill-execution-result.md)。前端、后端和测试子任务必须由生命周期主控从批准的 Slice Contract 编译任务包；任务包 schema 为 `.template-spec/process/schemas/subagent-task-package.schema.json`，技能列表必须来自 `taskPackageDefaults`，不能由编译器或执行 Agent 另行手写。
 
 ## 硬规则

@@ -3,6 +3,15 @@ import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { pipeline } from 'node:stream/promises';
 
+export async function runToolingTestFilesSerial(files, execute, { signal } = {}) {
+  const rows = [];
+  for (const [index, file] of files.entries()) {
+    if (signal?.aborted) break;
+    rows.push(await execute([file], `serial-${index}`));
+  }
+  return rows;
+}
+
 // Each supervised process owns one process group, including its test subprocesses.
 export async function runToolingProcess(file, args, { cwd, env = process.env, logRoot, name, signal, timeoutMs = 300000 }) {
   fs.mkdirSync(logRoot, { recursive: true });

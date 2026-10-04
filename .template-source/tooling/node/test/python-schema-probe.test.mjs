@@ -14,3 +14,41 @@ test('schema diagnostics preserve results, distinguish mutations and never seria
  const report=probe.report();assert.equal(report.batches.length,4);assert.equal(report.groups[0].repeated_jobs,1);assert.equal(report.groups[1].repeated_jobs,0);assert.equal(report.cross_operation_repeated_jobs,1);assert.notEqual(report.batches[0].jobs[0].schema_sha256,report.batches[3].jobs[0].schema_sha256);assert.equal(JSON.stringify(report).includes('private-body-must-not-appear'),false);
  probe.close();assert.equal(cp.spawnSync,original);assert.equal(validateJsonSchemas(items)[0].valid,false);
 });
+
+test('代表 Schema 重放使用观察到的本地引用闭包并保留拒绝结果',t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'schema-probe-ref-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ const schema=path.join(root,'schema.json');
+ fs.writeFileSync(schema,JSON.stringify({$schema:'https://json-schema.org/draft/2020-12/schema',$id:'https://example.invalid/schema.json',$ref:'value.json'}));
+ fs.writeFileSync(path.join(root,'value.json'),JSON.stringify({$schema:'https://json-schema.org/draft/2020-12/schema',type:'integer',minimum:1}));
+ const probe=installSchemaProbe({root});t.after(()=>probe.close());
+ const actual=probe.withOperation({id:'local-ref',entrypoint:'validateJsonSchemas'},()=>validateJsonSchemas([{schemaPath:schema,value:0}]));
+ assert.equal(actual[0].valid,false);
+ assert.match(actual[0].error,/less than the minimum/);
+ fs.writeFileSync(path.join(root,'value.json'),JSON.stringify({$schema:'https://json-schema.org/draft/2020-12/schema',type:'integer',minimum:0}));
+ const changed=probe.withOperation({id:'changed-local-ref',entrypoint:'validateJsonSchemas'},()=>validateJsonSchemas([{schemaPath:schema,value:0}]));
+ assert.equal(changed[0].valid,true);
+ const measured=probe.measurePython(1);
+ assert.equal(measured.validation[0].status,'measured');
+ assert.equal(measured.validation[0].samples[0].valid,false);
+ assert.equal(measured.validation[1].samples[0].valid,true);
+ assert.ok(probe.report().batches[0].jobs[0].resources_sha256);
+ assert.notEqual(probe.report().batches[0].jobs[0].resources_sha256,probe.report().batches[1].jobs[0].resources_sha256);
+});
+
+test('未知引用重放失败并保留实际 Python 退出码和错误',t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'schema-probe-unknown-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ const schema=path.join(root,'schema.json');
+ fs.writeFileSync(schema,JSON.stringify({$schema:'https://json-schema.org/draft/2020-12/schema',$ref:'#/$defs/Unknown'}));
+ const probe=installSchemaProbe({root});t.after(()=>probe.close());
+ const actual=probe.withOperation({id:'unknown-ref',entrypoint:'validateJsonSchemas'},()=>validateJsonSchemas([{schemaPath:schema,value:1}]));
+ assert.equal(actual[0].valid,false);
+ assert.match(actual[0].error,/PointerToNowhere/);
+ assert.throws(()=>probe.measurePython(1),/Python diagnostic subprocess failed: exit_code=1,[\s\S]*PointerToNowhere/);
+});
+
+test('未登记的外部 Schema 引用继续被离线校验拒绝',t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'schema-probe-offline-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ const schema=path.join(root,'schema.json');fs.writeFileSync(schema,JSON.stringify({$ref:'https://example.invalid/remote.json'}));
+ const probe=installSchemaProbe({root});t.after(()=>probe.close());
+ assert.throws(()=>probe.withOperation({id:'external-ref',entrypoint:'validateJsonSchemas'},()=>validateJsonSchemas([{schemaPath:schema,value:1}])),/JSON_SCHEMA_OFFLINE/);
+});

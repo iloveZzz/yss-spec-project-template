@@ -146,6 +146,9 @@
         },
         {
           "source": ".template-spec/plan/templates/competitive-analysis-template.md"
+        },
+        {
+          "source": ".template-spec/process/script-execution.md"
         }
       ],
       "upstream": [
@@ -364,7 +367,7 @@
           "id": "yss-implementation-contract-compiler",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/backend/yss-implementation-contract-compiler.patch",
-          "source_tree_sha256": "3171f054f845ea265a4d8b5a3b0299026c59eae29aa62f3cda73d064a984045b"
+          "source_tree_sha256": "754a54f4fd58619fd58c0800cbf43b10dbb5ac93bb53fff5b48f94cf94fe107b"
         },
         {
           "id": "yss-openapi-governance",
@@ -478,6 +481,9 @@
         },
         {
           "source": ".template-spec/plan/templates/competitive-analysis-template.md"
+        },
+        {
+          "source": ".template-spec/process/script-execution.md"
         }
       ],
       "upstream": [],
@@ -653,7 +659,7 @@
           "id": "yss-implementation-contract-compiler",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/frontend/yss-implementation-contract-compiler.patch",
-          "source_tree_sha256": "3171f054f845ea265a4d8b5a3b0299026c59eae29aa62f3cda73d064a984045b"
+          "source_tree_sha256": "754a54f4fd58619fd58c0800cbf43b10dbb5ac93bb53fff5b48f94cf94fe107b"
         },
         {
           "id": "yss-openapi-governance",
@@ -776,6 +782,9 @@
         },
         {
           "source": ".template-spec/plan/templates/competitive-analysis-template.md"
+        },
+        {
+          "source": ".template-spec/process/script-execution.md"
         }
       ],
       "upstream": [],

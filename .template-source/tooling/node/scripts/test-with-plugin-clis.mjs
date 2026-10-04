@@ -4,7 +4,7 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { verificationInputDigest } from '../../../../scripts/lib/verification-report.mjs';
 import { publishTestFixture, runtimeIdentity } from './tooling-fixture.mjs';
-import { runToolingProcess } from './tooling-process.mjs';
+import { runToolingProcess, runToolingTestFilesSerial } from './tooling-process.mjs';
 
 const root = path.resolve(import.meta.dirname, '../../../..');
 const mode = process.env.YSS_TOOLING_MODE || 'legacy';
@@ -125,8 +125,9 @@ try {
       for await (const chunk of fs.createReadStream(file)) (file === row.stdoutFile ? process.stdout : process.stderr).write(chunk);
     }
     if (row.code !== 0) process.exitCode = row.code;
+    return row;
   }
-  if (mode === 'legacy') await executeTests(tests, 'all-tests');
+  if (mode === 'legacy') await runToolingTestFilesSerial(tests, executeTests, { signal: controller.signal });
   else {
     for (const [index, file] of tests.filter(file => !parallelFiles.has(testRef(file))).entries()) await executeTests([file], `serial-${index}`);
     const parallel = tests.filter(file => parallelFiles.has(testRef(file))); let next = 0;
@@ -135,13 +136,16 @@ try {
     }));
   }
   metrics.input_after_sha256 = verificationInputDigest(root); metrics.input_drift = metrics.input_after_sha256 !== digest;
+  const executedFiles = metrics.executions.flatMap(row => row.test_files);
+  metrics.unexecuted_files = metrics.selected_files.filter(file => !executedFiles.includes(file));
   if (controller.signal.aborted) throw new Error('tooling-interrupted');
   if (metrics.input_drift) throw new Error('tooling-input-drift');
-  if (metrics.executions.flatMap(row => row.test_files).length !== tests.length) throw new Error('tooling-tests-not-executed');
+  if (metrics.unexecuted_files.length || new Set(executedFiles).size !== tests.length || executedFiles.length !== tests.length) throw new Error('tooling-tests-not-executed');
   metrics.status = process.exitCode ? 'failed' : 'passed';
 } catch (error) {
   metrics.status = 'failed'; metrics.error = error.message; console.error(error.stack); process.exitCode = controller.signal.aborted ? 130 : 1;
 } finally {
+  metrics.unexecuted_files = (metrics.selected_files || []).filter(file => !metrics.executions.some(row => row.test_files?.includes(file)));
   const begin = performance.now();
   try { fs.rmSync(temporary, { recursive: true, force: true }); metrics.cleanup = { duration_ms: performance.now() - begin, code: 0 }; }
   catch (error) { metrics.cleanup = { duration_ms: performance.now() - begin, code: 1, error: error.message }; metrics.status = 'failed'; process.exitCode = 1; }
