@@ -104,16 +104,3 @@ test('runtime policy references preserve existing skill preflight and authority'
   assert.match(orchestration, /Matt/);
   assert.match(orchestration, /数据库索引或历史通过记录不能推进阶段/);
 });
-
-test('CI declares all supported platforms and the actual minimum-version refusal', async () => {
-  const { parseDocument } = await import('../scripts/vendor/yaml.mjs');
-  const document = parseDocument(read('.github/workflows/runtime-store.yml').toString());
-  assert.deepEqual(document.errors, []);
-  const workflow = document.toJS();
-  assert.deepEqual(workflow.jobs.compatibility.strategy.matrix.os, ['ubuntu-latest', 'macos-latest', 'windows-latest']);
-  assert.deepEqual(workflow.jobs.compatibility.strategy.matrix.node, ['22.13.0', '24', '26']);
-  const refusal = workflow.jobs['old-node-rejection'];
-  assert.deepEqual(refusal.strategy.matrix.os, workflow.jobs.compatibility.strategy.matrix.os);
-  assert.equal(refusal.steps.find(step => step.uses === 'actions/setup-node@v4').with['node-version'], '22.12.0');
-  assert.match(refusal.steps.find(step => step.name === 'Refuse before writes').run, /Node 22\.12 startup rejection/);
-});

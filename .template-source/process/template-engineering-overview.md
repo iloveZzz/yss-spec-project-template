@@ -64,7 +64,7 @@ YSS 模板工程是一套可版本化的研发治理系统。它用仓库身份�
 2. **更新权威资产**：修改对应的单一事实来源，避免在说明文档中复制规则。
 3. **生成投影**：涉及 skills 时同步 Agent roots 和 `skills-lock.json`；涉及生命周期结构时同步派生视图；涉及实例分发时构建固定 commit 的 CLI 快照。
 4. **Fresh verification**：实现内循环执行 `scripts/verify-template-fast` 并默认停在 `implementation-ready`；PR 执行 candidate 核验；正式发布前执行完整 `scripts/verify-template`，跨仓 CLI 还要执行固定 commit 的集成测试和打包校验。
-5. **审查与发布**：L1/L2/L3 日常使用维护者自检，不强制冻结候选或独立审查；分级只决定验证强度。正式发布前执行完整 `scripts/verify-template` 和固定版本生成器集成。GitHub CI 边界见 `github-workflows.md`。
+5. **审查与发布**：L1/L2/L3 日常使用维护者自检，不强制冻结候选或独立审查；分级只决定验证强度。正式发布前执行完整 `scripts/verify-template` 和固定版本生成器集成。本地验证及已移除的 GitHub workflow 边界见 `github-workflows.md`。
 6. **发布与回滚**：先发布或提交子仓，再更新父仓 gitlink；跨仓版本、验证命令、发布顺序和回滚点必须可以重建。
 
 完成标准：当前强度要求的自检 / 审查证据通过，跨仓固定引用闭合，正式发布前完整 `scripts/verify-template` 通过，并且不存在未处理的 `violation`、`drift` 或 `new_impacts`。

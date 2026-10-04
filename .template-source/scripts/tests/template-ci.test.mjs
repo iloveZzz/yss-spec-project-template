@@ -5,7 +5,6 @@ import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, realpathSy
 import { pathToFileURL } from 'node:url';
 import os from 'node:os';
 import path from 'node:path';
-import { parseDocument } from '../../../scripts/vendor/yaml.mjs';
 import { assertReleaseCheckout, verifyTemplateRelease } from '../lib/template-release.mjs';
 import { RuntimeStore } from '../../cli-core/runtime-store.mjs';
 
@@ -152,33 +151,4 @@ test('失败保留报告和退出码，不执行后续打包', t => {
   assert.equal(report.status, 'failed');
   assert.equal(report.commands.at(-1).exit_code, 7);
   assert.ok(!report.commands.some(row => row.command === 'npm'));
-});
-
-test('工作流保持读权限、失败汇总、精确版本与独立兼容职责', () => {
-  const load = name => {
-    const doc = parseDocument(readFileSync(path.join(root, '.github/workflows', name), 'utf8'), { uniqueKeys: true });
-    assert.equal(doc.errors.length, 0);
-    return doc.toJS();
-  };
-  const ci = load('template-ci.yml'), release = load('template-release-verify.yml'), compatibility = load('template-compatibility.yml');
-  for (const workflow of [ci, release, compatibility]) assert.deepEqual(workflow.permissions, { contents: 'read' });
-  assert.ok(Object.hasOwn(ci.on, 'pull_request'));
-  assert.ok(!ci.on.pull_request?.paths);
-  assert.equal(ci.jobs.required.if, 'always()');
-  assert.deepEqual(ci.jobs.required.needs, ['plan', 'verify', 'compatibility']);
-  assert.deepEqual(Object.keys(release.on), ['workflow_dispatch']);
-  assert.equal(release.jobs.compatibility.with.commit, '${{ needs.resolve.outputs.commit }}');
-  assert.equal(release.jobs.verify.steps[0].with.ref, '${{ needs.resolve.outputs.commit }}');
-  assert.equal(release.jobs.verify.steps[0].with.submodules, undefined);
-  assert.equal(release.jobs.verify.steps[1].with.submodules, 'true');
-  assert.equal(ci.jobs.verify.steps[0].with.submodules, undefined);
-  assert.equal(ci.jobs.verify.steps[1].with.submodules, 'true');
-  assert.equal(release.concurrency['cancel-in-progress'], false);
-  const setup = readFileSync(path.join(root, '.github/actions/setup-template/action.yml'), 'utf8');
-  assert.match(setup, /submodules\/create-yss-spec/);
-  assert.doesNotMatch(setup, /submodules\/yss-harness-dev-agent/);
-  const matrix = compatibility.jobs.compatibility.strategy.matrix.include;
-  assert.equal(matrix.filter(row => row.observational).length, 1);
-  assert.equal(matrix.find(row => row.observational).node, '26');
-  assert.ok(!JSON.stringify(ci.jobs.verify).includes('build:vendor'));
 });
