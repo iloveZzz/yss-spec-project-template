@@ -12,6 +12,71 @@ import { decisionDigest } from './lib/user-decision.mjs';
 import { buildDecisionFixture } from './fixtures/user-decision/build-fixture.mjs';
 import { loadDigitalHumanRoles, countersignRuleForGate } from './lib/digital-human-roles.mjs';
 
+// These replies are synthetic fixtures, never evidence for a real Plan approval.
+function verifyClarificationEntryBoundaries(temp) {
+  const deferred = () => ({ id: 'q-detail', critical: false, runnable_blocker: false, status: 'deferred', noncritical_reason: '不影响目标、MVP 或关键规则', owner: 'test-only.requirements-owner', resolution_point: 'Spec 评审前', downstream_recipient: 'test-only.spec-owner', evidence_refs: ['plan.md'] });
+  const cases = [
+    ['非关键 open 仍阻断', f => f.review.open_items.push({ id: 'q-open', critical: false, runnable_blocker: false, status: 'open', evidence_refs: ['plan.md'] }), /未解决/],
+    ['grill_exit 仍 pending', f => f.review.checks.grill_exit.status = 'pending', /检查未通过: grill_exit/],
+    ['resolved 缺证据', f => f.review.open_items.push({ id: 'q-resolved', critical: true, runnable_blocker: false, status: 'resolved', evidence_refs: [] }), /缺少当前依据/],
+    ['resolved 引用未绑定证据', f => { f.write('unbound-evidence.md', '模拟澄清证据'); f.review.open_items.push({ id: 'q-resolved', critical: true, runnable_blocker: false, status: 'resolved', evidence_refs: ['unbound-evidence.md'] }); }, /缺少当前依据/],
+    ['resolved 依据摘要漂移', f => { f.write('resolution.md', '已确认旧结论'); f.review.basis.push({ ref: 'resolution.md', digest: decisionDigest(readFileSync(path.join(f.root, 'resolution.md'))) }); f.review.open_items.push({ id: 'q-resolved', critical: true, runnable_blocker: false, status: 'resolved', evidence_refs: ['resolution.md'] }); f.write('resolution.md', '用户纠正后的新结论'); }, /依据缺失、重复或已变更/],
+    ['延期缺当前证据', f => f.review.open_items.push({ ...deferred(), evidence_refs: [] }), /缺少当前依据/],
+    ['纠正后重新打开关键问题', f => { f.review.open_items.push({ id: 'q-corrected', critical: true, runnable_blocker: false, status: 'resolved', evidence_refs: ['plan.md'] }); f.review.open_items[0].status = 'open'; }, /未解决/],
+    ['完整关键延期仍阻断', f => f.review.open_items.push({ ...deferred(), critical: true }), /未解决/],
+    ['完整执行阻塞延期仍阻断', f => f.review.open_items.push({ ...deferred(), runnable_blocker: true }), /未解决/],
+  ];
+  for (const field of ['noncritical_reason', 'owner', 'resolution_point', 'downstream_recipient']) {
+    for (const absent of [true, false]) cases.push([`延期 ${field} ${absent ? '缺失' : '空白'}`, f => { const item = deferred(); if (absent) delete item[field]; else item[field] = '  '; f.review.open_items.push(item); }, new RegExp(`延期项缺少 ${field}`)]);
+  }
+  for (const [name, mutate, expected] of cases) {
+    const f = buildPlanFixture(path.join(temp, `clarification-${name}`));
+    mutate(f); f.reapprove();
+    assert.throws(() => assertPlanSpecEntry(f.state, { root: f.root }), expected, name);
+    process.stdout.write(`PASS 澄清入口拒绝: ${name}\n`);
+  }
+
+  const f = buildPlanFixture(path.join(temp, 'combined-final-confirmation'));
+  const summary = '共同理解：目标为小范围修订；MVP 为当前功能；非目标为新增业务边界；关键规则保持现状；验收例子为既有流程可执行；关键未决项已解决；非关键细节按责任人与解决时点延期；剩余不确定性明确。';
+  f.write('clarification.md', `${summary}\n解决证据：原始决策回复和当前 Plan。\n`);
+  const summaryAsset = { ref: 'clarification.md', digest: decisionDigest(readFileSync(path.join(f.root, 'clarification.md'))) };
+  f.review.basis.push(summaryAsset);
+  f.review.checks.grill_exit.evidence_refs = ['clarification.md'];
+  f.review.open_items = [{ id: 'q-rule', critical: true, runnable_blocker: false, status: 'resolved', evidence_refs: ['clarification.md'] }, deferred()];
+  const item = f.approval.record.request.items[0];
+  item.title = '确认共同理解与完整 Plan 审阅包';
+  item.changes = summary;
+  item.basis = [{ ...summaryAsset, ref: path.join(f.root, summaryAsset.ref), version: 'v1' }];
+  item.risks = ['非关键细节须在 Spec 评审前解决'];
+  item.recommendation = '确认上述共同理解并批准当前完整 Plan 审阅包';
+  item.next_actions = ['入口检查通过后进入 Spec'];
+  f.reapprove();
+  const reviewBytes = readFileSync(f.state.plan_review_ref);
+  const digestBeforeReply = decisionDigest(reviewBytes);
+  f.approval.record.responses = [];
+  f.approval.save();
+  assert.equal(f.review.checks.grill_exit.status, 'passed');
+  assert.throws(() => assertPlanSpecEntry(f.state, { root: f.root }), /user-decision-response-required/, '材料就绪不能替代最终回复');
+  f.approval.respond({ text: '确认上述共同理解，并批准本次完整 Plan 审阅包及已列明延期项，入口检查通过后进入 Spec。' });
+  f.approval.save();
+  assert.equal(f.approval.record.responses.length, 1, '共同理解和 Plan 批准合并一条原始回复');
+  assert.equal(assertPlanSpecEntry(f.state, { root: f.root }).result, 'allowed');
+  assert.deepEqual(readFileSync(f.state.plan_review_ref), reviewBytes, '回复单独保存，完整审阅包不回写');
+  assert.equal(f.approval.record.request.items[0].subject.digest, digestBeforeReply, '回复绑定当前固定审阅包');
+  assert.equal(assertPlanSpecEntry(f.state, { root: f.root }).result, 'allowed', '同一批准可复验，不要求重问');
+  process.stdout.write('PASS 合并最终确认、非关键延期、固定摘要和批准复用\n');
+
+  const completePresentation = JSON.parse(readFileSync(f.approval.record.request.presented_source.ref, 'utf8')).messages[0].text;
+  f.approval.record.request.presented_source = f.approval.capture('presentation', 'agent.orchestrator', 'digital-human', '2026-09-05T01:02:00Z', completePresentation.replace(summary, '共同理解未展示'));
+  f.approval.save();
+  assert.throws(() => assertPlanSpecEntry(f.state, { root: f.root }), /user-decision-presentation-mismatch/, '未完整展示共同理解不能合并批准');
+  f.approval.present(); f.approval.save();
+  assert.equal(assertPlanSpecEntry(f.state, { root: f.root }).result, 'allowed');
+  f.review.internal_checks['check.domain-strategy-approved'].reason += ' 用户纠正了当前理解';
+  f.save();
+  assert.throws(() => assertPlanSpecEntry(f.state, { root: f.root }), /user-decision-stale/, '旧包批准不能绑定纠正后的包');
+}
+
 for (const unit of ['plan-opportunity', 'plan-requirements', 'domain-strategy-design', 'stage-decision']) {
   for (const state of [undefined, {}, { gates: {}, user_decisions: [] }]) {
     assert.equal(validateNextRoute(`work-unit.${unit}`, 'work-unit.spec-synthesis', state).result, 'blocked', `${unit}: missing Plan review must block`);
@@ -28,6 +93,7 @@ assert.ok(specQuery.execution.plan_checks.every(check => check.status === 'pendi
 assert.ok(specQuery.lifecycle.gates.some(gate => gate.stage === 'stage.plan'));
 const temp = mkdtempSync(path.join(tmpdir(), 'yss-plan-entry-'));
 try {
+  verifyClarificationEntryBoundaries(temp);
   const mutations = [
     ['缺检查项', f => delete f.review.checks.goals],
     ['默认 pending', f => f.review.checks.goals.status = 'pending'],

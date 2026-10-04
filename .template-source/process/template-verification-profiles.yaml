@@ -309,6 +309,8 @@ syntax_files:
   - tests/drift-report.test.mjs
   - tests/maintenance-iteration.test.mjs
 routing:
+  - patterns: [ tests/plan-clarification-replay.test.mjs, .template-source/scripts/replay-plan-clarification, .template-source/scripts/plan-clarification-scenarios.json ]
+    groups: [ lifecycle ]
   - patterns: [ scripts/runtime-store, scripts/lib/runtime-store.mjs, .template-source/scripts/measure-runtime-store.mjs, .template-source/scripts/verify-runtime-windows.mjs, tests/runtime-store*.test.mjs, .template-spec/process/runtime-storage.md, .template-source/process/runtime-storage.md ]
     groups: [ runtime-storage ]
   - patterns: [ scripts/project-ci*, scripts/lib/project-*.mjs, scripts/lib/governance-io.mjs, scripts/lib/checkpoint-boundary.mjs, tests/project-ci.test.mjs, .template-spec/process/project-ci.md, .template-spec/process/checkpoint-boundary.yaml ]
@@ -749,6 +751,8 @@ groups:
         id: check.read-only-intake
   lifecycle:
     commands:
+      - run: node --test tests/plan-clarification-replay.test.mjs
+        when: template-source
       - run: node --test tests/checkpoint-boundary.test.mjs tests/flow-verification-routing.test.mjs tests/project-ci.test.mjs
       - run: node --test scripts/fixtures/reading-views/*.test.mjs
         when: template-source

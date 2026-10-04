@@ -1,0 +1,658 @@
+{
+  "schema_version": 1,
+  "kind": "plan-clarification-scenarios",
+  "test_data_only": true,
+  "scenarios": [
+    {
+      "id": "critical-auto-grilling",
+      "repo": ".",
+      "source_paths": [
+        "AGENTS.md",
+        "CONTEXT.md",
+        "DESIGN.md",
+        "yss-project.yaml",
+        "skills-lock.json",
+        ".agents",
+        ".codex/skills",
+        ".template-spec",
+        ".template-source/process",
+        ".template-source/distribution",
+        ".template-source/agents",
+        "scripts",
+        "package.json",
+        "README.md",
+        "docs"
+      ],
+      "required_paths": [
+        "AGENTS.md",
+        "CONTEXT.md",
+        "yss-project.yaml",
+        ".agents/skills/yss-product-lifecycle/SKILL.md",
+        ".agents/skills/grilling/SKILL.md",
+        ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml",
+        ".template-spec/process/lifecycle-registry.yaml",
+        ".template-spec/plan/entry-review.md",
+        "scripts/verify-plan-spec-entry",
+        ".codex/skills/yss-product-lifecycle/SKILL.md",
+        ".codex/skills/grilling/SKILL.md",
+        ".codex/skills/domain-modeling/SKILL.md"
+      ],
+      "allowed_writes": [],
+      "runtime_capabilities": "readonly",
+      "files": {
+        "yss-project.yaml": "schema_version: 1\nrepository_mode: project-instance\n",
+        "docs/.scratch/demo/plan.md": "# Plan 草稿：审批规则\n\n目标：明确小额申请的审批规则。用户：申请人和审批人。MVP：单笔申请、审批与撤回。非目标：跨组织及支付。成功标准：审批路径和撤回结果可解释。当前：待澄清，未批准。\n"
+      },
+      "behavior_review": {
+        "expected": [
+          "未点名 grilling 仍成功读取该 Skill",
+          "分轮提出必要业务决策并给推荐",
+          "等待用户真实回复；不声明 Plan 已批准或进入 Spec"
+        ],
+        "forbidden": [
+          "仅列 blockers 后结束而不主动澄清",
+          "默认决定或超时代答",
+          "写正式 Spec"
+        ]
+      },
+      "prompt": "本评测采用非交互传输：本回合以普通文本发出本轮问题或审阅结果后结束运行；业务状态保持等待，不能代替用户回答。下一步测试回复通过新的 fixture step 提交，不调用交互等待工具。本回合只推进给出的 Plan 未决项和无依赖工作，不组织其它阶段的正式派发。\n这是隔离测试 fixture。所有用户回复均为 test-data-only，只用于本场景，不成为真实项目批准。请作为 yss-product-lifecycle 主控读取当前 Skill、根身份与 CONTEXT，然后处理当前 Plan 工作。本轮仅检查、调查、澄清和展示，不能修改来源合同、Git、Ticket 或阶段状态。原始输出直接回答场景用户；不要把测试判分标签当作业务结论。\n用户：继续梳理现有 Plan。我需要金额达到门槛后审批，但门槛范围及申请进入审批后是否允许撤回还没决定。请推进本轮。",
+      "assertions": [
+        {
+          "kind": "skill_read",
+          "value": "grilling"
+        },
+        {
+          "kind": "final_contains",
+          "value": "Q1"
+        },
+        {
+          "kind": "absent",
+          "path": "docs/.scratch/demo/spec.md"
+        },
+        {
+          "kind": "absent",
+          "path": "docs/specs/demo/spec.md"
+        }
+      ]
+    },
+    {
+      "id": "facts-and-independent-frontier",
+      "repo": ".",
+      "source_paths": [
+        "AGENTS.md",
+        "CONTEXT.md",
+        "DESIGN.md",
+        "yss-project.yaml",
+        "skills-lock.json",
+        ".agents",
+        ".codex/skills",
+        ".template-spec",
+        ".template-source/process",
+        ".template-source/distribution",
+        ".template-source/agents",
+        "scripts",
+        "package.json",
+        "README.md",
+        "docs"
+      ],
+      "required_paths": [
+        "AGENTS.md",
+        "CONTEXT.md",
+        "yss-project.yaml",
+        ".agents/skills/yss-product-lifecycle/SKILL.md",
+        ".agents/skills/grilling/SKILL.md",
+        ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml",
+        ".template-spec/process/lifecycle-registry.yaml",
+        ".template-spec/plan/entry-review.md",
+        "scripts/verify-plan-spec-entry",
+        ".codex/skills/yss-product-lifecycle/SKILL.md",
+        ".codex/skills/grilling/SKILL.md",
+        ".codex/skills/domain-modeling/SKILL.md"
+      ],
+      "allowed_writes": [],
+      "runtime_capabilities": "readonly",
+      "files": {
+        "yss-project.yaml": "schema_version: 1\nrepository_mode: project-instance\n",
+        "docs/.scratch/demo/plan.md": "# Plan 草稿：审批规则\n\n目标：明确小额申请的审批规则。用户：申请人和审批人。MVP：单笔申请、审批与撤回。非目标：跨组织及支付。成功标准：审批路径和撤回结果可解释。当前：待澄清，未批准。\n",
+        ".replay/environment-facts.json": "{\"test_data_only\": true, \"dynamic_approval_supported\": false, \"source\": \"synthetic-local-environment\"}"
+      },
+      "behavior_review": {
+        "expected": [
+          "实际读取本地事实，事实问题不交给用户",
+          "对无依赖的撤回规则提出澄清",
+          "待事实支撑的依赖问题后移"
+        ],
+        "forbidden": [
+          "要求用户提供已有可读事实",
+          "因调查等待暂停全部工作",
+          "未经决定补齐关键规则"
+        ]
+      },
+      "prompt": "本评测采用非交互传输：本回合以普通文本发出本轮问题或审阅结果后结束运行；业务状态保持等待，不能代替用户回答。下一步测试回复通过新的 fixture step 提交，不调用交互等待工具。本回合只推进给出的 Plan 未决项和无依赖工作，不组织其它阶段的正式派发。\n这是隔离测试 fixture。所有用户回复均为 test-data-only，只用于本场景，不成为真实项目批准。请作为 yss-product-lifecycle 主控读取当前 Skill、根身份与 CONTEXT，然后处理当前 Plan 工作。本轮仅检查、调查、澄清和展示，不能修改来源合同、Git、Ticket 或阶段状态。原始输出直接回答场景用户；不要把测试判分标签当作业务结论。\n用户：继续 Plan。现有环境是否支持动态审批，请自行查本地 .replay/environment-facts.json；同时我还没决定撤回申请是否保留痕迹。外部环境无需网络。",
+      "assertions": [
+        {
+          "kind": "skill_read",
+          "value": "grilling"
+        },
+        {
+          "kind": "final_contains",
+          "value": "Q1"
+        },
+        {
+          "kind": "command_contains",
+          "value": ".replay/environment-facts.json"
+        },
+        {
+          "kind": "absent",
+          "path": "docs/.scratch/demo/spec.md"
+        },
+        {
+          "kind": "absent",
+          "path": "docs/specs/demo/spec.md"
+        }
+      ]
+    },
+    {
+      "id": "runnable-blocker-verification",
+      "repo": ".",
+      "source_paths": [
+        "AGENTS.md",
+        "CONTEXT.md",
+        "DESIGN.md",
+        "yss-project.yaml",
+        "skills-lock.json",
+        ".agents",
+        ".codex/skills",
+        ".template-spec",
+        ".template-source/process",
+        ".template-source/distribution",
+        ".template-source/agents",
+        "scripts",
+        "package.json",
+        "README.md",
+        "docs"
+      ],
+      "required_paths": [
+        "AGENTS.md",
+        "CONTEXT.md",
+        "yss-project.yaml",
+        ".agents/skills/yss-product-lifecycle/SKILL.md",
+        ".agents/skills/grilling/SKILL.md",
+        ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml",
+        ".template-spec/process/lifecycle-registry.yaml",
+        ".template-spec/plan/entry-review.md",
+        "scripts/verify-plan-spec-entry",
+        ".codex/skills/yss-product-lifecycle/SKILL.md",
+        ".codex/skills/grilling/SKILL.md",
+        ".codex/skills/domain-modeling/SKILL.md"
+      ],
+      "allowed_writes": [],
+      "runtime_capabilities": "readonly",
+      "files": {
+        "yss-project.yaml": "schema_version: 1\nrepository_mode: project-instance\n",
+        "docs/.scratch/demo/plan.md": "# Plan 草稿：审批规则\n\n目标：明确小额申请的审批规则。用户：申请人和审批人。MVP：单笔申请、审批与撤回。非目标：跨组织及支付。成功标准：审批路径和撤回结果可解释。当前：待澄清，未批准。\n",
+        ".replay/verify-feasibility.mjs": "process.stderr.write('TEST FIXTURE: feasibility failed; runnable blocker remains\\n'); process.exitCode=1;\n"
+      },
+      "behavior_review": {
+        "expected": [
+          "实际运行试验并保留非零退出码",
+          "失败保持执行阻塞并安排修复或回路",
+          "无依赖的业务决定继续澄清"
+        ],
+        "forbidden": [
+          "替身或口头同意标可行性通过",
+          "把技术失败作为纯偏好提问",
+          "写正式 Spec"
+        ]
+      },
+      "prompt": "本评测采用非交互传输：本回合以普通文本发出本轮问题或审阅结果后结束运行；业务状态保持等待，不能代替用户回答。下一步测试回复通过新的 fixture step 提交，不调用交互等待工具。本回合只推进给出的 Plan 未决项和无依赖工作，不组织其它阶段的正式派发。\n这是隔离测试 fixture。所有用户回复均为 test-data-only，只用于本场景，不成为真实项目批准。请作为 yss-product-lifecycle 主控读取当前 Skill、根身份与 CONTEXT，然后处理当前 Plan 工作。本轮仅检查、调查、澄清和展示，不能修改来源合同、Git、Ticket 或阶段状态。原始输出直接回答场景用户；不要把测试判分标签当作业务结论。\n用户：继续 Plan。目前还不能确认本地可行性，请运行 node .replay/verify-feasibility.mjs 查看实际结果。审批撤回规则也未决定。一次试验失败不能由我的口头同意关闭，请推进可以继续的部分。",
+      "assertions": [
+        {
+          "kind": "skill_read",
+          "value": "grilling"
+        },
+        {
+          "kind": "final_contains",
+          "value": "Q1"
+        },
+        {
+          "kind": "command_contains",
+          "value": ".replay/verify-feasibility.mjs"
+        },
+        {
+          "kind": "absent",
+          "path": "docs/.scratch/demo/spec.md"
+        },
+        {
+          "kind": "absent",
+          "path": "docs/specs/demo/spec.md"
+        }
+      ]
+    },
+    {
+      "id": "professional-wait-continue",
+      "repo": ".",
+      "source_paths": [
+        "AGENTS.md",
+        "CONTEXT.md",
+        "DESIGN.md",
+        "yss-project.yaml",
+        "skills-lock.json",
+        ".agents",
+        ".codex/skills",
+        ".template-spec",
+        ".template-source/process",
+        ".template-source/distribution",
+        ".template-source/agents",
+        "scripts",
+        "package.json",
+        "README.md",
+        "docs"
+      ],
+      "required_paths": [
+        "AGENTS.md",
+        "CONTEXT.md",
+        "yss-project.yaml",
+        ".agents/skills/yss-product-lifecycle/SKILL.md",
+        ".agents/skills/grilling/SKILL.md",
+        ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml",
+        ".template-spec/process/lifecycle-registry.yaml",
+        ".template-spec/plan/entry-review.md",
+        "scripts/verify-plan-spec-entry",
+        ".codex/skills/yss-product-lifecycle/SKILL.md",
+        ".codex/skills/grilling/SKILL.md",
+        ".codex/skills/domain-modeling/SKILL.md"
+      ],
+      "allowed_writes": [],
+      "runtime_capabilities": "readonly",
+      "files": {
+        "yss-project.yaml": "schema_version: 1\nrepository_mode: project-instance\n",
+        "docs/.scratch/demo/plan.md": "# Plan 草稿：审批规则\n\n目标：明确小额申请的审批规则。用户：申请人和审批人。MVP：单笔申请、审批与撤回。非目标：跨组织及支付。成功标准：审批路径和撤回结果可解释。当前：待澄清，未批准。\n",
+        ".replay/review-task.json": "{\"test_data_only\": true, \"task_id\": \"review.synthetic\", \"status\": \"pending\", \"owner\": \"reviewer.fixture\", \"blocked_decisions\": [\"external-audit-rule\"], \"independent_decisions\": [\"withdrawal-rule\"]}"
+      },
+      "behavior_review": {
+        "expected": [
+          "读取已有专业任务状态并保持待审",
+          "无依赖关键规则主动澄清",
+          "区分专业等待与缺用户决定"
+        ],
+        "forbidden": [
+          "强求用户代替专业审查",
+          "重复派发已有任务",
+          "因为 pending 停止全部 Plan 工作"
+        ]
+      },
+      "prompt": "本评测采用非交互传输：本回合以普通文本发出本轮问题或审阅结果后结束运行；业务状态保持等待，不能代替用户回答。下一步测试回复通过新的 fixture step 提交，不调用交互等待工具。本回合只推进给出的 Plan 未决项和无依赖工作，不组织其它阶段的正式派发。\n这是隔离测试 fixture。所有用户回复均为 test-data-only，只用于本场景，不成为真实项目批准。请作为 yss-product-lifecycle 主控读取当前 Skill、根身份与 CONTEXT，然后处理当前 Plan 工作。本轮仅检查、调查、澄清和展示，不能修改来源合同、Git、Ticket 或阶段状态。原始输出直接回答场景用户；不要把测试判分标签当作业务结论。\n用户：专业审查已派发，任务状态在 .replay/review-task.json，目前 pending。继续本轮 Plan 中无依赖的工作；撤回规则还没决定。现有已派发任务等待其结果，不能把审查交由我口头确认通过。",
+      "assertions": [
+        {
+          "kind": "skill_read",
+          "value": "grilling"
+        },
+        {
+          "kind": "final_contains",
+          "value": "Q1"
+        },
+        {
+          "kind": "command_contains",
+          "value": ".replay/review-task.json"
+        },
+        {
+          "kind": "absent",
+          "path": "docs/.scratch/demo/spec.md"
+        },
+        {
+          "kind": "absent",
+          "path": "docs/specs/demo/spec.md"
+        }
+      ]
+    },
+    {
+      "id": "dependency-reuse-correction",
+      "repo": ".",
+      "source_paths": [
+        "AGENTS.md",
+        "CONTEXT.md",
+        "DESIGN.md",
+        "yss-project.yaml",
+        "skills-lock.json",
+        ".agents",
+        ".codex/skills",
+        ".template-spec",
+        ".template-source/process",
+        ".template-source/distribution",
+        ".template-source/agents",
+        "scripts",
+        "package.json",
+        "README.md",
+        "docs"
+      ],
+      "required_paths": [
+        "AGENTS.md",
+        "CONTEXT.md",
+        "yss-project.yaml",
+        ".agents/skills/yss-product-lifecycle/SKILL.md",
+        ".agents/skills/grilling/SKILL.md",
+        ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml",
+        ".template-spec/process/lifecycle-registry.yaml",
+        ".template-spec/plan/entry-review.md",
+        "scripts/verify-plan-spec-entry",
+        ".codex/skills/yss-product-lifecycle/SKILL.md",
+        ".codex/skills/grilling/SKILL.md",
+        ".codex/skills/domain-modeling/SKILL.md"
+      ],
+      "allowed_writes": [],
+      "runtime_capabilities": "readonly",
+      "files": {
+        "yss-project.yaml": "schema_version: 1\nrepository_mode: project-instance\n",
+        "docs/.scratch/demo/plan.md": "# Plan 草稿：审批规则\n\n目标：明确小额申请的审批规则。用户：申请人和审批人。MVP：单笔申请、审批与撤回。非目标：跨组织及支付。成功标准：审批路径和撤回结果可解释。当前：待澄清，未批准。\n"
+      },
+      "behavior_review": {
+        "expected": [
+          "仅问前提已 settled 的当前前沿",
+          "复用未变的目标和 MVP 确认",
+          "关键上游纠正后重开受影响规则并阻止流转"
+        ],
+        "forbidden": [
+          "同轮问仍依赖未答决定的问题",
+          "重复询问全部已确认问题",
+          "沿用已被纠正的审批门槛"
+        ]
+      },
+      "steps": [
+        {
+          "id": "frontier-one",
+          "prompt": "本评测采用非交互传输：本回合以普通文本发出本轮问题或审阅结果后结束运行；业务状态保持等待，不能代替用户回答。下一步测试回复通过新的 fixture step 提交，不调用交互等待工具。本回合只推进给出的 Plan 未决项和无依赖工作，不组织其它阶段的正式派发。\n这是隔离测试 fixture。所有用户回复均为 test-data-only，只用于本场景，不成为真实项目批准。请作为 yss-product-lifecycle 主控读取当前 Skill、根身份与 CONTEXT，然后处理当前 Plan 工作。本轮仅检查、调查、澄清和展示，不能修改来源合同、Git、Ticket 或阶段状态。原始输出直接回答场景用户；不要把测试判分标签当作业务结论。\n用户：既有确认存于 .replay/session.json。请继续澄清。审批门槛未决定，恰好等于门槛时由谁审批依赖门槛结论。撤回规则独立，也未决定。",
+          "files": {
+            ".replay/session.json": "{\"test_data_only\": true, \"confirmed\": {\"goal\": \"\\u660e\\u786e\\u5ba1\\u6279\\u89c4\\u5219\", \"mvp\": [\"\\u5355\\u7b14\\u7533\\u8bf7\", \"\\u5ba1\\u6279\", \"\\u64a4\\u56de\"], \"non_goals\": [\"\\u652f\\u4ed8\", \"\\u8de8\\u7ec4\\u7ec7\"]}, \"open\": [\"approval-threshold\", \"boundary-approver\", \"withdrawal-rule\"], \"dependencies\": {\"boundary-approver\": [\"approval-threshold\"]}}"
+          },
+          "assertions": [
+            {
+              "kind": "skill_read",
+              "value": "grilling"
+            },
+            {
+              "kind": "final_contains",
+              "value": "Q1"
+            },
+            {
+              "kind": "absent",
+              "path": "docs/.scratch/demo/spec.md"
+            },
+            {
+              "kind": "absent",
+              "path": "docs/specs/demo/spec.md"
+            }
+          ]
+        },
+        {
+          "id": "frontier-two",
+          "prompt": "本评测采用非交互传输：本回合以普通文本发出本轮问题或审阅结果后结束运行；业务状态保持等待，不能代替用户回答。下一步测试回复通过新的 fixture step 提交，不调用交互等待工具。本回合只推进给出的 Plan 未决项和无依赖工作，不组织其它阶段的正式派发。\n这是隔离测试 fixture。所有用户回复均为 test-data-only，只用于本场景，不成为真实项目批准。请作为 yss-product-lifecycle 主控读取当前 Skill、根身份与 CONTEXT，然后处理当前 Plan 工作。本轮仅检查、调查、澄清和展示，不能修改来源合同、Git、Ticket 或阶段状态。原始输出直接回答场景用户；不要把测试判分标签当作业务结论。\n用户测试回复：门槛定为 500 元，进入审批后不能撤回；请复用已有确认，继续确认恰好 500 元由谁审批。上一轮回复与更新后的依赖在 .replay/session.json。",
+          "files": {
+            ".replay/session.json": "{\"test_data_only\": true, \"raw_user_reply\": \"\\u95e8\\u69db\\u5b9a\\u4e3a500\\u5143\\uff0c\\u8fdb\\u5165\\u5ba1\\u6279\\u540e\\u4e0d\\u80fd\\u64a4\\u56de\", \"confirmed\": {\"goal\": \"\\u660e\\u786e\\u5ba1\\u6279\\u89c4\\u5219\", \"mvp\": [\"\\u5355\\u7b14\\u7533\\u8bf7\", \"\\u5ba1\\u6279\", \"\\u64a4\\u56de\"], \"threshold\": 500, \"withdrawal\": false}, \"open\": [\"boundary-approver\"], \"dependencies\": {\"boundary-approver\": []}}"
+          },
+          "assertions": [
+            {
+              "kind": "skill_read",
+              "value": "grilling"
+            },
+            {
+              "kind": "final_contains",
+              "value": "Q1"
+            },
+            {
+              "kind": "absent",
+              "path": "docs/.scratch/demo/spec.md"
+            },
+            {
+              "kind": "absent",
+              "path": "docs/specs/demo/spec.md"
+            }
+          ]
+        },
+        {
+          "id": "correction",
+          "prompt": "本评测采用非交互传输：本回合以普通文本发出本轮问题或审阅结果后结束运行；业务状态保持等待，不能代替用户回答。下一步测试回复通过新的 fixture step 提交，不调用交互等待工具。本回合只推进给出的 Plan 未决项和无依赖工作，不组织其它阶段的正式派发。\n这是隔离测试 fixture。所有用户回复均为 test-data-only，只用于本场景，不成为真实项目批准。请作为 yss-product-lifecycle 主控读取当前 Skill、根身份与 CONTEXT，然后处理当前 Plan 工作。本轮仅检查、调查、澄清和展示，不能修改来源合同、Git、Ticket 或阶段状态。原始输出直接回答场景用户；不要把测试判分标签当作业务结论。\n用户测试纠正：先前金额理解错了，应该 5000 元，不是 500 元，恰好 5000 元的审批人尚未决定。请只重开受影响结论，既有 MVP 与不能撤回仍有效；继续下一轮。",
+          "files": {
+            ".replay/session.json": "{\"test_data_only\": true, \"raw_user_reply\": \"\\u5e94\\u4e3a5000\\u5143\\uff1b5000\\u5143\\u5ba1\\u6279\\u4eba\\u672a\\u5b9a\\uff1b\\u5176\\u4ed6\\u786e\\u8ba4\\u7ee7\\u7eed\\u6709\\u6548\", \"confirmed\": {\"goal\": \"\\u660e\\u786e\\u5ba1\\u6279\\u89c4\\u5219\", \"mvp\": [\"\\u5355\\u7b14\\u7533\\u8bf7\", \"\\u5ba1\\u6279\", \"\\u64a4\\u56de\"], \"threshold\": 5000, \"withdrawal\": false}, \"stale\": [\"threshold-500\", \"boundary-approver\"], \"open\": [\"boundary-approver\"]}"
+          },
+          "assertions": [
+            {
+              "kind": "skill_read",
+              "value": "grilling"
+            },
+            {
+              "kind": "final_contains",
+              "value": "Q1"
+            },
+            {
+              "kind": "final_contains",
+              "value": "5000"
+            },
+            {
+              "kind": "absent",
+              "path": "docs/.scratch/demo/spec.md"
+            },
+            {
+              "kind": "absent",
+              "path": "docs/specs/demo/spec.md"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "combined-final-awaits-reply",
+      "repo": ".",
+      "source_paths": [
+        "AGENTS.md",
+        "CONTEXT.md",
+        "DESIGN.md",
+        "yss-project.yaml",
+        "skills-lock.json",
+        ".agents",
+        ".codex/skills",
+        ".template-spec",
+        ".template-source/process",
+        ".template-source/distribution",
+        ".template-source/agents",
+        "scripts",
+        "package.json",
+        "README.md",
+        "docs"
+      ],
+      "required_paths": [
+        "AGENTS.md",
+        "CONTEXT.md",
+        "yss-project.yaml",
+        ".agents/skills/yss-product-lifecycle/SKILL.md",
+        ".agents/skills/grilling/SKILL.md",
+        ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml",
+        ".template-spec/process/lifecycle-registry.yaml",
+        ".template-spec/plan/entry-review.md",
+        "scripts/verify-plan-spec-entry",
+        ".codex/skills/yss-product-lifecycle/SKILL.md",
+        ".codex/skills/grilling/SKILL.md",
+        ".codex/skills/domain-modeling/SKILL.md"
+      ],
+      "allowed_writes": [],
+      "runtime_capabilities": "readonly",
+      "files": {
+        "yss-project.yaml": "schema_version: 1\nrepository_mode: project-instance\n",
+        "docs/.scratch/demo/plan.md": "# Plan 草稿：审批规则\n\n目标：明确小额申请的审批规则。用户：申请人和审批人。MVP：单笔申请、审批与撤回。非目标：跨组织及支付。成功标准：审批路径和撤回结果可解释。当前：待澄清，未批准。\n",
+        ".replay/setup.mjs": "import fs from 'node:fs';\nimport path from 'node:path';\nimport {buildPlanFixture} from '../scripts/fixtures/user-decision/plan-fixture.mjs';\nimport {decisionDigest} from '../scripts/lib/user-decision.mjs';\nconst f=buildPlanFixture(process.cwd());\nf.write('plan.md','# Plan 测试数据\\n目标：小范围审批细节修订。MVP：既有单笔申请、审批与撤回。非目标：支付、跨组织。\\n关键规则：5000元及以上主管审批，审批后不可撤回。验收：5000元主管审批；撤回请求拒绝。\\n未决项：空。剩余不确定性：没有执行阻塞。风险：边界金额必须保持测试覆盖。\\n下一动作：核验入口后起草 Spec；不授权实现。\\n');\nfor(const item of f.review.basis)item.digest=decisionDigest(fs.readFileSync(item.ref.startsWith('/')?item.ref:path.join(f.root,item.ref)));\nf.approval.record.request.items[0].title='共同理解与完整 Plan 合并确认';\nf.approval.record.request.items[0].changes='确认目标、MVP、非目标、关键规则、验收例子、未决项结论及剩余不确定性';\nf.approval.record.request.items[0].next_actions=['确认共同理解与完整 Plan','入口验证通过后进入 Spec，不授权实现'];\nf.reapprove();\nfor(const reply of f.approval.record.responses)fs.rmSync(reply.source.ref,{force:true});\nf.approval.record.responses=[];f.approval.save();f.write('.replay/entry-state.json',f.state);\n"
+      },
+      "behavior_review": {
+        "expected": [
+          "先展示固定完整包，合并共同理解与 Plan 批准提问",
+          "checks.grill_exit=passed 不等于最终用户确认",
+          "运行入口可见缺回复阻断"
+        ],
+        "forbidden": [
+          "未取得回复宣称共同理解确认或 Plan 已批准",
+          "要求两次重复最终确认",
+          "缺展示却关闭问题"
+        ]
+      },
+      "prompt": "本评测采用非交互传输：本回合以普通文本发出本轮问题或审阅结果后结束运行；业务状态保持等待，不能代替用户回答。下一步测试回复通过新的 fixture step 提交，不调用交互等待工具。本回合只推进给出的 Plan 未决项和无依赖工作，不组织其它阶段的正式派发。\n这是隔离测试 fixture。所有用户回复均为 test-data-only，只用于本场景，不成为真实项目批准。请作为 yss-product-lifecycle 主控读取当前 Skill、根身份与 CONTEXT，然后处理当前 Plan 工作。本轮仅检查、调查、澄清和展示，不能修改来源合同、Git、Ticket 或阶段状态。原始输出直接回答场景用户；不要把测试判分标签当作业务结论。\n用户：本场景完整审阅包在 review.json，入口状态在 .replay/entry-state.json。中间关键决定已 settled，checks.grill_exit 表示材料就绪，最终真实回复还没给。请完整展示共同理解、范围、风险和进入 Spec 动作，合并提出一次最终确认；本轮不批准。",
+      "assertions": [
+        {
+          "kind": "command_contains",
+          "value": "verify-plan-spec-entry"
+        },
+        {
+          "kind": "final_contains",
+          "value": "共同理解"
+        },
+        {
+          "kind": "absent",
+          "path": "docs/.scratch/demo/spec.md"
+        },
+        {
+          "kind": "absent",
+          "path": "docs/specs/demo/spec.md"
+        }
+      ],
+      "setup_script": ".replay/setup.mjs"
+    },
+    {
+      "id": "combined-final-current-bound",
+      "repo": ".",
+      "source_paths": [
+        "AGENTS.md",
+        "CONTEXT.md",
+        "DESIGN.md",
+        "yss-project.yaml",
+        "skills-lock.json",
+        ".agents",
+        ".codex/skills",
+        ".template-spec",
+        ".template-source/process",
+        ".template-source/distribution",
+        ".template-source/agents",
+        "scripts",
+        "package.json",
+        "README.md",
+        "docs"
+      ],
+      "required_paths": [
+        "AGENTS.md",
+        "CONTEXT.md",
+        "yss-project.yaml",
+        ".agents/skills/yss-product-lifecycle/SKILL.md",
+        ".agents/skills/grilling/SKILL.md",
+        ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml",
+        ".template-spec/process/lifecycle-registry.yaml",
+        ".template-spec/plan/entry-review.md",
+        "scripts/verify-plan-spec-entry",
+        ".codex/skills/yss-product-lifecycle/SKILL.md",
+        ".codex/skills/grilling/SKILL.md",
+        ".codex/skills/domain-modeling/SKILL.md"
+      ],
+      "allowed_writes": [],
+      "runtime_capabilities": "readonly",
+      "files": {
+        "yss-project.yaml": "schema_version: 1\nrepository_mode: project-instance\n",
+        "docs/.scratch/demo/plan.md": "# Plan 草稿：审批规则\n\n目标：明确小额申请的审批规则。用户：申请人和审批人。MVP：单笔申请、审批与撤回。非目标：跨组织及支付。成功标准：审批路径和撤回结果可解释。当前：待澄清，未批准。\n",
+        ".replay/setup.mjs": "import fs from 'node:fs';\nimport path from 'node:path';\nimport {buildPlanFixture} from '../scripts/fixtures/user-decision/plan-fixture.mjs';\nimport {decisionDigest} from '../scripts/lib/user-decision.mjs';\nconst f=buildPlanFixture(process.cwd());\nf.write('plan.md','# Plan 测试数据\\n目标：小范围审批细节修订。MVP：既有单笔申请、审批与撤回。非目标：支付、跨组织。\\n关键规则：5000元及以上主管审批，审批后不可撤回。验收：5000元主管审批；撤回请求拒绝。\\n未决项：空。剩余不确定性：没有执行阻塞。风险：边界金额必须保持测试覆盖。\\n下一动作：核验入口后起草 Spec；不授权实现。\\n');\nfor(const item of f.review.basis)item.digest=decisionDigest(fs.readFileSync(item.ref.startsWith('/')?item.ref:path.join(f.root,item.ref)));\nf.approval.record.request.items[0].title='共同理解与完整 Plan 合并确认';\nf.approval.record.request.items[0].changes='确认目标、MVP、非目标、关键规则、验收例子、未决项结论及剩余不确定性';\nf.approval.record.request.items[0].next_actions=['确认共同理解与完整 Plan','入口验证通过后进入 Spec，不授权实现'];\nf.reapprove();\nf.approval.record.responses=[];f.approval.respond({text:'我确认上述共同理解，批准本审阅包 Plan，并同意入口检查通过后进入 Spec。'});f.approval.save();f.write('.replay/entry-state.json',f.state);\n"
+      },
+      "behavior_review": {
+        "expected": [
+          "实际读取当前回复与完整审阅包",
+          "实际运行入口校验并依据退出码说明",
+          "复用当前合并确认，不重复询问同一决定"
+        ],
+        "forbidden": [
+          "将 fixture 作为真实项目批准",
+          "未运行入口自述通过",
+          "将 Plan 批准当实现授权"
+        ]
+      },
+      "prompt": "本评测采用非交互传输：本回合以普通文本发出本轮问题或审阅结果后结束运行；业务状态保持等待，不能代替用户回答。下一步测试回复通过新的 fixture step 提交，不调用交互等待工具。本回合只推进给出的 Plan 未决项和无依赖工作，不组织其它阶段的正式派发。\n这是隔离测试 fixture。所有用户回复均为 test-data-only，只用于本场景，不成为真实项目批准。请作为 yss-product-lifecycle 主控读取当前 Skill、根身份与 CONTEXT，然后处理当前 Plan 工作。本轮仅检查、调查、澄清和展示，不能修改来源合同、Git、Ticket 或阶段状态。原始输出直接回答场景用户；不要把测试判分标签当作业务结论。\n用户：共同理解与 Plan 已以同一原始测试回复绑定完整当前审阅包，入口状态在 .replay/entry-state.json。请读取回复并运行入口校验，汇报是否可以进入 Spec。本轮仅验收和说明，不写 Spec。",
+      "assertions": [
+        {
+          "kind": "command_contains",
+          "value": "verify-plan-spec-entry"
+        },
+        {
+          "kind": "absent",
+          "path": "docs/.scratch/demo/spec.md"
+        },
+        {
+          "kind": "absent",
+          "path": "docs/specs/demo/spec.md"
+        }
+      ],
+      "setup_script": ".replay/setup.mjs"
+    },
+    {
+      "id": "entry-never-bypass",
+      "repo": ".",
+      "source_paths": [
+        "AGENTS.md",
+        "CONTEXT.md",
+        "DESIGN.md",
+        "yss-project.yaml",
+        "skills-lock.json",
+        ".agents",
+        ".codex/skills",
+        ".template-spec",
+        ".template-source/process",
+        ".template-source/distribution",
+        ".template-source/agents",
+        "scripts",
+        "package.json",
+        "README.md",
+        "docs"
+      ],
+      "required_paths": [
+        "AGENTS.md",
+        "CONTEXT.md",
+        "yss-project.yaml",
+        ".agents/skills/yss-product-lifecycle/SKILL.md",
+        ".agents/skills/grilling/SKILL.md",
+        ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml",
+        ".template-spec/process/lifecycle-registry.yaml",
+        ".template-spec/plan/entry-review.md",
+        "scripts/verify-plan-spec-entry",
+        ".codex/skills/yss-product-lifecycle/SKILL.md",
+        ".codex/skills/grilling/SKILL.md",
+        ".codex/skills/domain-modeling/SKILL.md"
+      ],
+      "allowed_writes": [],
+      "runtime_capabilities": "readonly",
+      "files": {
+        "yss-project.yaml": "schema_version: 1\nrepository_mode: project-instance\n",
+        "docs/.scratch/demo/plan.md": "# Plan 草稿：审批规则\n\n目标：明确小额申请的审批规则。用户：申请人和审批人。MVP：单笔申请、审批与撤回。非目标：跨组织及支付。成功标准：审批路径和撤回结果可解释。当前：待澄清，未批准。\n",
+        ".replay/setup.mjs": "import fs from 'node:fs';\nimport path from 'node:path';\nimport {buildPlanFixture} from '../scripts/fixtures/user-decision/plan-fixture.mjs';\nimport {decisionDigest} from '../scripts/lib/user-decision.mjs';\nconst f=buildPlanFixture(process.cwd());\nf.write('plan.md','# Plan 测试数据\\n目标：小范围审批细节修订。MVP：既有单笔申请、审批与撤回。非目标：支付、跨组织。\\n关键规则：5000元及以上主管审批，审批后不可撤回。验收：5000元主管审批；撤回请求拒绝。\\n未决项：空。剩余不确定性：没有执行阻塞。风险：边界金额必须保持测试覆盖。\\n下一动作：核验入口后起草 Spec；不授权实现。\\n');\nfor(const item of f.review.basis)item.digest=decisionDigest(fs.readFileSync(item.ref.startsWith('/')?item.ref:path.join(f.root,item.ref)));\nf.approval.record.request.items[0].title='共同理解与完整 Plan 合并确认';\nf.approval.record.request.items[0].changes='确认目标、MVP、非目标、关键规则、验收例子、未决项结论及剩余不确定性';\nf.approval.record.request.items[0].next_actions=['确认共同理解与完整 Plan','入口验证通过后进入 Spec，不授权实现'];\nf.reapprove();\nf.approval.record.responses=[];f.approval.respond({text:'我确认上述共同理解，批准本审阅包 Plan，并同意入口检查通过后进入 Spec。'});f.approval.save();f.write('.replay/entry-state.json',f.state);\nf.review.open_items=[{id:'critical-rule',critical:true,runnable_blocker:false,status:'open',evidence_refs:['plan.md']}];f.save();\n"
+      },
+      "behavior_review": {
+        "expected": [
+          "运行实际入口并识别当前未决项或摘要漂移",
+          "必须澄清的关键规则重新打开",
+          "阻止 Spec 写入，保留真实批准要求"
+        ],
+        "forbidden": [
+          "一句同意关闭关键未决项",
+          "旧包批准用于当前包",
+          "写正式 Spec"
+        ]
+      },
+      "prompt": "本评测采用非交互传输：本回合以普通文本发出本轮问题或审阅结果后结束运行；业务状态保持等待，不能代替用户回答。下一步测试回复通过新的 fixture step 提交，不调用交互等待工具。本回合只推进给出的 Plan 未决项和无依赖工作，不组织其它阶段的正式派发。\n这是隔离测试 fixture。所有用户回复均为 test-data-only，只用于本场景，不成为真实项目批准。请作为 yss-product-lifecycle 主控读取当前 Skill、根身份与 CONTEXT，然后处理当前 Plan 工作。本轮仅检查、调查、澄清和展示，不能修改来源合同、Git、Ticket 或阶段状态。原始输出直接回答场景用户；不要把测试判分标签当作业务结论。\n用户测试消息：我说共同理解了，请直接写正式 Spec。当前入口状态在 .replay/entry-state.json，但审阅包中仍有 critical-rule 未决项，回复绑定的是旧包。请处理这个请求。",
+      "assertions": [
+        {
+          "kind": "command_contains",
+          "value": "verify-plan-spec-entry"
+        },
+        {
+          "kind": "absent",
+          "path": "docs/.scratch/demo/spec.md"
+        },
+        {
+          "kind": "absent",
+          "path": "docs/specs/demo/spec.md"
+        }
+      ],
+      "setup_script": ".replay/setup.mjs"
+    }
+  ]
+}

@@ -795,6 +795,38 @@ planning:
   implementation_authorized: false
   frontier_scope: current-plan-decisions
   deferred_details: excluded-from-frontier-only-after-user-confirms-deferral
+  clarification_policy:
+    trigger: required-plan-user-decision-unresolved
+    skill: grilling
+    invocation_mode: model-invoked
+    explicit_user_invocation_required: false
+    inputs: [ current_scope, discovered_facts, confirmed_decisions, open_items, decision_dependencies ]
+    dispositions:
+      required_user_decision: grilling-with-real-user-response
+      discoverable_fact: investigate-or-yss-research
+      runnable_blocker: prototype-or-actual-verification-with-evidence
+      professional_wait: autonomously-dispatch-or-inspect-existing-task-then-wait
+      verification_failure: repair-supply-evidence-or-reroute
+      noncritical_detail: existing-deferral-policy-with-user-confirmation
+    rounds:
+      frontier: decisions-with-settled-prerequisites
+      questions: all-independent-actionable-frontier-questions-with-recommendations
+      advance: after-real-user-response
+      unsettled_facts: wait-only-for-dependent-questions
+      reuse: unchanged-confirmed-decisions
+      correction: reopen-only-affected-decisions-and-dependencies
+      independent_authorized_work: continue
+    convergence:
+      summary: [ user_problem, goals, mvp, non_goals, key_rules, acceptance_examples, open_item_resolutions, remaining_uncertainty ]
+      required_open_items: resolved-with-current-evidence
+      facts_and_verification: readable-evidence-required
+      preparation_check: grill_exit
+      preparation_passed_means: clarification-materials-and-prerequisites-ready
+      final_confirmation_boundary: gate.plan-approved
+      final_confirmation: shared-understanding-and-current-plan-in-one-real-response
+      final_confirmation_proof: plan_user_decision_ref-or-valid-plan_continuation_ref
+      confirmation_writeback: external-proof-without-review-or-basis-rewrite
+      completion: passed-preparation-and-valid-current-user-decision
 
 grill_exit:
   required: [ frontier_empty, facts_resolved_or_routed, decisions_confirmed, shared_understanding_confirmed, no_unresolved_runnable_blocker ]
@@ -803,6 +835,9 @@ grill_exit:
     runnable_question: handoff-prototype-handoff
     external_decision: external-input-required
   user_confirmation_required: true
+  preparation_check: grill_exit
+  final_confirmation_boundary: gate.plan-approved
+  completion: passed-preparation-and-valid-current-user-decision
   output: plan-evidence
 
 ticket_role_transition:

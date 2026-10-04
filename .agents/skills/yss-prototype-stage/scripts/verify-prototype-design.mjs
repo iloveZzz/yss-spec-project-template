@@ -26,6 +26,7 @@ export async function verifyPrototypeDesign({scope='all',toolchain=process.env.Y
  if((await readdir(output)).length)throw Error('验证输出非空，拒绝覆盖历史证据');
  const report={schema_version:1,scope,status:'running',started_at:new Date().toISOString(),output,source:null,tools:{node:process.version},checks:[],counts:{passed:0,failed:0,'not-executed':0,'not-applicable':0},limitations:['自动化结果不构成人工视觉批准、读屏结论或真实用户效果。']};
  const env={...process.env,TMPDIR:output,YSS_PROTOTYPE_EVIDENCE_DIR:output};
+ delete env.NODE_TEST_CONTEXT; // 子进程独立输出 TAP，不继承父级 node --test 的内部传输协议。
  const add=(id,status,reason,extra={})=>report.checks.push({id,status,...(reason?{reason}:{}),...extra});
  async function run(id,args){
   const log=path.join(output,id+'.log'),command=[process.execPath,...args];

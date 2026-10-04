@@ -35,6 +35,40 @@ function parseYaml(source) {
   return document.toJS({ maxAliasCount: 0 });
 }
 
+const hashBytes = source => createHash("sha256").update(source).digest("hex");
+// This independent, test-only consumer context is never reconstructed from a record.
+function bindSource(source, file, approvalRef, contextDigest) {
+  const document = parseDocument(source, { maxAliasCount: 0, uniqueKeys: true });
+  if (document.errors.length) throw new Error(document.errors[0].message);
+  document.setIn(["approval", "approval_ref"], approvalRef);
+  document.setIn(["approval", "persisted_ref"], file);
+  document.set("approval_context", {
+    subject_ref: file,
+    approval_scope: ["feature.supplier-admission"],
+    basis: [{ ref: "CONTEXT.md", digest: contextDigest }],
+    drafter_principal_ref: "instance:role.requirements-manager"
+  });
+  return document.toString();
+}
+
+function fixtureApproval(gateId, file, source, contextDigest) {
+  return {
+    schema_version: 1, gate_id: gateId, decision: "approved", actor_kind: "digital-human",
+    role_id: "role.product-manager", runtime_id: "runtime.generic", principal_ref: "instance:role.product-manager",
+    drafter_role_id: "role.requirements-manager", drafter_principal_ref: "instance:role.requirements-manager",
+    subject_ref: file, subject_digest: hashBytes(source), approval_scope: ["feature.supplier-admission"],
+    basis: [{ ref: "CONTEXT.md", digest: contextDigest }], evidence_refs: [file, "CONTEXT.md"]
+  };
+}
+
+async function writeApprovedFixture(source, file, gateId, contextDigest) {
+  const approvalRef = `${file}.approval.json`;
+  const bound = bindSource(source, file, approvalRef, contextDigest);
+  await writeFile(file, bound);
+  await writeFile(approvalRef, JSON.stringify(fixtureApproval(gateId, file, bound, contextDigest), null, 2));
+  return bound;
+}
+
 function toV2Domain(source) {
   const value = structuredClone(parseYaml(source));
   value.schema_version = 2;
@@ -115,18 +149,18 @@ try {
   if (contextResult.status !== 0) throw new Error(`context fixture should pass: ${contextResult.stderr}`);
   const context = JSON.parse(contextResult.stdout);
 
-  const domainSource = (await readFile(validTemplate, "utf8"))
+  const domainTemplateSource = (await readFile(validTemplate, "utf8"))
     .replace("<document-digest>", context.document_digest)
     .replace("<referenced-terms-digest>", context.referenced_terms_digest);
   const domainFile = join(temporaryRoot, "domain-strategy.yaml");
-  await writeFile(domainFile, domainSource);
+  const contextDigest = hashBytes(contextSource);
+  const domainSource = await writeApprovedFixture(domainTemplateSource, domainFile, "check.domain-strategy-approved", contextDigest);
   const pass = run(validator, domainFile, temporaryRoot);
   if (pass.status !== 0) throw new Error(`valid v3 fixture should pass: ${pass.stderr}`);
 
   const v2Domain = toV2Domain(domainSource);
-  const v2DomainSource = JSON.stringify(v2Domain, null, 2);
   const v2DomainFile = join(temporaryRoot, "domain-strategy-v2.yaml");
-  await writeFile(v2DomainFile, v2DomainSource);
+  const v2DomainSource = await writeApprovedFixture(JSON.stringify(v2Domain, null, 2), v2DomainFile, "check.domain-strategy-approved", contextDigest);
   const v2Pass = run(validator, v2DomainFile, temporaryRoot);
   if (v2Pass.status !== 0) throw new Error(`read-only v2 fixture should pass: ${v2Pass.stderr}`);
 
@@ -192,12 +226,12 @@ try {
   await writeFile(unknownContext, domainSource.replace("to_context: ComplianceReview", "to_context: UnknownContext"));
   expectBlocked(run(validator, unknownContext, temporaryRoot), /未引用已声明上下文|未在领域战略中登记/, "unknown context");
 
-  const packageSource = (await readFile(validPackageTemplate, "utf8"))
+  const packageTemplateSource = (await readFile(validPackageTemplate, "utf8"))
     .replace("<document-digest>", context.document_digest)
     .replace("<referenced-terms-digest>", context.referenced_terms_digest)
     .replace("<domain-strategy-digest>", digestYaml(domainSource));
   const packageFile = join(temporaryRoot, "stage-decision.yaml");
-  await writeFile(packageFile, packageSource);
+  const packageSource = await writeApprovedFixture(packageTemplateSource, packageFile, "check.stage-decision-package-approved", contextDigest);
   const packagePass = run(packageValidator, packageFile, temporaryRoot);
   if (packagePass.status !== 0) throw new Error(`valid v3 stage decision package should pass: ${packagePass.stderr}`);
   for (const format of ['yaml', 'json']) {
@@ -215,16 +249,14 @@ try {
 
   const bundleFile = join(temporaryRoot, "plan-review-bundle.json");
   const bundledDomainValue = parseYaml(domainSource);
-  bundledDomainValue.approval.approval_ref = bundleFile;
-  const bundledDomainSource = JSON.stringify(bundledDomainValue, null, 2);
   const bundledDomainFile = join(temporaryRoot, "domain-strategy-bundled.yaml");
+  const bundledDomainSource = bindSource(JSON.stringify(bundledDomainValue, null, 2), bundledDomainFile, bundleFile, contextDigest);
   await writeFile(bundledDomainFile, bundledDomainSource);
   const bundledPackageValue = parseYaml(packageSource);
   bundledPackageValue.domain_strategy_ref.persisted_ref = "domain-strategy-bundled.yaml";
   bundledPackageValue.domain_strategy_ref.digest = digestYaml(bundledDomainSource);
-  bundledPackageValue.approval.approval_ref = bundleFile;
-  const bundledPackageSource = JSON.stringify(bundledPackageValue, null, 2);
   const bundledPackageFile = join(temporaryRoot, "stage-decision-bundled.yaml");
+  const bundledPackageSource = bindSource(JSON.stringify(bundledPackageValue, null, 2), bundledPackageFile, bundleFile, contextDigest);
   await writeFile(bundledPackageFile, bundledPackageSource);
   await writeFile(bundleFile, JSON.stringify({
     schema_version: 1,
@@ -237,8 +269,8 @@ try {
     runtime_id: "runtime.generic",
     principal_ref: "instance:role.product-manager",
     reviews: [
-      { schema_version: 1, gate_id: "check.domain-strategy-approved", decision: "approved", actor_kind: "digital-human", role_id: "role.product-manager", runtime_id: "runtime.generic", principal_ref: "instance:role.product-manager", drafter_role_id: "role.requirements-manager", drafter_principal_ref: "instance:role.requirements-manager", subject_ref: bundledDomainFile, subject_digest: digestYaml(bundledDomainSource).slice(7), approval_scope: ["feature.supplier-admission"], evidence_refs: [bundledDomainFile] },
-      { schema_version: 1, gate_id: "check.stage-decision-package-approved", decision: "approved", actor_kind: "digital-human", role_id: "role.product-manager", runtime_id: "runtime.generic", principal_ref: "instance:role.product-manager", drafter_role_id: "role.requirements-manager", drafter_principal_ref: "instance:role.requirements-manager", subject_ref: bundledPackageFile, subject_digest: digestYaml(bundledPackageSource).slice(7), approval_scope: ["feature.supplier-admission"], evidence_refs: [bundledPackageFile] }
+      fixtureApproval("check.domain-strategy-approved", bundledDomainFile, bundledDomainSource, contextDigest),
+      fixtureApproval("check.stage-decision-package-approved", bundledPackageFile, bundledPackageSource, contextDigest)
     ]
   }, null, 2));
   const bundledDomainPass = run(validator, bundledDomainFile, temporaryRoot);
@@ -246,9 +278,47 @@ try {
   const bundledPackagePass = run(packageValidator, bundledPackageFile, temporaryRoot);
   if (bundledPackagePass.status !== 0) throw new Error(`stage decision should select its conclusion from Plan review-bundle: ${bundledPackagePass.stderr}`);
 
+  // Both consumers reject coherent record edits unless independently current inputs match.
+  for (const [kind, command, source, gateId] of [
+    ["domain", validator, domainSource, "check.domain-strategy-approved"],
+    ["stage", packageValidator, packageSource, "check.stage-decision-package-approved"]
+  ]) {
+    for (const [label, mutateAsset, mutateRecord, pattern] of [
+      ["missing-context", value => { delete value.approval_context; }, null, /APPROVAL_CONTEXT_REQUIRED/],
+      ["context-missing-basis", value => { value.approval_context.basis = []; }, null, /APPROVAL_CONTEXT_REQUIRED/],
+      ["context-stale-basis", value => { value.approval_context.basis[0].digest = "0".repeat(64); }, null, /当前消费上下文.*证据过期/],
+      ["context-missing-drafter", value => { delete value.approval_context.drafter_principal_ref; }, null, /独立起草者来源/],
+      ["context-drafter", value => { value.approval_context.drafter_principal_ref = "instance:other-drafter"; }, null, /起草者身份.*不匹配/],
+      ["context-scope", value => { value.approval_context.approval_scope.push("feature.other"); }, null, /审查范围不匹配/],
+      ["record-subject", null, record => { record.subject_ref = domainFile; }, /审查对象不匹配/],
+      ["record-scope", null, record => { record.approval_scope.push("feature.other"); }, /审查范围不匹配/],
+      ["record-drafter", null, record => { record.drafter_principal_ref = "instance:other-drafter"; }, /起草者身份.*不匹配/],
+      ["record-self-sign", null, record => { record.principal_ref = record.drafter_principal_ref; }, /起草者自签/],
+      ["record-missing-basis", null, record => { record.basis = []; }, /批准记录.*缺少当前证据摘要/],
+      ["record-stale-basis", null, record => { record.basis[0].digest = "0".repeat(64); }, /批准记录.*证据过期/],
+      ["record-semantic-digest", null, record => { record.subject_digest = digestYaml(record.fixtureSource).slice(7); }, /审查资产摘要不匹配/]
+    ]) {
+      const file = join(temporaryRoot, `${kind}-${label}.yaml`);
+      let bound = await writeApprovedFixture(source, file, gateId, contextDigest);
+      if (mutateAsset) {
+        const value = parseYaml(bound); mutateAsset(value);
+        bound = JSON.stringify(value, null, 2);
+        await writeFile(file, bound);
+      }
+      const record = fixtureApproval(gateId, file, bound, contextDigest);
+      // Keep the raw bytes current even for consumer-context changes: an unrelated stale
+      // subject must not be what makes the current-context negative pass.
+      if (mutateRecord) {
+        record.fixtureSource = bound; mutateRecord(record); delete record.fixtureSource;
+      }
+      await writeFile(`${file}.approval.json`, JSON.stringify(record, null, 2));
+      expectBlocked(run(command, file, temporaryRoot), pattern, `${kind} ${label}`);
+    }
+  }
+
   const v2Stage = toV2Stage(packageSource, digestYaml(v2DomainSource));
   const v2StageFile = join(temporaryRoot, "stage-decision-v2.yaml");
-  await writeFile(v2StageFile, JSON.stringify(v2Stage, null, 2));
+  await writeApprovedFixture(JSON.stringify(v2Stage, null, 2), v2StageFile, "check.stage-decision-package-approved", contextDigest);
   const v2StagePass = run(packageValidator, v2StageFile, temporaryRoot);
   if (v2StagePass.status !== 0) throw new Error(`read-only v2 stage decision package should pass: ${v2StagePass.stderr}`);
 

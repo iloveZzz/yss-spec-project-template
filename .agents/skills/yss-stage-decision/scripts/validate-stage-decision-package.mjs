@@ -8,6 +8,7 @@ import process from "node:process";
 import { parseArgs } from "node:util";
 import { parseDocument } from "../../../../scripts/vendor/yaml.mjs";
 import { loadApprovalRecord, resolveApprovalRef, validateApprovalRecord } from "../../../../scripts/lib/approval-record.mjs";
+import { approvalExpectationForBoundAsset } from "../../../../scripts/lib/approval-consumption.mjs";
 import { verifyContextSnapshot } from "../../../../scripts/lib/context-contract.mjs";
 import { parseAsset, validateAssetStructure } from '../../../../scripts/lib/structured-assets.mjs';
 
@@ -27,7 +28,7 @@ function unique(items, label, errors) { const seen = new Set(); for (const item 
 function canonical(value) { if (Array.isArray(value)) return value.map(canonical); if (value && typeof value === "object") return Object.fromEntries(Object.keys(value).sort().map((key) => [key, canonical(value[key])])); return value; }
 function digest(value) { return `sha256:${createHash("sha256").update(JSON.stringify(canonical(value))).digest("hex")}`; }
 
-async function validate(data, contextRoot) {
+async function validate(data, contextRoot, currentRef) {
   validateAssetStructure(data, 'stage-decision-package');
   const errors = [];
   if (!data || typeof data !== "object" || Array.isArray(data)) return ["合同必须是对象"];
@@ -132,9 +133,11 @@ async function validate(data, contextRoot) {
   if (unresolved.some((item) => item?.type === "blocker") && data.status === "approved") errors.push("存在 blocker 未决项时不得 approved");
   if (data.status === "approved" && nonEmpty(approval.approval_ref)) {
     try {
-      const approvalPath = resolveApprovalRef(approval.approval_ref);
-      const record = loadApprovalRecord(approvalPath, "check.stage-decision-package-approved");
-      validateApprovalRecord(record, { requireApproved: true });
+      const options = { root: contextRoot, review_package: false };
+      const approvalPath = resolveApprovalRef(approval.approval_ref, currentRef, options);
+      const expected = approvalExpectationForBoundAsset("check.stage-decision-package-approved", { ref: currentRef }, options);
+      const record = loadApprovalRecord(approvalPath, "check.stage-decision-package-approved", options);
+      validateApprovalRecord(record, { ...options, requireApproved: true, expected });
       if (record.gate_id !== "check.stage-decision-package-approved") errors.push("approval_ref 的 gate_id 必须为 check.stage-decision-package-approved");
       if (record.role_id !== approval.approver) errors.push("approval.approver 必须与会签记录 role_id 一致");
     } catch (error) { errors.push(`approval_ref 会签记录无效: ${error.message}`); }
@@ -151,7 +154,7 @@ else {
     assertCurrentAssetReference(values.root, path.relative(path.resolve(values.root), path.resolve(file)));
     const source = await readFile(file, "utf8");
     {
-      const errors = await validate(parseAsset(source, file), values.root);
+      const errors = await validate(parseAsset(source, file), values.root, path.resolve(file));
       if (errors.length) fail(errors);
       else process.stdout.write(JSON.stringify({ result: "completed", contract: file }, null, 2) + "\n");
     }

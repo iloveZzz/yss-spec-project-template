@@ -35,8 +35,10 @@ const transformations={
  'backend-wire-runtime':bytes=>replaceExactly(bytes,'../../.agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs','./visual-baseline-contract.mjs','backend-wire-runtime'),
  'backend-wire-command':bytes=>replaceExactly(bytes,'../.agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs','./lib/visual-baseline-contract.mjs','backend-wire-command'),
  'backend-wire-fixture':bytes=>replaceExactly(bytes,'../../../.agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs','../../lib/visual-baseline-contract.mjs','backend-wire-fixture'),
+ 'profile-vendor-tooling':bytes=>replaceExactly(bytes,'node scripts/test-with-plugin-clis.mjs test/**/*.test.mjs','node --test test/**/*.test.mjs','profile-vendor-tooling'),
 };
 function transformationFor(target,ref){
+ if(target!=='.'&&ref==='.template-source/tooling/node/package.json')return'profile-vendor-tooling';
  if(target!=='.'&&ref==='scripts/lib/lifecycle-context-query.mjs')return target.endsWith('design-agent')?'design-query-runtime':'implementation-query-runtime';
  if(!target.endsWith('yss-harness-backend-agent'))return'identity';
  if(['scripts/lib/ui-baseline.mjs','scripts/lib/delivery-preflight.mjs'].includes(ref))return'backend-wire-runtime';
@@ -72,6 +74,12 @@ if(!existsSync(path.join(root,checkpointWire))||!checkpointBytes.equals(readFile
 shared.push('scripts/verify-context-contract','scripts/verify-approval-record',checkpointWire,'scripts/project-ci','scripts/project-ci-transition','scripts/lib/project-ci-install.mjs','scripts/lib/project-governance.mjs','scripts/lib/governance-io.mjs','scripts/lib/checkpoint-boundary.mjs','scripts/lifecycle-status','scripts/lib/lifecycle-status.mjs','.template-spec/process/project-ci.md');
 shared.push('scripts/verify-business-tickets','scripts/lib/business-tickets.mjs','scripts/lib/business-ticket-lifecycle.mjs','.template-spec/process/business-tickets.md','.template-spec/process/schemas/business-tickets-v1.schema.json','.template-spec/templates/business-ticket-template.md','.template-spec/templates/business-ticket-set-template.yaml','.template-spec/templates/business-ticket-review-template.yaml',...readdirSync(path.join(root,'scripts/fixtures/business-tickets')).map(name=>`scripts/fixtures/business-tickets/${name}`));
 shared.push('scripts/feature-assets','scripts/lib/feature-assets.mjs','.template-spec/process/feature-assets.md','.template-spec/templates/local-parent-ticket-template.md');
+// Portable maintenance validators consume this policy at module load time.
+// Keep its risk triggers in the same generated closure as the shared tooling.
+shared.push('.template-source/process/maintenance-intensity.yaml');
+shared.push('.template-source/process/schemas/maintenance-review-record.schema.json');
+// Shared vendor bytes need the same locked builder in each source Profile.
+shared.push('.template-source/tooling/node/package.json','.template-source/tooling/node/pnpm-lock.yaml','.template-source/tooling/node/scripts/build-vendor.mjs',...['yaml','xml','markdown'].map(kind=>`.template-source/tooling/node/vendor-entry-${kind}.mjs`));
 // CLI core owns the runtime store; copies remain generated portable modules.
 sync(path.join(root,'.template-source/cli-core/runtime-store.mjs'),path.join(root,'scripts/lib/runtime-store.mjs'));
 const sharedRefs=[...new Set(shared)].sort();

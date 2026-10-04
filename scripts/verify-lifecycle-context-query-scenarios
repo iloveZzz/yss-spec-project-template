@@ -26,6 +26,32 @@ const query = {
 const first = queryLifecycleContext(query);
 const second = queryLifecycleContext(query);
 
+// Plan 主动澄清策略随必需 planning 子树自动加载；查询不授予执行或流转资格。
+const clarificationQuery = queryLifecycleContext({ ...query, include: ['planning', 'grill_exit'] });
+const clarification = clarificationQuery.execution.selected.planning.clarification_policy;
+assert.deepEqual(clarification, first.execution.selected.planning.clarification_policy, 'Plan 入口自动加载主动澄清策略，无需额外点名');
+assert.deepEqual(clarificationQuery.lifecycle, first.lifecycle);
+assert.deepEqual(clarificationQuery.skills, first.skills);
+assert.deepEqual(clarificationQuery.execution.transition, first.execution.transition);
+assert.equal(clarificationQuery.execution.mode, 'read_only');
+assert.ok(clarificationQuery.execution.plan_checks.every(check => check.status === 'pending'));
+assert.equal(clarification.trigger, 'required-plan-user-decision-unresolved');
+assert.equal(clarification.skill, 'grilling');
+assert.equal(clarification.explicit_user_invocation_required, false);
+assert.equal(clarification.dispositions.discoverable_fact, 'investigate-or-yss-research');
+assert.equal(clarification.dispositions.runnable_blocker, 'prototype-or-actual-verification-with-evidence');
+assert.equal(clarification.dispositions.professional_wait, 'autonomously-dispatch-or-inspect-existing-task-then-wait');
+assert.equal(clarification.rounds.frontier, 'decisions-with-settled-prerequisites');
+assert.equal(clarification.rounds.advance, 'after-real-user-response');
+assert.equal(clarification.rounds.reuse, 'unchanged-confirmed-decisions');
+assert.equal(clarification.rounds.correction, 'reopen-only-affected-decisions-and-dependencies');
+assert.equal(clarification.rounds.independent_authorized_work, 'continue');
+assert.equal(clarification.convergence.preparation_passed_means, 'clarification-materials-and-prerequisites-ready');
+assert.equal(clarification.convergence.final_confirmation_boundary, 'gate.plan-approved');
+assert.equal(clarification.convergence.confirmation_writeback, 'external-proof-without-review-or-basis-rewrite');
+assert.equal(clarification.convergence.completion, clarificationQuery.execution.selected.grill_exit.completion);
+assert.throws(() => queryLifecycleContext({ ...query, include: ['clarification_policy'] }), /未知/, 'include 仍仅接收顶层合同键');
+
 // 请求解释策略按需查询；添加策略不得改变阶段、技能、转换或模式权限。
 const triageQuery = queryLifecycleContext({ ...query, include: ['request_triage'] });
 const triage = triageQuery.execution.selected.request_triage;

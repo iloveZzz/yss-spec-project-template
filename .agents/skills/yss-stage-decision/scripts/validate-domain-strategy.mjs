@@ -6,6 +6,7 @@ import process from "node:process";
 import { parseArgs } from "node:util";
 import { parseDocument } from "../../../../scripts/vendor/yaml.mjs";
 import { loadApprovalRecord, resolveApprovalRef, validateApprovalRecord } from "../../../../scripts/lib/approval-record.mjs";
+import { approvalExpectationForBoundAsset } from "../../../../scripts/lib/approval-consumption.mjs";
 import { verifyContextSnapshot } from "../../../../scripts/lib/context-contract.mjs";
 import { parseAsset, validateAssetStructure } from '../../../../scripts/lib/structured-assets.mjs';
 
@@ -51,7 +52,7 @@ function requireArray(object, field, path, errors, min = 0, itemKind = "string")
   if (field in object && list(object[field]) && itemKind === "string") object[field].forEach((item, index) => { if (!nonEmpty(item)) errors.push(`${path}.${field}[${index}] 必须是非空字符串`); });
 }
 
-function validate(data, contextRoot) {
+function validate(data, contextRoot, currentRef) {
   validateAssetStructure(data, 'domain-strategy');
   const errors = [];
   if (data?.traceability_version !== undefined) { try { extractTraceability(data); } catch(error) { errors.push(error.message); } }
@@ -199,9 +200,11 @@ function validate(data, contextRoot) {
     if (contexts.some((context) => context.status !== "confirmed")) errors.push("approved 合同要求所有上下文 status=confirmed");
     if (approval.current_version !== data.domain_version) errors.push("approval.current_version 必须等于 domain_version");
     try {
-      const approvalPath = resolveApprovalRef(approval.approval_ref);
-      const record = loadApprovalRecord(approvalPath, "check.domain-strategy-approved");
-      validateApprovalRecord(record, { requireApproved: true });
+      const options = { root: contextRoot, review_package: false };
+      const approvalPath = resolveApprovalRef(approval.approval_ref, currentRef, options);
+      const expected = approvalExpectationForBoundAsset("check.domain-strategy-approved", { ref: currentRef }, options);
+      const record = loadApprovalRecord(approvalPath, "check.domain-strategy-approved", options);
+      validateApprovalRecord(record, { ...options, requireApproved: true, expected });
       if (record.gate_id !== "check.domain-strategy-approved") errors.push("approval.approval_ref 的 gate_id 必须为 check.domain-strategy-approved");
       if (record.role_id !== approval.approver) errors.push("approval.approver 必须与会签记录 role_id 一致");
     } catch (error) { errors.push(`approval.approval_ref 会签记录无效: ${error.message}`); }
@@ -218,7 +221,7 @@ else {
     assertCurrentAssetReference(values.root, path.relative(path.resolve(values.root), path.resolve(file)));
     const source = await readFile(file, "utf8");
     {
-      const errors = validate(parseAsset(source, file), values.root);
+      const errors = validate(parseAsset(source, file), values.root, path.resolve(file));
       if (errors.length) fail(errors);
       else process.stdout.write(JSON.stringify({ result: "completed", contract: file }, null, 2) + "\n");
     }

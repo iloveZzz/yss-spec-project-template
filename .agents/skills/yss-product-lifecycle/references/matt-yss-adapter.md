@@ -35,7 +35,7 @@ Matt skills 决定如何工作；YSS 生命周期决定是否允许推进；YSS 
 | 情形 | Matt flow | 生命周期验收 |
 |---|---|---|
 | 首次启用或配置缺失 | `setup-matt-pocock-skills`（用户显式） | `needs-human`，说明缺失项；用户完成 setup 后重新计算 readiness |
-| 需求澄清 | 原生 `work-unit.plan-requirements`，按需使用 `grilling`、`domain-modeling`（生命周期原语） | 按退出判定检查未决项和回流 |
+| 需求澄清 | 原生 `work-unit.plan-requirements`，按 `planning.clarification_policy` 主动调用 `grilling` 处理必须确认的未决决定，术语使用 `domain-modeling` | 逐项验收未决项和证据回流；完整退出联合当前 Plan 用户决定 |
 | 信息在其他人手中 | 生命周期外部输入问卷 | 使用 `external-input-required` 暂停；答案回流后记录 response、重新分类影响面，再进入 `work-unit.plan-requirements` 或 `to-spec` |
 | 大型模糊工作 | `wayfinder`（可选） | 仅在跨会话 / 跨 Agent 或 frontier 不清晰时启用；map 真正完成后 `handoff → to-spec` |
 | 技术或战略事实 | `yss-research`（`research` 为 deprecated alias） | `technical-evidence` 核验一手技术资料；`strategy-evidence` 为领域战略和阶段决策提供可审计证据；研究包不得自行修改或批准下游资产 |
@@ -91,6 +91,8 @@ blocking_signals: []
 | `implement`（用户显式） | `ready-for-agent` 公式、Ticket 正式化结果、垂直切片引用/类型/状态、Contract 已批准/持久化/版本一致、Build Architecture Checklist、实现仓库/分支/CI/验证命令/回滚点，以及后端 Contract（适用时）均满足 | 生命周期只准备/验收；单会话实现同样适用，不得绕过门禁；父 Ticket、`ready-for-human` 切片或跳过 Ticket 正式化的 `next_route` 必须 `blocked` |
 
 `grill_exit` 不是“已经聊过”的自然语言声明。它必须同时证明 frontier 为空、事实已解决或分别路由到 `yss-research` / prototype / external input、用户决策已确认、双方共同理解已确认，并且没有未回流的 runnable blocker。
+
+按 `planning.clarification_policy` 主动开始必要澄清，调查、实验和专业审查分别取得证据，分轮仅询问前提已明确的必要决定。审阅包中的 `checks.grill_exit=passed` 表示澄清准备就绪；共同理解总述与完整当前 Plan 审阅包合并展示，由同一真实回复确认。入口联合准备检查与当前 `gate.plan-approved` 决定后才判断完整退出；回复独立保存，不回写审阅包或依据，不增加批准阶段。
 
 ## Review 候选与 Git 授权
 

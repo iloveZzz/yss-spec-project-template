@@ -18,7 +18,25 @@ function hasText(value) { return typeof value === "string" && value.trim().lengt
 const virtualTicketDecompositionRef = "docs/.scratch/demo/evidence/ticket-decomposition-result.yaml";
 const virtualTicketDecomposition = "result_schema: workflow-execution-result-v1\nwork_unit: work-unit.ticket-decomposition\nresult: completed\nevidence_refs:\n  - docs/.scratch/demo/evidence/ticket-decomposition-result.yaml\n";
 
+function validatePlanClarificationPolicy(data) {
+  const policy = data.planning?.clarification_policy;
+  ensure(policy?.trigger === 'required-plan-user-decision-unresolved' && policy?.skill === 'grilling' && policy?.invocation_mode === 'model-invoked' && policy?.explicit_user_invocation_required === false, 'Plan 必须决定未解决时未主动调用 grilling');
+  ensure(includesAll(policy?.inputs, ['current_scope', 'discovered_facts', 'confirmed_decisions', 'open_items', 'decision_dependencies']), 'Plan 澄清未传入当前事实、已确认决定和问题依赖');
+  const routes = policy?.dispositions;
+  ensure(routes?.required_user_decision === 'grilling-with-real-user-response' && routes?.discoverable_fact === 'investigate-or-yss-research' && routes?.runnable_blocker === 'prototype-or-actual-verification-with-evidence', 'Plan 用户决定、事实或实验阻塞分流不完整');
+  ensure(routes?.professional_wait === 'autonomously-dispatch-or-inspect-existing-task-then-wait' && routes?.verification_failure === 'repair-supply-evidence-or-reroute' && routes?.noncritical_detail === 'existing-deferral-policy-with-user-confirmation', 'Plan 专业等待、验证失败或非关键延期被错误交给问答关闭');
+  const rounds = policy?.rounds;
+  ensure(rounds?.frontier === 'decisions-with-settled-prerequisites' && rounds?.questions === 'all-independent-actionable-frontier-questions-with-recommendations' && rounds?.advance === 'after-real-user-response', 'Plan 澄清未按依赖前沿分轮并等待真实回复');
+  ensure(rounds?.unsettled_facts === 'wait-only-for-dependent-questions' && rounds?.reuse === 'unchanged-confirmed-decisions' && rounds?.correction === 'reopen-only-affected-decisions-and-dependencies' && rounds?.independent_authorized_work === 'continue', 'Plan 澄清缺少确认复用、受影响重开或独立工作继续策略');
+  const exit = policy?.convergence;
+  ensure(includesAll(exit?.summary, ['user_problem', 'goals', 'mvp', 'non_goals', 'key_rules', 'acceptance_examples', 'open_item_resolutions', 'remaining_uncertainty']) && exit?.required_open_items === 'resolved-with-current-evidence' && exit?.facts_and_verification === 'readable-evidence-required', 'Plan 共同理解摘要或未决项当前证据要求不完整');
+  ensure(exit?.preparation_check === 'grill_exit' && exit?.preparation_passed_means === 'clarification-materials-and-prerequisites-ready' && exit?.final_confirmation_boundary === 'gate.plan-approved' && exit?.final_confirmation === 'shared-understanding-and-current-plan-in-one-real-response', 'Plan 澄清准备与最终合并确认边界不完整');
+  ensure(exit?.final_confirmation_proof === 'plan_user_decision_ref-or-valid-plan_continuation_ref' && exit?.confirmation_writeback === 'external-proof-without-review-or-basis-rewrite' && exit?.completion === 'passed-preparation-and-valid-current-user-decision', 'Plan 最终回复未独立绑定固定审阅包，或准备完成被当作批准');
+  ensure(data.grill_exit?.preparation_check === 'grill_exit' && data.grill_exit?.final_confirmation_boundary === 'gate.plan-approved' && data.grill_exit?.completion === exit.completion, 'grill_exit 与 Plan 两层澄清退出要求冲突');
+}
+
 function validateMattContract(data) {
+  validatePlanClarificationPolicy(data);
   const formal = data.entry_routing?.formal_user_entry;
   ensure(includesAll(formal?.skills, ["setup-matt-pocock-skills", "to-spec", "to-tickets", "implement"]) && formal?.action === "lifecycle-validate-and-accept" && formal?.lifecycle_artifact_write === "conditional-explicit-user-entry" && formal?.return_to_orchestrator === "required", "正式用户入口缺少生命周期预检与回交约束");
   const setup = data.setup_readiness;
@@ -533,6 +551,18 @@ export function runScenario(name) {
       (item) => { item.matt_invocation_boundary.user_invoked_skills.push("unexpected-user-entry"); },
       (item) => { item.setup_readiness.lifecycle_may_invoke_setup = true; },
       (item) => { item.grill_exit.user_confirmation_required = false; },
+      (item) => { delete item.planning.clarification_policy; },
+      (item) => { item.planning.clarification_policy.explicit_user_invocation_required = true; },
+      (item) => { item.planning.clarification_policy.dispositions.discoverable_fact = 'ask-user'; },
+      (item) => { item.planning.clarification_policy.dispositions.runnable_blocker = 'grilling'; },
+      (item) => { item.planning.clarification_policy.dispositions.professional_wait = 'ask-user-to-approve'; },
+      (item) => { item.planning.clarification_policy.rounds.frontier = 'all-open-questions'; },
+      (item) => { item.planning.clarification_policy.rounds.advance = 'after-timeout'; },
+      (item) => { item.planning.clarification_policy.rounds.reuse = 'reask-all'; },
+      (item) => { item.planning.clarification_policy.rounds.correction = 'reopen-all'; },
+      (item) => { item.planning.clarification_policy.rounds.independent_authorized_work = 'stop'; },
+      (item) => { item.planning.clarification_policy.convergence.preparation_passed_means = 'plan-approved'; },
+      (item) => { item.planning.clarification_policy.convergence.confirmation_writeback = 'rewrite-review-with-reply'; },
       (item) => { delete item.git_authorization.explicit_scoped_user_reply_may_be_normalized; },
       (item) => { item.git_authorization.explicit_scoped_user_reply_may_be_normalized = false; },
       (item) => { delete item.git_authorization.push; },

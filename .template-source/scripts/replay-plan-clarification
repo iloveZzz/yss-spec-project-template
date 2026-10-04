@@ -1,0 +1,301 @@
+#!/usr/bin/env python3
+"""Replay disposable Plan cases through skills-agent-eval; never approve product work.
+
+Usage: replay-plan-clarification --output <new-external-dir> [--preflight]
+The configured Codex model/effort are inherited, never replaced by a fixed model.
+preflight freezes inputs and validates fixtures without invoking a model. Reruns use
+new output directories, preserving failures. Automatic checks require trace evidence;
+semantic_review remains pending until a maintainer trace review is recorded.
+"""
+import argparse
+import hashlib
+import io
+import importlib.util
+import json
+import os
+from pathlib import Path
+import shutil
+import subprocess
+import sys
+import tarfile
+import tomllib
+from types import SimpleNamespace
+
+sys.dont_write_bytecode = True
+ROOT = Path(__file__).resolve().parents[2]
+SUITE = Path(__file__).with_name('plan-clarification-scenarios.json')
+EVALUATOR = Path(__file__).with_name('skills-agent-eval.py')
+
+
+def sha(data):
+    return 'sha256:' + hashlib.sha256(data).hexdigest()
+
+
+def save(file, value):
+    file.write_text(json.dumps(value, ensure_ascii=False, indent=2) + '\n')
+
+
+def selected_defaults(config):
+    if not config.is_file():
+        return {'model': None, 'reasoning_effort': None, 'config_source': None}
+    data = tomllib.loads(config.read_text())
+    selected = {'model': data.get('model'), 'reasoning_effort': data.get('model_reasoning_effort'), 'config_source': str(config)}
+    for key in ['model', 'reasoning_effort']:
+        if selected[key] is not None and (not isinstance(selected[key], str) or not selected[key]):
+            raise ValueError('configured ' + key + ' must be a nonempty string')
+    return selected
+
+
+def configured_command(original, defaults):
+    """Adapt only mandatory evaluator flags when the user has no configured value."""
+    def command(args, runtime, workspace, private, env):
+        values = original(args, runtime, workspace, private, env)
+        if not defaults['model']:
+            index = values.index('--model')
+            del values[index:index + 2]
+        if not defaults['reasoning_effort']:
+            index = next(i for i, value in enumerate(values) if value.startswith('model_reasoning_effort='))
+            del values[index - 1:index + 1]
+        return values
+    return command
+
+
+
+def trace_assertions(original):
+    """Plan command assertions include observed completed shell calls, not only stubs.
+
+    The shared evaluator's command log covers PATH substitutes. Local node/read
+    commands are observable only in normalized traces. Text alone still needs
+    maintainer review to prove the claimed effect; no agent message is accepted.
+    """
+    def check(case, workspace, events, command_log):
+        observed = '\n'.join(event['item'].get('command', '') for event in events
+                             if event.get('type') == 'item.completed'
+                             and event.get('item', {}).get('type') == 'command_execution'
+                             and type(event['item'].get('exit_code')) is int)
+        return original(case, workspace, events, command_log + '\n' + observed)
+    return check
+
+def external_output(value):
+    raw = Path(value).absolute()
+    current = raw
+    while current != current.parent:
+        if current.is_symlink():
+            raise ValueError('output path cannot contain symlinks')
+        current = current.parent
+    output = raw.resolve()
+    if output.is_relative_to(ROOT) or output.exists():
+        raise ValueError('choose a new output directory outside the repository')
+    return output
+
+
+def safe_refs(refs):
+    for ref in refs:
+        value = Path(ref)
+        if not ref or value.is_absolute() or '..' in value.parts or ref == '.':
+            raise ValueError('unsafe source path: ' + ref)
+
+
+def freeze(root, target, refs, baseline_ref=None):
+    """Copy real bytes without symlinks, credentials, user config or Git metadata."""
+    target.mkdir(parents=True)
+    safe_refs(refs)
+    materialized = []
+    if baseline_ref:
+        tracked = subprocess.check_output(['git', 'ls-tree', '-r', '--name-only', baseline_ref, '--', *refs], cwd=root).decode().splitlines()
+        present = [ref for ref in refs if any(file == ref or file.startswith(ref + '/') for file in tracked)]
+        if not present:
+            raise ValueError('baseline source closure is empty')
+        archive = subprocess.check_output(['git', 'archive', '--format=tar', baseline_ref, '--', *present], cwd=root)
+        links = []
+        with tarfile.open(fileobj=io.BytesIO(archive)) as entries:
+            for entry in entries:
+                ref = entry.name.rstrip('/')
+                safe_refs([ref])
+                if entry.issym() and ref.startswith('.codex/skills/'):
+                    links.append((ref, entry.linkname))
+                    continue
+                if not entry.isfile() and not entry.isdir():
+                    raise ValueError('unsupported baseline source: ' + ref)
+                destination = target / ref
+                if entry.isdir():
+                    destination.mkdir(parents=True, exist_ok=True)
+                else:
+                    destination.parent.mkdir(parents=True, exist_ok=True)
+                    destination.write_bytes(entries.extractfile(entry).read())
+                    destination.chmod(entry.mode & 0o777)
+        for ref, link in links:
+            destination = target / ref
+            origin = (destination.parent / link).resolve()
+            if not origin.is_relative_to((target / '.agents/skills').resolve()) or not origin.is_dir():
+                raise ValueError('projection link does not target frozen canonical skill: ' + ref)
+            shutil.copytree(origin, destination)
+            materialized.append({'ref': ref, 'link_target': link, 'canonical_ref': str(origin.relative_to(target))})
+    else:
+        for ref in refs:
+            source = root / ref
+            if not source.exists():
+                raise ValueError('missing candidate source: ' + ref)
+            if source.is_symlink():
+                raise ValueError('source symlink requires explicit materialization: ' + ref)
+            candidates = [source] if source.is_file() else sorted(source.rglob('*'))
+            for file in candidates:
+                if not file.is_symlink():
+                    continue
+                origin = file.resolve()
+                if not ref.startswith('.codex/skills') or not origin.is_relative_to((root / '.agents/skills').resolve()) or not origin.is_dir():
+                    raise ValueError('source symlink requires explicit materialization: ' + str(file))
+                materialized.append({'ref': str(file.relative_to(root)), 'link_target': str(file.readlink()), 'canonical_ref': str(origin.relative_to(root))})
+            destination = target / ref
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            if source.is_dir():
+                shutil.copytree(source, destination, ignore=shutil.ignore_patterns('node_modules', '__pycache__', '.git', '.DS_Store'))
+            else:
+                shutil.copy2(source, destination)
+    inventory = [{'ref': str(file.relative_to(target)), 'sha256': sha(file.read_bytes()), 'mode': file.stat().st_mode & 0o777} for file in sorted(target.rglob('*')) if file.is_file()]
+    return {'file_count': len(inventory), 'digest': sha(json.dumps(inventory, sort_keys=True).encode()), 'files': inventory, 'materialized_projection_links': materialized}
+
+
+def review_observations(output, variant, cases, evaluation):
+    rows = []
+    for case in cases:
+        for directory in sorted(output.glob(case['id'] + '-*')):
+            result_file = directory / 'result.json'
+            if not result_file.exists():
+                continue
+            result = json.loads(result_file.read_text())
+            for step in result.get('steps', []):
+                trace_dir = Path(step['trace']).parent
+                events_file = trace_dir / 'normalized-events.json'
+                events = json.loads(events_file.read_text()) if events_file.exists() else []
+                final = '\n'.join(event.get('item', {}).get('text', '') for event in events if event.get('item', {}).get('type') == 'agent_message')
+                (trace_dir / 'raw-answer.txt').write_text(final + '\n')
+                calls = [event['item'] for event in events if event.get('type') == 'item.completed' and event.get('item', {}).get('type') in ['command_execution', 'mcp_tool_call', 'file_change']]
+                save(trace_dir / 'observed-tool-calls.json', calls)
+                observed_models = sorted({value for event in events for value in [event.get('model'), event.get('model_name'), event.get('item', {}).get('model')] if isinstance(value, str) and value})
+                observed_grilling = any(read['skill'] == 'grilling' and read['status'] == 'observed-read' for read in evaluation.skill_reads(events))
+                rows.append({'scenario': case['id'], 'variant': variant, 'repeat': result['repeat'], 'step': step['step'], 'automatic_result': step['automatic_result'], 'actual_model': observed_models or 'unknown', 'skill_selection': 'observed-successful-read' if observed_grilling else 'unobserved', 'round_behavior': 'pending-trace-review', 'semantic_review': 'pending', 'trace_ref': str(Path(step['trace'])), 'expected_behavior': case['behavior_review']['expected'], 'forbidden_behavior': case['behavior_review']['forbidden'], 'limits': 'A successful local read is selection evidence, not proof of complete consumption or shared understanding.'})
+    return rows
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--output', required=True)
+    parser.add_argument('--codex', default=shutil.which('codex'))
+    parser.add_argument('--config-source', default=str(Path(os.environ.get('CODEX_HOME', str(Path.home() / '.codex'))) / 'config.toml'))
+    parser.add_argument('--baseline-ref', default='HEAD')
+    parser.add_argument('--variant', choices=['both', 'baseline', 'candidate'], default='both')
+    parser.add_argument('--scenario', action='append')
+    parser.add_argument('--repetitions', type=int, default=2)
+    parser.add_argument('--timeout', type=float, default=300)
+    parser.add_argument('--max-turns', type=int, default=48)
+    parser.add_argument('--max-seconds', type=float, default=7200)
+    parser.add_argument('--python-dependencies')
+    parser.add_argument('--preflight', action='store_true', help='freeze and validate sources/fixtures; no model calls')
+    args = parser.parse_args(argv)
+    if args.repetitions < 1 or args.max_turns < 1 or not 0 < args.timeout < float('inf') or not 0 < args.max_seconds < float('inf'):
+        parser.error('budgets must be positive and finite')
+    output = external_output(args.output)
+    suite = json.loads(SUITE.read_text())
+    cases = [case for case in suite['scenarios'] if not args.scenario or case['id'] in args.scenario]
+    if not cases or args.scenario and set(args.scenario) - {case['id'] for case in cases}:
+        parser.error('unknown or empty scenario selection')
+    defaults = selected_defaults(Path(args.config_source).expanduser().resolve())
+    if not args.codex or not Path(args.codex).is_file():
+        parser.error('configured Codex executable unavailable; no model run attempted')
+    runtime = Path(args.codex).resolve()
+    output.mkdir(parents=True)
+    frozen_runner = output / 'skills-agent-eval.py'
+    shutil.copy2(EVALUATOR, frozen_runner)
+    spec = importlib.util.spec_from_file_location('plan_skill_evaluator', frozen_runner)
+    evaluation = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(evaluation)
+    routing_flags, routing_binding = evaluation.codex_provider_flags(defaults['config_source'])
+    evaluation.codex_provider_flags = lambda unused: (list(routing_flags), dict(routing_binding))
+    evaluation.runtime_command = configured_command(evaluation.runtime_command, defaults)
+    evaluation.assertions = trace_assertions(evaluation.assertions)
+    frozen_suite = output / 'scenarios.json'
+    save(frozen_suite, suite)
+    refs = sorted({ref for case in cases for ref in case['source_paths']})
+    baseline = subprocess.check_output(['git', 'rev-parse', args.baseline_ref + '^{commit}'], cwd=ROOT).decode().strip()
+    variants = ['baseline', 'candidate'] if args.variant == 'both' else [args.variant]
+    metadata = {'schema_version': 1, 'kind': 'plan-clarification-replay', 'test_data_only': True, 'source_state': 'working-tree', 'baseline_commit': baseline, 'requested_runtime_defaults': defaults, 'actual_model': 'unknown', 'runtime_path': str(runtime), 'runtime_sha256': sha(runtime.read_bytes()), 'wrapper_sha256': sha(Path(__file__).read_bytes()), 'evaluator_sha256': sha(frozen_runner.read_bytes()), 'suite_sha256': sha(frozen_suite.read_bytes()), 'selected_scenarios': [case['id'] for case in cases], 'repetitions': args.repetitions, 'per_turn_timeout_seconds': args.timeout, 'max_turns': args.max_turns, 'max_seconds': args.max_seconds, 'status': 'preparing', 'semantic_review': 'pending', 'snapshots': {}, 'variants': {}, 'unexecuted': [], 'limits': ['Each step is a fresh runtime session restored from the same fixture bytes, not native conversation continuation.', 'Only actual successful skill reads and tool calls count as observation; model self-report never proves invocation.', 'Fixture decisions cannot approve real projects; tool stubs never prove external side effects.', 'Automatic result is separate from semantic review; absent runtime model metadata remains unknown.']}
+    save(output / 'metadata.json', metadata)
+    try:
+        metadata['preflight_checks'] = []
+        for variant in variants:
+            source = output / 'sources' / variant
+            metadata['snapshots'][variant] = freeze(ROOT, source, refs, baseline if variant == 'baseline' else None)
+            for case in cases:
+                evaluation.scenario_steps(case)
+                with __import__('tempfile').TemporaryDirectory(prefix='yss-plan-preflight-', dir=output) as directory:
+                    workspace = Path(directory) / 'workspace'
+                    workspace.mkdir()
+                    evaluation.prepare_workspace(source, workspace, case)
+                    dependencies = evaluation.prepare_python_dependencies(args.python_dependencies, workspace) if args.python_dependencies else None
+                    environment = os.environ.copy()
+                    environment.update(PYTHONNOUSERSITE='1', PYTHONDONTWRITEBYTECODE='1', PYTHONPATH=dependencies['path'] if dependencies else '')
+                    evaluation.allowed_writes(workspace, case)
+                    for step in evaluation.scenario_steps(case):
+                        evaluation.allowed_writes(workspace, step) if 'allowed_writes' in step else None
+                    if case.get('setup_script'):
+                        preparation = subprocess.run(['node', str(workspace / case['setup_script'])], cwd=workspace, env=environment, text=True, capture_output=True, timeout=60)
+                        if preparation.returncode:
+                            raise RuntimeError(f"preflight setup {variant}/{case['id']} failed: {preparation.stderr[:2000]}")
+                    checks = [('context', ['node', 'scripts/verify-context-contract', '--root', '.', '--json'], 0),
+                              ('skills', ['node', 'scripts/query-lifecycle-context', '--mode', 'route', '--stage', 'stage.plan', '--work-unit', 'work-unit.plan-requirements', '--check-skills', '--agent-runtime', 'codex'], 0)]
+                    schema = workspace / '.replay/preflight-schema.json'
+                    schema.parent.mkdir(exist_ok=True)
+                    save(schema, {'type': 'object', 'required': ['test_data_only'], 'properties': {'test_data_only': {'const': True}}})
+                    checks.append(('schema-engine', ['node', '--input-type=module', '-e', "import {validateJsonSchema} from './scripts/lib/json-schema.mjs';validateJsonSchema({test_data_only:true},'.replay/preflight-schema.json');console.log('schema-engine-observed');"], 0))
+                    if case.get('setup_script'):
+                        expected = 0 if case['id'] == 'combined-final-current-bound' else 1
+                        checks.append(('plan-spec-entry', ['node', 'scripts/verify-plan-spec-entry', '.replay/entry-state.json'], expected))
+                    for name, command, expected in checks:
+                        result = subprocess.run(command, cwd=workspace, env=environment, text=True, capture_output=True, timeout=60)
+                        logs = output / 'preflight' / variant / case['id']
+                        logs.mkdir(parents=True, exist_ok=True)
+                        (logs / (name + '.stdout.log')).write_text(result.stdout)
+                        (logs / (name + '.stderr.log')).write_text(result.stderr)
+                        row = {'variant': variant, 'scenario': case['id'], 'check': name, 'command': command, 'expected_exit_code': expected, 'exit_code': result.returncode, 'stdout_sha256': sha(result.stdout.encode()), 'stderr_sha256': sha(result.stderr.encode()), 'status': 'passed' if result.returncode == expected else 'failed'}
+                        metadata['preflight_checks'].append(row)
+                        save(output / 'metadata.json', metadata)
+                        if row['status'] == 'failed':
+                            raise RuntimeError(f"preflight {variant}/{case['id']}/{name}: expected {expected}, got {result.returncode}; inspect {logs}")
+            metadata['variants'][variant] = {'status': 'preflight-passed', 'model_attempted': False}
+            save(output / 'metadata.json', metadata)
+        if args.preflight:
+            metadata['status'] = 'preflight-passed'
+            metadata['unexecuted'] = [{'variant': variant, 'scenario': case['id'], 'reason': 'preflight-only'} for variant in variants for case in cases]
+            return 0
+        incomplete = False
+        codes = []
+        observations = []
+        for variant in variants:
+            if incomplete:
+                metadata['unexecuted'].extend({'variant': variant, 'scenario': case['id'], 'reason': 'prior-variant-incomplete'} for case in cases)
+                continue
+            config = SimpleNamespace(source=str(output / 'sources' / variant), scenarios=str(frozen_suite), output=str(output / variant), variant=variant, codex=str(runtime), model=defaults['model'] or 'unknown', reasoning_effort=defaults['reasoning_effort'] or 'unknown', repetitions=args.repetitions, timeout=args.timeout, scenario=args.scenario, python_dependencies=args.python_dependencies, runtime='codex', codex_config_source=defaults['config_source'], max_turns=args.max_turns, max_seconds=args.max_seconds, budget_ledger=str(output / 'budget.json'), exit_policy='strict')
+            code = evaluation.run(config)
+            codes.append(code)
+            incomplete = code == 2
+            summary = json.loads((output / variant / 'summary.json').read_text())
+            metadata['variants'][variant] = {'status': summary['status'], 'exit_code': code, 'summary_ref': str(output / variant / 'summary.json')}
+            observations += review_observations(output / variant, variant, cases, evaluation)
+            save(output / 'behavior-review.json', observations)
+            save(output / 'metadata.json', metadata)
+        metadata['status'] = 'incomplete' if 2 in codes else ('failed' if 1 in codes else 'automatic-passed-semantic-pending')
+        metadata['actual_model'] = sorted({model for row in observations if isinstance(row['actual_model'], list) for model in row['actual_model']}) or 'unknown'
+        return 2 if 2 in codes else (1 if 1 in codes else 0)
+    except (Exception, KeyboardInterrupt) as error:
+        metadata['status'] = 'incomplete'
+        metadata['error'] = {'type': type(error).__name__, 'message': str(error)}
+        metadata['unexecuted'] = [{'variant': variant, 'scenario': case['id'], 'reason': 'preparation-or-runtime-error'} for variant in variants for case in cases if metadata['variants'].get(variant, {}).get('status') not in ['passed', 'failed']]
+        return 2
+    finally:
+        save(output / 'metadata.json', metadata)
+        print(json.dumps({'output': str(output), 'status': metadata['status'], 'semantic_review': 'pending', 'actual_model': metadata['actual_model']}, ensure_ascii=False))
+
+
+if __name__ == '__main__':
+    sys.exit(main())

@@ -23,6 +23,8 @@
 
 ## 更新与验证
 
+发布已提交来源时：
+
 1. 先在战略设计源仓形成并推送固定 commit。
 2. 更新 manifest 的 `source_revision` 和每项 `upstream_hash`。
 3. 同步父模板 canonical 内容，仅重放上表允许的薄适配。
@@ -38,6 +40,8 @@
    ```
 
 父模板、战略设计源仓与 CLI 快照必须按源仓 → 父模板 → CLI 顺序固定 revision；旧实例不回填，也不提供迁移检查器。
+
+模板维护的 `implementation-ready` 可以先核验工作树：清单保留当前 HEAD 作为基线 `source_revision`，将 `source_state` 明确登记为 `working-tree`，由源仓当前字节计算 `upstream_hash`，仅重放受影响公共技能及既有薄适配，再生成投影、锁和仓外 CLI 快照。这不证明已提交来源或可发布；取得 Git 授权并固定源仓 commit 后，仍须更新来源清单、重建锁与快照并完成适用发布门禁。
 
 ## 真实用户决定适配
 
