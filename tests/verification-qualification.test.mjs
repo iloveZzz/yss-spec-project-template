@@ -3,15 +3,16 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import {spawnSync} from 'node:child_process';
+import {spawnSync,spawn} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {validateQualification, qualificationPerformance,qualificationRunEvidence,validateQualificationPlanLedger,validateQualificationReportEvidence,measureQualificationRun} from '../.template-source/scripts/lib/verification-qualification.mjs';
-import {runQualification} from '../.template-source/scripts/qualify-template-verification.mjs';
+import {runQualification,runQualificationWithSignals} from '../.template-source/scripts/qualify-template-verification.mjs';
 import {compileQualificationPlans} from '../.template-source/scripts/lib/verification-qualification-plan.mjs';
 import {addVerificationExecutionTasks,compileTaskExecution} from '../.template-source/scripts/lib/verification-execution-plan.mjs';
 import {loadVerificationProfiles,ROOT} from '../scripts/lib/template-verification.mjs';
 import {createVerificationReport,finalizeVerificationReport} from '../scripts/lib/verification-report.mjs';
 import {installedTreeDigest,prepareCliSourceConsumer} from '../.template-source/scripts/lib/verification-artifacts.mjs';
+import {executeVerificationPlan} from '../.template-source/scripts/lib/template-verification-worker.mjs';
 
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 async function observedProof(t) {
@@ -98,6 +99,73 @@ test('缺少可信 bootstrap baseline 时资格 driver 在创建输出和执行�
   const output=path.join(directory,'evidence');let executed=false;
   await assert.rejects(()=>runQualification({root:directory,config:{},output,executePairSide:async()=>{executed=true;}}),/bootstrap-baseline-invalid/);
   assert.equal(executed,false);assert.equal(fs.existsSync(output),false);
+});
+
+function qualificationDriverFixture(t) {
+  const directory=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'qualification-driver-stop-')));t.after(()=>fs.rmSync(directory,{recursive:true,force:true}));
+  const root=path.join(directory,'root');fs.mkdirSync(path.join(root,'scripts'),{recursive:true});fs.writeFileSync(path.join(root,'scripts/repository-mode'),'console.log("template-source");\n');
+  fs.mkdirSync(path.join(root,'.template-source/scripts/lib'),{recursive:true});fs.copyFileSync(new URL('../.template-source/scripts/lib/verification-preflight.mjs',import.meta.url),path.join(root,'.template-source/scripts/lib/verification-preflight.mjs'));
+  for(const args of [['init','-q'],['add','.'],['-c','user.name=Fixture','-c','user.email=fixture@example.invalid','commit','-qm','fixture']]){const result=spawnSync('git',args,{cwd:root,encoding:'utf8'});assert.equal(result.status,0,result.stderr);}
+  const commit=spawnSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).stdout.trim();
+  const plan={strategy:'qualified-gates',requested_profile:'candidate',effective_profile:'candidate',source_requirement:'current',required_files:[],syntax_files:[],groups:['check'],selection:{effective:'legacy',omitted:[]},representative_commit:commit,commands:[]};
+  return {directory,root,plan};
+}
+test('资格配对一侧真实失败立即停止，保留partial pair且候选侧未启动',async t=>{
+  const f=qualificationDriverFixture(t),started=[],quote=value=>`'${String(value).replaceAll("'","'\\''")}'`;
+  f.plan.commands=[{id:'check.fail',task_id:'fixture.failure',group:'check',command:`${quote(process.execPath)} -e ${quote('console.error("actual legacy failure");process.exit(7)')}`}];
+  const result=await runQualification({root:f.root,config:{},bindings:{fixture:'bounded-process'},scope:'pilot',output:path.join(f.directory,'evidence'),
+    makePlans:()=>({legacy:f.plan,candidate:f.plan}),executePairSide:async options=>{started.push(options.side);return executeVerificationPlan(options);}});
+  assert.deepEqual(started,['legacy']);assert.equal(result.status,'failed');assert.equal(result.proof.pairs.length,0);
+  const partial=result.proof.active_pair;assert.equal(partial.status,'failed');assert.equal(partial.candidate,undefined);assert.equal(partial.legacy.actual_close.code,1);
+  const report=JSON.parse(fs.readFileSync(path.join(path.dirname(result.reportFile),partial.legacy.report_ref)));assert.equal(report.results.find(row=>row.task_id==='fixture.failure').actual_exit_code,7);
+  assert.equal(report.final_exit.observed,true);assert.ok(fs.existsSync(report.results.find(row=>row.task_id==='fixture.failure').stderrFile));
+});
+
+test('资格入口持久处理中断，真实legacy和后代关闭后不启动candidate并保留原始证据',async t=>{
+  for(const signalName of ['SIGINT','SIGTERM']) {
+    const f=qualificationDriverFixture(t),marker=path.join(f.directory,'legacy-pids.json'),startedFile=path.join(f.directory,'started.json'),outcomeFile=path.join(f.directory,'outcome.json'),entry=path.join(f.directory,'driver.mjs'),quote=value=>`'${String(value).replaceAll("'","'\\''")}'`;
+    const source=`const fs=require('node:fs'),{spawn}=require('node:child_process');const child=spawn(process.execPath,['-e','setInterval(()=>{},1000)'],{stdio:'ignore'});child.once('exit',()=>process.exit(130));process.on('SIGTERM',()=>child.kill('SIGTERM'));process.on('SIGINT',()=>child.kill('SIGTERM'));console.log('actual legacy long process');fs.writeFileSync(${JSON.stringify(marker)},JSON.stringify({pid:process.pid,descendant:child.pid}));setInterval(()=>{},1000);`;
+    f.plan.commands=[{id:'check.wait',task_id:'fixture.wait',group:'check',command:`${quote(process.execPath)} -e ${quote(source)}`}];
+    const driverUrl=new URL('../.template-source/scripts/qualify-template-verification.mjs',import.meta.url).href,workerUrl=new URL('../.template-source/scripts/lib/template-verification-worker.mjs',import.meta.url).href;
+    fs.writeFileSync(entry,`import fs from 'node:fs';import {runQualificationWithSignals} from ${JSON.stringify(driverUrl)};import {executeVerificationPlan} from ${JSON.stringify(workerUrl)};
+const started=[],before={SIGINT:process.listenerCount('SIGINT'),SIGTERM:process.listenerCount('SIGTERM')},plan=${JSON.stringify(f.plan)};
+const result=await runQualificationWithSignals({root:${JSON.stringify(f.root)},config:{},bindings:{fixture:'bounded-process'},scope:'pilot',output:${JSON.stringify(path.join(f.directory,'evidence'))},makePlans:()=>({legacy:plan,candidate:plan}),executePairSide:async options=>{started.push(options.side);fs.writeFileSync(${JSON.stringify(startedFile)},JSON.stringify(started));return executeVerificationPlan(options);}});
+fs.writeFileSync(${JSON.stringify(outcomeFile)},JSON.stringify({result,before,after:{SIGINT:process.listenerCount('SIGINT'),SIGTERM:process.listenerCount('SIGTERM')}}));process.exitCode=result.status==='interrupted'?130:1;
+`);
+    const child=spawn(process.execPath,[entry],{stdio:['ignore','pipe','pipe']});let stdout='',stderr='';child.stdout.on('data',data=>stdout+=data);child.stderr.on('data',data=>stderr+=data);
+    t.after(()=>{try{child.kill('SIGTERM');}catch{}});
+    const closed=new Promise(resolve=>child.once('close',(code,signal)=>resolve({code,signal}))),deadline=Date.now()+10000;
+    while(!fs.existsSync(marker)&&Date.now()<deadline&&child.exitCode===null)await new Promise(resolve=>setTimeout(resolve,10));
+    assert.ok(fs.existsSync(marker),stderr);const pids=JSON.parse(fs.readFileSync(marker));child.kill(signalName);
+    const close=await Promise.race([closed,new Promise((_,reject)=>{const timer=setTimeout(()=>reject(Error('qualification interrupt close timeout')),10000);timer.unref();})]);
+    assert.deepEqual(close,{code:130,signal:null},stderr);const {result,before,after}=JSON.parse(fs.readFileSync(outcomeFile));assert.deepEqual(after,before);
+    assert.deepEqual(JSON.parse(fs.readFileSync(startedFile)),['legacy']);assert.equal(result.status,'interrupted');assert.equal(result.proof.pairs.length,0);assert.equal(result.proof.active_pair.status,'interrupted');assert.equal(result.proof.active_pair.candidate,undefined);assert.deepEqual(result.proof.active_pair.unexecuted_sides,['candidate']);assert.equal(result.proof.interruption_reason,signalName);
+    const run=result.proof.active_pair.legacy,reportFile=path.join(path.dirname(result.reportFile),run.report_ref),report=JSON.parse(fs.readFileSync(reportFile));
+    assert.equal(run.report_sha256,hash(fs.readFileSync(reportFile)));assert.deepEqual(run.actual_close,report.final_exit);assert.equal(report.status,'interrupted');assert.equal(report.final_exit.observed,true);assert.equal(report.final_exit.code,130);
+    const row=report.results.find(item=>item.task_id==='fixture.wait');assert.ok(row);for(const ref of [row.stdoutFile,row.stderrFile]){assert.ok(fs.existsSync(ref));assert.equal(run.log_digests[ref],hash(fs.readFileSync(ref)));}
+    assert.ok(fs.existsSync(path.join(path.dirname(result.reportFile),run.measurement.ref)));assert.ok(stdout.includes('actual legacy long process'));
+    for(const pid of Object.values(pids)){const until=Date.now()+1000;while(Date.now()<until){try{process.kill(pid,0);await new Promise(resolve=>setTimeout(resolve,10));}catch(error){assert.equal(error.code,'ESRCH');break;}}assert.throws(()=>process.kill(pid,0),error=>error.code==='ESRCH');}
+  }
+});
+
+test('资格worker真实SIGKILL的未观察退出仍保留partial原始报告和close且不能授予资格',async t=>{
+  const f=qualificationDriverFixture(t),marker=path.join(f.directory,'task-pid'),controller=new AbortController(),started=[],quote=value=>`'${String(value).replaceAll("'","'\\''")}'`;
+  f.plan.commands=[{id:'check.wait',task_id:'fixture.wait',group:'check',command:`${quote(process.execPath)} -e ${quote(`console.log('actual forced-close task');require('node:fs').writeFileSync(${JSON.stringify(marker)},String(process.pid));setInterval(()=>{},1000);`)}`}];
+  let workerPid,taskPid;
+  const result=await runQualificationWithSignals({root:f.root,config:{},bindings:{fixture:'bounded-process'},scope:'pilot',signal:controller.signal,output:path.join(f.directory,'evidence'),makePlans:()=>({legacy:f.plan,candidate:f.plan}),executePairSide:async options=>{
+    started.push(options.side);const execution=executeVerificationPlan(options),deadline=Date.now()+10000;
+    while(!fs.existsSync(marker)&&Date.now()<deadline)await new Promise(resolve=>setTimeout(resolve,10));assert.ok(fs.existsSync(marker));taskPid=Number(fs.readFileSync(marker));
+    let current=taskPid;for(let index=0;index<10;index++){const parent=Number(spawnSync('ps',['-p',String(current),'-o','ppid='],{encoding:'utf8'}).stdout.trim());if(parent===process.pid){workerPid=current;break;}assert.ok(parent>1);current=parent;}
+    assert.ok(workerPid>1);controller.abort('forced-worker-close');process.kill(workerPid,'SIGKILL');return execution;
+  }});
+  assert.deepEqual(started,['legacy']);assert.equal(result.status,'interrupted');assert.equal(result.proof.pairs.length,0);
+  const run=result.proof.active_pair.legacy;assert.equal(run.diagnostic,true);assert.equal(run.execution_outcome.observed,false);assert.deepEqual(run.actual_close,{code:null,signal:'SIGKILL',observed:false});
+  const reportFile=path.join(path.dirname(result.reportFile),run.report_ref),report=JSON.parse(fs.readFileSync(reportFile));assert.deepEqual(report.final_exit,run.actual_close);assert.equal(run.report_sha256,hash(fs.readFileSync(reportFile)));
+  assert.ok(report.results.length);for(const row of report.results)for(const ref of [row.stdoutFile,row.stderrFile])if(ref){assert.ok(fs.existsSync(ref));assert.equal(run.log_digests[ref],hash(fs.readFileSync(ref)));}
+  const rawLogs=fs.readdirSync(path.join(path.dirname(reportFile),'logs')).filter(ref=>/\.(?:stdout|stderr)$/.test(ref));assert.ok(rawLogs.length>=4);for(const ref of rawLogs){const file=path.join(path.dirname(reportFile),'logs',ref);assert.equal(run.log_digests[file],hash(fs.readFileSync(file)));}
+  assert.equal(result.proof.active_pair.candidate,undefined);assert.deepEqual(result.proof.active_pair.unexecuted_sides,['candidate']);
+  assert.equal(validateQualification({root:f.root,config:{},reportFile:result.reportFile,expectedBindings:result.proof.bindings,scope:'pilot'}).valid,false);
+  for(const pid of [workerPid,taskPid]){const until=Date.now()+1000;while(Date.now()<until){try{process.kill(pid,0);await new Promise(resolve=>setTimeout(resolve,10));}catch(error){assert.equal(error.code,'ESRCH');break;}}assert.throws(()=>process.kill(pid,0),error=>error.code==='ESRCH');}
 });
 
 test('独立资格编译器拒绝成对删除 syntax、preflight、prepare、cleanup 与 Gate 台账',t=>{

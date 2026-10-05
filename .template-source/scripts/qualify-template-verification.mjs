@@ -36,6 +36,18 @@ export async function executeQualificationSide(options) {
   }
   return result;
 }
+const interruption=()=>Object.assign(new Error('qualification-interrupted'),{code:'QUALIFICATION_INTERRUPTED'});
+const interruptedOutcome=(result,signal)=>signal?.aborted||result.code===130||result.report?.status==='interrupted'||['SIGINT','SIGTERM'].includes(result.signal);
+
+/** The main process owns a persistent signal, even between worker lifetimes. */
+export async function runQualificationWithSignals(options) {
+  const controller=new AbortController(),abort=name=>{if(!controller.signal.aborted)controller.abort(name);};
+  const onInt=()=>abort('SIGINT'),onTerm=()=>abort('SIGTERM'),onExternal=()=>abort(options.signal.reason||'external-abort');
+  process.on('SIGINT',onInt);process.on('SIGTERM',onTerm);options.signal?.addEventListener('abort',onExternal,{once:true});
+  if(options.signal?.aborted)onExternal();
+  try {return await runQualification({...options,signal:controller.signal});}
+  finally {process.off('SIGINT',onInt);process.off('SIGTERM',onTerm);options.signal?.removeEventListener('abort',onExternal);}
+}
 
 /** The root may wrap each side with real all-four release integration; timings include the callback. */
 export async function runQualification({root=ROOT,config=loadVerificationProfiles(),output,base,baselineReport,baselineReportDigest,baselineAssessment,baselineValidator=validateBaselineReport,representative,negativeCases=[],routeCases=[],runCount=5,executePairSide=executeQualificationSide,makePlans=makeQualificationPlans,scope='gates',bindings:providedBindings,signal,environment=process.env}={}) {
@@ -56,11 +68,14 @@ export async function runQualification({root=ROOT,config=loadVerificationProfile
     representative_changed_files:[...new Set(representative?.changed_files||[])].sort(),
     input_sha256:originalInput,pairs:[],route_cases:[],negative_cases:[],performance:null,activation:'experimental-only'};
   const reportFile=path.join(output,'qualification.json'),save=()=>fs.writeFileSync(reportFile,JSON.stringify(proof,null,2)+'\n');save();
-  const run=async(side,plans,directory,caseRoot=root,caseEnvironment=environment)=>{
-    if(signal?.aborted)throw Error('qualification-interrupted');
+  const interruptCheckpoint=async()=>{await new Promise(resolve=>setImmediate(resolve));if(signal?.aborted)throw interruption();};
+  const run=async(side,plans,directory,caseRoot=root,caseEnvironment=environment,onEvidence=()=>{})=>{
+    if(signal?.aborted)throw interruption();
     let evidence;
     const measured=await measureQualificationRun({directory:output,reference:`${path.basename(directory)}.measurement.json`,execute:async()=>{
       const result=await executePairSide({side,root:caseRoot,plan:plans[side],reportDir:directory,purpose:'qualification',concurrency:side==='legacy'?1:2,toolingMode:side==='legacy'?'legacy':'optimized',environment:caseEnvironment,signal});
+      evidence=qualificationRunEvidence(result,{directory:output,diagnostic:!result.observed||result.code!==0||interruptedOutcome(result,signal)});
+      onEvidence(evidence);
       if(scope==='gates'&&result.observed&&result.code===0) {
         const reportFile=fs.realpathSync(result.reportFile),report=JSON.parse(fs.readFileSync(reportFile));
         validateQualificationSideEvidence({root:caseRoot,config,proof,report,reportDirectory:path.dirname(reportFile),side,observedExitCode:result.code});
@@ -68,26 +83,34 @@ export async function runQualification({root=ROOT,config=loadVerificationProfile
         const integrationFile=fs.realpathSync(result.integrationReportFile),checked=validateQualificationIntegration({root:caseRoot,reportFile:integrationFile,expectedDigest:verificationHash(fs.readFileSync(integrationFile)),expectedCommit:proof.representative_commit});
         if(!checked.valid)throw Error(`qualification-all-four-release-invalid:${checked.reasons.join(',')}`);
       }
-      evidence=qualificationRunEvidence(result,{directory:output});
       if(result.integrationReportFile){const file=fs.realpathSync(result.integrationReportFile);evidence.integration={report_ref:path.relative(output,file),report_sha256:verificationHash(fs.readFileSync(file))};}
       return result;
     }});
     evidence.wall_ms=measured.wall_ms;
     evidence.measurement=measured.measurement;
-    return evidence;
+    return {evidence,result:measured.result};
   };
   try {
     const plans=makePlans({root,config,base,changedFiles:representative?.changed_files||[]});
     proof.representative_commit=plans.legacy.representative_commit;save();
     for(let index=0;index<runCount;index++) {
-      const order=index%2?['candidate','legacy']:['legacy','candidate'],pair={pair_id:`pair.${index}`,scenario_id:representative?.id||'fixed-all-four-candidate',order};
-      for(const side of order)pair[side]=await run(side,plans,path.join(output,`${pair.pair_id}-${side}`));
-      proof.pairs.push(pair);save();
-      if(pair.legacy.actual_close.code!==0||pair.candidate.actual_close.code!==0)throw Error('qualification-pair-execution-failed');
+      await interruptCheckpoint();
+      const order=index%2?['candidate','legacy']:['legacy','candidate'],pair={pair_id:`pair.${index}`,scenario_id:representative?.id||'fixed-all-four-candidate',order,status:'running',unexecuted_sides:[...order]};
+      proof.active_pair=pair;save();
+      for(const side of order) {
+        await interruptCheckpoint();
+        pair.active_side=side;save();
+        const observed=await run(side,plans,path.join(output,`${pair.pair_id}-${side}`),root,environment,evidence=>{pair[side]=evidence;save();});
+        pair[side]=observed.evidence;pair.unexecuted_sides=order.filter(name=>!pair[name]);delete pair.active_side;save();
+        if(interruptedOutcome(observed.result,signal))throw interruption();
+        if(!observed.result.observed||observed.result.code!==0||observed.result.signal)throw Error('qualification-pair-execution-failed');
+      }
+      pair.status='passed';proof.pairs.push(pair);delete proof.active_pair;save();
       if(verificationInputDigest(root)!==originalInput)throw Error('qualification-input-drift');
     }
     const registeredRoutes=scope==='gates'?QUALIFICATION_ROUTE_REGISTRY:routeCases;
     for(const [index,caseInput]of registeredRoutes.entries()) {
+      await interruptCheckpoint();
       let actual,error=null;
       try {const planned=planTemplateVerification({root,config,base,profile:'release',changedFiles:caseInput.changed_files});actual={strategy:planned.strategy,task_ids:planned.shadow_commands.map(task=>task.task_id),gate_ids:planned.shadow_commands.flatMap(task=>task.gate_ids||[])};}
       catch(failure){error=failure.message;}
@@ -97,20 +120,25 @@ export async function runQualification({root=ROOT,config=loadVerificationProfile
       if(!passed)throw Error('qualification-route-rejected');
     }
     for(const [index,caseInput]of negativeCases.entries()) {
+      await interruptCheckpoint();
       const caseRoot=caseInput.root||root,plans=makePlans({root:caseRoot,config,base,changedFiles:caseInput.changed_files||[]});
       const environmentForCase={...environment,...caseInput.environment};
       for(const name of caseInput.unset_environment||[])delete environmentForCase[name];
       const row={id:caseInput.id,category:caseInput.category,covered_old_ids:caseInput.covered_old_ids,expected_gate_ids:caseInput.expected_gate_ids};
-      for(const side of ['legacy','candidate'])row[side]=await run(side,plans,path.join(output,`negative.${index}-${side}`),caseRoot,environmentForCase);
+      for(const side of ['legacy','candidate']){await interruptCheckpoint();const observed=await run(side,plans,path.join(output,`negative.${index}-${side}`),caseRoot,environmentForCase);row[side]=observed.evidence;if(interruptedOutcome(observed.result,signal))throw interruption();}
       proof.negative_cases.push(row);save();
       if(row.legacy.actual_close.code===0||row.candidate.actual_close.code===0)throw Error('qualification-negative-escaped');
     }
+    await interruptCheckpoint();
     if(scope==='gates'){proof.counterexamples=collectQualificationCounterexamples({root,directory:output});save();}
+    await interruptCheckpoint();
     proof.performance=qualificationPerformance(proof.pairs.map(pair=>pair.legacy.wall_ms),proof.pairs.map(pair=>pair.candidate.wall_ms));
     proof.status='passed';save();
     const validation=validateQualification({root,config,reportFile,expectedDigest:verificationHash(fs.readFileSync(reportFile)),expectedBindings:bindings,scope});
     if(!validation.valid){proof.status='failed';proof.errors=validation.reasons;save();}
-  }catch(error){proof.status=signal?.aborted?'interrupted':'failed';proof.errors=[error.message];save();}
+  }catch(error){proof.status=signal?.aborted||error.code==='QUALIFICATION_INTERRUPTED'?'interrupted':'failed';proof.errors=[error.message];
+    if(proof.active_pair){proof.active_pair.status=proof.status;proof.active_pair.unexecuted_sides=proof.active_pair.order.filter(side=>!proof.active_pair[side]);proof.active_pair.stop_reason=error.message;}
+    if(signal?.aborted)proof.interruption_reason=String(signal.reason||'aborted');save();}
   return {status:proof.status,reportFile,proof};
 }
 
@@ -119,7 +147,7 @@ async function main() {
   if(values.help){process.stdout.write('qualify-template-verification.mjs --root <fixed checkout> --base <40 SHA> --baseline-report <absolute release report> --baseline-report-sha256 <64 SHA> --cases <case corpus JSON> --output <new external directory> [--runs 5]\nExperimental evidence only; paired timing includes actual all-four package/install/migration integration.\n');return;}
   if(!/^[a-f0-9]{40}$/.test(values.base||'')||!values.cases)throw Error('qualification requires a full base SHA and an explicit case corpus');
   const cases=JSON.parse(fs.readFileSync(values.cases,'utf8')),root=fs.realpathSync(values.root),config=loadVerificationProfiles(fs.readFileSync(path.join(root,'.template-source/process/template-verification-profiles.yaml'),'utf8'));
-  const result=await runQualification({root,config,base:values.base,baselineReport:values['baseline-report'],baselineReportDigest:values['baseline-report-sha256'],output:values.output,runCount:Number(values.runs),representative:cases.representative,negativeCases:cases.negative_cases,routeCases:cases.route_cases});
-  process.stdout.write(JSON.stringify({status:result.status,reportFile:result.reportFile})+'\n');if(result.status!=='passed')process.exitCode=1;
+  const result=await runQualificationWithSignals({root,config,base:values.base,baselineReport:values['baseline-report'],baselineReportDigest:values['baseline-report-sha256'],output:values.output,runCount:Number(values.runs),representative:cases.representative,negativeCases:cases.negative_cases,routeCases:cases.route_cases});
+  process.stdout.write(JSON.stringify({status:result.status,reportFile:result.reportFile})+'\n');if(result.status!=='passed')process.exitCode=result.status==='interrupted'?130:1;
 }
 if(process.argv[1]&&pathToFileURL(path.resolve(process.argv[1])).href===import.meta.url)main().catch(error=>{process.stderr.write(error.message+'\n');process.exitCode=1;});

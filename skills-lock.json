@@ -854,7 +854,7 @@
         "source": "iloveZzz/yss-harness-design-agent",
         "sourceType": "git-submodule",
         "skillPath": ".agents/skills/yss-prototype-stage/SKILL.md",
-        "effectiveHash": "661ef1a3c5046d2ebc31f0840e512dd719a2fc33157360da7edc1dd72d49d4ff",
+        "effectiveHash": "ef5114baad2cd4b8b6ad65a801e9dabbae3753c7dd7cca4848bbf88f8fecb678",
         "sourceRevision": "b9f7923ccc0bd5d55443e49cb2fe5857d623c648",
         "upstreamHash": "9d1177a3f7f4737e08f084049ca3c0a6e8da0c5327da8370a87262a1b5db3b8e",
         "adaptationRef": ".template-source/agents/strategic-design-skills-integration.md",

@@ -64,7 +64,7 @@ test('正常完整worker采用DAG，普通失败保留独立结果和明确下�
     {id:'check.dependent',task_id:'dependent',group:'two',command:node('process.exit(99)'),depends_on:['failure']},
   ]};
   const outcome=await executeVerificationPlan({root,plan,reportDir:path.join(directory,'report'),purpose:'qualification'}),rows=Object.fromEntries(outcome.report.results.map(row=>[row.task_id,row]));
-  assert.equal(outcome.code,1);assert.equal(rows.failure.actual_exit_code,7);assert.equal(rows.independent.actual_exit_code,0);assert.equal(rows.dependent.termination,'dependency-failed');assert.equal(outcome.report.legacy_reference,undefined);assert.deepEqual(outcome.report.unexecuted,[]);
+  assert.equal(outcome.code,1);assert.equal(rows.failure.actual_exit_code,7);assert.equal(rows.independent.actual_exit_code,0);assert.equal(rows.dependent.termination,'dependency-failed');assert.equal(outcome.report.legacy_reference,undefined);assert.deepEqual(outcome.report.unexecuted.map(row=>row.task_id),['dependent']);assert.equal(outcome.report.unexecuted[0].reason,'dependency-failed');
 });
 test('两个Node测试文件默认会重叠，透明执行显式串行并保留请求与实际tuple',async t=>{
   const directory=temporary(t),active=path.join(directory,'active');fs.mkdirSync(active);
@@ -286,4 +286,29 @@ test('缺Vue的真实preflight子进程失败，昂贵任务未启动且父close
   assert.equal(outcome.code,1);assert.equal(outcome.report.results.length,1);
   const failure=outcome.report.results[0];assert.equal(failure.task_id,'check.verification-environment');assert.equal(failure.actual_exit_code,1);assert.equal(failure.actual_exit_code_observed,true);
   assert.match(outcome.report.error,/YSS_VUE_TOOLCHAIN/);assert.ok(outcome.report.unexecuted.some(row=>row.task_id==='expensive'));
+});
+
+test('实现合同包装入口的真实Node子批次始终串行，外层并发不会扩大内层白名单',t=>{
+  const directory=temporary(t),trace=path.join(directory,'trace.jsonl'),receipt=path.join(directory,'requested.json');
+  const files=['a','b'].map(name=>{
+    const file=path.join(directory,`${name}.test.mjs`);
+    fs.writeFileSync(file,`import fs from 'node:fs';import test from 'node:test';test('probe',async()=>{fs.appendFileSync(${JSON.stringify(trace)},JSON.stringify({event:'start',pid:process.pid})+'\\n');await new Promise(resolve=>setTimeout(resolve,180));fs.appendFileSync(${JSON.stringify(trace)},JSON.stringify({event:'end',pid:process.pid})+'\\n');});\n`);
+    return file;
+  });
+  const maximum=()=>{let active=0,max=0;for(const line of fs.readFileSync(trace,'utf8').trim().split('\n')){active+=JSON.parse(line).event==='start'?1:-1;max=Math.max(max,active);}assert.equal(active,0);return max;};
+  const childEnvironment={...process.env};delete childEnvironment.NODE_TEST_CONTEXT;
+  execFileSync(process.execPath,['--test','--test-concurrency=2',...files],{env:childEnvironment,stdio:'pipe',timeout:10000});
+  assert.equal(maximum(),2,'并发正控必须实际观察到重叠，证明探针能发现并发逃逸');
+  const script=path.join(directory,'entry');fs.copyFileSync(new URL('../scripts/verify-yss-implementation-contract-compiler-scenarios',import.meta.url),script);
+  fs.mkdirSync(path.join(directory,'lib'));fs.writeFileSync(path.join(directory,'lib/scenario-checks.mjs'),"export function runScenario(name){if(name!=='implementationContractCompiler')throw Error('unexpected scenario');}\n");
+  const preload=path.join(directory,'probe.mjs');
+  fs.writeFileSync(preload,`import fs from 'node:fs';import childProcess from 'node:child_process';import {syncBuiltinESMExports} from 'node:module';const real=childProcess.spawnSync;childProcess.spawnSync=(file,args,options)=>{if(args.includes('--test')){fs.writeFileSync(${JSON.stringify(receipt)},JSON.stringify({file,args}));return real(file,[...args.filter(value=>value.startsWith('--')),...${JSON.stringify(files)}],options);}return real(file,args,options);};syncBuiltinESMExports();\n`);
+  // Copy the exact wrapper bytes and replace only the unrelated first-stage
+  // fixture and its expensive input files. Its actual Node flags drive two
+  // real processes; the normal full gate still exercises all original files.
+  for(const concurrency of ['1','2']){
+    fs.writeFileSync(trace,'');
+    execFileSync(process.execPath,[script],{cwd:directory,env:{...childEnvironment,NODE_OPTIONS:`--import=${preload}`,YSS_TEMPLATE_CONCURRENCY:concurrency},stdio:'pipe',timeout:10000});
+    const request=JSON.parse(fs.readFileSync(receipt));assert.equal(request.file,process.execPath);assert.ok(request.args.includes('--test-concurrency=1'));assert.equal(request.args.filter(value=>!value.startsWith('--')).length,16);assert.equal(maximum(),1);
+  }
 });

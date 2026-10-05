@@ -40,6 +40,9 @@ export const QUALIFICATION_COUNTEREXAMPLE_REGISTRY=Object.freeze([
   {file:'tests/verification-qualification.test.mjs',name:'资格公开消费者拒绝真实 Node 的实际 argv cwd env 与源码回执篡改',categories:['qualification-actual-execution-tamper','qualification-source-receipt-tamper'],seam:'validateQualificationReportEvidence / validateVerificationReport'},
   {file:'tests/verification-qualification.test.mjs',name:'资格公开消费者复用普通 v2 的完整同轮执行输入等价合同',categories:['qualification-reuse-input-mismatch'],seam:'validateQualificationReportEvidence / validateVerificationReport'},
   {file:'tests/verification-qualification.test.mjs',name:'资格计时只消费完整 callback 单调时钟回执，不能孤立放大或缩短真实时长',categories:['qualification-timing-tamper'],seam:'measureQualificationRun / validateQualification'},
+  {file:'tests/verification-qualification.test.mjs',name:'资格配对一侧真实失败立即停止，保留partial pair且候选侧未启动',categories:['qualification-pair-failure-stop'],seam:'runQualification / executeVerificationPlan'},
+  {file:'tests/verification-qualification.test.mjs',name:'资格入口持久处理中断，真实legacy和后代关闭后不启动candidate并保留原始证据',categories:['qualification-interrupt-stop'],seam:'runQualificationWithSignals / executeVerificationPlan'},
+  {file:'tests/verification-qualification.test.mjs',name:'资格worker真实SIGKILL的未观察退出仍保留partial原始报告和close且不能授予资格',categories:['qualification-unobserved-close-retention'],seam:'runQualificationWithSignals / qualificationRunEvidence'},
   {file:'tests/verification-baseline.test.mjs',name:'基线成功证据必须绑定同一 SHA、报告字节和当前策略',categories:['baseline-digest'],seam:'validateBaseline'},
   {file:'tests/verification-baseline.test.mjs',name:'未来和非祖先提交不能缩小当前候选',categories:['baseline-nonancestor'],seam:'validateBaseline'},
   {file:'tests/verification-baseline.test.mjs',name:'Gitlink 基线差异按真实提交登记而不是工作树版本猜测',categories:['gitlink'],seam:'validateBaseline'},
@@ -87,12 +90,12 @@ export async function measureQualificationRun({directory,reference,execute}) {
   if(typeof execute!=='function'||!relative||relative.startsWith('..')||path.isAbsolute(relative)||fs.existsSync(file))throw Error('qualification-measurement-output-invalid');
   const startedAt=new Date().toISOString(),start=process.hrtime.bigint();
   const result=await execute();
-  const reportFile=fs.realpathSync(result.reportFile),reportDigest=hash(fs.readFileSync(reportFile));
+  const reportFile=fs.realpathSync(result.reportFile),reportBytes=fs.readFileSync(reportFile),reportDigest=hash(reportBytes),actualClose=JSON.parse(reportBytes).final_exit;
   const integration=result.integrationReportFile?{report_ref:path.relative(directory,fs.realpathSync(result.integrationReportFile)),report_sha256:hash(fs.readFileSync(result.integrationReportFile))}:undefined;
   const end=process.hrtime.bigint(),finishedAt=new Date().toISOString(),wallMs=Math.round(Number(end-start)/1e6);
   const measurement={schema_version:1,kind:'verification-qualification-measurement',clock:'process.hrtime.bigint',
     started_at:startedAt,finished_at:finishedAt,started_monotonic_ns:String(start),finished_monotonic_ns:String(end),wall_ms:wallMs,
-    report_ref:path.relative(directory,reportFile),report_sha256:reportDigest,actual_close:{code:result.code,signal:result.signal??null,observed:result.observed},
+    report_ref:path.relative(directory,reportFile),report_sha256:reportDigest,actual_close:actualClose,
     ...(integration?{integration}:{})};
   fs.writeFileSync(file,JSON.stringify(measurement,null,2)+'\n');
   return {result,wall_ms:wallMs,measurement:{ref:relative,sha256:hash(fs.readFileSync(file))}};
@@ -335,9 +338,12 @@ export function validateQualification({root,config,reportFile,expectedDigest,exp
   return {valid:false,reasons,bindings};
 }
 
-export function qualificationRunEvidence(result,{directory,wallMs}) {
-  if(!result.observed||!Number.isInteger(result.code)||!result.reportFile)throw Error('qualification-process-not-observed');
+export function qualificationRunEvidence(result,{directory,wallMs,diagnostic=false}) {
+  if(!result.reportFile||!diagnostic&&(!result.observed||!Number.isInteger(result.code)))throw Error('qualification-process-not-observed');
   const file=fs.realpathSync(result.reportFile),bytes=fs.readFileSync(file),report=JSON.parse(bytes),logs={};
   for(const row of report.results||[])for(const ref of [row.stdoutFile,row.stderrFile])if(ref)logs[ref]=hash(fs.readFileSync(ref));
-  return {report_ref:path.relative(directory,file),report_sha256:hash(bytes),actual_close:{code:result.code,signal:result.signal??null,observed:result.observed},wall_ms:wallMs,log_digests:logs};
+  if(diagnostic){const logRoot=path.join(path.dirname(file),'logs');if(fs.existsSync(logRoot)&&fs.lstatSync(logRoot).isDirectory()&&!fs.lstatSync(logRoot).isSymbolicLink())
+    for(const entry of fs.readdirSync(logRoot,{recursive:true,withFileTypes:true})){const ref=path.join(entry.parentPath,entry.name);if(entry.isFile()&&/\.(?:stdout|stderr)$/.test(entry.name)&&fs.realpathSync(ref)===ref)logs[ref]=hash(fs.readFileSync(ref));}}
+  return {report_ref:path.relative(directory,file),report_sha256:hash(bytes),actual_close:diagnostic?structuredClone(report.final_exit):{code:result.code,signal:result.signal??null,observed:result.observed},
+    ...(diagnostic?{execution_outcome:{code:result.code,signal:result.signal??null,observed:result.observed},diagnostic:true}:{}),wall_ms:wallMs,log_digests:logs};
 }

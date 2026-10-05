@@ -103,6 +103,7 @@ async function runPrepared(input) {
     plan=addVerificationExecutionTasks(plan,{root,repositoryMode:mode,reference:plan.strategy==='legacy-reference',checkpoints:values.checkpoint,taskPackages:values['task-package'],purpose,reportDir});
     before=verificationInputDigest(root);
     report=createVerificationReport(plan,{root,inputDigest:before,concurrency,scope,invocation});report.purpose=purpose;report.experimental=purpose==='qualification';
+    report.environment.repository_mode=mode;
     report.environment.tooling_mode=toolingMode;
     report.environment.test_concurrency=toolingMode==='optimized'?Math.min(2,concurrency):1;
     if(reportDir){fs.mkdirSync(reportDir);saveVerificationReport(reportDir,report);process.send?.({kind:'report-directory',directory:reportDir});}
@@ -205,7 +206,7 @@ export async function superviseVerificationWorker({argv=[],root=ROOT,controlled=
   const child=fork(workerFile,controlled?['--controlled-verification-worker']:argv,{cwd:root,env:environment,execArgv:[],detached:process.platform!=='win32',stdio:['ignore','inherit','inherit','ipc']});
   let escalation;
   const kill=sig=>{try{killTree(child,sig);}catch(error){killErrors.push(error.message);try{child.kill(sig);}catch(fallback){killErrors.push(fallback.message);}}};
-  const interrupt=()=>{cancelled=true;kill('SIGTERM');escalation=setTimeout(()=>kill('SIGKILL'),2500);};
+  const interrupt=()=>{if(cancelled)return;cancelled=true;kill('SIGTERM');escalation=setTimeout(()=>kill('SIGKILL'),2500);};
   process.on('SIGINT',interrupt);process.on('SIGTERM',interrupt);signal?.addEventListener('abort',interrupt,{once:true});if(signal?.aborted)interrupt();
   child.on('message',message=>{if(message.kind==='command-process'&&Number.isInteger(message.pid)&&message.pid>0){if(message.active)activeProcesses.add(message.pid);else activeProcesses.delete(message.pid);}if(message.kind==='report-directory')directory=message.directory;if(message.kind==='completed-report')report=message.report;});
   child.on('error',error=>{spawnError=error.message;});

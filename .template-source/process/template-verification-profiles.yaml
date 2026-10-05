@@ -87,6 +87,7 @@ core_escalation_patterns:
   - tests/verification-preflight.test.mjs
   - tests/verification-artifacts.test.mjs
   - tests/verification-report-v2.test.mjs
+  - tests/verification-report.test.mjs
   - tests/legacy-verification.test.mjs
   - tests/verification-execution.test.mjs
   - .template-source/scripts/lib/verification-delivery-run.mjs
@@ -245,6 +246,7 @@ required_files:
   - tests/verification-execution.test.mjs
   - tests/verification-preflight.test.mjs
   - tests/verification-report-v2.test.mjs
+  - tests/verification-report.test.mjs
   - tests/verification-artifacts.test.mjs
   - tests/legacy-verification.test.mjs
 syntax_files:
@@ -367,6 +369,7 @@ syntax_files:
   - tests/verification-preflight.test.mjs
   - tests/verification-artifacts.test.mjs
   - tests/verification-report-v2.test.mjs
+  - tests/verification-report.test.mjs
   - tests/legacy-verification.test.mjs
   - tests/verification-execution.test.mjs
   - .template-source/scripts/lib/verification-delivery-run.mjs
@@ -382,6 +385,7 @@ routing:
       - tests/verification-preflight.test.mjs
       - tests/verification-artifacts.test.mjs
       - tests/verification-report-v2.test.mjs
+      - tests/verification-report.test.mjs
       - tests/legacy-verification.test.mjs
       - tests/verification-execution.test.mjs
     groups:
@@ -1114,6 +1118,7 @@ gate_policy:
     - tests/verification-preflight.test.mjs
     - tests/verification-artifacts.test.mjs
     - tests/verification-report-v2.test.mjs
+    - tests/verification-report.test.mjs
     - tests/legacy-verification.test.mjs
     - tests/verification-execution.test.mjs
     - .template-source/scripts/lib/verification-delivery-run.mjs

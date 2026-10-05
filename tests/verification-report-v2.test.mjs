@@ -42,11 +42,97 @@ test('G20 等待监督 close 并结合全局完整性，普通 Gate 保持独立
  const gate=report=>report.gate_results.find(row=>row.id===id),ordinary=report=>report.gate_results.find(row=>row.id==='G04');
  f.report.final_exit={code:null,signal:null,observed:false};finalizeVerificationReport(f.report,{status:'passed',wallMs:1,repositoryMode:'template-source'});assert.equal(gate(f.report).status,'failed');assert.equal(ordinary(f.report).status,'passed');
  f.report.final_exit={code:0,signal:null,observed:true};saveVerificationReport(f.directory,f.report);assert.equal(gate(f.report).status,'passed');assert.equal(gate(JSON.parse(fs.readFileSync(path.join(f.directory,'report.json')))).status,'passed');
- for(const mutate of [report=>report.final_exit.code=1,report=>report.final_exit.observed=false,report=>report.final_exit.signal='SIGTERM',report=>report.status='failed',report=>report.input_drift=true,report=>report.input_after_sha256='c'.repeat(64),report=>report.unexecuted=[{id:'missing'}],report=>report.results[0].actual_exit_code_observed=false]){
+ for(const mutate of [report=>report.final_exit.code=1,report=>report.final_exit.observed=false,report=>report.final_exit.signal='SIGTERM',report=>report.status='failed',report=>report.input_drift=true,report=>report.input_after_sha256='c'.repeat(64),report=>report.results[0].actual_exit_code_observed=false]){
   const report=structuredClone(f.report);mutate(report);saveVerificationReport(f.directory,report);assert.equal(gate(report).status,'failed');assert.equal(ordinary(report).status,'passed');assert.equal(gate(JSON.parse(fs.readFileSync(path.join(f.directory,'report.json')))).status,'failed');
  }
  const missing=structuredClone(f.report);missing.plan.commands.push({id:'check.missing',task_id:'missing.0',command:'node --check missing.mjs',gate_ids:[]});missing.unexecuted=[];saveVerificationReport(f.directory,missing);assert.equal(gate(missing).status,'failed');assert.equal(ordinary(missing).status,'passed');
  finalizeVerificationReport(missing,{status:'passed',wallMs:1,repositoryMode:'template-source'});assert.equal(missing.unexecuted.length,1);assert.equal(gate(missing).status,'failed');assert.equal(ordinary(missing).status,'passed');
+});
+
+test('未执行台账包括明确跳过及缺结果，保留原因并排除已启动中断',t=>{
+ const f=fixture(t),gateId='check.verification-final-integrity';
+ const extra=(id)=>({id:`check.${id}`,task_id:id,command:`node --check ${id}.mjs`,gate_ids:[gateId]});
+ f.report.plan.commands.push(...['cancelled','dependent','started','missing'].map(extra));
+ f.report.plan.gates.push({id:gateId,selected:true,check_ids:[]});
+ for(const [task_id,termination,skipped]of [['cancelled','cancelled',true],['dependent','dependency-failed',true],['started','cancelled',false]]) {
+  const task=f.report.plan.commands.find(row=>row.task_id===task_id);
+  f.report.results.push({...task,index:f.report.plan.commands.indexOf(task),code:130,skipped,termination,actual_exit_code:null,actual_exit_signal:skipped?null:'SIGTERM',actual_exit_code_observed:false});
+ }
+ const unfinalized=structuredClone(f.report);unfinalized.status='running';unfinalized.unexecuted=[];saveVerificationReport(f.directory,unfinalized);assert.deepEqual(unfinalized.unexecuted,[]);
+ unfinalized.status='interrupted';unfinalized.final_exit={code:null,signal:'SIGKILL',observed:false};unfinalized.input_drift=null;
+ saveVerificationReport(f.directory,unfinalized);
+ const expected=[{task_id:'cancelled',reason:'cancelled'},{task_id:'dependent',reason:'dependency-failed'},{task_id:'missing',reason:'failure-or-interruption'}];
+ assert.deepEqual(unfinalized.unexecuted.map(({task_id,reason})=>({task_id,reason})),expected);
+ assert.deepEqual(JSON.parse(fs.readFileSync(path.join(f.directory,'report.json'))).unexecuted,unfinalized.unexecuted);
+ finalizeVerificationReport(f.report,{status:'interrupted',wallMs:1,repositoryMode:'template-source'});
+ assert.deepEqual(f.report.unexecuted.map(({task_id,reason})=>({task_id,reason})),expected);
+ assert.equal(f.report.gate_results.find(row=>row.id===gateId).status,'failed');
+ assert.equal(f.report.gate_results.find(row=>row.id==='G04').status,'passed');
+});
+
+test('v2 未选中项和不适用记录独立于选中未执行台账',t=>{
+ const f=fixture(t),omitted={id:'check.unselected',task_id:'unselected',command:'node --check unselected.mjs',reason:'declared-inputs-unaffected'},notApplicable={gate_id:'check.unaffected',reason:'declared-inputs-unaffected'};
+ f.report.plan.selection={effective:'allowlist',omitted:[omitted]};f.report.plan.not_applicable=[notApplicable];f.report.not_applicable=[notApplicable];
+ finalizeVerificationReport(f.report,{status:'passed',wallMs:1,repositoryMode:'template-source'});saveVerificationReport(f.directory,f.report);
+ assert.deepEqual(f.report.unexecuted,[]);assert.deepEqual(f.report.plan.selection.omitted,[omitted]);assert.deepEqual(f.report.not_applicable,[notApplicable]);
+ const selected={id:'check.selected',task_id:'selected',command:'node --check selected.mjs'};f.report.plan.commands.push(selected);
+ finalizeVerificationReport(f.report,{status:'failed',wallMs:1,repositoryMode:'template-source'});saveVerificationReport(f.directory,f.report);
+ assert.deepEqual(f.report.unexecuted,[{...selected,reason:'failure-or-interruption'}]);assert.deepEqual(f.report.plan.selection.omitted,[omitted]);assert.deepEqual(f.report.not_applicable,[notApplicable]);
+});
+
+test('实际仓库模式排除不适用任务，未知模式不能依据自述隐藏缺项',t=>{
+ const f=fixture(t),gateId='check.verification-final-integrity',outside={id:'check.product',task_id:'product',command:'node --check product.mjs',when:'project-instance',gate_ids:[gateId]};
+ f.report.plan.commands.push(outside);f.report.plan.gates.push({id:gateId,selected:true,check_ids:['check.syntax',outside.id]});
+ finalizeVerificationReport(f.report,{status:'passed',wallMs:1,repositoryMode:'template-source'});saveVerificationReport(f.directory,f.report);
+ assert.deepEqual(f.report.unexecuted,[]);assert.deepEqual(f.report.not_applicable,[{...outside,reason:'repository-mode'}]);assert.equal(f.report.environment.repository_mode,'template-source');assert.equal(f.report.gate_results.find(row=>row.id===gateId).status,'passed');
+ const withoutFinalize=structuredClone(f.report);withoutFinalize.unexecuted=[];saveVerificationReport(f.directory,withoutFinalize);assert.deepEqual(withoutFinalize.unexecuted,[]);assert.equal(withoutFinalize.gate_results.find(row=>row.id===gateId).status,'passed');
+ for(const mode of [undefined,'unknown']){
+  const unknown=structuredClone(f.report);unknown.environment.repository_mode=mode;unknown.unexecuted=[];
+  saveVerificationReport(f.directory,unknown);assert.deepEqual(unknown.unexecuted,[{id:outside.id,task_id:outside.task_id,command:outside.command,reason:'failure-or-interruption'}]);assert.equal(unknown.gate_results.find(row=>row.id===gateId).status,'failed');
+ }
+});
+
+test('真实轻量 worker 的依赖失败、中断及 SIGKILL 终态保存登记未启动任务', {timeout:20000},async t=>{
+ const {executeVerificationPlan}=await import('../.template-source/scripts/lib/template-verification-worker.mjs');
+ const directory=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'report-unexecuted-worker-'))),root=path.join(directory,'root');
+ t.after(()=>fs.rmSync(directory,{recursive:true,force:true}));
+ fs.mkdirSync(path.join(root,'scripts'),{recursive:true});fs.writeFileSync(path.join(root,'scripts/repository-mode'),'console.log("template-source");\n');
+ fs.mkdirSync(path.join(root,'.template-source/scripts/lib'),{recursive:true});fs.copyFileSync(new URL('../.template-source/scripts/lib/verification-preflight.mjs',import.meta.url),path.join(root,'.template-source/scripts/lib/verification-preflight.mjs'));
+ for(const args of [['init','-q'],['add','.'],['-c','user.name=Fixture','-c','user.email=fixture@example.invalid','commit','-qm','fixture']]){const row=spawnSync('git',args,{cwd:root,encoding:'utf8'});assert.equal(row.status,0,row.stderr);}
+ const quote=value=>`'${String(value).replaceAll("'","'\\''")}'`,node=source=>`${quote(process.execPath)} -e ${quote(source)}`,gateId='check.verification-final-integrity';
+ const plan=commands=>({strategy:'qualified-gates',requested_profile:'candidate',effective_profile:'candidate',source_requirement:'current',required_files:[],syntax_files:[],groups:['checks'],selection:{effective:'legacy',omitted:[]},gates:[{id:gateId,selected:true,check_ids:[]}],commands:commands.map(task=>({...task,group:'checks',gate_ids:[gateId]}))});
+ const failed=await executeVerificationPlan({root,plan:plan([
+  {id:'check.failure',task_id:'failure',command:node('process.exit(7)')},
+  {id:'check.dependent',task_id:'dependent',command:node('process.exit(99)'),depends_on:['failure']},
+  {id:'check.independent',task_id:'independent',command:node('console.log("independent")')},
+ ]),reportDir:path.join(directory,'failed-report'),purpose:'qualification'});
+ assert.equal(failed.code,1);assert.deepEqual(failed.report.unexecuted.map(({task_id,reason})=>({task_id,reason})),[{task_id:'dependent',reason:'dependency-failed'}]);
+ assert.equal(failed.report.results.find(row=>row.task_id==='failure').actual_exit_code,7);assert.equal(failed.report.results.find(row=>row.task_id==='independent').actual_exit_code,0);assert.equal(failed.report.gate_results.find(row=>row.id===gateId).status,'failed');
+ const marker=path.join(directory,'started'),controller=new AbortController();t.after(()=>controller.abort());
+ const execution=executeVerificationPlan({root,plan:plan([
+  {id:'check.wait',task_id:'wait',command:node(`require('node:fs').writeFileSync(${JSON.stringify(marker)},String(process.pid));setInterval(()=>{},1000);`)},
+  {id:'check.pending',task_id:'pending',command:node('process.exit(99)'),depends_on:['wait']},
+ ]),reportDir:path.join(directory,'interrupted-report'),purpose:'qualification',signal:controller.signal});
+ const deadline=Date.now()+10000;while(!fs.existsSync(marker)&&Date.now()<deadline)await new Promise(resolve=>setTimeout(resolve,10));
+ assert.ok(fs.existsSync(marker),'真实 wait 任务必须先启动');controller.abort();const interrupted=await execution;
+ assert.equal(interrupted.code,130);assert.equal(interrupted.report.status,'interrupted');
+ assert.deepEqual(interrupted.report.unexecuted.map(({task_id,reason})=>({task_id,reason})),['pending','post-legacy-runtime-call','post-legacy-runtime-path','post.git-diff-check'].map(task_id=>({task_id,reason:'cancelled'})));
+ const started=interrupted.report.results.find(row=>row.task_id==='wait');assert.notEqual(started.skipped,true);assert.equal(started.termination,'cancelled');assert.equal(started.actual_exit_code_observed,false);assert.ok(started.actual_exit_signal);
+ assert.equal(interrupted.report.gate_results.find(row=>row.id===gateId).status,'failed');
+ const killedMarker=path.join(directory,'killed-task-pid'),forcedController=new AbortController();t.after(()=>forcedController.abort());
+ const forcedExecution=executeVerificationPlan({root,plan:plan([
+  {id:'check.completed',task_id:'completed',command:node('console.log("completed before kill")')},
+  {id:'check.kill-wait',task_id:'kill-wait',command:node(`require('node:fs').writeFileSync(${JSON.stringify(killedMarker)},String(process.pid));setInterval(()=>{},1000);`)},
+  {id:'check.kill-pending',task_id:'kill-pending',command:node('process.exit(99)'),depends_on:['kill-wait']},
+ ]),reportDir:path.join(directory,'killed-report'),purpose:'qualification',signal:forcedController.signal});
+ const killedDeadline=Date.now()+10000;while(!fs.existsSync(killedMarker)&&Date.now()<killedDeadline)await new Promise(resolve=>setTimeout(resolve,10));
+ assert.ok(fs.existsSync(killedMarker));let workerPid,current=Number(fs.readFileSync(killedMarker,'utf8'));
+ for(let index=0;index<10;index++){const parent=Number(spawnSync('ps',['-p',String(current),'-o','ppid='],{encoding:'utf8'}).stdout.trim());if(parent===process.pid){workerPid=current;break;}assert.ok(parent>1);current=parent;}
+ assert.ok(workerPid>1);forcedController.abort();process.kill(workerPid,'SIGKILL');const forced=await forcedExecution;
+ assert.equal(forced.code,130);assert.deepEqual(forced.report.final_exit,{code:null,signal:'SIGKILL',observed:false});assert.equal(forced.report.status,'interrupted');assert.equal(forced.report.finished_at,undefined);
+ assert.equal(forced.report.results.find(row=>row.task_id==='completed').actual_exit_code,0);
+ assert.deepEqual(forced.report.unexecuted.map(({task_id,reason})=>({task_id,reason})),['kill-wait','kill-pending','post-legacy-runtime-call','post-legacy-runtime-path','post.git-diff-check'].map(task_id=>({task_id,reason:'failure-or-interruption'})));
+ assert.equal(forced.report.gate_results.find(row=>row.id===gateId).status,'failed');assert.deepEqual(JSON.parse(fs.readFileSync(forced.reportFile)).unexecuted,forced.report.unexecuted);
 });
 
 test('v2 schema 与 fresh consumer 拒绝实际退出、Gate、日志、invocation 和漂移缺陷',t=>{
@@ -96,9 +182,12 @@ test('qualified 请求与实际执行条件必须匹配独立资格合同',t=>{
 
 test('同轮复用必须具有相同依赖、资源、来源及完整执行输入',t=>{
  const f=fixture(t),first={...f.plan.commands[0],resources:['shared'],source_requirement:'committed',depends_on:[]},second={...first,id:'check.second',task_id:'syntax.1'};
- f.plan.commands=[first,second];f.plan.gates[0].check_ids.push(second.id);f.report.plan=structuredClone(f.plan);
+ f.plan.commands=[first,second];f.plan.gates[0].check_ids.push(second.id);f.plan.gates.push({id:'check.verification-final-integrity',selected:true,check_ids:[first.id,second.id]});f.report.plan=structuredClone(f.plan);
  f.report.results[0]={...f.report.results[0],...first};f.report.results.push({...f.report.results[0],...second,index:1,reused:true,reused_from:{task_id:first.task_id,index:0},actual_exit_code:null,actual_exit_signal:null,actual_exit_code_observed:false});
  finalizeVerificationReport(f.report,{status:'passed',wallMs:1,repositoryMode:'template-source'});
+ saveVerificationReport(f.directory,f.report);
+ assert.deepEqual(f.report.unexecuted,[]);
+ assert.equal(f.report.gate_results.find(row=>row.id==='check.verification-final-integrity').status,'passed');
  assert.equal(validateVerificationReport(f.report,f.options).status,'passed');
  for(const change of [{depends_on:['check.change']},{resources:['after']},{source_requirement:'current'},{timeout_ms:10},{lane:'after'},{execution:{requested_command:first.command,file:process.execPath,args:['--check','source.mjs'],cwd:'/different/source',environment:{}}}]){
   const expected=structuredClone(f.plan);Object.assign(expected.commands[1],change);const report=structuredClone(f.report);report.plan=structuredClone(expected);

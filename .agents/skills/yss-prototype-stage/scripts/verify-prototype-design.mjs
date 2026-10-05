@@ -68,7 +68,7 @@ export async function verifyPrototypeDesign({scope='all',toolchain=process.env.Y
   if(scope!=='browser'){
    if(authorReady){
     await run('contracts',['--test-reporter=tap',path.join(tests,'run-scenarios.mjs')]);
-    await run('vue-workspace',['--test','--test-reporter=tap',path.join(tests,'shadcn-vue.test.mjs'),path.join(tests,'workspace.test.mjs'),path.join(tests,'retirement.test.mjs'),path.join(tests,'business-controls.test.mjs'),path.join(tests,'verification-entry.test.mjs')]);
+    await run('vue-workspace',['--test','--test-concurrency=1','--test-reporter=tap',path.join(tests,'shadcn-vue.test.mjs'),path.join(tests,'workspace.test.mjs'),path.join(tests,'retirement.test.mjs'),path.join(tests,'business-controls.test.mjs'),path.join(tests,'verification-entry.test.mjs')]);
    }else for(const id of ['contracts','vue-workspace'])add(id,'not-executed','作者工具前置检查未通过');
   }
   if(scope!=='contract'){
