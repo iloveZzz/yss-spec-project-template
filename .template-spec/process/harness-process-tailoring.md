@@ -72,9 +72,11 @@ Plan 使用生命周期编排合同 `planning.review_control` 的有界专业审
 
 模板维护默认停在 `implementation-ready`。L1/L2/L3 均不强制独立审查、候选冻结或三轴任务包；分级只决定验证强度。维护者自检和发布前完整验证闭合后才能成为 `release-ready`，外部生成器集成与兼容性检查仍须通过，实际发布由生物人明确发起。按需独立审查不得自审，也不得用请求代替通过结论。三个核验入口由 `.template-source/process/template-verification-profiles.yaml` 统一定义：
 
-- `scripts/verify-template-fast`：按 Git 影响面运行快速检查；未映射路径或核心核验资产变化时 fail-safe 升级为完整验证，来源仍为当前工作树，支持 `implementation-ready`。验证强度升级不授予发布资格；显式 candidate / release 入口要求已提交来源。
-- `scripts/verify-template-candidate`：运行命中影响面与验证基础设施检查；PR 默认使用该入口，名称不表示必须冻结候选或提供审查任务包。
-- `scripts/verify-template`：执行不可裁剪的完整验证；main 与正式发布前运行。发布前按 `github-workflows.md` 额外验证固定版本生成器集成与兼容性，修复内循环按影响面执行。
+- `scripts/verify-template-fast`：按 Git 影响面运行快速检查；核心核验资产变化或资格不足时保留完整回退，未知路径在计划阶段拒绝。来源仍为当前工作树，支持 `implementation-ready`。验证强度升级不授予发布资格；显式 candidate / release 入口要求已提交来源。
+- `scripts/verify-template-candidate --base <完整 SHA>`：候选包含 base 至 HEAD 的提交差异、index、工作树及未跟踪路径；显式文件列表不能缩小该集合。PR 默认使用该入口，名称不表示必须冻结候选或提供审查任务包。
+- `scripts/verify-template`：main 与正式发布前运行。已接受的完整 baseline 和当前资格均通过独立核验后，才按 profile 的输入闭包选择全部适用检查；缺少 baseline、资格失效、核心策略变化或依赖未审计时执行独立 `legacy-full`。显式证据摘要错误、非祖先 baseline、未知路径及依赖配置错误在计划阶段拒绝。发布前按 `github-workflows.md` 额外验证固定版本生成器集成与兼容性。
+
+G01–G20 是风险结论的展示编号，不增加生命周期门禁。检查仍使用 `check.*`，内部任务逐项记录实际执行、失败、被前置阻断及不适用原因。覆盖合同和旧检查映射仅在验证 profile 维护。没有同输入、同依赖及同拒绝语义的等价证据时，旧检查继续保留。语法检查和终检属于本轮任务集合；报告消费者从调用上下文重算期望集合，不能用报告自行声称的通过数量放行。新报告使用 v2，历史 v1 只读兼容；维护 checkpoint 顶层仍使用 v2。
 
 新模板维护 checkpoint 使用 schema v2；历史 schema v1 继续只读兼容，不批量迁移。L1/L2 可直接写入主 Ticket 或集中 checkpoint，不要求新增独立文档：
 
@@ -99,7 +101,7 @@ candidate_digest: null | <sha256>
 
 使用 `scripts/verify-maintenance-checkpoint <file>` 或通过 stdin 传入 YAML / JSON 做只读校验。日常 `implementation-ready` 使用 fast、`review_round: 0`、`candidate_digest: null`。L2 必须有 counterexample、fresh-verification、self-check；L3 必须有 fresh-verification、self-check；命中 `maintenance-intensity.yaml.counterexample_triggers` 的每项风险还必须有对应实际 counterexample；这些证据不得因“待审”而跳过。L1 至少有 relevant-check。
 
-自检路径的 `release-ready` 使用 release、`review_round: 0`、`candidate_digest: null`，并提供恰好一条 `final-release-verification`，其 command 为 `scripts/verify-template`。该 checkpoint 只表示维护验证就绪，不代替 GitHub 发布前集成证据或实际发布授权。
+自检路径的 `release-ready` 使用 release、`review_round: 0`、`candidate_digest: null`，并提供恰好一条 `final-release-verification`，其 command 为 `scripts/verify-template`；实际参数、固定来源、适用集合、baseline 和资格绑定由所引用报告核验。监督入口必须观察 worker 关闭后的实际成功退出，且 `input_drift=false`、`unexecuted=[]`，缺日志、缺结果或不可观察退出均拒绝。该 checkpoint 只表示维护验证就绪，不代替固定版本 CLI 集成、兼容证据或实际发布授权。
 
 旧候选协议保留为显式独立审查及历史证据的兼容路径：`review-ready` 绑定候选、candidate / initial-release-verification 和任务包；`release-ready` 再绑定独立审查结论与 final-release-verification。仅显式采用该路径时使用 `scripts/prepare-maintenance-review` 的 Standards、Spec、Lead 任务包和最多两轮审查；第二轮未收敛时既有 `scripts/evaluate-maintenance-review-round` 保留 `needs-human`，不自动启动第三轮，也不改写历史状态。普通流程不启用该兼容限制；主控仍将阻塞区分为专业等待、修复 / 路由或真实决定缺失，只有最后一类需要资产展示后的用户回复。两轮内同样执行差异分析、定向复审和当前候选重绑定，不默认全轴重跑。这些工具不由日常 CI 自动调用，不构成 L1/L2/L3 强制要求；`judgement-call` 进入后续 backlog，不能增加事实源未规定的硬要求。
 

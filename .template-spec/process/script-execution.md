@@ -15,7 +15,7 @@
 | 合同阅读 | `scripts/contract view <合同.yaml> --kind slice --profile task --unit <工作单元>` | 只读派生视图；需追溯时展开 `full`，不要重复整读后自行重建 |
 | checkpoint 检查 | `scripts/verify-lifecycle-checkpoint <checkpoint>` | 核验显式资产；场景测试不替代项目校验 |
 | 技能投影与锁 | `scripts/sync-skills --check`、`scripts/update-skill-lock --check` | 默认先检查；更新用各仓已有生成器，保留项目扩展 |
-| 模板维护回归 | `scripts/verify-template-fast`、`scripts/verify-template-candidate --base <SHA>`、`scripts/verify-template` | 仅模板维护或显式回归任务；全量发布门禁保留 |
+| 模板维护回归 | `scripts/verify-template-fast`、`scripts/verify-template-candidate --base <完整 SHA>`、`scripts/verify-template` | 仅模板维护或显式回归任务；全部适用风险阻断，资格与完整 baseline 未闭合时走独立 `legacy-full` |
 | 实例依赖与补装 | 当前 CLI 的 `doctor`、`skills ensure --plan` 或 `assets ensure --plan`（以该家族 help 为准） | plan 不写项目；审阅缺口、文件纳入原因与固定来源后按既有授权补装 |
 
 参数与退出码以当前工具输出为准。Shell 包装器按 shebang 直接执行，例如 `scripts/verify-template-fast`；不能一律给入口加 `node`。调用失败时保留命令、退出码、时间和日志，先分清参数错误、依赖缺失、合同阻断与实际验证失败。

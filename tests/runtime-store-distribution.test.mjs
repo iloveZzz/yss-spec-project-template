@@ -13,6 +13,7 @@ const families = ['create-yss-spec', 'create-yss-strategic-design', 'create-yss-
 const sharedRefs = ['scripts/runtime-store', 'scripts/lib/runtime-store.mjs', '.template-spec/process/runtime-storage.md'];
 const read = ref => fs.readFileSync(path.join(root, ref));
 const json = ref => JSON.parse(read(ref));
+const cliRoot = name => path.resolve(process.env[`YSS_CLI_${({ 'create-yss-spec':'SPEC', 'create-yss-strategic-design':'DESIGN', 'create-yss-harness-backend':'BACKEND', 'create-yss-harness-frontend':'FRONTEND' })[name]}_ROOT`] || path.join(root,'submodules',name));
 
 function temporary(t) {
   const dir = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'runtime-distribution-')));
@@ -71,16 +72,16 @@ test('runtime module copies and synchronization locks bind the canonical source'
 });
 
 test('four CLI snapshots contain the runtime manager and portable policy', () => {
-  const main = 'submodules/create-yss-spec';
-  for (const ref of sharedRefs) assert.ok(read(`${main}/template/${ref}`).equals(read(ref)), `${main}/${ref}`);
-  assert.equal(fs.existsSync(path.join(root, main, 'template/.template-source/process/runtime-storage.md')), false);
+  const main = cliRoot('create-yss-spec');
+  for (const ref of sharedRefs) assert.ok(fs.readFileSync(path.join(main,'template',ref)).equals(read(ref)), `${main}/${ref}`);
+  assert.equal(fs.existsSync(path.join(main, 'template/.template-source/process/runtime-storage.md')), false);
   for (const name of families.filter(name => name !== 'create-yss-spec')) {
-    const packageRoot = `submodules/${name}`;
-    const snapshot = json(`${packageRoot}/template.snapshot.json`);
+    const packageRoot = cliRoot(name);
+    const snapshot = JSON.parse(fs.readFileSync(path.join(packageRoot,'template.snapshot.json')));
     for (const ref of sharedRefs) {
       const entry = snapshot.files[ref];
       assert.ok(entry, `${name}/${ref}`);
-      assert.ok(read(`${packageRoot}/template/${entry.blob}`).equals(read(ref)), `${name}/${ref}`);
+      assert.ok(fs.readFileSync(path.join(packageRoot,'template',entry.blob)).equals(read(ref)), `${name}/${ref}`);
     }
     assert.equal(snapshot.files['.template-source/process/runtime-storage.md'], undefined);
   }
@@ -88,9 +89,10 @@ test('four CLI snapshots contain the runtime manager and portable policy', () =>
 
 test('main CLI initial stage installs the runtime manager and portable policy', () => {
   const require = createRequire(import.meta.url);
-  const { distributionForVariables } = require('../submodules/create-yss-spec/src/template/distribution-runtime.js');
-  const { assetPaths } = require('../submodules/create-yss-spec/src/template/asset-runtime.js');
-  const template = path.join(root, 'submodules/create-yss-spec/template');
+  const cli = cliRoot('create-yss-spec');
+  const { distributionForVariables } = require(path.join(cli,'src/template/distribution-runtime.js'));
+  const { assetPaths } = require(path.join(cli,'src/template/asset-runtime.js'));
+  const template = path.join(cli, 'template');
   const paths = assetPaths(template, distributionForVariables({ agentRuntime: 'codex' }, template));
   for (const ref of sharedRefs) assert.ok(paths.has(ref), `initial stage: ${ref}`);
 });

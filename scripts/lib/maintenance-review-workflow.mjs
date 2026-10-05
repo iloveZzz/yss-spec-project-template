@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { parseDocument } from "../vendor/yaml.mjs";
 import { generateTaskPackageDefaults } from "./task-package.mjs";
-import { loadMaintenanceCheckpoint, validateMaintenanceCheckpoint } from "./maintenance-intensity.mjs";
+import { loadMaintenanceCheckpoint, validateMaintenanceCheckpoint,validateMaintenanceVerificationEvidence } from "./maintenance-intensity.mjs";
 import { ROOT } from "./template-verification.mjs";
 import { resolveMaintenanceReference, resolveMaintenanceOutput, maintenanceReference } from './maintenance-storage.mjs';
 
@@ -61,6 +61,10 @@ export function generateReviewerTaskPackages({ checkpointRef, candidateRef, outp
   const upstreamVerificationResults = (checkpoint.verification_evidence || []).flatMap((evidence) => {
     const evidenceRef = readableRef(evidence.evidence_ref);
     if (!evidenceRef || typeof evidence.executed_at !== "string" || typeof evidence.command !== "string") return [];
+    if(['initial-release-verification','final-release-verification'].includes(evidence.kind)){
+      const {report}=validateMaintenanceVerificationEvidence(evidence,{root:ROOT});
+      return [{command:evidence.command,exit_code:report.final_exit.code,duration_ms:Number.isInteger(report.metrics.wall_ms)?report.metrics.wall_ms:0,executed_at:report.finished_at,evidence_ref:evidenceRef,evidence_digest:`sha256:${evidence.evidence_digest.replace(/^sha256:/,'')}`}];
+    }
     return [{ command: evidence.command, exit_code: 0, duration_ms: Number.isInteger(evidence.duration_ms) ? evidence.duration_ms : 0, executed_at: evidence.executed_at, evidence_ref: evidenceRef, ...(evidence.evidence_digest ? { evidence_digest: evidence.evidence_digest } : {}) }];
   });
   const verificationCommands = [...new Set([...upstreamVerificationResults.map((result) => result.command), "git diff --check"])];

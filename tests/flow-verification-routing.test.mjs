@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { mkdtempSync, openSync, closeSync, readFileSync, rmSync } from 'node:fs';
+import { mkdtempSync, openSync, closeSync, readFileSync, rmSync, existsSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { planTemplateVerification } from '../scripts/lib/template-verification.mjs';
@@ -20,14 +20,15 @@ test('Plan/Spec、编排与 checkpoint 变更选择实际行为检查', () => {
   }
   const combined = planTemplateVerification({ changedFiles: ['.template-spec/templates/spec-template.md', '.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml'] });
   assert.ok(combined.groups.includes('plan-spec-content') && combined.groups.includes('skills') && combined.groups.includes('lifecycle'));
-  assert.equal(planTemplateVerification({ changedFiles: ['unmapped-file.xyz'] }).effective_profile, 'release');
+  assert.throws(() => planTemplateVerification({ changedFiles: ['unmapped-file.xyz'] }), /UNKNOWN_VERIFICATION_PATH/);
   assert.equal(planTemplateVerification({ changedFiles: ['scripts/run-template-verification'] }).effective_profile, 'release');
 });
 
 test('大验证计划经管道与文件输出均完整且内容相同', t => {
   const dir = mkdtempSync(path.join(os.tmpdir(), 'flow-plan-'));
   t.after(() => rmSync(dir, { recursive: true, force: true }));
-  const args = ['scripts/run-template-verification', '--profile', 'fast', '--changed-file', 'AGENTS.md', '--plan', '--json'];
+  const reportDir = path.join(dir, 'planned-report');
+  const args = ['scripts/run-template-verification', '--profile', 'fast', '--changed-file', 'AGENTS.md', '--plan', '--json', '--report-dir', reportDir];
   const fd = openSync(path.join(dir, 'plan.json'), 'wx');
   const file = spawnSync(process.execPath, args, { stdio: ['ignore', fd, 'pipe'] });
   closeSync(fd);
@@ -38,6 +39,7 @@ test('大验证计划经管道与文件输出均完整且内容相同', t => {
     assert.equal(result.status, 0, result.stderr);
     assert.deepEqual(JSON.parse(result.stdout), expected);
   }
+  assert.equal(existsSync(reportDir), false, '只读计划不能创建报告目录');
 });
 
 test('输出失败不返回成功',t=>{

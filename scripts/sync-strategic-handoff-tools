@@ -8,6 +8,8 @@ import { parseDocument } from './vendor/yaml.mjs';
 import { inspectWorkingTreeScope } from './lib/repository-scope-policy.mjs';
 const root=path.resolve(import.meta.dirname,'..');
 const check=process.argv.includes('--check');
+const rootOnly=process.argv.includes('--root-only');
+const skipCliSources=process.argv.includes('--skip-cli-sources');
 const targets=['submodules/yss-harness-design-agent','submodules/yss-harness-backend-agent','submodules/yss-harness-frontend-agent'];
 const shared=['scripts/strategic-consumer-entry','scripts/strategic-handoff','scripts/verify-strategic-handoff-consumption','scripts/verify-strategic-handoff-package-scenarios','scripts/verify-strategic-context-import','scripts/verify-strategic-context-import-scenarios','scripts/lib/context-contract.mjs','.template-spec/process/strategic-handoff-package.md','.template-spec/process/schemas/strategic-design-handoff.schema.json',...readdirSync(path.join(root,'scripts/lib')).filter(x=>x.startsWith('strategic-handoff-')||x==='strategic-handoff.mjs').map(x=>`scripts/lib/${x}`),...readdirSync(path.join(root,'.template-spec/process/schemas')).filter(x=>x.startsWith('strategic-handoff-')).map(x=>`.template-spec/process/schemas/${x}`),...readdirSync(path.join(root,'scripts/fixtures/strategic-handoff')).map(x=>`scripts/fixtures/strategic-handoff/${x}`)];
 shared.push('scripts/lib/user-decision-reuse.mjs','scripts/lib/user-decision.mjs','.template-spec/process/schemas/user-decision.schema.json','.template-spec/process/schemas/review-bundle.schema.json','scripts/fixtures/user-decision/build-fixture.mjs','scripts/lib/command-runner.mjs','scripts/lib/json-schema.mjs','scripts/lib/context-reconciliation.mjs','scripts/lib/source-context-snapshot.mjs','scripts/verify-context-reconciliation');
@@ -88,6 +90,7 @@ const sliceExecutionRefs=['scripts/generate-yss-skill-boundaries','scripts/lib/b
 const backendPlatformRefs=['scripts/verify-backend-platform-matrix','scripts/fixtures/backend-scaffold/generate-candidate.mjs','scripts/fixtures/backend-scaffold/platform-scenarios.test.mjs','scripts/verify-scaffold-architecture-decision-scenarios','scripts/verify-scaffold-generator-scenarios'];
 const routingContractRef='.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml';
 sliceExecutionRefs.push('scripts/lib/execution-evidence.mjs');
+sliceExecutionRefs.push('scripts/verify-frontend-delivery-scenarios','scripts/fixtures/frontend-delivery/scenarios.mjs','scripts/fixtures/backend-delivery/revision-server.mjs');
 sliceExecutionRefs.push('scripts/verify-frontend-implementation-evidence','.template-spec/process/schemas/frontend-implementation-evidence.schema.json','.template-spec/process/templates/frontend-implementation-verification-template.yaml');
 const routingSource=readFileSync(path.join(root,routingContractRef));
 const consumerRoutes=parseDocument(routingSource.toString(),{uniqueKeys:true}).toJS({maxAliasCount:0}).consumer_entry_routes;
@@ -172,18 +175,17 @@ function lock(target,targetRoot){const ref='.template-source/distribution/strate
 // the legacy src copy; the three thin subproject CLIs use their official sync-core command.
 sync(path.join(root,'.template-source/cli-core/command-runner.mjs'),path.join(root,'scripts/lib/command-runner.mjs'));
 lock('.',root);
-for(const name of ['create-yss-spec']) {
+for(const name of rootOnly||skipCliSources?[]:['create-yss-spec']) {
  const target=`submodules/${name}`;
  if(!existsSync(path.join(root,target,'.git')))continue;
  if(!check){const state=inspectWorkingTreeScope(root,{project_root:target,repository_scope:'git-submodule',checkout_state:'attached-branch'});if(!state.writable)throw new Error(`${target}: ${state.violation}`);}
  sync(path.join(root,'.template-source/cli-core/command-runner.mjs'),path.join(root,target,'src/command-runner.mjs'));
  sync(path.join(root,'.template-source/cli-core/runtime-store.mjs'),path.join(root,target,'src/runtime-store.mjs'));
 }
-for(const target of targets){
+for(const target of rootOnly?[]:targets){
  if(!existsSync(path.join(root,target,'.git')))continue;
  if(!check){const state=inspectWorkingTreeScope(root,{project_root:target,repository_scope:'git-submodule',checkout_state:'attached-branch'});if(!state.writable)throw new Error(`${target}: ${state.violation}`);}
  if(!target.endsWith('design-agent'))for(const ref of sliceExecutionRefs)sync(path.join(root,ref),path.join(root,target,ref),transformationFor(target,ref));
- if(!target.endsWith('design-agent'))for(const ref of ['scripts/verify-frontend-delivery-scenarios','scripts/fixtures/backend-delivery/revision-server.mjs'])sync(path.join(root,ref),path.join(root,target,ref));
  if(target.endsWith('backend-agent'))for(const ref of ['scripts/fixtures/existing-backend/scenarios.test.mjs','scripts/verify-existing-backend-architecture-scenarios','scripts/lib/implementation-contract-compiler.mjs','scripts/lib/technical-design-boundary.mjs',...backendPlatformRefs])sync(path.join(root,ref),path.join(root,target,ref));
  if(target.endsWith('backend-agent'))sync(path.join(root,visualSource),path.join(root,target,visualWire),'backend-wire-library');
  syncExistingProfiles(path.join(root,target));

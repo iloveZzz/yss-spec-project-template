@@ -100,13 +100,16 @@ const prototypeContractChange = planTemplateVerification({ profile: "fast", chan
 assert.ok(prototypeContractChange.groups.includes("implementation"), "原型契约脚本变化必须运行实现压力场景");
 
 const candidate = planTemplateVerification({ profile: "candidate", changedFiles: [".template-spec/process/harness-process-tailoring.md"] });
-assert.equal(candidate.effective_profile, "candidate");
+assert.equal(candidate.effective_profile, "release", "candidate 缺少可信 baseline 时保持旧完整阻断");
+assert.equal(candidate.strategy, "legacy-full");
 assert.ok(candidate.groups.includes("maintenance"));
 assert.ok(candidate.groups.includes("candidate-integrity"));
 
-const unknown = planTemplateVerification({ profile: "candidate", changedFiles: ["new-unmapped-root/file.txt"] });
-assert.equal(unknown.effective_profile, "release");
-assert.match(unknown.escalation_reason, /未映射/);
+assert.throws(
+  () => planTemplateVerification({ profile: "candidate", changedFiles: ["new-unmapped-root/file.txt"] }),
+  /UNKNOWN_VERIFICATION_PATH|未映射|未知路径/,
+  "未知路径须在计划阶段拒绝，不能生成看似完整的可执行计划",
+);
 
 const core = planTemplateVerification({ profile: "fast", changedFiles: ["scripts/lib/template-verification.mjs"] });
 assert.equal(core.effective_profile, "release");

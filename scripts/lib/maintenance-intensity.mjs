@@ -4,6 +4,8 @@ import { fileURLToPath } from "node:url";
 import { parseDocument } from "../vendor/yaml.mjs";
 import { validateMaintenanceReviewEvidence } from "./maintenance-review.mjs";
 import { resolveMaintenanceReference } from './maintenance-storage.mjs';
+import {spawnSync} from 'node:child_process';
+import {readRepositoryMode} from './repository-mode.mjs';
 
 import { validateCounterexample } from "./maintenance-counterexample.mjs";
 
@@ -97,7 +99,7 @@ export function validateMaintenanceCheckpoint(data, options = {}) {
   }
   const legacyFormalL3 = data.intensity === "L3" && data.review_mode === "formal-independent";
   const reviewKind = legacyFormalL3 ? "formal-independent-review" : data.review_mode === "focused-independent" ? "focused-independent-review" : null;
-  if (data.schema_version === 2) validateCheckpointState(data, kinds, reviewKind);
+  if (data.schema_version === 2) validateCheckpointState(data, kinds, reviewKind,options);
   const requiredEvidence = legacyFormalL3
     ? ["red", "green", "refactor", "pressure-scenario", "fresh-verification", "formal-independent-review"]
     : [...REQUIRED_EVIDENCE[data.intensity].filter((kind) => !(reviewKind && kind === "self-check")), ...(reviewKind ? [reviewKind] : [])];
@@ -115,7 +117,7 @@ export function validateMaintenanceCheckpoint(data, options = {}) {
   return { historical_only: options.history === true, execution_authorization: "not-evaluated", intensity: data.intensity, minimum_intensity: minimum, current_state: options.history ? "historical-only" : data.schema_version === 2 ? data.current_state : "release-ready" };
 }
 
-function validateCheckpointState(data, evidenceKinds, reviewKind) {
+function validateCheckpointState(data, evidenceKinds, reviewKind,options) {
   const states = ["implementation-ready", "review-ready", "release-ready", "needs-human"];
   const targets = ["implementation-ready", "review-ready", "release-ready"];
   const profiles = ["fast", "candidate", "release"];
@@ -142,7 +144,7 @@ function validateCheckpointState(data, evidenceKinds, reviewKind) {
     for (const required of ["candidate-verification", "initial-release-verification", "review-task-packages"]) {
       ensure(evidenceKinds.has(required), `${data.current_state} 缺少 ${required} 证据`);
     }
-    validateReleaseVerificationCommand(data, "initial-release-verification");
+    validateReleaseVerificationCommand(data, "initial-release-verification",options);
   } else {
     ensure(data.review_round === 0, "维护者自检不需要审查轮次");
     ensure(data.candidate_digest === null, "维护者自检不得冻结 candidate_digest");
@@ -163,14 +165,39 @@ function validateCheckpointState(data, evidenceKinds, reviewKind) {
   }
   ensure(data.verification_profile === "release", "release-ready 必须使用 release profile");
   ensure(evidenceKinds.has("final-release-verification"), "release-ready 缺少 final-release-verification 证据");
-  validateReleaseVerificationCommand(data, "final-release-verification");
+  validateReleaseVerificationCommand(data, "final-release-verification",options);
   if (reviewKind) ensure(evidenceKinds.has(reviewKind), `release-ready 缺少 ${reviewKind} 证据`);
 }
 
-function validateReleaseVerificationCommand(data, kind) {
+function validateReleaseVerificationCommand(data, kind,options) {
   const evidence = data.verification_evidence.filter((item) => item.kind === kind);
   ensure(evidence.length === 1, `${kind} 必须恰好提供一条完整门禁证据`);
   ensure(evidence[0].command === "scripts/verify-template", `${kind}.command 必须为 scripts/verify-template`);
+  if(!options.history)validateMaintenanceVerificationEvidence(evidence[0],{root:options.baseDir||root,expectedPlan:options.expectedPlan});
+}
+
+export function validateMaintenanceVerificationEvidence(evidence,{root:sourceRoot=root,expectedPlan}={}){
+ ensure(readRepositoryMode(sourceRoot)==='template-source','project-instance 不支持模板维护发布证据');
+ ensure(evidence.command==='scripts/verify-template','维护发布证据必须为 scripts/verify-template');
+ ensure(Array.isArray(evidence.args)&&evidence.args.every(value=>typeof value==='string'),'维护发布证据缺少实际 args');
+ ensure(evidence.exit_code===0,'维护发布证据缺少实际退出码');
+ ensure(typeof evidence.evidence_ref==='string'&&/^(?:sha256:)?[a-f0-9]{64}$/.test(evidence.evidence_digest),'维护发布证据缺少报告引用或摘要');
+ const file=evidence.evidence_ref.startsWith('maintenance:')?resolveMaintenanceReference(evidence.evidence_ref,{root:sourceRoot,digest:evidence.evidence_digest}):path.resolve(sourceRoot,evidence.evidence_ref);
+ // Keep checkpoint validation synchronous without importing the source-only
+ // execution graph while reading ordinary or historical task packages.
+ const moduleUrl=new URL('../../.template-source/scripts/lib/verification-report-validator.mjs',import.meta.url).href;
+ const bridge=`import fs from 'node:fs';import path from 'node:path';
+ const input=JSON.parse(fs.readFileSync(0,'utf8'));
+ try {const {compileExpectedVerificationPlan,validateVerificationReport,assertEvidenceFile}=await import(input.moduleUrl);
+ assertEvidenceFile(input.file,path.dirname(input.file),input.evidence.evidence_digest);
+ const report=JSON.parse(fs.readFileSync(input.file,'utf8'));
+ const plan=input.expectedPlan||compileExpectedVerificationPlan({root:input.root,args:input.evidence.args,reportDirectory:path.dirname(input.file)});
+ const verified=validateVerificationReport(report,{root:input.root,expectedPlan:plan,reportDirectory:path.dirname(input.file),expectedInvocation:{command:path.join(input.root,'scripts/run-template-verification'),args:['--profile','release',...input.evidence.args]},observedExitCode:input.evidence.exit_code});
+ process.stdout.write(JSON.stringify({report,verified}));
+ }catch(error){process.stderr.write(error.message);process.exitCode=1;}`;
+ const result=spawnSync(process.execPath,['--input-type=module','-e',bridge],{cwd:sourceRoot,encoding:'utf8',input:JSON.stringify({moduleUrl,root:sourceRoot,file,evidence,expectedPlan}),maxBuffer:16*1024*1024,timeout:30000});
+ ensure(result.status===0&&!result.error,result.error?.message||result.stderr||'维护发布报告校验未完成');
+ return JSON.parse(result.stdout);
 }
 
 export function loadMaintenanceCheckpoint(source) {

@@ -48,7 +48,7 @@ Plan 入口读 `.template-spec/plan/README.md`、`.template-spec/process/plan-mi
 
 ### 仓库身份
 
-`template-source` 不得生成产品 Spec、原型、OpenAPI 或垂直切片 Ticket；命中产品流程时返回 `blocked: template-source-product-artifact-forbidden`。模板维护使用 `maintaining-skills`，按 L1/L2/L3 留下对应证据。
+`template-source` 不得生成产品 Spec、原型、OpenAPI 或垂直切片 Ticket；命中产品流程返回 `blocked: template-source-product-artifact-forbidden`。维护用 `maintaining-skills`。验证按根 `AGENTS.md` 的 profile；合并展示不裁剪检查。
 
 ### 流转与实现
 

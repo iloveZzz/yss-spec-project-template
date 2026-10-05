@@ -1,0 +1,195 @@
+import { test } from 'node:test';
+import { attachSliceApproval, attachArtifactApproval } from '../backend-delivery/approval-fixture.mjs';
+import assert from 'node:assert/strict';
+import { fork } from 'node:child_process';
+import { once } from 'node:events';
+import { setTimeout as delay } from 'node:timers/promises';
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, cpSync, existsSync, renameSync } from 'node:fs';
+import path from 'node:path';
+import { pathToFileURL } from 'node:url';
+import { tmpdir } from 'node:os';
+import { fixture, context } from '../strategic-handoff/fixture.mjs';
+import { exportBundle, importBundle } from '../../lib/strategic-handoff.mjs';
+import { read, hash, json, ROOT } from '../../lib/strategic-handoff-io.mjs';
+
+// Both source and generated-instance modes retain their distinct input contract.
+export async function registerFrontendDeliveryScenarios({backendRoot,frontendRoot,crossRepoSampleRoot}={}) {
+const backendTools=backendRoot;
+const frontendTools=frontendRoot;
+const { backendDeliveryBasis, exportBackendDelivery, openBackendDelivery, inspectBackendDelivery } = await import(backendTools?pathToFileURL(path.join(backendTools,'scripts/lib/backend-delivery.mjs')):'../../lib/backend-delivery.mjs');
+const {importBackendDelivery}=await import(frontendTools?pathToFileURL(path.join(frontendTools,'scripts/lib/backend-delivery.mjs')):'../../lib/backend-delivery.mjs');
+const { verifyFrontendDelivery, verifyFrontendStrategicPreflight } = await import(frontendTools?pathToFileURL(path.join(frontendTools,'scripts/lib/frontend-delivery.mjs')):'../../lib/frontend-delivery.mjs');
+const { enforceFrontendDelivery } = await import(frontendTools?pathToFileURL(path.join(frontendTools,'scripts/lib/frontend-delivery-boundary.mjs')):'../../lib/frontend-delivery-boundary.mjs');
+const { compileDefaultImplementationContract } = await import(frontendTools?pathToFileURL(path.join(frontendTools,'scripts/lib/implementation-contract-compiler.mjs')):'../../lib/implementation-contract-compiler.mjs');
+const { validateNextRoute, validateImplementationEntry } = await import(frontendTools?pathToFileURL(path.join(frontendTools,'scripts/lib/lifecycle-transition.mjs')):'../../lib/lifecycle-transition.mjs');
+const runtimeRegistry=read(path.join(frontendTools||ROOT,'.template-spec/process/lifecycle-registry.yaml'));
+const lifecycleRoute=runtimeRegistry.stages.some(x=>x.id==='stage.frontend-engineering-design')
+  ?{stage:'stage.frontend-engineering-design',workUnit:'work-unit.frontend-engineering-design'}
+  :runtimeRegistry.stages.some(x=>x.id==='stage.technical-design')
+    ?{stage:'stage.technical-design',workUnit:'work-unit.technical-design'}
+  :runtimeRegistry.stages.some(x=>x.id==='stage.system-data-engineering')
+    ?{stage:'stage.system-data-engineering',workUnit:'work-unit.technical-analysis'}
+    :null;
+if(!lifecycleRoute||!runtimeRegistry.work_units.some(x=>x.id===lifecycleRoute.workUnit))throw new TypeError('lifecycle 缺少显式支持的前端工程设计入口');
+const frontendStage=lifecycleRoute.stage;
+const frontendWorkUnit=lifecycleRoute.workUnit;
+
+test('Frontend-only v4 可先完成战略预检，并以 backend-not-applicable 接收',async t=>{
+  const base=mkdtempSync(path.join(tmpdir(),'frontend-preflight-test-')),source=path.join(base,'strategy'),frontend=path.join(base,'frontend');
+  t.after(()=>rmSync(base,{recursive:true,force:true}));mkdirSync(source);mkdirSync(path.join(frontend,'.template-spec/process'),{recursive:true});
+  const put=(root,ref,value)=>{mkdirSync(path.dirname(path.join(root,ref)),{recursive:true});writeFileSync(path.join(root,ref),typeof value==='string'?value:json(value));};
+  const f=await fixture(source,{handoffVersion:4,impacts:{ui:true,api:false,data:false,backend:false,frontend:true,cross_repo:false,high_risk:false}});
+  put(frontend,'yss-project.yaml','schema_version: 1\nrepository_mode: project-instance\n');put(frontend,'CONTEXT.md',context);
+  put(frontend,'.template-spec/process/harness-profile.yaml',{schema_version:2,profile_id:'yss-harness-frontend',handoff:{consumer_capabilities:['frontend-engineering-design']}});
+  const output=path.join(base,'strategy-package');await exportBundle({sourceRoot:source,handoffRef:'handoff.yaml',output});
+  const imported=await importBundle({bundle:output,targetRoot:frontend}),receipt=read(path.join(frontend,imported.receipt_ref));
+  const route=receipt.routes[0],preflightRef=route.artifact_refs.find(ref=>ref.endsWith('frontend-strategic-preflight-draft.json')),traceRef=route.artifact_refs.find(ref=>ref.endsWith('frontend-traceability-draft.json'));
+  assert(preflightRef&&traceRef);const preflight=read(path.join(frontend,preflightRef));assert.equal(preflight.ready_for_agent,false);assert.equal(preflight.backend_dependency.mode,'not-applicable');
+  put(frontend,'reconciliation.json',{schema_version:1,repository_mode:'project-instance',stage:'stage.frontend-engineering-design',work_unit:'work-unit.frontend-engineering-design',status:'reconciled',context_snapshot:f.snapshot,changes:{added:['Global/Supplier'],updated:[],deprecated:[]},unresolved_terms:[],evidence_refs:['CONTEXT.md']});
+  preflight.status='verified';preflight.context_reconciliation_ref='reconciliation.json';put(frontend,preflightRef,preflight);
+  const preflightResult=await verifyFrontendStrategicPreflight({root:frontend,preflightRef});assert.equal(preflightResult.result,'preflight-verified');assert.equal(preflightResult.ready_for_agent,false);
+  assert.equal(enforceFrontendDelivery({frontend_preflight:{preflight_ref:preflightRef,digest:hash(readFileSync(path.join(frontend,preflightRef)))}},{root:frontend,phase:'design'}).result,'preflight-verified');
+  put(frontend,'cases.md','Synthetic UI-only acceptance cases.');
+  const trace=read(path.join(frontend,traceRef));const frontendCases=['success','failure'].map(outcome=>({case_id:`ui-${outcome}`,source_ids:['rule.complete','scenario.submit'],outcome,operation_ids:[],visual_case_ids:['primary-desktop','primary-narrow'],evidence_ref:'cases.md',evidence_digest:hash(readFileSync(path.join(frontend,'cases.md')))}));
+  for(const row of trace.rows)Object.assign(row,{disposition:'mapped',frontend_case_refs:frontendCases.map(item=>item.case_id),dependency_status:'known',dependent_slice_refs:['slice.ui-only'],evidence_refs:['cases.md']});
+  const acceptanceRef='frontend-acceptance-v2.json';put(frontend,acceptanceRef,{schema_version:2,status:'accepted',slice_id:'slice.ui-only',strategic_preflight:{ref:preflightRef,digest:hash(readFileSync(path.join(frontend,preflightRef)))},backend_dependency:preflight.backend_dependency,strategic_handoff:{import_receipt_ref:imported.receipt_ref,bundle_digest:receipt.bundle_digest,route_id:trace.route_id,context_reconciliation_ref:'reconciliation.json',rows:trace.rows},frontend_cases:frontendCases});
+  const accepted=await verifyFrontendDelivery({root:frontend,acceptanceRef,sliceRef:'slice.ui-only'});assert.equal(accepted.result,'inputs-verified');assert.equal(accepted.backend_dependency,'not-applicable');assert.equal(accepted.ready_for_agent,false);
+});
+
+test('战略与后端交付联合接收：便携、真实服务、拒绝不完整/过期输入及执行入口绕过',async t=>{
+  const sampleRoot=crossRepoSampleRoot;
+  const base=sampleRoot||mkdtempSync(path.join(tmpdir(),'frontend-delivery-test-'));
+  const put=(root,ref,value)=>{mkdirSync(path.dirname(path.join(root,ref)),{recursive:true});writeFileSync(path.join(root,ref),typeof value==='string'?value:json(value));};
+  const source=path.join(base,sampleRoot?'management':'strategy'), backend=path.join(base,'backend'), frontend=path.join(base,'frontend');
+  [source,backend,frontend].forEach(root=>mkdirSync(root,{recursive:true}));
+  if(backendTools)cpSync(backendTools,backend,{recursive:true});
+  if(frontendTools)cpSync(frontendTools,frontend,{recursive:true});
+  // This scenario explicitly models a historical v4 handoff / v2 Slice project.
+  // Do not inherit the opt-in version of a freshly generated project into it.
+  for(const root of [backend,frontend]) {
+    const tracker=path.join(root,'.template-spec/agents/issue-tracker.md');
+    if(existsSync(tracker))writeFileSync(tracker,readFileSync(tracker,'utf8').replace(/^\s*business_ticket_version: 1\r?\n/m,''));
+  }
+  const f=await fixture(source,{handoffVersion:4});
+  await t.test('旧 Spec 摘要阻断战略交付，恢复源字节后可继续',async()=>{
+    const specRef=path.join(source,'source/spec.md'), original=readFileSync(specRef);
+    put(source,'source/spec.md','# 已变化但未重新批准的 Spec\n');
+    await assert.rejects(()=>exportBundle({sourceRoot:source,handoffRef:'handoff.yaml',output:path.join(base,'stale-spec-package')}));
+    writeFileSync(specRef,original);
+  });
+  for(const root of [backend,frontend]) {put(root,'yss-project.yaml','schema_version: 1\nrepository_mode: project-instance\n');put(root,'CONTEXT.md',context);}
+  const strategic=await exportBundle({sourceRoot:source,handoffRef:'handoff.yaml',output:path.join(backend,'strategy-package')});
+  const roles=read(path.join(backendTools||source,'.template-spec/agents/digital-human-roles.yaml'));
+  if(!backendTools)for(const gate of ['gate.openapi-frozen']) {
+    roles.gate_policy.biological_human=(roles.gate_policy.biological_human||[]).filter(x=>x!==gate);
+    roles.gate_policy.digital_human_review=(roles.gate_policy.digital_human_review||[]).filter(x=>x.gate!==gate);
+    roles.gate_policy.digital_human_review.push({gate,countersigners:['role.product-manager']});
+  }
+  put(backend,'.template-spec/agents/digital-human-roles.yaml',roles);
+  put(backend,'api.yaml',{openapi:'3.1.0',info:{title:'Synthetic supplier API',version:'1'},paths:{'/suppliers':{post:{operationId:'submitSupplier',responses:{'200':{description:'OK'}}}}}});
+  put(backend,'slice.json',{schema_version:2,contract_id:'contract.backend',contract_version:'v1',slice_id:'slice.submit',status:'approved'});
+  put(backend,'data.md','Synthetic data setup for maintenance tests, not product verification.');
+  put(backend,'verification.log','Synthetic test fixture: successful/failed submissions exercised.');
+  const file=ref=>({ref,digest:hash(readFileSync(path.join(backend,ref)))});
+  const apiApproval=attachArtifactApproval(backend,'api.yaml','api.supplier',backendTools?'gate.openapi-freeze-confirmed':'gate.openapi-frozen');
+  const sliceApproval=attachSliceApproval(backend,'slice.json');
+  const serverState=path.join(base,'server.json');
+  const putServerState=value=>{const pending=path.join(base,`server-state-${process.pid}.tmp`);writeFileSync(pending,json(value));renameSync(pending,serverState);};
+  putServerState({body:{}});
+  const server=fork(path.join(ROOT,'scripts/fixtures/backend-delivery/revision-server.mjs'),[serverState],{stdio:['ignore','ignore','inherit','ipc']});
+  t.after(()=>{server.kill();rmSync(base,{recursive:true,force:true});});
+  const [{port}]=await once(server,'message');
+  const artifactDigest=sampleRoot?hash(readFileSync(path.join(backend,'target/submit-application-pilot-1.0.0.jar'))):`sha256:${'b'.repeat(64)}`;
+  const delivery={schema_version:1,delivery_id:'backend-delivery.supplier',version:'v1',status:'verified',strategic_bundle_ref:'strategy-package',strategic_bundle_digest:strategic.bundle_digest,strategic_route_id:'route.backend',scope:{slice_id:'slice.submit',source_ids:['rule.complete','scenario.submit'],operation_ids:['submitSupplier']},openapi:apiApproval.binding,slice_contract:sliceApproval.binding,build:{source_commit:'a'.repeat(40),artifact_digest:artifactDigest},environment:{id:'fixture-local',base_url:`http://127.0.0.1:${port}`,deployment_id:'fixture-v1',revision_path:'/version',revision_pointers:{deployment_id:'/deployment_id',source_commit:'/source_commit',openapi_digest:'/openapi_digest',artifact_digest:'/artifact_digest',test_data_digest:'/test_data_digest'},test_data:file('data.md')},verification:{},supporting_files:[...sliceApproval.supportingFiles,...apiApproval.supportingFiles]};
+  const record=kind=>({schema_version:1,kind,subject_digest:backendDeliveryBasis(delivery),results:[{command:'synthetic-maintenance-test',executed_at:new Date().toISOString(),exit_code:0,evidence:[file('verification.log')]}],operation_ids:['submitSupplier'],coverage:[{source_id:'scenario.submit',outcome:'success'},{source_id:'scenario.submit',outcome:'failure'}]});
+  put(backend,'contract-test.json',record('backend-contract'));put(backend,'deployment-test.json',record('backend-deployment'));
+  delivery.verification={contract:file('contract-test.json'),deployment:file('deployment-test.json')};put(backend,'delivery.json',delivery);
+  const body={deployment_id:'fixture-v1',source_commit:delivery.build.source_commit,openapi_digest:delivery.openapi.digest,artifact_digest:delivery.build.artifact_digest,test_data_digest:delivery.environment.test_data.digest};
+  putServerState({body});
+  await t.test('导出拒绝缺失场景、篡改接口及错误批准',async()=>{
+    const bytes=readFileSync(path.join(backend,'api.yaml'));put(backend,'api.yaml','changed');
+    await assert.rejects(()=>inspectBackendDelivery(backend,'delivery.json'),/摘要不一致/);writeFileSync(path.join(backend,'api.yaml'),bytes);
+    const approval=read(path.join(backend,delivery.openapi.approval_ref));put(backend,delivery.openapi.approval_ref,{...approval,artifact_bindings:[]});
+    await assert.rejects(()=>inspectBackendDelivery(backend,'delivery.json'),/批准未绑定/);put(backend,delivery.openapi.approval_ref,approval);
+    const oldApproval=structuredClone(approval);oldApproval.artifact_bindings[0].digest=`sha256:${'0'.repeat(64)}`;
+    put(backend,delivery.openapi.approval_ref,oldApproval);
+    await assert.rejects(()=>inspectBackendDelivery(backend,'delivery.json'));
+    put(backend,delivery.openapi.approval_ref,approval);
+    const tests=record('backend-contract');tests.coverage.pop();put(backend,'contract-test.json',tests);
+    const broken=structuredClone(delivery);broken.verification.contract=file('contract-test.json');put(backend,'delivery.json',broken);
+    await assert.rejects(()=>inspectBackendDelivery(backend,'delivery.json'),/成功\/失败/);
+    put(backend,'contract-test.json',record('backend-contract'));delivery.verification.contract=file('contract-test.json');put(backend,'delivery.json',delivery);
+  });
+  const output=path.join(base,'package');await exportBackendDelivery({sourceRoot:backend,deliveryRef:'delivery.json',output,zip:true});
+  const imported=await importBackendDelivery({bundle:`${output}.zip`,targetRoot:frontend});
+  assert.equal((await importBackendDelivery({bundle:output,targetRoot:frontend})).result,'already-imported');
+  const acceptance=read(path.join(frontend,imported.acceptance_ref));
+  await t.test('草案/缺少两类产物不能进入前端任务',async()=>{
+    await assert.rejects(()=>verifyFrontendDelivery({root:frontend,acceptanceRef:imported.acceptance_ref,sliceRef:'slice.submit'}),/schema/);
+    const profileRef=path.join(frontend,'.template-spec/process/harness-profile.yaml');
+    const profile=existsSync(profileRef)?read(profileRef):{schema_version:1,profile_id:'harness.frontend-delivery'};
+    put(frontend,'.template-spec/process/harness-profile.yaml',{...profile,frontend_delivery:{required:true}});
+    assert.throws(()=>enforceFrontendDelivery({}, {root:frontend}),/frontend-delivery-required/);
+    assert.throws(()=>compileDefaultImplementationContract({root:frontend}),/frontend-delivery-required/);
+    assert.throws(()=>enforceFrontendDelivery({contract:{kind:'template-maintenance'}},{root:frontend}),/不得用模板维护/);
+    assert.equal(validateNextRoute(frontendWorkUnit==='work-unit.technical-analysis'?'work-unit.spec-synthesis':'work-unit.harness-entry',frontendWorkUnit,undefined,{root:frontend}).result,'blocked');
+    assert.equal(validateImplementationEntry({}, {root:frontend}).blocking_signals[0],'frontend-delivery-blocked');
+  });
+  put(frontend,'reconciliation.json',{schema_version:1,repository_mode:'project-instance',stage:frontendStage,work_unit:frontendWorkUnit,status:'reconciled',context_snapshot:f.snapshot,changes:{added:['Global/Supplier'],updated:[],deprecated:[]},unresolved_terms:[],evidence_refs:['CONTEXT.md']});
+  const preflight=read(path.join(frontend,acceptance.strategic_preflight.ref));preflight.status='verified';preflight.context_reconciliation_ref='reconciliation.json';put(frontend,acceptance.strategic_preflight.ref,preflight);acceptance.strategic_preflight.digest=hash(readFileSync(path.join(frontend,acceptance.strategic_preflight.ref)));
+  put(frontend,'cases.md','Synthetic planned UI cases: complete submission succeeds; incomplete submission fails.');
+  acceptance.status='accepted';acceptance.strategic_handoff.context_reconciliation_ref='reconciliation.json';
+  acceptance.frontend_cases=['success','failure'].map(outcome=>({case_id:`submit-${outcome}`,source_ids:['rule.complete','scenario.submit'],outcome,operation_ids:['submitSupplier'],visual_case_ids:['primary-desktop','primary-narrow'],evidence_ref:'cases.md',evidence_digest:hash(readFileSync(path.join(frontend,'cases.md')))}));
+  for(const row of acceptance.strategic_handoff.rows)Object.assign(row,{disposition:'mapped',frontend_case_refs:acceptance.frontend_cases.map(x=>x.case_id),dependency_status:'known',dependent_slice_refs:['slice.submit'],evidence_refs:['cases.md']});
+  put(frontend,imported.acceptance_ref,acceptance);
+  const check=()=>verifyFrontendDelivery({root:frontend,acceptanceRef:imported.acceptance_ref,sliceRef:'slice.submit'});
+  await t.test('源仓消失后可验 ZIP 并独立恢复；输入就绪不授予代码实施',async()=>{
+    rmSync(source,{recursive:true});rmSync(backend,{recursive:true});
+    assert.equal(await openBackendDelivery(`${output}.zip`,b=>b.delivery.scope.slice_id),'slice.submit');
+    const verified=await check();assert.equal(verified.result,'inputs-verified');assert.equal(verified.ready_for_agent,false);
+    assert.equal(verified.actual_verification.observed.deployment_id,'fixture-v1');
+    const draft=compileDefaultImplementationContract({root:frontend,slice_id:'slice.submit',frontend_delivery:{acceptance_ref:imported.acceptance_ref},requiredCapabilities:['governance.implementation-contract']});
+    assert.equal(draft.status,'draft');assert.equal(draft.slice_id,'slice.submit');assert.equal(draft.frontend_delivery.digest,verified.acceptance_digest);
+    assert.equal(enforceFrontendDelivery({slice_id:'slice.submit',frontend_delivery:{acceptance_ref:imported.acceptance_ref}}, {root:frontend}).result,'inputs-verified');
+    assert.throws(()=>enforceFrontendDelivery({slice_id:'slice.submit',frontend_delivery:{acceptance_ref:imported.acceptance_ref}}, {root:frontend,phase:'implementation'}),/approved Slice Contract/);
+  });
+  await t.test('实现边界读取持久化合同并冻结接收记录及用例字节',async()=>{
+    const binding={acceptance_ref:imported.acceptance_ref,digest:hash(readFileSync(path.join(frontend,imported.acceptance_ref)))};
+    put(frontend,'frontend-contract.json',{status:'approved',slice_id:'slice.submit',frontend:{delivery:binding}});
+    assert.equal(enforceFrontendDelivery({slice_contract_ref:'frontend-contract.json'},{root:frontend,phase:'implementation'}).result,'inputs-verified');
+    put(frontend,'cases.md','changed case');await assert.rejects(check,/摘要漂移/);
+    put(frontend,'cases.md','Synthetic planned UI cases: complete submission succeeds; incomplete submission fails.');
+    put(frontend,'frontend-contract.json',{status:'draft',slice_id:'slice.submit',frontend:{delivery:binding}});
+    assert.throws(()=>enforceFrontendDelivery({slice_contract_ref:'frontend-contract.json'},{root:frontend,phase:'implementation'}),/approved Slice Contract/);
+  });
+  await t.test('部署版本/数据失配与服务失败使旧接收记录失效',async()=>{
+    const expectVersionMismatch=async()=>{
+      for(let attempt=0;attempt<3;attempt++){
+        try { await assert.rejects(check,/真实服务版本不匹配/);return; }
+        catch(error){
+          if(server.exitCode!==null||attempt===2||!/fetch failed|timeout|aborted/i.test(String(error)))throw error;
+          await delay(100);
+        }
+      }
+    };
+    for(const field of ['deployment_id','source_commit','openapi_digest','artifact_digest','test_data_digest']) {
+      putServerState({body:{...body,[field]:'wrong'}});await expectVersionMismatch();
+    }
+    putServerState({status:503,body});await assert.rejects(check,/真实接口不可用/);putServerState({body});
+  });
+  await t.test('范围、摘要和逐条承接缺口均拒绝',async()=>{
+    await assert.rejects(()=>verifyFrontendDelivery({root:frontend,acceptanceRef:imported.acceptance_ref,sliceRef:'slice.other'}),/切片不匹配/);
+    await assert.rejects(()=>verifyFrontendDelivery({root:frontend,acceptanceRef:imported.acceptance_ref,sliceRef:'slice.submit',expectedDigest:`sha256:${'0'.repeat(64)}`}),/摘要已变化/);
+    for(const mutate of [a=>a.frontend_cases.pop(),a=>a.strategic_handoff.rows[0].disposition='pending',a=>a.frontend_cases[0].operation_ids=['unknown'],a=>a.strategic_handoff.bundle_digest=`sha256:${'0'.repeat(64)}`]) {
+      const changed=structuredClone(acceptance);mutate(changed);put(frontend,imported.acceptance_ref,changed);await assert.rejects(check);
+    }
+    put(frontend,imported.acceptance_ref,acceptance);
+  });
+  await t.test('已导入更新版本阻断旧切片；包篡改拒绝',async()=>{
+    const receipt=read(path.join(frontend,imported.receipt_ref));const newer=path.posix.dirname(path.posix.dirname(imported.receipt_ref))+'/v2';
+    put(frontend,`${newer}/import-receipt.json`,{...receipt,version:'v2'});await assert.rejects(check,/旧前端接收记录 stale/);rmSync(path.join(frontend,newer),{recursive:true});
+    const changed=path.join(base,'tampered');cpSync(output,changed,{recursive:true});put(changed,'extra.txt','extra');await assert.rejects(()=>openBackendDelivery(changed,()=>null),/未登记文件/);
+  });
+});
+
+}

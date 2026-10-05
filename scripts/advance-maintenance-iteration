@@ -1,7 +1,11 @@
 #!/usr/bin/env node
 import { spawnSync } from "node:child_process";
 import { parseArgs } from "node:util";
+import { realpathSync, readFileSync } from "node:fs";
+import path from "node:path";
 import { ROOT } from "./lib/template-verification.mjs";
+import { readRepositoryMode } from "./lib/repository-mode.mjs";
+import { loadProfileSyncConfig } from "./lib/profile-skill-sync.mjs";
 import { captureMaintenanceCandidate } from "./lib/maintenance-candidate.mjs";
 import { commitCheckpoint, validateCheckpointRunId } from "./lib/checkpoint-commit.mjs";
 
@@ -19,16 +23,33 @@ try {
     json: { type: "boolean", default: false },
     "skip-verify": { type: "boolean", default: false },
     profile: { type: "string", default: "fast" },
+    root: { type: "string" },
   }, strict: true });
   if (!values["run-id"] || !values.output) throw new TypeError("用法: scripts/advance-maintenance-iteration --run-id <id> --output maintenance:candidates/<id> [--plan] [--json] [--profile fast|candidate]");
   if (!PROFILES.has(values.profile)) throw new TypeError("--profile 必须是 fast 或 candidate: " + values.profile);
   const runId = values["run-id"];
+  const root = values.root ? realpathSync(values.root) : ROOT;
+  if (root !== realpathSync(ROOT)) {
+    const target = Object.values(loadProfileSyncConfig(ROOT).profiles).find(row => path.resolve(ROOT, row.target) === root);
+    if (!target) throw new TypeError("--root 只能选择当前主模板或已登记的专职模板");
+    const gitlink = spawnSync("git", ["ls-tree", "HEAD", "--", target.target], { cwd: ROOT, encoding: "utf8" });
+    if (gitlink.status !== 0 || !/^160000 commit [a-f0-9]{40}\t/.test(gitlink.stdout)) throw new TypeError("专职模板必须是已登记的真实 gitlink");
+    const branch = spawnSync("git", ["symbolic-ref", "--quiet", "HEAD"], { cwd: root, encoding: "utf8" });
+    if (branch.status !== 0) throw new TypeError("专职模板 checkpoint 要求已明确选择本地分支");
+  }
+  if (readRepositoryMode(root) !== "template-source") throw new TypeError("checkpoint 仅适用于 template-source");
+  readFileSync(path.join(root, "CONTEXT.md"));
+  const gitRoot = spawnSync("git", ["rev-parse", "--show-toplevel"], { cwd: root, encoding: "utf8" });
+  if (gitRoot.status !== 0 || realpathSync(gitRoot.stdout.trim()) !== root) throw new TypeError("checkpoint 根必须是独立 Git 仓库");
+  const resolvedBase = spawnSync("git", ["rev-parse", "--verify", values.base + "^{commit}"], { cwd: root, encoding: "utf8" });
+  if (resolvedBase.status !== 0 || !/^[a-f0-9]{40}$/.test(resolvedBase.stdout.trim())) throw new TypeError("无法解析维护基线为完整 SHA: " + values.base);
+  const verificationBase = resolvedBase.stdout.trim();
   // Fail fast: an invalid or already-taken run id must not leave a candidate
   // directory behind that blocks the retry.
-  validateCheckpointRunId(ROOT, runId);
-  const capture = values.plan ? { candidate_digest: null, manifest_ref: null, files: [] } : captureMaintenanceCandidate({ root: ROOT, outputDir: values.output, baseRef: values.base });
+  validateCheckpointRunId(root, runId);
+  const capture = values.plan ? { candidate_digest: null, manifest_ref: null, files: [] } : captureMaintenanceCandidate({ root, outputDir: values.output, baseRef: values.base });
   const checkpoint = commitCheckpoint({
-    root: ROOT,
+    root,
     runId,
     baseRef: values.base,
     dryRun: values.plan,
@@ -36,8 +57,8 @@ try {
   });
   let verification = { profile: values.profile, exit_code: null, skipped: true };
   if (!values.plan && !values["skip-verify"]) {
-    const command = values.profile === "candidate" ? ["scripts/verify-template-candidate", "--base", values.base] : ["scripts/verify-template-fast"];
-    const result = spawnSync(command[0], command.slice(1), { cwd: ROOT, encoding: "utf8", stdio: "inherit" });
+    const command = values.profile === "candidate" ? ["scripts/verify-template-candidate", "--base", verificationBase] : ["scripts/verify-template-fast"];
+    const result = spawnSync(command[0], command.slice(1), { cwd: root, encoding: "utf8", stdio: "inherit" });
     if (result.error) throw new TypeError("机械验证无法执行: " + result.error.message);
     verification = { profile: values.profile, exit_code: result.status, skipped: false, command: command.join(" ") };
   }

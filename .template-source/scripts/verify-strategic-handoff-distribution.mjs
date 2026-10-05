@@ -26,12 +26,19 @@ async function run(script,args,{cwd=root}={}) {
   return output.stdout;
 }
 try {
-  const generated=await Promise.allSettled(profiles.map(async([name,repo,bin])=>{
+  const generate=async([name,repo,bin])=>{
     // Permit isolated worktrees and unpacked release packages without changing gitlinks.
     const cliRoot=process.env[`YSS_CLI_${name.toUpperCase()}_ROOT`]||path.join(root,'submodules',repo);
     await run(path.join(cliRoot,'bin',bin),['--project-name',`Handoff ${name}`,'--business-domain','合成交接验证','--team-size','3','--target-dir',path.join(scratch,name)]);
     process.stdout.write(`${name}: CLI 生成实例通过\n`);
-  }));
+  };
+  const generated=[];
+  if(process.env.YSS_TEMPLATE_CONCURRENCY==='1') {
+    for(const profile of profiles) {
+      try {generated.push({status:'fulfilled',value:await generate(profile)});}
+      catch(reason){generated.push({status:'rejected',reason});}
+    }
+  } else generated.push(...await Promise.allSettled(profiles.map(generate)));
   for(const result of generated)if(result.status==='rejected')throw result.reason;
   const source=path.join(scratch,'design'), target=path.join(scratch,'backend'), output=path.join(scratch,'bundle');
   const {fixture,context}=await import(pathToFileURL(path.join(source,'scripts/fixtures/strategic-handoff/fixture.mjs')));
