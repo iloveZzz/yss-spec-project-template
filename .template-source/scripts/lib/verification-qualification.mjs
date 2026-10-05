@@ -8,6 +8,7 @@ import {loadLegacyManifest,verificationPatternMatches} from './verification-gate
 import {compileQualificationPlans} from './verification-qualification-plan.mjs';
 import {addVerificationExecutionTasks} from './verification-execution-plan.mjs';
 import {validateBaseline} from './verification-baseline.mjs';
+import {validateJsonSchema} from '../../../scripts/lib/json-schema.mjs';
 
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 const median=values=>{const sorted=[...values].sort((a,b)=>a-b),middle=Math.floor(sorted.length/2);return sorted.length%2?sorted[middle]:(sorted[middle-1]+sorted[middle])/2;};
@@ -126,7 +127,7 @@ function verifyRun(directory,run,{expectFailure=false}={}) {
   if(report.schema_version!==2||report.kind!=='template-verification-report'||report.purpose!=='qualification'||report.experimental!==true)throw Error('qualification-run-purpose-invalid');
   if(report.input_drift!==false||report.input_sha256!==report.input_after_sha256)throw Error('qualification-run-input-drift');
   if(!Array.isArray(report.plan?.commands)||!report.plan.commands.length||!Array.isArray(report.results))throw Error('qualification-run-plan-missing');
-  if(report.final_exit&&((report.final_exit.code??report.final_exit.exit_code)!==close.code||(report.final_exit.observed??report.final_exit.actual_exit_code_observed)!==true))throw Error('qualification-close-binding-mismatch');
+  if(!report.final_exit||report.final_exit.code!==close.code||report.final_exit.observed!==true||report.final_exit.signal!==null)throw Error('qualification-close-binding-mismatch');
   const failed=[];
   for(const [index,item] of report.plan.commands.entries()) {
     if(item.when&&item.when!=='template-source')continue;
@@ -183,6 +184,7 @@ export function validateQualification({root,config,reportFile,expectedDigest,exp
       if(pairIds.has(pair.pair_id)||JSON.stringify(pair.order)!==JSON.stringify(index%2?['candidate','legacy']:['legacy','candidate']))throw Error('qualification-pair-order-invalid');pairIds.add(pair.pair_id);
       const before=verifyRun(directory,pair.legacy),after=verifyRun(directory,pair.candidate);
       if(scope==='gates')for(const [side,observed]of [['legacy',before],['candidate',after]]) {
+        validateJsonSchema(observed.report,path.join(root,'.template-source/process/schemas/template-verification-report.schema.json'));
         const expected=validateQualificationPlanLedger({root,config,proof,report:observed.report,reportDirectory:path.dirname(observed.report_file),side});
         if(!expected.valid)throw Error(expected.reasons[0]);
       }

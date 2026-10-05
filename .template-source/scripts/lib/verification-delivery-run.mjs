@@ -83,7 +83,9 @@ export function assembleQualificationIntegration({root,directory}={}) {
     ensure(command.actual_exit_code_observed&&command.actual_exit_code===0&&command.actual_exit_signal===null,'四 CLI 内部命令未实际通过');
     for(const [file,digest]of [[command.stdoutFile,command.stdout_sha256],[command.stderrFile,command.stderr_sha256]])ensure(hash(fs.readFileSync(file))===digest,'四 CLI 内部日志摘要漂移');
   }
-  const envelope={schema_version:2,kind:'template-release-verification',purpose:'qualification',status:'passed',requested_commit:manifest.root_commit,template_commit:manifest.root_commit,cli_families:[...families],sources_manifest:manifest,artifacts,cli_integrations:integrations,commands};
+  const envelope={schema_version:2,kind:'template-release-verification',purpose:'qualification',status:'passed',
+    verification_scope:'local-template-and-cli',release_readiness:'not-evaluated',
+    requested_commit:manifest.root_commit,template_commit:manifest.root_commit,cli_families:[...families],sources_manifest:manifest,artifacts,cli_integrations:integrations,commands};
   const file=path.join(directory,'integration-record.json');write(file,envelope);return {file,sha256:hash(fs.readFileSync(file)),envelope};
 }
 

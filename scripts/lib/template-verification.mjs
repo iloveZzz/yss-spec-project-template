@@ -54,6 +54,14 @@ export function loadVerificationProfiles(source = readFileSync(PROFILE_FILE, "ut
       }
     }
   }
+  if(config.supplemental_checks!==undefined) {
+    ensure(Array.isArray(config.supplemental_checks),'补充检查必须为数组');
+    const ids=new Set();
+    for(const item of config.supplemental_checks) {
+      ensure(item&&/^check\.[a-zA-Z0-9._-]+$/.test(item.id)&&!ids.has(item.id)&&typeof item.run==='string'&&item.run&&typeof item.group==='string'&&item.group&&Array.isArray(item.gate_ids)&&item.gate_ids.length&&item.gate_ids.every(id=>config.gates?.some(gate=>gate.id===id)), '补充检查定义或 Gate 绑定无效');
+      ids.add(item.id);
+    }
+  }
   return config;
 }
 
@@ -108,7 +116,7 @@ export function planTemplateVerification({ profile = "fast", changedFiles = [], 
     }
   }
   const compatibilityRequired = effectiveProfile === "release" || normalized.some((file) => (config.compatibility_patterns || []).some((pattern) => matches(file, pattern)));
-  const plan = { source_requirement: profile === 'fast' ? 'current' : 'committed', compatibility_required: compatibilityRequired, requested_profile: profile, effective_profile: effectiveProfile, escalation_reason: escalationReason, changed_files: normalized, unknown_files: routed.unknown, groups: orderedGroups, commands, required_files: config.required_files || [], syntax_files: config.syntax_files || [], max_concurrency: config.max_concurrency || 4 };
+  const plan = { source_requirement: profile === 'fast' ? 'current' : 'committed', compatibility_required: compatibilityRequired, requested_profile: profile, effective_profile: effectiveProfile, escalation_reason: escalationReason, changed_files: normalized, unknown_files: routed.unknown, groups: orderedGroups, commands, supplemental_checks:structuredClone(config.supplemental_checks||[]), required_files: config.required_files || [], syntax_files: config.syntax_files || [], max_concurrency: config.max_concurrency || 4 };
   if(config.gate_policy && (['candidate','release','legacy-full'].includes(profile)||effectiveProfile==='release')) {
     const gated=buildGatePlan(plan,{config,root,base,baselineReport,baselineReportDigest,baselineAssessment,baselineValidator,qualificationAssessment,qualificationReport,qualificationReportDigest});
     return applyVerificationSelection(gated,{selection,config,root,base});

@@ -47,6 +47,7 @@ function checkCycles(items,field,label) {
   for(const id of all.keys())visit(id);
 }
 export function validateGateConfiguration(config,manifest) {
+  validateSupplementalChecks(config,manifest);
   if(!Array.isArray(config.gates)||config.gates.length!==20||config.gates.some((gate,i)=>gate.display_id!==`G${String(i+1).padStart(2,'0')}`||!/^check\.[a-zA-Z0-9._-]+$/.test(gate.id))||new Set(config.gates.map(gate=>gate.id)).size!==20||new Set(config.gates.map(gate=>gate.display_id)).size!==20)throw Error('GATE_REGISTRY_INVALID');
   const gateIds=new Set(config.gates.map(x=>x.id));
   const rows=new Map((config.legacy_coverage||[]).map(row=>[row.old_id,row]));
@@ -58,6 +59,19 @@ export function validateGateConfiguration(config,manifest) {
     if(gate.check_ids.some(id=>!expected.has(id))||[...expected].some(id=>!gate.check_ids.includes(id)))throw Error(`GATE_CHECK_BINDING_INVALID: ${gate.id}`);
   }
   checkCycles(config.gates,'impact_dependencies','Gate影响');checkCycles(config.gates,'depends_on','Gate执行');
+  return true;
+}
+export function validateSupplementalChecks(config,manifest) {
+  if(config.supplemental_checks===undefined)return true;
+  if(!Array.isArray(config.supplemental_checks))throw Error('SUPPLEMENTAL_CHECK_INVALID');
+  const ids=new Set(manifest.commands.map(task=>task.id)),tasks=new Set(manifest.commands.map(task=>task.task_id)),gates=new Set(config.gates?.map(gate=>gate.id)||[]);
+  for(const check of config.supplemental_checks) {
+    if(!check||!/^check\.[a-zA-Z0-9._-]+$/.test(check.id)||ids.has(check.id)||!/^supplemental\.[a-zA-Z0-9._-]+$/.test(check.task_id)||tasks.has(check.task_id)||typeof check.run!=='string'||!check.run.trim()||typeof check.group!=='string'||!check.group||!Array.isArray(check.gate_ids)||!check.gate_ids.length||new Set(check.gate_ids).size!==check.gate_ids.length||check.gate_ids.some(id=>!gates.has(id))||!Array.isArray(check.depends_on)||check.depends_on.some(id=>typeof id!=='string'||!id)||check.when!=='template-source'||check.source_requirement!=='committed'||check.require_committed_for!==undefined)throw Error('SUPPLEMENTAL_CHECK_INVALID');
+    ids.add(check.id);tasks.add(check.task_id);
+  }
+  const all=[...manifest.commands,...config.supplemental_checks,{id:'check.verification-environment',task_id:'check.verification-environment',depends_on:[]}],taskMap=new Map(all.map(task=>[task.task_id,task]));
+  const normalized=all.map(task=>({...task,id:task.task_id,depends_on:(task.depends_on||[]).map(id=>{if(taskMap.has(id))return id;const matches=all.filter(row=>row.id===id);if(matches.length!==1)throw Error('SUPPLEMENTAL_DEPENDENCY_INVALID');return matches[0].task_id;})}));
+  checkCycles(normalized,'depends_on','补充检查执行');
   return true;
 }
 

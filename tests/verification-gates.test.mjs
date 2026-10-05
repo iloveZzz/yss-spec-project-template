@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
 import {loadVerificationProfiles, planTemplateVerification, ROOT} from '../scripts/lib/template-verification.mjs';
-import {loadLegacyManifest, compileVerificationCheck, validateGateConfiguration} from '../.template-source/scripts/lib/verification-gates.mjs';
+import {loadLegacyManifest, compileVerificationCheck, validateGateConfiguration,validateSupplementalChecks} from '../.template-source/scripts/lib/verification-gates.mjs';
 
 test('冻结台账保留 117 个旧检查及 115 条语法责任，每项都有 Gate 去向', () => {
   const manifest = loadLegacyManifest(ROOT), config = loadVerificationProfiles();
@@ -78,4 +78,22 @@ test('显式资格报告和摘要必须成对且字节吻合，过期来源才�
   const stale=plan({qualificationReport:reportFile,qualificationReportDigest:digest});
   assert.equal(stale.strategy,'legacy-full');assert.ok(stale.qualification.reasons.includes('qualification-source-binding-stale'));
   assert.equal(plan({base:'11d88fb0ae6e4213bff6b4c5af4de03fd1aa2f1c'}).strategy,'legacy-full');
+});
+
+test('新增九个风险 suite 登记为权威补充检查，全量回退携带且不改冻结117',()=>{
+  const config=loadVerificationProfiles(),expected=['tests/verification-gates.test.mjs','tests/verification-baseline.test.mjs','tests/verification-qualification.test.mjs','tests/verification-execution.test.mjs','tests/verification-preflight.test.mjs','tests/verification-report-v2.test.mjs','tests/verification-artifacts.test.mjs','tests/verification-delivery-run.test.mjs','tests/legacy-verification.test.mjs'];
+  assert.equal(config.supplemental_checks.length,1);const check=config.supplemental_checks[0];
+  assert.equal(check.id,'check.verification-optimization-regressions');assert.equal(check.task_id,'supplemental.optimization-regressions');assert.deepEqual(check.run.split(' ').slice(2),expected);assert.deepEqual(check.gate_ids,['check.verification-final-integrity']);
+  for(const ref of expected){assert.ok(config.required_files.includes(ref));assert.ok(config.syntax_files.includes(ref));assert.ok(config.gate_policy.qualification_inputs.includes(ref));}
+  for(const profile of ['fast','candidate','release'])assert.deepEqual(planTemplateVerification({profile,changedFiles:['README.md']}).supplemental_checks,config.supplemental_checks);
+  assert.equal(loadLegacyManifest(ROOT).commands.length,117);
+});
+
+test('补充检查拒绝 task/check 冲突、未知 Gate、空命令和错误 committed 规则',()=>{
+  const manifest=loadLegacyManifest(ROOT);
+  for(const mutate of [c=>c.supplemental_checks[0].task_id=manifest.commands[0].task_id,c=>c.supplemental_checks[0].id=manifest.commands[0].id,c=>c.supplemental_checks[0].gate_ids=['check.unknown-gate'],c=>c.supplemental_checks[0].run='',c=>c.supplemental_checks[0].source_requirement='current',c=>c.supplemental_checks[0].require_committed_for=['release'],c=>c.supplemental_checks.push(structuredClone(c.supplemental_checks[0]))]) {
+    const config=loadVerificationProfiles();mutate(config);
+    assert.throws(()=>validateSupplementalChecks(config,manifest),/SUPPLEMENTAL_CHECK_INVALID/);
+    assert.throws(()=>planTemplateVerification({profile:'release',changedFiles:['README.md'],config}),/SUPPLEMENTAL_CHECK_INVALID/);
+  }
 });

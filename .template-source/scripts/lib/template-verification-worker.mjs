@@ -44,6 +44,12 @@ async function prepare(argv,root) {
   const {values}=parseArgs({args:argv,options,strict:true});
   validateVerificationArguments(values);
   if(values.help)return {help:true,values};
+  if(values.profile==='legacy-full'){
+    const {assertBaselineParameters}=await import('./verification-baseline.mjs');
+    const {assertQualificationReportParameters}=await import('./verification-gates.mjs');
+    assertBaselineParameters({root,base:values.base,baselineReport:values['baseline-report'],baselineReportDigest:values['baseline-report-sha256']});
+    assertQualificationReportParameters({qualificationReport:values['qualification-report'],qualificationReportDigest:values['qualification-report-sha256']});
+  }
   const {planTemplateVerification,loadVerificationProfiles}=await import('../../../scripts/lib/template-verification.mjs');
   const explicit=values['changed-file']||[],requested=values.profile==='legacy-full'?'release':values.profile;
   const scope=resolveVerificationScope({profile:requested,explicit,actual:changedFiles(root,values.base)});scope.base=values.base||null;
@@ -51,6 +57,7 @@ async function prepare(argv,root) {
   if(values.base&&values['baseline-report']&&values['baseline-report-sha256']) {
     const {validateBaselineReport}=await import('./verification-report-validator.mjs');
     assessment=validateBaselineReport({root,base:values.base,reportFile:values['baseline-report'],expectedDigest:values['baseline-report-sha256']});
+    if(values.profile==='legacy-full'&&!assessment.valid)throw new TypeError(`BASELINE_REPORT_INVALID: ${(assessment.reasons||[]).join(', ')}`);
   }
   let qualificationAssessment;
   if(values['qualification-report']) {
@@ -59,6 +66,7 @@ async function prepare(argv,root) {
     const {qualificationBindings,validateQualification}=await import('./verification-qualification.mjs');
     const expectedBindings=qualificationBindings({root,config,policyDigest:verificationPolicyDigest(config),legacyManifestDigest:loadLegacyManifest(root).coverage_digest});
     qualificationAssessment=validateQualification({root,config,reportFile:values['qualification-report'],expectedDigest:values['qualification-report-sha256'],expectedBindings});
+    if(values.profile==='legacy-full'&&!qualificationAssessment.valid)throw new TypeError(`QUALIFICATION_REPORT_INVALID: ${(qualificationAssessment.reasons||[]).join(', ')}`);
   }
   let plan;
   if(values.profile==='legacy-full')plan=compileLegacyPlan(JSON.parse(fs.readFileSync(path.join(root,'.template-source/process/template-verification-legacy.json'))));
@@ -69,12 +77,17 @@ async function prepare(argv,root) {
   const legacy=plan.strategy==='legacy-full'||plan.strategy==='legacy-reference'||plan.effective_profile==='release'&&plan.strategy!=='qualified-gates';
   const concurrency=legacy?1:requestedConcurrency,requestedMode=values['tooling-mode']||'legacy';
   if(!['legacy','optimized'].includes(requestedMode))throw new TypeError('tooling-mode 必须为 legacy 或 optimized');
+  if(plan.strategy==='qualified-gates'){
+    const {assertQualificationExecutionContract}=await import('./verification-report-validator.mjs');
+    assertQualificationExecutionContract(plan,{concurrency:requestedConcurrency,toolingMode:requestedMode,testConcurrency:requestedMode==='legacy'?1:Math.min(2,requestedConcurrency)});
+  }
   const mode=legacy?'legacy':requestedMode;
   plan.tooling={requested_mode:requestedMode,effective_mode:mode,verification_concurrency:concurrency,test_concurrency:mode==='legacy'?1:Math.min(2,concurrency),reason:legacy?'legacy-reference-serial':requestedMode==='optimized'?'explicit-qualified-execution':'legacy-tooling'};
   const reportDir=values['report-dir']?validateVerificationReportDirectory(root,values['report-dir']):null;
   plan=addVerificationExecutionTasks(plan,{root,reference:plan.strategy==='legacy-reference',checkpoints:values.checkpoint,taskPackages:values['task-package'],reportDir});
   return {values,plan,scope,root,reportDir,concurrency,toolingMode:mode,purpose:'verification',invocation:{command:path.join(root,'scripts/run-template-verification'),args:argv}};
 }
+export {prepare as prepareVerificationPlan};
 async function runPrepared(input) {
   const {root,reportDir,concurrency=1,toolingMode='legacy',purpose='verification',scope={kind:'complete-candidate'},invocation=null,values={},environment:providedEnvironment=process.env}=input;
   const controller=new AbortController(),interrupt=()=>controller.abort();process.on('SIGINT',interrupt);process.on('SIGTERM',interrupt);
@@ -90,6 +103,7 @@ async function runPrepared(input) {
     before=verificationInputDigest(root);
     report=createVerificationReport(plan,{root,inputDigest:before,concurrency,scope,invocation});report.purpose=purpose;report.experimental=purpose==='qualification';
     report.environment.tooling_mode=toolingMode;
+    report.environment.test_concurrency=toolingMode==='optimized'?Math.min(2,concurrency):1;
     if(reportDir){fs.mkdirSync(reportDir);saveVerificationReport(reportDir,report);process.send?.({kind:'report-directory',directory:reportDir});}
     logRoot=reportDir?path.join(reportDir,'logs'):fs.mkdtempSync(path.join(os.tmpdir(),'yss-template-verification-'));
     const preflightTask=plan.commands.find(task=>task.kind==='preflight');

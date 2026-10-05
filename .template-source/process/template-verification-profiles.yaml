@@ -96,6 +96,9 @@ core_escalation_patterns:
   - tests/verification-selection.test.mjs
   - tests/verification-delivery-run.test.mjs
   - .template-source/scripts/lib/verification-qualification-plan.mjs
+  - tests/verification-gates.test.mjs
+  - tests/verification-baseline.test.mjs
+  - tests/verification-qualification.test.mjs
 required_files:
   - scripts/lib/content-identity.mjs
   - scripts/lib/drift-report.mjs
@@ -236,6 +239,14 @@ required_files:
   - tests/verification-selection.test.mjs
   - tests/verification-delivery-run.test.mjs
   - .template-source/scripts/lib/verification-qualification-plan.mjs
+  - tests/verification-gates.test.mjs
+  - tests/verification-baseline.test.mjs
+  - tests/verification-qualification.test.mjs
+  - tests/verification-execution.test.mjs
+  - tests/verification-preflight.test.mjs
+  - tests/verification-report-v2.test.mjs
+  - tests/verification-artifacts.test.mjs
+  - tests/legacy-verification.test.mjs
 syntax_files:
   - .template-source/scripts/verify-runtime-windows.mjs
   - scripts/runtime-store
@@ -3929,3 +3940,21 @@ legacy_coverage:
     counterexample_ref: null
     evidence_ref: .template-source/process/template-verification-legacy.json
     display_gate: G06
+supplemental_checks:
+  - id: check.verification-optimization-regressions
+    run: node --test tests/verification-gates.test.mjs
+      tests/verification-baseline.test.mjs
+      tests/verification-qualification.test.mjs
+      tests/verification-execution.test.mjs
+      tests/verification-preflight.test.mjs
+      tests/verification-report-v2.test.mjs
+      tests/verification-artifacts.test.mjs
+      tests/verification-delivery-run.test.mjs
+      tests/legacy-verification.test.mjs
+    group: verification-optimization
+    gate_ids:
+      - check.verification-final-integrity
+    depends_on: []
+    when: template-source
+    source_requirement: committed
+    task_id: supplemental.optimization-regressions

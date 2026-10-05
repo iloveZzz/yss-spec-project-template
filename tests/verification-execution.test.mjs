@@ -6,7 +6,9 @@ import path from 'node:path';
 import { runGroups, runCommandToFiles } from '../scripts/lib/template-verification-runner.mjs';
 import {execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
-import {executeVerificationPlan,addVerificationExecutionTasks,validateVerificationArguments} from '../.template-source/scripts/lib/template-verification-worker.mjs';
+import {createHash} from 'node:crypto';
+import {executeVerificationPlan,addVerificationExecutionTasks,validateVerificationArguments,prepareVerificationPlan} from '../.template-source/scripts/lib/template-verification-worker.mjs';
+import {assertQualificationExecutionContract} from '../.template-source/scripts/lib/verification-report-validator.mjs';
 
 const quote = value => `'${String(value).replaceAll("'", "'\\''")}'`;
 const node = source => `${quote(process.execPath)} -e ${quote(source)}`;
@@ -74,6 +76,36 @@ test('DAG仅复用成功结果，失败命令的另一occurrence真实重新执�
   const rows=(await runGroups(plan,'template-source',1,{cwd:'/fixture',environment:{},execute:async command=>({command,code:executions++===0?7:0})})).flatMap(group=>group.results);
   assert.equal(executions,2);assert.equal(rows[0].code,7);assert.equal(rows[1].code,0);assert.equal(rows[1].reused,false);
 });
+test('重复check ID依赖按唯一task occurrence匹配，歧义引用在执行前拒绝',async t=>{
+  const directory=temporary(t),counter=path.join(directory,'count');
+  const code=`const f=require('node:fs'),p=${JSON.stringify(counter)},n=f.existsSync(p)?Number(f.readFileSync(p))+1:1;f.writeFileSync(p,String(n));console.log(n);process.exit(n===1?7:0);`;
+  const plan={strategy:'qualified-gates',groups:['one'],commands:[
+    {id:'check.shared',task_id:'legacy.001',group:'one',command:node(code)},
+    {id:'check.shared',task_id:'legacy.002',group:'one',command:node(code)},
+    {id:'check.blocked',task_id:'blocked',group:'one',command:node('process.exit(99)'),depends_on:['legacy.001']},
+    {id:'check.allowed',task_id:'allowed',group:'one',command:node('console.log("allowed")'),depends_on:['legacy.002']},
+  ]};
+  const rows=(await runGroups(plan,'template-source',2,{cwd:directory,logRoot:path.join(directory,'failed-logs')})).flatMap(group=>group.results);
+  assert.equal(rows.find(row=>row.task_id==='blocked').termination,'dependency-failed');assert.equal(rows.find(row=>row.task_id==='allowed').actual_exit_code,0);assert.equal(fs.readFileSync(counter,'utf8'),'2');
+  const ambiguous=structuredClone(plan);ambiguous.commands[2].depends_on=['check.shared'];
+  await assert.rejects(()=>runGroups(ambiguous,'template-source',2,{cwd:directory,environment:{},execute:()=>assert.fail('ambiguous plan must not execute')}),/引用不明确/);
+  const successful=structuredClone(plan);successful.commands=successful.commands.filter(task=>task.task_id!=='blocked');
+  for(const task of successful.commands.filter(task=>task.id==='check.shared'))task.command=node(code.replace('process.exit(n===1?7:0);','process.exit(0);'));
+  const reused=(await runGroups(successful,'template-source',2,{cwd:directory,logRoot:path.join(directory,'passed-logs')})).flatMap(group=>group.results).find(row=>row.task_id==='legacy.002');
+  assert.equal(reused.reused,true);assert.equal(reused.reused_from.task_id,'legacy.001');assert.equal(fs.readFileSync(counter,'utf8'),'3');
+});
+test('新DAG复用绑定不同前置occurrence与资源，相同argv真实分别执行',async t=>{
+  const directory=temporary(t),counter=path.join(directory,'count'),command=node(`const f=require('node:fs'),p=${JSON.stringify(counter)},n=f.existsSync(p)?Number(f.readFileSync(p))+1:1;f.writeFileSync(p,String(n));`);
+  const plan={strategy:'qualified-gates',groups:['one'],commands:[
+    {id:'check.pre-a',task_id:'pre.a',group:'one',command:node('console.log("a")')},
+    {id:'check.pre-b',task_id:'pre.b',group:'one',command:node('console.log("b")')},
+    {id:'check.same',task_id:'same.a',group:'one',command,depends_on:['pre.a']},
+    {id:'check.same',task_id:'same.b',group:'one',command,depends_on:['pre.b']},
+    {id:'check.same',task_id:'same.resource',group:'one',command,depends_on:['pre.a'],resources:['shared']},
+  ]};
+  const rows=(await runGroups(plan,'template-source',2,{cwd:directory,logRoot:directory})).flatMap(group=>group.results);
+  assert.equal(fs.readFileSync(counter,'utf8'),'3');assert.ok(rows.filter(row=>row.id==='check.same').every(row=>row.actual_exit_code===0&&row.reused===false));
+});
 test('真实CLI可独立加载纯台账并生成完整计划',t=>{
   const root=fileURLToPath(new URL('..',import.meta.url)),entry=fileURLToPath(new URL('../scripts/run-template-verification',import.meta.url));
   const plan=JSON.parse(execFileSync(process.execPath,[entry,'--profile','legacy-full','--plan','--json','--report-dir',path.join(temporary(t),'report')],{cwd:root,encoding:'utf8',timeout:10000}));
@@ -106,6 +138,28 @@ test('仅提供base仍支持完整回退，显式legacy参考覆盖不被裁剪'
     if(profile==='legacy-full')assert.equal(plan.commands.filter(task=>task.kind==='syntax').length,115);
   }
 });
+test('显式legacy拒绝非祖先、错误报告摘要、符号链接及失败独立assessment',async t=>{
+  const fixture=fixtureRoot(t),tree=execFileSync('git',['rev-parse','HEAD^{tree}'],{cwd:fixture.root,encoding:'utf8'}).trim();
+  const nonAncestor=execFileSync('git',['-c','user.name=Fixture','-c','user.email=fixture@example.invalid','commit-tree',tree],{cwd:fixture.root,input:'separate fixture history\n',encoding:'utf8'}).trim();
+  await assert.rejects(()=>prepareVerificationPlan(['--profile','legacy-full','--base',nonAncestor,'--plan'],fixture.root),/BASELINE_NOT_ANCESTOR/);
+  const root=fileURLToPath(new URL('..',import.meta.url)),entry=fileURLToPath(new URL('../scripts/run-template-verification',import.meta.url)),base=execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim();
+  const directory=fs.realpathSync(temporary(t)),file=path.join(directory,'untrusted.json'),link=path.join(directory,'linked.json');fs.writeFileSync(file,'{}\n');fs.symlinkSync(file,link);
+  const digest=createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+  for(const [args,expected]of [
+    [['--baseline-report',file,'--baseline-report-sha256','0'.repeat(64)],/BASELINE_REPORT_DIGEST_MISMATCH/],
+    [['--qualification-report',file,'--qualification-report-sha256','0'.repeat(64)],/QUALIFICATION_REPORT_DIGEST_MISMATCH/],
+    [['--baseline-report',link,'--baseline-report-sha256',digest],/BASELINE_REPORT_PATH_INVALID/],
+    [['--qualification-report',link,'--qualification-report-sha256',digest],/QUALIFICATION_REPORT_PATH_INVALID/],
+    [['--baseline-report',file,'--baseline-report-sha256',digest],/BASELINE_REPORT_INVALID/],
+    [['--qualification-report',file,'--qualification-report-sha256',digest],/QUALIFICATION_REPORT_INVALID/],
+  ])assert.throws(()=>execFileSync(process.execPath,[entry,'--profile','legacy-full','--base',base,'--plan','--json',...args],{cwd:root,stdio:'pipe',timeout:10000}),error=>error.status===1&&expected.test(error.stderr.toString()));
+});
+test('qualified执行参数必须匹配实跑资格合同，shadow执行保持独立',()=>{
+  const plan={strategy:'qualified-gates',qualification:{valid:true,bindings:{execution_contract:{concurrency:2,tooling_mode:'optimized',test_concurrency:2}}}};
+  assert.doesNotThrow(()=>assertQualificationExecutionContract(plan,{concurrency:2,toolingMode:'optimized',testConcurrency:2}));
+  for(const actual of [{concurrency:1,toolingMode:'optimized',testConcurrency:1},{concurrency:2,toolingMode:'legacy',testConcurrency:1},{concurrency:2,toolingMode:'optimized',testConcurrency:1}])assert.throws(()=>assertQualificationExecutionContract(plan,actual),error=>error.code==='QUALIFICATION_EXECUTION_CONTRACT_MISMATCH');
+  assert.doesNotThrow(()=>assertQualificationExecutionContract({strategy:'qualification-shadow'},{concurrency:1,toolingMode:'legacy',testConcurrency:1}));
+});
 test('监督父进程观察worker close后持久化退出，失败报告保留真实任务日志',async t=>{
   const {directory,root}=fixtureRoot(t);
   const plan={strategy:'qualified-gates',requested_profile:'candidate',effective_profile:'candidate',source_requirement:'current',required_files:[],syntax_files:[],groups:['check'],selection:{effective:'legacy',omitted:[]},commands:[{id:'check.real',task_id:'check.real',group:'check',command:node('process.exit(7)')}]};
@@ -113,6 +167,7 @@ test('监督父进程观察worker close后持久化退出，失败报告保留�
   assert.equal(outcome.code,1);assert.equal(outcome.observed,true);
   const report=JSON.parse(fs.readFileSync(outcome.reportFile));assert.deepEqual(report.final_exit,{code:1,signal:null,observed:true});
   assert.equal(report.purpose,'qualification');assert.equal(report.status,'failed');
+  assert.equal(report.environment.test_concurrency,1);
   const failed=report.results.find(row=>row.id==='check.real');assert.equal(failed.actual_exit_code,7);assert.equal(failed.actual_exit_code_observed,true);assert.ok(fs.existsSync(failed.stdoutFile));
 });
 test('监督中断拒绝成功并保留实际 close 与日志',async t=>{
@@ -130,6 +185,21 @@ test('新语法台账去重仍逐路径node --check，参考计时保留原始�
   const compiled=addVerificationExecutionTasks(plan,{root:process.cwd()});
   assert.equal(compiled.commands.filter(row=>row.kind==='syntax').length,1);assert.ok(compiled.commands.every(row=>row.id.startsWith('check.')));
   assert.equal(addVerificationExecutionTasks(plan,{root:process.cwd(),reference:true}).commands.filter(row=>row.kind==='syntax').length,2);
+});
+test('扩展名为空的changed脚本仅Node shebang进入node语法台账',t=>{
+  const root=temporary(t);fs.mkdirSync(path.join(root,'scripts'));
+  const files={'scripts/node-entry':'#!/usr/bin/env node\nconsole.log(1);\n','scripts/node-flags':'#!/usr/bin/env -S node --no-warnings\nconsole.log(1);\n','scripts/bash-entry':'#!/bin/bash\nprintf test\n','scripts/no-shebang':'console.log(1);\n','scripts/module.mjs':'console.log(1);\n'};
+  for(const [file,bytes]of Object.entries(files))fs.writeFileSync(path.join(root,file),bytes);
+  const plan=addVerificationExecutionTasks({commands:[],groups:[],effective_profile:'release',syntax_files:[],changed_files:Object.keys(files)},{root});
+  const syntax=plan.commands.filter(task=>task.kind==='syntax').map(task=>task.command);
+  assert.equal(syntax.length,3);assert.ok(syntax.some(command=>command.endsWith("'scripts/node-entry'")));assert.ok(syntax.some(command=>command.endsWith("'scripts/node-flags'")));assert.ok(syntax.some(command=>command.endsWith("'scripts/module.mjs'")));
+});
+test('新增风险回归进入非参考台账并重建Gate覆盖，冻结reference不附加',()=>{
+  const gateId='check.verification-final-integrity',raw={id:'check.verification-optimization-regressions',task_id:'supplemental.optimization-regressions',run:'node --test tests/verification-execution.test.mjs',group:'verification-optimization',when:'template-source',gate_ids:[gateId],depends_on:[],source_requirement:'committed'};
+  const input={commands:[],groups:[],requested_profile:'release',effective_profile:'release',syntax_files:[],supplemental_checks:[raw],gates:[{id:gateId,selected:true,check_ids:['stale'],task_ids:['stale']}]};
+  const compiled=addVerificationExecutionTasks(input,{root:process.cwd()}),task=compiled.commands.find(row=>row.task_id===raw.task_id),gate=compiled.gates[0];
+  assert.equal(task.command,raw.run);assert.equal(task.group,'postchecks');assert.equal(task.source_requirement,'committed');assert.ok(task.depends_on.includes('check.verification-environment'));assert.ok(gate.check_ids.includes(raw.id));assert.ok(gate.task_ids.includes(raw.task_id));assert.ok(!gate.task_ids.includes('stale'));
+  const reference=addVerificationExecutionTasks(input,{root:process.cwd(),reference:true});assert.ok(!reference.commands.some(row=>row.task_id===raw.task_id));assert.deepEqual(reference.gates,[]);
 });
 test('准备和主检查使用独立日志，完成依赖可跨phase且finally实际清理',async t=>{
   const {directory,root}=fixtureRoot(t);

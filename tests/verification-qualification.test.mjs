@@ -17,7 +17,7 @@ function observedProof(t) {
   const proof={schema_version:1,kind:'template-verification-qualification',scope:'pilot',status:'passed',bindings:{fixture:'source-bytes'},pairs:[],negative_cases:[],route_cases:[]};
   function execute(name,side,{failure=false,reused=false,missing=false}={}) {
     const output=path.join(directory,name);fs.mkdirSync(output);
-    const source=failure?'console.error("refusal");process.exit(7)':`Atomics.wait(new Int32Array(new SharedArrayBuffer(4)),0,0,${side==='legacy'?75:5});console.log("observed")`;
+    const source=failure?'console.error("refusal");process.exit(7)':`Atomics.wait(new Int32Array(new SharedArrayBuffer(4)),0,0,${side==='legacy'?500:5});console.log("observed")`;
     const start=performance.now(),result=spawnSync(process.execPath,['-e',source],{encoding:'utf8'}),wallMs=performance.now()-start;
     assert.equal(result.status,failure?7:0);assert.equal(result.signal,null);
     const stdoutFile=path.join(output,'stdout.log'),stderrFile=path.join(output,'stderr.log');fs.writeFileSync(stdoutFile,result.stdout);fs.writeFileSync(stderrFile,result.stderr);
@@ -65,6 +65,9 @@ test('配对顺序、瞬时真实退出、结果及日志被篡改均不能继�
   f.proof.pairs[1].order=['legacy','candidate'];f.save();assert.ok(f.validate().reasons.includes('qualification-pair-order-invalid'));
   f.proof.pairs[1].order=['candidate','legacy'];
   const run=f.proof.pairs[1].candidate,file=path.join(f.directory,run.report_ref),report=JSON.parse(fs.readFileSync(file));
+  const finalExit=report.final_exit;delete report.final_exit;fs.writeFileSync(file,JSON.stringify(report));run.report_sha256=hash(fs.readFileSync(file));f.save();assert.ok(f.validate().reasons.includes('qualification-close-binding-mismatch'));
+  report.final_exit={...finalExit,observed:false};fs.writeFileSync(file,JSON.stringify(report));run.report_sha256=hash(fs.readFileSync(file));f.save();assert.ok(f.validate().reasons.includes('qualification-close-binding-mismatch'));
+  report.final_exit=finalExit;
   report.results[0].actual_exit_code_observed=false;fs.writeFileSync(file,JSON.stringify(report));run.report_sha256=hash(fs.readFileSync(file));f.save();assert.ok(f.validate().reasons.includes('qualification-task-close-not-observed'));
   report.results[0].actual_exit_code_observed=true;report.results=[];fs.writeFileSync(file,JSON.stringify(report));run.report_sha256=hash(fs.readFileSync(file));f.save();assert.ok(f.validate().reasons.includes('qualification-run-task-missing'));
   report.results=[{...report.plan.commands[0],index:0,code:0,actual_exit_code:0,actual_exit_code_observed:true,actual_exit_signal:null,stdoutFile:path.join(path.dirname(file),'stdout.log'),stderrFile:path.join(path.dirname(file),'stderr.log')}];fs.writeFileSync(file,JSON.stringify(report));run.report_sha256=hash(fs.readFileSync(file));f.save();fs.appendFileSync(report.results[0].stdoutFile,'tampered');assert.ok(f.validate().reasons.includes('qualification-evidence-digest-mismatch'));
@@ -90,6 +93,10 @@ test('独立资格编译器拒绝成对删除 syntax、preflight、prepare、cle
       tampered.plan.commands=tampered.plan.commands.filter(task=>task.task_id!==removed.task_id);tampered.results=[];
       assert.ok(validate(tampered).reasons.includes('qualification-independent-plan-ledger-mismatch'),kind);
     }
+    if(side==='candidate') {
+      const removed=plan.commands.find(task=>task.task_id==='supplemental.optimization-regressions');assert.ok(removed);
+      const tampered=structuredClone(report);tampered.plan.commands=tampered.plan.commands.filter(task=>task.task_id!==removed.task_id);tampered.results=[];assert.equal(validate(tampered).valid,false);
+    }else assert.ok(!plan.commands.some(task=>task.task_id==='supplemental.optimization-regressions'));
     if(side==='candidate'){const tampered=structuredClone(report);tampered.plan.gates=[];assert.equal(validate(tampered).valid,false);}
     const drifted=structuredClone(report);drifted.plan.changed_files=[];assert.equal(validate(drifted).valid,false);
   }

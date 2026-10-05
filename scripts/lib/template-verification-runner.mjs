@@ -196,15 +196,26 @@ async function runDag(plan, repositoryMode, concurrency, options) {
   const {cwd,environment,execute,logRoot,signal,runtimeSession,runtimeEvent,onResult}=options;
   if(!Number.isInteger(concurrency)||concurrency<1||concurrency>4)throw new TypeError('concurrency 必须为 1..4');
   const tasks=plan.commands.map((item,index)=>({...item,index})).filter(item=>!item.when||item.when===repositoryMode);
-  const byId=new Map();
+  const byTaskId=new Map(),byCheckId=new Map();
   for(const item of tasks) {
     if(!item.id)throw new TypeError('DAG 检查缺少稳定 ID');
-    if(byId.has(item.id)&&commandKey(byId.get(item.id),cwd)!==commandKey(item,cwd))throw new TypeError(`检查 ID 冲突: ${item.id}`);
-    if(!byId.has(item.id))byId.set(item.id,item);
+    item.execution_id=item.task_id||item.id;
+    if(byTaskId.has(item.execution_id))throw new TypeError(`任务 occurrence ID 冲突: ${item.execution_id}`);
+    const occurrences=byCheckId.get(item.id)||[];
+    if(occurrences.some(previous=>previous.command.trim()!==item.command.trim()||(previous.when||'')!==(item.when||'')))throw new TypeError(`检查 ID 冲突: ${item.id}`);
+    byTaskId.set(item.execution_id,item);byCheckId.set(item.id,[...occurrences,item]);
   }
+  const resolveDependency=id=>{
+    if(byTaskId.has(id))return byTaskId.get(id).execution_id;
+    const occurrences=byCheckId.get(id)||[];
+    if(!occurrences.length)throw new TypeError(`未知检查依赖: ${id}`);
+    if(occurrences.length!==1)throw new TypeError(`检查依赖引用不明确: ${id}；请使用唯一 task_id`);
+    return occurrences[0].execution_id;
+  };
+  for(const item of tasks)item.normalized_dependencies=[...new Set((item.depends_on||[]).map(resolveDependency))].sort();
   const visiting=new Set(),visited=new Set();
-  const visit=id=>{ if(visiting.has(id))throw new TypeError(`检查依赖循环: ${id}`); if(visited.has(id))return; const item=byId.get(id); if(!item)throw new TypeError(`未知检查依赖: ${id}`); visiting.add(id); for(const dependency of item.depends_on||[])visit(dependency); visiting.delete(id); visited.add(id); };
-  for(const id of byId.keys())visit(id);
+  const visit=id=>{ if(visiting.has(id))throw new TypeError(`检查依赖循环: ${id}`); if(visited.has(id))return; const item=byTaskId.get(id); visiting.add(id); for(const dependency of item.normalized_dependencies)visit(dependency); visiting.delete(id); visited.add(id); };
+  for(const id of byTaskId.keys())visit(id);
   const serialGroups=new Set(tasks.filter(item=>(item.parallel_unless_env||[]).some(name=>environment[name])).map(item=>item.group));
   const lane=item=>`${item.group}\0${serialGroups.has(item.group)?'default':item.lane||'default'}`;
   const results=new Map(),completed=new Map(),active=new Map(),executions=new Map();
@@ -218,18 +229,18 @@ async function runDag(plan, repositoryMode, concurrency, options) {
       else if(typeof runtimeSession.recordCommandAndEvent==='function')runtimeSession.recordCommandAndEvent({...row,exit_code:row.code},runtimeEvent,row);
       else {runtimeSession.recordCommand({...row,exit_code:row.code});runtimeSession.recordEvent(runtimeEvent,row);}
     }catch(error){row.storageError=error.message;row.code=1;}
-    results.set(item.index,row); if(!completed.has(item.id))completed.set(item.id,row); onResult(row); return row;
+    results.set(item.index,row);completed.set(item.execution_id,row);onResult(row);return row;
   };
   while(results.size<tasks.length) {
     let progressed=false;
     for(const item of tasks) {
       if(results.has(item.index)||active.has(item.index))continue;
       if(signal?.aborted) {remember(item,{command:item.command,code:130,skipped:true,termination:'cancelled',actual_exit_code:null,actual_exit_signal:null,actual_exit_code_observed:false,duration_ms:0,reused:false});progressed=true;continue;}
-      const dependencies=(item.depends_on||[]).map(id=>completed.get(id));
+      const dependencies=item.normalized_dependencies.map(id=>completed.get(id));
       if(dependencies.some(row=>row&&(row.code!==0||row.skipped||row.storageError))) {remember(item,{command:item.command,code:1,skipped:true,termination:'dependency-failed',actual_exit_code:null,actual_exit_signal:null,actual_exit_code_observed:false,duration_ms:0,reused:false});progressed=true;continue;}
       if(dependencies.some(row=>!row))continue;
       if([...active.values()].some(job=>lane(job.item)===lane(item)))continue;
-      const key=commandKey(item,cwd),previous=executions.get(key);
+      const key=commandKey({...item,depends_on:item.normalized_dependencies},cwd)+'\0'+JSON.stringify([...new Set(resources(item))].sort()),previous=executions.get(key);
       if(previous) {
         if(!previous.row)continue;
         if(previous.row.code===0&&!previous.row.skipped&&!previous.row.storageError){remember(item,{...previous.row,reused:true,reused_from:{id:previous.item.id,task_id:previous.item.task_id,index:previous.item.index}});progressed=true;continue;}

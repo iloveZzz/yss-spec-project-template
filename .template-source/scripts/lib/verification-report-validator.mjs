@@ -17,6 +17,16 @@ const ensure = (condition, message) => { if (!condition) throw new TypeError(mes
 const key = (task, index) => task.task_id || `index.${index}`;
 const selected = (plan, mode) => plan.commands.map((task,index)=>({...task,index})).filter(task=>!task.when||task.when===mode);
 
+/** Qualified evidence applies only to the execution conditions it measured. */
+export function assertQualificationExecutionContract(plan, {concurrency=1,toolingMode='legacy',testConcurrency=toolingMode==='legacy'?1:Math.min(2,concurrency)}={}) {
+  if(plan.strategy!=='qualified-gates')return;
+  const contract=plan.qualification?.bindings?.execution_contract;
+  if(plan.qualification?.valid!==true || !contract || concurrency!==contract.concurrency || toolingMode!==contract.tooling_mode || testConcurrency!==contract.test_concurrency) {
+    const error=new TypeError('QUALIFICATION_EXECUTION_CONTRACT_MISMATCH: 实际执行条件与资格证据绑定的 concurrency/tooling_mode/test_concurrency 不匹配');
+    error.code='QUALIFICATION_EXECUTION_CONTRACT_MISMATCH';throw error;
+  }
+}
+
 /** Recompile from repository policy and consumer arguments, not report.plan. */
 export function compileExpectedVerificationPlan({root,args=[],fixedCommit,config,baselineAssessment}={}){
  root=fs.realpathSync(root);
@@ -36,6 +46,7 @@ export function compileExpectedVerificationPlan({root,args=[],fixedCommit,config
   if(config.gate_policy?.legacy_manifest_digest)ensure(coverage_digest===config.gate_policy.legacy_manifest_digest,'固定 policy 的 legacy manifest 摘要漂移');
   verifyLegacyManifest(root,manifest);plan=compileLegacyPlan(manifest);
  }else plan=planTemplateVerification({root,config,profile:values.profile,changedFiles:[...files],base:values.base,baselineReport:values['baseline-report'],baselineReportDigest:values['baseline-report-sha256'],baselineAssessment,qualificationReport:values['qualification-report'],qualificationReportDigest:values['qualification-report-sha256'],...(values.selection?{selection:values.selection}:{})});
+ assertQualificationExecutionContract(plan,{concurrency:Number(values.concurrency??1),toolingMode:values['tooling-mode']??'legacy'});
  return addVerificationExecutionTasks(plan,{root,reference,reportDir:values['report-dir']?path.resolve(values['report-dir']):null,purpose:'verification',checkpoints:values.checkpoint||[],taskPackages:values['task-package']||[]});
 }
 
@@ -68,6 +79,11 @@ export function validateVerificationReport(report, {root,expectedPlan,reportDire
     ensure(report.plan.source_requirement === 'committed' && expectedPlan.source_requirement === 'committed', '发布验证必须绑定 committed 来源，不能用升级后的 fast 结果代替');
   }
   ensure(report.plan.strategy === expectedPlan.strategy && report.plan.policy_digest === expectedPlan.policy_digest, '验证策略或 policy 摘要不匹配');
+  if(expectedPlan.strategy==='qualified-gates') {
+    ensure(report.environment?.concurrency!==undefined && report.environment?.tooling_mode!==undefined && report.environment?.test_concurrency!==undefined,'qualified 实际执行环境缺失');
+    assertQualificationExecutionContract(expectedPlan,{concurrency:report.environment?.concurrency,toolingMode:report.environment?.tooling_mode,testConcurrency:report.environment?.test_concurrency});
+    ensure(report.plan.tooling?.verification_concurrency===report.environment.concurrency && report.plan.tooling?.effective_mode===report.environment.tooling_mode && report.plan.tooling?.test_concurrency===report.environment.test_concurrency,'qualified 执行台账与实际环境不匹配');
+  }
   ensure(expectedInvocation && typeof expectedInvocation.command === 'string' && Array.isArray(expectedInvocation.args), '独立期望 invocation 缺失');
   assert.deepEqual(report.invocation, expectedInvocation, '验证 invocation 不匹配');
   ensure(report.final_exit?.observed === true && report.final_exit.code === 0 && report.final_exit.signal === null, '验证最终退出未观察或失败');

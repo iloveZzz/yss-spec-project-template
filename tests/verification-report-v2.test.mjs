@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { createVerificationReport, finalizeVerificationReport,verificationInputDigest } from '../scripts/lib/verification-report.mjs';
-import { validateVerificationReport,compileExpectedVerificationPlan } from '../.template-source/scripts/lib/verification-report-validator.mjs';
+import { validateVerificationReport,compileExpectedVerificationPlan,assertQualificationExecutionContract } from '../.template-source/scripts/lib/verification-report-validator.mjs';
 import {compileLegacyPlan} from '../.template-source/scripts/lib/legacy-verification.mjs';
 import {addVerificationExecutionTasks} from '../.template-source/scripts/lib/verification-execution-plan.mjs';
 import {validateJsonSchema} from '../scripts/lib/json-schema.mjs';
@@ -64,6 +64,22 @@ test('维护证据保留固定 command 并逐字绑定实际 report invocation �
  assert.throws(()=>validateMaintenanceVerificationEvidence({...evidence,args:[]},{root:source,expectedPlan:f.plan}),/invocation/);
  assert.throws(()=>validateMaintenanceVerificationEvidence({...evidence,evidence_digest:'0'.repeat(64)},{root:source,expectedPlan:f.plan}),/摘要/);
  assert.equal(f.report.input_sha256,original);
+});
+
+test('qualified 请求与实际执行条件必须匹配独立资格合同',t=>{
+ const f=fixture(t),contract={concurrency:2,tooling_mode:'optimized',test_concurrency:2};
+ f.plan.strategy='qualified-gates';f.plan.qualification={valid:true,bindings:{execution_contract:contract}};
+ assert.throws(()=>assertQualificationExecutionContract(f.plan),{code:'QUALIFICATION_EXECUTION_CONTRACT_MISMATCH'});
+ assertQualificationExecutionContract(f.plan,{concurrency:2,toolingMode:'optimized'});
+ for(const requested of [{concurrency:1,toolingMode:'optimized'},{concurrency:2,toolingMode:'legacy'},{concurrency:2,toolingMode:'optimized',testConcurrency:1}])assert.throws(()=>assertQualificationExecutionContract(f.plan,requested),{code:'QUALIFICATION_EXECUTION_CONTRACT_MISMATCH'});
+ f.report.plan=structuredClone(f.plan);f.report.environment.concurrency=2;f.report.environment.tooling_mode='optimized';f.report.environment.test_concurrency=2;
+ f.report.plan.tooling={verification_concurrency:2,effective_mode:'optimized',test_concurrency:2};
+ assert.equal(validateVerificationReport(f.report,f.options).status,'passed');
+ for(const mutate of [r=>r.environment.concurrency=1,r=>r.environment.tooling_mode='legacy',r=>r.environment.test_concurrency=1,r=>delete r.environment.test_concurrency,r=>r.plan.tooling.test_concurrency=1]) {
+  const report=structuredClone(f.report);mutate(report);assert.throws(()=>validateVerificationReport(report,f.options),/QUALIFICATION_EXECUTION_CONTRACT_MISMATCH|实际|台账/);
+ }
+ const report=structuredClone(f.report);report.plan.qualification.bindings.execution_contract={concurrency:1,tooling_mode:'legacy',test_concurrency:1};report.environment.concurrency=1;report.environment.tooling_mode='legacy';report.environment.test_concurrency=1;report.plan.tooling={verification_concurrency:1,effective_mode:'legacy',test_concurrency:1};
+ assert.throws(()=>validateVerificationReport(report,f.options),{code:'QUALIFICATION_EXECUTION_CONTRACT_MISMATCH'});
 });
 
 test('project-instance 共享消费者与历史 checkpoint 不加载未分发的 source-only validator',async t=>{
