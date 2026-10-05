@@ -19,3 +19,7 @@
 [submodule "submodules/create-yss-harness-frontend"]
 	path = submodules/create-yss-harness-frontend
 	url = https://github.com/iloveZzz/create-yss-harness-frontend.git
+[submodule "submodules/yss-cli"]
+	path = submodules/yss-cli
+	url = https://github.com/iloveZzz/yss-cli.git
+	branch = codex/unified-go-cli
