@@ -7,10 +7,10 @@ import assert from 'node:assert/strict';
 import * as reportValidators from './verification-report-validator.mjs';
 import {loadLegacyManifest,verificationPatternMatches} from './verification-gates.mjs';
 import {compileQualificationPlans} from './verification-qualification-plan.mjs';
-import {addVerificationExecutionTasks} from './verification-execution-plan.mjs';
+import {addVerificationExecutionTasks,compileTaskExecution} from './verification-execution-plan.mjs';
 import {collectReleaseSources} from './verification-artifacts.mjs';
 import {validateBaseline} from './verification-baseline.mjs';
-import {runCommand} from '../../../scripts/lib/command-runner.mjs';
+import {runCommandToFiles} from '../../../scripts/lib/template-verification-runner.mjs';
 
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 const median=values=>{const sorted=[...values].sort((a,b)=>a-b),middle=Math.floor(sorted.length/2);return sorted.length%2?sorted[middle]:(sorted[middle-1]+sorted[middle])/2;};
@@ -44,9 +44,13 @@ export const QUALIFICATION_COUNTEREXAMPLE_REGISTRY=Object.freeze([
   {file:'tests/verification-qualification.test.mjs',name:'资格配对一侧真实失败立即停止，保留partial pair且候选侧未启动',categories:['qualification-pair-failure-stop'],seam:'runQualification / executeVerificationPlan'},
   {file:'tests/verification-qualification.test.mjs',name:'资格入口持久处理中断，真实legacy和后代关闭后不启动candidate并保留原始证据',categories:['qualification-interrupt-stop'],seam:'runQualificationWithSignals / executeVerificationPlan'},
   {file:'tests/verification-qualification.test.mjs',name:'资格worker真实SIGKILL的未观察退出仍保留partial原始报告和close且不能授予资格',categories:['qualification-unobserved-close-retention'],seam:'runQualificationWithSignals / qualificationRunEvidence'},
-  {file:'tests/verification-qualification.test.mjs',name:'资格反例收集中断实际进程组与后代，保留partial且后续套件未启动',categories:['qualification-counterexample-interrupt-stop'],seam:'collectQualificationCounterexamples / runCommand'},
+  {file:'tests/verification-qualification.test.mjs',name:'资格反例收集中断实际进程组与后代，保留partial且后续套件未启动',categories:['qualification-counterexample-interrupt-stop'],seam:'collectQualificationCounterexamples / runCommandToFiles'},
   {file:'tests/verification-qualification.test.mjs',name:'资格反例收集真实超时停止后续套件，原始close与日志不能授予资格',categories:['qualification-counterexample-timeout-stop'],seam:'collectQualificationCounterexamples / validateQualificationCounterexamples'},
   {file:'tests/verification-qualification.test.mjs',name:'资格反例收集边界取消与真实失败不会启动后续套件',categories:['qualification-counterexample-boundary-stop'],seam:'collectQualificationCounterexamples'},
+  {file:'tests/verification-qualification.test.mjs',name:'资格反例收集首次group SIGTERM EPERM保留错误并后备清理真实后代，后续套件不启动',categories:['qualification-counterexample-cancel-kill-error'],seam:'collectQualificationCounterexamples / runCommandToFiles'},
+  {file:'tests/verification-qualification.test.mjs',name:'资格反例收集真实exit0不能覆盖关闭group SIGKILL EPERM且不启动后续套件',categories:['qualification-counterexample-close-kill-error'],seam:'collectQualificationCounterexamples / validateQualificationCounterexamples'},
+  {file:'tests/verification-qualification.test.mjs',name:'资格driver全部真实正对完成后负例阶段改变helper仍被完整输入终检拒绝',categories:['qualification-final-input-drift'],seam:'runQualification / verificationInputDigest'},
+  {file:'tests/verification-qualification.test.mjs',name:'资格反例消费者绑定独立root，同改两处cwd或缺少上下文均拒绝',categories:['qualification-counterexample-root-tamper'],seam:'validateQualificationCounterexamples'},
   {file:'tests/verification-baseline.test.mjs',name:'基线成功证据必须绑定同一 SHA、报告字节和当前策略',categories:['baseline-digest'],seam:'validateBaseline'},
   {file:'tests/verification-baseline.test.mjs',name:'未来和非祖先提交不能缩小当前候选',categories:['baseline-nonancestor'],seam:'validateBaseline'},
   {file:'tests/verification-baseline.test.mjs',name:'Gitlink 基线差异按真实提交登记而不是工作树版本猜测',categories:['gitlink'],seam:'validateBaseline'},
@@ -128,8 +132,9 @@ function measuredQualificationWall(directory,run,report) {
   }
   return {wall_ms:wallMs,started_monotonic_ns:measurement.started_monotonic_ns,finished_monotonic_ns:measurement.finished_monotonic_ns,started_at_ms:started,finished_at_ms:finished};
 }
+const counterexampleCommand=args=>[process.execPath,...args].map(value=>`'${String(value).replaceAll("'","'\\''")}'`).join(' ');
 export async function collectQualificationCounterexamples({root,directory,signal,timeoutMs=120000,onProgress=()=>{}}) {
-  if(!Number.isFinite(timeoutMs)||timeoutMs<=0)throw Error('qualification-counterexample-timeout-invalid');
+  if(!Number.isSafeInteger(timeoutMs)||timeoutMs<=0)throw Error('qualification-counterexample-timeout-invalid');
   const files=[...new Set(QUALIFICATION_COUNTEREXAMPLE_REGISTRY.map(row=>row.file))],suites=[];
   const corpus={schema_version:1,kind:'verification-qualification-counterexamples',status:'running',suites,unexecuted_suites:[...files]};
   await onProgress(structuredClone(corpus));
@@ -142,17 +147,26 @@ export async function collectQualificationCounterexamples({root,directory,signal
     const cases=QUALIFICATION_COUNTEREXAMPLE_REGISTRY.filter(row=>row.file===file),escape=name=>name.replace(/[\\^$.*+?()[\]{}|]/g,'\\$&');
     const pattern=cases.map(row=>`^${escape(row.name)}$`).join('|');
     const args=['--test','--test-reporter=tap','--test-name-pattern',pattern,file],environment={...process.env};delete environment.NODE_TEST_CONTEXT;
-    const sourceDigest=hash(fs.readFileSync(path.join(root,file))),stdoutFile=path.join(directory,`counterexamples.${index}.stdout.log`),stderrFile=path.join(directory,`counterexamples.${index}.stderr.log`);
-    corpus.active_suite={file,source_sha256:sourceDigest,command:process.execPath,args,cwd:root,timeout_ms:timeoutMs,stdout_ref:path.basename(stdoutFile),stderr_ref:path.basename(stderrFile)};
+    const requestedCommand=counterexampleCommand(args),execution=compileTaskExecution({command:requestedCommand},{root});
+    const sourceDigest=hash(fs.readFileSync(path.join(root,file))),sequence=`counterexamples.${index}`;
+    corpus.active_suite={file,source_sha256:sourceDigest,command:process.execPath,args,requested_command:requestedCommand,cwd:root,timeout_ms:timeoutMs,stdout_ref:`${sequence}.stdout`,stderr_ref:`${sequence}.stderr`};
     await onProgress(structuredClone(corpus));
     if(signal?.aborted){corpus.status='interrupted';delete corpus.active_suite;break;}
-    const observed=await runCommand(process.execPath,args,{cwd:root,env:environment,signal,timeoutMs,stdoutFile,stderrFile});
+    const observed=await runCommandToFiles(requestedCommand,{cwd:root,environment,execution,signal,timeoutMs,logRoot:directory,sequence});
     const suite={...corpus.active_suite,actual_close:{code:observed.actual_exit_code,signal:observed.actual_exit_signal,observed:observed.actual_exit_code_observed},
-      status:observed.status,termination:observed.termination,duration_ms:observed.duration_ms,
-      stdout_sha256:hash(fs.readFileSync(stdoutFile)),stderr_sha256:hash(fs.readFileSync(stderrFile)),...(observed.storageError?{storage_error:observed.storageError}:{})};
+      code:observed.code,status:observed.code,termination:observed.termination,duration_ms:observed.duration_ms,error:observed.error,
+      kill_errors:structuredClone(observed.kill_errors||[]),actual_command:observed.command,actual_execution:observed.actual_execution,
+      ...(observed.storageError?{storageError:observed.storageError}:{})};
+    // Preserve the observed close and termination errors even when a log failed
+    // to materialize; incomplete evidence remains an explicit failed corpus.
+    for(const stream of ['stdout','stderr']) {
+      const logFile=observed[stream+'File'];if(logFile)suite[stream+'_ref']=path.relative(directory,logFile);
+      try {suite[stream+'_sha256']=hash(fs.readFileSync(logFile));}
+      catch(error){suite.storageError=[suite.storageError,error.message].filter(Boolean).join('; ');}
+    }
     suites.push(suite);delete corpus.active_suite;corpus.unexecuted_suites=files.slice(index+1);
     if(signal?.aborted||observed.termination==='cancelled')corpus.status='interrupted';
-    else if(observed.status!==0||observed.termination||observed.storageError||!observed.actual_exit_code_observed||observed.actual_exit_signal!==null)corpus.status='failed';
+    else if(suite.code!==0||suite.termination||suite.error||suite.kill_errors.length||suite.storageError||!observed.actual_exit_code_observed||observed.actual_exit_signal!==null)corpus.status='failed';
     else if(hash(fs.readFileSync(path.join(root,file)))!==sourceDigest){corpus.status='failed';corpus.error='qualification-counterexample-source-drift';}
     await onProgress(structuredClone(corpus));
     if(corpus.status!=='running')break;
@@ -164,7 +178,8 @@ export async function collectQualificationCounterexamples({root,directory,signal
   await onProgress(structuredClone(corpus));
   return corpus;
 }
-function verifyCounterexamples(directory,proof,bindings) {
+function verifyCounterexamples(directory,proof,bindings,executionRoot) {
+  if(typeof executionRoot!=='string'||!path.isAbsolute(executionRoot))throw Error('qualification-counterexample-root-context-missing');
   const corpus=proof.counterexamples;
   if(corpus?.schema_version!==1||corpus.kind!=='verification-qualification-counterexamples')throw Error('qualification-counterexamples-missing');
   if(corpus.status!=='passed'||corpus.active_suite||!Array.isArray(corpus.unexecuted_suites)||corpus.unexecuted_suites.length)throw Error('qualification-counterexamples-incomplete');
@@ -173,14 +188,19 @@ function verifyCounterexamples(directory,proof,bindings) {
   for(const suite of corpus.suites) {
     const cases=QUALIFICATION_COUNTEREXAMPLE_REGISTRY.filter(row=>row.file===suite.file),escape=name=>name.replace(/[\\^$.*+?()[\]{}|]/g,'\\$&');
     if(!cases.length||bindings.source_files[suite.file]!==suite.source_sha256||suite.command!==process.execPath||JSON.stringify(suite.args)!==JSON.stringify(['--test','--test-reporter=tap','--test-name-pattern',cases.map(row=>`^${escape(row.name)}$`).join('|'),suite.file]))throw Error('qualification-counterexample-source-unregistered');
-    if(suite.status!==0||suite.termination!==null||suite.storage_error||suite.actual_close?.observed!==true||suite.actual_close.code!==0||suite.actual_close.signal!==null)throw Error('qualification-counterexample-process-failed');
+    if(suite.code!==0||suite.status!==0||suite.termination!==null||suite.error!==''||!Array.isArray(suite.kill_errors)||suite.kill_errors.length||suite.storageError||suite.storage_error||suite.actual_close?.observed!==true||suite.actual_close.code!==0||suite.actual_close.signal!==null)throw Error('qualification-counterexample-process-failed');
+    if(suite.cwd!==executionRoot)throw Error('qualification-counterexample-execution-root-mismatch');
+    const requestedCommand=counterexampleCommand(suite.args);
+    if(typeof suite.cwd!=='string'||!path.isAbsolute(suite.cwd)||suite.requested_command!==requestedCommand||suite.actual_command!==requestedCommand)throw Error('qualification-counterexample-execution-mismatch');
+    try {assert.deepEqual(suite.actual_execution,compileTaskExecution({command:requestedCommand},{root:executionRoot}));}
+    catch {throw Error('qualification-counterexample-execution-mismatch');}
     const stdout=evidenceFile(directory,suite.stdout_ref,suite.stdout_sha256).bytes.toString('utf8');evidenceFile(directory,suite.stderr_ref,suite.stderr_sha256);
     if(/^not ok /m.test(stdout))throw Error('qualification-counterexample-assertion-failed');
     for(const row of cases)if(!new RegExp(`^ok \\d+ - ${escape(row.name)}(?:\\r?$)`,`m`).test(stdout))throw Error(`qualification-counterexample-unobserved:${row.categories.join(',')}`);
   }
 }
-export function validateQualificationCounterexamples({directory,corpus,bindings}) {
-  try {verifyCounterexamples(directory,{counterexamples:corpus},bindings);return {valid:true,reasons:[],categories:[...new Set(QUALIFICATION_COUNTEREXAMPLE_REGISTRY.flatMap(row=>row.categories))]};}
+export function validateQualificationCounterexamples({root,directory,corpus,bindings}) {
+  try {verifyCounterexamples(directory,{counterexamples:corpus},bindings,root);return {valid:true,reasons:[],categories:[...new Set(QUALIFICATION_COUNTEREXAMPLE_REGISTRY.flatMap(row=>row.categories))]};}
   catch(error){return {valid:false,reasons:[error.message],categories:[]};}
 }
 function qualificationChangedFiles(root,proof) {
@@ -283,7 +303,7 @@ export function validateQualification({root,config,reportFile,expectedDigest,exp
     }
     if(!Array.isArray(proof.pairs)||proof.pairs.length<5)throw Error('qualification-five-pairs-missing');
     const expectedSourcesManifest=scope==='gates'?collectReleaseSources({root,commit:proof.representative_commit}):undefined;
-    const legacy=[],candidate=[],pairIds=new Set(),measurementRefs=new Set();let previousMeasurement;
+    const legacy=[],candidate=[],pairIds=new Set(),measurementRefs=new Set();let previousMeasurement,executionRoot;
     for(const [index,pair]of proof.pairs.entries()) {
       if(pairIds.has(pair.pair_id)||JSON.stringify(pair.order)!==JSON.stringify(index%2?['candidate','legacy']:['legacy','candidate']))throw Error('qualification-pair-order-invalid');pairIds.add(pair.pair_id);
       const before=verifyRun(directory,pair.legacy),after=verifyRun(directory,pair.candidate);
@@ -296,6 +316,12 @@ export function validateQualification({root,config,reportFile,expectedDigest,exp
         const expectedPlan=verifiedQualificationPlan({root,config,proof,report:observed.report,reportDirectory:path.dirname(observed.report_file),side});
         validateQualificationReportEvidence(observed.report,{root,expectedPlan,reportDirectory:path.dirname(observed.report_file),
           expectedSourcesManifest,observedExitCode:pair[side].actual_close.code});
+        // Historical evaluation may run from a different checkout. Only the
+        // independently verified pair reports establish the actual source root;
+        // every side and pair must agree before a corpus can consume it.
+        const observedRoot=observed.report.root;
+        if(typeof observedRoot!=='string'||!path.isAbsolute(observedRoot)||executionRoot!==undefined&&executionRoot!==observedRoot)throw Error('qualification-pair-execution-root-mismatch');
+        executionRoot=observedRoot;
       }
       if(scope==='gates'&&(before.report.plan.representative_commit!==proof.representative_commit||after.report.plan.representative_commit!==proof.representative_commit||before.report.input_sha256!==proof.input_sha256||after.report.input_sha256!==proof.input_sha256))throw Error('qualification-representative-input-mismatch');
       const condition=report=>({...Object.fromEntries(['node','platform','arch','cpus','cache_condition','input_observation'].map(key=>[key,report.environment?.[key]])),toolchains:report.preflight?.observations?.filter(row=>['python-jsonschema','pnpm-and-tooling-lock','vue-author-toolchain'].includes(row.name))});
@@ -347,7 +373,7 @@ export function validateQualification({root,config,reportFile,expectedDigest,exp
       negativeCategories.add(row.category);row.covered_old_ids.forEach(id=>covered.add(id));
     }
     if(scope==='gates') {
-      verifyCounterexamples(directory,proof,expectedBindings);
+      verifyCounterexamples(directory,proof,expectedBindings,executionRoot);
       if(proof.negative_cases?.length)throw Error('qualification-unregistered-negative-case');
     }else if(!proof.negative_cases?.length)throw Error('qualification-negative-evidence-missing');
     for(const row of config.legacy_coverage||[])if(['retire','impact-only','diagnostic'].includes(row.disposition)&&!covered.has(row.old_id))throw Error(`qualification-pruned-risk-unproved:${row.old_id}`);

@@ -139,10 +139,12 @@ export async function runQualification({root=ROOT,config=loadVerificationProfile
       if(proof.counterexamples.status!=='passed')throw Error(proof.counterexamples.error||'qualification-counterexamples-failed');
     }
     await interruptCheckpoint();
+    if(verificationInputDigest(root)!==originalInput)throw Error('qualification-input-drift');
     proof.performance=qualificationPerformance(proof.pairs.map(pair=>pair.legacy.wall_ms),proof.pairs.map(pair=>pair.candidate.wall_ms));
     proof.status='passed';save();
     const validation=validateQualification({root,config,reportFile,expectedDigest:verificationHash(fs.readFileSync(reportFile)),expectedBindings:bindings,scope});
     if(!validation.valid){proof.status='failed';proof.errors=validation.reasons;save();}
+    else {await interruptCheckpoint();if(verificationInputDigest(root)!==originalInput)throw Error('qualification-input-drift');}
   }catch(error){proof.status=signal?.aborted||error.code==='QUALIFICATION_INTERRUPTED'?'interrupted':'failed';proof.errors=[error.message];
     if(proof.active_pair){proof.active_pair.status=proof.status;proof.active_pair.unexecuted_sides=proof.active_pair.order.filter(side=>!proof.active_pair[side]);proof.active_pair.stop_reason=error.message;}
     if(signal?.aborted)proof.interruption_reason=String(signal.reason||'aborted');save();}
