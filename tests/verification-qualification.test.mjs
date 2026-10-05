@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {spawnSync,spawn} from 'node:child_process';
 import {createHash} from 'node:crypto';
-import {validateQualification, qualificationPerformance,qualificationRunEvidence,validateQualificationPlanLedger,validateQualificationReportEvidence,measureQualificationRun} from '../.template-source/scripts/lib/verification-qualification.mjs';
+import {validateQualification, qualificationPerformance,qualificationRunEvidence,validateQualificationPlanLedger,validateQualificationReportEvidence,measureQualificationRun,collectQualificationCounterexamples,validateQualificationCounterexamples,QUALIFICATION_COUNTEREXAMPLE_REGISTRY} from '../.template-source/scripts/lib/verification-qualification.mjs';
 import {runQualification,runQualificationWithSignals} from '../.template-source/scripts/qualify-template-verification.mjs';
 import {compileQualificationPlans} from '../.template-source/scripts/lib/verification-qualification-plan.mjs';
 import {addVerificationExecutionTasks,compileTaskExecution} from '../.template-source/scripts/lib/verification-execution-plan.mjs';
@@ -15,6 +15,66 @@ import {installedTreeDigest,prepareCliSourceConsumer} from '../.template-source/
 import {executeVerificationPlan} from '../.template-source/scripts/lib/template-verification-worker.mjs';
 
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
+// The fixed collector still owns its registry; these are real bounded TAP files,
+// not the production suites or a complete Gate qualification run.
+function counterexampleFixture(t,{firstBody=''}={}) {
+  const directory=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'qualification-corpus-process-')));t.after(()=>fs.rmSync(directory,{recursive:true,force:true}));
+  const root=path.join(directory,'root'),output=path.join(directory,'evidence'),startedFile=path.join(directory,'started.log'),marker=path.join(directory,'pids.json');fs.mkdirSync(root);fs.mkdirSync(output);
+  const files=[...new Set(QUALIFICATION_COUNTEREXAMPLE_REGISTRY.map(row=>row.file))],source_files={};
+  for(const [index,file]of files.entries()) {
+    const cases=QUALIFICATION_COUNTEREXAMPLE_REGISTRY.filter(row=>row.file===file),target=path.join(root,file);fs.mkdirSync(path.dirname(target),{recursive:true});
+    const source=`import test from 'node:test';import fs from 'node:fs';import {spawn} from 'node:child_process';\nfs.appendFileSync(${JSON.stringify(startedFile)},${JSON.stringify(file+'\n')});\n`+cases.map((row,caseIndex)=>`test(${JSON.stringify(row.name)},async()=>{${index===0&&caseIndex===0?firstBody.replaceAll('__MARKER__',JSON.stringify(marker)):''}});`).join('\n');
+    fs.writeFileSync(target,source);source_files[file]=hash(fs.readFileSync(target));
+  }
+  return {directory,root,output,startedFile,marker,files,bindings:{source_files}};
+}
+
+test('资格反例收集异步监督真实TAP且固定消费者阳性仍有效',async t=>{
+  const f=counterexampleFixture(t),pending=collectQualificationCounterexamples({root:f.root,directory:f.output});
+  assert.equal(typeof pending?.then,'function','collector must yield to the persistent signal handler');
+  const corpus=await pending;assert.equal(corpus.status,'passed');assert.deepEqual(fs.readFileSync(f.startedFile,'utf8').trim().split('\n'),f.files);
+  assert.equal(validateQualificationCounterexamples({directory:f.output,corpus,bindings:f.bindings}).valid,true);
+  for(const suite of corpus.suites){assert.deepEqual(suite.actual_close,{code:0,signal:null,observed:true});assert.equal(suite.stdout_sha256,hash(fs.readFileSync(path.join(f.output,suite.stdout_ref))));assert.equal(suite.stderr_sha256,hash(fs.readFileSync(path.join(f.output,suite.stderr_ref))));}
+  const cancelled=structuredClone(corpus);cancelled.suites[0].termination='cancelled';assert.ok(validateQualificationCounterexamples({directory:f.output,corpus:cancelled,bindings:f.bindings}).reasons.includes('qualification-counterexample-process-failed'));
+});
+
+const longCounterexampleBody=`const child=spawn(process.execPath,['-e','setInterval(()=>{},1000)'],{stdio:'inherit'});let stopping=false;child.once('exit',()=>{if(stopping)process.exit(0);});process.on('SIGTERM',()=>{stopping=true;child.kill('SIGTERM');});fs.writeFileSync(__MARKER__,JSON.stringify({suite:process.pid,descendant:child.pid}));console.log('actual active counterexample');await new Promise(()=>{});`;
+async function waitForFile(file,timeoutMs=10000) {const deadline=Date.now()+timeoutMs;while(!fs.existsSync(file)&&Date.now()<deadline)await new Promise(resolve=>setTimeout(resolve,10));assert.ok(fs.existsSync(file),file);}
+async function assertProcessesClosed(pids) {for(const pid of Object.values(pids)){const deadline=Date.now()+2000;while(Date.now()<deadline){try{process.kill(pid,0);await new Promise(resolve=>setTimeout(resolve,10));}catch(error){assert.equal(error.code,'ESRCH');break;}}assert.throws(()=>process.kill(pid,0),error=>error.code==='ESRCH');}}
+
+test('资格反例收集中断实际进程组与后代，保留partial且后续套件未启动',async t=>{
+  for(const signalName of ['SIGINT','SIGTERM']) {
+    const f=counterexampleFixture(t,{firstBody:longCounterexampleBody}),entry=path.join(f.directory,'collect.mjs'),outcome=path.join(f.directory,'outcome.json'),partial=path.join(f.output,'partial.json');
+    const url=new URL('../.template-source/scripts/lib/verification-qualification.mjs',import.meta.url).href;
+    fs.writeFileSync(entry,`import fs from 'node:fs';import {collectQualificationCounterexamples} from ${JSON.stringify(url)};const controller=new AbortController();const onInt=()=>controller.abort('SIGINT'),onTerm=()=>controller.abort('SIGTERM');process.on('SIGINT',onInt);process.on('SIGTERM',onTerm);try{const corpus=await collectQualificationCounterexamples({root:${JSON.stringify(f.root)},directory:${JSON.stringify(f.output)},signal:controller.signal,onProgress:value=>fs.writeFileSync(${JSON.stringify(partial)},JSON.stringify(value))});fs.writeFileSync(${JSON.stringify(outcome)},JSON.stringify(corpus));process.exitCode=corpus.status==='interrupted'?130:1;}finally{process.off('SIGINT',onInt);process.off('SIGTERM',onTerm);}`);
+    const parent=spawn(process.execPath,[entry],{stdio:['ignore','pipe','pipe']}),closed=new Promise(resolve=>parent.once('close',(code,signal)=>resolve({code,signal})));let stderr='';parent.stderr.on('data',bytes=>stderr+=bytes);parent.stdout.resume();t.after(()=>{if(parent.exitCode===null)parent.kill('SIGKILL');});
+    await waitForFile(f.marker);const active=JSON.parse(fs.readFileSync(partial));assert.equal(active.status,'running');assert.equal(active.active_suite.file,f.files[0]);assert.equal(active.suites.length,0);
+    parent.kill(signalName);assert.deepEqual(await closed,{code:130,signal:null},stderr);
+    const corpus=JSON.parse(fs.readFileSync(outcome));assert.equal(corpus.status,'interrupted');assert.equal(corpus.suites.length,1);assert.equal(corpus.suites[0].termination,'cancelled');assert.deepEqual(corpus.unexecuted_suites,f.files.slice(1));assert.deepEqual(fs.readFileSync(f.startedFile,'utf8').trim().split('\n'),[f.files[0]]);
+    assert.deepEqual(JSON.parse(fs.readFileSync(partial)),corpus);const suite=corpus.suites[0];assert.equal(suite.source_sha256,f.bindings.source_files[suite.file]);assert.equal(suite.command,process.execPath);assert.equal(suite.cwd,f.root);assert.equal(suite.args.at(-1),f.files[0]);
+    for(const stream of ['stdout','stderr'])assert.equal(suite[stream+'_sha256'],hash(fs.readFileSync(path.join(f.output,suite[stream+'_ref']))));assert.match(fs.readFileSync(path.join(f.output,suite.stdout_ref),'utf8'),/actual active counterexample/);
+    assert.equal(validateQualificationCounterexamples({directory:f.output,corpus,bindings:f.bindings}).valid,false);await assertProcessesClosed(JSON.parse(fs.readFileSync(f.marker)));
+  }
+});
+
+test('资格反例收集真实超时停止后续套件，原始close与日志不能授予资格',async t=>{
+  const f=counterexampleFixture(t,{firstBody:longCounterexampleBody}),partial=path.join(f.output,'partial.json'),corpus=await collectQualificationCounterexamples({root:f.root,directory:f.output,timeoutMs:300,onProgress:value=>fs.writeFileSync(partial,JSON.stringify(value))});
+  assert.equal(corpus.status,'failed');assert.equal(corpus.suites.length,1);assert.equal(corpus.suites[0].status,124);assert.equal(corpus.suites[0].termination,'timeout');assert.equal(corpus.suites[0].timeout_ms,300);assert.deepEqual(corpus.unexecuted_suites,f.files.slice(1));assert.deepEqual(fs.readFileSync(f.startedFile,'utf8').trim().split('\n'),[f.files[0]]);assert.deepEqual(JSON.parse(fs.readFileSync(partial)),corpus);
+  const suite=corpus.suites[0];assert.ok(suite.actual_close.code!==null||suite.actual_close.signal!==null);for(const stream of ['stdout','stderr'])assert.equal(suite[stream+'_sha256'],hash(fs.readFileSync(path.join(f.output,suite[stream+'_ref']))));assert.equal(validateQualificationCounterexamples({directory:f.output,corpus,bindings:f.bindings}).valid,false);await assertProcessesClosed(JSON.parse(fs.readFileSync(f.marker)));
+});
+
+test('资格反例收集边界取消与真实失败不会启动后续套件',async t=>{
+  for(const boundary of ['before','active','closed','failed']) {
+    const f=counterexampleFixture(t,{firstBody:boundary==='failed'?'throw Error("actual counterexample assertion failure")':''}),controller=new AbortController();if(boundary==='before')controller.abort('before-collection');
+    const corpus=await collectQualificationCounterexamples({root:f.root,directory:f.output,signal:controller.signal,onProgress:async value=>{
+      if(boundary==='active'&&value.active_suite)controller.abort('before-spawn');
+      if(boundary==='closed'&&value.suites.length===1&&value.status==='running')controller.abort('between-suites');
+    }});
+    assert.equal(corpus.status,boundary==='failed'?'failed':'interrupted');assert.equal(corpus.active_suite,undefined);assert.equal(validateQualificationCounterexamples({directory:f.output,corpus,bindings:f.bindings}).valid,false);
+    if(['before','active'].includes(boundary)){assert.equal(corpus.suites.length,0);assert.equal(fs.existsSync(f.startedFile),false);assert.deepEqual(corpus.unexecuted_suites,f.files);}
+    else {assert.equal(corpus.suites.length,1);assert.deepEqual(fs.readFileSync(f.startedFile,'utf8').trim().split('\n'),[f.files[0]]);assert.deepEqual(corpus.unexecuted_suites,f.files.slice(1));}
+  }
+});
 async function observedProof(t) {
   const directory=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'qualification-observed-')));t.after(()=>fs.rmSync(directory,{recursive:true,force:true}));
   const proof={schema_version:1,kind:'template-verification-qualification',scope:'pilot',status:'passed',bindings:{fixture:'source-bytes'},pairs:[],negative_cases:[],route_cases:[]};

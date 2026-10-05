@@ -50,7 +50,7 @@ export async function runQualificationWithSignals(options) {
 }
 
 /** The root may wrap each side with real all-four release integration; timings include the callback. */
-export async function runQualification({root=ROOT,config=loadVerificationProfiles(),output,base,baselineReport,baselineReportDigest,baselineAssessment,baselineValidator=validateBaselineReport,representative,negativeCases=[],routeCases=[],runCount=5,executePairSide=executeQualificationSide,makePlans=makeQualificationPlans,scope='gates',bindings:providedBindings,signal,environment=process.env}={}) {
+export async function runQualification({root=ROOT,config=loadVerificationProfiles(),output,base,baselineReport,baselineReportDigest,baselineAssessment,baselineValidator=validateBaselineReport,representative,negativeCases=[],routeCases=[],runCount=5,executePairSide=executeQualificationSide,makePlans=makeQualificationPlans,scope='gates',bindings:providedBindings,signal,environment=process.env,counterexampleTimeoutMs=120000}={}) {
   if(!Number.isInteger(runCount)||runCount<5)throw Error('qualification requires at least five paired runs');
   if(scope==='gates'&&negativeCases.length)throw Error('qualification-unregistered-negative-case: use the fixed public-seam counterexample corpus');
   if(scope==='gates'&&routeCases.length&&JSON.stringify(routeCases)!==JSON.stringify(QUALIFICATION_ROUTE_REGISTRY))throw Error('qualification-route-unregistered');
@@ -130,7 +130,14 @@ export async function runQualification({root=ROOT,config=loadVerificationProfile
       if(row.legacy.actual_close.code===0||row.candidate.actual_close.code===0)throw Error('qualification-negative-escaped');
     }
     await interruptCheckpoint();
-    if(scope==='gates'){proof.counterexamples=collectQualificationCounterexamples({root,directory:output});save();}
+    if(scope==='gates') {
+      proof.counterexamples=await collectQualificationCounterexamples({root,directory:output,signal,timeoutMs:counterexampleTimeoutMs,
+        onProgress:corpus=>{proof.counterexamples=corpus;save();}});
+      // Retain the actual active/partial corpus before propagating any failure.
+      save();
+      if(proof.counterexamples.status==='interrupted'||signal?.aborted)throw interruption();
+      if(proof.counterexamples.status!=='passed')throw Error(proof.counterexamples.error||'qualification-counterexamples-failed');
+    }
     await interruptCheckpoint();
     proof.performance=qualificationPerformance(proof.pairs.map(pair=>pair.legacy.wall_ms),proof.pairs.map(pair=>pair.candidate.wall_ms));
     proof.status='passed';save();

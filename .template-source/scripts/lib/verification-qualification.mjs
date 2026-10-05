@@ -10,6 +10,7 @@ import {compileQualificationPlans} from './verification-qualification-plan.mjs';
 import {addVerificationExecutionTasks} from './verification-execution-plan.mjs';
 import {collectReleaseSources} from './verification-artifacts.mjs';
 import {validateBaseline} from './verification-baseline.mjs';
+import {runCommand} from '../../../scripts/lib/command-runner.mjs';
 
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 const median=values=>{const sorted=[...values].sort((a,b)=>a-b),middle=Math.floor(sorted.length/2);return sorted.length%2?sorted[middle]:(sorted[middle-1]+sorted[middle])/2;};
@@ -43,6 +44,9 @@ export const QUALIFICATION_COUNTEREXAMPLE_REGISTRY=Object.freeze([
   {file:'tests/verification-qualification.test.mjs',name:'资格配对一侧真实失败立即停止，保留partial pair且候选侧未启动',categories:['qualification-pair-failure-stop'],seam:'runQualification / executeVerificationPlan'},
   {file:'tests/verification-qualification.test.mjs',name:'资格入口持久处理中断，真实legacy和后代关闭后不启动candidate并保留原始证据',categories:['qualification-interrupt-stop'],seam:'runQualificationWithSignals / executeVerificationPlan'},
   {file:'tests/verification-qualification.test.mjs',name:'资格worker真实SIGKILL的未观察退出仍保留partial原始报告和close且不能授予资格',categories:['qualification-unobserved-close-retention'],seam:'runQualificationWithSignals / qualificationRunEvidence'},
+  {file:'tests/verification-qualification.test.mjs',name:'资格反例收集中断实际进程组与后代，保留partial且后续套件未启动',categories:['qualification-counterexample-interrupt-stop'],seam:'collectQualificationCounterexamples / runCommand'},
+  {file:'tests/verification-qualification.test.mjs',name:'资格反例收集真实超时停止后续套件，原始close与日志不能授予资格',categories:['qualification-counterexample-timeout-stop'],seam:'collectQualificationCounterexamples / validateQualificationCounterexamples'},
+  {file:'tests/verification-qualification.test.mjs',name:'资格反例收集边界取消与真实失败不会启动后续套件',categories:['qualification-counterexample-boundary-stop'],seam:'collectQualificationCounterexamples'},
   {file:'tests/verification-baseline.test.mjs',name:'基线成功证据必须绑定同一 SHA、报告字节和当前策略',categories:['baseline-digest'],seam:'validateBaseline'},
   {file:'tests/verification-baseline.test.mjs',name:'未来和非祖先提交不能缩小当前候选',categories:['baseline-nonancestor'],seam:'validateBaseline'},
   {file:'tests/verification-baseline.test.mjs',name:'Gitlink 基线差异按真实提交登记而不是工作树版本猜测',categories:['gitlink'],seam:'validateBaseline'},
@@ -124,28 +128,52 @@ function measuredQualificationWall(directory,run,report) {
   }
   return {wall_ms:wallMs,started_monotonic_ns:measurement.started_monotonic_ns,finished_monotonic_ns:measurement.finished_monotonic_ns,started_at_ms:started,finished_at_ms:finished};
 }
-export function collectQualificationCounterexamples({root,directory}) {
+export async function collectQualificationCounterexamples({root,directory,signal,timeoutMs=120000,onProgress=()=>{}}) {
+  if(!Number.isFinite(timeoutMs)||timeoutMs<=0)throw Error('qualification-counterexample-timeout-invalid');
   const files=[...new Set(QUALIFICATION_COUNTEREXAMPLE_REGISTRY.map(row=>row.file))],suites=[];
+  const corpus={schema_version:1,kind:'verification-qualification-counterexamples',status:'running',suites,unexecuted_suites:[...files]};
+  await onProgress(structuredClone(corpus));
+  try {
   for(const [index,file]of files.entries()) {
+    // Yield at boundaries so an OS signal received after close cannot launch
+    // another suite before the main process's durable controller handles it.
+    await new Promise(resolve=>setImmediate(resolve));
+    if(signal?.aborted){corpus.status='interrupted';break;}
     const cases=QUALIFICATION_COUNTEREXAMPLE_REGISTRY.filter(row=>row.file===file),escape=name=>name.replace(/[\\^$.*+?()[\]{}|]/g,'\\$&');
     const pattern=cases.map(row=>`^${escape(row.name)}$`).join('|');
     const args=['--test','--test-reporter=tap','--test-name-pattern',pattern,file],environment={...process.env};delete environment.NODE_TEST_CONTEXT;
-    const observed=spawnSync(process.execPath,args,{cwd:root,env:environment,encoding:'utf8',timeout:120000,maxBuffer:16*1024*1024});
-    const stdoutFile=path.join(directory,`counterexamples.${index}.stdout.log`),stderrFile=path.join(directory,`counterexamples.${index}.stderr.log`);fs.writeFileSync(stdoutFile,observed.stdout||'');fs.writeFileSync(stderrFile,observed.stderr||'');
-    suites.push({file,source_sha256:hash(fs.readFileSync(path.join(root,file))),command:process.execPath,args,actual_close:{code:observed.status,signal:observed.signal,observed:observed.status!==null||observed.signal!==null},stdout_ref:path.basename(stdoutFile),stdout_sha256:hash(fs.readFileSync(stdoutFile)),stderr_ref:path.basename(stderrFile),stderr_sha256:hash(fs.readFileSync(stderrFile))});
-    if(observed.status!==0)break;
+    const sourceDigest=hash(fs.readFileSync(path.join(root,file))),stdoutFile=path.join(directory,`counterexamples.${index}.stdout.log`),stderrFile=path.join(directory,`counterexamples.${index}.stderr.log`);
+    corpus.active_suite={file,source_sha256:sourceDigest,command:process.execPath,args,cwd:root,timeout_ms:timeoutMs,stdout_ref:path.basename(stdoutFile),stderr_ref:path.basename(stderrFile)};
+    await onProgress(structuredClone(corpus));
+    if(signal?.aborted){corpus.status='interrupted';delete corpus.active_suite;break;}
+    const observed=await runCommand(process.execPath,args,{cwd:root,env:environment,signal,timeoutMs,stdoutFile,stderrFile});
+    const suite={...corpus.active_suite,actual_close:{code:observed.actual_exit_code,signal:observed.actual_exit_signal,observed:observed.actual_exit_code_observed},
+      status:observed.status,termination:observed.termination,duration_ms:observed.duration_ms,
+      stdout_sha256:hash(fs.readFileSync(stdoutFile)),stderr_sha256:hash(fs.readFileSync(stderrFile)),...(observed.storageError?{storage_error:observed.storageError}:{})};
+    suites.push(suite);delete corpus.active_suite;corpus.unexecuted_suites=files.slice(index+1);
+    if(signal?.aborted||observed.termination==='cancelled')corpus.status='interrupted';
+    else if(observed.status!==0||observed.termination||observed.storageError||!observed.actual_exit_code_observed||observed.actual_exit_signal!==null)corpus.status='failed';
+    else if(hash(fs.readFileSync(path.join(root,file)))!==sourceDigest){corpus.status='failed';corpus.error='qualification-counterexample-source-drift';}
+    await onProgress(structuredClone(corpus));
+    if(corpus.status!=='running')break;
   }
-  return {schema_version:1,kind:'verification-qualification-counterexamples',suites};
+  }catch(error){corpus.status=signal?.aborted?'interrupted':'failed';corpus.error=error.message;}
+  await new Promise(resolve=>setImmediate(resolve));
+  if(signal?.aborted)corpus.status='interrupted';
+  if(corpus.status==='running')corpus.status=corpus.unexecuted_suites.length?'failed':'passed';
+  await onProgress(structuredClone(corpus));
+  return corpus;
 }
 function verifyCounterexamples(directory,proof,bindings) {
   const corpus=proof.counterexamples;
   if(corpus?.schema_version!==1||corpus.kind!=='verification-qualification-counterexamples')throw Error('qualification-counterexamples-missing');
+  if(corpus.status!=='passed'||corpus.active_suite||!Array.isArray(corpus.unexecuted_suites)||corpus.unexecuted_suites.length)throw Error('qualification-counterexamples-incomplete');
   const expectedFiles=[...new Set(QUALIFICATION_COUNTEREXAMPLE_REGISTRY.map(row=>row.file))];
   if(corpus.suites?.length!==expectedFiles.length||new Set(corpus.suites.map(row=>row.file)).size!==expectedFiles.length)throw Error('qualification-counterexamples-incomplete');
   for(const suite of corpus.suites) {
     const cases=QUALIFICATION_COUNTEREXAMPLE_REGISTRY.filter(row=>row.file===suite.file),escape=name=>name.replace(/[\\^$.*+?()[\]{}|]/g,'\\$&');
     if(!cases.length||bindings.source_files[suite.file]!==suite.source_sha256||suite.command!==process.execPath||JSON.stringify(suite.args)!==JSON.stringify(['--test','--test-reporter=tap','--test-name-pattern',cases.map(row=>`^${escape(row.name)}$`).join('|'),suite.file]))throw Error('qualification-counterexample-source-unregistered');
-    if(suite.actual_close?.observed!==true||suite.actual_close.code!==0||suite.actual_close.signal!==null)throw Error('qualification-counterexample-process-failed');
+    if(suite.status!==0||suite.termination!==null||suite.storage_error||suite.actual_close?.observed!==true||suite.actual_close.code!==0||suite.actual_close.signal!==null)throw Error('qualification-counterexample-process-failed');
     const stdout=evidenceFile(directory,suite.stdout_ref,suite.stdout_sha256).bytes.toString('utf8');evidenceFile(directory,suite.stderr_ref,suite.stderr_sha256);
     if(/^not ok /m.test(stdout))throw Error('qualification-counterexample-assertion-failed');
     for(const row of cases)if(!new RegExp(`^ok \\d+ - ${escape(row.name)}(?:\\r?$)`,`m`).test(stdout))throw Error(`qualification-counterexample-unobserved:${row.categories.join(',')}`);
