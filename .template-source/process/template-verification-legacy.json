@@ -1,0 +1,1163 @@
+{
+  "schema_version": 1,
+  "kind": "template-verification-legacy-manifest",
+  "source_commit": "11d88fb0ae6e4213bff6b4c5af4de03fd1aa2f1c",
+  "source_profile_sha256": "52c650f01e1d7d663ab9667a831db9d5800efd032b084cec4186e7c3194e1d56",
+  "commands": [
+    {
+      "run": "node --test tests/content-identity.test.mjs tests/drift-report.test.mjs tests/maintenance-iteration.test.mjs",
+      "when": "template-source",
+      "id": "check.drift-identity",
+      "group": "drift-identity",
+      "task_id": "legacy.000",
+      "depends_on": []
+    },
+    {
+      "run": "node --test submodules/create-yss-spec/tests/content-identity.test.js",
+      "when": "template-source",
+      "id": "check.cli-content-identity",
+      "group": "drift-identity",
+      "task_id": "legacy.001",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/sync-skills --check",
+      "when": "template-source",
+      "id": "check.skill-projection-identity",
+      "group": "drift-identity",
+      "task_id": "legacy.002",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/update-skill-lock --check",
+      "when": "template-source",
+      "id": "check.skill-lock-current",
+      "group": "drift-identity",
+      "task_id": "legacy.003",
+      "depends_on": []
+    },
+    {
+      "run": "node --test scripts/fixtures/structured-assets/*.test.mjs",
+      "id": "check.structured-assets",
+      "group": "schema-runtime",
+      "task_id": "legacy.004",
+      "depends_on": []
+    },
+    {
+      "run": "node --test scripts/fixtures/contract-efficiency/schema-rejection.test.mjs scripts/fixtures/contract-efficiency/security.test.mjs scripts/fixtures/contract-efficiency/phase.test.mjs scripts/fixtures/delivery-preflight/json-schema-framing.test.mjs",
+      "id": "check.schema-runtime",
+      "group": "schema-runtime",
+      "task_id": "legacy.005",
+      "depends_on": []
+    },
+    {
+      "run": "node --test tests/feature-assets.test.mjs tests/browser-session.test.mjs",
+      "when": "template-source",
+      "id": "check.feature-assets",
+      "group": "feature-assets",
+      "task_id": "legacy.006",
+      "depends_on": []
+    },
+    {
+      "run": "node --test scripts/fixtures/business-tickets/*.test.mjs",
+      "id": "check.business-ticket-contract",
+      "group": "business-tickets",
+      "task_id": "legacy.007",
+      "depends_on": []
+    },
+    {
+      "run": "node --test .template-source/tooling/node/test/plan-spec-quality.test.mjs tests/plan-spec-template-contract.test.mjs",
+      "group": "plan-spec-content",
+      "id": "check.292502d15942f4de",
+      "task_id": "legacy.008",
+      "depends_on": []
+    },
+    {
+      "run": "node .agents/skills/i-have-adhd/tests/verify-integration.mjs",
+      "group": "plan-spec-content",
+      "id": "check.57446ae09b82f3cd",
+      "task_id": "legacy.009",
+      "depends_on": []
+    },
+    {
+      "run": "node --test submodules/create-yss-spec/tests/sync-fast-smoke.test.js",
+      "when": "template-source",
+      "id": "check.517fe9954d913f53",
+      "group": "cli-sync",
+      "task_id": "legacy.010",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/verify-repository-scope-scenarios",
+      "when": "template-source",
+      "id": "check.2b52a050306077cc",
+      "group": "cli-sync",
+      "task_id": "legacy.011",
+      "depends_on": []
+    },
+    {
+      "run": "node --test .template-source/cli-core/tests/*.test.mjs",
+      "when": "template-source",
+      "id": "check.371da192d6338e6d",
+      "group": "dedicated-cli-core",
+      "task_id": "legacy.012",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/verify-frontend-delivery-scenarios",
+      "lane": "source-scenarios",
+      "parallel_unless_env": [
+        "YSS_DEDICATED_INSTANCE_ROOT",
+        "YSS_DELIVERY_TEST_BACKEND_ROOT",
+        "YSS_DELIVERY_TEST_FRONTEND_ROOT"
+      ],
+      "id": "check.1f1753b1299c14cf",
+      "group": "frontend-delivery",
+      "task_id": "legacy.013",
+      "depends_on": []
+    },
+    {
+      "run": "node .template-source/scripts/verify-delivery-harness-distribution.mjs",
+      "when": "template-source",
+      "lane": "generated-distribution",
+      "parallel_unless_env": [
+        "YSS_DEDICATED_INSTANCE_ROOT",
+        "YSS_DELIVERY_TEST_BACKEND_ROOT",
+        "YSS_DELIVERY_TEST_FRONTEND_ROOT"
+      ],
+      "id": "check.629b3c9ec897593f",
+      "group": "frontend-delivery",
+      "task_id": "legacy.014",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/verify-strategic-handoff-tools-lock",
+      "when": "template-source",
+      "id": "check.17d5665535e89587",
+      "group": "strategic-handoff-package",
+      "task_id": "legacy.015",
+      "depends_on": []
+    },
+    {
+      "run": "node --check scripts/lib/strategic-handoff.mjs",
+      "id": "check.ba0fad1faed81f06",
+      "group": "strategic-handoff-package",
+      "task_id": "legacy.016",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/verify-strategic-handoff-package-scenarios",
+      "id": "check.83f08a7516716a38",
+      "group": "strategic-handoff-package",
+      "task_id": "legacy.017",
+      "depends_on": []
+    },
+    {
+      "run": "node .template-source/tooling/node/scripts/design-md.mjs lint DESIGN.md",
+      "when": "template-source",
+      "id": "check.5178854477253978",
+      "group": "design-system",
+      "task_id": "legacy.018",
+      "depends_on": []
+    },
+    {
+      "run": "node .template-source/tooling/node/scripts/design-md.mjs drift",
+      "when": "template-source",
+      "id": "check.a27805ecf41a23e5",
+      "group": "design-system",
+      "task_id": "legacy.019",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/verify-governance-layout",
+      "id": "check.8cd499a929b8a5a4",
+      "group": "hygiene",
+      "task_id": "legacy.020",
+      "depends_on": []
+    },
+    {
+      "run": "python3 -m unittest discover -s .template-source/scripts/tests -p 'test_skills_agent_eval.py' -v",
+      "when": "template-source",
+      "id": "check.44ea73f718bcecec",
+      "group": "tooling",
+      "task_id": "legacy.021",
+      "depends_on": []
+    },
+    {
+      "run": "pnpm --dir .template-source/tooling/node test",
+      "when": "template-source",
+      "id": "check.71586a7291afee4f",
+      "group": "tooling",
+      "task_id": "legacy.022",
+      "depends_on": []
+    },
+    {
+      "run": "pnpm --dir .template-source/tooling/node check:vendor",
+      "when": "template-source",
+      "id": "check.637af2529c59dfe5",
+      "group": "tooling",
+      "task_id": "legacy.023",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/sync-profile-skills --check --profile=all",
+      "when": "template-source",
+      "id": "check.22712701df14f183",
+      "group": "skills",
+      "task_id": "legacy.024",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/sync-skills --check",
+      "id": "check.4301e56b48a9d570",
+      "group": "skills",
+      "task_id": "legacy.025",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/update-skill-lock --check",
+      "id": "check.eb4247ef92d2c0d0",
+      "group": "skills",
+      "task_id": "legacy.026",
+      "depends_on": []
+    },
+    {
+      "run": "node --test tests/skill-sync-efficiency.test.mjs",
+      "when": "template-source",
+      "id": "check.c80aaecf300ddc1f",
+      "group": "skills",
+      "task_id": "legacy.027",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/verify-skill-registry",
+      "id": "check.022dccdddca70b70",
+      "group": "skills",
+      "task_id": "legacy.028",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/verify-skill-governance",
+      "id": "check.93d2af5732ccdd96",
+      "group": "skills",
+      "task_id": "legacy.029",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/verify-upstream-skill-source --source=iloveZzz/yss-harness-design-agent --source-root=submodules/yss-harness-design-agent",
+      "when": "template-source",
+      "id": "check.a74d7c2cc539e456",
+      "group": "skills",
+      "task_id": "legacy.030",
+      "depends_on": []
+    },
+    {
+      "run": "node --test .agents/skills/yss-skill-source-index-refresh/scripts/refresh-yss-skill-index.test.mjs",
+      "id": "check.208c7eedeff4e6e9",
+      "inputs_complete": true,
+      "input_patterns": [
+        ".agents/skills/yss-skill-source-index-refresh/**",
+        "tests/yss-skill-source-index.test.mjs",
+        "scripts/**",
+        ".template-spec/agents/**"
+      ],
+      "depends_on": [],
+      "group": "skills",
+      "task_id": "legacy.031"
+    },
+    {
+      "run": "node --test .agents/skills/yss-repository/tests/profile-routing.test.mjs",
+      "id": "check.f8acc69a55fea6b0",
+      "inputs_complete": true,
+      "input_patterns": [
+        ".agents/skills/yss-repository/**",
+        ".agents/skills/yss-mybatis/**",
+        "scripts/**",
+        ".template-spec/agents/**"
+      ],
+      "depends_on": [],
+      "group": "skills",
+      "task_id": "legacy.032"
+    },
+    {
+      "run": "node .agents/skills/yss-technical-design/scripts/generate-schema.mjs --check",
+      "id": "check.3d61dc45c4a35922",
+      "group": "tactical-design",
+      "task_id": "legacy.033",
+      "depends_on": []
+    },
+    {
+      "run": "node .agents/skills/yss-technical-design/tests/run-scenarios.mjs",
+      "id": "check.4bade53d828a7468",
+      "group": "tactical-design",
+      "task_id": "legacy.034",
+      "depends_on": []
+    },
+    {
+      "run": "node --test .agents/skills/yss-technical-design/tests/engineering-scenarios.mjs",
+      "id": "check.f03591c3ea92405b",
+      "group": "tactical-design",
+      "task_id": "legacy.035",
+      "depends_on": []
+    },
+    {
+      "run": "node --check .agents/skills/yss-tactical-design/scripts/validate-tactical-design.mjs",
+      "id": "check.0eda9c9e0a08adf6",
+      "group": "tactical-design",
+      "task_id": "legacy.036",
+      "depends_on": []
+    },
+    {
+      "run": "node --check .agents/skills/yss-tactical-design/tests/run-scenarios.mjs",
+      "id": "check.9c058e5d7cf873aa",
+      "group": "tactical-design",
+      "task_id": "legacy.037",
+      "depends_on": []
+    },
+    {
+      "run": "node .agents/skills/yss-tactical-design/tests/run-scenarios.mjs",
+      "id": "check.0b0ff4c1ba24fa6e",
+      "group": "tactical-design",
+      "task_id": "legacy.038",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/verify-yss-dto-openapi-profile",
+      "id": "check.0bbbe97175f9674e",
+      "group": "contracts",
+      "task_id": "legacy.039",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/verify-yss-dto-openapi-scenarios",
+      "id": "check.eeb6e42ce91ac26a",
+      "group": "contracts",
+      "task_id": "legacy.040",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/verify-openapi-yaml-first-scenarios",
+      "id": "check.d3535102c1a26a7d",
+      "group": "contracts",
+      "task_id": "legacy.041",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/verify-openapi-json-handoff-scenarios",
+      "id": "check.b636f17f4fdfecf1",
+      "group": "contracts",
+      "task_id": "legacy.042",
+      "depends_on": []
+    },
+    {
+      "run": "node scripts/verify-plan-review-control-scenarios",
+      "when": "template-source",
+      "id": "check.plan-review-control-convergence",
+      "group": "collaboration",
+      "task_id": "legacy.043",
+      "depends_on": []
+    },
+    {
+      "run": "node --test .template-source/tooling/node/test/approval-current.test.mjs .template-source/tooling/node/test/review-capabilities.test.mjs .template-source/tooling/node/test/approval-consumption.test.mjs",
+      "when": "template-source",
+      "id": "check.role-gates-current-capability",
+      "group": "collaboration",
+      "task_id": "legacy.044",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/verify-digital-human-roles",
+      "id": "check.a3cc57f168071cc8",
+      "group": "collaboration",
+      "task_id": "legacy.045",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/verify-digital-human-roles-scenarios",
+      "id": "check.fa7fc43e32417857",
+      "group": "collaboration",
+      "task_id": "legacy.046",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/verify-approval-record --history .template-spec/templates/approval-record-template.yaml",
+      "id": "check.aab6b1527f8c70f0",
+      "group": "collaboration",
+      "task_id": "legacy.047",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/verify-subagent-task-package-scenarios",
+      "id": "check.ffe328872703d3c0",
+      "group": "collaboration",
+      "task_id": "legacy.048",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/verify-digital-human-task-package-scenarios",
+      "id": "check.b593997f977be2c5",
+      "group": "collaboration",
+      "task_id": "legacy.049",
+      "depends_on": []
+    },
+    {
+      "run": "node --test tests/read-only-intake.test.mjs",
+      "when": "template-source",
+      "id": "check.read-only-intake",
+      "group": "collaboration",
+      "task_id": "legacy.050",
+      "depends_on": []
+    },
+    {
+      "run": "node --test tests/plan-clarification-replay.test.mjs",
+      "when": "template-source",
+      "group": "lifecycle",
+      "id": "check.e9c24c657e0a67e7",
+      "task_id": "legacy.051",
+      "depends_on": []
+    },
+    {
+      "run": "node --test tests/checkpoint-boundary.test.mjs tests/flow-verification-routing.test.mjs tests/project-ci.test.mjs",
+      "group": "lifecycle",
+      "id": "check.657837436fa3e2f8",
+      "task_id": "legacy.052",
+      "depends_on": []
+    },
+    {
+      "run": "node --test scripts/fixtures/reading-views/*.test.mjs",
+      "when": "template-source",
+      "id": "check.document-reading-views",
+      "group": "lifecycle",
+      "task_id": "legacy.053",
+      "depends_on": []
+    },
+    {
+      "run": "node --test scripts/fixtures/stage-tracking/tracking.test.mjs",
+      "when": "template-source",
+      "id": "check.92a3623cf3550ba8",
+      "group": "lifecycle",
+      "task_id": "legacy.054",
+      "depends_on": []
+    },
+    {
+      "run": "node --test .template-source/tooling/node/test/decision-continuation.test.mjs",
+      "when": "template-source",
+      "id": "check.c17b4b0ba6c92cfc",
+      "group": "lifecycle",
+      "task_id": "legacy.055",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/verify-user-decision-scenarios",
+      "id": "check.491faba2d1fdef3b",
+      "group": "lifecycle",
+      "task_id": "legacy.056",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/verify-context-contract --root . --json",
+      "id": "check.1451647ba2722b30",
+      "group": "lifecycle",
+      "task_id": "legacy.057",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/verify-context-contract-scenarios",
+      "id": "check.b5ec80cdc570194f",
+      "group": "lifecycle",
+      "task_id": "legacy.058",
+      "depends_on": []
+    },
+    {
+      "run": "node scripts/verify-business-language-scenarios",
+      "id": "check.c959490d7a86d5c9",
+      "group": "lifecycle",
+      "task_id": "legacy.059",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/verify-context-reconciliation-scenarios",
+      "id": "check.fbcca7d04b9634fc",
+      "group": "lifecycle",
+      "task_id": "legacy.060",
+      "depends_on": []
+    },
+    {
+      "run": "node scripts/verify-script-performance-scenarios",
+      "id": "check.7752ee8d6f74f638",
+      "group": "lifecycle",
+      "task_id": "legacy.061",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/verify-plan-requirements-context-scenarios",
+      "id": "check.14755c909a41ebee",
+      "group": "lifecycle",
+      "task_id": "legacy.062",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/verify-strategic-context-import-scenarios",
+      "id": "check.220f79ecb19875df",
+      "group": "lifecycle",
+      "task_id": "legacy.063",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/verify-lifecycle-registry",
+      "id": "check.9f66238a57e457bf",
+      "group": "lifecycle",
+      "task_id": "legacy.064",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/verify-lifecycle-context-query-scenarios",
+      "id": "check.cca7321527c13629",
+      "group": "lifecycle",
+      "task_id": "legacy.065",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/verify-lifecycle-operator-scenarios",
+      "id": "check.aafa7bdc8a88bf84",
+      "group": "lifecycle",
+      "task_id": "legacy.066",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/verify-lifecycle-checkpoint .template-spec/process/templates/lifecycle-checkpoint-template.yaml",
+      "id": "check.56ea690765beec6f",
+      "group": "lifecycle",
+      "task_id": "legacy.067",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/verify-frontend-implementation-evidence --allow-template .template-spec/process/templates/frontend-implementation-plan-template.yaml",
+      "id": "check.058e2e3f6c3cf54b",
+      "group": "lifecycle",
+      "task_id": "legacy.068",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/verify-frontend-implementation-evidence --allow-template .template-spec/process/templates/frontend-implementation-verification-template.yaml",
+      "id": "check.f8325b4489484a22",
+      "group": "lifecycle",
+      "task_id": "legacy.069",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/verify-frontend-implementation-evidence-scenarios",
+      "id": "check.67adfa48ba9308b2",
+      "group": "lifecycle",
+      "task_id": "legacy.070",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/verify-scaffold-architecture-decisions --allow-template .template-spec/process/templates/scaffold-architecture-decisions-template.yaml",
+      "id": "check.bbef469ead80be51",
+      "group": "lifecycle",
+      "task_id": "legacy.071",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/verify-scaffold-architecture-decision-scenarios",
+      "id": "check.66e3685569009833",
+      "group": "lifecycle",
+      "task_id": "legacy.072",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/verify-lifecycle-scenarios",
+      "id": "check.0c8201229a241875",
+      "group": "lifecycle",
+      "task_id": "legacy.073",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/verify-lifecycle-transition-scenarios",
+      "id": "check.84142f2eab38b8a4",
+      "group": "lifecycle",
+      "task_id": "legacy.074",
+      "depends_on": []
+    },
+    {
+      "run": "node scripts/verify-plan-spec-entry-scenarios",
+      "id": "check.d87d713b76204ae4",
+      "group": "lifecycle",
+      "task_id": "legacy.075",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/verify-frontend-scaffold-generator-scenarios",
+      "id": "check.ad648590e5e06103",
+      "group": "lifecycle",
+      "task_id": "legacy.076",
+      "depends_on": []
+    },
+    {
+      "run": "node --test tests/lifecycle-query-freshness.test.mjs",
+      "when": "template-source",
+      "id": "check.lifecycle-query-freshness",
+      "group": "lifecycle",
+      "task_id": "legacy.077",
+      "depends_on": []
+    },
+    {
+      "run": "node --test scripts/fixtures/maintenance-storage/scenarios.test.mjs",
+      "when": "template-source",
+      "id": "check.maintenance-storage",
+      "group": "maintenance",
+      "task_id": "legacy.078",
+      "depends_on": []
+    },
+    {
+      "run": "node --test .template-source/scripts/tests/evidence-archive.test.mjs",
+      "when": "template-source",
+      "id": "check.evidence-archive-fixtures",
+      "group": "maintenance",
+      "task_id": "legacy.079",
+      "depends_on": []
+    },
+    {
+      "run": "node --test tests/maintenance-counterexample.test.mjs",
+      "id": "check.maintenance-counterexample",
+      "group": "maintenance",
+      "task_id": "legacy.080",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/verify-maintenance-intensity-scenarios",
+      "id": "check.5fa31f4262e122b1",
+      "group": "maintenance",
+      "task_id": "legacy.081",
+      "depends_on": []
+    },
+    {
+      "run": "node scripts/verify-maintenance-review-workflow-scenarios",
+      "id": "check.a5802dc214ecfcda",
+      "group": "maintenance",
+      "task_id": "legacy.082",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/verify-existing-backend-architecture-scenarios",
+      "id": "check.f74a919c8173a935",
+      "group": "existing-project-delivery",
+      "task_id": "legacy.083",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/verify-delivery-preflight-scenarios",
+      "id": "check.9ceb4a3839391bb6",
+      "group": "existing-project-delivery",
+      "task_id": "legacy.084",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/verify-existing-ui-baseline-scenarios",
+      "id": "check.a7f4f092f5b64b8d",
+      "group": "existing-project-delivery",
+      "task_id": "legacy.085",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/verify-implementation-path-scenarios",
+      "id": "check.7ea1e4340f4611ee",
+      "group": "implementation",
+      "task_id": "legacy.086",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/verify-repository-scope-scenarios",
+      "id": "check.5a81832cac0ee7be",
+      "group": "implementation",
+      "task_id": "legacy.087",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/verify-scaffold-generator-scenarios",
+      "id": "check.a156e5fff5a8dfdd",
+      "group": "implementation",
+      "task_id": "legacy.088",
+      "depends_on": []
+    },
+    {
+      "run": "node --test scripts/fixtures/backend-scaffold/platform-scenarios.test.mjs",
+      "id": "check.a53e61d79c3befc1",
+      "group": "implementation",
+      "task_id": "legacy.089",
+      "depends_on": []
+    },
+    {
+      "run": "node --test .agents/skills/yss-ddd-scaffold-generator/scripts/scaffold-generator.test.mjs",
+      "id": "check.edf25d8db265d921",
+      "group": "implementation",
+      "task_id": "legacy.090",
+      "depends_on": []
+    },
+    {
+      "run": "node --test .agents/skills/yss-layered-mvc-scaffold-generator/scripts/scaffold-generator.test.mjs",
+      "id": "check.c860ed22ba605f8d",
+      "group": "implementation",
+      "task_id": "legacy.091",
+      "depends_on": []
+    },
+    {
+      "run": "node --test scripts/lib/legacy-backend-scaffold-audit.test.mjs",
+      "id": "check.fcef5f013dd0e7f4",
+      "group": "implementation",
+      "task_id": "legacy.092",
+      "depends_on": []
+    },
+    {
+      "run": "node --test scripts/lib/api-contract-decision.test.mjs",
+      "id": "check.1ebcb1124ce67eb1",
+      "group": "implementation",
+      "task_id": "legacy.093",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/verify-frontend-scaffold-generator-scenarios",
+      "id": "check.ad648590e5e06103",
+      "group": "implementation",
+      "task_id": "legacy.094",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/verify-prototype-backend-scaffold-scenarios",
+      "id": "check.3851a250b368d3ae",
+      "group": "implementation",
+      "task_id": "legacy.095",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/verify-matt-yss-integration-scenarios",
+      "id": "check.d32468f5dd6a4654",
+      "group": "implementation",
+      "task_id": "legacy.096",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/verify-yss-implementation-contract-compiler-scenarios",
+      "id": "check.9a4dc0890f5759ad",
+      "group": "implementation",
+      "task_id": "legacy.097",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/generate-yss-skill-boundaries --check",
+      "id": "check.7cffb7c441bd4709",
+      "group": "implementation",
+      "task_id": "legacy.098",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/audit-yss-backend-skills --check",
+      "id": "check.e8232d4ab54fc999",
+      "group": "implementation",
+      "task_id": "legacy.099",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/verify-retired-skill-ids",
+      "id": "check.156d8dea8b8d6810",
+      "group": "implementation",
+      "task_id": "legacy.100",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/verify-yss-ui-scenarios",
+      "id": "check.842384deeb868cce",
+      "group": "implementation",
+      "task_id": "legacy.101",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/verify-yss-prototype-contract-scenarios",
+      "id": "check.2c43904888dff190",
+      "group": "implementation",
+      "task_id": "legacy.102",
+      "depends_on": []
+    },
+    {
+      "run": "node --test .agents/skills/yss-prototype-stage/tests/verification-entry.test.mjs",
+      "id": "check.3a2236d542e47171",
+      "group": "implementation",
+      "task_id": "legacy.103",
+      "depends_on": []
+    },
+    {
+      "run": "node .agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs validate-evidence .template-spec/design/templates/prototype-evidence-template.yaml --allow-template",
+      "id": "check.7126152a480689b5",
+      "group": "implementation",
+      "task_id": "legacy.104",
+      "depends_on": []
+    },
+    {
+      "run": "node .agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs validate .template-spec/design/templates/visual-baseline-template.yaml --allow-template",
+      "id": "check.f96c759bbc30d99e",
+      "group": "implementation",
+      "task_id": "legacy.105",
+      "depends_on": []
+    },
+    {
+      "run": "node --test tests/contract-review-preparation.test.mjs",
+      "when": "template-source",
+      "id": "check.contract-review-preparation",
+      "group": "implementation",
+      "task_id": "legacy.106",
+      "depends_on": []
+    },
+    {
+      "run": "node --test --test-concurrency=1 tests/runtime-store.test.mjs tests/runtime-store-integration.test.mjs tests/runtime-store-distribution.test.mjs",
+      "when": "template-source",
+      "id": "check.runtime-storage",
+      "group": "runtime-storage",
+      "task_id": "legacy.107",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/verify-governance-release",
+      "id": "check.010ab85199ad1140",
+      "group": "governance-release",
+      "task_id": "legacy.108",
+      "depends_on": []
+    },
+    {
+      "run": "scripts/verify-strategic-handoff-tools-lock",
+      "require_committed_for": [
+        "candidate",
+        "release"
+      ],
+      "when": "template-source",
+      "id": "check.a047149f13d2d04e",
+      "group": "candidate-integrity",
+      "task_id": "legacy.109",
+      "depends_on": []
+    },
+    {
+      "run": "node scripts/verify-template-verification-scenarios",
+      "id": "check.1f905d7e659c8525",
+      "group": "candidate-integrity",
+      "task_id": "legacy.110",
+      "depends_on": []
+    },
+    {
+      "run": "node scripts/verify-template-cache-scenarios",
+      "id": "check.e970cf29c7cd81e3",
+      "group": "candidate-integrity",
+      "task_id": "legacy.111",
+      "depends_on": []
+    },
+    {
+      "run": "node --test .template-source/scripts/tests/template-ci.test.mjs",
+      "when": "template-source",
+      "id": "check.af45fd40af913057",
+      "group": "candidate-integrity",
+      "task_id": "legacy.112",
+      "depends_on": []
+    },
+    {
+      "run": "node --test tests/verification-selection.test.mjs tests/verification-report.test.mjs",
+      "when": "template-source",
+      "id": "check.verification-selection",
+      "group": "candidate-integrity",
+      "task_id": "legacy.113",
+      "depends_on": []
+    },
+    {
+      "run": "node .agents/skills/yss-research/tests/run-scenarios.mjs",
+      "id": "check.research-evidence-scenarios",
+      "group": "research-evidence",
+      "task_id": "legacy.114",
+      "depends_on": []
+    },
+    {
+      "run": "node --test .agents/skills/yss-research/tests/competitive-scenarios.test.mjs",
+      "id": "check.competitive-evidence-scenarios",
+      "group": "research-evidence",
+      "task_id": "legacy.115",
+      "depends_on": []
+    },
+    {
+      "id": "check.document-writing-integration",
+      "run": "node .agents/skills/i-have-adhd/tests/verify-integration.mjs",
+      "group": "document-writing",
+      "task_id": "legacy.116",
+      "depends_on": []
+    }
+  ],
+  "syntax_files": [
+    ".template-source/scripts/verify-runtime-windows.mjs",
+    "scripts/runtime-store",
+    "scripts/lib/runtime-store.mjs",
+    ".template-source/scripts/measure-runtime-store.mjs",
+    ".template-source/cli-core/runtime-store.mjs",
+    "scripts/lib/user-decision.mjs",
+    "scripts/verify-user-decision",
+    "scripts/verify-user-decision-scenarios",
+    "scripts/sync-skills",
+    "scripts/update-skill-lock",
+    "scripts/verify-upstream-skill-source",
+    "scripts/lib/skill-supply-chain.mjs",
+    "scripts/lib/profile-skill-sync.mjs",
+    "scripts/sync-profile-skills",
+    ".agents/skills/yss-skill-source-index-refresh/scripts/refresh-yss-skill-index.mjs",
+    ".agents/skills/yss-skill-source-index-refresh/scripts/refresh-yss-skill-index.test.mjs",
+    ".agents/skills/yss-repository/tests/profile-routing.test.mjs",
+    "scripts/generate-lifecycle-artifacts",
+    "scripts/verify-lifecycle-registry",
+    "scripts/verify-lifecycle-checkpoint",
+    "scripts/lib/context-contract.mjs",
+    "scripts/verify-context-contract",
+    "scripts/verify-context-contract-scenarios",
+    "scripts/verify-business-language-scenarios",
+    "scripts/query-lifecycle-context",
+    "scripts/lib/lifecycle-context-query.mjs",
+    "scripts/verify-lifecycle-context-query-scenarios",
+    "scripts/verify-context-reconciliation",
+    "scripts/verify-context-reconciliation-scenarios",
+    "scripts/verify-plan-requirements-context-scenarios",
+    "scripts/verify-strategic-context-import",
+    "scripts/verify-strategic-context-import-scenarios",
+    "scripts/verify-frontend-implementation-evidence",
+    "scripts/verify-scaffold-architecture-decisions",
+    "scripts/verify-scaffold-architecture-decision-scenarios",
+    "scripts/lib/task-package-schema.mjs",
+    "scripts/lib/json-schema.mjs",
+    "scripts/lib/task-package.mjs",
+    "scripts/lib/maintenance-review.mjs",
+    "scripts/lib/maintenance-intensity.mjs",
+    "scripts/lib/template-verification.mjs",
+    "scripts/run-template-verification",
+    "scripts/verify-maintenance-checkpoint",
+    "scripts/verify-maintenance-review-record",
+    "scripts/verify-maintenance-intensity-scenarios",
+    "scripts/verify-skill-registry",
+    "scripts/lib/implementation-contract-compiler.mjs",
+    "scripts/lib/backend-scaffold-prerequisites.mjs",
+    "scripts/lib/api-contract-decision.mjs",
+    "scripts/lib/openapi-draft-validation.mjs",
+    "scripts/lib/api-contract-decision.test.mjs",
+    "scripts/verify-openapi-draft-validation-record",
+    "scripts/lib/legacy-backend-scaffold-audit.mjs",
+    "scripts/lib/legacy-backend-scaffold-audit.test.mjs",
+    "scripts/audit-legacy-backend-scaffold",
+    "scripts/fixtures/backend-scaffold/design-prerequisites.mjs",
+    "scripts/fixtures/backend-scaffold/attach-design-prerequisites.mjs",
+    "scripts/generate-yss-skill-boundaries",
+    "scripts/audit-yss-backend-skills",
+    "scripts/verify-retired-skill-ids",
+    "scripts/verify-skill-governance",
+    "scripts/verify-upstream-skill-source",
+    "scripts/lib/skill-supply-chain.mjs",
+    "scripts/verify-yss-dto-openapi-profile",
+    "scripts/verify-yss-dto-openapi-scenarios",
+    "scripts/verify-digital-human-roles",
+    "scripts/verify-digital-human-roles-scenarios",
+    "scripts/verify-approval-record",
+    "scripts/lib/lifecycle-transition.mjs",
+    "scripts/lib/backend-scaffold-prerequisites.mjs",
+    "scripts/lib/api-contract-decision.mjs",
+    "scripts/lib/openapi-draft-validation.mjs",
+    "scripts/lib/api-contract-decision.test.mjs",
+    "scripts/verify-openapi-draft-validation-record",
+    "scripts/lib/legacy-backend-scaffold-audit.mjs",
+    "scripts/lib/legacy-backend-scaffold-audit.test.mjs",
+    "scripts/audit-legacy-backend-scaffold",
+    "scripts/fixtures/backend-scaffold/design-prerequisites.mjs",
+    "scripts/fixtures/backend-scaffold/attach-design-prerequisites.mjs",
+    "scripts/verify-lifecycle-scenarios",
+    "scripts/verify-lifecycle-transition-scenarios",
+    "scripts/verify-frontend-scaffold-generator-scenarios",
+    ".agents/skills/yss-frontend-scaffold-generator/scripts/generate_scaffold.mjs",
+    ".agents/skills/yss-frontend-scaffold-generator/scripts/run_scaffold_verification.mjs",
+    ".agents/skills/yss-frontend-scaffold-generator/scripts/generate_and_verify_scaffold.mjs",
+    "scripts/verify-matt-yss-integration-scenarios",
+    "scripts/verify-prototype-backend-scaffold-scenarios",
+    "scripts/verify-yss-implementation-contract-compiler-scenarios",
+    "scripts/verify-yss-prototype-contract-scenarios",
+    "scripts/verify-openapi-yaml-first-scenarios",
+    "scripts/verify-openapi-json-handoff-scenarios",
+    "scripts/verify-repository-scope-scenarios",
+    "scripts/export-yss-skills",
+    "scripts/verify-digital-human-task-package",
+    "scripts/verify-digital-human-task-package-scenarios",
+    "scripts/verify-subagent-task-package",
+    "scripts/verify-subagent-task-package-scenarios",
+    "scripts/verify-template-verification-scenarios",
+    "scripts/lib/maintenance-review-workflow.mjs",
+    "scripts/lib/maintenance-candidate.mjs",
+    "scripts/lib/template-commit-cache.mjs",
+    "scripts/prepare-maintenance-review",
+    "scripts/evaluate-maintenance-review-round",
+    "scripts/cache-template-commit",
+    "scripts/capture-maintenance-candidate",
+    "scripts/inspect-maintenance-candidate",
+    "scripts/verify-maintenance-review-workflow-scenarios",
+    "scripts/verify-template-cache-scenarios",
+    "scripts/lib/content-identity.mjs",
+    "scripts/lib/drift-report.mjs",
+    "scripts/lib/checkpoint-commit.mjs",
+    "scripts/advance-maintenance-iteration",
+    "tests/content-identity.test.mjs",
+    "tests/drift-report.test.mjs",
+    "tests/maintenance-iteration.test.mjs"
+  ],
+  "required_files": [
+    "scripts/lib/content-identity.mjs",
+    "scripts/lib/drift-report.mjs",
+    "scripts/lib/checkpoint-commit.mjs",
+    "scripts/advance-maintenance-iteration",
+    "tests/content-identity.test.mjs",
+    "tests/drift-report.test.mjs",
+    "tests/maintenance-iteration.test.mjs",
+    ".template-source/scripts/verify-runtime-windows.mjs",
+    "scripts/runtime-store",
+    "scripts/lib/runtime-store.mjs",
+    ".template-source/cli-core/runtime-store.mjs",
+    "tests/runtime-store.test.mjs",
+    "tests/runtime-store-integration.test.mjs",
+    "tests/runtime-store-distribution.test.mjs",
+    "scripts/project-ci",
+    "scripts/project-ci-transition",
+    ".template-spec/process/project-ci.md",
+    "scripts/lib/project-governance.mjs",
+    "scripts/lib/project-ci-install.mjs",
+    ".template-spec/process/schemas/user-decision.schema.json",
+    ".template-spec/process/templates/user-decision-template.yaml",
+    ".agents/skills/yss-product-lifecycle/references/user-decisions.md",
+    "yss-project.yaml",
+    "AGENTS.md",
+    "CONTEXT.md",
+    "skills-lock.json",
+    ".agents/skills/.yss-skills-manifest.json",
+    ".agents/skills/.strategic-design-skills-manifest.json",
+    ".agents/mcp_config.json",
+    ".cursor/mcp.json",
+    ".vscode/mcp.json",
+    ".template-spec/agents/yss-skill-registry.yaml",
+    ".agents/skills/yss-implementation-contract-compiler/SKILL.md",
+    ".agents/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml",
+    ".agents/skills/yss-implementation-contract-compiler/references/boundaries.md",
+    ".agents/skills/yss-implementation-contract-compiler/references/slice-implementation-contract.md",
+    ".agents/skills/yss-implementation-contract-compiler/tests/compiler-scenarios.test.mjs",
+    ".agents/skills/yss-skill-source-index-refresh/SKILL.md",
+    ".agents/skills/yss-skill-source-index-refresh/scripts/refresh-yss-skill-index.mjs",
+    ".agents/skills/yss-skill-source-index-refresh/scripts/refresh-yss-skill-index.test.mjs",
+    "tests/backend-platforms.test.mjs",
+    "tests/implementation-contract-compiler.test.mjs",
+    "tests/yss-skill-source-index.test.mjs",
+    ".agents/skills/yss-repository/tests/profile-routing.test.mjs",
+    ".template-source/agents/yss-ui-skills-integration.md",
+    ".template-source/agents/strategic-design-skills-integration.md",
+    ".template-spec/user-guide/yss-ui-mcp.md",
+    ".template-spec/agents/digital-human-roles.yaml",
+    ".template-spec/process/lifecycle-registry.yaml",
+    ".template-spec/process/lifecycle-registry-baseline.json",
+    ".template-spec/process/lifecycle-registry-baseline-v1.json",
+    ".template-source/process/template-verification-profiles.yaml",
+    ".template-source/process/maintenance-intensity.yaml",
+    ".template-spec/process/schemas/digital-human-task-package.schema.json",
+    ".template-source/process/schemas/maintenance-review-record.schema.json",
+    ".template-spec/process/schemas/lifecycle-checkpoint.schema.json",
+    ".template-spec/process/schemas/context-reconciliation.schema.json",
+    ".template-spec/process/schemas/strategic-design-handoff.schema.json",
+    ".template-spec/process/schemas/frontend-implementation-evidence.schema.json",
+    ".template-spec/process/schemas/scaffold-architecture-decisions.schema.json",
+    ".template-spec/process/schemas/project-scaffold-contract.schema.json",
+    ".template-spec/process/schemas/data-architecture-decision.schema.json",
+    ".template-spec/process/schemas/api-contract-decision.schema.json",
+    ".template-spec/process/schemas/implementation-repository-preparation-result.schema.json",
+    ".template-spec/design/schemas/visual-baseline.schema.json",
+    ".template-spec/process/schemas/subagent-task-package.schema.json",
+    ".template-spec/process/templates/lifecycle-checkpoint-template.yaml",
+    ".template-spec/process/templates/context-reconciliation-template.yaml",
+    ".template-spec/process/templates/frontend-implementation-plan-template.yaml",
+    ".template-spec/process/templates/frontend-implementation-verification-template.yaml",
+    ".template-spec/process/templates/scaffold-architecture-decisions-template.yaml",
+    ".template-spec/design/templates/visual-baseline-template.yaml",
+    ".template-source/process/templates/maintenance-checkpoint-template.yaml",
+    ".template-spec/templates/subagent-task-package-template.md",
+    ".agents/skills/yss-technical-design/SKILL.md",
+    ".agents/skills/yss-technical-design/references/technical-design.schema.json",
+    ".agents/skills/yss-technical-design/scripts/validate-technical-design.mjs",
+    ".agents/skills/yss-tactical-design/SKILL.md",
+    ".agents/skills/yss-tactical-design/agents/openai.yaml",
+    ".agents/skills/yss-tactical-design/references/tactical-design-contract.md",
+    ".agents/skills/yss-tactical-design/references/tactical-design.schema.json",
+    ".agents/skills/yss-tactical-design/references/validation-rules.md",
+    ".agents/skills/yss-tactical-design/references/output-template.md",
+    ".agents/skills/yss-tactical-design/scripts/validate-tactical-design.mjs",
+    ".agents/skills/yss-tactical-design/tests/run-scenarios.mjs",
+    ".agents/skills/yss-layered-mvc-scaffold-generator/SKILL.md",
+    ".agents/skills/yss-layered-mvc-scaffold-generator/agents/openai.yaml",
+    ".agents/skills/yss-layered-mvc-scaffold-generator/references/architecture.md",
+    ".agents/skills/yss-layered-mvc-scaffold-generator/scripts/generate_scaffold.mjs",
+    ".agents/skills/yss-layered-mvc-scaffold-generator/scripts/run_scaffold_verification.mjs",
+    ".agents/skills/yss-layered-mvc-scaffold-generator/scripts/generate_and_verify_scaffold.mjs",
+    ".agents/skills/yss-layered-mvc-scaffold-generator/scripts/scaffold-generator.test.mjs",
+    ".agents/skills/yss-prototype-stage/references/product-design-adapter.md",
+    ".agents/skills/yss-prototype-stage/references/prototype-profile-routing.md",
+    ".agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs",
+    ".agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs",
+    ".agents/skills/yss-prototype-stage/tests/run-scenarios.mjs",
+    ".template-spec/design/templates/prototype-evidence-template.yaml",
+    "scripts/lib/template-verification.mjs",
+    "scripts/lib/template-verification-runner.mjs",
+    "scripts/lib/maintenance-intensity.mjs",
+    "scripts/lib/maintenance-candidate.mjs",
+    "scripts/lib/task-package.mjs",
+    "scripts/run-template-verification",
+    "scripts/verify-template-fast",
+    "scripts/verify-template-candidate",
+    "scripts/verify-template",
+    "scripts/verify-business-language-scenarios",
+    "scripts/query-lifecycle-context",
+    "scripts/lib/lifecycle-context-query.mjs",
+    "scripts/verify-lifecycle-context-query-scenarios",
+    "scripts/plan-spec-entry",
+    "scripts/lifecycle-status",
+    "scripts/lib/plan-spec-entry-view.mjs",
+    "scripts/lib/lifecycle-status.mjs",
+    "scripts/verify-lifecycle-operator-scenarios",
+    "scripts/verify-frontend-implementation-evidence-scenarios",
+    "scripts/prepare-maintenance-review",
+    "scripts/evaluate-maintenance-review-round",
+    "scripts/cache-template-commit",
+    "scripts/capture-maintenance-candidate",
+    "scripts/inspect-maintenance-candidate"
+  ],
+  "postchecks": [
+    {
+      "id": "post.legacy-runtime-call",
+      "kind": "legacy-runtime-call-scan",
+      "gate_ids": [
+        "check.verification-governance-syntax"
+      ]
+    },
+    {
+      "id": "post.legacy-runtime-path",
+      "kind": "legacy-runtime-path-scan",
+      "gate_ids": [
+        "check.verification-governance-syntax"
+      ]
+    },
+    {
+      "id": "post.git-diff-check",
+      "kind": "git-diff-check",
+      "command": "git diff --check",
+      "gate_ids": [
+        "check.verification-final-integrity"
+      ]
+    },
+    {
+      "id": "post.input-drift",
+      "kind": "input-drift",
+      "gate_ids": [
+        "check.verification-final-integrity"
+      ]
+    }
+  ],
+  "coverage_digest": "3aa58425b03fda2291ebc78eea62381c602cd4592d4c4db87f197f82da9705f4"
+}

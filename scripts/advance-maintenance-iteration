@@ -23,6 +23,9 @@ try {
   if (!values["run-id"] || !values.output) throw new TypeError("用法: scripts/advance-maintenance-iteration --run-id <id> --output maintenance:candidates/<id> [--plan] [--json] [--profile fast|candidate]");
   if (!PROFILES.has(values.profile)) throw new TypeError("--profile 必须是 fast 或 candidate: " + values.profile);
   const runId = values["run-id"];
+  const resolvedBase = spawnSync("git", ["rev-parse", "--verify", values.base + "^{commit}"], { cwd: ROOT, encoding: "utf8" });
+  if (resolvedBase.status !== 0 || !/^[a-f0-9]{40}$/.test(resolvedBase.stdout.trim())) throw new TypeError("无法解析维护基线为完整 SHA: " + values.base);
+  const verificationBase = resolvedBase.stdout.trim();
   // Fail fast: an invalid or already-taken run id must not leave a candidate
   // directory behind that blocks the retry.
   validateCheckpointRunId(ROOT, runId);
@@ -36,7 +39,7 @@ try {
   });
   let verification = { profile: values.profile, exit_code: null, skipped: true };
   if (!values.plan && !values["skip-verify"]) {
-    const command = values.profile === "candidate" ? ["scripts/verify-template-candidate", "--base", values.base] : ["scripts/verify-template-fast"];
+    const command = values.profile === "candidate" ? ["scripts/verify-template-candidate", "--base", verificationBase] : ["scripts/verify-template-fast"];
     const result = spawnSync(command[0], command.slice(1), { cwd: ROOT, encoding: "utf8", stdio: "inherit" });
     if (result.error) throw new TypeError("机械验证无法执行: " + result.error.message);
     verification = { profile: values.profile, exit_code: result.status, skipped: false, command: command.join(" ") };

@@ -20,7 +20,7 @@ async function run(script,args=[],{cwd=root,env=process.env,success=true}={}) {
   return result;
 }
 try {
-  const initializedSides = await Promise.allSettled(['backend','frontend'].map(async side => {
+  const initializeSide = async side => {
     const cliRoot=path.join(process.env.YSS_DEDICATED_CLI_ROOT||path.join(root,'submodules'),`create-yss-harness-${side}`),target=path.join(process.env.YSS_DEDICATED_INSTANCE_ROOT||scratch,side);
     const entry=path.join(cliRoot,`bin/create-yss-harness-${side}.js`);
     if(!process.env.YSS_DEDICATED_INSTANCE_ROOT){const initialized=JSON.parse((await run(entry,['init','--target-dir',target,'--json'])).stdout);assert.equal(initialized.status,'applied');}
@@ -44,7 +44,15 @@ try {
     assert.throws(()=>enforceHarnessTaskScope({},{root:target}),/metadata 与 profile 不一致/);
     writeFileSync(profilePath,profileBytes);
     process.stdout.write(`${side}: 初始化身份、独立入口、禁止覆盖和跨端任务边界通过\n`);
-  }));
+  };
+  // The supervisor's serial option also constrains this existing inner pair.
+  const initializedSides = [];
+  if (process.env.YSS_TEMPLATE_CONCURRENCY === '1') {
+    for (const side of ['backend', 'frontend']) {
+      try { initializedSides.push({status:'fulfilled', value:await initializeSide(side)}); }
+      catch (reason) { initializedSides.push({status:'rejected', reason}); }
+    }
+  } else initializedSides.push(...await Promise.allSettled(['backend','frontend'].map(initializeSide)));
   const failedSide = initializedSides.find(result => result.status === 'rejected');
   if (failedSide) throw failedSide.reason;
   // A frontend project must reject even contract preparation while either input is absent.

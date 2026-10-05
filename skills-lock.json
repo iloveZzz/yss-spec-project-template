@@ -352,7 +352,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/maintaining-skills/SKILL.md",
-        "effectiveHash": "646caffc24b423fdaa99367a051dd4fb20b30c2d60f1fbbf0a2221e975cf8e6f",
+        "effectiveHash": "6f3d906fc8b9aeaddcfc42592f551a9938ac21814c3322297042831e78aa74a5",
         "targets": [
           ".agents/skills",
           ".codex/skills",
@@ -842,7 +842,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-product-lifecycle/SKILL.md",
-        "effectiveHash": "f82e9fb63977a5dd953e731a48d00c2300220232ed8f4744ea918aea4a4cc94b",
+        "effectiveHash": "42ab55f30a79c2563b66c12f5ad58073ece37943b2ee5ac595a98bcd31923ca4",
         "targets": [
           ".agents/skills",
           ".codex/skills",

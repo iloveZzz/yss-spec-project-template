@@ -15,6 +15,8 @@ if (!checkerSource.includes("maintenance-intensity.yaml")) {
 
 const evidence = (...kinds) => kinds.map((kind) => ({ kind, command: `verify ${kind}`, result: "pass" }));
 const releaseEvidence = (kind) => ({ kind, command: "scripts/verify-template", result: "pass" });
+// 以下旧夹具只验证 checkpoint 状态机；不构造当前运行通过证据。
+const historicalStateFixture = { history: true };
 const reviewRequestOnly = "scripts/fixtures/maintenance-review/maintenance-review-request-only.md";
 const focusedReview = "scripts/fixtures/maintenance-review/maintenance-focused-review-approved.md";
 const formalReview = "scripts/fixtures/maintenance-review/maintenance-review/formal-review-record.yaml";
@@ -62,7 +64,7 @@ validateMaintenanceCheckpoint({
   review_round: 1,
   candidate_digest: "a".repeat(64),
   verification_evidence: [...v2Base.verification_evidence, ...evidence("candidate-verification", "review-task-packages"), releaseEvidence("initial-release-verification")]
-});
+}, historicalStateFixture);
 validateMaintenanceCheckpoint({
   ...v2Base,
   target_state: "release-ready",
@@ -71,7 +73,7 @@ validateMaintenanceCheckpoint({
   review_round: 2,
   candidate_digest: "d6bf78f58d2cf0e24528bfb7806bdf255124ed5f1b2973b5bf5fbc6aac5753dc",
   verification_evidence: [...v2Base.verification_evidence, ...evidence("candidate-verification", "review-task-packages"), releaseEvidence("initial-release-verification"), releaseEvidence("final-release-verification"), { kind: "formal-independent-review", command: formalReview, result: "pass" }]
-});
+}, historicalStateFixture);
 validateMaintenanceCheckpoint({
   ...v2Base,
   target_state: "release-ready",
@@ -80,7 +82,7 @@ validateMaintenanceCheckpoint({
   review_round: 2,
   candidate_digest: "a".repeat(64),
   verification_evidence: [...v2Base.verification_evidence, ...evidence("candidate-verification", "review-task-packages"), releaseEvidence("initial-release-verification")]
-});
+}, historicalStateFixture);
 
 // 日常 L2/L3 自检必须闭合；不能再借 pending review 跳过自检。
 for (const intensity of ["L1", "L2", "L3"]) {
@@ -88,7 +90,10 @@ for (const intensity of ["L1", "L2", "L3"]) {
   const daily = { ...v2Base, intensity, triggers: [intensity === "L1" ? "textual-only" : intensity === "L2" ? "local-rule" : "core-validator"], review_mode: "self-check", verification_evidence: evidence(...kinds) };
   validateMaintenanceCheckpoint(daily);
   const released = { ...daily, target_state: "release-ready", current_state: "release-ready", verification_profile: "release", verification_evidence: [...daily.verification_evidence, releaseEvidence("final-release-verification")] };
-  validateMaintenanceCheckpoint(released);
+  validateMaintenanceCheckpoint(released, historicalStateFixture);
+  let unboundReleaseRejected = false;
+  try { validateMaintenanceCheckpoint(released); } catch { unboundReleaseRejected = true; }
+  if (!unboundReleaseRejected) throw new TypeError("当前发布证据缺少实际报告、args 和退出码必须阻断");
   for (const invalid of [
     { ...released, verification_evidence: daily.verification_evidence },
     ...(intensity === "L1" ? [] : [{ ...daily, verification_evidence: evidence(...kinds.filter(kind => kind !== "self-check")) }])

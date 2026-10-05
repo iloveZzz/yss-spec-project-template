@@ -7,6 +7,9 @@ import os from 'node:os';
 import path from 'node:path';
 import { assertReleaseCheckout, verifyTemplateRelease } from '../lib/template-release.mjs';
 import { RuntimeStore } from '../../cli-core/runtime-store.mjs';
+import {validateBaselineReport} from '../lib/verification-report-validator.mjs';
+import {createHash} from 'node:crypto';
+const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 
 const root = path.resolve(import.meta.dirname, '../../..');
 function put(base, name, text, mode = 0o644) {
@@ -29,8 +32,10 @@ function fixture(t) {
   const cli = path.join(base, 'generator'), repo = path.join(base, 'template');
   mkdirSync(cli); mkdirSync(repo);
   git(cli, 'init', '-q'); git(repo, 'init', '-q');
-  put(cli, 'package.json', JSON.stringify({ name: 'create-yss-spec', version: '0.0.0', files: ['bin', 'template.snapshot.json'], bin: { 'create-yss-spec': 'bin/create-yss-spec.js' } }));
-  put(cli, 'scripts/sync-template.js', `const fs=require('fs'); const {execFileSync}=require('child_process'); const {fileURLToPath}=require('url'); const source=process.env.YSS_SPEC_TEMPLATE_REPO; const repo=source.startsWith('file:')?fileURLToPath(source):source; const commit=execFileSync('git',['rev-parse','HEAD'],{cwd:repo,encoding:'utf8'}).trim(); if(commit!==process.env.YSS_SPEC_TEMPLATE_REF)throw Error('stale'); fs.writeFileSync('template.snapshot.json',JSON.stringify({templateCommit:commit,requestedRef:commit}));`);
+  put(cli, 'package.json', JSON.stringify({ name: 'create-yss-spec', version: '0.0.0', files: ['bin', 'template.snapshot.json','cli-core.lock.json','template.manifest.json'], bin: { 'create-yss-spec': 'bin/create-yss-spec.js' } }));
+  put(cli, 'scripts/sync-template.js', `const fs=require('fs'); const {execFileSync}=require('child_process'); const {fileURLToPath}=require('url'); const source=process.env.YSS_SPEC_TEMPLATE_REPO; const repo=source.startsWith('file:')?fileURLToPath(source):source; const commit=execFileSync('git',['rev-parse','HEAD'],{cwd:repo,encoding:'utf8'}).trim(); if(commit!==process.env.YSS_SPEC_TEMPLATE_REF)throw Error('stale'); fs.writeFileSync('template.snapshot.json',JSON.stringify({templateCommit:commit,requestedRef:commit,sourceState:'committed'}));`);
+  put(cli,'template.manifest.json','{}\n');
+  put(cli,'scripts/sync-core.mjs',"import fs from 'node:fs'; fs.writeFileSync('cli-core.lock.json',JSON.stringify({sourceState:'committed',sourceRevision:process.argv[3]}));");
   put(cli, 'bin/create-yss-spec.js', `#!/usr/bin/env node
 const fs=require('fs'),path=require('path');const args=process.argv.slice(2),target=args[args.indexOf('--target-dir')+1];
 if(args[0]!=='sync'){
@@ -44,8 +49,21 @@ if(args[0]!=='sync'){
   git(repo, '-c', 'protocol.file.allow=always', 'submodule', 'add', '-q', cli, 'submodules/create-yss-spec');
   put(repo, 'yss-project.yaml', 'schema_version: 1\nrepository_mode: template-source\n');
   put(repo, 'scripts/repository-mode', '#!/bin/sh\necho template-source\n', 0o755);
+  put(repo,'.template-source/scripts/lib/verification-preflight.mjs','process.stdout.write(JSON.stringify({status:"passed",errors:[]}));');
+  for(const [folder,pkg] of [['create-yss-strategic-design','create-yss-harness-design'],['create-yss-harness-backend','create-yss-harness-backend'],['create-yss-harness-frontend','create-yss-harness-frontend']]){
+    const child=path.join(base,folder);mkdirSync(child);git(child,'init','-q');put(child,'package.json',JSON.stringify({name:pkg,version:'0.0.0'}));commit(child);git(repo,'-c','protocol.file.allow=always','submodule','add','-q',child,`submodules/${folder}`);
+  }
+  for(const family of ['design','backend','frontend'])git(repo,'-c','protocol.file.allow=always','submodule','add','-q',cli,`submodules/yss-harness-${family}-agent`);
+  put(repo,'.template-source/process/template-verification-profiles.yaml',JSON.stringify({schema_version:1,default_selection:'legacy',profiles:{fast:{all_groups:true},candidate:{all_groups:true},release:{all_groups:true}},groups:{fixture:{commands:[{id:'check.fixture',run:'node -e ""'}]}},required_files:[],syntax_files:[],routing:[]}));
   put(repo, 'scripts/verify-template', `#!/usr/bin/env node
-(async()=>{const fs=require('fs'),path=require('path');const {verificationInputDigest}=await import(${JSON.stringify(pathToFileURL(path.join(root,'scripts/lib/verification-report.mjs')).href)});const args=process.argv.slice(2),directory=args[args.indexOf('--report-dir')+1],source=fs.realpathSync(process.cwd());const sha=verificationInputDigest(source);fs.mkdirSync(directory,{recursive:true});const stdoutFile=path.join(directory,'stdout.log'),stderrFile=path.join(directory,'stderr.log');fs.writeFileSync(stdoutFile,'fixture verification\\n');fs.writeFileSync(stderrFile,'');fs.writeFileSync(path.join(directory,'report.json'),JSON.stringify({schema_version:1,kind:'template-verification-report',status:'passed',root:source,scope:{kind:'complete-candidate'},plan:{effective_profile:'release',selection:{effective:'shadow',omitted:[]},commands:[{command:'fixture verification'}]},input_sha256:sha,input_after_sha256:sha,input_drift:false,started_at:new Date().toISOString(),finished_at:new Date().toISOString(),unexecuted:[],results:[{index:0,command:'fixture verification',code:0,stdoutFile,stderrFile}]}))})().catch(error=>{console.error(error);process.exitCode=1});
+(async()=>{const fs=require('fs'),path=require('path'),{spawnSync}=require('child_process'),{createHash}=require('crypto');const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
+ const {verificationInputDigest,createVerificationReport,finalizeVerificationReport}=await import(${JSON.stringify(pathToFileURL(path.join(root,'scripts/lib/verification-report.mjs')).href)});
+ const {compileExpectedVerificationPlan}=await import(${JSON.stringify(pathToFileURL(path.join(root,'.template-source/scripts/lib/verification-report-validator.mjs')).href)});
+ const {collectReleaseSources}=await import(${JSON.stringify(pathToFileURL(path.join(root,'.template-source/scripts/lib/verification-artifacts.mjs')).href)});
+ const args=process.argv.slice(2),directory=args[args.indexOf('--report-dir')+1],source=fs.realpathSync(process.cwd()),sha=verificationInputDigest(source),plan=compileExpectedVerificationPlan({root:source,args});fs.mkdirSync(directory,{recursive:true});
+ const report=createVerificationReport(plan,{root:source,inputDigest:sha,scope:{kind:'complete-candidate'},concurrency:1,invocation:{command:path.join(source,'scripts/run-template-verification'),args:['--profile','release',...args]},sourcesManifest:collectReleaseSources({root:source,commit:spawnSync('git',['rev-parse','HEAD'],{cwd:source,encoding:'utf8'}).stdout.trim()})});
+ for(const [index,task] of plan.commands.entries()){const r=spawnSync('/bin/sh',['-c',task.command],{cwd:source,encoding:'utf8'}),stdoutFile=path.join(directory,'task-'+index+'.stdout'),stderrFile=path.join(directory,'task-'+index+'.stderr');fs.writeFileSync(stdoutFile,r.stdout||'');fs.writeFileSync(stderrFile,r.stderr||'');report.results.push({...task,index,code:r.status,actual_exit_code:r.status,actual_exit_code_observed:true,actual_exit_signal:r.signal,stdoutFile,stderrFile,log_digests:{stdoutFile:hash(fs.readFileSync(stdoutFile)),stderrFile:hash(fs.readFileSync(stderrFile))}});if(r.status!==0)throw Error(r.stderr);}
+ finalizeVerificationReport(report,{status:'passed',wallMs:1,repositoryMode:'template-source'});report.input_after_sha256=sha;report.input_drift=false;report.final_exit={code:0,signal:null,observed:true};fs.writeFileSync(path.join(directory,'report.json'),JSON.stringify(report));})().catch(error=>{console.error(error);process.exitCode=1});
 `, 0o755);
   return { base, repo, sha: commit(repo), output: path.join(base, 'evidence') };
 }
@@ -63,6 +81,21 @@ test('固定版本发布集成真实打包安装，并产生命令证据', t => 
   assert.ok(result.commands.every(row => row.exit_code === 0));
   assert.equal(git(f.repo, 'status', '--porcelain'), '');
   assert.equal(JSON.parse(readFileSync(path.join(f.output, 'release-verification.json'))).status, 'passed');
+});
+
+test('真实发布报告兼容 v1 baseline，并拒绝删除 syntax/终检、任务自证和来源错配',t=>{
+ const f=fixture(t),outer=verifyTemplateRelease({root:f.repo,commit:f.sha,output:f.output}),file=path.join(f.output,'release-verification.json'),fullFile=outer.full_verification.report;
+ const full=JSON.parse(readFileSync(fullFile));
+ const verify=()=>validateBaselineReport({root:f.repo,base:f.sha,reportFile:file,expectedDigest:hash(readFileSync(file))});
+ const initial=verify();assert.equal(initial.valid,true,initial.reasons.join('; '));
+ // Model the old runner's separately logged syntax/terminal validators.
+ full.schema_version=1;full.plan.commands=full.plan.commands.filter(row=>row.group!=='postchecks'&&row.kind!=='preflight');full.plan.syntax_files=[];
+ const terminal=full.results.find(row=>row.task_id==='post.git-diff-check');terminal.command=JSON.stringify(['git','diff','--check']);
+ full.results=[...full.results.filter(row=>row.group!=='postchecks'&&row.kind!=='preflight').map((row,index)=>({...row,index})),terminal];
+ const persist=()=>{writeFileSync(fullFile,JSON.stringify(full));outer.full_verification.report_sha256=hash(readFileSync(fullFile));writeFileSync(file,JSON.stringify(outer));};persist();
+ const result=verify();assert.equal(result.valid,true,result.reasons.join('; '));assert.equal(result.bindings.strategy,'legacy-full');assert.equal(result.bindings.sources_manifest.families[0],'spec');
+ full.results.pop();persist();assert.equal(verify().valid,false);
+ full.results.push(terminal);full.plan.commands=[];persist();assert.equal(verify().valid,false);
 });
 
 test('发布检出允许兼容期私有模板未初始化，但仍要求生成器就绪', t => {
@@ -84,13 +117,13 @@ test('退出零但缺失或不完整的全量报告阻止打包', t => {
     if (mutation === null) put(f.repo, 'scripts/verify-template', '#!/bin/sh\nexit 0\n', 0o755);
     else {
       const file=path.join(f.repo,'scripts/verify-template');
-      const replacement=`;const report=JSON.parse(fs.readFileSync(path.join(directory,'report.json')));${mutation};fs.writeFileSync(path.join(directory,'report.json'),JSON.stringify(report));`;
+      const replacement=`;${mutation};fs.writeFileSync(path.join(directory,'report.json'),JSON.stringify(report));`;
       put(f.repo,'scripts/verify-template',readFileSync(file,'utf8').replace('})().catch',replacement+'})().catch'),0o755);
     }
     const sha=commit(f.repo);
     assert.throws(()=>verifyTemplateRelease({root:f.repo,commit:sha,output:f.output}));
     const report=JSON.parse(readFileSync(path.join(f.output,'release-verification.json')));
-    assert.equal(report.status,'failed');assert.equal(report.commands.at(-1).exit_code,0);assert.ok(!report.commands.some(row=>row.command==='npm'));
+    assert.equal(report.status,'failed');assert.equal(report.commands.at(-1).exit_code,0,mutation||'missing report');assert.ok(!report.commands.some(row=>row.command==='npm'));
   }
 });
 

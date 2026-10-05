@@ -1,0 +1,398 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "template-verification-report.schema.json",
+  "title": "Template Verification Report v2",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "kind",
+    "purpose",
+    "status",
+    "root",
+    "scope",
+    "plan",
+    "invocation",
+    "input_sha256",
+    "results",
+    "unexecuted",
+    "not_applicable",
+    "gate_results",
+    "final_exit",
+    "metrics"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 2
+    },
+    "kind": {
+      "const": "template-verification-report"
+    },
+    "purpose": {
+      "enum": [
+        "verification",
+        "qualification"
+      ]
+    },
+    "status": {
+      "enum": [
+        "running",
+        "passed",
+        "failed",
+        "interrupted"
+      ]
+    },
+    "root": {
+      "type": "string",
+      "minLength": 1
+    },
+    "scope": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "limited",
+            "complete-candidate"
+          ]
+        }
+      }
+    },
+    "plan": {
+      "type": "object",
+      "required": [
+        "commands"
+      ],
+      "properties": {
+        "effective_profile": {
+          "type": "string"
+        },
+        "strategy": {
+          "type": "string"
+        },
+        "policy_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "commands": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "command"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "task_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "command": {
+                "type": "string",
+                "minLength": 1
+              },
+              "gate_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "uniqueItems": true
+              },
+              "depends_on": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "gates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "selected"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "selected": {
+                "type": "boolean"
+              },
+              "check_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "invocation": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "required": [
+            "command",
+            "args"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "command": {
+              "type": "string"
+            },
+            "args": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "input_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "input_after_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "input_drift": {
+      "type": "boolean"
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "finished_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "final_exit": {
+      "type": "object",
+      "required": [
+        "code",
+        "signal",
+        "observed"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "signal": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "observed": {
+          "type": "boolean"
+        }
+      }
+    },
+    "results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "command",
+          "code",
+          "stdoutFile",
+          "stderrFile",
+          "log_digests"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "task_id": {
+            "type": "string"
+          },
+          "index": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "command": {
+            "type": "string"
+          },
+          "code": {
+            "type": "integer"
+          },
+          "actual_exit_code": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "actual_exit_signal": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "actual_exit_code_observed": {
+            "type": "boolean"
+          },
+          "stdoutFile": {
+            "type": "string"
+          },
+          "stderrFile": {
+            "type": "string"
+          },
+          "reused": {
+            "type": "boolean"
+          },
+          "reused_from": {
+            "type": "object"
+          },
+          "log_digests": {
+            "type": "object",
+            "properties": {
+              "stdoutFile": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "stderrFile": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              }
+            },
+            "required": [
+              "stdoutFile",
+              "stderrFile"
+            ]
+          }
+        }
+      }
+    },
+    "unexecuted": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "not_applicable": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "reason"
+        ]
+      }
+    },
+    "gate_results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "task_ids",
+          "status"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "task_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "status": {
+            "enum": [
+              "passed",
+              "failed"
+            ]
+          }
+        }
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "required": [
+        "unique_commands",
+        "reused_commands",
+        "subprocesses",
+        "test_files",
+        "assertions"
+      ],
+      "properties": {
+        "wall_ms": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "unique_commands": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "reused_commands": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "subprocesses": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "test_files": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "assertions": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "output_bytes": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        }
+      }
+    },
+    "sources_manifest": {
+      "type": [
+        "object",
+        "null"
+      ]
+    }
+  }
+}

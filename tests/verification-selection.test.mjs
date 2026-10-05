@@ -7,6 +7,9 @@ import {planTemplateVerification,loadVerificationProfiles,ROOT} from '../scripts
 import {selectionBindings} from '../scripts/lib/verification-selection.mjs';
 import {resolveVerificationScope} from '../scripts/lib/verification-report.mjs';
 import {spawnSync} from 'node:child_process';
+import './verification-gates.test.mjs';
+import './verification-baseline.test.mjs';
+import './verification-qualification.test.mjs';
 const pilot='.agents/skills/yss-research/SKILL.md';
 test('shadow executes exactly legacy; explains unrelated scenario exclusions',()=>{
  const legacy=planTemplateVerification({changedFiles:[pilot],selection:'legacy'}),shadow=planTemplateVerification({changedFiles:[pilot],selection:'shadow'});
@@ -15,7 +18,8 @@ test('shadow executes exactly legacy; explains unrelated scenario exclusions',()
  assert.equal(planTemplateVerification({changedFiles:[pilot],selection:'allowlist'}).selection.effective,'shadow');
 });
 test('unknown, mixed, executable, core, projection outside pilot, lock and release fail safe',()=>{
- for(const files of [['mystery'],[pilot,'scripts/contract'],['.agents/skills/yss-research/scripts/x.mjs'],[pilot,'.codex/skills/yss-ui/SKILL.md'],['skills-lock.json'],['.agents/skills/yss-research/references/approval.yaml']]){
+ assert.throws(()=>planTemplateVerification({changedFiles:['mystery'],selection:'allowlist'}),/UNKNOWN_VERIFICATION_PATH/);
+ for(const files of [[pilot,'scripts/contract'],['.agents/skills/yss-research/scripts/x.mjs'],[pilot,'.codex/skills/yss-ui/SKILL.md'],['skills-lock.json'],['.agents/skills/yss-research/references/approval.yaml']]){
  const plan=planTemplateVerification({changedFiles:files,selection:'allowlist'});assert.equal(plan.selection.effective,'shadow');assert.deepEqual(plan.commands,plan.selection.baseline);
  }
  const p=planTemplateVerification({profile:'release',changedFiles:[pilot],selection:'allowlist'});assert.equal(p.selection.eligible,false);
@@ -24,7 +28,7 @@ test('path sets cover add delete rename untracked; candidate and release cannot 
  const actual=[pilot,'.agents/skills/yss-research/references/deleted.md','.agents/skills/yss-research/references/new.md','unknown-untracked'];
  for(const profile of ['candidate','release'])assert.deepEqual(resolveVerificationScope({profile,explicit:[pilot],actual}).files,[...actual].sort());
  assert.equal(resolveVerificationScope({profile:'fast',explicit:[pilot],actual}).kind,'limited');
- assert.equal(planTemplateVerification({changedFiles:actual}).effective_profile,'release');
+ assert.throws(()=>planTemplateVerification({changedFiles:actual}),/UNKNOWN_VERIFICATION_PATH/);
 });
 test('dependency closure and cycles/unknown dependency fail closed',()=>{
  const config=loadVerificationProfiles();const skipped=config.groups.skills.commands.find(x=>x.inputs_complete);const retained=config.groups['research-evidence'].commands[0];retained.depends_on=[skipped.id];
@@ -35,8 +39,9 @@ test('dependency closure and cycles/unknown dependency fail closed',()=>{
 test('qualification binds configuration and source bytes; no automatic expansion',()=>{
  const root=fs.mkdtempSync(path.join(os.tmpdir(),'selection-'));
  try{const config=loadVerificationProfiles();config.allowlist.qualification_inputs=[];config.allowlist.qualification_ref='qualification.json';
+ delete config.gate_policy;
  const evidence={kind:'verification-allowlist-qualification',status:'passed',negative_cases_passed:true,related_failures_omitted:0,unique_commands:{baseline:3,candidate:2},timing:{baseline_samples:[30,32,31],candidate_samples:[20,22,21]},bindings:selectionBindings(root,config)};
- fs.writeFileSync(path.join(root,'qualification.json'),JSON.stringify(evidence));assert.equal(planTemplateVerification({changedFiles:[pilot],selection:'allowlist',config,root}).selection.effective,'allowlist');
+ fs.writeFileSync(path.join(root,'qualification.json'),JSON.stringify(evidence));assert.equal(planTemplateVerification({changedFiles:[pilot],selection:'allowlist',config,root}).selection.effective,'shadow');
  config.groups.skills.commands[0].run+=' --changed';assert.equal(planTemplateVerification({changedFiles:[pilot],selection:'allowlist',config,root}).selection.effective,'shadow');
  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });

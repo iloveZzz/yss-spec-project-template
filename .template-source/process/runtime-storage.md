@@ -38,6 +38,8 @@
 
 受影响 CLI 的 Node engines 为 `>=22.13 <27`，启动入口在任何目标写入前检查版本。最低版本使用其已有的 `node:sqlite` API。兼容矩阵覆盖 Node 22.13、24、26 与 macOS、Linux、Windows，单独验证 22.12 拒绝且无写入。Windows 的独立 runtime 验收入口为 `.template-source/scripts/verify-runtime-windows.mjs`；用 `--help` 查看版本路径、源码摘要清单及仓外报告参数。非 Windows 机械检查不形成 Windows 通过证据，便携源码包不替代固定提交来源的完整验证。
 
-分发变更需要重建并验证四个 CLI 的核心来源、模板快照、打包、干净安装和真实入口。工作树构建结果不能冒充固定提交来源的发布证据。内循环运行 `verify-template-fast`，候选运行 `verify-template-candidate`；main 与发布前执行不可裁剪的 `verify-template`，固定版本集成仍按原发布边界闭合。
+分发变更需要重建并验证四个 CLI 的核心来源、模板快照、打包、干净安装和真实入口。工作树构建结果不能冒充固定提交来源的发布证据。内循环运行 `verify-template-fast`，候选运行 `verify-template-candidate`；main 与发布前执行 `verify-template`，按验证 profile 核验全部适用风险，完整 baseline 或资格未闭合时执行独立 `legacy-full`。固定版本集成仍按原发布边界闭合。
+
+单次运行的来源清单分别绑定根模板 / core、三个专职模板 gitlink、四个 CLI gitlink、锁及包摘要。只有精确来源元组相同的构建 / 包产物才能在本轮共享；插件 pinned 来源使用独立槽位。每个消费场景持有独立可写目录，消费前后复核摘要；共享产物不复用检查通过结论，重跑使用新报告目录。确定性构建继续真实执行两次。正式报告保留失败、超时、中断、终止失败及输入漂移的原始日志和状态，不拼接历史结果。
 
 本地维护交付默认止于 `implementation-ready`。新分发版本在当前验证闭合后默认启用 SQLite；已有实例使用显式升级计划接入。Git 提交、推送、发布及历史迁移均按各自授权执行。

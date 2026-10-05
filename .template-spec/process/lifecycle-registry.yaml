@@ -387,6 +387,7 @@ work_units:
     input: 变更仓库、强度分级与对应最低证据。
     output: 命令输出与证据。
     completion: L1 完成相关检查；L2 完成最小反例、维护者自检与本轮 fresh verification；L3 完成维护者自检与本轮 fresh verification，正式发布前另运行完整 scripts/verify-template。
+    public_completion: 完成分级要求的本轮验证；正式发布前运行 scripts/verify-template 核验全部适用风险。完整验证的集合与资格由验证 profile 定义；当前资格或完整 baseline 未闭合时执行独立 legacy-full。
   - id: work-unit.intensity-aware-review-v2
     name: 分级审查
     scope: template-source

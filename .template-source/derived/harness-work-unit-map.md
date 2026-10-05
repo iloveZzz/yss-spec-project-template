@@ -11,7 +11,7 @@
 | `work-unit.skill-projection-sync` | template-source | 技能投影同步 | .agents/skills。 | Agent root 投影、skills lock。 | --check 通过。 |
 | `work-unit.template-snapshot-build` | template-source | 模板快照构建 | 固定模板 commit。 | CLI bundled snapshot。 | commit 与 tree hash 可追踪。 |
 | `work-unit.attach-sync-integration` | template-source | attach / sync 集成 | 目标仓库、dry-run 计划。 | 受管资产和 metadata。 | 验证通过或完整回滚。 |
-| `work-unit.intensity-aware-verification-v2` | template-source | 分级 Fresh verification | 变更仓库、强度分级与对应最低证据。 | 命令输出与证据。 | L1 完成相关检查；L2 完成最小反例、维护者自检与本轮 fresh verification；L3 完成维护者自检与本轮 fresh verification，正式发布前另运行完整 scripts/verify-template。 |
+| `work-unit.intensity-aware-verification-v2` | template-source | 分级 Fresh verification | 变更仓库、强度分级与对应最低证据。 | 命令输出与证据。 | 完成分级要求的本轮验证；正式发布前运行 scripts/verify-template 核验全部适用风险。完整验证的集合与资格由验证 profile 定义；当前资格或完整 baseline 未闭合时执行独立 legacy-full。 |
 | `work-unit.intensity-aware-review-v2` | template-source | 分级审查 | 变更 diff、强度分级与验证证据。 | 维护者自检结论与阻断项；按需记录聚焦独立审查结果。 | 已完成命中等级要求的维护者自检并处理阻断项；独立审查仅在另行触发时执行，不由 L2 或 L3 自动强制。 |
 | `work-unit.release-and-rollback` | template-source | 发布与回滚 | 已审查 commit。 | release note、观察信号、回滚点。 | 两仓库顺序和恢复动作明确。 |
 | `work-unit.plan-opportunity` | project-instance | 机会调研 | 用户问题、市场/竞品事实需求和现有上下文。 | Plan 机会结论、证据、替代方案和关键假设。 | 机会继续/停止建议可审查；事实已 research 或记录为假设。 |
