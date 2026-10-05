@@ -795,6 +795,52 @@ planning:
   implementation_authorized: false
   frontier_scope: current-plan-decisions
   deferred_details: excluded-from-frontier-only-after-user-confirms-deferral
+  review_control:
+    protocol: bounded-plan-review-v1
+    enabled: true
+    checkpoint_field: plan_review_control
+    schema: .template-spec/process/schemas/plan-review-control.schema.json
+    bundle_id: review-bundle.plan
+    aggregate_gate: gate.plan-approved
+    professional_check_ids: [ check.domain-strategy-approved, check.stage-decision-package-approved ]
+    check_dependency: domain-strategy-before-stage-decision
+    aggregate_professional_result: reuse-internal-check-conclusions-without-third-review-task
+    limits: { regular: 2, exception: 1, total: 3 }
+    phase_order: [ initial, rereview, exception ]
+    counted: registered-professional-review-attempts
+    separately_counted: [ clarification, machine-check, read-only-diagnosis, external-mandatory-approval ]
+    preparation: scripts/prepare-review-package
+    reservation: existing-asset-transaction-with-exclusive-lock-and-digest-recheck
+    dry_run: read-only-without-reservation
+    dispatch: registered-attempt-and-current-binding-required
+    duplicate_input: return-existing-task-reference
+    interrupted_attempt: resume-same-attempt-without-new-budget
+    cycle_identity: feature-and-confirmed-scope
+    resets_forbidden: [ task-name, reviewer, candidate-version, candidate-digest, process-restart ]
+    successor_requires: [ predecessor, actual-scope-change-evidence, real-user-decision ]
+    finding_kinds: [ violation, missing-evidence, suggestion ]
+    later_finding_origins: [ repair, new-evidence, initial-miss ]
+    initial_review: complete-applicable-check-coverage-and-all-discovered-blockers
+    finding_identity: stable-id-with-rule-scenario-evidence-and-close-condition
+    rereview: repairs-and-affected-direct-or-transitive-dependencies-only
+    closed_finding_reopen: changed-related-behavior-or-invalidated-close-evidence
+    suggestions: backlog-without-blocking
+    no_progress: stop-automatic-review-and-diagnose
+    second_review_blocked: stop-automatic-review-and-diagnose
+    exception_requires: completed-diagnosis-and-new-resolution-evidence
+    exception_scope: unresolved-finding-ids-and-affected-checks
+    exception_blocked: retain-blockers-and-stop-cycle-automatic-professional-review
+    budget_exhaustion: never-implies-approval-or-default-human-pause
+    external_mandatory_approval: separately-recorded-and-never-waived
+    immutable_candidate: business-content-and-decision-basis
+    separate_records: [ progress, runtime-log, raw-user-response, final-aggregate-approval ]
+    countersign_writeback: finalize-byte-candidate-before-same-task-verification
+    final_user_confirmation: shared-understanding-and-current-plan-in-one-real-response
+    history: read-only-compatible-controlled-adoption-with-evidence
+    unknown_history_count: history-unknown-never-zero
+    history_over_limit: diagnosis-required
+    consumers: [ preparation, dispatch, result-consumption, resume, plan-to-spec-entry ]
+    applies_to: [ stage.plan ]
   clarification_policy:
     trigger: required-plan-user-decision-unresolved
     skill: grilling

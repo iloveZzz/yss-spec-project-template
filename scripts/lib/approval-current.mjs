@@ -70,8 +70,9 @@ function validateCurrentApproval(record, expected, context = {}) {
     const issued = approvalExpectedFromTask(task,{...context,expected:expected.review_context,read:context.read || readFileSync,rolesDoc:roles,registry,boundary:expected.boundary,reviewTaskRef:record.review_task_ref,reviewTaskDigest:record.review_task_digest});
     if ((record.review_task_id && record.review_task_id !== task.task_id) || (record.review_work_unit_id && record.review_work_unit_id !== task.work_unit_id)) fail('组合包身份与正式审查任务不匹配');
     if (record.review_bundle_basis) {
-      const basis = checkedBasis(record.review_bundle_basis,io,'组合包');
-      if (basis.length !== task.review_context.basis.length || basis.some(asset=>!task.review_context.basis.some(bound=>bound.ref===asset.ref && hex(bound.digest)===asset.digest))) fail('组合包依据与正式审查任务不匹配');
+      const bundleBasis = record.plan_review_binding ? record.review_bundle_basis.filter(asset => issued.basis.some(row => row.ref === asset.ref)) : record.review_bundle_basis;
+      const basis = checkedBasis(bundleBasis,io,'组合包');
+      if ((!record.plan_review_binding && basis.length !== task.review_context.basis.length) || record.review_bundle_basis.length !== task.review_context.basis.length || record.review_bundle_basis.some(asset=>!task.review_context.basis.some(bound=>bound.ref===asset.ref && hex(bound.digest)===hex(asset.digest)))) fail('组合包依据与正式审查任务不匹配');
     }
     if (issued.subject_ref !== expected.subject_ref || !sameScope(issued.approval_scope,expected.approval_scope)) fail('当前消费上下文与正式审查任务范围不匹配');
     for (const asset of expected.basis) if (!issued.basis.some(row => row.ref === asset.ref && hex(row.digest) === hex(asset.digest))) fail('当前消费上下文依据不属于正式审查任务');

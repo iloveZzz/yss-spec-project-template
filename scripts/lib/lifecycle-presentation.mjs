@@ -68,6 +68,10 @@ export function renderLifecycleStatus(result) {
   return [
     `当前阶段：${view.stage}。登记状态：${view.checkpoint_status}。`,
     `下一阶段（路由目标）：${view.next_stage ?? '待核验'}。${view.next_stage_reason ?? '阶段归属未核验；不代表已批准或可进入'}。`,
+    ...(view.plan_review ? [
+      `Plan 专业审查：累计 ${view.plan_review.professional_attempts ?? '待核验'} 次，已完成 ${view.plan_review.completed_attempts ?? '待核验'} 次；常规剩余 ${view.plan_review.remaining_regular ?? '待核验'} 次，异常剩余 ${view.plan_review.remaining_exception ?? '待核验'} 次。`,
+      `未关闭问题：${view.plan_review.unresolved_findings?.join('、') || '未登记'}；当前处理：${view.plan_review.disposition ?? view.plan_review.status}。下一条件：${view.plan_review.next_condition}。`,
+    ] : []),
     `当前阻塞：${view.blockers.length ? view.blockers.join('；') : '未登记阻塞；完整就绪与批准仍待核验'}。`,
     ...(view.issues ?? []).map((issue, index) => `${index + 1}. ${issue.severity === 'error' ? '阻塞' : '待核验问题'}：${issue.message}\n   负责人：${issue.owner}${ownerNote(issue)}；来源：${issue.source_ref ?? '未登记'}\n   处理：${issue.recovery}`),
     `负责人：${view.owner}。`,

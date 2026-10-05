@@ -1,0 +1,41 @@
+#!/usr/bin/env node
+import fs from 'node:fs';
+import { parseArgs } from 'node:util';
+import { safeFile } from './lib/governance-io.mjs';
+import { parseAsset, byteDigest, TOOL_ROOT } from './lib/structured-assets.mjs';
+import { initializePlanReview, adoptPlanReview, reconcilePlanReviewHistory, successorPlanReview, dispatchPlanReview, completePlanReview, diagnosePlanReview, assertPlanReviewEntry, summarizePlanReview, writePlanReviewCheckpoint } from './lib/plan-review-control.mjs';
+
+try {
+  const { values, positionals } = parseArgs({ options: { root: { type: 'string' }, checkpoint: { type: 'string' }, input: { type: 'string' }, task: { type: 'string' }, 'dry-run': { type: 'boolean', default: false } }, allowPositionals: true, strict: true });
+  if (positionals.length !== 1 || !values.checkpoint) throw new TypeError('用法: plan-review-control init|adopt|reconcile-history|successor|dispatch|complete|diagnose|check|status --checkpoint <项目内.json> [--input <项目内.json>] [--task <项目内task.json>] [--dry-run]');
+  const root = values.root || TOOL_ROOT, options = { root, dryRun: values['dry-run'] }, checkpointRef = values.checkpoint;
+  const read = ref => parseAsset(fs.readFileSync(safeFile(root, ref)), ref);
+  const command = positionals[0], input = values.input ? read(values.input) : null;
+  let result;
+  if (command === 'status' || command === 'check') {
+    const checkpoint = read(checkpointRef);
+    result = command === 'status' ? summarizePlanReview(checkpoint.plan_review_control, options) : assertPlanReviewEntry(checkpoint, options);
+  } else {
+    if (!input && command !== 'dispatch') throw new TypeError('此子命令需要 --input <项目内.json>，不能推断来源、历史、诊断或实际审查结果');
+    result = writePlanReviewCheckpoint(checkpointRef, checkpoint => {
+      const control = checkpoint.plan_review_control;
+      if (command === 'init') return initializePlanReview(checkpoint, input, options);
+      if (command === 'adopt') return adoptPlanReview(checkpoint, input, options);
+      if (command === 'reconcile-history') return reconcilePlanReviewHistory(control, input, options);
+      if (command === 'successor') return successorPlanReview(checkpoint, input, options);
+      if (command === 'diagnose') return diagnosePlanReview(control, input, options);
+      const task = values.task ? read(values.task) : null, binding = task?.review_context?.plan_review_binding || input?.plan_review_binding;
+      if (command === 'dispatch') {
+        if (!task || !binding) throw new TypeError('派发需要 --task 已登记的Plan审查任务');
+        return dispatchPlanReview(control, binding, options);
+      }
+      if (command === 'complete') {
+        const bytes = fs.readFileSync(safeFile(root, values.input));
+        const resultDigest = byteDigest(bytes).slice(7);
+        return completePlanReview(control, binding, { ...input, result_ref: values.input, result_digest: resultDigest }, options);
+      }
+      throw new TypeError(`未知子命令: ${command}`);
+    }, options);
+  }
+  process.stdout.write(JSON.stringify(result, null, 2) + '\n');
+} catch (error) { process.stderr.write(`Plan 审查控制失败: ${error.message}\n`); process.exitCode = 1; }

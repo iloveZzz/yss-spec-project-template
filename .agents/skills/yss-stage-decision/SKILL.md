@@ -51,6 +51,8 @@ Plan 成功标准在既有 `success_criteria[].statement` 细化指标定义、�
 
 ## 产物与批准
 
+Plan 专业审查只消费生命周期主控 `planning.review_control` 和 checkpoint `plan_review_control` 的当前周期；同一组合任务先核验业务边界，再核验决策包对它的承接，聚合 Plan 复用逐项结论。修复沿稳定问题 ID 关闭，按依据、场景和关闭条件验证；新阻断及重开须有对应证据。不得以重新生成资产、改任务名或摘要刷新获得新轮次；诊断与异常关闭由主控按唯一策略派发，不自行批准或重置额度。
+
 - 业务边界与规则设计是本类事实的权威资产，方案决策包只通过内部字段 `domain_strategy_ref` 引用它。两个合同的 `context_snapshot.context_ref` 必须精确为仓库根 `CONTEXT.md`，禁止子目录、`CONTEXT-MAP.md`、绝对路径和 Markdown 伪锚点。
 - 进入 `check.domain-strategy-approved` 或 `check.stage-decision-package-approved` 的外部决策证据必须引用通过校验的 `yss-research` `evidence-audited` 研究包；研究包只提供证据，不得直接修改本技能资产或批准门禁。
 - `stage_decision_package` 必须经过 `draft → ready-for-human → approved`；起草者不得自签。

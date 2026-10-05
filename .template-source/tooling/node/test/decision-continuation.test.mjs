@@ -76,7 +76,13 @@ test('Plan entry consumes continuation and still blocks incomplete checks', () =
   f.proof.subject = subject; f.review.subject = subject; f.review.comparison.after = subject;
   f.approveMandate(); f.refresh();
   delete plan.state.plan_user_decision_ref; plan.state.plan_continuation_ref = f.requirement.continuation_ref;
+  assert.throws(() => assertPlanSpecEntry(plan.state, { root: plan.root }), /Plan 聚合批准未绑定当前批准延续/);
+  const originalReply = readFileSync(plan.approval.ref);
+  const aggregate = JSON.parse(readFileSync(plan.state.plan_approval_ref));
+  delete aggregate.user_decision_ref; aggregate.continuation_ref = plan.state.plan_continuation_ref;
+  plan.write(plan.state.plan_approval_ref, aggregate);
   assert.equal(assertPlanSpecEntry(plan.state, { root: plan.root }).result, 'allowed');
+  assert.deepEqual(readFileSync(plan.approval.ref), originalReply);
   Object.values(plan.review.checks)[0].status = 'pending'; plan.save();
   assert.throws(() => assertPlanSpecEntry(plan.state, { root: plan.root }), /检查未通过/);
 }, 'gate.plan-approved'));

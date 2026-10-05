@@ -38,7 +38,7 @@ export function selectApprovalRecord(record, gateId) {
   if (record.kind !== 'review-bundle') return record;
   const selected = reviewBundleRows(record).filter(row => row.gate_id === gateId);
   if (selected.length !== 1) approvalError('APPROVAL_BUNDLE_INVALID', '组合审查缺少当前检查的明确结论');
-  return {...selected[0], review_bundle_id:record.bundle_id, review_task_id:record.task_id, review_work_unit_id:record.work_unit_id, review_session_id:record.review_session_id,...(record.schema_version===2?{review_bundle_basis:record.basis}:{})};
+  return {...selected[0], review_bundle_id:record.bundle_id, review_task_id:record.task_id, review_work_unit_id:record.work_unit_id, review_session_id:record.review_session_id,...(record.schema_version===2?{review_bundle_basis:record.basis}:{}),...(record.plan_review_binding?{plan_review_binding:record.plan_review_binding}:{})};
 }
 export function loadApprovalRecord(filePath, gateId, context = {}) {
   return selectApprovalRecord(readApprovalDocument(filePath, context), gateId);

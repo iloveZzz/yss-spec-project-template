@@ -10,8 +10,9 @@ const root=path.resolve(import.meta.dirname,'..');
 const check=process.argv.includes('--check');
 const targets=['submodules/yss-harness-design-agent','submodules/yss-harness-backend-agent','submodules/yss-harness-frontend-agent'];
 const shared=['scripts/strategic-consumer-entry','scripts/strategic-handoff','scripts/verify-strategic-handoff-consumption','scripts/verify-strategic-handoff-package-scenarios','scripts/verify-strategic-context-import','scripts/verify-strategic-context-import-scenarios','scripts/lib/context-contract.mjs','.template-spec/process/strategic-handoff-package.md','.template-spec/process/schemas/strategic-design-handoff.schema.json',...readdirSync(path.join(root,'scripts/lib')).filter(x=>x.startsWith('strategic-handoff-')||x==='strategic-handoff.mjs').map(x=>`scripts/lib/${x}`),...readdirSync(path.join(root,'.template-spec/process/schemas')).filter(x=>x.startsWith('strategic-handoff-')).map(x=>`.template-spec/process/schemas/${x}`),...readdirSync(path.join(root,'scripts/fixtures/strategic-handoff')).map(x=>`scripts/fixtures/strategic-handoff/${x}`)];
-shared.push('scripts/lib/user-decision-reuse.mjs','scripts/lib/user-decision.mjs','.template-spec/process/schemas/user-decision.schema.json','.template-spec/process/schemas/review-bundle.schema.json','scripts/fixtures/user-decision/build-fixture.mjs','scripts/lib/command-runner.mjs','scripts/lib/json-schema.mjs','scripts/lib/context-reconciliation.mjs','scripts/verify-context-reconciliation');
+shared.push('scripts/lib/user-decision-reuse.mjs','scripts/lib/user-decision.mjs','.template-spec/process/schemas/user-decision.schema.json','.template-spec/process/schemas/review-bundle.schema.json','scripts/fixtures/user-decision/build-fixture.mjs','scripts/lib/command-runner.mjs','scripts/lib/json-schema.mjs','scripts/lib/context-reconciliation.mjs','scripts/lib/source-context-snapshot.mjs','scripts/verify-context-reconciliation');
 shared.push('scripts/lib/decision-continuation.mjs');
+shared.push('scripts/lib/plan-review-control.mjs','scripts/plan-review-control','scripts/lib/plan-spec-entry.mjs','.template-spec/process/schemas/plan-review-control.schema.json');
 shared.push('scripts/lib/approval-record.mjs','scripts/lib/approval-current.mjs','scripts/lib/approval-record-io.mjs','scripts/lib/approval-consumption.mjs','scripts/lib/approval-checkpoint-discovery.mjs','scripts/lib/lifecycle-controls.mjs','scripts/lib/review-capabilities.mjs','scripts/lib/review-package.mjs','scripts/prepare-review-package','.template-spec/templates/review-bundle-template.yaml','.template-spec/templates/approval-record-template.yaml');
 shared.push('scripts/lib/structured-assets.mjs','scripts/lib/asset-transactions.mjs','scripts/lib/asset-migration.mjs','scripts/lib/asset-command.mjs','scripts/lib/plan-stage-coverage.mjs','scripts/check-plan-stage-coverage','.template-spec/process/structured-assets.md','.template-spec/process/schemas/approval-record.schema.json','.template-spec/process/templates/lifecycle-checkpoint-template.json','.template-spec/templates/approval-record-template.json');
 shared.push('scripts/lib/lifecycle-presentation.mjs','.template-spec/process/schemas/approval-context.schema.json');
@@ -99,8 +100,12 @@ function projectedRouting(targetRoot){
  const bytes=readFileSync(path.join(targetRoot,targetRoutingRef(targetRoot))),document=parseDocument(bytes.toString(),{uniqueKeys:true});
  if(document.errors.length)throw new Error('目标主控不可读');
  const current=document.toJS({maxAliasCount:0});
+ const planReview=checkpointContract.planning?.review_control;
+ if(!planReview)throw new Error('源主控缺少 Plan 收敛协议');
+ const planReviewChanged=targetRoot.endsWith('design-agent')&&JSON.stringify(current.planning?.review_control)!==JSON.stringify(planReview);
  const progress={...userProgressReport,owner:targetRoot.endsWith('design-agent')?'yss-strategic-design':'harness-orchestrator',reference:userProgressReport.writing_reference};
- if(JSON.stringify(current.consumer_entry_routes)===JSON.stringify(consumerRoutes)&&JSON.stringify(current.skill_preflight)===JSON.stringify(skillPreflight)&&JSON.stringify(current.user_progress_report)===JSON.stringify(progress))return bytes;
+ if(!planReviewChanged&&JSON.stringify(current.consumer_entry_routes)===JSON.stringify(consumerRoutes)&&JSON.stringify(current.skill_preflight)===JSON.stringify(skillPreflight)&&JSON.stringify(current.user_progress_report)===JSON.stringify(progress))return bytes;
+ if(targetRoot.endsWith('design-agent'))document.setIn(['planning','review_control'],planReview);
  document.set('consumer_entry_routes',consumerRoutes);
  document.set('skill_preflight',skillPreflight);
  document.set('user_progress_report',progress);
@@ -122,6 +127,15 @@ function syncOwnerProgress(targetRoot){
  const guidance=marker+'\n每轮返回或暂停按合同 `user_progress_report` 给出中文状态：当前阶段与本轮结果、下一阶段/单元与进入条件、问题/阻塞、已登记责任方、解除动作及复验、主控下一动作与用户待决定项。未知写“待核验”，负责人缺失写“未登记”；目标不代表批准，已授权工作继续执行。发送前核对证据、状态及结构化结果一致；写法见 `.template-spec/process/document-writing.md`。\n';
  const old=readFileSync(dest,'utf8'),pattern=new RegExp(marker+'\\n[^\\n]*(?:\\n|$)');
  if(old.includes(marker)&&!pattern.test(old))throw new Error('状态输出路由标记内容不明: '+dest);
+ const bytes=Buffer.from(old.includes(marker)?old.replace(pattern,guidance):old.trimEnd()+'\n\n'+guidance);
+ if(!bytes.equals(Buffer.from(old))){differences.push(path.relative(root,dest));if(!check)writeFileSync(dest,bytes);}
+}
+function syncOwnerPlanReview(targetRoot){
+ if(!targetRoot.endsWith('design-agent'))return;
+ const dest=path.join(targetRoot,'.agents/skills/yss-strategic-design/SKILL.md'),marker='<!-- PLAN_REVIEW_CONTROL -->';
+ const guidance=marker+'\nPlan 专业审查按当前主控合同 `planning.review_control` 和 checkpoint `plan_review_control` 执行；准备、派发、消费和恢复均核验原周期及本轮检查范围。聚合复用内部结论，诊断不默认请求用户；关键决定与最终 Plan 批准展示当前资产后取得同一次真实回复。工具与受控历史接入见 `.template-spec/plan/entry-review.md`。\n';
+ const old=readFileSync(dest,'utf8'),pattern=new RegExp(marker+'\\n[^\\n]*(?:\\n|$)');
+ if(old.includes(marker)&&!pattern.test(old))throw new Error('Plan 收敛路由标记内容不明: '+dest);
  const bytes=Buffer.from(old.includes(marker)?old.replace(pattern,guidance):old.trimEnd()+'\n\n'+guidance);
  if(!bytes.equals(Buffer.from(old))){differences.push(path.relative(root,dest));if(!check)writeFileSync(dest,bytes);}
 }
@@ -176,6 +190,7 @@ for(const target of targets){
  syncRouting(path.join(root,target));
  syncOwnerPreflight(path.join(root,target));
  syncOwnerProgress(path.join(root,target));
+ syncOwnerPlanReview(path.join(root,target));
  for(const ref of new Set(shared))sync(path.join(root,ref),path.join(root,target,ref),transformationFor(target,ref));
  lock(target,path.join(root,target));
 }

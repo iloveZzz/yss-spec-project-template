@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { existsSync, lstatSync, readFileSync, readdirSync } from './validation-phase.mjs';
 import path from "node:path";
+import { sourceContextRef } from './source-context-snapshot.mjs';
 
 const CONTEXT_FILE = "CONTEXT.md";
 const CONTEXT_MAP_FILE = "CONTEXT-MAP.md";
@@ -100,7 +101,7 @@ function canonicalTerm(term) {
 
 export function parseContextContract({ root = process.cwd(), allowedContextIds } = {}) {
   const absoluteRoot = path.resolve(root);
-  const contextPath = path.join(absoluteRoot, CONTEXT_FILE);
+  const contextPath = path.join(absoluteRoot, sourceContextRef(absoluteRoot, CONTEXT_FILE));
   const problems = [];
   const discovered = collectContextFiles(absoluteRoot);
   if (!existsSync(contextPath) || !lstatSync(contextPath).isFile()) problems.push(`项目根目录缺少大小写精确的 ${CONTEXT_FILE}`);

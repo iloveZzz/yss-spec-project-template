@@ -1,13 +1,15 @@
 import { BUSINESS_TICKET_CAPABILITY, checkBusinessTickets, assertBusinessDeferredApprovals } from './business-tickets.mjs';
 import { scopedConsumerCapabilities } from './strategic-handoff-routing.mjs';
 import { existsSync, lstatSync, readFileSync } from './validation-phase.mjs';
-import { mkdirSync, mkdtempSync, renameSync, rmSync, cpSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, renameSync, rmSync, cpSync, realpathSync } from 'node:fs';
 import path from 'node:path';
 import { tmpdir } from 'node:os';
 import { ensure, canonical, digest, hash, json, parse, read, safe, relative, files, write, project, schema, schemaBatch, archive, ROOT, sourceApprovalPolicy, withSourceContextSnapshot } from './strategic-handoff-io.mjs';
 import { parseContextSource, parseContextContract, resolveContextTermRefs } from './context-contract.mjs';
 import { countersignRuleForGate } from './digital-human-roles.mjs';
 import { validateApprovalRecord } from './approval-record.mjs';
+import { selectApprovalRecord } from './approval-record-io.mjs';
+import { findApprovalCheckpoint } from './approval-checkpoint-discovery.mjs';
 import {approvalExpectationForBoundAsset} from './approval-consumption.mjs';
 import { treeDigest } from './strategic-handoff-io.mjs';
 import { uiBaselineKind, uiBaselineRef, uiBaselineCaseIds, hasConsumerRoutes, validateHandoffUiBaseline } from './ui-baseline.mjs';
@@ -25,16 +27,7 @@ const SOURCE_SCHEMAS = new Map([
 const CAPABILITIES=['backend-technical-design','frontend-engineering-design','delivery-coordination'];
 
 function sourceApprovalRecord(document, gateId) {
-  if(document?.kind!=='review-bundle')return document;
-  for(const field of ['bundle_id','task_id','work_unit_id','review_session_id','role_id','runtime_id','principal_ref'])ensure(nonempty(document[field]),`组合审查缺少 ${field}`);
-  ensure(Array.isArray(document.reviews)&&document.reviews.length,'组合审查不能为空');
-  ensure(new Set(document.reviews.map(row=>row?.gate_id)).size===document.reviews.length,'组合审查 gate_id 重复');
-  const rows=document.reviews.filter(row=>row.gate_id===gateId);
-  ensure(rows.length===1,`组合审查缺少当前结论: ${gateId}`);
-  const row=rows[0];
-  ensure(row.role_id===document.role_id&&row.runtime_id===document.runtime_id&&row.principal_ref===document.principal_ref,'组合审查必须来自同一复核角色、运行时和实例');
-  ensure(!row.review_session_id||row.review_session_id===document.review_session_id,'组合审查 review_session_id 不一致');
-  return {...row,review_bundle_id:document.bundle_id,review_task_id:document.task_id,review_work_unit_id:document.work_unit_id,review_session_id:document.review_session_id};
+  return selectApprovalRecord(document, gateId);
 }
 
 function deliveryReadme(handoff) {
@@ -86,14 +79,21 @@ function validateConsumerRoutes(handoff, stage) {
 }
 
 export async function sourceApproval(record, roles, root, currentAssetBinding) {
+  const declaredRoot=path.resolve(root);
+  root=realpathSync(declaredRoot);
   const sourceGateIds = [...(roles.gate_policy.biological_human || []), ...(roles.gate_policy.product_digital_human_with_biological_veto || []), ...['dual_digital_human','digital_human_review','check_reviews'].flatMap(key => (roles.gate_policy[key] || []).map(row => row.gate))];
-  const options={rolesDoc:roles,registry:{gates:sourceGateIds.map(id=>({id})),id_policy:{deprecated_ids:[]}},requireApproved:true,root,read:ref=>readFileSync(safe(root,path.relative(root,ref).split(path.sep).join('/')))};
+  const options={rolesDoc:roles,registry:{gates:sourceGateIds.map(id=>({id})),id_policy:{deprecated_ids:[]}},requireApproved:true,root,read:ref=>{
+    const canonicalRef=path.relative(root,ref);
+    const localRef=canonicalRef==='..'||canonicalRef.startsWith(`..${path.sep}`)||path.isAbsolute(canonicalRef)?path.relative(declaredRoot,ref):canonicalRef;
+    return readFileSync(safe(root,localRef.split(path.sep).join('/')));
+  }};
+  let sourceTask;
   if(record.schema_version===2) {
     // v2 tasks consume the unchanged source policies, never receiver normalization.
     options.rolesDoc=read(safe(root,'.template-spec/agents/digital-human-roles.yaml'));
     options.registry=read(safe(root,'.template-spec/process/lifecycle-registry.yaml'));
     options.skillRegistry=read(safe(root,'.template-spec/agents/yss-skill-registry.yaml'));
-    const task=read(safe(root,record.review_task_ref));
+    const task=sourceTask=read(safe(root,record.review_task_ref));
     for(const ref of ['.template-spec/process/lifecycle-registry.yaml','.template-spec/agents/yss-skill-registry.yaml']) ensure(task.review_context?.basis?.some(row=>row.ref===ref && row.digest===hash(readFileSync(safe(root,ref))).slice(7)), '源正式审查任务未冻结实际注册表: '+ref);
     roles=options.rolesDoc;
   }
@@ -114,7 +114,27 @@ export async function sourceApproval(record, roles, root, currentAssetBinding) {
     policy.digital_human_review = [...(policy.digital_human_review || []).filter(x => x.gate !== record.gate_id), { gate: record.gate_id, countersigners: reviewers }];
   }
   if(!currentAssetBinding)throw new TypeError('APPROVAL_CONTEXT_REQUIRED: 源批准消费需要当前资产引用');
-  validateApprovalRecord(record,{...options,expected:approvalExpectationForBoundAsset(record.gate_id,currentAssetBinding,options)});
+  const expected=approvalExpectationForBoundAsset(record.gate_id,currentAssetBinding,options);
+  const boundedPlan=record.plan_review_binding || roles.gate_policy.review_execution?.review_bundles?.some(rule=>rule.aggregate_gate==='gate.plan-approved' && rule.aggregate_additional_review_task==='forbidden');
+  if(record.gate_id==='gate.plan-approved' && boundedPlan) {
+    // The issued consumer task supplies its current owner. The independently
+    // selected source asset must agree; never reconstruct expectations from approval fields.
+    ensure(sourceTask?.checkpoint_ref || currentAssetBinding.approval_ref,'源 Plan 消费需要当前任务或独立批准引用以定位 checkpoint');
+    const checkpointRef=sourceTask?.checkpoint_ref || findApprovalCheckpoint(root,currentAssetBinding.approval_ref);
+    const checkpoint=read(safe(root,checkpointRef));
+    if(sourceTask?.review_context?.plan_review_binding) {
+      const attempt=checkpoint.plan_review_control?.attempts?.find(row=>row.attempt_id===sourceTask.review_context.plan_review_binding.attempt_id);
+      const candidate=read(safe(root,sourceTask.review_context.candidate_ref));
+      ensure(attempt?.checkpoint_ref===checkpointRef && candidate.source_checkpoint?.ref===checkpointRef,'源 Plan 任务缺少当前周期归属');
+    }
+    const review=read(safe(root,checkpoint.plan_review_ref));
+    const hex=value=>value?.replace(/^sha256:/,'');
+    ensure(expected.subject_ref===checkpoint.plan_review_ref && hex(expected.subject_digest)===hex(hash(readFileSync(safe(root,checkpoint.plan_review_ref)))),'源 Plan 当前消费主体不匹配');
+    ensure(own([...expected.approval_scope].sort(),[checkpoint.feature_id]) && expected.drafter_principal_ref===review.drafter_principal_ref,'源 Plan 当前消费范围或作者不匹配');
+    ensure(expected.basis?.length && expected.basis.every(asset=>review.basis?.some(row=>row.ref===asset.ref && hex(row.digest)===hex(asset.digest)) && hex(hash(readFileSync(safe(root,asset.ref))))===hex(asset.digest)),'源 Plan 当前消费依据不匹配');
+    options.checkpoint=checkpoint;
+  }
+  validateApprovalRecord(record,{...options,expected});
 }
 
 function snapshot(snapshot, source) {
@@ -200,7 +220,7 @@ export async function inspectSource(root, handoffRef) {
   const sourceRoles=read(safe(root,'.template-spec/agents/digital-human-roles.yaml'));
   const roles=sourceApprovalPolicy(sourceRoles);
   for (const [artifact, version, gateId] of [[strategy,strategy.domain_version,'check.domain-strategy-approved'],[stage,stage.package_version,'check.stage-decision-package-approved']]) {
-    if(artifact.approval) { const record=sourceApprovalRecord(read(safe(root,artifact.approval.approval_ref)),gateId);await sourceApproval(record,roles,root,{ref:artifact.approval.persisted_ref,approval_context:artifact.approval.approval_context});ensure(artifact.approval.current_version===version,'资产内置批准版本过期'); }
+    if(artifact.approval) { const record=sourceApprovalRecord(read(safe(root,artifact.approval.approval_ref)),gateId);await sourceApproval(record,roles,root,{ref:artifact.approval.persisted_ref,approval_ref:artifact.approval.approval_ref,approval_context:artifact.approval.approval_context});ensure(artifact.approval.current_version===version,'资产内置批准版本过期'); }
   }
   // Source packages retain their published approval vocabulary. Never promote old approvals into current checkpoint gates.
   const currentPlan = (roles.gate_policy.dual_digital_human || []).some(rule => rule.gate === 'gate.plan-approved');
@@ -237,7 +257,7 @@ export async function inspectSource(root, handoffRef) {
     if(key!=='handoff')ensure(ref.digest===actual,`源资产摘要过期: ${key}`);
     const record=sourceApprovalRecord(read(safe(root,approval.record_ref)),approval.gate_id);
     if(key==='existing_ui_baseline_ref')ensure(record.subject_ref===(ref.approval_context?.subject_ref || `${ref.persisted_ref}/${ref.manifest_ref}`),'既有 UI 用户决定必须绑定当前 manifest 的独立批准上下文');
-    await sourceApproval(record,roles,root,{ref:['visual_baseline_ref','existing_ui_baseline_ref'].includes(key)?`${ref.persisted_ref}/${ref.manifest_ref}`:ref.persisted_ref,approval_context:ref.approval_context});
+    await sourceApproval(record,roles,root,{ref:['visual_baseline_ref','existing_ui_baseline_ref'].includes(key)?`${ref.persisted_ref}/${ref.manifest_ref}`:ref.persisted_ref,approval_ref:approval.record_ref,approval_context:ref.approval_context});
     businessProofRefs.push(approval.record_ref,record.user_decision_ref,record.continuation_ref,record.decision_reuse_ref);
     ensure(record.gate_id===approval.gate_id,`批准门禁不匹配: ${key}`);
     ensure((record.artifact_bindings || []).some(x=>x.id===(ref.id||ref.baseline_id) && x.version===ref.version && x.digest===actual),`批准记录未绑定当前资产: ${key}`);
@@ -263,9 +283,10 @@ export async function inspectSource(root, handoffRef) {
   return {handoff,config,indexes,strategy,stage,business};
 }
 
-function collect(root, handoffRef, handoff, config) {
+export function collectSourceClosure(root, handoffRef, handoff, config) {
   const collected=new Map(), queue=[handoffRef,'CONTEXT.md','.template-spec/agents/digital-human-roles.yaml',...Object.values(handoff.source).map(x=>x.persisted_ref),...Object.values(config.approvals).map(x=>x.record_ref),...handoff.evidence_and_version_digests,...config.additional_files];
   const roles=sourceApprovalPolicy(read(safe(root,'.template-spec/agents/digital-human-roles.yaml')));
+  const boundedPlan=roles.gate_policy.review_execution?.review_bundles?.some(rule=>rule.aggregate_gate==='gate.plan-approved' && rule.aggregate_additional_review_task==='forbidden');
   if(roles.user_decision_policy.required_capabilities?.includes(BUSINESS_TICKET_CAPABILITY)) {
     const report=checkBusinessTickets({root,setRef:handoff.source.business_ticket_set_ref.persisted_ref,mode:'formal'});
     ensure(report.status==='passed','业务 Ticket 导出前来源已变化');
@@ -276,9 +297,21 @@ function collect(root, handoffRef, handoff, config) {
   const symbolic=config.reference_map || {};
   const enqueue=ref=> { if(symbolic[ref])queue.push(symbolic[ref]); else if(/^https?:\/\//i.test(ref))return; else if(ref.startsWith('evidence.'))throw new TypeError(`未解析 evidence ID: ${ref}`); else if(ref.includes('/') || /\.(?:md|yaml|json|html|png|txt|log)$/.test(ref))queue.push(ref); };
   function refs(value,key='') {
+    if(value?.plan_review_control) {
+      const control=value.plan_review_control;
+      queue.push('yss-project.yaml','.template-spec/process/schemas/plan-review-control.schema.json');
+      if(typeof control.provenance?.source_ref==='string')enqueue(control.provenance.source_ref);
+      for(const attempt of control.attempts || []) {
+        for(const ref of [attempt.checkpoint_ref,attempt.task_ref,attempt.candidate_ref,attempt.result_ref]) if(typeof ref==='string')enqueue(ref);
+      }
+    }
+    if(value?.review_context?.plan_review_binding) {
+      enqueue(value.checkpoint_ref);
+      (value.inputs || []).forEach(enqueue);
+    }
     if(value?.schema_version===2 && value.review_task_ref) queue.push('.template-spec/process/lifecycle-registry.yaml','.template-spec/agents/yss-skill-registry.yaml');
     if(Array.isArray(value)) { if(key==='evidence_refs') value.forEach(enqueue); else value.forEach(v=>refs(v,key)); }
-    else if(value && typeof value==='object') for(const [k,v]of Object.entries(value)) { if(['review_task_ref','policy_ref','candidate_ref','registry_ref','approval_ref','persisted_ref','user_decision_ref','decision_reuse_ref','continuation_ref','plan_continuation_ref','scope_ref','subject_ref','delivery_ref','review_ref'].includes(k)&&typeof v==='string')enqueue(v); else if(k==='ref'&&typeof v==='string'&&!/^[a-z]+:\/\//i.test(v))enqueue(v); else refs(v,k); }
+    else if(value && typeof value==='object') for(const [k,v]of Object.entries(value)) { if(k==='policy_ref'&&typeof v==='string')enqueue(v.split('#')[0]); else if(['review_task_ref','candidate_ref','registry_ref','approval_ref','persisted_ref','user_decision_ref','decision_reuse_ref','continuation_ref','plan_continuation_ref','scope_ref','subject_ref','delivery_ref','review_ref'].includes(k)&&typeof v==='string')enqueue(v); else if(k==='ref'&&typeof v==='string'&&!/^[a-z]+:\/\//i.test(v))enqueue(v); else refs(v,k); }
   }
   let totalBytes = 0;
   while(queue.length) {
@@ -290,7 +323,15 @@ function collect(root, handoffRef, handoff, config) {
     const bytes=readFileSync(full); collected.set(ref,bytes); totalBytes += bytes.length;
     ensure(collected.size<=20000 && totalBytes<=MAX_BYTES,'交接包大小超限');
     const localBaseline=uiBaselineKind(handoff)==='existing-ui-baseline'&&ref.startsWith(`${uiBaselineRef(handoff).persisted_ref}/`);
-    if(!localBaseline&&/\.(yaml|yml|json)$/.test(ref))refs(parse(bytes));
+    if(!localBaseline&&/\.(yaml|yml|json)$/.test(ref)) {
+      const value=parse(bytes);
+      if(boundedPlan && value.gate_id==='gate.plan-approved' && typeof value.decision==='string' && typeof value.actor_kind==='string') {
+        const task=value.plan_review_binding && value.review_task_ref ? read(safe(root,value.review_task_ref)) : null;
+        enqueue(task?.checkpoint_ref || findApprovalCheckpoint(root,ref));
+        if(existsSync(path.join(root,'.template-spec/process/harness-profile.yaml')))enqueue('.template-spec/process/harness-profile.yaml');
+      }
+      refs(value);
+    }
     // The entire existing UI observation directory was validated as a byte-bound file set.
     // Its copied source documentation is evidence, not governance dependency instructions.
     if(!localBaseline)queue.push(...documentLinks(ref,bytes));
@@ -326,7 +367,7 @@ export async function openBundle(input, action, {readOnly=false}={}) {
     const inspected=await inspectSource(source,manifest.handoff_ref);
     ensure(manifest.bundle_id===inspected.handoff.handoff_id && manifest.version===inspected.handoff.handoff_version,'包身份与源交接不一致');
     ensure(own(read(safe(root,'indexes/rules.json')),inspected.indexes.rules) && own(read(safe(root,'indexes/scenarios.json')),inspected.indexes.scenarios),'规则/场景索引与源资产不一致');
-    const expected=collect(source,manifest.handoff_ref,inspected.handoff,inspected.config);
+    const expected=collectSourceClosure(source,manifest.handoff_ref,inspected.handoff,inspected.config);
     ensure(own([...expected.keys()].sort(),originals.sort()),'源快照闭包不一致');
     const changes=read(safe(root,'indexes/changes.json'));
     ensure(own(changes.previous_bundle,manifest.previous_bundle), '版本差异的前版绑定不一致');
@@ -350,7 +391,7 @@ export async function exportBundle({sourceRoot,handoffRef,output,zip=false,previ
   if(previous)prior=await openBundle(previous, b=>({manifest:b.manifest,indexes:b.indexes,handoff:b.handoff,rulesBytes:readFileSync(safe(b.root,'indexes/rules.json')),scenariosBytes:readFileSync(safe(b.root,'indexes/scenarios.json'))}));
   if(prior){ensure(prior.manifest.bundle_id===current.handoff.handoff_id,'前版属于不同交接');ensure(Number(current.handoff.handoff_version.slice(1))>Number(prior.manifest.version.slice(1)),'更新必须提升交接版本');for(const[key,ref]of Object.entries(current.handoff.source)){const old=prior.handoff.source[key];if(old&&old.digest!==ref.digest)ensure(old.version!==ref.version,`源资产内容变化必须提升版本: ${key}`);}}
   const previousBundle=prior?{bundle_id:prior.manifest.bundle_id,version:prior.manifest.version,digest:prior.manifest.bundle_digest}:null;
-  const snapshotFiles=collect(root,handoffRef,current.handoff,current.config);
+  const snapshotFiles=collectSourceClosure(root,handoffRef,current.handoff,current.config);
   const target=path.resolve(output);
   ensure(!existsSync(target) && (!zip||!existsSync(`${target}.zip`)),'输出已存在，禁止覆盖');
   ensure(target!==root && !root.startsWith(`${target}${path.sep}`),'输出不能覆盖源仓');

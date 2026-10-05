@@ -54,7 +54,7 @@ Plan 入口读 `.template-spec/plan/README.md`、`.template-spec/process/plan-mi
 
 不得越过命中的阶段、门禁、实现仓库准备或 Ticket 正式化。实现只接收绑定垂直切片、已批准且持久化、版本当前并通过完整 `ready-for-agent` 计算的合同；父 Ticket、`ready-for-human` 切片、`stale`、`drift`、`new_impacts`、`violation` 或缺失证据均阻断。实现仓库、脚手架、UI 还原、review input 和发布条件从对应合同子树查询，不在入口重复定义。
 
-按 `gate_consolidation` 默认一名独立审查者，按能力缺口、冲突或外部制度增员；相邻检查组合、逐项留证。复审按 `review_input.rereview` 首轮完整、修复定向、当前候选重绑定，未知先调查。
+审查按 `gate_consolidation`、`review_input.rereview`；Plan 执行 `planning.review_control`，周期由 checkpoint `plan_review_control` 持有；工具和派发、消费、恢复、入口校验见 `.template-spec/plan/entry-review.md`。
 
 职责及后端终点见 `execution_scopes`，恢复、编译、派发须复验。保留产品设计门禁，后端交付不等于业务完成或发布。
 

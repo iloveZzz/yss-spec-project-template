@@ -732,6 +732,9 @@
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "$id": "https://yss.dev/schemas/stage-tracking.schema.json",
       "title": "阶段工作追踪 v1"
+    },
+    "plan_review_control": {
+      "$ref": "plan-review-control.schema.json"
     }
   }
 }

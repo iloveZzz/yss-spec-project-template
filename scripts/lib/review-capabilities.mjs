@@ -5,12 +5,13 @@ import { parseDocument } from '../vendor/yaml.mjs';
 import { loadRegistry, ROOT } from './lifecycle-registry.mjs';
 import { validateTaskPackageSchema } from './task-package-schema.mjs';
 import { loadSkillRegistry } from './skill-registry.mjs';
+import { assertPlanReviewTask } from './plan-review-control.mjs';
 
 export const REVIEW_POLICY_REF = '.template-spec/agents/digital-human-roles.yaml';
 const HEX = /^[a-f0-9]{64}$/;
 const ID = /^capability\.[a-z0-9][a-z0-9-]*$/;
 const REVIEW_STATES = new Set(['Reviewer', 'Verifier']);
-const contextFields = ['check_ids', 'capability_ids', 'candidate_ref', 'candidate_digest', 'policy_ref', 'policy_digest', 'reviewer_principal_ref', 'drafter_principal_ref', 'approval_scope', 'basis', 'current_approvals'];
+const contextFields = ['check_ids', 'capability_ids', 'candidate_ref', 'candidate_digest', 'policy_ref', 'policy_digest', 'reviewer_principal_ref', 'drafter_principal_ref', 'approval_scope', 'basis', 'current_approvals', 'plan_review_binding'];
 const fail = (code, detail) => { const error = new TypeError(`${code}: ${detail}`); error.code = code; throw error; };
 const strings = value => Array.isArray(value) && value.length > 0 && value.every(x => typeof x === 'string' && x.trim()) && new Set(value).size === value.length;
 const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
@@ -147,8 +148,11 @@ export function currentApprovalsFromCheckpoint(checkpointRef, boundaries, option
     return { boundary, subject_ref: row.subject_ref, subject_digest: subjectDigest, approval_scope: [...row.approval_scope], basis, drafter_principal_ref: row.drafter_principal_ref };
   });
 }
-function currentContext(context, source) {
-  if (!context || contextFields.some(field => context[field] === undefined)) fail('APPROVAL_CONTEXT_REQUIRED', '缺少完整当前 review_context');
+function currentContext(context, source, options = {}) {
+  if (!context || contextFields.filter(field => field !== 'plan_review_binding').some(field => context[field] === undefined)) fail('APPROVAL_CONTEXT_REQUIRED', '缺少完整当前 review_context');
+  // A completed Plan bundle may supply an unaffected check after a narrower repair.
+  // Only that check's consumer-selected closure is freshened; the issued task stays byte-bound.
+  const boundary = context.plan_review_binding && options.boundary;
   for (const field of ['check_ids', 'capability_ids', 'approval_scope']) if (!strings(context[field])) fail('APPROVAL_CONTEXT_REQUIRED', `${field} 无效`);
   if (context.reviewer_principal_ref === context.drafter_principal_ref || !context.reviewer_principal_ref?.trim() || !context.drafter_principal_ref?.trim()) fail('REVIEW_NOT_INDEPENDENT', '审查实例必须不同于起草实例');
   for (const [ref, digest] of [[context.candidate_ref, context.candidate_digest], [context.policy_ref, context.policy_digest]]) {
@@ -156,28 +160,34 @@ function currentContext(context, source) {
   }
   if (context.policy_ref !== REVIEW_POLICY_REF) fail('GATE_POLICY_REQUIRED', '政策引用必须指向唯一角色事实源');
   if (!Array.isArray(context.basis) || !context.basis.length || new Set(context.basis.map(x => x.ref)).size !== context.basis.length) fail('APPROVAL_CONTEXT_REQUIRED', '缺少唯一当前 basis');
-  for (const item of context.basis) if (!HEX.test(item.digest || '') || reviewDigest(source.bytes(item.ref)) !== item.digest) fail('REVIEW_BINDING_STALE', `当前依据摘要过期: ${item.ref}`);
   const rows = context.current_approvals;
   if (!Array.isArray(rows) || !sameSet(rows.map(row => row.boundary), context.check_ids)) fail('APPROVAL_CONTEXT_REQUIRED', 'current_approvals 必须完整且唯一覆盖 check_ids');
+  const selected = boundary ? rows.filter(row => row.boundary === boundary) : rows;
+  if (!selected.length) fail('APPROVAL_CONTEXT_REQUIRED', '消费边界不属于当前审查任务');
+  const selectedRefs = new Set(selected.flatMap(row => row.basis.map(item => item.ref)));
+  for (const item of context.basis) {
+    if (!HEX.test(item.digest || '')) fail('REVIEW_BINDING_STALE', `依据摘要无效: ${item.ref}`);
+    if ((!boundary || selectedRefs.has(item.ref) || ['.template-spec/process/lifecycle-registry.yaml','.template-spec/agents/yss-skill-registry.yaml'].includes(item.ref)) && reviewDigest(source.bytes(item.ref)) !== item.digest) fail('REVIEW_BINDING_STALE', `当前依据摘要过期: ${item.ref}`);
+  }
   for (const row of rows) {
-    if (!HEX.test(row.subject_digest || '') || reviewDigest(source.bytes(row.subject_ref)) !== row.subject_digest) fail('REVIEW_BINDING_STALE', `当前逐项主体已变化: ${row.subject_ref}`);
+    if (!HEX.test(row.subject_digest || '') || ((!boundary || row.boundary === boundary) && reviewDigest(source.bytes(row.subject_ref)) !== row.subject_digest)) fail('REVIEW_BINDING_STALE', `当前逐项主体已变化: ${row.subject_ref}`);
     if (!strings(row.approval_scope) || row.approval_scope.some(x => !context.approval_scope.includes(x)) || !row.drafter_principal_ref?.trim() || row.drafter_principal_ref === context.reviewer_principal_ref) fail('REVIEW_NOT_INDEPENDENT', '逐项范围或独立作者来源无效');
     if (!Array.isArray(row.basis) || !row.basis.length || new Set(row.basis.map(x => x.ref)).size !== row.basis.length || row.basis.some(item => !context.basis.some(bound => same(canonical(bound), canonical(item))))) fail('APPROVAL_CONTEXT_REQUIRED', '逐项 basis 必须绑定当前任务依据');
   }
   const candidate = source.document(context.candidate_ref);
   if (candidate?.schema_version !== 1 || candidate.kind !== 'review-subject' || !same(canonical(candidate.current_approvals), canonical(rows))) fail('REVIEW_BINDING_STALE', '候选审阅包未绑定逐项当前上下文');
   if (!candidate.source_checkpoint?.ref || !HEX.test(candidate.source_checkpoint.digest || '')) fail('REVIEW_BINDING_STALE', '当前审阅包缺少 checkpoint 来源');
-  const currentRows = currentApprovalsFromCheckpoint(candidate.source_checkpoint.ref, context.check_ids, source);
+  const currentRows = currentApprovalsFromCheckpoint(candidate.source_checkpoint.ref, boundary ? [boundary] : context.check_ids, source);
   const checkpointDigest = candidate.source_checkpoint.binding_kind === 'current-approvals-v1' ? currentApprovalsDigest(currentRows) : reviewDigest(source.bytes(candidate.source_checkpoint.ref));
-  if(checkpointDigest !== candidate.source_checkpoint.digest) fail('REVIEW_BINDING_STALE','当前审阅包的 checkpoint 批准输入已变化');
-  if (!same(canonical(currentRows), canonical(rows))) fail('REVIEW_BINDING_STALE', '逐项预期与当前 checkpoint 消费上下文不同');
+  if(!boundary && checkpointDigest !== candidate.source_checkpoint.digest) fail('REVIEW_BINDING_STALE','当前审阅包的 checkpoint 批准输入已变化');
+  if (!same(canonical(currentRows), canonical(selected))) fail('REVIEW_BINDING_STALE', '逐项预期与当前 checkpoint 消费上下文不同');
 
 }
 export function validateReviewTaskBinding(task, options = {}) {
   const source = io(options);
   validateTaskPackageSchema(task);
   if (task.schema_version !== 1 || !REVIEW_STATES.has(task.execution_state) || !['active', 'resolved'].includes(task.workflow_status) || task.contract.status !== 'issued') fail('REVIEW_CAPABILITY_STATE', '只接受 issued 的正式 v1 Reviewer / Verifier 任务');
-  currentContext(task.review_context, source);
+  currentContext(task.review_context, source, options);
   const policy = source.document(task.review_context.policy_ref), rolesDoc = options.rolesDoc || policy;
   if (!same(canonical(rolesDoc), canonical(policy))) fail('REVIEW_BINDING_STALE', '传入角色政策与当前政策字节不一致');
   const role = rolesDoc.roles.find(x => x.id === task.role_id);
@@ -206,10 +216,11 @@ export function validateReviewTaskBinding(task, options = {}) {
       if (!equal) fail('REVIEW_BINDING_STALE', `任务未绑定当前消费者 ${field}`);
     }
   }
+  assertPlanReviewTask(task, options);
   return { ...task.review_context, ...compiled };
 }
 export function approvalExpectedFromTask(task, { boundary, reviewTaskRef, reviewTaskDigest, ...options } = {}) {
-  const context = validateReviewTaskBinding(task, options);
+  const context = validateReviewTaskBinding(task, { ...options, boundary });
   const rows = task.review_context?.current_approvals;
   const matches = rows?.filter(row => row.boundary === boundary);
   if (!context.check_ids.includes(boundary) || matches?.length !== 1) fail('APPROVAL_CONTEXT_REQUIRED', '任务缺少当前边界的独立 subject / scope / basis 来源');
@@ -227,7 +238,9 @@ export function assertReviewCapabilityBinding(record, { expected, ...options } =
   const source = io(options), bytes = source.bytes(expected.review_task_ref);
   if (reviewDigest(bytes) !== expected.review_task_digest) fail('REVIEW_BINDING_STALE', '审查任务字节已变化');
   const task = source.document(expected.review_task_ref);
-  const context = validateReviewTaskBinding(task, { ...options, expected });
+  const context = validateReviewTaskBinding(task, { ...options, expected, boundary: record.gate_id });
+  const plan = assertPlanReviewTask(task, { ...options, boundary: record.gate_id, requireCompleted: true });
+  if (plan.applicable && (!record.plan_review_binding || !same(canonical(record.plan_review_binding), canonical(plan.binding)))) fail('PLAN_REVIEW_RESULT_MISMATCH', 'Plan 结论未绑定已完成的当前专业审查尝试');
   if (!context.check_ids.includes(record.gate_id) || !sameSet(record.capability_ids, context.capability_ids)) fail('REVIEW_CAPABILITY_MISSING', '会签边界或能力不属于当前任务');
   if (record.role_id !== task.role_id || record.runtime_id !== task.runtime_id || record.principal_ref !== context.reviewer_principal_ref || record.drafter_principal_ref !== context.current_approvals.find(row => row.boundary === record.gate_id)?.drafter_principal_ref) fail('REVIEW_NOT_INDEPENDENT', '会签与任务中的角色、运行时或独立身份不匹配');
   return { task_id: task.task_id, capability_ids: context.capability_ids, review_skills: context.review_skills };

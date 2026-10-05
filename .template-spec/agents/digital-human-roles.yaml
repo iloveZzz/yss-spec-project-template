@@ -216,6 +216,17 @@ gate_policy:
     adjacent_checks: one-review-with-per-check-conclusions
     suggestions: backlog-without-blocking
     violations_or_missing_evidence: blocking
+    review_bundles:
+      - bundle_id: review-bundle.plan
+        work_unit: work-unit.plan-requirements
+        aggregate_gate: gate.plan-approved
+        checks:
+          - check.domain-strategy-approved
+          - check.stage-decision-package-approved
+        check_order: domain-strategy-before-stage-decision
+        aggregate_professional_result: reuse-internal-check-conclusions
+        aggregate_additional_review_task: forbidden
+        review_control_ref: .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml#planning.review_control
   continuation_reviews:
     gate.plan-approved: [role.product-manager]
     gate.spec-baseline-approved: [role.product-manager]

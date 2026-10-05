@@ -6,6 +6,7 @@ import { loadRegistry, ROOT } from './lifecycle-registry.mjs';
 import { loadDigitalHumanRoles, countersignRuleForGate } from './digital-human-roles.mjs';
 import {loadApprovalRecord} from './approval-record-io.mjs';
 import {assertCurrentApproval, approvalExpectationFromState} from './approval-current.mjs';
+import {assertPlanAggregateApproval} from './plan-spec-entry.mjs';
 
 const fail = message => { throw new TypeError(`lifecycle-control-blocked: ${message}`); };
 
@@ -64,8 +65,13 @@ function validateGateChecks(gateId, state, { root = ROOT, registry = loadRegistr
   const approvalRequired = countersignRuleForGate(rolesDoc.gate_policy, gateId);
   if (approvalRequired) {
     if (!refs.has(item.approval_ref) || !refs.has(item.subject_ref)) fail(`${gateId} 缺少已绑定批准记录和审阅包`);
-    const record = loadApprovalRecord(path.resolve(root, item.approval_ref), gateId);
-    assertCurrentApproval(record,approvalExpectationFromState(gateId,item,{root}),{rolesDoc,registry,root});
+    const boundedPlan = state.plan_review_control || rolesDoc.gate_policy.review_execution?.review_bundles?.some(rule =>
+      rule.aggregate_gate === 'gate.plan-approved' && rule.aggregate_additional_review_task === 'forbidden');
+    if (gateId === 'gate.plan-approved' && boundedPlan) assertPlanAggregateApproval(state, {rolesDoc,registry,root});
+    else {
+      const record = loadApprovalRecord(path.resolve(root, item.approval_ref), gateId);
+      assertCurrentApproval(record,approvalExpectationFromState(gateId,item,{root}),{rolesDoc,registry,root});
+    }
   }
   // Bind the aggregate approval to the exact check evidence it covers.
   for (const id of seen) for (const asset of state.checks[id].basis) {

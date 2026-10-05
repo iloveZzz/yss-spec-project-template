@@ -7,6 +7,7 @@ import path from 'node:path';
 import { parseDocument } from '../vendor/yaml.mjs';
 import { safeTrackingPath, trackingDrift } from './stage-tracking.mjs';
 import { loadLifecyclePresenter } from './lifecycle-presentation.mjs';
+import { summarizePlanReview } from './plan-review-control.mjs';
 
 const sha = bytes => `sha256:${createHash('sha256').update(bytes).digest('hex')}`;
 function parse(bytes) {
@@ -162,6 +163,16 @@ export function lifecycleStatus({ root, checkpointRef, taskPackageRef }) {
   if(registered?.digest && registered.digest!==actual)issue('business-sync-stale','业务集合已登记同步但摘要过期',setRef,'重验受影响来源与引用，保留历史批准');
   if(business.status==='missing'&&!['stage.entry-triage','stage.plan','stage.spec-architecture'].includes(value.stage))issue('business-decomposition-missing','Spec 后业务拆分尚未登记',checkpointRef,'补齐业务草案与覆盖，并回到业务正式化');
   check('business-decomposition',business.status,[setRef].filter(Boolean),'结构与来源只读检查；不证明批准或实现资格');
+  let planReview = null;
+  if (value.plan_review_control || value.stage === 'stage.plan') {
+    try {
+      planReview = summarizePlanReview(value.plan_review_control, { root });
+      const stopped = ['diagnosis-required','diagnosis-ready','blocked','history-unknown'].includes(planReview.status);
+      if (stopped) issue('plan-review-control-blocked', planReview.next_condition, checkpointRef, planReview.next_condition);
+      if (planReview.status === 'migration-required') issue('plan-review-control-missing', planReview.next_condition, checkpointRef, '保留历史记录并受控初始化或接入当前周期，不按零轮恢复', 'warning');
+      check('plan-review-control', stopped ? 'failed' : 'not-checked', [checkpointRef], '累计额度和问题处置只读视图；当前批准仍须正式核验');
+    } catch (error) { issue('plan-review-control-invalid', error.message, checkpointRef, '升级协议读取能力并核对原周期与历史次数，不重置额度'); }
+  }
   const blockers = [...new Set(diagnostics.filter(x => x.severity === 'error').map(x => x.message))];
   const next_step = {
     action_type: 'verify', work_unit: value.next_work_unit ?? null, cwd: root,
@@ -194,6 +205,7 @@ export function lifecycleStatus({ root, checkpointRef, taskPackageRef }) {
   const statusNames = { routing: '正在确定下一步', running: '正在推进', blocked: '受阻', 'paused-human-gate': '等待会签', completed: '记录为已完成，仍需核验' };
   const readable = text => presenter.text(text, {trace: false}).replace(/: (blocked|stale)$/, (_, status) => status === 'blocked' ? '：受阻' : '：依据已过期，需重新核验');
   const presentation = {
+    ...(planReview ? { plan_review: planReview } : {}),
     read_only: true, execution_allowed: false, approval_validity: 'not-checked',
     stage: value.stage ? presenter.label(value.stage, {trace: false}) : '未登记',
     next_stage: nextStage ? presenter.label(nextStage, {trace: false}) : '待核验', next_stage_reason: readable(nextStageReason),
@@ -208,6 +220,7 @@ export function lifecycleStatus({ root, checkpointRef, taskPackageRef }) {
     names: presenter.catalog({stage: value.stage, next_stage: nextStage, work_unit: value.next_work_unit, owner, gates: value.gates, artifacts: value.artifacts}),
   };
   return {
+    ...(planReview ? { plan_review: planReview } : {}),
     presentation,
     decomposition: {business, implementation: {status:implementationArtifact?'recorded':'not-recorded',recorded_status:implementationArtifact?.status??null,ref:implementationArtifact?.ref??null,coverage:implementationCoverage}, readiness:{status:'not-evaluated',reason:'阶段工作完成不替代批准与实现就绪校验'}},
     schema_version: 1, read_only: true, stage: value.stage, next_stage: nextStage, next_stage_reason: nextStageReason, next_stage_source_refs: [...new Set(stageAssociations.map(item => item.ref))], checkpoint_status: value.status,

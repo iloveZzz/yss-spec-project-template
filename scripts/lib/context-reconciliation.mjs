@@ -3,6 +3,7 @@ import path from "node:path";
 import { parseDocument } from "../vendor/yaml.mjs";
 import { resolveContextTermRefs, verifyContextSnapshot } from "./context-contract.mjs";
 import { validateJsonSchema } from "./json-schema.mjs";
+import { sourceContextRef } from './source-context-snapshot.mjs';
 const schemaPath = path.resolve(import.meta.dirname, "../../.template-spec/process/schemas/context-reconciliation.schema.json");
 export function parseReconciliationFile(file) {
   const document = parseDocument(readFileSync(file, "utf8"), { maxAliasCount: 0, uniqueKeys: true });
@@ -26,7 +27,7 @@ export function verifyContextReconciliation(file, { root = process.cwd() } = {})
   if (value.status === "not-applicable" && (value.repository_mode !== "template-source" || !value.reason)) throw new TypeError("not-applicable 只适用于 template-source 且必须说明 reason");
   for (const ref of value.evidence_refs) {
     if (/^https?:\/\//.test(ref)) continue;
-    const resolved = path.resolve(root, ref);
+    const resolved = path.resolve(root, sourceContextRef(root, ref));
     if (!resolved.startsWith(`${root}${path.sep}`) && resolved !== root) throw new TypeError(`evidence_ref 越出仓库: ${ref}`);
     if (!existsSync(resolved)) throw new TypeError(`evidence_ref 不可读: ${ref}`);
   }

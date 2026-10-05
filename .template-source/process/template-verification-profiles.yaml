@@ -39,6 +39,8 @@ core_escalation_patterns:
   - scripts/lib/review-capabilities.mjs
   - scripts/lib/review-package.mjs
   - scripts/prepare-review-package
+  - scripts/lib/plan-review-control.mjs
+  - scripts/plan-review-control
   - scripts/lib/lifecycle-transition.mjs
   - AGENTS.md
   - yss-project.yaml
@@ -733,6 +735,9 @@ groups:
         id: check.b636f17f4fdfecf1
   collaboration:
     commands:
+      - run: node scripts/verify-plan-review-control-scenarios
+        when: template-source
+        id: check.plan-review-control-convergence
       - run: node --test .template-source/tooling/node/test/approval-current.test.mjs .template-source/tooling/node/test/review-capabilities.test.mjs .template-source/tooling/node/test/approval-consumption.test.mjs
         when: template-source
         id: check.role-gates-current-capability

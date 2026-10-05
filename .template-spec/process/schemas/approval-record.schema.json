@@ -131,6 +131,9 @@
         "type": "string",
         "pattern": "^capability\\.[a-z0-9][a-z0-9-]*$"
       }
+    },
+    "plan_review_binding": {
+      "$ref": "plan-review-control.schema.json#/$defs/binding"
     }
   },
   "$comment": "Full structure schema retains history/draft readability. Current kernel requires nonempty independently bound subject/scope/basis/identity and current task; no history result authorizes execution.",
