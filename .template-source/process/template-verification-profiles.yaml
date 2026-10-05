@@ -414,6 +414,7 @@ routing:
       - scripts/lib/governance-io.mjs
       - scripts/lib/checkpoint-boundary.mjs
       - tests/project-ci.test.mjs
+      - tests/flow-verification-routing.test.mjs
       - .template-spec/process/project-ci.md
       - .template-spec/process/checkpoint-boundary.yaml
     groups:

@@ -23,20 +23,33 @@ function updateExecutionMetrics(report) {
   report.metrics.test_files=new Set(report.results.flatMap(x=>x.test_files||[])).size;
   report.metrics.output_bytes=report.results.filter(x=>!x.reused).reduce((n,x)=>n+[x.stdoutFile,x.stderrFile].reduce((m,f)=>m+(f&&fs.existsSync(f)?fs.statSync(f).size:0),0),0);
 }
+function updateGateResults(report) {
+  if(!Array.isArray(report.plan?.commands)||!Array.isArray(report.results))return;
+  const resultFor=(task,index)=>report.results.find(row=>task.task_id?row.task_id===task.task_id:row.index===index||row.id===task.id);
+  const passed=row=>row&&row.code===0&&!row.skipped&&!row.storageError;
+  const observedSuccess=row=>{
+    if(!passed(row))return false;
+    const actual=row.reused?report.results.find(origin=>row.reused_from?.task_id?origin.task_id===row.reused_from.task_id:origin.index===row.reused_from?.index):row;
+    return passed(actual)&&(!row.reused||actual!==row&&!actual.reused&&actual.command===row.command)&&actual.actual_exit_code_observed===true&&actual.actual_exit_code===0&&actual.actual_exit_signal===null;
+  };
+  const finalIntegrity=report.status==='passed'&&report.final_exit?.observed===true&&report.final_exit.code===0&&report.final_exit.signal===null&&report.input_drift===false&&report.input_after_sha256===report.input_sha256&&Array.isArray(report.unexecuted)&&report.unexecuted.length===0&&report.plan.commands.length>0&&report.plan.commands.every((task,index)=>observedSuccess(resultFor(task,index)));
+  report.gate_results=(report.plan.gates||[]).filter(gate=>gate.selected).map(gate=>{
+    const tasks=report.plan.commands.filter(task=>task.gate_ids?.includes(gate.id)||gate.check_ids?.includes(task.id));
+    const ownTasksPassed=tasks.length>0&&tasks.every(task=>passed(resultFor(task,report.plan.commands.indexOf(task))));
+    return {id:gate.id,task_ids:tasks.map(task=>task.task_id||task.id),status:ownTasksPassed&&(gate.id!=='check.verification-final-integrity'||finalIntegrity)?'passed':'failed'};
+  });
+}
 export function finalizeVerificationReport(report,{status,error=null,wallMs,repositoryMode}) {
   report.status=status;report.error=error;report.finished_at=new Date().toISOString();report.metrics.wall_ms=wallMs;
   updateExecutionMetrics(report);
   report.unexecuted=report.plan.commands.filter((x,index)=>!report.results.some(r=>x.task_id?r.task_id===x.task_id:r.index===index)).map(x=>({id:x.id,task_id:x.task_id,command:x.command,reason:x.when&&x.when!==repositoryMode?'repository-mode':'failure-or-interruption'}));
   if(report.plan.strategy!=='qualified-gates'&&report.plan.selection?.effective==='allowlist')report.unexecuted.push(...(report.plan.selection.omitted||[]));
-  report.gate_results=(report.plan.gates||[]).filter(g=>g.selected).map(g=>{
-    const tasks=report.plan.commands.filter(c=>c.gate_ids?.includes(g.id)||g.check_ids?.includes(c.id));
-    const rows=tasks.map(c=>report.results.find(r=>c.task_id?r.task_id===c.task_id:r.id===c.id));
-    return {id:g.id,task_ids:tasks.map(c=>c.task_id||c.id),status:tasks.length&&rows.every(r=>r&&r.code===0&&!r.skipped&&!r.storageError)?'passed':'failed'};
-  });
+  updateGateResults(report);
   return report;
 }
 export function saveVerificationReport(directory,report) {
   updateExecutionMetrics(report);
+  updateGateResults(report);
   fs.mkdirSync(directory,{recursive:true});const file=path.join(directory,'report.json'),temp=file+'.tmp';
   fs.writeFileSync(temp,JSON.stringify(report,null,2)+'\n');fs.renameSync(temp,file);
 }

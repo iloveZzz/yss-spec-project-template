@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { createVerificationReport, finalizeVerificationReport,verificationInputDigest } from '../scripts/lib/verification-report.mjs';
+import { createVerificationReport, finalizeVerificationReport,saveVerificationReport,verificationInputDigest } from '../scripts/lib/verification-report.mjs';
 import { validateVerificationReport,compileExpectedVerificationPlan,assertQualificationExecutionContract } from '../.template-source/scripts/lib/verification-report-validator.mjs';
 import {compileLegacyPlan} from '../.template-source/scripts/lib/legacy-verification.mjs';
 import {addVerificationExecutionTasks,compileTaskExecution} from '../.template-source/scripts/lib/verification-execution-plan.mjs';
@@ -35,6 +35,18 @@ test('完整 v2 报告按独立期望台账核验', t => {
   assert.equal(validateVerificationReport(f.report, f.options).status, 'passed');
   f.report.plan.commands = []; f.report.results = [];
   assert.throws(() => validateVerificationReport(f.report, f.options), /任务|task/);
+});
+
+test('G20 等待监督 close 并结合全局完整性，普通 Gate 保持独立结论',t=>{
+ const f=fixture(t),id='check.verification-final-integrity';f.plan.gates.push({id,selected:true,check_ids:['check.syntax']});f.report.plan=structuredClone(f.plan);
+ const gate=report=>report.gate_results.find(row=>row.id===id),ordinary=report=>report.gate_results.find(row=>row.id==='G04');
+ f.report.final_exit={code:null,signal:null,observed:false};finalizeVerificationReport(f.report,{status:'passed',wallMs:1,repositoryMode:'template-source'});assert.equal(gate(f.report).status,'failed');assert.equal(ordinary(f.report).status,'passed');
+ f.report.final_exit={code:0,signal:null,observed:true};saveVerificationReport(f.directory,f.report);assert.equal(gate(f.report).status,'passed');assert.equal(gate(JSON.parse(fs.readFileSync(path.join(f.directory,'report.json')))).status,'passed');
+ for(const mutate of [report=>report.final_exit.code=1,report=>report.final_exit.observed=false,report=>report.final_exit.signal='SIGTERM',report=>report.status='failed',report=>report.input_drift=true,report=>report.input_after_sha256='c'.repeat(64),report=>report.unexecuted=[{id:'missing'}],report=>report.results[0].actual_exit_code_observed=false]){
+  const report=structuredClone(f.report);mutate(report);saveVerificationReport(f.directory,report);assert.equal(gate(report).status,'failed');assert.equal(ordinary(report).status,'passed');assert.equal(gate(JSON.parse(fs.readFileSync(path.join(f.directory,'report.json')))).status,'failed');
+ }
+ const missing=structuredClone(f.report);missing.plan.commands.push({id:'check.missing',task_id:'missing.0',command:'node --check missing.mjs',gate_ids:[]});missing.unexecuted=[];saveVerificationReport(f.directory,missing);assert.equal(gate(missing).status,'failed');assert.equal(ordinary(missing).status,'passed');
+ finalizeVerificationReport(missing,{status:'passed',wallMs:1,repositoryMode:'template-source'});assert.equal(missing.unexecuted.length,1);assert.equal(gate(missing).status,'failed');assert.equal(ordinary(missing).status,'passed');
 });
 
 test('v2 schema 与 fresh consumer 拒绝实际退出、Gate、日志、invocation 和漂移缺陷',t=>{

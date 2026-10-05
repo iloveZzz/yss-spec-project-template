@@ -9,9 +9,9 @@ import {verificationInputDigest} from '../../scripts/lib/verification-report.mjs
 import {loadLegacyManifest,verificationPolicyDigest,verificationHash} from './lib/verification-gates.mjs';
 import {compileLegacyPlan} from './lib/legacy-verification.mjs';
 import {executeVerificationPlan} from './lib/template-verification-worker.mjs';
-import {qualificationBindings,qualificationRunEvidence,validateQualification,qualificationPerformance,collectQualificationCounterexamples,QUALIFICATION_ROUTE_REGISTRY} from './lib/verification-qualification.mjs';
+import {qualificationBindings,qualificationRunEvidence,validateQualification,qualificationPerformance,collectQualificationCounterexamples,QUALIFICATION_ROUTE_REGISTRY,measureQualificationRun,validateQualificationSideEvidence} from './lib/verification-qualification.mjs';
 import {validateBaseline} from './lib/verification-baseline.mjs';
-import {validateBaselineReport} from './lib/verification-report-validator.mjs';
+import {validateBaselineReport,validateQualificationIntegration} from './lib/verification-report-validator.mjs';
 import {assembleQualificationIntegration} from './lib/verification-delivery-run.mjs';
 import {compileQualificationPlans} from './lib/verification-qualification-plan.mjs';
 
@@ -58,10 +58,22 @@ export async function runQualification({root=ROOT,config=loadVerificationProfile
   const reportFile=path.join(output,'qualification.json'),save=()=>fs.writeFileSync(reportFile,JSON.stringify(proof,null,2)+'\n');save();
   const run=async(side,plans,directory,caseRoot=root,caseEnvironment=environment)=>{
     if(signal?.aborted)throw Error('qualification-interrupted');
-    const start=performance.now();
-    const result=await executePairSide({side,root:caseRoot,plan:plans[side],reportDir:directory,purpose:'qualification',concurrency:side==='legacy'?1:2,toolingMode:side==='legacy'?'legacy':'optimized',environment:caseEnvironment,signal});
-    const evidence=qualificationRunEvidence(result,{directory:output,wallMs:performance.now()-start});
-    if(result.integrationReportFile){const file=fs.realpathSync(result.integrationReportFile);evidence.integration={report_ref:path.relative(output,file),report_sha256:verificationHash(fs.readFileSync(file))};}
+    let evidence;
+    const measured=await measureQualificationRun({directory:output,reference:`${path.basename(directory)}.measurement.json`,execute:async()=>{
+      const result=await executePairSide({side,root:caseRoot,plan:plans[side],reportDir:directory,purpose:'qualification',concurrency:side==='legacy'?1:2,toolingMode:side==='legacy'?'legacy':'optimized',environment:caseEnvironment,signal});
+      if(scope==='gates'&&result.observed&&result.code===0) {
+        const reportFile=fs.realpathSync(result.reportFile),report=JSON.parse(fs.readFileSync(reportFile));
+        validateQualificationSideEvidence({root:caseRoot,config,proof,report,reportDirectory:path.dirname(reportFile),side,observedExitCode:result.code});
+        if(!result.integrationReportFile)throw Error('qualification-all-four-release-missing');
+        const integrationFile=fs.realpathSync(result.integrationReportFile),checked=validateQualificationIntegration({root:caseRoot,reportFile:integrationFile,expectedDigest:verificationHash(fs.readFileSync(integrationFile)),expectedCommit:proof.representative_commit});
+        if(!checked.valid)throw Error(`qualification-all-four-release-invalid:${checked.reasons.join(',')}`);
+      }
+      evidence=qualificationRunEvidence(result,{directory:output});
+      if(result.integrationReportFile){const file=fs.realpathSync(result.integrationReportFile);evidence.integration={report_ref:path.relative(output,file),report_sha256:verificationHash(fs.readFileSync(file))};}
+      return result;
+    }});
+    evidence.wall_ms=measured.wall_ms;
+    evidence.measurement=measured.measurement;
     return evidence;
   };
   try {

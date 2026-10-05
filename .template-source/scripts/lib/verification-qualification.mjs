@@ -3,12 +3,13 @@ import path from 'node:path';
 import os from 'node:os';
 import {createHash} from 'node:crypto';
 import {spawnSync} from 'node:child_process';
+import assert from 'node:assert/strict';
 import * as reportValidators from './verification-report-validator.mjs';
 import {loadLegacyManifest,verificationPatternMatches} from './verification-gates.mjs';
 import {compileQualificationPlans} from './verification-qualification-plan.mjs';
 import {addVerificationExecutionTasks} from './verification-execution-plan.mjs';
+import {collectReleaseSources} from './verification-artifacts.mjs';
 import {validateBaseline} from './verification-baseline.mjs';
-import {validateJsonSchema} from '../../../scripts/lib/json-schema.mjs';
 
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 const median=values=>{const sorted=[...values].sort((a,b)=>a-b),middle=Math.floor(sorted.length/2);return sorted.length%2?sorted[middle]:(sorted[middle-1]+sorted[middle])/2;};
@@ -36,6 +37,9 @@ export const QUALIFICATION_COUNTEREXAMPLE_REGISTRY=Object.freeze([
   {file:'tests/verification-report-v2.test.mjs',name:'批量 Node 测试显式串行，报告必须绑定请求和实际 file argv cwd env',categories:['node-batch-argv-cwd-environment-tamper'],seam:'compileTaskExecution / validateVerificationReport'},
   {file:'tests/verification-qualification.test.mjs',name:'配对顺序、瞬时真实退出、结果及日志被篡改均不能继承资格',categories:['missing-result'],seam:'validateQualification'},
   {file:'tests/verification-qualification.test.mjs',name:'独立资格编译器拒绝成对删除 syntax、preflight、prepare、cleanup 与 Gate 台账',categories:['missing-syntax','missing-preflight','missing-preparation','missing-cleanup','ledger-self-assertion'],seam:'validateQualificationPlanLedger'},
+  {file:'tests/verification-qualification.test.mjs',name:'资格公开消费者拒绝真实 Node 的实际 argv cwd env 与源码回执篡改',categories:['qualification-actual-execution-tamper','qualification-source-receipt-tamper'],seam:'validateQualificationReportEvidence / validateVerificationReport'},
+  {file:'tests/verification-qualification.test.mjs',name:'资格公开消费者复用普通 v2 的完整同轮执行输入等价合同',categories:['qualification-reuse-input-mismatch'],seam:'validateQualificationReportEvidence / validateVerificationReport'},
+  {file:'tests/verification-qualification.test.mjs',name:'资格计时只消费完整 callback 单调时钟回执，不能孤立放大或缩短真实时长',categories:['qualification-timing-tamper'],seam:'measureQualificationRun / validateQualification'},
   {file:'tests/verification-baseline.test.mjs',name:'基线成功证据必须绑定同一 SHA、报告字节和当前策略',categories:['baseline-digest'],seam:'validateBaseline'},
   {file:'tests/verification-baseline.test.mjs',name:'未来和非祖先提交不能缩小当前候选',categories:['baseline-nonancestor'],seam:'validateBaseline'},
   {file:'tests/verification-baseline.test.mjs',name:'Gitlink 基线差异按真实提交登记而不是工作树版本猜测',categories:['gitlink'],seam:'validateBaseline'},
@@ -76,6 +80,47 @@ function evidenceFile(directory,reference,digest) {
   if(actual!==file||relative.startsWith('..')||path.isAbsolute(relative)||!fs.lstatSync(file).isFile())throw Error('qualification-evidence-path-invalid');
   const bytes=fs.readFileSync(file);if(hash(bytes)!==digest)throw Error('qualification-evidence-digest-mismatch');return {file,bytes};
 }
+const MEASUREMENT_ROUNDING_MS=2; // Two UTC endpoints and one duration round to milliseconds.
+/** The window includes the whole callback, including strict terminal consumers. */
+export async function measureQualificationRun({directory,reference,execute}) {
+  const file=path.resolve(directory,reference),relative=path.relative(fs.realpathSync(directory),file);
+  if(typeof execute!=='function'||!relative||relative.startsWith('..')||path.isAbsolute(relative)||fs.existsSync(file))throw Error('qualification-measurement-output-invalid');
+  const startedAt=new Date().toISOString(),start=process.hrtime.bigint();
+  const result=await execute();
+  const reportFile=fs.realpathSync(result.reportFile),reportDigest=hash(fs.readFileSync(reportFile));
+  const integration=result.integrationReportFile?{report_ref:path.relative(directory,fs.realpathSync(result.integrationReportFile)),report_sha256:hash(fs.readFileSync(result.integrationReportFile))}:undefined;
+  const end=process.hrtime.bigint(),finishedAt=new Date().toISOString(),wallMs=Math.round(Number(end-start)/1e6);
+  const measurement={schema_version:1,kind:'verification-qualification-measurement',clock:'process.hrtime.bigint',
+    started_at:startedAt,finished_at:finishedAt,started_monotonic_ns:String(start),finished_monotonic_ns:String(end),wall_ms:wallMs,
+    report_ref:path.relative(directory,reportFile),report_sha256:reportDigest,actual_close:{code:result.code,signal:result.signal??null,observed:result.observed},
+    ...(integration?{integration}:{})};
+  fs.writeFileSync(file,JSON.stringify(measurement,null,2)+'\n');
+  return {result,wall_ms:wallMs,measurement:{ref:relative,sha256:hash(fs.readFileSync(file))}};
+}
+function measuredQualificationWall(directory,run,report) {
+  const measurement=JSON.parse(evidenceFile(directory,run.measurement?.ref,run.measurement?.sha256).bytes);
+  if(measurement.schema_version!==1||measurement.kind!=='verification-qualification-measurement'||measurement.clock!=='process.hrtime.bigint'||
+    !/^\d+$/.test(measurement.started_monotonic_ns||'')||!/^\d+$/.test(measurement.finished_monotonic_ns||''))throw Error('qualification-measurement-invalid');
+  const difference=BigInt(measurement.finished_monotonic_ns)-BigInt(measurement.started_monotonic_ns);
+  if(difference<=0n||difference>BigInt(Number.MAX_SAFE_INTEGER))throw Error('qualification-measurement-clock-invalid');
+  const wallMs=Math.round(Number(difference)/1e6),started=Date.parse(measurement.started_at),finished=Date.parse(measurement.finished_at);
+  if(!Number.isInteger(wallMs)||wallMs<=0||measurement.wall_ms!==wallMs||run.wall_ms!==wallMs||
+    !Number.isFinite(started)||!Number.isFinite(finished)||finished<started||Math.abs(finished-started-wallMs)>MEASUREMENT_ROUNDING_MS)throw Error('qualification-measurement-duration-mismatch');
+  if(measurement.report_ref!==run.report_ref||measurement.report_sha256!==run.report_sha256||
+    JSON.stringify(measurement.actual_close)!==JSON.stringify(run.actual_close)||JSON.stringify(measurement.integration)!==JSON.stringify(run.integration))throw Error('qualification-measurement-report-binding-mismatch');
+  const reportStarted=Date.parse(report.started_at),reportFinished=Date.parse(report.finished_at),supervision=report.metrics?.wall_ms;
+  if(!Number.isInteger(supervision)||supervision<0||!Number.isFinite(reportStarted)||!Number.isFinite(reportFinished)||reportFinished<reportStarted||
+    reportStarted<started-MEASUREMENT_ROUNDING_MS||reportFinished>finished+MEASUREMENT_ROUNDING_MS||
+    wallMs+MEASUREMENT_ROUNDING_MS<supervision||wallMs+MEASUREMENT_ROUNDING_MS<reportFinished-reportStarted)throw Error('qualification-measurement-shorter-than-supervision');
+  const commands=[...(report.results||[]).filter(row=>!row.reused&&!row.skipped)];
+  if(run.integration){const integration=JSON.parse(evidenceFile(directory,run.integration.report_ref,run.integration.report_sha256).bytes);commands.push(...(integration.commands||[]));}
+  for(const row of commands) {
+    if(!Number.isFinite(row.duration_ms)||row.duration_ms<0||wallMs+MEASUREMENT_ROUNDING_MS<row.duration_ms)throw Error('qualification-measurement-shorter-than-command');
+    if(row.started_at!==undefined||row.finished_at!==undefined){const a=Date.parse(row.started_at),b=Date.parse(row.finished_at);
+      if(!Number.isFinite(a)||!Number.isFinite(b)||b<a||a<started-MEASUREMENT_ROUNDING_MS||b>finished+MEASUREMENT_ROUNDING_MS||wallMs+MEASUREMENT_ROUNDING_MS<b-a)throw Error('qualification-measurement-command-window-mismatch');}
+  }
+  return {wall_ms:wallMs,started_monotonic_ns:measurement.started_monotonic_ns,finished_monotonic_ns:measurement.finished_monotonic_ns,started_at_ms:started,finished_at_ms:finished};
+}
 export function collectQualificationCounterexamples({root,directory}) {
   const files=[...new Set(QUALIFICATION_COUNTEREXAMPLE_REGISTRY.map(row=>row.file))],suites=[];
   for(const [index,file]of files.entries()) {
@@ -114,16 +159,38 @@ function qualificationChangedFiles(root,proof) {
   const diff=spawnSync('git',['diff','--name-only','-z','--no-renames',`${base}...${commit}`],{cwd:root,encoding:'utf8',maxBuffer:32*1024*1024});if(diff.status!==0)throw Error('qualification-representative-diff-unobserved');
   return [...new Set([...diff.stdout.split('\0').filter(Boolean),...additional])].sort();
 }
-export function validateQualificationPlanLedger({root,config,proof,report,reportDirectory,side}) {
-  try {
+function verifiedQualificationPlan({root,config,proof,report,reportDirectory,side}) {
     const changed=qualificationChangedFiles(root,proof),plans=compileQualificationPlans({root,config,changedFiles:changed,commit:proof.representative_commit});
-    const expected=addVerificationExecutionTasks(plans[side],{root,reportDir:reportDirectory,purpose:'qualification',reference:side==='legacy'});
+    const expected=addVerificationExecutionTasks(plans[side],{root,reportDir:reportDirectory,purpose:'qualification',reference:side==='legacy',fixedCommit:proof.representative_commit});
     const normalize=value=>typeof value==='string'?value.replaceAll(root,report.root):Array.isArray(value)?value.map(normalize):value&&typeof value==='object'?Object.fromEntries(Object.entries(value).map(([key,item])=>[key,normalize(item)])):value;
-    const taskView=task=>({task_id:task.task_id,id:task.id,command:task.command,gate_ids:[...(task.gate_ids||[])].sort(),depends_on:[...(task.depends_on||[])].sort(),kind:task.kind??null,when:task.when??null});
-    const gateView=gate=>({id:gate.id,display_id:gate.display_id,selected:gate.selected,check_ids:[...(gate.check_ids||[])].sort(),task_ids:[...(gate.task_ids||[])].sort(),depends_on:[...(gate.depends_on||[])].sort(),release_families:gate.release_families||[],required_at_release:gate.required_at_release});
-    if(JSON.stringify(report.plan.changed_files)!==JSON.stringify(changed)||report.plan.strategy!==plans[side].strategy||JSON.stringify((report.plan.commands||[]).map(taskView))!==JSON.stringify(normalize(expected.commands.map(taskView)))||JSON.stringify((report.plan.gates||[]).map(gateView))!==JSON.stringify((expected.gates||[]).map(gateView)))throw Error('qualification-independent-plan-ledger-mismatch');
-    return {valid:true,reasons:[]};
-  }catch(error){return {valid:false,reasons:[error.message]};}
+    const normalized=normalize(expected);
+    // Every task control is execution input. A projected view would let a
+    // report delete argv/env, change scheduling or drop future controls.
+    try {
+      assert.deepEqual(report.plan.changed_files,changed);
+      assert.equal(report.plan.strategy,plans[side].strategy);
+      assert.equal(report.plan.source_requirement,normalized.source_requirement);
+      assert.deepEqual(report.plan.tooling,normalized.tooling);
+      assert.deepEqual(report.plan.commands,normalized.commands);
+      assert.deepEqual(report.plan.gates||[],normalized.gates||[]);
+    }catch {throw Error('qualification-independent-plan-ledger-mismatch');}
+    return normalized;
+}
+export function validateQualificationPlanLedger(options) {
+  try {verifiedQualificationPlan(options);return {valid:true,reasons:[]};}
+  catch(error){return {valid:false,reasons:[error.message]};}
+}
+/** expectedPlan and expectedSourcesManifest come from the independent consumer. */
+export function validateQualificationReportEvidence(report,{root,expectedPlan,reportDirectory,expectedSourcesManifest,observedExitCode}={}) {
+  if(report?.purpose!=='qualification'||report.experimental!==true)throw Error('qualification-run-purpose-invalid');
+  if(!Number.isInteger(observedExitCode))throw Error('qualification-close-not-observed');
+  return reportValidators.validateVerificationReport(report,{root,expectedPlan,reportDirectory,expectedSourcesManifest,observedExitCode,
+    requireRelease:false,historical:true,expectedInvocation:{command:'executeVerificationPlan',args:[]}});
+}
+export function validateQualificationSideEvidence({root,config,proof,report,reportDirectory,side,observedExitCode}) {
+  const expectedPlan=verifiedQualificationPlan({root,config,proof,report,reportDirectory,side});
+  const expectedSourcesManifest=collectReleaseSources({root,commit:proof.representative_commit});
+  return validateQualificationReportEvidence(report,{root,expectedPlan,reportDirectory,expectedSourcesManifest,observedExitCode});
 }
 function verifyRun(directory,run,{expectFailure=false}={}) {
   const {file,bytes}=evidenceFile(directory,run.report_ref,run.report_sha256),report=JSON.parse(bytes),close=run.actual_close;
@@ -162,7 +229,8 @@ function verifyRun(directory,run,{expectFailure=false}={}) {
   if(expectFailure) {
     if(close.code===0||!failed.length||report.status!=='failed')throw Error('qualification-negative-not-rejected');
   } else if(close.code!==0||report.status!=='passed'||report.unexecuted?.length||failed.length)throw Error('qualification-run-not-passed');
-  return {report,failed,wall_ms:run.wall_ms,report_file:file};
+  const measurement=measuredQualificationWall(directory,run,report);
+  return {report,failed,wall_ms:measurement.wall_ms,measurement,report_file:file};
 }
 
 /** Counts and times are reconstructed from bound run reports and actual command logs. */
@@ -183,14 +251,20 @@ export function validateQualification({root,config,reportFile,expectedDigest,exp
       if(!baseline.valid)throw Error(`qualification-bootstrap-baseline-invalid:${baseline.reasons.join(',')}`);
     }
     if(!Array.isArray(proof.pairs)||proof.pairs.length<5)throw Error('qualification-five-pairs-missing');
-    const legacy=[],candidate=[],pairIds=new Set();
+    const expectedSourcesManifest=scope==='gates'?collectReleaseSources({root,commit:proof.representative_commit}):undefined;
+    const legacy=[],candidate=[],pairIds=new Set(),measurementRefs=new Set();let previousMeasurement;
     for(const [index,pair]of proof.pairs.entries()) {
       if(pairIds.has(pair.pair_id)||JSON.stringify(pair.order)!==JSON.stringify(index%2?['candidate','legacy']:['legacy','candidate']))throw Error('qualification-pair-order-invalid');pairIds.add(pair.pair_id);
       const before=verifyRun(directory,pair.legacy),after=verifyRun(directory,pair.candidate);
+      for(const side of pair.order) {
+        const observed=side==='legacy'?before:after,measurement=observed.measurement,ref=pair[side].measurement.ref;
+        if(measurementRefs.has(ref)||previousMeasurement&&(BigInt(measurement.started_monotonic_ns)<BigInt(previousMeasurement.finished_monotonic_ns)||measurement.started_at_ms+MEASUREMENT_ROUNDING_MS<previousMeasurement.finished_at_ms))throw Error('qualification-measurement-order-invalid');
+        measurementRefs.add(ref);previousMeasurement=measurement;
+      }
       if(scope==='gates')for(const [side,observed]of [['legacy',before],['candidate',after]]) {
-        validateJsonSchema(observed.report,path.join(root,'.template-source/process/schemas/template-verification-report.schema.json'));
-        const expected=validateQualificationPlanLedger({root,config,proof,report:observed.report,reportDirectory:path.dirname(observed.report_file),side});
-        if(!expected.valid)throw Error(expected.reasons[0]);
+        const expectedPlan=verifiedQualificationPlan({root,config,proof,report:observed.report,reportDirectory:path.dirname(observed.report_file),side});
+        validateQualificationReportEvidence(observed.report,{root,expectedPlan,reportDirectory:path.dirname(observed.report_file),
+          expectedSourcesManifest,observedExitCode:pair[side].actual_close.code});
       }
       if(scope==='gates'&&(before.report.plan.representative_commit!==proof.representative_commit||after.report.plan.representative_commit!==proof.representative_commit||before.report.input_sha256!==proof.input_sha256||after.report.input_sha256!==proof.input_sha256))throw Error('qualification-representative-input-mismatch');
       const condition=report=>({...Object.fromEntries(['node','platform','arch','cpus','cache_condition','input_observation'].map(key=>[key,report.environment?.[key]])),toolchains:report.preflight?.observations?.filter(row=>['python-jsonschema','pnpm-and-tooling-lock','vue-author-toolchain'].includes(row.name))});
@@ -198,7 +272,7 @@ export function validateQualification({root,config,reportFile,expectedDigest,exp
       if(scope==='gates'&&['node','platform','arch','cpus'].some(key=>before.report.environment?.[key]!==expectedBindings[key]))throw Error('qualification-current-environment-mismatch');
       if(scope==='gates'&&(!before.report.preflight?.observations?.length||before.report.preflight.status!=='passed'||after.report.preflight?.status!=='passed'))throw Error('qualification-preflight-evidence-missing');
       if(scope==='gates')for(const [observed,contract]of [[before.report,expectedBindings.legacy_execution_contract],[after.report,expectedBindings.execution_contract]]) {
-        const actual={concurrency:observed.environment?.concurrency,tooling_mode:observed.environment?.tooling_mode,test_concurrency:observed.plan.tooling?.test_concurrency??observed.environment?.test_concurrency};
+        const actual={concurrency:observed.environment?.concurrency,tooling_mode:observed.environment?.tooling_mode,test_concurrency:observed.environment?.test_concurrency};
         if(JSON.stringify(actual)!==JSON.stringify(contract))throw Error('qualification-execution-contract-mismatch');
       }
       if(before.report.plan.strategy!=='legacy-reference'||after.report.plan.strategy!=='qualification-shadow')throw Error('qualification-pair-strategy-invalid');
