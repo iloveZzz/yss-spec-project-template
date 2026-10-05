@@ -6,29 +6,53 @@ import path from "node:path";
 import os from "node:os";
 import fs from "node:fs";
 import { resolveMaintenanceOutput } from "./lib/maintenance-storage.mjs";
+import { createHash } from "node:crypto";
 import { stringify } from "./vendor/yaml.mjs";
 import { evaluateMaintenanceReviewRound, generateReviewerTaskPackages } from "./lib/maintenance-review-workflow.mjs";
 import { captureMaintenanceCandidate, inspectMaintenanceCandidate } from "./lib/maintenance-candidate.mjs";
 import { validateTaskPackage } from "./lib/task-package.mjs";
 import { ROOT } from "./lib/template-verification.mjs";
 
-const fixtureRoot = mkdtempSync(path.join(ROOT, "scripts/fixtures/.review-workflow-"));
+const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
+const reviewFixture=process.argv.includes('--review-fixture');
+if(!reviewFixture){
+  // Keep the state/package fixture separate from the real repository's complete
+  // release policy. Its observed verifier and independent policy are real.
+  const base=fs.realpathSync(mkdtempSync(path.join(os.tmpdir(),'review-workflow-source-'))),source=path.join(base,'source');
+  try{
+    mkdirSync(source);
+    fs.cpSync(path.join(ROOT,'scripts'),path.join(source,'scripts'),{recursive:true,filter:file=>{const ref=path.relative(path.join(ROOT,'scripts'),file);return ref!=='fixtures'&&!ref.startsWith(`fixtures${path.sep}`);}});
+    for(const ref of ['.template-spec','.template-source/scripts/lib','.template-source/process','.template-source/cli-core'])fs.cpSync(path.join(ROOT,ref),path.join(source,ref),{recursive:true});
+    for(const ref of ['AGENTS.md','CONTEXT.md','skills-lock.json'])fs.copyFileSync(path.join(ROOT,ref),path.join(source,ref));
+    mkdirSync(path.join(source,'.agents/skills/maintaining-skills'),{recursive:true});fs.copyFileSync(path.join(ROOT,'.agents/skills/maintaining-skills/SKILL.md'),path.join(source,'.agents/skills/maintaining-skills/SKILL.md'));
+    writeFileSync(path.join(source,'yss-project.yaml'),'schema_version: 1\nrepository_mode: template-source\n');
+    writeFileSync(path.join(source,'.template-source/process/template-verification-profiles.yaml'),JSON.stringify({schema_version:1,default_selection:'legacy',profiles:{fast:{all_groups:true},candidate:{all_groups:true},release:{all_groups:true}},groups:{fixture:{commands:[{id:'check.review-fixture',run:'node -e "require(\'node:assert/strict\').equal(2+2,4)"'}]}},required_files:[],syntax_files:[],routing:[]}));
+    const gitAt=(cwd,...args)=>{const result=spawnSync('git',args,{cwd,encoding:'utf8'});assert.equal(result.status,0,result.stderr);},git=(...args)=>gitAt(source,...args);git('init','-q');
+    for(const [folder,name]of [['create-yss-spec','create-yss-spec'],['create-yss-strategic-design','create-yss-harness-design'],['create-yss-harness-backend','create-yss-harness-backend'],['create-yss-harness-frontend','create-yss-harness-frontend'],...['design','backend','frontend'].map(family=>[`yss-harness-${family}-agent`,`fixture-${family}`])]){
+      const dependency=path.join(base,folder);mkdirSync(dependency);writeFileSync(path.join(dependency,'package.json'),JSON.stringify({name,version:'0.0.0'}));gitAt(dependency,'init','-q');gitAt(dependency,'add','.');gitAt(dependency,'-c','user.name=fixture','-c','user.email=fixture@example.invalid','commit','-qm','fixed dependency');git('-c','protocol.file.allow=always','submodule','add','-q',dependency,`submodules/${folder}`);
+    }
+    git('add','.');git('-c','user.name=fixture','-c','user.email=fixture@example.invalid','commit','-qm','isolated review fixture');
+    const result=spawnSync(process.execPath,[path.join(source,'scripts/verify-maintenance-review-workflow-scenarios'),'--review-fixture'],{cwd:source,env:{...process.env,YSS_RUNTIME_HOME:path.join(base,'runtime')},encoding:'utf8',maxBuffer:16*1024*1024});assert.equal(result.status,0,result.stderr||result.stdout);
+  }finally{rmSync(base,{recursive:true,force:true});}
+}else{
+const fixtureRef='maintenance:research/review-workflow-fixture',fixtureRoot=resolveMaintenanceOutput(fixtureRef,{root:ROOT});mkdirSync(fixtureRoot,{recursive:true});
 try {
-  const relativeRoot = path.relative(ROOT, fixtureRoot).replaceAll(path.sep, "/");
+  const relativeRoot = fixtureRef;
   const digest = "a".repeat(64);
   const checkpointRef = `${relativeRoot}/checkpoint.yaml`;
   const candidateRef = `${relativeRoot}/candidate-manifest.yaml`;
   const outputDir = `${relativeRoot}/reviews`;
-  const verificationRef = `${relativeRoot}/verification.md`;
-  mkdirSync(path.join(ROOT, outputDir));
-  writeFileSync(path.join(ROOT, verificationRef), "verified\n");
-  writeFileSync(path.join(ROOT, checkpointRef), stringify({
+  const verificationRef = `${relativeRoot}/verification/report.json`,reportDirectory=path.join(fixtureRoot,'verification');
+  const args=['--concurrency','1','--runtime-store','off','--report-dir',reportDirectory],verified=spawnSync(path.join(ROOT,'scripts/verify-template'),args,{cwd:ROOT,encoding:'utf8',maxBuffer:16*1024*1024});assert.equal(verified.status,0,verified.stderr||verified.stdout);
+  const reportFile=path.join(reportDirectory,'report.json'),report=JSON.parse(fs.readFileSync(reportFile));assert.equal(report.final_exit.observed,true);assert.equal(report.final_exit.code,0);
+  mkdirSync(path.join(fixtureRoot,'reviews'));
+  const checkpoint={
     schema_version: 2,
     intensity: "L3",
     classification_reason: "验证审查任务包生成",
     triggers: ["core-validator"],
     changed_assets: ["scripts/lib/template-verification.mjs"],
-    verification_evidence: ["red", "green", "refactor", "pressure-scenario", "fresh-verification", "candidate-verification", "initial-release-verification", "review-task-packages"].map((kind) => kind === "initial-release-verification" ? { kind, command: "scripts/verify-template", result: "pass", executed_at: "2026-09-01T00:00:00Z", duration_ms: 1000, evidence_ref: verificationRef } : { kind, command: `verify ${kind}`, result: "pass" }),
+    verification_evidence: ["red", "green", "refactor", "pressure-scenario", "fresh-verification", "candidate-verification", "initial-release-verification", "review-task-packages"].map((kind) => kind === "initial-release-verification" ? { kind, command: "scripts/verify-template", args,exit_code:verified.status,result: "pass", executed_at:report.finished_at,duration_ms:report.metrics.wall_ms,evidence_ref:verificationRef,evidence_digest:hash(fs.readFileSync(reportFile)) } : { kind, command: `verify ${kind}`, result: "pass" }),
     review_mode: "formal-independent",
     escalation: "none",
     target_state: "review-ready",
@@ -36,12 +60,12 @@ try {
     verification_profile: "candidate",
     review_round: 1,
     candidate_digest: digest
-  }));
+  };const checkpointFile=path.join(fixtureRoot,'checkpoint.yaml');writeFileSync(checkpointFile,stringify(checkpoint));
   const streamRef = `${relativeRoot}/candidate.bin`;
   const diffRef = `${relativeRoot}/tracked.diff`;
-  writeFileSync(path.join(ROOT, streamRef), "stream");
-  writeFileSync(path.join(ROOT, diffRef), "diff");
-  writeFileSync(path.join(ROOT, candidateRef), stringify({ candidate_kind: "yss-worktree-candidate-v1", candidate_digest: digest, snapshot_stream_ref: streamRef, tracked_diff_ref: diffRef }));
+  writeFileSync(path.join(fixtureRoot,'candidate.bin'), "stream");
+  writeFileSync(path.join(fixtureRoot,'tracked.diff'), "diff");
+  writeFileSync(path.join(fixtureRoot,'candidate-manifest.yaml'), stringify({ candidate_kind: "yss-worktree-candidate-v1", candidate_digest: digest, snapshot_stream_ref: streamRef, tracked_diff_ref: diffRef }));
 
   const packages = generateReviewerTaskPackages({
     checkpointRef,
@@ -61,6 +85,7 @@ try {
     assert.ok(taskPackage.allowed_read_paths.includes(diffRef));
     assert.equal(taskPackage.verification_results.length, 1);
     assert.equal(taskPackage.verification_results[0].evidence_ref, verificationRef);
+    assert.equal(taskPackage.verification_results[0].evidence_digest,`sha256:${hash(fs.readFileSync(reportFile))}`);
     assert.ok(!stringify(taskPackage, { lineWidth: 0 }).includes("*a1"), "Reviewer 任务包不得依赖 YAML alias");
     validateTaskPackage(taskPackage);
   }
@@ -73,6 +98,9 @@ try {
     implementationActorId: "worker.verification-efficiency",
     round: 1
   }), /candidateKind.*manifest/);
+  const initial=checkpoint.verification_evidence.find(row=>row.kind==='initial-release-verification'),savedArgs=initial.args;delete initial.args;writeFileSync(checkpointFile,stringify(checkpoint));assert.throws(()=>generateReviewerTaskPackages({checkpointRef,candidateRef,outputDir,candidateRequirement:'同一候选',implementationActorId:'worker.fixture',round:1}),/实际 args/);initial.args=savedArgs;
+  const savedDigest=initial.evidence_digest;initial.evidence_digest='0'.repeat(64);writeFileSync(checkpointFile,stringify(checkpoint));assert.throws(()=>generateReviewerTaskPackages({checkpointRef,candidateRef,outputDir,candidateRequirement:'同一候选',implementationActorId:'worker.fixture',round:1}),/摘要/);initial.evidence_digest=savedDigest;writeFileSync(checkpointFile,stringify(checkpoint));
+  const savedReport=fs.readFileSync(reportFile);for(const mutate of [value=>value.final_exit.observed=false,value=>value.results=[]]){const changed=structuredClone(report);mutate(changed);writeFileSync(reportFile,JSON.stringify(changed));initial.evidence_digest=hash(fs.readFileSync(reportFile));writeFileSync(checkpointFile,stringify(checkpoint));assert.throws(()=>generateReviewerTaskPackages({checkpointRef,candidateRef,outputDir,candidateRequirement:'同一候选',implementationActorId:'worker.fixture',round:1}),/实际|退出|结果|任务/);}writeFileSync(reportFile,savedReport);initial.evidence_digest=savedDigest;writeFileSync(checkpointFile,stringify(checkpoint));
 
   assert.equal(evaluateMaintenanceReviewRound({ review_round: 1, candidate_digest: digest, findings: [{ disposition: "violation", status: "open" }] }).current_state, "review-ready");
   const second = evaluateMaintenanceReviewRound({ review_round: 2, candidate_digest: digest, findings: [{ disposition: "violation", status: "open" }, { disposition: "judgement-call", status: "open" }] });
@@ -82,6 +110,9 @@ try {
   assert.throws(() => evaluateMaintenanceReviewRound({ review_round: 3, candidate_digest: digest, findings: [] }), /最多允许两轮/);
 } finally {
   rmSync(fixtureRoot, { recursive: true, force: true });
+}
+process.stdout.write('当前 Reviewer 包消费真实 observed v2 证据验证通过\n');
+process.exit(0);
 }
 
 const runtimeHome = fs.realpathSync(mkdtempSync(path.join(os.tmpdir(), "candidate-runtime-")));

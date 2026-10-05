@@ -1128,7 +1128,11 @@ gate_policy:
     - .template-source/cli-core/tests/cli.test.mjs
     - .template-source/tooling/node/test/approval-consumption.test.mjs
     - .template-source/scripts/lib/verification-qualification-plan.mjs
+    - .template-source/distribution/strategic-handoff-tools.lock.json
   qualification_input_patterns:
+    - tests/**
+    - .template-source/profile-skill-sync.json
+    - .template-source/distribution/**
     - scripts/**
     - .template-source/scripts/**
     - .template-source/tooling/node/**

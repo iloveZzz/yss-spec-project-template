@@ -4,7 +4,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {pathToFileURL,fileURLToPath} from 'node:url';
 import {parseArgs} from 'node:util';
-import {createHash} from 'node:crypto';
+import {createHash,randomUUID} from 'node:crypto';
 import {runGroups,printResults,runCommandToFiles} from '../../../scripts/lib/template-verification-runner.mjs';
 import {verificationInputDigest,resolveVerificationScope,createVerificationReport,finalizeVerificationReport,saveVerificationReport} from '../../../scripts/lib/verification-report.mjs';
 import {beginRuntimeRun} from '../../../scripts/lib/runtime-store.mjs';
@@ -12,7 +12,8 @@ import {validateVerificationReportDirectory} from './verification-preflight.mjs'
 import {compileLegacyPlan,loadLegacyReferenceRunner} from './legacy-verification.mjs';
 import {killTree} from '../../../scripts/lib/command-runner.mjs';
 import {validateReceipt} from './verification-delivery-run.mjs';
-import {addVerificationExecutionTasks} from './verification-execution-plan.mjs';
+import {addVerificationExecutionTasks,compileTaskExecution} from './verification-execution-plan.mjs';
+import {validateCliSourceConsumer,validateArtifact} from './verification-artifacts.mjs';
 export {addVerificationExecutionTasks} from './verification-execution-plan.mjs';
 
 const workerFile=fileURLToPath(import.meta.url);
@@ -83,7 +84,7 @@ async function prepare(argv,root) {
   }
   const mode=legacy?'legacy':requestedMode;
   plan.tooling={requested_mode:requestedMode,effective_mode:mode,verification_concurrency:concurrency,test_concurrency:mode==='legacy'?1:Math.min(2,concurrency),reason:legacy?'legacy-reference-serial':requestedMode==='optimized'?'explicit-qualified-execution':'legacy-tooling'};
-  const reportDir=values['report-dir']?validateVerificationReportDirectory(root,values['report-dir']):null;
+  const reportDir=validateVerificationReportDirectory(root,values['report-dir']||path.join(fs.realpathSync(os.tmpdir()),`yss-template-verification-${randomUUID()}`));
   plan=addVerificationExecutionTasks(plan,{root,reference:plan.strategy==='legacy-reference',checkpoints:values.checkpoint,taskPackages:values['task-package'],reportDir});
   return {values,plan,scope,root,reportDir,concurrency,toolingMode:mode,purpose:'verification',invocation:{command:path.join(root,'scripts/run-template-verification'),args:argv}};
 }
@@ -91,7 +92,7 @@ export {prepare as prepareVerificationPlan};
 async function runPrepared(input) {
   const {root,reportDir,concurrency=1,toolingMode='legacy',purpose='verification',scope={kind:'complete-candidate'},invocation=null,values={},environment:providedEnvironment=process.env}=input;
   const controller=new AbortController(),interrupt=()=>controller.abort();process.on('SIGINT',interrupt);process.on('SIGTERM',interrupt);
-  let report,logRoot,session,reference,started=performance.now(),before,exit=0,preparationStarted=false;
+  let report,logRoot,session,reference,sourceReceipt,started=performance.now(),before,exit=0,preparationStarted=false;
   const errors=[];
   const environment={...providedEnvironment,PYTHONDONTWRITEBYTECODE:'1',YSS_TEMPLATE_CONCURRENCY:String(concurrency),YSS_TOOLING_MODE:toolingMode,YSS_TOOLING_CONCURRENCY:String(toolingMode==='optimized'?Math.min(2,concurrency):1),...(reportDir?{YSS_TOOLING_REPORT_DIR:path.join(reportDir,'tooling')}:{})};
   let mode='template-source',plan=input.plan;
@@ -118,36 +119,58 @@ async function runPrepared(input) {
     const runtimeMode=values['runtime-store']||'off';if(!['off','sqlite'].includes(runtimeMode))throw new TypeError('runtime-store 必须为 sqlite 或 off');
     session=beginRuntimeRun({root,kind:'template-verification',mode:runtimeMode,input:{input_sha256:before,plan},reportDir});
     const onResult=row=>{row.log_digests=Object.fromEntries(['stdoutFile','stderrFile'].filter(key=>row[key]&&fs.existsSync(row[key])).map(key=>[key,hash(fs.readFileSync(row[key]))]));report.results.push(row);if(row.storageError)errors.push(row.storageError);if(reportDir)saveVerificationReport(reportDir,report);};
-    const legacy=plan.strategy==='legacy-full'||plan.strategy==='legacy-reference';
-    if(legacy)reference=await loadLegacyReferenceRunner(root,JSON.parse(fs.readFileSync(path.join(root,'.template-source/process/template-verification-legacy.json'))));
+    const legacyReference=plan.strategy==='legacy-reference';
+    if(legacyReference)reference=await loadLegacyReferenceRunner(root,JSON.parse(fs.readFileSync(path.join(root,'.template-source/process/template-verification-legacy.json'))));
     if(reference)report.legacy_reference=reference.binding;
+    const validateSource=()=>{
+      if(!sourceReceipt)throw new TypeError('SOURCE_TEST_RECEIPT_MISSING');
+      const receiptFile=path.join(reportDir,'consumption/source-test-receipt.json'),binding=report.source_test_receipts?.find(row=>row.ref===receiptFile);
+      if(!binding||hash(fs.readFileSync(receiptFile))!==binding.sha256)throw new TypeError('SOURCE_TEST_RECEIPT_DRIFT');
+      validateCliSourceConsumer(sourceReceipt,{root,expectedSource:report.sources_manifest.entries.find(row=>row.family==='spec'),directory:path.join(reportDir,'consumption/source-cli/spec'),artifact:report.artifacts.find(row=>row.source_tuple?.family==='spec')});
+    };
     const executeFor=phase=>async(command,options)=>{
       // Tooling owns a per-file timeout. Never apply the 600s file budget to
       // its full multi-file preparation/test driver. Phase prefixes keep
       // separate scheduler invocations from overwriting each other's logs.
-      return runCommandToFiles(command,{...options,sequence:`${phase}-${options.sequence}`,onProcess:event=>process.send?.({kind:'command-process',...event}),timeoutMs:/pnpm.*\.template-source\/tooling\/node\s+test/.test(command)?0:options.timeoutMs});
+      const candidates=plan.commands.filter(task=>task.command===command),task=options.task||candidates[0];
+      if(!task)throw new TypeError('ACTUAL_EXECUTION_TASK_MISSING');
+      let execution=compileTaskExecution(task,{root,reportDir,sourceReceipt});
+      if(execution?.source_consumer_ref){validateSource();execution={...execution,source_receipt_sha256:report.source_test_receipts.find(row=>row.ref===execution.source_consumer_ref).sha256};}
+      const row=await runCommandToFiles(command,{...options,execution,sequence:`${phase}-${options.sequence}`,onProcess:event=>process.send?.({kind:'command-process',...event}),timeoutMs:/pnpm.*\.template-source\/tooling\/node\s+test/.test(command)?0:options.timeoutMs});
+      if(execution?.source_consumer_ref)try{validateSource();}catch(error){row.code=1;row.error=[row.error,error.message].filter(Boolean).join('; ');}
+      return row;
     };
     const preparationTasks=plan.commands.filter(task=>task.group==='artifact-preparation');
     if(preparationTasks.length){
       preparationStarted=true;
-      const preparationPlan={...plan,strategy:'qualified-gates',groups:['artifact-preparation'],commands:preparationTasks.map(task=>({...task,depends_on:(task.depends_on||[]).filter(id=>id!==preflightTask.id)}))};
+      const preparationPlan={...plan,strategy:'qualified-gates',groups:['artifact-preparation'],commands:preparationTasks};
       const prepIndexes=new Map(plan.commands.map((task,index)=>[task.task_id||task.id,index]));
-      const prepared=await runGroups(preparationPlan,mode,concurrency,{cwd:root,environment,execute:executeFor('artifact'),logRoot,signal:controller.signal,runtimeSession:session,runtimeEvent:'check-result',onResult:row=>{const task=preparationPlan.commands[row.index];onResult({...row,index:prepIndexes.get(task.task_id),task_id:task.task_id,gate_ids:task.gate_ids});}});
-      if(prepared.flatMap(group=>group.results).some(row=>row.code!==0||row.skipped||row.storageError))throw new Error('四 CLI 产物或迁移准备失败');
-      const receiptTask=preparationTasks.find(task=>task.kind==='artifact-consumers');
-      if(receiptTask){const receipt=validateReceipt(JSON.parse(fs.readFileSync(receiptTask.receipt_file)),{root,receiptFile:receiptTask.receipt_file,expectedSourcesManifest:report.sources_manifest});Object.assign(environment,receipt.environment);report.artifacts=receipt.artifacts;report.sources_manifest=receipt.sources_manifest;report.artifact_receipt={ref:receiptTask.receipt_file,sha256:hash(fs.readFileSync(receiptTask.receipt_file))};}
+      await runGroups(preparationPlan,mode,concurrency,{cwd:root,environment,execute:executeFor('artifact'),logRoot,signal:controller.signal,runtimeSession:session,runtimeEvent:'check-result',completedTasks:[{task:preflightTask,result:preflightRow}],onResult:row=>{
+        const task=preparationPlan.commands[row.index];
+        if(row.code===0&&!row.skipped&&!row.storageError)try{
+          if(task.kind==='artifact-prepare'&&/^check\.cli-artifact-(?:spec|design|backend|frontend)$/.test(task.id)){
+            const family=task.id.replace('check.cli-artifact-',''),artifact=JSON.parse(fs.readFileSync(path.join(reportDir,'artifacts',family,'artifact.json')));
+            validateArtifact(artifact,report.sources_manifest.entries.find(source=>source.family===family));
+            report.artifacts=[...(report.artifacts||[]).filter(existing=>existing.source_tuple?.family!==family),artifact];
+          }
+          if(task.kind==='artifact-consumers'){const receipt=validateReceipt(JSON.parse(fs.readFileSync(task.receipt_file)),{root,receiptFile:task.receipt_file,expectedSourcesManifest:report.sources_manifest});Object.assign(environment,receipt.environment);report.artifacts=receipt.artifacts;report.sources_manifest=receipt.sources_manifest;report.artifact_receipt={ref:task.receipt_file,sha256:hash(fs.readFileSync(task.receipt_file))};}
+          if(task.kind==='source-test-consumer'){sourceReceipt=JSON.parse(fs.readFileSync(task.receipt_file));report.source_test_receipts=[{ref:task.receipt_file,sha256:hash(fs.readFileSync(task.receipt_file))}];validateSource();}
+        }catch(error){row.code=1;row.error=[row.error,error.message].filter(Boolean).join('; ');}
+        onResult({...row,index:prepIndexes.get(task.task_id),task_id:task.task_id,gate_ids:task.gate_ids});
+      }});
     }
-    const completedIds=new Set([preflightTask.id,...preparationTasks.map(task=>task.id)]);
-    const primary={...plan,commands:plan.commands.filter(task=>task.kind!=='preflight'&&task.kind!=='cleanup'&&task.group!=='artifact-preparation'&&(!legacy||task.group!=='postchecks')).map(task=>({...task,depends_on:(task.depends_on||[]).filter(id=>!completedIds.has(id))})),groups:plan.groups.filter(group=>group!=='preflight'&&group!=='artifact-preparation'&&group!=='cleanup'&&(!legacy||group!=='postchecks'))};
+    const completedTasks=[preflightTask,...preparationTasks].map(task=>({task,result:report.results.find(row=>row.task_id===task.task_id)}));
+    const completedIds=new Set(completedTasks.map(row=>row.task.id));
+    const primary={...plan,commands:plan.commands.filter(task=>task.kind!=='preflight'&&task.kind!=='cleanup'&&task.group!=='artifact-preparation'&&(!legacyReference||task.group!=='postchecks')).map(task=>({...task,depends_on:legacyReference?(task.depends_on||[]).filter(id=>!completedIds.has(id)):task.depends_on})),groups:plan.groups.filter(group=>group!=='preflight'&&group!=='artifact-preparation'&&group!=='cleanup'&&(!legacyReference||group!=='postchecks'))};
     const execute=executeFor('check');
     const originalIndexes=new Map(plan.commands.map((task,index)=>[task.task_id||task.id,index]));
     const collect=row=>{const task=primary.commands[row.index];const adjusted={...row,id:task.id,task_id:task.task_id,gate_ids:task.gate_ids||[],index:originalIndexes.get(task.task_id||task.id)};if(row.reused){const origin=report.results.find(result=>!result.reused&&result.command===row.command&&result.stdoutFile===row.stdoutFile&&result.stderrFile===row.stderrFile);if(!origin)throw new Error('复用任务缺少同轮实际结果');adjusted.reused_from={id:origin.id,task_id:origin.task_id,index:origin.index};}onResult(adjusted);};
-    const groups=await (reference?.runGroups||runGroups)(primary,mode,concurrency,{cwd:root,environment,execute,logRoot,signal:controller.signal,runtimeSession:session,runtimeEvent:'check-result',onResult:collect});
+    const groups=await (reference?.runGroups||runGroups)(primary,mode,concurrency,{cwd:root,environment,execute,logRoot,signal:controller.signal,runtimeSession:session,runtimeEvent:'check-result',completedTasks:legacyReference?[]:completedTasks,onResult:collect});
     await printResults(groups);
-    if(legacy&&!groups.flatMap(group=>group.results).some(row=>row.code!==0||row.storageError)&&!controller.signal.aborted) {
+    if(legacyReference&&!groups.flatMap(group=>group.results).some(row=>row.code!==0||row.storageError)&&!controller.signal.aborted) {
       for(const task of plan.commands.filter(task=>task.group==='postchecks')) {
         if(controller.signal.aborted)break;
-        const row=await runCommandToFiles(task.command,{cwd:root,environment,logRoot,sequence:`post-${originalIndexes.get(task.task_id)}`,signal:controller.signal,runtimeSession:session,onProcess:event=>process.send?.({kind:'command-process',...event})});
+        const row=await executeFor('post')(task.command,{task,cwd:root,environment,logRoot,sequence:originalIndexes.get(task.task_id),signal:controller.signal,runtimeSession:session});
         onResult({...row,id:task.id,task_id:task.task_id,gate_ids:task.gate_ids,group:task.group,index:originalIndexes.get(task.task_id),reused:false});
         if(row.code!==0||row.storageError)break;
       }

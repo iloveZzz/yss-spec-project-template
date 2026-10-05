@@ -9,6 +9,7 @@ import { assertReleaseCheckout, verifyTemplateRelease } from '../lib/template-re
 import { RuntimeStore } from '../../cli-core/runtime-store.mjs';
 import {validateBaselineReport} from '../lib/verification-report-validator.mjs';
 import {createHash} from 'node:crypto';
+import {collectReleaseSources} from '../lib/verification-artifacts.mjs';
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 
 const root = path.resolve(import.meta.dirname, '../../..');
@@ -88,6 +89,9 @@ test('真实发布报告兼容 v1 baseline，并拒绝删除 syntax/终检、任
  const full=JSON.parse(readFileSync(fullFile));
  const verify=()=>validateBaselineReport({root:f.repo,base:f.sha,reportFile:file,expectedDigest:hash(readFileSync(file))});
  const initial=verify();assert.equal(initial.valid,true,initial.reasons.join('; '));
+ outer.error='outer integration consumer failure';writeFileSync(file,JSON.stringify(outer));assert.equal(verify().valid,false);delete outer.error;
+ const specSources=outer.sources_manifest;outer.cli_families=['spec','design','backend','frontend'];outer.sources_manifest=collectReleaseSources({root:f.repo,commit:f.sha});outer.cli_integrations=[{family:'spec',status:'failed'}];writeFileSync(file,JSON.stringify(outer));const missingIntegration=verify();assert.equal(missingIntegration.valid,false);assert.match(missingIntegration.reasons.join('; '),/集成|integration/);
+ outer.cli_families=['spec'];outer.sources_manifest=specSources;delete outer.cli_integrations;writeFileSync(file,JSON.stringify(outer));
  // Model the old runner's separately logged syntax/terminal validators.
  full.schema_version=1;full.plan.commands=full.plan.commands.filter(row=>row.group!=='postchecks'&&row.kind!=='preflight');full.plan.syntax_files=[];
  const terminal=full.results.find(row=>row.task_id==='post.git-diff-check');terminal.command=JSON.stringify(['git','diff','--check']);

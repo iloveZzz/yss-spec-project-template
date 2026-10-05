@@ -1,13 +1,53 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
+import {spawnSync} from 'node:child_process';
 import {compileDeliveryPreparationTasks} from './verification-delivery-run.mjs';
 import {compileVerificationCheck} from './verification-gates.mjs';
 
 const hash=value=>createHash('sha256').update(value).digest('hex');
 const quote=value=>`'${String(value).replaceAll("'","'\\''")}'`;
 
-export function addVerificationExecutionTasks(plan,{root,repositoryMode='template-source',reference=false,checkpoints=[],taskPackages=[],purpose='verification',reportDir}={}) {
+function shellWords(command){
+  const words=[];let word='',quoted=null,started=false;
+  for(let index=0;index<command.length;index++){
+    const char=command[index];
+    if(quoted){if(char===quoted){quoted=null;continue;}if(char==='\\'&&quoted==='"'){if(++index===command.length)throw new TypeError('NODE_TEST_COMMAND_INVALID');word+=command[index];continue;}if(quoted==='"'&&(char==='$'||char==='`'))throw new TypeError('NODE_TEST_COMMAND_EXPANSION_REFUSED');word+=char;continue;}
+    if(char==='"'||char==="'"){quoted=char;started=true;continue;}
+    if(char==='\\'){if(++index===command.length)throw new TypeError('NODE_TEST_COMMAND_INVALID');word+=command[index];started=true;continue;}
+    if(/\s/.test(char)){if(started){words.push(word);word='';started=false;}continue;}
+    if(/[;$`|&<>]/.test(char))throw new TypeError('NODE_TEST_COMMAND_EXPANSION_REFUSED');
+    word+=char;started=true;
+  }
+  if(quoted)throw new TypeError('NODE_TEST_COMMAND_INVALID');if(started)words.push(word);return words;
+}
+export function compileTaskExecution(task,{root,reportDir,sourceReceipt,fixedCommit}={}){
+  const requested=task.command.trim();
+  if(!/^(?:node(?:\.exe)?|['"][^'"]*[\\/]node(?:\.exe)?['"]|\S*[\\/]node(?:\.exe)?)\s/.test(requested))return null;
+  const words=shellWords(requested),binary=words.shift();
+  if(!/^node(?:\.exe)?$/.test(path.basename(binary))||!words.includes('--test'))return null;
+  const args=[];
+  for(let index=0;index<words.length;index++){
+    const word=words[index];
+    if(word==='--test-concurrency'){if(!/^[1-9]\d*$/.test(words[++index]||''))throw new TypeError('NODE_TEST_CONCURRENCY_INVALID');continue;}
+    if(word.startsWith('--test-concurrency=')){if(!/^[1-9]\d*$/.test(word.slice('--test-concurrency='.length)))throw new TypeError('NODE_TEST_CONCURRENCY_INVALID');continue;}
+    if(!word.startsWith('--')&&/[?*[]/.test(word)){const matches=fs.globSync(word,{cwd:root}).sort();if(!matches.length)throw new TypeError(`NODE_TEST_GLOB_EMPTY: ${word}`);args.push(...matches);}else args.push(word);
+  }
+  const test=args.indexOf('--test');args.splice(test+1,0,'--test-concurrency=1');
+  const sourceTests=new Map([['legacy.001','content-identity.test.js'],['legacy.010','sync-fast-smoke.test.js']]),sourceTest=sourceTests.get(task.task_id);
+  const execution={requested_command:task.command,file:process.execPath,args,cwd:root,environment:{}};
+  if(sourceTest){
+    if(task.command!==`node --test submodules/create-yss-spec/tests/${sourceTest}`)throw new TypeError('SOURCE_TEST_REQUEST_MISMATCH');
+    if(!reportDir)throw new TypeError('SOURCE_TEST_REPORT_DIRECTORY_REQUIRED');
+    const consumerRoot=path.join(reportDir,'consumption/source-cli/spec'),receipt=path.join(reportDir,'consumption/source-test-receipt.json');
+    if(sourceReceipt&&fs.realpathSync(sourceReceipt.consumer_root)!==fs.realpathSync(consumerRoot))throw new TypeError('SOURCE_TEST_CONSUMER_MISMATCH');
+    const head=fixedCommit?{status:0,stdout:fixedCommit}:spawnSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'});if(head.status!==0||!/^[a-f0-9]{40}$/.test(head.stdout.trim()))throw new TypeError('SOURCE_TEST_TEMPLATE_SHA_INVALID');
+    execution.args=['--test','--test-concurrency=1',path.join(consumerRoot,'tests',sourceTest)];execution.cwd=consumerRoot;execution.environment={YSS_SPEC_TEMPLATE_REPO:root,YSS_SPEC_TEMPLATE_REF:head.stdout.trim()};execution.source_consumer_ref=receipt;
+  }
+  return execution;
+}
+
+export function addVerificationExecutionTasks(plan,{root,repositoryMode='template-source',reference=false,checkpoints=[],taskPackages=[],purpose='verification',reportDir,fixedCommit}={}) {
   plan=structuredClone(plan);plan.selection??={requested:'legacy',effective:'legacy',omitted:[]};plan.groups??=[...new Set(plan.commands.map(task=>task.group))];
   if(reference)plan.gates=[];
   plan.not_applicable??=[];
@@ -47,6 +87,7 @@ export function addVerificationExecutionTasks(plan,{root,repositoryMode='templat
     for(const task of plan.commands.filter(task=>task.kind!=='preflight'))task.depends_on=[...new Set(['check.verification-environment',...(task.depends_on||[])])];
     const gate=plan.gates?.find(gate=>gate.id==='check.verification-environment');if(gate){gate.selected=true;gate.selection_reason='mandatory-preflight';gate.check_ids=['check.verification-environment'];gate.task_ids=['check.verification-environment'];}
   }
+  for(const task of plan.commands){const execution=compileTaskExecution(task,{root,reportDir,fixedCommit});if(execution)task.execution=execution;}
   for(const gate of plan.gates||[])if(gate.selected){const tasks=plan.commands.filter(task=>task.gate_ids?.includes(gate.id));gate.check_ids=[...new Set(tasks.map(task=>task.id))];gate.task_ids=tasks.map(task=>task.task_id||task.id);}
   return plan;
 }

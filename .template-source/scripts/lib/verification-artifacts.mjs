@@ -9,15 +9,16 @@ const ensure=(ok,message)=>{if(!ok)throw new TypeError(message);};
 const definitions={spec:['create-yss-spec',null,'create-yss-spec'],design:['create-yss-strategic-design','yss-harness-design-agent','create-yss-harness-design'],backend:['create-yss-harness-backend','yss-harness-backend-agent','create-yss-harness-backend'],frontend:['create-yss-harness-frontend','yss-harness-frontend-agent','create-yss-harness-frontend']};
 function git(root,args){const result=spawnSync('git',args,{cwd:root,encoding:'utf8'});ensure(result.status===0,result.stderr||'无法核验固定 Git 来源');return result.stdout.trim();}
 function gitlink(root,commit,ref){const value=git(root,['ls-tree',commit,'--',ref]);const match=/^160000 commit ([a-f0-9]{40})\t/.exec(value);ensure(match,`缺少固定 gitlink: ${ref}`);return match[1];}
-export function installedTreeDigest(directory){
+function treeEntries(directory){
  ensure(fs.lstatSync(directory).isDirectory()&&!fs.lstatSync(directory).isSymbolicLink(),'安装目录必须是普通目录');const entries=[];
  const walk=(current,prefix='')=>{for(const name of fs.readdirSync(current).sort()){const file=path.join(current,name),ref=prefix?`${prefix}/${name}`:name,stat=fs.lstatSync(file),mode=stat.mode&0o777;
   if(stat.isDirectory()){entries.push({path:ref,kind:'directory',mode});walk(file,ref);}
   else if(stat.isFile())entries.push({path:ref,kind:'file',mode,sha256:hash(fs.readFileSync(file))});
   else if(stat.isSymbolicLink()){const target=fs.readlinkSync(file),relative=path.relative(directory,path.resolve(path.dirname(file),target));ensure(relative&&!relative.startsWith(`..${path.sep}`)&&relative!=='..'&&!path.isAbsolute(relative),'安装树链接越界');entries.push({path:ref,kind:'symlink',mode,target});}
   else throw new TypeError('安装树包含非文件节点');
- }};walk(directory);return hash(JSON.stringify(entries));
+ }};walk(directory);return entries;
 }
+export function installedTreeDigest(directory){return hash(JSON.stringify(treeEntries(directory)));}
 export function sourceTuple(source){
  ensure(source&&['candidate-release','plugin-pinned'].includes(source.namespace),'来源必须显式分槽');
  ensure(Object.hasOwn(definitions,source.family),'未知 CLI 家族');
@@ -94,6 +95,60 @@ export function produceCliArtifact({root,source,directory,run}={}){
  const snapshot_sha256=hash(fs.readFileSync(path.join(cli,'template.snapshot.json'))),manifest_sha256=fs.existsSync(manifestFile)?hash(fs.readFileSync(manifestFile)):null,core_lock_sha256=hash(fs.readFileSync(path.join(cli,'cli-core.lock.json')));
  const materialTuple=sourceTuple({...tuple,snapshot_hash:snapshot_sha256,...(manifest_sha256?{manifest_hash:manifest_sha256}:{}),core_digest:core.digest||core_lock_sha256,core_lock_hash:core_lock_sha256});
  return {source_tuple:materialTuple,tarball,packed_tarball_path:tarball,tarball_sha256:hash(fs.readFileSync(tarball)),installed_root,cli_root:cli,snapshot,core_lock:core,snapshot_sha256,manifest_sha256,core_lock_sha256,installed_tree_sha256:installedTreeDigest(installed_root)};
+}
+
+const sourceMaterials=['template','template.snapshot.json','vendor/cli-core','cli-core.lock.json','resources/upgrade-skill'];
+const isMaterial=ref=>sourceMaterials.some(prefix=>ref===prefix||ref.startsWith(`${prefix}/`));
+function fixedCliFiles(root,source){
+ const [folder]=definitions[source.family],cli=path.join(root,'submodules',folder);
+ ensure(gitlink(root,source.core_commit,`submodules/${folder}`)===source.cli_commit,'源码消费 CLI 与固定 gitlink 不匹配');
+ const result=spawnSync('git',['ls-tree','-r','-z',source.cli_commit],{cwd:cli,encoding:'utf8',maxBuffer:32*1024*1024});ensure(result.status===0,result.stderr||'CLI 固定源码清单缺失');
+ const files=result.stdout.split('\0').filter(Boolean).map(line=>{const match=/^(100644|100755) blob ([a-f0-9]{40})\t(.+)$/.exec(line);ensure(match,'源码消费不允许链接或嵌套 gitlink');return {gitMode:match[1],blob:match[2],ref:match[3]};});
+ const batch=spawnSync('git',['cat-file','--batch'],{cwd:cli,input:files.map(row=>row.blob).join('\n')+'\n',maxBuffer:256*1024*1024});ensure(batch.status===0,'CLI 固定源码字节不可读');let offset=0;
+ return files.map(({gitMode,blob,ref})=>{
+  const end=batch.stdout.indexOf(10,offset);ensure(end>=offset,'CLI 源码 batch 头缺失');const header=/^([a-f0-9]{40}) blob (\d+)$/.exec(batch.stdout.subarray(offset,end).toString());ensure(header&&header[1]===blob,'CLI 源码 batch 身份错配');
+  const size=Number(header[2]),start=end+1;ensure(Number.isSafeInteger(size)&&batch.stdout[start+size]===10,'CLI 源码 batch 长度错配');offset=start+size+1;
+  return {path:ref,kind:'file',mode:gitMode==='100755'?0o755:0o644,sha256:hash(batch.stdout.subarray(start,start+size))};
+ }).sort((a,b)=>a.path.localeCompare(b.path,'en'));
+}
+
+/** Fixed CLI source tests need tests/scripts, which the installed package excludes. */
+export function prepareCliSourceConsumer({artifact,source=artifact?.source_tuple,root,directory,run}={}){
+ const tuple=sourceTuple(source);ensure(tuple.family==='spec','目前仅编译 Spec CLI 固定源码测试消费');validateArtifact(artifact,tuple);
+ ensure(typeof run==='function'&&path.isAbsolute(directory)&&!fs.existsSync(directory),'源码消费必须使用新绝对目录和实际命令记录器');
+ const relative=path.relative(fs.realpathSync(root),directory);ensure(relative==='..'||relative.startsWith(`..${path.sep}`)||path.isAbsolute(relative),'源码消费目录必须位于仓外');
+ const original=fixedCliFiles(root,tuple),[folder]=definitions[tuple.family];fs.mkdirSync(path.dirname(directory),{recursive:true});
+ run('git',['clone','--shared','--no-checkout',path.join(root,'submodules',folder),directory],root);run('git',['checkout','--detach',tuple.cli_commit],directory);
+ // Git metadata is not execution input; the independently checked original
+ // files and generated material remain ordinary, retained evidence files.
+ fs.rmSync(path.join(directory,'.git'),{recursive:true,force:true});
+ for(const ref of sourceMaterials)fs.rmSync(path.join(directory,ref),{recursive:true,force:true});
+ fs.cpSync(artifact.installed_root,directory,{recursive:true,dereference:false});
+ const test_files=Object.fromEntries(original.filter(row=>row.path.startsWith('tests/')).map(row=>[row.path,row.sha256]));
+ const receipt={schema_version:1,kind:'verification-cli-source-consumer',source_tuple:tuple,consumer_root:fs.realpathSync(directory),source_tree_sha256:installedTreeDigest(directory),fixed_source_manifest_sha256:hash(JSON.stringify(original)),test_files,installed_root:artifact.installed_root,installed_tree_sha256:artifact.installed_tree_sha256,overlay_paths:[...sourceMaterials]};
+ validateCliSourceConsumer(receipt,{root,expectedSource:tuple,directory,artifact});return receipt;
+}
+
+/** Recompute source expectations from fixed Git bytes, never from the receipt. */
+export function validateCliSourceConsumer(receipt,{root,expectedSource,directory,artifact}={}){
+ ensure(receipt?.schema_version===1&&receipt.kind==='verification-cli-source-consumer','源码消费回执类型缺失');
+ const tuple=sourceTuple(expectedSource);ensure(tuple.family==='spec','源码消费家族不支持');
+ const actualTuple=sourceTuple(receipt.source_tuple);for(const [field,value]of Object.entries(tuple))assert.equal(actualTuple[field],value,'源码消费来源 tuple 错配');
+ validateArtifact(artifact,actualTuple);
+ ensure(path.isAbsolute(directory)&&receipt.consumer_root===fs.realpathSync(directory),'源码消费目录不是独立期望 slot');
+ ensure(!fs.lstatSync(directory).isSymbolicLink(),'源码消费目录不能为链接');
+ ensure(receipt.installed_root===artifact.installed_root&&receipt.installed_tree_sha256===artifact.installed_tree_sha256,'源码消费安装材料来源错配');
+ assert.deepEqual(receipt.overlay_paths,sourceMaterials,'源码消费派生覆盖范围错配');
+ const original=fixedCliFiles(root,tuple),actual=treeEntries(directory),byPath=new Map(actual.map(row=>[row.path,row]));
+ ensure(receipt.fixed_source_manifest_sha256===hash(JSON.stringify(original)),'源码消费原始固定清单摘要错配');
+ assert.deepEqual(receipt.test_files,Object.fromEntries(original.filter(row=>row.path.startsWith('tests/')).map(row=>[row.path,row.sha256])),'源码消费原测试摘要错配');
+ for(const entry of original.filter(row=>!isMaterial(row.path)))assert.deepEqual(byPath.get(entry.path),entry,`源码消费原字节、类型或权限漂移: ${entry.path}`);
+ const installed=treeEntries(artifact.installed_root);for(const entry of installed)assert.deepEqual(byPath.get(entry.path),entry,`源码消费安装覆盖材料漂移: ${entry.path}`);
+ const allowed=new Set([...original.filter(row=>!isMaterial(row.path)).map(row=>row.path),...installed.map(row=>row.path)]);
+ for(const ref of [...allowed]){let parent=path.posix.dirname(ref);while(parent!=='.'){allowed.add(parent);parent=path.posix.dirname(parent);}}
+ ensure(actual.every(row=>allowed.has(row.path)),'源码消费含未登记或多余文件');
+ ensure(/^[a-f0-9]{64}$/.test(receipt.source_tree_sha256)&&installedTreeDigest(directory)===receipt.source_tree_sha256,'源码消费完整树字节、类型或权限漂移');
+ return receipt;
 }
 
 /** Public installed entrypoints, with an old managed baseline kept in a separate synthetic target. */

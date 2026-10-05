@@ -133,6 +133,7 @@ export function verifyTemplateRelease({ root, commit, output, runtimeStore = 'of
       assert.ok(integration.valid,integration.reasons.join('; '));
     }
   } catch (error) {
+    report.status = 'failed';
     report.error = error.message;
     throw error;
   } finally {

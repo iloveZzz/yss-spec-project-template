@@ -9,6 +9,7 @@ import {fileURLToPath} from 'node:url';
 import {createHash} from 'node:crypto';
 import {executeVerificationPlan,addVerificationExecutionTasks,validateVerificationArguments,prepareVerificationPlan} from '../.template-source/scripts/lib/template-verification-worker.mjs';
 import {assertQualificationExecutionContract} from '../.template-source/scripts/lib/verification-report-validator.mjs';
+import {compileTaskExecution} from '../.template-source/scripts/lib/verification-execution-plan.mjs';
 
 const quote = value => `'${String(value).replaceAll("'", "'\\''")}'`;
 const node = source => `${quote(process.execPath)} -e ${quote(source)}`;
@@ -35,6 +36,60 @@ test('前置失败跳过依赖，继续同组及跨组独立检查并保留真�
   assert.equal(rows.find(row => row.task_id==='dependent').termination,'dependency-failed');
   assert.equal(rows.find(row => row.task_id==='independent').code,0);
 });
+test('普通legacy-full保留全部覆盖并继续独立项，显式reference保留旧组停止语义',async t=>{
+  const directory=temporary(t),commands=[
+    {id:'check.failure',task_id:'failure',group:'one',command:node('process.exit(7)')},
+    {id:'check.independent',task_id:'independent',group:'one',command:node('console.log("independent")')},
+    {id:'check.dependent',task_id:'dependent',group:'two',command:node('process.exit(99)'),depends_on:['failure']},
+  ];
+  const rows=(await runGroups({strategy:'legacy-full',groups:['one','two'],commands},'template-source',1,{cwd:directory,logRoot:path.join(directory,'full')})).flatMap(group=>group.results);
+  assert.equal(rows.length,3);assert.equal(rows.find(row=>row.task_id==='independent').actual_exit_code,0);assert.equal(rows.find(row=>row.task_id==='dependent').termination,'dependency-failed');
+  const old=(await runGroups({strategy:'legacy-reference',groups:['one'],commands:commands.slice(0,2)},'template-source',1,{cwd:directory,logRoot:path.join(directory,'reference')})).flatMap(group=>group.results);
+  assert.equal(old.length,1);assert.equal(old[0].actual_exit_code,7);
+});
+test('准备失败的真实结果阻断跨phase消费者，独立源码检查继续执行',async t=>{
+  const directory=temporary(t),task={id:'check.prepare',task_id:'prepare',group:'preparation',command:node('process.exit(7)'),depends_on:[]};
+  const result={...await runCommandToFiles(task.command,{cwd:directory,logRoot:directory,sequence:'prepare'}),id:task.id,task_id:task.task_id};
+  const rows=(await runGroups({strategy:'legacy-full',groups:['one'],commands:[
+    {id:'check.consume',task_id:'consume',group:'one',command:node('process.exit(99)'),depends_on:['prepare']},
+    {id:'check.source',task_id:'source',group:'one',command:node('console.log("source")')},
+  ]},'template-source',1,{cwd:directory,logRoot:directory,completedTasks:[{task,result}]})).flatMap(group=>group.results);
+  assert.equal(rows.find(row=>row.task_id==='consume').termination,'dependency-failed');assert.equal(rows.find(row=>row.task_id==='source').actual_exit_code,0);
+});
+test('正常完整worker采用DAG，普通失败保留独立结果和明确下游拒绝',async t=>{
+  const {directory,root}=fixtureRoot(t),plan={strategy:'legacy-full',requested_profile:'release',effective_profile:'release',source_requirement:'current',required_files:[],syntax_files:[],groups:['artifact-preparation','one','two'],commands:[
+    {id:'check.prepare',task_id:'prepare',kind:'artifact-prepare',group:'artifact-preparation',command:node('console.log("prepared")')},
+    {id:'check.failure',task_id:'failure',group:'one',command:node('process.exit(7)')},
+    {id:'check.independent',task_id:'independent',group:'one',command:node('console.log("independent")')},
+    {id:'check.dependent',task_id:'dependent',group:'two',command:node('process.exit(99)'),depends_on:['failure']},
+  ]};
+  const outcome=await executeVerificationPlan({root,plan,reportDir:path.join(directory,'report'),purpose:'qualification'}),rows=Object.fromEntries(outcome.report.results.map(row=>[row.task_id,row]));
+  assert.equal(outcome.code,1);assert.equal(rows.failure.actual_exit_code,7);assert.equal(rows.independent.actual_exit_code,0);assert.equal(rows.dependent.termination,'dependency-failed');assert.equal(outcome.report.legacy_reference,undefined);assert.deepEqual(outcome.report.unexecuted,[]);
+});
+test('两个Node测试文件默认会重叠，透明执行显式串行并保留请求与实际tuple',async t=>{
+  const directory=temporary(t),active=path.join(directory,'active');fs.mkdirSync(active);
+  const code=`const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');test('no-overlap',async()=>{const marker=path.join(${JSON.stringify(active)},String(process.pid));fs.writeFileSync(marker,'');await new Promise(r=>setTimeout(r,300));const count=fs.readdirSync(${JSON.stringify(active)}).length;fs.rmSync(marker);assert.equal(count,1,'file concurrency exceeded');});`;
+  for(const name of ['a.cjs','b.cjs'])fs.writeFileSync(path.join(directory,name),code);
+  const command=`${quote(process.execPath)} --test a.cjs b.cjs`,task={id:'check.batch',task_id:'batch',group:'one',command};
+  const environment={...process.env};delete environment.NODE_TEST_CONTEXT;
+  const counterexample=await runCommandToFiles(command,{cwd:directory,environment,logRoot:directory,sequence:'unbounded'});assert.notEqual(counterexample.actual_exit_code,0);
+  const execution=compileTaskExecution(task,{root:directory}),row=await runCommandToFiles(command,{cwd:directory,environment,execution,logRoot:directory,sequence:'bounded'});
+  assert.equal(row.actual_exit_code,0);assert.equal(row.command,command);assert.deepEqual(row.actual_execution,execution);assert.equal(row.actual_execution.args.filter(arg=>arg.startsWith('--test-concurrency=')).join(','),'--test-concurrency=1');
+  assert.equal(compileTaskExecution({...task,command:`${command} --test-concurrency=4`},{root:directory}).args.filter(arg=>arg.startsWith('--test-concurrency=')).join(','),'--test-concurrency=1');
+});
+test('两项原始Spec源码测试绑定独立消费位置、固定SHA及原始请求',t=>{
+  const {directory,root}=fixtureRoot(t),reportDir=path.join(directory,'report'),fixedCommit='a'.repeat(40);
+  for(const [task_id,name]of [['legacy.001','content-identity'],['legacy.010','sync-fast-smoke']]){
+    const command=`node --test submodules/create-yss-spec/tests/${name}.test.js`,execution=compileTaskExecution({task_id,command},{root,reportDir,fixedCommit});
+    assert.equal(execution.requested_command,command);assert.equal(execution.cwd,path.join(reportDir,'consumption/source-cli/spec'));assert.equal(execution.source_consumer_ref,path.join(reportDir,'consumption/source-test-receipt.json'));assert.equal(execution.environment.YSS_SPEC_TEMPLATE_REF,fixedCommit);assert.equal(execution.environment.YSS_SPEC_TEMPLATE_REPO,root);
+    assert.throws(()=>compileTaskExecution({task_id,command:command.replace(name,'changed')},{root,reportDir}),/SOURCE_TEST_REQUEST_MISMATCH/);
+  }
+});
+test('无report-dir的完整CLI计划分配新仓外报告且包含真实准备台账',t=>{
+  const root=fileURLToPath(new URL('..',import.meta.url)),entry=fileURLToPath(new URL('../scripts/run-template-verification',import.meta.url));
+  const plan=JSON.parse(execFileSync(process.execPath,[entry,'--profile','release','--plan','--json'],{cwd:root,encoding:'utf8',timeout:10000}));
+  const source=plan.commands.find(task=>task.kind==='source-test-consumer');assert.ok(source);assert.ok(path.isAbsolute(source.receipt_file));assert.equal(fs.existsSync(path.dirname(source.receipt_file)),false);assert.ok(!source.receipt_file.startsWith(root+path.sep));assert.ok(plan.commands.find(task=>task.task_id==='legacy.010').depends_on.includes(source.id));
+});
 test('真实进程超时返回124并保留最终观测，后续独立检查完成', async t => {
   const dir = temporary(t);
   const row = await runCommandToFiles(node('process.on("SIGTERM",()=>{});setInterval(()=>{},1000)'),{cwd:dir,logRoot:dir,sequence:0,timeoutMs:150});
@@ -47,6 +102,12 @@ test('进程组清理错误不能被真实退出0覆盖',async t=>{
   const dir=temporary(t);
   const row=await runCommandToFiles(node('console.log("done")'),{cwd:dir,logRoot:dir,sequence:0,terminateProcess:()=>{throw new Error('EPERM group cleanup');}});
   assert.equal(row.code,1);assert.equal(row.actual_exit_code,0);assert.equal(row.actual_exit_code_observed,true);assert.match(row.error,/EPERM/);assert.ok(row.kill_errors.length);
+});
+test('日志写入失败保留真实非零close与storageError，退出0也不能放行',async t=>{
+  const directory=temporary(t),failed=await runCommandToFiles(node('process.exit(11)'),{cwd:directory,logRoot:directory,sequence:'missing/nonzero'});
+  assert.equal(failed.code,11);assert.equal(failed.actual_exit_code,11);assert.equal(failed.actual_exit_code_observed,true);assert.ok(failed.storageError);
+  const passed=await runCommandToFiles(node('console.log("done")'),{cwd:directory,logRoot:directory,sequence:'missing/zero'});
+  assert.equal(passed.code,1);assert.equal(passed.actual_exit_code,0);assert.equal(passed.actual_exit_code_observed,true);assert.ok(passed.storageError);
 });
 test('两路内部tooling独占外层预算，同资源检查互斥', async () => {
   let active=0,peak=0,toolingActive=false;
@@ -216,7 +277,7 @@ test('准备和主检查使用独立日志，完成依赖可跨phase且finally�
   const failedPlan=structuredClone(plan);failedPlan.commands[0].command=node('process.exit(7)');
   const failed=await executeVerificationPlan({root,plan:failedPlan,reportDir:path.join(directory,'failed-report'),purpose:'qualification'});
   assert.equal(failed.code,1);assert.equal(failed.report.results.find(row=>row.task_id==='prepare').actual_exit_code,7);
-  assert.equal(failed.report.results.find(row=>row.task_id==='cleanup').actual_exit_code,0);assert.ok(!failed.report.results.some(row=>row.task_id==='consume'));
+  assert.equal(failed.report.results.find(row=>row.task_id==='cleanup').actual_exit_code,0);assert.equal(failed.report.results.find(row=>row.task_id==='consume').termination,'dependency-failed');
 });
 test('缺Vue的真实preflight子进程失败，昂贵任务未启动且父close落失败报告',async t=>{
   const {directory,root}=fixtureRoot(t);

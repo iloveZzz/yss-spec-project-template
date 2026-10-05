@@ -191,7 +191,7 @@ export function validateMaintenanceVerificationEvidence(evidence,{root:sourceRoo
  try {const {compileExpectedVerificationPlan,validateVerificationReport,assertEvidenceFile}=await import(input.moduleUrl);
  assertEvidenceFile(input.file,path.dirname(input.file),input.evidence.evidence_digest);
  const report=JSON.parse(fs.readFileSync(input.file,'utf8'));
- const plan=input.expectedPlan||compileExpectedVerificationPlan({root:input.root,args:input.evidence.args});
+ const plan=input.expectedPlan||compileExpectedVerificationPlan({root:input.root,args:input.evidence.args,reportDirectory:path.dirname(input.file)});
  const verified=validateVerificationReport(report,{root:input.root,expectedPlan:plan,reportDirectory:path.dirname(input.file),expectedInvocation:{command:path.join(input.root,'scripts/run-template-verification'),args:['--profile','release',...input.evidence.args]},observedExitCode:input.evidence.exit_code});
  process.stdout.write(JSON.stringify({report,verified}));
  }catch(error){process.stderr.write(error.message);process.exitCode=1;}`;

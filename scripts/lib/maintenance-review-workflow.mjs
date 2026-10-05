@@ -63,7 +63,7 @@ export function generateReviewerTaskPackages({ checkpointRef, candidateRef, outp
     if (!evidenceRef || typeof evidence.executed_at !== "string" || typeof evidence.command !== "string") return [];
     if(['initial-release-verification','final-release-verification'].includes(evidence.kind)){
       const {report}=validateMaintenanceVerificationEvidence(evidence,{root:ROOT});
-      return [{command:evidence.command,exit_code:report.final_exit.code,duration_ms:Number.isInteger(report.metrics.wall_ms)?report.metrics.wall_ms:0,executed_at:report.finished_at,evidence_ref:evidenceRef,evidence_digest:evidence.evidence_digest}];
+      return [{command:evidence.command,exit_code:report.final_exit.code,duration_ms:Number.isInteger(report.metrics.wall_ms)?report.metrics.wall_ms:0,executed_at:report.finished_at,evidence_ref:evidenceRef,evidence_digest:`sha256:${evidence.evidence_digest.replace(/^sha256:/,'')}`}];
     }
     return [{ command: evidence.command, exit_code: 0, duration_ms: Number.isInteger(evidence.duration_ms) ? evidence.duration_ms : 0, executed_at: evidence.executed_at, evidence_ref: evidenceRef, ...(evidence.evidence_digest ? { evidence_digest: evidence.evidence_digest } : {}) }];
   });

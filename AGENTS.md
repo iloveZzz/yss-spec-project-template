@@ -85,7 +85,7 @@
 - 会签按角色表 `gate_policy` 并经 `scripts/verify-approval-record --require-approved --checkpoint <current checkpoint>` 核验；当前期望上下文由消费者的 checkpoint / 任务提供，不从会签记录反向填充。`user_decision_policy` 命中的关键决定必须先展示可审阅资产，再取得提问者或其明确指定负责人的真实回复。无回复保持等待，数字人不能代答；原始来源、范围、复用和失效见生命周期 `references/user-decisions.md`。发布、商务承诺、运行时外部副作用仍须生物人。
 - 普通功能默认一个推进负责人和一个独立审查者；候选角色列表不要求逐角色签字。相邻检查可组合审查、逐项留结论。已有范围授权按用户决定协议验证延续，未知影响先调查，确认实质决定变化后才重新决定；外部强制审批不得裁掉，缺陷和缺证据仍阻断，非阻断建议进入待办。
 - 首轮覆盖全部适用审查项；修复后按差异、受影响结论 / 行为及依赖定向复审，并重新绑定当前候选。摘要变化、UI 影响或 `new_impacts` 不触发默认全轴复审；未知影响先调查。能力与补充只读技能从角色表编译，禁止用职称代替能力或独立身份。专业审查等待由主控自主派发并等待，验证失败修复或路由；仅缺真实决定或新授权时展示资产后询问，独立工作继续。
-- 会签暂停、handoff、实现、合并、发布边界同步范围、证据、风险、会签点、Ticket 状态和下一步。Git checkpoint 只含本轮范围；提交 / 推送须用户授权。仅 `template-source` 的 `scripts/advance-maintenance-iteration` 入口可在**本地 `refs/checkpoints/<run-id>` 引用**上自动创建 checkpoint 提交（不推送、不改分支、不建 tag）；`project-instance` 不适用；写入 main、推送远端、打 tag、发布仍须用户授权。
+- 会签暂停、handoff、实现、合并、发布边界同步范围、证据、风险、会签点、Ticket 状态和下一步。Git checkpoint 只含本轮范围；提交 / 推送须用户授权。仅 `template-source` 的 `scripts/advance-maintenance-iteration` 入口可在**本地 `refs/checkpoints/<run-id>` 引用**上自动创建 checkpoint 提交（不推送、不改分支、不建 tag）；可用 `--root` 指定已登记的专职模板真实 gitlink，先核验身份、Context 与明确的本地分支。`project-instance` 不适用；写入 main、推送远端、打 tag、发布仍须用户授权。
 - 发布或阶段完成时判断复盘；架构 / 验证返工、IMPORTANT / CRITICAL finding、人工确认延期时，落中文复盘并修订事实源。
 
 ## 11. Subagent 协同

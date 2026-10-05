@@ -6,7 +6,7 @@ import path from 'node:path';
 import { createVerificationReport, finalizeVerificationReport,verificationInputDigest } from '../scripts/lib/verification-report.mjs';
 import { validateVerificationReport,compileExpectedVerificationPlan,assertQualificationExecutionContract } from '../.template-source/scripts/lib/verification-report-validator.mjs';
 import {compileLegacyPlan} from '../.template-source/scripts/lib/legacy-verification.mjs';
-import {addVerificationExecutionTasks} from '../.template-source/scripts/lib/verification-execution-plan.mjs';
+import {addVerificationExecutionTasks,compileTaskExecution} from '../.template-source/scripts/lib/verification-execution-plan.mjs';
 import {validateJsonSchema} from '../scripts/lib/json-schema.mjs';
 import {validateMaintenanceVerificationEvidence} from '../scripts/lib/maintenance-intensity.mjs';
 import {createHash} from 'node:crypto';
@@ -80,6 +80,28 @@ test('qualified 请求与实际执行条件必须匹配独立资格合同',t=>{
  }
  const report=structuredClone(f.report);report.plan.qualification.bindings.execution_contract={concurrency:1,tooling_mode:'legacy',test_concurrency:1};report.environment.concurrency=1;report.environment.tooling_mode='legacy';report.environment.test_concurrency=1;report.plan.tooling={verification_concurrency:1,effective_mode:'legacy',test_concurrency:1};
  assert.throws(()=>validateVerificationReport(report,f.options),{code:'QUALIFICATION_EXECUTION_CONTRACT_MISMATCH'});
+});
+
+test('同轮复用必须具有相同依赖、资源、来源及完整执行输入',t=>{
+ const f=fixture(t),first={...f.plan.commands[0],resources:['shared'],source_requirement:'committed',depends_on:[]},second={...first,id:'check.second',task_id:'syntax.1'};
+ f.plan.commands=[first,second];f.plan.gates[0].check_ids.push(second.id);f.report.plan=structuredClone(f.plan);
+ f.report.results[0]={...f.report.results[0],...first};f.report.results.push({...f.report.results[0],...second,index:1,reused:true,reused_from:{task_id:first.task_id,index:0},actual_exit_code:null,actual_exit_signal:null,actual_exit_code_observed:false});
+ finalizeVerificationReport(f.report,{status:'passed',wallMs:1,repositoryMode:'template-source'});
+ assert.equal(validateVerificationReport(f.report,f.options).status,'passed');
+ for(const change of [{depends_on:['check.change']},{resources:['after']},{source_requirement:'current'},{timeout_ms:10},{lane:'after'},{execution:{requested_command:first.command,file:process.execPath,args:['--check','source.mjs'],cwd:'/different/source',environment:{}}}]){
+  const expected=structuredClone(f.plan);Object.assign(expected.commands[1],change);const report=structuredClone(f.report);report.plan=structuredClone(expected);
+  if(change.execution)report.results[1].actual_execution=structuredClone(change.execution);
+  assert.throws(()=>validateVerificationReport(report,{...f.options,expectedPlan:expected}),/执行输入不等价/);
+ }
+});
+
+test('批量 Node 测试显式串行，报告必须绑定请求和实际 file argv cwd env',t=>{
+ const f=fixture(t);for(const file of ['first.test.mjs','second.test.mjs'])fs.writeFileSync(path.join(f.directory,file),`import test from 'node:test';test('actual pass',()=>{});`);
+ f.plan.commands[0].command='node --test first.test.mjs second.test.mjs';const execution=compileTaskExecution(f.plan.commands[0],{root:f.directory,reportDir:f.directory});f.plan.commands[0].execution=execution;
+ assert.equal(execution.args.filter(value=>value==='--test-concurrency=1').length,1);const actual=spawnSync(execution.file,execution.args,{cwd:execution.cwd,encoding:'utf8'});assert.equal(actual.status,0,actual.stderr);
+ f.report.plan=structuredClone(f.plan);const row=f.report.results[0];Object.assign(row,f.plan.commands[0],{actual_execution:execution});fs.writeFileSync(row.stdoutFile,actual.stdout);fs.writeFileSync(row.stderrFile,actual.stderr);row.log_digests={stdoutFile:createHash('sha256').update(actual.stdout).digest('hex'),stderrFile:createHash('sha256').update(actual.stderr).digest('hex')};
+ assert.equal(validateVerificationReport(f.report,f.options).status,'passed');
+ for(const mutate of [r=>delete r.results[0].actual_execution,r=>r.results[0].actual_execution.args=r.results[0].actual_execution.args.filter(value=>value!=='--test-concurrency=1'),r=>r.results[0].actual_execution.cwd='/other',r=>r.results[0].actual_execution.environment={YSS_SPEC_TEMPLATE_REPO:'/other'},r=>r.results[0].actual_execution.requested_command='node --test first.test.mjs']){const report=structuredClone(f.report);mutate(report);assert.throws(()=>validateVerificationReport(report,f.options),/实际|argv|tuple/);}
 });
 
 test('project-instance 共享消费者与历史 checkpoint 不加载未分发的 source-only validator',async t=>{

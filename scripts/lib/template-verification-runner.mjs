@@ -41,7 +41,7 @@ function commandRedaction(command,environment,secrets=[]) {
   return {sensitive,redact,safeCommand};
 }
 
-export function runCommandToFiles(command, { cwd, environment = process.env, logRoot, sequence, signal, runtimeSession, secrets = [], deferCommandRegistration = false, timeoutMs = 0, terminateProcess = killTree, onProcess = () => {} }) {
+export function runCommandToFiles(command, { cwd, environment = process.env, execution = null, logRoot, sequence, signal, runtimeSession, secrets = [], deferCommandRegistration = false, timeoutMs = 0, terminateProcess = killTree, onProcess = () => {} }) {
   assertNodeVersion();
   if (!Number.isSafeInteger(timeoutMs) || timeoutMs < 0) throw new TypeError("timeoutMs 必须为非负整数");
   const {sensitive,redact,safeCommand}=commandRedaction(command,environment,secrets);
@@ -62,7 +62,10 @@ export function runCommandToFiles(command, { cwd, environment = process.env, log
   return new Promise((resolve) => {
     const started = performance.now();
     process.stderr.write(`[开始] ${safeCommand}\n`);
-    const child = spawn(command, { cwd, shell: true, env: environment, stdio: ["ignore", "pipe", "pipe"], detached: process.platform !== "win32" });
+    if(execution&&execution.requested_command!==command)throw new TypeError('ACTUAL_EXECUTION_REQUEST_MISMATCH');
+    const child = execution
+      ? spawn(execution.file,execution.args,{cwd:execution.cwd,shell:false,env:{...environment,...execution.environment},stdio:["ignore","pipe","pipe"],detached:process.platform!=="win32"})
+      : spawn(command, { cwd, shell: true, env: environment, stdio: ["ignore", "pipe", "pipe"], detached: process.platform !== "win32" });
     let spawnError = "", termination = null, escalation, timer, killErrors = [];
     if(child.pid)onProcess({pid:child.pid,active:true});
     const kill = sig => { try { terminateProcess(child, sig); } catch(error) { killErrors.push(redact(error.message)); try { child.kill(sig); } catch (fallback) { killErrors.push(redact(fallback.message)); } } };
@@ -83,10 +86,11 @@ export function runCommandToFiles(command, { cwd, environment = process.env, log
       const streamError = streams.find((result) => result.status === "rejected")?.reason;
       if(child.pid)onProcess({pid:child.pid,active:false});
       const duration_ms = Math.round(performance.now() - started);
-      const exitCode = termination==='cancelled' ? 130 : termination==='timeout' ? 124 : killErrors.length || streamError || spawnError ? 1 : code ?? 1;
+      const exitCode = termination==='cancelled' ? 130 : termination==='timeout' ? 124 : Number.isInteger(code)&&code!==0 ? code : killErrors.length || streamError || spawnError ? 1 : code ?? 1;
       process.stderr.write(`[${exitCode === 0 && !streamError ? "完成" : "失败"}] ${safeCommand} (${duration_ms}ms, exit=${exitCode})\n`);
       const observed=!spawnError&&Number.isInteger(code);
       const result = { command:safeCommand, code:exitCode, duration_ms, stdoutFile, stderrFile, error:redact([spawnError,streamError?.message,...killErrors].filter(Boolean).join("; ")),termination,actual_exit_code:observed?code:null,actual_exit_signal:spawnError?null:exitSignal??null,actual_exit_code_observed:observed };
+      if(execution)result.actual_execution=structuredClone(execution);
       if(streamError)result.storageError=redact(streamError.message);
       if(killErrors.length)result.kill_errors=killErrors;
       resolve(remember(result));
@@ -103,8 +107,9 @@ export async function runGroups(plan, repositoryMode, concurrency, {
   runtimeSession,
   runtimeEvent,
   onResult = () => {},
+  completedTasks = [],
 } = {}) {
-  if(['qualified-gates','qualification-shadow'].includes(plan.strategy))return runDag(plan,repositoryMode,concurrency,{cwd,environment,execute,logRoot,signal,runtimeSession,runtimeEvent,onResult});
+  if(['qualified-gates','qualification-shadow','legacy-full'].includes(plan.strategy))return runDag(plan,repositoryMode,concurrency,{cwd,environment,execute,logRoot,signal,runtimeSession,runtimeEvent,onResult,completedTasks});
   const grouped = new Map(plan.groups.map((group) => [group, []]));
   const resourcesByExecution = new Map();
   for (const [index, item] of plan.commands.entries()) {
@@ -143,7 +148,7 @@ export async function runGroups(plan, repositoryMode, concurrency, {
         if(runtimeSession)try{runtimeSession.recordEvent('command-skipped',{id:item.id,reason:'interrupted',exit_code:130});}catch(error){row.storageError=commandRedaction(item.command,environment).redact(error.message);}
         return row;
       }
-      return execute(item.command,{cwd,environment,logRoot,sequence,signal,runtimeSession,timeoutMs:item.timeout_ms||0,deferCommandRegistration:Boolean(runtimeSession&&runtimeEvent)});
+      return execute(item.command,{cwd,environment,logRoot,sequence,signal,runtimeSession,task:item,execution:item.execution,timeoutMs:item.timeout_ms||0,deferCommandRegistration:Boolean(runtimeSession&&runtimeEvent)});
     });
     const execution={promise,ownerId:item.id,ownerIndex:item.index,ownerTaskId:item.task_id};
     executions.set(key, execution);
@@ -193,11 +198,12 @@ async function replay(file, destination) {
 }
 
 async function runDag(plan, repositoryMode, concurrency, options) {
-  const {cwd,environment,execute,logRoot,signal,runtimeSession,runtimeEvent,onResult}=options;
+  const {cwd,environment,execute,logRoot,signal,runtimeSession,runtimeEvent,onResult,completedTasks=[]}=options;
   if(!Number.isInteger(concurrency)||concurrency<1||concurrency>4)throw new TypeError('concurrency 必须为 1..4');
   const tasks=plan.commands.map((item,index)=>({...item,index})).filter(item=>!item.when||item.when===repositoryMode);
   const byTaskId=new Map(),byCheckId=new Map();
-  for(const item of tasks) {
+  const seeded=completedTasks.map(({task,result})=>({...task,seeded_result:result,index:-1}));
+  for(const item of [...tasks,...seeded]) {
     if(!item.id)throw new TypeError('DAG 检查缺少稳定 ID');
     item.execution_id=item.task_id||item.id;
     if(byTaskId.has(item.execution_id))throw new TypeError(`任务 occurrence ID 冲突: ${item.execution_id}`);
@@ -212,13 +218,14 @@ async function runDag(plan, repositoryMode, concurrency, options) {
     if(occurrences.length!==1)throw new TypeError(`检查依赖引用不明确: ${id}；请使用唯一 task_id`);
     return occurrences[0].execution_id;
   };
-  for(const item of tasks)item.normalized_dependencies=[...new Set((item.depends_on||[]).map(resolveDependency))].sort();
+  for(const item of [...tasks,...seeded])item.normalized_dependencies=[...new Set((item.depends_on||[]).map(resolveDependency))].sort();
   const visiting=new Set(),visited=new Set();
   const visit=id=>{ if(visiting.has(id))throw new TypeError(`检查依赖循环: ${id}`); if(visited.has(id))return; const item=byTaskId.get(id); visiting.add(id); for(const dependency of item.normalized_dependencies)visit(dependency); visiting.delete(id); visited.add(id); };
   for(const id of byTaskId.keys())visit(id);
   const serialGroups=new Set(tasks.filter(item=>(item.parallel_unless_env||[]).some(name=>environment[name])).map(item=>item.group));
   const lane=item=>`${item.group}\0${serialGroups.has(item.group)?'default':item.lane||'default'}`;
   const results=new Map(),completed=new Map(),active=new Map(),executions=new Map();
+  for(const item of seeded){if(!item.seeded_result||item.seeded_result.task_id!==item.task_id||item.seeded_result.id!==item.id)throw new TypeError('DAG_COMPLETED_TASK_BINDING_MISMATCH');completed.set(item.execution_id,item.seeded_result);}
   let sequence=0;
   const resources=item=>item.resources||[];
   const exclusive=item=>Number(environment.YSS_TOOLING_CONCURRENCY)>1&&(item.kind==='tooling'||/pnpm.*\.template-source\/tooling\/node\s+test/.test(item.command));
@@ -240,7 +247,7 @@ async function runDag(plan, repositoryMode, concurrency, options) {
       if(dependencies.some(row=>row&&(row.code!==0||row.skipped||row.storageError))) {remember(item,{command:item.command,code:1,skipped:true,termination:'dependency-failed',actual_exit_code:null,actual_exit_signal:null,actual_exit_code_observed:false,duration_ms:0,reused:false});progressed=true;continue;}
       if(dependencies.some(row=>!row))continue;
       if([...active.values()].some(job=>lane(job.item)===lane(item)))continue;
-      const key=commandKey({...item,depends_on:item.normalized_dependencies},cwd)+'\0'+JSON.stringify([...new Set(resources(item))].sort()),previous=executions.get(key);
+      const key=commandKey({...item,depends_on:item.normalized_dependencies},cwd)+'\0'+JSON.stringify([...new Set(resources(item))].sort())+'\0'+JSON.stringify({execution:item.execution||null,source_requirement:item.source_requirement||null,timeout_ms:item.timeout_ms||0,lane:item.lane||'default'}),previous=executions.get(key);
       if(previous) {
         if(!previous.row)continue;
         if(previous.row.code===0&&!previous.row.skipped&&!previous.row.storageError){remember(item,{...previous.row,reused:true,reused_from:{id:previous.item.id,task_id:previous.item.task_id,index:previous.item.index}});progressed=true;continue;}
@@ -249,7 +256,7 @@ async function runDag(plan, repositoryMode, concurrency, options) {
       if(active.size>=concurrency||[...active.values()].some(job=>exclusive(job.item))||exclusive(item)&&active.size)continue;
       if([...active.values()].some(job=>resources(job.item).some(resource=>resources(item).includes(resource))))continue;
       const execution={item,row:null};executions.set(key,execution);
-      const promise=Promise.resolve().then(()=>execute(item.command,{cwd,environment,logRoot,sequence:sequence++,signal,runtimeSession,deferCommandRegistration:Boolean(runtimeSession&&runtimeEvent),timeoutMs:item.timeout_ms||0})).catch(error=>({command:item.command,code:1,error:error.message,actual_exit_code:null,actual_exit_signal:null,actual_exit_code_observed:false,duration_ms:0})).then(row=>{execution.row=remember(item,{...row,reused:false});active.delete(item.index);});
+      const promise=Promise.resolve().then(()=>execute(item.command,{cwd,environment,logRoot,sequence:sequence++,signal,runtimeSession,task:item,execution:item.execution,deferCommandRegistration:Boolean(runtimeSession&&runtimeEvent),timeoutMs:item.timeout_ms||0})).catch(error=>({command:item.command,code:1,error:error.message,actual_exit_code:null,actual_exit_signal:null,actual_exit_code_observed:false,duration_ms:0})).then(row=>{execution.row=remember(item,{...row,reused:false});active.delete(item.index);});
       active.set(item.index,{item,promise});progressed=true;
       if(exclusive(item))break;
     }

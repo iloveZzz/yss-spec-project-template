@@ -5,10 +5,10 @@ import { createHash } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 import { verificationInputDigest } from '../../../scripts/lib/verification-report.mjs';
 import {loadVerificationProfiles,planTemplateVerification} from '../../../scripts/lib/template-verification.mjs';
-import {addVerificationExecutionTasks} from './verification-execution-plan.mjs';
+import {addVerificationExecutionTasks,compileTaskExecution} from './verification-execution-plan.mjs';
 import {compileLegacyPlan,verifyLegacyManifest} from './legacy-verification.mjs';
 import {LEGACY_SOURCE_COMMIT,LEGACY_COVERAGE_DIGEST} from './verification-gates.mjs';
-import {sourceTuple,collectReleaseSources,validateArtifact} from './verification-artifacts.mjs';
+import {sourceTuple,collectReleaseSources,validateArtifact,validateCliSourceConsumer} from './verification-artifacts.mjs';
 import {parseArgs} from 'node:util';
 import {validateJsonSchema} from '../../../scripts/lib/json-schema.mjs';
 
@@ -16,6 +16,7 @@ const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 const ensure = (condition, message) => { if (!condition) throw new TypeError(message); };
 const key = (task, index) => task.task_id || `index.${index}`;
 const selected = (plan, mode) => plan.commands.map((task,index)=>({...task,index})).filter(task=>!task.when||task.when===mode);
+const executionInputs=task=>Object.fromEntries(Object.entries(task).filter(([name])=>!['id','task_id','index','gate_ids','group','title','display_id','old_id','old_index','selection_reason'].includes(name)).map(([name,value])=>[name,['depends_on','resources','parallel_unless_env','input_patterns'].includes(name)?[...new Set(value||[])].sort():value]).sort(([a],[b])=>a.localeCompare(b)));
 
 /** Qualified evidence applies only to the execution conditions it measured. */
 export function assertQualificationExecutionContract(plan, {concurrency=1,toolingMode='legacy',testConcurrency=toolingMode==='legacy'?1:Math.min(2,concurrency)}={}) {
@@ -28,7 +29,7 @@ export function assertQualificationExecutionContract(plan, {concurrency=1,toolin
 }
 
 /** Recompile from repository policy and consumer arguments, not report.plan. */
-export function compileExpectedVerificationPlan({root,args=[],fixedCommit,config,baselineAssessment}={}){
+export function compileExpectedVerificationPlan({root,args=[],fixedCommit,config,baselineAssessment,reportDirectory}={}){
  root=fs.realpathSync(root);
  const {values}=parseArgs({args,strict:true,options:{profile:{type:'string',default:'release'},base:{type:'string'},'changed-file':{type:'string',multiple:true},selection:{type:'string'},'report-dir':{type:'string'},'baseline-report':{type:'string'},'baseline-report-sha256':{type:'string'},'qualification-report':{type:'string'},'qualification-report-sha256':{type:'string'},'runtime-store':{type:'string'},concurrency:{type:'string'},'tooling-mode':{type:'string'},checkpoint:{type:'string',multiple:true},'task-package':{type:'string',multiple:true}}});
  const git=args=>{const r=spawnSync('git',args,{cwd:root,encoding:'utf8',maxBuffer:32*1024*1024});ensure(r.status===0,r.stderr||'无法独立编译验证计划');return r.stdout;};
@@ -47,7 +48,9 @@ export function compileExpectedVerificationPlan({root,args=[],fixedCommit,config
   verifyLegacyManifest(root,manifest);plan=compileLegacyPlan(manifest);
  }else plan=planTemplateVerification({root,config,profile:values.profile,changedFiles:[...files],base:values.base,baselineReport:values['baseline-report'],baselineReportDigest:values['baseline-report-sha256'],baselineAssessment,qualificationReport:values['qualification-report'],qualificationReportDigest:values['qualification-report-sha256'],...(values.selection?{selection:values.selection}:{})});
  assertQualificationExecutionContract(plan,{concurrency:Number(values.concurrency??1),toolingMode:values['tooling-mode']??'legacy'});
- return addVerificationExecutionTasks(plan,{root,reference,reportDir:values['report-dir']?path.resolve(values['report-dir']):null,purpose:'verification',checkpoints:values.checkpoint||[],taskPackages:values['task-package']||[]});
+ const reportDir=values['report-dir']?path.resolve(values['report-dir']):reportDirectory?path.resolve(reportDirectory):null;
+ if(values['report-dir']&&reportDirectory)ensure(fs.realpathSync(reportDir)===fs.realpathSync(reportDirectory),'实际 report directory 与明确 invocation 不匹配');
+ return addVerificationExecutionTasks(plan,{root,reference,fixedCommit,reportDir,purpose:'verification',checkpoints:values.checkpoint||[],taskPackages:values['task-package']||[]});
 }
 
 export function assertEvidenceFile(file, directory, expectedDigest) {
@@ -107,6 +110,7 @@ export function validateVerificationReport(report, {root,expectedPlan,reportDire
   }
   if(expectedFamilies)assert.deepEqual(report.sources_manifest?.families,expectedFamilies,'实际 CLI 家族不满足消费范围');
   const expectedGates=(expectedPlan.gates||[]).filter(g=>g.selected);
+  const verifiedSourceReceipts=new Map();
   assert.deepEqual(report.plan.gates||[],expectedPlan.gates||[],'验证 Gate 定义或全集不完整');
   assert.deepEqual((report.plan.gates||[]).filter(g=>g.selected).map(g=>g.id),expectedGates.map(g=>g.id),'验证 Gate 集合不完整');
   for (const task of expectedTasks) {
@@ -117,9 +121,26 @@ export function validateVerificationReport(report, {root,expectedPlan,reportDire
     ensure(rows.length===1,'验证任务结果缺失或重复');
     const row=rows[0];
     ensure(row.command===task.command && row.code===0 && !row.skipped && !row.storageError, '验证任务未通过');
+    const execution=task.execution||compileTaskExecution(task,{root:report.root,reportDir:reportDirectory});
+    if(execution){
+      ensure(row.actual_execution&&typeof row.actual_execution==='object','Node 测试实际执行 tuple 缺失');
+      const {source_receipt_sha256,...actual}=row.actual_execution;assert.deepEqual(actual,execution,'请求命令与实际 file/argv/cwd/env 不匹配');
+      if(execution.source_consumer_ref){
+        const refs=(report.source_test_receipts||[]).filter(ref=>ref.ref===execution.source_consumer_ref);
+        ensure(refs.length===1&&/^[a-f0-9]{64}$/.test(refs[0].sha256)&&refs[0].sha256===source_receipt_sha256,'源码测试准备回执或实际摘要未绑定');
+        if(!verifiedSourceReceipts.has(execution.source_consumer_ref)){
+          const receiptFile=assertEvidenceFile(execution.source_consumer_ref,reportDirectory,source_receipt_sha256),receipt=JSON.parse(fs.readFileSync(receiptFile,'utf8'));
+          const source=expectedSourcesManifest?.entries?.find(row=>row.family==='spec'),artifact=report.artifacts?.find(row=>row.source_tuple?.family==='spec');ensure(source&&artifact,'源码测试缺少独立固定来源或安装产物');
+          validateCliSourceConsumer(receipt,{root,expectedSource:source,directory:execution.cwd,artifact});verifiedSourceReceipts.set(execution.source_consumer_ref,receipt);
+        }
+      }else ensure(source_receipt_sha256===undefined,'普通测试不能挂靠未知源码回执');
+    }else ensure(row.actual_execution===undefined,'报告声明了未批准的执行适配');
     if (row.reused) {
       const origin=report.results.find(result=>row.reused_from?.task_id?result.task_id===row.reused_from.task_id:result.index===row.reused_from?.index);
       ensure(origin && origin!==row && !origin.reused && origin.command===row.command && origin.actual_exit_code_observed===true && origin.actual_exit_code===0 && !origin.actual_exit_signal, '复用任务没有同轮实际退出来源');
+      const originTask=expectedTasks.find(task=>origin.task_id?task.task_id===origin.task_id:task.index===origin.index);
+      ensure(originTask,'复用来源不属于独立期望台账');
+      assert.deepEqual(executionInputs(task),executionInputs(originTask),'复用任务的依赖、资源、来源或执行输入不等价');
       ensure(row.stdoutFile===origin.stdoutFile && row.stderrFile===origin.stderrFile,'复用日志与实际执行不匹配');
     } else ensure(row.actual_exit_code_observed===true && row.actual_exit_code===0 && !row.actual_exit_signal, '任务实际退出未观察或失败');
     for (const name of ['stdoutFile','stderrFile']){ensure(/^[a-f0-9]{64}$/.test(row.log_digests?.[name]),'v2 日志摘要缺失');assertEvidenceFile(row[name],reportDirectory,row.log_digests[name]);}
@@ -174,7 +195,7 @@ export function validateBaselineReport({root,base,reportFile,expectedDigest,expe
     ensure(/^(?:sha256:)?[a-f0-9]{64}$/.test(expectedDigest),'baseline 报告摘要缺失');
     const outer=JSON.parse(fs.readFileSync(reportFile,'utf8'));
     ensure([1,2].includes(outer.schema_version)&&(outer.schema_version===1||outer.kind==='template-release-verification')&&outer.purpose!=='qualification','baseline 不是受支持的 verification 发布报告');
-    ensure(outer.status==='passed'&&outer.requested_commit===base&&outer.template_commit===base,'baseline 提交未绑定通过报告');
+    ensure(outer.status==='passed'&&!outer.error&&outer.requested_commit===base&&outer.template_commit===base,'baseline 提交未绑定通过报告或存在外层失败');
     ensure(outer.commands?.length>0&&outer.commands.every(row=>row.exit_code===0),'baseline 外层实际命令未通过');
     for(const command of outer.commands){if(outer.schema_version===2)ensure(command.actual_exit_code_observed===true&&command.actual_exit_code===0&&!command.actual_exit_signal,'baseline 外层实际退出未观察');assertEvidenceFile(command.log,directory,command.log_sha256);}
     const fullFile=outer.full_verification?.report;assertEvidenceFile(fullFile,directory,outer.full_verification?.report_sha256);
@@ -193,13 +214,17 @@ export function validateBaselineReport({root,base,reportFile,expectedDigest,expe
       validateLegacyReport(full,{directory:path.dirname(fullFile),expectedPlan,extraValidators});
     }
     else {
-      expectedPlan??=compileExpectedVerificationPlan({root,args:invocation.args,fixedCommit:base});
+      expectedPlan??=compileExpectedVerificationPlan({root,args:invocation.args,fixedCommit:base,reportDirectory:path.dirname(fullFile)});
       const fixedSources=collectReleaseSources({root,commit:base});
       validateVerificationReport(full,{root:full.root,expectedPlan,reportDirectory:path.dirname(fullFile),expectedInvocation:{command:path.join(full.root,'scripts/run-template-verification'),args:['--profile','release',...invocation.args]},historical:true,expectedSourcesManifest:fixedSources});
     }
     const ancestor=spawnSync('git',['merge-base','--is-ancestor',base,'HEAD'],{cwd:root});ensure(ancestor.status===0,'baseline 不是当前祖先');
     const sources=collectReleaseSources({root,commit:base,families:outer.cli_families||['spec']});
     if(outer.sources_manifest)assert.deepEqual(outer.sources_manifest.entries.map(sourceTuple),sources.entries.map(sourceTuple),'baseline 精确来源错配');
+    if(outer.schema_version===2&&outer.cli_families?.length!==1){
+      const integration=validateQualificationIntegration({root,reportFile,expectedDigest,expectedCommit:base});
+      ensure(integration.valid,`baseline 固定 CLI 集成不完整: ${integration.reasons.join('; ')}`);
+    }
     return {valid:true,reasons:[],bindings:{base_sha:base,report_digest:hash(fs.readFileSync(reportFile)),report_file:reportFile,report_schema:outer.schema_version,strategy:full.schema_version===1||full.plan.strategy==='legacy-reference'?'legacy-full':full.plan.strategy,policy_digest:full.plan.policy_digest,sources_manifest:sources}};
   } catch(error) {return {valid:false,reasons:[error.message],bindings:null};}
 }
@@ -209,7 +234,7 @@ export function validateQualificationIntegration({root,reportFile,expectedDigest
   ensure(typeof reportFile==='string'&&path.isAbsolute(reportFile)&&/^(?:sha256:)?[a-f0-9]{64}$/.test(expectedDigest),'integration 报告路径或摘要缺失');
   const directory=fs.realpathSync(path.dirname(reportFile));reportFile=path.join(directory,path.basename(reportFile));assertEvidenceFile(reportFile,directory,expectedDigest);
   const report=JSON.parse(fs.readFileSync(reportFile,'utf8')),commit=expectedCommit||report.requested_commit;
-  ensure(report.schema_version===2&&report.kind==='template-release-verification'&&report.status==='passed'&&report.requested_commit===commit&&report.template_commit===commit,'integration 来源或结论未绑定');
+  ensure(report.schema_version===2&&report.kind==='template-release-verification'&&report.status==='passed'&&!report.error&&report.requested_commit===commit&&report.template_commit===commit,'integration 来源或结论未绑定或存在外层失败');
   const families=['spec','design','backend','frontend'];assert.deepEqual(report.cli_families,families,'integration 未覆盖 all-four');
   const expected=collectReleaseSources({root,commit,families});
   assert.deepEqual(report.sources_manifest?.families,families,'integration 来源家族缺失');assert.deepEqual(report.sources_manifest?.entries?.map(sourceTuple),expected.entries.map(sourceTuple),'integration 精确来源错配');

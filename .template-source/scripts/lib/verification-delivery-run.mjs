@@ -4,7 +4,7 @@ import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {parseArgs} from 'node:util';
 import {createHash} from 'node:crypto';
-import {collectReleaseSources, produceCliArtifact, prepareArtifactConsumers, verifyInstalledCliMigration, validateArtifact, sourceTuple} from './verification-artifacts.mjs';
+import {collectReleaseSources, produceCliArtifact, prepareArtifactConsumers, prepareCliSourceConsumer, validateCliSourceConsumer, verifyInstalledCliMigration, validateArtifact, sourceTuple} from './verification-artifacts.mjs';
 
 const entry=fileURLToPath(import.meta.url);
 const families=['spec','design','backend','frontend'];
@@ -22,7 +22,7 @@ function outside(root,directory){
 
 /** Supplemental four-family tasks remain individually visible beside the old coverage. */
 export function compileDeliveryPreparationTasks(plan,{root,reportDir}={}) {
-  const enabled=plan.strategy==='qualification-shadow'||plan.strategy==='legacy-reference'||plan.strategy==='qualified-gates'&&plan.effective_profile==='release';
+  const enabled=['qualification-shadow','legacy-reference','legacy-full'].includes(plan.strategy)||plan.strategy==='qualified-gates'&&plan.effective_profile==='release';
   if(!enabled)return {tasks:[],families:[],receiptFile:null,artifactDirectory:null};
   ensure(reportDir,'四 CLI 固定来源验证需要独立报告目录');outside(root,reportDir);
   const artifactDirectory=path.join(reportDir,'artifacts'),receiptFile=path.join(reportDir,'consumption','receipt.json');
@@ -31,6 +31,11 @@ export function compileDeliveryPreparationTasks(plan,{root,reportDir}={}) {
   const tasks=families.map(family=>({id:`check.cli-artifact-${family}`,task_id:`check.cli-artifact-${family}`,group:'artifact-preparation',kind:'artifact-prepare',gate_ids:[gates[family]],resources:['cli-artifact-production'],depends_on:['check.verification-environment'],command:command('prepare-cli',family)}));
   for(const family of families)tasks.push({id:`check.cli-migration-${family}`,task_id:`check.cli-migration-${family}`,group:'artifact-preparation',kind:'artifact-migration',gate_ids:['check.verification-cli-migration'],resources:['cli-artifact-consumption'],depends_on:[`check.cli-artifact-${family}`],command:command('migration',family)});
   tasks.push({id:'check.cli-artifact-consumers',task_id:'check.cli-artifact-consumers',group:'artifact-preparation',kind:'artifact-consumers',gate_ids:['check.verification-distribution'],depends_on:families.map(family=>`check.cli-artifact-${family}`),command:command('prepare-consumers'),receipt_file:receiptFile});
+  tasks.push({id:'check.cli-source-test-consumer',task_id:'check.cli-source-test-consumer',group:'artifact-preparation',kind:'source-test-consumer',gate_ids:[gates.spec],depends_on:['check.cli-artifact-spec'],command:command('prepare-source-consumer'),receipt_file:path.join(reportDir,'consumption','source-test-receipt.json')});
+  for(const task of plan.commands||[]){
+    if(/^node --test submodules\/create-yss-spec\/tests\/(?:content-identity|sync-fast-smoke)\.test\.js$/.test(task.command))task.depends_on=[...new Set([...(task.depends_on||[]),'check.cli-source-test-consumer'])];
+    if(/(?:verify-cli-upgrade|verify-(?:delivery-harness|strategic-handoff)-distribution)\.mjs|runtime-store-distribution\.test\.mjs/.test(task.command))task.depends_on=[...new Set([...(task.depends_on||[]),'check.cli-artifact-consumers'])];
+  }
   const cleanupTask={id:'check.verification-artifact-cleanup',task_id:'check.verification-artifact-cleanup',group:'cleanup',kind:'cleanup',gate_ids:['check.verification-final-integrity'],depends_on:[],command:command('cleanup')};
   return {tasks,cleanupTask,receiptFile,artifactDirectory,families:[...families]};
 }
@@ -91,7 +96,7 @@ export function assembleQualificationIntegration({root,directory}={}) {
 
 export function runDeliveryTask({root,directory,action,family}={}) {
   root=fs.realpathSync(root);directory=path.resolve(directory);outside(root,directory);
-  ensure(['prepare-cli','migration','prepare-consumers','cleanup'].includes(action),'未知产物准备动作');
+  ensure(['prepare-cli','migration','prepare-consumers','prepare-source-consumer','cleanup'].includes(action),'未知产物准备动作');
   if(action==='cleanup'){
     const start=performance.now();
     for(const name of families)fs.rmSync(path.join(directory,'artifacts',name,'cli'),{recursive:true,force:true});
@@ -116,6 +121,13 @@ export function runDeliveryTask({root,directory,action,family}={}) {
     ensure(!fs.existsSync(target),'迁移消费目录必须为新目录');
     const result=verifyInstalledCliMigration({artifact,directory:target,run:recorder.run});
     write(path.join(directory,'migration-results',`${family}.json`),{...result,command_records:recorder.records});return result;
+  }
+  if(action==='prepare-source-consumer'){
+    const source=manifest.entries.find(row=>row.family==='spec'),artifact=read(artifactFile(directory,'spec'));
+    const target=path.join(directory,'consumption','source-cli','spec'),recorder=commandRecorder(path.join(directory,'artifact-logs','source-consumer'));
+    const receipt=prepareCliSourceConsumer({root,source,artifact,directory:target,run:recorder.run});
+    validateCliSourceConsumer(receipt,{root,expectedSource:source,directory:target,artifact});
+    write(path.join(directory,'consumption','source-test-receipt.json'),{...receipt,command_records:recorder.records});return receipt;
   }
   const artifacts=families.map(name=>read(artifactFile(directory,name))),recorder=commandRecorder(path.join(directory,'artifact-logs','consumers'));
   const consumers=prepareArtifactConsumers({artifacts,directory:path.join(directory,'consumption','prepared'),run:recorder.run});
