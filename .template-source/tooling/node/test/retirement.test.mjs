@@ -21,7 +21,7 @@ test('legacy initializer rejects before creating or overwriting a target', () =>
     const run = () => spawnSync(process.execPath, [path.join(root, 'scripts/instantiate-harness'), '--target', target], {encoding:'utf8'});
     assert.equal(run().status, 1); assert.equal(fs.existsSync(target), false);
     fs.mkdirSync(target); fs.writeFileSync(path.join(target, 'sentinel'), 'user-owned');
-    const result=run(); assert.equal(result.status, 1); assert.match(result.stderr, /backend@0\.4\.7/); assert.match(result.stderr, /frontend@0\.3\.7/);
+    const result=run(); assert.equal(result.status, 1); assert.match(result.stderr, /yss init --root <新目录> --profile backend/); assert.match(result.stderr, /yss init --root <新目录> --profile frontend/);
     assert.deepEqual(fs.readdirSync(target), ['sentinel']); assert.equal(fs.readFileSync(path.join(target, 'sentinel'), 'utf8'), 'user-owned');
   } finally {fs.rmSync(temp, {recursive:true,force:true});}
 });
