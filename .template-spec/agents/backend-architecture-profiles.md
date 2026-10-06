@@ -6,7 +6,7 @@ Profile、模块闭包、生成器、成熟度和 Recipe 的权威映射见 `yss
 
 ## 既有工程适配
 
-`existing_project_profiles` 与下述生成器 Profile 独立维护。首版两个 Maven 适配器通过真实 Git/POM 三方核验、对应架构的成功/失败行为测试与 Maven test/package 后标记 supported；当前适配行为由 `scripts/verify-existing-backend-architecture-scenarios` 和对应独立 fixture 核验。这是适配协议支持证据，不是实际产品批准、数据库兼容或真实跨仓 S0 结论。每个工程仍须自己的固定来源、架构边界审查和执行证据，详见 `.template-spec/process/existing-backend-architecture.md`。生成器原有 draft 和首切片要求保持。
+`existing_project_profiles` 与下述生成器 Profile 独立维护。首版两个 Maven 适配器通过真实 Git/POM 三方核验、对应架构的成功/失败行为测试与 Maven test/package 后标记 supported；当前适配行为由 `tests/scenarios/verify-existing-backend-architecture-scenarios.mjs` 和对应独立 fixture 核验。这是适配协议支持证据，不是实际产品批准、数据库兼容或真实跨仓 S0 结论。每个工程仍须自己的固定来源、架构边界审查和执行证据，详见 `.template-spec/process/existing-backend-architecture.md`。生成器原有 draft 和首切片要求保持。
 
 ## MVC 分层
 

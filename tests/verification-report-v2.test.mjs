@@ -37,6 +37,30 @@ test('完整 v2 报告按独立期望台账核验', t => {
   assert.throws(() => validateVerificationReport(f.report, f.options), /任务|task/);
 });
 
+test('迁移场景报告绑定当前独立映射，拒绝旧argv和自改执行tuple',t=>{
+  const f=fixture(t),ref='tests/scenarios/verify-context-contract-scenarios.mjs';
+  fs.mkdirSync(path.join(f.directory,'tests/scenarios'),{recursive:true});fs.writeFileSync(path.join(f.directory,ref),'console.log("mapped current source");\n');
+  const task={id:'check.context',task_id:'legacy.context',command:'scripts/verify-context-contract-scenarios',gate_ids:['G04']};
+  f.plan.commands=[task];f.report.plan=structuredClone(f.plan);
+  const execution=compileTaskExecution(task,{root:f.report.root}),actual=spawnSync(execution.file,execution.args,{cwd:execution.cwd,encoding:'utf8'});
+  assert.equal(actual.status,0,actual.stderr);
+  const row=f.report.results[0];Object.assign(row,task,{actual_execution:execution});
+  fs.writeFileSync(row.stdoutFile,actual.stdout);fs.writeFileSync(row.stderrFile,actual.stderr);
+  row.log_digests={stdoutFile:createHash('sha256').update(actual.stdout).digest('hex'),stderrFile:createHash('sha256').update(actual.stderr).digest('hex')};
+  finalizeVerificationReport(f.report,{status:'passed',wallMs:1,repositoryMode:'template-source'});
+  assert.equal(validateVerificationReport(f.report,f.options).status,'passed');
+  for(const mutate of [
+    r=>delete r.results[0].actual_execution,
+    r=>r.results[0].actual_execution.args=['scripts/verify-context-contract-scenarios'],
+    r=>r.results[0].actual_execution.cwd='/other-root',
+    r=>r.results[0].actual_execution.file='/other-node',
+    r=>r.results[0].actual_execution.requested_command='node unapproved.mjs',
+    r=>r.results[0].actual_execution.environment={NODE_OPTIONS:'--import unapproved.mjs'},
+  ]){const report=structuredClone(f.report);mutate(report);assert.throws(()=>validateVerificationReport(report,f.options),/实际|argv|tuple/);}
+  fs.rmSync(path.join(f.directory,ref));
+  assert.throws(()=>validateVerificationReport(f.report,f.options),/RETIRED_SCRIPT_TARGET_MISSING/);
+});
+
 test('G20 等待监督 close 并结合全局完整性，普通 Gate 保持独立结论',t=>{
  const f=fixture(t),id='check.verification-final-integrity';f.plan.gates.push({id,selected:true,check_ids:['check.syntax']});f.report.plan=structuredClone(f.plan);
  const gate=report=>report.gate_results.find(row=>row.id===id),ordinary=report=>report.gate_results.find(row=>row.id==='G04');

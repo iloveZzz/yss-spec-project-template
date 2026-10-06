@@ -59,6 +59,16 @@ test('资格反例消费者绑定独立root，同改两处cwd或缺少上下文�
 
 const longCounterexampleBody=`const child=spawn(process.execPath,['-e','setInterval(()=>{},1000)'],{stdio:'inherit'});let stopping=false;child.once('exit',()=>{if(stopping)process.exit(0);});process.on('SIGTERM',()=>{stopping=true;child.kill('SIGTERM');});fs.writeFileSync(__MARKER__,JSON.stringify({suite:process.pid,descendant:child.pid}));console.log('actual active counterexample');await new Promise(()=>{});`;
 async function waitForFile(file,timeoutMs=10000) {const deadline=Date.now()+timeoutMs;while(!fs.existsSync(file)&&Date.now()<deadline)await new Promise(resolve=>setTimeout(resolve,10));assert.ok(fs.existsSync(file),file);}
+async function waitForCounterexampleOutput(file,parent,timeoutMs=10000) {
+  const deadline=Date.now()+timeoutMs;
+  while(Date.now()<deadline) {
+    if(fs.existsSync(file)&&fs.readFileSync(file,'utf8').includes('actual active counterexample'))return;
+    assert.equal(parent.exitCode,null,'collector closed before actual counterexample output');
+    assert.equal(parent.signalCode,null,'collector was signalled before actual counterexample output');
+    await new Promise(resolve=>setTimeout(resolve,10));
+  }
+  assert.fail(`actual counterexample output not observed within ${timeoutMs}ms: ${file}`);
+}
 async function assertProcessesClosed(pids) {for(const pid of Object.values(pids)){const deadline=Date.now()+2000;while(Date.now()<deadline){try{process.kill(pid,0);await new Promise(resolve=>setTimeout(resolve,10));}catch(error){assert.equal(error.code,'ESRCH');break;}}assert.throws(()=>process.kill(pid,0),error=>error.code==='ESRCH');}}
 
 test('资格反例收集中断实际进程组与后代，保留partial且后续套件未启动',async t=>{
@@ -67,12 +77,17 @@ test('资格反例收集中断实际进程组与后代，保留partial且后续�
     const url=new URL('../.template-source/scripts/lib/verification-qualification.mjs',import.meta.url).href;
     fs.writeFileSync(entry,`import fs from 'node:fs';import {collectQualificationCounterexamples} from ${JSON.stringify(url)};const controller=new AbortController();const onInt=()=>controller.abort('SIGINT'),onTerm=()=>controller.abort('SIGTERM');process.on('SIGINT',onInt);process.on('SIGTERM',onTerm);try{const corpus=await collectQualificationCounterexamples({root:${JSON.stringify(f.root)},directory:${JSON.stringify(f.output)},signal:controller.signal,onProgress:value=>fs.writeFileSync(${JSON.stringify(partial)},JSON.stringify(value))});fs.writeFileSync(${JSON.stringify(outcome)},JSON.stringify(corpus));process.exitCode=corpus.status==='interrupted'?130:1;}finally{process.off('SIGINT',onInt);process.off('SIGTERM',onTerm);}`);
     const parent=spawn(process.execPath,[entry],{stdio:['ignore','pipe','pipe']}),closed=new Promise(resolve=>parent.once('close',(code,signal)=>resolve({code,signal})));let stderr='';parent.stderr.on('data',bytes=>stderr+=bytes);parent.stdout.resume();t.after(()=>{if(parent.exitCode===null)parent.kill('SIGKILL');});
-    await waitForFile(f.marker);const active=JSON.parse(fs.readFileSync(partial));assert.equal(active.status,'running');assert.equal(active.active_suite.file,f.files[0]);assert.equal(active.suites.length,0);
-    parent.kill(signalName);assert.deepEqual(await closed,{code:130,signal:null},stderr);
+    await waitForFile(f.marker);const pids=JSON.parse(fs.readFileSync(f.marker));
+    for(const pid of Object.values(pids)){assert.ok(Number.isSafeInteger(pid)&&pid>0);assert.doesNotThrow(()=>process.kill(pid,0));}
+    const active=JSON.parse(fs.readFileSync(partial));assert.equal(active.status,'running');assert.equal(active.active_suite.file,f.files[0]);assert.equal(active.suites.length,0);
+    // The PID file precedes TAP forwarding. Interrupt only once the collector
+    // has persisted the real case's output, rather than racing that forwarding.
+    await waitForCounterexampleOutput(path.join(f.output,active.active_suite.stdout_ref),parent);
+    parent.kill(signalName);const close=await Promise.race([closed,new Promise((_,reject)=>{const timer=setTimeout(()=>reject(Error('counterexample interrupt close timeout')),10000);timer.unref();})]);assert.deepEqual(close,{code:130,signal:null},stderr);
     const corpus=JSON.parse(fs.readFileSync(outcome));assert.equal(corpus.status,'interrupted');assert.equal(corpus.suites.length,1);assert.equal(corpus.suites[0].termination,'cancelled');assert.deepEqual(corpus.unexecuted_suites,f.files.slice(1));assert.deepEqual(fs.readFileSync(f.startedFile,'utf8').trim().split('\n'),[f.files[0]]);
     assert.deepEqual(JSON.parse(fs.readFileSync(partial)),corpus);const suite=corpus.suites[0];assert.equal(suite.source_sha256,f.bindings.source_files[suite.file]);assert.equal(suite.command,process.execPath);assert.equal(suite.cwd,f.root);assert.equal(suite.args.at(-1),f.files[0]);
     for(const stream of ['stdout','stderr'])assert.equal(suite[stream+'_sha256'],hash(fs.readFileSync(path.join(f.output,suite[stream+'_ref']))));assert.match(fs.readFileSync(path.join(f.output,suite.stdout_ref),'utf8'),/actual active counterexample/);
-    assert.equal(validateQualificationCounterexamples({root:f.root,directory:f.output,corpus,bindings:f.bindings}).valid,false);await assertProcessesClosed(JSON.parse(fs.readFileSync(f.marker)));
+    assert.equal(validateQualificationCounterexamples({root:f.root,directory:f.output,corpus,bindings:f.bindings}).valid,false);await assertProcessesClosed(pids);
   }
 });
 

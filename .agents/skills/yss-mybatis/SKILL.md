@@ -5,15 +5,17 @@ description: 用于 YSS MyBatis / MyBatis-Plus 组件能力核验、接入决策
 
 # yss-mybatis
 
+执行路线按 Spec 项目中的 `.agents/skills/yss-product-lifecycle/references/daily-delivery.md` 的项目本地政策与固定 CLI 核验。仅合格且范围已授权的 Spec `daily` 消费同 Ticket 的范围、验收与已核验工程基线；`governed` 保留当前批准合同。缺本地政策/能力、其他 Profile 或已绑定正式任务不能凭标签降级；路线不授予执行授权。
+
 本 Skill 只维护 `yss-component-persistence` 的组件能力、选择条件和排障顺序。PO、Repository、Convertor、Gateway/Query Adapter 的结构与生成边界由 `yss-repository` 负责。
 
 ## 平台与源码门禁
 
-接入、修改、代码生成或提供精确类名/配置前，必须读取并执行 [共享平台与源码门禁](../yss-skill-source-index-refresh/references/backend-component-platform-compatibility.md)，以 `--skill yss-mybatis` 校验批准的平台线及匹配源码根。缺失、错配或漂移返回 `blocked`；不跨代回退，不在业务实现中升级、降级或替换组件。只读分诊可继续，但须标注未完成源码核验，不能据此宣称跨 Boot/JDK 兼容。
+接入、修改、代码生成或提供精确类名/配置前，必须读取并执行 [共享平台与源码门禁](../yss-skill-source-index-refresh/references/backend-component-platform-compatibility.md)，以 `--skill yss-mybatis` 校验当前路线已核验的精确平台线及匹配源码根（`daily` 来自同 Ticket 的已有工程基线，`governed` 来自批准的配置）；不因普通路径跳过源码检查。缺失、错配或漂移返回 `blocked`；不跨代回退，不在业务实现中升级、降级或替换组件。只读分诊可继续，但须标注未完成源码核验，不能据此宣称跨 Boot/JDK 兼容。
 
 ## 入口与前置
 
-1. 读取批准且当前的 `architecture_identity`、`persistence_profile`、实现仓登记和 Slice Implementation Contract。没有合同的故障诊断可以继续，但不得据此生成或改变架构。
+1. `governed` 读取批准且当前的 `architecture_identity`、`persistence_profile`、实现仓登记和 Slice Implementation Contract；合格 `daily` 从同 Ticket 的验收/范围与已有工程基线取得已确认架构、持久化模式和真实单仓根。缺事实可只读调查，不据此生成或改变架构。
 2. 精确类名、方法签名、配置 key、默认值或启用条件必须先读 [source-index.md](references/source-index.md)，并按 `yss-skill-source-index-refresh/references/source-location.md` 核验组件 tree 与组件子树 clean 状态。
 3. 组件 tree 不匹配或 persistence 子树为 dirty 时，路径提示只能用于定位；精确实现或审查结论返回 `stale` / `missing_evidence`，刷新索引后再继续。
 4. 新 DDD / MVC scaffold 只支持批准的 `mybatis-plus` Profile。普通 MyBatis 仅用于既有工程维护、兼容与排障；新增支持必须有独立 Profile 和 fixture，不自动猜测或混用。
@@ -54,7 +56,7 @@ description: 用于 YSS MyBatis / MyBatis-Plus 组件能力核验、接入决策
 | 请求 | 本 Skill 动作 | 后续路由 |
 |---|---|---|
 | 组件接入、基类选择、配置核验 | 读取当前 Profile 和源码能力矩阵，给出来源可追踪的选择 | 需要结构实现时转 `yss-repository` |
-| 分页、批量、扫描、XML、数据源故障 | 按下列顺序定位并保留实际证据 | 发现合同或数据影响时返回编译器 |
+| 分页、批量、扫描、XML、数据源故障 | 按下列顺序定位并保留实际证据 | 超出当前输入的数据/架构影响回生命周期调查；正式合同漂移回编译器 |
 | 生成 PO / Repository / Convertor / GatewayImpl | 不生成 | `yss-repository` |
 | 普通 MyBatis 新工程生成 | `unsupported` | 新 Profile / fixture 获批后再进入 |
 
@@ -70,13 +72,13 @@ description: 用于 YSS MyBatis / MyBatis-Plus 组件能力核验、接入决策
 
 ## Review 输入
 
-仅审查本体项目和合同/实现仓登记的后端研发项目。命中 Mapper、Repository、SQL、分页、批量、扫描配置或数据源能力时，`code-review` Standards 轴必须读取本 Skill 和当前 source index；无持久化影响时显式记录带原因的 `not-applicable`。
+仅审查本体项目、`governed` 合同/实现仓登记项目及 `daily` 同 Ticket 已核验的单一后端实现根。命中 Mapper、Repository、SQL、分页、批量、扫描配置或数据源能力时，`code-review` Standards 轴必须读取本 Skill 和当前 source index；无持久化影响时显式记录带原因的 `not-applicable`。
 
 ## 结果与验证
 
 - 行为变更使用 `behavior-tdd`；纯 Mapper/XML 骨架仅在批准合同明确为 `controlled-generation` 时允许。
 - 使用项目根 `./mvnw ...` 记录实际命令、退出码和时间；H2 只证明本地/测试行为，不证明生产方言。
-- 按 [YSS Skill Execution Result v2](../yss-implementation-contract-compiler/references/yss-skill-execution-result.md) 返回证据、`seam_deferred`、`deviations`、`new_impacts`、`drift` 和 `violation`。
+- `daily` 在同 Ticket 返回组件来源、分页/批量/映射约束及真实测试/命令/退出码，交独立 Reviewer 绑定当前候选；`governed` 按 [YSS Skill Execution Result v2](../yss-implementation-contract-compiler/references/yss-skill-execution-result.md) 返回证据、`seam_deferred`、`deviations`、`new_impacts`、`drift` 和 `violation`。
 
 ## 持久化选择记录
 

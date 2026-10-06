@@ -1,6 +1,8 @@
+diff --git a/SKILL.md b/SKILL.md
+index e123d84e..814c971a 100644
 --- a/SKILL.md
 +++ b/SKILL.md
-@@ -57,7 +57,6 @@
+@@ -59,7 +59,6 @@ YSS DTO 的可复用 HTTP/JSON 映射由 `.agents/skills/yss-dto/references/open
  - YAML / `$ref` / lint 不通过，operationId 不稳定或不唯一，或路径参数、schema、examples 无法解析。
  - `<feature>-validation.yaml` 缺失、verifier 失败、记录的 YAML SHA-256 与当前字节不一致，或 Redocly 未由 pnpm lockfile 锁定。
  - P0 操作缺请求、响应、错误、并发 / 幂等规则或可验证 seam；Spec 明确的认证或授权行为没有契约表示。
@@ -8,9 +10,11 @@
  - `$ref` 超出允许范围，或转换器版本、lockfile、命令、输入 YAML 无法识别。
  - `scripts/verify-yss-dto-openapi-profile` 失败、profile 版本未记录，或采用 YSS wrapper 的 Draft 响应未按 profile 建模 `x-yss-response-wrapper`、`YssResultMeta` / `allOf` 和具体 `data` schema。
  - 新的 YSS wrapper 契约引入 `com.yss.cloud.dto.response`、把 Java 泛型文字当成 OAS schema、把全局 `code` 放宽为任意 object，或采用 YSS 分页协议的接口把 `offset` / `needTotalCount` / `tempTotalCount` 作为客户端字段。
+diff --git a/references/governance-workflow.md b/references/governance-workflow.md
+index c6706f40..7993260d 100644
 --- a/references/governance-workflow.md
 +++ b/references/governance-workflow.md
-@@ -13,8 +13,6 @@
+@@ -29,8 +29,6 @@
     - 先执行项目 lockfile 锁定版本的 `pnpm exec redocly lint`；CI 可以包装调用，但 validation record 必须记录这条实际命令与退出码。
     - 检查 YAML 可解析、`$ref` 可解析、路径参数完整、operationId 唯一、examples 合法、schema 命名稳定。
     - 从 `.template-spec/api/templates/openapi-draft-validation-record-template.yaml` 创建 `<feature>-validation.yaml`，记录 YAML SHA-256 与 lint 工具链；运行 `scripts/verify-openapi-draft-validation-record --root <project-root> <record>`。自定义解析脚本可以补充诊断，但不能代替锁定的 Redocly lint evidence。

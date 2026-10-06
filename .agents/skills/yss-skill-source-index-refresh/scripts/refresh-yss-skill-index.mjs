@@ -533,7 +533,7 @@ export async function refresh({
       "",
       "Index schema: `backend-component-source-index-router-v1`",
       "",
-      "Select the source index from the approved `platform_configuration.component_platform_line`; do not infer a line from imports, a branch name or a requested upgrade.",
+      "For the Spec daily path, confirm the existing platform line from the current engineering baseline, actual POM / effective POM and dependency tree referenced by the same Ticket / PR. For the governed path, use the approved `platform_configuration.component_platform_line`. If the line cannot be proved or a platform / component upgrade is requested, stop the affected implementation and return to governance. Do not infer a line from imports, a branch name or a requested upgrade.",
       "",
       ...Object.entries(BACKEND_PLATFORM_LINES).map(([platformLine, contract]) =>
         `- \`${platformLine}\` — [${contract.label}](source-index.${platformLine}.md)`,

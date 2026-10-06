@@ -5,11 +5,13 @@ description: "实现或排查 YSS Spring MVC Excel 导入导出、RequestExcel�
 
 # yss-excel-mvc
 
+执行路线按 Spec 项目中的 `.agents/skills/yss-product-lifecycle/references/daily-delivery.md` 的项目本地政策与固定 CLI 核验。仅合格且范围已授权的 Spec `daily` 消费同 Ticket 的范围、验收与已核验工程基线；`governed` 保留当前批准合同。缺本地政策/能力、其他 Profile 或已绑定正式任务不能凭标签降级；路线不授予执行授权。
+
 用于处理基于注解的 Excel 导入导出能力。
 
 ## 平台与源码门禁
 
-接入、修改、代码生成或提供精确类名/配置前，必须读取并执行 [共享平台与源码门禁](../yss-skill-source-index-refresh/references/backend-component-platform-compatibility.md)，以 `--skill yss-excel-mvc` 校验批准的平台线及匹配源码根。缺失、错配或漂移返回 `blocked`；不跨代回退，不在业务实现中升级、降级或替换组件。只读分诊可继续，但须标注未完成源码核验，不能据此宣称跨 Boot/JDK 兼容。
+接入、修改、代码生成或提供精确类名/配置前，必须读取并执行 [共享平台与源码门禁](../yss-skill-source-index-refresh/references/backend-component-platform-compatibility.md)，以 `--skill yss-excel-mvc` 校验当前路线已核验的精确平台线及匹配源码根（`daily` 来自同 Ticket 的已有工程基线，`governed` 来自批准的配置）；不因普通路径跳过源码检查。缺失、错配或漂移返回 `blocked`；不跨代回退，不在业务实现中升级、降级或替换组件。只读分诊可继续，但须标注未完成源码核验，不能据此宣称跨 Boot/JDK 兼容。
 
 ## 何时使用
 
@@ -68,3 +70,7 @@ description: "实现或排查 YSS Spring MVC Excel 导入导出、RequestExcel�
 - 源码索引：`references/source-index.md`
 - 注解与返回结构：`assets/RequestExcel.java`、`assets/ResponseExcel.java`、`assets/ExcelDynamicData.java`
 - MVC 解析器：`assets/RequestFastExcelArgumentResolver.java`、`assets/ResponseFastExcelReturnValueHandler.java`
+
+## 执行证据与新增影响
+
+`daily` 将命中的组件来源、技术约束和真实测试/命令/退出码回填同 Ticket，接受独立审查；`governed` 保留原合同与正式结果协议。缺平台/源码事实、测试失败或超出当前范围的影响时停止受影响动作并回生命周期调查，未知或排除风险升级；不从本技能取得迁移、升级或新生产接入授权。

@@ -1,5 +1,7 @@
 # 生命周期状态模型
 
+本文件定义 `governed` 的正式状态及兼容历史记录。已合格 `daily` 只在普通 Ticket / PR 保留结果、实际测试和独立审查，按 [普通任务交付](daily-delivery.md) 校验；不生成本文件的阶段 checkpoint、正式 Slice、`approved` 或 `ready-for-agent`。本任务已绑定正式状态时按原规则恢复，不得降级。
+
 ## 命名空间
 
 | 域 | 允许值 |

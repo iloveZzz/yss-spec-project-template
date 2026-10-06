@@ -108,6 +108,37 @@ modes:
 # 用户请求理解与动作选择的唯一判断合同；自然语言解释由主控完成。
 request_triage:
   owner: yss-product-lifecycle
+  delivery_path:
+    version: 1
+    enabled_profiles: [spec]
+    eligible_requirements: [goal, acceptance, single_repository, current_baseline, skills, commands, rollback, known_risk]
+    excluded_impacts: [data-migration, cross-repository, platform-conversion, architecture-conversion, permission-change, deployment, release, external-approval, breaking-api, unknown-api]
+    active_task_bindings: preserve-governed
+    single_record: markdown-with-embedded-evidence
+    compatible_api: conservative-additive
+    read_only_capabilities: [lifecycle.route, lifecycle.verify-daily]
+    public_summary: >-
+      Spec 日常任务在目标、验收、写范围、一处已知实现仓、可回滚依据、可读工程基线、验证命令与适用 YSS 技能齐全且无排除风险时，
+      走需求与验收、技术技能、实现、测试、独立审查，仅更新同一 Ticket 或 PR，不生成阶段 checkpoint、正式 Slice 或多级批准。
+      缺事实先调查；无法证明条件时恢复完整治理。旧 CLI 或其他 Profile 缺能力时明确不支持，不降级正式校验器。
+    ordinary_record_fields: [scope, acceptance, engineering-baseline, applicable-skills, actual-tests, independent-review, rollback]
+    unknown_facts: investigate-before-route
+    unproven_eligibility: governed-or-needs-info
+    existing_governed_task: cannot-downgrade-through-label-or-removed-binding
+    unrelated_formal_assets: do-not-block-daily-task
+    newly_discovered_risk: preserve-edits-and-evidence-stop-affected-work-resume-nearest-trusted-stage
+    daily_sequence: [requirements-and-acceptance, yss-technical-skills, implementation, tests, independent-review]
+    daily_formal_stage_packages: forbidden
+    review_basis: current-diff-and-verification-evidence
+    completion_requires: [current-scope, passing-actual-tests, independent-review, no-open-blocking-findings, current-api-evidence-if-applicable]
+    new_decisions_and_external_actions: require-applicable-existing-authorization-boundary
+    compatible_api_sequence: [oas-3.1-yaml-draft, locked-tool-validation, conservative-compatibility-and-independent-review, digest-freeze, implementation-and-contract-tests]
+    compatible_api_rule: new-independent-operations-only-existing-operations-and-reachable-normalized-reference-closure-identical
+    api_evidence_location: same-ticket-api-contract-review-section
+    api_extra_formal_assets: not-required-for-daily
+    api_evidence_fields: [tool-command, actual-exit-code, baseline-digest, candidate-digest, reviewer, conclusion, freeze-digest, contract-tests]
+    api_freshness: yaml-reference-or-applicable-rule-changes-invalidate-affected-review-and-freeze
+    formal_validators: unchanged-no-daily-bypass
   interpretation:
     inputs: [ current-request, conversation-context, accessible-evidence ]
     capture: [ goal, target, expected-deliverable, action-scope, facts, assumptions, unknowns ]
@@ -295,7 +326,7 @@ task_package:
   schema_ref: .template-spec/process/schemas/digital-human-task-package.schema.json
   compatibility_schema_ref: .template-spec/process/schemas/subagent-task-package.schema.json
   validator: scripts/verify-digital-human-task-package
-  compatibility_validator: scripts/verify-subagent-task-package
+  compatibility_validator: scripts/verify-digital-human-task-package
   persistence_layout: docs/.scratch/<feature>/task-packages/<task-id>.yaml
   required: [ schema_version, task_id, work_unit_id, actor_id, role_id, runtime_id, execution_state, workflow_status, skill_source, contract, inputs, objective, allowed_write_paths, forbidden_actions, expected_outputs, expected_evidence_files, verification_commands, verification_results, downstream_consumers, convergence ]
   execution_states: [ Explorer, Drafter, Worker, Reviewer, Verifier ]

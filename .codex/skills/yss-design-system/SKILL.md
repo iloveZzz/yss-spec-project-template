@@ -110,7 +110,7 @@ description: 建立或核验 YSS 设计系统、主题 Token 与页面视觉一�
 
 1. 分析来源设计系统，不原样堆拷贝。
 2. 将稳定视觉 Token 与组件变体先落到根 `DESIGN.md`；治理、流程和验收说明再落到 `.template-spec/design/design.md`。
-3. 运行 `node .template-source/tooling/node/scripts/design-md.mjs export dtcg --write --write-manifest --antd-toolchain <固定antd6.6.4作者目录>` 更新派生视图；运行前先更新 `.template-source/design/design-system-sync.yaml` 的规范源摘要。
+3. 运行 `node .agents/skills/yss-design-system/scripts/design-md.mjs export dtcg --write --write-manifest --antd-toolchain <固定antd6.6.4作者目录>` 更新派生视图；运行前先更新 `.template-source/design/design-system-sync.yaml` 的规范源摘要。
 4. 将 Agent 执行入口落到 `.agents/skills/yss-design-system/SKILL.md`，执行清单落到 `references/design-system.md`；两者只引用 Token 名和角色，不复制具体值。
 5. 更新 `.template-spec/design/README.md` 和必要的 `AGENTS.md` 入口规则。
 6. 运行 frontmatter、对应 `node --test`、`design-md lint/drift`、技能投影与 lock 校验。

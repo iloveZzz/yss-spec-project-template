@@ -7,13 +7,15 @@ Review a pinned candidate: all applicable axes initially, then affected conclusi
 
 - **Standards** — does the code conform to this repo's documented coding standards **and**, for YSS slices, the specialist check inputs compiled in [yss-review-standards.md](references/yss-review-standards.md)?
 - **Spec** — does the code faithfully implement the originating issue / spec?
-- **UI fidelity** (only when the change has UI impact) — does the candidate match the confirmed prototype and `yss-design-system` / `yss-ui`? Type-check or claiming "already aligned" is not a pass. Invoke those skills' verification notes; do not collapse this axis into Standards or Spec. YSS page-module conventions stay on Standards.
+- **UI fidelity** (only when the change has UI impact) — does the candidate match the daily task's confirmed acceptance/current visual baseline, or the governed prototype, and `yss-design-system` / `yss-ui`? Type-check or claiming "already aligned" is not a pass. Invoke those skills' verification notes; do not collapse this axis into Standards or Spec. YSS page-module conventions stay on Standards.
 
 普通功能默认由一名与实现者独立的审查者完成 Standards、Spec 和适用的 UI fidelity 检查，分别报告结论。只有专业能力缺口、结论冲突、明确外部制度或用户指定时，才拆成多个审查者；多个无依赖审查可以并行。检查轴不等于会签人数，不能要求用户为每个轴重复确认。
 
 角色表编译 `review_context` / `skill_source.review_skills`（只读）；见协作规则，不授予实现权限。
 
-If `.template-spec/agents/issue-tracker.md` is missing, tell the user to run `/setup-matt-pocock-skills`; do not invoke another user-invoked skill yourself.
+以上正式角色接线用于 `governed`。已合格 Spec `daily` 由 `request_triage.delivery_path` 政策及支持 `route` / `verify-daily` 的固定 CLI 取得资格；其他 Profile / 旧 CLI 明确不支持。本技能不凭标签降级正式工作包。普通审查消费同一 Ticket / PR 的验收、真实单仓路径、当前 diff、适用 YSS 技能和实际测试，审查者须与实现者独立并保持只读；缺测试、失败、未关闭阻断项或候选过期时返回 `blocked`。结论和身份可回填同一 Ticket 的审查段，由工具绑定当前候选，不强制新 review 文件、正式 review manifest、checkpoint 或 Slice，不写 `approved` / `ready-for-agent`。
+
+For governed work, if `.template-spec/agents/issue-tracker.md` is missing, tell the user to run `/setup-matt-pocock-skills`; do not invoke another user-invoked skill yourself. A qualified daily review uses its existing task record and does not require a tracker setup stage.
 
 ## 文档写作
 
@@ -23,22 +25,22 @@ If `.template-spec/agents/issue-tracker.md` is missing, tell the user to run `/s
 
 ### 1. 固定候选
 
-开始审查前按 [候选捕获合同](references/candidate-capture.md) 选择 committed/worktree 模式，固定比较基点、内容摘要和未跟踪文件。保持只读；候选变化使相关审查失效。
+普通任务复用 `route` / `verify-daily` 绑定的完整基线 SHA、当前真实 diff、范围内新增文件和 `candidate_digest`；正式候选按 [候选捕获合同](references/candidate-capture.md) 选择 committed/worktree 模式。保持只读；候选变化使相关审查失效，不用自填摘要证明当前性。
 
 ### 2. Identify the spec source
 
 Look for the originating spec, in this order:
 
-1. A spec/Ticket/contract reference supplied by the user or an upstream lifecycle review input.
+1. The daily Ticket / PR goal and acceptance examples, or a spec/Ticket/contract reference supplied by the user or an upstream governed review input. A daily task with readable acceptance does not require a new calibrated Spec.
 2. Issue references in the commit messages (`#123`, `Closes #45`, GitLab `!67`, etc.) — fetch via the workflow in `.template-spec/agents/issue-tracker.md`.
 3. A spec file under `docs/`, `specs/`, or `docs/.scratch/` matching the branch name or feature.
 4. If nothing is found, ask the user where the spec is. If they say there isn't one, the **Spec** sub-agent will skip and report "no spec available".
 
 ### 3. Identify the standards sources
 
-Compile sources **before** review. For YSS implementation candidates follow [yss-review-standards.md](references/yss-review-standards.md): run machine checks that exist in the implementation repo; then collect repo docs (`CODING_STANDARDS.md` / `CONTRIBUTING.md` if present), every Slice `required_skills` skill file, the impact-conditioned specialist inputs (`alibaba-java-code-style`, `yss-ui`, `yss-domain`, …), and `.template-spec/templates/review-report-template.md`. Missing applicable coverage is `missing_evidence`, not a pass.
+Compile sources **before** review. For YSS implementation candidates follow [yss-review-standards.md](references/yss-review-standards.md): run machine checks that exist in the implementation repo; then collect repo docs (`CODING_STANDARDS.md` / `CONTRIBUTING.md` if present) and impact-conditioned specialist inputs (`alibaba-java-code-style`, `yss-ui`, `yss-domain`, …). Daily work uses the skills and engineering baseline bound by its task; governed slices also consume every Slice `required_skills` file and the formal review template. Missing applicable coverage is `missing_evidence`, not a pass.
 
-Resolve backend roots from the registered project and Slice scope; exclude frontend, vendor, unrelated submodules and unregistered roots. Assess both `yss-repository` and `yss-mybatis` for every backend candidate, including impact, selected Profile and current component source index per the standards reference. Without persistence impact, record concrete `not-applicable` reasons for both.
+Resolve daily backend roots from its verified single implementation root and allowed scope, and governed roots from the registered project and Slice scope; exclude frontend, vendor, unrelated submodules and unregistered roots. Assess both `yss-repository` and `yss-mybatis` for every backend candidate, including impact, selected Profile and current component source index per the standards reference. Without persistence impact, record concrete `not-applicable` reasons for both.
 
 Repo coding documents remain sources alongside mandatory YSS / Alibaba inputs.
 
@@ -58,15 +60,15 @@ Standards 检查代码 diff 时读取 [Fowler smell baseline](references/smell-b
 
 #### 报告与阻断
 
-按 `## Standards`、`## Spec` 分别呈现原报告或等义整理后的结论；UI 影响另列 `## UI fidelity`。专项表填写在 `.template-spec/templates/review-report-template.md` 的 Standards 证据中，不增加第四轴，也不合并或跨轴重排 findings。适用专项行空白、遗漏 `required_skills` 或 mandatory violation 未关闭时，结果为 `blocked`，不能写 `completed`。
+按 `## Standards`、`## Spec` 分别呈现原报告或等义整理后的结论；UI 影响另列 `## UI fidelity`。普通审查在同一任务记录保留适用规则、实际测试、候选摘要、独立身份和 findings；正式专项表填写在 `.template-spec/templates/review-report-template.md` 的 Standards 证据中。两条路径均不增加第四轴，也不合并或跨轴重排 findings。适用规则覆盖缺失、遗漏 governed `required_skills` 或 mandatory violation 未关闭时，结果为 `blocked`；普通结论只有当前证据齐备时才记录 `passed`。
 
 #### 修复后复审
 
-Reviewer 保持只读，将 `violation`、机器检查失败和适用行空白交回原合同路径的实施者。修复后比较差异、重新捕获候选，复审受影响结论与依赖，并明确重新绑定未受影响的证据；不在审查会话中写实现来关闭 finding。
+Reviewer 保持只读，将 `violation`、机器检查失败和适用覆盖缺失交回原任务 / 合同路径的实施者。修复后比较差异、重新绑定当前候选，复审受影响结论与依赖，并明确重新绑定未受影响的证据；不在审查会话中写实现来关闭 finding。
 
 #### 合同失效与延期
 
-`drift`、`new_impacts` 或 `required_skills` 不匹配时，将合同标为 `stale` 并回到 实现合同编译器 调查受影响要求；停止使用旧合同实现，不默认全轴重审。`not-applicable` 只用于未触发影响。mandatory 门禁不能豁免；按原合同修复，或在原流程允许延期时提供完整 `seam-deferred` 记录。
+普通任务的候选或输入变化使受影响审查过期，补事实后重验；新风险超出 daily 政策时停止受影响动作、保留证据并交回生命周期升级，不能创建一个自批 Slice 继续。`governed` 的 `drift`、`new_impacts` 或 `required_skills` 不匹配将合同标为 `stale` 并回到实现合同编译器；停止使用旧合同实现，不默认全轴重审。`not-applicable` 只用于未触发影响。mandatory 门禁不能豁免；按原合同修复，或在原流程允许延期时提供完整 `seam-deferred` 记录。
 
 For Worktree mode, recapture the candidate digest after all applicable checks finish. If it differs from `candidate_digest`, mark the affected reports as reviewing a **stale candidate** and return `blocked`; the caller may start a new review against a new capture, but this invocation must not aggregate findings from different bytes. Recheck the same digest again at the completion/checkpoint boundary.
 

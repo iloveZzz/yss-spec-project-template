@@ -2,7 +2,23 @@
 
 仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。仓库脚本与 pnpm 命令从当前登记的项目根目录执行。
 
-## 治理流程
+## 普通任务 API
+
+仅已由 Spec `request_triage.delivery_path` 及支持的 `yss lifecycle route` 判定合格的普通任务使用本段；其他 Profile / 旧 CLI 明确不支持，正式绑定不能降级。
+
+1. 读取普通 Ticket 的目标、验收及工程基线，核对工具绑定的完整 baseline SHA、基线/当前同一 OAS 3.1 YAML 和实际新增 operation。兼容检查必须真实解析旧 operation、可达 `$ref`、路径继承和全局契约，规范化后完全相同；只添加独立 operation。breaking、crossrepo、外部引用或无法证明的解析结果停止受影响实施并升级。
+2. 用 lockfile 固定的 Redocly 执行真实 `pnpm exec redocly lint` 和引用解析，完成适用 DTO wire、响应/错误/requiredness 与契约 seam 检查。普通 Ticket API 段保存工具/版本/lock 摘要、实际 argv、exit_code、可读日志及工具返回的独立 `api_digest`；不另建 `<feature>-validation.yaml`，也不调用正式 validation-record verifier 来豁免字段。
+3. 独立 `yss-openapi-draft-review` 审查同一 API 候选及需求验收。保留兼容报告、结构与语义结论、审查者身份、`api_digest` 和未关闭项，可直接记录在本 Ticket API 审查段；审查者不得是实现者，lint/兼容失败、阻断项或过期证据不能记 `passed`。
+4. 审查通过后在本 Ticket evidence 的 `api.freeze.digest` 锁定 CLI 返回的 `api_digest`（OAS、可达引用、适用 API rules 与工具锁）；不要求另建 Freeze 文件、`ref` 或 `candidate_digest`。Freeze 是字节锁定，不写 `approved` / `ready-for-agent`，不创建 API Contract Decision 或 engineering approval。YAML/引用/工具锁/规则变化使受影响校验、审查和 Freeze 失效；不得只重填摘要沿用旧结论。
+5. 实现消费同一 Freeze 摘要，执行当前契约测试和独立代码审查，由 `yss lifecycle verify-daily` 核验。需要 JSON 时才从冻结 YAML 可复现 bundle，并记录 JSON 摘要及解析/lint结果；不手改 JSON 或让它反向成为权威。日志和 review 可引用治理项目中本 Ticket 的唯一正文段，不强制新增各类资产文件；章节摘要规则消费生命周期 [普通任务交付](../../yss-product-lifecycle/references/daily-delivery.md)。
+
+机器字段直接消费当前 CLI 的普通 Ticket evidence 格式：`api.mode`、`baseline`、`candidate`、`new_operations`、`rules`、`tools`、`lint`、`compatibility`、`review`、`freeze` 和 `contract_tests`。非空 `api.rules: [{ref,digest}]` 绑定适用 API 规则，与普通代码 inputs 分开。OAS 文件引用属于实现仓；规则、日志、锁、审查引用按工具要求属于治理项目，Freeze 摘要直接保存在同一 evidence 段。原始文件/段落摘要、`APIContractDigest` 及 `candidate_digest` 各有对象，不相互冒充；未知能力明确不支持，不手写第二套 schema。
+
+API lint/compatibility/review/Freeze 绑定独立 `api_digest`，实现测试/代码 review/contract_tests 绑定整体 `candidate_digest`。仅代码变化不使未变 API 证据失效；重新验证受影响实现即可，不默认重做完整 API 审查或手动重绑定。API/引用/工具锁/适用规则变化使 API 摘要变化，仍重新执行受影响校验、审查和 Freeze。
+
+## governed 治理流程
+
+以下正式资产链及批准协议原义不变，只用于 governed。
 
 1. **建立或读取 YAML Draft**
    - 读取 Spec、产品设计 / 状态矩阵、架构约束和既有 Freeze 记录。

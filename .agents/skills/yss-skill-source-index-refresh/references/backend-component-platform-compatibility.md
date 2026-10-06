@@ -4,7 +4,7 @@
 
 ## 执行入口
 
-1. 接入、修改、代码生成或给出精确类名/配置前，从批准的 `platform_configuration.component_platform_line` 选择目标 Skill 的 `references/source-index.boot2-java8.md` 或 `references/source-index.boot3-java17.md`。以下命令从目标组件 Skill 根目录执行：
+1. 接入、修改、代码生成或给出精确类名/配置前，先确定既有工程的平台线。Spec 日常路径从同一张 Ticket / PR 引用的当前工程基线、实际 POM / effective POM 和依赖树确认平台线；完整治理路径从批准的 `platform_configuration.component_platform_line` 确认。无法证明既有工程的平台线或涉及平台 / 组件升级时，停止受影响实现并恢复完整治理，不能补一个日常标签继续。按确认的平台线选择目标 Skill 的 `references/source-index.boot2-java8.md` 或 `references/source-index.boot3-java17.md`。以下源码核验命令两条路径均须执行，从目标组件 Skill 根目录运行：
 
    ```bash
      node ../yss-skill-source-index-refresh/scripts/check-backend-skill-source-index.mjs \

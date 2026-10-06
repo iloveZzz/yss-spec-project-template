@@ -1,19 +1,21 @@
 ---
 name: yss-domain
-description: 按已批准的 DDD 技术设计实现或重构领域行为、不变量、状态机与 Gateway；不负责起草领域设计。
+description: 在已确认的 DDD 边界内实现或重构领域行为、不变量、状态机与 Gateway；按当前交付路线消费输入，不负责起草领域设计。
 ---
 
 # yss-domain
 
-这是一个领域实现 skill。核心目标是消费已批准的战术模型，将领域行为落实为代码；`yss-technical-design` 组织 DDD 分支，由 `yss-tactical-design` 设计、`yss-product-lifecycle` 维护批准。
+执行路线按 Spec 项目中的 `.agents/skills/yss-product-lifecycle/references/daily-delivery.md` 的项目本地政策与固定 CLI 核验。仅合格且范围已授权的 Spec `daily` 消费同 Ticket 的范围、验收与已核验工程基线；`governed` 保留当前批准合同。缺本地政策/能力、其他 Profile 或已绑定正式任务不能凭标签降级；路线不授予执行授权。
 
-既有工程先读取 `references/existing-project.md`，按登记的职责和批准边界审计或整改；只读审计不要求批准 Slice。
+这是一个领域实现 skill。核心目标是消费当前路线已确认的领域模型，将领域行为落实为代码；`yss-technical-design` 组织 DDD 分支，由 `yss-tactical-design` 设计、`yss-product-lifecycle` 维护批准。
+
+既有工程先读取 `references/existing-project.md`，按实际工程职责与当前路线边界审计或整改；只读审计不要求批准 Slice，`daily` 修改不因调用本技能补造 Slice。
 
 本 skill 在新脚手架链路只支持 `domain-driven` / `target-domain-model`。`layered-mvc-service` 与 `mvc-data-analysis-v1` 是独立 MVC Profile，不是失败的 DDD 工程；它们不加载本 skill，也不生成 Domain Gateway。既有旧架构不在本链路内迁移。
 
 ## 何时使用
 
-- 当前已批准的 DDD Slice Contract 要求实现或修复领域行为、不变量或状态机。
+- 当前 `governed` 的已批准 DDD Slice Contract，或合格 `daily` 同 Ticket 的已确认验收，要求在既有 DDD 边界内实现或修复领域行为、不变量或状态机。
 - 在既有已确认领域边界内重构 Entity、Value Object、Domain Event 或 Gateway。
 - 需要从需求、页面或 DDL 决定聚合及领域边界时，回交 `yss-technical-design` / `yss-tactical-design`，不先写领域代码。
 
@@ -25,9 +27,9 @@ description: 按已批准的 DDD 技术设计实现或重构领域行为、不�
 
 ## 工作方式
 
-1. 先读取批准且版本当前的 Technical Design Contract 的 DDD `design` 分支和 Slice Implementation Contract；旧 v1 tactical-design contract 只按 DDD 显式兼容读取。
+1. `governed` 先读取批准且版本当前的 Technical Design Contract 的 DDD `design` 分支和 Slice Implementation Contract；旧 v1 tactical-design contract 只按 DDD 显式兼容读取。合格 `daily` 读取同 Ticket 的范围、验收、已确认行为 seam 和已有工程领域基线；缺领域事实先调查，不由历史代码推定未确认规则或创建批准资产。
 2. 数据库字段只做补充，不直接决定领域对象结构。
-3. 按合同实现领域行为、状态机、不变量和 Gateway 边界。
+3. 按当前路线输入实现领域行为、状态机、不变量和 Gateway 边界；`daily` 只改同 Ticket 范围内的既有行为。
 4. 规则不清晰或模型需要扩展时，返回 `new_impacts` / `drift` 并停止，不要静默猜测。
 
 ## 产物范围
@@ -75,8 +77,8 @@ description: 按已批准的 DDD 技术设计实现或重构领域行为、不�
 
 ## 阶段 7 合同
 
-- 只消费生命周期已批准的 `Slice Implementation Contract` 和当前 `work_unit`；不得扩大 `allowed_write_paths`。
-- `Slice Implementation Contract` 必须引用批准且版本当前的 `technical_design` 绑定（旧 DDD 显式兼容 `tactical_design_ref`）；不得在实现阶段重新批准或替换聚合、不变量和一致性策略。
+- `governed` 只消费生命周期已批准的 `Slice Implementation Contract` 和当前 `work_unit`，不得扩大 `allowed_write_paths`；合格 `daily` 消费同 Ticket 的验收、真实工程基线和 `scope.paths`，不要求正式 Slice 或阶段批准。
+- `governed` 的 `Slice Implementation Contract` 必须引用批准且版本当前的 `technical_design` 绑定（旧 DDD 显式兼容 `tactical_design_ref`）。两条路线均不得在实现阶段重新批准、猜测或替换聚合、不变量和一致性策略。
 - 领域规则、状态机和不变量必须使用 `behavior-tdd`，先形成失败测试，再实现最小行为。
-- 完成后按 `yss-implementation-contract-compiler/references/yss-skill-execution-result.md` 返回统一 `YSS Skill Execution Result`：changed files、领域/测试证据、实际验证结果、偏离和新增影响。
-- 发现新 API、权限、状态机、数据模型或架构影响时填入 `new_impacts` 并暂停，不得静默扩张切片。
+- `daily` 将实际文件、领域约束、行为测试、真实命令/退出码、偏离和新增影响写入同 Ticket，并接受当前候选的独立审查；`governed` 按 `yss-implementation-contract-compiler/references/yss-skill-execution-result.md` 返回正式 `YSS Skill Execution Result`。
+- 发现超出当前范围的新 API、权限、状态机、数据模型或架构影响时停止受影响实现、保留已有修改与证据并回生命周期调查；`daily` 由当前政策重新分诊，未知风险或排除影响升级 `governed`，正式切片继续按 `new_impacts` 与原合同恢复。

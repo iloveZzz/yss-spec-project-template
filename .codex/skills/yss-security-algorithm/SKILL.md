@@ -5,6 +5,8 @@ description: "审查、迁移或排查既有 YSS 加解密、JWT/JWK、密码编
 
 # yss-security-algorithm
 
+执行路线按 Spec 项目中的 `.agents/skills/yss-product-lifecycle/references/daily-delivery.md` 的项目本地政策与固定 CLI 核验。仅合格且范围已授权的 Spec `daily` 盘点/分诊消费同 Ticket 的范围、验收与已核验工程基线；本技能的禁止新生产接入、密钥操作与迁移边界仍阻断；`governed` 保留当前批准合同。缺本地政策/能力、其他 Profile 或已绑定正式任务不能凭标签降级；路线不授予执行授权。
+
 作为既有 YSS 安全算法组件的盘点、分诊、风险收敛和迁移入口。当前组件禁止新生产接入；准入结论不因源码可读或可编译而改变。
 
 ## 当前准入结论
@@ -17,7 +19,7 @@ description: "审查、迁移或排查既有 YSS 加解密、JWT/JWK、密码编
 
 ## 平台与源码门禁
 
-接入、修改、代码生成或提供精确类名/配置前，必须读取并执行 [共享平台与源码门禁](../yss-skill-source-index-refresh/references/backend-component-platform-compatibility.md)，以 `--skill yss-security-algorithm` 校验批准的平台线及匹配源码根。缺失、错配或漂移返回 `blocked`；不跨代回退，不在业务实现中升级、降级或替换组件。只读分诊可继续，但须标注未完成源码核验，不能据此宣称跨 Boot/JDK 兼容。
+接入、修改、代码生成或提供精确类名/配置前，必须读取并执行 [共享平台与源码门禁](../yss-skill-source-index-refresh/references/backend-component-platform-compatibility.md)，以 `--skill yss-security-algorithm` 校验当前路线已核验的精确平台线及匹配源码根（`daily` 来自同 Ticket 的已有工程基线，`governed` 来自批准的配置）；不因普通路径跳过源码检查。缺失、错配或漂移返回 `blocked`；不跨代回退，不在业务实现中升级、降级或替换组件。只读分诊可继续，但须标注未完成源码核验，不能据此宣称跨 Boot/JDK 兼容。
 
 ## 源码定位
 
@@ -68,3 +70,7 @@ description: "审查、迁移或排查既有 YSS 加解密、JWT/JWK、密码编
 - 保持当前组件任务范围；扩展到其他组件须有用户要求或重新路由依据。
 - 组件编译、索引 fresh 或既有工程依赖不解除新接入禁令。
 - Agent 输出不得复制、打印、就地轮换或重新签发密钥材料。
+
+## 执行证据与新增影响
+
+`daily` 将允许的既有工程盘点/分诊事实、组件来源和风险回填同 Ticket；风险收敛或迁移命中正式边界时走 `governed`，保留原合同、生产前提和安全审查。缺平台/源码事实或超出范围的影响时停止受影响动作并回生命周期调查，不从本技能取得迁移、升级或新生产接入授权。

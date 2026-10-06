@@ -15,7 +15,7 @@ async function sourceSnapshot(){
  async function walk(target){const stat=await import('node:fs/promises').then(fs=>fs.lstat(target));if(stat.isSymbolicLink())throw Error(`来源不接受符号链接: ${target}`);if(stat.isDirectory()){for(const name of (await readdir(target)).sort())await walk(path.join(target,name));}else files[path.relative(repository,target)]=sha(await readFile(target));}
  for(const target of [skill,path.resolve(skill,'../yss-design-system'),path.resolve(skill,'../prototype-review'),...['DESIGN.md','.template-spec','scripts/lib','scripts/vendor'].map(ref=>path.join(repository,ref))])await walk(target);
  // Optional aliases are not inputs to the canonical entry. Bind their absence too.
- for(const ref of ['scripts/verify-prototype-design','scripts/verify-yss-prototype-contract-scenarios']){const target=path.join(repository,ref);if(existsSync(target))await walk(target);else files[ref]=null;}
+ for(const ref of ['scripts/verify-prototype-design','tests/scenarios/verify-yss-prototype-contract-scenarios.mjs']){const target=path.join(repository,ref);if(existsSync(target))await walk(target);else files[ref]=null;}
  return {digest:sha(JSON.stringify(files)),files};
 }
 export async function verifyPrototypeDesign({scope='all',toolchain=process.env.YSS_VUE_TOOLCHAIN,browserTools=process.env.YSS_PLAYWRIGHT_MODULE,output}={}){

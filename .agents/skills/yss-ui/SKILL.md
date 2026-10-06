@@ -7,11 +7,13 @@ description: "选择和核验 YSS Vue 生产页面组件及 Ant Design Vue 兼�
 
 本技能是 YSS Vue 生产页面的统一入口。它负责组件与导入来源路由、版本预检、跨组件约束和交付证据；具体页面、组件、请求和表单实现交给最小专项 skill，避免重复维护 API 细节。
 
+交付路径消费 `yss-product-lifecycle` 的当前 `route` 结果，唯一政策见 Spec 项目中的 `.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml` 的 `request_triage.delivery_path`。只有已启用的 Spec 与支持该能力的 CLI 返回 `daily` 时，才使用下文的普通任务输入和记录；本技能不自行授予该资格。`governed`、专职 Frontend Profile 或已绑定正式交付的任务继续消费原正式合同。
+
 ## 1. 权威事实顺序
 
 发生冲突时按以下顺序决策：
 
-1. 冻结的项目工程基线和批准的 Slice Implementation Contract。
+1. 当前任务的验收与允许写范围；`daily` 消费已有工程基线，`governed` 消费冻结的项目工程基线和当前批准的 Slice Implementation Contract。
 2. lockfile 中实际安装版本与 TypeScript 类型。
 3. 当前项目已通过测试的既有用法。
 4. 与安装版本匹配的 YSS UI 文档和本地快照。
@@ -36,9 +38,9 @@ pnpm why vue @yss-ui/components @yss-ui/hooks ant-design-vue vxe-table
 
 记录实际版本、lockfile、验证命令和环境阻塞。完整策略见 `references/antdv-compatibility.md`。
 
-本次输入还包括批准合同、页面 / 交互范围和实际适用的专项技能；UI 切片使用已校验的 `frontend_implementation_plan`，实现后补 `frontend_implementation_verification`。输入缺失、摘要漂移或组件事实无法确认时，停止受影响的实现并回交原所有者。
+`daily` 输入来自同一 Ticket / PR 的当前验收、页面 / 交互范围、允许写路径、已有工程与 API 基线及适用专项技能；按实际 UI 影响核验截图、已有界面参照、状态与交互证据，交付时绑定真实测试和独立审查。`governed` 输入另包括批准合同；UI 切片须使用已校验的 `frontend_implementation_plan`，实现后补 `frontend_implementation_verification`。各路径的必要输入缺失、摘要漂移或组件事实无法确认时，停止受影响的实现并回交原所有者；普通任务不因此补建正式 Slice 或前端计划资产。
 
-产品设计使用的 Antdv Next 或 Ant Design v6 视觉/token 语义，不等于 Vue 生产实现 API。生产代码必须使用项目安装的 Ant Design Vue 4.x API，禁止把原型 props、events、slots、hook 或组件写法当作生产合同。原型统一使用 HTML/CSS/JavaScript；原型阶段不得调用本技能。只有进入前端实现计划、已批准切片的生产实现或实现还原验证后，才从目标 lockfile、类型、本地文档和既有用法取得真实组件事实。
+产品设计使用的 Antdv Next 或 Ant Design v6 视觉/token 语义，不等于 Vue 生产实现 API。生产代码必须使用项目安装的 Ant Design Vue 4.x API，禁止把原型 props、events、slots、hook 或组件写法当作生产合同。原型统一使用 HTML/CSS/JavaScript；原型阶段不得调用本技能。已核验的 `daily` 生产任务，以及 `governed` 的前端实现计划、已批准切片生产实现或实现还原验证，均从目标 lockfile、类型、本地文档和既有用法取得真实组件事实。
 
 ## 3. 组件选型门禁
 
@@ -137,7 +139,7 @@ verification: pnpm type-check
 
 ## 8. 实施顺序
 
-1. 读取批准合同、项目版本和组件映射。
+1. `daily` 读取同一任务的验收、范围与已有工程基线；`governed` 读取批准合同。两者均核对项目版本和组件映射。
 2. 选择最小专项 skills。
 3. 搭页面目录和布局。
 4. 接 `YFormily`、`YTable`、`YTree` 等 YSS 主体组件。
@@ -157,7 +159,7 @@ verification: pnpm type-check
 - [ ] 键盘、焦点、标签和颜色对比度已检查。
 - [ ] 已执行 lint、type-check、组件测试及必要的 E2E/视觉回归。
 - [ ] 未执行项记录 `not-applicable` 或环境阻塞原因。
-- [ ] 返回 YSS Skill Execution Result 所需 changed/evidence/verification 信息。
+- [ ] `daily` 将 changed/evidence/verification 信息和独立审查记回同一 Ticket / PR；`governed` 返回 YSS Skill Execution Result。普通任务不另建正式执行结果。
 
 ## 10. 按需读取
 

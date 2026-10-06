@@ -1,5 +1,5 @@
 diff --git a/SKILL.md b/SKILL.md
-index c76da16..21660fb 100644
+index c76da16c..21660fbf 100644
 --- a/SKILL.md
 +++ b/SKILL.md
 @@ -9,71 +9,65 @@ description: "编译或重验 YSS Slice Implementation Contract、最小 Skill 
@@ -111,7 +111,7 @@ index c76da16..21660fb 100644
  ## 业务来源
  
 diff --git a/agents/openai.yaml b/agents/openai.yaml
-index b2b097f..9278c4b 100644
+index b2b097fd..9278c4b1 100644
 --- a/agents/openai.yaml
 +++ b/agents/openai.yaml
 @@ -1,4 +1,4 @@
@@ -121,7 +121,7 @@ index b2b097f..9278c4b 100644
 -  default_prompt: "Use yss-implementation-contract-compiler to compile the approved slice capabilities, deterministic skill closure, evidence plan, and v3 contract draft."
 +  default_prompt: "Use yss-implementation-contract-compiler to compile approved capabilities, deterministic skill closure, evidence, and a v3 contract draft."
 diff --git a/references/boundaries.md b/references/boundaries.md
-index 74d436c..73b8883 100644
+index 74d436c5..73b8883f 100644
 --- a/references/boundaries.md
 +++ b/references/boundaries.md
 @@ -18,39 +18,14 @@
@@ -281,7 +281,7 @@ index 74d436c..73b8883 100644
  | `yss-ui-business-page-generation` | `yss-hook` | `context-conditional` | `hooks` |
  | `yss-ui-business-page-generation` | `yss-formily` | `context-conditional` | `form` |
 diff --git a/references/compiler-contract.yaml b/references/compiler-contract.yaml
-index db54b2d..34ed571 100644
+index db54b2d8..34ed5715 100644
 --- a/references/compiler-contract.yaml
 +++ b/references/compiler-contract.yaml
 @@ -8,141 +8,169 @@ slice_contract_versions:
@@ -1128,9 +1128,9 @@ index db54b2d..34ed571 100644
 +  missing_or_drift: component-binding-drift
 +  action: return-to-backend-and-harness-orchestrator
 +  frontend_must_not_certify: true
-diff --git a/references/scaffold-compilation.md b/a/references/scaffold-compilation.md
+diff --git a/references/scaffold-compilation.md b/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-rebase-k00zO4/source/references/scaffold-compilation.md
 deleted file mode 100644
-index 1c4fae6..0000000
+index 1c4fae66..00000000
 --- a/references/scaffold-compilation.md
 +++ /dev/null
 @@ -1,7 +0,0 @@
@@ -1142,7 +1142,7 @@ index 1c4fae6..0000000
 -- 脚手架合同在编译阶段只能是 `draft` / `ready-for-lifecycle-review` / `blocked`；只有生命周期编排器可以把已持久化脚手架合同标记为 `approved`。脚手架合同只覆盖业务代码前的工程骨架工作单元；生成、基线校验和合同重编译完成后，它不能替代脚手架后的 Slice Implementation Contract。
 -- 脚手架输出消费批准的脚手架合同；脚手架后的所有生成后端代码都必须绑定当前批准且版本当前的 Slice Implementation Contract、主 YSS skill、依赖闭包、允许写路径、预期证据和 YSS Skill Execution Result。打印命令、`./mvnw validate` 单项通过或脚手架成功不能替代合同批准；生成范围从机械内容变成业务行为时触发完整重路由。
 diff --git a/references/slice-implementation-contract-v2.md b/references/slice-implementation-contract-v2.md
-index a5319c6..fc6d7fb 100644
+index a5319c63..fc6d7fb9 100644
 --- a/references/slice-implementation-contract-v2.md
 +++ b/references/slice-implementation-contract-v2.md
 @@ -1,100 +1,64 @@
@@ -1396,12 +1396,12 @@ index a5319c6..fc6d7fb 100644
 -技术设计编译绑定使用 `technical_design: {ref, version, digest}` 与 `slice_id`，校验器规则见 `yss-technical-design/references/technical-design-contract.md`。`backend.tactical_ddd` 仅适用于 `domain-driven`；MVC 消费共同技术设计绑定与 `design` 的用例、规则、事务和测试 seam，不填聚合或 Gateway 字段。
 +前端专职合同仅填写页面工程、组件、状态管理、API 消费与测试边界。来自导入包的承接使用前端联合接收核验，不生成或执行后端技术设计。
 diff --git a/references/yss-skill-execution-result.md b/references/yss-skill-execution-result.md
-index f401ccb..693ca7c 100644
+index 4004e818..0e2aedf4 100644
 --- a/references/yss-skill-execution-result.md
 +++ b/references/yss-skill-execution-result.md
-@@ -2,15 +2,12 @@
+@@ -4,15 +4,12 @@
  
- 核心 YSS skill 必须消费已批准合同版本，并返回：
+ 以下结构和校验要求仅适用于已经绑定正式工作单元 / Slice 的完整治理路径。该路径的核心 YSS skill 必须消费已批准合同版本，并返回：
  
 -后端结果顶层带与当前 resolution 完全一致的 `architecture_identity`；每条验证记录还须有整数 `exit_code`。身份缺失、Profile 未 supported、验证非零或没有执行时间均不得 accepted。
 -
@@ -1416,7 +1416,7 @@ index f401ccb..693ca7c 100644
    skill:
    slice_id:
    work_unit_id:
-@@ -23,8 +20,6 @@ execution_result:
+@@ -25,8 +22,6 @@ execution_result:
      registry_digest:
      compiler_contract_digest:
      component_bindings_digest: # 合同含 component_bindings 时必填
@@ -1425,7 +1425,7 @@ index f401ccb..693ca7c 100644
    changed_files:
      - path:
        contract_area: common | frontend | backend | contract | cross_repo
-@@ -51,9 +46,6 @@ execution_result:
+@@ -53,9 +48,6 @@ execution_result:
        constraint:
        status: passed | failed | not-applicable
        evidence_ref:
@@ -1436,7 +1436,7 @@ index f401ccb..693ca7c 100644
      - risk:
        owner:
 diff --git a/tests/compiler-scenarios.test.mjs b/tests/compiler-scenarios.test.mjs
-index 967988c..dc5b962 100644
+index 967988cc..dc5b9625 100644
 --- a/tests/compiler-scenarios.test.mjs
 +++ b/tests/compiler-scenarios.test.mjs
 @@ -1,6 +1,5 @@

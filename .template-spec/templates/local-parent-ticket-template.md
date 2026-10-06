@@ -7,6 +7,8 @@ pending_publication_to: "<none | github | gitlab>"
 
 # 功能父 Ticket：<功能名称>
 
+本模板以下阶段包适用于 `governed`。已按 `request_triage.delivery_path` 核验的 `daily` 只维护同一记录的范围、验收、工程基线、Skills、实际测试、独立审查、回滚及适用 API 契约审查段；格式见生命周期 `references/daily-delivery.md`，不要创建下方阶段包或批准占位符。正式绑定任务仍使用原路径。
+
 默认 Local Markdown 填写 `tracker: local-markdown`、`publication: local`、`pending_publication_to: none`；若选定的远程平台不可用，填写目标平台、`publication: pending` 和对应的 `pending_publication_to`。
 
 Status: ready-for-human

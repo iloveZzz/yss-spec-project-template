@@ -71,9 +71,6 @@
       "scripts/generate-lifecycle-artifacts",
       "scripts/generate-yss-skill-boundaries",
       "scripts/inspect-maintenance-candidate",
-      "scripts/instantiate-harness",
-      "scripts/node-generate-lifecycle-artifacts.mjs",
-      "scripts/node-verify-lifecycle-registry.mjs",
       "scripts/prepare-maintenance-review",
       "scripts/run-template-verification",
       "scripts/sync-strategic-handoff-tools",
@@ -98,8 +95,7 @@
       "scripts/lib/template-verification-runner.mjs",
       "scripts/lib/verification-selection.mjs",
       "scripts/lib/verification-report.mjs",
-      "scripts/lib/maintenance-counterexample.mjs",
-      "scripts/sync-harness-upgrade"
+      "scripts/lib/maintenance-counterexample.mjs"
     ],
     "excludePathSuffixes": [
       "-scenarios"
@@ -382,7 +378,7 @@
         ".template-spec/templates/business-ticket-review-template.yaml"
       ],
       "scripts": [
-        "scripts/design-md",
+        ".agents/skills/yss-design-system/scripts/design-md.mjs",
         "scripts/verify-business-tickets"
       ],
       "skills": [
@@ -404,7 +400,7 @@
         "scripts/verify-business-tickets",
         "scripts/backend-platforms",
         "scripts/backend-delivery",
-        "scripts/repository-scope-policy",
+        "scripts/lib/repository-scope-policy.mjs",
         "scripts/verify-scaffold-architecture-decisions"
       ],
       "skills": [
@@ -427,7 +423,7 @@
         ".template-spec/templates/verification-record-template.md"
       ],
       "scripts": [
-        "scripts/implementation-path-policy",
+        "scripts/lib/implementation-path-policy.mjs",
         "scripts/complete-backend-delivery"
       ],
       "skills": []

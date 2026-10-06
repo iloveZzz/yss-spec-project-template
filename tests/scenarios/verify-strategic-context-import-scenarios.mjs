@@ -1,0 +1,49 @@
+import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
+import { spawnSync } from "node:child_process";
+import { sealVisualBaseline } from "../../.agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs";
+
+const repoRoot = path.resolve(import.meta.dirname, "../..");
+const root = mkdtempSync(path.join(tmpdir(), "yss-strategic-import-"));
+mkdirSync(path.join(root, "docs", "evidence"), { recursive: true });
+writeFileSync(path.join(root, "yss-project.yaml"), "schema_version: 1\nrepository_mode: project-instance\n");
+const context = (meaning = "提供产品或服务的主体") => `---
+context_schema_version: 1
+---
+# CONTEXT
+## 流程术语
+| 术语 | 含义 | 英文标识 | 避免 / 备注 |
+|---|---|---|---|
+| 阶段 | 生命周期阶段 | — | |
+## 业务术语
+| 术语 | 含义 | 英文标识 | 适用限界上下文 | 避免 / 备注 |
+|---|---|---|---|---|
+| 供应商 | ${meaning} | Supplier | Global | |
+`;
+writeFileSync(path.join(root, "CONTEXT.md"), context());
+const run = (command, args) => spawnSync(command, args, { cwd: repoRoot, encoding: "utf8" });
+const snapshot = JSON.parse(run("scripts/verify-context-contract", ["--root", root, "--term-ref", "Global/Supplier", "--json"]).stdout).context_snapshot;
+const reconciliation = { schema_version: 1, repository_mode: "project-instance", stage: "stage.system-data-engineering", work_unit: "work-unit.technical-analysis", status: "reconciled", context_snapshot: snapshot, changes: { added: ["Global/Supplier"], updated: [], deprecated: [] }, unresolved_terms: [], evidence_refs: ["CONTEXT.md"] };
+const reconciliationFile = path.join(root, "docs/evidence/context-reconciliation.json"); writeFileSync(reconciliationFile, JSON.stringify(reconciliation));
+const supplier = { term_ref: "Global/Supplier", term: "供应商", meaning: "提供产品或服务的主体", english_identifier: "Supplier", context_id: "Global", forbidden_aliases: [] };
+const ref = (id) => ({ id, version: "v2", digest: `sha256:${id}`, status: "approved", persisted_ref: `source/${id}` });
+function pngHeader(width, height) { const value = Buffer.alloc(24); Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]).copy(value, 0); value.writeUInt32BE(13, 8); value.write("IHDR", 12, "ascii"); value.writeUInt32BE(width, 16); value.writeUInt32BE(height, 20); return value; }
+const bundleRoot = path.join(root, "source/visual-baseline-v1"); mkdirSync(path.join(bundleRoot, "images"), { recursive: true }); mkdirSync(path.join(bundleRoot, "sources"), { recursive: true }); mkdirSync(path.join(bundleRoot, "capture"), { recursive: true });
+writeFileSync(path.join(bundleRoot, "images/primary-desktop.png"), pngHeader(1440, 900)); writeFileSync(path.join(bundleRoot, "images/primary-narrow.png"), pngHeader(390, 844));
+writeFileSync(path.join(bundleRoot, "sources/prototype.html"), "<main>supplier</main>\n"); writeFileSync(path.join(bundleRoot, "sources/interaction.md"), "# Interaction\n"); writeFileSync(path.join(bundleRoot, "sources/states.md"), "# States\n"); writeFileSync(path.join(bundleRoot, "capture/capture.mjs"), "// capture\n"); writeFileSync(path.join(bundleRoot, "capture/result.json"), "{\"result\":\"passed\"}\n");
+const baselineFile = path.join(bundleRoot, "visual-baseline.yaml");
+const baseline = { schema_version: 1, baseline_id: "visual-baseline.supplier", feature: "supplier", version: "v1", status: "approved", bundle: { format: "portable-directory", root_ref: "source/visual-baseline-v1", digest: `sha256:${"0".repeat(64)}`, size_bytes: 0, max_image_bytes: 5242880, max_bundle_bytes: 104857600 }, source: { prototype_ref: "sources/prototype.html", prototype_digest: `sha256:${"1".repeat(64)}`, interaction_spec_ref: "sources/interaction.md", interaction_spec_digest: `sha256:${"2".repeat(64)}`, state_matrix_ref: "sources/states.md", state_matrix_digest: `sha256:${"3".repeat(64)}` }, capture_environment: { browser: "chromium", browser_version: "140.0.0", operating_system: "linux", fonts_digest: `sha256:${"4".repeat(64)}`, device_scale_factor: 1, color_space: "srgb", locale: "zh-CN", timezone: "Asia/Shanghai", animations_disabled: true, cursor_hidden: true, capture_script_ref: "capture/capture.mjs", capture_script_digest: `sha256:${"5".repeat(64)}`, capture_result_ref: "capture/result.json", capture_result_digest: `sha256:${"6".repeat(64)}` }, cases: [{ case_id: "primary-desktop", route: "/supplier", page: "SupplierPage", state: "normal", viewport: { name: "desktop", width: 1440, height: 900, scroll_mode: "viewport", scroll_position: 0 }, theme: "compact-light", locale: "zh-CN", data_scenario: "primary", image_ref: "images/primary-desktop.png", image_digest: `sha256:${"0".repeat(64)}`, image_size_bytes: 1, mask_ref: "not-applicable", mask_digest: "not-applicable", mask_size_bytes: 0, semantic_refs: ["sources/prototype.html", "sources/interaction.md"], allowed_differences: [], result: "passed" }, { case_id: "primary-narrow", route: "/supplier", page: "SupplierPage", state: "normal", viewport: { name: "narrow", width: 390, height: 844, scroll_mode: "viewport", scroll_position: 0 }, theme: "compact-light", locale: "zh-CN", data_scenario: "primary", image_ref: "images/primary-narrow.png", image_digest: `sha256:${"0".repeat(64)}`, image_size_bytes: 1, mask_ref: "not-applicable", mask_digest: "not-applicable", mask_size_bytes: 0, semantic_refs: ["sources/states.md"], allowed_differences: [], result: "passed" }] };
+writeFileSync(baselineFile, JSON.stringify(baseline)); const sealedBaseline = await sealVisualBaseline(baselineFile, bundleRoot);
+const visualBaselineRef = { baseline_id: sealedBaseline.baseline_id, version: sealedBaseline.version, digest: sealedBaseline.bundle.digest, status: "approved", persisted_ref: "source/visual-baseline-v1", manifest_ref: "visual-baseline.yaml", case_ids: sealedBaseline.cases.map((item) => item.case_id) };
+const handoff = { schema_version: 3, handoff_id: "strategic-design-handoff.supplier", handoff_version: "v3", status: "approved", source: { domain_strategy_ref: ref("domain"), stage_decision_package_ref: ref("stage"), spec_ref: ref("spec"), prototype_ref: ref("prototype"), visual_baseline_ref: visualBaselineRef, business_ticket_set_ref: ref("tickets") }, source_context_snapshot: snapshot, context_delta: { added: [supplier], updated: [], deprecated: [] }, target_context_reconciliation: { target_context_ref: "CONTEXT.md", reconciliation_schema_ref: ".template-spec/process/schemas/context-reconciliation.schema.json", required_before_skill: "yss-tactical-design", status: "pending" }, target: { team: "downstream-rd-team", skill: "yss-tactical-design", output: "tactical-design-contract" }, problem_and_business_outcomes: ["准入"], bounded_context_and_subdomain_map: ["Global"], context_map_and_translation_responsibility: ["共享"], ubiquitous_language_and_concept_candidates: ["Global/Supplier"], scenarios_and_business_invariants: ["稳定"], tactical_design_questions: ["聚合边界"], deferred_decisions_and_ownership: [], evidence_and_version_digests: ["source/evidence"], acceptance: ["target-context-reconciliation-is-required-before-tactical-design"] };
+const handoffFile = path.join(root, "handoff.json"); writeFileSync(handoffFile, JSON.stringify(handoff));
+function verify(expected, pattern) { const result = run("scripts/verify-strategic-context-import", ["--root", root, "--reconciliation", reconciliationFile, handoffFile]); if (result.status !== expected || (pattern && !pattern.test(`${result.stdout}${result.stderr}`))) throw new Error(`${result.stdout}${result.stderr}`); }
+verify(0);
+writeFileSync(path.join(root, "CONTEXT.md"), context("错误含义"));
+const staleSnapshot = JSON.parse(run("scripts/verify-context-contract", ["--root", root, "--term-ref", "Global/Supplier", "--json"]).stdout).context_snapshot;
+writeFileSync(reconciliationFile, JSON.stringify({ ...reconciliation, context_snapshot: staleSnapshot }));
+verify(1, /不一致/);
+writeFileSync(handoffFile, JSON.stringify({ ...handoff, schema_version: 2 }));
+verify(1, /migration-required/);
+process.stdout.write("Strategic context import scenarios passed\n");

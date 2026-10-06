@@ -12,7 +12,7 @@ import {validateVerificationReportDirectory} from './verification-preflight.mjs'
 import {compileLegacyPlan,loadLegacyReferenceRunner} from './legacy-verification.mjs';
 import {killTree} from '../../../scripts/lib/command-runner.mjs';
 import {validateReceipt} from './verification-delivery-run.mjs';
-import {addVerificationExecutionTasks,compileTaskExecution} from './verification-execution-plan.mjs';
+import {addVerificationExecutionTasks,compileTaskExecution,assertVerificationSources} from './verification-execution-plan.mjs';
 import {validateCliSourceConsumer,validateArtifact} from './verification-artifacts.mjs';
 export {addVerificationExecutionTasks} from './verification-execution-plan.mjs';
 
@@ -117,7 +117,7 @@ async function runPrepared(input) {
     try{report.preflight=JSON.parse(fs.readFileSync(preflightRow.stdoutFile,'utf8'));}catch(error){throw new Error(`环境预检没有结构化结果: ${error.message}`);}
     if(preflightRow.code!==0||preflightRow.storageError||report.preflight.status!=='passed')throw new Error(`环境预检失败: ${(report.preflight.errors||[]).map(row=>`${row.name}: ${row.error}`).join('; ')}`);
     report.sources_manifest=report.preflight.sources_manifest||null;
-    const missing=(plan.required_files||[]).filter(ref=>!fs.existsSync(path.join(root,ref)));if(missing.length)throw new Error(`缺少模板必需文件: ${missing.join(', ')}`);
+    assertVerificationSources(plan,root);
     const runtimeMode=values['runtime-store']||'off';if(!['off','sqlite'].includes(runtimeMode))throw new TypeError('runtime-store 必须为 sqlite 或 off');
     session=beginRuntimeRun({root,kind:'template-verification',mode:runtimeMode,input:{input_sha256:before,plan},reportDir});
     const onResult=row=>{row.log_digests=Object.fromEntries(['stdoutFile','stderrFile'].filter(key=>row[key]&&fs.existsSync(row[key])).map(key=>[key,hash(fs.readFileSync(row[key]))]));report.results.push(row);if(row.storageError)errors.push(row.storageError);if(reportDir)saveVerificationReport(reportDir,report);};

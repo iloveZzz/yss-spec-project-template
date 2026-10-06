@@ -1,5 +1,7 @@
 # 编排执行协议
 
+本协议的正式工作单元、checkpoint、阶段和门禁循环仅适用于 `governed` 或模板维护。先按 `orchestration-contract.yaml.request_triage.delivery_path` 判定；已合格普通任务执行 [普通任务交付](daily-delivery.md)，不先运行本文件的正式循环。其他 Profile 或旧 CLI 不因这段说明获得普通路径能力。
+
 ## 有界推进循环
 
 1. 按 `orchestration-contract.yaml.request_triage` 理解请求并选择模式，再识别仓库身份、任务规模和影响面；问题理解与澄清细节见 [请求分诊协议](request-triage.md)。查看已有项目进度可用 `scripts/lifecycle-status --root <项目> --checkpoint <引用>` 读取当前阶段、阻塞、负责人和下一动作；此视图不推进状态或代替流转校验。

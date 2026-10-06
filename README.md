@@ -26,8 +26,8 @@
 
 1. 先读取 `yss-project.yaml`，按 `repository_mode` 选择模板维护或产品研发生命周期。
 2. 必读入口为 `AGENTS.md` 与 `CONTEXT.md`；流程事实以生命周期注册表和裁剪指南为准。
-3. `template-source` 修改后先按 `maintenance-intensity.yaml` 判定 L1 / L2 / L3，默认用 `scripts/verify-template-fast` 达到 `implementation-ready`；L3 日常采用维护者自检，正式发布前执行完整门禁；只有共享 skill 变更才运行 `scripts/sync-skills` 和 `scripts/update-skill-lock`。
-4. `project-instance` 默认从 `yss-product-lifecycle` 的 `route` 模式开始，再由原生 `work-unit.*` 推进 Plan、Spec、产品设计、工程契约和 Ticket 正式化；`to-spec`、`to-tickets`、`implement` 仅作为用户显式调用的兼容入口。
+3. `template-source` 按 `maintenance-intensity.yaml` 判定 L1 / L2 / L3，先看 `scripts/verify-template-fast --plan`，日常执行受影响依赖的定向检查达到 `implementation-ready`；投影、锁和分发在 canonical 稳定后同步。
+4. `project-instance` 先用支持能力的 `yss lifecycle route` 按 `request_triage.delivery_path` 分流。`daily` 使用一张 Ticket/PR，按需求验收、技术技能、实现、测试、独立审查推进；`governed` 从最近可信阶段恢复正式治理。日常操作见[同一记录交付说明](.agents/skills/yss-product-lifecycle/references/daily-delivery.md)。
 5. 实现仓库接入、YSS 路由、独立审查、fresh verification 和 Git checkpoint 以 `AGENTS.md` 的硬门禁为准。
 
 YSS skills 的公开发布投影维护在 [iloveZzz/yss-spec-dev-skills](https://github.com/iloveZzz/yss-spec-dev-skills)，发布清单和导出命令见 [skills 维护说明](./.template-source/agents/skills-maintenance.md)。

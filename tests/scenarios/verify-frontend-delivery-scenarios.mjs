@@ -1,0 +1,6 @@
+import {registerFrontendDeliveryScenarios} from '../../scripts/fixtures/frontend-delivery/scenarios.mjs';
+await registerFrontendDeliveryScenarios({
+  backendRoot:process.env.YSS_DELIVERY_TEST_BACKEND_ROOT,
+  frontendRoot:process.env.YSS_DELIVERY_TEST_FRONTEND_ROOT,
+  crossRepoSampleRoot:process.env.YSS_CROSS_REPO_SAMPLE_ROOT,
+});

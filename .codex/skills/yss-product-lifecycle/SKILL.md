@@ -5,15 +5,13 @@ description: 编排 YSS 研发全生命周期；当阶段、产物、门禁或 S
 
 # YSS Product Lifecycle
 
-合同阅读与更新：`scripts/contract view|render|check-views`；见 `.template-spec/process/contract-reading.md`。
+先按 `references/orchestration-contract.yaml.request_triage.delivery_path` 选择交付路径；`daily` 操作见 [普通任务交付](references/daily-delivery.md)。路径不是阶段、Ticket 状态或批准。
 
-五类机器资产默认 JSON；读写、迁移及恢复须遵循 `.template-spec/process/structured-assets.md`。
-
-文档/进度按 `document_writing` 调用 `i-have-adhd`，遵循 `.template-spec/process/document-writing.md`。
+`governed` 正式资产使用 `.template-spec/process/structured-assets.md` 和 `.template-spec/process/contract-reading.md`；文档按 `document_writing` 调用 `i-have-adhd`。普通任务不因这两份协议生成正式资产。
 
 ## 事实源
 
-先读 `yss-project.yaml`、`AGENTS.md`、`CONTEXT.md` 和当前任务视图，按需读合同：
+先读 `yss-project.yaml`、`AGENTS.md`、`CONTEXT.md`、当前任务及交付路径政策。只在本地 Spec 政策已启用且固定 `yss` CLI 已支持 `route` / `verify-daily` 时进入 `daily`；旧 CLI、其他 Profile 或能力不可核验时明确 `daily unsupported`，不得按文字承诺放行。`governed` 再按当前工作单元读取以下事实源：
 
 | 事实 | 权威来源 |
 |---|---|
@@ -27,7 +25,7 @@ description: 编排 YSS 研发全生命周期；当阶段、产物、门禁或 S
 scripts/query-lifecycle-context --work-unit work-unit.plan-requirements --check-skills
 ```
 
-`--include` 限合同顶层键。调用前按 [来源与补装](references/matt-yss-adapter.md) 预检，在既有授权内补装并重验。
+上例用于 `governed` 工作单元。`--include` 限合同顶层键；调用前按 [来源与补装](references/matt-yss-adapter.md) 预检，在既有授权内补装并重验。`daily` 从当前任务影响选择并核验 YSS 技能，不能因省略正式合同漏掉技术约束。
 
 按 `execution_efficiency` 复用入口、合并查询和未变资料，核验资产与门禁；见项目 `.template-spec/process/script-execution.md`。
 
@@ -37,6 +35,8 @@ scripts/query-lifecycle-context --work-unit work-unit.plan-requirements --check-
 2. 判定影响面及最近可信阶段；完成须有内容、审查、新鲜上游和可读证据，文件存在不代表通过。
 3. 按 `request_triage` 选 `route`、`orchestrate`、`resume`、`audit`；行动请求无需模式关键字，意图不明只读 `route`。模式、门禁及授权边界仍适用。
 4. `project-instance` 按生命周期注册表推进；`template-source` 只走模板维护流程。
+
+进入正式工作单元前先判交付路径。已合格 `daily` 以一张普通 Ticket / PR 承接范围、验收、路径、技能、实际测试和独立审查；不创建阶段 checkpoint、正式 Slice 合同、多级批准或 `ready-for-agent`，也不调用正式实现准入器来豁免缺项。当前任务已绑定正式阶段、checkpoint 或 Slice 时恢复 `governed`；无关功能资产不阻断新普通任务。缺事实先调查，发现新风险时停止受影响动作、保留已有证据并从最近可信资产升级。
 
 只读咨询、状态和定位不创建 Ticket、checkpoint 或审批，不运行实现回归。行动从当前可信阶段选择缺失工作，复用当前批准资产、登记及工作单元；主链是导航，未来阶段产物不计作当前缺项。按影响面完成当前工作及直接 / 传递依赖的适用验证；Fresh Verification、证据复用和边界重验按裁剪合同执行。
 
@@ -54,7 +54,7 @@ Plan 入口读 `.template-spec/plan/README.md`、`.template-spec/process/plan-mi
 
 ### 流转与实现
 
-不得越过命中的阶段、门禁、实现仓库准备或 Ticket 正式化。实现只接收绑定垂直切片、已批准且持久化、版本当前并通过完整 `ready-for-agent` 计算的合同；父 Ticket、`ready-for-human` 切片、`stale`、`drift`、`new_impacts`、`violation` 或缺失证据均阻断。实现仓库、脚手架、UI 还原、review input 和发布条件从对应合同子树查询，不在入口重复定义。
+`governed` 不得越过命中的阶段、门禁、实现仓库准备或 Ticket 正式化。正式切片只接收绑定垂直切片、已批准且持久化、版本当前并通过完整 `ready-for-agent` 计算的合同；父 Ticket、`ready-for-human` 切片、`stale`、`drift`、`new_impacts`、`violation` 或缺失证据均阻断。实现仓库、脚手架、UI 还原、review input 和发布条件从对应合同子树查询，不在入口重复定义。普通路径的资格、测试、独立审查与证据失败同样阻断完成，不把 `daily` 用作正式合同降级旗标。
 
 审查按 `gate_consolidation`、`review_input.rereview`；Plan 执行 `planning.review_control`，周期由 checkpoint `plan_review_control` 持有；工具和派发、消费、恢复、入口校验见 `.template-spec/plan/entry-review.md`。
 
@@ -62,13 +62,15 @@ Plan 入口读 `.template-spec/plan/README.md`、`.template-spec/process/plan-mi
 
 ### 用户决定
 
-按角色表 `user_decision_policy` 与 `references/user-decisions.md` 展示资产、范围、风险、后续动作，再取得提问者或指定生物人的原始回复。数字人、超时、默认项不得代答。先验 `continuation_ref`；未知先调查，实质变化或缺强制审批时重新决定。缺陷/缺证据阻断，建议记待办；合同、验证、外部授权仍适用。
+`governed` 按角色表 `user_decision_policy` 与 `references/user-decisions.md` 展示资产、范围、风险、后续动作，再取得提问者或指定生物人的原始回复。数字人、超时、默认项不得代答。先验 `continuation_ref`；未知先调查，实质变化或缺强制审批时重新决定。`daily` 使用已明确的任务授权，不再为普通实现创建阶段批准；外部动作、风险接受和项目明确的强制制度仍按原授权处理。缺陷/缺证据阻断，建议记待办。
 
 ### 外部副作用与 Git
 
 生命周期批准、实现授权、泛泛意向不构成 Git 授权。按 `references/user-decisions.md` 整理明确动作与范围的真实回复，无需重填字段。commit、push、其他外部动作分别核验；来源不可读、撤回、越界则不执行。`git-submodule` 逐仓授权、非 detached HEAD、先子仓后父仓 gitlink。
 
 ## 有界编排循环
+
+以下循环只适用于 `governed` 和模板维护。`daily` 按 [普通任务交付](references/daily-delivery.md) 直接推进一张任务记录，不伪装成正式工作单元结果。
 
 1. 从真实资产重建状态，查询 mode、stage、work-unit 及必要合同子树。
 2. 核验影响面、上游新鲜度、门禁和阻塞，选择首个未阻塞单元；`not-applicable` 不作豁免。
@@ -77,7 +79,7 @@ Plan 入口读 `.template-spec/plan/README.md`、`.template-spec/process/plan-mi
 5. 先逐项验收用户目标、遗漏、错误假设和未决问题，再验收 `Workflow Execution Result`：工作单元、合同、允许写路径、`context_reconciliation`、证据、实际验证、延期 seam、漂移和下一路由必须可核验。实现派发额外绑定当前 Slice Implementation Contract v3；其他阶段不得伪造该合同。
 6. 按 `blocking_disposition` 自主处理阻塞；缺真实决定或新授权才展示资产后询问。独立工作继续，完成结论不新增暂停。
 
-`project-instance` 批准或流转前按根 `AGENTS.md` 完成术语回写与 `context_reconciliation`；候选术语、错误路径、摘要漂移或冲突阻断。质量标准由 `engineering-baseline` 唯一定义，高风险反证按裁剪合同。
+`governed` 项目实例批准或流转前按根 `AGENTS.md` 完成术语回写与 `context_reconciliation`；候选术语、错误路径、摘要漂移或冲突阻断。`daily` 消费当前词汇和工程基线，词汇冲突先解决，不机械生成对账文件。质量标准由 `engineering-baseline` 唯一定义，高风险反证按裁剪合同。
 
 ## 面向业务角色
 
@@ -91,7 +93,7 @@ Plan → Spec 写入前按 `.template-spec/plan/entry-review.md` 持久化审阅
 
 每轮返回/暂停按 `user_progress_report` 说明阶段及依据、结果、下一阶段/单元及条件、问题/阻塞、责任方、解除与复验、主控动作、用户决定。未知写“待核验”，负责人缺失写“未登记”；目标不代表批准，已授权修复继续。
 
-按 `workflow_execution_result` 与 `references/state-model.md` 记录状态、证据新鲜度、阻塞、动作、路由、Ticket / Git checkpoint。
+`governed` 按 `workflow_execution_result` 与 `references/state-model.md` 记录状态、证据新鲜度、阻塞、动作、路由、Ticket / Git checkpoint。`daily` 在原任务记录补齐实际测试和独立审查，由 `verify-daily` 核验当前边界；通过只表示本普通任务证据闭合，不表示正式批准、合并或发布。
 
 发送前核对状态、证据新鲜度、阻塞与结构化结果；见 [结果提示](references/orchestration.md#结果与友好提示)。会签保留门禁、角色/运行时、文件、推荐答案、恢复动作。恢复先验证；完成/合并/发布须同一候选通过适用审查和 fresh verification；发布须生物人决定。
 

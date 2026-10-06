@@ -1,6 +1,7 @@
 import { applyVerificationSelection, verificationCheckId } from './verification-selection.mjs';
 import {buildGatePlan, compileVerificationCheck, validateGateConfiguration, loadLegacyManifest, verificationPolicyDigest, assertQualificationReportParameters} from '../../.template-source/scripts/lib/verification-gates.mjs';
 import {assertBaselineParameters,validateBaseline} from '../../.template-source/scripts/lib/verification-baseline.mjs';
+import {assertVerificationSources,verificationSourceIdentities} from '../../.template-source/scripts/lib/verification-execution-plan.mjs';
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -26,7 +27,7 @@ function globRegex(pattern) {
   return new RegExp(`^${source}$`);
 }
 
-function matches(file, pattern) { return globRegex(pattern).test(file); }
+function matches(file, pattern) { const expression=globRegex(pattern);return verificationSourceIdentities(file).some(ref=>expression.test(ref)); }
 
 export function loadVerificationProfiles(source = readFileSync(PROFILE_FILE, "utf8")) {
   const document = parseDocument(source, { uniqueKeys: true });
@@ -127,6 +128,5 @@ export function planTemplateVerification({ profile = "fast", changedFiles = [], 
 }
 
 export function assertRequiredFiles(plan, root = ROOT) {
-  const missing = plan.required_files.filter((file) => !existsSync(path.join(root, file)));
-  ensure(missing.length === 0, `缺少模板必需文件: ${missing.join(", ")}`);
+  assertVerificationSources(plan,root);
 }

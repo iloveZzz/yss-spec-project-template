@@ -1,5 +1,7 @@
 # Matt / YSS 工作流适配
 
+本文件的工作单元预检、正式结果和阶段入口适用于 `governed` 或模板维护；显式兼容入口仍按其正式合同执行。普通任务先由当前 Spec 政策与支持的 CLI 判定，合格时按 [普通任务交付](daily-delivery.md) 使用 YSS 技术规则、测试和独立审查，不先建立正式阶段资产。旧 CLI 或其他 Profile 明确不支持，不以 Matt 通用指令越过原边界。
+
 上游来源是 [mattpocock/skills](https://github.com/mattpocock/skills)。固定提交、原始哈希和实际生效的 YSS 适配哈希以根 `skills-lock.json` 为准；补装使用模板快照中的适配版，不直接覆盖为上游最新版本。
 
 项目实例按需分发：注册表中受支持的技能可能尚未安装；改名与别名由 `.template-spec/agents/yss-skill-registry.yaml` 解析；已退役名称按 `.template-spec/agents/skill-migrations.md` 重新路由。这三种情况不能混用，也不需要把整个上游仓库装进实例。

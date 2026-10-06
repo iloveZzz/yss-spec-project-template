@@ -10,7 +10,7 @@
     "build:vendor": "node scripts/build-vendor.mjs",
     "test": "node scripts/test-with-plugin-clis.mjs test/**/*.test.mjs",
     "check:vendor": "node scripts/build-vendor.mjs --check",
-    "design-md": "node scripts/design-md.mjs"
+    "design-md": "node ../../../.agents/skills/yss-design-system/scripts/design-md.mjs"
   },
   "devDependencies": {
     "esbuild": "0.28.2",

@@ -1,0 +1,13 @@
+import { spawnSync } from "node:child_process";
+import { runScenario } from "../../scripts/lib/scenario-checks.mjs";
+
+try {
+  runScenario("implementationContractCompiler");
+  const result = spawnSync(process.execPath, ["--test", "--test-concurrency=1", "scripts/fixtures/lifecycle-core/research.test.mjs", "scripts/fixtures/lifecycle-core/views.test.mjs", "scripts/fixtures/lifecycle-core/evidence.test.mjs", ".agents/skills/yss-implementation-contract-compiler/tests/compiler-scenarios.test.mjs", "scripts/fixtures/slice-contract-v3/scenarios.test.mjs", "scripts/fixtures/slice-contract-v3/round2.test.mjs", "scripts/fixtures/contract-efficiency/views.test.mjs", "scripts/fixtures/contract-efficiency/phase.test.mjs", "scripts/fixtures/contract-efficiency/security.test.mjs", "scripts/fixtures/contract-efficiency/api-v2.test.mjs", "scripts/fixtures/contract-efficiency/distribution.test.mjs", "scripts/fixtures/backend-standards/preflight.test.mjs", "scripts/fixtures/backend-standards/review.test.mjs", "scripts/fixtures/backend-standards/coverage.test.mjs", "scripts/fixtures/backend-standards/matrix.test.mjs", "scripts/fixtures/backend-standards/executed-tests.test.mjs"], { encoding: "utf8" });
+  process.stdout.write(result.stdout);
+  process.stderr.write(result.stderr);
+  if (result.status !== 0) process.exitCode = result.status ?? 1;
+} catch (error) {
+  process.stderr.write(`${error.message}\n`);
+  process.exitCode = 1;
+}

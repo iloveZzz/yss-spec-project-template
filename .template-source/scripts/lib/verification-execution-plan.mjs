@@ -8,6 +8,90 @@ import {compileVerificationCheck} from './verification-gates.mjs';
 const hash=value=>createHash('sha256').update(value).digest('hex');
 const quote=value=>`'${String(value).replaceAll("'","'\\''")}'`;
 
+// Frozen legacy commands retain their identity; only their observed execution
+// and source locations move. Do not infer a replacement from a missing path.
+const retiredScenarios = [
+  'verify-business-language-scenarios', 'verify-context-contract-scenarios',
+  'verify-context-reconciliation-scenarios', 'verify-delivery-preflight-scenarios',
+  'verify-digital-human-roles-scenarios', 'verify-digital-human-task-package-scenarios',
+  'verify-existing-backend-architecture-scenarios', 'verify-existing-ui-baseline-scenarios',
+  'verify-frontend-delivery-scenarios', 'verify-frontend-implementation-evidence-scenarios',
+  'verify-frontend-scaffold-generator-scenarios', 'verify-implementation-path-scenarios',
+  'verify-lifecycle-context-query-scenarios', 'verify-lifecycle-operator-scenarios',
+  'verify-lifecycle-scenarios', 'verify-lifecycle-transition-scenarios',
+  'verify-maintenance-intensity-scenarios', 'verify-maintenance-review-workflow-scenarios',
+  'verify-maintenance-risk-scenarios', 'verify-matt-yss-integration-scenarios',
+  'verify-openapi-draft-validation-scenarios', 'verify-openapi-json-handoff-scenarios',
+  'verify-openapi-yaml-first-scenarios', 'verify-plan-requirements-context-scenarios',
+  'verify-plan-review-control-scenarios', 'verify-plan-spec-entry-scenarios',
+  'verify-prototype-backend-scaffold-scenarios', 'verify-repository-scope-scenarios',
+  'verify-scaffold-architecture-decision-scenarios', 'verify-scaffold-generator-scenarios',
+  'verify-script-performance-scenarios', 'verify-strategic-context-import-scenarios',
+  'verify-strategic-handoff-package-scenarios', 'verify-template-cache-scenarios',
+  'verify-template-verification-scenarios', 'verify-user-decision-scenarios',
+  'verify-yss-dto-openapi-scenarios', 'verify-yss-implementation-contract-compiler-scenarios',
+  'verify-yss-prototype-contract-scenarios', 'verify-yss-ui-scenarios',
+];
+const retiredSources = new Map(retiredScenarios.map(name=>[`scripts/${name}`, `tests/scenarios/${name}.mjs`]));
+if(new Set(retiredScenarios).size!==retiredScenarios.length)throw new TypeError('RETIRED_SCRIPT_SOURCE_DUPLICATE');
+retiredSources.set('scripts/verify-scaffold-generator-scenarios','tests/scenarios/verify-scaffold-generator-scenarios.py');
+retiredSources.set('scripts/verify-subagent-task-package-scenarios','tests/scenarios/verify-digital-human-task-package-scenarios.mjs');
+retiredSources.set('scripts/node-verify-lifecycle-registry.mjs','scripts/verify-lifecycle-registry');
+retiredSources.set('scripts/node-generate-lifecycle-artifacts.mjs','scripts/generate-lifecycle-artifacts');
+retiredSources.set('scripts/verify-subagent-task-package','scripts/verify-digital-human-task-package');
+retiredSources.set('scripts/instantiate-harness','tests/cli-retirement.test.mjs');
+retiredSources.set('scripts/implementation-path-policy','scripts/lib/implementation-path-policy.mjs');
+retiredSources.set('scripts/repository-scope-policy','scripts/lib/repository-scope-policy.mjs');
+retiredSources.set('scripts/verify-prototype-design','.agents/skills/yss-prototype-stage/scripts/verify-prototype-design.mjs');
+retiredSources.set('scripts/design-md','.agents/skills/yss-design-system/scripts/design-md.mjs');
+retiredSources.set('scripts/lib/design-md.mjs','.agents/skills/yss-design-system/scripts/design-md.mjs');
+retiredSources.set('.template-source/tooling/node/scripts/design-md.mjs','.agents/skills/yss-design-system/scripts/design-md.mjs');
+retiredSources.set('scripts/sync-harness-upgrade','.template-source/scripts/sync-harness-upgrade.mjs');
+retiredSources.set('scripts/lib/api-contract-decision.test.mjs','tests/api-contract-decision.test.mjs');
+retiredSources.set('scripts/lib/legacy-backend-scaffold-audit.test.mjs','tests/legacy-backend-scaffold-audit.test.mjs');
+const designMdAliases=new Set(['scripts/design-md','scripts/lib/design-md.mjs','.template-source/tooling/node/scripts/design-md.mjs']);
+const sourceTargets=new Map();
+for(const [source,target]of retiredSources) {
+  const previous=sourceTargets.get(target);
+  if(previous&&!(target==='.agents/skills/yss-design-system/scripts/design-md.mjs'&&[previous,source].every(ref=>designMdAliases.has(ref)))&&!(target==='tests/scenarios/verify-digital-human-task-package-scenarios.mjs'&&[previous,source].every(ref=>['scripts/verify-digital-human-task-package-scenarios','scripts/verify-subagent-task-package-scenarios'].includes(ref))))throw new TypeError(`RETIRED_SCRIPT_TARGET_DUPLICATE: ${target}`);
+  sourceTargets.set(target,source);
+}
+export function resolveVerificationSource(ref) {
+  if(retiredSources.has(ref))return retiredSources.get(ref);
+  if(/^scripts\/verify-[^/]+-scenarios$/.test(ref))throw new TypeError(`RETIRED_SCRIPT_MAPPING_MISSING: ${ref}`);
+  return ref;
+}
+export function verificationSourceIdentities(ref) {
+  const historical=[...retiredSources].filter(([source,target])=>source!==ref&&target===ref).map(([source])=>source);
+  // Relocation preserves the original impact boundary. Existing public entries
+  // and independent test suites still retain their own current-path rules.
+  return historical.length&&ref.startsWith('tests/scenarios/')?historical:[ref,...historical];
+}
+export function assertVerificationSources(plan,root) {
+  const missing=[];
+  for(const ref of plan.required_files||[]) {
+    if(retiredSources.has(ref))observedRetiredTarget(root,ref);
+    else if(!fs.existsSync(path.join(root,resolveVerificationSource(ref))))missing.push(ref);
+  }
+  if(missing.length)throw new TypeError(`缺少模板必需文件: ${missing.join(', ')}`);
+}
+function observedRetiredTarget(root,ref) {
+  const target=resolveVerificationSource(ref),file=path.resolve(root,target);
+  if(!fs.existsSync(file))throw new TypeError(`RETIRED_SCRIPT_TARGET_MISSING: ${ref} -> ${target}`);
+  const relative=path.relative(fs.realpathSync(root),fs.realpathSync(file));
+  if(fs.lstatSync(file).isSymbolicLink()||!fs.statSync(file).isFile()||relative.startsWith(`..${path.sep}`)||relative==='..'||path.isAbsolute(relative))throw new TypeError(`RETIRED_SCRIPT_TARGET_INVALID: ${ref}`);
+  return file;
+}
+let pythonInterpreter;
+function pythonExecution(task,root,file,args=[]) {
+  if(!pythonInterpreter) {
+    const result=spawnSync('python3',['-c','import sys; print(sys.executable)'],{encoding:'utf8'});
+    if(result.status!==0||!path.isAbsolute(result.stdout.trim())||!fs.existsSync(result.stdout.trim()))throw new TypeError('RETIRED_SCRIPT_PYTHON_UNAVAILABLE');
+    pythonInterpreter=fs.realpathSync(result.stdout.trim());
+  }
+  return {requested_command:task.command,file:pythonInterpreter,args:[file,...args],cwd:root,environment:{}};
+}
+
 function shellWords(command){
   const words=[];let word='',quoted=null,started=false;
   for(let index=0;index<command.length;index++){
@@ -23,9 +107,34 @@ function shellWords(command){
 }
 export function compileTaskExecution(task,{root,reportDir,sourceReceipt,fixedCommit}={}){
   const requested=task.command.trim();
+  const retiredRequest=/^(?:node(?:\.exe)?|['"][^'"]*[\\/]node(?:\.exe)?['"]|\S*[\\/]node(?:\.exe)?)\s/.test(requested)
+    ? null : /^scripts\/(?:verify-[^/\s]+-scenarios|verify-subagent-task-package|instantiate-harness|implementation-path-policy|repository-scope-policy|verify-prototype-design|design-md|sync-harness-upgrade)(?:\s|$)/.test(requested);
+  if(retiredRequest) {
+    const [ref,...args]=shellWords(requested);
+    if(ref==='scripts/instantiate-harness')throw new TypeError('RETIRED_SCRIPT_REQUEST_UNSUPPORTED: instantiate-harness');
+    const file=observedRetiredTarget(root,ref);
+    return file.endsWith('.py')?pythonExecution(task,root,file,args):{requested_command:task.command,file:process.execPath,args:[file,...args],cwd:root,environment:{}};
+  }
   if(!/^(?:node(?:\.exe)?|['"][^'"]*[\\/]node(?:\.exe)?['"]|\S*[\\/]node(?:\.exe)?)\s/.test(requested))return null;
   const words=shellWords(requested),binary=words.shift();
-  if(!/^node(?:\.exe)?$/.test(path.basename(binary))||!words.includes('--test'))return null;
+  if(!/^node(?:\.exe)?$/.test(path.basename(binary)))return null;
+  // Map only actual script operands, never source text passed to -e.
+  if(!words.includes('-e')&&!words.includes('--eval')&&!words.includes('--input-type=module')) {
+    const refs=words.filter(word=>retiredSources.has(word)||/^scripts\/verify-[^/]+-scenarios$/.test(word));
+    if(refs.length) {
+      const mapped=words.map(word=>refs.includes(word)?observedRetiredTarget(root,word):word);
+      const python=mapped.filter(word=>word.endsWith('.py'));
+      if(python.length) {
+        if(python.length!==1||mapped.length!==2||mapped[0]!=='--check')throw new TypeError('RETIRED_SCRIPT_PYTHON_REQUEST_UNSUPPORTED');
+        const execution=pythonExecution(task,root,python[0]);
+        execution.args=['-c','import ast, pathlib, sys; ast.parse(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8"), filename=sys.argv[1])',python[0]];
+        return execution;
+      }
+      if(!words.includes('--test'))return {requested_command:task.command,file:process.execPath,args:mapped,cwd:root,environment:{}};
+      words.splice(0,words.length,...mapped);
+    }
+  }
+  if(!words.includes('--test'))return null;
   const args=[];
   for(let index=0;index<words.length;index++){
     const word=words[index];

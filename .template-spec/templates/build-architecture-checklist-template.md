@@ -97,7 +97,7 @@ owner: ai
 > 命中不等于必然失败；`SingleResult` / `PageResult`、`CMD` / `Query` / `VO` 是 `yss-dto` 合法产物。命中项必须说明是否复用了既有 DTO 体系、是否位于约定包路径、是否继承约定基类；无法解释或未回勾合同即为 `violation`。
 
 ```bash
-scripts/verify-implementation-path-scenarios
+tests/scenarios/verify-implementation-path-scenarios.mjs
 rg -n "class (SingleResult|MultiResult|PageResult|Result)<|public static class .*(Command|Cmd|Query|VO)|subList\\(|InMemory.*Gateway|implements .*Gateway|extends .*Repository|@TableName|Mappers\\.getMapper|BeanUtils\\.copyProperties|copyProperties\\(|new [A-Za-z0-9]+VO\\(|new [A-Za-z0-9]+DTO\\(" apps/backend
 rg -n "class .*(PO|DTO|VO|Cmd|Query)\\b|private final .* log =|LoggerFactory\\.getLogger|public .*(get|set)[A-Z]" apps/backend
 ```

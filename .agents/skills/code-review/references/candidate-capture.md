@@ -1,5 +1,7 @@
 ### 1. Pin the fixed point and candidate
 
+This formal capture contract applies to governed and template-maintenance candidates. A qualified Spec daily review instead consumes the ordinary task's verified full baseline SHA, real scoped diff (including added files), current inputs and tool-produced `candidate_digest`; it records the same candidate and independent result in that Ticket / PR. It does not first create this manifest or a packed lifecycle snapshot. Changed inputs or diff invalidate the relevant review; old CLIs or unsupported Profiles cannot claim this alternative.
+
 Whatever the user said is the fixed point — a commit SHA, branch name, tag, `main`, `HEAD~5`, etc. If they didn't specify one, ask for it.
 
 Choose one candidate mode from the request or an upstream review contract:

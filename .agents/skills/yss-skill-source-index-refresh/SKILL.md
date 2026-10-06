@@ -30,7 +30,7 @@ node "$YSS_SKILLS_ROOT/yss-skill-source-index-refresh/scripts/refresh-yss-skill-
 
 后端输出稳定选择页 `references/source-index.md` 与两条平台生成索引；前端输出 `references/frontend-docs.md`。需要新增或调整技能到来源的映射时读取 [映射配置](references/source-map-config.md)。
 
-所有后端组件 Skill 共用 [平台与源码门禁](references/backend-component-platform-compatibility.md)。`references/source-index.md` 是稳定选择页；真实生成索引分别为 `source-index.boot2-java8.md` 与 `source-index.boot3-java17.md`。刷新后使用批准的 `platform_configuration.component_platform_line` 运行 `scripts/check-backend-skill-source-index.mjs --skill <skill-id> --platform-line <line> --source-root <matching-root>`，确认组件 tree、组件子树状态和 v2 平台信号与所选源码行一致。
+所有后端组件 Skill 共用 [平台与源码门禁](references/backend-component-platform-compatibility.md)。`references/source-index.md` 是稳定选择页；真实生成索引分别为 `source-index.boot2-java8.md` 与 `source-index.boot3-java17.md`。刷新后按共享门禁确认平台线（日常路径引用当前实际工程基线，完整治理引用批准的 `platform_configuration.component_platform_line`），运行 `scripts/check-backend-skill-source-index.mjs --skill <skill-id> --platform-line <line> --source-root <matching-root>`，确认组件 tree、组件子树状态和 v2 平台信号与所选源码行一致。
 
 脚本不复制大段源码；通用组件生成入口索引，持久化组件另生成公开 API、配置开关和能力边界矩阵，供按需定位真实源码。
 
@@ -52,7 +52,7 @@ node "$YSS_SKILLS_ROOT/yss-skill-source-index-refresh/scripts/refresh-yss-skill-
 
 ## Freshness 门禁
 
-提供精确类名、配置或安全结论前，必须执行 [共享平台与源码门禁](references/backend-component-platform-compatibility.md)，按批准平台选择索引与干净源码根。平台缺失或错配、组件 tree 漂移、子树 dirty 返回 `stale` / `blocked`，不回退另一代；历史路径提示只能定位。仅仓库 commit 不同但组件 tree 未变，不使索引过期。
+提供精确类名、配置或安全结论前，必须执行 [共享平台与源码门禁](references/backend-component-platform-compatibility.md)，按共享门禁确认的平台线选择索引与干净源码根。平台缺失或错配、组件 tree 漂移、子树 dirty 返回 `stale` / `blocked`，不回退另一代；历史路径提示只能定位。仅仓库 commit 不同但组件 tree 未变，不使索引过期。
 
 ## 刷新后验证
 

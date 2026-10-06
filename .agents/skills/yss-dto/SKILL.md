@@ -5,19 +5,21 @@ description: "实现或核验 YSS Result、PageResult、PageQuery、CommandDTO�
 
 # yss-dto
 
+执行路线按 Spec 项目中的 `.agents/skills/yss-product-lifecycle/references/daily-delivery.md` 的项目本地政策与固定 CLI 核验。仅合格且范围已授权的 Spec `daily` 消费同 Ticket 的范围、验收与已核验工程基线；`governed` 保留当前批准合同。缺本地政策/能力、其他 Profile 或已绑定正式任务不能凭标签降级；路线不授予执行授权。
+
 用于处理 `yss-component-dto` 的使用规范和代码接入。
 
 本 skill 同时负责把中台 DTO 映射到公开 HTTP/JSON 边界。`references/openapi-wire-profile.yaml` 是可复用的机器可读映射源；OpenAPI 治理和 Draft Review 必须消费它，不得各自复制一份 wrapper 或分页字段表。
 
 ## 平台与源码门禁
 
-接入、修改、代码生成或提供精确类名/配置前，必须读取并执行 [共享平台与源码门禁](../yss-skill-source-index-refresh/references/backend-component-platform-compatibility.md)，以 `--skill yss-dto` 校验批准的平台线及匹配源码根。缺失、错配或漂移返回 `blocked`；不跨代回退，不在业务实现中升级、降级或替换组件。只读分诊可继续，但须标注未完成源码核验，不能据此宣称跨 Boot/JDK 兼容。
+接入、修改、代码生成或提供精确类名/配置前，必须读取并执行 [共享平台与源码门禁](../yss-skill-source-index-refresh/references/backend-component-platform-compatibility.md)，以 `--skill yss-dto` 校验当前路线已核验的精确平台线及匹配源码根（`daily` 来自同 Ticket 的已有工程基线，`governed` 来自批准的配置）；不因普通路径跳过源码检查。缺失、错配或漂移返回 `blocked`；不跨代回退，不在业务实现中升级、降级或替换组件。只读分诊可继续，但须标注未完成源码核验，不能据此宣称跨 Boot/JDK 兼容。
 
 ## 所有权边界
 
 - 先消费 `architecture_identity`：DDD 的 HTTP DTO 在 Web；通用 MVC 私有 DTO 在 server、已批准公开 DTO 在 client；数据分析 MVC 公开 DTO 在 client。service/core 自有内部 Command/Query/Result，不依赖 client DTO；server 用 MapStruct 转换。共用 wire profile 不意味着共用模块路径。
 - `Result` / `SingleResult` / `MultiResult` / `PageResult`、`CommandDTO` / `QueryDTO` / `PageQuery` 的 canonical package、工厂方法、字段语义、默认值、枚举和禁用字段由本 skill 及 `references/openapi-wire-profile.yaml` 唯一持有。
-- Web skill 只生成 endpoint-specific Page Request、Request/Response 与 Convertor，并通过批准合同中的 profile 引用和 digest 消费上述协议；不得生成 wrapper/page base，也不得维护分页字段或默认值副本。
+- Web skill 只生成 endpoint-specific Page Request、Request/Response 与 Convertor，并通过 `governed` 批准合同或合格 `daily` 同 Ticket 中的 profile 引用和 digest 消费上述协议；不得生成 wrapper/page base，也不得维护分页字段或默认值副本。
 - OpenAPI skill 只把该 profile 组合进 endpoint schema；不得从 Java getter 或本地常量反向建立第二份 wire 协议。
 
 ## 何时使用
@@ -91,9 +93,9 @@ description: "实现或核验 YSS Result、PageResult、PageQuery、CommandDTO�
 
 ## 阶段 7 合同
 
-- DTO/VO 必须消费冻结 OpenAPI/no-impact record 和批准合同，写入合同允许路径。
+- `governed` DTO/VO 消费冻结 OpenAPI/no-impact record 和批准合同，写入合同允许路径；合格 `daily` 消费同 Ticket 的当前 API Freeze/no-impact、验收、既有工程基线和实际 `scope.paths`，不强制 Slice。
 - POJO 样板可 `controlled-generation`；校验、权限输入、错误结构和序列化行为必须由对应 `behavior-tdd` 工作单元覆盖。
-- 必须加载合同要求的 `lombok`、`mapstruct` 和 `alibaba-java-code-style`，并按统一 `YSS Skill Execution Result` 返回文件、契约测试和偏离。
+- 两条路线均加载实际适用的 `lombok`、`mapstruct` 和 `alibaba-java-code-style`；`governed` 保留合同要求的技能与正式 `YSS Skill Execution Result`，`daily` 在同 Ticket 返回文件、wire/序列化约束、真实契约测试/命令/退出码及偏离，接受独立审查。涉及 YSS wrapper 且目标 wire 能力未移植时保持 `UNPORTED`，不得凭普通路径声明已核验。
 
 ## 既有契约与特殊协议
 

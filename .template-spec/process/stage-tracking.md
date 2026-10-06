@@ -2,6 +2,8 @@
 
 本合同由主 tracker 与生命周期编排器消费。阶段、注册工作单元及父 Ticket 创建时点以生命周期注册表为准；工作项结构以 `schemas/stage-tracking.schema.json` 为准。
 
+本合同用于 `governed` 正式阶段。先按 `yss-product-lifecycle/references/orchestration-contract.yaml.request_triage.delivery_path` 判定；当前 Spec 政策和 CLI 已支持且判定合格的 `daily` 只维护一张普通 Ticket / PR，不强制建立阶段 checkpoint、stage work item 或运行本协议的 plan/apply/check。正式工作包现行或历史绑定仍按本协议恢复；其他功能的阶段记录不阻普通新任务。其他 Profile、旧 CLI 或政策未启用时明确 `daily unsupported`，不能按这段说明跳过正式追踪。
+
 ## 启用与职责
 
 `.template-spec/agents/issue-tracker.md` 的 `tracker.lifecycle_tracking_version: 1` 表示项目已启用。新初始化默认启用；attach / sync 保留已有配置，未声明的旧项目不自动启用。只读检查不修改项目；旧项目先 plan 再显式 apply。模板源只维护机制，不在模板根生成产品工作项。

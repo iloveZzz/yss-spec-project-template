@@ -1,0 +1,311 @@
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { queryLifecycleContext, inspectWorkUnitSkills } from "../../scripts/lib/lifecycle-context-query.mjs";
+import fs from "node:fs";
+import os from "node:os";
+import { treeHash } from "../../scripts/lib/skill-supply-chain.mjs";
+import { loadRegistry, validateRegistry } from "../../scripts/lib/lifecycle-registry.mjs";
+
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
+for (const [collection, id] of [["artifacts", "gate.user-confirmation"], ["checks", "gate.prototype-reviewed"], ["work_units", "check.missing"]]) {
+  const invalid = structuredClone(loadRegistry());
+  invalid[collection][0][collection === "work_units" ? "completion" : "trigger"] = `命中 ${id}`;
+  assert.throws(() => validateRegistry(invalid, { baseline: null }), /不存在的引用/);
+}
+
+const query = {
+  mode: "route",
+  stageId: "stage.plan",
+  workUnitId: "work-unit.plan-requirements",
+  include: ["grill_exit"],
+};
+const first = queryLifecycleContext(query);
+const second = queryLifecycleContext(query);
+
+// Plan 主动澄清策略随必需 planning 子树自动加载；查询不授予执行或流转资格。
+const clarificationQuery = queryLifecycleContext({ ...query, include: ['planning', 'grill_exit'] });
+const clarification = clarificationQuery.execution.selected.planning.clarification_policy;
+assert.deepEqual(clarification, first.execution.selected.planning.clarification_policy, 'Plan 入口自动加载主动澄清策略，无需额外点名');
+assert.deepEqual(clarificationQuery.lifecycle, first.lifecycle);
+assert.deepEqual(clarificationQuery.skills, first.skills);
+assert.deepEqual(clarificationQuery.execution.transition, first.execution.transition);
+assert.equal(clarificationQuery.execution.mode, 'read_only');
+assert.ok(clarificationQuery.execution.plan_checks.every(check => check.status === 'pending'));
+assert.equal(clarification.trigger, 'required-plan-user-decision-unresolved');
+assert.equal(clarification.skill, 'grilling');
+assert.equal(clarification.explicit_user_invocation_required, false);
+assert.equal(clarification.dispositions.discoverable_fact, 'investigate-or-yss-research');
+assert.equal(clarification.dispositions.runnable_blocker, 'prototype-or-actual-verification-with-evidence');
+assert.equal(clarification.dispositions.professional_wait, 'autonomously-dispatch-or-inspect-existing-task-then-wait');
+assert.equal(clarification.rounds.frontier, 'decisions-with-settled-prerequisites');
+assert.equal(clarification.rounds.advance, 'after-real-user-response');
+assert.equal(clarification.rounds.reuse, 'unchanged-confirmed-decisions');
+assert.equal(clarification.rounds.correction, 'reopen-only-affected-decisions-and-dependencies');
+assert.equal(clarification.rounds.independent_authorized_work, 'continue');
+assert.equal(clarification.convergence.preparation_passed_means, 'clarification-materials-and-prerequisites-ready');
+assert.equal(clarification.convergence.final_confirmation_boundary, 'gate.plan-approved');
+assert.equal(clarification.convergence.confirmation_writeback, 'external-proof-without-review-or-basis-rewrite');
+assert.equal(clarification.convergence.completion, clarificationQuery.execution.selected.grill_exit.completion);
+assert.throws(() => queryLifecycleContext({ ...query, include: ['clarification_policy'] }), /未知/, 'include 仍仅接收顶层合同键');
+
+// 请求解释策略按需查询；添加策略不得改变阶段、技能、转换或模式权限。
+const triageQuery = queryLifecycleContext({ ...query, include: ['request_triage'] });
+const triage = triageQuery.execution.selected.request_triage;
+assert.equal('request_triage' in first.execution.selected, false);
+assert.deepEqual(triageQuery.lifecycle, first.lifecycle);
+assert.deepEqual(triageQuery.skills, first.skills);
+assert.deepEqual(triageQuery.execution.transition, first.execution.transition);
+assert.equal(triageQuery.execution.mode, 'read_only');
+assert.equal(triage.mode_selection.gates_and_external_authorization, 'unchanged');
+assert.equal(triage.mode_selection.explicit_read_only, 'route');
+assert.equal(triage.mode_selection.clear_action_request, 'orchestrate');
+assert.equal(triage.mode_selection.clear_read_only_investigation_request, 'orchestrate');
+assert.equal(triage.mode_selection.mode_keywords_required, false);
+assert.equal(triage.clarification.timeout_is_answer, false);
+assert.equal(triage.next_action.skill_name_only_is_completion, false);
+assert.equal(triage.acceptance.unresolved_triage_is_complete, false);
+assert.equal(triage.evaluation.structural_checks_prove_model_accuracy, false);
+const triageCases = JSON.parse(readFileSync(path.join(ROOT, triage.evaluation.scenarios_ref), 'utf8'));
+assert.equal(triageCases.sample_kind, 'synthetic');
+assert.equal(triageCases.execution_status, 'not-model-replayed');
+assert.equal(new Set(triageCases.cases.map(item => item.id)).size, triageCases.cases.length);
+for (const item of triageCases.cases) {
+  assert.ok(item.input && item.context && item.expected.outcomes.length && item.forbidden.length, item.id);
+  assert.ok(['route', 'audit', 'resume', 'orchestrate'].includes(item.expected.mode), item.id);
+  assert.ok(Object.values(triage.next_action).includes(item.expected.next_action), item.id);
+}
+const triageSkill = readFileSync(path.join(ROOT, '.agents/skills/triage/SKILL.md'), 'utf8');
+assert.match(triageSkill, /disable-model-invocation: true/);
+assert.doesNotMatch(triageSkill, /trust them and apply the role directly|ready for a human to merge/);
+
+// 用户提示合同可按需加载，不改变查询权限、阶段门禁或执行路由。
+const progressQuery = queryLifecycleContext({ ...query, include: ['user_progress_report'] });
+const progress = progressQuery.execution.selected.user_progress_report;
+assert.deepEqual(progressQuery.lifecycle, first.lifecycle);
+assert.deepEqual(progressQuery.skills, first.skills);
+assert.deepEqual(progressQuery.execution.transition, first.execution.transition);
+assert.equal(progressQuery.execution.mode, 'read_only');
+assert.equal('user_progress_report' in first.execution.selected, false);
+for (const trigger of ['controller-return', 'blocked', 'human-pause', 'resume']) assert.ok(progress.emit_on.includes(trigger), trigger);
+for (const field of ['next-stage-and-work-unit', 'entry-conditions', 'issues-and-blockers', 'recovery-action-and-recheck']) assert.ok(progress.required_information.includes(field), field);
+assert.equal(progress.next_stage.planned_target_is_approved_transition, false);
+assert.equal(progress.next_stage['stage-order-as-route'], 'forbidden');
+assert.equal(progress.issues.no_blockers_claim, 'current-applicable-verification-required');
+assert.equal(progress.issues.unknown_owner, 'not-registered-never-auto-assigned');
+assert.equal(progress.recovery.authorized_agent_actions, 'continue-and-report-result');
+assert.equal(progress.template_source, 'maintenance-step-and-verification-target-never-product-stage');
+const controller = readFileSync(path.join(ROOT, '.agents/skills/yss-product-lifecycle/SKILL.md'), 'utf8');
+assert.ok(controller.includes('`user_progress_report`'));
+assert.ok(Buffer.byteLength(controller) <= 8192, '主控入口保持 8KB 预算，条件细节放在引用中');
+
+assert.deepEqual(first, second, "同一查询必须产生确定性结果");
+// 合并调用须保留原来三次查询的路由、阶段和技能信息。
+const modeOnly = queryLifecycleContext({ mode: query.mode });
+const stageOnly = queryLifecycleContext({ stageId: query.stageId });
+const unitOnly = queryLifecycleContext({ workUnitId: query.workUnitId });
+assert.deepEqual(first.execution.mode, modeOnly.execution.mode);
+for (const key of ["stage", "gates", "artifacts", "evidence"]) {
+  assert.deepEqual(first.lifecycle[key], stageOnly.lifecycle[key]);
+}
+assert.deepEqual(first.lifecycle.work_unit, unitOnly.lifecycle.work_unit);
+assert.deepEqual(first.execution.work_unit_route, unitOnly.execution.work_unit_route);
+assert.deepEqual(first.execution.transition, unitOnly.execution.transition);
+assert.deepEqual(first.skills, unitOnly.skills);
+const efficient = queryLifecycleContext({ ...query, include: ["grill_exit", "execution_efficiency"] });
+assert.deepEqual(efficient.lifecycle, first.lifecycle, "执行成本策略不得改变阶段门禁");
+assert.deepEqual(efficient.skills, first.skills);
+assert.deepEqual(efficient.execution.transition, first.execution.transition);
+assert.equal(efficient.execution.selected.execution_efficiency.verification.skip_triggered_gates, "forbidden");
+assert.equal("execution_efficiency" in first.execution.selected, false, "成本策略仍按需加载");
+assert.equal(first.query.mode, "route");
+assert.equal(first.lifecycle.stage.id, "stage.plan");
+assert.ok(first.lifecycle.gates.every((gate) => gate.stage === "stage.plan"));
+assert.ok(first.lifecycle.artifacts.every((artifact) => artifact.stage === "stage.plan"));
+assert.equal(first.lifecycle.work_unit.id, "work-unit.plan-requirements");
+assert.equal(first.execution.mode, "read_only");
+assert.equal(first.execution.work_unit_route.primary_skill, "yss-product-lifecycle");
+assert.ok(first.execution.selected.grill_exit.required.includes("frontier_empty"));
+assert.equal("review_input" in first.execution.selected, false, "不得返回未请求的合同子树");
+assert.ok(first.skills.some((skill) => skill.id === "grilling"));
+assert.throws(() => queryLifecycleContext({ stageId: "stage.discovery" }), /未知阶段/);
+assert.throws(() => queryLifecycleContext({ workUnitId: "work-unit.discovery-requirements" }), /未知工作单元/);
+assert.match(first.sources.lifecycle_registry.semantic_sha256, /^[0-9a-f]{64}$/);
+assert.match(first.sources.orchestration_contract.sha256, /^[0-9a-f]{64}$/);
+const prototype = queryLifecycleContext({ stageId: 'stage.product-design', workUnitId: 'work-unit.prototype-design-v2' });
+const decision = queryLifecycleContext({stageId:'stage.plan',workUnitId:'work-unit.stage-decision'});
+assert.equal(decision.presentation.names['work-unit.stage-decision'].name, '方案决策包综合');
+assert.equal(decision.presentation.names['check.stage-decision-package-approved'].name, '方案决策包评审');
+assert.equal(decision.presentation.names['role.requirements-manager'].name, '需求经理');
+assert.equal(decision.lifecycle.work_unit.id, 'work-unit.stage-decision');
+assert.equal(decision.presentation.execution_allowed, false);
+assert.equal(decision.presentation.approval_validity, 'not-checked');
+assert.ok(decision.sources.read_set.some(row => row.ref === '.template-spec/agents/digital-human-roles.yaml'));
+assert.equal(prototype.execution.work_unit_route.evidence_schema_version, 4);
+assert.match(prototype.lifecycle.work_unit.completion, /schema v4/);
+assert.throws(() => queryLifecycleContext({ workUnitId: "work-unit.prototype-design" }), /未知工作单元/);
+assert.match(prototype.lifecycle.evidence.find(item=>item.id==='evidence.prototype-deliverable-verification').description, /schema v4/);
+assert.ok(prototype.lifecycle.artifacts.some(item=>item.id==='artifact.prototype-review-v2' && item.trigger.includes('check.prototype-reviewed')));
+assert.ok(prototype.lifecycle.artifacts.some(item=>item.id==='artifact.prototype-confirmation-v2' && item.trigger.includes('gate.product-design-approved')));
+assert.throws(()=>queryLifecycleContext({workUnitId:'work-unit.intensity-aware-verification'}),/未知工作单元/);
+assert.equal(queryLifecycleContext({workUnitId:'work-unit.intensity-aware-verification-v2'}).lifecycle.work_unit.scope,'template-source');
+const service = queryLifecycleContext({ stageId: 'stage.system-data-engineering', workUnitId: 'work-unit.service-project-initialization' });
+assert.equal(service.execution.work_unit_route.primary_skill, 'yss-layered-mvc-scaffold-generator');
+assert.equal(service.execution.work_unit_route.parent_work_unit, 'work-unit.implementation-repository-preparation');
+assert.deepEqual(service.execution.transition.next, ['work-unit.implementation-repository-preparation']);
+
+for (const invalid of [
+  { mode: "invalid" },
+  { stageId: "stage.missing" },
+  { workUnitId: "work-unit.missing" },
+  { include: ["missing_contract_section"] },
+]) {
+  assert.throws(() => queryLifecycleContext(invalid), /未知|至少提供/);
+}
+
+const cli = spawnSync("node", [
+  "scripts/query-lifecycle-context",
+  "--mode", "route",
+  "--stage", "stage.plan",
+  "--work-unit", "work-unit.plan-requirements",
+  "--include", "grill_exit",
+], { cwd: ROOT, encoding: "utf8" });
+assert.equal(cli.status, 0, cli.stderr);
+assert.deepEqual(JSON.parse(cli.stdout), first, "CLI 输出必须等于库函数的规范投影");
+
+const skillPath = path.join(ROOT, ".agents/skills/yss-product-lifecycle/SKILL.md");
+const skill = readFileSync(skillPath, "utf8");
+assert.ok(Buffer.byteLength(skill) <= 8192, "生命周期入口 Skill 必须保持在 8KB 软预算内");
+assert.equal(skill.includes("| 主阶段 |"), false, "入口 Skill 不得复制完整阶段表");
+for (const marker of [
+  ".template-spec/process/lifecycle-registry.yaml",
+  "references/orchestration-contract.yaml",
+  ".template-spec/agents/yss-skill-registry.yaml",
+  "scripts/query-lifecycle-context",
+  "### 仓库身份",
+  "### 流转与实现",
+  "### 用户决定",
+  "### 外部副作用与 Git",
+]) assert.match(skill, new RegExp(marker.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+
+// Small real filesystem fixtures exercise readiness without changing template inputs.
+const readinessRoot = fs.mkdtempSync(path.join(os.tmpdir(), "yss-skill-ready-' "));
+try {
+  const fixtureRegistry = {
+    agent_runtime_roots: { codex: '.codex/skills', cursor: '.cursor/skills', pi: '.pi/skills' },
+    skills: ['main', 'needed', 'conditional', 'compat', 'reviewer'].map(id => ({ id, maturity: 'supported', aliases: id === 'main' ? ['main-alias'] : [] })),
+    external_skills: [{ id: 'external-demo' }, { id: 'product-design:index' }],
+    skill_dependencies: {
+      main: [{ skill: 'needed', type: 'context-required' }, { skill: 'conditional', type: 'context-conditional', when: 'api-impact' }, { skill: 'reviewer', type: 'review-only' }],
+      needed: [{ skill: 'main', type: 'context-required' }],
+    },
+  };
+  const fixtureLock = { version: 3, projectionRoots: ['.codex/skills'], skills: { shared: {} } };
+  const fixtureMetadata = { metadataSchemaVersion: 3, templateName: 'create-yss-spec',
+    distribution: { mode: 'selected', runtimes: ['codex'], installedSkills: [] }, managedFiles: {} };
+  const save = () => {
+    fs.writeFileSync(path.join(readinessRoot, 'skills-lock.json'), JSON.stringify(fixtureLock));
+    fs.writeFileSync(path.join(readinessRoot, '.yss-template.json'), JSON.stringify(fixtureMetadata));
+  };
+  function install(id) {
+    const source = path.join(readinessRoot, '.agents/skills', id), projection = path.join(readinessRoot, '.codex/skills', id);
+    fs.mkdirSync(source, { recursive: true });
+    fs.writeFileSync(path.join(source, 'SKILL.md'), '---\nname: ' + id + '\n---\nFixture\n');
+    fs.mkdirSync(path.dirname(projection), { recursive: true });
+    fs.cpSync(source, projection, { recursive: true });
+    fixtureLock.skills.shared[id] = { effectiveHash: treeHash(source), targets: ['.agents/skills', '.codex/skills'] };
+    fixtureMetadata.distribution.installedSkills.push(id);
+    save();
+  }
+  const fixtureRoute = { primary_skill: 'main-alias', supporting_skills: ['needed'], compatibility: { invocation_mode: 'reference', skill: 'compat' } };
+  const inspect = (overrides = {}) => inspectWorkUnitSkills({ root: readinessRoot, registry: fixtureRegistry, route: fixtureRoute, ...overrides });
+  install('main');
+  const untouched = treeHash(readinessRoot), missing = inspect();
+  assert.equal(missing.status, 'missing');
+  assert.equal(missing.agent_runtime, 'codex');
+  assert.deepEqual(missing.required_skills, ['main', 'needed']);
+  assert.deepEqual(missing.missing_skills, ['needed']);
+  assert.equal(missing.execution_allowed, false);
+  assert.match(missing.remediation.plan_command, /skills ensure needed/);
+  assert.match(missing.remediation.apply_command, /--apply$/);
+  assert.equal(treeHash(readinessRoot), untouched, 'readiness must remain read-only');
+  install('needed');
+  assert.equal(inspect().status, 'ready');
+  assert.deepEqual(inspect(), inspect(), 'repeat readiness is deterministic');
+  const conditional = inspect({ when: ['api-impact'] });
+  assert.deepEqual(conditional.missing_skills, ['conditional']);
+  assert.match(conditional.remediation.plan_command, /--when api-impact/);
+  assert.equal(inspect().required_skills.includes('reviewer'), false);
+  assert.equal(inspect().required_skills.includes('compat'), false);
+  assert.equal(inspect({ route: { native: { invocation_mode: 'reference', skill: 'compat' } } }).required_skills.length, 0);
+  assert.equal(inspect({ route: { primary_skill: ['grill', 'me'].join('-') } }).issues[0].code, 'skill-retired');
+  assert.equal(inspect({ route: { primary_skill: 'unknown-demo' } }).issues[0].code, 'skill-unknown');
+  assert.equal(inspect({ route: { primary_skill: 'external-demo' } }).issues[0].code, 'external-skill-required');
+  assert.equal(inspect({ route: { supporting_skills: ['product-design:index'] } }).issues[0].code, 'external-skill-required');
+  assert.throws(() => inspect({ agentRuntime: 'unknown' }), /未知 Agent/);
+  assert.equal(inspect({ agentRuntime: 'cursor' }).status, 'blocked');
+
+  const source = path.join(readinessRoot, '.agents/skills/needed'), projection = path.join(readinessRoot, '.codex/skills/needed');
+  fs.appendFileSync(path.join(source, 'SKILL.md'), 'drift');
+  assert.equal(inspect().issues.some(issue => issue.code === 'skill-hash-drift'), true);
+  fs.copyFileSync(path.join(projection, 'SKILL.md'), path.join(source, 'SKILL.md'));
+  fs.appendFileSync(path.join(projection, 'SKILL.md'), 'projection drift');
+  assert.equal(inspect().issues.some(issue => issue.code === 'projection-drift'), true);
+  fs.copyFileSync(path.join(source, 'SKILL.md'), path.join(projection, 'SKILL.md'));
+  fs.rmSync(projection, { recursive: true });
+  assert.equal(inspect().status, 'blocked', 'missing registered projection must not be an install candidate');
+  fs.symlinkSync(source, projection);
+  assert.equal(inspect().status, 'ready', 'managed projection symlinks remain supported');
+  fs.unlinkSync(projection);
+  fs.symlinkSync(os.tmpdir(), projection);
+  assert.equal(inspect().issues.some(issue => issue.code === 'skill-path-invalid'), true);
+  fs.unlinkSync(projection);
+  fs.cpSync(source, projection, { recursive: true });
+
+  const conditionalDir = path.join(readinessRoot, '.agents/skills/conditional');
+  const conditionalProjection = path.join(readinessRoot, '.codex/skills/conditional');
+  fs.mkdirSync(conditionalProjection, { recursive: true });
+  assert.equal(inspect({ when: ['api-impact'] }).issues.some(issue => issue.code === 'skill-path-conflict'), true);
+  fs.rmSync(conditionalProjection, { recursive: true });
+  fs.mkdirSync(conditionalDir, { recursive: true });
+  assert.equal(inspect({ when: ['api-impact'] }).issues.some(issue => issue.code === 'skill-path-conflict'), true);
+  fs.rmSync(conditionalDir, { recursive: true });
+  delete fixtureLock.skills.shared.needed;
+  save();
+  assert.equal(inspect().issues.some(issue => issue.code === 'skill-path-conflict'), true);
+  fixtureLock.skills.shared.needed = { effectiveHash: treeHash(source), targets: ['.agents/skills', '.codex/skills'] };
+  fixtureMetadata.distribution.installedSkills = ['main'];
+  save();
+  assert.equal(inspect().issues.some(issue => issue.code === 'distribution-lock-drift'), true);
+  fixtureMetadata.distribution.installedSkills.push('needed');
+  fixtureMetadata.distribution.runtimes.push('cursor');
+  fixtureLock.projectionRoots.push('.cursor/skills');
+  save();
+  assert.equal(inspect().issues.some(issue => issue.code === 'runtime-required'), true);
+  fixtureMetadata.distribution.runtimes = ['codex'];
+  fixtureLock.projectionRoots = ['.codex/skills'];
+  save();
+  fs.rmSync(source, { recursive: true });
+  assert.equal(inspect().issues.some(issue => issue.code === 'managed-skill-missing'), true);
+  delete fixtureLock.skills.shared.needed;
+  fixtureMetadata.distribution.installedSkills = ['main'];
+  fixtureMetadata.managedFiles['.agents/skills/needed/SKILL.md'] = { type: 'copy' };
+  save();
+  assert.equal(inspect().issues.some(issue => issue.code === 'managed-skill-missing'), true);
+  fixtureMetadata.managedFiles = {};
+  fs.rmSync(projection, { recursive: true });
+  fixtureMetadata.metadataSchemaVersion = 2;
+  save();
+  assert.equal(inspect().status, 'missing');
+  assert.equal(inspect().remediation.apply_command, null, 'legacy instances must not receive automatic migration or v3 install commands');
+  assert.equal(inspect({ agentRuntime: 'codex' }).status, 'missing');
+  assert.throws(() => queryLifecycleContext({ checkSkills: true }), /必须指定/);
+  assert.throws(() => queryLifecycleContext({ ...query, agentRuntime: 'codex' }), /一起使用/);
+  assert.throws(() => queryLifecycleContext({ ...query, checkSkills: true, when: ['invalid trigger'] }), /有效的条件/);
+  assert.equal('skill_readiness' in first, false, 'ordinary query retains its existing shape');
+} finally {
+  fs.rmSync(readinessRoot, { recursive: true, force: true });
+}
+process.stdout.write("生命周期按需上下文查询与技能预检场景验证通过\n");

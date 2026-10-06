@@ -1,6 +1,10 @@
 # Harness 流程裁剪与影响面判定
 
-本文件规定如何根据变更规模和风险选择最近可信阶段。裁剪只减少未触发的门禁，不得跳过已经命中的条件强制门禁。
+先按生命周期编排合同 `request_triage.delivery_path` 分流；这是唯一日常路径策略。支持能力的 Spec 实例用 `yss lifecycle route --root <治理项目> --task <同一记录> --implementation-root <实现仓> --base <完整 SHA>` 返回 `daily / governed / needs-info`。以下阶段裁剪规则适用于 `governed` 与模板维护；不能反向要求已核验的 `daily` 创建正式阶段资产。
+
+`daily` 只更新同一 Ticket/PR 的范围、验收、工程基线、Skills、实际测试、独立审查及回滚，消费技术技能后实现，用 `verify-daily` 核验当前证据。API 兼容边界与 Freeze 仍由上述唯一策略及 OpenAPI 技能控制。已有正式任务不能降级；无关正式资产不阻断新任务。实施发现风险时保留修改与证据，停止受影响工作并恢复最近可信阶段；其他 Profile 或缺能力 CLI 明确不支持。操作说明见生命周期 `references/daily-delivery.md`。
+
+本文件规定正式路径如何根据变更规模和风险选择最近可信阶段。裁剪只减少未触发的门禁，不得跳过已经命中的条件强制门禁。
 
 安全 / 权限不单独分诊。需求或冻结资产没有明确改变相关行为时不登记、不解释 `not-applicable`、不增加门禁；明确改变时只按实际 UI、API、Backend、Data、High-risk 影响复用普通流程。SQL / DDL / 迁移、上传 / 下载等技术载体继续由其数据或 API 影响决定路线，不自动升级为安全专项。
 
@@ -123,6 +127,6 @@ Worktree 候选使用 `scripts/capture-maintenance-candidate --output <目录>` 
 
 触发集合仅由 `.template-source/process/maintenance-intensity.yaml` 维护；当前包括权限边界、生命周期门禁和发布语义。每个命中 trigger 的 `counterexample` 条目填写 `trigger`、`run_ref`、实际 `command` 和 `result: pass`。运行记录绑定拒绝断言、原命令非零结果、日志 SHA-256、输入引用及摘要、起止时间；反例测试自身成功退出 0。文字 `pass`、未执行命令、缺日志或输入漂移均不满足要求。
 
-可用 `scripts/verify-maintenance-risk-scenarios --output maintenance:research/<本轮>/counterexamples` 执行三个最小拒绝场景，保存真实记录；具体修改仍应补充受影响行为的定向场景。核验只读保存记录，不执行其中的命令。这是可审计执行证据，不是密码学运行证明或业务批准。未命中上述风险的 L3 不新增反例要求。历史文件以 `scripts/verify-maintenance-checkpoint --history <file>` 兼容查看，不回写原批准，不用历史结果证明当前交付。
+可用 `node tests/scenarios/verify-maintenance-risk-scenarios.mjs --output maintenance:research/<本轮>/counterexamples` 执行三个最小拒绝场景，保存真实记录；具体修改仍应补充受影响行为的定向场景。核验只读保存记录，不执行其中的命令。这是可审计执行证据，不是密码学运行证明或业务批准。未命中上述风险的 L3 不新增反例要求。历史文件以 `scripts/verify-maintenance-checkpoint --history <file>` 兼容查看，不回写原批准，不用历史结果证明当前交付。
 
 维护运行输出与正式证据引用遵循[仓外维护目录与引用](../../.template-source/process/runtime-storage.md)。维护验证记录的 `maintenance:` 引用必须绑定 `evidence_digest`；项目实例和 Slice 不扩展外部路径权限。

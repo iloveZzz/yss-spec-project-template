@@ -4,16 +4,18 @@
 
 权威接线：`yss-product-lifecycle/references/orchestration-contract.yaml` 的 `work-unit.code-review.review_standards_route` 与 `review_input`。报告形状：`.template-spec/templates/review-report-template.md`。
 
+上面是 `governed` 正式审查接线。已由 Spec `request_triage.delivery_path` 政策和支持的 CLI 判为 `daily` 时，复用同一任务的验收、工程基线、适用 YSS 技能、真实单仓 diff、实际测试和独立审查身份。以下技术规则与覆盖要求仍适用；Slice `required_skills`、正式 review_input / 覆盖文件 / 模板字段、合同失效与工作单元流转要求仅对正式路径生效。普通结论可保存在任务审查段，不先生成这些文件；旧工具/其他 Profile 不以此段获得普通准入。
+
 ## 1. 编译标准源
 
 按顺序收集，缺项写 `not-applicable` 及原因，不得省略适用项：
 
 1. 仓库文档：`CODING_STANDARDS.md`、`CONTRIBUTING.md` 或实现仓等价文件（若存在）。
-2. Slice Implementation Contract 的 `required_skills`：对每个技能读取 `.agents/skills/<id>/SKILL.md` 及该 skill 指明的 references。
+2. 普通任务绑定的适用 YSS 技能；正式切片再取 Slice Implementation Contract 的 `required_skills`。读取对应 `.agents/skills/<id>/SKILL.md` 及其按影响指明的 references，已读且当前资料不重复整读。
 3. 影响面专项检查输入（与合同并集，不得互相替代）：
    - 后端：`alibaba-java-code-style`、`yss-domain`、`yss-application`、`yss-repository`、`yss-mybatis`、`yss-web-controller`、`yss-dto`、`mapstruct`、`lombok`
    - UI：`yss-ui`、`yss-design-system`、`yss-ui-business-page-generation`
-4. 报告模板中的后端 / 前端门禁表。空着的适用行视为 `missing_evidence`。
+4. 普通任务的专项检查结论，或正式报告模板中的后端 / 前端门禁表。适用覆盖缺失视为 `missing_evidence`。
 
 YSS 页面模块约定（YTable、YFormily、页面骨架等）走 Standards，不并入 UI fidelity。UI fidelity 只核原型与状态矩阵。
 
@@ -30,8 +32,8 @@ YSS 页面模块约定（YTable、YFormily、页面骨架等）走 Standards，�
 
 在派发 Standards / Spec 子审查之前，对实现仓**已登记且当前可执行**的命令实际跑一遍：
 
-- 后端优先：对本体项目和每个已登记后端研发项目分别执行其切片合同里的 `./mvnw` 验证；若工程已配置 Checkstyle / P3C / Spotless / `validate`，一并执行。
-- 前端优先：切片合同里的 `pnpm` 验证；若存在 `pnpm lint` / `pnpm type-check`，一并执行。
+- 后端优先：对本轮影响的已核验项目执行普通任务 / 正式切片绑定的 `./mvnw` 验证；若工程已配置 Checkstyle / P3C / Spotless / `validate`，执行适用项。
+- 前端优先：普通任务 / 正式切片绑定的 `pnpm` 验证；若存在 `pnpm lint` / `pnpm type-check`，执行适用项。
 
 记录命令、退出码、时间和证据引用。退出码非 0 记为 Standards **hard violation**。
 
@@ -64,6 +66,8 @@ YSS 页面模块约定（YTable、YFormily、页面骨架等）走 Standards，�
 
 
 ## 可执行后端审查结果
+
+以下正式后端结果形状和流转仅适用于 `governed`。普通结果由 `verify-daily` 消费同一 Ticket 的实际测试、候选摘要、独立审查段和适用 YSS 规则覆盖，不用缺字段的正式结果关闭后端交付。
 
 后端 `work-unit.code-review` 到交付的流转由 `scripts/lib/backend-review.mjs` 检查。
 `decision_state.review_input` 绑定 `slice_contract_ref`、`approval_ref`、跨仓时的 `work_unit_id`、`project_root`、既有候选的 `review_mode`、

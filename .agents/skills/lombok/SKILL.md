@@ -4,18 +4,20 @@ description: "配置或排查 Lombok 注解、构造器、Builder 和注解处�
 ---
 # Project Lombok
 
-只读排障先核验实际对象、工程基线和处理器配置，缺批准 Slice 时记录缺口；写入仍消费批准且当前的工作单元与允许路径。
+执行路线按 Spec 项目中的 `.agents/skills/yss-product-lifecycle/references/daily-delivery.md` 的项目本地政策与固定 CLI 核验。仅合格且范围已授权的 Spec `daily` 消费同 Ticket 的范围、验收与已核验工程基线；`governed` 保留当前批准合同。缺本地政策/能力、其他 Profile 或已绑定正式任务不能凭标签降级；路线不授予执行授权。
+
+只读排障先核验实际对象、工程基线和处理器配置。`governed` 写入消费批准且当前的 Slice/work unit；合格 `daily` 写入消费同 Ticket 的对象、验收、已有工程处理器基线与实际 `scope.paths`，不因缺 Slice 补造正式资产。
 
 ## YSS 阶段 7 执行结果
 
-- 消费工程 Java 与处理器基线；Java 语法、API、处理器与测试工具消费批准的精确平台配置。MapStruct binding 进入 annotationProcessorPaths，不作为业务依赖单独引入；示例不授权升级依赖。MVC PO 的身份/敏感字段风险与 DDD 相同，不能默认全量 @Data。
-- 消费批准后的 Slice Contract/work unit，只在允许路径内调整 POJO 样板和注解处理器配置。
+- 消费工程 Java 与处理器基线；Java 语法、API、处理器与测试工具消费当前路线已核验的精确平台事实（`daily` 为同 Ticket 的已有工程基线，`governed` 为批准配置）。MapStruct binding 进入 annotationProcessorPaths，不作为业务依赖单独引入；示例不授权升级依赖。MVC PO 的身份/敏感字段风险与 DDD 相同，不能默认全量 @Data。
+- `governed` 消费批准后的 Slice Contract/work unit；合格 `daily` 消费同 Ticket 已确认的对象与 seam，只在实际允许路径内调整 POJO 样板和注解处理器配置。
 - 受控生成必须记录对象类型、选用/排除注解、实体关系和敏感字段风险、编译/测试实际结果。
-- 按 `yss-implementation-contract-compiler` 的统一 Execution Result 返回 changed files、证据、偏离和新增影响；`@Data` 实体风险、处理器配置缺失或越界路径返回 `violation`。
+- `daily` 在同 Ticket 返回实际文件、注解/处理器约束、真实编译/测试命令与退出码，接受当前候选的独立审查；`governed` 按 `yss-implementation-contract-compiler` 的正式 Execution Result 返回。`@Data` 实体风险、处理器配置缺失或越界路径返回 `violation`。
 
 ## 按需读取
 
-先确认当前任务涉及的对象与批准合同，只读取对应参考段落：
+先确认当前任务涉及的对象与有效输入（`daily` 同 Ticket/已有工程基线，`governed` 批准合同），只读取对应参考段落：
 
 | 任务 | 参考 |
 |---|---|

@@ -5,7 +5,7 @@
 ## 与 DESIGN.md 的职责边界
 
 - `DESIGN.md`：机器可读的颜色、排版、圆角、间距和组件视觉变体规范；使用 Google `design.md` alpha 格式。
-- `.template-spec/design/tokens/*`：由规范源投影的运行时快照，禁止直接修改后作为规范依据；使用 `scripts/design-md` 执行漂移检查。
+- `.template-spec/design/tokens/*`：由规范源投影的运行时快照，禁止直接修改后作为规范依据；使用 `node .agents/skills/yss-design-system/scripts/design-md.mjs` 执行漂移检查。
 - 本文件：解释 YSS UI / Ant Design 双轨、页面设计约束、原型证据和生命周期门禁，不重新定义规范 token 的具体值。
 - Spec、交互说明和状态矩阵：继续承载业务状态、API、权限、并发、失败恢复和页面验收，不写入 `DESIGN.md`。
 

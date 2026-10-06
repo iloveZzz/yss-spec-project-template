@@ -1,0 +1,244 @@
+import assert from "node:assert/strict";
+import { existsSync, mkdirSync, rmSync, writeFileSync, mkdtempSync, readFileSync } from "node:fs";
+import path from "node:path";
+import os from "node:os";
+import { buildDecisionFixture } from "../../scripts/fixtures/user-decision/build-fixture.mjs";
+import { decisionDigest } from "../../scripts/lib/user-decision.mjs";
+const decisionTemp = mkdtempSync(path.join(os.tmpdir(), "task-decision-test-"));
+process.on("exit", () => rmSync(decisionTemp, { recursive: true, force: true }));
+let decisionRequirement;
+import { spawnSync } from "node:child_process";
+import { ROOT } from "../../scripts/lib/lifecycle-registry.mjs";
+import { generateTaskPackageDefaults, validateTaskPackage, validateTaskPackageSet, validateHistoricalMaintenanceTaskPackage } from "../../scripts/lib/task-package.mjs";
+
+const scenarioRoot = mkdtempSync(path.join(ROOT, "scripts/fixtures/.task-package-"));
+const scenarioRef = path.relative(ROOT, scenarioRoot).split(path.sep).join("/");
+process.on("exit", () => rmSync(scenarioRoot, { recursive: true, force: true }));
+const contractRef = `${scenarioRef}/slice-contract.json`;
+const contractFile = path.join(ROOT, contractRef);
+const templateSourceRoot = path.join(ROOT, ".template-source");
+const templateSourceExisted = existsSync(templateSourceRoot);
+const evidenceRef = `${scenarioRef}/evidence.json`;
+const evidenceFile = path.join(ROOT, evidenceRef);
+const maintenanceRef = `${scenarioRef}/maintenance.json`;
+const contract = {
+  schema_version: 2,
+  contract_id: "slice-todo",
+  contract_version: 2,
+  slice_id: "todo",
+  status: "approved",
+  lifecycle_refs: { ticket: "docs/.scratch/todo/issues/01-todo.md", engineering_baseline: evidenceRef },
+  common: { project_roots: ["apps/frontend/todo", "apps/backend/todo"], allowed_write_paths: ["apps/frontend/todo/", "apps/backend/todo/"] },
+  readiness: {},
+  work_units: [
+    { id: "work-unit.slice-frontend", role_id: "role.frontend-engineer", runtime_id: "runtime.skill-projection", task_package_ref: "work-unit.slice-frontend", contract_id: "slice-todo", contract_version: 2, allowed_write_paths: ["apps/frontend/todo/"] },
+    { id: "work-unit.slice-backend", role_id: "role.backend-engineer", runtime_id: "runtime.skill-projection", task_package_ref: "work-unit.slice-backend", contract_id: "slice-todo", contract_version: 2, allowed_write_paths: ["apps/backend/todo/"] }
+  ]
+};
+const maintenance = {
+  schema_version: 1,
+  intensity: "L2",
+  classification_reason: "场景测试维护合同",
+  triggers: [],
+  changed_assets: ["scenario-fixture"],
+  verification_evidence: [
+    { kind: "counterexample", command: "scenario", result: "pass" },
+    { kind: "fresh-verification", command: "scenario", result: "pass" }
+  ],
+  review_mode: "focused-independent",
+  escalation: "none"
+};
+
+function writeFixtures() {
+  mkdirSync(path.dirname(contractFile), { recursive: true });
+  writeFileSync(contractFile, JSON.stringify(contract));
+  writeFileSync(evidenceFile, JSON.stringify({ ok: true }));
+  writeFileSync(path.join(ROOT, maintenanceRef), JSON.stringify(maintenance));
+  const scopeRef = path.join(decisionTemp, "scope.json");
+  const asset = (ref) => ({ ref, version: "v1", digest: decisionDigest(readFileSync(path.join(ROOT, ref))) });
+  writeFileSync(scopeRef, JSON.stringify({ kind: "implementation-scope", slices: [{ ticket_ref: contract.lifecycle_refs.ticket, contract: asset(contractRef), repositories: contract.common.project_roots, allowed_write_paths: contract.common.allowed_write_paths, baselines: [asset(evidenceRef)] }] }));
+  decisionRequirement = buildDecisionFixture(decisionTemp, { boundary: "implementation-scope", scope: [contract.lifecycle_refs.ticket], subjectRef: scopeRef }).requirement;
+}
+
+function packageBase(roleId, taskId, workUnitId, kind, contractFields, stageId) {
+  writeFixtures();
+  return generateTaskPackageDefaults(roleId, {
+    task_id: taskId,
+    work_unit_id: workUnitId,
+    actor_id: `${roleId}.instance-1`,
+    ...(stageId ? { stage_id: stageId } : {}),
+    runtime_id: "runtime.skill-projection",
+    execution_state: "Worker",
+    workflow_status: "not-started",
+    contract: { kind, contract_id: `${kind}-${taskId}`, contract_version: 1, status: "issued", contract_ref: ".template-spec/process/lifecycle-registry.yaml", ...contractFields },
+    inputs: ["CONTEXT.md"],
+    objective: "执行有界生命周期工作单元",
+    allowed_write_paths: ["docs/.scratch/"],
+    forbidden_actions: ["不得越过主控门禁"],
+    expected_outputs: ["结构化工作结果"],
+    expected_evidence_files: [evidenceRef],
+    verification_commands: ["scripts/verify-template"],
+    verification_results: [],
+    downstream_consumers: ["role.lifecycle-orchestrator"],
+    convergence: { parent_work_unit: workUnitId, convergence_ref: "checkpoint:test", conflict_escalation: "返回主控" }
+  });
+}
+
+function lifecyclePackage() {
+  return packageBase("role.requirements-manager", "task-discovery", "work-unit.plan-opportunity", "lifecycle-work-unit", { lifecycle_ref: ".template-spec/process/lifecycle-registry.yaml", artifact_refs: ["artifact.plan-record"] , gate_refs: [] , contract_id: "lifecycle-discovery", contract_version: 1 }, "stage.plan");
+}
+
+function lifecycleStagePackage(roleId, taskId, workUnitId, stageId) {
+  return packageBase(roleId, taskId, workUnitId, "lifecycle-work-unit", { lifecycle_ref: ".template-spec/process/lifecycle-registry.yaml", contract_id: `lifecycle-${taskId}`, contract_version: 1 }, stageId);
+}
+
+function templatePackage() {
+  return packageBase("role.test-engineer", "task-maintenance", "work-unit.intensity-aware-verification-v2", "template-maintenance", { maintenance_ref: maintenanceRef, contract_id: "template-maintenance", contract_version: 1 });
+}
+
+function slicePackage(roleId, taskId, workUnitId, writePath) {
+  writeFixtures();
+  return generateTaskPackageDefaults(roleId, {
+    task_id: taskId,
+    work_unit_id: workUnitId,
+    actor_id: `${roleId}.instance-1`,
+    stage_id: "stage.vertical-slice-implementation",
+    runtime_id: "runtime.skill-projection",
+    execution_state: "Worker",
+    workflow_status: "not-started",
+    contract: { kind: "slice-implementation", contract_id: contract.contract_id, contract_version: contract.contract_version, status: "issued", contract_ref: contractRef, slice_contract_ref: contractRef },
+    inputs: ["CONTEXT.md"],
+    user_decisions: [decisionRequirement],
+    objective: "实现 Todo 垂直切片",
+    allowed_write_paths: [writePath],
+    forbidden_actions: ["不得修改合同"],
+    expected_outputs: ["实现代码", "测试证据"],
+    expected_evidence_files: [evidenceRef],
+    verification_commands: ["scripts/verify-template"],
+    verification_results: [],
+    downstream_consumers: ["role.test-engineer"],
+    convergence: { parent_work_unit: "work-unit.slice-implementation", convergence_ref: "checkpoint:todo", conflict_escalation: "返回主控" }
+  });
+}
+
+function completedResult(pkg, overrides = {}) {
+  return {
+    result_schema: "workflow-execution-result-v1",
+    work_unit: pkg.work_unit_id,
+    workflow_reference: `workflow:${pkg.task_id}`,
+    result: "completed",
+    skill: "yss-product-lifecycle",
+    changed_files: [],
+    context_reconciliation: { status: "reconciled", ref: evidenceRef },
+    evidence_refs: [evidenceRef],
+    deferred_seams: [],
+    drift: [],
+    violation: [],
+    new_impacts: [],
+    stale_candidates: [],
+    next_route: "work-unit.plan-requirements",
+    blocking_signals: [],
+    ...overrides
+  };
+}
+
+function mustFail(mutator, pattern, label, factory = () => lifecyclePackage()) {
+  const value = factory();
+  mutator(value);
+  assert.throws(() => validateTaskPackage(value), pattern, label);
+}
+
+try {
+  const discovery = lifecyclePackage();
+  const spec = lifecycleStagePackage("role.requirements-manager", "task-spec", "work-unit.spec-synthesis", "stage.spec-architecture");
+  const prototype = lifecycleStagePackage("role.product-manager", "task-prototype", "work-unit.prototype-design-v2", "stage.product-design");
+  const technical = lifecycleStagePackage("role.backend-engineer", "task-technical", "work-unit.technical-analysis", "stage.system-data-engineering");
+  const tickets = lifecycleStagePackage("role.project-manager", "task-tickets", "work-unit.ticket-decomposition", "stage.ticket-formalization");
+  const review = lifecycleStagePackage("role.test-engineer", "task-review", "work-unit.code-review", "stage.verification-release-retrospective");
+  review.execution_state = "Reviewer";
+  review.review_context = { implementation_actor_id: "role.frontend-engineer.instance-1" };
+  const maintenance = templatePackage();
+  maintenance.execution_state = "Reviewer";
+  maintenance.review_context = { implementation_actor_id: "role.lifecycle-orchestrator.instance-1" };
+  const frontend = slicePackage("role.frontend-engineer", "task-frontend", "work-unit.slice-frontend", "apps/frontend/todo/");
+  const backend = slicePackage("role.backend-engineer", "task-backend", "work-unit.slice-backend", "apps/backend/todo/");
+  [discovery, prototype, technical, tickets, review].forEach((pkg) => validateTaskPackage(pkg));
+  assert.throws(() => validateTaskPackage(spec), /plan-spec-entry-blocked/, "直接派发 Spec 缺 Plan 审阅须阻断");
+  validateTaskPackage(maintenance);
+  assert.deepEqual(validateHistoricalMaintenanceTaskPackage(maintenance), {status:'historical-only',execution_authorization:'not-evaluated'});
+  assert.throws(() => validateHistoricalMaintenanceTaskPackage(discovery), /仅适用于模板维护/);
+  validateTaskPackage(frontend);
+  assert.throws(() => validateTaskPackage({ ...frontend, user_decisions: [] }), /user-decision-scope-mismatch/, "Worker 派发前必须有当前实施范围批准");
+  validateTaskPackage(backend);
+  validateTaskPackageSet([frontend, backend]);
+
+  contract.schema_version = 1;
+  writeFixtures();
+  assert.throws(() => validateTaskPackage(frontend), /schema v2/, "旧 Slice schema 不得被当作当前编译合同");
+  contract.schema_version = 2;
+  contract.contract_version = "v1";
+  contract.work_units.forEach(unit => { unit.contract_version = "v1"; });
+  const stringVersion = slicePackage("role.backend-engineer", "task-string-version", "work-unit.slice-backend", "apps/backend/todo/");
+  validateTaskPackage(stringVersion);
+  assert.throws(() => validateTaskPackage({ ...stringVersion, contract: { ...stringVersion.contract, contract_version: 1 } }), /当前 approved/, "版本类型不得隐式转换");
+  for (const invalid of [0, "", "   "]) assert.throws(() => validateTaskPackage({ ...stringVersion, contract: { ...stringVersion.contract, contract_version: invalid } }), /contract_version.*not valid/, "无效版本拒绝");
+  contract.contract_version = 2;
+  contract.work_units.forEach(unit => { unit.contract_version = 2; });
+  writeFixtures();
+
+  const dispatchRef = `${scenarioRef}/dispatch.json`;
+  contract.work_units[1].task_package_ref = dispatchRef;
+  const dispatched = slicePackage("role.backend-engineer", "task-bound-dispatch", "work-unit.slice-backend", "apps/backend/todo/");
+  writeFileSync(path.join(ROOT, dispatchRef), JSON.stringify(dispatched));
+  try {
+    validateTaskPackage(dispatched);
+    assert.throws(() => validateTaskPackage({ ...dispatched, task_id: "other-dispatch" }), /派发身份不一致/);
+    rmSync(path.join(ROOT, dispatchRef));
+    assert.throws(() => validateTaskPackage(dispatched), /task_package_ref 不可读/);
+  } finally { rmSync(path.join(ROOT, dispatchRef), { force: true }); }
+  contract.work_units[1].task_package_ref = "work-unit.slice-backend";
+  writeFixtures();
+
+  const completedPlan = lifecyclePackage();
+  completedPlan.workflow_status = "resolved";
+  completedPlan.verification_results = [{ command: "scripts/verify-template", exit_code: 0, executed_at: "now", evidence_ref: evidenceRef }];
+  completedPlan.result = completedResult(completedPlan);
+  validateTaskPackage(completedPlan);
+
+  const validFile = path.join(ROOT, `${scenarioRef}/valid.json`);
+  writeFileSync(validFile, JSON.stringify(discovery));
+  for (const cli of ["scripts/verify-digital-human-task-package"]) {
+    const result = spawnSync(process.execPath, [path.join(ROOT, cli), validFile], { encoding: "utf8" });
+    assert.equal(result.status, 0, result.stderr);
+  }
+  assert.equal(existsSync(path.join(ROOT,"scripts/verify-subagent-task-package")),false,"retired validator alias must not remain executable");
+  rmSync(validFile, { force: true });
+
+  mustFail((value) => { value.contract.kind = "unknown"; }, /未知 contract.kind|not one of/, "unknown-contract-kind");
+  mustFail((value) => { value.contract.slice_contract_ref = contractRef; }, /不得携带专项合同引用/, "lifecycle-slice-ref");
+  mustFail((value) => { delete value.contract.lifecycle_ref; }, /lifecycle_ref/, "lifecycle-missing-ref");
+  mustFail((value) => { value.contract.kind = "slice-implementation"; delete value.contract.slice_contract_ref; }, /slice_contract_ref/, "slice-missing-ref");
+  mustFail((value) => { value.contract.kind = "template-maintenance"; delete value.contract.maintenance_ref; }, /maintenance_ref/, "maintenance-missing-ref");
+  mustFail((value) => { value.work_unit_id = "work-unit.intensity-aware-review-v2"; value.contract.kind = "lifecycle-work-unit"; value.contract.lifecycle_ref = ".template-spec/process/lifecycle-registry.yaml"; }, /template-source.*template-maintenance/, "template-source-lifecycle-kind");
+  mustFail((value) => { value.work_unit_id = "work-unit.slice-implementation"; value.stage_id = "stage.vertical-slice-implementation"; value.contract.kind = "lifecycle-work-unit"; value.contract.lifecycle_ref = ".template-spec/process/lifecycle-registry.yaml"; }, /不得冒充垂直切片/, "implementation-lifecycle-kind", () => lifecycleStagePackage("role.frontend-engineer", "task-illegal-implementation", "work-unit.slice-implementation", "stage.vertical-slice-implementation"));
+  mustFail((value) => { value.convergence.parent_work_unit = "work-unit.code-review"; }, /必须汇合到 work-unit.slice-implementation/, "slice-wrong-parent", () => slicePackage("role.frontend-engineer", "task-slice-parent", "work-unit.slice-frontend", "apps/frontend/todo/"));
+  mustFail((value) => { value.contract.status = "stale"; }, /stale 任务包必须暂停/, "stale-not-paused");
+  mustFail((value) => { value.runtime_id = "runtime.unknown"; }, /未知 runtime_id/, "unknown-runtime");
+  mustFail((value) => { value.skill_source.core_skills = ["forbidden-skill"]; }, /core_skills 必须与角色注册表完全一致/, "skill-source-mismatch");
+  mustFail((value) => { value.stage_id = "stage.product-design"; }, /未覆盖 stage_id/, "role-stage-mismatch");
+  mustFail((value) => { value.result = { result: "blocked", changed_files: ["docs/../secret.txt"] }; }, /超出 allowed_write_paths|越出仓库/, "write-path-traversal");
+  mustFail((value) => { value.execution_state = "Reviewer"; value.review_context = { implementation_actor_id: value.actor_id }; }, /不同 actor_id/, "reviewer-implementer-conflict");
+  mustFail((value) => { value.workflow_status = "resolved"; value.verification_results = [{ command: "scripts/verify-template", exit_code: 0, executed_at: "now", evidence_ref: evidenceRef }]; value.result = completedResult(value, { new_impacts: ["api-change"] }); }, /new_impacts 必须为空/, "completed-new-impact");
+  mustFail((value) => { value.workflow_status = "resolved"; value.verification_commands = ["scripts/verify-template", "pnpm test"]; value.verification_results = [{ command: "scripts/verify-template", exit_code: 0, executed_at: "now", evidence_ref: evidenceRef }]; value.result = completedResult(value); }, /覆盖全部 verification_commands/, "verification-command-gap");
+  mustFail((value) => { value.workflow_status = "resolved"; value.result = completedResult(value, { context_reconciliation: { status: "reconciled", ref: `${scenarioRef}/missing.json` }, evidence_refs: [`${scenarioRef}/missing.json`] }); value.verification_results = [{ command: "scripts/verify-template", exit_code: 0, executed_at: "now", evidence_ref: evidenceRef }]; }, /不可读/, "unreadable-evidence");
+  mustFail((value) => { value.workflow_status = "resolved"; value.verification_results = [{ command: "scripts/verify-template", exit_code: 0, executed_at: "now", evidence_ref: evidenceRef }]; }, /Workflow Execution Result/, "resolved-without-result");
+  mustFail((value) => { value.workflow_status = "resolved"; value.result = { result: "blocked" }; value.verification_results = [{ command: "scripts/verify-template", exit_code: 0, executed_at: "now", evidence_ref: evidenceRef }]; }, /Workflow Execution Result/, "resolved-blocked-result");
+  mustFail((value) => { value.workflow_status = "resolved"; value.verification_results = [{ command: "scripts/verify-template", exit_code: 0, executed_at: "now", evidence_ref: evidenceRef }]; value.result = completedResult(value); value.expected_evidence_files = [`${scenarioRef}/missing.json`]; }, /expected_evidence_files.*不可读/, "missing-expected-evidence");
+
+  process.stdout.write("数字人全生命周期任务包压力场景验证通过\n");
+} finally {
+  rmSync(contractFile, { force: true });
+  rmSync(evidenceFile, { force: true });
+  rmSync(path.join(ROOT, maintenanceRef), { force: true });
+  if (!templateSourceExisted) rmSync(templateSourceRoot, { recursive: true, force: true });
+}

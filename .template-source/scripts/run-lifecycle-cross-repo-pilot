@@ -53,7 +53,7 @@ try {
   // Each version/data/refusal case verifies the full portable input contract.
   // The complete suite needs its own bounded budget, rather than a single
   // business-build command's three-minute budget.
-  command('delivery-import-and-acceptance', root, 'node', ['--test', '--test-concurrency=1', 'scripts/verify-frontend-delivery-scenarios'], 600000, { YSS_CROSS_REPO_SAMPLE_ROOT: workspace });
+  command('delivery-import-and-acceptance', root, 'node', ['--test', '--test-concurrency=1', 'tests/scenarios/verify-frontend-delivery-scenarios.mjs'], 600000, { YSS_CROSS_REPO_SAMPLE_ROOT: workspace });
   report.result = 'passed';
 } catch (error) {
   report.result = 'blocked'; report.error = error.message; process.exitCode = 1;

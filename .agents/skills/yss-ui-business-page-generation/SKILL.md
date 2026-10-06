@@ -20,7 +20,7 @@ description: "生成或改造完整 YSS UI CRUD、列表、表单、详情或左
 
 ## 按影响读取参考
 
-先读组件来源与当前实现合同；仅加载当前页面实际使用的组件、Hook、Utils 与交付验证资料，不预读所有专项技能。
+交付路径消费 `yss-product-lifecycle` 的当前 `route` 结果，唯一政策见 Spec 项目中的 `.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml` 的 `request_triage.delivery_path`。已启用 Spec 的 `daily` 先读同一 Ticket / PR 的当前验收、范围、已有工程与 API 基线；`governed`、专职 Frontend Profile 或正式交付绑定继续读取当前实现合同。两者均核对组件来源，仅加载当前页面实际使用的组件、Hook、Utils 与交付验证资料，不预读所有专项技能。
 
 - 组件来源速查：`./references/component-map.md`
 - Hooks 速查：`./references/hooks-map.md`
@@ -29,7 +29,7 @@ description: "生成或改造完整 YSS UI CRUD、列表、表单、详情或左
 - 编辑表格细节：`../yedit-table-usage/SKILL.md`
 - 树形细节：`../ytree-usage/SKILL.md`
 - 表单细节：`../yss-formily/SKILL.md`
-- 前端还原验证：`../yss-ui/references/verification.md` 与当前 Slice 的 `frontend_implementation_plan` / `frontend_implementation_verification`
+- 前端还原验证：`../yss-ui/references/verification.md`；`daily` 消费同一任务的适用 UI 验收与实际证据，`governed` 另消费当前 Slice 的 `frontend_implementation_plan` / `frontend_implementation_verification`
 - 主题 Token 与换肤：`../theme-token-usage/SKILL.md`
 - 文件导出下载：`../file-export-download/SKILL.md`
 - Orval 接口与错误处理：`../yss-api-integration/SKILL.md`
@@ -76,7 +76,7 @@ description: "生成或改造完整 YSS UI CRUD、列表、表单、详情或左
 
 1. 读取组件来源速查；页面使用 Hook 或 Utils 时才追加相应 reference。按上述文档检索顺序核对真实 API 与导出，禁止根据旧示例猜测。
 2. 读取 `theme-token-usage`，检查项目真实主题变量与运行时同步链路。
-3. 若有截图或旧项目路径，先读取已批准且 digest 当前的 Visual Baseline manifest 和 `frontend_implementation_plan`，按 `case_id` 提取布局、状态、交互、响应式与控件类型验收项；缺失或摘要漂移时返回 `blocked`，不得凭目录或截图猜测。
+3. 若有截图或旧项目路径，`daily` 从同一任务确认的验收和可读的当前截图 / 既有界面提取布局、状态、交互、响应式与控件类型检查项，记录来源并逐项验证；不生成 Visual Baseline manifest 或正式前端计划。`governed` 仍先读取已批准且 digest 当前的 Visual Baseline manifest 和 `frontend_implementation_plan`，按 `case_id` 提取验收项。各路径的必要视觉输入缺失、冲突或摘要漂移时停止受影响实现，不得凭目录或截图猜测隐藏规则。
 4. 按需求类型加载细分 skill：列表读 `ytable-usage` 与 `yss-hook`；表单读 `yss-formily`；编辑表格读 `yedit-table-usage`；树读 `ytree-usage`；导出下载读 `file-export-download`。
 5. 先设计 `constant.ts`、`style.less` 和 hooks；独立类型或私有视图确有需要时再增加 `type.ts`/`components/`，最后写 `index.vue` 组合视图。
 6. 对 API 请求使用 Orval 真实生成类型和导出，在 hooks 内封装 loading、分页映射和失败后状态；错误 Toast 由 mutator 统一处理。
@@ -99,7 +99,7 @@ description: "生成或改造完整 YSS UI CRUD、列表、表单、详情或左
 - [ ] 主题色、状态色、中性色及交互态使用动态 Token；未依赖未同步变量的固定色 fallback。
 - [ ] 导出下载使用 `handleBlobResponse`，且 Blob 配置、响应头、loading 与错误链路已验证。
 - [ ] 已核对 Orval 真实导出，未使用 `if (res?.success)` 或重复错误 Toast。
-- [ ] 若有截图或旧项目参考，已按 `case_id` 配对基准图、实现图、diff/mask 和差异解释，并记录交互、console warning、实际 `pnpm` 命令与退出码。
+- [ ] 若有截图或旧项目参考，`daily` 已对同一任务的适用检查项核验当前参照、实现截图及差异；`governed` 已按 `case_id` 配对基准图、实现图、diff/mask 和差异解释。两者均记录适用交互、console warning、实际 `pnpm` 命令与退出码；`daily` 连同独立审查记回原 Ticket / PR。
 
 ## 失败兜底策略
 

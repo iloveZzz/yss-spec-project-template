@@ -1,5 +1,7 @@
 ## 输出契约
 
+已合格 `daily` 复用普通 Ticket 的 API evidence 段：保留当前 OAS/可达引用摘要、锁定工具链、真实 lint/兼容结果及日志、独立语义审查、摘要 Freeze、实现消费和契约测试；结论使用 `passed` / `blocked`，不生成 `approved`、API Contract Decision 或工程批准。必要 JSON 派生证据也留在同一记录。具体字段及原始字节/段落摘要由当前 `yss lifecycle route|verify-daily` 消费，不另建输出 schema。下面完整独立资产格式用于 `governed`。
+
 Wrapper 与分页检查按实际协议填写：采用 YSS 协议时记录 profile 符合性；下载、流式、回调或已批准分页例外记录协议依据、适用性和实际检查，不生成空 wrapper 或用不适用跳过审查证据。
 
 ```markdown

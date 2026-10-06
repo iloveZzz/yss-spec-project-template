@@ -1,6 +1,6 @@
 # 原型验证入口
 
-维护验证统一由 `scripts/verify-prototype-design` 执行；分发实例可直接调用本 Skill 的同名 `.mjs`。`verify-yss-prototype-contract-scenarios` 和历史 `antd-reference.test.mjs` 转调相同 contract 实现。
+模板源与分发实例统一调用本 Skill 的 `scripts/verify-prototype-design.mjs`；根 `scripts/verify-prototype-design` 兼容壳已退役，不再安装。`verify-yss-prototype-contract-scenarios` 和历史 `antd-reference.test.mjs` 转调相同 contract 实现。
 
 ```sh
 node .agents/skills/yss-prototype-stage/scripts/verify-prototype-design.mjs \

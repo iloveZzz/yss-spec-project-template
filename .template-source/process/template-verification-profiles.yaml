@@ -92,6 +92,7 @@ core_escalation_patterns:
   - tests/verification-report.test.mjs
   - tests/legacy-verification.test.mjs
   - tests/verification-execution.test.mjs
+  - tests/verification-script-retirement.test.mjs
   - .template-source/scripts/lib/verification-delivery-run.mjs
   - .template-source/scripts/verify-delivery-harness-distribution.mjs
   - .template-source/scripts/verify-strategic-handoff-distribution.mjs
@@ -246,6 +247,7 @@ required_files:
   - tests/verification-baseline.test.mjs
   - tests/verification-qualification.test.mjs
   - tests/verification-execution.test.mjs
+  - tests/verification-script-retirement.test.mjs
   - tests/verification-preflight.test.mjs
   - tests/verification-report-v2.test.mjs
   - tests/verification-report.test.mjs
@@ -374,6 +376,7 @@ syntax_files:
   - tests/verification-report.test.mjs
   - tests/legacy-verification.test.mjs
   - tests/verification-execution.test.mjs
+  - tests/verification-script-retirement.test.mjs
   - .template-source/scripts/lib/verification-delivery-run.mjs
   - .template-source/scripts/verify-delivery-harness-distribution.mjs
   - .template-source/scripts/verify-strategic-handoff-distribution.mjs
@@ -390,6 +393,9 @@ routing:
       - tests/verification-report.test.mjs
       - tests/legacy-verification.test.mjs
       - tests/verification-execution.test.mjs
+      - tests/verification-script-retirement.test.mjs
+      - tests/scenarios/**
+      - tests/fixtures/specialist-source-fixtures.py
     groups:
       - candidate-integrity
   - patterns:
@@ -1146,6 +1152,7 @@ gate_policy:
     - tests/verification-report.test.mjs
     - tests/legacy-verification.test.mjs
     - tests/verification-execution.test.mjs
+    - tests/verification-script-retirement.test.mjs
     - .template-source/scripts/lib/verification-delivery-run.mjs
     - .template-source/scripts/verify-delivery-harness-distribution.mjs
     - .template-source/scripts/verify-strategic-handoff-distribution.mjs
@@ -4013,6 +4020,7 @@ supplemental_checks:
       tests/verification-baseline.test.mjs
       tests/verification-qualification.test.mjs
       tests/verification-execution.test.mjs
+      tests/verification-script-retirement.test.mjs
       tests/verification-preflight.test.mjs
       tests/verification-report-v2.test.mjs
       tests/verification-artifacts.test.mjs

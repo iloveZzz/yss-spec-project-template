@@ -31,7 +31,7 @@ Frontend Strategic Preflight v2 使用 `ui_baseline_kind/ui_baseline_ref`；Fron
 - `inspectSource` 负责完整交接、门禁和真实决定；export/verify/import 与前端接收复用该验证。
 - `openBundle(input,action,{readOnly:true})` 只验已展开的受支持源布局，不写临时文件。ZIP 报 `readonly-extraction-required`，旧布局无法映射时报 `readonly-source-layout-required`，两者都不是已通过。默认模式保留旧包验包兼容性。
 
-机制验证运行 `scripts/verify-existing-ui-baseline-scenarios`，其中数据和决定均明确标记为 synthetic fixture，不能进入真实试验批准链。真实 Java/Vue 闭环、S0–S6 与 O1 由维护主控独立记账。
+机制验证运行 `tests/scenarios/verify-existing-ui-baseline-scenarios.mjs`，其中数据和决定均明确标记为 synthetic fixture，不能进入真实试验批准链。真实 Java/Vue 闭环、S0–S6 与 O1 由维护主控独立记账。
 
 ### 固定 Vite 代理前缀
 

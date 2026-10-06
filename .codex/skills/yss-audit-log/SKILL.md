@@ -5,11 +5,13 @@ description: "接入或排查 YSS AuditLog 的 SpEL 摘要、异步发布、订�
 
 # yss-audit-log
 
+执行路线按 Spec 项目中的 `.agents/skills/yss-product-lifecycle/references/daily-delivery.md` 的项目本地政策与固定 CLI 核验。仅合格且范围已授权的 Spec `daily` 消费同 Ticket 的范围、验收与已核验工程基线；`governed` 保留当前批准合同。缺本地政策/能力、其他 Profile 或已绑定正式任务不能凭标签降级；路线不授予执行授权。
+
 用于处理 `yss-component-audit-log` 的接入、排障和代码修改。
 
 ## 平台与源码门禁
 
-接入、修改、代码生成或提供精确类名/配置前，必须读取并执行 [共享平台与源码门禁](../yss-skill-source-index-refresh/references/backend-component-platform-compatibility.md)，以 `--skill yss-audit-log` 校验批准的平台线及匹配源码根。缺失、错配或漂移返回 `blocked`；不跨代回退，不在业务实现中升级、降级或替换组件。只读分诊可继续，但须标注未完成源码核验，不能据此宣称跨 Boot/JDK 兼容。
+接入、修改、代码生成或提供精确类名/配置前，必须读取并执行 [共享平台与源码门禁](../yss-skill-source-index-refresh/references/backend-component-platform-compatibility.md)，以 `--skill yss-audit-log` 校验当前路线已核验的精确平台线及匹配源码根（`daily` 来自同 Ticket 的已有工程基线，`governed` 来自批准的配置）；不因普通路径跳过源码检查。缺失、错配或漂移返回 `blocked`；不跨代回退，不在业务实现中升级、降级或替换组件。只读分诊可继续，但须标注未完成源码核验，不能据此宣称跨 Boot/JDK 兼容。
 
 ## 何时使用
 
@@ -57,7 +59,7 @@ description: "接入或排查 YSS AuditLog 的 SpEL 摘要、异步发布、订�
 7. 异步线程池或事件发布异常是否被吞掉。
 8. 参数位置、返回值字段、异常分支是否满足摘要模板。
 
-核验 `boot3-java17` 审计切面的 advice 与成功/异常边界；所登记平台基线使用 `@AfterReturning` 记录成功返回，源码漂移时该结论待核验。异常审计、参数脱敏、队列满丢弃、线程池关闭、重试和幂等须按当前组件能力及批准设计单独核验和测试，不能由旧基线推断已覆盖。组件测试至少覆盖 `#{result[name]}`、`args` / `result` 资源写入和可信身份来源。
+核验 `boot3-java17` 审计切面的 advice 与成功/异常边界；所登记平台基线使用 `@AfterReturning` 记录成功返回，源码漂移时该结论待核验。异常审计、参数脱敏、队列满丢弃、线程池关闭、重试和幂等须按当前组件能力和当前路线已确认的设计输入单独核验和测试（`daily` 使用同 Ticket 与已有工程基线，`governed` 使用批准设计），不能由旧基线推断已覆盖。组件测试至少覆盖 `#{result[name]}`、`args` / `result` 资源写入和可信身份来源。
 
 ## 修改约束
 
@@ -74,3 +76,7 @@ description: "接入或排查 YSS AuditLog 的 SpEL 摘要、异步发布、订�
 - 审计切面与 SpEL 解析：`assets/AuditLogAspect.java`
 - 异步发布链路：`assets/YssAuditPublishService.java`
 - 默认订阅器：`assets/YssAuditLogPrintSubscriberImpl.java`、`assets/YssAuditLogSysManagerSubscriberImpl.java`
+
+## 执行证据与新增影响
+
+`daily` 将命中的组件来源、技术约束和真实测试/命令/退出码回填同 Ticket，接受独立审查；`governed` 保留原合同与正式结果协议。缺平台/源码事实、测试失败或超出当前范围的影响时停止受影响动作并回生命周期调查，未知或排除风险升级；不从本技能取得迁移、升级或新生产接入授权。

@@ -8,6 +8,6 @@ Ant Design v6 提供设计语义与历史算法来源参考；Data Quality 真�
 
 `primary-control` / hover 是 YSS 为白色小字保留的可访问性变体，品牌 seed 保持 Data Quality 蓝；它们是已声明适配，不是 Data Quality 原值。生产默认使用根规范普通控件，显式 compact 才应用算法一次；新原型默认采用命名紧凑变体，窄屏和 comfortable 使用普通变体，不应用生产 compact 算法。暗色使用算法生成中性色，不能把浅色 text/surface 固定覆盖带入暗色。
 
-更新顺序：修改根 DESIGN.md → 更新 design-system-sync.yaml 摘要 → 在独立作者目录提供固定 antd6.6.4 → `node .template-source/tooling/node/scripts/design-md.mjs export dtcg --write --write-manifest --antd-toolchain <作者目录>` → lint / drift → 刷新 frontend scaffold baseline → 浏览器核对 HTML 和 Vue 两条实现。禁止手改 token 快照或生成投影。
+更新顺序：修改根 DESIGN.md → 更新 design-system-sync.yaml 摘要 → 在独立作者目录提供固定 antd6.6.4 → `node .agents/skills/yss-design-system/scripts/design-md.mjs export dtcg --write --write-manifest --antd-toolchain <作者目录>` → lint / drift → 刷新 frontend scaffold baseline → 浏览器核对 HTML 和 Vue 两条实现。禁止手改 token 快照或生成投影。
 
 采集依据：Data Quality commit `532509a59856fc02f3b9bcb28a062663ce887d71`；theme.ts SHA256 `8bdb5d13a0dabccc0771bac07d6e28e29d23dcc70fc72adfe04825b5a5ae16e1`。详细研究位于模板维护证据 `data-quality-theme-scaffold-2026-09-15/`。

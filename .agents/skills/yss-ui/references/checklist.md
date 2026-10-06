@@ -1,6 +1,6 @@
 # YSS UI 交付检查
 
-开发时按当前页面和影响面自检，联调时核对数据链路，交付时重新绑定当前 Slice 的实现计划、实现还原验证与实际执行证据。未命中项按原合同记录原因；命中但未验证的项保留阻塞，不能用清单勾选替代执行。
+开发时按当前页面和影响面自检，联调时核对数据链路。交付路径沿用 `yss-ui` 消费的当前生命周期 `route`：`daily` 绑定同一 Ticket / PR 的当前验收、范围、工程与 API 基线、实际 UI 证据和独立审查；`governed` 重新绑定当前 Slice 的实现计划、实现还原验证与实际执行证据。未命中项在各自记录中说明原因；命中但未验证的项保留阻塞，不能用清单勾选替代执行。
 
 ## 通用基线
 
@@ -47,6 +47,6 @@
 
 - [ ] 类型、静态检查和目标文件诊断没有新增问题；无调试输出遗留。格式检查优先使用工程现有检查模式，避免重写无关文件。
 - [ ] 适用组件测试、关键交互、E2E、响应式与视觉回归已执行，浏览器 console 无新增 warning/error。
-- [ ] `frontend_implementation_plan` / `frontend_implementation_verification` 绑定当前输入；视觉场景按 `case_id` 配对基准图、实现图、diff/mask 与差异解释。
+- [ ] `daily` 的适用 UI 验收、当前参照、实现截图与差异证据已记回原任务；`governed` 的 `frontend_implementation_plan` / `frontend_implementation_verification` 绑定当前输入，视觉场景按 `case_id` 配对基准图、实现图、diff/mask 与差异解释。
 - [ ] 验证记录含工作目录、实际命令、退出码、环境及证据。失败报告实际现象和已确认原因；原因未知时保留未知，未执行项不写通过。
 - [ ] 文档查询按 [组件来源判定](component-routing.md#导入来源判定)选择 MCP、匹配版本的本地资料或源码，不因生成代码就预读完整 `llms-full.txt`。

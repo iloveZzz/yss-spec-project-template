@@ -6,13 +6,17 @@ Subagent 和其它运行时实例只接收边界清晰的任务包。主控数�
 
 ## 任务包
 
-凡主控向数字人角色或独立运行时正式派发生命周期工作单元，都必须使用 `.template-spec/process/schemas/digital-human-task-package.schema.json` 定义的任务包，并写明 `task_id`、`work_unit_id`、`actor_id`、数字人角色 ID、`runtime_id`、执行态、工作流状态、从 `.template-spec/agents/digital-human-roles.yaml` 复制的 `core_skills` / `forbidden_skills`（可用 `taskPackageDefaults`）、合同类型和版本、输入资产、目标、允许写路径、禁止事项、验收标准、验证命令及其实际退出码 / 执行时间 / 证据引用、下游消费者和汇合方式。`slice-implementation` 才额外绑定 Slice Implementation Contract；禁止手写第二套技能包；任务包由 `scripts/verify-digital-human-task-package` 校验，`scripts/verify-subagent-task-package` 仅为兼容入口。
+先按交付路径政策判定。已合格 Spec `daily` 子任务复用普通 Ticket / PR 的证据段，写明角色、`runtime_id`、执行态、输入、目标、互不重叠写范围、禁止事项、预期结果与汇合点；返回实际变更、测试和独立审查证据。不强制生成下面的正式 v1 任务包、checkpoint 或 Slice，也不宣布 `approved` / `ready-for-agent`。审查者与实现者分离、只读审查和写边界仍严格；缺能力或新风险先调查并升级。此能力须已启用的 Spec 政策及支持 `route` / `verify-daily` 的 CLI，其他 Profile/旧 CLI 明确不支持。本轮模板维护和已绑定正式工作包继续使用原 schema，不按普通路径降级。
+
+凡主控向数字人角色或独立运行时正式派发生命周期工作单元，都必须使用 `.template-spec/process/schemas/digital-human-task-package.schema.json` 定义的任务包，并写明 `task_id`、`work_unit_id`、`actor_id`、数字人角色 ID、`runtime_id`、执行态、工作流状态、从 `.template-spec/agents/digital-human-roles.yaml` 复制的 `core_skills` / `forbidden_skills`（可用 `taskPackageDefaults`）、合同类型和版本、输入资产、目标、允许写路径、禁止事项、验收标准、验证命令及其实际退出码 / 执行时间 / 证据引用、下游消费者和汇合方式。`slice-implementation` 才额外绑定 Slice Implementation Contract；禁止手写第二套技能包；任务包由 `scripts/verify-digital-human-task-package` 校验；已退役的兼容入口不得继续调用。
 
 正式任务仍用 schema v1；Reviewer / Verifier 专业审查任务增加 `review_context`，绑定检查、所需能力、当前候选、当前策略、批准范围、依据摘要和相互独立的审查 / 起草主体。能力定义及补充只读技能只由角色表 `review_capabilities` 和检查策略编译为 `skill_source.review_skills`；不更改角色 `core_skills` / `forbidden_skills`，也不授予实施权限。缺能力、未声明当前上下文或身份相同即阻断，不能只换职称补足独立性。
 
 主控按阻塞原因推进：专业等待先自主派发或检查原任务并等待，验证失败修复或路由；未知影响先调查，只有真实决定或新授权缺失才展示可审阅资产后询问。等待期间继续无依赖的已授权工作，不因需要专业审查或即将提出完成结论结束整条编排链。
 
 ## 汇合
+
+本节结构化汇合适用于正式 `governed` / 模板维护任务。普通子任务把当前候选、变更、实际测试、独立身份、审查结论及阻断项回填同一任务记录，由 `verify-daily` 核验；不伪装 `workflow-execution-result-v1` 或通过本节关闭正式门禁。
 
 返回结果必须符合 `workflow-execution-result-v1`，至少包括 `work_unit`、`workflow_reference`、`result`、`skill`、`changed_files` / `changed_artifacts`、`evidence_refs`、实际验证结果、`deferred_seams`、`drift`、`violation`、`new_impacts`、`stale_candidates`、`blocking_signals` 和 `next_route`。主控必须重新执行 fresh verification，并在集中 checkpoint 中保留阶段因果。会签写入 `docs/.scratch/<feature>/gates/<gate-id>-approval.yaml`（形状见 `.template-spec/templates/approval-record-template.yaml`），不能用聊天表情代替。恢复前校验 `scripts/verify-approval-record --require-approved --checkpoint <current checkpoint>`，期望上下文来自消费者，不复制待验记录来证明当前性。
 

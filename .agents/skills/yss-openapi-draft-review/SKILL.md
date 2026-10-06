@@ -5,13 +5,17 @@ description: "审查 YSS OpenAPI Draft 的需求覆盖、页面动作、响应�
 
 # YSS OpenAPI Draft Review
 
-已有生命周期资产优先用 `scripts/contract view <资产> --kind <类型>` 阅读；执行任务用 `--profile task --unit <ID>`，绑定与校验明细用 `--profile full`。视图不授予执行权限，仍按本 Skill 的原始来源和批准门禁处理。类型、准备和迁移见 `.template-spec/process/contract-reading.md`。
+先消费已判定的交付路径。只有本地 Spec `request_triage.delivery_path` 已启用且固定 CLI 支持 `yss lifecycle route|verify-daily` 时使用普通 API 审查；其他 Profile / 旧 CLI 明确不支持，本任务正式绑定仍为 `governed`。正式资产按 `.template-spec/process/contract-reading.md` 阅读，普通任务直接消费其验收、API 段和当前 OAS YAML。
 
 Use this skill after OpenAPI Draft creation and before Engineering Baseline / YSS DDD Review. It is a fail-closed contract review skill for design-time OpenAPI files under `docs/.scratch/<feature>/api/`; it does not bundle JSON or generate Orval clients.
+
+上述工程阶段用于 `governed`。普通 API 小改只审查工具证明兼容的新增独立 operation：旧 operation、可达引用、路径继承与全局契约规范化保持完全相同。Reviewer 与实现者独立且只读，在原 Ticket API 审查段记录当前候选、结构/语义/兼容结论和未关闭项，不强制新 review 文件、校准 Spec 或 validation YAML，不写 `approved`。unknown、breaking、crossrepo、失败或过期证据返回 `blocked` 并停止受影响后续动作。
 
 先辨认当前批准协议。普通采用 YSS wrapper 的 HTTP/JSON 响应消费 DTO wire profile；下载、流式和第三方回调按批准协议审查媒体类型、状态、Header、错误及权限边界，不强套 wrapper。例外须有契约依据且仍通过本技能的结构和语义审查。
 
 ## Required Inputs
+
+普通任务输入为已合格 Ticket 的目标/验收、当前工程基线、权威 OAS 3.1 YAML 与完整基线、锁定 lint/refs/适用 YSS wire 证据和真实兼容报告。其工具/规则/日志原字节摘要及独立 `api_digest` 必须与当前 API 候选一致，reviewer 身份与 `implementation.actor_id` 不同；证据可以在同一 Ticket 的独立段。仅代码 diff 变化不使未变 API 审查失效；代码与契约测试另绑定整体 `candidate_digest`。以下独立正式资产用于 `governed`，实际 wire 与字段语义要求对两条路径同样适用。
 
 - OpenAPI Draft under `docs/.scratch/<feature>/api/<feature>.yaml`，作为唯一权威的单一 OAS 3.1 YAML document；生命周期元数据和 Freeze 决策位于相邻 Markdown 记录。
 - `docs/.scratch/<feature>/api/<feature>-validation.yaml`，且已由 `scripts/verify-openapi-draft-validation-record` 针对当前 Draft SHA-256 验证通过。
@@ -22,7 +26,7 @@ Use this skill after OpenAPI Draft creation and before Engineering Baseline / YS
 
 ## Review Flow
 
-开始语义审查时读取 [P0 追踪与审查步骤](references/semantic-review.md)，逐项覆盖当前 Spec / UI 命中的字段、操作、错误和测试 seam。当前 SHA 与锁定 lint 证据通过后才可能得出 Approved。
+开始语义审查时读取 [P0 追踪与审查步骤](references/semantic-review.md)，逐项覆盖当前需求 / UI 命中的字段、操作、错误和测试 seam。当前摘要、锁定 lint 和语义证据通过后，普通审查才能记录 `passed`；正式审查才能记录 `Approved`。
 
 ## Automation Boundary
 
@@ -35,7 +39,7 @@ Use this skill after OpenAPI Draft creation and before Engineering Baseline / YS
 
 ## Blocking Rules
 
-Block if any of these are true:
+Block if any of these are true. Governed validation-record requirements below use the current Ticket API evidence for a qualified daily task; they do not require a second validation YAML. Missing lint/compatibility/wire evidence, self-review, stale candidates or unresolved blockers prevent daily `passed`:
 
 - A P0 requirement has no endpoint, schema, error contract, or explicit non-goal.
 - The validation record is missing, stale, blocked or unverifiable; locked Redocly lint is absent or non-zero. Semantic pre-review may continue, but the overall Review Result remains `Blocked`.
@@ -51,4 +55,4 @@ Block if any of these are true:
 
 ## Output Contract
 
-形成持久化结论时读取 [审查输出契约](references/review-output.md)。`Review Result` 仅在 `Structural Validation` 和 `Semantic Review` 均为 `Passed` 时可为 `Approved`；否则 `Blocked`，不使用条件批准。
+形成持久化结论时读取 [审查输出契约](references/review-output.md)。普通结果只有结构、语义及兼容结论和独立身份均当前且通过时可为 `passed`，否则 `blocked`，不写 `Approved`。正式 `Review Result` 仅在 `Structural Validation` 和 `Semantic Review` 均为 `Passed` 时可为 `Approved`；否则 `Blocked`，不使用条件批准。

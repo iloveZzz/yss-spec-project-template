@@ -77,7 +77,7 @@ scripts/verify-frontend-delivery --root <frontend> --slice <slice-id> <relative-
 
 ## 维护与验证
 
-共享实现由当前主模板维护，通过 `scripts/sync-strategic-handoff-tools` 分发；canonical Skill 变更后生成运行时投影与 lock。新/旧模板的实例初始化与 sync 不静默转换 profile。场景入口为 `scripts/verify-frontend-delivery-scenarios` 与 `scripts/verify-existing-ui-baseline-scenarios`，通过临时实例和明确标注的合成测试服务验证行为，不作为具体产品的交付证据。
+共享实现由当前主模板维护，通过 `scripts/sync-strategic-handoff-tools` 分发；canonical Skill 变更后生成运行时投影与 lock。新/旧模板的实例初始化与 sync 不静默转换 profile。场景入口为 `tests/scenarios/verify-frontend-delivery-scenarios.mjs` 与 `tests/scenarios/verify-existing-ui-baseline-scenarios.mjs`，通过临时实例和明确标注的合成测试服务验证行为，不作为具体产品的交付证据。
 
 前端 `frontend_cases` 的 `evidence_ref` 必须同时绑定 `evidence_digest`（原始文件字节 SHA-256）。用例内容变化后须更新接收记录并重编译依赖合同。
 

@@ -348,6 +348,8 @@ test('准备和主检查使用独立日志，完成依赖可跨phase且finally�
 });
 test('缺Vue的真实preflight子进程失败，昂贵任务未启动且父close落失败报告',async t=>{
   const {directory,root}=fixtureRoot(t);
+  fs.mkdirSync(path.join(root,'tests/scenarios'),{recursive:true});
+  fs.writeFileSync(path.join(root,'tests/scenarios/verify-yss-prototype-contract-scenarios.mjs'),'throw Error("expensive case must not start");\n');
   const plan={strategy:'qualified-gates',requested_profile:'candidate',effective_profile:'candidate',source_requirement:'current',required_files:[],groups:['expensive'],selection:{effective:'legacy',omitted:[]},commands:[{id:'expensive',task_id:'expensive',group:'expensive',command:'scripts/verify-yss-prototype-contract-scenarios'}]};
   const outcome=await executeVerificationPlan({root,plan,reportDir:path.join(directory,'report'),purpose:'qualification',environment:{...process.env,YSS_VUE_TOOLCHAIN:''}});
   assert.equal(outcome.code,1);assert.equal(outcome.report.results.length,1);
@@ -366,8 +368,8 @@ test('实现合同包装入口的真实Node子批次始终串行，外层并发�
   const childEnvironment={...process.env};delete childEnvironment.NODE_TEST_CONTEXT;
   execFileSync(process.execPath,['--test','--test-concurrency=2',...files],{env:childEnvironment,stdio:'pipe',timeout:10000});
   assert.equal(maximum(),2,'并发正控必须实际观察到重叠，证明探针能发现并发逃逸');
-  const script=path.join(directory,'entry');fs.copyFileSync(new URL('../scripts/verify-yss-implementation-contract-compiler-scenarios',import.meta.url),script);
-  fs.mkdirSync(path.join(directory,'lib'));fs.writeFileSync(path.join(directory,'lib/scenario-checks.mjs'),"export function runScenario(name){if(name!=='implementationContractCompiler')throw Error('unexpected scenario');}\n");
+  const script=path.join(directory,'tests/scenarios/entry.mjs');fs.mkdirSync(path.dirname(script),{recursive:true});fs.copyFileSync(new URL('./scenarios/verify-yss-implementation-contract-compiler-scenarios.mjs',import.meta.url),script);
+  fs.mkdirSync(path.join(directory,'scripts/lib'),{recursive:true});fs.writeFileSync(path.join(directory,'scripts/lib/scenario-checks.mjs'),"export function runScenario(name){if(name!=='implementationContractCompiler')throw Error('unexpected scenario');}\n");
   const preload=path.join(directory,'probe.mjs');
   fs.writeFileSync(preload,`import fs from 'node:fs';import childProcess from 'node:child_process';import {syncBuiltinESMExports} from 'node:module';const real=childProcess.spawnSync;childProcess.spawnSync=(file,args,options)=>{if(args.includes('--test')){fs.writeFileSync(${JSON.stringify(receipt)},JSON.stringify({file,args}));return real(file,[...args.filter(value=>value.startsWith('--')),...${JSON.stringify(files)}],options);}return real(file,args,options);};syncBuiltinESMExports();\n`);
   // Copy the exact wrapper bytes and replace only the unrelated first-stage

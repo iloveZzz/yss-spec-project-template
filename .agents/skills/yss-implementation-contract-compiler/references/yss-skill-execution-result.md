@@ -1,6 +1,8 @@
 # YSS Skill Execution Result
 
-核心 YSS skill 必须消费已批准合同版本，并返回：
+先消费生命周期 `request_triage.delivery_path` 的路由结论。Spec 日常路径的技术 Skill 使用同一张 Ticket / PR 中的范围、验收、工程基线和适用技术规则；把实际修改、测试命令与退出码、独立审查、风险和回滚方式补回该记录。日常路径不生成下面的正式 Execution Result，也不调用编译器授予实现资格。测试失败、独立审查缺失或阻断问题未关闭时不得宣布完成；发现新风险时保留修改和证据，停止受影响工作并恢复完整治理。
+
+以下结构和校验要求仅适用于已经绑定正式工作单元 / Slice 的完整治理路径。该路径的核心 YSS skill 必须消费已批准合同版本，并返回：
 
 后端结果顶层带与当前 resolution 完全一致的 `architecture_identity`；每条验证记录还须有整数 `exit_code`。身份缺失、Profile 未 supported、验证非零或没有执行时间均不得 accepted。
 

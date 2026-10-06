@@ -3,6 +3,7 @@ import path from 'node:path';
 import {createHash} from 'node:crypto';
 import {validateBaseline,assertBaselineParameters} from './verification-baseline.mjs';
 import {qualificationBindings,validateQualification} from './verification-qualification.mjs';
+import {verificationSourceIdentities} from './verification-execution-plan.mjs';
 
 export const LEGACY_SOURCE_COMMIT = '11d88fb0ae6e4213bff6b4c5af4de03fd1aa2f1c';
 export const LEGACY_COVERAGE_DIGEST = '3aa58425b03fda2291ebc78eea62381c602cd4592d4c4db87f197f82da9705f4';
@@ -16,7 +17,8 @@ export function verificationPatternMatches(file, pattern) {
     else if(pattern[i]==='?')source+='[^/]';
     else source+=pattern[i].replace(/[\\^$.*+?()[\]{}|]/g,'\\$&');
   }
-  return new RegExp(`^${source}$`).test(file);
+  const expression=new RegExp(`^${source}$`);
+  return verificationSourceIdentities(file).some(ref=>expression.test(ref));
 }
 export function verificationPolicyDigest(config) {
   const copy=structuredClone(config);

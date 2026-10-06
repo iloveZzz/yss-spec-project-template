@@ -24,7 +24,7 @@
 pnpm why vue @yss-ui/components @yss-ui/hooks ant-design-vue vxe-table
 ```
 
-记录包管理器、lockfile、精确版本和验证命令。若目标项目未安装某依赖，不得自行添加或升级，除非批准合同明确允许。
+记录包管理器、lockfile、精确版本和验证命令。交付路径沿用 `yss-ui` 消费的当前生命周期 `route`；目标项目未安装的依赖不能自行添加或升级，`daily` 须由同一任务的现有授权与允许范围覆盖，`governed` 须由批准合同明确允许。引入的新影响仍按唯一政策核验，不因普通路径获得额外授权。
 
 ## 事实优先级
 
@@ -32,7 +32,7 @@ pnpm why vue @yss-ui/components @yss-ui/hooks ant-design-vue vxe-table
 
 ## Ant Design v6 边界
 
-Ant Design v6 是产品原型默认的主题样式、视觉和 token 语义标准；Vue 生产实现使用 Ant Design Vue 4.x。版本号不同本身不是冲突。生产映射必须消费原型证据中的 `visual_semantic_mapping`，并用实现仓 lockfile/类型验证 YSS 或 AntDV 目标；禁止复制 React hooks、JSX、组件 props、theme algorithm API 或事件模型到 Vue 代码。
+Ant Design v6 是产品原型默认的主题样式、视觉和 token 语义标准；Vue 生产实现使用 Ant Design Vue 4.x。版本号不同本身不是冲突。任务实际采用原型时，生产映射须消费原型证据中的 `visual_semantic_mapping`；已核验 `daily` 的既有界面小改按当前任务验收与已有工程参照核对视觉语义，不补建原型包。两者均用实现仓 lockfile/类型验证 YSS 或 AntDV 目标，禁止复制 React hooks、JSX、组件 props、theme algorithm API 或事件模型到 Vue 代码。
 
 ## 兼容性证据
 

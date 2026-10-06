@@ -138,7 +138,7 @@ test("repository_scope git-submodule is a first-class layout distinct from harne
 });
 
 test("Node lifecycle registry verifier preserves the published semantic baseline", () => {
-  const output = execFileSync("node", ["scripts/node-verify-lifecycle-registry.mjs"], {
+  const output = execFileSync("node", ["scripts/verify-lifecycle-registry"], {
     cwd: repositoryRoot,
     encoding: "utf8"
   });

@@ -95,8 +95,8 @@ Web Exception Translator 再将它映射为批准的状态码、错误码和消�
 
 ## 7. 生命周期证据
 
-- 消费批准且当前的 Tactical Design 与 Slice Implementation Contract。
-- 返回 YSS Skill Execution Result，包含 Domain 文件、行为测试、ArchUnit 结果及实际 `./mvnw ...` 证据。
+- `governed` 消费批准且当前的 Tactical Design 与 Slice Implementation Contract；合格 `daily` 消费同 Ticket 的范围、验收与已有工程已确认领域基线，不新增设计批准资产。
+- 两条路线均提供 Domain 文件、行为测试、适用 ArchUnit 结果及实际 `./mvnw ...` 证据；`daily` 回填同 Ticket，`governed` 返回正式 YSS Skill Execution Result。
 - 新聚合、不变量、状态机或跨上下文影响进入 `new_impacts` 并暂停。
 - 旧布局不走 scaffold 生成分支；既有 DDD 按登记整改。需改变架构或公开契约时单独评估并批准。
 

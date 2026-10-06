@@ -7,6 +7,8 @@ description: "在 Vue3 YSS UI 中对接 Orval API；核验生成方法、mutator
 
 本技能的 canonical 名称为 `yss-api-integration`。历史名称 `api-integration` 只由注册表与实现合同编译器解析，不维护第二份内容。
 
+交付路径消费 `yss-product-lifecycle` 的当前 `route` 结果，唯一政策见 Spec 项目中的 `.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml` 的 `request_triage.delivery_path`。仅已启用 Spec 且当前工具核验为 `daily` 的任务使用同一 Ticket / PR 的验收、范围和 API 证据；`governed`、专职 Frontend Profile 或正式交付绑定继续使用原批准合同与交付链。本技能不自行判定 API 兼容或授予普通路径资格。
+
 ## 目标
 
 帮助 AI 正确使用基于 **Orval** 生成的 API 客户端：
@@ -21,7 +23,7 @@ description: "在 Vue3 YSS UI 中对接 Orval API；核验生成方法、mutator
 
 1. **契约状态已明确**：
    - 已有生成客户端：先核验冻结契约、JSON 派生记录和真实导出，输入当前且一致时可以直接集成。
-   - 新增或变更 API：必须先在 `docs/.scratch/<feature>/api/<feature>.yaml` 形成 OpenAPI Draft，经工程基线 / 架构 / Spec Delta 设计和设计审查后 Freeze。冻结的 OpenAPI YAML 是唯一权威，JSON 仅为它的受控派生物。
+   - 新增或变更 API：`daily` 按唯一政策及 `yss-openapi-governance` 在同一任务完成 OAS 3.1 YAML Draft、锁定工具校验、保守兼容核验、独立 API 审查和摘要 Freeze，证据记在原 Ticket / PR，不另建 Spec Delta、API Contract Decision 或工程批准包；不能证明兼容或出现排除影响时恢复 `governed`。`governed` 仍在 `docs/.scratch/<feature>/api/<feature>.yaml` 形成 Draft，经工程基线 / 架构 / Spec Delta 设计和设计审查后 Freeze。两条路径均以冻结的 OpenAPI YAML 为唯一权威，JSON 仅为受控派生物。
    - 如果接口尚未冻结、JSON 派生记录缺失或生成函数不存在，先回到 `yss-product-lifecycle` / `yss-openapi-governance`，不要手写临时路径、DTO 或响应结构。
 2. **API 已生成**：在目标前端实现仓库中，按其既有的手动代码生成命令（例如 `pnpm generate:api`）刷新 API；本 Harness 不配置、不执行该命令，也不把它加入 CI。
 3. **了解 OpenAPI**：查看 Freeze 记录、JSON 派生记录和 `openapi/openapi.json` 了解接口定义；不得把 JSON 或生成 TypeScript 当成可手改的源文件。
@@ -38,11 +40,11 @@ description: "在 Vue3 YSS UI 中对接 Orval API；核验生成方法、mutator
   → 类型检查与调用方验证
 ```
 
-1. 读取 `yss-openapi-governance` 产出的 OpenAPI Freeze 记录和 `docs/.scratch/<feature>/api/<feature>-json-export.md`；确认 YAML SHA-256、JSON SHA-256、Redocly CLI 版本、lockfile 引用和 JSON 校验均通过。治理 JSON 的唯一产物路径是 `docs/.scratch/<feature>/api/<feature>.json`。
-2. JSON 导出由 `yss-openapi-governance` 负责。`yss-api-integration` 只接受该 skill 留下的派生记录；记录中的锁定 `redocly bundle` 命令是治理导出证据，不是前端集成任意重跑的入口。
-3. **受控交接**：若前端实现仓库需要本地输入，批准的 Cross-repo 子合同或项目脚本只能将上述治理 JSON 原样物化为 `<frontend>/openapi/openapi.json`；物化后的 SHA-256 必须与派生记录一致。禁止从 URL、Draft YAML、后端运行时或任意本地文件临时替换输入。
+1. `daily` 读取同一 Ticket / PR 中 `yss-openapi-governance` 留下的当前 API Freeze 与 JSON 派生证据，产物位于本任务单一实现仓的允许范围；`governed` 读取 OpenAPI Freeze 记录和 `docs/.scratch/<feature>/api/<feature>-json-export.md`，治理 JSON 产物仍为 `docs/.scratch/<feature>/api/<feature>.json`。两者均确认 YAML SHA-256、JSON SHA-256、Redocly CLI 版本、lockfile 引用和 JSON 校验通过。
+2. JSON 导出由 `yss-openapi-governance` 负责。`yss-api-integration` 只接受该 skill 留下的派生记录；`daily` 记录在同一任务，`governed` 使用原正式记录。锁定 `redocly bundle` 命令是导出证据，不是前端集成任意重跑的入口。
+3. **受控交接**：`daily` 只在本任务单一实现仓与允许路径中消费或原样物化已核验的冻结 JSON；`governed` 的前端本地输入仍由批准的 Cross-repo 子合同或项目脚本将治理 JSON 原样物化为 `<frontend>/openapi/openapi.json`。物化后的 SHA-256 必须与派生记录一致。禁止从 URL、Draft YAML、后端运行时或任意本地文件临时替换输入；跨仓交付不能走普通路径。
 4. `yss-api-integration` 只核对 JSON 派生记录、交接路径和 SHA-256，并把原始 JSON 交给既有前端代码生成流程；本 Harness 可只读核对目标前端的生成器配置与真实导出，但不修改该配置，不在此仓库执行生成，也不建立生成 CI 门禁。若 JSON SHA 与派生记录不一致，停止交接并回到治理流程。
-5. 目标前端项目在需要时手动运行其既有生成命令、类型检查和受影响组件 / API 测试；将实际命令、结果、生成输入 SHA 和偏离写入 `YSS Skill Execution Result`。
+5. 目标前端项目在需要时手动运行其既有生成命令、类型检查和受影响组件 / API 测试；`daily` 将实际命令、结果、生成输入 SHA、偏离和独立审查记回同一 Ticket / PR，`governed` 写入 `YSS Skill Execution Result`。
 
 ## 真实 mutator 响应契约
 
@@ -143,6 +145,6 @@ await pageQualityRule(query, { signal: controller.signal, timeout: 120000 });
 
 ## 阶段 7 合同
 
-- 只消费冻结的 OpenAPI YAML 派生出的 JSON、生成客户端和批准后的 `Slice Implementation Contract`；实现中的半成品 backend 不得作为稳定 source of truth。
+- `daily` 消费同一任务的当前验收、允许范围、已有工程与 API 基线及已核验的 API 证据；`governed` 另消费批准后的 `Slice Implementation Contract`。两者都只使用冻结的 OpenAPI YAML 派生出的 JSON 和真实生成客户端，实现中的半成品 backend 不得作为稳定 source of truth。
 - 客户端重新生成属于 `controlled-generation`；页面请求状态、错误处理、权限和用户交互属于 `behavior-tdd`。
-- 必须按统一 `YSS Skill Execution Result` 返回生成客户端引用、调用文件、组件/API 测试、实际 pnpm 验证结果、偏离和 `new_impacts`；发现缺失路径或 schema 变化时暂停并回生命周期。
+- 两条路径均返回生成客户端引用、调用文件、组件/API 测试、实际 pnpm 验证结果、偏离和 `new_impacts`；`daily` 连同独立审查记入原 Ticket / PR，不生成正式执行结果，`governed` 按统一 `YSS Skill Execution Result` 返回。缺失必要来源或允许路径时停止受影响实现；`daily` 发现无法证明兼容的 schema 变化或其他排除影响时按生命周期调查并恢复治理，`governed` 的 schema 变化继续暂停并回生命周期。
