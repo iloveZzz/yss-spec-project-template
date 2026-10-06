@@ -1,24 +1,12 @@
 [submodule "submodules/yss-harness-design-agent"]
 	path = submodules/yss-harness-design-agent
 	url = https://github.com/iloveZzz/yss-harness-design-agent.git
-[submodule "submodules/create-yss-spec"]
-	path = submodules/create-yss-spec
-	url = https://github.com/iloveZzz/create-yss-spec.git
-[submodule "submodules/create-yss-harness-design"]
-	path = submodules/create-yss-strategic-design
-	url = https://github.com/iloveZzz/create-yss-harness-design.git
 [submodule "submodules/yss-harness-backend-agent"]
 	path = submodules/yss-harness-backend-agent
 	url = https://github.com/iloveZzz/yss-harness-backend-agent.git
 [submodule "submodules/yss-harness-frontend-agent"]
 	path = submodules/yss-harness-frontend-agent
 	url = https://github.com/iloveZzz/yss-harness-frontend-agent.git
-[submodule "submodules/create-yss-harness-backend"]
-	path = submodules/create-yss-harness-backend
-	url = https://github.com/iloveZzz/create-yss-harness-backend.git
-[submodule "submodules/create-yss-harness-frontend"]
-	path = submodules/create-yss-harness-frontend
-	url = https://github.com/iloveZzz/create-yss-harness-frontend.git
 [submodule "submodules/yss-cli"]
 	path = submodules/yss-cli
 	url = https://github.com/iloveZzz/yss-cli.git

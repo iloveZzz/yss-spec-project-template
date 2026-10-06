@@ -1,3 +1,4 @@
+import {NATIVE_PROFILES,inspectNative} from '../.template-source/scripts/lib/native-yss.mjs';
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import path from 'node:path';import {spawnSync} from 'node:child_process';
 test('all maintained task consumers accept intake and preserve empty writes',()=>{
  for(const side of ['root','design','backend','frontend']){
@@ -7,11 +8,9 @@ test('all maintained task consumers accept intake and preserve empty writes',()=
   const result=spawnSync(process.execPath,['--input-type=module','-e',script],{cwd:root,encoding:'utf8'});assert.equal(result.status,0,`${side}: ${result.stderr}`);
  }
 });
-test('four current CLI snapshots include the read-only producer and consumer',()=>{
- const cli=path.resolve('submodules/create-yss-spec/template');for(const ref of ['scripts/prepare-read-only-intake','scripts/run-read-only-intake','scripts/lib/read-only-intake.mjs'])assert.ok(fs.existsSync(path.join(cli,ref)),ref);
- for(const pkg of ['create-yss-strategic-design','create-yss-harness-backend','create-yss-harness-frontend']){
-  const root=path.resolve('submodules',pkg);const snapshot=JSON.parse(fs.readFileSync(path.join(root,'template.snapshot.json')));
-  for(const ref of ['scripts/prepare-read-only-intake','scripts/run-read-only-intake','scripts/lib/read-only-intake.mjs'])assert.ok(snapshot.files[ref],`${pkg}/${ref}`);
+test('four native Bundle manifests include read-only producer and consumer',()=>{
+ for(const profile of NATIVE_PROFILES){const inspection=inspectNative(profile);
+  for(const ref of ['scripts/prepare-read-only-intake','scripts/run-read-only-intake','scripts/lib/read-only-intake.mjs'])assert.ok(inspection.files[ref],`${profile}/${ref}`);
  }
 });
 

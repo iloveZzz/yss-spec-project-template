@@ -12,7 +12,7 @@ import {addVerificationExecutionTasks,compileTaskExecution} from '../.template-s
 import {loadVerificationProfiles,ROOT} from '../scripts/lib/template-verification.mjs';
 import {createVerificationReport,finalizeVerificationReport,verificationInputDigest} from '../scripts/lib/verification-report.mjs';
 import {runCommandToFiles} from '../scripts/lib/template-verification-runner.mjs';
-import {installedTreeDigest,prepareCliSourceConsumer} from '../.template-source/scripts/lib/verification-artifacts.mjs';
+import {nativeBinary} from '../.template-source/scripts/lib/native-yss.mjs';
 import {executeVerificationPlan} from '../.template-source/scripts/lib/template-verification-worker.mjs';
 
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
@@ -344,19 +344,9 @@ function qualificationEvidenceFixture(t,{source=false,reuse=false}={}) {
   const run=(file,args,cwd)=>{const result=spawnSync(file,args,{cwd,encoding:'utf8'});assert.equal(result.status,0,result.stderr);return result;};
   let artifact,receipt,manifest,commit;
   if(source) {
-    const cli=path.join(root,'submodules/create-yss-spec');fs.mkdirSync(cli,{recursive:true});run('git',['init','-q'],root);run('git',['init','-q'],cli);
-    const put=(ref,bytes,mode=0o644)=>{const file=path.join(cli,ref);fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,bytes,{mode});};
-    put('package.json',JSON.stringify({name:'create-yss-spec',version:'1.0.0'}));put('bin/create-yss-spec.js','fixed public entry',0o755);
-    put('tests/sync-fast-smoke.test.js',`const assert=require('node:assert/strict');const snapshot=require('../template.snapshot.json');assert.equal(snapshot.sourceState,'committed');assert.equal(snapshot.templateCommit,process.env.YSS_SPEC_TEMPLATE_REF);`);
-    run('git',['add','.'],cli);run('git',['-c','user.name=fixture','-c','user.email=fixture@example.invalid','commit','-qm','fixed CLI'],cli);const cliCommit=run('git',['rev-parse','HEAD'],cli).stdout.trim();
-    run('git',['update-index','--add','--cacheinfo',`160000,${cliCommit},submodules/create-yss-spec`],root);run('git',['-c','user.name=fixture','-c','user.email=fixture@example.invalid','commit','-qm','fixed source'],root);commit=run('git',['rev-parse','HEAD'],root).stdout.trim();
-    const tuple={namespace:'candidate-release',family:'spec',cli_commit:cliCommit,template_commit:commit,core_commit:commit,package_name:'create-yss-spec',version:'1.0.0'},installed=path.join(directory,'installed');fs.mkdirSync(installed);
-    for(const ref of ['package.json','bin/create-yss-spec.js']){fs.mkdirSync(path.dirname(path.join(installed,ref)),{recursive:true});fs.copyFileSync(path.join(cli,ref),path.join(installed,ref));}
-    fs.writeFileSync(path.join(installed,'template.snapshot.json'),JSON.stringify({sourceState:'committed',templateCommit:commit,requestedRef:commit}));fs.writeFileSync(path.join(installed,'cli-core.lock.json'),JSON.stringify({sourceState:'committed',sourceRevision:commit}));
-    const tarball=path.join(directory,'package.tgz');fs.writeFileSync(tarball,'controlled fixture package');
-    artifact={source_tuple:tuple,tarball,tarball_sha256:hash(fs.readFileSync(tarball)),installed_root:installed,snapshot_sha256:hash(fs.readFileSync(path.join(installed,'template.snapshot.json'))),core_lock_sha256:hash(fs.readFileSync(path.join(installed,'cli-core.lock.json'))),installed_tree_sha256:installedTreeDigest(installed)};
-    receipt=prepareCliSourceConsumer({root,source:tuple,artifact,directory:path.join(directory,'consumption/source-cli/spec'),run});
-    manifest={schema_version:1,kind:'template-release-sources',root_commit:commit,families:['spec'],entries:[tuple]};
+    const pinned=nativeBinary(),binary=path.join(directory,path.basename(pinned.binary));fs.copyFileSync(pinned.binary,binary);fs.chmodSync(binary,fs.statSync(pinned.binary).mode&0o777);
+    const file=path.join(root,'tests/cli-retirement.test.mjs');fs.mkdirSync(path.dirname(file),{recursive:true});
+    fs.writeFileSync(file,`import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import {createHash} from 'node:crypto';import {spawnSync} from 'node:child_process';test('actual native consumer',()=>{const binary=${JSON.stringify(binary)},digest=${JSON.stringify(pinned.digest)};assert.equal(createHash('sha256').update(fs.readFileSync(binary)).digest('hex'),digest);const r=spawnSync(binary,['version','--json'],{encoding:'utf8'});assert.equal(r.status,0,r.stderr);const out=JSON.parse(r.stdout);assert.equal(out.outputVersion,1);assert.equal(out.protocolVersion,1);assert.equal(out.code,'OK');});`);
   }else fs.writeFileSync(path.join(root,'actual.test.mjs'),`import test from 'node:test';test('actual qualification consumer observation',()=>{});`);
   const first={id:'check.fixture',task_id:source?'legacy.010':'fixture.0',command:source?'node --test submodules/create-yss-spec/tests/sync-fast-smoke.test.js':'node --test actual.test.mjs',gate_ids:['check.fixture-gate'],depends_on:[],resources:['fixture-slot'],timeout_ms:10000,lane:'fixture',source_requirement:'committed'};
   first.execution=compileTaskExecution(first,{root,reportDir:directory,fixedCommit:commit});
@@ -366,14 +356,13 @@ function qualificationEvidenceFixture(t,{source=false,reuse=false}={}) {
   assert.equal(observation.status,0,observation.stderr);fs.writeFileSync(stdoutFile,observation.stdout);fs.writeFileSync(stderrFile,observation.stderr);
   const invocation={command:'executeVerificationPlan',args:[]},report=createVerificationReport(plan,{root,inputDigest:'b'.repeat(64),concurrency:2,scope:{kind:'complete-candidate'},invocation,sourcesManifest:manifest});report.purpose='qualification';report.experimental=true;
   const row={...first,index:0,code:observation.status,actual_exit_code:observation.status,actual_exit_code_observed:true,actual_exit_signal:observation.signal,actual_execution:structuredClone(execution),stdoutFile,stderrFile,log_digests:{stdoutFile:hash(fs.readFileSync(stdoutFile)),stderrFile:hash(fs.readFileSync(stderrFile))}};
-  if(source){fs.writeFileSync(execution.source_consumer_ref,JSON.stringify(receipt));const digest=hash(fs.readFileSync(execution.source_consumer_ref));row.actual_execution.source_receipt_sha256=digest;report.source_test_receipts=[{ref:execution.source_consumer_ref,sha256:digest}];report.artifacts=[artifact];}
   report.results.push(row);
   if(reuse){const second={...first,id:'check.fixture-duplicate',task_id:'fixture.duplicate'};plan.commands.push(second);plan.gates[0].check_ids.push(second.id);report.plan=structuredClone(plan);report.results.push({...row,...second,index:1,reused:true,reused_from:{task_id:first.task_id},actual_exit_code:null,actual_exit_code_observed:false});}
   finalizeVerificationReport(report,{status:'passed',wallMs,repositoryMode:'template-source'});report.input_after_sha256=report.input_sha256;report.input_drift=false;report.final_exit={code:0,signal:null,observed:true};
   return {root,directory,plan,report,receipt,options:{root,expectedPlan:plan,reportDirectory:directory,expectedSourcesManifest:manifest,observedExitCode:observation.status}};
 }
 
-test('资格公开消费者拒绝真实 Node 的实际 argv cwd env 与源码回执篡改',t=>{
+test('资格公开消费者拒绝真实 Node 的实际 argv cwd env 与原生映射篡改',t=>{
   for(const source of [false,true]) {
     const f=qualificationEvidenceFixture(t,{source});assert.equal(validateQualificationReportEvidence(f.report,f.options).status,'passed');
     assert.throws(()=>validateQualificationReportEvidence(f.report,{...f.options,observedExitCode:undefined}),/close-not-observed/);
@@ -387,10 +376,9 @@ test('资格公开消费者拒绝真实 Node 的实际 argv cwd env 与源码回
       r=>delete r.final_exit,
     ]){const report=structuredClone(f.report);mutate(report);assert.throws(()=>validateQualificationReportEvidence(report,f.options));}
     if(source) {
-      for(const mutate of [r=>r.source_test_receipts=[],r=>r.source_test_receipts[0].sha256='0'.repeat(64),r=>delete r.results[0].actual_execution.source_receipt_sha256]){const report=structuredClone(f.report);mutate(report);assert.throws(()=>validateQualificationReportEvidence(report,f.options),/回执|摘要/);}
-      const ref=f.report.source_test_receipts[0].ref,forged={...f.receipt,test_files:{'tests/sync-fast-smoke.test.js':'0'.repeat(64)}};fs.writeFileSync(ref,JSON.stringify(forged));
-      const report=structuredClone(f.report),digest=hash(fs.readFileSync(ref));report.source_test_receipts[0].sha256=digest;report.results[0].actual_execution.source_receipt_sha256=digest;
-      assert.throws(()=>validateQualificationReportEvidence(report,f.options),/原测试摘要/);
+      assert.equal(f.report.source_test_receipts,undefined,'退役私有源码回执不能赋予当前验证资格');
+      for(const mutate of [r=>r.results[0].actual_execution.args=['--test','old-private-test.js'],r=>r.results[0].actual_execution.source_consumer_ref='/unapproved/legacy-private-source.json']){const report=structuredClone(f.report);mutate(report);assert.throws(()=>validateQualificationReportEvidence(report,f.options));}
+
     }
   }
 });

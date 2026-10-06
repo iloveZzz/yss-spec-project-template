@@ -1,4 +1,18 @@
+---
+status: historical-superseded
+superseded_at: 2026-10-06
+superseded_by: .template-spec/user-guide/unified-cli.md
+current_upgrade_contract: .template-spec/process/harness-upgrade.md
+---
 # `create-yss-spec` 接管与模板同步跨仓库契约
+
+## 文档状态与当前入口
+
+本文为四个旧 npm CLI 时代的历史合同（historical / superseded），不再定义统一 `yss` 的现行操作、来源身份或发行条件。原历史版本与下文正文保留，用于解释旧实例和固定旧执行器的兼容 / 恢复边界；其中的旧包名、gitlink、metadata、参数、Node 执行器及发布步骤不能作为当前统一 CLI 的指令。
+
+当前操作与来源合同见 [统一 CLI 操作说明](../../.template-spec/user-guide/unified-cli.md)；旧实例显式迁移、原生 metadata、插件 binding、事务、恢复和回退以 [模板实例升级协议](../../.template-spec/process/harness-upgrade.md) 为准。旧执行器只从仓外固定恢复包取得。历史保护不变量作为历史依据保留，当前保护规则仍须按上述现行合同核验，不凭本文推导已实现兼容能力或发行已完成。
+
+以下为保留的历史合同正文。
 
 本文定义模板源仓库与外部 `create-yss-spec` CLI 仓库之间的身份、资产边界、迁移、同步、验证和发布契约。
 
@@ -98,7 +112,7 @@ CLI 必须遵循本契约的固定映射：旧 Spec / Ticket skill 和模板入�
 
 ## 发布顺序与阻断条件
 
-1. 模板完成适用 canonical、投影、锁和分发派生同步，执行当前不可裁剪验证并固定完整来源提交。
+1. 模板完成适用 canonical、投影、锁和分发派生同步，执行 `scripts/verify-template` 并固定完整来源提交；验证 profile 的资格与完整 baseline 未闭合时执行独立 `legacy-full`，不得遗漏任何适用风险。
 2. CLI 绑定该提交，完成 attach / sync 跨仓测试、适用审查与固定版本集成。
 3. 执行固定提交的包测试、实际打包、干净安装和真实入口验证；版本以当前包清单为准。
 4. 子仓交付后更新父仓 gitlink，发布另按授权处理；证据与恢复材料保存到仓外持久目录。

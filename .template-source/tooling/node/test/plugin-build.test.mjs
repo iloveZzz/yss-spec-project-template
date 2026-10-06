@@ -6,6 +6,7 @@ import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 import { measureTestBuild } from '../scripts/tooling-fixture.mjs';
+import { fileMode } from '../../../plugins/yss-backend-delivery/runtime.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../..');
 const BUILD = path.join(ROOT, '.template-source/plugins/yss-backend-delivery/build.mjs');
@@ -33,29 +34,29 @@ test('generated development plugin is portable, deterministic and fails closed o
       assert.equal(result.status, 0, result.stderr);
       const output = JSON.parse(result.stdout);
       assert.equal(output.ready_for_agent, false); assert.equal(output.release_ready, false);
-      assert.equal(output.source.distribution, 'development-only');
+      assert.equal(output.source.state, 'native-bundle');
       if (command === 'query-plan') assert.ok(output.query);
     }
   });
 
-  await t.test('all source, generated entry and external dependency provenance is retained', () => {
+  await t.test('public export preserves every bundle asset and fixed binary provenance', () => {
     const lock = JSON.parse(readFileSync(path.join(moved, 'bundle-lock.json')));
-    assert.ok(lock.files.some(x => x.ref === 'skills/backend-delivery/SKILL.md' && x.transformation === 'project-local-entry'));
-    assert.ok(lock.files.some(x => x.source_ref === '.agents/skills/yss-design-system/SKILL.md' && x.transformation === 'historical-path-redaction'));
-    assert.ok(lock.external_dependencies.platform.some(x => x.requested === 'product-design:index' && x.packaging === 'external'));
-    assert.ok(!lock.files.some(x => x.ref.includes('/.codex/skills/')));
-    const vueRef = '.agents/skills/yss-prototype-stage/assets/shadcn-vue-authoring/ui/select/Select.vue';
-    const vue = lock.files.find(x => x.source_ref === vueRef);
-    assert.ok(vue, 'Vue SFC is retained as an authoring asset');
-    assert.ok(!vue.reasons.includes('parsed-module-closure'), 'Vue source is not a Node entry');
-    assert.deepEqual(readFileSync(path.join(moved, vue.ref)), readFileSync(path.join(ROOT, vueRef)));
-    assert.ok(lock.files.some(x => x.source_ref === '.agents/skills/yss-prototype-stage/scripts/build-shadcn-vue-prototype.mjs' && x.reasons.includes('parsed-module-closure')), 'authoring CLI remains in the Node module graph');
-    assert.ok(!lock.files.some(x => x.ref.includes('/fixtures/') || x.ref.endsWith('.test.mjs')));
-    for (const file of lock.files) {
-      const bytes = readFileSync(path.join(moved, file.ref));
-      if (!bytes.includes(0)) assert.doesNotMatch(bytes.toString('utf8'), /\/(?:Users|home)\//, file.ref);
+    assert.equal(lock.schema_version, 2);
+    const pin = JSON.parse(readFileSync(path.join(moved, 'assets/native-lock.json')));
+    assert.equal(pin.protocolVersion, 1); assert.equal(pin.profile, 'spec');
+    assert.equal(pin.inspection.sourceState, 'committed');
+    assert.ok(lock.files.some(x => x.ref === 'skills/backend-delivery/SKILL.md'));
+    const exported = lock.files.filter(x => x.ref.startsWith('assets/template/'));
+    assert.deepEqual(exported.map(x => x.ref.slice('assets/template/'.length)).sort(), Object.keys(pin.inspection.files).sort());
+    for (const item of exported) {
+      const source = pin.inspection.files[item.ref.slice('assets/template/'.length)];
+      assert.equal(item.sha256, source.digest); assert.equal(item.mode, fileMode(source.mode));
     }
-    if (lock.source.state === 'working-tree') assert.equal(lock.source.content_commit, null);
+    assert.ok(exported.some(x => x.ref.endsWith('/Select.vue')), 'Vue SFC remains a raw authoring asset');
+    assert.ok(exported.some(x => x.ref.endsWith('/build-shadcn-vue-prototype.mjs')), 'Node governance tooling remains available');
+    assert.ok(!lock.files.some(x => x.ref.includes('assets/cli/') || x.ref.includes('cli-package.json.gz')));
+    assert.equal(pin.binarySha256, lock.files.find(x => x.ref === pin.binaryPath).sha256);
+    assert.equal(lock.release_ready, false);
   });
 
   await t.test('same source yields identical lock regardless of output directory', () => {
@@ -71,13 +72,15 @@ test('generated development plugin is portable, deterministic and fails closed o
     assert.equal(readFileSync(marker, 'utf8'), 'keep'); rmSync(marker);
     const link = path.join(dir, 'link'); symlinkSync(empty, link);
     assert.equal(run(BUILD, ['--output', path.join(link, NAME)], empty).status, 1);
+    const broken = path.join(dir, 'broken-link'); symlinkSync(path.join(dir, 'missing'), broken);
+    assert.equal(run(BUILD, ['--output', path.join(broken, NAME)], empty).status, 1);
   });
 
   await t.test('missing, altered, executable-mode and directory replacements are rejected', () => {
     const ref = path.join(moved, 'assets/template/.template-spec/process/lifecycle-registry.yaml');
     const bytes = readFileSync(ref);
     for (const corrupt of [() => rmSync(ref), () => writeFileSync(ref, 'altered'),
-      () => chmodSync(ref, 0o755), () => { rmSync(ref); mkdirSync(ref); writeFileSync(path.join(ref, 'copy'), bytes); }]) {
+      () => chmodSync(ref, process.platform === 'win32' ? 0o444 : 0o755), () => { rmSync(ref); mkdirSync(ref); writeFileSync(path.join(ref, 'copy'), bytes); }]) {
       corrupt(); assert.equal(run(cli, ['verify'], empty).status, 1);
       rmSync(ref, { recursive: true, force: true }); writeFileSync(ref, bytes); chmodSync(ref, 0o644);
     }

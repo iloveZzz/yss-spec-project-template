@@ -6,8 +6,6 @@ import { tmpdir } from 'node:os';
 import { spawnSync } from 'node:child_process';
 import { fixture } from '../../../../scripts/fixtures/strategic-handoff/fixture.mjs';
 import { finalizeDelivery } from '../../../../scripts/lib/strategic-handoff.mjs';
-import { gunzipSync } from 'node:zlib';
-import { projectOperations as api } from '../../../plugins/yss-backend-delivery/project.mjs';
 import { consumerEntry } from '../../../../scripts/lib/strategic-handoff-routing.mjs';
 import { materializeTestPlugin } from '../scripts/tooling-fixture.mjs';
 
@@ -93,45 +91,14 @@ test('backend plugin receives Handoff v5 without bypassing engineering or implem
     const result = call('project-import-design', ['--target-dir', target, '--bundle', packaged.delivery]);
     assert.equal(result.status, 1); assert.match(result.stderr, /backend-consumer-route-not-active/);
   });
-  await t.test('registered 0.2 project migrates while retaining receipt and business data', () => {
-    const legacy = JSON.parse(fs.readFileSync(path.join(plugin, 'assets/legacy-0.2.json')));
-    const overlay = JSON.parse(gunzipSync(fs.readFileSync(path.join(ROOT, '.template-source/tooling/node/fixtures/plugin-migration/v02-overlay.json.gz'))));
-    const currentBinding = JSON.parse(fs.readFileSync(path.join(plugin, 'assets/project-binding.json')));
-    const oldRefs = new Set(legacy.binding.map(x => x.ref));
-    for (const item of currentBinding) if (!oldRefs.has(item.ref)) fs.rmSync(path.join(target, item.ref));
-    const archive = JSON.parse(gunzipSync(fs.readFileSync(path.join(plugin, 'assets/legacy-cli-package.json.gz'))));
-    const cliFiles = new Map(archive.files.map(item => [item.ref, item]));
-    const snapshot = JSON.parse(Buffer.from(cliFiles.get('template.snapshot.json').content, 'base64'));
-    const oldFiles = new Map(overlay.files.map(item => [item.ref, item]));
-    const latest = JSON.parse(fs.readFileSync(path.join(plugin, 'assets/project-binding.json')));
-    const legacyRefs = new Set(legacy.binding.map(item => item.ref));
-    for (const item of latest) if (!legacyRefs.has(item.ref) && fs.existsSync(path.join(target, item.ref))) fs.rmSync(path.join(target, item.ref));
-    for (const item of legacy.binding) {
-      if (oldFiles.has(item.ref)) continue;
-      const source = cliFiles.get(`template/${snapshot.encodedPaths?.[item.ref] || item.ref}`);
-      assert.ok(source, `legacy source missing: ${item.ref}`);
-      const file = path.join(target, item.ref); fs.mkdirSync(path.dirname(file), { recursive: true });
-      fs.writeFileSync(file, Buffer.from(source.content, 'base64')); fs.chmodSync(file, source.mode);
-    }
-    for (const item of overlay.files) { const file = path.join(target, item.ref); fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, Buffer.from(item.content, 'base64')); fs.chmodSync(file, item.mode); }
-    fs.writeFileSync(path.join(target, 'skills-lock.json'), Buffer.from(cliFiles.get('template/skills-lock.json').content, 'base64'));
-    const receiptFile = path.join(target, '.yss-plugin.json'), binding = JSON.parse(fs.readFileSync(receiptFile));
-    Object.assign(binding, { plugin: legacy.plugin, cli: legacy.cli, plugin_bundle_sha256: legacy.bundle_digest, core_digest: api.digest(legacy.binding) });
-    fs.writeFileSync(receiptFile, JSON.stringify(binding));
-    const metadataPath = path.join(target, '.yss-template.json');
-    api.withLegacyCli(plugin, oldCli => {
-      const oldTarget = path.join(dir, 'legacy-baseline');
-      const init = run(oldCli.bin, ['--project-name', '合成接收验证', '--business-domain', '测试', '--team-size', '1',
-        '--issue-tracker', 'github', '--no-example-docs', '--target-dir', oldTarget]);
-      assert.equal(init.status, 0, init.stderr);
-      fs.copyFileSync(path.join(oldTarget, '.yss-template.json'), metadataPath);
-    });
-    const lockRefresh = run(path.join(target, 'scripts/update-skill-lock'), []);
-    assert.equal(lockRefresh.status, 0, lockRefresh.stderr || lockRefresh.stdout);
+  await t.test('native public upgrade retains imported receipt and business data', () => {
+    const bindingFile = path.join(target, '.yss-backend-plugin.json');
+    const binding = JSON.parse(fs.readFileSync(bindingFile));
+    fs.writeFileSync(bindingFile, JSON.stringify({ ...binding, plugin_version: 'previous-fixture' }));
     const before = fs.readFileSync(path.join(target, receipt));
-    const migration = ok(call('project-migration-plan', ['--target-dir', target]));
-    assert.equal(migration.from_plugin, 'yss-backend-delivery');
-    ok(call('project-migration-apply', ['--plan', put('migration.json', migration)]));
+    const migration = ok(call('project-upgrade-plan', ['--target-dir', target]));
+    assert.equal(migration.kind, 'upgrade');
+    ok(call('project-upgrade-apply', ['--plan', put('migration.json', migration)]));
     assert.deepEqual(fs.readFileSync(path.join(target, receipt)), before);
     ok(call('project-entry', ['--target-dir', target, '--mode', 'reuse', '--input', path.join(dir, 'reuse.json')]));
   });

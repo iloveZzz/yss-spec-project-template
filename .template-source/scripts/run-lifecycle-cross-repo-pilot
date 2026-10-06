@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import {initializeNative} from './lib/native-yss.mjs';
 // Isolated maintenance sample. Its generated approvals are test data only.
 import { createHash } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
@@ -30,9 +31,11 @@ function command(name, cwd, commandName, args, timeout = 180000, extraEnv = {}) 
 }
 try {
   const management = path.join(workspace, 'management'), backend = path.join(workspace, 'backend'), frontend = path.join(workspace, 'frontend');
-  command('management-init', root, 'node', [path.join(root, 'submodules/create-yss-spec/bin/create-yss-spec.js'), '--target-dir', management, '--project-name', '提交申请管理样板', '--business-domain', '申请受理', '--team-size', '1', '--agent-runtime', 'codex', '--issue-tracker', 'github']);
-  command('backend-init', root, 'node', [path.join(root, 'submodules/create-yss-harness-backend/bin/create-yss-harness-backend.js'), 'init', '--target-dir', backend, '--project-name', '提交申请后端样板', '--business-domain', '申请受理', '--team-size', '1', '--issue-tracker', 'local-markdown']);
-  command('frontend-init', root, 'node', [path.join(root, 'submodules/create-yss-harness-frontend/bin/create-yss-harness-frontend.js'), 'init', '--target-dir', frontend, '--project-name', '提交申请前端样板', '--business-domain', '申请受理', '--team-size', '1', '--issue-tracker', 'local-markdown']);
+  let initSequence=0;
+  const nativeOptions={run:(binary,args,cwd)=>command(`native-init-${initSequence++}`,cwd||root,binary,args)};
+  initializeNative('spec',management,{...nativeOptions,full:true});
+  initializeNative('backend',backend,nativeOptions);
+  initializeNative('frontend',frontend,nativeOptions);
   put(management, 'docs/.scratch/pilot/spec.md', '# 提交申请（样板测试数据）\n\n材料完整时提交成功；缺少申请人或材料时拒绝。\n');
   put(backend, 'pom.xml', `<project xmlns="http://maven.apache.org/POM/4.0.0"><modelVersion>4.0.0</modelVersion><groupId>example.invalid</groupId><artifactId>submit-application-pilot</artifactId><version>1.0.0</version><properties><maven.compiler.source>8</maven.compiler.source><maven.compiler.target>8</maven.compiler.target><project.build.sourceEncoding>UTF-8</project.build.sourceEncoding></properties><dependencies><dependency><groupId>junit</groupId><artifactId>junit</artifactId><version>4.13.2</version><scope>test</scope></dependency></dependencies><build><plugins><plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-compiler-plugin</artifactId><version>3.8.1</version></plugin><plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-surefire-plugin</artifactId><version>2.22.2</version></plugin></plugins></build></project>\n`);
   cpSync(path.join(root, '.agents/skills/yss-ddd-scaffold-generator/assets/wrapper'), backend, { recursive: true });
@@ -47,7 +50,10 @@ try {
   command('frontend-pnpm-install', frontend, 'pnpm', ['install', '--ignore-scripts'], 180000);
   command('frontend-pnpm-test', frontend, 'pnpm', ['test']);
   command('frontend-pnpm-build', frontend, 'pnpm', ['build']);
-  command('delivery-import-and-acceptance', root, 'node', ['--test', 'scripts/verify-frontend-delivery-scenarios'], 180000, { YSS_CROSS_REPO_SAMPLE_ROOT: workspace });
+  // Each version/data/refusal case verifies the full portable input contract.
+  // The complete suite needs its own bounded budget, rather than a single
+  // business-build command's three-minute budget.
+  command('delivery-import-and-acceptance', root, 'node', ['--test', '--test-concurrency=1', 'scripts/verify-frontend-delivery-scenarios'], 600000, { YSS_CROSS_REPO_SAMPLE_ROOT: workspace });
   report.result = 'passed';
 } catch (error) {
   report.result = 'blocked'; report.error = error.message; process.exitCode = 1;

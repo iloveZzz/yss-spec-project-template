@@ -9,13 +9,15 @@ description: 从需求、已批准的 Plan 或 Spec 开始 YSS 产品设计，�
 
 1. 从当前 SKILL.md 上两级定位插件根，以绝对路径运行 `node <插件根>/scripts/plugin.mjs verify` 与 `doctor`。所需外部设计提供者必须在会话中实际可用；默认 HTML 适配不依赖外部提供者。
 2. 普通目录或代码仓作为需求输入。先运行 `project-plan --target-dir <独立治理目录> --project-name <名称> --business-domain <领域>` 展示写入范围，按当前初始化授权运行 `project-apply --plan <JSON文件>`。团队规模和 tracker 可显式提供，默认 1 / local-markdown。
-3. 既有设计实例先 `project-check`；仅精确匹配而未绑定的实例可 `project-bind-plan`、`project-bind-apply`。来源不匹配或漂移时保留项目，不能手改 metadata 或套用后端迁移。
+3. 既有原生设计实例先 `project-check`；匹配而未绑定的实例用 `project-bind-plan`、`project-bind-apply`。旧身份及插件升级用 `project-migration-plan` / `project-upgrade-plan`，展示保存计划后按对应授权应用。`.yss.json` 与 `.yss-product-design-plugin.json` 原子更新，旧 metadata 和 `.yss-plugin.json` 原字节保留；来源冲突或业务资产漂移时保留现场。
 4. 执行 `project-entry --target-dir <治理根> --mode new|reuse|resume --input <JSON文件>`。new 用 `{}`；reuse 提供 `artifact_refs` 项目内路径数组或 `checkpoint`；resume 必须提供 `checkpoint`。原型和 checkpoint 都不是批准替代物。
 5. 实际读取返回的 `effective_orchestrator`、同根身份、CONTEXT.md、profile 与输入资产，按项目本地主控从最近可信阶段继续。新建仅开启新工作单元，不清除既有交付。
 6. 复用战略 profile 的 Plan、Spec、产品设计、业务级任务和战略交接。首版支持新原型与既有 UI 基线；纯无 UI 的正式交付需另行扩展合同，不能生成空原型。
 7. 原型遵守 `yss-prototype-stage`，包括独立评审、浏览器证据和真实用户决定。使用 `strategic-handoff finalize/verify` 交付 Handoff v5。交接 checkpoint 完成必须绑定当前包及验证；恢复已完成 checkpoint 只复验并返回终点。
 
 交付后说明包位置、版本、未决项和后端接收方式：在独立后端治理项目调用 `yss-backend-delivery` 的 `project-import-design --target-dir <治理根> --bundle <交付目录或ZIP>`，再以 `project-entry --mode reuse` 的 `import_receipt_ref` 继续。接收方完成词汇对账、工程设计、逐条消费与 Slice Contract 批准后才能实现。
+
+`project-status` 查看事务；`project-recover` / `project-rollback` 默认只读，写入需 `--apply`。回退恢复本次身份、治理文件与绑定；旧格式未完成事务使用归档中的原版本执行器。
 
 设计交付完成不代表后端已接收、前端已实现或业务已发布。Git、远端写入与发布沿用项目主控授权边界。
 

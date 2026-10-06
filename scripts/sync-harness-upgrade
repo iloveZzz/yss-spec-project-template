@@ -19,7 +19,7 @@ for(const profile of ['design','backend','frontend']){
  const orchestrator=`${base}/.agents/skills/harness-orchestrator/SKILL.md`;
  if(fs.existsSync(path.join(root,orchestrator))){
   const marker='<!-- HARNESS_UPGRADE_ROUTE -->',old=fs.readFileSync(path.join(root,orchestrator),'utf8');
-  const route=marker+'\n既有实例的模板升级、布局迁移和恢复使用 `yss-harness-upgrade`，遵循 `.template-spec/process/harness-upgrade.md`；升级不推进阶段或改写历史批准。\n';
+  const route=marker+'\n既有实例的同家族模板升级、旧身份迁移和事务恢复使用 `yss-harness-upgrade`，遵循 `.template-spec/process/harness-upgrade.md`；升级不推进阶段或改写历史批准。\n';
   const owned=new RegExp(marker+'\\n既有实例[^\\n]*(?:\\n|$)');
   if(old.includes(marker)&&!owned.test(old))throw new Error(`升级路由标记内容不明: ${orchestrator}`);
   emit(orchestrator,old.includes(marker)?old.replace(owned,route):old.trimEnd()+'\n\n'+route);

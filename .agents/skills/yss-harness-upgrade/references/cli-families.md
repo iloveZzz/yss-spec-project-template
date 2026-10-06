@@ -1,14 +1,18 @@
-# 同家族升级适配
+# 统一入口与历史身份
 
-| CLI | 实例 metadata |
-|---|---|
-| create-yss-spec | .yss-template.json |
-| create-yss-harness-design | .yss-harness-design.json |
-| create-yss-harness-backend | .yss-harness-backend.json |
-| create-yss-harness-frontend | .yss-harness-frontend.json |
+| `yss --profile` | 原生 metadata | 仅用于历史识别和恢复的旧身份 |
+|---|---|---|
+| spec | .yss.json | create-yss-spec / .yss-template.json |
+| design | .yss.json | create-yss-harness-design / .yss-harness-design.json |
+| backend | .yss.json | create-yss-harness-backend / .yss-harness-backend.json |
+| frontend | .yss.json | create-yss-harness-frontend / .yss-harness-frontend.json |
 
-身份还需通过各 CLI 原有 profile/schema 检查。多个 metadata、旧 dev 家族、未知 schema、符号链接或矛盾 profile 均不能自动接管。`migrate` 不是降级或跨家族工具。
+原生身份绑定 `profile`、`profileId`、协议、模板提交、Bundle/manifest 摘要和受管基线。旧 CLI 版本和提交只表示历史迁移基线，不能作为 `yss` 来源。多个有效 metadata、旧 dev 家族、未知 schema、符号链接或矛盾 Profile 均不能自动接管。`migrate` 不是降级或跨家族转换工具。
 
-四类 CLI 的新入口一致：`migrate plan|apply|status|recover|rollback`，支持 `--json`。`migrate plan` 只向显式指定的项目外新文件输出；`apply --plan <文件>` 显式写入。recover/rollback 默认只读，写入需 `--apply`。不要从旧 `sync` 推断新接口：主 CLI 普通 sync 会写入，专职 CLI sync 默认预览。
+原生读取 `--json` 返回 `outputVersion`、`protocolVersion`、`command`、`profile`、`status`、`code`、`result` envelope。成功必须同时满足实际退出 0 和 `status=ok/code=OK`；拒绝测试检查目标错误码，不能把 `INPUT_DRIFT` 当其他保护语义通过。
 
-目标模板来自当前固定 CLI 包，不接受计划中的下载地址或脚本。版本、模板和执行器摘要不匹配时更换为生成计划的原包，或重新规划；不得修改计划来绕过。已有 `update/upgrade` 仅更新 CLI 程序，既有 `recover` 仍只恢复原事务。
+`init` 默认直接初始化；需要先审阅时使用 `--plan --out <项目外新文件>`，再用 `--apply --plan-file <已保存计划>` 应用。`attach/sync/skills ensure/assets ensure` 默认预演，写入须保存计划后显式应用。`migrate plan` 只读，`migrate apply --plan-file` 显式迁移。普通 `recover/rollback` 不带 `--apply` 只读，加 `--apply` 才写入；`migrate recover|rollback` 本身是显式写入子命令，不要求 `--apply`。
+
+后端交付插件绑定的 Profile 是 `spec`，产品设计插件绑定的 Profile 是 `design`。绑定旧实例走对应插件 `project-migration-plan/apply`；绑定原生实例更换来源走 `project-upgrade-plan/apply`。直接同步缺少新绑定返回 `BINDING_REQUIRED`，原身份与绑定已不一致返回 `BINDING_CONFLICT`。同一来源补装资源仍可用公开原生计划，其输入绑定既有插件记录。
+
+目标模板来自固定二进制内的 Bundle；`bundle inspect/export` 是公开读取接口。来源摘要错配时恢复生成计划的二进制/Bundle，或重新规划。旧 npm 精确版本、源码 SHA 和恢复包继续保留，不执行 unpublish。旧未完成事务先用对应仓外固定旧执行器处理，迁入原生事务后才能切换默认入口。

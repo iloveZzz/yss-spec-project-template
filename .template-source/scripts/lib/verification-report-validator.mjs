@@ -11,6 +11,7 @@ import {LEGACY_SOURCE_COMMIT,LEGACY_COVERAGE_DIGEST} from './verification-gates.
 import {sourceTuple,collectReleaseSources,validateArtifact,validateCliSourceConsumer} from './verification-artifacts.mjs';
 import {parseArgs} from 'node:util';
 import {validateJsonSchema} from '../../../scripts/lib/json-schema.mjs';
+import {validateLegacyRecoveryMatrix} from './legacy-recovery-matrix.mjs';
 
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 const ensure = (condition, message) => { if (!condition) throw new TypeError(message); };
@@ -237,6 +238,8 @@ export function validateQualificationIntegration({root,reportFile,expectedDigest
   ensure(report.schema_version===2&&report.kind==='template-release-verification'&&report.status==='passed'&&!report.error&&report.requested_commit===commit&&report.template_commit===commit,'integration 来源或结论未绑定或存在外层失败');
   const families=['spec','design','backend','frontend'];assert.deepEqual(report.cli_families,families,'integration 未覆盖 all-four');
   const expected=collectReleaseSources({root,commit,families});
+  const recovery=report.legacy_recovery;
+  validateLegacyRecoveryMatrix({file:recovery?.ref,sha256:recovery?.sha256,binarySha256:expected.entries[0].binary_sha256});
   assert.deepEqual(report.sources_manifest?.families,families,'integration 来源家族缺失');assert.deepEqual(report.sources_manifest?.entries?.map(sourceTuple),expected.entries.map(sourceTuple),'integration 精确来源错配');
   ensure(report.artifacts?.length===4&&report.cli_integrations?.length===4,'integration 缺少包或迁移真实产物');
   const commands=[...new Map([...(report.commands||[]),...report.artifacts.flatMap(row=>row.command_records||[]),...report.cli_integrations.flatMap(row=>row.command_records||[])].map(row=>[row.stdoutFile||path.resolve(directory,row.log||''),row])).values()];
@@ -251,12 +254,19 @@ export function validateQualificationIntegration({root,reportFile,expectedDigest
    const artifacts=report.artifacts.filter(row=>row.source_tuple?.family===source.family);ensure(artifacts.length===1,'integration 包家族重复或缺失');validateArtifact(artifacts[0],source);
    const integrations=report.cli_integrations.filter(row=>row.family===source.family);ensure(integrations.length===1&&integrations[0].status==='passed','integration 迁移家族重复或未通过');
    ensure(requiredCases.every(value=>integrations[0].cases?.includes(value)),'integration 迁移风险未覆盖');
-   const entry=path.join(artifacts[0].installed_root,'bin',`${source.package_name}.js`);
-   const calls=commands.filter(row=>Array.isArray(row.args)&&row.args.includes(entry));
-   ensure(calls.some(row=>!['doctor','diff','sync','migrate'].includes(row.args[1]))&&['doctor','diff','sync'].every(value=>calls.some(row=>row.args[1]===value)),'integration 缺少实际安装入口验收');
-   ensure(calls.filter(row=>row.args[1]==='migrate'&&row.args[2]==='plan').length>=2&&calls.filter(row=>row.args[1]==='migrate'&&row.args[2]==='apply').length>=2&&calls.some(row=>row.args[1]==='migrate'&&row.args[2]==='rollback'&&row.args.includes('--apply')),'integration 缺少迁移幂等或回滚真实命令');
-   ensure(commands.filter(row=>(row.command||row.file)==='npm'&&row.args?.[0]==='pack'&&row.cwd===artifacts[0].cli_root).length===1,'integration 同精确来源必须恰好一次 npm pack');
-   ensure(commands.some(row=>(row.command||row.file)==='npm'&&row.args?.[0]==='install'&&row.args.includes(artifacts[0].packed_tarball_path||artifacts[0].tarball)),'integration 缺少真实 npm install');
+   if(source.package_name==='yss'){
+    const calls=commands.filter(row=>Array.isArray(row.args)&&(row.command||row.file)===artifacts[0].binary);
+    ensure(calls.some(row=>row.args[0]==='init'&&row.args.includes('--plan'))&&calls.some(row=>row.args[0]==='init'&&row.args.includes('--apply'))&&['doctor','diff','sync'].every(value=>calls.some(row=>row.args[0]===value)),'integration 缺少实际原生安装入口验收');
+    ensure(calls.filter(row=>row.args[0]==='migrate'&&row.args[1]==='plan').length>=2&&calls.some(row=>row.args[0]==='migrate'&&row.args[1]==='apply')&&calls.some(row=>row.args[0]==='migrate'&&row.args[1]==='rollback'),'integration 缺少原生迁移重规划或整体回滚真实命令');
+    ensure(calls.filter(row=>row.args[0]==='bundle'&&row.args[1]==='export').length===1,'integration 同精确来源必须恰好一次公开 Bundle export');
+   }else{
+    const entry=path.join(artifacts[0].installed_root,'bin',`${source.package_name}.js`);
+    const calls=commands.filter(row=>Array.isArray(row.args)&&row.args.includes(entry));
+    ensure(calls.some(row=>!['doctor','diff','sync','migrate'].includes(row.args[1]))&&['doctor','diff','sync'].every(value=>calls.some(row=>row.args[1]===value)),'integration 缺少实际安装入口验收');
+    ensure(calls.filter(row=>row.args[1]==='migrate'&&row.args[2]==='plan').length>=2&&calls.filter(row=>row.args[1]==='migrate'&&row.args[2]==='apply').length>=2&&calls.some(row=>row.args[1]==='migrate'&&row.args[2]==='rollback'&&row.args.includes('--apply')),'integration 缺少迁移幂等或回滚真实命令');
+    ensure(commands.filter(row=>(row.command||row.file)==='npm'&&row.args?.[0]==='pack'&&row.cwd===artifacts[0].cli_root).length===1,'integration 同精确来源必须恰好一次 npm pack');
+    ensure(commands.some(row=>(row.command||row.file)==='npm'&&row.args?.[0]==='install'&&row.args.includes(artifacts[0].packed_tarball_path||artifacts[0].tarball)),'integration 缺少真实 npm install');
+   }
   }
   return {valid:true,reasons:[],bindings:{families,root_commit:commit,sources_manifest:expected,report_digest:hash(fs.readFileSync(reportFile))}};
  }catch(error){return {valid:false,reasons:[error.message],bindings:null};}

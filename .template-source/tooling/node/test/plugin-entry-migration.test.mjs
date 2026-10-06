@@ -3,10 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { tmpdir } from 'node:os';
-import { gunzipSync } from 'node:zlib';
 import { spawnSync } from 'node:child_process';
-import { projectOperations as api } from '../../../plugins/yss-backend-delivery/project.mjs';
-import { migrationApply } from '../../../plugins/yss-backend-delivery/migration.mjs';
 import { materializeTestPlugin } from '../scripts/tooling-fixture.mjs';
 
 const ROOT = path.resolve(import.meta.dirname, '../../../..');
@@ -34,82 +31,50 @@ test('single entry and explicit M4 migration preserve project assets and fail cl
     assert.equal(command('project-entry', ['--target-dir', target, '--mode', 'reuse', '--input', put('bad.json', { artifact_refs: ['../outside'] })]).status, 1);
     assert.deepEqual(fs.readdirSync(path.join(plugin, 'skills')), ['backend-delivery']);
   });
-  // Restore the exact M4 overlay over the identical pinned CLI base, then bind its registered digest.
-  const legacy = JSON.parse(fs.readFileSync(path.join(SOURCE, 'legacy-m4.json')));
-  const overlay = JSON.parse(gunzipSync(fs.readFileSync(path.join(ROOT, '.template-source/tooling/node/fixtures/plugin-migration/m4-overlay.json.gz'))));
-  const archive = JSON.parse(gunzipSync(fs.readFileSync(path.join(plugin, 'assets/legacy-cli-package.json.gz'))));
-  const cliFiles = new Map(archive.files.map(item => [item.ref, item]));
-  const snapshot = JSON.parse(Buffer.from(cliFiles.get('template.snapshot.json').content, 'base64'));
-  const oldFiles = new Map(overlay.files.map(item => [item.ref, item]));
-  const latest = JSON.parse(fs.readFileSync(path.join(plugin, 'assets/project-binding.json')));
-  const legacyRefs = new Set(legacy.binding.map(item => item.ref));
-  for (const item of latest) if (!legacyRefs.has(item.ref) && fs.existsSync(path.join(target, item.ref))) fs.rmSync(path.join(target, item.ref));
-  for (const item of legacy.binding) {
-    if (oldFiles.has(item.ref)) continue;
-    const source = cliFiles.get(`template/${snapshot.encodedPaths?.[item.ref] || item.ref}`);
-    assert.ok(source, `legacy source missing: ${item.ref}`);
-    const file = path.join(target, item.ref); fs.mkdirSync(path.dirname(file), { recursive: true });
-    fs.writeFileSync(file, Buffer.from(source.content, 'base64')); fs.chmodSync(file, source.mode);
-  }
-  for (const file of overlay.files) {
-    const dest = path.join(target, file.ref); fs.mkdirSync(path.dirname(dest), { recursive: true });
-    fs.writeFileSync(dest, Buffer.from(file.content, 'base64')); fs.chmodSync(dest, file.mode);
-  }
-  fs.writeFileSync(path.join(target, 'skills-lock.json'), Buffer.from(cliFiles.get('template/skills-lock.json').content, 'base64'));
-  const receiptPath = path.join(target, '.yss-plugin.json'), receipt = JSON.parse(fs.readFileSync(receiptPath));
-  Object.assign(receipt, { plugin: legacy.plugin, cli: legacy.cli, plugin_bundle_sha256: legacy.bundle_digest, core_digest: api.digest(legacy.binding) });
-  fs.writeFileSync(receiptPath, JSON.stringify(receipt));
-  const metadataPath = path.join(target, '.yss-template.json');
-  api.withLegacyCli(plugin, oldCli => {
-    const oldTarget = path.join(dir, 'legacy-baseline');
-    const init = run(oldCli.bin, ['--project-name', '迁移机制测试', '--business-domain', '合成测试', '--team-size', '3',
-      '--issue-tracker', 'github', '--no-example-docs', '--target-dir', oldTarget]);
-    assert.equal(init.status, 0, init.stderr);
-    fs.copyFileSync(path.join(oldTarget, '.yss-template.json'), metadataPath);
-  });
-  const lockRefresh = run(path.join(target, 'scripts/update-skill-lock'), []);
-  assert.equal(lockRefresh.status, 0, lockRefresh.stderr || lockRefresh.stdout);
-  const originalReceipt = fs.readFileSync(receiptPath);
+  // Historical M4/v0.2/installed-plugin coverage is exercised by the recovery
+  // archive matrix in plugins/*/tests/native.test.mjs; no legacy executor is bundled.
+  const receiptPath = path.join(target, '.yss-backend-plugin.json');
+  const current = JSON.parse(fs.readFileSync(receiptPath));
+  const previous = Buffer.from(JSON.stringify({ ...current, plugin_version: 'prior-native-binding-fixture' }));
+  fs.writeFileSync(receiptPath, previous);
   const business = put('project/docs/business-note.txt', 'Preserve user-owned business and approval evidence');
-  const migration = () => command('project-migration-plan', ['--target-dir', target]);
-  await t.test('unknown identity, drift and completed projects reject migration', () => {
-    fs.writeFileSync(receiptPath, JSON.stringify({ ...receipt, plugin_bundle_sha256: 'unknown' }));
-    assert.equal(migration().status, 1); fs.writeFileSync(receiptPath, originalReceipt);
-    const scope = path.join(target, '.yss-execution-scope.yaml'), bytes = fs.readFileSync(scope);
-    fs.appendFileSync(scope, '# drift'); assert.equal(migration().status, 1); fs.writeFileSync(scope, bytes);
+  const migration = () => command('project-upgrade-plan', ['--target-dir', target]);
+  await t.test('unknown legacy identity and completed projects reject upgrades without writes', () => {
+    const foreign = put('project/.yss-plugin.json', { plugin: 'yss-backend-delivery', plugin_bundle_sha256: '0'.repeat(64), business_execution_ready: false, execution_owner: 'project-local-yss-product-lifecycle' });
+    assert.equal(migration().status, 1); fs.rmSync(foreign);
     const terminal = put('project/.yss-backend-delivery.json', {});
     assert.equal(migration().status, 1); fs.rmSync(terminal);
+    assert.deepEqual(fs.readFileSync(receiptPath), previous);
   });
   let preview = ok(migration());
-  await t.test('preview is read-only and stale plans cannot apply', () => {
-    assert.deepEqual(fs.readFileSync(receiptPath), originalReceipt);
-    assert.ok(preview.changes.some(change => change.ref === '.yss-plugin.json'));
+  await t.test('upgrade preview is read-only and concurrent binding changes cannot apply', () => {
+    assert.deepEqual(fs.readFileSync(receiptPath), previous);
+    assert.ok(preview.preview.result.changes.some(change => change.path === '.yss-backend-plugin.json'));
     const file = put('migration.json', preview);
-    fs.appendFileSync(business, '\nconcurrent edit');
-    assert.equal(command('project-migration-apply', ['--plan', file]).status, 1);
-    assert.match(fs.readFileSync(business, 'utf8'), /concurrent edit/);
+    const edited = Buffer.from(JSON.stringify({ ...JSON.parse(previous), note: 'concurrent edit' }));
+    fs.writeFileSync(receiptPath, edited);
+    assert.equal(command('project-upgrade-apply', ['--plan', file]).status, 1);
+    assert.deepEqual(fs.readFileSync(receiptPath), edited);
+    fs.writeFileSync(receiptPath, previous);
   });
   preview = ok(migration());
-  await t.test('verification failure rolls back original bytes without discarding the backup', () => {
-    api.withCli(plugin, cli => {
-      let checks = 0;
-      assert.throws(() => migrationApply(plugin, preview, cli, { ...api, projectCheck(...args) {
-        if (++checks === 4) throw new Error('synthetic-final-verification-failure');
-        return api.projectCheck(...args);
-      } }), /synthetic-final-verification-failure; rollback_conflicts=\[\]/);
-    });
-    assert.deepEqual(fs.readFileSync(receiptPath), originalReceipt);
-    assert.ok(fs.existsSync(path.join(preview.backup_path, 'plan.json')));
-    fs.renameSync(preview.backup_path, `${preview.backup_path}-failed-attempt`);
-  });
-  await t.test('known M4 source migrates and retains all original business evidence', () => {
-    const before = fs.readFileSync(business);
-    const result = ok(command('project-migration-apply', ['--plan', put('migration-current.json', preview)]));
-    assert.equal(result.result, 'migrated'); assert.equal(result.ready_for_agent, false);
-    assert.deepEqual(fs.readFileSync(business), before);
-    assert.equal(result.binding.plugin, 'yss-backend-delivery');
-    assert.equal(result.binding.migration.from_plugin, 'yss-plan-to-backend');
+  await t.test('public whole-transaction rollback restores original metadata and binding bytes', () => {
+    const metadata = fs.readFileSync(path.join(target, '.yss.json'));
+    ok(command('project-upgrade-apply', ['--plan', put('migration-current.json', preview)]));
     ok(command('project-check', ['--target-dir', target]));
-    assert.equal(command('project-migration-apply', ['--plan', path.join(dir, 'migration-current.json')]).status, 1);
+    ok(command('project-rollback', ['--target-dir', target, '--apply']));
+    assert.deepEqual(fs.readFileSync(receiptPath), previous);
+    assert.deepEqual(fs.readFileSync(path.join(target, '.yss.json')), metadata);
+    assert.ok(fs.existsSync(path.join(target, '.yss', 'transactions')), 'durable recovery journal remains available');
+  });
+  await t.test('reviewed public upgrade retains business evidence and replayed plan is rejected', () => {
+    const before = fs.readFileSync(business);
+    const saved = put('migration-final.json', ok(migration()));
+    const result = ok(command('project-upgrade-apply', ['--plan', saved]));
+    assert.equal(result.result, 'applied'); assert.equal(result.ready_for_agent, false);
+    assert.deepEqual(fs.readFileSync(business), before);
+    assert.equal(result.check.binding.plugin, 'yss-backend-delivery');
+    ok(command('project-check', ['--target-dir', target]));
+    assert.equal(command('project-upgrade-apply', ['--plan', saved]).status, 1);
   });
 });

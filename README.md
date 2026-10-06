@@ -36,7 +36,7 @@ YSS UI 组件知识同时通过项目级 MCP 配置提供；支持的客户端�
 
 ## 模板初始化 CLI
 
-`create-yss-spec` 的发布仓库是 [iloveZzz/create-yss-spec](https://github.com/iloveZzz/create-yss-spec)。用户从统一手册选择家族；CLI 源码、测试、打包和发布仍在各自仓库维护：
+四种 Profile 使用 [yss-cli](https://github.com/iloveZzz/yss-cli) 的原生 `yss` 入口，模板和三个 Agent 模板源独立维护。初始化、预演、事务、迁移及 Bundle 导出消费版本化协议：
 
 - [YSS 用户手册：CLI 能力与写入方式](./.template-spec/user-guide/用户手册.md#cli-能力与写入方式)
 - [YSS 用户手册：接管、同步与恢复](./.template-spec/user-guide/用户手册.md#接管同步与恢复)
@@ -44,10 +44,11 @@ YSS UI 组件知识同时通过项目级 MCP 配置提供；支持的客户端�
 推荐入口：
 
 ```bash
-npm create yss-spec@latest
+yss init --profile spec --root /absolute/path/project --plan --out /absolute/path/init-plan.json --json
+yss init --profile spec --root /absolute/path/project --apply --plan-file /absolute/path/init-plan.json --json
 ```
 
-首次使用前请先确认独立仓库和 npm 包已完成发布。
+`init` 默认直接初始化；上述 `--plan` 路线先生成可审阅计划。使用已固定版本和 SHA-256 的二进制；稳定版发行状态以发行清单为准。旧四个 npm 包仅作为历史识别、迁移和未完成事务恢复渠道保留，不执行 unpublish。完整安装、补装、恢复及退役边界见 [统一 CLI 操作说明](.template-spec/user-guide/unified-cli.md)。
 
 ## 模板配置取舍
 

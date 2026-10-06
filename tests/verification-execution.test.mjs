@@ -10,6 +10,7 @@ import {createHash} from 'node:crypto';
 import {executeVerificationPlan,addVerificationExecutionTasks,validateVerificationArguments,prepareVerificationPlan} from '../.template-source/scripts/lib/template-verification-worker.mjs';
 import {assertQualificationExecutionContract} from '../.template-source/scripts/lib/verification-report-validator.mjs';
 import {compileTaskExecution} from '../.template-source/scripts/lib/verification-execution-plan.mjs';
+import {planTemplateVerification,loadVerificationProfiles} from '../scripts/lib/template-verification.mjs';
 
 const quote = value => `'${String(value).replaceAll("'", "'\\''")}'`;
 const node = source => `${quote(process.execPath)} -e ${quote(source)}`;
@@ -23,6 +24,72 @@ const fixtureRoot=t=>{
   git('init','-q');git('add','.');git('-c','user.name=Fixture','-c','user.email=fixture@example.invalid','commit','-qm','fixture');
   return {directory,root};
 };
+test('真实Git退役四gitlink差异纳入完整门禁，仍保留三个Agent与统一CLI来源',t=>{
+  const {root}=fixtureRoot(t),sourceRoot=fileURLToPath(new URL('..',import.meta.url)),git=(...args)=>execFileSync('git',args,{cwd:root,encoding:'utf8'}).trim();
+  const retired=['create-yss-spec','create-yss-harness-strategic-design','create-yss-harness-backend','create-yss-harness-frontend'].map(name=>`submodules/${name}`);
+  const active=['yss-harness-design-agent','yss-harness-backend-agent','yss-harness-frontend-agent','yss-cli'].map(name=>`submodules/${name}`);
+  const seed=git('rev-parse','HEAD'),modules=refs=>refs.map(ref=>`[submodule "${ref}"]\n\tpath = ${ref}\n\turl = https://example.invalid/${path.basename(ref)}.git\n`).join('');
+  for(const ref of active)git('clone','--quiet','--no-hardlinks',root,path.join(root,ref));
+  fs.writeFileSync(path.join(root,'.gitmodules'),modules([...retired,...active]));
+  for(const ref of [...retired,...active])git('update-index','--add','--cacheinfo',`160000,${seed},${ref}`);
+  git('add','.gitmodules');git('-c','user.name=Fixture','-c','user.email=fixture@example.invalid','commit','-qm','eight real gitlinks');
+  for(const ref of retired)git('update-index','--force-remove','--',ref);
+  fs.writeFileSync(path.join(root,'.gitmodules'),modules(active));
+  const changed=[...new Set([git('diff','--cached','--name-only'),git('diff','--name-only')].flatMap(text=>text.split('\n').filter(Boolean)))].sort();
+  assert.deepEqual(changed,['.gitmodules',...retired].sort());
+  const remaining=git('ls-files','--stage').split('\n').filter(line=>line.startsWith('160000 ')).map(line=>line.split('\t')[1]).sort();
+  assert.deepEqual(remaining,active.sort(),'退役差异不能删除三个Agent或yss来源');
+  for(const profile of ['fast','candidate']){
+    const plan=planTemplateVerification({profile,changedFiles:changed,root:sourceRoot});
+    assert.equal(plan.effective_profile,'release');assert.equal(plan.compatibility_required,true);assert.deepEqual(plan.unknown_files,[]);assert.match(plan.escalation_reason,/\.gitmodules/);
+    for(const group of ['drift-identity','candidate-integrity','dedicated-cli-core','cli-sync','strategic-handoff-package','implementation'])assert.ok(plan.groups.includes(group),`${profile}: ${group}`);
+    const execution=addVerificationExecutionTasks(plan,{root:sourceRoot,reportDir:path.join(root,`report-${profile}`)});
+    assert.ok(execution.commands.some(item=>item.command.includes('verify-delivery-harness-distribution')),'公开四Profile交接分发不能被裁掉');
+    assert.equal(execution.commands.filter(item=>item.kind==='artifact-prepare').length,4,'四Profile公开Bundle生产准备不能被裁掉');
+    assert.ok(execution.commands.some(item=>item.command.includes('native-consumer-routing.test.mjs')),'活跃专职源与统一CLI消费者检查不能被裁掉');
+  }
+  assert.throws(()=>planTemplateVerification({profile:'fast',changedFiles:['unknown-retirement-policy.asset'],root:sourceRoot}),/UNKNOWN_VERIFICATION_PATH/);
+});
+test('原生实例必要检查纳入各profile及完整真实变更计划，保持退役门禁',t=>{
+  const root=fileURLToPath(new URL('..',import.meta.url)),directory=temporary(t);
+  const git=(...args)=>execFileSync('git',args,{cwd:root,encoding:'utf8',maxBuffer:32*1024*1024}).split('\0').filter(Boolean);
+  const actual=[...new Set([
+    ...git('diff','--name-only','-z','--no-renames','--diff-filter=ACDMRTUXB'),
+    ...git('diff','--cached','--name-only','-z','--no-renames','--diff-filter=ACDMRTUXB'),
+    ...git('ls-files','-z','--others','--exclude-standard'),
+  ])].sort();
+  const config=loadVerificationProfiles(),nativeRef='tests/native-instance-drift.test.mjs';
+  const definition=config.supplemental_checks.find(item=>item.id==='check.native-instance-drift');
+  assert.ok(definition,'必要原生实例suite必须在权威登记中存在');
+  assert.equal(definition.group,'drift-identity');
+  assert.equal(definition.task_id,'supplemental.native-instance-drift');
+  assert.equal(definition.when,'template-source');
+  assert.equal(definition.source_requirement,'committed');
+  assert.deepEqual(definition.gate_ids,['check.verification-fixed-source']);
+  assert.deepEqual(definition.depends_on,[]);
+  assert.ok(actual.every(ref=>typeof ref==='string'&&ref),'完整实际变更路径不可用显式子集代替');
+  for(const profile of ['fast','candidate','release'])for(const [scope,changedFiles]of [['native',[nativeRef]],['complete',actual]]){
+    const plan=planTemplateVerification({profile,changedFiles,root});
+    assert.deepEqual(plan.unknown_files,[]);
+    assert.deepEqual(plan.changed_files,[...new Set(changedFiles)].sort());
+    for(const group of ['drift-identity','implementation','cli-sync'])assert.ok(plan.groups.includes(group),`${profile}/${scope}: ${group}`);
+    const execution=addVerificationExecutionTasks(plan,{root,reportDir:path.join(directory,`${profile}-${scope}`)});
+    const check=execution.commands.find(item=>item.task_id==='supplemental.native-instance-drift');
+    assert.ok(check,'路径有路由还必须实际编译必要检查');
+    assert.equal(check.when,'template-source');
+    assert.equal(check.source_requirement,'committed');
+    assert.deepEqual(check.gate_ids,['check.verification-fixed-source']);
+    assert.deepEqual(check.execution.args,['--test','--test-concurrency=1','tests/instance-metadata.test.mjs','tests/native-instance-drift.test.mjs']);
+    assert.ok(check.depends_on.includes('check.verification-environment'));
+    if(scope==='complete'&&actual.includes('.gitmodules')){
+      assert.equal(plan.commands.filter(item=>item.task_id?.startsWith('legacy.')).length,117,'冻结历史检查不能改变');
+      assert.equal(execution.commands.filter(item=>item.kind==='artifact-prepare').length,4);
+      assert.ok(execution.commands.some(item=>item.command.includes('verify-delivery-harness-distribution')));
+      assert.ok(execution.commands.some(item=>item.command.includes('native-consumer-routing.test.mjs')));
+    }
+  }
+  for(const profile of ['fast','candidate','release'])assert.throws(()=>planTemplateVerification({profile,changedFiles:['unregistered-native-instance.asset'],root}),/UNKNOWN_VERIFICATION_PATH/);
+});
 test('前置失败跳过依赖，继续同组及跨组独立检查并保留真实退出', async t => {
   const dir = temporary(t);
   const plan = {strategy:'qualified-gates',groups:['checks'],commands:[
@@ -77,18 +144,18 @@ test('两个Node测试文件默认会重叠，透明执行显式串行并保留�
   assert.equal(row.actual_exit_code,0);assert.equal(row.command,command);assert.deepEqual(row.actual_execution,execution);assert.equal(row.actual_execution.args.filter(arg=>arg.startsWith('--test-concurrency=')).join(','),'--test-concurrency=1');
   assert.equal(compileTaskExecution({...task,command:`${command} --test-concurrency=4`},{root:directory}).args.filter(arg=>arg.startsWith('--test-concurrency=')).join(','),'--test-concurrency=1');
 });
-test('两项原始Spec源码测试绑定独立消费位置、固定SHA及原始请求',t=>{
+test('两项退役Spec源码检查保留历史请求并执行原生公开行为',t=>{
   const {directory,root}=fixtureRoot(t),reportDir=path.join(directory,'report'),fixedCommit='a'.repeat(40);
   for(const [task_id,name]of [['legacy.001','content-identity'],['legacy.010','sync-fast-smoke']]){
     const command=`node --test submodules/create-yss-spec/tests/${name}.test.js`,execution=compileTaskExecution({task_id,command},{root,reportDir,fixedCommit});
-    assert.equal(execution.requested_command,command);assert.equal(execution.cwd,path.join(reportDir,'consumption/source-cli/spec'));assert.equal(execution.source_consumer_ref,path.join(reportDir,'consumption/source-test-receipt.json'));assert.equal(execution.environment.YSS_SPEC_TEMPLATE_REF,fixedCommit);assert.equal(execution.environment.YSS_SPEC_TEMPLATE_REPO,root);
-    assert.throws(()=>compileTaskExecution({task_id,command:command.replace(name,'changed')},{root,reportDir}),/SOURCE_TEST_REQUEST_MISMATCH/);
+    assert.equal(execution.requested_command,command);assert.equal(execution.cwd,root);assert.equal(execution.source_consumer_ref,undefined);assert.deepEqual(execution.args,['--test','--test-concurrency=1',path.join(root,'tests/cli-retirement.test.mjs')]);assert.deepEqual(execution.environment,{});
+    assert.throws(()=>compileTaskExecution({task_id,command:command.replace(name,'changed')},{root,reportDir}),/RETIRED_CHECK_REQUEST_MISMATCH/);
   }
 });
 test('无report-dir的完整CLI计划分配新仓外报告且包含真实准备台账',t=>{
   const root=fileURLToPath(new URL('..',import.meta.url)),entry=fileURLToPath(new URL('../scripts/run-template-verification',import.meta.url));
   const plan=JSON.parse(execFileSync(process.execPath,[entry,'--profile','release','--plan','--json'],{cwd:root,encoding:'utf8',timeout:10000}));
-  const source=plan.commands.find(task=>task.kind==='source-test-consumer');assert.ok(source);assert.ok(path.isAbsolute(source.receipt_file));assert.equal(fs.existsSync(path.dirname(source.receipt_file)),false);assert.ok(!source.receipt_file.startsWith(root+path.sep));assert.ok(plan.commands.find(task=>task.task_id==='legacy.010').depends_on.includes(source.id));
+  const consumer=plan.commands.find(task=>task.kind==='artifact-consumers');assert.ok(consumer);assert.ok(path.isAbsolute(consumer.receipt_file));assert.equal(fs.existsSync(path.dirname(consumer.receipt_file)),false);assert.ok(!consumer.receipt_file.startsWith(root+path.sep));assert.equal(plan.commands.some(task=>task.kind==='source-test-consumer'),false);assert.ok(plan.commands.find(task=>task.task_id==='legacy.010').depends_on.includes(consumer.id));
 });
 test('真实进程超时返回124并保留最终观测，后续独立检查完成', async t => {
   const dir = temporary(t);

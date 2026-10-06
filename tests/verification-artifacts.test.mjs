@@ -3,54 +3,49 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import {createHash} from 'node:crypto';
-import {createArtifactCoordinator, sourceTuple, validateArtifact,installedTreeDigest,prepareCliSourceConsumer,validateCliSourceConsumer} from '../.template-source/scripts/lib/verification-artifacts.mjs';
 import {spawnSync} from 'node:child_process';
-const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
+import {createArtifactCoordinator,sourceTuple,validateArtifact,installedTreeDigest,produceCliArtifact,prepareCliSourceConsumer,validateCliSourceConsumer,verifyInstalledCliMigration} from '../.template-source/scripts/lib/verification-artifacts.mjs';
+import {NATIVE_PROFILES,nativeBinary,nativeDigest as hash,inspectNative,runNative} from '../.template-source/scripts/lib/native-yss.mjs';
+const temporary=t=>{const dir=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'native-artifacts-')));t.after(()=>fs.rmSync(dir,{recursive:true,force:true}));return dir;};
+const source=(binarySha)=>({namespace:'candidate-release',family:'spec',cli_commit:'1'.repeat(40),template_commit:'2'.repeat(40),core_commit:'3'.repeat(40),package_name:'yss',version:'1.0.0-alpha.3',template_version:'git:'+'2'.repeat(40),source_contract_version:2,protocol_version:1,snapshot_hash:'4'.repeat(64),manifest_hash:'5'.repeat(64),bundle_hash:'6'.repeat(64),binary_sha256:binarySha});
+
 test('同轮精确来源只生产一次，plugin-pinned 与候选产物分槽',t=>{
- const directory=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'artifact-tuple-')));t.after(()=>fs.rmSync(directory,{recursive:true,force:true}));
- const source={namespace:'candidate-release',family:'spec',cli_commit:'1'.repeat(40),template_commit:'2'.repeat(40),core_commit:'3'.repeat(40),package_name:'create-yss-spec',version:'1.0.0'};
- const tarball=path.join(directory,'package.tgz');fs.writeFileSync(tarball,'exact package bytes');let count=0;
- const coordinator=createArtifactCoordinator({produce:tuple=>{count++;return {source_tuple:tuple,tarball,tarball_sha256:hash(fs.readFileSync(tarball))};}});
- const a=coordinator.acquire(source);assert.equal(coordinator.acquire({...source}),a);assert.equal(count,1);
- coordinator.acquire({...source,namespace:'plugin-pinned'});assert.equal(count,2);
- assert.throws(()=>validateArtifact(a,{...source,template_commit:'4'.repeat(40)}),/来源/);
- fs.writeFileSync(tarball,'changed');assert.throws(()=>validateArtifact(a,source),/摘要/);
- assert.throws(()=>sourceTuple({...source,core_commit:'HEAD'}),/完整/);
+ const directory=temporary(t),tarball=path.join(directory,'yss');fs.writeFileSync(tarball,'exact binary bytes');const tuple=source(hash(fs.readFileSync(tarball)));let count=0;
+ const coordinator=createArtifactCoordinator({produce:expected=>{count++;return {source_tuple:expected,tarball,tarball_sha256:tuple.binary_sha256};}});
+ const a=coordinator.acquire(tuple);assert.equal(coordinator.acquire({...tuple}),a);assert.equal(count,1);coordinator.acquire({...tuple,namespace:'plugin-pinned'});assert.equal(count,2);
+ assert.throws(()=>validateArtifact(a,{...tuple,template_commit:'7'.repeat(40)}),/来源/);
+ fs.writeFileSync(tarball,'changed');assert.throws(()=>validateArtifact(a,tuple),/摘要/);
+ assert.throws(()=>sourceTuple({...tuple,core_commit:'HEAD'}),/完整/);assert.throws(()=>sourceTuple({...tuple,protocol_version:2}),/协议/);assert.throws(()=>sourceTuple({...tuple,bundle_hash:undefined}),/bundle_hash/);
 });
 
 test('已安装 bin/runtime 字节、类型和权限污染不能复用',t=>{
- const directory=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'installed-tree-')));t.after(()=>fs.rmSync(directory,{recursive:true,force:true}));
- const source={namespace:'candidate-release',family:'spec',cli_commit:'1'.repeat(40),template_commit:'2'.repeat(40),core_commit:'3'.repeat(40),package_name:'create-yss-spec',version:'1.0.0'},installed=path.join(directory,'installed');fs.mkdirSync(path.join(installed,'bin'),{recursive:true});
- fs.writeFileSync(path.join(installed,'package.json'),JSON.stringify({name:source.package_name,version:source.version}));
- for(const [file,data] of [['template.snapshot.json',{sourceState:'committed',templateCommit:source.template_commit,requestedRef:source.template_commit}],['cli-core.lock.json',{sourceState:'committed',sourceRevision:source.core_commit}]])fs.writeFileSync(path.join(installed,file),JSON.stringify(data));
- const bin=path.join(installed,'bin/create-yss-spec.js');fs.writeFileSync(bin,'real entry',{mode:0o755});
- const tarball=path.join(directory,'package.tgz');fs.writeFileSync(tarball,'fixed packed bytes');
- const artifact={source_tuple:source,tarball,tarball_sha256:hash(fs.readFileSync(tarball)),installed_root:installed,snapshot_sha256:hash(fs.readFileSync(path.join(installed,'template.snapshot.json'))),core_lock_sha256:hash(fs.readFileSync(path.join(installed,'cli-core.lock.json'))),installed_tree_sha256:installedTreeDigest(installed)};
- validateArtifact(artifact,source);artifact.source_tuple={...source,snapshot_hash:'0'.repeat(64)};assert.throws(()=>validateArtifact(artifact,source),/材料摘要/);artifact.source_tuple=source;
- fs.writeFileSync(bin,'polluted runtime');assert.throws(()=>validateArtifact(artifact,source),/安装树/);
- fs.writeFileSync(bin,'real entry');fs.chmodSync(bin,0o644);assert.throws(()=>validateArtifact(artifact,source),/安装树/);
- fs.chmodSync(bin,0o755);fs.rmSync(bin);fs.mkdirSync(bin);assert.throws(()=>validateArtifact(artifact,source),/安装树/);
+ const directory=temporary(t),installed=path.join(directory,'installed');fs.mkdirSync(path.join(installed,'bundle'),{recursive:true});const binary=path.join(installed,'yss');fs.writeFileSync(binary,'fixed binary',{mode:0o755});
+ const tuple=source(hash(fs.readFileSync(binary))),bundle_manifest=path.join(installed,'bundle/.yss-bundle.json');fs.writeFileSync(bundle_manifest,JSON.stringify({schemaVersion:2,profile:tuple.family,templateVersion:tuple.template_version,templateCommit:tuple.template_commit,sourceSnapshotHash:tuple.snapshot_hash,manifestHash:tuple.manifest_hash,bundleHash:tuple.bundle_hash}));
+ fs.writeFileSync(path.join(installed,'bundle/runtime.mjs'),'fixed retained governance tool',{mode:0o644});const tarball=path.join(directory,'release-yss');fs.copyFileSync(binary,tarball);
+ const artifact={source_tuple:tuple,tarball,tarball_sha256:tuple.binary_sha256,installed_root:installed,binary,bundle_manifest,installed_tree_sha256:installedTreeDigest(installed)};
+ validateArtifact(artifact,tuple);const original=fs.readFileSync(binary);fs.writeFileSync(binary,'polluted runtime');assert.throws(()=>validateArtifact(artifact,tuple),/安装树/);fs.writeFileSync(binary,original);fs.chmodSync(binary,0o644);assert.throws(()=>validateArtifact(artifact,tuple),/安装树/);fs.chmodSync(binary,0o755);
+ const manifest=fs.readFileSync(bundle_manifest);fs.writeFileSync(bundle_manifest,JSON.stringify({profile:'backend'}));artifact.installed_tree_sha256=installedTreeDigest(installed);assert.throws(()=>validateArtifact(artifact,tuple),/Bundle 来源/);fs.writeFileSync(bundle_manifest,manifest);artifact.installed_tree_sha256=installedTreeDigest(installed);
+ fs.rmSync(binary);fs.mkdirSync(binary);assert.throws(()=>validateArtifact(artifact,tuple),/安装树/);
 });
 
-test('固定源码消费保留原 tests/scripts 并绑定精确安装材料，污染与错配不能复用',t=>{
- const base=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'source-consumer-')));t.after(()=>fs.rmSync(base,{recursive:true,force:true}));
- const root=path.join(base,'source'),cli=path.join(root,'submodules/create-yss-spec');fs.mkdirSync(cli,{recursive:true});
- const commands=[],run=(file,args,cwd)=>{commands.push({file,args,cwd});const result=spawnSync(file,args,{cwd,encoding:'utf8'});assert.equal(result.status,0,result.stderr);return result;};
- run('git',['init','-q'],root);run('git',['init','-q'],cli);
- const put=(ref,bytes,mode=0o644)=>{fs.mkdirSync(path.dirname(path.join(cli,ref)),{recursive:true});fs.writeFileSync(path.join(cli,ref),bytes,{mode});};
- put('package.json',JSON.stringify({name:'create-yss-spec',version:'1.0.0'}));put('bin/create-yss-spec.js','fixed public entry',0o755);put('scripts/sync-template.js','fixed source script');put('tests/sync-fast-smoke.test.js',`const fs=require('fs'),path=require('path'),assert=require('assert');assert.equal(JSON.parse(fs.readFileSync(path.join(__dirname,'../template.snapshot.json'))).sourceState,'committed');`);
- run('git',['add','.'],cli);run('git',['-c','user.name=fixture','-c','user.email=fixture@example.invalid','commit','-qm','fixed CLI'],cli);const cliCommit=run('git',['rev-parse','HEAD'],cli).stdout.trim();
- run('git',['add','.'],root);run('git',['-c','user.name=fixture','-c','user.email=fixture@example.invalid','commit','-qm','fixed source'],root);const commit=run('git',['rev-parse','HEAD'],root).stdout.trim();
- const source={namespace:'candidate-release',family:'spec',cli_commit:cliCommit,template_commit:commit,core_commit:commit,package_name:'create-yss-spec',version:'1.0.0'},installed=path.join(base,'installed');fs.mkdirSync(installed);
- for(const ref of ['package.json','bin/create-yss-spec.js']){fs.mkdirSync(path.dirname(path.join(installed,ref)),{recursive:true});fs.copyFileSync(path.join(cli,ref),path.join(installed,ref));}
- fs.writeFileSync(path.join(installed,'template.snapshot.json'),JSON.stringify({sourceState:'committed',templateCommit:commit,requestedRef:commit}));fs.writeFileSync(path.join(installed,'cli-core.lock.json'),JSON.stringify({sourceState:'committed',sourceRevision:commit}));const tarball=path.join(base,'package.tgz');fs.writeFileSync(tarball,'exact package');
- const artifact={source_tuple:source,tarball,tarball_sha256:hash(fs.readFileSync(tarball)),installed_root:installed,snapshot_sha256:hash(fs.readFileSync(path.join(installed,'template.snapshot.json'))),core_lock_sha256:hash(fs.readFileSync(path.join(installed,'cli-core.lock.json'))),installed_tree_sha256:installedTreeDigest(installed)},directory=path.join(base,'consumer');
- const receipt=prepareCliSourceConsumer({root,source,artifact,directory,run}),validate=value=>validateCliSourceConsumer(value,{root,expectedSource:source,directory,artifact});assert.equal(validate(receipt).consumer_root,directory);
- assert.equal(fs.existsSync(path.join(installed,'tests')),false);assert.equal(fs.existsSync(path.join(directory,'scripts/sync-template.js')),true);assert.equal(commands.filter(row=>row.file==='npm').length,0);
- run(process.execPath,['--test','--test-concurrency=1',path.join(directory,'tests/sync-fast-smoke.test.js')],directory);validate(receipt);
- const testFile=path.join(directory,'tests/sync-fast-smoke.test.js'),bytes=fs.readFileSync(testFile);fs.writeFileSync(testFile,'process.exit(0)');const forged={...receipt,source_tree_sha256:installedTreeDigest(directory)};assert.throws(()=>validate(forged),/原字节/);fs.writeFileSync(testFile,bytes);
- fs.chmodSync(testFile,0o755);assert.throws(()=>validate({...receipt,source_tree_sha256:installedTreeDigest(directory)}),/权限/);fs.chmodSync(testFile,0o644);
- fs.writeFileSync(path.join(directory,'template.snapshot.json'),'fake material');assert.throws(()=>validate({...receipt,source_tree_sha256:installedTreeDigest(directory)}),/安装覆盖/);fs.copyFileSync(path.join(installed,'template.snapshot.json'),path.join(directory,'template.snapshot.json'));
- assert.throws(()=>validate({...receipt,test_files:{'tests/sync-fast-smoke.test.js':'0'.repeat(64)}}),/原测试摘要/);assert.throws(()=>validateCliSourceConsumer(receipt,{root,expectedSource:{...source,cli_commit:'0'.repeat(40)},directory,artifact}),/来源/);validate(receipt);
+test('固定原生消费保留完整 Bundle 并绑定二进制 bytes，旧私有源码接口明确拒绝',t=>{
+ const base=temporary(t),root=path.join(base,'source');fs.mkdirSync(root);const pinned=nativeBinary(),inspection=inspectNative('spec'),version=runNative(['version']).result;
+ const tuple={...source(pinned.digest),version:version.version,template_version:inspection.templateVersion,template_commit:inspection.templateCommit,snapshot_hash:inspection.sourceSnapshotHash,manifest_hash:inspection.manifestHash,bundle_hash:inspection.bundleHash};
+ const commands=[],run=(file,args,cwd,env)=>{commands.push({file,args,cwd});const result=spawnSync(file,args,{cwd,env,encoding:'utf8',maxBuffer:128*1024*1024});assert.equal(result.status,0,result.stderr);return result;};
+ const artifact=produceCliArtifact({root,source:tuple,directory:path.join(base,'artifact'),run});validateArtifact(artifact,tuple);assert.equal(commands.length,1);assert.equal(commands[0].file,artifact.binary);assert.deepEqual(commands[0].args.slice(0,2),['bundle','export']);assert.ok(fs.existsSync(path.join(artifact.installed_root,'bundle/scripts/runtime-store')));assert.ok(!commands.some(row=>row.file==='npm'));
+ assert.throws(()=>prepareCliSourceConsumer({}),/RETIRED_SOURCE_CONSUMER/);assert.throws(()=>validateCliSourceConsumer({}),/RETIRED_SOURCE_CONSUMER/);
+ fs.writeFileSync(path.join(artifact.installed_root,'bundle/scripts/runtime-store'),'tampered governance tool');assert.throws(()=>validateArtifact(artifact,tuple),/安装树/);
+});
+
+test('四 Profile 真实原生受管升级执行非空事务、重新规划幂等并整体回退',t=>{
+ const base=temporary(t),root=path.join(base,'source');fs.mkdirSync(root);const pinned=nativeBinary(),version=runNative(['version']).result;
+ for(const family of NATIVE_PROFILES){
+  const inspection=inspectNative(family),tuple={...source(pinned.digest),family,version:version.version,template_version:inspection.templateVersion,cli_commit:version.cliCommit,template_commit:inspection.templateCommit,snapshot_hash:inspection.sourceSnapshotHash,manifest_hash:inspection.manifestHash,bundle_hash:inspection.bundleHash};
+  const commands=[],run=(file,args,cwd,env)=>{commands.push({file,args,cwd});return spawnSync(file,args,{cwd,env,encoding:'utf8',maxBuffer:128*1024*1024});};
+  const artifact=produceCliArtifact({root,source:tuple,directory:path.join(base,family,'artifact'),run});
+  const result=verifyInstalledCliMigration({artifact,directory:path.join(base,family,'upgrade'),run});
+  assert.equal(result.status,'passed');assert.equal(result.migration_fixture,'native-managed-upgrade');assert.equal(result.historical_recovery,'separate-required-gate');
+  for(const action of ['plan','apply','rollback'])assert.ok(commands.some(row=>row.file===artifact.binary&&row.args[0]==='migrate'&&row.args[1]===action),`${family}: ${action}`);
+  assert.equal(commands.filter(row=>row.args[0]==='migrate'&&row.args[1]==='plan').length,2);
+ }
 });

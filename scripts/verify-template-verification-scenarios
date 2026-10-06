@@ -1,3 +1,4 @@
+import {inspectNative} from '../.template-source/scripts/lib/native-yss.mjs';
 #!/usr/bin/env node
 import assert from "node:assert/strict";
 import { mkdtempSync, readFileSync, rmSync } from "node:fs";
@@ -61,7 +62,7 @@ assert.ok(releaseCommands.has("node --test submodules/create-yss-spec/tests/sync
 const frontend = release.commands.filter((entry) => entry.group === "frontend-delivery");
 assert.deepEqual(frontend.map((entry) => entry.lane), ["source-scenarios", "generated-distribution"]);
 assert.equal(frontend.every((entry) => entry.parallel_unless_env.includes("YSS_DEDICATED_INSTANCE_ROOT")), true);
-const instanceManifest = JSON.parse(readFileSync("submodules/create-yss-spec/template.manifest.json", "utf8"));
+const instanceManifest = inspectNative('spec').manifest;
 assert.ok(instanceManifest.excludePaths.includes("scripts/lib/template-verification-runner.mjs"), "模板验证 runner 不得分发到 project-instance");
 assert.throws(() => loadVerificationProfiles(`
 schema_version: 1
@@ -84,9 +85,9 @@ const skillChange = planTemplateVerification({ profile: "fast", changedFiles: ["
 assert.ok(skillChange.groups.includes("skills"));
 assert.ok(skillChange.groups.includes("hygiene"));
 
-for (const file of ["submodules/create-yss-spec", "submodules/create-yss-spec/src/api/_sync-service.js"]) {
+for (const file of [".template-source/distribution/bundle-profile.json", ".template-source/scripts/lib/native-yss.mjs"]) {
   const cli = planTemplateVerification({ profile: "fast", changedFiles: [file] });
-  assert.deepEqual(cli.groups, ["cli-sync", "hygiene"], `${file} 只运行 CLI 快速组和基本检查`);
+  assert.ok(cli.groups.includes("cli-sync"), `${file} 运行原生 CLI 快速组`);
   assert.equal(cli.effective_profile, "fast");
   const candidateCli = planTemplateVerification({ profile: "candidate", changedFiles: [file] });
   assert.ok(candidateCli.groups.includes("candidate-integrity"));

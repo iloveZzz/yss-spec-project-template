@@ -1,3 +1,4 @@
+import {readInstanceMetadata} from './instance-metadata.mjs';
 import { loadExecutionScope, assertScopeWorkUnit, scopedNextRoutes } from './lifecycle-execution-scope.mjs';
 import { createHash } from "node:crypto";
 import { readFileSync, existsSync, lstatSync, readdirSync, withValidationPhase, validationDependencies } from "./validation-phase.mjs";
@@ -117,18 +118,20 @@ export function inspectWorkUnitSkills({ root = ROOT, registry, route, agentRunti
     return value;
   }
   const lock = readJson('skills-lock.json');
-  const metadata = readJson('.yss-template.json');
+  const instance = readInstanceMetadata(root);
+  const metadata = instance?.metadata;
+  const metadataRef = instance?.metadataRef ?? '.yss.json';
   const selected = metadata?.distribution?.mode === 'selected' ? metadata.distribution : null;
   const registeredRuntimes = selected?.runtimes ??
     Object.keys(roots).filter(runtime => lock?.projectionRoots?.includes(roots[runtime]));
   if (!agentRuntime && registeredRuntimes.length === 1) agentRuntime = registeredRuntimes[0];
   if (agentRuntime && !Object.hasOwn(roots, agentRuntime)) throw new TypeError('未知 Agent 运行时: ' + agentRuntime);
-  if (!agentRuntime) report('runtime-required', null, '.yss-template.json', '请用 --agent-runtime 明确指定运行时；只在登记了唯一运行时时自动选择');
-  else if (!registeredRuntimes.includes(agentRuntime)) report('runtime-not-installed', null, '.yss-template.json', '所选运行时未登记；先核对运行时安装范围');
+  if (!agentRuntime) report('runtime-required', null, metadataRef, '请用 --agent-runtime 明确指定运行时；只在登记了唯一运行时时自动选择');
+  else if (!registeredRuntimes.includes(agentRuntime)) report('runtime-not-installed', null, metadataRef, '所选运行时未登记；先核对运行时安装范围');
   if (!lock?.skills?.shared || !Array.isArray(lock.projectionRoots)) report('skill-lock-invalid', null, 'skills-lock.json', '技能锁缺失或结构不支持；先恢复锁文件或规划迁移');
   if (selected && (!Array.isArray(selected.installedSkills) || !Array.isArray(selected.runtimes) ||
       JSON.stringify([...selected.runtimes.map(runtime => roots[runtime])].sort()) !== JSON.stringify([...(lock?.projectionRoots ?? [])].sort()))) {
-    report('distribution-lock-drift', null, '.yss-template.json', '实例元数据与技能锁的运行时或安装清单不一致');
+    report('distribution-lock-drift', null, metadataRef, '实例元数据与技能锁的运行时或安装清单不一致');
   }
   const inside = (file, directory) => file === directory || file.startsWith(directory + path.sep);
   const realRoot = realpathSync(root);
@@ -186,7 +189,7 @@ export function inspectWorkUnitSkills({ root = ROOT, registry, route, agentRunti
       report('skill-path-conflict', id, canonicalRef, '同名技能路径存在但未登记，拒绝覆盖');
       continue;
     }
-    if (selected && !declared) report('distribution-lock-drift', id, '.yss-template.json', '技能锁与实例安装清单不一致');
+    if (selected && !declared) report('distribution-lock-drift', id, metadataRef, '技能锁与实例安装清单不一致');
     try {
       const hash = checkedTreeHash(canonical, canonical);
       if (!existsSync(path.join(canonical, 'SKILL.md'))) report('managed-skill-missing', id, canonicalRef + '/SKILL.md', '已登记技能缺少入口文件');
@@ -203,10 +206,12 @@ export function inspectWorkUnitSkills({ root = ROOT, registry, route, agentRunti
       report('skill-path-invalid', id, canonicalRef, error.message);
     }
   }
-  const canEnsure = metadata?.metadataSchemaVersion === 3 && selected && metadata.templateName === 'create-yss-spec';
-  const commandArgs = ['create-yss-spec', 'skills', 'ensure', ...missing.sort(), ...when.flatMap(trigger => ['--when', trigger]), '--target-dir', root];
+  const native = instance?.kind === 'native';
+  const canEnsure = selected && (native || (metadata?.metadataSchemaVersion === 3 && metadata.templateName === 'create-yss-spec'));
+  const commandArgs = native ? ['yss','skills','ensure',...missing.sort(),'--root',root] : ['create-yss-spec', 'skills', 'ensure', ...missing.sort(), ...when.flatMap(trigger => ['--when', trigger]), '--target-dir', root];
   const quote = value => /^[a-zA-Z0-9_./:-]+$/.test(value) ? value : "'" + value.replaceAll("'", "'\\''") + "'";
-  const command = mode => [...commandArgs, mode].map(quote).join(' ');
+  const planFile=path.join(root,'.yss/plans/skills-ensure.json');
+  const command = mode => (native ? [...commandArgs,...(mode==='--plan'?['--plan','--out',planFile]:['--apply','--plan-file',planFile])] : [...commandArgs,mode]).map(quote).join(' ');
   return {
     read_only: true, execution_allowed: false, agent_runtime: agentRuntime ?? null,
     required_skills: [...required].sort(), missing_skills: missing,

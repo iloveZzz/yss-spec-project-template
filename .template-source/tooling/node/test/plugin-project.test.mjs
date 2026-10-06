@@ -34,18 +34,18 @@ test('fixed CLI initializes, binds and resumes a separate governance project wit
   await t.test('public dry-run lists writes while leaving target and backend unchanged', () => {
     initial = success(call('project-plan', ['--target-dir', target, '--backend-root', backend, ...opts]));
     assert.equal(initial.kind, 'initialize'); assert.equal(existsSync(target), false);
-    assert.ok(initial.write_files.includes('.yss-template.json')); assert.ok(initial.write_files.includes('.yss-plugin.json'));
-    assert.equal(initial.backend.registration_status, 'pending-lifecycle-onboarding');
+    assert.ok(initial.preview.result.changes.some(x => x.path === '.yss.json')); assert.ok(initial.preview.result.changes.some(x => x.path === '.yss-backend-plugin.json'));
+    assert.equal(initial.binding.backend.registration_status, 'pending-lifecycle-onboarding');
     assert.equal(readFileSync(path.join(backend, 'keep.txt'), 'utf8'), 'user code');
     writeFileSync(planFile, JSON.stringify(initial));
   });
 
   await t.test('actual offline CLI initialization succeeds, uses fixed provenance and does not initialize Git', () => {
     const result = success(call('project-apply', ['--plan', planFile]));
-    assert.equal(result.result, 'initialized'); assert.equal(result.ready_for_agent, false);
+    assert.equal(result.result, 'applied'); assert.equal(result.ready_for_agent, false);
     assert.equal(existsSync(path.join(target, '.git')), false);
-    const metadata = JSON.parse(readFileSync(path.join(target, '.yss-template.json')));
-    assert.equal(metadata.cliVersion, initial.cli.version); assert.equal(metadata.templateCommit, initial.cli.template_commit);
+    const metadata = JSON.parse(readFileSync(path.join(target, '.yss.json')));
+    assert.equal(metadata.profile, 'spec'); assert.equal(metadata.templateCommit, initial.binding.template_commit);
     assert.match(readFileSync(path.join(target, 'yss-project.yaml'), 'utf8'), /repository_mode: project-instance/);
     assert.equal(readFileSync(path.join(backend, 'keep.txt'), 'utf8'), 'user code');
   });
@@ -74,17 +74,18 @@ test('fixed CLI initializes, binds and resumes a separate governance project wit
     const ref = '.agents/skills/yss-product-lifecycle/SKILL.md';
     const file = path.join(target, ref), old = readFileSync(file);
     writeFileSync(file, Buffer.concat([old, Buffer.from('\nchanged\n')]));
-    const metadataFile = path.join(target, '.yss-template.json'), oldMetadata = readFileSync(metadataFile);
+    const metadataFile = path.join(target, '.yss.json'), oldMetadata = readFileSync(metadataFile);
     const metadata = JSON.parse(oldMetadata);
-    metadata.managedFiles[ref].contentHash = createHash('sha256').update(readFileSync(file)).digest('hex');
+    metadata.managedFiles[ref].lastApplied.digest = createHash('sha256').update(readFileSync(file)).digest('hex');
+    metadata.baselineDigest = createHash('sha256').update(JSON.stringify(metadata.managedFiles)).digest('hex');
     writeFileSync(metadataFile, JSON.stringify(metadata));
     const result = call('project-check', ['--target-dir', target]);
-    assert.equal(result.status, 1); assert.match(result.stderr, /project-core-drift/);
+    assert.equal(result.status, 1); assert.match(result.stderr, /native-project-managed|DRIFT|CONFLICT|BASELINE/);
     writeFileSync(file, old); writeFileSync(metadataFile, oldMetadata);
   });
 
   await t.test('wrong template and plugin versions fail closed without migration or writes', () => {
-    for (const [ref, key, value] of [['.yss-template.json', 'templateCommit', '0'.repeat(40)], ['.yss-plugin.json', 'plugin_bundle_sha256', '0'.repeat(64)]]) {
+    for (const [ref, key, value] of [['.yss.json', 'templateCommit', '0'.repeat(40)], ['.yss-backend-plugin.json', 'plugin_bundle_sha256', '0'.repeat(64)]]) {
       const file = path.join(target, ref), old = readFileSync(file); const data = JSON.parse(old); data[key] = value;
       const modified = JSON.stringify(data); writeFileSync(file, modified);
       assert.equal(call('project-check', ['--target-dir', target]).status, 1);
@@ -93,13 +94,14 @@ test('fixed CLI initializes, binds and resumes a separate governance project wit
   });
 
   await t.test('compatible existing governance binds by writing only the new receipt', () => {
-    rmSync(path.join(target, '.yss-plugin.json'));
+    rmSync(path.join(target, '.yss-backend-plugin.json'));
     const marker = path.join(target, 'user-note.txt'); writeFileSync(marker, 'keep existing work');
     const context = readFileSync(path.join(target, 'CONTEXT.md'));
-    const existing = success(call('project-plan', ['--target-dir', target, '--backend-root', backend]));
-    assert.equal(existing.kind, 'bind-existing'); assert.deepEqual(existing.write_files, ['.yss-plugin.json']);
+    const existing = success(call('project-bind-plan', ['--target-dir', target, '--backend-root', backend]));
+    assert.equal(existing.kind, 'bind-existing'); assert.ok(existing.preview.result.changes.some(x => x.path === '.yss-backend-plugin.json'));
+    assert.equal(existing.binding.backend.root, backend);
     writeFileSync(planFile, JSON.stringify(existing));
-    assert.equal(success(call('project-apply', ['--plan', planFile])).result, 'bound');
+    assert.equal(success(call('project-bind-apply', ['--plan', planFile])).result, 'applied');
     assert.equal(readFileSync(marker, 'utf8'), 'keep existing work');
     assert.deepEqual(readFileSync(path.join(target, 'CONTEXT.md')), context);
   });
@@ -113,11 +115,13 @@ test('fixed CLI initializes, binds and resumes a separate governance project wit
     assert.deepEqual(readdirSync(other), ['keep']);
   });
 
-  await t.test('initializer failure preserves an existing empty target and cleans only its staging directory', () => {
-    const other = path.join(dir, 'failure-target'); mkdirSync(other);
+  await t.test('apply remains independent of global PATH and explicit rollback restores a new target', () => {
+    const other = path.join(dir, 'offline-target'); mkdirSync(other);
     const plan = success(call('project-plan', ['--target-dir', other, ...opts])); writeFileSync(planFile, JSON.stringify(plan));
-    const result = call('project-apply', ['--plan', planFile], { PATH: path.join(dir, 'missing-tools') });
-    assert.equal(result.status, 1); assert.deepEqual(readdirSync(other), []);
-    assert.ok(!readdirSync(dir).some(name => name.startsWith('.yss-governance-init-')));
+    assert.equal(call('project-apply', ['--plan', planFile], { PATH: path.join(dir, 'missing-tools') }).status, 0);
+    assert.ok(existsSync(path.join(other, '.yss-backend-plugin.json')));
+    success(call('project-rollback', ['--target-dir', other, '--apply']));
+    assert.equal(existsSync(path.join(other, '.yss-backend-plugin.json')), false);
+    assert.equal(existsSync(path.join(other, '.yss.json')), false);
   });
 });

@@ -41,7 +41,10 @@ test('未知路径在任何发布规划执行昂贵工作前失败', () => {
 test('展示编号不能充当机器主键，重复 display_id 和 Gate 依赖错误计划阶段拒绝',()=>{
   const manifest=loadLegacyManifest(ROOT);
   for(const mutate of [c=>c.gates[0].id='G01',c=>c.gates[1].display_id='G01']) {
-    const config=loadVerificationProfiles();mutate(config);assert.throws(()=>validateGateConfiguration(config,manifest),/GATE_REGISTRY_INVALID/);
+    const config=loadVerificationProfiles(),original=config.gates[0].id;mutate(config);
+    // 保持引用闭包，使非法主键的精确拒绝不被补充检查的悬空引用提前遮住。
+    if(config.gates[0].id!==original)for(const check of config.supplemental_checks)check.gate_ids=check.gate_ids.map(id=>id===original?config.gates[0].id:id);
+    assert.throws(()=>validateGateConfiguration(config,manifest),/GATE_REGISTRY_INVALID/);
   }
   const unknown=loadVerificationProfiles();unknown.gates[0].depends_on=['check.unregistered'];assert.throws(()=>validateGateConfiguration(unknown,manifest),/未知/);
   const cycle=loadVerificationProfiles();cycle.gates[0].impact_dependencies=[cycle.gates[1].id];cycle.gates[1].impact_dependencies=[cycle.gates[0].id];assert.throws(()=>validateGateConfiguration(cycle,manifest),/循环/);
@@ -80,9 +83,12 @@ test('显式资格报告和摘要必须成对且字节吻合，过期来源才�
   assert.equal(plan({base:'11d88fb0ae6e4213bff6b4c5af4de03fd1aa2f1c'}).strategy,'legacy-full');
 });
 
-test('新增九个风险 suite 登记为权威补充检查，全量回退携带且不改冻结117',()=>{
+test('现役四项补充检查按稳定ID登记，九个风险suite及冻结117保持',()=>{
   const config=loadVerificationProfiles(),expected=['tests/verification-gates.test.mjs','tests/verification-baseline.test.mjs','tests/verification-qualification.test.mjs','tests/verification-execution.test.mjs','tests/verification-preflight.test.mjs','tests/verification-report-v2.test.mjs','tests/verification-artifacts.test.mjs','tests/verification-delivery-run.test.mjs','tests/legacy-verification.test.mjs'];
-  assert.equal(config.supplemental_checks.length,1);const check=config.supplemental_checks[0];
+  assert.deepEqual(config.supplemental_checks.map(item=>item.id).sort(),['check.native-instance-drift','check.native-profile-asset-consumption','check.native-consumer-routing','check.verification-optimization-regressions'].sort());
+  assert.deepEqual(config.supplemental_checks.map(item=>item.task_id).sort(),['supplemental.native-instance-drift','supplemental.native-profile-asset-consumption','supplemental.native-consumer-routing','supplemental.optimization-regressions'].sort());
+  assert.ok(config.supplemental_checks.every(item=>item.when==='template-source'&&item.source_requirement==='committed'));
+  const check=config.supplemental_checks.find(item=>item.id==='check.verification-optimization-regressions');
   assert.equal(check.id,'check.verification-optimization-regressions');assert.equal(check.task_id,'supplemental.optimization-regressions');assert.deepEqual(check.run.split(' ').slice(2),expected);assert.deepEqual(check.gate_ids,['check.verification-final-integrity']);
   for(const ref of expected){assert.ok(config.required_files.includes(ref));assert.ok(config.syntax_files.includes(ref));assert.ok(config.gate_policy.qualification_inputs.includes(ref));}
   for(const profile of ['fast','candidate','release'])assert.deepEqual(planTemplateVerification({profile,changedFiles:['README.md']}).supplemental_checks,config.supplemental_checks);

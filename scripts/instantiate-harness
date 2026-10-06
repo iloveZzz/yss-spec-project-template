@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 // Retired creation entry: deliberately no filesystem imports or target writes.
 process.stderr.write(`instantiate-harness 已退役，不创建或修改目标目录。
-请选择已验证可安装的固定版本：
-  npx --yes create-yss-harness-backend@0.4.7 init --target-dir <新目录>
-  npx --yes create-yss-harness-frontend@0.3.7 init --target-dir <新目录>
-已有实例先用对应 CLI 的 sync --plan 查看迁移；保留原 .template-meta.json 与用户修改，不手改或覆盖迁移元数据。
+请使用受控发行版本的 yss，并先核验平台二进制 SHA-256。
+  yss init --root <新目录> --profile backend
+  yss init --root <新目录> --profile frontend
+其他 Profile 按对应用户手册选择。已有实例先用 yss doctor / diff 只读核对；旧实例须显式 migrate --plan --out <项目外新计划文件>，应用须 --apply --plan-file <已保存计划>。
+未完成的旧事务先用归档对应的固定旧执行器恢复；保留旧 metadata 和用户修改，不手改迁移基线。
 `);
 process.exitCode = 1;

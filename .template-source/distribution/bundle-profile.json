@@ -1,0 +1,459 @@
+{
+  "schemaVersion": 1,
+  "profile": "spec",
+  "manifest": {
+    "allowRootEntries": [
+      ".agents",
+      ".codex",
+      ".cursor",
+      ".pi",
+      ".vscode",
+      ".template-spec",
+      "scripts"
+    ],
+    "allowRootFiles": [
+      ".cursorrules",
+      ".gitignore",
+      ".nvmrc",
+      "AGENTS.md",
+      "CONTEXT.md",
+      "DESIGN.md",
+      "README.md",
+      "skills-lock.json",
+      "yss-project.yaml",
+      "yss-public-skills.json"
+    ],
+    "allowFiles": [],
+    "excludeRootEntries": [
+      ".git",
+      ".codegraph",
+      ".codebuddy",
+      ".idea",
+      ".uploads",
+      "node_modules",
+      ".ua",
+      ".qwen",
+      ".template-source",
+      "packages",
+      ".github"
+    ],
+    "excludeRootFiles": [
+      "package-lock.json",
+      "package.json",
+      "template.manifest.json",
+      "template.snapshot.json",
+      ".gitmodules"
+    ],
+    "excludePaths": [
+      ".codex/hooks.json",
+      ".codex/settings.local.json",
+      ".codex/skills/.DS_Store",
+      ".pi/settings.json",
+      ".cursor/environment.json",
+      "docs/.scratch",
+      "docs/discovery",
+      "docs/reviews",
+      "docs/adr",
+      ".template-source/process/maintenance-intensity.yaml",
+      ".template-source/process/schemas/maintenance-review-record.schema.json",
+      ".template-source/process/templates/maintenance-checkpoint-template.yaml",
+      ".template-source/process/template-verification-profiles.yaml",
+      ".template-source/process/template-engineering-overview.md",
+      ".template-source/agents/skills-maintenance.md",
+      ".template-source/agents/strategic-design-skills-integration.md",
+      ".template-source/agents/yss-ui-skills-integration.md",
+      "scripts/fixtures",
+      "scripts/audit-yss-backend-skills",
+      "scripts/cache-template-commit",
+      "scripts/capture-maintenance-candidate",
+      "scripts/evaluate-maintenance-review-round",
+      "scripts/export-yss-skills",
+      "scripts/generate-lifecycle-artifacts",
+      "scripts/generate-yss-skill-boundaries",
+      "scripts/inspect-maintenance-candidate",
+      "scripts/instantiate-harness",
+      "scripts/node-generate-lifecycle-artifacts.mjs",
+      "scripts/node-verify-lifecycle-registry.mjs",
+      "scripts/prepare-maintenance-review",
+      "scripts/run-template-verification",
+      "scripts/sync-strategic-handoff-tools",
+      "scripts/verify-maintenance-checkpoint",
+      "scripts/verify-maintenance-review-record",
+      "scripts/verify-governance-release",
+      "scripts/verify-retired-skill-ids",
+      "scripts/verify-skill-governance",
+      "scripts/verify-skill-registry",
+      "scripts/verify-strategic-handoff-tools-lock",
+      "scripts/verify-template",
+      "scripts/verify-template-candidate",
+      "scripts/verify-template-fast",
+      "scripts/verify-upstream-skill-source",
+      "scripts/lib/maintenance-intensity.mjs",
+      "scripts/lib/maintenance-review.mjs",
+      "scripts/lib/maintenance-review-workflow.mjs",
+      "scripts/lib/scenario-checks.mjs",
+      "scripts/lib/skill-governance.mjs",
+      "scripts/lib/template-commit-cache.mjs",
+      "scripts/lib/template-verification.mjs",
+      "scripts/lib/template-verification-runner.mjs",
+      "scripts/lib/verification-selection.mjs",
+      "scripts/lib/verification-report.mjs",
+      "scripts/lib/maintenance-counterexample.mjs",
+      "scripts/sync-harness-upgrade"
+    ],
+    "excludePathSuffixes": [
+      "-scenarios"
+    ],
+    "renderPaths": [
+      ".gitignore",
+      "AGENTS.md",
+      "README.md",
+      "skills-lock.json",
+      ".template-spec/user-guide/用户手册.md",
+      ".template-spec/user-guide/用户手册索引.md",
+      ".template-spec/user-guide/阶段接入与产物复用使用手册.md",
+      ".template-spec/user-guide/技术设计用户指南.md",
+      ".template-spec/design/README.md",
+      ".template-spec/engineering/backend-platforms.json",
+      "scripts/lib/skill-supply-chain.mjs",
+      ".template-spec/agents/backend-architecture-profiles.md",
+      ".agents/skills/yss-design-system/SKILL.md",
+      ".agents/skills/yss-design-system/references/data-quality-theme.md",
+      ".codex/skills/yss-design-system/SKILL.md",
+      ".codex/skills/yss-design-system/references/data-quality-theme.md",
+      ".cursor/skills/yss-design-system/SKILL.md",
+      ".cursor/skills/yss-design-system/references/data-quality-theme.md",
+      ".pi/skills/yss-design-system/SKILL.md",
+      ".pi/skills/yss-design-system/references/data-quality-theme.md",
+      "yss-project.yaml"
+    ],
+    "exampleDocPaths": [],
+    "initExcludeRootEntries": [],
+    "initExcludeRootFiles": [
+      "yss-public-skills.json"
+    ],
+    "initExcludePaths": [],
+    "ownershipPolicy": {
+      "version": 1,
+      "default": "managed",
+      "rules": [
+        {
+          "pattern": ".git/**",
+          "ownership": "protected"
+        },
+        {
+          "pattern": ".template-source/**",
+          "ownership": "protected"
+        },
+        {
+          "pattern": ".cursor/environment.json",
+          "ownership": "protected"
+        },
+        {
+          "pattern": ".gitmodules",
+          "ownership": "user-owned"
+        },
+        {
+          "pattern": ".gitignore",
+          "ownership": "managed-customizable"
+        },
+        {
+          "pattern": "apps/**",
+          "ownership": "user-owned"
+        },
+        {
+          "pattern": "packages/**",
+          "ownership": "user-owned"
+        },
+        {
+          "pattern": "wiki/**",
+          "ownership": "user-owned"
+        },
+        {
+          "pattern": "docs/reviews/**",
+          "ownership": "user-owned"
+        },
+        {
+          "pattern": "docs/.scratch/**",
+          "ownership": "user-owned"
+        },
+        {
+          "pattern": ".template-spec/agents/issue-tracker.md",
+          "ownership": "managed-customizable"
+        },
+        {
+          "pattern": "yss-project.yaml",
+          "ownership": "generated"
+        },
+        {
+          "pattern": "skills-lock.json",
+          "ownership": "generated"
+        },
+        {
+          "pattern": "yss-public-skills.json",
+          "ownership": "generated"
+        },
+        {
+          "pattern": ".agents/skills/.yss-skills-manifest.json",
+          "ownership": "generated"
+        },
+        {
+          "pattern": "AGENTS.md",
+          "ownership": "managed-customizable"
+        },
+        {
+          "pattern": "CONTEXT.md",
+          "ownership": "managed-customizable"
+        },
+        {
+          "pattern": "DESIGN.md",
+          "ownership": "managed-customizable"
+        },
+        {
+          "pattern": "README.md",
+          "ownership": "user-owned"
+        }
+      ]
+    },
+    "customizationPolicy": {
+      "version": 1,
+      "defaultStrategy": "replace-with-force",
+      "rules": [
+        {
+          "pattern": ".gitignore",
+          "strategy": "manual"
+        },
+        {
+          "pattern": ".template-spec/agents/issue-tracker.md",
+          "strategy": "manual"
+        },
+        {
+          "pattern": "CONTEXT.md",
+          "strategy": "manual"
+        },
+        {
+          "pattern": "DESIGN.md",
+          "strategy": "manual"
+        }
+      ]
+    },
+    "generatorPolicy": {
+      "version": 1,
+      "rules": [
+        {
+          "pattern": "yss-project.yaml",
+          "generatorId": "repository-identity",
+          "generatorVersion": 1
+        },
+        {
+          "pattern": "skills-lock.json",
+          "generatorId": "skills-lock",
+          "generatorVersion": 1
+        },
+        {
+          "pattern": "yss-public-skills.json",
+          "generatorId": "public-skills",
+          "generatorVersion": 1
+        },
+        {
+          "pattern": ".agents/skills/.yss-skills-manifest.json",
+          "generatorId": "skills-manifest",
+          "generatorVersion": 1
+        }
+      ]
+    }
+  },
+  "common": {
+    "files": [
+      ".template-spec/agents/yss-skill-registry.yaml",
+      ".template-spec/agents/digital-human-roles.yaml",
+      ".template-spec/agents/digital-human-roles.md",
+      ".template-spec/agents/issue-tracker.md",
+      ".template-spec/agents/triage-labels.md",
+      ".template-spec/process/lifecycle-registry.yaml",
+      ".template-spec/process/lifecycle-registry-baseline.json",
+      ".template-spec/process/lifecycle-registry-baseline-v1.json",
+      ".template-spec/process/lifecycle-artifact-map.md",
+      ".template-spec/process/harness-process-tailoring.md",
+      ".template-spec/process/script-execution.md",
+      ".template-spec/process/document-writing.md",
+      ".template-spec/process/contract-reading.md",
+      ".template-spec/process/structured-assets.md",
+      ".template-spec/process/runtime-storage.md",
+      ".template-spec/process/schemas/approval-record.schema.json",
+      ".template-spec/process/schemas/review-bundle.schema.json",
+      ".template-spec/process/templates/lifecycle-checkpoint-template.json",
+      ".template-spec/templates/approval-record-template.json",
+      ".template-spec/process/reading-policy.yaml",
+      ".template-spec/process/schemas/reading-policy.schema.json",
+      ".template-spec/process/schemas/reading-manifest.schema.json",
+      ".template-spec/process/schemas/domain-strategy-reading.schema.json",
+      ".template-spec/process/schemas/stage-decision-package-reading.schema.json",
+      ".template-spec/process/subagent-collaboration.md",
+      ".template-spec/process/stage-tracking.md",
+      ".template-spec/process/business-tickets.md",
+      ".template-spec/process/schemas/business-tickets-v1.schema.json",
+      ".template-spec/process/project-ci.md",
+      ".template-spec/process/checkpoint-boundary.yaml",
+      ".template-spec/process/schemas/context-reconciliation.schema.json",
+      ".template-spec/process/schemas/digital-human-task-package.schema.json",
+      ".template-spec/process/schemas/lifecycle-checkpoint.schema.json",
+      ".template-spec/process/schemas/stage-tracking.schema.json",
+      ".template-spec/process/schemas/user-decision.schema.json",
+      ".template-spec/process/templates/context-reconciliation-template.yaml",
+      ".template-spec/process/templates/lifecycle-checkpoint-template.yaml",
+      ".template-spec/process/templates/stage-checkpoint-template.md",
+      ".template-spec/process/templates/user-decision-template.yaml",
+      ".template-spec/templates/local-parent-ticket-template.md",
+      ".template-spec/templates/approval-record-template.yaml",
+      ".template-spec/templates/review-bundle-template.yaml",
+      ".template-spec/templates/review-report-template.md",
+      ".template-spec/user-guide/用户手册.md",
+      ".template-spec/user-guide/unified-cli.md"
+    ],
+    "scripts": [
+      "scripts/verify-project-instance",
+      "scripts/sync-skills",
+      "scripts/update-skill-lock",
+      "scripts/verify-context-contract",
+      "scripts/verify-context-reconciliation",
+      "scripts/verify-digital-human-roles",
+      "scripts/verify-digital-human-task-package",
+      "scripts/verify-lifecycle-checkpoint",
+      "scripts/verify-user-decision",
+      "scripts/verify-approval-record",
+      "scripts/query-lifecycle-context",
+      "scripts/prepare-read-only-intake",
+      "scripts/prepare-review-package",
+      "scripts/plan-review-control",
+      "scripts/run-read-only-intake",
+      "scripts/runtime-store",
+      "scripts/contract",
+      "scripts/check-plan-stage-coverage",
+      "scripts/stage-tracking",
+      "scripts/project-ci",
+      "scripts/project-ci-transition",
+      "scripts/lifecycle-status",
+      "scripts/gitworks"
+    ]
+  },
+  "stages": {
+    "stage.entry-triage": {
+      "files": [],
+      "scripts": [],
+      "skills": []
+    },
+    "stage.plan": {
+      "prefixes": [
+        ".template-spec/plan/"
+      ],
+      "files": [
+        ".template-spec/process/plan-migration.md",
+        ".template-spec/process/plan-spec-quality.md"
+      ],
+      "scripts": [
+        "scripts/verify-plan-spec-entry",
+        "scripts/inspect-plan-spec"
+      ],
+      "skills": []
+    },
+    "stage.spec-architecture": {
+      "files": [
+        ".template-spec/templates/business-ticket-template.md",
+        ".template-spec/templates/business-ticket-set-template.yaml",
+        ".template-spec/templates/business-ticket-review-template.yaml",
+        ".template-spec/templates/spec-template.md",
+        ".template-spec/templates/spec-delta-template.md",
+        ".template-spec/architecture/templates/business-architecture-template.md",
+        ".template-spec/architecture/templates/functional-architecture-template.md"
+      ],
+      "scripts": [
+        "scripts/verify-business-tickets"
+      ],
+      "skills": []
+    },
+    "stage.product-design": {
+      "prefixes": [
+        ".template-spec/design/"
+      ],
+      "files": [
+        ".template-spec/templates/business-ticket-template.md",
+        ".template-spec/templates/business-ticket-set-template.yaml",
+        ".template-spec/templates/business-ticket-review-template.yaml"
+      ],
+      "scripts": [
+        "scripts/design-md",
+        "scripts/verify-business-tickets"
+      ],
+      "skills": [
+        "yss-prototype-stage"
+      ]
+    },
+    "stage.system-data-engineering": {
+      "prefixes": [
+        ".template-spec/engineering/"
+      ],
+      "files": [
+        ".template-spec/process/implementation-repo-integration.md",
+        ".template-spec/process/existing-backend-architecture.md",
+        ".template-spec/process/existing-ui-baseline.md",
+        ".template-spec/process/frontend-backend-delivery.md",
+        ".template-spec/templates/implementation-repo-registry-template.md"
+      ],
+      "scripts": [
+        "scripts/verify-business-tickets",
+        "scripts/backend-platforms",
+        "scripts/backend-delivery",
+        "scripts/repository-scope-policy",
+        "scripts/verify-scaffold-architecture-decisions"
+      ],
+      "skills": [
+        "yss-implementation-contract-compiler"
+      ]
+    },
+    "stage.ticket-formalization": {
+      "files": [
+        ".template-spec/templates/vertical-slice-ticket-template.md",
+        ".template-spec/templates/cross-repo-slice-template.md"
+      ],
+      "scripts": [
+        "scripts/dispatch-slice-task",
+        "scripts/slice-contract"
+      ],
+      "skills": []
+    },
+    "stage.vertical-slice-implementation": {
+      "files": [
+        ".template-spec/templates/verification-record-template.md"
+      ],
+      "scripts": [
+        "scripts/implementation-path-policy",
+        "scripts/complete-backend-delivery"
+      ],
+      "skills": []
+    },
+    "stage.verification-release-retrospective": {
+      "files": [
+        ".template-spec/process/delivery-preflight.md",
+        ".template-spec/templates/release-note-template.md",
+        ".template-spec/templates/retro-report-template.md"
+      ],
+      "scripts": [
+        "scripts/preflight-delivery"
+      ],
+      "skills": []
+    }
+  },
+  "omitPaths": [
+    ".template-source/process/github-workflows.md",
+    ".template-spec/process/harness-executive-blueprint.md",
+    ".template-spec/process/PDCA-SCRUM.md",
+    ".template-spec/design/preview.html",
+    ".template-spec/design/preview.css",
+    ".template-spec/design/preview.js",
+    ".template-spec/design/preview-dark.html",
+    ".template-spec/design/facts/antdv-next",
+    ".template-spec/user-guide/设备借用贯穿案例.md",
+    ".template-spec/design/design-system-sync.yaml"
+  ]
+}

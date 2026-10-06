@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
+import {initializeNative, inspectNative, runNative} from './lib/native-yss.mjs';
 
 const root=path.resolve(import.meta.dirname,'../..');
 const scratch=realpathSync(mkdtempSync(path.join(tmpdir(),'yss-delivery-distribution-')));
@@ -21,20 +22,21 @@ async function run(script,args=[],{cwd=root,env=process.env,success=true}={}) {
 }
 try {
   const initializeSide = async side => {
-    const cliRoot=path.join(process.env.YSS_DEDICATED_CLI_ROOT||path.join(root,'submodules'),`create-yss-harness-${side}`),target=path.join(process.env.YSS_DEDICATED_INSTANCE_ROOT||scratch,side);
-    const entry=path.join(cliRoot,`bin/create-yss-harness-${side}.js`);
-    if(!process.env.YSS_DEDICATED_INSTANCE_ROOT){const initialized=JSON.parse((await run(entry,['init','--target-dir',target,'--json'])).stdout);assert.equal(initialized.status,'applied');}
-    const metadata=JSON.parse(readFileSync(path.join(target,`.yss-harness-${side}.json`)));
-    assert.equal(metadata.metadataSchemaVersion,2);
+    const target=path.join(process.env.YSS_DEDICATED_INSTANCE_ROOT||scratch,side);
+    if(!process.env.YSS_DEDICATED_INSTANCE_ROOT)initializeNative(side,target);
+    const metadata=JSON.parse(readFileSync(path.join(target,'.yss.json')));
+    assert.equal(metadata.schemaVersion,2);
+    assert.equal(metadata.bundleSchemaVersion,2);
+    assert.equal(metadata.protocolVersion,1);
     assert.equal(metadata.profileId,`harness.${side}-delivery`);
-    assert.equal(metadata.templateCommit,JSON.parse(readFileSync(path.join(cliRoot,'template.snapshot.json'))).templateCommit);
+    assert.equal(metadata.templateCommit,inspectNative(side).templateCommit);
     assert.equal(existsSync(path.join(target,'scripts/instantiate-harness')),false);
     assert.match(readFileSync(path.join(target,'yss-project.yaml'),'utf8'),/repository_mode: project-instance/);
     await run(path.join(target,'scripts/verify-harness-profile'));
     await run(path.join(target,'scripts/verify-entry-alignment'));
-    await run(entry,['init','--target-dir',target,'--json'],{success:false});
-    const preview=JSON.parse((await run(entry,['sync','--target-dir',target,'--json'])).stdout);
-    assert.equal(preview.status,'preview');
+    runNative(['init','--profile',side,'--root',target],{expectedCode:'CONFLICT'});
+    const preview=runNative(['sync','--profile',side,'--root',target]).result;
+    assert.equal(preview.command,'sync');
     const {enforceHarnessTaskScope,enforceHarnessSkillScope}=await import(pathToFileURL(path.join(target,'scripts/lib/harness-execution-scope.mjs')));
     const opposite=side==='frontend'?'backend':'frontend';
     assert.throws(()=>enforceHarnessTaskScope({contract:{kind:'lifecycle-work-unit'},role_id:`role.${opposite}-agent`,execution_state:'Worker',allowed_write_paths:['docs/']},{root:target}),/另一端/);

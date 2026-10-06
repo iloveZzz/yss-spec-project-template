@@ -1,4 +1,18 @@
+---
+status: historical-superseded
+superseded_at: 2026-10-06
+superseded_by: .template-spec/user-guide/unified-cli.md
+current_upgrade_contract: .template-spec/process/harness-upgrade.md
+---
 # `create-yss-spec` 接管与模板同步跨仓库契约
+
+## 文档状态与当前入口
+
+本文为四个旧 npm CLI 时代的历史合同（historical / superseded），不再定义统一 `yss` 的现行操作、来源身份或发行条件。原历史版本与下文正文保留，用于解释旧实例和固定旧执行器的兼容 / 恢复边界；其中的旧包名、gitlink、metadata、参数、Node 执行器及发布步骤不能作为当前统一 CLI 的指令。
+
+当前操作与来源合同见 [统一 CLI 操作说明](../../.template-spec/user-guide/unified-cli.md)；旧实例显式迁移、原生 metadata、插件 binding、事务、恢复和回退以 [模板实例升级协议](../../.template-spec/process/harness-upgrade.md) 为准。旧执行器只从仓外固定恢复包取得。历史保护不变量作为历史依据保留，当前保护规则仍须按上述现行合同核验，不凭本文推导已实现兼容能力或发行已完成。
+
+以下为保留的历史合同正文。
 
 本文定义模板源仓库与外部 `create-yss-spec` CLI 仓库之间的身份、资产边界、迁移、同步、验证和发布契约。
 

@@ -7,7 +7,7 @@ import { spawnSync } from 'node:child_process';
 import { build } from '../../../plugins/yss-product-design/build.mjs';
 import { measureTestBuild } from '../scripts/tooling-fixture.mjs';
 
-test('design plugin uses pinned design CLI and a bounded project-local lifecycle', async t => {
+test('design plugin uses fixed native yss binary and a bounded project-local lifecycle', async t => {
   const dir = fs.realpathSync(fs.mkdtempSync(path.join(tmpdir(), 'yss-product-design-test-')));
   t.after(() => fs.rmSync(dir, { recursive: true, force: true }));
   const plugin = path.join(dir, 'plugin/yss-product-design'), target = path.join(dir, '设计 治理');
@@ -20,9 +20,9 @@ test('design plugin uses pinned design CLI and a bounded project-local lifecycle
   const plan = ok(call('project-plan', ['--target-dir', target, ...opts]));
   await t.test('plan is read-only; application creates a distinct design instance', () => {
     assert.equal(fs.existsSync(target), false);
-    assert.equal(plan.profile_id, 'harness.business-ddd-strategy-handoff');
-    assert.equal(ok(call('project-apply', ['--plan', put('init.json', plan)])).result, 'initialized');
-    assert.ok(fs.existsSync(path.join(target, '.yss-harness-design.json')));
+    assert.equal(plan.profile, 'design');
+    assert.equal(ok(call('project-apply', ['--plan', put('init.json', plan)])).result, 'applied');
+    assert.ok(fs.existsSync(path.join(target, '.yss.json')));
     assert.equal(fs.existsSync(path.join(target, '.yss-template.json')), false);
   });
   await t.test('public entry resolves an actual readable local master and current contracts', () => {
@@ -50,18 +50,21 @@ test('design plugin uses pinned design CLI and a bounded project-local lifecycle
   await t.test('core drift and unrelated family metadata cannot be hidden by local metadata changes', () => {
     const file = path.join(target, '.agents/skills/yss-product-lifecycle/SKILL.md'), bytes = fs.readFileSync(file);
     fs.appendFileSync(file, '\nchange');
-    assert.match(call('project-check', ['--target-dir', target]).stderr, /core-drift/);
+    assert.match(call('project-check', ['--target-dir', target]).stderr, /native-project-managed|CONFLICT|DRIFT/);
     fs.writeFileSync(file, bytes);
     put('设计 治理/.yss-template.json', {});
-    assert.match(call('project-check', ['--target-dir', target]).stderr, /conflicting-project/);
-    fs.rmSync(path.join(target, '.yss-template.json'));
+    try {
+      const denied = call('project-check', ['--target-dir', target]);
+      assert.equal(denied.status, 1);
+      assert.ok(['IDENTITY', 'LEGACY'].includes(JSON.parse(denied.stderr).code));
+    } finally { fs.rmSync(path.join(target, '.yss-template.json')); }
   });
   await t.test('exact existing instance binds only a receipt and preserves business content', () => {
-    fs.rmSync(path.join(target, '.yss-plugin.json'));
+    fs.rmSync(path.join(target, '.yss-product-design-plugin.json'));
     const before = fs.readFileSync(path.join(target, 'docs/draft.md'));
     const binding = ok(call('project-bind-plan', ['--target-dir', target]));
-    assert.deepEqual(binding.write_files, ['.yss-plugin.json']);
-    assert.equal(ok(call('project-bind-apply', ['--plan', put('bind.json', binding)])).result, 'bound');
+    assert.ok(binding.preview.result.changes.some(x => x.path === '.yss-product-design-plugin.json'));
+    assert.equal(ok(call('project-bind-apply', ['--plan', put('bind.json', binding)])).result, 'applied');
     assert.deepEqual(fs.readFileSync(path.join(target, 'docs/draft.md')), before);
   });
   await t.test('stale initialization plans preserve newly created user work', () => {
@@ -71,12 +74,12 @@ test('design plugin uses pinned design CLI and a bounded project-local lifecycle
     assert.equal(call('project-apply', ['--plan', put('stale.json', preview)]).status, 1);
     assert.deepEqual(fs.readdirSync(other), ['keep.txt']);
   });
-  await t.test('initializer errors preserve an empty target and remove only staging', async () => {
-    const other = path.join(dir, 'failure'); fs.mkdirSync(other);
+  await t.test('native binding apply and rollback preserve original empty target', () => {
+    const other = path.join(dir, 'rollback'); fs.mkdirSync(other);
     const preview = ok(call('project-plan', ['--target-dir', other, ...opts]));
-    const { apply } = await import(path.join(plugin, 'scripts/project.mjs'));
-    assert.throws(() => apply(plugin, preview, false, () => { throw new Error('synthetic-initializer-failure'); }), /synthetic-initializer-failure/);
-    assert.deepEqual(fs.readdirSync(other), []);
-    assert.ok(!fs.readdirSync(dir).some(x => x.startsWith('.yss-design-init-')));
+    ok(call('project-apply', ['--plan', put('rollback.json', preview)]));
+    ok(call('project-rollback', ['--target-dir', other, '--apply']));
+    assert.equal(fs.existsSync(path.join(other, '.yss-product-design-plugin.json')), false);
+    assert.equal(fs.existsSync(path.join(other, '.yss.json')), false);
   });
 });
