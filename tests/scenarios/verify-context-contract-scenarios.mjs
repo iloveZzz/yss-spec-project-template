@@ -1,11 +1,11 @@
+import {contextExecution, decodeContext} from '../../scripts/lib/native-context.mjs';
 import assert from "node:assert/strict";
-import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { realpathSync, mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 
 const ROOT = path.resolve(import.meta.dirname, "../..");
-const validator = path.join(ROOT, "scripts/verify-context-contract");
 
 function contextSource(rows = [], scopeHeader = "适用业务责任区") {
   return `---
@@ -30,10 +30,12 @@ ${rows.join("\n")}
 }
 
 function run(root, ...args) {
-  return spawnSync(process.execPath, [validator, "--root", root, ...args], {
-    cwd: ROOT,
-    encoding: "utf8",
-  });
+  // Explicit synthetic source identity; no business approval is created.
+  writeFileSync(path.join(root,'yss-project.yaml'),'schema_version: 1\nrepository_mode: template-source\n');
+  const execution=contextExecution(ROOT,['--root',root,...args]);
+  const result=spawnSync(execution.file,execution.args,{cwd:ROOT,encoding:'utf8'});
+  if(result.status===0)result.stdout=JSON.stringify(decodeContext(result));
+  return result;
 }
 
 function expectBlocked(result, pattern, label) {
@@ -41,7 +43,7 @@ function expectBlocked(result, pattern, label) {
   assert.match(`${result.stdout}\n${result.stderr}`, pattern, label);
 }
 
-const sandbox = mkdtempSync(path.join(tmpdir(), "yss-context-contract-"));
+const sandbox = realpathSync(mkdtempSync(path.join(tmpdir(), "yss-context-contract-")));
 try {
   const valid = path.join(sandbox, "valid");
   mkdirSync(valid);
@@ -52,7 +54,7 @@ try {
   const validResult = run(valid, "--allowed-context", "ComplianceReview", "--term-ref", "Global/Supplier", "--term-ref", "ComplianceReview/AdmissionDecision", "--json");
   assert.equal(validResult.status, 0, validResult.stderr);
   const validOutput = JSON.parse(validResult.stdout);
-  assert.equal(validOutput.result, "completed");
+  assert.equal(validOutput.read_only, true);
   assert.match(validOutput.document_digest, /^sha256:[0-9a-f]{64}$/);
   assert.match(validOutput.referenced_terms_digest, /^sha256:[0-9a-f]{64}$/);
 
@@ -78,7 +80,7 @@ try {
   mkdirSync(mapped);
   writeFileSync(path.join(mapped, "CONTEXT.md"), contextSource());
   writeFileSync(path.join(mapped, "CONTEXT-MAP.md"), "# Context Map\n");
-  expectBlocked(run(mapped), /CONTEXT-MAP\.md.*禁止/, "CONTEXT-MAP.md");
+  expectBlocked(run(mapped), /CONTEXT-MAP\.md.*禁止|禁止 CONTEXT-MAP/, "CONTEXT-MAP.md");
 
   const duplicate = path.join(sandbox, "duplicate");
   mkdirSync(duplicate);
@@ -86,16 +88,16 @@ try {
     "| 准入决定 | 第一种定义。 | AdmissionDecision | ComplianceReview |  |",
     "| 准入结论 | 第二种定义。 | AdmissionDecision | ComplianceReview |  |",
   ]));
-  expectBlocked(run(duplicate, "--allowed-context", "ComplianceReview"), /术语身份重复/, "重复术语身份");
+  expectBlocked(run(duplicate, "--allowed-context", "ComplianceReview"), /术语身份.*重复/, "重复术语身份");
 
   const unknownContext = path.join(sandbox, "unknown-context");
   mkdirSync(unknownContext);
   writeFileSync(path.join(unknownContext, "CONTEXT.md"), contextSource([
     "| 准入决定 | 合规审查形成的准入结论。 | AdmissionDecision | UnknownContext |  |",
   ]));
-  expectBlocked(run(unknownContext, "--allowed-context", "ComplianceReview"), /未在业务边界与规则设计中登记/, "未知作用域");
+  expectBlocked(run(unknownContext, "--allowed-context", "ComplianceReview"), /未在.*登记/, "未知作用域");
 
-  expectBlocked(run(valid, "--allowed-context", "ComplianceReview", "--term-ref", "CONTEXT.md#Supplier"), /术语引用格式非法/, "Markdown 伪锚点");
+  expectBlocked(run(valid, "--allowed-context", "ComplianceReview", "--term-ref", "CONTEXT.md#Supplier"), /术语引用格式非法|CONTEXT_REFERENCE/, "Markdown 伪锚点");
   expectBlocked(run(valid, "--allowed-context", "ComplianceReview", "--term-ref", "ComplianceReview/Missing"), /无法解析/, "缺失术语引用");
 
   process.stdout.write("CONTEXT Contract 场景验证通过\n");

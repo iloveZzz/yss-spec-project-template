@@ -22,19 +22,22 @@ export function physical(value, file = false) {
   }
   return resolved;
 }
-function response(result) {
+function response(result, command) {
   if (result.error || result.signal) throw Object.assign(new Error('native-command-interrupted: ' + (result.error?.message || result.signal)),
     { code: 'CANCELLED', signal: result.signal, exitCode: result.status });
   let output;
   try { output = JSON.parse(result.stdout); } catch { throw new Error('native-protocol-invalid-json'); }
-  if (output.outputVersion !== 1 || output.protocolVersion !== 1 || !['ok', 'error'].includes(output.status)
+  if (!Number.isInteger(result.status) || ![0, 1, 2].includes(result.status) || output.command !== command || (output.code === 'OK') !== (result.status === 0) || output.outputVersion !== 1 || output.protocolVersion !== 1 || !['ok', 'error'].includes(output.status)
       || (output.status === 'ok') !== (result.status === 0)) throw new Error('native-protocol-mismatch');
   if (result.status !== 0) throw Object.assign(new Error(output.code + ': ' + (output.result?.message || JSON.stringify(output.result))), { code: output.code, envelope: output, exitCode: result.status });
   return output;
 }
 export function invoke(binary, args, options = {}) {
-  return response(spawnSync(binary, [...args, '--json'], { encoding: 'utf8', input: '', timeout: options.timeout ?? 120000,
-    maxBuffer: 128 * 1024 * 1024, cwd: options.cwd, env: { ...process.env, NODE_OPTIONS: '', NODE_PATH: '' } }));
+  const before = hash(readFileSync(binary));
+  const result = spawnSync(binary, [...args, '--json'], { encoding: 'utf8', input: '', timeout: options.timeout ?? 120000,
+    maxBuffer: 128 * 1024 * 1024, cwd: options.cwd, env: { ...process.env, NODE_OPTIONS: '', NODE_PATH: '' } });
+  if (hash(readFileSync(binary)) !== before) throw new Error('native-binary-drift');
+  return response(result, args[0]);
 }
 // Mutations must keep the wrapper alive until the native transaction has
 // acknowledged cancellation and completed its own recovery or rollback.
@@ -61,7 +64,7 @@ export function invokeAsync(binary, args, options = {}) {
     child.on('close', (status, signal) => {
       clearTimeout(timeout); process.removeListener('SIGINT', interrupt); process.removeListener('SIGTERM', terminate);
       try {
-        const output = response({ stdout: Buffer.concat(stdout).toString('utf8'), stderr: Buffer.concat(stderr).toString('utf8'), status, signal, error: failure });
+        const output = response({ stdout: Buffer.concat(stdout).toString('utf8'), stderr: Buffer.concat(stderr).toString('utf8'), status, signal, error: failure }, args[0]);
         if (requestedSignal) throw Object.assign(new Error('native-command-finished-after-cancel-request: inspect project-status'),
           { code: 'CANCELLED', envelope: output, exitCode: status, signal: requestedSignal });
         resolve(output);

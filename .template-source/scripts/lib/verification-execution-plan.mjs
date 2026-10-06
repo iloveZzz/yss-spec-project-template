@@ -1,3 +1,4 @@
+import {contextExecution, contextBinary} from '../../../scripts/lib/native-context.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
@@ -34,6 +35,7 @@ const retiredScenarios = [
 ];
 const retiredSources = new Map(retiredScenarios.map(name=>[`scripts/${name}`, `tests/scenarios/${name}.mjs`]));
 if(new Set(retiredScenarios).size!==retiredScenarios.length)throw new TypeError('RETIRED_SCRIPT_SOURCE_DUPLICATE');
+retiredSources.set('scripts/verify-context-contract','scripts/lib/native-context.mjs');
 retiredSources.set('scripts/verify-scaffold-generator-scenarios','tests/scenarios/verify-scaffold-generator-scenarios.py');
 retiredSources.set('scripts/verify-subagent-task-package-scenarios','tests/scenarios/verify-digital-human-task-package-scenarios.mjs');
 retiredSources.set('scripts/node-verify-lifecycle-registry.mjs','scripts/verify-lifecycle-registry');
@@ -107,6 +109,15 @@ function shellWords(command){
 }
 export function compileTaskExecution(task,{root,reportDir,sourceReceipt,fixedCommit}={}){
   const requested=task.command.trim();
+  if(/^(?:node\s+)?scripts\/verify-context-contract(?:\s|$)/.test(requested)) {
+    const words=shellWords(requested);if(words[0]==='node')words.shift();words.shift();
+    const execution=contextExecution(root,words);
+    return {requested_command:task.command,...execution,source_bindings:{mapping_sha256:hash(fs.readFileSync(path.join(root,'.template-source/scripts/lib/verification-execution-plan.mjs'))),target:'scripts/lib/native-context.mjs',target_sha256:hash(fs.readFileSync(observedRetiredTarget(root,'scripts/verify-context-contract')))}};
+  }
+  if(/^yss\s+context\s+check(?:\s|$)/.test(requested)) {
+    const words=shellWords(requested),{binary,digest}=contextBinary();words.shift();
+    return {requested_command:task.command,file:binary,args:words,cwd:root,environment:{},binary_sha256:digest,protocol:"context-envelope-v1",source_bindings:{mapping_sha256:hash(fs.readFileSync(path.join(root,'.template-source/scripts/lib/verification-execution-plan.mjs'))),target:'scripts/lib/native-context.mjs',target_sha256:hash(fs.readFileSync(observedRetiredTarget(root,'scripts/verify-context-contract')))}};
+  }
   const retiredRequest=/^(?:node(?:\.exe)?|['"][^'"]*[\\/]node(?:\.exe)?['"]|\S*[\\/]node(?:\.exe)?)\s/.test(requested)
     ? null : /^scripts\/(?:verify-[^/\s]+-scenarios|verify-subagent-task-package|instantiate-harness|implementation-path-policy|repository-scope-policy|verify-prototype-design|design-md|sync-harness-upgrade)(?:\s|$)/.test(requested);
   if(retiredRequest) {

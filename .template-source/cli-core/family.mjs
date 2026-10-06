@@ -22,7 +22,7 @@ export function userOwned(ref, family) {
 }
 export const CHECKS = [
   ['layout', 'scripts/verify-governance-layout'],
-  ['context', 'scripts/verify-context-contract', '--root', '.', '--json'],
+  ['context', 'scripts/lib/native-context.mjs'],
   ['profile', 'scripts/verify-harness-profile'],
   ['skill-lock', 'scripts/update-skill-lock', '--check'],
 ];

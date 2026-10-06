@@ -1,3 +1,4 @@
+import {checkNativeContext, contextBinary} from './native-context.mjs';
 import {findApprovalCheckpoint} from './approval-checkpoint-discovery.mjs';
 import fs from 'node:fs';
 import { spawnSync } from 'node:child_process';
@@ -68,6 +69,7 @@ export function checkProjectGovernance({root,base,checkpointRef,taskRef,recovery
   root=fs.realpathSync(root);
   const report={schema_version:1,kind:'project-governance-verification',read_only:true,execution_authorization:'not-evaluated',status:'passed',checks:[],diagnostics:[],inputs:[],scope:{roots:[],files:[],checkpoints:[],tasks:[],unrecognized:[],missing_capabilities:[]},base:base||null};
   const observed=new Map();
+  let contextPin, contextCommand;
   const issue=(code,message,ref,exception=false)=>{report.diagnostics.push({code,message,source_ref:ref,recovery:'修复明确输入或证据后重新运行当前校验'});report.status=exception?'error':report.status==='error'?'error':'failed';};
   const observe=ref=>{const hash=fileBinding(root,ref);if(observed.has(ref)&&observed.get(ref)!==hash)throw new Error(`INPUT_DRIFT: ${ref}`);observed.set(ref,hash);return hash;};
   const read=ref=>{if(!observe(ref))throw new Error(`输入不可读: ${ref}`);return fs.readFileSync(safeFile(root,ref));};
@@ -93,7 +95,11 @@ export function checkProjectGovernance({root,base,checkpointRef,taskRef,recovery
     // Validator code/schema changes invalidate this run too; do not import future Skill validators.
     const toolFiles=governanceFiles(root,['scripts','.template-spec/process/schemas','.template-spec/agents','.agents/skills/yss-product-lifecycle']);
     toolFiles.forEach(observe);
-    run('context','scripts/verify-context-contract',['--root',root,'--json'],['CONTEXT.md']);
+    try {
+      const binary=contextBinary();contextPin=binary;contextCommand=[binary.binary,'context','check','--root',root,'--json'];
+      const result=checkNativeContext({root,environment:{...process.env,YSS_NATIVE_BINARY:binary.binary,YSS_NATIVE_BINARY_SHA256:binary.digest}});
+      report.checks.push({id:'context',command:[binary.binary,'context','check','--root',root,'--json'],binary_sha256:binary.digest,input_refs:['CONTEXT.md'],exit_code:0,status:'passed',context_snapshot:result.context_snapshot});
+    } catch(error) { report.checks.push({id:'context',command:contextCommand||null,binary_sha256:contextPin?.digest||null,exit_code:error.exitCode??null,status:'failed'});issue(error.code||'context-native-failed',error.message,'CONTEXT.md',!error.exitCode); }
     report.recovery = recovery ? {sequence:['context','checkpoint','approval','transition','task-package'],dispatch:false,action:'复核实际任务结果及当前证据后由主控继续',prerequisites:['当前适用检查通过','原任务结果明确']} : null;
     const queue=checkpointRef?[checkpointRef]:initial.filter(ref=>/\.(?:ya?ml|json|md)$/.test(ref));
     if(taskRef)queue.push(taskRef);
@@ -181,6 +187,7 @@ export function checkProjectGovernance({root,base,checkpointRef,taskRef,recovery
       }
     }
     if(JSON.stringify(initial)!==JSON.stringify(governanceFiles(root,roots))||JSON.stringify(toolFiles)!==JSON.stringify(governanceFiles(root,['scripts','.template-spec/process/schemas','.template-spec/agents','.agents/skills/yss-product-lifecycle'])))throw new Error('INPUT_DRIFT: 检查范围发生变化');
+    if(contextPin)contextBinary({...process.env,YSS_NATIVE_BINARY:contextPin.binary,YSS_NATIVE_BINARY_SHA256:contextPin.digest});
     for(const [ref,hash] of observed)if(fileBinding(root,ref)!==hash)throw new Error(`INPUT_DRIFT: ${ref}`);
   }catch(error){issue('input-or-execution-error',error.message,checkpointRef||null,true);}
   report.scope.files=[...new Set([...report.scope.files,...observed.keys()].filter(ref=>!ref.startsWith('scripts/')&&!ref.startsWith('.agents/')))].sort();

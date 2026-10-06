@@ -83,10 +83,10 @@ test('显式资格报告和摘要必须成对且字节吻合，过期来源才�
   assert.equal(plan({base:'11d88fb0ae6e4213bff6b4c5af4de03fd1aa2f1c'}).strategy,'legacy-full');
 });
 
-test('现役四项补充检查按稳定ID登记，十个风险suite及冻结117保持',()=>{
+test('现役五项补充检查按稳定ID登记，十个风险suite及冻结117保持',()=>{
   const config=loadVerificationProfiles(),expected=['tests/verification-gates.test.mjs','tests/verification-baseline.test.mjs','tests/verification-qualification.test.mjs','tests/verification-execution.test.mjs','tests/verification-script-retirement.test.mjs','tests/verification-preflight.test.mjs','tests/verification-report-v2.test.mjs','tests/verification-artifacts.test.mjs','tests/verification-delivery-run.test.mjs','tests/legacy-verification.test.mjs'];
-  assert.deepEqual(config.supplemental_checks.map(item=>item.id).sort(),['check.native-instance-drift','check.native-profile-asset-consumption','check.native-consumer-routing','check.verification-optimization-regressions'].sort());
-  assert.deepEqual(config.supplemental_checks.map(item=>item.task_id).sort(),['supplemental.native-instance-drift','supplemental.native-profile-asset-consumption','supplemental.native-consumer-routing','supplemental.optimization-regressions'].sort());
+  assert.deepEqual(config.supplemental_checks.map(item=>item.id).sort(),['check.native-instance-drift','check.native-profile-asset-consumption','check.native-consumer-routing','check.native-context-retirement','check.verification-optimization-regressions'].sort());
+  assert.deepEqual(config.supplemental_checks.map(item=>item.task_id).sort(),['supplemental.native-instance-drift','supplemental.native-profile-asset-consumption','supplemental.native-consumer-routing','supplemental.native-context-retirement','supplemental.optimization-regressions'].sort());
   assert.ok(config.supplemental_checks.every(item=>item.when==='template-source'&&item.source_requirement==='committed'));
   const check=config.supplemental_checks.find(item=>item.id==='check.verification-optimization-regressions');
   assert.equal(check.id,'check.verification-optimization-regressions');assert.equal(check.task_id,'supplemental.optimization-regressions');assert.deepEqual(check.run.split(' ').slice(2),expected);assert.deepEqual(check.gate_ids,['check.verification-final-integrity']);

@@ -1,3 +1,5 @@
+import {contextBinary,decodeContext} from "./native-context.mjs";
+import {readFileSync} from "node:fs";
 import { spawn } from "node:child_process";
 import { once } from "node:events";
 import { createReadStream, createWriteStream, mkdirSync } from "node:fs";
@@ -63,6 +65,7 @@ export function runCommandToFiles(command, { cwd, environment = process.env, exe
     const started = performance.now();
     process.stderr.write(`[开始] ${safeCommand}\n`);
     if(execution&&execution.requested_command!==command)throw new TypeError('ACTUAL_EXECUTION_REQUEST_MISMATCH');
+    if(execution?.protocol==="context-envelope-v1")contextBinary({...environment,YSS_NATIVE_BINARY:execution.file,YSS_NATIVE_BINARY_SHA256:execution.binary_sha256});
     const child = execution
       ? spawn(execution.file,execution.args,{cwd:execution.cwd,shell:false,env:{...environment,...execution.environment},stdio:["ignore","pipe","pipe"],detached:process.platform!=="win32"})
       : spawn(command, { cwd, shell: true, env: environment, stdio: ["ignore", "pipe", "pipe"], detached: process.platform !== "win32" });
@@ -91,6 +94,10 @@ export function runCommandToFiles(command, { cwd, environment = process.env, exe
       const observed=!spawnError&&Number.isInteger(code);
       const result = { command:safeCommand, code:exitCode, duration_ms, stdoutFile, stderrFile, error:redact([spawnError,streamError?.message,...killErrors].filter(Boolean).join("; ")),termination,actual_exit_code:observed?code:null,actual_exit_signal:spawnError?null:exitSignal??null,actual_exit_code_observed:observed };
       if(execution)result.actual_execution=structuredClone(execution);
+      if(execution?.protocol==="context-envelope-v1")try {
+        contextBinary({...environment,YSS_NATIVE_BINARY:execution.file,YSS_NATIVE_BINARY_SHA256:execution.binary_sha256});
+        decodeContext({status:result.actual_exit_code,signal:result.actual_exit_signal,error:spawnError?new Error(spawnError):null,stdout:readFileSync(stdoutFile,"utf8")});
+      }catch(error){result.code=1;result.error=[result.error,redact(error.message)].filter(Boolean).join("; ");}
       if(streamError)result.storageError=redact(streamError.message);
       if(killErrors.length)result.kill_errors=killErrors;
       resolve(remember(result));

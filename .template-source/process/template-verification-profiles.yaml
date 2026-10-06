@@ -275,7 +275,7 @@ syntax_files:
   - scripts/verify-lifecycle-registry
   - scripts/verify-lifecycle-checkpoint
   - scripts/lib/context-contract.mjs
-  - scripts/verify-context-contract
+  - scripts/lib/native-context.mjs
   - scripts/verify-context-contract-scenarios
   - scripts/verify-business-language-scenarios
   - scripts/query-lifecycle-context
@@ -654,12 +654,14 @@ routing:
       - tests/efficiency-distribution.test.mjs
       - tests/instance-metadata.test.mjs
       - tests/native-consumer-routing.test.mjs
+      - tests/native-context-retirement.test.mjs
       - tests/native-instance-drift.test.mjs
     groups:
       - implementation
       - cli-sync
   - patterns:
       - .template-source/distribution/bundle-profile.json
+      - .template-source/scripts/lib/native-yss.mjs
       - .template-spec/user-guide/unified-cli.md
       - tests/cli-retirement.test.mjs
     groups:
@@ -945,7 +947,7 @@ groups:
         id: check.c17b4b0ba6c92cfc
       - run: scripts/verify-user-decision-scenarios
         id: check.491faba2d1fdef3b
-      - run: scripts/verify-context-contract --root . --json
+      - run: yss context check --root . --json
         id: check.1451647ba2722b30
       - run: scripts/verify-context-contract-scenarios
         id: check.b5ec80cdc570194f
@@ -3987,6 +3989,14 @@ legacy_coverage:
     evidence_ref: .template-source/process/template-verification-legacy.json
     display_gate: G06
 supplemental_checks:
+  - id: check.native-context-retirement
+    run: node --test tests/native-context-retirement.test.mjs
+    group: lifecycle
+    gate_ids: [check.verification-lifecycle]
+    depends_on: []
+    when: template-source
+    source_requirement: committed
+    task_id: supplemental.native-context-retirement
   - id: check.native-instance-drift
     run: node --test --test-concurrency=1 tests/instance-metadata.test.mjs
       tests/native-instance-drift.test.mjs

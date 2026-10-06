@@ -41,7 +41,7 @@ function fixture(t, side = "backend") {
   );
   const files = {
     "README.md": "# {{PROJECT_NAME}}\n",
-    "CONTEXT.md": "# Context\n",
+    "CONTEXT.md": fs.readFileSync(new URL("../../../CONTEXT.md",import.meta.url),"utf8"),
     "AGENTS.md": "Read CONTEXT.md\n",
     "yss-project.yaml": "schema_version: 1\nrepository_mode: template-source\n",
     ".template-spec/process/harness-profile.yaml": `schema_version: 1\nprofile_id: ${family.profileId}\ninstantiation:\n  cli_package: ${family.packageName}\n  metadata_file: ${family.metadataFile}\n  template_source: ${family.templateSource}\n`,
@@ -962,8 +962,8 @@ test('战略 v1 缺少证据不迁移，合法来源仅在 apply 转换，未知
 test('三家族真实写入、中断、备份损坏、并发修改及校验失败均保持恢复边界',t=>{
  for(const side of ['design','backend','frontend']) for(const failure of ['write','kill','backup-corrupt','concurrent','verify']) {
   const f=fixture(t,side);
-  if(failure==='verify')f.bundle({'skills-lock.json':json({version:3,skills:{shared:{}},projectionRoots:[]}), 'scripts/update-skill-lock':'process.exit(0);', 'scripts/verify-context-contract':'process.exit(0);','scripts/verify-harness-profile':'process.exit(0);','scripts/verify-governance-layout':'process.exit(0);'});
-  assert.equal(f.run('init').status,0);
+  if(failure==='verify')f.bundle({'skills-lock.json':json({version:3,skills:{shared:{}},projectionRoots:[]}), 'scripts/update-skill-lock':'process.exit(0);', 'scripts/lib/native-context.mjs':'export const checkNativeContext=()=>({});','scripts/verify-harness-profile':'process.exit(0);','scripts/verify-governance-layout':'process.exit(0);'});
+  const initialized=f.run('init');assert.equal(initialized.status,0,initialized.stderr);
   const metadata=path.join(f.target,f.family.metadataFile),before=fs.readFileSync(metadata);
   f.bundle({'.template-spec/process/rule.md':'updated'});
   let code;

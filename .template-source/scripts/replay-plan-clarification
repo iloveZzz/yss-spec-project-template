@@ -207,6 +207,8 @@ def main(argv=None):
     output.mkdir(parents=True)
     frozen_runner = output / 'skills-agent-eval.py'
     shutil.copy2(EVALUATOR, frozen_runner)
+    frozen_context = output / 'native-context.mjs'
+    shutil.copy2(ROOT / 'scripts/lib/native-context.mjs', frozen_context)
     spec = importlib.util.spec_from_file_location('plan_skill_evaluator', frozen_runner)
     evaluation = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(evaluation)
@@ -219,7 +221,7 @@ def main(argv=None):
     refs = sorted({ref for case in cases for ref in case['source_paths']})
     baseline = subprocess.check_output(['git', 'rev-parse', args.baseline_ref + '^{commit}'], cwd=ROOT).decode().strip()
     variants = ['baseline', 'candidate'] if args.variant == 'both' else [args.variant]
-    metadata = {'schema_version': 1, 'kind': 'plan-clarification-replay', 'test_data_only': True, 'source_state': 'working-tree', 'baseline_commit': baseline, 'requested_runtime_defaults': defaults, 'actual_model': 'unknown', 'runtime_path': str(runtime), 'runtime_sha256': sha(runtime.read_bytes()), 'wrapper_sha256': sha(Path(__file__).read_bytes()), 'evaluator_sha256': sha(frozen_runner.read_bytes()), 'suite_sha256': sha(frozen_suite.read_bytes()), 'selected_scenarios': [case['id'] for case in cases], 'repetitions': args.repetitions, 'per_turn_timeout_seconds': args.timeout, 'max_turns': args.max_turns, 'max_seconds': args.max_seconds, 'status': 'preparing', 'semantic_review': 'pending', 'snapshots': {}, 'variants': {}, 'unexecuted': [], 'limits': ['Each step is a fresh runtime session restored from the same fixture bytes, not native conversation continuation.', 'Only actual successful skill reads and tool calls count as observation; model self-report never proves invocation.', 'Fixture decisions cannot approve real projects; tool stubs never prove external side effects.', 'Automatic result is separate from semantic review; absent runtime model metadata remains unknown.']}
+    metadata = {'schema_version': 1, 'kind': 'plan-clarification-replay', 'test_data_only': True, 'source_state': 'working-tree', 'baseline_commit': baseline, 'requested_runtime_defaults': defaults, 'actual_model': 'unknown', 'runtime_path': str(runtime), 'runtime_sha256': sha(runtime.read_bytes()), 'wrapper_sha256': sha(Path(__file__).read_bytes()), 'evaluator_sha256': sha(frozen_runner.read_bytes()), 'context_transport_sha256': sha(frozen_context.read_bytes()), 'suite_sha256': sha(frozen_suite.read_bytes()), 'selected_scenarios': [case['id'] for case in cases], 'repetitions': args.repetitions, 'per_turn_timeout_seconds': args.timeout, 'max_turns': args.max_turns, 'max_seconds': args.max_seconds, 'status': 'preparing', 'semantic_review': 'pending', 'snapshots': {}, 'variants': {}, 'unexecuted': [], 'limits': ['Each step is a fresh runtime session restored from the same fixture bytes, not native conversation continuation.', 'Only actual successful skill reads and tool calls count as observation; model self-report never proves invocation.', 'Fixture decisions cannot approve real projects; tool stubs never prove external side effects.', 'Automatic result is separate from semantic review; absent runtime model metadata remains unknown.']}
     save(output / 'metadata.json', metadata)
     try:
         metadata['preflight_checks'] = []
@@ -242,7 +244,7 @@ def main(argv=None):
                         preparation = subprocess.run(['node', str(workspace / case['setup_script'])], cwd=workspace, env=environment, text=True, capture_output=True, timeout=60)
                         if preparation.returncode:
                             raise RuntimeError(f"preflight setup {variant}/{case['id']} failed: {preparation.stderr[:2000]}")
-                    checks = [('context', ['node', 'scripts/verify-context-contract', '--root', '.', '--json'], 0),
+                    checks = [('context', ['node', '--input-type=module', '-e', "import {contextExecution,runContextExecution} from " + json.dumps(frozen_context.as_uri()) + ";console.log(JSON.stringify(runContextExecution(contextExecution(process.cwd(),['--profile','spec']))));"], 0),
                               ('skills', ['node', 'scripts/query-lifecycle-context', '--mode', 'route', '--stage', 'stage.plan', '--work-unit', 'work-unit.plan-requirements', '--check-skills', '--agent-runtime', 'codex'], 0)]
                     schema = workspace / '.replay/preflight-schema.json'
                     schema.parent.mkdir(exist_ok=True)
@@ -258,6 +260,8 @@ def main(argv=None):
                         (logs / (name + '.stdout.log')).write_text(result.stdout)
                         (logs / (name + '.stderr.log')).write_text(result.stderr)
                         row = {'variant': variant, 'scenario': case['id'], 'check': name, 'command': command, 'expected_exit_code': expected, 'exit_code': result.returncode, 'stdout_sha256': sha(result.stdout.encode()), 'stderr_sha256': sha(result.stderr.encode()), 'status': 'passed' if result.returncode == expected else 'failed'}
+                        if name == 'context' and result.returncode == 0:
+                            row['native_execution'] = json.loads(result.stdout)
                         metadata['preflight_checks'].append(row)
                         save(output / 'metadata.json', metadata)
                         if row['status'] == 'failed':

@@ -2,7 +2,7 @@
 
 `work-unit.plan-requirements` 由 `yss-product-lifecycle` 或当前 profile 编排器执行。发现必须确认的需求、业务规则、范围或取舍未决项时，按 `planning.clarification_policy` 主动调用 `grilling`；术语工作使用 `domain-modeling`。不另建批准入口。
 
-1. 读取 yss-project.yaml 与唯一根 CONTEXT.md，执行 `scripts/verify-context-contract --root . --json`。缺失、大小写错误、嵌套合同、跨仓路径、伪锚点或不支持的 schema 都阻断；格式消费 `domain-modeling/CONTEXT-FORMAT.md`。
+1. 读取 yss-project.yaml 与唯一根 CONTEXT.md，执行 `yss context check --root . --json`。缺失、大小写错误、嵌套合同、跨仓路径、伪锚点或不支持的 schema 都阻断；格式消费 `domain-modeling/CONTEXT-FORMAT.md`。
 2. 自行查证可发现事实，技术事实路由 `yss-research`，可执行阻塞安排原型或实际验证，专业审查由主控派发，验证失败修复或补证。真正用户决定才组成当前决策前沿；调查未完成只等待依赖该事实的问题，其他必要问题和独立已授权工作继续。未确认的术语留在 Plan，不能写成稳定事实。
 3. 依问题依赖分轮询问全部当前可回答的必要问题，每题给出建议，保留真实原始回复；回复后再推进依赖问题。复用未变化的确认，用户纠正理解时只重开受影响问题及依赖。不能用口头同意代替事实、实验或审查证据。
 4. 确认后由 domain-modeling 维护五列业务词汇表，以 `<ContextId>/<EnglishIdentifier>` 标识；非 Global 的 ContextId 来自已确认业务责任区。只有难以逆转、非显然且有真实取舍的决定才形成 ADR。研究和实际验证保留可读证据。

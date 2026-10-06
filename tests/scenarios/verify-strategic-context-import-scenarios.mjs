@@ -1,11 +1,12 @@
-import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
+import {contextExecution, decodeContext} from '../../scripts/lib/native-context.mjs';
+import { realpathSync, mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { sealVisualBaseline } from "../../.agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs";
 
 const repoRoot = path.resolve(import.meta.dirname, "../..");
-const root = mkdtempSync(path.join(tmpdir(), "yss-strategic-import-"));
+const root = realpathSync(mkdtempSync(path.join(tmpdir(), "yss-strategic-import-")));
 mkdirSync(path.join(root, "docs", "evidence"), { recursive: true });
 writeFileSync(path.join(root, "yss-project.yaml"), "schema_version: 1\nrepository_mode: project-instance\n");
 const context = (meaning = "提供产品或服务的主体") => `---
@@ -23,7 +24,7 @@ context_schema_version: 1
 `;
 writeFileSync(path.join(root, "CONTEXT.md"), context());
 const run = (command, args) => spawnSync(command, args, { cwd: repoRoot, encoding: "utf8" });
-const snapshot = JSON.parse(run("scripts/verify-context-contract", ["--root", root, "--term-ref", "Global/Supplier", "--json"]).stdout).context_snapshot;
+const snapshot = JSON.parse(nativeContext(["--root", root, "--term-ref", "Global/Supplier", "--json"]).stdout).context_snapshot;
 const reconciliation = { schema_version: 1, repository_mode: "project-instance", stage: "stage.system-data-engineering", work_unit: "work-unit.technical-analysis", status: "reconciled", context_snapshot: snapshot, changes: { added: ["Global/Supplier"], updated: [], deprecated: [] }, unresolved_terms: [], evidence_refs: ["CONTEXT.md"] };
 const reconciliationFile = path.join(root, "docs/evidence/context-reconciliation.json"); writeFileSync(reconciliationFile, JSON.stringify(reconciliation));
 const supplier = { term_ref: "Global/Supplier", term: "供应商", meaning: "提供产品或服务的主体", english_identifier: "Supplier", context_id: "Global", forbidden_aliases: [] };
@@ -41,9 +42,16 @@ const handoffFile = path.join(root, "handoff.json"); writeFileSync(handoffFile, 
 function verify(expected, pattern) { const result = run("scripts/verify-strategic-context-import", ["--root", root, "--reconciliation", reconciliationFile, handoffFile]); if (result.status !== expected || (pattern && !pattern.test(`${result.stdout}${result.stderr}`))) throw new Error(`${result.stdout}${result.stderr}`); }
 verify(0);
 writeFileSync(path.join(root, "CONTEXT.md"), context("错误含义"));
-const staleSnapshot = JSON.parse(run("scripts/verify-context-contract", ["--root", root, "--term-ref", "Global/Supplier", "--json"]).stdout).context_snapshot;
+const staleSnapshot = JSON.parse(nativeContext(["--root", root, "--term-ref", "Global/Supplier", "--json"]).stdout).context_snapshot;
 writeFileSync(reconciliationFile, JSON.stringify({ ...reconciliation, context_snapshot: staleSnapshot }));
 verify(1, /不一致/);
 writeFileSync(handoffFile, JSON.stringify({ ...handoff, schema_version: 2 }));
 verify(1, /migration-required/);
 process.stdout.write("Strategic context import scenarios passed\n");
+
+function nativeContext(args) {
+ const ex=contextExecution(repoRoot,[...args,'--profile','spec']);
+ const res=spawnSync(ex.file,ex.args,{cwd:ex.cwd,encoding:'utf8'});
+ if(res.status===0)res.stdout=JSON.stringify(decodeContext(res));
+ return res;
+}

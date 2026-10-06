@@ -14,14 +14,15 @@ function run(root, ref, args = [], options = {}) {
   return spawnSync(process.execPath, [path.join(root, ref), ...args], { cwd: root, encoding: 'utf8', ...options });
 }
 function fixture(t) {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'yss-native-instance-drift-'));
+  const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'yss-native-instance-drift-')));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   for (const ref of ['scripts/lib', 'scripts/vendor', '.template-spec']) {
     fs.cpSync(path.join(SOURCE, ref), path.join(root, ref), { recursive: true, preserveTimestamps: true });
   }
-  for (const ref of ['scripts/verify-project-instance', 'scripts/sync-skills', 'scripts/update-skill-lock', 'scripts/verify-context-contract', 'CONTEXT.md']) {
+  for (const ref of ['scripts/verify-project-instance', 'scripts/sync-skills', 'scripts/update-skill-lock', 'scripts/lib/native-context.mjs', 'CONTEXT.md']) {
     fs.copyFileSync(path.join(SOURCE, ref), path.join(root, ref));
   }
+  fs.writeFileSync(path.join(root,'.template-spec/process/harness-profile.yaml'),'schema_version: 2\nprofile_id: harness.spec-template\ninstantiation:\n  cli_package: yss\n  metadata_file: .yss.json\n  native_profile: spec\n  template_source: github:iloveZzz/yss-spec-project-template\n');
   fs.mkdirSync(path.join(root, '.agents/skills'), { recursive: true });
   for (const name of ['.yss-skills-manifest.json', '.strategic-design-skills-manifest.json']) {
     fs.copyFileSync(path.join(SOURCE, '.agents/skills', name), path.join(root, '.agents/skills', name));
@@ -245,7 +246,7 @@ test('Schema 1 与 Schema 2 原生实例校验使用原生基线并保留旧 met
     if (version === 2) schema2(f);
     // The historical baseline deliberately differs. Native lastApplied is the
     // current applied state; preserved legacy metadata is migration lineage.
-    fs.writeFileSync(path.join(f.root, '.yss-template.json'), JSON.stringify({ managedFiles: {
+    fs.writeFileSync(path.join(f.root, '.yss-template.json'), JSON.stringify({ metadataSchemaVersion: 3, templateSource:'github:iloveZzz/yss-spec-project-template',templateCommit:'a'.repeat(40), managedFiles: {
       'managed.txt': { contentHash: '0'.repeat(64), ownership: 'managed' },
       'never-installed-historical.txt': { contentHash: '1'.repeat(64), ownership: 'managed' },
     } }));
@@ -302,7 +303,7 @@ test('损坏或未知原生身份不能用保留的旧 metadata 绕过', async t
   ];
   for (const [name, alter, error] of cases) await t.test(name, t => {
     const f = fixture(t);
-    fs.writeFileSync(path.join(f.root, '.yss-template.json'), JSON.stringify({ managedFiles: {} }));
+    fs.writeFileSync(path.join(f.root, '.yss-template.json'), JSON.stringify({ metadataSchemaVersion: 3, templateSource:'github:iloveZzz/yss-spec-project-template',templateCommit:'a'.repeat(40), managedFiles: {} }));
     alter(f); verifyWithoutWrites(f, 1, error);
   });
 });
@@ -311,7 +312,8 @@ test('旧实例仍检查原字节基线，skills-lock 使用独立供应链检�
   await t.test('legacy-baseline', t => {
     const f = fixture(t);
     fs.rmSync(path.join(f.root, '.yss.json'));
-    fs.writeFileSync(path.join(f.root, '.yss-template.json'), JSON.stringify({ managedFiles: {
+    fs.writeFileSync(path.join(f.root,'.template-spec/process/harness-profile.yaml'),'schema_version: 1\nprofile_id: harness.spec-template\n');
+    fs.writeFileSync(path.join(f.root, '.yss-template.json'), JSON.stringify({ metadataSchemaVersion: 3, templateSource:'github:iloveZzz/yss-spec-project-template',templateCommit:'a'.repeat(40), managedFiles: {
       'managed.txt': { contentHash: sha(original), ownership: 'managed' },
     } }));
     verifyWithoutWrites(f, 0);
@@ -442,7 +444,8 @@ test('managed 锁保留原始摘要校验，专职 Profile 不复用 Spec 锁豁
 test('历史没有 mode 的锁记录保留旧 canonical 校验，不报告原生权限等价', t => {
   const f = fixture(t);
   fs.rmSync(path.join(f.root, '.yss.json'));
-  fs.writeFileSync(path.join(f.root, '.yss-template.json'), JSON.stringify({ managedFiles: {
+  fs.writeFileSync(path.join(f.root,'.template-spec/process/harness-profile.yaml'),'schema_version: 1\nprofile_id: harness.spec-template\n');
+  fs.writeFileSync(path.join(f.root, '.yss-template.json'), JSON.stringify({ metadataSchemaVersion: 3, templateSource:'github:iloveZzz/yss-spec-project-template',templateCommit:'a'.repeat(40), managedFiles: {
     'managed.txt': { contentHash: sha(original), ownership: 'managed' },
     'skills-lock.json': { contentHash: '0'.repeat(64), ownership: 'managed' },
   } }));

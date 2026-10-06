@@ -1,7 +1,8 @@
 #!/usr/bin/env node
+import {checkNativeContext} from '../../../../scripts/lib/native-context.mjs';
 import { createHash } from "node:crypto";
 import { spawnSync } from "node:child_process";
-import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { realpath, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { tmpdir } from "node:os";
@@ -11,7 +12,7 @@ const testsRoot = dirname(fileURLToPath(import.meta.url));
 const projectRoot = resolve(testsRoot, "../../../..");
 const validator = join(testsRoot, "..", "scripts", "validate-domain-strategy.mjs");
 const packageValidator = join(testsRoot, "..", "scripts", "validate-stage-decision-package.mjs");
-const contextValidator = join(projectRoot, "scripts", "verify-context-contract");
+
 const migrationTool = join(testsRoot, "..", "scripts", "migrate-context-references.mjs");
 const v3MigrationTool = join(testsRoot, "..", "scripts", "migrate-contract-v3.mjs");
 const validTemplate = join(testsRoot, "fixtures", "valid-supplier-domain.yaml");
@@ -142,12 +143,11 @@ context_schema_version: 1
 | 准入决定 | 合规审查形成的准入结论。 | AdmissionDecision | ComplianceReview | 避免：\`审批结果\` |
 `;
 
-const temporaryRoot = await mkdtemp(join(tmpdir(), "yss-stage-decision-v3-"));
+const temporaryRoot = await realpath(await mkdtemp(join(tmpdir(), "yss-stage-decision-v3-")));
 try {
   await writeFile(join(temporaryRoot, "CONTEXT.md"), contextSource);
-  const contextResult = spawnSync(process.execPath, [contextValidator, "--root", temporaryRoot, "--allowed-context", "SupplierManagement", "--allowed-context", "ComplianceReview", "--allowed-context", "ProcurementExecution", "--term-ref", "Global/Supplier", "--term-ref", "ComplianceReview/AdmissionDecision", "--json"], { cwd: projectRoot, encoding: "utf8" });
-  if (contextResult.status !== 0) throw new Error(`context fixture should pass: ${contextResult.stderr}`);
-  const context = JSON.parse(contextResult.stdout);
+  await writeFile(join(temporaryRoot,'yss-project.yaml'),'schema_version: 1\nrepository_mode: template-source\n');
+  const context = checkNativeContext({root:temporaryRoot,allowedContextIds:['SupplierManagement','ComplianceReview','ProcurementExecution'],termRefs:['Global/Supplier','ComplianceReview/AdmissionDecision']});
 
   const domainTemplateSource = (await readFile(validTemplate, "utf8"))
     .replace("<document-digest>", context.document_digest)

@@ -49,3 +49,9 @@ yss lifecycle verify-daily --profile spec --root /absolute/path/spec --task docs
 `yss bundle export --profile <Profile> --out <项目外新目录> --json` 导出完整资产与 manifest，供插件和只读升级说明消费。插件固定二进制和摘要，不再使用旧 Node bin、私有 CommonJS 模块或旧成功 JSON。
 
 真实业务工程只在隔离副本中验证。旧固定 npm 包、源码提交、上一版二进制、Bundle、来源锁和插件包长期保留。npm deprecated 和旧仓归档在固定源码、六平台原生验收、完整模板门禁及可审阅发行清单完成后分别授权；不执行 unpublish。
+
+## Context 校验与快照
+
+运行 `yss context check --root /absolute/path/project --json`；按需要追加 `--allowed-context-ids ComplianceReview,Reporting` 和 `--term-refs Global/Customer,ComplianceReview/AdmissionDecision`。原生参数使用逗号分隔，成功快照在 envelope 的 `result.context_snapshot`；未选择术语时返回空引用集合及其摘要。旧重复参数仅由冻结历史检查的显式映射转换。
+
+合法 `template-source` 可只读执行 Context check/verify/query，不要求实例 metadata；项目实例仍须通过原有身份校验。缺二进制、快照能力、错误协议、实际非零退出或摘要漂移均阻断，需显式取得正确版本；不得回退旧校验入口。校验不创建批准或执行授权。

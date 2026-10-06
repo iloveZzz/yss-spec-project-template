@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import {contextExecution} from '../../scripts/lib/native-context.mjs';
 // Fixed-input component benchmark. This is performance evidence, not a substitute
 // for the complete template verification or a committed-source release gate.
 import fs from 'node:fs';
@@ -32,9 +33,11 @@ const { values } = parseArgs({ strict: true, options: {
 } });
 if (values.worker) {
   const root = values.fixture;
+  const native=contextExecution(root);
+  const contextCommand=[native.file,...native.args].map(quote).join(' ');
   const commands = [
     `${quote(process.execPath)} ${quote(path.join(source, 'scripts/repository-mode'))}`,
-    `${quote(process.execPath)} ${quote(path.join(source, 'scripts/verify-context-contract'))} --root ${quote(root)}`,
+    contextCommand,
     `${quote(process.execPath)} ${quote(path.join(source, 'scripts/verify-maintenance-checkpoint'))} ${quote(path.join(root, 'checkpoint.json'))}`,
     `${quote(process.execPath)} --check ${quote(path.join(source, '.template-source/cli-core/runtime-store.mjs'))}`,
   ];
@@ -45,7 +48,7 @@ if (values.worker) {
   fs.mkdirSync(directory, { recursive: true });
   if (!session) fs.writeFileSync(path.join(directory, 'inputs.json'), input);
   const events = [];
-  const groups = await runGroups({ groups: ['fixed-fast-components'], commands: commands.map((command, index) => ({ command, id: String(index), group: 'fixed-fast-components' })) }, 'template-source', 1, {
+  const groups = await runGroups({ groups: ['fixed-fast-components'], commands: commands.map((command, index) => ({ command, id: String(index), group: 'fixed-fast-components', ...(index===1?{execution:{...native,requested_command:command}}:{}) })) }, 'template-source', 1, {
     cwd: root, logRoot: directory, runtimeSession: session, runtimeEvent:'command-result',
     onResult: row => {
       if (!session) { events.push({ id: row.id, code: row.code }); fs.writeFileSync(path.join(directory, 'report.json'), JSON.stringify({ events })); }

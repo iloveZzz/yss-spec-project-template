@@ -311,7 +311,7 @@
       "scripts/verify-project-instance",
       "scripts/sync-skills",
       "scripts/update-skill-lock",
-      "scripts/verify-context-contract",
+      "scripts/lib/native-context.mjs",
       "scripts/verify-context-reconciliation",
       "scripts/verify-digital-human-roles",
       "scripts/verify-digital-human-task-package",

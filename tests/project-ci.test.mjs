@@ -8,10 +8,21 @@ import { spawnSync } from 'node:child_process';
 import { parse } from '../scripts/vendor/yaml.mjs';
 
 const source=process.cwd();
+let nativeMetadata, nativeProfile;
 function fixture(t) {
-  const root=fs.mkdtempSync(path.join(os.tmpdir(),'project-ci-test-'));
+  const root=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'project-ci-test-')));
+  if(!nativeMetadata) {
+    const seed=path.join(root,'seed');
+    const init=spawnSync(process.env.YSS_NATIVE_BINARY,['init','--profile','spec','--root',seed,'--json'],{encoding:'utf8'});
+    assert.equal(init.status,0,init.stderr||init.stdout);
+    nativeMetadata=fs.readFileSync(path.join(seed,'.yss.json'));
+    nativeProfile=fs.readFileSync(path.join(seed,'.template-spec/process/harness-profile.yaml'));
+    fs.rmSync(seed,{recursive:true});
+  }
+  fs.writeFileSync(path.join(root,'.yss.json'),nativeMetadata);
   t.after(()=>fs.rmSync(root,{recursive:true,force:true,maxRetries:5,retryDelay:100}));
   const write=(ref,bytes)=>{const file=path.join(root,ref);fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,bytes);};
+  write('.template-spec/process/harness-profile.yaml',nativeProfile);
   write('yss-project.yaml','schema_version: 1\nrepository_mode: project-instance\n');
   for(const ref of ['CONTEXT.md','.template-spec/agents/issue-tracker.md'])write(ref,fs.readFileSync(ref));
   write('business.md','用户业务原文');write('.github/workflows/user.yml','name: user-owned\n');
@@ -174,4 +185,24 @@ test('PR 基线保留中文路径，删除中文目录 checkpoint 不能变绿',
   const git=(...args)=>{const r=spawnSync('git',['-c','maintenance.auto=false','-c','gc.auto=0',...args],{cwd:f.root,encoding:'utf8'});assert.equal(r.status,0,r.stderr);return r.stdout.trim();};
   git('init','-q');git('add','.');git('-c','user.name=fixture','-c','user.email=fixture@invalid','commit','-qm','Chinese filename fixture');const base=git('rev-parse','HEAD');
   fs.unlinkSync(path.join(f.root,'docs/.scratch/中文/checkpoint.yaml'));const r=f.run('check','--base',base);assert.equal(r.status,1,r.stdout);assert.ok(JSON.parse(r.stdout).diagnostics.some(x=>x.code==='checkpoint-deleted'&&x.source_ref.includes('中文')));
+});
+
+test('真实 CI Context 消费路径拒绝缺二进制、错误协议、非零退出与摘要漂移',t=>{
+  const f=fixture(t);tools(f);
+  const success={outputVersion:1,protocolVersion:1,command:'context',status:'ok',code:'OK',result:{context_snapshot:{context_ref:'CONTEXT.md',context_schema_version:1,document_digest:'sha256:'+'a'.repeat(64),referenced_terms_digest:'sha256:'+'b'.repeat(64),term_refs:[]}}};
+  const binaries=[
+    {name:'absent',file:path.join(f.root,'absent')},
+    {name:'wrong-protocol',output:{...success,protocolVersion:2},exit:0},
+    {name:'nonzero',output:{...success,status:'error',code:'CONTEXT',result:{message:'synthetic rejected'}},exit:1},
+    {name:'digest-drift',output:success,exit:0,mutate:true}
+  ];
+  for(const item of binaries) {
+    const binary=item.file||path.join(f.root,item.name);
+    if(!item.file) {fs.writeFileSync(binary,`#!/usr/bin/env node\n${item.mutate?"require('node:fs').appendFileSync(__filename,'// drift\\n');":""}\nprocess.stdout.write(${JSON.stringify(JSON.stringify(item.output))});process.exit(${item.exit});\n`);fs.chmodSync(binary,0o755);}
+    const result=spawnSync(process.execPath,[path.join(source,'scripts/project-ci'),'check','--root',f.root,'--json'],{encoding:'utf8',env:{...process.env,YSS_NATIVE_BINARY:binary,YSS_NATIVE_BINARY_SHA256:''}});
+    assert.notEqual(result.status,0,item.name+result.stdout);
+    const report=JSON.parse(result.stdout);assert.notEqual(report.status,'passed');
+    assert.ok(report.checks.some(check=>check.id==='context'&&check.status==='failed'),item.name+result.stdout);
+    if(item.exit===1)assert.equal(report.checks.find(check=>check.id==='context').exit_code,1);
+  }
 });

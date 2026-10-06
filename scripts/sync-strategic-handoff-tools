@@ -75,7 +75,7 @@ const checkpointContract=parseDocument(readFileSync(path.join(root,'.agents/skil
 const checkpointWire='.template-spec/process/checkpoint-boundary.yaml';
 const checkpointBytes=Buffer.from(JSON.stringify({schema_version:1,derived_from:'.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml',phase_boundary:checkpointContract.phase_boundary,checkpoint_policy:checkpointContract.checkpoint_policy},null,2)+'\n');
 if(!existsSync(path.join(root,checkpointWire))||!checkpointBytes.equals(readFileSync(path.join(root,checkpointWire)))){differences.push(checkpointWire);if(!check)writeFileSync(path.join(root,checkpointWire),checkpointBytes);}
-shared.push('scripts/verify-context-contract','scripts/verify-approval-record',checkpointWire,'scripts/project-ci','scripts/project-ci-transition','scripts/lib/project-ci-install.mjs','scripts/lib/project-governance.mjs','scripts/lib/governance-io.mjs','scripts/lib/checkpoint-boundary.mjs','scripts/lifecycle-status','scripts/lib/lifecycle-status.mjs','.template-spec/process/project-ci.md');
+shared.push('scripts/lib/native-context.mjs','scripts/verify-approval-record',checkpointWire,'scripts/project-ci','scripts/project-ci-transition','scripts/lib/project-ci-install.mjs','scripts/lib/project-governance.mjs','scripts/lib/governance-io.mjs','scripts/lib/checkpoint-boundary.mjs','scripts/lifecycle-status','scripts/lib/lifecycle-status.mjs','.template-spec/process/project-ci.md');
 shared.push('scripts/verify-business-tickets','scripts/lib/business-tickets.mjs','scripts/lib/business-ticket-lifecycle.mjs','.template-spec/process/business-tickets.md','.template-spec/process/schemas/business-tickets-v1.schema.json','.template-spec/templates/business-ticket-template.md','.template-spec/templates/business-ticket-set-template.yaml','.template-spec/templates/business-ticket-review-template.yaml',...readdirSync(path.join(root,'scripts/fixtures/business-tickets')).map(name=>`scripts/fixtures/business-tickets/${name}`));
 shared.push('scripts/feature-assets','scripts/lib/feature-assets.mjs','.template-spec/process/feature-assets.md','.template-spec/templates/local-parent-ticket-template.md');
 // Portable maintenance validators consume this policy at module load time.
@@ -84,6 +84,8 @@ shared.push('.template-source/process/maintenance-intensity.yaml');
 shared.push('.template-source/process/schemas/maintenance-review-record.schema.json');
 // Shared vendor bytes need the same locked builder in each source Profile.
 shared.push('.template-source/tooling/node/package.json','.template-source/tooling/node/pnpm-lock.yaml','.template-source/tooling/node/scripts/build-vendor.mjs',...['yaml','xml','markdown'].map(kind=>`.template-source/tooling/node/vendor-entry-${kind}.mjs`));
+// CLI core owns portable native Context transport and runtime store.
+sync(path.join(root,'.template-source/cli-core/native-context.mjs'),path.join(root,'scripts/lib/native-context.mjs'));
 // CLI core owns the runtime store; copies remain generated portable modules.
 sync(path.join(root,'.template-source/cli-core/runtime-store.mjs'),path.join(root,'scripts/lib/runtime-store.mjs'));
 const sharedRefs=[...new Set(shared)].sort();
@@ -169,7 +171,7 @@ function expectedLock(target,targetRoot){
  effectiveFiles[targetRoutingRef(targetRoot)]=digestBytes(target==='.'?routingSource:projectedRouting(targetRoot));
  sourceFiles[registryRef]=digestBytes(readFileSync(path.join(root,registryRef)));
  effectiveFiles[registryRef]=digestBytes(target==='.'?readFileSync(path.join(root,registryRef)):projectedRegistry(targetRoot));
- return {schema_version:1,target_id:target==='.'?'template-root':path.basename(target),source_repository:'yss-spec-project-template',source_revision:revision,source_state:sourceState,transformation_set:[...new Set([...lockedRefs.map(ref=>transformationFor(target,ref)),...(target.endsWith('backend-agent')?['backend-wire-library']:[])])].sort(),source_files:{...sourceFiles,'.template-source/cli-core/runtime-store.mjs':digestBytes(readFileSync(path.join(root,'.template-source/cli-core/runtime-store.mjs')))},effective_files:effectiveFiles};
+ return {schema_version:1,target_id:target==='.'?'template-root':path.basename(target),source_repository:'yss-spec-project-template',source_revision:revision,source_state:sourceState,transformation_set:[...new Set([...lockedRefs.map(ref=>transformationFor(target,ref)),...(target.endsWith('backend-agent')?['backend-wire-library']:[])])].sort(),source_files:{...sourceFiles,'.template-source/cli-core/native-context.mjs':digestBytes(readFileSync(path.join(root,'.template-source/cli-core/native-context.mjs'))),'.template-source/cli-core/runtime-store.mjs':digestBytes(readFileSync(path.join(root,'.template-source/cli-core/runtime-store.mjs')))},effective_files:effectiveFiles};
 }
 function lock(target,targetRoot){const ref='.template-source/distribution/strategic-handoff-tools.lock.json',dest=path.join(targetRoot,ref),bytes=Buffer.from(`${JSON.stringify(expectedLock(target,targetRoot),null,2)}\n`);if(!existsSync(dest)||!bytes.equals(readFileSync(dest))){differences.push(path.relative(root,dest));if(!check){mkdirSync(path.dirname(dest),{recursive:true});writeFileSync(dest,bytes);}}}
 // Shared Node governance modules remain independently maintained after CLI retirement.

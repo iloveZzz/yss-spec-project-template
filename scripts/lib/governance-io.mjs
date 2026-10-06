@@ -1,3 +1,4 @@
+import {readInstanceMetadata} from './instance-metadata.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
@@ -30,6 +31,11 @@ export function orchestrationRef(root) {
   const profileRef='.template-spec/process/harness-profile.yaml';
   if(!fileBinding(root,profileRef))return '.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml';
   const profile=readDocument(root,profileRef).profile_id;
+  if(profile==='harness.spec-template') {
+    const identity=readInstanceMetadata(root);
+    if(identity?.kind!=='native'||identity.profile!=='spec')throw new Error('Spec 原生 Profile 缺少匹配的实例身份');
+    return '.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml';
+  }
   const owner={
     'harness.business-ddd-strategy-handoff':'yss-strategic-design',
     'harness.backend-delivery':'harness-orchestrator',

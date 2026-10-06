@@ -1,10 +1,11 @@
-import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
+import {contextExecution, decodeContext} from '../../scripts/lib/native-context.mjs';
+import { realpathSync, mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 
 const repoRoot = path.resolve(import.meta.dirname, "../..");
-const root = mkdtempSync(path.join(tmpdir(), "yss-context-reconciliation-"));
+const root = realpathSync(mkdtempSync(path.join(tmpdir(), "yss-context-reconciliation-")));
 mkdirSync(path.join(root, "docs", "evidence"), { recursive: true });
 writeFileSync(path.join(root, "yss-project.yaml"), "schema_version: 1\nrepository_mode: project-instance\n");
 writeFileSync(path.join(root, "CONTEXT.md"), `---
@@ -28,10 +29,11 @@ context_schema_version: 1
 `);
 
 function run(command, args) {
+
   return spawnSync(command, args, { cwd: repoRoot, encoding: "utf8" });
 }
 
-const snapshotResult = run("scripts/verify-context-contract", ["--root", root, "--allowed-context", "ComplianceReview", "--term-ref", "Global/Supplier", "--term-ref", "ComplianceReview/AdmissionDecision", "--json"]);
+const snapshotResult = nativeContext(["--root", root, "--allowed-context", "ComplianceReview", "--term-ref", "Global/Supplier", "--term-ref", "ComplianceReview/AdmissionDecision", "--json"]);
 if (snapshotResult.status !== 0) throw new Error(snapshotResult.stderr || snapshotResult.stdout);
 const snapshot = JSON.parse(snapshotResult.stdout).context_snapshot;
 
@@ -66,3 +68,10 @@ writeFileSync(path.join(root, "yss-project.yaml"), "schema_version: 1\nrepositor
 verify("template-source", record({ repository_mode: "template-source", status: "not-applicable", reason: "模板源仅校验 CONTEXT.md 结构", changes: { added: [], updated: [], deprecated: [] } }), 0);
 
 process.stdout.write("Context reconciliation scenarios passed\n");
+
+function nativeContext(args) {
+ const ex=contextExecution(repoRoot,[...args,'--profile','spec']);
+ const res=spawnSync(ex.file,ex.args,{cwd:ex.cwd,encoding:'utf8'});
+ if(res.status===0)res.stdout=JSON.stringify(decodeContext(res));
+ return res;
+}

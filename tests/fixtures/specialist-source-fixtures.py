@@ -62,16 +62,28 @@ for profile,initial in seeds.items():
  if not CHECK:dest.mkdir(parents=True,exist_ok=True)
  rows=[]
  for ref in sorted(selected):
-  s=R/ref;t=dest/ref
+  s=R/ref;stored="context-source.fixture.md" if ref=="CONTEXT.md" else ref;t=dest/stored
   if CHECK:
    assert t.is_file() and not t.is_symlink() and t.read_bytes()==s.read_bytes() and stat.S_IMODE(t.stat().st_mode)==stat.S_IMODE(s.stat().st_mode),(profile,ref)
   else:
    t.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(s,t)
-  rows.append({'path':ref,'source_path':ref,'sha256':hashlib.sha256(s.read_bytes()).hexdigest(),'mode':stat.S_IMODE(s.stat().st_mode)})
+  rows.append({'path':ref,'source_path':ref,'storage_path':stored,'sha256':hashlib.sha256(s.read_bytes()).hexdigest(),'mode':stat.S_IMODE(s.stat().st_mode)})
  index={'schema_version':1,'kind':'test-only-canonical-source','source_repository':'yss-spec-project-template','source_head':subprocess.check_output(['git','rev-parse','HEAD'],cwd=R,text=True).strip(),'source_state':'working-tree','files':rows}
+ # source_head records the historical generator observation, not payload identity.
+ # Checking a later unrelated commit must still compare every closed payload byte/mode.
+ if CHECK:
+  stored_index=(dest.parent/'upstream-source-index.mjs').read_text()
+  observed=json.loads(stored_index.split('export default ',1)[1].removesuffix(';\n'))
+  assert re.fullmatch('[a-f0-9]{40}',observed.get('source_head','')),(profile,'source head')
+  index['source_head']=observed['source_head']
  expected='// Generated test source inventory; not a lifecycle policy or an approval.\nexport default '+json.dumps(index,ensure_ascii=False,indent=2)+';\n'
  if CHECK:
   assert (dest.parent/'upstream-source-index.mjs').read_text()==expected,(profile,'index')
-  assert sorted(str(x.relative_to(dest)) for x in dest.rglob('*') if x.is_file())==sorted(selected),(profile,'extra files')
- else:(dest.parent/'upstream-source-index.mjs').write_text(expected)
+  assert sorted(str(x.relative_to(dest)) for x in dest.rglob('*') if x.is_file())==sorted("context-source.fixture.md" if ref=="CONTEXT.md" else ref for ref in selected),(profile,'extra files')
+ else:
+  (dest.parent/'upstream-source-index.mjs').write_text(expected)
+  legacy=dest/'CONTEXT.md'
+  if legacy.exists():
+   assert (dest/'context-source.fixture.md').read_bytes()==legacy.read_bytes()
+   legacy.unlink()
  print(profile,len(rows),'fixture source files',flush=True)

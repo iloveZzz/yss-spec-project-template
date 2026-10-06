@@ -1,3 +1,4 @@
+import {checkNativeContext} from './native-context.mjs';
 import * as fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -29,7 +30,7 @@ export function verifyInstance(bundle, root) {
   identity(root, bundle, 'doctor');
   const checks = [];
   if (!bundle.files.has('skills-lock.json')) return checks;
-  for (const [name, ref, ...args] of CHECKS) checks.push({name,status:'ok',...run(root,ref,args)});
+  for (const [name, ref, ...args] of CHECKS) checks.push({name,status:'ok',...(name==='context' ? {exitCode:0,context:checkNativeContext({root})} : run(root,ref,args))});
   const lock = JSON.parse(fs.readFileSync(safe(root, 'skills-lock.json')));
   ensure(lock.version === 3 && lock.skills?.shared && Array.isArray(lock.projectionRoots), '技能锁 schema 非法', 'VERIFY');
   for (const name of Object.keys(lock.skills.shared)) {
@@ -43,7 +44,7 @@ export function verifyInstance(bundle, root) {
 // that the transaction will apply. Unknown user skills are never auto-enrolled.
 export function prepareGenerated(bundle, target, operations, metadata, observe) {
   if (!bundle.files.has('skills-lock.json')) return;
-  const scratch = fs.mkdtempSync(path.join(os.tmpdir(), 'harness-candidate-'));
+  const scratch = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'harness-candidate-')));
   try {
     const refs = new Set([...bundle.files.keys(), ...Object.keys(metadata.managedFiles)]);
     const roots = ['.agents/skills','.claude/skills','.codex/skills','.cursor/skills','.pi/skills','.qoder/skills','.trae/skills'];

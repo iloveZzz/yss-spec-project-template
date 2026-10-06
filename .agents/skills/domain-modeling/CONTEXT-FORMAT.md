@@ -52,4 +52,8 @@ context_schema_version: 1
 
 ## 机器验证
 
-使用根目录 `scripts/verify-context-contract` 校验位置、版本、表格、术语身份、适用业务责任区和引用。业务资产只使用结构化 `context_ref: CONTEXT.md` 与 `term_refs`，不得使用 `CONTEXT.md#Term` 或 `contexts/<ContextId>/CONTEXT.md`。校验器兼容旧项目的 `适用限界上下文` 表头，但新模板只写 `适用业务责任区`。
+使用 `yss context check --root . --json` 校验位置、版本、表格、术语身份、适用业务责任区和引用。业务资产只使用结构化 `context_ref: CONTEXT.md` 与 `term_refs`，不得使用 `CONTEXT.md#Term` 或 `contexts/<ContextId>/CONTEXT.md`。校验器兼容旧项目的 `适用限界上下文` 表头，但新模板只写 `适用业务责任区`。
+
+需要限制责任区或选择术语时，使用 `--allowed-context-ids ComplianceReview,Reporting` 与 `--term-refs Global/Customer,ComplianceReview/AdmissionDecision`。原生参数按逗号分隔；旧重复参数 `--allowed-context`、`--term-ref` 只在冻结历史命令的显式映射中转换。
+
+成功必须同时满足实际退出码 0、envelope v1 的 `status=ok` 与 `code=OK`。读取 `result.context_snapshot`，包含文档身份、版本、文档摘要、引用术语摘要和 `term_refs`；未选择术语时 `term_refs` 为空数组，仍有空集合的摘要。缺少该能力须显式升级固定二进制，不能使用旧脚本回退。

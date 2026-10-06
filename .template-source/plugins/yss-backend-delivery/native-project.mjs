@@ -68,7 +68,8 @@ function check(root, target, ctx, requireBinding = false) {
   const statusPlan = envelope.result.plan || envelope.result;
   if (statusPlan.conflicts?.length || statusPlan.changes?.length) throw new Error('native-project-managed-conflict-or-drift');
   safe(target, '.agents/skills/yss-product-lifecycle/SKILL.md');
-  executeNode(safe(target, 'scripts/verify-context-contract'), ['--root', target], target);
+  const contextReport = invoke(ctx.binary, ['context', 'check', '--root', target]);
+  if (!contextReport.result?.context_snapshot) throw new Error('native-context-capability-missing');
   const receipt = existsSync(path.join(target, ctx.receipt)) ? read(target, ctx.receipt) : null;
   if (receipt && digest(receipt) !== digest(binding(ctx, legacyBinding(target, ctx), receipt.backend || null))) throw new Error('native-plugin-binding-mismatch: use project-migration-plan');
   if (receipt && ctx.pin.profile === 'spec') {
