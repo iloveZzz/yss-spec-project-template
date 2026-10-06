@@ -41,7 +41,19 @@ export function verificationPreflight({root,plan,reportDir,environment=process.e
     for(const [name,version] of Object.entries({...expected.dependencies,...expected.devDependencies}))if(JSON.parse(fs.readFileSync(path.join(toolchain,'node_modules',name,'package.json'))).version!==version)throw new Error(`${name} 需要锁定 ${version}`);
     return {root:toolchain,package_manager:expected.packageManager,package_sha256:hash(fs.readFileSync(path.join(assets,'package.json'))),lock_sha256:hash(fs.readFileSync(path.join(toolchain,'pnpm-lock.yaml'))),packages:{...expected.dependencies,...expected.devDependencies}};
   });
-  check('submodule-source',()=>{const status=invoke('git',['submodule','status','--recursive']);if(status.split('\n').some(line=>/^[-+U]/.test(line)))throw new Error('子模块未初始化或与 gitlink 不匹配');return status;});
+  check('submodule-source',()=>{
+    const status=invoke('git',['submodule','status','--recursive']);
+    const invalid=status.split('\n').some(line=>{
+      if(/^[+U]/.test(line))return true;
+      if(!line.startsWith('-'))return false;
+      // The CLI is verified from YSS_NATIVE_SOURCE_ROOT by release-sources.
+      // Its optional anchor must not require a second checkout of CLI source.
+      const match=/^-[a-f0-9]{40}\s+(\S+)(?:\s+\([^\n]*\))?$/.exec(line);
+      return !match||match[1]!=='submodules/yss-cli';
+    });
+    if(invalid)throw new Error('子模块未初始化或与 gitlink 不匹配');
+    return status;
+  });
   if(plan.source_requirement==='committed')check('committed-source',()=>{const head=invoke('git',['rev-parse','HEAD']);if(!/^[a-f0-9]{40}$/.test(head))throw new Error('模板 SHA 不是完整 40 位');if(invoke('git',['status','--porcelain','--untracked-files=all']))throw new Error('固定源候选工作树不干净');return head;});
   return {status:errors.length?'failed':'passed',observations,errors};
 }

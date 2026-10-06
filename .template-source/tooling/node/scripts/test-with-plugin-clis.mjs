@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { pathToFileURL } from 'node:url';
+import {nativeBinary,inspectNative,runNative} from '../../../scripts/lib/native-yss.mjs';
 import { verificationInputDigest } from '../../../../scripts/lib/verification-report.mjs';
 import { publishTestFixture, runtimeIdentity } from './tooling-fixture.mjs';
 import { runToolingProcess, runToolingTestFilesSerial } from './tooling-process.mjs';
@@ -74,31 +74,12 @@ try {
   const tests = collectTests(process.argv.slice(2));
   metrics.selected_files = tests.map(file => path.relative(root, file));
   digest = verificationInputDigest(root); metrics.input_sha256 = digest; save();
-  const dependencies = [];
-  for (const [plugin, repository, variable] of [
-    ['yss-backend-delivery', 'create-yss-spec', 'YSS_BACKEND_PLUGIN_CLI_ROOT'],
-    ['yss-product-design', 'create-yss-strategic-design', 'YSS_DESIGN_PLUGIN_CLI_ROOT'],
-  ]) {
-    const pin = JSON.parse(fs.readFileSync(path.join(root, '.template-source/plugins', plugin, 'cli-pin.json')));
-    const source = path.join(root, 'submodules', repository), cli = path.join(temporary, repository);
-    await prepare('git', ['clone', '--quiet', '--shared', '--no-checkout', source, cli], root, `clone-${repository}`);
-    const probe = await run('git', ['cat-file', '-e', `${pin.cli_commit}^{commit}`], cli, `pin-${repository}`);
-    metrics.preparations.push(probe);
-    if (probe.code !== 0) {
-      if (probe.reason || controller.signal.aborted) throw new Error('pin-probe-interrupted');
-      const remote = await prepare('git', ['remote', 'get-url', 'origin'], source, `remote-${repository}`);
-      await prepare('git', ['fetch', '--depth=1', remote, pin.cli_commit], cli, `fetch-${repository}`);
-    }
-    await prepare('git', ['checkout', '--quiet', '--detach', pin.cli_commit], cli, `checkout-${repository}`);
-    if (repository === 'create-yss-spec') await prepare(process.execPath, ['scripts/sync-template.js', '--require-committed'], cli, 'backend-snapshot',
-      { YSS_SPEC_TEMPLATE_REPO: pathToFileURL(root).href, YSS_SPEC_TEMPLATE_REF: pin.template_commit });
-    const snapshot = JSON.parse(fs.readFileSync(path.join(cli, 'template.snapshot.json')));
-    if (snapshot.sourceState !== 'committed' || snapshot.templateCommit !== pin.template_commit
-        || snapshot.snapshotHash !== pin.snapshot_hash || snapshot.manifestHash !== pin.manifest_hash) throw new Error(`plugin-test-snapshot-mismatch: ${pin.name}`);
-    if (await prepare('git', ['status', '--porcelain', '--untracked-files=all'], cli, `clean-${repository}`)) throw new Error('plugin-test-cli-not-clean');
-    dependencies.push({ pin, snapshot }); env[variable] = cli;
-    console.log(`Plugin test dependency: ${pin.name}@${pin.version} (${pin.cli_commit})`);
-  }
+  const pinned=nativeBinary(env),version=runNative(['version'],{environment:env}).result;
+  const dependencies=['spec','design'].map(profile=>({profile,binarySha256:pinned.digest,version,snapshot:inspectNative(profile,{environment:env})}));
+  env.YSS_PLUGIN_BINARY=pinned.binary;
+  env.YSS_NATIVE_BINARY=pinned.binary;
+  env.YSS_NATIVE_BINARY_SHA256=pinned.digest;
+  for(const dependency of dependencies)console.log(`Plugin native dependency: ${dependency.profile}, ${pinned.digest}`);
   let fixtureEnvironment = {};
   if (mode === 'optimized' && tests.some(file => reuseFiles.has(testRef(file)))) {
     const artifact = path.join(temporary, 'fixture/yss-backend-delivery'), manifestFile = path.join(temporary, 'fixture.json');

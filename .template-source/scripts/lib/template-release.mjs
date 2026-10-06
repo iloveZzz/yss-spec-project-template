@@ -9,6 +9,8 @@ import { verificationInputDigest } from '../../../scripts/lib/verification-repor
 import {compileExpectedVerificationPlan,validateVerificationReport,validateQualificationIntegration,assertEvidenceFile} from './verification-report-validator.mjs';
 import {collectReleaseSources,createArtifactCoordinator,produceCliArtifact,verifyInstalledCliMigration,validateArtifact} from './verification-artifacts.mjs';
 import {validateReceipt} from './verification-delivery-run.mjs';
+import {initializeNative, runNative, applyNative} from './native-yss.mjs';
+import {requiredLegacyRecoveryMatrix} from './legacy-recovery-matrix.mjs';
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 
 function git(root, args) {
@@ -19,6 +21,14 @@ function git(root, args) {
 
 const OPTIONAL_UNINITIALIZED_SUBMODULES = new Set([
   'submodules/yss-harness-dev-agent',
+  // Historical gitlinks may remain until the physical retirement checkpoint.
+  // Their source trees are no longer production inputs.
+  'submodules/create-yss-spec',
+  'submodules/create-yss-strategic-design',
+  'submodules/create-yss-harness-backend',
+  'submodules/create-yss-harness-frontend',
+  // CLI provenance is verified from the explicit committed source directory.
+  'submodules/yss-cli',
 ]);
 
 export function assertReleaseCheckout(root, commit) {
@@ -34,14 +44,16 @@ export function assertReleaseCheckout(root, commit) {
     return !match || !OPTIONAL_UNINITIALIZED_SUBMODULES.has(match[1]);
   });
   assert.deepEqual(invalidSubmodules, [], '必需子模块必须检出 gitlink 指定版本');
-  const entry = git(root, ['ls-tree', 'HEAD', '--', 'submodules/create-yss-spec']);
-  const match = /^160000 commit ([a-f0-9]{40})\tsubmodules\/create-yss-spec$/.exec(entry);
-  assert.ok(match, '缺少固定的 create-yss-spec gitlink');
-  assert.equal(git(path.join(root, 'submodules/create-yss-spec'), ['rev-parse', 'HEAD']), match[1], '生成器版本与 gitlink 不一致');
-  return { template_commit: commit, generator_commit: match[1], submodules };
+  // The three Agent template sources remain required. The retired executors are
+  // deliberately absent from production input validation.
+  for(const name of ['design','backend','frontend']){
+    const ref=`submodules/yss-harness-${name}-agent`,match=/^160000 commit ([a-f0-9]{40})\t/.exec(git(root,['ls-tree',commit,'--',ref]));
+    assert.ok(match,`缺少固定模板源: ${ref}`);assert.equal(git(path.join(root,ref),['rev-parse','HEAD']),match[1],'模板源与 gitlink 不一致');
+  }
+  return { template_commit: commit, submodules };
 }
 
-export function verifyTemplateRelease({ root, commit, output, runtimeStore = 'off',cliFamily='spec',base,baselineReport,baselineReportDigest,qualificationReport,qualificationReportDigest,concurrency=1,toolingMode='legacy',expectedPlan,artifactCoordinator }) {
+export function verifyTemplateRelease({ root, commit, output, runtimeStore = 'off',cliFamily='all-four',base,baselineReport,baselineReportDigest,qualificationReport,qualificationReportDigest,concurrency=1,toolingMode='legacy',expectedPlan,artifactCoordinator }) {
   assertNodeVersion();
   assert.ok(['sqlite','off'].includes(runtimeStore), 'runtime-store 必须为 sqlite 或 off');
   assert.ok(['spec','all-four'].includes(cliFamily),'cli-family 必须为 spec 或 all-four');
@@ -80,6 +92,7 @@ export function verifyTemplateRelease({ root, commit, output, runtimeStore = 'of
   };
   try {
     Object.assign(report, assertReleaseCheckout(root, commit));
+    if(cliFamily==='all-four')report.legacy_recovery=requiredLegacyRecoveryMatrix();
     run('scripts/repository-mode', []);
     assert.equal(readFileSync(path.join(output, '01.log'), 'utf8').trim(), 'template-source', '只允许模板源发布验证');
     const fullDirectory = path.join(output, 'full-verification');
@@ -103,14 +116,13 @@ export function verifyTemplateRelease({ root, commit, output, runtimeStore = 'of
     report.artifacts=report.sources_manifest.entries.map(source=>validateArtifact(prepared?prepared.artifacts.find(row=>row.source_tuple.family===source.family):coordinator.acquire(source),source));
     const spec=report.artifacts.find(artifact=>artifact.source_tuple.family==='spec');
     report.generated_snapshot=spec.snapshot;
-    const consumer=path.dirname(path.dirname(spec.installed_root));
     scratch=mkdtempSync(path.join(os.tmpdir(),'yss-template-release-'));
-    const entry = path.join(consumer, 'node_modules/create-yss-spec/bin/create-yss-spec.js');
+    const nativeOptions={run,environment:{...process.env,YSS_NATIVE_BINARY:spec.binary,YSS_NATIVE_BINARY_SHA256:spec.source_tuple.binary_sha256},cwd:spec.installed_root};
     const instance = path.join(scratch, 'instance');
-    run(process.execPath, [entry, '--target-dir', instance, '--project-name', 'CI release verification', '--business-domain', '模板发布验收', '--team-size', '3', '--agent-runtime', 'codex']);
+    initializeNative('spec',instance,nativeOptions);
     assert.match(readFileSync(path.join(instance, 'yss-project.yaml'), 'utf8'), /repository_mode: project-instance/);
     for (const forbidden of ['.github', '.template-source', 'submodules']) assert.equal(existsSync(path.join(instance, forbidden)), false, `实例不得包含 ${forbidden}`);
-    const metadata = JSON.parse(readFileSync(path.join(instance, '.yss-template.json'), 'utf8'));
+    const metadata = JSON.parse(readFileSync(path.join(instance, '.yss.json'), 'utf8'));
     assert.equal(metadata.templateCommit, commit, '实例没有绑定待发布模板');
     run(process.execPath, [path.join(instance, 'scripts/sync-skills'), '--check'], instance);
     run(process.execPath, [path.join(instance, 'scripts/update-skill-lock'), '--check'], instance);
@@ -118,14 +130,15 @@ export function verifyTemplateRelease({ root, commit, output, runtimeStore = 'of
     const userWorkflow = path.join(instance, '.github/workflows/user.yml');
     const userBytes = 'name: User owned workflow\non: workflow_dispatch\njobs: {}\n';
     writeFileSync(userWorkflow, userBytes);
-    run(process.execPath, [entry, 'sync', '--target-dir', instance, '--dry-run']);
+    runNative(['sync','--root',instance],nativeOptions);
     assert.equal(readFileSync(userWorkflow, 'utf8'), userBytes);
-    run(process.execPath, [entry, 'sync', '--target-dir', instance]);
+    applyNative('sync','spec',instance,path.join(scratch,'sync-plan.json'),[],nativeOptions);
     assert.equal(readFileSync(userWorkflow, 'utf8'), userBytes, '同步不得接管用户 .github');
     if(cliFamily==='all-four')report.cli_integrations=report.artifacts.map(artifact=>prepared?JSON.parse(readFileSync(assertEvidenceFile(path.join(fullDirectory,'migration-results',`${artifact.source_tuple.family}.json`),fullDirectory))):verifyInstalledCliMigration({artifact,directory:path.join(output,'integration',artifact.source_tuple.family),run}));
     for(const artifact of report.artifacts)validateArtifact(artifact,artifact.source_tuple);
     assert.equal(verificationInputDigest(root),full.input_sha256,'发布集成结束后输入已漂移');
     assertReleaseCheckout(root, commit);
+    if(cliFamily==='all-four')assert.deepEqual(requiredLegacyRecoveryMatrix(),report.legacy_recovery,'历史恢复证据在发行验证期间漂移');
     report.status = 'passed';
     if(cliFamily==='all-four'){
       const integrationFile=path.join(output,'release-verification.json');writeFileSync(integrationFile,JSON.stringify(report,null,2)+'\n');

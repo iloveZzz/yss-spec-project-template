@@ -1,24 +1,10 @@
 #!/usr/bin/env node
-// Run the same public-entrypoint contract against source or installed packages.
-// This command never rebuilds the supplied package or changes its snapshot.
+// Fixed native binary public entrypoint acceptance. No source rebuild or global install.
+import {spawnSync} from 'node:child_process';
 import path from 'node:path';
-import {pathToFileURL} from 'node:url';
-import {spawn} from 'node:child_process';
+import {nativeBinary} from './lib/native-yss.mjs';
+nativeBinary();
 const root=path.resolve(import.meta.dirname,'../..');
-const profiles=[['DESIGN','create-yss-strategic-design'],['BACKEND','create-yss-harness-backend'],['FRONTEND','create-yss-harness-frontend']];
-const verifyProfile=async ([key,folder])=>{
- const pkg=path.resolve(process.env[`YSS_CLI_${key}_ROOT`] || path.join(root,'submodules',folder));
- const source=`import {packageContract} from ${JSON.stringify(pathToFileURL(path.join(pkg,'vendor/cli-core/tests/package-contract.mjs')).href)};import {boundaryContract} from ${JSON.stringify(new URL('./cli-boundaries.mjs',import.meta.url).href)};packageContract(${JSON.stringify(pkg)});boundaryContract(${JSON.stringify(pkg)});`;
- await new Promise((resolve,reject)=>{
-  const child=spawn(process.execPath,['--input-type=module','-e',source],{stdio:'inherit'});
-  child.on('error',reject);child.on('close',code=>code===0?resolve():reject(new Error(`${key} 包验收失败: ${code}`)));
- });
-};
-const results=[];
-if(process.env.YSS_TEMPLATE_CONCURRENCY==='1'){
- for(const profile of profiles){
-  try{await verifyProfile(profile);results.push({status:'fulfilled'});}
-  catch(reason){results.push({status:'rejected',reason});}
- }
-}else results.push(...await Promise.allSettled(profiles.map(verifyProfile)));
-for(const r of results) if(r.status==='rejected'){console.error(r.reason.message);process.exitCode=1;}
+const result=spawnSync(process.execPath,['--test','--test-concurrency=1','tests/cli-retirement.test.mjs'],{cwd:root,env:process.env,stdio:'inherit'});
+if(result.error||result.signal||!Number.isInteger(result.status))throw new Error('原生 CLI 验收未观察到正常退出');
+process.exitCode=result.status;

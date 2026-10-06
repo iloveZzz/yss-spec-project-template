@@ -10,6 +10,9 @@ inputs:
   submodules:
     description: 是否初始化模板验证依赖的公开固定子模块
     default: 'false'
+  yss-commit:
+    description: 可选的 yss-cli 完整固定 SHA；现役 CLI 检查必须提供本输入或固定的 YSS_NATIVE_BINARY
+    default: ''
 runs:
   using: composite
   steps:
@@ -18,20 +21,39 @@ runs:
       run: |
         git submodule sync -- \
           submodules/yss-harness-design-agent \
-          submodules/create-yss-strategic-design \
           submodules/yss-harness-backend-agent \
-          submodules/yss-harness-frontend-agent \
-          submodules/create-yss-harness-backend \
-          submodules/create-yss-harness-frontend \
-          submodules/create-yss-spec
+          submodules/yss-harness-frontend-agent
         git -c protocol.version=2 submodule update --init --depth=1 -- \
           submodules/yss-harness-design-agent \
-          submodules/create-yss-strategic-design \
           submodules/yss-harness-backend-agent \
-          submodules/yss-harness-frontend-agent \
-          submodules/create-yss-harness-backend \
-          submodules/create-yss-harness-frontend \
-          submodules/create-yss-spec
+          submodules/yss-harness-frontend-agent
+    - if: inputs.yss-commit != ''
+      uses: actions/checkout@v4
+      with:
+        repository: iloveZzz/yss-cli
+        ref: ${{ inputs.yss-commit }}
+        path: .yss-ci-source
+    - if: inputs.yss-commit != ''
+      uses: actions/setup-go@v5
+      with:
+        go-version-file: .yss-ci-source/go.mod
+    - if: inputs.yss-commit != ''
+      shell: bash
+      env:
+        YSS_EXPECTED_COMMIT: ${{ inputs.yss-commit }}
+      run: |
+        [[ "$YSS_EXPECTED_COMMIT" =~ ^[a-f0-9]{40}$ ]]
+        test "$(git -C .yss-ci-source rev-parse HEAD)" = "$YSS_EXPECTED_COMMIT"
+        yss_source="$RUNNER_TEMP/yss-cli-$YSS_EXPECTED_COMMIT"
+        test ! -e "$yss_source"
+        mv .yss-ci-source "$yss_source"
+        cd "$yss_source"
+        go run ./tools/bundle --source-root "$GITHUB_WORKSPACE" --lock docs/source-lock.json --out internal/bundle/assets
+        test -z "$(git status --porcelain --untracked-files=normal)"
+        CGO_ENABLED=0 go build -trimpath -o "$RUNNER_TEMP/yss" ./cmd/yss
+        echo "YSS_NATIVE_SOURCE_ROOT=$yss_source" >> "$GITHUB_ENV"
+        echo "YSS_NATIVE_BINARY=$RUNNER_TEMP/yss" >> "$GITHUB_ENV"
+        node -e 'const fs=require("node:fs"),crypto=require("node:crypto");fs.appendFileSync(process.env.GITHUB_ENV,"YSS_NATIVE_BINARY_SHA256="+crypto.createHash("sha256").update(fs.readFileSync(process.env.RUNNER_TEMP+"/yss")).digest("hex")+"\n")'
     - uses: actions/setup-node@v4
       with:
         node-version: ${{ inputs.node }}

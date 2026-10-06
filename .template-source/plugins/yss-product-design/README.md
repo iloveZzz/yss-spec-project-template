@@ -1,27 +1,32 @@
 # YSS 需求到产品设计
 
-开发插件 `yss-product-design`，唯一公开入口 `product-design`。
+本开发插件使用包内固定的原生 yss 二进制和完整治理 Bundle，Profile 为 `design`。程序版本、二进制 SHA-256、平台、协议版本、模板 commit 与 Bundle/manifest 摘要分别锁定。不会调用旧 Node CLI、私有 CommonJS API 或本机 PATH 上的 yss。
 
-Plan → Spec / 功能架构 → 产品设计与验证 → Handoff v5 正式方案包。接收方为 `yss-backend-delivery`，接收后继续工程设计和后端实现；导入成功不授予实现权限。
+业务唯一主控仍为项目本地 `yss-product-lifecycle`。插件接入不批准阶段、Slice、实现、Git 或发布；专业提供者须在当前会话实际发现。
 
-初始化使用固定 `create-yss-harness-design` 原始包和显式开发覆盖层，绑定战略设计 profile。项目内容保存在独立治理目录；更新插件不自动升级项目。
+## 项目接入
 
-## 命令
+从插件目录用绝对路径运行 `node scripts/plugin.mjs`。
 
-从插件实际目录执行 `node scripts/plugin.mjs`：
+- `verify` 核验精确文件集合、mode 与 SHA-256；`doctor` 核验固定二进制平台和 Bundle 以及适用治理工具依赖。
+- `project-plan --target-dir <独立绝对目录> --project-name <名称> --business-domain <领域> --issue-tracker <已选择平台>` 返回只读计划，不创建项目。保存整个 JSON 后用 `project-apply --plan <绝对计划文件>` 执行已授权计划。初始化选取完整治理资产，身份和 `.yss-product-design-plugin.json` 由同一原生事务写入。
+- `project-check --target-dir <绝对治理根>` 核验原生身份、当前来源、词汇与绑定；`project-bind-plan` / `project-bind-apply` 接入匹配且未绑定的原生项目。
+- `project-migration-plan` / `project-migration-apply` 接入旧身份；`project-upgrade-plan` / `project-upgrade-apply` 更新既有原生插件绑定。展示保存计划后按授权执行，不直接改 metadata。旧 metadata 和 `.yss-plugin.json` 保留原字节，并将其摘要作为事务输入。
+- 已绑定项目更换模板、Bundle 或二进制来源时，使用新插件的 `project-upgrade-plan` / `project-upgrade-apply`。直接 `yss sync` 缺少新绑定会返回 `BINDING_REQUIRED`；已登记身份与绑定本身不一致则返回 `BINDING_CONFLICT`。同一来源的治理资源补装仍可使用原生公开入口，其计划保护既有绑定 bytes 与 mode。
+- `project-status`、`project-recover`、`project-rollback` 默认只读；后两者写入需 `--apply`。恢复和最近事务回退一起处理原生身份、治理文件、绑定及职责 scope。并发修改与摘要漂移停止回退并保留现场。
+- 写入期间收到 SIGINT/SIGTERM 时，插件转发取消并等待原生事务结束，返回原始取消协议与退出码。仅剩已完整恢复的 `.yss` 初始化档案时，可重新预演初始化；是否接受由原生公开入口校验。未知、未完成或异家族历史仍阻断。
+- `project-entry --target-dir <绝对治理根> --mode new|reuse|resume --input <JSON文件>` 交回项目本地主控。new 用空对象，reuse 提供项目内 `artifact_refs` 或 checkpoint，resume 必须提供 checkpoint。交接不是阶段完成或实现许可。
 
-- `verify`、`doctor`：包完整性与依赖检查。
-- `project-plan --target-dir <空目录> --project-name <名称> --business-domain <领域>`：预览初始化；`project-apply --plan <JSON>` 应用已授权计划。
-- `project-check --target-dir <治理根>`：核验来源、核心文件、词汇合同与绑定。
-- `project-bind-plan --target-dir <治理根>`、`project-bind-apply --plan <JSON>`：只绑定精确匹配的既有实例。
-- `project-entry --target-dir <治理根> --mode new|reuse|resume --input <JSON>`：交给项目本地主控。复用传 `artifact_refs` 或 `checkpoint`，恢复必须有 `checkpoint`。
+旧格式未完成事务继续使用仓外恢复包中的固定原版本执行器；不由新版猜测恢复。旧 npm 版本长期保留可得，不 unpublish。插件升级不自动改写已有项目。
 
-支持新原型与既有 UI 基线；纯无 UI 正式交付不在首版范围。终点复用战略交接 checkpoint 和实际整包验证，不另建状态机。模板代码、包或批准漂移会阻断接入；业务文档修改由生命周期重新判断新鲜度。
+## 构建
 
-## 构建与接收
+`node .template-source/plugins/yss-product-design/build.mjs --binary <固定绝对yss路径> --output <不存在目录/yss-product-design> [--binary-commit <完整SHA>]`
 
-`node .template-source/plugins/yss-product-design/build.mjs --output "$(scripts/maintenance-path cache/product-design/yss-product-design)"`
+构建通过公开 `bundle inspect` / `bundle export` 获取完整资产，并核验逐文件 bytes、mode 与摘要；不使用临时覆盖层。产物仅包含固定二进制、治理资产、单一入口和诊断脚本。保存的 Bundle provenance 不等于二进制已提交来源；程序 commit 和 sourceState 由固定二进制 version 协议记录，`--binary-commit` 只验证既有完整 SHA 一致性。本轮构建保持开发资格。
 
-后端通过 `project-import-design --target-dir <后端治理根> --bundle <交付目录或ZIP>` 导入，再以 `project-entry --mode reuse --input <包含 import_receipt_ref 的 JSON>` 继续。目录导入使用 Import Receipt v3；运输用 package.zip 沿用现有导入协议，保留原包摘要与批准，不伪造源交付记录。
+本地机制验证、真实业务交付、已安装 Codex 会话、六平台原生运行与稳定发布分别验收。当前产物保持 `release_ready: false`；不写已安装 cache，不提交、推送或发布。
 
-包内技能资源不等于外部提供者在当前会话可用。机制 fixture 与真实设备借用示例的业务批准和验收分别记录；开发构建不代表正式发布就绪。
+设计范围为 Plan → Spec / 功能架构 → 产品设计与 Handoff v5，tracker 默认 local-markdown。后端从独立治理项目通过 `project-import-design` 接收；导入仍需词汇对账、设计、逐条消费与批准后才能实现。
+
+原生行为测试必须提供固定 `YSS_PLUGIN_TEST_BINARY`；旧身份测试另提供 `YSS_PLUGIN_LEGACY_SPEC` / `YSS_PLUGIN_LEGACY_DESIGN` 的固定恢复包根，以及 `YSS_PLUGIN_LEGACY_ARCHIVE_ROOT`。跨二进制升级测试还需真实前版的 `YSS_PLUGIN_PREVIOUS_BINARY` 与独立固定摘要 `YSS_PLUGIN_PREVIOUS_BINARY_SHA256`。缺少输入时报错，不能跳过后仍宣称行为已验证。

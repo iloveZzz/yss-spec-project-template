@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 import { resolveMaintenanceOutput } from './lib/maintenance-storage.mjs';
-import { ROOT } from './lib/template-verification.mjs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 try {
   const [relative] = process.argv.slice(2);
   if (!relative) throw new TypeError('用法: scripts/maintenance-path <类别/运行ID/文件>');

@@ -14,6 +14,7 @@ profiles:
   legacy-full:
     all_groups: true
 compatibility_patterns:
+  - .gitmodules
   - scripts/**
   - .github/**
   - .template-source/tooling/node/**
@@ -21,6 +22,7 @@ compatibility_patterns:
   - .agents/skills/**/scripts/**
   - submodules/**
 core_escalation_patterns:
+  - .gitmodules
   - scripts/lib/json-schema.mjs
   - scripts/lib/validation-phase.mjs
   - scripts/lib/project-governance.mjs
@@ -432,12 +434,15 @@ routing:
   - patterns:
       - scripts/lib/content-identity.mjs
       - scripts/lib/drift-report.mjs
+      - scripts/lib/instance-metadata.mjs
       - scripts/lib/checkpoint-commit.mjs
       - scripts/advance-maintenance-iteration
       - scripts/verify-project-instance
       - scripts/lib/skill-supply-chain.mjs
       - tests/content-identity.test.mjs
       - tests/drift-report.test.mjs
+      - tests/instance-metadata.test.mjs
+      - tests/native-instance-drift.test.mjs
       - tests/maintenance-iteration.test.mjs
     groups:
       - drift-identity
@@ -639,15 +644,34 @@ routing:
     groups:
       - candidate-integrity
   - patterns:
-      - submodules/create-yss-spec
-      - submodules/create-yss-spec/**
+      - tests/efficiency-distribution.test.mjs
+      - tests/instance-metadata.test.mjs
+      - tests/native-consumer-routing.test.mjs
+      - tests/native-instance-drift.test.mjs
+    groups:
+      - implementation
+      - cli-sync
+  - patterns:
+      - .template-source/distribution/bundle-profile.json
+      - .template-spec/user-guide/unified-cli.md
+      - tests/cli-retirement.test.mjs
     groups:
       - cli-sync
   - patterns:
+      - .gitmodules
+    groups:
+      - drift-identity
+      - candidate-integrity
+      - dedicated-cli-core
+      - cli-sync
+      - strategic-handoff-package
+      - implementation
+  - patterns:
       - submodules/**
     exclude_patterns:
-      - submodules/create-yss-spec
-      - submodules/create-yss-spec/**
+      - .template-source/distribution/bundle-profile.json
+      - .template-spec/user-guide/unified-cli.md
+      - tests/cli-retirement.test.mjs
     groups:
       - implementation
   - patterns:
@@ -710,7 +734,7 @@ groups:
           tests/maintenance-iteration.test.mjs
         when: template-source
         id: check.drift-identity
-      - run: node --test submodules/create-yss-spec/tests/content-identity.test.js
+      - run: node --test tests/cli-retirement.test.mjs
         when: template-source
         id: check.cli-content-identity
       - run: scripts/sync-skills --check
@@ -744,7 +768,7 @@ groups:
       - run: node .agents/skills/i-have-adhd/tests/verify-integration.mjs
   cli-sync:
     commands:
-      - run: node --test submodules/create-yss-spec/tests/sync-fast-smoke.test.js
+      - run: node --test tests/cli-retirement.test.mjs
         when: template-source
         id: check.517fe9954d913f53
       - run: scripts/verify-repository-scope-scenarios
@@ -1596,6 +1620,8 @@ legacy_coverage:
     check_id: check.cli-content-identity
     group: drift-identity
     command: node --test submodules/create-yss-spec/tests/content-identity.test.js
+    replacement_command: node --test tests/cli-retirement.test.mjs
+    retirement_disposition: public-native-content-identity
     owner: role.test-engineer
     replacement_gate: check.verification-fixed-source
     gate_ids:
@@ -1782,6 +1808,8 @@ legacy_coverage:
     check_id: check.517fe9954d913f53
     group: cli-sync
     command: node --test submodules/create-yss-spec/tests/sync-fast-smoke.test.js
+    replacement_command: node --test tests/cli-retirement.test.mjs
+    retirement_disposition: public-native-sync-protection
     owner: role.test-engineer
     replacement_gate: check.verification-spec-cli
     gate_ids:
@@ -3951,6 +3979,34 @@ legacy_coverage:
     evidence_ref: .template-source/process/template-verification-legacy.json
     display_gate: G06
 supplemental_checks:
+  - id: check.native-instance-drift
+    run: node --test --test-concurrency=1 tests/instance-metadata.test.mjs
+      tests/native-instance-drift.test.mjs
+    group: drift-identity
+    gate_ids:
+      - check.verification-fixed-source
+    depends_on: []
+    when: template-source
+    source_requirement: committed
+    task_id: supplemental.native-instance-drift
+  - id: check.native-profile-asset-consumption
+    run: node scripts/fixtures/contract-efficiency/distribution-smoke.mjs
+    group: document-writing
+    gate_ids:
+      - check.verification-distribution
+    depends_on: []
+    when: template-source
+    source_requirement: committed
+    task_id: supplemental.native-profile-asset-consumption
+  - id: check.native-consumer-routing
+    run: node --test --test-concurrency=1 tests/native-consumer-routing.test.mjs
+    group: cli-sync
+    gate_ids:
+      - check.verification-spec-cli
+    depends_on: []
+    when: template-source
+    source_requirement: committed
+    task_id: supplemental.native-consumer-routing
   - id: check.verification-optimization-regressions
     run: node --test tests/verification-gates.test.mjs
       tests/verification-baseline.test.mjs

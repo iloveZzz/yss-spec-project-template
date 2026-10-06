@@ -4,6 +4,7 @@ import { spawnSync } from 'node:child_process';
 import { safe } from './strategic-handoff-io.mjs';
 import { ROOT } from './lifecycle-registry.mjs';
 import { parseDocument } from '../vendor/yaml.mjs';
+import { createHash } from 'node:crypto';
 
 export const SCOPE_REF = '.yss-execution-scope.yaml';
 export const TERMINAL_REF = '.yss-backend-delivery.json';
@@ -17,8 +18,17 @@ const check = (ok, message) => { if (!ok) throw new TypeError(`execution-scope-b
 
 /** The project opt-in selects a policy; callers cannot supply a replacement policy. */
 export function loadExecutionScope(root = ROOT) {
+  const current=path.join(root,'.yss-backend-plugin.json');
   const marker = path.join(root, '.yss-plugin.json');
-  const plugin = existsSync(marker) ? read(root, '.yss-plugin.json') : null;
+  const plugin = existsSync(current)?read(root,'.yss-backend-plugin.json'):existsSync(marker)?read(root,'.yss-plugin.json'):null;
+  if(existsSync(current)) {
+    check(plugin?.schema_version===2&&plugin?.plugin==='yss-backend-delivery'&&plugin?.execution_scope==='plan-to-backend','native插件职责绑定无效');
+    if(existsSync(marker)) {
+      const legacy=read(root,'.yss-plugin.json');
+      check(['yss-plan-to-backend','yss-backend-delivery'].includes(legacy?.plugin)&&legacy?.execution_scope===plugin.execution_scope,'历史插件与native职责绑定不一致');
+      if(plugin.legacy_binding) check(plugin.legacy_binding.path==='.yss-plugin.json'&&plugin.legacy_binding.sha256===createHash('sha256').update(readFileSync(safe(root,'.yss-plugin.json'))).digest('hex'),'历史插件绑定原字节已漂移');
+    } else check(!plugin.legacy_binding,'历史插件绑定缺失');
+  }
   const file = path.join(root, SCOPE_REF);
   if (!existsSync(file)) {
     check(!['yss-plan-to-backend', 'yss-backend-delivery'].includes(plugin?.plugin), '插件项目缺少职责范围；迁移后才能继续');

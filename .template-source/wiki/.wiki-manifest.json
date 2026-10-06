@@ -11,10 +11,10 @@
       "livePath": "AGENTS.md",
       "rawPath": "raw/AGENTS.md",
       "role": "copy",
-      "sha256": "18c7c425da670de7240d73c91834fdb18ebd6096ffabaf75ee03a2dc6e9a20be",
-      "originalDigest": "18c7c425da670de7240d73c91834fdb18ebd6096ffabaf75ee03a2dc6e9a20be",
-      "effectiveDigest": "18c7c425da670de7240d73c91834fdb18ebd6096ffabaf75ee03a2dc6e9a20be",
-      "rawDigest": "18c7c425da670de7240d73c91834fdb18ebd6096ffabaf75ee03a2dc6e9a20be",
+      "sha256": "11a0958b15dac520e7e55ce4b58762aa7a33ffb5e42a79b27d093c6a0b65b9af",
+      "originalDigest": "11a0958b15dac520e7e55ce4b58762aa7a33ffb5e42a79b27d093c6a0b65b9af",
+      "effectiveDigest": "11a0958b15dac520e7e55ce4b58762aa7a33ffb5e42a79b27d093c6a0b65b9af",
+      "rawDigest": "11a0958b15dac520e7e55ce4b58762aa7a33ffb5e42a79b27d093c6a0b65b9af",
       "location": "AGENTS.md"
     },
     {
@@ -155,10 +155,10 @@
       "livePath": ".template-source/contracts/create-yss-spec-repository-mode-contract.md",
       "rawPath": "raw/create-yss-spec-repository-mode-contract.md",
       "role": "copy",
-      "sha256": "c011bac1c6c8cd077e32977360ccb00a45aa7f3c2b3d10b94489109891922d20",
-      "originalDigest": "c011bac1c6c8cd077e32977360ccb00a45aa7f3c2b3d10b94489109891922d20",
-      "effectiveDigest": "c011bac1c6c8cd077e32977360ccb00a45aa7f3c2b3d10b94489109891922d20",
-      "rawDigest": "c011bac1c6c8cd077e32977360ccb00a45aa7f3c2b3d10b94489109891922d20",
+      "sha256": "e46057f8aa0400cedacf959275e4571251d59c9452485a472d5e8de6718faf09",
+      "originalDigest": "e46057f8aa0400cedacf959275e4571251d59c9452485a472d5e8de6718faf09",
+      "effectiveDigest": "e46057f8aa0400cedacf959275e4571251d59c9452485a472d5e8de6718faf09",
+      "rawDigest": "e46057f8aa0400cedacf959275e4571251d59c9452485a472d5e8de6718faf09",
       "location": ".template-source/contracts/create-yss-spec-repository-mode-contract.md"
     },
     {
@@ -198,11 +198,33 @@
           "skills-lock.json"
         ]
       },
-      "sha256": "1aebf02ccf25c6973828c4d16ff1aa99fbf400874e811cb6b9c3e2f19b9cd194",
-      "originalDigest": "1aebf02ccf25c6973828c4d16ff1aa99fbf400874e811cb6b9c3e2f19b9cd194",
+      "sha256": "2bae967f35d4b45417c89250a893c692b14cc4d02300de05ffaa5296c17e19e9",
+      "originalDigest": "2bae967f35d4b45417c89250a893c692b14cc4d02300de05ffaa5296c17e19e9",
       "effectiveDigest": "f2e80d35e542bac3276a60e18a81d98833a7540fb46608f5c9f1374e127c0bc1",
       "rawDigest": "f2e80d35e542bac3276a60e18a81d98833a7540fb46608f5c9f1374e127c0bc1",
       "location": "skills-lock.json"
+    },
+    {
+      "id": "unified-cli.md",
+      "kind": "document",
+      "location": ".template-spec/user-guide/unified-cli.md",
+      "livePath": ".template-spec/user-guide/unified-cli.md",
+      "rawPath": "raw/unified-cli.md",
+      "originalDigest": "0241723b9da6d234851c6d4f50b8bbb94da42fe7dbe61b6c7ffb4254824a7011",
+      "effectiveDigest": "0241723b9da6d234851c6d4f50b8bbb94da42fe7dbe61b6c7ffb4254824a7011",
+      "rawDigest": "0241723b9da6d234851c6d4f50b8bbb94da42fe7dbe61b6c7ffb4254824a7011",
+      "sha256": "0241723b9da6d234851c6d4f50b8bbb94da42fe7dbe61b6c7ffb4254824a7011"
+    },
+    {
+      "id": "harness-upgrade.md",
+      "kind": "document",
+      "location": ".template-spec/process/harness-upgrade.md",
+      "livePath": ".template-spec/process/harness-upgrade.md",
+      "rawPath": "raw/harness-upgrade.md",
+      "originalDigest": "b2b807c9420fd50724604594dace76470fa4d331eaf00b29af3065a15545f116",
+      "effectiveDigest": "b2b807c9420fd50724604594dace76470fa4d331eaf00b29af3065a15545f116",
+      "rawDigest": "b2b807c9420fd50724604594dace76470fa4d331eaf00b29af3065a15545f116",
+      "sha256": "b2b807c9420fd50724604594dace76470fa4d331eaf00b29af3065a15545f116"
     }
   ],
   "articles": [
@@ -372,31 +394,43 @@
       "sourceIds": [
         "yss-project.yaml",
         "AGENTS.md",
-        "create-yss-spec-repository-mode-contract"
+        "create-yss-spec-repository-mode-contract",
+        "unified-cli.md",
+        "harness-upgrade.md"
       ],
       "humanOwned": false,
-      "articleDigest": "1f82b0011c086ad2e22b411a7ee29d79fd2479c120b30ea760680d74299a1b05",
+      "articleDigest": "1e1dde4aa7c29f6ea155608476a5ed5ebaa93421d9c5d5ee7b0e1fd7d1d9cb20",
       "compiledFrom": {
-        "AGENTS.md": {
-          "effectiveDigest": "18c7c425da670de7240d73c91834fdb18ebd6096ffabaf75ee03a2dc6e9a20be",
-          "rawDigest": "18c7c425da670de7240d73c91834fdb18ebd6096ffabaf75ee03a2dc6e9a20be",
-          "extractorVersion": "identity-v1"
-        },
-        "create-yss-spec-repository-mode-contract": {
-          "effectiveDigest": "c011bac1c6c8cd077e32977360ccb00a45aa7f3c2b3d10b94489109891922d20",
-          "rawDigest": "c011bac1c6c8cd077e32977360ccb00a45aa7f3c2b3d10b94489109891922d20",
-          "extractorVersion": "identity-v1"
-        },
         "yss-project.yaml": {
           "effectiveDigest": "dae2ddacbb024ba25b70a18830fc26ab7d3dcd8aaa361cc8b3767d68307f98af",
           "rawDigest": "dae2ddacbb024ba25b70a18830fc26ab7d3dcd8aaa361cc8b3767d68307f98af",
+          "extractorVersion": "identity-v1"
+        },
+        "AGENTS.md": {
+          "effectiveDigest": "11a0958b15dac520e7e55ce4b58762aa7a33ffb5e42a79b27d093c6a0b65b9af",
+          "rawDigest": "11a0958b15dac520e7e55ce4b58762aa7a33ffb5e42a79b27d093c6a0b65b9af",
+          "extractorVersion": "identity-v1"
+        },
+        "create-yss-spec-repository-mode-contract": {
+          "effectiveDigest": "e46057f8aa0400cedacf959275e4571251d59c9452485a472d5e8de6718faf09",
+          "rawDigest": "e46057f8aa0400cedacf959275e4571251d59c9452485a472d5e8de6718faf09",
+          "extractorVersion": "identity-v1"
+        },
+        "unified-cli.md": {
+          "effectiveDigest": "0241723b9da6d234851c6d4f50b8bbb94da42fe7dbe61b6c7ffb4254824a7011",
+          "rawDigest": "0241723b9da6d234851c6d4f50b8bbb94da42fe7dbe61b6c7ffb4254824a7011",
+          "extractorVersion": "identity-v1"
+        },
+        "harness-upgrade.md": {
+          "effectiveDigest": "b2b807c9420fd50724604594dace76470fa4d331eaf00b29af3065a15545f116",
+          "rawDigest": "b2b807c9420fd50724604594dace76470fa4d331eaf00b29af3065a15545f116",
           "extractorVersion": "identity-v1"
         }
       },
       "compiledDependencies": {},
       "verification": {
-        "articleDigest": "1f82b0011c086ad2e22b411a7ee29d79fd2479c120b30ea760680d74299a1b05",
-        "checkedAt": "2026-10-02T17:18:30.041Z",
+        "articleDigest": "1e1dde4aa7c29f6ea155608476a5ed5ebaa93421d9c5d5ee7b0e1fd7d1d9cb20",
+        "checkedAt": "2026-10-05T22:00:22.248Z",
         "evidence": [
           {
             "sourceId": "yss-project.yaml",
@@ -404,7 +438,7 @@
             "startLine": 1,
             "endLine": 2,
             "excerptDigest": "eb0499a20732d9c1e73321545163bd02612dbe750ee9965ee6d3bd6392c57c0b",
-            "claim": "当前根清单是 `schema_version: 1`、`repository_mode: template-source`",
+            "claim": "当前根清单为 schema_version:1 / repository_mode:template-source，先按真实身份路由。",
             "risk": "critical"
           },
           {
@@ -413,7 +447,16 @@
             "startLine": 5,
             "endLine": 10,
             "excerptDigest": "72bd34e25dbfe69feead5dc035ae78fff8e819f0f099d8790eadb6ef85b383d2",
-            "claim": "不根据目录、Git remote 或占位符猜测",
+            "claim": "身份缺失、schema 不支持或模式非法停止；template-source 不生成产品产物。",
+            "risk": "critical"
+          },
+          {
+            "sourceId": "AGENTS.md",
+            "inputPath": "AGENTS.md",
+            "startLine": 14,
+            "endLine": 24,
+            "excerptDigest": "87766e3b3a45ed813d040be609e8b95896896b4e2291158806bcbd3b84a15787",
+            "claim": "Wiki 为阅读视图，根入口及其引用的事实来源持有权威。",
             "risk": "critical"
           },
           {
@@ -421,107 +464,107 @@
             "inputPath": "AGENTS.md",
             "startLine": 33,
             "endLine": 49,
-            "excerptDigest": "9148f66461f805f6f1ad74f04af54b5313d7964e41e8fa7ddc749e2878d8c581",
-            "claim": "本仓默认走 [[模板维护流程]]",
-            "risk": "general"
-          },
-          {
-            "sourceId": "create-yss-spec-repository-mode-contract",
-            "inputPath": ".template-source/contracts/create-yss-spec-repository-mode-contract.md",
-            "startLine": 17,
-            "endLine": 25,
-            "excerptDigest": "b78747cc25d3b5fbad327e1676e38e54d7c127cdf409ef3c90523252c5f3c517",
-            "claim": "写入 `schema_version: 1`、`repository_mode: project-instance`",
-            "risk": "critical"
-          },
-          {
-            "sourceId": "create-yss-spec-repository-mode-contract",
-            "inputPath": ".template-source/contracts/create-yss-spec-repository-mode-contract.md",
-            "startLine": 42,
-            "endLine": 42,
-            "excerptDigest": "8e9cde25b2332eba4dfb08ed2b6df2c6c22e7822b2ae6d5ffef7d8e26d96873e",
-            "claim": "已经有 `.yss-template.json` 时拒绝接管并提示 `sync`",
-            "risk": "critical"
-          },
-          {
-            "sourceId": "create-yss-spec-repository-mode-contract",
-            "inputPath": ".template-source/contracts/create-yss-spec-repository-mode-contract.md",
-            "startLine": 7,
-            "endLine": 11,
-            "excerptDigest": "d89e3652d8797b110f77cf5b007ad69cf3a98d8119f7dbc7101b1df44b2e18e6",
-            "claim": "`attach` / `sync` 不得创建、覆盖或删除这些实现仓资产",
-            "risk": "critical"
-          },
-          {
-            "sourceId": "create-yss-spec-repository-mode-contract",
-            "inputPath": ".template-source/contracts/create-yss-spec-repository-mode-contract.md",
-            "startLine": 11,
-            "endLine": 13,
-            "excerptDigest": "7837a6c833383899973832719ea0c0cd92dd30ddcb1393e482abd7b2ea252661",
-            "claim": "模板快照由显式分发 allowlist 构建",
-            "risk": "critical"
-          },
-          {
-            "sourceId": "create-yss-spec-repository-mode-contract",
-            "inputPath": ".template-source/contracts/create-yss-spec-repository-mode-contract.md",
-            "startLine": 74,
-            "endLine": 76,
-            "excerptDigest": "1ba2a6dd45a2eaeae55b643e4078fc3303f8b0043687fadfff69954ace08398d",
-            "claim": "新增顶层文件未命中 allowlist 时也不进入",
-            "risk": "critical"
-          },
-          {
-            "sourceId": "create-yss-spec-repository-mode-contract",
-            "inputPath": ".template-source/contracts/create-yss-spec-repository-mode-contract.md",
-            "startLine": 46,
-            "endLine": 48,
-            "excerptDigest": "7cde98b742469c8f780a06456405ed7b69081049dfd4d6f0f341fb545ecd79a5",
-            "claim": "不在运行时拉取模板仓库",
-            "risk": "critical"
-          },
-          {
-            "sourceId": "create-yss-spec-repository-mode-contract",
-            "inputPath": ".template-source/contracts/create-yss-spec-repository-mode-contract.md",
-            "startLine": 42,
-            "endLine": 42,
-            "excerptDigest": "8e9cde25b2332eba4dfb08ed2b6df2c6c22e7822b2ae6d5ffef7d8e26d96873e",
-            "claim": "不能绕过 unsafe 或迁移冲突",
-            "risk": "critical"
-          },
-          {
-            "sourceId": "create-yss-spec-repository-mode-contract",
-            "inputPath": ".template-source/contracts/create-yss-spec-repository-mode-contract.md",
-            "startLine": 50,
-            "endLine": 50,
-            "excerptDigest": "f07998e7a5759496de63b1b3336428a320e392a59fb0d358d94593bfa135a4e0",
-            "claim": "删除前备份",
-            "risk": "critical"
-          },
-          {
-            "sourceId": "create-yss-spec-repository-mode-contract",
-            "inputPath": ".template-source/contracts/create-yss-spec-repository-mode-contract.md",
-            "startLine": 48,
-            "endLine": 48,
-            "excerptDigest": "c70ddadeebef8eeeab5bd5509317ba94b517f120516e541529f7509d66aaa6ac",
-            "claim": "回滚本次文件变更并保持旧 metadata",
-            "risk": "critical"
-          },
-          {
-            "sourceId": "create-yss-spec-repository-mode-contract",
-            "inputPath": ".template-source/contracts/create-yss-spec-repository-mode-contract.md",
-            "startLine": 99,
-            "endLine": 106,
-            "excerptDigest": "3b812e646e35ee1c57f962ab11a1d4cb813be143388626e2bb846c73e9c6d298",
-            "claim": "来源仍为浮动 ref / WORKTREE 时，不能宣称整体可发布",
+            "excerptDigest": "684e4bbd86ec557aeaca9d9dddbf83fb7957989537514b12f06b95f01779e78d",
+            "claim": "模板维护与产品研发分别按真实仓库身份、影响面及最近可信阶段执行。",
             "risk": "critical"
           },
           {
             "sourceId": "AGENTS.md",
             "inputPath": "AGENTS.md",
-            "startLine": 85,
-            "endLine": 88,
-            "excerptDigest": "3dbf118f8ea1af7f12d7a31d40e561ca6feb6511cd611a861209640fb41a29c9",
-            "claim": "发布动作仍按授权执行",
+            "startLine": 76,
+            "endLine": 89,
+            "excerptDigest": "7e9d8e3e2641309ce2747ffcba2a136ccc591b7cab3a6559144b89172f71e839",
+            "claim": "实现仓挂载边界、Fresh Verification、checkpoint 和提交/发布授权仍适用。",
+            "risk": "critical"
+          },
+          {
+            "sourceId": "unified-cli.md",
+            "inputPath": ".template-spec/user-guide/unified-cli.md",
+            "startLine": 3,
+            "endLine": 9,
+            "excerptDigest": "37e2c2140efc12e0cb7f80941a454098df32068daa70135e4abc098000c27a9b",
+            "claim": "统一 yss 负责四 Profile；三个 Agent 源保留，来源必须核验实际固定二进制与协议/Bundle，不猜 PATH 或旧 gitlink。",
+            "risk": "critical"
+          },
+          {
+            "sourceId": "unified-cli.md",
+            "inputPath": ".template-spec/user-guide/unified-cli.md",
+            "startLine": 24,
+            "endLine": 24,
+            "excerptDigest": "05172431e196bb9a4de54e3ffec7e789276e9be7280b8d8a1e28d99ed930994e",
+            "claim": "init 默认写入；普通工程 attach 默认预演，保护 Context、业务、Git、类型与权限。",
+            "risk": "critical"
+          },
+          {
+            "sourceId": "unified-cli.md",
+            "inputPath": ".template-spec/user-guide/unified-cli.md",
+            "startLine": 28,
+            "endLine": 34,
+            "excerptDigest": "cdc44e17090f45be64206b7fe9fdd91dbe2ae6cbc2344f6f8eece3868b54b10b",
+            "claim": "旧身份显式迁移、原生 metadata 与插件 binding 同事务；恢复/回退精确区分只读和显式写入，成功需退出与envelope。",
+            "risk": "critical"
+          },
+          {
+            "sourceId": "unified-cli.md",
+            "inputPath": ".template-spec/user-guide/unified-cli.md",
+            "startLine": 38,
+            "endLine": 40,
+            "excerptDigest": "dfe29ea9a8b0d2eb2577a1fbae0375fdb64293e4526fb4a018435107cfbf52d7",
+            "claim": "公开 Bundle 导出与插件固定资产；真实业务隔离验证，六平台/固定源码/完整门禁闭合且外部动作另行授权，历史不unpublish。",
+            "risk": "critical"
+          },
+          {
+            "sourceId": "harness-upgrade.md",
+            "inputPath": ".template-spec/process/harness-upgrade.md",
+            "startLine": 7,
+            "endLine": 22,
+            "excerptDigest": "0eb1dae03da3dad988a6d1e3d3a23649635af5e2dbb580512432c55d323a9d9f",
+            "claim": "保存计划显式绑定固定来源；init/attach/sync/migrate 写入语义不同，目标来自内嵌Bundle且不执行外部脚本。",
+            "risk": "critical"
+          },
+          {
+            "sourceId": "harness-upgrade.md",
+            "inputPath": ".template-spec/process/harness-upgrade.md",
+            "startLine": 26,
+            "endLine": 28,
+            "excerptDigest": "4f53672c13f42a08c0ae413f7a8ee461d20ee383dd68b8db3706cb105bb72661",
+            "claim": "插件 Profile 与 migration/upgrade 入口保持原子 binding，直接sync来源更换返回精确binding错误。",
+            "risk": "critical"
+          },
+          {
+            "sourceId": "harness-upgrade.md",
+            "inputPath": ".template-spec/process/harness-upgrade.md",
+            "startLine": 32,
+            "endLine": 38,
+            "excerptDigest": "17c4ad5e979359117cf76d84d01691f6a9210ff83fae07326ec569436e629128",
+            "claim": "身份基线、输入字节/mode、Context业务Git保护；冲突与必要UNPORTED阻断，不仿制force/prune等旧参数。",
+            "risk": "critical"
+          },
+          {
+            "sourceId": "harness-upgrade.md",
+            "inputPath": ".template-spec/process/harness-upgrade.md",
+            "startLine": 42,
+            "endLine": 54,
+            "excerptDigest": "3a83e7fb7eeee115721c3ca10278e51d94079495ed0a5c4ff873f7df3a228aad",
+            "claim": "事务在 .yss/transactions；generic与migrate恢复语义不同，LEGACY_INTERRUPTED先旧恢复，CONCURRENT保留用户现场且成功回退幂等。",
+            "risk": "critical"
+          },
+          {
+            "sourceId": "harness-upgrade.md",
+            "inputPath": ".template-spec/process/harness-upgrade.md",
+            "startLine": 58,
+            "endLine": 60,
+            "excerptDigest": "bbe2a78d22f2e9c1f562778a71ad6544a12724a2f04c8d86ea5483ea89cdcee5",
+            "claim": "迁移后重验身份基线Skill和绑定及实例治理；升级不授予产品批准或发行就绪。",
+            "risk": "critical"
+          },
+          {
+            "sourceId": "create-yss-spec-repository-mode-contract",
+            "inputPath": ".template-source/contracts/create-yss-spec-repository-mode-contract.md",
+            "startLine": 1,
+            "endLine": 16,
+            "excerptDigest": "0ae5bf1225ce9cc13b54833549f821bb765290a87b31c1093d143da8409d07a9",
+            "claim": "该历史合同显式superseded，旧命令不得作为当前统一CLI指令，当前SSOT链接指向统一指南与升级协议。",
             "risk": "critical"
           }
         ]

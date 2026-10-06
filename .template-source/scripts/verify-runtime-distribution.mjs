@@ -8,6 +8,7 @@ import { parseArgs } from 'node:util';
 import { fileURLToPath } from 'node:url';
 import { verificationInputDigest } from '../../scripts/lib/verification-report.mjs';
 import { assertNodeVersion, resolveRuntimeLocation } from '../../scripts/lib/runtime-store.mjs';
+import {NATIVE_PROFILES,nativeBinary,initializeNative,inspectNative} from './lib/native-yss.mjs';
 
 assertNodeVersion();
 const root = fileURLToPath(new URL('../..', import.meta.url));
@@ -29,22 +30,10 @@ function run(command, args, cwd = root, env = process.env) {
 try {
   report.source_commit = run('git', ['rev-parse', 'HEAD']).trim();
   const canonical = fs.readFileSync(path.join(root, '.template-source/cli-core/runtime-store.mjs'));
-  for (const family of ['create-yss-spec', 'create-yss-strategic-design', 'create-yss-harness-backend', 'create-yss-harness-frontend']) {
-    const packageRoot = path.join(root, 'submodules', family), pkg = JSON.parse(fs.readFileSync(path.join(packageRoot, 'package.json')));
-    assert.equal(pkg.engines.node, '>=22.13 <27');
-    assert.deepEqual(fs.readFileSync(path.join(packageRoot, 'vendor/cli-core/runtime-store.mjs')), canonical);
-    const packed = JSON.parse(run('npm', ['pack', '--ignore-scripts', '--json', '--pack-destination', output], packageRoot));
-    assert.equal(packed.length, 1);
-    const archive = path.join(output, packed[0].filename); assert.equal(path.dirname(archive), output);
-    const consumer = path.join(output, family, 'consumer');
-    run('npm', ['install', '--prefix', consumer, '--ignore-scripts', '--no-audit', '--no-fund', archive]);
-    const installed = path.join(consumer, 'node_modules', pkg.name), entry = path.join(installed, Object.values(pkg.bin)[0]);
-    run(process.execPath, [entry, '--version']);
-    const instance = path.join(output, family, 'instance');
-    const args = [entry, ...(family === 'create-yss-spec' ? [] : ['init']), '--target-dir', instance, '--project-name', '运行存储验收', '--business-domain', '治理工具验证'];
-    if (family === 'create-yss-spec') args.push('--agent-runtime', 'codex');
-    else args.push('--json');
-    run(process.execPath, args);
+  const pinned=nativeBinary();
+  for (const family of NATIVE_PROFILES) {
+    const instance = path.join(output, family, 'instance');fs.mkdirSync(path.dirname(instance),{recursive:true});
+    initializeNative(family,instance,{run:(binary,args,cwd,env)=>({stdout:run(binary,args,cwd,env),status:0})});
     assert.match(fs.readFileSync(path.join(instance, 'yss-project.yaml'), 'utf8'), /repository_mode:\s*project-instance/);
     assert.deepEqual(fs.readFileSync(path.join(instance, 'scripts/lib/runtime-store.mjs')), canonical);
     assert.deepEqual(fs.readFileSync(path.join(instance, '.template-spec/process/runtime-storage.md')), fs.readFileSync(path.join(root, '.template-spec/process/runtime-storage.md')));
@@ -52,8 +41,8 @@ try {
     const summary = JSON.parse(run(process.execPath, [path.join(instance, 'scripts/runtime-store'), 'inspect', '--root', instance, '--home', runtimeHome], instance));
     assert.equal(summary.database_exists, false); assert.equal(fs.existsSync(runtimeHome), false);
     for (const forbidden of ['.template-source', 'submodules']) assert.equal(fs.existsSync(path.join(instance, forbidden)), false);
-    report.packages.push({ family, package: pkg.name, version: pkg.version, archive: path.basename(archive), sha256: digest(fs.readFileSync(archive)), source_state: 'working-tree', installed_entry: entry, instance }); save();
-    process.stderr.write(`${pkg.name}@${pkg.version} 打包、干净安装、初始化和只读查询通过\n`);
+    report.packages.push({family,package:'yss',binary_sha256:pinned.digest,bundle:inspectNative(family),source_state:'working-tree',instance});save();
+    process.stderr.write(`${family}: 固定 yss 初始化、治理工具和只读查询通过\n`);
   }
   report.input_after_sha256 = verificationInputDigest(root);
   assert.equal(report.input_after_sha256, report.input_sha256, '分发验证输入发生漂移');

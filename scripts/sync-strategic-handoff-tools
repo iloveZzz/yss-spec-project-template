@@ -9,7 +9,6 @@ import { inspectWorkingTreeScope } from './lib/repository-scope-policy.mjs';
 const root=path.resolve(import.meta.dirname,'..');
 const check=process.argv.includes('--check');
 const rootOnly=process.argv.includes('--root-only');
-const skipCliSources=process.argv.includes('--skip-cli-sources');
 const targets=['submodules/yss-harness-design-agent','submodules/yss-harness-backend-agent','submodules/yss-harness-frontend-agent'];
 const shared=['scripts/strategic-consumer-entry','scripts/strategic-handoff','scripts/verify-strategic-handoff-consumption','scripts/verify-strategic-handoff-package-scenarios','scripts/verify-strategic-context-import','scripts/verify-strategic-context-import-scenarios','scripts/lib/context-contract.mjs','.template-spec/process/strategic-handoff-package.md','.template-spec/process/schemas/strategic-design-handoff.schema.json',...readdirSync(path.join(root,'scripts/lib')).filter(x=>x.startsWith('strategic-handoff-')||x==='strategic-handoff.mjs').map(x=>`scripts/lib/${x}`),...readdirSync(path.join(root,'.template-spec/process/schemas')).filter(x=>x.startsWith('strategic-handoff-')).map(x=>`.template-spec/process/schemas/${x}`),...readdirSync(path.join(root,'scripts/fixtures/strategic-handoff')).map(x=>`scripts/fixtures/strategic-handoff/${x}`)];
 shared.push('scripts/lib/user-decision-reuse.mjs','scripts/lib/user-decision.mjs','.template-spec/process/schemas/user-decision.schema.json','.template-spec/process/schemas/review-bundle.schema.json','scripts/fixtures/user-decision/build-fixture.mjs','scripts/lib/command-runner.mjs','scripts/lib/json-schema.mjs','scripts/lib/context-reconciliation.mjs','scripts/lib/source-context-snapshot.mjs','scripts/verify-context-reconciliation');
@@ -51,7 +50,7 @@ function transformationFor(target,ref){
 }
 function sync(source,dest,transformation='identity'){const bytes=transformations[transformation](readFileSync(source));if(!existsSync(dest)||!bytes.equals(readFileSync(dest))){differences.push(path.relative(root,dest));if(!check){mkdirSync(path.dirname(dest),{recursive:true});writeFileSync(dest,bytes);}}if(!check&&path.basename(path.dirname(dest))==='scripts'&&!path.extname(dest))chmodSync(dest,0o755);}
 const digestBytes=bytes=>`sha256:${createHash('sha256').update(bytes).digest('hex')}`;
-shared.push('scripts/lib/lifecycle-execution-scope.mjs');
+shared.push('scripts/lib/lifecycle-execution-scope.mjs','scripts/lib/instance-metadata.mjs','scripts/lib/harness-execution-scope.mjs');
 shared.push('scripts/inspect-skill-discovery','scripts/lib/skill-discovery.mjs');
 // Diagnostic-only content inspection: shared authoring format, no lifecycle gate.
 shared.push('scripts/vendor/yaml.mjs','scripts/vendor/manifest.json','scripts/vendor/NOTICES.md');
@@ -171,17 +170,9 @@ function expectedLock(target,targetRoot){
  return {schema_version:1,target_id:target==='.'?'template-root':path.basename(target),source_repository:'yss-spec-project-template',source_revision:revision,source_state:sourceState,transformation_set:[...new Set([...lockedRefs.map(ref=>transformationFor(target,ref)),...(target.endsWith('backend-agent')?['backend-wire-library']:[])])].sort(),source_files:{...sourceFiles,'.template-source/cli-core/runtime-store.mjs':digestBytes(readFileSync(path.join(root,'.template-source/cli-core/runtime-store.mjs')))},effective_files:effectiveFiles};
 }
 function lock(target,targetRoot){const ref='.template-source/distribution/strategic-handoff-tools.lock.json',dest=path.join(targetRoot,ref),bytes=Buffer.from(`${JSON.stringify(expectedLock(target,targetRoot),null,2)}\n`);if(!existsSync(dest)||!bytes.equals(readFileSync(dest))){differences.push(path.relative(root,dest));if(!check){mkdirSync(path.dirname(dest),{recursive:true});writeFileSync(dest,bytes);}}}
-// CLI core owns the portable external-command runner. Only create-yss-spec still consumes
-// the legacy src copy; the three thin subproject CLIs use their official sync-core command.
+// Shared Node governance modules remain independently maintained after CLI retirement.
 sync(path.join(root,'.template-source/cli-core/command-runner.mjs'),path.join(root,'scripts/lib/command-runner.mjs'));
 lock('.',root);
-for(const name of rootOnly||skipCliSources?[]:['create-yss-spec']) {
- const target=`submodules/${name}`;
- if(!existsSync(path.join(root,target,'.git')))continue;
- if(!check){const state=inspectWorkingTreeScope(root,{project_root:target,repository_scope:'git-submodule',checkout_state:'attached-branch'});if(!state.writable)throw new Error(`${target}: ${state.violation}`);}
- sync(path.join(root,'.template-source/cli-core/command-runner.mjs'),path.join(root,target,'src/command-runner.mjs'));
- sync(path.join(root,'.template-source/cli-core/runtime-store.mjs'),path.join(root,target,'src/runtime-store.mjs'));
-}
 for(const target of rootOnly?[]:targets){
  if(!existsSync(path.join(root,target,'.git')))continue;
  if(!check){const state=inspectWorkingTreeScope(root,{project_root:target,repository_scope:'git-submodule',checkout_state:'attached-branch'});if(!state.writable)throw new Error(`${target}: ${state.violation}`);}

@@ -1,3 +1,4 @@
+import {readInstanceMetadata,appliedManagedDigest} from './instance-metadata.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
@@ -74,8 +75,7 @@ const scanExcluded = new Set(['.git','node_modules','.codegraph','.graphify','.c
 const toolSources=new Set(['scripts/feature-assets','scripts/lib/feature-assets.mjs','.template-spec/process/feature-assets.md']);
 function sources(ctx) {
   const files=[], unknown=[];
-  const metadata=path.join(ctx.root,'.yss-template.json');
-  const managed=present(metadata)?JSON.parse(fs.readFileSync(metadata,'utf8')).managedFiles||{}:{};
+  const managed=readInstanceMetadata(ctx.root)?.metadata?.managedFiles??{};
   function walk(dir, relative='') {
     for (const entry of fs.readdirSync(dir,{withFileTypes:true}).sort((a,b)=>a.name.localeCompare(b.name))) {
       const ref=relative ? relative+'/'+entry.name : entry.name;
@@ -90,7 +90,7 @@ function sources(ctx) {
       const hash=digest(bytes);
       // Unchanged distributed framework files are generic readers, not feature bindings.
       // Locally edited/new files in these directories must still be scanned.
-      const generic=toolSources.has(ref)||(/^scripts\/|^\.agents\/|^\.template-spec\//.test(ref)&&managed[ref]?.contentHash===hash);
+      const generic=toolSources.has(ref)||(/^scripts\/|^\.agents\/|^\.template-spec\//.test(ref)&&appliedManagedDigest(managed[ref])===hash);
       files.push({ref,digest:hash,text:generic?'':bytes.toString('utf8')});
     }
   }

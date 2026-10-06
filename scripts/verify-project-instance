@@ -8,6 +8,8 @@ import { loadRegistry, validateRegistry } from "./lib/lifecycle-registry.mjs";
 import { syncSkills, updateSkillLock } from "./lib/skill-supply-chain.mjs";
 import { verifyGovernanceLayout } from "./lib/governance-layout.mjs";
 import { DRIFT_EXIT, buildDriftReport, driftReportExit, expectedFromDistribution, formatDriftReport } from "./lib/drift-report.mjs";
+import { readInstanceMetadata } from "./lib/instance-metadata.mjs";
+import { loadSkillRegistry } from "./lib/skill-registry.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const identityPath = path.join(root, "yss-project.yaml");
@@ -17,6 +19,31 @@ const identity = parseDocument(readFileSync(identityPath, "utf8"), {
 }).toJS({ maxAliasCount: 0 });
 if (identity?.schema_version !== 1 || identity?.repository_mode !== "project-instance") {
   throw new TypeError("verify-project-instance 仅适用于合法 project-instance");
+}
+const instance = readInstanceMetadata(root);
+if (instance && instance.profile !== "spec") {
+  throw new TypeError("verify-project-instance 仅适用于 Spec 实例；专职 Profile 使用 yss doctor / diff");
+}
+function printReport(report) {
+  const body = process.argv.includes("--json") ? JSON.stringify(report, null, 2) + "\n" : formatDriftReport(report) + "\n";
+  // A rejecting report can exceed the pipe buffer. Finish the write before an
+  // uncaught rejection exits Node; otherwise callers receive truncated JSON.
+  return new Promise((resolve, reject) => process.stdout.write(body, error => error ? reject(error) : resolve()));
+}
+// Native init/migration records the Spec lock's actual descriptor. Validate its
+// physical path before supply-chain readers can follow a link; never synthesize
+// a trusted mode or accept an unregistered/user-owned lock as a managed baseline.
+if (instance?.kind === "native") {
+  const lock = instance.metadata.managedFiles["skills-lock.json"];
+  if (!lock || !["generated", "managed"].includes(lock.ownership)) {
+    throw new TypeError("INSTANCE_BASELINE: 原生 skills-lock.json 缺少受管记录；先通过 yss 保存计划修复基线");
+  }
+  const physical = buildDriftReport({ scope: "project-instance", root,
+    managedFiles: { "skills-lock.json": lock }, contentValidatedRefs: ["skills-lock.json"] });
+  if (driftReportExit(physical) !== DRIFT_EXIT.clean) {
+    await printReport(physical);
+    throw new TypeError("实例受管锁的类型、可读性或权限漂移；先处理 skills-lock.json 后再校验");
+  }
 }
 
 const commands = ["scripts/sync-skills", "scripts/update-skill-lock", "scripts/verify-context-contract"];
@@ -34,23 +61,67 @@ if (result.status !== 0) {
 }
 validateRegistry(loadRegistry());
 verifyGovernanceLayout(root, "project-instance");
-const metadataPath = path.join(root, ".yss-template.json");
-if (existsSync(metadataPath)) {
-  const metadata = JSON.parse(readFileSync(metadataPath, "utf8"));
+if (instance) {
+  const metadata = instance.metadata;
+  let skillLock = null;
+  const platformManifests = {};
+  let platformSkills = [];
+  if (instance.kind === "native") {
+    // The lock physical preflight and canonical checks above must complete
+    // before any native group/source declaration is consumed.
+    skillLock = JSON.parse(readFileSync(path.join(root, "skills-lock.json"), "utf8"));
+    const installed = metadata.distribution?.installedSkills ?? [];
+    if (!Array.isArray(installed) || installed.some(name => typeof name !== "string" || !/^[a-z0-9][a-z0-9-]*$/.test(name))) {
+      throw new TypeError("INSTANCE_DISTRIBUTION: 未知 installedSkills 声明");
+    }
+    const platformInstalled = Object.entries(skillLock.skills?.platform ?? {}).flatMap(([platformRoot, group]) =>
+      Object.keys(group).filter(name => installed.includes(name)).map(name => ({ root: platformRoot, id: name })));
+    async function checkSource(ref) {
+      const record = metadata.managedFiles[ref];
+      if (!record || !["managed", "managed-customizable", "generated"].includes(record.ownership)) {
+        throw new TypeError("INSTANCE_DISTRIBUTION: 平台 Skill source 缺少非豁免受管记录: " + ref);
+      }
+      // A source manifest cannot redirect the resolver through different bytes,
+      // modes, file types or linked ancestors before the drift gate reads it.
+      const physical = buildDriftReport({ scope: "project-instance", root, managedFiles: { [ref]: record } });
+      if (driftReportExit(physical) !== DRIFT_EXIT.clean) {
+        await printReport(physical);
+        throw new TypeError("实例受管平台 Skill 来源漂移或缺失: " + ref);
+      }
+    }
+    if (platformInstalled.length) {
+      await checkSource(".template-spec/agents/yss-skill-registry.yaml");
+      platformSkills = loadSkillRegistry().platform_skills ?? [];
+      for (const source of platformInstalled) {
+        if (source.root !== ".codex/skills" || !/^[a-z0-9][a-z0-9-]*$/.test(source.id) || !platformSkills.some(skill => skill.root === source.root && skill.id === source.id)) {
+          throw new TypeError("INSTANCE_DISTRIBUTION: 未知平台 Skill 来源: " + source.root + "/" + source.id);
+        }
+        const prefix = source.root + "/" + source.id;
+        const ref = prefix + "/.codex-plugin/plugin.json";
+        await checkSource(ref);
+        platformManifests[prefix] = JSON.parse(readFileSync(path.join(root, ref), "utf8"));
+      }
+    }
+  }
   const report = buildDriftReport({
     scope: "project-instance",
     root,
-    // skills-lock.json is a rendered asset with its own update-skill-lock --check;
-    // Permitted customizations remain required readable files. Managed/generated
-    // assets — including other rendered files — remain hash-gated.
-    managedFiles: Object.fromEntries(Object.entries(metadata.managedFiles ?? {}).filter(([ref, record]) => ref !== "skills-lock.json" && record.mergeStrategy !== "manual")),
+    // Only the native Spec generated lock uses the canonical content check
+    // above in place of historical raw bytes. Its physical descriptor remains
+    // mandatory. A managed lock keeps its raw digest; legacy records lack modes.
+    // User-owned/protected paths are outside the managed drift gate. CONTEXT.md
+    // has its dedicated contract check above. Permitted managed customizations
+    // remain required readable files; other managed/generated assets are hashed.
+    managedFiles: Object.fromEntries(Object.entries(metadata.managedFiles ?? {}).filter(([ref, record]) =>
+      ref === "skills-lock.json" ? instance.kind === "native" :
+      !["user-owned", "protected"].includes(record.ownership) && (instance.kind === "native" || record.mergeStrategy !== "manual"))),
+    contentValidatedRefs: instance.kind === "native" && metadata.managedFiles["skills-lock.json"]?.ownership === "generated" ? ["skills-lock.json"] : [],
     allowCustomizations: true,
-    expected: expectedFromDistribution(metadata),
+    expected: expectedFromDistribution(metadata, { native: instance.kind === "native", skillLock, platformSkills, platformManifests }),
   });
-  if (process.argv.includes("--json")) process.stdout.write(JSON.stringify(report, null, 2) + "\n");
-  else process.stdout.write(formatDriftReport(report) + "\n");
+  await printReport(report);
   if (driftReportExit(report) !== DRIFT_EXIT.clean) {
-    throw new TypeError("实例受管资产漂移或缺失：先运行 create-yss-spec sync 或补装后再校验");
+    throw new TypeError("实例受管资产漂移或缺失：先用 yss diff 检查，再通过 yss sync --plan --out <保存路径> 或 yss assets ensure <stage-id> --plan --out <保存路径> 生成可审阅计划，处理冲突并应用后再校验");
   }
 }
 process[process.argv.includes("--json") ? "stderr" : "stdout"].write("项目实例校验通过\n");

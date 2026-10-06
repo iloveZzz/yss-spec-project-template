@@ -34,15 +34,12 @@ export function compileTaskExecution(task,{root,reportDir,sourceReceipt,fixedCom
     if(!word.startsWith('--')&&/[?*[]/.test(word)){const matches=fs.globSync(word,{cwd:root}).sort();if(!matches.length)throw new TypeError(`NODE_TEST_GLOB_EMPTY: ${word}`);args.push(...matches);}else args.push(word);
   }
   const test=args.indexOf('--test');args.splice(test+1,0,'--test-concurrency=1');
-  const sourceTests=new Map([['legacy.001','content-identity.test.js'],['legacy.010','sync-fast-smoke.test.js']]),sourceTest=sourceTests.get(task.task_id);
   const execution={requested_command:task.command,file:process.execPath,args,cwd:root,environment:{}};
-  if(sourceTest){
-    if(task.command!==`node --test submodules/create-yss-spec/tests/${sourceTest}`)throw new TypeError('SOURCE_TEST_REQUEST_MISMATCH');
-    if(!reportDir)throw new TypeError('SOURCE_TEST_REPORT_DIRECTORY_REQUIRED');
-    const consumerRoot=path.join(reportDir,'consumption/source-cli/spec'),receipt=path.join(reportDir,'consumption/source-test-receipt.json');
-    if(sourceReceipt&&fs.realpathSync(sourceReceipt.consumer_root)!==fs.realpathSync(consumerRoot))throw new TypeError('SOURCE_TEST_CONSUMER_MISMATCH');
-    const head=fixedCommit?{status:0,stdout:fixedCommit}:spawnSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'});if(head.status!==0||!/^[a-f0-9]{40}$/.test(head.stdout.trim()))throw new TypeError('SOURCE_TEST_TEMPLATE_SHA_INVALID');
-    execution.args=['--test','--test-concurrency=1',path.join(consumerRoot,'tests',sourceTest)];execution.cwd=consumerRoot;execution.environment={YSS_SPEC_TEMPLATE_REPO:root,YSS_SPEC_TEMPLATE_REF:head.stdout.trim()};execution.source_consumer_ref=receipt;
+  const retired=new Map([['legacy.001','content-identity.test.js'],['legacy.010','sync-fast-smoke.test.js']]);
+  const old=retired.get(task.task_id);
+  if(old){
+    if(task.command!==`node --test submodules/create-yss-spec/tests/${old}`)throw new TypeError('RETIRED_CHECK_REQUEST_MISMATCH');
+    execution.args=['--test','--test-concurrency=1',path.join(root,'tests/cli-retirement.test.mjs')];
   }
   return execution;
 }

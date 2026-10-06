@@ -9,6 +9,26 @@ import { parseArgs } from 'node:util';
 import { spawnSync } from 'node:child_process';
 
 export const hash = bytes => createHash('sha256').update(bytes).digest('hex');
+// Match the native domain.FileMode capability model. Windows chmod expresses
+// the owner-write/read-only attribute; Unix retains all observed POSIX bits.
+export function fileMode(mode, platform = process.platform) {
+  if (!Number.isInteger(mode) || mode < 0 || mode > 0xffffffff) throw new Error('invalid-file-mode');
+  return platform === 'win32' ? (mode & 0o200 ? 0o644 : 0o444) : mode & 0o777;
+}
+export function executableMode(mode, platform = process.platform) {
+  const permissions = fileMode(mode, platform);
+  // Windows executability is established by the actual public binary spawn,
+  // not by stat execute bits which libuv cannot report there.
+  return platform === 'win32' || Boolean(permissions & 0o111);
+}
+export const nativeBinaryPath = (platform = process.platform) => `assets/tool/${platform === 'win32' ? 'yss.exe' : 'yss'}`;
+export function publicNativePin(pin) {
+  const { inspection, ...provenance } = pin;
+  return { ...provenance, bundle: { schemaVersion: inspection.schemaVersion, profile: inspection.profile,
+    templateVersion: inspection.templateVersion, templateCommit: inspection.templateCommit, sourceState: inspection.sourceState,
+    sourceSnapshotHash: inspection.sourceSnapshotHash, manifestHash: inspection.manifestHash, bundleHash: inspection.bundleHash,
+    producer: inspection.producer, files: Object.keys(inspection.files).length } };
+}
 export function safe(root, ref) {
   if (typeof ref !== 'string' || !ref || /[\\\x00-\x1f:]/u.test(ref)
       || path.isAbsolute(ref) || ref.split('/').some(x => !x || x === '.' || x === '..')) throw new Error(`unsafe-path: ${ref}`);
@@ -32,14 +52,14 @@ export function files(root, prefix = '') {
 }
 export function verify(root) {
   const lock = JSON.parse(readFileSync(safe(root, 'bundle-lock.json')));
-  if (lock.schema_version !== 1 || lock.plugin !== identity.name || !Array.isArray(lock.files)
+  if (lock.schema_version !== 2 || lock.plugin !== identity.name || !Array.isArray(lock.files)
       || lock.files.length === 0) throw new Error('invalid-bundle-lock');
   const refs = lock.files.map(x => x.ref);
   if (new Set(refs).size !== refs.length || refs.includes('bundle-lock.json')) throw new Error('invalid-lock-inventory');
   if (JSON.stringify(files(root).filter(x => x !== 'bundle-lock.json').sort()) !== JSON.stringify([...refs].sort())) throw new Error('inventory-drift');
   for (const file of lock.files) {
     const absolute = safe(root, file.ref), stat = lstatSync(absolute);
-    if (!stat.isFile() || hash(readFileSync(absolute)) !== file.sha256 || (stat.mode & 0o777) !== file.mode) throw new Error(`content-or-mode-drift: ${file.ref}`);
+    if (!stat.isFile() || hash(readFileSync(absolute)) !== file.sha256 || fileMode(stat.mode) !== fileMode(file.mode)) throw new Error(`content-or-mode-drift: ${file.ref}`);
   }
   const manifest = JSON.parse(readFileSync(safe(root, '.codex-plugin/plugin.json')));
   if (manifest.name !== lock.plugin || manifest.version !== identity.version || manifest.skills !== './skills/') throw new Error('manifest-drift');
@@ -48,7 +68,7 @@ export function verify(root) {
   if (ids.some(x => !x) || new Set(ids).size !== ids.length || ids.length !== 1 || ids[0] !== identity.entry) throw new Error('skill-identity-collision');
   return { result: 'verified', files: refs.length, source: lock.source, skills: ids.length,
     integrity_only: true, ready_for_agent: false, release_ready: false,
-    external_dependencies: lock.external_dependencies, cli: lock.cli,
+    external_dependencies: lock.external_dependencies, native: publicNativePin(lock.native),
     pending: ['business-lifecycle-verification', 'installed-session-verification'] };
 }
 
@@ -56,17 +76,20 @@ export async function main() {
   const { values, positionals } = parseArgs({ allowPositionals: true, options: {
     'plugin-root': { type: 'string', default: path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..') },
     'target-dir': { type: 'string' }, 'project-name': { type: 'string' }, 'business-domain': { type: 'string' },
-    'team-size': { type: 'string' }, 'issue-tracker': { type: 'string' }, 'backend-root': { type: 'string' }, plan: { type: 'string' }, checkpoint: { type: 'string' }, input: { type: 'string' }, 'work-unit': { type: 'string' }, mode: { type: 'string' }, bundle: { type: 'string' },
+    'team-size': { type: 'string' }, 'issue-tracker': { type: 'string' }, 'backend-root': { type: 'string' }, plan: { type: 'string' }, checkpoint: { type: 'string' }, input: { type: 'string' }, 'work-unit': { type: 'string' }, mode: { type: 'string' }, bundle: { type: 'string' }, apply: { type: 'boolean', default: false },
   } });
-  const projectCommands = ['project-plan', 'project-apply', 'project-check', 'query-project', 'project-resume', 'project-dispatch', 'project-entry', 'project-migration-plan', 'project-migration-apply', 'project-import-design', 'project-bind-plan', 'project-bind-apply'];
+  const projectCommands = ['project-plan', 'project-apply', 'project-check', 'query-project', 'project-resume', 'project-dispatch', 'project-entry', 'project-migration-plan', 'project-migration-apply', 'project-import-design', 'project-bind-plan', 'project-bind-apply', 'project-upgrade-plan', 'project-upgrade-apply', 'project-status', 'project-recover', 'project-rollback'];
   if (positionals.length !== 1 || !['verify', 'doctor', 'query-plan', ...projectCommands].includes(positionals[0])) throw new Error('usage: plugin.mjs verify|doctor|query-plan|project-plan|project-apply|project-check|query-project');
-  const root = path.resolve(values['plugin-root']), result = verify(root);
+  const { physical } = await import('./native-tool.mjs');
+  const root = physical(values['plugin-root']), result = verify(root);
   if (projectCommands.includes(positionals[0])) {
     const { runProjectCommand } = await import('./project.mjs');
-    process.stdout.write(`${JSON.stringify(runProjectCommand(root, positionals[0], values), null, 2)}\n`);
+    process.stdout.write(`${JSON.stringify(await runProjectCommand(root, positionals[0], values), null, 2)}\n`);
     return;
   }
   if (positionals[0] === 'doctor') {
+    const { tool } = await import('./native-tool.mjs');
+    result.native = publicNativePin(tool(root).pin);
     const major = Number(process.versions.node.split('.')[0]);
     result.node = { version: process.versions.node, supported: major >= 22 && major < 27 };
     const python = spawnSync('python3', ['-c', 'import sys, jsonschema; print(sys.version.split()[0])'], { encoding: 'utf8', timeout: 10000 });

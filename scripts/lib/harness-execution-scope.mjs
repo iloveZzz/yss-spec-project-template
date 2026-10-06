@@ -1,23 +1,27 @@
+import {readInstanceMetadata} from './instance-metadata.mjs';
 import { loadExecutionScope, assertScopeWorkUnit } from './lifecycle-execution-scope.mjs';
 import { existsSync } from './validation-phase.mjs';
 import path from 'node:path';
 import { ROOT, read, safe, ensure } from './strategic-handoff-io.mjs';
 
 export function loadDeliveryProfile(root=ROOT) {
-  const metadata=['backend','frontend'].filter(side=>existsSync(path.join(root,`.yss-harness-${side}.json`)));
+  const instance=readInstanceMetadata(root);
+  const native=instance?.kind==='native';
+  const metadata=native?(['backend','frontend'].includes(instance.profile)?[instance.profile]:[]):['backend','frontend'].filter(side=>existsSync(path.join(root,`.yss-harness-${side}.json`)));
   ensure(metadata.length<=1,'专职 Harness metadata 身份冲突');
   const profilePath=path.join(root,'.template-spec/process/harness-profile.yaml');
   ensure(!metadata.length||existsSync(profilePath),'专职 Harness 缺少 profile，不得绕过执行门禁');
   const profile=existsSync(profilePath)?read(safe(root,'.template-spec/process/harness-profile.yaml')):null;
   if(metadata.length) {
     const expected=`harness.${metadata[0]}-delivery`;
-    const record=read(safe(root,`.yss-harness-${metadata[0]}.json`));
+    const record=native?instance.metadata:read(safe(root,`.yss-harness-${metadata[0]}.json`));
     // Runtime scope checks preserve old projects; the new CLI still refuses their adoption.
     const newIdentity=record.metadataSchemaVersion===2 && !('schema_version' in record) && !('profile_id' in record)
       && record.profileId===expected && record.templateSource===`github:iloveZzz/yss-harness-${metadata[0]}-agent`
       && profile?.instantiation?.cli_package===`create-yss-harness-${metadata[0]}`;
     const oldIdentity=record.schema_version===1 && !('metadataSchemaVersion' in record) && record.profile_id===expected;
-    ensure((newIdentity||oldIdentity)&&profile?.profile_id===expected,'专职 Harness metadata 与 profile 不一致');
+    const nativeIdentity=native&&record.profileId===expected&&profile?.instantiation?.cli_package==='yss'&&profile?.instantiation?.metadata_file==='.yss.json'&&profile?.instantiation?.native_profile===metadata[0]&&profile?.instantiation?.template_source===`github:iloveZzz/yss-harness-${metadata[0]}-agent`;
+    ensure((nativeIdentity||newIdentity||oldIdentity)&&profile?.profile_id===expected,'专职 Harness metadata 与 profile 不一致');
   }
   return profile;
 }

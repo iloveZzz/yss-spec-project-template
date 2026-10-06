@@ -28,6 +28,16 @@ test('scope opt-in cannot silently disappear or accept a custom work-unit allowl
   f.put('.yss-execution-scope.yaml',{schema_version:1,scope_id:'plan-to-backend',allowed_work_units:['work-unit.release-and-retrospective']});
   assert.throws(()=>loadExecutionScope(f.root),/被扩大/);
 });
+test('native backend binding requires its matching marker and cannot widen the scope', t => {
+  const f = fixture(t);
+  f.put('.yss-backend-plugin.json', { schema_version: 2, plugin: 'yss-backend-delivery', execution_scope: 'plan-to-backend', business_execution_ready: false });
+  assert.equal(loadExecutionScope(f.root).scope_id, 'plan-to-backend');
+  fs.rmSync(path.join(f.root, '.yss-execution-scope.yaml'));
+  assert.throws(() => loadExecutionScope(f.root), /缺少职责/);
+  f.put('.yss-execution-scope.yaml', { schema_version: 1, scope_id: 'plan-to-backend' });
+  f.put('.yss-plugin.json', { plugin: 'yss-backend-delivery', execution_scope: 'another-scope' });
+  assert.throws(() => loadExecutionScope(f.root), /冲突|一致|未知|scope/);
+});
 test('backend scope keeps product design while forbidding frontend implementation and release routes',t=>{
   const {root}=fixture(t);
   assert.doesNotThrow(()=>assertScopeWorkUnit('work-unit.prototype-design-v2',{root}));

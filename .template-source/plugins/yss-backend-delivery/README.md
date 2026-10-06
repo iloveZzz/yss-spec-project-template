@@ -1,51 +1,32 @@
 # YSS 需求到后端交付
 
-开发版 `yss-backend-delivery` 0.3.0-dev.1。唯一公开入口为 `backend-delivery`，通过版本核验后读取治理项目本地 `yss-product-lifecycle` 并继续工作；包内专业技能为分发资源，不再暴露 41 个同名诊断包装入口。
+本开发插件使用包内固定的原生 yss 二进制和完整治理 Bundle，Profile 为 `spec`。程序版本、二进制 SHA-256、平台、协议版本、模板 commit 与 Bundle/manifest 摘要分别锁定。不会调用旧 Node CLI、私有 CommonJS API 或本机 PATH 上的 yss。
 
-Plan → Spec → Design → 工程契约 → 实现准备 → Ticket / Slice → 后端实现与验证 → Backend Delivery。
+业务唯一主控仍为项目本地 `yss-product-lifecycle`。插件接入不批准阶段、Slice、实现、Git 或发布；专业提供者须在当前会话实际发现。
 
-产品设计按影响触发，工程设计完成适用的数据/API/技术合同。新后端按批准合同实现；已有后端先登记、核验、补差，再采集交付证据。仅后端交付不代表前端、整个业务或发布完成。
+## 项目接入
 
-## 新建、复用、恢复
+从插件目录用绝对路径运行 `node scripts/plugin.mjs`。
 
-所有命令调用本包 `node scripts/plugin.mjs`，使用绝对路径定位包与治理项目。
+- `verify` 核验精确文件集合、mode 与 SHA-256；`doctor` 核验固定二进制平台和 Bundle 以及适用治理工具依赖。
+- `project-plan --target-dir <独立绝对目录> --project-name <名称> --business-domain <领域> --issue-tracker <已选择平台>` 返回只读计划，不创建项目。保存整个 JSON 后用 `project-apply --plan <绝对计划文件>` 执行已授权计划。初始化选取完整治理资产，身份和 `.yss-backend-plugin.json` 由同一原生事务写入。
+- `project-check --target-dir <绝对治理根>` 核验原生身份、当前来源、词汇与绑定；`project-bind-plan` / `project-bind-apply` 接入匹配且未绑定的原生项目。
+- `project-migration-plan` / `project-migration-apply` 接入旧身份；`project-upgrade-plan` / `project-upgrade-apply` 更新既有原生插件绑定。展示保存计划后按授权执行，不直接改 metadata。旧 metadata 和 `.yss-plugin.json` 保留原字节，并将其摘要作为事务输入。
+- 已绑定项目更换模板、Bundle 或二进制来源时，使用新插件的 `project-upgrade-plan` / `project-upgrade-apply`。直接 `yss sync` 缺少新绑定会返回 `BINDING_REQUIRED`；已登记身份与绑定本身不一致则返回 `BINDING_CONFLICT`。同一来源的治理资源补装仍可使用原生公开入口，其计划保护既有绑定 bytes 与 mode。
+- `project-status`、`project-recover`、`project-rollback` 默认只读；后两者写入需 `--apply`。恢复和最近事务回退一起处理原生身份、治理文件、绑定及职责 scope。并发修改与摘要漂移停止回退并保留现场。
+- 写入期间收到 SIGINT/SIGTERM 时，插件转发取消并等待原生事务结束，返回原始取消协议与退出码。仅剩已完整恢复的 `.yss` 初始化档案时，可重新预演初始化；是否接受由原生公开入口校验。未知、未完成或异家族历史仍阻断。
+- `project-entry --target-dir <绝对治理根> --mode new|reuse|resume --input <JSON文件>` 交回项目本地主控。new 用空对象，reuse 提供项目内 `artifact_refs` 或 checkpoint，resume 必须提供 checkpoint。交接不是阶段完成或实现许可。
 
-- 新建：`project-plan --target-dir <独立治理目录> --project-name <名称> --business-domain <领域> --team-size <规模> --issue-tracker github|gitlab` 输出计划；按当前初始化授权用 `project-apply --plan <计划文件>` 创建并绑定。`--backend-root` 只登记既有后端候选，不批准写源码。
-- 检查：`project-check --target-dir <治理目录>`。
-- 主入口：`project-entry --target-dir <治理目录> --mode new|reuse|resume --input <JSON>`。new 输入为 `{}`；reuse 可用 `{ "artifact_refs": ["docs/spec.md"] }`；resume 必须给 `{ "checkpoint": "docs/.scratch/example/checkpoint.yaml" }`。
-- 入口返回 `project-local-handoff` 和主控绝对路径。Agent 必须实际读取该路径并按项目本地主控执行；只读结果自身不批准阶段或实现。上游文件及 checkpoint 仍须重新核验资产、原始批准、摘要和门禁。
-- `query-project`、`project-resume`、`project-dispatch` 保留原命令语义；派发只编译已批准任务包，不自动执行。
+旧格式未完成事务继续使用仓外恢复包中的固定原版本执行器；不由新版猜测恢复。更早的 M4 / v0.2 绑定先用对应归档插件的公开迁移入口桥接到已登记旧版本，再迁移原生身份。原生 rollback 只回退第二阶段；第一阶段使用旧桥接独立备份恢复，不宣称旧协议直迁。旧桥接可能同步 CONTEXT，须从其独立备份按 before/after 摘要与 mode 守卫恢复原字节，再完成旧公开 check 与新迁移；此保护恢复是额外步骤。旧 npm 版本长期保留可得，不 unpublish。插件升级不自动改写已有项目。
 
-## 已登记开发项目迁移
+## 构建
 
-支持包内登记精确摘要的 `yss-plan-to-backend` 0.1.0-dev.4 与 `yss-backend-delivery` 0.2 开发包，不接受相同版本号下任意来源。
+`node .template-source/plugins/yss-backend-delivery/build.mjs --binary <固定绝对yss路径> --output <不存在目录/yss-backend-delivery> [--binary-commit <完整SHA>]`
 
-新项目使用包内固定的 `create-yss-spec` 3.4.12，并安装后端交付所需 Skill；迁移预检另用固定的 3.4.9 核验旧项目，再由新版 CLI 同步并生成逐文件迁移计划。两个 CLI 包均随插件锁定摘要，不从本机全局安装取用。
+构建通过公开 `bundle inspect` / `bundle export` 获取完整资产，并核验逐文件 bytes、mode 与摘要；不使用临时覆盖层。产物仅包含固定二进制、治理资产、单一入口和诊断脚本。保存的 Bundle provenance 不等于二进制已提交来源；程序 commit 和 sourceState 由固定二进制 version 协议记录，`--binary-commit` 只验证既有完整 SHA 一致性。本轮构建保持开发资格。
 
-`project-migration-plan --target-dir <旧治理目录>` 返回逐文件变化、原/目标摘要、备份路径及证据影响；用户审阅并明确授权后执行 `project-migration-apply --plan <计划文件>`。
+本地机制验证、真实业务交付、已安装 Codex 会话、六平台原生运行与稳定发布分别验收。当前产物保持 `release_ready: false`；不写已安装 cache，不提交、推送或发布。
 
-预览在临时副本核验新规则，原项目不变。应用重新核验计划及全部项目文件摘要，备份本次受影响文件到治理根之外。失败恢复本次写入；发现并发修改则保留现场并报告冲突。原业务代码、Spec、Context、批准及 checkpoint 不改写。规则变化后的合同新鲜度由本地主控重新判断，迁移不授予 ready-for-agent。
+后端输出范围为 Plan → Spec → Design → 工程契约 → 后端实现与交付。初始化 tracker 必选 github/gitlab；`--backend-root` 只登记独立既有后端候选，不写业务代码。`project-import-design`、`query-project`、`project-resume`、`project-dispatch` 保留治理交接；生产前端不属于此插件职责。
 
-M3、未知来源、核心漂移或已有后端终点的项目拒绝迁移。保留旧插件用于旧项目只读核验；不能把新插件当作通用自动升级器。
-
-## 验证与限制
-
-`verify` 校验精确文件集合、模式和摘要；`doctor` 检查运行依赖；`query-plan` 提供包内只读合同查询。源码仍保留 working-tree／development-only 标识，固定 CLI 原始包未被改写。
-
-当前开发包的实际业务就绪、真实服务与交付验收、独立审查及发布前固定来源验证分别判断。不能靠修改布尔值、原批准或源码 SHA 放行。
-
-安装后用新任务调用 `backend-delivery`。通过项目本地主控按条件发现外部 product-design 提供者，不能仅凭包内存在资源宣布运行可用。
-
-## 从源码构建
-
-`node .template-source/plugins/yss-backend-delivery/build.mjs --output "$(scripts/maintenance-path cache/plugin-unified/yss-backend-delivery)"`
-
-修改 identity.json、入口模板和实现后重新构建；不手改已安装缓存。首次个人市场用 plugin-creator 脚手架，迭代用该技能的 cachebuster 流程；版本修改必须在最终 bundle-lock 生成前完成。
-
-本机验收说明：`project-check`、`project-entry` 和迁移预览不修改治理项目，但需要可写的系统临时目录解包固定 CLI。严格只读沙箱会阻断这一步；验收使用独立可写 sandbox，并比较治理项目运行前后的文件摘要。
-
-## 产品设计方案接收
-
-先运行 `project-import-design --target-dir <后端治理根> --bundle <Handoff-v5交付目录或ZIP>`；再将返回的 `import_receipt_ref` 传给 `project-entry --mode reuse --input <JSON>`。入口复验原包、批准与路线，映射到本地主控的 `work-unit.technical-analysis`，固定不授予实现权限。完成目标词汇对账、Technical Design v2 逐条消费、工程契约与 Slice Contract 批准后继续后端实现。源包的前端和协调路线保持未接管状态。
-
-新版迁移同时接受登记的 M4 与 0.2 开发包精确摘要；未知同名版本、核心漂移及已完成后端终点拒绝迁移。迁移计划只预览，应用重新核验、备份并支持失败回滚，历史批准不自动延续。
+原生行为测试必须提供固定 `YSS_PLUGIN_TEST_BINARY`；旧身份测试另提供 `YSS_PLUGIN_LEGACY_SPEC` / `YSS_PLUGIN_LEGACY_DESIGN` 的固定恢复包根，以及 `YSS_PLUGIN_LEGACY_ARCHIVE_ROOT`。跨二进制升级测试还需真实前版的 `YSS_PLUGIN_PREVIOUS_BINARY` 与独立固定摘要 `YSS_PLUGIN_PREVIOUS_BINARY_SHA256`。缺少输入时报错，不能跳过后仍宣称行为已验证。

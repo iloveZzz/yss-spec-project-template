@@ -1,0 +1,4388 @@
+{
+  "schema_version": 1,
+  "plugin": "yss-backend-delivery",
+  "version": "0.3.0-dev.1+codex.20260923164747",
+  "bundle_digest": "c48d67ec2908cfb91ca6d0f195d77bb8a67fadac4e738c3c1c5831732fe49d4e",
+  "cli": {
+    "name": "create-yss-spec",
+    "version": "3.4.12",
+    "cli_commit": "6b1c388932615ece9fdb496ddf776ed904767061",
+    "template_commit": "327072236d45a7705f9388e977427aac46f128fb",
+    "snapshot_hash": "57f3b76de6f64eac30d1d7b24a62a33cae81641e0ce2d33c31813e3d95b99382",
+    "manifest_hash": "2780e1855c9b0cb46fe056e226744817510ed50f86e9a71f8a269307789d5885"
+  },
+  "binding": [
+    {
+      "ref": ".agents/skills/.strategic-design-skills-manifest.json",
+      "sha256": "3d0c270205aab528616e691e224239db0f536c4a045bbc2e40355b8e17a3b120",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/alibaba-java-code-style/agents/openai.yaml",
+      "sha256": "5eead6dbb2544abde3ba635f34029eee98e555f8cc7a4e2baa8261feca49a5d3",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/alibaba-java-code-style/references/database-engineering-design.md",
+      "sha256": "613d5327dda595976fbe51941d1ba6e60dcb8687ffde243161349404b43fbfbc",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/alibaba-java-code-style/references/java-programming.md",
+      "sha256": "aa71d0401e31562b3edadf226cbf0d1c319ca2f2354d2d2d7c4edad415db04b7",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/alibaba-java-code-style/references/reliability-test-security.md",
+      "sha256": "3a76a88d1d0ce38886760b97795d8fb6f5716eb2dc8fd4aff9e1b617d8ca84ca",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/alibaba-java-code-style/SKILL.md",
+      "sha256": "015548bb036b8a0b25835683476801c6980792d41599ac07626763163a3dc83c",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/code-review/agents/openai.yaml",
+      "sha256": "51931ae4ecad37873b98374b9ffe215ff888b5ca5387f614f6fc1a9c1419872e",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/code-review/references/candidate-capture.md",
+      "sha256": "e88f535ab04c31fef1485e7a1b2c6b84403634382176edacf22baf1026ed62c9",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/code-review/references/yss-review-standards.md",
+      "sha256": "1ad296f682c2334c952aa8a35e67c474065a8a26bfddf0ba70f0c39c741772ce",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/code-review/SKILL.md",
+      "sha256": "b3cb049380ace0808b15dd79649e2b4730f1140be37e908fde484f17be87c014",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/codebase-design/agents/openai.yaml",
+      "sha256": "edebc9e4fcfe102114012575eaa9600b9b5fd08c311664f389c36e7bc717740f",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/codebase-design/DEEPENING.md",
+      "sha256": "125e6b77413ad2bc7cf7a772bc74336d580a50f9e797db2178ed133d62333d06",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/codebase-design/DESIGN-IT-TWICE.md",
+      "sha256": "09f9948ea7636a4d3704c5ab909762e876c0b39849eefb14d2e03a398cc9c7e7",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/codebase-design/SKILL.md",
+      "sha256": "355b2c2f7a00d2ea37260e50cb28140f8f28f78fe27b0fc28963aa016fb6366c",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/competitive-intelligence/SKILL.md",
+      "sha256": "caee822202f1f85517efcbee5a7cada337112c4fd01d3a77ceeac9edf15d703f",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/domain-modeling/ADR-FORMAT.md",
+      "sha256": "f1f36cd3f8d3b6474ddd5855da4e233bfc4ae1a1c5024909ccf11871819a41b2",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/domain-modeling/agents/openai.yaml",
+      "sha256": "f6bf2aa996c6e6f53fdd0708e18a0d16a56aed8322cca59fedbe3c0d2c75f06b",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/domain-modeling/CONTEXT-FORMAT.md",
+      "sha256": "efc21043f630473bc9a07749f2c34a243fe2b8202752620f394f8ac5ba235896",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/domain-modeling/SKILL.md",
+      "sha256": "6bbfeeaa16b7e90eb298e76190e63f290f5f7a4f5cebc2db753de0448f6780aa",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/grilling/agents/openai.yaml",
+      "sha256": "1411d7df7d99b7e621a1ff8283c8133cc2464be63d064e52d8ce169c6800ee9b",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/grilling/SKILL.md",
+      "sha256": "a521b01e5dd581fd7b0a71f9dcca74c983cdb9503ad1f7ea87ff273a4745530f",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/i-have-adhd/agents/openai.yaml",
+      "sha256": "af6df42b6e1bfa3faaebc20b29f776e502d35f2073e0c89e67cfaef486658632",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/i-have-adhd/LICENSE",
+      "sha256": "8acbb618089b738404f76ac60fca1aaa995d9a87995eddf95f0b777acd7f7d2c",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/i-have-adhd/references/yss-adaptation.md",
+      "sha256": "8be569710d33a7cca1c2a7516a0bd74fd2605fecefa94a435729029a62a33b5e",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/i-have-adhd/SKILL.md",
+      "sha256": "4f04260b77564f14eda73171d392222b727a902223672f7ed6eb767343c3dda0",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/i-have-adhd/tests/verify-integration.mjs",
+      "sha256": "b89554a1049e7034b2061323dd5369c4836109dbac183e87bca24a08413cbcfa",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/implementation-repo-onboarding/references/write-scope.md",
+      "sha256": "120eba47a5fe9a261b3e36ee9dcca83915ae3f1961346c322c2a0323a61999f8",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/implementation-repo-onboarding/SKILL.md",
+      "sha256": "8180b25c30b2f71429c7bf78a9ce7ee08c7d7e423ba75e8c1acd48cdf09389a0",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/lombok/references/annotation-examples.md",
+      "sha256": "6c9f1d79e898cf36dd635e751ed8724d60c60870f4653cf7884ae2f7e26e2b60",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/lombok/SKILL.md",
+      "sha256": "3d69060391369ff3be43ded3db5d4458a99722ee90575f0265d901d300b25e74",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/mapstruct/references/annotation-examples.md",
+      "sha256": "0a5258e40307fd241853484754617c36cae1cacc9b970520e97fd4acfd542d25",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/mapstruct/SKILL.md",
+      "sha256": "0f02ee4604bd5a6f933ca06260d86dee53138f4161a5d8ec3199fee2beddda3f",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/prototype-review/agents/openai.yaml",
+      "sha256": "88dfbf24cca9bc333d430d05442aae112026efba1bc6573f10246f622722212f",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/prototype-review/SKILL.md",
+      "sha256": "4e961fd869799f322b5c05a49223104e6b348b102e816ab67dbd3548ab5b9a27",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/tdd/agents/openai.yaml",
+      "sha256": "ea6f01cf1b8c06a4b0f5b649d74b1b8ce8685e72af1b38d70d877693e092af0b",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/tdd/mocking.md",
+      "sha256": "3ceb807fdf4a47d6a93d4d9a891e5ba6d362a6247bd08adc451feebfc17361ef",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/tdd/SKILL.md",
+      "sha256": "81018a12d3c3b519735c5f1b248063ab7f2e5c4c4bbf9c14a0db3babed315822",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/tdd/tests.md",
+      "sha256": "859f9e592c188fda4fc7277dd180e4ce9c7a2e13f6efe1f6f29eccc9d28c106a",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-application/agents/openai.yaml",
+      "sha256": "223ad66fc237ded5af904f2e60c48d038dd339b0cbb301bda27392e2fc1895b3",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-application/references/application-layer-guide.md",
+      "sha256": "8a491eead7eb9261853ff36bbff0a1f7a2423a25c91928ea97f621731c9521ad",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-application/references/profiles/existing-domain-driven-maven.md",
+      "sha256": "550e549893b5345d7679d1ae8fee00c40a05a5cf1ae72a0ddde315d3bf813ccc",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-application/references/profiles/existing-layered-mvc-maven.md",
+      "sha256": "8903142393facc1523b6dae947df3fc6c306079db05be1134edce9b41ebbd0cd",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-application/references/profiles/layered-mvc-service.md",
+      "sha256": "c2ef0142c11cb4715de689604fa567e4da77d0d3913d39d187a44fa91caecc45",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-application/references/profiles/mvc-data-analysis-v1.md",
+      "sha256": "de3ea7f88adfbecd48ea4d17e4a280f05dafa3413554427724fb774cab1df3e0",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-application/references/profiles/target-domain-model.md",
+      "sha256": "56ce3871ee44a117a7b23d476c02157b5fe3ffcdcfd07efa1968eaf2e7ac2718",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-application/SKILL.md",
+      "sha256": "c9592407f0cc5499d30c683698d3ff3af7b7d68adab97cc544c7aed2e9e87fa2",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-audit-log/agents/openai.yaml",
+      "sha256": "259a30ac42beacbd393e573ffc36d4569b9e930d0840a2801be40c808bba5dae",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-audit-log/assets/AuditLogAspect.java",
+      "sha256": "7024c387f1c5723d7efe674957ec265e15359e7b324ffa651e1f2fcb15fee8e7",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-audit-log/assets/YssAuditLogPrintSubscriberImpl.java",
+      "sha256": "3befab90b1ef41461455798cac0242d1865a21479253b6b5b643c7ba906fc33f",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-audit-log/assets/YssAuditLogSysManagerSubscriberImpl.java",
+      "sha256": "f8c8eb9673bf9e77ad07628e6474e47223e9391a5d5c1792f36ee08d4a4dc198",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-audit-log/assets/YssAuditPublishService.java",
+      "sha256": "056c850b94b13520784e03ba4d472fa990e8733cf9e6e7bba3b3cafd4b3a21ad",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-audit-log/references/README.md",
+      "sha256": "e13712a1fa1d330cd18739e5d3a7b0625a36ccd51dc390efa213dc5213840d45",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-audit-log/references/source-index.boot2-java8.md",
+      "sha256": "b50600f4925e47834d5599e7605fc29107f46e9273d389b0e941b2f37f6fc6e1",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-audit-log/references/source-index.boot3-java17.md",
+      "sha256": "16068395422558f830d9e7c3f2e9b2b4910321b18784f6cb4943477de3ba0fe4",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-audit-log/references/source-index.md",
+      "sha256": "a9fd3b30d53d7cc179adcc8de8ecded270bfd204874298bd20f6e7cd8454ad58",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-audit-log/SKILL.md",
+      "sha256": "98695fbd1cfe1179735240aa4c4cc5a25d49120cad0f9c31c2ec8fcea2d5687d",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-backend-spec-review/references/check-inputs.md",
+      "sha256": "a70c08db9fbd2f5d4f4a540d68f9502cd9a7e44c67415697ca83de927fc27b71",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-backend-spec-review/references/remediation-workflow.md",
+      "sha256": "ba6b4ff11a331661bb872f0dc7ff8d295923dcfb357332722540e03ec1220331",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-backend-spec-review/references/standards-coverage.md",
+      "sha256": "9c6ccfd2a5d20686567c0a2d1984dad89ce3155f67f43816a404035297ca6f8d",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-backend-spec-review/SKILL.md",
+      "sha256": "f6a685c11562d91b4ccd37e245a447082e923ab689aa131613e7a51b9fa24384",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-backend-spec-review/tests/routing.test.mjs",
+      "sha256": "5d20d530d5ad2fcc815abab8ce8d75980e91f50459f800290960d91a7a0124cc",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-cache/agents/openai.yaml",
+      "sha256": "167af8b9d2a44091119f8d47feb5f72e12848155eef42bbe58737918eb5c174b",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-cache/references/annotations.md",
+      "sha256": "989ae6f0d6a727eecafa24938e5f18cb90ea6be3d4bd7da1a3ecb7ed19653073",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-cache/references/architecture.md",
+      "sha256": "ee13569cef3c1372450de8bed70fc8e0624543f7325d283b3d765b739666daf3",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-cache/references/configuration.md",
+      "sha256": "488128b1c5c7deaafef0ce62c2dbd80173fd9c0ae8a2f7bdfd2d3966d184ffc2",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-cache/references/jetcache.md",
+      "sha256": "710151fbf2e824fd04edcb4de663824958ddcdf96244a94795d9cdfb216da32f",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-cache/references/redis-fallback.md",
+      "sha256": "a36193dad5539f8ce565efb992414c2378a83830636befc017c8ab8d841b024e",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-cache/references/redis-topology.md",
+      "sha256": "f985c7362fdf879b648091cec89831eb6c3e63018a6240bdf9f1633795ca994d",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-cache/references/serialization.md",
+      "sha256": "8ec804ae94a09fb6b40eb138c044a27fbb36062b53350acc61c6b0d6b147a7fb",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-cache/references/source-index.boot2-java8.md",
+      "sha256": "becbb07c8ab3e0a703f01188eac9f4295644dba40105cd1b4cd2ee509d8164c0",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-cache/references/source-index.boot3-java17.md",
+      "sha256": "21537db9c5b55b0adb228da09208a8523026d2f49e1fec2906d81e0f284738f8",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-cache/references/source-index.md",
+      "sha256": "9ada6032b1dfd189851d27b8540b21aafe76b19abfb97425cbf67f027fb46b50",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-cache/references/troubleshooting.md",
+      "sha256": "27db3dc5d0b6bdc5b9697232e472be6feb7bb9b6e40cc1ac9e114fcdde5ec15a",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-cache/references/verification.md",
+      "sha256": "25f40a64ce351890dbfc2029c875ff28847af568c7ec28480d2f80580ccff7d9",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-cache/scripts/check-skill-freshness.sh",
+      "sha256": "e867b5b6bec8d0ae3edd5db4ed18b3f4b161a8a3bfd29d501d7fd70104487abe",
+      "mode": 493
+    },
+    {
+      "ref": ".agents/skills/yss-cache/scripts/inspect-cache-usage.sh",
+      "sha256": "ac2455fa637ef7364e3a3f89f450b1db8284d1e40ef85188e83a5a45e81b9aba",
+      "mode": 493
+    },
+    {
+      "ref": ".agents/skills/yss-cache/scripts/verify-cache-component.sh",
+      "sha256": "3823d87208464e696ce4022f4d92cbb116a6466e7a422d756e0bc8ba1b7f3748",
+      "mode": 493
+    },
+    {
+      "ref": ".agents/skills/yss-cache/SKILL.md",
+      "sha256": "28f98b2908ab0526b0df98554faa93b6dc61e731b139dff7dc11bdbdce8ec4b0",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-ddd-scaffold-generator/agents/openai.yaml",
+      "sha256": "8ecbd8ee1d78ae6dd5a6330fd7eb37d4923b92ddfd5e5928bef0491618b99315",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-ddd-scaffold-generator/assets/templates/config/application-local.yml.template",
+      "sha256": "0b142d62b94664f2a9d86e42302cbaa6b4677c701c4bea61fe1aa0c7abc00aed",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-ddd-scaffold-generator/assets/templates/config/application.yml.template",
+      "sha256": "4b91eafc91add9322ce8ebaf4f3df15d7da17e1bb818f9e72a7ba871fb76cb75",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-ddd-scaffold-generator/assets/templates/config/logback-spring.xml.template",
+      "sha256": "fb1547b842b97ccfbb581309f44bbfe2f00f6264d9625b03b03baad3b2ffab63",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-ddd-scaffold-generator/assets/templates/java/architecture-rules-test.java.template",
+      "sha256": "18e899cfd853883ab3a7e21a346f14d002cebdf8573dd36aff0faf8968afb118",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-ddd-scaffold-generator/assets/templates/java/bootstrap-application.java.template",
+      "sha256": "cdf4a7041d72218655c5587a72f57237e4d5291b4d5560eddbd2bdb729ca7b2d",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-ddd-scaffold-generator/assets/templates/pom/adapter-pom.xml.template",
+      "sha256": "50a6be19155bb04f4050be75ec9f784ce8e24fd90a10f67a763545efa5cb393a",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-ddd-scaffold-generator/assets/templates/pom/application-pom.xml.template",
+      "sha256": "9880e50e691b5f6ecf8aee69997a9d2bf31418352f40ef00645496e8c6580246",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-ddd-scaffold-generator/assets/templates/pom/bootstrap-pom.xml.template",
+      "sha256": "040ff009b38eae234f6d6e5e8008419f0f79be66c24c61b4ff89530a095314f1",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-ddd-scaffold-generator/assets/templates/pom/domain-pom.xml.template",
+      "sha256": "cb6c7d094d2cea1be76e42d82099f0e079533f5217555d0b8df31daeaf5b1462",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-ddd-scaffold-generator/assets/templates/pom/infrastructure-pom.xml.template",
+      "sha256": "06f385dd724380c2ea4dd044fc46e615f8e18ef1753bc40e8ac9dcdfc199e948",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-ddd-scaffold-generator/assets/templates/pom/parent-pom.xml.template",
+      "sha256": "e59403c00e7d7a429ad446b3a3532cf6560e00191ee1c459696ab84d7213c425",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-ddd-scaffold-generator/assets/templates/pom/web-pom.xml.template",
+      "sha256": "02da8b29ea2d5422ed26cb014aa12c34029abb5fb76c4ea77dbc81b2aab3a013",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-ddd-scaffold-generator/assets/wrapper/.mvn/jvm.config",
+      "sha256": "198cd51c423a4f9ac70ab48ae0968cf65bc9b2851733eb672afec7316d1d8c8d",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-ddd-scaffold-generator/assets/wrapper/.mvn/maven.config",
+      "sha256": "f588b33688ebc166d6a9c1fba5cc27b9a4aab7798363eb5a480f993040adec27",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-ddd-scaffold-generator/assets/wrapper/.mvn/settings.xml",
+      "sha256": "a2bc72361864fd3ad0f2e7ac8b8677bbf733155ff2e7a145068c2858df5593b7",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-ddd-scaffold-generator/assets/wrapper/.mvn/wrapper/maven-wrapper.jar",
+      "sha256": "0f37e00f4a503f19cfb1b8100b1f251f241cd1981524761bb9454037cb97589d",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-ddd-scaffold-generator/assets/wrapper/.mvn/wrapper/maven-wrapper.properties",
+      "sha256": "7a5e74a3636d21098dce658774bcc50d98e3201288ed6621cc287e30bdd8895f",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-ddd-scaffold-generator/assets/wrapper/.mvn/wrapper/MavenWrapperDownloader.java",
+      "sha256": "6a780367972104169c14ba8e993ddcc2fab4d4fa2b74d4f5db8afdbbf14b6949",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-ddd-scaffold-generator/assets/wrapper/mvnw",
+      "sha256": "1d740ebb29dd6d83d0a58aa405fc8240773f6b48934073a718aecff69ca5e5b8",
+      "mode": 493
+    },
+    {
+      "ref": ".agents/skills/yss-ddd-scaffold-generator/assets/wrapper/mvnw.cmd",
+      "sha256": "6d19e53372cb157e46f62b648832d34ab12f0e6b6b9f5f10b643f1f010bcc4c9",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-ddd-scaffold-generator/references/ARCHITECTURE.md",
+      "sha256": "40075d965b974afc3a22c78192e6bd57c112695baf5828fc605b8c559c2e1255",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-ddd-scaffold-generator/references/command-examples.md",
+      "sha256": "8199932f40dd44066898c38286792af21bd568dc58dfa51350781f81e25b3a5c",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-ddd-scaffold-generator/references/engineering-baseline.md",
+      "sha256": "336df2b644cd01df11114626e450044fb353d4ae1226a60d1f825f83de7002a0",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-ddd-scaffold-generator/references/generator-maintenance.md",
+      "sha256": "c7693739f7e6136973373153fc3cc3a082c8114309a4c345273e08d5636f0cc5",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-ddd-scaffold-generator/references/layer-skill-routing.md",
+      "sha256": "3fd69baff3c046d02af5aabffc83e40eb1100845337c0eb79f1b29c291e316ba",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-ddd-scaffold-generator/references/USAGE_EXAMPLES.md",
+      "sha256": "bd6cd8b50870465889d158756b67b7a2e3893fac9598360e31c9440401361796",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-ddd-scaffold-generator/scripts/first-slice-compatibility.test.mjs",
+      "sha256": "33e855e9c4f556fef0f0b8a2359b1d6bb291feefe71a7b424aa65267bff5ea72",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-ddd-scaffold-generator/scripts/first-slice-verification.test.mjs",
+      "sha256": "a863d95e9703aa96e866138cac2223e8e0a184694addd53dc2bc9f2f69170e75",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-ddd-scaffold-generator/scripts/generate_and_verify_scaffold.mjs",
+      "sha256": "facb6e4cffc7c62e5d711aa6035a5e9086efee0f54f0dc2bd29ef15b63a742ac",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-ddd-scaffold-generator/scripts/generate_scaffold.mjs",
+      "sha256": "551fd70c16c60cba4a4b66988045c9b229eade6f281f9ad2fa86c879e7d16a64",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-ddd-scaffold-generator/scripts/run_first_slice_verification.mjs",
+      "sha256": "08ca6d4b7ff3bd2806f0222009dd49d9c1a46ea028a4ae66cb0710274937bafa",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-ddd-scaffold-generator/scripts/run_scaffold_verification.mjs",
+      "sha256": "af636ab3e017a3f4824810845e4e6751a07287342bb1ec6b22317ef2c31570ed",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-ddd-scaffold-generator/scripts/scaffold-generator.test.mjs",
+      "sha256": "f558c24ff2e5007072a5b1992b59f7ce590eed8c84bf63ba244811140bb0a3c1",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-ddd-scaffold-generator/SKILL.md",
+      "sha256": "405e4dcaf81e8654d710a2350f8f4cf2bddfa79ab7e517a2c5a8cb5973fe5f72",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-design-system/agents/openai.yaml",
+      "sha256": "7d6ced6aef8a09057898a20afeb4ea2b535d84d300311da21dd5598f5479bc79",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-design-system/references/data-quality-theme.md",
+      "sha256": "d736e1fd7926250095651ac2bf17ff241ae6b6a7d365300db0f18774e9d46c1e",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-design-system/references/design-qa-theme.md",
+      "sha256": "6b21cd920d09df65bf61a9de438c60aa7b8611a4d501967efa28c53b7fb03d0b",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-design-system/references/design-system.md",
+      "sha256": "ef8a93f126f57d3707f988d6c82efcb25bcb39cba03e7864b5f73f979c32269b",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-design-system/scripts/validate-frontmatter.mjs",
+      "sha256": "483eb1aebd4a761748280cf1c87d078162a4d8760b518b3fceeaa297629d2d71",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-design-system/scripts/validate-frontmatter.test.mjs",
+      "sha256": "d34739075cc5d436ce671c1587189bdf2ddda1f419cfee0733ea2b6af222abfc",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-design-system/SKILL.md",
+      "sha256": "3e39cd4c94bc7828368c579f2e8262c044328e9885d7ad7a01ce53425fccdced",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-distributed-id/agents/openai.yaml",
+      "sha256": "de75689ef5277d8a8dbe877babd461f9c44aef84b330be4d9b87fbb12b504b4b",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-distributed-id/references/README.md",
+      "sha256": "9f57fa9788ee1abbb8f4c8e899538f6119d74636438860b2a97f1d171600c0b2",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-distributed-id/references/source-index.boot2-java8.md",
+      "sha256": "99dd555e2e5870fdc8cdc6f7b96abd179afbac6d285d65db28a8c525b55fe3f6",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-distributed-id/references/source-index.boot3-java17.md",
+      "sha256": "1399ecdab783d7fe71a31d9fe99bb7c0232a9ff67a43158247e126fac2074bd3",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-distributed-id/references/source-index.md",
+      "sha256": "8942c2f2a9bcca9e6fd327e896dae14cc199c04f14627a35be1e451725e7672f",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-distributed-id/SKILL.md",
+      "sha256": "c390c8674b97240fbaac557a735506183207dec3d13c0ba82b8490e285b2eac9",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-domain/agents/openai.yaml",
+      "sha256": "4dfc8e15a3edd3ecae770d874c2390a4abc1e2f931ca81eece67d11406109c33",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-domain/references/domain-layer-guide.md",
+      "sha256": "1083a44e2d93036c8e60d14a620c720062fcc88e2e25c47a7229201ebefc795f",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-domain/references/existing-project.md",
+      "sha256": "78bf4000e64d2bcd54d2bba1ffcb954751855ce0ba8b7cf3ca45746046c21c79",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-domain/SKILL.md",
+      "sha256": "1740028bd38b554142eceedb106a182aef1185ffa36579d4baf3b0578b44578e",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-dto/agents/openai.yaml",
+      "sha256": "15a86272de16827623e0e77d100edb20e5631c3e414ab11cadc7cb195f323b00",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-dto/assets/CommandDTO.java",
+      "sha256": "7a60b0034f15a3879ff6348d66648deb6d3383dcb3ff72d4273f88e2279227a5",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-dto/assets/PageQuery.java",
+      "sha256": "cd10750339a7b9ff055f2ac004889113bd592b6da3b12dd8bc76828667cf128f",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-dto/assets/QueryDTO.java",
+      "sha256": "5b16982feb8696dca989bb5fd877229042cfdff588a73acab31f0f1ad0157b2c",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-dto/assets/Result.java",
+      "sha256": "9ae6b91465152a65eed91545f3afc5acb4a54ad5f9b0fbc8f273d32590fd615f",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-dto/references/openapi-wire-profile.yaml",
+      "sha256": "a2bfe4296f2e2e1196f34eb484f795162ab327756078de99b8f540431151b78b",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-dto/references/README.md",
+      "sha256": "7ffaca82842c19759c0cbd2d43525595130166bc016541742c77a61a70576f1f",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-dto/references/source-index.boot2-java8.md",
+      "sha256": "bc36a0e05c64424cf2cfd36aac17cd414d4910b594b94c9942252dfb44901145",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-dto/references/source-index.boot3-java17.md",
+      "sha256": "95d8a959ceb56df8cfe85d093f7b71e710450c4194d591d7fdfae664ede98ce8",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-dto/references/source-index.md",
+      "sha256": "9b4602d6a7b4152e0aaac97ca3a197c2679166129ef238163b4f599ace3be5a8",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-dto/references/wire-validation-checklist.md",
+      "sha256": "4b0a3833ad8816fad88d4b3d71fad949e9dc4dd1ac2d633448d6d94fc3462957",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-dto/SKILL.md",
+      "sha256": "a0d08e98c36438108e42bcc3bcad515418b8d2be3289a49262b92d87c7a2c7cf",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-excel-mvc/agents/openai.yaml",
+      "sha256": "30338140e21ce0af70e821597533d2c2230bb085575f13f485ce7b2666dc9ce5",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-excel-mvc/assets/ExcelDynamicData.java",
+      "sha256": "15c6aefc8a17ca06aa4b9fac5ff6e0a1688c93da8fc12be60a89c5f577c5f0f9",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-excel-mvc/assets/RequestExcel.java",
+      "sha256": "8b3a9880352ae6efbd737748e4f9ec352e614b98b689810e9d2b1f43fdaef0a8",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-excel-mvc/assets/RequestFastExcelArgumentResolver.java",
+      "sha256": "73d6213b5ac70a89e53cd1629cdfee72b08b894fbdb01cc0eee05bb184ef6595",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-excel-mvc/assets/ResponseExcel.java",
+      "sha256": "7afc2c69bf8691144da1d59fd8c42f9ba99329eecb5ce768a8902cee48248fbd",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-excel-mvc/assets/ResponseFastExcelReturnValueHandler.java",
+      "sha256": "72659ae5cfaf9590e9839980647d64cf784b9be15f553681920c13d94123d023",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-excel-mvc/references/README.md",
+      "sha256": "6a11b3a8bdc6e9b8bef3754d55fbbf8fc60c6e115c590065d55d356403ce7dd4",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-excel-mvc/references/source-index.boot2-java8.md",
+      "sha256": "8764771a1f6cee7def275961b15dc52797d763dca826e946cbe2e3f491602cd6",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-excel-mvc/references/source-index.boot3-java17.md",
+      "sha256": "2b26f6efcb6926124f6a2d652f1667f443eec72df68a7c0b98971e63f73c9590",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-excel-mvc/references/source-index.md",
+      "sha256": "f957295230ce9c39ecde47a891dfbf2a4bd3788318208b7fb44a92931e83f4d9",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-excel-mvc/SKILL.md",
+      "sha256": "55ea6bdfb53cb8b6498b785329f89d9ae4e5a24a36b5f335fa5cdf20ca17c97d",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-exception/agents/openai.yaml",
+      "sha256": "fc2092e945762aff8d05fea253ea12d5cff725f77fcf61348ba852c67c21fc1b",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-exception/references/source-index.boot2-java8.md",
+      "sha256": "f0f6a0b0efa373d38cead169776c942129a25cfc24543e56a4305672001b5ea0",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-exception/references/source-index.boot3-java17.md",
+      "sha256": "d81655170b09b0f04890b51f572f62d44e4376b5867ff71b888b920986fc86d2",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-exception/references/source-index.md",
+      "sha256": "e3b85e2bc243ff91082118d181727e0ba5ce17a6e3ad7e5a59dadac07c75c19c",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-exception/SKILL.md",
+      "sha256": "f0acc11ee0740ea6203664f7783fed4deea7fbae66e6f013d36df1d506848bd8",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-implementation-contract-compiler/agents/openai.yaml",
+      "sha256": "522a9c250b9825768b1e1c561b6aa49c1b831bfcfd817445679f649686fa407b",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-implementation-contract-compiler/references/boundaries.md",
+      "sha256": "cb3d67876bed81ab7d4675b1d6a50a1b9f7b06fe853ea15bb5c0c6256e1b5d48",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml",
+      "sha256": "9f99e2e1105f68eb362ab69d609176ac20d516bc0c7eca86848ae3c3d132c88e",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-implementation-contract-compiler/references/slice-implementation-contract-v2.md",
+      "sha256": "adacb44dc80e6ea7d4982d13fd0b4ba3a9984e5010ebc846e6422a8d69fbe9e0",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-implementation-contract-compiler/references/slice-implementation-contract.md",
+      "sha256": "f94f83e6381cd282b5e3292c6b1df638248fd890bf0e1a2a55f354fa0d775286",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-implementation-contract-compiler/references/strategic-handoff-routing.md",
+      "sha256": "da322bf9920892eced5ce3d4ee00c971368de3e3b524133c7f1d90132a409f2a",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-implementation-contract-compiler/references/yss-skill-execution-result.md",
+      "sha256": "ae45bf5c781492c6969fa8afc87707d158faf3e85430611173896634d2cac9ba",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-implementation-contract-compiler/SKILL.md",
+      "sha256": "d2d0c73b0b652488f4ad5f1ee993329485aac8f90684170a2e5954626281dc35",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-implementation-contract-compiler/tests/backend-profiles.test.mjs",
+      "sha256": "bce593561c61c424bb65877a4f1df25429ab5fed7de9579968911b7eb6c7c242",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-implementation-contract-compiler/tests/compiler-scenarios.test.mjs",
+      "sha256": "b7d937bc2c8a9e09364c32fad64a1cb2042999324289acd55aaa47933290e09e",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-layered-mvc-scaffold-generator/agents/openai.yaml",
+      "sha256": "b0565c810f097dd73e8cbdb188efc87d83b87a737d4f0008ff2e54ff7d4343bf",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-layered-mvc-scaffold-generator/assets/templates/architecture-rules-test.java.template",
+      "sha256": "e1967be34691e38703af9570f3c7e955405219aca05bdbed8f0a059df82c3b2a",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-layered-mvc-scaffold-generator/references/architecture.md",
+      "sha256": "ff7d595bf53e18de50a5735a6e80716ddf833c6d0fe4377c1f6cf38c8928fadb",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-layered-mvc-scaffold-generator/scripts/data-analysis-profile.mjs",
+      "sha256": "6ef6d97084c79a977af1476febd0905a0c691fca0e588a7dde88147c94898fca",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-layered-mvc-scaffold-generator/scripts/generate_and_verify_scaffold.mjs",
+      "sha256": "5c2ab0bb26de6f23e000bd1f429f12e3e8c9128d604e0a4ab0da672283f560cc",
+      "mode": 493
+    },
+    {
+      "ref": ".agents/skills/yss-layered-mvc-scaffold-generator/scripts/generate_scaffold.mjs",
+      "sha256": "299d4323ebb6d234aac60c723f944a2a3b70e4a4e703a042a42a47bf03156b9b",
+      "mode": 493
+    },
+    {
+      "ref": ".agents/skills/yss-layered-mvc-scaffold-generator/scripts/run_scaffold_verification.mjs",
+      "sha256": "548d8b5c9bfa0b7e09420ba23d6a3025b98c5fac334006bbbed4385bb930675e",
+      "mode": 493
+    },
+    {
+      "ref": ".agents/skills/yss-layered-mvc-scaffold-generator/scripts/scaffold-generator.test.mjs",
+      "sha256": "2ddcb1796c841cfedfa676e05727dd665d0fe905797c0730afe9f12664ab30f2",
+      "mode": 493
+    },
+    {
+      "ref": ".agents/skills/yss-layered-mvc-scaffold-generator/SKILL.md",
+      "sha256": "a50dd8e17dbbdfa7a6e42c9313113dd87a4a9e3585a5f6aeca0b42c7afe5a873",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-layered-mvc-scaffold-generator/tests/scaffold-generator.test.mjs",
+      "sha256": "4ada0465e7213a3693bf904a8f4e2ca8da8194c16dc6a556be2d98144237c399",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-mybatis/agents/openai.yaml",
+      "sha256": "9cb246641382d733e80642a8a65208903ff30dc05189188534a83a1ceed308b7",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-mybatis/references/source-index.boot2-java8.md",
+      "sha256": "18d26437420e6e39d919c1b2e19b9060ef34008dbc73379824e80271870eee83",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-mybatis/references/source-index.boot3-java17.md",
+      "sha256": "2a5f0c3e2ae8433a598e46b186920a19f9cfb3a985452a4fc07f66f338fc4925",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-mybatis/references/source-index.md",
+      "sha256": "bdcf2e6005d12474263ba93f63d093ade31f77f0c0514c590cdbe261b2aea605",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-mybatis/SKILL.md",
+      "sha256": "cd4374c009707fff7c50827f744edbee28db3ea4e7a0f22d750ea0ab4eea5600",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-openapi-draft-review/SKILL.md",
+      "sha256": "3223b9aa6c569d7eccb881996e9edb26a18aa2d3b58a6918488641bdc0d13883",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-openapi-governance/agents/openai.yaml",
+      "sha256": "d9cda54ec0711d6f287a66d5031c8fb1cb25176a6095395f2d587ae84c365e1c",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-openapi-governance/references/governance-output.md",
+      "sha256": "7aea7bbc76a2cca2d25cd413ad5d050ee82e0878dd1a02df93815c829cec0cdd",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-openapi-governance/SKILL.md",
+      "sha256": "f02fbd64bfe19f49cd78a43f1bec7f768ec144eef83665adc6e64782b64d18a9",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-product-lifecycle/agents/openai.yaml",
+      "sha256": "65e4357d39f12b384e9f1029046e012ba6b80441225af44eeb0c5851ed7e19ba",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-product-lifecycle/references/artifact-dependencies.md",
+      "sha256": "6d8607a53e4138b5a3f180c9ba2c62c3b2018d16bc134af1f2ae5c2f66ab3975",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-product-lifecycle/references/matt-yss-adapter.md",
+      "sha256": "193800f57b2898d5ac8910fee33fe6aa1ad2d76aa6754d674ce251da03bffde7",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml",
+      "sha256": "cdee384ab5dafa68a31005dec941096d64dd60a64437a1c1d57d7cc6f92ced5a",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-product-lifecycle/references/orchestration.md",
+      "sha256": "f5a40bdd5c41bf017ddc70b9ab0e1a86a81b6612daa3282a0632b270471ccce7",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-product-lifecycle/references/request-triage-scenarios.yaml",
+      "sha256": "aa5039f61a8f26b23b4eac559a57f181f8dddc0bace3e4a1f2e4b023205675d6",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-product-lifecycle/references/request-triage.md",
+      "sha256": "63f742c01cd140981dd8fbaa706be24cc37207616dde4e5e97ccf4f2cc267b82",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-product-lifecycle/references/state-model.md",
+      "sha256": "6a8a0e8e1f3a1e00ed6e19cb6b022f80309912bfa639f51ec60f1fae2d76cc8d",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-product-lifecycle/references/user-decisions.md",
+      "sha256": "4b54c3c28b15067b172fa89f23ddebd77443d3ff5886bcb9db4f1789830db4e4",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-product-lifecycle/SKILL.md",
+      "sha256": "98cb44955a114b7aa9292ce706eac07d788cca603a94a16335a1a19b6cae97b3",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/assets/antd-authoring/package.json",
+      "sha256": "e8fcab62721c4bcc66fd000ab5ede3423d3bd528cea31586725b554274167a26",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/assets/antd-authoring/pnpm-lock.yaml",
+      "sha256": "098dade90cac0884063746e34942c16f6fc7064f0cd5a7115ef96161a07c69f1",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/assets/antd-authoring/workbench.jsx",
+      "sha256": "efbefd5255d5586e1f2d107f0302c96b6514f4d34bda971b5236f9886b00b4e1",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/assets/native-workbench/app.js",
+      "sha256": "60624679edf39d586d7f456193f8d6945d51b972d25551c0020cb328e6e7dbf2",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/assets/native-workbench/index.html",
+      "sha256": "370543ca91cd8e660710fe5cd73cf378dab40ba56c061e214a0a4c28dca5808f",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/assets/native-workbench/styles.css",
+      "sha256": "9e4991b64b771ae4d7256854bc94d84680eafe4bdc911bd4127254cf5cbbf800",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/assets/offline-html/app.js",
+      "sha256": "fff5efc3a882269202d1acf12ec81efa96752e957b5a830ce81fdbb858c1881a",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/assets/offline-html/index.html",
+      "sha256": "86dffc0e5f59ceb384e60a6f0de9860c7fc04d7e065c4ca217774519c49295f9",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/assets/offline-html/scenarios.js",
+      "sha256": "ddd320a8813e31f2471572e7cfa9cc5eb8b5be8388fe70ab4309c4c32f94a955",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/assets/offline-html/styles.css",
+      "sha256": "2d4a5745b86e9464907d8f11ef236d0c21367dc301ce8ee18d3b55335f61c30f",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/references/antd-component-catalog.json",
+      "sha256": "b58364eb40914d323b156d6395d96af5c389bb24dee0690fd978a04a30a5b0f9",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/references/antd-integration.md",
+      "sha256": "1a88686e7048f5ddccc43030d028e379c2770bafc138fc078aa69e57bce4f833",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/references/existing-ui-entry.md",
+      "sha256": "c005d4691096056de09393152f74c0f98ad11b5ab671cca13e4d7c3667efeb4b",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/references/html-prototype-practices.md",
+      "sha256": "122d8749622e2b2cdc712ea4772634177aff1eb0203723be6e08c868b6bf1ab5",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/references/product-design-adapter.md",
+      "sha256": "d6ccd427b8b34c1eafde46ef24e5fdacb0146ea0d4d25ce8f26bbcac7e482a5e",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/references/prototype-profile-routing.md",
+      "sha256": "729010e683f532a9a626e1fdb70ae0715db3acd39cbf14c158689fa424a88f41",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/scripts/build-antd-prototype.mjs",
+      "sha256": "7ff4d07af5d58c59ed02ddcd37549792632aab329613e5fe1b0c437a917e49f1",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/scripts/collect-antd-reference.mjs",
+      "sha256": "937efa58b1783ac13d5c0857817ca7b4f9d42c4b08cb54b9d88ecd9331e34257",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/scripts/offline-html.mjs",
+      "sha256": "664f02de70ac0e8ded76bbb64a364f9a9f0e8b693041026746244c360fa1a9b3",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs",
+      "sha256": "642109cfee56e7e5c4b6581f97e748105f68d15df9d91a4684ff328a388bab19",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs",
+      "sha256": "bbf144458fb3fb094128eb2ecaaee56ab5d437dffa8e4fd4f7cf70a631559a07",
+      "mode": 493
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/SKILL.md",
+      "sha256": "31b073e79426dfde106f2b0b560680d7af35a45971cf1e23c7ecd156b15c403d",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/tests/antd-reference.test.mjs",
+      "sha256": "8e0a5f7d2cee4d6b62732f85ff06383a11e9a67ee95eb0d38df2f27a031ab3bb",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/tests/browser-smoke.mjs",
+      "sha256": "7fb0643f4f432e2325d9bfe8e364c363c09a1f00a813ad29640c55e9d4735049",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/tests/run-scenarios.mjs",
+      "sha256": "2829e4d254b99d3c6d2119d70f23b9f8412f6974f8618055449c685b38c5ec84",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-prototype-stage/tests/workbench-smoke.mjs",
+      "sha256": "048e5533ce886b8dfe44b8818ac7d7dbe23a449bb8cbf6b97a09709649ea5dd4",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-repository/agents/openai.yaml",
+      "sha256": "9ba11c8c53b6d6056abaf91f6a7bf000339325df329c9b9487fac9bc293081c4",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-repository/references/profiles/existing-domain-driven-maven.md",
+      "sha256": "12b984bda63eda097a450f0f65266f59c95818fb0b9f001dc8132c15a73d67ad",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-repository/references/profiles/existing-layered-mvc-maven.md",
+      "sha256": "c1cec2b02cba600bf4bf075f8c0ec69e7034713e1f0636cbee0819b004aabe8d",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-repository/references/profiles/layered-mvc-service.md",
+      "sha256": "8ecdbfc0103f65723911b3a8ca9c07e672cb2c3f86fa7909c3e5991e96e020e0",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-repository/references/profiles/mvc-data-analysis-v1.md",
+      "sha256": "039bc55f07efbd722ec8db24b020f8a4e418107acf683ca77f6ecd632d399f7e",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-repository/references/profiles/target-domain-model.md",
+      "sha256": "1aa5d0a2d2a93aae40d4e798521843b315485863a42734d8cd290099c31047f1",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-repository/SKILL.md",
+      "sha256": "90b5dd5c05a48e46d50619f1f1d9b30fec7cfb22909672e95f5fc5a8abff1d4e",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-repository/tests/profile-routing.test.mjs",
+      "sha256": "6a5de44e674814967313818b2ca0616b2e6626cea0bad489e031a756f19b4c14",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-research/agents/openai.yaml",
+      "sha256": "8ecd0ce015596948d53dd0201a2f68e9d3463f8e5620526360cf7b0096fb50bc",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-research/assets/evidence-template.yaml",
+      "sha256": "24167045ea501db6e2eab7b7248c38fb42daa30402581d0c55a6a5899dc49b20",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-research/assets/research-brief-template.md",
+      "sha256": "5ab5ca8ca63158290977548c2ad8ff610564dc39210009b5665c058ef5cc6be7",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-research/references/evidence-contract.md",
+      "sha256": "accf660bda44cec320aca3d7ea769c8c724ac7adaf543879035d56a030cb9fa7",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-research/scripts/validate-research-package.mjs",
+      "sha256": "5e4e437d54e67cce9dd380974744605bd149c71939c5f01e3ea4719c79911d0f",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-research/SKILL.md",
+      "sha256": "3102bfd433213e8a2c59b64bc8bb2ef56dd23c51d484c759b1c106e5f169c8b2",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-research/tests/run-scenarios.mjs",
+      "sha256": "db4285f37820927b626b875a11650d6292783a70553c5dbf3ae4205f162bcc56",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-resilience4j/agents/openai.yaml",
+      "sha256": "814f14085f2fc62d7acaa6b347b3977d6622ff403aadb912faa827446370f1c5",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-resilience4j/references/source-index.boot2-java8.md",
+      "sha256": "dc6faef24dd1c6c1112bb96bcf045e172d6126860f04c91bd7b3d90ac64fde92",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-resilience4j/references/source-index.boot3-java17.md",
+      "sha256": "20cdb121a47f8fe46ec2e6c5a8a623421665a98045caad4d2d66a48e0a1a99e2",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-resilience4j/references/source-index.md",
+      "sha256": "58c49c030f7938118c35d32baee2d8a119885dc489fe5991f1d77c022082c9b5",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-resilience4j/SKILL.md",
+      "sha256": "dbc620e97951b40b0a025978cd78736c032d83404d42c2934ee643637ee981b4",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-security-algorithm/agents/openai.yaml",
+      "sha256": "a32a74c55bdb5855cf2526a4df8912dcfab7064477f9927d60f64099f3fd3d37",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-security-algorithm/references/source-index.boot2-java8.md",
+      "sha256": "9a88f4eb536130a72dd93464de5a2ea593985bf4d662db0e79c89e76a5406242",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-security-algorithm/references/source-index.boot3-java17.md",
+      "sha256": "b58cff79e3367482bdf0374217a6f40957983459472d3f533261812260da5a08",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-security-algorithm/references/source-index.md",
+      "sha256": "a9f56af271a55d72e412db6994a041098cd0e25b4e89c732a2b1c6903b7631ed",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-security-algorithm/SKILL.md",
+      "sha256": "07bc87c0ef57857425a14b3912dca921642179ac5599565fe087ca4ca8367e8c",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-skill-source-index-refresh/agents/openai.yaml",
+      "sha256": "4762781d1ecc2086498cca3aa18294a796ef1f3e9fec8c752bac1e1cdbb06e83",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-skill-source-index-refresh/references/backend-component-platform-compatibility.md",
+      "sha256": "271115af2e193d27fead259e35770507ecca338cc2f8a006e8f43ee13a35655d",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-skill-source-index-refresh/references/source-location.md",
+      "sha256": "79d4ce8754d94c08e44aac4b4aa8ee6c1a99a4e79e630d81268b3cc6c110b91e",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-skill-source-index-refresh/references/source-map-config.md",
+      "sha256": "665171beb1868d4c4650e20ca463a58e8a95f598a9ec932e3c4f8541d78dae7a",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-skill-source-index-refresh/scripts/check-backend-skill-source-index.mjs",
+      "sha256": "df18eeefd72927e68055b277a84daa3bd90152070a4ab55693f955c029496550",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-skill-source-index-refresh/scripts/refresh-yss-skill-index.mjs",
+      "sha256": "e91a6c4eaf4d29f232bb0e97cb7c34a827af116533efdb2169ba621ba5178860",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-skill-source-index-refresh/scripts/refresh-yss-skill-index.test.mjs",
+      "sha256": "09ff7e497b21c7a46a36c9b2f8102b4ca95e18f92bdcf214f903968d29b731b1",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-skill-source-index-refresh/SKILL.md",
+      "sha256": "aa18785b1b3b8f6658c54d5a452eb9468633e13e1417a2604386c4a360441a72",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-stage-decision/references/domain-strategy-contract.md",
+      "sha256": "8a01ddc9678cc67d6e69043752e3e6124688bd110131177fb9c5b4a686dfeac4",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-stage-decision/references/domain-strategy-v2.schema.json",
+      "sha256": "7c1f98c7211a102c5bdaae45ade3b273e943ff0e61aff4da284a1ef215e2d806",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-stage-decision/references/domain-strategy-v3.schema.json",
+      "sha256": "28e20c194a444cd217059793e4b86efe6a79c7a5d1474008bc2fdea317bb8496",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-stage-decision/references/domain-strategy.schema.json",
+      "sha256": "acc4b23b6c244dd0836036e92a7008506dac43d44ea2d57d2b6016485d843d3e",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-stage-decision/references/stage-decision-package-contract.md",
+      "sha256": "ce8cd907b2e3699b6bd9d60b9158e35deec67b1ba51aa6b558acf2c8cb53a074",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-stage-decision/references/stage-decision-package-v2.schema.json",
+      "sha256": "6d80bc6eabf13a1339c25617f8fbca7c9a2d0fee46a5da1e275a1c9a7790bdae",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-stage-decision/references/stage-decision-package-v3.schema.json",
+      "sha256": "49076623d5338dc6110cd3c793558034297b9d8085ab0c24c9721d8d805ee2f1",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-stage-decision/references/stage-decision-package.schema.json",
+      "sha256": "7517836960657ea050c219b41310646b72c259500a3174a5e44699227ddd733b",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-stage-decision/references/strategic-handoff-routing.md",
+      "sha256": "f86427eca4a0df495a9350d97fd4b2d5eeb5424dcf408bd0ed26f29690fff4e5",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-stage-decision/references/validation-rules.md",
+      "sha256": "3f33535ebca2eecb8083eaa4db8561839392197eeeedc6a0923afa911731a48e",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-stage-decision/scripts/migrate-context-references.mjs",
+      "sha256": "7c710d287ebc1f2d60b05651cd8fdc58fcb1afc0627e756d08cd09bffee10218",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-stage-decision/scripts/migrate-contract-v3.mjs",
+      "sha256": "e03d864a6f37062b8ddbdcd20419e26d13f06cc989c3e3ecc8c0c0f55ca336af",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-stage-decision/scripts/validate-domain-strategy.mjs",
+      "sha256": "85e226192e0a1c4ddc4182f61cd78b56c46c1e440d3ff83b83e1fd1cbdd9ae31",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-stage-decision/scripts/validate-stage-decision-package.mjs",
+      "sha256": "cbad2c83f6a08c5e1f793e6da9546613d478974abb325f06353a73a64d651e31",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-stage-decision/SKILL.md",
+      "sha256": "ea3d33534ce8489fc16f89f604c9b0e867051b74455b38497797e35164283244",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-stage-decision/tests/fixtures/domain-strategy-approval.yaml",
+      "sha256": "c0bb521714370b7ac9419dc6e90f7c38ce7a43853608b7498c9722fa6a3359af",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-stage-decision/tests/fixtures/invalid-direction.yaml",
+      "sha256": "988d0cdf9cabbd65032c28e70fc9041c812f8d2fec26f81e5c868e5fd0bd9ffe",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-stage-decision/tests/fixtures/invalid-stage-decision-blocker.yaml",
+      "sha256": "bb41b61dfc9714cd16aa4fb4393fa42dafc7c38f3c1e77f6b08eef5a3c6b082f",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-stage-decision/tests/fixtures/stage-decision-approval.yaml",
+      "sha256": "d322bdf6f448674a2652e94242a3bf35c699d119eef13032efd3e2b74e94e9e7",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-stage-decision/tests/fixtures/valid-stage-decision-package.yaml",
+      "sha256": "9bfb57a7fbd21ff2a5b67b261d22f99dc37c3b613b769698c269b83285b5d243",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-stage-decision/tests/fixtures/valid-supplier-domain.yaml",
+      "sha256": "45a5a948dec305c9c1dfbf33a1e7cb7e6bc690d50b03e165b19b723479ccdaf6",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-stage-decision/tests/run-scenarios.mjs",
+      "sha256": "a04ce5bcc7a57893f8b122447f7048ddd3e92ddd940a73a136efa430e60a24eb",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-tactical-design/agents/openai.yaml",
+      "sha256": "5040a9ee59fc870ee3ddecb54d015fe51cd63f1ac8665e78f7f2eb80b66dbcf6",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-tactical-design/references/output-template.md",
+      "sha256": "e7f90a84de5334e5cc84a0d48b18967544e233cc1fd90153369e22b6c6d1f03e",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-tactical-design/references/strategic-handoff-routing.md",
+      "sha256": "f11539b9f4690db41cb436d1274e742f1bf238aaaca274f0549ab4acf0bf4bb3",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-tactical-design/references/tactical-design-contract.md",
+      "sha256": "dbacc99af2a6959dc9925173dae766967f519fbda5f4bc64c82340455a98ac64",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-tactical-design/references/tactical-design.schema.json",
+      "sha256": "7a110d6b9510a4e40b4b0c7796e8b21589b8c5f9ffc7b8a3b7eb3098f0deae4e",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-tactical-design/references/validation-rules.md",
+      "sha256": "3a535f8701663b57d1615a90b22578d3eef673dad59e265ab8561683c917edcc",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-tactical-design/scripts/validate-tactical-design.mjs",
+      "sha256": "fe43c921a7d10b88ee9a389fcb30becfc11744050d0ceb760f1ab0e292f917a3",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-tactical-design/SKILL.md",
+      "sha256": "4edad91279f9ea6fa8e548e9b52b67aaa1c243b93f0b8e26424e4898b43c184d",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-tactical-design/tests/fixtures/invalid-api-leaks-aggregate.yaml",
+      "sha256": "88f87a1b6410842b841b5c7c0487fbf5516c49365aeb9e5685500ba0607510d1",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-tactical-design/tests/fixtures/invalid-missing-consistency-policy.yaml",
+      "sha256": "c6b9326896c55467ec91a3d3b011e93b5825b74c9dc2017b859fc5b8ce1b06dc",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-tactical-design/tests/fixtures/invalid-missing-invariant.yaml",
+      "sha256": "f1762b51e32a82481da972f547087f34a56c876bc1bf9e42adaf0ad927148d61",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-tactical-design/tests/fixtures/invalid-stale-upstream-ref.yaml",
+      "sha256": "ed904feebcdd7ab4cf9e857c592f631a3eb3c83efa4f8754cad69122c04eea1e",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-tactical-design/tests/fixtures/invalid-strategic-as-tactical.yaml",
+      "sha256": "9604bba4d8144cc1de8d0f0e6d04693fbd49652e4f5c138feea4367dea65a759",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-tactical-design/tests/fixtures/valid-tactical-design.yaml",
+      "sha256": "a7052250b0ee76f760a310d7359824c9635b785f66f454dca03e818b34815f40",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-tactical-design/tests/run-scenarios.mjs",
+      "sha256": "2bcd9fdf120a65a7c2ad2aa34e949fdd3bac4e0c838ec1a114d2316891244235",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-technical-design/agents/openai.yaml",
+      "sha256": "72c7f567e53930b2109ad75fdf916404a791f6c6d9f8994151f0e421a5f9d7ed",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-technical-design/references/engineering-design.schema.json",
+      "sha256": "e12bc42d280b1e15b470d027f71c561812cddf89a1c2fdeff5e9b76f3e3dc18d",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-technical-design/references/mvc-design.schema.json",
+      "sha256": "d13136b47cc62747c4c835a2744f38774eec3f3a561f7d6542917ee8f0f76958",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-technical-design/references/technical-design-common.schema.json",
+      "sha256": "03add15aa624f7a8fa22cc7cfc3ccd4853d12f2f2b2d1a0daa95514c4343fffe",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-technical-design/references/technical-design-contract.md",
+      "sha256": "5e6a787a6502a5b3d074a43cdf55a69330587e13af39f1ed0894afd30c9425d1",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-technical-design/references/technical-design.schema.json",
+      "sha256": "2db3442c4d923a8e3746398534bfa034a850ae93b57145f7ba4901b35421ad78",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-technical-design/scripts/engineering-design.mjs",
+      "sha256": "201db90f145a66aad0b05744f80aeee947b80b2d5ab41c598425690bd29b2d1e",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-technical-design/scripts/generate-schema.mjs",
+      "sha256": "afaa0f37a877fee67a73b765b783cc6066f8789ca5f49cd9506d030c12693f19",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-technical-design/scripts/validate-technical-design.mjs",
+      "sha256": "eccfc8e307270f2481e33ff6b17f93af8e3fb5edbf8f1b082ee76f75b7ead08b",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-technical-design/SKILL.md",
+      "sha256": "b2ce6e580d7e829118cc6e6679790a4bd9d52dc78839d209d9fcefb4f095dc96",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-technical-design/tests/engineering-scenarios.mjs",
+      "sha256": "1e4eb35f91ad2853078bd7f71aa9b8383ab68e001b3b8a26cb73754a2ceffc16",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-technical-design/tests/fixtures.mjs",
+      "sha256": "07b1596f04f3af0a09c5063c15c72697f593448f08ec58bc1bfb2bf1d97a8ec7",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-technical-design/tests/run-scenarios.mjs",
+      "sha256": "e63e77bcf77c5194d45a08a0e6b59cc444f7745f460a255b152971602ea2e2c7",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-up-springboot3/agents/openai.yaml",
+      "sha256": "3c861fcf27926cff79c8a6ac3f6c209ffe655436ca3cdc95bc280d65d2fb8eb7",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-up-springboot3/SKILL.md",
+      "sha256": "178c9c6196afbbffaa4b18ee16d9cd59c118068927e9723e8d2c3ac0d4ebb7a6",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-userinfo/agents/openai.yaml",
+      "sha256": "3932c83c7a155bb86be194d34083496490dc4858a4009ca76a6a79b91b131b6f",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-userinfo/references/source-index.boot2-java8.md",
+      "sha256": "fb4bba89f7aa67868e9d3f37da385261707c44e4349ecd2612cefc9ce048280b",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-userinfo/references/source-index.boot3-java17.md",
+      "sha256": "e7eac90a1e5cb5c6b4c280387b9d86a0c9634494141b28e828015a92cf397e5e",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-userinfo/references/source-index.md",
+      "sha256": "199c539e90171fa60d424ac6b6e1910d20ca487c7bb3b1314c509e10935a32b5",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-userinfo/SKILL.md",
+      "sha256": "3ad71968370ee8a1ddf23168b36a3b98921cdf258e679a596a9e9fdb3d36026a",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-validation/agents/openai.yaml",
+      "sha256": "593a8973ea54465cfb6388ae81b5474dd66d3bd796dce43f76fcaa8d7e7e05e7",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-validation/references/source-index.boot2-java8.md",
+      "sha256": "9377ec5ad1a18b5940a4ac5eab40dcede4c01ab306dad4b9f461af9bb5b2019b",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-validation/references/source-index.boot3-java17.md",
+      "sha256": "108105415f2983b9a593cd5fe369b4db24bd8a1f3725d3ff4f0da6617cec378a",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-validation/references/source-index.md",
+      "sha256": "e0ae041081c845e510fc41a02af595db714ec757285dda13b19851dd8473df6e",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-validation/SKILL.md",
+      "sha256": "bd45ce715137a6d6445d90e4e7a506cb4f9de0f81be6f1ebaf58e93aec1e4f15",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-web-controller/agents/openai.yaml",
+      "sha256": "1eba4e9313e2b41cace15abf4fa771fa25aca578922ef1b98a627297facc6b5a",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-web-controller/assets/templates/Controller.java.template",
+      "sha256": "afc63f8fb3d9e08ef255cc89294f4fa369167eb4d43d40231bb4305e9f450d42",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-web-controller/assets/templates/web/dto/CreateRequest.java.template",
+      "sha256": "624f8a21be865d8edeaf1a594dc29bb71492ef9dc271a50e7bf2cbaf15f92a17",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-web-controller/assets/templates/web/dto/PageRequest.java.template",
+      "sha256": "a4d5c346d98bbc61f21ea5e0eb8a710be6b223556b1c9edebe9b9c194fd6823a",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-web-controller/assets/templates/web/dto/Response.java.template",
+      "sha256": "bc2bb6829ca3707b6cb1522011068fb4ac4de586461cf904607e6ff4abb5e107",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-web-controller/assets/templates/web/dto/UpdateRequest.java.template",
+      "sha256": "cd7967d2af7ff2fa2ff9cd7caf4f748ab5544ecf07892279de07881e3f7e91db",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-web-controller/assets/templates/WebConvertor.java.template",
+      "sha256": "b1e9dd1774bac167c2bbca9aa0c02af27d39696321a5da08fd16eeb9fcb2295c",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-web-controller/references/profiles/existing-domain-driven-maven.md",
+      "sha256": "df69aa23102085dbad64e408456299630ecf741a3f2a0a7f334a25ad033f4589",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-web-controller/references/profiles/existing-layered-mvc-maven.md",
+      "sha256": "5fb1718748c1110a98e28d81d2bf1bad23af7f0f584d5c505ecd8b4dab41739d",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-web-controller/references/profiles/layered-mvc-service.md",
+      "sha256": "f736bf9a927fe61fca617322a1a660618e5b8f49acdd464d52c96e35f37edbd8",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-web-controller/references/profiles/mvc-data-analysis-v1.md",
+      "sha256": "1b6b7758da9c3cde7827d78078da03786f36f70e9522cbdeddbcf260fbf99821",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-web-controller/references/profiles/target-domain-model.md",
+      "sha256": "11ba4f8aa5d3211a6747d80527a339ec13b9fba05fd5f8d046e36a730613813b",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-web-controller/references/web-adapter-layer-guide.md",
+      "sha256": "b98a4ed3e6fcc46571c9062286e29b24aa0e07c179844ade185d05b41cfb03fa",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-web-controller/references/web-generation-contract.schema.json",
+      "sha256": "3cd22a2fbeaff88d25476e69be4d5902ea666ad286fe8e5f2956d9f82d709a0c",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-web-controller/scripts/generate_controller.mjs",
+      "sha256": "05778d341778282c5f5052add94aeed44f760379d8de1e5c8e7180175d48fb7c",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-web-controller/scripts/generate_controller.test.mjs",
+      "sha256": "6230e50a28e3e5e7c09b40f2f94658e3dab37c37f4e5bcc79046765b0dc2c35f",
+      "mode": 420
+    },
+    {
+      "ref": ".agents/skills/yss-web-controller/SKILL.md",
+      "sha256": "c0505864105e1cb84fb8381fb53cc16820ce6f5052707696725d272bad29c459",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/alibaba-java-code-style/agents/openai.yaml",
+      "sha256": "5eead6dbb2544abde3ba635f34029eee98e555f8cc7a4e2baa8261feca49a5d3",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/alibaba-java-code-style/references/database-engineering-design.md",
+      "sha256": "613d5327dda595976fbe51941d1ba6e60dcb8687ffde243161349404b43fbfbc",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/alibaba-java-code-style/references/java-programming.md",
+      "sha256": "aa71d0401e31562b3edadf226cbf0d1c319ca2f2354d2d2d7c4edad415db04b7",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/alibaba-java-code-style/references/reliability-test-security.md",
+      "sha256": "3a76a88d1d0ce38886760b97795d8fb6f5716eb2dc8fd4aff9e1b617d8ca84ca",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/alibaba-java-code-style/SKILL.md",
+      "sha256": "015548bb036b8a0b25835683476801c6980792d41599ac07626763163a3dc83c",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/code-review/agents/openai.yaml",
+      "sha256": "51931ae4ecad37873b98374b9ffe215ff888b5ca5387f614f6fc1a9c1419872e",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/code-review/references/candidate-capture.md",
+      "sha256": "e88f535ab04c31fef1485e7a1b2c6b84403634382176edacf22baf1026ed62c9",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/code-review/references/yss-review-standards.md",
+      "sha256": "1ad296f682c2334c952aa8a35e67c474065a8a26bfddf0ba70f0c39c741772ce",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/code-review/SKILL.md",
+      "sha256": "b3cb049380ace0808b15dd79649e2b4730f1140be37e908fde484f17be87c014",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/codebase-design/agents/openai.yaml",
+      "sha256": "edebc9e4fcfe102114012575eaa9600b9b5fd08c311664f389c36e7bc717740f",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/codebase-design/DEEPENING.md",
+      "sha256": "125e6b77413ad2bc7cf7a772bc74336d580a50f9e797db2178ed133d62333d06",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/codebase-design/DESIGN-IT-TWICE.md",
+      "sha256": "09f9948ea7636a4d3704c5ab909762e876c0b39849eefb14d2e03a398cc9c7e7",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/codebase-design/SKILL.md",
+      "sha256": "355b2c2f7a00d2ea37260e50cb28140f8f28f78fe27b0fc28963aa016fb6366c",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/competitive-intelligence/SKILL.md",
+      "sha256": "caee822202f1f85517efcbee5a7cada337112c4fd01d3a77ceeac9edf15d703f",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/domain-modeling/ADR-FORMAT.md",
+      "sha256": "f1f36cd3f8d3b6474ddd5855da4e233bfc4ae1a1c5024909ccf11871819a41b2",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/domain-modeling/agents/openai.yaml",
+      "sha256": "f6bf2aa996c6e6f53fdd0708e18a0d16a56aed8322cca59fedbe3c0d2c75f06b",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/domain-modeling/CONTEXT-FORMAT.md",
+      "sha256": "efc21043f630473bc9a07749f2c34a243fe2b8202752620f394f8ac5ba235896",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/domain-modeling/SKILL.md",
+      "sha256": "6bbfeeaa16b7e90eb298e76190e63f290f5f7a4f5cebc2db753de0448f6780aa",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/grilling/agents/openai.yaml",
+      "sha256": "1411d7df7d99b7e621a1ff8283c8133cc2464be63d064e52d8ce169c6800ee9b",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/grilling/SKILL.md",
+      "sha256": "a521b01e5dd581fd7b0a71f9dcca74c983cdb9503ad1f7ea87ff273a4745530f",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/i-have-adhd/agents/openai.yaml",
+      "sha256": "af6df42b6e1bfa3faaebc20b29f776e502d35f2073e0c89e67cfaef486658632",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/i-have-adhd/LICENSE",
+      "sha256": "8acbb618089b738404f76ac60fca1aaa995d9a87995eddf95f0b777acd7f7d2c",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/i-have-adhd/references/yss-adaptation.md",
+      "sha256": "8be569710d33a7cca1c2a7516a0bd74fd2605fecefa94a435729029a62a33b5e",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/i-have-adhd/SKILL.md",
+      "sha256": "4f04260b77564f14eda73171d392222b727a902223672f7ed6eb767343c3dda0",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/i-have-adhd/tests/verify-integration.mjs",
+      "sha256": "b89554a1049e7034b2061323dd5369c4836109dbac183e87bca24a08413cbcfa",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/implementation-repo-onboarding/references/write-scope.md",
+      "sha256": "120eba47a5fe9a261b3e36ee9dcca83915ae3f1961346c322c2a0323a61999f8",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/implementation-repo-onboarding/SKILL.md",
+      "sha256": "8180b25c30b2f71429c7bf78a9ce7ee08c7d7e423ba75e8c1acd48cdf09389a0",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/lombok/references/annotation-examples.md",
+      "sha256": "6c9f1d79e898cf36dd635e751ed8724d60c60870f4653cf7884ae2f7e26e2b60",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/lombok/SKILL.md",
+      "sha256": "3d69060391369ff3be43ded3db5d4458a99722ee90575f0265d901d300b25e74",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/mapstruct/references/annotation-examples.md",
+      "sha256": "0a5258e40307fd241853484754617c36cae1cacc9b970520e97fd4acfd542d25",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/mapstruct/SKILL.md",
+      "sha256": "0f02ee4604bd5a6f933ca06260d86dee53138f4161a5d8ec3199fee2beddda3f",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/prototype-review/agents/openai.yaml",
+      "sha256": "88dfbf24cca9bc333d430d05442aae112026efba1bc6573f10246f622722212f",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/prototype-review/SKILL.md",
+      "sha256": "4e961fd869799f322b5c05a49223104e6b348b102e816ab67dbd3548ab5b9a27",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/tdd/agents/openai.yaml",
+      "sha256": "ea6f01cf1b8c06a4b0f5b649d74b1b8ce8685e72af1b38d70d877693e092af0b",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/tdd/mocking.md",
+      "sha256": "3ceb807fdf4a47d6a93d4d9a891e5ba6d362a6247bd08adc451feebfc17361ef",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/tdd/SKILL.md",
+      "sha256": "81018a12d3c3b519735c5f1b248063ab7f2e5c4c4bbf9c14a0db3babed315822",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/tdd/tests.md",
+      "sha256": "859f9e592c188fda4fc7277dd180e4ce9c7a2e13f6efe1f6f29eccc9d28c106a",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-application/agents/openai.yaml",
+      "sha256": "223ad66fc237ded5af904f2e60c48d038dd339b0cbb301bda27392e2fc1895b3",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-application/references/application-layer-guide.md",
+      "sha256": "8a491eead7eb9261853ff36bbff0a1f7a2423a25c91928ea97f621731c9521ad",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-application/references/profiles/existing-domain-driven-maven.md",
+      "sha256": "550e549893b5345d7679d1ae8fee00c40a05a5cf1ae72a0ddde315d3bf813ccc",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-application/references/profiles/existing-layered-mvc-maven.md",
+      "sha256": "8903142393facc1523b6dae947df3fc6c306079db05be1134edce9b41ebbd0cd",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-application/references/profiles/layered-mvc-service.md",
+      "sha256": "c2ef0142c11cb4715de689604fa567e4da77d0d3913d39d187a44fa91caecc45",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-application/references/profiles/mvc-data-analysis-v1.md",
+      "sha256": "de3ea7f88adfbecd48ea4d17e4a280f05dafa3413554427724fb774cab1df3e0",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-application/references/profiles/target-domain-model.md",
+      "sha256": "56ce3871ee44a117a7b23d476c02157b5fe3ffcdcfd07efa1968eaf2e7ac2718",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-application/SKILL.md",
+      "sha256": "c9592407f0cc5499d30c683698d3ff3af7b7d68adab97cc544c7aed2e9e87fa2",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-audit-log/agents/openai.yaml",
+      "sha256": "259a30ac42beacbd393e573ffc36d4569b9e930d0840a2801be40c808bba5dae",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-audit-log/assets/AuditLogAspect.java",
+      "sha256": "7024c387f1c5723d7efe674957ec265e15359e7b324ffa651e1f2fcb15fee8e7",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-audit-log/assets/YssAuditLogPrintSubscriberImpl.java",
+      "sha256": "3befab90b1ef41461455798cac0242d1865a21479253b6b5b643c7ba906fc33f",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-audit-log/assets/YssAuditLogSysManagerSubscriberImpl.java",
+      "sha256": "f8c8eb9673bf9e77ad07628e6474e47223e9391a5d5c1792f36ee08d4a4dc198",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-audit-log/assets/YssAuditPublishService.java",
+      "sha256": "056c850b94b13520784e03ba4d472fa990e8733cf9e6e7bba3b3cafd4b3a21ad",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-audit-log/references/README.md",
+      "sha256": "e13712a1fa1d330cd18739e5d3a7b0625a36ccd51dc390efa213dc5213840d45",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-audit-log/references/source-index.boot2-java8.md",
+      "sha256": "b50600f4925e47834d5599e7605fc29107f46e9273d389b0e941b2f37f6fc6e1",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-audit-log/references/source-index.boot3-java17.md",
+      "sha256": "16068395422558f830d9e7c3f2e9b2b4910321b18784f6cb4943477de3ba0fe4",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-audit-log/references/source-index.md",
+      "sha256": "a9fd3b30d53d7cc179adcc8de8ecded270bfd204874298bd20f6e7cd8454ad58",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-audit-log/SKILL.md",
+      "sha256": "98695fbd1cfe1179735240aa4c4cc5a25d49120cad0f9c31c2ec8fcea2d5687d",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-backend-spec-review/references/check-inputs.md",
+      "sha256": "a70c08db9fbd2f5d4f4a540d68f9502cd9a7e44c67415697ca83de927fc27b71",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-backend-spec-review/references/remediation-workflow.md",
+      "sha256": "ba6b4ff11a331661bb872f0dc7ff8d295923dcfb357332722540e03ec1220331",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-backend-spec-review/references/standards-coverage.md",
+      "sha256": "9c6ccfd2a5d20686567c0a2d1984dad89ce3155f67f43816a404035297ca6f8d",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-backend-spec-review/SKILL.md",
+      "sha256": "f6a685c11562d91b4ccd37e245a447082e923ab689aa131613e7a51b9fa24384",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-backend-spec-review/tests/routing.test.mjs",
+      "sha256": "5d20d530d5ad2fcc815abab8ce8d75980e91f50459f800290960d91a7a0124cc",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-cache/agents/openai.yaml",
+      "sha256": "167af8b9d2a44091119f8d47feb5f72e12848155eef42bbe58737918eb5c174b",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-cache/references/annotations.md",
+      "sha256": "989ae6f0d6a727eecafa24938e5f18cb90ea6be3d4bd7da1a3ecb7ed19653073",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-cache/references/architecture.md",
+      "sha256": "ee13569cef3c1372450de8bed70fc8e0624543f7325d283b3d765b739666daf3",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-cache/references/configuration.md",
+      "sha256": "488128b1c5c7deaafef0ce62c2dbd80173fd9c0ae8a2f7bdfd2d3966d184ffc2",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-cache/references/jetcache.md",
+      "sha256": "710151fbf2e824fd04edcb4de663824958ddcdf96244a94795d9cdfb216da32f",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-cache/references/redis-fallback.md",
+      "sha256": "a36193dad5539f8ce565efb992414c2378a83830636befc017c8ab8d841b024e",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-cache/references/redis-topology.md",
+      "sha256": "f985c7362fdf879b648091cec89831eb6c3e63018a6240bdf9f1633795ca994d",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-cache/references/serialization.md",
+      "sha256": "8ec804ae94a09fb6b40eb138c044a27fbb36062b53350acc61c6b0d6b147a7fb",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-cache/references/source-index.boot2-java8.md",
+      "sha256": "becbb07c8ab3e0a703f01188eac9f4295644dba40105cd1b4cd2ee509d8164c0",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-cache/references/source-index.boot3-java17.md",
+      "sha256": "21537db9c5b55b0adb228da09208a8523026d2f49e1fec2906d81e0f284738f8",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-cache/references/source-index.md",
+      "sha256": "9ada6032b1dfd189851d27b8540b21aafe76b19abfb97425cbf67f027fb46b50",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-cache/references/troubleshooting.md",
+      "sha256": "27db3dc5d0b6bdc5b9697232e472be6feb7bb9b6e40cc1ac9e114fcdde5ec15a",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-cache/references/verification.md",
+      "sha256": "25f40a64ce351890dbfc2029c875ff28847af568c7ec28480d2f80580ccff7d9",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-cache/scripts/check-skill-freshness.sh",
+      "sha256": "e867b5b6bec8d0ae3edd5db4ed18b3f4b161a8a3bfd29d501d7fd70104487abe",
+      "mode": 493
+    },
+    {
+      "ref": ".codex/skills/yss-cache/scripts/inspect-cache-usage.sh",
+      "sha256": "ac2455fa637ef7364e3a3f89f450b1db8284d1e40ef85188e83a5a45e81b9aba",
+      "mode": 493
+    },
+    {
+      "ref": ".codex/skills/yss-cache/scripts/verify-cache-component.sh",
+      "sha256": "3823d87208464e696ce4022f4d92cbb116a6466e7a422d756e0bc8ba1b7f3748",
+      "mode": 493
+    },
+    {
+      "ref": ".codex/skills/yss-cache/SKILL.md",
+      "sha256": "28f98b2908ab0526b0df98554faa93b6dc61e731b139dff7dc11bdbdce8ec4b0",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-ddd-scaffold-generator/agents/openai.yaml",
+      "sha256": "8ecbd8ee1d78ae6dd5a6330fd7eb37d4923b92ddfd5e5928bef0491618b99315",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-ddd-scaffold-generator/assets/templates/config/application-local.yml.template",
+      "sha256": "0b142d62b94664f2a9d86e42302cbaa6b4677c701c4bea61fe1aa0c7abc00aed",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-ddd-scaffold-generator/assets/templates/config/application.yml.template",
+      "sha256": "4b91eafc91add9322ce8ebaf4f3df15d7da17e1bb818f9e72a7ba871fb76cb75",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-ddd-scaffold-generator/assets/templates/config/logback-spring.xml.template",
+      "sha256": "fb1547b842b97ccfbb581309f44bbfe2f00f6264d9625b03b03baad3b2ffab63",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-ddd-scaffold-generator/assets/templates/java/architecture-rules-test.java.template",
+      "sha256": "18e899cfd853883ab3a7e21a346f14d002cebdf8573dd36aff0faf8968afb118",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-ddd-scaffold-generator/assets/templates/java/bootstrap-application.java.template",
+      "sha256": "cdf4a7041d72218655c5587a72f57237e4d5291b4d5560eddbd2bdb729ca7b2d",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-ddd-scaffold-generator/assets/templates/pom/adapter-pom.xml.template",
+      "sha256": "50a6be19155bb04f4050be75ec9f784ce8e24fd90a10f67a763545efa5cb393a",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-ddd-scaffold-generator/assets/templates/pom/application-pom.xml.template",
+      "sha256": "9880e50e691b5f6ecf8aee69997a9d2bf31418352f40ef00645496e8c6580246",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-ddd-scaffold-generator/assets/templates/pom/bootstrap-pom.xml.template",
+      "sha256": "040ff009b38eae234f6d6e5e8008419f0f79be66c24c61b4ff89530a095314f1",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-ddd-scaffold-generator/assets/templates/pom/domain-pom.xml.template",
+      "sha256": "cb6c7d094d2cea1be76e42d82099f0e079533f5217555d0b8df31daeaf5b1462",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-ddd-scaffold-generator/assets/templates/pom/infrastructure-pom.xml.template",
+      "sha256": "06f385dd724380c2ea4dd044fc46e615f8e18ef1753bc40e8ac9dcdfc199e948",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-ddd-scaffold-generator/assets/templates/pom/parent-pom.xml.template",
+      "sha256": "e59403c00e7d7a429ad446b3a3532cf6560e00191ee1c459696ab84d7213c425",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-ddd-scaffold-generator/assets/templates/pom/web-pom.xml.template",
+      "sha256": "02da8b29ea2d5422ed26cb014aa12c34029abb5fb76c4ea77dbc81b2aab3a013",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-ddd-scaffold-generator/assets/wrapper/.mvn/jvm.config",
+      "sha256": "198cd51c423a4f9ac70ab48ae0968cf65bc9b2851733eb672afec7316d1d8c8d",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-ddd-scaffold-generator/assets/wrapper/.mvn/maven.config",
+      "sha256": "f588b33688ebc166d6a9c1fba5cc27b9a4aab7798363eb5a480f993040adec27",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-ddd-scaffold-generator/assets/wrapper/.mvn/settings.xml",
+      "sha256": "a2bc72361864fd3ad0f2e7ac8b8677bbf733155ff2e7a145068c2858df5593b7",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-ddd-scaffold-generator/assets/wrapper/.mvn/wrapper/maven-wrapper.jar",
+      "sha256": "0f37e00f4a503f19cfb1b8100b1f251f241cd1981524761bb9454037cb97589d",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-ddd-scaffold-generator/assets/wrapper/.mvn/wrapper/maven-wrapper.properties",
+      "sha256": "7a5e74a3636d21098dce658774bcc50d98e3201288ed6621cc287e30bdd8895f",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-ddd-scaffold-generator/assets/wrapper/.mvn/wrapper/MavenWrapperDownloader.java",
+      "sha256": "6a780367972104169c14ba8e993ddcc2fab4d4fa2b74d4f5db8afdbbf14b6949",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-ddd-scaffold-generator/assets/wrapper/mvnw",
+      "sha256": "1d740ebb29dd6d83d0a58aa405fc8240773f6b48934073a718aecff69ca5e5b8",
+      "mode": 493
+    },
+    {
+      "ref": ".codex/skills/yss-ddd-scaffold-generator/assets/wrapper/mvnw.cmd",
+      "sha256": "6d19e53372cb157e46f62b648832d34ab12f0e6b6b9f5f10b643f1f010bcc4c9",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-ddd-scaffold-generator/references/ARCHITECTURE.md",
+      "sha256": "40075d965b974afc3a22c78192e6bd57c112695baf5828fc605b8c559c2e1255",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-ddd-scaffold-generator/references/command-examples.md",
+      "sha256": "8199932f40dd44066898c38286792af21bd568dc58dfa51350781f81e25b3a5c",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-ddd-scaffold-generator/references/engineering-baseline.md",
+      "sha256": "336df2b644cd01df11114626e450044fb353d4ae1226a60d1f825f83de7002a0",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-ddd-scaffold-generator/references/generator-maintenance.md",
+      "sha256": "c7693739f7e6136973373153fc3cc3a082c8114309a4c345273e08d5636f0cc5",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-ddd-scaffold-generator/references/layer-skill-routing.md",
+      "sha256": "3fd69baff3c046d02af5aabffc83e40eb1100845337c0eb79f1b29c291e316ba",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-ddd-scaffold-generator/references/USAGE_EXAMPLES.md",
+      "sha256": "bd6cd8b50870465889d158756b67b7a2e3893fac9598360e31c9440401361796",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-ddd-scaffold-generator/scripts/first-slice-compatibility.test.mjs",
+      "sha256": "33e855e9c4f556fef0f0b8a2359b1d6bb291feefe71a7b424aa65267bff5ea72",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-ddd-scaffold-generator/scripts/first-slice-verification.test.mjs",
+      "sha256": "a863d95e9703aa96e866138cac2223e8e0a184694addd53dc2bc9f2f69170e75",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-ddd-scaffold-generator/scripts/generate_and_verify_scaffold.mjs",
+      "sha256": "facb6e4cffc7c62e5d711aa6035a5e9086efee0f54f0dc2bd29ef15b63a742ac",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-ddd-scaffold-generator/scripts/generate_scaffold.mjs",
+      "sha256": "551fd70c16c60cba4a4b66988045c9b229eade6f281f9ad2fa86c879e7d16a64",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-ddd-scaffold-generator/scripts/run_first_slice_verification.mjs",
+      "sha256": "08ca6d4b7ff3bd2806f0222009dd49d9c1a46ea028a4ae66cb0710274937bafa",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-ddd-scaffold-generator/scripts/run_scaffold_verification.mjs",
+      "sha256": "af636ab3e017a3f4824810845e4e6751a07287342bb1ec6b22317ef2c31570ed",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-ddd-scaffold-generator/scripts/scaffold-generator.test.mjs",
+      "sha256": "f558c24ff2e5007072a5b1992b59f7ce590eed8c84bf63ba244811140bb0a3c1",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-ddd-scaffold-generator/SKILL.md",
+      "sha256": "405e4dcaf81e8654d710a2350f8f4cf2bddfa79ab7e517a2c5a8cb5973fe5f72",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-design-system/agents/openai.yaml",
+      "sha256": "7d6ced6aef8a09057898a20afeb4ea2b535d84d300311da21dd5598f5479bc79",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-design-system/references/data-quality-theme.md",
+      "sha256": "d736e1fd7926250095651ac2bf17ff241ae6b6a7d365300db0f18774e9d46c1e",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-design-system/references/design-qa-theme.md",
+      "sha256": "6b21cd920d09df65bf61a9de438c60aa7b8611a4d501967efa28c53b7fb03d0b",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-design-system/references/design-system.md",
+      "sha256": "ef8a93f126f57d3707f988d6c82efcb25bcb39cba03e7864b5f73f979c32269b",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-design-system/scripts/validate-frontmatter.mjs",
+      "sha256": "483eb1aebd4a761748280cf1c87d078162a4d8760b518b3fceeaa297629d2d71",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-design-system/scripts/validate-frontmatter.test.mjs",
+      "sha256": "d34739075cc5d436ce671c1587189bdf2ddda1f419cfee0733ea2b6af222abfc",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-design-system/SKILL.md",
+      "sha256": "3e39cd4c94bc7828368c579f2e8262c044328e9885d7ad7a01ce53425fccdced",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-distributed-id/agents/openai.yaml",
+      "sha256": "de75689ef5277d8a8dbe877babd461f9c44aef84b330be4d9b87fbb12b504b4b",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-distributed-id/references/README.md",
+      "sha256": "9f57fa9788ee1abbb8f4c8e899538f6119d74636438860b2a97f1d171600c0b2",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-distributed-id/references/source-index.boot2-java8.md",
+      "sha256": "99dd555e2e5870fdc8cdc6f7b96abd179afbac6d285d65db28a8c525b55fe3f6",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-distributed-id/references/source-index.boot3-java17.md",
+      "sha256": "1399ecdab783d7fe71a31d9fe99bb7c0232a9ff67a43158247e126fac2074bd3",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-distributed-id/references/source-index.md",
+      "sha256": "8942c2f2a9bcca9e6fd327e896dae14cc199c04f14627a35be1e451725e7672f",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-distributed-id/SKILL.md",
+      "sha256": "c390c8674b97240fbaac557a735506183207dec3d13c0ba82b8490e285b2eac9",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-domain/agents/openai.yaml",
+      "sha256": "4dfc8e15a3edd3ecae770d874c2390a4abc1e2f931ca81eece67d11406109c33",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-domain/references/domain-layer-guide.md",
+      "sha256": "1083a44e2d93036c8e60d14a620c720062fcc88e2e25c47a7229201ebefc795f",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-domain/references/existing-project.md",
+      "sha256": "78bf4000e64d2bcd54d2bba1ffcb954751855ce0ba8b7cf3ca45746046c21c79",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-domain/SKILL.md",
+      "sha256": "1740028bd38b554142eceedb106a182aef1185ffa36579d4baf3b0578b44578e",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-dto/agents/openai.yaml",
+      "sha256": "15a86272de16827623e0e77d100edb20e5631c3e414ab11cadc7cb195f323b00",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-dto/assets/CommandDTO.java",
+      "sha256": "7a60b0034f15a3879ff6348d66648deb6d3383dcb3ff72d4273f88e2279227a5",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-dto/assets/PageQuery.java",
+      "sha256": "cd10750339a7b9ff055f2ac004889113bd592b6da3b12dd8bc76828667cf128f",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-dto/assets/QueryDTO.java",
+      "sha256": "5b16982feb8696dca989bb5fd877229042cfdff588a73acab31f0f1ad0157b2c",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-dto/assets/Result.java",
+      "sha256": "9ae6b91465152a65eed91545f3afc5acb4a54ad5f9b0fbc8f273d32590fd615f",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-dto/references/openapi-wire-profile.yaml",
+      "sha256": "a2bfe4296f2e2e1196f34eb484f795162ab327756078de99b8f540431151b78b",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-dto/references/README.md",
+      "sha256": "7ffaca82842c19759c0cbd2d43525595130166bc016541742c77a61a70576f1f",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-dto/references/source-index.boot2-java8.md",
+      "sha256": "bc36a0e05c64424cf2cfd36aac17cd414d4910b594b94c9942252dfb44901145",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-dto/references/source-index.boot3-java17.md",
+      "sha256": "95d8a959ceb56df8cfe85d093f7b71e710450c4194d591d7fdfae664ede98ce8",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-dto/references/source-index.md",
+      "sha256": "9b4602d6a7b4152e0aaac97ca3a197c2679166129ef238163b4f599ace3be5a8",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-dto/references/wire-validation-checklist.md",
+      "sha256": "4b0a3833ad8816fad88d4b3d71fad949e9dc4dd1ac2d633448d6d94fc3462957",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-dto/SKILL.md",
+      "sha256": "a0d08e98c36438108e42bcc3bcad515418b8d2be3289a49262b92d87c7a2c7cf",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-excel-mvc/agents/openai.yaml",
+      "sha256": "30338140e21ce0af70e821597533d2c2230bb085575f13f485ce7b2666dc9ce5",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-excel-mvc/assets/ExcelDynamicData.java",
+      "sha256": "15c6aefc8a17ca06aa4b9fac5ff6e0a1688c93da8fc12be60a89c5f577c5f0f9",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-excel-mvc/assets/RequestExcel.java",
+      "sha256": "8b3a9880352ae6efbd737748e4f9ec352e614b98b689810e9d2b1f43fdaef0a8",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-excel-mvc/assets/RequestFastExcelArgumentResolver.java",
+      "sha256": "73d6213b5ac70a89e53cd1629cdfee72b08b894fbdb01cc0eee05bb184ef6595",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-excel-mvc/assets/ResponseExcel.java",
+      "sha256": "7afc2c69bf8691144da1d59fd8c42f9ba99329eecb5ce768a8902cee48248fbd",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-excel-mvc/assets/ResponseFastExcelReturnValueHandler.java",
+      "sha256": "72659ae5cfaf9590e9839980647d64cf784b9be15f553681920c13d94123d023",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-excel-mvc/references/README.md",
+      "sha256": "6a11b3a8bdc6e9b8bef3754d55fbbf8fc60c6e115c590065d55d356403ce7dd4",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-excel-mvc/references/source-index.boot2-java8.md",
+      "sha256": "8764771a1f6cee7def275961b15dc52797d763dca826e946cbe2e3f491602cd6",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-excel-mvc/references/source-index.boot3-java17.md",
+      "sha256": "2b26f6efcb6926124f6a2d652f1667f443eec72df68a7c0b98971e63f73c9590",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-excel-mvc/references/source-index.md",
+      "sha256": "f957295230ce9c39ecde47a891dfbf2a4bd3788318208b7fb44a92931e83f4d9",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-excel-mvc/SKILL.md",
+      "sha256": "55ea6bdfb53cb8b6498b785329f89d9ae4e5a24a36b5f335fa5cdf20ca17c97d",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-exception/agents/openai.yaml",
+      "sha256": "fc2092e945762aff8d05fea253ea12d5cff725f77fcf61348ba852c67c21fc1b",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-exception/references/source-index.boot2-java8.md",
+      "sha256": "f0f6a0b0efa373d38cead169776c942129a25cfc24543e56a4305672001b5ea0",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-exception/references/source-index.boot3-java17.md",
+      "sha256": "d81655170b09b0f04890b51f572f62d44e4376b5867ff71b888b920986fc86d2",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-exception/references/source-index.md",
+      "sha256": "e3b85e2bc243ff91082118d181727e0ba5ce17a6e3ad7e5a59dadac07c75c19c",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-exception/SKILL.md",
+      "sha256": "f0acc11ee0740ea6203664f7783fed4deea7fbae66e6f013d36df1d506848bd8",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-implementation-contract-compiler/agents/openai.yaml",
+      "sha256": "522a9c250b9825768b1e1c561b6aa49c1b831bfcfd817445679f649686fa407b",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-implementation-contract-compiler/references/boundaries.md",
+      "sha256": "cb3d67876bed81ab7d4675b1d6a50a1b9f7b06fe853ea15bb5c0c6256e1b5d48",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml",
+      "sha256": "9f99e2e1105f68eb362ab69d609176ac20d516bc0c7eca86848ae3c3d132c88e",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-implementation-contract-compiler/references/slice-implementation-contract-v2.md",
+      "sha256": "adacb44dc80e6ea7d4982d13fd0b4ba3a9984e5010ebc846e6422a8d69fbe9e0",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-implementation-contract-compiler/references/slice-implementation-contract.md",
+      "sha256": "f94f83e6381cd282b5e3292c6b1df638248fd890bf0e1a2a55f354fa0d775286",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-implementation-contract-compiler/references/strategic-handoff-routing.md",
+      "sha256": "da322bf9920892eced5ce3d4ee00c971368de3e3b524133c7f1d90132a409f2a",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-implementation-contract-compiler/references/yss-skill-execution-result.md",
+      "sha256": "ae45bf5c781492c6969fa8afc87707d158faf3e85430611173896634d2cac9ba",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-implementation-contract-compiler/SKILL.md",
+      "sha256": "d2d0c73b0b652488f4ad5f1ee993329485aac8f90684170a2e5954626281dc35",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-implementation-contract-compiler/tests/backend-profiles.test.mjs",
+      "sha256": "bce593561c61c424bb65877a4f1df25429ab5fed7de9579968911b7eb6c7c242",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-implementation-contract-compiler/tests/compiler-scenarios.test.mjs",
+      "sha256": "b7d937bc2c8a9e09364c32fad64a1cb2042999324289acd55aaa47933290e09e",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-layered-mvc-scaffold-generator/agents/openai.yaml",
+      "sha256": "b0565c810f097dd73e8cbdb188efc87d83b87a737d4f0008ff2e54ff7d4343bf",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-layered-mvc-scaffold-generator/assets/templates/architecture-rules-test.java.template",
+      "sha256": "e1967be34691e38703af9570f3c7e955405219aca05bdbed8f0a059df82c3b2a",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-layered-mvc-scaffold-generator/references/architecture.md",
+      "sha256": "ff7d595bf53e18de50a5735a6e80716ddf833c6d0fe4377c1f6cf38c8928fadb",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-layered-mvc-scaffold-generator/scripts/data-analysis-profile.mjs",
+      "sha256": "6ef6d97084c79a977af1476febd0905a0c691fca0e588a7dde88147c94898fca",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-layered-mvc-scaffold-generator/scripts/generate_and_verify_scaffold.mjs",
+      "sha256": "5c2ab0bb26de6f23e000bd1f429f12e3e8c9128d604e0a4ab0da672283f560cc",
+      "mode": 493
+    },
+    {
+      "ref": ".codex/skills/yss-layered-mvc-scaffold-generator/scripts/generate_scaffold.mjs",
+      "sha256": "299d4323ebb6d234aac60c723f944a2a3b70e4a4e703a042a42a47bf03156b9b",
+      "mode": 493
+    },
+    {
+      "ref": ".codex/skills/yss-layered-mvc-scaffold-generator/scripts/run_scaffold_verification.mjs",
+      "sha256": "548d8b5c9bfa0b7e09420ba23d6a3025b98c5fac334006bbbed4385bb930675e",
+      "mode": 493
+    },
+    {
+      "ref": ".codex/skills/yss-layered-mvc-scaffold-generator/scripts/scaffold-generator.test.mjs",
+      "sha256": "2ddcb1796c841cfedfa676e05727dd665d0fe905797c0730afe9f12664ab30f2",
+      "mode": 493
+    },
+    {
+      "ref": ".codex/skills/yss-layered-mvc-scaffold-generator/SKILL.md",
+      "sha256": "a50dd8e17dbbdfa7a6e42c9313113dd87a4a9e3585a5f6aeca0b42c7afe5a873",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-layered-mvc-scaffold-generator/tests/scaffold-generator.test.mjs",
+      "sha256": "4ada0465e7213a3693bf904a8f4e2ca8da8194c16dc6a556be2d98144237c399",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-mybatis/agents/openai.yaml",
+      "sha256": "9cb246641382d733e80642a8a65208903ff30dc05189188534a83a1ceed308b7",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-mybatis/references/source-index.boot2-java8.md",
+      "sha256": "18d26437420e6e39d919c1b2e19b9060ef34008dbc73379824e80271870eee83",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-mybatis/references/source-index.boot3-java17.md",
+      "sha256": "2a5f0c3e2ae8433a598e46b186920a19f9cfb3a985452a4fc07f66f338fc4925",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-mybatis/references/source-index.md",
+      "sha256": "bdcf2e6005d12474263ba93f63d093ade31f77f0c0514c590cdbe261b2aea605",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-mybatis/SKILL.md",
+      "sha256": "cd4374c009707fff7c50827f744edbee28db3ea4e7a0f22d750ea0ab4eea5600",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-openapi-draft-review/SKILL.md",
+      "sha256": "3223b9aa6c569d7eccb881996e9edb26a18aa2d3b58a6918488641bdc0d13883",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-openapi-governance/agents/openai.yaml",
+      "sha256": "d9cda54ec0711d6f287a66d5031c8fb1cb25176a6095395f2d587ae84c365e1c",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-openapi-governance/references/governance-output.md",
+      "sha256": "7aea7bbc76a2cca2d25cd413ad5d050ee82e0878dd1a02df93815c829cec0cdd",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-openapi-governance/SKILL.md",
+      "sha256": "f02fbd64bfe19f49cd78a43f1bec7f768ec144eef83665adc6e64782b64d18a9",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-product-lifecycle/agents/openai.yaml",
+      "sha256": "65e4357d39f12b384e9f1029046e012ba6b80441225af44eeb0c5851ed7e19ba",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-product-lifecycle/references/artifact-dependencies.md",
+      "sha256": "6d8607a53e4138b5a3f180c9ba2c62c3b2018d16bc134af1f2ae5c2f66ab3975",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-product-lifecycle/references/matt-yss-adapter.md",
+      "sha256": "193800f57b2898d5ac8910fee33fe6aa1ad2d76aa6754d674ce251da03bffde7",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-product-lifecycle/references/orchestration-contract.yaml",
+      "sha256": "cdee384ab5dafa68a31005dec941096d64dd60a64437a1c1d57d7cc6f92ced5a",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-product-lifecycle/references/orchestration.md",
+      "sha256": "f5a40bdd5c41bf017ddc70b9ab0e1a86a81b6612daa3282a0632b270471ccce7",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-product-lifecycle/references/request-triage-scenarios.yaml",
+      "sha256": "aa5039f61a8f26b23b4eac559a57f181f8dddc0bace3e4a1f2e4b023205675d6",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-product-lifecycle/references/request-triage.md",
+      "sha256": "63f742c01cd140981dd8fbaa706be24cc37207616dde4e5e97ccf4f2cc267b82",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-product-lifecycle/references/state-model.md",
+      "sha256": "6a8a0e8e1f3a1e00ed6e19cb6b022f80309912bfa639f51ec60f1fae2d76cc8d",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-product-lifecycle/references/user-decisions.md",
+      "sha256": "4b54c3c28b15067b172fa89f23ddebd77443d3ff5886bcb9db4f1789830db4e4",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-product-lifecycle/SKILL.md",
+      "sha256": "98cb44955a114b7aa9292ce706eac07d788cca603a94a16335a1a19b6cae97b3",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-prototype-stage/assets/antd-authoring/package.json",
+      "sha256": "e8fcab62721c4bcc66fd000ab5ede3423d3bd528cea31586725b554274167a26",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-prototype-stage/assets/antd-authoring/pnpm-lock.yaml",
+      "sha256": "098dade90cac0884063746e34942c16f6fc7064f0cd5a7115ef96161a07c69f1",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-prototype-stage/assets/antd-authoring/workbench.jsx",
+      "sha256": "efbefd5255d5586e1f2d107f0302c96b6514f4d34bda971b5236f9886b00b4e1",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-prototype-stage/assets/native-workbench/app.js",
+      "sha256": "60624679edf39d586d7f456193f8d6945d51b972d25551c0020cb328e6e7dbf2",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-prototype-stage/assets/native-workbench/index.html",
+      "sha256": "370543ca91cd8e660710fe5cd73cf378dab40ba56c061e214a0a4c28dca5808f",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-prototype-stage/assets/native-workbench/styles.css",
+      "sha256": "9e4991b64b771ae4d7256854bc94d84680eafe4bdc911bd4127254cf5cbbf800",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-prototype-stage/assets/offline-html/app.js",
+      "sha256": "fff5efc3a882269202d1acf12ec81efa96752e957b5a830ce81fdbb858c1881a",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-prototype-stage/assets/offline-html/index.html",
+      "sha256": "86dffc0e5f59ceb384e60a6f0de9860c7fc04d7e065c4ca217774519c49295f9",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-prototype-stage/assets/offline-html/scenarios.js",
+      "sha256": "ddd320a8813e31f2471572e7cfa9cc5eb8b5be8388fe70ab4309c4c32f94a955",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-prototype-stage/assets/offline-html/styles.css",
+      "sha256": "2d4a5745b86e9464907d8f11ef236d0c21367dc301ce8ee18d3b55335f61c30f",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-prototype-stage/references/antd-component-catalog.json",
+      "sha256": "b58364eb40914d323b156d6395d96af5c389bb24dee0690fd978a04a30a5b0f9",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-prototype-stage/references/antd-integration.md",
+      "sha256": "1a88686e7048f5ddccc43030d028e379c2770bafc138fc078aa69e57bce4f833",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-prototype-stage/references/existing-ui-entry.md",
+      "sha256": "c005d4691096056de09393152f74c0f98ad11b5ab671cca13e4d7c3667efeb4b",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-prototype-stage/references/html-prototype-practices.md",
+      "sha256": "122d8749622e2b2cdc712ea4772634177aff1eb0203723be6e08c868b6bf1ab5",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-prototype-stage/references/product-design-adapter.md",
+      "sha256": "d6ccd427b8b34c1eafde46ef24e5fdacb0146ea0d4d25ce8f26bbcac7e482a5e",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-prototype-stage/references/prototype-profile-routing.md",
+      "sha256": "729010e683f532a9a626e1fdb70ae0715db3acd39cbf14c158689fa424a88f41",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-prototype-stage/scripts/build-antd-prototype.mjs",
+      "sha256": "7ff4d07af5d58c59ed02ddcd37549792632aab329613e5fe1b0c437a917e49f1",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-prototype-stage/scripts/collect-antd-reference.mjs",
+      "sha256": "937efa58b1783ac13d5c0857817ca7b4f9d42c4b08cb54b9d88ecd9331e34257",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-prototype-stage/scripts/offline-html.mjs",
+      "sha256": "664f02de70ac0e8ded76bbb64a364f9a9f0e8b693041026746244c360fa1a9b3",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-prototype-stage/scripts/prototype-contract.mjs",
+      "sha256": "642109cfee56e7e5c4b6581f97e748105f68d15df9d91a4684ff328a388bab19",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs",
+      "sha256": "bbf144458fb3fb094128eb2ecaaee56ab5d437dffa8e4fd4f7cf70a631559a07",
+      "mode": 493
+    },
+    {
+      "ref": ".codex/skills/yss-prototype-stage/SKILL.md",
+      "sha256": "31b073e79426dfde106f2b0b560680d7af35a45971cf1e23c7ecd156b15c403d",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-prototype-stage/tests/antd-reference.test.mjs",
+      "sha256": "8e0a5f7d2cee4d6b62732f85ff06383a11e9a67ee95eb0d38df2f27a031ab3bb",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-prototype-stage/tests/browser-smoke.mjs",
+      "sha256": "7fb0643f4f432e2325d9bfe8e364c363c09a1f00a813ad29640c55e9d4735049",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-prototype-stage/tests/run-scenarios.mjs",
+      "sha256": "2829e4d254b99d3c6d2119d70f23b9f8412f6974f8618055449c685b38c5ec84",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-prototype-stage/tests/workbench-smoke.mjs",
+      "sha256": "048e5533ce886b8dfe44b8818ac7d7dbe23a449bb8cbf6b97a09709649ea5dd4",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-repository/agents/openai.yaml",
+      "sha256": "9ba11c8c53b6d6056abaf91f6a7bf000339325df329c9b9487fac9bc293081c4",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-repository/references/profiles/existing-domain-driven-maven.md",
+      "sha256": "12b984bda63eda097a450f0f65266f59c95818fb0b9f001dc8132c15a73d67ad",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-repository/references/profiles/existing-layered-mvc-maven.md",
+      "sha256": "c1cec2b02cba600bf4bf075f8c0ec69e7034713e1f0636cbee0819b004aabe8d",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-repository/references/profiles/layered-mvc-service.md",
+      "sha256": "8ecdbfc0103f65723911b3a8ca9c07e672cb2c3f86fa7909c3e5991e96e020e0",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-repository/references/profiles/mvc-data-analysis-v1.md",
+      "sha256": "039bc55f07efbd722ec8db24b020f8a4e418107acf683ca77f6ecd632d399f7e",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-repository/references/profiles/target-domain-model.md",
+      "sha256": "1aa5d0a2d2a93aae40d4e798521843b315485863a42734d8cd290099c31047f1",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-repository/SKILL.md",
+      "sha256": "90b5dd5c05a48e46d50619f1f1d9b30fec7cfb22909672e95f5fc5a8abff1d4e",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-repository/tests/profile-routing.test.mjs",
+      "sha256": "6a5de44e674814967313818b2ca0616b2e6626cea0bad489e031a756f19b4c14",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-research/agents/openai.yaml",
+      "sha256": "8ecd0ce015596948d53dd0201a2f68e9d3463f8e5620526360cf7b0096fb50bc",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-research/assets/evidence-template.yaml",
+      "sha256": "24167045ea501db6e2eab7b7248c38fb42daa30402581d0c55a6a5899dc49b20",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-research/assets/research-brief-template.md",
+      "sha256": "5ab5ca8ca63158290977548c2ad8ff610564dc39210009b5665c058ef5cc6be7",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-research/references/evidence-contract.md",
+      "sha256": "accf660bda44cec320aca3d7ea769c8c724ac7adaf543879035d56a030cb9fa7",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-research/scripts/validate-research-package.mjs",
+      "sha256": "5e4e437d54e67cce9dd380974744605bd149c71939c5f01e3ea4719c79911d0f",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-research/SKILL.md",
+      "sha256": "3102bfd433213e8a2c59b64bc8bb2ef56dd23c51d484c759b1c106e5f169c8b2",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-research/tests/run-scenarios.mjs",
+      "sha256": "db4285f37820927b626b875a11650d6292783a70553c5dbf3ae4205f162bcc56",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-resilience4j/agents/openai.yaml",
+      "sha256": "814f14085f2fc62d7acaa6b347b3977d6622ff403aadb912faa827446370f1c5",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-resilience4j/references/source-index.boot2-java8.md",
+      "sha256": "dc6faef24dd1c6c1112bb96bcf045e172d6126860f04c91bd7b3d90ac64fde92",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-resilience4j/references/source-index.boot3-java17.md",
+      "sha256": "20cdb121a47f8fe46ec2e6c5a8a623421665a98045caad4d2d66a48e0a1a99e2",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-resilience4j/references/source-index.md",
+      "sha256": "58c49c030f7938118c35d32baee2d8a119885dc489fe5991f1d77c022082c9b5",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-resilience4j/SKILL.md",
+      "sha256": "dbc620e97951b40b0a025978cd78736c032d83404d42c2934ee643637ee981b4",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-security-algorithm/agents/openai.yaml",
+      "sha256": "a32a74c55bdb5855cf2526a4df8912dcfab7064477f9927d60f64099f3fd3d37",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-security-algorithm/references/source-index.boot2-java8.md",
+      "sha256": "9a88f4eb536130a72dd93464de5a2ea593985bf4d662db0e79c89e76a5406242",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-security-algorithm/references/source-index.boot3-java17.md",
+      "sha256": "b58cff79e3367482bdf0374217a6f40957983459472d3f533261812260da5a08",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-security-algorithm/references/source-index.md",
+      "sha256": "a9f56af271a55d72e412db6994a041098cd0e25b4e89c732a2b1c6903b7631ed",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-security-algorithm/SKILL.md",
+      "sha256": "07bc87c0ef57857425a14b3912dca921642179ac5599565fe087ca4ca8367e8c",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-skill-source-index-refresh/agents/openai.yaml",
+      "sha256": "4762781d1ecc2086498cca3aa18294a796ef1f3e9fec8c752bac1e1cdbb06e83",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-skill-source-index-refresh/references/backend-component-platform-compatibility.md",
+      "sha256": "271115af2e193d27fead259e35770507ecca338cc2f8a006e8f43ee13a35655d",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-skill-source-index-refresh/references/source-location.md",
+      "sha256": "79d4ce8754d94c08e44aac4b4aa8ee6c1a99a4e79e630d81268b3cc6c110b91e",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-skill-source-index-refresh/references/source-map-config.md",
+      "sha256": "665171beb1868d4c4650e20ca463a58e8a95f598a9ec932e3c4f8541d78dae7a",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-skill-source-index-refresh/scripts/check-backend-skill-source-index.mjs",
+      "sha256": "df18eeefd72927e68055b277a84daa3bd90152070a4ab55693f955c029496550",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-skill-source-index-refresh/scripts/refresh-yss-skill-index.mjs",
+      "sha256": "e91a6c4eaf4d29f232bb0e97cb7c34a827af116533efdb2169ba621ba5178860",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-skill-source-index-refresh/scripts/refresh-yss-skill-index.test.mjs",
+      "sha256": "09ff7e497b21c7a46a36c9b2f8102b4ca95e18f92bdcf214f903968d29b731b1",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-skill-source-index-refresh/SKILL.md",
+      "sha256": "aa18785b1b3b8f6658c54d5a452eb9468633e13e1417a2604386c4a360441a72",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-stage-decision/references/domain-strategy-contract.md",
+      "sha256": "8a01ddc9678cc67d6e69043752e3e6124688bd110131177fb9c5b4a686dfeac4",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-stage-decision/references/domain-strategy-v2.schema.json",
+      "sha256": "7c1f98c7211a102c5bdaae45ade3b273e943ff0e61aff4da284a1ef215e2d806",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-stage-decision/references/domain-strategy-v3.schema.json",
+      "sha256": "28e20c194a444cd217059793e4b86efe6a79c7a5d1474008bc2fdea317bb8496",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-stage-decision/references/domain-strategy.schema.json",
+      "sha256": "acc4b23b6c244dd0836036e92a7008506dac43d44ea2d57d2b6016485d843d3e",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-stage-decision/references/stage-decision-package-contract.md",
+      "sha256": "ce8cd907b2e3699b6bd9d60b9158e35deec67b1ba51aa6b558acf2c8cb53a074",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-stage-decision/references/stage-decision-package-v2.schema.json",
+      "sha256": "6d80bc6eabf13a1339c25617f8fbca7c9a2d0fee46a5da1e275a1c9a7790bdae",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-stage-decision/references/stage-decision-package-v3.schema.json",
+      "sha256": "49076623d5338dc6110cd3c793558034297b9d8085ab0c24c9721d8d805ee2f1",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-stage-decision/references/stage-decision-package.schema.json",
+      "sha256": "7517836960657ea050c219b41310646b72c259500a3174a5e44699227ddd733b",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-stage-decision/references/strategic-handoff-routing.md",
+      "sha256": "f86427eca4a0df495a9350d97fd4b2d5eeb5424dcf408bd0ed26f29690fff4e5",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-stage-decision/references/validation-rules.md",
+      "sha256": "3f33535ebca2eecb8083eaa4db8561839392197eeeedc6a0923afa911731a48e",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-stage-decision/scripts/migrate-context-references.mjs",
+      "sha256": "7c710d287ebc1f2d60b05651cd8fdc58fcb1afc0627e756d08cd09bffee10218",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-stage-decision/scripts/migrate-contract-v3.mjs",
+      "sha256": "e03d864a6f37062b8ddbdcd20419e26d13f06cc989c3e3ecc8c0c0f55ca336af",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-stage-decision/scripts/validate-domain-strategy.mjs",
+      "sha256": "85e226192e0a1c4ddc4182f61cd78b56c46c1e440d3ff83b83e1fd1cbdd9ae31",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-stage-decision/scripts/validate-stage-decision-package.mjs",
+      "sha256": "cbad2c83f6a08c5e1f793e6da9546613d478974abb325f06353a73a64d651e31",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-stage-decision/SKILL.md",
+      "sha256": "ea3d33534ce8489fc16f89f604c9b0e867051b74455b38497797e35164283244",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-stage-decision/tests/fixtures/domain-strategy-approval.yaml",
+      "sha256": "c0bb521714370b7ac9419dc6e90f7c38ce7a43853608b7498c9722fa6a3359af",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-stage-decision/tests/fixtures/invalid-direction.yaml",
+      "sha256": "988d0cdf9cabbd65032c28e70fc9041c812f8d2fec26f81e5c868e5fd0bd9ffe",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-stage-decision/tests/fixtures/invalid-stage-decision-blocker.yaml",
+      "sha256": "bb41b61dfc9714cd16aa4fb4393fa42dafc7c38f3c1e77f6b08eef5a3c6b082f",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-stage-decision/tests/fixtures/stage-decision-approval.yaml",
+      "sha256": "d322bdf6f448674a2652e94242a3bf35c699d119eef13032efd3e2b74e94e9e7",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-stage-decision/tests/fixtures/valid-stage-decision-package.yaml",
+      "sha256": "9bfb57a7fbd21ff2a5b67b261d22f99dc37c3b613b769698c269b83285b5d243",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-stage-decision/tests/fixtures/valid-supplier-domain.yaml",
+      "sha256": "45a5a948dec305c9c1dfbf33a1e7cb7e6bc690d50b03e165b19b723479ccdaf6",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-stage-decision/tests/run-scenarios.mjs",
+      "sha256": "a04ce5bcc7a57893f8b122447f7048ddd3e92ddd940a73a136efa430e60a24eb",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-tactical-design/agents/openai.yaml",
+      "sha256": "5040a9ee59fc870ee3ddecb54d015fe51cd63f1ac8665e78f7f2eb80b66dbcf6",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-tactical-design/references/output-template.md",
+      "sha256": "e7f90a84de5334e5cc84a0d48b18967544e233cc1fd90153369e22b6c6d1f03e",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-tactical-design/references/strategic-handoff-routing.md",
+      "sha256": "f11539b9f4690db41cb436d1274e742f1bf238aaaca274f0549ab4acf0bf4bb3",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-tactical-design/references/tactical-design-contract.md",
+      "sha256": "dbacc99af2a6959dc9925173dae766967f519fbda5f4bc64c82340455a98ac64",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-tactical-design/references/tactical-design.schema.json",
+      "sha256": "7a110d6b9510a4e40b4b0c7796e8b21589b8c5f9ffc7b8a3b7eb3098f0deae4e",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-tactical-design/references/validation-rules.md",
+      "sha256": "3a535f8701663b57d1615a90b22578d3eef673dad59e265ab8561683c917edcc",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-tactical-design/scripts/validate-tactical-design.mjs",
+      "sha256": "fe43c921a7d10b88ee9a389fcb30becfc11744050d0ceb760f1ab0e292f917a3",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-tactical-design/SKILL.md",
+      "sha256": "4edad91279f9ea6fa8e548e9b52b67aaa1c243b93f0b8e26424e4898b43c184d",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-tactical-design/tests/fixtures/invalid-api-leaks-aggregate.yaml",
+      "sha256": "88f87a1b6410842b841b5c7c0487fbf5516c49365aeb9e5685500ba0607510d1",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-tactical-design/tests/fixtures/invalid-missing-consistency-policy.yaml",
+      "sha256": "c6b9326896c55467ec91a3d3b011e93b5825b74c9dc2017b859fc5b8ce1b06dc",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-tactical-design/tests/fixtures/invalid-missing-invariant.yaml",
+      "sha256": "f1762b51e32a82481da972f547087f34a56c876bc1bf9e42adaf0ad927148d61",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-tactical-design/tests/fixtures/invalid-stale-upstream-ref.yaml",
+      "sha256": "ed904feebcdd7ab4cf9e857c592f631a3eb3c83efa4f8754cad69122c04eea1e",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-tactical-design/tests/fixtures/invalid-strategic-as-tactical.yaml",
+      "sha256": "9604bba4d8144cc1de8d0f0e6d04693fbd49652e4f5c138feea4367dea65a759",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-tactical-design/tests/fixtures/valid-tactical-design.yaml",
+      "sha256": "a7052250b0ee76f760a310d7359824c9635b785f66f454dca03e818b34815f40",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-tactical-design/tests/run-scenarios.mjs",
+      "sha256": "2bcd9fdf120a65a7c2ad2aa34e949fdd3bac4e0c838ec1a114d2316891244235",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-technical-design/agents/openai.yaml",
+      "sha256": "72c7f567e53930b2109ad75fdf916404a791f6c6d9f8994151f0e421a5f9d7ed",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-technical-design/references/engineering-design.schema.json",
+      "sha256": "e12bc42d280b1e15b470d027f71c561812cddf89a1c2fdeff5e9b76f3e3dc18d",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-technical-design/references/mvc-design.schema.json",
+      "sha256": "d13136b47cc62747c4c835a2744f38774eec3f3a561f7d6542917ee8f0f76958",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-technical-design/references/technical-design-common.schema.json",
+      "sha256": "03add15aa624f7a8fa22cc7cfc3ccd4853d12f2f2b2d1a0daa95514c4343fffe",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-technical-design/references/technical-design-contract.md",
+      "sha256": "5e6a787a6502a5b3d074a43cdf55a69330587e13af39f1ed0894afd30c9425d1",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-technical-design/references/technical-design.schema.json",
+      "sha256": "2db3442c4d923a8e3746398534bfa034a850ae93b57145f7ba4901b35421ad78",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-technical-design/scripts/engineering-design.mjs",
+      "sha256": "201db90f145a66aad0b05744f80aeee947b80b2d5ab41c598425690bd29b2d1e",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-technical-design/scripts/generate-schema.mjs",
+      "sha256": "afaa0f37a877fee67a73b765b783cc6066f8789ca5f49cd9506d030c12693f19",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-technical-design/scripts/validate-technical-design.mjs",
+      "sha256": "eccfc8e307270f2481e33ff6b17f93af8e3fb5edbf8f1b082ee76f75b7ead08b",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-technical-design/SKILL.md",
+      "sha256": "b2ce6e580d7e829118cc6e6679790a4bd9d52dc78839d209d9fcefb4f095dc96",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-technical-design/tests/engineering-scenarios.mjs",
+      "sha256": "1e4eb35f91ad2853078bd7f71aa9b8383ab68e001b3b8a26cb73754a2ceffc16",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-technical-design/tests/fixtures.mjs",
+      "sha256": "07b1596f04f3af0a09c5063c15c72697f593448f08ec58bc1bfb2bf1d97a8ec7",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-technical-design/tests/run-scenarios.mjs",
+      "sha256": "e63e77bcf77c5194d45a08a0e6b59cc444f7745f460a255b152971602ea2e2c7",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-up-springboot3/agents/openai.yaml",
+      "sha256": "3c861fcf27926cff79c8a6ac3f6c209ffe655436ca3cdc95bc280d65d2fb8eb7",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-up-springboot3/SKILL.md",
+      "sha256": "178c9c6196afbbffaa4b18ee16d9cd59c118068927e9723e8d2c3ac0d4ebb7a6",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-userinfo/agents/openai.yaml",
+      "sha256": "3932c83c7a155bb86be194d34083496490dc4858a4009ca76a6a79b91b131b6f",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-userinfo/references/source-index.boot2-java8.md",
+      "sha256": "fb4bba89f7aa67868e9d3f37da385261707c44e4349ecd2612cefc9ce048280b",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-userinfo/references/source-index.boot3-java17.md",
+      "sha256": "e7eac90a1e5cb5c6b4c280387b9d86a0c9634494141b28e828015a92cf397e5e",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-userinfo/references/source-index.md",
+      "sha256": "199c539e90171fa60d424ac6b6e1910d20ca487c7bb3b1314c509e10935a32b5",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-userinfo/SKILL.md",
+      "sha256": "3ad71968370ee8a1ddf23168b36a3b98921cdf258e679a596a9e9fdb3d36026a",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-validation/agents/openai.yaml",
+      "sha256": "593a8973ea54465cfb6388ae81b5474dd66d3bd796dce43f76fcaa8d7e7e05e7",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-validation/references/source-index.boot2-java8.md",
+      "sha256": "9377ec5ad1a18b5940a4ac5eab40dcede4c01ab306dad4b9f461af9bb5b2019b",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-validation/references/source-index.boot3-java17.md",
+      "sha256": "108105415f2983b9a593cd5fe369b4db24bd8a1f3725d3ff4f0da6617cec378a",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-validation/references/source-index.md",
+      "sha256": "e0ae041081c845e510fc41a02af595db714ec757285dda13b19851dd8473df6e",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-validation/SKILL.md",
+      "sha256": "bd45ce715137a6d6445d90e4e7a506cb4f9de0f81be6f1ebaf58e93aec1e4f15",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-web-controller/agents/openai.yaml",
+      "sha256": "1eba4e9313e2b41cace15abf4fa771fa25aca578922ef1b98a627297facc6b5a",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-web-controller/assets/templates/Controller.java.template",
+      "sha256": "afc63f8fb3d9e08ef255cc89294f4fa369167eb4d43d40231bb4305e9f450d42",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-web-controller/assets/templates/web/dto/CreateRequest.java.template",
+      "sha256": "624f8a21be865d8edeaf1a594dc29bb71492ef9dc271a50e7bf2cbaf15f92a17",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-web-controller/assets/templates/web/dto/PageRequest.java.template",
+      "sha256": "a4d5c346d98bbc61f21ea5e0eb8a710be6b223556b1c9edebe9b9c194fd6823a",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-web-controller/assets/templates/web/dto/Response.java.template",
+      "sha256": "bc2bb6829ca3707b6cb1522011068fb4ac4de586461cf904607e6ff4abb5e107",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-web-controller/assets/templates/web/dto/UpdateRequest.java.template",
+      "sha256": "cd7967d2af7ff2fa2ff9cd7caf4f748ab5544ecf07892279de07881e3f7e91db",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-web-controller/assets/templates/WebConvertor.java.template",
+      "sha256": "b1e9dd1774bac167c2bbca9aa0c02af27d39696321a5da08fd16eeb9fcb2295c",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-web-controller/references/profiles/existing-domain-driven-maven.md",
+      "sha256": "df69aa23102085dbad64e408456299630ecf741a3f2a0a7f334a25ad033f4589",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-web-controller/references/profiles/existing-layered-mvc-maven.md",
+      "sha256": "5fb1718748c1110a98e28d81d2bf1bad23af7f0f584d5c505ecd8b4dab41739d",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-web-controller/references/profiles/layered-mvc-service.md",
+      "sha256": "f736bf9a927fe61fca617322a1a660618e5b8f49acdd464d52c96e35f37edbd8",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-web-controller/references/profiles/mvc-data-analysis-v1.md",
+      "sha256": "1b6b7758da9c3cde7827d78078da03786f36f70e9522cbdeddbcf260fbf99821",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-web-controller/references/profiles/target-domain-model.md",
+      "sha256": "11ba4f8aa5d3211a6747d80527a339ec13b9fba05fd5f8d046e36a730613813b",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-web-controller/references/web-adapter-layer-guide.md",
+      "sha256": "b98a4ed3e6fcc46571c9062286e29b24aa0e07c179844ade185d05b41cfb03fa",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-web-controller/references/web-generation-contract.schema.json",
+      "sha256": "3cd22a2fbeaff88d25476e69be4d5902ea666ad286fe8e5f2956d9f82d709a0c",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-web-controller/scripts/generate_controller.mjs",
+      "sha256": "05778d341778282c5f5052add94aeed44f760379d8de1e5c8e7180175d48fb7c",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-web-controller/scripts/generate_controller.test.mjs",
+      "sha256": "6230e50a28e3e5e7c09b40f2f94658e3dab37c37f4e5bcc79046765b0dc2c35f",
+      "mode": 420
+    },
+    {
+      "ref": ".codex/skills/yss-web-controller/SKILL.md",
+      "sha256": "c0505864105e1cb84fb8381fb53cc16820ce6f5052707696725d272bad29c459",
+      "mode": 420
+    },
+    {
+      "ref": ".yss-execution-scope.yaml",
+      "sha256": "60150c8b48fba99db19741e821e1d4169aa60a0246cb8d6a04fd91dcc716ced2",
+      "mode": 420
+    },
+    {
+      "ref": "docs/agents/digital-human-roles.yaml",
+      "sha256": "73bd146b4a9fd023cdd965eed39dd21f9391fcaf3ad6ce616b99eb45f02fe18c",
+      "mode": 420
+    },
+    {
+      "ref": "docs/agents/yss-skill-registry.yaml",
+      "sha256": "dbbe04f208b1de39542c77a141469fe0e9ff40194b97f140bf3f6c25a4864ddd",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/contract-reading.md",
+      "sha256": "29ba825556cc80059232156a6a4ba5d470c7aa0dabcda38f72f0b8773f9e9535",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/delivery-preflight.md",
+      "sha256": "334a2d4df29ae8213b3e8214d17a2eb48662649fa895c3a9d68fcd23b3a1499d",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/document-writing.md",
+      "sha256": "974c195d98450295e64b17d7a94c6bd84c64efaa571446905654cc52ff26c138",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/existing-backend-architecture.md",
+      "sha256": "6fae391f6a81e510643139e33b5859e04279c5d8eb0abee66610c4888e785c60",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/existing-ui-baseline.md",
+      "sha256": "a4019c9aa3741c2009b9295ca84456bcc5655fbb514cdbd1b3cdba84f9cd06b4",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/frontend-backend-delivery.md",
+      "sha256": "8a9d2468cb856dca2c8390a874942ba95d9de069ac64d1a4ed9cc6ef8f11d655",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/github-workflows.md",
+      "sha256": "5e282425240b53b760ae4a30383a758cb1d37af1e175d4d50fa7e2f728221b39",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/harness-executive-blueprint.md",
+      "sha256": "ef5d7ce420b30fb1ceede7f89c9e90129c5f63c67e820a6fcc762a557fd46fcf",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/harness-process-tailoring.md",
+      "sha256": "019cb1bdd81d921f5970b53284683887baec6aced3412a348debf8f733c06b46",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/implementation-repo-integration.md",
+      "sha256": "411b100254eb7b9135d511a3d5cc91a096cd85d49ec60ca6fab0104067ec9d84",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/lifecycle-artifact-map.md",
+      "sha256": "542ee53c8044216502752fd6eee4e1da59da32f4895472b7db3c5addb48e3416",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/lifecycle-registry-baseline.json",
+      "sha256": "5aa3194ec5b8d781a7705b049359644c3f18e09c33b9383d19675c5d0e2ab9bc",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/lifecycle-registry.yaml",
+      "sha256": "25cf3a33be7a94ead82da71cf4d495f73126224a5bbcda7dec5a20ce6a3ae18a",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/maintenance-intensity.yaml",
+      "sha256": "6338e218860416a2a2ca9c187b5589bc1140b967dbac5f3ecea906adfb588a0f",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+      "sha256": "32d5778be070a0b3a1e2b392b79d03b7491a3ebed9e8b6a55fcacea9ddcd4b0e",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/PDCA-SCRUM.md",
+      "sha256": "0e1e3edc80c1c554aa52c6a6df9b4fc3e5db0e3dafcc298c35d36c70b12fcad3",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/plan-migration.md",
+      "sha256": "612c861ec3168a63f212a99168c778c7fe31d79fa1c1da38d40f883a0602e87a",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/schemas/api-contract-decision-v2.schema.json",
+      "sha256": "e874b18a8cde8e8101d4f29be04a95cba94243a0abeab4853cfeb11cb459668c",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/schemas/api-contract-decision.schema.json",
+      "sha256": "5310e84d0d11a16266ae5e6d2f1500023b0787e476811270713831aa4cec2f69",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/schemas/backend-architecture-identity.schema.json",
+      "sha256": "ed961052f1aa7c2decf9a9eafe506a065bde7921716a030d7401f9ba166dfcdb",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/schemas/backend-delivery-verification.schema.json",
+      "sha256": "78a55801bb8bd64429d7a6ee36f1bf573b092b95d99fa865eb6eba78e8879d7d",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/schemas/backend-delivery.schema.json",
+      "sha256": "92a97c59e180c2d618039af64e59863e48fe081d3e0a2ceea0b34923b426f5ee",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/schemas/context-reconciliation.schema.json",
+      "sha256": "a9629e5ddce08ece4cfdb391820bed7ea93e84824519d40eae3fda9d62e97016",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/schemas/data-architecture-decision.schema.json",
+      "sha256": "a6f9b69917cab66a1dc8b93ac02ff4e06a6804567001a2cb5163d9c2789adf43",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/schemas/delivery-preflight-input.schema.json",
+      "sha256": "3b9d38d917d92f305cfacf4e949672b4f4539d50194583027f39fd2fb31ce93c",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/schemas/delivery-preflight-result.schema.json",
+      "sha256": "fdd98392148dd4bb9f9e7a2654a7c77e8937740ae82a6778dbbb275e5916122d",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/schemas/digital-human-task-package.schema.json",
+      "sha256": "cfe30ab1840ae11b2847ed3ae915f882347edb032c33f99faebddb647c479e8e",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/schemas/existing-ui-baseline.schema.json",
+      "sha256": "a6829ca6ed204a69897d7eff35cb350db71e281260bf72fa97d9bc124433af02",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/schemas/frontend-delivery-acceptance-v1.schema.json",
+      "sha256": "831f0132d391fd34eb7268417301588676c18e7d0e8700f74dc0a1f6f6f04754",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/schemas/frontend-delivery-acceptance-v3.schema.json",
+      "sha256": "fc2555fed02480e00e751c10cd7e3b07234f812d7d37acbe2819970ab73f2c2d",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/schemas/frontend-delivery-acceptance.schema.json",
+      "sha256": "5f7a7f66c84c56937c37d248dac0e82ccc1370d767bc4ec0dfb01fae5649fbb4",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/schemas/frontend-implementation-evidence.schema.json",
+      "sha256": "9e432cce4c3d6cb39be3a5d18058d1c8d5229fec7a5e5db2d42015b1c738d39c",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/schemas/frontend-strategic-preflight-v2.schema.json",
+      "sha256": "fe14a116af9d1b27555e32f2550c7db22a96139dd1f86bca5e0d53b86eec788d",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/schemas/frontend-strategic-preflight.schema.json",
+      "sha256": "890cfa882c5638d73544805ee87a396719716a7a0f0afb0268819c8b457533e5",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/schemas/implementation-repository-preparation-result.schema.json",
+      "sha256": "989253e0f4ed46fe2d6ccd34a324ba8acc26bad29ead07a09e185014db64be89",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/schemas/lifecycle-checkpoint.schema.json",
+      "sha256": "aee622d9d208d2390eec66ffd10e295fef0cd551a04865bb8833e315c72df079",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/schemas/lifecycle-registry.schema.json",
+      "sha256": "8413617f1d0ba256438bbc609b99181de2d0222c934eb98394e877300eadcba5",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/schemas/maintenance-review-record.schema.json",
+      "sha256": "0ec1c909983fee6d91a5bb40b7eaa465183816acca431951fe1c94cffede5804",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/schemas/openapi-draft-validation-record.schema.json",
+      "sha256": "63fccc988e92d2ef55b44b63c8995fbfc5a3ca5a7a0709afb8d4497f9fcacd45",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/schemas/project-scaffold-contract.schema.json",
+      "sha256": "d89f323895208a406acab5be132ec314d292653ca2cfc0774a95b4841b92e5ed",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/schemas/review-bundle.schema.json",
+      "sha256": "4b2dd0c0e3e410e066789167628f8461220d649e548c28b89a98e6b5bee8ccd8",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/schemas/scaffold-architecture-decisions.schema.json",
+      "sha256": "9fcbeb4bcadb89f589b8ee56a65f999d41637602f6d8bf2c182b54f18521bb15",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/schemas/slice-implementation-contract-v3.schema.json",
+      "sha256": "5d273c7a1de03b7a2f8bee1706e5abed93e647590919c38fd82ecbc24797c9df",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/schemas/stage-tracking.schema.json",
+      "sha256": "ac66159e15b24c538c6a92d365d63cac1732d5686e500f0bf2afb2599c84fd8c",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/schemas/strategic-consumer-feedback.schema.json",
+      "sha256": "e9ff177b80bd0e13fb6584d51c10b4ac7bebdc5adfc700869e7e41d342638388",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/schemas/strategic-design-handoff-v3.schema.json",
+      "sha256": "37b4ce4a6f1a09de01e3abb476af4b7c62cc0f8e19bc936990f07c5e9b464b74",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/schemas/strategic-design-handoff-v4.schema.json",
+      "sha256": "de44e715fda8a06c0edfef9894acff33147987314ad42d841dd71ab999bf7bda",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/schemas/strategic-design-handoff-v5.schema.json",
+      "sha256": "8d3fbb3bb5fc5123970ca611a2b848f2a1a6d1739be80bc16ab9636dd037072b",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/schemas/strategic-design-handoff.schema.json",
+      "sha256": "8d3fbb3bb5fc5123970ca611a2b848f2a1a6d1739be80bc16ab9636dd037072b",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/schemas/strategic-feedback-adjudication.schema.json",
+      "sha256": "074fc1186c8698451a45d4164480e065bbb41e21699624cb6974faa464957019",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/schemas/strategic-handoff-delivery-verification.schema.json",
+      "sha256": "d05b0156ee9a056f9af847feb8b7745ef7adcab0c82e9266106380615732d295",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/schemas/strategic-handoff-delivery.schema.json",
+      "sha256": "7c0e9ee4ac42196525ab4c3834f773e97198676ba76e22160f101a7887191e7d",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/schemas/strategic-handoff-domain-strategy-v3.schema.json",
+      "sha256": "09141a3416181b18fff1a61112b9ec13242e7538d27670c8a2b43a971012545d",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/schemas/strategic-handoff-domain-strategy.schema.json",
+      "sha256": "e54e661565fae53866a8f2e79276f70de63508d6fd743ae58f7115f7847b7e8e",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/schemas/strategic-handoff-export-v2.schema.json",
+      "sha256": "591bce6840dcc43108b5800358c01ccaa012a3362de3c95368a7d7dc1f7dcc57",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/schemas/strategic-handoff-export.schema.json",
+      "sha256": "6596cc5658d2495ea05d6ebf19d0f47f2864812c7336d73b7fa3af849d463c49",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/schemas/strategic-handoff-import-receipt-v3.schema.json",
+      "sha256": "4ccc30108466ab8d8c63631868c72063542365e822a9567b942e1d5095682890",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/schemas/strategic-handoff-import-receipt.schema.json",
+      "sha256": "7c6e48bcafa5ad38898c26c4f721d756e888896da921b1917fc9c5930ff7ff4c",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/schemas/strategic-handoff-package.schema.json",
+      "sha256": "0fc216457fe26b925fe9dd1d56bb230ec6c52865a712694986fc4e3a645564ba",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/schemas/strategic-handoff-stage-decision-package-v3.schema.json",
+      "sha256": "610aed5d21cb3b13c9bcd8b46fec20a0199b4cbd5685774480c82dfe9878a31b",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/schemas/strategic-handoff-stage-decision-package.schema.json",
+      "sha256": "9114c22e2db64909a9d7565d8b83dbf460871d36821001d3f93c897b15f8437b",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/schemas/subagent-task-package.schema.json",
+      "sha256": "d3cf2ee92411b5b8217eb9be2711bd0ac7bdd7d486d16c4d43e2f8831c4566c7",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/schemas/user-decision.schema.json",
+      "sha256": "3391456766bb41766a939c8a06db39ab256f2d261bdd09fcc6bce05b243d128b",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/stage-tracking.md",
+      "sha256": "c1afa48f8ac330a87ba940bcd89e3619a1414e4e371d76ba362792ec3488418d",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/strategic-handoff-package.md",
+      "sha256": "3c547f92585b8dd8a16aae7d8b07c4bd2bb3abc90436f9b5443454a9ba35b587",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/subagent-collaboration.md",
+      "sha256": "5b43aac7e119b1e319db03bfc75d0f8143a11a58675d42107791eab7b9c030c4",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/template-engineering-overview.md",
+      "sha256": "fa0c00cf9f7f79d0b816f86691999d230b1528d424d695ebb2ec410ca1d036cf",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/template-verification-profiles.yaml",
+      "sha256": "59b156a09f2fec89517a1030752760ce885aa8f8209730dd74193365ccf83d9c",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/templates/context-reconciliation-template.yaml",
+      "sha256": "a45c630526a842ba8fca95b78995068c045355150957152b922e8cf1892e0e70",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/templates/frontend-implementation-plan-template.yaml",
+      "sha256": "3cea3fe28fd851f617adf1e29694a35f867490158e6170615e339e134a09cb09",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/templates/frontend-implementation-verification-template.yaml",
+      "sha256": "0f0fa43a96aa19411b5a13f14988781297b52e9bf6a89239b219a8f099c83e12",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/templates/lifecycle-checkpoint-template.yaml",
+      "sha256": "561b750d644550e19144b03e2378a2dd58cbf79c7c389a0929dc91de11c4c089",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/templates/maintenance-checkpoint-template.yaml",
+      "sha256": "5800dcc53c2063c78d795c2ba8f7ec9dbf1c855c5901d83847c32cc1db76e44a",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/templates/scaffold-architecture-decisions-template.yaml",
+      "sha256": "b7a04e0e53eb24564e18ba16f4bda07b3bc93d2fee4f3428d178c32590260939",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/templates/stage-checkpoint-template.md",
+      "sha256": "42e3c64c85d7949812ec61d099dedcf130498a56eff004dd8fcbd5a7db308d6d",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/templates/user-decision-template.yaml",
+      "sha256": "e9c891633b03674682fee48d74157a7c65ca5fe43cae61120e53aee9f3151259",
+      "mode": 420
+    },
+    {
+      "ref": "docs/process/yss-product-lifecycle-team-guide.md",
+      "sha256": "3000c13661d3525cd01b09abf72b4825c44824ae61da6c5191173927e9f25b17",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/api-contract-decision",
+      "sha256": "080fb7f7f187341985abb3ba8d8dfa823c17d88dbfbfb55e357f18f7b8f54a87",
+      "mode": 493
+    },
+    {
+      "ref": "scripts/audit-legacy-backend-scaffold",
+      "sha256": "1b315575c006eaf0cc403c806e534510d1b79985ee13835f8124efb000900894",
+      "mode": 493
+    },
+    {
+      "ref": "scripts/backend-delivery",
+      "sha256": "c1da64e120f6b8327d136d1bdd7c74fd033a1a4b817f0da36ecc37449dd949bc",
+      "mode": 493
+    },
+    {
+      "ref": "scripts/backend-platforms",
+      "sha256": "1a85ffb099895b2aff22fd2792817553dcc8ae1480f555ef9180d419d972b83c",
+      "mode": 493
+    },
+    {
+      "ref": "scripts/backend-standards-coverage",
+      "sha256": "433dfd5435e6a7c8b53297180557e7e94ff8818559c2c61f905b5f9fbac1524d",
+      "mode": 493
+    },
+    {
+      "ref": "scripts/complete-backend-delivery",
+      "sha256": "543a442d32869c3e60280e84a85e5c1338a0ec4b784ba72486d2666be675efe2",
+      "mode": 493
+    },
+    {
+      "ref": "scripts/contract",
+      "sha256": "a24b786687f60c381327d78ef8c4e9203ca5f34a7cad3833173f25b03e0bebc6",
+      "mode": 493
+    },
+    {
+      "ref": "scripts/design-md",
+      "sha256": "eb0b05ca6ba415a7fc51cbbe277febec5b63cc02823bb34cd44226a70aaaadc3",
+      "mode": 493
+    },
+    {
+      "ref": "scripts/dispatch-slice-task",
+      "sha256": "4771198c366d98b5d12bb8b5d377ad6956857c9c2b1e67496c5fe3855f6a4078",
+      "mode": 493
+    },
+    {
+      "ref": "scripts/generate-yss-skill-boundaries",
+      "sha256": "d7bb72644eb9a5eebeddad4c7b7741e9cb99c823f3c1eafffb83f9ec5371f880",
+      "mode": 493
+    },
+    {
+      "ref": "scripts/gitworks",
+      "sha256": "1164e9dc7790a18beb70c79b17715c0bff0d23c3f434bc154c1b8473cc50852f",
+      "mode": 493
+    },
+    {
+      "ref": "scripts/implementation-path-policy",
+      "sha256": "96cab2a3f06122d0847b3c57a997e793ccc54cc8b547db9b747a519b647e6a18",
+      "mode": 493
+    },
+    {
+      "ref": "scripts/lib/api-contract-decision.mjs",
+      "sha256": "dec782e7380e2ecac9883c01c6ed50161008208d73abdb9694ff3250dac36a04",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/api-contract-decision.test.mjs",
+      "sha256": "0ff8557fa89ad45666b7f9cb95bc0086682a21d72bd001dde1803130030a5fb7",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/approval-record.mjs",
+      "sha256": "8e441bf98551c450fc9f3bb4561282ea39e4796ca7effe2bc4f126d2aa9ae1f6",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/approved-execution-context.mjs",
+      "sha256": "88a8e4d44ea3b8a5099befd24a212512387149bdaa15aab6d2ca923138c98979",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/backend-architecture.mjs",
+      "sha256": "9d03ab2bbe62358f08d5f69103991ca7f120e333179500ab2dad01e46e23ae54",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/backend-delivery-terminal.mjs",
+      "sha256": "4e74d1fd209d0f5ccec4043d408aa0cb7cb75881a909449c95ab188501ed31f7",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/backend-delivery.mjs",
+      "sha256": "aa19ae7200a44adb2f7ff8aab33cc6de721a4cd5f3e4f4440a63f9caa2f78c8f",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/backend-platform-provenance.mjs",
+      "sha256": "bd20b29f9a0e5c465cc7ceb9c2c5cca9de9d207c2f9c9a2bb613b74cff0b603b",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/backend-platform-verification.mjs",
+      "sha256": "766662b390401b034896e185fb7df5f9aec25bdffa2c571f49c31433f7dd60b7",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/backend-platform.mjs",
+      "sha256": "6f22d2e5239aadb4a06cb712b733743bd3446f2778b57e70f5cb885175e7e2cd",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/backend-review.mjs",
+      "sha256": "2fcc920dcdc7395647d01b439cdf2513775a4be639fbc099457aaebb08b3c054",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/backend-scaffold-prerequisites.mjs",
+      "sha256": "bf2685cb88ef2df9224d6216681f7ab88fc9757903937841a96737045769835a",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/backend-standards-coverage.mjs",
+      "sha256": "8db72be23668c3465fc92729a7854a5203eff83c53f44ad8124223c90e5a9b3a",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/command-runner.mjs",
+      "sha256": "4fb7f3c9ca26dff3f955ddb1c6ad545519d3e55af179f834ff67b1c0bf20bffd",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/context-contract.mjs",
+      "sha256": "4c674b02875b96f6bd8d8022c010423744cb7b82abe2a60e844ff74dd74e2220",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/context-reconciliation.mjs",
+      "sha256": "3c567b262af6cdd2358cfc5c571c963df7319e622f900305c3d3cf4c55badba8",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/contract-source.mjs",
+      "sha256": "57d271e9be9b8ccb171671be3e244c0a148da00b93bc67400d0c27c7e9148fe2",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/contract-views.mjs",
+      "sha256": "871ea318718a9db211aea4b778dcd471b5961f7794b53cca214c727c78cd6d3d",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/decision-continuation.mjs",
+      "sha256": "fbd544e0468ef7df19e6e69e33fd39d9fd419fc785ef606ec82f45edca9b70c1",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/delivery-preflight.mjs",
+      "sha256": "a40dff3415c68554cfada68adc9867cd2576e11ab48185f6f76189cb4a58d3ca",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/design-md.mjs",
+      "sha256": "17dd0426a3e00dc012ec96cbccc84d688ea91971eb918725aacd37b9d191be0d",
+      "mode": 493
+    },
+    {
+      "ref": "scripts/lib/digital-human-roles.mjs",
+      "sha256": "b1417a98f5b28787769fcf5eecb3632ea0a4ea364f8a5ac94485156383623915",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/existing-backend-architecture.mjs",
+      "sha256": "b171a834f7dbc1c11f9d4b00a0a350d6fdec4a6601bc0cbb383f1b35a776c62c",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/existing-ui-baseline.mjs",
+      "sha256": "c286efeccdb9cc2043b2fd56af910cd1568eb0937a00cebc65e696598076dbde",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/export-skills.mjs",
+      "sha256": "236362125e5870c5fdf8917d91c11bc56aa71da33b66b629cf20b756b875b63b",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/first-slice-architecture.mjs",
+      "sha256": "d45d01c0cc3aeff05ff58023d9120b306155f14f2875be9c57fe518e02a75d2f",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/first-slice-artifacts.mjs",
+      "sha256": "956cdb07a6d3df854b6f9413ef41bcc08c7b45d66b878aad6bd064968a056092",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/first-slice-tests.mjs",
+      "sha256": "1fc8ba26f8eaf71023e90acc56c7b14781cb321445f2320e3bba7b244c4e4e5f",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/frontend-delivery-boundary.mjs",
+      "sha256": "f101a277f535bb26e7751ea1f66023946b13ef2cbef1226b6545cc06cd35efdc",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/frontend-delivery.mjs",
+      "sha256": "7a644e9a45cfbeb7db96a02115b4d61ea236d2f8a425b69570e0571a83152d90",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/git-submodule-fixtures.mjs",
+      "sha256": "9ea30d29eb29b878c3cd82345edf722b5cfdae1e9ac51eade1c565a40f3d0485",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/harness-execution-scope.mjs",
+      "sha256": "02b2905a0e4f74d6f283c96c9182efcebb50a388a87623dba7f10ba5eabe2f8c",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/implementation-contract-compiler.mjs",
+      "sha256": "4e828f79c1996d5dfd30c06fe3a4f5600c155e93ee6a91af060e58a360fe19c1",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/implementation-path-policy.mjs",
+      "sha256": "65f96fec6b786374d2ffc341bd7e3c9e42bb6a850ebfba476c9fc574b7655ef4",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/json-schema.mjs",
+      "sha256": "51800bc3e3bfa5d6a676a448e9ec4ca098c2847c6adc2f362aebf0a548b24fec",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/legacy-backend-scaffold-audit.mjs",
+      "sha256": "7545d84b8a5bfa122d22de6a12d1c392abb311b90a909945d13112880104a10b",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/legacy-backend-scaffold-audit.test.mjs",
+      "sha256": "516db803694836e549543cb9982b7f1a3d07b9676e3a8a0a0e84221081891546",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/lifecycle-context-query.mjs",
+      "sha256": "fb9a42ebd4dba73401a02432ef33d31f491e02ec946d8b9018ab710062ac6c0d",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/lifecycle-controls.mjs",
+      "sha256": "75b0ef8b3d1b57535d28c374aae34d870745c72a833e0221af5c37ebe24a0564",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/lifecycle-execution-scope.mjs",
+      "sha256": "59907ff74c550573a9389d49ed80007a05dec0c810948ea1e1e55cbc30d27bb2",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/lifecycle-registry.mjs",
+      "sha256": "2106fe1f5bf4930099477fb8927d77b0b2031571f8fd2d2ac5901224887c7276",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/lifecycle-transition.mjs",
+      "sha256": "0b9703c1e491972cc0526280232fd18077d8acb786700e738022f1c43574bb12",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/maintenance-candidate.mjs",
+      "sha256": "4c5c89e66bd71383d8e99a7711370728d0fcf463644977a2af3b14b496dd1ffd",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/maintenance-intensity.mjs",
+      "sha256": "e26e98eaf607f553d6b48b2d9d14c1a8b86b43c058a15f648eac4a1b40655c23",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/maintenance-review.mjs",
+      "sha256": "21569086da8908677e690ecf6ba250963e3f31abdcf1cc0f85838ea6c86715de",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/openapi-draft-validation.mjs",
+      "sha256": "9564a6c7956e2dc18c872331db6c301a6b5f5aa77a8770528b30cacc88ed7e96",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/plan-spec-entry.mjs",
+      "sha256": "47282eecf84b2aaebca5b16ab14b6fc0b7cd00e1807c6770c5c8a7fb14518771",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/profile-skill-sync.mjs",
+      "sha256": "c920104b3eb89b0775bdc3a884bf6550b79d42cd3136666b3148386424d01175",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/repository-mode.mjs",
+      "sha256": "1f93c512ee318ed5e3df70cc5e24ab471136a66f66d2041b0e8313a65dcde514",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/repository-scope-policy.mjs",
+      "sha256": "419be37886b313981f0686c9b49d99195499bcbc1acda4ef800d8d96c780196e",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/scaffold-local-database.mjs",
+      "sha256": "66d47c11698b36ff57e4f37577c6f83ea3a6590f4b9ab6862833bd991fde3662",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/skill-registry.mjs",
+      "sha256": "483e457d4bcae15783f237a317ad71a366f3040ff4298f221ef0675923e1e123",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/skill-supply-chain.mjs",
+      "sha256": "951599615fefedc5d5aacc3117dbae4df0e737a214ce8cd120f9603db6b87974",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/slice-applicability.mjs",
+      "sha256": "c899fd31a39e3a4237a4a21e13c5fa718b319b792b6365b23b602cf792281e1c",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/slice-contract-preparation.mjs",
+      "sha256": "f6fb06ff48e1b2161d91d37301ac3c090802a07754bcb686b6ac8c5224751b88",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/slice-contract-views.mjs",
+      "sha256": "2e572b6ee93014fb145cbb286bc42f4dbebcc210288e60858e4b90f6c548fb6d",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/slice-contract.mjs",
+      "sha256": "e26dfe094ddc0d79574ccb2f9fbea2f22a0835177b7094c9ff26f7ec345cf44a",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/slice-execution-preflight.mjs",
+      "sha256": "5f8155944be784bfaead5c5e1ab24c40868b05917ff81fb17c25535c6a4dc181",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/slice-repositories.mjs",
+      "sha256": "ca4594d7d5ddcf08f05dd9fd5d7099fc5acdde4c1f55dd8319c59a78f67b7caf",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/slice-task-package.mjs",
+      "sha256": "2c5e8d7e76ce9838c5b3fb1a6f5fbb093744d9749e0523be75537772e18921f2",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/stage-tracking-migration.mjs",
+      "sha256": "a099543fe8a3f4d5cc1776aeaf83d04804234065d35d6fdb7977338ff2df5d00",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/stage-tracking.mjs",
+      "sha256": "ed020cd672cbf3b6b8da27f71285e94d69b177a46fdf339d014a521922147be9",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/strategic-feedback.mjs",
+      "sha256": "70f3ef1060b6b8abf904183a7b613e6cb7f8bd0c6d2fee0617adcdc0b42ef874",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/strategic-handoff-consumption.mjs",
+      "sha256": "4286802d34038b398fb680f98e361499fc4c02a3baa7a045420e079a000e8a52",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/strategic-handoff-design-targets.mjs",
+      "sha256": "7535dc763c606d36a9b02ce78bff2c49b53e196a2621245ace357d1300060a37",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/strategic-handoff-io.mjs",
+      "sha256": "8ec0fdea764f80a7c24969f718c99b78910b47ad15d4164c056688b8552754a5",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/strategic-handoff-routing.mjs",
+      "sha256": "1e00d5e7685a7674134f1bceefd1516e76a11d19d006b33a311ab8919eb9c52a",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/strategic-handoff-rules.mjs",
+      "sha256": "f346ef52b6b790e37071d691e4a6443ec40f5f070760c8110fa2e8b5646c195e",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/strategic-handoff-zip.py",
+      "sha256": "726a86004b4bb7a38a670c81dc0b1d115411732e418688b698b1f7d4d900e180",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/strategic-handoff.mjs",
+      "sha256": "fc5740f902a69ed295c9e6ef0925ca205b1c2b6b03641591f187e5a749b1f178",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/task-package-schema.mjs",
+      "sha256": "f21c29249e834c1b110078dedcb9e1e1a67991b1d0145f71b54fd803c33a6f67",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/task-package.mjs",
+      "sha256": "1c70927b09f55c87d8f374d225107e194f3ba5f9aaebb7917a6865a516e0050b",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/technical-design-boundary.mjs",
+      "sha256": "c6114c8a9fa2425bf219cfd7c1a7f7b220d71bb4085c09efe0aec8476dcb6d9d",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/ui-baseline.mjs",
+      "sha256": "d16dad62c49a4f63dbde61df7d7af82185069a4d5b3eaea6585b49166b80c095",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/user-decision-reuse.mjs",
+      "sha256": "c00e11c2caf9a727c018d4c4caa482b43ae66bd53ecbffea50b5964b55377d36",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/user-decision.mjs",
+      "sha256": "d1ad8c53db49f68b486b93d3a62fbf0580172e8333eabe7305b50375cfcc3279",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/lib/validation-phase.mjs",
+      "sha256": "5a08dc611ef1ad75786c26010ebc1cb25e34c51b0d1a41db17101ffb52daf425",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/preflight-delivery",
+      "sha256": "cd83fa432847207b7167cfb5434846baff7615d5f2ffc33c7e9d4779c419f68f",
+      "mode": 493
+    },
+    {
+      "ref": "scripts/query-lifecycle-context",
+      "sha256": "29ace0db500839dc5aa6fbdf0e07ff390f357ea9418658301790408451adc0ac",
+      "mode": 493
+    },
+    {
+      "ref": "scripts/repository-mode",
+      "sha256": "bb98d03d5a85f36f00ef5ffacad1b2cc6aaf32a565b7c6a3f7836f699a4bd8b9",
+      "mode": 493
+    },
+    {
+      "ref": "scripts/repository-scope-policy",
+      "sha256": "cebb510adcc1f54c76706d516a9df49cce8a5eecb6769d30546b085376c93d89",
+      "mode": 493
+    },
+    {
+      "ref": "scripts/slice-contract",
+      "sha256": "219edfe2ba6c13feabd565411b28822e231a9cf72cbb120181dfc736324625c1",
+      "mode": 493
+    },
+    {
+      "ref": "scripts/stage-tracking",
+      "sha256": "88132c6b8adc559f756de457f006dd4d0b127651ca7c9c86ca0e85516347f528",
+      "mode": 493
+    },
+    {
+      "ref": "scripts/strategic-consumer-entry",
+      "sha256": "861fcf95ae5b083d56ac450eea74fb06c9bda570434a2ef4293f2fa5eaf678c7",
+      "mode": 493
+    },
+    {
+      "ref": "scripts/strategic-feedback",
+      "sha256": "5bc5b31cc07fd29d160d3d5f25de87859ff53602384f824f1a89fa1482533272",
+      "mode": 493
+    },
+    {
+      "ref": "scripts/strategic-handoff",
+      "sha256": "da481b802e95ae19f81c80b66d23334e47c43ba47018e73324bd75cc794da6f4",
+      "mode": 493
+    },
+    {
+      "ref": "scripts/sync-profile-skills",
+      "sha256": "ceea5cc0cb3cbbb9a6bdd1ce820656741ba056e200f9738f2d6a59b310c6f989",
+      "mode": 493
+    },
+    {
+      "ref": "scripts/sync-skills",
+      "sha256": "4d2e808e69508077576a0e2a4d2b71877640ebec0c73cf31ef66df7ed2eefb09",
+      "mode": 493
+    },
+    {
+      "ref": "scripts/update-skill-lock",
+      "sha256": "a3ff3eec0be02152c3246c89f0c0b26285606e92c4acfb36655b26010320c28c",
+      "mode": 493
+    },
+    {
+      "ref": "scripts/vendor/manifest.json",
+      "sha256": "3f4060b8a3c4675e58acd71d6395cf39eed23f43d8369ea51c4ec74dcabc998d",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/vendor/NOTICES.md",
+      "sha256": "eba35bcc98b266be1bbfcce9d8786d09eaf919f53fc7ecd15febc9546d124803",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/vendor/xml.mjs",
+      "sha256": "bab9b35f123c30198a7597422ca0baa9f207c0e536b41f2c478c6fd6b7fdfc79",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/vendor/yaml.mjs",
+      "sha256": "58c510627769ef4e75e90bcf410d63ba33e64b46bc9cfc53149839d5ccb1709b",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/verify-approval-record",
+      "sha256": "bdea371c2806c16505c445cff2e2de11fc49ba913f3fbb43368f7d841d9b0139",
+      "mode": 493
+    },
+    {
+      "ref": "scripts/verify-backend-platform-matrix",
+      "sha256": "4f95b558dcf97fc9032a77106bc0e71f9833f2b94c38d6ed0a1230c9930a8347",
+      "mode": 493
+    },
+    {
+      "ref": "scripts/verify-context-contract",
+      "sha256": "96a2e2de54f68dada593122552c42a654b3e98531273565a94fb3462b44811a3",
+      "mode": 493
+    },
+    {
+      "ref": "scripts/verify-context-reconciliation",
+      "sha256": "3734954ea8d6db85f5ac9d68dda45f6c6a975c9983b78f8b103bed8035e46ca3",
+      "mode": 493
+    },
+    {
+      "ref": "scripts/verify-digital-human-roles",
+      "sha256": "3a344737ee954a655983182f4bf2adce3ec257752ba1b5502b04ec8267aa0d06",
+      "mode": 493
+    },
+    {
+      "ref": "scripts/verify-digital-human-task-package",
+      "sha256": "d0ac0b39bbfe6cce2f3b0baf122c9ff98e69d91563bc5d84e979fd9b1b73f679",
+      "mode": 493
+    },
+    {
+      "ref": "scripts/verify-frontend-delivery",
+      "sha256": "b592aaa6bba168f4ac39f9caa89a01590357f574cc9748bcf7148b622bf3837f",
+      "mode": 493
+    },
+    {
+      "ref": "scripts/verify-frontend-implementation-evidence",
+      "sha256": "30d8881b3c6408d92a4a4c9bb3561bb9a3a7fd5835d128d37932c6c06bdf3adf",
+      "mode": 493
+    },
+    {
+      "ref": "scripts/verify-frontend-strategic-preflight",
+      "sha256": "7543e9dbe7f710bf28d4187b97f234a76d239cb3eb07d4f2921e9442c76a8dd2",
+      "mode": 493
+    },
+    {
+      "ref": "scripts/verify-lifecycle-checkpoint",
+      "sha256": "2214b7f1a9a6dbcffd2b7357e8a6d0ff2853fa01e2809fcd823048cf3fd659c2",
+      "mode": 493
+    },
+    {
+      "ref": "scripts/verify-lifecycle-registry",
+      "sha256": "710b60827bfd5127fdc4e3d9fe77e729ba0ee79a53ff4b194a329f09a8588f11",
+      "mode": 493
+    },
+    {
+      "ref": "scripts/verify-openapi-draft-validation-record",
+      "sha256": "fcb7382aabeb778074317d81f53d41690b3e12b21e8abccb54c43ef0048c5261",
+      "mode": 493
+    },
+    {
+      "ref": "scripts/verify-plan-spec-entry",
+      "sha256": "e15d4edee0f79302715eab4dabe9082702890ded809e4cbf965374c387cde6b5",
+      "mode": 420
+    },
+    {
+      "ref": "scripts/verify-project-instance",
+      "sha256": "5331aad2b2e19985db1415e2d7f7831f9f4e3a8602360560f149c073c4dbfe74",
+      "mode": 493
+    },
+    {
+      "ref": "scripts/verify-scaffold-architecture-decisions",
+      "sha256": "32baba252d070fd9f737ca569f78b3b529f96c78e8f2b9be9152592095543a6d",
+      "mode": 493
+    },
+    {
+      "ref": "scripts/verify-strategic-context-import",
+      "sha256": "06af5ae4943666d1521160b79d9eb5de3048fd02b6f2db336f614970e5c92788",
+      "mode": 493
+    },
+    {
+      "ref": "scripts/verify-strategic-handoff-consumption",
+      "sha256": "9ab43edbcf48ab6677ca7389e959a557d52939455ed309e5306391aa48ef0b10",
+      "mode": 493
+    },
+    {
+      "ref": "scripts/verify-subagent-task-package",
+      "sha256": "2a8356cf8e99904ce1af63ffa41bbdeca96403e0343114a386d02ce38a07b64d",
+      "mode": 493
+    },
+    {
+      "ref": "scripts/verify-user-decision",
+      "sha256": "ab9c9906b7d35b79011ce11166749e3ffb79cde738817da300bc8bf8212b6e76",
+      "mode": 493
+    },
+    {
+      "ref": "scripts/verify-yss-dto-openapi-profile",
+      "sha256": "915fd5d552645ed706702f84fe1ee47f61648c34eb63208c0031f342c49521ce",
+      "mode": 493
+    }
+  ],
+  "native_legacy_baseline_policy": "backend-delivery-0.3-c48d67ec",
+  "native_direct_migration": true
+}

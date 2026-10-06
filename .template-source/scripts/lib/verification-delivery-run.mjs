@@ -4,7 +4,7 @@ import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {parseArgs} from 'node:util';
 import {createHash} from 'node:crypto';
-import {collectReleaseSources, produceCliArtifact, prepareArtifactConsumers, prepareCliSourceConsumer, validateCliSourceConsumer, verifyInstalledCliMigration, validateArtifact, sourceTuple} from './verification-artifacts.mjs';
+import {collectReleaseSources, produceCliArtifact, prepareArtifactConsumers, verifyInstalledCliMigration, validateArtifact, sourceTuple} from './verification-artifacts.mjs';
 
 const entry=fileURLToPath(import.meta.url);
 const families=['spec','design','backend','frontend'];
@@ -31,9 +31,8 @@ export function compileDeliveryPreparationTasks(plan,{root,reportDir}={}) {
   const tasks=families.map(family=>({id:`check.cli-artifact-${family}`,task_id:`check.cli-artifact-${family}`,group:'artifact-preparation',kind:'artifact-prepare',gate_ids:[gates[family]],resources:['cli-artifact-production'],depends_on:['check.verification-environment'],command:command('prepare-cli',family)}));
   for(const family of families)tasks.push({id:`check.cli-migration-${family}`,task_id:`check.cli-migration-${family}`,group:'artifact-preparation',kind:'artifact-migration',gate_ids:['check.verification-cli-migration'],resources:['cli-artifact-consumption'],depends_on:[`check.cli-artifact-${family}`],command:command('migration',family)});
   tasks.push({id:'check.cli-artifact-consumers',task_id:'check.cli-artifact-consumers',group:'artifact-preparation',kind:'artifact-consumers',gate_ids:['check.verification-distribution'],depends_on:families.map(family=>`check.cli-artifact-${family}`),command:command('prepare-consumers'),receipt_file:receiptFile});
-  tasks.push({id:'check.cli-source-test-consumer',task_id:'check.cli-source-test-consumer',group:'artifact-preparation',kind:'source-test-consumer',gate_ids:[gates.spec],depends_on:['check.cli-artifact-spec'],command:command('prepare-source-consumer'),receipt_file:path.join(reportDir,'consumption','source-test-receipt.json')});
   for(const task of plan.commands||[]){
-    if(/^node --test submodules\/create-yss-spec\/tests\/(?:content-identity|sync-fast-smoke)\.test\.js$/.test(task.command))task.depends_on=[...new Set([...(task.depends_on||[]),'check.cli-source-test-consumer'])];
+    if(task.command.includes('tests/cli-retirement.test.mjs')||['legacy.001','legacy.010'].includes(task.task_id))task.depends_on=[...new Set([...(task.depends_on||[]),'check.cli-artifact-consumers'])];
     if(/(?:verify-cli-upgrade|verify-(?:delivery-harness|strategic-handoff)-distribution)\.mjs|runtime-store-distribution\.test\.mjs/.test(task.command))task.depends_on=[...new Set([...(task.depends_on||[]),'check.cli-artifact-consumers'])];
   }
   const cleanupTask={id:'check.verification-artifact-cleanup',task_id:'check.verification-artifact-cleanup',group:'cleanup',kind:'cleanup',gate_ids:['check.verification-final-integrity'],depends_on:[],command:command('cleanup')};
@@ -66,10 +65,12 @@ export function validateReceipt(envelope,{root,receiptFile,expectedSourcesManife
   ensure(JSON.stringify(envelope.sources_manifest.entries.map(sourceTuple))===JSON.stringify(expected.entries.map(sourceTuple)),'产物回执固定来源错配');
   ensure(envelope.artifacts?.length===4&&new Set(envelope.artifacts.map(row=>row.source_tuple.family)).size===4,'产物回执缺少四 CLI');
   for(const source of expected.entries){const artifact=envelope.artifacts.find(row=>row.source_tuple.family===source.family);ensure(artifact?.installed_root&&/^[a-f0-9]{64}$/.test(artifact.installed_tree_sha256||''),'产物回执缺少真实安装树');validateArtifact(artifact,source);}
-  const consumption=path.dirname(receiptFile),allowed=new Set(['YSS_DEDICATED_CLI_ROOT','YSS_DEDICATED_INSTANCE_ROOT',...families.map(family=>`YSS_CLI_${family.toUpperCase()}_ROOT`)]);
+  const consumption=path.dirname(receiptFile),allowed=new Set(['YSS_NATIVE_BINARY','YSS_NATIVE_BINARY_SHA256','YSS_DEDICATED_INSTANCE_ROOT']);
   ensure(Object.keys(envelope.environment||{}).length===allowed.size,'产物回执环境字段缺失');
   for(const [key,value]of Object.entries(envelope.environment)){
-    ensure(allowed.has(key)&&typeof value==='string'&&path.isAbsolute(value),'产物回执含非法环境字段');
+    ensure(allowed.has(key)&&typeof value==='string','产物回执含非法环境字段');
+    if(key==='YSS_NATIVE_BINARY_SHA256'){ensure(/^[a-f0-9]{64}$/.test(value)&&envelope.artifacts.every(row=>row.source_tuple.binary_sha256===value),'产物回执二进制摘要错配');continue;}
+    ensure(path.isAbsolute(value),'产物回执路径必须为绝对路径');
     // 运行消费者必须存在；终检后的归档回执只消费已验证的不可变产物，
     // 不重新应用已清理测试实例的环境变量。
     const resolved=requireLiveConsumers?fs.realpathSync(value):path.resolve(value);
@@ -96,7 +97,7 @@ export function assembleQualificationIntegration({root,directory}={}) {
 
 export function runDeliveryTask({root,directory,action,family}={}) {
   root=fs.realpathSync(root);directory=path.resolve(directory);outside(root,directory);
-  ensure(['prepare-cli','migration','prepare-consumers','prepare-source-consumer','cleanup'].includes(action),'未知产物准备动作');
+  ensure(['prepare-cli','migration','prepare-consumers','cleanup'].includes(action),'未知产物准备动作');
   if(action==='cleanup'){
     const start=performance.now();
     for(const name of families)fs.rmSync(path.join(directory,'artifacts',name,'cli'),{recursive:true,force:true});
@@ -121,13 +122,6 @@ export function runDeliveryTask({root,directory,action,family}={}) {
     ensure(!fs.existsSync(target),'迁移消费目录必须为新目录');
     const result=verifyInstalledCliMigration({artifact,directory:target,run:recorder.run});
     write(path.join(directory,'migration-results',`${family}.json`),{...result,command_records:recorder.records});return result;
-  }
-  if(action==='prepare-source-consumer'){
-    const source=manifest.entries.find(row=>row.family==='spec'),artifact=read(artifactFile(directory,'spec'));
-    const target=path.join(directory,'consumption','source-cli','spec'),recorder=commandRecorder(path.join(directory,'artifact-logs','source-consumer'));
-    const receipt=prepareCliSourceConsumer({root,source,artifact,directory:target,run:recorder.run});
-    validateCliSourceConsumer(receipt,{root,expectedSource:source,directory:target,artifact});
-    write(path.join(directory,'consumption','source-test-receipt.json'),{...receipt,command_records:recorder.records});return receipt;
   }
   const artifacts=families.map(name=>read(artifactFile(directory,name))),recorder=commandRecorder(path.join(directory,'artifact-logs','consumers'));
   const consumers=prepareArtifactConsumers({artifacts,directory:path.join(directory,'consumption','prepared'),run:recorder.run});
