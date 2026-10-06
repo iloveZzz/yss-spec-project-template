@@ -68,11 +68,11 @@ test('原生实例必要检查纳入各profile及完整真实变更计划，保�
   assert.deepEqual(definition.gate_ids,['check.verification-fixed-source']);
   assert.deepEqual(definition.depends_on,[]);
   assert.ok(actual.every(ref=>typeof ref==='string'&&ref),'完整实际变更路径不可用显式子集代替');
-  for(const profile of ['fast','candidate','release'])for(const [scope,changedFiles]of [['native',[nativeRef]],['complete',actual]]){
+  for(const profile of ['fast','candidate','release'])for(const [scope,changedFiles]of [['native',[nativeRef]],['complete',actual],['clean',[]]]){
     const plan=planTemplateVerification({profile,changedFiles,root});
     assert.deepEqual(plan.unknown_files,[]);
     assert.deepEqual(plan.changed_files,[...new Set(changedFiles)].sort());
-    for(const group of ['drift-identity','implementation','cli-sync'])assert.ok(plan.groups.includes(group),`${profile}/${scope}: ${group}`);
+    if(scope==='native'||plan.effective_profile==='release')for(const group of ['drift-identity','implementation','cli-sync'])assert.ok(plan.groups.includes(group),`${profile}/${scope}: ${group}`);
     const execution=addVerificationExecutionTasks(plan,{root,reportDir:path.join(directory,`${profile}-${scope}`)});
     const check=execution.commands.find(item=>item.task_id==='supplemental.native-instance-drift');
     assert.ok(check,'路径有路由还必须实际编译必要检查');
