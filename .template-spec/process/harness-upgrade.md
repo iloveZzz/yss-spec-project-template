@@ -1,25 +1,46 @@
-# YSS 模板实例升级协议
+# YSS 安装、初始化与升级维护协议
 
-本协议定义固定原生 `yss` 对 Spec、Design、Backend、Frontend 的同家族实例升级，以及旧四 CLI 实例的显式迁移。`yss-harness-upgrade` 负责判断、冲突处置和授权范围；执行器负责保存计划、输入校验、受管基线、事务、恢复和回退。历史批准及 Ticket 状态仍由各自权威协议管理。
+本协议定义 YSS Go CLI 安装与升级、四 Profile 治理工程新建与接管、同家族实例同步、旧四 CLI 显式迁移、资源补装及事务恢复回退。`yss-harness-upgrade` 负责分流、来源核验、冲突处置和授权范围；执行器负责保存计划、输入校验、受管基线和事务。历史批准及 Ticket 状态仍由各自权威协议管理。
+
+## 程序来源与安装
+
+默认查询固定官方仓库 `iloveZzz/yss-cli` 的 [最新正式 Release](https://github.com/iloveZzz/yss-cli/releases/latest)（API：`https://api.github.com/repos/iloveZzz/yss-cli/releases/latest`），排除草稿、预发布和未发布 main。每次任务重新查询，不把当前版本写成长期默认。用户明确指定版本或可信离线产物时消费该来源。查询后记录固定 tag/URL、校验清单、完整源码 SHA、平台、归档名、大小、归档及二进制 SHA-256、来源锁与实际发行资格；不把分支名或交叉编译当固定提交或平台验收。
+
+程序安装不要求已有项目的身份与 Context。确认实际二进制绝对路径、入口链接和工具根；`version --json`、`update status --tool-root <工具根> --json`、安装收据、manifest、受管文件摘要及权限必须相符。旧版本缺安装诊断字段时逐项核验，不能将缺字段或版本查询成功当一致性通过。默认复用合法受管目录；首次安装采用用户级独立目录（Unix `~/.local/share/yss`，Windows `%LOCALAPPDATA%\yss`，展开绝对路径），不得覆盖未受管文件。工具根不能是 Git 仓库根或治理项目根。
+
+| 程序操作 | 接口与写入语义 |
+|---|---|
+| 查询最新正式版 | `upgrade --check --json` 只查询，不下载程序包、不写入；以实际能力/帮助为准 |
+| 在线升级 | `upgrade --to <查询得到的版本> --tool-root <工具根> --json` 显式写入；无 `plan/apply` 子命令 |
+| 固定包安装/离线升级 | `update plan --tool-root <工具根> --artifact <本机包> --sha256 <包摘要> --out <工具根外新计划>`，再 `update apply --tool-root <工具根> --plan-file <计划>` |
+| 状态/恢复/回退 | `update status` 只读；`update recover` / `update rollback` 本身写入，不要求 `--apply`；均显式指定工具根 |
+
+没有 CLI 时在仓外新临时目录安全展开已校验发行包，拒绝越界、链接与非预期成员，核对包内 manifest 文件摘要和权限后使用引导二进制。旧 CLI 缺在线入口或不能读取新包合同，同样可使用固定新引导执行器；不能先复制裸二进制到工具根绕过安装事务。计划和应用使用同一固定执行器，核对范围与来源后在已有授权内执行。
+
+在线 `--to` 固定版本，CLI 会重新查询该 tag 清单，并在一次执行内核验下载与包内来源；它没有预期摘要参数。需要严格绑定查询时已审阅的包摘要或保存计划时，采用下载固定产物后的 `update plan/apply`，不声称在线两次调用锁住同 tag 的原摘要。在线回执与先前来源记录不符时停止后续项目操作并保留程序事务证据；已下载固定包后出现更晚 Release 不改变本批次。已最新且受管来源一致时返回 `unchanged`，不重复下载或创建事务。
+
+下载失败、限流、缺清单或摘要错误时停止相应来源分支，记录准确诊断；不静默换 npm、镜像、main 或预发布。缺合适平台包时，从选定 Release 的完整 SHA 在仓外干净检出，消费该提交的工具链、测试、CGO0 构建及打包入口，保留原四 Profile 固定来源锁；无法证明提交或构建失败则阻断。本地包及实际平台验证独立记录，保持打包的发行资格原值，不把交叉编译或本机安装标成官方稳定发行。
+
+安装不一致时保留旧目录、链接、收据与事务；未完成程序事务先检查状态与材料后恢复，其他失配可安装到全新工具根，验证后再切换用户 PATH。未知入口不直接删除，系统级安装另按实际授权处理。程序事务只消费 `program-update`，回退最近成功安装且重复回退不跨越更早事务；用户后续字节或权限修改阻断覆盖。程序安装与项目迁移分别记录，程序安装成功后重新固定新二进制及 Bundle，再独立规划项目操作，不复用旧项目计划。
 
 ## 输入、来源与接口
 
-确认真实项目根、根 `yss-project.yaml`、`CONTEXT.md`、metadata/schema、Profile、插件 binding、受管基线及 Git 状态。身份缺失或矛盾时停止，不能按目录猜测、删除 metadata 或重新 init。固定统一 CLI 版本、源码提交和二进制 SHA-256，核对 `yss bundle inspect --profile <Profile> --json` 中的协议、模板提交、Bundle、manifest 和快照摘要。旧 CLI 版本只记录历史基线，不能冒充统一 CLI 来源。
+项目操作确认真实项目根、metadata/schema、Profile、插件 binding、受管基线及 Git 状态。新建目标不存在或为空，无旧身份和 Context 是预期初始状态；普通工程接管需用户明确工程与 Profile，先检查已有 Context、业务资产及 Git。既有实例必须读取根 `yss-project.yaml` 和唯一 `CONTEXT.md`；身份缺失、矛盾或 schema 不支持时停止，不能按目录猜测、删除 metadata、重新 init 或 attach。模板源不是实例升级目标。固定统一 CLI 版本、源码提交和二进制 SHA-256，核对 `yss bundle inspect --profile <Profile> --json` 中的协议、模板提交、Bundle、manifest 和快照摘要。旧 CLI 版本只记录历史基线，不能冒充统一 CLI 来源。
 
 | 操作 | 原生接口与写入语义 |
 |---|---|
-| 新建 | `init --profile <Profile> --root <目标>` 默认直接初始化；审阅路线加 `--plan --out <新计划>`，再以 `--apply --plan-file <计划>` 应用 |
+| 新建 | `init --profile <Profile> --root <目标>` 默认直接初始化；本技能使用 `--plan --out <新计划>`，再以 `--apply --plan-file <计划>` 应用 |
 | 接管普通工程 | `attach --profile <Profile> --root <目标> --plan --out <新计划>`；默认预演，写入用 `--apply --plan-file <计划>` |
 | 升级原生实例 | `sync --root <目标> --plan --out <新计划>`；默认预演，写入用 `--apply --plan-file <计划>` |
 | 迁移未绑定旧实例 | `migrate plan --root <目标> --profile <Profile> --out <新计划>`；写入用 `migrate apply --root <目标> --plan-file <计划>` |
 | 状态 | `migrate status --root <目标>` 只读 |
 | 普通项目恢复与回退 | `recover --root <目标>`、`rollback --root <目标>` 默认只读检查；各加 `--apply` 才恢复未完成项目事务或回退最近成功项目事务 |
 | 迁移恢复与回退 | `migrate recover --root <目标>` 是显式恢复写入子命令；`migrate rollback --root <目标>` 是最近成功迁移的显式回退写入子命令，不要求 `--apply` |
-| 资源补装 | `assets ensure <stage>` / `skills ensure <skill>` 默认预演，保存计划后用 `--apply --plan-file <计划>` 写入 |
+| 资源补装 | 先 `assets list` / `skills list` 选择当前 Profile 实际标识；`assets ensure <stage>` / `skills ensure <skill>` 默认预演，保存计划后用 `--apply --plan-file <计划>` 写入 |
 
 命令均可用 `--json` 消费 `outputVersion`、`protocolVersion`、`command`、`profile`、`status`、`code`、`result` 的版本化 envelope。成功须同时观察实际退出 0、`status=ok`、`code=OK`。计划、metadata、Bundle 和输出 envelope 各有自己的 schema，不把旧成功 JSON 当原生协议。
 
-计划推荐保存到项目外全新普通文件；原生也允许专用 `.yss/plans/`。业务目录、Git 内部目录、链接别名及已有输出文件不能用作计划覆盖目标。目标模板来自固定二进制内的 Bundle；apply 不查询 `latest` 或执行计划提供的外部脚本。`bundle export --profile <Profile> --out <项目外新目录> --json` 可独立读取完整资产与 manifest。
+计划推荐保存到项目外全新普通文件；原生也允许专用 `.yss/plans/`。业务目录、Git 内部目录、链接别名及已有输出文件不能用作计划覆盖目标。目标模板来自固定二进制内的 Bundle，不另拉模板 main；项目 apply 不查询 `latest` 或执行计划提供的外部脚本。`bundle export --profile <Profile> --out <项目外新目录> --json` 可独立读取完整资产与 manifest。治理工程初始化及资源补装不授予产品阶段批准或生产脚手架权限，工程接入与生成仍消费相应生命周期合同。
 
 ## 插件绑定
 

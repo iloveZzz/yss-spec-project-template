@@ -107,4 +107,4 @@ Spec 起草业务票，Design 校准后正式化；无设计影响直接正式�
 
 资产整理及旧票迁移按 `.template-spec/process/feature-assets.md` 和显式计划保留状态、批准依据、原文，不推进阶段；被引用草稿按正式资产保留。
 
-既有实例模板升级、旧布局迁移和升级恢复用 `yss-harness-upgrade`，遵循 `.template-spec/process/harness-upgrade.md`；不推进产品阶段或重写历史批准。
+YSS CLI 安装与升级、治理工程新建与接管、实例模板同步、旧身份迁移、资源补装及事务恢复回退用 `yss-harness-upgrade`，遵循 `.template-spec/process/harness-upgrade.md`；默认查询 GitHub 最新正式 Release 后固定来源，不推进产品阶段或重写历史批准。

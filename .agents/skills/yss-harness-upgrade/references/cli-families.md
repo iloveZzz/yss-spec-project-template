@@ -1,5 +1,7 @@
 # 统一入口与历史身份
 
+本表用于项目身份识别；程序安装不要求已有实例。安装或升级 CLI 时读取 [程序安装与升级](program-installation.md)，新建、接管及资源补装读取 [项目操作](project-operations.md)。CLI 默认来源为远程最新正式 Release，选定后固定版本及摘要；四个项目 Profile 均消费该二进制内的固定 Bundle。
+
 | `yss --profile` | 原生 metadata | 仅用于历史识别和恢复的旧身份 |
 |---|---|---|
 | spec | .yss.json | create-yss-spec / .yss-template.json |

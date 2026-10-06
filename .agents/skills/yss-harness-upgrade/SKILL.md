@@ -1,27 +1,36 @@
 ---
 name: yss-harness-upgrade
-description: 用固定 yss 二进制升级 Spec、Design、Backend、Frontend 模板实例，显式迁移旧 CLI 身份并验证归档、事务恢复和回退；不处理业务代码或数据库迁移。
+description: 安装或升级 YSS Go CLI，默认取得 GitHub 最新正式 Release；编排四 Profile 工程新建、接管、模板同步、旧实例迁移、资源补装、诊断和事务恢复回退。
 ---
 
-# YSS 实例升级
+# YSS 安装、初始化与升级维护
 
-先读取根 `yss-project.yaml`、`CONTEXT.md` 和 [统一协议](../../../.template-spec/process/harness-upgrade.md)。目标必须是已登记的同家族 `project-instance`；身份/schema 不支持时只诊断，不能重新 init 或猜测身份。模板源的技能维护由 `maintaining-skills` 处理。
+本技能编排固定 `yss` 公开入口；操作合同以 [统一协议](../../../.template-spec/process/harness-upgrade.md) 为准。先判断用户要维护程序还是项目，只加载对应参考。模板源的技能修改交给 `maintaining-skills`；业务实现、数据库迁移及产品批准由原工作单元处理。
 
-## 工作顺序
+## 操作分流
 
-1. 确认目标绝对路径、授权范围、工作区改动、metadata 与 Profile。固定 `yss` 二进制版本、源码提交和 SHA-256，并用 `yss bundle inspect --profile <Profile> --json` 核对 Bundle、manifest 和模板提交。执行期间不引用 `latest`，也不自动安装全局程序。程序升级和实例迁移分别记录。
-2. 按 [家族适配](references/cli-families.md) 检查原生及旧未完成事务。用 `yss migrate status` 或不带 `--apply` 的 `yss recover` 只读检查原生事务；恢复写入按下文选择入口。旧未完成事务先交给归档中的对应固定旧执行器恢复，再用 Go 生成迁移计划。不能删除状态目录绕过恢复。
-3. 未绑定旧实例使用 `yss migrate plan --root <绝对路径> --profile <Profile> --out <项目外全新计划.json> --json`；原生实例使用 `yss sync --root <绝对路径> --plan --out <项目外全新计划.json> --json`。已绑定后端交付或产品设计插件的实例，分别使用对应插件的 `project-migration-plan` 或 `project-upgrade-plan`。核对身份、受管基线、插件 binding、输入摘要、保护路径、冲突和收据位置。旧 metadata 原字节进入同一事务的恢复材料。
-4. 冲突或不支持能力阻断对应迁移。保留现场，在项目外起草处置差异并展示新增语义取舍；复用有效授权，缺失决定才等待。不能使用 `--force`、手改 metadata 或先改项目来消除冲突；未移植旧参数必须给出明确错误及替代路径。
-5. 相同固定二进制执行 `yss migrate apply --root <绝对路径> --profile <Profile> --plan-file <计划> --json`，或按原生同步计划执行 `yss sync --root <绝对路径> --apply --plan-file <计划> --json`。插件计划由对应 `project-migration-apply` 或 `project-upgrade-apply` 应用，使身份与 binding 原子更新。执行器重新计算并绑定计划与输入；`INPUT_DRIFT`、摘要或身份变化时重新规划，不能编辑计划续跑。迁移不自动 commit、stash、reset、push 或发布。
-6. 查看回执和实例验证结果，执行相同选项的新计划验证无重复迁移。核对业务文件与既有工作区改动保持，说明保留的定制和现有失败。输出实际版本、归档/回执位置、验证证据和剩余问题；结构检查不能代替真实 CLI 或 Agent 行为验证。
+| 用户目标 | 入口与必读参考 |
+|---|---|
+| 安装、升级 CLI，或缺少平台包时构建 | [程序安装与升级](references/program-installation.md)：远程最新正式 Release → 固定版本及摘要 → 程序事务 |
+| 新建治理工程或接管普通工程 | [项目操作](references/project-operations.md)：`init` / `attach` 保存计划后应用 |
+| 原生模板同步、旧四 CLI 实例迁移 | [项目操作](references/project-operations.md) 与 [家族适配](references/cli-families.md)：`sync` / `migrate plan/apply`；有插件 binding 时走插件公开接口 |
+| 补装技能或阶段资源 | [项目操作](references/project-operations.md)：先 `skills/assets list`，再 `ensure` 保存计划后应用 |
+| 诊断、恢复或回退 | 按程序/项目选择上述参考；先只读查状态，再在已有授权范围使用对应事务写入入口 |
 
-## 恢复与边界
+## 共同执行规则
 
-- `yss recover` 和 `yss rollback` 不带 `--apply` 时只读检查；加 `--apply` 才恢复未完成项目事务或回退最近成功项目事务。`yss migrate status` 只读；`yss migrate recover` 是显式恢复写入子命令，`yss migrate rollback` 是最近成功迁移的显式回退写入子命令，两者不要求 `--apply`。写入只在已有迁移/恢复授权范围内执行；后续用户修改或归档损坏必须拒绝覆盖。旧执行器按其固定版本说明使用，不能混用这些规则。
-- 已绑定插件的项目更换二进制、模板或 Bundle 来源时，使用对应插件公开升级计划；直接 `yss sync` 缺少新 binding 返回 `BINDING_REQUIRED`，身份与既有 binding 已失配返回 `BINDING_CONFLICT`。同一来源的 `assets ensure` / `skills ensure` 可按保存计划补装，并保护既有 binding 原字节和权限。
-- Spec、Ticket、合同、人工回复、批准和正式验证默认保留。路径迁移不产生新批准；语义或批准绑定变化交回原生命周期，不补造旧状态。
-- 不执行跨家族转换、任意历史版本跳转、业务重构或数据库迁移。未知基线不能由 Agent 猜测；归档不能作为扩大写入授权的理由。
-- 旧实例缺少本技能时，用固定 `yss bundle export --profile <Profile> --out <项目外新目录> --json` 在项目外读取完整资产、manifest 与升级入口。不得先同步目标项目来安装技能。
+1. 明确操作、目标绝对路径和已有授权范围。程序安装不要求已有项目的 `yss-project.yaml` 或 `CONTEXT.md`；项目操作读取目标根身份、唯一 Context、metadata、Profile、binding、受管基线和 Git 状态。新建与接管的身份前置条件见项目参考；既有实例身份非法或 schema 不支持时只诊断，不能猜身份或重新 init。
+2. 默认查询固定仓库 `iloveZzz/yss-cli` 的最新正式 Release，排除草稿、预发布和未发布 main；记录 Release、完整源码 SHA、平台、包与二进制 SHA-256。每个执行批次固定来源；先查最新、再用明确版本或已下载包执行，不把 `latest` 留在项目 apply 中。用户明确指定固定版本或离线产物时消费该来源。
+3. 核对实际运行文件、版本、安装回执和来源清单；程序恢复与项目恢复分别记录。回执、摘要或身份失配时保留现场，不能手改 metadata/收据、删除事务、`--force` 或覆盖裸二进制。程序安装成功后重新固定新二进制，再独立规划项目操作。
+4. 保存计划先核对范围、输入、冲突和备份位置，应用使用生成计划的同一固定二进制。`INPUT_DRIFT` 或来源变化要求重新规划；原生不接受的旧参数须说明错误与替代路径。新增语义选择先展示处置差异，复用有效授权，缺真实决定才等待。
+5. 核对实际退出 0、envelope `status=ok/code=OK`、回执及操作后的状态；项目操作再做同选项计划，验证无重复变更。记录定制、已有失败、来源、计划/回执/归档、实际命令及未覆盖项。结构检查不代替真实 CLI 或 Agent 行为验证。
 
-本技能只编排，不复制迁移执行器。研究新技术事实时用 `yss-research`；结论输出按 `lifecycle-document-output` 使用 `i-have-adhd`。不批准 Slice、不设置 `ready-for-agent`、不宣称可发布。
+## 保护与恢复
+
+- 程序 `update status`、项目 `migrate status` 只读。程序 `update recover/rollback` 和项目 `migrate recover/rollback` 本身是显式写入子命令，不加 `--apply`；普通项目 `recover/rollback` 默认只读，加 `--apply` 才写入。旧固定执行器消费其自身版本规则。
+- 程序目录与项目根分别指定；回退只针对最近成功的适用事务，重复回退不跨到更早事务。后续用户字节/权限变化或归档损坏时拒绝覆盖；不能把归档当扩大授权的理由。
+- 保护唯一 Context、业务文件、用户 `.github`、Git HEAD/index/gitlink、文件类型和权限。Spec、Ticket、合同、人工回复、批准和正式验证默认保留；语义或批准绑定变化回交生命周期。
+- 旧实例缺技能时用固定 `bundle export` 在项目外读取入口，不能先同步来安装技能。CLI 升级只改程序；实例同步使用新二进制内固定 Bundle，不另拉模板 main。
+- 不自动 commit、stash、reset、clean、push 或发布；不执行跨家族转换、任意历史回退、业务重构或数据库迁移。本技能不批准 Slice，不设置 `ready-for-agent`，不宣称可发布。
+
+研究新增事实时用 `yss-research`；维护说明按 `lifecycle-document-output` 使用 `i-have-adhd`。
