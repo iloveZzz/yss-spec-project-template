@@ -3,11 +3,18 @@ import os from 'node:os';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
 import {spawnSync} from 'node:child_process';
-import {intakeSnapshot} from './read-only-intake.mjs';
+import {intakeSnapshot,createIntakeSnapshotObserver} from './read-only-intake.mjs';
 export const fingerprint = value => createHash('sha256').update(JSON.stringify(value)).digest('hex');
 export function verificationInputDigest(root) {
+  return fingerprintInputs(root, intakeSnapshot(root,{excludeIgnoredToolState:true}));
+}
+function fingerprintInputs(root, files) {
   const git = args => {const r=spawnSync('git',args,{cwd:root,encoding:'utf8',maxBuffer:32*1024*1024});if(r.status!==0)throw Error(r.stderr);return r.stdout;};
-  return fingerprint({head:git(['rev-parse','HEAD']),index:git(['ls-files','--stage','-z']),files:intakeSnapshot(root,{excludeIgnoredToolState:true})});
+  return fingerprint({head:git(['rev-parse','HEAD']),index:git(['ls-files','--stage','-z']),files});
+}
+export function createVerificationInputObserver(root, options) {
+  const observer = createIntakeSnapshotObserver(options);
+  return { digest: () => fingerprintInputs(root, observer.snapshot(root,{excludeIgnoredToolState:true})), get metrics() { return observer.metrics; } };
 }
 export function resolveVerificationScope({profile,explicit=[],actual=[]}) {
   return {kind:explicit.length && profile==='fast'?'limited':'complete-candidate',files:[...new Set(explicit.length && profile==='fast'?explicit:[...actual,...explicit])].sort(),explicit_files:explicit};

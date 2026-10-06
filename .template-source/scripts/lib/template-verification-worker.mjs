@@ -6,7 +6,7 @@ import {pathToFileURL,fileURLToPath} from 'node:url';
 import {parseArgs} from 'node:util';
 import {createHash,randomUUID} from 'node:crypto';
 import {runGroups,printResults,runCommandToFiles} from '../../../scripts/lib/template-verification-runner.mjs';
-import {verificationInputDigest,resolveVerificationScope,createVerificationReport,finalizeVerificationReport,saveVerificationReport} from '../../../scripts/lib/verification-report.mjs';
+import {createVerificationInputObserver,resolveVerificationScope,createVerificationReport,finalizeVerificationReport,saveVerificationReport} from '../../../scripts/lib/verification-report.mjs';
 import {beginRuntimeRun} from '../../../scripts/lib/runtime-store.mjs';
 import {validateVerificationReportDirectory} from './verification-preflight.mjs';
 import {compileLegacyPlan,loadLegacyReferenceRunner} from './legacy-verification.mjs';
@@ -27,7 +27,7 @@ function changedFiles(root,base) {
   for(const args of [['diff','--name-only','-z','--no-renames','--diff-filter=ACDMRTUXB'],['diff','--cached','--name-only','-z','--no-renames','--diff-filter=ACDMRTUXB'],['ls-files','-z','--others','--exclude-standard']])collect(git(root,args));
   return [...files];
 }
-const options={help:{type:'boolean',default:false},profile:{type:'string',default:'fast'},base:{type:'string'},'changed-file':{type:'string',multiple:true},selection:{type:'string'},'report-dir':{type:'string'},'baseline-report':{type:'string'},'baseline-report-sha256':{type:'string'},'qualification-report':{type:'string'},'qualification-report-sha256':{type:'string'},'runtime-store':{type:'string',default:'off'},plan:{type:'boolean',default:false},json:{type:'boolean',default:false},concurrency:{type:'string'},'tooling-mode':{type:'string'},checkpoint:{type:'string',multiple:true},'task-package':{type:'string',multiple:true}};
+const options={help:{type:'boolean',default:false},profile:{type:'string',default:'fast'},base:{type:'string'},'changed-file':{type:'string',multiple:true},selection:{type:'string'},'report-dir':{type:'string'},'baseline-report':{type:'string'},'baseline-report-sha256':{type:'string'},'qualification-report':{type:'string'},'qualification-report-sha256':{type:'string'},'runtime-store':{type:'string',default:'off'},'fresh-inputs':{type:'boolean',default:false},plan:{type:'boolean',default:false},json:{type:'boolean',default:false},concurrency:{type:'string'},'tooling-mode':{type:'string'},checkpoint:{type:'string',multiple:true},'task-package':{type:'string',multiple:true}};
 export function validateVerificationArguments(values) {
   if(values.base!==undefined&&!/^[a-f0-9]{40}$/.test(values.base))throw new TypeError('--base 必须为完整 40 位 SHA');
   for(const [report,digest]of [['baseline-report','baseline-report-sha256'],['qualification-report','qualification-report-sha256']]){
@@ -92,7 +92,7 @@ export {prepare as prepareVerificationPlan};
 async function runPrepared(input) {
   const {root,reportDir,concurrency=1,toolingMode='legacy',purpose='verification',scope={kind:'complete-candidate'},invocation=null,values={},environment:providedEnvironment=process.env}=input;
   const controller=new AbortController(),interrupt=()=>controller.abort();process.on('SIGINT',interrupt);process.on('SIGTERM',interrupt);
-  let report,logRoot,session,reference,sourceReceipt,started=performance.now(),before,exit=0,preparationStarted=false;
+  let report,logRoot,session,reference,sourceReceipt,started=performance.now(),before,inputObserver,exit=0,preparationStarted=false;
   const errors=[];
   const environment={...providedEnvironment,PYTHONDONTWRITEBYTECODE:'1',YSS_TEMPLATE_CONCURRENCY:String(concurrency),YSS_TOOLING_MODE:toolingMode,YSS_TOOLING_CONCURRENCY:String(toolingMode==='optimized'?Math.min(2,concurrency):1),...(reportDir?{YSS_TOOLING_REPORT_DIR:path.join(reportDir,'tooling')}:{})};
   let mode='template-source',plan=input.plan;
@@ -101,7 +101,8 @@ async function runPrepared(input) {
     const modeResult=spawnSync(process.execPath,[path.join(root,'scripts/repository-mode')],{cwd:root,env:environment,encoding:'utf8'});
     if(modeResult.status!==0)throw new TypeError(modeResult.stderr||'仓库身份校验失败');mode=modeResult.stdout.trim();
     plan=addVerificationExecutionTasks(plan,{root,repositoryMode:mode,reference:plan.strategy==='legacy-reference',checkpoints:values.checkpoint,taskPackages:values['task-package'],purpose,reportDir});
-    before=verificationInputDigest(root);
+    inputObserver=createVerificationInputObserver(root,{reuseUnchanged:!['release','legacy-full'].includes(plan.requested_profile)&&!['release','legacy-full'].includes(plan.effective_profile)&&!values['fresh-inputs']});
+    before=inputObserver.digest();
     report=createVerificationReport(plan,{root,inputDigest:before,concurrency,scope,invocation});report.purpose=purpose;report.experimental=purpose==='qualification';
     report.environment.repository_mode=mode;
     report.environment.tooling_mode=toolingMode;
@@ -179,7 +180,7 @@ async function runPrepared(input) {
     if(errors.length)throw new Error(`运行存储异常: ${errors.join('; ')}`);
     if(controller.signal.aborted){exit=130;throw new Error('验证被中断');}
     const failed=report.results.find(row=>row.code!==0||row.skipped);if(failed)throw new Error(`检查失败: ${failed.command}`);
-    if(verificationInputDigest(root)!==before)throw new Error('核验命令修改了工作树；检查必须只读');
+    if(inputObserver.digest()!==before)throw new Error('核验命令修改了工作树；检查必须只读');
     finalizeVerificationReport(report,{status:'passed',wallMs:Math.round(performance.now()-started),repositoryMode:mode});
   }catch(error){exit=controller.signal.aborted?130:1; if(report)finalizeVerificationReport(report,{status:controller.signal.aborted?'interrupted':'failed',error:error.message,wallMs:Math.round(performance.now()-started),repositoryMode:mode});process.stderr.write(`模板核验失败: ${error.message}\n`);}
   finally {
@@ -191,7 +192,7 @@ async function runPrepared(input) {
         if(row.code!==0||row.storageError){report.status='failed';report.error=[report.error,`产物清理失败: ${row.error||row.storageError||row.code}`].filter(Boolean).join('; ');exit=1;}
       }
     }catch(error){report.status='failed';report.error=[report.error,error.message].filter(Boolean).join('; ');exit=1;}
-    if(report)try{report.input_after_sha256=verificationInputDigest(root);report.input_drift=report.input_after_sha256!==before;if(report.input_drift){report.status='failed';report.error=[report.error,'验证输入变化'].filter(Boolean).join('; ');exit=1;}}catch(error){report.status='failed';report.error=error.message;exit=1;}
+    if(report)try{report.input_after_sha256=inputObserver.digest();report.input_drift=report.input_after_sha256!==before;if(report.input_drift){report.status='failed';report.error=[report.error,'验证输入变化'].filter(Boolean).join('; ');exit=1;}}catch(error){report.status='failed';report.error=error.message;exit=1;}finally{if(report&&inputObserver)report.input_observation_metrics=inputObserver.metrics;}
     if(report){finalizeVerificationReport(report,{status:report.status,error:report.error,wallMs:Math.round(performance.now()-started),repositoryMode:mode});if(report.status==='passed'&&report.unexecuted.length){report.status='failed';report.error='存在未执行的选中任务';exit=1;}}
     if(session)try{session.recordEvent('unexecuted',report?.unexecuted||[]);session.registerFiles(reportDir||session.runDir);session.finish({status:report?.status||'failed',exitCode:exit,report});session.close();}catch(error){if(report){report.status='failed';report.error=[report.error,error.message].filter(Boolean).join('; ');}exit=1;try{session.close();}catch{}}
     if(report)try{if(reportDir)saveVerificationReport(reportDir,report);process.send?.({kind:'completed-report',report});}catch(error){process.stderr.write(`报告保存失败: ${error.message}\n`);exit=1;}
@@ -236,7 +237,7 @@ if(process.argv[1]&&path.resolve(process.argv[1])===workerFile) {
   } else {
     try {
       const input=await prepare(process.argv.slice(2),process.cwd());
-      if(input.help)process.stdout.write('用法: scripts/run-template-verification --profile fast|candidate|release|legacy-full [--base <完整SHA>] [--baseline-report <文件> --baseline-report-sha256 <摘要>] [--plan --json] [--report-dir <仓库外新目录>] [--concurrency 1..4]\nlegacy-full 独立执行冻结旧runner；qualified Gate 只在固定基线和当前资格证据有效时启用。\n');
+      if(input.help)process.stdout.write('用法: scripts/run-template-verification --profile fast|candidate|release|legacy-full [--base <完整SHA>] [--baseline-report <文件> --baseline-report-sha256 <摘要>] [--plan --json] [--report-dir <仓库外新目录>] [--concurrency 1..4] [--fresh-inputs]\n--fresh-inputs 禁用本次运行内的文件摘要复用；release 与 legacy-full 始终完整读取字节。\nlegacy-full 独立执行冻结旧runner；qualified Gate 只在固定基线和当前资格证据有效时启用。\n');
       else if(input.values.plan)process.stdout.write(`${JSON.stringify(input.plan,null,input.values.json?2:0)}\n`);
       else await runPrepared(input);
     }catch(error){process.stderr.write(`模板核验失败: ${error.message}\n`);process.exitCode=1;}

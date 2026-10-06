@@ -38,6 +38,8 @@ scripts/query-lifecycle-context --work-unit work-unit.plan-requirements --check-
 3. 按 `request_triage` 选 `route`、`orchestrate`、`resume`、`audit`；行动请求无需模式关键字，意图不明只读 `route`。模式、门禁及授权边界仍适用。
 4. `project-instance` 按生命周期注册表推进；`template-source` 只走模板维护流程。
 
+只读咨询、状态和定位不创建 Ticket、checkpoint 或审批，不运行实现回归。行动从当前可信阶段选择缺失工作，复用当前批准资产、登记及工作单元；主链是导航，未来阶段产物不计作当前缺项。按影响面完成当前工作及直接 / 传递依赖的适用验证；Fresh Verification、证据复用和边界重验按裁剪合同执行。
+
 Plan 入口读 `.template-spec/plan/README.md`、`.template-spec/process/plan-migration.md`，核验战略输入与退出条件。关键未决项阻断 Spec；其余记责任人、时点和接收方。仅认 Plan，不解析旧阶段或自动沿用历史批准。
 
 必须确认的未决项按 `planning.clarification_policy` 主动调用 `grilling`，见 [澄清](references/plan-requirements.md)。

@@ -27,6 +27,8 @@ Plan 使用生命周期编排合同 `planning.review_control` 的有界专业审
 3. 判断 UI、API、数据、后端、前端、跨仓库和高风险影响。
 4. 从最近可信阶段恢复；不要因为当前目录存在某类文件就猜测阶段已通过。
 
+只读问答、状态查询和定位只返回来源、结论及未决项；写正式资产、批准或流转才进入工作单元。行动请求核验复用已有资产、登记和追踪，不将主流程逐阶段重跑。当前工作单元只检查当前资产、触发合同和直接 / 传递依赖；未来未要求的产物不是当前缺项。小改动裁剪不授予越过批准当前 Slice 合同的业务实现资格。
+
 ## 2. 裁剪矩阵
 
 | 类型 | 默认入口 | 必需工作 | 可记录为 `not-applicable` |
@@ -42,6 +44,8 @@ Plan 使用生命周期编排合同 `planning.review_control` 的有界专业审
 ## 3. 执行与证据
 
 同一独立执行者可以在一个连续工作单元内完成相邻的实现动作，但不能替代独立审查者。阶段证据在集中 checkpoint 回写，至少包含：范围、变更文件、受影响仓库、验证命令及结果、阻塞项、人工审查点、Ticket 状态和下一步。
+
+Fresh Verification 是当前范围的真实验证，不等于全仓检查。按当前合同、工程基线和已采纳 CI 条件选择检查；同一边界且资产 / 上游字节、校验器 / schema、命令参数及仓库根均未变化时可复用，变化只使受影响依赖失效。恢复、handoff、进入实现、合并及发布时重验当前边界，当前性不明则重跑适用检查。产品实例不运行模板回归套件，除非另有明确模板维护或回归任务；局部任务完成不推导整体可合并或可发布。
 
 ## 4. 模板维护验证与审查强度分级
 
@@ -72,9 +76,11 @@ Plan 使用生命周期编排合同 `planning.review_control` 的有界专业审
 
 模板维护默认停在 `implementation-ready`。L1/L2/L3 均不强制独立审查、候选冻结或三轴任务包；分级只决定验证强度。维护者自检和发布前完整验证闭合后才能成为 `release-ready`，外部生成器集成与兼容性检查仍须通过，实际发布由生物人明确发起。按需独立审查不得自审，也不得用请求代替通过结论。三个核验入口由 `.template-source/process/template-verification-profiles.yaml` 统一定义：
 
-- `scripts/verify-template-fast`：按 Git 影响面运行快速检查；核心核验资产变化或资格不足时保留完整回退，未知路径在计划阶段拒绝。来源仍为当前工作树，支持 `implementation-ready`。验证强度升级不授予发布资格；显式 candidate / release 入口要求已提交来源。
+日常交付执行本轮改动及直接 / 传递依赖的定向检查，补齐命中等级的实际证据。不因交付措辞、L3、当前分支为 main 或缺少发布 baseline 自动运行全量，也不依次运行三个入口。先看 fast 的 `--plan`；若计划扩大到全量，日常交付使用定向检查并记录选择依据、范围、实际命令 / 退出码和未覆盖风险。未知影响先调查，不用全量兜底，也不把定向通过写成 fast / candidate / release 整体通过；正式任务选中的检查不得手工删除。
+
+- `scripts/verify-template-fast`：按 Git 影响面编制并执行计划；核心核验资产变化或资格不足时，运行器仍保留完整回退，未知路径在计划阶段拒绝。先据上述日常规则决定是否执行该计划，或改做有明确范围的定向检查。来源仍为当前工作树，支持 `implementation-ready`；发布资格另核验。
 - `scripts/verify-template-candidate --base <完整 SHA>`：候选包含 base 至 HEAD 的提交差异、index、工作树及未跟踪路径；显式文件列表不能缩小该集合。PR 默认使用该入口，名称不表示必须冻结候选或提供审查任务包。
-- `scripts/verify-template`：main 与正式发布前运行。已接受的完整 baseline 和当前资格均通过独立核验后，才按 profile 的输入闭包选择全部适用检查；缺少 baseline、资格失效、核心策略变化或依赖未审计时执行独立 `legacy-full`。显式证据摘要错误、非祖先 baseline、未知路径及依赖配置错误在计划阶段拒绝。发布前按 `github-workflows.md` 额外验证固定版本生成器集成与兼容性。
+- `scripts/verify-template`：main 集成验证及正式发布任务运行，当前分支名称本身不触发。已接受的完整 baseline 和当前资格均通过独立核验后，才按 profile 的输入闭包选择全部适用检查；缺少 baseline、资格失效、核心策略变化或依赖未审计时执行独立 `legacy-full`。显式证据摘要错误、非祖先 baseline、未知路径及依赖配置错误在计划阶段拒绝。发布前按 `github-workflows.md` 额外验证固定版本生成器集成与兼容性。
 
 G01–G20 是风险结论的展示编号，不增加生命周期门禁。检查仍使用 `check.*`，内部任务逐项记录实际执行、失败、被前置阻断及不适用原因。覆盖合同和旧检查映射仅在验证 profile 维护。没有同输入、同依赖及同拒绝语义的等价证据时，旧检查继续保留。语法检查和终检属于本轮任务集合；报告消费者从调用上下文重算期望集合，不能用报告自行声称的通过数量放行。新报告使用 v2，历史 v1 只读兼容；维护 checkpoint 顶层仍使用 v2。
 
@@ -99,7 +105,7 @@ review_round: 0 | 1 | 2
 candidate_digest: null | <sha256>
 ```
 
-使用 `scripts/verify-maintenance-checkpoint <file>` 或通过 stdin 传入 YAML / JSON 做只读校验。日常 `implementation-ready` 使用 fast、`review_round: 0`、`candidate_digest: null`。L2 必须有 counterexample、fresh-verification、self-check；L3 必须有 fresh-verification、self-check；命中 `maintenance-intensity.yaml.counterexample_triggers` 的每项风险还必须有对应实际 counterexample；这些证据不得因“待审”而跳过。L1 至少有 relevant-check。
+使用 `scripts/verify-maintenance-checkpoint <file>` 或通过 stdin 传入 YAML / JSON 做只读校验。日常 `implementation-ready` 使用 fast、`review_round: 0`、`candidate_digest: null`；这里的 profile 表示交付层级，实际执行范围由逐条证据声明，定向结果不冒充整套 profile 通过。L2 必须有 counterexample、fresh-verification、self-check；L3 必须有 fresh-verification、self-check；命中 `maintenance-intensity.yaml.counterexample_triggers` 的每项风险还必须有对应实际 counterexample；这些证据不得因“待审”而跳过。L1 至少有 relevant-check。
 
 自检路径的 `release-ready` 使用 release、`review_round: 0`、`candidate_digest: null`，并提供恰好一条 `final-release-verification`，其 command 为 `scripts/verify-template`；实际参数、固定来源、适用集合、baseline 和资格绑定由所引用报告核验。监督入口必须观察 worker 关闭后的实际成功退出，且 `input_drift=false`、`unexecuted=[]`，缺日志、缺结果或不可观察退出均拒绝。该 checkpoint 只表示维护验证就绪，不代替固定版本 CLI 集成、兼容证据或实际发布授权。
 

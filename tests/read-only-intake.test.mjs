@@ -5,7 +5,7 @@ import path from 'node:path';
 import os from 'node:os';
 import { spawnSync } from 'node:child_process';
 import { generateTaskPackageDefaults, validateTaskPackage } from '../scripts/lib/task-package.mjs';
-import { observeReadOnlyIntake, intakeEvidencePath, intakeSnapshot, fileDigest, digest } from '../scripts/lib/read-only-intake.mjs';
+import { observeReadOnlyIntake, intakeEvidencePath, intakeSnapshot, createIntakeSnapshotObserver, fileDigest, digest } from '../scripts/lib/read-only-intake.mjs';
 
 function fixture(t) {
   const temp=fs.mkdtempSync(path.join(os.tmpdir(),'yss-intake-test-')); t.after(()=>fs.rmSync(temp,{recursive:true,force:true}));
@@ -34,7 +34,8 @@ test('snapshots hash mixed file lengths exactly and observe fresh file, link and
  git(['init','-q']);fs.writeFileSync(path.join(child,'nested'),'nested');git(['add','.']);
  git(['-c','user.name=Fixture','-c','user.email=fixture@example.invalid','-c','commit.gpgSign=false','commit','-qm','synthetic fixture']);
  assert.equal(spawnSync('git',['add','child'],{cwd:root}).status,0);
- const before=intakeSnapshot(root);
+ const observer=createIntakeSnapshotObserver(),before=observer.snapshot(root);
+ assert.deepEqual(before,intakeSnapshot(root));
  bytes.forEach((value,i)=>assert.equal(before.files[`${i}.bin`].digest,digest(value)));
  assert.equal(before.files['ignored.bin'].digest,digest('ignored'));
  assert.equal(before.files['deleted.bin'],null);
@@ -46,7 +47,8 @@ test('snapshots hash mixed file lengths exactly and observe fresh file, link and
  fs.chmodSync(path.join(root,'2.bin'),0o755);
  fs.unlinkSync(path.join(root,'link'));fs.symlinkSync('2.bin',path.join(root,'link'));
  fs.writeFileSync(path.join(child,'nested'),'changed nested');
- const after=intakeSnapshot(root);
+ const after=observer.snapshot(root);
+ assert.deepEqual(after,intakeSnapshot(root),'memo must preserve ordinary byte snapshot including ignored files and child repositories');
  assert.equal(after.files['0.bin'].digest,digest('new'));
  assert.equal(after.files['ignored.bin'].digest,digest('changed'));
  assert.equal(after.files['2.bin'].mode & 0o777,0o755);
@@ -54,6 +56,47 @@ test('snapshots hash mixed file lengths exactly and observe fresh file, link and
  assert.equal(after.files.child.files.files.nested.digest,digest('changed nested'));
  assert.deepEqual(after.files['1.bin'],before.files['1.bin']);
  assert.throws(()=>fileDigest(path.join(root,'absent')),error=>error.code==='ENOENT');
+});
+test('run-local memo avoids unchanged byte reads but invalidates same-size rewrites with restored mtime',t=>{
+ const {root}=fixture(t),file=path.join(root,'CONTEXT.md'),observer=createIntakeSnapshotObserver();
+ const before=observer.snapshot(root),hashed=observer.metrics.hashed_files,bytes=observer.metrics.hashed_bytes;
+ assert.deepEqual(observer.snapshot(root),before);
+ assert.equal(observer.metrics.hashed_files,hashed);assert.equal(observer.metrics.hashed_bytes,bytes);
+ assert.equal(observer.metrics.reused_files,hashed);
+ const stat=fs.statSync(file),content=fs.readFileSync(file);content[0]^=1;
+ fs.writeFileSync(file,content);fs.utimesSync(file,stat.atime,stat.mtime);
+ const after=observer.snapshot(root);
+ assert.notDeepEqual(after,before);assert.deepEqual(after,intakeSnapshot(root));
+ assert.equal(observer.metrics.hashed_files,hashed+1);
+ const separate=createIntakeSnapshotObserver();separate.snapshot(root);
+ assert.equal(separate.metrics.hashed_files,hashed,'new observer starts with fresh reads');
+ const strict=createIntakeSnapshotObserver({reuseUnchanged:false});strict.snapshot(root);strict.snapshot(root);
+ assert.equal(strict.metrics.hashed_files,hashed*2);assert.equal(strict.metrics.reused_files,0);
+});
+test('metadata-only changes and identical-byte replacements preserve byte identity',t=>{
+ const {root}=fixture(t),file=path.join(root,'CONTEXT.md'),observer=createIntakeSnapshotObserver();
+ const before=observer.snapshot(root),bytes=fs.readFileSync(file);
+ fs.utimesSync(file,new Date(),new Date(Date.now()+10000));
+ assert.deepEqual(observer.snapshot(root),before);
+ const replacement=path.join(root,'replacement');fs.writeFileSync(replacement,bytes);fs.renameSync(replacement,file);
+ assert.deepEqual(observer.snapshot(root),before);
+ fs.unlinkSync(file);assert.notDeepEqual(observer.snapshot(root),before);
+ fs.writeFileSync(file,bytes);assert.deepEqual(observer.snapshot(root),before);
+ assert.equal(observer.metrics.reused_files,4);
+});
+for (const [mode, snapshot] of [
+ ['memo', root=>createIntakeSnapshotObserver().snapshot(root)],
+ ['fresh observer', root=>createIntakeSnapshotObserver({reuseUnchanged:false}).snapshot(root)],
+ ['independent snapshot', root=>intakeSnapshot(root)],
+]) test(`a file changing during its first digest is rejected by ${mode}`,t=>{
+ const {root}=fixture(t),file=path.join(root,'CONTEXT.md'),original=fs.readSync;
+ let changed=false;
+ t.mock.method(fs,'readSync',(...args)=>{
+  const count=original(...args);
+  if(count&&!changed){changed=true;fs.appendFileSync(file,'change');}
+  return count;
+ });
+ assert.throws(()=>snapshot(root),/读取期间文件变化/);
 });
 test('read-only v2 requires no checkpoint and preserves v1 constraints', t=>{
  const {root,task}=fixture(t);assert.equal(validateTaskPackage(task,{root}),task);
@@ -68,6 +111,15 @@ test('observed completion with no command is explicitly not-executed',async t=>{
  const wrongUnit=structuredClone(result);wrongUnit.result.work_unit='work-unit.slice-implementation';assert.throws(()=>validateTaskPackage(wrongUnit,{root,runDir}),/原分诊工作单元/);
  const forged=structuredClone(result);forged.result.next_route='work-unit.ssot-update';assert.throws(()=>validateTaskPackage(forged,{root,runDir}));
  fs.writeFileSync(path.join(root,'later.md'),'change');assert.throws(()=>validateTaskPackage(result,{root,runDir}),/实际差异/);
+});
+test('read-only intake can explicitly use fresh bytes for unreliable metadata',async t=>{
+ const {temp,root,task}=fixture(t),runDir=path.join(temp,'fresh');
+ const result=await observeReadOnlyIntake(task,{root,runDir,reuseUnchanged:false});
+ const observation=JSON.parse(fs.readFileSync(path.join(runDir,'observation.json'),'utf8'));
+ assert.equal(observation.input_observation_metrics.method,'fresh-bytes');
+ assert.equal(observation.input_observation_metrics.snapshots,2);
+ assert.equal(observation.input_observation_metrics.reused_files,0);
+ assert.equal(validateTaskPackage(result,{root,runDir}),result);
 });
 test('real execution logs validate; source refs cannot impersonate a command log',async t=>{
  const {temp,root,task}=fixture(t),runDir=path.join(temp,'run');const result=await observeReadOnlyIntake(task,{root,runDir,command:process.execPath,args:['-e','console.log("observed")']});

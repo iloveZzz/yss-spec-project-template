@@ -55,18 +55,15 @@
 
    新增共享 skill 时先显式登记：`scripts/update-skill-lock --add=<skill-name>`；新增平台专属 skill 使用 `scripts/update-skill-lock --add-platform=<root>:<skill-name>`。脚本不会把工作区中偶然出现的未跟踪目录自动纳入发布清单。
 
-5. 日常修改先执行影响面快速核验，默认完成到 `implementation-ready`：
+5. 日常修改按本轮影响及直接 / 传递依赖做定向核验，默认完成到 `implementation-ready`。先读取影响计划：
 
    ```bash
-   scripts/verify-template-fast
+   scripts/verify-template-fast --plan
    ```
 
-   PR 使用 `scripts/verify-template-candidate`；main 与发布前使用 `scripts/verify-template`。是否冻结候选或做独立审查按权威策略判定，candidate 命令本身不要求冻结：
+   计划适用于本轮时执行 fast；若扩大到全量，按裁剪合同改做明确范围的定向检查，记录实际命令、退出码、选择依据与未覆盖项，不把定向结果写成完整 profile 通过。未知影响先调查；L3、main 分支或缺发布 baseline 不自动触发日常全量。自检由 `maintaining-skills` 承接，独立审查与候选冻结只按明确选择或既有强制条件执行。
 
-   ```bash
-   scripts/verify-template-candidate
-   scripts/verify-template
-   ```
+   PR 候选使用 `scripts/verify-template-candidate --base <完整 SHA>`；main 集成验证和正式发布任务使用 `scripts/verify-template`，并遵守对应完整适用集合、资格与回退规则。三个入口属于不同任务边界，不依次作为每次日常交付的固定检查。
 
    模板源维护引入或更新分发到实例的 Node 工具时，维护侧依赖、构建和 vendor 校验只在模板源治理区及 CI 中执行；实例门禁不得安装依赖或重建 vendor。实例只消费已提交的 `scripts/lib/*.mjs` 与 `scripts/vendor/*.mjs`，具体维护侧命令和治理决策不属于项目实例文档。
 
@@ -84,7 +81,7 @@ scripts/sync-profile-skills --apply --profile=design,backend,frontend
 scripts/sync-profile-skills --check --profile=all
 ```
 
-Profile 同步只维护登记的内容，不代替子项目的派生更新。应用后，在每个受影响子项目运行 `scripts/sync-skills`、`scripts/update-skill-lock`，再分别以 `--check` 验证，最后重建其 CLI 快照。正文的 `effectiveHash` 变化必须在同批锁文件中体现；不能靠改来源 revision 掩盖过期摘要。验证和打包期间不要重建同一 CLI 的快照，以免测试前后读到不同输入。
+Profile 同步只维护登记的内容，不代替子项目的派生更新。应用后，在每个受影响子项目运行 `scripts/sync-skills`、`scripts/update-skill-lock`，再分别以 `--check` 验证。涉及 CLI 分发或正式发布时，再按固定来源合同重建其快照；普通 Skill 本地交付不自行升级 CLI 或扩大为发布任务。正文的 `effectiveHash` 变化必须在同批锁文件中体现；不能靠改来源 revision 掩盖过期摘要。验证和打包期间不要重建同一 CLI 的快照，以免测试前后读到不同输入。
 
 默认行为等同 `--dry-run`。`--json` 输出机器可读报告。实际入口未分类时检查失败，包括内容相同的副本和子项目独有入口。简单适配使用已登记的片段替换与计数基线；复杂适配的文件级补丁位于 `.template-source/profile-skill-patches/`，并绑定上游 Skill 树 hash。目标含未提交且与期望结果不同的改动、引用缺失、路径越界、上游基线漂移或补丁无法重放时禁止写入。应用会在整批预检后逐文件更新，并在写入失败时恢复本次已改文件；工具不提交、不推送，也不更新 CLI 的固定版本快照。
 

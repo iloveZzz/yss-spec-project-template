@@ -35,6 +35,29 @@ function fileDigestWithBuffer(file, buffer) {
 }
 /** Final observable repository files, including ignored and untracked files; never follow links. */
 export function intakeSnapshot(root, { excludeIgnoredToolState = false } = {}) {
+  return captureSnapshot(root, { excludeIgnoredToolState }, Buffer.allocUnsafe(1024 * 1024));
+}
+const statIdentity = stat => [stat.dev, stat.ino, stat.mode, stat.size, stat.mtimeNs, stat.ctimeNs, stat.birthtimeNs].join(':');
+/** A caller-owned, run-local memo of file digests, never verification results. */
+export function createIntakeSnapshotObserver({ reuseUnchanged = true } = {}) {
+  const cache = reuseUnchanged ? new Map() : null;
+  const buffer = Buffer.allocUnsafe(1024 * 1024);
+  const metrics = { snapshots: 0, hashed_files: 0, hashed_bytes: 0, reused_files: 0, wall_ms: 0 };
+  return {
+    snapshot(root, { excludeIgnoredToolState = false } = {}) {
+      const started = performance.now(), seen = new Set();
+      try {
+        return captureSnapshot(root, { excludeIgnoredToolState, cache, metrics, seen }, buffer);
+      } finally {
+        if (cache) for (const file of cache.keys()) if (!seen.has(file)) cache.delete(file);
+        metrics.snapshots += 1;
+        metrics.wall_ms += performance.now() - started;
+      }
+    },
+    get metrics() { return { method: reuseUnchanged ? 'run-local-stat-memo' : 'fresh-bytes', ...metrics }; }
+  };
+}
+function captureSnapshot(root, { excludeIgnoredToolState = false, cache, metrics, seen }, buffer) {
   const result = spawnSync('git', ['ls-files', '-z', '--cached', '--others'], { cwd: root, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 });
   ensure(result.status === 0, result.stderr || '无法观察仓库');
   const refs = [...new Set(result.stdout.split('\0').filter(Boolean))].sort();
@@ -48,19 +71,36 @@ export function intakeSnapshot(root, { excludeIgnoredToolState = false } = {}) {
     }
   }
   // Synchronous reads share scratch space only within this snapshot, never results.
-  const rows = {}, buffer = Buffer.allocUnsafe(1024 * 1024);
+  const rows = {};
   for (const ref of refs) {
     if (ignoredToolState.has(ref)) continue;
-    const file = path.join(root, ref);
+    const file = path.resolve(root, ref);
     try {
-      const stat = fs.lstatSync(file);
+      const stat = fs.lstatSync(file, { bigint: true });
       if (stat.isDirectory()) {
         const nested = spawnSync('git', ['rev-parse', '--show-toplevel'], { cwd: file, encoding: 'utf8' });
         ensure(nested.status === 0 && fs.realpathSync(nested.stdout.trim()) === fs.realpathSync(file), `子仓未初始化: ${ref}`);
         const head = spawnSync('git', ['rev-parse', 'HEAD'], { cwd: file, encoding: 'utf8' });
         ensure(nested.status === 0 && head.status === 0, `子仓不可观测: ${ref}`);
-        rows[ref] = { kind: 'gitlink', head: head.stdout.trim(), files: intakeSnapshot(file, { excludeIgnoredToolState }) };
-      } else rows[ref] = { kind: stat.isSymbolicLink() ? 'link' : 'file', mode: stat.mode, digest: stat.isSymbolicLink() ? digest(fs.readlinkSync(file)) : fileDigestWithBuffer(file, buffer) };
+        rows[ref] = { kind: 'gitlink', head: head.stdout.trim(), files: captureSnapshot(file, { excludeIgnoredToolState, cache, metrics, seen }, buffer) };
+      } else {
+        let fileDigest;
+        if (stat.isSymbolicLink()) fileDigest = digest(fs.readlinkSync(file));
+        else {
+          seen?.add(file);
+          const signature = statIdentity(stat), previous = cache?.get(file);
+          if (previous?.signature === signature) {
+            fileDigest = previous.digest;
+            if (metrics) metrics.reused_files += 1;
+          } else {
+            fileDigest = fileDigestWithBuffer(file, buffer);
+            if (metrics) { metrics.hashed_files += 1; metrics.hashed_bytes += Number(stat.size); }
+            ensure(signature === statIdentity(fs.lstatSync(file, { bigint: true })), `摘要读取期间文件变化: ${ref}`);
+            if (cache) cache.set(file, { signature, digest: fileDigest });
+          }
+        }
+        rows[ref] = { kind: stat.isSymbolicLink() ? 'link' : 'file', mode: Number(stat.mode), digest: fileDigest };
+      }
     } catch (error) { if (error.code === 'ENOENT') rows[ref] = null; else throw error; }
   }
   const head=spawnSync('git',['rev-parse','--verify','HEAD'],{cwd:root,encoding:'utf8'});
@@ -114,7 +154,7 @@ export function validateReadOnlyIntake(value, { root, runDir, roles, lifecycle }
   return value;
 }
 /** Runner-owned evidence is outside the repository; the child receives no new repository permissions. */
-export async function observeReadOnlyIntake(task, { root, runDir, command, args = [], timeoutMs = 0, runtimeStore = 'off' }) {
+export async function observeReadOnlyIntake(task, { root, runDir, command, args = [], timeoutMs = 0, runtimeStore = 'off', reuseUnchanged = true }) {
   assertNodeVersion();
   ensure(['sqlite','off'].includes(runtimeStore), 'runtime-store 必须为 sqlite 或 off');
   const label = command ? JSON.stringify([command,...args]) : null;
@@ -129,11 +169,12 @@ export async function observeReadOnlyIntake(task, { root, runDir, command, args 
   fs.mkdirSync(runDir, { recursive: false });
   runDir = fs.realpathSync(runDir);
   fs.writeFileSync(path.join(runDir,'task.json'),JSON.stringify(task,null,2)+'\n',{flag:'wx'});
-  const before = intakeSnapshot(root), started = new Date().toISOString();
+  const observer = createIntakeSnapshotObserver({ reuseUnchanged });
+  const before = observer.snapshot(root), started = new Date().toISOString();
   const result = command ? await runCommand(command, args, { cwd: root, timeoutMs, stdoutFile: path.join(runDir, 'stdout.log'), stderrFile: path.join(runDir, 'stderr.log'), runtimeSession }) : null;
   if(result?.storageError)storageErrors.push(result.storageError);
-  const after = intakeSnapshot(root);
-  const observation = { schema_version: 1, kind: 'read-only-intake-observation', task_id: task.task_id, task_ref:'run:task.json', task_digest:digest(fs.readFileSync(path.join(runDir,'task.json'))), root, started_at: started, before, after };
+  const after = observer.snapshot(root);
+  const observation = { schema_version: 1, kind: 'read-only-intake-observation', task_id: task.task_id, task_ref:'run:task.json', task_digest:digest(fs.readFileSync(path.join(runDir,'task.json'))), root, started_at: started, before, after, input_observation_metrics: observer.metrics };
   fs.writeFileSync(path.join(runDir, 'observation.json'), JSON.stringify(observation, null, 2)+'\n');
   const changed = JSON.stringify(before) !== JSON.stringify(after);
   let completed = !changed && !storageErrors.length && (!result || result.status === 0);

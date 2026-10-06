@@ -605,6 +605,7 @@ routing:
       - scripts/*task-package*
       - scripts/*digital-human*
       - scripts/lib/task-package*
+      - tests/read-only-intake.test.mjs
     groups:
       - collaboration
   - patterns:

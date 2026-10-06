@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {runGroups} from '../scripts/lib/template-verification-runner.mjs';
-import {createVerificationReport,finalizeVerificationReport,saveVerificationReport,verificationInputDigest} from '../scripts/lib/verification-report.mjs';
+import {createVerificationReport,finalizeVerificationReport,saveVerificationReport,verificationInputDigest,createVerificationInputObserver} from '../scripts/lib/verification-report.mjs';
 import {intakeSnapshot} from '../scripts/lib/read-only-intake.mjs';
 test('actual logs, deduplication, failures and wall time are distinct',async()=>{
  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'report-'));const commands=[{group:'a',command:'node -e "console.log(123)"'},{group:'b',command:'node -e "console.log(123)"'},{group:'a',command:'node -e "process.exit(7)"'},{group:'a',command:'node -e "process.exit(99)"'},{group:'b',command:'ignored',when:'project-instance'}];
@@ -26,12 +26,15 @@ test('verification ignores only Git-ignored tool state and still detects source 
   git('init','-q');git('config','user.email','fixture@example.invalid');git('config','user.name','fixture');
   write('.gitignore','.codegraph/\n.idea/\n*.ignored\n');write('source.js','current');git('add','.');git('commit','-qm','fixture');
   write('.codegraph/codegraph.db','index-1');write('.idea/workspace.xml','ide-1');write('authority.ignored','authority-1');write('new-source.js','new-1');
-  const before=verificationInputDigest(root),intakeBefore=intakeSnapshot(root);
+  const observer=createVerificationInputObserver(root),before=observer.digest(),intakeBefore=intakeSnapshot(root);
+  assert.equal(before,verificationInputDigest(root));
   write('.codegraph/codegraph.db','index-2');write('.idea/workspace.xml','ide-2');
-  assert.equal(verificationInputDigest(root),before);assert.notDeepEqual(intakeSnapshot(root),intakeBefore,'ordinary read-only intake still observes ignored tool files');
-  write('authority.ignored','authority-2');const authorityChanged=verificationInputDigest(root);assert.notEqual(authorityChanged,before);
-  write('new-source.js','new-2');assert.notEqual(verificationInputDigest(root),authorityChanged);
+  assert.equal(observer.digest(),before);assert.notDeepEqual(intakeSnapshot(root),intakeBefore,'ordinary read-only intake still observes ignored tool files');
+  write('authority.ignored','authority-2');const authorityChanged=observer.digest();assert.notEqual(authorityChanged,before);assert.equal(authorityChanged,verificationInputDigest(root));
+  write('new-source.js','new-2');assert.notEqual(observer.digest(),authorityChanged);
   write('.codegraph/tracked.json','tracked-1');git('add','-f','.codegraph/tracked.json');git('commit','-qm','tracked tool source');
-  const trackedBefore=verificationInputDigest(root);write('.codegraph/tracked.json','tracked-2');assert.notEqual(verificationInputDigest(root),trackedBefore);
+  const trackedBefore=observer.digest();write('.codegraph/tracked.json','tracked-2');assert.notEqual(observer.digest(),trackedBefore);
+  const sourceBefore=observer.digest();git('add','new-source.js');assert.notEqual(observer.digest(),sourceBefore,'index changes invalidate input identity even if file bytes are unchanged');
+  const indexBefore=observer.digest();git('commit','-qm','index change');assert.notEqual(observer.digest(),indexBefore,'HEAD changes invalidate input identity');
  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });

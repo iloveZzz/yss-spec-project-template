@@ -25,6 +25,7 @@ Use this reference when changing a skill's trigger, prompt structure or runtime 
 Use realistic prompts covering a direct request, a paraphrase, a neighboring task that should not trigger, an explicit compatibility request and any permission boundary affected. Review whether the description selects the right entry and whether required references are reachable. Keep structural checks separate from observed model behavior: a metadata or keyword check is not an end-to-end model evaluation.
 
 Run the checks warranted by the change and the repository policy. After success, repeat only when a new edit, failure or unresolved concern requires it. Do not replace required suites with a smaller check or infer release readiness from reduced prompt length.
+Host-authorized focused checks establish only their stated implementation scope. They do not replace formal candidate, release or adopted mandatory CI evidence; a local task need not run those separate gates merely to finish ordinary delivery.
 
 ## Sources
 

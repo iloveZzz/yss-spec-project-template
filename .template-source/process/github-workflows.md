@@ -6,14 +6,18 @@
 
 | 入口 | 行为 | 结果边界 |
 |---|---|---|
-| 内循环：`scripts/verify-template-fast` | 按当前影响面执行检查；未具备当前资格时保留完整回退 | 日常维护验证 |
+| 日常交付：定向检查 / `scripts/verify-template-fast` | 先看 fast 的 `--plan`；按本轮影响与依赖选择实际检查，计划扩大到全量时使用有明确范围的定向检查 | `implementation-ready`，记录实际覆盖，不冒充完整 profile 通过 |
 | 候选：`scripts/verify-template-candidate --base <完整 SHA>` | 以显式 base 计算提交差异，并合并 index、工作树和未跟踪路径 | 合并前机器检查，不宣布发布就绪 |
-| main 与发布前：`scripts/verify-template` | 核验完整 baseline 与当前资格后执行全部适用风险；缺失或失效时走独立 `legacy-full` | 检查完整候选 |
+| main 集成验证与正式发布：`scripts/verify-template` | 核验完整 baseline 与当前资格后执行全部适用风险；缺失或失效时走独立 `legacy-full` | 检查完整候选；当前分支为 main 不单独触发 |
 | 固定版本：`verify-template-release.mjs` | 输入完整 40 位模板 commit，执行上述验证与指定 CLI 家族集成 | 产出证据，不打 tag、不创建 Release、不发布包 |
 
 主模板、三个专职 Agent 模板和四个 CLI 仓库的根 `.github/workflows` 已移除。仓库推送、PR 和手动 Actions 入口不再自动运行这些模板检查；维护者通过上述本地入口执行并保存本轮证据。
 
+日常交付不依次执行三个入口，不因 L3、交付措辞或缺少发布 baseline 自动升级为正式发布验证。定向选择依据、命令、退出码与未覆盖风险必须可读；未知影响先调查。候选、发布及已采纳 mandatory CI 命中后仍执行其完整适用集合，不能通过删计划项或改报告声明绕过。
+
 模板验证首先要求 `template-source`。全量检查使用实际依赖的公开 gitlink 固定子模块，不追踪上游分支；运行前须初始化所需子模块。工具依赖使用固定 pnpm 与 frozen lockfile；Node 24 为主验证环境，Python 3.12 / jsonschema 4.23.0 提供既有 schema 检查依赖。vendor 校验在临时目录重建并比较，不先覆盖受版本管理的 vendor。
+
+三个入口均在执行前及结束时观察输入，失败和中断同样保留最终观测；漂移使本轮失败。fast / candidate 可按[运行内摘要复用规则](../../.template-spec/process/subagent-collaboration.md#只读分诊任务包-v2)减少未变化文件的重复字节读取，报告 `input_observation_metrics`；有效 profile 为 release 或显式传入 `--fresh-inputs` 时前后均完整读取字节。摘要、文件覆盖范围和漂移判定不变，普通问答不因此新增全仓验证要求。
 
 本地复验应把独立 Node 24 的 bin 加入 PATH 后直接运行验证入口；不要用带 `--package` 的 `npm exec` 包住整条验证链，其包配置可能被内部 npx 继承，改变实际执行的工具。
 
