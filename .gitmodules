@@ -10,4 +10,4 @@
 [submodule "submodules/yss-cli"]
 	path = submodules/yss-cli
 	url = https://github.com/iloveZzz/yss-cli.git
-	branch = codex/cli-retirement
+	branch = main
