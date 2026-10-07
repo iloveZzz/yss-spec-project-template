@@ -91,7 +91,7 @@ yss lifecycle verify-daily --profile spec --root /absolute/path/spec --task docs
 ## 入口导航
 
 ```text
-yss 1.2.0 — Spec / Design / Backend / Frontend 统一入口
+yss 1.3.0-dev.1 — Spec / Design / Backend / Frontend 统一入口
 ──────────────────────
 
 用法: yss [选项] <命令> [参数]
@@ -109,7 +109,7 @@ Profile 职责:
 
 生命周期导航:
   正式：入口分诊 → Plan（战略规划） → Spec / 功能架构 → 产品设计 → 系统 / 数据架构与工程契约 → Ticket 正式化 → 垂直切片实现 → 验证 / 发布 / 复盘
-  固定模板：e1221a08bc196c59ce599301a97cc17b9bf66073；来源摘要：d876225c5bfe1dd63ef05359c34688cd83194d59d05a47bc4a223833a1961ab5
+  固定模板：c219b60206d62e0e90e6f5dc585d721b8cf8b8c4；来源摘要：d876225c5bfe1dd63ef05359c34688cd83194d59d05a47bc4a223833a1961ab5
   日常：需求与验收 → 技术技能 → 实现 → 测试 → 独立审查 → verify-daily（当前 Spec 政策）
   教程：yss help tutorial governed | yss help tutorial daily
 
@@ -202,7 +202,7 @@ Profile 职责:
 
 ```text
 正式生命周期（spec）
-来源摘要：template=e1221a08bc196c59ce599301a97cc17b9bf66073；registry=d876225c5bfe1dd63ef05359c34688cd83194d59d05a47bc4a223833a1961ab5；profile=尚未登记；policy=e4c712ba50c0198b9c0f13acb515aa6a90b393b75b8b2ffd6929b3fae5543a16
+来源摘要：template=c219b60206d62e0e90e6f5dc585d721b8cf8b8c4；registry=d876225c5bfe1dd63ef05359c34688cd83194d59d05a47bc4a223833a1961ab5；profile=尚未登记；policy=5d59f7d334d9c9c86c9d2557cacddb16029b12c31ef8cf0e48b81532125a299d
 前置条件：合法项目身份，从当前任务最近可信阶段继续；阶段触发与退出条件由该 Profile 固定模板及项目当前资产核验。
 输入材料：当前 checkpoint、已确认战略/Spec/合同和相应证据。路径示例使用新项目 .work；旧项目按 tracker.root 替换。以下需要当前资产的命令在材料齐备后执行。
 
@@ -293,7 +293,7 @@ Profile 职责:
 
 ```text
 日常交付（Spec）
-来源摘要：template=e1221a08bc196c59ce599301a97cc17b9bf66073；policy=e4c712ba50c0198b9c0f13acb515aa6a90b393b75b8b2ffd6929b3fae5543a16；日常能力=true
+来源摘要：template=c219b60206d62e0e90e6f5dc585d721b8cf8b8c4；policy=5d59f7d334d9c9c86c9d2557cacddb16029b12c31ef8cf0e48b81532125a299d；日常能力=true
 前置条件：当前 Spec 实例启用日常政策；同一任务有需求与验收、单一实现仓、已确认完整基线、适用 Skills、实际测试、独立审查和回滚依据。
 输入材料：docs/daily-task.md 的同一 Ticket/PR 证据区；实际实现仓；已确认的40位 SHA。格式消费项目 .agents/skills/yss-product-lifecycle/references/daily-delivery.md。
 顺序：需求与验收 → YSS 技术技能 → 实现 → 测试 → 独立审查 → verify-daily。
@@ -332,7 +332,7 @@ Profile spec
 失败恢复：身份、依赖或交接材料不匹配时补当前输入；未支持能力明确返回 UNPORTED。
 
 正式生命周期（spec）
-来源摘要：template=e1221a08bc196c59ce599301a97cc17b9bf66073；registry=d876225c5bfe1dd63ef05359c34688cd83194d59d05a47bc4a223833a1961ab5；profile=尚未登记；policy=e4c712ba50c0198b9c0f13acb515aa6a90b393b75b8b2ffd6929b3fae5543a16
+来源摘要：template=c219b60206d62e0e90e6f5dc585d721b8cf8b8c4；registry=d876225c5bfe1dd63ef05359c34688cd83194d59d05a47bc4a223833a1961ab5；profile=尚未登记；policy=5d59f7d334d9c9c86c9d2557cacddb16029b12c31ef8cf0e48b81532125a299d
 前置条件：合法项目身份，从当前任务最近可信阶段继续；阶段触发与退出条件由该 Profile 固定模板及项目当前资产核验。
 输入材料：当前 checkpoint、已确认战略/Spec/合同和相应证据。路径示例使用新项目 .work；旧项目按 tracker.root 替换。以下需要当前资产的命令在材料齐备后执行。
 
@@ -441,7 +441,7 @@ Profile design
 失败恢复：身份、依赖或交接材料不匹配时补当前输入；未支持能力明确返回 UNPORTED。
 
 正式生命周期（design）
-来源摘要：template=9db9f036a772ace7e2e3afd20a1daebc0422c2f2；registry=78be460bcee78a5325f36c8f3c4b2c1454ab7821fea456eab4fefb0b73df3220；profile=c4cd307dc2bea3279d50dd7988b5e43b59d3aece408c89e82287497ebe0f8e84；policy=尚未登记
+来源摘要：template=961a4afbb59ad56f107fccfad255bf003ab33260；registry=78be460bcee78a5325f36c8f3c4b2c1454ab7821fea456eab4fefb0b73df3220；profile=c4cd307dc2bea3279d50dd7988b5e43b59d3aece408c89e82287497ebe0f8e84；policy=尚未登记
 前置条件：合法项目身份，从当前任务最近可信阶段继续；阶段触发与退出条件由该 Profile 固定模板及项目当前资产核验。
 输入材料：当前 checkpoint、已确认战略/Spec/合同和相应证据。路径示例使用新项目 .work；旧项目按 tracker.root 替换。以下需要当前资产的命令在材料齐备后执行。
 
@@ -523,7 +523,7 @@ Profile backend
 失败恢复：身份、依赖或交接材料不匹配时补当前输入；未支持能力明确返回 UNPORTED。
 
 正式生命周期（backend）
-来源摘要：template=2b6774e9ca035f740f543f03b823a14a4de634ee；registry=4a3eabfb5adc2cdd999cd7d7967a0b7c344b3cbd618cea36b752fd5292dd2ac9；profile=3af7f3d5f15babfbc6f90fa918c9fb5e6f81b6488062087575fe374bb4ccfeca；policy=尚未登记
+来源摘要：template=ebf5236f44c2c91d58366e838b64551e6f30751d；registry=4a3eabfb5adc2cdd999cd7d7967a0b7c344b3cbd618cea36b752fd5292dd2ac9；profile=3af7f3d5f15babfbc6f90fa918c9fb5e6f81b6488062087575fe374bb4ccfeca；policy=尚未登记
 前置条件：合法项目身份，从当前任务最近可信阶段继续；阶段触发与退出条件由该 Profile 固定模板及项目当前资产核验。
 输入材料：当前 checkpoint、已确认战略/Spec/合同和相应证据。路径示例使用新项目 .work；旧项目按 tracker.root 替换。以下需要当前资产的命令在材料齐备后执行。
 
@@ -611,7 +611,7 @@ Profile frontend
 失败恢复：身份、依赖或交接材料不匹配时补当前输入；未支持能力明确返回 UNPORTED。
 
 正式生命周期（frontend）
-来源摘要：template=119c53f9ab6fcaae5ef17dd23e9ecbec9f72455d；registry=27eb6b4d0bf80472ba6ca4f0ea54dcffe519660e1779035b1dc7b835a7e55905；profile=6f87ffbcdc392a4a88830048ffffc3f0e4b7d52a089048c5eca22ec01f351cf1；policy=尚未登记
+来源摘要：template=00ca3eb844b0c4e778dfe679552d29e034cea6eb；registry=27eb6b4d0bf80472ba6ca4f0ea54dcffe519660e1779035b1dc7b835a7e55905；profile=6f87ffbcdc392a4a88830048ffffc3f0e4b7d52a089048c5eca22ec01f351cf1；policy=尚未登记
 前置条件：合法项目身份，从当前任务最近可信阶段继续；阶段触发与退出条件由该 Profile 固定模板及项目当前资产核验。
 输入材料：当前 checkpoint、已确认战略/Spec/合同和相应证据。路径示例使用新项目 .work；旧项目按 tracker.root 替换。以下需要当前资产的命令在材料齐备后执行。
 
