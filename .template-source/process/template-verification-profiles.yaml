@@ -252,6 +252,7 @@ required_files:
   - tests/verification-report-v2.test.mjs
   - tests/verification-report.test.mjs
   - tests/verification-artifacts.test.mjs
+  - tests/cli-core-retirement.test.mjs
   - tests/legacy-verification.test.mjs
 syntax_files:
   - .template-source/scripts/verify-runtime-windows.mjs
@@ -372,6 +373,7 @@ syntax_files:
   - scripts/fixtures/frontend-delivery/scenarios.mjs
   - tests/verification-preflight.test.mjs
   - tests/verification-artifacts.test.mjs
+  - tests/cli-core-retirement.test.mjs
   - tests/verification-report-v2.test.mjs
   - tests/verification-report.test.mjs
   - tests/legacy-verification.test.mjs
@@ -485,6 +487,7 @@ routing:
       - skills
   - patterns:
       - .template-source/cli-core/**
+      - tests/cli-core-retirement.test.mjs
     groups:
       - dedicated-cli-core
   - patterns:
@@ -804,7 +807,7 @@ groups:
         id: check.2b52a050306077cc
   dedicated-cli-core:
     commands:
-      - run: node --test .template-source/cli-core/tests/*.test.mjs
+      - run: node --test tests/cli-core-retirement.test.mjs
         when: template-source
         id: check.371da192d6338e6d
   frontend-delivery:
@@ -1183,8 +1186,7 @@ gate_policy:
     - .template-source/scripts/verify-template-release.mjs
     - .template-source/scripts/lib/verification-execution-plan.mjs
     - tests/verification-delivery-run.test.mjs
-    - .template-source/cli-core/tests/build.test.mjs
-    - .template-source/cli-core/tests/cli.test.mjs
+    - tests/cli-core-retirement.test.mjs
     - .template-source/tooling/node/test/approval-consumption.test.mjs
     - .template-source/scripts/lib/verification-qualification-plan.mjs
     - .template-source/distribution/strategic-handoff-tools.lock.json
@@ -1881,6 +1883,8 @@ legacy_coverage:
     check_id: check.371da192d6338e6d
     group: dedicated-cli-core
     command: node --test .template-source/cli-core/tests/*.test.mjs
+    replacement_command: node --test tests/cli-core-retirement.test.mjs
+    retirement_disposition: public-native-core-protection
     owner: role.test-engineer
     replacement_gate: check.verification-cli-core
     gate_ids:
@@ -1893,8 +1897,8 @@ legacy_coverage:
     audit_status: preserved
     equivalent_assertion:
       status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.012
-    counterexample_ref: null
+      source_ref: tests/cli-core-retirement.test.mjs
+    counterexample_ref: tests/cli-core-retirement.test.mjs
     evidence_ref: .template-source/process/template-verification-legacy.json
     display_gate: G12
   - old_id: legacy.013

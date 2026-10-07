@@ -14,6 +14,24 @@ import {verificationInputDigest} from '../scripts/lib/verification-report.mjs';
 const fixture=t=>{const root=fs.mkdtempSync(path.join(os.tmpdir(),'yss-script-retirement-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));return root;};
 const put=(root,ref)=>{const file=path.join(root,ref);fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,'console.log("mapped scenario");\n');return file;};
 
+test('旧CLI核心检查保留冻结身份，缺失、篡改和链接目标不能执行',t=>{
+  const root=fixture(t),source='.template-source/cli-core/tests/*.test.mjs',target='tests/cli-core-retirement.test.mjs',file=put(root,target);
+  const task={id:'check.371da192d6338e6d',task_id:'legacy.012',command:`node --test ${source}`},before=structuredClone(task);
+  const execution=compileTaskExecution(task,{root});
+  assert.deepEqual(task,before);assert.equal(execution.requested_command,task.command);
+  assert.equal(execution.file,process.execPath);assert.equal(execution.cwd,root);
+  assert.deepEqual(execution.args,['--test','--test-concurrency=1',file]);
+  assert.equal(resolveVerificationSource(source),target);assertRequiredFiles({required_files:[source]},root);
+  for(const altered of [{...task,id:'check.other'},{...task,task_id:'legacy.999'},{...task,task_id:undefined},{...task,command:'true'},{...task,command:`${task.command} --test-concurrency=2`},{id:'check.other',task_id:'legacy.999',command:`node --test --test-concurrency=2 ${source}`},{id:'check.other',task_id:'legacy.999',command:`node --test "${source}"`}]) {
+    assert.throws(()=>compileTaskExecution(altered,{root}),/RETIRED_CHECK_REQUEST_MISMATCH/);
+  }
+  const current=compileTaskExecution({id:task.id,command:`node --test ${target}`},{root});
+  assert.deepEqual(current.args,['--test','--test-concurrency=1',target]);
+  fs.unlinkSync(file);assert.throws(()=>compileTaskExecution(task,{root}),/RETIRED_SCRIPT_TARGET_MISSING/);
+  const outside=put(fixture(t),'outside.mjs');fs.symlinkSync(outside,file);
+  assert.throws(()=>compileTaskExecution(task,{root}),/RETIRED_SCRIPT_TARGET_INVALID/);
+});
+
 test('固定迁移映射保持历史请求和检查身份，执行当前场景真实来源',t=>{
   const root=fixture(t),ref='tests/scenarios/verify-context-contract-scenarios.mjs',file=put(root,ref);
   for(const command of ['scripts/verify-context-contract-scenarios','node scripts/verify-context-contract-scenarios']){

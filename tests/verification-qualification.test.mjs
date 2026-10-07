@@ -330,7 +330,7 @@ test('独立资格编译器拒绝成对删除 syntax、preflight、prepare、cle
     if(side==='candidate'){const tampered=structuredClone(report);tampered.plan.gates=[];assert.equal(validate(tampered).valid,false);}
     const drifted=structuredClone(report);drifted.plan.changed_files=[];assert.equal(validate(drifted).valid,false);
     for(const mutate of [r=>r.plan.source_requirement='current',r=>r.plan.tooling.test_concurrency=4]){const tampered=structuredClone(report);mutate(tampered);assert.equal(validate(tampered).valid,false);}
-    const source=plan.commands.find(task=>task.task_id==='legacy.010'),batch=plan.commands.find(task=>task.execution&&!task.execution.source_consumer_ref);assert.ok(source);assert.ok(batch);
+    const source=plan.commands.find(task=>task.task_id==='legacy.010'),batch=plan.commands.find(task=>task.execution);assert.ok(source);assert.ok(batch);
     for(const [id,mutate]of [
       [source.task_id,task=>delete task.execution],
       [source.task_id,task=>task.execution.cwd='/different/consumer'],
@@ -392,7 +392,7 @@ test('资格公开消费者拒绝真实 Node 的实际 argv cwd env 与原生映
     ]){const report=structuredClone(f.report);mutate(report);assert.throws(()=>validateQualificationReportEvidence(report,f.options));}
     if(source) {
       assert.equal(f.report.source_test_receipts,undefined,'退役私有源码回执不能赋予当前验证资格');
-      for(const mutate of [r=>r.results[0].actual_execution.args=['--test','old-private-test.js'],r=>r.results[0].actual_execution.source_consumer_ref='/unapproved/legacy-private-source.json']){const report=structuredClone(f.report);mutate(report);assert.throws(()=>validateQualificationReportEvidence(report,f.options));}
+      for(const mutate of [r=>r.results[0].actual_execution.args=['--test','old-private-test.js'],r=>r.results[0].actual_execution.source_consumer_ref='/unapproved/legacy-private-source.json',r=>r.results[0].actual_execution.source_receipt_sha256='a'.repeat(64),r=>r.source_test_receipts=[],r=>r.plan.commands[0].kind='source-test-consumer']){const report=structuredClone(f.report);mutate(report);assert.throws(()=>validateQualificationReportEvidence(report,f.options));}
 
     }
   }

@@ -60,8 +60,8 @@ export const QUALIFICATION_COUNTEREXAMPLE_REGISTRY=Object.freeze([
   {file:'tests/verification-gates.test.mjs',name:'保守闭包保留共享 helper、fixture、lock、混合变更及 Spec raw 检查全部 117',categories:['shared-helper','fixture','lock'],seam:'planTemplateVerification'},
   {file:'tests/verification-artifacts.test.mjs',name:'已安装 bin/runtime 字节、类型和权限污染不能复用',categories:['consumer-isolation-artifact-tamper'],seam:'validateArtifact'},
   {file:'tests/verification-artifacts.test.mjs',name:'固定原生消费保留完整 Bundle 并绑定二进制 bytes，旧私有源码接口明确拒绝',categories:['fixed-native-bundle-consumer-tamper'],seam:'produceCliArtifact / validateArtifact'},
-  {file:'.template-source/cli-core/tests/build.test.mjs',name:'战略 YAML 清单投影、固定来源与 WORKTREE 仅在临时副本构建',categories:['fixed-source-mismatch'],seam:'syncTemplate'},
-  {file:'.template-source/cli-core/tests/cli.test.mjs',name:'显式迁移不覆盖已修改的旧治理文件',categories:['user-file-overwrite'],seam:'migrate apply'},
+  {file:'tests/cli-core-retirement.test.mjs',name:'固定原生 CLI 来源不匹配时拒绝执行且不写入项目',categories:['fixed-source-mismatch'],seam:'produceCliArtifact / validateArtifact / runNative'},
+  {file:'tests/cli-core-retirement.test.mjs',name:'原生同步与回滚保留用户文件，碰撞拒绝不写入项目',categories:['user-file-overwrite'],seam:'sync apply / migrate apply / rollback'},
   {file:'.template-source/tooling/node/test/approval-consumption.test.mjs',name:'changing raw asset and unsigned-context digest cannot reuse old frozen approval',categories:['approval-stale'],seam:'validateApprovalRecord'},
 ]);
 

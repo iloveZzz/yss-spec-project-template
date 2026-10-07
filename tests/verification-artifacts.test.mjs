@@ -23,6 +23,12 @@ test('已安装 bin/runtime 字节、类型和权限污染不能复用',t=>{
  const tuple=source(hash(fs.readFileSync(binary))),bundle_manifest=path.join(installed,'bundle/.yss-bundle.json');fs.writeFileSync(bundle_manifest,JSON.stringify({schemaVersion:2,profile:tuple.family,templateVersion:tuple.template_version,templateCommit:tuple.template_commit,sourceSnapshotHash:tuple.snapshot_hash,manifestHash:tuple.manifest_hash,bundleHash:tuple.bundle_hash}));
  fs.writeFileSync(path.join(installed,'bundle/runtime.mjs'),'fixed retained governance tool',{mode:0o644});const tarball=path.join(directory,'release-yss');fs.copyFileSync(binary,tarball);
  const artifact={source_tuple:tuple,tarball,tarball_sha256:tuple.binary_sha256,installed_root:installed,binary,bundle_manifest,installed_tree_sha256:installedTreeDigest(installed)};
+ const supportedManifest=JSON.parse(fs.readFileSync(bundle_manifest));
+ for(const schemaVersion of [2,3,1,4,2.5,'3']){
+  fs.writeFileSync(bundle_manifest,JSON.stringify({...supportedManifest,schemaVersion}));artifact.installed_tree_sha256=installedTreeDigest(installed);
+  if([2,3].includes(schemaVersion))validateArtifact(artifact,tuple);else assert.throws(()=>validateArtifact(artifact,tuple),/Bundle 来源/);
+ }
+ fs.writeFileSync(bundle_manifest,JSON.stringify(supportedManifest));artifact.installed_tree_sha256=installedTreeDigest(installed);
  validateArtifact(artifact,tuple);const original=fs.readFileSync(binary);fs.writeFileSync(binary,'polluted runtime');assert.throws(()=>validateArtifact(artifact,tuple),/安装树/);fs.writeFileSync(binary,original);fs.chmodSync(binary,0o644);assert.throws(()=>validateArtifact(artifact,tuple),/安装树/);fs.chmodSync(binary,0o755);
  const manifest=fs.readFileSync(bundle_manifest);fs.writeFileSync(bundle_manifest,JSON.stringify({profile:'backend'}));artifact.installed_tree_sha256=installedTreeDigest(installed);assert.throws(()=>validateArtifact(artifact,tuple),/Bundle 来源/);fs.writeFileSync(bundle_manifest,manifest);artifact.installed_tree_sha256=installedTreeDigest(installed);
  fs.rmSync(binary);fs.mkdirSync(binary);assert.throws(()=>validateArtifact(artifact,tuple),/安装树/);

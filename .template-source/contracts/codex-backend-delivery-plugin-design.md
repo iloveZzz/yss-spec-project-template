@@ -12,12 +12,12 @@ repository_mode: template-source
 
 ## 2. 可复用能力与已知缺口
 
-当前能力以 canonical 生命周期、插件源码、固定 CLI 清单及本轮实际校验为准。
+当前能力以 canonical 生命周期、插件源码、固定原生 `yss` 来源锁及本轮实际校验为准。
 
 | 现有能力 | 当前如何使用 | 边界 |
 |---|---|---|
 | 主模板 `yss-product-lifecycle` | 作为唯一主控，保留现有路由、合同、批准和恢复规则 | 不手工复制维护另一套生命周期 |
-| `create-yss-spec` | 复用固定快照的初始化与治理文件同步能力 | 当前 `templatePlan/templateApply` 是同步 API，不能当初始化 API |
+| 原生 `yss` 的 `spec` Profile | 使用包内固定二进制与完整治理 Bundle 初始化、同步和显式迁移 | 旧 compat `templatePlan/templateApply` 返回 `UNPORTED`，不提供初始化或同步能力 |
 | 后端专职模板 | 参考既有后端交付边界与验证实现 | 其入口消费已批准战略，不能原样充当 Plan 起点的插件 |
 | `backend-delivery` | 验证、导出可移植后端交付包 | 编译通过或 JAR 存在不等于正式交付 |
 | Codex `plugin-creator` | 生成本机支持的插件清单和个人 marketplace 条目 | 清单通过不证明动态技能路由、安装或业务执行正确 |
@@ -37,7 +37,7 @@ Codex 插件安装产物
   ├─ .codex-plugin/plugin.json
   ├─ skills/                  由 canonical 生成的插件投影
   ├─ scripts/                 接入、诊断和打包适配
-  └─ assets/                  固定版本 CLI/模板资源及来源清单
+  └─ assets/                  固定原生二进制、治理 Bundle 及来源锁
 
 用户工作区（与插件安装目录分开）
   ├─ demo-governance/          Plan、Spec、设计、合同、Ticket、证据
@@ -50,7 +50,7 @@ Codex 插件安装产物
 ## 4. 主控与版本所有权
 
 1. 插件接入入口只处理目录发现、运行依赖、项目初始化计划和主控定位，不持有业务阶段或批准权。接入完成后调用唯一 `yss-product-lifecycle`，由主控派发专项技能并验收结果。
-2. 插件中的 Skills 从 `.agents/skills` 生成，锁定来源提交、内容摘要、注册表及依赖资源；不能手改插件投影。插件自身新增入口也遵守 `maintaining-skills`，不以插件格式绕开仓库技能治理。
+2. 插件中的治理 Skills 来自固定 Bundle 的 `.agents/skills`，锁定来源提交、内容摘要、注册表及依赖资源；不能手改插件投影。插件自身新增入口也遵守 `maintaining-skills`，不以插件格式绕开仓库技能治理。
 3. 分发闭包通过合同允许的调用、技能注册表、脚本依赖、模板与 schema 引用计算；不是把所有文件复制进包。Plan、Spec、适用产品设计、工程契约、实现、审查及交付所需能力必须完整。
 4. 初始化后治理项目拥有自己的固定规则版本和可审计状态。插件全局版本不同于项目固定版本时，只做诊断与迁移计划；运行应消费项目匹配版本，不同时混用两版主控或校验器。
 5. 必须验证插件技能命名空间与项目本地同名技能的发现行为。设计目标是业务执行只有一个可确定的有效主控；具体绑定机制在安装试验中定稿，不能只依赖“优先使用”的提示词。
@@ -62,7 +62,7 @@ Codex 插件安装产物
 
 已有治理项目直接核对身份、版本、Context 和 checkpoint。既有代码仓默认关联或创建独立治理项目，登记代码根、分支、CI、验证命令、回滚点和允许路径；不覆盖业务源码，不重跑脚手架，不自动转换架构。多个候选治理根无法确定时，才让用户选择。
 
-第一版建议由接入脚本通过参数数组调用包内固定版本 CLI 的公开初始化路径。`templatePlan/templateApply` 仅用于其实际支持的同步用途；若需要新初始化 API，应在 CLI 权威仓单独实现和验证。运行时不依赖 `@latest`、主模板开发目录、兄弟源码仓或随时变动的网络模板。
+接入脚本通过参数数组调用包内固定原生 `yss` 的 `init` 公开入口及其计划 / 应用协议，初始化选择 `spec` Profile。旧 compat `templatePlan/templateApply` 仅返回 `UNPORTED`，不能作为项目初始化或同步入口。运行时不依赖 `@latest`、主模板开发目录、兄弟源码仓或随时变动的网络模板。
 
 主控接管后从最近可信工作单元继续，保留跨会话恢复、上游摘要核验、真实批准、Context reconciliation 及 drift 重路由。新会话、重新安装插件或机器重启不能自动解除阻塞。
 
@@ -108,6 +108,6 @@ Codex 插件安装产物
 
 ## 10. 当前接口与版本
 
-实际接口、固定 CLI、包版本及显式迁移边界见 [插件入口](../plugins/yss-backend-delivery/README.md)、`cli-pin.json` 和构建来源锁。`project-plan` / `project-apply` / `project-check` / `query-project` 消费对应固定来源；后端关联路径不代替正式工程登记。
+后端交付与产品设计插件使用同一固定原生 `yss` 二进制，分别选择 `spec` 与 `design` Profile，并共用原生构建适配。构建经公开 `bundle inspect` / `bundle export` 获取对应 Profile 的完整资产，逐文件核验 bytes、mode 与摘要。实际接口、程序身份、模板与 Bundle 来源及显式迁移边界见 [插件入口](../plugins/yss-backend-delivery/README.md)、`assets/native-lock.json` 和 `bundle-lock.json`。`project-plan` / `project-apply` / `project-check` / `query-project` 消费对应固定来源；后端关联路径不代替正式工程登记。
 
-开发包的工作树覆盖层仅供显式新建项目；既有项目通过当前来源与摘要绑定的迁移计划升级，保留用户资产及失败回滚。安装验证、真实业务交付和固定来源发布分别留证。合同本身不授予提交、推送、发布或业务环境变更权限。
+匹配且未绑定的原生项目通过 `project-bind-plan` / `project-bind-apply` 接入；旧身份通过 `project-migration-plan` / `project-migration-apply` 显式迁移，既有原生绑定通过 `project-upgrade-plan` / `project-upgrade-apply` 更新。保存计划绑定当前来源和项目输入；原生事务一起处理治理文件、身份与插件绑定，保留用户资产及失败回滚。Bundle provenance 与程序 commit / sourceState 分别核验，固定二进制本身不授予发布资格。安装验证、真实业务交付和固定来源发布分别留证。合同本身不授予提交、推送、发布或业务环境变更权限。

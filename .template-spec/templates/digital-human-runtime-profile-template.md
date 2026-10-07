@@ -21,7 +21,7 @@
 
 ## `project-instance` 绑定清单
 
-模板仓只 `publish-singleton-profiles`。实例仓按本表 duplicate，禁止按功能再拆实例。外部 `create-yss-spec` 尚未接管此步骤。
+模板仓只 `publish-singleton-profiles`。实例仓按本表 duplicate，禁止按功能再拆实例。当前运行时角色绑定仍按本清单人工完成。
 
 - [ ] 从 YAML 复制 `title`、`description`、`core_skills`、`forbidden_skills`，不手写第二套职责
 - [ ] 选择一个 `runtime_id`（`runtime.generic` / `runtime.skill-projection` / `runtime.grok`）

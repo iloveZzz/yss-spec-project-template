@@ -6,13 +6,15 @@
 
 新增 `yss-product-design:product-design`，从 Plan、Spec 到有 UI 的产品设计和 Handoff v5；后端由 `yss-backend-delivery` 正式导入、目标对账、逐条消费并继续工程设计与实现。首版支持新原型和既有 UI，纯无 UI 正式交付不适用。三个独立目录保存设计治理、后端治理和实现代码。
 
-设计和后端分别使用其固定 CLI；精确版本、SHA、snapshot、manifest、core 和开发覆盖层由各插件 cli-pin、bundle-lock 及项目绑定记录持有。维护运行材料保存在仓外 maintenance 命名空间。
+设计和后端使用同一固定原生 `yss` 二进制，分别选择 `design` 与 `spec` Profile。程序版本、二进制 SHA-256、平台、协议版本、模板 commit 与 Bundle/manifest 摘要由各插件的 `assets/native-lock.json`、`bundle-lock.json` 及项目绑定记录持有。维护运行材料保存在仓外 maintenance 命名空间。
 
 ## 当前适配
 
 战略设计模板主控实际名为 `yss-strategic-design`，专职研发主控为 `harness-orchestrator`。设计 profile 新增本地 `yss-product-lifecycle` 兼容入口，实际读取原战略主控及其同一合同；历史 workflow_reference、资产所有者、checkpoint 不改名。公开插件仍只暴露 product-design。主模板的 consumer_entry_routes 通过共享同步投影到各 profile 原主控合同，保留各自其余规则。
 
-设计 CLI 的 vendor/cli-core、blob snapshot、metadata 与后端 CLI 不同，使用独立适配。原始 fixed CLI 包不可改写，当前设计 profile 的 canonical 技能生成物化投影并作为显式开发覆盖层；只在新建实例中应用。绑定既有实例只允许当前精确匹配核心，不自动升级。
+两插件共用 `native-build.mjs`，经公开 `bundle inspect` / `bundle export` 获取对应 Profile 的完整治理资产，并逐文件核验 bytes、mode 与摘要。各 Profile 保持独立 Bundle 来源锁，项目使用原生 `.yss.json` 身份与插件绑定。旧 compat `templatePlan/templateApply` 仅返回 `UNPORTED`，不能作为当前项目接入或同步入口。
+
+匹配且未绑定的原生项目通过 `project-bind-plan` / `project-bind-apply` 接入；旧身份通过 `project-migration-plan` / `project-migration-apply` 显式迁移，既有原生绑定通过 `project-upgrade-plan` / `project-upgrade-apply` 更新。插件升级不自动改写既有项目。
 
 ## 接口与状态
 
@@ -26,7 +28,7 @@
 
 ## 兼容、验证与交付
 
-已登记来源的开发包可通过显式迁移计划升级；来源摘要、全部项目文件、备份和失败回滚沿用原机制。未知来源、核心漂移、过期计划、已完成后端终点拒绝迁移。设计 profile 入口兼容不改变阶段门禁。
+显式迁移或升级使用保存的原生计划，绑定来源摘要与项目输入；治理文件、原生身份和插件绑定由同一事务应用并验证，保留备份和失败回滚。未知来源、身份或绑定冲突、输入漂移、过期计划、已完成后端终点保持阻断。设计 Profile 入口兼容不改变阶段门禁。Bundle provenance 与程序 commit / sourceState 分别核验，固定二进制本身不授予发布资格。
 
 维护强度 L3：跨仓合同、生成语义和权限边界。模板维护执行自检、聚焦回归、fast/candidate 适用验证，正式分发执行完整门禁和 committed 来源验证；不把业务切片审查要求扩展成所有模板修改的额外批准。
 

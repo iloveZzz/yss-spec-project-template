@@ -19,17 +19,16 @@ function temporary(t) {
   return dir;
 }
 
-test('supported Node range is consistent in retained governance tools and generated scaffolds', async () => {
-  for (const ref of ['.template-source/cli-core/package.json']) {
+test('supported Node range is consistent in retained governance tools', async () => {
+  for (const ref of ['.template-source/cli-core/package.json', '.template-source/tooling/node/package.json']) {
     assert.equal(json(ref).engines.node, '>=22.13 <27', ref);
   }
-  assert.match(read('.template-source/cli-core/scaffold.mjs').toString(), /engines: \{ node: ">=22\.13 <27" \}/);
   const { assertNodeVersion } = await import(pathToFileURL(path.join(root, coreRef)));
   for (const version of ['22.13.0', '22.13.1', '24.0.0', '26.0.0']) assert.doesNotThrow(() => assertNodeVersion(version));
   for (const version of ['22.12.0', '22.0.0', '21.7.3', '27.0.0']) assert.throws(() => assertNodeVersion(version), /22\.13/);
 });
 
-test('Node 22.12 startup rejection precedes runtime storage and scaffold writes', t => {
+test('Node 22.12 startup rejection precedes runtime storage and maintenance output writes', t => {
   const scratch = temporary(t);
   const preload = path.join(scratch, 'old-node.cjs');
   fs.writeFileSync(preload, "Object.defineProperty(process.versions, 'node', {value:'22.12.0'});\n");
@@ -40,13 +39,13 @@ test('Node 22.12 startup rejection precedes runtime storage and scaffold writes'
     const result=spawnSync(process.execPath,['--require',preload,path.join(target,'scripts/runtime-store'),'inspect','--root',target,'--home',runtimeHome],{cwd:target,encoding:'utf8'});
     assert.equal(result.status,2,`${profile}: ${result.stderr}`);assert.match(result.stdout+result.stderr,/运行存储需要 Node >=22\.13 <27，当前 22\.12\.0/);assert.equal(fs.existsSync(runtimeHome),false);
   }
-  const scaffoldTarget = path.join(scratch, 'scaffold');
-  const scaffold = spawnSync(process.execPath, ['--require', preload, path.join(root, '.template-source/cli-core/scaffold.mjs'), 'backend', scaffoldTarget], {
+  const measurementTarget = path.join(scratch, 'measurement');
+  const measurement = spawnSync(process.execPath, ['--require', preload, path.join(root, '.template-source/scripts/measure-runtime-store.mjs'), '--output', measurementTarget], {
     cwd: root, encoding: 'utf8', env: { ...process.env, YSS_RUNTIME_HOME: runtimeHome },
   });
-  assert.equal(scaffold.status, 1, scaffold.stderr);
-  assert.match(scaffold.stderr, /22\.13/);
-  assert.equal(fs.existsSync(scaffoldTarget), false);
+  assert.equal(measurement.status, 1, measurement.stderr);
+  assert.match(measurement.stderr, /运行存储需要 Node >=22\.13 <27，当前 22\.12\.0/);
+  assert.equal(fs.existsSync(measurementTarget), false);
   assert.equal(fs.existsSync(runtimeHome), false);
 });
 

@@ -37,6 +37,16 @@ test('完整 v2 报告按独立期望台账核验', t => {
   assert.throws(() => validateVerificationReport(f.report, f.options), /任务|task/);
 });
 
+test('当前报告拒绝挂靠退役源码回执与任务',t=>{
+  const f=fixture(t);
+  for(const mutate of [
+    r=>r.source_test_receipts=[],
+    r=>r.source_test_receipts=[{ref:'/old/source-test-receipt.json',sha256:'a'.repeat(64)}],
+    r=>r.plan.commands[0].kind='source-test-consumer',
+    r=>r.results[0].kind='source-test-consumer',
+  ]){const report=structuredClone(f.report);mutate(report);assert.throws(()=>validateVerificationReport(report,f.options));}
+});
+
 test('迁移场景报告绑定当前独立映射，拒绝旧argv和自改执行tuple',t=>{
   const f=fixture(t),ref='tests/scenarios/verify-context-contract-scenarios.mjs';
   fs.mkdirSync(path.join(f.directory,'tests/scenarios'),{recursive:true});fs.writeFileSync(path.join(f.directory,ref),'console.log("mapped current source");\n');
@@ -56,7 +66,9 @@ test('迁移场景报告绑定当前独立映射，拒绝旧argv和自改执行t
     r=>r.results[0].actual_execution.file='/other-node',
     r=>r.results[0].actual_execution.requested_command='node unapproved.mjs',
     r=>r.results[0].actual_execution.environment={NODE_OPTIONS:'--import unapproved.mjs'},
-  ]){const report=structuredClone(f.report);mutate(report);assert.throws(()=>validateVerificationReport(report,f.options),/实际|argv|tuple/);}
+    r=>r.results[0].actual_execution.source_consumer_ref='/old/source-test-receipt.json',
+    r=>r.results[0].actual_execution.source_receipt_sha256='a'.repeat(64),
+  ]){const report=structuredClone(f.report);mutate(report);assert.throws(()=>validateVerificationReport(report,f.options),/实际|argv|tuple|source_consumer_ref|source_receipt_sha256/);}
   fs.rmSync(path.join(f.directory,ref));
   assert.throws(()=>validateVerificationReport(f.report,f.options),/RETIRED_SCRIPT_TARGET_MISSING/);
 });

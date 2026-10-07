@@ -8,7 +8,7 @@ import {loadVerificationProfiles,planTemplateVerification} from '../../../script
 import {addVerificationExecutionTasks,compileTaskExecution} from './verification-execution-plan.mjs';
 import {compileLegacyPlan,verifyLegacyManifest} from './legacy-verification.mjs';
 import {LEGACY_SOURCE_COMMIT,LEGACY_COVERAGE_DIGEST} from './verification-gates.mjs';
-import {sourceTuple,collectReleaseSources,validateArtifact,validateCliSourceConsumer} from './verification-artifacts.mjs';
+import {sourceTuple,collectReleaseSources,validateArtifact} from './verification-artifacts.mjs';
 import {parseArgs} from 'node:util';
 import {validateJsonSchema} from '../../../scripts/lib/json-schema.mjs';
 import {validateLegacyRecoveryMatrix} from './legacy-recovery-matrix.mjs';
@@ -111,7 +111,6 @@ export function validateVerificationReport(report, {root,expectedPlan,reportDire
   }
   if(expectedFamilies)assert.deepEqual(report.sources_manifest?.families,expectedFamilies,'实际 CLI 家族不满足消费范围');
   const expectedGates=(expectedPlan.gates||[]).filter(g=>g.selected);
-  const verifiedSourceReceipts=new Map();
   assert.deepEqual(report.plan.gates||[],expectedPlan.gates||[],'验证 Gate 定义或全集不完整');
   assert.deepEqual((report.plan.gates||[]).filter(g=>g.selected).map(g=>g.id),expectedGates.map(g=>g.id),'验证 Gate 集合不完整');
   for (const task of expectedTasks) {
@@ -125,16 +124,7 @@ export function validateVerificationReport(report, {root,expectedPlan,reportDire
     const execution=task.execution||compileTaskExecution(task,{root:report.root,reportDir:reportDirectory});
     if(execution){
       ensure(row.actual_execution&&typeof row.actual_execution==='object','Node 测试实际执行 tuple 缺失');
-      const {source_receipt_sha256,...actual}=row.actual_execution;assert.deepEqual(actual,execution,'请求命令与实际 file/argv/cwd/env 不匹配');
-      if(execution.source_consumer_ref){
-        const refs=(report.source_test_receipts||[]).filter(ref=>ref.ref===execution.source_consumer_ref);
-        ensure(refs.length===1&&/^[a-f0-9]{64}$/.test(refs[0].sha256)&&refs[0].sha256===source_receipt_sha256,'源码测试准备回执或实际摘要未绑定');
-        if(!verifiedSourceReceipts.has(execution.source_consumer_ref)){
-          const receiptFile=assertEvidenceFile(execution.source_consumer_ref,reportDirectory,source_receipt_sha256),receipt=JSON.parse(fs.readFileSync(receiptFile,'utf8'));
-          const source=expectedSourcesManifest?.entries?.find(row=>row.family==='spec'),artifact=report.artifacts?.find(row=>row.source_tuple?.family==='spec');ensure(source&&artifact,'源码测试缺少独立固定来源或安装产物');
-          validateCliSourceConsumer(receipt,{root,expectedSource:source,directory:execution.cwd,artifact});verifiedSourceReceipts.set(execution.source_consumer_ref,receipt);
-        }
-      }else ensure(source_receipt_sha256===undefined,'普通测试不能挂靠未知源码回执');
+      assert.deepEqual(row.actual_execution,execution,'请求命令与实际 file/argv/cwd/env 不匹配');
     }else ensure(row.actual_execution===undefined,'报告声明了未批准的执行适配');
     if (row.reused) {
       const origin=report.results.find(result=>row.reused_from?.task_id?result.task_id===row.reused_from.task_id:result.index===row.reused_from?.index);

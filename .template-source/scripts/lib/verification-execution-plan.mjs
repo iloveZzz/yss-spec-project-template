@@ -34,6 +34,9 @@ const retiredScenarios = [
   'verify-yss-prototype-contract-scenarios', 'verify-yss-ui-scenarios',
 ];
 const retiredSources = new Map(retiredScenarios.map(name=>[`scripts/${name}`, `tests/scenarios/${name}.mjs`]));
+const retiredCoreTestSource='.template-source/cli-core/tests/*.test.mjs';
+const retiredCoreTestCommand=`node --test ${retiredCoreTestSource}`;
+retiredSources.set(retiredCoreTestSource,'tests/cli-core-retirement.test.mjs');
 if(new Set(retiredScenarios).size!==retiredScenarios.length)throw new TypeError('RETIRED_SCRIPT_SOURCE_DUPLICATE');
 retiredSources.set('scripts/verify-context-contract','scripts/lib/native-context.mjs');
 retiredSources.set('scripts/verify-scaffold-generator-scenarios','tests/scenarios/verify-scaffold-generator-scenarios.py');
@@ -107,8 +110,16 @@ function shellWords(command){
   }
   if(quoted)throw new TypeError('NODE_TEST_COMMAND_INVALID');if(started)words.push(word);return words;
 }
-export function compileTaskExecution(task,{root,reportDir,sourceReceipt,fixedCommit}={}){
+export function compileTaskExecution(task,{root,reportDir,fixedCommit}={}){
+  if(task.kind==='source-test-consumer')throw new TypeError('RETIRED_SOURCE_CONSUMER: 旧源码消费任务不再授予验证资格');
   const requested=task.command.trim();
+  // Bind the frozen occurrence before expanding its removed test glob. The
+  // current profile calls the public native tests directly with its own request.
+  if(task.task_id==='legacy.012'||requested===retiredCoreTestCommand) {
+    if(task.task_id!=='legacy.012'||task.id!=='check.371da192d6338e6d'||task.command!==retiredCoreTestCommand)throw new TypeError('RETIRED_CHECK_REQUEST_MISMATCH');
+    const file=observedRetiredTarget(root,retiredCoreTestSource);
+    return {requested_command:task.command,file:process.execPath,args:['--test','--test-concurrency=1',file],cwd:root,environment:{}};
+  }
   if(/^(?:node\s+)?scripts\/verify-context-contract(?:\s|$)/.test(requested)) {
     const words=shellWords(requested);if(words[0]==='node')words.shift();words.shift();
     const execution=contextExecution(root,words);
@@ -129,6 +140,7 @@ export function compileTaskExecution(task,{root,reportDir,sourceReceipt,fixedCom
   if(!/^(?:node(?:\.exe)?|['"][^'"]*[\\/]node(?:\.exe)?['"]|\S*[\\/]node(?:\.exe)?)\s/.test(requested))return null;
   const words=shellWords(requested),binary=words.shift();
   if(!/^node(?:\.exe)?$/.test(path.basename(binary)))return null;
+  if(words.includes(retiredCoreTestSource))throw new TypeError('RETIRED_CHECK_REQUEST_MISMATCH');
   // Map only actual script operands, never source text passed to -e.
   if(!words.includes('-e')&&!words.includes('--eval')&&!words.includes('--input-type=module')) {
     const refs=words.filter(word=>retiredSources.has(word)||/^scripts\/verify-[^/]+-scenarios$/.test(word));

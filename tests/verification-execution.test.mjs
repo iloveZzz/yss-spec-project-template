@@ -24,6 +24,14 @@ const fixtureRoot=t=>{
   git('init','-q');git('add','.');git('-c','user.name=Fixture','-c','user.email=fixture@example.invalid','commit','-qm','fixture');
   return {directory,root};
 };
+test('旧源码消费任务在真实 worker 执行任何命令前被拒绝',async t=>{
+  const {directory,root}=fixtureRoot(t),marker=path.join(directory,'old-source-executed');
+  const task={id:'check.old-source',task_id:'old-source',kind:'source-test-consumer',group:'checks',command:node(`require('node:fs').writeFileSync(${JSON.stringify(marker)},'executed')`)};
+  const plan={strategy:'qualified-gates',requested_profile:'candidate',effective_profile:'candidate',source_requirement:'current',required_files:[],syntax_files:[],groups:['checks'],selection:{effective:'legacy',omitted:[]},gates:[],commands:[task]};
+  const result=await executeVerificationPlan({root,plan,reportDir:path.join(directory,'report'),purpose:'qualification'});
+  assert.equal(result.code,1);assert.equal(fs.existsSync(marker),false);
+  assert.throws(()=>compileTaskExecution(task,{root}),/RETIRED_SOURCE_CONSUMER/);
+});
 test('真实Git退役四gitlink差异纳入完整门禁，仍保留三个Agent与统一CLI来源',t=>{
   const {root}=fixtureRoot(t),sourceRoot=fileURLToPath(new URL('..',import.meta.url)),git=(...args)=>execFileSync('git',args,{cwd:root,encoding:'utf8'}).trim();
   const retired=['create-yss-spec','create-yss-harness-strategic-design','create-yss-harness-backend','create-yss-harness-frontend'].map(name=>`submodules/${name}`);

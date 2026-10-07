@@ -13,9 +13,7 @@
         "file": {"type": "string", "minLength": 1},
         "args": {"type": "array", "items": {"type": "string"}},
         "cwd": {"type": "string", "minLength": 1},
-        "environment": {"type": "object", "additionalProperties": {"type": "string"}},
-        "source_consumer_ref": {"type": "string", "minLength": 1},
-        "source_receipt_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+        "environment": {"type": "object", "additionalProperties": {"type": "string"}}
       }
     }
   },
@@ -112,6 +110,7 @@
                 "type": "string",
                 "minLength": 1
               },
+              "kind": {"not": {"const": "source-test-consumer"}},
               "execution": {"$ref": "#/$defs/execution"},
               "gate_ids": {
                 "type": "array",
@@ -251,6 +250,7 @@
           "command": {
             "type": "string"
           },
+          "kind": {"not": {"const": "source-test-consumer"}},
           "actual_execution": {"$ref": "#/$defs/execution"},
           "code": {
             "type": "integer"
@@ -412,17 +412,6 @@
         "null"
       ]
     },
-    "source_test_receipts": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": ["ref", "sha256"],
-        "additionalProperties": false,
-        "properties": {
-          "ref": {"type": "string", "minLength": 1},
-          "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
-        }
-      }
-    }
+    "source_test_receipts": false
   }
 }

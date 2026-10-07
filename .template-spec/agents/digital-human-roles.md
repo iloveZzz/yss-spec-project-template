@@ -68,7 +68,7 @@ Grok 专用操作见 `.template-spec/templates/grok-bot-profile-template.md`。�
 ## 实例化
 
 - 模板仓：`publish-singleton-profiles`。账户级只发布一套职称 profile，不按功能再拆。
-- `project-instance`：`duplicate-and-bind-repo-path`。复制 YAML 的 `title` / `description` / `core_skills`，写入本仓库路径，选择 `runtime_id`。步骤见 `.template-spec/templates/digital-human-runtime-profile-template.md`。外部 `create-yss-spec` 尚未接管此步骤。
+- `project-instance`：`duplicate-and-bind-repo-path`。复制 YAML 的 `title` / `description` / `core_skills`，写入本仓库路径，选择 `runtime_id`。步骤见 `.template-spec/templates/digital-human-runtime-profile-template.md`。当前运行时角色绑定仍按该清单人工完成。
 
 ## 任务包最低字段
 
