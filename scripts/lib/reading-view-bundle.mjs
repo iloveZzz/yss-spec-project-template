@@ -31,7 +31,7 @@ function build(root,checkpoint){
  return withValidationPhase({root,purpose:'reading-bundle',readOnly:true},()=>{
   identity(root);readingPolicy(root);
   if(!bytes(root,'CONTEXT.md'))throw Error('reading-context-required');
-  const loc=readingLocation(checkpoint),raw=parseSliceYaml(bytes(root,checkpoint)),assets=[{ref:checkpoint,kind:'checkpoint'}],seen=new Set();
+  const loc=readingLocation(root,checkpoint),raw=parseSliceYaml(bytes(root,checkpoint)),assets=[{ref:checkpoint,kind:'checkpoint'}],seen=new Set();
   for(const [key,value]of Object.entries(raw.artifacts||{})){
    const kind=kinds[key];if(!kind)continue;
    const ref=typeof value==='string'?value:value?.ref;
@@ -124,7 +124,7 @@ function locked(root,loc,action){
  try{if(loc.recover!==false)recover(root,loc);return action();}finally{if(fs.existsSync(file)&&fs.readFileSync(file,'utf8')===token)fs.unlinkSync(file);}
 }
 export function renderReadingBundle(root,checkpoint,{afterWrite}={}){
- root=path.resolve(root);identity(root);const loc=readingLocation(checkpoint);
+ root=path.resolve(root);identity(root);const loc=readingLocation(root,checkpoint);
  return locked(root,loc,()=>{
   const built=build(root,checkpoint),changes=changesFor(root,built);verifyInputs(root,built);
   if(!changes.length)return {status:'unchanged',checkpoint_ref:checkpoint,diagnostics:built.manifest.diagnostics};
@@ -146,7 +146,7 @@ export function checkReadingViews(root,checkpoint,{required=false}={}){
  identity(root);const enabled=managedReading(root,checkpoint);
  if(!required&&!enabled)return {status:'manual',read_only:true,execution_allowed:false,blockers:[]};
  try{
-  const loc=readingLocation(checkpoint);
+  const loc=readingLocation(root,checkpoint);
   if(bytes(root,`${loc.directory}/.transaction.json`)||bytes(root,`${loc.directory}/.lock`))throw Error('reading-update-incomplete');
   const expected=build(root,checkpoint),actual=oldManifest(root,loc),reasons=[];
   if(!actual||json(actual)!==json(expected.manifest))reasons.push('reading-manifest-stale');
@@ -179,7 +179,7 @@ export function finalizeReading(root,checkpoint,sourceOperation){
 export function readingCheckpointsForAsset(root,ref,kind){
  if(!['domain-strategy','stage-decision-package','checkpoint','tracking-migration'].includes(kind))return [];
  const policy=readingPolicy(root);if(policy.mode!=='managed')return [];
- return policy.checkpoints.filter(checkpoint=>ref.startsWith(readingLocation(checkpoint).base+'/'));
+ return policy.checkpoints.filter(checkpoint=>ref.startsWith(readingLocation(root,checkpoint).base+'/'));
 }
 export function assertReadingTransition(root,decisionState,currentWorkUnit){
  const ref=decisionState?.checkpoint_ref||decisionState?.checkpoint?.ref;
@@ -188,7 +188,7 @@ export function assertReadingTransition(root,decisionState,currentWorkUnit){
  const result=checkReadingViews(root,ref);if(result.blockers.length)throw Error(`reading-views-stale: ${result.blockers.join('; ')}`);return result;
 }
 export function saveReadingComparison(root,checkpoint,result){
- const loc=readingLocation(checkpoint);
+ const loc=readingLocation(root,checkpoint);
  if(result.blockers?.length||!result.diff||!result.diff.markdown)throw Error('reading-comparison-source-invalid');
  const report=result.diff.markdown+'\n批准有效性：not-checked；原决定及语义审阅仍按准备结果处理。\n';
  const id=hash(json({before:result.before,after:result.after,report,renderer:toolClosure()})).slice(7),ref=`${loc.directory}/changes/${id}.md`,file=safe(root,ref,{missing:true});

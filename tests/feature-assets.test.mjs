@@ -14,6 +14,7 @@ function fixture(t) {
   const area = fs.mkdtempSync(path.join(os.tmpdir(), 'feature-assets-test-'));
   const root = path.join(area, 'project'); fs.mkdirSync(root);
   const put = (ref, text) => { const file = path.join(root, ref); fs.mkdirSync(path.dirname(file), {recursive:true}); fs.writeFileSync(file, text); return file; };
+  put('.template-spec/agents/issue-tracker.md','---\ntracker:\n  platform: local-markdown\n  root: docs/.scratch\n---\n');
   put('yss-project.yaml', 'schema_version: 1\nrepository_mode: project-instance\n');
   put(`${feature}/checkpoint.yaml`, 'schema_version: 1\nrepository_mode: project-instance\nfeature_id: example\nstage: stage.plan\n');
   const call = (...args) => spawnSync(process.execPath, [cli, ...args, '--root', root], {encoding:'utf8'});

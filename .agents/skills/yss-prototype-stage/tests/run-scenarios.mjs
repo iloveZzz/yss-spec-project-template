@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import {fixtureTracker} from './work-layout-fixture.mjs';
 import assert from "node:assert/strict";
 import { buildDecisionFixture } from "../../../../scripts/lib/testing/user-decision-fixture.mjs";
 import { mkdtemp, mkdir, readFile, writeFile, rm, cp, symlink } from "node:fs/promises";
@@ -11,6 +12,7 @@ import { sealOfflineHtml } from "../scripts/offline-html.mjs";
 
 const tempRoot = await mkdtemp(path.join(os.tmpdir(), "yss-prototype-contract-"));
 const projectRoot = path.join(tempRoot, "project");
+await fixtureTracker(projectRoot,'.work');
 const feature = "order-review";
 await mkdir(path.join(projectRoot, ".template-spec/design/tokens"), { recursive: true });
 await writeFile(path.join(projectRoot, "DESIGN.md"), "---\nversion: alpha\n---\n");
@@ -18,7 +20,7 @@ await writeFile(path.join(projectRoot, ".template-spec/design/tokens/theme.json"
 
 await cp(new URL("../../../../.template-spec/design/tokens/variables.css", import.meta.url), path.join(projectRoot, ".template-spec/design/tokens/variables.css"));
 
-const h1Root = path.join(projectRoot, "docs/.scratch", feature, "design/prototypes");
+const h1Root = path.join(projectRoot, ".work", feature, "design/prototypes");
 await prepareStaticPrototype({ projectRoot, root: h1Root, feature });
 assert.deepEqual((await validatePrototypeProject({ root: h1Root, profile: "H1" })).errors, []);
 const originalHtml = await readFile(path.join(h1Root, "index.html"), "utf8");
@@ -29,7 +31,7 @@ assert((await validatePrototypeProject({ root: h1Root, profile: "H1" })).errors.
 await rm(path.join(h1Root, "package.json"));
 
 const h2Feature = "approval-flow";
-const h2Root = path.join(projectRoot, "docs/.scratch", h2Feature, "design/prototypes");
+const h2Root = path.join(projectRoot, ".work", h2Feature, "design/prototypes");
 const h2Manifest = await prepareFlowPrototype({ projectRoot, root: h2Root, feature: h2Feature });
 assert.equal(h2Manifest.component_basis, "html-css-js");
 assert.equal(h2Manifest.runtime_build_required, false);
@@ -63,7 +65,7 @@ function common(profile, kind, block) {
   const data = {
     schema_version: 4,
     feature,
-    prototype_ref: `docs/.scratch/${feature}/design/prototypes/index.html`,
+    prototype_ref: `.work/${feature}/design/prototypes/index.html`,
     prototype_profile: profile,
     profile_kind: kind,
     profile_decision: {
@@ -76,16 +78,16 @@ function common(profile, kind, block) {
     upstream_refs: { spec_ref: "spec.md", interaction_spec_ref: "interaction.md", low_fidelity_ref: "low.md", state_matrix_ref: "states.md", prototype_review_ref: "review.md" },
     source_visual: { ideation_status: "not-applicable", selected_ref: "approved-pattern.md", reuse_reason: "复用已批准模式" },
     design_baseline: { canonical_design_ref: "DESIGN.md", canonical_design_digest: "sha256:design", project_design_ref: ".template-spec/design/design.md", project_token_refs: [".template-spec/design/tokens/theme.json"], project_token_baseline_digest: "sha256:tokens", project_override_reviewed: true },
-    visual_baseline: { manifest_ref: `docs/.scratch/${feature}/handoff/visual-baseline-v1/visual-baseline.yaml`, baseline_id: `visual-baseline.${feature}`, version: "v1", digest: `sha256:${"a".repeat(64)}`, status: "approved", case_ids: ["primary-desktop", "primary-narrow"] },
+    visual_baseline: { manifest_ref: `.work/${feature}/handoff/visual-baseline-v1/visual-baseline.yaml`, baseline_id: `visual-baseline.${feature}`, version: "v1", digest: `sha256:${"a".repeat(64)}`, status: "approved", case_ids: ["primary-desktop", "primary-narrow"] },
     browser_delivery: {
-      delivery_kind: "static-directory", entry_ref: `docs/.scratch/${feature}/design/prototypes/index.html`, rendered_nonblank: true, prototype_digest: "sha256:prototype",
+      delivery_kind: "static-directory", entry_ref: `.work/${feature}/design/prototypes/index.html`, rendered_nonblank: true, prototype_digest: "sha256:prototype",
       viewports: [
         { name: "desktop", size: "1440x900", result: "passed", case_ids: ["primary-desktop"] },
         { name: "narrow", size: "390x844", result: "passed", case_ids: ["primary-narrow"] }
       ],
       console_result: "passed", console_ref: "console.txt"
     },
-    design_qa: { report_ref: `docs/.scratch/${feature}/verification/design-qa.md`, result: "passed", axes: { visual: "passed", layout: "passed", interaction: "passed", content: "passed", accessibility: "passed", cross_platform: "passed" } },
+    design_qa: { report_ref: `.work/${feature}/verification/design-qa.md`, result: "passed", axes: { visual: "passed", layout: "passed", interaction: "passed", content: "passed", accessibility: "passed", cross_platform: "passed" } },
     profile_evidence: block,
     implementation_handoff: {
       prototype_code_reusable: false,
@@ -201,7 +203,7 @@ function pngHeader(width, height) {
   value.writeUInt32BE(13, 8); value.write("IHDR", 12, "ascii"); value.writeUInt32BE(width, 16); value.writeUInt32BE(height, 20);
   return value;
 }
-const bundleRoot = path.join(projectRoot, "docs/.scratch", feature, "handoff/visual-baseline-v1");
+const bundleRoot = path.join(projectRoot, ".work", feature, "handoff/visual-baseline-v1");
 await mkdir(path.join(bundleRoot, "images"), { recursive: true });
 await mkdir(path.join(bundleRoot, "sources"), { recursive: true });
 await mkdir(path.join(bundleRoot, "capture"), { recursive: true });
@@ -215,7 +217,7 @@ await writeFile(path.join(bundleRoot, "capture/result.json"), "{\"result\":\"pas
 const baselineFile = path.join(bundleRoot, "visual-baseline.yaml");
 const baseline = {
   schema_version: 1, baseline_id: `visual-baseline.${feature}`, feature, version: "v1", status: "approved",
-  bundle: { format: "portable-directory", root_ref: `docs/.scratch/${feature}/handoff/visual-baseline-v1`, digest: `sha256:${"0".repeat(64)}`, size_bytes: 0, max_image_bytes: 5242880, max_bundle_bytes: 104857600 },
+  bundle: { format: "portable-directory", root_ref: `.work/${feature}/handoff/visual-baseline-v1`, digest: `sha256:${"0".repeat(64)}`, size_bytes: 0, max_image_bytes: 5242880, max_bundle_bytes: 104857600 },
   source: { prototype_ref: "sources/prototype.snapshot.html", prototype_digest: `sha256:${"1".repeat(64)}`, interaction_spec_ref: "sources/interaction-spec.snapshot.md", interaction_spec_digest: `sha256:${"2".repeat(64)}`, state_matrix_ref: "sources/state-matrix.snapshot.md", state_matrix_digest: `sha256:${"3".repeat(64)}` },
   capture_environment: { browser: "chromium", browser_version: "140.0.0", operating_system: "linux", fonts_digest: `sha256:${"4".repeat(64)}`, device_scale_factor: 1, color_space: "srgb", locale: "zh-CN", timezone: "Asia/Shanghai", animations_disabled: true, cursor_hidden: true, capture_script_ref: "capture/capture.mjs", capture_script_digest: `sha256:${"5".repeat(64)}`, capture_result_ref: "capture/result.json", capture_result_digest: `sha256:${"6".repeat(64)}` },
   cases: [

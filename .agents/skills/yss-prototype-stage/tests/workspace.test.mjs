@@ -1,3 +1,4 @@
+import { fixtureTracker } from './work-layout-fixture.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile,mkdtemp,mkdir,cp} from 'node:fs/promises';
@@ -62,6 +63,7 @@ test('workspace style references resolve to generated project or local variables
 test('workspace builds as a portable Vue package with exact page source closure',{},async()=>{
  const projectRoot=await mkdtemp(path.join(os.tmpdir(),'yss-workspace-contract-'));await mkdir(path.join(projectRoot,'.template-spec/design/tokens'),{recursive:true});
  for(const file of ['DESIGN.md','.template-spec/design/tokens/variables.css'])await cp(new URL('../../../../'+file,import.meta.url),path.join(projectRoot,file));
+ await fixtureTracker(projectRoot);
  const root=path.join(projectRoot,'docs/.scratch/workspace/design/prototypes');const manifest=await buildShadcnVuePrototype({projectRoot,root,feature:'workspace',toolchain:process.env.YSS_VUE_TOOLCHAIN,config:new URL('../assets/vue-business-patterns/workspace-standard.config.json',import.meta.url).pathname});
  assert.equal(manifest.component_basis,'vue-shadcn-prebuilt');assert.equal(manifest.build_provenance.component_groups.length,27);assert.deepEqual((await validatePrototypeProject({root,projectRoot})).errors,[]);
  for(const source of ['ListDetail.vue','MultiStep.vue','Approval.vue','Conflict.vue','Analysis.vue','workspace-model.js','workspace-page.ts','workspace-definition.ts'])assert(manifest.files['authoring-sources/'+source],source);

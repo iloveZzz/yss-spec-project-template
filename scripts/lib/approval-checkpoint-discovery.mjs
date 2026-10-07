@@ -1,3 +1,4 @@
+import { readWorkLayout } from './work-layout.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import {approvalIO, approvalError} from './approval-record-io.mjs';
@@ -18,6 +19,8 @@ export function findApprovalCheckpoint(root, approvalRef) {
     const rows = [...Object.values(value.gates), ...Object.values(value.checks || {})];
     if (rows.some(row => row?.approval_ref && path.resolve(root,row.approval_ref) === selected)) matches.push(ref);
   };
+  const workRoots = readWorkLayout(root).scanRoots;
+  for (const ref of workRoots.filter(ref => !ref.startsWith('docs/'))) visit(ref);
   for (const name of fs.readdirSync(root).sort()) {
     if (name === 'docs' || name === '.yss' || /\.(?:json|ya?ml)$/.test(name)) visit(name);
   }

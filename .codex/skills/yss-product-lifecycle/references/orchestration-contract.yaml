@@ -327,7 +327,7 @@ task_package:
   compatibility_schema_ref: .template-spec/process/schemas/subagent-task-package.schema.json
   validator: scripts/verify-digital-human-task-package
   compatibility_validator: scripts/verify-digital-human-task-package
-  persistence_layout: docs/.scratch/<feature>/task-packages/<task-id>.yaml
+  persistence_layout: .work/<feature>/task-packages/<task-id>.yaml
   required: [ schema_version, task_id, work_unit_id, actor_id, role_id, runtime_id, execution_state, workflow_status, skill_source, contract, inputs, objective, allowed_write_paths, forbidden_actions, expected_outputs, expected_evidence_files, verification_commands, verification_results, downstream_consumers, convergence ]
   execution_states: [ Explorer, Drafter, Worker, Reviewer, Verifier ]
   workflow_statuses: [ not-started, active, paused, resolved, failed ]
@@ -1191,7 +1191,7 @@ tracker:
   remote_origin_role: code_host_only
   no_automatic_cross_platform_switch: true
   local_markdown:
-    root: docs/.scratch
+    root: .work
     legacy_roots: [ .scratch, docs/requirements/tickets ]
     feature_layout: [ map.md, plan, spec.md, spec-delta, parent-ticket.md, design, api, architecture, gates, verification, issues ]
     primary_sync: local
@@ -1201,7 +1201,7 @@ tracker:
   remote_platforms:
     primary_sync: remote
     remote_ticket_required: true
-    unavailable_fallback_root: docs/.scratch
+    unavailable_fallback_root: .work
     unavailable_fallback_marker: pending-publication
     unavailable_fallback_record: parent-ticket.md
     unavailable_fallback_fields: [ tracker, publication, pending_publication_to ]

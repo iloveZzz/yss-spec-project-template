@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { readWorkLayout, TRACKER_REF } from '../../../../scripts/lib/work-layout.mjs';
 import { existsSync, realpathSync } from 'node:fs';
 import {mkdtemp,mkdir,cp,writeFile,readdir,rename,rm} from 'node:fs/promises';
 import path from 'node:path';
@@ -12,7 +13,8 @@ export async function exportVuePatterns({projectRoot,output,toolchain}){
  try{
   const fixture=path.join(temp,'fixture'),bundle=path.join(temp,'bundle');await mkdir(path.join(fixture,'.template-spec/design/tokens'),{recursive:true});await mkdir(bundle);
   for(const ref of ['DESIGN.md','.template-spec/design/tokens/variables.css'])await cp(path.join(projectRoot,ref),path.join(fixture,ref));
-  for(const name of Object.keys({...patterns,...catalog})){const root=path.join(fixture,`docs/.scratch/${name}/design/prototypes`);await buildShadcnVuePrototype({projectRoot:fixture,root,feature:name,toolchain,config:new URL(`../assets/vue-business-patterns/${name}-standard.config.json`,import.meta.url).pathname});await cp(root,path.join(bundle,name),{recursive:true});}
+  await mkdir(path.join(fixture,'.template-spec/agents'),{recursive:true});await cp(path.join(projectRoot,TRACKER_REF),path.join(fixture,TRACKER_REF));
+  for(const name of Object.keys({...patterns,...catalog})){const root=path.join(fixture,readWorkLayout(fixture).featureRoot(name),'design/prototypes');await buildShadcnVuePrototype({projectRoot:fixture,root,feature:name,toolchain,config:new URL(`../assets/vue-business-patterns/${name}-standard.config.json`,import.meta.url).pathname});await cp(root,path.join(bundle,name),{recursive:true});}
   await cp(path.join(projectRoot,'.template-spec/design/tokens/variables.css'),path.join(bundle,'tokens.css'));
   await writeFile(path.join(bundle,'index.html'),`<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Vue 企业页面模式</title><link rel="stylesheet" href="tokens.css"><style>body{font-family:var(--brand-font-family);color:var(--brand-color-text);background:var(--brand-color-bg-layout);padding:var(--brand-size-lg)}a{color:var(--yss-color-primary-control)}li{margin-block:var(--brand-size)}</style><h1>Vue 企业页面模式</h1><p>维护教学示例；场景及保存结果为本地模拟，不代表已批准产品。</p><ul>${Object.entries({...patterns,...catalog}).map(([id,label])=>`<li><a href="${id}/index.html">${label}</a></li>`).join('')}</ul></html>`);
   await rename(bundle,output);return {root:output,entry:path.join(output,'index.html'),patterns:Object.keys(patterns)};

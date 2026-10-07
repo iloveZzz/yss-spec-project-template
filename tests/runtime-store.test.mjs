@@ -225,6 +225,21 @@ test('JSON/YAML/Markdown逐仓登记组合local_worktree与project_root', t => {
   assert.throws(() => resolveRuntimeLocation({ ...config, home: path.join(second, 'runtime') }), /不得进入/);
 });
 
+test('运行目录保护消费配置的功能包根和历史扫描根', t => {
+ const config = fixture(t), external = path.join(config.base, 'bound-repository');
+ fs.mkdirSync(external);
+ fs.mkdirSync(path.join(config.root, '.template-spec/agents'), {recursive:true});
+ for (const base of ['.work', 'custom-work']) {
+  fs.writeFileSync(path.join(config.root, '.template-spec/agents/issue-tracker.md'), `---\ntracker:\n  platform: local-markdown\n  root: ${base}\n---\n`);
+  fs.mkdirSync(path.join(config.root,base,'report'),{recursive:true});
+  fs.writeFileSync(path.join(config.root,base,'report/repositories.json'),JSON.stringify({local_worktree:external}));
+  assert.throws(()=>resolveRuntimeLocation({...config,home:path.join(external,'runtime')}), /不得进入/);
+  fs.unlinkSync(path.join(config.root,base,'report/repositories.json'));
+ }
+ fs.writeFileSync(path.join(config.root, '.template-spec/agents/issue-tracker.md'), '---\ntracker:\n  platform: local-markdown\n  root: .yss/work\n---\n');
+ assert.throws(()=>resolveRuntimeLocation(config), /WORK_LAYOUT_RESERVED/);
+});
+
 test('登记路径保留引号和JSON转义，不漏保护仓外项目', t => {
   const config = fixture(t); fs.mkdirSync(path.join(config.root, 'docs'));
   const names = ["registered's folder", '$registered{root}', ...(process.platform === 'win32' ? [] : ['escaped\\path"quote'])];

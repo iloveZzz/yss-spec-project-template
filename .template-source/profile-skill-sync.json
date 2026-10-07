@@ -379,7 +379,7 @@
           "id": "yss-openapi-governance",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/backend/yss-openapi-governance.patch",
-          "source_tree_sha256": "36328310f2d244caa1c088a426a3536c5be253e770a94ce48c37226d8bf4b9c0"
+          "source_tree_sha256": "cf347105e7bc1f937d91b4e8c67b49d05858656356b51cebae198dbd6a274bba"
         },
         {
           "id": "prototype",
@@ -671,13 +671,13 @@
           "id": "yss-openapi-governance",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/frontend/yss-openapi-governance.patch",
-          "source_tree_sha256": "36328310f2d244caa1c088a426a3536c5be253e770a94ce48c37226d8bf4b9c0"
+          "source_tree_sha256": "cf347105e7bc1f937d91b4e8c67b49d05858656356b51cebae198dbd6a274bba"
         },
         {
           "id": "prototype-review",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/frontend/prototype-review.patch",
-          "source_tree_sha256": "a4c55ace9893dce312645f4f9a200adf6ba28cb2879e317403f12e10ebf990cc"
+          "source_tree_sha256": "6df4f4443b1f32e565b47330ec0d71c1a2bccf1c5b344f7f17891b87e23f867d"
         },
         {
           "id": "triage",
@@ -689,13 +689,13 @@
           "id": "yss-api-integration",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/frontend/yss-api-integration.patch",
-          "source_tree_sha256": "66582cef67e45cfda0120542618e2b93b35101d006e636c4b93f2f1dc9c1f7ac"
+          "source_tree_sha256": "43dce4e7cf27f8995956eb5fc0fb56440ac422412ea96321714cf5edb7b46176"
         },
         {
           "id": "yss-openapi-draft-review",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/frontend/yss-openapi-draft-review.patch",
-          "source_tree_sha256": "139e95594aadc83223c3aff46447b6369f91525a85375b94ff73a16f057e8500"
+          "source_tree_sha256": "1ec20053c78df208218453fff19c2d27da659fccf92cfe32ab8c3be8a187a774"
         },
         {
           "id": "yss-skill-source-index-refresh",

@@ -79,10 +79,20 @@ function nativeFixture(t, version=2, profile='spec') {
   profileId:profile==='spec'?'harness.spec-template':'harness.business-ddd-strategy-handoff',
   templateSourceState:'committed',templateCommit:'a'.repeat(40),snapshotHash:'b'.repeat(64),manifestHash:'c'.repeat(64),
   variables:{},distribution:{mode:'selected'},managedFiles:{},baselineDigest:sha('{}')};
- if(version===2)Object.assign(metadata,{bundleSchemaVersion:2,bundleHash:'d'.repeat(64),cliSourceState:'committed',cliCommit:'e'.repeat(40)});
+ if(version>=2)Object.assign(metadata,{bundleSchemaVersion:version,bundleHash:'d'.repeat(64),cliSourceState:'committed',cliCommit:'e'.repeat(40)});
  const save=()=>fs.writeFileSync(path.join(root,'.yss.json'),JSON.stringify(metadata));save();
  return {root,metadata,save};
 }
+test('metadata v3 绑定模板基线与保留决定，并保留本地0600权限', t => {
+ const f=nativeFixture(t,3);
+ const baseline={type:'file',digest:'a'.repeat(64),mode:420};
+ const applied={type:'file',digest:'b'.repeat(64),mode:384};
+ const item={baseline,lastApplied:applied,ownership:'managed-customizable',baselineSource:{kind:'bundle',templateCommit:f.metadata.templateCommit,snapshotHash:f.metadata.snapshotHash,bundleHash:f.metadata.bundleHash,path:'AGENTS.md',variant:'initial',templateDigest:'c'.repeat(64)},disposition:{choice:'keep-local',target:baseline,applied}};
+ f.metadata.managedFiles={'AGENTS.md':item};f.metadata.baselineDigest=sha(JSON.stringify(f.metadata.managedFiles));f.save();
+ assert.equal(readInstanceMetadata(f.root).metadata.managedFiles['AGENTS.md'].lastApplied.mode,384);
+ item.disposition.applied={...applied,digest:'0'.repeat(64)};f.metadata.baselineDigest=sha(JSON.stringify(f.metadata.managedFiles));f.save();
+ assert.throws(()=>readInstanceMetadata(f.root),/保留决定与基线矛盾/);
+});
 test('两固定插件 binding 必须匹配原生家族和来源，保留旧 metadata 不改变身份', async t => {
  for(const profile of ['spec','design'])await t.test(profile, async t=>{
   const f=nativeFixture(t,2,profile);

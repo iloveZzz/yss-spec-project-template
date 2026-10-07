@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
-import { spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, writeFileSync } from 'node:fs';
+import { execFileSync, spawnSync } from 'node:child_process';
+import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { hash } from '../runtime.mjs';
@@ -18,10 +18,11 @@ export function sourceUpgrade(build, name, profile) {
   const parent = realpathSync(mkdtempSync(path.join(process.env.YSS_PLUGIN_TEST_ROOT || tmpdir(), `source-upgrade-${profile}-`)));
   const receipt = profile === 'design' ? '.yss-product-design-plugin.json' : '.yss-backend-plugin.json';
   const events = [], startedAt = new Date().toISOString();
+  let previousSource = null;
   let passed = false;
   const persist = () => writeFileSync(path.join(parent, 'source-upgrade-result.json'), JSON.stringify({ profile, target: path.join(parent, 'project'),
     previous_binary: previousBinary, previous_binary_sha256: previousDigest, binary, binary_sha256: hash(readFileSync(binary)),
-    started_at: startedAt, finished_at: new Date().toISOString(), passed, events }, null, 2) + '\n');
+    previous_source: previousSource, started_at: startedAt, finished_at: new Date().toISOString(), passed, events }, null, 2) + '\n');
   function execute(executable, args, expected = 0) {
     const start = new Date().toISOString();
     const result = spawnSync(executable, args, { encoding: 'utf8', timeout: 120000, maxBuffer: 128 * 1024 * 1024 });
@@ -34,7 +35,32 @@ export function sourceUpgrade(build, name, profile) {
     const previousRoot = path.join(parent, 'previous'), currentRoot = path.join(parent, 'current');
     mkdirSync(previousRoot); mkdirSync(currentRoot);
     const previousPlugin = path.join(previousRoot, name), currentPlugin = path.join(currentRoot, name), target = path.join(parent, 'project');
-    build({ output: previousPlugin, binary: previousBinary }); build({ output: currentPlugin, binary });
+    const previousCommit = process.env.YSS_PLUGIN_PREVIOUS_SOURCE_COMMIT;
+    if (previousCommit) {
+      assert.match(previousCommit, /^[a-f0-9]{40}$/, 'historical plugin source requires a full fixed commit');
+      const repository = realpathSync(process.env.YSS_PLUGIN_PREVIOUS_SOURCE_GIT_ROOT);
+      const source = path.join(parent, 'previous-source'); mkdirSync(source);
+      const prefixes = ['.template-source/plugins/yss-backend-delivery', '.template-source/plugins/yss-product-design'];
+      const tree = execFileSync('git', ['-C', repository, 'ls-tree', '-r', '-z', previousCommit, ...prefixes], { maxBuffer: 4 * 1024 * 1024 });
+      const records = [];
+      for (const entry of tree.toString('utf8').split('\0').filter(Boolean)) {
+        const [header, ref] = entry.split('\t'), [mode, kind, blob] = header.split(' ');
+        assert.ok(kind === 'blob' && ['100644', '100755'].includes(mode), 'historical closure only contains regular Git blobs');
+        assert.ok(prefixes.some(prefix => ref.startsWith(prefix + '/')) && !ref.split('/').includes('..'));
+        const bytes = execFileSync('git', ['-C', repository, 'cat-file', 'blob', blob], { maxBuffer: 4 * 1024 * 1024 });
+        const file = path.join(source, ref), permissions = mode === '100755' ? 0o755 : 0o644;
+        mkdirSync(path.dirname(file), { recursive: true }); writeFileSync(file, bytes, { flag: 'wx' }); chmodSync(file, permissions);
+        records.push({ ref, git_blob: blob, sha256: hash(bytes), mode: permissions });
+      }
+      assert.ok(records.length > 0, 'historical plugin dependency closure must exist');
+      previousSource = { repository, commit: previousCommit, root: source, files: records };
+      // Keep the historical builder and runtime together. The current builder's
+      // new capability requirements remain intact for the current executable.
+      execute(process.execPath, [path.join(source, '.template-source/plugins', name, 'build.mjs'), '--output', previousPlugin, '--binary', previousBinary]);
+    } else {
+      build({ output: previousPlugin, binary: previousBinary });
+    }
+    build({ output: currentPlugin, binary });
     const plugin = (root, args) => execute(process.execPath, [path.join(root, 'scripts/plugin.mjs'), ...args]);
     const save = (name, value) => { const file = path.join(parent, name); writeFileSync(file, JSON.stringify(value)); return file; };
     const initial = plugin(previousPlugin, ['project-plan', '--target-dir', target, '--project-name', '原生绑定来源升级', '--business-domain', '治理', '--issue-tracker', 'github']);
@@ -42,6 +68,7 @@ export function sourceUpgrade(build, name, profile) {
     const read = ref => readFileSync(path.join(target, ref));
     const metadataBefore = read('.yss.json'), receiptBefore = read(receipt), contextBefore = read('CONTEXT.md');
     assert.equal(JSON.parse(receiptBefore).binary_sha256, previousDigest);
+    if (previousSource) assert.equal(JSON.parse(metadataBefore).schemaVersion, 2, 'historical plugin must create a real old native identity');
     writeFileSync(path.join(target, 'business.txt'), '跨二进制升级必须保留的业务资产\n');
     const beforeRejected = inventory(target), rejectedPlan = path.join(parent, 'rejected-native-plan.json');
     const rejection = execute(binary, ['sync', '--root', target, '--profile', profile, '--plan', '--out', rejectedPlan, '--json'], 1);

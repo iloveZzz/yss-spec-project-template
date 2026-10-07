@@ -38,6 +38,21 @@ logs/
 htmlcov/
 .coverage
 .pytest_cache/
+# Durable work package records
+!/.work/
+!/.work/**/
+!/.work/**/*.md
+!/.work/**/*.yaml
+!/.work/**/*.yml
+!/.work/**/*.json
+!/.work/**/verification/**/*.log
+# Explicitly rebuildable local materials
+.work/**/cache/
+.work/**/tmp/
+.work/**/build/
+.work/**/verification/browser/.chrome-profile/
+.work/**/verification/browser/.chrome-baseline-profile/
+
 # <<< create-yss-spec managed rules
 
 # Template-source only
@@ -52,4 +67,5 @@ docs/process/yss-product-lifecycle-team-guide.md
 .template-spec/process/yss-product-lifecycle-team-guide.md
 docs/graphify-out
 docs/.scratch/
+.work/
 # Preserved in calibration-and-environment-evidence.tar.gz with a SHA-256 manifest.

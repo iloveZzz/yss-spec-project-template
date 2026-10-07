@@ -5,9 +5,9 @@
 ## 命令
 
 ```sh
-scripts/feature-assets inspect --root <项目绝对路径> --checkpoint docs/.scratch/<feature>/checkpoint.yaml --json
-scripts/feature-assets plan --root <项目绝对路径> --checkpoint docs/.scratch/<feature>/checkpoint.yaml \
-  --candidate docs/.scratch/<feature>/verification/prototype-evidence-draft.yaml \
+scripts/feature-assets inspect --root <项目绝对路径> --checkpoint .work/<feature>/checkpoint.yaml --json
+scripts/feature-assets plan --root <项目绝对路径> --checkpoint .work/<feature>/checkpoint.yaml \
+  --candidate .work/<feature>/verification/prototype-evidence-draft.yaml \
   --archive-dir <项目外全新归档绝对路径> > <项目外计划.json>
 scripts/feature-assets apply --root <项目绝对路径> --plan <项目外计划.json>
 scripts/feature-assets restore --root <项目绝对路径> --receipt <归档绝对路径>/receipt.json

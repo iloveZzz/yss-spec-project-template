@@ -13,7 +13,7 @@ pending_publication_to: "<none | github | gitlab>"
 
 Status: ready-for-human
 
-> Local Markdown 主 tracker 的功能父 Ticket。文件位置固定为 `docs/.scratch/<feature>/parent-ticket.md`。
+> Local Markdown 主 tracker 的功能父 Ticket。文件位于配置的功能包根，示例为 `.work/<feature>/parent-ticket.md`。
 > 若明确选择的 GitHub / GitLab 暂不可用，将 `tracker` 改为目标平台、`publication` 改为 `pending`，并填写 `pending_publication_to`；不得改投另一平台。
 
 ## 功能包
@@ -21,8 +21,8 @@ Status: ready-for-human
 | 字段 | 值 |
 |---|---|
 | feature | `<feature>` |
-| spec | `docs/.scratch/<feature>/spec.md` |
-| map | `docs/.scratch/<feature>/map.md` |
+| spec | `.work/<feature>/spec.md` |
+| map | `.work/<feature>/map.md` |
 | remote_mirror | none / GitHub URL / GitLab URL |
 | last_sync | local / `<timestamp>` |
 | publication | local / pending |
@@ -30,35 +30,35 @@ Status: ready-for-human
 
 ## 生命周期查询
 
-Checkpoint：`docs/.scratch/<feature>/checkpoint.yaml`（填写实际存在的路径）。
+Checkpoint：`.work/<feature>/checkpoint.yaml`（填写实际存在的路径）。
 
 阶段、阻塞、门禁摘要与下一工作单元从同一 checkpoint 按需查询；本票只保存 Ticket 五态、业务说明与资产入口。
 
 ```sh
-scripts/lifecycle-status --root . --checkpoint docs/.scratch/<feature>/checkpoint.yaml
-scripts/stage-tracking check --root . --checkpoint docs/.scratch/<feature>/checkpoint.yaml
+scripts/lifecycle-status --root . --checkpoint .work/<feature>/checkpoint.yaml
+scripts/stage-tracking check --root . --checkpoint .work/<feature>/checkpoint.yaml
 ```
 
 查询不写文件，也不授予执行权限。批准依据仍读取下方会签记录。
 
 ## 资产与证据
 
-- Plan：`docs/.scratch/<feature>/plan/`
-- Spec Delta：`docs/.scratch/<feature>/spec-delta/`
-- Design：`docs/.scratch/<feature>/design/`
-- API：`docs/.scratch/<feature>/api/`
-- Architecture：`docs/.scratch/<feature>/architecture/`
-- Gates：`docs/.scratch/<feature>/gates/`
-- Verification：`docs/.scratch/<feature>/verification/`
-- Vertical slices：`docs/.scratch/<feature>/issues/`
+- Plan：`.work/<feature>/plan/`
+- Spec Delta：`.work/<feature>/spec-delta/`
+- Design：`.work/<feature>/design/`
+- API：`.work/<feature>/api/`
+- Architecture：`.work/<feature>/architecture/`
+- Gates：`.work/<feature>/gates/`
+- Verification：`.work/<feature>/verification/`
+- Vertical slices：`.work/<feature>/issues/`
 
 ## 会签
 
-会签记录写在 `docs/.scratch/<feature>/gates/<gate-id>-approval.yaml`。会签桶内门禁标为 `approved` 前必须通过 `scripts/verify-approval-record`。
+会签记录写在 `.work/<feature>/gates/<gate-id>-approval.yaml`。会签桶内门禁标为 `approved` 前必须通过 `scripts/verify-approval-record`。
 
 | 门禁 | 记录路径 | 会签角色 |
 |---|---|---|
-|  | `docs/.scratch/<feature>/gates/<gate-id>-approval.yaml` | 见 `.template-spec/agents/digital-human-roles.yaml` |
+|  | `.work/<feature>/gates/<gate-id>-approval.yaml` | 见 `.template-spec/agents/digital-human-roles.yaml` |
 
 会签结果读取记录原件；阻塞关系与下一工作单元读取上述 checkpoint，不在本票重填状态表。
 

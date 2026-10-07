@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { readWorkLayout } from '../../../../scripts/lib/work-layout.mjs';
 import { existsSync, realpathSync } from 'node:fs';
 // Review-only snapshots. This tool never writes prototype approval or product evidence.
 import { createHash } from 'node:crypto';
@@ -81,7 +82,7 @@ export async function prepareComparison({ projectRoot, feature, input: inputPath
   const project = await realpath(projectRoot);
   const input = JSON.parse(await readFile(await safe(project, inputPath), 'utf8'));
   definition(input);
-  const output = await safe(project, `docs/.scratch/${feature}/design/comparisons/${input.comparison_id}`);
+  const output = await safe(project, `${readWorkLayout(project).featureRoot(feature)}/design/comparisons/${input.comparison_id}`);
   try { requireThat((await readdir(output)).length === 0, '比较目录非空，拒绝覆盖'); }
   catch (error) { if (error.code !== 'ENOENT') throw error; }
   const sources = [input.comparison_ref, input.scenario_ref, 'DESIGN.md', '.template-spec/design/tokens/variables.css'];

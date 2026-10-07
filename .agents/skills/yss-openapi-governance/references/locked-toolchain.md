@@ -7,14 +7,14 @@
 在持有冻结 YAML 与派生记录的项目工作区中，将 `@redocly/cli` 固定在 `devDependencies` 并提交对应的 pnpm lockfile。使用项目脚本或下列等价命令；不得使用浮动 `npx --yes`、全局安装或未记录版本的转换器。
 
 ```bash
-pnpm exec redocly lint docs/.scratch/<feature>/api/<feature>.yaml
+pnpm exec redocly lint .work/<feature>/api/<feature>.yaml
 
 pnpm exec redocly bundle \
-  docs/.scratch/<feature>/api/<feature>.yaml \
-  --output docs/.scratch/<feature>/api/<feature>.json \
+  .work/<feature>/api/<feature>.yaml \
+  --output .work/<feature>/api/<feature>.json \
   --ext json \
   --component-renaming-conflicts-severity=error \
-  --metafile docs/.scratch/<feature>/api/<feature>.bundle-metafile.json
+  --metafile .work/<feature>/api/<feature>.bundle-metafile.json
 ```
 
 默认 bundle 保留内部 `$ref`，不要为图省事加入 `--dereferenced`；递归模型或循环引用需要保留其可表示的 `$ref` 结构。若项目将命令包装为 `pnpm openapi:bundle`，该脚本必须实际执行上述 `redocly bundle` 语义，并在记录中写明脚本和已锁定的包版本。

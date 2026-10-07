@@ -5,6 +5,7 @@ import crypto from 'node:crypto';
 import { createRequire } from 'node:module';
 import { gzipSync, gunzipSync } from 'node:zlib';
 import { spawnSync } from 'node:child_process';
+import { workScanRoots } from './work-layout.mjs';
 
 const require = createRequire(import.meta.url);
 const VERSION = 1;
@@ -81,7 +82,7 @@ function registeredRoots(root) {
   read(path.join(root, '.gitmodules'));
   // Registrations remain file authority; this conservative extraction is only a
   // deny-list. Callers can provide the schema-validated registered roots as well.
-  for (const relative of ['docs', '.scratch', '.template-spec/implementation', '.template-spec/projects', '.template-spec/project']) {
+  for (const relative of new Set(['docs', ...workScanRoots(root), '.template-spec/implementation', '.template-spec/projects', '.template-spec/project'])) {
     const directory = path.join(root, relative);
     if (fs.existsSync(directory)) for (const file of walk(directory).files) if (/\.(?:ya?ml|json|md)$/.test(file)) read(file);
   }

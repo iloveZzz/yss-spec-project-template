@@ -15,7 +15,7 @@
 
 ## 记录与来源
 
-使用 `.template-spec/process/schemas/user-decision.schema.json` 和 `.template-spec/process/templates/user-decision-template.yaml`。存于 `docs/.scratch/<feature>/decisions/<request-id>.yaml`；已展示的请求快照不改写，修改方案产生新请求并保留旧引用。请求中的 `subject` 指向可独立摘要的资产正文或冻结快照，批准记录另存，避免正文包含自己的批准摘要形成循环。`basis` 列出影响决定的额外冻结依据。
+使用 `.template-spec/process/schemas/user-decision.schema.json` 和 `.template-spec/process/templates/user-decision-template.yaml`。存于 `.work/<feature>/decisions/<request-id>.yaml`；已展示的请求快照不改写，修改方案产生新请求并保留旧引用。请求中的 `subject` 指向可独立摘要的资产正文或冻结快照，批准记录另存，避免正文包含自己的批准摘要形成循环。`basis` 列出影响决定的额外冻结依据。
 
 原始消息可由运行时直接读取，或保存为原始会话导出 / 用户提供的确认文件。跨平台统一捕获封装如下；字段必须来自原始来源，保留原始引用和完整原文，不能把 Agent 编写的摘要包装成来源：
 

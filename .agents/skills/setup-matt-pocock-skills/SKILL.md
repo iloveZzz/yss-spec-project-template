@@ -4,6 +4,8 @@ description: Configure this repo for the engineering skills — set up its issue
 disable-model-invocation: true
 ---
 
+功能包根只从 `.template-spec/agents/issue-tracker.md` 的 `tracker.root` 读取；本文 `.work/` 路径是新项目示例，已有项目沿用已配置的根。
+
 # Setup Matt Pocock's Skills
 
 Scaffold the per-repo configuration that the engineering skills assume:
@@ -25,7 +27,7 @@ Look at the current repo to understand its starting state. Read whatever exists;
 - The case-sensitive `CONTEXT.md` at the Git repository root; also detect lowercase, nested, or duplicate context files as migration problems
 - `docs/adr/` and any `src/*/docs/adr/` directories
 - `.template-spec/agents/` — does this skill's prior output already exist?
-- `docs/.scratch/` — sign that the canonical local-markdown issue tracker convention is already in use
+- `.work/` — sign that the canonical local-markdown issue tracker convention is already in use
 - `.scratch/` and `docs/requirements/tickets/` — legacy local-tracker roots; inspect them read-only for migration and never use them as new write targets
 - Is the `triage` skill installed? (a `triage` skill folder alongside this one, or `triage` in your available skills.) This decides whether Section B runs at all.
 

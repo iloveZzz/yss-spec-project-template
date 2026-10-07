@@ -8,7 +8,7 @@ H1/H2 表示验证深度，不表示低/高保真。统一消费 Prototype Evide
 
 ```bash
 node .agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs prepare-flow \
-  --project-root <project-root> --root <project-root>/docs/.scratch/<feature>/design/prototypes --feature <feature>
+  --project-root <project-root> --root <project-root>/.work/<feature>/design/prototypes --feature <feature>
 ```
 
 H1 将 `prepare-flow` 换成 `prepare-static`。两者输出 `index.html`、`styles.css`、`tokens.css`、`scenarios.js`、`app.js` 和 `yss-prototype-adapter.json`。初始交互仅为模板示例，必须按已评审的 Spec、页面与状态替换。已有非空目录拒绝覆盖；旧批准版本保持只读，新工作版本使用新的工作目录标识并保留业务 feature 的追踪关系。
@@ -48,8 +48,8 @@ node .agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs validate-
 
 ```bash
 node .agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs seal \
-  docs/.scratch/<feature>/handoff/visual-baseline-v1/visual-baseline.yaml \
-  --bundle-root docs/.scratch/<feature>/handoff/visual-baseline-v1
+  .work/<feature>/handoff/visual-baseline-v1/visual-baseline.yaml \
+  --bundle-root .work/<feature>/handoff/visual-baseline-v1
 ```
 
 从 manifest 的 `case_id` 读取语义与截图，不依赖 glob；视觉回归按风险采用，首次生成基线不声称已有回归通过。六轴 QA、独立评审、用户确认和生产实现隔离保持原合同。

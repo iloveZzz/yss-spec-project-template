@@ -7,7 +7,7 @@ node scripts/project-ci plan --provider github --root . --branch main > /tmp/yss
 node scripts/project-ci apply --root . --plan /tmp/yss-ci-plan.json
 node scripts/project-ci check --root . --json
 node scripts/project-ci check --root . --base <PR基线的40位提交> --json
-node scripts/lifecycle-status --root . --checkpoint docs/.scratch/feature/checkpoint.yaml --preflight
+node scripts/lifecycle-status --root . --checkpoint .work/feature/checkpoint.yaml --preflight
 ```
 
 计划列出目标分支、范围、文件内容、输入摘要和冲突。仅显式 apply 写入独立工作流、接入配置和托管凭据；保留其他工作流。输出文件已被手工修改、计划过期或同名文件未托管时拒绝覆盖。中断后执行 `node scripts/project-ci apply --root . --recover`，按事务日志恢复旧字节；遇到后续人工修改时停止并保留现场。重复 apply 无变化；tracker 或工具输入变化后须重新 plan。

@@ -1,3 +1,4 @@
+import { readWorkLayout } from './work-layout.mjs';
 import {approvalExpectationForBoundAsset} from './approval-consumption.mjs';
 import { assertBusinessApprovalBasis } from './business-ticket-lifecycle.mjs';
 import { assertBusinessTicketTransition, assertImplementationTicket } from './business-tickets.mjs';
@@ -292,16 +293,9 @@ function validateTechnicalAnalysisCompletion(state, { exists = existsSync, read 
   return signals.length ? blockedResult(signals, missing, evidenceRefs) : allowedResult(evidenceRefs);
 }
 
-function validateTicketPath(ref) {
-  if (!hasText(ref)) return false;
-  return /^docs\/\.scratch\/[^/]+\/issues\/[^/]+\.md$/.test(ref);
-}
-
-function validateTicketReference(ref, trackerKind) {
-  if (trackerKind === "github" || trackerKind === "gitlab") {
-    return /^(https?:\/\/|(?:github|gitlab):)[^\s]+$/.test(ref);
-  }
-  return validateTicketPath(ref);
+function validateTicketReference(ref, trackerKind, root) {
+  if (trackerKind === "github" || trackerKind === "gitlab") return /^(https?:\/\/|(?:github|gitlab):)[^\s]+$/.test(ref);
+  return readWorkLayout(root).isTicket(ref);
 }
 
 /**
@@ -583,9 +577,12 @@ export function validateTicketFormalization(state, { exists = existsSync, read =
       signals.push(BLOCKING_SIGNALS.wrongRole);
       missing.push("vertical_slice_ticket_role=vertical_slice_ticket.role");
     }
-    if (!validateTicketReference(ticket.ref, trackerKind)) {
+    let validTicket = false;
+    try {validTicket = validateTicketReference(ticket.ref, trackerKind, decisionOptions.root || ROOT);}
+    catch (error) {missing.push(error.message);}
+    if (!validTicket) {
       signals.push(ticket.kind === "parent-ticket" || ticket.ref.endsWith("/parent-ticket.md") ? BLOCKING_SIGNALS.parentTicket : BLOCKING_SIGNALS.missingSlice);
-      missing.push(trackerKind === "local-markdown" ? "vertical_slice_ticket.ref under docs/.scratch/<feature>/issues/" : "remote tracker Ticket reference");
+      missing.push(trackerKind === "local-markdown" ? "vertical_slice_ticket.ref under configured feature root/issues/" : "remote tracker Ticket reference");
     }
     if (ticket.kind === "parent-ticket" || ticket.ref.endsWith("/parent-ticket.md")) {
       signals.push(BLOCKING_SIGNALS.parentTicket);

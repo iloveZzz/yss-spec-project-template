@@ -1,15 +1,16 @@
 diff --git a/SKILL.md b/SKILL.md
-index e123d84e..dc4b1c80 100644
+index 37a3593..b04bb9e 100644
 --- a/SKILL.md
 +++ b/SKILL.md
-@@ -1,13 +1,13 @@
+@@ -1,6 +1,6 @@
  ---
  name: yss-openapi-governance
 -description: "维护、校验、冻结或导出 YSS OpenAPI 3.1 设计合同；以冻结 YAML 生成受审查的 JSON。"
 +description: 前端只读核验后端冻结 OpenAPI、JSON 派生与交付证据；契约修订或 Freeze 回交后端权威方。
  ---
  
- # YSS OpenAPI Governance
+ 功能包根只从 `.template-spec/agents/issue-tracker.md` 的 `tracker.root` 读取；本文 `.work/` 路径是新项目示例，已有项目沿用已配置的根。
+@@ -9,7 +9,7 @@ description: "维护、校验、冻结或导出 YSS OpenAPI 3.1 设计合同；
  
  先消费已判定的交付路径；本技能不自行授予 `daily`。只有 Spec 的 `request_triage.delivery_path` 已启用且固定 CLI 支持 `yss lifecycle route|verify-daily` 时可使用普通路径；其他 Profile / 旧 CLI 明确不支持。本任务的正式绑定保留 `governed`。正式资产按 `.template-spec/process/contract-reading.md` 阅读，普通任务直接消费其 API 段和权威 YAML。
  
@@ -18,9 +19,9 @@ index e123d84e..dc4b1c80 100644
  
  ```text
  Spec / 设计输入 → OpenAPI YAML Draft → 审查与 Freeze → JSON 派生物 → 下游既有前端代码生成流程
-@@ -15,26 +15,28 @@ Spec / 设计输入 → OpenAPI YAML Draft → 审查与 Freeze → JSON 派生
+@@ -17,26 +17,28 @@ Spec / 设计输入 → OpenAPI YAML Draft → 审查与 Freeze → JSON 派生
  
- `governed` 的 `docs/.scratch/<feature>/api/<feature>.yaml`，或普通任务绑定的既有项目 OAS YAML，是各自唯一权威的 OpenAPI 3.1 契约；普通小改不为了目录约定搬迁现有合同。JSON 只能由冻结后的 YAML 可复现地产生，用于前端代码生成或分发；不得手写、不得反向覆盖 YAML、不得把运行时代码当成设计契约来源。
+ `governed` 的 `.work/<feature>/api/<feature>.yaml`，或普通任务绑定的既有项目 OAS YAML，是各自唯一权威的 OpenAPI 3.1 契约；普通小改不为了目录约定搬迁现有合同。JSON 只能由冻结后的 YAML 可复现地产生，用于前端代码生成或分发；不得手写、不得反向覆盖 YAML、不得把运行时代码当成设计契约来源。
  
 -YSS DTO 的可复用 HTTP/JSON 映射由 `.agents/skills/yss-dto/references/openapi-wire-profile.yaml` 单一维护。它描述公开 wire shape，不是 Java 字段或 getter 清单；本 skill 必须消费 profile，不能在治理文档、feature YAML 和 JSON 中各自发明 `SingleResult`、`PageResult` 或 `PageQuery` 字段表。
 +YSS DTO 的可复用 HTTP/JSON 映射由 `.agents/skills/yss-openapi-governance/references/openapi-wire-profile.yaml` 提供只读快照。它描述公开 wire shape，不是 Java 字段或 getter 清单；本 skill 必须消费 profile，不能在治理文档、feature YAML 和 JSON 中各自发明 `SingleResult`、`PageResult` 或 `PageQuery` 字段表。
@@ -39,21 +40,21 @@ index e123d84e..dc4b1c80 100644
  
  使用 `yss-openapi-governance`：
  
--- 基于冻结前的 Spec、产品设计、架构约束创建或更新 `docs/.scratch/<feature>/api/<feature>.yaml`。
-+- 向后端提交消费需求，由后端基于冻结前的 Spec、产品设计、架构约束创建或更新 `docs/.scratch/<feature>/api/<feature>.yaml`。
+-- 基于冻结前的 Spec、产品设计、架构约束创建或更新 `.work/<feature>/api/<feature>.yaml`。
++- 向后端提交消费需求，由后端基于冻结前的 Spec、产品设计、架构约束创建或更新 `.work/<feature>/api/<feature>.yaml`。
  - 保证 YAML 是单一 YAML document、根节点为 `openapi: 3.1.0`，且不把 `pipeline`、`stage`、`status`、`owner` 等生命周期元数据写入 OpenAPI 根节点。
 -- 采用 YSS wrapper / 分页协议时，按 `yss-dto` wire profile 校验 `com.yss.cloud.dto.result` canonical 包、`YssResultMeta` 公共字段、具体 wrapper schema、请求 / 响应方向和分页负向字段；其他批准协议记录适用性及实际契约检查。
 +- 采用 YSS wrapper / 分页协议时，按只读 HTTP/JSON wire profile 校验 `com.yss.cloud.dto.result` canonical 包、`YssResultMeta` 公共字段、具体 wrapper schema、请求 / 响应方向和分页负向字段；其他批准协议记录适用性及实际契约检查。
  - 运行受项目 lockfile 约束的 lint / bundle，检查 `$ref`、operationId、响应包装、错误、分页、幂等和契约测试 seam；只有 Spec 明确改变认证或授权行为时才检查对应契约。
--- 在 `docs/.scratch/<feature>/api/<feature>-validation.yaml` 持久化结构校验记录，并用 `scripts/verify-openapi-draft-validation-record` 复核当前 YAML SHA-256、锁定的 Redocly 版本、实际命令、退出码、执行时间和证据引用。
+-- 在 `.work/<feature>/api/<feature>-validation.yaml` 持久化结构校验记录，并用 `scripts/verify-openapi-draft-validation-record` 复核当前 YAML SHA-256、锁定的 Redocly 版本、实际命令、退出码、执行时间和证据引用。
  - 在 OpenAPI Freeze 后，用锁定的 Redocly CLI 将 YAML bundle 为 JSON，并记录可重现证据。
 -- 维护治理记录、Freeze 记录和 JSON 派生记录。
 -- 在技术分析中生成 API Contract Decision（版本与历史兼容见下文第 3 步）：有 API 影响时以原始字节摘要闭包绑定权威 YAML、Validation、独立 Draft Review 和 Freeze；无 API 影响时绑定影响评估、明确原因和至少一项可读证据，且不得生成空占位资产。
 +- 消费后端治理及 Freeze 记录，维护本地 JSON 派生与客户端生成记录。
- - Spec Delta 影响存在时，在 `docs/.scratch/<feature>/spec-delta/` 记录与冻结 YAML 的关系；没有影响时明确记录 `not-applicable`。
+ - Spec Delta 影响存在时，在 `.work/<feature>/spec-delta/` 记录与冻结 YAML 的关系；没有影响时明确记录 `not-applicable`。
  
  不使用本 skill 来替代：
-@@ -57,9 +59,7 @@ YSS DTO 的可复用 HTTP/JSON 映射由 `.agents/skills/yss-dto/references/open
+@@ -59,9 +61,7 @@ YSS DTO 的可复用 HTTP/JSON 映射由 `.agents/skills/yss-dto/references/open
  
  - YAML 不是单一 OAS 3.1 document，或其根节点混入生命周期元数据。
  - YAML / `$ref` / lint 不通过，operationId 不稳定或不唯一，或路径参数、schema、examples 无法解析。
@@ -63,7 +64,7 @@ index e123d84e..dc4b1c80 100644
  - `$ref` 超出允许范围，或转换器版本、lockfile、命令、输入 YAML 无法识别。
  - `scripts/verify-yss-dto-openapi-profile` 失败、profile 版本未记录，或采用 YSS wrapper 的 Draft 响应未按 profile 建模 `x-yss-response-wrapper`、`YssResultMeta` / `allOf` 和具体 `data` schema。
  - 新的 YSS wrapper 契约引入 `com.yss.cloud.dto.response`、把 Java 泛型文字当成 OAS schema、把全局 `code` 放宽为任意 object，或采用 YSS 分页协议的接口把 `offset` / `needTotalCount` / `tempTotalCount` 作为客户端字段。
-@@ -69,6 +69,48 @@ YSS DTO 的可复用 HTTP/JSON 映射由 `.agents/skills/yss-dto/references/open
+@@ -71,6 +71,48 @@ YSS DTO 的可复用 HTTP/JSON 映射由 `.agents/skills/yss-dto/references/open
  
  ## 输出契约
  
@@ -75,7 +76,7 @@ index e123d84e..dc4b1c80 100644
 +<Draft / Approved for Freeze / Blocked / JSON Exported>
 +
 +### YAML Authority
-+- YAML: <docs/.scratch/<feature>/api/<feature>.yaml>
++- YAML: <.work/<feature>/api/<feature>.yaml>
 +- OAS: 3.1.0
 +- YAML SHA-256: <sha256>
 +- Freeze record: <path / ref>
@@ -88,7 +89,7 @@ index e123d84e..dc4b1c80 100644
 +- Blocking findings: <file:line grounded finding>
 +
 +### JSON Derivative
-+- JSON: <docs/.scratch/<feature>/api/<feature>.json>
++- JSON: <.work/<feature>/api/<feature>.json>
 +- JSON SHA-256: <sha256>
 +- Redocly CLI / lockfile: <version and lock reference>
 +- Bundle command and metafile: <command / path>
@@ -114,10 +115,10 @@ index e123d84e..dc4b1c80 100644
  
  `governed` API Contract Decision 可用 `scripts/api-contract-decision prepare` 自动生成来源摘要；v1 显式迁移用 `migrate --version <新版本> --output <新路径>`。候选保持 draft，审查、Freeze 绑定和工程契约批准仍由现有生命周期核验；普通 API 小改不为了这些字段生成正式工程资产。
 diff --git a/references/governance-workflow.md b/references/governance-workflow.md
-index c6706f40..dee264c7 100644
+index f124ddc..982571a 100644
 --- a/references/governance-workflow.md
 +++ b/references/governance-workflow.md
-@@ -26,20 +26,15 @@
+@@ -26,20 +26,15 @@ API lint/compatibility/review/Freeze 绑定独立 `api_digest`，实现测试/
     - 所有操作使用稳定、可生成客户端的 `operationId`；页面动作可通过 `x-yss-action-key` 或同路径的追踪矩阵关联。
  
  2. **运行结构与治理校验**
@@ -139,10 +140,10 @@ index c6706f40..dee264c7 100644
 -   - 将同一 YAML 的版本与摘要、validation record、独立 Review 和 Freeze 写入 API Contract Decision（新建 v2；历史 v1 只读兼容，准备与迁移见 `.template-spec/process/contract-reading.md`）。`gate.engineering-contract-approved` 一次批准同时绑定 Technical Design、Data Architecture Decision、API Contract Decision；API `required` 时还必须直接绑定冻结 YAML。不得另造字符串 URI 或仅凭 `status: approved` 关闭门禁。
  
  4. **从冻结 YAML 派生 JSON**
-    - 使用 [锁定工具链](locked-toolchain.md) 中的 `redocly bundle` 命令生成 `docs/.scratch/<feature>/api/<feature>.json`，JSON 不纳入人工编辑面。
-diff --git a/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-rebase-4LBkAF/desired/references/openapi-wire-profile.yaml b/references/openapi-wire-profile.yaml
+    - 使用 [锁定工具链](locked-toolchain.md) 中的 `redocly bundle` 命令生成 `.work/<feature>/api/<feature>.json`，JSON 不纳入人工编辑面。
+diff --git a/adapted/references/openapi-wire-profile.yaml b/references/openapi-wire-profile.yaml
 new file mode 100644
-index 00000000..2f010899
+index 0000000..2f01089
 --- /dev/null
 +++ b/references/openapi-wire-profile.yaml
 @@ -0,0 +1,187 @@
@@ -333,9 +334,9 @@ index 00000000..2f010899
 +    - representative-serialization-fixtures
 +    - contract-test-or-equivalent-http-evidence
 +  rule: Java fields and computed getters are not public wire facts until target-boundary evidence confirms them.
-diff --git a/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-rebase-4LBkAF/desired/references/openapi-wire-source.json b/references/openapi-wire-source.json
+diff --git a/adapted/references/openapi-wire-source.json b/references/openapi-wire-source.json
 new file mode 100644
-index 00000000..813a34a7
+index 0000000..813a34a
 --- /dev/null
 +++ b/references/openapi-wire-source.json
 @@ -0,0 +1,8 @@

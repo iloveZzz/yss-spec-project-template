@@ -79,17 +79,17 @@ scripts/contract prepare-review <前资产> <后资产> --kind <类型> [--unit 
 # 只读预览；只读检查不创建文件
 scripts/contract view <原资产> --kind domain-strategy
 scripts/contract view <历史迁移plan.json> --kind tracking-migration
-scripts/contract check-views --checkpoint docs/.scratch/<feature>/checkpoint.yaml
+scripts/contract check-views --checkpoint .work/<feature>/checkpoint.yaml
 
 # 先审阅启用计划，再显式应用；不覆盖已有计划
-scripts/contract plan-enable --checkpoint docs/.scratch/<feature>/checkpoint.yaml --output reading-enable.json
+scripts/contract plan-enable --checkpoint .work/<feature>/checkpoint.yaml --output reading-enable.json
 scripts/contract apply-enable reading-enable.json
 
 # 手动重建，或完成直接源编辑后调用
-scripts/contract render --checkpoint docs/.scratch/<feature>/checkpoint.yaml
+scripts/contract render --checkpoint .work/<feature>/checkpoint.yaml
 
 # 正式差异记录可明确保存；相同内容幂等，历史报告不追随源覆盖
-scripts/contract prepare-review <旧资产> <新资产> --kind domain-strategy --checkpoint docs/.scratch/<feature>/checkpoint.yaml --json
+scripts/contract prepare-review <旧资产> <新资产> --kind domain-strategy --checkpoint .work/<feature>/checkpoint.yaml --json
 ```
 
 策略由 `reading-policy.yaml` 持有；缺失或 `manual` 保留旧行为。实际人工阅读试验通过前，模板默认 `manual`。`apply-enable` 只将计划绑定的 checkpoint 登记为托管；其他功能不会被自动接管。领域与阶段决策页消费 checkpoint.artifacts 中对应 `artifact.domain-strategy`、`artifact.stage-decision-package` 的明确 ref；不扫描目录推断资产。其他未来资产保留原入口。

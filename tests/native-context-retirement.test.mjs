@@ -80,14 +80,24 @@ test('历史 Context 检查记录实际原生执行并拒绝退出0的错误协�
   const {runCommandToFiles}=await import('../scripts/lib/template-verification-runner.mjs');
   const base=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'context-history-')));
   t.after(()=>fs.rmSync(base,{recursive:true,force:true}));
-  const command='scripts/verify-context-contract --root . --json',task={command,task_id:'legacy.057',id:'check.1451647ba2722b30'};
+  // Execute against a real, isolated Context. A source oracle can contain the
+  // full specialist dependency trees without Git gitlink metadata; those
+  // nested Context documents must not turn this protocol test into a root scan.
+  const project=path.join(base,'project');fs.mkdirSync(project);
+  fs.writeFileSync(path.join(project,'yss-project.yaml'),'schema_version: 1\nrepository_mode: template-source\n');
+  fs.copyFileSync(path.resolve(import.meta.dirname,'../CONTEXT.md'),path.join(project,'CONTEXT.md'));
+  const command=`scripts/verify-context-contract --root ${project} --json`,task={command,task_id:'legacy.057',id:'check.1451647ba2722b30'};
   const execution=compileTaskExecution(task,{root:process.cwd()});
   assert.equal(execution.file,process.env.YSS_NATIVE_BINARY);
-  assert.deepEqual(execution.args,['context','check','--root',process.cwd(),'--json']);
+  assert.deepEqual(execution.args,['context','check','--root',project,'--json']);
   assert.equal(execution.source_bindings.target,'scripts/lib/native-context.mjs');
   assert.equal(execution.protocol,'context-envelope-v1');
   const valid=await runCommandToFiles(command,{cwd:process.cwd(),execution,logRoot:base,sequence:'native'});
   assert.equal(valid.code,0,valid.error);assert.equal(valid.actual_exit_code,0);
+  const nested=path.join(project,'nested');fs.mkdirSync(nested);fs.copyFileSync(path.join(project,'CONTEXT.md'),path.join(nested,'CONTEXT.md'));
+  const duplicate=spawnSync(process.env.YSS_NATIVE_BINARY,['context','check','--root',project,'--json'],{encoding:'utf8'});
+  assert.equal(duplicate.status,1,duplicate.stdout);assert.match(duplicate.stdout,/禁止嵌套 CONTEXT/);
+  fs.rmSync(nested,{recursive:true,force:true});
   const fake=path.join(base,'fake');fs.writeFileSync(fake,'#!/usr/bin/env node\nconsole.log("{\\"status\\":\\"ok\\"}");\n');fs.chmodSync(fake,0o755);
   const invalid=contextExecution(base,[],{...process.env,YSS_NATIVE_BINARY:fake,YSS_NATIVE_BINARY_SHA256:''});invalid.requested_command=command;
   const rejected=await runCommandToFiles(command,{cwd:base,execution:invalid,logRoot:base,sequence:'invalid'});
@@ -140,6 +150,9 @@ test('专用源码夹具按载荷校验：无关根提交不会漂移，载荷�
     const scenario=`submodules/yss-harness-${profile}-agent/tests/scenarios/verify-yss-ui-scenarios.mjs`;
     if(fs.existsSync(scenario))copy(scenario);
   }
+  // Current source modules also consume the shared work-layout helper. Seed it
+  // before deriving the fixture closure; old stored indexes may predate it.
+  copy('scripts/lib/work-layout.mjs');
   copy('tests/fixtures/specialist-source-fixtures.py');
   const run=(file,args)=>{const r=spawnSync(file,args,{cwd:base,encoding:'utf8'});return r;};
   for(const args of [['init','-q'],['add','.'],['-c','user.name=fixture','-c','user.email=fixture@invalid','commit','-qm','payload baseline']])assert.equal(run('git',args).status,0);

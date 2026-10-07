@@ -22,7 +22,7 @@ API lint/compatibility/review/Freeze 绑定独立 `api_digest`，实现测试/�
 
 1. **建立或读取 YAML Draft**
    - 读取 Spec、产品设计 / 状态矩阵、架构约束和既有 Freeze 记录。
-   - 在 `docs/.scratch/<feature>/api/<feature>.yaml` 创建或更新单一 OAS 3.1 文档；生命周期状态写入相邻 Markdown 记录，不写入 YAML 前置元数据。
+   - 在 `.work/<feature>/api/<feature>.yaml` 创建或更新单一 OAS 3.1 文档；生命周期状态写入相邻 Markdown 记录，不写入 YAML 前置元数据。
    - 所有操作使用稳定、可生成客户端的 `operationId`；页面动作可通过 `x-yss-action-key` 或同路径的追踪矩阵关联。
 
 2. **运行结构与治理校验**
@@ -42,13 +42,13 @@ API lint/compatibility/review/Freeze 绑定独立 `api_digest`，实现测试/�
    - 将同一 YAML 的版本与摘要、validation record、独立 Review 和 Freeze 写入 API Contract Decision（新建 v2；历史 v1 只读兼容，准备与迁移见 `.template-spec/process/contract-reading.md`）。`gate.engineering-contract-approved` 一次批准同时绑定 Technical Design、Data Architecture Decision、API Contract Decision；API `required` 时还必须直接绑定冻结 YAML。不得另造字符串 URI 或仅凭 `status: approved` 关闭门禁。
 
 4. **从冻结 YAML 派生 JSON**
-   - 使用 [锁定工具链](locked-toolchain.md) 中的 `redocly bundle` 命令生成 `docs/.scratch/<feature>/api/<feature>.json`，JSON 不纳入人工编辑面。
+   - 使用 [锁定工具链](locked-toolchain.md) 中的 `redocly bundle` 命令生成 `.work/<feature>/api/<feature>.json`，JSON 不纳入人工编辑面。
    - 对输出 JSON 重新执行解析 / lint（按项目工具链），确认 bundle 未产生组件重名冲突或无法解析的引用。
-   - 写入 `docs/.scratch/<feature>/api/<feature>-json-export.md`，可从 `.template-spec/api/templates/openapi-json-export-record-template.md` 创建。
+   - 写入 `.work/<feature>/api/<feature>-json-export.md`，可从 `.template-spec/api/templates/openapi-json-export-record-template.md` 创建。
    - 记录 YAML SHA-256、JSON SHA-256、OAS 版本、Redocly CLI 版本与 lockfile 引用、完整命令、metafile、`$ref` 例外以及结果。
 
 5. **交给下游前端**
    - 仅当 Freeze、JSON 派生记录和 JSON 校验均通过时，才把派生 JSON 交给 `yss-api-integration` 与目标前端实现仓库。
-   - JSON 的治理产物固定为 `docs/.scratch/<feature>/api/<feature>.json`。跨仓库时只能由批准的 Cross-repo 子合同或项目脚本将同一字节内容物化为 `<frontend>/openapi/openapi.json`，并记录两端相同的 SHA-256 与交接路径。
+   - JSON 的治理产物位于配置的功能包根（示例 `.work/<feature>/api/<feature>.json`）。跨仓库时只能由批准的 Cross-repo 子合同或项目脚本将同一字节内容物化为 `<frontend>/openapi/openapi.json`，并记录两端相同的 SHA-256 与交接路径。
    - 本模板不读取、修改或验证目标前端项目的客户端生成配置，不执行客户端生成，也不把生成动作加入 CI；目标前端项目在需要时手动运行其既有代码生成命令。
    - 接口调整回写 YAML，而不是编辑 JSON 或生成的 TypeScript。

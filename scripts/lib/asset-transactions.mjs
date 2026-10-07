@@ -1,3 +1,4 @@
+import { readWorkLayout } from './work-layout.mjs';
 import {findApprovalCheckpoint} from './approval-checkpoint-discovery.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -61,7 +62,7 @@ export function observeAssetInputs(root) {
     }
     else if (st.isFile()) rows[ref] = descriptor(file);
   }
-  for (const ref of ['yss-project.yaml', 'CONTEXT.md', 'DESIGN.md', 'AGENTS.md', 'skills-lock.json', '.template-spec', '.agents', 'scripts', 'docs']) walk(ref);
+  for (const ref of ['yss-project.yaml', 'CONTEXT.md', 'DESIGN.md', 'AGENTS.md', 'skills-lock.json', '.template-spec', '.agents', 'scripts', 'docs', ...readWorkLayout(root).scanRoots]) walk(ref);
   return rows;
 }
 
@@ -123,7 +124,7 @@ export function planAssetWrite(root, specs, { schemaRoot = TOOL_ROOT, verify, mi
   const observed = observeAssetInputs(root), seen = new Set();
   const changes = specs.map(({ ref, kind, value }) => {
     ensure(!seen.has(ref), `ASSET_DUPLICATE_TARGET: ${ref}`); seen.add(ref);
-    ensure(ref.endsWith('.json') && /^(docs\/|\.yss\/)/.test(ref) && !ref.startsWith(`${TX}/`), 'ASSET_WRITE_SCOPE: project JSON assets only');
+    ensure(ref.endsWith('.json') && (/^(docs\/|\.yss\/)/.test(ref) || ref.startsWith(readWorkLayout(root).root+'/')) && !ref.startsWith(`${TX}/`), 'ASSET_WRITE_SCOPE: project JSON assets only');
     const file = safeFile(root, ref), before = descriptor(file);
     const legacy = ref.replace(/\.json$/, '.yaml');
     if (!before && exists(safeFile(root, legacy))) ensure(migration?.source_to_target?.[legacy] === ref, 'ASSET_AMBIGUOUS_AUTHORITY: use plan-migrate');

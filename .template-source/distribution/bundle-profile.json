@@ -95,7 +95,8 @@
       "scripts/lib/template-verification-runner.mjs",
       "scripts/lib/verification-selection.mjs",
       "scripts/lib/verification-report.mjs",
-      "scripts/lib/maintenance-counterexample.mjs"
+      "scripts/lib/maintenance-counterexample.mjs",
+      ".work"
     ],
     "excludePathSuffixes": [
       "-scenarios"
@@ -207,6 +208,10 @@
         },
         {
           "pattern": "README.md",
+          "ownership": "user-owned"
+        },
+        {
+          "pattern": ".work/**",
           "ownership": "user-owned"
         }
       ]
@@ -451,5 +456,38 @@
     ".template-spec/design/facts/antdv-next",
     ".template-spec/user-guide/设备借用贯穿案例.md",
     ".template-spec/design/design-system-sync.yaml"
-  ]
+  ],
+  "upgradePolicy": {
+    "schemaVersion": 1,
+    "assets": [
+      {
+        "paths": [
+          "CONTEXT.md",
+          "yss-project.yaml",
+          ".template-spec/agents/issue-tracker.md",
+          "README.md"
+        ],
+        "kind": "preserve"
+      },
+      {
+        "paths": [
+          "AGENTS.md",
+          ".gitignore",
+          "DESIGN.md"
+        ],
+        "kind": "customizable"
+      },
+      {
+        "paths": [
+          "skills-lock.json",
+          ".template-spec/process/harness-profile.yaml",
+          ".agents/skills/.public-skills.json",
+          ".agents/skills/.skills-manifest.json"
+        ],
+        "kind": "generated",
+        "generator": "native-bundle"
+      }
+    ],
+    "rules": []
+  }
 }

@@ -9,12 +9,12 @@
     {
       "upstream": "prototype-review",
       "canonical": "prototype-review",
-      "upstream_hash": "9c0b042760f7d741487e62eaccf55b5079a1991e5489286560e278c9642a09b0"
+      "upstream_hash": "16cd912969a487808a53711f0c0e13d56d68abd5e07d144a4007187f8430f959"
     },
     {
       "upstream": "yss-prototype-stage",
       "canonical": "yss-prototype-stage",
-      "upstream_hash": "800b053febfb0a54414e11bdb8ec34bbb50dc731681e77d1a1d04e693c9f7513"
+      "upstream_hash": "145614fe856d23896d51a92c0f8fba54d0ebd1598f67366db6b012ce81c89810"
     },
     {
       "upstream": "yss-design-system",
@@ -27,5 +27,5 @@
       "upstream_hash": "094c50ddf430bb830500db015046c5f7dcd5a80f0e9aef68e665d2edf234cc7a"
     }
   ],
-  "source_state": "committed"
+  "source_state": "working-tree"
 }

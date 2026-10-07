@@ -25,8 +25,8 @@ try {
     const target=path.join(process.env.YSS_DEDICATED_INSTANCE_ROOT||scratch,side);
     if(!process.env.YSS_DEDICATED_INSTANCE_ROOT)initializeNative(side,target);
     const metadata=JSON.parse(readFileSync(path.join(target,'.yss.json')));
-    assert.equal(metadata.schemaVersion,2);
-    assert.equal(metadata.bundleSchemaVersion,2);
+    assert.equal(metadata.schemaVersion,3);
+    assert.equal(metadata.bundleSchemaVersion,3);
     assert.equal(metadata.protocolVersion,1);
     assert.equal(metadata.profileId,`harness.${side}-delivery`);
     assert.equal(metadata.templateCommit,inspectNative(side).templateCommit);

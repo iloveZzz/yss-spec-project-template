@@ -46,7 +46,7 @@ owner: ai
 ## 4. 冻结后变更规则
 
 - 冻结后如需改变路径、请求 / 响应 schema、错误结构、分页规则，或 Spec 已明确的认证 / 授权行为，必须回到 OpenAPI Draft Review 和 Design Review。
-- 行为规格变化影响接口时，必须同步回写 `docs/.scratch/<feature>/api/<feature>.yaml` 和 OpenAPI Draft 或 Spec 验收场景。
+- 行为规格变化影响接口时，必须同步回写 `.work/<feature>/api/<feature>.yaml` 和 OpenAPI Draft 或 Spec 验收场景。
 - 前后端实现必须以本记录引用的冻结版本为准。
 - 前端代码生成前，必须从冻结 YAML 生成 JSON，并保留 `openapi-json-export-record-template.md` 对应的派生记录。
 - 跨仓库前端仅可通过批准的交接脚本物化同 SHA-256 的 JSON 到其既有输入位置；目标前端项目按既有方式手动生成客户端，本模板不修改其生成配置，也不把生成动作加入 CI。

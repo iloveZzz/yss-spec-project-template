@@ -14,9 +14,10 @@ export function buildNative({ binary, output, profile, identity, pluginRoot, bin
   const executable = lstatSync(input), bytes = readFileSync(input);
   if (!executable.isFile() || !executableMode(executable.mode)) throw new Error('native-binary-not-executable');
   const version = invoke(input, ['version']).result;
+  if (!invoke(input, ['capabilities']).result?.native?.includes('work-layout-v1')) throw new Error('native-work-layout-capability-missing');
   if (binaryCommit !== null && binaryCommit !== version.cliCommit) throw new Error('binary-commit-provenance-mismatch');
   const inspection = invoke(input, ['bundle', 'inspect', '--profile', profile]).result;
-  if (inspection.schemaVersion !== 2 || inspection.profile !== profile || inspection.sourceState !== 'committed'
+  if (![2, 3].includes(inspection.schemaVersion) || inspection.profile !== profile || inspection.sourceState !== 'committed'
       || !inspection.files || !/^[a-f0-9]{64}$/.test(inspection.bundleHash) || !/^[a-f0-9]{40}$/.test(inspection.templateCommit)) throw new Error('native-bundle-identity-invalid');
   const parent = realpathSync(mkdtempSync(path.join(tmpdir(), 'yss-native-plugin-'))), exported = path.join(parent, 'template');
   let stage;

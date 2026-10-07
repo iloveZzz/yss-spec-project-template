@@ -15,8 +15,8 @@ function ensure(condition, message) { if (!condition) throw new TypeError(messag
 function exists(relative) { return existsSync(path.join(root, relative)); }
 function includesAll(actual, expected) { return Array.isArray(actual) && expected.every((item) => actual.includes(item)); }
 function hasText(value) { return typeof value === "string" && value.trim().length > 0; }
-const virtualTicketDecompositionRef = "docs/.scratch/demo/evidence/ticket-decomposition-result.yaml";
-const virtualTicketDecomposition = "result_schema: workflow-execution-result-v1\nwork_unit: work-unit.ticket-decomposition\nresult: completed\nevidence_refs:\n  - docs/.scratch/demo/evidence/ticket-decomposition-result.yaml\n";
+const virtualTicketDecompositionRef = ".work/demo/evidence/ticket-decomposition-result.yaml";
+const virtualTicketDecomposition = "result_schema: workflow-execution-result-v1\nwork_unit: work-unit.ticket-decomposition\nresult: completed\nevidence_refs:\n  - .work/demo/evidence/ticket-decomposition-result.yaml\n";
 
 function validatePlanClarificationPolicy(data) {
   const policy = data.planning?.clarification_policy;
@@ -170,8 +170,8 @@ function validateWorkflowExecutionResult(payload, contract, workUnitRoutes, opti
       root: options.root ?? root,
       // The scenario uses one explicit virtual fixture; arbitrary local refs
       // must still pass the real readability check and cannot use a fallback.
-      exists: (ref) => existsSync(ref) || existsSync(path.resolve(options.root ?? root, ref)) || exists(ref) || ref === "docs/.scratch/demo/issues/01-valid-slice.md" || ref === virtualTicketDecompositionRef,
-      read: (ref) => ref === "docs/.scratch/demo/issues/01-valid-slice.md" ? "---\nkind: vertical-slice-ticket\n---\n# 合法切片测试\n" : ref === virtualTicketDecompositionRef ? virtualTicketDecomposition : readFileSync(path.resolve(options.root ?? root, ref), "utf8"),
+      exists: (ref) => existsSync(ref) || existsSync(path.resolve(options.root ?? root, ref)) || exists(ref) || ref === ".work/demo/issues/01-valid-slice.md" || ref === virtualTicketDecompositionRef,
+      read: (ref) => ref === ".work/demo/issues/01-valid-slice.md" ? "---\nkind: vertical-slice-ticket\n---\n# 合法切片测试\n" : ref === virtualTicketDecompositionRef ? virtualTicketDecomposition : readFileSync(path.resolve(options.root ?? root, ref), "utf8"),
     });
     ensure(semantic.result === "allowed", `Workflow Execution Result implementation Ticket 语义非法: ${semantic.blocking_signals.join(", ")} / ${semantic.missing_requirements.join("; ")}`);
   }
@@ -313,7 +313,7 @@ export function runScenario(name) {
     const decisionTemp = mkdtempSync(path.join(os.tmpdir(), "matt-decision-test-"));
     process.on("exit", () => rmSync(decisionTemp, { recursive: true, force: true }));
     const specDecision = buildDecisionFixture(path.join(decisionTemp, "spec"));
-    const implementationDecision = buildImplementationFixture(path.join(decisionTemp, "implementation"), "docs/.scratch/demo/issues/01-valid-slice.md");
+    const implementationDecision = buildImplementationFixture(path.join(decisionTemp, "implementation"), ".work/demo/issues/01-valid-slice.md");
     const planFixture = buildPlanFixture(path.join(decisionTemp, 'plan'));
     const validResult = {
       ...planFixture.state,
@@ -335,8 +335,8 @@ export function runScenario(name) {
       ...validResult,
       work_unit: "work-unit.ticket-decomposition",
       next_route: "work-unit.slice-implementation",
-      ticket_decomposition_result_ref: "docs/.scratch/demo/evidence/ticket-decomposition-result.yaml",
-      vertical_slice_ticket_ref: "docs/.scratch/demo/issues/01-valid-slice.md",
+      ticket_decomposition_result_ref: ".work/demo/evidence/ticket-decomposition-result.yaml",
+      vertical_slice_ticket_ref: ".work/demo/issues/01-valid-slice.md",
     };
     validateWorkflowExecutionResult(validTicketResult, data.workflow_execution_result, data.work_unit_routes, { root: planFixture.root });
     const technicalDesignRef = path.join(planFixture.root, "technical-design.json");
@@ -455,12 +455,12 @@ export function runScenario(name) {
       next_route: "work-unit.code-review",
       predecessor_work_unit: "work-unit.ticket-decomposition",
       ready_for_agent: true,
-      ticket_decomposition_result_ref: "docs/.scratch/demo/evidence/ticket-decomposition-result.yaml",
+      ticket_decomposition_result_ref: ".work/demo/evidence/ticket-decomposition-result.yaml",
       ticket_decomposition_result_status: "completed",
-      vertical_slice_ticket_ref: "docs/.scratch/demo/issues/01-valid-slice.md",
+      vertical_slice_ticket_ref: ".work/demo/issues/01-valid-slice.md",
       vertical_slice_ticket_role: "ready-for-agent",
       vertical_slice_ticket_kind: "vertical-slice-ticket",
-      slice_contract_ticket_ref: "docs/.scratch/demo/issues/01-valid-slice.md",
+      slice_contract_ticket_ref: ".work/demo/issues/01-valid-slice.md",
       slice_contract_status: "approved",
       slice_contract_persisted: true,
       slice_contract_current_version: true,
@@ -498,8 +498,8 @@ export function runScenario(name) {
     for (const mutate of [
       (item) => { item.vertical_slice_ticket_role = "ready-for-human"; },
       (item) => { item.vertical_slice_ticket_kind = "parent-ticket"; },
-      (item) => { item.vertical_slice_ticket_ref = "docs/.scratch/demo/parent-ticket.md"; },
-      (item) => { item.slice_contract_ticket_ref = "docs/.scratch/demo/issues/02-other.md"; },
+      (item) => { item.vertical_slice_ticket_ref = ".work/demo/parent-ticket.md"; },
+      (item) => { item.slice_contract_ticket_ref = ".work/demo/issues/02-other.md"; },
       (item) => { item.predecessor_work_unit = "work-unit.spec-synthesis"; },
       (item) => { item.ticket_decomposition_result_status = "blocked"; },
       (item) => { item.ticket_decomposition_result_status = "needs-human"; },

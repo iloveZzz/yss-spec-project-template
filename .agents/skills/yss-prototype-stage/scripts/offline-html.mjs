@@ -1,3 +1,4 @@
+import { readWorkLayout } from '../../../../scripts/lib/work-layout.mjs';
 import { createHash } from "node:crypto";
 import { existsSync } from "node:fs";
 import { mkdir, readFile, writeFile, readdir, lstat } from "node:fs/promises";
@@ -148,7 +149,7 @@ export async function prepareOfflineHtml({ projectRoot, root, feature, profile, 
 export async function assertPrototypeTarget({projectRoot,root,feature,pattern="workbench"}) {
   if (!/^[a-z0-9][a-z0-9-]*$/.test(feature ?? "")) throw new TypeError("feature 必须是小写 kebab-case");
   if (!["editor", "workbench"].includes(pattern)) throw new Error("pattern 必须为 editor/workbench");
-  const expected = path.resolve(projectRoot, "docs/.scratch", feature, "design/prototypes");
+  const expected = path.resolve(projectRoot, readWorkLayout(projectRoot).featureRoot(feature), "design/prototypes");
   if (path.resolve(root) !== expected) throw new TypeError(`原型目录必须精确匹配 ${expected}`);
   for (let current = path.resolve(root); current.startsWith(`${path.resolve(projectRoot)}${path.sep}`); current = path.dirname(current)) {
     if (existsSync(current) && (await lstat(current)).isSymbolicLink()) throw new Error(`原型路径不允许符号链接: ${current}`);

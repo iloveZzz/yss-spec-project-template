@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "cases": [
+    {"root":".work","valid":true,"normalized":".work","feature":"export-report","checkpoint":".work/export-report/checkpoint.json","ticket":".work/export-report/issues/01-download.md"},
+    {"root":"docs/.scratch","valid":true,"normalized":"docs/.scratch","feature":"export-report","checkpoint":"docs/.scratch/export-report/checkpoint.yaml","ticket":"docs/.scratch/export-report/issues/01-download.md"},
+    {"root":"docs/feature-work/","valid":true,"normalized":"docs/feature-work","feature":"export-report","checkpoint":"docs/feature-work/export-report/checkpoint.yml","ticket":"docs/feature-work/export-report/issues/01-download.md"},
+    {"root":null,"valid":false},
+    {"root":"","valid":false},
+    {"root":"../outside","valid":false},
+    {"root":"/outside","valid":false},
+    {"root":"docs/../outside","valid":false},
+    {"root":".git/work","valid":false},
+    {"root":".yss/work","valid":false},
+    {"root":".template-spec/work","valid":false},
+    {"root":".agents/work","valid":false},
+    {"root":"app/work","valid":false},
+    {"root":".scratch","valid":false},
+    {"root":"docs/requirements/tickets","valid":false},
+    {"root":"docs/CON","valid":false},
+    {"root":"docs/end.","valid":false},
+    {"root":"docs//work","valid":false}
+  ]
+}

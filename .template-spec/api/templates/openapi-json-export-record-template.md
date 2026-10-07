@@ -14,7 +14,7 @@ owner: ai
 
 | 项目 | 值 |
 |---|---|
-| 冻结 YAML | `docs/.scratch/<feature>/api/<feature>.yaml` |
+| 冻结 YAML | `.work/<feature>/api/<feature>.yaml` |
 | YAML SHA-256 |  |
 | OAS 版本 | 3.1.0 |
 | OpenAPI Freeze 记录 |  |
@@ -34,7 +34,7 @@ owner: ai
 
 | 项目 | 值 |
 |---|---|
-| 输出 JSON | `docs/.scratch/<feature>/api/<feature>.json` |
+| 输出 JSON | `.work/<feature>/api/<feature>.json` |
 | JSON SHA-256 |  |
 | 受控交接 JSON | `<frontend>/openapi/openapi.json` |
 | 交接后 SHA-256 | 必须与输出 JSON 相同 |

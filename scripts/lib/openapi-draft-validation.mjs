@@ -5,6 +5,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseAllDocuments, parseDocument } from "../vendor/yaml.mjs";
 import { validateJsonSchema } from "./json-schema.mjs";
+import { readWorkLayout } from './work-layout.mjs';
 
 const TEMPLATE_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const METHODS = new Set(["get", "put", "post", "delete", "options", "head", "patch", "trace"]);
@@ -95,6 +96,8 @@ export function validateOpenApiDraftValidationRecord(recordFile, { root = TEMPLA
   ensure(record.toolchain.exit_code === 0, "Redocly lint 必须以退出码 0 完成");
   ensure(Object.values(record.checks).every((result) => result === "passed"), "所有结构与 lint checks 必须为 passed");
   ensure(record.toolchain.command === `pnpm exec redocly lint ${record.draft.ref}`, "lint command 必须精确指向当前 Draft");
+  const layout=readWorkLayout(projectRoot),feature=layout.featureOf(record.draft.ref);
+  ensure(record.draft.ref.startsWith(`${layout.featureRoot(feature)}/api/`),"Draft 必须位于配置的功能包根的 api 目录");
   const draftFile = resolveOpenApiRef(projectRoot, record.draft.ref);
   const lockfile = resolveOpenApiRef(projectRoot, record.toolchain.lockfile_ref);
   resolveOpenApiRef(projectRoot, record.toolchain.evidence_ref);

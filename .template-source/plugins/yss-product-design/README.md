@@ -30,3 +30,7 @@
 设计范围为 Plan → Spec / 功能架构 → 产品设计与 Handoff v5，tracker 默认 local-markdown。后端从独立治理项目通过 `project-import-design` 接收；导入仍需词汇对账、设计、逐条消费与批准后才能实现。
 
 原生行为测试必须提供固定 `YSS_PLUGIN_TEST_BINARY`；旧身份测试另提供 `YSS_PLUGIN_LEGACY_SPEC` / `YSS_PLUGIN_LEGACY_DESIGN` 的固定恢复包根，以及 `YSS_PLUGIN_LEGACY_ARCHIVE_ROOT`。跨二进制升级测试还需真实前版的 `YSS_PLUGIN_PREVIOUS_BINARY` 与独立固定摘要 `YSS_PLUGIN_PREVIOUS_BINARY_SHA256`。缺少输入时报错，不能跳过后仍宣称行为已验证。
+
+## 受管资产升级决议
+
+`project-upgrade-plan` 和 `project-migration-plan` 支持 `--review-out <项目外新目录>`、`--base-bundle <离线历史Bundle>`。存在冲突时先保存插件计划，再通过 `--plan <原插件计划> --resolution-file <决议文件>` 重新规划，保存新插件计划后交相应 apply 入口。决议摘要绑定容器内的原生计划；新 binding、受管文件、锁及 metadata 在同一原生事务中应用和验证。`readyToApply=false` 的计划保持阻断，旧 Context 单独诊断，业务与批准资产保留。计划 v2、Bundle v3、metadata v3；插件和原生 JSON envelope 继续 v1。

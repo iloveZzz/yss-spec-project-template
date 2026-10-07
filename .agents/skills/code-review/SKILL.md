@@ -3,6 +3,8 @@ name: code-review
 description: 审查分支、PR、固定候选或工作树改动，按仓库规范、Spec 及适用 UI 还原要求报告有证据的缺陷。
 ---
 
+功能包根只从 `.template-spec/agents/issue-tracker.md` 的 `tracker.root` 读取；本文 `.work/` 路径是新项目示例，已有项目沿用已配置的根。
+
 Review a pinned candidate: all applicable axes initially, then affected conclusions and dependencies:
 
 - **Standards** — does the code conform to this repo's documented coding standards **and**, for YSS slices, the specialist check inputs compiled in [yss-review-standards.md](references/yss-review-standards.md)?
@@ -33,7 +35,7 @@ Look for the originating spec, in this order:
 
 1. The daily Ticket / PR goal and acceptance examples, or a spec/Ticket/contract reference supplied by the user or an upstream governed review input. A daily task with readable acceptance does not require a new calibrated Spec.
 2. Issue references in the commit messages (`#123`, `Closes #45`, GitLab `!67`, etc.) — fetch via the workflow in `.template-spec/agents/issue-tracker.md`.
-3. A spec file under `docs/`, `specs/`, or `docs/.scratch/` matching the branch name or feature.
+3. A spec file under `docs/`, `specs/`, or `.work/` matching the branch name or feature.
 4. If nothing is found, ask the user where the spec is. If they say there isn't one, the **Spec** sub-agent will skip and report "no spec available".
 
 ### 3. Identify the standards sources

@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { readWorkLayout } from '../../../../scripts/lib/work-layout.mjs';
 import { existsSync, realpathSync, readFileSync, lstatSync } from 'node:fs';
 // Author-side build; only the fully verified offline package is published.
 import {readFile,writeFile,mkdir,mkdtemp,rm,cp,rename,lstat,realpath} from 'node:fs/promises';
@@ -109,7 +110,9 @@ export async function buildShadcnVuePrototype({projectRoot,root,feature,toolchai
  }
  const stagingParent=path.join(path.dirname(root),'build');await mkdir(stagingParent,{recursive:true});const temp=await mkdtemp(path.join(stagingParent,'.prototype-'));
  try{
-  const project=path.join(temp,'project'),out=path.join(project,`docs/.scratch/${feature}/design/prototypes`);
+  const project=path.join(temp,'project'),out=path.join(project,readWorkLayout(projectRoot).featureRoot(feature),'design/prototypes');
+  await mkdir(path.join(project,'.template-spec/agents'),{recursive:true});
+  await cp(path.join(projectRoot,'.template-spec/agents/issue-tracker.md'),path.join(project,'.template-spec/agents/issue-tracker.md'));
   await mkdir(path.join(project,'.template-spec/design/tokens'),{recursive:true});for(const ref of ['DESIGN.md','.template-spec/design/tokens/variables.css'])await cp(path.join(projectRoot,ref),path.join(project,ref));
   await writeFile(path.join(temp,'scenarios.json'),scenarioBytes);
   const manifest=await prepareOfflineHtml({projectRoot:project,root:out,feature,profile,pattern:'workbench',scenarios:path.join(temp,'scenarios.json'),title,density});
@@ -134,4 +137,4 @@ export async function buildShadcnVuePrototype({projectRoot,root,feature,toolchai
   const sealed=await sealOfflineHtml(out,profile);await assertPrototypeTarget({projectRoot,root,feature});await rename(out,root);return sealed;
  }finally{await rm(temp,{recursive:true,force:true});}
 }
-if(process.argv[1]&&existsSync(process.argv[1])&&pathToFileURL(realpathSync(process.argv[1])).href===import.meta.url){const args={};for(let i=2;i<process.argv.length;i+=2){if(!process.argv[i].startsWith('--')||!process.argv[i+1])throw Error('参数必须是 --key value');args[process.argv[i].slice(2)]=process.argv[i+1];}const projectRoot=path.resolve(args['project-root']||'.');const root=args.root||path.join(projectRoot,'docs/.scratch',args.feature||'','design/prototypes');console.log(JSON.stringify(await buildShadcnVuePrototype({projectRoot,root,feature:args.feature,profile:args.profile,toolchain:args.toolchain,entry:args.entry,config:args.config,density:args.density}),null,2));}
+if(process.argv[1]&&existsSync(process.argv[1])&&pathToFileURL(realpathSync(process.argv[1])).href===import.meta.url){const args={};for(let i=2;i<process.argv.length;i+=2){if(!process.argv[i].startsWith('--')||!process.argv[i+1])throw Error('参数必须是 --key value');args[process.argv[i].slice(2)]=process.argv[i+1];}const projectRoot=path.resolve(args['project-root']||'.');const root=args.root||path.join(projectRoot,readWorkLayout(projectRoot).featureRoot(args.feature),'design/prototypes');console.log(JSON.stringify(await buildShadcnVuePrototype({projectRoot,root,feature:args.feature,profile:args.profile,toolchain:args.toolchain,entry:args.entry,config:args.config,density:args.density}),null,2));}

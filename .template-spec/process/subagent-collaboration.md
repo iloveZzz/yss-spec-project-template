@@ -18,7 +18,7 @@ Subagent 和其它运行时实例只接收边界清晰的任务包。主控数�
 
 本节结构化汇合适用于正式 `governed` / 模板维护任务。普通子任务把当前候选、变更、实际测试、独立身份、审查结论及阻断项回填同一任务记录，由 `verify-daily` 核验；不伪装 `workflow-execution-result-v1` 或通过本节关闭正式门禁。
 
-返回结果必须符合 `workflow-execution-result-v1`，至少包括 `work_unit`、`workflow_reference`、`result`、`skill`、`changed_files` / `changed_artifacts`、`evidence_refs`、实际验证结果、`deferred_seams`、`drift`、`violation`、`new_impacts`、`stale_candidates`、`blocking_signals` 和 `next_route`。主控必须重新执行 fresh verification，并在集中 checkpoint 中保留阶段因果。会签写入 `docs/.scratch/<feature>/gates/<gate-id>-approval.yaml`（形状见 `.template-spec/templates/approval-record-template.yaml`），不能用聊天表情代替。恢复前校验 `scripts/verify-approval-record --require-approved --checkpoint <current checkpoint>`，期望上下文来自消费者，不复制待验记录来证明当前性。
+返回结果必须符合 `workflow-execution-result-v1`，至少包括 `work_unit`、`workflow_reference`、`result`、`skill`、`changed_files` / `changed_artifacts`、`evidence_refs`、实际验证结果、`deferred_seams`、`drift`、`violation`、`new_impacts`、`stale_candidates`、`blocking_signals` 和 `next_route`。主控必须重新执行 fresh verification，并在集中 checkpoint 中保留阶段因果。会签写入配置的功能包根（示例 `.work/<feature>/gates/<gate-id>-approval.yaml`）（形状见 `.template-spec/templates/approval-record-template.yaml`），不能用聊天表情代替。恢复前校验 `scripts/verify-approval-record --require-approved --checkpoint <current checkpoint>`，期望上下文来自消费者，不复制待验记录来证明当前性。
 
 新会签与组合审查使用 schema v2，绑定当前 `review_task_ref/digest`、`capability_ids` 和 `basis`；组合内保留逐项主体、范围、依据和结论。历史记录只读保留，`--history` 不授予当前放行；旧消费者拒绝 v2 后升级，不降级绕过。首轮完整覆盖适用检查，修复后按差异影响定向复审，复用项说明未受影响依据，并将全部消费结论重新绑定当前候选。摘要变化、UI 或 `new_impacts` 不构成全轴默认复审理由，未知先调查。
 

@@ -1,3 +1,4 @@
+import { readWorkLayout } from './work-layout.mjs';
 import {readInstanceMetadata,appliedManagedDigest} from './instance-metadata.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -35,7 +36,7 @@ function project(root, checkpoint) {
   if (identity.schema_version!==1 || identity.repository_mode!=='project-instance') fail('project-instance-required');
   const cp=yaml(safeAssetPath(root,checkpoint));
   if (cp.schema_version!==1 || cp.repository_mode!=='project-instance' || !/^[a-z0-9][a-z0-9-]*$/.test(cp.feature_id || '')) fail('checkpoint-identity-invalid');
-  const base=`docs/.scratch/${cp.feature_id}`;
+  const base=readWorkLayout(root).featureRoot(cp.feature_id);
   if (!checkpoint.startsWith(base+'/')) fail('checkpoint-feature-mismatch');
   return {root,checkpoint,base};
 }

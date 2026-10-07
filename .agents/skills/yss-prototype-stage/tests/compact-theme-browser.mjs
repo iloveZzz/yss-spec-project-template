@@ -1,3 +1,4 @@
+import { fixtureTracker } from './work-layout-fixture.mjs';
 // Maintainer check against the normative source, not a visual approval.
 import assert from 'node:assert/strict';
 import {readFile,writeFile,mkdtemp} from 'node:fs/promises';
@@ -45,6 +46,7 @@ try{
  const feature='comfortable',root=path.join(output,`docs/.scratch/${feature}/design/prototypes`);
  const {mkdir,cp}=await import('node:fs/promises');await mkdir(path.join(output,'.template-spec/design/tokens'),{recursive:true});
  for(const ref of ['DESIGN.md','.template-spec/design/tokens/variables.css'])await cp(path.join(projectRoot,ref),path.join(output,ref));
+ await fixtureTracker(output);
  await buildShadcnVuePrototype({projectRoot:output,root,feature,toolchain:process.env.YSS_VUE_TOOLCHAIN,density:'comfortable'});
  await page.setViewportSize({width:1440,height:900});await page.goto(pathToFileURL(path.join(root,'index.html')).href);await page.locator('#keyword').waitFor();
  assert.equal(await page.locator('#keyword').evaluate(el=>el.getBoundingClientRect().height),parseFloat(spec.components['button-primary'].height));

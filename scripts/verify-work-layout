@@ -1,0 +1,49 @@
+#!/usr/bin/env node
+import fs from 'node:fs';
+import path from 'node:path';
+import assert from 'node:assert/strict';
+const root=path.resolve(import.meta.dirname,'..');
+const exceptions=new Map([
+  ['scripts/lib/work-layout.mjs','集中当前/历史根合同'],
+  ['scripts/lib/native-context.mjs','旧执行器能力兼容诊断'],
+  ['scripts/lib/scenario-checks.mjs','维护场景夹具，不分发'],
+]);
+const bad=[];
+const old=/docs(?:\/|\\\/)(?:\.|\\\.)scratch/;
+function scan(base,predicate) {
+  for(const entry of fs.readdirSync(path.join(root,base),{withFileTypes:true})) {
+    const ref=`${base}/${entry.name}`;
+    if(entry.isDirectory()) { if(!['tests','fixtures','assets','vendor'].includes(entry.name)) scan(ref,predicate); }
+    else if(entry.isFile()&&predicate(ref)) {
+      const content=fs.readFileSync(path.join(root,ref),'utf8');
+      if(old.test(content)&&!exceptions.has(ref))bad.push(ref);
+    }
+  }
+}
+scan('scripts/lib',ref=>/\.(mjs|js|py)$/.test(ref)&&!ref.includes('.test.'));
+scan('.agents/skills',ref=>ref.includes('/scripts/')&&/\.(mjs|js|py)$/.test(ref)&&!ref.includes('.test.'));
+assert.deepEqual(bad,[],'生产路径硬编码必须改为 work-layout；历史例外需说明用途');
+const cliIndex=process.argv.indexOf('--cli-root');
+if(cliIndex>=0) {
+  const cli=path.resolve(process.argv[cliIndex+1]);
+  assert.deepEqual(fs.readFileSync(path.join(cli,'internal/worklayout/testdata/cases.json')),fs.readFileSync(path.join(root,'tests/fixtures/work-layout-cases.json')),'JS/Go 共享路径用例必须逐字节一致');
+  const legacyGo=new Map([
+    ['internal/worklayout/layout.go','集中历史根合同'],
+    ['internal/project/work_layout.go','显式旧根到新根迁移及闭包核验'],
+    ['internal/project/work_layout_resolution.go','迁移候选重绑定的旧引用诊断'],
+    ['internal/bundle/native_work_layout.go','固定来源的旧指引适配'],
+    ['internal/bundle/producer.go','禁止打包实例资产的兼容根'],
+    ['internal/bundle/upgrade.go','实例资产保留策略的兼容根'],
+  ]);
+  function goScan(base) {
+    for(const entry of fs.readdirSync(path.join(cli,base),{withFileTypes:true})) {
+      const ref=`${base}/${entry.name}`;
+      if(entry.isDirectory()) { if(!['testdata','assets','native','work-layout-assets'].includes(entry.name))goScan(ref); }
+      else if(entry.isFile()&&ref.endsWith('.go')&&!ref.endsWith('_test.go')&&old.test(fs.readFileSync(path.join(cli,ref),'utf8'))&&!legacyGo.has(ref))bad.push(ref);
+    }
+  }
+  goScan('internal');
+  assert.deepEqual(bad,[],'Go 生产消费者不得硬编码旧工作包路径');
+  for(const [ref,reason] of legacyGo)exceptions.set(ref,reason);
+}
+console.log(JSON.stringify({status:'passed',production_hardcodes:bad,compatibility_exceptions:Object.fromEntries(exceptions)}));

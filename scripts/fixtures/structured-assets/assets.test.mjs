@@ -16,6 +16,8 @@ function fixture(t) {
   fs.mkdirSync(path.join(root,'.template-spec/process'),{recursive:true});
   fs.cpSync(path.join(TOOL_ROOT,'.template-spec/process/schemas'),path.join(root,'.template-spec/process/schemas'),{recursive:true});
   fs.writeFileSync(path.join(root,'yss-project.yaml'),'schema_version: 1\nrepository_mode: project-instance\n');
+  fs.mkdirSync(path.join(root,'.template-spec/agents'),{recursive:true});
+  fs.writeFileSync(path.join(root,'.template-spec/agents/issue-tracker.md'),'---\ntracker:\n  platform: local-markdown\n  root: docs/.scratch\n---\n');
   return root;
 }
 const verify = (root, ref, kind) => {validateAssetStructure(parseAsset(fs.readFileSync(path.join(root,ref)),ref),kind,{schemaRoot:root});return {exit_code:0};};

@@ -692,6 +692,19 @@ routing:
     groups:
       - feature-assets
   - patterns:
+      - scripts/lib/work-layout.mjs
+      - tests/work-layout.test.mjs
+      - tests/fixtures/work-layout-cases.json
+      - scripts/verify-work-layout
+      - .template-spec/process/work-layout.md
+      - .agents/skills/yss-prototype-stage/tests/work-layout-fixture.mjs
+      - .template-source/scripts/sync-native-work-layout.mjs
+    groups:
+      - work-layout
+      - hygiene
+      - implementation
+      - feature-assets
+  - patterns:
       - scripts/**
     groups:
       - hygiene
@@ -737,6 +750,12 @@ routing:
     groups:
       - candidate-integrity
 groups:
+  work-layout:
+    commands:
+      - run: node --test tests/work-layout.test.mjs
+        id: check.work-layout
+      - run: node scripts/verify-work-layout
+        id: check.work-layout-hardcodes
   drift-identity:
     commands:
       - run: node --test tests/content-identity.test.mjs tests/drift-report.test.mjs
@@ -3989,6 +4008,22 @@ legacy_coverage:
     evidence_ref: .template-source/process/template-verification-legacy.json
     display_gate: G06
 supplemental_checks:
+  - id: check.work-layout-supplemental
+    run: node --test tests/work-layout.test.mjs
+    group: feature-assets
+    gate_ids: [check.verification-lifecycle]
+    depends_on: []
+    when: template-source
+    task_id: supplemental.work-layout
+    source_requirement: committed
+  - id: check.work-layout-hardcodes-supplemental
+    run: node scripts/verify-work-layout
+    group: feature-assets
+    gate_ids: [check.verification-lifecycle]
+    depends_on: []
+    when: template-source
+    task_id: supplemental.work-layout-hardcodes
+    source_requirement: committed
   - id: check.native-context-retirement
     run: node --test tests/native-context-retirement.test.mjs
     group: lifecycle

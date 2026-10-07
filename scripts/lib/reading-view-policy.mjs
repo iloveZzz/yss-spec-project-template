@@ -1,3 +1,4 @@
+import { readWorkLayout } from './work-layout.mjs';
 import {existsSync,readFileSync} from './validation-phase.mjs';
 import {safe,schema} from './strategic-handoff-io.mjs';
 import {parseSliceYaml} from './slice-contract.mjs';
@@ -9,8 +10,7 @@ export function readingPolicy(root){
  return value;
 }
 export function managedReading(root,checkpoint){const policy=readingPolicy(root);return policy.mode==='managed'&&policy.checkpoints.includes(checkpoint);}
-export function readingLocation(checkpoint){
- const match=/^docs\/\.scratch\/([a-z0-9][a-z0-9-]*)\/[^/]+\.(yaml|json)$/.exec(checkpoint);
- if(!match)throw Error('reading-checkpoint-path-invalid');
- return {feature:match[1],base:`docs/.scratch/${match[1]}`,directory:`docs/.scratch/${match[1]}/reading`};
+export function readingLocation(root, checkpoint){
+ const layout=readWorkLayout(root),feature=layout.checkpointFeature(checkpoint),base=layout.featureRoot(feature);
+ return {feature,base,directory:base+'/reading'};
 }

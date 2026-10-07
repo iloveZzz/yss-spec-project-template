@@ -6,7 +6,7 @@ version: v1
 status: draft
 bundle:
   format: portable-directory
-  root_ref: docs/.scratch/<feature>/handoff/visual-baseline-v1
+  root_ref: .work/<feature>/handoff/visual-baseline-v1
   digest: <sha256>
   size_bytes: <bytes>
   max_image_bytes: 5242880

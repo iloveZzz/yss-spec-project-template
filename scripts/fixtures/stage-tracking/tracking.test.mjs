@@ -10,12 +10,12 @@ import { planTracking, applyTracking, checkTracking } from '../../lib/stage-trac
 const repo = path.resolve(import.meta.dirname, '../../..');
 const checkpointRef = 'docs/.scratch/demo/checkpoint.json';
 function put(root, ref, value) { const p = path.join(root, ref); mkdirSync(path.dirname(p), { recursive: true }); writeFileSync(p, typeof value === 'string' ? value : ref.endsWith('.json') ? JSON.stringify(value, null, 2) : stringify(value)); }
-function fixture({ design = false, enabled = false, platform = 'local-markdown' } = {}) {
+function fixture({ design = false, enabled = false, platform = 'local-markdown', workRoot = 'docs/.scratch' } = {}) {
   const root = mkdtempSync(path.join(os.tmpdir(), 'yss-stage-tracking-'));
   for (const ref of ['.template-spec/process/checkpoint-boundary.yaml', '.template-spec/process/schemas/stage-tracking.schema.json', '.template-spec/process/schemas/lifecycle-checkpoint.schema.json', '.template-spec/process/templates/lifecycle-checkpoint-template.yaml', '.template-spec/process/lifecycle-registry.yaml']) put(root, ref, readFileSync(path.join(repo, ref), 'utf8'));
   put(root, 'yss-project.yaml', { schema_version: 1, repository_mode: 'project-instance' });
   put(root, 'CONTEXT.md', '# 测试词汇');
-  put(root, '.template-spec/agents/issue-tracker.md', `---\ntracker:\n  platform: ${platform}\n${enabled ? '  lifecycle_tracking_version: 1\n' : ''}---\n# Tracker\n`);
+  put(root, '.template-spec/agents/issue-tracker.md', `---\ntracker:\n  platform: ${platform}\n  root: ${workRoot}\n${enabled ? '  lifecycle_tracking_version: 1\n' : ''}---\n# Tracker\n`);
   if (design) put(root, '.template-spec/process/harness-profile.yaml', { profile_id: 'harness.business-ddd-strategy-handoff', allowed_work_units: ['work-unit.plan-requirements', 'work-unit.spec-synthesis', 'work-unit.prototype-design-v2'] });
   put(root, 'docs/.scratch/demo/plan/input.md', '# 已确认的问题');
   return root;
@@ -41,6 +41,21 @@ test('new Plan: unique parent, inline item, no slice; check and plan are read-on
   assert.equal(existsSync(path.join(root, 'docs/.scratch/demo/issues')), false);
   assert.equal(applyTracking(root, plan).status, 'unchanged');
   assert.equal(planTracking(root, plan.input).changes.length, 0);
+});
+
+test('configured new and custom roots generate one consistent checkpoint, parent and work item', () => {
+  for(const workRoot of ['.work','docs/custom-work']) {
+    const root=fixture({workRoot}),checkpoint_ref=`${workRoot}/demo/checkpoint.json`;
+    put(root,`${workRoot}/demo/plan/input.md`,'明确需求');
+    const item={...seed(),source_refs:[`${workRoot}/demo/plan/input.md`],split_reasons:['independent-acceptance']};
+    const plan=planTracking(root,{checkpoint_ref,items:[item]});
+    assert.equal(applyTracking(root,plan).status,'applied');
+    const cp=parseYaml(readFileSync(path.join(root,checkpoint_ref),'utf8'));
+    assert.equal(cp.stage_tracking.entry.ref,`${workRoot}/demo/parent-ticket.md`);
+    assert.equal(cp.stage_tracking.items[0].definition_ref,`${workRoot}/demo/work-items/scope.md`);
+    assert.equal(checkTracking(root,checkpoint_ref).status,'valid');
+    assert.throws(()=>planTracking(root,{checkpoint_ref:checkpointRef,items:[item]}),/WORK_LAYOUT_CHECKPOINT/);
+  }
 });
 test('Design entry uses checkpoint and never engineering parent', () => {
   const { root, checkpoint } = start({ design: true });

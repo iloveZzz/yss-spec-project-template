@@ -13,6 +13,8 @@ const write = (relative, value) => {
   return file;
 };
 const draftRef = "docs/.scratch/example/api/example.yaml";
+
+write('.template-spec/agents/issue-tracker.md','---\ntracker:\n  platform: local-markdown\n  root: docs/.scratch\n---\n');
 const evidenceRef = "docs/.scratch/example/api/example-redocly-lint.txt";
 const draft = `openapi: 3.1.0
 info: { title: Example, version: 0.1.0-draft }

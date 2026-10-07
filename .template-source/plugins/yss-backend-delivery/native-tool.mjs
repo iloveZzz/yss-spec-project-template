@@ -81,5 +81,6 @@ export function tool(root) {
   if (hash(readFileSync(binary)) !== pin.binarySha256 || fileMode(lstatSync(binary).mode) !== fileMode(pin.binaryMode)) throw new Error('native-binary-drift');
   const snapshot = invoke(binary, ['bundle', 'inspect', '--profile', pin.profile]).result;
   if (digest(snapshot) !== pin.inspectionDigest) throw new Error('native-bundle-drift');
-  return { binary, pin, snapshot, bundleDigest: hash(readFileSync(safe(root, 'bundle-lock.json'))) };
+  const capabilities = invoke(binary, ['capabilities']).result;
+  return { binary, pin, snapshot, capabilities, bundleDigest: hash(readFileSync(safe(root, 'bundle-lock.json'))) };
 }

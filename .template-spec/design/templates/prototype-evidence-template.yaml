@@ -1,8 +1,8 @@
-# 复制到 docs/.scratch/<feature>/verification/prototype-evidence.yaml。
+# 复制到 .work/<feature>/verification/prototype-evidence.yaml。
 # 只保留所选档位的 profile_evidence 子块；schema v1/v2/v3 仅允许只读迁移。
 schema_version: 4
 feature: <feature>
-prototype_ref: docs/.scratch/<feature>/design/prototypes/index.html
+prototype_ref: .work/<feature>/design/prototypes/index.html
 prototype_profile: H2
 profile_kind: flow-review
 profile_decision:
@@ -20,11 +20,11 @@ profile_decision:
     reason: not-applicable
     evidence_ref: not-applicable
 upstream_refs:
-  spec_ref: docs/.scratch/<feature>/spec/<feature>-spec.md
-  interaction_spec_ref: docs/.scratch/<feature>/design/<feature>-interaction-spec.md
-  low_fidelity_ref: docs/.scratch/<feature>/design/<feature>-low-fidelity.md
-  state_matrix_ref: docs/.scratch/<feature>/design/<feature>-state-matrix.md
-  prototype_review_ref: docs/.scratch/<feature>/design/<feature>-prototype-review.md
+  spec_ref: .work/<feature>/spec/<feature>-spec.md
+  interaction_spec_ref: .work/<feature>/design/<feature>-interaction-spec.md
+  low_fidelity_ref: .work/<feature>/design/<feature>-low-fidelity.md
+  state_matrix_ref: .work/<feature>/design/<feature>-state-matrix.md
+  prototype_review_ref: .work/<feature>/design/<feature>-prototype-review.md
 source_visual:
   kind: design-system # 有独立视觉稿时用 visual-reference
   ideation_status: not-applicable
@@ -42,7 +42,7 @@ design_baseline:
   project_token_baseline_digest: <sha256>
   project_override_reviewed: false
 visual_baseline:
-  manifest_ref: docs/.scratch/<feature>/handoff/visual-baseline-v1/visual-baseline.yaml
+  manifest_ref: .work/<feature>/handoff/visual-baseline-v1/visual-baseline.yaml
   baseline_id: visual-baseline.<feature>
   version: v1
   digest: <sha256>
@@ -50,11 +50,11 @@ visual_baseline:
   case_ids: [primary-desktop, primary-narrow]
 browser_delivery:
   delivery_contract: offline-html-v1
-  resource_manifest_ref: docs/.scratch/<feature>/design/prototypes/yss-prototype-adapter.json
+  resource_manifest_ref: .work/<feature>/design/prototypes/yss-prototype-adapter.json
   offline_verification_ref: <file-url-offline-browser-evidence>
   offline_verification_result: pending
   delivery_kind: static-directory
-  entry_ref: docs/.scratch/<feature>/design/prototypes/index.html
+  entry_ref: .work/<feature>/design/prototypes/index.html
   rendered_nonblank: false
   prototype_digest: <sha256>
   viewports:
@@ -72,7 +72,7 @@ design_qa:
   # 同一 report_ref 内记录 320 CSS px 重排、实际 200% 缩放、目标区域/焦点遮挡、读屏版本与未执行项。
   # 验证运行 report.json 经该报告引用；首次截图待审，自动扫描/模拟观察不替代用户研究。
   mode: design-contract # visual-reference 对应 visual-comparison
-  report_ref: docs/.scratch/<feature>/verification/design-qa.md
+  report_ref: .work/<feature>/verification/design-qa.md
   result: pending
   axes:
     visual: pending
@@ -132,12 +132,12 @@ implementation_handoff:
       target_stage: frontend-implementation-plan
 review:
   result: pending
-  review_ref: docs/.scratch/<feature>/design/<feature>-prototype-review.md
+  review_ref: .work/<feature>/design/<feature>-prototype-review.md
 user_confirmation:
   user_decision_ref: <真实用户决定记录>
   decision_subject_ref: <原型与基线确认快照>
   result: pending
-  confirmation_ref: docs/.scratch/<feature>/design/<feature>-prototype-confirmation.md
+  confirmation_ref: .work/<feature>/design/<feature>-prototype-confirmation.md
   confirmed_decision: <用户确认的设计决定>
   operable_scope: [<可操作范围>]
   simulations_or_gaps: [<模拟或缺口>]

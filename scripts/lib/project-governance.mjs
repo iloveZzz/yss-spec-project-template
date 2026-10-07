@@ -1,4 +1,5 @@
 import {checkNativeContext, contextBinary} from './native-context.mjs';
+import { readWorkLayout } from './work-layout.mjs';
 import {findApprovalCheckpoint} from './approval-checkpoint-discovery.mjs';
 import fs from 'node:fs';
 import { spawnSync } from 'node:child_process';
@@ -18,13 +19,12 @@ export function parseGovernance(bytes, ref) {
 export function governanceScope(root) {
   const identity=readDocument(root,'yss-project.yaml');
   if(identity?.schema_version!==1||identity.repository_mode!=='project-instance')throw new Error('project-ci 仅适用于 project-instance');
-  const tracker=parseGovernance(fs.readFileSync(safeFile(root,TRACKER)),TRACKER)?.tracker;
-  if(!tracker||!['local-markdown','github','gitlab'].includes(tracker.platform)||typeof tracker.root!=='string')throw new Error('主 tracker 配置无效');
+  const layout=readWorkLayout(root);
   const config=fileBinding(root,CI_CONFIG)?readDocument(root,CI_CONFIG):{schema_version:1,provider:'github',branch:'main',additional_paths:[]};
   if(config.schema_version!==1||config.provider!=='github'||!Array.isArray(config.additional_paths)||config.additional_paths.some(x=>typeof x!=='string'))throw new Error('project-ci 配置无效');
-  const roots=[...new Set([tracker.root.replace(/\/$/,''),...config.additional_paths])].sort();
+  const roots=[...new Set([layout.root,...config.additional_paths])].sort();
   roots.forEach(ref=>safeFile(root,ref));
-  return {roots,config,trackerRoot:tracker.root.replace(/\/$/,'')};
+  return {roots,config,trackerRoot:layout.root};
 }
 export function governanceFiles(root, roots) {
   const result=[];

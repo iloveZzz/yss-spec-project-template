@@ -1,3 +1,4 @@
+import { readWorkLayout } from './work-layout.mjs';
 import {finalizeReading} from './reading-view-bundle.mjs';
 import {runAssetTransaction,assertAssetTransactionIdle,assertCurrentAssetReference} from './asset-transactions.mjs';
 import {parseAsset} from './structured-assets.mjs';
@@ -8,11 +9,7 @@ import { TRACKER_REF, STAGE_WORK_UNITS, sha256, safeTrackingPath, readTracking, 
 
 const descriptor = (root, ref) => { const p = safeTrackingPath(root, ref); return existsSync(p) ? { digest: sha256(readFileSync(p)), mode: statSync(p).mode & 0o777 } : null; };
 const json = x => `${JSON.stringify(x, null, 2)}\n`;
-function featureFrom(ref) {
-  const match = /^docs\/\.scratch\/([a-z0-9][a-z0-9-]*)\/[^/]+\.(yaml|json)$/.exec(ref);
-  if (!match) throw new Error('tracking-checkpoint-path-invalid');
-  return match[1];
-}
+function featureFrom(root, ref) { return readWorkLayout(root).checkpointFeature(ref); }
 function identity(root) {
   const value = parseYaml(readTracking(root, 'yss-project.yaml'));
   if (value?.schema_version !== 1 || value.repository_mode !== 'project-instance') throw new Error('stage-tracking-project-instance-required');
@@ -31,7 +28,7 @@ function definition(item, checkpointRef) {
 export function checkTracking(root, checkpointRef) {
   assertAssetTransactionIdle(root);assertCurrentAssetReference(root,checkpointRef);
   identity(root);
-  const feature = featureFrom(checkpointRef);
+  const feature = featureFrom(root, checkpointRef);
   const config = trackerConfig(root);
   if (!existsSync(safeTrackingPath(root, checkpointRef))) return { status: 'missing-checkpoint', feature_id: feature, enabled: config.lifecycle_tracking_version === 1 };
   const checkpoint = parseAsset(readTracking(root, checkpointRef),checkpointRef);
@@ -44,7 +41,7 @@ export function planTracking(root, { checkpoint_ref, items = [], refresh = false
   assertAssetTransactionIdle(root);assertCurrentAssetReference(root,checkpoint_ref);
   if (!checkpoint_ref?.endsWith('.json')) throw new Error('ASSET_MIGRATION_REQUIRED: stage-tracking writes require an explicit JSON checkpoint');
   root = path.resolve(root); identity(root);
-  const feature = featureFrom(checkpoint_ref);
+  const feature = featureFrom(root, checkpoint_ref);
   trackerConfig(root);
   const changes = [], observed = {}, gaps = [];
   function watch(ref) { observed[ref] = descriptor(root, ref); }
@@ -69,7 +66,7 @@ export function planTracking(root, { checkpoint_ref, items = [], refresh = false
   checkpoint.feature_id ??= feature;
   const design = isDesign(root);
   checkpoint.stage_tracking ??= { schema_version: 1, feature_id: checkpoint.feature_id, checkpoint_ref, entry_stage: checkpoint.stage,
-    entry: { kind: design ? 'checkpoint' : 'parent-ticket', ref: design ? checkpoint_ref : `docs/.scratch/${feature}/parent-ticket.md` }, items: [] };
+    entry: { kind: design ? 'checkpoint' : 'parent-ticket', ref: design ? checkpoint_ref : `${readWorkLayout(root).featureRoot(feature)}/parent-ticket.md` }, items: [] };
   if (refresh) checkpoint = refreshTracking(root, checkpoint).checkpoint;
   const tracking = checkpoint.stage_tracking;
   const ids = new Set(tracking.items.map(x => x.id));
@@ -99,7 +96,7 @@ export function planTracking(root, { checkpoint_ref, items = [], refresh = false
     for (const source of [...item.source_refs, ...item.completion.flatMap(x => x.evidence_refs)]) watch(source.ref);
     if (item.deferred) watch(item.deferred.decision_ref);
     if (item.split_reasons?.length && !gaps.length) {
-      const ref = `docs/.scratch/${feature}/work-items/${item.id}.md`;
+      const ref = `${readWorkLayout(root).featureRoot(feature)}/work-items/${item.id}.md`;
       if (!item.definition_ref) {
         if (descriptor(root, ref)) throw new Error(`tracking-unowned-file-conflict: ${ref}`);
         item.definition_ref = ref;
@@ -115,7 +112,7 @@ export function planTracking(root, { checkpoint_ref, items = [], refresh = false
     if (!observed[entryRef]) change(entryRef, `# ${feature}\n\nStatus: needs-triage\n${link}${trackerConfig(root).platform !== 'local-markdown' ? `\npublication: pending\npending_publication_to: ${trackerConfig(root).platform}\n` : ''}`);
     else if (!readTracking(root, entryRef).includes(checkpoint_ref)) change(entryRef, readTracking(root, entryRef) + link);
   }
-  const mapRef = `docs/.scratch/${feature}/map.md`; watch(mapRef);
+  const mapRef = `${readWorkLayout(root).featureRoot(feature)}/map.md`; watch(mapRef);
   if (!observed[mapRef]) change(mapRef, `---\ncheckpoint_ref: ${checkpoint_ref}\n---\n# ${feature}\n\n阶段工作与证据见 ${checkpoint_ref}。\n`);
   else if (!readTracking(root, mapRef).includes(checkpoint_ref)) change(mapRef, readTracking(root, mapRef) + `\n阶段工作与证据：${checkpoint_ref}\n`);
   change(checkpoint_ref, checkpoint_ref.endsWith('.json') ? json(checkpoint) : stringify(checkpoint));
@@ -129,8 +126,8 @@ function applyTrackingSources(root, plan, { afterWrite } = {}) {
   if (plan.root !== root || plan.schema_version !== 1 || !/^[a-f0-9]{64}$/.test(plan.plan_id)) throw new Error('tracking-plan-identity-invalid');
   const { plan_id, ...payload } = plan;
   if (sha256(JSON.stringify(payload)).slice(7) !== plan_id) throw new Error('tracking-plan-digest-mismatch');
-  const feature = featureFrom(plan.input.checkpoint_ref);
-  const transactionRef = `docs/.scratch/${feature}/verification/stage-tracking-migrations/${plan_id}`;
+  const feature = featureFrom(root, plan.input.checkpoint_ref);
+  const transactionRef = `${readWorkLayout(root).featureRoot(feature)}/verification/stage-tracking-migrations/${plan_id}`;
   const receiptRef = `${transactionRef}/receipt.json`;
   if (existsSync(safeTrackingPath(root, receiptRef))) {
     const receipt = JSON.parse(readTracking(root, receiptRef));

@@ -1,3 +1,4 @@
+import { fixtureTracker } from './work-layout-fixture.mjs';
 // Real browser verification of reusable maintenance starters; never product approval.
 import assert from 'node:assert/strict';
 import {mkdtemp,mkdir,cp,writeFile,readFile} from 'node:fs/promises';
@@ -7,7 +8,7 @@ import {pathToFileURL} from 'node:url';
 import {prepareFlowPrototype,validatePrototypeProject} from '../scripts/prototype-contract.mjs';
 import {buildShadcnVuePrototype} from '../scripts/build-shadcn-vue-prototype.mjs';
 const engines=await import(process.env.YSS_PLAYWRIGHT_MODULE||'playwright');const engine=process.env.YSS_BROWSER_ENGINE||'chromium';const chromium=engines[engine];
-const temp=await mkdtemp(path.join(os.tmpdir(),'yss-workbench-browser-'));const source=path.join(temp,'source');
+const temp=await mkdtemp(path.join(os.tmpdir(),'yss-workbench-browser-'));const source=path.join(temp,'source');await fixtureTracker(source);
 await mkdir(path.join(source,'.template-spec/design/tokens'),{recursive:true});for(const ref of ['DESIGN.md','.template-spec/design/tokens/variables.css'])await cp(new URL(`../../../../${ref}`,import.meta.url),path.join(source,ref));
 const results=[];const browser=await chromium.launch(process.env.YSS_BROWSER_CHANNEL?{channel:process.env.YSS_BROWSER_CHANNEL}:{});
 try{

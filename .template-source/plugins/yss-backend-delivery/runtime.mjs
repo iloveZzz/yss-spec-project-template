@@ -76,6 +76,7 @@ export async function main() {
   const { values, positionals } = parseArgs({ allowPositionals: true, options: {
     'plugin-root': { type: 'string', default: path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..') },
     'target-dir': { type: 'string' }, 'project-name': { type: 'string' }, 'business-domain': { type: 'string' },
+	'review-out': { type: 'string' }, 'base-bundle': { type: 'string' }, 'resolution-file': { type: 'string' },
     'team-size': { type: 'string' }, 'issue-tracker': { type: 'string' }, 'backend-root': { type: 'string' }, plan: { type: 'string' }, checkpoint: { type: 'string' }, input: { type: 'string' }, 'work-unit': { type: 'string' }, mode: { type: 'string' }, bundle: { type: 'string' }, apply: { type: 'boolean', default: false },
   } });
   const projectCommands = ['project-plan', 'project-apply', 'project-check', 'query-project', 'project-resume', 'project-dispatch', 'project-entry', 'project-migration-plan', 'project-migration-apply', 'project-import-design', 'project-bind-plan', 'project-bind-apply', 'project-upgrade-plan', 'project-upgrade-apply', 'project-status', 'project-recover', 'project-rollback'];

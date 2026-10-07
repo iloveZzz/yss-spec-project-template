@@ -32,10 +32,10 @@ checkpoint 的 `stage_tracking` 是阶段工作项当前进度的唯一机器状
 ## 公共命令
 
 ```sh
-scripts/stage-tracking check --root <项目> --checkpoint docs/.scratch/<feature>/checkpoint.yaml
-scripts/stage-tracking plan --root <项目> --checkpoint docs/.scratch/<feature>/checkpoint.json --items <工作项数组.yaml> > <plan.json>
+scripts/stage-tracking check --root <项目> --checkpoint .work/<feature>/checkpoint.yaml
+scripts/stage-tracking plan --root <项目> --checkpoint .work/<feature>/checkpoint.json --items <工作项数组.yaml> > <plan.json>
 scripts/stage-tracking apply --root <项目> --plan <plan.json>
-scripts/stage-tracking plan --root <项目> --checkpoint docs/.scratch/<feature>/checkpoint.json --refresh > <refresh-plan.json>
+scripts/stage-tracking plan --root <项目> --checkpoint .work/<feature>/checkpoint.json --refresh > <refresh-plan.json>
 ```
 
 check / plan 不写项目。首次 checkpoint 不存在时，plan 从本项目 checkpoint 模板形成草稿。没有明确工作项时输出 gaps，apply 拒绝。items 只登记 pending 项，不把历史产物推断为完成，也不覆盖已有同 ID 项。
@@ -57,7 +57,7 @@ apply 复验项目身份、计划摘要、全部观察文件及源证据摘要�
     - 范围及至少一个边界例子可供审阅
   dependencies: []
   source_refs:
-    - docs/.scratch/example/plan/input.md
+    - .work/example/plan/input.md
   split_reasons: []
 ```
 

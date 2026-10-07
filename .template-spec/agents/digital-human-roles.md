@@ -26,7 +26,7 @@
 
 Plan、产品设计、工程契约统一呈现适用检查后批准。`gate.delivery-accepted` 由测试角色进行交付验收，实际合并或发布仍须另有生物人授权。内部检查不独立请求用户决定；检查失败仍阻断聚合门禁。专业审查可在同一工作单元完成多个检查项，但必须保留逐项结论、资产摘要与独立执行者身份。
 
-会签写入 `docs/.scratch/<feature>/gates/<gate-id>-approval.yaml`，新记录使用 schema v2，形状见 `.template-spec/templates/approval-record-template.yaml`。专业记录绑定 `review_task_ref/digest`、`capability_ids` 与 `basis`，相邻检查可组合为 schema v2 `review-bundle` 并逐项记录。恢复前运行 `scripts/verify-approval-record --require-approved --checkpoint <current checkpoint>`；当前期望上下文由消费 checkpoint / 任务建立，不能反向复制会签记录。错误会签只能得到 `blocked`，不能把门禁标成 `approved`。Checkpoint 里会签桶门禁为 `approved` 时必须有可读 `approval_ref`。历史记录可用 `--history` 只读查看，不放行当前执行；旧消费者须拒绝 v2 并升级。
+会签写入配置的功能包根（示例 `.work/<feature>/gates/<gate-id>-approval.yaml`），新记录使用 schema v2，形状见 `.template-spec/templates/approval-record-template.yaml`。专业记录绑定 `review_task_ref/digest`、`capability_ids` 与 `basis`，相邻检查可组合为 schema v2 `review-bundle` 并逐项记录。恢复前运行 `scripts/verify-approval-record --require-approved --checkpoint <current checkpoint>`；当前期望上下文由消费 checkpoint / 任务建立，不能反向复制会签记录。错误会签只能得到 `blocked`，不能把门禁标成 `approved`。Checkpoint 里会签桶门禁为 `approved` 时必须有可读 `approval_ref`。历史记录可用 `--history` 只读查看，不放行当前执行；旧消费者须拒绝 v2 并升级。
 
 `paused-human-gate` 表示等待指定会签人；`user_decision_policy` 命中的关键决定同时强制真实用户回复，数字人审查不能代答。请求展示、原始回复证据、复用和恢复规则见 [用户决定协议](../../.agents/skills/yss-product-lifecycle/references/user-decisions.md)。
 

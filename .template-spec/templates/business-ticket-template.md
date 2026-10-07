@@ -5,7 +5,7 @@ id: BT-<stable-id>
 version: v1
 status: draft
 spec:
-  ref: docs/.scratch/<feature>/spec.md
+  ref: .work/<feature>/spec.md
   version: v1
   digest: sha256:<raw-bytes>
 requirement_refs: [FR-001]

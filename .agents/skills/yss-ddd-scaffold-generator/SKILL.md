@@ -3,6 +3,8 @@ name: yss-ddd-scaffold-generator
 description: 用于生成完整的 YSS DDD 多模块后端脚手架。当用户要求从零创建符合 YSS 规范的 Domain、Application、Infrastructure、Adapter、Bootstrap 工程骨架时调用。
 ---
 
+功能包根只从 `.template-spec/agents/issue-tracker.md` 的 `tracker.root` 读取；本文 `.work/` 路径是新项目示例，已有项目沿用已配置的根。
+
 # yss-ddd-scaffold-generator
 
 这是一个脚手架生成型 skill。优先运行脚本和模板，不要手工拼装整套多模块工程。
@@ -64,7 +66,7 @@ description: 用于生成完整的 YSS DDD 多模块后端脚手架。当用户�
 - `first-slice-verified` 只能由 `run_first_slice_verification.mjs` 写入。手工改 Manifest、只生成 Controller、只通过局部模块测试或仅有结构扫描都不能升级完成等级。
 - 严禁把领域规则、状态机、权限、事务、复杂查询、错误映射、业务字段或用户可见行为塞进脚手架生成步骤。`./mvnw validate`、输出目录存在或“生成成功”都不等于生命周期批准、架构放行或 `ready-for-agent`。
 - 脚手架完成后，所有后续后端代码必须回到 `yss-implementation-contract-compiler`，消费批准且版本当前的 Slice Implementation Contract 和适用 YSS skill；业务行为使用 `behavior-tdd`，机械生成才使用 `controlled-generation`。
-- 涉及 API 契约时，先确认 `docs/.scratch/<feature>/api/<feature>.yaml` 中的 OpenAPI Draft / Freeze 状态；不要用脚手架生成结果反向替代产品契约设计。
+- 涉及 API 契约时，先确认 `.work/<feature>/api/<feature>.yaml` 中的 OpenAPI Draft / Freeze 状态；不要用脚手架生成结果反向替代产品契约设计。
 
 ## 按需读取
 

@@ -8,8 +8,15 @@ const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
 const hex=value=>typeof value==='string'&&/^[a-f0-9]{64}$/.test(value);
 const ensure=(ok,message)=>{if(!ok)throw new TypeError('INSTANCE_IDENTITY: '+message);};
 function read(root,ref){let cursor=root;for(const part of ref.split('/')){cursor=path.join(cursor,part);const stat=lstatSync(cursor,{throwIfNoEntry:false});if(!stat)return null;ensure(!stat.isSymbolicLink()&&(cursor===path.join(root,ref)?stat.isFile():stat.isDirectory()),'身份路径必须为普通文件: '+ref);}return parseAsset(readFileSync(cursor),ref);}
-function descriptor(value){ensure(value?.type==='file'&&hex(value.digest)&&[420,493].includes(value.mode),'未知受管文件描述');return {type:value.type,digest:value.digest,mode:value.mode};}
-function managedDigest(managed){ensure(managed&&typeof managed==='object'&&!Array.isArray(managed),'受管基线缺失');const ordered=[];for(const ref of Object.keys(managed).sort()){ensure(ref&&!ref.startsWith('/')&&!ref.includes('\\')&&!ref.split('/').some(p=>!p||p==='.'||p==='..'||p.toLowerCase()==='.git'),'受管路径越界');const item=managed[ref];ordered.push(JSON.stringify(ref)+':'+JSON.stringify({baseline:descriptor(item.baseline),lastApplied:descriptor(item.lastApplied),ownership:item.ownership}));ensure(typeof item.ownership==='string','归属缺失');}return sha(('{'+ordered.join(',')+'}').replace(/[<>&\u2028\u2029]/g,c=>'\\u'+c.charCodeAt(0).toString(16).padStart(4,'0')));}
+function descriptor(value,local=false){ensure(value?.type==='file'&&hex(value.digest)&&(local?Number.isInteger(value.mode)&&value.mode>=0&&value.mode<=511:[420,493].includes(value.mode)),'未知受管文件描述');return {type:value.type,digest:value.digest,mode:value.mode};}
+function baselineSource(value){
+ ensure(value&&['bundle','unavailable'].includes(value.kind),'未知模板基线来源');
+ if(value.kind==='unavailable')return {kind:'unavailable'};
+ ensure(/^[a-f0-9]{40}$/.test(value.templateCommit)&&hex(value.snapshotHash)&&hex(value.templateDigest)&&hex(value.bundleHash)&&typeof value.path==='string'&&['initial','full','generated'].includes(value.variant),'模板基线来源不完整');
+ return {kind:value.kind,templateCommit:value.templateCommit,snapshotHash:value.snapshotHash,...(value.bundleHash?{bundleHash:value.bundleHash}:{}),path:value.path,variant:value.variant,templateDigest:value.templateDigest};
+}
+function disposition(value,local=false){ensure(value&&['keep-local','use-merged'].includes(value.choice),'未知保留决定');return {choice:value.choice,target:descriptor(value.target),applied:descriptor(value.applied,local),...(value.ruleId?{ruleId:value.ruleId}:{})};}
+function managedDigest(managed,version){ensure(managed&&typeof managed==='object'&&!Array.isArray(managed),'受管基线缺失');const ordered=[];for(const ref of Object.keys(managed).sort()){ensure(ref&&!ref.startsWith('/')&&!ref.includes('\\')&&!ref.split('/').some(p=>!p||p==='.'||p==='..'||p.toLowerCase()==='.git'),'受管路径越界');const item=managed[ref];ordered.push(JSON.stringify(ref)+':'+JSON.stringify({baseline:descriptor(item.baseline),lastApplied:descriptor(item.lastApplied,version===3),ownership:item.ownership,...(item.baselineSource?{baselineSource:baselineSource(item.baselineSource)}:{}),...(item.disposition?{disposition:disposition(item.disposition,version===3)}:{})}));ensure(typeof item.ownership==='string','归属缺失');}return sha(('{'+ordered.join(',')+'}').replace(/[<>&\u2028\u2029]/g,c=>'\\u'+c.charCodeAt(0).toString(16).padStart(4,'0')));}
 function validateBindings(root,native){
  for(const [ref,profile,plugin] of [
   ['.yss-backend-plugin.json','spec','yss-backend-delivery'],
@@ -18,7 +25,7 @@ function validateBindings(root,native){
   const binding=read(root,ref);
   if(!binding)continue;
   ensure(native,'插件 binding 缺少匹配原生身份: '+ref);
-  ensure(native.schemaVersion===2&&native.profile===profile&&binding.schema_version===2&&binding.plugin===plugin&&binding.profile===profile&&binding.template_commit===native.templateCommit&&binding.bundle_hash===native.bundleHash&&hex(binding.binary_sha256),'插件 binding 与原生身份或来源不一致: '+ref);
+  ensure([2,3].includes(native.schemaVersion)&&native.profile===profile&&binding.schema_version===2&&binding.plugin===plugin&&binding.profile===profile&&binding.template_commit===native.templateCommit&&binding.bundle_hash===native.bundleHash&&hex(binding.binary_sha256),'插件 binding 与原生身份或来源不一致: '+ref);
  }
 }
 /** Native identity wins only after validation; preserved legacy bytes are lineage. */
@@ -26,10 +33,11 @@ export function readInstanceMetadata(root){
  root=path.resolve(root);const native=read(root,'.yss.json'),legacy=[];for(const [profile,p] of Object.entries(profiles)){const value=read(root,p.legacy);if(value)legacy.push({profile,metadataRef:p.legacy,metadata:value,kind:'legacy'});}
  ensure(legacy.length<=1,'检测到多个旧家族 metadata');
  if(!native){validateBindings(root,null);return legacy[0]??null;}
- ensure([1,2].includes(native.schemaVersion)&&native.protocolVersion===1,'未知 native metadata 或协议');const p=profiles[native.profile];ensure(p&&native.profileId===p.id&&(!legacy.length||legacy[0].profile===native.profile),'native 与家族身份矛盾');
+ ensure([1,2,3].includes(native.schemaVersion)&&native.protocolVersion===1,'未知 native metadata 或协议');const p=profiles[native.profile];ensure(p&&native.profileId===p.id&&(!legacy.length||legacy[0].profile===native.profile),'native 与家族身份矛盾');
  ensure(native.templateSourceState==='committed'&&/^[a-f0-9]{40}$/.test(native.templateCommit)&&hex(native.snapshotHash)&&hex(native.manifestHash),'native 来源缺失或不合法');
- if(native.schemaVersion===2)ensure(native.bundleSchemaVersion===2&&hex(native.bundleHash)&&['committed','working-tree','unknown'].includes(native.cliSourceState)&&(!native.cliCommit||/^[a-f0-9]{40}$/.test(native.cliCommit))&&(native.cliSourceState!=='committed'||native.cliCommit),'native v2来源不合法');
- ensure(native.variables&&native.distribution&&hex(native.baselineDigest)&&managedDigest(native.managedFiles)===native.baselineDigest,'native 受管基线摘要不一致');
+ if(native.schemaVersion>=2)ensure((native.bundleSchemaVersion===2||(native.schemaVersion===3&&native.bundleSchemaVersion===3))&&hex(native.bundleHash)&&['committed','working-tree','unknown'].includes(native.cliSourceState)&&(!native.cliCommit||/^[a-f0-9]{40}$/.test(native.cliCommit))&&(native.cliSourceState!=='committed'||native.cliCommit),'native v2来源不合法');
+ ensure(native.variables&&native.distribution&&hex(native.baselineDigest)&&managedDigest(native.managedFiles,native.schemaVersion)===native.baselineDigest,'native 受管基线摘要不一致');
+ if(native.schemaVersion===3)for(const [ref,item]of Object.entries(native.managedFiles)){ensure(item.baselineSource,'缺少模板基线来源: '+ref);if(item.disposition)ensure(JSON.stringify(descriptor(item.disposition.target))===JSON.stringify(descriptor(item.baseline))&&JSON.stringify(descriptor(item.disposition.applied,true))===JSON.stringify(descriptor(item.lastApplied,true)),'保留决定与基线矛盾: '+ref);}
  validateBindings(root,native);
  return {kind:'native',profile:native.profile,metadataRef:'.yss.json',metadata:native};
 }

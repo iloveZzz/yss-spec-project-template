@@ -15,6 +15,18 @@ function identity(root) { return read(root, 'scripts/identity.json'); }
 function context(root, target) {
   const ctx = tool(root); ctx.identity = identity(root); ctx.receipt = receiptPath(ctx.pin.profile); ctx.target = target;
   if (within(target, root) || within(root, target) || !existsSync(path.dirname(target))) throw new Error('separate-target-with-existing-parent-required');
+  const tracker = path.join(target, '.template-spec/agents/issue-tracker.md');
+  let requiresLayout = !existsSync(tracker);
+  if (!requiresLayout) {
+    const front = readFileSync(safe(target, '.template-spec/agents/issue-tracker.md'), 'utf8').match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/);
+    if (!front) throw new Error('work-layout-config-missing');
+    const doc = parseDocument(front[1], { uniqueKeys: true });
+    if (doc.errors.length) throw new Error('work-layout-config-invalid');
+    const value = doc.toJS({maxAliasCount:0})?.tracker?.root;
+    if (typeof value !== 'string') throw new Error('work-layout-config-missing');
+    requiresLayout = value.replace(/\/$/, '') !== 'docs/.scratch';
+  }
+  if (requiresLayout && !ctx.capabilities?.native?.includes('work-layout-v1')) throw new Error('native-work-layout-capability-missing');
   return ctx;
 }
 function executeNode(file, args, cwd) {
@@ -62,7 +74,7 @@ function binding(ctx, legacy = null, backend = null) {
 function check(root, target, ctx, requireBinding = false) {
   const envelope = invoke(ctx.binary, ['doctor', '--root', target, '--profile', ctx.pin.profile]);
   const metadata = read(target, '.yss.json');
-  if (![1, 2].includes(metadata.schemaVersion) || metadata.profile !== ctx.pin.profile || metadata.templateCommit !== ctx.snapshot.templateCommit
+  if (![1, 2, 3].includes(metadata.schemaVersion) || metadata.profile !== ctx.pin.profile || metadata.templateCommit !== ctx.snapshot.templateCommit
       || metadata.snapshotHash !== ctx.snapshot.sourceSnapshotHash || metadata.manifestHash !== ctx.snapshot.manifestHash
       || metadata.templateSourceState !== 'committed') throw new Error('native-project-version-mismatch: use project-migration-plan');
   const statusPlan = envelope.result.plan || envelope.result;
@@ -111,7 +123,28 @@ function plan(root, values, kind) {
   try {
     const bindingFile = path.join(parent, 'binding.json'), nativeFile = path.join(parent, 'native-plan.json');
     writeFileSync(bindingFile, json(request));
-    const args = [command, '--root', target, '--profile', ctx.pin.profile, '--plan', '--out', nativeFile, '--binding-file', bindingFile];
+    const args = [command, '--root', target, '--profile', ctx.pin.profile, '--plan', '--out', nativeFile];
+    if (values['resolution-file']) {
+      if (!values.plan || command === 'init') throw new Error('original-upgrade-or-migration-plan-required');
+      const original = JSON.parse(readFileSync(values.plan));
+      const { plan_id, ...body } = original;
+      if (original.schema_version !== 2 || plan_id !== digest(body) || original.target !== target || original.profile !== ctx.pin.profile
+          || original.kind !== kind || original.command !== command || original.native_lock_digest !== digest(ctx.pin)
+          || original.plugin_bundle_sha256 !== ctx.bundleDigest || digest(original.binding) !== digest(content)) throw new Error('original-plugin-plan-mismatch');
+      const material = original.native_plan;
+      if (material?.encoding !== 'gzip-base64' || !Number.isInteger(material.bytes) || material.bytes < 1 || material.bytes > 128 * 1024 * 1024) throw new Error('native-plan-container-invalid');
+      const bytes = gunzipSync(Buffer.from(material.data, 'base64'), { maxOutputLength: 128 * 1024 * 1024 });
+      if (bytes.length !== material.bytes || hash(bytes) !== material.sha256) throw new Error('native-plan-container-drift');
+      const originalFile = path.join(parent, 'original-native-plan.json'); writeFileSync(originalFile, bytes);
+      args.push('--plan-file', originalFile, '--resolution-file', physical(values['resolution-file'], true));
+    } else {
+      if (values.plan) throw new Error('resolution-file-required-for-replanning');
+      args.push('--binding-file', bindingFile);
+    }
+    for (const option of ['review-out', 'base-bundle']) if (values[option]) {
+      if (command === 'init') throw new Error('upgrade-planning-options-require-existing-project');
+      args.push('--' + option, physical(values[option], option === 'base-bundle' ? 'either' : false));
+    }
     if (command === 'init') {
       if (!values['project-name']?.trim() || !values['business-domain']?.trim()) throw new Error('project-name-and-business-domain-required');
       const tracker = values['issue-tracker'] || (ctx.pin.profile === 'design' ? 'local-markdown' : null);

@@ -1,3 +1,4 @@
+import { fixtureTracker } from './work-layout-fixture.mjs';
 import {spawnSync} from 'node:child_process';
 import test from 'node:test';import assert from 'node:assert/strict';
 import {readFile,writeFile,mkdtemp,mkdir,cp,readdir,symlink} from 'node:fs/promises';import path from 'node:path';import os from 'node:os';
@@ -5,7 +6,7 @@ import {parseScenarios,scenarioScript} from '../scripts/scenario-contract.mjs';
 import {prepareFlowPrototype,validatePrototypeProject} from '../scripts/prototype-contract.mjs';
 import {comparisonFixture} from './comparison-fixture.mjs';
 import {validateComparison,sealComparison} from '../scripts/prototype-comparison.mjs';
-async function project(){const root=await mkdtemp(path.join(os.tmpdir(),'prototype-reliability-'));await mkdir(path.join(root,'.template-spec/design/tokens'),{recursive:true});for(const ref of ['DESIGN.md','.template-spec/design/tokens/variables.css'])await cp(new URL(`../../../../${ref}`,import.meta.url),path.join(root,ref));return root;}
+async function project(){const root=await mkdtemp(path.join(os.tmpdir(),'prototype-reliability-'));await mkdir(path.join(root,'.template-spec/design/tokens'),{recursive:true});for(const ref of ['DESIGN.md','.template-spec/design/tokens/variables.css'])await cp(new URL(`../../../../${ref}`,import.meta.url),path.join(root,ref));await fixtureTracker(root);return root;}
 test('scenario data is parsed without execution; IDs and generated script bind exact JSON',async()=>{
  const bytes=await readFile(new URL('../assets/native-workbench/scenarios.json',import.meta.url));const doc=parseScenarios(bytes);assert(doc.scenarios.some(s=>s.id==='conflict'));assert.throws(()=>parseScenarios('globalThis.touched=true'));doc.scenarios.push(doc.scenarios[0]);assert.throws(()=>parseScenarios(JSON.stringify(doc)),/重复/);
  const f=await comparisonFixture();const input=structuredClone(f.input);input.cases[0].scenario='missing';await writeFile(path.join(f.root,'input.json'),JSON.stringify(input));await assert.rejects(f.prepare(),/场景 ID 不存在/);

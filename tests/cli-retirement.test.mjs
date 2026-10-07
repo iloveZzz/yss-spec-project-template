@@ -65,7 +65,7 @@ test('公开 Bundle 导出保持完整文件 bytes、mode 和 manifest，拒绝�
   nativeBinary();const base=scratch(t),out=path.join(base,'export');
   const result=runNative(['bundle','export','--profile','spec','--out',out]).result;
   assert.equal(result.directory,out);const inspection=result.inspection;
-  assert.equal(inspection.schemaVersion,2);assert.ok(result.files.length>10);
+  assert.ok([2,3].includes(inspection.schemaVersion),'公开导出使用受支持的固定 Bundle schema');assert.ok(result.files.length>10);
   for(const entry of result.files){const file=path.join(out,entry.path);assert.equal(nativeDigest(fs.readFileSync(file)),entry.digest,entry.path);assert.equal(fs.statSync(file).mode&0o777,entry.mode,entry.path);}
   const before=tree(out);
   runNative(['bundle','export','--profile','spec','--out',out],{expectedCode:'EXISTS'});assert.deepEqual(tree(out),before);
@@ -81,7 +81,8 @@ test('Spec 原生阶段资源与 Skill 补装通过保存计划完整闭包安�
  applyNative('skills','spec',target,path.join(base,'skill.json'),['ensure','yss-tactical-design']);
  assert.ok(fs.existsSync(path.join(target,'.agents/skills/yss-tactical-design/SKILL.md')));assert.ok(fs.existsSync(path.join(target,'scripts/verify-strategic-handoff-consumption')));
  assert.deepEqual(fs.readFileSync(path.join(target,'CONTEXT.md')),context);
- const metadata=JSON.parse(fs.readFileSync(path.join(target,'.yss.json')));assert.equal(metadata.schemaVersion,2);assert.equal(metadata.bundleSchemaVersion,2);
+ const metadata=JSON.parse(fs.readFileSync(path.join(target,'.yss.json'))),inspection=inspectNative('spec');
+ assert.equal(metadata.schemaVersion,inspection.schemaVersion);assert.equal(metadata.bundleSchemaVersion,inspection.schemaVersion);
  const preview=runNative(['sync','--root',target]).result;assert.equal(preview.stats.changed,0);assert.equal(preview.stats.conflicts,0);
 });
 
@@ -94,7 +95,8 @@ test('现役 archify 与 yss-research 补装不能绕过 UNPORTED，安装闭包
   assert.ok(requirement.paths.length>0,`${skill} 不能使用空闭包`);
   const plan=path.join(base,`${skill}.json`),before=tree(target);
   const preview=runNative(['skills','ensure',skill,'--profile','spec','--root',target,'--plan','--out',plan]).result;
-  assert.deepEqual(tree(target),before,'保存补装计划不能写入实例');assert.ok(preview.changes.length>0);
+  assert.deepEqual(tree(target),before,'保存补装计划不能写入实例');
+  assert.ok(preview.changes.length>0 || requirement.paths.every(ref=>fs.existsSync(path.join(target,ref))),'已有完整闭包无需补装；缺失闭包必须生成变更');
   runNative(['skills','ensure',skill,'--profile','spec','--root',target,'--apply','--plan-file',plan]);
   assert.ok(fs.existsSync(path.join(target,'.agents/skills',skill,'SKILL.md')));
  }

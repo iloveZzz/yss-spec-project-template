@@ -8,15 +8,15 @@
 
 | 资产 | 路径 / 链接 | 说明 |
 |---|---|---|
-| Spec 初稿 | `docs/.scratch/<feature>/spec.md` | 原型评审后需要回填和校准 |
-| 产品总体设计 / 功能架构 | `docs/.scratch/<feature>/design/<feature>-product-overview-design.md` | 必需；缺失时先返回产品总体设计阶段 |
+| Spec 初稿 | `.work/<feature>/spec.md` | 原型评审后需要回填和校准 |
+| 产品总体设计 / 功能架构 | `.work/<feature>/design/<feature>-product-overview-design.md` | 必需；缺失时先返回产品总体设计阶段 |
 | 领域术语 | `CONTEXT.md` | 核心名词、状态和业务规则 |
 | Plan | `<实际 Plan 资产引用>` | 按当前项目范围填写 |
 | 原型阶段合同 / 视觉来源 | `yss-prototype-stage`；`source_visual.kind=design-system` 或 `visual-reference` | 默认 DESIGN.md 规范直出；独立视觉稿才条件使用 Product Design focused skill |
 | 原型 / 线框图 | `<链接或导出图片路径>` | Excalidraw / Figma / Penpot / tldraw / Axure / Markdown |
-| H1/H2 原型交付物 | `docs/.scratch/<feature>/design/prototypes/index.html` 与本地资源 | 低保真评审后按档位补齐；高保真主要使用 shadcn/ui 预构建，轻量局部修改可用原生 HTML；产出后须用户确认 |
-| 原型验证清单 | `docs/.scratch/<feature>/verification/prototype-evidence.yaml` | 记录 schema v4 档位、浏览器、统一 Design QA、Visual Baseline case、条件组件证据和阻塞项 |
-| 现有 API 草案 | `docs/.scratch/<feature>/api/<feature>.yaml` | 可选；通常应先完成产品设计和 Spec 校准 |
+| H1/H2 原型交付物 | `.work/<feature>/design/prototypes/index.html` 与本地资源 | 低保真评审后按档位补齐；高保真主要使用 shadcn/ui 预构建，轻量局部修改可用原生 HTML；产出后须用户确认 |
+| 原型验证清单 | `.work/<feature>/verification/prototype-evidence.yaml` | 记录 schema v4 档位、浏览器、统一 Design QA、Visual Baseline case、条件组件证据和阻塞项 |
+| 现有 API 草案 | `.work/<feature>/api/<feature>.yaml` | 可选；通常应先完成产品设计和 Spec 校准 |
 
 ## 2. 页面地图
 

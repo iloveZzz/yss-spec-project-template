@@ -26,7 +26,7 @@
 - [ ] 从 YAML 复制 `title`、`description`、`core_skills`、`forbidden_skills`，不手写第二套职责
 - [ ] 选择一个 `runtime_id`（`runtime.generic` / `runtime.skill-projection` / `runtime.grok`）
 - [ ] `description` 末尾写明本仓库路径
-- [ ] 会签文件落在 `docs/.scratch/<feature>/gates/<gate-id>-approval.yaml`
+- [ ] 会签文件落在 `.work/<feature>/gates/<gate-id>-approval.yaml`
 - [ ] 未命中 `dual_hat_split_when` 时，主控与项目经理共用同一实例
 
 ## 协同

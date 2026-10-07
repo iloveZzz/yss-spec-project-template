@@ -52,7 +52,7 @@ AND `check.implementation-repositories-ready` 已通过，所有命中的前后�
 AND `work-unit.implementation-repository-preparation` 已返回当前且证据可读的 `completed` 结果
 AND implementation repo/branch/CI/test/rollback 已明确
 AND `work-unit.ticket-decomposition` 已返回 `completed`，且其 `ticket_decomposition_result_ref` 证据可读取
-AND `vertical_slice_ticket_ref` 指向 `docs/.scratch/<feature>/issues/` 下的垂直切片 Ticket
+AND `vertical_slice_ticket_ref` 指向 `.work/<feature>/issues/` 下的垂直切片 Ticket
 AND `vertical_slice_ticket_kind=vertical-slice-ticket` 且 `vertical_slice_ticket_role=ready-for-agent`
 AND `vertical_slice_ticket_ref` 不得指向 `parent-ticket.md`
 AND Slice Implementation Contract 已由生命周期编排器批准并持久化
@@ -94,14 +94,14 @@ workflow:
   active_skill: yss-product-lifecycle
   status: paused
 artifacts:
-  spec: {status: ready-for-human, ref: docs/.scratch/example/spec.md}
-  openapi: {status: stale, ref: docs/.scratch/example/api/example.yaml, stale_by: [spec]}
+  spec: {status: ready-for-human, ref: .work/example/spec.md}
+  openapi: {status: stale, ref: .work/example/api/example.yaml, stale_by: [spec]}
 gates:
   gate.spec-baseline-approved: {status: needs-human}
 tracker:
   kind: local-markdown
-  root: docs/.scratch
-  parent_ticket: docs/.scratch/example/parent-ticket.md
+  root: .work
+  parent_ticket: .work/example/parent-ticket.md
   role: ready-for-human
 pause:
   reason_code: human-gate

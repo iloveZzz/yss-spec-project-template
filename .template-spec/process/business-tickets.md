@@ -19,8 +19,8 @@ Spec 综合同时起草业务 Ticket；完成条件是可读取的集合和 FR/A
 草案可有具名未决项，但不得静默漏掉需求。暂不能分票的需求在 coverage_deferred 记录 reason、risk、owner、target_version、followup_ticket_ref、verification_plan；正式化还需绑定已有有效决定，不补造历史批准。专业审查检查业务粒度、行为完整性、语义保真和延期授权；校验器仅证明结构、引用与摘要，不用文本相似度判断业务正确性。
 
 ```sh
-node scripts/verify-business-tickets docs/.scratch/<feature>/business-ticket-set.yaml --root . --mode draft --json
-node scripts/verify-business-tickets docs/.scratch/<feature>/business-ticket-set.yaml --root . --mode formal --json
+node scripts/verify-business-tickets .work/<feature>/business-ticket-set.yaml --root . --mode draft --json
+node scripts/verify-business-tickets .work/<feature>/business-ticket-set.yaml --root . --mode formal --json
 ```
 
 命令只读，0 表示所选结构检查通过，1 表示阻断，2 表示命令错误；任何结果都不批准资产、不设置 ready-for-agent。正式检查需要绑定当前集合摘要的独立专业审查；真实批准仍由生命周期原验证器核验。

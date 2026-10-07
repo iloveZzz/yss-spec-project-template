@@ -26,7 +26,7 @@ Token 或组件视觉变体变更必须先修改 `DESIGN.md`，再更新派生�
 - 表单、表格、弹窗、抽屉、步骤流等交互说明。
 - loading、empty、error、readonly、disabled、no-permission、conflict 等状态矩阵。
 - 页面字段、筛选条件、操作按钮和权限规则。
-- 原型交付物默认路径为 `docs/.scratch/<feature>/design/prototypes/index.html`，交付为离线资源包。高保真 H1/H2 优先采用 shadcn-vue + Vue 3 预构建，React 作者库已移除，旧包仅历史只读，轻量局部修改可用原生 HTML，接收者无需 Node。React AntD 原型生成路线已退役，历史证据只读。真实 Vue 3 + YSS UI/AntDV 组件只在批准后的前端实现和实现还原验证中使用。产出后必须记录 Prototype Evidence schema v4、Visual Baseline schema v1、根 `DESIGN.md` digest 与 Token digest，并获得用户确认。
+- 原型交付物默认路径为 `.work/<feature>/design/prototypes/index.html`，交付为离线资源包。高保真 H1/H2 优先采用 shadcn-vue + Vue 3 预构建，React 作者库已移除，旧包仅历史只读，轻量局部修改可用原生 HTML，接收者无需 Node。React AntD 原型生成路线已退役，历史证据只读。真实 Vue 3 + YSS UI/AntDV 组件只在批准后的前端实现和实现还原验证中使用。产出后必须记录 Prototype Evidence schema v4、Visual Baseline schema v1、根 `DESIGN.md` digest 与 Token digest，并获得用户确认。
 
 这些资产用于反推 API 影响、契约草案、OpenAPI 请求 / 响应字段、错误结构、分页筛选、权限状态和前端验收标准。
 
@@ -54,10 +54,10 @@ Token 或组件视觉变体变更必须先修改 `DESIGN.md`，再更新派生�
 推荐目录：
 
 ```text
-docs/.scratch/<feature>/design/diagrams/
-docs/.scratch/<feature>/design/prototypes/
-docs/.scratch/<feature>/architecture/diagrams/
-docs/.scratch/<feature>/plan/diagrams/
+.work/<feature>/design/diagrams/
+.work/<feature>/design/prototypes/
+.work/<feature>/architecture/diagrams/
+.work/<feature>/plan/diagrams/
 ```
 
 ## 企业工作区原型

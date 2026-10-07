@@ -1,3 +1,4 @@
+import { fixtureTracker } from './work-layout-fixture.mjs';
 // Template adapter smoke test; this is not a product prototype approval.
 import assert from "node:assert/strict";
 import { mkdtemp, mkdir, cp, writeFile } from "node:fs/promises";
@@ -13,6 +14,7 @@ await mkdir(path.join(source, ".template-spec/design/tokens"), { recursive: true
 await cp(new URL("../../../../DESIGN.md", import.meta.url), path.join(source, "DESIGN.md"));
 await cp(new URL("../../../../.template-spec/design/tokens/variables.css", import.meta.url), path.join(source, ".template-spec/design/tokens/variables.css"));
 const root = path.join(source, "docs/.scratch/fixture/design/prototypes");
+await fixtureTracker(source);
 await prepareFlowPrototype({ projectRoot: source, root, feature: "fixture" });
 const portable = path.join(temp, "portable");
 await cp(root, portable, { recursive: true });

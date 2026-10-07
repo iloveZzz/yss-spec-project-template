@@ -13,12 +13,12 @@
   "schema_version": 2,
   "comparison_id": "task-options",
   "title": "资料处理方案",
-  "comparison_ref": "docs/.scratch/demo/design/interaction.md",
-  "scenario_ref": "docs/.scratch/demo/design/shared-scenarios.json",
+  "comparison_ref": ".work/demo/design/interaction.md",
+  "scenario_ref": ".work/demo/design/shared-scenarios.json",
   "cases": [{"id": "normal", "label": "正常处理", "scenario": "primary"}],
   "variants": [
-    {"id": "a", "label": "逐项处理", "root": "docs/.scratch/demo/design/candidates/a", "entry": "index.html", "cases": ["normal"]},
-    {"id": "b", "label": "批量处理", "root": "docs/.scratch/demo/design/candidates/b", "entry": "index.html", "cases": ["normal"]}
+    {"id": "a", "label": "逐项处理", "root": ".work/demo/design/candidates/a", "entry": "index.html", "cases": ["normal"]},
+    {"id": "b", "label": "批量处理", "root": ".work/demo/design/candidates/b", "entry": "index.html", "cases": ["normal"]}
   ]
 }
 ```
@@ -31,7 +31,7 @@ node .agents/skills/yss-prototype-stage/scripts/prototype-comparison.mjs validat
 node .agents/skills/yss-prototype-stage/scripts/prototype-comparison.mjs seal --root <未批准的v2比较包>
 ```
 
-输出固定为 `docs/.scratch/<feature>/design/comparisons/<comparison-id>/`。prepare 检查 ID 存在、各候选共同数据及派生脚本一致、Token 和资源完整；非空目录拒绝覆盖，失败删除临时包。manifest v2 只保存来源、入口、场景与摘要，不保存批准。
+输出位于配置的功能包根（示例 `.work/<feature>/design/comparisons/<comparison-id>/`）。prepare 检查 ID 存在、各候选共同数据及派生脚本一致、Token 和资源完整；非空目录拒绝覆盖，失败删除临时包。manifest v2 只保存来源、入口、场景与摘要，不保存批准。
 
 ## 初始化与实际评审
 

@@ -65,7 +65,7 @@ test('successful tracking source transaction survives a presentation conflict an
  const cp='docs/.scratch/demo/working-checkpoint.json';
  const {planTracking,applyTracking}=await import('../../lib/stage-tracking-migration.mjs');const {parseYaml}=await import('../../lib/stage-tracking.mjs');const f=setup();try{
   for(const ref of ['.template-spec/process/schemas/stage-tracking.schema.json','.template-spec/process/lifecycle-registry.yaml'])f.put(ref,readFileSync(path.join(repo,ref),'utf8'));
-  f.put('.template-spec/agents/issue-tracker.md','---\ntracker:\n  platform: local-markdown\n---\n# Tracker\n');
+  f.put('.template-spec/agents/issue-tracker.md','---\ntracker:\n  platform: local-markdown\n  root: docs/.scratch\n---\n# Tracker\n');
   const c=JSON.parse(readFileSync(path.join(repo,'scripts/fixtures/reading-views/checkpoint.json'),'utf8'));c.stage='stage.plan';c.next_work_unit='work-unit.plan-requirements';f.put(cp,JSON.stringify(c));
   assert.equal(f.cli('plan-enable','--checkpoint',cp,'--output','enable.json').status,0);assert.equal(f.cli('apply-enable','enable.json').status,0);
   f.put('docs/.scratch/demo/reading/status.review.md','人工补充，不得覆盖');

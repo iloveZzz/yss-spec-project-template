@@ -9,14 +9,14 @@ Wrapper 与分页检查按实际协议填写：采用 YSS 协议时记录 profil
 <Draft / Approved for Freeze / Blocked / JSON Exported>
 
 ### YAML Authority
-- YAML: <docs/.scratch/<feature>/api/<feature>.yaml>
+- YAML: <.work/<feature>/api/<feature>.yaml>
 - OAS: 3.1.0
 - YAML SHA-256: <sha256>
 - Freeze record: <path / ref>
 
 ### Validation
 - Lint command and result: <locked pnpm command / result>
-- Validation record: <docs/.scratch/<feature>/api/<feature>-validation.yaml / verifier result / matching YAML SHA-256>
+- Validation record: <.work/<feature>/api/<feature>-validation.yaml / verifier result / matching YAML SHA-256>
 - YSS DTO wire profile: <`.agents/skills/yss-dto/references/openapi-wire-profile.yaml`, schema_version, verifier result>
 - P0 field traceability: <source / operationId / schema / property path / shape / requiredness / constraints / error-test summary>
 - Wrapper conformance: <`x-yss-response-wrapper`, `YssResultMeta`, `allOf`, concrete data schema, direction and forbidden-field result>
@@ -24,7 +24,7 @@ Wrapper 与分页检查按实际协议填写：采用 YSS 协议时记录 profil
 - Blocking findings: <file:line grounded finding>
 
 ### JSON Derivative
-- JSON: <docs/.scratch/<feature>/api/<feature>.json>
+- JSON: <.work/<feature>/api/<feature>.json>
 - JSON SHA-256: <sha256>
 - Redocly CLI / lockfile: <version and lock reference>
 - Bundle command and metafile: <command / path>

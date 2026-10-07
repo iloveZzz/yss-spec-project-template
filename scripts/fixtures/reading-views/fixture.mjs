@@ -9,6 +9,7 @@ export function readingFixture(){
   const root=mkdtempSync(path.join(tmpdir(),'yss-reading-'));
   const put=(ref,value)=>{const file=path.join(root,ref);mkdirSync(path.dirname(file),{recursive:true});writeFileSync(file,typeof value==='string'?value:stringify(value));};
   put('yss-project.yaml',{schema_version:1,repository_mode:'project-instance'});
+  put('.template-spec/agents/issue-tracker.md','---\ntracker:\n  platform: local-markdown\n  root: docs/.scratch\n---\n');
   put('CONTEXT.md','# 业务上下文\n');
   const strategy=JSON.parse(readFileSync(path.join(repo,'scripts/fixtures/strategic-handoff/base-strategy.json'),'utf8'));
   strategy.status='draft';

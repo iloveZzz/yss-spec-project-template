@@ -38,7 +38,21 @@
 
 已绑定后端交付或产品设计插件的旧实例，使用对应插件 `project-migration-plan/apply`；绑定原生实例更换二进制、模板或 Bundle 来源时用 `project-upgrade-plan/apply`，身份、受管基线和 binding 原子更新。直接同步缺新 binding 的 `BINDING_REQUIRED`，或既有失配的 `BINDING_CONFLICT`，均不能手改绑定绕过。
 
-冲突先在项目外起草保留/合并差异，新增语义选择取得真实决定后处理，再从当前输入重新规划。未知基线、受管文件定制和 `UNPORTED` 阻断对应写入；`INPUT_DRIFT`、摘要或身份变化不能通过编辑保存计划续跑。旧 metadata 原字节进入同一事务恢复材料。
+`attach` 仅用于没有 YSS metadata 的普通工程。原生实例返回 `SYNC_REQUIRED`，旧实例返回 `MIGRATION_REQUIRED`；先识别身份再选择 `--full`。未知 schema、矛盾身份或未完成事务阻断写入，按诊断进入恢复。
+
+冲突处理使用同一固定二进制：
+
+```sh
+yss sync --root ./project --plan --out /review/plan.json --review-out /review/package
+yss sync --root ./project --plan --plan-file /review/plan.json --resolution-file /review/decisions.json --out /review/resolved.json
+yss sync --root ./project --apply --plan-file /review/resolved.json
+```
+
+审查包的 `conflicts.json` 给出每项决议的绑定字段和可选项，`decisions.json` 默认空决议。将选定项及 `choice` 填入决议文件；`use-merged` 需提供普通候选文件 `candidateFile` 和原字节 SHA-256 `candidateDigest`。三方候选只用于审查，干净合并也需决议。固定来源资产不能任意合并，生成锁只由登记生成器重建。决议绑定原计划摘要、路径、本地和目标描述及迁移规则，输入变化使决议失效。
+
+历史材料先取核验过的事务归档，其次使用显式 `--base-bundle <完整导出目录或快照文件>`。Bundle 导出的 `.yss-bundle.snapshot.json` 同时保存初始与完整变体；原字节须匹配登记摘要。材料缺失标记“基线不可用”，使用双向对照和人工候选，默认不联网。旧保存计划应用返回 `PLAN_VERSION`，不能编辑重签；用当前现场重新生成计划。旧 metadata 原字节进入同一事务恢复材料。
+
+同步范围包含当前基础资源、已安装阶段、Skills 和已选运行时的依赖闭包；没有迁移规则的退役资产明确保留。删除、改名只在固定规则匹配、旧字节可信且未定制时自动规划，其他情况进入冲突。已决定保留的入口差异持续显示为例外，重复规划不产生额外变更。
 
 ## 资源补装
 

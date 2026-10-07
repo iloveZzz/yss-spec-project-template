@@ -7,6 +7,7 @@ import { prepareOfflineHtml, validateOfflineHtml, sealOfflineHtml } from "./offl
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { parseDocument } from "../../../../scripts/vendor/yaml.mjs";
+import { readWorkLayout } from "../../../../scripts/lib/work-layout.mjs";
 
 const nonEmpty = (value) => typeof value === "string" && value.trim().length > 0;
 const object = (value) => value && typeof value === "object" && !Array.isArray(value);
@@ -44,7 +45,7 @@ function validateConditionalCheck(check, parent, errors, allowTemplate) {
   requiredString(check, "evidence_ref", parent, errors);
 }
 
-function validateCommonV4(data, errors, allowTemplate) {
+function validateCommonV4(data, errors, allowTemplate, projectRoot) {
   for (const field of ["feature", "prototype_ref", "prototype_profile", "profile_kind", "profile_decision", "upstream_refs", "source_visual", "design_baseline", "visual_baseline", "browser_delivery", "design_qa", "profile_evidence", "implementation_handoff", "review", "user_confirmation", "gaps", "blockers"]) required(data, field, "root", errors);
   requiredString(data, "feature", "root", errors);
   requiredString(data, "prototype_ref", "root", errors);
@@ -120,7 +121,10 @@ function validateCommonV4(data, errors, allowTemplate) {
 
   const qa = data.design_qa;
   requiredString(qa, "report_ref", "design_qa", errors);
-  if (nonEmpty(qa?.report_ref) && !/^docs\/\.scratch\/[^/]+\/verification\/design-qa\.md$/.test(qa.report_ref) && !(allowTemplate && /<[^>]+>/.test(qa.report_ref))) errors.push("design_qa.report_ref 必须是 feature 级 verification/design-qa.md");
+  if (nonEmpty(qa?.report_ref) && !allowTemplate) {
+    try { if (qa.report_ref !== `${readWorkLayout(projectRoot).featureRoot(data.feature)}/verification/design-qa.md`) errors.push("design_qa.report_ref 必须位于配置的功能包根内"); }
+    catch (error) { errors.push(error.message); }
+  }
   if (!allowTemplate) requiredPassed(qa, "result", "design_qa", errors, allowTemplate);
   for (const axis of ["visual", "layout", "interaction", "content", "accessibility", "cross_platform"]) if (!allowTemplate) requiredPassed(qa?.axes, axis, "design_qa.axes", errors, allowTemplate); else required(qa?.axes, axis, "design_qa.axes", errors);
 
@@ -231,7 +235,7 @@ export function validatePrototypeEvidence(data, { allowTemplate = false, allowLe
     if (!allowLegacy && !allowTemplate) errors.push("Provider 已退役；旧证据仅 --allow-legacy 只读检查，在途需迁移 Vue 或原生 HTML");
     else warnings.push("历史 Provider 证据只读，不代表当前原型通过");
   }
-  validateCommonV4(data, errors, allowTemplate);
+  validateCommonV4(data, errors, allowTemplate, decisionOptions.projectRoot ?? decisionOptions.root ?? process.cwd());
   validateProfileV4(data, errors, allowTemplate);
   if (!allowTemplate && errors.length === 0) {
     try {

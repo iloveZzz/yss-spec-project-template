@@ -3,6 +3,8 @@ name: yss-frontend-scaffold-generator
 description: Use when creating a new YSS frontend micro-application from the standard frontend template.
 ---
 
+功能包根只从 `.template-spec/agents/issue-tracker.md` 的 `tracker.root` 读取；本文 `.work/` 路径是新项目示例，已有项目沿用已配置的根。
+
 # YSS Frontend Scaffold Generator
 
 用于从标准 YSS 前端模板创建 0-1 前端微应用工程。它只在阶段 5 的 `work-unit.implementation-repository-preparation` 中消费生命周期批准、持久化且当前的 Project Scaffold Contract schema v4，执行 `controlled-generation`；不生成业务页面。
@@ -24,8 +26,8 @@ description: Use when creating a new YSS frontend micro-application from the sta
 - `base_route`：基础路由。
 - Project Scaffold Contract schema v4：包含用户确认的仓库 scope、目标路径、`init_git`、模板 manifest 摘要或 Git commit、应用参数、允许写路径和验证命令。
 - OpenAPI Freeze 记录：有 API 影响时提供已批准的冻结 YAML 版本和引用；无 API 影响时提供带原因的 `not-applicable`。
-- 有 API 影响时提供 OpenAPI JSON 派生记录：`docs/.scratch/<feature>/api/<feature>-json-export.md`，包含 YAML / JSON SHA-256、Redocly CLI 版本和 lockfile 引用。
-- 有 API 影响时提供冻结 JSON 产物：`docs/.scratch/<feature>/api/<feature>.json`；这是唯一允许交给既有前端代码生成流程的上游产物。无 API 影响时沿用带原因的 `not-applicable`，不生成占位 JSON 或 API client。
+- 有 API 影响时提供 OpenAPI JSON 派生记录：`.work/<feature>/api/<feature>-json-export.md`，包含 YAML / JSON SHA-256、Redocly CLI 版本和 lockfile 引用。
+- 有 API 影响时提供冻结 JSON 产物：`.work/<feature>/api/<feature>.json`；这是唯一允许交给既有前端代码生成流程的上游产物。无 API 影响时沿用带原因的 `not-applicable`，不生成占位 JSON 或 API client。
 - `target_git_url` 或 `output_dir`：目标实现仓库或本地输出目录。
 - `package_manager`：默认 pnpm。
 - `init_git`：是否初始化 Git；默认必须用户明确确认。

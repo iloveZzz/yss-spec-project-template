@@ -3,6 +3,8 @@ name: yss-api-integration
 description: "在 Vue3 YSS UI 中对接 Orval API；核验生成方法、mutator、错误反馈、loading 与长整型精度。"
 ---
 
+功能包根只从 `.template-spec/agents/issue-tracker.md` 的 `tracker.root` 读取；本文 `.work/` 路径是新项目示例，已有项目沿用已配置的根。
+
 # API 集成 Skill
 
 本技能的 canonical 名称为 `yss-api-integration`。历史名称 `api-integration` 只由注册表与实现合同编译器解析，不维护第二份内容。
@@ -23,7 +25,7 @@ description: "在 Vue3 YSS UI 中对接 Orval API；核验生成方法、mutator
 
 1. **契约状态已明确**：
    - 已有生成客户端：先核验冻结契约、JSON 派生记录和真实导出，输入当前且一致时可以直接集成。
-   - 新增或变更 API：`daily` 按唯一政策及 `yss-openapi-governance` 在同一任务完成 OAS 3.1 YAML Draft、锁定工具校验、保守兼容核验、独立 API 审查和摘要 Freeze，证据记在原 Ticket / PR，不另建 Spec Delta、API Contract Decision 或工程批准包；不能证明兼容或出现排除影响时恢复 `governed`。`governed` 仍在 `docs/.scratch/<feature>/api/<feature>.yaml` 形成 Draft，经工程基线 / 架构 / Spec Delta 设计和设计审查后 Freeze。两条路径均以冻结的 OpenAPI YAML 为唯一权威，JSON 仅为受控派生物。
+   - 新增或变更 API：`daily` 按唯一政策及 `yss-openapi-governance` 在同一任务完成 OAS 3.1 YAML Draft、锁定工具校验、保守兼容核验、独立 API 审查和摘要 Freeze，证据记在原 Ticket / PR，不另建 Spec Delta、API Contract Decision 或工程批准包；不能证明兼容或出现排除影响时恢复 `governed`。`governed` 仍在 `.work/<feature>/api/<feature>.yaml` 形成 Draft，经工程基线 / 架构 / Spec Delta 设计和设计审查后 Freeze。两条路径均以冻结的 OpenAPI YAML 为唯一权威，JSON 仅为受控派生物。
    - 如果接口尚未冻结、JSON 派生记录缺失或生成函数不存在，先回到 `yss-product-lifecycle` / `yss-openapi-governance`，不要手写临时路径、DTO 或响应结构。
 2. **API 已生成**：在目标前端实现仓库中，按其既有的手动代码生成命令（例如 `pnpm generate:api`）刷新 API；本 Harness 不配置、不执行该命令，也不把它加入 CI。
 3. **了解 OpenAPI**：查看 Freeze 记录、JSON 派生记录和 `openapi/openapi.json` 了解接口定义；不得把 JSON 或生成 TypeScript 当成可手改的源文件。
@@ -40,7 +42,7 @@ description: "在 Vue3 YSS UI 中对接 Orval API；核验生成方法、mutator
   → 类型检查与调用方验证
 ```
 
-1. `daily` 读取同一 Ticket / PR 中 `yss-openapi-governance` 留下的当前 API Freeze 与 JSON 派生证据，产物位于本任务单一实现仓的允许范围；`governed` 读取 OpenAPI Freeze 记录和 `docs/.scratch/<feature>/api/<feature>-json-export.md`，治理 JSON 产物仍为 `docs/.scratch/<feature>/api/<feature>.json`。两者均确认 YAML SHA-256、JSON SHA-256、Redocly CLI 版本、lockfile 引用和 JSON 校验通过。
+1. `daily` 读取同一 Ticket / PR 中 `yss-openapi-governance` 留下的当前 API Freeze 与 JSON 派生证据，产物位于本任务单一实现仓的允许范围；`governed` 读取 OpenAPI Freeze 记录和 `.work/<feature>/api/<feature>-json-export.md`，治理 JSON 产物仍为 `.work/<feature>/api/<feature>.json`。两者均确认 YAML SHA-256、JSON SHA-256、Redocly CLI 版本、lockfile 引用和 JSON 校验通过。
 2. JSON 导出由 `yss-openapi-governance` 负责。`yss-api-integration` 只接受该 skill 留下的派生记录；`daily` 记录在同一任务，`governed` 使用原正式记录。锁定 `redocly bundle` 命令是导出证据，不是前端集成任意重跑的入口。
 3. **受控交接**：`daily` 只在本任务单一实现仓与允许路径中消费或原样物化已核验的冻结 JSON；`governed` 的前端本地输入仍由批准的 Cross-repo 子合同或项目脚本将治理 JSON 原样物化为 `<frontend>/openapi/openapi.json`。物化后的 SHA-256 必须与派生记录一致。禁止从 URL、Draft YAML、后端运行时或任意本地文件临时替换输入；跨仓交付不能走普通路径。
 4. `yss-api-integration` 只核对 JSON 派生记录、交接路径和 SHA-256，并把原始 JSON 交给既有前端代码生成流程；本 Harness 可只读核对目标前端的生成器配置与真实导出，但不修改该配置，不在此仓库执行生成，也不建立生成 CI 门禁。若 JSON SHA 与派生记录不一致，停止交接并回到治理流程。

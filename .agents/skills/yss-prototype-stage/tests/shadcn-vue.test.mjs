@@ -1,3 +1,4 @@
+import { fixtureTracker } from './work-layout-fixture.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile,writeFile,mkdtemp,mkdir,cp,readdir,symlink} from 'node:fs/promises';
@@ -13,7 +14,7 @@ test('Vue components have fixed original sources, exact dependencies and closed 
  assert.equal(pkg.dependencies.vue,pkg.devDependencies['@vue/compiler-sfc']);for(const v of Object.values({...pkg.dependencies,...pkg.devDependencies}))assert.match(v,/^\d+\.\d+\.\d+$/);assert(!pkg.dependencies.react);assert.match(await readFile(new URL('SHADCN-LICENSE.txt',base),'utf8'),/MIT License/);
  assert(resourceErrors('App.vue','<script setup>fetch("https://example.test")</script>',{}).length);assert(resourceErrors('App.vue','<template><img src="https://example.test/x.png"/></template>',{}).length);
 });
-async function fixture(){const r=await mkdtemp(path.join(os.tmpdir(),'yss-vue-test-'));await mkdir(path.join(r,'.template-spec/design/tokens'),{recursive:true});for(const f of ['DESIGN.md','.template-spec/design/tokens/variables.css'])await cp(new URL(`../../../../${f}`,import.meta.url),path.join(r,f));return r;}
+async function fixture(){const r=await mkdtemp(path.join(os.tmpdir(),'yss-vue-test-'));await mkdir(path.join(r,'.template-spec/design/tokens'),{recursive:true});for(const f of ['DESIGN.md','.template-spec/design/tokens/variables.css'])await cp(new URL(`../../../../${f}`,import.meta.url),path.join(r,f));await fixtureTracker(r);return r;}
 test('Vue multi-file SFC build: asset closure, scoped CSS, schema, rejection and cleanup',{},async()=>{
  const projectRoot=await fixture(),author=path.join(projectRoot,'author');await mkdir(author);
  const config=path.join(author,'config.json');await cp(new URL('../assets/vue-business-patterns/list-detail.scenarios.json',import.meta.url),path.join(author,'scenarios.json'));

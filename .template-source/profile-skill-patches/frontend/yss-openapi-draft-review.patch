@@ -1,10 +1,10 @@
 diff --git a/SKILL.md b/SKILL.md
-index 394028e5..c7b44e75 100644
+index af47c80..bb6cedb 100644
 --- a/SKILL.md
 +++ b/SKILL.md
-@@ -3,10 +3,12 @@ name: yss-openapi-draft-review
- description: "审查 YSS OpenAPI Draft 的需求覆盖、页面动作、响应、错误与测试 seam；不执行 Freeze。"
- ---
+@@ -5,10 +5,12 @@ description: "审查 YSS OpenAPI Draft 的需求覆盖、页面动作、响应
+ 
+ 功能包根只从 `.template-spec/agents/issue-tracker.md` 的 `tracker.root` 读取；本文 `.work/` 路径是新项目示例，已有项目沿用已配置的根。
  
 -# YSS OpenAPI Draft Review
 +# YSS OpenAPI 消费审查
@@ -13,11 +13,11 @@ index 394028e5..c7b44e75 100644
  
 +前端仅从页面动作、状态、错误与客户端类型角度提供只读反馈；后端持有 Draft / Freeze 权威并执行修订。本地不生成后端 DTO、不批准 API Freeze；mapper evidence 由后端交付。
 +
- Use this skill after OpenAPI Draft creation and before Engineering Baseline / YSS DDD Review. It is a fail-closed contract review skill for design-time OpenAPI files under `docs/.scratch/<feature>/api/`; it does not bundle JSON or generate Orval clients.
+ Use this skill after OpenAPI Draft creation and before Engineering Baseline / YSS DDD Review. It is a fail-closed contract review skill for design-time OpenAPI files under `.work/<feature>/api/`; it does not bundle JSON or generate Orval clients.
  
  上述工程阶段用于 `governed`。普通 API 小改只审查工具证明兼容的新增独立 operation：旧 operation、可达引用、路径继承与全局契约规范化保持完全相同。Reviewer 与实现者独立且只读，在原 Ticket API 审查段记录当前候选、结构/语义/兼容结论和未关闭项，不强制新 review 文件、校准 Spec 或 validation YAML，不写 `approved`。unknown、breaking、crossrepo、失败或过期证据返回 `blocked` 并停止受影响后续动作。
-@@ -21,7 +23,7 @@ Use this skill after OpenAPI Draft creation and before Engineering Baseline / YS
- - `docs/.scratch/<feature>/api/<feature>-validation.yaml`，且已由 `scripts/verify-openapi-draft-validation-record` 针对当前 Draft SHA-256 验证通过。
+@@ -23,7 +25,7 @@ Use this skill after OpenAPI Draft creation and before Engineering Baseline / YS
+ - `.work/<feature>/api/<feature>-validation.yaml`，且已由 `scripts/verify-openapi-draft-validation-record` 针对当前 Draft SHA-256 验证通过。
  - Calibrated Spec.
  - Interaction spec / prototype review when UI exists.
 -- YSS engineering baseline rules and `.agents/skills/yss-dto/references/openapi-wire-profile.yaml`；先运行 `scripts/verify-yss-dto-openapi-profile`。

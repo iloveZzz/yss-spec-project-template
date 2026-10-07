@@ -19,6 +19,7 @@ shared.push('scripts/lib/structured-assets.mjs','scripts/lib/asset-transactions.
 shared.push('scripts/lib/lifecycle-presentation.mjs','.template-spec/process/schemas/approval-context.schema.json');
 shared.push('scripts/query-lifecycle-context','scripts/lib/lifecycle-context-query.mjs');
 shared.push('scripts/lib/testing/user-decision-fixture.mjs');
+shared.push('scripts/lib/work-layout.mjs','.template-spec/process/work-layout.md');
 shared.push('.template-spec/process/research-completion.md');
 shared.push('scripts/lib/backend-platform-provenance.mjs','scripts/lib/backend-platform.mjs','scripts/lib/backend-platform-verification.mjs','scripts/lib/scaffold-local-database.mjs','scripts/vendor/xml.mjs','.template-spec/engineering/backend-platforms.json','.template-spec/engineering/backend-platforms.md','.template-spec/process/schemas/project-scaffold-contract.schema.json','.template-spec/process/schemas/scaffold-architecture-decisions.schema.json','scripts/verify-scaffold-architecture-decisions','scripts/backend-platforms','.template-spec/agents/backend-architecture-profiles.md','scripts/fixtures/backend-scaffold/platform-fixture.mjs','scripts/fixtures/backend-scaffold/design-prerequisites.mjs');
 shared.push('.template-spec/process/schemas/digital-human-task-package.schema.json','scripts/lib/maintenance-candidate.mjs','scripts/lib/first-slice-artifacts.mjs','scripts/lib/first-slice-tests.mjs','scripts/lib/slice-repositories.mjs','scripts/lib/slice-applicability.mjs','scripts/lib/slice-contract.mjs','.template-spec/process/schemas/slice-implementation-contract-v3.schema.json');
@@ -30,6 +31,7 @@ let differences=[];
 function replaceExactly(bytes,from,to,name){const content=bytes.toString();const count=content.split(from).length-1;if(count!==1)throw new Error(`${name} 转换基线失效，预期 1 处，实际 ${count} 处`);return Buffer.from(content.replace(from,to));}
 const visualSource='.agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs',visualWire='scripts/lib/visual-baseline-contract.mjs';
 const transformations={
+ 'cli-core-layout':bytes=>replaceExactly(bytes,"'../vendor/yaml.mjs'","'./vendor/yaml.mjs'",'cli-core-layout'),
  'design-query-runtime':bytes=>replaceExactly(replaceExactly(bytes,'.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml','.agents/skills/yss-strategic-design/references/orchestration-contract.yaml','design-query-runtime'),"const QUERY_PROFILE = 'lifecycle';","const QUERY_PROFILE = 'specialist';",'design-query-profile'),
  'implementation-query-runtime':bytes=>replaceExactly(replaceExactly(bytes,'.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml','.agents/skills/harness-orchestrator/references/orchestration-contract.yaml','implementation-query-runtime'),"const QUERY_PROFILE = 'lifecycle';","const QUERY_PROFILE = 'specialist';",'implementation-query-profile'),
  'backend-wire-library':bytes=>replaceExactly(replaceExactly(bytes,'../../../../scripts/vendor/yaml.mjs','../vendor/yaml.mjs','backend-wire-yaml'),'../../../../scripts/lib/validation-phase.mjs','./validation-phase.mjs','backend-wire-phase'),
@@ -86,6 +88,8 @@ shared.push('.template-source/process/schemas/maintenance-review-record.schema.j
 shared.push('.template-source/tooling/node/package.json','.template-source/tooling/node/pnpm-lock.yaml','.template-source/tooling/node/scripts/build-vendor.mjs',...['yaml','xml','markdown'].map(kind=>`.template-source/tooling/node/vendor-entry-${kind}.mjs`));
 // CLI core owns portable native Context transport and runtime store.
 sync(path.join(root,'.template-source/cli-core/native-context.mjs'),path.join(root,'scripts/lib/native-context.mjs'));
+// The same path resolver is bundled with the retired runtime for safe recovery.
+sync(path.join(root,'scripts/lib/work-layout.mjs'),path.join(root,'.template-source/cli-core/work-layout.mjs'),'cli-core-layout');
 // CLI core owns the runtime store; copies remain generated portable modules.
 sync(path.join(root,'.template-source/cli-core/runtime-store.mjs'),path.join(root,'scripts/lib/runtime-store.mjs'));
 const sharedRefs=[...new Set(shared)].sort();
@@ -160,7 +164,7 @@ function projectedRegistry(targetRoot){
 function syncExistingProfiles(targetRoot){const dest=path.join(targetRoot,registryRef),bytes=projectedRegistry(targetRoot);if(!bytes.equals(readFileSync(dest))){differences.push(path.relative(root,dest));if(!check)writeFileSync(dest,bytes);}}
 
 const revision=spawnSync('git',['-C',root,'rev-parse','HEAD'],{encoding:'utf8'}).stdout.trim();
-const scopedState=spawnSync('git',['-C',root,'status','--porcelain=v1','--untracked-files=all','--','scripts/sync-strategic-handoff-tools','.template-source/cli-core/runtime-store.mjs',registryRef,routingContractRef,visualSource,...sharedRefs,...sliceExecutionRefs,...backendPlatformRefs],{encoding:'utf8'}).stdout.trim();
+const scopedState=spawnSync('git',['-C',root,'status','--porcelain=v1','--untracked-files=all','--','scripts/sync-strategic-handoff-tools','.template-source/cli-core/runtime-store.mjs','.template-source/cli-core/work-layout.mjs',registryRef,routingContractRef,visualSource,...sharedRefs,...sliceExecutionRefs,...backendPlatformRefs],{encoding:'utf8'}).stdout.trim();
 const sourceState=scopedState?'working-tree':'committed';
 function expectedLock(target,targetRoot){
  const lockedRefs=[...new Set([...sharedRefs,...(target==='.'||!target.endsWith('design-agent')?sliceExecutionRefs:[]),...(target==='.'||target.endsWith('backend-agent')?backendPlatformRefs:[])])].sort();
@@ -171,7 +175,7 @@ function expectedLock(target,targetRoot){
  effectiveFiles[targetRoutingRef(targetRoot)]=digestBytes(target==='.'?routingSource:projectedRouting(targetRoot));
  sourceFiles[registryRef]=digestBytes(readFileSync(path.join(root,registryRef)));
  effectiveFiles[registryRef]=digestBytes(target==='.'?readFileSync(path.join(root,registryRef)):projectedRegistry(targetRoot));
- return {schema_version:1,target_id:target==='.'?'template-root':path.basename(target),source_repository:'yss-spec-project-template',source_revision:revision,source_state:sourceState,transformation_set:[...new Set([...lockedRefs.map(ref=>transformationFor(target,ref)),...(target.endsWith('backend-agent')?['backend-wire-library']:[])])].sort(),source_files:{...sourceFiles,'.template-source/cli-core/native-context.mjs':digestBytes(readFileSync(path.join(root,'.template-source/cli-core/native-context.mjs'))),'.template-source/cli-core/runtime-store.mjs':digestBytes(readFileSync(path.join(root,'.template-source/cli-core/runtime-store.mjs')))},effective_files:effectiveFiles};
+ return {schema_version:1,target_id:target==='.'?'template-root':path.basename(target),source_repository:'yss-spec-project-template',source_revision:revision,source_state:sourceState,transformation_set:[...new Set([...lockedRefs.map(ref=>transformationFor(target,ref)),...(target.endsWith('backend-agent')?['backend-wire-library']:[])])].sort(),source_files:{...sourceFiles,'.template-source/cli-core/native-context.mjs':digestBytes(readFileSync(path.join(root,'.template-source/cli-core/native-context.mjs'))),'.template-source/cli-core/runtime-store.mjs':digestBytes(readFileSync(path.join(root,'.template-source/cli-core/runtime-store.mjs'))),'.template-source/cli-core/work-layout.mjs':digestBytes(readFileSync(path.join(root,'.template-source/cli-core/work-layout.mjs')))},effective_files:effectiveFiles};
 }
 function lock(target,targetRoot){const ref='.template-source/distribution/strategic-handoff-tools.lock.json',dest=path.join(targetRoot,ref),bytes=Buffer.from(`${JSON.stringify(expectedLock(target,targetRoot),null,2)}\n`);if(!existsSync(dest)||!bytes.equals(readFileSync(dest))){differences.push(path.relative(root,dest));if(!check){mkdirSync(path.dirname(dest),{recursive:true});writeFileSync(dest,bytes);}}}
 // Shared Node governance modules remain independently maintained after CLI retirement.

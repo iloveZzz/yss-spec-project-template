@@ -3,8 +3,9 @@ tracker:
   lifecycle_tracking_version: 1
   business_ticket_version: 1
   platform: local-markdown
-  root: docs/.scratch
+  root: .work
   legacy_roots:
+    - docs/.scratch
     - .scratch
     - docs/requirements/tickets
   remote_mirror: false
@@ -19,10 +20,12 @@ tracker:
 | 字段 | 值 |
 |---|---|
 | `platform` | `local-markdown` |
-| `root` | `docs/.scratch/` |
+| `root` | `.work/` |
 | `feature_layout` | 完整功能包 |
 | `remote_mirror` | 可选，默认关闭 |
-| `legacy_roots` | `.scratch/`、`docs/requirements/tickets/`（只读迁移来源） |
+| `legacy_roots` | `docs/.scratch/`、`.scratch/`、`docs/requirements/tickets/`（历史扫描根；旧实例以配置根为准） |
+
+`tracker.root` 是唯一功能包根。新项目默认 `.work`；旧实例按既有配置继续使用 `docs/.scratch` 或受支持的自定义根。attach、sync、升级不移动资产。路径缺失、非法或执行器不支持时阻断，不根据目录存在猜根。本文 `.work/` 为示例，执行时均解析配置根。
 
 上方 front matter 是机器可读的持久化配置；表格用于人和 Agent 阅读。初始化或迁移到 GitHub / GitLab 时，必须同时更新两处，并保留迁移记录。
 
@@ -34,7 +37,7 @@ tracker:
 2. 初始化或迁移时用户明确选择 GitHub / GitLab，则更新本文件后使用所选平台。
 3. Git remote 只用于代码托管、分支、PR / MR 和 CI；不能单独把 Ticket tracker 改成远程平台。
 4. 多个持久化配置声明不同平台时返回 `conflict`，暂停并要求迁移，不覆盖任何配置。
-5. 选定 GitHub / GitLab 但凭据或平台暂不可用时，先在 `docs/.scratch/<feature>/` 生成“待发布平台”草案；`parent-ticket.md` 保留目标平台、标记 `publication: pending` 和 `pending_publication_to`；不得自动改投另一远程平台。
+5. 选定 GitHub / GitLab 但凭据或平台暂不可用时，先在 `.work/<feature>/` 生成“待发布平台”草案；`parent-ticket.md` 保留目标平台、标记 `publication: pending` 和 `pending_publication_to`；不得自动改投另一远程平台。
 
 Slice v3 声明冻结需求时，合同绑定的 Ticket 文件只保留冻结时状态。当前状态、验收结果和执行记录继续进入主 tracker；Local Markdown 使用现有父 Ticket / 任务包记录进度，远程平台不可用时沿用待发布记录。需求文件版本不得作为当前执行状态读取，也不得因更新进度而改写。协议见 [Slice 合同](../../.agents/skills/yss-implementation-contract-compiler/references/slice-implementation-contract.md#第二轮增量规则)。
 
@@ -43,7 +46,7 @@ Slice v3 声明冻结需求时，合同绑定的 Ticket 文件只保留冻结时
 Local 主 tracker 的完整功能包结构如下：
 
 ```text
-docs/.scratch/<feature>/
+.work/<feature>/
 ├── map.md
 ├── plan/
 ├── spec.md
@@ -72,7 +75,7 @@ docs/.scratch/<feature>/
 
 Spec、生命周期和交付任务状态必须同步到当前主 tracker：
 
-- `local-markdown`：写入 `docs/.scratch/<feature>/`，本地文件即 Ticket 和阶段证据的权威载体。
+- `local-markdown`：写入配置的功能包根（示例 `.work/<feature>/`），本地文件即 Ticket 和阶段证据的权威载体。
 - `github`：使用 GitHub Issues，并在本地功能包记录 URL / 编号和最近同步时间；平台不可用时保留 `tracker: github`、`publication: pending`、`pending_publication_to: github`。
 - `gitlab`：使用 GitLab Issues，并在本地功能包记录 URL / IID 和最近同步时间；平台不可用时保留 `tracker: gitlab`、`publication: pending`、`pending_publication_to: gitlab`。
 
@@ -110,10 +113,10 @@ GitLab 相关配置和 MR / CI 工作流见 `.template-spec/agents/gitlab-workfl
 
 ## Local Markdown 操作
 
-- 创建或发布 Ticket：创建 `docs/.scratch/<feature>/`，按上述结构写入 `parent-ticket.md`、`spec.md` 或 `issues/NN-<slug>.md`。
-- 读取 Ticket：优先读取用户提供的 `docs/.scratch/<feature>/` 或具体 Ticket 路径；如果引用旧路径，进入迁移检查，不把旧路径当作新写入目标。
+- 创建或发布 Ticket：创建 `.work/<feature>/`，按上述结构写入 `parent-ticket.md`、`spec.md` 或 `issues/NN-<slug>.md`。
+- 读取 Ticket：优先读取用户提供的 `.work/<feature>/` 或具体 Ticket 路径；如果引用旧路径，进入迁移检查，不把旧路径当作新写入目标。
 - 更新状态：修改文件顶部的 `Status:`，并在 `## Comments` 追加原因和证据。
-- Wayfinder map：使用 `docs/.scratch/<feature>/map.md`，子 Ticket 放在 `issues/`。
+- Wayfinder map：使用 `.work/<feature>/map.md`，子 Ticket 放在 `issues/`。
 
 ## Triage Surface
 
@@ -128,13 +131,13 @@ Ticket 是默认 triage surface。MR / PR 是否纳入 triage 取决于当前平
 当 skill 说 “publish to the issue tracker” 时：
 
 1. 读取本文件的 `platform` 配置。
-2. `local-markdown` 直接在 `docs/.scratch/<feature>/` 创建或更新 Ticket。
+2. `local-markdown` 直接在 `.work/<feature>/` 创建或更新 Ticket。
 3. `github` / `gitlab` 在对应平台创建或更新 Ticket，并在本地功能包记录 URL / 编号和最近同步时间。
-4. 选定远程平台不可用时，在 `docs/.scratch/<feature>/` 创建并标注“待发布平台”的草案；在 `parent-ticket.md` 写入 `publication: pending` 和 `pending_publication_to`，恢复后优先补同步。
+4. 选定远程平台不可用时，在 `.work/<feature>/` 创建并标注“待发布平台”的草案；在 `parent-ticket.md` 写入 `publication: pending` 和 `pending_publication_to`，恢复后优先补同步。
 
 当 skill 说 “fetch the relevant ticket” 时：
 
-- Local Markdown：读取引用的 `docs/.scratch/<feature>/...` 文件；旧路径引用必须先经过迁移检查。
+- Local Markdown：读取引用的 `.work/<feature>/...` 文件；旧路径引用必须先经过迁移检查。
 - GitLab：使用 `glab issue view <iid> --comments`。
 - GitHub：使用 `gh issue view <number> --comments`。
 

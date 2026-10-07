@@ -1,3 +1,4 @@
+import { workLayout } from './work-layout.mjs';
 import { readFileSync, existsSync, lstatSync, realpathSync } from 'node:fs';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
@@ -89,9 +90,8 @@ export function assertStageTracking(checkpoint, { root, checkpointRef, currentWo
   validateJsonSchema(tracking, path.join(root, '.template-spec/process/schemas/stage-tracking.schema.json'));
   const feature = checkpoint.feature_id;
   if (feature !== tracking.feature_id || typeof feature !== 'string' || !feature.trim()) throw new Error('tracking-feature-mismatch');
-  const location = /^(docs\/\.scratch\/[a-z0-9][a-z0-9-]*\/)[^/]+\.(yaml|json)$/.exec(tracking.checkpoint_ref);
-  if (!location) throw new Error('tracking-checkpoint-path-invalid');
-  const base = location[1];
+  const layout = workLayout(root, config);
+  const base = layout.featureRoot(layout.checkpointFeature(tracking.checkpoint_ref)) + '/';
   if (!tracking.checkpoint_ref.startsWith(base) || (checkpointRef && tracking.checkpoint_ref !== checkpointRef)) throw new Error('tracking-checkpoint-mismatch');
   safeTrackingPath(root, tracking.checkpoint_ref);
   if (isDesign(root)) {

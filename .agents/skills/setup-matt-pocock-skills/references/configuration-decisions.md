@@ -10,18 +10,18 @@ Lead each section with the recommended answer so the user can accept it in a wor
 
 **Section A — Issue tracker.**
 
-> Explainer: The "issue tracker" is where issues live for this repo. Skills like `to-tickets`, `triage`, and `to-spec` read from and write to it — they need to know whether to call `gh issue create`, write a markdown file under `docs/.scratch/`, or follow some other workflow you describe. Pick the place you actually track work for this repo.
+> Explainer: The "issue tracker" is where issues live for this repo. Skills like `to-tickets`, `triage`, and `to-spec` read from and write to it — they need to know whether to call `gh issue create`, write a markdown file under `.work/`, or follow some other workflow you describe. Pick the place you actually track work for this repo.
 
 Path resolution is configuration-first: every Local-aware skill must read the
 persisted `tracker.root` from `.template-spec/agents/issue-tracker.md` before resolving an
-artifact path. If the field is absent, use `docs/.scratch` as the default. Do
+artifact path. If the field is absent, use `.work` as the default. Do
 not infer a tracker or replace the configured root from `git remote`; the legacy
 `.scratch/` and `docs/requirements/tickets/` roots are read-only migration
 sources.
 
 The supported tracker choices in this template are exactly `local-markdown`, `github`, and `gitlab`. A `git remote` may be displayed as code-host context only; it must not choose or rank a tracker. Ask for one explicit project choice, with Local Markdown as the template default:
 
-- **Local markdown (recommended)** — issues live as files under `docs/.scratch/<feature>/` in this repo.
+- **Local markdown (recommended)** — issues live as files under `.work/<feature>/` in this repo.
 - **GitHub** — use GitHub Issues and the `gh` CLI only when the user explicitly selects GitHub.
 - **GitLab** — use GitLab Issues and the [`glab`](https://gitlab.com/gitlab-org/cli) CLI only when the user explicitly selects GitLab.
 

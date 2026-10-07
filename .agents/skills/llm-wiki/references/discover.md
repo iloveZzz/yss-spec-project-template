@@ -28,7 +28,7 @@ Unless the user replaces this list with the host's single source-of-truth table:
 
 - `docs/reviews/`
 - `.template-source/evidence/`
-- `docs/.scratch/`
+- `.work/`
 - Agent projection directories (copies or symlinks of shared skills)
 - `node_modules`
 - Whole lock files (`package-lock.json`, `pnpm-lock.yaml`, `skills-lock.json` as a document). A lock may appear only as `kind: derived` with an `extract` recipe.

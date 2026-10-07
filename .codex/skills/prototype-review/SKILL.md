@@ -3,6 +3,8 @@ name: prototype-review
 description: Use when independently reviewing low-fidelity UI, interaction specs, or state matrices before choosing an H1/H2 prototype profile, calibrating Spec/OpenAPI, slicing, or implementation.
 ---
 
+功能包根只从 `.template-spec/agents/issue-tracker.md` 的 `tracker.root` 读取；本文 `.work/` 路径是新项目示例，已有项目沿用已配置的根。
+
 # Prototype Review
 
 Use this skill as the independent low-fidelity review in `yss-prototype-stage`. The review is fail-closed: if the design cannot drive calibrated requirements, API, frontend acceptance, and slices, send it back to product design. `yss-product-lifecycle` alone records the resulting `check.prototype-reviewed` decision.
@@ -16,10 +18,10 @@ Run this independent gate only when UI changes affect a primary user flow, navig
 ## Required Inputs
 
 - Spec baseline or confirmed user stories.
-- `docs/.scratch/<feature>/design/<feature>-interaction-spec.md` or prototype link.
+- `.work/<feature>/design/<feature>-interaction-spec.md` or prototype link.
 - State matrix, preferably based on `.template-spec/design/templates/state-matrix-template.md`.
 - Existing OpenAPI Draft only if the review is checking alignment; do not require OpenAPI before product design.
-- `docs/.scratch/<feature>/verification/prototype-evidence.yaml` may be created as a pending Prototype Evidence schema v4 record from `.template-spec/design/templates/prototype-evidence-template.yaml`, but档位构建与浏览器验证属于后续 `check.prototype-verified`。
+- `.work/<feature>/verification/prototype-evidence.yaml` may be created as a pending Prototype Evidence schema v4 record from `.template-spec/design/templates/prototype-evidence-template.yaml`, but档位构建与浏览器验证属于后续 `check.prototype-verified`。
 
 ## Review Gates
 

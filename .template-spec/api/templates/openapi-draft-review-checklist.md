@@ -8,18 +8,18 @@
 
 | 资产 | 路径 | 状态 |
 |---|---|---|
-| API 影响记录 / 契约草案 | issue note / design note / `docs/.scratch/<feature>/api/<feature>.yaml` |  |
-| OpenAPI Draft | `docs/.scratch/<feature>/api/<feature>.yaml` |  |
-| Draft validation record | `docs/.scratch/<feature>/api/<feature>-validation.yaml`；`scripts/verify-openapi-draft-validation-record` | 必须绑定当前 YAML SHA-256 与锁定 Redocly lint |
+| API 影响记录 / 契约草案 | issue note / design note / `.work/<feature>/api/<feature>.yaml` |  |
+| OpenAPI Draft | `.work/<feature>/api/<feature>.yaml` |  |
+| Draft validation record | `.work/<feature>/api/<feature>-validation.yaml`；`scripts/verify-openapi-draft-validation-record` | 必须绑定当前 YAML SHA-256 与锁定 Redocly lint |
 | Spec / 需求冻结 |  |  |
 | 产品总体设计 / 功能架构 |  |  |
-| 交互说明 / 页面清单 | `docs/.scratch/<feature>/design/<feature>-interaction-spec.md` |  |
+| 交互说明 / 页面清单 | `.work/<feature>/design/<feature>-interaction-spec.md` |  |
 | 原型 / 线框图 |  |  |
-| 状态矩阵 | `docs/.scratch/<feature>/design/<feature>-state-matrix.md` |  |
-| 原型评审结论 | `docs/.scratch/<feature>/design/<feature>-prototype-review.md` |  |
-| 原型交付物 | `docs/.scratch/<feature>/design/prototypes/index.html` 或稳定 URL | 有产品设计影响时必需；必须引用 Prototype Evidence schema v4、Visual Baseline schema v1 档位决策与交付物验证 |
+| 状态矩阵 | `.work/<feature>/design/<feature>-state-matrix.md` |  |
+| 原型评审结论 | `.work/<feature>/design/<feature>-prototype-review.md` |  |
+| 原型交付物 | `.work/<feature>/design/prototypes/index.html` 或稳定 URL | 有产品设计影响时必需；必须引用 Prototype Evidence schema v4、Visual Baseline schema v1 档位决策与交付物验证 |
 | 条件 AntD 事实 | `prototype-evidence.yaml` 的档位证据 | H1 不适用；H2 使用 AntD 时引用新鲜 fact pack 或增量 CLI；不得作为生产 YSS/AntDV 组件事实 |
-| 用户确认记录 | `docs/.scratch/<feature>/design/<feature>-prototype-confirmation.md` | 有 UI 时必需；未确认前不得进入 OpenAPI Draft 评审 |
+| 用户确认记录 | `.work/<feature>/design/<feature>-prototype-confirmation.md` | 有 UI 时必需；未确认前不得进入 OpenAPI Draft 评审 |
 | YSS 工程基线 | `.agents/skills/yss-ddd-scaffold-generator/references/engineering-baseline.md` |  |
 | YSS DTO wire profile | `.agents/skills/yss-dto/references/openapi-wire-profile.yaml`；`scripts/verify-yss-dto-openapi-profile` |  |
 

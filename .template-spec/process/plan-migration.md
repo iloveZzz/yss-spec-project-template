@@ -2,7 +2,7 @@
 
 新流程仅使用 `stage.plan`、`artifact.plan-record`、`work-unit.plan-opportunity` 和 `work-unit.plan-requirements`。不提供 Discovery 阶段别名、旧标识解析或兼容入口；旧 ID 在注册表中仅作为弃用清单保留，以防重新分配，不可执行。
 
-新工作从 `.template-spec/plan/templates/plan-template.md` 起草，工作目录为 `docs/.scratch/<feature>/plan/`。问题、机会和事实探索是 Plan 内按影响面执行的活动。
+新工作从 `.template-spec/plan/templates/plan-template.md` 起草，工作目录为 `.work/<feature>/plan/`。问题、机会和事实探索是 Plan 内按影响面执行的活动。
 
 历史冻结文档、批准记录和摘要保持原字节。旧状态不能直接恢复执行；如需继续，按当前 Plan 模板重新整理输入并核查当前退出条件，不把旧批准自动视为新流程批准。已有事实和结论可引用，但须记录当前版本、适用范围和复用理由。
 

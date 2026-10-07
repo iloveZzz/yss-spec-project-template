@@ -1,3 +1,4 @@
+import { fixtureTracker } from './work-layout-fixture.mjs';
 // Real browser checks for the maintenance catalog and enhanced patterns; no user approval.
 import assert from 'node:assert/strict';
 import {readFile,writeFile,mkdtemp,cp,mkdir} from 'node:fs/promises';
@@ -49,6 +50,7 @@ for(const [engine,type] of [['chromium',chromium],['webkit',webkit]]){
 const fixture=path.join(out,'comfortable-fixture');await mkdir(path.join(fixture,'.template-spec/design/tokens'),{recursive:true});
 for(const ref of ['DESIGN.md','.template-spec/design/tokens/variables.css'])await cp(path.join(root,ref),path.join(fixture,ref));
 const comfortable=path.join(fixture,'docs/.scratch/catalog/design/prototypes');
+await fixtureTracker(fixture);
 await buildShadcnVuePrototype({projectRoot:fixture,root:comfortable,feature:'catalog',toolchain:process.env.YSS_VUE_TOOLCHAIN,config:path.join(root,'.agents/skills/yss-prototype-stage/assets/vue-business-patterns/component-states-standard.config.json'),density:'comfortable'});
 const browser=await chromium.launch();try{const context=await browser.newContext({offline:true,reducedMotion:'reduce'}),page=await context.newPage();
 for(const width of [1440,390]){await page.setViewportSize({width,height:width===390?844:900});await page.goto(pathToFileURL(path.join(comfortable,'index.html')).href);await page.locator('#catalog-input').waitFor();

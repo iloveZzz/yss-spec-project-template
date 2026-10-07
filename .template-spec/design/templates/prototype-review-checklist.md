@@ -6,14 +6,14 @@
 
 | 输入 | 路径 / 链接 | 是否具备 |
 |---|---|---|
-| Spec | `docs/.scratch/<feature>/spec.md` |  |
-| 交互说明 | `docs/.scratch/<feature>/design/<feature>-interaction-spec.md` |  |
+| Spec | `.work/<feature>/spec.md` |  |
+| 交互说明 | `.work/<feature>/design/<feature>-interaction-spec.md` |  |
 | 原型 / 线框图 | `<链接或导出图片路径>` |  |
-| 状态矩阵 | `docs/.scratch/<feature>/design/<feature>-state-matrix.md` |  |
+| 状态矩阵 | `.work/<feature>/design/<feature>-state-matrix.md` |  |
 | 视觉规范与主题快照 | 根 `DESIGN.md`、`.template-spec/design/design.md`、实际消费的 Token 快照 | 默认 Data Quality 浅色；显式暗色 / 紧凑模式注明选择依据 |
 | 原型阶段合同 / Product Design 路由记录 | `yss-prototype-stage`；规范直出或条件独立视觉稿路线 |  |
-| 原型验证清单 | `docs/.scratch/<feature>/verification/prototype-evidence.yaml` | 档位确定后补齐 schema v4 共同与档位证据，并引用 Visual Baseline Bundle v1 |
-| 现有 API 草案 | `docs/.scratch/<feature>/api/<feature>.yaml` | 可选 |
+| 原型验证清单 | `.work/<feature>/verification/prototype-evidence.yaml` | 档位确定后补齐 schema v4 共同与档位证据，并引用 Visual Baseline Bundle v1 |
+| 现有 API 草案 | `.work/<feature>/api/<feature>.yaml` | 可选 |
 
 ## 门禁清单
 
