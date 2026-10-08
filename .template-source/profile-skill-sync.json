@@ -31,6 +31,9 @@
           "id": "maintaining-skills"
         },
         {
+          "id": "publish-skills-sh"
+        },
+        {
           "id": "resolving-merge-conflicts"
         },
         {
@@ -57,7 +60,7 @@
           "target": ".codex/skills/product-design"
         },
         {
-          "id": "yss-harness-upgrade"
+          "id": "setup-yss-harness"
         }
       ],
       "adapted": [
@@ -180,7 +183,8 @@
         "wait-what",
         "grill-with-docs",
         "to-questionnaire",
-        "improve-codebase-architecture"
+        "improve-codebase-architecture",
+        "yss-harness-upgrade"
       ],
       "reference_roots": [
         ".codex/skills/product-design"
@@ -230,6 +234,9 @@
         },
         {
           "id": "maintaining-skills"
+        },
+        {
+          "id": "publish-skills-sh"
         },
         {
           "id": "mapstruct"
@@ -337,7 +344,7 @@
           "id": "git-commit-core"
         },
         {
-          "id": "yss-harness-upgrade"
+          "id": "setup-yss-harness"
         }
       ],
       "adapted": [
@@ -373,7 +380,7 @@
           "id": "yss-implementation-contract-compiler",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/backend/yss-implementation-contract-compiler.patch",
-          "source_tree_sha256": "d35346daa7406a4b531318383ac31bf9bd48e0edf618c2fe258d725e7bdc67c7"
+          "source_tree_sha256": "2a73204c8d53682f30ace3620474f741433e82ee512b51943d276581f8b0e31b"
         },
         {
           "id": "yss-openapi-governance",
@@ -515,7 +522,8 @@
         "wait-what",
         "grill-with-docs",
         "to-questionnaire",
-        "improve-codebase-architecture"
+        "improve-codebase-architecture",
+        "yss-harness-upgrade"
       ],
       "reference_roots": []
     },
@@ -569,6 +577,9 @@
         },
         {
           "id": "maintaining-skills"
+        },
+        {
+          "id": "publish-skills-sh"
         },
         {
           "id": "prototype"
@@ -657,7 +668,7 @@
           "id": "git-commit-core"
         },
         {
-          "id": "yss-harness-upgrade"
+          "id": "setup-yss-harness"
         }
       ],
       "adapted": [
@@ -665,7 +676,7 @@
           "id": "yss-implementation-contract-compiler",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/frontend/yss-implementation-contract-compiler.patch",
-          "source_tree_sha256": "d35346daa7406a4b531318383ac31bf9bd48e0edf618c2fe258d725e7bdc67c7"
+          "source_tree_sha256": "2a73204c8d53682f30ace3620474f741433e82ee512b51943d276581f8b0e31b"
         },
         {
           "id": "yss-openapi-governance",
@@ -819,7 +830,8 @@
         "wait-what",
         "grill-with-docs",
         "to-questionnaire",
-        "improve-codebase-architecture"
+        "improve-codebase-architecture",
+        "yss-harness-upgrade"
       ],
       "reference_roots": [
         ".codex/skills/product-design"

@@ -101,8 +101,14 @@ const visualBaselineRef = { baseline_id: sealedBaseline.baseline_id, version: se
  }
  const relative=ref=>path.relative(root,ref).split(path.sep).join('/');
  const decisionFor=(key,boundary,subjectRef)=>{const d=buildDecisionFixture(path.join(root,'decisions',key),{subjectRef:path.join(root,subjectRef),boundary,scope:['feature.supplier']});d.record.request.items[0].subject.ref=subjectRef;d.record.request.requester_source.ref=relative(d.record.request.requester_source.ref);d.present();d.record.responses=[];d.respond();d.record.request.presented_source.ref=relative(d.record.request.presented_source.ref);d.record.responses[0].source.ref=relative(d.record.responses[0].source.ref);d.save();return relative(d.ref);};
- const sign=()=>{
+ if(handoffVersion===5&&!impacts.ui&&!impacts.frontend){
+   handoff.ui_baseline_kind='not-applicable';handoff.package_export.ui_baseline_kind='not-applicable';
+   delete handoff.package_export.prototype;
+   for(const key of ['prototype_ref','visual_baseline_ref','existing_ui_baseline_ref']){delete sourceRefs[key];delete approvals[key];}
+ }
+ const sign=({bindPlanChecks=false}={})=>{
    const planRef='source/plan-review-package.json',productRef='source/product-design-review-package.json';
+   const productKeys=['prototype_ref','visual_baseline_ref','existing_ui_baseline_ref'].filter(key=>sourceRefs[key]);
    const gateFor=key=>approvals[key]?.gate_id||gates[key];
    const subjectFor=key=>gateFor(key)==='gate.plan-approved'?planRef:gateFor(key)==='gate.product-design-approved'?productRef:`source/review-packages/${key}.json`;
    const fileFor=key=>key==='handoff'?'handoff.yaml':['visual_baseline_ref','existing_ui_baseline_ref'].includes(key)?`${sourceRefs[key].persisted_ref}/${sourceRefs[key].manifest_ref}`:sourceRefs[key].persisted_ref;
@@ -118,14 +124,15 @@ const visualBaselineRef = { baseline_id: sealedBaseline.baseline_id, version: se
    }
    if(currentPlan){
      put(planRef,packageFor('gate.plan-approved',businessTickets?['domain_strategy_ref','stage_decision_package_ref']:['domain_strategy_ref','stage_decision_package_ref','business_ticket_set_ref'],'plan-review-package'));
-     put(productRef,packageFor('gate.product-design-approved',['prototype_ref','visual_baseline_ref','existing_ui_baseline_ref'].filter(key=>sourceRefs[key]),'product-design-review-package'));
+     if(productKeys.length)put(productRef,packageFor('gate.product-design-approved',productKeys,'product-design-review-package'));
      const row=(gateId,subjectRef)=>({schema_version:1,gate_id:gateId,decision:'approved',actor_kind:'digital-human',role_id:'role.product-manager',runtime_id:'runtime.generic',principal_ref:'synthetic-plan-reviewer',drafter_role_id:'role.requirements-manager',drafter_principal_ref:drafter,subject_ref:subjectRef,subject_digest:bound(subjectRef).digest,approval_scope:['feature.supplier'],basis:[bound('evidence/offline.log'),bound(subjectRef)],evidence_refs:['evidence/offline.log']});
      put('approvals/plan-checks.yaml',{schema_version:1,kind:'review-bundle',bundle_id:'review-bundle.plan',task_id:'task.plan-review.supplier',work_unit_id:'work-unit.plan-requirements',review_session_id:'review-session.plan.supplier',role_id:'role.product-manager',runtime_id:'runtime.generic',principal_ref:'synthetic-plan-reviewer',reviews:[row('check.domain-strategy-approved','source/strategy.yaml'),row('check.stage-decision-package-approved','source/stage.yaml')]});
+     if(bindPlanChecks){const review=read(path.join(root,planRef));review.basis.push(bound('approvals/plan-checks.yaml'));put(planRef,review);}
    }
    const decisions=currentPlan?{
      'gate.plan-approved':decisionFor('plan','gate.plan-approved',planRef),
      'gate.spec-baseline-approved':decisionFor('spec','gate.spec-baseline-approved',subjectFor('spec_ref')),
-     'gate.product-design-approved':decisionFor('product','gate.product-design-approved',productRef)
+     ...(productKeys.length?{'gate.product-design-approved':decisionFor('product','gate.product-design-approved',productRef)}:{})
    }:{};
    for(const[key,approval]of Object.entries(approvals)){
      const asset=key==='handoff'?{id:handoff.handoff_id,version:handoff.handoff_version,digest:hash(readFileSync(path.join(root,'handoff.yaml')))}:sourceRefs[key];

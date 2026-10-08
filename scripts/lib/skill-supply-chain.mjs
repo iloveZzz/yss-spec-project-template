@@ -16,6 +16,7 @@ OBSOLETE.add("grill-with-docs");
 OBSOLETE.add("to-questionnaire");
 OBSOLETE.add("improve-codebase-architecture");
 OBSOLETE.add("wait-what");
+OBSOLETE.add("yss-harness-upgrade");
 export function obsoleteCanonicalResidues(names, obsolete = OBSOLETE) {
   return names.filter((name) => obsolete.has(name)).sort();
 }

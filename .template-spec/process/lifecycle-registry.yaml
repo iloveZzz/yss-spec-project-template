@@ -57,18 +57,27 @@ stages:
     name: Spec / 功能架构
     goal: 固化解决方案和功能边界。
     exit_criteria: Spec 基线和功能边界可审查。
+    public_goal: 固化解决方案和功能边界，同时按用户行为与验收结果起草业务 Ticket。
+    public_exit_criteria: Spec 基线和功能边界可审查；适用业务 Ticket 草案及 FR/AC 覆盖可读取。
   - id: stage.product-design
     name: 产品设计
     goal: 在存在产品设计影响时校准页面流和状态。
     exit_criteria: 命中的设计门禁通过；未命中项记录 not-applicable 及原因。
+    public_name: 产品设计与业务 Ticket 正式化
+    public_goal: 按产品设计影响校准页面流、状态和业务 Ticket；在技术分析前完成适用业务 Ticket 正式化。
+    public_exit_criteria: 命中的设计门禁通过，适用业务 Ticket 正式化及当前审查闭合；无产品设计影响时记录依据，从 Spec 进入业务正式化，不生成空原型。
   - id: stage.system-data-engineering
     name: 系统 / 数据架构与工程契约
     goal: 固化系统、数据、工程基线和 API 契约。
     exit_criteria: 新建后端已由用户确认 DDD / MVC 与精确 Spring Boot 版本，既有工程已核验并复用登记值；受影响工程契约冻结或记录无 API 影响；required 脚手架证据齐全。
+    public_goal: 消费已正式化业务 Ticket 和当前批准的 Spec / 设计，围绕当前交付范围固化系统、数据、工程基线及 API 契约。
   - id: stage.ticket-formalization
     name: Ticket 正式化
     goal: 在既有功能追踪入口下，将冻结范围正式化为垂直切片。
     exit_criteria: 工作单元窄、依赖清晰、验收和测试 seam 可执行。
+    public_name: 实现切片拆分与合同准入
+    public_goal: 消费冻结工程契约和当前实现仓库准备，将业务 Ticket 细化为可独立验证的实现切片，并批准当前 Slice Implementation Contract。
+    public_exit_criteria: 切片范围窄、依赖清晰、验收与测试 seam 可执行；工程前置闭合、合同批准且当前，生命周期复算后才能 ready-for-agent。
   - id: stage.vertical-slice-implementation
     name: 垂直切片实现
     goal: 以批准合同驱动 TDD 实现和跨仓库协作。
@@ -307,6 +316,7 @@ artifacts:
     name: 实现仓库准备结果
     stage: stage.system-data-engineering
     trigger: 后端或前端交付面进入 Ticket 正式化。
+    public_trigger: 后端或前端交付面进入实现切片拆分与合同准入前。
   - id: artifact.tactical-design
     name: DDD 战术设计
     stage: stage.system-data-engineering
@@ -462,6 +472,7 @@ work_units:
     completion: 当前合同与交接摘要一致，真实 Wrapper 三命令通过后仅 empty-scaffold-verified；首切片仍须独立批准和验证。
   - id: work-unit.ticket-decomposition
     name: 垂直切片 Ticket 正式化
+    public_name: 实现切片拆分与合同准入
     scope: project-instance
     input: 已正式化业务 Ticket、冻结 Spec、设计、契约、当前实现仓库准备和阻塞关系。
     output: 更新既有功能父 Ticket 的关联、形成垂直切片和批准的 Slice Implementation Contract。
@@ -582,6 +593,7 @@ checks:
     name: 实现仓库准备就绪
     stage: stage.system-data-engineering
     trigger: 后端或前端交付面进入 Ticket 正式化；未命中的交付面须记录带原因的 not-applicable。
+    public_trigger: 后端或前端交付面进入实现切片拆分与合同准入前；未命中的交付面须记录带原因的 not-applicable。
     evidence:
       - evidence.implementation-repository-preparation
       - evidence.fresh-verification

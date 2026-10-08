@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "kind",
+    "baseline_id",
+    "version",
+    "bundle_digest",
+    "package_ref",
+    "target_profile_id",
+    "target_context_digest",
+    "status",
+    "ready_for_agent",
+    "working_set_ref"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "kind": {
+      "const": "spec-baseline-import"
+    },
+    "baseline_id": {
+      "type": "string",
+      "pattern": "^spec-baseline\\.[a-zA-Z0-9][a-zA-Z0-9._-]*$"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^v[1-9][0-9]*$"
+    },
+    "bundle_digest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "package_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "target_profile_id": {
+      "const": "harness.business-ddd-strategy-handoff"
+    },
+    "target_context_digest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "status": {
+      "const": "imported-pending-context-reconciliation"
+    },
+    "ready_for_agent": {
+      "const": false
+    },
+    "working_set_ref": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

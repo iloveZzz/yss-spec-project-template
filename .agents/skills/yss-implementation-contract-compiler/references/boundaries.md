@@ -114,7 +114,7 @@
 | `yss-implementation-contract-compiler` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
 | `yss-openapi-governance` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
 | `yss-stage-decision` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
-| `yss-harness-upgrade` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
+| `setup-yss-harness` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
 | `yss-research` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
 | `yss-product-lifecycle` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
 | `code-review` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |

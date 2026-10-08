@@ -7,7 +7,7 @@
 1. 按 `orchestration-contract.yaml.request_triage` 理解请求并选择模式，再识别仓库身份、任务规模和影响面；问题理解与澄清细节见 [请求分诊协议](request-triage.md)。查看已有项目进度可用 `scripts/lifecycle-status --root <项目> --checkpoint <引用>` 读取当前阶段、阻塞、负责人和下一动作；此视图不推进状态或代替流转校验。
 2. `setup readiness`：每个任务只执行一次，核对 tracker、五态标签和领域文档布局，并在本轮缓存结果；仅在 tracker、主远端、真实标签或配置变化时重查。
 3. 加载父 Ticket/checkpoint 与真实资产，计算最近可信阶段；按 `.template-spec/process/stage-tracking.md` 登记、恢复并核验当前阶段工作项，写入前确保 checkpoint 已持久化，工作单元结果带 checkpoint_ref。
-4. 评估资产、门禁和 `stale`，选择第一个未阻塞工作单元。进入 `work-unit.slice-implementation` 前，必须先通过 `scripts/lib/lifecycle-transition.mjs` 的 Ticket 正式化、垂直切片绑定和合法 `next_route` 校验；父 Ticket、缺少垂直切片或 `ready-for-human` 的切片一律 `blocked`。
+4. 评估资产、门禁和 `stale`，选择第一个未阻塞工作单元。进入 `work-unit.slice-implementation` 前，必须先通过 `scripts/lib/lifecycle-transition.mjs` 的实现切片拆分与合同准入、垂直切片绑定和合法 `next_route` 校验；父 Ticket、缺少垂直切片或 `ready-for-human` 的切片一律 `blocked`。
 5. 执行最小生命周期工作单元：主控先按 `.template-spec/process/schemas/digital-human-task-package.schema.json` 编译并校验任务包，再只实际调用允许的 model-invoked skill；原生工作单元可直接持有正式资产，Matt 兼容 user-invoked skill 仅作为 workflow reference，仍由用户显式启动。将结果归一化为 `Workflow Execution Result`，验收输出并回写状态与证据。任务包的 `contract.kind` 按工作单元选择；只有实现子任务使用 `slice-implementation` 并消费 Slice Implementation Contract，其他阶段不伪造该合同。
 6. 若仍在授权和自动推进边界内，回到第 3 步；否则暂停。
 
@@ -75,7 +75,7 @@ Matt phase boundary 是工作阶段之间的上下文决策，不是新的生命
 
 阶段 5 在技术分析后固定进入 `work-unit.implementation-repository-preparation`。编排器按 backend / frontend 影响逐项目展示已有或新建工程、Agent 推荐、仓库 scope、目标路径、Git 初始化、验证命令和风险，取得真实用户确认后再执行。已有工程调用 `implementation-repo-onboarding`；新后端按已确认架构调用对应生成器；新前端调用 `yss-frontend-scaffold-generator`。默认 `external-repository`，`harness-apps` / `git-submodule`、`git init` 和远端仓库创建均须显式选择或授权。
 
-所有命中项目必须达到 `existing-and-onboarded` 或 `initialized-and-verified`，未命中的交付面必须有带原因的 `not-applicable`。聚合结果、Manifest、验证和 onboarding 证据必须可读且当前；否则 `check.implementation-repositories-ready` 阻断 Ticket 正式化。旧实例恢复时保留已有 Ticket，但将相关 Ticket / Slice Contract 标为 `blocked` / `stale` 并返回本工作单元。
+所有命中项目必须达到 `existing-and-onboarded` 或 `initialized-and-verified`，未命中的交付面必须有带原因的 `not-applicable`。聚合结果、Manifest、验证和 onboarding 证据必须可读且当前；否则 `check.implementation-repositories-ready` 阻断实现切片拆分与合同准入。旧实例恢复时保留已有 Ticket，但将相关 Ticket / Slice Contract 标为 `blocked` / `stale` 并返回本工作单元。
 
 `prototype_confirmation` 通过后，先判断实现仓库登记中的 backend `scaffold_status`。当状态为 `required` 时，在进入 DDD / MVC 分支设计前完成 `gate.backend-architecture-platform-approved`：Agent 按领域复杂度给出 `domain-driven` / `layered-mvc` 推荐和依据，并从 `.template-spec/engineering/backend-platforms.json` 展示可选平台的精确 Spring Boot 补丁版本与 Java 版本；用户在同一次决定中确认架构与平台。本体选择作为子项目预填默认值，用户可批量确认全部项目或逐项覆盖。选择写入 `scaffold-architecture-decisions.yaml`；处于 `undecided`、`recommended`、`awaiting-user-decision` 或 `stale` 时必须阻断，不得默认 DDD、MVC 或 Spring Boot 版本，也不得在生成器内交互。既有工程使用当前 `existing-registration` 的架构及固定工程基线/POM 中的实际 Spring Boot 版本，核验摘要和支持状态后将该门禁记录为 `not-applicable`，不重复询问；架构转换或平台升级另行立项。
 
@@ -103,12 +103,12 @@ tracker 选择和冲突按 `.template-spec/agents/issue-tracker.md` 裁决：已
 
 ## Matt flow 进入条件
 
-- `work-unit.technical-analysis` 由 `yss-technical-design` 组织后端技术设计；其 `domain-driven` 分支调用 `yss-tactical-design`，`layered-mvc` 分支由自身持有。状态、规则、一致性、持久化影响本身不意味着选择 DDD。无后端技术设计影响记录带原因的 `not-applicable`，其他 API / 前端技术分析继续各自路由。新合同使用 `artifact.technical-design`，通过 `evidence.technical-design-review` 回交现有架构审查；旧 DDD 稳定 ID 只读兼容。批准仍由生命周期维护，编译器消费批准且当前的设计起草实现合同；`stale`、`drift` 或 `new_impacts` 时不得继续 Ticket 正式化。
+- `work-unit.technical-analysis` 由 `yss-technical-design` 组织后端技术设计；其 `domain-driven` 分支调用 `yss-tactical-design`，`layered-mvc` 分支由自身持有。状态、规则、一致性、持久化影响本身不意味着选择 DDD。无后端技术设计影响记录带原因的 `not-applicable`，其他 API / 前端技术分析继续各自路由。新合同使用 `artifact.technical-design`，通过 `evidence.technical-design-review` 回交现有架构审查；旧 DDD 稳定 ID 只读兼容。批准仍由生命周期维护，编译器消费批准且当前的设计起草实现合同；`stale`、`drift` 或 `new_impacts` 时不得继续实现切片拆分与合同准入。
 
 - `work-unit.plan-requirements` 按 `planning.clarification_policy` 在必须确认的需求、规则、范围或取舍未决时主动调用 `grilling`，术语工作使用 `domain-modeling`。事实、实验、专业审查分别回流证据，依赖分轮并复用未变确认。`checks.grill_exit=passed` 表示准备就绪；固定审阅包后将共同理解与 Plan 批准范围一并展示，以单独保存的真实回复联合完成完整退出。`work-unit.plan-opportunity` 按事实类型路由 `competitive-intelligence` 或 `yss-research`。`yss-research:quick` 只用于探索；外部证据进入领域战略、阶段决策或其他生命周期批准输入前必须升级为 `evidence-audited`。生命周期原生工作单元默认负责 Spec、Ticket 和实现资产；`to-spec`、`to-tickets`、`implement` 仅保留为显式兼容入口，结果必须回交生命周期验收。
 - 原生 `work-unit.ticket-decomposition` 只能在 OpenAPI Freeze 或无 API 影响记录后创建垂直切片，初始 Ticket 状态统一为 `ready-for-human`；生命周期复算完整公式后才能提升 `ready-for-agent`。该工作单元必须返回 `ticket_decomposition_result_ref` 和垂直切片引用，并作为实现的必经前置证据。
 - 原生 `work-unit.slice-implementation` 必须在生命周期批准并持久化 Slice Implementation Contract 和 Build Architecture Checklist 后执行；用户显式 `implement` 仍走兼容入口，不得绕过生命周期。
-- `Workflow Execution Result.next_route` 必须通过生命周期转换校验；Spec、原型和技术分析不得直接跳转到 Ticket 正式化或实现，必须先完成 `work-unit.implementation-repository-preparation`，再进入 `work-unit.ticket-decomposition`。
+- `Workflow Execution Result.next_route` 必须通过生命周期转换校验；Spec、原型和技术分析不得直接跳转到实现切片拆分与合同准入或实现，必须先完成 `work-unit.implementation-repository-preparation`，再进入 `work-unit.ticket-decomposition`。
 - `implement` 遇到 backend `scaffold_status=required` 时，还必须满足原型确认后的脚手架策略：脚手架 Execution Result、生成器内部工程基线、Wrapper 验证和 实现合同编译器 合同重编译均已回写；否则停在工程基线，不得写业务代码。
 - `Workflow Execution Result` 出现 `drift`、`new_impacts`、`stale_candidates`、`violation`、`missing_evidence`、空 `evidence_refs` 或缺少必需字段时暂停当前工作单元；旧结果只能先经只读兼容 adapter 归一化。
 

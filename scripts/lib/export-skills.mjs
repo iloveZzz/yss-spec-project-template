@@ -106,7 +106,7 @@ function validate(output, skillNames) {
 function loadConfig() {
   let data;
   try { data = JSON.parse(readFileSync(path.join(root, "yss-public-skills.json"), "utf8")); } catch (error) { fail("invalid yss-public-skills.json: " + error.message); }
-  if (!Array.isArray(data.skills) || !data.skills.length || new Set(data.skills).size !== data.skills.length || data.skills.some((item) => !/^yss-[a-z0-9]+(?:-[a-z0-9]+)*$/.test(item))) fail("yss-public-skills.json skills must be a unique non-empty skill-directory array");
+  if (!Array.isArray(data.skills) || !data.skills.length || new Set(data.skills).size !== data.skills.length || data.skills.some((item) => !/^(?:yss-[a-z0-9]+(?:-[a-z0-9]+)*|setup-yss-harness)$/.test(item))) fail("yss-public-skills.json skills must be a unique non-empty skill-directory array");
   if (data.canonical_root !== ".agents/skills") fail("canonical_root must be .agents/skills");
   if (!Array.isArray(data.groupings) || !data.groupings.length) fail("yss-public-skills.json groupings must be a non-empty array");
   const grouped = data.groupings.flatMap((group) => {
@@ -170,10 +170,17 @@ function fileMap(directory) {
 }
 
 export function exportSkills(argv = process.argv.slice(2)) {
-  if (argv.includes("-h") || argv.includes("--help")) return "Usage: scripts/export-yss-skills --output DIR [--check]";
+  if (argv.includes("-h") || argv.includes("--help")) return "Usage: scripts/export-yss-skills --output DIR [--skill NAME] [--check]";
   const position = argv.indexOf("--output");
   if (position < 0 || !argv[position + 1]) fail("--output is required");
   const output = path.resolve(argv[position + 1]); const data = loadConfig();
+  const selection = argv.indexOf("--skill");
+  if (selection >= 0) {
+    const name = argv[selection + 1];
+    if (!data.skills.includes(name)) fail("--skill requires a listed public skill: " + (name ?? ""));
+    data.skills = [name];
+    data.groupings = data.groupings.map(group => ({ ...group, skills: group.skills.filter(skill => skill === name) })).filter(group => group.skills.length);
+  }
   if (!argv.includes("--check")) { build(output, data); return "Exported " + data.skills.length + " YSS skills to " + output; }
   ensureOutput(output); if (!existsSync(output) || !lstatSync(output).isDirectory()) fail("export directory does not exist: " + output);
   const temporary = mkdtempSync(path.join(tmpdir(), "yss-export-check-"));

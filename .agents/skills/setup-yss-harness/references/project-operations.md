@@ -1,6 +1,6 @@
 # 项目初始化与维护
 
-仅在新建、接管、同步、迁移、补装或恢复项目时读取；[统一协议](../../../../.template-spec/process/harness-upgrade.md) 持有保护与事务规则。以下命令可在任意工作目录运行，`<固定yss>`、目标根和计划均使用绝对路径；Profile 明确选择 `spec/design/backend/frontend`，不按目录名猜测。
+仅在新建、接管、同步、迁移、补装或恢复项目时读取；[统一协议](operation-contract.md) 持有保护与事务规则。以下命令可在任意工作目录运行，`<固定yss>`、目标根和计划均使用绝对路径；Profile 明确选择 `spec/design/backend/frontend`，不按目录名猜测。
 
 ## 判断目标与准备输入
 

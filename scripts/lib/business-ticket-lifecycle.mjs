@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import {businessAuthoringEnabled,businessPath,businessSetRef,checkBusinessTickets,assertBusinessDeferredApprovals} from './business-tickets.mjs';
 import {yamlValue} from './plan-spec-markdown.mjs';
 import {loadApprovalRecord,validateApprovalRecord} from './approval-record.mjs';
+import {assertImportedSpecPrerequisite} from './spec-baseline.mjs';
 
 // Reuse existing approval protocols; this function creates no approval boundary.
 export function assertBusinessApprovalBasis(root,state,{required=false}={}) {
@@ -14,6 +15,12 @@ export function assertBusinessApprovalBasis(root,state,{required=false}={}) {
   const rolesDoc=yamlValue(fs.readFileSync(businessPath(root,'.template-spec/agents/digital-human-roles.yaml'),'utf8'));
   const proofRefs=[];
   for(const id of ['gate.spec-baseline-approved','gate.product-design-approved']) {
+    if(id==='gate.spec-baseline-approved'&&state.upstream_spec_baseline&&state.gates?.[id]?.status!=='approved') {
+      const imported=assertImportedSpecPrerequisite(state,{root});
+      if(report.spec.ref!==imported.specRef||report.spec.digest!==imported.source.spec_digest)throw Error('BUSINESS_SPEC_APPROVAL_MISMATCH: 导入基线与当前业务票 Spec 不一致');
+      proofRefs.push(state.upstream_spec_baseline.receipt_ref);
+      continue;
+    }
     const gate=state.gates?.[id];
     if(id==='gate.product-design-approved'&&gate?.status==='not-applicable'&&gate.reason?.trim()&&gate.evidence_refs?.length){for(const ref of gate.evidence_refs)fs.readFileSync(businessPath(root,ref));continue;}
     if(gate?.status!=='approved'||!gate.approval_ref)throw Error(`BUSINESS_APPROVAL_REQUIRED: ${id}`);

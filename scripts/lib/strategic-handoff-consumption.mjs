@@ -2,7 +2,7 @@ import { uiBaselineSourceKeys, uiBaselineKind } from './ui-baseline.mjs';
 import { existsSync, readdirSync, inValidationPhase, acceptValidationDependencies } from './validation-phase.mjs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
-import { openBundle } from './strategic-handoff.mjs';
+import { openBundle,assertImportReceipt } from './strategic-handoff.mjs';
 import { read, safe, ensure, ROOT, digest, project } from './strategic-handoff-io.mjs';
 import { designTargets } from './strategic-handoff-design-targets.mjs';
 import { parseContextContract } from './context-contract.mjs';
@@ -39,8 +39,10 @@ export async function verifyConsumption(data,{root=process.cwd(),sliceRef,consum
   ensure(latestReceipt.version===versions[0]&&latestReceipt.package_ref===`docs/handoffs/${receipt.bundle_id}/${versions[0]}/package`,'最新收据路径无效');
   return openBundle(safe(root,receipt.package_ref),async original=>{
     ensure(original.manifest.bundle_digest===receipt.bundle_digest,'导入收据与包不一致');
+    assertImportReceipt(root,receipt,original,consumer==='frontend'?'frontend-engineering-design':'backend-technical-design');
     return openBundle(safe(root,latestReceipt.package_ref),async current=>{
       ensure(current.manifest.bundle_id===receipt.bundle_id && current.manifest.bundle_digest===latestReceipt.bundle_digest,'最新导入收据无效');
+      assertImportReceipt(root,latestReceipt,current,consumer==='frontend'?'frontend-engineering-design':'backend-technical-design');
       for(const op of ['added','updated'])for(const term of current.handoff.context_delta[op]) {
         const actual=context.terms_by_ref.get(term.term_ref);ensure(actual,`目标缺少术语: ${term.term_ref}`);
         for(const key of ['term','meaning','english_identifier','context_id','forbidden_aliases'])ensure(digest(actual[key])===digest(term[key]),`目标术语未对账: ${term.term_ref}`);

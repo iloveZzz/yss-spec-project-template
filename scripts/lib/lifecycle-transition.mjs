@@ -21,6 +21,7 @@ import { validateJsonSchema } from "./json-schema.mjs";
 import { ROOT } from "./lifecycle-registry.mjs";
 import { readRepositoryMode } from './repository-mode.mjs';
 import { validateResearchCompletion } from './maintenance-research.mjs';
+import {verifySpecBaselineBinding} from './spec-baseline.mjs';
 
 const IMPLEMENTATION_WORK_UNIT = "work-unit.slice-implementation";
 const TICKET_DECOMPOSITION_WORK_UNIT = "work-unit.ticket-decomposition";
@@ -311,6 +312,7 @@ export function validateNextRoute(currentWorkUnit, nextRoute, decisionState, opt
       const mode = readRepositoryMode(options.root || ROOT);
       if (currentWorkUnit === 'work-unit.entry-triage') entryRoutes = mode === 'template-source'
         ? ['work-unit.maintenance-research', 'work-unit.ssot-update'] : NEXT_ROUTES[currentWorkUnit];
+      if(currentWorkUnit==='work-unit.entry-triage'&&decisionState?.upstream_spec_baseline)entryRoutes=[verifySpecBaselineBinding(decisionState,{root:options.root || ROOT}).next_work_unit];
       if ((currentWorkUnit === 'work-unit.maintenance-research' || nextRoute === 'work-unit.maintenance-research') && mode !== 'template-source') throw Error('template-research-requires-template-source');
       if (currentWorkUnit === 'work-unit.maintenance-research') {
         assertScopeTransition(currentWorkUnit, nextRoute, decisionState, options);

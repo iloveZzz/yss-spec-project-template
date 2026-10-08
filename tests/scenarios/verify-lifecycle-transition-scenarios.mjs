@@ -20,6 +20,7 @@ const writeProjectFile = (ref, value) => {
   writeFileSync(file, typeof value === "string" ? value : `${JSON.stringify(value, null, 2)}\n`);
   return { ref, file, digest: digest(readFileSync(file)) };
 };
+writeProjectFile(".template-spec/agents/issue-tracker.md", "---\ntracker:\n  platform: local-markdown\n  root: docs/.scratch\n---\n");
 const apiAssessment = writeProjectFile("docs/.scratch/demo/evidence/api-impact.json", { schema_version: 1, backend: true, api: false });
 const apiEvidence = writeProjectFile("docs/.scratch/demo/evidence/api-decision.md", "无 API 影响测试证据。\n");
 const apiDecisionValue = {

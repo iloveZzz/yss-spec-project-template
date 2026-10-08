@@ -1,16 +1,20 @@
 import { test } from 'node:test';
 import { attachSliceApproval, attachArtifactApproval } from '../../scripts/fixtures/backend-delivery/approval-fixture.mjs';
 import assert from 'node:assert/strict';
-import { mkdtempSync, rmSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, rmSync, mkdirSync, readFileSync, writeFileSync,copyFileSync,cpSync,existsSync } from 'node:fs';
 import path from 'node:path';
 import { tmpdir } from 'node:os';
 import { baselineFixture, handoffFixture } from '../../scripts/fixtures/existing-ui-baseline/fixture.mjs';
 import { validateExistingUiBaseline } from '../../scripts/lib/existing-ui-baseline.mjs';
-import { exportBundle,openBundle,importBundle,inspectSource } from '../../scripts/lib/strategic-handoff.mjs';
+import { exportBundle,openBundle,importBundle,inspectSource,finalizeDelivery } from '../../scripts/lib/strategic-handoff.mjs';
 import { read,json,hash,treeDigest,schema,ROOT } from '../../scripts/lib/strategic-handoff-io.mjs';
 import { loadDeliveryProfile } from '../../scripts/lib/harness-execution-scope.mjs';
 import { context } from '../../scripts/fixtures/strategic-handoff/fixture.mjs';
 const root=t=>{const root=mkdtempSync(path.join(tmpdir(),'existing-ui-test-'));t.after(()=>rmSync(root,{recursive:true,force:true}));return root;};
+function frontendAuthority(target) {
+ const candidate=path.join(ROOT,'submodules/yss-harness-frontend-agent'),authority=existsSync(path.join(candidate,'.template-spec/process/harness-profile.yaml'))?candidate:ROOT;
+ for(const ref of ['.template-spec/process/harness-profile.yaml','.template-spec/process/lifecycle-registry.yaml','.agents/skills/harness-orchestrator/references/orchestration-contract.yaml']){mkdirSync(path.dirname(path.join(target,ref)),{recursive:true});copyFileSync(path.join(authority,ref),path.join(target,ref));}
+}
 function useCustomRouteIds(f) {
  const ids={'route.backend':'route.custom-backend','route.frontend':'route.custom-frontend','route.coordination':'route.custom-coordination'};
  for(const route of f.handoff.consumer_routes){route.route_id=ids[route.route_id];route.dependencies=(route.dependencies||[]).map(id=>ids[id]);}
@@ -34,9 +38,11 @@ test('Handoff v5 既有基线从源导出、离线只读验包、前端导入 v2
  const result=await exportBundle({sourceRoot:source,handoffRef:'handoff.yaml',output,zip:true});const before=treeDigest(base,'package');
  assert.equal(await openBundle(output,b=>b.manifest.bundle_digest,{readOnly:true}),result.bundle_digest);assert.equal(treeDigest(base,'package'),before);
  await assert.rejects(()=>openBundle(`${output}.zip`,()=>null,{readOnly:true}),/readonly-extraction-required/);
+ const delivered=await finalizeDelivery({sourceRoot:source,handoffRef:'handoff.yaml'}),wrapper=path.join(base,'delivery');cpSync(delivered.delivery,wrapper,{recursive:true});
  rmSync(source,{recursive:true});assert.equal(await openBundle(output,b=>b.handoff.ui_baseline_kind),'existing-ui-baseline');
  const target=path.join(base,'target');mkdirSync(target);writeFileSync(path.join(target,'yss-project.yaml'),'schema_version: 1\nrepository_mode: project-instance\n');writeFileSync(path.join(target,'CONTEXT.md'),context);
- const imported=await importBundle({bundle:output,targetRoot:target}),receipt=read(path.join(target,imported.receipt_ref));assert.equal(receipt.schema_version,2);
+ await assert.rejects(()=>importBundle({bundle:output,targetRoot:target}),/delivery wrapper/);
+ const imported=await importBundle({bundle:wrapper,targetRoot:target}),receipt=read(path.join(target,imported.receipt_ref));assert.equal(receipt.schema_version,3);
  const preflight=read(path.join(target,path.dirname(imported.receipt_ref),'frontend-strategic-preflight-draft.json'));assert.equal(preflight.schema_version,2);assert.equal(preflight.ui_baseline_kind,'existing-ui-baseline');assert.match(preflight.ui_baseline_ref,/existing-ui-baseline.json$/);assert.equal(preflight.backend_dependency.route_id,'route.custom-backend');
 });
 test('Handoff v5 原型仍验证离线原型；v4 原版本保持，未知版本拒绝',async t=>{
@@ -55,14 +61,18 @@ test('重算包内摘要不能复用旧用户批准；UI=true 不能走既有分
 test('前端 v2 预检与 v3 接收实际执行；跨类型、悬空 case、协议降级拒绝',async t=>{
  const {verifyFrontendStrategicPreflight,verifyFrontendDelivery}=await import('../../scripts/lib/frontend-delivery.mjs');
  const base=root(t),source=path.join(base,'source'),target=path.join(base,'target');mkdirSync(source);mkdirSync(target);
- const f=await handoffFixture(source,{backend:false}),output=path.join(base,'package');await exportBundle({sourceRoot:source,handoffRef:'handoff.yaml',output});
+ const f=await handoffFixture(source,{backend:false}),output=(await finalizeDelivery({sourceRoot:source,handoffRef:'handoff.yaml'})).delivery;
  const put=(ref,value)=>{mkdirSync(path.dirname(path.join(target,ref)),{recursive:true});writeFileSync(path.join(target,ref),typeof value==='string'?value:json(value));};
  put('yss-project.yaml','schema_version: 1\nrepository_mode: project-instance\n');put('CONTEXT.md',context);
+ frontendAuthority(target);
  const imported=await importBundle({bundle:output,targetRoot:target}),receipt=read(path.join(target,imported.receipt_ref)),route=receipt.routes.find(route=>route.capability==='frontend-engineering-design');
  const preflightRef=route.artifact_refs.find(ref=>ref.endsWith('frontend-strategic-preflight-draft.json')),traceRef=route.artifact_refs.find(ref=>ref.endsWith('frontend-traceability-draft.json')),preflight=read(path.join(target,preflightRef)),trace=read(path.join(target,traceRef));
  put('reconciliation.json',{schema_version:1,repository_mode:'project-instance',stage:'stage.frontend-engineering-design',work_unit:'work-unit.frontend-engineering-design',status:'reconciled',context_snapshot:f.snapshot,changes:{added:['Global/Supplier'],updated:[],deprecated:[]},unresolved_terms:[],evidence_refs:['CONTEXT.md']});
  preflight.status='verified';preflight.context_reconciliation_ref='reconciliation.json';put(preflightRef,preflight);
  assert.equal((await verifyFrontendStrategicPreflight({root:target,preflightRef,readOnly:true})).result,'preflight-verified');
+ assert.equal(receipt.schema_version,3);
+ const originalReceipt=readFileSync(path.join(target,imported.receipt_ref)),downgrade={...receipt,schema_version:2};for(const key of ['source_delivery_record_ref','source_delivery_record_sha256','ready_for_agent'])delete downgrade[key];put(imported.receipt_ref,downgrade);await assert.rejects(()=>verifyFrontendStrategicPreflight({root:target,preflightRef,readOnly:true}),/协议版本/);writeFileSync(path.join(target,imported.receipt_ref),originalReceipt);
+ const recordFile=path.join(target,receipt.source_delivery_record_ref),recordBytes=readFileSync(recordFile),record=read(recordFile);record.source_assets[0].digest=`sha256:${'0'.repeat(64)}`;put(receipt.source_delivery_record_ref,record);put(imported.receipt_ref,{...receipt,source_delivery_record_sha256:hash(readFileSync(recordFile))});await assert.rejects(()=>verifyFrontendStrategicPreflight({root:target,preflightRef,readOnly:true}),/来源资产/);writeFileSync(recordFile,recordBytes);writeFileSync(path.join(target,imported.receipt_ref),originalReceipt);
  put('cases.md','SYNTHETIC acceptance mapping for both outcomes.');const cases=['success','failure'].map(outcome=>({case_id:`accept-${outcome}`,source_ids:['rule.complete','scenario.submit'],outcome,operation_ids:[],baseline_case_ids:['submit'],evidence_ref:'cases.md',evidence_digest:hash(readFileSync(path.join(target,'cases.md')))}));
  for(const row of trace.rows)Object.assign(row,{disposition:'mapped',frontend_case_refs:cases.map(item=>item.case_id),dependency_status:'known',dependent_slice_refs:['slice.ui'],evidence_refs:['cases.md']});
  const acceptance={schema_version:3,status:'accepted',slice_id:'slice.ui',ui_baseline_kind:'existing-ui-baseline',strategic_preflight:{ref:preflightRef,digest:hash(readFileSync(path.join(target,preflightRef)))},backend_dependency:preflight.backend_dependency,strategic_handoff:{import_receipt_ref:imported.receipt_ref,bundle_digest:receipt.bundle_digest,route_id:trace.route_id,context_reconciliation_ref:'reconciliation.json',rows:trace.rows},frontend_cases:cases};
@@ -86,6 +96,7 @@ test('v5 既有基线与后端交付联合接收会执行真实 HTTP 五字段�
  const put=(root,ref,value)=>{mkdirSync(path.dirname(path.join(root,ref)),{recursive:true});writeFileSync(path.join(root,ref),typeof value==='string'?value:json(value));};
  const f=await handoffFixture(source);useCustomRouteIds(f);for(const dir of [backend,frontend]){put(dir,'yss-project.yaml','schema_version: 1\nrepository_mode: project-instance\n');put(dir,'CONTEXT.md',context);}
  const strategic=await exportBundle({sourceRoot:source,handoffRef:'handoff.yaml',output:path.join(backend,'strategy-package')});
+ const strategicDelivery=await finalizeDelivery({sourceRoot:source,handoffRef:'handoff.yaml'});frontendAuthority(frontend);await importBundle({bundle:strategicDelivery.delivery,targetRoot:frontend});
  const dedicated=['harness.backend-delivery','harness.frontend-delivery'].includes(loadDeliveryProfile()?.profile_id);
  const roles=read(path.join(dedicated?ROOT:source,'.template-spec/agents/digital-human-roles.yaml'));if(!dedicated){for(const gate of ['gate.openapi-frozen']){roles.gate_policy.biological_human=(roles.gate_policy.biological_human||[]).filter(item=>item!==gate);roles.gate_policy.digital_human_review=(roles.gate_policy.digital_human_review||[]).filter(item=>item.gate!==gate);roles.gate_policy.digital_human_review.push({gate,countersigners:['role.product-manager']});}roles.gate_policy.orchestrator=[...(roles.gate_policy.orchestrator||[]),'gate.slice-contract-approved'];}put(backend,'.template-spec/agents/digital-human-roles.yaml',roles);
  put(backend,'api.json',read(path.join(source,'existing-ui/api/openapi.json')));put(backend,'slice.json',{schema_version:2,contract_id:'contract.backend',contract_version:'v1',slice_id:'slice.submit',status:'approved'});put(backend,'data.txt','SYNTHETIC data setup');put(backend,'test.log','SYNTHETIC successful and failed business cases');

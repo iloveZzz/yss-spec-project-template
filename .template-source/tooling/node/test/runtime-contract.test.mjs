@@ -163,3 +163,31 @@ test("public skill export preserves its portable manifest and blocks workstation
     await rm(output, { recursive: true, force: true });
   }
 });
+
+test("standalone setup export closes local references and rejects unknown selection before writing", async () => {
+  const output = await mkdtemp(path.join(tmpdir(), "yss-setup-export-"));
+  const fs = await import("node:fs/promises");
+  try {
+    const args = ["--skill", "setup-yss-harness", "--output", output];
+    execFileSync("scripts/export-yss-skills", args, { cwd: repositoryRoot, encoding: "utf8" });
+    execFileSync("scripts/export-yss-skills", [...args, "--check"], { cwd: repositoryRoot, encoding: "utf8" });
+    const skillRoot = path.join(output, "skills/setup-yss-harness");
+    assert.deepEqual(await fs.readdir(path.join(output, "skills")), ["setup-yss-harness"]);
+    const manifest = await fs.readFile(path.join(output, ".yss-export-manifest.json"), "utf8");
+    const files = JSON.parse(manifest).skills[0].files;
+    assert.ok(files.includes("references/operation-contract.md"));
+    for (const file of files.filter(name => name.endsWith(".md"))) {
+      const source = path.join(skillRoot, file);
+      for (const [, href] of (await fs.readFile(source, "utf8")).matchAll(/\[[^\]]*\]\(([^)]+)\)/g)) {
+        if (/^(https?:|#)/.test(href)) continue;
+        const target = path.resolve(path.dirname(source), href.split("#")[0]);
+        assert.ok(target.startsWith(skillRoot + path.sep), `${file}: reference escapes standalone skill`);
+        await fs.access(target);
+      }
+    }
+    assert.throws(() => execFileSync("scripts/export-yss-skills", ["--skill", "yss-harness-upgrade", "--output", output], { cwd: repositoryRoot, stdio: "pipe" }), /listed public skill/);
+    assert.equal(await fs.readFile(path.join(output, ".yss-export-manifest.json"), "utf8"), manifest);
+  } finally {
+    await rm(output, { recursive: true, force: true });
+  }
+});

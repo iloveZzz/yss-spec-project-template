@@ -3,6 +3,7 @@ import {withValidationPhase, existsSync, readFileSync} from './validation-phase.
 import {ROOT, loadRegistry} from './lifecycle-registry.mjs';
 import {loadDigitalHumanRoles, countersignRuleForGate} from './digital-human-roles.mjs';
 import {assertGateChecks} from './lifecycle-controls.mjs';
+import {assertImportedSpecPrerequisite} from './spec-baseline.mjs';
 import {assertPlanAggregateApproval} from './plan-spec-entry.mjs';
 import {assertUserDecisionRequirement, assertWorkUnitUserDecision, assertImplementationDecision} from './user-decision.mjs';
 import {validateAssetStructure, canonicalValue} from './structured-assets.mjs';
@@ -112,6 +113,9 @@ export function assertStrategicWorkUnitDecision(workUnit, state, options = {}) {
   const roles=currentRoles(options);
   const boundaries=workUnit==='work-unit.strategic-design-handoff' ? ['gate.strategic-design-handoff-approved'] : [...(roles.user_decision_policy.work_unit_gates?.[workUnit] || []), ...(roles.user_decision_policy.work_units?.[workUnit] ? [roles.user_decision_policy.work_units[workUnit]] : [])];
   for(const boundary of boundaries) {
+    if(state.upstream_spec_baseline&&state.gates?.[boundary]?.status!=='approved'&&['gate.plan-approved','gate.spec-baseline-approved'].includes(boundary)) {
+      assertImportedSpecPrerequisite(state,options);continue;
+    }
     const gate=state.gates?.[boundary];
     if(gate?.status==='approved') {
       assertGateChecks(boundary,state,options);

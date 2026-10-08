@@ -71,7 +71,7 @@ AND UI 影响切片的前端实现还原计划已通过 schema 校验、`templat
 
 任何 `project-instance` 工作单元进入下一步、任何阶段会签暂停或阶段完成 checkpoint，还必须引用当前工作单元的 `context_reconciliation`。其中 `status=reconciled`、`context_ref=CONTEXT.md`、`document_digest` 与 `referenced_terms_digest` 必须和根目录唯一 `CONTEXT.md` 一致；该证据不改变门禁数量。`template-source` 仅允许以带原因的 `not-applicable` 表示它只校验模板合同，不产生产品业务术语。
 
-用户显式运行 `to-tickets` 后，垂直切片初始 Ticket 状态固定为 `ready-for-human`。原生路径执行 `work-unit.ticket-decomposition` 时同样必须产生等价的垂直切片和 `Workflow Execution Result` 证据。只有 `yss-product-lifecycle` 复算上述公式全部为真后，才能把它提升为 `ready-for-agent`；生命周期不会自动调用 `to-tickets`，但不得跳过实现仓库准备和 Ticket 正式化工作单元。旧实例恢复时若缺少当前工程准备结果，保留既有 Ticket，将 Ticket 与 Slice Contract 标为 `blocked` / `stale` 并回到阶段 5。其默认标签也不参与该裁决。
+用户显式运行 `to-tickets` 后，垂直切片初始 Ticket 状态固定为 `ready-for-human`。原生路径执行 `work-unit.ticket-decomposition` 时同样必须产生等价的垂直切片和 `Workflow Execution Result` 证据。只有 `yss-product-lifecycle` 复算上述公式全部为真后，才能把它提升为 `ready-for-agent`；生命周期不会自动调用 `to-tickets`，但不得跳过实现仓库准备和实现切片拆分与合同准入工作单元。旧实例恢复时若缺少当前工程准备结果，保留既有 Ticket，将 Ticket 与 Slice Contract 标为 `blocked` / `stale` 并回到阶段 5。其默认标签也不参与该裁决。
 
 ## Review 与 Git 授权状态
 

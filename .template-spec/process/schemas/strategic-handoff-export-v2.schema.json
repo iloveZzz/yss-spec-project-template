@@ -762,7 +762,8 @@
     "ui_baseline_kind": {
       "enum": [
         "prototype",
-        "existing-ui-baseline"
+        "existing-ui-baseline",
+        "not-applicable"
       ]
     }
   },
@@ -794,29 +795,68 @@
         }
       },
       "else": {
-        "not": {
-          "required": [
-            "prototype"
-          ]
+        "if": {
+          "properties": {
+            "ui_baseline_kind": {
+              "const": "existing-ui-baseline"
+            }
+          }
         },
-        "properties": {
-          "approvals": {
+        "then": {
+          "not": {
             "required": [
-              "existing_ui_baseline_ref"
-            ],
-            "not": {
-              "anyOf": [
-                {
-                  "required": [
-                    "prototype_ref"
-                  ]
-                },
-                {
-                  "required": [
-                    "visual_baseline_ref"
-                  ]
-                }
-              ]
+              "prototype"
+            ]
+          },
+          "properties": {
+            "approvals": {
+              "required": [
+                "existing_ui_baseline_ref"
+              ],
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "prototype_ref"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "visual_baseline_ref"
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "else": {
+          "not": {
+            "required": [
+              "prototype"
+            ]
+          },
+          "properties": {
+            "approvals": {
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "prototype_ref"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "visual_baseline_ref"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "existing_ui_baseline_ref"
+                    ]
+                  }
+                ]
+              }
             }
           }
         }

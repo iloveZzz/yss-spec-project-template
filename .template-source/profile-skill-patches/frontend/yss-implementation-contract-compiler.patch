@@ -235,7 +235,7 @@ index 74d436c5..73b8883f 100644
  | `yss-openapi-governance` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
 -| `yss-stage-decision` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
 +| `yss-prototype-stage` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
- | `yss-harness-upgrade` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
+ | `setup-yss-harness` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
  | `yss-research` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
 -| `yss-product-lifecycle` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
 -| `code-review` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |

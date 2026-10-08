@@ -287,6 +287,9 @@
                     },
                     "review_package": {
                       "type": "boolean"
+                    },
+                    "source_baseline": {
+                      "$ref": "#/$defs/specBaselineOrigin"
                     }
                   }
                 }
@@ -369,6 +372,9 @@
                     },
                     "review_package": {
                       "type": "boolean"
+                    },
+                    "source_baseline": {
+                      "$ref": "#/$defs/specBaselineOrigin"
                     }
                   }
                 }
@@ -451,6 +457,9 @@
                     },
                     "review_package": {
                       "type": "boolean"
+                    },
+                    "source_baseline": {
+                      "$ref": "#/$defs/specBaselineOrigin"
                     }
                   }
                 }
@@ -533,6 +542,9 @@
                     },
                     "review_package": {
                       "type": "boolean"
+                    },
+                    "source_baseline": {
+                      "$ref": "#/$defs/specBaselineOrigin"
                     }
                   }
                 }
@@ -615,6 +627,9 @@
                     },
                     "review_package": {
                       "type": "boolean"
+                    },
+                    "source_baseline": {
+                      "$ref": "#/$defs/specBaselineOrigin"
                     }
                   }
                 }
@@ -697,6 +712,9 @@
                     },
                     "review_package": {
                       "type": "boolean"
+                    },
+                    "source_baseline": {
+                      "$ref": "#/$defs/specBaselineOrigin"
                     }
                   }
                 }
@@ -779,6 +797,9 @@
                     },
                     "review_package": {
                       "type": "boolean"
+                    },
+                    "source_baseline": {
+                      "$ref": "#/$defs/specBaselineOrigin"
                     }
                   }
                 }
@@ -1044,6 +1065,9 @@
             },
             "review_package": {
               "type": "boolean"
+            },
+            "source_baseline": {
+              "$ref": "#/$defs/specBaselineOrigin"
             }
           }
         }
@@ -1146,6 +1170,9 @@
             },
             "review_package": {
               "type": "boolean"
+            },
+            "source_baseline": {
+              "$ref": "#/$defs/specBaselineOrigin"
             }
           }
         }
@@ -1174,6 +1201,34 @@
           "minLength": 1
         },
         "target_version": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "specBaselineOrigin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "receipt_ref",
+        "receipt_digest",
+        "source_ref",
+        "context_reconciliation_ref"
+      ],
+      "properties": {
+        "receipt_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "receipt_digest": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "source_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "context_reconciliation_ref": {
           "type": "string",
           "minLength": 1
         }

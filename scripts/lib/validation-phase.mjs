@@ -3,19 +3,21 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {createHash} from 'node:crypto';
 import {AsyncLocalStorage} from 'node:async_hooks';
+import {sourceContextRef} from './source-context-snapshot.mjs';
 
 // Only a live local call owns these snapshots. Neither receipts nor cache data confer approval.
 const phases=new AsyncLocalStorage();
 const checksum=bytes=>createHash('sha256').update(bytes).digest('hex');
-const filename=value=>path.resolve(value instanceof URL?fileURLToPath(value):value);
+const filename=value=>{const resolved=path.resolve(value instanceof URL?fileURLToPath(value):value);return path.basename(resolved)==='CONTEXT.md'?path.join(path.dirname(resolved),sourceContextRef(path.dirname(resolved),'CONTEXT.md')):resolved;};
 const error=(code,detail)=>Object.assign(new TypeError(`${code}: ${detail}`),{code});
 const current=()=>{const phase=phases.getStore();if(phase&&!phase.active)throw error('VALIDATION_PHASE_EXPIRED','验证阶段已经结束');if(phase?.signal?.aborted)throw error('VALIDATION_CANCELLED','验证阶段已取消');return phase;};
 const statShape=stat=>({type:stat.isSymbolicLink()?'link':stat.isDirectory()?'directory':stat.isFile()?'file':'other',mode:Number(stat.mode),ino:String(stat.ino),dev:String(stat.dev)});
 function observe(file,kind,read){const phase=current();if(!phase)return read();const key=`${kind}\0${file}`;if(!phase.observations.has(key))phase.observations.set(key,{file,kind,value:read()});return phase.observations.get(key).value;}
 function pathIdentity(file){let part=path.parse(file).root;for(const name of path.relative(part,file).split(path.sep).filter(Boolean)){part=path.join(part,name);const nameRef=part;observe(nameRef,'stat',()=>{try{return statShape(fs.lstatSync(nameRef));}catch(e){if(e.code==='ENOENT')return null;throw e;}});}}
 export function readFileSync(file,options){
- const phase=current();if(!phase||typeof file==='number'||(typeof options==='object'&&options?.flag&&options.flag!=='r'))return fs.readFileSync(file,options);
- const ref=filename(file);pathIdentity(ref);
+ if(typeof file==='number')return fs.readFileSync(file,options);
+ const ref=filename(file),phase=current();if(!phase||(typeof options==='object'&&options?.flag&&options.flag!=='r'))return fs.readFileSync(ref,options);
+ pathIdentity(ref);
  if(!phase.files.has(ref))phase.files.set(ref,Buffer.from(fs.readFileSync(ref)));
  const bytes=phase.files.get(ref),encoding=typeof options==='string'?options:options?.encoding;
  return encoding?bytes.toString(encoding):Buffer.from(bytes);

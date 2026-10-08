@@ -574,6 +574,7 @@ routing:
       - governance-release
   - patterns:
       - skills-lock.json
+      - yss-public-skills.json
       - .agents/skills/**
       - .codex/skills/**
       - .cursor/skills/**

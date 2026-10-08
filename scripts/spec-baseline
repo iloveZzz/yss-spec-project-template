@@ -1,0 +1,15 @@
+#!/usr/bin/env node
+import {parseArgs} from 'node:util';
+import {withValidationPhase} from './lib/validation-phase.mjs';
+import {read,safe} from './lib/strategic-handoff-io.mjs';
+import {verifySpecBaselineBinding,verifySpecBaselinePackage} from './lib/spec-baseline.mjs';
+try {
+  const {values,positionals}=parseArgs({options:{root:{type:'string',default:process.cwd()},checkpoint:{type:'string'},bundle:{type:'string'}},allowPositionals:true});
+  const [action]=positionals;
+  const result=await withValidationPhase({root:values.root,purpose:'spec-baseline',readOnly:action==='verify'},async()=>{
+    if(action==='verify'&&values.checkpoint){const proof=verifySpecBaselineBinding(read(safe(values.root,values.checkpoint)),{root:values.root});return {result:proof.result,next_work_unit:proof.next_work_unit,ready_for_agent:false};}
+    if(action==='verify'&&values.bundle){const {manifest}=verifySpecBaselinePackage(values.bundle);return {result:'spec-baseline-package-verified',baseline_id:manifest.baseline_id,version:manifest.version,bundle_digest:manifest.bundle_digest,ready_for_agent:false};}
+    throw new TypeError('用法: spec-baseline verify --checkpoint <ref> 或 --bundle <dir>（只读；持久写入使用 native yss handoff saved plan/apply）');
+  });
+  console.log(JSON.stringify(result,null,2));
+}catch(error){console.error(JSON.stringify({result:'blocked',error:error.message,ready_for_agent:false}));process.exitCode=1;}

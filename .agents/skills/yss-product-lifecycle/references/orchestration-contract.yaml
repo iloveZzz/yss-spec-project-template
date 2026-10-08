@@ -1,4 +1,25 @@
 schema_version: 1
+profile_guidance:
+  schema_version: 1
+  links_file: .yss-profile-links.json
+  required_capabilities: [ profile-guidance-v1, spec-baseline-v1 ]
+  routes:
+    spec:
+      targets: [ design, backend, frontend ]
+      default: continue-current-spec
+    design:
+      targets: [ backend, frontend ]
+    backend:
+      targets: [ frontend ]
+    frontend:
+      targets: []
+  evidence: explicit-profile-links-and-current-approved-inputs
+  emit_on: [ approved-baseline, completed-profile-responsibility, status-request, resume ]
+  recommendation: read-only-never-initialization-or-approval
+  confirmation: explicit-user-target-choice-before-prepare-or-import
+  unregistered_target: unknown-never-inferred-from-neighbor-directories
+  design_intake: frozen-spec-baseline-then-target-context-reconciliation
+  role_boundary: recommend-downstream-profile-without-dispatching-its-implementation
 document_writing:
   supporting_skill: i-have-adhd
   condition: lifecycle-document-output
@@ -1532,6 +1553,10 @@ consumer_entry_routes:
     backend-technical-design:
       source_work_unit: work-unit.technical-design
       target_work_unit: work-unit.technical-design
+  harness.frontend-delivery:
+    frontend-engineering-design:
+      source_work_unit: work-unit.frontend-engineering-design
+      target_work_unit: work-unit.frontend-engineering-design
 
 stage_tracking:
   contract: .template-spec/process/stage-tracking.md

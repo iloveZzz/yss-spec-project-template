@@ -56,6 +56,10 @@ assert.throws(() => validateRegistry(invalidPresentation, { baseline: null }), /
 
 const presenter = loadLifecyclePresenter(ROOT);
 assert.deepEqual(presenter.warnings, []);
+assert.equal(presenter.label('stage.product-design', {trace:false}), '产品设计与业务 Ticket 正式化');
+assert.equal(presenter.label('stage.ticket-formalization', {trace:false}), '实现切片拆分与合同准入');
+assert.equal(presenter.label('work-unit.ticket-decomposition', {trace:false}), '实现切片拆分与合同准入');
+assert.match(rendered, /在技术分析前完成适用业务 Ticket 正式化/);
 let count = 0;
 for (const collection of ['stages','gates','checks','artifacts','work_units','evidence']) {
   for (const record of registryContract[collection]) {

@@ -11,6 +11,8 @@ const check=process.argv.includes('--check');
 const rootOnly=process.argv.includes('--root-only');
 const targets=['submodules/yss-harness-design-agent','submodules/yss-harness-backend-agent','submodules/yss-harness-frontend-agent'];
 const shared=['scripts/strategic-consumer-entry','scripts/strategic-handoff','scripts/verify-strategic-handoff-consumption','tests/scenarios/verify-strategic-handoff-package-scenarios.mjs','scripts/verify-strategic-context-import','tests/scenarios/verify-strategic-context-import-scenarios.mjs','scripts/lib/context-contract.mjs','.template-spec/process/strategic-handoff-package.md','.template-spec/process/schemas/strategic-design-handoff.schema.json',...readdirSync(path.join(root,'scripts/lib')).filter(x=>x.startsWith('strategic-handoff-')||x==='strategic-handoff.mjs').map(x=>`scripts/lib/${x}`),...readdirSync(path.join(root,'.template-spec/process/schemas')).filter(x=>x.startsWith('strategic-handoff-')).map(x=>`.template-spec/process/schemas/${x}`),...readdirSync(path.join(root,'scripts/fixtures/strategic-handoff')).map(x=>`scripts/fixtures/strategic-handoff/${x}`)];
+shared.push('scripts/spec-baseline','scripts/lib/spec-baseline.mjs','.template-spec/process/spec-baseline.md','.template-spec/process/schemas/spec-baseline-package.schema.json','.template-spec/process/schemas/spec-baseline-import-receipt.schema.json');
+shared.push('scripts/fixtures/spec-baseline/fixture.mjs','scripts/fixtures/spec-baseline/package.mjs');
 shared.push('scripts/lib/user-decision-reuse.mjs','scripts/lib/user-decision.mjs','.template-spec/process/schemas/user-decision.schema.json','.template-spec/process/schemas/review-bundle.schema.json','scripts/fixtures/user-decision/build-fixture.mjs','scripts/lib/command-runner.mjs','scripts/lib/json-schema.mjs','scripts/lib/context-reconciliation.mjs','scripts/lib/source-context-snapshot.mjs','scripts/verify-context-reconciliation');
 shared.push('scripts/lib/decision-continuation.mjs');
 shared.push('scripts/lib/plan-review-control.mjs','scripts/plan-review-control','scripts/lib/plan-spec-entry.mjs','.template-spec/process/schemas/plan-review-control.schema.json');
@@ -103,8 +105,10 @@ const routingSource=readFileSync(path.join(root,routingContractRef));
 const consumerRoutes=parseDocument(routingSource.toString(),{uniqueKeys:true}).toJS({maxAliasCount:0}).consumer_entry_routes;
 const skillPreflight=parseDocument(routingSource.toString(),{uniqueKeys:true}).toJS({maxAliasCount:0}).skill_preflight;
 const userProgressReport=parseDocument(routingSource.toString(),{uniqueKeys:true}).toJS({maxAliasCount:0}).user_progress_report;
+const profileGuidance=parseDocument(routingSource.toString(),{uniqueKeys:true}).toJS({maxAliasCount:0}).profile_guidance;
 if(!consumerRoutes)throw new Error('源主控缺少 consumer_entry_routes');
 if(!userProgressReport)throw new Error('源主控缺少 user_progress_report');
+if(!profileGuidance)throw new Error('源主控缺少 profile_guidance');
 function targetRoutingRef(targetRoot){return targetRoot===root?routingContractRef:targetRoot.endsWith('design-agent')?'.agents/skills/yss-strategic-design/references/orchestration-contract.yaml':'.agents/skills/harness-orchestrator/references/orchestration-contract.yaml';}
 function projectedRouting(targetRoot){
  const bytes=readFileSync(path.join(targetRoot,targetRoutingRef(targetRoot))),document=parseDocument(bytes.toString(),{uniqueKeys:true});
@@ -114,11 +118,12 @@ function projectedRouting(targetRoot){
  if(!planReview)throw new Error('源主控缺少 Plan 收敛协议');
  const planReviewChanged=targetRoot.endsWith('design-agent')&&JSON.stringify(current.planning?.review_control)!==JSON.stringify(planReview);
  const progress={...userProgressReport,owner:targetRoot.endsWith('design-agent')?'yss-strategic-design':'harness-orchestrator',reference:userProgressReport.writing_reference};
- if(!planReviewChanged&&JSON.stringify(current.consumer_entry_routes)===JSON.stringify(consumerRoutes)&&JSON.stringify(current.skill_preflight)===JSON.stringify(skillPreflight)&&JSON.stringify(current.user_progress_report)===JSON.stringify(progress))return bytes;
+ if(!planReviewChanged&&JSON.stringify(current.consumer_entry_routes)===JSON.stringify(consumerRoutes)&&JSON.stringify(current.skill_preflight)===JSON.stringify(skillPreflight)&&JSON.stringify(current.user_progress_report)===JSON.stringify(progress)&&JSON.stringify(current.profile_guidance)===JSON.stringify(profileGuidance))return bytes;
  if(targetRoot.endsWith('design-agent'))document.setIn(['planning','review_control'],planReview);
  document.set('consumer_entry_routes',consumerRoutes);
  document.set('skill_preflight',skillPreflight);
  document.set('user_progress_report',progress);
+ document.set('profile_guidance',profileGuidance);
  return Buffer.from(document.toString());
 }
 function syncRouting(targetRoot){const dest=path.join(targetRoot,targetRoutingRef(targetRoot)),bytes=projectedRouting(targetRoot);if(!bytes.equals(readFileSync(dest))){differences.push(path.relative(root,dest));if(!check)writeFileSync(dest,bytes);}}
@@ -137,6 +142,14 @@ function syncOwnerProgress(targetRoot){
  const guidance=marker+'\n每轮返回或暂停按合同 `user_progress_report` 给出中文状态：当前阶段与本轮结果、下一阶段/单元与进入条件、问题/阻塞、已登记责任方、解除动作及复验、主控下一动作与用户待决定项。未知写“待核验”，负责人缺失写“未登记”；目标不代表批准，已授权工作继续执行。发送前核对证据、状态及结构化结果一致；写法见 `.template-spec/process/document-writing.md`。\n';
  const old=readFileSync(dest,'utf8'),pattern=new RegExp(marker+'\\n[^\\n]*(?:\\n|$)');
  if(old.includes(marker)&&!pattern.test(old))throw new Error('状态输出路由标记内容不明: '+dest);
+ const bytes=Buffer.from(old.includes(marker)?old.replace(pattern,guidance):old.trimEnd()+'\n\n'+guidance);
+ if(!bytes.equals(Buffer.from(old))){differences.push(path.relative(root,dest));if(!check)writeFileSync(dest,bytes);}
+}
+function syncOwnerProfileGuidance(targetRoot){
+ const owner=targetRoot.endsWith('design-agent')?'yss-strategic-design':'harness-orchestrator';
+ const ref='.agents/skills/'+owner+'/SKILL.md',dest=path.join(targetRoot,ref),marker='<!-- PROFILE_GUIDANCE -->';
+ const guidance=marker+'\n当前职责完成、状态查询或恢复时，消费合同 `profile_guidance` 与 `yss lifecycle status --root <当前工程> --checkpoint <当前checkpoint>` 给出下游 Profile 建议；不按邻近目录猜初始化状态。Spec 默认继续当前职责；没有当前战略交接时，可经用户明确选择交给独立 Design。Spec 或 Design 已形成经核验的当前战略交接后，按消费者路由建议 Backend、Frontend 或同时准备，两者仍在独立目录执行；设计完成声明不能替代交接及来源批准，显式交接失效时先解除阻断。目标 Design 接入已批准 Spec 走 `spec-baseline` 冻结包与 Receipt、目标 Context 对账后从设计继续，不重走 Plan，不复制源 checkpoint 批准到目标；目标 Backend / Frontend 使用战略接收记录及各自消费合同。建议不改变当前工作单元、不授予批准或执行，下游推荐不扩展本 Profile 的实现写范围。\n';
+ const old=readFileSync(dest,'utf8'),pattern=new RegExp(marker+'\\n[^\\n]*(?:\\n|$)');
  const bytes=Buffer.from(old.includes(marker)?old.replace(pattern,guidance):old.trimEnd()+'\n\n'+guidance);
  if(!bytes.equals(Buffer.from(old))){differences.push(path.relative(root,dest));if(!check)writeFileSync(dest,bytes);}
 }
@@ -191,6 +204,7 @@ for(const target of rootOnly?[]:targets){
  syncRouting(path.join(root,target));
  syncOwnerPreflight(path.join(root,target));
  syncOwnerProgress(path.join(root,target));
+ syncOwnerProfileGuidance(path.join(root,target));
  syncOwnerPlanReview(path.join(root,target));
  for(const ref of new Set(shared))sync(path.join(root,ref),path.join(root,target,ref),transformationFor(target,ref));
  lock(target,path.join(root,target));

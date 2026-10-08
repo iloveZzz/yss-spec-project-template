@@ -3,6 +3,7 @@
   "repository": "iloveZzz/yss-spec-dev-skills",
   "canonical_root": ".agents/skills",
   "skills": [
+    "setup-yss-harness",
     "yss-api-integration",
     "yss-audit-log",
     "yss-application",
@@ -42,6 +43,7 @@
       "title": "生命周期",
       "description": "用于 YSS 产品生命周期、路由和跨仓库协作的技能。",
       "skills": [
+        "setup-yss-harness",
         "yss-product-lifecycle",
         "yss-implementation-contract-compiler",
         "yss-skill-source-index-refresh"

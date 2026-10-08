@@ -3,10 +3,12 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
 import { parseDocument } from '../vendor/yaml.mjs';
+import {sourceContextRef} from './source-context-snapshot.mjs';
 
 export const digest = bytes => `sha256:${createHash('sha256').update(bytes).digest('hex')}`;
 export function safeFile(root, ref) {
   if (typeof ref !== 'string' || !ref || path.isAbsolute(ref) || /[\\\x00-\x1f:#?]/.test(ref) || ref.split('/').some(p=>!p||p==='.'||p==='..')) throw new Error(`非法治理引用: ${ref}`);
+  ref=sourceContextRef(root,ref);
   let file=fs.realpathSync(root);
   for(const part of ref.split('/')) {
     file=path.join(file,part);

@@ -1,10 +1,11 @@
 import { BUSINESS_TICKET_CAPABILITY, checkBusinessTickets, assertBusinessDeferredApprovals } from './business-tickets.mjs';
-import { scopedConsumerCapabilities } from './strategic-handoff-routing.mjs';
+import { scopedConsumerCapabilities,consumerEntry } from './strategic-handoff-routing.mjs';
 import { existsSync, lstatSync, readFileSync } from './validation-phase.mjs';
 import { mkdirSync, mkdtempSync, renameSync, rmSync, cpSync, realpathSync } from 'node:fs';
 import path from 'node:path';
 import { tmpdir } from 'node:os';
 import { ensure, canonical, digest, hash, json, parse, read, safe, relative, files, write, project, schema, schemaBatch, archive, ROOT, sourceApprovalPolicy, withSourceContextSnapshot } from './strategic-handoff-io.mjs';
+import {importedApprovalOrigin} from './spec-baseline.mjs';
 import { parseContextSource, parseContextContract, resolveContextTermRefs } from './context-contract.mjs';
 import { countersignRuleForGate } from './digital-human-roles.mjs';
 import { validateApprovalRecord } from './approval-record.mjs';
@@ -206,21 +207,31 @@ export async function inspectSource(root, handoffRef) {
   snapshot(handoff.source_context_snapshot,source); checkDelta(handoff,source);
   const strategy=read(safe(root,handoff.source.domain_strategy_ref.persisted_ref));
   const stage=read(safe(root,handoff.source.stage_decision_package_ref.persisted_ref));
+  const strategyOrigin=importedApprovalOrigin(root,handoff.source.domain_strategy_ref),stageOrigin=importedApprovalOrigin(root,handoff.source.stage_decision_package_ref);
   const [strategySchema,stageSchema]=versionSchema(handoff.schema_version,SOURCE_SCHEMAS,'Strategic Handoff source');
   schemaBatch([[strategy,strategySchema],[stage,stageSchema]]);
-  snapshot(strategy.context_snapshot,source); snapshot(stage.context_snapshot,source);
+  snapshot(strategy.context_snapshot,strategyOrigin?parseContextSource(readFileSync(safe(strategyOrigin.sourceRoot,'source-context.snapshot.md'),'utf8')):source);
+  snapshot(stage.context_snapshot,stageOrigin?parseContextSource(readFileSync(safe(stageOrigin.sourceRoot,'source-context.snapshot.md'),'utf8')):source);
   ensure(strategy.status==='approved' && stage.status==='approved', '战略合同/方案决策包尚未批准');
   ensure(strategy.domain_strategy_id===handoff.source.domain_strategy_ref.id && strategy.domain_version===handoff.source.domain_strategy_ref.version, '战略身份/版本不一致');
   ensure(stage.stage_decision_id===handoff.source.stage_decision_package_ref.id && stage.package_version===handoff.source.stage_decision_package_ref.version, '阶段包身份/版本不一致');
-  ensure(stage.domain_strategy_ref.domain_strategy_id===strategy.domain_strategy_id && stage.domain_strategy_ref.domain_version===strategy.domain_version && stage.domain_strategy_ref.status==='approved' && stage.domain_strategy_ref.persisted_ref===handoff.source.domain_strategy_ref.persisted_ref && stage.domain_strategy_ref.digest===digest(strategy), '阶段包引用的战略内容不一致');
+  ensure(stage.domain_strategy_ref.domain_strategy_id===strategy.domain_strategy_id && stage.domain_strategy_ref.domain_version===strategy.domain_version && stage.domain_strategy_ref.status==='approved' && stage.domain_strategy_ref.persisted_ref===(strategyOrigin?.origin.source_ref || handoff.source.domain_strategy_ref.persisted_ref) && stage.domain_strategy_ref.digest===digest(strategy), '阶段包引用的战略内容不一致');
   ensure(!(stage.unresolved_items || []).some(x=>x.type==='blocker'), '阶段包含 blocker');
   validateConsumerRoutes(handoff,stage);
   if(uiBaselineKind(handoff)==='existing-ui-baseline')ensure(stage.impact_assessment?.ui===false,'existing-ui-baseline 不支持 UI 影响，返回产品设计');
+  if(uiBaselineKind(handoff)==='not-applicable')ensure(stage.impact_assessment?.ui===false&&stage.impact_assessment?.frontend===false&&handoff.consumer_routes.find(route=>route.capability==='frontend-engineering-design')?.activation==='not-applicable','UI 基线 N/A 必须有已批准的无 UI/Frontend 影响与不适用消费者路线');
   const indexes=extractTraceability(strategy);
   const sourceRoles=read(safe(root,'.template-spec/agents/digital-human-roles.yaml'));
   const roles=sourceApprovalPolicy(sourceRoles);
   for (const [artifact, version, gateId] of [[strategy,strategy.domain_version,'check.domain-strategy-approved'],[stage,stage.package_version,'check.stage-decision-package-approved']]) {
-    if(artifact.approval) { const record=sourceApprovalRecord(read(safe(root,artifact.approval.approval_ref)),gateId);await sourceApproval(record,roles,root,{ref:artifact.approval.persisted_ref,approval_ref:artifact.approval.approval_ref,approval_context:artifact.approval.approval_context});ensure(artifact.approval.current_version===version,'资产内置批准版本过期'); }
+    const sourceBinding=artifact===strategy?handoff.source.domain_strategy_ref:handoff.source.stage_decision_package_ref;
+    const origin=importedApprovalOrigin(root,sourceBinding);
+    if(artifact.approval) {
+      const proofRoot=origin?.sourceRoot || root,proofRoles=origin?.rolesDoc || roles;
+      const record=sourceApprovalRecord(read(safe(proofRoot,artifact.approval.approval_ref)),gateId);
+      await withSourceContextSnapshot(proofRoot,()=>sourceApproval(record,proofRoles,proofRoot,{ref:artifact.approval.persisted_ref,approval_ref:artifact.approval.approval_ref,approval_context:artifact.approval.approval_context}));
+      ensure(artifact.approval.current_version===version,'资产内置批准版本过期');
+    }
   }
   // Source packages retain their published approval vocabulary. Never promote old approvals into current checkpoint gates.
   const currentPlan = (roles.gate_policy.dual_digital_human || []).some(rule => rule.gate === 'gate.plan-approved');
@@ -255,9 +266,14 @@ export async function inspectSource(root, handoffRef) {
       }
     } else actual=bytesDigest(readFileSync(safe(root,ref.persisted_ref)),approval.digest_kind);
     if(key!=='handoff')ensure(ref.digest===actual,`源资产摘要过期: ${key}`);
-    const record=sourceApprovalRecord(read(safe(root,approval.record_ref)),approval.gate_id);
+    const origin=key==='handoff'?null:importedApprovalOrigin(root,ref);
+    const proofRoot=origin?.sourceRoot || root,proofRoles=origin?.rolesDoc || roles;
+    const sourceGate=origin?.state.gates?.[approval.gate_id];
+    if(origin)ensure(sourceGate?.approval_ref&&approval.record_ref===`${origin.receipt.package_ref}/payload/files/${sourceGate.approval_ref}`,'继承批准记录必须绑定源 checkpoint 的当前批准');
+    const recordRef=origin?sourceGate.approval_ref:approval.record_ref;
+    const record=sourceApprovalRecord(read(safe(proofRoot,recordRef)),approval.gate_id);
     if(key==='existing_ui_baseline_ref')ensure(record.subject_ref===(ref.approval_context?.subject_ref || `${ref.persisted_ref}/${ref.manifest_ref}`),'既有 UI 用户决定必须绑定当前 manifest 的独立批准上下文');
-    await sourceApproval(record,roles,root,{ref:['visual_baseline_ref','existing_ui_baseline_ref'].includes(key)?`${ref.persisted_ref}/${ref.manifest_ref}`:ref.persisted_ref,approval_ref:approval.record_ref,approval_context:ref.approval_context});
+    await withSourceContextSnapshot(proofRoot,()=>sourceApproval(record,proofRoles,proofRoot,{ref:origin?origin.origin.source_ref:['visual_baseline_ref','existing_ui_baseline_ref'].includes(key)?`${ref.persisted_ref}/${ref.manifest_ref}`:ref.persisted_ref,approval_ref:recordRef,approval_context:ref.approval_context}));
     businessProofRefs.push(approval.record_ref,record.user_decision_ref,record.continuation_ref,record.decision_reuse_ref);
     ensure(record.gate_id===approval.gate_id,`批准门禁不匹配: ${key}`);
     ensure((record.artifact_bindings || []).some(x=>x.id===(ref.id||ref.baseline_id) && x.version===ref.version && x.digest===actual),`批准记录未绑定当前资产: ${key}`);
@@ -283,12 +299,17 @@ export async function inspectSource(root, handoffRef) {
   return {handoff,config,indexes,strategy,stage,business};
 }
 
-export function collectSourceClosure(root, handoffRef, handoff, config) {
+export function collectSourceClosure(root, handoffRef, handoff, config, {businessMode='formal'}={}) {
   const collected=new Map(), queue=[handoffRef,'CONTEXT.md','.template-spec/agents/digital-human-roles.yaml',...Object.values(handoff.source).map(x=>x.persisted_ref),...Object.values(config.approvals).map(x=>x.record_ref),...handoff.evidence_and_version_digests,...config.additional_files];
   const roles=sourceApprovalPolicy(read(safe(root,'.template-spec/agents/digital-human-roles.yaml')));
+  if(existsSync(path.join(root,'.yss.json')))queue.push('.yss.json');
+  const sealedPackages=Object.values(handoff.source).filter(value=>value?.approval_context?.source_baseline).map(value=>{
+    const proof=importedApprovalOrigin(root,value);queue.push(proof.origin.receipt_ref,proof.origin.context_reconciliation_ref,proof.receipt.working_set_ref,proof.receipt.package_ref);return proof.receipt.package_ref;
+  });
+  if(sealedPackages.length)queue.push('yss-project.yaml','.template-spec/process/harness-profile.yaml','.template-spec/process/lifecycle-registry.yaml');
   const boundedPlan=roles.gate_policy.review_execution?.review_bundles?.some(rule=>rule.aggregate_gate==='gate.plan-approved' && rule.aggregate_additional_review_task==='forbidden');
-  if(roles.user_decision_policy.required_capabilities?.includes(BUSINESS_TICKET_CAPABILITY)) {
-    const report=checkBusinessTickets({root,setRef:handoff.source.business_ticket_set_ref.persisted_ref,mode:'formal'});
+  if(handoff.source.business_ticket_set_ref && roles.user_decision_policy.required_capabilities?.includes(BUSINESS_TICKET_CAPABILITY)) {
+    const report=checkBusinessTickets({root,setRef:handoff.source.business_ticket_set_ref.persisted_ref,mode:businessMode});
     ensure(report.status==='passed','业务 Ticket 导出前来源已变化');
     queue.push(...report.inputs.map(item=>item.ref));
   }
@@ -297,6 +318,7 @@ export function collectSourceClosure(root, handoffRef, handoff, config) {
   const symbolic=config.reference_map || {};
   const enqueue=ref=> { if(symbolic[ref])queue.push(symbolic[ref]); else if(/^https?:\/\//i.test(ref))return; else if(ref.startsWith('evidence.'))throw new TypeError(`未解析 evidence ID: ${ref}`); else if(ref.includes('/') || /\.(?:md|yaml|json|html|png|txt|log)$/.test(ref))queue.push(ref); };
   function refs(value,key='') {
+    if(value?.source_baseline){enqueue(value.source_baseline.receipt_ref);enqueue(value.source_baseline.context_reconciliation_ref);return;}
     if(value?.plan_review_control) {
       const control=value.plan_review_control;
       queue.push('yss-project.yaml','.template-spec/process/schemas/plan-review-control.schema.json');
@@ -311,7 +333,7 @@ export function collectSourceClosure(root, handoffRef, handoff, config) {
     }
     if(value?.schema_version===2 && value.review_task_ref) queue.push('.template-spec/process/lifecycle-registry.yaml','.template-spec/agents/yss-skill-registry.yaml');
     if(Array.isArray(value)) { if(key==='evidence_refs') value.forEach(enqueue); else value.forEach(v=>refs(v,key)); }
-    else if(value && typeof value==='object') for(const [k,v]of Object.entries(value)) { if(k==='policy_ref'&&typeof v==='string')enqueue(v.split('#')[0]); else if(['review_task_ref','candidate_ref','registry_ref','approval_ref','persisted_ref','user_decision_ref','decision_reuse_ref','continuation_ref','plan_continuation_ref','scope_ref','subject_ref','delivery_ref','review_ref'].includes(k)&&typeof v==='string')enqueue(v); else if(k==='ref'&&typeof v==='string'&&!/^[a-z]+:\/\//i.test(v))enqueue(v); else refs(v,k); }
+    else if(value && typeof value==='object') for(const [k,v]of Object.entries(value)) { if(k==='policy_ref'&&typeof v==='string')enqueue(v.split('#')[0]); else if(['review_task_ref','candidate_ref','registry_ref','approval_ref','persisted_ref','user_decision_ref','decision_reuse_ref','continuation_ref','plan_continuation_ref','scope_ref','subject_ref','delivery_ref','review_ref','receipt_ref','package_ref','working_set_ref','context_reconciliation_ref'].includes(k)&&typeof v==='string')enqueue(v); else if(k==='ref'&&typeof v==='string'&&!/^[a-z]+:\/\//i.test(v))enqueue(v); else refs(v,k); }
   }
   let totalBytes = 0;
   while(queue.length) {
@@ -322,7 +344,7 @@ export function collectSourceClosure(root, handoffRef, handoff, config) {
     ensure(stat.isFile() && stat.size<=MAX_BYTES,`源文件类型/大小无效: ${ref}`);
     const bytes=readFileSync(full); collected.set(ref,bytes); totalBytes += bytes.length;
     ensure(collected.size<=20000 && totalBytes<=MAX_BYTES,'交接包大小超限');
-    const localBaseline=uiBaselineKind(handoff)==='existing-ui-baseline'&&ref.startsWith(`${uiBaselineRef(handoff).persisted_ref}/`);
+    const localBaseline=(uiBaselineKind(handoff)==='existing-ui-baseline'&&ref.startsWith(`${uiBaselineRef(handoff).persisted_ref}/`))||sealedPackages.some(prefix=>ref.startsWith(prefix+'/'));
     if(!localBaseline&&/\.(yaml|yml|json)$/.test(ref)) {
       const value=parse(bytes);
       if(boundedPlan && value.gate_id==='gate.plan-approved' && typeof value.decision==='string' && typeof value.actor_kind==='string') {
@@ -436,18 +458,37 @@ export async function openDelivery(input, action) {
   const allowed=new Set(['delivery-record.json','verification.json',...(record.zip?['package.zip']:[])]);
   for(const ref of files(root))ensure(ref.startsWith('package/')||allowed.has(ref),`交付目录存在未登记文件: ${ref}`);
   return openBundle(packageRoot,async bundle=>{
-    ensure(record.handoff.id===bundle.manifest.bundle_id&&record.handoff.version===bundle.manifest.version&&record.handoff.schema_version===bundle.handoff.schema_version,'delivery record 的 Handoff 身份不一致');
-    ensure(record.bundle_digest===bundle.manifest.bundle_digest&&record.manifest_ref==='package/manifest.json','delivery record 的包摘要或清单引用不一致');
+    assertDeliveryRecordBinding(record,bundle);
     ensure(verification.bundle_digest===bundle.manifest.bundle_digest&&verification.package_ref===record.package_ref&&verification.manifest_ref===record.manifest_ref&&verification.exit_code===0&&verification.result==='verified','delivery verification 与包不一致');
-    const handoffEntry=bundle.manifest.files.find(file=>file.original_ref===record.handoff.ref);
-    ensure(handoffEntry&&handoffEntry.sha256===record.handoff.sha256,'delivery record 的 Handoff 源摘要不一致');
-    const sourceAssets=Object.entries(bundle.handoff.source).sort(([a],[b])=>a.localeCompare(b)).map(([sourceKey,value])=>({source_key:sourceKey,id:value.id||value.baseline_id,version:value.version,ref:value.persisted_ref,digest:value.digest}));
-    ensure(own(sourceAssets,record.source_assets),'delivery record 的来源资产不一致');
-    ensure(own(bundle.handoff.consumer_routes.map(({route_id,capability,activation})=>({route_id,capability,activation})),record.consumer_routes),'delivery record 的消费者路由不一致');
-    const previous=bundle.manifest.previous_bundle?{handoff_id:bundle.manifest.previous_bundle.bundle_id,version:bundle.manifest.previous_bundle.version,bundle_digest:bundle.manifest.previous_bundle.digest}:null;
-    ensure(own(previous,record.previous_delivery),'delivery record 的上一版本身份不一致');
     return action({...bundle,deliveryRoot:root,packageRoot,record,recordBytes,verification});
   });
+}
+
+function assertDeliveryRecordBinding(record,bundle) {
+  schema(record,'.template-spec/process/schemas/strategic-handoff-delivery.schema.json');
+  ensure(record.handoff.id===bundle.manifest.bundle_id&&record.handoff.version===bundle.manifest.version&&record.handoff.schema_version===bundle.handoff.schema_version,'delivery record 的 Handoff 身份不一致');
+  ensure(record.bundle_digest===bundle.manifest.bundle_digest&&record.manifest_ref==='package/manifest.json','delivery record 的包摘要或清单引用不一致');
+  const handoffEntry=bundle.manifest.files.find(file=>file.original_ref===record.handoff.ref);
+  ensure(handoffEntry&&handoffEntry.sha256===record.handoff.sha256,'delivery record 的 Handoff 源摘要不一致');
+  const sourceAssets=Object.entries(bundle.handoff.source).sort(([a],[b])=>a.localeCompare(b)).map(([sourceKey,value])=>({source_key:sourceKey,id:value.id||value.baseline_id,version:value.version,ref:value.persisted_ref,digest:value.digest}));
+  ensure(own(sourceAssets,record.source_assets),'delivery record 的来源资产不一致');
+  ensure(own(bundle.handoff.consumer_routes.map(({route_id,capability,activation})=>({route_id,capability,activation})),record.consumer_routes),'delivery record 的消费者路由不一致');
+  const previous=bundle.manifest.previous_bundle?{handoff_id:bundle.manifest.previous_bundle.bundle_id,version:bundle.manifest.previous_bundle.version,bundle_digest:bundle.manifest.previous_bundle.digest}:null;
+  ensure(own(previous,record.previous_delivery),'delivery record 的上一版本身份不一致');
+}
+
+export function assertImportReceipt(root,receipt,bundle,capability) {
+  ensure(receipt.schema_version===(bundle.handoff.schema_version===5?3:bundle.handoff.schema_version===4?2:1),'Import Receipt 与 Handoff 协议版本不匹配，v5须使用真实交付记录 Receipt v3');
+  const base=`docs/handoffs/${receipt.bundle_id}/${receipt.version}`;
+  ensure(receipt.package_ref===`${base}/package`&&receipt.bundle_digest===bundle.manifest.bundle_digest,'Import Receipt 与当前包不一致');
+  if(receipt.schema_version>=2)schema(receipt,receipt.schema_version===3?'.template-spec/process/schemas/strategic-handoff-import-receipt-v3.schema.json':'.template-spec/process/schemas/strategic-handoff-import-receipt.schema.json');
+  if(receipt.schema_version!==3)return;
+  ensure(receipt.source_delivery_record_ref===`${base}/source-delivery-record.json`,'交付记录引用与收据路径不一致');
+  const bytes=readFileSync(safe(root,receipt.source_delivery_record_ref));ensure(hash(bytes)===receipt.source_delivery_record_sha256,'交付记录字节漂移');
+  assertDeliveryRecordBinding(parse(bytes),bundle);
+  const profileRef=path.join(root,'.template-spec/process/harness-profile.yaml'),physicalProfile=existsSync(profileRef)?read(profileRef).profile_id:'yss-full-lifecycle';
+  const selected=capability?[capability]:receipt.selected_consumer_capabilities;
+  for(const id of selected){const route=bundle.handoff.consumer_routes.find(row=>row.capability===id);ensure(route&&receipt.selected_consumer_capabilities.includes(id),'收据未选择当前消费者能力');consumerEntry(root,id,route.entry_work_unit);ensure(receipt.target_profile_id===physicalProfile,'收据消费者与当前Profile不一致');const bound=receipt.routes.find(row=>row.capability===id);ensure(bound?.route_id===route.route_id&&bound.activation===route.activation,'收据消费者路由与原交付不一致');}
 }
 
 export async function finalizeDelivery({sourceRoot,handoffRef,zip=false,previous}) {
@@ -487,9 +528,10 @@ export async function importBundle({bundle,targetRoot}) {
     if(existsSync(dest)) {
       const receipt=read(safe(dest,'import-receipt.json'));
       ensure(receipt.bundle_digest===b.manifest.bundle_digest,'同 ID/version 内容冲突');
-      await openBundle(safe(dest,'package'),()=>null);
+      await openBundle(safe(dest,'package'),existing=>assertImportReceipt(target,receipt,existing));
       return {result:'already-imported',receipt_ref:`${rel}/import-receipt.json`};
     }
+    ensure(b.handoff.schema_version!==5||b.recordBytes,'Handoff v5 接入必须消费正式 delivery wrapper 与 Receipt v3');
     const terms=[];
     for(const operation of ['added','updated','deprecated'])for(const expected of b.handoff.context_delta[operation]) {
       const actual=context.terms_by_ref.get(expected.term_ref);

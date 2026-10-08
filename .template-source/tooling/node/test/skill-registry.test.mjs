@@ -73,6 +73,13 @@ test("unknown layer is rejected", () => {
   assert.throws(() => validateSkillRegistry(data), /未知 layer/);
 });
 
+test("retired harness entry reroutes new requests without a discovery alias", async () => {
+  const { resolveSkillForNewUse } = await import("../../../../scripts/lib/skill-registry.mjs");
+  const data = registry();
+  assert.equal(resolveSkillForNewUse(data, "setup-yss-harness").id, "setup-yss-harness");
+  assert.throws(() => resolveSkillForNewUse(data, "yss-harness-upgrade"), error => error.code === "skill-retired" && error.details.replacement_skill === "setup-yss-harness");
+});
+
 test("shadow registry cannot be marked as runtime consumed", () => {
   const data = registry({ status: "shadow", runtime_policy: { consumed_by_compiler: true, consumed_by_lifecycle: false, discovery_enforced: false } });
   assert.throws(() => validateSkillRegistry(data), /shadow 注册表不得被实现合同编译器/);

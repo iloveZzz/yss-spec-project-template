@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "kind",
+    "baseline_id",
+    "version",
+    "bundle_digest",
+    "source",
+    "files"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "kind": {
+      "const": "spec-baseline"
+    },
+    "baseline_id": {
+      "type": "string",
+      "pattern": "^spec-baseline\\.[a-zA-Z0-9][a-zA-Z0-9._-]*$"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^v[1-9][0-9]*$"
+    },
+    "bundle_digest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "profile_id",
+        "feature_id",
+        "checkpoint_ref",
+        "checkpoint_digest",
+        "template_commit",
+        "spec_ref",
+        "spec_digest",
+        "product_design_required",
+        "plan_ref",
+        "domain_strategy_ref",
+        "stage_decision_package_ref",
+        "business_ticket_set_ref"
+      ],
+      "properties": {
+        "profile_id": {
+          "const": "harness.spec-template"
+        },
+        "feature_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "checkpoint_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "checkpoint_digest": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "template_commit": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{40}$"
+        },
+        "spec_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "spec_digest": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "product_design_required": {
+          "type": "boolean"
+        },
+        "plan_ref": {
+          "type": "string"
+        },
+        "domain_strategy_ref": {
+          "type": "string"
+        },
+        "stage_decision_package_ref": {
+          "type": "string"
+        },
+        "business_ticket_set_ref": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "files": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 20000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "original_ref",
+          "sha256",
+          "size_bytes"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "original_ref": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "size_bytes": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 104857600
+          }
+        }
+      }
+    }
+  }
+}

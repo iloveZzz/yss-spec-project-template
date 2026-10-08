@@ -159,7 +159,7 @@ export async function importBackendDelivery({bundle,targetRoot}) {
     const strategic=await importBundle({bundle:safe(b.source,b.delivery.strategic_bundle_ref),targetRoot:target});
     const strategicReceipt=read(safe(target,strategic.receipt_ref));
     const strategicBase=path.posix.dirname(strategic.receipt_ref);
-    const frontendRoute=strategicReceipt.schema_version===2?strategicReceipt.routes.find(route=>route.capability==='frontend-engineering-design'):null;
+    const frontendRoute=[2,3].includes(strategicReceipt.schema_version)?strategicReceipt.routes.find(route=>route.capability==='frontend-engineering-design'):null;
     const traceRef=frontendRoute?.artifact_refs.find(item=>item.endsWith('frontend-traceability-draft.json'))||`${strategicBase}/tactical-traceability-draft.json`;
     const trace=read(safe(target,traceRef));
     mkdirSync(path.dirname(destination),{recursive:true});
@@ -169,7 +169,7 @@ export async function importBackendDelivery({bundle,targetRoot}) {
       const receipt={schema_version:1,delivery_id:b.delivery.delivery_id,version:b.delivery.version,bundle_digest:b.manifest.bundle_digest,package_ref:`${ref}/package`};
       write(staging,'import-receipt.json',json(receipt));
       const strategicHandoff={import_receipt_ref:strategic.receipt_ref,bundle_digest:strategicReceipt.bundle_digest,...(trace.route_id?{route_id:trace.route_id}:{}),context_reconciliation_ref:'',rows:trace.rows.map(({tactical_refs,test_seam_refs,...row})=>({...row,frontend_case_refs:[]}))};
-      if(strategicReceipt.schema_version===2){
+      if([2,3].includes(strategicReceipt.schema_version)){
         ensure(frontendRoute,'Import Receipt 未选择 frontend-engineering-design 能力');
         const preflightRef=frontendRoute.artifact_refs.find(item=>item.endsWith('frontend-strategic-preflight-draft.json'));ensure(preflightRef,'缺少 Frontend Strategic Preflight 草案');
         const preflight=read(safe(target,preflightRef));

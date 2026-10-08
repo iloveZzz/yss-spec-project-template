@@ -10,6 +10,10 @@ Spec 综合同时起草业务 Ticket；完成条件是可读取的集合和 FR/A
 
 研发可以在技术分析期间形成实现 Slice 草案。正式实现 Slice 仍需当前工程契约、实现仓库准备、Slice 合同批准和完整就绪检查。业务票只能为 `draft` 或 `ready-for-human`，不能授予实现权限。业务票与阶段工作项即使移动到 `issues/` 仍不能作为实现票。
 
+主阶段导航将业务正式化呈现在“产品设计与业务 Ticket 正式化”，位于“系统 / 数据架构与工程契约”之前；无产品设计影响时从 Spec 直接进入业务正式化。原 `stage.ticket-formalization` 展示为“实现切片拆分与合同准入”，仅承接工程前置闭合后的实现切片与合同准入。两个 Ticket 工作单元保持各自输入、证据和就绪边界；阶段展示顺序不代替工作单元路由。
+
+架构可行性、重大数据风险和非功能约束可在 Plan / Spec 中提前调查；详细工程设计与契约冻结围绕当前已确认交付范围，不要求先完成未来业务范围的设计。
+
 ## 文件合同
 
 功能包中每票一份 `business-tickets/BT-<id>.md`，集合为 `business-ticket-set.yaml`；实现票保留 `issues/`。使用共享 business-ticket、business-ticket-set、business-ticket-review 模板及 `schemas/business-tickets-v1.schema.json`。集合只保存引用、版本、原字节 SHA-256 和覆盖处置；Spec、map、父 Ticket、checkpoint 均引用同一集合。先固定 Spec 内容再计算其摘要；Spec 只写集合路径，不能嵌入集合摘要造成循环。
