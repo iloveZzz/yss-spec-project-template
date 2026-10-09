@@ -118,7 +118,7 @@ function prepare({root=process.cwd(),ticket_ref,checkpoint_ref,sources={},refine
     scope.full_reroute_triggers=[...new Set([...(compilerRules.full_reroute_triggers||[]),...(scope.full_reroute_triggers||[])])];
     for(const impact of input.extensions?.backend?.component_impacts||[])if(!compilerRules.impact_to_capabilities[impact])throw new TypeError(`未知组件影响: ${impact}`);
     const componentCapabilities=(input.extensions?.backend?.component_impacts||[]).flatMap(impact=>compilerRules.impact_to_capabilities[impact]||[]);
-    const compileBase={root,slice_id:input.slice_id,conditions:input.conditions||[]};
+    const compileBase={root,slice_id:input.slice_id,checkpoint_ref,spec_ref:bound('spec')?.ref,conditions:input.conditions||[]};
     let compiled;
     if(input.extensions?.cross_repo?.repository_bindings) {
       const repositories=sliceRepositories({basis,scope,extensions:input.extensions,work_units:input.work_units,resolution:{}},readSliceSources({basis},{root}),{root});

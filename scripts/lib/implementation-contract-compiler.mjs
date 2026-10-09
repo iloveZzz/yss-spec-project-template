@@ -107,12 +107,14 @@ export function compileImplementationContract({
   root = ROOT,
   slice_id,
   frontend_delivery,
+  checkpoint_ref,
+  spec_ref,
   technical_design,
   readOnly = false
 }) {
   assertV3(registry, compilerContract);
   const recompilationExecution=approved_slice?createApprovedRecompilationContext(approved_slice,{root,work_unit_id}):undefined;
-  const deliveryInput = enforceFrontendDelivery({ slice_id, frontend_delivery }, { root, phase: 'contract', sliceRef: approved_slice?.ref, workUnitId: work_unit_id });
+  const deliveryInput = enforceFrontendDelivery({ slice_id, frontend_delivery, checkpoint_ref, spec_ref }, { root, phase: 'contract', sliceRef: approved_slice?.ref, workUnitId: work_unit_id });
   if (!Array.isArray(recipeIds) || !Array.isArray(requiredCapabilities) || !Array.isArray(conditions)) {
     fail("recipeIds、requiredCapabilities 与 conditions 必须是数组");
   }

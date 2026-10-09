@@ -158,7 +158,7 @@ export async function localImplementationFixture({nativeSeed,backendRequired=tru
      primary_skill:'yss-frontend-scaffold-generator',supporting_skills:[],tdd_mode:'behavior-tdd',project_root:owner.project,
      allowed_write_paths:['src/frontend'],verification_refs:['frontend'],acceptance_refs:['AC-001']});
     const compiled=nativeReaders.compiler.compileDefaultImplementationContract({root,recipeIds:[...(backendRequired?contract.resolution.recipe_ids:[]),'frontend.vue3-scaffold'],
-     slice_id:contract.slice_id,architecture_identity:owner.identity,architecture_evidence:owner.bindings,technical_design:owner.technical_design});
+     slice_id:contract.slice_id,checkpoint_ref:checkpointRef,architecture_identity:owner.identity,architecture_evidence:owner.bindings,technical_design:owner.technical_design});
     if(compiled.frontend_delivery)throw Error('Local approved assets must not manufacture a frontend acceptance receipt');
     for(const key of ['required_capabilities','required_skills','recipe_ids','registry_digest','compiler_contract_digest','component_bindings','component_bindings_digest'])if(compiled[key]!==undefined)contract.resolution[key]=compiled[key];
    }});
