@@ -6,12 +6,12 @@ import { parse } from './lib/strategic-handoff-io.mjs';
 import { completeBackendDelivery, verifyBackendDeliveryTerminal } from './lib/backend-delivery-terminal.mjs';
 
 try {
-  const { values, positionals } = parseArgs({ allowPositionals: true, options: { root: { type: 'string' }, input: { type: 'string' } } });
-  if (positionals.length !== 1 || !values.root) throw new TypeError('用法: complete-backend-delivery complete --root <governance> --input <plan.json> | verify --root <governance>');
+  const { values, positionals } = parseArgs({ allowPositionals: true, options: { root: { type: 'string' }, input: { type: 'string' }, checkpoint: { type: 'string' } } });
+  if (positionals.length !== 1 || !values.root) throw new TypeError('用法: complete-backend-delivery complete --root <governance> --input <plan.json> [--checkpoint <ref>] | verify --root <governance> [--checkpoint <ref>]');
   const root = path.resolve(values.root);
   let result;
-  if (positionals[0] === 'verify' && !values.input) result = await verifyBackendDeliveryTerminal(root);
-  else if (positionals[0] === 'complete' && values.input) result = await completeBackendDelivery(root, parse(readFileSync(values.input)));
+  if (positionals[0] === 'verify' && !values.input) result = await verifyBackendDeliveryTerminal(root, {checkpointRef: values.checkpoint});
+  else if (positionals[0] === 'complete' && values.input) result = await completeBackendDelivery(root, parse(readFileSync(values.input)), {checkpointRef: values.checkpoint});
   else throw new TypeError('需要 complete 或 verify 及匹配参数');
   process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
 } catch (error) { process.stderr.write(`${JSON.stringify({ result: 'blocked', error: error.message })}\n`); process.exitCode = 1; }

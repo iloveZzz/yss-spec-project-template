@@ -11,6 +11,12 @@ import './verification-gates.test.mjs';
 import './verification-baseline.test.mjs';
 import './verification-qualification.test.mjs';
 const pilot='.agents/skills/yss-research/SKILL.md';
+test('目标意图的候选当前性及其消费者必须选择真实 Git 边界检查', () => {
+ for (const ref of ['scripts/lib/implementation-candidate-current.mjs', 'scripts/lib/backend-review.mjs', 'scripts/lib/backend-standards-coverage.mjs', 'scripts/lib/existing-backend-architecture.mjs', 'tests/implementation-candidate-current.test.mjs']) {
+  const plan = planTemplateVerification({changedFiles: [ref]});
+  assert.ok(plan.commands.some(item => item.id === 'check.implementation-candidate-current'), ref);
+ }
+});
 test('shadow executes exactly legacy; explains unrelated scenario exclusions',()=>{
  const legacy=planTemplateVerification({changedFiles:[pilot],selection:'legacy'}),shadow=planTemplateVerification({changedFiles:[pilot],selection:'shadow'});
  assert.deepEqual(shadow.commands,legacy.commands);assert.equal(shadow.selection.eligible,true);assert.equal(shadow.selection.omitted.length,2);
@@ -64,13 +70,14 @@ test('选中的 Schema 行为测试能发现全部接受的错误实现', t => {
   assert.ok(selected, '必须选择实际拒绝行为测试');
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'selection-mutant-'));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
-  for (const ref of ['scripts/lib/json-schema.mjs', 'scripts/lib/validation-phase.mjs', 'scripts/fixtures/contract-efficiency/schema-rejection.test.mjs']) {
+  for (const ref of ['scripts/lib/json-schema.mjs', 'scripts/lib/validation-phase.mjs', 'scripts/lib/source-context-snapshot.mjs', 'scripts/fixtures/contract-efficiency/schema-rejection.test.mjs']) {
     fs.mkdirSync(path.dirname(path.join(root, ref)), { recursive: true });
     fs.copyFileSync(path.join(ROOT, ref), path.join(root, ref));
   }
   const env = { ...process.env }; delete env.NODE_TEST_CONTEXT;
   const run = () => spawnSync(process.execPath, ['--test', 'scripts/fixtures/contract-efficiency/schema-rejection.test.mjs'], { cwd: root, env, encoding: 'utf8' });
-  assert.equal(run().status, 0);
+  const initial = run();
+  assert.equal(initial.status, 0, `${initial.stdout}${initial.stderr}`);
   const file = path.join(root, 'scripts/lib/json-schema.mjs'), original = fs.readFileSync(file, 'utf8');
   const changed = original.replace('return jobs.map((_,i)=>structuredClone(cached.get(i)));', "return jobs.map(() => ({valid: true, error: ''}));");
   assert.notEqual(changed, original);

@@ -7,6 +7,7 @@ import { loadDigitalHumanRoles, countersignRuleForGate } from './digital-human-r
 import {loadApprovalRecord} from './approval-record-io.mjs';
 import {assertCurrentApproval, approvalExpectationFromState} from './approval-current.mjs';
 import {assertPlanAggregateApproval} from './plan-spec-entry.mjs';
+import {assertHandoffEvidenceRef} from './strategic-handoff-io.mjs';
 
 const fail = message => { throw new TypeError(`lifecycle-control-blocked: ${message}`); };
 
@@ -20,10 +21,13 @@ function validateGateChecks(gateId, state, { root = ROOT, registry = loadRegistr
   const controls = new Map(registry.checks.map(item => [item.id, item]));
   const seen = new Set();
   const evidence = item => {
+    const factualRef = ref => {try {assertHandoffEvidenceRef(ref);} catch (error) {fail(error.message);}};
+    for (const ref of [item.subject_ref,item.approval_ref]) if (typeof ref === 'string') factualRef(ref);
     if (!Array.isArray(item.basis) || !item.basis.length) fail('缺少当前证据摘要');
     const refs = new Set();
     for (const asset of item.basis) {
       if (!asset?.ref || refs.has(asset.ref)) fail('证据引用缺失或重复');
+      factualRef(asset.ref);
       refs.add(asset.ref);
       const bytes = readFileSync(path.resolve(root, asset.ref));
       if (createHash('sha256').update(bytes).digest('hex') !== asset.digest) fail(`证据过期: ${asset.ref}`);

@@ -15,6 +15,7 @@ shared.push('scripts/spec-baseline','scripts/lib/spec-baseline.mjs','.template-s
 shared.push('scripts/fixtures/spec-baseline/fixture.mjs','scripts/fixtures/spec-baseline/package.mjs');
 shared.push('scripts/lib/user-decision-reuse.mjs','scripts/lib/user-decision.mjs','.template-spec/process/schemas/user-decision.schema.json','.template-spec/process/schemas/review-bundle.schema.json','scripts/fixtures/user-decision/build-fixture.mjs','scripts/lib/command-runner.mjs','scripts/lib/json-schema.mjs','scripts/lib/context-reconciliation.mjs','scripts/lib/source-context-snapshot.mjs','scripts/verify-context-reconciliation');
 shared.push('scripts/lib/decision-continuation.mjs');
+shared.push('scripts/lib/implementation-candidate-current.mjs','scripts/lib/drift-report.mjs','scripts/lib/content-identity.mjs');
 shared.push('scripts/lib/plan-review-control.mjs','scripts/plan-review-control','scripts/lib/plan-spec-entry.mjs','.template-spec/process/schemas/plan-review-control.schema.json');
 shared.push('scripts/lib/approval-record.mjs','scripts/lib/approval-current.mjs','scripts/lib/approval-record-io.mjs','scripts/lib/approval-consumption.mjs','scripts/lib/approval-checkpoint-discovery.mjs','scripts/lib/lifecycle-controls.mjs','scripts/lib/review-capabilities.mjs','scripts/lib/review-package.mjs','scripts/prepare-review-package','.template-spec/templates/review-bundle-template.yaml','.template-spec/templates/approval-record-template.yaml');
 shared.push('scripts/lib/structured-assets.mjs','scripts/lib/asset-transactions.mjs','scripts/lib/asset-migration.mjs','scripts/lib/asset-command.mjs','scripts/lib/plan-stage-coverage.mjs','scripts/check-plan-stage-coverage','.template-spec/process/structured-assets.md','.template-spec/process/schemas/approval-record.schema.json','.template-spec/process/templates/lifecycle-checkpoint-template.json','.template-spec/templates/approval-record-template.json');
@@ -57,6 +58,7 @@ function transformationFor(target,ref){
 function sync(source,dest,transformation='identity'){const bytes=transformations[transformation](readFileSync(source));if(!existsSync(dest)||!bytes.equals(readFileSync(dest))){differences.push(path.relative(root,dest));if(!check){mkdirSync(path.dirname(dest),{recursive:true});writeFileSync(dest,bytes);}}if(!check&&path.basename(path.dirname(dest))==='scripts'&&!path.extname(dest))chmodSync(dest,0o755);}
 const digestBytes=bytes=>`sha256:${createHash('sha256').update(bytes).digest('hex')}`;
 shared.push('scripts/lib/lifecycle-execution-scope.mjs','scripts/lib/instance-metadata.mjs','scripts/lib/harness-execution-scope.mjs');
+shared.push('scripts/lib/lifecycle-progression.mjs','.template-spec/process/schemas/progression-target.schema.json','.template-spec/process/lifecycle-progression.md');
 shared.push('scripts/inspect-skill-discovery','scripts/lib/skill-discovery.mjs');
 // Diagnostic-only content inspection: shared authoring format, no lifecycle gate.
 shared.push('scripts/vendor/yaml.mjs','scripts/vendor/manifest.json','scripts/vendor/NOTICES.md');

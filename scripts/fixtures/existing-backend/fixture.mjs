@@ -5,13 +5,18 @@ import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {parse} from '../../lib/strategic-handoff-io.mjs';
-import {countersignRuleForGate} from '../../lib/digital-human-roles.mjs';
+import {countersignRuleForGate,collectCountersignGateIds} from '../../lib/digital-human-roles.mjs';
 import {existingArchitectureDigest as digest} from '../../lib/existing-backend-architecture.mjs';
 import {componentCapabilityDigest,loadBackendPlatforms,platformBinding,platformDigest,platformRecipeDigest} from '../../lib/backend-platform.mjs';
 import {platformSourceFingerprint} from '../../lib/backend-platform-provenance.mjs';
 export const sha=x=>`sha256:${createHash('sha256').update(x).digest('hex')}`;
-export function fixture(family='layered-mvc'){
+export function fixture(family='layered-mvc',{nativeSeed}={}){
  const root=fs.mkdtempSync(path.join(os.tmpdir(),'yss-existing-regression-')), project=path.join(root,'project');fs.mkdirSync(project);
+ if(nativeSeed){
+  const seedRoot=path.resolve(nativeSeed);
+  // This relocated synthetic fixture consumes assets, not the source root's transaction journals.
+  fs.cpSync(seedRoot,root,{recursive:true,filter:source=>path.relative(seedRoot,source)!==path.join('.yss','transactions')});
+ }
  const write=(ref,value)=>{const target=path.join(root,ref);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,typeof value==='string'?value:JSON.stringify(value,null,2)+'\n');return{ref,digest:sha(fs.readFileSync(target))};};
  const git=(...args)=>execFileSync('git',['-C',project,...args],{encoding:'utf8'}).trim();
  git('init','-q');git('config','user.name','Synthetic Test');git('config','user.email','fixture@example.invalid');git('remote','add','origin','https://example.invalid/fixture.git');
@@ -50,8 +55,9 @@ export function fixture(family='layered-mvc'){
  const common={repository_id:identity.repository_id,project_id:identity.project_id,architecture_identity:identity};
  const manifest={schema_version:1,kind:'existing-project-observation',...common,source,build_units:units};
  const baseline={schema_version:1,kind:'existing-engineering-baseline',id:'engineering.fixture',version:'v1',status:'current',author:'fixture-drafter',boundary_scope:['src/main/java'],...common,source,build_units:units,verification_commands:['./mvnw test'],databases:{verification:{status:'not-applicable',reason:'compiler fixture only'},production:{status:'unknown'}}};
- const rolesBytes=fs.readFileSync(new URL('../../../.template-spec/agents/digital-human-roles.yaml',import.meta.url),'utf8'),rolesDoc=parse(rolesBytes);
- const reviewGate=['check.architecture-reviewed','gate.technical-design-approved'].find(gate=>countersignRuleForGate(rolesDoc.gate_policy,gate));
+ const rolesBytes=fs.readFileSync(nativeSeed?path.join(root,'.template-spec/agents/digital-human-roles.yaml'):new URL('../../../.template-spec/agents/digital-human-roles.yaml',import.meta.url),'utf8'),rolesDoc=parse(rolesBytes);
+ const declaredReviews=new Set(collectCountersignGateIds(rolesDoc.gate_policy));
+ const reviewGate=['check.architecture-reviewed','gate.technical-design-approved'].find(gate=>declaredReviews.has(gate));
  if(!reviewGate)throw new Error('Synthetic architecture fixture requires the installed source architecture review policy');
  const reviewer=countersignRuleForGate(rolesDoc.gate_policy,reviewGate).countersigners.at(-1);
  const evidence=write('architecture-review-evidence.log','Synthetic boundary review fixture. Not a real approval.\n');

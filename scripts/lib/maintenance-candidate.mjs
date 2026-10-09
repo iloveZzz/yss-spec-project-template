@@ -12,7 +12,7 @@ const CANDIDATE_FILES = ["candidate-manifest.yaml", "candidate.bin", "tracked.di
 function fail(message) { throw new TypeError(message); }
 function ensure(condition, message) { if (!condition) fail(message); }
 function git(args, root, encoding = "utf8") {
-  const result = spawnSync("git", args, { cwd: root, encoding, maxBuffer: MAX_BUFFER });
+  const result = spawnSync("git", ["--no-optional-locks", "-c", "diff.autoRefreshIndex=false", ...args], { cwd: root, encoding, env: {...process.env, GIT_OPTIONAL_LOCKS: "0"}, maxBuffer: MAX_BUFFER });
   if (result.status !== 0) fail((typeof result.stderr === "string" ? result.stderr : result.stderr?.toString()).trim() || `git ${args.join(" ")} 执行失败`);
   return result.stdout;
 }

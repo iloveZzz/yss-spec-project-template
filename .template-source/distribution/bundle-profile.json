@@ -272,6 +272,7 @@
       ".template-spec/agents/issue-tracker.md",
       ".template-spec/agents/triage-labels.md",
       ".template-spec/process/lifecycle-registry.yaml",
+      ".template-spec/process/schemas/lifecycle-registry.schema.json",
       ".template-spec/process/lifecycle-registry-baseline.json",
       ".template-spec/process/lifecycle-registry-baseline-v1.json",
       ".template-spec/process/lifecycle-artifact-map.md",
@@ -310,7 +311,12 @@
       ".template-spec/templates/review-bundle-template.yaml",
       ".template-spec/templates/review-report-template.md",
       ".template-spec/user-guide/用户手册.md",
-      ".template-spec/user-guide/unified-cli.md"
+      ".template-spec/user-guide/unified-cli.md",
+      ".template-spec/process/lifecycle-progression.md",
+      ".template-spec/process/schemas/progression-target.schema.json",
+      ".template-spec/process/spec-baseline.md",
+      ".template-spec/process/schemas/spec-baseline-package.schema.json",
+      ".template-spec/process/schemas/spec-baseline-import-receipt.schema.json"
     ],
     "scripts": [
       "scripts/verify-project-instance",
@@ -335,7 +341,8 @@
       "scripts/project-ci",
       "scripts/project-ci-transition",
       "scripts/lifecycle-status",
-      "scripts/gitworks"
+      "scripts/gitworks",
+      "scripts/spec-baseline"
     ]
   },
   "stages": {

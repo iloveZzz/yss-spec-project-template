@@ -67,6 +67,7 @@ export function renderLifecycleStatus(result) {
   const ownerNote = issue => ({'work-unit': '（工作单元负责人；问题责任方待确认）', 'checkpoint-pause': '（暂停记录责任方；问题责任方待确认）'}[issue.owner_scope] ?? '');
   return [
     `当前阶段：${view.stage}。登记状态：${view.checkpoint_status}。`,
+    ...(view.progression ? [`本次目标：${view.progression.public_name ?? view.progression.target}；核验结果：${({pending: '尚未到达', reached: '已达到', 'not-applicable': '不适用', blocked: '当前证据受阻'})[view.progression.status] ?? '待核验'}。专职职责终点与整个业务验收分别判断。`] : []),
     `下一阶段（路由目标）：${view.next_stage ?? '待核验'}。${view.next_stage_reason ?? '阶段归属未核验；不代表已批准或可进入'}。`,
     ...(view.plan_review ? [
       `Plan 专业审查：累计 ${view.plan_review.professional_attempts ?? '待核验'} 次，已完成 ${view.plan_review.completed_attempts ?? '待核验'} 次；常规剩余 ${view.plan_review.remaining_regular ?? '待核验'} 次，异常剩余 ${view.plan_review.remaining_exception ?? '待核验'} 次。`,

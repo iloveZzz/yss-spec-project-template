@@ -5,6 +5,7 @@
 
 | 稳定 ID | 范围 | 工作单元 | 输入 | 输出 | 完成条件 |
 |---|---|---|---|---|---|
+| `work-unit.strategic-design-handoff` | project-instance | 业务方案交接 | 当前批准的 Plan、Spec、适用产品设计、正式业务 Ticket 与显式外部 Backend 或 Frontend 实现消费者。 | Handoff v5 不可变交付目录、delivery record 和整包 verification。 | 源角色独立审查与原始批准当前；finalize 成包且实际整包 verify 通过，写入 checkpoint。接收 Receipt 可异步；完成不等于整个业务验收。 |
 | `work-unit.maintenance-research` | template-source | 模板维护研究 | 已明确范围的技术或策略研究请求。 | 研究简报、证据台账和绑定当前输入的验证记录。 | 当前研究包校验通过、执行阻断关闭；独立结束或在已授权范围内继续模板维护。 |
 | `work-unit.entry-triage` | template-source | 入口分诊 | 用户请求、仓库身份。 | 影响面与最近可信阶段。 | 身份和影响面可解释。 |
 | `work-unit.ssot-update` | template-source | 单一事实源更新 | 变更合同。 | 权威文档或脚本。 | 其他投影可由脚本生成。 |

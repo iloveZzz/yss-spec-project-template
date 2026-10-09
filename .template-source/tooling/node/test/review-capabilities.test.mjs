@@ -96,6 +96,28 @@ test('cross-root preparation and validation use the target lifecycle and skill r
   assert.throws(()=>buildReviewPackage(options),/GATE_POLICY_REQUIRED/);
 });
 
+test('真实专职政策允许独立Slice工程审查并绑定当前编译候选',t=>{
+  for(const profile of ['backend','frontend']) {
+    const f=fixture(t),source=path.join(ROOT,`submodules/yss-harness-${profile}-agent`);
+    for(const ref of [policyRef,'.template-spec/process/lifecycle-registry.yaml','.template-spec/agents/yss-skill-registry.yaml']) f.write(ref,fs.readFileSync(path.join(source,ref)));
+    const localRegistry=loadRegistry(path.join(source,'.template-spec/process/lifecycle-registry.yaml'));
+    const localRoles=loadDigitalHumanRoles(path.join(source,policyRef));
+    const compiled=compileReviewCapabilities({checkIds:['check.design-reviewed'],roleId:'role.architecture-agent',rolesDoc:localRoles,registry:localRegistry});
+    assert.deepEqual(compiled.capability_ids,[profile==='backend'?'capability.technical-design':'capability.frontend-engineering']);
+    const subject='compiled-slice.yaml';
+    f.write(subject,'schema_version: 3\ncontract_id: synthetic.current-compiled-slice\n');
+    f.write(f.checkpointRef,JSON.stringify({checks:{'check.design-reviewed':{...f.checkpoint.checks[checkIds[0]],subject_ref:subject,subject_digest:reviewDigest(fs.readFileSync(path.join(f.root,subject))) }},gates:{}}));
+    const options={...f.options,checkIds:['check.design-reviewed'],roleId:'role.architecture-agent',workUnitId:'work-unit.slice-contract'};
+    delete options.registry;
+    const built=buildReviewPackage(options);
+    assert.equal(built.task.stage_id,'stage.slice-contract');
+    assert.equal(built.bundle.reviews[0].subject_ref,subject);
+    assert.equal(built.bundle.reviews[0].subject_digest,reviewDigest(fs.readFileSync(path.join(f.root,subject))));
+    assert.ok(localRegistry.gates.find(gate=>gate.id==='gate.slice-contract-approved').requires_checks.includes('check.design-reviewed'));
+    assert.throws(()=>buildReviewPackage({...options,reviewerPrincipalRef:'instance:author-0'}),/INDEPENDENT|independent|独立/);
+  }
+});
+
 test('generated draft is parsed by the real approval reader and remains blocked by pending', t => {
   const f = prepared(t), file = path.join(f.root, f.result.bundle_ref);
   const history = readApprovalHistory(file, { root: f.root });

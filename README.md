@@ -1,10 +1,12 @@
-# YSS Spec Project Template
+# YSS 综合研发主控模板（Spec Profile）
 
 > Matt Pocock Engineering Skills × YSS × OpenAPI 驱动的轻量 AI 研发文档模板。
 
 ## 定位
 
 本模板默认作为 Harness / 研发管理仓库，保留流程文档、契约模板、Agent skills 和协作约定。前端 / 后端源码默认位于独立实现仓库；只有用户明确选择本仓库承载实现代码时，才按需创建 `apps/backend/`、`apps/frontend/`。
+
+默认一个 Spec 主控推进同一功能到业务验收，Design、Backend、Frontend 按需协作。Spec 文档批准、产品设计完成、后端可交付、前端验收和业务验收是可选的本次终点；终点改变保留当前批准和后续路线。专职 Profile 继续按自身职责结束，主控通过显式同功能 checkpoint 与当前接收证据汇总。见[本次推进目标与专职协作](.template-spec/process/lifecycle-progression.md)。
 
 ## 项目结构
 

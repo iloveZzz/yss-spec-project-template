@@ -1,4 +1,4 @@
-import { workLayout } from './work-layout.mjs';
+import { readingLocation } from './reading-view-policy.mjs';
 import { readFileSync, existsSync, lstatSync, realpathSync } from 'node:fs';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
@@ -16,6 +16,7 @@ export const STAGE_WORK_UNITS = Object.freeze({
   'work-unit.prototype-design-v2': 'stage.product-design',
   'work-unit.prototype-design': 'stage.product-design',
   'work-unit.business-ticket-formalization': 'stage.product-design',
+  'work-unit.strategic-design-handoff': 'stage.product-design',
 });
 export const sha256 = bytes => `sha256:${createHash('sha256').update(bytes).digest('hex')}`;
 export function parseYaml(bytes) {
@@ -76,7 +77,7 @@ export function refreshTracking(root, checkpoint) {
   return { checkpoint: next, stale_item_ids: changed };
 }
 export function assertStageTracking(checkpoint, { root, checkpointRef, currentWorkUnit, nextWorkUnit, transition = false, entering = false, now = new Date() } = {}) {
-  const workUnits={...STAGE_WORK_UNITS,...(isDesign(root)?{'work-unit.business-ticket-formalization':'stage.ticket-formalization'}:{})};
+  const workUnits={...STAGE_WORK_UNITS,...(isDesign(root)?{'work-unit.business-ticket-formalization':'stage.ticket-formalization','work-unit.strategic-design-handoff':'stage.ticket-formalization'}:{})};
   const identity = parseYaml(readTracking(root, 'yss-project.yaml'));
   if (identity?.schema_version !== 1 || !['template-source', 'project-instance'].includes(identity.repository_mode)) throw new Error('tracking-repository-identity-invalid');
   if ((transition || entering) && checkpoint?.stage) assertCheckpointBoundary(checkpoint, { root });
@@ -90,9 +91,9 @@ export function assertStageTracking(checkpoint, { root, checkpointRef, currentWo
   validateJsonSchema(tracking, path.join(root, '.template-spec/process/schemas/stage-tracking.schema.json'));
   const feature = checkpoint.feature_id;
   if (feature !== tracking.feature_id || typeof feature !== 'string' || !feature.trim()) throw new Error('tracking-feature-mismatch');
-  const layout = workLayout(root, config);
-  const base = layout.featureRoot(layout.checkpointFeature(tracking.checkpoint_ref)) + '/';
-  if (!tracking.checkpoint_ref.startsWith(base) || (checkpointRef && tracking.checkpoint_ref !== checkpointRef)) throw new Error('tracking-checkpoint-mismatch');
+  const location = readingLocation(root, tracking.checkpoint_ref), registered = location.feature.startsWith('feature.');
+  const base = location.base + '/';
+  if ((registered ? location.feature !== feature : !tracking.checkpoint_ref.startsWith(base)) || (checkpointRef && tracking.checkpoint_ref !== checkpointRef)) throw new Error('tracking-checkpoint-mismatch');
   safeTrackingPath(root, tracking.checkpoint_ref);
   if (isDesign(root)) {
     if (tracking.entry.kind !== 'checkpoint' || tracking.entry.ref !== tracking.checkpoint_ref) throw new Error('tracking-design-parent-forbidden');

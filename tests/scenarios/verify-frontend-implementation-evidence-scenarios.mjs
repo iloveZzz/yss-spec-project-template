@@ -57,6 +57,9 @@ for(const row of verification.actual_verification)row.evidence_digest=bind(row.e
 for(const row of verification.case_results){row.implementation_image_digest=bind(row.implementation_image_ref).digest;row.diff_digest=bind(row.diff_ref).digest;}
 run("valid-plan", plan, 0);
 run("valid-verification", verification, 0);
+run('committed-candidate-identity',{...verification,independent_review:{...verification.independent_review,candidate_digest:'a'.repeat(40)}},0);
+run('invalid-candidate-identity',{...verification,independent_review:{...verification.independent_review,candidate_digest:'z'.repeat(40)}},1,/candidate_digest/);
+run('tree-id-is-not-image-digest',{...verification,case_results:verification.case_results.map((row,i)=>i?row:{...row,implementation_image_digest:'a'.repeat(40)})},1,/implementation_image_digest/);
 run("missing-case", { ...verification, case_results: verification.case_results.slice(0, 1) }, 1, /一一对应/);
 run("unexplained", { ...verification, uncovered_differences: ["间距偏差"], difference_owner: "frontend" }, 1, /未解释视觉差异/);
 run("nonzero", { ...verification, actual_verification: [{ ...verification.actual_verification[0], exit_code: 1 }] }, 1, /非零退出码/);

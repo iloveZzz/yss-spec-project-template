@@ -3,7 +3,7 @@ import path from 'node:path';
 import os from 'node:os';
 import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
-import {approvedSpecFixture,designFixture,reconcile,localPlanFixture} from './fixture.mjs';
+import {approvedSpecFixture,designFixture,reconcile,localPlanFixture,bindLocalPlanHandoff} from './fixture.mjs';
 import {inspectSpecBaselineSource,verifySpecBaselineBinding,importedApprovalOrigin} from '../../lib/spec-baseline.mjs';
 import {exportSpecBaseline,importSpecBaseline} from './package.mjs';
 import {exportBundle,openBundle} from '../../lib/strategic-handoff.mjs';
@@ -142,7 +142,7 @@ try {
  const localReview=read(path.join(localRoot,localSet.review_ref));localReview.subject_digest=localSetDigest;local.put(localSet.review_ref,localReview);local.handoff.source.business_ticket_set_ref.digest=localSetDigest;
  local.sign({bindPlanChecks:true});reconcile(localRoot,'local-intake-context.json',{receiptRef:localImported.receipt_ref,sourceContextRef:localReceipt.package_ref+'/payload/files/source-context.snapshot.md'});
  const localCurrent={feature_id:source.state.feature_id,stage:'stage.entry-triage',upstream_spec_baseline:{receipt_ref:localImported.receipt_ref,receipt_digest:localImported.receipt_digest},context_reconciliation:{status:'reconciled',ref:'local-intake-context.json',evidence_refs:[localImported.receipt_ref,'local-intake-context.json']},artifacts:{'artifact.spec':{status:'approved',ref:local.handoff.source.spec_ref.persisted_ref,evidence_refs:[local.handoff.package_export.approvals.spec_ref.record_ref]}},checks:{},gates:{'gate.plan-approved':approvedGate(local,'domain_strategy_ref'),'gate.spec-baseline-approved':approvedGate(local,'spec_ref')}};
- const currentPlan=localPlanFixture(local);Object.assign(localCurrent,currentPlan.state);localCurrent.gates['gate.spec-baseline-approved']=approvedGate(local,'spec_ref');
+ const currentPlan=localPlanFixture(local);if(local.nativeSeed)bindLocalPlanHandoff(local,currentPlan);Object.assign(localCurrent,currentPlan.state);localCurrent.gates['gate.spec-baseline-approved']=approvedGate(local,'spec_ref');
  check(assertCheckpointBoundary(localCurrent,{root:localRoot}).status==='passed','本地当前批准可以承接新Context并保留Receipt来源');
  assert.throws(()=>verifySpecBaselineBinding({...localCurrent,plan_review_ref:undefined},{root:localRoot}),/plan_review_ref/);checks++;
  local.put('local-intake-checkpoint.json',{...checkpoint,...localCurrent});

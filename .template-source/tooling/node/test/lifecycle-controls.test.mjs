@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { mkdtempSync, writeFileSync, readFileSync, rmSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
@@ -10,6 +10,7 @@ const { assertGateChecks } = await import(path.join(root, 'scripts/lib/lifecycle
 const { loadRegistry, validateRegistry } = await import(path.join(root, 'scripts/lib/lifecycle-registry.mjs'));
 const { validateApprovalRecord, assertCheckpointApprovals, assertCheckpointUserDecisions } = await import(path.join(root, 'scripts/lib/approval-record.mjs'));
 const { loadDigitalHumanRoles } = await import(path.join(root, 'scripts/lib/digital-human-roles.mjs'));
+const { parseDocument } = await import(path.join(root, 'scripts/vendor/yaml.mjs'));
 
 function fixture(run) {
  const dir = mkdtempSync(path.join(tmpdir(), 'yss-gate-checks-'));
@@ -25,8 +26,16 @@ function fixture(run) {
   run({dir,save,asset,gateId,checkId,state,registry,verify});
  } finally {rmSync(dir,{recursive:true,force:true});}
 }
-test('registry distinguishes seven approval gates from internal checks and rejects cycles',()=>{
- const r=loadRegistry();assert.equal(r.stages.length,8);assert.equal(r.gates.length,7);assert.equal(r.checks.length,14);
+test('registry retains seven approval gates, adds a conditional handoff gate and rejects cycles',()=>{
+ const r=loadRegistry();assert.equal(r.stages.length,8);assert.equal(r.gates.length,8);assert.equal(r.checks.length,14);
+ const handoffId='gate.strategic-design-handoff-approved';
+ const retainedGateIds=['gate.plan-approved','gate.spec-baseline-approved','gate.product-design-approved','gate.backend-architecture-platform-approved','gate.engineering-contract-approved','gate.slice-contract-approved','gate.delivery-accepted'];
+ assert.deepEqual(r.gates.filter(gate=>gate.id!==handoffId).map(gate=>gate.id).sort(),retainedGateIds.sort());
+ const handoff=r.gates.find(gate=>gate.id===handoffId);
+ assert.equal(handoff.stage,'stage.product-design');
+ assert.deepEqual(handoff.requires_gates,['gate.plan-approved','gate.spec-baseline-approved','gate.product-design-approved']);
+ const orchestration=parseDocument(readFileSync(path.join(root,'.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml'),'utf8')).toJS();
+ assert.equal(orchestration.work_unit_routes['work-unit.strategic-design-handoff'].applies_when,'explicit-external-implementation-consumer');
  const cyclic=structuredClone(r);cyclic.checks[0].requires_checks=[cyclic.checks[1].id];cyclic.checks[1].requires_checks=[cyclic.checks[0].id];
  assert.throws(()=>validateRegistry(cyclic,{baseline:null}),/依赖循环/);
 });
@@ -53,6 +62,19 @@ test('automatic evidence passes without another human approval, missing and fail
  assert.equal(f.verify().result,'passed');
  for(const status of ['pending','failed','stale','not-applicable']){f.state.checks[f.checkId].status=status;assert.throws(f.verify,/未通过|未命中/);}
  delete f.state.checks[f.checkId];assert.throws(f.verify,/缺少检查/);
+}));
+test('gate and internal check reject extra current target intent as factual evidence',()=>fixture(f=>{
+ assert.equal(f.verify().result,'passed');
+ for(const ref of ['progression-target.json','nested/PROGRESSION-TARGET.JSON']) {
+  mkdirSync(path.dirname(path.join(f.dir,ref)),{recursive:true});
+  f.save(ref,{schema_version:1,kind:'lifecycle-progression-target',target:'business-accepted'});
+  const basis=structuredClone(f.state.gates[f.gateId].basis);
+  f.state.gates[f.gateId].basis=[...basis,f.asset(ref)];
+  assert.throws(f.verify,/推进目标.*不能作为批准或交付证据/);
+  f.state.checks[f.checkId].basis=[...basis,f.asset(ref)];
+  assert.throws(f.verify,/推进目标.*不能作为批准或交付证据/);
+  f.state.gates[f.gateId].basis=basis;f.state.checks[f.checkId].basis=structuredClone(basis);
+ }
 }));
 test('N/A requires explicit applicability, explanation and current evidence',()=>fixture(f=>{
  Object.assign(f.state.checks[f.checkId],{status:'not-applicable',applicable:false,reason:'no affected delivery'});

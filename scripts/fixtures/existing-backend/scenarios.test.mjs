@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {validateArchitectureIdentity, verifyArchitectureEvidence} from '../../lib/backend-architecture.mjs';
 import {loadSkillRegistry} from '../../lib/skill-registry.mjs';
+import {read as readYaml} from '../../lib/strategic-handoff-io.mjs';
 const registry=loadSkillRegistry();
 const identity=family=>({schema_version:2,source_kind:'existing-registration',architecture_family:family,architecture_profile:family==='domain-driven'?'existing-domain-driven-maven':'existing-layered-mvc-maven',repository_id:'sample-repo',project_id:'sample',source_digest:`sha256:${'a'.repeat(64)}`,build_units_digest:`sha256:${'b'.repeat(64)}`});
 for(const family of ['domain-driven','layered-mvc'])test(`${family}: existing identity has no fabricated generator or H2 claim`,()=>{assert.equal(validateArchitectureIdentity(identity(family),registry).architecture_family,family);});
@@ -46,4 +47,13 @@ test('raw evidence drift, self-review, missing source files and actual POM confl
   if(fault==='pom')fs.writeFileSync(path.join(f.project,'pom.xml'),'<project><artifactId>different</artifactId></project>');
   assert.throws(()=>verifyArchitectureEvidence(f.identity,f.bindings,{root:f.root,registry}),undefined,fault);
  }finally{f.cleanup();}}
+});
+test('missing declared architecture review boundaries fail closed without probing unrelated Slice checks',()=>{
+ const f=fixture();try{
+  const ref='.template-spec/agents/digital-human-roles.yaml',roles=readYaml(path.join(f.root,ref));
+  const boundaries=new Set(['check.architecture-reviewed','gate.technical-design-approved']);
+  for(const [key,value]of Object.entries(roles.gate_policy))if(Array.isArray(value))roles.gate_policy[key]=value.filter(row=>!boundaries.has(typeof row==='string'?row:row?.gate));
+  f.write(ref,roles);
+  assert.throws(()=>verifyArchitectureEvidence(f.identity,f.bindings,{root:f.root,registry}),/ARCH_REVIEW_MISSING/);
+ }finally{f.cleanup();}
 });

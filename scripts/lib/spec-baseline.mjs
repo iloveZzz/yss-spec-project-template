@@ -8,7 +8,7 @@ import {checkBusinessTickets} from './business-tickets.mjs';
 import {verifyContextReconciliation} from './context-reconciliation.mjs';
 import {parseContextContract,parseContextSource,resolveContextTermRefs,verifyContextSnapshot} from './context-contract.mjs';
 import {withSourceContextSnapshot} from './source-context-snapshot.mjs';
-import {read, safe, ensure, hash, digest, parse, relative, files, schema, sourceApprovalPolicy} from './strategic-handoff-io.mjs';
+import {read, safe, ensure, hash, digest, parse, relative, files, schema, sourceApprovalPolicy, assertHandoffEvidenceRef} from './strategic-handoff-io.mjs';
 
 const packageSchema='.template-spec/process/schemas/spec-baseline-package.schema.json';
 const receiptSchema='.template-spec/process/schemas/spec-baseline-import-receipt.schema.json';
@@ -95,7 +95,7 @@ export function verifySpecBaselinePackage(packageRoot) {
   ensure(digest(unsigned)===bundle_digest,'Spec baseline manifest 摘要不一致');
   const seen=new Set(),originals=new Set();let size=0;
   for(const file of manifest.files) {
-    relative(file.original_ref);
+    relative(file.original_ref);assertHandoffEvidenceRef(file.original_ref);
     const expected=`payload/files/${file.original_ref==='CONTEXT.md'?'source-context.snapshot.md':file.original_ref}`;
     ensure(file.path===expected&&!seen.has(file.path)&&!originals.has(file.original_ref),'Spec baseline 文件重复或映射非法');
     seen.add(file.path);originals.add(file.original_ref);

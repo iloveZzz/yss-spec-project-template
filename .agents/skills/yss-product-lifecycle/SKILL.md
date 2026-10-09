@@ -60,6 +60,10 @@ Plan 入口读 `.template-spec/plan/README.md`、`.template-spec/process/plan-mi
 
 职责及后端终点见 `execution_scopes`，恢复、编译、派发须复验。保留产品设计门禁，后端交付不等于业务完成或发布。
 
+Spec 是综合研发主控；Spec 文档批准只是一个里程碑。正式功能的本次终点由 `progression_target` 与独立意图文件选择，新政策默认业务验收；旧实例须显式同步支持该政策，不自动补写历史意图。改变终点保留实际 next、批准和冻结包字节。派发与生成前通过固定 CLI 核验当前目标，到达终点停止下游写入；缺能力或证据不可验证时停止受影响推进。见[推进到指定里程碑](references/progression-target.md)。Design、Backend、Frontend 按需协作，各自职责终点单独验核；汇总只消费显式同功能 checkpoint 和当前接收证据，不按 root 猜功能。
+
+本地 `backend-deliverable` 不派发对外交付包单元。当前验证单元完成后端实现、独立审查及真实构建部署验证后，按推进目标协议调用 `scripts/complete-backend-delivery complete` 登记同功能 `local-evidence` 终点，再复算目标；不改变 next/status、不导出战略或后端包。缺少该记录时继续补当前目标所需证据，不能越过后端终点直接推进业务验收。
+
 ### 用户决定
 
 `governed` 按角色表 `user_decision_policy` 与 `references/user-decisions.md` 展示资产、范围、风险、后续动作，再取得提问者或指定生物人的原始回复。数字人、超时、默认项不得代答。先验 `continuation_ref`；未知先调查，实质变化或缺强制审批时重新决定。`daily` 使用已明确的任务授权，不再为普通实现创建阶段批准；外部动作、风险接受和项目明确的强制制度仍按原授权处理。缺陷/缺证据阻断，建议记待办。

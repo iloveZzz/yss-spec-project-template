@@ -1,4 +1,5 @@
 import { readWorkLayout } from './work-layout.mjs';
+import {assertProgressionEntry, readProgressionTarget} from './lifecycle-progression.mjs';
 import {approvalExpectationForBoundAsset} from './approval-consumption.mjs';
 import { assertBusinessApprovalBasis } from './business-ticket-lifecycle.mjs';
 import { assertBusinessTicketTransition, assertImplementationTicket } from './business-tickets.mjs';
@@ -51,7 +52,8 @@ const NEXT_ROUTES = deepFreeze({
   "work-unit.stage-decision": ["work-unit.spec-synthesis"],
   "work-unit.spec-synthesis": ["work-unit.prototype-design-v2", "work-unit.business-ticket-formalization", "work-unit.technical-analysis"],
   "work-unit.prototype-design-v2": ["work-unit.business-ticket-formalization", "work-unit.technical-analysis"],
-  "work-unit.business-ticket-formalization": ["work-unit.technical-analysis"],
+  "work-unit.business-ticket-formalization": ["work-unit.technical-analysis", "work-unit.strategic-design-handoff"],
+  "work-unit.strategic-design-handoff": ["work-unit.technical-analysis"],
   "work-unit.technical-analysis": [REPOSITORY_PREPARATION_WORK_UNIT],
   [REPOSITORY_PREPARATION_WORK_UNIT]: [SERVICE_INITIALIZATION_WORK_UNIT, TICKET_DECOMPOSITION_WORK_UNIT],
   [SERVICE_INITIALIZATION_WORK_UNIT]: [REPOSITORY_PREPARATION_WORK_UNIT],
@@ -59,7 +61,7 @@ const NEXT_ROUTES = deepFreeze({
   [IMPLEMENTATION_WORK_UNIT]: ["work-unit.frontend-implementation-verification", "work-unit.code-review"],
   "work-unit.frontend-implementation-verification": ["work-unit.code-review"],
   "work-unit.code-review": ["work-unit.release-and-retrospective", IMPLEMENTATION_WORK_UNIT, "work-unit.backend-delivery"],
-  "work-unit.backend-delivery": [],
+  "work-unit.backend-delivery": ["work-unit.release-and-retrospective"],
   "work-unit.release-and-retrospective": [],
 });
 
@@ -306,6 +308,12 @@ function validateTicketReference(ref, trackerKind, root) {
  * by `validateWorkflowExecutionResult` before this function is called.
  */
 export function validateNextRoute(currentWorkUnit, nextRoute, decisionState, options = {}) {
+  if ([currentWorkUnit, nextRoute].includes('work-unit.strategic-design-handoff')) {
+    try {
+      const intent = readProgressionTarget({root: options.root || ROOT, checkpointRef: decisionState?.checkpoint_ref});
+      if (!intent?.consumers.some(consumer => ['backend', 'frontend'].includes(consumer.profile) && path.resolve(consumer.root) !== intent.root)) throw Error('业务方案交接仅用于显式外部实现专职消费者；本地资产直接消费');
+    } catch (error) { return blockedResult(['strategic-handoff-consumer-required'], [error.message]); }
+  }
   let entryRoutes;
   if (currentWorkUnit === 'work-unit.entry-triage' || currentWorkUnit === 'work-unit.maintenance-research' || nextRoute === 'work-unit.maintenance-research') {
     try {
@@ -340,10 +348,10 @@ export function validateNextRoute(currentWorkUnit, nextRoute, decisionState, opt
 
 
   if (["work-unit.technical-analysis", TICKET_DECOMPOSITION_WORK_UNIT, IMPLEMENTATION_WORK_UNIT, "work-unit.frontend-implementation-verification"].includes(nextRoute)) {
-    try { enforceFrontendDelivery(decisionState, { root: options.root, phase: nextRoute === IMPLEMENTATION_WORK_UNIT ? "implementation" : "inputs" }); }
+    try { enforceFrontendDelivery(decisionState, { root: options.root, checkpointRef: options.checkpointRef, phase: nextRoute === IMPLEMENTATION_WORK_UNIT ? "implementation" : "inputs", localPhase: nextRoute === 'work-unit.frontend-implementation-verification' ? 'verification' : 'contract' }); }
     catch (error) { return blockedResult(["frontend-delivery-blocked"], [error.message]); }
   }
-  const routes = NEXT_ROUTES[currentWorkUnit] && scopedNextRoutes(currentWorkUnit, entryRoutes || NEXT_ROUTES[currentWorkUnit], options);
+  const routes = NEXT_ROUTES[currentWorkUnit] && scopedNextRoutes(currentWorkUnit, entryRoutes || NEXT_ROUTES[currentWorkUnit], {...options, checkpointRef: decisionState?.checkpoint_ref});
   if (!routes) return blockedResult([BLOCKING_SIGNALS.invalidRoute], ["known_current_work_unit"]);
   if (nextRoute === REPOSITORY_PREPARATION_WORK_UNIT && !["work-unit.technical-analysis", SERVICE_INITIALIZATION_WORK_UNIT].includes(currentWorkUnit)) {
     return blockedResult([BLOCKING_SIGNALS.technicalAnalysisRequired], ["work-unit.technical-analysis predecessor"]);
@@ -512,7 +520,7 @@ export function validateTicketFormalization(state, { exists = existsSync, read =
       if (kind === "stage-work-item") return blockedResult(["stage-work-item-not-implementable"], ["vertical-slice-ticket required"]);
     } catch(error) { return blockedResult([error.message.includes("stage-work-item")?"stage-work-item-not-implementable":error.message.includes("business-ticket")?"business-ticket-not-implementable":"ticket-content-unreadable"], [error.message]); }
   }
-  try { enforceFrontendDelivery(state, { root: decisionOptions.root, phase: "implementation" }); }
+  try { enforceFrontendDelivery(state, { root: decisionOptions.root, checkpointRef: decisionOptions.checkpointRef, phase: "implementation", localPhase: 'contract' }); }
   catch (error) { return blockedResult(["frontend-delivery-blocked"], [error.message]); }
   const repositoryResult = validateImplementationRepositoriesReady(state, { exists, read, ...decisionOptions });
   if (repositoryResult.result === "blocked") return repositoryResult;
@@ -636,6 +644,8 @@ export function validateTicketFormalization(state, { exists = existsSync, read =
  * Validate the complete implementation entry seam after ready-for-agent promotion.
  */
 export function validateImplementationEntry(state, options = {}) {
+  try { assertProgressionEntry(IMPLEMENTATION_WORK_UNIT, {root: options.root || ROOT, checkpointRef: state?.checkpoint_ref, assetRef: state?.vertical_slice_ticket_ref}); }
+  catch (error) { return blockedResult(['progression-target-blocked'], [error.message]); }
   try { assertScopeWorkUnit(IMPLEMENTATION_WORK_UNIT, options); assertScopeImpacts(state, options); }
   catch (error) { return blockedResult(['execution-scope-blocked'], [error.message]); }
   const ticketResult = validateTicketFormalization(state, options);

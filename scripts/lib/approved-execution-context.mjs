@@ -1,6 +1,7 @@
 import {approvalExpectationForCheckpoint,approvalExpectationForBoundAsset} from './approval-consumption.mjs';
 import {validateJsonSchemas} from './json-schema.mjs';
 import { assertScopeSlice, assertScopeWorkUnit } from './lifecycle-execution-scope.mjs';
+import {assertProgressionEntry} from './lifecycle-progression.mjs';
 import { selectSliceWorkUnit, normalizeSliceContract, sourceSliceContract, parseSliceYaml } from './slice-contract.mjs';
 import path from 'node:path';
 import { readFileSync, inValidationPhase, validationMemo, validationPhaseToken } from './validation-phase.mjs';
@@ -41,6 +42,7 @@ export function verifySliceContractApproval(binding,{root=process.cwd(),contract
   if(expected)check(same(sourceSliceContract(expected),sourceSliceContract(contract)),'EXECUTION_CONTRACT_CONFLICT','调用方合同与持久化原字节不一致');
   const roles=read(safe(root,'.template-spec/agents/digital-human-roles.yaml'));
   const approval=read(safe(root,binding.approval_ref));
+  let checkpointRef = null;
   if(!countersignRuleForGate(roles.gate_policy,gateId)&&roles.gate_policy.orchestrator?.includes(gateId)) {
     // The current lifecycle already owns this gate. Consume its checkpoint and existing
     // implementation-scope decision instead of inventing an approval-record countersignature.
@@ -51,13 +53,14 @@ export function verifySliceContractApproval(binding,{root=process.cwd(),contract
     check(gate?.status==='approved'&&gate.subject_ref===binding.ref,'EXECUTION_APPROVAL_SCOPE','主控 gate 未批准当前持久化 Slice');
     check(review.implementation?.slice_contract_ref===binding.ref,'EXECUTION_APPROVAL_SCOPE','实施批准不指向当前 Slice 原始文件');
     assertImplementationDecision({...review.implementation,user_decisions:review.user_decisions||[]},{...ioFor(root),rolesDoc:roles});
+    checkpointRef = binding.approval_ref;
   } else {
     // Historical source profiles that declared this a countersign gate retain their policy.
     validateApprovalRecord(approval,{...ioFor(root),rolesDoc:roles,requireApproved:true,expected:approvalExpectationForBoundAsset(gateId,binding,{...ioFor(root),review_package:false})});
     check(approval.gate_id===gateId&&approval.artifact_bindings?.some(item=>item.id===contract.contract_id&&item.version===contract.contract_version&&item.digest===binding.digest),'EXECUTION_APPROVAL_SCOPE','源会签未绑定当前 Slice 的身份、版本和字节');
   }
   if(contract.schema_version===3) verifySliceProfessionalReview(approval,{...binding,id:contract.contract_id,version:contract.contract_version},roles,root);
-  return {contract,binding:structuredClone(binding),root};
+  return {contract,binding:structuredClone(binding),root,...(checkpointRef?{checkpoint_ref:checkpointRef}:{})};
 }
 
 function executionBasis(verified,{allowCompilerDrift=false}={}) {
@@ -94,6 +97,7 @@ function primeApprovalSchemas(binding,root){
 export function createApprovedExecutionContext(binding,options={}) {
   primeApprovalSchemas(binding,path.resolve(options.root||process.cwd()));
   const verified=executionBasis(verifySliceContractApproval(binding,options));
+  if(!options.readOnly)assertProgressionEntry('work-unit.slice-implementation',{root:verified.root,assetRef:verified.binding.ref});
   assertScopeSlice(selectSliceWorkUnit(verified.contract,options.work_unit_id),{root:verified.root});
   if(!options.readOnly)assertScopeWorkUnit('work-unit.slice-implementation',{root:verified.root});
   const context=Object.freeze({kind:'approved-slice-execution-context'});
@@ -104,6 +108,7 @@ export function createApprovedExecutionContext(binding,options={}) {
 /** A prior approved scope may authenticate bounded output while current compiler facts are recomputed. */
 export function createApprovedRecompilationContext(binding,options={}) {
   const verified=executionBasis(verifySliceContractApproval(binding,options),{allowCompilerDrift:true,readOnly:options.readOnly===true});
+  if(!options.readOnly)assertProgressionEntry('work-unit.slice-implementation',{root:verified.root,assetRef:verified.binding.ref});
   assertScopeSlice(selectSliceWorkUnit(verified.contract,options.work_unit_id),{root:verified.root});
   if(!options.readOnly)assertScopeWorkUnit('work-unit.slice-implementation',{root:verified.root});
   const context=Object.freeze({kind:'approved-slice-recompilation-context'});
@@ -119,6 +124,7 @@ export function assertApprovedExecutionContext(context,{root=process.cwd(),contr
   check(!saved.readOnly||readOnly,'EXECUTION_CONTEXT_READ_ONLY','只读检查上下文不能执行实现');
   if(!readOnly)assertScopeWorkUnit('work-unit.slice-implementation',{root});
   const verified=executionBasis(verifySliceContractApproval(saved.binding,{root,contract}),{allowCompilerDrift:saved.allowCompilerDrift});
+  if(!readOnly)assertProgressionEntry('work-unit.slice-implementation',{root:verified.root,assetRef:verified.binding.ref});
   const current=selectSliceWorkUnit(verified.contract,saved.work_unit_id),resolution=current.resolution;
   if(sliceId)check(current.slice_id===sliceId,'EXECUTION_SCOPE_CONFLICT','执行上下文属于另一切片');
   if(architectureIdentity)check(same(resolution.architecture_identity,architectureIdentity),'EXECUTION_INPUT_REPLACED','执行上下文不允许替换架构身份或固定源码输入');

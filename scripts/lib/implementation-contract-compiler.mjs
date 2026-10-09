@@ -112,7 +112,7 @@ export function compileImplementationContract({
 }) {
   assertV3(registry, compilerContract);
   const recompilationExecution=approved_slice?createApprovedRecompilationContext(approved_slice,{root,work_unit_id}):undefined;
-  const deliveryInput = enforceFrontendDelivery({ slice_id, frontend_delivery }, { root });
+  const deliveryInput = enforceFrontendDelivery({ slice_id, frontend_delivery }, { root, phase: 'contract', sliceRef: approved_slice?.ref, workUnitId: work_unit_id });
   if (!Array.isArray(recipeIds) || !Array.isArray(requiredCapabilities) || !Array.isArray(conditions)) {
     fail("recipeIds、requiredCapabilities 与 conditions 必须是数组");
   }
@@ -130,7 +130,7 @@ export function compileImplementationContract({
   if (architectural || architecture_identity) {
     architectureProfile = validateArchitectureIdentity(architecture_identity, registry);
     if (!architecture_evidence?.engineering_baseline || !architecture_evidence?.repository_registration || !architecture_evidence?.manifest) fail("缺少工程基线、仓库登记或 Manifest 架构证据");
-    verifyArchitectureEvidence(architecture_identity, architecture_evidence, { root, registry, execution:recompilationExecution });
+    verifyArchitectureEvidence(architecture_identity, architecture_evidence, { root, registry, execution:recompilationExecution, assetRef:approved_slice?.ref });
     for (const recipe of orderedRecipes) if (recipe.architecture_family && recipe.architecture_family !== architecture_identity.architecture_family) fail(`Recipe ${recipe.id} 与架构族不匹配`);
   }
 
@@ -282,7 +282,7 @@ export function evaluateContractFreshness(contract, { registry, compilerContract
   } catch(error) { reasons.push(error.code||'EXECUTION_APPROVAL_INVALID');trustedExecution=undefined; }
   try { enforceTechnicalDesign({ ...resolution, slice_id: contract.slice_id ?? resolution.slice_id }, { root,execution:trustedExecution,readOnly }); }
   catch { reasons.push("technical-design-stale-or-unavailable"); }
-  try { enforceFrontendDelivery(contract, { root }); }
+  try { enforceFrontendDelivery(contract, { root, sliceRef: approved_slice?.ref, workUnitId: work_unit_id }); }
   catch { reasons.push("frontend-delivery-stale-or-unavailable"); }
   if (resolution.registry_digest !== digestDocument(registry)) reasons.push("registry-digest-changed");
   if (resolution.compiler_contract_digest !== digestDocument(compilerContract)) reasons.push("compiler-contract-digest-changed");
@@ -290,7 +290,7 @@ export function evaluateContractFreshness(contract, { registry, compilerContract
     try { validateArchitectureIdentity(resolution.architecture_identity, registry); }
     catch { reasons.push("architecture-identity-invalid"); }
     if (resolution.architecture_identity.schema_version === 2) {
-      try { verifyArchitectureEvidence(resolution.architecture_identity, resolution.architecture_evidence, { root, registry, execution:trustedExecution, readOnly }); }
+      try { verifyArchitectureEvidence(resolution.architecture_identity, resolution.architecture_evidence, { root, registry, execution:trustedExecution, readOnly, assetRef:approved_slice?.ref }); }
       catch (error) { reasons.push(error.code ?? "architecture-evidence-stale-or-unavailable"); }
     }
     if (resolution.architecture_identity_digest !== architectureDigest(resolution.architecture_identity)) reasons.push("architecture-identity-digest-changed");

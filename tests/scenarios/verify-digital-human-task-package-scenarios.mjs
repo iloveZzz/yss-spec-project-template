@@ -152,6 +152,10 @@ try {
   const discovery = lifecyclePackage();
   const spec = lifecycleStagePackage("role.requirements-manager", "task-spec", "work-unit.spec-synthesis", "stage.spec-architecture");
   const prototype = lifecycleStagePackage("role.product-manager", "task-prototype", "work-unit.prototype-design-v2", "stage.product-design");
+  const productBusinessReview = lifecycleStagePackage("role.requirements-manager", "task-product-business-review", "work-unit.prototype-design-v2", "stage.product-design");
+  productBusinessReview.execution_state = "Reviewer";
+  productBusinessReview.allowed_write_paths = [`${scenarioRef}/business-review/`];
+  productBusinessReview.review_context = { implementation_actor_id: "role.product-manager.instance-1" };
   const technical = lifecycleStagePackage("role.backend-engineer", "task-technical", "work-unit.technical-analysis", "stage.system-data-engineering");
   const tickets = lifecycleStagePackage("role.project-manager", "task-tickets", "work-unit.ticket-decomposition", "stage.ticket-formalization");
   const review = lifecycleStagePackage("role.test-engineer", "task-review", "work-unit.code-review", "stage.verification-release-retrospective");
@@ -162,7 +166,7 @@ try {
   maintenance.review_context = { implementation_actor_id: "role.lifecycle-orchestrator.instance-1" };
   const frontend = slicePackage("role.frontend-engineer", "task-frontend", "work-unit.slice-frontend", "apps/frontend/todo/");
   const backend = slicePackage("role.backend-engineer", "task-backend", "work-unit.slice-backend", "apps/backend/todo/");
-  [discovery, prototype, technical, tickets, review].forEach((pkg) => validateTaskPackage(pkg));
+  [discovery, prototype, productBusinessReview, technical, tickets, review].forEach((pkg) => validateTaskPackage(pkg));
   assert.throws(() => validateTaskPackage(spec), /plan-spec-entry-blocked/, "直接派发 Spec 缺 Plan 审阅须阻断");
   validateTaskPackage(maintenance);
   assert.deepEqual(validateHistoricalMaintenanceTaskPackage(maintenance), {status:'historical-only',execution_authorization:'not-evaluated'});
@@ -225,7 +229,7 @@ try {
   mustFail((value) => { value.contract.status = "stale"; }, /stale 任务包必须暂停/, "stale-not-paused");
   mustFail((value) => { value.runtime_id = "runtime.unknown"; }, /未知 runtime_id/, "unknown-runtime");
   mustFail((value) => { value.skill_source.core_skills = ["forbidden-skill"]; }, /core_skills 必须与角色注册表完全一致/, "skill-source-mismatch");
-  mustFail((value) => { value.stage_id = "stage.product-design"; }, /未覆盖 stage_id/, "role-stage-mismatch");
+  mustFail((value) => { value.stage_id = "stage.system-data-engineering"; }, /未覆盖 stage_id/, "role-stage-mismatch");
   mustFail((value) => { value.result = { result: "blocked", changed_files: ["docs/../secret.txt"] }; }, /超出 allowed_write_paths|越出仓库/, "write-path-traversal");
   mustFail((value) => { value.execution_state = "Reviewer"; value.review_context = { implementation_actor_id: value.actor_id }; }, /不同 actor_id/, "reviewer-implementer-conflict");
   mustFail((value) => { value.workflow_status = "resolved"; value.verification_results = [{ command: "scripts/verify-template", exit_code: 0, executed_at: "now", evidence_ref: evidenceRef }]; value.result = completedResult(value, { new_impacts: ["api-change"] }); }, /new_impacts 必须为空/, "completed-new-impact");

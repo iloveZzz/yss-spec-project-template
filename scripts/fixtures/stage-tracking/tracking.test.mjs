@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, cpSync, symlinkSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, cpSync, symlinkSync, rmSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -30,6 +30,55 @@ function complete(root, cp, id = 'scope') {
   put(root, `docs/.scratch/demo/verification/${id}.md`, '规则已逐例验证');
   item.completion = item.acceptance.map(criterion => ({ criterion, evidence_refs: [binding(root, `docs/.scratch/demo/verification/${id}.md`)] })); item.progress = 'completed';
 }
+function registeredFixture({design=false,workRoot='.work'}={}){
+ const root=fixture({design,workRoot}),ref=design?'intake-checkpoint.json':`${workRoot}/demo/checkpoint.json`,base=`${workRoot}/demo`;
+ const owner=design?path.join(repo,'submodules/yss-harness-design-agent'):repo;
+ if(design)put(root,'.template-spec/process/harness-profile.yaml',readFileSync(path.join(owner,'.template-spec/process/harness-profile.yaml'),'utf8'));
+ else put(root,'.template-spec/process/harness-profile.yaml',{schema_version:1,profile_id:'harness.spec-template'});
+ const contract=design?'.agents/skills/yss-strategic-design/references/orchestration-contract.yaml':'.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml';
+ put(root,contract,readFileSync(path.join(owner,contract),'utf8'));
+ const cp=parseYaml(readFileSync(path.join(repo,'.template-spec/process/templates/lifecycle-checkpoint-template.yaml'),'utf8'));cp.feature_id='feature.supplier';cp.stage='stage.plan';cp.next_work_unit='work-unit.plan-requirements';put(root,ref,cp);
+ put(root,`${base}/map.md`,`---\ncheckpoint_ref: ${ref}\n---\n# 登记\n`);return {root,ref,base,contract};
+}
+test('registered current Spec and root Design migration use map directory and preserve original approval fields',()=>{
+ for(const options of [{},{design:true},{workRoot:'docs/custom-work'}]){
+  const f=registeredFixture(options);try{
+   const before=parseYaml(readFileSync(path.join(f.root,f.ref),'utf8'));
+   const p=planTracking(f.root,{checkpoint_ref:f.ref,items:[{...seed(),split_reasons:['independent-acceptance']}]});
+   assert.equal(applyTracking(f.root,p).status,'applied');
+   const cp=parseYaml(readFileSync(path.join(f.root,f.ref),'utf8'));
+   assert.equal(cp.feature_id,'feature.supplier');assert.equal(cp.stage_tracking.feature_id,cp.feature_id);
+   assert.equal(cp.stage_tracking.entry.ref,options.design?f.ref:`${f.base}/parent-ticket.md`);
+   assert.equal(cp.stage_tracking.items[0].definition_ref,`${f.base}/work-items/scope.md`);
+   assert.deepEqual(cp.gates,before.gates);assert.deepEqual(cp.human_review,before.human_review);
+   assert.equal(checkTracking(f.root,f.ref).status,'valid');assert.equal(applyTracking(f.root,p).status,'unchanged');
+   cp.stage_tracking.entry.kind=options.design?'parent-ticket':'checkpoint';assert.throws(()=>assertStageTracking(cp,{root:f.root,checkpointRef:f.ref}),/design-parent-forbidden|parent-required/);
+  }finally{rmSync(f.root,{recursive:true,force:true});}
+ }
+});
+test('registered Stage rejects missing or conflicting registration and unsupported capabilities',()=>{
+ for(const scenario of ['missing','duplicate','wrong-checkpoint','unknown-version','unknown-capability']){
+  const f=registeredFixture({design:true});try{
+   if(scenario==='missing')rmSync(path.join(f.root,`${f.base}/map.md`));
+   if(scenario==='duplicate')put(f.root,'.work/duplicate/map.md',`---\ncheckpoint_ref: ${f.ref}\n---\n`);
+   if(scenario==='wrong-checkpoint'){put(f.root,'other.json',readFileSync(path.join(f.root,f.ref),'utf8'));put(f.root,`${f.base}/map.md`,'---\ncheckpoint_ref: other.json\n---\n');}
+   if(scenario.startsWith('unknown')){const contract=parseYaml(readFileSync(path.join(f.root,f.contract),'utf8'));if(scenario==='unknown-version')contract.progression_target.schema_version=99;else contract.progression_target.required_capabilities.push('unknown-capability');put(f.root,f.contract,contract);}
+   const before=readFileSync(path.join(f.root,f.ref));assert.throws(()=>planTracking(f.root,{checkpoint_ref:f.ref,items:[seed()]}),/registration-not-unique|capability-unsupported/,scenario);assert.deepEqual(readFileSync(path.join(f.root,f.ref)),before);
+  }finally{rmSync(f.root,{recursive:true,force:true});}
+ }
+});
+test('duplicate maps before and during current Stage apply fail with original checkpoint restored',()=>{
+ for(const late of [false,true]){
+  const f=registeredFixture({design:true});try{
+   const before=readFileSync(path.join(f.root,f.ref)),p=planTracking(f.root,{checkpoint_ref:f.ref,items:[seed()]});
+   const duplicate=()=>put(f.root,'.work/duplicate/map.md',`---\ncheckpoint_ref: ${f.ref}\n---\n`);
+   if(!late)duplicate();
+   assert.throws(()=>applyTracking(f.root,p,late?{afterWrite:(_,count)=>{if(count===1)duplicate();}}:{}),late?/registration-not-unique.*rollback-complete/:/registration-not-unique/);
+   assert.deepEqual(readFileSync(path.join(f.root,f.ref)),before);assert.ok(existsSync(path.join(f.root,'.work/duplicate/map.md')));
+   assert.equal(existsSync(path.join(f.root,`${f.base}/parent-ticket.md`)),false);
+  }finally{rmSync(f.root,{recursive:true,force:true});}
+ }
+});
 test('new Plan: unique parent, inline item, no slice; check and plan are read-only', () => {
   const root = fixture(); const plan = planTracking(root, { checkpoint_ref: checkpointRef, items: [seed()] });
   assert.equal(existsSync(path.join(root, checkpointRef)), false);

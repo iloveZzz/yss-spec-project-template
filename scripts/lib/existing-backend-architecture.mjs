@@ -1,4 +1,5 @@
-import {countersignRuleForGate} from './digital-human-roles.mjs';
+import {inspectCandidateBaseCommit, candidateHasIntentMaterial} from './implementation-candidate-current.mjs';
+import {collectCountersignGateIds} from './digital-human-roles.mjs';
 import {approvalExpectationForBoundAsset} from './approval-consumption.mjs';
 import {assertApprovedExecutionContext} from './approved-execution-context.mjs';
 import {createHash} from 'node:crypto';
@@ -38,7 +39,7 @@ function inspectMaven(root,units){
  const script=`import json,sys,xml.etree.ElementTree as ET\nout=[]\nfor p in json.load(sys.stdin):\n r=ET.parse(p).getroot(); ns={'m':'http://maven.apache.org/POM/4.0.0'}; q=lambda s:r.find(s,ns)\n aid=q('m:artifactId'); aid=aid if aid is not None else q('artifactId')\n deps=[e.text.strip() for e in r.findall('m:dependencies/m:dependency/m:artifactId',ns)+r.findall('m:profiles/m:profile/m:dependencies/m:dependency/m:artifactId',ns)+r.findall('dependencies/dependency/artifactId') if e.text]\n modules=[e.text.strip() for e in r.findall('.//m:modules/m:module',ns)+r.findall('.//modules/module') if e.text]\n out.append({'artifact_id':aid.text.strip() if aid is not None else '', 'dependencies':deps, 'modules':modules})\nprint(json.dumps(out))`;
  try{return JSON.parse(execFileSync('python3',['-c',script],{input:JSON.stringify(units.map(u=>file(root,u.pom_ref))),encoding:'utf8',timeout:15000,maxBuffer:2*1024*1024}));}catch(error){requireThat(false,'ARCH_BUILD_INVALID',`无法读取实际 Maven 构建单元: ${error.message}`);}
 }
-export function verifyExistingArchitecture(identity,bindings,{root,registry,execution,readOnly=false}={}){
+export function verifyExistingArchitecture(identity,bindings,{root,registry,execution,readOnly=false,assetRef}={}){
  const profile=validateExistingArchitecture(identity,registry);
  requireThat(text(root),'ARCH_EVIDENCE_REF','需要治理 root');
  const baseline=bound(root,bindings?.engineering_baseline),registration=bound(root,bindings?.repository_registration),manifest=bound(root,bindings?.manifest);
@@ -54,13 +55,13 @@ export function verifyExistingArchitecture(identity,bindings,{root,registry,exec
  const repositoryRoot=realpathSync(registration.local_worktree);
  const projectRoot=registration.project_root==='.'?repositoryRoot:path.join(repositoryRoot,relative(registration.project_root));
  requireThat(realpathSync(projectRoot)===projectRoot,'ARCH_PATH','工程根存在符号链接');
- const git=(args)=>execFileSync('git',['-C',repositoryRoot,...args],{encoding:'utf8',timeout:15000,maxBuffer:32*1024*1024}).trim();
+ const git=(args)=>execFileSync('git',['--no-optional-locks','-c','diff.autoRefreshIndex=false','-C',repositoryRoot,...args],{env:{...process.env,GIT_OPTIONAL_LOCKS:'0'},encoding:'utf8',timeout:15000,maxBuffer:32*1024*1024}).trim();
  requireThat(git(['rev-parse','--show-toplevel'])===repositoryRoot,'ARCH_REPOSITORY_CONFLICT','登记根不是实际 Git 根');
  const source=manifest.source;
  requireThat(source&&/^[a-f0-9]{40}$/.test(source.base_commit)&&Array.isArray(source.files)&&source.files.length&&Array.isArray(source.roots)&&source.roots.length,'ARCH_SOURCE_MISSING','源码基线缺固定提交、文件清单或根范围');
  requireThat(git(['rev-parse',`${source.base_commit}^{commit}`])===source.base_commit,'ARCH_SOURCE_STALE','固定基础提交不可读');
  requireThat(git(['remote','get-url','origin'])===registration.repository_url,'ARCH_REPOSITORY_CONFLICT','实际 origin 与登记来源不一致');
- requireThat(git(['rev-parse','HEAD'])===source.base_commit,'ARCH_SOURCE_STALE','工作树 HEAD 与批准固定输入不一致');
+ const candidate=inspectCandidateBaseCommit({root,projectRoot,assetRef,baseCommit:source.base_commit});
  same(source,baseline.source,'ARCH_SOURCE_CONFLICT','工程基线与观测的源码范围不一致');
  requireThat(existingArchitectureDigest(source)===identity.source_digest,'ARCH_SOURCE_STALE','固定源码基线摘要不一致');
  for(const ref of source.roots)if(ref!=='.')relative(ref);
@@ -73,6 +74,8 @@ export function verifyExistingArchitecture(identity,bindings,{root,registry,exec
  const changes=[];
  for(const item of source.files){
   relative(item.path);requireThat(digest(item.sha256),'ARCH_SOURCE_INVALID','源码摘要格式无效');
+  requireThat(item.base_blob===treeMap.get(item.path),'ARCH_SOURCE_STALE',`基础 Git blob 不一致: ${item.path}`);
+  if(candidateHasIntentMaterial(candidate,item.path))continue;
   let bytes;
   try { bytes=readFileSync(file(projectRoot,item.path)); } catch(error) { if(error.code==='ENOENT'){changes.push(item.path);continue;} throw error; }
   const actual=sha(bytes);const baseBlob=treeMap.get(item.path);
@@ -82,7 +85,7 @@ export function verifyExistingArchitecture(identity,bindings,{root,registry,exec
   if(currentBlob!==baseBlob)requireThat(source.patches?.some(p=>p.path===item.path&&p.base_blob===baseBlob&&p.sha256===actual),'ARCH_SOURCE_UNDECLARED',`未登记基线补丁: ${item.path}`);
  }
  const observed=[...new Set(source.roots.flatMap(scope=>{ const entry=path.join(projectRoot,scope); try { const stat=lstatSync(entry); requireThat(!stat.isSymbolicLink(),'ARCH_PATH',`源码根出现 symlink: ${scope}`); return stat.isDirectory()?listFiles(projectRoot,scope==='.'?'':scope):[scope]; } catch(error) { if(error.code==='ENOENT')return [];throw error; } }))];
- for(const ref of observed)if(!sourcePaths.includes(ref))changes.push(ref);
+ for(const ref of observed)if(!sourcePaths.includes(ref)&&!candidateHasIntentMaterial(candidate,ref))changes.push(ref);
  const units=manifest.build_units;
  requireThat(Array.isArray(units)&&units.length&&units.every(u=>text(u.id)&&text(u.pom_ref)&&Array.isArray(u.roles)&&Array.isArray(u.depends_on)),'ARCH_BUILD_MISSING','缺少实际构建单元/角色/依赖');
  same(units,baseline.build_units,'ARCH_BUILD_CONFLICT','三方构建单元映射不一致');
@@ -115,7 +118,9 @@ export function verifyExistingArchitecture(identity,bindings,{root,registry,exec
  const review=bound(root,baseline.boundary_review);
  const rolesFile=path.join(root,'.template-spec/agents/digital-human-roles.yaml');
  const roles=parse(readFileSync(rolesFile));
- const reviewBoundary=['check.architecture-reviewed','gate.technical-design-approved'].find(boundary=>countersignRuleForGate(roles.gate_policy,boundary));
+ const declaredReviews=new Set(collectCountersignGateIds(roles.gate_policy));
+ const reviewBoundary=['check.architecture-reviewed','gate.technical-design-approved'].find(boundary=>declaredReviews.has(boundary));
+ requireThat(reviewBoundary,'ARCH_REVIEW_MISSING','当前来源政策缺少既有架构边界审查入口');
  validateApprovalRecord(review,{rolesDoc:roles,requireApproved:true,root,expected:approvalExpectationForBoundAsset(reviewBoundary,bindings.manifest,{root})});
  requireThat(['check.architecture-reviewed','gate.technical-design-approved'].includes(review.gate_id)&&text(baseline.id)&&text(baseline.version),'ARCH_REVIEW_MISSING','需要架构边界审查');
  const basis=existingArchitectureDigest(Object.fromEntries(Object.entries(baseline).filter(([k])=>k!=='boundary_review')));

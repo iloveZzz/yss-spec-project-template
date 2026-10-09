@@ -518,13 +518,26 @@ routing:
       - scripts/*frontend-strategic-preflight*
       - scripts/lib/*backend-delivery*
       - scripts/lib/*frontend-delivery*
+      - scripts/lib/implementation-candidate-current.mjs
+      - scripts/lib/backend-review.mjs
+      - scripts/lib/backend-standards-coverage.mjs
+      - scripts/lib/existing-backend-architecture.mjs
       - scripts/fixtures/backend-delivery/**
+      - tests/implementation-candidate-current.test.mjs
+      - tests/backend-delivery-terminal.test.mjs
+      - tests/slice-task-package-frontend-boundary.test.mjs
       - .template-spec/process/frontend-backend-delivery.md
       - .template-spec/process/schemas/backend-delivery*
       - .template-spec/process/schemas/frontend-delivery*
       - .template-spec/process/schemas/frontend-strategic-preflight*
     groups:
       - frontend-delivery
+  - patterns:
+      - scripts/fixtures/spec-baseline/local-implementation-fixture.mjs
+    groups:
+      - frontend-delivery
+      - strategic-handoff-package
+      - lifecycle
   - patterns:
       - scripts/*user-decision*
       - scripts/lib/user-decision*
@@ -540,6 +553,10 @@ routing:
       - scripts/*strategic-handoff*
       - scripts/*strategic-feedback*
       - scripts/lib/strategic-handoff*
+      - scripts/lib/source-context-snapshot.mjs
+      - tests/progression-target-evidence.test.mjs
+      - tests/strategic-handoff-readonly.test.mjs
+      - tests/strategic-handoff-sealed-owner.test.mjs
       - scripts/lib/strategic-feedback*
       - scripts/fixtures/strategic-handoff/**
       - .template-source/distribution/strategic-handoff-tools.lock.json
@@ -813,6 +830,15 @@ groups:
         id: check.371da192d6338e6d
   frontend-delivery:
     commands:
+      - run: node --test tests/implementation-candidate-current.test.mjs
+        when: template-source
+        id: check.implementation-candidate-current
+      - run: node --test tests/slice-task-package-frontend-boundary.test.mjs
+        when: template-source
+        id: check.slice-task-frontend-inputs
+      - run: node --test tests/backend-delivery-terminal.test.mjs
+        when: template-source
+        id: check.backend-delivery-terminal
       - run: scripts/verify-frontend-delivery-scenarios
         lane: source-scenarios
         parallel_unless_env:
@@ -830,6 +856,15 @@ groups:
         id: check.629b3c9ec897593f
   strategic-handoff-package:
     commands:
+      - run: node --test tests/strategic-handoff-readonly.test.mjs
+        when: template-source
+        id: check.strategic-handoff-readonly
+      - run: node --test tests/strategic-handoff-sealed-owner.test.mjs
+        when: template-source
+        id: check.strategic-handoff-sealed-owner
+      - run: node --test tests/progression-target-evidence.test.mjs
+        when: template-source
+        id: check.progression-target-evidence
       - run: scripts/verify-strategic-handoff-tools-lock
         when: template-source
         id: check.17d5665535e89587

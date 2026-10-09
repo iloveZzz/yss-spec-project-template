@@ -10,11 +10,19 @@ const source=parseDocument(fs.readFileSync(path.join(root,registry),'utf8')).toJ
 const skillId='setup-yss-harness',previousId='yss-harness-upgrade';
 const skill=source.skills.find(s=>s.id===skillId);const differences=[];
 if(!skill)throw new Error(`缺少技能注册: ${skillId}`);
+const migrations='.template-spec/agents/skill-migrations.md',migrationHeading=`## \`${previousId}\` 更名`;
+function migrationRange(text){const start=text.indexOf(migrationHeading);if(start<0)return null;const next=text.indexOf('\n## ',start+1);return[start,next<0?text.length:next+1];}
+const sourceMigrations=fs.readFileSync(path.join(root,migrations),'utf8'),sourceRange=migrationRange(sourceMigrations);
+if(!sourceRange)throw new Error(`缺少维护入口迁移说明: ${previousId}`);
+const migrationSection=sourceMigrations.slice(...sourceRange);
 function emit(ref,bytes){const p=path.join(root,ref);if(!fs.existsSync(p)||!fs.readFileSync(p).equals(Buffer.from(bytes))){differences.push(ref);if(!check){fs.mkdirSync(path.dirname(p),{recursive:true});fs.writeFileSync(p,bytes);}}}
 emit(`.agents/skills/${skillId}/references/operation-contract.md`,'<!-- Generated from .template-spec/process/harness-upgrade.md by .template-source/scripts/sync-harness-upgrade.mjs; edit the source protocol. -->\n\n'+fs.readFileSync(path.join(root,protocol),'utf8'));
 for(const profile of ['design','backend','frontend']){
  const base=`submodules/yss-harness-${profile}-agent`,p=path.join(root,base,registry),doc=parseDocument(fs.readFileSync(p,'utf8'));
  if(doc.errors.length)throw doc.errors[0];
+ const oldMigrations=fs.readFileSync(path.join(root,base,migrations),'utf8'),oldRange=migrationRange(oldMigrations);
+ const insertion=oldRange?.[0]??(oldMigrations.indexOf('\n## ')<0?oldMigrations.length:oldMigrations.indexOf('\n## ')+1);
+ emit(`${base}/${migrations}`,oldMigrations.slice(0,insertion)+migrationSection+oldMigrations.slice(oldRange?.[1]??insertion));
  const entries=doc.get('skills');const existing=entries.items.find(n=>n.get('id')===skillId)||entries.items.find(n=>n.get('id')===previousId);
  if(existing){for(const [key,value]of Object.entries(skill))existing.set(key,value);}else entries.add(skill);
  entries.items=entries.items.filter(n=>n.get('id')!==previousId);
