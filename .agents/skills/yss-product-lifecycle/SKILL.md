@@ -27,6 +27,8 @@ scripts/query-lifecycle-context --work-unit work-unit.plan-requirements --check-
 
 上例用于 `governed` 工作单元。`--include` 限合同顶层键；调用前按 [来源与补装](references/matt-yss-adapter.md) 预检，在既有授权内补装并重验。`daily` 从当前任务影响选择并核验 YSS 技能，不能因省略正式合同漏掉技术约束。
 
+一般任务由 Agent 根据 `skills list --details` 的描述选择内置技能，再用 `skills resolve <id...> --agent-runtime codex --json` 核验所选闭包；按 [来源与补装](references/matt-yss-adapter.md) 消费状态、补装并直接读取已核验入口。
+
 按 `execution_efficiency` 复用入口、合并查询和未变资料，核验资产与门禁；见项目 `.template-spec/process/script-execution.md`。
 
 ## 入口与模式

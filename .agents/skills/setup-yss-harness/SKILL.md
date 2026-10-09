@@ -32,7 +32,7 @@ description: 安全安装或升级 YSS CLI，并按目标工程的真实环境�
 | 安装、升级 CLI，或缺少平台包时构建 | [程序安装与升级](references/program-installation.md)：远程最新正式 Release → 固定版本及摘要 → 程序事务 |
 | 新建治理工程或接管普通工程 | [项目操作](references/project-operations.md)：`init` / `attach` 保存计划后应用 |
 | 原生模板同步、旧四 CLI 实例迁移 | [项目操作](references/project-operations.md) 与 [家族适配](references/cli-families.md)：`sync` / `migrate plan/apply`；有插件 binding 时走插件公开接口 |
-| 补装技能或阶段资源 | [项目操作](references/project-operations.md)：先 `skills/assets list`，再 `ensure` 保存计划后应用 |
+| 补装技能或阶段资源 | [项目操作](references/project-operations.md)：技能先 `list --details` / `resolve`，缺失时 `ensure` 保存计划后应用并重验；阶段沿用 `assets list/ensure` |
 | 诊断、恢复或回退 | 按程序/项目选择上述参考；先只读查状态，再在已有授权范围使用对应事务写入入口 |
 
 ## 共同执行规则
