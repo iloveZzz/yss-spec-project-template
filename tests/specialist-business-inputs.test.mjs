@@ -7,10 +7,11 @@ import {enforceHarnessTaskScope} from '../scripts/lib/harness-execution-scope.mj
 const root=path.resolve(import.meta.dirname,'..');
 const read=(base,ref)=>parse(fs.readFileSync(path.join(base,ref),'utf8'));
 test('专职 Profile 本地 Plan/Spec 与上游路线共享唯一日常政策，不扩另一端实现',()=>{
- const policy=read(root,'.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml').request_triage;
+ const canonical=read(root,'.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml'),policy=canonical.request_triage;
  for(const side of ['backend','frontend']) {
   const base=path.join(root,`submodules/yss-harness-${side}-agent`),profile=read(base,'.template-spec/process/harness-profile.yaml'),contract=read(base,'.agents/skills/harness-orchestrator/references/orchestration-contract.yaml'),registry=read(base,'.template-spec/process/lifecycle-registry.yaml');
   assert.deepEqual(contract.request_triage,policy);
+  for(const key of ['phase_boundary','checkpoint_policy'])assert.deepEqual(contract[key],canonical[key]);
   assert.deepEqual(profile.business_input.modes,['standalone','upstream']);
   assert.equal(profile.business_input.analysis_grants_opposite_side_write,false);
   for(const id of ['work-unit.plan-requirements','work-unit.domain-strategy-design','work-unit.spec-synthesis']) {assert.ok(profile.lifecycle.allowed_work_units.includes(id));assert.ok(registry.work_units.some(x=>x.id===id));assert.ok(contract.work_unit_routes[id]);}

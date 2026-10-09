@@ -120,8 +120,10 @@ function projectedRouting(targetRoot){
  const planReview=checkpointContract.planning?.review_control;
  if(!planReview)throw new Error('源主控缺少 Plan 收敛协议');
  const planReviewChanged=JSON.stringify(current.planning?.review_control)!==JSON.stringify(planReview);
+ const checkpointChanged=['phase_boundary','checkpoint_policy'].some(key=>JSON.stringify(current[key])!==JSON.stringify(checkpointContract[key]));
  const progress={...userProgressReport,owner:targetRoot.endsWith('design-agent')?'yss-strategic-design':'harness-orchestrator',reference:userProgressReport.writing_reference};
- if(JSON.stringify(current.request_triage)===JSON.stringify(checkpointContract.request_triage)&&!planReviewChanged&&JSON.stringify(current.consumer_entry_routes)===JSON.stringify(consumerRoutes)&&JSON.stringify(current.skill_preflight)===JSON.stringify(skillPreflight)&&JSON.stringify(current.user_progress_report)===JSON.stringify(progress)&&JSON.stringify(current.profile_guidance)===JSON.stringify(profileGuidance))return bytes;
+ if(JSON.stringify(current.request_triage)===JSON.stringify(checkpointContract.request_triage)&&!planReviewChanged&&!checkpointChanged&&JSON.stringify(current.consumer_entry_routes)===JSON.stringify(consumerRoutes)&&JSON.stringify(current.skill_preflight)===JSON.stringify(skillPreflight)&&JSON.stringify(current.user_progress_report)===JSON.stringify(progress)&&JSON.stringify(current.profile_guidance)===JSON.stringify(profileGuidance))return bytes;
+ for(const key of ['phase_boundary','checkpoint_policy'])document.set(key,checkpointContract[key]);
  document.setIn(['planning','review_control'],planReview);
  document.set('request_triage',checkpointContract.request_triage);
  document.set('consumer_entry_routes',consumerRoutes);

@@ -175,7 +175,8 @@ export async function localImplementationFixture({nativeSeed,backendRequired=tru
   Object.assign(checkpoint.checks,sliceCP.checks);Object.assign(checkpoint.gates,sliceCP.gates);
   checkpoint.human_review.implementation=sliceCP.human_review.implementation;
   checkpoint.human_review.user_decisions.push(...sliceCP.human_review.user_decisions);
-  Object.assign(checkpoint,{stage:'stage.vertical-slice-implementation',next_work_unit:'work-unit.slice-implementation'});
+  const {sliceImplementationStage}=await load(f.root,'scripts/lib/slice-task-package.mjs');
+  Object.assign(checkpoint,{stage:sliceImplementationStage(f.root),next_work_unit:'work-unit.slice-implementation'});
   checkpoint.artifacts['artifact.slice-implementation-contract']={ref:f.binding.ref,digest:f.binding.digest,status:'approved',evidence_refs:[f.binding.approval_ref]};
   f.write(checkpointRef,checkpoint);
   specProof=modules.spec.inspectSpecBaselineSource(f.root,checkpointRef,undefined,{localFrontend:!!nativeFrontendSeed});

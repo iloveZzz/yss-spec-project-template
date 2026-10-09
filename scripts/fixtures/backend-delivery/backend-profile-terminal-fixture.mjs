@@ -80,7 +80,7 @@ export async function backendProfileTerminalFixture({nativeSeed,strategicInput,o
       evidence:{'evidence.fresh-verification':Object.values(delivery.verification).map(row=>row.ref),'evidence.test-verification':['profile-contract.json']}};
     const checkpointRef='.work/profile/checkpoint.json',terminalRef='.work/profile/backend-delivery.json';
     Object.assign(checkpoint,{feature_id:'feature.profile',stage:'stage.verification',next_work_unit:'work-unit.verification'});
-    if(localEvidence)checkpoint.artifacts={'artifact.spec':{...file('spec.md'),status:'approved'}};
+    if(localEvidence)checkpoint.artifacts={'artifact.spec':{...file('spec.md'),status:'approved',evidence_refs:['spec.md']}};
     const shape=validateJsonSchemas([{value:checkpoint,schemaPath:path.join(f.root,'.template-spec/process/schemas/lifecycle-checkpoint.schema.json'),formatChecker:false}])[0];
     if(!shape.valid)throw new TypeError(`Synthetic native Backend checkpoint shape: ${shape.error}`);
     f.write(checkpointRef,checkpoint);f.write('.work/profile/map.md',`---\ncheckpoint_ref: ${checkpointRef}\n---\n# Synthetic Backend feature\n`);
