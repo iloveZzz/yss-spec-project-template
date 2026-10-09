@@ -2,7 +2,7 @@
   "schema_version": 1,
   "target_id": "template-root",
   "source_repository": "yss-spec-project-template",
-  "source_revision": "ff9a9a78456bbe0540acae060f2a9ddb3627acbd",
+  "source_revision": "33e9ac4295e2f8df3838baec2a3f6d2ae2372d8c",
   "source_state": "committed",
   "transformation_set": [
     "identity"
@@ -235,7 +235,7 @@
     "scripts/lib/slice-applicability.mjs": "sha256:c899fd31a39e3a4237a4a21e13c5fa718b319b792b6365b23b602cf792281e1c",
     "scripts/lib/slice-contract-preparation.mjs": "sha256:b50621e66c5023c23c069aeceb7afcdd14d60cd7b94810fe8c2b33370aba7897",
     "scripts/lib/slice-contract-views.mjs": "sha256:2e572b6ee93014fb145cbb286bc42f4dbebcc210288e60858e4b90f6c548fb6d",
-    "scripts/lib/slice-contract.mjs": "sha256:f90e8eca39797fa06120fa27b3516bf7b760d2aca92be824f5ba774dd857017a",
+    "scripts/lib/slice-contract.mjs": "sha256:328d53acc7678a903c23214c6c75c14ce9dbcc2e826e10a93de4d2f1c14e61e0",
     "scripts/lib/slice-execution-preflight.mjs": "sha256:5f8155944be784bfaead5c5e1ab24c40868b05917ff81fb17c25535c6a4dc181",
     "scripts/lib/slice-repositories.mjs": "sha256:3658ce26cb3d4b88bff3c882a848977dcd4bc5664bcba6fc235f6c16c35f99e3",
     "scripts/lib/slice-task-package.mjs": "sha256:625803c527b8e8cd72a9db049e699edd066bcc3cb23446ac8d0efa5b07842ec3",
@@ -538,7 +538,7 @@
     "scripts/lib/slice-applicability.mjs": "sha256:c899fd31a39e3a4237a4a21e13c5fa718b319b792b6365b23b602cf792281e1c",
     "scripts/lib/slice-contract-preparation.mjs": "sha256:b50621e66c5023c23c069aeceb7afcdd14d60cd7b94810fe8c2b33370aba7897",
     "scripts/lib/slice-contract-views.mjs": "sha256:2e572b6ee93014fb145cbb286bc42f4dbebcc210288e60858e4b90f6c548fb6d",
-    "scripts/lib/slice-contract.mjs": "sha256:f90e8eca39797fa06120fa27b3516bf7b760d2aca92be824f5ba774dd857017a",
+    "scripts/lib/slice-contract.mjs": "sha256:328d53acc7678a903c23214c6c75c14ce9dbcc2e826e10a93de4d2f1c14e61e0",
     "scripts/lib/slice-execution-preflight.mjs": "sha256:5f8155944be784bfaead5c5e1ab24c40868b05917ff81fb17c25535c6a4dc181",
     "scripts/lib/slice-repositories.mjs": "sha256:3658ce26cb3d4b88bff3c882a848977dcd4bc5664bcba6fc235f6c16c35f99e3",
     "scripts/lib/slice-task-package.mjs": "sha256:625803c527b8e8cd72a9db049e699edd066bcc3cb23446ac8d0efa5b07842ec3",
