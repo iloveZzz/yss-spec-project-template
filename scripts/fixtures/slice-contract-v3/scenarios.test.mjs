@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { hash } from '../../lib/strategic-handoff-io.mjs';
-import { normalizeSliceContract } from '../../lib/slice-contract.mjs';
+import { normalizeSliceContract,selectSliceWorkUnit,sourceSliceContract } from '../../lib/slice-contract.mjs';
 
 function fixture() {
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'slice-v3-'));
@@ -246,4 +246,19 @@ test('stage work item cannot be disguised as the implementation contract ticket'
     assert.throws(()=>normalizeSliceContract(f.contract,{root:f.root}),/stage-work-item/);
     assert.throws(()=>normalizeSliceContract({schema_version:2,lifecycle_refs:{ticket:'ticket.md'}},{root:f.root}),/stage-work-item/);
   }finally{f.cleanup();}
+});
+
+test('single-repository specialist Agent units preserve source and frozen scope',()=>{
+ for(const role of ['role.backend-engineer','role.frontend-engineer','role.backend-agent','role.frontend-agent']) {
+  const f=fixture();try {
+   f.contract.work_units[0].role_id=role;f.contract.work_units[0].project_root=f.root;f.contract.work_units[0].allowed_write_paths=['src/owned'];
+   const original=structuredClone(f.contract),normalized=normalizeSliceContract(f.contract,{root:f.root}),selected=selectSliceWorkUnit(normalized,'validate');
+   assert.deepEqual(selected.common.allowed_write_paths,['src/owned']);assert.deepEqual(selected.common.project_roots,[f.root]);
+   assert.deepEqual(sourceSliceContract(selected),original);assert.deepEqual(f.contract,original);
+   const opposite=role.includes('backend')?'frontend':'backend';assert.deepEqual(selected[opposite],{status:'not-applicable'});
+   normalized.work_units[0].role_id='role.requirements-manager';assert.throws(()=>selectSliceWorkUnit(normalized,'validate'),/原始合同冲突/);
+   f.contract.work_units[0].role_id='role.requirements-manager';assert.throws(()=>selectSliceWorkUnit(normalizeSliceContract(f.contract,{root:f.root}),'validate'),/明确后端或前端角色/);
+   f.contract.work_units[0].allowed_write_paths=['outside'];assert.throws(()=>normalizeSliceContract(f.contract,{root:f.root}),/写范围/);
+  }finally{f.cleanup();}
+ }
 });

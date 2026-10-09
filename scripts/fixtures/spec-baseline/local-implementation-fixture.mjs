@@ -156,10 +156,10 @@ export async function localImplementationFixture({nativeSeed,backendRequired=tru
     if(!backendRequired){contract.work_units=[];contract.verification={};}
     contract.verification.frontend={command:'pnpm test',cwd:owner.project,expected_evidence:['frontend/pnpm.log'],test_seams:['submit'],acceptance_refs:['AC-001']};
     contract.work_units.push({id:'work-unit.slice-frontend',behavior:'提交供应商材料并验证成功与失败状态',role_id:nativeFrontendSeed?'role.frontend-agent':'role.frontend-engineer',
-     primary_skill:'yss-frontend-scaffold-generator',supporting_skills:[],tdd_mode:'behavior-tdd',project_root:owner.project,
+     primary_skill:nativeFrontendSeed?'yss-ui':'yss-frontend-scaffold-generator',supporting_skills:[],tdd_mode:'behavior-tdd',project_root:owner.project,
      allowed_write_paths:['src/frontend'],verification_refs:['frontend'],acceptance_refs:['AC-001']});
     owner.write(checkpointRef,checkpoint);
-    const compiled=receiverCompiler.compileDefaultImplementationContract({root,recipeIds:[...(backendRequired?contract.resolution.recipe_ids:[]),'frontend.vue3-scaffold'],
+    const compiled=receiverCompiler.compileDefaultImplementationContract({root,recipeIds:nativeFrontendSeed?['frontend.ui-slice']:[...(backendRequired?contract.resolution.recipe_ids:[]),'frontend.vue3-scaffold'],
      slice_id:contract.slice_id,checkpoint_ref:checkpointRef,...(backendRequired?{architecture_identity:owner.identity,architecture_evidence:owner.bindings,technical_design:owner.technical_design}:{})});
     if(compiled.frontend_delivery)throw Error('Local approved assets must not manufacture a frontend acceptance receipt');
     for(const key of ['required_capabilities','required_skills','recipe_ids','registry_digest','compiler_contract_digest','component_bindings','component_bindings_digest'])if(compiled[key]!==undefined)contract.resolution[key]=compiled[key];

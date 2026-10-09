@@ -250,11 +250,11 @@ export function selectSliceWorkUnit(contract,workUnitId) {
    requireThat(repo,'工作单元未绑定当前登记工程');
    selected={...contract,backend:repo.project.delivery_role==='backend'?contract.backend:{status:'not-applicable'},frontend:repo.project.delivery_role==='frontend'?{...contract.frontend,...(repo.resolution.frontend_delivery?{delivery:repo.resolution.frontend_delivery}:{})}:{status:'not-applicable'},resolution:{...repo.resolution,freshness:contract.resolution.freshness},common:{...contract.common,project_roots:[unit.project_root],allowed_write_paths:unit.allowed_write_paths},lifecycle_refs:{...contract.lifecycle_refs,...Object.fromEntries(Object.entries(repo.basis).map(([k,v])=>[k,v.ref]))}};
  } else {
-   requireThat(['role.backend-engineer','role.frontend-engineer'].includes(unit.role_id),'单仓职责选择需要明确后端或前端角色');
+   requireThat(['role.backend-engineer','role.frontend-engineer','role.backend-agent','role.frontend-agent'].includes(unit.role_id),'单仓职责选择需要明确后端或前端角色');
    requireThat(contract.common.project_roots.includes(unit.project_root)
      &&allowed.length>0&&allowed.every(ref=>contract.common.allowed_write_paths.some(parent=>withinSlicePath(ref,parent))),'工作单元超出当前工程或已冻结写范围');
-   selected={...contract,backend:unit.role_id==='role.backend-engineer'?contract.backend:{status:'not-applicable'},
-     frontend:unit.role_id==='role.frontend-engineer'?contract.frontend:{status:'not-applicable'},
+   selected={...contract,backend:['role.backend-engineer','role.backend-agent'].includes(unit.role_id)?contract.backend:{status:'not-applicable'},
+     frontend:['role.frontend-engineer','role.frontend-agent'].includes(unit.role_id)?contract.frontend:{status:'not-applicable'},
      work_units:[unit],common:{...contract.common,project_roots:[unit.project_root],allowed_write_paths:[...allowed]}};
  }
  originals.set(selected,{source,selection:Object.freeze({work_unit_id:unit.id,role_id:unit.role_id,
