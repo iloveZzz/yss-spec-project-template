@@ -5,7 +5,7 @@ import { assertAssetTransactionIdle } from './asset-transactions.mjs';
 import { assertTrackingEntry } from './stage-tracking.mjs';
 import {assertProgressionEntry} from './lifecycle-progression.mjs';
 import { normalizeSliceContract } from './slice-contract.mjs';
-import { assertSliceV3TaskPackage } from './slice-task-package.mjs';
+import { assertSliceV3TaskPackage, sliceImplementationStage } from './slice-task-package.mjs';
 export { compileSliceTaskPackage, assertSliceV3TaskPackage } from './slice-task-package.mjs';
 import { existsSync, readFileSync } from "node:fs";
 import { resolveMaintenanceOutput, resolveMaintenanceReference } from "./maintenance-storage.mjs";
@@ -208,7 +208,7 @@ function validateContract(value, registry, lifecycle, { history = false } = {}) 
     return;
   }
   if (contract.lifecycle_ref || contract.maintenance_ref) fail("slice-implementation 不得携带其他合同引用");
-  if (!/^stage\.vertical-slice-implementation$/.test(value.stage_id)) fail("slice-implementation 必须绑定垂直切片实现阶段");
+  if (value.stage_id !== sliceImplementationStage()) fail("slice-implementation 必须绑定垂直切片实现阶段");
   if (value.convergence.parent_work_unit !== implementationWorkUnit) fail("slice-implementation 必须汇合到 work-unit.slice-implementation");
   if (/^https?:\/\//.test(contract.slice_contract_ref)) fail("slice_contract_ref 必须引用本地已持久化的 Slice Implementation Contract");
   const contractPath = assertSafeRelativePath(contract.slice_contract_ref, "contract.slice_contract_ref");

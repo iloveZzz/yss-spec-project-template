@@ -2,8 +2,8 @@
   "schema_version": 1,
   "target_id": "template-root",
   "source_repository": "yss-spec-project-template",
-  "source_revision": "dd5323ba0ab8fce3dbad613a1461b3822b7005da",
-  "source_state": "committed",
+  "source_revision": "5e34542268d093162e6803f863090a9bdc162cec",
+  "source_state": "working-tree",
   "transformation_set": [
     "identity"
   ],
@@ -238,7 +238,7 @@
     "scripts/lib/slice-contract.mjs": "sha256:f90e8eca39797fa06120fa27b3516bf7b760d2aca92be824f5ba774dd857017a",
     "scripts/lib/slice-execution-preflight.mjs": "sha256:5f8155944be784bfaead5c5e1ab24c40868b05917ff81fb17c25535c6a4dc181",
     "scripts/lib/slice-repositories.mjs": "sha256:3658ce26cb3d4b88bff3c882a848977dcd4bc5664bcba6fc235f6c16c35f99e3",
-    "scripts/lib/slice-task-package.mjs": "sha256:b310ff06e92174d42cf4125bb0a2328bcbfd97eecc965f4f011c079bb0e3d80b",
+    "scripts/lib/slice-task-package.mjs": "sha256:625803c527b8e8cd72a9db049e699edd066bcc3cb23446ac8d0efa5b07842ec3",
     "scripts/lib/source-context-snapshot.mjs": "sha256:0d98e2a705afbbff852f5de4a19cf6187434335f1a0ce044ea253ae628f20c4e",
     "scripts/lib/spec-baseline.mjs": "sha256:ac776fd1460f417e6186dfc6ceb9e8e2a2713ccb41646a7e5a9c05fdb3289f64",
     "scripts/lib/stage-tracking-migration.mjs": "sha256:19905071e3a5e5e646a724c760382d142f5a0321dd2736bcb6efbb644d6b56a1",
@@ -541,7 +541,7 @@
     "scripts/lib/slice-contract.mjs": "sha256:f90e8eca39797fa06120fa27b3516bf7b760d2aca92be824f5ba774dd857017a",
     "scripts/lib/slice-execution-preflight.mjs": "sha256:5f8155944be784bfaead5c5e1ab24c40868b05917ff81fb17c25535c6a4dc181",
     "scripts/lib/slice-repositories.mjs": "sha256:3658ce26cb3d4b88bff3c882a848977dcd4bc5664bcba6fc235f6c16c35f99e3",
-    "scripts/lib/slice-task-package.mjs": "sha256:b310ff06e92174d42cf4125bb0a2328bcbfd97eecc965f4f011c079bb0e3d80b",
+    "scripts/lib/slice-task-package.mjs": "sha256:625803c527b8e8cd72a9db049e699edd066bcc3cb23446ac8d0efa5b07842ec3",
     "scripts/lib/source-context-snapshot.mjs": "sha256:0d98e2a705afbbff852f5de4a19cf6187434335f1a0ce044ea253ae628f20c4e",
     "scripts/lib/spec-baseline.mjs": "sha256:ac776fd1460f417e6186dfc6ceb9e8e2a2713ccb41646a7e5a9c05fdb3289f64",
     "scripts/lib/stage-tracking-migration.mjs": "sha256:19905071e3a5e5e646a724c760382d142f5a0321dd2736bcb6efbb644d6b56a1",
