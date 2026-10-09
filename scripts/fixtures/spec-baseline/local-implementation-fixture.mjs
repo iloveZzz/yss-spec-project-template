@@ -65,6 +65,7 @@ export async function localImplementationFixture({nativeSeed,backendRequired=tru
   const nativeReaders={compiler:await load(nativeSeed,'scripts/lib/implementation-contract-compiler.mjs'),
    preparation:await load(nativeSeed,'scripts/lib/slice-contract-preparation.mjs'),
    slice:await load(nativeSeed,'scripts/lib/slice-contract.mjs')};
+  const receiverCompiler=nativeFrontendSeed?await load(nativeFrontendSeed,'scripts/lib/implementation-contract-compiler.mjs'):nativeReaders.compiler;
   let checkpoint,checkpointRef,specProof;
   f=terminalReviewFixture({nativeSeed,nativeReaders,apiRequired:backendRequired,
    specText:'---\ncontent_profile: plan-spec-v1\n---\n## 功能需求\n| ID | 需求 |\n|---|---|\n| FR-1 | 提交材料 |\n## 验收标准\n| ID | 需求引用 |\n|---|---|\n| AC-1 | FR-1 |\n',
@@ -141,7 +142,7 @@ export async function localImplementationFixture({nativeSeed,backendRequired=tru
     contract.basis.ticket={...bind(owner.ticket),version:'v1'};
     contract.acceptance={'AC-001':{source:'spec',locator:'AC-001'}};
     if(backendRequired){contract.scope.impacted_areas.push('frontend');contract.scope.allowed_write_paths.push('src/frontend');}
-    else{contract.scope.impacted_areas=['frontend','ui'];contract.scope.allowed_write_paths=['src/frontend'];contract.applicability.backend={status:'not-applicable',reason:'Synthetic approved UI-only scope has no backend/API/data implementation.'};delete contract.extensions.backend;}
+    else{contract.scope.impacted_areas=['frontend','ui'];contract.scope.allowed_write_paths=['src/frontend'];contract.applicability.backend={status:'not-applicable',reason:'Synthetic approved UI-only scope has no backend/API/data implementation.'};delete contract.extensions.backend;delete contract.resolution.architecture_identity;for(const key of ['repository_registration','manifest','backend_repository','maven_wrapper','technical_design'])delete contract.basis[key];}
     contract.applicability.frontend={status:'required'};
     const frontendSources={requirement_freeze:originalSpec,low_fidelity_review:'source/product-design-review-package.json',
      prototype_review:prototypeReview.binding.approval_ref,prototype_profile_decision:'local-prototype-profile.json',
@@ -157,8 +158,9 @@ export async function localImplementationFixture({nativeSeed,backendRequired=tru
     contract.work_units.push({id:'work-unit.slice-frontend',behavior:'提交供应商材料并验证成功与失败状态',role_id:nativeFrontendSeed?'role.frontend-agent':'role.frontend-engineer',
      primary_skill:'yss-frontend-scaffold-generator',supporting_skills:[],tdd_mode:'behavior-tdd',project_root:owner.project,
      allowed_write_paths:['src/frontend'],verification_refs:['frontend'],acceptance_refs:['AC-001']});
-    const compiled=nativeReaders.compiler.compileDefaultImplementationContract({root,recipeIds:[...(backendRequired?contract.resolution.recipe_ids:[]),'frontend.vue3-scaffold'],
-     slice_id:contract.slice_id,checkpoint_ref:checkpointRef,architecture_identity:owner.identity,architecture_evidence:owner.bindings,technical_design:owner.technical_design});
+    owner.write(checkpointRef,checkpoint);
+    const compiled=receiverCompiler.compileDefaultImplementationContract({root,recipeIds:[...(backendRequired?contract.resolution.recipe_ids:[]),'frontend.vue3-scaffold'],
+     slice_id:contract.slice_id,checkpoint_ref:checkpointRef,...(backendRequired?{architecture_identity:owner.identity,architecture_evidence:owner.bindings,technical_design:owner.technical_design}:{})});
     if(compiled.frontend_delivery)throw Error('Local approved assets must not manufacture a frontend acceptance receipt');
     for(const key of ['required_capabilities','required_skills','recipe_ids','registry_digest','compiler_contract_digest','component_bindings','component_bindings_digest'])if(compiled[key]!==undefined)contract.resolution[key]=compiled[key];
    }});

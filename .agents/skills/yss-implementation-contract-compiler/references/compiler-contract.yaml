@@ -72,7 +72,7 @@ readiness:
   backend_impact: [engineering_baseline, backend_repository, maven_wrapper]
   cross_repo: [repository_registry, delivery_order, integration_verification, rollback_order]
   frontend_delivery:
-    when: specialized-frontend-profile-or-explicit-frontend-delivery-binding
+    when: upstream-handoff-or-explicit-frontend-delivery-binding
     source: .template-spec/process/frontend-backend-delivery.md
     verifier: scripts/verify-frontend-delivery
     output_binding: frontend.delivery

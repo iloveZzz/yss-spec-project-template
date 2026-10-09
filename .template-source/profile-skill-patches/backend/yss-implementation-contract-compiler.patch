@@ -14,7 +14,7 @@ index c76da16..9d2428a 100644
  ## 输入
  
 -先读取 Spec、切片 Ticket、需求冻结、适用的原型确认、OpenAPI Freeze/no-impact、适用的系统/数据架构和 Design Review、Build Architecture Checklist、实现仓库和验证命令。输入缺失、未批准或 `stale` 时输出 `blocked`，交回 `yss-product-lifecycle`。
-+采用专职前端 profile 或显式 `frontend_delivery` 时，按 `.template-spec/process/frontend-backend-delivery.md` 核验战略与后端联合交付；缺任一输入只诊断和回交，正式实现与恢复从当前批准的 Slice Contract 重验接收摘要和真实服务。
++按 `.template-spec/process/frontend-backend-delivery.md` 区分来源：上游战略交接或显式 `frontend_delivery` 绑定须核验联合交付并冻结接收摘要；本地已批准资产须绑定当前功能 checkpoint 与 Spec，实际核验适用的设计和后端/API 依赖，不要求外部接收回执。纯 UI 无后端/API 影响时记录有理由的 not-applicable。无效的显式绑定不得回退本地路径；正式实现、生成和恢复仍须当前批准的 Slice Contract，接口或部署漂移使受影响证据失效。
  
 -## 编译循环
 +必须读取 yss-project.yaml、CONTEXT.md、Spec / 战略设计、Technical Design Contract、API / 数据 / UI 影响、实现仓库登记、允许写路径和验证命令。输入缺失、未批准或过期时返回 blocked。
@@ -32,7 +32,7 @@ index c76da16..9d2428a 100644
 -完整草案使用 `scripts/slice-contract prepare` 或 `prepareSliceImplementationContract` 从已有 Ticket / checkpoint 和必要细化组装；执行前读取唯一 YAML，视图和检查报告不授予权限。
  
 -来源摘要、闭包、阅读视图和校验直接复用 `slice-contract` / `contract` 入口；不再用临时脚本手工重算同一合同。工具或参数缺失按消费项目 `.template-spec/process/script-execution.md` 诊断，禁止用自写校验替代当前合同门禁。
-+接入与导出先按 `.template-spec/process/delivery-preflight.md` 执行对应阶段只读预检；既有工程身份按 `.template-spec/process/existing-backend-architecture.md` 读取原始证据，不补造生成器来源。无 UI 改动可承接当前确认的 `existing-ui-baseline`，新设计仍走原型；当前批准后仅允许登记与合同交集内的输出增量。
++接入与导出先按 `.template-spec/process/delivery-preflight.md` 执行对应阶段只读预检；适用的既有后端工程身份按 `.template-spec/process/existing-backend-architecture.md` 只读消费原始证据，不补造生成器来源。无 UI 改动可承接当前确认的 `existing-ui-baseline`，新设计仍走原型；当前批准后仅允许登记与合同交集内的输出增量。
  
 -合同结构见 [slice-implementation-contract.md](references/slice-implementation-contract.md)，专项返回协议见 [yss-skill-execution-result.md](references/yss-skill-execution-result.md)。前端、后端和测试子任务必须由生命周期主控从批准的 Slice Contract 编译任务包；任务包 schema 为 `.template-spec/process/schemas/subagent-task-package.schema.json`，技能列表必须来自 `taskPackageDefaults`，不能由编译器或执行 Agent 另行手写。
 +## 编译结果
@@ -40,7 +40,7 @@ index c76da16..9d2428a 100644
 -## 硬规则
 +来源摘要、闭包、阅读视图和校验直接复用本 Profile 已安装的 `slice-contract` / `contract` 入口；工具或参数缺失按 消费项目 `.template-spec/process/script-execution.md` 诊断，不用临时校验替代当前合同门禁。
  
--采用专职前端 profile 或显式 `frontend_delivery` 绑定时，先按 `.template-spec/process/frontend-backend-delivery.md` 实际核验战略与后端联合交付。缺任一输入只能诊断和回交；输入通过后准备计划/合同，正式实现、生成和恢复仍须当前批准的 Slice Contract 冻结接收摘要。接口或部署版本漂移时重新接收，不复用旧成功输出。
+-按 `.template-spec/process/frontend-backend-delivery.md` 区分来源：上游战略交接或显式 `frontend_delivery` 绑定须核验联合交付并冻结接收摘要；本地已批准资产须绑定当前功能 checkpoint 与 Spec，实际核验适用的设计和后端/API 依赖，不要求外部接收回执。纯 UI 无后端/API 影响时记录有理由的 not-applicable。无效的显式绑定不得回退本地路径；正式实现、生成和恢复仍须当前批准的 Slice Contract，接口或部署漂移使受影响证据失效。
 +新合同使用 Slice v3 唯一 YAML：basis、scope、resolution、acceptance、verification、work_units 与适用 extensions 单点保存；任务包由批准合同派生。v2 按原规则读取，修改时显式迁移新草案，不继承批准。
  
 -- 编译器不得输出 `approved`、`ready-for-agent` 或 `completed`。
@@ -332,7 +332,7 @@ index db54b2d..6e159ef 100644
 -  backend_impact: [engineering_baseline, backend_repository, maven_wrapper]
 -  cross_repo: [repository_registry, delivery_order, integration_verification, rollback_order]
 -  frontend_delivery:
--    when: specialized-frontend-profile-or-explicit-frontend-delivery-binding
+-    when: upstream-handoff-or-explicit-frontend-delivery-binding
 -    source: .template-spec/process/frontend-backend-delivery.md
 -    verifier: scripts/verify-frontend-delivery
 -    output_binding: frontend.delivery
@@ -1144,7 +1144,7 @@ index db54b2d..6e159ef 100644
    unknown_dependency: block-all
    compiler_must_not_approve: true
 +frontend_delivery_readiness:
-+  when: specialized-frontend-profile-or-explicit-frontend-delivery-binding
++  when: upstream-handoff-or-explicit-frontend-delivery-binding
 +  source: .template-spec/process/frontend-backend-delivery.md
 +  verifier: scripts/verify-frontend-delivery
 +  output_binding: frontend.delivery
@@ -1200,7 +1200,7 @@ index a5319c6..927c020 100644
 -`yss-implementation-contract-compiler` 生成草案；`yss-product-lifecycle` 核验、批准并持久化。合同缺少必填字段时状态为 `blocked`。schema v1 已停止支持，必须重新编译为 v2，不提供自动升级。
 +由 `yss-implementation-contract-compiler` 生成草案，由 `harness-orchestrator` 校验、持久化和批准。合同以一个垂直切片为边界，四个 Agent 必须消费同一个 contract_id / contract_version 和 resolution digest。schema v1 已停止支持，必须重新编译，不自动升级。
  
--采用专职前端 profile 时，`frontend.delivery` 绑定 `{acceptance_ref, digest}`，来自 `scripts/verify-frontend-delivery` 的当前结果；也可由 `resolution.frontend_delivery` 承载，两处并存时必须一致。正式执行从持久化合同读取并重验输入。细则见 `.template-spec/process/frontend-backend-delivery.md`。
+-采用上游交接或显式 `frontend_delivery` 绑定时，`frontend.delivery` 绑定 `{acceptance_ref, digest}`，来自 `scripts/verify-frontend-delivery` 的当前结果；也可由 `resolution.frontend_delivery` 承载，两处并存时必须一致。本地已批准资产绑定当前功能 checkpoint 与 Spec，实际核验适用的设计和后端/API 依赖；纯 UI 无相关影响须记录有理由的 not-applicable，不补造外部回执。正式执行从当前批准的持久化合同重验输入；无效的显式绑定不得回退本地路径。细则见 `.template-spec/process/frontend-backend-delivery.md`。
 +## 合同结构
  
 -```yaml
@@ -1421,7 +1421,7 @@ index a5319c6..927c020 100644
 -    verification_commands: []
 -    behavior_tests_after_generation: []
 -```
-+只有上游输入、战术设计 / not-applicable、API / 数据 / UI 影响、实现仓库、写路径、测试 seam、验证命令和证据均满足，且不存在 blocked / stale / drift / violation / new_impacts 时，Orchestrator 才能把合同和切片设置为 ready-for-agent。
++只有当前批准的本地输入或已核验的上游输入、战术设计 / not-applicable、API / 数据 / UI 影响、实现仓库、写路径、测试 seam、验证命令和证据均满足，且不存在 blocked / stale / drift / violation / new_impacts 时，Orchestrator 才能把合同和切片设置为 ready-for-agent。
 +
 +API schema、数据库 schema、状态机、Visual Baseline 版本或 digest、聚合、不变量、Gateway、写路径、测试 seam、验证命令、Registry digest 或 Compiler digest 发生实质变化时，当前合同变为 stale，所有下游任务暂停并递增 contract_version；重新编译后仍须由 Orchestrator 再批准。UI 切片只消费 `visual_baseline_case_ids` 指定的图片；Agent 必须先读 manifest 与语义引用，不得按目录 glob 猜测图片含义。
  
