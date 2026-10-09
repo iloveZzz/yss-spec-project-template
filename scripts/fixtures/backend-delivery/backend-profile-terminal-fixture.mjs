@@ -61,9 +61,9 @@ export async function backendProfileTerminalFixture({nativeSeed,strategicInput,o
       scope:{slice_id:f.contract.slice_id,source_ids:['rule.complete','scenario.submit'],operation_ids:['submitSupplier']},
       openapi:api.binding,slice_contract:f.binding,build:{source_commit:f.git('rev-parse','HEAD'),artifact_digest:`sha256:${'b'.repeat(64)}`},
       environment:{id:'profile-fixture',base_url:'http://127.0.0.1:1',deployment_id:'profile-fixture-v1',revision_path:'/version',revision_pointers:{deployment_id:'/deployment_id',source_commit:'/source_commit',openapi_digest:'/openapi_digest',artifact_digest:'/artifact_digest',test_data_digest:'/test_data_digest'},...environment,test_data:file('profile-data.md')},verification:{},supporting_files:[...supporting].sort()};
-    if(localEvidence) {delivery.delivery_mode='local-evidence';for(const key of ['strategic_bundle_ref','strategic_bundle_digest','strategic_route_id'])delete delivery[key];}
+    if(localEvidence) {delivery.delivery_mode='local-evidence';delivery.scope.source_ids=Object.keys(f.contract.acceptance);for(const key of ['strategic_bundle_ref','strategic_bundle_digest','strategic_route_id'])delete delivery[key];}
     for(const [key,kind]of [['contract','backend-contract'],['deployment','backend-deployment']]) {
-      f.write(`profile-${key}.json`,{schema_version:1,kind,subject_digest:producer.backendDeliveryBasis(delivery),results:[{command:'synthetic-current-native-verification',executed_at:new Date().toISOString(),exit_code:0,evidence:[file('profile-deployment.log')]}],operation_ids:['submitSupplier'],coverage:['success','failure'].map(outcome=>({source_id:'scenario.submit',outcome}))});
+      f.write(`profile-${key}.json`,{schema_version:1,kind,subject_digest:producer.backendDeliveryBasis(delivery),results:[{command:'synthetic-current-native-verification',executed_at:new Date().toISOString(),exit_code:0,evidence:[file('profile-deployment.log')]}],operation_ids:['submitSupplier'],coverage:(localEvidence?delivery.scope.source_ids:['scenario.submit']).flatMap(source_id=>['success','failure'].map(outcome=>({source_id,outcome})))});
       delivery.verification[key]=file(`profile-${key}.json`);
     }
     f.write('profile-delivery.json',delivery);
