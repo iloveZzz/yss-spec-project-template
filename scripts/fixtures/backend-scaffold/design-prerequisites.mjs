@@ -82,6 +82,7 @@ export function attachDesignPrerequisites(root, contract, { dataImpact = "not-ap
   };
   let openapi = null;
   if (apiImpact === "required") {
+    write(root, ".template-spec/agents/issue-tracker.md", "---\ntracker:\n  platform: local-markdown\n  root: docs/.scratch\n---\n");
     const slug = contract.project_name.toLowerCase().replace(/[^a-z0-9-]+/g, "-").replace(/^-+|-+$/g, "") || "demo";
     openapi = write(root, `docs/.scratch/${slug}/api/${slug}.yaml`, [
       "openapi: 3.1.0",

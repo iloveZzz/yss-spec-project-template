@@ -22,7 +22,7 @@ for profile in seeds:
   for x in re.findall(r'["\'](\.agents/skills/yss-ui/[^"\']+)["\']',f.read_text()): seeds[profile].append(x)
 for profile in ['design','frontend']:
  seeds[profile]+=[str(x.relative_to(R)) for x in (R/'.agents/skills/yss-ddd-scaffold-generator').rglob('*') if x.is_file()]
- seeds[profile]+=['scripts/fixtures/user-decision/build-fixture.mjs','scripts/fixtures/backend-scaffold/attach-design-prerequisites.mjs','scripts/fixtures/backend-scaffold/design-prerequisites.mjs','yss-project.yaml','CONTEXT.md','.template-source/engineering/evidence/aliyun-artifact-resolution.json']
+ seeds[profile]+=['scripts/fixtures/user-decision/build-fixture.mjs','scripts/fixtures/backend-scaffold/attach-design-prerequisites.mjs','scripts/fixtures/backend-scaffold/design-prerequisites.mjs','yss-project.yaml','CONTEXT.md','.template-spec/engineering/evidence/aliyun-artifact-resolution.json']
  # Data dependencies of schema validation and approved scaffold source provenance.
  seeds[profile]+=[str(x.relative_to(R)) for x in (R/'.template-spec/process/schemas').glob('*scaffold*') if x.is_file()]
  seeds[profile]+=[str(x.relative_to(R)) for x in (R/'.agents/skills/yss-technical-design/references').glob('*.json')]

@@ -46,7 +46,7 @@ description: 用于生成完整的 YSS DDD 多模块后端脚手架。当用户�
 - `*-bootstrap` 下可被 Spring Boot Maven Plugin 发现的机械 `*Application` 启动入口
 - 基础配置、机械模板、构建脚本
 
-生成前预检与生成后内容验收须读取 [工程内容检查](references/engineering-checks.md)，并消费既有 [工程基线](references/engineering-baseline.md)。凭据仅从安全环境注入，日志须脱敏。
+生成前预检与生成后内容验收须读取 [工程内容检查](references/engineering-checks.md)，并消费既有 [工程基线](references/engineering-baseline.md)。Maven 优先参考用户目录的 settings 或既有显式配置，缺少可用配置时询问用户文件路径或必要仓库信息；凭据留在用户配置或安全环境，日志脱敏。
 
 ## 使用约束
 

@@ -91,11 +91,12 @@ export function checkPlatformDependencies(profile, effectivePom, dependencyTrees
 }
 
 export async function platformCommand(projectRoot, evidenceDir, label, args, environment, options = {}) {
+  args = [...args, ...(options.mavenArgs ?? [])];
   const stdout_ref = path.join(evidenceDir, `${label}.stdout.log`);
   const stderr_ref = path.join(evidenceDir, `${label}.stderr.log`);
   const executed_at = new Date().toISOString();
   const start = Date.now();
-  const result = await runCommand(path.join(projectRoot, "mvnw"), args, { cwd: projectRoot, env: environment, timeoutMs: options.timeoutMs || 180000, signal: options.signal, stdoutFile: stdout_ref, stderrFile: stderr_ref, secrets: [environment.MAVEN_REPO_USERNAME, environment.MAVEN_REPO_PASSWORD], progress: true });
+  const result = await runCommand(path.join(projectRoot, "mvnw"), args, { cwd: projectRoot, env: environment, timeoutMs: options.timeoutMs || 180000, signal: options.signal, stdoutFile: stdout_ref, stderrFile: stderr_ref, secrets: options.secrets ?? [], progress: true });
   return { command: `./mvnw ${args.join(" ")}`, exit_code: result.status, termination: result.termination, executed_at, duration_ms: Date.now() - start, stdout_ref, stderr_ref, stdout: result.stdout, stderr: result.stderr };
 }
 export async function verifyPlatformDependencies(projectRoot, evidenceDir, profile, environment, options = {}) {
@@ -203,7 +204,7 @@ export async function verifyPlatformStartup(projectRoot, evidenceDir, manifest, 
     const killTimer = setTimeout(() => { if (!exited) child.kill("SIGKILL"); }, 3000);
     await closed; clearTimeout(killTimer);
   }
-  const redact = text => [environment.MAVEN_REPO_USERNAME, environment.MAVEN_REPO_PASSWORD].filter(Boolean).reduce((value, secret) => value.replaceAll(secret, "[REDACTED]"), text);
+  const redact = text => [...(options.secrets ?? []), environment.MAVEN_REPO_USERNAME, environment.MAVEN_REPO_PASSWORD].filter(Boolean).reduce((value, secret) => value.replaceAll(secret, "[REDACTED]"), text);
   await writeFile(path.join(evidenceDir, "startup.stdout.log"), redact(output));
   await writeFile(path.join(evidenceDir, "startup.stderr.log"), redact(errors));
   return { status: passed ? "passed" : "failed", commands: [command], executed_at: processStartedAt, artifact_digest: platformDigest(await readFile(path.join(target, jars[0]))), stdout_ref: path.join(evidenceDir, "startup.stdout.log"), stderr_ref: path.join(evidenceDir, "startup.stderr.log") };

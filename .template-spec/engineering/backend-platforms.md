@@ -50,6 +50,8 @@ Boot 2 私服中的 Cache `3.0.0-SNAPSHOT` 使用 JDK 8 构建且 BOM 2.x 管理
 
 `compatibility[].artifact_resolution_evidence` 绑定私服解析报告的相对路径和原始字节摘要。加载 catalog 时会同时核对 report ID、仓库 ID、timestamped version、POM/JAR SHA-256 与可证明的 Git tree；报告字节或任一构件绑定变化都返回 `component-binding-drift`。报告不保存 Maven 用户名、密码或令牌。用户级 `settings.xml` 只提供下载配置；其中 profile 下的 `distributionManagement` 会被 Maven 忽略，发布目标必须由发布 POM 持有。
 
+供实例运行时消费的解析报告保存在 `.template-spec/engineering/evidence/`，与平台清单一起分发并保持原始字节摘要；不得引用实例分发排除的 `.template-source/` 维护证据。报告可读只证明构件解析绑定，不改变平台或能力的认证状态。
+
 ## 依赖与验证
 
 Boot BOM 管理 Spring Framework/MVC、嵌入式容器、Servlet、Validation、Jackson 等依赖，Boot Plugin 与 Boot 精确版本相同。Boot 3.5 Validation 作为 `platform-managed` capability 解析，不再要求 YSS Validation starter。YSS 父 POM/BOM 仍由用户确认，解析结果冲突则阻断，不能依靠属性覆盖宣称兼容。清单记录构建工具、Lombok、MapStruct、Swagger、ArchUnit 的候选版本；YSS 组件源码不在脚手架步骤中改造。

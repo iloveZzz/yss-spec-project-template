@@ -412,7 +412,7 @@
           "source": ".template-spec/templates/retro-report-template.md"
         },
         {
-          "source": ".template-source/engineering/evidence/aliyun-artifact-resolution.json"
+          "source": ".template-spec/engineering/evidence/aliyun-artifact-resolution.json"
         },
         {
           "source": ".agents/skills/yss-technical-design/references/technical-design.schema.json"
@@ -726,7 +726,7 @@
           "source": ".template-spec/templates/retro-report-template.md"
         },
         {
-          "source": ".template-source/engineering/evidence/aliyun-artifact-resolution.json"
+          "source": ".template-spec/engineering/evidence/aliyun-artifact-resolution.json"
         },
         {
           "source": "DESIGN.md"

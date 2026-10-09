@@ -9,6 +9,7 @@ import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 import { run } from "./run_scaffold_verification.mjs";
+import { run as runMvc } from "../../yss-layered-mvc-scaffold-generator/scripts/run_scaffold_verification.mjs";
 import { makeGitlinkFixture } from "../../../../scripts/lib/git-submodule-fixtures.mjs";
 import { GITLINK_MODE, gitLsFilesStage } from "../../../../scripts/lib/repository-scope-policy.mjs";
 import { attachDesignPrerequisites } from "../../../../scripts/fixtures/backend-scaffold/design-prerequisites.mjs";
@@ -104,6 +105,8 @@ async function fixture(contractOverrides = {}) {
 
 const controlledEnvironment = {
   ...process.env,
+  MAVEN_ARGS: "",
+  YSS_MAVEN_SETTINGS: "",
   YSS_MAVEN_REPOSITORY_URL: "https://repo.example.invalid/repository/maven-public/",
   MAVEN_REPO_USERNAME: "test-user",
   MAVEN_REPO_PASSWORD: "test-password"
@@ -145,9 +148,103 @@ async function prepareVerifierProject(project, manifest = targetManifest()) {
   await mkdir(path.join(project, ".yss"), { recursive: true });
   await mkdir(path.join(project, ".mvn"), { recursive: true });
   await writeFile(path.join(project, ".mvn", "maven.config"), "-s .mvn/settings.xml\n-P yss-internal\n");
-  await writeFile(path.join(project, ".mvn", "settings.xml"), "<settings/>\n");
+  await writeFile(path.join(project, ".mvn", "settings.xml"), await readFile(path.join(scripts, "../assets/wrapper/.mvn/settings.xml")));
   await writeFile(path.join(project, ".yss", "scaffold-generation.json"), `${JSON.stringify(manifest)}\n`);
 }
+
+test("DDD 和 MVC 默认使用用户 settings，无须重复配置模板仓库变量且日志脱敏", async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), "yss-user-settings-"));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const home = path.join(root, "user home");
+  const settingsFile = path.join(home, ".m2/settings.xml");
+  const settings = "<settings><!-- unused example: ${env.YSS_TEST_UNUSED_SETTING} --><servers><server><username>private-user</username><password>private-password</password></server></servers></settings>\n";
+  await mkdir(path.dirname(settingsFile), { recursive: true });
+  await writeFile(settingsFile, settings, { mode: 0o600 });
+  for (const [family, verify] of [["domain-driven", run], ["layered-mvc", runMvc]]) {
+    const project = path.join(root, family);
+    await prepareVerifierProject(project, family === "domain-driven" ? targetManifest() : targetManifest({ architecture_family: family, architecture_profile: "layered-mvc-service", generator_skill: "yss-layered-mvc-scaffold-generator", profiles: { architecture: "layered-mvc", repository: "yss-internal" } }));
+    await writeFile(path.join(project, ".mvn/maven.config"), "");
+    await writeFile(path.join(project, "mvnw"), "#!/bin/sh\nprintf '%s\\n' \"$@\"\nprintf 'private-user private-password\\n'\n");
+    await chmod(path.join(project, "mvnw"), 0o755);
+    const evidence = path.join(root, `${family}-evidence`);
+    const report = await verify(project, evidence, { ...process.env, HOME: home, MAVEN_ARGS: "", YSS_MAVEN_SETTINGS: "", YSS_MAVEN_REPOSITORY_URL: "", MAVEN_REPO_USERNAME: "", MAVEN_REPO_PASSWORD: "" });
+    assert.equal(report.status, "passed");
+    assert.equal(report.preflight.settings_source, "user-default");
+    assert.equal(report.preflight.settings_ref, settingsFile);
+    assert.ok(report.commands.every(item => item.command.includes(settingsFile)));
+    const log = await readFile(path.join(evidence, "mvnw-validate.stdout.log"), "utf8");
+    assert.ok(log.includes(`validate\n--settings\n${settingsFile}\n`));
+    assert.doesNotMatch(log, /private-user|private-password/);
+  }
+  assert.equal(await readFile(settingsFile, "utf8"), settings);
+});
+
+test("显式 settings 保留优先级，缺失或无效时不回退且不执行 Maven", async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), "yss-explicit-settings-"));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const project = path.join(root, "project"), home = path.join(root, "home");
+  await prepareVerifierProject(project);
+  await writeFile(path.join(project, ".mvn/maven.config"), "");
+  await writeFile(path.join(project, "mvnw"), "#!/bin/sh\nprintf '%s\\n' \"$@\"\n");
+  await chmod(path.join(project, "mvnw"), 0o755);
+  const environment = { ...process.env, HOME: home, MAVEN_ARGS: "", YSS_MAVEN_SETTINGS: "", YSS_MAVEN_REPOSITORY_URL: "", MAVEN_REPO_USERNAME: "", MAVEN_REPO_PASSWORD: "" };
+  const missing = await run(project, path.join(root, "missing-evidence"), environment);
+  assert.equal(missing.status, "failed");
+  assert.deepEqual(missing.commands, []);
+  assert.ok(missing.preflight.failures.includes("maven-settings-required"));
+  assert.match(missing.preflight.next_action, /用户.*settings 文件路径/);
+  await mkdir(path.join(home, ".m2"), { recursive: true });
+  await writeFile(path.join(home, ".m2/settings.xml"), "<settings/>\n");
+  const explicit = path.join(root, "custom-settings.xml");
+  await writeFile(explicit, "<settings/>\n");
+  const report = await run(project, path.join(root, "explicit-evidence"), { ...environment, YSS_MAVEN_SETTINGS: explicit });
+  assert.equal(report.status, "passed");
+  assert.equal(report.preflight.settings_source, "explicit");
+  assert.equal(report.preflight.settings_ref, explicit);
+  await writeFile(path.join(project, ".mvn/maven.config"), `--settings=${explicit}\n`);
+  const configured = await run(project, path.join(root, "configured-evidence"), environment);
+  assert.equal(configured.status, "passed");
+  assert.equal(configured.preflight.settings_source, "project-config");
+  assert.equal(configured.preflight.settings_ref, explicit);
+  assert.deepEqual(configured.commands.map(item => item.command), ["./mvnw validate", "./mvnw test", "./mvnw package"]);
+  const spaced = path.join(root, "settings with spaces.xml");
+  await writeFile(spaced, "<settings/>\n");
+  await writeFile(path.join(project, ".mvn/maven.config"), `--settings\n${spaced}\n`);
+  const multiline = await run(project, path.join(root, "multiline-evidence"), environment);
+  assert.equal(multiline.status, "passed");
+  assert.equal(multiline.preflight.settings_ref, spaced);
+  await assert.rejects(() => run(project, path.join(root, "conflict-evidence"), { ...environment, YSS_MAVEN_SETTINGS: explicit }), /同时.*指定/);
+  await writeFile(path.join(project, ".mvn/maven.config"), "");
+  const mavenArgs = await run(project, path.join(root, "maven-args-evidence"), { ...environment, MAVEN_ARGS: `--settings ${explicit}` });
+  assert.equal(mavenArgs.status, "passed");
+  assert.equal(mavenArgs.preflight.settings_source, "maven-args");
+  assert.equal(mavenArgs.preflight.settings_ref, explicit);
+  assert.deepEqual(mavenArgs.commands.map(item => item.command), ["./mvnw validate", "./mvnw test", "./mvnw package"]);
+  await writeFile(path.join(project, "mvnw"), "#!/bin/sh\nprintf 'must not run' > wrapper-ran\nexit 99\n");
+  await assert.rejects(() => run(project, path.join(root, "bad-path-evidence"), { ...environment, YSS_MAVEN_SETTINGS: path.join(root, "absent.xml") }), /不可读取或 XML 无效/);
+  await writeFile(explicit, "<settings><password>never-expose-this-secret</settings>");
+  await assert.rejects(() => run(project, path.join(root, "bad-xml-evidence"), { ...environment, YSS_MAVEN_SETTINGS: explicit }), error => /XML 无效/.test(error.message) && !error.message.includes("never-expose-this-secret"));
+  assert.equal(existsSync(path.join(project, "wrapper-ran")), false);
+});
+
+test("无用户 settings 时显式使用项目环境模板，保留仓库凭据预检", async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), "yss-environment-settings-"));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const project = path.join(root, "project");
+  await prepareVerifierProject(project);
+  await writeFile(path.join(project, ".mvn/maven.config"), "");
+  await writeFile(path.join(project, "mvnw"), "#!/bin/sh\nprintf '%s\\n' \"$@\"\n");
+  await chmod(path.join(project, "mvnw"), 0o755);
+  const environment = { ...controlledEnvironment, HOME: path.join(root, "home"), YSS_MAVEN_SETTINGS: "" };
+  const report = await run(project, path.join(root, "evidence"), environment);
+  assert.equal(report.status, "passed");
+  assert.equal(report.preflight.settings_source, "project-environment");
+  assert.ok(report.commands.every(item => item.command.endsWith(`--settings ${path.join(project, ".mvn/settings.xml")} -P yss-internal`)));
+  const missing = await run(project, path.join(root, "no-credentials"), { ...environment, MAVEN_REPO_PASSWORD: "" });
+  assert.equal(missing.status, "failed");
+  assert.deepEqual(missing.commands, []);
+  assert.ok(missing.preflight.failures.includes("repository-credentials-not-configured"));
+});
 
 test("生成批准的服务级 target profile 骨架，并写入带设计门禁的 Manifest v4", async (t) => { const data = await fixture(); t.after(() => rm(data.root, { recursive: true, force: true })); const result = await command(data.args); assert.equal(result.code, 0, result.stderr); const project = path.join(data.output, "demo-service"); const manifest = JSON.parse(await readFile(path.join(project, ".yss/scaffold-generation.json"), "utf8")); assert.equal(manifest.schema_version, 4); assert.equal(manifest.architecture_family, "domain-driven"); assert.equal(manifest.generator_skill, "yss-ddd-scaffold-generator"); assert.equal(manifest.decision_id, "scaffold-decision.demo-service"); assert.equal(manifest.scaffold_request_id, "scaffold-request-1"); assert.equal(manifest.slice_id, undefined); assert.equal(manifest.completion_level, "generated"); assert.equal(manifest.profiles.architecture, "target-domain-model"); assert.deepEqual(manifest.design_prerequisites, { ...data.contract.design_prerequisites, data_architecture_decision: { ...data.contract.design_prerequisites.data_architecture_decision, impact: "not-applicable" } }); assert.deepEqual(manifest.generation_policy, { mode: "initialize-only", existing_target: "unsupported", old_project_migration: "unsupported", template_upgrade: "unsupported" }); assert.match(manifest.generator.template_digest, /^[a-f0-9]{64}$/); assert.match(manifest.contract_digest, /^[a-f0-9]{64}$/); assert.ok(manifest.ownership.generated_files.length > 8); assert.ok(manifest.ownership.generated_files.every((item) => item.owner === "generator" && /^[a-f0-9]{64}$/.test(item.sha256))); assert.equal(manifest.generation_mode, "controlled-generation"); assert.deepEqual(manifest.verification_commands, ["./mvnw validate", "./mvnw test", "./mvnw package"]); assert.equal(manifest.bootstrap_main_class, "com.yss.demo.DemoServiceApplication"); assert.equal(manifest.bootstrap_main_source, "demo-service-bootstrap/src/main/java/com/yss/demo/DemoServiceApplication.java"); assert.match(await readFile(path.join(project, manifest.bootstrap_main_source), "utf8"), /class DemoServiceApplication/); assert.match(await readFile(path.join(project, "pom.xml"), "utf8"), /demo-service/); assert.equal(manifest.readiness.downstream_skills["yss-domain"], await treeDigest(path.resolve(scripts, "../../yss-domain"))); assert.match(manifest.readiness.contracts.engineering_baseline, /^[a-f0-9]{64}$/); assert.match(manifest.readiness.contracts.compiler_contract, /^[a-f0-9]{64}$/); });
 
@@ -297,8 +394,8 @@ test("一键工作流只有在真实 Maven 三命令全部通过后才报告完�
   assert.equal(verification.status, "passed");
   assert.deepEqual(verification.commands.map((item) => item.command), ["./mvnw validate", "./mvnw test", "./mvnw package"]);
   assert.ok(verification.commands.every((item) => item.exit_code === 0));
-  assert.equal(verification.preflight.project_settings_wired, true);
-  assert.equal(verification.preflight.repository_profile_wired, true);
+  assert.ok(["user-default", "explicit", "project-environment"].includes(verification.preflight.settings_source));
+  assert.ok(verification.preflight.settings_ref);
   assert.equal(workflowReport.status, "completed");
   assert.equal(workflowReport.verification_ref, path.join(evidence, "scaffold-verification.json"));
   const manifest = JSON.parse(await readFile(path.join(data.output, "demo-service", ".yss", "scaffold-generation.json"), "utf8"));
@@ -356,8 +453,7 @@ test("生成工程声明命名仓库 profile、target DDD 依赖边界和构建�
   const project = path.join(data.output, "demo-service");
   const mavenConfig = await readFile(path.join(project, ".mvn/maven.config"), "utf8");
   const settings = await readFile(path.join(project, ".mvn/settings.xml"), "utf8");
-  assert.match(mavenConfig, /-s \.mvn\/settings\.xml/);
-  assert.match(mavenConfig, /-P yss-internal/);
+  assert.equal(mavenConfig.trim(), "");
   assert.doesNotMatch(settings, /192\.168\.|<activeProfile>aliyun-only<\/activeProfile>/);
   assert.match(settings, /\$\{env\.YSS_MAVEN_REPOSITORY_URL\}/);
   assert.match(settings, /\$\{env\.MAVEN_REPO_USERNAME\}/);

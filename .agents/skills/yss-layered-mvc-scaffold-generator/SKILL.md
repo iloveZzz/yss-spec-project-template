@@ -43,6 +43,8 @@ description: 在生命周期已批准的脚手架合同下生成通用 YSS 分�
 
 ## 执行
 
+Maven settings 与 DDD 共用 [配置选择和凭据规则](../yss-ddd-scaffold-generator/references/engineering-checks.md)：保留既有显式配置，默认参考用户 `~/.m2/settings.xml`；缺少可用配置时先询问用户文件路径或必要仓库信息。`YSS_MAVEN_SETTINGS` 可指定外部文件，不复制用户配置或凭据进生成工程。
+
 优先使用一键入口。以下命令从 Skill 根目录执行；坐标、平台及合同参数消费当前批准输入，示例不授予生成或覆盖权限：
 
 ```bash
