@@ -43,7 +43,7 @@ export function enforceFrontendDelivery(state={}, {root=ROOT,phase='inputs',loca
   const external=state.frontend_delivery||state.frontend?.delivery||state.resolution?.frontend_delivery||localContract?.frontend?.delivery||localContract?.resolution?.frontend_delivery;
   const frontendRequired=state.frontend?.status==='required'||['role.frontend-engineer','role.frontend-agent'].includes(selectedUnit?.role_id)||localContract?.frontend?.status==='required'||state.work_unit_id==='work-unit.frontend-implementation-verification'||localPhase==='verification';
   if(!external&&localInputs&&!contractRef&&!frontendRequired&&!['preflight','design'].includes(localPhase)&&profile?.lifecycle?.allowed_work_units?.includes(state.work_unit_id)&&state.contract?.kind!=='slice-implementation')return {result:'local-analysis',ready_for_agent:false};
-  if(!external&&localInputs&&(frontendRequired||['preflight','design'].includes(localPhase))) {
+  if(!external&&localInputs&&(frontendRequired||['preflight','design'].includes(localPhase)||(dedicated&&localPhase==='contract'))) {
     ensure(!checkpointRef||!state.checkpoint_ref||checkpointRef===state.checkpoint_ref,'本地前端输入checkpoint绑定冲突');
     const assetRef=contractRef||state.spec_ref;
     const explicitCheckpoint=checkpointRef||state.checkpoint_ref||(!assetRef?state.contract?.lifecycle_ref:null);

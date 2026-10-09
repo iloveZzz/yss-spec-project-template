@@ -231,7 +231,7 @@ export function compileImplementationContract({
   return {
     schema_version: 2,
     status: "draft",
-    ...(deliveryInput.result === "inputs-verified" ? { slice_id: deliveryInput.slice_id, frontend_delivery: { acceptance_ref: deliveryInput.acceptance_ref, digest: deliveryInput.acceptance_digest } } : {}),
+    ...(deliveryInput.result === "inputs-verified" && deliveryInput.delivery_mode !== 'local-approved-assets' ? { slice_id: deliveryInput.slice_id, frontend_delivery: { acceptance_ref: deliveryInput.acceptance_ref, digest: deliveryInput.acceptance_digest } } : {}),
     ...(architecture_identity ? {
       architecture_identity: structuredClone(architecture_identity),
       architecture_identity_digest: architectureDigest(architecture_identity),
