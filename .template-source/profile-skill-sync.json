@@ -380,7 +380,7 @@
           "id": "yss-implementation-contract-compiler",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/backend/yss-implementation-contract-compiler.patch",
-          "source_tree_sha256": "4dac46553ab4acb444049b9b33dbd4a8dba6664b8b8d37428c926a18d4e284e3"
+          "source_tree_sha256": "8bcf1c59ddd9cbb0b3bdf85337484ef294dacb269209de929b421ea9e7d2da84"
         },
         {
           "id": "yss-openapi-governance",
@@ -694,7 +694,7 @@
           "id": "yss-implementation-contract-compiler",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/frontend/yss-implementation-contract-compiler.patch",
-          "source_tree_sha256": "4dac46553ab4acb444049b9b33dbd4a8dba6664b8b8d37428c926a18d4e284e3"
+          "source_tree_sha256": "8bcf1c59ddd9cbb0b3bdf85337484ef294dacb269209de929b421ea9e7d2da84"
         },
         {
           "id": "yss-openapi-governance",

@@ -20,11 +20,11 @@ for (const name of Object.keys(registry.architecture_profiles)) {
     const data = input(name);
     const mvc = data.architecture_identity.architecture_family === "layered-mvc";
     const result = compileDefaultImplementationContract({ ...data,
-      recipeIds: [mvc ? "backend.mvc-service-behavior" : "backend.ddd-domain-behavior", mvc ? "backend.mvc-http-api" : "backend.ddd-http-api"] });
+      recipeIds: [mvc ? "backend.mvc-service-behavior" : "backend.ddd-domain-behavior"] });
     assert.equal(result.required_skills.includes("yss-domain"), !mvc);
     assert.equal(result.skill_profiles["yss-application"], name);
-    assert.equal(result.skill_profiles["yss-web-controller"], name);
     assert.ok(result.readiness_blockers.includes("backend-profile-not-supported"));
+    assert.throws(() => compileDefaultImplementationContract({ ...data, recipeIds: [mvc ? "backend.mvc-http-api" : "backend.ddd-http-api"] }), /component-platform-binding-required/);
   });
 }
 
