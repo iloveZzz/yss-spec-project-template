@@ -2,7 +2,7 @@
   "schema_version": 1,
   "target_id": "template-root",
   "source_repository": "yss-spec-project-template",
-  "source_revision": "48fa43b9d58c412deb0ec96b04eab64cbbd9792f",
+  "source_revision": "8799e3997d084c37107c9136c357748fdc48648b",
   "source_state": "committed",
   "transformation_set": [
     "identity"
@@ -172,7 +172,7 @@
     "scripts/lib/backend-review.mjs": "sha256:97615d18a094fd3487e0b140062f392c46962571e041565437d4c400d7bbd818",
     "scripts/lib/backend-standards-coverage.mjs": "sha256:2fa0c3b368a9277b05387a765dab3a6faedd0464e94181e2d7168671000c4395",
     "scripts/lib/business-ticket-lifecycle.mjs": "sha256:d27091bba950fd0d7015896b64abb8b71e8e55412f02fb6d8d0d282f6af57a7b",
-    "scripts/lib/business-tickets.mjs": "sha256:5fe632ef8aa235d8203fafc2878d634b57ed72038b2aa970b4888e7b812e45a9",
+    "scripts/lib/business-tickets.mjs": "sha256:4ca944b589e1f7e6d5123d1e3929ff19bafd978449557ddfa73c8fd0c4eaeea7",
     "scripts/lib/checkpoint-boundary.mjs": "sha256:0bcf14d41e20d8035406a8435c4cdba8328a878a45c219e8f3e6f73b1b5e7bdb",
     "scripts/lib/command-runner.mjs": "sha256:af5cdb58dc5ee2487f04aad8afde37776a219866cc7830a298d971e772411892",
     "scripts/lib/content-identity.mjs": "sha256:b0f765db70721e9caf4595db8d22cd55b5a07424b1d77e885b790d6d396dbe2e",
@@ -475,7 +475,7 @@
     "scripts/lib/backend-review.mjs": "sha256:97615d18a094fd3487e0b140062f392c46962571e041565437d4c400d7bbd818",
     "scripts/lib/backend-standards-coverage.mjs": "sha256:2fa0c3b368a9277b05387a765dab3a6faedd0464e94181e2d7168671000c4395",
     "scripts/lib/business-ticket-lifecycle.mjs": "sha256:d27091bba950fd0d7015896b64abb8b71e8e55412f02fb6d8d0d282f6af57a7b",
-    "scripts/lib/business-tickets.mjs": "sha256:5fe632ef8aa235d8203fafc2878d634b57ed72038b2aa970b4888e7b812e45a9",
+    "scripts/lib/business-tickets.mjs": "sha256:4ca944b589e1f7e6d5123d1e3929ff19bafd978449557ddfa73c8fd0c4eaeea7",
     "scripts/lib/checkpoint-boundary.mjs": "sha256:0bcf14d41e20d8035406a8435c4cdba8328a878a45c219e8f3e6f73b1b5e7bdb",
     "scripts/lib/command-runner.mjs": "sha256:af5cdb58dc5ee2487f04aad8afde37776a219866cc7830a298d971e772411892",
     "scripts/lib/content-identity.mjs": "sha256:b0f765db70721e9caf4595db8d22cd55b5a07424b1d77e885b790d6d396dbe2e",
