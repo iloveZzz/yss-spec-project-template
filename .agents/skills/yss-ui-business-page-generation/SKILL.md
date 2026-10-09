@@ -20,7 +20,7 @@ description: "生成或改造完整 YSS UI CRUD、列表、表单、详情或左
 
 ## 按影响读取参考
 
-交付路径消费 `yss-product-lifecycle` 的当前 `route` 结果，唯一政策见 Spec 项目中的 `.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml` 的 `request_triage.delivery_path`。已启用 Spec 的 `daily` 先读同一 Ticket / PR 的当前验收、范围、已有工程与 API 基线；`governed`、专职 Frontend Profile 或正式交付绑定继续读取当前实现合同。两者均核对组件来源，仅加载当前页面实际使用的组件、Hook、Utils 与交付验证资料，不预读所有专项技能。
+交付路径消费 `yss-product-lifecycle` 的当前 `route` 结果，唯一政策见 Spec 项目中的 `.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml` 的 `request_triage.delivery_path`。已启用 Spec 的 `daily` 先读同一 Ticket / PR 的当前验收、范围、已有工程与 API 基线；`governed` 或正式交付绑定继续读取当前实现合同。两者均核对组件来源，仅加载当前页面实际使用的组件、Hook、Utils 与交付验证资料，不预读所有专项技能。
 
 - 组件来源速查：`./references/component-map.md`
 - Hooks 速查：`./references/hooks-map.md`

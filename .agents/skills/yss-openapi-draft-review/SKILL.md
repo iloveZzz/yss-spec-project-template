@@ -7,7 +7,7 @@ description: "审查 YSS OpenAPI Draft 的需求覆盖、页面动作、响应�
 
 # YSS OpenAPI Draft Review
 
-先消费已判定的交付路径。只有本地 Spec `request_triage.delivery_path` 已启用且固定 CLI 支持 `yss lifecycle route|verify-daily` 时使用普通 API 审查；其他 Profile / 旧 CLI 明确不支持，本任务正式绑定仍为 `governed`。正式资产按 `.template-spec/process/contract-reading.md` 阅读，普通任务直接消费其验收、API 段和当前 OAS YAML。
+先消费已判定的交付路径。只有当前 Profile 的 `request_triage.delivery_path` 已启用且固定 CLI 支持 `yss lifecycle route|verify-daily` 时使用普通 API 审查；缺政策或能力的 Profile / 旧 CLI 明确不支持，本任务正式绑定仍为 `governed`。正式资产按 `.template-spec/process/contract-reading.md` 阅读，普通任务直接消费其验收、API 段和当前 OAS YAML。
 
 Use this skill after OpenAPI Draft creation and before Engineering Baseline / YSS DDD Review. It is a fail-closed contract review skill for design-time OpenAPI files under `.work/<feature>/api/`; it does not bundle JSON or generate Orval clients.
 

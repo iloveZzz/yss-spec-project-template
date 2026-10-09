@@ -11,7 +11,7 @@ description: "从需求或设计图生成 YFormily JSON Schema 与表单代码�
 
 用户要求根据需求、原型图、截图、Figma 或业务字段生成 YFormily schema / 渲染代码时使用。这里将已提供的设计转为生产表单，不生成产品原型。
 
-确认表单用途、目标模式（查询 / 新增 / 编辑 / 查看 / 混合）、允许输出范围和可读上游输入。交付路径消费 `yss-product-lifecycle` 的当前 `route` 结果，唯一政策见 Spec 项目中的 `.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml` 的 `request_triage.delivery_path`：已启用 Spec 且核验为 `daily` 时，使用同一 Ticket / PR 的当前验收、范围、已有工程与 API 基线及实际适用 UI 证据，结果、测试和独立审查记回原记录；`governed`、专职 Frontend Profile 或正式交付绑定仍消费当前批准的 Slice Implementation Contract。本技能输出不自行授予实现或批准资格。字段语义、校验和接口模型以当前路径的已确认输入和冻结 API 为准，目标组件事实以工程版本、类型和真实导出为准。
+确认表单用途、目标模式（查询 / 新增 / 编辑 / 查看 / 混合）、允许输出范围和可读上游输入。交付路径消费 `yss-product-lifecycle` 的当前 `route` 结果，唯一政策见 Spec 项目中的 `.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml` 的 `request_triage.delivery_path`：已启用 Spec 且核验为 `daily` 时，使用同一 Ticket / PR 的当前验收、范围、已有工程与 API 基线及实际适用 UI 证据，结果、测试和独立审查记回原记录；`governed` 或正式交付绑定仍消费当前批准的 Slice Implementation Contract。本技能输出不自行授予实现或批准资格。字段语义、校验和接口模型以当前路径的已确认输入和冻结 API 为准，目标组件事实以工程版本、类型和真实导出为准。
 
 转换字段、布局、校验、联动或插槽时，读取 [转换工作流](references/workflow.md)相应部分；不要求为了单一字段调整读取全部样例。
 

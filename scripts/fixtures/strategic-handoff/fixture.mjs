@@ -21,7 +21,7 @@ context_schema_version: 1
 // only the actual installed policy/Skill closure; never transplant runtime state.
 export function copyNativeFixturePolicy(root, nativeSeed) {
  const metadata=read(path.join(nativeSeed,'.yss.json')),profile=read(path.join(nativeSeed,'.template-spec/process/harness-profile.yaml'));
- const expected={spec:'harness.spec-template',design:'harness.business-ddd-strategy-handoff'}[metadata.profile];
+ const expected={spec:'harness.spec-template',design:'harness.business-ddd-strategy-handoff',frontend:'harness.frontend-delivery'}[metadata.profile];
  if(!expected||metadata.profileId!==expected||profile.profile_id!==expected)throw Error('Synthetic strategic native seed Profile policy mismatch');
  for(const ref of ['.template-spec/process','.agents/skills']){
    const source=path.join(nativeSeed,ref);if(!lstatSync(source).isDirectory())throw Error('Native policy closure missing: '+ref);

@@ -201,7 +201,7 @@ request_triage:
   owner: yss-product-lifecycle
   delivery_path:
     version: 1
-    enabled_profiles: [spec]
+    enabled_profiles: [spec, backend, frontend]
     eligible_requirements: [goal, acceptance, single_repository, current_baseline, skills, commands, rollback, known_risk]
     excluded_impacts: [data-migration, cross-repository, platform-conversion, architecture-conversion, permission-change, deployment, release, external-approval, breaking-api, unknown-api]
     active_task_bindings: preserve-governed
@@ -209,9 +209,9 @@ request_triage:
     compatible_api: conservative-additive
     read_only_capabilities: [lifecycle.route, lifecycle.verify-daily]
     public_summary: >-
-      Spec 日常任务在目标、验收、写范围、一处已知实现仓、可回滚依据、可读工程基线、验证命令与适用 YSS 技能齐全且无排除风险时，
-      走需求与验收、技术技能、实现、测试、独立审查，仅更新同一 Ticket 或 PR，不生成阶段 checkpoint、正式 Slice 或多级批准。
-      缺事实先调查；无法证明条件时恢复完整治理。旧 CLI 或其他 Profile 缺能力时明确不支持，不降级正式校验器。
+      Spec、Backend、Frontend 日常任务在目标、验收、写范围、一处已知实现仓、可回滚依据、可读工程基线、验证命令与适用 YSS 技能齐全且无排除风险时，
+      走需求与验收、技术技能、实现、测试、独立审查，仅更新同一 Ticket 或 PR，不生成阶段 checkpoint、正式 Slice 或多级批准。专职 Profile 的本地业务分析不扩大另一端实现写范围。
+      缺事实先调查；无法证明条件时恢复完整治理。旧 CLI 或未声明能力的 Profile明确不支持，不降级正式校验器。
     ordinary_record_fields: [scope, acceptance, engineering-baseline, applicable-skills, actual-tests, independent-review, rollback]
     unknown_facts: investigate-before-route
     unproven_eligibility: governed-or-needs-info
@@ -230,6 +230,13 @@ request_triage:
     api_evidence_fields: [tool-command, actual-exit-code, baseline-digest, candidate-digest, reviewer, conclusion, freeze-digest, contract-tests]
     api_freshness: yaml-reference-or-applicable-rule-changes-invalidate-affected-review-and-freeze
     formal_validators: unchanged-no-daily-bypass
+    specialist_business_input: [mode, side, ref, digest, conflicts]
+    business_input_modes: [standalone, upstream]
+    standalone_authority: local-plan-spec-and-current-approved-design
+    upstream_conflicts: confirm-with-authority-before-dependent-work
+    own_side_completion: not-cross-side-business-acceptance
+    frontend_backend_dependency: current-alignment-or-reasoned-not-applicable
+    standalone_scaffold: mechanical-only-no-business-authorization
   interpretation:
     inputs: [ current-request, conversation-context, accessible-evidence ]
     capture: [ goal, target, expected-deliverable, action-scope, facts, assumptions, unknowns ]

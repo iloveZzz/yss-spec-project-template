@@ -1,5 +1,5 @@
 diff --git a/SKILL.md b/SKILL.md
-index c76da16c..9d2428af 100644
+index c76da16..9d2428a 100644
 --- a/SKILL.md
 +++ b/SKILL.md
 @@ -9,72 +9,68 @@ description: "编译或重验 YSS Slice Implementation Contract、最小 Skill 
@@ -112,7 +112,7 @@ index c76da16c..9d2428af 100644
  
  按 `.template-spec/process/business-tickets.md` 执行 Spec 业务草案、Design 校准与业务正式化。业务票放在 `business-tickets/`，集合引用进入 Spec / map / checkpoint；业务票不授予实现资格。实现票仍在 `issues/`，受工程准备、当前 Slice 合同批准和完整就绪检查约束。 新规则项目必须验证 business_ticket_refs 与 acceptance_refs，使用现有 basis.business_ticket_set 绑定当前集合原字节；原始验收仍从 basis.spec 定位，不升级 Slice 主 schema。业务票及阶段工作项不能充当实现票。来源过期返回战略/技术分析，不由编译器重写批准。
 diff --git a/agents/openai.yaml b/agents/openai.yaml
-index b2b097fd..9278c4b1 100644
+index b2b097f..9278c4b 100644
 --- a/agents/openai.yaml
 +++ b/agents/openai.yaml
 @@ -1,4 +1,4 @@
@@ -122,7 +122,7 @@ index b2b097fd..9278c4b1 100644
 -  default_prompt: "Use yss-implementation-contract-compiler to compile the approved slice capabilities, deterministic skill closure, evidence plan, and v3 contract draft."
 +  default_prompt: "Use yss-implementation-contract-compiler to compile approved capabilities, deterministic skill closure, evidence, and a v3 contract draft."
 diff --git a/references/boundaries.md b/references/boundaries.md
-index 74d436c5..d9c83a79 100644
+index 85769ce..6a208e6 100644
 --- a/references/boundaries.md
 +++ b/references/boundaries.md
 @@ -18,15 +18,15 @@
@@ -251,7 +251,7 @@ index 74d436c5..d9c83a79 100644
 +| `yss-backend-spec-review` | `yss-implementation-contract-compiler` | `coordination-only` | — |
 +| `yss-backend-spec-review` | `code-review` | `review-only` | — |
 diff --git a/references/compiler-contract.yaml b/references/compiler-contract.yaml
-index db54b2d8..6e159efa 100644
+index db54b2d..6e159ef 100644
 --- a/references/compiler-contract.yaml
 +++ b/references/compiler-contract.yaml
 @@ -8,141 +8,174 @@ slice_contract_versions:
@@ -1167,9 +1167,9 @@ index db54b2d8..6e159efa 100644
    new_generation_requires: [exact-boot-java, confirmed-decision, matching-yss-coordinates, verified-compatibility-entry]
    candidate_generation: maintenance-only
    candidate_downstream: blocked
-diff --git a/references/scaffold-compilation.md b/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-rebase-c2zMUX/source/references/scaffold-compilation.md
+diff --git a/references/scaffold-compilation.md b/current/references/scaffold-compilation.md
 deleted file mode 100644
-index 1c4fae66..00000000
+index 1c4fae6..0000000
 --- a/references/scaffold-compilation.md
 +++ /dev/null
 @@ -1,7 +0,0 @@
@@ -1181,7 +1181,7 @@ index 1c4fae66..00000000
 -- 脚手架合同在编译阶段只能是 `draft` / `ready-for-lifecycle-review` / `blocked`；只有生命周期编排器可以把已持久化脚手架合同标记为 `approved`。脚手架合同只覆盖业务代码前的工程骨架工作单元；生成、基线校验和合同重编译完成后，它不能替代脚手架后的 Slice Implementation Contract。
 -- 脚手架输出消费批准的脚手架合同；脚手架后的所有生成后端代码都必须绑定当前批准且版本当前的 Slice Implementation Contract、主 YSS skill、依赖闭包、允许写路径、预期证据和 YSS Skill Execution Result。打印命令、`./mvnw validate` 单项通过或脚手架成功不能替代合同批准；生成范围从机械内容变成业务行为时触发完整重路由。
 diff --git a/references/slice-implementation-contract-v2.md b/references/slice-implementation-contract-v2.md
-index a5319c63..927c020d 100644
+index a5319c6..927c020 100644
 --- a/references/slice-implementation-contract-v2.md
 +++ b/references/slice-implementation-contract-v2.md
 @@ -1,100 +1,64 @@
@@ -1437,7 +1437,7 @@ index a5319c63..927c020d 100644
 -技术设计编译绑定使用 `technical_design: {ref, version, digest}` 与 `slice_id`，校验器规则见 `yss-technical-design/references/technical-design-contract.md`。`backend.tactical_ddd` 仅适用于 `domain-driven`；MVC 消费共同技术设计绑定与 `design` 的用例、规则、事务和测试 seam，不填聚合或 Gateway 字段。
 +后端设计影响使用 `resolution.technical_design: {ref, version, digest}`，同时绑定 `slice_id` 和架构来源。当前批准的 v2 合同根据架构消费 `design`，DDD 专属字段仅适用于 `domain-driven`。旧 v1 DDD 可显式加 `legacy_ddd: true` 只读消费。编译与 freshness 都重验文件、版本、摘要、批准及切片依赖；不得自动迁移或批准。
 diff --git a/references/yss-skill-execution-result.md b/references/yss-skill-execution-result.md
-index 4004e818..14dbd221 100644
+index 998decd..ed0b201 100644
 --- a/references/yss-skill-execution-result.md
 +++ b/references/yss-skill-execution-result.md
 @@ -12,7 +12,7 @@
@@ -1479,7 +1479,7 @@ index 4004e818..14dbd221 100644
  3. `expected_evidence_files` 全部存在并能回指行为。
  4. 验证命令包含实际结果和时间；计划命令不算证据。
 diff --git a/tests/compiler-scenarios.test.mjs b/tests/compiler-scenarios.test.mjs
-index 967988cc..e317754c 100644
+index 967988c..e317754 100644
 --- a/tests/compiler-scenarios.test.mjs
 +++ b/tests/compiler-scenarios.test.mjs
 @@ -1,6 +1,5 @@

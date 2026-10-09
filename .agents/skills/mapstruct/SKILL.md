@@ -4,7 +4,7 @@ description: "实现或排查 MapStruct DTO、PO、Domain 映射及 Lombok 集�
 ---
 # MapStruct Object Mapping
 
-执行路线按 Spec 项目中的 `.agents/skills/yss-product-lifecycle/references/daily-delivery.md` 的项目本地政策与固定 CLI 核验。仅合格且范围已授权的 Spec `daily` 消费同 Ticket 的范围、验收与已核验工程基线；`governed` 保留当前批准合同。缺本地政策/能力、其他 Profile 或已绑定正式任务不能凭标签降级；路线不授予执行授权。
+执行路线消费当前 Profile 主控合同的 `request_triage.delivery_path` 与固定 CLI 的 `route` / `verify-daily` 结果。仅已启用且合格的 Spec、Backend、Frontend `daily` 使用同一 Ticket 的范围、验收、工程基线、实际测试与独立审查；本端写范围不扩大。缺政策或能力时保持正式路径，已有正式任务不得降级；本技能不授予执行授权。
 
 只读排障先核验实际对象、工程基线和处理器配置。`governed` 写入消费批准且当前的 Slice/work unit；合格 `daily` 写入消费同 Ticket 的对象、验收、已有工程处理器基线与实际 `scope.paths`，不因缺 Slice 补造正式资产。
 

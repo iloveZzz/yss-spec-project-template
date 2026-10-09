@@ -11,6 +11,7 @@ import { runCommand } from "../../../../scripts/lib/command-runner.mjs";
 import { parseXmlDocument } from "../../../../scripts/vendor/xml.mjs";
 import { assertArchitectureAgreement } from "../../../../scripts/lib/backend-architecture.mjs";
 import { assertLocalDatabaseProfile, scaffoldArchitectureIdentity } from "../../../../scripts/lib/scaffold-local-database.mjs";
+import { assertStandaloneManifest, STANDALONE_MODE } from "../../../../scripts/lib/standalone-backend-scaffold.mjs";
 
 const PHASES = ["validate", "test", "package"];
 const COMMANDS = PHASES.map((phase) => `./mvnw ${phase}`);
@@ -79,6 +80,7 @@ function classifyFailure(phase, outcome) {
 }
 function parseArgs(argv) { const result = {}; for (let index = 0; index < argv.length; index += 1) { let token = argv[index]; if (token === "--help" || token === "-h") { result.help = true; continue; } const equals = token.indexOf("="); let value; if (equals !== -1) { value = token.slice(equals + 1); token = token.slice(0, equals); } if (!["--project-root", "--evidence-dir", "--timeout-ms"].includes(token)) throw new Error(`不支持的参数: ${token}`); if (value === undefined) value = argv[++index]; if (!value || value.startsWith("--")) throw new Error(`参数 ${token} 缺少值`); if (token === "--timeout-ms") result.timeoutMs = Number(value); else result[token === "--project-root" ? "projectRoot" : "evidenceDir"] = path.resolve(value); } if (result.help) return result; if (!result.projectRoot || !result.evidenceDir) throw new Error("必须提供 --project-root 和 --evidence-dir"); return result; }
 function validateManifest(manifest) {
+  if (manifest.kind === "standalone-backend-scaffold") { assertStandaloneManifest(manifest); return; }
   if (![2, 3, 4].includes(manifest.schema_version)) throw new Error(`unsupported: scaffold Manifest schema_version=${manifest.schema_version}；只读兼容 v2，并验证当前 v3/v4`);
   const required = ["schema_version", "contract_id", "contract_version", "scaffold_request_id", "contract_digest", "profiles", "ownership", "readiness", "generation_policy", "completion_level", "approval_ref", "approver", "lifecycle_approval_ref", "compiler_draft_ref", "persisted_ref", "contract_file_ref", "current_version", "allowed_write_paths", "expected_evidence_files", "verification_commands", "generation_mode"];
   if (manifest.schema_version >= 3) required.push("architecture_family", "generator_skill", "decision_id", "decision_digest", "module_profile");
@@ -105,9 +107,19 @@ export async function run(projectRoot, evidenceDir, environment = process.env, {
   if (!await isFile(manifestPath)) throw new Error(`项目根目录缺少脚手架生成元数据清单: ${manifestPath}`);
   let manifest; try { manifest = JSON.parse(await readFile(manifestPath, "utf8")); } catch { throw new Error(`脚手架生成元数据清单无法读取或不是合法 JSON: ${manifestPath}`); }
   validateManifest(manifest);
+  const standalone = manifest.kind === "standalone-backend-scaffold";
+  const verificationMode = standalone ? STANDALONE_MODE : "controlled-generation";
+  if (standalone && firstSlice) throw new Error("独立骨架没有生命周期合同或业务实现资格，不能进入首切片验证");
   let selectedPlatform, selectedEntry;
+  if (standalone) {
+    selectedPlatform = assertStandaloneManifest(manifest);
+    const relativeEvidence = path.relative(path.resolve(projectRoot), path.resolve(evidenceDir));
+    if (!relativeEvidence || (!relativeEvidence.startsWith(`..${path.sep}`) && relativeEvidence !== ".." && !path.isAbsolute(relativeEvidence))) throw new Error("独立骨架验证证据必须位于生成工程之外");
+    assertSourceFingerprint(manifest.source_fingerprint, manifest.architecture_family);
+    if (generatedTreeDigest(projectRoot, manifest) !== manifest.generated_tree_digest) throw new Error("独立骨架生成文件摘要漂移");
+  }
   if (manifest.platform_verification && !manifest.platform_configuration) throw new Error("backend-platform: Manifest missing platform_configuration");
-  if (manifest.platform_configuration) {
+  if (manifest.platform_configuration && !standalone) {
     if (manifest.platform_verification === "candidate" && platformOptions.candidate !== true) throw new Error("backend-platform: candidate scaffold cannot enter production verification");
     const contractBytes = await readFile(manifest.contract_file_ref);
     if (platformDigest(contractBytes).replace(/^sha256:/, "") !== manifest.contract_digest.replace(/^sha256:/, "")) throw new Error("backend-platform: contract digest drift");
@@ -151,7 +163,7 @@ export async function run(projectRoot, evidenceDir, environment = process.env, {
   if (projectTemplate && missingEnvironment.includes("YSS_MAVEN_REPOSITORY_URL")) failed.push("repository-url-not-configured");
   if (projectTemplate && missingEnvironment.some(name => ["MAVEN_REPO_USERNAME", "MAVEN_REPO_PASSWORD"].includes(name))) failed.push("repository-credentials-not-configured");
   if (projectTemplate && missingEnvironment.some(name => !["YSS_MAVEN_REPOSITORY_URL", "MAVEN_REPO_USERNAME", "MAVEN_REPO_PASSWORD"].includes(name))) failed.push("settings-environment-not-configured");
-  if (failed.length) return { verification_mode: "controlled-generation", project_root: projectRoot, scaffold_manifest_ref: manifestPath, generated_at: isoNow(), status: "failed", failure_category: "verification-preflight", completion_level: "generated", preflight: { ...preflight, failures: failed, next_action: "请向用户获取可用 settings 文件路径；如需新建配置，确认仓库地址、server id、profile 和认证方式，凭据通过本地文件或安全环境提供" }, commands: [] };
+  if (failed.length) return { verification_mode: verificationMode, project_root: projectRoot, scaffold_manifest_ref: manifestPath, generated_at: isoNow(), status: "failed", failure_category: "verification-preflight", completion_level: "generated", preflight: { ...preflight, failures: failed, next_action: "请向用户获取可用 settings 文件路径；如需新建配置，确认仓库地址、server id、profile 和认证方式，凭据通过本地文件或安全环境提供" }, commands: [] };
   const verificationStartedAt = Date.now();
   const commands = [];
   for (const phase of PHASES) {
@@ -178,24 +190,24 @@ export async function run(projectRoot, evidenceDir, environment = process.env, {
     });
   }
   let failureCategory = commands.find((item) => item.failure_category)?.failure_category ?? null;
-  const platformDependencies = selectedPlatform && failureCategory === null ? await verifyPlatformDependencies(projectRoot, evidenceDir, selectedPlatform, environment, { timeoutMs, signal, manifest, components: selectedEntry.components, mavenArgs: settings.args, secrets: settings.secrets }) : null;
+  const platformDependencies = !standalone && selectedPlatform && failureCategory === null ? await verifyPlatformDependencies(projectRoot, evidenceDir, selectedPlatform, environment, { timeoutMs, signal, manifest, components: selectedEntry.components, mavenArgs: settings.args, secrets: settings.secrets }) : null;
   if (platformDependencies?.status === "failed") failureCategory = "platform-dependencies";
-  const integrationTests = selectedPlatform && failureCategory === null ? await verifyPlatformTests(projectRoot, evidenceDir, manifest, verificationStartedAt) : null;
+  const integrationTests = !standalone && selectedPlatform && failureCategory === null ? await verifyPlatformTests(projectRoot, evidenceDir, manifest, verificationStartedAt) : null;
   if (integrationTests?.status === "failed") failureCategory = "platform-integration-tests";
-  const startup = selectedPlatform && failureCategory === null ? await verifyPlatformStartup(projectRoot, evidenceDir, manifest, environment, { timeoutMs, signal, runtimeArtifacts: platformDependencies.runtime_artifacts, providedLombokVersion: selectedPlatform.versions.lombok, mavenArgs: settings.args, secrets: settings.secrets }) : null;
+  const startup = !standalone && selectedPlatform && failureCategory === null ? await verifyPlatformStartup(projectRoot, evidenceDir, manifest, environment, { timeoutMs, signal, runtimeArtifacts: platformDependencies.runtime_artifacts, providedLombokVersion: selectedPlatform.versions.lombok, mavenArgs: settings.args, secrets: settings.secrets }) : null;
   if (startup?.status === "failed") failureCategory = "platform-startup";
   if (selectedPlatform && !firstSlice && generatedTreeDigest(projectRoot, manifest) !== manifest.generated_tree_digest) throw new Error("backend-platform: Maven modified generated source bytes");
   return {
-    verification_scope: firstSlice ? "first-slice" : "empty-scaffold",
-    ...(selectedPlatform && !firstSlice ? { recipe_digest: manifest.platform_configuration.compatibility_digest, source_fingerprint: manifest.source_fingerprint, generated_tree_digest: manifest.generated_tree_digest, evidence_artifacts: await platformEvidenceArtifacts(evidenceDir), verified_capabilities: manifest.module_profile?.requested_capabilities ?? [], integration_tests: integrationTests } : {}),
+    verification_scope: standalone ? "standalone-scaffold" : firstSlice ? "first-slice" : "empty-scaffold",
+    ...(!standalone && selectedPlatform && !firstSlice ? { recipe_digest: manifest.platform_configuration.compatibility_digest, source_fingerprint: manifest.source_fingerprint, generated_tree_digest: manifest.generated_tree_digest, evidence_artifacts: await platformEvidenceArtifacts(evidenceDir), verified_capabilities: manifest.module_profile?.requested_capabilities ?? [], integration_tests: integrationTests } : {}),
     ...(selectedPlatform ? { spring_boot_version: selectedPlatform.spring_boot_version, java_version: selectedPlatform.java_version, parent: manifest.platform_configuration.parent, bom: manifest.platform_configuration.bom, architecture_family: manifest.architecture_family, platform_dependencies: platformDependencies, dependency_check: platformDependencies?.status ?? "not-executed", startup, startup_check: startup?.status ?? "not-executed", platform_verification: manifest.platform_verification } : {}),
-    verification_mode: "controlled-generation",
+    verification_mode: verificationMode,
     project_root: projectRoot,
     scaffold_manifest_ref: manifestPath,
     generated_at: isoNow(),
     status: failureCategory === null ? "passed" : "failed",
     failure_category: failureCategory,
-    completion_level: firstSlice ? manifest.completion_level : failureCategory === null && manifest.platform_verification !== "candidate" ? "empty-scaffold-verified" : "generated",
+    completion_level: standalone ? failureCategory === null ? "standalone-scaffold-verified" : "generated" : firstSlice ? manifest.completion_level : failureCategory === null && manifest.platform_verification !== "candidate" ? "empty-scaffold-verified" : "generated",
     preflight,
     commands
   };

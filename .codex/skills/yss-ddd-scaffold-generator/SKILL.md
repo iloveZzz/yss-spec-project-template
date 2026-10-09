@@ -23,9 +23,14 @@ description: 用于生成完整的 YSS DDD 多模块后端脚手架。当用户�
 - 只补持久层时，优先 `yss-repository`。
 - 只补 Web 层时，优先 `yss-web-controller`。
 
+## 执行模式
+
+- 没有 Harness 合同且用户只要独立工程骨架时，先收集明确输入，按 [独立生成](references/standalone-generation.md) 使用 `--standalone`；不伪造批准或阻断在缺合同这一项上。
+- 正式治理任务继续使用当前批准的 Project Scaffold Contract。以下生命周期、合同和阶段 7 约束适用于正式路径；目录、initialize-only、凭据和禁止业务示例的约束适用于两条路径。
+
 ## Spring Boot / Java 平台选择
 
-核验新工程平台时读取 [平台选择与证据](references/platform-selection.md)。只消费生命周期经 `gate.backend-architecture-platform-approved` 取得的真实用户确认和当前 `platform_configuration` v2；以 `scripts/backend-platforms` 的已验证可选组合为准。生成器不提问、不默认、不降级；缺证据即 `blocked`。
+正式治理路径核验新工程平台时读取 [平台选择与证据](references/platform-selection.md)。只消费生命周期经 `gate.backend-architecture-platform-approved` 取得的真实用户确认和当前 `platform_configuration` v2；以 `scripts/backend-platforms` 的已验证可选组合为准。生成器不提问、不默认、不降级；缺证据即 `blocked`。
 
 ## 优先流程
 

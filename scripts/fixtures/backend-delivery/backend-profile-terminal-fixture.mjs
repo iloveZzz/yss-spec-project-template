@@ -10,7 +10,7 @@ import {attachArtifactApproval} from './approval-fixture.mjs';
 import {exportBundle} from '../../lib/strategic-handoff.mjs';
 import {read,hash,files} from '../../lib/strategic-handoff-io.mjs';
 
-export async function backendProfileTerminalFixture({nativeSeed,strategicInput,openapiBytes,environment}={}) {
+export async function backendProfileTerminalFixture({nativeSeed,strategicInput,openapiBytes,environment,localEvidence=false}={}) {
   if(!nativeSeed)throw new Error('backendProfileTerminalFixture requires a real native Backend seed');
   nativeSeed=path.resolve(nativeSeed);
   const metadata=read(path.join(nativeSeed,'.yss.json'));
@@ -28,7 +28,7 @@ export async function backendProfileTerminalFixture({nativeSeed,strategicInput,o
     const registry=registryModule.loadRegistry(path.join(f.root,'.template-spec/process/lifecycle-registry.yaml'));
     const rolesDoc=read(path.join(f.root,'.template-spec/agents/digital-human-roles.yaml'));
     let strategic;
-    if(strategicInput) {
+    if(localEvidence) { strategic={bundle_digest:null}; }else if(strategicInput) {
       fs.cpSync(strategicInput.delivery,path.join(f.root,'strategy-package'),{recursive:true});
       strategic={bundle_digest:strategicInput.bundle_digest};
     }else {
@@ -61,6 +61,7 @@ export async function backendProfileTerminalFixture({nativeSeed,strategicInput,o
       scope:{slice_id:f.contract.slice_id,source_ids:['rule.complete','scenario.submit'],operation_ids:['submitSupplier']},
       openapi:api.binding,slice_contract:f.binding,build:{source_commit:f.git('rev-parse','HEAD'),artifact_digest:`sha256:${'b'.repeat(64)}`},
       environment:{id:'profile-fixture',base_url:'http://127.0.0.1:1',deployment_id:'profile-fixture-v1',revision_path:'/version',revision_pointers:{deployment_id:'/deployment_id',source_commit:'/source_commit',openapi_digest:'/openapi_digest',artifact_digest:'/artifact_digest',test_data_digest:'/test_data_digest'},...environment,test_data:file('profile-data.md')},verification:{},supporting_files:[...supporting].sort()};
+    if(localEvidence) {delivery.delivery_mode='local-evidence';for(const key of ['strategic_bundle_ref','strategic_bundle_digest','strategic_route_id'])delete delivery[key];}
     for(const [key,kind]of [['contract','backend-contract'],['deployment','backend-deployment']]) {
       f.write(`profile-${key}.json`,{schema_version:1,kind,subject_digest:producer.backendDeliveryBasis(delivery),results:[{command:'synthetic-current-native-verification',executed_at:new Date().toISOString(),exit_code:0,evidence:[file('profile-deployment.log')]}],operation_ids:['submitSupplier'],coverage:['success','failure'].map(outcome=>({source_id:'scenario.submit',outcome}))});
       delivery.verification[key]=file(`profile-${key}.json`);
@@ -83,8 +84,8 @@ export async function backendProfileTerminalFixture({nativeSeed,strategicInput,o
     if(!shape.valid)throw new TypeError(`Synthetic native Backend checkpoint shape: ${shape.error}`);
     f.write(checkpointRef,checkpoint);f.write('.work/profile/map.md',`---\ncheckpoint_ref: ${checkpointRef}\n---\n# Synthetic Backend feature\n`);
     f.refreshCoverage();f.save();f.write('profile-review-state.json',f.state);
-    const exported=await producer.exportBackendDelivery({sourceRoot:f.root,deliveryRef:'profile-delivery.json',output:path.join(f.root,'backend-package')});
-    const terminal={checkpoint_ref:checkpointRef,delivery:file('profile-delivery.json'),review_state:file('profile-review-state.json'),bundle_ref:'backend-package',bundle_digest:exported.bundle_digest,
+    const exported=localEvidence?null:await producer.exportBackendDelivery({sourceRoot:f.root,deliveryRef:'profile-delivery.json',output:path.join(f.root,'backend-package')});
+    const terminal={checkpoint_ref:checkpointRef,delivery:file('profile-delivery.json'),review_state:file('profile-review-state.json'),...(localEvidence?{delivery_mode:'local-evidence'}:{bundle_ref:'backend-package',bundle_digest:exported.bundle_digest}),
       downstream:{owner:'synthetic-spec-coordinator',ticket_ref:'synthetic-profile-followup',verification_plan:'synthetic full business acceptance',target_version:'v1'}};
     const result=await terminalModule.completeBackendDelivery(f.root,terminal,{checkpointRef});
     return {...f,file,delivery,deliveryRef:'profile-delivery.json',checkpointRef,terminalRef,terminal,result,terminalModule};

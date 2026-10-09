@@ -9,7 +9,7 @@ description: "在 Vue3 YSS UI 中对接 Orval API；核验生成方法、mutator
 
 本技能的 canonical 名称为 `yss-api-integration`。历史名称 `api-integration` 只由注册表与实现合同编译器解析，不维护第二份内容。
 
-交付路径消费 `yss-product-lifecycle` 的当前 `route` 结果，唯一政策见 Spec 项目中的 `.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml` 的 `request_triage.delivery_path`。仅已启用 Spec 且当前工具核验为 `daily` 的任务使用同一 Ticket / PR 的验收、范围和 API 证据；`governed`、专职 Frontend Profile 或正式交付绑定继续使用原批准合同与交付链。本技能不自行判定 API 兼容或授予普通路径资格。
+交付路径消费 `yss-product-lifecycle` 的当前 `route` 结果，唯一政策见 Spec 项目中的 `.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml` 的 `request_triage.delivery_path`。仅当前 Profile 政策已启用且工具核验为 `daily` 的任务使用同一 Ticket / PR 的验收、范围和 API 证据；`governed` 或正式交付绑定继续使用原批准合同与交付链。本技能不自行判定 API 兼容或授予普通路径资格。
 
 ## 目标
 

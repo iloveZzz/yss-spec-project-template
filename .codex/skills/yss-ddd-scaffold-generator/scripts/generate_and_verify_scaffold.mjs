@@ -39,7 +39,7 @@ function parseArgs(argv) {
   }
   if (!evidenceDir) throw new Error("必须提供 --evidence-dir");
   if (!projectName || !outputDir) throw new Error("必须提供 --project-name 和 --output-dir");
-  return { evidenceDir, generatorArgs, projectRoot: path.join(path.resolve(outputDir), projectName) };
+  return { evidenceDir, generatorArgs, workflowMode: generatorArgs.includes("--standalone") ? "standalone-generation" : "controlled-generation", projectRoot: path.join(path.resolve(outputDir), projectName) };
 }
 
 function executeGenerator(args) {
@@ -73,7 +73,7 @@ async function main() {
   process.stderr.write(generation.stderr);
   if (generation.exitCode !== 0) {
     await writeJson(workflowPath, {
-      workflow_mode: "controlled-generation",
+      workflow_mode: args.workflowMode,
       generated_at: isoNow(),
       project_root: args.projectRoot,
       status: "blocked",
@@ -87,16 +87,20 @@ async function main() {
     const verification = await run(args.projectRoot, args.evidenceDir);
     await writeJson(verificationPath, verification);
     const passed = verification.status === "passed";
-    if (passed) {
+    if (passed || verification.verification_mode === "standalone-generation") {
       const manifestPath = path.join(args.projectRoot, ".yss", "scaffold-generation.json");
       const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
-      manifest.completion_level = "empty-scaffold-verified";
-      manifest.empty_scaffold_verification_ref = verificationPath;
-      manifest.empty_scaffold_verified_at = isoNow();
+      manifest.completion_level = manifest.generation_mode === "standalone-generation" ? verification.completion_level : "empty-scaffold-verified";
+      if (manifest.generation_mode === "standalone-generation") manifest.verification = { status: verification.status, failure_category: verification.failure_category, commands: verification.commands, report_ref: verificationPath };
+      if (passed) {
+        const prefix = manifest.generation_mode === "standalone-generation" ? "standalone_scaffold" : "empty_scaffold";
+        manifest[`${prefix}_verification_ref`] = verificationPath;
+        manifest[`${prefix}_verified_at`] = isoNow();
+      }
       await writeJson(manifestPath, manifest);
     }
     await writeJson(workflowPath, {
-      workflow_mode: "controlled-generation",
+      workflow_mode: args.workflowMode,
       generated_at: isoNow(),
       project_root: args.projectRoot,
       status: passed ? "completed" : "blocked",
@@ -109,7 +113,7 @@ async function main() {
     return passed ? 0 : 1;
   } catch (error) {
     await writeJson(workflowPath, {
-      workflow_mode: "controlled-generation",
+      workflow_mode: args.workflowMode,
       generated_at: isoNow(),
       project_root: args.projectRoot,
       status: "blocked",

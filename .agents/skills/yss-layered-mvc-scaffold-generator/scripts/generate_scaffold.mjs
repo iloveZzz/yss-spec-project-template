@@ -15,6 +15,7 @@ import { assertLocalDatabaseProfile, localDatabaseConfiguration, scaffoldArchite
 import { validateArchitectureIdentity } from "../../../../scripts/lib/backend-architecture.mjs";
 import { validateJsonSchema } from "../../../../scripts/lib/json-schema.mjs";
 import { finalizeDataAnalysisProfile } from "./data-analysis-profile.mjs";
+import { standaloneConfiguration, standaloneManifest } from "../../../../scripts/lib/standalone-backend-scaffold.mjs";
 
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 const SKILL_ROOT = path.resolve(SCRIPT_DIR, "..");
@@ -81,11 +82,13 @@ export function parseArgs(argv) {
     ["--contract-file", "contractFile"], ["--contract-id", "contractId"], ["--contract-version", "contractVersion"],
     ["--approval-ref", "approvalRef"], ["--compiler-draft-ref", "compilerDraftRef"], ["--persisted-ref", "persistedRef"],
     ["--group-id", "groupId"], ["--project-version", "projectVersion"], ["--parent-group-id", "parentGroupId"],
-    ["--parent-artifact-id", "parentArtifactId"], ["--parent-version", "parentVersion"], ["--yss-components-version", "yssComponentsVersion"]
+    ["--parent-artifact-id", "parentArtifactId"], ["--parent-version", "parentVersion"], ["--yss-components-version", "yssComponentsVersion"],
+    ["--platform-profile", "platformProfile"], ["--spring-boot-version", "springBootVersion"], ["--java-version", "javaVersion"]
   ]);
   for (let index = 0; index < argv.length; index += 1) {
     let token = argv[index];
     if (token === "--help" || token === "-h") { options.help = true; continue; }
+    if (token === "--standalone") { options.standalone = true; continue; }
     if (token === "--force") { options.force = true; continue; }
     const equal = token.indexOf("=");
     let value;
@@ -96,11 +99,18 @@ export function parseArgs(argv) {
     options[mapping.get(token)] = value;
   }
   if (options.help) return options;
-  for (const key of mapping.values()) if (!isPresent(options[key])) fail(`缺少必填参数: ${key}`);
+  if (!options.standalone && ["platformProfile", "springBootVersion", "javaVersion"].some(key => options[key] !== undefined)) fail("独立平台参数必须显式使用 --standalone，正式模式消费合同平台");
+  const contractKeys = ["contractFile", "contractId", "contractVersion", "approvalRef", "compilerDraftRef", "persistedRef"];
+  for (const key of mapping.values()) {
+    if (["platformProfile", "springBootVersion", "javaVersion"].includes(key) || options.standalone && contractKeys.includes(key)) continue;
+    if (!isPresent(options[key])) fail(`缺少必填参数: ${key}`);
+  }
   if (!/^[a-z][a-z0-9-]*$/.test(options.projectName)) fail("--project-name 必须是 kebab-case");
   if (!/^[a-z](?:[a-z0-9]*)(?:\.[a-z](?:[a-z0-9]*)?)*$/.test(options.basePackage)) fail("--base-package 不是合法 Java 包名");
-  if (!/^\d+$/.test(options.contractVersion) || Number(options.contractVersion) < 1) fail("--contract-version 必须为正整数");
-  options.contractVersion = Number(options.contractVersion);
+  if (!options.standalone) {
+    if (!/^\d+$/.test(options.contractVersion) || Number(options.contractVersion) < 1) fail("--contract-version 必须为正整数");
+    options.contractVersion = Number(options.contractVersion);
+  }
   if (options.force) fail("unsupported: initialize-only 脚手架禁止 --force");
   return options;
 }
@@ -155,6 +165,11 @@ function modulePom(contract, module, modules, platform) {
 }
 
 export async function validateContract(options, skillId, architectureProfile, platformOptions) {
+  if (options.standalone) {
+    if (architectureProfile !== "layered-mvc-service" || skillId !== SKILL_ID) fail("unsupported: 独立 MVC 只生成通用纯工程骨架，不初始化治理实例");
+    const { configuration, platform } = standaloneConfiguration(options, "layered-mvc");
+    return { contract: configuration, contractText: JSON.stringify(configuration), modules: configuration.module_profile.resolved_modules, platform };
+  }
   const contractFile = path.resolve(options.contractFile);
   const contractText = await readFile(contractFile, "utf8").catch(() => fail(`脚手架合同不可读取: ${contractFile}`));
   let contract;
@@ -240,7 +255,7 @@ async function profileFromContract(options) {
 }
 
 export async function generate(options, { skillId = SKILL_ID, architectureProfile, finalize, platformOptions = {} } = {}) {
-  architectureProfile ??= await profileFromContract(options);
+  architectureProfile ??= options.standalone ? "layered-mvc-service" : await profileFromContract(options);
   if (skillId !== SKILL_ID || !["layered-mvc-service", "mvc-data-analysis-v1"].includes(architectureProfile)) fail("unsupported MVC generator/Profile pair");
   await validateOutputLayout(options.outputDir, options.projectName);
   const { contract, contractText, modules, designPrerequisites, platform } = await validateContract(options, skillId, architectureProfile, platformOptions);
@@ -270,16 +285,20 @@ export async function generate(options, { skillId = SKILL_ID, architectureProfil
     const wrapper = path.join(REPOSITORY_ROOT, ".agents/skills/yss-ddd-scaffold-generator/assets/wrapper");
     await cp(wrapper, projectRoot, { recursive: true });
     await chmod(path.join(projectRoot, "mvnw"), 0o755);
-    const architectureIdentity = scaffoldArchitectureIdentity(contract, sha256(contractText));
+    const architectureIdentity = options.standalone ? undefined : scaffoldArchitectureIdentity(contract, sha256(contractText));
     const profileFinalize = finalize ?? (architectureProfile === "mvc-data-analysis-v1" ? finalizeDataAnalysisProfile : null);
     if (profileFinalize) await profileFinalize({ projectRoot, contract, architectureIdentity, options });
-    await put(projectRoot, "README.md", `# ${options.projectName}\n\n平台：Spring Boot ${platform.spring_boot_version} / Java ${platform.java_version}。\n\n该工程由 ${skillId} 根据批准的 schema v${contract.schema_version} 合同生成。模块：${modules.join("、")}。不包含业务 API、SQL 或生产数据库绑定。\n\n本地运行需同时显式启用 Maven -Pscaffold-local 和 Spring scaffold-local Profile；测试独立使用 H2。生产数据库须由后续已批准存储工作单元接入。`);
+    await put(projectRoot, "README.md", `# ${options.projectName}\n\n平台：Spring Boot ${platform.spring_boot_version} / Java ${platform.java_version}。\n\n该工程由 ${skillId} ${options.standalone ? "按用户明确输入独立生成；尚无生命周期批准，平台和构建尚未验证" : `根据批准的 schema v${contract.schema_version} 合同生成`}。模块：${modules.join("、")}。不包含业务 API、SQL 或生产数据库绑定。\n\n本地运行需同时显式启用 Maven -Pscaffold-local 和 Spring scaffold-local Profile；测试独立使用 H2。生产数据库须由后续已批准存储工作单元接入。`);
     const generatedFiles = [];
     for (const entry of await fileEntries(projectRoot, new Set([".yss/scaffold-generation.json"]))) generatedFiles.push({ path: entry.relative, owner: "generator", sha256: rawSha256(await readFile(entry.target)) });
     const architectureRuleset = `${serverRoot}/src/test/java/${packagePath}/architecture/LayeredMvcArchitectureTest.java`;
     const downstream = {};
     for (const skill of ["yss-application", "yss-repository", "yss-mybatis", "yss-web-controller", "yss-dto", "yss-exception", "yss-validation", "mapstruct", "lombok", "alibaba-java-code-style"]) downstream[skill] = (await treeDigest(path.join(REPOSITORY_ROOT, ".agents/skills", skill))).replace(/^sha256:/, "");
-    const manifest = {
+    const manifest = options.standalone ? standaloneManifest(contract, {
+      source_fingerprint: platformSourceFingerprint(contract.architecture_family), generated_tree_digest: generatedTreeDigest(projectRoot, { ownership: { generated_files: generatedFiles } }),
+      bootstrap_main_class: `${options.basePackage}.${applicationClass}`, bootstrap_main_source: `${serverRoot}/src/main/java/${packagePath}/${applicationClass}.java`,
+      generator: { id: skillId, template_digest: await treeDigest(SKILL_ROOT) }, ownership: { generated_files: generatedFiles, user_owned_globs: ["**/src/main/java/**", "**/src/test/java/**", "db/**"] }
+    }) : {
       ...(contract.platform_configuration ? { source_fingerprint: platformSourceFingerprint(contract.architecture_family), generated_tree_digest: generatedTreeDigest(projectRoot, { ownership: { generated_files: generatedFiles } }) } : {}),
       ...(contract.platform_configuration ? { platform_verification: platformOptions.candidate === true ? "candidate" : "verified", platform_configuration: contract.platform_configuration } : {}),
       schema_version: 4,
@@ -335,7 +354,7 @@ export async function generate(options, { skillId = SKILL_ID, architectureProfil
 async function main() {
   try {
     const options = parseArgs(process.argv.slice(2));
-    if (options.help) { process.stdout.write("Use --project-name --base-package --output-dir and approved contract metadata. Local/test database is H2; production is not bound.\n"); return 0; }
+    if (options.help) { process.stdout.write("使用 --project-name --base-package --output-dir。独立模式显式传 --standalone、精确平台及完整 Maven 坐标；正式路径提供当前批准合同。验证数据库是 H2，生产数据库未绑定。\n"); return 0; }
     await generate(options);
     return 0;
   } catch (error) {

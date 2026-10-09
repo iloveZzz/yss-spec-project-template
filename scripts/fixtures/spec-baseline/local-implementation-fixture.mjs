@@ -43,7 +43,7 @@ function gateFor(root,approved,{evidenceKind,checks=[]}={}) {
 /** One native Spec root, current original Plan/Spec, approved mixed Slice and local backend evidence.
  * No strategic export/import, self Receipt or caller completion flag is used.
  */
-export async function localImplementationFixture({nativeSeed,backendRequired=true}={}) {
+export async function localImplementationFixture({nativeSeed,backendRequired=true,nativeFrontendSeed}={}) {
  if(!nativeSeed)throw new Error('localImplementationFixture requires a real native Spec asset seed');
  nativeSeed=path.resolve(nativeSeed);
  const identity=read(path.join(nativeSeed,'.yss.json'));
@@ -53,7 +53,7 @@ export async function localImplementationFixture({nativeSeed,backendRequired=tru
  const load=(root,ref)=>import(pathToFileURL(path.join(root,ref)));
  let f;
  try {
-  const spec=await approvedSpecFixture(scratch,{nativeSeed,productDesign:true});
+  const spec=await approvedSpecFixture(scratch,{nativeSeed:nativeFrontendSeed||nativeSeed,productDesign:true});
   if(!backendRequired){
    Object.assign(spec.strategic.stage.impact_assessment,{backend:false,api:false,data:false,frontend:true,ui:true});
    spec.strategic.put('source/stage.yaml',spec.strategic.stage);
@@ -70,6 +70,12 @@ export async function localImplementationFixture({nativeSeed,backendRequired=tru
    specText:'---\ncontent_profile: plan-spec-v1\n---\n## 功能需求\n| ID | 需求 |\n|---|---|\n| FR-1 | 提交材料 |\n## 验收标准\n| ID | 需求引用 |\n|---|---|\n| AC-1 | FR-1 |\n',
    refineContract:(contract,owner)=>{
     f=owner;
+    if(nativeFrontendSeed) {
+      if(backendRequired)throw Error('native Frontend fixture does not implement Backend');
+      const metadata=read(path.join(nativeFrontendSeed,'.yss.json'));
+      if(metadata.profile!=='frontend'||metadata.profileId!=='harness.frontend-delivery')throw Error('native frontend authority mismatch');
+      for(const ref of ['.yss.json','.template-spec/process','.template-spec/agents','.agents/skills','scripts','skills-lock.json'])fs.cpSync(path.join(nativeFrontendSeed,ref),path.join(owner.root,ref),{recursive:true});
+    }
     const root=owner.root,bind=ref=>({ref,digest:hash(fs.readFileSync(path.join(root,ref)))});
     // Copy only business source facts. Native assets and transaction journals stay at their original roots.
     for(const ref of files(scratch)) {
@@ -148,7 +154,7 @@ export async function localImplementationFixture({nativeSeed,backendRequired=tru
     for(const unit of contract.work_units){unit.acceptance_refs=['AC-001'];unit.allowed_write_paths=['src/main/java'];unit.project_root=owner.project;}
     if(!backendRequired){contract.work_units=[];contract.verification={};}
     contract.verification.frontend={command:'pnpm test',cwd:owner.project,expected_evidence:['frontend/pnpm.log'],test_seams:['submit'],acceptance_refs:['AC-001']};
-    contract.work_units.push({id:'work-unit.slice-frontend',behavior:'提交供应商材料并验证成功与失败状态',role_id:'role.frontend-engineer',
+    contract.work_units.push({id:'work-unit.slice-frontend',behavior:'提交供应商材料并验证成功与失败状态',role_id:nativeFrontendSeed?'role.frontend-agent':'role.frontend-engineer',
      primary_skill:'yss-frontend-scaffold-generator',supporting_skills:[],tdd_mode:'behavior-tdd',project_root:owner.project,
      allowed_write_paths:['src/frontend'],verification_refs:['frontend'],acceptance_refs:['AC-001']});
     const compiled=nativeReaders.compiler.compileDefaultImplementationContract({root,recipeIds:[...(backendRequired?contract.resolution.recipe_ids:[]),'frontend.vue3-scaffold'],
@@ -172,7 +178,7 @@ export async function localImplementationFixture({nativeSeed,backendRequired=tru
   Object.assign(checkpoint,{stage:'stage.vertical-slice-implementation',next_work_unit:'work-unit.slice-implementation'});
   checkpoint.artifacts['artifact.slice-implementation-contract']={ref:f.binding.ref,digest:f.binding.digest,status:'approved',evidence_refs:[f.binding.approval_ref]};
   f.write(checkpointRef,checkpoint);
-  specProof=modules.spec.inspectSpecBaselineSource(f.root,checkpointRef);
+  specProof=modules.spec.inspectSpecBaselineSource(f.root,checkpointRef,undefined,{localFrontend:!!nativeFrontendSeed});
   modules.controls.assertGateChecks('gate.product-design-approved',checkpoint,{root:f.root,registry,rolesDoc});
   modules.controls.assertGateChecks('gate.slice-contract-approved',checkpoint,{root:f.root,registry,rolesDoc});
   const api=backendRequired?attachArtifactApproval(f.root,'api.yaml','api.local-implementation','gate.engineering-contract-approved'):null;
@@ -222,8 +228,13 @@ export async function localImplementationFixture({nativeSeed,backendRequired=tru
   checkpoint.artifacts['artifact.frontend-implementation-plan']={ref:frontendPlanRef,status:'approved',evidence_refs:[frontendPlanRef]};
   checkpoint.artifacts['artifact.frontend-implementation-verification']={ref:frontendVerificationRef,status:'ready-for-human',evidence_refs:[frontendVerificationRef]};
   f.write(checkpointRef,checkpoint);
-  specProof=modules.spec.inspectSpecBaselineSource(f.root,checkpointRef);
-  for(const [ref,saved]of preserved)for(const checkedRoot of [nativeSeed,f.root])if(!fs.readFileSync(path.join(checkedRoot,ref)).equals(saved.bytes)||fs.statSync(path.join(checkedRoot,ref)).mode!==saved.mode)throw new Error('native seed authority bytes/mode mutated: '+ref);
+  specProof=modules.spec.inspectSpecBaselineSource(f.root,checkpointRef,undefined,{localFrontend:!!nativeFrontendSeed});
+  for(const [ref,saved]of preserved)if(!fs.readFileSync(path.join(nativeSeed,ref)).equals(saved.bytes)||fs.statSync(path.join(nativeSeed,ref)).mode!==saved.mode)throw Error('native Spec seed authority mutated: '+ref);
+  const finalSeed=nativeFrontendSeed||nativeSeed;
+  for(const original of protectedRefs) {
+    const ref=nativeFrontendSeed&&original.startsWith('.agents/skills/yss-product-lifecycle/')?original.replace('yss-product-lifecycle','harness-orchestrator'):original;
+    if(!fs.readFileSync(path.join(f.root,ref)).equals(fs.readFileSync(path.join(finalSeed,ref))))throw Error('native receiver authority mutated: '+ref);
+  }
   return {...f,checkpoint,checkpointRef,sliceRef:f.binding.ref,sliceID:f.contract.slice_id,specRef:'source/spec.md',specProof,
    backendTerminalRef:result?.terminal_ref||null,frontendPlanRef,frontendVerificationRef,frontendWorkUnitId:'work-unit.slice-frontend',taskBinding:f.binding,
    sourceSeed:nativeSeed,backendRequired,synthetic_fixture:true,result};

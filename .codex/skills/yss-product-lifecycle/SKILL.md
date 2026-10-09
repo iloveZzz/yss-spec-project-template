@@ -118,3 +118,5 @@ Spec 起草业务票，产品设计校准后完成业务 Ticket 正式化，再�
 资产整理及旧票迁移按 `.template-spec/process/feature-assets.md` 和显式计划保留状态、批准依据、原文，不推进阶段；被引用草稿按正式资产保留。
 
 YSS CLI 安装与升级、治理工程新建与接管、实例模板同步、旧身份迁移、资源补装及事务恢复回退用 `setup-yss-harness`，遵循 `.template-spec/process/harness-upgrade.md`；默认查询 GitHub 最新正式 Release 后固定来源，不推进产品阶段或重写历史批准。
+
+专职 Backend/Frontend 同样可从原始需求完成本地业务分析与本端交付。按唯一 `request_triage.delivery_path` 选择日常/正式路径；本地 Plan/Spec 复用现有门禁，上游输入复用批准且当前的来源，规则冲突回交权威方。角色分析权限不扩大另一端实现范围，本端完成不等于跨端业务验收。独立机械脚手架使用生成器 `--standalone`，不生成批准或业务资格。

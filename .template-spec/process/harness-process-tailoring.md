@@ -1,8 +1,8 @@
 # Harness 流程裁剪与影响面判定
 
-先按生命周期编排合同 `request_triage.delivery_path` 分流；这是唯一日常路径策略。支持能力的 Spec 实例用 `yss lifecycle route --root <治理项目> --task <同一记录> --implementation-root <实现仓> --base <完整 SHA>` 返回 `daily / governed / needs-info`。以下阶段裁剪规则适用于 `governed` 与模板维护；不能反向要求已核验的 `daily` 创建正式阶段资产。
+先按生命周期编排合同 `request_triage.delivery_path` 分流；这是唯一日常路径策略。支持能力且政策启用的 Spec、Backend、Frontend 实例用 `yss lifecycle route --root <治理项目> --task <同一记录> --implementation-root <实现仓> --base <完整 SHA>` 返回 `daily / governed / needs-info`。以下阶段裁剪规则适用于 `governed` 与模板维护；不能反向要求已核验的 `daily` 创建正式阶段资产。
 
-`daily` 只更新同一 Ticket/PR 的范围、验收、工程基线、Skills、实际测试、独立审查及回滚，消费技术技能后实现，用 `verify-daily` 核验当前证据。API 兼容边界与 Freeze 仍由上述唯一策略及 OpenAPI 技能控制。已有正式任务不能降级；无关正式资产不阻断新任务。实施发现风险时保留修改与证据，停止受影响工作并恢复最近可信阶段；其他 Profile 或缺能力 CLI 明确不支持。操作说明见生命周期 `references/daily-delivery.md`。
+`daily` 只更新同一 Ticket/PR 的范围、验收、工程基线、Skills、实际测试、独立审查及回滚，消费技术技能后实现，用 `verify-daily` 核验当前证据。API 兼容边界与 Freeze 仍由上述唯一策略及 OpenAPI 技能控制。已有正式任务不能降级；无关正式资产不阻断新任务。实施发现风险时保留修改与证据，停止受影响工作并恢复最近可信阶段；缺政策的 Profile 或缺能力 CLI 明确不支持。操作说明见生命周期 `references/daily-delivery.md`。
 
 本文件规定正式路径如何根据变更规模和风险选择最近可信阶段。裁剪只减少未触发的门禁，不得跳过已经命中的条件强制门禁。
 

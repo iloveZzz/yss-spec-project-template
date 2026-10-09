@@ -380,13 +380,13 @@
           "id": "yss-implementation-contract-compiler",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/backend/yss-implementation-contract-compiler.patch",
-          "source_tree_sha256": "2a73204c8d53682f30ace3620474f741433e82ee512b51943d276581f8b0e31b"
+          "source_tree_sha256": "4dac46553ab4acb444049b9b33dbd4a8dba6664b8b8d37428c926a18d4e284e3"
         },
         {
           "id": "yss-openapi-governance",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/backend/yss-openapi-governance.patch",
-          "source_tree_sha256": "cf347105e7bc1f937d91b4e8c67b49d05858656356b51cebae198dbd6a274bba"
+          "source_tree_sha256": "edfe747bb247114e3e99542616f8e980d4b99684e554e54a315d6b2324d269d9"
         },
         {
           "id": "prototype",
@@ -399,6 +399,18 @@
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/backend/triage.patch",
           "source_tree_sha256": "16c88d5139cc7bc23661501db2fdf5473d9f2b7fbf4ceae5cfd4819823486451"
+        },
+        {
+          "id": "yss-stage-decision",
+          "strategy": "replace",
+          "replacements": [
+            {
+              "file": "SKILL.md",
+              "from": "yss-product-lifecycle",
+              "to": "harness-orchestrator",
+              "count": 3
+            }
+          ]
         }
       ],
       "assets": [
@@ -472,6 +484,9 @@
           "source": "scripts/lib/backend-scaffold-prerequisites.mjs"
         },
         {
+          "source": "scripts/lib/standalone-backend-scaffold.mjs"
+        },
+        {
           "source": "scripts/lib/api-contract-decision.mjs"
         },
         {
@@ -497,6 +512,10 @@
         },
         {
           "source": ".template-spec/process/script-execution.md"
+        },
+        {
+          "source": ".agents/skills/yss-product-lifecycle/references/user-decisions.md",
+          "target": ".agents/skills/harness-orchestrator/references/user-decisions.md"
         }
       ],
       "upstream": [],
@@ -509,7 +528,6 @@
       "excluded": [
         "frontend-agent",
         "yss-product-lifecycle",
-        "yss-stage-decision",
         "yss-ui"
       ],
       "retired": [
@@ -676,13 +694,13 @@
           "id": "yss-implementation-contract-compiler",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/frontend/yss-implementation-contract-compiler.patch",
-          "source_tree_sha256": "2a73204c8d53682f30ace3620474f741433e82ee512b51943d276581f8b0e31b"
+          "source_tree_sha256": "4dac46553ab4acb444049b9b33dbd4a8dba6664b8b8d37428c926a18d4e284e3"
         },
         {
           "id": "yss-openapi-governance",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/frontend/yss-openapi-governance.patch",
-          "source_tree_sha256": "cf347105e7bc1f937d91b4e8c67b49d05858656356b51cebae198dbd6a274bba"
+          "source_tree_sha256": "edfe747bb247114e3e99542616f8e980d4b99684e554e54a315d6b2324d269d9"
         },
         {
           "id": "prototype-review",
@@ -700,19 +718,31 @@
           "id": "yss-api-integration",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/frontend/yss-api-integration.patch",
-          "source_tree_sha256": "43dce4e7cf27f8995956eb5fc0fb56440ac422412ea96321714cf5edb7b46176"
+          "source_tree_sha256": "ace4fd89299fc17c33881cd40ce1eb5eb9a8309ee263a5ad6e9cd3cf03d85192"
         },
         {
           "id": "yss-openapi-draft-review",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/frontend/yss-openapi-draft-review.patch",
-          "source_tree_sha256": "1ec20053c78df208218453fff19c2d27da659fccf92cfe32ab8c3be8a187a774"
+          "source_tree_sha256": "f74d7119aa01bb5d757ba783eb426cd3ed15ed8654da908ee412b61f4d3d91ee"
         },
         {
           "id": "yss-skill-source-index-refresh",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/frontend/yss-skill-source-index-refresh.patch",
-          "source_tree_sha256": "81165bafde3767c3c1be159a773b7dfbf9ed60fbd50b274bee9ef1d4edd7d06e"
+          "source_tree_sha256": "619fd5a97eaa486674040bd51fadaa082b32e6a3fbe167a690e8db2179613a70"
+        },
+        {
+          "id": "yss-stage-decision",
+          "strategy": "replace",
+          "replacements": [
+            {
+              "file": "SKILL.md",
+              "from": "yss-product-lifecycle",
+              "to": "harness-orchestrator",
+              "count": 3
+            }
+          ]
         }
       ],
       "assets": [
@@ -796,6 +826,10 @@
         },
         {
           "source": ".template-spec/process/script-execution.md"
+        },
+        {
+          "source": ".agents/skills/yss-product-lifecycle/references/user-decisions.md",
+          "target": ".agents/skills/harness-orchestrator/references/user-decisions.md"
         }
       ],
       "upstream": [],
@@ -808,7 +842,6 @@
       "excluded": [
         "backend-agent",
         "yss-product-lifecycle",
-        "yss-stage-decision",
         "yss-tactical-design",
         "yss-technical-design"
       ],

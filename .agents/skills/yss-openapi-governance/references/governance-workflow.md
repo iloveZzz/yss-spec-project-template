@@ -4,7 +4,7 @@
 
 ## 普通任务 API
 
-仅已由 Spec `request_triage.delivery_path` 及支持的 `yss lifecycle route` 判定合格的普通任务使用本段；其他 Profile / 旧 CLI 明确不支持，正式绑定不能降级。
+仅已由 Spec `request_triage.delivery_path` 及支持的 `yss lifecycle route` 判定合格的普通任务使用本段；缺政策或能力的 Profile / 旧 CLI 明确不支持，正式绑定不能降级。
 
 1. 读取普通 Ticket 的目标、验收及工程基线，核对工具绑定的完整 baseline SHA、基线/当前同一 OAS 3.1 YAML 和实际新增 operation。兼容检查必须真实解析旧 operation、可达 `$ref`、路径继承和全局契约，规范化后完全相同；只添加独立 operation。breaking、crossrepo、外部引用或无法证明的解析结果停止受影响实施并升级。
 2. 用 lockfile 固定的 Redocly 执行真实 `pnpm exec redocly lint` 和引用解析，完成适用 DTO wire、响应/错误/requiredness 与契约 seam 检查。普通 Ticket API 段保存工具/版本/lock 摘要、实际 argv、exit_code、可读日志及工具返回的独立 `api_digest`；不另建 `<feature>-validation.yaml`，也不调用正式 validation-record verifier 来豁免字段。

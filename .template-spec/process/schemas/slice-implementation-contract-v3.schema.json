@@ -714,6 +714,24 @@
             "implementation_verification_ref": {
               "type": "string",
               "minLength": 1
+            },
+            "backend_dependency": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "ref": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "digest": {
+                  "type": "string",
+                  "pattern": "^sha256:[a-f0-9]{64}$"
+                }
+              },
+              "required": [
+                "ref",
+                "digest"
+              ]
             }
           },
           "required": [

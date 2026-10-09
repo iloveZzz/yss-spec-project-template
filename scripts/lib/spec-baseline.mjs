@@ -36,8 +36,8 @@ function identity(root,profile) {
   ensure(installed.schema_version===2&&installed.profile_id===metadata.metadata.profileId&&installed.instantiation?.cli_package==='yss'&&installed.instantiation?.native_profile===profile&&installed.instantiation?.metadata_file==='.yss.json','Spec baseline 安装Profile合同与原生身份不一致');
   return metadata.metadata;
 }
-export function inspectSpecBaselineSource(root,checkpointRef,expected) {
-  const metadata=identity(root,'spec'),state=read(safe(root,checkpointRef));
+export function inspectSpecBaselineSource(root,checkpointRef,expected,{localFrontend=false}={}) {
+  const profile=localFrontend?'frontend':'spec',metadata=identity(root,profile),state=read(safe(root,checkpointRef));
   schema(state,'.template-spec/process/schemas/lifecycle-checkpoint.schema.json');
   ensure(state.repository_mode==='project-instance'&&state.context_reconciliation?.status==='reconciled'&&state.context_reconciliation.ref,'Spec baseline 来源必须有当前Context对账');
   verifyContextReconciliation(safe(root,state.context_reconciliation.ref),{root});
@@ -57,7 +57,7 @@ export function inspectSpecBaselineSource(root,checkpointRef,expected) {
   ensure(basis.some(row=>row.ref===specRef&&String(row.digest).replace(/^sha256:/,'')===specDigest.slice(7)),'Spec 批准未覆盖当前 Spec 原始字节');
   const specApproval=selectApprovalRecord(read(safe(root,state.gates['gate.spec-baseline-approved'].approval_ref)),'gate.spec-baseline-approved');
   ensure((specApproval.basis||[]).some(row=>row.ref===specRef&&String(row.digest).replace(/^sha256:/,'')===specDigest.slice(7))||(specApproval.subject_ref===specRef&&String(specApproval.subject_digest).replace(/^sha256:/,'')===specDigest.slice(7)),'当前 Spec 原始字节不在已验证批准的范围内');
-  const source={profile_id:sourceProfile,feature_id:state.feature_id || state.feature || state.ticket_id || '',checkpoint_ref:checkpointRef,checkpoint_digest:hash(readFileSync(safe(root,checkpointRef))),template_commit:metadata.templateCommit,spec_ref:specRef,spec_digest:specDigest,
+  const source={profile_id:profile==='frontend'?'harness.frontend-delivery':sourceProfile,feature_id:state.feature_id || state.feature || state.ticket_id || '',checkpoint_ref:checkpointRef,checkpoint_digest:hash(readFileSync(safe(root,checkpointRef))),template_commit:metadata.templateCommit,spec_ref:specRef,spec_digest:specDigest,
     plan_ref:declaredPlan||planReview.plan_ref,domain_strategy_ref:assetRef(state,'artifact.domain-strategy','domain_strategy_ref'),stage_decision_package_ref:assetRef(state,'artifact.stage-decision-package','stage_decision_package_ref'),business_ticket_set_ref:assetRef(state,'artifact.business-ticket-set','business_ticket_set_ref'),product_design_required:true};
   // The approved Plan review is the human-confirmed scope. Extra checkpoint rows cannot extend it.
   const planBasis=planReview.basis;

@@ -56,7 +56,7 @@ export function authorizeBackendDelivery({root = ROOT, checkpointRef, assetRef, 
     check(identity.schema_version === 1 && identity.repository_mode === 'project-instance'
       && read(root, '.template-spec/process/harness-profile.yaml').profile_id === 'harness.backend-delivery', '后端专职实例身份不一致');
     check(typeof checkpointRef === 'string' && checkpointRef, '后端专职交付需要明确功能 checkpoint');
-    check(deliveryMode !== 'local-evidence', '本地交付证据仅用于 Spec 功能目标');
+    if(deliveryMode === 'local-evidence') check(read(root,'.agents/skills/harness-orchestrator/references/orchestration-contract.yaml').progression_target?.local_implementation_inputs === 'native-profile-current-feature-approved-assets','当前后端合同未支持本地业务交付证据');
     const feature = readProgressionTarget({root, checkpointRef, includeDefault: true});
     check(feature?.target === 'profile-terminal' && feature.policy.required_checks?.includes('backend-delivery'), '当前后端合同缺少本端交付完成政策');
     const checkpoint = read(root, feature.checkpoint_ref);

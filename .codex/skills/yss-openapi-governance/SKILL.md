@@ -7,7 +7,7 @@ description: "维护、校验、冻结或导出 YSS OpenAPI 3.1 设计合同；�
 
 # YSS OpenAPI Governance
 
-先消费已判定的交付路径；本技能不自行授予 `daily`。只有 Spec 的 `request_triage.delivery_path` 已启用且固定 CLI 支持 `yss lifecycle route|verify-daily` 时可使用普通路径；其他 Profile / 旧 CLI 明确不支持。本任务的正式绑定保留 `governed`。正式资产按 `.template-spec/process/contract-reading.md` 阅读，普通任务直接消费其 API 段和权威 YAML。
+先消费已判定的交付路径；本技能不自行授予 `daily`。只有当前 Profile 的 `request_triage.delivery_path` 已启用且固定 CLI 支持 `yss lifecycle route|verify-daily` 时可使用普通路径；缺政策或能力的 Profile / 旧 CLI 明确不支持。本任务的正式绑定保留 `governed`。正式资产按 `.template-spec/process/contract-reading.md` 阅读，普通任务直接消费其 API 段和权威 YAML。
 
 本 skill 负责 YSS OpenAPI 的 **YAML-first** 工作流：
 

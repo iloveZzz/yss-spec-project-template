@@ -19,7 +19,7 @@ async function inspect(root, record, {checkpointRef, readOnly = false} = {}) {
     assetRef: record.delivery?.ref, readOnly, deliveryMode: record.delivery_mode});
   const local = record.delivery_mode === 'local-evidence';
   if (authorization.mode !== 'execution-scope') ensure(record.checkpoint_ref === authorization.checkpoint_ref, '终点未绑定当前功能 checkpoint');
-  ensure(!local || authorization.mode === 'feature-target', '本地后端证据只能登记到当前功能终点');
+  ensure(!local || ['feature-target','backend-profile'].includes(authorization.mode), '本地后端证据只能登记到当前功能终点');
   ensure(record.schema_version === 1 && record.kind === 'backend-delivery-terminal'
     && record.business_completed === false && record.release_authorized === false, '后端终点不是业务完成或发布批准');
   for (const name of ['delivery', 'review_state']) {

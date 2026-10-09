@@ -82,7 +82,7 @@ export function bindLocalPlanHandoff(owner,currentPlan) {
  return currentPlan;
 }
 export async function approvedSpecFixture(root,{productDesign=true,nativeSeed}={}) {
- if(nativeSeed)assertNativeIdentity(nativeSeed,'spec');
+ if(nativeSeed) {const profile=read(path.join(nativeSeed,'.yss.json')).profile;if(!['spec','frontend'].includes(profile))throw Error('local business fixture requires native Spec or Frontend');assertNativeIdentity(nativeSeed,profile);}
  fs.mkdirSync(root,{recursive:true});
  const strategic=await strategicFixture(root,{nativeSeed,handoffVersion:5,businessTickets:true,...(!productDesign?{impacts:{ui:false,api:true,data:true,backend:true,frontend:false,cross_repo:false,high_risk:false}}:{})});
  const businessRef=strategic.handoff.source.business_ticket_set_ref.persisted_ref,business=read(path.join(root,businessRef));

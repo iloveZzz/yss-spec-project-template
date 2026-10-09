@@ -4,7 +4,7 @@
 
 ## 1. 接入清单
 
-已合格 Spec `daily` 使用已有且可核验的单实现仓：普通 Ticket 绑定真实 Git 根、当前基线、允许写路径、可逆依据和实际验证命令，核验复用现有工程事实，不为了小任务重建阶段接入、脚手架合同或工程批准包。适用 YSS 技术基线、路径边界、测试和独立审查仍须完成。新仓、未确认根、跨仓、平台/架构转换或无法证明回滚时先调查并按 `request_triage.delivery_path` 升级；旧 CLI/其他 Profile 不因此得到普通准入。以下正式接入和切片绑定要求仍适用于 `governed`。
+已合格且政策启用的 Spec、Backend、Frontend `daily` 使用已有且可核验的单实现仓：普通 Ticket 绑定真实 Git 根、当前基线、允许写路径、可逆依据和实际验证命令，核验复用现有工程事实，不为了小任务重建阶段接入、脚手架合同或工程批准包。适用 YSS 技术基线、路径边界、测试和独立审查仍须完成。新仓、未确认根、跨仓、平台/架构转换或无法证明回滚时先调查并按 `request_triage.delivery_path` 升级；缺政策或能力的 CLI/Profile 不因此得到普通准入。以下正式接入和切片绑定要求仍适用于 `governed`。
 
 每个受影响实现仓库必须登记：仓库地址、分支、代码所有者、CI 入口、测试 / 构建命令、允许写路径、回滚点和 MR / PR。没有登记记录时，先完成 onboarding，不能用本仓库目录代替实现仓库。
 
@@ -103,3 +103,5 @@ scripts/verify-template
 ```
 
 CLI 仓库至少执行固定 commit 的 `YSS_SPEC_TEMPLATE_REF=<pinned-commit> npm test`、`npm pack --dry-run`，并在解包后的 CLI 上验证 init、attach、sync、迁移冲突和回滚。共同发布前记录两个仓库的 commit、模板快照 hash、测试结果、独立审查结论和 rollback 路径。
+
+显式独立脚手架请求可直接提供工程名、包名、精确平台版本、Maven 坐标和目标目录，调用 DDD/MVC 生成器 `--standalone`。缺少正式合同本身不阻断纯机械生成；不得自动降级已有正式任务，独立 Manifest 不含 approved、ready-for-agent 或业务实施授权。真实 Maven 验证和后续治理接入分别记录。
