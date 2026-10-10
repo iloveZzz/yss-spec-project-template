@@ -1,0 +1,31 @@
+{
+  "files": [
+    "README.md",
+    "docs/process/*.md",
+    ".template-source/agents/*.md",
+    ".template-spec/agents/*.md"
+  ],
+  "revisionFiles": ["README.md"],
+  "patterns": [
+    {
+      "id": "gate-count",
+      "regex": "[0-9一二三四五六七八九十两]+ ?个(聚合)?门禁",
+      "authority": ".template-spec/process/lifecycle-registry.yaml#gates"
+    },
+    {
+      "id": "stage-count",
+      "regex": "[0-9一二三四五六七八九十两]+ ?个主阶段",
+      "authority": ".template-spec/process/lifecycle-registry.yaml#stages"
+    },
+    {
+      "id": "projection-root-count",
+      "regex": "[0-9一二三四五六七八九十两]+ ?个(共享)?投影根",
+      "authority": ".template-spec/agents/yss-skill-registry.yaml#projection_roots"
+    },
+    {
+      "id": "orthogonal-axis-count",
+      "regex": "[0-9一二三四五六七八九十两]+ ?条正交轴",
+      "authority": ".template-spec/agents/digital-human-roles.md 的轴表"
+    }
+  ]
+}

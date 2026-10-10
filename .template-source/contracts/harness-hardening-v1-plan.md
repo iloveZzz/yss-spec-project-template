@@ -60,7 +60,7 @@ flowchart LR
 | WP-03 | FR-003、FR-004 | L2：release-semantics（需反例） | `.github/workflows/template-gate.yml`、`.gitlab-ci.yml`、`.github/actions/setup-template/`、`github-workflows.md` | WP-02 | — |
 | WP-04 | FR-005 | L2：local-rule、permission-boundary（需反例） | `scripts/agent-hook`、`scripts/lib/agent-hook.mjs`、`tests/agent-hook.test.mjs`、`.claude/settings.json`、`.codex/hooks.json`、`bundle-profile.json` | WP-02 | Q-003 |
 | WP-05 | FR-006 | L2：generation-semantics、cross-repo-contract | `CLAUDE.md`、`yss-skill-registry.yaml`（`projection_roots`、`runtimes`）、`scripts/lib/skill-supply-chain.mjs`、`skills-lock.json`、`.claude/skills/`（生成）、`bundle-profile.json`、`profile-skill-sync.json`、子模块对应文件 | WP-00 | Q-004 |
-| WP-06 | FR-007、FR-008 | L1：textual-only；检查脚本部分 L2：non-core-validator | `docs/process/yss-product-lifecycle-team-guide.md`、`README.md`、`skills-maintenance.md`、`digital-human-roles.md`、`scripts/verify-doc-facts`、`scripts/lib/doc-facts.mjs`、测试 | WP-00；检查接入 `ci-gate` 需 WP-02 | — |
+| WP-06 | FR-007、FR-008 | L1：textual-only；检查脚本部分 L2：non-core-validator | `docs/process/yss-product-lifecycle-team-guide.md`、`README.md`、`skills-maintenance.md`、`digital-human-roles.md`、`scripts/verify-doc-facts`、`scripts/lib/doc-facts.mjs`、`scripts/lib/doc-facts-patterns.json`、测试、`template-verification-profiles.yaml`（登记检查输入）、`bundle-profile.json`（排除该脚本） | WP-00；检查接入 `ci-gate` 需 WP-02 | — |
 | WP-07 | FR-010 | L2：generation-semantics、lifecycle-gate（第二批需反例） | `yss-skill-registry.yaml`（`invocation` 字段）、`scripts/lib/skill-supply-chain.mjs`、各技能 frontmatter 与 `agents/openai.yaml`（由同步生成）、`skills-lock.json`、`AGENTS.md`（仅入口说明） | WP-00 | — |
 | WP-08 | FR-011 | L2：generation-semantics、release-semantics、cross-repo-contract（需反例） | `yss-skill-registry.yaml`、`skill-supply-chain.mjs`、`.codex/skills`、`.cursor/skills`、`.pi/skills`、`skills-lock.json`、`bundle-profile.json`、`skills-maintenance.md`、`skill-migrations.md`（登记删除的投影根）、子模块对应文件 | WP-05、WP-07 | Q-004 |
 | WP-09 | FR-012 | L2：template-structure | `CONTEXT.md`、`.template-spec/process/process-glossary.md`（新增）、运行时 profile 文档、`AGENTS.md`、所有指向被迁术语的链接 | WP-06 | — |
@@ -218,6 +218,8 @@ flowchart LR
 | 2026-10-10 | Q-001 CI 平台 | GitHub 与 GitLab 都要；环境准备抽到 `scripts/ci-setup` | 维护者 |
 | 2026-10-10 | Q-002 Codex 高权限配置 | 本机仍需要，改放 `~/.codex/config.toml`；仓库内文件删除 | 维护者 |
 | 2026-10-10 | Q-005 显式技能清单 | 交实施者判断；分两批，见 WP-07 | 维护者授权，实施者执行 |
+| 2026-10-10 | WP-06 写范围例外 | 补登 `doc-facts-patterns.json`、`template-verification-profiles.yaml` 与 `bundle-profile.json`：与 WP-00 一样登记检查输入，并把模板源专用检查排除出实例分发 | 维护者批准执行计划 |
+| 2026-10-10 | WP-06 团队指南 | `docs/process/yss-product-lifecycle-team-guide.md` 被 `.gitignore` 排除，只在维护者本地修正；文档事实检查在文件存在时扫描 | 维护者 |
 
 ## 7. 执行状态
 
@@ -225,4 +227,5 @@ flowchart LR
 |---|---|---|---|
 | WP-00 | 已提交，待合并 | `harden/wp-00` | `harness-metrics` 与 4 个测试通过；基线已测 |
 | WP-01 | 已提交，待合并 | `harden/wp-01`（主仓与三个 Profile 子模块同名） | 配置已删除并加检查；AC-002 未完成（需 yss-cli 改动）；合并前需维护者把配置抄到 `~/.codex/config.toml` |
-| WP-02 起 | 未开始 | — | 依赖 WP-01 合并 |
+| WP-02 起 | 未开始 | — | 依赖 WP-01 合并；WP-06 除外 |
+| WP-06 | 已提交，待合并 | `harden/wp-06` | 基于 main（文本修复不依赖 WP-00 代码）；三处被追踪的漂移已修，`verify-doc-facts` 与 5 个测试通过；团队指南为未追踪文件，本地已修；接入 `ci-gate` 待 WP-02 |

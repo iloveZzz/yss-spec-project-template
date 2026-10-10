@@ -1,0 +1,30 @@
+#!/usr/bin/env node
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { checkDocFacts, formatFinding } from './lib/doc-facts.mjs';
+
+const SCRIPT_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+
+function usage() {
+  return '用法: scripts/verify-doc-facts [--root <目录>]\n只读；说明文档复述已登记的可计数事实或硬编码上游 revision 时失败。模式表见 scripts/lib/doc-facts-patterns.json。';
+}
+
+try {
+  const args = process.argv.slice(2);
+  let root = SCRIPT_ROOT;
+  for (let index = 0; index < args.length; index += 1) {
+    if (args[index] === '--root') root = path.resolve(args[++index] ?? '');
+    else if (args[index] === '--help') { process.stdout.write(`${usage()}\n`); process.exit(0); }
+    else throw new TypeError(`未知参数 ${args[index]}\n${usage()}`);
+  }
+  const findings = checkDocFacts(root);
+  if (findings.length) {
+    process.stderr.write(`${findings.map(formatFinding).join('\n')}\n文档事实检查失败：${findings.length} 处。改为链接权威资产，不复述数量或 revision。\n`);
+    process.exitCode = 1;
+  } else {
+    process.stdout.write('文档事实检查通过\n');
+  }
+} catch (error) {
+  process.stderr.write(`verify-doc-facts 错误: ${error.message}\n`);
+  process.exitCode = 1;
+}

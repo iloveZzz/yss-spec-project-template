@@ -1,6 +1,6 @@
 # YSS 综合研发主控模板（Spec Profile）
 
-> Matt Pocock Engineering Skills × YSS × OpenAPI 驱动的轻量 AI 研发文档模板。
+> 可版本化的研发治理系统：Matt Pocock Engineering Skills × YSS × OpenAPI，把产品研发从需求澄清连接到实现、审查、发布与复盘。
 
 ## 定位
 
@@ -61,12 +61,7 @@ scripts/sync-skills
 scripts/update-skill-lock
 ```
 
-Matt skills 固定来源：
-
-```text
-mattpocock/skills
-main@6acc160e4e0cd062dbbbd7a1b26ae92855edf07e
-```
+Matt skills 的上游来源与固定 revision 见 [`skills-lock.json`](skills-lock.json)，说明文档不复述。
 
 主研发流程使用 `skills/engineering`；`skills-lock.json` 同时记录本次安装的关联 `productivity`、`in-progress`、`deprecated`、`misc` 和 `personal` skill 路径。
 
