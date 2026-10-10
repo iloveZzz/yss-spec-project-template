@@ -12,7 +12,7 @@ YSS 模板工程是一套可版本化的研发治理系统。它用仓库身份�
 
 1. 读取根目录 `yss-project.yaml`，确认 `repository_mode`。
 2. 读取 `AGENTS.md`，取得当前仓库的入口规则、硬门禁和禁止事项。
-3. 读取 `CONTEXT.md`，统一领域与流程语言。
+3. 读取 `CONTEXT.md` 取得业务语言；流程术语按需读取 `.template-spec/process/process-glossary.md`。
 4. 按任务读取生命周期注册表、裁剪规则、技能注册表和数字人角色注册表。
 
 完成标准：仓库身份合法，任务属于模板维护还是产品研发已经明确，影响面和下一工作单元可以由权威资产解释。
@@ -98,7 +98,7 @@ YSS 模板工程是一套可版本化的研发治理系统。它用仓库身份�
 | 问题 | 权威资产 |
 |---|---|
 | 仓库是什么 | `yss-project.yaml`、`AGENTS.md` |
-| 统一语言是什么 | `CONTEXT.md` |
+| 业务语言与流程术语是什么 | `CONTEXT.md`（业务）、`.template-spec/process/process-glossary.md`（流程） |
 | 阶段、门禁和工作单元是什么 | `.template-spec/process/lifecycle-registry.yaml` |
 | 如何裁剪流程和判定维护强度 | `.template-spec/process/harness-process-tailoring.md`、`.template-source/process/maintenance-intensity.yaml` |
 | skills 如何发现与校验 | `.template-spec/agents/yss-skill-registry.yaml`、`skills-lock.json` |

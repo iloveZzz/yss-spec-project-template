@@ -110,6 +110,22 @@ profiles:
           - "tests/explicit-invocation.test.mjs"
         depends_on: []
         failure_mode: "被生命周期编排器路由或合同声明为模型调用的技能被设为显式，或显式集合被无意改动"
+      - id: check.process-glossary
+        run: "node --test tests/process-glossary.test.mjs"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
+          - "CONTEXT.md"
+          - "AGENTS.md"
+          - ".template-spec/process/process-glossary.md"
+          - ".template-spec/agents/digital-human-roles.md"
+          - ".template-source/process/template-engineering-overview.md"
+          - ".agents/skills/yss-product-lifecycle/SKILL.md"
+          - "scripts/lib/context-contract.mjs"
+          - "scripts/lib/harness-metrics.mjs"
+          - "tests/process-glossary.test.mjs"
+        depends_on: []
+        failure_mode: "流程术语回流到根 CONTEXT.md、术语表违反英文标识或重复规则、入口链接断开、运行时平台细节混入流程术语，或常驻读取超过预算"
       - id: check.runtime-storage
         group: runtime-storage
         inputs_complete: true
@@ -1300,6 +1316,8 @@ routing:
       - CLAUDE.md
       - tests/claude-entry.test.mjs
       - tests/explicit-invocation.test.mjs
+      - tests/process-glossary.test.mjs
+      - .template-spec/process/process-glossary.md
     groups:
       - feature-assets
   - patterns:
@@ -4723,6 +4741,14 @@ supplemental_checks:
     depends_on: []
     when: template-source
     task_id: supplemental.explicit-invocation
+    source_requirement: committed
+  - id: check.process-glossary-supplemental
+    run: node --test tests/process-glossary.test.mjs
+    group: feature-assets
+    gate_ids: [check.verification-lifecycle]
+    depends_on: []
+    when: template-source
+    task_id: supplemental.process-glossary
     source_requirement: committed
   - id: check.native-context-retirement
     run: node --test tests/native-context-retirement.test.mjs

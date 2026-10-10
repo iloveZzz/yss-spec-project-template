@@ -49,8 +49,8 @@ Plan、产品设计、工程契约统一呈现适用检查后批准。`gate.deli
 | ID | 覆盖 | 落地方式 |
 |---|---|---|
 | `runtime.generic` | 任何能加载 `core_skills` 并接受任务包的 Agent | 通用会话 / 人设 / system prompt |
-| `runtime.skill-projection` | `yss-skill-registry.yaml` 的 `agent_runtime_roots`（codex、cursor、pi） | 投影技能 + subagent 任务包 |
-| `runtime.grok` | Grok Bot | 持久 Bot、群聊或 1:1 交接；群超过 6 人改 1:1，不改逻辑协作组 |
+| `runtime.skill-projection` | `yss-skill-registry.yaml` 的 `agent_runtime_roots` | 投影技能 + subagent 任务包 |
+| `runtime.grok` | Grok Bot | 持久 Bot、群聊或 1:1 交接；群超过 6 人改 1:1，不改逻辑协作组。Bot 是该平台上的运行时实例，不是数字人角色、技能或门禁 |
 
 新增平台：先加 `runtimes` 条目，再写适配说明。不要把平台限制写进 `roles`。
 
