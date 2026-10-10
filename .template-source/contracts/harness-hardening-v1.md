@@ -1,6 +1,6 @@
 ---
 design_id: harness-hardening-v1
-version: 0.2.0
+version: 0.3.0
 status: proposed
 content_profile: plan-spec-v1
 repository_mode: template-source
@@ -32,8 +32,8 @@ execution_plan: harness-hardening-v1-plan.md
 | 证据 2 | `.github/workflows/` 为空；合同写明“根 `.github/workflows` 已移除……不再自动运行这些模板检查”；`.github/actions/setup-template/action.yml` 仍保留 | `.template-source/process/github-workflows.md` |
 | 证据 3 | `.codex/hooks.json` 为 `{"hooks": {}}`；仓库无 `.claude/` 目录、无根 `CLAUDE.md` | `.codex/hooks.json` |
 | 证据 4 | 选择性 gate policy 仍为 `activation: legacy-full`、`qualification_ref: null` | `.template-source/process/template-verification-profiles.yaml` |
-| 证据 5 | 常驻读取：`AGENTS.md` 4,816 B、`CONTEXT.md` 24,801 B（98 行表格）、`yss-product-lifecycle/SKILL.md` 15,076 B，合计 44,693 B | 根目录；`.agents/skills/yss-product-lifecycle/` |
-| 证据 6 | 共享技能 79 个，description 合计 6,475 字符，其中仅 8 个声明 `disable-model-invocation: true`；Backend/Frontend/Design Profile 分别为 62/57/25 个技能、5,068/5,015/2,229 字符 | `.agents/skills/*/SKILL.md`；`submodules/*/.agents/skills` |
+| 证据 5 | 常驻读取（工作树，含未提交改动）：`AGENTS.md` 4,816 B、`CONTEXT.md` 24,801 B（98 行表格）、`yss-product-lifecycle/SKILL.md` 15,076 B，合计 44,693 B；已提交的 HEAD `26b9be5f` 为 43,741 B | 根目录；`.agents/skills/yss-product-lifecycle/` |
+| 证据 6 | 共享技能 79 个，description 合计 6,403 字符（`harness-metrics` 口径，不含引号），其中仅 8 个声明 `disable-model-invocation: true`，可隐式触发的 71 个技能合计 5,707 字符；Backend/Frontend/Design Profile 在工作树物化后为 62/57/25 个技能（隐式 description 4,320/4,279/1,834 字符），但已提交的子模块提交里 Backend/Frontend 只有 4 个技能，其余在初始化时生成 | `.agents/skills/*/SKILL.md`；`submodules/*/.agents/skills` |
 | 证据 7 | `.codex/skills` 80 项：48 个符号链接、31 个与 `.agents/skills` 逐字节相同的完整副本、1 个 Codex 独有（`product-design`）；另有 `.cursor/skills`、`.pi/skills` 两个投影根 | `.codex/skills`；`yss-skill-registry.yaml` `instance_distribution.projection_roots` |
 | 证据 8 | 文档漂移：团队指南写“21 个门禁”和“机会与 Discovery”阶段（注册表为 8 个门禁，`stage.discovery` 已弃用）；README 固定 Matt skills `6acc160e…`，lock 为 `0ab1b63a…`；技能维护文档写“六个共享投影根”（实际 3 个）；角色文档标题为“四条正交轴” | `docs/process/yss-product-lifecycle-team-guide.md`；`README.md`；`skills-lock.json`；`.template-source/agents/skills-maintenance.md`；`.template-spec/agents/digital-human-roles.md` |
 | 证据 9 | `package.json` 无 `engines`；运行时存储依赖 `node:sqlite`，验证合同要求 Node 24 运行器、Node 22 工具兼容 | `package.json`；`.nvmrc` |
@@ -83,7 +83,7 @@ execution_plan: harness-hardening-v1-plan.md
 | NFR-001 | `agent-hook` 不拖慢交互 | 单轮变更，含技能或注册表改动 | p95 墙钟秒 | ≤ 10 s | 候选 | 测试：`harness-metrics` 记录 20 次运行 | .template-source/contracts/harness-hardening-v1.md :: heading:解决方案 | AC-007 | Q-003 |
 | NFR-002 | `ci-gate` 在托管 runner 上可用 | PR / MR 模式，典型单技能改动；GitHub 与 GitLab 分别统计 | 墙钟分钟 | 未知，基线测得后确认 | 候选 | 测试：每个平台连续 5 个 PR / MR 的耗时 | .template-source/process/github-workflows.md :: heading:模板源 | AC-004 | Q-008 |
 | NFR-003 | 常驻上下文减少 | 模板源仓首次进入 | `AGENTS.md`+`CONTEXT.md`+`yss-product-lifecycle/SKILL.md` 字节 | 由 44,693 B 降至 ≤ 25,000 B | 候选 | 检查：`harness-metrics` | .template-source/contracts/harness-hardening-v1.md :: heading:现状证据 | AC-017 | 无 |
-| NFR-004 | 隐式技能清单缩小 | 模板源仓与各 Profile | 可隐式触发技能的 description 字符数 | 模板源由 6,475 降至 ≤ 4,000；各 Profile 不高于基线的 70% | 候选 | 检查：`harness-metrics` | .template-source/contracts/harness-hardening-v1.md :: heading:现状证据 | AC-014 | 无 |
+| NFR-004 | 隐式技能清单缩小 | 模板源仓与各 Profile | 可隐式触发技能的 description 字符数 | 模板源由 5,707 降至 ≤ 4,000；各 Profile 不高于基线的 70% | 候选 | 检查：`harness-metrics` | .template-source/contracts/harness-hardening-v1.md :: heading:现状证据 | AC-014 | 无 |
 | NFR-005 | 加固不增加流程表面积 | 本轮全部变更 | `.template-spec/process` 文件数；新增流程术语数 | 文件数净增 ≤ 1（`process-glossary.md`）；`CONTEXT.md` 不新增流程术语 | 已确认 | 检查：阶段前后 `harness-metrics` 对比 | .template-source/contracts/harness-hardening-v1.md :: heading:文档状态与范围 | AC-020 | 无 |
 | NFR-006 | 已有实例兼容 | 已按旧版本初始化的实例 | 升级失败数 | 0；变化经 `harness-upgrade` 计划展示 | 已确认 | 测试：现有升级场景测试与新增配置迁移场景 | .template-spec/process/harness-upgrade.md :: heading:计划、冲突与保护 | AC-002 | 无 |
 

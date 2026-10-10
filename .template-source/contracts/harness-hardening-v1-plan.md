@@ -1,6 +1,6 @@
 ---
 design_id: harness-hardening-v1-plan
-version: 0.2.0
+version: 0.3.0
 status: proposed
 repository_mode: template-source
 spec: harness-hardening-v1.md
@@ -158,7 +158,7 @@ flowchart LR
 | 第二批 explicit（以 AC-024 为前提） | `yss-stage-decision`、`yss-prototype-stage`、`yss-technical-design`、`yss-tactical-design`、`yss-implementation-contract-compiler`、`cross-repo-implementation-routing`、`implementation-repo-onboarding`、`yss-backend-spec-review`、`prototype-review`、`yss-openapi-draft-review` | 1,130 |
 | 保持 implicit | 其余技能，包括 `yss-product-lifecycle`、`yss-research`、`code-review`、`tdd`、`diagnosing-bugs`、全部 YSS 后端组件、Formily / YTable / YTree 等前端组件技能 | — |
 
-按 2026-10-10 的描述长度估算，模板源可隐式触发的 description 合计约为：现状 5,775 → 第一批后约 4,800 → 第二批后约 3,670，第二批完成才能达到 NFR-004 的 4,000 目标。若第二批有技能因路由测试保持 implicit，再缩短最长的几条描述来补足：`yss-prototype-stage` 284、`codebase-design` 265、`prototype-review` 184。规格“现状证据”中 6,475 这个数包含了已显式的技能，WP-00 的度量脚本要按“可隐式触发”口径重算并回写规格。
+按 2026-10-10 的描述长度估算，模板源可隐式触发的 description 合计约为：现状 5,707 → 第一批后约 4,800 → 第二批后约 3,670，第二批完成才能达到 NFR-004 的 4,000 目标。若第二批有技能因路由测试保持 implicit，再缩短最长的几条描述来补足：`yss-prototype-stage` 284、`codebase-design` 265、`prototype-review` 184。WP-00 的度量脚本已按“可隐式触发”口径重算，规格已回写（5,707）。
 
 步骤：
 
@@ -218,3 +218,11 @@ flowchart LR
 | 2026-10-10 | Q-001 CI 平台 | GitHub 与 GitLab 都要；环境准备抽到 `scripts/ci-setup` | 维护者 |
 | 2026-10-10 | Q-002 Codex 高权限配置 | 本机仍需要，改放 `~/.codex/config.toml`；仓库内文件删除 | 维护者 |
 | 2026-10-10 | Q-005 显式技能清单 | 交实施者判断；分两批，见 WP-07 | 维护者授权，实施者执行 |
+
+## 7. 执行状态
+
+| 工作包 | 状态 | 分支 | 说明 |
+|---|---|---|---|
+| WP-00 | 已提交，待合并 | `harden/wp-00` | `harness-metrics` 与 4 个测试通过；基线已测 |
+| WP-01 | 已提交，待合并 | `harden/wp-01`（主仓与三个 Profile 子模块同名） | 配置已删除并加检查；AC-002 未完成（需 yss-cli 改动）；合并前需维护者把配置抄到 `~/.codex/config.toml` |
+| WP-02 起 | 未开始 | — | 依赖 WP-01 合并 |
