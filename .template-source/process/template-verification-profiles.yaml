@@ -28,6 +28,21 @@ profiles:
           - ".template-spec/agents/yss-skill-registry.yaml"
         depends_on: []
         failure_mode: "维护技能层级或调用元数据的接受与拒绝语义回归"
+      - id: check.doc-facts
+        run: "node --test tests/doc-facts.test.mjs"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
+          - "scripts/verify-doc-facts"
+          - "scripts/lib/doc-facts.mjs"
+          - "scripts/lib/doc-facts-patterns.json"
+          - "tests/doc-facts.test.mjs"
+          - "README.md"
+          - ".template-source/agents/*.md"
+          - ".template-spec/agents/*.md"
+          - ".template-source/contracts/harness-hardening-v1*.md"
+        depends_on: []
+        failure_mode: "说明文档复述门禁数、阶段数、投影根数量或硬编码与 lock 不一致的上游 revision"
       - id: check.runtime-storage
         group: runtime-storage
         inputs_complete: true
@@ -1181,6 +1196,14 @@ routing:
       - work-layout
       - hygiene
       - implementation
+      - feature-assets
+  - patterns:
+      - scripts/verify-doc-facts
+      - scripts/lib/doc-facts.mjs
+      - scripts/lib/doc-facts-patterns.json
+      - tests/doc-facts.test.mjs
+    groups:
+      - hygiene
       - feature-assets
   - patterns:
       - scripts/**
@@ -4520,6 +4543,22 @@ supplemental_checks:
     depends_on: []
     when: template-source
     task_id: supplemental.work-layout-hardcodes
+    source_requirement: committed
+  - id: check.doc-facts-supplemental
+    run: node --test tests/doc-facts.test.mjs
+    group: feature-assets
+    gate_ids: [check.verification-lifecycle]
+    depends_on: []
+    when: template-source
+    task_id: supplemental.doc-facts
+    source_requirement: committed
+  - id: check.doc-facts-restatements-supplemental
+    run: node scripts/verify-doc-facts
+    group: hygiene
+    gate_ids: [check.verification-lifecycle]
+    depends_on: []
+    when: template-source
+    task_id: supplemental.doc-facts-restatements
     source_requirement: committed
   - id: check.native-context-retirement
     run: node --test tests/native-context-retirement.test.mjs
