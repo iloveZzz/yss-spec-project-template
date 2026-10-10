@@ -1,0 +1,36 @@
+#!/usr/bin/env node
+import { writeFileSync, mkdirSync } from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { collectMetrics, digest } from "./lib/harness-metrics.mjs";
+import { resolveMaintenanceOutput } from "./lib/maintenance-storage.mjs";
+
+const SCRIPT_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+
+function usage() {
+  return "用法: scripts/harness-metrics [--root <目录>] [--out maintenance:<类别/运行ID/文件>]\n只读；默认向 stdout 输出 JSON。--out 写入仓外维护命名空间并输出 sha256。";
+}
+
+try {
+  const args = process.argv.slice(2);
+  let root = SCRIPT_ROOT;
+  let out = null;
+  for (let index = 0; index < args.length; index += 1) {
+    if (args[index] === "--root") root = path.resolve(args[++index] ?? "");
+    else if (args[index] === "--out") out = args[++index];
+    else if (args[index] === "--help") { process.stdout.write(`${usage()}\n`); process.exit(0); }
+    else throw new TypeError(`未知参数 ${args[index]}\n${usage()}`);
+  }
+  const text = `${JSON.stringify(collectMetrics(root), null, 2)}\n`;
+  if (out) {
+    const target = resolveMaintenanceOutput(out, { root: SCRIPT_ROOT });
+    mkdirSync(path.dirname(target), { recursive: true });
+    writeFileSync(target, text, { flag: "wx" });
+    process.stdout.write(`${target}\nsha256:${digest(text)}\n`);
+  } else {
+    process.stdout.write(text);
+  }
+} catch (error) {
+  process.stderr.write(`harness-metrics 错误: ${error.message}\n`);
+  process.exitCode = 1;
+}
