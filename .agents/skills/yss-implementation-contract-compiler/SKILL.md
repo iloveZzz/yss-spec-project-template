@@ -5,7 +5,9 @@ description: "编译或重验 YSS Slice Implementation Contract、最小 Skill �
 
 # YSS Implementation Contract Compiler
 
-已有生命周期资产优先用 `scripts/contract view <资产> --kind <类型>` 阅读；执行任务用 `--profile task --unit <ID>`，绑定与校验明细用 `--profile full`。视图不授予执行权限，仍按本 Skill 的原始来源和批准门禁处理。类型、准备和迁移见 `.template-spec/process/contract-reading.md`。
+当前任务先一次性读取 `yss capabilities --json`；仅当 `result.readingViews.schemaVersion: 1` 且对应入口和模式已声明时，Slice 优先用 `yss contract view --root <项目> --kind slice --file <合同>` 阅读，任务加 `--view task --unit <唯一 ID>`，明细加 `--view full`。JSON 只消费结构化 `content`、绑定及检查范围；v3 任务仅展开关联验收，诊断其他验收时按 `full_acceptance_ref` 定向读取。全局、专项和未分类约束必须完整消费。旧 CLI 或其他合同继续用 `scripts/contract view <资产> --kind <类型> [--profile task --unit <ID>|--profile full]`，不向旧 CLI 追加新参数。视图不授予执行权限；原始来源和批准门禁仍适用。类型、准备和迁移见 `.template-spec/process/contract-reading.md`。
+
+同一任务已读且未变化的内容继续使用；来源变化、新影响、冲突、恢复或交接时刷新。证据先读结论与引用，需要诊断才定向读正文。验证复用须同时绑定资产与上游字节、工具及 Schema、参数、仓库根和相关环境；改变的输入只使受影响证据失效，不重复执行同输入命令，不建立跨会话校验缓存。
 
 Slice v3 的当前执行结果须按 `references/yss-skill-execution-result.md` 绑定验收、验证项、合同原字节、实际证据和执行来源；`legacy-evidence-binding-missing` 表示历史可读但不能据此完成当前任务，不补造历史执行信息。
 
@@ -46,7 +48,7 @@ Slice v3 的当前执行结果须按 `references/yss-skill-execution-result.md` 
 - 后端技术设计由 `yss-technical-design` 先行组织。消费批准且版本当前的 Technical Design Contract，核对其架构与工程基线一致；DDD 才消费聚合、Gateway 等战术字段并路由 `yss-domain`，MVC 消费用例、分层、规则和事务设计并按 Profile 路由。旧 v1 战术合同只按 DDD 显式兼容读取。无相关影响记录带原因的 `not-applicable`。
 - API 变化必须回到生命周期 Draft/Review/Freeze；半成品 backend 不得冒充稳定 source of truth。
 - 后端端到端切片必须包含 Application；对象/POJO 影响按契约自动补 `mapstruct`、`lombok`、`alibaba-java-code-style`。
-- Harness 内实现路径必须落在 `apps/backend/<project>/` 或 `apps/frontend/<project>/` 的具体项目目录；`apps/backend/`、`apps/frontend/` 只能作为容器，`app/backend/`、`app/frontend/` 及其子路径一律阻断。外部实现仓库使用其登记的真实项目根路径。`git-submodule` 使用 `implementation_path_policy: git-submodule-harness-apps`，空 gitlink、detached HEAD 或 `--force` 覆盖挂载点不得脚手架；`inspectWorkingTreeScope.writable` 必须为显式布尔值。
+- Harness 内实现路径使用已确认的实际工程根，默认布局为 `apps/backend/<project>/` 或 `apps/frontend/<project>/`；`apps/backend/`、`apps/frontend/` 只能作为容器。外部实现仓库使用其登记的真实项目根路径。`git-submodule` 使用 `implementation_path_policy: git-submodule-harness-apps`，空 gitlink、detached HEAD 或 `--force` 覆盖挂载点不得脚手架；`inspectWorkingTreeScope.writable` 必须为显式布尔值。
 - 当前用户、缓存、审计、Excel、分布式 ID、请求校验、错误映射、加解密或网关韧性命中时，必须按 `compiler-contract.yaml` 的 `impact_to_capabilities` 补齐入口 capability；不能只在 `boundaries.md` 中提及。仅复用已经验证的平台认证 / 授权能力不算 component impact，不自动增加权限专项 skill。
 - 业务行为使用 `behavior-tdd`；只有机械脚手架/生成物可用 `controlled-generation`，并记录例外和验证。
 - 无工程且需要机械生成时，先读取 [脚手架合同编译](references/scaffold-compilation.md)。只起草 Project Scaffold Contract schema v4，由生命周期批准并持久化后运行；既有工程不重新生成。脚手架合同不能替代后续批准的 Slice Contract，业务行为必须重路由。

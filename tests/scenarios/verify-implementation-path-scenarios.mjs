@@ -1,6 +1,10 @@
 import { validImplementationPath, violation } from "../../scripts/lib/implementation-path-policy.mjs";
 
 const validPaths = {
+  "backend registered root": "app/backend/",
+  "frontend registered root": "app/frontend/",
+  "backend registered nested source": "app/backend/project1/src/main/java/",
+  "frontend registered nested source": "app/frontend/project1/src/",
   "backend project 1": "apps/backend/project1/",
   "backend project 2 nested source": "apps/backend/project2/src/main/java/",
   "frontend project 1": "apps/frontend/project1/",
@@ -8,8 +12,6 @@ const validPaths = {
 };
 
 const invalidPaths = {
-  "singular backend root": "app/backend/project1/",
-  "singular frontend root": "app/frontend/project1/",
   "backend container root": "apps/backend/",
   "frontend container root": "apps/frontend/",
   "wildcard project root": "apps/backend/*/",

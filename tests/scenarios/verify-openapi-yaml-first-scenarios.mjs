@@ -1,5 +1,5 @@
 import { spawnSync } from "node:child_process";
-import { runScenario } from "../../scripts/lib/scenario-checks.mjs";
+import { runScenario } from "../helpers/scenario-checks.mjs";
 try {
   runScenario("openapiYaml");
   const result = spawnSync(process.execPath, ["tests/scenarios/verify-openapi-draft-validation-scenarios.mjs"], { encoding: "utf8" });

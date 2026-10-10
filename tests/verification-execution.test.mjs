@@ -377,7 +377,7 @@ test('实现合同包装入口的真实Node子批次始终串行，外层并发�
   execFileSync(process.execPath,['--test','--test-concurrency=2',...files],{env:childEnvironment,stdio:'pipe',timeout:10000});
   assert.equal(maximum(),2,'并发正控必须实际观察到重叠，证明探针能发现并发逃逸');
   const script=path.join(directory,'tests/scenarios/entry.mjs');fs.mkdirSync(path.dirname(script),{recursive:true});fs.copyFileSync(new URL('./scenarios/verify-yss-implementation-contract-compiler-scenarios.mjs',import.meta.url),script);
-  fs.mkdirSync(path.join(directory,'scripts/lib'),{recursive:true});fs.writeFileSync(path.join(directory,'scripts/lib/scenario-checks.mjs'),"export function runScenario(name){if(name!=='implementationContractCompiler')throw Error('unexpected scenario');}\n");
+  fs.mkdirSync(path.join(directory,'tests/helpers'),{recursive:true});fs.writeFileSync(path.join(directory,'tests/helpers/scenario-checks.mjs'),"export function runScenario(name){if(name!=='implementationContractCompiler')throw Error('unexpected scenario');}\n");
   const preload=path.join(directory,'probe.mjs');
   fs.writeFileSync(preload,`import fs from 'node:fs';import childProcess from 'node:child_process';import {syncBuiltinESMExports} from 'node:module';const real=childProcess.spawnSync;childProcess.spawnSync=(file,args,options)=>{if(args.includes('--test')){fs.writeFileSync(${JSON.stringify(receipt)},JSON.stringify({file,args}));return real(file,[...args.filter(value=>value.startsWith('--')),...${JSON.stringify(files)}],options);}return real(file,args,options);};syncBuiltinESMExports();\n`);
   // Copy the exact wrapper bytes and replace only the unrelated first-stage

@@ -46,13 +46,13 @@ Gateway interface 的签名由批准战术模型决定，并由 `yss-domain` 唯
 ```java
 package com.yss.quality.domain.template.gateway;
 
-import com.yss.quality.domain.template.model.QualityTemplate;
+import com.yss.quality.domain.template.model.QualityTemplateEntity;
 import com.yss.quality.domain.template.model.QualityTemplateId;
 import java.util.Optional;
 
 public interface QualityTemplateGateway {
-    Optional<QualityTemplate> findById(QualityTemplateId id);
-    void save(QualityTemplate template);
+    Optional<QualityTemplateEntity> findById(QualityTemplateId id);
+    void save(QualityTemplateEntity template);
 }
 ```
 

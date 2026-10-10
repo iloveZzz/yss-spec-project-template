@@ -31,6 +31,8 @@ infrastructure-+
 - `adapter/web`：拥有 HTTP DTO、Controller、异常翻译、WebConvertor；只依赖 Application。
 - `bootstrap`：装配与启动，不放业务逻辑。
 
+业务对象命名和阿里/COLA 适配消费 `.template-spec/agents/backend-architecture-profiles.md` 的“对象命名与外部规范适配”；工程基线记录实际类型与例外。PO/Entity 属于后续业务切片，不是骨架生成产物。
+
 依赖方向由 Maven Reactor、Maven Enforcer 与 ArchUnit 共同约束。MapStruct 统一使用 Spring component model，父 POM 配置 annotation processor、Lombok 与 `lombok-mapstruct-binding`。
 
 ## 生成与验证

@@ -88,7 +88,7 @@ node .agents/skills/yss-ddd-scaffold-generator/scripts/generate_and_verify_scaff
 ./mvnw package
 ```
 
-执行前必须由安全环境提供 `YSS_MAVEN_REPOSITORY_URL`、`MAVEN_REPO_USERNAME`、`MAVEN_REPO_PASSWORD`；模板不固化内部 URL 或凭据。只有三条命令全部返回 0，工作流才把 Manifest 从 `generated` 更新为 `empty-scaffold-verified`。任一步失败都返回非 0并保留证据：
+执行前按 [Maven settings 规则](engineering-checks.md) 参考用户 `~/.m2/settings.xml` 或显式文件路径；可通过 `YSS_MAVEN_SETTINGS=/path/to/settings.xml` 传给工作流。缺少可用配置时先获取用户的文件路径或必要仓库信息；仅采用项目环境模板时才必须由安全环境提供 `YSS_MAVEN_REPOSITORY_URL`、`MAVEN_REPO_USERNAME`、`MAVEN_REPO_PASSWORD`。模板不固化内部 URL 或凭据。只有三条命令全部返回 0，工作流才把 Manifest 从 `generated` 更新为 `empty-scaffold-verified`。任一步失败都返回非 0并保留证据：
 
 - `scaffold-generation.stdout.log` / `scaffold-generation.stderr.log`
 - `mvnw-validate.*.log`、`mvnw-test.*.log`、`mvnw-package.*.log`

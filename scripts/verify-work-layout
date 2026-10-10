@@ -6,7 +6,6 @@ const root=path.resolve(import.meta.dirname,'..');
 const exceptions=new Map([
   ['scripts/lib/work-layout.mjs','集中当前/历史根合同'],
   ['scripts/lib/native-context.mjs','旧执行器能力兼容诊断'],
-  ['scripts/lib/scenario-checks.mjs','维护场景夹具，不分发'],
 ]);
 const bad=[];
 const old=/docs(?:\/|\\\/)(?:\.|\\\.)scratch/;

@@ -33,7 +33,7 @@ public class QualityTemplateService {
 
     @Transactional(rollbackFor = Exception.class)
     public QualityTemplateId create(QualityTemplateCreateCommand command) {
-        QualityTemplate aggregate = QualityTemplate.create(command.name());
+        QualityTemplateEntity aggregate = QualityTemplateEntity.create(command.name());
         gateway.save(aggregate);
         return aggregate.id();
     }

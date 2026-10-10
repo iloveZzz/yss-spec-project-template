@@ -34,6 +34,8 @@ description: 在已确认的 DDD 边界内实现或重构领域行为、不变�
 
 ## 产物范围
 
+对象命名及阿里/COLA 适配消费 `.template-spec/agents/backend-architecture-profiles.md` 的“对象命名与外部规范适配”；领域模型与数据库 PO/DO 分离，既有类型名按已确认基线处理。
+
 - `domain/{segment}/model/*Entity.java`
 - `domain/{segment}/gateway/*Gateway.java`
 - DTO/VO 属于 client/web 契约，转交 `yss-dto` / `yss-web-controller`；Domain skill 不顺带生成。

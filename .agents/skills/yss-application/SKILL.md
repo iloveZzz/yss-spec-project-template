@@ -47,6 +47,8 @@ DDD 用例层协调 Domain 与 Gateway，定义事务边界和跨聚合流程，
 
 ## DDD 产物范围
 
+对象职责、命名及阿里/COLA 适配消费 `.template-spec/agents/backend-architecture-profiles.md` 的“对象命名与外部规范适配”；内部 Command/Query/Result 不借用 HTTP DTO 或持久化 PO/DO。
+
 以下路径只适用于 `target-domain-model`；MVC 产物以选中的 Profile reference 和合同为准。
 
 - `application/.../command/*Command.java`、`application/.../query/*Query.java`、`application/.../result/*Result.java`

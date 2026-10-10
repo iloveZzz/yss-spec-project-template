@@ -18,13 +18,14 @@ description: 应用阿里巴巴 Java 手册审查或实现 Java 代码；按当�
 
 ## 适用原则
 
+- 先读取 `.template-spec/agents/backend-architecture-profiles.md` 的“对象命名与外部规范适配”。YSS Profile、当前工程基线和专项技能持有分层、对象职责及协议；本 Skill 不授予采用 COLA 架构、组件或示例命名的资格。手册中的 DO 按持久化职责适配为新 YSS 工程的 PO，领域 Entity 单独建模；既有命名按已确认基线处理。
 - 先消费 architecture_identity 与工程 Java/数据库基线。MVC 分层按 `.template-spec/agents/backend-architecture-profiles.md`；MySQL 专属方言规则仅对批准的 MySQL 存储生效，不能要求 H2 骨架引入 MySQL 驱动。YSS 包装、命名及处理器差异逐项记录基线例外，安全、权限、敏感信息与 SQL 参数绑定不得豁免。
 - 名称使用清晰英文标识并遵循当前 Java 分层约定。
 - 核验 null、相等、包装类型比较、集合和并发的运行时边界，不能以编译通过代替行为正确。
 - 日志有诊断用途，并控制 CPU、磁盘和告警成本。
 - 单元测试自动、独立、可重复，围绕公开行为验证。
 - SQL 使用参数绑定与显式 ORM 映射，不依赖字符串拼接。
-- 按已登记架构保持职责：Web/controller 校验和适配，service/manager 编排业务，DAO/repository 持有持久化。
+- 按已登记架构保持职责；手册的 Service/Manager/DAO 称谓须映射到当前 YSS Profile，不据此新增分层、让持久化对象穿层或把领域行为移到用例层。
 
 ## 检查提要
 

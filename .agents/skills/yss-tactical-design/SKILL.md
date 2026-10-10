@@ -22,6 +22,8 @@ description: 在 YSS 技术分析阶段将批准的战略领域输入细化为�
 
 数据库表、HTTP 调用链或菜单结构不能单独决定聚合边界；OpenAPI 不得暴露内部聚合、Repository 或持久化表结构。
 
+对象职责、命名及阿里/COLA 适配消费 `.template-spec/agents/backend-architecture-profiles.md` 的“对象命名与外部规范适配”。在既有 `entity_catalog` 与 `persistence_mapping` 中区分领域 Entity 和持久化 PO，具体类型名承接工程基线；手册/COLA 的数据库 DO 不能充当领域设计。
+
 ## 输出与状态
 
 新产物输出 Technical Design Contract schema v2 的 DDD `design` 分支（沿用 v1 DDD 内容结构）；旧独立 tactical-design contract schema v1 仅显式兼容读取，不自动迁移或批准。输出验证结果、评审引用和影响标记；来自 Strategic Design Handoff 时保留 `strategic_context_import_ref` 与 `context_reconciliation_ref`。状态使用 `draft`、`ready-for-human`、`approved`、`blocked`、`stale`、`drift`、`new_impacts`。

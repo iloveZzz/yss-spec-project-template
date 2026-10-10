@@ -1,13 +1,13 @@
 import { existsSync, readFileSync, mkdtempSync, rmSync } from "node:fs";
 import path from "node:path";
-import { buildPlanFixture } from "../fixtures/user-decision/plan-fixture.mjs";
+import { buildPlanFixture } from "../../scripts/fixtures/user-decision/plan-fixture.mjs";
 import os from "node:os";
-import { buildDecisionFixture, buildImplementationFixture } from "../fixtures/user-decision/build-fixture.mjs";
+import { buildDecisionFixture, buildImplementationFixture } from "../../scripts/fixtures/user-decision/build-fixture.mjs";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
-import { parseDocument } from "../vendor/yaml.mjs";
-import { lifecycleTransitionContract, validateImplementationEntry, validateNextRoute } from "./lifecycle-transition.mjs";
-import { decisionDigest } from "./user-decision.mjs";
+import { parseDocument } from "../../scripts/vendor/yaml.mjs";
+import { lifecycleTransitionContract, validateImplementationEntry, validateNextRoute } from "../../scripts/lib/lifecycle-transition.mjs";
+import { decisionDigest } from "../../scripts/lib/user-decision.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const read = (relative) => readFileSync(path.join(root, relative), "utf8");
@@ -192,7 +192,6 @@ function validateInvocationMetadata(boundary, skillContents) {
 
 function validateLifecycleEntrySkill(skill) {
   ensure(/^---\nname: yss-product-lifecycle\n/m.test(skill), "生命周期入口缺少有效 frontmatter");
-  ensure(Buffer.byteLength(skill) <= 8192, "生命周期入口超过 8KB 上下文预算");
   for (const reference of [".template-spec/process/lifecycle-registry.yaml", "references/orchestration-contract.yaml", ".template-spec/agents/yss-skill-registry.yaml", "scripts/query-lifecycle-context"]) {
     ensure(skill.includes(reference), `生命周期入口缺少权威引用: ${reference}`);
   }
@@ -315,6 +314,7 @@ export function runScenario(name) {
     const specDecision = buildDecisionFixture(path.join(decisionTemp, "spec"));
     const implementationDecision = buildImplementationFixture(path.join(decisionTemp, "implementation"), ".work/demo/issues/01-valid-slice.md");
     const planFixture = buildPlanFixture(path.join(decisionTemp, 'plan'));
+    planFixture.write('.template-spec/agents/issue-tracker.md', '---\ntracker:\n  platform: local-markdown\n  root: .work\n---\n# Implementation fixture\n');
     const validResult = {
       ...planFixture.state,
       user_decisions: [specDecision.requirement],

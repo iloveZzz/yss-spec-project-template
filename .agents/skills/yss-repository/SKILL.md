@@ -25,6 +25,8 @@ description: 用于按当前路线已确认的 YSS 架构与持久化输入实�
 
 ## 共用规则
 
+对象命名及阿里/COLA 适配消费 `.template-spec/agents/backend-architecture-profiles.md` 的“对象命名与外部规范适配”；手册的数据库 DO 对应持久化 PO 职责，类名不代替端口、转换与跨层边界检查。
+
 <a id="repository.ownership"></a>
 <!-- yss-rule {"id":"repository.ownership","when":"persistence","level":"mandatory","evidence":"code-and-verification"} -->
 - 只实现当前路线已确认的结构与 seam（`governed` 来自批准合同，`daily` 来自同 Ticket 和已有工程基线），不创建或改写 Domain Gateway、Application Query Port、service/core 接口或 Web/API DTO。

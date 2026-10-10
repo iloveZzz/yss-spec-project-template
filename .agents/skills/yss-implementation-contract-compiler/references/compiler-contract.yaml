@@ -34,9 +34,6 @@ implementation_path_policy:
   container_roots:
     - apps/backend/
     - apps/frontend/
-  forbidden_roots:
-    - app/backend/
-    - app/frontend/
   policies:
     - harness-apps-multi-project
     - external-repository-native
@@ -55,8 +52,7 @@ implementation_path_policy:
     empty_gitlink_writable: false
     force_overlay_regular_dir_path: blocked
   rules:
-    - "Harness 内每个运行时工程必须位于具体 project 目录，不能直接写入 apps/backend/ 或 apps/frontend/。"
-    - "app/backend/、app/frontend/ 及其子路径不是兼容别名，必须阻断。"
+    - "Harness 内每个运行时工程使用已确认的实际工程根，不能直接写入 apps/backend/ 或 apps/frontend/ 容器根。"
     - "外部实现仓库使用登记的真实项目根路径，不用 Harness 容器路径冒充。"
     - "git-submodule 挂载路径使用 git-submodule-harness-apps，必须是 gitlink 且分别登记；不得登记为 harness-apps。"
     - "空 gitlink、detached HEAD、--force 覆盖挂载点不得当成普通目录；也不得在 detached HEAD 工作树内当普通目录写入。"

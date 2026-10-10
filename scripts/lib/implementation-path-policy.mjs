@@ -16,9 +16,6 @@ export function violation(value, { enforceHarness = true } = {}) {
   if (!enforceHarness) return null;
   const parts = clean.split("/");
   const root = parts.slice(0, 2).join("/");
-  if (parts.length >= 2 && parts[0] === "app" && IMPLEMENTATION_KINDS.has(parts[1])) {
-    return `singular app implementation root is forbidden: ${root}/`;
-  }
   if (!(parts[0] === "apps" && IMPLEMENTATION_KINDS.has(parts[1]))) return null;
   if (parts.length < 3) return `implementation container root is not a project root: ${root}/`;
   if (!PROJECT_NAME.test(parts[2])) {

@@ -196,7 +196,7 @@ export class ScaffoldGenerator {
     const relative = path.relative(REPOSITORY_ROOT, this.outputDir);
     if (relative.startsWith("..") || path.isAbsolute(relative)) return; // 外部实现仓库。
     const parts = relative.split(path.sep).filter(Boolean);
-    if (parts.length >= 2 && parts[0] === "app" && ["backend", "frontend"].includes(parts[1])) fail("禁止使用单数 app/backend 或 app/frontend 作为工程生成路径；Harness 内后端脚手架必须以 apps/backend 为父容器");
+    if (parts[0] !== "apps") return;
     if (parts.length === 2 && parts[0] === "apps" && parts[1] === "backend") return;
     if (parts.length >= 2 && parts[0] === "apps" && parts[1] === "frontend") fail("后端脚手架不能输出到 apps/frontend；请使用外部后端仓库或 apps/backend");
     fail("当前 Harness 内生成后端工程时，输出目录必须是 apps/backend；生成器会以 project_name 创建 apps/backend/<project>/");

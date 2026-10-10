@@ -2,6 +2,8 @@
 
 Use this reference for MySQL DDL/SQL, ORM mappings, Maven/library dependency rules, application layering, server/JVM settings, and design artifacts.
 
+YSS 适配先消费 `.template-spec/agents/backend-architecture-profiles.md` 的“对象命名与外部规范适配”。下列手册分层及 MySQL 示例不能取代已确认的 DDD/MVC、数据合同、主键/审计策略、异常或 wire 边界；COLA 示例也不自动成为本工程模块、组件或协议。
+
 ## MySQL Table Design
 
 Mandatory:
@@ -74,7 +76,7 @@ Recommended/reference:
 
 Recommended/reference:
 
-- Follow downward dependencies:
+- Follow downward dependencies (handbook roles; map them to the selected YSS Profile rather than creating these layers verbatim):
   - Open API layer: exposes service methods as RPC/HTTP, handles gateway security and traffic controls.
   - Terminal display layer: templates, JavaScript rendering, JSP, or mobile display.
   - Web layer: forwarding, access control, basic parameter validation, and simple non-reused business handling.
@@ -82,14 +84,14 @@ Recommended/reference:
   - Manager layer: common business handling, third-party platform adaptation, service common capability extraction, cache/middleware handling, and DAO composition.
   - DAO layer: persistence interaction with MySQL, Oracle, HBase, etc.
   - External interfaces: other departments' RPC APIs, base platforms, or third-party HTTP APIs.
-- Exception handling by layer:
+- Exception handling by layer (handbook examples; YSS uses the selected Profile and `yss-exception`, without requiring DAOException/ServiceException wrappers at every hop):
   - DAO catches broad persistence exceptions and wraps them as `DAOException`; do not log again if the upper layer will log.
   - Service logs exceptions with parameters and context.
   - Manager follows DAO behavior when deployed with Service, or Service behavior when independently deployed.
   - Web should not keep throwing to users; render friendly errors when the page cannot proceed.
   - Open API converts exceptions to error code and message.
 - Domain model meanings:
-  - `DO`: database table object, passed upward by DAO.
+  - `DO`: database table object (Data Object), corresponding to the YSS persistence PO role, not Domain Entity; passed upward by DAO only through the approved YSS conversion/port boundary, never exposed as a Web DTO.
   - `DTO`: transfer object from Service/Manager outward.
   - `BO`: business object output by Service.
   - `AO`: application object between Web and Service, close to display and not highly reusable.

@@ -46,16 +46,17 @@ description: 用于生成完整的 YSS DDD 多模块后端脚手架。当用户�
 - `*-bootstrap` 下可被 Spring Boot Maven Plugin 发现的机械 `*Application` 启动入口
 - 基础配置、机械模板、构建脚本
 
-生成前预检与生成后内容验收须读取 [工程内容检查](references/engineering-checks.md)，并消费既有 [工程基线](references/engineering-baseline.md)。凭据仅从安全环境注入，日志须脱敏。
+生成前预检与生成后内容验收须读取 [工程内容检查](references/engineering-checks.md)，并消费既有 [工程基线](references/engineering-baseline.md)。Maven 优先参考用户目录的 settings 或既有显式配置，缺少可用配置时询问用户文件路径或必要仓库信息；凭据留在用户配置或安全环境，日志脱敏。
 
 ## 使用约束
 
 - 先在生命周期批准的脚手架受控生成合同下生成骨架，再做业务化定制；不要直接把脚手架当最终代码交付。
 - 永不生成 `User CRUD` 示例；`--with-example` 已禁用，业务代码必须按批准的 Slice Implementation Contract 逐切片实现。
 - 输出目录必须显式指定，生成器严格 `initialize-only`；目标工程目录必须不存在。已有工程、非空目标、`--force`、旧项目迁移和当前模板升级均返回 `unsupported`。旧项目继续按原工程维护；现代化或未来同一 Target Profile 模板升级须另行设计、批准，当前不提供该执行能力。
-- Harness 内多项目使用 `apps/backend/<project>/`，`apps/backend/` 只作输出父容器；`app/backend/`、`app/frontend/` 及其子路径一律拒绝。
+- Harness 内多项目默认使用 `apps/backend/<project>/`，`apps/backend/` 只作输出父容器；其他布局使用已确认合同中的实际工程根。
 - `git-submodule` gitlink、空挂载点和 detached HEAD 不作为普通目录覆盖或 rename，`--force` 不解除边界。`--output-dir` 指向 detached HEAD 子仓时不得 mkdir、staging 或生成；工程准备须先初始化 submodule 并在子仓附加分支工作树内生成。维护生成器时读取 [守卫顺序](references/generator-maintenance.md)。
 - 生成工程基线由本 Skill 的 `references/engineering-baseline.md` 持有并绑定摘要，不是独立 Skill。后续实现的专项路由见 [分层 Skill 路由](references/layer-skill-routing.md)，由实现合同编译器按批准切片选择实际命中的技能。
+- 对象职责、命名及阿里/COLA 适配消费 `.template-spec/agents/backend-architecture-profiles.md` 的“对象命名与外部规范适配”；生成器不生成业务 PO/Entity，不把外部示例变成模块或组件依赖。
 - 生成后的后端工程必须使用项目根目录 `./mvnw ...` 执行构建、测试、运行和 CI 验证；不得在 README、实施记录、Ticket、Review 或 Release 中默认写裸 `mvn ...`。既有仓库确实无法使用 wrapper 时，必须记录受控例外。
 - 原型确认后，`scaffold_status=required` 才能进入本 skill；本 skill 的生成边界是工程结构、POM、配置、Wrapper 和机械模板，不是业务实现。
 - 脚手架合同必须携带 `contract_id`、`contract_version`、实现合同编译器 draft 引用、生命周期批准引用、持久化引用、当前版本、允许写路径、预期证据文件和验证命令；字段缺失或版本过期时阻断。

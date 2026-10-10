@@ -98,7 +98,6 @@ implementation_path_policy:
     backend: apps/backend/<project>/
     frontend: apps/frontend/<project>/
   container_roots: [ apps/backend/, apps/frontend/ ]
-  forbidden_roots: [ app/backend/, app/frontend/ ]
   container_roots_are_projects: false
   external_repository_uses_native_root: true
   policies: [ harness-apps-multi-project, external-repository-native, git-submodule-harness-apps ]

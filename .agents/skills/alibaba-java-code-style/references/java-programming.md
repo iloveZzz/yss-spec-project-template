@@ -2,6 +2,8 @@
 
 Use this reference for Java implementation and review: naming, constants, formatting, OOP, collections, concurrency, control flow, comments, and general coding traps.
 
+YSS 适配先消费 `.template-spec/agents/backend-architecture-profiles.md` 的“对象命名与外部规范适配”。以下保留手册条款等级；类型后缀、领域身份与创建/重建、POJO 注解、wire 默认值按当前 YSS 职责和工程基线处理，不能由通用 POJO 建议反向修改领域或接口合同。
+
 ## Naming
 
 Mandatory:
@@ -26,7 +28,7 @@ Recommended/reference:
 - Capability interfaces may use adjective names such as `Translatable`.
 - Enum class names may end with `Enum`; enum members use uppercase underscores.
 - Layer method prefixes: `get` for one object, `list` for multiple objects, `count`, `save`/`insert`, `remove`/`delete`, and `update`.
-- Model suffixes: `xxxDO`, `xxxDTO`, `xxxVO`; do not name a class `xxxPOJO`.
+- Model suffixes: `xxxDO`, `xxxDTO`, `xxxVO`; do not name a class `xxxPOJO`. This is the handbook recommendation; YSS maps persistence naming to `*PO` for new projects and preserves confirmed existing naming.
 
 ## Constants
 

@@ -22,7 +22,7 @@ for profile in seeds:
   for x in re.findall(r'["\'](\.agents/skills/yss-ui/[^"\']+)["\']',f.read_text()): seeds[profile].append(x)
 for profile in ['design','frontend']:
  seeds[profile]+=[str(x.relative_to(R)) for x in (R/'.agents/skills/yss-ddd-scaffold-generator').rglob('*') if x.is_file()]
- seeds[profile]+=['scripts/fixtures/user-decision/build-fixture.mjs','scripts/fixtures/backend-scaffold/attach-design-prerequisites.mjs','scripts/fixtures/backend-scaffold/design-prerequisites.mjs','yss-project.yaml','CONTEXT.md','.template-source/engineering/evidence/aliyun-artifact-resolution.json']
+ seeds[profile]+=['scripts/fixtures/user-decision/build-fixture.mjs','scripts/fixtures/backend-scaffold/attach-design-prerequisites.mjs','scripts/fixtures/backend-scaffold/design-prerequisites.mjs','yss-project.yaml','CONTEXT.md','.template-spec/engineering/evidence/aliyun-artifact-resolution.json']
  # Data dependencies of schema validation and approved scaffold source provenance.
  seeds[profile]+=[str(x.relative_to(R)) for x in (R/'.template-spec/process/schemas').glob('*scaffold*') if x.is_file()]
  seeds[profile]+=[str(x.relative_to(R)) for x in (R/'.agents/skills/yss-technical-design/references').glob('*.json')]
@@ -82,8 +82,11 @@ for profile,initial in seeds.items():
   assert sorted(str(x.relative_to(dest)) for x in dest.rglob('*') if x.is_file())==sorted("context-source.fixture.md" if ref=="CONTEXT.md" else ref for ref in selected),(profile,'extra files')
  else:
   (dest.parent/'upstream-source-index.mjs').write_text(expected)
-  legacy=dest/'CONTEXT.md'
-  if legacy.exists():
-   assert (dest/'context-source.fixture.md').read_bytes()==legacy.read_bytes()
-   legacy.unlink()
+  for old,current in [('CONTEXT.md','context-source.fixture.md'),('scripts/lib/git-submodule-fixtures.mjs','tests/helpers/git-submodule-fixtures.mjs')]:
+   legacy=dest/old
+   if legacy.exists():
+    replacement=dest/current
+    assert not legacy.is_symlink() and replacement.is_file() and not replacement.is_symlink(),(profile,old)
+    assert replacement.read_bytes()==legacy.read_bytes() and stat.S_IMODE(replacement.stat().st_mode)==stat.S_IMODE(legacy.stat().st_mode),(profile,old)
+    legacy.unlink()
  print(profile,len(rows),'fixture source files',flush=True)

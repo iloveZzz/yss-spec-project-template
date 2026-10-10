@@ -16,7 +16,7 @@
 
 ## 1.1 Harness 内实现项目路径策略
 
-当前 Harness 明确承载运行时代码时，统一使用以下多项目布局：
+当前 Harness 明确承载运行时代码时，默认使用以下多项目布局；其他布局以已确认登记的实际工程根为准：
 
 ```text
 apps/
@@ -24,8 +24,8 @@ apps/
 └── frontend/<frontend-project>/
 ```
 
-- `apps/backend/` 和 `apps/frontend/` 是项目容器，不是可生成的工程项目根；后端、前端项目必须分别位于 `apps/backend/<project>/`、`apps/frontend/<project>/`，多个项目按 `<project>` 目录并列。
-- `app/backend/`、`app/frontend/` 及其所有子路径均禁止作为工程生成目标；单复数差异不能被视为等价路径。
+- `apps/backend/` 和 `apps/frontend/` 是项目容器，不是可生成的工程项目根；采用该布局时，后端、前端项目分别位于 `apps/backend/<project>/`、`apps/frontend/<project>/`，多个项目按 `<project>` 目录并列。
+- 工程根以已确认的登记和合同为准；`app/backend/`、`app/frontend/` 可作为实际工程根，不因目录单复数阻断。
 - `allowed_write_paths`、`expected_evidence_files` 和生成器输出位置必须能回指具体项目目录；直接放开 `apps/backend/` 或 `apps/frontend/` 属于路径策略违规。
 - 外部实现仓库不要求采用 Harness 的 `apps/` 布局，但仍必须登记该仓库内的实际项目根路径；跨仓库切片的写路径不得用本 Harness 的占位路径冒充真实路径。
 
@@ -37,6 +37,7 @@ apps/
 
 - **frontend**：依赖安装、测试、type-check 与构建优先使用 `pnpm`（例如 `pnpm test`、`pnpm type-check`、`pnpm build`）。不要默认 `npm` 或 `yarn`。
 - **backend**：校验、测试与编译优先使用项目根 `./mvnw`（例如 `./mvnw validate`、`./mvnw test`、`./mvnw package`）。不要默认裸 `mvn`。
+- **Maven settings**：`mvnw` 与受控例外下的 `mvn` 均保留用户已显式指定的 settings；未指定时优先参考用户目录 `~/.m2/settings.xml`，先核验 `.mvn/maven.config` 等入口是否覆盖了它。缺失、不可读、无效或实际仓库访问失败时询问用户可用文件路径，必要时获取仓库地址、server id、profile 和认证方式；凭据由本地文件或安全环境提供，不要求在聊天中贴密码，不复制用户 settings 到工程或证据包。记录实际配置来源、路径、摘要和执行结果。脚手架验证器的具体选择见 DDD 技能的 `references/engineering-checks.md`。
 - Ticket、Slice Implementation Contract、CI 和 Review 证据必须写下实际执行的上述命令。既有仓库缺少 `pnpm` 或 Maven Wrapper 时，先记录受控例外、替代命令和责任人，再执行。
 - 本模板源仓库没有产品 frontend / backend 运行时；模板源维护侧的 Node 校验命令和环境约束只记录在 `.template-source/` 治理区及 CI 配置中，不属于项目实例实现命令。
 
@@ -63,7 +64,7 @@ apps/
 
 强制规则：
 
-- `layout_policy` / `implementation_path_policy` 必须是 `git-submodule-harness-apps`。挂载路径仍须是具体的 `apps/backend/<project>/` 或 `apps/frontend/<project>/`；容器根和 `app/` 单数路径一律阻断。
+- `layout_policy` / `implementation_path_policy` 必须是 `git-submodule-harness-apps`。挂载路径以已确认的具体工程根为准，默认采用 `apps/backend/<project>/` 或 `apps/frontend/<project>/`；`apps/backend/`、`apps/frontend/` 容器根不得作为工程根。
 - 三个 `repository_scope` 必须在登记字段、Git 身份和写路径上可区分：`git-submodule` 强制 `git_url`、`gitmodules_name`、`gitlink_path`（等于 `project_root`）、`git_entry_mode: 160000`、`superproject_git_url`、`checkout_state`，并分别登记默认分支、CI、验证命令、回滚点（子仓 SHA + 父仓 gitlink SHA）；`harness-apps` 与 `external-repository` 禁止填写这些 gitlink 身份字段（可填 `不适用`）。缺 `git_entry_mode` 不得默认为普通目录。
 - 子仓 `git_url` 必须与 `superproject_git_url` 不同。登记后必须用工作树对照（`git ls-files --stage`、`.gitmodules`、`inspectWorkingTreeScope`）：声明 `harness-apps` 但路径是 gitlink，或声明 `git-submodule` 但工作树只是普通目录 / 复制源码，均视为误路由并阻断。
 - 只允许 `git submodule add` / `git submodule update --init` 形成 gitlink；禁止把实现仓库源码 copy、subtree 或普通 clone 进 Harness 后冒充 submodule。

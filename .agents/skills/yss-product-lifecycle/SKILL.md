@@ -29,6 +29,10 @@ scripts/query-lifecycle-context --work-unit work-unit.plan-requirements --check-
 
 按 `execution_efficiency` 复用入口、合并查询和未变资料，核验资产与门禁；见项目 `.template-spec/process/script-execution.md`。
 
+当前任务只做一次 `yss capabilities --json` 能力发现。`result.readingViews.schemaVersion: 1` 且入口声明相应模式时，按对象使用 `yss lifecycle query --root <项目> --id <稳定 ID> --view agent --json`、`yss lifecycle status --root <项目> --checkpoint <引用> --view agent --json`，Context 用 `yss context query --root <项目> --term-refs <引用列表> --view agent --json` 或唯一 `--id`。Slice 用 `yss contract view --root <项目> --kind slice --file <合同> --view task --unit <唯一 ID> --json`；必须完整消费全局与未分类约束。先消费结论、全部阻断项、下一动作和证据引用，诊断时才读取相关正文。状态阅读仅报告登记事实；下游 Profile 核验、批准及执行仍用原入口。旧 CLI 保留上述脚本及原命令，不追加未知 `--view` 参数。
+
+已读且未变化的任务资料不重复回传；来源变化、新影响、冲突、恢复或交接时刷新。复用验证证据必须同时满足资产与上游字节、工具及 Schema、命令参数、仓库根和相关环境未变化。新路径先补齐依赖映射，再定向验证；当前候选相同输入的同一验证命令只运行一次，首期不持久缓存验证结论。
+
 ## 入口与模式
 
 1. 严格解析 `yss-project.yaml`，不得按目录、Git remote 或占位符猜仓库身份。

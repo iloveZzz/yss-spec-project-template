@@ -24,7 +24,7 @@ API 先 OAS 3.1 YAML Draft、锁定工具校验、独立审查与 Freeze，再�
 
 ## 条件入口与边界
 
-- 工程接入、脚手架、仓库写范围读 `.template-spec/process/implementation-repo-integration.md`。代码进入已确认实现仓；禁止 `app/backend/`、`app/frontend/`，不得把空 gitlink/子模块当普通目录或覆盖既有工程。
+- 工程接入、脚手架、仓库写范围读 `.template-spec/process/implementation-repo-integration.md`。代码进入已确认实现仓；不得把空 gitlink/子模块当普通目录或覆盖既有工程。
 - 实现优先 YSS 技能；前端 `pnpm`，后端根 `./mvnw`；行为测试用 `tdd`。原型用 `yss-prototype-stage`，技术研究用 `yss-research`，竞品用 `competitive-intelligence`。
 - 协作读 `.template-spec/process/subagent-collaboration.md`，角色/会签读 `.template-spec/agents/digital-human-roles.yaml`；写范围不重叠，实施者不得自审。主控裁决状态与完成。
 - 验证保留实际命令、退出码、范围与未覆盖项；字节、规则、参数或仓库变化使受影响证据失效。局部完成不等于可合并/可发布。

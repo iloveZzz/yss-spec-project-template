@@ -54,6 +54,8 @@ retiredSources.set('.template-source/tooling/node/scripts/design-md.mjs','.agent
 retiredSources.set('scripts/sync-harness-upgrade','.template-source/scripts/sync-harness-upgrade.mjs');
 retiredSources.set('scripts/lib/api-contract-decision.test.mjs','tests/api-contract-decision.test.mjs');
 retiredSources.set('scripts/lib/legacy-backend-scaffold-audit.test.mjs','tests/legacy-backend-scaffold-audit.test.mjs');
+retiredSources.set('scripts/lib/git-submodule-fixtures.mjs','tests/helpers/git-submodule-fixtures.mjs');
+retiredSources.set('scripts/lib/scenario-checks.mjs','tests/helpers/scenario-checks.mjs');
 const designMdAliases=new Set(['scripts/design-md','scripts/lib/design-md.mjs','.template-source/tooling/node/scripts/design-md.mjs']);
 const sourceTargets=new Map();
 for(const [source,target]of retiredSources) {

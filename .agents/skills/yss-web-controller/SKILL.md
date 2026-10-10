@@ -19,6 +19,8 @@ description: "按冻结合同与稳定 Application 接口生成或重构 YSS Con
 
 以下 Application / Domain Gateway / Infrastructure / Web module 叙述仅适用于 target-domain-model；MVC 的 service/core/repository/server/client 所有权由所选 Profile 引用定义。
 
+对象命名及阿里/COLA 适配消费 `.template-spec/agents/backend-architecture-profiles.md` 的“对象命名与外部规范适配”；持久化 PO/DO 与领域 Entity 均不得直接充当 HTTP 请求/响应。
+
 ## 何时使用
 
 - 用户要批量生成 Controller。

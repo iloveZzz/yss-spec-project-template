@@ -2,12 +2,12 @@ import { platformSourceFingerprint, generatedTreeDigest, assertResumableCandidat
 import assert from "node:assert/strict";
 import test from "node:test";
 import { spawnSync } from "node:child_process";
-import { mkdtemp, mkdir, readFile, writeFile, rm, readdir } from "node:fs/promises";
+import { mkdtemp, mkdir, readFile, writeFile, rm, readdir, chmod } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { loadBackendPlatforms, platformBinding, platformRecipeDigest, platformProfile, platformDigest, resolveBackendPlatform, resolveComponentCapabilities, componentCapabilityDigest, assertJavaPlatform, assertContractPlatform } from "../../lib/backend-platform.mjs";
 import { architectureDigest } from "../../lib/backend-architecture.mjs";
-import { checkPlatformDependencies, checkPlatformTests, checkRuntimeArchive } from "../../lib/backend-platform-verification.mjs";
+import { checkPlatformDependencies, checkPlatformTests, checkRuntimeArchive, platformCommand } from "../../lib/backend-platform-verification.mjs";
 import { fixtureCatalog } from "./platform-fixture.mjs";
 import { attachDesignPrerequisites } from "./design-prerequisites.mjs";
 import { ScaffoldGenerator, parseArgs as parseDddArgs } from "../../../.agents/skills/yss-ddd-scaffold-generator/scripts/generate_scaffold.mjs";
@@ -15,6 +15,18 @@ import { generate as generateMvc, parseArgs as parseMvcArgs } from "../../../.ag
 import { run as verifyScaffold } from "../../../.agents/skills/yss-ddd-scaffold-generator/scripts/run_scaffold_verification.mjs";
 
 const profiles = loadBackendPlatforms().profiles;
+test("平台依赖与启动打包入口沿用所选 settings 并脱敏", async t => {
+  const root = await mkdtemp(path.join(os.tmpdir(), "yss-platform-settings-"));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const settings = path.join(root, "user settings.xml");
+  await writeFile(path.join(root, "mvnw"), "#!/bin/sh\nprintf '%s\\n' \"$@\"\nprintf 'private-password\\n'\n");
+  await chmod(path.join(root, "mvnw"), 0o755);
+  const result = await platformCommand(root, root, "settings-check", ["dependency:tree"], process.env, { mavenArgs: ["--settings", settings], secrets: ["private-password"] });
+  assert.equal(result.exit_code, 0);
+  assert.ok(result.stdout.includes(`dependency:tree\n--settings\n${settings}\n`));
+  assert.doesNotMatch(result.stdout, /private-password/);
+  assert.doesNotMatch(await readFile(result.stdout_ref, "utf8"), /private-password/);
+});
 export async function platformFixture(root, family, profile) {
   const output = path.join(root, "output");
   await mkdir(output, { recursive: true });

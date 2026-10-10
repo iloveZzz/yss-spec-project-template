@@ -5,8 +5,10 @@ import { assertContractPlatform, assertPlatformAgreement, platformDigest } from 
 import { verifyPlatformDependencies, verifyPlatformStartup, verifyPlatformTests, platformEvidenceArtifacts } from "../../../../scripts/lib/backend-platform-verification.mjs";
 import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
+import os from "node:os";
 import process from "node:process";
 import { runCommand } from "../../../../scripts/lib/command-runner.mjs";
+import { parseXmlDocument } from "../../../../scripts/vendor/xml.mjs";
 import { assertArchitectureAgreement } from "../../../../scripts/lib/backend-architecture.mjs";
 import { assertLocalDatabaseProfile, scaffoldArchitectureIdentity } from "../../../../scripts/lib/scaffold-local-database.mjs";
 
@@ -21,6 +23,41 @@ async function isExecutable(target) {
 }
 async function readTextIfPresent(target) { try { return await readFile(target, "utf8"); } catch (error) { if (error.code === "ENOENT") return ""; throw error; } }
 function configured(value) { return typeof value === "string" && value.trim().length > 0; }
+async function selectMavenSettings(projectRoot, environment, mavenConfig) {
+  const home = environment.HOME || os.homedir();
+  const config = mavenConfig.replace(/^\s*#.*$/gm, "");
+  const settingsFlag = /(?:^|\s)(?:--settings(?:=|\s+)|-s(?:=|\s*))(?:(?:"([^"]+)")|(?:'([^']+)')|([^\s]+))/;
+  const configuredSettings = [["project-config", config], ["maven-args", environment.MAVEN_ARGS ?? ""]].map(([source, value]) => {
+    const match = value.match(settingsFlag);
+    const configPath = source === "project-config" ? (value.match(/^(?:-s|--settings)\r?\n([^\r\n]+)/m)?.[1] ?? value.match(/^--settings=([^\r\n]+)/m)?.[1]) : null;
+    return { source, ref: configPath?.trim() ?? (match && (match[1] ?? match[2] ?? match[3])) };
+  }).filter(item => item.ref);
+  if (configuredSettings.length > 1 || configuredSettings.length && configured(environment.YSS_MAVEN_SETTINGS)) throw new Error("Maven settings 同时由多个入口指定，请在 YSS_MAVEN_SETTINGS、MAVEN_ARGS 与 .mvn/maven.config 中保留一个明确来源");
+  let source, ref, args = [];
+  if (configuredSettings.length) { ({ source, ref } = configuredSettings[0]); }
+  else if (configured(environment.YSS_MAVEN_SETTINGS)) { source = "explicit"; ref = environment.YSS_MAVEN_SETTINGS; }
+  else if (await isFile(path.join(home, ".m2/settings.xml"))) { source = "user-default"; ref = path.join(home, ".m2/settings.xml"); }
+  else if (configured(environment.YSS_MAVEN_REPOSITORY_URL) && await isFile(path.join(projectRoot, ".mvn/settings.xml"))) { source = "project-environment"; ref = ".mvn/settings.xml"; }
+  else return { source: "missing", ref: null, args, secrets: [] };
+  ref = path.resolve(projectRoot, ref.replace(/^~(?=[/\\])/, home));
+  let bytes, settings;
+  try { bytes = await readFile(ref, "utf8"); settings = parseXmlDocument(bytes.replace(/<settings\s*\/>/, "<settings></settings>"), { expectedRoot: "settings" }); }
+  catch { throw new Error(`Maven settings 不可读取或 XML 无效: ${ref}；请提供可用 settings 文件路径`); }
+  if (!configuredSettings.length) args = ["--settings", ref, ...(source === "project-environment" ? ["-P", "yss-internal"] : [])];
+  const secrets = [];
+  function collect(value) {
+    if (!value || typeof value !== "object") return;
+    for (const [key, item] of Object.entries(value)) {
+      if (/^(?:.*:)?(?:username|password|passphrase|privateKey)$/.test(key) && typeof item === "string") {
+        const resolved = item.trim().replace(/\$\{env\.([^}]+)\}/g, (expression, name) => environment[name] ?? expression)
+          .replace(/&#x([\da-f]+);|&#(\d+);|&(amp|lt|gt|quot|apos);/gi, (_, hex, decimal, entity) => hex || decimal ? String.fromCodePoint(parseInt(hex || decimal, hex ? 16 : 10)) : ({ amp: "&", lt: "<", gt: ">", quot: '"', apos: "'" })[entity.toLowerCase()]);
+        if (resolved) secrets.push(resolved);
+      } else collect(item);
+    }
+  }
+  collect(settings);
+  return { source, ref, args, secrets, digest: platformDigest(bytes), required_environment: [...new Set([...bytes.matchAll(/\$\{env\.([^}]+)\}/g)].map(match => match[1]))] };
+}
 function redactSecrets(text, environment = process.env) {
   let output = text;
   for (const name of ["MAVEN_REPO_USERNAME", "MAVEN_REPO_PASSWORD"]) {
@@ -88,6 +125,9 @@ export async function run(projectRoot, evidenceDir, environment = process.env, {
   }
   await mkdir(evidenceDir, { recursive: true });
   const mavenConfig = await readTextIfPresent(path.join(projectRoot, ".mvn", "maven.config"));
+  const settings = await selectMavenSettings(projectRoot, environment, mavenConfig);
+  const missingEnvironment = (settings.required_environment ?? []).filter(name => !configured(environment[name]));
+  const projectTemplate = settings.source === "project-environment" || settings.ref === path.resolve(projectRoot, ".mvn/settings.xml");
   const preflight = {
     wrapper_exists: true,
     wrapper_executable: await isExecutable(wrapper),
@@ -99,14 +139,19 @@ export async function run(projectRoot, evidenceDir, environment = process.env, {
     project_settings_wired: /(?:^|\s)-(?:s|-settings)\s+\.mvn\/settings\.xml(?:\s|$)/m.test(mavenConfig),
     repository_profile: manifest.profiles.repository,
     repository_profile_wired: /(?:^|\s)-(?:P|-activate-profiles)\s+yss-internal(?:\s|$)/m.test(mavenConfig),
+    settings_source: settings.source,
+    settings_ref: settings.ref,
+    settings_digest: settings.digest ?? null,
+    settings_missing_environment: missingEnvironment,
     maven_coordinates_source: manifest.maven_coordinates_source
   };
   const failed = [];
   if (!preflight.wrapper_executable) failed.push("wrapper-not-executable");
-  if (!preflight.project_settings_present || !preflight.project_maven_config_present || !preflight.project_settings_wired || !preflight.repository_profile_wired) failed.push("repository-profile-not-wired");
-  if (!preflight.maven_repository_url_configured) failed.push("repository-url-not-configured");
-  if (!preflight.maven_repository_credentials_configured) failed.push("repository-credentials-not-configured");
-  if (failed.length) return { verification_mode: "controlled-generation", project_root: projectRoot, scaffold_manifest_ref: manifestPath, generated_at: isoNow(), status: "failed", failure_category: "verification-preflight", completion_level: "generated", preflight: { ...preflight, failures: failed }, commands: [] };
+  if (!settings.ref) failed.push("maven-settings-required");
+  if (projectTemplate && missingEnvironment.includes("YSS_MAVEN_REPOSITORY_URL")) failed.push("repository-url-not-configured");
+  if (projectTemplate && missingEnvironment.some(name => ["MAVEN_REPO_USERNAME", "MAVEN_REPO_PASSWORD"].includes(name))) failed.push("repository-credentials-not-configured");
+  if (projectTemplate && missingEnvironment.some(name => !["YSS_MAVEN_REPOSITORY_URL", "MAVEN_REPO_USERNAME", "MAVEN_REPO_PASSWORD"].includes(name))) failed.push("settings-environment-not-configured");
+  if (failed.length) return { verification_mode: "controlled-generation", project_root: projectRoot, scaffold_manifest_ref: manifestPath, generated_at: isoNow(), status: "failed", failure_category: "verification-preflight", completion_level: "generated", preflight: { ...preflight, failures: failed, next_action: "请向用户获取可用 settings 文件路径；如需新建配置，确认仓库地址、server id、profile 和认证方式，凭据通过本地文件或安全环境提供" }, commands: [] };
   const verificationStartedAt = Date.now();
   const commands = [];
   for (const phase of PHASES) {
@@ -114,8 +159,8 @@ export async function run(projectRoot, evidenceDir, environment = process.env, {
     const stderrPath = path.join(evidenceDir, `mvnw-${phase}.stderr.log`);
     const startedAt = isoNow();
     const started = process.hrtime.bigint();
-    const args = [phase, ...Object.entries(systemProperties).map(([key, value]) => `-D${key}=${value}`)];
-    const execution = await runCommand(wrapper, args, { cwd: projectRoot, env: environment, timeoutMs, signal, stdoutFile: stdoutPath, stderrFile: stderrPath, secrets: [environment.MAVEN_REPO_USERNAME, environment.MAVEN_REPO_PASSWORD], progress: true });
+    const args = [phase, ...settings.args, ...Object.entries(systemProperties).map(([key, value]) => `-D${key}=${value}`)];
+    const execution = await runCommand(wrapper, args, { cwd: projectRoot, env: environment, timeoutMs, signal, stdoutFile: stdoutPath, stderrFile: stderrPath, secrets: settings.secrets, progress: true });
     const outcome = { ...execution, exitCode: execution.status };
     const durationMs = Number(process.hrtime.bigint() - started) / 1e6;
     await writeText(stdoutPath, redactSecrets(outcome.stdout, environment));
@@ -133,11 +178,11 @@ export async function run(projectRoot, evidenceDir, environment = process.env, {
     });
   }
   let failureCategory = commands.find((item) => item.failure_category)?.failure_category ?? null;
-  const platformDependencies = selectedPlatform && failureCategory === null ? await verifyPlatformDependencies(projectRoot, evidenceDir, selectedPlatform, environment, { timeoutMs, signal, manifest, components: selectedEntry.components }) : null;
+  const platformDependencies = selectedPlatform && failureCategory === null ? await verifyPlatformDependencies(projectRoot, evidenceDir, selectedPlatform, environment, { timeoutMs, signal, manifest, components: selectedEntry.components, mavenArgs: settings.args, secrets: settings.secrets }) : null;
   if (platformDependencies?.status === "failed") failureCategory = "platform-dependencies";
   const integrationTests = selectedPlatform && failureCategory === null ? await verifyPlatformTests(projectRoot, evidenceDir, manifest, verificationStartedAt) : null;
   if (integrationTests?.status === "failed") failureCategory = "platform-integration-tests";
-  const startup = selectedPlatform && failureCategory === null ? await verifyPlatformStartup(projectRoot, evidenceDir, manifest, environment, { timeoutMs, signal, runtimeArtifacts: platformDependencies.runtime_artifacts, providedLombokVersion: selectedPlatform.versions.lombok }) : null;
+  const startup = selectedPlatform && failureCategory === null ? await verifyPlatformStartup(projectRoot, evidenceDir, manifest, environment, { timeoutMs, signal, runtimeArtifacts: platformDependencies.runtime_artifacts, providedLombokVersion: selectedPlatform.versions.lombok, mavenArgs: settings.args, secrets: settings.secrets }) : null;
   if (startup?.status === "failed") failureCategory = "platform-startup";
   if (selectedPlatform && !firstSlice && generatedTreeDigest(projectRoot, manifest) !== manifest.generated_tree_digest) throw new Error("backend-platform: Maven modified generated source bytes");
   return {

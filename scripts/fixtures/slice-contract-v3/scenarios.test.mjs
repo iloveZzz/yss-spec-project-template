@@ -26,6 +26,27 @@ function fixture() {
 }
 export {fixture};
 
+test('v3 accepts registered app project roots and still rejects container roots and traversal',()=>{
+  const f=fixture();try {
+    for(const policy of ['harness-apps-multi-project','external-repository-native']) {
+      for(const projectRoot of ['app/backend/','app/frontend/','app/backend/project1/']) {
+        const contract=structuredClone(f.contract);
+        contract.scope.implementation_path_policy=policy;
+        contract.scope.project_roots=[projectRoot];
+        contract.verification.test.cwd=projectRoot;
+        assert.equal(normalizeSliceContract(contract,{root:f.root}).common.project_roots[0],projectRoot);
+      }
+    }
+    for(const projectRoot of ['apps/backend/','apps/frontend/','app/backend/../outside']) {
+      const contract=structuredClone(f.contract);
+      contract.scope.implementation_path_policy='harness-apps-multi-project';
+      contract.scope.project_roots=[projectRoot];
+      contract.verification.test.cwd=projectRoot;
+      assert.throws(()=>normalizeSliceContract(contract,{root:f.root}),/工程|路径/);
+    }
+  }finally{f.cleanup();}
+});
+
 test('v3 inherits constraints once and refuses task scope expansion and omitted acceptance',()=>{
   const f=fixture();try {
     const n=normalizeSliceContract(f.contract,{root:f.root});

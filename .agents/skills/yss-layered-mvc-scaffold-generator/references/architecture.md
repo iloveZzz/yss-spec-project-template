@@ -15,6 +15,8 @@
 
 ## 职责和依赖
 
+对象命名及阿里/COLA 适配消费 `.template-spec/agents/backend-architecture-profiles.md` 的“对象命名与外部规范适配”；具体类型由工程基线和当前设计绑定，生成器只产出机械骨架。
+
 | 模块 | 职责 | 允许依赖 |
 |---|---|---|
 | `server` | Spring Boot 启动、Controller 装配和 Web 配置 | `service`、可选 `client` |

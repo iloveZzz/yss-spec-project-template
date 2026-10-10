@@ -380,7 +380,7 @@
           "id": "yss-implementation-contract-compiler",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/backend/yss-implementation-contract-compiler.patch",
-          "source_tree_sha256": "2a73204c8d53682f30ace3620474f741433e82ee512b51943d276581f8b0e31b"
+          "source_tree_sha256": "ec98148170ca978cbfe85d9c7826ade7924a65ce19362b8c4da901eefc66f9e2"
         },
         {
           "id": "yss-openapi-governance",
@@ -412,7 +412,7 @@
           "source": ".template-spec/templates/retro-report-template.md"
         },
         {
-          "source": ".template-source/engineering/evidence/aliyun-artifact-resolution.json"
+          "source": ".template-spec/engineering/evidence/aliyun-artifact-resolution.json"
         },
         {
           "source": ".agents/skills/yss-technical-design/references/technical-design.schema.json"
@@ -676,7 +676,7 @@
           "id": "yss-implementation-contract-compiler",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/frontend/yss-implementation-contract-compiler.patch",
-          "source_tree_sha256": "2a73204c8d53682f30ace3620474f741433e82ee512b51943d276581f8b0e31b"
+          "source_tree_sha256": "ec98148170ca978cbfe85d9c7826ade7924a65ce19362b8c4da901eefc66f9e2"
         },
         {
           "id": "yss-openapi-governance",
@@ -726,7 +726,7 @@
           "source": ".template-spec/templates/retro-report-template.md"
         },
         {
-          "source": ".template-source/engineering/evidence/aliyun-artifact-resolution.json"
+          "source": ".template-spec/engineering/evidence/aliyun-artifact-resolution.json"
         },
         {
           "source": "DESIGN.md"

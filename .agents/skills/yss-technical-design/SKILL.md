@@ -19,6 +19,8 @@ description: 在 YSS 技术分析中统一承接需求与战略输入，按已�
 
 按项目绑定架构来源及摘要，架构族只允许 `domain-driven` 与 `layered-mvc`；不从目录推断或默认架构、Spring Boot 版本。具体 Profile 与模块边界消费技能注册表及 `.template-spec/agents/backend-architecture-profiles.md`。
 
+对象职责、命名及阿里/COLA 适配消费 `.template-spec/agents/backend-architecture-profiles.md` 的“对象命名与外部规范适配”；将实际类型与例外写入当前工程基线和设计映射，不因通用规范改变已确认 DDD/MVC、组件或 wire 协议。
+
 - 新工程先通过 `gate.backend-architecture-platform-approved`：展示 DDD / MVC 推荐依据及平台清单中的精确 Spring Boot、Java，用户在同一次决定确认架构与平台。决定持久化到 `scaffold-architecture-decisions.yaml`，设计与后续脚手架消费同一决定。
 - 既有工程核验并沿用当前登记架构及固定工程基线/POM 的实际 Spring Boot；该门禁记录带依据的 `not-applicable`，不重复询问。架构转换或平台升级单独立项。
 

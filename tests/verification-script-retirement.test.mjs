@@ -14,6 +14,27 @@ import {verificationInputDigest} from '../scripts/lib/verification-report.mjs';
 const fixture=t=>{const root=fs.mkdtempSync(path.join(os.tmpdir(),'yss-script-retirement-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));return root;};
 const put=(root,ref)=>{const file=path.join(root,ref);fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,'console.log("mapped scenario");\n');return file;};
 
+test('第六批测试辅助库退役旧位置，历史来源和语法执行绑定真实替代文件',t=>{
+  const root=fixture(t),pairs=[['scripts/lib/git-submodule-fixtures.mjs','tests/helpers/git-submodule-fixtures.mjs'],['scripts/lib/scenario-checks.mjs','tests/helpers/scenario-checks.mjs']];
+  for(const [old,current]of pairs){
+    assert.equal(resolveVerificationSource(old),current);
+    assert.ok(verificationSourceIdentities(current).includes(old));
+    for(const profile of ['fast','candidate','release']){
+      const before=planTemplateVerification({profile,changedFiles:[old]}),after=planTemplateVerification({profile,changedFiles:[current]});
+      assert.deepEqual([...after.groups].sort(),[...before.groups].sort());
+      assert.deepEqual(after.commands.map(row=>row.id),before.commands.map(row=>row.id));
+    }
+    assert.throws(()=>assertRequiredFiles({required_files:[old]},root),/RETIRED_SCRIPT_TARGET_MISSING/);
+    const file=put(root,current);
+    assertRequiredFiles({required_files:[old]},root);
+    const execution=compileTaskExecution({command:`node --check ${old}`},{root});
+    assert.deepEqual(execution.args,['--check',file]);
+    assert.equal(spawnSync(execution.file,execution.args,{cwd:root}).status,0);
+    fs.unlinkSync(file);fs.symlinkSync(put(fixture(t),'outside.mjs'),file);
+    assert.throws(()=>compileTaskExecution({command:`node --check ${old}`},{root}),/RETIRED_SCRIPT_TARGET_INVALID/);
+  }
+});
+
 test('旧CLI核心检查保留冻结身份，缺失、篡改和链接目标不能执行',t=>{
   const root=fixture(t),source='.template-source/cli-core/tests/*.test.mjs',target='tests/cli-core-retirement.test.mjs',file=put(root,target);
   const task={id:'check.371da192d6338e6d',task_id:'legacy.012',command:`node --test ${source}`},before=structuredClone(task);
