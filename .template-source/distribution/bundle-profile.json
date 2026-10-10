@@ -7,6 +7,7 @@
       ".codex",
       ".cursor",
       ".pi",
+      ".claude",
       ".vscode",
       ".template-spec",
       "scripts"
@@ -16,6 +17,7 @@
       ".gitignore",
       ".nvmrc",
       "AGENTS.md",
+      "CLAUDE.md",
       "CONTEXT.md",
       "DESIGN.md",
       "README.md",
@@ -136,6 +138,8 @@
       ".cursor/skills/yss-design-system/references/data-quality-theme.md",
       ".pi/skills/yss-design-system/SKILL.md",
       ".pi/skills/yss-design-system/references/data-quality-theme.md",
+      ".claude/skills/yss-design-system/SKILL.md",
+      ".claude/skills/yss-design-system/references/data-quality-theme.md",
       "yss-project.yaml"
     ],
     "exampleDocPaths": [],

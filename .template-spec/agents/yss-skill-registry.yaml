@@ -9,8 +9,8 @@ canonical_content_root: .agents/skills
 instance_distribution:
   schema_version: 1
   initial_skills: [yss-product-lifecycle, yss-research, i-have-adhd, setup-yss-harness]
-  runtimes: [codex, cursor, pi]
-  projection_roots: { codex: .codex/skills, cursor: .cursor/skills, pi: .pi/skills }
+  runtimes: [codex, cursor, pi, claude]
+  projection_roots: { codex: .codex/skills, cursor: .cursor/skills, pi: .pi/skills, claude: .claude/skills }
   dependency_types_for_ensure: [context-required, context-conditional]
   initial_example_docs: false
 backend_skill_domains:
@@ -358,6 +358,7 @@ agent_runtime_roots:
   codex: .codex/skills
   cursor: .cursor/skills
   pi: .pi/skills
+  claude: .claude/skills
 skills:
   - { id: i-have-adhd, layer: core, maturity: supported, instance_default_discoverable: true, aliases: [], impacts: [writing] }
   - id: alibaba-java-code-style

@@ -352,7 +352,8 @@ export function validateSkillRegistry(registry, { lock, compilerContract, lifecy
   const expected = {
     codex: ".codex/skills",
     cursor: ".cursor/skills",
-    pi: ".pi/skills"
+    pi: ".pi/skills",
+    claude: ".claude/skills"
   };
   for (const [agent, root] of Object.entries(expected)) {
     if (roots[agent] !== root) fail(`agent_runtime_roots.${agent} 必须为 ${root}`);

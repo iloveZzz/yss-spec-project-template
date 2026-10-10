@@ -84,6 +84,21 @@ profiles:
           - ".template-source/distribution/bundle-profile.json"
         depends_on: []
         failure_mode: "Stop hook 对相关路径漏检、对无关路径误检或误阻断、阻断协议与 Claude Code / Codex 不一致，或 hook 文件进入实例分发"
+      - id: check.claude-entry
+        run: "node --test tests/claude-entry.test.mjs"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
+          - "CLAUDE.md"
+          - ".claude/skills/**"
+          - "skills-lock.json"
+          - ".template-spec/agents/yss-skill-registry.yaml"
+          - "scripts/lib/skill-supply-chain.mjs"
+          - "scripts/lib/harness-metrics.mjs"
+          - "tests/claude-entry.test.mjs"
+          - ".template-source/distribution/bundle-profile.json"
+        depends_on: []
+        failure_mode: "Claude Code 入口复制了 AGENTS.md 的内容、.claude/skills 与 canonical 脱节或不是符号链接、注册表与锁在 claude 上不一致，或 hook 设置进入实例分发"
       - id: check.runtime-storage
         group: runtime-storage
         inputs_complete: true
@@ -185,6 +200,7 @@ profiles:
           - ".codex/skills/**"
           - ".cursor/skills/**"
           - ".pi/skills/**"
+          - ".claude/skills/**"
           - "skills-lock.json"
           - "scripts/sync-skills"
           - "scripts/update-skill-lock"
@@ -198,6 +214,7 @@ profiles:
           - ".codex/skills/**"
           - ".cursor/skills/**"
           - ".pi/skills/**"
+          - ".claude/skills/**"
           - "skills-lock.json"
           - "scripts/sync-skills"
           - "scripts/update-skill-lock"
@@ -211,6 +228,7 @@ profiles:
           - ".codex/skills/**"
           - ".cursor/skills/**"
           - ".pi/skills/**"
+          - ".claude/skills/**"
           - "scripts/verify-skill-governance"
           - "scripts/lib/skill-governance.mjs"
           - ".template-source/agents/skills-maintenance.md"
@@ -1109,6 +1127,7 @@ routing:
       - .codex/skills/**
       - .cursor/skills/**
       - .pi/skills/**
+      - .claude/skills/**
       - .template-spec/agents/yss-skill-registry.yaml
       - .template-source/agents/skills-maintenance.md
       - scripts/*skill*
@@ -1265,6 +1284,8 @@ routing:
       - tests/agent-hook.test.mjs
       - .claude/settings.json
       - .codex/hooks.json
+      - CLAUDE.md
+      - tests/claude-entry.test.mjs
     groups:
       - feature-assets
   - patterns:
@@ -1292,10 +1313,12 @@ routing:
       - .codex/skills/yss-research/**
       - .cursor/skills/yss-research/**
       - .pi/skills/yss-research/**
+      - .claude/skills/yss-research/**
       - .agents/skills/competitive-intelligence/**
       - .codex/skills/competitive-intelligence/**
       - .cursor/skills/competitive-intelligence/**
       - .pi/skills/competitive-intelligence/**
+      - .claude/skills/competitive-intelligence/**
       - .template-spec/plan/templates/competitive-matrix-template.md
       - .template-spec/plan/templates/competitive-analysis-template.md
     groups:
@@ -1305,6 +1328,7 @@ routing:
       - .codex/skills/i-have-adhd/**
       - .cursor/skills/i-have-adhd/**
       - .pi/skills/i-have-adhd/**
+      - .claude/skills/i-have-adhd/**
     groups:
       - document-writing
   - patterns:
@@ -4669,6 +4693,14 @@ supplemental_checks:
     depends_on: []
     when: template-source
     task_id: supplemental.agent-hook
+    source_requirement: committed
+  - id: check.claude-entry-supplemental
+    run: node --test tests/claude-entry.test.mjs
+    group: feature-assets
+    gate_ids: [check.verification-lifecycle]
+    depends_on: []
+    when: template-source
+    task_id: supplemental.claude-entry
     source_requirement: committed
   - id: check.native-context-retirement
     run: node --test tests/native-context-retirement.test.mjs
