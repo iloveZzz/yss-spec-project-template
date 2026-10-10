@@ -1,0 +1,21 @@
+#!/usr/bin/env node
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { findRiskyCodexConfigs, formatFindings } from "./lib/agent-config-safety.mjs";
+
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+try {
+  const args = process.argv.slice(2);
+  const rootIndex = args.indexOf("--root");
+  const root = rootIndex >= 0 ? path.resolve(args[rootIndex + 1] ?? "") : ROOT;
+  const findings = findRiskyCodexConfigs(root);
+  if (findings.length > 0) {
+    process.stderr.write(`${formatFindings(findings)}\n`);
+    process.exitCode = 1;
+  } else {
+    process.stdout.write("Agent 配置安全检查通过：没有被追踪的配置关闭沙箱或审批\n");
+  }
+} catch (error) {
+  process.stderr.write(`Agent 配置检查错误: ${error.message}\n`);
+  process.exitCode = 2;
+}

@@ -814,6 +814,10 @@ routing:
       - scripts/harness-metrics
       - scripts/lib/harness-metrics.mjs
       - tests/harness-metrics.test.mjs
+      - scripts/verify-agent-config
+      - scripts/lib/agent-config-safety.mjs
+      - tests/agent-config-safety.test.mjs
+      - .codex/config.toml
     groups:
       - feature-assets
   - patterns:
@@ -4162,6 +4166,22 @@ supplemental_checks:
     depends_on: []
     when: template-source
     task_id: supplemental.harness-metrics
+    source_requirement: committed
+  - id: check.agent-config-safety
+    run: node --test tests/agent-config-safety.test.mjs
+    group: feature-assets
+    gate_ids: [check.verification-lifecycle]
+    depends_on: []
+    when: template-source
+    task_id: supplemental.agent-config-safety
+    source_requirement: committed
+  - id: check.agent-config-tracked
+    run: node scripts/verify-agent-config
+    group: feature-assets
+    gate_ids: [check.verification-lifecycle]
+    depends_on: []
+    when: template-source
+    task_id: supplemental.agent-config-tracked
     source_requirement: committed
   - id: check.native-context-retirement
     run: node --test tests/native-context-retirement.test.mjs
