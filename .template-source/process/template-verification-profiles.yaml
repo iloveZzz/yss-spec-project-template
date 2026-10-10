@@ -811,6 +811,12 @@ routing:
       - implementation
       - feature-assets
   - patterns:
+      - scripts/harness-metrics
+      - scripts/lib/harness-metrics.mjs
+      - tests/harness-metrics.test.mjs
+    groups:
+      - feature-assets
+  - patterns:
       - scripts/**
     groups:
       - hygiene
@@ -4148,6 +4154,14 @@ supplemental_checks:
     depends_on: []
     when: template-source
     task_id: supplemental.work-layout-hardcodes
+    source_requirement: committed
+  - id: check.harness-metrics
+    run: node --test tests/harness-metrics.test.mjs
+    group: feature-assets
+    gate_ids: [check.verification-lifecycle]
+    depends_on: []
+    when: template-source
+    task_id: supplemental.harness-metrics
     source_requirement: committed
   - id: check.native-context-retirement
     run: node --test tests/native-context-retirement.test.mjs
