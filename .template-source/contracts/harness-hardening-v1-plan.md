@@ -261,12 +261,12 @@ flowchart LR
 | WP-02 | 已合并到 main | `harden/wp-02` | `ci-gate`、`ci-setup`、`engines.node` 与 21 个测试通过；AC-003、AC-004、AC-012 已实测；`verify-doc-facts` 已接入；`ci-setup` 已在本机隔离环境实跑通过（52 秒），托管 runner 上的耗时与 GitLab 路径待 WP-03；candidate 按风险表降为非阻断，原因见第 6 节 |
 | WP-03 | 已合并到 main | `harden/wp-03` | 两个适配器、`setup-template` 薄封装、`github-workflows.md` 改写与 12 个契约测试；GitLab 任务在 `node:24` 容器里按 `.gitlab-ci.yml` 原样实跑；真实平台的 PR / MR、必需检查设置与 5 次耗时仍待维护者；Linux 上 fast 有两个已知失败测试，见第 6 节 |
 | WP-04 | 已合并到 main | `harden/wp-04` | `scripts/agent-hook`、库与 19 个测试；Claude Code 与 Codex 的 `Stop` hook 已注册，hook 文件已排除出实例分发；真实仓库反例（改坏 `skills-lock.json` → 退出 2 并给出修复命令，修复后通过）与 20 次计时（触发全部检查的最坏路径 p95 681 ms，仅 `.codex` 变更 123 ms，目标 ≤ 10 s）已实测；fast 通过；AC-008 由测试覆盖。两个客户端里的真实会话验证与 Codex 的 `/hooks` 信任需维护者在各自客户端确认；Profile 子模块未启用，见第 6 节 |
-| WP-05 | 已合并到 main | `harden/wp-05`（主仓；三个 Profile 子模块同名，提交在各自的 `harden/wp-05`，推送前主仓 gitlink 引用本地提交） | 根 `CLAUDE.md`、`.claude/skills`（79 个符号链接）、注册表 `runtimes` / `projection_roots` / `agent_runtime_roots`、锁、`bundle-profile.json`、验证登记与 5 个契约测试；三个 Profile 的 `CLAUDE.md` 已改为导入形式，设计 Profile 的来源清单已按新指针钉住；fast 与 ci-gate 的必需步骤通过。Profile 的 `.claude/skills` 与实例分发依赖 yss-cli 与 Profile 准备脚本的改动，见第 6 节两条记录；AC-009 的 Claude Code 实机确认**待维护者**：本机无头 `claude -p` 未登录（返回 Not logged in），未能在实施会话内完成。确认方法：在已登录的 Claude Code 里打开该分支的检出，`/skills` 应列出 79 个来自 `.claude/skills` 的技能，启动提示或 `/memory` 应显示 `CLAUDE.md` 经 `@AGENTS.md` 导入；WP-04 的 Stop hook 同样需要在客户端里实际结束一轮会话来确认 |
+| WP-05 | 已合并到 main | `harden/wp-05`（主仓；三个 Profile 子模块同名，提交在各自的 `harden/wp-05`，已随维护者推送进入远端） | 根 `CLAUDE.md`、`.claude/skills`（79 个符号链接）、注册表 `runtimes` / `projection_roots` / `agent_runtime_roots`、锁、`bundle-profile.json`、验证登记与 5 个契约测试；三个 Profile 的 `CLAUDE.md` 已改为导入形式，设计 Profile 的来源清单已按新指针钉住；fast 与 ci-gate 的必需步骤通过。Profile 的 `.claude/skills` 与实例分发依赖 yss-cli 与 Profile 准备脚本的改动，见第 6 节两条记录；AC-009 的 Claude Code 实机确认**待维护者**：本机无头 `claude -p` 未登录（返回 Not logged in），未能在实施会话内完成。确认方法：在已登录的 Claude Code 里打开该分支的检出，`/skills` 应列出 79 个来自 `.claude/skills` 的技能，启动提示或 `/memory` 应显示 `CLAUDE.md` 经 `@AGENTS.md` 导入；WP-04 的 Stop hook 同样需要在客户端里实际结束一轮会话来确认 |
 | WP-11 | 草稿已合并到 main，待签署 | `harden/wp-11` | `.template-source/contracts/governance-core-layering-design.md`（`proposed`）与第 6 节四项维护连续性决策（仓库归属、第二维护者、`CODEOWNERS` 范围、CLI 平台矩阵，均为未决并带时点）；决策记录 L-1 至 L-5 待维护者签署；AC-019、AC-022 未完成 |
 | WP-10 | 草稿已合并到 main，待签署 | `harden/wp-10` | `.template-source/contracts/spec-delta-rebaseline-design.md`（`proposed`）与 4 个结构测试；决策记录 D-1 至 D-7 待维护者签署；AC-018 未完成 |
 | WP-08 | 研究完成，实施暂缓 | `harden/wp-08`（只含 WP-05 补丁与计划记录） | Q-004 的 Codex、Cursor、Pi 部分已按当期文档答复；删除冗余投影根要改实例运行时模型并需要 yss-cli 配合，已列出完整改动面与建议做法，等待维护者决定；AC-015、AC-016 未完成 |
 | WP-09 | 已合并到 main | `harden/wp-09` | `process-glossary.md`（93 个流程术语）、`CONTEXT.md` 缩为合同骨架、`AGENTS.md` 阅读地图与工程概览指向术语表、运行时绑定表补一句；6 个测试；fast 与 ci-gate 必需步骤通过；AC-017、NFR-003、NFR-005 达标 |
-| WP-07 | 第一批已合并到 main，第二批待 AC-024 | `harden/wp-07`（主仓；三个 Profile 子模块同名，提交在各自的 `harden/wp-07`，推送前主仓 gitlink 引用本地提交） | 显式技能由 8 个增至 13 个（第一批 5 个），复用现有调用契约；前端补丁重新生成、三个 Profile 完成传播；4 个守护测试；fast 与 ci-gate 必需步骤通过。AC-013 通过；AC-014 未达标（见第 6 节，NFR-004 差距与最好情况预估）；AC-024 与第二批待维护者在已登录客户端执行路由测试 |
+| WP-07 | 第一批已合并到 main，第二批待 AC-024 | `harden/wp-07`（主仓；三个 Profile 子模块同名，提交在各自的 `harden/wp-07`，已随维护者推送进入远端） | 显式技能由 8 个增至 13 个（第一批 5 个），复用现有调用契约；前端补丁重新生成、三个 Profile 完成传播；4 个守护测试；fast 与 ci-gate 必需步骤通过。AC-013 通过；AC-014 未达标（见第 6 节，NFR-004 差距与最好情况预估）；AC-024 与第二批待维护者在已登录客户端执行路由测试 |
 | WP-06 | 已合并到 main | `harden/wp-06` | 基于 main（文本修复不依赖 WP-00 代码）；三处被追踪的漂移已修，`verify-doc-facts` 与 5 个测试通过；团队指南为未追踪文件，本地已修；已随 WP-02 接入 `ci-gate` |
 
 ### 阶段汇总（2026-10-11）
@@ -302,4 +302,4 @@ flowchart LR
 | AC-022 | **未决** | 四项连续性决策均已写出事实与建议，等待维护者决定，均带时点 |
 | AC-024 | **待维护者** | 第二批与被推迟的技能共 15 个，需在已登录的 Claude Code 与 Codex 里做路由测试 |
 
-推送顺序提示：本轮所有提交都在本地。主仓的 gitlink 引用了三个 Profile 子模块的本地提交（各自 `main` 与 `harden/wp-05`、`harden/wp-07`），需先推送三个 Profile，再推送主仓；yss-cli 本轮没有改动。
+推送状态与顺序：推送由维护者执行。写下本节时，`origin/main` 已到 WP-09 的合并提交，三个 Profile 子模块的远端 `main` 已包含 WP-05 与 WP-07 的提交；WP-08、WP-10、WP-11 的合并与本汇总尚未推送，其中不涉及子模块改动，直接推送主仓即可。以后主仓的 gitlink 若引用未推送的子模块提交，须先推子模块、再推主仓。yss-cli 本轮没有改动。
