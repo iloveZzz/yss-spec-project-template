@@ -1,0 +1,43 @@
+#!/usr/bin/env node
+import { readFileSync } from "node:fs";
+import path from "node:path";
+import { parseArgs } from "node:util";
+import { parsePayload, repositoryRoot, runHook, SKIP_ENV } from "./lib/agent-hook.mjs";
+
+function usage() {
+  return [
+    "用法: scripts/agent-hook [--root <仓库根>]   （由 Claude Code 与 Codex 的 Stop hook 调用，stdin 为 hook 的 JSON 输入）",
+    "按本轮工作区变更选择毫秒级检查：技能或锁 → sync-skills / update-skill-lock；技能注册表 → verify-skill-registry；",
+    "生命周期注册表 → verify-lifecycle-registry；批准记录 → verify-approval-record --history；.codex/ → verify-agent-config。",
+    "无相关变更立即成功且无输出；检查失败退出 2 并把原因与修复命令写入 stderr；不调用 fast、candidate 或全量验证。",
+    `${SKIP_ENV}=off 跳过本次检查并记录到仓外维护目录。`,
+  ].join("\n");
+}
+
+function readStdin() {
+  if (process.stdin.isTTY) return "";
+  try {
+    return readFileSync(0, "utf8");
+  } catch {
+    return "";
+  }
+}
+
+try {
+  const { values } = parseArgs({ options: { root: { type: "string" }, help: { type: "boolean" } }, strict: true });
+  if (values.help) {
+    process.stdout.write(`${usage()}\n`);
+  } else {
+    const payload = parsePayload(readStdin());
+    const root = values.root ? path.resolve(values.root) : repositoryRoot(typeof payload.cwd === "string" && payload.cwd ? payload.cwd : process.cwd());
+    if (root) {
+      const result = runHook({ root, payload });
+      process.stdout.write(result.stdout);
+      process.stderr.write(result.stderr);
+      process.exitCode = result.exitCode;
+    }
+  }
+} catch (error) {
+  // hook 自身出错不应阻断会话：记录原因并放行，由 ci-gate 兜底。
+  process.stderr.write(`agent-hook 错误（已放行）: ${error.message}\n`);
+}

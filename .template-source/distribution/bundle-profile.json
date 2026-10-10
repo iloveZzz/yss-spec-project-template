@@ -47,6 +47,7 @@
     ],
     "excludePaths": [
       ".codex/hooks.json",
+      ".claude/settings.json",
       ".codex/config.toml",
       ".codex/settings.local.json",
       ".codex/skills/.DS_Store",
@@ -69,6 +70,7 @@
       "scripts/audit-yss-backend-skills",
       "scripts/cache-template-commit",
       "scripts/capture-maintenance-candidate",
+      "scripts/agent-hook",
       "scripts/ci-gate",
       "scripts/ci-setup",
       "scripts/evaluate-maintenance-review-round",
@@ -99,6 +101,7 @@
       "scripts/lib/template-commit-cache.mjs",
       "scripts/lib/doc-facts.mjs",
       "scripts/lib/doc-facts-patterns.json",
+      "scripts/lib/agent-hook.mjs",
       "scripts/lib/ci-gate.mjs",
       "scripts/lib/template-verification.mjs",
       "scripts/lib/template-verification-runner.mjs",

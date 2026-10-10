@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "root=$(git rev-parse --show-toplevel 2>/dev/null); [ -f \"$root/scripts/agent-hook\" ] || exit 0; exec node \"$root/scripts/agent-hook\"",
+            "command": "node \"$CLAUDE_PROJECT_DIR/scripts/agent-hook\"",
             "timeout": 90
           }
         ]
