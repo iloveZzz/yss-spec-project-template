@@ -7,7 +7,7 @@ import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
-import { applyProfileSkillSync, formatProfileSkillSync, planProfileSkillSync, reportProfileSkillSync } from "../../../../scripts/lib/profile-skill-sync.mjs";
+import { applyProfileSkillSync, composeProfileSkills, formatProfileSkillSync, planProfileSkillSync, reportProfileSkillSync } from "../../../../scripts/lib/profile-skill-sync.mjs";
 
 function fixture() {
   const root = mkdtempSync(path.join(tmpdir(), "profile-skill-sync-"));
@@ -36,6 +36,18 @@ function fixture() {
 }
 
 const clean = () => new Set();
+
+test("profile composition retains complete resources and executable modes", t => {
+  const { root, config } = fixture();
+  t.after(() => rmSync(root, { recursive: true, force: true }));
+  writeFileSync(path.join(root, ".agents/skills/exact/probe"), "#!/bin/sh\n", { mode: 0o755 });
+  writeFileSync(path.join(root, ".agents/skills/adapted/resource.txt"), "resource\n");
+  const view = composeProfileSkills({ root, config, profile: "dev" });
+  assert.equal(view.get(".agents/skills/exact/probe").mode, 0o755);
+  assert.equal(view.get(".agents/skills/adapted/SKILL.md").content.toString(), "owner: child\n");
+  assert.equal(view.get(".agents/skills/adapted/resource.txt").content.toString(), "resource\n");
+  assert.equal(view.has(".agents/skills/role-agent/SKILL.md"), false);
+});
 
 test("maintenance sync propagates the retirement authority and preserves profile-local migrations", t => {
   const root = mkdtempSync(path.join(tmpdir(), "maintenance-retirement-sync-"));

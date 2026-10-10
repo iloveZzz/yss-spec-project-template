@@ -5,6 +5,47 @@ profiles:
   fast:
     always_groups:
       - hygiene
+    checks:
+      - id: "check.profile-skills-preparation"
+        run: "node --test .template-source/tooling/node/test/profile-skill-sync.test.mjs .template-source/tooling/node/test/profile-skills-preparation.test.mjs .template-source/tooling/node/test/profile-skills-standalone.test.mjs"
+        group: "skills"
+        inputs_complete: true
+        input_patterns:
+          - "scripts/sync-profile-skills"
+          - "scripts/lib/profile-skill-sync.mjs"
+          - ".template-source/profile-skill-sync.json"
+          - ".template-source/distribution/bundle-profile.json"
+          - ".template-source/profile-skill-patches/**"
+          - ".template-source/scripts/lib/profile-skills-preparation.mjs"
+          - ".template-source/scripts/prepare-profile-skills.mjs"
+          - ".template-source/tooling/node/test/profile-skill*.test.mjs"
+          - "submodules/yss-harness-backend-agent"
+          - "submodules/yss-harness-backend-agent/**"
+          - "submodules/yss-harness-frontend-agent"
+          - "submodules/yss-harness-frontend-agent/**"
+        depends_on: []
+        failure_mode: "完整技能生成、冲突保护或独立准备错误"
+      - id: "check.profile-skill-composition-bundle"
+        run: "go -C submodules/yss-cli test ./internal/bundle ./tools/bundle"
+        group: "cli-sync"
+        inputs_complete: true
+        input_patterns:
+          - "scripts/sync-profile-skills"
+          - "scripts/lib/profile-skill-sync.mjs"
+          - ".template-source/profile-skill-sync.json"
+          - ".template-source/distribution/bundle-profile.json"
+          - ".template-source/profile-skill-patches/**"
+          - ".template-source/scripts/lib/profile-skills-preparation.mjs"
+          - ".template-source/scripts/prepare-profile-skills.mjs"
+          - ".template-source/tooling/node/test/profile-skill*.test.mjs"
+          - "submodules/yss-harness-backend-agent"
+          - "submodules/yss-harness-backend-agent/**"
+          - "submodules/yss-harness-frontend-agent"
+          - "submodules/yss-harness-frontend-agent/**"
+          - "submodules/yss-cli"
+          - "submodules/yss-cli/**"
+        depends_on: []
+        failure_mode: "固定 Git 来源组合或离线分发错误"
   candidate:
     always_groups:
       - hygiene
@@ -4118,3 +4159,19 @@ supplemental_checks:
     when: template-source
     source_requirement: committed
     task_id: supplemental.optimization-regressions
+  - id: check.profile-skills-preparation
+    run: node --test .template-source/tooling/node/test/profile-skill-sync.test.mjs .template-source/tooling/node/test/profile-skills-preparation.test.mjs .template-source/tooling/node/test/profile-skills-standalone.test.mjs
+    group: skills
+    gate_ids: [check.verification-skills]
+    depends_on: []
+    when: template-source
+    source_requirement: committed
+    task_id: supplemental.profile-skills-preparation
+  - id: check.profile-skill-composition-bundle
+    run: go -C submodules/yss-cli test ./internal/bundle ./tools/bundle
+    group: cli-sync
+    gate_ids: [check.verification-spec-cli, check.verification-distribution]
+    depends_on: []
+    when: template-source
+    source_requirement: committed
+    task_id: supplemental.profile-skill-composition-bundle

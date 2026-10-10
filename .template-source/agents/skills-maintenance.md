@@ -69,6 +69,26 @@
 
 6. 需要重新加载技能的客户端在变更落地后重启或刷新项目。
 
+## Backend / Frontend 生成内容
+
+两端的 `materialization: generated` 由 `.template-source/profile-skill-sync.json` 声明。共享技能完整目录与三个 Agent 投影只在本地生成；各端四个 `local_only` 技能、技能锁、注册表、来源锁和适配材料继续受 Git 管理。Design 保留原同步模式及四个上游技能的所有权。Frontend 的 Product Design 平台包按完整包生成。
+
+独立克隆后，先把可信 Spec 源码 checkout 到本端 `.template-source/profile-skills-source.json` 的完整提交，再显式运行：
+
+```sh
+node scripts/prepare-skills --source <固定Spec源码目录> --check
+node scripts/prepare-skills --source <固定Spec源码目录> --apply
+node scripts/prepare-skills --check
+```
+
+前两条在 Backend 或 Frontend 根目录执行；不联网、不切换来源、不自动安装。缺来源、错误提交、源文件漂移、适配基线变化、链接越界、已修改生成文件或未知占用均拒绝覆盖。应用失败恢复已触及文件；相同输入重复执行不写入。最后一条只核验本地生成回执，准备后无需保持来源目录在线。维护入口先执行这一检查；`--plan` 仍可用于未准备仓的只读调查。
+
+本模板维护期间，`scripts/sync-profile-skills --apply --profile=backend,frontend --update-source-lock` 显式更新生成内容和来源锁；不带 `--update-source-lock` 不改变锁。仅原样生成或登记的完整适配树可进入生成模式，片段替换保留计数基线，补丁保留整树基线，权限差异通过 `file_modes` 登记。禁止直接编辑两端的生成目录。源码尚有相关改动时，锁标记为 `working-tree`，只用于本地维护检查；独立准备及正式组合构建只接受 `committed`。
+
+CLI 的内部来源锁 v3 将两端固定提交与 `skillsSource` 的 Spec 提交、清单路径和摘要分别绑定。构建只读 Git 对象并重放适配，忽略本地生成目录和 dirty worktree；公开 Bundle 继续为 v3，组合来源、完整技能摘要位于 `manifest.skillComposition`，参与 manifest 和 Bundle 摘要校验。实例仍安装完整离线技能，不分发源码准备入口、来源回执或生成目录忽略规则。历史来源锁 v2、公开 Bundle 和实例读入及升级事务继续兼容。
+
+固定来源按以下顺序交付：先提交共享源、清单和生成实现；用该完整提交更新两端来源锁并提交两端；随后固定 CLI 来源锁并构建完整资产；最后更新父仓 gitlink。共享来源不绑定未来父仓提交，避免循环引用。提交、推送与发布分别遵守既有授权边界。仓库当前没有 GitHub workflow；以后接入 CI 时显式准备再校验，不增加隐式网络准备。
+
 ## 专职 Profile 同步
 
 战略设计、后端和前端 Agent 子项目通过 `.template-source/profile-skill-sync.json` 声明跨仓消费关系。每个实际 Skill 入口都必须分类为原样同步、带适配同步、子项目独有、排除、退役或上游；`excluded` 只允许目标中不存在的技能，不能隐藏活跃副本。战略设计的四个公共 Skill 由战略源仓向本模板薄适配集成，其余登记项由本模板向消费 Profile 同步。

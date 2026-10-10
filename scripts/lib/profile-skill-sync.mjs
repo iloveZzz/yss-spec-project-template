@@ -8,6 +8,7 @@ import {
   readdirSync,
   rmSync,
   writeFileSync,
+  chmodSync,
 } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { tmpdir } from "node:os";
@@ -22,6 +23,11 @@ function safe(root, relative, label = "path") {
   const resolvedRoot = path.resolve(root);
   const resolved = path.resolve(resolvedRoot, relative);
   if (resolved === resolvedRoot || !resolved.startsWith(`${resolvedRoot}${path.sep}`)) fail(`${label} 越界: ${relative}`);
+  let parent = resolvedRoot;
+  for (const part of path.relative(resolvedRoot, resolved).split(path.sep).slice(0, -1)) {
+    parent = path.join(parent, part);
+    if (existsSync(parent) && lstatSync(parent).isSymbolicLink()) fail(`${label} 符号链接越界: ${relative}`);
+  }
   return resolved;
 }
 
@@ -64,7 +70,7 @@ function treeDigest(tree) {
   return hash.digest("hex");
 }
 
-function patchedSource(root, profile, item) {
+function patchedSource(root, profile, item, modes) {
   const source = safe(root, item.source ?? `.agents/skills/${item.id}`, "source");
   const patchFile = safe(root, item.patch, "patch");
   const sourceFiles = files(source);
@@ -78,6 +84,7 @@ function patchedSource(root, profile, item) {
       const target = safe(temporary, name, "patch source file");
       mkdirSync(path.dirname(target), { recursive: true });
       writeFileSync(target, content);
+      chmodSync(target, lstatSync(safe(source, name)).mode & 0o777);
     }
     const applied = spawnSync("git", ["apply", "--binary", "--whitespace=nowarn", patchFile], {
       cwd: temporary,
@@ -85,13 +92,15 @@ function patchedSource(root, profile, item) {
       stdio: ["ignore", "pipe", "pipe"],
     });
     if (applied.status !== 0) fail(`${profile}/${item.id} 补丁无法重放: ${applied.stderr.trim()}`);
-    return files(temporary);
+    const result = files(temporary);
+    if (modes) for (const name of result.keys()) modes.set(name, lstatSync(safe(temporary, name)).mode & 0o777);
+    return result;
   } finally {
     rmSync(temporary, { recursive: true, force: true });
   }
 }
 
-function gitDirty(profileRoot, relativePaths) {
+export function gitDirty(profileRoot, relativePaths) {
   if (!relativePaths.length) return new Set();
   const result = spawnSync("git", ["-C", profileRoot, "status", "--porcelain=v1", "--untracked-files=all", "--", ...relativePaths], {
     encoding: "utf8",
@@ -173,6 +182,47 @@ export function loadProfileSyncConfig(root, configPath = ".template-source/profi
   const config = JSON.parse(readFileSync(absolute, "utf8"));
   if (config.schema_version !== 1 || !config.profiles || typeof config.profiles !== "object") fail("profile skill sync 配置必须是 schema v1");
   return config;
+}
+
+// Compose only shared content; profile-owned skills keep their own source.
+export function composeProfileSkills({ root, config, profile }) {
+  const definition = config.profiles[profile];
+  if (!definition) fail(`未知 profile: ${profile}`);
+  const result = new Map();
+  const classified = new Set();
+  for (const group of [definition.exact ?? [], definition.adapted ?? [], ...["local_only", "excluded", "upstream", "retired"].map(key => (definition[key] ?? []).map(id => ({ id })))]) {
+    for (const { id } of group) {
+      if (classified.has(id)) fail(`${profile}/${id} 重复来源分类`);
+      classified.add(id);
+    }
+  }
+  for (const item of [...(definition.exact ?? []), ...(definition.adapted ?? [])]) {
+    if (item.files?.length) fail(`${profile}/${item.id} 生成模式需要完整适配树`);
+    const target = item.target ?? `.agents/skills/${item.id}`;
+    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(item.id) || ![`.agents/skills/${item.id}`, `.codex/skills/${item.id}`].includes(target)) fail(`生成技能目标非法: ${target}`);
+    const source = safe(root, item.source ?? `.agents/skills/${item.id}`, "source");
+    if (!existsSync(source)) fail(`缺少共享技能源: ${item.id}`);
+    const modes = new Map();
+    let desired;
+    if (!item.strategy) desired = files(source);
+    else if (item.strategy === "patch") desired = patchedSource(root, profile, item, modes);
+    else if (item.strategy === "replace") {
+      desired = transformedSource(root, profile, item);
+    } else fail(`${profile}/${item.id} 生成模式不支持 ${item.strategy}`);
+    if (!desired.size) fail(`共享技能不能为空: ${item.id}`);
+    safe(root, target, "target");
+    for (const [name, content] of desired) {
+      const ref = `${target}/${name}`;
+      if (result.has(ref)) fail(`共享技能目标重复: ${ref}`);
+      const sourceMode = modes.get(name) ?? (lstatSync(safe(source, name)).mode & 0o777);
+      const override = item.file_modes?.[name];
+      if (override !== undefined && !["0644", "0755"].includes(override)) fail(`共享技能权限不支持: ${ref}`);
+      const mode = override ? Number.parseInt(override, 8) : sourceMode & 0o111 ? 0o755 : 0o644;
+      if (![0o644, 0o755].includes(mode)) fail(`共享技能权限不支持: ${ref}`);
+      result.set(ref, { content, mode });
+    }
+  }
+  return result;
 }
 
 export function planProfileSkillSync({ root, config, selectedProfiles, dirtyProvider = gitDirty }) {

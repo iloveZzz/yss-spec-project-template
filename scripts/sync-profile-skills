@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { applyProfileSkillSync, formatProfileSkillSync, loadProfileSyncConfig, planProfileSkillSync, reportProfileSkillSync } from "./lib/profile-skill-sync.mjs";
+import { applyProfileSkillSync, formatProfileSkillSync, gitDirty, loadProfileSyncConfig, planProfileSkillSync, reportProfileSkillSync } from "./lib/profile-skill-sync.mjs";
+import fs from "node:fs";
+import {applySkillPreparation, makeSkillSourceLock, planSkillPreparation, SKILL_SOURCE_LOCK} from "../.template-source/scripts/lib/profile-skills-preparation.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 try {
@@ -11,7 +13,7 @@ try {
   const profileArgs = [];
   for (let index = 0; index < args.length; index += 1) {
     const arg = args[index];
-    if (["--check", "--dry-run", "--apply", "--json"].includes(arg)) continue;
+    if (["--check", "--dry-run", "--apply", "--json", "--update-source-lock"].includes(arg)) continue;
     if (arg === "--profile") {
       const value = args[index + 1];
       if (!value || value.startsWith("--")) throw new TypeError("--profile 缺少值");
@@ -25,16 +27,48 @@ try {
   const json = args.includes("--json");
   const selectedProfiles = profileArgs.some((item) => item === "all") ? [] : profileArgs.flatMap((item) => item.split(",").filter(Boolean));
   const config = loadProfileSyncConfig(root);
-  const plan = planProfileSkillSync({ root, config, selectedProfiles });
+  if(args.includes("--update-source-lock")&&!args.includes("--apply"))throw new TypeError("--update-source-lock 必须显式选择 --apply");
+  const preparation=[];
+  const preparedPlans=[];
+  for(const profile of (selectedProfiles.length?selectedProfiles:Object.keys(config.profiles))){
+    const definition=config.profiles[profile];
+    if(definition?.materialization!=="generated")continue;
+    const targetRoot=path.join(root,definition.target);
+    const prepared=planSkillPreparation({root,targetRoot,config,profile});
+    preparedPlans.push(prepared);
+    preparation.push({profile,changes:prepared.changes.length,issues:prepared.issues});
+  }
+  const dirtyProvider=(targetRoot,refs)=>{
+    const prepared=preparedPlans.find(x=>x.targetRoot===targetRoot);
+    const owned=prepared?new Set([...prepared.view.keys(),...prepared.changes.map(x=>x.path)]):new Set();
+    return gitDirty(targetRoot,refs.filter(ref=>!owned.has(ref)));
+  };
+  const plan = planProfileSkillSync({ root, config, selectedProfiles, dirtyProvider });
+  for(const item of preparation)for(const issue of item.issues)plan.issues.push({profile:item.profile,status:"adaptation_conflict",...issue});
+  if(args.includes("--apply")){
+    if(plan.issues.length)throw new TypeError(`同步预检失败，共 ${plan.issues.length} 项问题`);
+    for(const prepared of preparedPlans)applySkillPreparation(prepared);
+    // Generated skill writes belong to preparation, including permissions and projections.
+    const refreshed=planProfileSkillSync({root,config,selectedProfiles,dirtyProvider});
+    if(refreshed.issues.length)throw new TypeError(`同步预检失败，共 ${refreshed.issues.length} 项问题`);
+    plan.changes=refreshed.changes;
+    if(args.includes("--update-source-lock"))for(const prepared of preparedPlans){
+      const lockFile=path.join(prepared.targetRoot,SKILL_SOURCE_LOCK),bytes=JSON.stringify(makeSkillSourceLock({root,config,profile:prepared.profile}),null,2)+"\n";
+      if(!fs.existsSync(lockFile)||fs.readFileSync(lockFile,"utf8")!==bytes)fs.writeFileSync(lockFile,bytes);
+    }
+  }
   const result = args.includes("--apply") ? applyProfileSkillSync({ root, config, plan }) : plan;
   const report = reportProfileSkillSync(result);
+  report.preparation=preparation;
   if (json) process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
   else {
     const output = formatProfileSkillSync(report, modes[0]);
     process.stdout.write(output.stdout);
     process.stderr.write(output.stderr);
+    for(const item of preparation)if(item.changes)process.stdout.write(`${item.profile}: 技能准备 ${item.changes} 项${args.includes("--apply")?"已生成":"待生成"}\n`);
   }
   if (args.includes("--check") && (plan.changes.length || plan.issues.length)) process.exitCode = 1;
+  if(args.includes("--check")&&preparation.some(x=>x.changes))process.exitCode=1;
   if (args.includes("--apply") && plan.issues.length) process.exitCode = 1;
 } catch (error) {
   process.stderr.write(`${error.message}\n`);

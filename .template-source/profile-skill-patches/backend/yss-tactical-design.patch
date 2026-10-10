@@ -1,0 +1,57 @@
+diff --git a/SKILL.md b/SKILL.md
+index fcf5b10..51b4a7a 100644
+--- a/SKILL.md
++++ b/SKILL.md
+@@ -30,7 +30,7 @@ description: 在 YSS 技术分析阶段将批准的战略领域输入细化为
+ 
+ 当用户或当前技术分析 / 架构评审合同明确要求聚合关系、状态转换、调用链、数据流或 Before/After 图示时，追加使用 `archify`。图必须从当前 Spec、ADR、OpenAPI、Tactical Design Contract 和代码证据派生，保存成 `*.archify.json`、`*.html` 与 `*.receipt.json` 配对资产；它是审查证据，不是新的事实源或批准门禁。没有明确图示要求时，不把 `archify` 加入 `required_skills`。
+ 
+-本 skill 不能自行批准资产、设置 `ready-for-agent`、创建 Ticket 或修改生命周期状态。批准由 `yss-product-lifecycle` 维护；独立架构评审使用 `evidence.tactical-design-review`。
++本 skill 不能自行批准资产、设置 `ready-for-agent`、创建 Ticket 或修改生命周期状态。批准由 `harness-orchestrator` 维护；独立架构评审使用 `evidence.tactical-design-review`。
+ 
+ ## 与实现交接
+ 
+diff --git a/references/output-template.md b/references/output-template.md
+index 0b77987..257fef0 100644
+--- a/references/output-template.md
++++ b/references/output-template.md
+@@ -5,7 +5,7 @@ owner: ai
+ 
+ # <功能名称> Tactical DDD Design
+ 
+-仅用于已确认 domain-driven 分支的阅读视图；引用 Technical Design Contract v2 的 design，不复制共同输入与审批状态。交接来源及可接受版本按 [输入合同](tactical-design-contract.md) 核对并绑定实际 ref/version/digest。MVC 使用 `yss-technical-design` 的 `layered-mvc` 分支。
++仅用于已确认 domain-driven 分支的阅读视图；引用 Technical Design Contract v2 的 design，不复制共同输入与审批状态。MVC 使用 `yss-technical-design` 的 `layered-mvc` 分支。
+ 
+ ## 上游引用
+ 
+@@ -13,8 +13,8 @@ owner: ai
+ |---|---|---|---|
+ | Spec |  |  |  |
+ | Strategic DDD |  |  |  |
+-| Strategic Design Handoff / 交付包（适用时） |  |  |  |
+-| 原型或 existing UI baseline（按交接来源） |  |  |  |
++| Strategic Design Handoff v3 |  |  |  |
++| Visual Baseline Bundle v1 |  |  |  |
+ | Strategic Context Import / Context Reconciliation |  |  |  |
+ | 状态矩阵 |  |  |  |
+ | OpenAPI / 无 API 影响记录 |  |  |  |
+diff --git a/references/tactical-design-contract.md b/references/tactical-design-contract.md
+index bc5ba43..ac2878a 100644
+--- a/references/tactical-design-contract.md
++++ b/references/tactical-design-contract.md
+@@ -2,7 +2,7 @@
+ 
+ ## 输入
+ 
+-必须引用批准且版本当前的 Spec、功能架构、战略 DDD、适用 UI 状态矩阵、OpenAPI Draft / Freeze（或无 API 影响记录）、ADR 和工程约束。来自 Strategic Design Handoff 时，按仓库 `.template-spec/process/strategic-handoff-package.md` 的版本与消费者规则绑定交接包、`strategic_context_import_ref` 和目标仓 `context_reconciliation_ref`；历史 v3/v4 只按冻结 schema 兼容读取，新交付使用 v5。原型或 existing UI baseline 须符合该包的来源分支；目标根 `CONTEXT.md` 未完成增量对账前返回 `blocked`。所有引用都必须带版本或 digest；不可读或过期引用返回 `blocked` / `stale`。
++必须引用批准且版本当前的 Spec、功能架构、战略 DDD、原型状态矩阵、OpenAPI Draft / Freeze（或无 API 影响记录）、ADR 和工程约束。来自 Strategic Design Handoff 时，额外要求 v3 交接包、`strategic_context_import_ref` 和目标仓 `context_reconciliation_ref`；目标根 `CONTEXT.md` 未完成增量对账前返回 `blocked`。所有引用都必须带版本或 digest；不可读或过期引用返回 `blocked` / `stale`。
+ 
+ ## 输出
+ 
+@@ -42,6 +42,4 @@ evidence_refs: []
+ 6. 复杂跨聚合一致性、并发、幂等、事件补偿或持久化错位必须写明策略，必要时升级独立文档。
+ 7. 实现发现新影响时必须阻断并回到生命周期重新路由。
+ 
+-对象命名及阿里/COLA 适配消费 `.template-spec/agents/backend-architecture-profiles.md` 的“对象命名与外部规范适配”。`entity_catalog` 记录领域身份与行为；`persistence_mapping` 记录对应持久化 PO、字段/值对象转换及职责归属，不把数据库 DO 的表结构复制成领域模型。类型名来自当前工程基线和设计，不新增第二套命名合同。
+-
+ 跨仓快照消费在 v2 共同头（旧独立 v1 则为根对象）绑定 `strategic_handoff`；字段与实际命令以 `.template-spec/process/strategic-handoff-package.md` 为准。

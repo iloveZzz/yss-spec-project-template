@@ -96,7 +96,9 @@
       "scripts/lib/verification-selection.mjs",
       "scripts/lib/verification-report.mjs",
       "scripts/lib/maintenance-counterexample.mjs",
-      ".work"
+      ".work",
+      "scripts/sync-profile-skills",
+      "scripts/lib/profile-skill-sync.mjs"
     ],
     "excludePathSuffixes": [
       "-scenarios"
