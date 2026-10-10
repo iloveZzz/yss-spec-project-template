@@ -1,6 +1,9 @@
 {
   "name": "yss-spec-project-template",
   "private": true,
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "dev": "node -e \"console.log('YSS template-source harness ready (no dev server; run scripts/verify-template for validation).')\""
   }

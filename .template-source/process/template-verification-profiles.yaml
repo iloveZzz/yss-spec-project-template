@@ -43,6 +43,19 @@ profiles:
           - ".template-source/contracts/harness-hardening-v1*.md"
         depends_on: []
         failure_mode: "说明文档复述门禁数、阶段数、投影根数量或硬编码与 lock 不一致的上游 revision"
+      - id: check.ci-gate
+        run: "node --test tests/ci-gate.test.mjs"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
+          - "scripts/ci-gate"
+          - "scripts/ci-setup"
+          - "scripts/lib/ci-gate.mjs"
+          - "tests/ci-gate.test.mjs"
+          - "package.json"
+          - ".nvmrc"
+        depends_on: []
+        failure_mode: "合入检查的步骤顺序、失败退出、报告位置或 Node 版本声明一致性回归"
       - id: check.runtime-storage
         group: runtime-storage
         inputs_complete: true
@@ -1213,6 +1226,10 @@ routing:
       - scripts/lib/agent-config-safety.mjs
       - tests/agent-config-safety.test.mjs
       - .codex/config.toml
+      - scripts/ci-gate
+      - scripts/ci-setup
+      - scripts/lib/ci-gate.mjs
+      - tests/ci-gate.test.mjs
     groups:
       - feature-assets
   - patterns:
@@ -4593,6 +4610,14 @@ supplemental_checks:
     depends_on: []
     when: template-source
     task_id: supplemental.agent-config-tracked
+    source_requirement: committed
+  - id: check.ci-gate-supplemental
+    run: node --test tests/ci-gate.test.mjs
+    group: feature-assets
+    gate_ids: [check.verification-lifecycle]
+    depends_on: []
+    when: template-source
+    task_id: supplemental.ci-gate
     source_requirement: committed
   - id: check.native-context-retirement
     run: node --test tests/native-context-retirement.test.mjs

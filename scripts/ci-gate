@@ -1,0 +1,37 @@
+#!/usr/bin/env node
+import path from "node:path";
+import { parseArgs } from "node:util";
+import { fileURLToPath } from "node:url";
+import { runGate } from "./lib/ci-gate.mjs";
+
+const SCRIPT_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+
+function usage() {
+  return [
+    "用法: scripts/ci-gate --mode pr --base <目标分支的完整提交SHA> [--report-dir <仓外绝对目录>]",
+    "      scripts/ci-gate --mode push [--report-dir <仓外绝对目录>]",
+    "平台无关的合入检查：配置安全、技能投影与锁、注册表、文档事实、Node 版本声明，最后 PR 模式跑 verify-template-candidate、推送模式跑 verify-template-fast。",
+    "任一步失败即非零退出；报告与日志默认写入仓外维护目录，仓内不得新增文件。退出码：0 通过，1 检查失败，2 用法或环境错误。",
+  ].join("\n");
+}
+
+try {
+  const { values } = parseArgs({
+    options: { mode: { type: "string" }, base: { type: "string" }, "report-dir": { type: "string" }, root: { type: "string" }, help: { type: "boolean" } },
+    strict: true,
+  });
+  if (values.help) {
+    process.stdout.write(`${usage()}\n`);
+  } else {
+    const result = await runGate({
+      root: values.root ? path.resolve(values.root) : SCRIPT_ROOT,
+      mode: values.mode,
+      base: values.base,
+      reportDir: values["report-dir"],
+    });
+    process.exitCode = result.exitCode;
+  }
+} catch (error) {
+  process.stderr.write(`ci-gate 错误: ${error.message}\n${error instanceof TypeError ? `${usage()}\n` : ""}`);
+  process.exitCode = 2;
+}
