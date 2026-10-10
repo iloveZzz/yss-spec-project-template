@@ -70,6 +70,16 @@ profiles:
           - ".template-source/distribution/bundle-profile.json"
         depends_on: []
         failure_mode: "平台适配器混入检查逻辑、两个平台的触发或 base 取值分叉、运行时版本与 ci-setup 脱节，或合入检查说明回到旧表述"
+      - id: check.legacy-runtime-scan
+        run: "node --test tests/legacy-runtime-scan.test.mjs"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
+          - ".template-source/scripts/lib/legacy-runtime-scan.mjs"
+          - ".template-source/scripts/lib/verification-execution-plan.mjs"
+          - "tests/legacy-runtime-scan.test.mjs"
+        depends_on: []
+        failure_mode: "旧运行时残留扫描依赖外部二进制、漏报或误报，或候选与发布后置检查回到不可移植的实现"
       - id: check.agent-hook
         run: "node --test tests/agent-hook.test.mjs"
         group: feature-assets
@@ -1317,6 +1327,8 @@ routing:
       - tests/ci-gate.test.mjs
       - .gitlab-ci.yml
       - tests/ci-adapters.test.mjs
+      - .template-source/scripts/lib/legacy-runtime-scan.mjs
+      - tests/legacy-runtime-scan.test.mjs
       - scripts/agent-hook
       - scripts/lib/agent-hook.mjs
       - tests/agent-hook.test.mjs
@@ -4758,6 +4770,14 @@ supplemental_checks:
     depends_on: []
     when: template-source
     task_id: supplemental.process-glossary
+    source_requirement: committed
+  - id: check.legacy-runtime-scan-supplemental
+    run: node --test tests/legacy-runtime-scan.test.mjs
+    group: feature-assets
+    gate_ids: [check.verification-lifecycle]
+    depends_on: []
+    when: template-source
+    task_id: supplemental.legacy-runtime-scan
     source_requirement: committed
   - id: check.native-context-retirement
     run: node --test tests/native-context-retirement.test.mjs

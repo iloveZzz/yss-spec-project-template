@@ -204,7 +204,11 @@ test('无report-dir的完整CLI计划分配新仓外报告且包含真实准备�
 });
 test('真实进程超时返回124并保留最终观测，后续独立检查完成', async t => {
   const dir = temporary(t);
-  const row = await runCommandToFiles(node('process.on("SIGTERM",()=>{});setInterval(()=>{},1000)'),{cwd:dir,logRoot:dir,sequence:0,timeoutMs:150});
+  // runCommandToFiles 经 /bin/sh -c 启动命令：macOS 的 sh 会直接 exec 单条命令，Debian/Ubuntu 的 dash 不会，
+  // 直接子进程成了 sh，收到 SIGTERM 即退出，观测到的终止信号就是 SIGTERM。显式 exec 让忽略 SIGTERM 的 node
+  // 成为直接子进程，各平台一致地要靠升级后的 SIGKILL 才能结束。
+  const ignoresTerm = node('process.on("SIGTERM",()=>{});setInterval(()=>{},1000)');
+  const row = await runCommandToFiles(process.platform === 'win32' ? ignoresTerm : `exec ${ignoresTerm}`,{cwd:dir,logRoot:dir,sequence:0,timeoutMs:150});
   assert.equal(row.code,124); assert.equal(row.termination,'timeout');
   assert.equal(row.actual_exit_code_observed,false); assert.equal(row.actual_exit_signal,'SIGKILL');
   const recovered = await runCommandToFiles(node('console.log("recovered")'),{cwd:dir,logRoot:dir,sequence:1});
