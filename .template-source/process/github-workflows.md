@@ -7,21 +7,40 @@
 | 入口 | 行为 | 结果边界 |
 |---|---|---|
 | 日常交付：`scripts/verify-template-fast` | 先看 `--plan`；按检查输入、变化行为及消费者选择必要集合，缺映射或非法依赖先修正，不自动运行全量 | `implementation-ready`，报告 `limited`，记录实际覆盖及未覆盖边界 |
+| 合入检查：`scripts/ci-gate --mode pr --base <完整 SHA>` / `--mode push` | 平台无关；PR、MR 与主分支推送由 `template-gate` 调用，详见下文“合入检查” | 合并前机器检查，不替代候选与发布验证 |
 | 候选：`scripts/verify-template-candidate --base <完整 SHA>` | 以显式 base 计算提交差异，并合并 index、工作树和未跟踪路径 | 合并前机器检查，不宣布发布就绪 |
 | main 集成验证与正式发布：`scripts/verify-template` | 核验完整 baseline 与当前资格后执行全部适用风险；缺失或失效时走独立 `legacy-full` | 检查完整候选；当前分支为 main 不单独触发 |
 | 固定版本：`verify-template-release.mjs` | 输入完整 40 位模板 commit，执行上述验证与指定 CLI 家族集成 | 产出证据，不打 tag、不创建 Release、不发布包 |
 
-主模板、三个专职 Agent 模板和四个 CLI 仓库的根 `.github/workflows` 已移除。仓库推送、PR 和手动 Actions 入口不再自动运行这些模板检查；维护者通过上述本地入口执行并保存本轮证据。
+主模板源提供两个薄适配器：`.github/workflows/template-gate.yml`（GitHub Actions）与 `.gitlab-ci.yml`（GitLab CI），检查名均为 `template-gate`，在 PR / MR 与主分支推送时运行，并登记为 PR / MR 必需检查。三个专职 Agent 模板和四个 CLI 仓库不设根 `.github/workflows`，它们的检查通过各自仓库的本地入口执行；手动 Actions 入口不再提供。正式发布仍由维护者通过上述本地入口执行并保存本轮证据。
 
 日常交付不依次执行三个入口，不因维护等级、交付措辞或缺少发布 baseline 自动升级为正式发布验证。定向选择依据、命令、退出码与未覆盖风险必须可读；未知影响先调查。候选、发布及已采纳 mandatory CI 命中后仍执行其完整适用集合，不能通过删计划项或改报告声明绕过。
 
-模板验证首先要求 `template-source`。日常预检仅要求所选任务使用的工具、子模块或固定 CLI 输入，不准备未选制品或消费者；`--selection legacy` / `shadow` 保留显式原组范围。全量检查使用实际依赖的公开 gitlink 固定子模块，不追踪上游分支；运行前须初始化所需子模块。工具依赖使用固定 pnpm 与 frozen lockfile；Node 24 为验证运行器环境，Python 3.12 / jsonschema 4.23.0 提供既有 schema 检查依赖。vendor 校验在临时目录重建并比较，不先覆盖受版本管理的 vendor。
+模板验证首先要求 `template-source`。日常预检仅要求所选任务使用的工具、子模块或固定 CLI 输入，不准备未选制品或消费者；`--selection legacy` / `shadow` 保留显式原组范围。全量检查使用实际依赖的公开 gitlink 固定子模块，不追踪上游分支；运行前须初始化所需子模块。工具依赖使用固定 pnpm 与 frozen lockfile；Node 24 为验证运行器环境，Python 3.12（验证预检要求恰为该版本）与固定的 jsonschema 4.23.0 提供既有 schema 检查依赖；目标版本以 `scripts/ci-setup --print-versions` 为准。运行器缺少 Python 3.12 或所需 Go 时，`scripts/ci-setup` 只在 CI 的 root 容器内补装：Python 经固定版本的 uv，Go 取自固定 yss-cli 源码 `go.mod` 指定的版本并校验 go.dev 公布的 sha256；其它环境须由镜像自带。vendor 校验在临时目录重建并比较，不先覆盖受版本管理的 vendor。
 
 三个入口均在执行前及结束时观察输入，失败和中断同样保留最终观测；漂移使本轮失败。fast / candidate 可按[运行内摘要复用规则](../../.template-spec/process/subagent-collaboration.md#只读分诊任务包-v2)减少未变化文件的重复字节读取，报告 `input_observation_metrics`；有效 profile 为 release 或显式传入 `--fresh-inputs` 时前后均完整读取字节。摘要、文件覆盖范围和漂移判定不变，普通问答不因此新增全仓验证要求。
 
 本地复验应把独立 Node 24 的 bin 加入 PATH 后直接运行验证入口；不要用带 `--package` 的 `npm exec` 包住整条验证链，其包配置可能被内部 npx 继承，改变实际执行的工具。
 
-工具兼容性仍按影响面和发布验证计划检查：Node 22 工具测试、macOS vendor 一致性及 Node 26 非阻断观察分别保留实际环境、命令、退出码和日志。运行时存储的跨平台验证仍覆盖受支持的 Node 与操作系统，以及最低版本拒绝行为；本地单一环境通过不能充当未执行平台的结果。远程 required checks / 分支保护由仓库维护者单独配置。
+工具兼容性仍按影响面和发布验证计划检查：Node 22 工具测试、macOS vendor 一致性及 Node 26 非阻断观察分别保留实际环境、命令、退出码和日志。运行时存储的跨平台验证仍覆盖受支持的 Node 与操作系统，以及最低版本拒绝行为；本地单一环境通过不能充当未执行平台的结果。远程 required checks / 分支保护由仓库维护者单独配置：GitHub 与 GitLab 都要把 `template-gate` 设为必需检查，这是仓库设置，不在代码中。
+
+## 合入检查
+
+`template-gate` 的两个适配器只做三件事：选择模式、调用 `scripts/ci-setup` 准备环境、调用 `scripts/ci-gate`。它们不含检查逻辑，所以同一提交在两个平台执行相同的步骤、命令与退出码。步骤清单只在 `scripts/lib/ci-gate.mjs` 的一个数组里维护，本文不复述；环境版本只在 `scripts/ci-setup` 里维护，GitHub 的 `setup-template` 通过 `--print-versions` 读取，GitLab 的镜像主版本由测试与之核对。
+
+| 事件 | 模式 | base |
+|---|---|---|
+| GitHub `pull_request` | `--mode pr` | `github.event.pull_request.base.sha` |
+| GitLab `merge_request_event` | `--mode pr` | `CI_MERGE_REQUEST_DIFF_BASE_SHA` |
+| 主分支推送 | `--mode push` | 脚本取 `HEAD^`（合并提交的第一亲本即上一个主分支顶点） |
+
+两个平台都用完整历史检出。`verify-template-fast` 必须带范围基准：干净检出且不带 `--base` 时变更文件数为 0，只会空过。`verify-template-candidate` 在 PR 模式下是非阻断步骤，只记录结果：选择性 gate policy 未激活时它退化为完整的 `release` 验证，要求固定 yss 二进制且 Bundle 的模板来源等于被验证提交，对新提交无法在托管 runner 通过。转为必需检查的条件见执行计划与规格的 Q-008。
+
+fast 选中的部分检查需要原生 `yss` 二进制，所以两个平台都用 `scripts/ci-setup --yss-commit gitlink`，从本仓 `submodules/yss-cli` 固定的提交构建并导出 `YSS_NATIVE_BINARY`。环境准备依赖的子模组都是公开仓库，匿名可读，GitLab runner 不需要令牌或镜像。拉取子模组失败时 `scripts/ci-setup` 以非零退出，`template-gate` 失败并在日志中给出原因，不得跳过该步骤后报告通过。
+
+已知限制：`tests/verification-execution.test.mjs` 中的两个测试（超时后的 `SIGKILL` 观察、`finally` 清理）按 macOS 行为编写，在 Linux runner 上稳定失败；`yss-cli` 的原生验证也只对 darwin/arm64 做资格。因此在这两个测试修复或平台策略确定之前，改动验证基础设施（会选中该文件）的 PR 在 Linux 的 `template-gate` 上会失败，普通技能与文档类改动不受影响。
+
+报告与日志写在仓外的 `/tmp/ci-gate`，两个平台都作为构建产物保留；两份报告的步骤名单、各步命令与退出码应一致。检查期间仓库出现任何新增改动都会使本轮失败。
 
 ## 发布版本与证据
 

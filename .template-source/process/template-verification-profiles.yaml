@@ -56,6 +56,20 @@ profiles:
           - ".nvmrc"
         depends_on: []
         failure_mode: "合入检查的步骤顺序、失败退出、报告位置或 Node 版本声明一致性回归"
+      - id: check.ci-adapters
+        run: "node --test tests/ci-adapters.test.mjs"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
+          - ".github/workflows/template-gate.yml"
+          - ".github/actions/setup-template/action.yml"
+          - ".gitlab-ci.yml"
+          - "scripts/ci-setup"
+          - "tests/ci-adapters.test.mjs"
+          - ".template-source/process/github-workflows.md"
+          - ".template-source/distribution/bundle-profile.json"
+        depends_on: []
+        failure_mode: "平台适配器混入检查逻辑、两个平台的触发或 base 取值分叉、运行时版本与 ci-setup 脱节，或合入检查说明回到旧表述"
       - id: check.runtime-storage
         group: runtime-storage
         inputs_complete: true
@@ -1230,6 +1244,8 @@ routing:
       - scripts/ci-setup
       - scripts/lib/ci-gate.mjs
       - tests/ci-gate.test.mjs
+      - .gitlab-ci.yml
+      - tests/ci-adapters.test.mjs
     groups:
       - feature-assets
   - patterns:
@@ -4618,6 +4634,14 @@ supplemental_checks:
     depends_on: []
     when: template-source
     task_id: supplemental.ci-gate
+    source_requirement: committed
+  - id: check.ci-adapters-supplemental
+    run: node --test tests/ci-adapters.test.mjs
+    group: feature-assets
+    gate_ids: [check.verification-lifecycle]
+    depends_on: []
+    when: template-source
+    task_id: supplemental.ci-adapters
     source_requirement: committed
   - id: check.native-context-retirement
     run: node --test tests/native-context-retirement.test.mjs

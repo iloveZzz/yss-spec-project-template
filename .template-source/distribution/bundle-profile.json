@@ -42,7 +42,8 @@
       "package.json",
       "template.manifest.json",
       "template.snapshot.json",
-      ".gitmodules"
+      ".gitmodules",
+      ".gitlab-ci.yml"
     ],
     "excludePaths": [
       ".codex/hooks.json",

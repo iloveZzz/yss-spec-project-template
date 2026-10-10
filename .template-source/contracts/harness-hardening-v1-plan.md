@@ -57,7 +57,7 @@ flowchart LR
 | WP-00 | FR-015、FR-016 | L2：non-core-validator | `scripts/harness-metrics`、`scripts/lib/harness-metrics.mjs`、`tests/harness-metrics.test.mjs`、`bundle-profile.json`（排除该脚本） | 无 | — |
 | WP-01 | FR-001 | L2：permission-boundary、release-semantics、cross-repo-contract（需反例） | `.codex/config.toml`（删除）、三个子模块的同名文件（删除）、`bundle-profile.json`、`scripts/lib/agent-config-safety.mjs`、升级场景测试 | WP-00 | — |
 | WP-02 | FR-002、FR-009 | L2：core-validator | `scripts/ci-gate`、`scripts/ci-setup`、`scripts/lib/ci-gate.mjs`、`tests/ci-gate.test.mjs`、`package.json`、`template-verification-profiles.yaml`（登记新检查输入）、`bundle-profile.json`（排除新脚本） | WP-01 | — |
-| WP-03 | FR-003、FR-004 | L2：release-semantics（需反例） | `.github/workflows/template-gate.yml`、`.gitlab-ci.yml`、`.github/actions/setup-template/`、`github-workflows.md` | WP-02 | — |
+| WP-03 | FR-003、FR-004 | L2：release-semantics（需反例） | `.github/workflows/template-gate.yml`、`.gitlab-ci.yml`、`.github/actions/setup-template/`、`github-workflows.md`、`scripts/ci-setup`（`--print-versions`、Python 下限、缺 pip 补装）、`tests/ci-adapters.test.mjs`、`tests/ci-gate.test.mjs`、`template-verification-profiles.yaml`（登记新路径）、`bundle-profile.json`（排除 `.gitlab-ci.yml`） | WP-02 | — |
 | WP-04 | FR-005 | L2：local-rule、permission-boundary（需反例） | `scripts/agent-hook`、`scripts/lib/agent-hook.mjs`、`tests/agent-hook.test.mjs`、`.claude/settings.json`、`.codex/hooks.json`、`bundle-profile.json` | WP-02 | Q-003 |
 | WP-05 | FR-006 | L2：generation-semantics、cross-repo-contract | `CLAUDE.md`、`yss-skill-registry.yaml`（`projection_roots`、`runtimes`）、`scripts/lib/skill-supply-chain.mjs`、`skills-lock.json`、`.claude/skills/`（生成）、`bundle-profile.json`、`profile-skill-sync.json`、子模块对应文件 | WP-00 | Q-004 |
 | WP-06 | FR-007、FR-008 | L1：textual-only；检查脚本部分 L2：non-core-validator | `docs/process/yss-product-lifecycle-team-guide.md`、`README.md`、`skills-maintenance.md`、`digital-human-roles.md`、`scripts/verify-doc-facts`、`scripts/lib/doc-facts.mjs`、`scripts/lib/doc-facts-patterns.json`、测试、`template-verification-profiles.yaml`（登记检查输入）、`bundle-profile.json`（排除该脚本） | WP-00；检查接入 `ci-gate` 需 WP-02 | — |
@@ -104,9 +104,9 @@ flowchart LR
 
 ### WP-03 平台适配器
 
-1. GitHub：`.github/workflows/template-gate.yml`，触发 `pull_request` 与 `push: main`；步骤只有 checkout（含所需子模块）、`setup-template`（已改为调用 `scripts/ci-setup` 的薄封装）、`scripts/ci-gate`。PR 模式的 base 取 `github.event.pull_request.base.sha`。
-2. GitLab：`.gitlab-ci.yml` 一个 `template-gate` job，`rules` 覆盖 `merge_request_event` 与默认分支推送；镜像固定 Node 24；步骤为 `scripts/ci-setup` 与 `scripts/ci-gate`。MR 模式的 base 取 `CI_MERGE_REQUEST_DIFF_BASE_SHA`。
-3. GitLab 拉取 `iloveZzz` 名下子模块：先确认是否公开可读；不可读时在 GitLab 配置只读部署令牌或镜像，并写进 `github-workflows.md`。拉取失败时检查必须失败（AC-023），不得跳过。
+1. GitHub：`.github/workflows/template-gate.yml`，触发 `pull_request` 与 `push: main`；步骤只有 checkout（完整历史）、`setup-template`（只供给 Node、Python、Go 并调用 `scripts/ci-setup`，版本取自 `scripts/ci-setup --print-versions`，子模块由 `ci-setup --submodules` 初始化，原生 `yss` 由 `ci-setup --yss-commit gitlink` 从固定提交构建）、`scripts/ci-gate`。两个平台的报告目录都用 `/tmp/ci-gate`，保证报告里的命令字符串可逐步比对。PR 模式的 base 取 `github.event.pull_request.base.sha`。
+2. GitLab：`.gitlab-ci.yml` 一个 `template-gate` job，`rules` 覆盖 `merge_request_event` 与默认分支推送；镜像固定 `node:24`（Debian 12，自带 Python 3.11、无 pip、无 Go；`scripts/ci-setup` 在 root 容器内补装预检要求的 Python 3.12 与 Go）；步骤为 `scripts/ci-setup` 与 `scripts/ci-gate`；GitLab artifact 只收项目目录内文件，报告在 `ci-gate` 结束后由 `after_script` 复制进去。MR 模式的 base 取 `CI_MERGE_REQUEST_DIFF_BASE_SHA`。
+3. GitLab 拉取 `iloveZzz` 名下子模块：已确认匿名可读（2026-10-11 对三个 Profile 仓库、`yss-cli` 与主仓做 `git ls-remote` 均成功），无需令牌或镜像；若日后变为不可读，则在 GitLab 配置只读部署令牌或镜像，并写进 `github-workflows.md`。拉取失败时检查必须失败（AC-023），不得跳过。
 4. 改写 `github-workflows.md` 的“已移除”段落，登记两平台的 `template-gate` 为必需检查；正式发布段落不动。文件名保持不变，避免断链。
 5. 反例：同一个故意破坏投影的提交分别推到两个平台，确认两边都失败；再推修复提交，对比两份报告的步骤名单与退出码（AC-023）。
 6. 维护者在两个平台把 `template-gate` 设为必需检查（仓库设置，不在代码中），并分别记录 5 次耗时（NFR-002）。
@@ -221,6 +221,10 @@ flowchart LR
 | 2026-10-10 | WP-06 写范围例外 | 补登 `doc-facts-patterns.json`、`template-verification-profiles.yaml` 与 `bundle-profile.json`：与 WP-00 一样登记检查输入，并把模板源专用检查排除出实例分发 | 维护者批准执行计划 |
 | 2026-10-11 | WP-02 写范围例外 | 补登 `bundle-profile.json`：`ci-gate`、`ci-setup` 与 `lib/ci-gate.mjs` 是模板源专用检查工具，与 WP-00 / WP-06 一样排除出实例分发 | 待维护者确认 |
 | 2026-10-11 | WP-02 candidate 降为非阻断 | 按规格风险表执行：选择性 gate policy 未激活，candidate 实际退化为 `legacy-full` / `release`，其预检要求固定 yss 二进制，且 Bundle 的模板来源必须等于被验证提交；实测四个 Profile 的 Bundle 提交都是 `yss-cli/docs/source-lock.json` 的固定值（落后当前 main 16 个提交），对新提交无法在托管 runner 通过。`fast` 为必需检查并带 `--base`，candidate 只记录；转为必需的条件并入 Q-008 | 待维护者确认 |
+| 2026-10-11 | WP-03 写范围例外 | 补登 `scripts/ci-setup` 与 `tests/ci-gate.test.mjs`（适配器需要 `--print-versions`，GitLab 的 `node:24` 映像需要 Python 下限与补装 pip）、`tests/ci-adapters.test.mjs`、`template-verification-profiles.yaml`（登记新路径）和 `bundle-profile.json`（把根目录的 `.gitlab-ci.yml` 排除出实例分发，否则实例会继承一个调用不存在脚本的流水线） | 待维护者确认 |
+| 2026-10-11 | WP-03 GitLab 运行时补装 | 验证预检硬性要求 Python 恰为 3.12，且改动 `bundle-profile.json` 等路径会选中 `go -C submodules/yss-cli test`（`go.mod` 要求 go 1.27.1）。`node:24` 映像是 Debian 12（Python 3.11.2，无 pip，无 Go），按字面「步骤只有 ci-setup 与 ci-gate」在 GitLab 上跑不起来。`ci-setup` 因此在 CI 的 root 容器内补装：Python 经固定版本的 uv，Go 取 `go.mod` 指定版本并校验 go.dev 的 sha256；非 root 或非 apt 环境仍要求镜像自带。长期更稳妥的做法是维护者提供含 Node 24、Python 3.12、Go 的固定 CI 镜像 | 待维护者确认 |
+| 2026-10-11 | WP-03 Linux runner 上 fast 的已知失败 | 在 `node:24` 容器（单容器、无负载）里，`tests/verification-execution.test.mjs` 的「真实进程超时返回124…」（期望 `SIGKILL` 实得 `SIGTERM`）与「准备和主检查使用独立日志…」（退出码 1）稳定失败，macOS 本机通过；yss-cli 的 `native.yml` 也只在 `macos-15` 对 darwin/arm64 做资格。两个适配器按计划使用 Linux，改动验证基础设施的 PR 会在上面失败。待维护者决定：修这两个测试，或 GitHub 改用 `macos-15`、GitLab 指定 macOS runner | 待维护者确认 |
+| 2026-10-11 | yss-cli 源码锁落后于模板 | `yss-cli/docs/source-lock.json` 仍固定模板 `d947b648`（schema v1，`core-validator` 属 L3），而 `de5c2055` 已把维护强度合并为 L1/L2。yss-cli 的 Go 测试以固定模板为 Node 预言机，因此 `TestMaintenanceIntensityTwoLevels` 报 `Node/Go verdict differs`（已用旧模板复现、用 `cad38300` 验证通过）。需要在 yss-cli 提交更新后的锁与重新生成的 Bundle 资产，再更新本仓 gitlink；同一落后也是 candidate 的 `release-sources` 不匹配的根因之一 | 待维护者确认 |
 | 2026-10-10 | WP-06 团队指南 | `docs/process/yss-product-lifecycle-team-guide.md` 被 `.gitignore` 排除，只在维护者本地修正；文档事实检查在文件存在时扫描 | 维护者 |
 
 ## 7. 执行状态
@@ -230,5 +234,6 @@ flowchart LR
 | WP-00 | 已合并到 main | `harden/wp-00` | `harness-metrics` 与 4 个测试通过；基线已测 |
 | WP-01 | 已合并到 main | `harden/wp-01`（主仓与三个 Profile 子模块同名；子模块合并提交在各自的 `harden/integration`） | 配置已删除并加检查；AC-002 未完成（需 yss-cli 改动）；维护者需把配置抄到 `~/.codex/config.toml` |
 | WP-02 | 已合并到 main | `harden/wp-02` | `ci-gate`、`ci-setup`、`engines.node` 与 21 个测试通过；AC-003、AC-004、AC-012 已实测；`verify-doc-facts` 已接入；`ci-setup` 已在本机隔离环境实跑通过（52 秒），托管 runner 上的耗时与 GitLab 路径待 WP-03；candidate 按风险表降为非阻断，原因见第 6 节 |
-| WP-03 起 | 未开始 | — | 依赖 WP-02 |
+| WP-03 | 已提交，待合并 | `harden/wp-03` | 两个适配器、`setup-template` 薄封装、`github-workflows.md` 改写与 12 个契约测试；GitLab 任务在 `node:24` 容器里按 `.gitlab-ci.yml` 原样实跑；真实平台的 PR / MR、必需检查设置与 5 次耗时仍待维护者；Linux 上 fast 有两个已知失败测试，见第 6 节 |
+| WP-04 起 | 未开始 | — | 依赖 WP-02，已满足 |
 | WP-06 | 已合并到 main | `harden/wp-06` | 基于 main（文本修复不依赖 WP-00 代码）；三处被追踪的漂移已修，`verify-doc-facts` 与 5 个测试通过；团队指南为未追踪文件，本地已修；已随 WP-02 接入 `ci-gate` |
