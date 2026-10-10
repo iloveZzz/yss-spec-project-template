@@ -122,3 +122,12 @@ test('Schema 1/2 的同家族旧 metadata 只作 lineage，未知家族仍拒绝
   assert.throws(()=>readInstanceMetadata(f.root),/家族身份矛盾/);
  });
 });
+
+test('原生实例可以声明 claude 运行时，投影根必须与运行时一一对应', () => {
+ const none={platformSkills:[],platformManifests:{}};
+ const lock={version:3,canonicalRoot:'.agents/skills',projectionRoots:['.claude/skills'],skills:{shared:{},platform:{}}};
+ const metadata={distribution:{runtimes:['claude'],installedSkills:[]},managedFiles:{}};
+ assert.deepEqual(nativeInstalledSkillRefs(metadata,lock,none),[]);
+ assert.throws(()=>nativeInstalledSkillRefs(metadata,{...lock,projectionRoots:['.codex/skills']},none),/INSTANCE_DISTRIBUTION:.*Skill 平台范围与实例运行时不一致/);
+ assert.throws(()=>nativeInstalledSkillRefs({distribution:{runtimes:['claude','unknown-runtime'],installedSkills:[]},managedFiles:{}},lock,none),/INSTANCE_DISTRIBUTION:.*未知或重复运行时声明/);
+});

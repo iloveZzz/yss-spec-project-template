@@ -49,7 +49,7 @@ export function nativeInstalledSkillRefs(metadata, lock, { platformSkills = [], 
  const requireContract=(ok,message)=>{if(!ok)throw new TypeError('INSTANCE_DISTRIBUTION: '+message);};
  const object=value=>value&&typeof value==='object'&&!Array.isArray(value);
  const sameSet=(left,right)=>left.length===right.length&&[...left].sort().every((value,index)=>value===[...right].sort()[index]);
- const runtimeRoots={codex:'.codex/skills',cursor:'.cursor/skills',pi:'.pi/skills'};
+ const runtimeRoots={codex:'.codex/skills',cursor:'.cursor/skills',pi:'.pi/skills',claude:'.claude/skills'};
  requireContract(lock?.version===3&&lock.canonicalRoot==='.agents/skills'&&object(lock.skills?.shared)&&object(lock.skills?.platform)&&Array.isArray(lock.projectionRoots),'缺少合法原生 skills-lock 分组合同');
  const roots=lock.projectionRoots,runtimes=metadata.distribution?.runtimes??[];
  requireContract(Array.isArray(runtimes)&&new Set(runtimes).size===runtimes.length&&runtimes.every(runtime=>Object.hasOwn(runtimeRoots,runtime)),'未知或重复运行时声明');
