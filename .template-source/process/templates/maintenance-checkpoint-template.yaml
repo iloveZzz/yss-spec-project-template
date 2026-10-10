@@ -1,5 +1,5 @@
 schema_version: 2
-intensity: L3
+intensity: L2
 classification_reason: <分级理由>
 triggers: [core-validator]
 changed_assets: [<路径或资产引用>]

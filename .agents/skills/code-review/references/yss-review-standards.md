@@ -51,7 +51,7 @@ YSS 页面模块约定（YTable、YFormily、页面骨架等）走 Standards，�
 
 ## 4. Finding 分流与豁免
 
-产品切片与模板维护使用**同一闭环**；只是强度不同：切片绑定当前 Slice Implementation Contract，模板维护绑定 L1 / L2 / L3。权威字段：`review_standards_route.finding_disposition`。
+产品切片与模板维护使用**同一闭环**；只是强度不同：切片绑定当前 Slice Implementation Contract，模板维护绑定 L1 / L2。权威字段：`review_standards_route.finding_disposition`。
 
 审查者只记录 finding，不得当场改实现代码。
 

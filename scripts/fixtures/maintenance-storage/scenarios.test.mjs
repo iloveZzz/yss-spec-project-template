@@ -104,9 +104,9 @@ test('v2 candidate preserves stream, rejects overwrite, tamper and foreign works
 test('historical checkpoints cannot grant current task status; external evidence is digest bound', t => {
   const { root } = fixture(t);
   const evidence = resolveMaintenanceOutput('maintenance:research/check.log', { root }); fs.mkdirSync(path.dirname(evidence), { recursive: true }); fs.writeFileSync(evidence, 'passed\n');
-  const checkpoint = { schema_version: 2, intensity: 'L3', classification_reason: '独立夹具', triggers: ['core-validator'], changed_assets: ['fixture'], verification_evidence: [{ kind: 'self-check', command: 'fixture', result: 'pass' }, { kind: 'fresh-verification', command: 'fixture', result: 'pass', evidence_ref: 'maintenance:research/check.log', evidence_digest: digest(fs.readFileSync(evidence)) }], review_mode: 'self-check', escalation: 'none', target_state: 'implementation-ready', current_state: 'implementation-ready', verification_profile: 'fast', review_round: 0, candidate_digest: null };
+  const checkpoint = { schema_version: 2, intensity: 'L2', classification_reason: '独立夹具', triggers: ['core-validator'], changed_assets: ['fixture'], verification_evidence: [{ kind: 'self-check', command: 'fixture', result: 'pass' }, { kind: 'fresh-verification', command: 'fixture', result: 'pass', evidence_ref: 'maintenance:research/check.log', evidence_digest: digest(fs.readFileSync(evidence)) }], review_mode: 'self-check', escalation: 'none', target_state: 'implementation-ready', current_state: 'implementation-ready', verification_profile: 'fast', review_round: 0, candidate_digest: null };
   assert.equal(validateMaintenanceCheckpoint(checkpoint, { baseDir: root }).current_state, 'implementation-ready');
-  const historical = validateMaintenanceCheckpoint(checkpoint, { baseDir: root, history: true });
+  const historical = validateMaintenanceCheckpoint({ ...checkpoint, intensity: 'L3' }, { baseDir: root, history: true });
   assert.equal(historical.current_state, 'historical-only'); assert.equal(historical.execution_authorization, 'not-evaluated');
   delete checkpoint.verification_evidence[1].evidence_digest;
   assert.throws(() => validateMaintenanceCheckpoint(checkpoint, { baseDir: root }), /evidence_digest/);

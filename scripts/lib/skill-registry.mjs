@@ -252,7 +252,7 @@ function validateFindingDisposition(disposition) {
   requireStringSet(disposition.same_loop_for, ["product-slice", "template-maintenance"], "finding_disposition.same_loop_for");
   requireObject(disposition.intensity, "finding_disposition.intensity");
   if (disposition.intensity["product-slice"] !== "slice-contract") fail("产品切片审查强度必须绑定 slice-contract");
-  if (disposition.intensity["template-maintenance"] !== "L1-L2-L3") fail("模板维护审查强度必须绑定 L1-L2-L3");
+  if (disposition.intensity["template-maintenance"] !== "L1-L2") fail("模板维护审查强度必须绑定 L1-L2");
   if (disposition.reviewer_write_implementation !== "forbidden") fail("审查者不得写实现");
   const repair = disposition.repair_then_targeted_rereview;
   requireObject(repair, "finding_disposition.repair_then_targeted_rereview");

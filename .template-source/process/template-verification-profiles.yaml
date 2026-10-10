@@ -6,6 +6,48 @@ profiles:
     always_groups:
       - hygiene
     checks:
+      - id: check.maintenance-counterexample
+        group: maintenance
+        inputs_complete: true
+        input_patterns:
+          - ".template-source/process/maintenance-intensity*.yaml"
+          - "scripts/lib/maintenance-intensity.mjs"
+          - "scripts/lib/maintenance-counterexample.mjs"
+          - "tests/maintenance-counterexample.test.mjs"
+          - "tests/scenarios/verify-maintenance-risk-scenarios.mjs"
+          - "scripts/verify-maintenance-risk-scenarios"
+        depends_on: []
+        failure_mode: "两级触发项遗漏、当前 L3 被接受、三类强制反例缺失或运行证据伪造"
+      - id: check.5fa31f4262e122b1
+        group: maintenance
+        inputs_complete: true
+        input_patterns:
+          - ".template-source/process/maintenance-intensity*.yaml"
+          - ".template-source/process/templates/maintenance-checkpoint-template.yaml"
+          - "scripts/lib/maintenance-intensity.mjs"
+          - "scripts/verify-maintenance-checkpoint"
+          - "scripts/verify-maintenance-intensity-scenarios"
+          - "tests/scenarios/verify-maintenance-intensity-scenarios.mjs"
+        depends_on: []
+        failure_mode: "历史等级、证据和审查语义被重解释，或当前 L2 审查模式和状态门禁失效"
+      - id: check.maintenance-storage
+        group: maintenance
+        inputs_complete: true
+        input_patterns:
+          - "scripts/lib/maintenance-intensity.mjs"
+          - "scripts/fixtures/maintenance-storage/scenarios.test.mjs"
+        depends_on: []
+        failure_mode: "历史只读记录错误授予当前状态，或仓外证据未绑定当前字节"
+      - id: check.a5802dc214ecfcda
+        run: "node tests/scenarios/verify-maintenance-review-workflow-scenarios.mjs"
+        group: maintenance
+        inputs_complete: true
+        input_patterns:
+          - "scripts/lib/maintenance-intensity.mjs"
+          - "tests/scenarios/verify-maintenance-review-workflow-scenarios.mjs"
+          - "scripts/verify-maintenance-review-workflow-scenarios"
+        depends_on: []
+        failure_mode: "当前 L2 正式审查的候选绑定、任务包或发布门禁未闭合"
       - id: "check.profile-skills-preparation"
         run: "node --test .template-source/tooling/node/test/profile-skill-sync.test.mjs .template-source/tooling/node/test/profile-skills-preparation.test.mjs .template-source/tooling/node/test/profile-skills-standalone.test.mjs"
         group: "skills"
@@ -90,6 +132,7 @@ core_escalation_patterns:
   - AGENTS.md
   - yss-project.yaml
   - .template-source/process/maintenance-intensity.yaml
+  - .template-source/process/maintenance-intensity-v1.yaml
   - .template-spec/process/lifecycle-registry.yaml
   - scripts/verify-template
   - scripts/verify-template-fast
@@ -198,6 +241,7 @@ required_files:
   - .template-spec/process/lifecycle-registry-baseline-v1.json
   - .template-source/process/template-verification-profiles.yaml
   - .template-source/process/maintenance-intensity.yaml
+  - .template-source/process/maintenance-intensity-v1.yaml
   - .template-spec/process/schemas/digital-human-task-package.schema.json
   - .template-source/process/schemas/maintenance-review-record.schema.json
   - .template-spec/process/schemas/lifecycle-checkpoint.schema.json
@@ -1105,7 +1149,7 @@ groups:
         id: check.maintenance-counterexample
       - run: scripts/verify-maintenance-intensity-scenarios
         id: check.5fa31f4262e122b1
-      - run: node scripts/verify-maintenance-review-workflow-scenarios
+      - run: node tests/scenarios/verify-maintenance-review-workflow-scenarios.mjs
         id: check.a5802dc214ecfcda
   existing-project-delivery:
     commands:

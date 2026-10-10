@@ -218,7 +218,7 @@ function findingDisposition(overrides = {}) {
     same_loop_for: ["product-slice", "template-maintenance"],
     intensity: {
       "product-slice": "slice-contract",
-      "template-maintenance": "L1-L2-L3"
+      "template-maintenance": "L1-L2"
     },
     reviewer_write_implementation: "forbidden",
     repair_then_targeted_rereview: {

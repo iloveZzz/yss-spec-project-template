@@ -9,33 +9,35 @@ import {readRepositoryMode} from './repository-mode.mjs';
 
 import { validateCounterexample } from "./maintenance-counterexample.mjs";
 
-const LEVELS = ["L1", "L2", "L3"];
+const LEVELS = ["L1", "L2"];
+const HISTORICAL_LEVELS = [...LEVELS, "L3"];
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const INTENSITY_POLICY = path.join(root, ".template-source/process/maintenance-intensity.yaml");
 
 const REQUIRED_EVIDENCE = {
   L1: ["relevant-check"],
-  L2: ["counterexample", "fresh-verification", "self-check"],
-  L3: ["fresh-verification", "self-check"]
+  L2: ["fresh-verification", "self-check"]
 };
+const HISTORICAL_EVIDENCE = { ...REQUIRED_EVIDENCE, L2: ["counterexample", ...REQUIRED_EVIDENCE.L2], L3: REQUIRED_EVIDENCE.L2 };
 
 const REVIEW_MODES = {
   L1: new Set(["self-check", "human-checkpoint"]),
-  L2: new Set(["self-check", "human-checkpoint", "focused-independent"]),
-  L3: new Set(["self-check", "human-checkpoint", "focused-independent", "formal-independent"])
+  L2: new Set(["self-check", "human-checkpoint", "focused-independent", "formal-independent"])
 };
+const HISTORICAL_REVIEW_MODES = { ...REVIEW_MODES, L2: new Set(["self-check", "human-checkpoint", "focused-independent"]), L3: REVIEW_MODES.L2 };
 
 function ensure(condition, message) {
   if (!condition) throw new TypeError(message);
 }
 
-function loadTriggerLevels() {
-  const document = parseDocument(readFileSync(INTENSITY_POLICY, "utf8"), { uniqueKeys: true });
+function loadTriggerLevels(history = false) {
+  const levels = history ? HISTORICAL_LEVELS : LEVELS;
+  const document = parseDocument(readFileSync(history ? path.join(root, ".template-source/process/maintenance-intensity-v1.yaml") : INTENSITY_POLICY, "utf8"), { uniqueKeys: true });
   ensure(document.errors.length === 0, document.errors[0]?.message || "维护强度策略无法解析");
   const policy = document.toJS({ maxAliasCount: 0 });
-  ensure(policy?.schema_version === 1 && LEVELS.includes(policy.default_level) && policy.levels && typeof policy.levels === "object", "维护强度策略 schema 无效");
+  ensure(policy?.schema_version === (history ? 1 : 2) && levels.includes(policy.default_level) && policy.levels && typeof policy.levels === "object" && !Array.isArray(policy.levels) && Object.keys(policy.levels).length === levels.length && Object.keys(policy.levels).every(level => levels.includes(level)), "维护强度策略 schema 无效");
   const pairs = [];
-  for (const level of LEVELS) {
+  for (const level of levels) {
     const triggers = policy.levels[level]?.triggers;
     ensure(Array.isArray(triggers) && triggers.length > 0, `维护强度策略缺少 ${level} triggers`);
     for (const trigger of triggers) {
@@ -49,25 +51,25 @@ function loadTriggerLevels() {
   return { defaultLevel: policy.default_level, map, counterexamples: policy.counterexample_triggers };
 }
 
-const triggerLevels = loadTriggerLevels();
+let triggerLevels;
 
-function levelRank(level) {
-  return LEVELS.indexOf(level);
-}
-
-export function minimumIntensity(triggers) {
+export function minimumIntensity(triggers, { history = false } = {}) {
+  const levels = history ? HISTORICAL_LEVELS : LEVELS;
+  const policy = history ? loadTriggerLevels(true) : (triggerLevels ??= loadTriggerLevels());
   ensure(Array.isArray(triggers), "triggers 必须是数组");
-  if (triggers.length === 0) return triggerLevels.defaultLevel;
+  if (triggers.length === 0) return policy.defaultLevel;
   let required = "L1";
   for (const trigger of triggers) {
-    ensure(triggerLevels.map.has(trigger), `未知 trigger: ${trigger}`);
-    const candidate = triggerLevels.map.get(trigger);
-    if (levelRank(candidate) > levelRank(required)) required = candidate;
+    ensure(policy.map.has(trigger), `未知 trigger: ${trigger}`);
+    const candidate = policy.map.get(trigger);
+    if (levels.indexOf(candidate) > levels.indexOf(required)) required = candidate;
   }
   return required;
 }
 
 export function validateMaintenanceCheckpoint(data, options = {}) {
+  const history = options.history === true;
+  const levels = history ? HISTORICAL_LEVELS : LEVELS;
   ensure(data && typeof data === "object" && !Array.isArray(data), "checkpoint 必须是对象");
   const v1Fields = ["schema_version", "intensity", "classification_reason", "triggers", "changed_assets", "verification_evidence", "review_mode", "escalation"];
   const v2Fields = [...v1Fields, "target_state", "current_state", "verification_profile", "review_round", "candidate_digest"];
@@ -75,11 +77,11 @@ export function validateMaintenanceCheckpoint(data, options = {}) {
   const unknown = Object.keys(data).filter((key) => !exactFields.includes(key));
   ensure(unknown.length === 0, `checkpoint 包含未知字段: ${unknown.join(", ")}`);
   ensure([1, 2].includes(data.schema_version), "schema_version 必须为 1 或 2");
-  ensure(LEVELS.includes(data.intensity), "intensity 必须是 L1、L2 或 L3");
+  ensure(levels.includes(data.intensity), "当前 intensity 必须是 L1 或 L2；L3 仅供 --history 历史读取");
   ensure(typeof data.classification_reason === "string" && data.classification_reason.trim(), "classification_reason 不能为空");
   ensure(Array.isArray(data.changed_assets) && data.changed_assets.length > 0 && data.changed_assets.every((item) => typeof item === "string" && item.trim()), "changed_assets 必须包含至少一个路径或资产引用");
-  const minimum = minimumIntensity(data.triggers);
-  ensure(levelRank(data.intensity) >= levelRank(minimum), `${data.triggers.join(", ") || "默认"} 至少要求 ${minimum}，不得声明为 ${data.intensity}`);
+  const minimum = minimumIntensity(data.triggers, { history });
+  ensure(levels.indexOf(data.intensity) >= levels.indexOf(minimum), `${data.triggers.join(", ") || "默认"} 至少要求 ${minimum}，不得声明为 ${data.intensity}`);
   ensure(typeof data.escalation === "string" && data.escalation.trim(), "escalation 必须说明 none 或升级原因");
   ensure(Array.isArray(data.verification_evidence), "verification_evidence 必须是数组");
   const kinds = new Set();
@@ -97,22 +99,25 @@ export function validateMaintenanceCheckpoint(data, options = {}) {
     }
     kinds.add(evidence.kind);
   }
-  const legacyFormalL3 = data.intensity === "L3" && data.review_mode === "formal-independent";
-  const reviewKind = legacyFormalL3 ? "formal-independent-review" : data.review_mode === "focused-independent" ? "focused-independent-review" : null;
+  const legacyFormalL3 = history && data.intensity === "L3" && data.review_mode === "formal-independent";
+  const reviewKind = data.review_mode === "formal-independent" ? "formal-independent-review" : data.review_mode === "focused-independent" ? "focused-independent-review" : null;
   if (data.schema_version === 2) validateCheckpointState(data, kinds, reviewKind,options);
   const requiredEvidence = legacyFormalL3
     ? ["red", "green", "refactor", "pressure-scenario", "fresh-verification", "formal-independent-review"]
-    : [...REQUIRED_EVIDENCE[data.intensity].filter((kind) => !(reviewKind && kind === "self-check")), ...(reviewKind ? [reviewKind] : [])];
+    : [...(history ? HISTORICAL_EVIDENCE : REQUIRED_EVIDENCE)[data.intensity].filter((kind) => !(reviewKind && kind === "self-check")), ...(reviewKind ? [reviewKind] : [])];
   for (const required of requiredEvidence) {
     const pendingByV2State = data.schema_version === 2 && data.current_state !== "release-ready" && required === reviewKind;
     if ((options.allowPendingReview === true || pendingByV2State) && required === reviewKind) continue;
     ensure(kinds.has(required), `${data.intensity} 缺少 ${required} 证据`);
   }
-  ensure(REVIEW_MODES[data.intensity].has(data.review_mode), `${data.intensity} 不允许 review_mode=${data.review_mode}`);
-  if (!options.history) for (const trigger of data.triggers.filter(x => triggerLevels.counterexamples.includes(x))) {
-    const records = data.verification_evidence.filter(x => x.kind === "counterexample" && x.trigger === trigger);
+  ensure((history ? HISTORICAL_REVIEW_MODES : REVIEW_MODES)[data.intensity].has(data.review_mode), `${data.intensity} 不允许 review_mode=${data.review_mode}`);
+  if (!history) for (const trigger of data.triggers.filter(x => triggerLevels.counterexamples.includes(x))) {
+    const records = data.verification_evidence.filter(x => x.kind === "counterexample" && x.trigger === trigger && Object.hasOwn(x, "run_ref"));
     ensure(records.length > 0, `${trigger} 缺少定向 counterexample 运行证据`);
-    for (const evidence of records) validateCounterexample(evidence, { root: options.baseDir || root, trigger });
+  }
+  if (!options.history) for (const evidence of data.verification_evidence.filter(x => x.kind === "counterexample" && Object.hasOwn(x, "run_ref"))) {
+    ensure(data.triggers.includes(evidence.trigger), "自愿反例证据的 trigger 必须属于当前维护范围");
+    validateCounterexample(evidence, { root: options.baseDir || root, trigger: evidence.trigger });
   }
   return { historical_only: options.history === true, execution_authorization: "not-evaluated", intensity: data.intensity, minimum_intensity: minimum, current_state: options.history ? "historical-only" : data.schema_version === 2 ? data.current_state : "release-ready" };
 }

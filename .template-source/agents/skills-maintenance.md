@@ -61,7 +61,7 @@
    scripts/verify-template-fast --plan
    ```
 
-   计划适用于本轮时执行 fast；若扩大到全量，按裁剪合同改做明确范围的定向检查，记录实际命令、退出码、选择依据与未覆盖项，不把定向结果写成完整 profile 通过。未知影响先调查；L3、main 分支或缺发布 baseline 不自动触发日常全量。自检由 `maintaining-skills` 承接，独立审查与候选冻结只按明确选择或既有强制条件执行。
+   计划适用于本轮时执行 fast；若扩大到全量，按裁剪合同改做明确范围的定向检查，记录实际命令、退出码、选择依据与未覆盖项，不把定向结果写成完整 profile 通过。未知影响先调查；维护等级、main 分支或缺发布 baseline 不自动触发日常全量。自检由 `maintaining-skills` 承接，独立审查与候选冻结只按明确选择或既有强制条件执行。
 
    PR 候选使用 `scripts/verify-template-candidate --base <完整 SHA>`；main 集成验证和正式发布任务使用 `scripts/verify-template`，并遵守对应完整适用集合、资格与回退规则。三个入口属于不同任务边界，不依次作为每次日常交付的固定检查。
 

@@ -20,7 +20,7 @@ API 先 OAS 3.1 YAML Draft、锁定工具校验、独立审查与 Freeze，再�
 
 `template-source` 不生成产品阶段资产。按影响面维护事实源、派生、分发与证据；Skill 用 `maintaining-skills`，仅改 canonical `.agents/skills`，生成投影并更新锁。
 
-按裁剪文档和 `.template-source/process/maintenance-intensity.yaml` 分 L1/L2/L3。日常定向验证直接/传递依赖，交付 `implementation-ready`。先看 `scripts/verify-template-fast --plan`；扩大到全量时按明确范围定向检查，不默认跑发布套件。候选/main集成/发布的入口、资格与覆盖由 `.template-source/process/template-verification-profiles.yaml` 定义，定向结果不能冒充整体通过。
+按裁剪文档和 `.template-source/process/maintenance-intensity.yaml` 分 L1/L2。日常定向验证直接/传递依赖，交付 `implementation-ready`。先看 `scripts/verify-template-fast --plan`；扩大到全量时按明确范围定向检查，不默认跑发布套件。候选/main集成/发布的入口、资格与覆盖由 `.template-source/process/template-verification-profiles.yaml` 定义，定向结果不能冒充整体通过。
 
 ## 条件入口与边界
 

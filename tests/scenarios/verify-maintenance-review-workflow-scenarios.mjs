@@ -58,7 +58,7 @@ try {
   mkdirSync(path.join(fixtureRoot,'reviews'));
   const checkpoint={
     schema_version: 2,
-    intensity: "L3",
+    intensity: "L2",
     classification_reason: "验证审查任务包生成",
     triggers: ["core-validator"],
     changed_assets: ["scripts/lib/template-verification.mjs"],

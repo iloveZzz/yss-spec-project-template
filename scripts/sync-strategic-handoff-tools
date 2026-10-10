@@ -86,9 +86,9 @@ if(!existsSync(path.join(root,checkpointWire))||!checkpointBytes.equals(readFile
 shared.push('scripts/lib/native-context.mjs','scripts/verify-approval-record',checkpointWire,'scripts/project-ci','scripts/project-ci-transition','scripts/lib/project-ci-install.mjs','scripts/lib/project-governance.mjs','scripts/lib/governance-io.mjs','scripts/lib/checkpoint-boundary.mjs','scripts/lifecycle-status','scripts/lib/lifecycle-status.mjs','.template-spec/process/project-ci.md');
 shared.push('scripts/verify-business-tickets','scripts/lib/business-tickets.mjs','scripts/lib/business-ticket-lifecycle.mjs','.template-spec/process/business-tickets.md','.template-spec/process/schemas/business-tickets-v1.schema.json','.template-spec/templates/business-ticket-template.md','.template-spec/templates/business-ticket-set-template.yaml','.template-spec/templates/business-ticket-review-template.yaml',...readdirSync(path.join(root,'scripts/fixtures/business-tickets')).map(name=>`scripts/fixtures/business-tickets/${name}`));
 shared.push('scripts/feature-assets','scripts/lib/feature-assets.mjs','.template-spec/process/feature-assets.md','.template-spec/templates/local-parent-ticket-template.md');
-// Portable maintenance validators consume this policy at module load time.
-// Keep its risk triggers in the same generated closure as the shared tooling.
+// Keep current and frozen historical policies in the validators' shared closure.
 shared.push('.template-source/process/maintenance-intensity.yaml');
+shared.push('.template-source/process/maintenance-intensity-v1.yaml');
 shared.push('.template-source/process/schemas/maintenance-review-record.schema.json');
 // Shared vendor bytes need the same locked builder in each source Profile.
 shared.push('.template-source/tooling/node/package.json','.template-source/tooling/node/pnpm-lock.yaml','.template-source/tooling/node/scripts/build-vendor.mjs',...['yaml','xml','markdown'].map(kind=>`.template-source/tooling/node/vendor-entry-${kind}.mjs`));

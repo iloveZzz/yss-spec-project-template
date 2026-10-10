@@ -115,6 +115,7 @@ evidence:
   - id: evidence.maintenance-intensity-checkpoint
     name: 模板维护强度 checkpoint
     description: template-source 变更的 L1 / L2 / L3 分级、触发项、最低验证证据、review 模式和升级记录。
+    public_description: 当前 template-source 按 maintenance-intensity.yaml 的 L1 / L2 分级，记录触发项、最低验证证据、review 模式和升级依据。
   - id: evidence.repository-identity-check
     name: 仓库身份校验结果
     description: yss-project.yaml 的合法性与 repository_mode 裁决。
@@ -417,13 +418,14 @@ work_units:
     input: 变更仓库、强度分级与对应最低证据。
     output: 命令输出与证据。
     completion: L1 完成相关检查；L2 完成最小反例、维护者自检与本轮 fresh verification；L3 完成维护者自检与本轮 fresh verification，正式发布前另运行完整 scripts/verify-template。
-    public_completion: 日常完成本轮影响及依赖的定向检查、分级反例与维护者自检；fast 计划扩大到全量时记录范围并改做定向检查，不冒充完整 profile 通过。main 集成验证与正式发布另运行 scripts/verify-template；其完整适用集合、baseline、资格及 legacy-full 回退由验证 profile 核验。
+    public_completion: L1 完成相关检查；L2 完成维护者自检与本轮 fresh verification，权限边界、生命周期门禁、发布语义逐项补实际反例。日常完成本轮影响及依赖的定向检查；fast 计划扩大到全量时记录范围并改做定向检查，不冒充完整 profile 通过。main 集成验证与正式发布另运行 scripts/verify-template；其完整适用集合、baseline、资格及 legacy-full 回退由验证 profile 核验。
   - id: work-unit.intensity-aware-review-v2
     name: 分级审查
     scope: template-source
     input: 变更 diff、强度分级与验证证据。
     output: 维护者自检结论与阻断项；按需记录聚焦独立审查结果。
     completion: 已完成命中等级要求的维护者自检并处理阻断项；独立审查仅在另行触发时执行，不由 L2 或 L3 自动强制。
+    public_completion: 已完成当前 L1 / L2 要求的自检并处理阻断项；独立审查仅在另行触发时执行，不由维护等级自动强制。
   - id: work-unit.release-and-rollback
     name: 发布与回滚
     scope: template-source

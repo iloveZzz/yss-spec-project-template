@@ -31,4 +31,4 @@ Host-authorized focused checks establish only their stated implementation scope.
 
 Authoring guidance reviewed on 2026-09-16: [OpenAI's Astra Skills guidance](https://developers.openai.com/blog/rethinking-skills-and-prompts-for-gpt-6-astra) and [Codex Skills documentation](https://developers.openai.com/codex/skills). These support concise discovery and conditional loading; repository-specific gates remain local decisions.
 
-本仓模板维护的定向反例与历史兼容按 `.template-spec/process/harness-process-tailoring.md` 及其引用的维护强度策略执行；不要把自检级别替代为新的通用人工批准要求。
+本仓普通模板维护不强制修改前失败或独立反例包；风险触发的实际反例、普通回归、自愿运行证据与历史兼容按 `.template-spec/process/harness-process-tailoring.md` 及其引用的维护强度策略执行；不要把自检级别替代为新的通用人工批准要求。

@@ -58,16 +58,15 @@ Fresh Verification 是当前范围的真实验证，不等于全仓检查。按�
 | 强度 | 权威触发项 | 最低验证证据 | Review |
 |---|---|---|---|
 | L1 | `maintenance-intensity.yaml` 的 `levels.L1.triggers` | 至少一项与变更直接相关的实际检查 | `self-check` 或显式 `human-checkpoint` |
-| L2 | `maintenance-intensity.yaml` 的 `levels.L2.triggers`，或该策略的 `default_level` | 修改前可失败的最小反例、维护者自检，以及本轮 fresh verification | 维护者自检；可按需发起 `focused-independent` 聚焦审查 |
-| L3 | `maintenance-intensity.yaml` 的 `levels.L3.triggers` | 维护者自检与本轮 fresh verification；正式发布另执行一次完整 `scripts/verify-template` | 日常不要求独立审查；发布证据由维护者提供 |
+| L2 | `maintenance-intensity.yaml` 的 `levels.L2.triggers`，或该策略的 `default_level` | 维护者自检与本轮 fresh verification | 维护者自检；可按需发起 `focused-independent` 聚焦审查 |
 
 判定规则：
 
 1. 等级只由 `maintenance-intensity.yaml` 计算；未给出 trigger 时使用该策略的 `default_level`，未知 trigger 必须更新策略后才可验证。
 2. 实施者可先分级，不要求 L1/L2 预批准；发现新影响时立即更新 `escalation`、重新分级并补齐证据。
-3. 发布、合并或阶段完成时按整体候选重新判定；不得把共同改变整体语义的修改拆成多个 L1/L2 规避 L3。
-4. RED 用于证明行为差异。L1 不人为构造失败；L2 可使用已有失败、最小 fixture 或现有测试修改前失败；L3 不再强制构造完整 RED/GREEN/REFACTOR/压力场景，记录维护者自检和 fresh verification 即可。
-5. 模板正式发布仍执行一次完整 `scripts/verify-template`，但不因 L3 额外冻结候选或派发正式独立审查。
+3. 发布、合并或阶段完成时按整体候选重新判定；不得把共同改变整体语义的修改拆成多个 L1 规避 L2。
+4. L1 不人为构造失败；普通 L2 不要求通用反例包或完整 RED/GREEN/REFACTOR/压力场景，记录维护者自检和 fresh verification。命中策略 `counterexample_triggers` 的风险仍逐项提供实际拒绝证据；已有回归中的拒绝、边界和恢复场景继续按影响面验证。
+5. 模板正式发布仍执行一次完整 `scripts/verify-template`，但维护等级不额外触发候选冻结或正式独立审查。
 6. 模板维护与产品切片使用同一 finding 闭环：`violation` / 机器检查失败 / 适用行空白由实施者修复后，按差异影响定向重新验证和复审；`drift` / `new_impacts` 先查明行为、依据和依赖变化，再更新影响面、合同及等级，禁止在旧合同或旧 checkpoint 上继续编码。所有结果重新绑定当前候选；未受影响结论保留可核验的复用依据，不以全轴复审替代调查。审查者不得写实现。未命中的条件项才 `not-applicable`；命中后不得豁免。
 
 ## 5. 上下文、反证与质量基线裁剪
@@ -78,9 +77,9 @@ Fresh Verification 是当前范围的真实验证，不等于全仓检查。按�
 - 只有命中高风险影响时才要求 Doubt-Driven 在途反证：API / 数据迁移、跨仓契约、发布回滚、实际改变的安全行为、生命周期或生成语义。反证写入现有决策 / 架构 / 契约 / 发布审查记录，不新增生命周期阶段；缺少反证、证据不足或残余风险未处理即阻断。
 - Wayfinder 是超长工作的可选规划模式，不改变阶段、门禁或 Ticket 状态；地图收敛后按 `wayfinder → handoff → to-spec` 返回主链。
 
-模板维护默认停在 `implementation-ready`。L1/L2/L3 均不强制独立审查、候选冻结或三轴任务包；分级只决定验证强度。维护者自检和发布前完整验证闭合后才能成为 `release-ready`，外部生成器集成与兼容性检查仍须通过，实际发布由生物人明确发起。按需独立审查不得自审，也不得用请求代替通过结论。三个核验入口由 `.template-source/process/template-verification-profiles.yaml` 统一定义：
+模板维护默认停在 `implementation-ready`。L1/L2 均不强制独立审查、候选冻结或三轴任务包；分级只决定验证强度。维护者自检和发布前完整验证闭合后才能成为 `release-ready`，外部生成器集成与兼容性检查仍须通过，实际发布由生物人明确发起。按需独立审查不得自审，也不得用请求代替通过结论。三个核验入口由 `.template-source/process/template-verification-profiles.yaml` 统一定义：
 
-日常交付执行本轮改动及直接 / 传递依赖的定向检查，补齐命中等级的实际证据。不因交付措辞、L3、当前分支为 main 或缺少发布 baseline 自动运行全量，也不依次运行三个入口。先看 fast 的 `--plan`；若计划扩大到全量，日常交付使用定向检查并记录选择依据、范围、实际命令 / 退出码和未覆盖风险。未知影响先调查，不用全量兜底，也不把定向通过写成 fast / candidate / release 整体通过；正式任务选中的检查不得手工删除。
+日常交付执行本轮改动及直接 / 传递依赖的定向检查，补齐命中等级的实际证据。不因交付措辞、维护等级、当前分支为 main 或缺少发布 baseline 自动运行全量，也不依次运行三个入口。先看 fast 的 `--plan`；若计划扩大到全量，日常交付使用定向检查并记录选择依据、范围、实际命令 / 退出码和未覆盖风险。未知影响先调查，不用全量兜底，也不把定向通过写成 fast / candidate / release 整体通过；正式任务选中的检查不得手工删除。
 
 - `scripts/verify-template-fast`：按 Git 影响面编制并执行计划；核心核验资产变化或资格不足时，运行器仍保留完整回退，未知路径在计划阶段拒绝。先据上述日常规则决定是否执行该计划，或改做有明确范围的定向检查。来源仍为当前工作树，支持 `implementation-ready`；发布资格另核验。
 - `scripts/verify-template-candidate --base <完整 SHA>`：候选包含 base 至 HEAD 的提交差异、index、工作树及未跟踪路径；显式文件列表不能缩小该集合。PR 默认使用该入口，名称不表示必须冻结候选或提供审查任务包。
@@ -92,7 +91,7 @@ G01–G20 是风险结论的展示编号，不增加生命周期门禁。检查�
 
 ```yaml
 schema_version: 2
-intensity: L1 | L2 | L3
+intensity: L1 | L2
 classification_reason: <分级理由>
 triggers: [<可观察触发项>]
 changed_assets: [<路径或资产引用>]
@@ -100,7 +99,7 @@ verification_evidence:
   - kind: self-check | relevant-check | counterexample | red | green | refactor | pressure-scenario | fresh-verification | focused-independent-review | formal-independent-review
     command: <本轮实际命令或可读取证据引用>
     result: pass
-review_mode: self-check | human-checkpoint | focused-independent | formal-independent # 日常使用 self-check；独立审查按需，历史 formal 记录只读兼容
+review_mode: self-check | human-checkpoint | focused-independent | formal-independent # 日常使用 self-check；L2 独立审查按需，formal 保留显式兼容路径
 escalation: none | <升级原因和原等级>
 target_state: implementation-ready | review-ready | release-ready
 current_state: implementation-ready | review-ready | release-ready | needs-human
@@ -109,11 +108,25 @@ review_round: 0 | 1 | 2
 candidate_digest: null | <sha256>
 ```
 
-使用 `scripts/verify-maintenance-checkpoint <file>` 或通过 stdin 传入 YAML / JSON 做只读校验。日常 `implementation-ready` 使用 fast、`review_round: 0`、`candidate_digest: null`；这里的 profile 表示交付层级，实际执行范围由逐条证据声明，定向结果不冒充整套 profile 通过。L2 必须有 counterexample、fresh-verification、self-check；L3 必须有 fresh-verification、self-check；命中 `maintenance-intensity.yaml.counterexample_triggers` 的每项风险还必须有对应实际 counterexample；这些证据不得因“待审”而跳过。L1 至少有 relevant-check。
+使用 `scripts/verify-maintenance-checkpoint <file>` 或通过 stdin 传入 YAML / JSON 做只读校验。日常 `implementation-ready` 使用 fast、`review_round: 0`、`candidate_digest: null`；这里的 profile 表示交付层级，实际执行范围由逐条证据声明，定向结果不冒充整套 profile 通过。L2 必须有 fresh-verification、self-check；命中 `maintenance-intensity.yaml.counterexample_triggers` 的每项风险还须有对应实际 counterexample，必要证据不得因“待审”而跳过。L1 至少有 relevant-check。
+
+当前维护策略 schema v2 只定义 L1/L2，L1 有 3 项触发、L2 有 9 项具体影响触发，默认仍为 L2。冻结的 `maintenance-intensity-v1.yaml` 仅供 `--history` 按原映射和证据规则读取历史 L1/L2/L3；当前校验拒绝 L3，不自动改写旧批准、状态或摘要。旧消费者不支持策略 v2 时明确拒绝并升级，不补回 L3 绕过。
+
+四项原判级标签已退役；当前记录使用下列替代归类，不新增别名或自动降级：
+
+| 退役标签 | 当前归类与保留检查 |
+|---|---|
+| `ticket-state` | 普通工单规则用 `local-rule`；准入、放行、阶段流转或完成条件改变用 `lifecycle-gate`；涉及执行权限同时用 `permission-boundary` |
+| `historical-important-escape` | 按实际缺陷选具体影响项；历史漏检写入问题说明和回归依据，原缺陷回归仍执行 |
+| `aggregate-behavior-change` | 选择全部实际命中的具体影响项，整体按 L2；每项强制风险分别提供真实反例，覆盖直接及传递消费者 |
+| `release-candidate` | 使用现有目标状态、验证 profile、候选摘要及正式合同；修改发布放行语义才选择 `release-semantics`，候选/main/发布覆盖不缩减 |
+
+不得用空 triggers 或普通标签遮蔽已识别的权限、流转或发布风险。携带退役标签的旧 L2 当前记录会被拒绝；继续工作时先保存原字节，重新分析影响并更新本轮记录及证据，不复制旧批准、发布状态或候选摘要。政策输入改变时重验受影响证据。`--history` 使用冻结 v1 的原三级映射，不保证旧两级 L2 记录通过；旧两级记录仅审计时保留其原政策、源码和输出，不授予当前执行资格。
+
 
 自检路径的 `release-ready` 使用 release、`review_round: 0`、`candidate_digest: null`，并提供恰好一条 `final-release-verification`，其 command 为 `scripts/verify-template`；实际参数、固定来源、适用集合、baseline 和资格绑定由所引用报告核验。监督入口必须观察 worker 关闭后的实际成功退出，且 `input_drift=false`、`unexecuted=[]`，缺日志、缺结果或不可观察退出均拒绝。该 checkpoint 只表示维护验证就绪，不代替固定版本 CLI 集成、兼容证据或实际发布授权。
 
-旧候选协议保留为显式独立审查及历史证据的兼容路径：`review-ready` 绑定候选、candidate / initial-release-verification 和任务包；`release-ready` 再绑定独立审查结论与 final-release-verification。仅显式采用该路径时使用 `scripts/prepare-maintenance-review` 的 Standards、Spec、Lead 任务包和最多两轮审查；第二轮未收敛时既有 `scripts/evaluate-maintenance-review-round` 保留 `needs-human`，不自动启动第三轮，也不改写历史状态。普通流程不启用该兼容限制；主控仍将阻塞区分为专业等待、修复 / 路由或真实决定缺失，只有最后一类需要资产展示后的用户回复。两轮内同样执行差异分析、定向复审和当前候选重绑定，不默认全轴重跑。这些工具不由日常 CI 自动调用，不构成 L1/L2/L3 强制要求；`judgement-call` 进入后续 backlog，不能增加事实源未规定的硬要求。
+旧候选协议保留为显式独立审查及历史证据的兼容路径：`review-ready` 绑定候选、candidate / initial-release-verification 和任务包；`release-ready` 再绑定独立审查结论与 final-release-verification。仅显式采用该路径时使用 `scripts/prepare-maintenance-review` 的 Standards、Spec、Lead 任务包和最多两轮审查；第二轮未收敛时既有 `scripts/evaluate-maintenance-review-round` 保留 `needs-human`，不自动启动第三轮，也不改写历史状态。普通流程不启用该兼容限制；主控仍将阻塞区分为专业等待、修复 / 路由或真实决定缺失，只有最后一类需要资产展示后的用户回复。两轮内同样执行差异分析、定向复审和当前候选重绑定，不默认全轴重跑。这些工具不由日常 CI 自动调用，不构成 L1/L2 强制要求；`judgement-call` 进入后续 backlog，不能增加事实源未规定的硬要求。
 
 触发项 ID 与最低等级只由 `maintenance-intensity.yaml` 维护；未知触发项必须先更新策略和场景，不能静默接受。
 
@@ -121,12 +134,12 @@ Worktree 候选使用 `scripts/capture-maintenance-candidate --output <目录>` 
 
 固定远程模板输入可使用 `scripts/cache-template-commit --repository <remote-url> --commit <40位commit>`。缓存键仅由 URL 与 commit 构成，每次命中仍复核 metadata 和 Git object hash；缓存目录不进入 Git 或正式证据。
 
-`focused-independent-review` 与 `formal-independent-review` 的 `command` 必须引用可读取的审查结论。L1/L2/L3 日常新记录使用维护者自检；仅主动选择独立审查时创建对应记录；正式记录使用 `.template-source/process/schemas/maintenance-review-record.schema.json`，旧结构化记录仅兼容读取；历史专用 Markdown 白名单入口已退役。审查请求、实施者自述、否定裁决、伪造或非规范候选流、无效任务包、未关闭 findings 或 symlink 越界证据都会被拒绝。可用 `scripts/verify-maintenance-review-record` 单独校验历史记录。
+`focused-independent-review` 与 `formal-independent-review` 的 `command` 必须引用可读取的审查结论。L1/L2 日常新记录使用维护者自检；仅主动选择独立审查时创建对应记录；正式记录使用 `.template-source/process/schemas/maintenance-review-record.schema.json`，旧结构化记录仅兼容读取；历史专用 Markdown 白名单入口已退役。审查请求、实施者自述、否定裁决、伪造或非规范候选流、无效任务包、未关闭 findings 或 symlink 越界证据都会被拒绝。可用 `scripts/verify-maintenance-review-record` 单独校验历史记录。
 
-### 定向高风险反例
+### 定向高风险反例与历史兼容
 
-触发集合仅由 `.template-source/process/maintenance-intensity.yaml` 维护；当前包括权限边界、生命周期门禁和发布语义。每个命中 trigger 的 `counterexample` 条目填写 `trigger`、`run_ref`、实际 `command` 和 `result: pass`。运行记录绑定拒绝断言、原命令非零结果、日志 SHA-256、输入引用及摘要、起止时间；反例测试自身成功退出 0。文字 `pass`、未执行命令、缺日志或输入漂移均不满足要求。
+触发集合仅由 `.template-source/process/maintenance-intensity.yaml` 维护，包括权限边界、生命周期门禁和发布语义。每个命中 trigger 的 counterexample 必须绑定 `run_ref`、实际命令与通过结果，并核验预期拒绝原因、原命令非零结果、日志 SHA-256、输入摘要、起止时间和测试自身退出 0。缺记录、文字 pass 或输入漂移不满足要求。其他自愿提交的运行证据同样核验真实性，trigger 必须属于当前维护范围。
 
-可用 `node tests/scenarios/verify-maintenance-risk-scenarios.mjs --output maintenance:research/<本轮>/counterexamples` 执行三个最小拒绝场景，保存真实记录；具体修改仍应补充受影响行为的定向场景。核验只读保存记录，不执行其中的命令。这是可审计执行证据，不是密码学运行证明或业务批准。未命中上述风险的 L3 不新增反例要求。历史文件以 `scripts/verify-maintenance-checkpoint --history <file>` 兼容查看，不回写原批准，不用历史结果证明当前交付。
+可用 `node tests/scenarios/verify-maintenance-risk-scenarios.mjs --output maintenance:research/<运行 ID>/counterexamples` 执行三个最小拒绝场景，保存真实记录；具体修改仍须补充实际受影响行为的定向检查。核验读取保存的记录，不执行其中的命令。未命中风险的 L2 不额外构造反例；历史文件以 `scripts/verify-maintenance-checkpoint --history <file>` 查看，不回写原批准，不用历史结果证明当前交付。
 
 维护运行输出与正式证据引用遵循[仓外维护目录与引用](../../.template-source/process/runtime-storage.md)。维护验证记录的 `maintenance:` 引用必须绑定 `evidence_digest`；项目实例和 Slice 不扩展外部路径权限。

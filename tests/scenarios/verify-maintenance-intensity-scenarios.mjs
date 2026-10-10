@@ -1,3 +1,4 @@
+import assert from "node:assert/strict";
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
@@ -35,7 +36,7 @@ const base = {
 const v2Base = {
   ...base,
   schema_version: 2,
-  intensity: "L3",
+  intensity: "L2",
   triggers: ["core-validator"],
   review_mode: "formal-independent",
   target_state: "implementation-ready",
@@ -48,15 +49,17 @@ const v2Base = {
 
 const accepted = [
   { ...base, intensity: "L1", triggers: ["textual-only"], verification_evidence: evidence("relevant-check"), review_mode: "self-check" },
-  { ...base, intensity: "L2", triggers: ["local-rule"], verification_evidence: [...evidence("counterexample", "fresh-verification"), { kind: "focused-independent-review", command: focusedReview, result: "pass" }], review_mode: "focused-independent" },
-  { ...base, intensity: "L2", triggers: [], verification_evidence: [...evidence("counterexample", "fresh-verification"), { kind: "focused-independent-review", command: focusedReview, result: "pass" }], review_mode: "focused-independent" },
+  { ...base, intensity: "L2", triggers: ["local-rule"], verification_evidence: [...evidence("fresh-verification"), { kind: "focused-independent-review", command: focusedReview, result: "pass" }], review_mode: "focused-independent" },
+  { ...base, intensity: "L2", triggers: [], verification_evidence: [...evidence("fresh-verification"), { kind: "focused-independent-review", command: focusedReview, result: "pass" }], review_mode: "focused-independent" },
   { ...base, intensity: "L3", triggers: ["core-validator"], verification_evidence: [...evidence("red", "green", "refactor", "pressure-scenario", "fresh-verification"), { kind: "formal-independent-review", command: formalReview, result: "pass" }], review_mode: "formal-independent" }
 ];
 
-for (const checkpoint of accepted) validateMaintenanceCheckpoint(checkpoint);
+for (const checkpoint of accepted) validateMaintenanceCheckpoint(checkpoint, { history: checkpoint.intensity === "L3" });
+validateMaintenanceCheckpoint({ ...accepted[3], intensity: "L2", verification_evidence: [...evidence("fresh-verification"), { kind: "formal-independent-review", command: formalReview, result: "pass" }] });
 validateMaintenanceCheckpoint(v2Base);
 validateMaintenanceCheckpoint({
   ...v2Base,
+  intensity: "L3",
   target_state: "review-ready",
   current_state: "review-ready",
   verification_profile: "candidate",
@@ -66,6 +69,7 @@ validateMaintenanceCheckpoint({
 }, historicalStateFixture);
 validateMaintenanceCheckpoint({
   ...v2Base,
+  intensity: "L3",
   target_state: "release-ready",
   current_state: "release-ready",
   verification_profile: "release",
@@ -75,6 +79,7 @@ validateMaintenanceCheckpoint({
 }, historicalStateFixture);
 validateMaintenanceCheckpoint({
   ...v2Base,
+  intensity: "L3",
   target_state: "release-ready",
   current_state: "needs-human",
   verification_profile: "candidate",
@@ -83,23 +88,23 @@ validateMaintenanceCheckpoint({
   verification_evidence: [...v2Base.verification_evidence, ...evidence("candidate-verification", "review-task-packages"), releaseEvidence("initial-release-verification")]
 }, historicalStateFixture);
 
-// 日常 L2/L3 自检必须闭合；不能再借 pending review 跳过自检。
-for (const intensity of ["L1", "L2", "L3"]) {
-  const kinds = intensity === "L1" ? ["relevant-check"] : intensity === "L2" ? ["counterexample", "fresh-verification", "self-check"] : ["fresh-verification", "self-check"];
-  const daily = { ...v2Base, intensity, triggers: [intensity === "L1" ? "textual-only" : intensity === "L2" ? "local-rule" : "core-validator"], review_mode: "self-check", verification_evidence: evidence(...kinds) };
+// 日常 L2 自检必须闭合；不能再借 pending review 跳过自检。
+for (const intensity of ["L1", "L2"]) {
+  const kinds = intensity === "L1" ? ["relevant-check"] : ["fresh-verification", "self-check"];
+  const daily = { ...v2Base, intensity, triggers: [intensity === "L1" ? "textual-only" : "core-validator"], review_mode: "self-check", verification_evidence: evidence(...kinds) };
   validateMaintenanceCheckpoint(daily);
   const released = { ...daily, target_state: "release-ready", current_state: "release-ready", verification_profile: "release", verification_evidence: [...daily.verification_evidence, releaseEvidence("final-release-verification")] };
-  validateMaintenanceCheckpoint(released, historicalStateFixture);
+  validateMaintenanceCheckpoint({ ...released, intensity: intensity === "L1" ? "L1" : "L3" }, historicalStateFixture);
   let unboundReleaseRejected = false;
   try { validateMaintenanceCheckpoint(released); } catch { unboundReleaseRejected = true; }
   if (!unboundReleaseRejected) throw new TypeError("当前发布证据缺少实际报告、args 和退出码必须阻断");
   for (const invalid of [
     { ...released, verification_evidence: daily.verification_evidence },
-    ...(intensity === "L1" ? [] : [{ ...daily, verification_evidence: evidence(...kinds.filter(kind => kind !== "self-check")) }])
+    ...(intensity === "L1" ? [] : ["self-check", "fresh-verification"].map(missing => ({ ...daily, verification_evidence: evidence(...kinds.filter(kind => kind !== missing)) })))
   ]) {
     let failed = false;
     try { validateMaintenanceCheckpoint(invalid); } catch { failed = true; }
-    if (!failed) throw new TypeError("自检或发布证据缺失必须阻断");
+    if (!failed) throw new TypeError("自检、fresh verification 或发布证据缺失必须阻断");
   }
 }
 
@@ -107,16 +112,23 @@ const pendingFormalReview = {
   ...accepted[3],
   verification_evidence: evidence("red", "green", "refactor", "pressure-scenario", "fresh-verification")
 };
-validateMaintenanceCheckpoint(pendingFormalReview, { allowPendingReview: true });
+validateMaintenanceCheckpoint(pendingFormalReview, { history: true, allowPendingReview: true });
 let pendingPassedStrictClosure = true;
-try { validateMaintenanceCheckpoint(pendingFormalReview); } catch { pendingPassedStrictClosure = false; }
+try { validateMaintenanceCheckpoint(pendingFormalReview, historicalStateFixture); } catch { pendingPassedStrictClosure = false; }
 if (pendingPassedStrictClosure) throw new TypeError("待审合同不得通过最终 checkpoint 校验");
+
+assert.throws(() => validateMaintenanceCheckpoint({ ...accepted[0], triggers: ["generation-semantics"] }), /至少要求 L2/);
+for (const trigger of ["ticket-state", "historical-important-escape", "aggregate-behavior-change", "release-candidate"]) {
+  const checkpoint = { ...base, intensity: "L2", triggers: [trigger], verification_evidence: evidence("fresh-verification", "self-check"), review_mode: "self-check" };
+  assert.throws(() => validateMaintenanceCheckpoint(checkpoint), new RegExp(`未知 trigger: ${trigger}`));
+  assert.equal(validateMaintenanceCheckpoint({ ...checkpoint, intensity: "L3" }, { history: true }).current_state, "historical-only");
+}
 
 const rejected = [
   { ...accepted[1], verification_evidence: evidence("fresh-verification") },
   { ...accepted[1], verification_evidence: evidence("counterexample", "fresh-verification") },
   { ...accepted[0], triggers: ["release-semantics"] },
-  { ...accepted[0], triggers: ["aggregate-behavior-change"] },
+  { ...accepted[0], triggers: ["generation-semantics"] },
   { ...accepted[2], verification_evidence: evidence("red", "green", "refactor", "pressure-scenario") },
   { ...accepted[2], verification_evidence: evidence("red", "green", "refactor", "pressure-scenario", "fresh-verification") },
   { ...accepted[1], escalation: "发现发布语义影响但仍维持 L2", triggers: ["release-semantics"] },
@@ -195,7 +207,7 @@ const rejected = [
 
 for (const checkpoint of rejected) {
   let failed = false;
-  try { validateMaintenanceCheckpoint(checkpoint); } catch { failed = true; }
+  try { validateMaintenanceCheckpoint(checkpoint, { history: checkpoint.intensity === "L3" }); } catch { failed = true; }
   if (!failed) throw new TypeError(`错误 checkpoint 未被拒绝: ${JSON.stringify(checkpoint)}`);
 }
 
@@ -212,4 +224,4 @@ try {
   rmSync(symlinkFixture, { recursive: true, force: true });
 }
 
-process.stdout.write("模板维护 L1/L2/L3 强度场景验证通过\n");
+process.stdout.write("模板维护 L1/L2 强度与历史 L3 兼容场景验证通过\n");
