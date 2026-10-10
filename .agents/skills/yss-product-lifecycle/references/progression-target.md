@@ -1,6 +1,6 @@
 # 推进到指定里程碑
 
-读取当前合同 `progression_target` 与项目[推进目标协议](../../../../.template-spec/process/lifecycle-progression.md)。该能力只约束正式功能本次行动，不改变生命周期状态、职责范围或批准权。
+读取当前合同 `progression_target` 与项目推进目标协议 `.template-spec/process/lifecycle-progression.md`。该能力只约束正式功能本次行动，不改变生命周期状态、职责范围或批准权。
 
 1. 从 `tracker.root` 内唯一 `map.md.checkpoint_ref` 绑定同一功能。新建正式 Spec 功能默认 `business-accepted`；缺此政策的旧实例保持原路线，显式同步新政策后可只读评估默认终点，均不补写历史意图配置。
 2. 指令明确终点后由支持 `lifecycle-target-v1` 的固定 CLI 生成可审阅计划并事务应用意图配置。目标变更保持真实 next 和批准/冻结包字节。
@@ -10,7 +10,7 @@
 
 业务验收按当前批准的影响评估核验实现证据。存在后端、API 或数据影响时，必须核验同功能的本地后端交付证据，或显式后端消费者的当前接收及交付；战略包验证不能代替适用的实现、独立审查和构建部署验证。影响范围不明确时继续核验，不能报整体完成。
 
-本地工程目标（`backend-deliverable`、`frontend-accepted` 或 `business-accepted`）的批准范围需要后端交付时，后端实现、独立审查和真实构建部署证据通过后，在当前验证单元准备带 `delivery_mode: local-evidence` 的终点输入并运行 `scripts/complete-backend-delivery complete --root <当前根> --checkpoint <当前checkpoint> --input <终点输入.json>`，随后复跑只读目标核验。输入协议见[推进目标协议](../../../../.template-spec/process/lifecycle-progression.md)；工具只在本功能 map 目录登记后端证据，不改 next/status、不导包。业务验收可消费同一前后端切片的后端证据，仍须单独闭合适用的前端验收；完整 Spec 的短目标保留同一混合切片的原批准；`plan-to-backend` 与后端专职路线仍保持后端职责上限。缺证据时在当前验证边界补齐。
+本地工程目标（`backend-deliverable`、`frontend-accepted` 或 `business-accepted`）的批准范围需要后端交付时，后端实现、独立审查和真实构建部署证据通过后，在当前验证单元准备带 `delivery_mode: local-evidence` 的终点输入并运行 `scripts/complete-backend-delivery complete --root <当前根> --checkpoint <当前checkpoint> --input <终点输入.json>`，随后复跑只读目标核验。输入协议见推进目标协议 `.template-spec/process/lifecycle-progression.md`；工具只在本功能 map 目录登记后端证据，不改 next/status、不导包。业务验收可消费同一前后端切片的后端证据，仍须单独闭合适用的前端验收；完整 Spec 的短目标保留同一混合切片的原批准；`plan-to-backend` 与后端专职路线仍保持后端职责上限。缺证据时在当前验证边界补齐。
 
 本地前端直接消费同功能的当前批准资产。父流程的工程设计、计划与合同准备不等待未来后端交付；生产前端工作单元发包和正式还原验证必须重新核验当前 Slice、接口及适用后端交付，依赖范围取完整批准切片，不能用前端工作单元的裁剪视图声明后端不适用。后端可以是主控登记的本地交付，或显式绑定并已对账的专职 Backend。已有外部 Frontend 接收绑定继续按原 Receipt 路线核验，失配不能回退到本地。纯 UI 的不适用依据必须来自当前批准范围。
 
