@@ -209,7 +209,7 @@ test('专职身份不能通过手工目标配置扩大成综合Spec后端交付'
   assert.throws(() => authorizeBackendDelivery({root: f.root, checkpointRef: f.checkpointRef}), /真实 native Spec/);
 });
 
-test('真实Backend本端交付绑定明确功能而无需Spec目标，不能生成本地证据终点', t => {
+test('旧Backend合同本端交付绑定明确功能，未声明能力不能生成本地证据终点', t => {
   const f = fixture(t), hex = '0'.repeat(64);
   f.write('.yss.json', JSON.stringify({schemaVersion: 1, protocolVersion: 1, profile: 'backend', profileId: 'harness.backend-delivery', templateSourceState: 'committed', templateCommit: 'a'.repeat(40), snapshotHash: hex, manifestHash: hex, variables: {}, distribution: {}, managedFiles: {}, baselineDigest: createHash('sha256').update('{}').digest('hex')}));
   f.write('.template-spec/process/harness-profile.yaml', 'schema_version: 1\nprofile_id: harness.backend-delivery\n');
@@ -219,7 +219,7 @@ test('真实Backend本端交付绑定明确功能而无需Spec目标，不能生
   assert.deepEqual(authorizeBackendDelivery({root: f.root, checkpointRef: f.checkpointRef}), {mode: 'backend-profile', checkpoint_ref: f.checkpointRef, terminal_ref: '.work/package-one/backend-delivery.json'});
   assert.equal(fs.existsSync(path.join(f.root, f.configRef)), false);
   assert.throws(() => authorizeBackendDelivery({root: f.root}), /明确.*checkpoint/);
-  assert.throws(() => authorizeBackendDelivery({root: f.root, checkpointRef: f.checkpointRef, deliveryMode: 'local-evidence'}), /本地.*Spec/);
+  assert.throws(() => authorizeBackendDelivery({root: f.root, checkpointRef: f.checkpointRef, deliveryMode: 'local-evidence'}), /当前后端合同未支持本地业务交付证据/);
   const checkpoint = fs.readFileSync(path.join(f.root, f.checkpointRef), 'utf8');
   f.write(f.checkpointRef, `${checkpoint}profile_id: harness.frontend-delivery\n`);
   assert.throws(() => authorizeBackendDelivery({root: f.root, checkpointRef: f.checkpointRef}), /checkpoint Profile/);
