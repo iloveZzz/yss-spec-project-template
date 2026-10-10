@@ -1,6 +1,6 @@
 # 编排执行协议
 
-本协议的正式工作单元、checkpoint、阶段和门禁循环仅适用于 `governed` 或模板维护。先按 `orchestration-contract.yaml.request_triage.delivery_path` 判定；已合格普通任务执行 [普通任务交付](daily-delivery.md)，不先运行本文件的正式循环。其他 Profile 或旧 CLI 不因这段说明获得普通路径能力。
+本协议的正式工作单元、checkpoint、阶段和门禁循环仅适用于 `governed` 或模板维护。先按 `orchestration-contract.yaml.request_triage.delivery_path` 判定；已合格普通任务执行 [普通任务交付](daily-delivery.md)，不先运行本文件的正式循环。只有唯一政策启用的 Profile 及支持该能力的 CLI 可使用普通路径；说明文字不授予资格。
 
 ## 有界推进循环
 

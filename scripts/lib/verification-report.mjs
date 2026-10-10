@@ -17,9 +17,10 @@ export function createVerificationInputObserver(root, options) {
   return { digest: () => fingerprintInputs(root, observer.snapshot(root,{excludeIgnoredToolState:true})), get metrics() { return observer.metrics; } };
 }
 export function resolveVerificationScope({profile,explicit=[],actual=[]}) {
-  return {kind:explicit.length && profile==='fast'?'limited':'complete-candidate',files:[...new Set(explicit.length && profile==='fast'?explicit:[...actual,...explicit])].sort(),explicit_files:explicit};
+  return {kind:profile==='fast'?'limited':'complete-candidate',files:[...new Set(explicit.length && profile==='fast'?explicit:[...actual,...explicit])].sort(),explicit_files:explicit};
 }
 export function createVerificationReport(plan,{root,inputDigest,concurrency,scope,invocation=null,sourcesManifest=null}) {
+  if(plan.requested_profile==='fast')scope={...scope,kind:'limited'};
   return {schema_version:2,kind:'template-verification-report',purpose:'verification',status:'running',started_at:new Date().toISOString(),root:fs.realpathSync(root),scope,plan:structuredClone(plan),invocation,sources_manifest:sourcesManifest,final_exit:{code:null,signal:null,observed:false},input_sha256:inputDigest,environment:{node:process.version,platform:process.platform,arch:process.arch,cpus:os.availableParallelism(),load_average:os.loadavg(),concurrency,cache_condition:'uncontrolled OS cache; no persistent result cache',input_observation:'tracked, untracked and ignored files; exclude only Git-ignored .codegraph/ and .idea/ tool state'},results:[],unexecuted:[],not_applicable:structuredClone(plan.not_applicable||[]),gate_results:[],metrics:{wall_ms:null,unique_commands:0,reused_commands:0,test_files:0,subprocesses:0,assertions:null,output_bytes:0,tool_calls:null,duplicate_tool_calls:null,material_rounds:null,recoveries:null,observed_read_bytes:null,runtime_tokens:null,agent_active_ms:null,human_wait_ms:null,repeated_confirmations:null,first_acceptance:null,rework_reason:null,omitted_failures:null,permission_violations:null,unobserved_reason:'CLI cannot observe agent, human, token or external acceptance telemetry'}};
 }
 function updateExecutionMetrics(report) {

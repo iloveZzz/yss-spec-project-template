@@ -227,7 +227,7 @@ if(process.argv[1]&&path.resolve(process.argv[1])===workerFile) {
   } else {
     try {
       const input=await prepare(process.argv.slice(2),process.cwd());
-      if(input.help)process.stdout.write('用法: scripts/run-template-verification --profile fast|candidate|release|legacy-full [--base <完整SHA>] [--baseline-report <文件> --baseline-report-sha256 <摘要>] [--plan --json] [--report-dir <仓库外新目录>] [--concurrency 1..4] [--fresh-inputs]\n--fresh-inputs 禁用本次运行内的文件摘要复用；release 与 legacy-full 始终完整读取字节。\nlegacy-full 独立执行冻结旧runner；qualified Gate 只在固定基线和当前资格证据有效时启用。\n');
+      if(input.help)process.stdout.write('用法: scripts/run-template-verification --profile fast|candidate|release|legacy-full [--base <完整SHA>] [--baseline-report <文件> --baseline-report-sha256 <摘要>] [--plan --json] [--report-dir <仓库外新目录>] [--concurrency 1..4] [--selection legacy|shadow|allowlist] [--fresh-inputs]\nfast 默认按检查选择必要集合，报告范围 limited；legacy / shadow 显式使用原组范围。\n--fresh-inputs 禁用本次运行内的文件摘要复用；release 与 legacy-full 始终完整读取字节。\nlegacy-full 独立执行冻结旧runner；qualified Gate 只在固定基线和当前资格证据有效时启用。\n');
       else if(input.values.plan)process.stdout.write(`${JSON.stringify(input.plan,null,input.values.json?2:0)}\n`);
       else await runPrepared(input);
     }catch(error){process.stderr.write(`模板核验失败: ${error.message}\n`);process.exitCode=1;}

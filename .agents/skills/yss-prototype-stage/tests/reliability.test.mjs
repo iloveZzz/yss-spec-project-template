@@ -33,3 +33,14 @@ test('new compact preset is explicit, invalid density is rejected and old manife
  assert.equal(manifest.visual_preset.density,'compact');manifest.visual_preset.density='comfortable';await writeFile(file,JSON.stringify(manifest));assert.match((await validatePrototypeProject({root})).errors.join(),/密度不一致/);
  delete manifest.visual_preset;await writeFile(file,JSON.stringify(manifest));assert.deepEqual((await validatePrototypeProject({root})).errors,[]);
 });
+
+test('configured roots drive prototype output and reject other or occupied paths',async()=>{
+ for(const workRoot of ['.work','docs/custom-work','docs/.scratch']){
+  const projectRoot=await project();await fixtureTracker(projectRoot,workRoot);
+  const root=path.join(projectRoot,workRoot,'configured/design/prototypes');
+  await assert.rejects(prepareFlowPrototype({projectRoot,root:path.join(projectRoot,'wrong/configured/design/prototypes'),feature:'configured'}),/精确匹配/);
+  await prepareFlowPrototype({projectRoot,root,feature:'configured'});
+  assert.deepEqual((await validatePrototypeProject({root,projectRoot})).errors,[]);
+  await assert.rejects(prepareFlowPrototype({projectRoot,root,feature:'configured'}),/已存在内容/);
+ }
+});

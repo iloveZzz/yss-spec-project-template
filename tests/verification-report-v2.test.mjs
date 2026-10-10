@@ -36,6 +36,11 @@ test('完整 v2 报告按独立期望台账核验', t => {
   f.report.plan.commands = []; f.report.results = [];
   assert.throws(() => validateVerificationReport(f.report, f.options), /任务|task/);
 });
+test('日常 limited 报告不能成为正式发布证据',t=>{
+ const f=fixture(t);const daily=createVerificationReport({...f.plan,requested_profile:'fast'},{root:f.directory,inputDigest:f.report.input_sha256,scope:{kind:'complete-candidate'}});
+ assert.equal(daily.scope.kind,'limited');f.report.scope.kind=daily.scope.kind;
+ assert.throws(()=>validateVerificationReport(f.report,f.options),/验证范围不是完整候选/);
+});
 
 test('当前报告拒绝挂靠退役源码回执与任务',t=>{
   const f=fixture(t);

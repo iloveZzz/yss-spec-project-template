@@ -4,8 +4,10 @@ import {spawnSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 import {parseArgs} from 'node:util';
+import {createRequire} from 'node:module';
 
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
+const require=createRequire(import.meta.url);
 export function validateVerificationReportDirectory(root,directory) {
   const target=path.resolve(directory),realRoot=fs.realpathSync(root);
   if(fs.existsSync(target))throw new TypeError('report-dir 必须为新目录，防止覆盖历史证据');
@@ -16,13 +18,16 @@ export function validateVerificationReportDirectory(root,directory) {
 }
 export function verificationPreflight({root,plan,reportDir,environment=process.env,nodeVersion=process.version,probe=spawnSync}) {
   const observations=[],errors=[];
+  const daily=plan.strategy==='daily-necessary',commands=plan.commands.map(item=>item.command).join('\n');
   const check=(name,operation)=>{try{observations.push({name,status:'passed',observed:operation()});}catch(error){errors.push({name,error:error.message});observations.push({name,status:'failed',error:error.message});}};
   const invoke=(file,args,cwd=root)=>{const result=probe(file,args,{cwd,env:environment,encoding:'utf8',timeout:30000,maxBuffer:4*1024*1024});if(result.status!==0||result.error||result.signal)throw new Error(result.error?.message||result.stderr||`${file}: exit=${result.status} signal=${result.signal}`);return result.stdout.trim();};
-  check('node',()=>{if(!/^v24\./.test(nodeVersion))throw new Error(`发布主验证需要 Node 24，实际 ${nodeVersion}`);return nodeVersion;});
+  check('node',()=>{if(!/^v24\./.test(nodeVersion))throw new Error(`验证运行器需要 Node 24，实际 ${nodeVersion}`);return nodeVersion;});
   if(reportDir)check('report-directory',()=>validateVerificationReportDirectory(root,reportDir));
-  check('python-jsonschema',()=>{const value=JSON.parse(invoke('python3',['-c','import sys,json,importlib.metadata; print(json.dumps({"version":[sys.version_info.major,sys.version_info.minor],"executable":sys.executable,"jsonschema":importlib.metadata.version("jsonschema")}))']));if(value.version[0]!==3||value.version[1]!==12)throw new Error('需要 Python 3.12 和 jsonschema');return value;});
-  const commands=plan.commands.map(item=>item.command).join('\n');
-  if(/pnpm|\.template-source\/tooling\/node/.test(commands))check('pnpm-and-tooling-lock',()=>{
+  if(!daily||plan.commands.some(item=>item.resources?.includes('python-jsonschema')))check('python-jsonschema',()=>{const value=JSON.parse(invoke('python3',['-c','import sys,json,importlib.metadata; print(json.dumps({"version":[sys.version_info.major,sys.version_info.minor],"executable":sys.executable,"jsonschema":importlib.metadata.version("jsonschema")}))']));if(value.version[0]!==3||value.version[1]!==12)throw new Error('需要 Python 3.12 和 jsonschema');return value;});
+  else if(/\bpython3?\s/.test(commands))check('python',()=>{const value=JSON.parse(invoke('python3',['-c','import sys,json; print(json.dumps({"version":[sys.version_info.major,sys.version_info.minor],"executable":sys.executable}))']));if(value.version[0]!==3||value.version[1]!==12)throw new Error('需要 Python 3.12');return value;});
+  if(daily&&plan.commands.some(item=>/^go\s/.test(item.command)))check('go',()=>invoke('go',['version']));
+  if(daily&&plan.commands.some(item=>item.resources?.includes('native-cli')))check('native-cli',()=>require('./native-yss.mjs').nativeBinary(environment));
+  if(/\bpnpm\b/.test(commands)||!daily&&/\.template-source\/tooling\/node/.test(commands)||plan.commands.some(item=>item.resources?.includes('pnpm-tooling')))check('pnpm-and-tooling-lock',()=>{
     const tooling=path.join(root,'.template-source/tooling/node'),pkg=JSON.parse(fs.readFileSync(path.join(tooling,'package.json'))),version=invoke('pnpm',['--version'],tooling);
     if(`pnpm@${version}`!==pkg.packageManager)throw new Error(`pnpm 版本需要 ${pkg.packageManager}，实际 ${version}`);
     const expected=fs.readFileSync(path.join(tooling,'pnpm-lock.yaml'));
@@ -41,15 +46,16 @@ export function verificationPreflight({root,plan,reportDir,environment=process.e
     for(const [name,version] of Object.entries({...expected.dependencies,...expected.devDependencies}))if(JSON.parse(fs.readFileSync(path.join(toolchain,'node_modules',name,'package.json'))).version!==version)throw new Error(`${name} 需要锁定 ${version}`);
     return {root:toolchain,package_manager:expected.packageManager,package_sha256:hash(fs.readFileSync(path.join(assets,'package.json'))),lock_sha256:hash(fs.readFileSync(path.join(toolchain,'pnpm-lock.yaml'))),packages:{...expected.dependencies,...expected.devDependencies}};
   });
-  check('submodule-source',()=>{
-    const status=invoke('git',['submodule','status','--recursive']);
+  const selectedSubmodules=[...new Set([...commands.matchAll(/submodules\/(yss-[\w-]+)/g)].map(match=>`submodules/${match[1]}`))];
+  if(!daily||selectedSubmodules.length)check('submodule-source',()=>{
+    const status=invoke('git',['submodule','status','--recursive',...daily?['--',...selectedSubmodules]:[]]);
     const invalid=status.split('\n').some(line=>{
-      if(/^[+U]/.test(line))return true;
+      if(/^U/.test(line)||!daily&&/^\+/.test(line))return true;
       if(!line.startsWith('-'))return false;
       // The CLI is verified from YSS_NATIVE_SOURCE_ROOT by release-sources.
       // Its optional anchor must not require a second checkout of CLI source.
       const match=/^-[a-f0-9]{40}\s+(\S+)(?:\s+\([^\n]*\))?$/.exec(line);
-      return !match||match[1]!=='submodules/yss-cli';
+      return daily||!match||match[1]!=='submodules/yss-cli';
     });
     if(invalid)throw new Error('子模块未初始化或与 gitlink 不匹配');
     return status;
@@ -63,7 +69,7 @@ if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.ur
     const {values}=parseArgs({options:{root:{type:'string'},'plan-json':{type:'string'},purpose:{type:'string',default:'verification'}},strict:true});
     const root=path.resolve(values.root),plan=JSON.parse(values['plan-json']);
     const result=verificationPreflight({root,plan});
-    if(values.purpose==='verification'||fs.existsSync(path.join(root,'.gitmodules')))try{const {collectReleaseSources}=await import('./verification-artifacts.mjs');result.sources_manifest=collectReleaseSources({root,commit:spawnSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).stdout.trim()});result.observations.push({name:'release-sources',status:'passed',observed:result.sources_manifest});}catch(error){result.status='failed';result.errors.push({name:'release-sources',error:error.message});}
+    if(plan.strategy!=='daily-necessary'&&(values.purpose==='verification'||fs.existsSync(path.join(root,'.gitmodules'))))try{const {collectReleaseSources}=await import('./verification-artifacts.mjs');result.sources_manifest=collectReleaseSources({root,commit:spawnSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).stdout.trim()});result.observations.push({name:'release-sources',status:'passed',observed:result.sources_manifest});}catch(error){result.status='failed';result.errors.push({name:'release-sources',error:error.message});}
     process.stdout.write(JSON.stringify(result)+'\n');process.exitCode=result.status==='passed'?0:1;
   }catch(error){process.stdout.write(JSON.stringify({status:'failed',errors:[{name:'preflight-input',error:error.message}],observations:[]})+'\n');process.exitCode=1;}
 }

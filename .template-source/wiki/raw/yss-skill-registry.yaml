@@ -8,7 +8,7 @@ description: >-
 canonical_content_root: .agents/skills
 instance_distribution:
   schema_version: 1
-  initial_skills: [yss-product-lifecycle, yss-research, i-have-adhd, yss-harness-upgrade]
+  initial_skills: [yss-product-lifecycle, yss-research, i-have-adhd, setup-yss-harness]
   runtimes: [codex, cursor, pi]
   projection_roots: { codex: .codex/skills, cursor: .cursor/skills, pi: .pi/skills }
   dependency_types_for_ensure: [context-required, context-conditional]
@@ -206,7 +206,7 @@ skill_dependencies:
     - { skill: i-have-adhd, type: context-conditional, when: lifecycle-document-output }
   yss-stage-decision:
     - { skill: i-have-adhd, type: context-conditional, when: lifecycle-document-output }
-  yss-harness-upgrade:
+  setup-yss-harness:
     - { skill: i-have-adhd, type: context-conditional, when: lifecycle-document-output }
   yss-research:
     - { skill: i-have-adhd, type: context-conditional, when: lifecycle-document-output }
@@ -450,6 +450,12 @@ skills:
     instance_default_discoverable: true
     aliases: []
     impacts: [template-maintenance]
+  - id: publish-skills-sh
+    layer: core
+    maturity: verified
+    instance_default_discoverable: true
+    aliases: []
+    impacts: [template-maintenance]
   - id: mapstruct
     layer: specialist
     maturity: supported
@@ -468,7 +474,7 @@ skills:
     instance_default_discoverable: true
     aliases: []
     impacts: [prototype]
-  - id: yss-harness-upgrade
+  - id: setup-yss-harness
     layer: core
     maturity: supported
     instance_default_discoverable: true

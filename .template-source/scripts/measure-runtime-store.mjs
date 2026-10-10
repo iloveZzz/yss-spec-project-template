@@ -71,7 +71,7 @@ if (values.worker) {
   fs.mkdirSync(output, { recursive: true });
   const fixture = path.join(output, 'fixture'); fs.mkdirSync(fixture);
   for (const file of ['CONTEXT.md', 'yss-project.yaml']) fs.copyFileSync(path.join(source, file), path.join(fixture, file));
-  fs.writeFileSync(path.join(fixture, 'checkpoint.json'), JSON.stringify({ schema_version: 2, intensity: 'L3', classification_reason: '固定输入组件测量', triggers: ['core-validator'], changed_assets: ['runtime-store'], verification_evidence: ['self-check', 'fresh-verification'].map(kind => ({ kind, command: 'fixture', result: 'pass' })), review_mode: 'self-check', escalation: 'none', target_state: 'implementation-ready', current_state: 'implementation-ready', verification_profile: 'fast', review_round: 0, candidate_digest: null }));
+  fs.writeFileSync(path.join(fixture, 'checkpoint.json'), JSON.stringify({ schema_version: 2, intensity: 'L2', classification_reason: '固定输入组件测量', triggers: ['core-validator'], changed_assets: ['runtime-store'], verification_evidence: ['self-check', 'fresh-verification'].map(kind => ({ kind, command: 'fixture', result: 'pass' })), review_mode: 'self-check', escalation: 'none', target_state: 'implementation-ready', current_state: 'implementation-ready', verification_profile: 'fast', review_round: 0, candidate_digest: null }));
   const inputs = Object.fromEntries(['CONTEXT.md', 'yss-project.yaml', 'checkpoint.json'].map(file => [file, hash(fs.readFileSync(path.join(fixture, file)))]));
   const runtimeInput = values.input ? fs.readFileSync(path.resolve(values.input)) : Buffer.from(JSON.stringify(inputs));
   fs.writeFileSync(path.join(fixture, 'inputs.json'), runtimeInput);

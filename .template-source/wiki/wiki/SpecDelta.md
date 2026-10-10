@@ -2,6 +2,8 @@
 
 Spec Delta 记录相对既有冻结 Spec 基线的 `ADDED / MODIFIED / REMOVED` 高风险行为差异，以及对应验收场景和测试映射。它保留变化的边界，完整规格、OpenAPI 与架构资产仍分别承担各自职责。
 
+本页解释 `governed` 正式路径的高风险变化。项目实例先核验唯一日常 / 正式政策；不能用“小改动”标签降级已有正式资产或政策排除风险。
+
 ## 适用范围
 
 `artifact.spec-delta` 属于 `stage.spec-architecture`，触发条件是已有冻结 Spec 的高风险行为变化。全新产品或全新模块不使用 Spec Delta；未命中的条件记录带原因的 `not-applicable`，不生成空文档。
@@ -22,8 +24,9 @@ OpenAPI Freeze 或无 API 影响记录后，才能把冻结范围拆成窄而可
 
 ## 来源
 
-- `CONTEXT.md`：第 45、54、58–59 行。
-
-- `AGENTS.md`：第 46、47、48、55–56、64、49、84 行。
-
-- `.template-spec/process/lifecycle-registry.yaml`：第 314–317 行。
+- `CONTEXT.md`：45、54、58–59 行。
+- `AGENTS.md`：5–7、11–19、34–38 行。
+- `.template-spec/process/lifecycle-registry.yaml`：337–340、493–505 行。
+- `.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml`：205–226 行。
+- `.template-spec/process/harness-process-tailoring.md`：9–11 行。
+- `.agents/skills/code-review/references/yss-review-standards.md`：65 行。

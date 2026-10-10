@@ -14,7 +14,7 @@ import { findGitRoot, gitSubmoduleScaffoldViolation, overlayMountViolation } fro
 import { assertLocalDatabaseProfile, localDatabaseConfiguration, scaffoldArchitectureIdentity } from "../../../../scripts/lib/scaffold-local-database.mjs";
 import { validateArchitectureIdentity } from "../../../../scripts/lib/backend-architecture.mjs";
 import { validateJsonSchema } from "../../../../scripts/lib/json-schema.mjs";
-import { finalizeDataAnalysisProfile } from "./data-analysis-profile.mjs";
+import { finalizeDataAnalysisProfile, readDataAnalysisAgents } from "./data-analysis-profile.mjs";
 import { standaloneConfiguration, standaloneManifest } from "../../../../scripts/lib/standalone-backend-scaffold.mjs";
 
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
@@ -254,6 +254,7 @@ export async function generate(options, { skillId = SKILL_ID, architectureProfil
   if (skillId !== SKILL_ID || !["layered-mvc-service", "mvc-data-analysis-v1"].includes(architectureProfile)) fail("unsupported MVC generator/Profile pair");
   await validateOutputLayout(options.outputDir, options.projectName);
   const { contract, contractText, modules, designPrerequisites, platform } = await validateContract(options, skillId, architectureProfile, platformOptions);
+  const agents = architectureProfile === "mvc-data-analysis-v1" ? await readDataAnalysisAgents() : undefined;
   const outputDir = path.resolve(options.outputDir);
   await mkdir(outputDir, { recursive: true });
   const staging = await mkdtemp(path.join(outputDir, `.${options.projectName}.staging-`));
@@ -282,7 +283,7 @@ export async function generate(options, { skillId = SKILL_ID, architectureProfil
     await chmod(path.join(projectRoot, "mvnw"), 0o755);
     const architectureIdentity = options.standalone ? undefined : scaffoldArchitectureIdentity(contract, sha256(contractText));
     const profileFinalize = finalize ?? (architectureProfile === "mvc-data-analysis-v1" ? finalizeDataAnalysisProfile : null);
-    if (profileFinalize) await profileFinalize({ projectRoot, contract, architectureIdentity, options });
+    if (profileFinalize) await profileFinalize({ projectRoot, contract, architectureIdentity, options, agents });
     await put(projectRoot, "README.md", `# ${options.projectName}\n\n平台：Spring Boot ${platform.spring_boot_version} / Java ${platform.java_version}。\n\n该工程由 ${skillId} ${options.standalone ? "按用户明确输入独立生成；尚无生命周期批准，平台和构建尚未验证" : `根据批准的 schema v${contract.schema_version} 合同生成`}。模块：${modules.join("、")}。不包含业务 API、SQL 或生产数据库绑定。\n\n本地运行需同时显式启用 Maven -Pscaffold-local 和 Spring scaffold-local Profile；测试独立使用 H2。生产数据库须由后续已批准存储工作单元接入。`);
     const generatedFiles = [];
     for (const entry of await fileEntries(projectRoot, new Set([".yss/scaffold-generation.json"]))) generatedFiles.push({ path: entry.relative, owner: "generator", sha256: rawSha256(await readFile(entry.target)) });

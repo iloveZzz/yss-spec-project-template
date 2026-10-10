@@ -158,6 +158,10 @@
         },
         {
           "source": ".agents/skills/yss-design-system/references/prototype-default-theme.md"
+        },
+        {
+          "source": ".agents/skills/yss-product-lifecycle/references/user-decisions.md",
+          "target": ".agents/skills/yss-strategic-design/references/user-decisions.md"
         }
       ],
       "upstream": [

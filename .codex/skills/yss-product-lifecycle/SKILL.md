@@ -11,7 +11,7 @@ description: 编排 YSS 研发全生命周期；当阶段、产物、门禁或 S
 
 ## 事实源
 
-先读 `yss-project.yaml`、`AGENTS.md`、`CONTEXT.md`、当前任务及交付路径政策。只在本地 Spec 政策已启用且固定 `yss` CLI 已支持 `route` / `verify-daily` 时进入 `daily`；旧 CLI、其他 Profile 或能力不可核验时明确 `daily unsupported`，不得按文字承诺放行。`governed` 再按当前工作单元读取以下事实源：
+先读 `yss-project.yaml`、`AGENTS.md`、`CONTEXT.md`、当前任务及交付路径政策。只在当前 Profile 的政策已启用且固定 `yss` CLI 已支持 `route` / `verify-daily` 时进入 `daily`；旧 CLI、Profile 未启用或能力不可核验时明确 `daily unsupported`，不得按文字承诺放行。`governed` 再按当前工作单元读取以下事实源：
 
 | 事实 | 权威来源 |
 |---|---|

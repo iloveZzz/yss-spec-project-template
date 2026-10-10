@@ -12,11 +12,11 @@ owner: ai
 
 ## 业务 Ticket 草案
 
-集合：`docs/.scratch/<feature>/business-ticket-set.yaml`。Spec 综合同时起草，Design 校准同一组 ID；集合只存引用及覆盖处置，正文按业务 Ticket 模板填写。此处只引用路径，避免 Spec 与集合摘要循环。
+集合：`.work/<feature>/business-ticket-set.yaml`。Spec 综合同时起草，Design 校准同一组 ID；集合只存引用及覆盖处置，正文按业务 Ticket 模板填写。此处只引用路径，避免 Spec 与集合摘要循环。
 
 ## 功能父 Ticket
 
-<Local：`docs/.scratch/<feature>/parent-ticket.md`；GitHub / GitLab：Issue URL / 编号>
+<Local：`.work/<feature>/parent-ticket.md`；GitHub / GitLab：Issue URL / 编号>
 
 ## 问题陈述
 
@@ -64,7 +64,7 @@ owner: ai
 - MVP：
 - 非目标：见本文“非目标范围”，此处不重复维护。
 - UI 影响：是 / 否
-- 产品总体设计：`docs/.scratch/<feature>/design/<feature>-product-overview-design.md`
+- 产品总体设计：`.work/<feature>/design/<feature>-product-overview-design.md`
 
 > 只有存在产品设计影响时，才强制低保真页面草图、状态矩阵、按 H1/H2 路由的原型交付物和用户确认；否则记录 `not-applicable` 及原因。
 
@@ -72,7 +72,7 @@ owner: ai
 
 - [ ] 无
 - [ ] 需要 API 影响分析 / 契约草案
-- [ ] 需要 review-only OpenAPI Draft：`docs/.scratch/<feature>/api/<feature>.yaml`
+- [ ] 需要 review-only OpenAPI Draft：`.work/<feature>/api/<feature>.yaml`
 
 > OpenAPI Draft 在 OpenAPI Freeze 前仅用于评审和架构反审，不作为实现或生成客户端的稳定契约。
 

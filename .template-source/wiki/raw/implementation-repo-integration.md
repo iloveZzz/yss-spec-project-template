@@ -1,8 +1,10 @@
 # 实现仓库接入与跨仓库切片绑定
 
-本文件是 Harness 仓库连接外部实现仓库的事实源。当前 `yss-spec-project-template` 与 `create-yss-spec` 的模板接管 / 同步变更属于 Harness-only 加 release-only 影响，不创建前端、后端或运行时代码目录。
+本文件是 Harness 仓库连接外部实现仓库的事实源。当前 `yss-spec-project-template` 与统一原生 `yss` 的 `spec` Profile 模板接管 / 同步变更属于 Harness-only 加 release-only 影响，不创建前端、后端或运行时代码目录。
 
 ## 1. 接入清单
+
+已合格且政策启用的 Spec、Backend、Frontend `daily` 使用已有且可核验的单实现仓：普通 Ticket 绑定真实 Git 根、当前基线、允许写路径、可逆依据和实际验证命令，核验复用现有工程事实，不为了小任务重建阶段接入、脚手架合同或工程批准包。适用 YSS 技术基线、路径边界、测试和独立审查仍须完成。新仓、未确认根、跨仓、平台/架构转换或无法证明回滚时先调查并按 `request_triage.delivery_path` 升级；缺政策或能力的 CLI/Profile 不因此得到普通准入。以下正式接入和切片绑定要求仍适用于 `governed`。
 
 每个受影响实现仓库必须登记：仓库地址、分支、代码所有者、CI 入口、测试 / 构建命令、允许写路径、回滚点和 MR / PR。没有登记记录时，先完成 onboarding，不能用本仓库目录代替实现仓库。
 
@@ -14,7 +16,7 @@
 
 ## 1.1 Harness 内实现项目路径策略
 
-当前 Harness 明确承载运行时代码时，统一使用以下多项目布局：
+当前 Harness 明确承载运行时代码时，推荐以下多项目布局；最终位置以已确认的实现仓登记和批准写范围为准：
 
 ```text
 apps/
@@ -22,8 +24,8 @@ apps/
 └── frontend/<frontend-project>/
 ```
 
-- `apps/backend/` 和 `apps/frontend/` 是项目容器，不是可生成的工程项目根；后端、前端项目必须分别位于 `apps/backend/<project>/`、`apps/frontend/<project>/`，多个项目按 `<project>` 目录并列。
-- `app/backend/`、`app/frontend/` 及其所有子路径均禁止作为工程生成目标；单复数差异不能被视为等价路径。
+- `apps/backend/` 和 `apps/frontend/` 是项目容器，不是可生成的工程项目根；默认将后端、前端项目分别放在 `apps/backend/<project>/`、`apps/frontend/<project>/`，多个项目按 `<project>` 目录并列。
+- `app/backend/`、`app/frontend/` 或其他布局可按真实工程位置登记；路径名称本身不授予写权限，仍须核验当前项目根和批准范围。
 - `allowed_write_paths`、`expected_evidence_files` 和生成器输出位置必须能回指具体项目目录；直接放开 `apps/backend/` 或 `apps/frontend/` 属于路径策略违规。
 - 外部实现仓库不要求采用 Harness 的 `apps/` 布局，但仍必须登记该仓库内的实际项目根路径；跨仓库切片的写路径不得用本 Harness 的占位路径冒充真实路径。
 
@@ -35,6 +37,7 @@ apps/
 
 - **frontend**：依赖安装、测试、type-check 与构建优先使用 `pnpm`（例如 `pnpm test`、`pnpm type-check`、`pnpm build`）。不要默认 `npm` 或 `yarn`。
 - **backend**：校验、测试与编译优先使用项目根 `./mvnw`（例如 `./mvnw validate`、`./mvnw test`、`./mvnw package`）。不要默认裸 `mvn`。
+- **Maven settings**：`mvnw` 与受控例外下的 `mvn` 均保留用户已显式指定的 settings；未指定时优先参考用户目录 `~/.m2/settings.xml`，先核验 `.mvn/maven.config` 等入口是否覆盖了它。缺失、不可读、无效或实际仓库访问失败时询问用户可用文件路径，必要时获取仓库地址、server id、profile 和认证方式；凭据由本地文件或安全环境提供，不要求在聊天中贴密码，不复制用户 settings 到工程或证据包。记录实际配置来源、路径、摘要和执行结果。脚手架验证器的具体选择见 DDD 技能的 `references/engineering-checks.md`。
 - Ticket、Slice Implementation Contract、CI 和 Review 证据必须写下实际执行的上述命令。既有仓库缺少 `pnpm` 或 Maven Wrapper 时，先记录受控例外、替代命令和责任人，再执行。
 - 本模板源仓库没有产品 frontend / backend 运行时；模板源维护侧的 Node 校验命令和环境约束只记录在 `.template-source/` 治理区及 CI 配置中，不属于项目实例实现命令。
 
@@ -61,14 +64,14 @@ apps/
 
 强制规则：
 
-- `layout_policy` / `implementation_path_policy` 必须是 `git-submodule-harness-apps`。挂载路径仍须是具体的 `apps/backend/<project>/` 或 `apps/frontend/<project>/`；容器根和 `app/` 单数路径一律阻断。
+- `layout_policy` / `implementation_path_policy` 必须是 `git-submodule-harness-apps`。挂载路径必须是已登记、已批准的具体项目相对根；默认布局为 `apps/backend/<project>/` 或 `apps/frontend/<project>/`，也可使用其他已登记布局。`apps/backend/` 和 `apps/frontend/` 容器根不能代替具体项目根。
 - 三个 `repository_scope` 必须在登记字段、Git 身份和写路径上可区分：`git-submodule` 强制 `git_url`、`gitmodules_name`、`gitlink_path`（等于 `project_root`）、`git_entry_mode: 160000`、`superproject_git_url`、`checkout_state`，并分别登记默认分支、CI、验证命令、回滚点（子仓 SHA + 父仓 gitlink SHA）；`harness-apps` 与 `external-repository` 禁止填写这些 gitlink 身份字段（可填 `不适用`）。缺 `git_entry_mode` 不得默认为普通目录。
 - 子仓 `git_url` 必须与 `superproject_git_url` 不同。登记后必须用工作树对照（`git ls-files --stage`、`.gitmodules`、`inspectWorkingTreeScope`）：声明 `harness-apps` 但路径是 gitlink，或声明 `git-submodule` 但工作树只是普通目录 / 复制源码，均视为误路由并阻断。
 - 只允许 `git submodule add` / `git submodule update --init` 形成 gitlink；禁止把实现仓库源码 copy、subtree 或普通 clone 进 Harness 后冒充 submodule。
 - clone / CI / Cloud Agent 必须递归检出：`git clone --recurse-submodules`，或事后 `git submodule update --init`。GitHub Actions 须显式 `submodules: true|recursive` 且私有子仓另给 PAT / SSH；GitLab 须设 `GIT_SUBMODULE_STRATEGY` 并配置 job token 访问。默认不递归时目录为空，不得当作「工程不存在」去脚手架。
 - 空 gitlink、未初始化、detached HEAD 或 `--force` 覆盖挂载点一律不得当成普通目录：`scaffold_status=required` 阻断，脚手架生成器即使收到 `--force` 也不得覆盖 gitlink，且不得进入「请显式传入 `--force`」普通目录覆盖 / rename 路径；禁止在 detached HEAD 上 commit，也不得把 `--output-dir` 指向 detached HEAD 子仓后 mkdir、staging 或生成工程。先在子仓检出跟踪分支，再写代码。写入前必须读取 `inspectWorkingTreeScope` 的对象结果：只有 `.writable === true` 才可写。已登记为 `git-submodule` 的空 gitlink / uninitialized / detached HEAD 必须 `.writable === false`，即使工作树探测失败也不得把返回值当成可写。
 - Git 授权按仓分别计算，顺序强制为 **先子仓 commit/push，再父仓更新 gitlink**。父仓 push 使用 `git push --recurse-submodules=check`。跨仓库切片的 `delivery_order` 必须包含 `superproject-gitlink-update`。
-- `.gitmodules`、gitlink 和子仓工作树不是 `create-yss-spec` 受管资产；CLI `sync` 不得创建、覆盖或删除它们。
+- `.gitmodules`、gitlink 和子仓工作树不是 `yss` 模板同步受管资产；CLI `sync` 不得创建、覆盖或删除它们。
 
 ## 2. 影响面路由
 
@@ -100,3 +103,5 @@ scripts/verify-template
 ```
 
 CLI 仓库至少执行固定 commit 的 `YSS_SPEC_TEMPLATE_REF=<pinned-commit> npm test`、`npm pack --dry-run`，并在解包后的 CLI 上验证 init、attach、sync、迁移冲突和回滚。共同发布前记录两个仓库的 commit、模板快照 hash、测试结果、独立审查结论和 rollback 路径。
+
+显式独立脚手架请求可直接提供工程名、包名、精确平台版本、Maven 坐标和目标目录，调用 DDD/MVC 生成器 `--standalone`。缺少正式合同本身不阻断纯机械生成；不得自动降级已有正式任务，独立 Manifest 不含 approved、ready-for-agent 或业务实施授权。真实 Maven 验证和后续治理接入分别记录。

@@ -2,7 +2,7 @@
 
 本合同由主 tracker 与生命周期编排器消费。阶段、注册工作单元及父 Ticket 创建时点以生命周期注册表为准；工作项结构以 `schemas/stage-tracking.schema.json` 为准。
 
-本合同用于 `governed` 正式阶段。先按 `yss-product-lifecycle/references/orchestration-contract.yaml.request_triage.delivery_path` 判定；当前 Spec 政策和 CLI 已支持且判定合格的 `daily` 只维护一张普通 Ticket / PR，不强制建立阶段 checkpoint、stage work item 或运行本协议的 plan/apply/check。正式工作包现行或历史绑定仍按本协议恢复；其他功能的阶段记录不阻普通新任务。其他 Profile、旧 CLI 或政策未启用时明确 `daily unsupported`，不能按这段说明跳过正式追踪。
+本合同用于 `governed` 正式阶段。先按 `yss-product-lifecycle/references/orchestration-contract.yaml.request_triage.delivery_path` 判定；当前 Profile 政策和 CLI 已支持且判定合格的 `daily` 只维护一张普通 Ticket / PR，不强制建立阶段 checkpoint、stage work item 或运行本协议的 plan/apply/check。正式工作包现行或历史绑定仍按本协议恢复；其他功能的阶段记录不阻普通新任务。Profile 未启用、旧 CLI 或政策缺失时明确 `daily unsupported`，不能按这段说明跳过正式追踪。
 
 ## 启用与职责
 

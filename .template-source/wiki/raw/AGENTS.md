@@ -1,98 +1,38 @@
-# AGENTS.md — AI 开发入口规则
+# AGENTS.md — YSS 开发入口
 
-> 只保留入口、硬门禁和禁令。
+用简体中文；按当前任务加载规则，明确行动在既有授权内持续推进。
 
-## 1. 首先识别仓库身份
+本入口用于当前 YSS 治理仓及其治理资产，路径相对当前仓根。进入独立子仓时，使用子仓入口解释本地身份、工具和流程；共同授权、用户工作保护及允许写范围继续有效。CLI 源码仓和 skillUtils 工具包按各自已声明身份维护，不补造产品治理文件。
 
-先读根 `yss-project.yaml`：`template-source` 走模板维护；`project-instance` 走产品生命周期。
+先读当前治理仓根 `yss-project.yaml` 与唯一的 `CONTEXT.md`。身份缺失、非法或 schema 不支持时停止受影响写入并检查迁移；不得猜身份。只读调查不创建 Ticket、checkpoint、批准或启动回归。
 
-- `template-source` 不生成产品 Spec、原型、OpenAPI 或垂直切片 Ticket。
-- 文件缺失、schema 不支持或模式非法时停止并迁移检查；不得按目录、Git remote 或占位符猜身份。
+## 项目实例
 
-## 2. 单一事实来源
+先消费 `.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml` 的 `request_triage.delivery_path`。这是日常/正式路径的唯一策略；用支持该能力的 `yss lifecycle route` 核验当前任务、实现仓和完整基线 SHA。缺事实先调查；旧 CLI、缺政策、Profile 未启用或资格未证明时，不自行启用日常路径。
 
-| 事实 | 权威资产 |
-|---|---|
-| 词汇 | `CONTEXT.md` |
-| Agent 入口红线 | `AGENTS.md` |
-| 阶段、门禁、产物、工作单元、证据、稳定 ID | `.template-spec/process/lifecycle-registry.yaml`；`.template-spec/process/lifecycle-artifact-map.md` 仅为派生阅读视图 |
-| 影响面、`not-applicable`、模板维护强度 | `.template-spec/process/harness-process-tailoring.md`、`.template-source/process/maintenance-intensity.yaml` |
-| Skill 来源、版本、投影、路由 | `skills-lock.json`、`.template-spec/agents/yss-skill-registry.yaml` |
-| 数字人角色、运行时与会签 | `.template-spec/agents/digital-human-roles.yaml` |
-| 视觉规范 | `DESIGN.md`；治理见 `.template-spec/design/design.md` |
+`daily`：需求与验收 → 适用 YSS 技术技能 → 实现 → 测试 → 独立 `code-review`。只维护一张 Ticket/PR，记录范围、验收、工程/基线、Skills、实际测试、审查与回滚；跨会话更新同一记录。无需阶段 checkpoint、正式 Slice 合同或多级批准。用 `yss lifecycle verify-daily` 核验当前差异与证据；失败、缺独立审查或阻断问题未关闭不得宣布完成。
 
-其他文档和派生视图只引用，不重复定义。
+已有正式任务不得降级；无关正式资产不阻断日常任务。发现新风险保留修改与证据，停止受影响工作，从最近可信阶段恢复 `governed`。
 
-## 3. 标准文档语言与规范语汇
+`governed`：按 `.template-spec/process/harness-process-tailoring.md` 判影响，再用 `yss-product-lifecycle` 执行当前工作单元及依赖。阶段、门禁、稳定 ID 只由 `.template-spec/process/lifecycle-registry.yaml` 定义；只验证当前资产、触发合同与依赖，不提前生成未来资产。正式切片必须消费批准且当前的 Slice Implementation Contract；编译器不批准、不授予 `ready-for-agent`。正式批准/流转核验 Context、工程接入与门禁。
 
-- 生命周期文档用简体中文；英文专名、代码 / API 标识、schema、命令、文件名和 metadata 原样保留。新流程统一用 Spec、Ticket、`to-spec`、`to-tickets`。
-- 规划至实现全程消费根 `CONTEXT.md` 及文首合同；不可读即 `blocked`。稳定术语先登记，再以 `<ContextId>/<EnglishIdentifier>` 引用；跨上下文用 `Global/<EnglishIdentifier>`。
-- 每仓只允许根目录一个大小写精确的 `CONTEXT.md`；禁止嵌套、`CONTEXT-MAP.md`、跨仓路径和伪锚点。
-- `project-instance` 每个工作单元批准或流转前完成 `context_reconciliation`；缺失、冲突或摘要漂移即 `blocked`。`template-source` 校验模板合同并记录带原因的 `not-applicable`。
+API 先 OAS 3.1 YAML Draft、锁定工具校验、独立审查与 Freeze，再实现和契约测试。日常兼容范围及同一 Ticket 的证据按上述唯一策略和 `yss-openapi-governance`；其余走正式治理。
 
-## 4. `template-source` 模板维护路由
+<!-- YSS_TEMPLATE_SOURCE_ONLY_START -->
+## 模板源维护
 
-在用户已授权的模板维护范围内，继续完成受影响 Skill、投影、锁文件和分发快照的同步与适用验证；按当前影响面读取文档。首次编辑完成不等于交付完成。只有新增决定、缺失必要输入或命中既有审批边界时才暂停；提交、推送、发布仍按本仓授权规则执行。
+`template-source` 不生成产品阶段资产。按影响面维护事实源、派生、分发与证据；Skill 用 `maintaining-skills`，仅改 canonical `.agents/skills`，生成投影并更新锁。
 
-- 按“影响面 → 事实源 → 投影 / 派生 → 分级证据”维护；改 Skill 必须用 `maintaining-skills`，并按 `.template-spec/process/harness-process-tailoring.md` 判定 L1 / L2 / L3。
-- `.agents/skills` 是共享 Skill 权威目录；其他 Agent root 下的同名 Skill 是生成投影，不得手改或与 canonical 并列维护。
-- 内循环运行 `scripts/verify-template-fast`；PR 运行 `scripts/verify-template-candidate --base <完整 SHA>`；main 和发布前运行 `scripts/verify-template`。检查集合、覆盖台账及资格只由 `.template-source/process/template-verification-profiles.yaml` 定义；资格与完整 baseline 闭合后才能按影响选择，缺失或失效时执行独立 `legacy-full`。所有适用风险继续阻断。日常维护不强制独立审查或候选冻结，L1/L2/L3 决定验证强度；外部固定版本 CLI 集成未闭合不得称可发布。CI 边界见 `.template-source/process/github-workflows.md`。
+按裁剪文档和 `.template-source/process/maintenance-intensity.yaml` 分 L1/L2。先看 `scripts/verify-template-fast --plan`，日常按检查选择变化行为及直接/传递消费者；每项指出命中文件、受影响行为和能发现的具体错误，适用的强制检查注明合同依据。已有检查覆盖时不新增测试或启动环境；必要检查通过即结束，只有相关修改、失败或具体遗漏才追加验证。未知路径、缺输入映射或非法依赖先修正计划，不自动跑全量。日常报告记录 `limited` 范围、实际结果与未覆盖边界，交付 `implementation-ready`，无需逐项填写跳过理由。候选/main集成/发布仍遵守 `.template-source/process/template-verification-profiles.yaml` 的当前资格与完整覆盖合同。
 
-## 5. `project-instance` 产品研发路由
 
-主流程：分诊 → Plan → Spec / 功能架构 → 产品设计 → 工程契约 → Ticket → 切片 → 验证 / 发布 / 复盘。
+唯一自动 Git 例外由 `advance-maintenance-iteration` 的本地 checkpoint 引用合同规定，仅适用于模板源维护。
+<!-- YSS_TEMPLATE_SOURCE_ONLY_END -->
 
-- 先按 `.template-spec/process/harness-process-tailoring.md` 判定影响面和最近可信阶段，再由 `yss-product-lifecycle` 执行 `.template-spec/process/lifecycle-registry.yaml`；阅读导航见 `.template-spec/process/lifecycle-artifact-map.md`。
-- 命中门禁必须完成；仅未命中时记录带原因的 `not-applicable`，不得生成空文档或混淆门禁、产物、工作单元、证据。安全 / 权限写入普通 Spec、契约、架构、验收和 seam，按实际影响触发门禁。
-- 新功能和较大变更先进入 Plan；`to-spec`、`to-tickets`、`implement` 仅为用户显式兼容入口。API 变更先形成 OpenAPI 3.1 Draft，审查后 Freeze，再实现。
-- Spec 综合同时起草业务 Ticket 集，Design 校准同一组 ID；业务正式化后战略交接或技术分析，协议见 `.template-spec/process/business-tickets.md`。业务票不授予实现资格。Spec Delta 只记冻结基线的高风险行为差异。OpenAPI Freeze 或无 API 影响记录后拆窄垂直切片，禁止仅按技术层横拆。
-- `seam-deferred` 必须记录风险、责任人、后续 Ticket、验证计划和目标版本或发布日期。
+## 条件入口与边界
 
-## 6. Ticket 与状态
-
-- Plan / Spec / Design 按 `.template-spec/process/stage-tracking.md` 从阶段入口登记工作、按需拆分并在恢复 / 流转时验证；工作项进度不替代 Ticket 五态和阶段批准。
-
-- 每个功能先建父 Ticket，汇总阶段资产、审查、阻塞和证据。
-- Spec、设计、原型、OpenAPI Draft 和待冻结资产使用 `ready-for-human`；只有门禁通过、阻塞清除且可直接实现的垂直切片才能使用 `ready-for-agent`。
-- 按 `.template-spec/agents/issue-tracker.md` 持久化主 tracker，不从 Git remote 推断；平台不可用时生成待发布草案。五态见 `.template-spec/agents/triage-labels.md`。
-
-## 7. 实现与 YSS 路由硬门禁
-
-- 实现前按 `.template-spec/process/implementation-repo-integration.md` 登记仓库、项目根、分支、CI、验证命令、回滚点；再用 `yss-implementation-contract-compiler` 编译最小 Skill 集和当前合同。
-- 无工程先确认外部仓库或输出目录。Backend `scaffold_status=required` 时，由生命周期推荐 `domain-driven` / `layered-mvc`，用户逐项目确认后路由；Frontend 用 `yss-frontend-scaffold-generator`。缺目录不改路由。
-- 脚手架仅在 `scaffold-architecture-decisions.yaml` 已确认且当前、Project Scaffold Contract schema v4 已持久化并获批准后无交互运行，只生成机械骨架。既有工程不得重选或覆盖；架构转换单独立项。
-- 正式切片只消费已批准、已持久化且当前的 Slice Implementation Contract；编译器只起草，不批准、不设置 `ready-for-agent`、不宣布完成。
-- UI 切片在 `ready-for-agent` 前须有已校验的 `frontend_implementation_plan`，实现后补 `frontend_implementation_verification`，覆盖截图 / 视觉回归、状态交互、console warning、实际 `pnpm` 退出码。
-- 前端验证优先 `pnpm`，后端优先根 `./mvnw`；缺少时记录受控例外和实际命令。
-- 路径越界、证据缺失、验证未执行、`drift`、`violation` 或 `new_impacts` 时停止实现并重新路由。
-
-## 8. 专项任务的强制入口
-
-- 技术事实、标准、第三方 API 或框架行为用 `yss-research`（`technical-evidence` / `strategy-evidence`）；竞品、市场、口碑用 `competitive-intelligence`。
-- 产品设计由 `yss-prototype-stage` 持有合同并调用设计系统、独立评审、H1 / H2 适配器；原型禁用 `yss-ui`。真实组件事实只用于实现计划、已批准实现和还原验证。
-- 数字人协同或会签先读 `.template-spec/agents/digital-human-roles.yaml`；角色不得另起生命周期、批准 Slice 合同、设置 `ready-for-agent` 或宣布可发布。
-- 业务行为默认按 `tdd` 的 `behavior-tdd` 使用已确认公开 seam 逐切片实现；一次性生成、纯配置或流程文档不适用时，记录例外理由和可执行验证。
-
-## 9. 工作区与实现仓库边界
-
-- 运行时代码默认进入已登记的 `external-repository`；仅用户明确选择时使用 `apps/backend/<project>`、`apps/frontend/<project>` 的 `harness-apps`，或以真实 gitlink 使用 `git-submodule`。三种 scope 按实现接入文档登记。
-- 禁止向 `app/backend/`、`app/frontend/` 输出；空 gitlink、detached HEAD、`--force` 挂载点不得视为普通目录；不得把 submodule 登记为 `harness-apps` 或复制源码冒充。
-
-## 10. 独立审查、验证和追踪
-
-- 实现者不做独立审查，Reviewer 不写实现；代码审查统一用 `code-review`。mandatory 不豁免；`violation` 修复后重审，`drift` / `new_impacts` 使合同 `stale` 并回编译器。
-- “完成 / 可合并 / 可发布”仅基于 Fresh Verification；历史结果、自述无效。
-- 会签按角色表 `gate_policy` 并经 `scripts/verify-approval-record --require-approved --checkpoint <current checkpoint>` 核验；当前期望上下文由消费者的 checkpoint / 任务提供，不从会签记录反向填充。`user_decision_policy` 命中的关键决定必须先展示可审阅资产，再取得提问者或其明确指定负责人的真实回复。无回复保持等待，数字人不能代答；原始来源、范围、复用和失效见生命周期 `references/user-decisions.md`。发布、商务承诺、运行时外部副作用仍须生物人。
-- 普通功能默认一个推进负责人和一个独立审查者；候选角色列表不要求逐角色签字。相邻检查可组合审查、逐项留结论。已有范围授权按用户决定协议验证延续，未知影响先调查，确认实质决定变化后才重新决定；外部强制审批不得裁掉，缺陷和缺证据仍阻断，非阻断建议进入待办。
-- 首轮覆盖全部适用审查项；修复后按差异、受影响结论 / 行为及依赖定向复审，并重新绑定当前候选。摘要变化、UI 影响或 `new_impacts` 不触发默认全轴复审；未知影响先调查。能力与补充只读技能从角色表编译，禁止用职称代替能力或独立身份。专业审查等待由主控自主派发并等待，验证失败修复或路由；仅缺真实决定或新授权时展示资产后询问，独立工作继续。
-- 会签暂停、handoff、实现、合并、发布边界同步范围、证据、风险、会签点、Ticket 状态和下一步。Git checkpoint 只含本轮范围；提交 / 推送须用户授权。仅 `template-source` 的 `scripts/advance-maintenance-iteration` 入口可在**本地 `refs/checkpoints/<run-id>` 引用**上自动创建 checkpoint 提交（不推送、不改分支、不建 tag）；可用 `--root` 指定已登记的专职模板真实 gitlink，先核验身份、Context 与明确的本地分支。`project-instance` 不适用；写入 main、推送远端、打 tag、发布仍须用户授权。
-- 发布或阶段完成时判断复盘；架构 / 验证返工、IMPORTANT / CRITICAL finding、人工确认延期时，落中文复盘并修订事实源。
-
-## 11. Subagent 协同
-
-- 使用 subagent 或其他运行时前读 `.template-spec/process/subagent-collaboration.md`，建立含角色、`runtime_id`、执行态、技能约束和不重叠写范围的任务包；共享工作区不是安全边界。
-- 仓库身份、Ticket 最终状态、Git checkpoint、Slice 合同批准和完成结论由主控裁决；实现者不得兼任独立审查者或会签自己的资产。
-
-## 12. 测试质量基线
-
-模板推荐 Domain / Application `>= 90%`、API `>= 80%`、前端组件 `>= 75%`、关键流程 `100% E2E`；`project-instance` 明确采纳后才是 CI 门禁，未定义关键流程不得称 100% E2E。
+- 工程接入、脚手架、仓库写范围读 `.template-spec/process/implementation-repo-integration.md`。代码进入已确认实现仓；不得把空 gitlink/子模块当普通目录或覆盖既有工程。
+- 实现优先 YSS 技能；前端 `pnpm`，后端根 `./mvnw`；行为测试用 `tdd`。原型用 `yss-prototype-stage`，技术研究用 `yss-research`，竞品用 `competitive-intelligence`。
+- 协作读 `.template-spec/process/subagent-collaboration.md`，角色/会签读 `.template-spec/agents/digital-human-roles.yaml`；写范围不重叠，实施者不得自审。主控裁决状态与完成。
+- 验证保留实际命令、退出码、范围与未覆盖项；字节、规则、参数或仓库变化使受影响证据失效。局部完成不等于可合并/可发布。
+- 决定/授权消费 [.agents/skills/yss-product-lifecycle/references/user-decisions.md](.agents/skills/yss-product-lifecycle/references/user-decisions.md)。复用有效范围授权；新决定、外部强制审批和外部动作按实际边界处理。提交、推送、发布须用户授权。

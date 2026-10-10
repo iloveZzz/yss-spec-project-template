@@ -1,4 +1,4 @@
-import { existsSync, lstatSync, readdirSync } from "node:fs";
+import { existsSync, lstatSync, readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 
@@ -48,6 +48,14 @@ export function verifyGovernanceLayout(root, mode) {
   }
   let oldFiles;
   if (mode === "template-source") {
+    for (const ref of ["AGENTS.md", ...["design", "backend", "frontend"].map(profile => `submodules/yss-harness-${profile}-agent/AGENTS.md`)]) {
+      if (ref !== "AGENTS.md" && !existsSync(path.join(root, ref))) continue;
+      const source = readFileSync(path.join(root, ref), "utf8");
+      const start = "<!-- YSS_TEMPLATE_SOURCE_ONLY_START -->", end = "<!-- YSS_TEMPLATE_SOURCE_ONLY_END -->";
+      if (source.split(start).length !== 2 || source.split(end).length !== 2 || source.indexOf(end) < source.indexOf(start)) {
+        throw new TypeError(`AGENTS_SOURCE_ONLY_MARKERS: 当前模板来源必须有一对顺序正确的标记: ${ref}`);
+      }
+    }
     const result = spawnSync("git", ["ls-files", "-z", "--", "docs"], { cwd: root, encoding: "utf8" });
     if (result.status !== 0) throw new TypeError(result.stderr || "无法读取模板源受控文件清单");
     oldFiles = result.stdout.split("\0").filter(Boolean).filter(staticPath);

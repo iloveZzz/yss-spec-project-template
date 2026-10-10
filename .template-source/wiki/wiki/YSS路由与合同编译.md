@@ -2,6 +2,8 @@
 
 `yss-implementation-contract-compiler` 把冻结资产与垂直切片编译成当前实现合同和最小 Skill 集。路由以登记的工程与影响面为输入，合同批准、实现就绪和最终完成由生命周期掌握。
 
+先由生命周期唯一 `request_triage.delivery_path` 政策与支持的 CLI 判定任务路径。合格日常任务按需求验收选择适用 YSS 技术 Skill，在同一 Ticket/PR 留实现、测试、独立审查及回滚证据；正式切片才按下述合同编译、批准与就绪要求推进。专项技能不自行授予日常资格，已有正式绑定不能降级。
+
 ## 权威路由输入
 
 实现前先按工程接入事实源登记仓库、项目根、分支、CI、验证命令和回滚点，再用 `yss-implementation-contract-compiler` 编译最小 Skill 集与当前合同。`CONTEXT.md` 在规划至实现全程消费；稳定术语先登记，再以 `<ContextId>/<EnglishIdentifier>` 引用，跨上下文使用 `Global/<EnglishIdentifier>`。
@@ -24,6 +26,9 @@ Skill 来源、版本和投影由 `skills-lock.json` 记录；路由由 `.templa
 
 ## 来源
 
-- `AGENTS.md`：第 61、29–31、20、38、64、62–63、67 行。
-
-- `CONTEXT.md`：第 64–65、100、95–98、64、65 行。
+- `AGENTS.md`：5–7、11–19、34–38 行。
+- `CONTEXT.md`：64、64–65、65、95–98、100 行。
+- `.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml`：205–226、1158–1172、1210–1229 行。
+- `.template-spec/agents/yss-skill-registry.yaml`：1–15 行。
+- `.template-spec/process/implementation-repo-integration.md`：7–15 行。
+- `.agents/skills/code-review/references/yss-review-standards.md`：54–65 行。

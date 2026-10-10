@@ -2,13 +2,14 @@ import { attachScaffoldDecisionFixture } from "../../../../scripts/fixtures/user
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { spawnSync } from "node:child_process";
-import { mkdtemp, mkdir, readFile, rm, stat, writeFile } from "node:fs/promises";
+import { cp, mkdtemp, mkdir, readFile, readdir, rm, stat, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 import { attachDesignPrerequisites } from "../../../../scripts/fixtures/backend-scaffold/design-prerequisites.mjs";
 import { validateNextRoute } from "../../../../scripts/lib/lifecycle-transition.mjs";
+import { renderDataAnalysisAgents } from "./data-analysis-profile.mjs";
 
 const script = path.join(path.dirname(fileURLToPath(import.meta.url)), "generate_scaffold.mjs");
 const digest = (value) => `sha256:${createHash("sha256").update(value).digest("hex")}`;
@@ -74,6 +75,18 @@ async function fixture(t, { profile = capabilityModules.basic, architectureProfi
   return { root, output, decisionFile, contractFile, contract, design, args, project: path.join(output, "demo-service") };
 }
 
+test("AGENTS 入口裁剪不依赖标题且拒绝非法标记", () => {
+  const start = "<!-- YSS_TEMPLATE_SOURCE_ONLY_START -->", end = "<!-- YSS_TEMPLATE_SOURCE_ONLY_END -->";
+  const input = `产品规则\n${start}\n## 任意标题\n源仓规则\n${end}\n授权 .agents/skills/test\n`;
+  const expected = "产品规则\n\n授权 ../skillUtils/.agents/skills/test\n";
+  assert.equal(renderDataAnalysisAgents(input), expected);
+  assert.equal(renderDataAnalysisAgents(expected), expected);
+  for (const invalid of [start, end, end + start, start + start + end, start + end + end]) {
+    assert.throws(() => renderDataAnalysisAgents(invalid), /AGENTS_SOURCE_ONLY_MARKERS/);
+  }
+  assert.equal(renderDataAnalysisAgents("## 4. `template-source` 模板维护路由\n旧维护\n## 5. 产品规则\n"), "## 4. 模板维护\n\n本仓为 project-instance；模板维护回上游执行。\n\n## 5. 产品规则\n");
+});
+
 test("数据分析初始化生成 H2 六模块和独立治理信封", async (t) => {
   const data = await fixture(t, { architectureProfile: "mvc-data-analysis-v1", profile: { capabilities: [], modules: ["server", "core", "client", "repository", "adapter", "feign-client"] } });
   const context = "---\ncontext_schema_version: 1\n---\n# 业务上下文\n\n## 业务术语\n\n| 术语 | 含义 | 英文标识 | 适用业务责任区 | 避免 / 备注 |\n|---|---|---|---|---|\n";
@@ -108,6 +121,14 @@ test("数据分析初始化生成 H2 六模块和独立治理信封", async (t) 
   assert.equal(await readFile(path.join(data.project, "CONTEXT.md"), "utf8"), context);
   await stat(path.join(data.project, ".git"));
   await stat(path.join(data.output, "skillUtils/skills-lock.json"));
+  const agents = await readFile(path.join(data.project, "AGENTS.md"), "utf8");
+  assert.doesNotMatch(agents, /YSS_TEMPLATE_SOURCE_ONLY|## 模板源维护|\.template-source\/process\/maintenance-intensity/);
+  assert.match(agents, /daily/);
+  assert.match(agents, /governed/);
+  assert.match(agents, /\.\.\/skillUtils\/\.agents\/skills/);
+  const toolsAgents = await readFile(path.join(data.output, "skillUtils/AGENTS.md"), "utf8");
+  assert.match(toolsAgents, /yss-skill-utils \/ skill-utils-v1/);
+  assert.doesNotMatch(toolsAgents, /每个任务先读|先读根/);
   assert.ok(!manifest.ownership.generated_files.some((entry) => entry.path.startsWith(".git/")));
   const manifestRef = path.join(data.project, ".yss/scaffold-generation.json");
   const verificationRef = path.join(data.root, "scaffold-verification.json");
@@ -133,6 +154,27 @@ test("数据分析初始化生成 H2 六模块和独立治理信封", async (t) 
   assert.equal(edge("work-unit.service-project-initialization", "work-unit.implementation-repository-preparation").result, "blocked", "缺失 Wrapper 命令不得放行");
   const core = await readFile(path.join(data.project, "demo-service-core/pom.xml"), "utf8");
   assert.doesNotMatch(core, /demo-service-client|spring-web|ojdbc|mysql-connector/);
+});
+
+test("数据分析 AGENTS 非法标记在创建输出前零写入", async (t) => {
+  const data = await fixture(t, { architectureProfile: "mvc-data-analysis-v1", profile: { capabilities: [], modules: ["server", "core", "client", "repository", "adapter", "feign-client"] } });
+  const context = "---\ncontext_schema_version: 1\n---\n# 业务上下文\n";
+  await writeFile(path.join(data.root, "context-handoff.md"), context);
+  Object.assign(data.contract, { context_handoff_ref: "context-handoff.md", context_handoff_digest: digest(context) });
+  await writeFile(data.contractFile, JSON.stringify(data.contract));
+  const source = path.join(data.root, "source");
+  const repository = path.resolve(path.dirname(script), "../../../..");
+  for (const ref of ["scripts", ".agents/skills", ".template-spec", ".template-source/process"]) {
+    await cp(path.join(repository, ref), path.join(source, ref), { recursive: true });
+  }
+  const start = "<!-- YSS_TEMPLATE_SOURCE_ONLY_START -->", end = "<!-- YSS_TEMPLATE_SOURCE_ONLY_END -->";
+  for (const invalid of [start, end, end + start, start + start + end, start + end + end]) {
+    await writeFile(path.join(source, "AGENTS.md"), invalid);
+    const result = spawnSync(process.execPath, [path.join(source, "scripts/fixtures/backend-scaffold/generate-candidate.mjs"), path.join(source, ".agents/skills/yss-layered-mvc-scaffold-generator/scripts/generate_scaffold.mjs"), ...data.args], { encoding: "utf8" });
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /AGENTS_SOURCE_ONLY_MARKERS/);
+    assert.deepEqual(await readdir(data.output), []);
+  }
 });
 
 test("数据分析 Profile 缺少 CONTEXT handoff 或独立 Git 合同时零写入阻断", async (t) => {

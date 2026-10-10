@@ -76,7 +76,7 @@ main@6acc160e4e0cd062dbbbd7a1b26ae92855edf07e
 scripts/verify-template-fast
 ```
 
-快速入口按 Git 影响面执行相关检查，未映射路径或核心校验资产变化时 fail-safe 升级为完整验证，来源仍为当前工作树，用于 `implementation-ready`。显式 candidate / 发布入口要求已提交来源。三个入口共同检查：
+快速入口先用 `--plan` 按 Git 影响面选择当前变化及直接/传递消费者的必要检查；未映射路径、缺输入映射或非法依赖先修正计划，不自动运行全量。来源为当前工作树，日常交付记录 `limited` 范围，必要检查通过后用于 `implementation-ready`。显式 candidate / 发布入口要求已提交来源。三个入口共同检查：
 
 - `yss-project.yaml`、权威流程资产和模板是否完整。
 - 共享技能投影及 `skills-lock.json` 的完整树哈希是否一致。

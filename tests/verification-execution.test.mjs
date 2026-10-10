@@ -11,6 +11,39 @@ import {executeVerificationPlan,addVerificationExecutionTasks,validateVerificati
 import {assertQualificationExecutionContract} from '../.template-source/scripts/lib/verification-report-validator.mjs';
 import {compileTaskExecution} from '../.template-source/scripts/lib/verification-execution-plan.mjs';
 import {planTemplateVerification,loadVerificationProfiles} from '../scripts/lib/template-verification.mjs';
+test('日常任务只追加变化脚本语法，文本不追加全量终检和制品',()=>{
+  const input=planTemplateVerification({changedFiles:['.agents/skills/yss-cache/SKILL.md']});
+  const text=addVerificationExecutionTasks(input,{root:process.cwd()});
+  assert.equal(text.commands.filter(task=>task.kind==='syntax').length,0);
+  assert.ok(!text.commands.some(task=>task.kind?.startsWith('artifact')||task.task_id?.startsWith('supplemental.')));
+  assert.ok(text.commands.every(task=>task.selection_reason));
+  const scripts=addVerificationExecutionTasks(planTemplateVerification({changedFiles:['scripts/lib/verification-selection.mjs']}),{root:process.cwd()});
+  assert.deepEqual(scripts.commands.filter(task=>task.kind==='syntax').map(task=>task.command.match(/'([^']+)'$/)[1]),['scripts/lib/verification-selection.mjs']);
+});
+test('日常 package 解析模式变化只重验其作用域中的管理脚本',t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'daily-parsing-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ fs.mkdirSync(path.join(root,'scripts'));fs.writeFileSync(path.join(root,'scripts/package.json'),'{}');
+ fs.writeFileSync(path.join(root,'scripts/a.js'),'const a = 1;');fs.writeFileSync(path.join(root,'scripts/b.mjs'),'const b = 1;');
+ const plan=addVerificationExecutionTasks({strategy:'daily-necessary',requested_profile:'fast',effective_profile:'fast',commands:[],syntax_files:['scripts/a.js','scripts/b.mjs'],changed_files:['scripts/package.json']},{root});
+ assert.equal(plan.commands.filter(task=>task.kind==='syntax').length,1);
+ assert.ok(plan.commands.find(task=>task.kind==='syntax').command.endsWith("'scripts/a.js'"));
+});
+test('日常等价 Node 入口复用一次真实执行，保留请求及任务身份',async t=>{
+ const directory=fs.mkdtempSync(path.join(os.tmpdir(),'daily-alias-'));t.after(()=>fs.rmSync(directory,{recursive:true,force:true}));
+ const target=path.join(directory,'counter.test.mjs'),count=path.join(directory,'count');
+ fs.writeFileSync(target,`import test from 'node:test';import fs from 'node:fs';test('counter',()=>{const p=${JSON.stringify(count)};fs.writeFileSync(p,String(Number(fs.existsSync(p)?fs.readFileSync(p):0)+1));});`);
+ const plan=addVerificationExecutionTasks({strategy:'daily-necessary',requested_profile:'fast',effective_profile:'fast',commands:[
+  {id:'check.first',task_id:'first',group:'one',command:`node --test ${target}`,when:'template-source'},
+  {id:'check.second',task_id:'second',group:'two',command:`'${process.execPath}' --test ${target}`},
+ ]},{root:process.cwd()});
+ const tasks=plan.commands.filter(item=>item.group==='one'||item.group==='two').map(item=>({...item,depends_on:[]}));
+ const environment={...process.env};delete environment.NODE_TEST_CONTEXT;
+ const rows=(await runGroups({...plan,commands:tasks},'template-source',2,{cwd:process.cwd(),environment,logRoot:directory})).flatMap(group=>group.results);
+ assert.ok(fs.existsSync(count),rows.map(row=>fs.readFileSync(row.stdoutFile,'utf8')+fs.readFileSync(row.stderrFile,'utf8')).join('\n'));
+ assert.equal(fs.readFileSync(count,'utf8'),'1');
+ assert.deepEqual(rows.map(row=>row.task_id),['first','second']);assert.equal(rows[1].reused,true);
+ assert.notEqual(tasks[0].requested_command,tasks[1].requested_command);
+});
 
 const quote = value => `'${String(value).replaceAll("'", "'\\''")}'`;
 const node = source => `${quote(process.execPath)} -e ${quote(source)}`;
@@ -47,9 +80,10 @@ test('真实Git退役四gitlink差异纳入完整门禁，仍保留三个Agent�
   assert.deepEqual(changed,['.gitmodules',...retired].sort());
   const remaining=git('ls-files','--stage').split('\n').filter(line=>line.startsWith('160000 ')).map(line=>line.split('\t')[1]).sort();
   assert.deepEqual(remaining,active.sort(),'退役差异不能删除三个Agent或yss来源');
-  for(const profile of ['fast','candidate']){
+  assert.throws(()=>planTemplateVerification({profile:'fast',changedFiles:changed,root:sourceRoot}),/INCOMPLETE_VERIFICATION_INPUTS/,'缺日常映射不能转换为发布任务');
+  for(const profile of ['candidate','release']){
     const plan=planTemplateVerification({profile,changedFiles:changed,root:sourceRoot});
-    assert.equal(plan.effective_profile,'release');assert.equal(plan.compatibility_required,true);assert.deepEqual(plan.unknown_files,[]);assert.match(plan.escalation_reason,/\.gitmodules/);
+    assert.equal(plan.effective_profile,'release');assert.equal(plan.compatibility_required,true);assert.deepEqual(plan.unknown_files,[]);if(profile==='candidate')assert.match(plan.escalation_reason,/\.gitmodules/);
     for(const group of ['drift-identity','candidate-integrity','dedicated-cli-core','cli-sync','strategic-handoff-package','implementation'])assert.ok(plan.groups.includes(group),`${profile}: ${group}`);
     const execution=addVerificationExecutionTasks(plan,{root:sourceRoot,reportDir:path.join(root,`report-${profile}`)});
     assert.ok(execution.commands.some(item=>item.command.includes('verify-delivery-harness-distribution')),'公开四Profile交接分发不能被裁掉');
@@ -76,7 +110,10 @@ test('原生实例必要检查纳入各profile及完整真实变更计划，保�
   assert.deepEqual(definition.gate_ids,['check.verification-fixed-source']);
   assert.deepEqual(definition.depends_on,[]);
   assert.ok(actual.every(ref=>typeof ref==='string'&&ref),'完整实际变更路径不可用显式子集代替');
-  for(const profile of ['fast','candidate','release'])for(const [scope,changedFiles]of [['native',[nativeRef]],['complete',actual],['clean',[]]]){
+  assert.throws(()=>planTemplateVerification({profile:'fast',changedFiles:[nativeRef],root}),/INCOMPLETE_VERIFICATION_INPUTS/);
+  const daily=addVerificationExecutionTasks(planTemplateVerification({profile:'fast',changedFiles:[],root}),{root});
+  assert.ok(!daily.commands.some(task=>task.task_id?.startsWith('supplemental.')),'日常不无条件追加补充回归');
+  for(const profile of ['candidate','release'])for(const [scope,changedFiles]of [['native',[nativeRef]],['complete',actual],['clean',[]]]){
     const plan=planTemplateVerification({profile,changedFiles,root});
     assert.deepEqual(plan.unknown_files,[]);
     assert.deepEqual(plan.changed_files,[...new Set(changedFiles)].sort());

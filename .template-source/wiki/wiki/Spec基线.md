@@ -2,9 +2,9 @@
 
 Spec 记录用户问题、解决方案、用户故事、关键决策、验收标准和测试 seam，是可审查的产品研发规格。它为设计、契约和切片提供需求基线，进入实现还需当前合同与就绪核验。
 
-## 生命周期位置
+## 正式生命周期位置
 
-新功能和较大变更先进入 Plan。`work-unit.spec-synthesis` 消费已确认的 Plan 记录和测试 seam，产出 Spec、产品总体设计、功能架构及业务 Ticket 草案集合；草案进入 `ready-for-human`，下游推进仍需 `gate.spec-baseline-approved`。
+正式新功能和较大变更先进入 Plan；合格日常任务的需求与验收保存在同一 Ticket/PR，不因此生成正式 Spec 阶段资产。`work-unit.spec-synthesis` 消费已确认的 Plan 记录和测试 seam，产出 Spec、产品总体设计、功能架构及业务 Ticket 草案集合；草案进入 `ready-for-human`，下游推进仍需 `gate.spec-baseline-approved`。
 
 `gate.spec-baseline-approved` 处理新功能、行为变化或范围扩大进入基线的批准。已授权范围内细化可复用当前有效授权；实质变化需要重新决定。模板源仓库只维护这些可复用规则，`template-source` 不生成具体产品的 Spec、原型、OpenAPI 或垂直切片 Ticket。
 
@@ -26,10 +26,8 @@ Spec 记录用户问题、解决方案、用户故事、关键决策、验收标
 
 ## 来源
 
-- `.template-spec/templates/spec-template.md`：第 1–7、13–19、33–39、51–59、41–49、97–105、125–131、61–77 行。
-
-- `CONTEXT.md`：第 44、8–14 行。
-
-- `AGENTS.md`：第 47、7–10 行。
-
-- `.template-spec/process/lifecycle-registry.yaml`：第 432–437、167–173 行。
+- `.template-spec/templates/spec-template.md`：1–7、13–19、33–39、41–49、51–59、61–77、97–105、125–131 行。
+- `CONTEXT.md`：8–14、44 行。
+- `AGENTS.md`：5–7、11–19、34–38 行。
+- `.template-spec/process/lifecycle-registry.yaml`：185–191、463–468 行。
+- `.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml`：205–226 行。

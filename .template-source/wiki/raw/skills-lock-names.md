@@ -31,8 +31,10 @@ Derived names only. Do not copy hashes, paths, or the lock file.
 - `mapstruct`
 - `prototype`
 - `prototype-review`
+- `publish-skills-sh`
 - `resolving-merge-conflicts`
 - `setup-matt-pocock-skills`
+- `setup-yss-harness`
 - `tdd`
 - `theme-token-usage`
 - `to-spec`
@@ -57,7 +59,6 @@ Derived names only. Do not copy hashes, paths, or the lock file.
 - `yss-formily`
 - `yss-formily-schema-generator`
 - `yss-frontend-scaffold-generator`
-- `yss-harness-upgrade`
 - `yss-hook`
 - `yss-implementation-contract-compiler`
 - `yss-layered-mvc-scaffold-generator`

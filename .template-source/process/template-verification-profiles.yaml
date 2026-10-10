@@ -6,6 +6,39 @@ profiles:
     always_groups:
       - hygiene
     checks:
+      - id: check.9f66238a57e457bf
+        group: lifecycle
+        inputs_complete: true
+        input_patterns:
+          - ".template-source/derived/harness-work-unit-map.md"
+          - ".template-spec/process/lifecycle-registry.yaml"
+          - ".template-spec/process/schemas/lifecycle-registry.schema.json"
+          - "scripts/lib/lifecycle-registry.mjs"
+          - "scripts/verify-lifecycle-registry"
+          - "scripts/generate-lifecycle-artifacts"
+        depends_on: []
+        failure_mode: "维护工作单元说明与生命周期事实源或派生输出不一致"
+      - id: check.skill-registry-unit
+        run: "node --test .template-source/tooling/node/test/skill-registry.test.mjs"
+        group: skills-policy
+        inputs_complete: true
+        input_patterns:
+          - "scripts/lib/skill-registry.mjs"
+          - ".template-source/tooling/node/test/skill-registry.test.mjs"
+          - ".template-spec/agents/yss-skill-registry.yaml"
+        depends_on: []
+        failure_mode: "维护技能层级或调用元数据的接受与拒绝语义回归"
+      - id: check.runtime-storage
+        group: runtime-storage
+        inputs_complete: true
+        input_patterns:
+          - "scripts/runtime-store"
+          - "scripts/lib/runtime-store.mjs"
+          - ".template-source/cli-core/runtime-store.mjs"
+          - ".template-source/scripts/measure-runtime-store.mjs"
+          - "tests/runtime-store*.test.mjs"
+        depends_on: []
+        failure_mode: "运行记录保留、仓外落盘或实际测量入口的分发与输出错误"
       - id: check.maintenance-counterexample
         group: maintenance
         inputs_complete: true
@@ -48,6 +81,121 @@ profiles:
           - "scripts/verify-maintenance-review-workflow-scenarios"
         depends_on: []
         failure_mode: "当前 L2 正式审查的候选绑定、任务包或发布门禁未闭合"
+      - id: "check.agents-wiki-structure"
+        run: "node .agents/skills/llm-wiki/scripts/lint-wikilinks.mjs .template-source/wiki --repo . --structure-only"
+        group: "hygiene"
+        inputs_complete: true
+        input_patterns:
+          - ".template-source/wiki/**"
+        depends_on: []
+        failure_mode: "入口知识刷新产生坏链接、错误来源闭包或未完成事务；当前性另由 status 报告"
+      - id: "check.agents-shared-sync"
+        run: "scripts/sync-strategic-handoff-tools --check"
+        group: "strategic-handoff-package"
+        inputs_complete: true
+        input_patterns:
+          - "scripts/sync-strategic-handoff-tools"
+          - ".template-spec/process/subagent-collaboration.md"
+          - ".template-spec/process/stage-tracking.md"
+          - ".template-source/distribution/strategic-handoff-tools.lock.json"
+          - "submodules/yss-harness-*/.template-source/distribution/strategic-handoff-tools.lock.json"
+        depends_on: []
+        failure_mode: "共享协作和阶段路由说明未传播或来源锁仍绑定旧字节"
+      - id: "check.agents-source-boundary"
+        run: "node --test tests/governance-layout.test.mjs"
+        group: "hygiene"
+        inputs_complete: true
+        input_patterns:
+          - "AGENTS.md"
+          - "submodules/yss-harness-*/AGENTS.md"
+          - "scripts/verify-governance-layout"
+          - "scripts/lib/governance-layout.mjs"
+          - "tests/governance-layout.test.mjs"
+        depends_on: []
+        failure_mode: "当前来源缺失、重复或倒序标记被历史兼容路径静默接受"
+      - id: "check.mvc-data-analysis-entry"
+        run: "node --test --test-name-pattern='数据分析|AGENTS|入口' .agents/skills/yss-layered-mvc-scaffold-generator/scripts/scaffold-generator.test.mjs"
+        group: "implementation"
+        inputs_complete: true
+        input_patterns:
+          - "AGENTS.md"
+          - ".agents/skills/yss-layered-mvc-scaffold-generator/scripts/**"
+        depends_on: []
+        failure_mode: "数据分析工程入口泄漏模板规则、工具包身份错误或非法标记产生部分输出"
+      - id: "check.skill-projection-identity"
+        inputs_complete: true
+        input_patterns:
+          - ".agents/skills/**"
+          - ".codex/skills/**"
+          - ".cursor/skills/**"
+          - ".pi/skills/**"
+          - "skills-lock.json"
+          - "scripts/sync-skills"
+          - "scripts/update-skill-lock"
+          - "scripts/lib/skill-supply-chain.mjs"
+        depends_on: []
+        failure_mode: "技能投影缺失或与 canonical 字节不一致的错误"
+      - id: "check.skill-lock-current"
+        inputs_complete: true
+        input_patterns:
+          - ".agents/skills/**"
+          - ".codex/skills/**"
+          - ".cursor/skills/**"
+          - ".pi/skills/**"
+          - "skills-lock.json"
+          - "scripts/sync-skills"
+          - "scripts/update-skill-lock"
+          - "scripts/lib/skill-supply-chain.mjs"
+        depends_on: []
+        failure_mode: "技能锁摘要与当前内容不一致的错误"
+      - id: "check.93d2af5732ccdd96"
+        inputs_complete: true
+        input_patterns:
+          - ".agents/skills/**"
+          - ".codex/skills/**"
+          - ".cursor/skills/**"
+          - ".pi/skills/**"
+          - "scripts/verify-skill-governance"
+          - "scripts/lib/skill-governance.mjs"
+          - ".template-source/agents/skills-maintenance.md"
+        depends_on: []
+        failure_mode: "技能入口命名、引用或资源结构错误"
+      - id: "check.prototype-work-layout"
+        run: "node --test .agents/skills/yss-prototype-stage/tests/reliability.test.mjs submodules/yss-harness-design-agent/.agents/skills/yss-prototype-stage/tests/reliability.test.mjs"
+        group: "work-layout"
+        inputs_complete: true
+        input_patterns:
+          - ".agents/skills/yss-prototype-stage/tests/reliability.test.mjs"
+          - "submodules/yss-harness-design-agent"
+          - "submodules/yss-harness-design-agent/.agents/skills/yss-prototype-stage/**"
+        depends_on: []
+        failure_mode: "原型拒绝配置的工作包根、接受错目录或覆盖已存在内容"
+      - id: "check.022dccdddca70b70"
+        inputs_complete: true
+        input_patterns:
+          - ".template-spec/agents/yss-skill-registry.yaml"
+          - "scripts/verify-skill-registry"
+          - "scripts/lib/skill-registry.mjs"
+          - "yss-public-skills.json"
+        depends_on: []
+        failure_mode: "技能注册、别名或入口身份错误"
+      - id: "check.c80aaecf300ddc1f"
+        inputs_complete: true
+        input_patterns:
+          - "scripts/lib/skill-supply-chain.mjs"
+          - "tests/skill-sync-efficiency.test.mjs"
+        depends_on: []
+        failure_mode: "投影或锁更新遗漏、重复更新错误"
+      - id: "check.22712701df14f183"
+        inputs_complete: true
+        input_patterns:
+          - "scripts/sync-profile-skills"
+          - "scripts/lib/profile-skill-sync.mjs"
+          - ".template-source/profile-skill-sync.json"
+          - "submodules/yss-harness-design-agent/**"
+          - "submodules/yss-harness-design-agent"
+        depends_on: []
+        failure_mode: "Profile 分发投影与来源不一致的错误"
       - id: "check.profile-skills-preparation"
         run: "node --test .template-source/tooling/node/test/profile-skill-sync.test.mjs .template-source/tooling/node/test/profile-skills-preparation.test.mjs .template-source/tooling/node/test/profile-skills-standalone.test.mjs"
         group: "skills"
@@ -88,6 +236,227 @@ profiles:
           - "submodules/yss-cli/**"
         depends_on: []
         failure_mode: "固定 Git 来源组合或离线分发错误"
+      - id: "check.a74d7c2cc539e456"
+        inputs_complete: true
+        input_patterns:
+          - ".agents/skills/.strategic-design-skills-manifest.json"
+          - "submodules/yss-harness-design-agent"
+          - "submodules/yss-harness-design-agent/**"
+        depends_on: []
+        failure_mode: "上游 Skill 来源未保留或来源摘要错误"
+      - id: "check.208c7eedeff4e6e9"
+        inputs_complete: true
+        input_patterns:
+          - ".agents/skills/yss-skill-source-index-refresh/**"
+        depends_on: []
+        failure_mode: "来源索引生成和失效判断错误"
+      - id: "check.f8acc69a55fea6b0"
+        inputs_complete: true
+        input_patterns:
+          - ".agents/skills/yss-repository/**"
+          - ".agents/skills/yss-mybatis/**"
+        depends_on: []
+        failure_mode: "持久化 Profile 选择或错误路由"
+      - id: "check.research-evidence-scenarios"
+        inputs_complete: true
+        input_patterns:
+          - ".agents/skills/yss-research/scripts/**"
+          - ".agents/skills/yss-research/assets/**"
+          - ".agents/skills/yss-research/references/evidence-contract.md"
+        depends_on: []
+        failure_mode: "研究证据结构或审计拒绝语义错误"
+      - id: "check.competitive-evidence-scenarios"
+        inputs_complete: true
+        input_patterns:
+          - ".agents/skills/yss-research/scripts/**"
+          - ".agents/skills/yss-research/references/competitive-analysis.md"
+          - ".agents/skills/competitive-intelligence/**"
+          - ".template-spec/plan/templates/competitive-*"
+        depends_on: []
+        failure_mode: "竞品证据绑定或输出一致性错误"
+      - id: "check.document-writing-integration"
+        inputs_complete: true
+        input_patterns:
+          - ".agents/skills/i-have-adhd/**"
+          - ".template-spec/process/document-writing.md"
+        depends_on: []
+        failure_mode: "文档写法或技能接入引用错误"
+      - id: "check.8cd499a929b8a5a4"
+        inputs_complete: true
+        input_patterns:
+          - "AGENTS.md"
+          - "CONTEXT.md"
+          - "yss-project.yaml"
+          - "README.md"
+          - ".gitignore"
+          - ".template-spec/**"
+          - ".template-source/process/**"
+          - ".template-source/agents/**"
+          - "docs/**"
+          - "scripts/verify-governance-layout"
+          - "scripts/lib/governance-layout.mjs"
+        depends_on: []
+        failure_mode: "治理身份、目录或资产引用布局错误"
+      - id: "check.structured-assets"
+        resources: ["python-jsonschema"]
+        inputs_complete: true
+        input_patterns:
+          - ".template-spec/process/schemas/**"
+          - ".template-spec/agents/**"
+          - "scripts/fixtures/structured-assets/**"
+        depends_on: []
+        failure_mode: "结构化资产解析或 Schema 拒绝错误"
+      - id: "check.schema-runtime"
+        resources: ["python-jsonschema"]
+        inputs_complete: true
+        input_patterns:
+          - "scripts/lib/json-schema.mjs"
+          - "scripts/lib/validation-phase.mjs"
+          - "scripts/fixtures/contract-efficiency/schema-rejection.test.mjs"
+        depends_on: []
+        failure_mode: "非法 Schema 被接受或验证阶段错误"
+      - id: "check.daily-plan-spec"
+        run: "node --test .template-source/tooling/node/test/plan-spec-quality.test.mjs tests/plan-spec-template-contract.test.mjs"
+        group: "plan-spec-content"
+        inputs_complete: true
+        input_patterns:
+          - ".template-spec/templates/spec-template.md"
+          - ".template-spec/plan/templates/plan-template.md"
+          - ".template-spec/process/plan-spec-quality.md"
+          - "scripts/lib/plan-spec-quality.mjs"
+          - "scripts/inspect-plan-spec"
+          - ".template-spec/templates/examples/plan-spec/**"
+          - ".template-source/tooling/node/test/plan-spec-quality.test.mjs"
+          - "tests/plan-spec-template-contract.test.mjs"
+        depends_on: []
+        failure_mode: "Plan/Spec 必需业务内容或模板边界错误"
+      - id: "check.daily-checkpoint"
+        resources: ["python-jsonschema"]
+        run: "node --test tests/checkpoint-boundary.test.mjs"
+        group: "lifecycle"
+        inputs_complete: true
+        input_patterns:
+          - ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml"
+          - ".template-spec/process/schemas/lifecycle-checkpoint.schema.json"
+          - "scripts/verify-lifecycle-checkpoint"
+          - "scripts/lib/checkpoint-boundary.mjs"
+          - "tests/checkpoint-boundary.test.mjs"
+        depends_on: []
+        failure_mode: "阶段 checkpoint 越界接受或编排合同错误"
+      - id: "check.daily-selection"
+        resources: ["python-jsonschema"]
+        run: "node --test --test-name-pattern '日常|试点|unknown, mixed|path sets|dependency closure|qualification binds|missing dependency|正式 Schema|选中的 Schema|目标意图|既有补充|补充检查拒绝' tests/verification-selection.test.mjs"
+        group: "candidate-integrity"
+        inputs_complete: true
+        input_patterns:
+          - "scripts/lib/template-verification.mjs"
+          - "scripts/lib/verification-selection.mjs"
+          - "scripts/lib/verification-report.mjs"
+          - ".template-source/scripts/lib/verification-execution-plan.mjs"
+          - ".template-source/process/template-verification-profiles.yaml"
+          - "tests/verification-selection.test.mjs"
+          - "tests/verification-gates.test.mjs"
+        depends_on: []
+        failure_mode: "检查选择遗漏、错误扩大或依赖闭包错误"
+      - id: "check.daily-execution"
+        resources: ["python-jsonschema"]
+        run: "node --test tests/verification-execution.test.mjs"
+        group: "candidate-integrity"
+        inputs_complete: true
+        input_patterns:
+          - "scripts/lib/template-verification-runner.mjs"
+          - "scripts/lib/template-verification.mjs"
+          - "scripts/lib/verification-selection.mjs"
+          - "scripts/lib/verification-report.mjs"
+          - ".template-source/process/template-verification-profiles.yaml"
+          - ".template-source/scripts/lib/verification-preflight.mjs"
+          - ".template-source/scripts/lib/verification-execution-plan.mjs"
+          - ".template-source/scripts/lib/template-verification-worker.mjs"
+          - "scripts/run-template-verification"
+          - "scripts/verify-template-fast"
+          - "tests/verification-execution.test.mjs"
+        depends_on: []
+        failure_mode: "任务编译、实际退出、依赖调度或复用错误"
+      - id: "check.daily-preflight"
+        run: "node --test tests/verification-preflight.test.mjs"
+        group: "candidate-integrity"
+        inputs_complete: true
+        input_patterns:
+          - ".template-source/scripts/lib/verification-preflight.mjs"
+          - "tests/verification-preflight.test.mjs"
+        depends_on: []
+        failure_mode: "环境缺失未提前拒绝或无关环境被强制要求的错误"
+      - id: "check.daily-report"
+        resources: ["python-jsonschema"]
+        run: "node --test tests/verification-report.test.mjs tests/verification-report-v2.test.mjs"
+        group: "candidate-integrity"
+        inputs_complete: true
+        input_patterns:
+          - "scripts/lib/verification-report.mjs"
+          - "scripts/lib/template-verification.mjs"
+          - "scripts/lib/verification-selection.mjs"
+          - "scripts/lib/template-verification-runner.mjs"
+          - ".template-source/scripts/lib/verification-execution-plan.mjs"
+          - ".template-source/process/template-verification-profiles.yaml"
+          - ".template-source/scripts/lib/verification-report-validator.mjs"
+          - ".template-source/process/schemas/template-verification-report.schema.json"
+          - "tests/verification-report.test.mjs"
+          - "tests/verification-report-v2.test.mjs"
+        depends_on: []
+        failure_mode: "局部报告被当作正式报告或退出、漂移证据错误"
+      - id: "check.daily-flow"
+        run: "node --test tests/flow-verification-routing.test.mjs"
+        group: "candidate-integrity"
+        inputs_complete: true
+        input_patterns:
+          - "scripts/verify-template-fast"
+          - "scripts/run-template-verification"
+          - "scripts/lib/template-verification.mjs"
+          - "scripts/lib/verification-selection.mjs"
+          - "scripts/lib/verification-report.mjs"
+          - ".template-source/scripts/lib/verification-execution-plan.mjs"
+          - ".template-source/scripts/lib/template-verification-worker.mjs"
+          - ".template-source/process/template-verification-profiles.yaml"
+          - "tests/flow-verification-routing.test.mjs"
+        depends_on: []
+        failure_mode: "公开快检入口、范围或输出错误"
+      - id: "check.daily-benchmark-syntax"
+        run: "python3 -c 'import ast,pathlib; ast.parse(pathlib.Path(\".template-source/scripts/benchmark-tooling.py\").read_text())'"
+        group: "candidate-integrity"
+        inputs_complete: true
+        input_patterns:
+          - ".template-source/scripts/benchmark-tooling.py"
+        depends_on: ["check.daily-flow"]
+        failure_mode: "已有性能对照入口的 Python 语法错误；对照仍显式使用原组范围"
+      - id: "check.cli-content-identity"
+        resources: ["native-cli"]
+        inputs_complete: true
+        input_patterns:
+          - "submodules/yss-cli"
+          - "tests/cli-retirement.test.mjs"
+          - "submodules/create-yss-spec/**"
+        depends_on: []
+        failure_mode: "原生 CLI 消费入口、兼容或来源身份错误"
+      - id: "check.work-layout"
+        inputs_complete: true
+        input_patterns:
+          - "scripts/lib/work-layout.mjs"
+          - "tests/work-layout.test.mjs"
+          - "tests/fixtures/work-layout-cases.json"
+          - ".template-spec/process/work-layout.md"
+          - ".template-source/scripts/sync-native-work-layout.mjs"
+        depends_on: []
+        failure_mode: "工作目录选择和历史兼容错误"
+      - id: "check.work-layout-hardcodes"
+        inputs_complete: true
+        input_patterns:
+          - "scripts/lib/work-layout.mjs"
+          - "scripts/verify-work-layout"
+          - "submodules/yss-harness-design-agent"
+          - "submodules/yss-harness-design-agent/**"
+          - ".template-source/scripts/sync-native-work-layout.mjs"
+        depends_on: []
+        failure_mode: "工作目录被硬编码到旧路径的错误"
   candidate:
     always_groups:
       - hygiene
@@ -666,6 +1035,9 @@ routing:
       - README.md
       - .template-spec/**
       - docs/**
+      - .template-source/wiki/**
+      - tests/governance-layout.test.mjs
+      - scripts/lib/governance-layout.mjs
     groups:
       - hygiene
   - patterns:

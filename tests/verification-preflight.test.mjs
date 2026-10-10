@@ -4,6 +4,26 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {verificationPreflight,validateVerificationReportDirectory} from '../.template-source/scripts/lib/verification-preflight.mjs';
+test('日常 Node 检查无需 Python 或无关子模块环境',()=>{
+ const result=verificationPreflight({root:process.cwd(),nodeVersion:'v24.21.0',environment:{},plan:{strategy:'daily-necessary',commands:[{command:'node --test .template-source/tooling/node/test/plan-spec-quality.test.mjs'}]},probe:()=>{throw new Error('不应探测未选工具');}});
+ assert.equal(result.status,'passed',JSON.stringify(result.errors));
+ assert.deepEqual(result.observations.map(row=>row.name),['node']);
+});
+test('日常所选 Schema 检查仍必须具备 Python 环境',()=>{
+ const result=verificationPreflight({root:process.cwd(),nodeVersion:'v24.21.0',plan:{strategy:'daily-necessary',commands:[{command:'node --test tests/schema.test.mjs',resources:['python-jsonschema']}]},probe:()=>({status:1,stderr:'missing Python'})});
+ assert.equal(result.status,'failed');assert.deepEqual(result.errors.map(row=>row.name),['python-jsonschema']);
+});
+test('日常 Python 语法检查不要求 jsonschema',()=>{
+ const result=verificationPreflight({root:process.cwd(),nodeVersion:'v24.21.0',plan:{strategy:'daily-necessary',commands:[{command:'python3 -c ast'}]},probe:(file,args)=>{assert.equal(file,'python3');assert.ok(!args[1].includes('jsonschema'));return {status:0,stdout:JSON.stringify({version:[3,12],executable:'/fixture/python'})};}});
+ assert.equal(result.status,'passed');assert.deepEqual(result.observations.map(row=>row.name),['node','python']);
+});
+test('日常所选 Go 与原生消费者缺实际工具时提前拒绝',()=>{
+ const base={root:process.cwd(),nodeVersion:'v24.21.0',environment:{}};
+ const go=verificationPreflight({...base,plan:{strategy:'daily-necessary',commands:[{command:'go test ./...'}]},probe:(file,args)=>{assert.equal(file,'go');assert.deepEqual(args,['version']);return {status:1,stderr:'missing go'};}});
+ assert.deepEqual(go.errors.map(row=>row.name),['go']);
+ const native=verificationPreflight({...base,plan:{strategy:'daily-necessary',commands:[{command:'node --test tests/cli-retirement.test.mjs',resources:['native-cli']}]},probe:()=>assert.fail('不应启动无关工具')});
+ assert.deepEqual(native.errors.map(row=>row.name),['native-cli']);assert.match(native.errors[0].error,/YSS_NATIVE_BINARY/);
+});
 test('仅选定原型时要求Vue，缺项在昂贵场景前失败',()=>{
   const probe=(file,args)=>({status:0,stdout:file==='python3'?JSON.stringify({version:[3,12],jsonschema:'4.0',executable:'/fixture/python'}):'',stderr:''});
   const base={root:process.cwd(),nodeVersion:'v24.1.0',environment:{},probe};
@@ -24,6 +44,12 @@ test('报告目录拒绝仓内、已有目录和符号链接逃逸',t=>{
 
 const fixedSHA='a'.repeat(40);
 const agentStatus=['design','backend','frontend'].map(name=>` ${fixedSHA} submodules/yss-harness-${name}-agent`).join('\n');
+test('日常只查所选子模块，允许当前 SHA，拒绝未初始化或冲突',()=>{
+ for(const prefix of [' ','+','-','U']){
+  const result=verificationPreflight({root:process.cwd(),nodeVersion:'v24.1.0',plan:{strategy:'daily-necessary',commands:[{command:'go -C submodules/yss-cli test ./internal/bundle'}]},probe:(file,args)=>{if(file==='go')return {status:0,stdout:'go version'};assert.equal(file,'git');assert.deepEqual(args,['submodule','status','--recursive','--','submodules/yss-cli']);return {status:0,stdout:`${prefix}${fixedSHA} submodules/yss-cli`};}});
+  assert.equal(result.status,['-','U'].includes(prefix)?'failed':'passed');
+ }
+});
 function preflightWithSubmodules(status) {
   const probe=(file,args)=>({status:0,stdout:file==='python3'?JSON.stringify({version:[3,12],jsonschema:'4.0',executable:'/fixture/python'}):args[0]==='submodule'?status:'',stderr:''});
   return verificationPreflight({root:process.cwd(),nodeVersion:'v24.1.0',environment:{YSS_NATIVE_SOURCE_ROOT:path.resolve('/fixture/fixed-yss-source')},probe,plan:{commands:[]}});

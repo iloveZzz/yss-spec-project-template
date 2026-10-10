@@ -2,9 +2,11 @@
 
 垂直切片 Ticket 描述贯穿所有受影响层、可独立验证的窄功能行为。冻结需求保留版本与原始字节，当前状态、验收结果和执行记录由主 tracker 与任务包承载。
 
+正式 `governed` 实现按下述切片和批准合同推进。合格 `daily` 保持同一普通 Ticket/PR 与当前证据，不补正式 Slice、阶段 checkpoint 或 `ready-for-agent` 声明；已有正式任务不得降级。
+
 ## 父 Ticket、业务票与切片
 
-每个功能先建功能父 Ticket，汇总阶段资产、审查、阻塞和证据；业务 Ticket 在 Spec 起草、Design 校准阶段形成，不授予实现资格。OpenAPI Freeze 或无 API 影响记录后再拆窄切片，禁止仅按技术层横拆。
+正式功能先建功能父 Ticket，汇总阶段资产、审查、阻塞和证据；业务 Ticket 在 Spec 起草、Design 校准阶段形成，不授予实现资格。OpenAPI Freeze 或无 API 影响记录后再拆窄切片，禁止仅按技术层横拆。
 
 `work-unit.ticket-decomposition` 输入已正式化业务 Ticket、冻结 Spec、设计、契约、当前实现仓库准备和阻塞关系，更新既有父 Ticket 并形成垂直切片和批准的 Slice Implementation Contract；生命周期复算后才能进入 `ready-for-agent`。
 
@@ -20,7 +22,7 @@
 
 Ticket 五态为 `needs-triage`、`needs-info`、`ready-for-agent`、`ready-for-human`、`wontfix`。`ready-for-agent` 只用于必要门禁通过、阻塞边清除、可直接实现的垂直切片；Spec、设计和契约草案仍使用 `ready-for-human`。
 
-主 tracker 由 `.template-spec/agents/issue-tracker.md` 显式配置，模板默认 `local-markdown` 与 `docs/.scratch/`；Git remote 不能替代该选择。远程平台暂不可用时保留目标平台并生成待发布草案。Slice v3 的当前状态、验收与执行记录继续进入主 tracker，不改冻结需求。
+主 tracker 由 `.template-spec/agents/issue-tracker.md` 显式配置，模板默认 `local-markdown` 与 `.work/`；Git remote 不能替代该选择。远程平台暂不可用时保留目标平台并生成待发布草案。Slice v3 的当前状态、验收与执行记录继续进入主 tracker，不改冻结需求。
 
 实现合同编译器不能批准合同或设置 `ready-for-agent`。生命周期核验并持久化当前合同、清除阻塞边，再在主 tracker 推进执行状态。UI 切片还需已校验的前端实现计划，实际项目绑定见 [[实现仓库与跨仓库契约]]。
 
@@ -32,14 +34,10 @@ Ticket 五态为 `needs-triage`、`needs-info`、`ready-for-agent`、`ready-for-
 
 ## 来源
 
-- `.template-spec/templates/vertical-slice-ticket-template.md`：第 12、1–7、18–22、28–85、56–75、63–67、75、87–99、121–133 行。
-
-- `CONTEXT.md`：第 63 行。
-
-- `AGENTS.md`：第 48、55、65 行。
-
-- `.template-spec/agents/issue-tracker.md`：第 15–39 行。
-
-- `.template-spec/agents/triage-labels.md`：第 3–11 行。
-
-- `.template-spec/process/lifecycle-registry.yaml`：第 462–467 行。
+- `.template-spec/templates/vertical-slice-ticket-template.md`：1–7、12、18–22、28–85、56–75、63–67、75、87–99、121–133 行。
+- `CONTEXT.md`：63 行。
+- `AGENTS.md`：5–7、11–19、34–38 行。
+- `.template-spec/agents/issue-tracker.md`：16–42 行。
+- `.template-spec/agents/triage-labels.md`：3–11 行。
+- `.template-spec/process/lifecycle-registry.yaml`：493–505 行。
+- `.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml`：205–226、1417–1424 行。

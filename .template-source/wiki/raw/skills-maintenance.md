@@ -18,6 +18,7 @@
 | `mattpocock/skills` | `0ab1b63a410a03d3627979a109c8695de27af954` / `skills/engineering` 及锁文件记录的关联路径 | 通用工程流程及关联 skills |
 | `anthropics/knowledge-work-plugins` | `sales/skills/competitive-intelligence` | 竞品与市场事实研究 |
 | `tt-a1i/archify` | `199360cc6687a7857b54dd188d4922b09e466a4b` / `archify` | 条件式、可验证的技术架构图；YSS 适配见 `.template-source/agents/archify-integration.md` |
+| `ayghri/i-have-adhd` | `839872f9d1cd634fed642b4589ce7226199cc15f` / `skills/i-have-adhd` | 当前文档任务的表达配套；中文规范和作用域适配见 `.agents/skills/i-have-adhd/references/yss-adaptation.md`，固定目录与先前基线字节相同 |
 | `iloveZzz/yss-ui` | `.agents/skills/.yss-skills-manifest.json` 锁定的 revision / `packages/skills` | 13 个 `categories.app` 业务前端 skills；排除组件库内部 `categories.library` 和后端提交 skill，适配见 `.template-source/agents/yss-ui-skills-integration.md` |
 | 项目本地 | `.agents/skills` 或平台专属 root | YSS 适配与项目治理 skills |
 
@@ -54,22 +55,39 @@
 
    新增共享 skill 时先显式登记：`scripts/update-skill-lock --add=<skill-name>`；新增平台专属 skill 使用 `scripts/update-skill-lock --add-platform=<root>:<skill-name>`。脚本不会把工作区中偶然出现的未跟踪目录自动纳入发布清单。
 
-5. 日常修改先执行影响面快速核验，默认完成到 `implementation-ready`：
+5. 日常修改按本轮影响及直接 / 传递依赖做定向核验，默认完成到 `implementation-ready`。先读取影响计划：
 
    ```bash
-   scripts/verify-template-fast
+   scripts/verify-template-fast --plan
    ```
 
-   PR 使用 `scripts/verify-template-candidate`；main 与发布前使用 `scripts/verify-template`。是否冻结候选或做独立审查按权威策略判定，candidate 命令本身不要求冻结：
+   fast 默认逐项选择输入及消费者，计划理由包含命中文件、变化行为和能发现的具体错误；未知路径、缺映射或非法依赖先补映射再执行。普通 Skill 文本仅执行相关一致性检查；脚本、研究证据或写作合同变化按各自输入加入已有行为场景。已有检查覆盖时不新增测试或启动环境，必要检查通过即结束；只在相关修改、失败或具体遗漏后追加。记录实际命令、退出码、`limited` 范围及未覆盖边界，无需逐项填写完整清单的跳过理由。`--selection legacy` 可显式恢复原组范围，维护等级、main 分支或缺发布资格不自动触发日常全量。自检由 `maintaining-skills` 承接，独立审查与候选冻结按实际条件执行。
 
-   ```bash
-   scripts/verify-template-candidate
-   scripts/verify-template
-   ```
+   PR 候选使用 `scripts/verify-template-candidate --base <完整 SHA>`；main 集成验证和正式发布任务使用 `scripts/verify-template`，并遵守对应完整适用集合、资格与回退规则。三个入口属于不同任务边界，不依次作为每次日常交付的固定检查。
 
    模板源维护引入或更新分发到实例的 Node 工具时，维护侧依赖、构建和 vendor 校验只在模板源治理区及 CI 中执行；实例门禁不得安装依赖或重建 vendor。实例只消费已提交的 `scripts/lib/*.mjs` 与 `scripts/vendor/*.mjs`，具体维护侧命令和治理决策不属于项目实例文档。
 
 6. 需要重新加载技能的客户端在变更落地后重启或刷新项目。
+
+## Backend / Frontend 生成内容
+
+两端的 `materialization: generated` 由 `.template-source/profile-skill-sync.json` 声明。共享技能完整目录与三个 Agent 投影只在本地生成；各端四个 `local_only` 技能、技能锁、注册表、来源锁和适配材料继续受 Git 管理。Design 保留原同步模式及四个上游技能的所有权。Frontend 的 Product Design 平台包按完整包生成。
+
+独立克隆后，先把可信 Spec 源码 checkout 到本端 `.template-source/profile-skills-source.json` 的完整提交，再显式运行：
+
+```sh
+node scripts/prepare-skills --source <固定Spec源码目录> --check
+node scripts/prepare-skills --source <固定Spec源码目录> --apply
+node scripts/prepare-skills --check
+```
+
+前两条在 Backend 或 Frontend 根目录执行；不联网、不切换来源、不自动安装。缺来源、错误提交、源文件漂移、适配基线变化、链接越界、已修改生成文件或未知占用均拒绝覆盖。应用失败恢复已触及文件；相同输入重复执行不写入。最后一条只核验本地生成回执，准备后无需保持来源目录在线。维护入口先执行这一检查；`--plan` 仍可用于未准备仓的只读调查。
+
+本模板维护期间，`scripts/sync-profile-skills --apply --profile=backend,frontend --update-source-lock` 显式更新生成内容和来源锁；不带 `--update-source-lock` 不改变锁。仅原样生成或登记的完整适配树可进入生成模式，片段替换保留计数基线，补丁保留整树基线，权限差异通过 `file_modes` 登记。禁止直接编辑两端的生成目录。源码尚有相关改动时，锁标记为 `working-tree`，只用于本地维护检查；独立准备及正式组合构建只接受 `committed`。
+
+CLI 的内部来源锁 v3 将两端固定提交与 `skillsSource` 的 Spec 提交、清单路径和摘要分别绑定。构建只读 Git 对象并重放适配，忽略本地生成目录和 dirty worktree；公开 Bundle 继续为 v3，组合来源、完整技能摘要位于 `manifest.skillComposition`，参与 manifest 和 Bundle 摘要校验。实例仍安装完整离线技能，不分发源码准备入口、来源回执或生成目录忽略规则。历史来源锁 v2、公开 Bundle 和实例读入及升级事务继续兼容。
+
+固定来源按以下顺序交付：先提交共享源、清单和生成实现；用该完整提交更新两端来源锁并提交两端；随后固定 CLI 来源锁并构建完整资产；最后更新父仓 gitlink。共享来源不绑定未来父仓提交，避免循环引用。提交、推送与发布分别遵守既有授权边界。仓库当前没有 GitHub workflow；以后接入 CI 时显式准备再校验，不增加隐式网络准备。
 
 ## 专职 Profile 同步
 
@@ -83,7 +101,7 @@ scripts/sync-profile-skills --apply --profile=design,backend,frontend
 scripts/sync-profile-skills --check --profile=all
 ```
 
-Profile 同步只维护登记的内容，不代替子项目的派生更新。应用后，在每个受影响子项目运行 `scripts/sync-skills`、`scripts/update-skill-lock`，再分别以 `--check` 验证，最后重建其 CLI 快照。正文的 `effectiveHash` 变化必须在同批锁文件中体现；不能靠改来源 revision 掩盖过期摘要。验证和打包期间不要重建同一 CLI 的快照，以免测试前后读到不同输入。
+Profile 同步只维护登记的内容，不代替子项目的派生更新。应用后，在每个受影响子项目运行 `scripts/sync-skills`、`scripts/update-skill-lock`，再分别以 `--check` 验证。涉及 CLI 分发或正式发布时，再按固定来源合同重建其快照；普通 Skill 本地交付不自行升级 CLI 或扩大为发布任务。正文的 `effectiveHash` 变化必须在同批锁文件中体现；不能靠改来源 revision 掩盖过期摘要。验证和打包期间不要重建同一 CLI 的快照，以免测试前后读到不同输入。
 
 默认行为等同 `--dry-run`。`--json` 输出机器可读报告。实际入口未分类时检查失败，包括内容相同的副本和子项目独有入口。简单适配使用已登记的片段替换与计数基线；复杂适配的文件级补丁位于 `.template-source/profile-skill-patches/`，并绑定上游 Skill 树 hash。目标含未提交且与期望结果不同的改动、引用缺失、路径越界、上游基线漂移或补丁无法重放时禁止写入。应用会在整批预检后逐文件更新，并在写入失败时恢复本次已改文件；工具不提交、不推送，也不更新 CLI 的固定版本快照。
 

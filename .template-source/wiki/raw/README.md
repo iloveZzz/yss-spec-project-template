@@ -1,10 +1,12 @@
-# YSS Spec Project Template
+# YSS 综合研发主控模板（Spec Profile）
 
 > Matt Pocock Engineering Skills × YSS × OpenAPI 驱动的轻量 AI 研发文档模板。
 
 ## 定位
 
 本模板默认作为 Harness / 研发管理仓库，保留流程文档、契约模板、Agent skills 和协作约定。前端 / 后端源码默认位于独立实现仓库；只有用户明确选择本仓库承载实现代码时，才按需创建 `apps/backend/`、`apps/frontend/`。
+
+默认一个 Spec 主控推进同一功能到业务验收，Design、Backend、Frontend 按需协作。Spec 文档批准、产品设计完成、后端可交付、前端验收和业务验收是可选的本次终点；终点改变保留当前批准和后续路线。专职 Profile 继续按自身职责结束，主控通过显式同功能 checkpoint 与当前接收证据汇总。见[本次推进目标与专职协作](.template-spec/process/lifecycle-progression.md)。
 
 ## 项目结构
 
@@ -26,8 +28,8 @@
 
 1. 先读取 `yss-project.yaml`，按 `repository_mode` 选择模板维护或产品研发生命周期。
 2. 必读入口为 `AGENTS.md` 与 `CONTEXT.md`；流程事实以生命周期注册表和裁剪指南为准。
-3. `template-source` 修改后先按 `maintenance-intensity.yaml` 判定 L1 / L2 / L3，默认用 `scripts/verify-template-fast` 达到 `implementation-ready`；L3 日常采用维护者自检，正式发布前执行完整门禁；只有共享 skill 变更才运行 `scripts/sync-skills` 和 `scripts/update-skill-lock`。
-4. `project-instance` 默认从 `yss-product-lifecycle` 的 `route` 模式开始，再由原生 `work-unit.*` 推进 Plan、Spec、产品设计、工程契约和 Ticket 正式化；`to-spec`、`to-tickets`、`implement` 仅作为用户显式调用的兼容入口。
+3. `template-source` 按 `maintenance-intensity.yaml` 判定 L1 / L2，先看 `scripts/verify-template-fast --plan`，日常执行受影响依赖的定向检查达到 `implementation-ready`；投影、锁和分发在 canonical 稳定后同步。
+4. `project-instance` 先用支持能力的 `yss lifecycle route` 按 `request_triage.delivery_path` 分流。`daily` 使用一张 Ticket/PR，按需求验收、技术技能、实现、测试、独立审查推进；`governed` 从最近可信阶段恢复正式治理。日常操作见[同一记录交付说明](.agents/skills/yss-product-lifecycle/references/daily-delivery.md)。
 5. 实现仓库接入、YSS 路由、独立审查、fresh verification 和 Git checkpoint 以 `AGENTS.md` 的硬门禁为准。
 
 YSS skills 的公开发布投影维护在 [iloveZzz/yss-spec-dev-skills](https://github.com/iloveZzz/yss-spec-dev-skills)，发布清单和导出命令见 [skills 维护说明](./.template-source/agents/skills-maintenance.md)。
@@ -36,7 +38,7 @@ YSS UI 组件知识同时通过项目级 MCP 配置提供；支持的客户端�
 
 ## 模板初始化 CLI
 
-`create-yss-spec` 的发布仓库是 [iloveZzz/create-yss-spec](https://github.com/iloveZzz/create-yss-spec)。用户从统一手册选择家族；CLI 源码、测试、打包和发布仍在各自仓库维护：
+四种 Profile 使用 [yss-cli](https://github.com/iloveZzz/yss-cli) 的原生 `yss` 入口，模板和三个 Agent 模板源独立维护。初始化、预演、事务、迁移及 Bundle 导出消费版本化协议：
 
 - [YSS 用户手册：CLI 能力与写入方式](./.template-spec/user-guide/用户手册.md#cli-能力与写入方式)
 - [YSS 用户手册：接管、同步与恢复](./.template-spec/user-guide/用户手册.md#接管同步与恢复)
@@ -44,10 +46,11 @@ YSS UI 组件知识同时通过项目级 MCP 配置提供；支持的客户端�
 推荐入口：
 
 ```bash
-npm create yss-spec@latest
+yss init --profile spec --root /absolute/path/project --plan --out /absolute/path/init-plan.json --json
+yss init --profile spec --root /absolute/path/project --apply --plan-file /absolute/path/init-plan.json --json
 ```
 
-首次使用前请先确认独立仓库和 npm 包已完成发布。
+`init` 默认直接初始化；上述 `--plan` 路线先生成可审阅计划。使用已固定版本和 SHA-256 的二进制；稳定版发行状态以发行清单为准。旧四个 npm 包仅作为历史识别、迁移和未完成事务恢复渠道保留，不执行 unpublish。完整安装、补装、恢复及退役边界见 [统一 CLI 操作说明](.template-spec/user-guide/unified-cli.md)。
 
 ## 模板配置取舍
 
@@ -73,7 +76,7 @@ main@6acc160e4e0cd062dbbbd7a1b26ae92855edf07e
 scripts/verify-template-fast
 ```
 
-快速入口按 Git 影响面执行相关检查，未映射路径或核心校验资产变化时 fail-safe 升级为完整验证，来源仍为当前工作树，用于 `implementation-ready`。显式 candidate / 发布入口要求已提交来源。三个入口共同检查：
+快速入口先用 `--plan` 按 Git 影响面选择当前变化及直接/传递消费者的必要检查；未映射路径、缺输入映射或非法依赖先修正计划，不自动运行全量。来源为当前工作树，日常交付记录 `limited` 范围，必要检查通过后用于 `implementation-ready`。显式 candidate / 发布入口要求已提交来源。三个入口共同检查：
 
 - `yss-project.yaml`、权威流程资产和模板是否完整。
 - 共享技能投影及 `skills-lock.json` 的完整树哈希是否一致。

@@ -68,7 +68,7 @@ def identities(metrics):
 
 def sample(state, pair, mode):
     directory = output / f'{state}-{pair:02d}-{mode}'
-    command = [str(root / 'scripts/verify-template-fast'), '--changed-file', ref,
+    command = [str(root / 'scripts/verify-template-fast'), '--selection', 'legacy', '--changed-file', ref,
                '--tooling-mode', mode, '--concurrency', '2', '--report-dir', str(directory)]
     if state == 'input-change':
         command += ['--changed-file', input_ref]

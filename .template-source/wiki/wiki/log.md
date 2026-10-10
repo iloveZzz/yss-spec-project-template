@@ -1,7 +1,7 @@
 # Wiki 当前运行
 
-## [2026-10-05] REFRESH | 3c33130a6f4978e725b2b970
+## [2026-10-10] REFRESH | 9d699e2b88ccc3ff27e53031
 
-- Changed articles: 仓库身份与路由
+- Changed articles: 模板维护流程
 - Remaining freshness must be read from status.
-- 运行材料：maintenance:wiki/a4774ae2719652300063cb9465bdc31e5127ed5d9debd58ed34e2ff517c95cf2/.wiki-staging/3c33130a6f4978e725b2b970/completed.json
+- 运行材料：maintenance:wiki/53841b4dcf0f207b6747b4605a7bd587ebfc7a653faf8502ba3f6f6b1c6a26e9/.wiki-staging/9d699e2b88ccc3ff27e53031/completed.json

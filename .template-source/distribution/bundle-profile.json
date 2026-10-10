@@ -55,6 +55,7 @@
       "docs/reviews",
       "docs/adr",
       ".template-source/process/maintenance-intensity.yaml",
+      ".template-source/process/maintenance-intensity-v1.yaml",
       ".template-source/process/schemas/maintenance-review-record.schema.json",
       ".template-source/process/templates/maintenance-checkpoint-template.yaml",
       ".template-source/process/template-verification-profiles.yaml",

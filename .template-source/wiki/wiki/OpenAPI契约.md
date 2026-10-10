@@ -6,9 +6,15 @@ API 变化先形成 OpenAPI 3.1 Draft，完成适用审查并 Freeze 后进入�
 
 OpenAPI Draft 是 review-only 草案，Freeze 前不得作为前后端稳定实现契约。Draft 和其他待冻结资产使用 `ready-for-human`。OpenAPI Freeze 已通过评审；Freeze 后的变更必须回到 API 影响分析和设计审查。
 
-API Contract Decision 以原始字节摘要绑定影响结论。有 API 影响时，绑定 Draft、Validation、独立 Review 与 Freeze；无 API 影响时，绑定评估、原因和证据。不能用空 OpenAPI 或字符串自证替代该决定。
+正式 API Contract Decision 以原始字节摘要绑定影响结论。有 API 影响时，绑定 Draft、Validation、独立 Review 与 Freeze；无 API 影响时，绑定评估、原因和证据。不能用空 OpenAPI 或字符串自证替代该决定。
 
-## 工程契约中的批准
+## 合格日常任务的 API 证据
+
+`daily` 也执行 OAS 3.1 YAML Draft、锁定工具校验、保守兼容判断及独立审查、摘要 Freeze、实现与契约测试。兼容仅允许新增独立操作，既有操作及其可达规范化引用闭包保持一致；breaking / unknown API 回到正式治理。证据放同一 Ticket 的 API 契约审查段，保存工具命令、实际退出码、基线 / 候选摘要、审查者、结论、Freeze 摘要与契约测试，不额外生成正式阶段批准包。YAML、引用或适用规则变化使受影响审查和 Freeze 失效。
+
+下述 API Contract Decision 与聚合门禁是正式路径合同，不反向作为日常任务的额外阶段材料。
+
+## 正式工程契约中的批准
 
 `work-unit.technical-analysis` 消费已正式化业务 Ticket 集、Spec、适用原型以及 API、数据、工程影响面，形成 OpenAPI、数据架构、按确认架构组织的技术设计、工程基线、架构审查和 Slice 合同草案。命中契约需要冻结；无 API 影响也必须有可读记录。
 
@@ -24,8 +30,8 @@ OpenAPI Freeze 或无 API 影响记录完成后拆窄 [[垂直切片Ticket]]。�
 
 ## 来源
 
-- `AGENTS.md`：第 47、56、48、64、67 行。
-
-- `CONTEXT.md`：第 53–54、54、55、112–114 行。
-
-- `.template-spec/process/lifecycle-registry.yaml`：第 444–449、549–566、190–204 行。
+- `AGENTS.md`：5–7、11–19、34–38 行。
+- `CONTEXT.md`：53–54、54、55、112–114 行。
+- `.template-spec/process/lifecycle-registry.yaml`：208–222、208–229、475–480、582–599 行。
+- `.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml`：205–226、227–233 行。
+- `.agents/skills/code-review/references/yss-review-standards.md`：54–63 行。

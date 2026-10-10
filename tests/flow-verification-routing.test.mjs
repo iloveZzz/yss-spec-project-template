@@ -21,7 +21,7 @@ test('Plan/Spec、编排与 checkpoint 变更选择实际行为检查', () => {
   const combined = planTemplateVerification({ changedFiles: ['.template-spec/templates/spec-template.md', '.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml'] });
   assert.ok(combined.groups.includes('plan-spec-content') && combined.groups.includes('skills') && combined.groups.includes('lifecycle'));
   assert.throws(() => planTemplateVerification({ changedFiles: ['unmapped-file.xyz'] }), /UNKNOWN_VERIFICATION_PATH/);
-  assert.equal(planTemplateVerification({ changedFiles: ['scripts/run-template-verification'] }).effective_profile, 'release');
+  assert.equal(planTemplateVerification({ changedFiles: ['scripts/run-template-verification'] }).effective_profile, 'fast');
 });
 
 test('大验证计划经管道与文件输出均完整且内容相同', t => {
@@ -53,15 +53,16 @@ test('输出失败不返回成功',t=>{
 });
 
 test('tooling 模式显式可选，串行限制传播且 release 强制 legacy', () => {
-  const plan = (file, mode, concurrency = '4') => {
+  const plan = (file, mode, concurrency = '4', profile='fast') => {
     const r = spawnSync(process.execPath, ['scripts/run-template-verification', '--plan', '--json', '--changed-file', file,
-      '--tooling-mode', mode, '--concurrency', concurrency], { encoding: 'utf8', maxBuffer: 4 * 1024 * 1024 });
+      '--tooling-mode', mode, '--concurrency', concurrency,'--profile',profile,'--selection','legacy'], { encoding: 'utf8', maxBuffer: 4 * 1024 * 1024 });
     assert.equal(r.status, 0, r.stderr); return JSON.parse(r.stdout);
   };
   assert.equal(plan('.template-source/tooling/node/test/plugin-project.test.mjs', 'optimized').tooling.effective_mode, 'optimized');
   assert.equal(plan('.template-source/tooling/node/test/plugin-project.test.mjs', 'optimized', '1').tooling.test_concurrency, 1);
-  assert.equal(plan('scripts/lib/json-schema.mjs', 'optimized').tooling.effective_mode, 'legacy');
-  assert.equal(plan('scripts/lib/json-schema.mjs', 'optimized', '4').tooling.verification_concurrency, 1);
+  assert.equal(plan('scripts/lib/json-schema.mjs', 'optimized').tooling.effective_mode, 'optimized');
+  assert.equal(plan('scripts/lib/json-schema.mjs', 'optimized', '4','release').tooling.verification_concurrency, 1);
+  assert.equal(plan('scripts/lib/json-schema.mjs', 'optimized','4','release').tooling.effective_mode, 'legacy');
   const bad = spawnSync(process.execPath, ['scripts/run-template-verification', '--plan', '--tooling-mode', 'unknown'], { encoding: 'utf8' });
   assert.notEqual(bad.status, 0);
 });

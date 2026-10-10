@@ -21,6 +21,12 @@ function scan(base,predicate) {
 }
 scan('scripts/lib',ref=>/\.(mjs|js|py)$/.test(ref)&&!ref.includes('.test.'));
 scan('.agents/skills',ref=>ref.includes('/scripts/')&&/\.(mjs|js|py)$/.test(ref)&&!ref.includes('.test.'));
+const design = 'submodules/yss-harness-design-agent';
+if (fs.existsSync(path.join(root, design, '.agents/skills'))) {
+  exceptions.set(`${design}/scripts/lib/work-layout.mjs`, '上游 Design 的当前/历史根合同');
+  scan(`${design}/scripts/lib`,ref=>/\.(mjs|js|py)$/.test(ref)&&!ref.includes('.test.'));
+  scan(`${design}/.agents/skills`,ref=>ref.includes('/scripts/')&&/\.(mjs|js|py)$/.test(ref)&&!ref.includes('.test.'));
+}
 assert.deepEqual(bad,[],'生产路径硬编码必须改为 work-layout；历史例外需说明用途');
 const cliIndex=process.argv.indexOf('--cli-root');
 if(cliIndex>=0) {

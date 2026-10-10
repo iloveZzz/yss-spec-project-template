@@ -1,7 +1,7 @@
 ---
 kind: vertical-slice-ticket
 status: ready-for-human
-business_ticket_set_ref: docs/.scratch/<feature>/business-ticket-set.yaml
+business_ticket_set_ref: .work/<feature>/business-ticket-set.yaml
 business_ticket_refs: [BT-001]
 acceptance_refs: [AC-001]
 requirement_version: v1
@@ -13,7 +13,7 @@ requirement_version: v1
 
 ## 父级
 
-<Spec：`docs/.scratch/<feature>/spec.md`；功能父 Ticket：`docs/.scratch/<feature>/parent-ticket.md` 或远程 Issue URL>
+<Spec：`.work/<feature>/spec.md`；功能父 Ticket：`.work/<feature>/parent-ticket.md` 或远程 Issue URL>
 
 ## 要构建什么
 
@@ -28,7 +28,7 @@ requirement_version: v1
 ## OpenAPI 影响
 
 - [ ] 无
-- [ ] 基于冻结 OpenAPI：`docs/.scratch/<feature>/api/<feature>.yaml`
+- [ ] 基于冻结 OpenAPI：`.work/<feature>/api/<feature>.yaml`
 
 受影响端点：
 
@@ -104,7 +104,7 @@ Agent 使用 `scripts/slice-contract view <合同.yaml>` 展示审阅说明，�
 
 | 门禁 | 记录路径 | 会签角色 | 状态 |
 |---|---|---|---|
-|  | `docs/.scratch/<feature>/gates/<gate-id>-approval.yaml` | 见 `.template-spec/agents/digital-human-roles.yaml` | pending / approved / blocked / not-applicable |
+|  | `.work/<feature>/gates/<gate-id>-approval.yaml` | 见 `.template-spec/agents/digital-human-roles.yaml` | pending / approved / blocked / not-applicable |
 
 ## 状态
 

@@ -1,4 +1,4 @@
-import { applyVerificationSelection, verificationCheckId } from './verification-selection.mjs';
+import { applyVerificationSelection, applyDailyVerificationSelection, verificationCheckId } from './verification-selection.mjs';
 import {buildGatePlan, compileVerificationCheck, validateGateConfiguration, loadLegacyManifest, verificationPolicyDigest, assertQualificationReportParameters} from '../../.template-source/scripts/lib/verification-gates.mjs';
 import {assertBaselineParameters,validateBaseline} from '../../.template-source/scripts/lib/verification-baseline.mjs';
 import {assertVerificationSources,verificationSourceIdentities} from '../../.template-source/scripts/lib/verification-execution-plan.mjs';
@@ -83,7 +83,7 @@ function matchedGroups(config, changedFiles) {
   return { groups, unknown };
 }
 
-export function planTemplateVerification({ profile = "fast", changedFiles = [], config = loadVerificationProfiles(), selection = config.default_selection || "legacy", root = ROOT, base, baselineReport, baselineReportDigest, baselineAssessment, baselineValidator, qualificationReport, qualificationReportDigest, qualificationAssessment } = {}) {
+export function planTemplateVerification({ profile = "fast", changedFiles = [], config = loadVerificationProfiles(), selection, root = ROOT, base, baselineReport, baselineReportDigest, baselineAssessment, baselineValidator, qualificationReport, qualificationReportDigest, qualificationAssessment } = {}) {
   ensure(Object.hasOwn(config.profiles, profile), `未知核验 profile: ${profile}`);
   assertBaselineParameters({root,base,baselineReport,baselineReportDigest});
   if(baselineReport!==undefined) {
@@ -99,7 +99,9 @@ export function planTemplateVerification({ profile = "fast", changedFiles = [], 
   const coreChange = normalized.find((file) => (config.core_escalation_patterns || []).some((pattern) => matches(file, pattern)));
   let effectiveProfile = profile;
   let escalationReason = null;
-  if (profile !== "release" && profile !== 'legacy-full' && coreChange) {
+  const daily=profile==='fast'&&Array.isArray(config.profiles.fast.checks);
+  selection??=daily?'allowlist':config.default_selection||'legacy';
+  if (!daily && profile !== "release" && profile !== 'legacy-full' && coreChange) {
     effectiveProfile = "release";
     escalationReason = `核心核验资产变化: ${coreChange}`;
   }
@@ -118,6 +120,7 @@ export function planTemplateVerification({ profile = "fast", changedFiles = [], 
   }
   const compatibilityRequired = effectiveProfile === "release" || normalized.some((file) => (config.compatibility_patterns || []).some((pattern) => matches(file, pattern)));
   const plan = { source_requirement: profile === 'fast' ? 'current' : 'committed', compatibility_required: compatibilityRequired, requested_profile: profile, effective_profile: effectiveProfile, escalation_reason: escalationReason, changed_files: normalized, unknown_files: routed.unknown, groups: orderedGroups, commands, supplemental_checks:structuredClone(config.supplemental_checks||[]), required_files: config.required_files || [], syntax_files: config.syntax_files || [], max_concurrency: config.max_concurrency || 4 };
+  if(daily)return {...applyDailyVerificationSelection(plan,{selection,config}),compatibility_required:false,policy_digest:verificationPolicyDigest(config),fallback_reasons:[]};
   if(config.gate_policy && (['candidate','release','legacy-full'].includes(profile)||effectiveProfile==='release')) {
     const gated=buildGatePlan(plan,{config,root,base,baselineReport,baselineReportDigest,baselineAssessment,baselineValidator,qualificationAssessment,qualificationReport,qualificationReportDigest});
     return applyVerificationSelection(gated,{selection,config,root,base});

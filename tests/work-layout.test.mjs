@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { spawnSync } from 'node:child_process';
 import { readWorkLayout, workLayout } from '../scripts/lib/work-layout.mjs';
 
 test('JS 与 Go 消费同一份可移植路径合同用例', t => {
@@ -53,4 +54,21 @@ test('配置根不能通过符号链接越过项目边界', t => {
   t.after(() => fs.rmSync(outside, { recursive: true, force: true }));
   fs.symlinkSync(outside, path.join(root, '.work'));
   assert.throws(() => readWorkLayout(root), /symlink/);
+});
+
+test('硬编码检查同时覆盖 Design 上游且允许集中历史根合同', t => {
+  const root = project(t);
+  const design = 'submodules/yss-harness-design-agent';
+  for (const ref of ['scripts/lib', '.agents/skills', `${design}/scripts/lib`, `${design}/.agents/skills`]) fs.mkdirSync(path.join(root, ref), { recursive: true });
+  const checker = path.join(root, 'scripts/verify-work-layout');
+  fs.copyFileSync(new URL('../scripts/verify-work-layout', import.meta.url), checker);
+  const consumer = path.join(root, design, 'scripts/lib/consumer.mjs');
+  fs.writeFileSync(consumer, "const root = 'docs/.scratch';\n");
+  const run = () => spawnSync(process.execPath, [checker], { encoding: 'utf8' });
+  const rejected = run();
+  assert.notEqual(rejected.status, 0);
+  assert.match(rejected.stderr, /consumer\.mjs/);
+  fs.writeFileSync(consumer, "const root = 'configured';\n");
+  fs.writeFileSync(path.join(root, design, 'scripts/lib/work-layout.mjs'), "const historical = 'docs/.scratch';\n");
+  assert.equal(run().status, 0);
 });

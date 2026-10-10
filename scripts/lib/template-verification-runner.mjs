@@ -116,7 +116,7 @@ export async function runGroups(plan, repositoryMode, concurrency, {
   onResult = () => {},
   completedTasks = [],
 } = {}) {
-  if(['qualified-gates','qualification-shadow','legacy-full'].includes(plan.strategy))return runDag(plan,repositoryMode,concurrency,{cwd,environment,execute,logRoot,signal,runtimeSession,runtimeEvent,onResult,completedTasks});
+  if(['daily-necessary','qualified-gates','qualification-shadow','legacy-full'].includes(plan.strategy))return runDag(plan,repositoryMode,concurrency,{cwd,environment,execute,logRoot,signal,runtimeSession,runtimeEvent,onResult,completedTasks});
   const grouped = new Map(plan.groups.map((group) => [group, []]));
   const resourcesByExecution = new Map();
   for (const [index, item] of plan.commands.entries()) {
