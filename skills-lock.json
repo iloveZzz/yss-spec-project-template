@@ -5,7 +5,8 @@
   "projectionRoots": [
     ".codex/skills",
     ".cursor/skills",
-    ".pi/skills"
+    ".pi/skills",
+    ".claude/skills"
   ],
   "sources": {
     "mattpocock/skills": {
@@ -18,7 +19,7 @@
       "revision": "c4d958f18cc947cb91cbe1bd48783fa4601cc18f"
     },
     "iloveZzz/yss-harness-design-agent": {
-      "revision": "9c17657857002fb7fd9591151e1f1e6c2691b3fb"
+      "revision": "700809078934f04886350eaad642635e7b509412"
     },
     "ayghri/i-have-adhd": {
       "revision": "839872f9d1cd634fed642b4589ce7226199cc15f"
@@ -35,7 +36,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "archify": {
@@ -50,7 +52,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "code-review": {
@@ -65,7 +68,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "codebase-design": {
@@ -80,7 +84,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "competitive-intelligence": {
@@ -92,7 +97,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "cross-repo-implementation-routing": {
@@ -104,7 +110,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "diagnosing-bugs": {
@@ -119,7 +126,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "domain-modeling": {
@@ -134,7 +142,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "file-export-download": {
@@ -149,7 +158,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "formily-foundation": {
@@ -164,7 +174,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "formily-linkage-effects": {
@@ -179,7 +190,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "formily-mode-slot-detail": {
@@ -194,7 +206,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "formily-step-flow": {
@@ -209,7 +222,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "frontend-commit": {
@@ -224,7 +238,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "git-commit-core": {
@@ -236,7 +251,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "grilling": {
@@ -251,7 +267,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "handoff": {
@@ -266,7 +283,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "i-have-adhd": {
@@ -281,7 +299,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "implement": {
@@ -296,7 +315,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "implementation-repo-onboarding": {
@@ -308,7 +328,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "java-backend-commit": {
@@ -320,7 +341,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "llm-wiki": {
@@ -332,7 +354,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "lombok": {
@@ -345,7 +368,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "maintaining-skills": {
@@ -357,7 +381,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "mapstruct": {
@@ -370,7 +395,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "prototype": {
@@ -385,7 +411,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "prototype-review": {
@@ -393,14 +420,15 @@
         "sourceType": "git-submodule",
         "skillPath": ".agents/skills/prototype-review/SKILL.md",
         "effectiveHash": "510f79764656760f74d30a045d131257c7961bdabb1fa25c2adf886ce60578ea",
-        "sourceRevision": "9c17657857002fb7fd9591151e1f1e6c2691b3fb",
+        "sourceRevision": "700809078934f04886350eaad642635e7b509412",
         "upstreamHash": "16cd912969a487808a53711f0c0e13d56d68abd5e07d144a4007187f8430f959",
         "adaptationRef": ".template-source/agents/strategic-design-skills-integration.md",
         "targets": [
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "publish-skills-sh": {
@@ -412,7 +440,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "resolving-merge-conflicts": {
@@ -427,7 +456,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "setup-matt-pocock-skills": {
@@ -442,7 +472,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "setup-yss-harness": {
@@ -454,7 +485,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "tdd": {
@@ -469,7 +501,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "theme-token-usage": {
@@ -484,7 +517,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "to-spec": {
@@ -499,7 +533,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "to-tickets": {
@@ -514,7 +549,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "triage": {
@@ -529,7 +565,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "using-git-worktrees": {
@@ -541,7 +578,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "wayfinder": {
@@ -556,7 +594,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "writing-for-agents": {
@@ -571,7 +610,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "yedit-table-usage": {
@@ -586,7 +626,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "yss-api-integration": {
@@ -601,7 +642,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "yss-application": {
@@ -613,7 +655,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "yss-audit-log": {
@@ -625,7 +668,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "yss-backend-spec-review": {
@@ -637,7 +681,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "yss-cache": {
@@ -649,7 +694,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "yss-ddd-scaffold-generator": {
@@ -661,7 +707,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "yss-design-system": {
@@ -669,14 +716,15 @@
         "sourceType": "git-submodule",
         "skillPath": ".agents/skills/yss-design-system/SKILL.md",
         "effectiveHash": "d7da9b2ba31ba0a53a01227dbd798e0d4d166482d40164cbab93e418c1aba112",
-        "sourceRevision": "9c17657857002fb7fd9591151e1f1e6c2691b3fb",
+        "sourceRevision": "700809078934f04886350eaad642635e7b509412",
         "upstreamHash": "2ad84479f0fb20fde3e6dda07825eddf6b67c9f571e498f70609e7b4c5083a65",
         "adaptationRef": ".template-source/agents/strategic-design-skills-integration.md",
         "targets": [
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "yss-distributed-id": {
@@ -688,7 +736,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "yss-domain": {
@@ -700,7 +749,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "yss-dto": {
@@ -712,7 +762,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "yss-excel-mvc": {
@@ -724,7 +775,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "yss-exception": {
@@ -736,7 +788,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "yss-formily": {
@@ -751,7 +804,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "yss-formily-schema-generator": {
@@ -763,7 +817,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "yss-frontend-scaffold-generator": {
@@ -775,7 +830,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "yss-hook": {
@@ -787,7 +843,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "yss-implementation-contract-compiler": {
@@ -799,7 +856,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "yss-layered-mvc-scaffold-generator": {
@@ -811,7 +869,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "yss-mybatis": {
@@ -823,7 +882,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "yss-openapi-draft-review": {
@@ -835,7 +895,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "yss-openapi-governance": {
@@ -847,7 +908,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "yss-product-lifecycle": {
@@ -859,7 +921,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "yss-prototype-stage": {
@@ -867,14 +930,15 @@
         "sourceType": "git-submodule",
         "skillPath": ".agents/skills/yss-prototype-stage/SKILL.md",
         "effectiveHash": "fb03623ff92b686df7b82821e4ed9fb5939a40a57d1e828051e671d1df1c1021",
-        "sourceRevision": "9c17657857002fb7fd9591151e1f1e6c2691b3fb",
+        "sourceRevision": "700809078934f04886350eaad642635e7b509412",
         "upstreamHash": "d33acdba362e09ea464410d6b0a2f573c018608cf0c9ca7beeda04c6966c1da8",
         "adaptationRef": ".template-source/agents/strategic-design-skills-integration.md",
         "targets": [
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "yss-repository": {
@@ -886,7 +950,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "yss-research": {
@@ -901,7 +966,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "yss-resilience4j": {
@@ -913,7 +979,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "yss-security-algorithm": {
@@ -925,7 +992,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "yss-skill-source-index-refresh": {
@@ -937,7 +1005,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "yss-stage-decision": {
@@ -945,14 +1014,15 @@
         "sourceType": "git-submodule",
         "skillPath": ".agents/skills/yss-stage-decision/SKILL.md",
         "effectiveHash": "747aa0bba17bfbf0771a2852bec6dbb686e6ac1379d06ef6ca14940002421dfc",
-        "sourceRevision": "9c17657857002fb7fd9591151e1f1e6c2691b3fb",
+        "sourceRevision": "700809078934f04886350eaad642635e7b509412",
         "upstreamHash": "094c50ddf430bb830500db015046c5f7dcd5a80f0e9aef68e665d2edf234cc7a",
         "adaptationRef": ".template-source/agents/strategic-design-skills-integration.md",
         "targets": [
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "yss-tactical-design": {
@@ -964,7 +1034,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "yss-technical-design": {
@@ -976,7 +1047,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "yss-ui": {
@@ -988,7 +1060,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "yss-ui-business-page-generation": {
@@ -1003,7 +1076,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "yss-up-springboot3": {
@@ -1015,7 +1089,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "yss-userinfo": {
@@ -1027,7 +1102,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "yss-validation": {
@@ -1039,7 +1115,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "yss-web-controller": {
@@ -1051,7 +1128,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "ytable-usage": {
@@ -1066,7 +1144,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       },
       "ytree-usage": {
@@ -1081,7 +1160,8 @@
           ".agents/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".pi/skills"
+          ".pi/skills",
+          ".claude/skills"
         ]
       }
     },
