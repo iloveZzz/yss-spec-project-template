@@ -70,6 +70,20 @@ profiles:
           - ".template-source/distribution/bundle-profile.json"
         depends_on: []
         failure_mode: "平台适配器混入检查逻辑、两个平台的触发或 base 取值分叉、运行时版本与 ci-setup 脱节，或合入检查说明回到旧表述"
+      - id: check.agent-hook
+        run: "node --test tests/agent-hook.test.mjs"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
+          - "scripts/agent-hook"
+          - "scripts/lib/agent-hook.mjs"
+          - "scripts/lib/ci-gate.mjs"
+          - "tests/agent-hook.test.mjs"
+          - ".claude/settings.json"
+          - ".codex/hooks.json"
+          - ".template-source/distribution/bundle-profile.json"
+        depends_on: []
+        failure_mode: "Stop hook 对相关路径漏检、对无关路径误检或误阻断、阻断协议与 Claude Code / Codex 不一致，或 hook 文件进入实例分发"
       - id: check.runtime-storage
         group: runtime-storage
         inputs_complete: true
@@ -1246,6 +1260,11 @@ routing:
       - tests/ci-gate.test.mjs
       - .gitlab-ci.yml
       - tests/ci-adapters.test.mjs
+      - scripts/agent-hook
+      - scripts/lib/agent-hook.mjs
+      - tests/agent-hook.test.mjs
+      - .claude/settings.json
+      - .codex/hooks.json
     groups:
       - feature-assets
   - patterns:
@@ -4642,6 +4661,14 @@ supplemental_checks:
     depends_on: []
     when: template-source
     task_id: supplemental.ci-adapters
+    source_requirement: committed
+  - id: check.agent-hook-supplemental
+    run: node --test tests/agent-hook.test.mjs
+    group: feature-assets
+    gate_ids: [check.verification-lifecycle]
+    depends_on: []
+    when: template-source
+    task_id: supplemental.agent-hook
     source_requirement: committed
   - id: check.native-context-retirement
     run: node --test tests/native-context-retirement.test.mjs
