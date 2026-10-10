@@ -1,8 +1,8 @@
 diff --git a/SKILL.md b/SKILL.md
-index e20c899..9d2428a 100644
+index 64607db..5b70c26 100644
 --- a/SKILL.md
 +++ b/SKILL.md
-@@ -9,72 +9,68 @@ description: "编译或重验 YSS Slice Implementation Contract、最小 Skill 
+@@ -11,72 +11,68 @@ description: "编译或重验 YSS Slice Implementation Contract、最小 Skill 
  
  Slice v3 的当前执行结果须按 `references/yss-skill-execution-result.md` 绑定验收、验证项、合同原字节、实际证据和执行来源；`legacy-evidence-binding-missing` 表示历史可读但不能据此完成当前任务，不补造历史执行信息。
  
@@ -14,7 +14,7 @@ index e20c899..9d2428a 100644
  ## 输入
  
 -先读取 Spec、切片 Ticket、需求冻结、适用的原型确认、OpenAPI Freeze/no-impact、适用的系统/数据架构和 Design Review、Build Architecture Checklist、实现仓库和验证命令。输入缺失、未批准或 `stale` 时输出 `blocked`，交回 `yss-product-lifecycle`。
-+采用专职前端 profile 或显式 `frontend_delivery` 时，按 `.template-spec/process/frontend-backend-delivery.md` 核验战略与后端联合交付；缺任一输入只诊断和回交，正式实现与恢复从当前批准的 Slice Contract 重验接收摘要和真实服务。
++按 `.template-spec/process/frontend-backend-delivery.md` 区分来源：上游战略交接或显式 `frontend_delivery` 绑定须核验联合交付并冻结接收摘要；本地已批准资产须绑定当前功能 checkpoint 与 Spec，实际核验适用的设计和后端/API 依赖，不要求外部接收回执。纯 UI 无后端/API 影响时记录有理由的 not-applicable。无效的显式绑定不得回退本地路径；正式实现、生成和恢复仍须当前批准的 Slice Contract，接口或部署漂移使受影响证据失效。
  
 -## 编译循环
 +必须读取 yss-project.yaml、CONTEXT.md、Spec / 战略设计、Technical Design Contract、API / 数据 / UI 影响、实现仓库登记、允许写路径和验证命令。输入缺失、未批准或过期时返回 blocked。
@@ -32,7 +32,7 @@ index e20c899..9d2428a 100644
 -完整草案使用 `scripts/slice-contract prepare` 或 `prepareSliceImplementationContract` 从已有 Ticket / checkpoint 和必要细化组装；执行前读取唯一 YAML，视图和检查报告不授予权限。
  
 -来源摘要、闭包、阅读视图和校验直接复用 `slice-contract` / `contract` 入口；不再用临时脚本手工重算同一合同。工具或参数缺失按消费项目 `.template-spec/process/script-execution.md` 诊断，禁止用自写校验替代当前合同门禁。
-+接入与导出先按 `.template-spec/process/delivery-preflight.md` 执行对应阶段只读预检；既有工程身份按 `.template-spec/process/existing-backend-architecture.md` 读取原始证据，不补造生成器来源。无 UI 改动可承接当前确认的 `existing-ui-baseline`，新设计仍走原型；当前批准后仅允许登记与合同交集内的输出增量。
++接入与导出先按 `.template-spec/process/delivery-preflight.md` 执行对应阶段只读预检；适用的既有后端工程身份按 `.template-spec/process/existing-backend-architecture.md` 只读消费原始证据，不补造生成器来源。无 UI 改动可承接当前确认的 `existing-ui-baseline`，新设计仍走原型；当前批准后仅允许登记与合同交集内的输出增量。
  
 -合同结构见 [slice-implementation-contract.md](references/slice-implementation-contract.md)，专项返回协议见 [yss-skill-execution-result.md](references/yss-skill-execution-result.md)。前端、后端和测试子任务必须由生命周期主控从批准的 Slice Contract 编译任务包；任务包 schema 为 `.template-spec/process/schemas/subagent-task-package.schema.json`，技能列表必须来自 `taskPackageDefaults`，不能由编译器或执行 Agent 另行手写。
 +## 编译结果
@@ -40,7 +40,7 @@ index e20c899..9d2428a 100644
 -## 硬规则
 +来源摘要、闭包、阅读视图和校验直接复用本 Profile 已安装的 `slice-contract` / `contract` 入口；工具或参数缺失按 消费项目 `.template-spec/process/script-execution.md` 诊断，不用临时校验替代当前合同门禁。
  
--采用专职前端 profile 或显式 `frontend_delivery` 绑定时，先按 `.template-spec/process/frontend-backend-delivery.md` 实际核验战略与后端联合交付。缺任一输入只能诊断和回交；输入通过后准备计划/合同，正式实现、生成和恢复仍须当前批准的 Slice Contract 冻结接收摘要。接口或部署版本漂移时重新接收，不复用旧成功输出。
+-按 `.template-spec/process/frontend-backend-delivery.md` 区分来源：上游战略交接或显式 `frontend_delivery` 绑定须核验联合交付并冻结接收摘要；本地已批准资产须绑定当前功能 checkpoint 与 Spec，实际核验适用的设计和后端/API 依赖，不要求外部接收回执。纯 UI 无后端/API 影响时记录有理由的 not-applicable。无效的显式绑定不得回退本地路径；正式实现、生成和恢复仍须当前批准的 Slice Contract，接口或部署漂移使受影响证据失效。
 +新合同使用 Slice v3 唯一 YAML：basis、scope、resolution、acceptance、verification、work_units 与适用 extensions 单点保存；任务包由批准合同派生。v2 按原规则读取，修改时显式迁移新草案，不继承批准。
  
 -- 编译器不得输出 `approved`、`ready-for-agent` 或 `completed`。
@@ -51,7 +51,7 @@ index e20c899..9d2428a 100644
 -- 后端技术设计由 `yss-technical-design` 先行组织。消费批准且版本当前的 Technical Design Contract，核对其架构与工程基线一致；DDD 才消费聚合、Gateway 等战术字段并路由 `yss-domain`，MVC 消费用例、分层、规则和事务设计并按 Profile 路由。旧 v1 战术合同只按 DDD 显式兼容读取。无相关影响记录带原因的 `not-applicable`。
 -- API 变化必须回到生命周期 Draft/Review/Freeze；半成品 backend 不得冒充稳定 source of truth。
 -- 后端端到端切片必须包含 Application；对象/POJO 影响按契约自动补 `mapstruct`、`lombok`、`alibaba-java-code-style`。
--- Harness 内实现路径使用已确认的实际工程根，默认布局为 `apps/backend/<project>/` 或 `apps/frontend/<project>/`；`apps/backend/`、`apps/frontend/` 只能作为容器。外部实现仓库使用其登记的真实项目根路径。`git-submodule` 使用 `implementation_path_policy: git-submodule-harness-apps`，空 gitlink、detached HEAD 或 `--force` 覆盖挂载点不得脚手架；`inspectWorkingTreeScope.writable` 必须为显式布尔值。
+-- Harness 内实现路径必须是已登记的具体项目相对路径，默认布局为 `apps/backend/<project>/` 或 `apps/frontend/<project>/`；`apps/backend/`、`apps/frontend/` 只能作为容器。外部实现仓库使用其登记的真实项目根路径。`git-submodule` 使用 `implementation_path_policy: git-submodule-harness-apps`，空 gitlink、detached HEAD 或 `--force` 覆盖挂载点不得脚手架；`inspectWorkingTreeScope.writable` 必须为显式布尔值。
 -- 当前用户、缓存、审计、Excel、分布式 ID、请求校验、错误映射、加解密或网关韧性命中时，必须按 `compiler-contract.yaml` 的 `impact_to_capabilities` 补齐入口 capability；不能只在 `boundaries.md` 中提及。仅复用已经验证的平台认证 / 授权能力不算 component impact，不自动增加权限专项 skill。
 -- 业务行为使用 `behavior-tdd`；只有机械脚手架/生成物可用 `controlled-generation`，并记录例外和验证。
 -- 无工程且需要机械生成时，先读取 [脚手架合同编译](references/scaffold-compilation.md)。只起草 Project Scaffold Contract schema v4，由生命周期批准并持久化后运行；既有工程不重新生成。脚手架合同不能替代后续批准的 Slice Contract，业务行为必须重路由。
@@ -251,10 +251,10 @@ index 85769ce..6a208e6 100644
 +| `yss-backend-spec-review` | `yss-implementation-contract-compiler` | `coordination-only` | — |
 +| `yss-backend-spec-review` | `code-review` | `review-only` | — |
 diff --git a/references/compiler-contract.yaml b/references/compiler-contract.yaml
-index 9adb5a3..6e159ef 100644
+index 22e13cc..972a954 100644
 --- a/references/compiler-contract.yaml
 +++ b/references/compiler-contract.yaml
-@@ -8,137 +8,174 @@ slice_contract_versions:
+@@ -8,140 +8,174 @@ slice_contract_versions:
  backend_architecture:
    registry_source: .template-spec/agents/yss-skill-registry.yaml
    identity_schema: .template-spec/process/schemas/backend-architecture-identity.schema.json
@@ -288,12 +288,14 @@ index 9adb5a3..6e159ef 100644
 -forbidden_statuses: [approved, ready-for-agent, completed]
 -implementation_path_policy:
 -  applies_to: harness-resident-runtime-code
+-  # 默认布局；实际工程位置以登记和批准写范围为准。
 -  project_roots:
 -    backend: apps/backend/<project>/
 -    frontend: apps/frontend/<project>/
 -  container_roots:
 -    - apps/backend/
 -    - apps/frontend/
+-  forbidden_roots: []
 -  policies:
 -    - harness-apps-multi-project
 -    - external-repository-native
@@ -312,7 +314,8 @@ index 9adb5a3..6e159ef 100644
 -    empty_gitlink_writable: false
 -    force_overlay_regular_dir_path: blocked
 -  rules:
--    - "Harness 内每个运行时工程使用已确认的实际工程根，不能直接写入 apps/backend/ 或 apps/frontend/ 容器根。"
+-    - "Harness 内每个运行时工程必须位于具体 project 目录，不能直接写入 apps/backend/ 或 apps/frontend/。"
+-    - "其他布局按已登记的具体项目相对路径和批准写范围核验，不按目录拼写阻断。"
 -    - "外部实现仓库使用登记的真实项目根路径，不用 Harness 容器路径冒充。"
 -    - "git-submodule 挂载路径使用 git-submodule-harness-apps，必须是 gitlink 且分别登记；不得登记为 harness-apps。"
 -    - "空 gitlink、detached HEAD、--force 覆盖挂载点不得当成普通目录；也不得在 detached HEAD 工作树内当普通目录写入。"
@@ -328,7 +331,7 @@ index 9adb5a3..6e159ef 100644
 -  backend_impact: [engineering_baseline, backend_repository, maven_wrapper]
 -  cross_repo: [repository_registry, delivery_order, integration_verification, rollback_order]
 -  frontend_delivery:
--    when: specialized-frontend-profile-or-explicit-frontend-delivery-binding
+-    when: upstream-handoff-or-explicit-frontend-delivery-binding
 -    source: .template-spec/process/frontend-backend-delivery.md
 -    verifier: scripts/verify-frontend-delivery
 -    output_binding: frontend.delivery
@@ -536,7 +539,7 @@ index 9adb5a3..6e159ef 100644
    component_bindings:
      when: any-required-capability-provider-kind-is-yss-component
      platform_configuration: required-v2
-@@ -147,298 +184,384 @@ resolution_contract:
+@@ -150,298 +184,384 @@ resolution_contract:
      exact_artifact_binding: [group_id, artifact_id, declared_version, resolved_version, pom_sha256, jar_sha256, source_tree]
      digest_change_status: stale
      old_contract_without_binding: stale-and-recompile-no-auto-upgrade
@@ -1140,7 +1143,7 @@ index 9adb5a3..6e159ef 100644
    unknown_dependency: block-all
    compiler_must_not_approve: true
 +frontend_delivery_readiness:
-+  when: specialized-frontend-profile-or-explicit-frontend-delivery-binding
++  when: upstream-handoff-or-explicit-frontend-delivery-binding
 +  source: .template-spec/process/frontend-backend-delivery.md
 +  verifier: scripts/verify-frontend-delivery
 +  output_binding: frontend.delivery
@@ -1163,7 +1166,7 @@ index 9adb5a3..6e159ef 100644
    new_generation_requires: [exact-boot-java, confirmed-decision, matching-yss-coordinates, verified-compatibility-entry]
    candidate_generation: maintenance-only
    candidate_downstream: blocked
-diff --git a/references/scaffold-compilation.md b/a/references/scaffold-compilation.md
+diff --git a/references/scaffold-compilation.md b/source/references/scaffold-compilation.md
 deleted file mode 100644
 index 1c4fae6..0000000
 --- a/references/scaffold-compilation.md
@@ -1177,7 +1180,7 @@ index 1c4fae6..0000000
 -- 脚手架合同在编译阶段只能是 `draft` / `ready-for-lifecycle-review` / `blocked`；只有生命周期编排器可以把已持久化脚手架合同标记为 `approved`。脚手架合同只覆盖业务代码前的工程骨架工作单元；生成、基线校验和合同重编译完成后，它不能替代脚手架后的 Slice Implementation Contract。
 -- 脚手架输出消费批准的脚手架合同；脚手架后的所有生成后端代码都必须绑定当前批准且版本当前的 Slice Implementation Contract、主 YSS skill、依赖闭包、允许写路径、预期证据和 YSS Skill Execution Result。打印命令、`./mvnw validate` 单项通过或脚手架成功不能替代合同批准；生成范围从机械内容变成业务行为时触发完整重路由。
 diff --git a/references/slice-implementation-contract-v2.md b/references/slice-implementation-contract-v2.md
-index a5319c6..927c020 100644
+index 24ae0f9..0f4f437 100644
 --- a/references/slice-implementation-contract-v2.md
 +++ b/references/slice-implementation-contract-v2.md
 @@ -1,100 +1,64 @@
@@ -1196,7 +1199,7 @@ index a5319c6..927c020 100644
 -`yss-implementation-contract-compiler` 生成草案；`yss-product-lifecycle` 核验、批准并持久化。合同缺少必填字段时状态为 `blocked`。schema v1 已停止支持，必须重新编译为 v2，不提供自动升级。
 +由 `yss-implementation-contract-compiler` 生成草案，由 `harness-orchestrator` 校验、持久化和批准。合同以一个垂直切片为边界，四个 Agent 必须消费同一个 contract_id / contract_version 和 resolution digest。schema v1 已停止支持，必须重新编译，不自动升级。
  
--采用专职前端 profile 时，`frontend.delivery` 绑定 `{acceptance_ref, digest}`，来自 `scripts/verify-frontend-delivery` 的当前结果；也可由 `resolution.frontend_delivery` 承载，两处并存时必须一致。正式执行从持久化合同读取并重验输入。细则见 `.template-spec/process/frontend-backend-delivery.md`。
+-采用上游交接或显式 `frontend_delivery` 绑定时，`frontend.delivery` 绑定 `{acceptance_ref, digest}`，来自 `scripts/verify-frontend-delivery` 的当前结果；也可由 `resolution.frontend_delivery` 承载，两处并存时必须一致。本地已批准资产绑定当前功能 checkpoint 与 Spec，实际核验适用的设计和后端/API 依赖；纯 UI 无相关影响须记录有理由的 not-applicable，不补造外部回执。正式执行从当前批准的持久化合同重验输入；无效的显式绑定不得回退本地路径。细则见 `.template-spec/process/frontend-backend-delivery.md`。
 +## 合同结构
  
 -```yaml
@@ -1417,7 +1420,7 @@ index a5319c6..927c020 100644
 -    verification_commands: []
 -    behavior_tests_after_generation: []
 -```
-+只有上游输入、战术设计 / not-applicable、API / 数据 / UI 影响、实现仓库、写路径、测试 seam、验证命令和证据均满足，且不存在 blocked / stale / drift / violation / new_impacts 时，Orchestrator 才能把合同和切片设置为 ready-for-agent。
++只有当前批准的本地输入或已核验的上游输入、战术设计 / not-applicable、API / 数据 / UI 影响、实现仓库、写路径、测试 seam、验证命令和证据均满足，且不存在 blocked / stale / drift / violation / new_impacts 时，Orchestrator 才能把合同和切片设置为 ready-for-agent。
 +
 +API schema、数据库 schema、状态机、Visual Baseline 版本或 digest、聚合、不变量、Gateway、写路径、测试 seam、验证命令、Registry digest 或 Compiler digest 发生实质变化时，当前合同变为 stale，所有下游任务暂停并递增 contract_version；重新编译后仍须由 Orchestrator 再批准。UI 切片只消费 `visual_baseline_case_ids` 指定的图片；Agent 必须先读 manifest 与语义引用，不得按目录 glob 猜测图片含义。
  
@@ -1433,7 +1436,7 @@ index a5319c6..927c020 100644
 -技术设计编译绑定使用 `technical_design: {ref, version, digest}` 与 `slice_id`，校验器规则见 `yss-technical-design/references/technical-design-contract.md`。`backend.tactical_ddd` 仅适用于 `domain-driven`；MVC 消费共同技术设计绑定与 `design` 的用例、规则、事务和测试 seam，不填聚合或 Gateway 字段。
 +后端设计影响使用 `resolution.technical_design: {ref, version, digest}`，同时绑定 `slice_id` 和架构来源。当前批准的 v2 合同根据架构消费 `design`，DDD 专属字段仅适用于 `domain-driven`。旧 v1 DDD 可显式加 `legacy_ddd: true` 只读消费。编译与 freshness 都重验文件、版本、摘要、批准及切片依赖；不得自动迁移或批准。
 diff --git a/references/yss-skill-execution-result.md b/references/yss-skill-execution-result.md
-index 4004e81..14dbd22 100644
+index 998decd..ed0b201 100644
 --- a/references/yss-skill-execution-result.md
 +++ b/references/yss-skill-execution-result.md
 @@ -12,7 +12,7 @@

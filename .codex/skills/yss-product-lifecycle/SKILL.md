@@ -27,6 +27,8 @@ scripts/query-lifecycle-context --work-unit work-unit.plan-requirements --check-
 
 上例用于 `governed` 工作单元。`--include` 限合同顶层键；调用前按 [来源与补装](references/matt-yss-adapter.md) 预检，在既有授权内补装并重验。`daily` 从当前任务影响选择并核验 YSS 技能，不能因省略正式合同漏掉技术约束。
 
+一般任务由 Agent 根据 `skills list --details` 的描述选择内置技能，再用 `skills resolve <id...> --agent-runtime codex --json` 核验所选闭包；按 [来源与补装](references/matt-yss-adapter.md) 消费状态、补装并直接读取已核验入口。
+
 按 `execution_efficiency` 复用入口、合并查询和未变资料，核验资产与门禁；见项目 `.template-spec/process/script-execution.md`。
 
 当前任务只做一次 `yss capabilities --json` 能力发现。`result.readingViews.schemaVersion: 1` 且入口声明相应模式时，按对象使用 `yss lifecycle query --root <项目> --id <稳定 ID> --view agent --json`、`yss lifecycle status --root <项目> --checkpoint <引用> --view agent --json`，Context 用 `yss context query --root <项目> --term-refs <引用列表> --view agent --json` 或唯一 `--id`。Slice 用 `yss contract view --root <项目> --kind slice --file <合同> --view task --unit <唯一 ID> --json`；必须完整消费全局与未分类约束。先消费结论、全部阻断项、下一动作和证据引用，诊断时才读取相关正文。状态阅读仅报告登记事实；下游 Profile 核验、批准及执行仍用原入口。旧 CLI 保留上述脚本及原命令，不追加未知 `--view` 参数。
@@ -63,6 +65,10 @@ Plan 入口读 `.template-spec/plan/README.md`、`.template-spec/process/plan-mi
 审查按 `gate_consolidation`、`review_input.rereview`；Plan 执行 `planning.review_control`，周期由 checkpoint `plan_review_control` 持有；工具和派发、消费、恢复、入口校验见 `.template-spec/plan/entry-review.md`。
 
 职责及后端终点见 `execution_scopes`，恢复、编译、派发须复验。保留产品设计门禁，后端交付不等于业务完成或发布。
+
+Spec 是综合研发主控；Spec 文档批准只是一个里程碑。正式功能的本次终点由 `progression_target` 与独立意图文件选择，新政策默认业务验收；旧实例须显式同步支持该政策，不自动补写历史意图。改变终点保留实际 next、批准和冻结包字节。派发与生成前通过固定 CLI 核验当前目标，到达终点停止下游写入；缺能力或证据不可验证时停止受影响推进。见[推进到指定里程碑](references/progression-target.md)。Design、Backend、Frontend 按需协作，各自职责终点单独验核；汇总只消费显式同功能 checkpoint 和当前接收证据，不按 root 猜功能。
+
+本地 `backend-deliverable` 不派发对外交付包单元。当前验证单元完成后端实现、独立审查及真实构建部署验证后，按推进目标协议调用 `scripts/complete-backend-delivery complete` 登记同功能 `local-evidence` 终点，再复算目标；不改变 next/status、不导出战略或后端包。缺少该记录时继续补当前目标所需证据，不能越过后端终点直接推进业务验收。
 
 ### 用户决定
 
@@ -116,3 +122,5 @@ Spec 起草业务票，产品设计校准后完成业务 Ticket 正式化，再�
 资产整理及旧票迁移按 `.template-spec/process/feature-assets.md` 和显式计划保留状态、批准依据、原文，不推进阶段；被引用草稿按正式资产保留。
 
 YSS CLI 安装与升级、治理工程新建与接管、实例模板同步、旧身份迁移、资源补装及事务恢复回退用 `setup-yss-harness`，遵循 `.template-spec/process/harness-upgrade.md`；默认查询 GitHub 最新正式 Release 后固定来源，不推进产品阶段或重写历史批准。
+
+专职 Backend/Frontend 同样可从原始需求完成本地业务分析与本端交付。按唯一 `request_triage.delivery_path` 选择日常/正式路径；本地 Plan/Spec 复用现有门禁，上游输入复用批准且当前的来源，规则冲突回交权威方。角色分析权限不扩大另一端实现范围，本端完成不等于跨端业务验收。独立机械脚手架使用生成器 `--standalone`，不生成批准或业务资格。

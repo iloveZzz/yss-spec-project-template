@@ -3,8 +3,9 @@ import { validateReadOnlyIntake } from './read-only-intake.mjs';
 import { parseAsset } from './structured-assets.mjs';
 import { assertAssetTransactionIdle } from './asset-transactions.mjs';
 import { assertTrackingEntry } from './stage-tracking.mjs';
+import {assertProgressionEntry} from './lifecycle-progression.mjs';
 import { normalizeSliceContract } from './slice-contract.mjs';
-import { assertSliceV3TaskPackage } from './slice-task-package.mjs';
+import { assertSliceV3TaskPackage, sliceImplementationStage } from './slice-task-package.mjs';
 export { compileSliceTaskPackage, assertSliceV3TaskPackage } from './slice-task-package.mjs';
 import { existsSync, readFileSync } from "node:fs";
 import { resolveMaintenanceOutput, resolveMaintenanceReference } from "./maintenance-storage.mjs";
@@ -93,6 +94,7 @@ function validateCommon(value, registry, lifecycle) {
   const safe = (ref, field) => assertSafeRelativePath(ref, field, { maintenance });
   const readable = (ref, field, digest) => assertReadableEvidenceRef(ref, field, { maintenance, digest });
   if (value.allowed_write_paths?.length && value.contract.kind === "lifecycle-work-unit") assertTrackingEntry(value.work_unit_id, value, { root: ROOT });
+  if (value.allowed_write_paths?.length && !maintenance && ['Drafter', 'Worker'].includes(value.execution_state) && !['resolved', 'failed'].includes(value.workflow_status)) assertProgressionEntry(value.work_unit_id, {root: ROOT, checkpointRef: value.checkpoint_ref || value.result?.checkpoint_ref, assetRef: value.contract.slice_contract_ref || value.contract.lifecycle_ref});
   if (value.work_unit_id === 'work-unit.spec-synthesis') assertPlanSpecEntry(value);
   const workUnit = lifecycle.work_units.find((item) => item.id === value.work_unit_id);
   if (!workUnit && value.contract.kind !== "slice-implementation") fail(`未知 work_unit_id: ${value.work_unit_id}`);
@@ -206,7 +208,7 @@ function validateContract(value, registry, lifecycle, { history = false } = {}) 
     return;
   }
   if (contract.lifecycle_ref || contract.maintenance_ref) fail("slice-implementation 不得携带其他合同引用");
-  if (!/^stage\.vertical-slice-implementation$/.test(value.stage_id)) fail("slice-implementation 必须绑定垂直切片实现阶段");
+  if (value.stage_id !== sliceImplementationStage()) fail("slice-implementation 必须绑定垂直切片实现阶段");
   if (value.convergence.parent_work_unit !== implementationWorkUnit) fail("slice-implementation 必须汇合到 work-unit.slice-implementation");
   if (/^https?:\/\//.test(contract.slice_contract_ref)) fail("slice_contract_ref 必须引用本地已持久化的 Slice Implementation Contract");
   const contractPath = assertSafeRelativePath(contract.slice_contract_ref, "contract.slice_contract_ref");

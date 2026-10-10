@@ -1,4 +1,5 @@
 import path from 'node:path';
+import {orchestrationRef} from './governance-io.mjs';
 import {withValidationPhase, existsSync, readFileSync} from './validation-phase.mjs';
 import {ROOT, loadRegistry} from './lifecycle-registry.mjs';
 import {loadDigitalHumanRoles, countersignRuleForGate} from './digital-human-roles.mjs';
@@ -7,7 +8,7 @@ import {assertImportedSpecPrerequisite} from './spec-baseline.mjs';
 import {assertPlanAggregateApproval} from './plan-spec-entry.mjs';
 import {assertUserDecisionRequirement, assertWorkUnitUserDecision, assertImplementationDecision} from './user-decision.mjs';
 import {validateAssetStructure, canonicalValue} from './structured-assets.mjs';
-import {assertCurrentApproval, approvalExpectationFromState} from './approval-current.mjs';
+import {assertCurrentApproval, approvalExpectationFromState, assertCurrentApprovalEvidenceRef, assertCurrentApprovalReferences} from './approval-current.mjs';
 import {approvalExpectedFromTask} from './review-capabilities.mjs';
 import {approvalIO, readApprovalDocument, reviewBundleRows, loadApprovalRecord, selectApprovalRecord, readApprovalHistory, resolveApprovalRef, approvalError} from './approval-record-io.mjs';
 export {assertCurrentApproval, approvalExpectationFromState, approvalExpectationFromSubject} from './approval-current.mjs';
@@ -39,6 +40,7 @@ function validatePlanApproval(record, options) {
   const checkpoint = options.checkpoint;
   const ref = checkpoint?.plan_approval_ref || checkpoint?.gates?.['gate.plan-approved']?.approval_ref;
   if (!checkpoint || !ref) approvalError('APPROVAL_CONTEXT_REQUIRED', 'Plan 聚合批准须完整当前 checkpoint 与受控审查周期');
+  assertCurrentApprovalEvidenceRef(ref);
   if (JSON.stringify(canonicalValue(approvalIO(options).document(ref))) !== JSON.stringify(canonicalValue(record))) approvalError('APPROVAL_CURRENT_INVALID', '待验 Plan 记录不是 checkpoint 当前聚合批准');
   return assertPlanAggregateApproval(checkpoint, options);
 }
@@ -48,13 +50,16 @@ export function validateApprovalRecord(record, options = {}) {
     if (record.kind === 'review-bundle') reviewBundleRows(record);
     return {bucket:'history-only',record,execution_authorization:'not-evaluated'};
   }
+  assertCurrentApprovalReferences(record);
   if (record.gate_id === 'gate.plan-approved' && boundedPlanApproval(record, options)) return validatePlanApproval(record, options);
   return withValidationPhase({root:options.root || ROOT,purpose:'approval-current',readOnly:true},()=>assertCurrentApproval(record,expectedFor(record,options),options));
 }
 export function validateApprovalRecordFile(filePath, options = {}) {
   if (options.history === true || options.requireApproved === false) return readApprovalHistory(filePath,options);
+  assertCurrentApprovalEvidenceRef(filePath);
   return withValidationPhase({root:options.root || ROOT,purpose:'approval-current',readOnly:true},()=>{
     const record = readApprovalDocument(filePath,options);
+    assertCurrentApprovalReferences(record);
     if (record.gate_id === 'gate.plan-approved' && boundedPlanApproval(record, options)) return validatePlanApproval(record, options);
     if (record.kind !== 'review-bundle') return assertCurrentApproval(record,expectedFor(record,options),options);
     return reviewBundleRows(record).map(row=>assertCurrentApproval(loadApprovalRecord(filePath,row.gate_id,options),expectedFor(row,options),options));
@@ -66,7 +71,9 @@ export function assertApprovedGateHasValidApproval(gateId,gateState,options = {}
   if (!gateState || typeof gateState !== 'object') approvalError('APPROVAL_CONTEXT_REQUIRED',`${gateId} 缺少门禁状态`);
   if (gateState.status !== 'approved') return;
   if (!gateState.approval_ref) approvalError('APPROVAL_REFERENCE_REQUIRED',`${gateId} 已 approved 但缺少 approval_ref`);
+  assertCurrentApprovalEvidenceRef(gateState.subject_ref);assertCurrentApprovalEvidenceRef(gateState.approval_ref);
   if (gateId === 'gate.plan-approved' && boundedPlanApproval(null, {...options, rolesDoc})) {
+    assertCurrentApprovalEvidenceRef(options.checkpoint?.plan_approval_ref);
     if (!options.checkpoint || JSON.stringify(canonicalValue(options.checkpoint.gates?.[gateId])) !== JSON.stringify(canonicalValue(gateState))) approvalError('APPROVAL_CONTEXT_REQUIRED', 'Plan 聚合批准须完整当前 checkpoint 与受控审查周期');
     return assertPlanAggregateApproval(options.checkpoint, {...options,rolesDoc});
   }
@@ -103,7 +110,7 @@ export function assertCheckpointUserDecisions(checkpoint, options = {}) {
   if (review.external_input) assertUserDecisionRequirement({ ...review.external_input, boundary: "external-input" }, options);
   if (checkpoint.status === "completed") {
     if (checkpoint.blockers?.length || Object.values(checkpoint.gates || {}).some(gate => !["approved", "not-applicable"].includes(gate.status))) throw new TypeError("lifecycle-control-blocked: 仍有阻塞或未通过门禁，不可完成");
-    const completionGate=loadRegistry().gates.some(gate=>gate.id==="gate.strategic-design-handoff-approved")?"gate.strategic-design-handoff-approved":"gate.delivery-accepted";
+    const completionGate=orchestrationRef(options.root || ROOT).includes('/yss-strategic-design/')?"gate.strategic-design-handoff-approved":"gate.delivery-accepted";
     if (checkpoint.gates?.[completionGate]?.status !== "approved") throw new TypeError("lifecycle-control-blocked: 阶段完成须当前交付或战略交接验收，不等于发布授权");
   }
 }

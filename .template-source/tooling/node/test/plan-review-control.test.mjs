@@ -12,7 +12,7 @@ import { buildPlanReviewFixture, PLAN_BOUNDARIES } from '../../../../scripts/fix
 import { buildLegacyPlanSourceFixture } from '../../../../scripts/fixtures/plan-review-control/legacy-source-fixture.mjs';
 import { localizeSyntheticPlanSource, syntheticPlanSourceContext } from '../../../../scripts/fixtures/plan-review-control/source-consumption-fixture.mjs';
 import { buildPlanFixture } from '../../../../scripts/fixtures/user-decision/plan-fixture.mjs';
-import { assertPlanSpecEntry } from '../../../../scripts/lib/plan-spec-entry.mjs';
+import { assertPlanSpecEntry, assertPlanAggregateApproval } from '../../../../scripts/lib/plan-spec-entry.mjs';
 import { validateApprovalRecord, validateApprovalRecordFile, assertApprovedGateHasValidApproval, assertCheckpointApprovals } from '../../../../scripts/lib/approval-record.mjs';
 import { assertGateChecks } from '../../../../scripts/lib/lifecycle-controls.mjs';
 import { sourceApproval } from '../../../../scripts/lib/strategic-handoff.mjs';
@@ -166,6 +166,46 @@ test('bounded Plan source policy rejects current aggregate approval without revi
     () => assertGateChecks('gate.plan-approved', checkpoint, options)
   ]) assert.throws(consume, /PLAN_REVIEW_CONTROL_REQUIRED/);
   assert.throws(() => validateApprovalRecord(record, { root, rolesDoc, registry, expected: { boundary: 'gate.plan-approved', ...gate } }), /APPROVAL_CONTEXT_REQUIRED/);
+});
+
+test('direct Plan aggregate rejects target-named primary aliases while retaining original approval bytes and history', t => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'yss-plan-aggregate-alias-'));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const f = buildPlanFixture(root), approvalRef = f.state.plan_approval_ref;
+  f.state.gates = { 'gate.plan-approved': { status: 'approved', approval_ref: approvalRef, subject_ref: f.state.plan_review_ref } };
+  f.write('current-checkpoint.json', f.state);
+  const checkpointBytes = fs.readFileSync(path.join(root, 'current-checkpoint.json')), approvalBytes = fs.readFileSync(approvalRef);
+  assert.equal(assertPlanAggregateApproval(f.state, { root }).result, 'allowed');
+  for (const ref of ['nested/Progression-Target.JSON', 'progression-target.json']) {
+    const alias = path.join(root, ref);
+    fs.mkdirSync(path.dirname(alias), { recursive: true }); fs.writeFileSync(alias, approvalBytes);
+    const state = { ...f.state, plan_approval_ref: alias };
+    assert.equal(state.gates['gate.plan-approved'].approval_ref, approvalRef);
+    assert.throws(() => assertPlanAggregateApproval(state, { root }), /推进目标.*不能作为批准或交付证据/);
+    assert.equal(validateApprovalRecordFile(alias, { root, history: true }).execution_authorization, 'not-evaluated');
+    assert.deepEqual(fs.readFileSync(alias), approvalBytes);
+  }
+  assert.deepEqual(fs.readFileSync(approvalRef), approvalBytes);
+  assert.deepEqual(fs.readFileSync(path.join(root, 'current-checkpoint.json')), checkpointBytes);
+  assert.equal(assertPlanAggregateApproval(f.state, { root }).result, 'allowed');
+});
+
+test('direct Plan aggregate rejects extra target intent in current evidence refs while pure history remains readable', t => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'yss-plan-aggregate-evidence-'));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const f = buildPlanFixture(root), approvalRef = f.state.plan_approval_ref;
+  f.state.gates = { 'gate.plan-approved': { status: 'approved', approval_ref: approvalRef, subject_ref: f.state.plan_review_ref } };
+  const approvalBytes = fs.readFileSync(approvalRef), record = JSON.parse(approvalBytes);
+  assert.equal(assertPlanAggregateApproval(f.state, { root }).result, 'allowed');
+  for (const ref of ['nested/Progression-Target.JSON', 'progression-target.json']) {
+    f.write(ref, { schema_version: 1, kind: 'lifecycle-progression-target', feature_id: f.state.feature_id, checkpoint_ref: 'current-checkpoint.json', target: 'business-accepted', intent_source: 'synthetic-test', consumers: [] });
+    const contaminated = { ...record, evidence_refs: [...record.evidence_refs, ref] };
+    f.write(approvalRef, contaminated);
+    assert.throws(() => assertPlanAggregateApproval(f.state, { root }), /推进目标.*不能作为批准或交付证据/);
+    assert.equal(validateApprovalRecordFile(approvalRef, { root, history: true }).execution_authorization, 'not-evaluated');
+  }
+  fs.writeFileSync(approvalRef, approvalBytes);
+  assert.equal(assertPlanAggregateApproval(f.state, { root }).result, 'allowed');
 });
 
 test('first Plan review covers both professional checks and preserves their dependency', () => {

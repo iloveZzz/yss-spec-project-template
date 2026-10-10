@@ -6,8 +6,14 @@ import { createApprovedExecutionContext, assertApprovedExecutionContext } from '
 import { assertImplementationDecision } from './user-decision.mjs';
 import { taskPackageDefaults, loadDigitalHumanRoles } from './digital-human-roles.mjs';
 import { validateTaskPackageSchema } from './task-package-schema.mjs';
+import {enforceFrontendDelivery} from './frontend-delivery-boundary.mjs';
 const fail=message=>{throw new TypeError(message);};
 const equalArrays=(a,b)=>Array.isArray(a)&&a.length===b.length&&a.every((x,i)=>x===b[i]);
+export function sliceImplementationStage(root=ROOT) {
+  const stages=parseSliceYaml(readFileSync(safe(root,'.template-spec/process/lifecycle-registry.yaml'))).stages.filter(stage=>['stage.vertical-slice-implementation','stage.slice-implementation'].includes(stage.id));
+  if(stages.length!==1)fail('接收端注册表缺少唯一 Slice 实现阶段');
+  return stages[0].id;
+}
 function generateTaskPackageDefaults(roleId,overrides,{rolesDoc}={}) {
   const defaults=taskPackageDefaults(roleId,rolesDoc||loadDigitalHumanRoles());
   return {schema_version:1,role_id:roleId,skill_source:{registry_ref:'.template-spec/agents/digital-human-roles.yaml',defaults_ref:`taskPackageDefaults(${roleId})`,core_skills:defaults.core_skills,forbidden_skills:defaults.forbidden_skills},...overrides};
@@ -28,7 +34,7 @@ function compile(binding,{root=ROOT,work_unit_id,task_id,actor_id,runtime_id,exe
   const checkpoint=readSliceDispatchApproval(root,binding.approval_ref);
   const decisions=user_decisions||checkpoint.human_review?.user_decisions;
   const output=generateTaskPackageDefaults(unit.role_id,{
-    task_id,work_unit_id,actor_id,runtime_id,execution_state,workflow_status:'not-started',stage_id:'stage.vertical-slice-implementation',
+    task_id,work_unit_id,actor_id,runtime_id,execution_state,workflow_status:'not-started',stage_id:sliceImplementationStage(root),
     contract:{kind:'slice-implementation',contract_id:contract.contract_id,contract_version:contract.contract_version,status:'issued',contract_ref:binding.ref,slice_contract_ref:binding.ref,gate_refs:[binding.approval_ref]},
     inputs:[binding.ref,...new Set(Object.values(contract.lifecycle_refs))],
     objective:`${unit.behavior}（执行目录：${unit.project_root}；默认消费 ${binding.ref} 的 task 视图并指定 ${work_unit_id}，追溯时展开 full）`,
@@ -47,7 +53,7 @@ export function assertSliceV3TaskPackage(value,slice,{root=ROOT}={}) {
   const contract=value.contract;
   const current=normalizeSliceContract(slice,{root});
   const roles=parseSliceYaml(readFileSync(safe(root,'.template-spec/agents/digital-human-roles.yaml'))),defaults=taskPackageDefaults(value.role_id,roles);
-  if(!roles.runtimes.some(runtime=>runtime.id===value.runtime_id)||!defaults.stages.includes(value.stage_id))fail('接收端角色或运行时不支持当前任务');
+  if(value.stage_id!==sliceImplementationStage(root)||!roles.runtimes.some(runtime=>runtime.id===value.runtime_id)||!defaults.stages.includes(value.stage_id))fail('接收端角色或运行时不支持当前任务');
   if(!equalArrays(value.skill_source.core_skills,defaults.core_skills)||!equalArrays(value.skill_source.forbidden_skills,defaults.forbidden_skills))fail('任务角色能力与接收端不一致');
   const unit=current.work_units.find(item=>item.id===value.work_unit_id);
   if(unit&&[unit.primary_skill,...(unit.supporting_skills||[])].some(skill=>defaults.forbidden_skills.includes(skill)))fail('工作单元使用接收角色禁用 Skill');
@@ -55,7 +61,9 @@ export function assertSliceV3TaskPackage(value,slice,{root=ROOT}={}) {
   if(!Array.isArray(contract.gate_refs)||contract.gate_refs.length!==1)fail('Slice v3 派发需要唯一批准 checkpoint 引用');
   const bytes=readFileSync(safe(root,contract.slice_contract_ref));
   const execution=createApprovedExecutionContext({ref:contract.slice_contract_ref,digest:hash(bytes),id:current.contract_id,version:current.contract_version,approval_ref:contract.gate_refs[0]},{root,work_unit_id:value.work_unit_id});
-  assertApprovedExecutionContext(execution,{root,contract:current});
+  const {contract:selected}=assertApprovedExecutionContext(execution,{root,contract:current});
+  if(['Drafter','Worker'].includes(value.execution_state))enforceFrontendDelivery(selected,{root,sliceRef:contract.slice_contract_ref,
+    workUnitId:value.work_unit_id,phase:'implementation'});
   for(const allowed of value.allowed_write_paths)if(!unit.allowed_write_paths.some(parent=>withinSlicePath(allowed,parent)))fail('任务写范围超出 Slice v3');
   for(const key of ['verification_commands','expected_evidence_files']) {
     const required=key==='verification_commands'?unit.work_unit.verification_commands:unit.work_unit.expected_evidence;

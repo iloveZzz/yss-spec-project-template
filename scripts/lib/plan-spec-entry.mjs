@@ -1,7 +1,7 @@
 import path from 'node:path';
 import { verifyContextReconciliation } from './context-reconciliation.mjs';
 import { decisionIO, decisionDigest, assertUserDecisionRequirement } from './user-decision.mjs';
-import { assertCurrentApproval, assertApprovalSigner } from './approval-current.mjs';
+import { assertCurrentApproval, assertApprovalSigner, assertCurrentApprovalEvidenceRef, assertCurrentApprovalReferences } from './approval-current.mjs';
 import { selectApprovalRecord, reviewBundleRows } from './approval-record-io.mjs';
 import { loadDigitalHumanRoles } from './digital-human-roles.mjs';
 import { approvalExpectationForCheckpoint } from './approval-consumption.mjs';
@@ -59,7 +59,9 @@ function validatePlanBundle(source, approvalRef, checkId, state, io, roles, opti
 function validatePlanAggregate(state, review, basis, bundles, io, roles, registry, options) {
   const approvalRef = state.plan_approval_ref || state.gates?.['gate.plan-approved']?.approval_ref;
   if (!text(approvalRef)) fail('bounded-plan-review-v1 缺少 plan_approval_ref');
+  assertCurrentApprovalEvidenceRef(approvalRef);
   const approval = io.document(approvalRef);
+  assertCurrentApprovalReferences(approval);
   if (approval.kind === 'review-bundle' || approval.gate_id !== 'gate.plan-approved') fail('Plan 聚合门禁必须使用独立批准记录');
   assertApprovalSigner(approval, { rolesDoc: roles, registry });
   if (approval.subject_ref !== state.plan_review_ref || hex(approval.subject_digest) !== hex(decisionDigest(io.bytes(state.plan_review_ref)))) fail('Plan 批准未绑定当前审阅包');
@@ -97,6 +99,7 @@ function validatePlanAggregate(state, review, basis, bundles, io, roles, registr
 // 自动加载只产生 pending；持久化审阅包、证据新鲜度和真实回复共同决定放行。
 export function assertPlanSpecEntry(state, options = {}) {
   if (!text(state?.plan_review_ref) || !text(state?.feature_id)) fail('缺少 plan_review_ref / feature_id');
+  assertCurrentApprovalEvidenceRef(state.plan_review_ref);
   const io = decisionIO(options), policy = planEntryPolicy(options);
   const review = io.document(state.plan_review_ref);
   if (review.schema_version !== 1 || review.kind !== 'plan-entry-review' || review.gate_id !== 'gate.plan-approved' || review.feature_id !== state.feature_id) fail('审阅包身份或范围不匹配');

@@ -2,11 +2,11 @@ const PROJECT_NAME = /^[a-z][a-z0-9-]*$/;
 const IMPLEMENTATION_KINDS = new Set(["backend", "frontend"]);
 
 export function normalizeImplementationPath(value) {
-  if (typeof value !== "string" || value.length === 0) return null;
+  if (typeof value !== "string" || value.length === 0 || /[\\:\x00-\x1f*?{}\[\]]/.test(value)) return null;
   const candidate = value.endsWith("/") ? value.slice(0, -1) : value;
   if (candidate.length === 0 || candidate.startsWith("/") || candidate.startsWith("../")) return null;
   const parts = candidate.split("/");
-  if (parts.some((part) => part === "" || part === "." || part === "..")) return null;
+  if (parts.some((part) => part === "" || part === "." || part === ".." || /[ .]$/.test(part))) return null;
   return candidate;
 }
 

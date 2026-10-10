@@ -6,6 +6,22 @@
 
 项目实例按需分发：注册表中受支持的技能可能尚未安装；改名与别名由 `.template-spec/agents/yss-skill-registry.yaml` 解析；已退役名称按 `.template-spec/agents/skill-migrations.md` 重新路由。这三种情况不能混用，也不需要把整个上游仓库装进实例。
 
+## 按任务发现与读取内置技能
+
+先用固定执行器的 `skills resolve --help` 确认能力；旧 CLI 沿用下节预检，不把版本号或查询退出成功当成支持或就绪。spec、backend、frontend 的自然语言任务由 Agent 对照 `skills list --details --root <项目根> --json` 的描述和 `invocation` 选择规范 ID，例如“审查代码”选择 `code-review`，“分析模块边界”选择 `codebase-design`。详情仅观察注册信息和安装声明，不核验整个技能库。
+
+```text
+<固定yss> skills resolve <id...> --agent-runtime codex --root <项目根> --json
+```
+
+条件依赖使用逗号分隔的 `--when <已登记条件列表>`；只展开 `context-required` 和命中的 `context-conditional`，不加载整套角色技能。消费 `result.status`，查询退出 0 仅表示查询完成：
+
+- `ready`：直接读取所选闭包每项的绝对 `entryPath`，以 `contentDigest` 绑定实际读取记录，再按入口及需要的引用执行当前任务；无需等待 Codex 原生技能列表刷新。调用仍遵守 `invocation.invocation_mode`，`user` 入口必须有用户明确调用。
+- `missing`：只将规范 `missing` 集合传给既有 `skills ensure` 保存计划；已有任务授权覆盖且无冲突时应用。安装后重新执行同一 resolve，整体 `ready` 才读取与调用。
+- `blocked` 或查询失败：停止受影响调用并报告 `issues`；受管文件丢失、字节或权限漂移、同名路径占用、来源不匹配、退役及外部技能均不能自动补装。
+
+不隐式同步、迁移、覆盖或创建业务批准。就绪只证明本次核验的技能入口和依赖；文件变化后重验，不将技能就绪当成阶段资格或任务完成。
+
 ## 工作单元技能预检与补装
 
 准备调用原生工作单元的专项技能前，运行：

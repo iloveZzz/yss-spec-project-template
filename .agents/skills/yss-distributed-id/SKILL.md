@@ -5,7 +5,7 @@ description: "接入或排查 YSS 分布式 ID 的 Segment、Snowflake、主键�
 
 # yss-distributed-id
 
-执行路线按 Spec 项目中的 `.agents/skills/yss-product-lifecycle/references/daily-delivery.md` 的项目本地政策与固定 CLI 核验。仅合格且范围已授权的 Spec `daily` 消费同 Ticket 的范围、验收与已核验工程基线；`governed` 保留当前批准合同。缺本地政策/能力、其他 Profile 或已绑定正式任务不能凭标签降级；路线不授予执行授权。
+执行路线消费当前 Profile 主控合同的 `request_triage.delivery_path` 与固定 CLI 的 `route` / `verify-daily` 结果。仅已启用且合格的 Spec、Backend、Frontend `daily` 使用同一 Ticket 的范围、验收、工程基线、实际测试与独立审查；本端写范围不扩大。缺政策或能力时保持正式路径，已有正式任务不得降级；本技能不授予执行授权。
 
 处理 `yss-component-distributed-id` 及 Leaf 消费项目的发号、主键填充与迁移。`governed` 从批准的 `platform_configuration.component_platform_line` 选择 [源码索引](references/source-index.md)，合格 `daily` 使用同 Ticket 已核验的既有工程精确平台线；Boot 2 的历史能力不能推定为 Boot 3 可用能力。缺当前事实可只读分诊；普通路径只修现有已确认策略内的行为，不授权改变主键策略、迁移或宣布兼容。
 

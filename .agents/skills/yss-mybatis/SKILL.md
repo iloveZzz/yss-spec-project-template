@@ -5,7 +5,7 @@ description: 用于 YSS MyBatis / MyBatis-Plus 组件能力核验、接入决策
 
 # yss-mybatis
 
-执行路线按 Spec 项目中的 `.agents/skills/yss-product-lifecycle/references/daily-delivery.md` 的项目本地政策与固定 CLI 核验。仅合格且范围已授权的 Spec `daily` 消费同 Ticket 的范围、验收与已核验工程基线；`governed` 保留当前批准合同。缺本地政策/能力、其他 Profile 或已绑定正式任务不能凭标签降级；路线不授予执行授权。
+执行路线消费当前 Profile 主控合同的 `request_triage.delivery_path` 与固定 CLI 的 `route` / `verify-daily` 结果。仅已启用且合格的 Spec、Backend、Frontend `daily` 使用同一 Ticket 的范围、验收、工程基线、实际测试与独立审查；本端写范围不扩大。缺政策或能力时保持正式路径，已有正式任务不得降级；本技能不授予执行授权。
 
 本 Skill 只维护 `yss-component-persistence` 的组件能力、选择条件和排障顺序。PO、Repository、Convertor、Gateway/Query Adapter 的结构与生成边界由 `yss-repository` 负责。
 

@@ -2,10 +2,10 @@ import { uiBaselineRef, uiBaselineCaseIds, uiBaselineKind, hasConsumerRoutes } f
 import { existsSync, readdirSync, readFileSync } from './validation-phase.mjs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
-import { openBackendDelivery } from './backend-delivery.mjs';
+import { openBackendDelivery, openBackendStrategicInput } from './backend-delivery.mjs';
 import { openBundle,assertImportReceipt } from './strategic-handoff.mjs';
 import { verifyConsumption } from './strategic-handoff-consumption.mjs';
-import { read, safe, ensure, hash, schema, project, ROOT } from './strategic-handoff-io.mjs';
+import { read, safe, ensure, hash, digest, schema, project, ROOT } from './strategic-handoff-io.mjs';
 import {consumerEntry} from './strategic-handoff-routing.mjs';
 
 const ACCEPTANCE_SCHEMAS=new Map([[1,'.template-spec/process/schemas/frontend-delivery-acceptance-v1.schema.json'],[2,'.template-spec/process/schemas/frontend-delivery-acceptance.schema.json'],[3,'.template-spec/process/schemas/frontend-delivery-acceptance-v3.schema.json']]);
@@ -69,7 +69,7 @@ export async function verifyFrontendStrategicPreflight({root=process.cwd(),prefl
     const expectedMode=backendRoute.activation==='not-applicable'?'not-applicable':'required';
     ensure(preflight.backend_dependency.mode===expectedMode&&preflight.backend_dependency.route_id===backendRoute.route_id,'前端战略预检后端依赖与消费者路由不一致');
     if(expectedMode==='not-applicable')ensure(preflight.backend_dependency.reason===backendRoute.reason&&JSON.stringify(preflight.backend_dependency.impact_refs)===JSON.stringify(backendRoute.impact_refs)&&JSON.stringify(preflight.backend_dependency.evidence_refs)===JSON.stringify(backendRoute.evidence_refs),'backend-not-applicable 依据与战略路由不一致');
-    return {result:'preflight-verified',ready_for_agent:false,preflight_ref:preflightRef,preflight_digest:preflightDigest,strategic_bundle_digest:receipt.bundle_digest,ui_baseline_kind:uiBaselineKind(bundle.handoff),preflight_schema_version:preflight.schema_version,backend_dependency:expectedMode,next_action:'prepare-frontend-engineering-design-draft'};
+    return {result:'preflight-verified',ready_for_agent:false,preflight_ref:preflightRef,preflight_digest:preflightDigest,strategic_bundle_digest:receipt.bundle_digest,ui_baseline_kind:uiBaselineKind(bundle.handoff),preflight_schema_version:preflight.schema_version,backend_dependency:expectedMode,backend_dependency_binding:preflight.backend_dependency,next_action:'prepare-frontend-engineering-design-draft'};
   },{readOnly});
 }
 
@@ -112,7 +112,9 @@ export async function verifyFrontendDelivery({root=process.cwd(),acceptanceRef,s
     ensure((acceptance.schema_version===3)===(preflight.preflight_schema_version===2),'前端接收与预检协议版本不匹配，禁止降级');
     if(acceptance.schema_version===3)ensure(acceptance.ui_baseline_kind===preflight.ui_baseline_kind,'前端接收基线类型不一致');
     ensure(preflight.strategic_bundle_digest===acceptance.strategic_handoff.bundle_digest,'前端接收与战略预检版本不一致');
+    ensure(acceptance.backend_dependency.mode===preflight.backend_dependency&&acceptance.backend_dependency.route_id===preflight.backend_dependency_binding.route_id,'前端接收后端依赖与战略预检不一致');
     if(acceptance.backend_dependency.mode==='not-applicable') {
+      ensure(digest(acceptance.backend_dependency)===digest(preflight.backend_dependency_binding),'前端接收后端不适用依据与战略预检不一致');
       ensure(!acceptance.backend_delivery,'backend-not-applicable 不得绑定后端交付收据');
       const strategic=await verifyConsumption(acceptance,{root,sliceRef,consumer:'frontend'});
       ensure(strategic.result==='verified',`战略承接阻断: ${JSON.stringify(strategic.issues)}`);
@@ -147,7 +149,7 @@ export async function verifyFrontendDelivery({root=process.cwd(),acceptanceRef,s
     ensure(strategic.result==='verified',`战略承接阻断: ${JSON.stringify(strategic.issues)}`);
     const ids=acceptance.frontend_cases.map(item=>item.case_id);
     ensure(new Set(ids).size===ids.length,'前端验收用例 ID 重复');
-    await openBundle(safe(backend.source,delivery.strategic_bundle_ref),bundle=>{
+    await openBackendStrategicInput(safe(backend.source,delivery.strategic_bundle_ref),bundle=>{
       ensure(acceptance.schema_version===3||bundle.handoff.schema_version!==5,'Handoff v5 必须使用前端接收 v3');
       const visualCases=uiBaselineCaseIds(bundle.handoff);
       for(const item of acceptance.frontend_cases) {

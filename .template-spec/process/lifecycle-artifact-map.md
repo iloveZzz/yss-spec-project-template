@@ -26,6 +26,7 @@
 
 | 稳定 ID | 门禁 | 所属阶段 | 触发条件 | 前置门禁 / 检查 | 必须留下的证据 |
 |---|---|---|---|---|---|
+| `gate.strategic-design-handoff-approved` | 业务方案交接验收 | `stage.product-design` | 明确绑定外部 Backend 或 Frontend 实现消费者；Design 仅消费 SpecBaseline，本地综合研发直接消费资产时不适用。 | `gate.plan-approved`、`gate.spec-baseline-approved`、`gate.product-design-approved` | `evidence.strategic-design-handoff`、`evidence.approval-record`、`evidence.fresh-verification` |
 | `gate.plan-approved` | Plan 批准 | `stage.plan` | Plan 结论进入 Spec；汇总战略检查，核验当前规划范围的原始批准或有效授权延续。 | `check.domain-strategy-approved`、`check.stage-decision-package-approved` | `evidence.approval-record` |
 | `gate.spec-baseline-approved` | Spec 基线批准 | `stage.spec-architecture` | 新功能、行为变化或范围扩大进入 Spec 基线；已授权范围内细化复用当前有效授权，实质变化重新决定。 | 无 | `evidence.approval-record` |
 | `gate.product-design-approved` | 产品设计批准 | `stage.product-design` | 存在产品设计影响；独立原型评审与交付物验证通过后核验原批准或授权延续，新增体验取舍由用户决定。 | `check.prototype-reviewed`、`check.prototype-verified` | `evidence.prototype-confirmation` |
@@ -59,6 +60,7 @@
 
 | 稳定 ID | 产物 | 所属阶段 | 触发条件 |
 |---|---|---|---|
+| `artifact.strategic-design-handoff` | 业务方案交接包 | `stage.product-design` | 同一功能明确交付外部 Backend 或 Frontend 实现消费者，需要冻结战略来源并形成可验证交付目录。 |
 | `artifact.impact-assessment` | 影响面分析 | `stage.entry-triage` | 每次变更。 |
 | `artifact.domain-strategy` | 业务边界与规则设计 | `stage.plan` | 新产品/模块、跨责任区协作、业务词汇冲突、责任边界或关键规则变化。 |
 | `artifact.stage-decision-package` | 方案决策包 | `stage.plan` | Plan 到 Spec 入口需要结构化上游决策。 |
@@ -94,6 +96,7 @@
 
 | 稳定 ID | 证据 | 说明 |
 |---|---|---|
+| `evidence.strategic-design-handoff` | 业务方案交接包验证证据 | 显式外部 Backend 或 Frontend 实现消费者所需 Handoff v5 来源批准、不可变交付目录与整包实际验证证据。 |
 | `evidence.context-reconciliation` | Context Reconciliation 证据 | 工作单元在批准或流转前对根目录唯一 CONTEXT.md 的稳定术语回写、作用域解析和双摘要核对结果；不新增门禁。 |
 | `evidence.impact-assessment` | 影响面分析记录 | 受影响仓库、资产、风险与最近可信阶段。 |
 | `evidence.domain-strategy-review` | 业务边界与规则评审证据 | 业务板块、业务责任区、统一业务词汇、协作与交接关系、关键场景和不可违反规则的结构化评审结果。 |

@@ -1,4 +1,4 @@
-diff --git a/LOGIC.md b/LOGIC.md
+diff --git a/LOGIC.md b/current/LOGIC.md
 deleted file mode 100644
 index 85744ad..0000000
 --- a/LOGIC.md
@@ -103,7 +103,7 @@ index 208e2a8..c1c73d4 100644
 +- 这是维护/专项入口，非默认生产实现技能，不要求页面或可视化 UI。
 +- 试验记录引用权威 Spec、接口与业务词汇，不产生第二套业务规则。
 +- 不把试验直接合入生产，不自动提交、推送或发布；清理与保留范围随当前任务交接。
-diff --git a/agents/openai.yaml b/agents/openai.yaml
+diff --git a/agents/openai.yaml b/current/agents/openai.yaml
 deleted file mode 100644
 index 1618b14..0000000
 --- a/agents/openai.yaml

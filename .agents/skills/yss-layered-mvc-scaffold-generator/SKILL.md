@@ -1,13 +1,19 @@
 ---
 name: yss-layered-mvc-scaffold-generator
-description: 在生命周期已批准的脚手架合同下生成通用 YSS 分层 MVC 后端，或按 mvc-data-analysis-v1 初始化六模块数据分析 project-instance。
+description: 用明确独立输入或当前批准合同生成 YSS 分层 MVC 纯工程骨架；数据分析治理初始化继续使用批准合同。
 ---
 
 # YSS Layered MVC Scaffold Generator
 
-本 skill 只为已登记的全新 backend project 生成机械工程骨架，不生成业务 Controller、DTO、查询、状态机或 Mock 数据。普通 `layered-mvc-service` 不创建 `project-instance` 或初始化 Git；`mvc-data-analysis-v1` 按批准合同创建独立 project-instance、同级锁定 `skillUtils` 和未提交的 main Git。
+本 skill 为全新 backend project 生成机械工程骨架，不生成业务 Controller、DTO、查询、状态机或 Mock 数据。普通 `layered-mvc-service` 不创建 `project-instance` 或初始化 Git；`mvc-data-analysis-v1` 按批准合同创建独立 project-instance、同级锁定 `skillUtils` 和未提交的 main Git。
 
-## 进入条件
+## 执行模式
+
+没有 Harness 合同且用户只要求独立骨架时，先收集明确的平台、Maven 坐标和输出目录，按 [独立生成](../yss-ddd-scaffold-generator/references/standalone-generation.md) 使用 `--standalone`。它只生成通用三模块工程，不创建治理实例或批准，也不获得业务资格。
+
+已有正式治理任务继续消费当前批准合同。以下进入条件、批准和兼容证据要求适用于正式路径；目录、initialize-only、凭据和禁止业务示例的约束同时适用于独立路径。
+
+## 正式治理进入条件
 
 - backend `scaffold_status=required`，目标目录已确认且不存在。
 - `scaffold-architecture-decisions.yaml` 中对应项目已达到 `lifecycle-approved`，确认架构为 `layered-mvc`。
@@ -18,7 +24,7 @@ description: 在生命周期已批准的脚手架合同下生成通用 YSS 分�
 
 ## Spring Boot / Java 平台选择
 
-调用本技能前由生命周期编排器展示 `scripts/backend-platforms` 的精确版本清单及兼容状态，并通过 `gate.backend-architecture-platform-approved` 把架构、Spring Boot、Java 和 YSS 父 POM/BOM 合并展示、取得真实用户确认；生成器不提问、不猜版本、不使用 `x` 或 `latest`。已有批准且当前的选择展示摘要后复用；既有工程核验并复用登记值，不触发该门禁。
+正式治理调用本技能前由生命周期编排器展示 `scripts/backend-platforms` 的精确版本清单及兼容状态，并通过 `gate.backend-architecture-platform-approved` 把架构、Spring Boot、Java 和 YSS 父 POM/BOM 合并展示、取得真实用户确认；生成器不提问、不猜版本、不使用 `x` 或 `latest`。已有批准且当前的选择展示摘要后复用；既有工程核验并复用登记值，不触发该门禁。
 
 - 精确候选版本与可选状态只读取 `scripts/backend-platforms` 和共享平台清单，不在此复制版本表；候选不等于可生成。
 - 独立子项目可继承主项目组合或覆盖，必须逐项目确认（允许一次确认明确列出的项目）；同一 Maven Reactor 使用一个平台。

@@ -1,5 +1,5 @@
 diff --git a/SKILL.md b/SKILL.md
-index 37a3593..b04bb9e 100644
+index 9b9f8e4..c7427b7 100644
 --- a/SKILL.md
 +++ b/SKILL.md
 @@ -1,6 +1,6 @@
@@ -12,7 +12,7 @@ index 37a3593..b04bb9e 100644
  功能包根只从 `.template-spec/agents/issue-tracker.md` 的 `tracker.root` 读取；本文 `.work/` 路径是新项目示例，已有项目沿用已配置的根。
 @@ -9,7 +9,7 @@ description: "维护、校验、冻结或导出 YSS OpenAPI 3.1 设计合同；
  
- 先消费已判定的交付路径；本技能不自行授予 `daily`。只有 Spec 的 `request_triage.delivery_path` 已启用且固定 CLI 支持 `yss lifecycle route|verify-daily` 时可使用普通路径；其他 Profile / 旧 CLI 明确不支持。本任务的正式绑定保留 `governed`。正式资产按 `.template-spec/process/contract-reading.md` 阅读，普通任务直接消费其 API 段和权威 YAML。
+ 先消费已判定的交付路径；本技能不自行授予 `daily`。只有当前 Profile 的 `request_triage.delivery_path` 已启用且固定 CLI 支持 `yss lifecycle route|verify-daily` 时可使用普通路径；缺政策或能力的 Profile / 旧 CLI 明确不支持。本任务的正式绑定保留 `governed`。正式资产按 `.template-spec/process/contract-reading.md` 阅读，普通任务直接消费其 API 段和权威 YAML。
  
 -本 skill 负责 YSS OpenAPI 的 **YAML-first** 工作流：
 +本 skill 在前端仓只消费 YSS OpenAPI 的 **YAML-first** 工作流结果：
@@ -115,7 +115,7 @@ index 37a3593..b04bb9e 100644
  
  `governed` API Contract Decision 可用 `scripts/api-contract-decision prepare` 自动生成来源摘要；v1 显式迁移用 `migrate --version <新版本> --output <新路径>`。候选保持 draft，审查、Freeze 绑定和工程契约批准仍由现有生命周期核验；普通 API 小改不为了这些字段生成正式工程资产。
 diff --git a/references/governance-workflow.md b/references/governance-workflow.md
-index f124ddc..982571a 100644
+index 4149162..bef054b 100644
 --- a/references/governance-workflow.md
 +++ b/references/governance-workflow.md
 @@ -26,20 +26,15 @@ API lint/compatibility/review/Freeze 绑定独立 `api_digest`，实现测试/
@@ -141,7 +141,7 @@ index f124ddc..982571a 100644
  
  4. **从冻结 YAML 派生 JSON**
     - 使用 [锁定工具链](locked-toolchain.md) 中的 `redocly bundle` 命令生成 `.work/<feature>/api/<feature>.json`，JSON 不纳入人工编辑面。
-diff --git a/adapted/references/openapi-wire-profile.yaml b/references/openapi-wire-profile.yaml
+diff --git a/desired/references/openapi-wire-profile.yaml b/references/openapi-wire-profile.yaml
 new file mode 100644
 index 0000000..2f01089
 --- /dev/null
@@ -334,7 +334,7 @@ index 0000000..2f01089
 +    - representative-serialization-fixtures
 +    - contract-test-or-equivalent-http-evidence
 +  rule: Java fields and computed getters are not public wire facts until target-boundary evidence confirms them.
-diff --git a/adapted/references/openapi-wire-source.json b/references/openapi-wire-source.json
+diff --git a/desired/references/openapi-wire-source.json b/references/openapi-wire-source.json
 new file mode 100644
 index 0000000..813a34a
 --- /dev/null

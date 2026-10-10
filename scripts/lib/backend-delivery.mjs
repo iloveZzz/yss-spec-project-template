@@ -2,15 +2,23 @@ import { verifySliceContractApproval } from './approved-execution-context.mjs';
 import { cpSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, renameSync, rmSync } from 'node:fs';
 import path from 'node:path';
 import { tmpdir } from 'node:os';
-import { openBundle, importBundle, sourceApproval } from './strategic-handoff.mjs';
-import { read, safe, ensure, hash, digest, json, files, write, project, schema, archive, sourceApprovalPolicy } from './strategic-handoff-io.mjs';
+import { readSliceContract } from './slice-contract.mjs';
+import { parseContent, ids } from './plan-spec-markdown.mjs';
+import {authorizeBackendDelivery} from './lifecycle-execution-scope.mjs';
+import { openBundle, openDelivery, importBundle, sourceApproval } from './strategic-handoff.mjs';
+import { read, safe, ensure, hash, digest, json, files, write, project, schema, archive, sourceApprovalPolicy, assertHandoffEvidenceRef } from './strategic-handoff-io.mjs';
 
 // Evidence binds the deliverable basis, avoiding a circular hash through its own logs.
 export function backendDeliveryBasis(delivery) {
-  return digest(Object.fromEntries(['delivery_id','version','strategic_bundle_digest','strategic_route_id','scope','openapi','slice_contract','build','environment'].filter(key=>delivery[key]!==undefined).map(key=>[key,delivery[key]])));
+  return digest(Object.fromEntries(['delivery_mode','delivery_id','version','strategic_bundle_digest','strategic_route_id','scope','openapi','slice_contract','build','environment'].filter(key=>delivery[key]!==undefined).map(key=>[key,delivery[key]])));
+}
+
+export function openBackendStrategicInput(input, action, options = {}) {
+  return existsSync(path.join(input,'delivery-record.json')) ? openDelivery(input,action,options) : openBundle(input,action,options);
 }
 
 function boundFile(root, binding) {
+  assertHandoffEvidenceRef(binding.ref);
   const bytes=readFileSync(safe(root,binding.ref));
   ensure(hash(bytes)===binding.digest,`交付资产摘要不一致: ${binding.ref}`);
   return bytes;
@@ -40,24 +48,57 @@ function verification(root, binding, basis, kind) {
   return record;
 }
 
-export async function inspectBackendDelivery(root, ref, { readOnly = false } = {}) {
+async function inspectDeliveryEvidence(root, ref, local = false) {
   project(root);
   const delivery=read(safe(root,ref));
   schema(delivery,'.template-spec/process/schemas/backend-delivery.schema.json');
+  ensure(local?delivery.delivery_mode==='local-evidence':!delivery.delivery_mode,'本地证据不能作为外部交付；请使用本地后端终点核验');
   ensure(boundFile(root,delivery.environment.test_data).length>0,'测试数据准备说明为空');
-  await approvedFile(root,delivery.openapi,['gate.engineering-contract-approved','gate.openapi-frozen','gate.openapi-freeze-confirmed']);
+  if(delivery.openapi.mode!=='not-applicable')await approvedFile(root,delivery.openapi,['gate.engineering-contract-approved','gate.openapi-frozen','gate.openapi-freeze-confirmed']);
   await approvedFile(root,delivery.slice_contract,'gate.slice-contract-approved');
   const contractDoc=read(safe(root,delivery.slice_contract.ref));
   const contract=contractDoc.slice_contract||contractDoc;
   ensure(contract.status==='approved'&&contract.slice_id===delivery.scope.slice_id&&contract.contract_id===delivery.slice_contract.id&&contract.contract_version===delivery.slice_contract.version,'后端 Slice Contract 身份/状态/切片不匹配');
-  const api=read(safe(root,delivery.openapi.ref));
-  ensure(/^3\.1\./.test(api.openapi),'后端交付必须使用 OpenAPI 3.1');
-  const operations=Object.values(api.paths||{}).flatMap(item=>Object.entries(item).filter(([method])=>['get','put','post','delete','options','head','patch','trace'].includes(method)).map(([,operation])=>operation.operationId));
-  ensure(delivery.scope.operation_ids.every(id=>operations.includes(id)),'交付接口不在冻结 OpenAPI 中');
+  if(delivery.openapi.mode!=='not-applicable') {
+    const api=read(safe(root,delivery.openapi.ref));
+    ensure(/^3\.1\./.test(api.openapi),'后端交付必须使用 OpenAPI 3.1');
+    const operations=Object.values(api.paths||{}).flatMap(item=>Object.entries(item).filter(([method])=>['get','put','post','delete','options','head','patch','trace'].includes(method)).map(([,operation])=>operation.operationId));
+    ensure(delivery.scope.operation_ids.length>0&&delivery.scope.operation_ids.every(id=>operations.includes(id)),'交付接口不在冻结 OpenAPI 中');
+  }
   const basis=backendDeliveryBasis(delivery);
   const tests=verification(root,delivery.verification.contract,basis,'backend-contract');
   verification(root,delivery.verification.deployment,basis,'backend-deployment');
-  return openBundle(safe(root,delivery.strategic_bundle_ref),bundle=>{
+  ensure(delivery.scope.operation_ids.every(id=>tests.operation_ids.includes(id)),'后端契约验证未覆盖交付接口');
+  return {delivery,basis,tests};
+}
+
+export async function inspectLocalBackendDelivery(root, ref, {checkpointRef, readOnly = true} = {}) {
+  const inspected=await inspectDeliveryEvidence(root,ref,true),{delivery,tests}=inspected;
+  const loaded=readSliceContract(delivery.slice_contract.ref,{root}),contract=loaded.contract;
+  const authorization=checkpointRef?authorizeBackendDelivery({root,checkpointRef,assetRef:ref,readOnly,deliveryMode:'local-evidence'}):null;
+  const business=authorization?.local_scope==='business';
+  ensure(contract.backend?.status==='required','本地后端交付缺少批准的后端实现范围');
+  ensure(business||(contract.frontend?.status==='not-applicable'&&!(contract.common?.impacted_areas||[]).some(item=>['ui','frontend'].includes(item))&&!(contract.work_units||[]).some(unit=>unit.role_id==='role.frontend-engineer')),'本地后端终点只消费已批准后端 Slice；不能扩大前端实现批准');
+  const apiRequired=contract.contract?.api_impact===true||loaded.raw.applicability?.api?.status==='required';
+  ensure(apiRequired===(delivery.openapi.mode!=='not-applicable'),'本地后端 API 影响与批准 Slice 不一致');
+  if(!apiRequired) {
+    boundFile(root,delivery.openapi);
+    const decision=read(safe(root,delivery.openapi.ref));
+    ensure(decision.status==='not-applicable'&&decision.slice_id===delivery.scope.slice_id&&delivery.scope.operation_ids.length===0&&contract.lifecycle_refs.openapi_freeze_or_no_impact===delivery.openapi.ref,'本地后端缺少当前 Slice 的 API 不适用依据');
+  }else ensure(contract.lifecycle_refs.openapi_freeze_or_no_impact===delivery.openapi.ref,'本地后端未消费 Slice 当前冻结 OAS');
+  const spec=loaded.sources.spec;
+  ensure(spec,'本地后端需要 Slice 已绑定的当前 Spec');
+  const parsed=parseContent(spec.text,spec.ref),known=new Set(parsed.supported?parsed.entries.filter(row=>['FR','AC'].includes(row.kind)).map(row=>row.id):ids(spec.text,['FR','AC']));
+  const acceptance=Object.keys(loaded.raw.acceptance||{});
+  ensure(acceptance.length>0&&delivery.scope.source_ids.every(id=>known.has(id))&&acceptance.every(id=>delivery.scope.source_ids.includes(id)),'本地后端 Spec/验收来源未完整绑定当前 Slice');
+  for(const id of acceptance)for(const outcome of ['success','failure'])ensure(tests.coverage.some(row=>row.source_id===id&&row.outcome===outcome),'本地后端缺少当前验收成功/失败验证');
+  return inspected;
+}
+
+export async function inspectBackendDelivery(root, ref, { readOnly = false } = {}) {
+  const {delivery,basis,tests}=await inspectDeliveryEvidence(root,ref);
+  return openBackendStrategicInput(safe(root,delivery.strategic_bundle_ref),bundle=>{
+    ensure(bundle.handoff.schema_version!==5||bundle.recordBytes,'Handoff v5 后端交付必须保留正式 delivery wrapper');
     ensure(bundle.manifest.bundle_digest===delivery.strategic_bundle_digest,'后端交付与战略版本不一致');
     if([4,5].includes(bundle.handoff.schema_version)){
       const route=bundle.handoff.consumer_routes.find(item=>item.capability==='backend-technical-design');
@@ -87,6 +128,7 @@ function validManifest(manifest,root) {
   ensure(manifest.files.reduce((total,file)=>total+file.size_bytes,0)<=512*1024*1024,'后端包大小超限');
   const originals=manifest.files.filter(x=>x.original_ref).map(x=>x.original_ref);
   ensure(new Set(originals.map(x=>x.toLowerCase())).size===originals.length,'后端包源路径重复');
+  originals.forEach(assertHandoffEvidenceRef);
   const captured = new Map();
   for(const file of manifest.files) {
     const bytes=readFileSync(safe(root,file.path));
@@ -125,6 +167,7 @@ export async function exportBackendDelivery({sourceRoot,deliveryRef,output,zip=f
   if(lstatSync(strategy).isDirectory())files(root,delivery.strategic_bundle_ref).forEach(ref=>refs.add(ref));
   else refs.add(delivery.strategic_bundle_ref);
   ensure(refs.size<=20000,'后端包文件数量超限');
+  refs.forEach(assertHandoffEvidenceRef);
   const captured=[...refs].sort().map(ref=>({ref,bytes:readFileSync(safe(root,ref))}));
   mkdirSync(path.dirname(target),{recursive:true});
   const staging=mkdtempSync(path.join(path.dirname(target),'.backend-export-'));

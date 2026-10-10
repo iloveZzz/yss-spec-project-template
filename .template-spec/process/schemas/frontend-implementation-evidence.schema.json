@@ -61,7 +61,7 @@
     "review": {
       "type": "object", "additionalProperties": false,
       "required": ["reviewer", "candidate_digest", "status", "findings_ref"],
-      "properties": {"reviewer": {"type": "string", "minLength": 1}, "candidate_digest": {"$ref": "#/$defs/digest"}, "status": {"enum": ["pending", "approved", "blocked"]}, "findings_ref": {"type": "string", "minLength": 1}}
+      "properties": {"reviewer": {"type": "string", "minLength": 1}, "candidate_digest": {"type": "string", "pattern": "^(sha256:[a-f0-9]{64}|[a-f0-9]{40})$"}, "status": {"enum": ["pending", "approved", "blocked"]}, "findings_ref": {"type": "string", "minLength": 1}}
     }
   }
 }

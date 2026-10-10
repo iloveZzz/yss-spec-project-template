@@ -1,4 +1,72 @@
 schema_version: 1
+progression_target:
+  schema_version: 1
+  required_capabilities: [ lifecycle-target-v1 ]
+  config_file: progression-target.json
+  schema: .template-spec/process/schemas/progression-target.schema.json
+  default_target: business-accepted
+  scope_defaults: { plan-to-backend: backend-deliverable }
+  writer_profiles: [ spec ]
+  default_applies_to: new-governed-feature-or-explicitly-synced-policy-readonly-default
+  legacy_instances: no-policy-requires-explicit-sync-never-backfill-sidecar-or-rewrite-checkpoint
+  identity_source: unique-map-checkpoint-registration-under-tracker-root
+  state_owner: checkpoint-and-current-original-verification
+  independent_of: [ checkpoint-bytes, approval-bytes, frozen-handoff-closure, profile-terminal ]
+  change_target: preserve-next-and-current-approvals-revalidate-before-resume
+  writes_after_target_reached: stop-dispatch-preserve-next
+  unverifiable_target: block-affected-dispatch
+  execution_scope_upper_bound: preserve-and-reject-target-beyond-scope
+  specialist_status: explicit-same-feature-checkpoint-and-current-receipt-only
+  local_implementation_inputs: native-spec-current-feature-approved-assets
+  consumer_limit_per_profile: 1
+  release_authorization: separate-explicit-action
+  completion_policy:
+    spec-approved:
+      public_name: Spec 批准
+      required_gates: [ gate.spec-baseline-approved ]
+      required_checks: [ business-tickets-draft ]
+      allowed_execution_scopes: [ plan-to-backend ]
+    product-design-completed:
+      public_name: 产品设计完成
+      required_gates: [ gate.spec-baseline-approved, gate.product-design-approved ]
+      required_checks: [ business-tickets-formal ]
+      conditional_required_checks: { strategic-handoff-delivery: explicit-external-implementation-consumer }
+      conditional_gates: { gate.product-design-approved: product-design-impact }
+      no_ui_presentation: not-applicable-with-current-impact-evidence
+      strategic_handoff_terminal: separate-responsibility
+      allowed_execution_scopes: [ plan-to-backend ]
+    backend-deliverable:
+      public_name: 后端可交付
+      required_gates: [ gate.engineering-contract-approved, gate.slice-contract-approved ]
+      required_checks: [ backend-delivery ]
+      backend_completion_mode: local-current-verification-or-required-external-package
+      conditional_required_checks: { strategic-handoff-delivery: explicit-external-implementation-consumer }
+      allowed_execution_scopes: [ plan-to-backend ]
+    frontend-accepted:
+      public_name: 前端验收
+      required_gates: [ gate.slice-contract-approved, gate.delivery-accepted ]
+      required_checks: [ frontend-implementation ]
+      conditional_required_checks: { strategic-handoff-delivery: explicit-external-implementation-consumer }
+      no_ui_presentation: not-applicable-with-current-impact-evidence
+      allowed_execution_scopes: []
+    business-accepted:
+      public_name: 业务验收
+      required_gates: [ gate.delivery-accepted ]
+      required_checks: [ business-acceptance ]
+      conditional_required_checks: { strategic-handoff-delivery: explicit-external-implementation-consumer, backend-delivery: backend-api-data-impact, frontend-implementation: frontend-impact }
+      allowed_execution_scopes: []
+  external_strategic_handoff:
+    work_unit: work-unit.strategic-design-handoff
+    gate: gate.strategic-design-handoff-approved
+    artifact: artifact.strategic-design-handoff
+    trigger: explicit-external-implementation-consumer
+    source_capability: business-ticket-approval-v1
+    source_drafter: role.product-manager
+    independent_reviewer: role.requirements-manager
+    default_local_self_export_or_import: forbidden
+    completion_requires: current-source-approvals-and-immutable-package-verification
+    receiver_receipt_blocks_source_completion: false
+    shared_progress_requires: explicit-consumer-checkpoint-and-current-receipt
 profile_guidance:
   schema_version: 1
   links_file: .yss-profile-links.json
@@ -20,6 +88,8 @@ profile_guidance:
   unregistered_target: unknown-never-inferred-from-neighbor-directories
   design_intake: frozen-spec-baseline-then-target-context-reconciliation
   role_boundary: recommend-downstream-profile-without-dispatching-its-implementation
+  progression_intent: one-spec-controller-with-optional-specialists
+  specialist_terminal_is_business_acceptance: false
 document_writing:
   supporting_skill: i-have-adhd
   condition: lifecycle-document-output
@@ -94,10 +164,12 @@ service_project_initialization:
 supported_state_schema_versions: [ 1 ]
 
 implementation_path_policy:
+  # 默认布局；实际工程位置以登记和批准写范围为准。
   harness_layout:
     backend: apps/backend/<project>/
     frontend: apps/frontend/<project>/
   container_roots: [ apps/backend/, apps/frontend/ ]
+  forbidden_roots: []
   container_roots_are_projects: false
   external_repository_uses_native_root: true
   policies: [ harness-apps-multi-project, external-repository-native, git-submodule-harness-apps ]
@@ -130,7 +202,7 @@ request_triage:
   owner: yss-product-lifecycle
   delivery_path:
     version: 1
-    enabled_profiles: [spec]
+    enabled_profiles: [spec, backend, frontend]
     eligible_requirements: [goal, acceptance, single_repository, current_baseline, skills, commands, rollback, known_risk]
     excluded_impacts: [data-migration, cross-repository, platform-conversion, architecture-conversion, permission-change, deployment, release, external-approval, breaking-api, unknown-api]
     active_task_bindings: preserve-governed
@@ -138,9 +210,9 @@ request_triage:
     compatible_api: conservative-additive
     read_only_capabilities: [lifecycle.route, lifecycle.verify-daily]
     public_summary: >-
-      Spec 日常任务在目标、验收、写范围、一处已知实现仓、可回滚依据、可读工程基线、验证命令与适用 YSS 技能齐全且无排除风险时，
-      走需求与验收、技术技能、实现、测试、独立审查，仅更新同一 Ticket 或 PR，不生成阶段 checkpoint、正式 Slice 或多级批准。
-      缺事实先调查；无法证明条件时恢复完整治理。旧 CLI 或其他 Profile 缺能力时明确不支持，不降级正式校验器。
+      Spec、Backend、Frontend 日常任务在目标、验收、写范围、一处已知实现仓、可回滚依据、可读工程基线、验证命令与适用 YSS 技能齐全且无排除风险时，
+      走需求与验收、技术技能、实现、测试、独立审查，仅更新同一 Ticket 或 PR，不生成阶段 checkpoint、正式 Slice 或多级批准。专职 Profile 的本地业务分析不扩大另一端实现写范围。
+      缺事实先调查；无法证明条件时恢复完整治理。旧 CLI 或未声明能力的 Profile明确不支持，不降级正式校验器。
     ordinary_record_fields: [scope, acceptance, engineering-baseline, applicable-skills, actual-tests, independent-review, rollback]
     unknown_facts: investigate-before-route
     unproven_eligibility: governed-or-needs-info
@@ -159,6 +231,13 @@ request_triage:
     api_evidence_fields: [tool-command, actual-exit-code, baseline-digest, candidate-digest, reviewer, conclusion, freeze-digest, contract-tests]
     api_freshness: yaml-reference-or-applicable-rule-changes-invalidate-affected-review-and-freeze
     formal_validators: unchanged-no-daily-bypass
+    specialist_business_input: [mode, side, ref, digest, conflicts]
+    business_input_modes: [standalone, upstream]
+    standalone_authority: local-plan-spec-and-current-approved-design
+    upstream_conflicts: confirm-with-authority-before-dependent-work
+    own_side_completion: not-cross-side-business-acceptance
+    frontend_backend_dependency: current-alignment-or-reasoned-not-applicable
+    standalone_scaffold: mechanical-only-no-business-authorization
   interpretation:
     inputs: [ current-request, conversation-context, accessible-evidence ]
     capture: [ goal, target, expected-deliverable, action-scope, facts, assumptions, unknowns ]
@@ -648,7 +727,10 @@ work_unit_routes:
     primary_skill: yss-product-lifecycle
     supporting_skills: [ code-review ]
     skills: [ yss-product-lifecycle, code-review ]
-    applies_when: execution_scope_plan_to_backend
+    applies_when: backend-delivery-requested
+    request_sources: [ execution-scope-plan-to-backend, explicit-external-backend-consumer ]
+    feature_terminal: unique-map-directory/backend-delivery.json
+    preserves: [ permanent-execution-scope, recorded-next, business-acceptance-boundary ]
     not_applicable_reason: outside_plan_to_backend_execution_scope
     verifier: scripts/complete-backend-delivery
     completion: current-source-and-exported-package-verified
@@ -724,6 +806,22 @@ work_unit_routes:
       - yss-product-lifecycle
     applies_when: business_scope_impact
     not_applicable_reason: no_business_scope_impact
+  work-unit.strategic-design-handoff:
+    native: { source: yss-product-lifecycle, skill: yss-product-lifecycle, invocation_mode: model-invoked }
+    primary_skill: yss-product-lifecycle
+    supporting_skills: []
+    skills: [ yss-product-lifecycle ]
+    human_gate: gate.strategic-design-handoff-approved
+    applies_when: explicit-external-implementation-consumer
+    not_applicable_reason: local-spec-assets-consumed-directly
+    post_approval_action:
+      command: scripts/strategic-handoff finalize --source-root <project-root> --handoff <approved-v5-ref>
+      output_root: docs/deliveries/strategic/<handoff-id>/<version>
+      checkpoint_artifact: artifact.strategic-design-handoff
+      checkpoint_evidence: [ delivery-record.json, verification.json ]
+      checkpoint_verification: verification.strategic_delivery
+      failure_status: blocked
+      receiver_receipt_required: false
 
 compatibility_flow_preconditions:
   to-spec:
@@ -816,10 +914,12 @@ transition_graph:
     work-unit.slice-implementation: [ work-unit.frontend-implementation-verification, work-unit.code-review ]
     work-unit.frontend-implementation-verification: [ work-unit.code-review ]
     work-unit.code-review: [ work-unit.release-and-retrospective, work-unit.slice-implementation, work-unit.backend-delivery ]
-    work-unit.backend-delivery: []
+    work-unit.backend-delivery: [ work-unit.release-and-retrospective ]
     work-unit.release-and-retrospective: []
     work-unit.business-ticket-formalization:
       - work-unit.technical-analysis
+      - work-unit.strategic-design-handoff
+    work-unit.strategic-design-handoff: [ work-unit.technical-analysis ]
   forbidden_shortcuts:
     - { from: work-unit.spec-synthesis, to: work-unit.implementation-repository-preparation }
     - { from: work-unit.prototype-design-v2, to: work-unit.implementation-repository-preparation }

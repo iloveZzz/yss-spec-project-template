@@ -88,6 +88,9 @@ stages:
     exit_criteria: 所有命中门禁通过，人工审查点已完成，checkpoint 可追溯。
 
 evidence:
+  - id: evidence.strategic-design-handoff
+    name: 业务方案交接包验证证据
+    description: 显式外部 Backend 或 Frontend 实现消费者所需 Handoff v5 来源批准、不可变交付目录与整包实际验证证据。
   - id: evidence.context-reconciliation
     name: Context Reconciliation 证据
     description: 工作单元在批准或流转前对根目录唯一 CONTEXT.md 的稳定术语回写、作用域解析和双摘要核对结果；不新增门禁。
@@ -164,6 +167,12 @@ evidence:
     description: 可追溯的变更边界、发布记录和恢复动作。
 
 gates:
+  - id: gate.strategic-design-handoff-approved
+    name: 业务方案交接验收
+    stage: stage.product-design
+    trigger: 明确绑定外部 Backend 或 Frontend 实现消费者；Design 仅消费 SpecBaseline，本地综合研发直接消费资产时不适用。
+    evidence: [ evidence.strategic-design-handoff, evidence.approval-record, evidence.fresh-verification ]
+    requires_gates: [ gate.plan-approved, gate.spec-baseline-approved, gate.product-design-approved ]
   - id: gate.plan-approved
     name: Plan 批准
     stage: stage.plan
@@ -229,6 +238,10 @@ gates:
       - check.frontend-implementation-verified
 
 artifacts:
+  - id: artifact.strategic-design-handoff
+    name: 业务方案交接包
+    stage: stage.product-design
+    trigger: 同一功能明确交付外部 Backend 或 Frontend 实现消费者，需要冻结战略来源并形成可验证交付目录。
   - id: artifact.impact-assessment
     name: 影响面分析
     stage: stage.entry-triage
@@ -355,6 +368,13 @@ artifacts:
     trigger: Spec 同步起草、Design 校准和战略业务正式化；不依赖实现工程，不授予实现资格。
 
 work_units:
+  - id: work-unit.strategic-design-handoff
+    name: 业务方案交接
+    stage: stage.product-design
+    scope: project-instance
+    input: 当前批准的 Plan、Spec、适用产品设计、正式业务 Ticket 与显式外部 Backend 或 Frontend 实现消费者。
+    output: Handoff v5 不可变交付目录、delivery record 和整包 verification。
+    completion: 源角色独立审查与原始批准当前；finalize 成包且实际整包 verify 通过，写入 checkpoint。接收 Receipt 可异步；完成不等于整个业务验收。
   - id: work-unit.maintenance-research
     name: 模板维护研究
     scope: template-source

@@ -1,21 +1,17 @@
 import {approvalExpectationForBoundAsset} from './approval-consumption.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
-import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { parseSliceYaml, selectSliceWorkUnit } from './slice-contract.mjs';
+import { parseSliceYaml, readSliceContract, selectSliceWorkUnit } from './slice-contract.mjs';
 import { validateApprovalRecord } from './approval-record.mjs';
 import { inspectSliceContract } from './slice-execution-preflight.mjs';
 import { inspectMaintenanceCandidate } from './maintenance-candidate.mjs';
+import {inspectImplementationCandidate} from './implementation-candidate-current.mjs';
 import { compileStandardsCoverage, coverageDigest, coverageFile, verifyCoverageRows } from './backend-standards-coverage.mjs';
 
 const ensure = (condition, message) => { if (!condition) throw new Error(`backend-review: ${message}`); };
 const text = value => typeof value === 'string' && value.trim();
 const digest = value => createHash('sha256').update(value).digest('hex');
-function git(root, args) {
-  const result = spawnSync('git', args, { cwd: root, maxBuffer: 64 * 1024 * 1024 });
-  ensure(result.status === 0, `git ${args[0]} failed`); return result.stdout;
-}
 function file(root, ref) {
   ensure(text(ref) && !path.isAbsolute(ref), 'relative evidence reference required');
   const resolved = fs.realpathSync(path.resolve(root, ref));
@@ -34,6 +30,15 @@ export function validateBackendReview(state, { root = process.cwd() } = {}) {
   ensure(['baseline','change'].includes(input?.scope_kind), 'scope_kind required; historical records are read-only');
   if (input.scope_kind === 'baseline') return validateBaselineReview(state, {root});
   ensure(input?.slice_contract_ref, 'review input must bind Slice contract');
+  const original = readSliceContract(input.slice_contract_ref, {root}).contract;
+  if (original.backend?.status === 'required' && original.frontend?.status === 'required') {
+    ensure(text(input.work_unit_id), 'mixed Slice backend work_unit_id required');
+  }
+  if (input.work_unit_id) {
+    const unit = original.work_units.find(item => item.id === input.work_unit_id);
+    ensure(unit?.role_id === 'role.backend-engineer', 'review must select an approved backend work unit');
+    ensure(fs.realpathSync(path.resolve(root, input.project_root || '.')) === fs.realpathSync(path.resolve(root, unit.project_root)), 'review candidate must use the selected backend project');
+  }
   const loaded = inspectSliceContract(input.slice_contract_ref, { root, approval_ref: input.approval_ref, work_unit_id: input.work_unit_id });
   ensure(loaded.report.execution_allowed, `approved current contract required: ${loaded.report.blockers.join('; ')}`);
   const contract = selectSliceWorkUnit(loaded.contract, input.work_unit_id);
@@ -51,29 +56,8 @@ export function validateBackendReview(state, { root = process.cwd() } = {}) {
   ensure(result.candidate_digest === input.candidate_digest, 'candidate digest mismatch');
   const projectRoot = fs.realpathSync(path.resolve(root, input.project_root || '.'));
   ensure(contract.common.project_roots.some(ref => fs.realpathSync(path.resolve(root, ref)) === projectRoot), 'candidate project is outside approved contract');
-  // Reuse the packed worktree candidate protocol. Its exclusions are restricted to review evidence.
-  if (input.review_mode === 'worktree') {
-    const { manifest, trackedDiff, entries } = inspectMaintenanceCandidate({ manifestPath: file(projectRoot, input.candidate_snapshot_ref) });
-    ensure(manifest.candidate_digest === input.candidate_digest, 'snapshot digest mismatch');
-    ensure(trackedDiff.equals(git(projectRoot, ['diff','--no-ext-diff','--binary','--full-index',manifest.merge_base])), 'tracked candidate stale');
-    const excluded = manifest.excluded_paths || [];
-    ensure(excluded.every(p => p.startsWith('.template-source/evidence/maintenance/') && !p.split('/').includes('..')), 'candidate exclusions must be evidence only');
-    const actual = git(projectRoot, ['ls-files','-z','--others','--exclude-standard']).toString().split('\0').filter(Boolean)
-      .filter(p => !excluded.some(ex => p === ex || p.startsWith(`${ex}/`))).sort();
-    ensure(JSON.stringify(actual) === JSON.stringify(entries.map(e => e.path).sort()), 'untracked candidate inventory stale');
-    for (const entry of entries) {
-      const info = fs.lstatSync(path.resolve(projectRoot, entry.path));
-      ensure(info.mode === entry.mode && (entry.kind === 'symlink' ? info.isSymbolicLink() : info.isFile()), `untracked candidate mode/kind stale: ${entry.path}`);
-      const current = entry.kind === 'symlink' ? Buffer.from(fs.readlinkSync(path.resolve(projectRoot, entry.path))) : fs.readFileSync(file(projectRoot, entry.path));
-      ensure(current.equals(entry.content), `untracked candidate stale: ${entry.path}`);
-    }
-  } else {
-    ensure(input.review_mode === 'committed', 'unsupported candidate mode');
-    const tree = git(projectRoot, ['rev-parse',`${input.implementation_candidate_ref}^{tree}`]).toString().trim();
-    ensure(tree === input.candidate_digest, 'committed candidate mismatch');
-    ensure(git(projectRoot, ['rev-parse','HEAD^{tree}']).toString().trim() === tree && !git(projectRoot, ['status','--porcelain']).length, 'committed candidate is not current clean checkout');
-  }
-  const coverage = currentStandardsCoverage(input, {root, projectRoot, contract});
+  const candidate = inspectImplementationCandidate(input, {root, projectRoot, assetRef: input.slice_contract_ref});
+  const coverage = currentStandardsCoverage(input, {root, projectRoot, contract, candidate});
   verifyCoverageRows(coverage, result.constraint_results, {root, projectRoot});
   const required = coverage.skills.map(row => row.skill);
   ensure(Array.isArray(result.verification_results) && result.verification_results.length > 0, 'machine verification required');
@@ -91,7 +75,7 @@ export function validateBackendReview(state, { root = process.cwd() } = {}) {
 }
 
 /** Recompute derived coverage, do not trust a submitted expected-rule list. */
-export function currentStandardsCoverage(input, {root, projectRoot, contract=null}={}) {
+export function currentStandardsCoverage(input, {root, projectRoot, contract=null, candidate=null}={}) {
   ensure(input.standards_coverage_ref && input.standards_coverage_digest, 'standards coverage binding required');
   const bytes=fs.readFileSync(file(root,input.standards_coverage_ref));
   ensure(digest(bytes)===input.standards_coverage_digest, 'standards coverage digest stale');
@@ -99,11 +83,11 @@ export function currentStandardsCoverage(input, {root, projectRoot, contract=nul
   let comparison_ref=null;
   if(input.scope_kind==='change') {
     comparison_ref=input.review_mode==='worktree'
-      ? inspectMaintenanceCandidate({manifestPath:file(projectRoot,input.candidate_snapshot_ref)}).manifest.merge_base
+      ? inspectMaintenanceCandidate({manifestPath:file(projectRoot,input.candidate_snapshot_ref),root:projectRoot}).manifest.merge_base
       : input.review_base_ref;
   }
   const current=compileStandardsCoverage({root,projectRoot,contract,scope_kind:input.scope_kind,
-    baseline_binding:input.baseline_binding,comparison_ref,actual_skills:input.actual_skill_impacts||[],responsibility_evidence:input.responsibility_evidence||[]});
+    baseline_binding:input.baseline_binding,comparison_ref,actual_skills:input.actual_skill_impacts||[],responsibility_evidence:input.responsibility_evidence||[],candidateContext:candidate,recordedCoverage:recorded});
   ensure(coverageDigest(current)===coverageDigest(recorded),'standards coverage stale or incomplete');
   return current;
 }

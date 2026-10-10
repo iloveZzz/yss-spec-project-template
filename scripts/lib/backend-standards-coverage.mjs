@@ -4,6 +4,7 @@ import { createHash } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 import { parseSliceYaml } from './slice-contract.mjs';
 import { treeHash } from './skill-supply-chain.mjs';
+import {candidateChangedPaths, candidateCoverageSource, candidateCoverageInventory} from './implementation-candidate-current.mjs';
 
 export const coverageDigest = value => createHash('sha256').update(typeof value === 'string' || Buffer.isBuffer(value) ? value : JSON.stringify(value)).digest('hex');
 const ensure = (ok, message) => { if (!ok) throw Error(`backend-review: ${message}`); };
@@ -31,7 +32,7 @@ function files(root, prefix = '') {
   });
 }
 function git(root,args) {
-  const r=spawnSync('git',args,{cwd:root,encoding:'utf8',maxBuffer:32*1024*1024});
+  const r=spawnSync('git',['--no-optional-locks','-c','diff.autoRefreshIndex=false',...args],{cwd:root,env:{...process.env,GIT_OPTIONAL_LOCKS:'0'},encoding:'utf8',maxBuffer:32*1024*1024});
   ensure(r.status===0,`coverage git ${args[0]} failed`); return r.stdout;
 }
 function stripComments(source) {
@@ -72,7 +73,7 @@ function readRules(root,skill) {
 }
 
 /** Read-only derivation: never approves a contract or executes project build commands. */
-export function compileStandardsCoverage({root,projectRoot,contract=null,scope_kind='baseline',baseline_binding=null,comparison_ref=null,actual_skills=[],responsibility_evidence=[]}={}) {
+export function compileStandardsCoverage({root,projectRoot,contract=null,scope_kind='baseline',baseline_binding=null,comparison_ref=null,actual_skills=[],responsibility_evidence=[],candidateContext=null,recordedCoverage=null}={}) {
   ensure(['baseline','change'].includes(scope_kind),'scope_kind required');
   root=fs.realpathSync(root);projectRoot=fs.realpathSync(projectRoot);
   const basis=contract?.resolution?.architecture_evidence?.engineering_baseline || baseline_binding;
@@ -88,7 +89,8 @@ export function compileStandardsCoverage({root,projectRoot,contract=null,scope_k
   const selected=all.filter(ref=>roots.some(r=>beneath(ref,r)));
   const outside=all.filter(ref=>!selected.includes(ref)&&ref.endsWith('.java'));
   if (outside.length) issues.push({id:'unregistered-source',reason:outside.join(', ')});
-  const inventory=selected.map(ref=>({path:ref,mode:fs.statSync(coverageFile(projectRoot,ref)).mode,digest:coverageDigest(fs.readFileSync(coverageFile(projectRoot,ref)))}));
+  let inventory=selected.map(ref=>({path:ref,mode:fs.statSync(coverageFile(projectRoot,ref)).mode,digest:coverageDigest(fs.readFileSync(coverageFile(projectRoot,ref)))}));
+  if(candidateContext)inventory=candidateCoverageInventory(candidateContext,inventory,recordedCoverage?.inventory);
   const types=selected.filter(ref=>ref.endsWith('.java')).map(ref=>javaType(ref,fs.readFileSync(coverageFile(projectRoot,ref),'utf8')));
   for(const t of types) if(!t.declared.length || /\\u[0-9a-fA-F]{4}/.test(t.code)) issues.push({id:`unparsed:${t.ref}`,reason:'源码类型解析不足，须人工核实或编译态证据'});
   if(!types.some(t=>!t.ref.includes('/test/'))) issues.push({id:'zero-business-types',reason:'未发现业务类型，不能证明存量工程合规'});
@@ -122,7 +124,7 @@ export function compileStandardsCoverage({root,projectRoot,contract=null,scope_k
   if(scope_kind==='change') {
     ensure(contract && comparison_ref,'change coverage needs approved contract and comparison_ref');
     ensure(/^[a-f0-9]{40}$/.test(comparison_ref),'comparison_ref must be an immutable commit');
-    changedPaths=[...new Set([...git(projectRoot,['diff','--name-only',comparison_ref]).trim().split('\n'),...git(projectRoot,['ls-files','--others','--exclude-standard']).trim().split('\n')].filter(Boolean))];
+    changedPaths=candidateContext?candidateChangedPaths(candidateContext,comparison_ref,recordedCoverage?.changed_paths):[...new Set([...git(projectRoot,['diff','--name-only',comparison_ref]).trim().split('\n'),...git(projectRoot,['ls-files','--others','--exclude-standard']).trim().split('\n')].filter(Boolean))];
     const affected=new Set(types.filter(t=>changedPaths.includes(t.ref)));
     // Source inventory is broad; semantic work is restricted to changed types and bidirectional dependency closure.
     let expanding=true;
@@ -211,7 +213,7 @@ export function compileStandardsCoverage({root,projectRoot,contract=null,scope_k
     if(t.http && !t.annotations.some(a=>['ControllerAdvice','RestControllerAdvice'].includes(a)) && (dependencies.some(o=>[...o.roles].some(r=>['domain','repository','infrastructure','persistence'].includes(r)))||/\b(?:[A-Z]\w*(?:Gateway|Repository|Mapper)|JdbcTemplate|EntityManager)\b/.test(t.code)))findings.push({constraint_id:'web.use-case',code_ref:t.ref,disposition:'violation',reason:'HTTP 入口直接引用领域/持久化能力'});
     if(t.roles.has('domain')&&family==='domain-driven'&&/\bimport\s+(?:org\.springframework|org\.apache\.ibatis|com\.baomidou|jakarta\.persistence|javax\.persistence)\./.test(t.code))findings.push({constraint_id:'domain.dependencies',code_ref:t.ref,disposition:'violation',reason:'Domain 技术依赖泄漏'});
   }
-  return {schema_version:1,scope_kind,architecture_identity:identity||null,basis: basis||null,comparison_ref,source_roots:roots,source_head:git(projectRoot,['rev-parse','HEAD']).trim(),changed_paths:changedPaths.sort(),inventory,reviewed_paths:active.map(t=>t.ref).sort(),skills:observedSkills.map(skill=>({skill,tree_digest:skillTrees[skill],reasons:[...reasons.get(skill)].sort()})),skill_assessments:CORE_SKILLS.map(skill=>({skill,status:observedSkills.includes(skill)?'applicable':'not-applicable',reason:observedSkills.includes(skill)?'observed-or-declared':'no matching registered responsibility or source signal'})),constraints:constraints.sort((a,b)=>a.constraint_id.localeCompare(b.constraint_id)),responsibility_evidence,discovery_sources,platform_catalog_digest,rule_sources:rulesSources.sort((a,b)=>a.ref.localeCompare(b.ref)),skill_lock_digest:fs.existsSync(lock)?coverageDigest(fs.readFileSync(lock)):null,issues,findings,limitations:['源码检查用于发现职责与明确反例，不替代编译态 ArchUnit、HTTP fixture 或 Reviewer 全文语义审查。']};
+  return {schema_version:1,scope_kind,architecture_identity:identity||null,basis: basis||null,comparison_ref,source_roots:roots,source_head:candidateContext?candidateCoverageSource(candidateContext,recordedCoverage?.source_head):git(projectRoot,['rev-parse','HEAD']).trim(),changed_paths:changedPaths.sort(),inventory,reviewed_paths:active.map(t=>t.ref).sort(),skills:observedSkills.map(skill=>({skill,tree_digest:skillTrees[skill],reasons:[...reasons.get(skill)].sort()})),skill_assessments:CORE_SKILLS.map(skill=>({skill,status:observedSkills.includes(skill)?'applicable':'not-applicable',reason:observedSkills.includes(skill)?'observed-or-declared':'no matching registered responsibility or source signal'})),constraints:constraints.sort((a,b)=>a.constraint_id.localeCompare(b.constraint_id)),responsibility_evidence,discovery_sources,platform_catalog_digest,rule_sources:rulesSources.sort((a,b)=>a.ref.localeCompare(b.ref)),skill_lock_digest:fs.existsSync(lock)?coverageDigest(fs.readFileSync(lock)):null,issues,findings,limitations:['源码检查用于发现职责与明确反例，不替代编译态 ArchUnit、HTTP fixture 或 Reviewer 全文语义审查。']};
 }
 
 export function verifyCoverageRows(coverage, rows, {root,projectRoot}={}) {

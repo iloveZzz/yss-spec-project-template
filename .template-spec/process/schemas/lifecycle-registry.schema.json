@@ -233,6 +233,7 @@
           "completion"
         ],
         "properties": {
+          "stage": {"type": "string", "pattern": "^stage\\."},
           "id": {
             "$ref": "#/$defs/id"
           },

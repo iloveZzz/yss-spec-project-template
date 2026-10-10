@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { hash } from '../../lib/strategic-handoff-io.mjs';
-import { normalizeSliceContract } from '../../lib/slice-contract.mjs';
+import { normalizeSliceContract,selectSliceWorkUnit,sourceSliceContract } from '../../lib/slice-contract.mjs';
 
 function fixture() {
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'slice-v3-'));
@@ -45,6 +45,30 @@ test('v3 accepts registered app project roots and still rejects container roots 
       assert.throws(()=>normalizeSliceContract(contract,{root:f.root}),/工程|路径/);
     }
   }finally{f.cleanup();}
+});
+
+test('registered Harness layouts and external native roots keep scope checks',()=>{
+ for(const project of ['app/backend/project1','app/frontend/project1','services/billing','apps/backend/project1']) {
+  const f=fixture();try {
+   f.contract.scope.implementation_path_policy='harness-apps-multi-project';
+   f.contract.scope.project_roots=[project];f.contract.verification.test.cwd=project;
+   assert.deepEqual(normalizeSliceContract(f.contract,{root:f.root}).common.project_roots,[project]);
+   f.contract.work_units[0].project_root='unregistered';
+   assert.throws(()=>normalizeSliceContract(f.contract,{root:f.root}),/登记的 project_root/);
+  }finally{f.cleanup();}
+ }
+ for(const project of ['apps/backend/','services/../billing','services/*','services\\billing','/services/billing']) {
+  const f=fixture();try {
+   f.contract.scope.implementation_path_policy='harness-apps-multi-project';
+   f.contract.scope.project_roots=[project];f.contract.verification.test.cwd=project;
+   assert.throws(()=>normalizeSliceContract(f.contract,{root:f.root}),/相对路径|具体项目/);
+  }finally{f.cleanup();}
+ }
+ const f=fixture();try {
+  assert.deepEqual(normalizeSliceContract(f.contract,{root:f.root}).common.project_roots,[f.root]);
+  f.contract.scope.project_roots=['.'];f.contract.verification.test.cwd='.';
+  assert.deepEqual(normalizeSliceContract(f.contract,{root:f.root}).common.project_roots,['.']);
+ }finally{f.cleanup();}
 });
 
 test('v3 inherits constraints once and refuses task scope expansion and omitted acceptance',()=>{
@@ -267,4 +291,19 @@ test('stage work item cannot be disguised as the implementation contract ticket'
     assert.throws(()=>normalizeSliceContract(f.contract,{root:f.root}),/stage-work-item/);
     assert.throws(()=>normalizeSliceContract({schema_version:2,lifecycle_refs:{ticket:'ticket.md'}},{root:f.root}),/stage-work-item/);
   }finally{f.cleanup();}
+});
+
+test('single-repository specialist Agent units preserve source and frozen scope',()=>{
+ for(const role of ['role.backend-engineer','role.frontend-engineer','role.backend-agent','role.frontend-agent']) {
+  const f=fixture();try {
+   f.contract.work_units[0].role_id=role;f.contract.work_units[0].project_root=f.root;f.contract.work_units[0].allowed_write_paths=['src/owned'];
+   const original=structuredClone(f.contract),normalized=normalizeSliceContract(f.contract,{root:f.root}),selected=selectSliceWorkUnit(normalized,'validate');
+   assert.deepEqual(selected.common.allowed_write_paths,['src/owned']);assert.deepEqual(selected.common.project_roots,[f.root]);
+   assert.deepEqual(sourceSliceContract(selected),original);assert.deepEqual(f.contract,original);
+   const opposite=role.includes('backend')?'frontend':'backend';assert.deepEqual(selected[opposite],{status:'not-applicable'});
+   normalized.work_units[0].role_id='role.requirements-manager';assert.throws(()=>selectSliceWorkUnit(normalized,'validate'),/原始合同冲突/);
+   f.contract.work_units[0].role_id='role.requirements-manager';assert.throws(()=>selectSliceWorkUnit(normalizeSliceContract(f.contract,{root:f.root}),'validate'),/明确后端或前端角色/);
+   f.contract.work_units[0].allowed_write_paths=['outside'];assert.throws(()=>normalizeSliceContract(f.contract,{root:f.root}),/写范围/);
+  }finally{f.cleanup();}
+ }
 });

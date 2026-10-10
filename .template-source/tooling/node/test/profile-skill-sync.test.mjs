@@ -1,9 +1,11 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { existsSync, mkdtempSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { execFileSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import test from "node:test";
+import { fileURLToPath } from "node:url";
 
 import { applyProfileSkillSync, formatProfileSkillSync, planProfileSkillSync, reportProfileSkillSync } from "../../../../scripts/lib/profile-skill-sync.mjs";
 
@@ -34,6 +36,34 @@ function fixture() {
 }
 
 const clean = () => new Set();
+
+test("maintenance sync propagates the retirement authority and preserves profile-local migrations", t => {
+  const root = mkdtempSync(path.join(tmpdir(), "maintenance-retirement-sync-"));
+  t.after(() => rmSync(root, { recursive: true, force: true }));
+  const repository = fileURLToPath(new URL("../../../../", import.meta.url));
+  const put = (ref, bytes) => { const target = path.join(root, ref); mkdirSync(path.dirname(target), { recursive: true }); writeFileSync(target, bytes); };
+  for (const ref of [".template-source/scripts/sync-harness-upgrade.mjs", "scripts/vendor/yaml.mjs"]) {
+    put(ref, ""); copyFileSync(path.join(repository, ref), path.join(root, ref));
+  }
+  put(".template-spec/agents/yss-skill-registry.yaml", "skills:\n  - id: setup-yss-harness\nskill_dependencies:\n  setup-yss-harness: {}\n");
+  put(".template-spec/process/harness-upgrade.md", "# Source maintenance contract\n");
+  put(".template-spec/user-guide/unified-cli.md", "# Source CLI guide\n");
+  const section = "## `yss-harness-upgrade` 更名（2026-10-08）\n\n维护入口统一为 `setup-yss-harness`。\n\n";
+  put(".template-spec/agents/skill-migrations.md", "# Source migrations\n\n" + section + "## Unrelated source retirement\n\nDo not copy.\n");
+  const profiles = ["design", "backend", "frontend"];
+  for (const profile of profiles) {
+    const base = `submodules/yss-harness-${profile}-agent`;
+    put(`${base}/.template-spec/agents/yss-skill-registry.yaml`, "skills:\n  - id: setup-yss-harness\nskill_dependencies:\n  setup-yss-harness: {}\n");
+    put(`${base}/.template-spec/agents/skill-migrations.md`, `# ${profile} migrations\n\n## Local retirement\n\nKeep ${profile}.\n`);
+  }
+  const run = (...args) => JSON.parse(execFileSync(process.execPath, [path.join(root, ".template-source/scripts/sync-harness-upgrade.mjs"), ...args], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }));
+  run();
+  for (const profile of profiles) assert.equal(readFileSync(path.join(root, `submodules/yss-harness-${profile}-agent/.template-spec/agents/skill-migrations.md`), "utf8"), `# ${profile} migrations\n\n${section}## Local retirement\n\nKeep ${profile}.\n`);
+  assert.deepEqual(run("--check").differences, []);
+  assert.deepEqual(run().differences, []);
+  put(".template-spec/agents/skill-migrations.md", "# Missing retirement authority\n");
+  assert.throws(() => run(), /缺少维护入口迁移说明/);
+});
 
 test("text preview retains changes and conflict diagnostics without changing JSON or target files", () => {
   const { root, profile, config } = fixture();

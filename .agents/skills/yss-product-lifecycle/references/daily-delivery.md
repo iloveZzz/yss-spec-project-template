@@ -1,6 +1,6 @@
 # 普通任务交付
 
-适用条件、排除项及能力要求只由 `orchestration-contract.yaml.request_triage.delivery_path` 定义。本文说明执行，不定义第二套路由。首批仅本地 Spec 的已启用政策及支持 `route` / `verify-daily` 的固定 `yss` CLI 可用；其他 Profile、旧 CLI 或无法核验能力时返回 `daily unsupported`，保留原正式路径，不以文字豁免其前置条件。
+适用条件、排除项及能力要求只由 `orchestration-contract.yaml.request_triage.delivery_path` 定义。本文说明执行，不定义第二套路由。Spec、Backend、Frontend 的项目本地已启用政策及支持 `route` / `verify-daily` 的固定 `yss` CLI 可用；缺政策的 Profile、旧 CLI 或无法核验能力时返回 `daily unsupported`，保留原正式路径，不以文字豁免其前置条件。
 
 固定入口是 `yss lifecycle route|verify-daily --root <治理项目> --task <项目内Markdown> --implementation-root <真实Git根> --base <完整SHA> [--profile spec] [--json]`。`route` 不执行测试、不宣布完成；只有返回 `delivery_path: daily` 才取得普通路径资格，`needs-info` 先补事实，`governed` 保留正式路径。不支持的工具返回明确 `UNPORTED`，不能当作普通路径通过。
 

@@ -1,17 +1,17 @@
 diff --git a/SKILL.md b/SKILL.md
-index 8b8e24d4..48489301 100644
+index 6130afc..6f07558 100644
 --- a/SKILL.md
 +++ b/SKILL.md
-@@ -7,7 +7,7 @@ description: "在 Vue3 YSS UI 中对接 Orval API；核验生成方法、mutator
+@@ -9,7 +9,7 @@ description: "在 Vue3 YSS UI 中对接 Orval API；核验生成方法、mutator
  
  本技能的 canonical 名称为 `yss-api-integration`。历史名称 `api-integration` 只由注册表与实现合同编译器解析，不维护第二份内容。
  
--交付路径消费 `yss-product-lifecycle` 的当前 `route` 结果，唯一政策见 Spec 项目中的 `.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml` 的 `request_triage.delivery_path`。仅已启用 Spec 且当前工具核验为 `daily` 的任务使用同一 Ticket / PR 的验收、范围和 API 证据；`governed`、专职 Frontend Profile 或正式交付绑定继续使用原批准合同与交付链。本技能不自行判定 API 兼容或授予普通路径资格。
-+专职 Frontend Profile 继续消费本地 `harness-orchestrator` 的正式交付链。Spec 的 `request_triage.delivery_path` 不在本 Profile 启用；当前 CLI 缺少该能力时明确报不支持，不能凭 `daily` 标签免除原合同或后端权威交接。
+-交付路径消费 `yss-product-lifecycle` 的当前 `route` 结果，唯一政策见 Spec 项目中的 `.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml` 的 `request_triage.delivery_path`。仅当前 Profile 政策已启用且工具核验为 `daily` 的任务使用同一 Ticket / PR 的验收、范围和 API 证据；`governed` 或正式交付绑定继续使用原批准合同与交付链。本技能不自行判定 API 兼容或授予普通路径资格。
++执行路线消费当前 Profile 主控合同的 `request_triage.delivery_path` 与固定 CLI 的 `route` / `verify-daily` 结果。仅已启用且合格的 Spec、Backend、Frontend `daily` 使用同一 Ticket 的范围、验收、工程基线、实际测试与独立审查；本端写范围不扩大。缺政策或能力时保持正式路径，已有正式任务不得降级；本技能不授予执行授权。
  
  ## 目标
  
-@@ -23,8 +23,8 @@ description: "在 Vue3 YSS UI 中对接 Orval API；核验生成方法、mutator
+@@ -25,8 +25,8 @@ description: "在 Vue3 YSS UI 中对接 Orval API；核验生成方法、mutator
  
  1. **契约状态已明确**：
     - 已有生成客户端：先核验冻结契约、JSON 派生记录和真实导出，输入当前且一致时可以直接集成。
@@ -22,7 +22,7 @@ index 8b8e24d4..48489301 100644
  2. **API 已生成**：在目标前端实现仓库中，按其既有的手动代码生成命令（例如 `pnpm generate:api`）刷新 API；本 Harness 不配置、不执行该命令，也不把它加入 CI。
  3. **了解 OpenAPI**：查看 Freeze 记录、JSON 派生记录和 `openapi/openapi.json` 了解接口定义；不得把 JSON 或生成 TypeScript 当成可手改的源文件。
  
-@@ -40,11 +40,11 @@ description: "在 Vue3 YSS UI 中对接 Orval API；核验生成方法、mutator
+@@ -42,11 +42,11 @@ description: "在 Vue3 YSS UI 中对接 Orval API；核验生成方法、mutator
    → 类型检查与调用方验证
  ```
  
@@ -38,7 +38,7 @@ index 8b8e24d4..48489301 100644
  
  ## 真实 mutator 响应契约
  
-@@ -145,6 +145,6 @@ await pageQualityRule(query, { signal: controller.signal, timeout: 120000 });
+@@ -147,6 +147,6 @@ await pageQualityRule(query, { signal: controller.signal, timeout: 120000 });
  
  ## 阶段 7 合同
  

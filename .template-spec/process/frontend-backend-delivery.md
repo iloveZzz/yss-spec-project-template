@@ -87,3 +87,9 @@ OpenAPI Freeze 的来源门禁兼容当前综合模板 `gate.engineering-contrac
 
 
 初始化、构建、导出与接收的前提通过 [只读交付预检](delivery-preflight.md) 汇总。预检不启动服务或制造接收状态；最终有后端依赖的接收仍执行本节真实服务探测，不能复用旧预检结论跳过实际边界核验。
+
+## 专职 Profile 的本地业务输入
+
+Backend / Frontend 可以分析原始业务需求，在本端批准适用 Plan/Spec；无需预建独立 Spec/Design。以上战略包与联合接收流程用于 upstream 模式或已有显式绑定，不能据本地模式改写上游规则或降级既有正式任务。纯 UI 按当前批准影响与 Slice 绑定无后端/API依据。
+
+本地正式 Frontend 命中实际 Backend/API/Data 依赖时，在已批准 Slice 的 `extensions.frontend.backend_dependency` 保存 `{ref,digest}` 原始字节绑定，指向 `{schema_version:1,kind:"frontend-backend-dependency",root:"<真实外部 Backend 根>",checkpoint_ref:"<同功能当前 checkpoint>"}`。原生校验消费该 Backend 的真实职责终点、独立 Fresh Verification、当前 Slice 与构建，核对同一批准 Spec 与冻结 OpenAPI 摘要；缺少、失败或漂移不得回退前端本地 Backend 记录。该依赖只授予本端消费输入，不授予另一端实现或整体业务验收。

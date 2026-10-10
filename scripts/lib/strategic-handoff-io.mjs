@@ -2,8 +2,8 @@ import { createHash } from 'node:crypto';
 import { mkdirSync, writeFileSync, realpathSync } from 'node:fs';
 import { existsSync, lstatSync, readdirSync, readFileSync, validationMemo } from './validation-phase.mjs';
 import path from 'node:path';
-import { sourceContextRef } from './source-context-snapshot.mjs';
-export { sourceContextRef, withSourceContextSnapshot } from './source-context-snapshot.mjs';
+import { sourceContextRef, sourceSnapshotFiles } from './source-context-snapshot.mjs';
+export { sourceContextRef, withSourceContextSnapshot, withSourceSnapshotLayout } from './source-context-snapshot.mjs';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { validateJsonSchemas } from './json-schema.mjs';
@@ -28,6 +28,9 @@ export function relative(ref) {
   ensure(typeof ref === 'string' && ref.length > 0 && !/[\\\x00-\x1f:#?]/.test(ref) && !path.posix.isAbsolute(ref) && !ref.split('/').some(x => !x || x === '.' || x === '..') && !/[. ]$/.test(ref), `非法相对路径: ${ref}`);
   return ref;
 }
+export function assertHandoffEvidenceRef(ref) {
+  ensure(path.posix.basename(ref).toLowerCase()!=='progression-target.json',`推进目标只表达协调意图，不能作为批准或交付证据: ${ref}`);
+}
 export function safe(root, ref, { missing = false } = {}) {
   relative(ref);
   ref = sourceContextRef(root, ref);
@@ -41,6 +44,9 @@ export function safe(root, ref, { missing = false } = {}) {
   return current;
 }
 export function files(root, prefix = '') {
+  if(prefix)relative(prefix);
+  const captured=sourceSnapshotFiles(root,prefix);
+  if(captured)return captured;
   const base = prefix ? safe(root, prefix) : root;
   return readdirSync(base).sort().flatMap(name => {
     const ref = prefix ? `${prefix}/${name}` : name;

@@ -58,7 +58,7 @@ function build(root,checkpoint){
   const block=[BEGIN,'## 阅读导航','',...Object.keys(outputs).map(ref=>`- [${path.posix.basename(ref)}](./${path.posix.relative(loc.base,ref)})`),'','以上为来源快照；提交审阅或交接前运行 `scripts/contract check-views --checkpoint '+checkpoint+'`。',END].join('\n');
   const renderer=toolClosure();
   readFileSync(safe(ROOT,'.template-spec/process/schemas/reading-manifest.schema.json'));
-  const dependencies=validationDependencies().files.map(row=>{
+  const dependencies=validationDependencies().files.filter(row=>row.file!==safe(root,loc.base+'/map.md',{missing:true})).map(row=>{
    const local=path.relative(root,row.file);return !local.startsWith('..')&&!path.isAbsolute(local)?{scope:'project',ref:local,digest:'sha256:'+row.digest}:{scope:'tool',ref:path.relative(ROOT,row.file),digest:'sha256:'+row.digest};
   }).sort((a,b)=>(a.scope+a.ref).localeCompare(b.scope+b.ref));
   for(const row of referenceBindings)if(!dependencies.some(item=>item.scope===row.scope&&item.ref===row.ref))dependencies.push(row);
@@ -179,7 +179,10 @@ export function finalizeReading(root,checkpoint,sourceOperation){
 export function readingCheckpointsForAsset(root,ref,kind){
  if(!['domain-strategy','stage-decision-package','checkpoint','tracking-migration'].includes(kind))return [];
  const policy=readingPolicy(root);if(policy.mode!=='managed')return [];
- return policy.checkpoints.filter(checkpoint=>ref.startsWith(readingLocation(root,checkpoint).base+'/'));
+ return policy.checkpoints.filter(checkpoint=>{
+  const location=readingLocation(root,checkpoint);
+  return ref===checkpoint||ref.startsWith(location.base+'/');
+ });
 }
 export function assertReadingTransition(root,decisionState,currentWorkUnit){
  const ref=decisionState?.checkpoint_ref||decisionState?.checkpoint?.ref;

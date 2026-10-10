@@ -8,14 +8,21 @@ const validPaths = {
   "backend project 1": "apps/backend/project1/",
   "backend project 2 nested source": "apps/backend/project2/src/main/java/",
   "frontend project 1": "apps/frontend/project1/",
-  "external repository native path": "src/main/java/"
+  "external repository native path": "src/main/java/",
+  "registered singular backend": "app/backend/project1/",
+  "registered singular frontend": "app/frontend/project1/",
+  "registered custom layout": "services/billing/"
 };
 
 const invalidPaths = {
   "backend container root": "apps/backend/",
   "frontend container root": "apps/frontend/",
   "wildcard project root": "apps/backend/*/",
-  traversal: "apps/backend/project1/../project2/"
+  traversal: "apps/backend/project1/../project2/",
+  "custom traversal": "services/../billing/",
+  "absolute Harness root": "/services/billing/",
+  "wildcard custom root": "services/*/",
+  "backslash alias": "services\\billing/"
 };
 
 const externalNativePaths = {

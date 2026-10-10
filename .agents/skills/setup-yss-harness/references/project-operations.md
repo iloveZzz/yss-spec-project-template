@@ -56,7 +56,15 @@ yss sync --root ./project --apply --plan-file /review/resolved.json
 
 ## 资源补装
 
-先 `<固定yss> skills list --root <项目根> --json` 或 `assets list`，只选择当前 Profile 实际支持的 Skill/阶段标识。
+先用 `skills resolve --help` 确认固定执行器支持按需查询；不支持时沿用 `skills list` 及工作单元预检。支持时用 `skills list --details --root <项目根> --json` 让 Agent 按描述和调用模式选择内置技能，再查询：
+
+```text
+<固定yss> skills resolve <id...> --agent-runtime codex --root <项目根> --json
+```
+
+只接受已登记 ID 或别名；条件依赖用逗号分隔的 `--when <条件列表>`。消费 `result.status`，退出 0 不代表可调用。整体 `ready` 后，当前会话直接读取闭包中已核验的绝对 `entryPath` 并记录 `contentDigest`；无需等待 Codex 原生技能目录刷新，`user` 调用模式仍需用户明确调用。`missing` 时仅补装规范 `missing` 集合，已有任务授权覆盖且计划无冲突才应用，随后重新 resolve。`blocked` 或查询失败停止受影响调用：受管文件丢失、内容/权限/投影漂移、占用、来源不匹配、退役及外部技能都不能自动修复。补装不隐式 sync、migrate 或创建业务批准。
+
+阶段资源仍先 `assets list`，只选择当前 Profile 实际支持的阶段标识。
 
 ```text
 <固定yss> skills ensure <skill> --root <项目根> --plan --out <项目外新计划.json> --json

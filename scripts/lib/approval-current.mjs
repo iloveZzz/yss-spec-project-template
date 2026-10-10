@@ -7,17 +7,29 @@ import {parseAsset, validateAssetStructure} from './structured-assets.mjs';
 import {approvalIO, approvalError} from './approval-record-io.mjs';
 import {assertApprovalUserDecision} from './user-decision-reuse.mjs';
 import {assertReviewCapabilityBinding, approvalExpectedFromTask} from './review-capabilities.mjs';
+import {assertHandoffEvidenceRef} from './strategic-handoff-io.mjs';
 
 const hash = value => createHash('sha256').update(value).digest('hex');
 const hex = value => typeof value === 'string' ? value.replace(/^sha256:/, '') : value;
 const text = value => typeof value === 'string' && value.trim();
 const sameScope = (a,b) => Array.isArray(a) && a.length > 0 && Array.isArray(b) && b.length > 0 && new Set(a).size === a.length && new Set(b).size === b.length && JSON.stringify([...a].sort()) === JSON.stringify([...b].sort());
 const fail = detail => approvalError('APPROVAL_CURRENT_INVALID', detail);
+export function assertCurrentApprovalEvidenceRef(ref) {
+  if (typeof ref !== 'string') return;
+  try {assertHandoffEvidenceRef(ref);} catch (error) {fail(error.message);}
+}
+export function assertCurrentApprovalReferences(record) {
+  for (const ref of [record?.subject_ref,record?.review_task_ref,record?.continuation_ref,
+    ...(Array.isArray(record?.basis)?record.basis.map(asset=>asset?.ref):[]),
+    ...(Array.isArray(record?.review_bundle_basis)?record.review_bundle_basis.map(asset=>asset?.ref):[]),
+    ...(Array.isArray(record?.evidence_refs)?record.evidence_refs:[])]) assertCurrentApprovalEvidenceRef(ref);
+}
 function checkedBasis(basis, io, label) {
   if (!Array.isArray(basis) || !basis.length) fail(`${label} 缺少当前证据摘要`);
   const refs = new Set();
   return basis.map(asset => {
     if (!text(asset?.ref) || refs.has(asset.ref) || !/^[a-f0-9]{64}$/.test(hex(asset.digest))) fail(`${label} 证据引用缺失、重复或摘要非法`);
+    assertCurrentApprovalEvidenceRef(asset.ref);
     refs.add(asset.ref);
     if (hash(io.bytes(asset.ref)) !== hex(asset.digest)) fail(`${label} 证据过期: ${asset.ref}`);
     return {ref:asset.ref,digest:hex(asset.digest)};
@@ -48,18 +60,21 @@ export function assertApprovalSigner(record, {rolesDoc = loadDigitalHumanRoles()
 }
 export function approvalExpectationFromState(boundary, state, context = {}) {
   if (!state || !text(state.subject_ref) || !sameScope(state.approval_scope, state.approval_scope)) approvalError('APPROVAL_CONTEXT_REQUIRED','当前消费边界缺少主体或批准范围');
+  assertCurrentApprovalEvidenceRef(state.subject_ref);assertCurrentApprovalEvidenceRef(state.approval_ref);
   const io = approvalIO(context), bytes = io.bytes(state.subject_ref);
   let subject;
   try {subject = parseAsset(bytes,io.resolve(state.subject_ref));} catch {subject = null;}
   return {boundary,subject_ref:state.subject_ref,subject_digest:state.subject_digest || state.basis?.find(asset=>asset.ref===state.subject_ref)?.digest || hash(bytes),approval_scope:[...state.approval_scope],basis:state.basis?.filter(asset => ![state.approval_ref,state.subject_ref].includes(asset.ref)),drafter_principal_ref:state.drafter_principal_ref || subject?.drafter_principal_ref,review_package:context.review_package ?? state.review_package ?? boundary.startsWith('gate.'),review_context:state.review_context};
 }
 export function approvalExpectationFromSubject(boundary, subjectRef, context = {}) {
+  assertCurrentApprovalEvidenceRef(subjectRef);
   const io=approvalIO(context),bytes=io.bytes(subjectRef),subject=parseAsset(bytes,io.resolve(subjectRef)),scope=subject.approval_scope || subject.scope;
   if (!sameScope(scope,scope) || !subject.basis?.length) approvalError('APPROVAL_CONTEXT_REQUIRED','当前主体缺少独立范围及依据；请提供 checkpoint/task 消费上下文');
   return {boundary,subject_ref:subjectRef,subject_digest:hash(bytes),approval_scope:[...scope],basis:subject.basis,drafter_principal_ref:subject.drafter_principal_ref,review_package:context.review_package ?? boundary.startsWith('gate.')};
 }
 /** Validates only a supplied current binding; never derives expected values from the approval record. */
 function validateCurrentApproval(record, expected, context = {}) {
+  assertCurrentApprovalReferences(record);assertCurrentApprovalEvidenceRef(expected?.subject_ref);
   const authorityRoot=context.root || ROOT,rolesPath=path.resolve(authorityRoot,'.template-spec/agents/digital-human-roles.yaml'),registryPath=path.resolve(authorityRoot,'.template-spec/process/lifecycle-registry.yaml');
   const roles = context.rolesDoc || loadDigitalHumanRoles(existsSync(rolesPath)?rolesPath:undefined), registry = context.registry || loadRegistry(existsSync(registryPath)?registryPath:undefined);
   const rule = assertApprovalSigner(record, {rolesDoc:roles,registry});

@@ -8,6 +8,7 @@ import { parseDocument } from '../vendor/yaml.mjs';
 import { safeTrackingPath, trackingDrift } from './stage-tracking.mjs';
 import { loadLifecyclePresenter } from './lifecycle-presentation.mjs';
 import { summarizePlanReview } from './plan-review-control.mjs';
+import {evaluateProgressionTarget} from './lifecycle-progression.mjs';
 
 const sha = bytes => `sha256:${createHash('sha256').update(bytes).digest('hex')}`;
 function parse(bytes) {
@@ -26,7 +27,7 @@ function source(root, ref) {
 }
 
 /** Read-only projection; checkpoint, registry and orchestration remain authoritative. */
-export function lifecycleStatus({ root, checkpointRef, taskPackageRef }) {
+export function lifecycleStatus({ root, checkpointRef, taskPackageRef, env }) {
   if (!root || !checkpointRef) throw new TypeError('root and checkpoint are required');
   root = path.resolve(root);
   let identity;
@@ -54,6 +55,9 @@ export function lifecycleStatus({ root, checkpointRef, taskPackageRef }) {
   const diagnostics = [], verification_scope = [];
   const check = (id, status, refs, reason) => verification_scope.push({ id, status, refs, reason });
   const issue = (code, message, source_ref, recovery, severity = 'error', issueOwner = owner, ownerScope = defaultOwnerScope) => diagnostics.push({ code, message, source_ref, owner: issueOwner, owner_scope: issueOwner === '未登记' ? 'not-recorded' : ownerScope, recovery, severity });
+  let progression = null;
+  try {progression = evaluateProgressionTarget({root, checkpointRef, env});}
+  catch (error) {issue('progression-target-unverifiable', error.message, checkpointRef, '核对固定 CLI 的 lifecycle-target-v1 能力、唯一 map 登记与当前批准证据后复验');}
   if (!Object.hasOwn(value, 'blockers')) {
     issue('registered-blockers-missing', 'checkpoint 缺少 blockers；不能据此判定无已登记阻塞', checkpointRef, '核对原始状态并补齐真实阻塞记录后重验');
   } else if (!Array.isArray(value.blockers)) {
@@ -200,11 +204,19 @@ export function lifecycleStatus({ root, checkpointRef, taskPackageRef }) {
     catch { issue('precheck-unavailable', `预检入口不可读: ${script}`, script, '补齐当前实例工具后执行预检', 'warning'); }
   }
   const implementationArtifact=value.artifacts?.['artifact.vertical-slice-ticket'];
+  if (['reached', 'not-applicable'].includes(progression?.status)) {
+    next_step.action_type = 'stop'; next_step.command = null;
+    next_action = '本次推进目标已达成；保留已登记下一工作单元。明确改变终点后复验当前来源并续推';
+  } else if (progression && progression.status !== 'pending') {
+    next_step.action_type = 'repair'; next_step.command = null;
+    next_action = '本次目标尚不可验证；核对影响依据和当前证据后再决定推进';
+  }
   const implementationCoverage=setRef && implementationArtifact?.ref?.endsWith('.md')?summarizeBusinessImplementation({root,setRef,sliceRefs:[implementationArtifact.ref]}):null;
   const presenter = loadLifecyclePresenter(root);
   const statusNames = { routing: '正在确定下一步', running: '正在推进', blocked: '受阻', 'paused-human-gate': '等待会签', completed: '记录为已完成，仍需核验' };
   const readable = text => presenter.text(text, {trace: false}).replace(/: (blocked|stale)$/, (_, status) => status === 'blocked' ? '：受阻' : '：依据已过期，需重新核验');
   const presentation = {
+    ...(progression ? {progression} : {}),
     ...(planReview ? { plan_review: planReview } : {}),
     read_only: true, execution_allowed: false, approval_validity: 'not-checked',
     stage: value.stage ? presenter.label(value.stage, {trace: false}) : '未登记',
@@ -220,6 +232,7 @@ export function lifecycleStatus({ root, checkpointRef, taskPackageRef }) {
     names: presenter.catalog({stage: value.stage, next_stage: nextStage, work_unit: value.next_work_unit, owner, gates: value.gates, artifacts: value.artifacts}),
   };
   return {
+    ...(progression ? {progression} : {}),
     ...(planReview ? { plan_review: planReview } : {}),
     presentation,
     decomposition: {business, implementation: {status:implementationArtifact?'recorded':'not-recorded',recorded_status:implementationArtifact?.status??null,ref:implementationArtifact?.ref??null,coverage:implementationCoverage}, readiness:{status:'not-evaluated',reason:'阶段工作完成不替代批准与实现就绪校验'}},

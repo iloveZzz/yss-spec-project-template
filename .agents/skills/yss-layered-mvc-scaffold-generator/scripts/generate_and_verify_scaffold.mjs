@@ -44,14 +44,18 @@ async function main() {
     if (generation.exitCode !== 0) throw new Error(`生成失败: ${generation.stderr.trim()}`);
     const verification = await run(args.projectRoot, args.evidenceDir);
     await writeFile(path.join(args.evidenceDir, "scaffold-verification.json"), `${JSON.stringify(verification, null, 2)}\n`, "utf8");
-    if (verification.status !== "passed") return 1;
+    if (verification.status !== "passed" && verification.verification_mode !== "standalone-generation") return 1;
     const manifestPath = path.join(args.projectRoot, ".yss/scaffold-generation.json");
     const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
-    manifest.completion_level = "empty-scaffold-verified";
-    manifest.empty_scaffold_verification_ref = path.join(args.evidenceDir, "scaffold-verification.json");
-    manifest.empty_scaffold_verified_at = new Date().toISOString();
+    manifest.completion_level = manifest.generation_mode === "standalone-generation" ? verification.completion_level : "empty-scaffold-verified";
+    if (manifest.generation_mode === "standalone-generation") manifest.verification = { status: verification.status, failure_category: verification.failure_category, commands: verification.commands, report_ref: path.join(args.evidenceDir, "scaffold-verification.json") };
+    if (verification.status === "passed") {
+      const prefix = manifest.generation_mode === "standalone-generation" ? "standalone_scaffold" : "empty_scaffold";
+      manifest[`${prefix}_verification_ref`] = path.join(args.evidenceDir, "scaffold-verification.json");
+      manifest[`${prefix}_verified_at`] = new Date().toISOString();
+    }
     await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
-    return 0;
+    return verification.status === "passed" ? 0 : 1;
   } catch (error) {
     process.stderr.write(`❌ MVC 脚手架工作流失败: ${error.message}\n`);
     return 1;

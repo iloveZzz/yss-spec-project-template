@@ -15,7 +15,7 @@ Review a pinned candidate: all applicable axes initially, then affected conclusi
 
 角色表编译 `review_context` / `skill_source.review_skills`（只读）；见协作规则，不授予实现权限。
 
-以上正式角色接线用于 `governed`。已合格 Spec `daily` 由 `request_triage.delivery_path` 政策及支持 `route` / `verify-daily` 的固定 CLI 取得资格；其他 Profile / 旧 CLI 明确不支持。本技能不凭标签降级正式工作包。普通审查消费同一 Ticket / PR 的验收、真实单仓路径、当前 diff、适用 YSS 技能和实际测试，审查者须与实现者独立并保持只读；缺测试、失败、未关闭阻断项或候选过期时返回 `blocked`。结论和身份可回填同一 Ticket 的审查段，由工具绑定当前候选，不强制新 review 文件、正式 review manifest、checkpoint 或 Slice，不写 `approved` / `ready-for-agent`。
+以上正式角色接线用于 `governed`。已合格且政策启用的 Spec、Backend、Frontend `daily` 由 `request_triage.delivery_path` 政策及支持 `route` / `verify-daily` 的固定 CLI 取得资格；缺政策或能力的 Profile / 旧 CLI 明确不支持。本技能不凭标签降级正式工作包。普通审查消费同一 Ticket / PR 的验收、真实单仓路径、当前 diff、适用 YSS 技能和实际测试，审查者须与实现者独立并保持只读；缺测试、失败、未关闭阻断项或候选过期时返回 `blocked`。结论和身份可回填同一 Ticket 的审查段，由工具绑定当前候选，不强制新 review 文件、正式 review manifest、checkpoint 或 Slice，不写 `approved` / `ready-for-agent`。
 
 For governed work, if `.template-spec/agents/issue-tracker.md` is missing, tell the user to run `/setup-matt-pocock-skills`; do not invoke another user-invoked skill yourself. A qualified daily review uses its existing task record and does not require a tracker setup stage.
 

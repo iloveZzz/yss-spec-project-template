@@ -36,6 +36,33 @@ test('current approval without consumer context is rejected; explicit history ca
  assert.equal(history.execution_authorization,'not-evaluated');
 }));
 
+test('current approval refuses extra target intent as evidence while pure history remains readable',()=>fixture(f=>{
+ assert.doesNotThrow(()=>assertCurrentApproval(f.record,f.expected,{root:f.root}));
+ for(const ref of ['progression-target.json','nested/PROGRESSION-TARGET.JSON']) {
+  mkdirSync(path.dirname(path.join(f.root,ref)),{recursive:true});
+  f.save(ref,{schema_version:1,kind:'lifecycle-progression-target',target:'spec-approved'});
+  const contaminated={...f.record,basis:[...f.record.basis,f.asset(ref)]};
+  assert.throws(()=>assertCurrentApproval(contaminated,f.expected,{root:f.root}),/推进目标.*不能作为批准或交付证据/);
+  assert.throws(()=>assertCurrentApproval(f.record,{...f.expected,basis:[...f.expected.basis,f.asset(ref)]},{root:f.root}),/推进目标.*不能作为批准或交付证据/);
+  assert.equal(validateApprovalRecord(contaminated,{root:f.root,history:true}).execution_authorization,'not-evaluated');
+ }
+}));
+
+test('current subject and approval aliases cannot masquerade as target configuration; history is separate',()=>fixture(f=>{
+ for(const ref of ['progression-target.json','nested/PROGRESSION-TARGET.JSON']) {
+  mkdirSync(path.dirname(path.join(f.root,ref)),{recursive:true});
+  f.save(ref,f.record);
+  assert.throws(()=>validateApprovalRecordFile(path.join(f.root,ref),{root:f.root,expected:f.expected}),/推进目标.*不能作为批准或交付证据/);
+  assert.equal(validateApprovalRecordFile(path.join(f.root,ref),{root:f.root,history:true}).execution_authorization,'not-evaluated');
+  const state={status:'approved',subject_ref:f.record.subject_ref,approval_ref:ref,approval_scope:f.record.approval_scope,basis:f.record.basis,drafter_principal_ref:f.record.drafter_principal_ref};
+  assert.throws(()=>assertApprovedGateHasValidApproval(f.record.gate_id,state,{root:f.root}),/推进目标.*不能作为批准或交付证据/);
+  assert.throws(()=>assertApprovedGateHasValidApproval('gate.plan-approved',state,{root:f.root,checkpoint:{gates:{'gate.plan-approved':state}}}),/推进目标.*不能作为批准或交付证据/);
+  f.save(ref,{gate_id:f.record.gate_id,basis:f.record.basis,drafter_principal_ref:f.record.drafter_principal_ref});
+  const record={...f.record,subject_ref:ref,subject_digest:f.asset(ref).digest},expected={...f.expected,subject_ref:ref};
+  assert.throws(()=>assertCurrentApproval(record,expected,{root:f.root}),/推进目标.*不能作为批准或交付证据/);
+ }
+}));
+
 test('current gate assertion cannot opt into history or a non-approved validation mode',()=>fixture(f=>{
   const state={status:'approved',subject_ref:f.record.subject_ref,approval_ref:'approval.json',approval_scope:f.record.approval_scope,basis:f.record.basis,drafter_principal_ref:f.record.drafter_principal_ref};
   const options={root:f.root,rolesDoc:loadDigitalHumanRoles()};

@@ -54,7 +54,7 @@ owner: ai
 | typecheck_command |  |  |
 | ci_pipeline |  |  |
 
-Harness 内项目路径约束：`apps/backend/`、`apps/frontend/` 只能作为项目容器；采用该布局时，工程位于具体的 `apps/backend/<project>/` 或 `apps/frontend/<project>/`；其他布局登记实际工程根。外部实现仓库填写真实项目根路径，不使用本表的 Harness 占位路径。`git-submodule` 必须同时满足已登记挂载路径和独立 Git 身份，不得登记为 `harness-apps` 或无 gitlink 的 `external-repository`。空 gitlink、detached HEAD、`--force` 覆盖挂载点不得当成普通目录。登记后必须对照工作树 gitlink，禁止把复制进 Harness 的源码冒充 submodule。
+Harness 内项目路径约束：`apps/backend/`、`apps/frontend/` 只能作为项目容器；默认工程布局为 `apps/backend/<project>/` 或 `apps/frontend/<project>/`。其他布局按实际项目根登记，生成仍须当前批准的写范围。外部实现仓库填写真实项目根路径，不使用本表的 Harness 占位路径。`git-submodule` 必须同时满足已登记挂载路径和独立 Git 身份，不得登记为 `harness-apps` 或无 gitlink 的 `external-repository`。空 gitlink、detached HEAD、`--force` 覆盖挂载点不得当成普通目录。登记后必须对照工作树 gitlink，禁止把复制进 Harness 的源码冒充 submodule。
 
 ## 2.1 项目清单（同一 monorepo 可登记多个项目）
 

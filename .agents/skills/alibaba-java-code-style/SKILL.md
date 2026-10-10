@@ -5,7 +5,7 @@ description: 应用阿里巴巴 Java 手册审查或实现 Java 代码；按当�
 
 # 阿里巴巴 Java 规范
 
-执行路线按 Spec 项目中的 `.agents/skills/yss-product-lifecycle/references/daily-delivery.md` 的项目本地政策与固定 CLI 核验。仅合格且范围已授权的 Spec `daily` 消费同 Ticket 的范围、验收与已核验工程基线；`governed` 保留当前批准合同。缺本地政策/能力、其他 Profile 或已绑定正式任务不能凭标签降级；路线不授予执行授权。
+执行路线消费当前 Profile 主控合同的 `request_triage.delivery_path` 与固定 CLI 的 `route` / `verify-daily` 结果。仅已启用且合格的 Spec、Backend、Frontend `daily` 使用同一 Ticket 的范围、验收、工程基线、实际测试与独立审查；本端写范围不扩大。缺政策或能力时保持正式路径，已有正式任务不得降级；本技能不授予执行授权。
 
 本 Skill 从用户提供的《阿里巴巴 Java 开发手册》1.4.0 提炼适用规范。`mandatory` 违规阻断审查，除非仓库 `AGENTS.md`、安全约束或现有框架约定明确要求不同模式；例外须有依据。`recommended` / `reference` 保留建议等级，不因进入下文检查提要变为强制规则。
 

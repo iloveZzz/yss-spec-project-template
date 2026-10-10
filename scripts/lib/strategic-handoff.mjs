@@ -4,8 +4,9 @@ import { existsSync, lstatSync, readFileSync } from './validation-phase.mjs';
 import { mkdirSync, mkdtempSync, renameSync, rmSync, cpSync, realpathSync } from 'node:fs';
 import path from 'node:path';
 import { tmpdir } from 'node:os';
-import { ensure, canonical, digest, hash, json, parse, read, safe, relative, files, write, project, schema, schemaBatch, archive, ROOT, sourceApprovalPolicy, withSourceContextSnapshot } from './strategic-handoff-io.mjs';
-import {importedApprovalOrigin} from './spec-baseline.mjs';
+import { ensure, canonical, digest, hash, json, parse, read, safe, relative, files, write, project, schema, schemaBatch, archive, ROOT, sourceApprovalPolicy, withSourceContextSnapshot, withSourceSnapshotLayout, assertHandoffEvidenceRef } from './strategic-handoff-io.mjs';
+import {importedApprovalOrigin,verifySpecBaselineBinding} from './spec-baseline.mjs';
+import {TRACKER_REF} from './work-layout.mjs';
 import { parseContextSource, parseContextContract, resolveContextTermRefs } from './context-contract.mjs';
 import { countersignRuleForGate } from './digital-human-roles.mjs';
 import { validateApprovalRecord } from './approval-record.mjs';
@@ -29,6 +30,10 @@ const CAPABILITIES=['backend-technical-design','frontend-engineering-design','de
 
 function sourceApprovalRecord(document, gateId) {
   return selectApprovalRecord(document, gateId);
+}
+
+function inheritedOwnerBinding(origin, binding) {
+  return origin ? {...binding,checkpoint_ref:origin.source.checkpoint_ref,checkpoint_digest:origin.source.checkpoint_digest} : binding;
 }
 
 function deliveryReadme(handoff) {
@@ -121,8 +126,16 @@ export async function sourceApproval(record, roles, root, currentAssetBinding) {
     // The issued consumer task supplies its current owner. The independently
     // selected source asset must agree; never reconstruct expectations from approval fields.
     ensure(sourceTask?.checkpoint_ref || currentAssetBinding.approval_ref,'源 Plan 消费需要当前任务或独立批准引用以定位 checkpoint');
-    const checkpointRef=sourceTask?.checkpoint_ref || findApprovalCheckpoint(root,currentAssetBinding.approval_ref);
-    const checkpoint=read(safe(root,checkpointRef));
+    const checkpointRef=currentAssetBinding.checkpoint_ref || sourceTask?.checkpoint_ref || findApprovalCheckpoint(root,currentAssetBinding.approval_ref);
+    assertHandoffEvidenceRef(checkpointRef);
+    const checkpointBytes=readFileSync(safe(root,checkpointRef)),checkpoint=parse(checkpointBytes);
+    if(currentAssetBinding.checkpoint_ref) {
+      ensure(hash(checkpointBytes)===currentAssetBinding.checkpoint_digest,'源 Plan 封存 checkpoint 原始字节漂移');
+      ensure(!sourceTask?.checkpoint_ref || safe(root,sourceTask.checkpoint_ref)===safe(root,checkpointRef),'源 Plan 任务与封存 checkpoint 归属不一致');
+      const gate=checkpoint.gates?.['gate.plan-approved'];
+      ensure(gate?.status==='approved' && gate.approval_ref && safe(root,gate.approval_ref)===safe(root,currentAssetBinding.approval_ref),'源 Plan 封存 checkpoint 未绑定当前批准引用');
+      ensure(!checkpoint.plan_approval_ref || safe(root,checkpoint.plan_approval_ref)===safe(root,currentAssetBinding.approval_ref),'源 Plan 封存 checkpoint 聚合批准引用冲突');
+    }
     if(sourceTask?.review_context?.plan_review_binding) {
       const attempt=checkpoint.plan_review_control?.attempts?.find(row=>row.attempt_id===sourceTask.review_context.plan_review_binding.attempt_id);
       const candidate=read(safe(root,sourceTask.review_context.candidate_ref));
@@ -229,7 +242,9 @@ export async function inspectSource(root, handoffRef) {
     if(artifact.approval) {
       const proofRoot=origin?.sourceRoot || root,proofRoles=origin?.rolesDoc || roles;
       const record=sourceApprovalRecord(read(safe(proofRoot,artifact.approval.approval_ref)),gateId);
-      await withSourceContextSnapshot(proofRoot,()=>sourceApproval(record,proofRoles,proofRoot,{ref:artifact.approval.persisted_ref,approval_ref:artifact.approval.approval_ref,approval_context:artifact.approval.approval_context}));
+      const validateApproval=()=>sourceApproval(record,proofRoles,proofRoot,inheritedOwnerBinding(origin,{ref:artifact.approval.persisted_ref,approval_ref:artifact.approval.approval_ref,approval_context:artifact.approval.approval_context}));
+      if(origin)await withSourceContextSnapshot(proofRoot,validateApproval);
+      else await validateApproval();
       ensure(artifact.approval.current_version===version,'资产内置批准版本过期');
     }
   }
@@ -273,7 +288,9 @@ export async function inspectSource(root, handoffRef) {
     const recordRef=origin?sourceGate.approval_ref:approval.record_ref;
     const record=sourceApprovalRecord(read(safe(proofRoot,recordRef)),approval.gate_id);
     if(key==='existing_ui_baseline_ref')ensure(record.subject_ref===(ref.approval_context?.subject_ref || `${ref.persisted_ref}/${ref.manifest_ref}`),'既有 UI 用户决定必须绑定当前 manifest 的独立批准上下文');
-    await withSourceContextSnapshot(proofRoot,()=>sourceApproval(record,proofRoles,proofRoot,{ref:origin?origin.origin.source_ref:['visual_baseline_ref','existing_ui_baseline_ref'].includes(key)?`${ref.persisted_ref}/${ref.manifest_ref}`:ref.persisted_ref,approval_ref:recordRef,approval_context:ref.approval_context}));
+    const validateApproval=()=>sourceApproval(record,proofRoles,proofRoot,inheritedOwnerBinding(origin,{ref:origin?origin.origin.source_ref:['visual_baseline_ref','existing_ui_baseline_ref'].includes(key)?`${ref.persisted_ref}/${ref.manifest_ref}`:ref.persisted_ref,approval_ref:recordRef,approval_context:ref.approval_context}));
+    if(origin)await withSourceContextSnapshot(proofRoot,validateApproval);
+    else await validateApproval();
     businessProofRefs.push(approval.record_ref,record.user_decision_ref,record.continuation_ref,record.decision_reuse_ref);
     ensure(record.gate_id===approval.gate_id,`批准门禁不匹配: ${key}`);
     ensure((record.artifact_bindings || []).some(x=>x.id===(ref.id||ref.baseline_id) && x.version===ref.version && x.digest===actual),`批准记录未绑定当前资产: ${key}`);
@@ -304,7 +321,7 @@ export function collectSourceClosure(root, handoffRef, handoff, config, {busines
   const roles=sourceApprovalPolicy(read(safe(root,'.template-spec/agents/digital-human-roles.yaml')));
   if(existsSync(path.join(root,'.yss.json')))queue.push('.yss.json');
   const sealedPackages=Object.values(handoff.source).filter(value=>value?.approval_context?.source_baseline).map(value=>{
-    const proof=importedApprovalOrigin(root,value);queue.push(proof.origin.receipt_ref,proof.origin.context_reconciliation_ref,proof.receipt.working_set_ref,proof.receipt.package_ref);return proof.receipt.package_ref;
+    const proof=importedApprovalOrigin(root,value);queue.push(proof.origin.receipt_ref,proof.origin.context_reconciliation_ref,proof.receipt.working_set_ref,proof.receipt.package_ref,...Object.values(proof.working.assets));return proof.receipt.package_ref;
   });
   if(sealedPackages.length)queue.push('yss-project.yaml','.template-spec/process/harness-profile.yaml','.template-spec/process/lifecycle-registry.yaml');
   const boundedPlan=roles.gate_policy.review_execution?.review_bundles?.some(rule=>rule.aggregate_gate==='gate.plan-approved' && rule.aggregate_additional_review_task==='forbidden');
@@ -318,6 +335,11 @@ export function collectSourceClosure(root, handoffRef, handoff, config, {busines
   const symbolic=config.reference_map || {};
   const enqueue=ref=> { if(symbolic[ref])queue.push(symbolic[ref]); else if(/^https?:\/\//i.test(ref))return; else if(ref.startsWith('evidence.'))throw new TypeError(`未解析 evidence ID: ${ref}`); else if(ref.includes('/') || /\.(?:md|yaml|json|html|png|txt|log)$/.test(ref))queue.push(ref); };
   function refs(value,key='') {
+    if(value?.upstream_spec_baseline) {
+      const proof=verifySpecBaselineBinding(value,{root});
+      if(!sealedPackages.includes(proof.receipt.package_ref))sealedPackages.push(proof.receipt.package_ref);
+      queue.push(value.upstream_spec_baseline.receipt_ref,proof.receipt.working_set_ref,proof.receipt.package_ref,...Object.values(proof.working.assets),'yss-project.yaml','.template-spec/process/harness-profile.yaml','.template-spec/process/lifecycle-registry.yaml');
+    }
     if(value?.source_baseline){enqueue(value.source_baseline.receipt_ref);enqueue(value.source_baseline.context_reconciliation_ref);return;}
     if(value?.plan_review_control) {
       const control=value.plan_review_control;
@@ -337,7 +359,7 @@ export function collectSourceClosure(root, handoffRef, handoff, config, {busines
   }
   let totalBytes = 0;
   while(queue.length) {
-    const ref=symbolic[queue[0]]||queue[0]; queue.shift(); if(/^https?:\/\//i.test(ref))continue; relative(ref);
+    const ref=symbolic[queue[0]]||queue[0]; queue.shift(); if(/^https?:\/\//i.test(ref))continue; relative(ref);assertHandoffEvidenceRef(ref);
     if(collected.has(ref))continue;
     const full=safe(root,ref),stat=lstatSync(full);
     if(stat.isDirectory()) { queue.push(...files(root,ref)); continue; }
@@ -350,6 +372,7 @@ export function collectSourceClosure(root, handoffRef, handoff, config, {busines
       if(boundedPlan && value.gate_id==='gate.plan-approved' && typeof value.decision==='string' && typeof value.actor_kind==='string') {
         const task=value.plan_review_binding && value.review_task_ref ? read(safe(root,value.review_task_ref)) : null;
         enqueue(task?.checkpoint_ref || findApprovalCheckpoint(root,ref));
+        if(!task?.checkpoint_ref)enqueue(TRACKER_REF);
         if(existsSync(path.join(root,'.template-spec/process/harness-profile.yaml')))enqueue('.template-spec/process/harness-profile.yaml');
       }
       refs(value);
@@ -377,13 +400,19 @@ export async function openBundle(input, action, {readOnly=false}={}) {
     ensure(own([...paths,'manifest.json'].sort(),files(root).sort()),'包文件缺失或存在未登记文件');
     ensure(manifest.files.length<=20000 && manifest.files.reduce((n,f)=>n+f.size_bytes,0)<=MAX_BYTES,'包大小超限');
     const captured = new Map();
-    for(const file of manifest.files){const bytes=readFileSync(safe(root,file.path));ensure(bytes.length===file.size_bytes && hash(bytes)===file.sha256,`文件摘要不一致: ${file.path}`);if(file.original_ref)relative(file.original_ref);captured.set(file.path,bytes);}
+    for(const file of manifest.files){const bytes=readFileSync(safe(root,file.path));ensure(bytes.length===file.size_bytes && hash(bytes)===file.sha256,`文件摘要不一致: ${file.path}`);if(file.original_ref){relative(file.original_ref);assertHandoffEvidenceRef(file.original_ref);}captured.set(file.path,bytes);}
     const originals=manifest.files.filter(x=>x.original_ref).map(x=>x.original_ref);
     ensure(new Set(originals.map(x=>x.toLowerCase())).size===originals.length,'源路径重复');
-    let source;
+    let source,legacyLayout;
     if(readOnly){
-      ensure(manifest.files.filter(file=>file.original_ref).every(file=>file.path===`payload/files/${file.original_ref==='CONTEXT.md'?'source-context.snapshot.md':file.original_ref}`),'readonly-source-layout-required: 原始源布局需要只读文件映射支持');
-      source=safe(root,'payload/files');
+      const inventory=manifest.files.filter(file=>file.original_ref);
+      const handoffFile=inventory.find(file=>file.original_ref===manifest.handoff_ref);
+      const version=handoffFile?parse(captured.get(handoffFile.path)).schema_version:null;
+      ensure([2,3,4,5].includes(version),'readonly-source-layout-required: 未支持的原始源布局版本');
+      const sourcePath=ref=>version===5?`payload/files/${ref==='CONTEXT.md'?'source-context.snapshot.md':ref}`:ref===manifest.handoff_ref?'handoff.yaml':ref==='CONTEXT.md'?'payload/source-context.snapshot.md':`payload/files/${ref}`;
+      ensure(inventory.every(file=>file.path===sourcePath(file.original_ref)),'readonly-source-layout-required: 原始源布局与固定导出合同不一致');
+      source=version===5?safe(root,'payload/files'):root;
+      if(version!==5)legacyLayout=inventory;
     }else{source=path.join(temp,'source');mkdirSync(source);materialize(captured,manifest,source);}
     const inspect=async()=>{
     const inspected=await inspectSource(source,manifest.handoff_ref);
@@ -403,7 +432,7 @@ export async function openBundle(input, action, {readOnly=false}={}) {
     ensure(own(changes,{previous_bundle:manifest.previous_bundle,...compareIndexes(inspected.indexes,previousIndexes)}),'版本差异与实际索引不一致');
     return await action({root,manifest,...inspected,changes});
     };
-    return readOnly?await withSourceContextSnapshot(source,inspect):await inspect();
+    return legacyLayout?await withSourceSnapshotLayout(source,legacyLayout,inspect):readOnly?await withSourceContextSnapshot(source,inspect):await inspect();
   } finally {if(temp)rmSync(temp,{recursive:true,force:true});}
 }
 export async function exportBundle({sourceRoot,handoffRef,output,zip=false,previous}) {
@@ -444,7 +473,7 @@ export async function exportBundle({sourceRoot,handoffRef,output,zip=false,previ
   } finally {rmSync(staging,{recursive:true,force:true});rmSync(`${staging}.zip`,{force:true});}
 }
 
-export async function openDelivery(input, action) {
+export async function openDelivery(input, action, {readOnly=false}={}) {
   const root=path.resolve(input);
   ensure(isDeliveryDirectory(root),'交付目录缺少 delivery-record.json');
   ensure(!lstatSync(root).isSymbolicLink(),'交付目录不能是 symlink');
@@ -461,7 +490,7 @@ export async function openDelivery(input, action) {
     assertDeliveryRecordBinding(record,bundle);
     ensure(verification.bundle_digest===bundle.manifest.bundle_digest&&verification.package_ref===record.package_ref&&verification.manifest_ref===record.manifest_ref&&verification.exit_code===0&&verification.result==='verified','delivery verification 与包不一致');
     return action({...bundle,deliveryRoot:root,packageRoot,record,recordBytes,verification});
-  });
+  },{readOnly});
 }
 
 function assertDeliveryRecordBinding(record,bundle) {

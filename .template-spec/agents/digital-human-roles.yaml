@@ -74,7 +74,7 @@ roles:
     kind: digital-human
     contract_version: 1
     title: YSS 需求经理
-    stages: [ stage.plan, stage.spec-architecture ]
+    stages: [ stage.plan, stage.spec-architecture, stage.product-design ]
     draft_artifact_ids: [ artifact.plan-record, artifact.spec, artifact.business-ticket-set ]
     core_skills: [ grilling, domain-modeling, yss-research, competitive-intelligence ]
     forbidden_skills: [ yss-ui, yss-domain, yss-web-controller, yss-repository, yss-ddd-scaffold-generator, yss-layered-mvc-scaffold-generator, yss-frontend-scaffold-generator, implement, tdd ]
@@ -87,7 +87,7 @@ roles:
     contract_version: 1
     title: YSS 产品经理
     stages: [ stage.plan, stage.spec-architecture, stage.product-design, stage.verification-release-retrospective ]
-    draft_artifact_ids: [ artifact.business-ticket-set, artifact.product-overview, artifact.functional-architecture, artifact.interaction-spec, artifact.state-matrix, artifact.prototype-confirmation-v2 ]
+    draft_artifact_ids: [ artifact.business-ticket-set, artifact.product-overview, artifact.functional-architecture, artifact.interaction-spec, artifact.state-matrix, artifact.prototype-confirmation-v2, artifact.strategic-design-handoff ]
     core_skills: [ yss-design-system, yss-prototype-stage, prototype-review, yss-research, competitive-intelligence ]
     forbidden_skills: [ yss-ui, yss-domain, yss-repository, yss-web-controller, yss-ddd-scaffold-generator, yss-layered-mvc-scaffold-generator, implement, tdd ]
     description: >-
@@ -174,6 +174,10 @@ stage_groups:
 
 # 职称继续用于导航；正式专业审查按能力绑定同一独立实例，不授予实现权限。
 review_capabilities:
+  - id: capability.strategic-handoff
+    name: 战略交接与证据审查
+    eligible_roles: [role.requirements-manager]
+    review_skills: [code-review]
   - id: capability.business-rules
     name: 业务边界与规则审查
     eligible_roles: [role.product-manager]
@@ -239,6 +243,10 @@ gate_policy:
   orchestrator:
     - gate.slice-contract-approved
   digital_human_review:
+    - gate: gate.strategic-design-handoff-approved
+      drafter: role.product-manager
+      countersigners: [role.requirements-manager]
+      capability_ids: [capability.strategic-handoff]
     - gate: gate.delivery-accepted
       capability_ids: [capability.implementation-assurance]
       countersigners:
@@ -324,6 +332,7 @@ gate_policy:
 # 用户决定是关键业务/授权条件；不替代数字人专业审查，不新增 gate。
 user_decision_policy:
   schema_version: 1
+  required_capabilities: [business-ticket-approval-v1]
   default_responder: requester
   delegate_requires_requester_evidence: true
   # 专业批准仍逐项核验；已有明确授权通过延续证明复用，不再重复询问用户。

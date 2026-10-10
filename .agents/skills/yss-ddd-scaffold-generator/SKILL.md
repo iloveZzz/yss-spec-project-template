@@ -23,9 +23,14 @@ description: 用于生成完整的 YSS DDD 多模块后端脚手架。当用户�
 - 只补持久层时，优先 `yss-repository`。
 - 只补 Web 层时，优先 `yss-web-controller`。
 
+## 执行模式
+
+- 没有 Harness 合同且用户只要独立工程骨架时，先收集明确输入，按 [独立生成](references/standalone-generation.md) 使用 `--standalone`；不伪造批准或阻断在缺合同这一项上。
+- 正式治理任务继续使用当前批准的 Project Scaffold Contract。以下生命周期、合同和阶段 7 约束适用于正式路径；目录、initialize-only、凭据和禁止业务示例的约束适用于两条路径。
+
 ## Spring Boot / Java 平台选择
 
-核验新工程平台时读取 [平台选择与证据](references/platform-selection.md)。只消费生命周期经 `gate.backend-architecture-platform-approved` 取得的真实用户确认和当前 `platform_configuration` v2；以 `scripts/backend-platforms` 的已验证可选组合为准。生成器不提问、不默认、不降级；缺证据即 `blocked`。
+正式治理路径核验新工程平台时读取 [平台选择与证据](references/platform-selection.md)。只消费生命周期经 `gate.backend-architecture-platform-approved` 取得的真实用户确认和当前 `platform_configuration` v2；以 `scripts/backend-platforms` 的已验证可选组合为准。生成器不提问、不默认、不降级；缺证据即 `blocked`。
 
 ## 优先流程
 
@@ -53,7 +58,7 @@ description: 用于生成完整的 YSS DDD 多模块后端脚手架。当用户�
 - 先在生命周期批准的脚手架受控生成合同下生成骨架，再做业务化定制；不要直接把脚手架当最终代码交付。
 - 永不生成 `User CRUD` 示例；`--with-example` 已禁用，业务代码必须按批准的 Slice Implementation Contract 逐切片实现。
 - 输出目录必须显式指定，生成器严格 `initialize-only`；目标工程目录必须不存在。已有工程、非空目标、`--force`、旧项目迁移和当前模板升级均返回 `unsupported`。旧项目继续按原工程维护；现代化或未来同一 Target Profile 模板升级须另行设计、批准，当前不提供该执行能力。
-- Harness 内多项目默认使用 `apps/backend/<project>/`，`apps/backend/` 只作输出父容器；其他布局使用已确认合同中的实际工程根。
+- Harness 内默认使用 `apps/backend/<project>/`，`apps/backend/` 只作输出父容器；其他布局按合同中的实际项目根和写范围生成。
 - `git-submodule` gitlink、空挂载点和 detached HEAD 不作为普通目录覆盖或 rename，`--force` 不解除边界。`--output-dir` 指向 detached HEAD 子仓时不得 mkdir、staging 或生成；工程准备须先初始化 submodule 并在子仓附加分支工作树内生成。维护生成器时读取 [守卫顺序](references/generator-maintenance.md)。
 - 生成工程基线由本 Skill 的 `references/engineering-baseline.md` 持有并绑定摘要，不是独立 Skill。后续实现的专项路由见 [分层 Skill 路由](references/layer-skill-routing.md)，由实现合同编译器按批准切片选择实际命中的技能。
 - 对象职责、命名及阿里/COLA 适配消费 `.template-spec/agents/backend-architecture-profiles.md` 的“对象命名与外部规范适配”；生成器不生成业务 PO/Entity，不把外部示例变成模块或组件依赖。

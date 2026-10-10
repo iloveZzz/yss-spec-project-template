@@ -15,7 +15,7 @@ function initRepo(dir) {
   git(dir, ["config", "commit.gpgsign", "false"]);
 }
 
-export function makeGitlinkFixture({ checkout = "empty-gitlink" } = {}) {
+export function makeGitlinkFixture({ checkout = "empty-gitlink", mount = "apps/backend/billing-service" } = {}) {
   const root = mkdtempSync(path.join(tmpdir(), "yss-gitlink-"));
   const child = path.join(root, "child.git");
   const superproject = path.join(root, "super");
@@ -25,8 +25,7 @@ export function makeGitlinkFixture({ checkout = "empty-gitlink" } = {}) {
   git(child, ["commit", "-m", "init child"]);
   const sha = git(child, ["rev-parse", "HEAD"]).trim();
   initRepo(superproject);
-  mkdirSync(path.join(superproject, "apps/backend"), { recursive: true });
-  const mount = "apps/backend/billing-service";
+  mkdirSync(path.dirname(path.join(superproject, mount)), { recursive: true });
   if (checkout === "empty-gitlink") {
     mkdirSync(path.join(superproject, mount), { recursive: true });
     writeFileSync(

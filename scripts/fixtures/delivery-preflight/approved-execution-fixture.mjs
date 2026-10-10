@@ -7,11 +7,11 @@ import {mvcFixture} from '../../../.agents/skills/yss-technical-design/tests/fix
 import {technicalDigest} from '../../../.agents/skills/yss-technical-design/scripts/validate-technical-design.mjs';
 import {compileDefaultImplementationContract,loadCompilerContract} from '../../lib/implementation-contract-compiler.mjs';
 import {hash,read,sourceApprovalPolicy} from '../../lib/strategic-handoff-io.mjs';
-import {countersignRuleForGate} from '../../lib/digital-human-roles.mjs';
+import {countersignRuleForGate,collectCountersignGateIds} from '../../lib/digital-human-roles.mjs';
 import {context as fixtureContext} from '../strategic-handoff/fixture.mjs';
 
-export function approvedFixture(family='layered-mvc',{withDesign=family==='layered-mvc'}={}) {
- const f=fixture(family),slice_id='slice.synthetic',ticket='tickets/synthetic.md';
+export function approvedFixture(family='layered-mvc',{withDesign=family==='layered-mvc',specText,nativeSeed,nativeReaders}={}) {
+ const f=fixture(family,{nativeSeed}),slice_id='slice.synthetic',ticket='tickets/synthetic.md';
  const roles=sourceApprovalPolicy(read(path.join(f.root,'.template-spec/agents/digital-human-roles.yaml')));
  let design,technical_design;
  if(withDesign){
@@ -19,13 +19,15 @@ export function approvedFixture(family='layered-mvc',{withDesign=family==='layer
   f.write('registration.json',f.registration);
   design.status='approved';design.architecture.project_id=f.identity.project_id;design.architecture.decision_digest=f.bindings.repository_registration.digest;
  }
- f.write('yss-project.yaml','schema_version: 1\nrepository_mode: project-instance\n');
+ if(!nativeSeed)f.write('yss-project.yaml','schema_version: 1\nrepository_mode: project-instance\n');
  f.write('CONTEXT.md',fixtureContext);
  f.write(ticket,'Synthetic Ticket only.');
+ if(specText!==undefined) f.write('spec.md',specText);
  if(design){
   design.inputs=design.inputs.map(item=>({...item,digest:hash(readFileSync(path.join(f.root,item.ref)))}));design.digest=technicalDigest(design);
   technical_design={...f.write('technical-design.json',design),id:design.technical_design_id,version:design.version};
-  const designGate=['gate.engineering-contract-approved','gate.technical-design-approved'].find(gate=>countersignRuleForGate(roles.gate_policy,gate));
+  const declaredReviews=new Set(collectCountersignGateIds(roles.gate_policy));
+  const designGate=['gate.engineering-contract-approved','gate.technical-design-approved'].find(gate=>declaredReviews.has(gate));
   if(!designGate)throw new Error('Synthetic technical fixture requires installed source approval policy');
   const evidence=f.write('technical-review.log','Synthetic current design comparison; not a real approval.');
   const basis=[{ref:technical_design.ref,digest:technical_design.digest.slice(7)},{ref:evidence.ref,digest:evidence.digest.slice(7)}];
@@ -36,8 +38,8 @@ export function approvedFixture(family='layered-mvc',{withDesign=family==='layer
   const proof={schema_version:1,gate_id:designGate,decision:'approved',actor_kind:'digital-human',role_id:countersignRuleForGate(roles.gate_policy,designGate).countersigners[0],runtime_id:'runtime.generic',principal_ref:'synthetic-product-reviewer',subject_ref:subject.ref,subject_digest:subject.digest.slice(7),drafter_principal_ref:'synthetic-design-drafter',basis,approval_scope:[slice_id],user_decision_ref:d.ref,artifact_bindings:[{id:technical_design.id,version:technical_design.version,digest:technical_design.digest}]};
   technical_design.approval_ref=f.write('technical-approval.json',proof).ref;
  }
- const resolution=compileDefaultImplementationContract({root:f.root,recipeIds:[family==='domain-driven'?'backend.ddd-http-api':'backend.mvc-http-api'],slice_id,architecture_identity:f.identity,architecture_evidence:f.bindings,...(technical_design?{technical_design}:{})});
- const definition=loadCompilerContract();
+ const resolution=(nativeReaders?.compiler.compileDefaultImplementationContract || compileDefaultImplementationContract)({root:f.root,recipeIds:[family==='domain-driven'?'backend.ddd-http-api':'backend.mvc-http-api'],slice_id,architecture_identity:f.identity,architecture_evidence:f.bindings,...(technical_design?{technical_design}:{})});
+ const definition=(nativeReaders?.compiler.loadCompilerContract || loadCompilerContract)();
  const contract={};
  for(const [section,fields]of Object.entries(definition.slice_contract_required)){
   const target=section==='root'?contract:(contract[section]={});for(const key of fields)target[key]=[];

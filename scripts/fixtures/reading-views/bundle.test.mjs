@@ -4,6 +4,78 @@ import {readFileSync,existsSync} from 'node:fs';
 import path from 'node:path';
 import {readingFixture,repo} from './fixture.mjs';
 const cp='docs/.scratch/demo/checkpoint.yaml',manifest='docs/.scratch/demo/reading/.manifest.json';
+function registeredReading(profile='spec',checkpoint='intake-checkpoint.json'){
+ const f=readingFixture(),owner=profile==='design'?path.join(repo,'submodules/yss-harness-design-agent'):repo;
+ if(profile==='spec')f.put('.template-spec/process/harness-profile.yaml',{schema_version:1,profile_id:'harness.spec-template'});else f.put('.template-spec/process/harness-profile.yaml',readFileSync(path.join(owner,'.template-spec/process/harness-profile.yaml'),'utf8'));
+ const contract=profile==='design'?'.agents/skills/yss-strategic-design/references/orchestration-contract.yaml':'.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml';f.put(contract,readFileSync(path.join(owner,contract),'utf8'));
+ f.put('.template-spec/agents/issue-tracker.md','---\ntracker:\n  platform: local-markdown\n  root: .work\n---\n');
+ const c=JSON.parse(readFileSync(path.join(repo,'scripts/fixtures/reading-views/checkpoint.json'),'utf8'));c.feature_id='feature.supplier';c.artifacts={};f.put(checkpoint,JSON.stringify(c));
+ f.put('.work/supplier/map.md','---\ncheckpoint_ref: '+checkpoint+'\n---\n# 当前功能\n');
+ return {...f,checkpoint};
+}
+test('current registered reading separates canonical ID and root Design checkpoint directory',async()=>{
+ const {readingLocation}=await import('../../lib/reading-view-policy.mjs');const f=registeredReading('design');
+ try{assert.deepEqual(readingLocation(f.root,f.checkpoint),{feature:'feature.supplier',base:'.work/supplier',directory:'.work/supplier/reading'});}finally{f.cleanup();}
+});
+test('registered root checkpoint renders an idempotent bundle without navigation self-dependency',async()=>{
+ const {renderReadingBundle,checkReadingViews}=await import('../../lib/reading-view-bundle.mjs');
+ for(const profile of ['spec','design']){
+  const f=registeredReading(profile);try{
+   f.put('.template-spec/process/reading-policy.yaml',{schema_version:1,mode:'managed',checkpoints:[f.checkpoint]});
+   f.put('.work/other/map.md','---\ncheckpoint_ref: .work/other/checkpoint.json\n---\n');f.put('.work/other/checkpoint.json',{feature_id:'feature.other'});
+   assert.equal(renderReadingBundle(f.root,f.checkpoint).status,'rendered');
+   const ref='.work/supplier/reading/.manifest.json',before=readFileSync(path.join(f.root,ref));
+   const dependencies=JSON.parse(before).dependencies;
+   assert.ok(!dependencies.some(row=>row.ref==='.work/supplier/map.md'));
+   assert.ok(dependencies.some(row=>row.ref==='.work/other/map.md'));
+   assert.equal(checkReadingViews(f.root,f.checkpoint,{required:true}).status,'current');
+   assert.equal(renderReadingBundle(f.root,f.checkpoint).status,'unchanged');assert.deepEqual(readFileSync(path.join(f.root,ref)),before);
+  }finally{f.cleanup();}
+ }
+});
+test('root Design checkpoint review preparation retains managed missing and stale reading gaps',async()=>{
+ const {prepareContractReview}=await import('../../lib/contract-views.mjs');
+ const {readingCheckpointsForAsset,renderReadingBundle}=await import('../../lib/reading-view-bundle.mjs');
+ const f=registeredReading('design');try{
+  f.put('.template-spec/process/reading-policy.yaml',{schema_version:1,mode:'managed',checkpoints:[f.checkpoint]});
+  assert.deepEqual(readingCheckpointsForAsset(f.root,f.checkpoint,'checkpoint'),[f.checkpoint]);
+  const prepare=()=>prepareContractReview(f.checkpoint,f.checkpoint,{root:f.root,kind:'checkpoint'});
+  assert.ok(prepare().gaps.some(row=>row.code==='READING_VIEWS_STALE'),'missing managed bundle must block review preparation');
+  renderReadingBundle(f.root,f.checkpoint);
+  assert.ok(!prepare().gaps.some(row=>row.code==='READING_VIEWS_STALE'),'current managed bundle must remain usable');
+  f.put(f.checkpoint,readFileSync(path.join(f.root,f.checkpoint),'utf8')+'\n');
+  const before=readFileSync(path.join(f.root,f.checkpoint));
+  assert.ok(prepare().gaps.some(row=>row.code==='READING_VIEWS_STALE'),'stale managed bundle must block review preparation');
+  assert.deepEqual(readFileSync(path.join(f.root,f.checkpoint)),before);
+ }finally{f.cleanup();}
+});
+test('registered reading refuses missing, duplicate and conflicting maps and unsupported declared policies',async()=>{
+ const {readingLocation}=await import('../../lib/reading-view-policy.mjs');const {rmSync}=await import('node:fs');
+ for(const scenario of ['missing','duplicate','wrong-checkpoint','wrong-tracker','unknown-version','null-policy']){
+  const f=registeredReading();try{
+   const contract='.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml';
+   if(scenario==='missing')rmSync(path.join(f.root,'.work/supplier/map.md'));
+   if(scenario==='duplicate')f.put('.work/duplicate/map.md','---\ncheckpoint_ref: '+f.checkpoint+'\n---\n');
+   if(scenario==='wrong-checkpoint'){f.put('other-checkpoint.json',readFileSync(path.join(f.root,f.checkpoint),'utf8'));f.put('.work/supplier/map.md','---\ncheckpoint_ref: other-checkpoint.json\n---\n');}
+   if(scenario==='wrong-tracker')f.put('.template-spec/agents/issue-tracker.md','---\ntracker:\n  platform: local-markdown\n  root: elsewhere\n---\n');
+   if(scenario==='unknown-version'||scenario==='null-policy'){
+    const {parseSliceYaml}=await import('../../lib/slice-contract.mjs'),value=parseSliceYaml(readFileSync(path.join(f.root,contract)));
+    if(scenario==='unknown-version')value.progression_target.schema_version=99;else value.progression_target=null;f.put(contract,value);
+   }
+   assert.throws(()=>readingLocation(f.root,f.checkpoint),/registration-not-unique|capability-unsupported/,scenario);
+  }finally{f.cleanup();}
+ }
+});
+test('reading policy root references retain traversal and absolute-path rejection',async()=>{
+ const {readingPolicy}=await import('../../lib/reading-view-policy.mjs');const f=registeredReading('design');try{
+  for(const ref of ['intake-checkpoint.json','docs/.scratch/demo/中文 状态.json']){
+   f.put('.template-spec/process/reading-policy.yaml',{schema_version:1,mode:'managed',checkpoints:[ref]});assert.deepEqual(readingPolicy(f.root).checkpoints,[ref]);
+  }
+  for(const ref of ['../checkpoint.json','/checkpoint.json','a/../checkpoint.json','a\\checkpoint.json']){
+   f.put('.template-spec/process/reading-policy.yaml',{schema_version:1,mode:'managed',checkpoints:[ref]});assert.throws(()=>readingPolicy(f.root),/schema|Schema|pattern|不匹配/);
+  }
+ }finally{f.cleanup();}
+});
 function setup(){const f=readingFixture();const c=JSON.parse(readFileSync(path.join(repo,'scripts/fixtures/reading-views/checkpoint.json'),'utf8'));c.artifacts={'artifact.domain-strategy':{ref:'docs/.scratch/demo/plan/domain-strategy.yaml',status:'draft',evidence_refs:[]}};f.put(cp,c);return f;}
 test('explicit enable plan protects manual map and produces deterministic current bundle',()=>{
  const f=setup();try{

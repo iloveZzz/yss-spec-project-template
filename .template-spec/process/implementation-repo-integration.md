@@ -4,7 +4,7 @@
 
 ## 1. 接入清单
 
-已合格 Spec `daily` 使用已有且可核验的单实现仓：普通 Ticket 绑定真实 Git 根、当前基线、允许写路径、可逆依据和实际验证命令，核验复用现有工程事实，不为了小任务重建阶段接入、脚手架合同或工程批准包。适用 YSS 技术基线、路径边界、测试和独立审查仍须完成。新仓、未确认根、跨仓、平台/架构转换或无法证明回滚时先调查并按 `request_triage.delivery_path` 升级；旧 CLI/其他 Profile 不因此得到普通准入。以下正式接入和切片绑定要求仍适用于 `governed`。
+已合格且政策启用的 Spec、Backend、Frontend `daily` 使用已有且可核验的单实现仓：普通 Ticket 绑定真实 Git 根、当前基线、允许写路径、可逆依据和实际验证命令，核验复用现有工程事实，不为了小任务重建阶段接入、脚手架合同或工程批准包。适用 YSS 技术基线、路径边界、测试和独立审查仍须完成。新仓、未确认根、跨仓、平台/架构转换或无法证明回滚时先调查并按 `request_triage.delivery_path` 升级；缺政策或能力的 CLI/Profile 不因此得到普通准入。以下正式接入和切片绑定要求仍适用于 `governed`。
 
 每个受影响实现仓库必须登记：仓库地址、分支、代码所有者、CI 入口、测试 / 构建命令、允许写路径、回滚点和 MR / PR。没有登记记录时，先完成 onboarding，不能用本仓库目录代替实现仓库。
 
@@ -16,7 +16,7 @@
 
 ## 1.1 Harness 内实现项目路径策略
 
-当前 Harness 明确承载运行时代码时，默认使用以下多项目布局；其他布局以已确认登记的实际工程根为准：
+当前 Harness 明确承载运行时代码时，推荐以下多项目布局；最终位置以已确认的实现仓登记和批准写范围为准：
 
 ```text
 apps/
@@ -24,8 +24,8 @@ apps/
 └── frontend/<frontend-project>/
 ```
 
-- `apps/backend/` 和 `apps/frontend/` 是项目容器，不是可生成的工程项目根；采用该布局时，后端、前端项目分别位于 `apps/backend/<project>/`、`apps/frontend/<project>/`，多个项目按 `<project>` 目录并列。
-- 工程根以已确认的登记和合同为准；`app/backend/`、`app/frontend/` 可作为实际工程根，不因目录单复数阻断。
+- `apps/backend/` 和 `apps/frontend/` 是项目容器，不是可生成的工程项目根；默认将后端、前端项目分别放在 `apps/backend/<project>/`、`apps/frontend/<project>/`，多个项目按 `<project>` 目录并列。
+- `app/backend/`、`app/frontend/` 或其他布局可按真实工程位置登记；路径名称本身不授予写权限，仍须核验当前项目根和批准范围。
 - `allowed_write_paths`、`expected_evidence_files` 和生成器输出位置必须能回指具体项目目录；直接放开 `apps/backend/` 或 `apps/frontend/` 属于路径策略违规。
 - 外部实现仓库不要求采用 Harness 的 `apps/` 布局，但仍必须登记该仓库内的实际项目根路径；跨仓库切片的写路径不得用本 Harness 的占位路径冒充真实路径。
 
@@ -64,7 +64,7 @@ apps/
 
 强制规则：
 
-- `layout_policy` / `implementation_path_policy` 必须是 `git-submodule-harness-apps`。挂载路径以已确认的具体工程根为准，默认采用 `apps/backend/<project>/` 或 `apps/frontend/<project>/`；`apps/backend/`、`apps/frontend/` 容器根不得作为工程根。
+- `layout_policy` / `implementation_path_policy` 必须是 `git-submodule-harness-apps`。挂载路径必须是已登记、已批准的具体项目相对根；默认布局为 `apps/backend/<project>/` 或 `apps/frontend/<project>/`，也可使用其他已登记布局。`apps/backend/` 和 `apps/frontend/` 容器根不能代替具体项目根。
 - 三个 `repository_scope` 必须在登记字段、Git 身份和写路径上可区分：`git-submodule` 强制 `git_url`、`gitmodules_name`、`gitlink_path`（等于 `project_root`）、`git_entry_mode: 160000`、`superproject_git_url`、`checkout_state`，并分别登记默认分支、CI、验证命令、回滚点（子仓 SHA + 父仓 gitlink SHA）；`harness-apps` 与 `external-repository` 禁止填写这些 gitlink 身份字段（可填 `不适用`）。缺 `git_entry_mode` 不得默认为普通目录。
 - 子仓 `git_url` 必须与 `superproject_git_url` 不同。登记后必须用工作树对照（`git ls-files --stage`、`.gitmodules`、`inspectWorkingTreeScope`）：声明 `harness-apps` 但路径是 gitlink，或声明 `git-submodule` 但工作树只是普通目录 / 复制源码，均视为误路由并阻断。
 - 只允许 `git submodule add` / `git submodule update --init` 形成 gitlink；禁止把实现仓库源码 copy、subtree 或普通 clone 进 Harness 后冒充 submodule。
@@ -103,3 +103,5 @@ scripts/verify-template
 ```
 
 CLI 仓库至少执行固定 commit 的 `YSS_SPEC_TEMPLATE_REF=<pinned-commit> npm test`、`npm pack --dry-run`，并在解包后的 CLI 上验证 init、attach、sync、迁移冲突和回滚。共同发布前记录两个仓库的 commit、模板快照 hash、测试结果、独立审查结论和 rollback 路径。
+
+显式独立脚手架请求可直接提供工程名、包名、精确平台版本、Maven 坐标和目标目录，调用 DDD/MVC 生成器 `--standalone`。缺少正式合同本身不阻断纯机械生成；不得自动降级已有正式任务，独立 Manifest 不含 approved、ready-for-agent 或业务实施授权。真实 Maven 验证和后续治理接入分别记录。

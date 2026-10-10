@@ -15,6 +15,8 @@ shared.push('scripts/spec-baseline','scripts/lib/spec-baseline.mjs','.template-s
 shared.push('scripts/fixtures/spec-baseline/fixture.mjs','scripts/fixtures/spec-baseline/package.mjs');
 shared.push('scripts/lib/user-decision-reuse.mjs','scripts/lib/user-decision.mjs','.template-spec/process/schemas/user-decision.schema.json','.template-spec/process/schemas/review-bundle.schema.json','scripts/fixtures/user-decision/build-fixture.mjs','scripts/lib/command-runner.mjs','scripts/lib/json-schema.mjs','scripts/lib/context-reconciliation.mjs','scripts/lib/source-context-snapshot.mjs','scripts/verify-context-reconciliation');
 shared.push('scripts/lib/decision-continuation.mjs');
+shared.push('scripts/lib/implementation-path-policy.mjs','scripts/lib/repository-scope-policy.mjs');
+shared.push('scripts/lib/implementation-candidate-current.mjs','scripts/lib/drift-report.mjs','scripts/lib/content-identity.mjs');
 shared.push('scripts/lib/plan-review-control.mjs','scripts/plan-review-control','scripts/lib/plan-spec-entry.mjs','.template-spec/process/schemas/plan-review-control.schema.json');
 shared.push('scripts/lib/approval-record.mjs','scripts/lib/approval-current.mjs','scripts/lib/approval-record-io.mjs','scripts/lib/approval-consumption.mjs','scripts/lib/approval-checkpoint-discovery.mjs','scripts/lib/lifecycle-controls.mjs','scripts/lib/review-capabilities.mjs','scripts/lib/review-package.mjs','scripts/prepare-review-package','.template-spec/templates/review-bundle-template.yaml','.template-spec/templates/approval-record-template.yaml');
 shared.push('scripts/lib/structured-assets.mjs','scripts/lib/asset-transactions.mjs','scripts/lib/asset-migration.mjs','scripts/lib/asset-command.mjs','scripts/lib/plan-stage-coverage.mjs','scripts/check-plan-stage-coverage','.template-spec/process/structured-assets.md','.template-spec/process/schemas/approval-record.schema.json','.template-spec/process/templates/lifecycle-checkpoint-template.json','.template-spec/templates/approval-record-template.json');
@@ -23,7 +25,7 @@ shared.push('scripts/query-lifecycle-context','scripts/lib/lifecycle-context-que
 shared.push('scripts/lib/testing/user-decision-fixture.mjs');
 shared.push('scripts/lib/work-layout.mjs','.template-spec/process/work-layout.md');
 shared.push('.template-spec/process/research-completion.md');
-shared.push('scripts/lib/backend-platform-provenance.mjs','scripts/lib/backend-platform.mjs','scripts/lib/backend-platform-verification.mjs','scripts/lib/scaffold-local-database.mjs','scripts/vendor/xml.mjs','.template-spec/engineering/backend-platforms.json','.template-spec/engineering/backend-platforms.md','.template-spec/process/schemas/project-scaffold-contract.schema.json','.template-spec/process/schemas/scaffold-architecture-decisions.schema.json','scripts/verify-scaffold-architecture-decisions','scripts/backend-platforms','.template-spec/agents/backend-architecture-profiles.md','scripts/fixtures/backend-scaffold/platform-fixture.mjs','scripts/fixtures/backend-scaffold/design-prerequisites.mjs');
+shared.push('scripts/lib/backend-platform-provenance.mjs','scripts/lib/backend-platform.mjs','scripts/lib/backend-platform-verification.mjs','scripts/lib/scaffold-local-database.mjs','scripts/lib/standalone-backend-scaffold.mjs','scripts/vendor/xml.mjs','.template-spec/engineering/backend-platforms.json','.template-spec/engineering/backend-platforms.md','.template-spec/process/schemas/project-scaffold-contract.schema.json','.template-spec/process/schemas/scaffold-architecture-decisions.schema.json','scripts/verify-scaffold-architecture-decisions','scripts/backend-platforms','.template-spec/agents/backend-architecture-profiles.md','scripts/fixtures/backend-scaffold/platform-fixture.mjs','scripts/fixtures/backend-scaffold/design-prerequisites.mjs');
 shared.push('.template-spec/engineering/evidence/aliyun-artifact-resolution.json');
 shared.push('.template-spec/process/schemas/digital-human-task-package.schema.json','scripts/lib/maintenance-candidate.mjs','scripts/lib/first-slice-artifacts.mjs','scripts/lib/first-slice-tests.mjs','scripts/lib/slice-repositories.mjs','scripts/lib/slice-applicability.mjs','scripts/lib/slice-contract.mjs','.template-spec/process/schemas/slice-implementation-contract-v3.schema.json');
 shared.push('scripts/backend-delivery','scripts/verify-frontend-delivery','scripts/verify-frontend-strategic-preflight','scripts/strategic-feedback','scripts/verify-strategic-handoff-tools-lock','scripts/lib/backend-delivery.mjs','scripts/lib/frontend-delivery.mjs','scripts/lib/frontend-delivery-boundary.mjs','scripts/lib/strategic-feedback.mjs','.template-spec/process/frontend-backend-delivery.md','.template-spec/process/schemas/backend-delivery.schema.json','.template-spec/process/schemas/backend-delivery-verification.schema.json','.template-spec/process/schemas/frontend-delivery-acceptance.schema.json','.template-spec/process/schemas/frontend-delivery-acceptance-v1.schema.json','.template-spec/process/schemas/frontend-strategic-preflight.schema.json','.template-spec/process/schemas/strategic-design-handoff-v3.schema.json','.template-spec/process/schemas/strategic-design-handoff-v4.schema.json','.template-spec/process/schemas/strategic-consumer-feedback.schema.json','.template-spec/process/schemas/strategic-feedback-adjudication.schema.json');
@@ -58,6 +60,7 @@ function transformationFor(target,ref){
 function sync(source,dest,transformation='identity'){const bytes=transformations[transformation](readFileSync(source));if(!existsSync(dest)||!bytes.equals(readFileSync(dest))){differences.push(path.relative(root,dest));if(!check){mkdirSync(path.dirname(dest),{recursive:true});writeFileSync(dest,bytes);}}if(!check&&path.basename(path.dirname(dest))==='scripts'&&!path.extname(dest))chmodSync(dest,0o755);}
 const digestBytes=bytes=>`sha256:${createHash('sha256').update(bytes).digest('hex')}`;
 shared.push('scripts/lib/lifecycle-execution-scope.mjs','scripts/lib/instance-metadata.mjs','scripts/lib/harness-execution-scope.mjs');
+shared.push('scripts/lib/lifecycle-progression.mjs','.template-spec/process/schemas/progression-target.schema.json','.template-spec/process/lifecycle-progression.md');
 shared.push('scripts/inspect-skill-discovery','scripts/lib/skill-discovery.mjs');
 // Diagnostic-only content inspection: shared authoring format, no lifecycle gate.
 shared.push('scripts/vendor/yaml.mjs','scripts/vendor/manifest.json','scripts/vendor/NOTICES.md');
@@ -117,10 +120,13 @@ function projectedRouting(targetRoot){
  const current=document.toJS({maxAliasCount:0});
  const planReview=checkpointContract.planning?.review_control;
  if(!planReview)throw new Error('源主控缺少 Plan 收敛协议');
- const planReviewChanged=targetRoot.endsWith('design-agent')&&JSON.stringify(current.planning?.review_control)!==JSON.stringify(planReview);
+ const planReviewChanged=JSON.stringify(current.planning?.review_control)!==JSON.stringify(planReview);
+ const checkpointChanged=['phase_boundary','checkpoint_policy'].some(key=>JSON.stringify(current[key])!==JSON.stringify(checkpointContract[key]));
  const progress={...userProgressReport,owner:targetRoot.endsWith('design-agent')?'yss-strategic-design':'harness-orchestrator',reference:userProgressReport.writing_reference};
- if(!planReviewChanged&&JSON.stringify(current.consumer_entry_routes)===JSON.stringify(consumerRoutes)&&JSON.stringify(current.skill_preflight)===JSON.stringify(skillPreflight)&&JSON.stringify(current.user_progress_report)===JSON.stringify(progress)&&JSON.stringify(current.profile_guidance)===JSON.stringify(profileGuidance))return bytes;
- if(targetRoot.endsWith('design-agent'))document.setIn(['planning','review_control'],planReview);
+ if(JSON.stringify(current.request_triage)===JSON.stringify(checkpointContract.request_triage)&&!planReviewChanged&&!checkpointChanged&&JSON.stringify(current.consumer_entry_routes)===JSON.stringify(consumerRoutes)&&JSON.stringify(current.skill_preflight)===JSON.stringify(skillPreflight)&&JSON.stringify(current.user_progress_report)===JSON.stringify(progress)&&JSON.stringify(current.profile_guidance)===JSON.stringify(profileGuidance))return bytes;
+ for(const key of ['phase_boundary','checkpoint_policy'])document.set(key,checkpointContract[key]);
+ document.setIn(['planning','review_control'],planReview);
+ document.set('request_triage',checkpointContract.request_triage);
  document.set('consumer_entry_routes',consumerRoutes);
  document.set('skill_preflight',skillPreflight);
  document.set('user_progress_report',progress);
@@ -128,6 +134,20 @@ function projectedRouting(targetRoot){
  return Buffer.from(document.toString());
 }
 function syncRouting(targetRoot){const dest=path.join(targetRoot,targetRoutingRef(targetRoot)),bytes=projectedRouting(targetRoot);if(!bytes.equals(readFileSync(dest))){differences.push(path.relative(root,dest));if(!check)writeFileSync(dest,bytes);}}
+function syncBusinessDecisions(targetRoot){
+ if(targetRoot.endsWith('design-agent'))return;
+ const ref='.template-spec/agents/digital-human-roles.yaml',dest=path.join(targetRoot,ref),document=parseDocument(readFileSync(dest,'utf8'));
+ const canonical=parseDocument(readFileSync(path.join(root,ref),'utf8')).toJS().user_decision_policy;
+ const registry=parseDocument(readFileSync(path.join(targetRoot,'.template-spec/process/lifecycle-registry.yaml'),'utf8')).toJS();
+ const gates=new Set(registry.gates.map(x=>x.id)),units=new Set(registry.work_units.map(x=>x.id));
+ const policy={...canonical,gates:canonical.gates.filter(id=>gates.has(id)),work_units:Object.fromEntries(Object.entries(canonical.work_units).filter(([id])=>units.has(id))),work_unit_gates:Object.fromEntries(Object.entries(canonical.work_unit_gates).filter(([id])=>units.has(id)).map(([id,ids])=>[id,ids.filter(x=>gates.has(x))])),continuation:{...canonical.continuation,boundaries:canonical.continuation.boundaries.filter(id=>gates.has(id)||id==='implementation-scope')}};
+ const gatePolicy=parseDocument(readFileSync(path.join(root,ref),'utf8')).toJS().gate_policy;
+ const bundles=gatePolicy.review_execution.review_bundles.filter(x=>gates.has(x.aggregate_gate)&&units.has(x.work_unit)).map(x=>({...x,review_control_ref:targetRoutingRef(targetRoot)+'#planning.review_control'}));
+ const roleMap={'role.backend-engineer':'role.backend-agent','role.frontend-engineer':'role.frontend-agent','role.test-engineer':'role.test-agent'},roles=new Set(document.toJS().roles.map(x=>x.id));
+ const continuation=Object.fromEntries(Object.entries(gatePolicy.continuation_reviews).filter(([id])=>policy.continuation.boundaries.includes(id)).map(([id,ids])=>[id,ids.map(x=>roleMap[x]||x).filter(x=>roles.has(x))]));
+ const old=readFileSync(dest,'utf8');document.set('user_decision_policy',policy);document.setIn(['gate_policy','review_execution','review_bundles'],bundles);document.setIn(['gate_policy','continuation_reviews'],continuation);
+ const bytes=document.toString();if(bytes===old)return;differences.push(path.relative(root,dest));if(!check)writeFileSync(dest,bytes);
+}
 function syncOwnerPreflight(targetRoot){
  const owner=targetRoot.endsWith('design-agent')?'yss-strategic-design':'harness-orchestrator';
  const ref='.agents/skills/'+owner+'/SKILL.md',dest=path.join(targetRoot,ref),marker='<!-- SKILL_PREFLIGHT_ROUTE -->';
@@ -203,6 +223,7 @@ for(const target of rootOnly?[]:targets){
  if(target.endsWith('backend-agent'))sync(path.join(root,visualSource),path.join(root,target,visualWire),'backend-wire-library');
  syncExistingProfiles(path.join(root,target));
  syncRouting(path.join(root,target));
+ syncBusinessDecisions(path.join(root,target));
  syncOwnerPreflight(path.join(root,target));
  syncOwnerProgress(path.join(root,target));
  syncOwnerProfileGuidance(path.join(root,target));

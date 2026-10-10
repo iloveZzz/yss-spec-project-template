@@ -20,7 +20,7 @@ owner: ai
 | 风险 / 回滚约束 | `AGENTS.md` |  |
 | Slice Implementation Contract |  | 填写 contract_id / contract_version / 生命周期批准状态 |
 | 后端脚手架策略 | `orchestration-contract.yaml` / DDD 或 Layered MVC 生成器 |  | backend `scaffold_status=required` 时填写架构与平台用户门禁、architecture decision、精确 Spring Boot 版本、schema v4 合同身份、批准/持久化引用、生成器输入、Manifest v4、实际 `./mvnw` 结果和后置实现合同编译器重编译；既有工程填写登记值复用证据 |
-| 工程项目路径策略 | `.template-spec/process/implementation-repo-integration.md` / 实现合同编译器 Contract |  | Harness 内默认使用 `apps/backend/<project>/` 或 `apps/frontend/<project>/`，其他布局使用已登记的实际工程根；`apps/backend/`、`apps/frontend/` 仅为容器 |
+| 工程项目路径策略 | `.template-spec/process/implementation-repo-integration.md` / 实现合同编译器 Contract |  | Harness 默认布局为 `apps/backend/<project>/` 或 `apps/frontend/<project>/`；其他布局按已登记项目根核验，`apps/backend/`、`apps/frontend/` 仅为容器 |
 | 垂直切片工作单元 |  |  |
 | YSS Skill Execution Result |  | 每个 skill / work_unit 的结果文件引用 |
 
@@ -43,7 +43,7 @@ owner: ai
 | Infrastructure：需要持久化的切片必须有 PO / Repository / Convertor / GatewayImpl；`InMemory*Gateway` 只能作为显式 `seam-deferred` | `yss-repository` / 数据架构 |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 未补齐时不得声称生产持久化完成 |
 | POJO / Convertor：DTO / VO / CMD / Query / PO / Domain Model 样板代码默认使用 Lombok；对象转换默认使用 MapStruct，禁止 `BeanUtils.copyProperties`、反射拷贝和重复手写字段赋值 | `lombok` / `mapstruct` / `AGENTS.md` |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 未加载 skill、缺注解处理器配置、缺 Convertor 或无例外说明时标记 `violation` |
 | 后端工程工具链：构建、测试、运行、OpenAPI 生成、CI 和 Release 命令必须使用项目根目录 `./mvnw ...`；裸 `mvn ...` 必须有受控例外记录 | DDD / Layered MVC 生成器及 implementation routing |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 无例外记录时改为 `./mvnw ...`，否则不得进入完成 / 可合并结论 |
-| 工程项目路径：每个 Harness 内项目必须登记实际工程根，采用 `apps/` 布局时禁止直接写入容器根 | `.template-spec/process/implementation-repo-integration.md` / implementation path validator |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 路径违规时停止 build，并回到实现路由 |
+| 工程项目路径：Harness 内实现必须使用已登记、已批准的具体项目相对根，容器根不能代替项目根 | `.template-spec/process/implementation-repo-integration.md` / implementation path validator |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 路径违规时停止 build，并回到实现路由 |
 | 文档语言：持久化生命周期文档、实施记录、审查报告、发布说明和 Git checkpoint 正文必须使用中文，英文 skill / 模板不得原样落地 | `AGENTS.md` / `yss-product-lifecycle` |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 仅保留必要英文技术标识、命令和 metadata |
 | 高风险变更：按已批准的普通影响面结论记录验证证据、责任人和回滚约束 | `AGENTS.md` / Spec / 架构记录 |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 缺验证证据或责任人时不得发布或合并 |
 | 质量基线：`baseline_id` / `baseline_version` 只从 `engineering-baseline` 引用，Slice、Execution Result、审查和发布不得重复定义 | `engineering-baseline` / `orchestration-contract.yaml` |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 缺少基线引用或出现重复标准时阻断并回到工程基线 |

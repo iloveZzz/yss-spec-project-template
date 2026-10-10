@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Lifecycle progression intent (not progress or approval)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "kind", "feature_id", "checkpoint_ref", "target", "intent_source", "consumers"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "kind": {"const": "lifecycle-progression-target"},
+    "feature_id": {"type": "string", "minLength": 1},
+    "checkpoint_ref": {"type": "string", "minLength": 1},
+    "target": {"enum": ["spec-approved", "product-design-completed", "backend-deliverable", "frontend-accepted", "business-accepted"]},
+    "intent_source": {"type": "string", "minLength": 1},
+    "consumers": {
+      "type": "array", "uniqueItems": true, "maxItems": 3,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["profile", "root", "checkpoint_ref"],
+        "properties": {
+          "profile": {"enum": ["design", "backend", "frontend"]},
+          "root": {"type": "string", "minLength": 1},
+          "checkpoint_ref": {"type": "string", "minLength": 1}
+        }
+      }
+    }
+  }
+}

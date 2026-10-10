@@ -38,7 +38,7 @@ Slice v3 的当前执行结果须按 `references/yss-skill-execution-result.md` 
 
 ## 硬规则
 
-采用专职前端 profile 或显式 `frontend_delivery` 绑定时，先按 `.template-spec/process/frontend-backend-delivery.md` 实际核验战略与后端联合交付。缺任一输入只能诊断和回交；输入通过后准备计划/合同，正式实现、生成和恢复仍须当前批准的 Slice Contract 冻结接收摘要。接口或部署版本漂移时重新接收，不复用旧成功输出。
+按 `.template-spec/process/frontend-backend-delivery.md` 区分来源：上游战略交接或显式 `frontend_delivery` 绑定须核验联合交付并冻结接收摘要；本地已批准资产须绑定当前功能 checkpoint 与 Spec，实际核验适用的设计和后端/API 依赖，不要求外部接收回执。纯 UI 无后端/API 影响时记录有理由的 not-applicable。无效的显式绑定不得回退本地路径；正式实现、生成和恢复仍须当前批准的 Slice Contract，接口或部署漂移使受影响证据失效。
 
 - 编译器不得输出 `approved`、`ready-for-agent` 或 `completed`。
 - Registry 使用其权威 schema v3，编译规则保持 schema v2；新 Slice 使用 v3，旧 Slice v2 按原规则读取和显式迁移。已停止支持的 schema 一律拒绝，不自动升级，不提供未登记的旧技能名兼容。
@@ -48,7 +48,7 @@ Slice v3 的当前执行结果须按 `references/yss-skill-execution-result.md` 
 - 后端技术设计由 `yss-technical-design` 先行组织。消费批准且版本当前的 Technical Design Contract，核对其架构与工程基线一致；DDD 才消费聚合、Gateway 等战术字段并路由 `yss-domain`，MVC 消费用例、分层、规则和事务设计并按 Profile 路由。旧 v1 战术合同只按 DDD 显式兼容读取。无相关影响记录带原因的 `not-applicable`。
 - API 变化必须回到生命周期 Draft/Review/Freeze；半成品 backend 不得冒充稳定 source of truth。
 - 后端端到端切片必须包含 Application；对象/POJO 影响按契约自动补 `mapstruct`、`lombok`、`alibaba-java-code-style`。
-- Harness 内实现路径使用已确认的实际工程根，默认布局为 `apps/backend/<project>/` 或 `apps/frontend/<project>/`；`apps/backend/`、`apps/frontend/` 只能作为容器。外部实现仓库使用其登记的真实项目根路径。`git-submodule` 使用 `implementation_path_policy: git-submodule-harness-apps`，空 gitlink、detached HEAD 或 `--force` 覆盖挂载点不得脚手架；`inspectWorkingTreeScope.writable` 必须为显式布尔值。
+- Harness 内实现路径必须是已登记的具体项目相对路径，默认布局为 `apps/backend/<project>/` 或 `apps/frontend/<project>/`；`apps/backend/`、`apps/frontend/` 只能作为容器。外部实现仓库使用其登记的真实项目根路径。`git-submodule` 使用 `implementation_path_policy: git-submodule-harness-apps`，空 gitlink、detached HEAD 或 `--force` 覆盖挂载点不得脚手架；`inspectWorkingTreeScope.writable` 必须为显式布尔值。
 - 当前用户、缓存、审计、Excel、分布式 ID、请求校验、错误映射、加解密或网关韧性命中时，必须按 `compiler-contract.yaml` 的 `impact_to_capabilities` 补齐入口 capability；不能只在 `boundaries.md` 中提及。仅复用已经验证的平台认证 / 授权能力不算 component impact，不自动增加权限专项 skill。
 - 业务行为使用 `behavior-tdd`；只有机械脚手架/生成物可用 `controlled-generation`，并记录例外和验证。
 - 无工程且需要机械生成时，先读取 [脚手架合同编译](references/scaffold-compilation.md)。只起草 Project Scaffold Contract schema v4，由生命周期批准并持久化后运行；既有工程不重新生成。脚手架合同不能替代后续批准的 Slice Contract，业务行为必须重路由。
