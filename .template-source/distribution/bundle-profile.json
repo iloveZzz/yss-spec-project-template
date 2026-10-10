@@ -46,6 +46,7 @@
     ],
     "excludePaths": [
       ".codex/hooks.json",
+      ".codex/config.toml",
       ".codex/settings.local.json",
       ".codex/skills/.DS_Store",
       ".pi/settings.json",

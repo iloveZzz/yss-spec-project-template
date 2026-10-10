@@ -225,7 +225,7 @@ flowchart LR
 
 | 工作包 | 状态 | 分支 | 说明 |
 |---|---|---|---|
-| WP-00 | 已提交，待合并 | `harden/wp-00` | `harness-metrics` 与 4 个测试通过；基线已测 |
-| WP-01 | 已提交，待合并 | `harden/wp-01`（主仓与三个 Profile 子模块同名） | 配置已删除并加检查；AC-002 未完成（需 yss-cli 改动）；合并前需维护者把配置抄到 `~/.codex/config.toml` |
-| WP-02 起 | 未开始 | — | 依赖 WP-01 合并；WP-06 除外 |
-| WP-06 | 已提交，待合并 | `harden/wp-06` | 基于 main（文本修复不依赖 WP-00 代码）；三处被追踪的漂移已修，`verify-doc-facts` 与 5 个测试通过；团队指南为未追踪文件，本地已修；接入 `ci-gate` 待 WP-02 |
+| WP-00 | 已合并到 main | `harden/wp-00` | `harness-metrics` 与 4 个测试通过；基线已测 |
+| WP-01 | 已合并到 main | `harden/wp-01`（主仓与三个 Profile 子模块同名；子模块合并提交在各自的 `harden/integration`） | 配置已删除并加检查；AC-002 未完成（需 yss-cli 改动）；维护者需把配置抄到 `~/.codex/config.toml` |
+| WP-02 起 | 未开始 | — | 依赖 WP-01，已满足 |
+| WP-06 | 已合并到 main | `harden/wp-06` | 基于 main（文本修复不依赖 WP-00 代码）；三处被追踪的漂移已修，`verify-doc-facts` 与 5 个测试通过；团队指南为未追踪文件，本地已修；接入 `ci-gate` 待 WP-02 |
