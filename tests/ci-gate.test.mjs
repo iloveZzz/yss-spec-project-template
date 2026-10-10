@@ -281,7 +281,7 @@ test("ci-setup：dry-run 只打印计划，覆盖子模块、yss 构建、pnpm �
   const sha = "0123456789abcdef0123456789abcdef01234567";
   const result = spawnSync(CI_SETUP, ["--dry-run", "--submodules", "--yss-commit", sha], { encoding: "utf8", env: { ...process.env, CI: "" } });
   assert.equal(result.status, 0, result.stderr);
-  for (const expected of [/Node 主版本必须是 24/, /repository-mode/, /submodule update --init --depth=1 -- submodules\/yss-cli\n/, /submodule update --init -- submodules\/yss-harness-design-agent /, new RegExp(sha), /pnpm --dir \.template-source\/tooling\/node install --frozen-lockfile/, /jsonschema==4\.23\.0/, /环境准备完成/]) {
+  for (const expected of [/Node 主版本必须是 24/, /repository-mode/, /submodule update --init --depth=1 -- submodules\/yss-cli\n/, /submodule update --init -- submodules\/yss-harness-design-agent /, /sync-profile-skills --apply --profile=all/, new RegExp(sha), /pnpm --dir \.template-source\/tooling\/node install --frozen-lockfile/, /jsonschema==4\.23\.0/, /环境准备完成/]) {
     assert.match(result.stdout, expected);
   }
   assert.doesNotMatch(result.stdout, /--depth=1 -- submodules\/yss-harness/, "构建 yss 需要 Profile 仓库的完整历史");
@@ -290,7 +290,7 @@ test("ci-setup：dry-run 只打印计划，覆盖子模块、yss 构建、pnpm �
   assert.match(shallow.stdout, /submodule update --init --depth=1 -- submodules\/yss-cli\n/);
   const minimal = spawnSync(CI_SETUP, ["--dry-run", "--no-python"], { encoding: "utf8", env: { ...process.env, CI: "" } });
   assert.equal(minimal.status, 0, minimal.stderr);
-  assert.doesNotMatch(minimal.stdout, /jsonschema|submodule update|yss-cli/);
+  assert.doesNotMatch(minimal.stdout, /jsonschema|submodule update|yss-cli|sync-profile-skills/);
 });
 
 test("ci-setup：--print-versions 打印可直接追加到 GITHUB_OUTPUT 的目标版本，且不要求 CI 环境", () => {

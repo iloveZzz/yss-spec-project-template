@@ -1,6 +1,7 @@
 ---
 name: publish-skills-sh
 description: 发布或更新指定 Agent 技能到公开 GitHub 分发仓，并验证安装与 skills.sh 收录；用于技能公开分发、同步和更名。
+disable-model-invocation: true
 ---
 
 # 发布技能到 skills.sh

@@ -320,12 +320,12 @@ invocation_contract:
       exclusion_conditions: [standalone-task-selection]
       primary_output: internal-commit-contract
     frontend-commit:
-      invocation_mode: both
+      invocation_mode: user
       trigger_conditions: [frontend-commit-assistance]
       exclusion_conditions: [no-commit-related-request]
       primary_output: frontend-commit-guidance
     java-backend-commit:
-      invocation_mode: both
+      invocation_mode: user
       trigger_conditions: [backend-commit-assistance]
       exclusion_conditions: [no-commit-related-request]
       primary_output: backend-commit-guidance
@@ -345,7 +345,7 @@ invocation_contract:
       exclusion_conditions: [outside-authorized-scope]
       primary_output: workspace-guidance
     yss-skill-source-index-refresh:
-      invocation_mode: both
+      invocation_mode: user
       trigger_conditions: [authorized-source-index-maintenance]
       exclusion_conditions: [outside-authorized-scope]
       primary_output: source-index-evidence
@@ -354,6 +354,10 @@ invocation_contract:
       trigger_conditions: [explicit-handoff-request]
       exclusion_conditions: [no-handoff-request]
       primary_output: session-handoff
+    publish-skills-sh:
+      invocation_mode: user
+    llm-wiki:
+      invocation_mode: user
 agent_runtime_roots:
   codex: .codex/skills
   cursor: .cursor/skills

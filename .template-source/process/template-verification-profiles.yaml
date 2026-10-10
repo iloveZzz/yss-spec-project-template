@@ -99,6 +99,17 @@ profiles:
           - ".template-source/distribution/bundle-profile.json"
         depends_on: []
         failure_mode: "Claude Code 入口复制了 AGENTS.md 的内容、.claude/skills 与 canonical 脱节或不是符号链接、注册表与锁在 claude 上不一致，或 hook 设置进入实例分发"
+      - id: check.explicit-invocation
+        run: "node --test tests/explicit-invocation.test.mjs"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
+          - ".template-spec/agents/yss-skill-registry.yaml"
+          - ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml"
+          - "scripts/lib/skill-registry.mjs"
+          - "tests/explicit-invocation.test.mjs"
+        depends_on: []
+        failure_mode: "被生命周期编排器路由或合同声明为模型调用的技能被设为显式，或显式集合被无意改动"
       - id: check.runtime-storage
         group: runtime-storage
         inputs_complete: true
@@ -248,6 +259,8 @@ profiles:
         inputs_complete: true
         input_patterns:
           - ".template-spec/agents/yss-skill-registry.yaml"
+          - ".agents/skills/*/SKILL.md"
+          - ".agents/skills/*/agents/openai.yaml"
           - "scripts/verify-skill-registry"
           - "scripts/lib/skill-registry.mjs"
           - "yss-public-skills.json"
@@ -1286,6 +1299,7 @@ routing:
       - .codex/hooks.json
       - CLAUDE.md
       - tests/claude-entry.test.mjs
+      - tests/explicit-invocation.test.mjs
     groups:
       - feature-assets
   - patterns:
@@ -4701,6 +4715,14 @@ supplemental_checks:
     depends_on: []
     when: template-source
     task_id: supplemental.claude-entry
+    source_requirement: committed
+  - id: check.explicit-invocation-supplemental
+    run: node --test tests/explicit-invocation.test.mjs
+    group: feature-assets
+    gate_ids: [check.verification-lifecycle]
+    depends_on: []
+    when: template-source
+    task_id: supplemental.explicit-invocation
     source_requirement: committed
   - id: check.native-context-retirement
     run: node --test tests/native-context-retirement.test.mjs

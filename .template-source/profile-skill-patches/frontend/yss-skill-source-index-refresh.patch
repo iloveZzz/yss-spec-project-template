@@ -1,12 +1,13 @@
 diff --git a/SKILL.md b/SKILL.md
-index 115ef7c..97c511f 100644
+index 4750a92..d74d050 100644
 --- a/SKILL.md
 +++ b/SKILL.md
-@@ -1,65 +1,21 @@
+@@ -1,66 +1,22 @@
  ---
  name: yss-skill-source-index-refresh
 -description: 后端组件源码或前端 YSS UI 文档变化后，刷新技能来源索引并核验平台线、组件摘要与引用。
 +description: 前端 YSS UI 组件、Hook 或页面模块文档入口变化后，刷新已安装技能的文档入口索引；仅用于前端维护。
+ disable-model-invocation: true
  ---
  
 -# YSS 技能来源索引维护
@@ -76,17 +77,19 @@ index 115ef7c..97c511f 100644
 +- 不查找或要求 Java 源仓，不读取 `YSS_SOURCE_ROOT`，不创建后端 `source-index.md`。
 +- 这是文档入口索引生成器，不下载文档，也不证明网页内容已更新或与当前组件版本匹配。实际实现仍需读取当前版本文档与组件证据。
 +- 在 canonical 技能根刷新后，使用本仓 `scripts/update-skill-lock`、`scripts/sync-skills` 和快速验证完成维护；不手改各运行时投影。
-diff --git a/agents/openai.yaml b/current/agents/openai.yaml
-deleted file mode 100644
-index 117c190..0000000
+diff --git a/agents/openai.yaml b/agents/openai.yaml
+index 5e332fc..5b1f887 100644
 --- a/agents/openai.yaml
-+++ /dev/null
-@@ -1,4 +0,0 @@
++++ b/agents/openai.yaml
+@@ -1,7 +1,2 @@
 -interface:
 -  display_name: "YSS Skill Source Index Refresh"
 -  short_description: "Locate sources and refresh YSS skill indexes"
 -  default_prompt: "Refresh YSS skill indexes from yss-cloud-microservice and YSS UI docs."
-diff --git a/references/backend-component-platform-compatibility.md b/current/references/backend-component-platform-compatibility.md
+-
+ policy:
+   allow_implicit_invocation: false
+diff --git a/references/backend-component-platform-compatibility.md a/references/backend-component-platform-compatibility.md
 deleted file mode 100644
 index 6d7a414..0000000
 --- a/references/backend-component-platform-compatibility.md
@@ -119,7 +122,7 @@ index 6d7a414..0000000
 -- `javax.sql`、`javax.crypto` 等 Java SE 包不是 Jakarta 迁移目标，不能用简单字符串替换处理。
 -
 -共享平台事实源为 `.template-spec/engineering/backend-platforms.json` 和 `.template-spec/engineering/backend-platforms.md`。
-diff --git a/references/source-location.md b/current/references/source-location.md
+diff --git a/references/source-location.md a/references/source-location.md
 deleted file mode 100644
 index d3364f9..0000000
 --- a/references/source-location.md
@@ -144,7 +147,7 @@ index d3364f9..0000000
 -- Prefer symbols, package names, Maven artifact names, and annotations in instructions; they survive repository relocation better than absolute paths.
 -- Keep full production source out of skill `assets/`; generate concise signatures, activation conditions and file hashes instead.
 -- When refreshing indexes, export both generation-specific variables; targeted skill refresh still regenerates both tracks for the selected Skill.
-diff --git a/references/source-map-config.md b/current/references/source-map-config.md
+diff --git a/references/source-map-config.md a/references/source-map-config.md
 deleted file mode 100644
 index b5b9859..0000000
 --- a/references/source-map-config.md
@@ -186,7 +189,7 @@ index b5b9859..0000000
 -| `ytable-usage` | hooks docs |
 -| `yedit-table-usage` | hooks docs |
 -| `ytree-usage` | hooks docs |
-diff --git a/scripts/check-backend-skill-source-index.mjs b/current/scripts/check-backend-skill-source-index.mjs
+diff --git a/scripts/check-backend-skill-source-index.mjs a/scripts/check-backend-skill-source-index.mjs
 deleted file mode 100644
 index 64c3527..0000000
 --- a/scripts/check-backend-skill-source-index.mjs
