@@ -1,0 +1,153 @@
+#!/usr/bin/env bash
+# 托管 runner 的环境准备，GitHub Actions 与 GitLab CI 共用；只依赖 bash。
+# 会安装依赖并可能改写全局工具，所以只在 CI 环境运行；本机请用 --dry-run 查看计划。
+set -euo pipefail
+
+YSS_CI_NODE_MAJOR="${YSS_CI_NODE_MAJOR:-24}"
+YSS_CI_PNPM_VERSION="${YSS_CI_PNPM_VERSION:-10.15.0}"
+YSS_CI_PYTHON_MINOR="${YSS_CI_PYTHON_MINOR:-3.12}"
+YSS_CI_JSONSCHEMA_VERSION="${YSS_CI_JSONSCHEMA_VERSION:-4.23.0}"
+YSS_CLI_REPOSITORY="${YSS_CLI_REPOSITORY:-https://github.com/iloveZzz/yss-cli.git}"
+PROFILE_SUBMODULES=(
+  submodules/yss-harness-design-agent
+  submodules/yss-harness-backend-agent
+  submodules/yss-harness-frontend-agent
+)
+
+usage() {
+  cat <<'EOF'
+用法: scripts/ci-setup [--no-python] [--submodules] [--yss-commit <40位SHA>] [--dry-run]
+  默认          校验 Node 主版本、确认 template-source、按 frozen lockfile 安装 pnpm 依赖、安装 Python schema 依赖
+  --no-python   跳过 Python schema 依赖
+  --submodules  初始化三个公开固定的 Profile 子模块，并准备原型作者工具链
+  --yss-commit  从固定提交构建 yss 二进制（需要 go）
+  --dry-run     只打印计划，不执行
+环境变量:
+  YSS_CI_ENV_FILE  需要传给后续步骤的变量按 NAME=value 追加到该文件
+                   （GitHub 传 $GITHUB_ENV；GitLab 在后续命令前 set -a; . 该文件）
+  YSS_CI_ALLOW_LOCAL=1  允许在未设置 CI 的机器上真实执行
+EOF
+}
+
+python=1
+submodules=0
+yss_commit=""
+dry_run=0
+while (($#)); do
+  case "$1" in
+    --no-python) python=0 ;;
+    --submodules) submodules=1 ;;
+    --yss-commit)
+      shift
+      yss_commit="${1:-}"
+      ;;
+    --dry-run) dry_run=1 ;;
+    --help | -h) usage; exit 0 ;;
+    *) echo "未知参数: $1" >&2; usage >&2; exit 2 ;;
+  esac
+  shift
+done
+
+if [[ -n "$yss_commit" && ! "$yss_commit" =~ ^[a-f0-9]{40}$ ]]; then
+  echo "--yss-commit 必须是 40 位小写十六进制的完整提交 SHA" >&2
+  exit 2
+fi
+if ((!dry_run)) && [[ -z "${CI:-}" && "${YSS_CI_ALLOW_LOCAL:-}" != "1" ]]; then
+  echo "scripts/ci-setup 会安装依赖并改写工具，只在 CI 环境运行；本机用 --dry-run 查看计划，确需执行请设置 YSS_CI_ALLOW_LOCAL=1" >&2
+  exit 2
+fi
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$ROOT_DIR"
+
+step() { echo "==> $*"; }
+run() {
+  echo "+ $*"
+  if ((!dry_run)); then "$@"; fi
+}
+export_var() {
+  echo "export $1=$2"
+  if ((!dry_run)) && [[ -n "${YSS_CI_ENV_FILE:-}" ]]; then echo "$1=$2" >>"$YSS_CI_ENV_FILE"; fi
+}
+work_dir() {
+  if [[ -n "${RUNNER_TEMP:-}" ]]; then echo "$RUNNER_TEMP"; else mktemp -d; fi
+}
+
+step "Node 主版本必须是 ${YSS_CI_NODE_MAJOR}（由 runner 镜像或 setup-node 提供）"
+if ((!dry_run)); then
+  actual_node="$(node -p 'process.versions.node.split(".")[0]')"
+  if [[ "$actual_node" != "$YSS_CI_NODE_MAJOR" ]]; then
+    echo "当前 Node 主版本为 ${actual_node}，需要 ${YSS_CI_NODE_MAJOR}；请在 runner 镜像或 setup-node 中固定" >&2
+    exit 1
+  fi
+fi
+
+step "确认仓库模式为 template-source"
+if ((!dry_run)); then test "$(scripts/repository-mode)" = template-source; else echo "+ test \"\$(scripts/repository-mode)\" = template-source"; fi
+
+if ((submodules)); then
+  step "初始化公开固定子模块"
+  run git submodule sync -- "${PROFILE_SUBMODULES[@]}"
+  run git -c protocol.version=2 submodule update --init --depth=1 -- "${PROFILE_SUBMODULES[@]}"
+fi
+
+if [[ -n "$yss_commit" ]]; then
+  step "从固定提交 ${yss_commit} 构建 yss"
+  if ((dry_run)); then
+    echo "+ git fetch --depth 1 ${YSS_CLI_REPOSITORY} ${yss_commit} → go run ./tools/bundle → go build ./cmd/yss"
+  else
+    command -v go >/dev/null || { echo "构建 yss 需要 go；请在 runner 镜像中提供" >&2; exit 1; }
+    yss_source="$(work_dir)/yss-cli-${yss_commit}"
+    test ! -e "$yss_source"
+    git init -q "$yss_source"
+    git -C "$yss_source" remote add origin "$YSS_CLI_REPOSITORY"
+    git -C "$yss_source" -c protocol.version=2 fetch -q --depth 1 origin "$yss_commit"
+    git -C "$yss_source" checkout -q --detach FETCH_HEAD
+    test "$(git -C "$yss_source" rev-parse HEAD)" = "$yss_commit"
+    (cd "$yss_source" && go run ./tools/bundle --source-root "$ROOT_DIR" --lock docs/source-lock.json --out internal/bundle/assets)
+    test -z "$(git -C "$yss_source" status --porcelain --untracked-files=normal)"
+    yss_binary="$(dirname "$yss_source")/yss"
+    (cd "$yss_source" && CGO_ENABLED=0 go build -trimpath -o "$yss_binary" ./cmd/yss)
+    export_var YSS_NATIVE_SOURCE_ROOT "$yss_source"
+    export_var YSS_NATIVE_BINARY "$yss_binary"
+    export_var YSS_NATIVE_BINARY_SHA256 "$(node -e 'process.stdout.write(require("node:crypto").createHash("sha256").update(require("node:fs").readFileSync(process.argv[1])).digest("hex"))' "$yss_binary")"
+  fi
+fi
+
+step "pnpm ${YSS_CI_PNPM_VERSION}：按 frozen lockfile 安装模板工具依赖"
+if ((!dry_run)); then
+  if [[ "$(pnpm --version 2>/dev/null || true)" != "$YSS_CI_PNPM_VERSION" ]]; then
+    corepack enable
+    corepack prepare "pnpm@${YSS_CI_PNPM_VERSION}" --activate
+  fi
+else
+  echo "+ corepack prepare pnpm@${YSS_CI_PNPM_VERSION} --activate（版本不符时）"
+fi
+run pnpm --dir .template-source/tooling/node install --frozen-lockfile
+
+if ((submodules)); then
+  step "准备原型作者工具链"
+  if ((dry_run)); then
+    echo "+ cp .agents/skills/yss-prototype-stage/assets/shadcn-vue-authoring/{package.json,pnpm-lock.yaml} <临时目录> && pnpm --dir <临时目录> install --frozen-lockfile --ignore-scripts"
+  else
+    prototype_toolchain="$(work_dir)/yss-prototype-author"
+    mkdir -p "$prototype_toolchain"
+    cp .agents/skills/yss-prototype-stage/assets/shadcn-vue-authoring/{package.json,pnpm-lock.yaml} "$prototype_toolchain/"
+    pnpm --dir "$prototype_toolchain" install --frozen-lockfile --ignore-scripts
+    export_var YSS_VUE_TOOLCHAIN "$prototype_toolchain"
+  fi
+fi
+
+if ((python)); then
+  step "Python ${YSS_CI_PYTHON_MINOR}：安装 jsonschema==${YSS_CI_JSONSCHEMA_VERSION}"
+  if ((!dry_run)); then
+    actual_python="$(python3 -c 'import sys; print("%d.%d" % sys.version_info[:2])')"
+    if [[ "$actual_python" != "$YSS_CI_PYTHON_MINOR" ]]; then
+      echo "当前 Python 为 ${actual_python}，需要 ${YSS_CI_PYTHON_MINOR}；请在 runner 镜像或 setup-python 中固定" >&2
+      exit 1
+    fi
+  fi
+  run python3 -m pip install "jsonschema==${YSS_CI_JSONSCHEMA_VERSION}"
+fi
+
+step "环境准备完成"
