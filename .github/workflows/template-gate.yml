@@ -1,0 +1,43 @@
+name: template-gate
+# 薄适配器：只选择模式并转发参数。检查逻辑全部在 scripts/ci-gate，环境准备在 scripts/ci-setup。
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: template-gate-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+jobs:
+  template-gate:
+    name: template-gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ./.github/actions/setup-template
+        with:
+          submodules: 'true'
+          yss-commit: gitlink
+      - name: scripts/ci-gate
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          REPORT_DIR: /tmp/ci-gate
+        run: |
+          if [[ "$EVENT_NAME" == pull_request ]]; then
+            scripts/ci-gate --mode pr --base "$BASE_SHA" --report-dir "$REPORT_DIR"
+          else
+            scripts/ci-gate --mode push --report-dir "$REPORT_DIR"
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ci-gate-report
+          path: /tmp/ci-gate
+          if-no-files-found: warn

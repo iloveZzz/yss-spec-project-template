@@ -1,0 +1,32 @@
+# 薄适配器：只选择模式并转发参数。检查逻辑全部在 scripts/ci-gate，环境准备在 scripts/ci-setup。
+# 本文件只属于模板源仓；实例分发已排除。镜像主版本须与 scripts/ci-setup 的 YSS_CI_NODE_MAJOR 一致，tests/ci-adapters.test.mjs 校验。
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+template-gate:
+  stage: test
+  image: node:24
+  timeout: 30 minutes
+  interruptible: true
+  variables:
+    GIT_DEPTH: "0"
+    YSS_CI_ENV_FILE: /tmp/yss-ci-env
+  script:
+    - scripts/ci-setup --submodules --yss-commit gitlink
+    - set -a; if [ -f "$YSS_CI_ENV_FILE" ]; then . "$YSS_CI_ENV_FILE"; fi; set +a
+    - |
+      if [ "$CI_PIPELINE_SOURCE" = "merge_request_event" ]; then
+        scripts/ci-gate --mode pr --base "$CI_MERGE_REQUEST_DIFF_BASE_SHA" --report-dir /tmp/ci-gate
+      else
+        scripts/ci-gate --mode push --report-dir /tmp/ci-gate
+      fi
+  after_script:
+    # 报告必须写在仓外；GitLab 只收集项目目录内的 artifact，ci-gate 结束后再复制。
+    - mkdir -p ci-gate-report && cp -R /tmp/ci-gate/. ci-gate-report/ || true
+  artifacts:
+    when: always
+    expire_in: 14 days
+    paths:
+      - ci-gate-report/

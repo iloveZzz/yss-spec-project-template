@@ -281,12 +281,35 @@ test("ci-setup：dry-run 只打印计划，覆盖子模块、yss 构建、pnpm �
   const sha = "0123456789abcdef0123456789abcdef01234567";
   const result = spawnSync(CI_SETUP, ["--dry-run", "--submodules", "--yss-commit", sha], { encoding: "utf8", env: { ...process.env, CI: "" } });
   assert.equal(result.status, 0, result.stderr);
-  for (const expected of [/Node 主版本必须是 24/, /repository-mode/, /submodule update --init --depth=1/, new RegExp(sha), /pnpm --dir \.template-source\/tooling\/node install --frozen-lockfile/, /jsonschema==4\.23\.0/, /环境准备完成/]) {
+  for (const expected of [/Node 主版本必须是 24/, /repository-mode/, /submodule update --init --depth=1 -- submodules\/yss-cli\n/, /submodule update --init -- submodules\/yss-harness-design-agent /, new RegExp(sha), /pnpm --dir \.template-source\/tooling\/node install --frozen-lockfile/, /jsonschema==4\.23\.0/, /环境准备完成/]) {
     assert.match(result.stdout, expected);
   }
+  assert.doesNotMatch(result.stdout, /--depth=1 -- submodules\/yss-harness/, "构建 yss 需要 Profile 仓库的完整历史");
+  const shallow = spawnSync(CI_SETUP, ["--dry-run", "--submodules"], { encoding: "utf8", env: { ...process.env, CI: "" } });
+  assert.match(shallow.stdout, /submodule update --init --depth=1 -- submodules\/yss-harness-design-agent /);
+  assert.match(shallow.stdout, /submodule update --init --depth=1 -- submodules\/yss-cli\n/);
   const minimal = spawnSync(CI_SETUP, ["--dry-run", "--no-python"], { encoding: "utf8", env: { ...process.env, CI: "" } });
   assert.equal(minimal.status, 0, minimal.stderr);
   assert.doesNotMatch(minimal.stdout, /jsonschema|submodule update|yss-cli/);
+});
+
+test("ci-setup：--print-versions 打印可直接追加到 GITHUB_OUTPUT 的目标版本，且不要求 CI 环境", () => {
+  const result = spawnSync(CI_SETUP, ["--print-versions"], { encoding: "utf8", env: { ...process.env, CI: "", YSS_CI_NODE_MAJOR: "", YSS_CI_PYTHON_MINOR: "" } });
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stdout, /^node=\d+\npython=\d+\.\d+\n$/);
+  const overridden = spawnSync(CI_SETUP, ["--print-versions"], { encoding: "utf8", env: { ...process.env, CI: "", YSS_CI_NODE_MAJOR: "26", YSS_CI_PYTHON_MINOR: "3.13" } });
+  assert.equal(overridden.stdout, "node=26\npython=3.13\n");
+});
+
+test("ci-setup：Python 必须恰为目标版本，缺失时的补装与 Go 的补装都写进 dry-run 计划", () => {
+  const plan = spawnSync(CI_SETUP, ["--dry-run", "--submodules"], { encoding: "utf8", env: { ...process.env, CI: "" } });
+  assert.equal(plan.status, 0, plan.stderr);
+  assert.match(plan.stdout, /不是 3\.12 时，在 root 容器内经 uv==\d+\.\d+\.\d+ 补装/);
+  assert.match(plan.stdout, /Go：版本取自 submodules\/yss-cli\/go\.mod/);
+  assert.match(plan.stdout, /go\.dev 公布的 sha256/);
+  const source = fs.readFileSync(CI_SETUP, "utf8");
+  assert.doesNotMatch(source, /PYTHON_FLOOR/);
+  assert.match(source, /sha256sum -c/);
 });
 
 test("ci-setup：本机非 dry-run 拒绝执行，非法参数退出 2", () => {
@@ -294,6 +317,10 @@ test("ci-setup：本机非 dry-run 拒绝执行，非法参数退出 2", () => {
   assert.equal(local.status, 2);
   assert.match(local.stderr, /只在 CI 环境运行/);
   assert.equal(spawnSync(CI_SETUP, ["--dry-run", "--yss-commit", "main"], { encoding: "utf8" }).status, 2);
+  const pinned = spawnSync(CI_SETUP, ["--dry-run", "--yss-commit", "gitlink"], { encoding: "utf8", env: { ...process.env, CI: "" } });
+  assert.equal(pinned.status, 0, pinned.stderr);
+  const gitlink = spawnSync("git", ["-C", ROOT, "rev-parse", "HEAD:submodules/yss-cli"], { encoding: "utf8" }).stdout.trim();
+  assert.match(pinned.stdout, new RegExp(`从固定提交 ${gitlink} 构建 yss`));
   assert.equal(spawnSync(CI_SETUP, ["--bogus"], { encoding: "utf8" }).status, 2);
   assert.equal(spawnSync("bash", ["-n", CI_SETUP], { encoding: "utf8" }).status, 0);
 });

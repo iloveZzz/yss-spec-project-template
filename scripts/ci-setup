@@ -5,9 +5,13 @@ set -euo pipefail
 
 YSS_CI_NODE_MAJOR="${YSS_CI_NODE_MAJOR:-24}"
 YSS_CI_PNPM_VERSION="${YSS_CI_PNPM_VERSION:-10.15.0}"
+# 验证预检要求 Python 恰为该版本；GitHub 用 setup-python 供给，缺失时在 CI 的 root 容器里经 uv 补装。
 YSS_CI_PYTHON_MINOR="${YSS_CI_PYTHON_MINOR:-3.12}"
+YSS_CI_UV_VERSION="${YSS_CI_UV_VERSION:-0.13.0}"
 YSS_CI_JSONSCHEMA_VERSION="${YSS_CI_JSONSCHEMA_VERSION:-4.23.0}"
 YSS_CLI_REPOSITORY="${YSS_CLI_REPOSITORY:-https://github.com/iloveZzz/yss-cli.git}"
+# 都是公开仓库、gitlink 固定的提交。yss-cli 供 read-only-intake 等检查读取固定的 CLI 源码，历史约 1GB，永远只浅克隆。
+CLI_SUBMODULE=submodules/yss-cli
 PROFILE_SUBMODULES=(
   submodules/yss-harness-design-agent
   submodules/yss-harness-backend-agent
@@ -16,12 +20,14 @@ PROFILE_SUBMODULES=(
 
 usage() {
   cat <<'EOF'
-用法: scripts/ci-setup [--no-python] [--submodules] [--yss-commit <40位SHA>] [--dry-run]
+用法: scripts/ci-setup [--no-python] [--submodules] [--yss-commit <40位SHA>|gitlink] [--dry-run]
+       scripts/ci-setup --print-versions
   默认          校验 Node 主版本、确认 template-source、按 frozen lockfile 安装 pnpm 依赖、安装 Python schema 依赖
   --no-python   跳过 Python schema 依赖
   --submodules  初始化三个公开固定的 Profile 子模块，并准备原型作者工具链
-  --yss-commit  从固定提交构建 yss 二进制（需要 go）
+  --yss-commit  从固定提交构建 yss 二进制（需要 go）；写 gitlink 表示取本仓 submodules/yss-cli 的固定提交
   --dry-run     只打印计划，不执行
+  --print-versions  打印 node= 与 python= 的目标版本（KEY=value，可直接追加到 $GITHUB_OUTPUT），供平台适配器选择运行时，不重复写版本号
 环境变量:
   YSS_CI_ENV_FILE  需要传给后续步骤的变量按 NAME=value 追加到该文件
                    （GitHub 传 $GITHUB_ENV；GitLab 在后续命令前 set -a; . 该文件）
@@ -42,14 +48,19 @@ while (($#)); do
       yss_commit="${1:-}"
       ;;
     --dry-run) dry_run=1 ;;
+    --print-versions) printf 'node=%s\npython=%s\n' "$YSS_CI_NODE_MAJOR" "$YSS_CI_PYTHON_MINOR"; exit 0 ;;
     --help | -h) usage; exit 0 ;;
     *) echo "未知参数: $1" >&2; usage >&2; exit 2 ;;
   esac
   shift
 done
 
+if [[ "$yss_commit" == gitlink ]]; then
+  yss_commit="$(git -C "$(dirname "${BASH_SOURCE[0]}")/.." rev-parse HEAD:submodules/yss-cli 2>/dev/null || true)"
+  [[ -n "$yss_commit" ]] || { echo "无法读取 submodules/yss-cli 的 gitlink" >&2; exit 2; }
+fi
 if [[ -n "$yss_commit" && ! "$yss_commit" =~ ^[a-f0-9]{40}$ ]]; then
-  echo "--yss-commit 必须是 40 位小写十六进制的完整提交 SHA" >&2
+  echo "--yss-commit 必须是 40 位小写十六进制的完整提交 SHA，或写 gitlink" >&2
   exit 2
 fi
 if ((!dry_run)) && [[ -z "${CI:-}" && "${YSS_CI_ALLOW_LOCAL:-}" != "1" ]]; then
@@ -73,6 +84,55 @@ work_dir() {
   if [[ -n "${RUNNER_TEMP:-}" ]]; then echo "$RUNNER_TEMP"; else mktemp -d; fi
 }
 
+is_root() { [[ "$(id -u)" == 0 ]]; }
+fail() { echo "$*" >&2; exit 1; }
+# 只在 CI 的 root 容器（apt 系）里补装缺失的工具；其它环境要求 runner 镜像自带。
+can_provision() { is_root && command -v apt-get >/dev/null; }
+apt_install() {
+  apt-get update -qq
+  DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends "$@"
+}
+python_minor() { python3 -c 'import sys; print("%d.%d" % sys.version_info[:2])' 2>/dev/null || true; }
+
+ensure_python() {
+  [[ "$(python_minor)" == "$YSS_CI_PYTHON_MINOR" ]] && return 0
+  can_provision || fail "需要 Python ${YSS_CI_PYTHON_MINOR}（当前 $(python_minor)）；请在 runner 镜像或 setup-python 中提供"
+  command -v python3 >/dev/null && python3 -m pip --version >/dev/null 2>&1 || apt_install python3 python3-pip
+  PIP_BREAK_SYSTEM_PACKAGES=1 python3 -m pip install -q "uv==${YSS_CI_UV_VERSION}"
+  uv python install "$YSS_CI_PYTHON_MINOR"
+  ln -sf "$(uv python find "$YSS_CI_PYTHON_MINOR")" /usr/local/bin/python3
+  hash -r # 清掉已缓存的 /usr/bin/python3，否则下面的检查仍看到旧解释器
+  [[ "$(python_minor)" == "$YSS_CI_PYTHON_MINOR" ]] || fail "补装后 python3 仍不是 ${YSS_CI_PYTHON_MINOR}"
+}
+
+# Go 版本取自固定的 yss-cli 源码（go.mod 的 go 指令），不在这里再写一份；校验值取自 go.dev 公布的发布清单。
+ensure_go() {
+  local required have arch file sha tmp
+  required="${YSS_CI_GO_VERSION:-$(sed -n 's/^go \([0-9][0-9.]*\)$/\1/p' submodules/yss-cli/go.mod | head -n1)}"
+  [[ -n "$required" ]] || fail "无法从 submodules/yss-cli/go.mod 读出所需 Go 版本"
+  if command -v go >/dev/null; then
+    have="$(go env GOVERSION | sed 's/^go//')"
+    [[ "$(printf '%s\n%s\n' "$required" "$have" | sort -V | head -n1)" == "$required" ]] && return 0
+  fi
+  can_provision || fail "需要 Go ${required} 或更新（当前 ${have:-未安装}）；请在 runner 镜像或 setup-go 中提供"
+  case "$(uname -m)" in x86_64) arch=amd64 ;; aarch64 | arm64) arch=arm64 ;; *) fail "不支持的架构 $(uname -m)" ;; esac
+  read -r file sha < <(node -e '
+    fetch("https://go.dev/dl/?mode=json&include=all").then((r) => r.json()).then((releases) => {
+      const release = releases.find((item) => item.version === "go" + process.argv[1]);
+      const entry = release?.files.find((f) => f.os === "linux" && f.arch === process.argv[2] && f.kind === "archive");
+      if (!entry) { console.error("go.dev 没有 go" + process.argv[1] + " 的 linux/" + process.argv[2] + " 发布"); process.exit(1); }
+      console.log(entry.filename, entry.sha256);
+    });' "$required" "$arch")
+  [[ -n "${file:-}" && -n "${sha:-}" ]] || fail "无法从 go.dev 取得 go${required} 的发布信息"
+  tmp="$(mktemp -d)"
+  curl -fsSL -o "$tmp/$file" "https://go.dev/dl/$file"
+  echo "$sha  $tmp/$file" | sha256sum -c - >/dev/null || fail "Go 压缩包校验和不匹配"
+  rm -rf /usr/local/go && tar -C /usr/local -xzf "$tmp/$file"
+  ln -sf /usr/local/go/bin/go /usr/local/bin/go && ln -sf /usr/local/go/bin/gofmt /usr/local/bin/gofmt
+  hash -r
+  rm -rf "$tmp"
+}
+
 step "Node 主版本必须是 ${YSS_CI_NODE_MAJOR}（由 runner 镜像或 setup-node 提供）"
 if ((!dry_run)); then
   actual_node="$(node -p 'process.versions.node.split(".")[0]')"
@@ -87,8 +147,21 @@ if ((!dry_run)); then test "$(scripts/repository-mode)" = template-source; else 
 
 if ((submodules)); then
   step "初始化公开固定子模块"
-  run git submodule sync -- "${PROFILE_SUBMODULES[@]}"
-  run git -c protocol.version=2 submodule update --init --depth=1 -- "${PROFILE_SUBMODULES[@]}"
+  # 构建 yss 时 Bundle 工具要读 source-lock 固定的 Profile 历史提交，所以此时 Profile 仓库（各约 10MB）完整克隆；否则浅克隆即可。
+  depth_args=(--depth=1)
+  [[ -z "$yss_commit" ]] || depth_args=()
+  run git submodule sync -- "$CLI_SUBMODULE" "${PROFILE_SUBMODULES[@]}"
+  run git -c protocol.version=2 submodule update --init --depth=1 -- "$CLI_SUBMODULE"
+  run git -c protocol.version=2 submodule update --init ${depth_args[@]+"${depth_args[@]}"} -- "${PROFILE_SUBMODULES[@]}"
+fi
+
+if ((submodules)); then
+  step "Go：版本取自 submodules/yss-cli/go.mod"
+  if ((dry_run)); then
+    echo "+ go 缺失或低于 go.mod 的 go 指令时，在 root 容器内按 go.dev 公布的 sha256 安装"
+  else
+    ensure_go
+  fi
 fi
 
 if [[ -n "$yss_commit" ]]; then
@@ -140,13 +213,13 @@ fi
 
 if ((python)); then
   step "Python ${YSS_CI_PYTHON_MINOR}：安装 jsonschema==${YSS_CI_JSONSCHEMA_VERSION}"
-  if ((!dry_run)); then
-    actual_python="$(python3 -c 'import sys; print("%d.%d" % sys.version_info[:2])')"
-    if [[ "$actual_python" != "$YSS_CI_PYTHON_MINOR" ]]; then
-      echo "当前 Python 为 ${actual_python}，需要 ${YSS_CI_PYTHON_MINOR}；请在 runner 镜像或 setup-python 中固定" >&2
-      exit 1
-    fi
+  if ((dry_run)); then
+    echo "+ python3 不是 ${YSS_CI_PYTHON_MINOR} 时，在 root 容器内经 uv==${YSS_CI_UV_VERSION} 补装"
+  else
+    ensure_python
   fi
+  # 补装后的解释器不受 PEP 668 限制；系统 Python 在一次性 CI 容器内允许写入，本机不放开。
+  if [[ -n "${CI:-}" ]]; then export PIP_BREAK_SYSTEM_PACKAGES=1; fi
   run python3 -m pip install "jsonschema==${YSS_CI_JSONSCHEMA_VERSION}"
 fi
 
