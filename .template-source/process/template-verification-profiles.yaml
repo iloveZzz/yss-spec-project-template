@@ -135,6 +135,17 @@ profiles:
           - "tests/instance-metadata.test.mjs"
         depends_on: []
         failure_mode: "实例元数据对运行时、投影根或平台技能声明的校验放行了不一致的声明，或拒绝了已登记的运行时"
+      - id: check.design-docs
+        run: "node --test tests/design-docs.test.mjs"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
+          - ".template-source/contracts/spec-delta-rebaseline-design.md"
+          - ".template-source/contracts/governance-core-layering-design.md"
+          - ".template-source/contracts/harness-hardening-v1.md"
+          - "tests/design-docs.test.mjs"
+        depends_on: []
+        failure_mode: "加固轮次的设计文档缺前置元数据、链接断开、缺决策记录，或在 proposed 状态下冒充已签署"
       - id: check.runtime-storage
         group: runtime-storage
         inputs_complete: true
@@ -1327,6 +1338,9 @@ routing:
       - tests/explicit-invocation.test.mjs
       - tests/process-glossary.test.mjs
       - .template-spec/process/process-glossary.md
+      - tests/design-docs.test.mjs
+      - .template-source/contracts/spec-delta-rebaseline-design.md
+      - .template-source/contracts/governance-core-layering-design.md
     groups:
       - feature-assets
   - patterns:
@@ -4758,6 +4772,14 @@ supplemental_checks:
     depends_on: []
     when: template-source
     task_id: supplemental.process-glossary
+    source_requirement: committed
+  - id: check.design-docs-supplemental
+    run: node --test tests/design-docs.test.mjs
+    group: feature-assets
+    gate_ids: [check.verification-lifecycle]
+    depends_on: []
+    when: template-source
+    task_id: supplemental.design-docs
     source_requirement: committed
   - id: check.native-context-retirement
     run: node --test tests/native-context-retirement.test.mjs
