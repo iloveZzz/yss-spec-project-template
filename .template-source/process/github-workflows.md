@@ -38,7 +38,7 @@
 
 fast 选中的部分检查需要原生 `yss` 二进制，所以两个平台都用 `scripts/ci-setup --yss-commit gitlink`，从本仓 `submodules/yss-cli` 固定的提交构建并导出 `YSS_NATIVE_BINARY`。环境准备依赖的子模组都是公开仓库，匿名可读，GitLab runner 不需要令牌或镜像。拉取子模组失败时 `scripts/ci-setup` 以非零退出，`template-gate` 失败并在日志中给出原因，不得跳过该步骤后报告通过。
 
-已知限制：`tests/verification-execution.test.mjs` 中的两个测试（超时后的 `SIGKILL` 观察、`finally` 清理）按 macOS 行为编写，在 Linux runner 上稳定失败；`yss-cli` 的原生验证也只对 darwin/arm64 做资格。因此在这两个测试修复或平台策略确定之前，改动验证基础设施（会选中该文件）的 PR 在 Linux 的 `template-gate` 上会失败，普通技能与文档类改动不受影响。
+Linux runner 上的两个测试曾因对 macOS 行为的隐性假设而失败，已修复：超时测试显式 `exec`，使忽略 `SIGTERM` 的进程成为 `sh -c` 的直接子进程；候选、发布与 `qualified-gates` 的“旧运行时残留”后置检查改用 `.template-source/scripts/lib/legacy-runtime-scan.mjs`，不再依赖外部 ripgrep。`yss-cli` 的原生验证仍只对 darwin/arm64 做资格。
 
 报告与日志写在仓外的 `/tmp/ci-gate`，两个平台都作为构建产物保留；两份报告的步骤名单、各步命令与退出码应一致。检查期间仓库出现任何新增改动都会使本轮失败。
 

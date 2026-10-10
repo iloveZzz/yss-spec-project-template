@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
 import {spawnSync} from 'node:child_process';
+import {fileURLToPath} from 'node:url';
 import {compileDeliveryPreparationTasks} from './verification-delivery-run.mjs';
 import {compileVerificationCheck} from './verification-gates.mjs';
 
@@ -210,13 +211,13 @@ export function addVerificationExecutionTasks(plan,{root,repositoryMode='templat
     const files=reference?selected:[...new Set([...selected,...extras])];
     files.forEach((file,index)=>{const suffix=hash(file).slice(0,16),id=`check.syntax.${suffix}`,taskId=`syntax.${suffix}`;append({id,task_id:reference?`${taskId}.${index}`:taskId,kind:'syntax',group:'postchecks',command:`${quote(process.execPath)} --check ${quote(file)}`,gate_ids:['check.verification-governance-syntax'],depends_on:[],...daily?{selection_reason:`input-match:${file} / ${(plan.changed_files||[]).join(', ')} -> 当前解析语法错误`}:{}});});
     const roots=daily?[]:['scripts','.template-source/scripts'].filter(ref=>fs.existsSync(path.join(root,ref)));
-    const runtime=['ru','by'].join('');
-    for(const [id,args] of daily?[]:[
-      ['check.verification-post-legacy-runtime-call',['-n',`^#!.*${runtime}|\\b${runtime}\\b`,...roots,'--glob','!*.md']],
-      ['check.verification-post-legacy-runtime-path',['--files',...roots,'--glob','*.rb']],
+    // 旧运行时扫描用 Node 实现，不依赖外部 ripgrep；同样的语义与退出码（有匹配即失败）。
+    const scanner=fileURLToPath(new URL('./legacy-runtime-scan.mjs',import.meta.url));
+    for(const [id,kind] of daily?[]:[
+      ['check.verification-post-legacy-runtime-call','call'],
+      ['check.verification-post-legacy-runtime-path','path'],
     ]) {
-      const code=`const r=require('node:child_process').spawnSync('rg',${JSON.stringify(args)},{encoding:'utf8'});process.stdout.write(r.stdout||'');process.stderr.write(r.stderr||'');process.exit(r.status===1?0:1);`;
-      append({id,task_id:id.replace('check.verification-',''),kind:'postcheck',group:'postchecks',gate_ids:['check.verification-governance-syntax'],depends_on:[],command:`${quote(process.execPath)} -e ${quote(code)}`});
+      append({id,task_id:id.replace('check.verification-',''),kind:'postcheck',group:'postchecks',gate_ids:['check.verification-governance-syntax'],depends_on:[],command:`${quote(process.execPath)} ${quote(scanner)} ${kind}${roots.map(root=>` ${quote(root)}`).join('')}`});
     }
   }
   if(!reference&&!daily)for(const raw of plan.supplemental_checks||[]){
