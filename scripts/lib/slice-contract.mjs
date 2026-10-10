@@ -2,6 +2,7 @@ import { assertImplementationTicket, assertSliceBusinessSources, businessTicketV
 import {validateExistingUiBaseline} from './existing-ui-baseline.mjs';
 import {sliceRepositories} from './slice-repositories.mjs';
 import { sliceCheckApplicability } from './slice-applicability.mjs';
+import { validImplementationPath } from './implementation-path-policy.mjs';
 import {hasLocalImplementationInputs} from './lifecycle-progression.mjs';
 import fs, {validationMemo} from './validation-phase.mjs';
 import path from 'node:path';
@@ -174,8 +175,10 @@ export function normalizeSliceContract(document, options = {}) {
   requireKeys(refs,[extension.api?'openapi_freeze':'no_api_impact_record'],'API 依据');
   requireThat(!refs[extension.api?'no_api_impact_record':'openapi_freeze'],'API 影响结论冲突');
   for (const p of scope.allowed_write_paths) safeWritePath(p);
-  requireThat(!scope.project_roots.some(p=>/^app\/(backend|frontend)(\/|$)/.test(p)), '禁止 app/backend 或 app/frontend');
-  if (scope.implementation_path_policy !== 'external-repository-native') for(const p of scope.project_roots) requireThat(/^apps\/(backend|frontend)\/[^/]+/.test(p),'Harness 工程必须落入具体 project 目录');
+  if (scope.implementation_path_policy !== 'external-repository-native') for(const p of scope.project_roots) {
+    safeWritePath(p);
+    requireThat(validImplementationPath(p),'Harness 工程必须使用已登记的具体项目相对路径');
+  }
   sliceAcceptanceText(raw,sources);
   const unitIds=new Set(), usedChecks=new Set(), covered=new Set();
   const expected=Object.keys(raw.acceptance);

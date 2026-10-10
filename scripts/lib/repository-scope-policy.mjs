@@ -85,7 +85,7 @@ export function violationRepositoryScope(record = {}) {
 function gitSubmoduleRecordViolation(record) {
   const projectRoot = normalizeSlash(record.project_root);
   if (!projectRoot || !validImplementationPath(`${projectRoot}/`)) {
-    return `git-submodule project_root must be a concrete apps/backend/<project>/ or apps/frontend/<project>/ path: ${pathViolation(record.project_root || "") ?? "missing"}`;
+    return `git-submodule project_root must be a concrete registered relative path: ${pathViolation(record.project_root || "") ?? "missing"}`;
   }
   if (!isDeclared(record.gitlink_path)) {
     return "git-submodule gitlink_path is required";
@@ -150,7 +150,7 @@ function harnessAppsRecordViolation(record) {
   if (foreign) return foreign;
   const projectRoot = normalizeSlash(record.project_root);
   if (projectRoot && !validImplementationPath(`${projectRoot}/`)) {
-    return `harness-apps project_root must be a concrete apps/<kind>/<project>/ path: ${pathViolation(record.project_root)}`;
+    return `harness-apps project_root must be a concrete registered relative path: ${pathViolation(record.project_root)}`;
   }
   return null;
 }
@@ -409,8 +409,8 @@ export function inspectWorkingTreeScope(repoRoot, record = {}) {
   let violation = null;
   if (declaredScope === "harness-apps" && actualScope === "git-submodule") {
     violation = "工作树存在 gitlink / .gitmodules，不得登记为 harness-apps";
-  } else if (declaredScope === "external-repository" && actualScope === "git-submodule" && projectRoot.startsWith("apps/")) {
-    violation = "工作树存在 apps/ gitlink，不得登记为 external-repository";
+  } else if (declaredScope === "external-repository" && actualScope === "git-submodule") {
+    violation = "工作树存在真实 gitlink，不得登记为 external-repository";
   } else if (declaredScope === "git-submodule" && actualScope !== "git-submodule") {
     violation = "工作树不是 gitlink，不得登记为 git-submodule";
   }

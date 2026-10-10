@@ -16,7 +16,7 @@
 
 ## 1.1 Harness 内实现项目路径策略
 
-当前 Harness 明确承载运行时代码时，统一使用以下多项目布局：
+当前 Harness 明确承载运行时代码时，推荐以下多项目布局；最终位置以已确认的实现仓登记和批准写范围为准：
 
 ```text
 apps/
@@ -24,8 +24,8 @@ apps/
 └── frontend/<frontend-project>/
 ```
 
-- `apps/backend/` 和 `apps/frontend/` 是项目容器，不是可生成的工程项目根；后端、前端项目必须分别位于 `apps/backend/<project>/`、`apps/frontend/<project>/`，多个项目按 `<project>` 目录并列。
-- `app/backend/`、`app/frontend/` 及其所有子路径均禁止作为工程生成目标；单复数差异不能被视为等价路径。
+- `apps/backend/` 和 `apps/frontend/` 是项目容器，不是可生成的工程项目根；默认将后端、前端项目分别放在 `apps/backend/<project>/`、`apps/frontend/<project>/`，多个项目按 `<project>` 目录并列。
+- `app/backend/`、`app/frontend/` 或其他布局可按真实工程位置登记；路径名称本身不授予写权限，仍须核验当前项目根和批准范围。
 - `allowed_write_paths`、`expected_evidence_files` 和生成器输出位置必须能回指具体项目目录；直接放开 `apps/backend/` 或 `apps/frontend/` 属于路径策略违规。
 - 外部实现仓库不要求采用 Harness 的 `apps/` 布局，但仍必须登记该仓库内的实际项目根路径；跨仓库切片的写路径不得用本 Harness 的占位路径冒充真实路径。
 
@@ -64,7 +64,7 @@ apps/
 
 强制规则：
 
-- `layout_policy` / `implementation_path_policy` 必须是 `git-submodule-harness-apps`。挂载路径仍须是具体的 `apps/backend/<project>/` 或 `apps/frontend/<project>/`；容器根和 `app/` 单数路径一律阻断。
+- `layout_policy` / `implementation_path_policy` 必须是 `git-submodule-harness-apps`。挂载路径必须是已登记、已批准的具体项目相对根；默认布局为 `apps/backend/<project>/` 或 `apps/frontend/<project>/`，也可使用其他已登记布局。`apps/backend/` 和 `apps/frontend/` 容器根不能代替具体项目根。
 - 三个 `repository_scope` 必须在登记字段、Git 身份和写路径上可区分：`git-submodule` 强制 `git_url`、`gitmodules_name`、`gitlink_path`（等于 `project_root`）、`git_entry_mode: 160000`、`superproject_git_url`、`checkout_state`，并分别登记默认分支、CI、验证命令、回滚点（子仓 SHA + 父仓 gitlink SHA）；`harness-apps` 与 `external-repository` 禁止填写这些 gitlink 身份字段（可填 `不适用`）。缺 `git_entry_mode` 不得默认为普通目录。
 - 子仓 `git_url` 必须与 `superproject_git_url` 不同。登记后必须用工作树对照（`git ls-files --stage`、`.gitmodules`、`inspectWorkingTreeScope`）：声明 `harness-apps` 但路径是 gitlink，或声明 `git-submodule` 但工作树只是普通目录 / 复制源码，均视为误路由并阻断。
 - 只允许 `git submodule add` / `git submodule update --init` 形成 gitlink；禁止把实现仓库源码 copy、subtree 或普通 clone 进 Harness 后冒充 submodule。

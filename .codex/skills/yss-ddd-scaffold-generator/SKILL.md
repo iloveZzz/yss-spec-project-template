@@ -58,7 +58,7 @@ description: 用于生成完整的 YSS DDD 多模块后端脚手架。当用户�
 - 先在生命周期批准的脚手架受控生成合同下生成骨架，再做业务化定制；不要直接把脚手架当最终代码交付。
 - 永不生成 `User CRUD` 示例；`--with-example` 已禁用，业务代码必须按批准的 Slice Implementation Contract 逐切片实现。
 - 输出目录必须显式指定，生成器严格 `initialize-only`；目标工程目录必须不存在。已有工程、非空目标、`--force`、旧项目迁移和当前模板升级均返回 `unsupported`。旧项目继续按原工程维护；现代化或未来同一 Target Profile 模板升级须另行设计、批准，当前不提供该执行能力。
-- Harness 内多项目使用 `apps/backend/<project>/`，`apps/backend/` 只作输出父容器；`app/backend/`、`app/frontend/` 及其子路径一律拒绝。
+- Harness 内默认使用 `apps/backend/<project>/`，`apps/backend/` 只作输出父容器；其他布局按合同中的实际项目根和写范围生成。
 - `git-submodule` gitlink、空挂载点和 detached HEAD 不作为普通目录覆盖或 rename，`--force` 不解除边界。`--output-dir` 指向 detached HEAD 子仓时不得 mkdir、staging 或生成；工程准备须先初始化 submodule 并在子仓附加分支工作树内生成。维护生成器时读取 [守卫顺序](references/generator-maintenance.md)。
 - 生成工程基线由本 Skill 的 `references/engineering-baseline.md` 持有并绑定摘要，不是独立 Skill。后续实现的专项路由见 [分层 Skill 路由](references/layer-skill-routing.md)，由实现合同编译器按批准切片选择实际命中的技能。
 - 生成后的后端工程必须使用项目根目录 `./mvnw ...` 执行构建、测试、运行和 CI 验证；不得在 README、实施记录、Ticket、Review 或 Release 中默认写裸 `mvn ...`。既有仓库确实无法使用 wrapper 时，必须记录受控例外。

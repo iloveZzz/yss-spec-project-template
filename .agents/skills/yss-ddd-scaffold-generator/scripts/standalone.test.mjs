@@ -52,6 +52,21 @@ test("独立 MVC 使用相同输入规则生成三模块，不初始化治理实
   await assert.rejects(stat(path.join(project, ".git")), { code: "ENOENT" });
 });
 
+test("DDD 与 MVC 可在明确选择的 Harness 自定义布局生成，仍拒绝覆盖", async t => {
+  const repositoryRoot=path.resolve(scripts,"../../../..");
+  const root=await mkdtemp(path.join(repositoryRoot,".scaffold-layout-"));
+  t.after(()=>rm(root,{recursive:true,force:true}));
+  for(const skill of ["yss-ddd-scaffold-generator","yss-layered-mvc-scaffold-generator"]) {
+    const entry=path.resolve(scripts,"../../",skill,"scripts/generate_scaffold.mjs");
+    const output=path.join(root,skill,"app/backend");
+    const generated=spawnSync(process.execPath,[entry,...args(output)],{encoding:"utf8"});
+    assert.equal(generated.status,0,generated.stderr);
+    const pom=path.join(output,"demo-service/pom.xml"),before=await readFile(pom);
+    assert.notEqual(spawnSync(process.execPath,[entry,...args(output)],{encoding:"utf8"}).status,0);
+    assert.deepEqual(await readFile(pom),before);
+  }
+});
+
 test("独立一键入口保留骨架并记录缺少 Maven settings 的真实待验证状态", async t => {
   for (const skill of ["yss-ddd-scaffold-generator", "yss-layered-mvc-scaffold-generator"]) {
     const root = await mkdtemp(path.join(os.tmpdir(), "yss-standalone-verify-"));

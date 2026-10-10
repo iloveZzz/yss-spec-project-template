@@ -28,15 +28,14 @@ allowed_statuses: [draft, blocked, ready-for-lifecycle-review]
 forbidden_statuses: [approved, ready-for-agent, completed]
 implementation_path_policy:
   applies_to: harness-resident-runtime-code
+  # 默认布局；实际工程位置以登记和批准写范围为准。
   project_roots:
     backend: apps/backend/<project>/
     frontend: apps/frontend/<project>/
   container_roots:
     - apps/backend/
     - apps/frontend/
-  forbidden_roots:
-    - app/backend/
-    - app/frontend/
+  forbidden_roots: []
   policies:
     - harness-apps-multi-project
     - external-repository-native
@@ -56,7 +55,7 @@ implementation_path_policy:
     force_overlay_regular_dir_path: blocked
   rules:
     - "Harness 内每个运行时工程必须位于具体 project 目录，不能直接写入 apps/backend/ 或 apps/frontend/。"
-    - "app/backend/、app/frontend/ 及其子路径不是兼容别名，必须阻断。"
+    - "其他布局按已登记的具体项目相对路径和批准写范围核验，不按目录拼写阻断。"
     - "外部实现仓库使用登记的真实项目根路径，不用 Harness 容器路径冒充。"
     - "git-submodule 挂载路径使用 git-submodule-harness-apps，必须是 gitlink 且分别登记；不得登记为 harness-apps。"
     - "空 gitlink、detached HEAD、--force 覆盖挂载点不得当成普通目录；也不得在 detached HEAD 工作树内当普通目录写入。"

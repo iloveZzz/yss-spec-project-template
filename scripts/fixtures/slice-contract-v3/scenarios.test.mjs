@@ -26,6 +26,30 @@ function fixture() {
 }
 export {fixture};
 
+test('registered Harness layouts and external native roots keep scope checks',()=>{
+ for(const project of ['app/backend/project1','app/frontend/project1','services/billing','apps/backend/project1']) {
+  const f=fixture();try {
+   f.contract.scope.implementation_path_policy='harness-apps-multi-project';
+   f.contract.scope.project_roots=[project];f.contract.verification.test.cwd=project;
+   assert.deepEqual(normalizeSliceContract(f.contract,{root:f.root}).common.project_roots,[project]);
+   f.contract.work_units[0].project_root='unregistered';
+   assert.throws(()=>normalizeSliceContract(f.contract,{root:f.root}),/登记的 project_root/);
+  }finally{f.cleanup();}
+ }
+ for(const project of ['apps/backend/','services/../billing','services/*','services\\billing','/services/billing']) {
+  const f=fixture();try {
+   f.contract.scope.implementation_path_policy='harness-apps-multi-project';
+   f.contract.scope.project_roots=[project];f.contract.verification.test.cwd=project;
+   assert.throws(()=>normalizeSliceContract(f.contract,{root:f.root}),/相对路径|具体项目/);
+  }finally{f.cleanup();}
+ }
+ const f=fixture();try {
+  assert.deepEqual(normalizeSliceContract(f.contract,{root:f.root}).common.project_roots,[f.root]);
+  f.contract.scope.project_roots=['.'];f.contract.verification.test.cwd='.';
+  assert.deepEqual(normalizeSliceContract(f.contract,{root:f.root}).common.project_roots,['.']);
+ }finally{f.cleanup();}
+});
+
 test('v3 inherits constraints once and refuses task scope expansion and omitted acceptance',()=>{
   const f=fixture();try {
     const n=normalizeSliceContract(f.contract,{root:f.root});

@@ -329,7 +329,7 @@ def main() -> int:
         )
         require(not (schema_v1_root / "schemav1-service").exists(), "schema v1 拒绝后不得留下生成目录")
 
-        forbidden_harness_output = run_generator(
+        unapproved_harness_output = run_generator(
             "--project-name",
             "forbidden-service",
             "--base-package",
@@ -340,9 +340,9 @@ def main() -> int:
             str(temp_root / "forbidden-contract.json"),
         )
         require(
-            forbidden_harness_output.returncode != 0
-            and "禁止使用单数 app/backend" in (forbidden_harness_output.stdout + forbidden_harness_output.stderr),
-            "脚手架不得把 app/backend 作为工程输出路径",
+            unapproved_harness_output.returncode != 0
+            and "必须提供已持久化的结构化脚手架合同" in (unapproved_harness_output.stdout + unapproved_harness_output.stderr),
+            "app/backend 输出仍须具有当前脚手架合同",
         )
 
         stale_contract_root = temp_root / "stale-contract-output"

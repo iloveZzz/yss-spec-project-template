@@ -15,6 +15,7 @@ shared.push('scripts/spec-baseline','scripts/lib/spec-baseline.mjs','.template-s
 shared.push('scripts/fixtures/spec-baseline/fixture.mjs','scripts/fixtures/spec-baseline/package.mjs');
 shared.push('scripts/lib/user-decision-reuse.mjs','scripts/lib/user-decision.mjs','.template-spec/process/schemas/user-decision.schema.json','.template-spec/process/schemas/review-bundle.schema.json','scripts/fixtures/user-decision/build-fixture.mjs','scripts/lib/command-runner.mjs','scripts/lib/json-schema.mjs','scripts/lib/context-reconciliation.mjs','scripts/lib/source-context-snapshot.mjs','scripts/verify-context-reconciliation');
 shared.push('scripts/lib/decision-continuation.mjs');
+shared.push('scripts/lib/implementation-path-policy.mjs','scripts/lib/repository-scope-policy.mjs');
 shared.push('scripts/lib/implementation-candidate-current.mjs','scripts/lib/drift-report.mjs','scripts/lib/content-identity.mjs');
 shared.push('scripts/lib/plan-review-control.mjs','scripts/plan-review-control','scripts/lib/plan-spec-entry.mjs','.template-spec/process/schemas/plan-review-control.schema.json');
 shared.push('scripts/lib/approval-record.mjs','scripts/lib/approval-current.mjs','scripts/lib/approval-record-io.mjs','scripts/lib/approval-consumption.mjs','scripts/lib/approval-checkpoint-discovery.mjs','scripts/lib/lifecycle-controls.mjs','scripts/lib/review-capabilities.mjs','scripts/lib/review-package.mjs','scripts/prepare-review-package','.template-spec/templates/review-bundle-template.yaml','.template-spec/templates/approval-record-template.yaml');

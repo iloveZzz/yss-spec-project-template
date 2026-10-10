@@ -237,11 +237,6 @@ export async function validateContract(options, skillId, architectureProfile, pl
 
 async function validateOutputLayout(outputDir, projectName) {
   const target = path.join(path.resolve(outputDir), projectName);
-  const relative = path.relative(REPOSITORY_ROOT, path.resolve(outputDir));
-  if (!relative.startsWith("..") && !path.isAbsolute(relative)) {
-    const parts = relative.split(path.sep).filter(Boolean);
-    if (!(parts.length === 2 && parts[0] === "apps" && parts[1] === "backend")) fail("Harness 内后端脚手架输出父目录必须是 apps/backend");
-  }
   const gitRoot = findGitRoot(target) || findGitRoot(outputDir) || REPOSITORY_ROOT;
   const violation = gitSubmoduleScaffoldViolation(gitRoot, path.resolve(outputDir), projectName, { force: false }) || overlayMountViolation(gitRoot, target, { force: true });
   if (violation) fail(violation);

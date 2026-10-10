@@ -5,7 +5,7 @@
 ## 优先流程
 
 1. 确认服务级 `scaffold_request_id`、已通过 `gate.backend-architecture-platform-approved` 的 `domain-driven` 架构与精确 Spring Boot 版本选择及 digest、项目名、基础包名、Maven 项目坐标、父 POM GAV、YSS Components BOM 版本、输出目录和批准 Profile。Java `base_package` 与 Maven `group_id` 是两个独立输入，不得相互推导；脚手架发生在 Ticket 正式化前，不使用 `slice_id` 伪造切片身份。
-   Harness 内输出目录必须是 `apps/backend/` 容器，生成器再以 `project_name` 创建 `apps/backend/<project>/`；禁止使用 `app/backend/`、`app/frontend/` 或把 `apps/backend/` 之外的容器根当作后端项目根。
+   Harness 内默认以 `apps/backend/` 为输出父容器，生成器以 `project_name` 创建具体项目；其他父目录按合同中的实际项目根和写范围核验。
 2. 按 [Maven settings 与工程检查](engineering-checks.md) 核验已有显式配置或用户目录的 settings；缺少可用配置时先询问用户文件路径或必要仓库信息。优先运行 `node scripts/generate_and_verify_scaffold.mjs`，在同一个受控工作流中生成骨架并执行真实 Maven 验证。`generate_scaffold.mjs` 只是底层生成原语，单独返回 0 不代表脚手架完成。
 3. 检查生成的模块名、POM、机械启动入口、基础配置文件和包路径。
 4. 受控工作流必须在生成项目根目录实际执行 `./mvnw validate`、`./mvnw test` 和 `./mvnw package`；三条命令全部返回 0 后才能报告完成。

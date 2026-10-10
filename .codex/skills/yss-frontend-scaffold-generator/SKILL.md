@@ -41,7 +41,7 @@ description: Use when creating a new YSS frontend micro-application from the sta
 - 接口或部署版本漂移时重新接收，不复用旧成功输出。
 
 1. 确认当前任务已经通过 Harness 入口分诊、逐项目脚手架决定已由真实用户确认，且 schema v4 合同已由生命周期批准、持久化并保持当前。
-2. 确认目标是外部实现仓库；只有用户明确选择时才输出到 Harness 仓库的 `apps/frontend/<project>/`。`apps/frontend/` 只能作为项目容器，`app/frontend/`、`app/backend/` 及其子路径禁止作为输出位置。`git-submodule` 只能在已初始化且附加分支的子仓工作树生成；空 gitlink、detached HEAD、`--force` 覆盖挂载点不得当成普通目录。
+2. 确认目标是外部实现仓库；Harness 内位置须明确选择并登记，默认使用 `apps/frontend/<project>/`。`apps/frontend/` 只能作为项目容器；其他布局按实际项目根和批准写范围核验。`git-submodule` 只能在已初始化且附加分支的子仓工作树生成；空 gitlink、detached HEAD、`--force` 覆盖挂载点不得当成普通目录。
 3. 默认核验 bundled manifest 摘要、白名单和每个文件字节；Git 兼容方式核验合同的精确 commit。生成不读取 Data Quality 本机路径或未提交业务代码。
 4. 使用 `scripts/generate_and_verify_scaffold.mjs --contract-file <合同> --output-dir <目录> --evidence-dir <证据目录>` 生成白名单骨架；Git 来源额外提供 checkout，导出批准 commit 并排除 `.git` 及未提交工作树内容；目标必须不存在或为空。不得默认写入 Harness、不得 `--force`。仅合同 `init_git=true` 时初始化目标 Git。
 5. 替换应用名、微应用名、路由、`micro-config.json`、环境变量和 README 中的模板占位。
@@ -75,7 +75,7 @@ packages/package.json
 - 不接受任意 URL、未冻结 YAML、后端运行时输出或手工 JSON 作为既有前端代码生成流程的输入。
 - 目标生成时不修改既有代码生成配置，也不把客户端生成加入 CI；本模板维护允许审阅和更新标准配置。
 - 不携带 Data Quality 业务页面、默认管理员、生产接口、私网 Postman 同步、部署凭证或残缺 JSP 命令；当前支持 Qiankun 与 standalone，JSP 不在可用基线内。
-- 不得把 `apps/frontend/` 容器根登记为项目根；Harness 内每个前端项目必须有独立的 `apps/frontend/<project>/` 路径。
+- 不得把 `apps/frontend/` 容器根登记为项目根；Harness 内每个前端项目必须登记具体项目根，默认采用 `apps/frontend/<project>/` 布局。
 - 不把模板示例页面当作业务功能交付。
 - 生成后仍需使用 `yss-ui`、`yss-ui-business-page-generation`、`yss-api-integration` 以及实际命中的表格、树、Formily 等专项 skill 实现业务页面。
 

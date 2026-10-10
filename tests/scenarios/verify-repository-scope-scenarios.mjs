@@ -106,7 +106,18 @@ ensure(gitSubmodulePushOrderViolation(["submodule-repositories", "superproject-g
 const emptyGitlink = makeGitlinkFixture({ checkout: "empty-gitlink" });
 const detached = makeGitlinkFixture({ checkout: "detached-head" });
 const attached = makeGitlinkFixture({ checkout: "attached-branch" });
+const custom = makeGitlinkFixture({ checkout: "attached-branch", mount: "services/billing" });
 try {
+  const customRecord = { ...validGitSubmodule, project_root: custom.mount, gitlink_path: custom.mount };
+  ensure(validRepositoryScope(customRecord), "已登记的自定义 gitlink 路径应允许");
+  ensure(inspectWorkingTreeScope(custom.superproject, customRecord).writable === true, "自定义附加分支 git-submodule 应可写");
+  const misdeclared = inspectWorkingTreeScope(custom.superproject, {
+    repository_scope: "external-repository", project_root: custom.mount, checkout_state: "attached-branch"
+  });
+  ensure(misdeclared.writable === false && misdeclared.violation?.includes("不得登记为 external-repository"), "自定义真实 gitlink 不得冒充外部普通工程");
+  ensure(inspectWorkingTreeScope(custom.superproject, {
+    repository_scope: "external-repository", project_root: custom.child, checkout_state: "attached-branch"
+  }).writable === true, "真正的独立外部仓库应保持可写");
   const emptyTarget = path.join(emptyGitlink.superproject, emptyGitlink.mount);
   const emptyRecord = {
     repository_scope: "git-submodule",
@@ -203,6 +214,7 @@ try {
   emptyGitlink.cleanup();
   detached.cleanup();
   attached.cleanup();
+  custom.cleanup();
 }
 
 for (const id of NAMED_STRESS_SCENARIOS) {

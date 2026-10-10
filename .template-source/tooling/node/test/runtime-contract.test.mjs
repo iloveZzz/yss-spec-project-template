@@ -44,7 +44,9 @@ test("vendored XML parser rejects DOCTYPE and preserves scalar text", async () =
 test("implementation path policy preserves harness and external-repository boundaries", async () => {
   const { violation } = await import(path.join(repositoryRoot, "scripts/lib/implementation-path-policy.mjs"));
   assert.equal(violation("apps/backend/project1/"), null);
-  assert.match(violation("app/backend/project1/"), /singular app implementation root/);
+  assert.equal(violation("app/backend/project1/"), null);
+  assert.equal(violation("app/frontend/project1/"), null);
+  assert.equal(violation("services/billing/"), null);
   assert.match(violation("apps/backend/"), /container root/);
   assert.equal(violation("app/backend/project1/", { enforceHarness: false }), null);
 });
