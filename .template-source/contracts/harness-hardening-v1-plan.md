@@ -94,7 +94,7 @@ flowchart LR
 
 1. `scripts/ci-setup`：从 `.github/actions/setup-template/action.yml` 抽出环境准备（Node 24、pnpm frozen lockfile、可选 Python schema 依赖、按需初始化固定子模块、可选固定 `yss` 源码构建），只用 bash，GitHub 与 GitLab 共用。
 2. `scripts/ci-gate --mode pr --base <SHA> | --mode push [--report-dir <仓外目录>]`。步骤列表集中在 `scripts/lib/ci-gate.mjs` 的一个数组里，后续工作包只追加数组项。
-3. 初始步骤：配置安全检查（WP-01）→ `sync-skills --check` → `update-skill-lock --check` → `verify-lifecycle-registry` → `verify-skill-registry` → `verify-doc-facts`（WP-06 步骤 4，随数组一并接入）→ Node 版本声明一致性（`package.json` 的 `engines.node` 是范围，`.nvmrc` 与 `scripts/ci-setup` 的 `YSS_CI_NODE_MAJOR` 默认值都必须落在该范围内）→ PR 模式 `verify-template-candidate --base`，推送模式 `verify-template-fast`。
+3. 初始步骤：配置安全检查（WP-01）→ `sync-skills --check` → `update-skill-lock --check` → `verify-lifecycle-registry` → `verify-skill-registry` → `verify-doc-facts`（WP-06 步骤 4，随数组一并接入）→ Node 版本声明一致性（`package.json` 的 `engines.node` 是范围，`.nvmrc` 与 `scripts/ci-setup` 的 `YSS_CI_NODE_MAJOR` 默认值都必须落在该范围内）→ `verify-template-fast`（必需；PR 模式 `--base` 取目标分支 SHA，推送模式取 `HEAD^`，因为干净检出且不带 `--base` 时 fast 的变更范围为空）→ 仅 PR 模式：`verify-template-candidate --base`（非阻断，见第 6 节 2026-10-11 记录）。
 4. 每步记录命令、退出码、耗时、日志路径；失败时打印修复建议。默认报告目录用 `scripts/maintenance-path`。
 5. `package.json` 增加 `engines.node`，取值与 `github-workflows.md` 的受支持范围一致（Node 24 为验证运行器，Node 22 为工具兼容下限，故取 `>=22`）；该文档的叙述不做机器解析，运行器主版本以 `ci-setup` 的默认值为准。
 6. 在 `template-verification-profiles.yaml` 登记新脚本为检查输入，避免 fast 选择器漏选。
@@ -220,6 +220,7 @@ flowchart LR
 | 2026-10-10 | Q-005 显式技能清单 | 交实施者判断；分两批，见 WP-07 | 维护者授权，实施者执行 |
 | 2026-10-10 | WP-06 写范围例外 | 补登 `doc-facts-patterns.json`、`template-verification-profiles.yaml` 与 `bundle-profile.json`：与 WP-00 一样登记检查输入，并把模板源专用检查排除出实例分发 | 维护者批准执行计划 |
 | 2026-10-11 | WP-02 写范围例外 | 补登 `bundle-profile.json`：`ci-gate`、`ci-setup` 与 `lib/ci-gate.mjs` 是模板源专用检查工具，与 WP-00 / WP-06 一样排除出实例分发 | 待维护者确认 |
+| 2026-10-11 | WP-02 candidate 降为非阻断 | 按规格风险表执行：选择性 gate policy 未激活，candidate 实际退化为 `legacy-full` / `release`，其预检要求固定 yss 二进制，且 Bundle 的模板来源必须等于被验证提交；实测四个 Profile 的 Bundle 提交都是 `yss-cli/docs/source-lock.json` 的固定值（落后当前 main 16 个提交），对新提交无法在托管 runner 通过。`fast` 为必需检查并带 `--base`，candidate 只记录；转为必需的条件并入 Q-008 | 待维护者确认 |
 | 2026-10-10 | WP-06 团队指南 | `docs/process/yss-product-lifecycle-team-guide.md` 被 `.gitignore` 排除，只在维护者本地修正；文档事实检查在文件存在时扫描 | 维护者 |
 
 ## 7. 执行状态
@@ -228,6 +229,6 @@ flowchart LR
 |---|---|---|---|
 | WP-00 | 已合并到 main | `harden/wp-00` | `harness-metrics` 与 4 个测试通过；基线已测 |
 | WP-01 | 已合并到 main | `harden/wp-01`（主仓与三个 Profile 子模块同名；子模块合并提交在各自的 `harden/integration`） | 配置已删除并加检查；AC-002 未完成（需 yss-cli 改动）；维护者需把配置抄到 `~/.codex/config.toml` |
-| WP-02 | 已提交，待合并 | `harden/wp-02` | `ci-gate`、`ci-setup`、`engines.node` 与 19 个测试通过；AC-003、AC-004、AC-012 已实测；`verify-doc-facts` 已接入；`ci-setup` 的真实安装路径待 WP-03 在托管 runner 上验证 |
+| WP-02 | 已提交，待合并 | `harden/wp-02` | `ci-gate`、`ci-setup`、`engines.node` 与 21 个测试通过；AC-003、AC-004、AC-012 已实测；`verify-doc-facts` 已接入；`ci-setup` 已在本机隔离环境实跑通过（52 秒），托管 runner 上的耗时与 GitLab 路径待 WP-03；candidate 按风险表降为非阻断，原因见第 6 节 |
 | WP-03 起 | 未开始 | — | 依赖 WP-02 |
 | WP-06 | 已合并到 main | `harden/wp-06` | 基于 main（文本修复不依赖 WP-00 代码）；三处被追踪的漂移已修，`verify-doc-facts` 与 5 个测试通过；团队指南为未追踪文件，本地已修；已随 WP-02 接入 `ci-gate` |

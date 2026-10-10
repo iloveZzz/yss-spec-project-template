@@ -13,7 +13,10 @@ const SKIPPED_AFTER_FAILURE = "前置步骤失败，已跳过";
  * - command：相对仓库根的命令；重步骤用函数按模式生成。
  * - run：进程内检查，返回 { ok, lines }。
  * - fix：失败时打印的修复建议，优先写可直接运行的命令。
+ * - modes：只在列出的模式下执行，缺省为两种模式都执行。
  * - blocking：false 时失败只记录、不影响退出码。
+ * - context.scopeBase：fast 的变更范围基准。PR 模式是目标分支 SHA；推送模式是 HEAD^（合并提交的第一亲本即上一个主分支顶点）。
+ *   干净检出且不带 --base 时 fast 的变更文件数为 0，只会空过，所以必须带基准。
  */
 export const STEPS = [
   {
@@ -60,12 +63,21 @@ export const STEPS = [
   },
   {
     id: "verify-template",
-    title: "模板验证",
+    title: "模板验证（fast，按变更范围）",
     heavy: true,
-    command: (context) => (context.mode === "pr"
-      ? ["scripts/verify-template-candidate", "--base", context.base, "--report-dir", path.join(context.reportDir, "verification")]
-      : ["scripts/verify-template-fast", "--report-dir", path.join(context.reportDir, "verification")]),
+    command: (context) => ["scripts/verify-template-fast", ...(context.scopeBase ? ["--base", context.scopeBase] : []), "--report-dir", path.join(context.reportDir, "verification")],
     fix: "查看该步骤日志与 verification 报告中第一个失败的检查；本地用同一命令复现",
+  },
+  {
+    id: "verify-candidate",
+    title: "候选验证（非阻断）",
+    heavy: true,
+    modes: ["pr"],
+    // 规格风险表：candidate 依赖固定 yss 二进制，其 Bundle 逐提交绑定来源，托管 runner 上无法对新提交通过；
+    // 先以 fast 为必需检查、candidate 只记录，按 NFR-002 基线与 Q-008 再决定是否转为必需。
+    blocking: false,
+    command: (context) => ["scripts/verify-template-candidate", "--base", context.base, "--report-dir", path.join(context.reportDir, "candidate")],
+    fix: "非阻断：需要固定 yss 二进制（scripts/ci-setup --yss-commit），且其 Bundle 必须绑定被验证提交；见执行计划第 6 节 2026-10-11 记录",
   },
 ];
 
@@ -236,13 +248,16 @@ function runCommand({ root, command, logPath, env, stdout, stderr }) {
 function seconds(ms) { return `${(ms / 1000).toFixed(1)}s`; }
 
 /** 依次执行 STEPS，记录命令、退出码、耗时与日志路径，并保证仓内没有新增改动。 */
-export async function runGate({ root, mode, base, reportDir, steps = STEPS, env = process.env, stdout = process.stdout, stderr = process.stderr }) {
+export async function runGate({ root, mode, base, reportDir, steps: allSteps = STEPS, env = process.env, stdout = process.stdout, stderr = process.stderr }) {
   validateOptions({ root, mode, base, reportDir });
+  const steps = allSteps.filter((step) => !step.modes || step.modes.includes(mode));
   const directory = reportDir ?? defaultReportDir(root, mode);
   mkdirSync(directory, { recursive: true });
-  const context = { root, mode, base, reportDir: directory };
   const head = git(root, ["rev-parse", "HEAD"]).stdout.trim();
-  const report = { mode, base: base ?? null, head, started_at: new Date().toISOString(), report_dir: directory, status: "running", duration_ms: null, steps: [] };
+  const parent = git(root, ["rev-parse", "--verify", "--quiet", "HEAD^"]);
+  const scopeBase = mode === "pr" ? base : (parent.status === 0 ? parent.stdout.trim() : null);
+  const context = { root, mode, base, scopeBase, reportDir: directory };
+  const report = { mode, base: base ?? null, scope_base: scopeBase, head, started_at: new Date().toISOString(), report_dir: directory, status: "running", duration_ms: null, steps: [] };
   const reportPath = path.join(directory, "report.json");
   const save = () => writeFileSync(reportPath, `${JSON.stringify(report, null, 2)}\n`);
   const before = worktreeState(root);
