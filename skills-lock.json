@@ -230,7 +230,7 @@
         "source": "iloveZzz/yss-ui",
         "sourceType": "github",
         "skillPath": "packages/skills/frontend-commit/SKILL.md",
-        "effectiveHash": "aef8df2cb8114a35740144563981788443e7566619e6c489e64efcf2dc6cd81c",
+        "effectiveHash": "1dbc8c77f24b81d69218fd80f1674d047912bed3aaf67f7433c9440814d024d3",
         "sourceRevision": "c4d958f18cc947cb91cbe1bd48783fa4601cc18f",
         "upstreamHash": "ffc1c7813607705c7c1158f4c5d3111aca79e73f1843e33bbc95eda9b5c726de",
         "adaptationRef": ".template-source/agents/yss-ui-skills-integration.md",
@@ -336,7 +336,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/java-backend-commit/SKILL.md",
-        "effectiveHash": "0d50beb6563ff17b87ef2726b6f3ed53c4d686e210ff02a8692582dd6d8eb79f",
+        "effectiveHash": "0b096b7aafde50122c912e969e95eb99020ce864d15a8cccff2465209a431251",
         "targets": [
           ".agents/skills",
           ".codex/skills",
@@ -349,7 +349,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/llm-wiki/SKILL.md",
-        "effectiveHash": "459a837af5f15167b68fc0ac02f00d429018d572cf448912e4824a3fba29d856",
+        "effectiveHash": "6bcecabc335af981b13ab5286ebac9442792c982f37e8886c426934fec5c238a",
         "targets": [
           ".agents/skills",
           ".codex/skills",
@@ -435,7 +435,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/publish-skills-sh/SKILL.md",
-        "effectiveHash": "f483f253c72778cbe267f4a4373da2d5d7df12fba4b835f87b4e9defb2bd2048",
+        "effectiveHash": "2ee8fb2715501335ff93835016b45848bc8cbf9e55fda3c7720b5932de189d7e",
         "targets": [
           ".agents/skills",
           ".codex/skills",
@@ -1000,7 +1000,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-skill-source-index-refresh/SKILL.md",
-        "effectiveHash": "b588ff542387d83e6a319f0d12fb8c80b22f1cfce277b1386cfe3675aff3403b",
+        "effectiveHash": "67d0ea4ca3f549d67aad79c1d6c1280b7a10199ac297e95310bbc80c4a92390e",
         "targets": [
           ".agents/skills",
           ".codex/skills",

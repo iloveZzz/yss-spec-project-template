@@ -1,6 +1,7 @@
 ---
 name: java-backend-commit
 description: "为 Java 后端改动生成提交信息、审查原子提交或修复 Git hook；用户明确要求提交时执行 git commit。"
+disable-model-invocation: true
 ---
 
 # Java 后端规范提交

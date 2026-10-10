@@ -1,6 +1,7 @@
 ---
 name: frontend-commit
 description: "为前端改动生成提交信息、审查原子提交或修复 Git hook；用户明确要求提交时执行 git commit。"
+disable-model-invocation: true
 ---
 
 # 前端规范提交

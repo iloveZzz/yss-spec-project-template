@@ -1,6 +1,7 @@
 ---
 name: yss-skill-source-index-refresh
 description: 后端组件源码或前端 YSS UI 文档变化后，刷新技能来源索引并核验平台线、组件摘要与引用。
+disable-model-invocation: true
 ---
 
 # YSS 技能来源索引维护

@@ -1,6 +1,7 @@
 ---
 name: llm-wiki
 description: "Build or refresh a local LLM wiki; use for wiki init, ingest, rebuild, lint, or source-backed wiki questions."
+disable-model-invocation: true
 ---
 
 # llm-wiki

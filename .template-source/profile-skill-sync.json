@@ -735,7 +735,7 @@
           "id": "yss-skill-source-index-refresh",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/frontend/yss-skill-source-index-refresh.patch",
-          "source_tree_sha256": "619fd5a97eaa486674040bd51fadaa082b32e6a3fbe167a690e8db2179613a70"
+          "source_tree_sha256": "7a7815dea3acda72bab8bd09bad03101bb19c042047a747830f0b72c39a1c4d5"
         },
         {
           "id": "yss-stage-decision",
