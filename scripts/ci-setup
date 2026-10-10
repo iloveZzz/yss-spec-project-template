@@ -153,6 +153,10 @@ if ((submodules)); then
   run git submodule sync -- "$CLI_SUBMODULE" "${PROFILE_SUBMODULES[@]}"
   run git -c protocol.version=2 submodule update --init --depth=1 -- "$CLI_SUBMODULE"
   run git -c protocol.version=2 submodule update --init ${depth_args[@]+"${depth_args[@]}"} -- "${PROFILE_SUBMODULES[@]}"
+  step "物化 Profile 的生成技能"
+  # Profile 子模块的提交里只有少数自有技能，其余由本仓 canonical 生成且被 .gitignore 忽略。
+  # 干净检出不物化时，sync-profile-skills --check 与 skill-registry.test.mjs 必然失败，任何改动技能的 PR 都会被拦。
+  run scripts/sync-profile-skills --apply --profile=all
 fi
 
 if ((submodules)); then
