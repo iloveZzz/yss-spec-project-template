@@ -1,7 +1,7 @@
 ---
 design_id: architecture-iteration-v1
-version: 0.1.0
-status: proposed
+version: 0.2.0
+status: accepted
 content_profile: plan-spec-v1
 repository_mode: template-source
 intensity: L2
@@ -14,7 +14,7 @@ execution_plan: architecture-iteration-v1-plan.md
 
 ## 文档状态与范围
 
-本文是 `template-source` 的维护合同，状态为 `proposed`。各项决定已于 2026-10-11 由维护者在 wayfinder 决策地图里逐票确认，地图在仓外 `.work/architecture-iteration/`，决定摘要见[执行计划](architecture-iteration-v1-plan.md)第 6 节。本文措辞经维护者确认之前，不授权任何写入。本文规定这轮改造要达到的可观察结果；执行顺序、写入范围和验证命令见执行计划。本文不是产品 Spec，不触发产品 Spec、OpenAPI、原型或 `context_reconciliation`，这些项记为 `not-applicable：模板源架构维护`。
+本文是 `template-source` 的维护合同，状态为 `accepted`：各项决定已于 2026-10-11 由维护者在 wayfinder 决策地图里逐票确认，地图在仓外 `.work/architecture-iteration/`，决定摘要见[执行计划](architecture-iteration-v1-plan.md)第 6 节；同日维护者确认了本文措辞并解决 Q-001、Q-002。`accepted` 的含义是可以按执行计划派发工作包，每个工作包只能写入计划第 3 节列出的路径；推送、打 tag、发布 CLI、归档旧仓库仍按计划第 1 节第 8 条逐次授权。本文规定这轮改造要达到的可观察结果；执行顺序、写入范围和验证命令见执行计划。本文不是产品 Spec，不触发产品 Spec、OpenAPI、原型或 `context_reconciliation`，这些项记为 `not-applicable：模板源架构维护`。
 
 本轮的主目标是**迭代速度**：一次内核改动从修改到实例可用，要经过多少个提交、多少个仓库、多少个人工步骤。次要目标是减少 Agent 起步要读的规则。本轮不推翻[模板加固规格](harness-hardening-v1.md)已交付的结果；hardening 的 WP-08 移交给本合同，WP-11 不受影响，照常签署。
 
@@ -45,6 +45,7 @@ execution_plan: architecture-iteration-v1-plan.md
 | 证据 9 | 按官方文档，Codex、Cursor、Pi 都直接读 `.agents/skills`，只有 Claude Code 需要 `.claude/skills`（支持符号链接）。打包器会把 `.codex`、`.cursor`、`.pi` 下的链接展开成完整副本，却不认 `.claude` | `submodules/yss-cli/internal/bundle/producer.go` |
 | 证据 10 | 编排合同有 63 个顶层策略、95 KB，其中 35 个（38% 的字节）没有任何代码引用，25 个只存在于合同里。daily 起步必读约 56 KB | `.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml` |
 | 证据 11 | 验证 profile 3,219 行、引用 201 个检查 id、分 4 档；`gate_policy.activation` 仍是 `legacy-full` | `.template-source/process/template-verification-profiles.yaml` |
+| 证据 12 | `.codex/skills/product-design` 是 OpenAI 的第三方 Codex 插件（`role-specific-plugins`，v0.1.41，带 `.codex-plugin`、`.app.json`），不是本仓编写的技能；根仓和 design Profile 各有 56 个受追踪文件。注册表把它登记为 Codex 平台技能（`platform_skills`），默认不可发现 | `.codex/skills/product-design`；`.template-spec/agents/yss-skill-registry.yaml`；`skills-lock.json` |
 
 外部参照（只用于判断方向，不作为本仓规则来源）：Codex、Cursor、Claude Code 的官方技能文档，以及 Pi 0.27.4 的发布记录。实施时按当期文档复核，见 Q-003。
 
@@ -63,12 +64,12 @@ execution_plan: architecture-iteration-v1-plan.md
 
 | ID | 需求 | 优先级 | 来源引用 | 验收引用 | 未决项 |
 |---|---|---|---|---|---|
-| FR-001 | 模板与 yss-cli 各有一条语义化版本线，四个 Profile 共用模板版本。yss-cli 的来源锁钉模板 tag，并记录对应 commit 作完整性校验；Bundle 只在 CLI 发布时从 tag 生成，模板的普通提交不触发任何重钉。实例记录 CLI 版本和模板版本。N3 的刷新脚本改为发布流程中的一步，N7 的手动落后检查删除 | P0 | .template-source/contracts/architecture-iteration-v1.md :: heading:现状证据 | AC-001 | Q-001 |
+| FR-001 | 模板与 yss-cli 各有一条语义化版本线，四个 Profile 共用模板版本；模板的首个 tag 为 `v4.0.0`（高于 spec 旧 npm 包的最高版本 3.5.10，也不与 yss-cli 的 1.3.x 混淆）。yss-cli 的来源锁钉模板 tag，并记录对应 commit 作完整性校验；Bundle 只在 CLI 发布时从 tag 生成，模板的普通提交不触发任何重钉。实例记录 CLI 版本和模板版本。N3 的刷新脚本改为发布流程中的一步，N7 的手动落后检查删除 | P0 | .template-source/contracts/architecture-iteration-v1.md :: heading:现状证据 | AC-001 | 无 |
 | FR-002 | 根仓不再用 submodule 固定 yss-cli，改为在一个文件里固定 `yss` 的版本号和 SHA-256；本地联调仍可用 `YSS_NATIVE_BINARY` 覆盖。`check.cli-content-identity` 改为核对这个固定版本 | P0 | .template-source/contracts/architecture-iteration-v1.md :: heading:现状证据 | AC-002 | 无 |
 | FR-003 | yss-cli 的迁移规则支持按模板版本区间匹配。从 yss-cli 的来源锁历史和内嵌 bundle 历史，一次性生成「commit → 版本」对照表，随 CLI 发布 | P0 | .template-source/contracts/architecture-iteration-v1.md :: heading:现状证据 | AC-003 | 无 |
 | FR-004 | 升级计划里的删除动作可以逐文件拒绝（选择「保留」）；用户拒绝时文件保留，升级不失败 | P0 | .template-spec/process/harness-upgrade.md :: heading:计划、冲突与保护 | AC-004 | 无 |
 | FR-005 | 生成物不再提交进 Git：`bundles.json.gz` 与 `docs/cli-help.md` 改为发布时生成（离线帮助照旧在构建时嵌入）；根仓 `skills-lock.json` 只记录上游来源的 revision，本地技能的树哈希在验证或发布时现算；实例里的锁由打包器生成，格式不变 | P1 | .template-source/contracts/architecture-iteration-v1.md :: heading:现状证据 | AC-005 | 无 |
-| FR-006 | 投影根收敛：删除 `.codex/skills`、`.cursor/skills`、`.pi/skills`，`.agents/skills` 是唯一的权威目录；`.claude/skills` 只保留相对符号链接，打包器接受 `.claude` 链接；实例「运行时 ↔ 投影根」一一对应的模型相应调整；Codex 独有技能 `product-design` 按 Q-002 处理。本条接手 hardening 的 FR-011 / WP-08 | P1 | .template-source/agents/skills-maintenance.md :: heading:权威内容与投影 | AC-006 | Q-002, Q-003 |
+| FR-006 | 投影根收敛：删除 `.codex/skills`、`.cursor/skills`、`.pi/skills`，`.agents/skills` 是唯一的权威目录；`.claude/skills` 只保留相对符号链接，打包器接受 `.claude` 链接；实例「运行时 ↔ 投影根」一一对应的模型相应调整。第三方 Codex 插件 `product-design` 从模板、三个 Profile 与新实例分发中移出，由用户自行安装；注册表 `platform_skills` 里的登记和锁里的平台技能组随之清空，`platform_skills` 机制本身保留。已有实例里的 `.codex/skills`（含 `product-design`）按 FR-003、FR-004 的版本区间删除规则清理，用户可以拒绝。本条接手 hardening 的 FR-011 / WP-08 | P1 | .template-source/agents/skills-maintenance.md :: heading:权威内容与投影 | AC-006 | Q-003 |
 | FR-007 | yss-cli 打包器支持「内核 + 覆盖层」组合：覆盖 spec、design、backend、frontend，范围包括技能、`scripts/`、`.template-spec/process/`、`.template-spec/templates/`；覆盖层里同路径的文件优先。现有的 9 种字节替换改为「统一路径布局 + 2 个参数」（查询 profile、编排合同路径） | P0 | .template-source/contracts/architecture-iteration-v1.md :: heading:现状证据 | AC-007 | 无 |
 | FR-008 | 三个 Profile 并入根仓 `profiles/{backend,frontend,design}/`，三者共有的内容放 `profiles/_specialist/`，每个目录只放覆盖层。采用快照导入，导入提交写明来源仓库与 commit；旧仓库归档为只读。同时删除：同步脚本、`strategic-handoff-tools.lock.json`、`profile-variants.json`、Profile 漂移检查、`.strategic-design-skills-manifest.json`、三个 submodule 指针。Profile 的 evidence 和 wiki 移到仓外归档，并附 SHA-256 清单 | P0 | .template-source/contracts/architecture-iteration-v1.md :: heading:现状证据 | AC-008 | 无 |
 | FR-009 | 治理内核分四层：core（读写、schema、注册表、摘要与决定 IO）→ 领域校验 → 工作流 → 入口，上层只依赖下层。Node 侧消除导入环，并加一条亚秒级、只读的导入方向检查；Go 侧把 `internal/governance` 按领域拆成子包 | P1 | .template-source/contracts/architecture-iteration-v1.md :: heading:现状证据 | AC-009 | 无 |
@@ -95,12 +96,12 @@ execution_plan: architecture-iteration-v1-plan.md
 
 | ID | 需求引用 | 前提 | 触发 | 可观察结果 | 场景类型 | 未决项 |
 |---|---|---|---|---|---|---|
-| AC-001 | FR-001 | 模板已打首个 tag | 在 yss-cli 发布流程中刷新来源锁 | 来源锁记录 tag 和 commit；在模板上做一次普通提交后，yss-cli 与根仓都没有新增重钉提交 | 成功 | Q-001 |
+| AC-001 | FR-001 | 模板已打首个 tag `v4.0.0` | 在 yss-cli 发布流程中刷新来源锁 | 来源锁记录 tag 和 commit；在模板上做一次普通提交后，yss-cli 与根仓都没有新增重钉提交 | 成功 | Q-001 |
 | AC-002 | FR-002 | S0 完成 | 检查根仓的 `.gitmodules` 与固定版本文件，运行 fast | 没有 yss-cli gitlink；固定文件写有版本号和 SHA-256；版本或摘要不符时 `cli-content-identity` 失败 | 成功 / 拒绝 | 无 |
 | AC-003 | FR-003 | 一个按历史 commit 初始化的实例 | 用新 CLI 生成升级计划 | 能借对照表识别出该实例的模板版本；按版本区间匹配的删除规则生效；对照表里找不到的 commit 明确报告，不猜测 | 成功 / 边界 | 无 |
 | AC-004 | FR-004, NFR-004 | 升级计划里含删除动作 | 用户对其中一个文件选择「保留」后应用 | 该文件原样保留，其余动作照常执行，升级不失败 | 状态变化 | 无 |
 | AC-005 | FR-005 | S1 完成 | 检查两个仓库的受追踪文件 | 不再有 `bundles.json.gz`、生成的 `cli-help.md` 和本地技能树哈希；发布产物里有这两个文件；实例锁格式与旧版一致 | 成功 | 无 |
-| AC-006 | FR-006 | S1 完成 | 用新版本初始化 spec 实例，并在 Claude Code、Codex、Cursor 里列出技能 | 实例里没有 `.codex/skills`、`.cursor/skills`、`.pi/skills`；`.claude/skills` 是链接；三个运行时都能列出全部技能 | 成功 | Q-003 |
+| AC-006 | FR-006 | S1 完成 | 用新版本初始化 spec 实例，并在 Claude Code、Codex、Cursor 里列出技能 | 实例里没有 `.codex/skills`、`.cursor/skills`、`.pi/skills`，也没有 `product-design`；`.claude/skills` 是链接；三个运行时都能列出全部技能；注册表 `platform_skills` 为空且校验通过；已有 design 实例里的 `product-design` 以可拒绝的删除列出，拒绝时原样保留 | 成功 / 状态变化 | Q-003 |
 | AC-007 | FR-007 | yss-cli 组合能力已扩展 | 对同一组源码，分别按旧形态（子模块）和新形态（覆盖层）构建 | 四个 Profile 的「路径 → digest、mode、ownership」映射逐项一致 | 成功 | 无 |
 | AC-008 | FR-008, NFR-002 | S2 完成 | 检查 `.gitmodules`、`profiles/` 和同步机制；修改一个共享内核文件 | 没有 Profile submodule；同步脚本、工具锁、有意定制登记、设计技能清单都已删除；这次修改只需根仓 1 个 PR，构建出的四个 Profile 都带上了它 | 成功 | 无 |
 | AC-009 | FR-009, NFR-005 | S3 第一步完成 | 运行导入方向检查；故意加一条反向导入 | Node 没有导入环，检查在 1 秒内通过；加了反向导入后检查失败，并指出这条边 | 成功 / 拒绝 | 无 |
@@ -130,13 +131,14 @@ execution_plan: architecture-iteration-v1-plan.md
 | 唯一的 Go 校验实现没有测试兜底 | 退役 Node 后，校验悄悄出错 | 每退一步，先补 FR-011 的 fixture 回放，再删 Node 实现 | 实施者 | S3 每一步 |
 | Windows 不能直接创建符号链接 | `.claude/skills` 链接在 Windows 实例里失效 | 按 Q-003 决定用目录联接或副本模式，并对副本做哈希校验 | 实施者 | S1 |
 | 历史实例在对照表里找不到 | 版本区间规则匹配不到，旧副本清理不了 | 找不到的明确报告，旧副本保留（满足 NFR-004），不猜测 | 实施者 | S0 |
+| design 实例的用户依赖 `product-design` | 新实例不再带该插件，用户需自行安装 | 升级计划和 README 注明安装来源；已有实例默认保留该目录 | 实施者 | AR-04 |
 | 多个会话共用同一工作目录 | 改动混进别人的分支 | 每个工作包使用独立 worktree 和分支，动手前先确认分支 | 维护者 | 每个工作包开始前 |
 
 ## 未决项
 
 | ID | 问题 | 判断依据 | 责任人 | 解决时点 | 接收方 / 解决证据 |
 |---|---|---|---|---|---|
-| Q-001 | 模板第一个 tag 的版本号从多少开始？ | 影响 AC-001 和实例记录的版本号；不影响其他决定 | 维护者 | AR-02 开工前 | 计划第 6 节 |
-| Q-002 | Codex 独有技能 `product-design` 迁入权威目录，还是登记为运行时独有技能保留？ | 删除 `.codex/skills` 后，它需要一个归宿 | 维护者 | AR-04 开工前 | 计划第 6 节 |
+| Q-001 | 模板第一个 tag 的版本号 | **已决（2026-10-11）**：`v4.0.0` | 维护者 | 已解决 | FR-001、AC-001；计划第 6 节 |
+| Q-002 | Codex 独有的第三方插件 `product-design` 的归宿 | **已决（2026-10-11）**：从模板移出，由用户自行安装 | 维护者 | 已解决 | FR-006、AC-006；计划第 6 节 |
 | Q-003 | Windows 实例的 `.claude/skills` 用目录联接还是副本？Cursor 对符号链接的已知问题是否影响实际使用？ | 官方文档没写 Windows 的行为；Cursor 社区有符号链接相关的问题报告 | 实施者 | AR-04 | 实施记录，附当期官方文档链接与本机实测 |
 | Q-004 | Node 独有的校验（context 对账与 UI 基线导入、handoff 消费细节等）补进 Go 的工作量有多大？ | 影响退役第 2、3 步的排期 | 实施者 | AR-09 开工前 | 实施记录 |
