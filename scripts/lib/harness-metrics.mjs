@@ -1,9 +1,33 @@
 import { createHash } from "node:crypto";
-import { existsSync, lstatSync, readFileSync, readdirSync } from "node:fs";
+import { execFileSync } from "node:child_process";
+import { existsSync, lstatSync, readFileSync, readdirSync, realpathSync } from "node:fs";
 import path from "node:path";
 
 export const SCHEMA_VERSION = 1;
 export const RESIDENT_FILES = ["AGENTS.md", "CONTEXT.md", ".agents/skills/yss-product-lifecycle/SKILL.md"];
+// daily 起步必读（architecture-iteration-v1 附录 A）。S4 之后改为 AGENTS.md、CONTEXT.md 加 `yss lifecycle route --json` 的输出，届时调整 profile。
+export const DAILY_START_PROFILE = "pre-s4";
+const LIFECYCLE_REFERENCES = ".agents/skills/yss-product-lifecycle/references";
+export const DAILY_START_FILES = [
+  "AGENTS.md",
+  "CONTEXT.md",
+  ".agents/skills/yss-product-lifecycle/SKILL.md",
+  `${LIFECYCLE_REFERENCES}/daily-delivery.md`,
+  `${LIFECYCLE_REFERENCES}/user-decisions.md`,
+];
+export const DAILY_START_SECTIONS = [{ path: `${LIFECYCLE_REFERENCES}/orchestration-contract.yaml`, section: "request_triage" }];
+export const PIPELINE_WINDOW_DAYS = 30;
+// 管道提交的路径口径（附录 A）。路径被删除后口径保持不变，前后才可比。
+const PIPELINE_PATTERNS = [
+  /^skills-lock\.json$/,
+  /^submodules\//,
+  /\.lock\.json$/,
+  /manifest\.json$/,
+  /^\.(codex|cursor|pi|claude)\/skills\//,
+  /(^|\/)profile-skill-sync\.json$/,
+  /(^|\/)pnpm-lock\.yaml$/,
+  /(^|\/)source-lock[^/]*\.json$/,
+];
 export const PROJECTION_ROOT_CANDIDATES = [".codex/skills", ".cursor/skills", ".pi/skills", ".claude/skills"];
 const PROFILE_SUBMODULES = ["yss-harness-backend-agent", "yss-harness-design-agent", "yss-harness-frontend-agent"];
 
@@ -116,7 +140,93 @@ function countFiles(directory) {
   return total;
 }
 
-export function collectMetrics(root = process.cwd()) {
+export function isPipelinePath(file) {
+  return PIPELINE_PATTERNS.some((pattern) => pattern.test(file));
+}
+
+function runGit(root, args) {
+  return execFileSync("git", ["-C", root, "-c", "core.quotePath=false", ...args], { encoding: "utf8", maxBuffer: 256 * 1024 * 1024, stdio: ["ignore", "pipe", "ignore"] });
+}
+
+function plainArgument(value, name) {
+  if (typeof value !== "string" || value === "" || value.startsWith("-") || /[\0\n]/.test(value)) throw new TypeError(`${name} 参数无效: ${JSON.stringify(value)}`);
+  return value;
+}
+
+/**
+ * 近一个窗口内，只改管道文件（锁、指针、投影、清单）的非合并提交占比。
+ * 默认窗口是 rev 的提交时间往前 30 天，因此同一个提交上的结果可重复；可用 since、until、rev 复现历史口径。
+ * 不是仓库根目录（含子目录）或没有提交时返回 null，不读取上层仓库的历史。没有改动任何文件的提交不计入。
+ */
+export function pipelineCommitStats(root, { since, until, rev } = {}) {
+  const explicitRev = rev !== undefined;
+  const revision = explicitRev ? plainArgument(rev, "rev") : "HEAD";
+  if (since !== undefined) plainArgument(since, "since");
+  if (until !== undefined) plainArgument(until, "until");
+  let committed;
+  try {
+    const top = runGit(root, ["rev-parse", "--show-toplevel"]).trim();
+    if (realpathSync(top) !== realpathSync(root)) return null;
+    committed = runGit(root, ["log", "-1", "--format=%cI", revision, "--"]).trim();
+  } catch {
+    if (explicitRev) throw new TypeError(`rev 无法解析: ${revision}`);
+    return null;
+  }
+  if (!committed) return null;
+  const windowEnd = until ?? committed;
+  let windowStart = since;
+  if (windowStart === undefined) {
+    const end = Date.parse(windowEnd);
+    if (Number.isNaN(end)) throw new TypeError("since 需要显式给出：until 不是可解析的时间");
+    windowStart = new Date(end - PIPELINE_WINDOW_DAYS * 86400000).toISOString();
+  }
+  const output = runGit(root, ["log", "--no-merges", "--no-renames", "--name-only", "-z", "--format=%x1e%H", `--since=${windowStart}`, `--until=${windowEnd}`, revision, "--"]);
+  let total = 0;
+  let pipelineOnly = 0;
+  let touching = 0;
+  for (const chunk of output.split("\x1e").slice(1)) {
+    const files = chunk.split("\0").slice(1).map((name) => name.replace(/^\n/, "")).filter(Boolean);
+    if (!files.length) continue;
+    total += 1;
+    const pipeline = files.filter(isPipelinePath).length;
+    if (pipeline) touching += 1;
+    if (pipeline === files.length) pipelineOnly += 1;
+  }
+  return {
+    window: { rev: revision, since: windowStart, until: windowEnd },
+    total,
+    pipeline_only: pipelineOnly,
+    touching_pipeline: touching,
+    pipeline_only_ratio: total ? Math.round((pipelineOnly / total) * 1000) / 1000 : null,
+  };
+}
+
+function yamlSectionBytes(text, section) {
+  const lines = text.split(/(?<=\n)/);
+  const start = lines.findIndex((line) => line.startsWith(`${section}:`));
+  if (start < 0) return null;
+  let end = lines.length;
+  for (let index = start + 1; index < lines.length; index += 1) {
+    if (/^[^\s#]/.test(lines[index])) { end = index; break; }
+  }
+  return lines.slice(start, end).reduce((sum, line) => sum + Buffer.byteLength(line), 0);
+}
+
+/** daily 路径起步要读的字节：入口文件整份，加上编排合同里按名字取出的段落（原文字节，不依赖 YAML 库）。 */
+export function dailyStartStats(root) {
+  const files = DAILY_START_FILES.map((rel) => {
+    const file = path.join(root, rel);
+    return { path: rel, bytes: existsSync(file) ? readFileSync(file).length : null };
+  });
+  const sections = DAILY_START_SECTIONS.map(({ path: rel, section }) => {
+    const file = path.join(root, rel);
+    return { path: rel, section, bytes: existsSync(file) ? yamlSectionBytes(readFileSync(file, "utf8"), section) : null };
+  });
+  const total = [...files, ...sections].reduce((sum, item) => sum + (item.bytes ?? 0), 0);
+  return { profile: DAILY_START_PROFILE, files, sections, total_bytes: total };
+}
+
+export function collectMetrics(root = process.cwd(), options = {}) {
   const resident = RESIDENT_FILES.map((rel) => {
     const file = path.join(root, rel);
     return { path: rel, bytes: existsSync(file) ? readFileSync(file).length : null };
@@ -132,6 +242,8 @@ export function collectMetrics(root = process.cwd()) {
   return {
     schema_version: SCHEMA_VERSION,
     resident_context: { files: resident, total_bytes: resident.reduce((sum, item) => sum + (item.bytes ?? 0), 0) },
+    daily_start: dailyStartStats(root),
+    pipeline_commits: pipelineCommitStats(root, options),
     skills: { canonical: { ...canonical, root: ".agents/skills" }, profiles },
     projection_roots: projectionStats(root, canonicalNames),
     process_files: countFiles(path.join(root, ".template-spec/process")),

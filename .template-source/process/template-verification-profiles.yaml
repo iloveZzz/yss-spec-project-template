@@ -228,6 +228,16 @@ profiles:
           - "tests/design-docs.test.mjs"
         depends_on: []
         failure_mode: "加固轮次的设计文档缺前置元数据、链接断开、缺决策记录，或在 proposed 状态下冒充已签署"
+      - id: check.harness-metrics
+        run: "node --test tests/harness-metrics.test.mjs"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
+          - "scripts/harness-metrics"
+          - "scripts/lib/harness-metrics.mjs"
+          - "tests/harness-metrics.test.mjs"
+        depends_on: []
+        failure_mode: "度量口径（管道提交占比、daily 起步必读、隐式技能 description 字符数、常驻上下文）计算错误，阶段基线与复测不可比"
       - id: check.runtime-storage
         group: runtime-storage
         inputs_complete: true
@@ -3068,7 +3078,7 @@ supplemental_checks:
     when: template-source
     task_id: supplemental.source-lock-lag
     source_requirement: committed
-  - id: check.harness-metrics
+  - id: check.harness-metrics-supplemental
     run: node --test tests/harness-metrics.test.mjs
     group: feature-assets
     gate_ids: [check.verification-lifecycle]

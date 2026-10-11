@@ -34,7 +34,7 @@ execution_plan: architecture-iteration-v1-plan.md
 
 | 编号 | 事实 | 位置 |
 |---|---|---|
-| 证据 1 | 398 个非合并提交里，149 个（37%）只改锁、指针、投影或清单，330 个（83%）至少碰到其中一种。改动最多的文件：`skills-lock.json` 137 次，三个 Profile 指针各 97～99 次，`strategic-handoff-tools.lock.json` 89 次 | 根仓 Git 历史 |
+| 证据 1 | 396 个非合并提交里，149 个（37.6%）只改锁、指针、投影或清单，311 个（78.5%）至少碰到其中一种（口径与复现命令见执行计划附录 A；最近 30 天窗口为 289 个里 122 个，42.2%）。改动最多的文件：`skills-lock.json` 137 次，三个 Profile 指针各 97～99 次，`strategic-handoff-tools.lock.json` 89 次 | 根仓 Git 历史 |
 | 证据 2 | 每个 Profile 有 174～209 个 `scripts/` 文件与根仓逐字节相同。扣掉测试、证据和 wiki 后，每个 Profile 只剩约 50 个独有文件，其中 4 个 lib 三个 Profile 都有 | `submodules/yss-harness-*-agent/` |
 | 证据 3 | 根仓、三个 Profile、yss-cli 都是 0 个 tag。yss-cli 的来源锁固定 spec 于 `cad38300`，落后 42 个提交；它内嵌的 8.9 MB `bundles.json.gz` 在 82 个提交里被改了 17 次 | `submodules/yss-cli/docs/source-lock.json`；`submodules/yss-cli/internal/bundle/assets/` |
 | 证据 4 | 三个 Profile 都没有独立 CI，`.github/workflows` 已删；根仓验证 profile 有 19 处直接引用 `submodules/yss-harness-*` | `.template-source/process/template-verification-profiles.yaml` |
@@ -85,7 +85,7 @@ execution_plan: architecture-iteration-v1-plan.md
 
 | ID | 需求 | 适用条件/负载 | 指标及单位 | 目标 | 确认状态 | 验证方法 | 来源引用 | 验收引用 | 未决项 |
 |---|---|---|---|---|---|---|---|---|---|
-| NFR-001 | 管道提交减少 | 根仓非合并提交，30 天窗口 | 只改锁、指针、投影、清单的提交占比 | 由 37% 降至 < 10% | 已确认 | 检查：按执行计划附录口径统计 Git 历史 | .template-source/contracts/architecture-iteration-v1.md :: heading:现状证据 | AC-017 | 无 |
+| NFR-001 | 管道提交减少 | 根仓非合并提交，30 天窗口 | 只改锁、指针、投影、清单的提交占比 | 由 37.6%（2026-08-27 起；最近 30 天为 42.2%）降至 < 10% | 已确认 | 检查：`scripts/harness-metrics` 的 `pipeline_commits`，口径见执行计划附录 A | .template-source/contracts/architecture-iteration-v1.md :: heading:现状证据 | AC-017 | 无 |
 | NFR-002 | 修一次内核只碰一个仓 | 只改工作流或规则、不改校验语义的修复 | 涉及的仓库数 | 由 5 个降至 1 个（改校验语义时另加 yss-cli） | 已确认 | 检查：S2 之后抽查 5 次修复 | .template-source/contracts/architecture-iteration-v1.md :: heading:问题陈述 | AC-008, AC-017 | 无 |
 | NFR-003 | Agent 起步更轻 | daily 路径，首次进入 | 起步必读字节 | 由约 56 KB 降至 ≤ 10 KB | 已确认 | 检查：`harness-metrics` | .template-source/contracts/architecture-iteration-v1.md :: heading:现状证据 | AC-013 | 无 |
 | NFR-004 | 已有实例兼容 | 已按旧版本初始化的实例 | 升级失败数；强制删除数 | 都为 0；所有删除都经可审阅、可逐文件拒绝的计划 | 已确认 | 测试：升级场景与删除拒绝场景 | .template-spec/process/harness-upgrade.md :: heading:计划、冲突与保护 | AC-004, AC-016 | 无 |
