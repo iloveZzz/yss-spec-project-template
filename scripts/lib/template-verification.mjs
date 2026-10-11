@@ -6,6 +6,7 @@ import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseDocument } from "../vendor/yaml.mjs";
+import { expandLegacyCoverage } from "./legacy-coverage.mjs";
 
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 export const PROFILE_FILE = path.join(ROOT, ".template-source/process/template-verification-profiles.yaml");
@@ -33,6 +34,7 @@ export function loadVerificationProfiles(source = readFileSync(PROFILE_FILE, "ut
   const document = parseDocument(source, { uniqueKeys: true });
   ensure(document.errors.length === 0, document.errors[0]?.message || "核验 profile 无法解析");
   const config = document.toJS({ maxAliasCount: 0 });
+  expandLegacyCoverage(config);
   ensure(config?.schema_version === 1, "核验 profile schema_version 必须为 1");
   ensure(config.profiles?.fast && config.profiles?.candidate && config.profiles?.release, "必须声明 fast、candidate、release profile");
   ensure(config.groups && typeof config.groups === "object", "核验 profile 缺少 groups");

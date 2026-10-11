@@ -56,7 +56,7 @@ YSS 模板工程是一套可版本化的研发治理系统。它用仓库身份�
 
 模板实例分发面包含根规则、`CONTEXT.md`、按需选择的共享 skills、`.template-spec/` 中的治理资产和共享验证脚本；`docs/` 保存实例按需产生的产品资产。CLI 从固定模板 commit 构建 bundled snapshot，并在 metadata 中保存模板身份和版本。
 
-`.template-source/` 是模板源治理区，保存当前维护规则、跨仓契约、工具源码、必要工程依据和模板源 Wiki；运行报告、历史证据、缓存及恢复包存入仓外 maintenance 命名空间。该目录不进入 `project-instance`，避免把模板维护历史误当成产品研发资产。
+`.template-source/` 是模板源治理区，保存当前维护规则、跨仓契约、工具源码、必要工程依据；`llm-wiki` 在本机按需生成的模板源 Wiki 不提交；运行报告、历史证据、缓存及恢复包存入仓外 maintenance 命名空间。该目录不进入 `project-instance`，避免把模板维护历史误当成产品研发资产。
 
 ## 7. 模板维护工作流
 
@@ -81,6 +81,8 @@ YSS 模板工程是一套可版本化的研发治理系统。它用仓库身份�
 | 同步共享 skill 投影 | `scripts/sync-skills` |
 | 校验 skills lock | `scripts/update-skill-lock --check` |
 | 校验生命周期注册表 | `scripts/verify-lifecycle-registry` |
+| 校验 Profile 共享工具与来源一致 | `scripts/sync-strategic-handoff-tools --check`；Profile 暂时有意保持差异时，写入 `.template-source/distribution/profile-variants.json`（原因、解除条件与副本摘要），登记不替代同步，过期或被改动的登记会让检查失败 |
+| 校验 yss-cli 来源锁没有落后太多 | `scripts/verify-source-lock-lag`（候选与发布验证执行；落后超过 Bundle 输入提交数上限时失败）；刷新用 yss-cli 的 `tools/refresh-source-lock.mjs`，目标提交须已推送 |
 | 校验维护 checkpoint | `scripts/verify-maintenance-checkpoint <file>` |
 
 ### 工具链测试执行模式

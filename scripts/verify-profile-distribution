@@ -1,0 +1,26 @@
+#!/usr/bin/env node
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { evaluateAll, formatReport } from './lib/profile-distribution.mjs';
+
+const SCRIPT_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+
+function usage() {
+  return '用法: scripts/verify-profile-distribution [--root <目录>]\n只读；backend / frontend / design 的分发策略没有排除根仓声明的「仅模板源」脚本、或让技能目录里的测试目录随实例分发时失败。无法评估（Profile 未检出）也失败。';
+}
+
+try {
+  const args = process.argv.slice(2);
+  let root = SCRIPT_ROOT;
+  for (let index = 0; index < args.length; index += 1) {
+    if (args[index] === '--root') root = path.resolve(args[++index] ?? '');
+    else if (args[index] === '--help') { process.stdout.write(`${usage()}\n`); process.exit(0); }
+    else throw new TypeError(`未知参数 ${args[index]}\n${usage()}`);
+  }
+  const result = evaluateAll(root);
+  (result.ok ? process.stdout : process.stderr).write(`${formatReport(result)}\n`);
+  if (!result.ok) process.exitCode = 1;
+} catch (error) {
+  process.stderr.write(`verify-profile-distribution 错误: ${error.message}\n`);
+  process.exitCode = 1;
+}

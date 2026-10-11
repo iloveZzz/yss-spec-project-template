@@ -6,10 +6,13 @@ import { spawnSync } from 'node:child_process';
 import path from 'node:path';
 import { parseDocument } from './vendor/yaml.mjs';
 import { inspectWorkingTreeScope } from './lib/repository-scope-policy.mjs';
+import { loadProfileVariants, classifyVariant, lockContentMatches } from './lib/profile-variants.mjs';
 const root=path.resolve(import.meta.dirname,'..');
 const check=process.argv.includes('--check');
 const rootOnly=process.argv.includes('--root-only');
 const targets=['submodules/yss-harness-design-agent','submodules/yss-harness-backend-agent','submodules/yss-harness-frontend-agent'];
+// 有意定制登记：登记在案的 Profile 副本不被覆盖，其摘要由登记固定；未登记的差异仍算漂移。
+const variants=loadProfileVariants(root),usedVariants=new Set(),variantErrors=[];
 const shared=['scripts/strategic-consumer-entry','scripts/strategic-handoff','scripts/verify-strategic-handoff-consumption','tests/scenarios/verify-strategic-handoff-package-scenarios.mjs','scripts/verify-strategic-context-import','tests/scenarios/verify-strategic-context-import-scenarios.mjs','scripts/lib/context-contract.mjs','.template-spec/process/strategic-handoff-package.md','.template-spec/process/schemas/strategic-design-handoff.schema.json',...readdirSync(path.join(root,'scripts/lib')).filter(x=>x.startsWith('strategic-handoff-')||x==='strategic-handoff.mjs').map(x=>`scripts/lib/${x}`),...readdirSync(path.join(root,'.template-spec/process/schemas')).filter(x=>x.startsWith('strategic-handoff-')).map(x=>`.template-spec/process/schemas/${x}`),...readdirSync(path.join(root,'scripts/fixtures/strategic-handoff')).map(x=>`scripts/fixtures/strategic-handoff/${x}`)];
 shared.push('scripts/spec-baseline','scripts/lib/spec-baseline.mjs','.template-spec/process/spec-baseline.md','.template-spec/process/schemas/spec-baseline-package.schema.json','.template-spec/process/schemas/spec-baseline-import-receipt.schema.json');
 shared.push('scripts/fixtures/spec-baseline/fixture.mjs','scripts/fixtures/spec-baseline/package.mjs');
@@ -57,7 +60,7 @@ function transformationFor(target,ref){
  if(ref==='scripts/fixtures/strategic-handoff/fixture.mjs')return'backend-wire-fixture';
  return'identity';
 }
-function sync(source,dest,transformation='identity'){const bytes=transformations[transformation](readFileSync(source));if(!existsSync(dest)||!bytes.equals(readFileSync(dest))){differences.push(path.relative(root,dest));if(!check){mkdirSync(path.dirname(dest),{recursive:true});writeFileSync(dest,bytes);}}if(!check&&path.basename(path.dirname(dest))==='scripts'&&!path.extname(dest))chmodSync(dest,0o755);}
+function sync(source,dest,transformation='identity'){const bytes=transformations[transformation](readFileSync(source));const variant=variants.get(path.relative(root,dest));if(variant){usedVariants.add(path.relative(root,dest));const verdict=classifyVariant(variant,{actual:existsSync(dest)?readFileSync(dest):null,expected:bytes});if(verdict.status!=='ok')variantErrors.push(`${path.relative(root,dest)}: ${verdict.message}`);return;}if(!existsSync(dest)||!bytes.equals(readFileSync(dest))){differences.push(path.relative(root,dest));if(!check){mkdirSync(path.dirname(dest),{recursive:true});writeFileSync(dest,bytes);}}if(!check&&path.basename(path.dirname(dest))==='scripts'&&!path.extname(dest))chmodSync(dest,0o755);}
 const digestBytes=bytes=>`sha256:${createHash('sha256').update(bytes).digest('hex')}`;
 shared.push('scripts/lib/lifecycle-execution-scope.mjs','scripts/lib/instance-metadata.mjs','scripts/lib/harness-execution-scope.mjs');
 shared.push('scripts/lib/lifecycle-progression.mjs','.template-spec/process/schemas/progression-target.schema.json','.template-spec/process/lifecycle-progression.md');
@@ -203,7 +206,7 @@ const sourceState=scopedState?'working-tree':'committed';
 function expectedLock(target,targetRoot){
  const lockedRefs=[...new Set([...sharedRefs,...(target==='.'||!target.endsWith('design-agent')?sliceExecutionRefs:[]),...(target==='.'||target.endsWith('backend-agent')?backendPlatformRefs:[])])].sort();
  const sourceFiles=Object.fromEntries(lockedRefs.map(ref=>[ref,digestBytes(readFileSync(path.join(root,ref)))]));
- const effectiveFiles=Object.fromEntries(lockedRefs.map(ref=>[ref,digestBytes(transformations[transformationFor(target,ref)](readFileSync(path.join(root,ref))))]));
+ const effectiveFiles=Object.fromEntries(lockedRefs.map(ref=>[ref,variants.get(path.relative(root,path.join(root,target,ref)))?.variant_sha256??digestBytes(transformations[transformationFor(target,ref)](readFileSync(path.join(root,ref))))]));
  if(target.endsWith('backend-agent')){sourceFiles[visualSource]=digestBytes(readFileSync(path.join(root,visualSource)));effectiveFiles[visualWire]=digestBytes(transformations['backend-wire-library'](readFileSync(path.join(root,visualSource))));}
  sourceFiles[routingContractRef]=digestBytes(routingSource);
  effectiveFiles[targetRoutingRef(targetRoot)]=digestBytes(target==='.'?routingSource:projectedRouting(targetRoot));
@@ -211,12 +214,14 @@ function expectedLock(target,targetRoot){
  effectiveFiles[registryRef]=digestBytes(target==='.'?readFileSync(path.join(root,registryRef)):projectedRegistry(targetRoot));
  return {schema_version:1,target_id:target==='.'?'template-root':path.basename(target),source_repository:'yss-spec-project-template',source_revision:revision,source_state:sourceState,transformation_set:[...new Set([...lockedRefs.map(ref=>transformationFor(target,ref)),...(target.endsWith('backend-agent')?['backend-wire-library']:[])])].sort(),source_files:{...sourceFiles,'.template-source/cli-core/native-context.mjs':digestBytes(readFileSync(path.join(root,'.template-source/cli-core/native-context.mjs'))),'.template-source/cli-core/runtime-store.mjs':digestBytes(readFileSync(path.join(root,'.template-source/cli-core/runtime-store.mjs'))),'.template-source/cli-core/work-layout.mjs':digestBytes(readFileSync(path.join(root,'.template-source/cli-core/work-layout.mjs')))},effective_files:effectiveFiles};
 }
-function lock(target,targetRoot){const ref='.template-source/distribution/strategic-handoff-tools.lock.json',dest=path.join(targetRoot,ref),bytes=Buffer.from(`${JSON.stringify(expectedLock(target,targetRoot),null,2)}\n`);if(!existsSync(dest)||!bytes.equals(readFileSync(dest))){differences.push(path.relative(root,dest));if(!check){mkdirSync(path.dirname(dest),{recursive:true});writeFileSync(dest,bytes);}}}
+// 来源修订号与来源状态只记录生成锁时的提交与工作区状态，每提交一次就会变：--check 只按锁内容（文件摘要等）判漂移；
+// 显式同步时仍会把它们刷新到当前状态，提交后重跑一次即可把锁钉成 committed。发布门禁由 verify-strategic-handoff-tools-lock --require-committed 负责。
+function lock(target,targetRoot){const ref='.template-source/distribution/strategic-handoff-tools.lock.json',dest=path.join(targetRoot,ref),fresh=expectedLock(target,targetRoot),bytes=Buffer.from(`${JSON.stringify(fresh,null,2)}\n`);let existing=null,same=false;if(existsSync(dest)){const raw=readFileSync(dest);same=bytes.equals(raw);try{existing=JSON.parse(raw.toString('utf8'));}catch{existing=null;}}const stale=check?!lockContentMatches(existing,fresh):!same;if(stale){differences.push(path.relative(root,dest));if(!check){mkdirSync(path.dirname(dest),{recursive:true});writeFileSync(dest,bytes);}}}
 // Shared Node governance modules remain independently maintained after CLI retirement.
 sync(path.join(root,'.template-source/cli-core/command-runner.mjs'),path.join(root,'scripts/lib/command-runner.mjs'));
 lock('.',root);
 for(const target of rootOnly?[]:targets){
- if(!existsSync(path.join(root,target,'.git')))continue;
+ if(!existsSync(path.join(root,target,'.git'))){for(const rel of variants.keys())if(rel.startsWith(target+'/'))usedVariants.add(rel);continue;}
  if(!check){const state=inspectWorkingTreeScope(root,{project_root:target,repository_scope:'git-submodule',checkout_state:'attached-branch'});if(!state.writable)throw new Error(`${target}: ${state.violation}`);}
  if(!target.endsWith('design-agent'))for(const ref of sliceExecutionRefs)sync(path.join(root,ref),path.join(root,target,ref),transformationFor(target,ref));
  if(target.endsWith('backend-agent'))for(const ref of ['scripts/fixtures/existing-backend/scenarios.test.mjs','tests/scenarios/verify-existing-backend-architecture-scenarios.mjs','scripts/lib/implementation-contract-compiler.mjs','scripts/lib/technical-design-boundary.mjs',...backendPlatformRefs])sync(path.join(root,ref),path.join(root,target,ref));
@@ -231,4 +236,6 @@ for(const target of rootOnly?[]:targets){
  for(const ref of new Set(shared))sync(path.join(root,ref),path.join(root,target,ref),transformationFor(target,ref));
  lock(target,path.join(root,target));
 }
-if(check&&differences.length){process.stderr.write(`交接工具同步漂移: ${differences.join(', ')}\n`);process.exitCode=1;}else process.stdout.write(`战略交接共享工具 ${check?'同步检查通过':`同步 ${differences.length} 文件`}\n`);
+for(const rel of variants.keys())if(!usedVariants.has(rel))variantErrors.push(`${rel}: 登记项不在同步范围内（路径写错，或该文件已不再被同步），请更正或删除`);
+if(variantErrors.length){process.stderr.write(`有意定制登记不一致（.template-source/distribution/profile-variants.json）:\n${variantErrors.map(x=>'  '+x).join('\n')}\n`);process.exitCode=1;}
+if(check&&differences.length){process.stderr.write(`交接工具同步漂移: ${differences.join(', ')}\n`);process.exitCode=1;}else if(!variantErrors.length)process.stdout.write(`战略交接共享工具 ${check?'同步检查通过':`同步 ${differences.length} 文件`}\n`);

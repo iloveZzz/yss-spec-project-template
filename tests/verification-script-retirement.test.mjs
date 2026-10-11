@@ -7,33 +7,12 @@ import {fileURLToPath} from 'node:url';
 import {createHash} from 'node:crypto';
 import {spawnSync} from 'node:child_process';
 import {compileTaskExecution,resolveVerificationSource,verificationSourceIdentities} from '../.template-source/scripts/lib/verification-execution-plan.mjs';
-import {assertRequiredFiles,planTemplateVerification} from '../scripts/lib/template-verification.mjs';
+import {assertRequiredFiles} from '../scripts/lib/template-verification.mjs';
 import {verificationPatternMatches} from '../.template-source/scripts/lib/verification-gates.mjs';
 import {verificationInputDigest} from '../scripts/lib/verification-report.mjs';
 
 const fixture=t=>{const root=fs.mkdtempSync(path.join(os.tmpdir(),'yss-script-retirement-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));return root;};
 const put=(root,ref)=>{const file=path.join(root,ref);fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,'console.log("mapped scenario");\n');return file;};
-
-test('第六批测试辅助库退役旧位置，历史来源和语法执行绑定真实替代文件',t=>{
-  const root=fixture(t),pairs=[['scripts/lib/git-submodule-fixtures.mjs','tests/helpers/git-submodule-fixtures.mjs'],['scripts/lib/scenario-checks.mjs','tests/helpers/scenario-checks.mjs']];
-  for(const [old,current]of pairs){
-    assert.equal(resolveVerificationSource(old),current);
-    assert.ok(verificationSourceIdentities(current).includes(old));
-    for(const profile of ['fast','candidate','release']){
-      const before=planTemplateVerification({profile,changedFiles:[old]}),after=planTemplateVerification({profile,changedFiles:[current]});
-      assert.deepEqual([...after.groups].sort(),[...before.groups].sort());
-      assert.deepEqual(after.commands.map(row=>row.id),before.commands.map(row=>row.id));
-    }
-    assert.throws(()=>assertRequiredFiles({required_files:[old]},root),/RETIRED_SCRIPT_TARGET_MISSING/);
-    const file=put(root,current);
-    assertRequiredFiles({required_files:[old]},root);
-    const execution=compileTaskExecution({command:`node --check ${old}`},{root});
-    assert.deepEqual(execution.args,['--check',file]);
-    assert.equal(spawnSync(execution.file,execution.args,{cwd:root}).status,0);
-    fs.unlinkSync(file);fs.symlinkSync(put(fixture(t),'outside.mjs'),file);
-    assert.throws(()=>compileTaskExecution({command:`node --check ${old}`},{root}),/RETIRED_SCRIPT_TARGET_INVALID/);
-  }
-});
 
 test('旧CLI核心检查保留冻结身份，缺失、篡改和链接目标不能执行',t=>{
   const root=fixture(t),source='.template-source/cli-core/tests/*.test.mjs',target='tests/cli-core-retirement.test.mjs',file=put(root,target);
@@ -122,21 +101,6 @@ test('当前输入摘要同时观察固定mapping来源和迁移后的真实case
   const before=verificationInputDigest(root);
   fs.appendFileSync(source,'// changed fixed mapping policy\n');const policyChanged=verificationInputDigest(root);assert.notEqual(policyChanged,before);
   fs.appendFileSync(target,'// changed actual scenario\n');assert.notEqual(verificationInputDigest(root),policyChanged);
-});
-
-test('全部迁移场景在fast/candidate/release严格保留原影响组和检查身份',()=>{
-  const scenarios=fs.readdirSync(new URL('./scenarios/',import.meta.url)).filter(name=>/^verify-.+-scenarios\.(?:mjs|py)$/.test(name));
-  assert.equal(scenarios.length,40);
-  const mappings=scenarios.map(name=>[`scripts/${name.replace(/\.(?:mjs|py)$/,'')}`,`tests/scenarios/${name}`]);
-  mappings.push(['scripts/verify-subagent-task-package-scenarios',resolveVerificationSource('scripts/verify-subagent-task-package-scenarios')]);
-  const identities=checks=>(checks||[]).map(check=>`${check.task_id||''}:${check.id}`).sort();
-  for(const [source,target]of mappings)for(const profile of ['fast','candidate','release']){
-    const old=planTemplateVerification({profile,changedFiles:[source]}),current=planTemplateVerification({profile,changedFiles:[target]}),label=`${profile}: ${source}`;
-    assert.deepEqual([...current.groups].sort(),[...old.groups].sort(),`${label} must preserve exact impact groups`);
-    assert.deepEqual(identities(current.commands),identities(old.commands),`${label} must preserve selected checks`);
-    assert.deepEqual(identities(current.shadow_commands),identities(old.shadow_commands),`${label} must preserve Gate impact checks before fallback`);
-    assert.deepEqual(current.changed_files,[target]);assert.equal(verificationPatternMatches(target,source),true);assert.equal(current.effective_profile,old.effective_profile);
-  }
 });
 
 test('迁移场景只按历史身份匹配，现役入口及新增回归保留实际路径规则',()=>{

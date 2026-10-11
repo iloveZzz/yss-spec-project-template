@@ -66,6 +66,8 @@ docs/process/yss-product-lifecycle-team-guide.md
 .template-spec/process/presentations/
 .template-spec/process/yss-product-lifecycle-team-guide.md
 docs/graphify-out
+# llm-wiki 在模板源本机按需生成的阅读视图，不提交
+.template-source/wiki/
 docs/.scratch/
 .work/
 # Preserved in calibration-and-environment-evidence.tar.gz with a SHA-256 manifest.
