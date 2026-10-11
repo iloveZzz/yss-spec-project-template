@@ -3,7 +3,7 @@ import { loadExecutionScope, assertScopeWorkUnit, scopedNextRoutes } from './lif
 import { createHash } from "node:crypto";
 import { readFileSync, existsSync, lstatSync, readdirSync, withValidationPhase, validationDependencies } from "./validation-phase.mjs";
 import { realpathSync } from "node:fs";
-import { OBSOLETE } from "./skill-supply-chain.mjs";
+import { OBSOLETE, lockedTreeHashMatches } from "./skill-supply-chain.mjs";
 import path from "node:path";
 import { parseDocument } from "../vendor/yaml.mjs";
 import { ROOT, loadRegistry, semanticDigest, validateRegistry } from "./lifecycle-registry.mjs";
@@ -193,7 +193,7 @@ export function inspectWorkUnitSkills({ root = ROOT, registry, route, agentRunti
     try {
       const hash = checkedTreeHash(canonical, canonical);
       if (!existsSync(path.join(canonical, 'SKILL.md'))) report('managed-skill-missing', id, canonicalRef + '/SKILL.md', '已登记技能缺少入口文件');
-      if (hash !== record.effectiveHash) report('skill-hash-drift', id, canonicalRef, 'canonical 技能内容与锁定有效哈希不一致');
+      if (!lockedTreeHashMatches(record, hash)) report('skill-hash-drift', id, canonicalRef, 'canonical 技能内容与锁定有效哈希不一致');
       const projectionRef = agentRuntime && roots[agentRuntime];
       if (projectionRef) {
         if (!lock.projectionRoots.includes(projectionRef) || !record.targets?.includes(projectionRef) || !record.targets?.includes('.agents/skills')) {

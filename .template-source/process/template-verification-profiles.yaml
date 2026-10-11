@@ -372,6 +372,18 @@ profiles:
           - "scripts/lib/skill-supply-chain.mjs"
         depends_on: []
         failure_mode: "技能锁摘要与当前内容不一致的错误"
+      - id: check.skill-lock-readers
+        run: "node --test tests/skill-lock-readers.test.mjs"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
+          - "skills-lock.json"
+          - "scripts/lib/skill-supply-chain.mjs"
+          - "scripts/lib/lifecycle-context-query.mjs"
+          - "scripts/lib/backend-standards-coverage.mjs"
+          - "tests/skill-lock-readers.test.mjs"
+        depends_on: []
+        failure_mode: "根锁重新带回本地树哈希，读取方把没有 effectiveHash 的模板锁判成漂移，或对带 effectiveHash 的实例锁放过哈希不符、未登记的技能"
       - id: "check.93d2af5732ccdd96"
         inputs_complete: true
         input_patterns:
@@ -1414,6 +1426,10 @@ routing:
       - scripts/verify-source-lock-lag
       - scripts/lib/source-lock-lag.mjs
       - tests/source-lock-lag.test.mjs
+    groups:
+      - feature-assets
+  - patterns:
+      - tests/skill-lock-readers.test.mjs
     groups:
       - feature-assets
   - patterns:
@@ -3099,6 +3115,14 @@ supplemental_checks:
     depends_on: []
     when: template-source
     task_id: supplemental.yss-cli-pin
+    source_requirement: committed
+  - id: check.skill-lock-readers-supplemental
+    run: node --test tests/skill-lock-readers.test.mjs
+    group: feature-assets
+    gate_ids: [check.verification-lifecycle]
+    depends_on: []
+    when: template-source
+    task_id: supplemental.skill-lock-readers
     source_requirement: committed
   - id: check.harness-metrics-supplemental
     run: node --test tests/harness-metrics.test.mjs

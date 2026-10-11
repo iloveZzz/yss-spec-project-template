@@ -3,7 +3,7 @@ import path from 'node:path';
 import { createHash } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 import { parseSliceYaml } from './slice-contract.mjs';
-import { treeHash } from './skill-supply-chain.mjs';
+import { treeHash, lockedTreeHashMatches } from './skill-supply-chain.mjs';
 import {candidateChangedPaths, candidateCoverageSource, candidateCoverageInventory} from './implementation-candidate-current.mjs';
 
 export const coverageDigest = value => createHash('sha256').update(typeof value === 'string' || Buffer.isBuffer(value) ? value : JSON.stringify(value)).digest('hex');
@@ -191,7 +191,8 @@ export function compileStandardsCoverage({root,projectRoot,contract=null,scope_k
     const skillRoot=path.join(root,'.agents/skills',skill);
     if(fs.existsSync(skillRoot)) {
       skillTrees[skill]=treeHash(skillRoot);
-      if(skillLock?.skills?.shared?.[skill]?.effectiveHash!==skillTrees[skill])issues.push({id:`skill-lock-drift:${skill}`,reason:'技能正文、引用或源码索引与锁不一致'});
+      const lockedSkill=skillLock?.skills?.shared?.[skill];
+      if(!lockedSkill||!lockedTreeHashMatches(lockedSkill,skillTrees[skill]))issues.push({id:`skill-lock-drift:${skill}`,reason:'技能正文、引用或源码索引与锁不一致'});
     }
   }
   for(const skill of observedSkills){const {rules,sourceDigests}=readRules(root,skill);rulesSources.push(...sourceDigests);for(const rule of rules){const applicability=tags.has(rule.when)?'required':(['pagination','batch'].includes(rule.when)?'conditional':'not-applicable');constraints.push({...rule,constraint_id:rule.id,applicability,applicability_basis:applicability==='required'?[...reasons.get(skill)].sort():[`no-observed-${rule.when}; reviewer must reconcile actual behavior`]});}}

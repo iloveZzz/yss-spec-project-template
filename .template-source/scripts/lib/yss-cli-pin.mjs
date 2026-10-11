@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // 固定 yss 二进制：读取并校验 .template-source/distribution/yss-cli-pin.json（architecture-iteration-v1 FR-002）。
 // 根仓不再用 submodule 固定 yss-cli；这里的固定文件记录 yss 的版本号、对应的 yss-cli 提交、构建方式和各平台二进制的 SHA-256。
-// 同一提交、同一 Go 版本、-trimpath 构建出的二进制逐字节相同，所以摘要可以用来核对。
+// 同一提交、同一 Go 版本、yss-cli 的 tools/build-candidate.mjs 构建出的二进制逐字节相同，所以摘要可以用来核对。
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';

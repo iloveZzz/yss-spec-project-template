@@ -177,7 +177,7 @@ fi
 if [[ -n "$yss_commit" ]]; then
   step "从固定提交 ${yss_commit} 构建 yss"
   if ((dry_run)); then
-    echo "+ git fetch --depth 1 ${YSS_CLI_REPOSITORY} ${yss_commit} → go run ./tools/bundle → go build ./cmd/yss"
+    echo "+ git fetch --depth 1 ${YSS_CLI_REPOSITORY} ${yss_commit} → go run ./tools/bundle → node tools/build-candidate.mjs（官方候选构建配方；没有该脚本的旧提交退回 go build -trimpath）"
   else
     command -v go >/dev/null || { echo "构建 yss 需要 go；请在 runner 镜像中提供" >&2; exit 1; }
     yss_source="$(work_dir)/yss-cli-${yss_commit}"
@@ -193,11 +193,19 @@ if [[ -n "$yss_commit" ]]; then
     fi
     (cd "$yss_source" && go run ./tools/bundle --source-root "$ROOT_DIR" --lock docs/source-lock.json --out internal/bundle/assets)
     test -z "$(git -C "$yss_source" status --porcelain --untracked-files=normal)"
-    yss_binary="$(dirname "$yss_source")/yss"
-    (cd "$yss_source" && CGO_ENABLED=0 go build -trimpath -o "$yss_binary" ./cmd/yss)
+    if [[ -f "$yss_source/tools/build-candidate.mjs" ]]; then
+      # yss-cli 自带的候选构建配方：固定 Go 环境、-mod=readonly -trimpath -buildvcs=false，提交号与来源状态用 -X 写入，并留下构建收据。
+      yss_build_out="$(dirname "$yss_source")/yss-build-${yss_commit}"
+      test ! -e "$yss_build_out"
+      node "$yss_source/tools/build-candidate.mjs" --root "$yss_source" --out "$yss_build_out"
+      yss_binary="$yss_build_out/yss"
+    else
+      yss_binary="$(dirname "$yss_source")/yss"
+      (cd "$yss_source" && CGO_ENABLED=0 go build -trimpath -o "$yss_binary" ./cmd/yss)
+    fi
     yss_sha256="$(node -e 'process.stdout.write(require("node:crypto").createHash("sha256").update(require("node:fs").readFileSync(process.argv[1])).digest("hex"))' "$yss_binary")"
     if ((yss_pinned)); then
-      # 同一提交、同一 Go 版本、-trimpath 构建出的二进制逐字节相同：摘要必须等于固定文件登记的值。
+      # 同一提交、同一 Go 版本、同一构建配方构建出的二进制逐字节相同：摘要必须等于固定文件登记的值。
       case "$(uname -m)" in x86_64) yss_arch=amd64 ;; aarch64 | arm64) yss_arch=arm64 ;; *) fail "不支持的架构 $(uname -m)" ;; esac
       yss_expected="$(node "$ROOT_DIR/$YSS_CLI_PIN" sha256 "$(uname -s | tr '[:upper:]' '[:lower:]')-${yss_arch}")" || fail "yss-cli 固定文件没有登记当前平台的二进制摘要"
       [[ "$yss_sha256" == "$yss_expected" ]] || fail "构建出的 yss 与固定文件的摘要不符：期望 ${yss_expected}，实际 ${yss_sha256}"

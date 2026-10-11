@@ -90,7 +90,9 @@ export function validateSkillGovernance({ read = (relative) => readFileSync(path
     if (!item || item.source !== strategicManifest.source || item.sourceRevision !== strategicManifest.source_revision || item.upstreamHash !== skill.upstream_hash) {
       fail(`战略设计 skill 缺少一致的来源锁定: ${skill.canonical}`);
     }
-    if (item.effectiveHash !== item.upstreamHash && item.adaptationRef !== strategicManifest.adaptation_ref) {
+    // 模板源的锁不再提交本地树哈希（FR-005）：现算 canonical 目录；实例锁里有打包器写入的值时与之相同。
+    const effectiveHash = item.effectiveHash ?? treeHash(path.join(ROOT, ".agents/skills", skill.canonical));
+    if (effectiveHash !== item.upstreamHash && item.adaptationRef !== strategicManifest.adaptation_ref) {
       fail(`战略设计 skill 差异缺少薄适配引用: ${skill.canonical}`);
     }
   }

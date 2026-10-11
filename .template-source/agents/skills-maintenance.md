@@ -22,13 +22,13 @@
 | `iloveZzz/yss-ui` | `.agents/skills/.yss-skills-manifest.json` 锁定的 revision / `packages/skills` | 13 个 `categories.app` 业务前端 skills；排除组件库内部 `categories.library` 和后端提交 skill，适配见 `.template-source/agents/yss-ui-skills-integration.md` |
 | 项目本地 | `.agents/skills` 或平台专属 root | YSS 适配与项目治理 skills |
 
-`skills-lock.json` 是技能清单、来源、上游哈希、当前有效内容哈希和投影目标的权威记录：
+`skills-lock.json` 是技能清单、来源、上游哈希和投影目标的权威记录；本地技能的当前内容哈希不再提交，验证与打包时现算：
 
 - `upstreamHash`：能够追溯时记录未经项目适配的上游内容哈希。
-- `effectiveHash`：当前实际生效的完整 skill 目录树哈希。
+- `effectiveHash`：当前实际生效的完整 skill 目录树哈希。模板源的锁不记录它（architecture-iteration-v1 FR-005），避免每次改技能正文都改锁；打包器按分发的技能树重算并写进实例里的锁，格式与旧版一致。
 - `targets`：权威内容应投影到的 Agent roots。
 
-项目允许按 YSS 流程适配上游 skill，但必须同时保留可追溯的上游信息和适配后的有效哈希。
+项目允许按 YSS 流程适配上游 skill，但必须保留可追溯的上游信息（`upstreamHash` 与 `adaptationRef`）；相对上游是否有改动，由现算的有效哈希与 `upstreamHash` 比较得出。
 
 当前 Matt 快照为 `0ab1b63a410a03d3627979a109c8695de27af954`。模板按 YSS capability 白名单收录上游 Skill；已退役的通用路由、个人工作流、教学、练习、写作实验和专项迁移 Skill 不再随 project-instance 分发。
 

@@ -54,6 +54,12 @@ export function treeHash(directory) {
   return digest.digest("hex");
 }
 
+// 模板源的锁不记录本地技能的树哈希（architecture-iteration-v1 FR-005）；实例锁由打包器写入 effectiveHash。
+// 锁里有这个值时，它必须等于实际的技能树哈希；没有就无需比较。
+export function lockedTreeHashMatches(record, actual) {
+  return record?.effectiveHash === undefined || record.effectiveHash === actual;
+}
+
 // treeHash is the published, normalized Skill digest. A no-op copy needs the
 // stricter filesystem comparison so modes, links and raw line endings survive.
 function projectionMatchesSource(source, target) {
@@ -256,7 +262,10 @@ function metadata(name, skillPath, directory, previous, canonical = false, sourc
   let recordedPath = old.skillPath ?? skillPath;
   if (canonical && /^\.(codex|cursor|pi|claude)\/skills\//.test(recordedPath)) recordedPath = skillPath;
   if (!hashCache.has(directory)) hashCache.set(directory, treeHash(directory));
-  const result = { source: old.source ?? "project", sourceType: old.sourceType ?? "local", skillPath: recordedPath, effectiveHash: hashCache.get(directory) };
+  // 本地技能的树哈希不再提交进锁（architecture-iteration-v1 FR-005）：这里只用它判断相对上游是否有改动；
+  // 实例锁里的 effectiveHash 由打包器按分发的技能树重算。
+  const effectiveHash = hashCache.get(directory);
+  const result = { source: old.source ?? "project", sourceType: old.sourceType ?? "local", skillPath: recordedPath };
   const sourceInfo = sources[result.source];
   if (sourceInfo?.revision) result.sourceRevision = sourceInfo.revision;
   let upstreamDirectory = null;
@@ -265,11 +274,11 @@ function metadata(name, skillPath, directory, previous, canonical = false, sourc
     if (!existsSync(upstreamDirectory)) throw new TypeError(`${name} 的上游路径不存在: ${recordedPath}`);
     result.upstreamHash = treeHash(upstreamDirectory);
   } else if (old.upstreamHash ?? old.computedHash) result.upstreamHash = old.upstreamHash ?? old.computedHash;
-  if (result.upstreamHash && result.effectiveHash !== result.upstreamHash) {
+  if (result.upstreamHash && effectiveHash !== result.upstreamHash) {
     const adaptationRef = old.adaptationRef ?? (result.source === "mattpocock/skills" ? ".template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md" : null);
     if (adaptationRef) result.adaptationRef = adaptationRef;
   }
-  return result;
+  return [result, effectiveHash];
 }
 export function updateSkillLock(arguments_ = process.argv.slice(2), { hashCache = new Map() } = {}) {
   const oldLock = parseLock(); const previous = priorMetadata(oldLock); const sources = sourceRevisionMap(oldLock, arguments_); const upstreamRoot = option(arguments_, "upstream-root");
@@ -291,7 +300,7 @@ export function updateSkillLock(arguments_ = process.argv.slice(2), { hashCache 
   if (unlocked.length) throw new TypeError(`发现未登记到 skills-lock.json 的已跟踪共享 skills: ${unlocked.join(", ")}\n确认新增后运行 scripts/update-skill-lock --add=<skill-name>`);
   const targets = [".agents/skills", ...PROJECTION_ROOTS];
   const shared = Object.fromEntries(sharedNames.map((name) => {
-    const item = metadata(name, `.agents/skills/${name}/SKILL.md`, path.join(SOURCE_ROOT, name), previous, true, sources, upstreamRoot, hashCache);
+    const [item, effectiveHash] = metadata(name, `.agents/skills/${name}/SKILL.md`, path.join(SOURCE_ROOT, name), previous, true, sources, upstreamRoot, hashCache);
     const yssUiSkill = yssUiSkills.get(name);
     if (yssUiSkill) {
       item.source = yssUiManifest.source;
@@ -299,7 +308,7 @@ export function updateSkillLock(arguments_ = process.argv.slice(2), { hashCache 
       item.skillPath = `${yssUiManifest.source_root}/${yssUiSkill.upstream}/SKILL.md`;
       item.sourceRevision = yssUiManifest.source_revision;
       item.upstreamHash = yssUiSkill.upstream_hash;
-      if (item.effectiveHash !== item.upstreamHash) item.adaptationRef = yssUiManifest.adaptation_ref;
+      if (effectiveHash !== item.upstreamHash) item.adaptationRef = yssUiManifest.adaptation_ref;
       else delete item.adaptationRef;
     }
     const strategicDesignSkill = strategicDesignSkills.get(name);
@@ -309,7 +318,7 @@ export function updateSkillLock(arguments_ = process.argv.slice(2), { hashCache 
       item.skillPath = `${strategicDesignManifest.source_root}/${strategicDesignSkill.upstream}/SKILL.md`;
       item.sourceRevision = strategicDesignManifest.source_revision;
       item.upstreamHash = strategicDesignSkill.upstream_hash;
-      if (item.effectiveHash !== item.upstreamHash) item.adaptationRef = strategicDesignManifest.adaptation_ref;
+      if (effectiveHash !== item.upstreamHash) item.adaptationRef = strategicDesignManifest.adaptation_ref;
       else delete item.adaptationRef;
     }
     item.targets = targets;
@@ -322,7 +331,7 @@ export function updateSkillLock(arguments_ = process.argv.slice(2), { hashCache 
     if (!names.length) continue;
     const absentPlatform = names.filter((name) => !lstatSafe(path.join(location, name))?.isDirectory());
     if (absentPlatform.length) throw new TypeError(`锁文件声明的平台 skills 缺少内容 (${root}): ${absentPlatform.join(", ")}`);
-    platform[root] = Object.fromEntries(names.map((name) => { const item = metadata(name, `${root}/${name}/SKILL.md`, path.join(location, name), previous, false, sources, upstreamRoot, hashCache); item.targets = [root]; return [name, item]; }));
+    platform[root] = Object.fromEntries(names.map((name) => { const [item] = metadata(name, `${root}/${name}/SKILL.md`, path.join(location, name), previous, false, sources, upstreamRoot, hashCache); item.targets = [root]; return [name, item]; }));
   }
   const manifest = { version: 3, generatedBy: "scripts/update-skill-lock", canonicalRoot: ".agents/skills", projectionRoots: PROJECTION_ROOTS, sources, skills: { shared, platform } };
   const rendered = `${JSON.stringify(manifest, null, 2)}\n`;

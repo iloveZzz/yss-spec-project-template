@@ -54,7 +54,7 @@ execution_plan: architecture-iteration-v1-plan.md
 分五个阶段推进，验证收缩贯穿全程。前一阶段的出口没通过，就不开始后一阶段的写入：
 
 1. **S0 版本与迁移底座**：引入语义化版本；CLI 改钉模板 tag；迁移规则支持版本区间，删除动作可以逐文件拒绝；根仓去掉 yss-cli 子模块（FR-001～FR-004）。
-2. **S1 生成物与投影**：生成物改为发布时生成；投影根只保留 `.claude/skills`（FR-005、FR-006）。
+2. **S1 生成物与投影**：根锁瘦身、生成物只在发布时重新生成（提交的副本由 CI 校验）；投影根只保留 `.claude/skills`（FR-005、FR-006）。
 3. **S2 Profile 并入**：打包时由内核与覆盖层组合；三个 Profile 并入根仓 `profiles/*`，同步机制随之删除（FR-007、FR-008）。
 4. **S3 分层与单一实现**：内核分四层，不再有导入环；校验归 Go，工作流归 Node，分四步退役（FR-009～FR-011）。
 5. **S4 规则与 Agent 上下文**：编排合同拆分；Agent 通过 `yss lifecycle route` 获取规则摘录；schema 常驻两代（FR-012～FR-014）。
@@ -65,10 +65,10 @@ execution_plan: architecture-iteration-v1-plan.md
 | ID | 需求 | 优先级 | 来源引用 | 验收引用 | 未决项 |
 |---|---|---|---|---|---|
 | FR-001 | 模板与 yss-cli 各有一条语义化版本线，四个 Profile 共用模板版本；模板的首个 tag 为 `v4.0.0`（高于 spec 旧 npm 包的最高版本 3.5.10，也不与 yss-cli 的 1.3.x 混淆）。yss-cli 的来源锁钉模板 tag，并记录对应 commit 作完整性校验；Bundle 只在 CLI 发布时从 tag 生成，模板的普通提交不触发任何重钉。实例记录 CLI 版本和模板版本。N3 的刷新脚本改为发布流程中的一步，N7 的手动落后检查删除 | P0 | .template-source/contracts/architecture-iteration-v1.md :: heading:现状证据 | AC-001 | 无 |
-| FR-002 | 根仓不再用 submodule 固定 yss-cli，改为在一个文件里固定 `yss` 的版本号和 SHA-256；本地联调仍可用 `YSS_NATIVE_BINARY` 覆盖。`check.cli-content-identity` 改为核对这个固定版本。实现口径：固定文件 `.template-source/distribution/yss-cli-pin.json` 记录 `yss` 自报的版本号、构建所用的 yss-cli 提交、Go 版本，以及各平台二进制的 SHA-256；同一提交、同一 Go 版本、`-trimpath` 构建出的二进制逐字节相同，所以摘要可以核对。尚无包含本轮改动的 CLI 发行版，固定的是按该提交构建的二进制，CLI 发布后再改记发行包摘要。本地联调自己构建的二进制，用 `YSS_NATIVE_BINARY_OVERRIDE=1` 显式覆盖，结果标记为未固定；CI 与发行验证不接受覆盖 | P0 | .template-source/contracts/architecture-iteration-v1.md :: heading:现状证据 | AC-002 | 无 |
+| FR-002 | 根仓不再用 submodule 固定 yss-cli，改为在一个文件里固定 `yss` 的版本号和 SHA-256；本地联调仍可用 `YSS_NATIVE_BINARY` 覆盖。`check.cli-content-identity` 改为核对这个固定版本。实现口径：固定文件 `.template-source/distribution/yss-cli-pin.json` 记录 `yss` 自报的版本号、构建所用的 yss-cli 提交、Go 版本，以及各平台二进制的 SHA-256；同一提交、同一 Go 版本、按 yss-cli 的 `tools/build-candidate.mjs` 构建出的二进制逐字节相同，所以摘要可以核对（配方固定 Go 环境并带 `-mod=readonly -trimpath -buildvcs=false`；AR-03 同步上游后由原来单独的 `-trimpath` 构建改为这条官方配方）。尚无包含本轮改动的 CLI 发行版，固定的是按该提交构建的二进制，CLI 发布后再改记发行包摘要。本地联调自己构建的二进制，用 `YSS_NATIVE_BINARY_OVERRIDE=1` 显式覆盖，结果标记为未固定；CI 与发行验证不接受覆盖 | P0 | .template-source/contracts/architecture-iteration-v1.md :: heading:现状证据 | AC-002 | 无 |
 | FR-003 | yss-cli 的迁移规则支持按模板版本区间匹配。从 yss-cli 的来源锁历史和内嵌 bundle 历史，一次性生成「commit → 版本」对照表，随 CLI 发布 | P0 | .template-source/contracts/architecture-iteration-v1.md :: heading:现状证据 | AC-003 | 无 |
 | FR-004 | 升级计划里的删除动作可以逐文件拒绝（选择「保留」）；用户拒绝时文件保留，升级不失败 | P0 | .template-spec/process/harness-upgrade.md :: heading:计划、冲突与保护 | AC-004 | 无 |
-| FR-005 | 生成物不再提交进 Git：`bundles.json.gz` 与 `docs/cli-help.md` 改为发布时生成（离线帮助照旧在构建时嵌入）；根仓 `skills-lock.json` 只记录上游来源的 revision，本地技能的树哈希在验证或发布时现算；实例里的锁由打包器生成，格式不变 | P1 | .template-source/contracts/architecture-iteration-v1.md :: heading:现状证据 | AC-005 | 无 |
+| FR-005 | 根仓 `skills-lock.json` 只记录上游来源与上游哈希，本地技能的树哈希（`effectiveHash`）不再提交，在验证或发布时现算；实例里的锁由打包器按分发的技能树重算 `effectiveHash`，格式与旧版逐字节一致。yss-cli 的生成物（`bundles.json.gz`、四个离线帮助 JSON、`docs/cli-help.md`）保持提交（离线帮助照旧在构建时嵌入），由上游 CI 的 artifacts 检查校验与源码一致，只在发布时重新生成（AR-03 同步上游后收窄：上游已用 `tools/artifacts.mjs` 与 `artifacts.yml` 把校验与生成做成同一套工具，不再改为不提交） | P1 | .template-source/contracts/architecture-iteration-v1.md :: heading:现状证据 | AC-005 | 无 |
 | FR-006 | 投影根收敛：删除 `.codex/skills`、`.cursor/skills`、`.pi/skills`，`.agents/skills` 是唯一的权威目录；`.claude/skills` 只保留相对符号链接，打包器接受 `.claude` 链接；实例「运行时 ↔ 投影根」一一对应的模型相应调整。第三方 Codex 插件 `product-design` 从模板、三个 Profile 与新实例分发中移出，由用户自行安装；注册表 `platform_skills` 里的登记和锁里的平台技能组随之清空，`platform_skills` 机制本身保留。已有实例里的 `.codex/skills`（含 `product-design`）按 FR-003、FR-004 的版本区间删除规则清理，用户可以拒绝。本条接手 hardening 的 FR-011 / WP-08 | P1 | .template-source/agents/skills-maintenance.md :: heading:权威内容与投影 | AC-006 | Q-003 |
 | FR-007 | yss-cli 打包器支持「内核 + 覆盖层」组合：覆盖 spec、design、backend、frontend，范围包括技能、`scripts/`、`.template-spec/process/`、`.template-spec/templates/`；覆盖层里同路径的文件优先。现有的 9 种字节替换改为「统一路径布局 + 2 个参数」（查询 profile、编排合同路径） | P0 | .template-source/contracts/architecture-iteration-v1.md :: heading:现状证据 | AC-007 | 无 |
 | FR-008 | 三个 Profile 并入根仓 `profiles/{backend,frontend,design}/`，三者共有的内容放 `profiles/_specialist/`，每个目录只放覆盖层。采用快照导入，导入提交写明来源仓库与 commit；旧仓库归档为只读。同时删除：同步脚本、`strategic-handoff-tools.lock.json`、`profile-variants.json`、Profile 漂移检查、`.strategic-design-skills-manifest.json`、三个 submodule 指针。Profile 的 evidence 和 wiki 移到仓外归档，并附 SHA-256 清单 | P0 | .template-source/contracts/architecture-iteration-v1.md :: heading:现状证据 | AC-008 | 无 |
@@ -100,7 +100,7 @@ execution_plan: architecture-iteration-v1-plan.md
 | AC-002 | FR-002 | S0 完成 | 检查根仓的 `.gitmodules` 与固定版本文件，运行 fast | 没有 yss-cli gitlink；固定文件写有版本号和 SHA-256；版本或摘要不符时 `cli-content-identity` 失败 | 成功 / 拒绝 | 无 |
 | AC-003 | FR-003 | 一个按历史 commit 初始化的实例 | 用新 CLI 生成升级计划 | 能借对照表识别出该实例的模板版本；按版本区间匹配的删除规则生效；对照表里找不到的 commit 明确报告，不猜测 | 成功 / 边界 | 无 |
 | AC-004 | FR-004, NFR-004 | 升级计划里含删除动作 | 用户对其中一个文件选择「保留」后应用 | 该文件原样保留，其余动作照常执行，升级不失败 | 状态变化 | 无 |
-| AC-005 | FR-005 | S1 完成 | 检查两个仓库的受追踪文件 | 不再有 `bundles.json.gz`、生成的 `cli-help.md` 和本地技能树哈希；发布产物里有这两个文件；实例锁格式与旧版一致 | 成功 | 无 |
+| AC-005 | FR-005 | S1 完成 | 检查根仓受追踪的 `skills-lock.json`，并让打包器分别用带与不带 `effectiveHash` 的模板锁渲染实例锁 | 根锁里没有 `effectiveHash`；两种输入渲染出的实例锁逐字节相同；改动技能正文不再改动根锁（相对上游的适配状态没有变化时）；实例锁里的哈希与分发的技能树不符时，读取方仍报漂移 | 成功 / 拒绝 | 无 |
 | AC-006 | FR-006 | S1 完成 | 用新版本初始化 spec 实例，并在 Claude Code、Codex、Cursor 里列出技能 | 实例里没有 `.codex/skills`、`.cursor/skills`、`.pi/skills`，也没有 `product-design`；`.claude/skills` 是链接；三个运行时都能列出全部技能；注册表 `platform_skills` 为空且校验通过；已有 design 实例里的 `product-design` 以可拒绝的删除列出，拒绝时原样保留 | 成功 / 状态变化 | Q-003 |
 | AC-007 | FR-007 | yss-cli 组合能力已扩展 | 对同一组源码，分别按旧形态（子模块）和新形态（覆盖层）构建 | 四个 Profile 的「路径 → digest、mode、ownership」映射逐项一致 | 成功 | 无 |
 | AC-008 | FR-008, NFR-002 | S2 完成 | 检查 `.gitmodules`、`profiles/` 和同步机制；修改一个共享内核文件 | 没有 Profile submodule；同步脚本、工具锁、有意定制登记、设计技能清单都已删除；这次修改只需根仓 1 个 PR，构建出的四个 Profile 都带上了它 | 成功 | 无 |
