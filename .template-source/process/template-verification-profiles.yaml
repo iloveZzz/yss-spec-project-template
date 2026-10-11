@@ -54,6 +54,17 @@ profiles:
           - "tests/profile-variants.test.mjs"
         depends_on: []
         failure_mode: "有意定制登记接受已与来源一致的副本、放过被改动的定制，或把未登记的 Profile 差异当成有意"
+      - id: check.template-wiki-untracked
+        run: "node --test tests/template-wiki-untracked.test.mjs"
+        group: hygiene
+        inputs_complete: true
+        input_patterns:
+          - ".template-source/wiki/**"
+          - ".template-source/README.md"
+          - ".gitignore"
+          - "tests/template-wiki-untracked.test.mjs"
+        depends_on: []
+        failure_mode: "llm-wiki 编译出的模板源阅读视图被重新提交进版本库，成为会过期且无人检查的派生物"
       - id: check.verification-script-retirement
         run: "node --test tests/verification-script-retirement.test.mjs"
         group: candidate-integrity
@@ -249,14 +260,6 @@ profiles:
           - "scripts/verify-maintenance-review-workflow-scenarios"
         depends_on: []
         failure_mode: "当前 L2 正式审查的候选绑定、任务包或发布门禁未闭合"
-      - id: "check.agents-wiki-structure"
-        run: "node .agents/skills/llm-wiki/scripts/lint-wikilinks.mjs .template-source/wiki --repo . --structure-only"
-        group: "hygiene"
-        inputs_complete: true
-        input_patterns:
-          - ".template-source/wiki/**"
-        depends_on: []
-        failure_mode: "入口知识刷新产生坏链接、错误来源闭包或未完成事务；当前性另由 status 报告"
       - id: "check.agents-shared-sync"
         run: "scripts/sync-strategic-handoff-tools --check"
         group: "strategic-handoff-package"
@@ -1208,9 +1211,11 @@ routing:
       - package.json
       - .gitignore
       - README.md
+      - .template-source/README.md
       - .template-spec/**
       - docs/**
-      - .template-source/wiki/**
+      - .template-source/wiki/**  # 已不再提交（被 .gitignore 排除）；由 check.template-wiki-untracked 守卫
+      - tests/template-wiki-untracked.test.mjs
       - tests/governance-layout.test.mjs
       - scripts/lib/governance-layout.mjs
     groups:
@@ -3017,6 +3022,14 @@ supplemental_checks:
     depends_on: []
     when: template-source
     task_id: supplemental.profile-variants
+    source_requirement: committed
+  - id: check.template-wiki-untracked-supplemental
+    run: node --test tests/template-wiki-untracked.test.mjs
+    group: hygiene
+    gate_ids: [check.verification-lifecycle]
+    depends_on: []
+    when: template-source
+    task_id: supplemental.template-wiki-untracked
     source_requirement: committed
   - id: check.legacy-coverage-supplemental
     run: node --test tests/legacy-coverage.test.mjs
