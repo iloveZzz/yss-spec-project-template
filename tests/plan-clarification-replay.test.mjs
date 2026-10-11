@@ -28,7 +28,7 @@ test('observations require actual completed reads; self-report and missing model
 });
 
 test('all risk cases declare observations and protected fixture write scope without local docs', () => {
-  python(`suite=json.loads(m.SUITE.read_text());cases=suite['scenarios']\nassert len(cases)==8 and len({c['id'] for c in cases})==8\nfor case in cases:\n assert 'docs' not in case['source_paths'] and 'docs/.scratch/demo/plan.md' in case['files']\n assert case['allowed_writes']==[] and case['behavior_review']['expected'] and case['behavior_review']['forbidden']\n assert '.agents/skills/grilling/SKILL.md' in case['required_paths']\n assert case['files']['yss-project.yaml'].endswith('repository_mode: project-instance\\n')\n for step in case.get('steps',[case]):\n  assert 'test-data-only' in step['prompt']\n  assert any(a['kind']=='absent' and a['path']=='docs/.scratch/demo/spec.md' for a in step['assertions'])\n`);
+  python(`suite=json.loads(m.SUITE.read_text());cases=suite['scenarios']\nassert len(cases)==8 and len({c['id'] for c in cases})==8\nfor case in cases:\n assert 'docs' not in case['source_paths'] and '.work/demo/plan.md' in case['files']\n assert case['allowed_writes']==[] and case['behavior_review']['expected'] and case['behavior_review']['forbidden']\n assert '.agents/skills/grilling/SKILL.md' in case['required_paths']\n assert case['files']['yss-project.yaml'].endswith('repository_mode: project-instance\\n')\n for step in case.get('steps',[case]):\n  assert 'test-data-only' in step['prompt']\n  assert any(a['kind']=='absent' and a['path']=='.work/demo/spec.md' for a in step['assertions'])\n`);
 });
 
 test('combined-confirmation fixtures prepare against frozen candidate without model calls', () => {

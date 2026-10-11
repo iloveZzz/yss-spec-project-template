@@ -4,9 +4,9 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
-import { readWorkLayout, workLayout } from '../scripts/lib/work-layout.mjs';
+import { assertNoTemplateReferences, readWorkLayout, workLayout } from '../scripts/lib/work-layout.mjs';
 
-test('JS 与 Go 消费同一份可移植路径合同用例', t => {
+test('工作包路径遵循可移植合同用例', t => {
   const suite=JSON.parse(fs.readFileSync(new URL('./fixtures/work-layout-cases.json',import.meta.url)));
   const root=project(t);
   for(const item of suite.cases) {
@@ -56,19 +56,70 @@ test('配置根不能通过符号链接越过项目边界', t => {
   assert.throws(() => readWorkLayout(root), /symlink/);
 });
 
-test('硬编码检查同时覆盖 Design 上游且允许集中历史根合同', t => {
+test('正式引用拒绝当前、自定义和历史布局的模板占位路径，说明文字不作为路径', t => {
+  for (const base of ['.work', 'docs/custom-work', 'docs/.scratch']) {
+    const root = project(t, base);
+    for (const ref of [`./${base}/example/spec.md`, `${base}//example/spec.md`, `${base}/reports/../example/spec.md`, path.join(root, base, 'example/spec.md')]) {
+      assert.throws(() => assertNoTemplateReferences({ spec_ref: ref }, { root }), /模板占位/);
+    }
+    assert.doesNotThrow(() => assertNoTemplateReferences({ spec_ref: `https://example.org/${base}/example/spec.md` }, { root }));
+    for (const ref of [`${base}/example/spec.md`, '.work/example/spec.md', 'docs/.scratch/example/spec.md', `${base}/<feature>/spec.md`]) {
+      assert.throws(() => assertNoTemplateReferences({ spec_ref: ref }, { root }), /模板占位/);
+      assert.throws(() => assertNoTemplateReferences({ evidence_refs: [ref] }, { root }), /模板占位/);
+      assert.throws(() => assertNoTemplateReferences({ implementation_plan: { ref } }, { root }), /模板占位/);
+    }
+    assert.doesNotThrow(() => assertNoTemplateReferences({ spec_ref: `${base}/reports/spec.md`, explanation: '历史说明 docs/.scratch/example/spec.md' }, { root }));
+  }
+});
+
+test('遗留检查覆盖所有子模块、文档、Schema、无扩展脚本、转义及文件名，并拒绝过期例外', t => {
   const root = project(t);
-  const design = 'submodules/yss-harness-design-agent';
-  for (const ref of ['scripts/lib', '.agents/skills', `${design}/scripts/lib`, `${design}/.agents/skills`]) fs.mkdirSync(path.join(root, ref), { recursive: true });
-  const checker = path.join(root, 'scripts/verify-work-layout');
-  fs.copyFileSync(new URL('../scripts/verify-work-layout', import.meta.url), checker);
-  const consumer = path.join(root, design, 'scripts/lib/consumer.mjs');
-  fs.writeFileSync(consumer, "const root = 'docs/.scratch';\n");
-  const run = () => spawnSync(process.execPath, [checker], { encoding: 'utf8' });
-  const rejected = run();
-  assert.notEqual(rejected.status, 0);
-  assert.match(rejected.stderr, /consumer\.mjs/);
-  fs.writeFileSync(consumer, "const root = 'configured';\n");
-  fs.writeFileSync(path.join(root, design, 'scripts/lib/work-layout.mjs'), "const historical = 'docs/.scratch';\n");
+  const checker = new URL('../scripts/verify-work-layout', import.meta.url).pathname;
+  const git = (cwd, ...args) => {
+    const result = spawnSync('git', ['-C', cwd, ...args], { encoding: 'utf8' });
+    assert.equal(result.status, 0, result.stderr);
+  };
+  git(root, 'init', '-q');
+  const write = (ref, text) => { fs.mkdirSync(path.dirname(path.join(root, ref)), { recursive: true }); fs.writeFileSync(path.join(root, ref), text); };
+  const policyRef = '.template-source/process/work-layout-exceptions.json';
+  const save = exceptions => write(policyRef, JSON.stringify({ schema_version: 1, exceptions }));
+  save([]);
+  const run = (...args) => spawnSync(process.execPath, [checker, '--root', root, ...args], { encoding: 'utf8' });
   assert.equal(run().status, 0);
+  for (const profile of ['design', 'backend', 'frontend']) {
+    const ref = `submodules/${profile}`;
+    fs.mkdirSync(path.join(root, ref), { recursive: true });
+    git(path.join(root, ref), 'init', '-q');
+    git(root, 'update-index', '--add', '--cacheinfo', `160000,${'1'.repeat(40)},${ref}`);
+  }
+  const refs = ['policy.yaml', 'schema.json', 'issue-tracker.md', 'scripts/check', 'tests/ordinary.mjs', 'submodules/design/contract.yaml', 'submodules/backend/work-layout.md', 'submodules/frontend/scripts/check'];
+  for (const ref of refs) write(ref, 'root: docs/.scratch\n');
+  write('escaped.json', JSON.stringify({ pattern: String.raw`^docs\/\.scratch` }));
+  write('docs/.scratch/empty.md', '');
+  const failed = run();
+  assert.notEqual(failed.status, 0);
+  for (const ref of [...refs, 'escaped.json', 'docs/.scratch/empty.md']) assert.ok(failed.stderr.includes(ref), failed.stderr);
+  const inspected = run('--inventory');
+  assert.equal(inspected.status, 0, inspected.stderr);
+  const rules = JSON.parse(inspected.stdout).map(({ line, ...item }) => ({ ...item, category: 'compatibility-test', reason: '显式旧布局回归用例' }));
+  save(rules);
+  assert.equal(run().status, 0, run().stderr);
+  write('policy.yaml', 'root: docs/.scratch\nroot: docs/.scratch\n');
+  assert.match(run().stderr, /次数变化/);
+  write('policy.yaml', 'root: .work\n');
+  assert.match(run().stderr, /失效例外/);
+  fs.rmSync(path.join(root, 'submodules/backend/.git'), { recursive: true });
+  assert.match(run().stderr, /子模块未初始化/);
+});
+
+test('独立 CLI 扫描不依赖已删除的 Go 测试目录', t => {
+  const root = project(t), cli = project(t);
+  for (const cwd of [root, cli]) assert.equal(spawnSync('git', ['-C', cwd, 'init', '-q']).status, 0);
+  fs.mkdirSync(path.join(root, '.template-source/process'), { recursive: true });
+  fs.writeFileSync(path.join(root, '.template-source/process/work-layout-exceptions.json'), JSON.stringify({ schema_version: 1, exceptions: [] }));
+  const run = () => spawnSync(process.execPath, [new URL('../scripts/verify-work-layout', import.meta.url).pathname, '--root', root, '--cli-root', cli], { encoding: 'utf8' });
+  assert.equal(run().status, 0, run().stderr);
+  fs.writeFileSync(path.join(cli, 'layout.go'), 'const root = "docs/.scratch"');
+  assert.notEqual(run().status, 0);
+  assert.match(run().stderr, /cli\/layout.go/);
 });

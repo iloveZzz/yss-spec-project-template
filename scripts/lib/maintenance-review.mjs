@@ -236,7 +236,7 @@ function validateStructuredRecord(record, expectedMode, baseDir, recordRef) {
   return { review_mode: expectedMode, record_ref: recordRef, candidate_digest: record.candidate_digest };
 }
 
-export function validateMaintenanceReviewEvidence(evidence, { baseDir = ROOT } = {}) {
+export function validateMaintenanceReviewEvidence(evidence, { baseDir = ROOT, history = false } = {}) {
   const expectedMode = REVIEW_KIND_TO_MODE.get(evidence?.kind);
   ensure(expectedMode, `未知独立审查证据类型: ${evidence?.kind ?? "unknown"}`);
   if (evidence.command?.startsWith('maintenance:')) ensure(typeof evidence.evidence_digest === 'string', '仓外审查记录必须绑定 evidence_digest');
@@ -248,7 +248,7 @@ export function validateMaintenanceReviewEvidence(evidence, { baseDir = ROOT } =
     return validateStructuredRecord(parseYamlOrJson(source, "维护独立审查记录"), expectedMode, baseDir, evidence.command);
   }
   ensure(/\.md$/i.test(evidence.command), `${evidence.kind}.command 必须引用 Markdown 结论或结构化 YAML/JSON 记录`);
-  if (expectedMode === "formal-independent") ensure(false, 'formal-independent 必须使用结构化记录；历史 Markdown 入口已退役');
+  if (expectedMode === "formal-independent" && !history) ensure(false, 'formal-independent 必须使用结构化记录；历史 Markdown 入口已退役');
   validateReviewReportBody(source, evidence.command, { expectedMode, allowLegacyFormal: true });
-  return { review_mode: expectedMode, record_ref: evidence.command, legacy: true };
+  return { review_mode: expectedMode, record_ref: evidence.command, legacy: true, ...(history ? {historical_only: true, execution_authorization: "not-evaluated"} : {}) };
 }

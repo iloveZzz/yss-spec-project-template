@@ -26,7 +26,7 @@ mkdirSync(path.join(template, "node_modules"));
 writeFileSync(path.join(template, "node_modules/cache.txt"), "not approved");
 writeFileSync(path.join(template, "micro-config.json"), "uncommitted edit");
 const contract = {
-  schema_version: 4, kind: "project-scaffold-contract", contract_id: "frontend.demo.v1", contract_version: "1", status: "approved", persisted_ref: "docs/.scratch/demo/scaffold-contract.json", current_version: true,
+  schema_version: 4, kind: "project-scaffold-contract", contract_id: "frontend.demo.v1", contract_version: "1", status: "approved", persisted_ref: ".work/demo/scaffold-contract.json", current_version: true,
   delivery_role: "frontend", scaffold_kind: "frontend-yss-vue3", generator_skill: "yss-frontend-scaffold-generator", implementation_repository: output, target_output_dir: output, repository_scope: "external-repository", init_git: false,
   frontend: { app_name: "demo-app", microapp_name: "demo", base_route: "/demo", package_manager: "pnpm", template: { repository: template, commit }, openapi_impact: "not-applicable", openapi_not_applicable_reason: "static-only" },
   allowed_write_paths: [output], expected_evidence_files: [".yss/scaffold-generation.json"], verification_commands: ["pnpm install --frozen-lockfile", "pnpm lint", "pnpm type-check", "pnpm build"], approval: { approval_ref: "decision://frontend", approver: "user" }, generation_policy: { mode: "initialize-only", existing_target: "unsupported", old_project_migration: "unsupported", template_upgrade: "unsupported" }

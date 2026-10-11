@@ -141,5 +141,5 @@ evidence_refs: [evidence.discovery.supplier, evidence.discovery.compliance]
 approval:
   approval_ref: .agents/skills/yss-stage-decision/tests/fixtures/domain-strategy-approval.yaml
   approver: role.product-manager
-  persisted_ref: docs/.scratch/supplier/domain/domain-strategy-v1.yaml
+  persisted_ref: .work/supplier/domain/domain-strategy-v1.yaml
   current_version: v3

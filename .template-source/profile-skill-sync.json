@@ -158,10 +158,6 @@
         },
         {
           "source": ".agents/skills/yss-design-system/references/prototype-default-theme.md"
-        },
-        {
-          "source": ".agents/skills/yss-product-lifecycle/references/user-decisions.md",
-          "target": ".agents/skills/yss-strategic-design/references/user-decisions.md"
         }
       ],
       "upstream": [
@@ -303,12 +299,6 @@
           }
         },
         {
-          "id": "yss-layered-mvc-scaffold-generator",
-          "file_modes": {
-            "scripts/scaffold-generator.test.mjs": "0644"
-          }
-        },
-        {
           "id": "yss-dto"
         },
         {
@@ -365,7 +355,7 @@
           "id": "yss-tactical-design",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/backend/yss-tactical-design.patch",
-          "source_tree_sha256": "831adb018617f3d68636c1c184781b5437ecda9e8e0b91405fb64f8ac1298c86"
+          "source_tree_sha256": "b99307b2efd8ed4be23f5a3e8c1a69aeb42d994dbb275c680d82cbcb3e3945db"
         },
         {
           "id": "yss-implementation-contract-compiler",
@@ -402,6 +392,15 @@
               "count": 3
             }
           ]
+        },
+        {
+          "id": "yss-layered-mvc-scaffold-generator",
+          "file_modes": {
+            "scripts/scaffold-generator.test.mjs": "0644"
+          },
+          "strategy": "patch",
+          "patch": ".template-source/profile-skill-patches/backend/yss-layered-mvc-scaffold-generator.patch",
+          "source_tree_sha256": "d338c8edea1af089878554e666d358319fe0c01237a713cef8a95709c942b7fc"
         }
       ],
       "assets": [

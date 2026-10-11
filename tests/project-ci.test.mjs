@@ -55,29 +55,29 @@ function tools(f) {
   for(const ref of ['scripts','.template-spec','.agents/skills']) {
     fs.cpSync(ref,path.join(f.root,ref),{recursive:true,filter:file=>!/(?:\/fixtures\/|\/tests\/|\/assets\/|\/node_modules\/)/.test(file)});
   }
-  f.write('.template-spec/agents/issue-tracker.md','---\ntracker: {platform: local-markdown, root: docs/.scratch}\n---\n');
+  f.write('.template-spec/agents/issue-tracker.md','---\ntracker: {platform: local-markdown, root: .work}\n---\n');
 }
 test('空实例与草案可检查，非法交接/虚假批准/缺能力失败且不执行业务命令',t=>{
   const f=fixture(t);tools(f);f.install();
   const check=()=>{const r=f.run('check','--json');return {...r,data:JSON.parse(r.stdout)};};
   assert.equal(check().status,0);
-  f.write('docs/.scratch/a/spec.md','# 草案\n待确认');assert.equal(check().status,0);
+  f.write('.work/a/spec.md','# 草案\n待确认');assert.equal(check().status,0);
   const cp=parse(fs.readFileSync('.template-spec/process/templates/lifecycle-checkpoint-template.yaml','utf8'));
   cp.verification.commands=['touch DO-NOT-EXECUTE'];
-  f.write('docs/.scratch/a/checkpoint.yaml',JSON.stringify(cp));assert.equal(check().status,0);
+  f.write('.work/a/checkpoint.yaml',JSON.stringify(cp));assert.equal(check().status,0);
   assert.equal(fs.existsSync(path.join(f.root,'DO-NOT-EXECUTE')),false);
-  f.write('docs/.scratch/a/checkpoint.yaml',JSON.stringify({...cp,phase_boundary:{decision:'handoff'}}));assert.equal(check().status,1);
-  f.write('docs/.scratch/a/checkpoint.yaml',JSON.stringify({...cp,gates:{'gate.plan-approved':{status:'approved',reason:'fake',evidence_refs:[]}}}));assert.equal(check().status,1);
+  f.write('.work/a/checkpoint.yaml',JSON.stringify({...cp,phase_boundary:{decision:'handoff'}}));assert.equal(check().status,1);
+  f.write('.work/a/checkpoint.yaml',JSON.stringify({...cp,gates:{'gate.plan-approved':{status:'approved',reason:'fake',evidence_refs:[]}}}));assert.equal(check().status,1);
   fs.unlinkSync(path.join(f.root,'scripts/verify-lifecycle-checkpoint'));assert.equal(check().status,2);
 });
 test('PR 基线不能通过删除 checkpoint 或缩小 tracker 范围变绿',t=>{
   const f=fixture(t);tools(f);f.install();
-  const cp=fs.readFileSync('.template-spec/process/templates/lifecycle-checkpoint-template.yaml');f.write('docs/.scratch/a/checkpoint.yaml',cp);
+  const cp=fs.readFileSync('.template-spec/process/templates/lifecycle-checkpoint-template.yaml');f.write('.work/a/checkpoint.yaml',cp);
   const git=(...args)=>{const r=spawnSync('git',['-c','maintenance.auto=false','-c','gc.auto=0',...args],{cwd:f.root,encoding:'utf8'});assert.equal(r.status,0,r.stderr);return r.stdout.trim();};
   git('init','-q');git('add','.');git('-c','user.name=fixture','-c','user.email=fixture@invalid','commit','-qm','fixture');const base=git('rev-parse','HEAD');
-  fs.unlinkSync(path.join(f.root,'docs/.scratch/a/checkpoint.yaml'));
+  fs.unlinkSync(path.join(f.root,'.work/a/checkpoint.yaml'));
   const deleted=f.run('check','--json','--base',base);assert.equal(deleted.status,1,deleted.stdout);assert.ok(JSON.parse(deleted.stdout).diagnostics.some(x=>x.code==='checkpoint-deleted'));
-  f.write('docs/.scratch/a/checkpoint.yaml',cp);f.write('.template-spec/agents/issue-tracker.md','---\ntracker: {platform: local-markdown, root: docs/new}\n---\n');
+  f.write('.work/a/checkpoint.yaml',cp);f.write('.template-spec/agents/issue-tracker.md','---\ntracker: {platform: local-markdown, root: docs/new}\n---\n');
   const reduced=f.run('check','--json','--base',base);assert.equal(reduced.status,1);assert.ok(JSON.parse(reduced.stdout).diagnostics.some(x=>x.code==='scope-reduced'));
 });
 
@@ -97,11 +97,11 @@ test('事务中断恢复与恢复冲突保留已有文件',t=>{
 });
 test('明确补充范围、重复 apply 的输入变化、预检能力缺失和普通查询区分',t=>{
   const f=fixture(t);tools(f);
-  const p=JSON.parse(f.run('plan','--additional-path','aaa/custom').stdout);assert.deepEqual(new Set(p.roots),new Set(['docs/.scratch','aaa/custom']));
+  const p=JSON.parse(f.run('plan','--additional-path','aaa/custom').stdout);assert.deepEqual(new Set(p.roots),new Set(['.work','aaa/custom']));
   f.write('plan.json',JSON.stringify(p));assert.equal(f.run('apply','--plan',path.join(f.root,'plan.json')).status,0);
-  const cp=fs.readFileSync('.template-spec/process/templates/lifecycle-checkpoint-template.yaml');f.write('docs/.scratch/a/checkpoint.yaml',cp);
+  const cp=fs.readFileSync('.template-spec/process/templates/lifecycle-checkpoint-template.yaml');f.write('.work/a/checkpoint.yaml',cp);
   fs.unlinkSync(path.join(f.root,'scripts/verify-lifecycle-checkpoint'));
-  const status=(...args)=>spawnSync(process.execPath,[path.join(f.root,'scripts/lifecycle-status'),'--root',f.root,'--checkpoint','docs/.scratch/a/checkpoint.yaml',...args],{encoding:'utf8'});
+  const status=(...args)=>spawnSync(process.execPath,[path.join(f.root,'scripts/lifecycle-status'),'--root',f.root,'--checkpoint','.work/a/checkpoint.yaml',...args],{encoding:'utf8'});
   assert.equal(status().status,0);assert.equal(status('--preflight').status,2);
   f.write('.template-spec/agents/issue-tracker.md','---\ntracker: {platform: local-markdown, root: docs/new}\n---\n');
   assert.notEqual(f.run('apply','--plan',path.join(f.root,'plan.json')).status,0);
@@ -110,48 +110,48 @@ test('摘要漂移、未知批准和非法流转不能作为通过；运行中�
   const f=fixture(t);tools(f);
   const cp=parse(fs.readFileSync('.template-spec/process/templates/lifecycle-checkpoint-template.yaml','utf8'));
   cp.stage_trace.completed_work_unit='work-unit.entry-triage';cp.next_work_unit='work-unit.release-and-retrospective';
-  f.write('docs/.scratch/a/checkpoint.yaml',JSON.stringify(cp));const transition=f.run('check');assert.equal(transition.status,1,transition.stdout);
+  f.write('.work/a/checkpoint.yaml',JSON.stringify(cp));const transition=f.run('check');assert.equal(transition.status,1,transition.stdout);
   assert.ok(JSON.parse(transition.stdout).checks.some(x=>x.id==='transition'&&x.exit_code!==0));
-  fs.unlinkSync(path.join(f.root,'docs/.scratch/a/checkpoint.yaml'));
-  f.write('docs/.scratch/a/claim.json',JSON.stringify({status:'approved',input_ref:'business.md',input_digest:'sha256:'+'0'.repeat(64)}));
+  fs.unlinkSync(path.join(f.root,'.work/a/checkpoint.yaml'));
+  f.write('.work/a/claim.json',JSON.stringify({status:'approved',input_ref:'business.md',input_digest:'sha256:'+'0'.repeat(64)}));
   const drift=f.run('check');assert.equal(drift.status,1);assert.ok(JSON.parse(drift.stdout).diagnostics.some(x=>x.code==='evidence-drift'));
-  f.write('docs/.scratch/a/task.json',JSON.stringify({task_id:'task.test',work_unit_id:'work-unit.plan-opportunity',contract:{kind:'unknown'},workflow_status:'active'}));
-  const task=spawnSync(process.execPath,[path.join(f.root,'scripts/lifecycle-status'),'--root',f.root,'--task','docs/.scratch/a/task.json','--preflight'],{encoding:'utf8'});
+  f.write('.work/a/task.json',JSON.stringify({task_id:'task.test',work_unit_id:'work-unit.plan-opportunity',contract:{kind:'unknown'},workflow_status:'active'}));
+  const task=spawnSync(process.execPath,[path.join(f.root,'scripts/lifecycle-status'),'--root',f.root,'--task','.work/a/task.json','--preflight'],{encoding:'utf8'});
   const report=JSON.parse(task.stdout);assert.notEqual(task.status,0);assert.equal(report.recovery.dispatch,false);assert.ok(report.diagnostics.some(x=>x.code==='task-not-resolved'));
 });
 test('有效当前会签可通过，删除批准记录和间接依据对照基线失败',t=>{
   const f=fixture(t);tools(f);
   const bound=ref=>({ref,digest:createHash('sha256').update(fs.readFileSync(path.join(f.root,ref))).digest('hex')});
-  const boundary='check.design-reviewed',subject_ref='docs/.scratch/a/subject.json',approval_ref='docs/.scratch/a/approval.json';
+  const boundary='check.design-reviewed',subject_ref='.work/a/subject.json',approval_ref='.work/a/approval.json';
   const current={subject_ref,approval_scope:['fixture'],basis:[bound('business.md')],drafter_principal_ref:'instance:test-drafter'};
   f.write(subject_ref,JSON.stringify({gate_id:boundary,...current,evidence_refs:['business.md']}));
   current.subject_digest=bound(subject_ref).digest;
   const approval={schema_version:1,gate_id:boundary,decision:'approved',actor_kind:'digital-human',role_id:'role.test-engineer',runtime_id:'runtime.generic',principal_ref:'instance:test-reviewer',...current,evidence_refs:[subject_ref],biological_veto:false};
-  f.write('docs/.scratch/a/approval.json',JSON.stringify(approval));
+  f.write('.work/a/approval.json',JSON.stringify(approval));
   const unowned=f.run('check');assert.equal(unowned.status,1,unowned.stdout);assert.ok(JSON.parse(unowned.stdout).diagnostics.some(x=>x.code==='approval-context-required'));
   const checkpoint=parse(fs.readFileSync('.template-spec/process/templates/lifecycle-checkpoint-template.yaml','utf8'));
   checkpoint.checks={[boundary]:{status:'approved',applicable:true,reason:'Synthetic current independent design review; not a delivery or release approval.',...current,approval_ref,basis:[...current.basis,bound(subject_ref),bound(approval_ref)],evidence_refs:[subject_ref],evidence:{'evidence.design-review-result':[subject_ref]}}};
-  f.write('docs/.scratch/a/checkpoint.json',JSON.stringify(checkpoint));
+  f.write('.work/a/checkpoint.json',JSON.stringify(checkpoint));
   const valid=f.run('check');assert.equal(valid.status,0,valid.stdout);assert.ok(JSON.parse(valid.stdout).checks.some(x=>x.id==='approval'&&x.exit_code===0));
   const git=(...args)=>{const r=spawnSync('git',['-c','maintenance.auto=false','-c','gc.auto=0',...args],{cwd:f.root,encoding:'utf8'});assert.equal(r.status,0,r.stderr);return r.stdout.trim();};
   git('init','-q');git('add','.');git('-c','user.name=fixture','-c','user.email=fixture@invalid','commit','-qm','synthetic approval fixture');const base=git('rev-parse','HEAD');
-  fs.unlinkSync(path.join(f.root,'docs/.scratch/a/approval.json'));fs.unlinkSync(path.join(f.root,'business.md'));
+  fs.unlinkSync(path.join(f.root,'.work/a/approval.json'));fs.unlinkSync(path.join(f.root,'business.md'));
   const r=f.run('check','--base',base);assert.equal(r.status,1,r.stdout);
-  const refs=JSON.parse(r.stdout).diagnostics.filter(x=>x.code==='approved-evidence-deleted').map(x=>x.source_ref);assert.ok(refs.includes('business.md'));assert.ok(refs.includes('docs/.scratch/a/approval.json'));
+  const refs=JSON.parse(r.stdout).diagnostics.filter(x=>x.code==='approved-evidence-deleted').map(x=>x.source_ref);assert.ok(refs.includes('business.md'));assert.ok(refs.includes('.work/a/approval.json'));
 });
 test('显式预检输入不可被未知结构冒充',t=>{
-  const f=fixture(t);tools(f);f.write('docs/.scratch/a/unknown.json','{"status":"draft"}');
+  const f=fixture(t);tools(f);f.write('.work/a/unknown.json','{"status":"draft"}');
   for(const option of ['--task','--checkpoint']) {
-    const r=spawnSync(process.execPath,[path.join(f.root,'scripts/lifecycle-status'),'--root',f.root,option,'docs/.scratch/a/unknown.json','--preflight'],{encoding:'utf8'});
+    const r=spawnSync(process.execPath,[path.join(f.root,'scripts/lifecycle-status'),'--root',f.root,option,'.work/a/unknown.json','--preflight'],{encoding:'utf8'});
     assert.notEqual(r.status,0,r.stdout);
   }
 });
 test('稳定术语及运行时身份不会误作本地文件；当前文件引用仍须可读',t=>{
   const f=fixture(t);tools(f);
   const cp=parse(fs.readFileSync('.template-spec/process/templates/lifecycle-checkpoint-template.yaml','utf8'));
-  cp.verification.evidence_refs=['docs/.scratch/a/evidence.json'];
-  f.write('docs/.scratch/a/checkpoint.yaml',JSON.stringify(cp));
-  f.write('docs/.scratch/a/evidence.json',JSON.stringify({term_refs:['Global/Example'],principal_ref:'instance:reviewer',original_ref:'session://original',evidence_refs:['business.md']}));
+  cp.verification.evidence_refs=['.work/a/evidence.json'];
+  f.write('.work/a/checkpoint.yaml',JSON.stringify(cp));
+  f.write('.work/a/evidence.json',JSON.stringify({term_refs:['Global/Example'],principal_ref:'instance:reviewer',original_ref:'session://original',evidence_refs:['business.md']}));
   assert.equal(f.run('check').status,0);
   fs.unlinkSync(path.join(f.root,'business.md'));assert.equal(f.run('check').status,1);
 });
@@ -165,10 +165,10 @@ test('应用中实际写入失败回滚，不留下半套 CI',t=>{
 test('字段不完整的运行中任务及流转声明不能伪装成草案',t=>{
   const f=fixture(t);tools(f);
   for(const value of [{task_id:'task.active',work_unit_id:'work-unit.plan-opportunity',workflow_status:'active'},{status:'running',kind:'unknown-flow'},{workflow_status:'resolved'}]) {
-    f.write('docs/.scratch/a/incomplete.json',JSON.stringify(value));
+    f.write('.work/a/incomplete.json',JSON.stringify(value));
     assert.notEqual(f.run('check').status,0,JSON.stringify(value));
   }
-  f.write('docs/.scratch/a/incomplete.json',JSON.stringify({status:'draft',kind:'unknown-future-asset'}));assert.equal(f.run('check').status,0);
+  f.write('.work/a/incomplete.json',JSON.stringify({status:'draft',kind:'unknown-future-asset'}));assert.equal(f.run('check').status,0);
 });
 test('实例身份不能由 checkpoint 声明覆盖，未知阶段和工作单元拒绝',t=>{
   const f=fixture(t);tools(f);const cp=parse(fs.readFileSync('.template-spec/process/templates/lifecycle-checkpoint-template.yaml','utf8'));
@@ -178,13 +178,13 @@ test('实例身份不能由 checkpoint 声明覆盖，未知阶段和工作单�
     {...legacy,stage:'stage.unknown'},
     {...legacy,next_work_unit:'work-unit.unknown'},
     {...legacy,next_work_unit:'work-unit.ssot-update'}
-  ]) {f.write('docs/.scratch/a/checkpoint.json',JSON.stringify(value));assert.notEqual(f.run('check').status,0,JSON.stringify(value));}
+  ]) {f.write('.work/a/checkpoint.json',JSON.stringify(value));assert.notEqual(f.run('check').status,0,JSON.stringify(value));}
 });
 test('PR 基线保留中文路径，删除中文目录 checkpoint 不能变绿',t=>{
-  const f=fixture(t);tools(f);f.write('docs/.scratch/中文/checkpoint.yaml',fs.readFileSync('.template-spec/process/templates/lifecycle-checkpoint-template.yaml'));
+  const f=fixture(t);tools(f);f.write('.work/中文/checkpoint.yaml',fs.readFileSync('.template-spec/process/templates/lifecycle-checkpoint-template.yaml'));
   const git=(...args)=>{const r=spawnSync('git',['-c','maintenance.auto=false','-c','gc.auto=0',...args],{cwd:f.root,encoding:'utf8'});assert.equal(r.status,0,r.stderr);return r.stdout.trim();};
   git('init','-q');git('add','.');git('-c','user.name=fixture','-c','user.email=fixture@invalid','commit','-qm','Chinese filename fixture');const base=git('rev-parse','HEAD');
-  fs.unlinkSync(path.join(f.root,'docs/.scratch/中文/checkpoint.yaml'));const r=f.run('check','--base',base);assert.equal(r.status,1,r.stdout);assert.ok(JSON.parse(r.stdout).diagnostics.some(x=>x.code==='checkpoint-deleted'&&x.source_ref.includes('中文')));
+  fs.unlinkSync(path.join(f.root,'.work/中文/checkpoint.yaml'));const r=f.run('check','--base',base);assert.equal(r.status,1,r.stdout);assert.ok(JSON.parse(r.stdout).diagnostics.some(x=>x.code==='checkpoint-deleted'&&x.source_ref.includes('中文')));
 });
 
 test('真实 CI Context 消费路径拒绝缺二进制、错误协议、非零退出与摘要漂移',t=>{

@@ -7,7 +7,7 @@ import { decisionDigest } from '../../lib/user-decision.mjs';
 import { planEntryPolicy } from '../../lib/plan-spec-entry.mjs';
 import { buildDecisionFixture } from './build-fixture.mjs';
 import { initializePlanReview } from '../../lib/plan-review-control.mjs';
-import { copyNativeFixturePolicy } from '../strategic-handoff/fixture.mjs';
+import { copyNativeFixturePolicy, context } from '../strategic-handoff/fixture.mjs';
 
 export function buildPlanFixture(root, { nativeSeed } = {}) {
   if (nativeSeed) copyNativeFixturePolicy(root, nativeSeed);
@@ -15,8 +15,9 @@ export function buildPlanFixture(root, { nativeSeed } = {}) {
   const write = (ref, value) => { const file = path.resolve(root, ref); mkdirSync(path.dirname(file), { recursive: true }); writeFileSync(file, typeof value === 'string' ? value : JSON.stringify(value, null, 2)); };
   write('yss-project.yaml', 'schema_version: 1\nrepository_mode: project-instance\n');
   mkdirSync(path.join(root, '.template-spec/agents'), { recursive: true });
-  write('.template-spec/agents/issue-tracker.md', '---\ntracker:\n  platform: local-markdown\n  root: docs/.scratch\n---\n# Legacy Plan fixture\n');
-  if (!nativeSeed) for (const ref of ['CONTEXT.md', '.template-spec/process/lifecycle-registry.yaml', '.template-spec/process/schemas/plan-review-control.schema.json', '.template-spec/agents/digital-human-roles.yaml', '.template-spec/agents/yss-skill-registry.yaml', '.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml']) write(ref, readFileSync(path.join(ROOT, ref), 'utf8'));
+  write('.template-spec/agents/issue-tracker.md', '---\ntracker:\n  platform: local-markdown\n  root: .work\n---\n# Legacy Plan fixture\n');
+  if (!nativeSeed) for (const ref of ['.template-spec/process/lifecycle-registry.yaml', '.template-spec/process/schemas/plan-review-control.schema.json', '.template-spec/agents/digital-human-roles.yaml', '.template-spec/agents/yss-skill-registry.yaml', '.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml']) write(ref, readFileSync(path.join(ROOT, ref), 'utf8'));
+  if (!nativeSeed) write('CONTEXT.md', context);
   else if (!existsSync(path.join(root, 'CONTEXT.md'))) copyFileSync(path.join(nativeSeed, 'CONTEXT.md'), path.join(root, 'CONTEXT.md'));
   write('plan.md', '测试规划：小范围修订，不改变业务边界或关键规则。\n');
   const c = parseContextContract({ root });

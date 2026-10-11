@@ -17,7 +17,7 @@ function fixture(t) {
   t.after(()=>fs.rmSync(directory,{recursive:true,force:true}));
   const root=path.join(directory,'source'),sealed=path.join(directory,'sealed');
   const plan=buildPlanFixture(root);localizeSyntheticPlanSource(plan);
-  const source=syntheticPlanSourceContext(plan),checkpointRef='docs/.scratch/feature.demo/checkpoint.json';
+  const source=syntheticPlanSourceContext(plan),checkpointRef='.work/feature.demo/checkpoint.json';
   const checkpoint={...plan.state,checks:{},gates:{'gate.plan-approved':source.gate}};
   plan.write(checkpointRef,checkpoint);
   const handoffRef='synthetic-handoff.json',config={approvals:{plan:{record_ref:source.binding.approval_ref}},additional_files:[checkpointRef]};
@@ -101,7 +101,7 @@ test('ordinary local Plan retains strict unique Tracker owner discovery',async t
   fs.unlinkSync(tracker);
   try{await assert.rejects(sourceApproval(f.record,f.roles,f.root,f.source.binding),/ENOENT.*issue-tracker/);}
   finally{fs.writeFileSync(tracker,trackerBytes);}
-  f.plan.write('docs/.scratch/feature.demo/duplicate.json',f.checkpoint);
+  f.plan.write('.work/feature.demo/duplicate.json',f.checkpoint);
   await assert.rejects(sourceApproval(f.record,f.roles,f.root,f.source.binding),/APPROVAL_CONTEXT_REQUIRED.*找到 2 个/);
 });
 

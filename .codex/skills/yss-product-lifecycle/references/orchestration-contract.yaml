@@ -846,7 +846,7 @@ ticket_formalization:
     kind: vertical-slice-ticket
     role_before_promotion: ready-for-human
     role_for_implementation: ready-for-agent
-    local_ref_pattern: '^docs/\\.scratch/[^/]+/issues/[^/]+\\.md$'
+    local_ref_contract: .template-spec/process/work-layout.md
     parent_ticket_ref_forbidden: true
   slice_contract_binding:
     ticket_ref_must_equal: vertical_slice_ticket_ref

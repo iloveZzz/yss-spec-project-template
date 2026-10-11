@@ -349,7 +349,9 @@ test('监督父进程观察worker close后持久化退出，失败报告保留�
 });
 test('监督中断拒绝成功并保留实际 close 与日志',async t=>{
   const {directory,root}=fixtureRoot(t),marker=path.join(directory,'child-pid'),controller=new AbortController();
-  const plan={strategy:'qualified-gates',requested_profile:'candidate',effective_profile:'candidate',source_requirement:'current',required_files:[],groups:['check'],selection:{effective:'legacy',omitted:[]},commands:[{id:'check.wait',task_id:'wait',group:'check',command:node(`require('node:fs').writeFileSync(${JSON.stringify(marker)},String(process.pid));setInterval(()=>{},1000);`)}]};
+  const waitCommand=node(`require('node:fs').writeFileSync(${JSON.stringify(marker)},String(process.pid));setInterval(()=>{},1000);`);
+  // Observe the supervised process itself, not an orphan whose reaping depends on container PID 1.
+  const plan={strategy:'qualified-gates',requested_profile:'candidate',effective_profile:'candidate',source_requirement:'current',required_files:[],groups:['check'],selection:{effective:'legacy',omitted:[]},commands:[{id:'check.wait',task_id:'wait',group:'check',command:process.platform==='win32'?waitCommand:`exec ${waitCommand}`} ]};
   const execution=executeVerificationPlan({root,plan,reportDir:path.join(directory,'report'),purpose:'qualification',signal:controller.signal});
   const deadline=Date.now()+10000;while(!fs.existsSync(marker)&&Date.now()<deadline)await new Promise(resolve=>setTimeout(resolve,10));
   assert.ok(fs.existsSync(marker));const pid=Number(fs.readFileSync(marker,'utf8'));controller.abort();

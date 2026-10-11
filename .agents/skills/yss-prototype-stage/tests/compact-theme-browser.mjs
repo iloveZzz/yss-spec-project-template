@@ -43,7 +43,7 @@ try{
   report.cases.push({width,checks:['selected-row','modal-padding','primary-hover-active','error-focus'],result:'passed'});
  }
  // A preserved comfortable density is an explicit author choice.
- const feature='comfortable',root=path.join(output,`docs/.scratch/${feature}/design/prototypes`);
+ const feature='comfortable',root=path.join(output,`.work/${feature}/design/prototypes`);
  const {mkdir,cp}=await import('node:fs/promises');await mkdir(path.join(output,'.template-spec/design/tokens'),{recursive:true});
  for(const ref of ['DESIGN.md','.template-spec/design/tokens/variables.css'])await cp(path.join(projectRoot,ref),path.join(output,ref));
  await fixtureTracker(output);

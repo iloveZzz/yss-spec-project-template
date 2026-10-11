@@ -6,7 +6,7 @@ import path from "node:path";
 import { buildDecisionFixture, buildImplementationFixture } from "../../scripts/fixtures/user-decision/build-fixture.mjs";
 const temp = mkdtempSync(path.join(os.tmpdir(), "lifecycle-decision-test-"));
 process.on("exit", () => rmSync(temp, { recursive: true, force: true }));
-const approval = buildImplementationFixture(temp, "docs/.scratch/demo/issues/01-valid-slice.md");
+const approval = buildImplementationFixture(temp, ".work/demo/issues/01-valid-slice.md");
 const scaffoldApproval = buildDecisionFixture(path.join(temp, "scaffold-choice"), { boundary: "scaffold-choice", scope: ["backend", "frontend"] });
 const backendArchitectureApproval = buildDecisionFixture(path.join(temp, "backend-architecture-platform"), { boundary: "gate.backend-architecture-platform-approved", scope: ["backend", "layered-mvc", "spring-boot-2.7-jdk8@2.7.18/java8"] });
 import { validateImplementationEntry, validateImplementationRepositoriesReady, validateNextRoute, validateTicketFormalization } from "../../scripts/lib/lifecycle-transition.mjs";
@@ -20,9 +20,9 @@ const writeProjectFile = (ref, value) => {
   writeFileSync(file, typeof value === "string" ? value : `${JSON.stringify(value, null, 2)}\n`);
   return { ref, file, digest: digest(readFileSync(file)) };
 };
-writeProjectFile(".template-spec/agents/issue-tracker.md", "---\ntracker:\n  platform: local-markdown\n  root: docs/.scratch\n---\n");
-const apiAssessment = writeProjectFile("docs/.scratch/demo/evidence/api-impact.json", { schema_version: 1, backend: true, api: false });
-const apiEvidence = writeProjectFile("docs/.scratch/demo/evidence/api-decision.md", "无 API 影响测试证据。\n");
+writeProjectFile(".template-spec/agents/issue-tracker.md", "---\ntracker:\n  platform: local-markdown\n  root: .work\n---\n");
+const apiAssessment = writeProjectFile(".work/demo/evidence/api-impact.json", { schema_version: 1, backend: true, api: false });
+const apiEvidence = writeProjectFile(".work/demo/evidence/api-decision.md", "无 API 影响测试证据。\n");
 const apiDecisionValue = {
   schema_version: 1,
   kind: "api-contract-decision",
@@ -36,15 +36,15 @@ const apiDecisionValue = {
   evidence_refs: [apiEvidence.ref],
   reason: "后端仓库接入不新增或修改 API",
 };
-const apiDecision = writeProjectFile("docs/.scratch/demo/evidence/api-contract-decision.json", apiDecisionValue);
-const technicalDesign = writeProjectFile("docs/.scratch/demo/evidence/technical-design.json", { schema_version: 2, technical_design_id: "technical-design.backend", version: "v1", status: "approved" });
+const apiDecision = writeProjectFile(".work/demo/evidence/api-contract-decision.json", apiDecisionValue);
+const technicalDesign = writeProjectFile(".work/demo/evidence/technical-design.json", { schema_version: 2, technical_design_id: "technical-design.backend", version: "v1", status: "approved" });
 const dataDecisionValue = { schema_version: 1, kind: "data-architecture-decision", decision_id: "data-architecture.backend", decision_version: "v1", status: "approved", current_version: true, impact: "not-applicable" };
-const dataDecision = writeProjectFile("docs/.scratch/demo/evidence/data-architecture-decision.json", dataDecisionValue);
+const dataDecision = writeProjectFile(".work/demo/evidence/data-architecture-decision.json", dataDecisionValue);
 // Synthetic current authority comes from the consumer's raw assets, before the approval record exists.
 const engineeringScope = ["backend", "backend-ddd"];
 const engineeringDrafter = "synthetic-backend-drafter";
 const engineeringBasis = [technicalDesign, dataDecision, apiDecision, apiAssessment, apiEvidence].map(({ ref, digest }) => ({ ref, digest: digest.replace(/^sha256:/, "") }));
-const engineeringPackage = writeProjectFile("docs/.scratch/demo/evidence/engineering-contract-package.json", {
+const engineeringPackage = writeProjectFile(".work/demo/evidence/engineering-contract-package.json", {
   schema_version: 1,
   kind: "engineering-contract-package",
   project_id: "backend",
@@ -58,7 +58,7 @@ const engineeringPackage = writeProjectFile("docs/.scratch/demo/evidence/enginee
 });
 const engineeringContext = { subject_ref: engineeringPackage.file, subject_digest: engineeringPackage.digest, approval_scope: engineeringScope, drafter_principal_ref: engineeringDrafter, basis: engineeringBasis };
 const engineeringApproval = buildDecisionFixture(path.join(temp, "engineering-contract"), { boundary: "gate.engineering-contract-approved", scope: engineeringScope, subjectRef: engineeringPackage.file });
-writeProjectFile("docs/.scratch/demo/evidence/engineering-contract-approval.json", {
+writeProjectFile(".work/demo/evidence/engineering-contract-approval.json", {
   schema_version: 1,
   gate_id: "gate.engineering-contract-approved",
   decision: "approved",
@@ -83,21 +83,21 @@ writeProjectFile("docs/.scratch/demo/evidence/engineering-contract-approval.json
 
 const exists = (ref) => [
   ".template-spec/process/lifecycle-registry.yaml",
-  "docs/.scratch/demo/issues/01-valid-slice.md",
-  "docs/.scratch/demo/evidence/ticket-decomposition-result.yaml",
-  "docs/.scratch/demo/evidence/repository-preparation.yaml",
-  "docs/.scratch/demo/evidence/backend-onboarding.yaml",
-  "docs/.scratch/demo/evidence/frontend-onboarding.yaml",
-  "docs/.scratch/demo/evidence/backend-manifest.json",
-  "docs/.scratch/demo/evidence/backend-verification.json",
-  "docs/.scratch/demo/evidence/frontend-manifest.json",
-  "docs/.scratch/demo/evidence/frontend-verification.json",
-  "docs/.scratch/demo/evidence/technical-analysis-result.yaml",
-  "docs/.scratch/demo/evidence/technical-design.json",
-  "docs/.scratch/demo/evidence/data-architecture-decision.json",
-  "docs/.scratch/demo/evidence/engineering-contract-approval.json",
+  ".work/demo/issues/01-valid-slice.md",
+  ".work/demo/evidence/ticket-decomposition-result.yaml",
+  ".work/demo/evidence/repository-preparation.yaml",
+  ".work/demo/evidence/backend-onboarding.yaml",
+  ".work/demo/evidence/frontend-onboarding.yaml",
+  ".work/demo/evidence/backend-manifest.json",
+  ".work/demo/evidence/backend-verification.json",
+  ".work/demo/evidence/frontend-manifest.json",
+  ".work/demo/evidence/frontend-verification.json",
+  ".work/demo/evidence/technical-analysis-result.yaml",
+  ".work/demo/evidence/technical-design.json",
+  ".work/demo/evidence/data-architecture-decision.json",
+  ".work/demo/evidence/engineering-contract-approval.json",
 ].includes(ref) || existsSync(path.resolve(temp, ref)) || existsSync(ref);
-const decompositionResult = `result_schema: workflow-execution-result-v1\nwork_unit: work-unit.ticket-decomposition\nresult: completed\nevidence_refs:\n  - docs/.scratch/demo/evidence/ticket-decomposition-result.yaml\n`;
+const decompositionResult = `result_schema: workflow-execution-result-v1\nwork_unit: work-unit.ticket-decomposition\nresult: completed\nevidence_refs:\n  - .work/demo/evidence/ticket-decomposition-result.yaml\n`;
 const technicalAnalysisResult = `${JSON.stringify({
   result_schema: "workflow-execution-result-v1",
   work_unit: "work-unit.technical-analysis",
@@ -105,19 +105,19 @@ const technicalAnalysisResult = `${JSON.stringify({
   current_version: true,
   api_contract_decision: { ref: apiDecision.ref, version: "v1", digest: apiDecision.digest, impact: "not-applicable" },
   context_reconciliation: { status: "reconciled", ref: ".template-spec/process/lifecycle-registry.yaml" },
-  evidence_refs: ["docs/.scratch/demo/evidence/technical-analysis-result.yaml", apiDecision.ref],
+  evidence_refs: [".work/demo/evidence/technical-analysis-result.yaml", apiDecision.ref],
 }, null, 2)}\n`;
 const backendDesignPrerequisites = {
   technical_design: { ref: technicalDesign.ref, version: "v1", digest: technicalDesign.digest, approval_context: structuredClone(engineeringContext) },
   data_architecture_decision: { ref: dataDecision.ref, version: "v1", digest: dataDecision.digest, impact: "not-applicable" },
   api_contract_decision: { ref: apiDecision.ref, version: "v1", digest: apiDecision.digest, impact: "not-applicable" },
-  engineering_contract_approval_ref: "docs/.scratch/demo/evidence/engineering-contract-approval.json",
+  engineering_contract_approval_ref: ".work/demo/evidence/engineering-contract-approval.json",
 };
 const manifests = {
-  "docs/.scratch/demo/evidence/backend-manifest.json": JSON.stringify({ schema_version: 4, completion_level: "empty-scaffold-verified", design_prerequisites: backendDesignPrerequisites }),
-  "docs/.scratch/demo/evidence/frontend-manifest.json": JSON.stringify({ schema_version: 4, completion_level: "empty-scaffold-verified" }),
+  ".work/demo/evidence/backend-manifest.json": JSON.stringify({ schema_version: 4, completion_level: "empty-scaffold-verified", design_prerequisites: backendDesignPrerequisites }),
+  ".work/demo/evidence/frontend-manifest.json": JSON.stringify({ schema_version: 4, completion_level: "empty-scaffold-verified" }),
 };
-const read = (ref) => ref === "docs/.scratch/demo/issues/01-valid-slice.md" ? "---\nkind: vertical-slice-ticket\n---\n# 合法切片测试\n" : ref === "docs/.scratch/demo/evidence/ticket-decomposition-result.yaml" ? decompositionResult : ref === "docs/.scratch/demo/evidence/technical-analysis-result.yaml" ? technicalAnalysisResult : manifests[ref] ?? readFileSync(existsSync(path.resolve(temp, ref)) ? path.resolve(temp, ref) : ref, "utf8");
+const read = (ref) => ref === ".work/demo/issues/01-valid-slice.md" ? "---\nkind: vertical-slice-ticket\n---\n# 合法切片测试\n" : ref === ".work/demo/evidence/ticket-decomposition-result.yaml" ? decompositionResult : ref === ".work/demo/evidence/technical-analysis-result.yaml" ? technicalAnalysisResult : manifests[ref] ?? readFileSync(existsSync(path.resolve(temp, ref)) ? path.resolve(temp, ref) : ref, "utf8");
 const options = { exists, read, root: temp };
 
 const validTicketState = {
@@ -129,29 +129,29 @@ const validTicketState = {
     kind: "implementation-repository-preparation-result",
     result: "completed",
     current_version: true,
-    evidence_refs: ["docs/.scratch/demo/evidence/repository-preparation.yaml"],
+    evidence_refs: [".work/demo/evidence/repository-preparation.yaml"],
     projects: [
-      { project_id: "backend", delivery_role: "backend", status: "existing-and-onboarded", repository_ref: "git://backend", project_root: "/workspace/backend", repository_scope: "external-repository", architecture_family: "domain-driven", design_prerequisites: backendDesignPrerequisites, onboarding_result: { status: "completed", ref: "docs/.scratch/demo/evidence/backend-onboarding.yaml" } },
-      { project_id: "frontend", delivery_role: "frontend", status: "existing-and-onboarded", repository_ref: "git://frontend", project_root: "/workspace/frontend", repository_scope: "external-repository", onboarding_result: { status: "completed", ref: "docs/.scratch/demo/evidence/frontend-onboarding.yaml" } },
+      { project_id: "backend", delivery_role: "backend", status: "existing-and-onboarded", repository_ref: "git://backend", project_root: "/workspace/backend", repository_scope: "external-repository", architecture_family: "domain-driven", design_prerequisites: backendDesignPrerequisites, onboarding_result: { status: "completed", ref: ".work/demo/evidence/backend-onboarding.yaml" } },
+      { project_id: "frontend", delivery_role: "frontend", status: "existing-and-onboarded", repository_ref: "git://frontend", project_root: "/workspace/frontend", repository_scope: "external-repository", onboarding_result: { status: "completed", ref: ".work/demo/evidence/frontend-onboarding.yaml" } },
     ],
   },
   predecessor_work_unit: "work-unit.ticket-decomposition",
   tracker_kind: "local-markdown",
-  ticket_decomposition_result_ref: "docs/.scratch/demo/evidence/ticket-decomposition-result.yaml",
-  vertical_slice_ticket_ref: "docs/.scratch/demo/issues/01-valid-slice.md",
+  ticket_decomposition_result_ref: ".work/demo/evidence/ticket-decomposition-result.yaml",
+  vertical_slice_ticket_ref: ".work/demo/issues/01-valid-slice.md",
   vertical_slice_ticket_role: "ready-for-agent",
   vertical_slice_ticket_kind: "vertical-slice-ticket",
   ticket_decomposition_result: {
     result: "completed",
-    evidence_refs: ["docs/.scratch/demo/evidence/ticket-decomposition-result.yaml"],
+    evidence_refs: [".work/demo/evidence/ticket-decomposition-result.yaml"],
   },
   vertical_slice_ticket: {
-    ref: "docs/.scratch/demo/issues/01-valid-slice.md",
+    ref: ".work/demo/issues/01-valid-slice.md",
     kind: "vertical-slice-ticket",
     role: "ready-for-agent",
   },
   slice_contract: {
-    ticket_ref: "docs/.scratch/demo/issues/01-valid-slice.md",
+    ticket_ref: ".work/demo/issues/01-valid-slice.md",
     status: "approved",
     persisted: true,
     current_version: true,
@@ -197,25 +197,25 @@ assert.ok(validateImplementationRepositoriesReady(missingApiDecision, options).b
 const initializedState = {
   delivery_impacts: { backend: true, frontend: true },
   implementation_repository_preparation: {
-    schema_version: 2, kind: "implementation-repository-preparation-result", result: "completed", current_version: true, evidence_refs: ["docs/.scratch/demo/evidence/repository-preparation.yaml"],
+    schema_version: 2, kind: "implementation-repository-preparation-result", result: "completed", current_version: true, evidence_refs: [".work/demo/evidence/repository-preparation.yaml"],
     projects: [
-      { project_id: "backend", delivery_role: "backend", status: "initialized-and-verified", repository_ref: "git://backend", project_root: "/workspace/backend", repository_scope: "external-repository", architecture_family: "domain-driven", design_prerequisites: backendDesignPrerequisites, scaffold_contract: { schema_version: 4, status: "approved", persisted: true, current_version: true }, scaffold_manifest_ref: "docs/.scratch/demo/evidence/backend-manifest.json", scaffold_verification: { status: "passed", ref: "docs/.scratch/demo/evidence/backend-verification.json" } },
-      { project_id: "frontend", delivery_role: "frontend", status: "initialized-and-verified", repository_ref: "git://frontend", project_root: "/workspace/frontend", repository_scope: "external-repository", template_available: true, scaffold_contract: { schema_version: 4, status: "approved", persisted: true, current_version: true }, scaffold_manifest_ref: "docs/.scratch/demo/evidence/frontend-manifest.json", scaffold_verification: { status: "passed", ref: "docs/.scratch/demo/evidence/frontend-verification.json" } },
+      { project_id: "backend", delivery_role: "backend", status: "initialized-and-verified", repository_ref: "git://backend", project_root: "/workspace/backend", repository_scope: "external-repository", architecture_family: "domain-driven", design_prerequisites: backendDesignPrerequisites, scaffold_contract: { schema_version: 4, status: "approved", persisted: true, current_version: true }, scaffold_manifest_ref: ".work/demo/evidence/backend-manifest.json", scaffold_verification: { status: "passed", ref: ".work/demo/evidence/backend-verification.json" } },
+      { project_id: "frontend", delivery_role: "frontend", status: "initialized-and-verified", repository_ref: "git://frontend", project_root: "/workspace/frontend", repository_scope: "external-repository", template_available: true, scaffold_contract: { schema_version: 4, status: "approved", persisted: true, current_version: true }, scaffold_manifest_ref: ".work/demo/evidence/frontend-manifest.json", scaffold_verification: { status: "passed", ref: ".work/demo/evidence/frontend-verification.json" } },
     ],
   },
 };
 assert.equal(validateImplementationRepositoriesReady(initializedState, options).result, "allowed");
-assert.equal(validateImplementationRepositoriesReady({ delivery_impacts: { backend: false, frontend: false }, implementation_repository_preparation: { schema_version: 2, kind: "implementation-repository-preparation-result", result: "completed", current_version: true, evidence_refs: ["docs/.scratch/demo/evidence/repository-preparation.yaml"], projects: [{ project_id: "backend-na", delivery_role: "backend", status: "not-applicable", reason: "no backend impact" }, { project_id: "frontend-na", delivery_role: "frontend", status: "not-applicable", reason: "no frontend impact" }] } }, options).result, "allowed");
+assert.equal(validateImplementationRepositoriesReady({ delivery_impacts: { backend: false, frontend: false }, implementation_repository_preparation: { schema_version: 2, kind: "implementation-repository-preparation-result", result: "completed", current_version: true, evidence_refs: [".work/demo/evidence/repository-preparation.yaml"], projects: [{ project_id: "backend-na", delivery_role: "backend", status: "not-applicable", reason: "no backend impact" }, { project_id: "frontend-na", delivery_role: "frontend", status: "not-applicable", reason: "no frontend impact" }] } }, options).result, "allowed");
 
-const legacyManifest = writeProjectFile("docs/.scratch/demo/evidence/backend-manifest-v3.json", { schema_version: 3, completion_level: "empty-scaffold-verified" });
-const legacyOwnership = writeProjectFile("docs/.scratch/demo/evidence/backend-v3-ownership.json", { ownership_state: "unchanged-mechanical-scaffold", extra_files: [] });
-const legacyRecovery = writeProjectFile("docs/.scratch/demo/evidence/backend-v3-recovery-approval.json", { status: "approved", api_reconciled: true });
+const legacyManifest = writeProjectFile(".work/demo/evidence/backend-manifest-v3.json", { schema_version: 3, completion_level: "empty-scaffold-verified" });
+const legacyOwnership = writeProjectFile(".work/demo/evidence/backend-v3-ownership.json", { ownership_state: "unchanged-mechanical-scaffold", extra_files: [] });
+const legacyRecovery = writeProjectFile(".work/demo/evidence/backend-v3-recovery-approval.json", { status: "approved", api_reconciled: true });
 const legacyState = {
   delivery_impacts: { backend: true, frontend: false },
   implementation_repository_preparation: {
-    schema_version: 2, kind: "implementation-repository-preparation-result", result: "completed", current_version: true, evidence_refs: ["docs/.scratch/demo/evidence/repository-preparation.yaml"],
+    schema_version: 2, kind: "implementation-repository-preparation-result", result: "completed", current_version: true, evidence_refs: [".work/demo/evidence/repository-preparation.yaml"],
     projects: [
-      { project_id: "backend", delivery_role: "backend", status: "initialized-and-verified", repository_ref: "git://backend", project_root: "/workspace/backend", repository_scope: "external-repository", architecture_family: "domain-driven", design_prerequisites: backendDesignPrerequisites, scaffold_contract: { schema_version: 3, status: "approved", persisted: true, current_version: true }, scaffold_manifest_ref: legacyManifest.ref, scaffold_verification: { status: "passed", ref: "docs/.scratch/demo/evidence/backend-verification.json" }, legacy_reconciliation: { status: "approved", ownership_state: "unchanged-mechanical-scaffold", premature_implementation: false, manifest_ref: legacyManifest.ref, manifest_digest: legacyManifest.digest, ownership_check_ref: legacyOwnership.ref, recovery_approval_ref: legacyRecovery.ref } },
+      { project_id: "backend", delivery_role: "backend", status: "initialized-and-verified", repository_ref: "git://backend", project_root: "/workspace/backend", repository_scope: "external-repository", architecture_family: "domain-driven", design_prerequisites: backendDesignPrerequisites, scaffold_contract: { schema_version: 3, status: "approved", persisted: true, current_version: true }, scaffold_manifest_ref: legacyManifest.ref, scaffold_verification: { status: "passed", ref: ".work/demo/evidence/backend-verification.json" }, legacy_reconciliation: { status: "approved", ownership_state: "unchanged-mechanical-scaffold", premature_implementation: false, manifest_ref: legacyManifest.ref, manifest_digest: legacyManifest.digest, ownership_check_ref: legacyOwnership.ref, recovery_approval_ref: legacyRecovery.ref } },
       { project_id: "frontend-na", delivery_role: "frontend", status: "not-applicable", reason: "backend-only recovery" },
     ],
   },
@@ -245,18 +245,18 @@ const cases = [
   ["missing slice role", { ...validTicketState, vertical_slice_ticket_role: undefined }, "vertical-slice-ticket-role-missing"],
   ["missing slice kind", { ...validTicketState, vertical_slice_ticket_kind: undefined }, "vertical-slice-ticket-kind-missing"],
   ["missing vertical slice", { ...validTicketState, vertical_slice_ticket: undefined }, "vertical-slice-ticket-required"],
-  ["parent ticket reference", { ...validTicketState, vertical_slice_ticket: { ref: "docs/.scratch/demo/parent-ticket.md", kind: "parent-ticket", role: "ready-for-agent" } }, "parent-ticket-forbidden"],
+  ["parent ticket reference", { ...validTicketState, vertical_slice_ticket: { ref: ".work/demo/parent-ticket.md", kind: "parent-ticket", role: "ready-for-agent" } }, "parent-ticket-forbidden"],
   ["human-ready slice", { ...validTicketState, vertical_slice_ticket: { ...validTicketState.vertical_slice_ticket, role: "ready-for-human" } }, "ticket-not-ready-for-agent"],
   ["uncompleted decomposition", { ...validTicketState, ticket_decomposition_result: { result: "blocked", evidence_refs: [] } }, "ticket-decomposition-incomplete"],
   ["needs-human decomposition", { ...validTicketState, ticket_decomposition_result: { result: "needs-human", evidence_refs: [] } }, "ticket-decomposition-incomplete"],
-  ["unreadable decomposition evidence", { ...validTicketState, ticket_decomposition_result: { ...validTicketState.ticket_decomposition_result, evidence_refs: ["docs/.scratch/demo/missing-evidence.md"] } }, "ticket-formalization-evidence-missing"],
+  ["unreadable decomposition evidence", { ...validTicketState, ticket_decomposition_result: { ...validTicketState.ticket_decomposition_result, evidence_refs: [".work/demo/missing-evidence.md"] } }, "ticket-formalization-evidence-missing"],
   ["wrong slice kind", { ...validTicketState, vertical_slice_ticket: { ...validTicketState.vertical_slice_ticket, kind: "parent-ticket" }, vertical_slice_ticket_kind: "parent-ticket" }, "parent-ticket-forbidden"],
   ["unapproved contract", { ...validTicketState, slice_contract: { ...validTicketState.slice_contract, status: "draft" } }, "slice-contract-not-approved"],
   ["unpersisted contract", { ...validTicketState, slice_contract: { ...validTicketState.slice_contract, persisted: false } }, "slice-contract-not-persisted"],
   ["stale formalization", { ...validTicketState, stale: true }, "ticket-formalization-stale"],
   ["wrong implementation predecessor", { ...validTicketState, predecessor_work_unit: "work-unit.spec-synthesis" }, "invalid-implementation-predecessor"],
-  ["contract bound to another ticket", { ...validTicketState, slice_contract: { ...validTicketState.slice_contract, ticket_ref: "docs/.scratch/demo/issues/02-other.md" } }, "slice-contract-ticket-mismatch"],
-  ["unreadable slice", { ...validTicketState, vertical_slice_ticket: { ...validTicketState.vertical_slice_ticket, ref: "docs/.scratch/demo/issues/03-missing.md" } }, "vertical-slice-ticket-unreadable"],
+  ["contract bound to another ticket", { ...validTicketState, slice_contract: { ...validTicketState.slice_contract, ticket_ref: ".work/demo/issues/02-other.md" } }, "slice-contract-ticket-mismatch"],
+  ["unreadable slice", { ...validTicketState, vertical_slice_ticket: { ...validTicketState.vertical_slice_ticket, ref: ".work/demo/issues/03-missing.md" } }, "vertical-slice-ticket-unreadable"],
 ];
 
 for (const [name, state, signal] of cases) {
@@ -267,7 +267,7 @@ for (const [name, state, signal] of cases) {
 
 const parentOnly = validateTicketFormalization({
   ...validTicketState,
-  vertical_slice_ticket: { ref: "docs/.scratch/demo/parent-ticket.md", kind: "parent-ticket", role: "ready-for-human" },
+  vertical_slice_ticket: { ref: ".work/demo/parent-ticket.md", kind: "parent-ticket", role: "ready-for-human" },
 }, options);
 assert.equal(parentOnly.result, "blocked");
 
@@ -286,7 +286,7 @@ for (const current of ["work-unit.spec-synthesis", "work-unit.prototype-design-v
 assert.ok(validateNextRoute("work-unit.technical-analysis", "work-unit.implementation-repository-preparation", {}, options).blocking_signals.includes("technical-analysis-required"));
 assert.equal(validateNextRoute("work-unit.technical-analysis", "work-unit.implementation-repository-preparation", {
   user_decisions: [backendArchitectureApproval.requirement, engineeringApproval.requirement],
-  technical_analysis_result_ref: "docs/.scratch/demo/evidence/technical-analysis-result.yaml",
+  technical_analysis_result_ref: ".work/demo/evidence/technical-analysis-result.yaml",
   technical_analysis_result: {
     result_schema: "workflow-execution-result-v1",
     work_unit: "work-unit.technical-analysis",
@@ -294,19 +294,19 @@ assert.equal(validateNextRoute("work-unit.technical-analysis", "work-unit.implem
     current_version: true,
     api_contract_decision: { ref: apiDecision.ref, version: "v1", digest: apiDecision.digest, impact: "not-applicable" },
     context_reconciliation: { status: "reconciled", ref: ".template-spec/process/lifecycle-registry.yaml" },
-    evidence_refs: ["docs/.scratch/demo/evidence/technical-analysis-result.yaml", apiDecision.ref],
+    evidence_refs: [".work/demo/evidence/technical-analysis-result.yaml", apiDecision.ref],
   },
 }, options).result, "allowed");
 assert.ok(validateNextRoute("work-unit.technical-analysis", "work-unit.implementation-repository-preparation", {
   user_decisions: [backendArchitectureApproval.requirement, engineeringApproval.requirement],
-  technical_analysis_result_ref: "docs/.scratch/demo/evidence/technical-analysis-result.yaml",
+  technical_analysis_result_ref: ".work/demo/evidence/technical-analysis-result.yaml",
   technical_analysis_result: {
     result_schema: "workflow-execution-result-v1",
     work_unit: "work-unit.technical-analysis",
     result: "completed",
     current_version: true,
     context_reconciliation: { status: "reconciled", ref: ".template-spec/process/lifecycle-registry.yaml" },
-    evidence_refs: ["docs/.scratch/demo/evidence/technical-analysis-result.yaml"],
+    evidence_refs: [".work/demo/evidence/technical-analysis-result.yaml"],
   },
 }, options).blocking_signals.includes("technical-analysis-required"));
 assert.equal(validateNextRoute("work-unit.implementation-repository-preparation", "work-unit.ticket-decomposition", validTicketState, options).result, "allowed");
@@ -330,6 +330,6 @@ assert.equal(validateTicketFormalization({
   vertical_slice_ticket_ref: "https://github.com/example/project/issues/1",
   vertical_slice_ticket: { ref: "https://github.com/example/project/issues/1", kind: "vertical-slice-ticket", role: "ready-for-agent" },
   slice_contract: { ...validTicketState.slice_contract, ticket_ref: "https://github.com/example/project/issues/1" },
-}, { ...options, exists: (ref) => ref === "https://github.com/example/project/issues/1" || exists(ref), read: (ref) => ref === "https://github.com/example/project/issues/1" ? decompositionResult.replace("docs/.scratch/demo/evidence/ticket-decomposition-result.yaml", "https://github.com/example/project/issues/1") : readFileSync(ref, "utf8") }).result, "allowed");
+}, { ...options, exists: (ref) => ref === "https://github.com/example/project/issues/1" || exists(ref), read: (ref) => ref === "https://github.com/example/project/issues/1" ? decompositionResult.replace(".work/demo/evidence/ticket-decomposition-result.yaml", "https://github.com/example/project/issues/1") : readFileSync(ref, "utf8") }).result, "allowed");
 
 process.stdout.write("生命周期转换压力场景验证通过\n");

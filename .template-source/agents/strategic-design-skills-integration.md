@@ -47,5 +47,7 @@
 
 模板生命周期的关键决定统一消费 `.template-spec/agents/digital-human-roles.yaml.user_decision_policy`。本地原型确认与阶段决策批准追加真实回复、当前资产和范围校验；数字人审查保留。记录协议见 [用户决定协议](../../.agents/skills/yss-product-lifecycle/references/user-decisions.md)。此适配只更新 effective hash，不改写已锁定的上游 revision/hash，也不发布外部技能源。
 
+Design 的 `yss-strategic-design` 属于 `local_only`。其 `references/user-decisions.md` 按本地 Profile 维护路由说明，不能由 Spec 的同名协议逐字覆盖：Design 尚未启用 `daily`，也不分发 Spec 的 `daily-delivery.md`。共同的真实回复、范围和当前性要求仍由上述角色政策及共享校验器执行。
+
 
 当前来源 revision、状态和摘要由 `.agents/skills/.strategic-design-skills-manifest.json` 持有。原型能力及 Plan / Spec 内容规则以当前 canonical 技能和 `.template-spec/process/plan-spec-quality.md` 为准，不在本合同重复维护版本过程。

@@ -160,7 +160,7 @@ check("等待期间可保存状态但不能流转依赖工作", () => {
   assert.throws(() => assertCheckpointUserDecisions({ repository_mode: "project-instance", status: "running", human_review: { required_decisions: [f.requirement] } }), /user-decision-response-required/);
 });
 check("实施批准绑定切片、合同、仓库、路径和基线", () => {
-  const f = buildImplementationFixture(path.join(root, "implementation"), "docs/.scratch/demo/issues/one.md"); assertImplementationDecision(f.state);
+  const f = buildImplementationFixture(path.join(root, "implementation"), ".work/demo/issues/one.md"); assertImplementationDecision(f.state);
   assert.throws(() => assertImplementationDecision({ ...f.state, vertical_slice_ticket_ref: "another.md" }), /user-decision-scope-mismatch/);
   writeFileSync(f.state.slice_contract_ref, "changed"); assert.throws(() => assertImplementationDecision(f.state), /user-decision-stale/);
 });
