@@ -54,6 +54,17 @@ profiles:
           - "tests/profile-variants.test.mjs"
         depends_on: []
         failure_mode: "有意定制登记接受已与来源一致的副本、放过被改动的定制，或把未登记的 Profile 差异当成有意"
+      - id: check.legacy-coverage
+        run: "node --test tests/legacy-coverage.test.mjs"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
+          - "scripts/lib/legacy-coverage.mjs"
+          - "scripts/lib/template-verification.mjs"
+          - "tests/legacy-coverage.test.mjs"
+          - ".template-source/process/template-verification-profiles.yaml"
+        depends_on: []
+        failure_mode: "压缩后的旧检查覆盖展开出与压缩前不同的字段、顺序或内容，使 policy_digest 或某条旧检查的门禁归属悄悄改变"
       - id: check.source-lock-lag
         run: "node --test tests/source-lock-lag.test.mjs"
         group: feature-assets
@@ -1362,6 +1373,11 @@ routing:
       - hygiene
       - feature-assets
   - patterns:
+      - scripts/lib/legacy-coverage.mjs
+      - tests/legacy-coverage.test.mjs
+    groups:
+      - feature-assets
+  - patterns:
       - scripts/harness-metrics
       - scripts/lib/harness-metrics.mjs
       - tests/harness-metrics.test.mjs
@@ -2331,2392 +2347,628 @@ gates:
     display_id: G20
     audit_basis: Every registered changed path retains this risk; no narrowing or
       retirement.
+# 旧检查覆盖（冻结，共 117 条）。逐条只写不同的字段；其余由下面的 defaults 与 gates 表在加载时展开，
+# 展开结果与压缩前逐字节相同（规则与校验见 scripts/lib/legacy-coverage.mjs，等价性见 tests/legacy-coverage.test.mjs）。
+legacy_coverage_defaults:
+  owner: role.test-engineer
+  input_patterns: ["**"]
+  depends_on: []
+  duration_ms: null
+  disposition: merge
+  audit_status: preserved
+  counterexample_ref: null
+  evidence_ref: .template-source/process/template-verification-legacy.json
+legacy_coverage_gates:
+  check.verification-fixed-source: G01
+  check.verification-skills: G03
+  check.verification-governance-syntax: G04
+  check.verification-design-ui: G10
+  check.verification-plan-spec: G06
+  check.verification-spec-cli: G13
+  check.verification-cli-core: G12
+  check.verification-distribution: G18
+  check.verification-strategic-contract: G09
+  check.verification-tooling-dependencies: G05
+  check.verification-implementation: G11
+  check.verification-approval: G08
+  check.verification-lifecycle: G07
+  check.verification-final-integrity: G20
 legacy_coverage:
   - old_id: legacy.000
     check_id: check.drift-identity
     group: drift-identity
-    command: node --test tests/content-identity.test.mjs tests/drift-report.test.mjs
-      tests/maintenance-iteration.test.mjs
-    owner: role.test-engineer
-    replacement_gate: check.verification-fixed-source
-    gate_ids:
-      - check.verification-fixed-source
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.000
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G01
+    gate: check.verification-fixed-source
+    command: "node --test tests/content-identity.test.mjs tests/drift-report.test.mjs tests/maintenance-iteration.test.mjs"
   - old_id: legacy.001
     check_id: check.cli-content-identity
     group: drift-identity
-    command: node --test submodules/create-yss-spec/tests/content-identity.test.js
-    replacement_command: node --test tests/cli-retirement.test.mjs
+    gate: check.verification-fixed-source
+    command: "node --test submodules/create-yss-spec/tests/content-identity.test.js"
+    replacement_command: "node --test tests/cli-retirement.test.mjs"
     retirement_disposition: public-native-content-identity
-    owner: role.test-engineer
-    replacement_gate: check.verification-fixed-source
-    gate_ids:
-      - check.verification-fixed-source
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.001
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G01
   - old_id: legacy.002
     check_id: check.skill-projection-identity
     group: drift-identity
-    command: scripts/sync-skills --check
-    owner: role.test-engineer
-    replacement_gate: check.verification-skills
-    gate_ids:
-      - check.verification-skills
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.002
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G03
+    gate: check.verification-skills
+    command: "scripts/sync-skills --check"
   - old_id: legacy.003
     check_id: check.skill-lock-current
     group: drift-identity
-    command: scripts/update-skill-lock --check
-    owner: role.test-engineer
-    replacement_gate: check.verification-skills
-    gate_ids:
-      - check.verification-skills
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.003
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G03
+    gate: check.verification-skills
+    command: "scripts/update-skill-lock --check"
   - old_id: legacy.004
     check_id: check.structured-assets
     group: schema-runtime
-    command: node --test scripts/fixtures/structured-assets/*.test.mjs
-    owner: role.test-engineer
-    replacement_gate: check.verification-governance-syntax
-    gate_ids:
-      - check.verification-governance-syntax
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.004
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G04
+    gate: check.verification-governance-syntax
+    command: "node --test scripts/fixtures/structured-assets/*.test.mjs"
   - old_id: legacy.005
     check_id: check.schema-runtime
     group: schema-runtime
-    command: node --test
-      scripts/fixtures/contract-efficiency/schema-rejection.test.mjs
-      scripts/fixtures/contract-efficiency/security.test.mjs
-      scripts/fixtures/contract-efficiency/phase.test.mjs
-      scripts/fixtures/delivery-preflight/json-schema-framing.test.mjs
-    owner: role.test-engineer
-    replacement_gate: check.verification-governance-syntax
-    gate_ids:
-      - check.verification-governance-syntax
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.005
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G04
+    gate: check.verification-governance-syntax
+    command: "node --test scripts/fixtures/contract-efficiency/schema-rejection.test.mjs scripts/fixtures/contract-efficiency/security.test.mjs scripts/fixtures/contract-efficiency/phase.test.mjs scripts/fixtures/delivery-preflight/json-schema-framing.test.mjs"
   - old_id: legacy.006
     check_id: check.feature-assets
     group: feature-assets
-    command: node --test tests/feature-assets.test.mjs tests/browser-session.test.mjs
-    owner: role.test-engineer
-    replacement_gate: check.verification-design-ui
-    gate_ids:
-      - check.verification-design-ui
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.006
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G10
+    gate: check.verification-design-ui
+    command: "node --test tests/feature-assets.test.mjs tests/browser-session.test.mjs"
   - old_id: legacy.007
     check_id: check.business-ticket-contract
     group: business-tickets
-    command: node --test scripts/fixtures/business-tickets/*.test.mjs
-    owner: role.test-engineer
-    replacement_gate: check.verification-plan-spec
-    gate_ids:
-      - check.verification-plan-spec
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.007
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G06
+    gate: check.verification-plan-spec
+    command: "node --test scripts/fixtures/business-tickets/*.test.mjs"
   - old_id: legacy.008
     check_id: check.292502d15942f4de
     group: plan-spec-content
-    command: node --test
-      .template-source/tooling/node/test/plan-spec-quality.test.mjs
-      tests/plan-spec-template-contract.test.mjs
-    owner: role.test-engineer
-    replacement_gate: check.verification-plan-spec
-    gate_ids:
-      - check.verification-plan-spec
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.008
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G06
+    gate: check.verification-plan-spec
+    command: "node --test .template-source/tooling/node/test/plan-spec-quality.test.mjs tests/plan-spec-template-contract.test.mjs"
   - old_id: legacy.009
     check_id: check.57446ae09b82f3cd
     group: plan-spec-content
-    command: node .agents/skills/i-have-adhd/tests/verify-integration.mjs
-    owner: role.test-engineer
-    replacement_gate: check.verification-plan-spec
-    gate_ids:
-      - check.verification-plan-spec
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.009
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G06
+    gate: check.verification-plan-spec
+    command: "node .agents/skills/i-have-adhd/tests/verify-integration.mjs"
   - old_id: legacy.010
     check_id: check.517fe9954d913f53
     group: cli-sync
-    command: node --test submodules/create-yss-spec/tests/sync-fast-smoke.test.js
-    replacement_command: node --test tests/cli-retirement.test.mjs
+    gate: check.verification-spec-cli
+    gate_ids: ["check.verification-spec-cli", "check.verification-cli-core"]
+    command: "node --test submodules/create-yss-spec/tests/sync-fast-smoke.test.js"
+    replacement_command: "node --test tests/cli-retirement.test.mjs"
     retirement_disposition: public-native-sync-protection
-    owner: role.test-engineer
-    replacement_gate: check.verification-spec-cli
-    gate_ids:
-      - check.verification-spec-cli
-      - check.verification-cli-core
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.010
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G13
   - old_id: legacy.011
     check_id: check.2b52a050306077cc
     group: cli-sync
-    command: scripts/verify-repository-scope-scenarios
-    owner: role.test-engineer
-    replacement_gate: check.verification-spec-cli
-    gate_ids:
-      - check.verification-spec-cli
-      - check.verification-cli-core
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.011
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G13
+    gate: check.verification-spec-cli
+    gate_ids: ["check.verification-spec-cli", "check.verification-cli-core"]
+    command: "scripts/verify-repository-scope-scenarios"
   - old_id: legacy.012
     check_id: check.371da192d6338e6d
     group: dedicated-cli-core
-    command: node --test .template-source/cli-core/tests/*.test.mjs
-    replacement_command: node --test tests/cli-core-retirement.test.mjs
+    gate: check.verification-cli-core
+    command: "node --test .template-source/cli-core/tests/*.test.mjs"
+    replacement_command: "node --test tests/cli-core-retirement.test.mjs"
     retirement_disposition: public-native-core-protection
-    owner: role.test-engineer
-    replacement_gate: check.verification-cli-core
-    gate_ids:
-      - check.verification-cli-core
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: tests/cli-core-retirement.test.mjs
-    counterexample_ref: tests/cli-core-retirement.test.mjs
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G12
+    counterexample_ref: "tests/cli-core-retirement.test.mjs"
+    source_ref: "tests/cli-core-retirement.test.mjs"
   - old_id: legacy.013
     check_id: check.1f1753b1299c14cf
     group: frontend-delivery
-    command: scripts/verify-frontend-delivery-scenarios
-    owner: role.test-engineer
-    replacement_gate: check.verification-distribution
-    gate_ids:
-      - check.verification-distribution
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.013
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G18
+    gate: check.verification-distribution
+    command: "scripts/verify-frontend-delivery-scenarios"
   - old_id: legacy.014
     check_id: check.629b3c9ec897593f
     group: frontend-delivery
-    command: node .template-source/scripts/verify-delivery-harness-distribution.mjs
-    owner: role.test-engineer
-    replacement_gate: check.verification-distribution
-    gate_ids:
-      - check.verification-distribution
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.014
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G18
+    gate: check.verification-distribution
+    command: "node .template-source/scripts/verify-delivery-harness-distribution.mjs"
   - old_id: legacy.015
     check_id: check.17d5665535e89587
     group: strategic-handoff-package
-    command: scripts/verify-strategic-handoff-tools-lock
-    owner: role.test-engineer
-    replacement_gate: check.verification-strategic-contract
-    gate_ids:
-      - check.verification-strategic-contract
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.015
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G09
+    gate: check.verification-strategic-contract
+    command: "scripts/verify-strategic-handoff-tools-lock"
   - old_id: legacy.016
     check_id: check.ba0fad1faed81f06
     group: strategic-handoff-package
-    command: node --check scripts/lib/strategic-handoff.mjs
-    owner: role.test-engineer
-    replacement_gate: check.verification-strategic-contract
-    gate_ids:
-      - check.verification-strategic-contract
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.016
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G09
+    gate: check.verification-strategic-contract
+    command: "node --check scripts/lib/strategic-handoff.mjs"
   - old_id: legacy.017
     check_id: check.83f08a7516716a38
     group: strategic-handoff-package
-    command: scripts/verify-strategic-handoff-package-scenarios
-    owner: role.test-engineer
-    replacement_gate: check.verification-strategic-contract
-    gate_ids:
-      - check.verification-strategic-contract
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.017
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G09
+    gate: check.verification-strategic-contract
+    command: "scripts/verify-strategic-handoff-package-scenarios"
   - old_id: legacy.018
     check_id: check.5178854477253978
     group: design-system
-    command: node .template-source/tooling/node/scripts/design-md.mjs lint DESIGN.md
-    owner: role.test-engineer
-    replacement_gate: check.verification-design-ui
-    gate_ids:
-      - check.verification-design-ui
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.018
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G10
+    gate: check.verification-design-ui
+    command: "node .template-source/tooling/node/scripts/design-md.mjs lint DESIGN.md"
   - old_id: legacy.019
     check_id: check.a27805ecf41a23e5
     group: design-system
-    command: node .template-source/tooling/node/scripts/design-md.mjs drift
-    owner: role.test-engineer
-    replacement_gate: check.verification-design-ui
-    gate_ids:
-      - check.verification-design-ui
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.019
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G10
+    gate: check.verification-design-ui
+    command: "node .template-source/tooling/node/scripts/design-md.mjs drift"
   - old_id: legacy.020
     check_id: check.8cd499a929b8a5a4
     group: hygiene
-    command: scripts/verify-governance-layout
-    owner: role.test-engineer
-    replacement_gate: check.verification-governance-syntax
-    gate_ids:
-      - check.verification-governance-syntax
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.020
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G04
+    gate: check.verification-governance-syntax
+    command: "scripts/verify-governance-layout"
   - old_id: legacy.021
     check_id: check.44ea73f718bcecec
     group: tooling
-    command: python3 -m unittest discover -s .template-source/scripts/tests -p
-      'test_skills_agent_eval.py' -v
-    owner: role.test-engineer
-    replacement_gate: check.verification-tooling-dependencies
-    gate_ids:
-      - check.verification-tooling-dependencies
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.021
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G05
+    gate: check.verification-tooling-dependencies
+    command: "python3 -m unittest discover -s .template-source/scripts/tests -p 'test_skills_agent_eval.py' -v"
   - old_id: legacy.022
     check_id: check.71586a7291afee4f
     group: tooling
-    command: pnpm --dir .template-source/tooling/node test
-    owner: role.test-engineer
-    replacement_gate: check.verification-tooling-dependencies
-    gate_ids:
-      - check.verification-tooling-dependencies
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.022
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G05
+    gate: check.verification-tooling-dependencies
+    command: "pnpm --dir .template-source/tooling/node test"
   - old_id: legacy.023
     check_id: check.637af2529c59dfe5
     group: tooling
-    command: pnpm --dir .template-source/tooling/node check:vendor
-    owner: role.test-engineer
-    replacement_gate: check.verification-tooling-dependencies
-    gate_ids:
-      - check.verification-tooling-dependencies
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.023
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G05
+    gate: check.verification-tooling-dependencies
+    command: "pnpm --dir .template-source/tooling/node check:vendor"
   - old_id: legacy.024
     check_id: check.22712701df14f183
     group: skills
-    command: scripts/sync-profile-skills --check --profile=all
-    owner: role.test-engineer
-    replacement_gate: check.verification-skills
-    gate_ids:
-      - check.verification-skills
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.024
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G03
+    gate: check.verification-skills
+    command: "scripts/sync-profile-skills --check --profile=all"
   - old_id: legacy.025
     check_id: check.4301e56b48a9d570
     group: skills
-    command: scripts/sync-skills --check
-    owner: role.test-engineer
-    replacement_gate: check.verification-skills
-    gate_ids:
-      - check.verification-skills
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.025
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G03
+    gate: check.verification-skills
+    command: "scripts/sync-skills --check"
   - old_id: legacy.026
     check_id: check.eb4247ef92d2c0d0
     group: skills
-    command: scripts/update-skill-lock --check
-    owner: role.test-engineer
-    replacement_gate: check.verification-skills
-    gate_ids:
-      - check.verification-skills
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.026
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G03
+    gate: check.verification-skills
+    command: "scripts/update-skill-lock --check"
   - old_id: legacy.027
     check_id: check.c80aaecf300ddc1f
     group: skills
-    command: node --test tests/skill-sync-efficiency.test.mjs
-    owner: role.test-engineer
-    replacement_gate: check.verification-skills
-    gate_ids:
-      - check.verification-skills
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.027
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G03
+    gate: check.verification-skills
+    command: "node --test tests/skill-sync-efficiency.test.mjs"
   - old_id: legacy.028
     check_id: check.022dccdddca70b70
     group: skills
-    command: scripts/verify-skill-registry
-    owner: role.test-engineer
-    replacement_gate: check.verification-skills
-    gate_ids:
-      - check.verification-skills
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.028
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G03
+    gate: check.verification-skills
+    command: "scripts/verify-skill-registry"
   - old_id: legacy.029
     check_id: check.93d2af5732ccdd96
     group: skills
-    command: scripts/verify-skill-governance
-    owner: role.test-engineer
-    replacement_gate: check.verification-skills
-    gate_ids:
-      - check.verification-skills
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.029
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G03
+    gate: check.verification-skills
+    command: "scripts/verify-skill-governance"
   - old_id: legacy.030
     check_id: check.a74d7c2cc539e456
     group: skills
-    command: scripts/verify-upstream-skill-source
-      --source=iloveZzz/yss-harness-design-agent
-      --source-root=submodules/yss-harness-design-agent
-    owner: role.test-engineer
-    replacement_gate: check.verification-skills
-    gate_ids:
-      - check.verification-skills
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.030
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G03
+    gate: check.verification-skills
+    command: "scripts/verify-upstream-skill-source --source=iloveZzz/yss-harness-design-agent --source-root=submodules/yss-harness-design-agent"
   - old_id: legacy.031
     check_id: check.208c7eedeff4e6e9
     group: skills
-    command: node --test
-      .agents/skills/yss-skill-source-index-refresh/scripts/refresh-yss-skill-index.test.mjs
-    owner: role.test-engineer
-    replacement_gate: check.verification-skills
-    gate_ids:
-      - check.verification-skills
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.031
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G03
+    gate: check.verification-skills
+    command: "node --test .agents/skills/yss-skill-source-index-refresh/scripts/refresh-yss-skill-index.test.mjs"
   - old_id: legacy.032
     check_id: check.f8acc69a55fea6b0
     group: skills
-    command: node --test .agents/skills/yss-repository/tests/profile-routing.test.mjs
-    owner: role.test-engineer
-    replacement_gate: check.verification-skills
-    gate_ids:
-      - check.verification-skills
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.032
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G03
+    gate: check.verification-skills
+    command: "node --test .agents/skills/yss-repository/tests/profile-routing.test.mjs"
   - old_id: legacy.033
     check_id: check.3d61dc45c4a35922
     group: tactical-design
-    command: node .agents/skills/yss-technical-design/scripts/generate-schema.mjs
-      --check
-    owner: role.test-engineer
-    replacement_gate: check.verification-strategic-contract
-    gate_ids:
-      - check.verification-strategic-contract
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.033
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G09
+    gate: check.verification-strategic-contract
+    command: "node .agents/skills/yss-technical-design/scripts/generate-schema.mjs --check"
   - old_id: legacy.034
     check_id: check.4bade53d828a7468
     group: tactical-design
-    command: node .agents/skills/yss-technical-design/tests/run-scenarios.mjs
-    owner: role.test-engineer
-    replacement_gate: check.verification-strategic-contract
-    gate_ids:
-      - check.verification-strategic-contract
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.034
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G09
+    gate: check.verification-strategic-contract
+    command: "node .agents/skills/yss-technical-design/tests/run-scenarios.mjs"
   - old_id: legacy.035
     check_id: check.f03591c3ea92405b
     group: tactical-design
-    command: node --test
-      .agents/skills/yss-technical-design/tests/engineering-scenarios.mjs
-    owner: role.test-engineer
-    replacement_gate: check.verification-strategic-contract
-    gate_ids:
-      - check.verification-strategic-contract
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.035
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G09
+    gate: check.verification-strategic-contract
+    command: "node --test .agents/skills/yss-technical-design/tests/engineering-scenarios.mjs"
   - old_id: legacy.036
     check_id: check.0eda9c9e0a08adf6
     group: tactical-design
-    command: node --check
-      .agents/skills/yss-tactical-design/scripts/validate-tactical-design.mjs
-    owner: role.test-engineer
-    replacement_gate: check.verification-strategic-contract
-    gate_ids:
-      - check.verification-strategic-contract
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.036
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G09
+    gate: check.verification-strategic-contract
+    command: "node --check .agents/skills/yss-tactical-design/scripts/validate-tactical-design.mjs"
   - old_id: legacy.037
     check_id: check.9c058e5d7cf873aa
     group: tactical-design
-    command: node --check .agents/skills/yss-tactical-design/tests/run-scenarios.mjs
-    owner: role.test-engineer
-    replacement_gate: check.verification-strategic-contract
-    gate_ids:
-      - check.verification-strategic-contract
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.037
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G09
+    gate: check.verification-strategic-contract
+    command: "node --check .agents/skills/yss-tactical-design/tests/run-scenarios.mjs"
   - old_id: legacy.038
     check_id: check.0b0ff4c1ba24fa6e
     group: tactical-design
-    command: node .agents/skills/yss-tactical-design/tests/run-scenarios.mjs
-    owner: role.test-engineer
-    replacement_gate: check.verification-strategic-contract
-    gate_ids:
-      - check.verification-strategic-contract
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.038
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G09
+    gate: check.verification-strategic-contract
+    command: "node .agents/skills/yss-tactical-design/tests/run-scenarios.mjs"
   - old_id: legacy.039
     check_id: check.0bbbe97175f9674e
     group: contracts
-    command: scripts/verify-yss-dto-openapi-profile
-    owner: role.test-engineer
-    replacement_gate: check.verification-implementation
-    gate_ids:
-      - check.verification-implementation
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.039
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G11
+    gate: check.verification-implementation
+    command: "scripts/verify-yss-dto-openapi-profile"
   - old_id: legacy.040
     check_id: check.eeb6e42ce91ac26a
     group: contracts
-    command: scripts/verify-yss-dto-openapi-scenarios
-    owner: role.test-engineer
-    replacement_gate: check.verification-implementation
-    gate_ids:
-      - check.verification-implementation
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.040
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G11
+    gate: check.verification-implementation
+    command: "scripts/verify-yss-dto-openapi-scenarios"
   - old_id: legacy.041
     check_id: check.d3535102c1a26a7d
     group: contracts
-    command: scripts/verify-openapi-yaml-first-scenarios
-    owner: role.test-engineer
-    replacement_gate: check.verification-implementation
-    gate_ids:
-      - check.verification-implementation
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.041
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G11
+    gate: check.verification-implementation
+    command: "scripts/verify-openapi-yaml-first-scenarios"
   - old_id: legacy.042
     check_id: check.b636f17f4fdfecf1
     group: contracts
-    command: scripts/verify-openapi-json-handoff-scenarios
-    owner: role.test-engineer
-    replacement_gate: check.verification-implementation
-    gate_ids:
-      - check.verification-implementation
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.042
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G11
+    gate: check.verification-implementation
+    command: "scripts/verify-openapi-json-handoff-scenarios"
   - old_id: legacy.043
     check_id: check.plan-review-control-convergence
     group: collaboration
-    command: node scripts/verify-plan-review-control-scenarios
-    owner: role.test-engineer
-    replacement_gate: check.verification-approval
-    gate_ids:
-      - check.verification-approval
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.043
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G08
+    gate: check.verification-approval
+    command: "node scripts/verify-plan-review-control-scenarios"
   - old_id: legacy.044
     check_id: check.role-gates-current-capability
     group: collaboration
-    command: node --test
-      .template-source/tooling/node/test/approval-current.test.mjs
-      .template-source/tooling/node/test/review-capabilities.test.mjs
-      .template-source/tooling/node/test/approval-consumption.test.mjs
-    owner: role.test-engineer
-    replacement_gate: check.verification-approval
-    gate_ids:
-      - check.verification-approval
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.044
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G08
+    gate: check.verification-approval
+    command: "node --test .template-source/tooling/node/test/approval-current.test.mjs .template-source/tooling/node/test/review-capabilities.test.mjs .template-source/tooling/node/test/approval-consumption.test.mjs"
   - old_id: legacy.045
     check_id: check.a3cc57f168071cc8
     group: collaboration
-    command: scripts/verify-digital-human-roles
-    owner: role.test-engineer
-    replacement_gate: check.verification-approval
-    gate_ids:
-      - check.verification-approval
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.045
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G08
+    gate: check.verification-approval
+    command: "scripts/verify-digital-human-roles"
   - old_id: legacy.046
     check_id: check.fa7fc43e32417857
     group: collaboration
-    command: scripts/verify-digital-human-roles-scenarios
-    owner: role.test-engineer
-    replacement_gate: check.verification-approval
-    gate_ids:
-      - check.verification-approval
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.046
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G08
+    gate: check.verification-approval
+    command: "scripts/verify-digital-human-roles-scenarios"
   - old_id: legacy.047
     check_id: check.aab6b1527f8c70f0
     group: collaboration
-    command: scripts/verify-approval-record --history
-      .template-spec/templates/approval-record-template.yaml
-    owner: role.test-engineer
-    replacement_gate: check.verification-approval
-    gate_ids:
-      - check.verification-approval
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.047
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G08
+    gate: check.verification-approval
+    command: "scripts/verify-approval-record --history .template-spec/templates/approval-record-template.yaml"
   - old_id: legacy.048
     check_id: check.ffe328872703d3c0
     group: collaboration
-    command: scripts/verify-subagent-task-package-scenarios
-    owner: role.test-engineer
-    replacement_gate: check.verification-approval
-    gate_ids:
-      - check.verification-approval
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.048
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G08
+    gate: check.verification-approval
+    command: "scripts/verify-subagent-task-package-scenarios"
   - old_id: legacy.049
     check_id: check.b593997f977be2c5
     group: collaboration
-    command: scripts/verify-digital-human-task-package-scenarios
-    owner: role.test-engineer
-    replacement_gate: check.verification-approval
-    gate_ids:
-      - check.verification-approval
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.049
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G08
+    gate: check.verification-approval
+    command: "scripts/verify-digital-human-task-package-scenarios"
   - old_id: legacy.050
     check_id: check.read-only-intake
     group: collaboration
-    command: node --test tests/read-only-intake.test.mjs
-    owner: role.test-engineer
-    replacement_gate: check.verification-approval
-    gate_ids:
-      - check.verification-approval
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.050
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G08
+    gate: check.verification-approval
+    command: "node --test tests/read-only-intake.test.mjs"
   - old_id: legacy.051
     check_id: check.e9c24c657e0a67e7
     group: lifecycle
-    command: node --test tests/plan-clarification-replay.test.mjs
-    owner: role.test-engineer
-    replacement_gate: check.verification-plan-spec
-    gate_ids:
-      - check.verification-plan-spec
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.051
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G06
+    gate: check.verification-plan-spec
+    command: "node --test tests/plan-clarification-replay.test.mjs"
   - old_id: legacy.052
     check_id: check.657837436fa3e2f8
     group: lifecycle
-    command: node --test tests/checkpoint-boundary.test.mjs
-      tests/flow-verification-routing.test.mjs tests/project-ci.test.mjs
-    owner: role.test-engineer
-    replacement_gate: check.verification-lifecycle
-    gate_ids:
-      - check.verification-lifecycle
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.052
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G07
+    gate: check.verification-lifecycle
+    command: "node --test tests/checkpoint-boundary.test.mjs tests/flow-verification-routing.test.mjs tests/project-ci.test.mjs"
   - old_id: legacy.053
     check_id: check.document-reading-views
     group: lifecycle
-    command: node --test scripts/fixtures/reading-views/*.test.mjs
-    owner: role.test-engineer
-    replacement_gate: check.verification-lifecycle
-    gate_ids:
-      - check.verification-lifecycle
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.053
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G07
+    gate: check.verification-lifecycle
+    command: "node --test scripts/fixtures/reading-views/*.test.mjs"
   - old_id: legacy.054
     check_id: check.92a3623cf3550ba8
     group: lifecycle
-    command: node --test scripts/fixtures/stage-tracking/tracking.test.mjs
-    owner: role.test-engineer
-    replacement_gate: check.verification-lifecycle
-    gate_ids:
-      - check.verification-lifecycle
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.054
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G07
+    gate: check.verification-lifecycle
+    command: "node --test scripts/fixtures/stage-tracking/tracking.test.mjs"
   - old_id: legacy.055
     check_id: check.c17b4b0ba6c92cfc
     group: lifecycle
-    command: node --test
-      .template-source/tooling/node/test/decision-continuation.test.mjs
-    owner: role.test-engineer
-    replacement_gate: check.verification-approval
-    gate_ids:
-      - check.verification-approval
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.055
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G08
+    gate: check.verification-approval
+    command: "node --test .template-source/tooling/node/test/decision-continuation.test.mjs"
   - old_id: legacy.056
     check_id: check.491faba2d1fdef3b
     group: lifecycle
-    command: scripts/verify-user-decision-scenarios
-    owner: role.test-engineer
-    replacement_gate: check.verification-approval
-    gate_ids:
-      - check.verification-approval
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.056
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G08
+    gate: check.verification-approval
+    command: "scripts/verify-user-decision-scenarios"
   - old_id: legacy.057
     check_id: check.1451647ba2722b30
     group: lifecycle
-    command: scripts/verify-context-contract --root . --json
-    owner: role.test-engineer
-    replacement_gate: check.verification-lifecycle
-    gate_ids:
-      - check.verification-lifecycle
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.057
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G07
+    gate: check.verification-lifecycle
+    command: "scripts/verify-context-contract --root . --json"
   - old_id: legacy.058
     check_id: check.b5ec80cdc570194f
     group: lifecycle
-    command: scripts/verify-context-contract-scenarios
-    owner: role.test-engineer
-    replacement_gate: check.verification-lifecycle
-    gate_ids:
-      - check.verification-lifecycle
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.058
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G07
+    gate: check.verification-lifecycle
+    command: "scripts/verify-context-contract-scenarios"
   - old_id: legacy.059
     check_id: check.c959490d7a86d5c9
     group: lifecycle
-    command: node scripts/verify-business-language-scenarios
-    owner: role.test-engineer
-    replacement_gate: check.verification-lifecycle
-    gate_ids:
-      - check.verification-lifecycle
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.059
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G07
+    gate: check.verification-lifecycle
+    command: "node scripts/verify-business-language-scenarios"
   - old_id: legacy.060
     check_id: check.fbcca7d04b9634fc
     group: lifecycle
-    command: scripts/verify-context-reconciliation-scenarios
-    owner: role.test-engineer
-    replacement_gate: check.verification-lifecycle
-    gate_ids:
-      - check.verification-lifecycle
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.060
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G07
+    gate: check.verification-lifecycle
+    command: "scripts/verify-context-reconciliation-scenarios"
   - old_id: legacy.061
     check_id: check.7752ee8d6f74f638
     group: lifecycle
-    command: node scripts/verify-script-performance-scenarios
-    owner: role.test-engineer
-    replacement_gate: check.verification-lifecycle
-    gate_ids:
-      - check.verification-lifecycle
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.061
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G07
+    gate: check.verification-lifecycle
+    command: "node scripts/verify-script-performance-scenarios"
   - old_id: legacy.062
     check_id: check.14755c909a41ebee
     group: lifecycle
-    command: scripts/verify-plan-requirements-context-scenarios
-    owner: role.test-engineer
-    replacement_gate: check.verification-plan-spec
-    gate_ids:
-      - check.verification-plan-spec
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.062
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G06
+    gate: check.verification-plan-spec
+    command: "scripts/verify-plan-requirements-context-scenarios"
   - old_id: legacy.063
     check_id: check.220f79ecb19875df
     group: lifecycle
-    command: scripts/verify-strategic-context-import-scenarios
-    owner: role.test-engineer
-    replacement_gate: check.verification-lifecycle
-    gate_ids:
-      - check.verification-lifecycle
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.063
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G07
+    gate: check.verification-lifecycle
+    command: "scripts/verify-strategic-context-import-scenarios"
   - old_id: legacy.064
     check_id: check.9f66238a57e457bf
     group: lifecycle
-    command: scripts/verify-lifecycle-registry
-    owner: role.test-engineer
-    replacement_gate: check.verification-lifecycle
-    gate_ids:
-      - check.verification-lifecycle
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.064
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G07
+    gate: check.verification-lifecycle
+    command: "scripts/verify-lifecycle-registry"
   - old_id: legacy.065
     check_id: check.cca7321527c13629
     group: lifecycle
-    command: scripts/verify-lifecycle-context-query-scenarios
-    owner: role.test-engineer
-    replacement_gate: check.verification-lifecycle
-    gate_ids:
-      - check.verification-lifecycle
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.065
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G07
+    gate: check.verification-lifecycle
+    command: "scripts/verify-lifecycle-context-query-scenarios"
   - old_id: legacy.066
     check_id: check.aafa7bdc8a88bf84
     group: lifecycle
-    command: scripts/verify-lifecycle-operator-scenarios
-    owner: role.test-engineer
-    replacement_gate: check.verification-lifecycle
-    gate_ids:
-      - check.verification-lifecycle
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.066
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G07
+    gate: check.verification-lifecycle
+    command: "scripts/verify-lifecycle-operator-scenarios"
   - old_id: legacy.067
     check_id: check.56ea690765beec6f
     group: lifecycle
-    command: scripts/verify-lifecycle-checkpoint
-      .template-spec/process/templates/lifecycle-checkpoint-template.yaml
-    owner: role.test-engineer
-    replacement_gate: check.verification-lifecycle
-    gate_ids:
-      - check.verification-lifecycle
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.067
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G07
+    gate: check.verification-lifecycle
+    command: "scripts/verify-lifecycle-checkpoint .template-spec/process/templates/lifecycle-checkpoint-template.yaml"
   - old_id: legacy.068
     check_id: check.058e2e3f6c3cf54b
     group: lifecycle
-    command: scripts/verify-frontend-implementation-evidence --allow-template
-      .template-spec/process/templates/frontend-implementation-plan-template.yaml
-    owner: role.test-engineer
-    replacement_gate: check.verification-lifecycle
-    gate_ids:
-      - check.verification-lifecycle
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.068
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G07
+    gate: check.verification-lifecycle
+    command: "scripts/verify-frontend-implementation-evidence --allow-template .template-spec/process/templates/frontend-implementation-plan-template.yaml"
   - old_id: legacy.069
     check_id: check.f8325b4489484a22
     group: lifecycle
-    command: scripts/verify-frontend-implementation-evidence --allow-template
-      .template-spec/process/templates/frontend-implementation-verification-template.yaml
-    owner: role.test-engineer
-    replacement_gate: check.verification-lifecycle
-    gate_ids:
-      - check.verification-lifecycle
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.069
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G07
+    gate: check.verification-lifecycle
+    command: "scripts/verify-frontend-implementation-evidence --allow-template .template-spec/process/templates/frontend-implementation-verification-template.yaml"
   - old_id: legacy.070
     check_id: check.67adfa48ba9308b2
     group: lifecycle
-    command: scripts/verify-frontend-implementation-evidence-scenarios
-    owner: role.test-engineer
-    replacement_gate: check.verification-lifecycle
-    gate_ids:
-      - check.verification-lifecycle
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.070
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G07
+    gate: check.verification-lifecycle
+    command: "scripts/verify-frontend-implementation-evidence-scenarios"
   - old_id: legacy.071
     check_id: check.bbef469ead80be51
     group: lifecycle
-    command: scripts/verify-scaffold-architecture-decisions --allow-template
-      .template-spec/process/templates/scaffold-architecture-decisions-template.yaml
-    owner: role.test-engineer
-    replacement_gate: check.verification-lifecycle
-    gate_ids:
-      - check.verification-lifecycle
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.071
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G07
+    gate: check.verification-lifecycle
+    command: "scripts/verify-scaffold-architecture-decisions --allow-template .template-spec/process/templates/scaffold-architecture-decisions-template.yaml"
   - old_id: legacy.072
     check_id: check.66e3685569009833
     group: lifecycle
-    command: scripts/verify-scaffold-architecture-decision-scenarios
-    owner: role.test-engineer
-    replacement_gate: check.verification-lifecycle
-    gate_ids:
-      - check.verification-lifecycle
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.072
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G07
+    gate: check.verification-lifecycle
+    command: "scripts/verify-scaffold-architecture-decision-scenarios"
   - old_id: legacy.073
     check_id: check.0c8201229a241875
     group: lifecycle
-    command: scripts/verify-lifecycle-scenarios
-    owner: role.test-engineer
-    replacement_gate: check.verification-lifecycle
-    gate_ids:
-      - check.verification-lifecycle
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.073
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G07
+    gate: check.verification-lifecycle
+    command: "scripts/verify-lifecycle-scenarios"
   - old_id: legacy.074
     check_id: check.84142f2eab38b8a4
     group: lifecycle
-    command: scripts/verify-lifecycle-transition-scenarios
-    owner: role.test-engineer
-    replacement_gate: check.verification-lifecycle
-    gate_ids:
-      - check.verification-lifecycle
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.074
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G07
+    gate: check.verification-lifecycle
+    command: "scripts/verify-lifecycle-transition-scenarios"
   - old_id: legacy.075
     check_id: check.d87d713b76204ae4
     group: lifecycle
-    command: node scripts/verify-plan-spec-entry-scenarios
-    owner: role.test-engineer
-    replacement_gate: check.verification-plan-spec
-    gate_ids:
-      - check.verification-plan-spec
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.075
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G06
+    gate: check.verification-plan-spec
+    command: "node scripts/verify-plan-spec-entry-scenarios"
   - old_id: legacy.076
     check_id: check.ad648590e5e06103
     group: lifecycle
-    command: scripts/verify-frontend-scaffold-generator-scenarios
-    owner: role.test-engineer
-    replacement_gate: check.verification-lifecycle
-    gate_ids:
-      - check.verification-lifecycle
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.076
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G07
+    gate: check.verification-lifecycle
+    command: "scripts/verify-frontend-scaffold-generator-scenarios"
   - old_id: legacy.077
     check_id: check.lifecycle-query-freshness
     group: lifecycle
-    command: node --test tests/lifecycle-query-freshness.test.mjs
-    owner: role.test-engineer
-    replacement_gate: check.verification-lifecycle
-    gate_ids:
-      - check.verification-lifecycle
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.077
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G07
+    gate: check.verification-lifecycle
+    command: "node --test tests/lifecycle-query-freshness.test.mjs"
   - old_id: legacy.078
     check_id: check.maintenance-storage
     group: maintenance
-    command: node --test scripts/fixtures/maintenance-storage/scenarios.test.mjs
-    owner: role.test-engineer
-    replacement_gate: check.verification-approval
-    gate_ids:
-      - check.verification-approval
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.078
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G08
+    gate: check.verification-approval
+    command: "node --test scripts/fixtures/maintenance-storage/scenarios.test.mjs"
   - old_id: legacy.079
     check_id: check.evidence-archive-fixtures
     group: maintenance
-    command: node --test .template-source/scripts/tests/evidence-archive.test.mjs
-    owner: role.test-engineer
-    replacement_gate: check.verification-approval
-    gate_ids:
-      - check.verification-approval
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.079
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G08
+    gate: check.verification-approval
+    command: "node --test .template-source/scripts/tests/evidence-archive.test.mjs"
   - old_id: legacy.080
     check_id: check.maintenance-counterexample
     group: maintenance
-    command: node --test tests/maintenance-counterexample.test.mjs
-    owner: role.test-engineer
-    replacement_gate: check.verification-approval
-    gate_ids:
-      - check.verification-approval
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.080
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G08
+    gate: check.verification-approval
+    command: "node --test tests/maintenance-counterexample.test.mjs"
   - old_id: legacy.081
     check_id: check.5fa31f4262e122b1
     group: maintenance
-    command: scripts/verify-maintenance-intensity-scenarios
-    owner: role.test-engineer
-    replacement_gate: check.verification-approval
-    gate_ids:
-      - check.verification-approval
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.081
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G08
+    gate: check.verification-approval
+    command: "scripts/verify-maintenance-intensity-scenarios"
   - old_id: legacy.082
     check_id: check.a5802dc214ecfcda
     group: maintenance
-    command: node scripts/verify-maintenance-review-workflow-scenarios
-    owner: role.test-engineer
-    replacement_gate: check.verification-approval
-    gate_ids:
-      - check.verification-approval
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.082
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G08
+    gate: check.verification-approval
+    command: "node scripts/verify-maintenance-review-workflow-scenarios"
   - old_id: legacy.083
     check_id: check.f74a919c8173a935
     group: existing-project-delivery
-    command: scripts/verify-existing-backend-architecture-scenarios
-    owner: role.test-engineer
-    replacement_gate: check.verification-implementation
-    gate_ids:
-      - check.verification-implementation
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.083
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G11
+    gate: check.verification-implementation
+    command: "scripts/verify-existing-backend-architecture-scenarios"
   - old_id: legacy.084
     check_id: check.9ceb4a3839391bb6
     group: existing-project-delivery
-    command: scripts/verify-delivery-preflight-scenarios
-    owner: role.test-engineer
-    replacement_gate: check.verification-implementation
-    gate_ids:
-      - check.verification-implementation
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.084
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G11
+    gate: check.verification-implementation
+    command: "scripts/verify-delivery-preflight-scenarios"
   - old_id: legacy.085
     check_id: check.a7f4f092f5b64b8d
     group: existing-project-delivery
-    command: scripts/verify-existing-ui-baseline-scenarios
-    owner: role.test-engineer
-    replacement_gate: check.verification-design-ui
-    gate_ids:
-      - check.verification-design-ui
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.085
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G10
+    gate: check.verification-design-ui
+    command: "scripts/verify-existing-ui-baseline-scenarios"
   - old_id: legacy.086
     check_id: check.7ea1e4340f4611ee
     group: implementation
-    command: scripts/verify-implementation-path-scenarios
-    owner: role.test-engineer
-    replacement_gate: check.verification-implementation
-    gate_ids:
-      - check.verification-implementation
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.086
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G11
+    gate: check.verification-implementation
+    command: "scripts/verify-implementation-path-scenarios"
   - old_id: legacy.087
     check_id: check.5a81832cac0ee7be
     group: implementation
-    command: scripts/verify-repository-scope-scenarios
-    owner: role.test-engineer
-    replacement_gate: check.verification-implementation
-    gate_ids:
-      - check.verification-implementation
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.087
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G11
+    gate: check.verification-implementation
+    command: "scripts/verify-repository-scope-scenarios"
   - old_id: legacy.088
     check_id: check.a156e5fff5a8dfdd
     group: implementation
-    command: scripts/verify-scaffold-generator-scenarios
-    owner: role.test-engineer
-    replacement_gate: check.verification-implementation
-    gate_ids:
-      - check.verification-implementation
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.088
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G11
+    gate: check.verification-implementation
+    command: "scripts/verify-scaffold-generator-scenarios"
   - old_id: legacy.089
     check_id: check.a53e61d79c3befc1
     group: implementation
-    command: node --test scripts/fixtures/backend-scaffold/platform-scenarios.test.mjs
-    owner: role.test-engineer
-    replacement_gate: check.verification-implementation
-    gate_ids:
-      - check.verification-implementation
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.089
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G11
+    gate: check.verification-implementation
+    command: "node --test scripts/fixtures/backend-scaffold/platform-scenarios.test.mjs"
   - old_id: legacy.090
     check_id: check.edf25d8db265d921
     group: implementation
-    command: node --test
-      .agents/skills/yss-ddd-scaffold-generator/scripts/scaffold-generator.test.mjs
-    owner: role.test-engineer
-    replacement_gate: check.verification-implementation
-    gate_ids:
-      - check.verification-implementation
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.090
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G11
+    gate: check.verification-implementation
+    command: "node --test .agents/skills/yss-ddd-scaffold-generator/scripts/scaffold-generator.test.mjs"
   - old_id: legacy.091
     check_id: check.c860ed22ba605f8d
     group: implementation
-    command: node --test
-      .agents/skills/yss-layered-mvc-scaffold-generator/scripts/scaffold-generator.test.mjs
-    owner: role.test-engineer
-    replacement_gate: check.verification-implementation
-    gate_ids:
-      - check.verification-implementation
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.091
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G11
+    gate: check.verification-implementation
+    command: "node --test .agents/skills/yss-layered-mvc-scaffold-generator/scripts/scaffold-generator.test.mjs"
   - old_id: legacy.092
     check_id: check.fcef5f013dd0e7f4
     group: implementation
-    command: node --test scripts/lib/legacy-backend-scaffold-audit.test.mjs
-    owner: role.test-engineer
-    replacement_gate: check.verification-implementation
-    gate_ids:
-      - check.verification-implementation
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.092
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G11
+    gate: check.verification-implementation
+    command: "node --test scripts/lib/legacy-backend-scaffold-audit.test.mjs"
   - old_id: legacy.093
     check_id: check.1ebcb1124ce67eb1
     group: implementation
-    command: node --test scripts/lib/api-contract-decision.test.mjs
-    owner: role.test-engineer
-    replacement_gate: check.verification-implementation
-    gate_ids:
-      - check.verification-implementation
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.093
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G11
+    gate: check.verification-implementation
+    command: "node --test scripts/lib/api-contract-decision.test.mjs"
   - old_id: legacy.094
     check_id: check.ad648590e5e06103
     group: implementation
-    command: scripts/verify-frontend-scaffold-generator-scenarios
-    owner: role.test-engineer
-    replacement_gate: check.verification-implementation
-    gate_ids:
-      - check.verification-implementation
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.094
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G11
+    gate: check.verification-implementation
+    command: "scripts/verify-frontend-scaffold-generator-scenarios"
   - old_id: legacy.095
     check_id: check.3851a250b368d3ae
     group: implementation
-    command: scripts/verify-prototype-backend-scaffold-scenarios
-    owner: role.test-engineer
-    replacement_gate: check.verification-design-ui
-    gate_ids:
-      - check.verification-design-ui
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.095
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G10
+    gate: check.verification-design-ui
+    command: "scripts/verify-prototype-backend-scaffold-scenarios"
   - old_id: legacy.096
     check_id: check.d32468f5dd6a4654
     group: implementation
-    command: scripts/verify-matt-yss-integration-scenarios
-    owner: role.test-engineer
-    replacement_gate: check.verification-implementation
-    gate_ids:
-      - check.verification-implementation
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.096
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G11
+    gate: check.verification-implementation
+    command: "scripts/verify-matt-yss-integration-scenarios"
   - old_id: legacy.097
     check_id: check.9a4dc0890f5759ad
     group: implementation
-    command: scripts/verify-yss-implementation-contract-compiler-scenarios
-    owner: role.test-engineer
-    replacement_gate: check.verification-implementation
-    gate_ids:
-      - check.verification-implementation
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.097
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G11
+    gate: check.verification-implementation
+    command: "scripts/verify-yss-implementation-contract-compiler-scenarios"
   - old_id: legacy.098
     check_id: check.7cffb7c441bd4709
     group: implementation
-    command: scripts/generate-yss-skill-boundaries --check
-    owner: role.test-engineer
-    replacement_gate: check.verification-implementation
-    gate_ids:
-      - check.verification-implementation
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.098
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G11
+    gate: check.verification-implementation
+    command: "scripts/generate-yss-skill-boundaries --check"
   - old_id: legacy.099
     check_id: check.e8232d4ab54fc999
     group: implementation
-    command: scripts/audit-yss-backend-skills --check
-    owner: role.test-engineer
-    replacement_gate: check.verification-implementation
-    gate_ids:
-      - check.verification-implementation
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.099
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G11
+    gate: check.verification-implementation
+    command: "scripts/audit-yss-backend-skills --check"
   - old_id: legacy.100
     check_id: check.156d8dea8b8d6810
     group: implementation
-    command: scripts/verify-retired-skill-ids
-    owner: role.test-engineer
-    replacement_gate: check.verification-implementation
-    gate_ids:
-      - check.verification-implementation
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.100
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G11
+    gate: check.verification-implementation
+    command: "scripts/verify-retired-skill-ids"
   - old_id: legacy.101
     check_id: check.842384deeb868cce
     group: implementation
-    command: scripts/verify-yss-ui-scenarios
-    owner: role.test-engineer
-    replacement_gate: check.verification-design-ui
-    gate_ids:
-      - check.verification-design-ui
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.101
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G10
+    gate: check.verification-design-ui
+    command: "scripts/verify-yss-ui-scenarios"
   - old_id: legacy.102
     check_id: check.2c43904888dff190
     group: implementation
-    command: scripts/verify-yss-prototype-contract-scenarios
-    owner: role.test-engineer
-    replacement_gate: check.verification-design-ui
-    gate_ids:
-      - check.verification-design-ui
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.102
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G10
+    gate: check.verification-design-ui
+    command: "scripts/verify-yss-prototype-contract-scenarios"
   - old_id: legacy.103
     check_id: check.3a2236d542e47171
     group: implementation
-    command: node --test
-      .agents/skills/yss-prototype-stage/tests/verification-entry.test.mjs
-    owner: role.test-engineer
-    replacement_gate: check.verification-design-ui
-    gate_ids:
-      - check.verification-design-ui
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.103
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G10
+    gate: check.verification-design-ui
+    command: "node --test .agents/skills/yss-prototype-stage/tests/verification-entry.test.mjs"
   - old_id: legacy.104
     check_id: check.7126152a480689b5
     group: implementation
-    command: node .agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs
-      validate-evidence
-      .template-spec/design/templates/prototype-evidence-template.yaml
-      --allow-template
-    owner: role.test-engineer
-    replacement_gate: check.verification-design-ui
-    gate_ids:
-      - check.verification-design-ui
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.104
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G10
+    gate: check.verification-design-ui
+    command: "node .agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs validate-evidence .template-spec/design/templates/prototype-evidence-template.yaml --allow-template"
   - old_id: legacy.105
     check_id: check.f96c759bbc30d99e
     group: implementation
-    command: node
-      .agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs
-      validate .template-spec/design/templates/visual-baseline-template.yaml
-      --allow-template
-    owner: role.test-engineer
-    replacement_gate: check.verification-design-ui
-    gate_ids:
-      - check.verification-design-ui
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.105
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G10
+    gate: check.verification-design-ui
+    command: "node .agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs validate .template-spec/design/templates/visual-baseline-template.yaml --allow-template"
   - old_id: legacy.106
     check_id: check.contract-review-preparation
     group: implementation
-    command: node --test tests/contract-review-preparation.test.mjs
-    owner: role.test-engineer
-    replacement_gate: check.verification-implementation
-    gate_ids:
-      - check.verification-implementation
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.106
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G11
+    gate: check.verification-implementation
+    command: "node --test tests/contract-review-preparation.test.mjs"
   - old_id: legacy.107
     check_id: check.runtime-storage
     group: runtime-storage
-    command: node --test --test-concurrency=1 tests/runtime-store.test.mjs
-      tests/runtime-store-integration.test.mjs
-      tests/runtime-store-distribution.test.mjs
-    owner: role.test-engineer
-    replacement_gate: check.verification-tooling-dependencies
-    gate_ids:
-      - check.verification-tooling-dependencies
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.107
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G05
+    gate: check.verification-tooling-dependencies
+    command: "node --test --test-concurrency=1 tests/runtime-store.test.mjs tests/runtime-store-integration.test.mjs tests/runtime-store-distribution.test.mjs"
   - old_id: legacy.108
     check_id: check.010ab85199ad1140
     group: governance-release
-    command: scripts/verify-governance-release
-    owner: role.test-engineer
-    replacement_gate: check.verification-final-integrity
-    gate_ids:
-      - check.verification-final-integrity
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.108
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G20
+    gate: check.verification-final-integrity
+    command: "scripts/verify-governance-release"
   - old_id: legacy.109
     check_id: check.a047149f13d2d04e
     group: candidate-integrity
-    command: scripts/verify-strategic-handoff-tools-lock
-    owner: role.test-engineer
-    replacement_gate: check.verification-final-integrity
-    gate_ids:
-      - check.verification-final-integrity
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.109
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G20
+    gate: check.verification-final-integrity
+    command: "scripts/verify-strategic-handoff-tools-lock"
   - old_id: legacy.110
     check_id: check.1f905d7e659c8525
     group: candidate-integrity
-    command: node scripts/verify-template-verification-scenarios
-    owner: role.test-engineer
-    replacement_gate: check.verification-final-integrity
-    gate_ids:
-      - check.verification-final-integrity
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.110
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G20
+    gate: check.verification-final-integrity
+    command: "node scripts/verify-template-verification-scenarios"
   - old_id: legacy.111
     check_id: check.e970cf29c7cd81e3
     group: candidate-integrity
-    command: node scripts/verify-template-cache-scenarios
-    owner: role.test-engineer
-    replacement_gate: check.verification-final-integrity
-    gate_ids:
-      - check.verification-final-integrity
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.111
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G20
+    gate: check.verification-final-integrity
+    command: "node scripts/verify-template-cache-scenarios"
   - old_id: legacy.112
     check_id: check.af45fd40af913057
     group: candidate-integrity
-    command: node --test .template-source/scripts/tests/template-ci.test.mjs
-    owner: role.test-engineer
-    replacement_gate: check.verification-final-integrity
-    gate_ids:
-      - check.verification-final-integrity
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.112
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G20
+    gate: check.verification-final-integrity
+    command: "node --test .template-source/scripts/tests/template-ci.test.mjs"
   - old_id: legacy.113
     check_id: check.verification-selection
     group: candidate-integrity
-    command: node --test tests/verification-selection.test.mjs
-      tests/verification-report.test.mjs
-    owner: role.test-engineer
-    replacement_gate: check.verification-final-integrity
-    gate_ids:
-      - check.verification-final-integrity
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.113
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G20
+    gate: check.verification-final-integrity
+    command: "node --test tests/verification-selection.test.mjs tests/verification-report.test.mjs"
   - old_id: legacy.114
     check_id: check.research-evidence-scenarios
     group: research-evidence
-    command: node .agents/skills/yss-research/tests/run-scenarios.mjs
-    owner: role.test-engineer
-    replacement_gate: check.verification-plan-spec
-    gate_ids:
-      - check.verification-plan-spec
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.114
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G06
+    gate: check.verification-plan-spec
+    command: "node .agents/skills/yss-research/tests/run-scenarios.mjs"
   - old_id: legacy.115
     check_id: check.competitive-evidence-scenarios
     group: research-evidence
-    command: node --test
-      .agents/skills/yss-research/tests/competitive-scenarios.test.mjs
-    owner: role.test-engineer
-    replacement_gate: check.verification-plan-spec
-    gate_ids:
-      - check.verification-plan-spec
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.115
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G06
+    gate: check.verification-plan-spec
+    command: "node --test .agents/skills/yss-research/tests/competitive-scenarios.test.mjs"
   - old_id: legacy.116
     check_id: check.document-writing-integration
     group: document-writing
-    command: node .agents/skills/i-have-adhd/tests/verify-integration.mjs
-    owner: role.test-engineer
-    replacement_gate: check.verification-plan-spec
-    gate_ids:
-      - check.verification-plan-spec
-    input_patterns:
-      - "**"
-    depends_on: []
-    duration_ms: null
-    disposition: merge
-    audit_status: preserved
-    equivalent_assertion:
-      status: preserved
-      source_ref: .template-source/process/template-verification-legacy.json#legacy.116
-    counterexample_ref: null
-    evidence_ref: .template-source/process/template-verification-legacy.json
-    display_gate: G06
+    gate: check.verification-plan-spec
+    command: "node .agents/skills/i-have-adhd/tests/verify-integration.mjs"
 supplemental_checks:
   - id: check.work-layout-supplemental
     run: node --test tests/work-layout.test.mjs
@@ -4757,6 +3009,14 @@ supplemental_checks:
     depends_on: []
     when: template-source
     task_id: supplemental.profile-variants
+    source_requirement: committed
+  - id: check.legacy-coverage-supplemental
+    run: node --test tests/legacy-coverage.test.mjs
+    group: feature-assets
+    gate_ids: [check.verification-lifecycle]
+    depends_on: []
+    when: template-source
+    task_id: supplemental.legacy-coverage
     source_requirement: committed
   - id: check.source-lock-lag-supplemental
     run: node --test tests/source-lock-lag.test.mjs
