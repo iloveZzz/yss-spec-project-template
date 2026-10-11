@@ -26,6 +26,8 @@
 
 ## Quickstart
 
+只需后端开发脚手架时，可直接使用 `yss-layered-mvc-scaffold-generator`（MVC）或 `yss-ddd-scaffold-generator`（DDD），无需先准备需求合同、原型、设计审批或初始化治理实例。提供工程信息即可生成，命令与参数见[直接生成开发脚手架](.agents/skills/yss-ddd-scaffold-generator/references/standalone-generation.md)。以下步骤用于治理项目。
+
 1. 先读取 `yss-project.yaml`，按 `repository_mode` 选择模板维护或产品研发生命周期。
 2. 必读入口为 `AGENTS.md` 与 `CONTEXT.md`；流程事实以生命周期注册表和裁剪指南为准。
 3. `template-source` 按 `maintenance-intensity.yaml` 判定 L1 / L2，先看 `scripts/verify-template-fast --plan`，日常执行受影响依赖的定向检查达到 `implementation-ready`；投影、锁和分发在 canonical 稳定后同步。

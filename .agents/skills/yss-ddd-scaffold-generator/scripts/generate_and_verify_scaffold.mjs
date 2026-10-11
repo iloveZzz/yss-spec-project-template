@@ -7,6 +7,7 @@ import process from "node:process";
 import { fileURLToPath } from "node:url";
 
 import { run } from "./run_scaffold_verification.mjs";
+import { parseArgs as parseGeneratorArgs } from "./generate_scaffold.mjs";
 
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 const GENERATOR = path.join(SCRIPT_DIR, "generate_scaffold.mjs");
@@ -39,7 +40,8 @@ function parseArgs(argv) {
   }
   if (!evidenceDir) throw new Error("必须提供 --evidence-dir");
   if (!projectName || !outputDir) throw new Error("必须提供 --project-name 和 --output-dir");
-  return { evidenceDir, generatorArgs, workflowMode: generatorArgs.includes("--standalone") ? "standalone-generation" : "controlled-generation", projectRoot: path.join(path.resolve(outputDir), projectName) };
+  const options = parseGeneratorArgs(generatorArgs);
+  return { evidenceDir, generatorArgs, workflowMode: options.standalone ? "standalone-generation" : "controlled-generation", projectRoot: path.join(path.resolve(outputDir), projectName) };
 }
 
 function executeGenerator(args) {

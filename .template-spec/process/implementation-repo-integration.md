@@ -104,4 +104,4 @@ scripts/verify-template
 
 CLI 仓库至少执行固定 commit 的 `YSS_SPEC_TEMPLATE_REF=<pinned-commit> npm test`、`npm pack --dry-run`，并在解包后的 CLI 上验证 init、attach、sync、迁移冲突和回滚。共同发布前记录两个仓库的 commit、模板快照 hash、测试结果、独立审查结论和 rollback 路径。
 
-显式独立脚手架请求可直接提供工程名、包名、精确平台版本、Maven 坐标和目标目录，调用 DDD/MVC 生成器 `--standalone`。缺少正式合同本身不阻断纯机械生成；不得自动降级已有正式任务，独立 Manifest 不含 approved、ready-for-agent 或业务实施授权。真实 Maven 验证和后续治理接入分别记录。
+用户只要求新建后端开发脚手架时，按 [直接生成说明](../../.agents/skills/yss-ddd-scaffold-generator/references/standalone-generation.md) 提供工程名、包名、精确平台版本、Maven 坐标和目标目录，直接调用 DDD/MVC 生成技能。未传合同或批准参数时默认独立生成，`--standalone` 可省略；无需需求合同、原型、设计审批、仓库登记或治理实例。目录与已有工程保护继续有效。显式合同调用必须通过原有校验，不自动降级已有正式任务；独立 Manifest 不含 approved、ready-for-agent 或正式业务批准。真实 Maven 验证和后续治理接入分别记录。

@@ -7,12 +7,12 @@
 - Architecture: `target-domain-model`
 - Persistence: `mybatis-plus`
 - Verification database: `h2`; production database: `not-bound`
-- Platform: approved `platform_configuration` v2 from the shared backend platform catalog
+- Platform: direct-generation inputs, or approved `platform_configuration` v2 for governed generation, from the shared backend platform catalog
 - Validation namespace: derived from that platform (`javax` for Boot 2.7; `jakarta` for Boot 3.5/4.1)
 - DTO placement: `web`
 - Repository: `yss-internal`
 
-未具备独立 fixture、受控合同和真实验证证据的组合统一为 `unsupported`。旧架构不存在可选 Profile，也不能作为回退。
+正式合同路径中，未具备独立 fixture、受控合同和真实验证证据的组合统一为 `unsupported`。直接生成按共享清单使用精确平台配方并记录 `platform_verification=unverified`，不要求兼容验收或治理合同。旧架构不存在可选 Profile，也不能作为回退。
 
 ## 模块与依赖方向
 
@@ -37,11 +37,11 @@ infrastructure-+
 
 ## 生成与验证
 
-- 输入是批准、持久化且当前的服务级 scaffold contract schema v4，身份为 `scaffold_request_id`，并绑定已确认的 `architecture_family=domain-driven` 架构决策、Technical Design、Data Architecture Decision v1 与真实工程合同批准；不使用 `slice_id`。历史 Manifest v2/v3 仅供验证器只读兼容。
+- 默认直接生成，输入为项目名、包名、输出目录、精确平台及 Maven 坐标，不要求合同或设计审批。正式路径输入是批准、持久化且当前的服务级 scaffold contract schema v4，身份为 `scaffold_request_id`，并绑定已确认的 `architecture_family=domain-driven` 架构决策、Technical Design、Data Architecture Decision v1 与真实工程合同批准；不使用 `slice_id`。历史 Manifest v2/v3 仅供验证器只读兼容。
 - 生成器严格 initialize-only：目标工程目录必须不存在，`--force`、旧项目迁移和当前模板升级均为 `unsupported`。
 - Maven 内部仓库通过命名 profile `yss-internal` 与环境变量注入；共享模板不写内部 URL 或凭据。
 - Wrapper 必须带 checksum；DEBUG 和 MyBatis stdout SQL 只允许在 `application-local.yml`。
-- `./mvnw validate`、`./mvnw test`、`./mvnw package` 全部成功只得到 `empty-scaffold-verified`。
+- 仅生成时记录 `generated`；可随后执行 `./mvnw validate`、`./mvnw test`、`./mvnw package`。全部成功后，直接生成得到 `standalone-scaffold-verified`，正式路径得到 `empty-scaffold-verified`。
 - 只有批准且版本当前的 golden first slice 真实组合 Domain/Application/Infrastructure/Web、通过当前批准合同的技能/编译依据 freshness 校验与根 Wrapper，才能由 `run_first_slice_verification.mjs` 写入 `first-slice-verified`。
 
 ## 下游权威技能
@@ -52,7 +52,7 @@ infrastructure-+
 - Web：`yss-web-controller` + `yss-dto` + `yss-exception`
 - 横切实现约束：`yss-validation` + `mapstruct` + `lombok` + `alibaba-java-code-style`
 
-业务代码必须回到 `yss-implementation-contract-compiler`，消费批准且版本当前的 Slice Implementation Contract，并采用 `behavior-tdd`；脚手架只生成机械工程资产。
+脚手架只生成机械工程资产。接入正式 Harness 治理后的业务代码回到 `yss-implementation-contract-compiler`，消费批准且版本当前的 Slice Implementation Contract，并采用 `behavior-tdd`。
 
 ## 生成来源与当前基线
 

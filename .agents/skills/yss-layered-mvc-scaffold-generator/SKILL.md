@@ -1,17 +1,19 @@
 ---
 name: yss-layered-mvc-scaffold-generator
-description: 用明确独立输入或当前批准合同生成 YSS 分层 MVC 纯工程骨架；数据分析治理初始化继续使用批准合同。
+description: 直接生成 YSS 分层 MVC 后端开发脚手架，无需需求合同、原型或设计审批；数据分析治理初始化也支持显式批准合同。
 ---
 
 # YSS Layered MVC Scaffold Generator
 
 本 skill 为全新 backend project 生成机械工程骨架，不生成业务 Controller、DTO、查询、状态机或 Mock 数据。普通 `layered-mvc-service` 不创建 `project-instance` 或初始化 Git；`mvc-data-analysis-v1` 按批准合同创建独立 project-instance、同级锁定 `skillUtils` 和未提交的 main Git。
 
-## 执行模式
+## 直接生成（默认）
 
-没有 Harness 合同且用户只要求独立骨架时，先收集明确的平台、Maven 坐标和输出目录，按 [独立生成](../yss-ddd-scaffold-generator/references/standalone-generation.md) 使用 `--standalone`。它只生成通用三模块工程，不创建治理实例或批准，也不获得业务资格。
+用户要求生成 MVC 开发脚手架时，按 [生成说明与命令](../yss-ddd-scaffold-generator/references/standalone-generation.md) 收集项目名、包名、输出目录、精确平台和 Maven 坐标，直接运行 `scripts/generate_scaffold.mjs`。未传合同或批准参数时默认独立生成，`--standalone` 是可选的显式写法。默认生成 `server/service/repository` 三模块。
 
-已有正式治理任务继续消费当前批准合同。以下进入条件、批准和兼容证据要求适用于正式路径；目录、initialize-only、凭据和禁止业务示例的约束同时适用于独立路径。
+不要求需求合同、Plan/Spec、原型确认、技术/数据/API 设计审批、`scaffold_status`、生命周期 checkpoint 或实现合同编译器；无需先创建 Harness 项目。Maven settings、仓库凭据和实际构建验证可在生成后准备；生成成功与构建通过分别报告。
+
+显式携带合同或批准参数时才进入正式合同路径，缺失、无效或过期合同仍报错。已有正式治理任务继续消费当前批准合同。以下进入条件、批准和兼容证据要求仅适用于正式路径；目录、initialize-only、凭据和禁止业务示例的约束同时适用于直接生成。
 
 ## 正式治理进入条件
 
@@ -22,7 +24,7 @@ description: 用明确独立输入或当前批准合同生成 YSS 分层 MVC 纯
 
 任一条件缺失时返回 `blocked`。本生成器无交互、无默认回退；用户选择由 `yss-product-lifecycle` 在 `work-unit.technical-analysis` 的工程基线内完成。
 
-## Spring Boot / Java 平台选择
+## 正式路径的 Spring Boot / Java 平台选择
 
 正式治理调用本技能前由生命周期编排器展示 `scripts/backend-platforms` 的精确版本清单及兼容状态，并通过 `gate.backend-architecture-platform-approved` 把架构、Spring Boot、Java 和 YSS 父 POM/BOM 合并展示、取得真实用户确认；生成器不提问、不猜版本、不使用 `x` 或 `latest`。已有批准且当前的选择展示摘要后复用；既有工程核验并复用登记值，不触发该门禁。
 
@@ -41,15 +43,15 @@ description: 用明确独立输入或当前批准合同生成 YSS 分层 MVC 纯
 - `external-integration` 增加 `adapter`。
 - `published-client` 增加 `client`。
 - `feign-client` 增加 `client`、`feign-client`。
-- 平台来自批准的 `platform_configuration`；保留 YSS BOM、MyBatis-Plus，不固定单一 Boot/Java/Validation 命名空间。
+- 直接生成的平台来自工程输入，正式路径来自批准的 `platform_configuration`；保留 YSS BOM、MyBatis-Plus，不固定单一 Boot/Java/Validation 命名空间。
 - `mvc-data-analysis-v1` 固定 `server/core/client/repository/adapter/feign-client` 六模块，要求 `context_handoff_ref`、摘要和 `init_git=true`，复制批准的根 `CONTEXT.md`、治理资产和锁定工具包；不得从交接内容创造术语。该 Profile 仍绑定平台目录与构件证据，不再通过历史初始化器绕过平台门禁。
 - 两个 Profile 均固定 verification_database=h2、production_database=not-bound。测试使用 H2，本地运行显式启用 scaffold-local；不引入外部驱动/数据源。
 
-能力解析规则、模块职责和依赖方向见 [architecture.md](references/architecture.md)。生成器必须同时校验 `requested_capabilities` 与 `resolved_modules`，不得自行补猜模块。
+能力解析规则、模块职责和依赖方向见 [architecture.md](references/architecture.md)。正式路径必须同时校验 `requested_capabilities` 与 `resolved_modules`；直接生成使用固定三模块。
 
 对象职责、命名及阿里/COLA 适配消费 `.template-spec/agents/backend-architecture-profiles.md` 的“对象命名与外部规范适配”；MVC 不因外部示例新增 Domain/Gateway、Manager 层或 client 模块。
 
-## 执行
+## 正式合同路径的执行
 
 Maven settings 与 DDD 共用 [配置选择和凭据规则](../yss-ddd-scaffold-generator/references/engineering-checks.md)：保留既有显式配置，默认参考用户 `~/.m2/settings.xml`；缺少可用配置时先询问用户文件路径或必要仓库信息。`YSS_MAVEN_SETTINGS` 可指定外部文件，不复制用户配置或凭据进生成工程。
 
@@ -77,12 +79,12 @@ node scripts/generate_and_verify_scaffold.mjs \
 
 受控工作流必须在项目根实际执行 `./mvnw validate`、`./mvnw test`、`./mvnw package`，逐条记录退出码、时间、stdout/stderr 和失败分类。全部通过后只得到 `empty-scaffold-verified`。
 
-## 硬约束
+## 通用边界与正式接入
 
-- 新生成只接受包含 API Contract Decision 的统一 schema v4；缺 API 字段的预发布 v4 不得静默接受。验证器可只读检查历史 Manifest v3，恢复必须另行完成所有权审计、技术/数据/API 设计补齐与当前批准。历史 v2/v3 均不用于新生成。
+- 正式合同路径只接受包含 API Contract Decision 的统一 schema v4；缺 API 字段的预发布 v4 不得静默接受。验证器可只读检查历史 Manifest v3，恢复必须另行完成所有权审计、技术/数据/API 设计补齐与当前批准。历史 v2/v3 均不用于新生成。直接生成使用独立 Manifest，不要求这些治理资产。
 - `architecture_family` 必须为 `layered-mvc`，`generator_skill` 必须为本 skill。旧数据分析初始化合同必须标记 `stale` 并按 `mvc-data-analysis-v1` Profile 重编译，不自动替换或继承批准。
 - 目标存在、`--force`、旧项目迁移、模板升级均为 `unsupported`。
-- Harness 内只允许以 `apps/backend/` 为输出父容器；外部实现仓库使用已登记真实路径。
+- Harness 内默认以 `apps/backend/` 为输出父容器；直接生成可使用用户指定的其他目录，正式路径按合同中的实际项目根和写范围生成。
 - 不生成业务示例。健康检查、上下文加载测试和架构测试只能验证机械工程能力，不定义用户可见 API。
-- 生成后业务实现必须回到当前批准的 Slice Implementation Contract，使用适用 YSS skills 和 `behavior-tdd`。
+- 接入正式治理后的业务实现回到当前批准的 Slice Implementation Contract，使用适用 YSS skills 和 `behavior-tdd`。
 - DDD/MVC 互转不属于脚手架生成；已生成项目改变架构时必须建立独立迁移工作单元。

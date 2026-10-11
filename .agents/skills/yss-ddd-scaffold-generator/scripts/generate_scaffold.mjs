@@ -14,6 +14,7 @@ import { validateArchitectureIdentity } from "../../../../scripts/lib/backend-ar
 import { validateJsonSchema } from "../../../../scripts/lib/json-schema.mjs";
 import { validateBackendScaffoldPrerequisites } from "../../../../scripts/lib/backend-scaffold-prerequisites.mjs";
 import { standaloneConfiguration, standaloneManifest, assertStandaloneManifest } from "../../../../scripts/lib/standalone-backend-scaffold.mjs";
+import { isStandaloneGeneration } from "./generation-mode.mjs";
 
 import {
   findGitRoot,
@@ -54,11 +55,11 @@ function sha256(content) { return createHash("sha256").update(content).digest("h
 function sha256Ref(content) { return `sha256:${sha256(content)}`; }
 function usage(error) {
   const text = `YSS DDD 脚手架生成器\n\n` +
-    `用法: node scripts/generate_scaffold.mjs --project-name <kebab-case> --base-package <package> --output-dir <dir> --contract-file <json> [选项]\n\n` +
-    `独立模式: --standalone --platform-profile --spring-boot-version --java-version，必须提供完整 Maven 坐标；不携带合同参数。\n` +
-    `正式路径必填合同元数据: --contract-id --contract-version --approval-ref --compiler-draft-ref --persisted-ref\n` +
+    `用法: node scripts/generate_scaffold.mjs --project-name <kebab-case> --base-package <package> --output-dir <dir> [选项]\n\n` +
+    `默认直接生成，无需需求合同或设计审批。提供 --platform-profile --spring-boot-version --java-version 和完整 Maven 坐标；--standalone 可省略。\n` +
+    `正式路径显式提供: --contract-file --contract-id --contract-version --approval-ref --compiler-draft-ref --persisted-ref\n` +
     `Maven 坐标: --group-id --project-version --parent-group-id --parent-artifact-id --parent-version --yss-components-version\n` +
-    `固定 Profile: target-domain-model / mybatis-plus / approved Boot/Java platform / derived validation namespace / web / yss-internal\n` +
+    `固定 Profile: target-domain-model / mybatis-plus / explicit Boot/Java platform / derived validation namespace / web / yss-internal\n` +
     `本生成器严格 initialize-only；--force 和任何已有项目目标均为 unsupported。\n` +
     `--with-example 已禁用；--without-example 仅保留为无操作参数。`;
   if (error) process.stderr.write(`错误: ${error}\n\n`);
@@ -93,7 +94,8 @@ export function parseArgs(argv) {
     options[mapping.get(token)] = value;
   }
   if (options.help) return options;
-  if (!options.standalone && ["platformProfile", "springBootVersion", "javaVersion"].some(key => options[key] !== undefined)) fail("独立平台参数必须显式使用 --standalone，正式模式消费合同平台");
+  options.standalone = isStandaloneGeneration(options);
+  if (!options.standalone && ["platformProfile", "springBootVersion", "javaVersion"].some(key => options[key] !== undefined)) fail("正式模式消费合同平台，不接受独立平台参数");
   for (const [flag, key] of mapping) {
     if (["platformProfile", "springBootVersion", "javaVersion"].includes(key) || options.standalone && key === "contractFile") continue;
     if (["database", "overwriteScope", "rollbackRef", "contractId", "contractVersion", "approvalRef", "compilerDraftRef", "persistedRef", "groupId", "projectVersion", "parentGroupId", "parentArtifactId", "parentVersion", "yssComponentsVersion"].includes(key)) continue;
@@ -358,7 +360,7 @@ export class ScaffoldGenerator {
   generateDatabaseScripts() { console.log("\n🗃️  保留数据库目录布局...\n  ✓ db/（业务 schema 和初始化数据由批准切片合同生成）"); }
   async generateDocumentation() {
     console.log("\n📚 生成项目文档...");
-    await writeText(path.join(this.projectRoot, "README.md"), this.render((this.options.standalone ? "独立纯工程骨架：没有生命周期批准或业务实现资格，构建尚未验证。正式接入 Harness 后消费当前合同。\n\n" : "") + "# {{project_name}}\n\n平台：Spring Boot {{boot_version}} / Java {{java_version}}。\n\n## 模块说明\n\n- {{project_name}}-domain\n- {{project_name}}-application\n- {{project_name}}-infrastructure\n- {{project_name}}-adapter\n- {{project_name}}-bootstrap\n\n业务 API、领域模型、数据结构和权限行为必须在冻结的 Slice Implementation Contract 下，由对应 YSS skill 逐切片实现。\n\n## 快速开始\n\n```bash\ncd {{project_name}}\n./mvnw clean compile\n./mvnw -Pscaffold-local spring-boot:run -pl {{project_name}}-bootstrap -Dspring-boot.run.profiles=scaffold-local\n```\n"));
+    await writeText(path.join(this.projectRoot, "README.md"), this.render((this.options.standalone ? "按工程输入直接生成的开发脚手架；构建尚未验证。\n\n" : "") + "# {{project_name}}\n\n平台：Spring Boot {{boot_version}} / Java {{java_version}}。\n\n## 模块说明\n\n- {{project_name}}-domain\n- {{project_name}}-application\n- {{project_name}}-infrastructure\n- {{project_name}}-adapter\n- {{project_name}}-bootstrap\n\n可基于骨架继续开发业务 API、领域模型、数据结构和权限行为。接入正式 Harness 治理后，按当前批准的 Slice Implementation Contract 和对应 YSS skill 逐切片实现。\n\n## 快速开始\n\n```bash\ncd {{project_name}}\n./mvnw clean compile\n./mvnw -Pscaffold-local spring-boot:run -pl {{project_name}}-bootstrap -Dspring-boot.run.profiles=scaffold-local\n```\n"));
     console.log("  ✓ README.md");
   }
   async writeGenerationManifest() {
