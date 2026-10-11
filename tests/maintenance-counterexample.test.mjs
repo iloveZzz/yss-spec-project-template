@@ -65,3 +65,20 @@ test('自愿提供的运行记录仍验证实际拒绝、摘要和输入，历�
   fs.writeFileSync(path.join(root,'log.json'),JSON.stringify(logs));fs.writeFileSync(path.join(root,'source.json'),'drift');assert.throws(()=>validateMaintenanceCheckpoint(current,{baseDir:root}),/漂移/);
   assert.equal(validateMaintenanceCheckpoint({...current,intensity:'L3'},{baseDir:root,history:true}).current_state,'historical-only');
 });
+
+test('历史正式 Markdown 审查只读兼容，不能充当当前结构化审查', async t=>{
+  const {validateMaintenanceReviewEvidence}=await import('../scripts/lib/maintenance-review.mjs');
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'maintenance-legacy-review-'));
+  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  const review='legacy_formal_review: true\n审查角色：synthetic-independent-reviewer\n结论：通过。\n';
+  fs.writeFileSync(path.join(root,'review.md'),review);
+  const evidence={kind:'formal-independent-review',command:'review.md',result:'pass'};
+  assert.throws(()=>validateMaintenanceReviewEvidence(evidence,{baseDir:root}),/必须使用结构化记录/);
+  const result=validateMaintenanceReviewEvidence(evidence,{baseDir:root,history:true});
+  assert.equal(result.historical_only,true);
+  assert.equal(result.execution_authorization,'not-evaluated');
+  for(const invalid of [review.replace('legacy_formal_review: true',''),review.replace('结论：通过。','结论：blocked。')]) {
+    fs.writeFileSync(path.join(root,'review.md'),invalid);
+    assert.throws(()=>validateMaintenanceReviewEvidence(evidence,{baseDir:root,history:true}),/legacy_formal_review|阻断/);
+  }
+});
