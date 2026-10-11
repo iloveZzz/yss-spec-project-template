@@ -54,6 +54,16 @@ profiles:
           - "tests/profile-variants.test.mjs"
         depends_on: []
         failure_mode: "有意定制登记接受已与来源一致的副本、放过被改动的定制，或把未登记的 Profile 差异当成有意"
+      - id: check.source-lock-lag
+        run: "node --test tests/source-lock-lag.test.mjs"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
+          - "scripts/verify-source-lock-lag"
+          - "scripts/lib/source-lock-lag.mjs"
+          - "tests/source-lock-lag.test.mjs"
+        depends_on: []
+        failure_mode: "来源锁落后统计把文档类提交算进去、漏掉触及 Bundle 输入的提交，或在无法评估时静默通过"
       - id: check.ci-gate
         run: "node --test tests/ci-gate.test.mjs"
         group: feature-assets
@@ -1343,6 +1353,13 @@ routing:
       - tests/profile-variants.test.mjs
     groups:
       - strategic-handoff-package
+      - feature-assets
+  - patterns:
+      - scripts/verify-source-lock-lag
+      - scripts/lib/source-lock-lag.mjs
+      - tests/source-lock-lag.test.mjs
+    groups:
+      - hygiene
       - feature-assets
   - patterns:
       - scripts/harness-metrics
@@ -4740,6 +4757,22 @@ supplemental_checks:
     depends_on: []
     when: template-source
     task_id: supplemental.profile-variants
+    source_requirement: committed
+  - id: check.source-lock-lag-supplemental
+    run: node --test tests/source-lock-lag.test.mjs
+    group: feature-assets
+    gate_ids: [check.verification-lifecycle]
+    depends_on: []
+    when: template-source
+    task_id: supplemental.source-lock-lag
+    source_requirement: committed
+  - id: check.source-lock-lag-gate-supplemental
+    run: node scripts/verify-source-lock-lag
+    group: hygiene
+    gate_ids: [check.verification-lifecycle]
+    depends_on: []
+    when: template-source
+    task_id: supplemental.source-lock-lag-gate
     source_requirement: committed
   - id: check.harness-metrics
     run: node --test tests/harness-metrics.test.mjs

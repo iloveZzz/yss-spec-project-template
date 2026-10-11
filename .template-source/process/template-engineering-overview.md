@@ -82,6 +82,7 @@ YSS 模板工程是一套可版本化的研发治理系统。它用仓库身份�
 | 校验 skills lock | `scripts/update-skill-lock --check` |
 | 校验生命周期注册表 | `scripts/verify-lifecycle-registry` |
 | 校验 Profile 共享工具与来源一致 | `scripts/sync-strategic-handoff-tools --check`；Profile 暂时有意保持差异时，写入 `.template-source/distribution/profile-variants.json`（原因、解除条件与副本摘要），登记不替代同步，过期或被改动的登记会让检查失败 |
+| 校验 yss-cli 来源锁没有落后太多 | `scripts/verify-source-lock-lag`（候选与发布验证执行；落后超过 Bundle 输入提交数上限时失败）；刷新用 yss-cli 的 `tools/refresh-source-lock.mjs`，目标提交须已推送 |
 | 校验维护 checkpoint | `scripts/verify-maintenance-checkpoint <file>` |
 
 ### 工具链测试执行模式
