@@ -77,7 +77,7 @@ async function gate(t, options = {}, env = {}) {
 
 test("步骤集中在一个数组里，顺序固定，后续工作包只追加", () => {
   assert.deepEqual(STEPS.map((step) => step.id), [
-    "agent-config", "sync-skills", "skill-lock", "lifecycle-registry", "skill-registry", "doc-facts", "node-engines", "verify-template", "verify-candidate",
+    "agent-config", "sync-skills", "skill-lock", "lifecycle-registry", "skill-registry", "handoff-tools-sync", "handoff-tools-lock", "doc-facts", "node-engines", "verify-template", "verify-candidate",
   ]);
   assert.equal(new Set(STEPS.map((step) => step.id)).size, STEPS.length);
   assert.ok(STEPS.every((step) => step.title && (step.command || step.run)));

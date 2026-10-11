@@ -43,6 +43,17 @@ profiles:
           - ".template-source/contracts/harness-hardening-v1*.md"
         depends_on: []
         failure_mode: "说明文档复述门禁数、阶段数、投影根数量或硬编码与 lock 不一致的上游 revision"
+      - id: check.profile-variants
+        run: "node --test tests/profile-variants.test.mjs"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
+          - "scripts/lib/profile-variants.mjs"
+          - ".template-source/distribution/profile-variants.json"
+          - "scripts/sync-strategic-handoff-tools"
+          - "tests/profile-variants.test.mjs"
+        depends_on: []
+        failure_mode: "有意定制登记接受已与来源一致的副本、放过被改动的定制，或把未登记的 Profile 差异当成有意"
       - id: check.ci-gate
         run: "node --test tests/ci-gate.test.mjs"
         group: feature-assets
@@ -226,6 +237,8 @@ profiles:
           - ".template-spec/process/subagent-collaboration.md"
           - ".template-spec/process/stage-tracking.md"
           - ".template-source/distribution/strategic-handoff-tools.lock.json"
+          - ".template-source/distribution/profile-variants.json"
+          - "scripts/lib/profile-variants.mjs"
           - "submodules/yss-harness-*/.template-source/distribution/strategic-handoff-tools.lock.json"
         depends_on: []
         failure_mode: "共享协作和阶段路由说明未传播或来源锁仍绑定旧字节"
@@ -1323,6 +1336,13 @@ routing:
       - tests/doc-facts.test.mjs
     groups:
       - hygiene
+      - feature-assets
+  - patterns:
+      - scripts/lib/profile-variants.mjs
+      - .template-source/distribution/profile-variants.json
+      - tests/profile-variants.test.mjs
+    groups:
+      - strategic-handoff-package
       - feature-assets
   - patterns:
       - scripts/harness-metrics
@@ -4712,6 +4732,14 @@ supplemental_checks:
     depends_on: []
     when: template-source
     task_id: supplemental.doc-facts-restatements
+    source_requirement: committed
+  - id: check.profile-variants-supplemental
+    run: node --test tests/profile-variants.test.mjs
+    group: feature-assets
+    gate_ids: [check.verification-lifecycle]
+    depends_on: []
+    when: template-source
+    task_id: supplemental.profile-variants
     source_requirement: committed
   - id: check.harness-metrics
     run: node --test tests/harness-metrics.test.mjs
