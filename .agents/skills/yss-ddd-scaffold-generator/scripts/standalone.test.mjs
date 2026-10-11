@@ -8,13 +8,13 @@ import { fileURLToPath } from "node:url";
 
 const scripts = path.dirname(fileURLToPath(import.meta.url));
 function args(output) {
-  return ["--standalone", "--project-name", "demo-service", "--base-package", "com.yss.demo", "--output-dir", output,
+  return ["--project-name", "demo-service", "--base-package", "com.yss.demo", "--output-dir", output,
     "--platform-profile", "spring-boot-3.5-jdk21", "--spring-boot-version", "3.5.16", "--java-version", "21",
     "--group-id", "com.yss.demo", "--project-version", "1.0.0-SNAPSHOT", "--parent-group-id", "com.yss.cloud",
     "--parent-artifact-id", "yss-cloud-microservice", "--parent-version", "3.0.0-SNAPSHOT", "--yss-components-version", "3.0.0-SNAPSHOT"];
 }
 
-test("独立 DDD 输入可生成纯骨架，不创建批准合同或业务资格", async t => {
+test("DDD 默认直接生成纯骨架，无需合同或 --standalone，不创建批准或业务资格", async t => {
   const root = await mkdtemp(path.join(os.tmpdir(), "yss-standalone-ddd-"));
   t.after(() => rm(root, { recursive: true, force: true }));
   const result = spawnSync(process.execPath, [path.join(scripts, "generate_scaffold.mjs"), ...args(root)], { encoding: "utf8" });
@@ -34,7 +34,7 @@ test("独立 DDD 输入可生成纯骨架，不创建批准合同或业务资格
   assert.match(await readFile(path.join(project, "pom.xml"), "utf8"), /3\.0\.0-SNAPSHOT/);
 });
 
-test("独立 MVC 使用相同输入规则生成三模块，不初始化治理实例", async t => {
+test("MVC 默认直接生成三模块，无需合同或 --standalone，不初始化治理实例", async t => {
   const root = await mkdtemp(path.join(os.tmpdir(), "yss-standalone-mvc-"));
   t.after(() => rm(root, { recursive: true, force: true }));
   const generator = path.resolve(scripts, "../../yss-layered-mvc-scaffold-generator/scripts/generate_scaffold.mjs");
@@ -86,6 +86,26 @@ test("独立一键入口保留骨架并记录缺少 Maven settings 的真实待�
     assert.equal(manifest.completion_level, "generated");
     assert.equal(manifest.verification.status, "failed");
     assert.equal(manifest.readiness.ready_for_agent, false);
+    if (skill === "yss-ddd-scaffold-generator") {
+      const workflow = JSON.parse(await readFile(path.join(evidence, "scaffold-workflow.json"), "utf8"));
+      assert.equal(workflow.workflow_mode, "standalone-generation");
+    }
+  }
+});
+
+test("DDD 与 MVC 收到任意正式合同参数时不回退成直接生成", async t => {
+  for (const skill of ["yss-ddd-scaffold-generator", "yss-layered-mvc-scaffold-generator"]) {
+    const root = await mkdtemp(path.join(os.tmpdir(), "yss-contract-mode-"));
+    t.after(() => rm(root, { recursive: true, force: true }));
+    const entry = path.resolve(scripts, "../../", skill, "scripts/generate_scaffold.mjs");
+    const input = args(path.join(root, "output"));
+    const projectArgs = input.filter((value, index) => !["--platform-profile", "--spring-boot-version", "--java-version"].includes(value) && !["--platform-profile", "--spring-boot-version", "--java-version"].includes(input[index - 1]));
+    for (const flag of ["--contract-file", "--contract-id", "--contract-version", "--approval-ref", "--compiler-draft-ref", "--persisted-ref"]) {
+      const result = spawnSync(process.execPath, [entry, ...projectArgs, `${flag}=1`], { encoding: "utf8" });
+      assert.equal(result.status, 1, `${skill} ${flag}: ${result.stderr}`);
+      assert.match(result.stderr, /合同|contract/);
+      await assert.rejects(stat(path.join(root, "output")), { code: "ENOENT" });
+    }
   }
 });
 
@@ -94,9 +114,9 @@ test("独立一键入口保留骨架并记录缺少 Maven settings 的真实待�
   const root=await mkdtemp(path.join(os.tmpdir(),"yss-standalone-boundary-"));t.after(()=>rm(root,{recursive:true,force:true}));
   const entry=path.resolve(scripts,"../../",skill,"scripts/generate_scaffold.mjs");
   for(const extra of [["--contract-id","approved.fake"],["--spring-boot-version","3.5.x"],["--java-version","17"]]){
-   const result=spawnSync(process.execPath,[entry,...args(root),...extra],{encoding:"utf8"});assert.notEqual(result.status,0);await assert.rejects(stat(path.join(root,"demo-service")),{code:"ENOENT"});
+   const result=spawnSync(process.execPath,[entry,"--standalone",...args(root),...extra],{encoding:"utf8"});assert.notEqual(result.status,0);await assert.rejects(stat(path.join(root,"demo-service")),{code:"ENOENT"});
   }
-  assert.equal(spawnSync(process.execPath,[entry,...args(root)]).status,0);
+  assert.equal(spawnSync(process.execPath,[entry,"--standalone",...args(root)]).status,0);
   const before=await readFile(path.join(root,"demo-service/pom.xml"));assert.notEqual(spawnSync(process.execPath,[entry,...args(root)]).status,0);assert.deepEqual(await readFile(path.join(root,"demo-service/pom.xml")),before);
  }
  });

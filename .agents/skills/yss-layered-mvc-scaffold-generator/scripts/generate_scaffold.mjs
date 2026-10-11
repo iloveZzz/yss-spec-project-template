@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/** 依据生命周期批准的 schema v4 合同生成纯机械 YSS 分层 MVC 后端骨架。 */
+/** 直接生成纯机械 YSS 分层 MVC 后端骨架，也支持显式 schema v4 合同。 */
 import { platformSourceFingerprint, generatedTreeDigest } from "../../../../scripts/lib/backend-platform-provenance.mjs";
 import { assertContractPlatform, platformTemplateVars, platformSmokeTest } from "../../../../scripts/lib/backend-platform.mjs";
 import { assertScaffoldUserDecision } from "../../../../scripts/lib/user-decision.mjs";
@@ -99,8 +99,11 @@ export function parseArgs(argv) {
     options[mapping.get(token)] = value;
   }
   if (options.help) return options;
-  if (!options.standalone && ["platformProfile", "springBootVersion", "javaVersion"].some(key => options[key] !== undefined)) fail("独立平台参数必须显式使用 --standalone，正式模式消费合同平台");
   const contractKeys = ["contractFile", "contractId", "contractVersion", "approvalRef", "compilerDraftRef", "persistedRef"];
+  const hasContract = contractKeys.some(key => options[key] !== undefined);
+  if (options.standalone && hasContract) fail("--standalone 不得携带合同或批准参数；已有合同须走正式治理路径");
+  options.standalone = !hasContract;
+  if (!options.standalone && ["platformProfile", "springBootVersion", "javaVersion"].some(key => options[key] !== undefined)) fail("正式模式消费合同平台，不接受独立平台参数");
   for (const key of mapping.values()) {
     if (["platformProfile", "springBootVersion", "javaVersion"].includes(key) || options.standalone && contractKeys.includes(key)) continue;
     if (!isPresent(options[key])) fail(`缺少必填参数: ${key}`);
@@ -284,7 +287,7 @@ export async function generate(options, { skillId = SKILL_ID, architectureProfil
     const architectureIdentity = options.standalone ? undefined : scaffoldArchitectureIdentity(contract, sha256(contractText));
     const profileFinalize = finalize ?? (architectureProfile === "mvc-data-analysis-v1" ? finalizeDataAnalysisProfile : null);
     if (profileFinalize) await profileFinalize({ projectRoot, contract, architectureIdentity, options, agents });
-    await put(projectRoot, "README.md", `# ${options.projectName}\n\n平台：Spring Boot ${platform.spring_boot_version} / Java ${platform.java_version}。\n\n该工程由 ${skillId} ${options.standalone ? "按用户明确输入独立生成；尚无生命周期批准，平台和构建尚未验证" : `根据批准的 schema v${contract.schema_version} 合同生成`}。模块：${modules.join("、")}。不包含业务 API、SQL 或生产数据库绑定。\n\n本地运行需同时显式启用 Maven -Pscaffold-local 和 Spring scaffold-local Profile；测试独立使用 H2。生产数据库须由后续已批准存储工作单元接入。`);
+    await put(projectRoot, "README.md", `# ${options.projectName}\n\n平台：Spring Boot ${platform.spring_boot_version} / Java ${platform.java_version}。\n\n该工程由 ${skillId} ${options.standalone ? "按工程输入直接生成；平台和构建尚未验证" : `根据批准的 schema v${contract.schema_version} 合同生成`}。模块：${modules.join("、")}。不包含业务 API、SQL 或生产数据库绑定。\n\n本地运行需同时显式启用 Maven -Pscaffold-local 和 Spring scaffold-local Profile；测试独立使用 H2。可基于骨架继续开发并接入生产数据库；采用正式 Harness 治理时，由后续已批准存储工作单元接入。`);
     const generatedFiles = [];
     for (const entry of await fileEntries(projectRoot, new Set([".yss/scaffold-generation.json"]))) generatedFiles.push({ path: entry.relative, owner: "generator", sha256: rawSha256(await readFile(entry.target)) });
     const architectureRuleset = `${serverRoot}/src/test/java/${packagePath}/architecture/LayeredMvcArchitectureTest.java`;
@@ -350,7 +353,7 @@ export async function generate(options, { skillId = SKILL_ID, architectureProfil
 async function main() {
   try {
     const options = parseArgs(process.argv.slice(2));
-    if (options.help) { process.stdout.write("使用 --project-name --base-package --output-dir。独立模式显式传 --standalone、精确平台及完整 Maven 坐标；正式路径提供当前批准合同。验证数据库是 H2，生产数据库未绑定。\n"); return 0; }
+    if (options.help) { process.stdout.write("使用 --project-name --base-package --output-dir、精确平台及完整 Maven 坐标，默认直接生成，无需需求合同或设计审批；--standalone 可省略。正式路径显式提供当前批准合同及元数据。验证数据库是 H2，生产数据库未绑定。\n"); return 0; }
     await generate(options);
     return 0;
   } catch (error) {
