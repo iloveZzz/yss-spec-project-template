@@ -306,6 +306,16 @@ profiles:
           - "tests/governance-layout.test.mjs"
         depends_on: []
         failure_mode: "当前来源缺失、重复或倒序标记被历史兼容路径静默接受"
+      - id: "check.backend-scaffold-direct-generation"
+        run: "node --test .agents/skills/yss-ddd-scaffold-generator/scripts/standalone.test.mjs .agents/skills/yss-ddd-scaffold-generator/scripts/scaffold-generator.test.mjs .agents/skills/yss-layered-mvc-scaffold-generator/scripts/scaffold-generator.test.mjs"
+        group: "implementation"
+        inputs_complete: true
+        input_patterns:
+          - "scripts/lib/standalone-backend-scaffold.mjs"
+          - ".agents/skills/yss-ddd-scaffold-generator/scripts/**"
+          - ".agents/skills/yss-layered-mvc-scaffold-generator/scripts/**"
+        depends_on: []
+        failure_mode: "MVC/DDD 无合同默认生成失败、显式合同错误回退、验证报告模式错误或目录保护失效"
       - id: "check.mvc-data-analysis-entry"
         run: "node --test --test-name-pattern='数据分析|AGENTS|入口' .agents/skills/yss-layered-mvc-scaffold-generator/scripts/scaffold-generator.test.mjs"
         group: "implementation"
