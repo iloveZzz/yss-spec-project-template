@@ -16,7 +16,6 @@ import { validateArchitectureIdentity } from "../../../../scripts/lib/backend-ar
 import { validateJsonSchema } from "../../../../scripts/lib/json-schema.mjs";
 import { finalizeDataAnalysisProfile, readDataAnalysisAgents } from "./data-analysis-profile.mjs";
 import { standaloneConfiguration, standaloneManifest } from "../../../../scripts/lib/standalone-backend-scaffold.mjs";
-import { isStandaloneGeneration } from "../../yss-ddd-scaffold-generator/scripts/generation-mode.mjs";
 
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 const SKILL_ROOT = path.resolve(SCRIPT_DIR, "..");
@@ -100,9 +99,11 @@ export function parseArgs(argv) {
     options[mapping.get(token)] = value;
   }
   if (options.help) return options;
-  options.standalone = isStandaloneGeneration(options);
-  if (!options.standalone && ["platformProfile", "springBootVersion", "javaVersion"].some(key => options[key] !== undefined)) fail("正式模式消费合同平台，不接受独立平台参数");
   const contractKeys = ["contractFile", "contractId", "contractVersion", "approvalRef", "compilerDraftRef", "persistedRef"];
+  const hasContract = contractKeys.some(key => options[key] !== undefined);
+  if (options.standalone && hasContract) fail("--standalone 不得携带合同或批准参数；已有合同须走正式治理路径");
+  options.standalone = !hasContract;
+  if (!options.standalone && ["platformProfile", "springBootVersion", "javaVersion"].some(key => options[key] !== undefined)) fail("正式模式消费合同平台，不接受独立平台参数");
   for (const key of mapping.values()) {
     if (["platformProfile", "springBootVersion", "javaVersion"].includes(key) || options.standalone && contractKeys.includes(key)) continue;
     if (!isPresent(options[key])) fail(`缺少必填参数: ${key}`);

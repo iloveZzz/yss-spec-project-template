@@ -14,7 +14,6 @@ import { validateArchitectureIdentity } from "../../../../scripts/lib/backend-ar
 import { validateJsonSchema } from "../../../../scripts/lib/json-schema.mjs";
 import { validateBackendScaffoldPrerequisites } from "../../../../scripts/lib/backend-scaffold-prerequisites.mjs";
 import { standaloneConfiguration, standaloneManifest, assertStandaloneManifest } from "../../../../scripts/lib/standalone-backend-scaffold.mjs";
-import { isStandaloneGeneration } from "./generation-mode.mjs";
 
 import {
   findGitRoot,
@@ -94,7 +93,10 @@ export function parseArgs(argv) {
     options[mapping.get(token)] = value;
   }
   if (options.help) return options;
-  options.standalone = isStandaloneGeneration(options);
+  const contractKeys = ["contractFile", "contractId", "contractVersion", "approvalRef", "compilerDraftRef", "persistedRef"];
+  const hasContract = contractKeys.some(key => options[key] !== undefined);
+  if (options.standalone && hasContract) fail("--standalone 不得携带合同或批准参数；已有合同须走正式治理路径");
+  options.standalone = !hasContract;
   if (!options.standalone && ["platformProfile", "springBootVersion", "javaVersion"].some(key => options[key] !== undefined)) fail("正式模式消费合同平台，不接受独立平台参数");
   for (const [flag, key] of mapping) {
     if (["platformProfile", "springBootVersion", "javaVersion"].includes(key) || options.standalone && key === "contractFile") continue;
