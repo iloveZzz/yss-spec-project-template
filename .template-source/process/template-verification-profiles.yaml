@@ -54,6 +54,14 @@ profiles:
           - "tests/profile-variants.test.mjs"
         depends_on: []
         failure_mode: "有意定制登记接受已与来源一致的副本、放过被改动的定制，或把未登记的 Profile 差异当成有意"
+      - id: check.verification-script-retirement
+        run: "node --test tests/verification-script-retirement.test.mjs"
+        group: candidate-integrity
+        inputs_complete: true
+        input_patterns:
+          - "tests/verification-script-retirement.test.mjs"
+        depends_on: []
+        failure_mode: "已搬迁或退役的验证脚本失去历史身份映射，或旧请求回落到已退役命令"
       - id: check.legacy-coverage
         run: "node --test tests/legacy-coverage.test.mjs"
         group: feature-assets
