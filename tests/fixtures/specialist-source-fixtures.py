@@ -3,6 +3,9 @@ import re,json,hashlib,shutil,subprocess,stat
 R=Path(__file__).resolve().parents[2]
 import sys
 CHECK="--check" in sys.argv
+# Git records only the owner executable bit; checkout umask is not source identity.
+def git_mode(path):
+ return 0o755 if path.stat().st_mode & stat.S_IXUSR else 0o644
 # Closed source payloads. Text-only Skill consumers get only the files they read;
 # executable generators get their actual modules, assets and authority dependencies.
 common=['.agents/skills/yss-ui/SKILL.md','.agents/skills/yss-ui/references/yss-ui-source-index.md']
@@ -64,10 +67,10 @@ for profile,initial in seeds.items():
  for ref in sorted(selected):
   s=R/ref;stored="context-source.fixture.md" if ref=="CONTEXT.md" else ref;t=dest/stored
   if CHECK:
-   assert t.is_file() and not t.is_symlink() and t.read_bytes()==s.read_bytes() and stat.S_IMODE(t.stat().st_mode)==stat.S_IMODE(s.stat().st_mode),(profile,ref)
+   assert t.is_file() and not t.is_symlink() and t.read_bytes()==s.read_bytes() and git_mode(t)==git_mode(s),(profile,ref)
   else:
    t.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(s,t)
-  rows.append({'path':ref,'source_path':ref,'storage_path':stored,'sha256':hashlib.sha256(s.read_bytes()).hexdigest(),'mode':stat.S_IMODE(s.stat().st_mode)})
+  rows.append({'path':ref,'source_path':ref,'storage_path':stored,'sha256':hashlib.sha256(s.read_bytes()).hexdigest(),'mode':git_mode(s)})
  index={'schema_version':1,'kind':'test-only-canonical-source','source_repository':'yss-spec-project-template','source_head':subprocess.check_output(['git','rev-parse','HEAD'],cwd=R,text=True).strip(),'source_state':'working-tree','files':rows}
  # source_head records the historical generator observation, not payload identity.
  # Checking a later unrelated commit must still compare every closed payload byte/mode.
@@ -87,6 +90,6 @@ for profile,initial in seeds.items():
    if legacy.exists():
     replacement=dest/current
     assert not legacy.is_symlink() and replacement.is_file() and not replacement.is_symlink(),(profile,old)
-    assert replacement.read_bytes()==legacy.read_bytes() and stat.S_IMODE(replacement.stat().st_mode)==stat.S_IMODE(legacy.stat().st_mode),(profile,old)
+    assert replacement.read_bytes()==legacy.read_bytes() and git_mode(replacement)==git_mode(legacy),(profile,old)
     legacy.unlink()
  print(profile,len(rows),'fixture source files',flush=True)
