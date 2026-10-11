@@ -245,11 +245,23 @@ profiles:
           - ".template-source/process/maintenance-intensity*.yaml"
           - "scripts/lib/maintenance-intensity.mjs"
           - "scripts/lib/maintenance-counterexample.mjs"
+          - "scripts/lib/maintenance-review.mjs"
           - "tests/maintenance-counterexample.test.mjs"
           - "tests/scenarios/verify-maintenance-risk-scenarios.mjs"
           - "scripts/verify-maintenance-risk-scenarios"
         depends_on: []
-        failure_mode: "两级触发项遗漏、当前 L3 被接受、三类强制反例缺失或运行证据伪造"
+        failure_mode: "两级触发项遗漏、当前 L3 被接受、三类强制反例缺失、运行证据伪造，或历史审查被误作当前执行授权"
+      - id: check.harness-skill-scope
+        run: "node --test submodules/yss-harness-backend-agent/.template-source/tooling/node/test/harness-skill-scope.test.mjs submodules/yss-harness-frontend-agent/.template-source/tooling/node/test/harness-skill-scope.test.mjs"
+        group: skills
+        inputs_complete: true
+        input_patterns:
+          - "scripts/lib/harness-execution-scope.mjs"
+          - "scripts/lib/harness-skill-scope.mjs"
+          - "submodules/yss-harness-backend-agent"
+          - "submodules/yss-harness-frontend-agent"
+        depends_on: []
+        failure_mode: "专职端将跨仓参考或退役技能身份误作本地可执行技能，或伪装影响面绕过身份边界"
       - id: check.5fa31f4262e122b1
         group: maintenance
         inputs_complete: true
