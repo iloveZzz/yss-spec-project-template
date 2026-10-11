@@ -41,6 +41,7 @@ profiles:
           - ".template-source/agents/*.md"
           - ".template-spec/agents/*.md"
           - ".template-source/contracts/harness-hardening-v1*.md"
+          - ".template-source/contracts/architecture-iteration-v1*.md"
         depends_on: []
         failure_mode: "说明文档复述门禁数、阶段数、投影根数量或硬编码与 lock 不一致的上游 revision"
       - id: check.profile-variants
