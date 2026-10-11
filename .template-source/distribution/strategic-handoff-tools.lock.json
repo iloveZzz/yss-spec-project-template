@@ -2,7 +2,7 @@
   "schema_version": 1,
   "target_id": "template-root",
   "source_repository": "yss-spec-project-template",
-  "source_revision": "c8a7523cf670694600aceccb08a3cc7c68119a1f",
+  "source_revision": "8b92c3e1dc76c82dc2b0f2d53acfd9dda689b3f8",
   "source_state": "committed",
   "transformation_set": [
     "identity"
@@ -210,7 +210,7 @@
     "scripts/lib/maintenance-counterexample.mjs": "sha256:562fd67a2fff41731529132861281e3265644169a3622044dff53930492ee7ba",
     "scripts/lib/maintenance-intensity.mjs": "sha256:53b8e876760a70dae0cbbbddb025e21c068ec6f11313c6b88794489484341a69",
     "scripts/lib/maintenance-research.mjs": "sha256:7e6091dd91e3e9a028204636824188e0e75fa259e1d9436128dbe9f8ca86889e",
-    "scripts/lib/maintenance-review.mjs": "sha256:5ec1474d4f430b674d443064587d41a49ef5a4c838bdc459a3bc29297428b4f6",
+    "scripts/lib/maintenance-review.mjs": "sha256:fe933cde4de39d898a8691060b7be1180703f2cd83fa7120456c8cb3c2aa74d6",
     "scripts/lib/maintenance-storage.mjs": "sha256:7e92a98f1b653e62736058d5247df8c3f656e62e06b69d02f6681cf872fc8628",
     "scripts/lib/native-context.mjs": "sha256:f2130c19be1777414dae8e4d425a9e3f528cee17068f4441108a6838319dd1c7",
     "scripts/lib/openapi-draft-validation.mjs": "sha256:384a9152aa8c64b16902d5f09dfbedc397c51b566027fb3cfe627660d239fb28",
@@ -517,7 +517,7 @@
     "scripts/lib/maintenance-counterexample.mjs": "sha256:562fd67a2fff41731529132861281e3265644169a3622044dff53930492ee7ba",
     "scripts/lib/maintenance-intensity.mjs": "sha256:53b8e876760a70dae0cbbbddb025e21c068ec6f11313c6b88794489484341a69",
     "scripts/lib/maintenance-research.mjs": "sha256:7e6091dd91e3e9a028204636824188e0e75fa259e1d9436128dbe9f8ca86889e",
-    "scripts/lib/maintenance-review.mjs": "sha256:5ec1474d4f430b674d443064587d41a49ef5a4c838bdc459a3bc29297428b4f6",
+    "scripts/lib/maintenance-review.mjs": "sha256:fe933cde4de39d898a8691060b7be1180703f2cd83fa7120456c8cb3c2aa74d6",
     "scripts/lib/maintenance-storage.mjs": "sha256:7e92a98f1b653e62736058d5247df8c3f656e62e06b69d02f6681cf872fc8628",
     "scripts/lib/native-context.mjs": "sha256:f2130c19be1777414dae8e4d425a9e3f528cee17068f4441108a6838319dd1c7",
     "scripts/lib/openapi-draft-validation.mjs": "sha256:384a9152aa8c64b16902d5f09dfbedc397c51b566027fb3cfe627660d239fb28",
