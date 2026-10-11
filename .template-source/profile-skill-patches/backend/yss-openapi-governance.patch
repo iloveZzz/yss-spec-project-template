@@ -14,6 +14,13 @@ diff --git a/references/governance-workflow.md b/references/governance-workflow.
 index 4149162..6a66f88 100644
 --- a/references/governance-workflow.md
 +++ b/references/governance-workflow.md
+@@ -11,5 +11,5 @@
+ 3. 独立 `yss-openapi-draft-review` 审查同一 API 候选及需求验收。保留兼容报告、结构与语义结论、审查者身份、`api_digest` 和未关闭项，可直接记录在本 Ticket API 审查段；审查者不得是实现者，lint/兼容失败、阻断项或过期证据不能记 `passed`。
+ 4. 审查通过后在本 Ticket evidence 的 `api.freeze.digest` 锁定 CLI 返回的 `api_digest`（OAS、可达引用、适用 API rules 与工具锁）；不要求另建 Freeze 文件、`ref` 或 `candidate_digest`。Freeze 是字节锁定，不写 `approved` / `ready-for-agent`，不创建 API Contract Decision 或 engineering approval。YAML/引用/工具锁/规则变化使受影响校验、审查和 Freeze 失效；不得只重填摘要沿用旧结论。
+-5. 实现消费同一 Freeze 摘要，执行当前契约测试和独立代码审查，由 `yss lifecycle verify-daily` 核验。需要 JSON 时才从冻结 YAML 可复现 bundle，并记录 JSON 摘要及解析/lint结果；不手改 JSON 或让它反向成为权威。日志和 review 可引用治理项目中本 Ticket 的唯一正文段，不强制新增各类资产文件；章节摘要规则消费生命周期 [普通任务交付](../../yss-product-lifecycle/references/daily-delivery.md)。
++5. 实现消费同一 Freeze 摘要，执行当前契约测试和独立代码审查，由 `yss lifecycle verify-daily` 核验。需要 JSON 时才从冻结 YAML 可复现 bundle，并记录 JSON 摘要及解析/lint结果；不手改 JSON 或让它反向成为权威。日志和 review 可引用治理项目中本 Ticket 的唯一正文段，不强制新增各类资产文件；章节摘要规则消费当前 Profile 已启用的普通任务合同与 CLI evidence 格式。
+ 
+ 机器字段直接消费当前 CLI 的普通 Ticket evidence 格式：`api.mode`、`baseline`、`candidate`、`new_operations`、`rules`、`tools`、`lint`、`compatibility`、`review`、`freeze` 和 `contract_tests`。非空 `api.rules: [{ref,digest}]` 绑定适用 API 规则，与普通代码 inputs 分开。OAS 文件引用属于实现仓；规则、日志、锁、审查引用按工具要求属于治理项目，Freeze 摘要直接保存在同一 evidence 段。原始文件/段落摘要、`APIContractDigest` 及 `candidate_digest` 各有对象，不相互冒充；未知能力明确不支持，不手写第二套 schema。
 @@ -29,8 +29,6 @@ API lint/compatibility/review/Freeze 绑定独立 `api_digest`，实现测试/
     - 先执行项目 lockfile 锁定版本的 `pnpm exec redocly lint`；CI 可以包装调用，但 validation record 必须记录这条实际命令与退出码。
     - 检查 YAML 可解析、`$ref` 可解析、路径参数完整、operationId 唯一、examples 合法、schema 命名稳定。

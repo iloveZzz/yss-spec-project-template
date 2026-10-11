@@ -62,7 +62,7 @@ function transformationFor(target,ref){
 }
 function sync(source,dest,transformation='identity'){const bytes=transformations[transformation](readFileSync(source));const variant=variants.get(path.relative(root,dest));if(variant){usedVariants.add(path.relative(root,dest));const verdict=classifyVariant(variant,{actual:existsSync(dest)?readFileSync(dest):null,expected:bytes});if(verdict.status!=='ok')variantErrors.push(`${path.relative(root,dest)}: ${verdict.message}`);return;}if(!existsSync(dest)||!bytes.equals(readFileSync(dest))){differences.push(path.relative(root,dest));if(!check){mkdirSync(path.dirname(dest),{recursive:true});writeFileSync(dest,bytes);}}if(!check&&path.basename(path.dirname(dest))==='scripts'&&!path.extname(dest))chmodSync(dest,0o755);}
 const digestBytes=bytes=>`sha256:${createHash('sha256').update(bytes).digest('hex')}`;
-shared.push('scripts/lib/lifecycle-execution-scope.mjs','scripts/lib/instance-metadata.mjs','scripts/lib/harness-execution-scope.mjs');
+shared.push('scripts/lib/harness-skill-scope.mjs','scripts/lib/lifecycle-execution-scope.mjs','scripts/lib/instance-metadata.mjs','scripts/lib/harness-execution-scope.mjs');
 shared.push('scripts/lib/lifecycle-progression.mjs','.template-spec/process/schemas/progression-target.schema.json','.template-spec/process/lifecycle-progression.md');
 shared.push('scripts/inspect-skill-discovery','scripts/lib/skill-discovery.mjs');
 // Diagnostic-only content inspection: shared authoring format, no lifecycle gate.
