@@ -303,12 +303,6 @@
           }
         },
         {
-          "id": "yss-layered-mvc-scaffold-generator",
-          "file_modes": {
-            "scripts/scaffold-generator.test.mjs": "0644"
-          }
-        },
-        {
           "id": "yss-dto"
         },
         {
@@ -402,6 +396,15 @@
               "count": 3
             }
           ]
+        },
+        {
+          "id": "yss-layered-mvc-scaffold-generator",
+          "file_modes": {
+            "scripts/scaffold-generator.test.mjs": "0644"
+          },
+          "strategy": "patch",
+          "patch": ".template-source/profile-skill-patches/backend/yss-layered-mvc-scaffold-generator.patch",
+          "source_tree_sha256": "d338c8edea1af089878554e666d358319fe0c01237a713cef8a95709c942b7fc"
         }
       ],
       "assets": [
