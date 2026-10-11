@@ -201,9 +201,6 @@
           "id": "alibaba-java-code-style"
         },
         {
-          "id": "archify"
-        },
-        {
           "id": "codebase-design"
         },
         {
@@ -547,9 +544,6 @@
     "frontend": {
       "target": "submodules/yss-harness-frontend-agent",
       "exact": [
-        {
-          "id": "archify"
-        },
         {
           "id": "codebase-design"
         },
