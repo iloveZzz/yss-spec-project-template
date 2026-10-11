@@ -38,7 +38,7 @@ downstream_mapping:
     reapproval_condition: 规则确认
 evidence_refs: [evidence.invalid]
 approval:
-  approval_ref: docs/.scratch/invalid/gate.yaml
+  approval_ref: .work/invalid/gate.yaml
   approver: role.lifecycle-orchestrator
-  persisted_ref: docs/.scratch/invalid/package.yaml
+  persisted_ref: .work/invalid/package.yaml
   current_version: v1

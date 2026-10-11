@@ -7,7 +7,7 @@ import {readingFixture,repo} from './fixture.mjs';
 
 test('领域阅读保留失败、例外、未知约束及零值，输出可读 Markdown 并保持源字节',()=>{
   const f=readingFixture();try{
-    const ref='docs/.scratch/demo/plan/domain-strategy.yaml',before=readFileSync(path.join(f.root,ref));
+    const ref='.work/demo/plan/domain-strategy.yaml',before=readFileSync(path.join(f.root,ref));
     const result=f.cli('view',ref,'--kind','domain-strategy');
     assert.equal(result.status,0,result.stderr+result.stdout);
     for(const text of ['业务责任区','被任务引用时不得删除；须先解除引用。','仅管理员可以修改口令；开发者不可读取明文。','无引用时删除成功。','false'])assert.ok(result.stdout.includes(text),text);
@@ -26,11 +26,11 @@ test('领域阅读保留失败、例外、未知约束及零值，输出可读 M
 test('checkpoint keeps declared state separate from unchecked approval and empty blockers',()=>{
  const f=readingFixture();try{
   for(const ref of ['.template-spec/process/lifecycle-registry.yaml','.template-spec/agents/digital-human-roles.yaml'])f.put(ref,readFileSync(path.join(repo,ref),'utf8'));
-  f.put('docs/.scratch/demo/checkpoint.yaml',JSON.parse(readFileSync(path.join(repo,'scripts/fixtures/reading-views/checkpoint.json'),'utf8')));
-  const r=f.cli('view','docs/.scratch/demo/checkpoint.yaml','--kind','checkpoint');assert.equal(r.status,0,r.stderr+r.stdout);
+  f.put('.work/demo/checkpoint.yaml',JSON.parse(readFileSync(path.join(repo,'scripts/fixtures/reading-views/checkpoint.json'),'utf8')));
+  const r=f.cli('view','.work/demo/checkpoint.yaml','--kind','checkpoint');assert.equal(r.status,0,r.stderr+r.stdout);
   assert.match(r.stdout,/未登记阻塞/);assert.match(r.stdout,/不等于可执行/);assert.match(r.stdout,/work-unit.plan-opportunity/);
   assert.match(r.stdout,/机会调研（work-unit.plan-opportunity）/);
-  const v=JSON.parse(f.cli('view','docs/.scratch/demo/checkpoint.yaml','--kind','checkpoint','--json').stdout);
+  const v=JSON.parse(f.cli('view','.work/demo/checkpoint.yaml','--kind','checkpoint','--json').stdout);
   assert.equal(v.content.next_work_unit,'work-unit.plan-opportunity');
   assert.equal(v.execution_allowed,false);
  }finally{f.cleanup();}
@@ -38,10 +38,10 @@ test('checkpoint keeps declared state separate from unchecked approval and empty
 
 test('migration preview verifies embedded after and never invents missing before',()=>{
  const f=readingFixture();try{
-  const after='规则：不得删除\n';const payload={schema_version:1,root:f.root,input:{checkpoint_ref:'docs/.scratch/demo/checkpoint.yaml'},gaps:[],observed:{},changes:[{ref:'docs/.scratch/demo/plan/rules.yaml',before:{digest:hash('旧规则')},after,after_digest:hash(after)}]};
-  const plan={...payload,plan_id:hash(JSON.stringify(payload)).slice(7)};f.put('docs/.scratch/demo/migration.json',JSON.stringify(plan));
-  let r=f.cli('view','docs/.scratch/demo/migration.json','--kind','tracking-migration');assert.equal(r.status,0,r.stderr);assert.match(r.stdout,/无法比较旧内容/);assert.match(r.stdout,/不得删除/);assert.doesNotMatch(r.stdout,/after_digest.*\\n/);
-  plan.changes[0].after='篡改';f.put('docs/.scratch/demo/migration.json',JSON.stringify(plan));r=f.cli('view','docs/.scratch/demo/migration.json','--kind','tracking-migration');assert.equal(r.status,1);assert.match(r.stdout,/digest-mismatch/);
+  const after='规则：不得删除\n';const payload={schema_version:1,root:f.root,input:{checkpoint_ref:'.work/demo/checkpoint.yaml'},gaps:[],observed:{},changes:[{ref:'.work/demo/plan/rules.yaml',before:{digest:hash('旧规则')},after,after_digest:hash(after)}]};
+  const plan={...payload,plan_id:hash(JSON.stringify(payload)).slice(7)};f.put('.work/demo/migration.json',JSON.stringify(plan));
+  let r=f.cli('view','.work/demo/migration.json','--kind','tracking-migration');assert.equal(r.status,0,r.stderr);assert.match(r.stdout,/无法比较旧内容/);assert.match(r.stdout,/不得删除/);assert.doesNotMatch(r.stdout,/after_digest.*\\n/);
+  plan.changes[0].after='篡改';f.put('.work/demo/migration.json',JSON.stringify(plan));r=f.cli('view','.work/demo/migration.json','--kind','tracking-migration');assert.equal(r.status,1);assert.match(r.stdout,/digest-mismatch/);
  }finally{f.cleanup();}
 });
 

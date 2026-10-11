@@ -11,6 +11,7 @@ const write = (relative, value = relative) => {
   const file = path.join(root, relative); mkdirSync(path.dirname(file), { recursive: true }); writeFileSync(file, Buffer.isBuffer(value) || typeof value === "string" ? value : JSON.stringify(value, null, 2)); return relative;
 };
 write("docs/spec.md"); write("docs/prototype.html");
+write('.template-spec/agents/issue-tracker.md', '---\ntracker:\n  platform: local-markdown\n  root: .work\n---\n');
 for (const file of ["verification/desktop.png", "verification/narrow.png", "verification/desktop-diff.png", "verification/narrow-diff.png", "verification/pnpm.txt", "verification/review.md"]) write(file);
 const digest = `sha256:${"a".repeat(64)}`;
 function pngHeader(width, height) { const value = Buffer.alloc(24); Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]).copy(value, 0); value.writeUInt32BE(13, 8); value.write("IHDR", 12, "ascii"); value.writeUInt32BE(width, 16); value.writeUInt32BE(height, 20); return value; }
@@ -56,6 +57,15 @@ verification.interaction_results=visual_baseline.case_ids.map(case_id=>{const b=
 for(const row of verification.actual_verification)row.evidence_digest=bind(row.evidence_ref).digest;
 for(const row of verification.case_results){row.implementation_image_digest=bind(row.implementation_image_ref).digest;row.diff_digest=bind(row.diff_ref).digest;}
 run("valid-plan", plan, 0);
+for (const workRoot of ['.work', 'docs/custom-work', 'docs/.scratch']) {
+  write('.template-spec/agents/issue-tracker.md', `---\ntracker:\n  platform: local-markdown\n  root: ${workRoot}\n---\n`);
+  const spec_ref = write(`${workRoot}/example/spec.md`);
+  run(`template-path-${workRoot.replaceAll('/', '-')}`, { ...plan, spec_ref }, 1, /模板占位/);
+  for (const [index, alias] of [`./${spec_ref}`, spec_ref.replace('/example/', '//example/'), `${workRoot}/unused/../example/spec.md`].entries()) {
+    run(`template-alias-${workRoot.replaceAll('/', '-')}-${index}`, { ...plan, spec_ref: alias }, 1, /模板占位/);
+  }
+}
+write('.template-spec/agents/issue-tracker.md', '---\ntracker:\n  platform: local-markdown\n  root: .work\n---\n');
 run("valid-verification", verification, 0);
 run('committed-candidate-identity',{...verification,independent_review:{...verification.independent_review,candidate_digest:'a'.repeat(40)}},0);
 run('invalid-candidate-identity',{...verification,independent_review:{...verification.independent_review,candidate_digest:'z'.repeat(40)}},1,/candidate_digest/);

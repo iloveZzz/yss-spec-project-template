@@ -9,7 +9,7 @@ export function readingFixture(){
   const root=mkdtempSync(path.join(tmpdir(),'yss-reading-'));
   const put=(ref,value)=>{const file=path.join(root,ref);mkdirSync(path.dirname(file),{recursive:true});writeFileSync(file,typeof value==='string'?value:stringify(value));};
   put('yss-project.yaml',{schema_version:1,repository_mode:'project-instance'});
-  put('.template-spec/agents/issue-tracker.md','---\ntracker:\n  platform: local-markdown\n  root: docs/.scratch\n---\n');
+  put('.template-spec/agents/issue-tracker.md','---\ntracker:\n  platform: local-markdown\n  root: .work\n---\n');
   put('CONTEXT.md','# 业务上下文\n');
   const strategy=JSON.parse(readFileSync(path.join(repo,'scripts/fixtures/strategic-handoff/base-strategy.json'),'utf8'));
   strategy.status='draft';
@@ -18,7 +18,7 @@ export function readingFixture(){
   strategy.scenarios[0].failure_results=['被任务引用时不得删除；须先解除引用。'];
   strategy.scenarios[0].success_results=['无引用时删除成功。'];
   strategy.extra_constraint={exception:'仅管理员可以修改口令；开发者不可读取明文。',threshold:0,enabled:false};
-  put('docs/.scratch/demo/plan/domain-strategy.yaml',strategy);
+  put('.work/demo/plan/domain-strategy.yaml',strategy);
   const cli=(...args)=>spawnSync(process.execPath,[path.join(repo,'scripts/contract'),...args,'--root',root],{encoding:'utf8'});
   return {root,put,cli,strategy,cleanup:()=>rmSync(root,{recursive:true,force:true})};
 }

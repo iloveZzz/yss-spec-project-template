@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
+import { readWorkLayout } from './work-layout.mjs';
 import { safeFile, orchestrationRef } from './governance-io.mjs';
 import { parseAsset, canonicalValue, serializeAsset, byteDigest, validateAssetStructure, TOOL_ROOT } from './structured-assets.mjs';
 import { runAssetTransaction } from './asset-transactions.mjs';
@@ -471,7 +472,8 @@ export function summarizePlanReview(control, options = {}) {
 /** Strict JSON checkpoint mutation, preserving every field outside this protocol and all historical approval bytes. */
 export function writePlanReviewCheckpoint(checkpointRef, mutate, options = {}) {
   const root = fs.realpathSync(options.root || TOOL_ROOT);
-  ensure(typeof checkpointRef === 'string' && checkpointRef.endsWith('.json') && /^(?:docs\/|\.yss\/)/.test(checkpointRef) && !checkpointRef.startsWith('.yss/asset-transactions/'), 'PLAN_REVIEW_WRITE_SCOPE', '仅更新项目内 JSON checkpoint');
+  ensure(typeof checkpointRef === 'string' && checkpointRef.endsWith('.json'), 'PLAN_REVIEW_WRITE_SCOPE', '仅更新当前配置根下的 JSON checkpoint');
+  readWorkLayout(root).checkpointFeature(checkpointRef);
   const file = safeFile(root, checkpointRef), beforeBytes = fs.readFileSync(file), checkpoint = parseAsset(beforeBytes, checkpointRef);
   validateAssetStructure(checkpoint, 'checkpoint', { schemaRoot: root });
   const control = mutate(clone(checkpoint)), next = { ...checkpoint, plan_review_control: control };

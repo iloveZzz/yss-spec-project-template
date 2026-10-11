@@ -82,9 +82,9 @@ export function attachDesignPrerequisites(root, contract, { dataImpact = "not-ap
   };
   let openapi = null;
   if (apiImpact === "required") {
-    write(root, ".template-spec/agents/issue-tracker.md", "---\ntracker:\n  platform: local-markdown\n  root: docs/.scratch\n---\n");
+    write(root, ".template-spec/agents/issue-tracker.md", "---\ntracker:\n  platform: local-markdown\n  root: .work\n---\n");
     const slug = contract.project_name.toLowerCase().replace(/[^a-z0-9-]+/g, "-").replace(/^-+|-+$/g, "") || "demo";
-    openapi = write(root, `docs/.scratch/${slug}/api/${slug}.yaml`, [
+    openapi = write(root, `.work/${slug}/api/${slug}.yaml`, [
       "openapi: 3.1.0",
       "info:",
       `  title: ${contract.project_name} API`,
@@ -99,8 +99,8 @@ export function attachDesignPrerequisites(root, contract, { dataImpact = "not-ap
       "",
     ].join("\n"));
     write(root, "pnpm-lock.yaml", "lockfileVersion: '9.0'\npackages:\n  '@redocly/cli@2.0.0': {}\n");
-    const lintEvidence = write(root, `docs/.scratch/${slug}/api/redocly-lint.txt`, "synthetic redocly lint exit_code=0\n");
-    const validation = write(root, `docs/.scratch/${slug}/api/${slug}-validation.json`, {
+    const lintEvidence = write(root, `.work/${slug}/api/redocly-lint.txt`, "synthetic redocly lint exit_code=0\n");
+    const validation = write(root, `.work/${slug}/api/${slug}-validation.json`, {
       schema_version: 1,
       kind: "openapi-draft-validation",
       template: false,
@@ -124,8 +124,8 @@ export function attachDesignPrerequisites(root, contract, { dataImpact = "not-ap
         lint: "passed",
       },
     });
-    const reviewEvidence = write(root, `docs/.scratch/${slug}/api/draft-review-evidence.md`, "独立 Draft Review 测试证据：无阻断项。\n");
-    const reviewRecord = write(root, `docs/.scratch/${slug}/api/draft-review.json`, {
+    const reviewEvidence = write(root, `.work/${slug}/api/draft-review-evidence.md`, "独立 Draft Review 测试证据：无阻断项。\n");
+    const reviewRecord = write(root, `.work/${slug}/api/draft-review.json`, {
       schema_version: 1,
       kind: "openapi-draft-review",
       result: "approved",

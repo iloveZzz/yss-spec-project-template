@@ -8,6 +8,7 @@ import { parseDocument } from "./vendor/yaml.mjs";
 import { validateVisualBaseline } from "../.agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs";
 import { enforceFrontendDelivery } from "./lib/frontend-delivery-boundary.mjs";
 import {safe,hash} from './lib/strategic-handoff-io.mjs';
+import { assertNoTemplateReferences } from './lib/work-layout.mjs';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const schemaPath = path.join(repoRoot, ".template-spec/process/schemas/frontend-implementation-evidence.schema.json");
@@ -38,8 +39,9 @@ try {
   if (!values["allow-template"] && value.template !== false) throw new TypeError("正式证据必须设置 template: false");
   if (!values["allow-template"] && value.status !== "approved") throw new TypeError("正式证据必须达到 status: approved");
   const serialized = JSON.stringify(value);
-  if (!values["allow-template"] && /REPLACE_ME|<[^>]+>|docs\/\.scratch\/example/.test(serialized)) throw new TypeError("正式证据不得保留模板占位值");
+  if (!values["allow-template"] && /REPLACE_ME|<[^>]+>/.test(serialized)) throw new TypeError("正式证据不得保留模板占位值");
   if (!values["allow-template"]) {
+    assertNoTemplateReferences(value, { root });
     for (const field of ["prototype_ref", "spec_ref", "visual_baseline.manifest_ref"]) {
       const reference = field === "visual_baseline.manifest_ref" ? value.visual_baseline.manifest_ref : value[field];
       if (!/^https?:\/\//.test(reference) && !existsSync(path.resolve(root, reference))) throw new TypeError(`${field} 不可读取: ${reference}`);

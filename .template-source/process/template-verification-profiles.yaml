@@ -361,7 +361,7 @@ profiles:
         group: "work-layout"
         inputs_complete: true
         input_patterns:
-          - ".agents/skills/yss-prototype-stage/tests/reliability.test.mjs"
+          - ".agents/skills/yss-prototype-stage/tests/**"
           - "submodules/yss-harness-design-agent"
           - "submodules/yss-harness-design-agent/.agents/skills/yss-prototype-stage/**"
         depends_on: []
@@ -627,13 +627,243 @@ profiles:
       - id: "check.work-layout-hardcodes"
         inputs_complete: true
         input_patterns:
-          - "scripts/lib/work-layout.mjs"
-          - "scripts/verify-work-layout"
-          - "submodules/yss-harness-design-agent"
-          - "submodules/yss-harness-design-agent/**"
+          - ".agents/skills/yss-frontend-scaffold-generator/scripts/scaffold-generator.test.mjs"
+          - ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml"
+          - ".agents/skills/yss-prototype-stage/tests/browser-smoke.mjs"
+          - ".agents/skills/yss-prototype-stage/tests/compact-theme-browser.mjs"
+          - ".agents/skills/yss-prototype-stage/tests/comparison-fixture.mjs"
+          - ".agents/skills/yss-prototype-stage/tests/components-browser.mjs"
+          - ".agents/skills/yss-prototype-stage/tests/reliability.test.mjs"
+          - ".agents/skills/yss-prototype-stage/tests/shadcn-vue.test.mjs"
+          - ".agents/skills/yss-prototype-stage/tests/work-layout-fixture.mjs"
+          - ".agents/skills/yss-prototype-stage/tests/workbench-smoke.mjs"
+          - ".agents/skills/yss-prototype-stage/tests/workspace.test.mjs"
+          - ".agents/skills/yss-stage-decision/tests/fixtures/invalid-stage-decision-blocker.yaml"
+          - ".agents/skills/yss-stage-decision/tests/fixtures/valid-stage-decision-package.yaml"
+          - ".agents/skills/yss-stage-decision/tests/fixtures/valid-supplier-domain.yaml"
+          - ".agents/skills/yss-tactical-design/tests/fixtures/valid-tactical-design.yaml"
+          - ".template-source/cli-core/work-layout.mjs"
+          - ".template-source/distribution/strategic-handoff-tools.lock.json"
+          - ".template-source/process/work-layout-exceptions.json"
+          - ".template-source/profile-skill-sync.json"
+          - ".template-source/scripts/plan-clarification-scenarios.json"
+          - ".template-source/scripts/run-lifecycle-cross-repo-pilot"
           - ".template-source/scripts/sync-native-work-layout.mjs"
+          - ".template-source/tooling/node/test/plan-review-control.test.mjs"
+          - ".template-source/tooling/node/test/review-capabilities.test.mjs"
+          - ".template-spec/agents/issue-tracker.md"
+          - ".template-spec/process/work-layout.md"
+          - "scripts/fixtures/backend-scaffold/design-prerequisites.mjs"
+          - "scripts/fixtures/business-tickets/business-tickets.test.mjs"
+          - "scripts/fixtures/contract-efficiency/api-v2.test.mjs"
+          - "scripts/fixtures/plan-review-control/build-fixture.mjs"
+          - "scripts/fixtures/reading-views/bundle.test.mjs"
+          - "scripts/fixtures/reading-views/fixture.mjs"
+          - "scripts/fixtures/reading-views/reading.test.mjs"
+          - "scripts/fixtures/spec-baseline/fixture.mjs"
+          - "scripts/fixtures/stage-tracking/tracking.test.mjs"
+          - "scripts/fixtures/strategic-handoff/base-stage.json"
+          - "scripts/fixtures/strategic-handoff/base-strategy.json"
+          - "scripts/fixtures/structured-assets/assets.test.mjs"
+          - "scripts/fixtures/user-decision/plan-fixture.mjs"
+          - "scripts/lib/plan-review-control.mjs"
+          - "scripts/lib/review-package.mjs"
+          - "scripts/lib/work-layout.mjs"
+          - "scripts/verify-frontend-implementation-evidence"
+          - "scripts/verify-work-layout"
+          - "skills-lock.json"
+          - "submodules/yss-cli"
+          - "submodules/yss-harness-backend-agent"
+          - "submodules/yss-harness-design-agent"
+          - "submodules/yss-harness-frontend-agent"
+          - "tests/feature-assets.test.mjs"
+          - "tests/plan-clarification-replay.test.mjs"
+          - "tests/project-ci.test.mjs"
+          - "tests/scenarios/verify-digital-human-task-package-scenarios.mjs"
+          - "scripts/verify-digital-human-task-package-scenarios"
+          - "scripts/verify-subagent-task-package-scenarios"
+          - "tests/scenarios/verify-frontend-implementation-evidence-scenarios.mjs"
+          - "scripts/verify-frontend-implementation-evidence-scenarios"
+          - "tests/scenarios/verify-lifecycle-operator-scenarios.mjs"
+          - "scripts/verify-lifecycle-operator-scenarios"
+          - "tests/scenarios/verify-lifecycle-transition-scenarios.mjs"
+          - "scripts/verify-lifecycle-transition-scenarios"
+          - "tests/scenarios/verify-openapi-draft-validation-scenarios.mjs"
+          - "scripts/verify-openapi-draft-validation-scenarios"
+          - "tests/scenarios/verify-user-decision-scenarios.mjs"
+          - "scripts/verify-user-decision-scenarios"
+          - "tests/strategic-handoff-sealed-owner.test.mjs"
+          - "tests/work-layout.test.mjs"
+          - "submodules/**"
         depends_on: []
-        failure_mode: "工作目录被硬编码到旧路径的错误"
+        failure_mode: "旧路径硬编码错误：主仓及子模块新增命中、精确兼容例外缺失、次数变化或过期"
+      - id: check.work-layout-feature-assets
+        run: "node --test tests/feature-assets.test.mjs"
+        group: work-layout
+        inputs_complete: true
+        input_patterns:
+          - "tests/feature-assets.test.mjs"
+        depends_on: []
+        failure_mode: "功能资产在默认根下无法保留或引用"
+      - id: check.work-layout-project-ci
+        run: "node --test tests/project-ci.test.mjs"
+        group: work-layout
+        inputs_complete: true
+        input_patterns:
+          - "tests/project-ci.test.mjs"
+        depends_on: []
+        failure_mode: "项目 CI 遗漏当前工作包或删除基线"
+      - id: check.work-layout-plan-replay
+        run: "node --test tests/plan-clarification-replay.test.mjs"
+        group: work-layout
+        inputs_complete: true
+        input_patterns:
+          - "tests/plan-clarification-replay.test.mjs"
+          - ".template-source/scripts/plan-clarification-scenarios.json"
+        depends_on: []
+        failure_mode: "澄清回放样例的工作包引用与当前配置不一致"
+      - id: check.work-layout-sealed-owner
+        run: "node --test tests/strategic-handoff-sealed-owner.test.mjs"
+        group: work-layout
+        inputs_complete: true
+        input_patterns:
+          - "tests/strategic-handoff-sealed-owner.test.mjs"
+          - "scripts/fixtures/spec-baseline/**"
+          - "scripts/fixtures/user-decision/plan-fixture.mjs"
+        depends_on: []
+        failure_mode: "交接来源的 checkpoint 所有者绑定或证据闭包丢失"
+      - id: check.work-layout-reading
+        run: "node --test scripts/fixtures/reading-views/*.test.mjs"
+        group: work-layout
+        inputs_complete: true
+        input_patterns:
+          - "scripts/fixtures/reading-views/**"
+        depends_on: []
+        failure_mode: "阅读视图仍生成旧工作包路径"
+      - id: check.work-layout-stage-tracking
+        run: "node --test scripts/fixtures/stage-tracking/tracking.test.mjs"
+        group: work-layout
+        inputs_complete: true
+        input_patterns:
+          - "scripts/fixtures/stage-tracking/**"
+        depends_on: []
+        failure_mode: "阶段任务定义和 checkpoint 的根不一致"
+      - id: check.work-layout-tickets
+        run: "node --test scripts/fixtures/business-tickets/*.test.mjs"
+        group: work-layout
+        inputs_complete: true
+        input_patterns:
+          - "scripts/fixtures/business-tickets/**"
+          - "scripts/fixtures/strategic-handoff/base-*.json"
+        depends_on: []
+        failure_mode: "业务 Ticket 在默认根下引用或 formalize 失败"
+      - id: check.work-layout-assets
+        run: "node --test scripts/fixtures/structured-assets/*.test.mjs"
+        group: work-layout
+        inputs_complete: true
+        input_patterns:
+          - "scripts/fixtures/structured-assets/**"
+        depends_on: []
+        failure_mode: "结构化资产迁移或写范围错误"
+      - id: check.work-layout-api
+        run: "node --test scripts/fixtures/contract-efficiency/api-v2.test.mjs"
+        group: work-layout
+        inputs_complete: true
+        input_patterns:
+          - "scripts/fixtures/contract-efficiency/api-v2.test.mjs"
+        depends_on: []
+        failure_mode: "API 决策样例遗漏配置根或 Draft 绑定"
+      - id: check.work-layout-plan-review
+        run: "node --test .template-source/tooling/node/test/plan-review-control.test.mjs .template-source/tooling/node/test/review-capabilities.test.mjs"
+        group: work-layout
+        inputs_complete: true
+        input_patterns:
+          - "scripts/lib/plan-review-control.mjs"
+          - "scripts/lib/review-package.mjs"
+          - "scripts/lib/work-layout.mjs"
+          - "scripts/fixtures/plan-review-control/**"
+          - ".template-source/tooling/node/test/plan-review-control.test.mjs"
+          - ".template-source/tooling/node/test/review-capabilities.test.mjs"
+        depends_on: []
+        failure_mode: "Plan 审查写入忽略当前根、越界或丢失事务与证据绑定"
+      - id: check.work-layout-frontend-implementation-evidence
+        run: "node tests/scenarios/verify-frontend-implementation-evidence-scenarios.mjs"
+        group: work-layout
+        inputs_complete: true
+        input_patterns:
+          - "tests/scenarios/verify-frontend-implementation-evidence-scenarios.mjs"
+          - "scripts/verify-frontend-implementation-evidence-scenarios"
+          - "scripts/lib/work-layout.mjs"
+          - "scripts/verify-frontend-implementation-evidence"
+        depends_on: []
+        failure_mode: "目录修正后对应生命周期或证据消费者接受错误引用或拒绝当前有效引用"
+      - id: check.work-layout-lifecycle-transition
+        run: "node tests/scenarios/verify-lifecycle-transition-scenarios.mjs"
+        group: work-layout
+        inputs_complete: true
+        input_patterns:
+          - "tests/scenarios/verify-lifecycle-transition-scenarios.mjs"
+          - "scripts/verify-lifecycle-transition-scenarios"
+          - "scripts/fixtures/user-decision/plan-fixture.mjs"
+        depends_on: []
+        failure_mode: "目录修正后对应生命周期或证据消费者接受错误引用或拒绝当前有效引用"
+      - id: check.work-layout-lifecycle-operator
+        run: "node tests/scenarios/verify-lifecycle-operator-scenarios.mjs"
+        group: work-layout
+        inputs_complete: true
+        input_patterns:
+          - "tests/scenarios/verify-lifecycle-operator-scenarios.mjs"
+          - "scripts/verify-lifecycle-operator-scenarios"
+        depends_on: []
+        failure_mode: "目录修正后对应生命周期或证据消费者接受错误引用或拒绝当前有效引用"
+      - id: check.work-layout-openapi-draft-validation
+        run: "node tests/scenarios/verify-openapi-draft-validation-scenarios.mjs"
+        group: work-layout
+        inputs_complete: true
+        input_patterns:
+          - "tests/scenarios/verify-openapi-draft-validation-scenarios.mjs"
+          - "scripts/verify-openapi-draft-validation-scenarios"
+        depends_on: []
+        failure_mode: "目录修正后对应生命周期或证据消费者接受错误引用或拒绝当前有效引用"
+      - id: check.work-layout-digital-human-task-package
+        run: "node tests/scenarios/verify-digital-human-task-package-scenarios.mjs"
+        group: work-layout
+        inputs_complete: true
+        input_patterns:
+          - "tests/scenarios/verify-digital-human-task-package-scenarios.mjs"
+          - "scripts/verify-digital-human-task-package-scenarios"
+          - "scripts/verify-subagent-task-package-scenarios"
+        depends_on: []
+        failure_mode: "目录修正后对应生命周期或证据消费者接受错误引用或拒绝当前有效引用"
+      - id: check.work-layout-user-decision
+        run: "node tests/scenarios/verify-user-decision-scenarios.mjs"
+        group: work-layout
+        inputs_complete: true
+        input_patterns:
+          - "tests/scenarios/verify-user-decision-scenarios.mjs"
+          - "scripts/verify-user-decision-scenarios"
+        depends_on: []
+        failure_mode: "目录修正后对应生命周期或证据消费者接受错误引用或拒绝当前有效引用"
+      - id: check.work-layout-design-migration
+        run: "node submodules/yss-harness-design-agent/tests/scenarios/verify-strategic-gate-migration-scenarios.mjs"
+        group: work-layout
+        inputs_complete: true
+        input_patterns:
+          - "submodules/yss-harness-design-agent"
+          - "submodules/yss-harness-design-agent/scripts/lib/strategic-gate-migration.mjs"
+          - "submodules/yss-harness-design-agent/.template-spec/process/schemas/strategic-gate-migration-plan.schema.json"
+        depends_on: []
+        failure_mode: "迁移计划拒绝当前或自定义根，或应用越过配置/功能边界并改写历史证据"
+      - id: check.work-layout-design-fixtures
+        run: "node --test .agents/skills/yss-stage-decision/tests/run-scenarios.mjs .agents/skills/yss-tactical-design/tests/run-scenarios.mjs .agents/skills/yss-frontend-scaffold-generator/scripts/scaffold-generator.test.mjs"
+        group: work-layout
+        inputs_complete: true
+        input_patterns:
+          - ".agents/skills/yss-stage-decision/tests/**"
+          - ".agents/skills/yss-tactical-design/tests/**"
+          - ".agents/skills/yss-frontend-scaffold-generator/scripts/scaffold-generator.test.mjs"
+        depends_on: []
+        failure_mode: "默认工作包样例在阶段决策、战术设计或前端脚手架中产生失效引用"
   candidate:
     always_groups:
       - hygiene
@@ -1354,6 +1584,7 @@ routing:
       - tests/work-layout.test.mjs
       - tests/fixtures/work-layout-cases.json
       - scripts/verify-work-layout
+      - .template-source/process/work-layout-exceptions.json
       - .template-spec/process/work-layout.md
       - .agents/skills/yss-prototype-stage/tests/work-layout-fixture.mjs
       - .template-source/scripts/sync-native-work-layout.mjs

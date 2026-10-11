@@ -13,7 +13,7 @@ const source = path.join(temp, "source");
 await mkdir(path.join(source, ".template-spec/design/tokens"), { recursive: true });
 await cp(new URL("../../../../DESIGN.md", import.meta.url), path.join(source, "DESIGN.md"));
 await cp(new URL("../../../../.template-spec/design/tokens/variables.css", import.meta.url), path.join(source, ".template-spec/design/tokens/variables.css"));
-const root = path.join(source, "docs/.scratch/fixture/design/prototypes");
+const root = path.join(source, ".work/fixture/design/prototypes");
 await fixtureTracker(source);
 await prepareFlowPrototype({ projectRoot: source, root, feature: "fixture" });
 const portable = path.join(temp, "portable");
@@ -67,7 +67,7 @@ try {
     await page.screenshot({ path: screenshot, animations: "disabled" });
     results.push({ width, layout, screenshot, scenarios: ["failure-retry-input-preserved", "reset", "no-permission", "conflict-reload", "keyboard-submit"], result: "passed" });
   }
-  const h1Root = path.join(source, "docs/.scratch/visual-fixture/design/prototypes");
+  const h1Root = path.join(source, ".work/visual-fixture/design/prototypes");
   await prepareStaticPrototype({ projectRoot: source, root: h1Root, feature: "visual-fixture" });
   await page.goto(pathToFileURL(path.join(h1Root, "index.html")).href);
   assert.equal(await page.locator("h1").innerText(), "visual-fixture");

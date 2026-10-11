@@ -36,7 +36,19 @@ function textDiff(before, after) {
 export function buildReviewPackage({ checkpointRef, checkIds, roleId, runtimeId = 'runtime.generic', actorId, reviewerPrincipalRef, drafterPrincipalRef, implementationActorId, taskId, reviewSessionId, workUnitId, outputDir, previousSubjectRef, reviewPhase, reviewInputRef, targetFindingIds, resolutionEvidence, root = ROOT, registry, skillRegistry }) {
   root = fs.realpathSync(root);
   for (const [name, value] of Object.entries({ checkpointRef, roleId, runtimeId, actorId, reviewerPrincipalRef, drafterPrincipalRef, implementationActorId, taskId, reviewSessionId, workUnitId, outputDir })) requireText(value, name);
-  const read = file => fs.readFileSync(file), bytes = ref => read(reviewLocalPath(root, ref));
+  // Bind every derived reservation and its transaction precondition to one read.
+  // Re-reading the checkpoint after assembly could accept a concurrent reservation.
+  const checkpointFile = reviewLocalPath(root, checkpointRef);
+  let checkpointBytes, checkpointMode;
+  const read = file => {
+    if (path.resolve(file) !== checkpointFile) return fs.readFileSync(file);
+    if (checkpointBytes === undefined) {
+      const fd = fs.openSync(checkpointFile, 'r');
+      try { checkpointBytes = fs.readFileSync(fd); checkpointMode = fs.fstatSync(fd).mode & 0o777; }
+      finally { fs.closeSync(fd); }
+    }
+    return checkpointBytes;
+  }, bytes = ref => read(reviewLocalPath(root, ref));
   ({registry,skillRegistry}=reviewAuthorityRegistries({root,read,registry,skillRegistry}));
   const policyBytes = bytes(REVIEW_POLICY_REF), rolesDoc = parse(policyBytes, REVIEW_POLICY_REF);
   const compiled = compileReviewCapabilities({ checkIds, roleId, rolesDoc, registry, skillRegistry });
@@ -115,7 +127,7 @@ export function buildReviewPackage({ checkpointRef, checkIds, roleId, runtimeId 
   const diff = textDiff(previousSubjectRef ? String(bytes(previousSubjectRef)) : undefined, subjectText);
   const files = { 'subject.json': subjectText, 'task.json': taskText, 'bundle-draft.yaml': stringify(bundle, { lineWidth: 0, aliasDuplicateObjects: false }), 'coverage.md': coverage, 'diff.md': '# 审阅包原始差异\n\n' + diff };
   if (plan) validateAssetStructure(planCheckpoint, 'checkpoint', { schemaRoot: root });
-  return { task, bundle, subject, files, task_ref: taskRef, task_digest: taskDigest, subject_ref: subjectRef, subject_digest: reviewDigest(subjectText), decision: 'pending', execution_authorization: 'not-granted', ...(plan ? { plan_checkpoint: planCheckpoint, checkpoint_before: { digest: 'sha256:' + reviewDigest(bytes(checkpointRef)), mode: fs.statSync(reviewLocalPath(root, checkpointRef)).mode & 0o777 } } : {}) };
+  return { task, bundle, subject, files, task_ref: taskRef, task_digest: taskDigest, subject_ref: subjectRef, subject_digest: reviewDigest(subjectText), decision: 'pending', execution_authorization: 'not-granted', ...(plan ? { plan_checkpoint: planCheckpoint, checkpoint_before: { digest: 'sha256:' + reviewDigest(bytes(checkpointRef)), mode: checkpointMode } } : {}) };
 }
 export function prepareReviewPackage(options) {
   const root = fs.realpathSync(options.root || ROOT), built = buildReviewPackage({ ...options, root });

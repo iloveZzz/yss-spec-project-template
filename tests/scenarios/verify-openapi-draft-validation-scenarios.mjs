@@ -12,10 +12,10 @@ const write = (relative, value) => {
   writeFileSync(file, value);
   return file;
 };
-const draftRef = "docs/.scratch/example/api/example.yaml";
+const draftRef = ".work/example/api/example.yaml";
 
-write('.template-spec/agents/issue-tracker.md','---\ntracker:\n  platform: local-markdown\n  root: docs/.scratch\n---\n');
-const evidenceRef = "docs/.scratch/example/api/example-redocly-lint.txt";
+write('.template-spec/agents/issue-tracker.md','---\ntracker:\n  platform: local-markdown\n  root: .work\n---\n');
+const evidenceRef = ".work/example/api/example-redocly-lint.txt";
 const draft = `openapi: 3.1.0
 info: { title: Example, version: 0.1.0-draft }
 paths:
@@ -74,7 +74,7 @@ function run(name, record, expected, pattern) {
 run("valid", base, 0, /验证通过/);
 run("stale-digest", { ...base, draft: { ...base.draft, sha256: `sha256:${"0".repeat(64)}` } }, 1, /SHA-256 不匹配/);
 run("failed-lint", { ...base, status: "blocked", toolchain: { ...base.toolchain, exit_code: 1 }, checks: { ...base.checks, lint: "blocked" } }, 1, /status: passed/);
-run("wrong-command-target", { ...base, toolchain: { ...base.toolchain, command: "pnpm exec redocly lint docs/.scratch/example/api/other.yaml" } }, 1, /精确指向当前 Draft/);
+run("wrong-command-target", { ...base, toolchain: { ...base.toolchain, command: "pnpm exec redocly lint .work/example/api/other.yaml" } }, 1, /精确指向当前 Draft/);
 run("unlocked-version", { ...base, toolchain: { ...base.toolchain, version: "2.1.0" } }, 1, /lockfile 未绑定/);
 write(draftRef, draft.replace("#/components/schemas/Widget", "#/components/schemas/Missing"));
 const brokenDigest = `sha256:${createHash("sha256").update(draft.replace("#/components/schemas/Widget", "#/components/schemas/Missing")).digest("hex")}`;

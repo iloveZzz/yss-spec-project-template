@@ -23,15 +23,15 @@ function fixture(t) {
   const write = (ref, value) => { fs.mkdirSync(path.dirname(path.join(root, ref)), { recursive: true }); fs.writeFileSync(path.join(root, ref), value); };
   write(policyRef, fs.readFileSync(path.join(ROOT, policyRef)));
   write('yss-project.yaml', 'schema_version: 1\nrepository_mode: project-instance\n');
-  const checkpointRef = 'docs/.scratch/feature/checkpoint.json';
+  const checkpointRef = '.work/feature/checkpoint.json';
   const rows = checkIds.map((id, i) => {
-    const subject = `docs/.scratch/feature/subject-${i}.yaml`, evidence = `docs/.scratch/feature/evidence-${i}.txt`;
+    const subject = `.work/feature/subject-${i}.yaml`, evidence = `.work/feature/evidence-${i}.txt`;
     write(subject, `schema_version: 1\nsubject: ${i}\n`); write(evidence, `actual evidence ${i}\n`);
     return [id, { applicable: true, status: 'pending', subject_ref: subject, subject_digest: reviewDigest(fs.readFileSync(path.join(root, subject))), approval_scope: [`scope-${i}`], drafter_principal_ref: `instance:author-${i}`, basis: [{ ref: evidence, digest: reviewDigest(fs.readFileSync(path.join(root, evidence))) }], evidence_refs: [evidence] }];
   });
   const checkpoint = { checks: Object.fromEntries(rows), gates: {} };
   write(checkpointRef, JSON.stringify(checkpoint));
-  const options = { root, registry, checkpointRef, checkIds, roleId: 'role.test-engineer', runtimeId: 'runtime.generic', actorId: 'agent.reviewer', reviewerPrincipalRef: 'instance:qa', drafterPrincipalRef: 'instance:packet-owner', implementationActorId: 'agent.worker', taskId: 'review.api-baseline', reviewSessionId: 'session:one', workUnitId: 'work-unit.technical-analysis', outputDir: 'docs/.scratch/feature/reviews/current' };
+  const options = { root, registry, checkpointRef, checkIds, roleId: 'role.test-engineer', runtimeId: 'runtime.generic', actorId: 'agent.reviewer', reviewerPrincipalRef: 'instance:qa', drafterPrincipalRef: 'instance:packet-owner', implementationActorId: 'agent.worker', taskId: 'review.api-baseline', reviewSessionId: 'session:one', workUnitId: 'work-unit.technical-analysis', outputDir: '.work/feature/reviews/current' };
   return { root, write, checkpointRef, checkpoint, options };
 }
 function prepared(t) { const f = fixture(t), result = prepareReviewPackage(f.options); return { ...f, result, task: JSON.parse(fs.readFileSync(path.join(f.root, result.task_ref))), bundle: parseDocument(fs.readFileSync(path.join(f.root, result.bundle_ref), 'utf8')).toJS() }; }
@@ -220,7 +220,7 @@ test('prepare refuses missing independent consumer input and never overwrites ex
   assert.deepEqual(fs.readFileSync(path.join(f.root, f.result.task_ref)), old);
   delete f.checkpoint.checks[checkIds[0]].drafter_principal_ref;
   f.write(f.checkpointRef, JSON.stringify(f.checkpoint));
-  assert.throws(() => buildReviewPackage({ ...f.options, outputDir: 'docs/.scratch/feature/reviews/next' }), /APPROVAL_CONTEXT_REQUIRED/);
+  assert.throws(() => buildReviewPackage({ ...f.options, outputDir: '.work/feature/reviews/next' }), /APPROVAL_CONTEXT_REQUIRED/);
 });
 
 test('symlinked subject is rejected and current bytes are never accepted through an escaping path', t => {

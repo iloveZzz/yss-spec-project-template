@@ -40,7 +40,7 @@
       "runtime_capabilities": "readonly",
       "files": {
         "yss-project.yaml": "schema_version: 1\nrepository_mode: project-instance\n",
-        "docs/.scratch/demo/plan.md": "# Plan 草稿：审批规则\n\n目标：明确小额申请的审批规则。用户：申请人和审批人。MVP：单笔申请、审批与撤回。非目标：跨组织及支付。成功标准：审批路径和撤回结果可解释。当前：待澄清，未批准。\n"
+        ".work/demo/plan.md": "# Plan 草稿：审批规则\n\n目标：明确小额申请的审批规则。用户：申请人和审批人。MVP：单笔申请、审批与撤回。非目标：跨组织及支付。成功标准：审批路径和撤回结果可解释。当前：待澄清，未批准。\n"
       },
       "behavior_review": {
         "expected": [
@@ -66,7 +66,7 @@
         },
         {
           "kind": "absent",
-          "path": "docs/.scratch/demo/spec.md"
+          "path": ".work/demo/spec.md"
         },
         {
           "kind": "absent",
@@ -111,7 +111,7 @@
       "runtime_capabilities": "readonly",
       "files": {
         "yss-project.yaml": "schema_version: 1\nrepository_mode: project-instance\n",
-        "docs/.scratch/demo/plan.md": "# Plan 草稿：审批规则\n\n目标：明确小额申请的审批规则。用户：申请人和审批人。MVP：单笔申请、审批与撤回。非目标：跨组织及支付。成功标准：审批路径和撤回结果可解释。当前：待澄清，未批准。\n",
+        ".work/demo/plan.md": "# Plan 草稿：审批规则\n\n目标：明确小额申请的审批规则。用户：申请人和审批人。MVP：单笔申请、审批与撤回。非目标：跨组织及支付。成功标准：审批路径和撤回结果可解释。当前：待澄清，未批准。\n",
         ".replay/environment-facts.json": "{\"test_data_only\": true, \"dynamic_approval_supported\": false, \"source\": \"synthetic-local-environment\"}"
       },
       "behavior_review": {
@@ -142,7 +142,7 @@
         },
         {
           "kind": "absent",
-          "path": "docs/.scratch/demo/spec.md"
+          "path": ".work/demo/spec.md"
         },
         {
           "kind": "absent",
@@ -187,7 +187,7 @@
       "runtime_capabilities": "readonly",
       "files": {
         "yss-project.yaml": "schema_version: 1\nrepository_mode: project-instance\n",
-        "docs/.scratch/demo/plan.md": "# Plan 草稿：审批规则\n\n目标：明确小额申请的审批规则。用户：申请人和审批人。MVP：单笔申请、审批与撤回。非目标：跨组织及支付。成功标准：审批路径和撤回结果可解释。当前：待澄清，未批准。\n",
+        ".work/demo/plan.md": "# Plan 草稿：审批规则\n\n目标：明确小额申请的审批规则。用户：申请人和审批人。MVP：单笔申请、审批与撤回。非目标：跨组织及支付。成功标准：审批路径和撤回结果可解释。当前：待澄清，未批准。\n",
         ".replay/verify-feasibility.mjs": "process.stderr.write('TEST FIXTURE: feasibility failed; runnable blocker remains\\n'); process.exitCode=1;\n"
       },
       "behavior_review": {
@@ -218,7 +218,7 @@
         },
         {
           "kind": "absent",
-          "path": "docs/.scratch/demo/spec.md"
+          "path": ".work/demo/spec.md"
         },
         {
           "kind": "absent",
@@ -263,7 +263,7 @@
       "runtime_capabilities": "readonly",
       "files": {
         "yss-project.yaml": "schema_version: 1\nrepository_mode: project-instance\n",
-        "docs/.scratch/demo/plan.md": "# Plan 草稿：审批规则\n\n目标：明确小额申请的审批规则。用户：申请人和审批人。MVP：单笔申请、审批与撤回。非目标：跨组织及支付。成功标准：审批路径和撤回结果可解释。当前：待澄清，未批准。\n",
+        ".work/demo/plan.md": "# Plan 草稿：审批规则\n\n目标：明确小额申请的审批规则。用户：申请人和审批人。MVP：单笔申请、审批与撤回。非目标：跨组织及支付。成功标准：审批路径和撤回结果可解释。当前：待澄清，未批准。\n",
         ".replay/review-task.json": "{\"test_data_only\": true, \"task_id\": \"review.synthetic\", \"status\": \"pending\", \"owner\": \"reviewer.fixture\", \"blocked_decisions\": [\"external-audit-rule\"], \"independent_decisions\": [\"withdrawal-rule\"]}"
       },
       "behavior_review": {
@@ -294,7 +294,7 @@
         },
         {
           "kind": "absent",
-          "path": "docs/.scratch/demo/spec.md"
+          "path": ".work/demo/spec.md"
         },
         {
           "kind": "absent",
@@ -339,7 +339,7 @@
       "runtime_capabilities": "readonly",
       "files": {
         "yss-project.yaml": "schema_version: 1\nrepository_mode: project-instance\n",
-        "docs/.scratch/demo/plan.md": "# Plan 草稿：审批规则\n\n目标：明确小额申请的审批规则。用户：申请人和审批人。MVP：单笔申请、审批与撤回。非目标：跨组织及支付。成功标准：审批路径和撤回结果可解释。当前：待澄清，未批准。\n"
+        ".work/demo/plan.md": "# Plan 草稿：审批规则\n\n目标：明确小额申请的审批规则。用户：申请人和审批人。MVP：单笔申请、审批与撤回。非目标：跨组织及支付。成功标准：审批路径和撤回结果可解释。当前：待澄清，未批准。\n"
       },
       "behavior_review": {
         "expected": [
@@ -371,7 +371,7 @@
             },
             {
               "kind": "absent",
-              "path": "docs/.scratch/demo/spec.md"
+              "path": ".work/demo/spec.md"
             },
             {
               "kind": "absent",
@@ -396,7 +396,7 @@
             },
             {
               "kind": "absent",
-              "path": "docs/.scratch/demo/spec.md"
+              "path": ".work/demo/spec.md"
             },
             {
               "kind": "absent",
@@ -425,7 +425,7 @@
             },
             {
               "kind": "absent",
-              "path": "docs/.scratch/demo/spec.md"
+              "path": ".work/demo/spec.md"
             },
             {
               "kind": "absent",
@@ -472,7 +472,7 @@
       "runtime_capabilities": "readonly",
       "files": {
         "yss-project.yaml": "schema_version: 1\nrepository_mode: project-instance\n",
-        "docs/.scratch/demo/plan.md": "# Plan 草稿：审批规则\n\n目标：明确小额申请的审批规则。用户：申请人和审批人。MVP：单笔申请、审批与撤回。非目标：跨组织及支付。成功标准：审批路径和撤回结果可解释。当前：待澄清，未批准。\n",
+        ".work/demo/plan.md": "# Plan 草稿：审批规则\n\n目标：明确小额申请的审批规则。用户：申请人和审批人。MVP：单笔申请、审批与撤回。非目标：跨组织及支付。成功标准：审批路径和撤回结果可解释。当前：待澄清，未批准。\n",
         ".replay/setup.mjs": "import fs from 'node:fs';\nimport path from 'node:path';\nimport {buildPlanFixture} from '../scripts/fixtures/user-decision/plan-fixture.mjs';\nimport {decisionDigest} from '../scripts/lib/user-decision.mjs';\nconst f=buildPlanFixture(process.cwd());\nf.write('plan.md','# Plan 测试数据\\n目标：小范围审批细节修订。MVP：既有单笔申请、审批与撤回。非目标：支付、跨组织。\\n关键规则：5000元及以上主管审批，审批后不可撤回。验收：5000元主管审批；撤回请求拒绝。\\n未决项：空。剩余不确定性：没有执行阻塞。风险：边界金额必须保持测试覆盖。\\n下一动作：核验入口后起草 Spec；不授权实现。\\n');\nfor(const item of f.review.basis)item.digest=decisionDigest(fs.readFileSync(item.ref.startsWith('/')?item.ref:path.join(f.root,item.ref)));\nf.approval.record.request.items[0].title='共同理解与完整 Plan 合并确认';\nf.approval.record.request.items[0].changes='确认目标、MVP、非目标、关键规则、验收例子、未决项结论及剩余不确定性';\nf.approval.record.request.items[0].next_actions=['确认共同理解与完整 Plan','入口验证通过后进入 Spec，不授权实现'];\nf.reapprove();\nfor(const reply of f.approval.record.responses)fs.rmSync(reply.source.ref,{force:true});\nf.approval.record.responses=[];f.approval.save();f.write('.replay/entry-state.json',f.state);\n"
       },
       "behavior_review": {
@@ -499,7 +499,7 @@
         },
         {
           "kind": "absent",
-          "path": "docs/.scratch/demo/spec.md"
+          "path": ".work/demo/spec.md"
         },
         {
           "kind": "absent",
@@ -545,7 +545,7 @@
       "runtime_capabilities": "readonly",
       "files": {
         "yss-project.yaml": "schema_version: 1\nrepository_mode: project-instance\n",
-        "docs/.scratch/demo/plan.md": "# Plan 草稿：审批规则\n\n目标：明确小额申请的审批规则。用户：申请人和审批人。MVP：单笔申请、审批与撤回。非目标：跨组织及支付。成功标准：审批路径和撤回结果可解释。当前：待澄清，未批准。\n",
+        ".work/demo/plan.md": "# Plan 草稿：审批规则\n\n目标：明确小额申请的审批规则。用户：申请人和审批人。MVP：单笔申请、审批与撤回。非目标：跨组织及支付。成功标准：审批路径和撤回结果可解释。当前：待澄清，未批准。\n",
         ".replay/setup.mjs": "import fs from 'node:fs';\nimport path from 'node:path';\nimport {buildPlanFixture} from '../scripts/fixtures/user-decision/plan-fixture.mjs';\nimport {decisionDigest} from '../scripts/lib/user-decision.mjs';\nconst f=buildPlanFixture(process.cwd());\nf.write('plan.md','# Plan 测试数据\\n目标：小范围审批细节修订。MVP：既有单笔申请、审批与撤回。非目标：支付、跨组织。\\n关键规则：5000元及以上主管审批，审批后不可撤回。验收：5000元主管审批；撤回请求拒绝。\\n未决项：空。剩余不确定性：没有执行阻塞。风险：边界金额必须保持测试覆盖。\\n下一动作：核验入口后起草 Spec；不授权实现。\\n');\nfor(const item of f.review.basis)item.digest=decisionDigest(fs.readFileSync(item.ref.startsWith('/')?item.ref:path.join(f.root,item.ref)));\nf.approval.record.request.items[0].title='共同理解与完整 Plan 合并确认';\nf.approval.record.request.items[0].changes='确认目标、MVP、非目标、关键规则、验收例子、未决项结论及剩余不确定性';\nf.approval.record.request.items[0].next_actions=['确认共同理解与完整 Plan','入口验证通过后进入 Spec，不授权实现'];\nf.reapprove();\nf.approval.record.responses=[];f.approval.respond({text:'我确认上述共同理解，批准本审阅包 Plan，并同意入口检查通过后进入 Spec。'});f.approval.save();f.write('.replay/entry-state.json',f.state);\n"
       },
       "behavior_review": {
@@ -568,7 +568,7 @@
         },
         {
           "kind": "absent",
-          "path": "docs/.scratch/demo/spec.md"
+          "path": ".work/demo/spec.md"
         },
         {
           "kind": "absent",
@@ -614,7 +614,7 @@
       "runtime_capabilities": "readonly",
       "files": {
         "yss-project.yaml": "schema_version: 1\nrepository_mode: project-instance\n",
-        "docs/.scratch/demo/plan.md": "# Plan 草稿：审批规则\n\n目标：明确小额申请的审批规则。用户：申请人和审批人。MVP：单笔申请、审批与撤回。非目标：跨组织及支付。成功标准：审批路径和撤回结果可解释。当前：待澄清，未批准。\n",
+        ".work/demo/plan.md": "# Plan 草稿：审批规则\n\n目标：明确小额申请的审批规则。用户：申请人和审批人。MVP：单笔申请、审批与撤回。非目标：跨组织及支付。成功标准：审批路径和撤回结果可解释。当前：待澄清，未批准。\n",
         ".replay/setup.mjs": "import fs from 'node:fs';\nimport path from 'node:path';\nimport {buildPlanFixture} from '../scripts/fixtures/user-decision/plan-fixture.mjs';\nimport {decisionDigest} from '../scripts/lib/user-decision.mjs';\nconst f=buildPlanFixture(process.cwd());\nf.write('plan.md','# Plan 测试数据\\n目标：小范围审批细节修订。MVP：既有单笔申请、审批与撤回。非目标：支付、跨组织。\\n关键规则：5000元及以上主管审批，审批后不可撤回。验收：5000元主管审批；撤回请求拒绝。\\n未决项：空。剩余不确定性：没有执行阻塞。风险：边界金额必须保持测试覆盖。\\n下一动作：核验入口后起草 Spec；不授权实现。\\n');\nfor(const item of f.review.basis)item.digest=decisionDigest(fs.readFileSync(item.ref.startsWith('/')?item.ref:path.join(f.root,item.ref)));\nf.approval.record.request.items[0].title='共同理解与完整 Plan 合并确认';\nf.approval.record.request.items[0].changes='确认目标、MVP、非目标、关键规则、验收例子、未决项结论及剩余不确定性';\nf.approval.record.request.items[0].next_actions=['确认共同理解与完整 Plan','入口验证通过后进入 Spec，不授权实现'];\nf.reapprove();\nf.approval.record.responses=[];f.approval.respond({text:'我确认上述共同理解，批准本审阅包 Plan，并同意入口检查通过后进入 Spec。'});f.approval.save();f.write('.replay/entry-state.json',f.state);\nf.review.open_items=[{id:'critical-rule',critical:true,runnable_blocker:false,status:'open',evidence_refs:['plan.md']}];f.save();\n"
       },
       "behavior_review": {
@@ -637,7 +637,7 @@
         },
         {
           "kind": "absent",
-          "path": "docs/.scratch/demo/spec.md"
+          "path": ".work/demo/spec.md"
         },
         {
           "kind": "absent",
