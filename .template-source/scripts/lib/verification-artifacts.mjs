@@ -3,6 +3,7 @@ import path from 'node:path';
 import assert from 'node:assert/strict';
 import {spawnSync} from 'node:child_process';
 import {NATIVE_PROFILES, nativeBinary, nativeDigest as hash, inspectNative, initializeNative, runNative, applyNative} from './native-yss.mjs';
+import {readYssCliPin, verifyPinnedBinary} from './yss-cli-pin.mjs';
 const ensure=(ok,message)=>{if(!ok)throw new TypeError(message);};
 const templates={spec:null,design:'yss-harness-design-agent',backend:'yss-harness-backend-agent',frontend:'yss-harness-frontend-agent'};
 const historicalPackages={spec:'create-yss-spec',design:'create-yss-harness-design',backend:'create-yss-harness-backend',frontend:'create-yss-harness-frontend'};
@@ -40,6 +41,9 @@ export function collectReleaseSources({root,commit,families=NATIVE_PROFILES,envi
  ensure(/^module\s+github\.com\/iloveZzz\/yss-cli\s*$/m.test(fs.readFileSync(path.join(cliSource,'go.mod'),'utf8')),'yss 源码 module 身份不匹配');
  ensure(git(cliSource,['status','--porcelain','--untracked-files=normal','--ignore-submodules=none'])==='','发行 yss 源码要求干净固定工作树');
  const sourceCommit=git(cliSource,['rev-parse','HEAD']);ensure(sourceCommit===version.cliCommit,'yss 源码实际提交与二进制 CLI commit 错配');
+ // 仓库里有 yss-cli 固定文件时，发布验证只接受固定的二进制与固定的源码提交；本地覆盖不能通过发布验证。
+ const pin=readYssCliPin(root);
+ if(pin){ensure(verifyPinnedBinary({digest:binary.digest,pin,environment}).pinned,'发布验证必须使用固定的 yss 二进制，不接受 YSS_NATIVE_BINARY_OVERRIDE');ensure(sourceCommit===pin.commit,`yss 源码提交 ${sourceCommit.slice(0,8)} 与固定文件的 ${pin.commit.slice(0,8)} 不一致`);}
  const entries=families.map(family=>{
   ensure(NATIVE_PROFILES.includes(family),'未知发布 Profile');const template_path=templates[family]?`submodules/${templates[family]}`:'.',template_commit=templates[family]?gitlink(root,commit,template_path):commit;
   const bundle=inspectNative(family,{environment});

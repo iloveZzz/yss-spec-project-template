@@ -87,7 +87,7 @@ node scripts/prepare-skills --check
 
 CLI 的内部来源锁 v3 将两端固定提交与 `skillsSource` 的 Spec 提交、清单路径和摘要分别绑定。构建只读 Git 对象并重放适配，忽略本地生成目录和 dirty worktree；公开 Bundle 继续为 v3，组合来源、完整技能摘要位于 `manifest.skillComposition`，参与 manifest 和 Bundle 摘要校验。实例仍安装完整离线技能，不分发源码准备入口、来源回执或生成目录忽略规则。历史来源锁 v2、公开 Bundle 和实例读入及升级事务继续兼容。
 
-固定来源按以下顺序交付：先提交共享源、清单和生成实现；用该完整提交更新两端来源锁并提交两端；随后固定 CLI 来源锁并构建完整资产；最后更新父仓 gitlink。共享来源不绑定未来父仓提交，避免循环引用。提交、推送与发布分别遵守既有授权边界。仓库当前没有 GitHub workflow；以后接入 CI 时显式准备再校验，不增加隐式网络准备。
+固定来源按以下顺序交付：先提交共享源、清单和生成实现；用该完整提交更新两端来源锁并提交两端；随后固定 CLI 来源锁并构建完整资产；最后更新父仓对三个 Profile 的 gitlink，以及 `.template-source/distribution/yss-cli-pin.json` 固定的 yss 提交与摘要（yss-cli 不再是 submodule）。共享来源不绑定未来父仓提交，避免循环引用。提交、推送与发布分别遵守既有授权边界。仓库当前没有 GitHub workflow；以后接入 CI 时显式准备再校验，不增加隐式网络准备。
 
 ## 专职 Profile 同步
 

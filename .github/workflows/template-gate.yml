@@ -22,7 +22,7 @@ jobs:
       - uses: ./.github/actions/setup-template
         with:
           submodules: 'true'
-          yss-commit: gitlink
+          yss-commit: pin
       - name: scripts/ci-gate
         shell: bash
         env:

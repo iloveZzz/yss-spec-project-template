@@ -65,10 +65,10 @@ test('旧源码消费任务在真实 worker 执行任何命令前被拒绝',asyn
   assert.equal(result.code,1);assert.equal(fs.existsSync(marker),false);
   assert.throws(()=>compileTaskExecution(task,{root}),/RETIRED_SOURCE_CONSUMER/);
 });
-test('真实Git退役四gitlink差异纳入完整门禁，仍保留三个Agent与统一CLI来源',t=>{
+test('真实Git退役四gitlink差异纳入完整门禁，仍保留三个Agent来源（yss-cli 由固定文件固定，不再是 gitlink）',t=>{
   const {root}=fixtureRoot(t),sourceRoot=fileURLToPath(new URL('..',import.meta.url)),git=(...args)=>execFileSync('git',args,{cwd:root,encoding:'utf8'}).trim();
   const retired=['create-yss-spec','create-yss-harness-strategic-design','create-yss-harness-backend','create-yss-harness-frontend'].map(name=>`submodules/${name}`);
-  const active=['yss-harness-design-agent','yss-harness-backend-agent','yss-harness-frontend-agent','yss-cli'].map(name=>`submodules/${name}`);
+  const active=['yss-harness-design-agent','yss-harness-backend-agent','yss-harness-frontend-agent'].map(name=>`submodules/${name}`);
   const seed=git('rev-parse','HEAD'),modules=refs=>refs.map(ref=>`[submodule "${ref}"]\n\tpath = ${ref}\n\turl = https://example.invalid/${path.basename(ref)}.git\n`).join('');
   for(const ref of active)git('clone','--quiet','--no-hardlinks',root,path.join(root,ref));
   fs.writeFileSync(path.join(root,'.gitmodules'),modules([...retired,...active]));
@@ -79,7 +79,7 @@ test('真实Git退役四gitlink差异纳入完整门禁，仍保留三个Agent�
   const changed=[...new Set([git('diff','--cached','--name-only'),git('diff','--name-only')].flatMap(text=>text.split('\n').filter(Boolean)))].sort();
   assert.deepEqual(changed,['.gitmodules',...retired].sort());
   const remaining=git('ls-files','--stage').split('\n').filter(line=>line.startsWith('160000 ')).map(line=>line.split('\t')[1]).sort();
-  assert.deepEqual(remaining,active.sort(),'退役差异不能删除三个Agent或yss来源');
+  assert.deepEqual(remaining,active.sort(),'退役差异不能删除三个Agent来源');
   assert.throws(()=>planTemplateVerification({profile:'fast',changedFiles:changed,root:sourceRoot}),/INCOMPLETE_VERIFICATION_INPUTS/,'缺日常映射不能转换为发布任务');
   for(const profile of ['candidate','release']){
     const plan=planTemplateVerification({profile,changedFiles:changed,root:sourceRoot});

@@ -10,6 +10,7 @@ import { RuntimeStore } from '../../cli-core/runtime-store.mjs';
 import {validateBaselineReport} from '../lib/verification-report-validator.mjs';
 import {createHash} from 'node:crypto';
 import {collectReleaseSources} from '../lib/verification-artifacts.mjs';
+import {PIN_FILE,platformKey} from '../lib/yss-cli-pin.mjs';
 import {produceCliArtifact,verifyInstalledCliMigration} from '../lib/verification-artifacts.mjs';
 import {validateLegacyRecoveryMatrix,REQUIRED_LEGACY_RECOVERY_CASES} from '../lib/legacy-recovery-matrix.mjs';
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
@@ -187,9 +188,24 @@ test('固定发行拒绝缺失、脏树、错误身份或实际提交错配的�
   put(f.cli,'README.md','new source commit');commit(f.cli);assert.throws(()=>collectReleaseSources({root:f.repo,commit:f.sha}),/实际提交.*CLI commit 错配/);
 });
 
+test('发行验证在有 yss-cli 固定文件时只接受固定的二进制与固定的源码提交，本地覆盖不能通过',t=>{
+  const f=fixture(t),digest=hash(readFileSync(process.env.YSS_NATIVE_BINARY)),cliCommit=git(f.cli,'rev-parse','HEAD');
+  const writePin=(overrides={})=>put(f.repo,PIN_FILE,JSON.stringify({schema_version:1,repository:'https://example.test/yss-cli.git',version:'1.3.5',commit:cliCommit,go_version:'1.27.1',build:'go build',binaries:{[platformKey()]:{sha256:digest}},...overrides}));
+  const previous=process.env.YSS_NATIVE_BINARY_OVERRIDE;t.after(()=>{if(previous===undefined)delete process.env.YSS_NATIVE_BINARY_OVERRIDE;else process.env.YSS_NATIVE_BINARY_OVERRIDE=previous;});
+  delete process.env.YSS_NATIVE_BINARY_OVERRIDE;
+  writePin();
+  assert.equal(collectReleaseSources({root:f.repo,commit:f.sha}).kind,'template-release-sources','与固定文件一致时通过');
+  writePin({binaries:{[platformKey()]:{sha256:'0'.repeat(64)}}});
+  assert.throws(()=>collectReleaseSources({root:f.repo,commit:f.sha}),/与固定版本不符/,'二进制摘要不符');
+  writePin({commit:'f'.repeat(40)});
+  assert.throws(()=>collectReleaseSources({root:f.repo,commit:f.sha}),/与固定文件的 ffffffff 不一致/,'源码提交不符');
+  writePin({binaries:{[platformKey()]:{sha256:'0'.repeat(64)}}});process.env.YSS_NATIVE_BINARY_OVERRIDE='1';
+  assert.throws(()=>collectReleaseSources({root:f.repo,commit:f.sha}),/不接受 YSS_NATIVE_BINARY_OVERRIDE/,'本地覆盖不能通过发行验证');
+});
+
 test('浮动版本、脏树、未初始化或漂移子模块不得用于发布；四旧执行器与显式 CLI 源无需 gitlink checkout', t => {
   const f = fixture(t);
-  const optional=['create-yss-spec','create-yss-strategic-design','create-yss-harness-backend','create-yss-harness-frontend','yss-cli'];
+  const optional=['create-yss-spec','create-yss-strategic-design','create-yss-harness-backend','create-yss-harness-frontend'];
   for(const name of optional)git(f.repo,'-c','protocol.file.allow=always','submodule','add','-q',f.cli,`submodules/${name}`);
   f.sha=commit(f.repo);git(f.repo,'submodule','deinit','-f','--',...optional.map(name=>`submodules/${name}`));
   assert.equal(assertReleaseCheckout(f.repo,f.sha).template_commit,f.sha);

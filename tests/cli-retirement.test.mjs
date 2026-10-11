@@ -5,6 +5,19 @@ import path from 'node:path';
 import os from 'node:os';
 import {spawnSync} from 'node:child_process';
 import {NATIVE_PROFILES, nativeBinary, nativeDigest, decodeNative, runNative, initializeNative, applyNative, inspectNative} from '../.template-source/scripts/lib/native-yss.mjs';
+import {readYssCliPin, verifyPinnedBinary} from '../.template-source/scripts/lib/yss-cli-pin.mjs';
+
+// FR-002：根仓不再用 submodule 固定 yss-cli，由 .template-source/distribution/yss-cli-pin.json 固定版本、提交与各平台摘要。
+test('固定的 yss 二进制与固定文件一致：摘要、版本号和构建提交',t=>{
+  const pin=readYssCliPin(path.resolve(import.meta.dirname,'..'));
+  assert.ok(pin,'仓库必须带 yss-cli 固定文件');
+  const verified=verifyPinnedBinary({digest:nativeBinary().digest,pin});
+  if(!verified.pinned){t.diagnostic('本地覆盖（YSS_NATIVE_BINARY_OVERRIDE=1）：二进制未固定，不能当作固定版本通过');return;}
+  const reported=runNative(['version']).result;
+  assert.equal(reported.version,pin.version,'二进制自报版本与固定文件不一致');
+  assert.equal(reported.cliCommit,pin.commit,'二进制的构建提交与固定文件不一致');
+  assert.equal(reported.sourceState,'committed','固定的二进制必须来自已提交的 yss-cli 源码');
+});
 
 const scratch=t=>{const root=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'yss-native-consumer-')));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));return root;};
 const put=(root,ref,bytes,mode=0o644)=>{const file=path.join(root,ref);fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,bytes,{mode});return file;};

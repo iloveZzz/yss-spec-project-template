@@ -27,9 +27,8 @@ const OPTIONAL_UNINITIALIZED_SUBMODULES = new Set([
   'submodules/create-yss-strategic-design',
   'submodules/create-yss-harness-backend',
   'submodules/create-yss-harness-frontend',
-  // CLI provenance is verified from the explicit committed source directory.
-  'submodules/yss-cli',
 ]);
+// yss-cli 不是 submodule：CLI 来源由 .template-source/distribution/yss-cli-pin.json 固定，并从显式提交的源码目录核验。
 
 export function assertReleaseCheckout(root, commit) {
   assert.match(commit, /^[a-f0-9]{40}$/, '必须指定完整 40 位 commit SHA');

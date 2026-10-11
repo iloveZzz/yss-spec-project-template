@@ -26,7 +26,11 @@ export function verificationPreflight({root,plan,reportDir,environment=process.e
   if(!daily||plan.commands.some(item=>item.resources?.includes('python-jsonschema')))check('python-jsonschema',()=>{const value=JSON.parse(invoke('python3',['-c','import sys,json,importlib.metadata; print(json.dumps({"version":[sys.version_info.major,sys.version_info.minor],"executable":sys.executable,"jsonschema":importlib.metadata.version("jsonschema")}))']));if(value.version[0]!==3||value.version[1]!==12)throw new Error('需要 Python 3.12 和 jsonschema');return value;});
   else if(/\bpython3?\s/.test(commands))check('python',()=>{const value=JSON.parse(invoke('python3',['-c','import sys,json; print(json.dumps({"version":[sys.version_info.major,sys.version_info.minor],"executable":sys.executable}))']));if(value.version[0]!==3||value.version[1]!==12)throw new Error('需要 Python 3.12');return value;});
   if(daily&&plan.commands.some(item=>/^go\s/.test(item.command)))check('go',()=>invoke('go',['version']));
-  if(daily&&plan.commands.some(item=>item.resources?.includes('native-cli')))check('native-cli',()=>require('./native-yss.mjs').nativeBinary(environment));
+  if(daily&&plan.commands.some(item=>item.resources?.includes('native-cli')))check('native-cli',()=>{
+    const binary=require('./native-yss.mjs').nativeBinary(environment),pins=require('./yss-cli-pin.mjs'),pin=pins.readYssCliPin(root);
+    // 仓库里有固定文件，二进制就必须与它一致；本地联调自己构建的二进制要显式覆盖，结果会标记为未固定。
+    return pin?{...binary,pin:pins.verifyPinnedBinary({digest:binary.digest,pin,environment})}:binary;
+  });
   if(/\bpnpm\b/.test(commands)||!daily&&/\.template-source\/tooling\/node/.test(commands)||plan.commands.some(item=>item.resources?.includes('pnpm-tooling')))check('pnpm-and-tooling-lock',()=>{
     const tooling=path.join(root,'.template-source/tooling/node'),pkg=JSON.parse(fs.readFileSync(path.join(tooling,'package.json'))),version=invoke('pnpm',['--version'],tooling);
     if(`pnpm@${version}`!==pkg.packageManager)throw new Error(`pnpm 版本需要 ${pkg.packageManager}，实际 ${version}`);
@@ -49,14 +53,9 @@ export function verificationPreflight({root,plan,reportDir,environment=process.e
   const selectedSubmodules=[...new Set([...commands.matchAll(/submodules\/(yss-[\w-]+)/g)].map(match=>`submodules/${match[1]}`))];
   if(!daily||selectedSubmodules.length)check('submodule-source',()=>{
     const status=invoke('git',['submodule','status','--recursive',...daily?['--',...selectedSubmodules]:[]]);
-    const invalid=status.split('\n').some(line=>{
-      if(/^U/.test(line)||!daily&&/^\+/.test(line))return true;
-      if(!line.startsWith('-'))return false;
-      // The CLI is verified from YSS_NATIVE_SOURCE_ROOT by release-sources.
-      // Its optional anchor must not require a second checkout of CLI source.
-      const match=/^-[a-f0-9]{40}\s+(\S+)(?:\s+\([^\n]*\))?$/.exec(line);
-      return daily||!match||match[1]!=='submodules/yss-cli';
-    });
+    // yss-cli 不再是 submodule：它由固定文件（yss-cli-pin.json）固定，源码由 YSS_NATIVE_SOURCE_ROOT 显式提供，
+    // 所以任何未初始化、冲突的 gitlink 都不再有例外。
+    const invalid=status.split('\n').some(line=>/^U/.test(line)||!daily&&/^\+/.test(line)||line.startsWith('-'));
     if(invalid)throw new Error('子模块未初始化或与 gitlink 不匹配');
     return status;
   });

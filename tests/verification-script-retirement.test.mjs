@@ -135,11 +135,17 @@ test('第三批兼容壳固定指向核心库或canonical原型入口，保留�
   }
 });
 
-test('第三批分发保留替代核心库并且当前阶段直接安装新路径',()=>{
+test('第三批分发保留替代核心库并且当前阶段直接安装新路径',t=>{
   const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
-  const read=ref=>JSON.parse(fs.readFileSync(path.join(root,ref),'utf8'));
-  for(const ref of ['submodules/yss-harness-design-agent/.template-source/distribution/bundle-profile.json','submodules/yss-cli/internal/bundle/rules/design.json']){
-    const policy=read(ref);
+  // yss-cli 不再是 submodule（由 yss-cli-pin.json 固定）：它的内置策略从显式提供的固定源码目录读取，没有提供就跳过这一部分。
+  const cliSource=process.env.YSS_NATIVE_SOURCE_ROOT;
+  const readFrom=(base,ref)=>JSON.parse(fs.readFileSync(path.join(base,ref),'utf8'));
+  const read=ref=>readFrom(root,ref);
+  if(!cliSource)t.diagnostic('未提供 YSS_NATIVE_SOURCE_ROOT：跳过 yss-cli 内置策略 rules/design.json、rules/spec.json 的核对');
+  const designPolicies=[['submodules/yss-harness-design-agent/.template-source/distribution/bundle-profile.json',()=>read('submodules/yss-harness-design-agent/.template-source/distribution/bundle-profile.json')]];
+  if(cliSource)designPolicies.push(['yss-cli internal/bundle/rules/design.json',()=>readFrom(cliSource,'internal/bundle/rules/design.json')]);
+  for(const [ref,load] of designPolicies){
+    const policy=load();
     for(const name of ['implementation-path-policy','repository-scope-policy']){
       assert.ok(!policy.manifest.excludePaths.includes(`scripts/lib/${name}.mjs`),`${ref} must retain the replacement library`);
       assert.ok(!policy.manifest.excludePaths.includes(`scripts/${name}`),`${ref} must not require the retired shell`);
@@ -147,9 +153,11 @@ test('第三批分发保留替代核心库并且当前阶段直接安装新路�
   }
   const manifest=fs.readFileSync(path.join(root,'submodules/yss-harness-design-agent/.template-spec/process/instance-distribution-manifest.yaml'),'utf8');
   for(const name of ['implementation-path-policy','repository-scope-policy']) assert.ok(!manifest.includes(`- scripts/lib/${name}.mjs`),'Design instance manifest must retain replacement libraries');
-  for(const ref of ['.template-source/distribution/bundle-profile.json','submodules/yss-cli/internal/bundle/rules/spec.json']){
-    const policy=read(ref);
-    assert.ok(policy.stages['stage.system-data-engineering'].scripts.includes('scripts/lib/repository-scope-policy.mjs'));
+  const specPolicies=[['.template-source/distribution/bundle-profile.json',()=>read('.template-source/distribution/bundle-profile.json')]];
+  if(cliSource)specPolicies.push(['yss-cli internal/bundle/rules/spec.json',()=>readFrom(cliSource,'internal/bundle/rules/spec.json')]);
+  for(const [ref,load] of specPolicies){
+    const policy=load();
+    assert.ok(policy.stages['stage.system-data-engineering'].scripts.includes('scripts/lib/repository-scope-policy.mjs'),ref);
     assert.ok(policy.stages['stage.vertical-slice-implementation'].scripts.includes('scripts/lib/implementation-path-policy.mjs'));
   }
 });

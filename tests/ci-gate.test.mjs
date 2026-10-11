@@ -6,6 +6,7 @@ import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { STEPS, checkNodeEngines, runGate, satisfiesNodeRange, validateOptions } from "../scripts/lib/ci-gate.mjs";
+import { readYssCliPin } from "../.template-source/scripts/lib/yss-cli-pin.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const CI_GATE = path.join(ROOT, "scripts/ci-gate");
@@ -281,13 +282,13 @@ test("ci-setup：dry-run 只打印计划，覆盖子模块、yss 构建、pnpm �
   const sha = "0123456789abcdef0123456789abcdef01234567";
   const result = spawnSync(CI_SETUP, ["--dry-run", "--submodules", "--yss-commit", sha], { encoding: "utf8", env: { ...process.env, CI: "" } });
   assert.equal(result.status, 0, result.stderr);
-  for (const expected of [/Node 主版本必须是 24/, /repository-mode/, /submodule update --init --depth=1 -- submodules\/yss-cli\n/, /submodule update --init -- submodules\/yss-harness-design-agent /, /sync-profile-skills --apply --profile=all/, new RegExp(sha), /pnpm --dir \.template-source\/tooling\/node install --frozen-lockfile/, /jsonschema==4\.23\.0/, /环境准备完成/]) {
+  for (const expected of [/Node 主版本必须是 24/, /repository-mode/, /submodule update --init -- submodules\/yss-harness-design-agent /, /sync-profile-skills --apply --profile=all/, new RegExp(sha), /pnpm --dir \.template-source\/tooling\/node install --frozen-lockfile/, /jsonschema==4\.23\.0/, /环境准备完成/]) {
     assert.match(result.stdout, expected);
   }
   assert.doesNotMatch(result.stdout, /--depth=1 -- submodules\/yss-harness/, "构建 yss 需要 Profile 仓库的完整历史");
   const shallow = spawnSync(CI_SETUP, ["--dry-run", "--submodules"], { encoding: "utf8", env: { ...process.env, CI: "" } });
   assert.match(shallow.stdout, /submodule update --init --depth=1 -- submodules\/yss-harness-design-agent /);
-  assert.match(shallow.stdout, /submodule update --init --depth=1 -- submodules\/yss-cli\n/);
+  assert.doesNotMatch(shallow.stdout, /submodules\/yss-cli/, "yss-cli 不再是 submodule");
   const minimal = spawnSync(CI_SETUP, ["--dry-run", "--no-python"], { encoding: "utf8", env: { ...process.env, CI: "" } });
   assert.equal(minimal.status, 0, minimal.stderr);
   assert.doesNotMatch(minimal.stdout, /jsonschema|submodule update|yss-cli|sync-profile-skills/);
@@ -305,7 +306,7 @@ test("ci-setup：Python 必须恰为目标版本，缺失时的补装与 Go 的�
   const plan = spawnSync(CI_SETUP, ["--dry-run", "--submodules"], { encoding: "utf8", env: { ...process.env, CI: "" } });
   assert.equal(plan.status, 0, plan.stderr);
   assert.match(plan.stdout, /不是 3\.12 时，在 root 容器内经 uv==\d+\.\d+\.\d+ 补装/);
-  assert.match(plan.stdout, /Go：版本取自 submodules\/yss-cli\/go\.mod/);
+  assert.match(plan.stdout, /Go：版本取自 yss-cli 固定文件的 go_version/);
   assert.match(plan.stdout, /go\.dev 公布的 sha256/);
   const source = fs.readFileSync(CI_SETUP, "utf8");
   assert.doesNotMatch(source, /PYTHON_FLOOR/);
@@ -317,10 +318,15 @@ test("ci-setup：本机非 dry-run 拒绝执行，非法参数退出 2", () => {
   assert.equal(local.status, 2);
   assert.match(local.stderr, /只在 CI 环境运行/);
   assert.equal(spawnSync(CI_SETUP, ["--dry-run", "--yss-commit", "main"], { encoding: "utf8" }).status, 2);
-  const pinned = spawnSync(CI_SETUP, ["--dry-run", "--yss-commit", "gitlink"], { encoding: "utf8", env: { ...process.env, CI: "" } });
+  const pinned = spawnSync(CI_SETUP, ["--dry-run", "--yss-commit", "pin"], { encoding: "utf8", env: { ...process.env, CI: "" } });
   assert.equal(pinned.status, 0, pinned.stderr);
-  const gitlink = spawnSync("git", ["-C", ROOT, "rev-parse", "HEAD:submodules/yss-cli"], { encoding: "utf8" }).stdout.trim();
-  assert.match(pinned.stdout, new RegExp(`从固定提交 ${gitlink} 构建 yss`));
+  const pin = readYssCliPin(ROOT);
+  assert.match(pinned.stdout, new RegExp(`从固定提交 ${pin.commit} 构建 yss`));
+  const retired = spawnSync(CI_SETUP, ["--dry-run", "--yss-commit", "gitlink"], { encoding: "utf8", env: { ...process.env, CI: "" } });
+  assert.equal(retired.status, 2, "gitlink 已取消，必须明确拒绝而不是静默回退");
+  assert.match(retired.stderr, /已取消.*pin/);
+  const source = fs.readFileSync(CI_SETUP, "utf8");
+  assert.match(source, /构建出的 yss 与固定文件的摘要不符/, "固定提交构建后必须核对固定摘要");
   assert.equal(spawnSync(CI_SETUP, ["--bogus"], { encoding: "utf8" }).status, 2);
   assert.equal(spawnSync("bash", ["-n", CI_SETUP], { encoding: "utf8" }).status, 0);
 });

@@ -65,7 +65,7 @@ execution_plan: architecture-iteration-v1-plan.md
 | ID | 需求 | 优先级 | 来源引用 | 验收引用 | 未决项 |
 |---|---|---|---|---|---|
 | FR-001 | 模板与 yss-cli 各有一条语义化版本线，四个 Profile 共用模板版本；模板的首个 tag 为 `v4.0.0`（高于 spec 旧 npm 包的最高版本 3.5.10，也不与 yss-cli 的 1.3.x 混淆）。yss-cli 的来源锁钉模板 tag，并记录对应 commit 作完整性校验；Bundle 只在 CLI 发布时从 tag 生成，模板的普通提交不触发任何重钉。实例记录 CLI 版本和模板版本。N3 的刷新脚本改为发布流程中的一步，N7 的手动落后检查删除 | P0 | .template-source/contracts/architecture-iteration-v1.md :: heading:现状证据 | AC-001 | 无 |
-| FR-002 | 根仓不再用 submodule 固定 yss-cli，改为在一个文件里固定 `yss` 的版本号和 SHA-256；本地联调仍可用 `YSS_NATIVE_BINARY` 覆盖。`check.cli-content-identity` 改为核对这个固定版本 | P0 | .template-source/contracts/architecture-iteration-v1.md :: heading:现状证据 | AC-002 | 无 |
+| FR-002 | 根仓不再用 submodule 固定 yss-cli，改为在一个文件里固定 `yss` 的版本号和 SHA-256；本地联调仍可用 `YSS_NATIVE_BINARY` 覆盖。`check.cli-content-identity` 改为核对这个固定版本。实现口径：固定文件 `.template-source/distribution/yss-cli-pin.json` 记录 `yss` 自报的版本号、构建所用的 yss-cli 提交、Go 版本，以及各平台二进制的 SHA-256；同一提交、同一 Go 版本、`-trimpath` 构建出的二进制逐字节相同，所以摘要可以核对。尚无包含本轮改动的 CLI 发行版，固定的是按该提交构建的二进制，CLI 发布后再改记发行包摘要。本地联调自己构建的二进制，用 `YSS_NATIVE_BINARY_OVERRIDE=1` 显式覆盖，结果标记为未固定；CI 与发行验证不接受覆盖 | P0 | .template-source/contracts/architecture-iteration-v1.md :: heading:现状证据 | AC-002 | 无 |
 | FR-003 | yss-cli 的迁移规则支持按模板版本区间匹配。从 yss-cli 的来源锁历史和内嵌 bundle 历史，一次性生成「commit → 版本」对照表，随 CLI 发布 | P0 | .template-source/contracts/architecture-iteration-v1.md :: heading:现状证据 | AC-003 | 无 |
 | FR-004 | 升级计划里的删除动作可以逐文件拒绝（选择「保留」）；用户拒绝时文件保留，升级不失败 | P0 | .template-spec/process/harness-upgrade.md :: heading:计划、冲突与保护 | AC-004 | 无 |
 | FR-005 | 生成物不再提交进 Git：`bundles.json.gz` 与 `docs/cli-help.md` 改为发布时生成（离线帮助照旧在构建时嵌入）；根仓 `skills-lock.json` 只记录上游来源的 revision，本地技能的树哈希在验证或发布时现算；实例里的锁由打包器生成，格式不变 | P1 | .template-source/contracts/architecture-iteration-v1.md :: heading:现状证据 | AC-005 | 无 |
@@ -96,7 +96,7 @@ execution_plan: architecture-iteration-v1-plan.md
 
 | ID | 需求引用 | 前提 | 触发 | 可观察结果 | 场景类型 | 未决项 |
 |---|---|---|---|---|---|---|
-| AC-001 | FR-001 | 模板已打首个 tag `v4.0.0` | 在 yss-cli 发布流程中刷新来源锁 | 来源锁记录 tag 和 commit；在模板上做一次普通提交后，yss-cli 与根仓都没有新增重钉提交 | 成功 | Q-001 |
+| AC-001 | FR-001 | 模板已打首个 tag `v4.0.0` | 在 yss-cli 发布流程中刷新来源锁 | 来源锁记录 tag 和 commit；在模板上做一次普通提交后，yss-cli 与根仓都没有新增重钉提交 | 成功 | 无 |
 | AC-002 | FR-002 | S0 完成 | 检查根仓的 `.gitmodules` 与固定版本文件，运行 fast | 没有 yss-cli gitlink；固定文件写有版本号和 SHA-256；版本或摘要不符时 `cli-content-identity` 失败 | 成功 / 拒绝 | 无 |
 | AC-003 | FR-003 | 一个按历史 commit 初始化的实例 | 用新 CLI 生成升级计划 | 能借对照表识别出该实例的模板版本；按版本区间匹配的删除规则生效；对照表里找不到的 commit 明确报告，不猜测 | 成功 / 边界 | 无 |
 | AC-004 | FR-004, NFR-004 | 升级计划里含删除动作 | 用户对其中一个文件选择「保留」后应用 | 该文件原样保留，其余动作照常执行，升级不失败 | 状态变化 | 无 |

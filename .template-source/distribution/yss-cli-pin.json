@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "repository": "https://github.com/iloveZzz/yss-cli.git",
+  "version": "1.3.5",
+  "commit": "ca1e0b9ed894c163767b16985e273db037b80e17",
+  "go_version": "1.27.1",
+  "build": "CGO_ENABLED=0 go build -trimpath -o yss ./cmd/yss",
+  "binaries": {
+    "darwin-arm64": { "sha256": "3bf1e1362359d5ad06c14dd9a793251b6c8eba02a8eec0b087d7ac5e1ee65e12" },
+    "linux-amd64": { "sha256": "d88a7b0425ce37379dd958e449bea97082cfb822c2de84bd271c715b06f4baf2" },
+    "linux-arm64": { "sha256": "d7456471a0107fcba50ba72e78ec1838751803d278798d6d23b61ed441e6b39a" }
+  }
+}

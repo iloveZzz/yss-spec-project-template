@@ -36,7 +36,7 @@
 
 两个平台都用完整历史检出。`verify-template-fast` 必须带范围基准：干净检出且不带 `--base` 时变更文件数为 0，只会空过。`verify-template-candidate` 在 PR 模式下是非阻断步骤，只记录结果：选择性 gate policy 未激活时它退化为完整的 `release` 验证，要求固定 yss 二进制且 Bundle 的模板来源等于被验证提交，对新提交无法在托管 runner 通过。转为必需检查的条件见执行计划与规格的 Q-008。
 
-fast 选中的部分检查需要原生 `yss` 二进制，所以两个平台都用 `scripts/ci-setup --yss-commit gitlink`，从本仓 `submodules/yss-cli` 固定的提交构建并导出 `YSS_NATIVE_BINARY`。环境准备依赖的子模组都是公开仓库，匿名可读，GitLab runner 不需要令牌或镜像。拉取子模组失败时 `scripts/ci-setup` 以非零退出，`template-gate` 失败并在日志中给出原因，不得跳过该步骤后报告通过。
+fast 选中的部分检查需要原生 `yss` 二进制，所以两个平台都用 `scripts/ci-setup --yss-commit pin`：取 `.template-source/distribution/yss-cli-pin.json` 固定的提交，按固定的 Go 版本构建，核对当前平台的 SHA-256 与固定文件一致后导出 `YSS_NATIVE_BINARY`；摘要不符即失败，CI 里也不接受 `YSS_NATIVE_BINARY_OVERRIDE`。yss-cli 不再是 submodule。环境准备依赖的子模组都是公开仓库，匿名可读，GitLab runner 不需要令牌或镜像。拉取子模组失败时 `scripts/ci-setup` 以非零退出，`template-gate` 失败并在日志中给出原因，不得跳过该步骤后报告通过。
 
 Linux runner 上的两个测试曾因对 macOS 行为的隐性假设而失败，已修复：超时测试显式 `exec`，使忽略 `SIGTERM` 的进程成为 `sh -c` 的直接子进程；候选、发布与 `qualified-gates` 的“旧运行时残留”后置检查改用 `.template-source/scripts/lib/legacy-runtime-scan.mjs`，不再依赖外部 ripgrep。`yss-cli` 的原生验证仍只对 darwin/arm64 做资格。
 

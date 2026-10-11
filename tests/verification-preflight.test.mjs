@@ -3,7 +3,9 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import {createHash} from 'node:crypto';
 import {verificationPreflight,validateVerificationReportDirectory} from '../.template-source/scripts/lib/verification-preflight.mjs';
+import {PIN_FILE,platformKey} from '../.template-source/scripts/lib/yss-cli-pin.mjs';
 test('日常 Node 检查无需 Python 或无关子模块环境',()=>{
  const result=verificationPreflight({root:process.cwd(),nodeVersion:'v24.21.0',environment:{},plan:{strategy:'daily-necessary',commands:[{command:'node --test .template-source/tooling/node/test/plan-spec-quality.test.mjs'}]},probe:()=>{throw new Error('不应探测未选工具');}});
  assert.equal(result.status,'passed',JSON.stringify(result.errors));
@@ -46,7 +48,7 @@ const fixedSHA='a'.repeat(40);
 const agentStatus=['design','backend','frontend'].map(name=>` ${fixedSHA} submodules/yss-harness-${name}-agent`).join('\n');
 test('日常只查所选子模块，允许当前 SHA，拒绝未初始化或冲突',()=>{
  for(const prefix of [' ','+','-','U']){
-  const result=verificationPreflight({root:process.cwd(),nodeVersion:'v24.1.0',plan:{strategy:'daily-necessary',commands:[{command:'go -C submodules/yss-cli test ./internal/bundle'}]},probe:(file,args)=>{if(file==='go')return {status:0,stdout:'go version'};assert.equal(file,'git');assert.deepEqual(args,['submodule','status','--recursive','--','submodules/yss-cli']);return {status:0,stdout:`${prefix}${fixedSHA} submodules/yss-cli`};}});
+  const result=verificationPreflight({root:process.cwd(),nodeVersion:'v24.1.0',plan:{strategy:'daily-necessary',commands:[{command:'go -C submodules/yss-harness-design-agent test ./internal/bundle'}]},probe:(file,args)=>{if(file==='go')return {status:0,stdout:'go version'};assert.equal(file,'git');assert.deepEqual(args,['submodule','status','--recursive','--','submodules/yss-harness-design-agent']);return {status:0,stdout:`${prefix}${fixedSHA} submodules/yss-harness-design-agent`};}});
   assert.equal(result.status,['-','U'].includes(prefix)?'failed':'passed');
  }
 });
@@ -54,14 +56,15 @@ function preflightWithSubmodules(status) {
   const probe=(file,args)=>({status:0,stdout:file==='python3'?JSON.stringify({version:[3,12],jsonschema:'4.0',executable:'/fixture/python'}):args[0]==='submodule'?status:'',stderr:''});
   return verificationPreflight({root:process.cwd(),nodeVersion:'v24.1.0',environment:{YSS_NATIVE_SOURCE_ROOT:path.resolve('/fixture/fixed-yss-source')},probe,plan:{commands:[]}});
 }
-test('三个 Agent 固定源已初始化时允许独立 CLI 的未初始化 gitlink',()=>{
-  const result=preflightWithSubmodules(`${agentStatus}\n-${fixedSHA} submodules/yss-cli`);
+test('三个 Agent 固定源已初始化时通过；yss-cli 不再是 submodule，没有例外',()=>{
+  const result=preflightWithSubmodules(agentStatus);
   assert.equal(result.status,'passed',JSON.stringify(result.errors));
   assert.equal(result.observations.find(item=>item.name==='submodule-source').status,'passed');
 });
 test('仍拒绝必需 Agent 缺失、任意 gitlink 漂移或冲突和未知未初始化源',async t=>{
   const invalid=[
     ...['design','backend','frontend'].map(name=>`${agentStatus}\n-${fixedSHA} submodules/yss-harness-${name}-agent`),
+    `${agentStatus}\n-${fixedSHA} submodules/yss-cli`,
     `${agentStatus}\n+${fixedSHA} submodules/yss-cli`,
     `${agentStatus}\nU${fixedSHA} submodules/yss-cli`,
     `${agentStatus}\n+${fixedSHA} submodules/yss-harness-design-agent`,
@@ -77,4 +80,22 @@ test('仍拒绝必需 Agent 缺失、任意 gitlink 漂移或冲突和未知未�
     assert.deepEqual(result.errors.map(item=>item.name),['submodule-source']);
     assert.match(result.errors[0].error,/子模块未初始化或与 gitlink 不匹配/);
   });
+});
+
+test('原生消费者的二进制必须与固定文件一致，本地联调可显式覆盖且 CI 不接受',t=>{
+  const temp=fs.mkdtempSync(path.join(os.tmpdir(),'verification-pin-'));t.after(()=>fs.rmSync(temp,{recursive:true,force:true}));
+  const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
+  const write=(name,bytes)=>{const file=path.join(temp,name);fs.writeFileSync(file,bytes,{mode:0o755});return file;};
+  const pinned=write('pinned','pinned bytes'),other=write('other','other bytes');
+  fs.mkdirSync(path.join(temp,'.template-source/distribution'),{recursive:true});
+  fs.writeFileSync(path.join(temp,PIN_FILE),JSON.stringify({schema_version:1,repository:'https://example.test/yss-cli.git',version:'1.3.5',commit:'c'.repeat(40),go_version:'1.27.1',build:'go build',binaries:{[platformKey()]:{sha256:sha('pinned bytes')}}}));
+  const run=(binary,extra={})=>verificationPreflight({root:temp,nodeVersion:'v24.21.0',environment:{YSS_NATIVE_BINARY:binary,...extra},plan:{strategy:'daily-necessary',commands:[{command:'node --test tests/cli-retirement.test.mjs',resources:['native-cli']}]},probe:()=>assert.fail('不应启动无关工具')});
+  const ok=run(pinned);
+  assert.equal(ok.status,'passed',JSON.stringify(ok.errors));assert.equal(ok.observations.find(item=>item.name==='native-cli').observed.pin.pinned,true);
+  const bad=run(other);
+  assert.deepEqual(bad.errors.map(item=>item.name),['native-cli']);assert.match(bad.errors[0].error,/与固定版本不符/);
+  const local=run(other,{YSS_NATIVE_BINARY_OVERRIDE:'1'});
+  assert.equal(local.status,'passed');assert.equal(local.observations.find(item=>item.name==='native-cli').observed.pin.pinned,false);
+  const ci=run(other,{YSS_NATIVE_BINARY_OVERRIDE:'1',CI:'true'});
+  assert.match(ci.errors[0].error,/CI 不接受覆盖/);
 });

@@ -87,9 +87,9 @@ test("setup-template 是薄封装：运行时版本取自 ci-setup，不在 YAML
   assert.match(printed.python, /^\d+\.\d+$/);
 });
 
-test("两个平台都不跳过子模组，并都用固定 gitlink 构建 yss（fast 的部分测试需要原生二进制）", () => {
-  assert.match(code(WORKFLOW), /submodules: 'true'\n\s+yss-commit: gitlink/);
-  assert.match(code(GITLAB), /scripts\/ci-setup --submodules --yss-commit gitlink/);
+test("两个平台都不跳过子模组，并都按 yss-cli 固定文件构建 yss（fast 的部分测试需要原生二进制）", () => {
+  assert.match(code(WORKFLOW), /submodules: 'true'\n\s+yss-commit: pin/);
+  assert.match(code(GITLAB), /scripts\/ci-setup --submodules --yss-commit pin/);
   assert.match(read("scripts/ci-setup"), /git -c protocol\.version=2 submodule update --init/);
 });
 

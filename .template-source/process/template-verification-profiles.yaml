@@ -105,16 +105,34 @@ profiles:
           - ".template-source/process/template-verification-profiles.yaml"
         depends_on: []
         failure_mode: "压缩后的旧检查覆盖展开出与压缩前不同的字段、顺序或内容，使 policy_digest 或某条旧检查的门禁归属悄悄改变"
-      - id: check.source-lock-lag
-        run: "node --test tests/source-lock-lag.test.mjs"
+      - id: check.yss-cli-pin
+        run: "node --test tests/yss-cli-pin.test.mjs"
         group: feature-assets
         inputs_complete: true
         input_patterns:
+          - ".template-source/distribution/yss-cli-pin.json"
+          - ".template-source/scripts/lib/yss-cli-pin.mjs"
+          - ".template-source/scripts/lib/verification-preflight.mjs"
+          - "tests/yss-cli-pin.test.mjs"
+          # AR-02 删除了 N7 的手动落后检查。删除也算变更路径，删除提交里必须仍有登记；合入之后这三行可以移除。
           - "scripts/verify-source-lock-lag"
           - "scripts/lib/source-lock-lag.mjs"
           - "tests/source-lock-lag.test.mjs"
         depends_on: []
-        failure_mode: "来源锁落后统计把文档类提交算进去、漏掉触及 Bundle 输入的提交，或在无法评估时静默通过"
+        failure_mode: "yss-cli 固定文件缺项、坏摘要或未知平台被放行，二进制摘要与固定版本不符时没有失败，或 CI 里接受了本地覆盖"
+      - id: check.template-release-sources
+        run: "node --test --test-name-pattern '固定发行拒绝缺失|发行验证在有 yss-cli 固定文件时|浮动版本、脏树' .template-source/scripts/tests/template-ci.test.mjs"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
+          - ".template-source/scripts/lib/template-release.mjs"
+          - ".template-source/scripts/lib/verification-artifacts.mjs"
+          - ".template-source/scripts/tests/template-ci.test.mjs"
+          - ".gitmodules"
+          # AR-02 已移除的 yss-cli gitlink：删除也算变更路径，删除提交里仍需登记；合入之后可以移除。
+          - "submodules/yss-cli"
+        depends_on: []
+        failure_mode: "发布检出把未初始化的 yss-cli 当作允许项，发行验证接受了与固定文件不符的二进制或源码提交，或本地覆盖通过了发行验证"
       - id: check.ci-gate
         run: "node --test tests/ci-gate.test.mjs"
         group: feature-assets
@@ -620,11 +638,11 @@ profiles:
         resources: ["native-cli"]
         inputs_complete: true
         input_patterns:
-          - "submodules/yss-cli"
+          - ".template-source/distribution/yss-cli-pin.json"
           - "tests/cli-retirement.test.mjs"
           - "submodules/create-yss-spec/**"
         depends_on: []
-        failure_mode: "原生 CLI 消费入口、兼容或来源身份错误"
+        failure_mode: "固定的 yss 二进制与 yss-cli 固定文件的版本、提交或摘要不符，或原生 CLI 消费入口、兼容或来源身份错误"
       - id: "check.work-layout"
         inputs_complete: true
         input_patterns:
@@ -1389,6 +1407,10 @@ routing:
       - strategic-handoff-package
       - feature-assets
   - patterns:
+      - .template-source/distribution/yss-cli-pin.json
+      - .template-source/scripts/lib/yss-cli-pin.mjs
+      - tests/yss-cli-pin.test.mjs
+      # AR-02 已删除的 N7 手动落后检查：删除提交里的变更路径仍需登记，合入之后可以移除。
       - scripts/verify-source-lock-lag
       - scripts/lib/source-lock-lag.mjs
       - tests/source-lock-lag.test.mjs
@@ -3070,13 +3092,13 @@ supplemental_checks:
     when: template-source
     task_id: supplemental.legacy-coverage
     source_requirement: committed
-  - id: check.source-lock-lag-supplemental
-    run: node --test tests/source-lock-lag.test.mjs
+  - id: check.yss-cli-pin-supplemental
+    run: node --test tests/yss-cli-pin.test.mjs
     group: feature-assets
     gate_ids: [check.verification-lifecycle]
     depends_on: []
     when: template-source
-    task_id: supplemental.source-lock-lag
+    task_id: supplemental.yss-cli-pin
     source_requirement: committed
   - id: check.harness-metrics-supplemental
     run: node --test tests/harness-metrics.test.mjs
