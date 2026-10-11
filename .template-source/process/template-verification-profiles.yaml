@@ -251,6 +251,17 @@ profiles:
           - "scripts/verify-maintenance-risk-scenarios"
         depends_on: []
         failure_mode: "两级触发项遗漏、当前 L3 被接受、三类强制反例缺失、运行证据伪造，或历史审查被误作当前执行授权"
+      - id: check.specialist-source-fixtures
+        run: "python3 tests/fixtures/specialist-source-fixtures.py --check && node --test submodules/yss-harness-design-agent/.template-source/tooling/node/test/canonical-fixture.test.mjs submodules/yss-harness-backend-agent/.template-source/tooling/node/test/canonical-fixture.test.mjs submodules/yss-harness-frontend-agent/.template-source/tooling/node/test/canonical-fixture.test.mjs"
+        group: skills
+        inputs_complete: true
+        input_patterns:
+          - "tests/fixtures/specialist-source-fixtures.py"
+          - "submodules/yss-harness-design-agent"
+          - "submodules/yss-harness-backend-agent"
+          - "submodules/yss-harness-frontend-agent"
+        depends_on: []
+        failure_mode: "专职模板测试源闭包发生字节、Git 可执行位或符号链接漂移，或 checkout umask 导致不可移植"
       - id: check.harness-skill-scope
         run: "node --test submodules/yss-harness-backend-agent/.template-source/tooling/node/test/harness-skill-scope.test.mjs submodules/yss-harness-frontend-agent/.template-source/tooling/node/test/harness-skill-scope.test.mjs"
         group: skills
