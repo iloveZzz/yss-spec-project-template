@@ -2,7 +2,7 @@
   "schema_version": 1,
   "target_id": "template-root",
   "source_repository": "yss-spec-project-template",
-  "source_revision": "64a83e0c0db59eeb7d6d9d4620c7760b72acc3c2",
+  "source_revision": "c8a7523cf670694600aceccb08a3cc7c68119a1f",
   "source_state": "committed",
   "transformation_set": [
     "identity"
@@ -193,7 +193,8 @@
     "scripts/lib/frontend-delivery-boundary.mjs": "sha256:adcf9600b904368d26f9c236aeea95e3548af0ada357a001f29621fda4b4b959",
     "scripts/lib/frontend-delivery.mjs": "sha256:12578d4ada0427d667c722138e9ca8210dfb3e7869a29dffd5112876a4428015",
     "scripts/lib/governance-io.mjs": "sha256:5f065a733409b224dc4a73fd0278ebbc66fa357b184bc7fe1f1edd0050e9e271",
-    "scripts/lib/harness-execution-scope.mjs": "sha256:6c5c8c938886e588389e85bb9f6fd6c6524b0c4be65908a9cf0b4eb2b84192cb",
+    "scripts/lib/harness-execution-scope.mjs": "sha256:846a591991bb95aa511890672d9c7552b08e8a701fac992322a1a2aa0b778e5d",
+    "scripts/lib/harness-skill-scope.mjs": "sha256:7ae781e8baa31bc6b6bcecd07980cf11c52365525dfcd2980d6ef3dedd9a2f0e",
     "scripts/lib/implementation-candidate-current.mjs": "sha256:721b714a1746a47eeb3fba1217e46aa66e60ff378c253c2a4538f3df721ad491",
     "scripts/lib/implementation-contract-compiler.mjs": "sha256:ea6c8662bdec764e15f4c9496566018f656b5f56654dcf6f9c52934adc3c194d",
     "scripts/lib/implementation-path-policy.mjs": "sha256:c8a2463e4d1cb2791afd2f2e0f71a7848c5c0db80ae2efcdcafbdc5a259dc724",
@@ -499,7 +500,8 @@
     "scripts/lib/frontend-delivery-boundary.mjs": "sha256:adcf9600b904368d26f9c236aeea95e3548af0ada357a001f29621fda4b4b959",
     "scripts/lib/frontend-delivery.mjs": "sha256:12578d4ada0427d667c722138e9ca8210dfb3e7869a29dffd5112876a4428015",
     "scripts/lib/governance-io.mjs": "sha256:5f065a733409b224dc4a73fd0278ebbc66fa357b184bc7fe1f1edd0050e9e271",
-    "scripts/lib/harness-execution-scope.mjs": "sha256:6c5c8c938886e588389e85bb9f6fd6c6524b0c4be65908a9cf0b4eb2b84192cb",
+    "scripts/lib/harness-execution-scope.mjs": "sha256:846a591991bb95aa511890672d9c7552b08e8a701fac992322a1a2aa0b778e5d",
+    "scripts/lib/harness-skill-scope.mjs": "sha256:7ae781e8baa31bc6b6bcecd07980cf11c52365525dfcd2980d6ef3dedd9a2f0e",
     "scripts/lib/implementation-candidate-current.mjs": "sha256:721b714a1746a47eeb3fba1217e46aa66e60ff378c253c2a4538f3df721ad491",
     "scripts/lib/implementation-contract-compiler.mjs": "sha256:ea6c8662bdec764e15f4c9496566018f656b5f56654dcf6f9c52934adc3c194d",
     "scripts/lib/implementation-path-policy.mjs": "sha256:c8a2463e4d1cb2791afd2f2e0f71a7848c5c0db80ae2efcdcafbdc5a259dc724",
