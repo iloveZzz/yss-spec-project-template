@@ -54,6 +54,26 @@ profiles:
           - "tests/profile-variants.test.mjs"
         depends_on: []
         failure_mode: "有意定制登记接受已与来源一致的副本、放过被改动的定制，或把未登记的 Profile 差异当成有意"
+      - id: check.profile-distribution
+        run: "node --test tests/profile-distribution.test.mjs"
+        group: hygiene
+        inputs_complete: true
+        input_patterns:
+          - "scripts/lib/profile-distribution.mjs"
+          - "tests/profile-distribution.test.mjs"
+        depends_on: []
+        failure_mode: "分发判定镜像与 yss-cli 的 includedByManifest 不一致，或守卫放过了未排除的仅模板源脚本与会误伤的后缀规则"
+      - id: check.profile-distribution-gate
+        run: "scripts/verify-profile-distribution"
+        group: hygiene
+        inputs_complete: true
+        input_patterns:
+          - "scripts/verify-profile-distribution"
+          - "scripts/lib/profile-distribution.mjs"
+          - ".template-source/distribution/bundle-profile.json"
+          - "submodules/yss-harness-*-agent"
+        depends_on: []
+        failure_mode: "backend / frontend / design 实例分发了根仓声明为仅模板源的脚本，或技能目录里的测试目录没有被排除"
       - id: check.template-wiki-untracked
         run: "node --test tests/template-wiki-untracked.test.mjs"
         group: hygiene
@@ -1390,6 +1410,12 @@ routing:
       - tests/legacy-coverage.test.mjs
     groups:
       - feature-assets
+  - patterns:
+      - scripts/verify-profile-distribution
+      - scripts/lib/profile-distribution.mjs
+      - tests/profile-distribution.test.mjs
+    groups:
+      - hygiene
   - patterns:
       - scripts/harness-metrics
       - scripts/lib/harness-metrics.mjs
@@ -3022,6 +3048,22 @@ supplemental_checks:
     depends_on: []
     when: template-source
     task_id: supplemental.profile-variants
+    source_requirement: committed
+  - id: check.profile-distribution-supplemental
+    run: node --test tests/profile-distribution.test.mjs
+    group: hygiene
+    gate_ids: [check.verification-lifecycle]
+    depends_on: []
+    when: template-source
+    task_id: supplemental.profile-distribution
+    source_requirement: committed
+  - id: check.profile-distribution-gate-supplemental
+    run: node scripts/verify-profile-distribution
+    group: hygiene
+    gate_ids: [check.verification-lifecycle]
+    depends_on: []
+    when: template-source
+    task_id: supplemental.profile-distribution-gate
     source_requirement: committed
   - id: check.template-wiki-untracked-supplemental
     run: node --test tests/template-wiki-untracked.test.mjs
