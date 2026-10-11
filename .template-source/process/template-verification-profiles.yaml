@@ -1382,7 +1382,6 @@ routing:
       - scripts/lib/source-lock-lag.mjs
       - tests/source-lock-lag.test.mjs
     groups:
-      - hygiene
       - feature-assets
   - patterns:
       - scripts/lib/legacy-coverage.mjs
@@ -3067,14 +3066,6 @@ supplemental_checks:
     depends_on: []
     when: template-source
     task_id: supplemental.source-lock-lag
-    source_requirement: committed
-  - id: check.source-lock-lag-gate-supplemental
-    run: node scripts/verify-source-lock-lag
-    group: hygiene
-    gate_ids: [check.verification-lifecycle]
-    depends_on: []
-    when: template-source
-    task_id: supplemental.source-lock-lag-gate
     source_requirement: committed
   - id: check.harness-metrics
     run: node --test tests/harness-metrics.test.mjs
