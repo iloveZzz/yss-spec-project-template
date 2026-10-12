@@ -189,8 +189,7 @@ test('one v2 capability task strictly binds different per-check subjects across 
  const options={root,rolesDoc,registry:live,expected};
  const paths=[()=>validateApprovalRecord(bundle.reviews[0],{...options,expected:expected[0]}),()=>validateApprovalRecordFile(path.join(root,'reviews/approved-0.json'),{...options,expected:expected[0]}),()=>validateApprovalRecordFile(path.join(root,'reviews/approved-bundle.json'),options),()=>assertApprovedGateHasValidApproval(checkIds[0],consumer.checks[checkIds[0]],{root,rolesDoc,registry:live}),()=>assertCheckpointApprovals(consumer,path.join(root,'reviews/consumer-checkpoint.json'),{root,rolesDoc,registry})];
  for(const verify of paths)assert.doesNotThrow(verify);
- const cliArgs=[path.join(ROOT,'scripts/verify-approval-record'),'--require-approved','--root',root,'--checkpoint',path.join(root,'reviews/consumer-checkpoint.json'),path.join(root,'reviews/approved-bundle.json')];
- const cli=spawnSync(process.execPath,cliArgs,{encoding:'utf8'});assert.equal(cli.status,0,cli.stderr);
+ // 命令行入口已是 yss 的薄壳，只能在完整实例里运行；与 Node 实现的等价回放见 tests/go-validator-replay.test.mjs。
  for(const [i,row]of bundle.reviews.entries()) {
   const current=base.checks[row.gate_id];
   await assert.doesNotReject(()=>sourceApproval(row,rolesDoc,root,{ref:current.subject_ref,approval_context:current}),`source check ${i}`);
@@ -237,5 +236,4 @@ test('one v2 capability task strictly binds different per-check subjects across 
   const before=bundle[field];bundle[field]=value;refresh();for(const verify of paths.slice(2))assert.throws(verify,/APPROVAL_CURRENT_INVALID|APPROVAL_BUNDLE_INVALID|REVIEW_BINDING_STALE/);bundle[field]=before;
  }
  refresh();write('input/evidence-0.txt','changed evidence');for(const verify of paths)assert.throws(verify,/STALE|证据过期/);
- const stale=spawnSync(process.execPath,cliArgs,{encoding:'utf8'});assert.equal(stale.status,1);assert.match(stale.stderr,/STALE|证据过期/);
 });

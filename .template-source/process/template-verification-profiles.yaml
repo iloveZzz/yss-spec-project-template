@@ -108,6 +108,8 @@ profiles:
         inputs_complete: true
         input_patterns:
           - "tests/go-validator-replay.test.mjs"
+          - "scripts/verify-approval-record"
+          - "scripts/verify-user-decision"
           - "scripts/lib/native-evidence.mjs"
           - "scripts/lib/native-context.mjs"
           - "scripts/lib/user-decision.mjs"
@@ -116,6 +118,15 @@ profiles:
           - ".template-source/distribution/yss-cli-pin.json"
         depends_on: []
         failure_mode: "Node 与固定版本 yss 对同一批用户决定、批准记录夹具的通过/拒绝结论或拒绝码不一致（唯一实现退役前的等价回放）"
+      - id: check.user-decision-scenarios
+        run: "scripts/verify-user-decision-scenarios"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
+          - "scripts/verify-user-decision-scenarios"
+          - "tests/scenarios/verify-user-decision-scenarios.mjs"
+        depends_on: []
+        failure_mode: "用户决定的 Node 实现（来源、展示、范围、撤回、会签绑定）在场景里被放行或误拒"
       - id: check.contract-review-preparation
         run: "node --test tests/contract-review-preparation.test.mjs"
         group: feature-assets

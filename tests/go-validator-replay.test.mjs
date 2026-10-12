@@ -100,3 +100,37 @@ for (const where of ['instance', 'template-source']) test(`批准记录回放（
   const go = goApproval(['--require-approved']);
   assert.equal(go.ok, false, go.message);
 });
+
+// 薄壳冒烟：scripts/verify-user-decision 调用的子命令存在，退出码与信息透传；省略 --requirements 时由 yss 的 --from-record 反推。
+const shell = (args) => spawnSync(path.join(REPO, 'scripts', 'verify-user-decision'), args, {encoding: 'utf8', env: {...process.env, YSS_NATIVE_BINARY: binary}});
+test('verify-user-decision 薄壳：通过、拒绝、显式 requirements', {skip}, () => {
+  site = 'template-source';
+  const ok = fixture();
+  ok.save();
+  const pass = shell([ok.ref]);
+  assert.equal(pass.status, 0, pass.stderr);
+  assert.match(pass.stdout, /用户决定及当前批准范围校验通过/);
+  const req = path.join(path.dirname(ok.ref), 'requirements.json');
+  writeFileSync(req, JSON.stringify([ok.requirement]));
+  assert.equal(shell(['--requirements', req, ok.ref]).status, 0);
+  const bad = fixture();
+  bad.record.responses = [];
+  bad.save();
+  const denied = shell([bad.ref]);
+  assert.notEqual(denied.status, 0);
+  assert.match(denied.stderr, /用户决定校验失败: .*user-decision/);
+});
+
+test('verify-approval-record 薄壳：历史结构可读，没有当前上下文不放行', {skip}, () => {
+  site = 'template-source';
+  const file = path.join(setup(), '.work', `replay-${process.pid}`, 'approval-shell.json');
+  mkdirSync(path.dirname(file), {recursive: true});
+  writeFileSync(file, JSON.stringify(approvalRecord));
+  const run = (args) => spawnSync(path.join(REPO, 'scripts', 'verify-approval-record'), args, {encoding: 'utf8', env: {...process.env, YSS_NATIVE_BINARY: binary}});
+  const history = run(['--history', file]);
+  assert.equal(history.status, 0, history.stderr);
+  assert.match(history.stdout, /历史兼容结构检查完成/);
+  const current = run([file]);
+  assert.notEqual(current.status, 0);
+  assert.match(current.stderr, /会签记录校验失败/);
+});

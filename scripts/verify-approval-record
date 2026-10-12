@@ -1,25 +1,21 @@
 #!/usr/bin/env node
+// 薄壳：校验语义归 yss（evidence verify --kind approval），这里只翻译参数、透传结论与退出码。
 import path from 'node:path';
 import {parseArgs} from 'node:util';
-import {ROOT} from './lib/lifecycle-registry.mjs';
-import {withValidationPhase} from './lib/validation-phase.mjs';
-import {approvalIO} from './lib/approval-record-io.mjs';
-import {validateAssetStructure} from './lib/structured-assets.mjs';
-import {validateApprovalRecordFile} from './lib/approval-record.mjs';
+import {nativeEvidenceVerify} from './lib/native-evidence.mjs';
 try {
   const {positionals,values}=parseArgs({allowPositionals:true,strict:true,options:{help:{type:'boolean'},'require-approved':{type:'boolean'},history:{type:'boolean'},checkpoint:{type:'string'},root:{type:'string'}}});
-  if(values.help) process.stdout.write('用法: scripts/verify-approval-record [--require-approved] [--root <project>] [--checkpoint <current checkpoint>] <record.yaml|json>\n--history 仅检查历史结构，不放行；不能与当前上下文选项组合。v1当前批准须有checkpoint；v2可使用正式任务的独立当前绑定。0=相应检查通过，1=失败。\n');
+  if(values.help) process.stdout.write('用法: scripts/verify-approval-record [--require-approved] [--root <project>] [--checkpoint <current checkpoint>] <record.yaml|json>\n--history 仅检查历史结构，不放行；不能与当前上下文选项组合。v1当前批准须有checkpoint；v2可使用正式任务的独立当前绑定。校验由 yss evidence verify --kind approval 执行。0=相应检查通过，1=失败。\n');
   else {
     if(positionals.length!==1) throw new TypeError('需要一个批准记录路径');
     if(values.history&&(values['require-approved']||values.checkpoint)) throw new TypeError('--history 不能用于当前批准校验');
-    const root=path.resolve(values.root || ROOT), file=path.resolve(positionals[0]);
-    const verify=()=>{
-      let checkpoint;
-      if(values.checkpoint) {checkpoint=approvalIO({root}).document(path.resolve(values.checkpoint));validateAssetStructure(checkpoint,'checkpoint');}
-      validateApprovalRecordFile(file,{root,checkpoint,history:values.history===true,requireApproved:!values.history});
-    };
-    if(values.history) verify();
-    else withValidationPhase({root,purpose:'approval-cli-current',readOnly:true},verify);
-    process.stdout.write(values.history?'历史兼容结构检查完成；execution_authorization=not-evaluated\n':'会签当前绑定及适用用户决定校验通过；不授予执行或发布\n');
+    const root=path.resolve(values.root ?? path.join(import.meta.dirname,'..'));
+    const extra=[];
+    if(values.history) extra.push('--history');
+    else extra.push('--require-approved');
+    if(values.checkpoint) extra.push('--checkpoint',path.resolve(values.checkpoint));
+    const result=nativeEvidenceVerify({root,kind:'approval',file:path.resolve(positionals[0]),extra});
+    if(result.exitCode!==0) {process.stderr.write(`会签记录校验失败: ${result.message}\n`);process.exitCode=result.exitCode;}
+    else process.stdout.write(values.history?'历史兼容结构检查完成；execution_authorization=not-evaluated\n':'会签当前绑定及适用用户决定校验通过；不授予执行或发布\n');
   }
 } catch(error) {process.stderr.write(`会签记录校验失败: ${error.message}\n`);process.exitCode=1;}
