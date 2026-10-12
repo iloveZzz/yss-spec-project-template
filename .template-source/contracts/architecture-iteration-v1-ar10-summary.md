@@ -1,6 +1,6 @@
-# AR-10 进展：task 已完成，slice 与 checkpoint 待决定
+# AR-10 进展：task 已完成，checkpoint 已量测，slice 待决定
 
-状态：task 校验入口完成；slice、checkpoint 经调研后停在决定点（见 §3）。沿用 AR-09 的口径：删除 Node 实现与删除规则随 AR-11，本包做回放、薄壳和委托。
+状态：task 校验入口完成；checkpoint 完成对拍量测并固化为回放（§4），薄壳待决定；slice 停在输出形态决定点（§3）。沿用 AR-09 的口径：删除 Node 实现与删除规则随 AR-11，本包做回放、薄壳和委托。
 
 ## 1. 已完成：task（`contract verify --kind task`）
 
@@ -29,3 +29,15 @@
 
 ### 建议
 先对 checkpoint 做一次「对拍量测」（复用现有 stage-tracking、lifecycle-progression 夹具生成真实 checkpoint，用 Node 与 yss 各校验一次，只统计结论一致率与不一致类别，不改任何入口），再决定补 Go 还是缩范围；slice 先定输出形态。两者都需要维护者拍板，不适合我自行选择。
+
+## 4. checkpoint 对拍量测结果（已固化为回放测试）
+
+- 方法：在真实实例里用 `yss stage plan/apply` 生成带阶段跟踪的 checkpoint（`stage_tracking`、`feature_id`、路径登记），同一批变体分别交给**实例自带的** `scripts/verify-lifecycle-checkpoint`（Node）与 `yss lifecycle verify --checkpoint`，只比通过/拒绝。回放测试 20 类全部一致：原样、mode/status 变化、完成与会签前缺对账、blocked、下一工作单元未登记/为空/缺 Plan 审阅包/缺业务票、阶段与 trace 不一致、边界决定、缺 gates、引用不存在的用户决定、仓库身份矛盾、多余字段、schema 版本。量测阶段用了 37 类，同样全部一致。
+- 关键前置：没有阶段跟踪的 checkpoint 两边都会在「跟踪」上拒绝；要比较其余语义必须先让 checkpoint 是已登记、已跟踪的。唯一一次差异出现在未跟踪的 `next_work_unit: null`（Node 放行，yss 要求功能身份与路径一致），在已跟踪的 checkpoint 上不存在。这条差异意味着：yss 对**所有**checkpoint 要求登记的功能身份，Node 在不需要跟踪时不要求。
+- 覆盖缺口（未量）：已批准门禁与其批准记录（批准路径已委托，但整份 checkpoint 带批准的场景未对拍）、Plan 聚合、业务票与已通过业务审查的组合、执行范围终点（`loadExecutionScope`）、`--history`。
+- 薄壳化 `verify-lifecycle-checkpoint` 的代价：有 6 个测试在模板源仓根用合成的 project-instance checkpoint 跑这个 Node 脚本（`checkpoint-boundary`、`project-ci`、`flow-verification-routing`、`verify-lifecycle-operator-scenarios`、`verify-maintenance-risk-scenarios`、`lifecycle-status-feedback`），换成 yss 薄壳后它们在模板源仓根会因仓库身份矛盾失败，需要像 5b 那样迁到真实实例根。
+
+## 5. 建议
+
+- checkpoint：对拍一致率足够，建议换薄壳并把上述 6 个测试迁到真实实例；先补一轮「带批准门禁」的对拍再换。
+- slice：先定输出形态（见 §3）。

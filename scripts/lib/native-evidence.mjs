@@ -7,7 +7,9 @@ import {contextBinary} from './native-context.mjs';
 
 export function nativeEvidenceVerify({root, kind, file, extra = [], environment = process.env, group = 'evidence'}) {
   const {binary} = contextBinary(environment);
-  const args = [group, 'verify', '--root', root, '--kind', kind, '--file', file, ...extra, '--json'];
+  // lifecycle 领域的资产选择器是 --checkpoint，其余领域是 --kind 加 --file。
+  const selector = group === 'lifecycle' ? ['--checkpoint', file] : ['--kind', kind, '--file', file];
+  const args = [group, 'verify', '--root', root, ...selector, ...extra, '--json'];
   const run = spawnSync(binary, args, {cwd: root, env: environment, encoding: 'utf8', timeout: 120000, maxBuffer: 32 * 1024 * 1024});
   if (run.error || run.signal || !Number.isInteger(run.status)) throw new Error(`NATIVE_INTERRUPTED: ${run.error?.message || run.signal}`);
   let envelope;
@@ -104,4 +106,9 @@ export function nativeApprovalRecord({root: given, record, file, gate, expected,
 // contract 领域（slice、task、scaffold、frontend-delivery）的校验，与 evidence 同一信封。
 export function nativeContractVerify(options) {
   return nativeEvidenceVerify({...options, group: 'contract'});
+}
+
+// lifecycle 领域（checkpoint）的校验。
+export function nativeLifecycleVerify(options) {
+  return nativeEvidenceVerify({...options, kind: 'checkpoint', group: 'lifecycle'});
 }

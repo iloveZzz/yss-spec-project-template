@@ -114,6 +114,7 @@ profiles:
           - "scripts/verify-approval-record"
           - "scripts/verify-user-decision"
           - "scripts/verify-digital-human-task-package"
+          - "scripts/verify-lifecycle-checkpoint"
           - "scripts/lib/native-evidence.mjs"
           - "scripts/lib/native-context.mjs"
           - "scripts/lib/user-decision.mjs"

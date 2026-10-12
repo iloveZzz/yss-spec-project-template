@@ -7,8 +7,9 @@ import os from 'node:os';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {contextBinary} from '../scripts/lib/native-context.mjs';
-import {nativeEvidenceVerify, nativeContractVerify, nativeDelegationAvailable, rootBoundRead} from '../scripts/lib/native-evidence.mjs';
+import {nativeEvidenceVerify, nativeContractVerify, nativeLifecycleVerify, nativeDelegationAvailable, rootBoundRead} from '../scripts/lib/native-evidence.mjs';
 import {generateTaskPackageDefaults, validateTaskPackage} from '../scripts/lib/task-package.mjs';
+import {parse as parseYamlText} from '../scripts/vendor/yaml.mjs';
 import {buildDecisionFixture} from '../scripts/lib/testing/user-decision-fixture.mjs';
 import {validateUserDecision, assertUserDecisionRequirement} from '../scripts/lib/user-decision.mjs';
 import {validateApprovalRecord, approvalExpectationFromSubject} from '../scripts/lib/approval-record.mjs';
@@ -412,3 +413,55 @@ test('verify-digital-human-task-package 薄壳：通过与拒绝都透传', {ski
   assert.notEqual(bad.status, 0);
   assert.match(bad.stderr, /数字人任务包验证失败/);
 });
+
+// 生命周期 checkpoint：在真实实例里用 yss stage plan/apply 生成带阶段跟踪的 checkpoint，
+// 同一批变体交给实例自带的 Node 校验脚本与 yss lifecycle verify，通过/拒绝结论必须一致。
+function trackedCheckpoint() {
+  site = 'instance';
+  const inst = setup();
+  const feature = `.work/replay-checkpoint-${++seq}`;
+  mkdirSync(path.join(inst, feature, 'plan'), {recursive: true});
+  writeFileSync(path.join(inst, feature, 'plan/input.md'), '# 已确认的问题\n');
+  const template = parseYamlText(readFileSync(path.join(inst, '.template-spec/process/templates/lifecycle-checkpoint-template.yaml'), 'utf8'));
+  const ref = `${feature}/checkpoint.json`;
+  writeFileSync(path.join(inst, ref), JSON.stringify({...template, feature_id: `feature.replay${seq}`, stage: 'stage.plan', next_work_unit: 'work-unit.plan-requirements', stage_trace: {...template.stage_trace, stage: 'stage.plan'}}));
+  writeFileSync(path.join(inst, feature, 'map.md'), `---\ncheckpoint_ref: ${ref}\n---\n# 登记\n`);
+  writeFileSync(path.join(inst, `replay-items-${seq}.json`), JSON.stringify([{id: 'scope', title: '明确导入覆盖规则', stage: 'stage.plan', work_unit: 'work-unit.plan-requirements', owner: '需求负责人', scope: '明确重复数据如何处理', acceptance: ['覆盖规则有明确实例'], source_refs: [`${feature}/plan/input.md`]}]));
+  const plan = spawnSync(binary, ['stage', 'plan', '--root', inst, '--checkpoint', ref, '--items', `replay-items-${seq}.json`], {cwd: inst, encoding: 'utf8'});
+  assert.equal(plan.status, 0, plan.stderr);
+  writeFileSync(path.join(inst, `replay-stage-plan-${seq}.json`), plan.stdout);
+  const applied = spawnSync(binary, ['stage', 'apply', '--root', inst, '--plan-file', `replay-stage-plan-${seq}.json`, '--json'], {cwd: inst, encoding: 'utf8'});
+  assert.equal(applied.status, 0, applied.stdout);
+  return {inst, ref, base: JSON.parse(readFileSync(path.join(inst, ref), 'utf8'))};
+}
+const checkpointVariants = {
+  '原样': (x) => x,
+  'mode=audit': (x) => ({...x, mode: 'audit'}),
+  'status=running': (x) => ({...x, status: 'running'}),
+  'status=completed 无阶段验收': (x) => ({...x, status: 'completed', next_work_unit: null}),
+  'status=paused-human-gate 无对账': (x) => ({...x, status: 'paused-human-gate'}),
+  'status=blocked 有阻塞': (x) => ({...x, status: 'blocked', blockers: ['缺少输入']}),
+  '未知 status': (x) => ({...x, status: 'unknown'}),
+  '下一工作单元未登记': (x) => ({...x, next_work_unit: 'work-unit.unknown'}),
+  'next=null': (x) => ({...x, next_work_unit: null}),
+  'next=spec-synthesis 缺 Plan 审阅包': (x) => ({...x, next_work_unit: 'work-unit.spec-synthesis'}),
+  'next=slice-implementation 缺业务票': (x) => ({...x, next_work_unit: 'work-unit.slice-implementation'}),
+  'stage 与 trace 不一致': (x) => ({...x, stage: 'stage.spec-architecture'}),
+  '边界 handoff 缺依据': (x) => ({...x, phase_boundary: {decision: 'handoff'}}),
+  '边界 handoff 有依据': (x) => ({...x, phase_boundary: {decision: 'handoff', reason: 't', source_ref: 'CONTEXT.md', destination_ref: 'AGENTS.md'}}),
+  '边界未知': (x) => ({...x, phase_boundary: {decision: 'unknown', reason: 't'}}),
+  '缺 gates': (x) => { const y = structuredClone(x); delete y.gates; return y; },
+  '引用不存在的用户决定': (x) => ({...x, status: 'running', human_review: {...x.human_review, required_decisions: [{boundary: 'gate.plan-approved', subject_ref: 'none.md', scope: ['a'], user_decision_ref: 'none.json'}]}}),
+  '仓库身份矛盾': (x) => ({...x, repository_mode: 'template-source'}),
+  '多余字段': (x) => ({...x, surprise: 1}),
+  'schema_version=2': (x) => ({...x, schema_version: 2}),
+};
+for (const [name, mutate] of Object.entries(checkpointVariants)) {
+  test(`checkpoint 回放：${name}`, {skip}, () => {
+    const {inst, ref, base} = trackedCheckpoint();
+    writeFileSync(path.join(inst, ref), JSON.stringify(mutate(structuredClone(base))));
+    const node = spawnSync(process.execPath, [path.join(inst, 'scripts/verify-lifecycle-checkpoint'), ref], {cwd: inst, encoding: 'utf8'});
+    const go = nativeLifecycleVerify({root: inst, file: ref});
+    assert.equal(go.exitCode === 0, node.status === 0, `结论不一致：Node=${node.status} ${node.stderr.trim().slice(0, 120)} Go=${go.exitCode} ${go.message.slice(0, 120)}`);
+  });
+}

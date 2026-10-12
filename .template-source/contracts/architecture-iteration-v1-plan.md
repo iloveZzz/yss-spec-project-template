@@ -78,7 +78,7 @@ S3 的 AR-08 可以和 S1、S2 并行。S4 的 AR-15 只依赖 AR-01，可以提
 | AR-07 | FR-009 | L2：core-validator | 根仓 | `scripts/lib/**` 中切断 5 条边、把 user-decision 的读写与摘要工具下沉到 core；新增导入方向检查与登记 | AR-06 | — |
 | AR-08 | FR-009 | L2：core-validator、cross-repo-contract | yss-cli | `internal/governance` 按领域拆成子包，对外行为不变 | AR-02 | — |
 | AR-09 | FR-010、FR-011、FR-016 | L2：core-validator、lifecycle-gate、release-semantics（需反例） | yss-cli、根仓 | 第 1 步（approval、user-decision、verification、spec-baseline）：根仓 fixture 回放、同名薄壳与冒烟检查、非交接调用方委托；**删除对应的 Node 实现与对应版本的删除规则移交 AR-11**（2026-10-12 维护者确认，见 `architecture-iteration-v1-ar09-summary.md`） | AR-01、AR-07、AR-08 | — |
-| AR-10 | 同上 | 同上 | yss-cli、根仓 | 第 2 步：checkpoint、slice、task 的校验 | AR-09 | Q-004 |
+| AR-10 | 同上 | 同上 | yss-cli、根仓 | 第 2 步：checkpoint、slice、task 的校验 | AR-09 | Q-004。**checkpoint 对拍**：在真实实例里用 `yss stage plan/apply` 生成已跟踪的 checkpoint，Node 脚本与 yss 对 20 类变体结论全部一致；覆盖缺口（带批准门禁、Plan 聚合、业务票、执行范围终点、`--history`）未量；薄壳化需迁 6 个依赖合成根的测试，详见 AR-10 总结 §4–§5 |
 | AR-11 | 同上 | 同上 | yss-cli、根仓 | 第 3 步：handoff、context；并接收 AR-09 移交的 approval/user-decision 的 Node 实现删除与删除规则（清单见 AR-09 总结 §4） | AR-10 | Q-004 |
 | AR-12 | 同上 | 同上 | yss-cli、根仓 | 第 4 步：backend、frontend 的校验部分 | AR-11 | — |
 | AR-13 | FR-012 | L2：lifecycle-gate、template-structure（需反例） | 根仓 | 编排合同按层和领域拆成多个文件，`work_unit_routes` 每个工作单元一个文件；逐项写明策略的 owner 与消费者，写不出来的删除；读取合同的 Node 与 Go 代码相应调整 | AR-07 | — |
