@@ -10,22 +10,17 @@ YSS_CI_PYTHON_MINOR="${YSS_CI_PYTHON_MINOR:-3.12}"
 YSS_CI_UV_VERSION="${YSS_CI_UV_VERSION:-0.13.0}"
 YSS_CI_JSONSCHEMA_VERSION="${YSS_CI_JSONSCHEMA_VERSION:-4.23.0}"
 YSS_CLI_REPOSITORY="${YSS_CLI_REPOSITORY:-https://github.com/iloveZzz/yss-cli.git}"
-# 都是公开仓库、gitlink 固定的提交。yss-cli 不再是 submodule：它的版本、提交、Go 版本和各平台二进制摘要写在
+# yss-cli 不是 submodule：它的版本、提交、Go 版本和各平台二进制摘要写在
 # .template-source/distribution/yss-cli-pin.json；供 read-only-intake 等检查读取的 CLI 源码历史约 1GB，永远只浅克隆那个固定提交。
 YSS_CLI_PIN=.template-source/scripts/lib/yss-cli-pin.mjs
-PROFILE_SUBMODULES=(
-  submodules/yss-harness-design-agent
-  submodules/yss-harness-backend-agent
-  submodules/yss-harness-frontend-agent
-)
 
 usage() {
   cat <<'EOF'
-用法: scripts/ci-setup [--no-python] [--submodules] [--yss-commit <40位SHA>|pin] [--dry-run]
+用法: scripts/ci-setup [--no-python] [--toolchain] [--yss-commit <40位SHA>|pin] [--dry-run]
        scripts/ci-setup --print-versions
   默认          校验 Node 主版本、确认 template-source、按 frozen lockfile 安装 pnpm 依赖、安装 Python schema 依赖
   --no-python   跳过 Python schema 依赖
-  --submodules  初始化三个公开固定的 Profile 子模块，并准备原型作者工具链
+  --toolchain   准备原型作者工具链，并（配合 --yss-commit）安装固定版本的 Go 以构建 yss
   --yss-commit  从固定提交构建 yss 二进制（需要 go）；写 pin 表示取 yss-cli 固定文件里的提交，并在构建后核对固定的 sha256
   --dry-run     只打印计划，不执行
   --print-versions  打印 node= 与 python= 的目标版本（KEY=value，可直接追加到 $GITHUB_OUTPUT），供平台适配器选择运行时，不重复写版本号
@@ -37,13 +32,13 @@ EOF
 }
 
 python=1
-submodules=0
+toolchain=0
 yss_commit=""
 dry_run=0
 while (($#)); do
   case "$1" in
     --no-python) python=0 ;;
-    --submodules) submodules=1 ;;
+    --toolchain) toolchain=1 ;;
     --yss-commit)
       shift
       yss_commit="${1:-}"
@@ -152,20 +147,7 @@ fi
 step "确认仓库模式为 template-source"
 if ((!dry_run)); then test "$(scripts/repository-mode)" = template-source; else echo "+ test \"\$(scripts/repository-mode)\" = template-source"; fi
 
-if ((submodules)); then
-  step "初始化公开固定子模块"
-  # 构建 yss 时 Bundle 工具要读 source-lock 固定的 Profile 历史提交，所以此时 Profile 仓库（各约 10MB）完整克隆；否则浅克隆即可。
-  depth_args=(--depth=1)
-  [[ -z "$yss_commit" ]] || depth_args=()
-  run git submodule sync -- "${PROFILE_SUBMODULES[@]}"
-  run git -c protocol.version=2 submodule update --init ${depth_args[@]+"${depth_args[@]}"} -- "${PROFILE_SUBMODULES[@]}"
-  step "物化 Profile 的生成技能"
-  # Profile 子模块的提交里只有少数自有技能，其余由本仓 canonical 生成且被 .gitignore 忽略。
-  # 干净检出不物化时，sync-profile-skills --check 与 skill-registry.test.mjs 必然失败，任何改动技能的 PR 都会被拦。
-  run scripts/sync-profile-skills --apply --profile=all
-fi
-
-if ((submodules)); then
+if ((toolchain)); then
   step "Go：版本取自 yss-cli 固定文件的 go_version"
   if ((dry_run)); then
     echo "+ go 缺失或低于固定文件的 go_version 时，在 root 容器内按 go.dev 公布的 sha256 安装"
@@ -229,7 +211,7 @@ else
 fi
 run pnpm --dir .template-source/tooling/node install --frozen-lockfile
 
-if ((submodules)); then
+if ((toolchain)); then
   step "准备原型作者工具链"
   if ((dry_run)); then
     echo "+ cp .agents/skills/yss-prototype-stage/assets/shadcn-vue-authoring/{package.json,pnpm-lock.yaml} <临时目录> && pnpm --dir <临时目录> install --frozen-lockfile --ignore-scripts"

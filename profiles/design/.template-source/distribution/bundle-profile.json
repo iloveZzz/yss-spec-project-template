@@ -213,7 +213,8 @@
       "scripts/verify-project-instance",
       "scripts/verify-retired-skill-ids",
       "scripts/verify-user-decision",
-      "scripts/verify-work-layout"
+      "scripts/verify-work-layout",
+      "scripts/lib/profile-tree.mjs"
     ],
     "excludeRootEntries": [
       ".git",

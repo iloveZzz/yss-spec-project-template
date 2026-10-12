@@ -1,11 +1,12 @@
 import test from 'node:test';
+import {composeProfileTree} from '../../lib/profile-tree.mjs';
 import assert from 'node:assert/strict';
 import {readFileSync,existsSync} from 'node:fs';
 import path from 'node:path';
 import {readingFixture,repo} from './fixture.mjs';
 const cp='docs/.scratch/demo/checkpoint.yaml',manifest='docs/.scratch/demo/reading/.manifest.json';
 function registeredReading(profile='spec',checkpoint='intake-checkpoint.json'){
- const f=readingFixture(),owner=profile==='design'?path.join(repo,'submodules/yss-harness-design-agent'):repo;
+ const f=readingFixture(),owner=profile==='design'?composeProfileTree('design'):repo;
  if(profile==='spec')f.put('.template-spec/process/harness-profile.yaml',{schema_version:1,profile_id:'harness.spec-template'});else f.put('.template-spec/process/harness-profile.yaml',readFileSync(path.join(owner,'.template-spec/process/harness-profile.yaml'),'utf8'));
  const contract=profile==='design'?'.agents/skills/yss-strategic-design/references/orchestration-contract.yaml':'.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml';f.put(contract,readFileSync(path.join(owner,contract),'utf8'));
  f.put('.template-spec/agents/issue-tracker.md','---\ntracker:\n  platform: local-markdown\n  root: .work\n---\n');

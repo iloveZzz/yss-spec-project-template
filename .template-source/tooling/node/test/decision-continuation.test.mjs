@@ -1,10 +1,11 @@
+import { composeProfileTree } from '../../../../scripts/lib/profile-tree.mjs';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { mkdtempSync, rmSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { buildDecisionFixture, buildImplementationFixture } from '../../../../scripts/fixtures/user-decision/build-fixture.mjs';
 import { buildPlanFixture } from '../../../../scripts/fixtures/user-decision/plan-fixture.mjs';
 import { assertPlanSpecEntry } from '../../../../scripts/lib/plan-spec-entry.mjs';
@@ -58,7 +59,7 @@ test('source approval continuation is verified by all three dedicated receivers'
   const record = { schema_version: 1, gate_id: f.requirement.boundary, decision: 'approved', actor_kind: 'digital-human', role_id: 'role.test-engineer', runtime_id: 'runtime.generic', principal_ref: 'synthetic.reviewer', drafter_principal_ref: 'synthetic.worker', subject_ref: f.subject.ref, subject_digest:f.asset(f.subject.ref).digest.slice(7), basis:f.basis.map(x=>({ref:x.ref,digest:x.digest.slice(7)})), approval_scope: f.requirement.scope, continuation_ref: f.requirement.continuation_ref };
   const input = f.save('source-approval.json', { record, currentAssetRef:f.subject.ref, roles: loadDigitalHumanRoles() });
   for (const profile of ['design', 'backend', 'frontend']) {
-    const moduleUrl = new URL(`../../../../submodules/yss-harness-${profile}-agent/scripts/lib/strategic-handoff.mjs`, import.meta.url).href;
+    const moduleUrl = pathToFileURL(path.join(composeProfileTree(profile), 'scripts/lib/strategic-handoff.mjs')).href;
     const code = `import {readFileSync} from 'node:fs'; import {sourceApproval} from ${JSON.stringify(moduleUrl)}; const {record,roles,currentAssetRef}=JSON.parse(readFileSync(process.argv[1])); await sourceApproval(record,roles,process.argv[2],currentAssetRef);`;
     const result = spawnSync(process.execPath, ['--input-type=module', '-e', code, input, f.root], { encoding: 'utf8' });
     assert.equal(result.status, 0, `${profile}: ${result.stderr}`);

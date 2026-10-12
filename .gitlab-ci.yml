@@ -14,7 +14,7 @@ template-gate:
     GIT_DEPTH: "0"
     YSS_CI_ENV_FILE: /tmp/yss-ci-env
   script:
-    - scripts/ci-setup --submodules --yss-commit pin
+    - scripts/ci-setup --toolchain --yss-commit pin
     - set -a; if [ -f "$YSS_CI_ENV_FILE" ]; then . "$YSS_CI_ENV_FILE"; fi; set +a
     - |
       if [ "$CI_PIPELINE_SOURCE" = "merge_request_event" ]; then

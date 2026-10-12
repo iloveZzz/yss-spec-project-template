@@ -125,7 +125,8 @@
       "scripts/verify-plan-spec-entry",
       "scripts/verify-profile-distribution",
       "scripts/verify-project-instance",
-      "scripts/verify-work-layout"
+      "scripts/verify-work-layout",
+      "scripts/lib/profile-tree.mjs"
     ],
     "excludeRootEntries": [
       ".git",

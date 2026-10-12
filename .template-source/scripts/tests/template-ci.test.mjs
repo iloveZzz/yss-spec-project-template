@@ -36,7 +36,6 @@ function fixture(t) {
   const cli=path.join(base,'native-source'),repo=path.join(base,'template');mkdirSync(cli);mkdirSync(repo);
   git(cli,'init','-q');git(repo,'init','-q');
   put(cli,'go.mod','module github.com/iloveZzz/yss-cli\n\ngo 1.27.1\n');put(cli,'main.go',readFileSync(path.join(root,'.template-source/scripts/tests/fixtures/native-release.go'),'utf8'));const cliCommit=commit(cli);
-  const templateCommits={};for(const family of ['design','backend','frontend']){const child=path.join(base,family);mkdirSync(child);git(child,'init','-q');put(child,'README.md',`Synthetic ${family} template\n`);templateCommits[family]=commit(child);git(repo,'-c','protocol.file.allow=always','submodule','add','-q',child,`submodules/yss-harness-${family}-agent`);}
   put(repo,'yss-project.yaml','schema_version: 1\nrepository_mode: template-source\n');put(repo,'scripts/repository-mode','#!/bin/sh\necho template-source\n',0o755);
   put(repo,'.template-source/scripts/lib/verification-preflight.mjs','process.stdout.write(JSON.stringify({status:"passed",errors:[]}));');
   put(repo,'.template-source/process/template-verification-profiles.yaml',JSON.stringify({schema_version:1,default_selection:'legacy',profiles:{fast:{all_groups:true},candidate:{all_groups:true},release:{all_groups:true}},groups:{fixture:{commands:[{id:'check.fixture',run:'node -e ""'}]}},required_files:[],syntax_files:[],routing:[]}));
@@ -51,7 +50,7 @@ function fixture(t) {
  finalizeVerificationReport(report,{status:'passed',wallMs:1,repositoryMode:'template-source'});report.input_after_sha256=sha;report.input_drift=false;report.final_exit={code:0,signal:null,observed:true};fs.writeFileSync(path.join(directory,'report.json'),JSON.stringify(report));})().catch(error=>{console.error(error);process.exitCode=1});
 `, 0o755);
   const sha=commit(repo),binary=path.join(base,'yss-fixture');
-  const bind=templateSha=>{const ldflags=`-X main.cliCommit=${cliCommit} -X main.templateCommit=${templateSha} -X main.designCommit=${templateCommits.design} -X main.backendCommit=${templateCommits.backend} -X main.frontendCommit=${templateCommits.frontend}`;const built=spawnSync('go',['build','-trimpath','-ldflags',ldflags,'-o',binary,'.'],{cwd:cli,env:{...process.env,CGO_ENABLED:'0'},encoding:'utf8'});assert.equal(built.status,0,built.stderr);process.env.YSS_NATIVE_BINARY=binary;process.env.YSS_NATIVE_BINARY_SHA256=hash(readFileSync(binary));process.env.YSS_NATIVE_SOURCE_ROOT=realpathSync(cli);};
+  const bind=templateSha=>{const ldflags=`-X main.cliCommit=${cliCommit} -X main.templateCommit=${templateSha} -X main.designCommit=${templateSha} -X main.backendCommit=${templateSha} -X main.frontendCommit=${templateSha}`;const built=spawnSync('go',['build','-trimpath','-ldflags',ldflags,'-o',binary,'.'],{cwd:cli,env:{...process.env,CGO_ENABLED:'0'},encoding:'utf8'});assert.equal(built.status,0,built.stderr);process.env.YSS_NATIVE_BINARY=binary;process.env.YSS_NATIVE_BINARY_SHA256=hash(readFileSync(binary));process.env.YSS_NATIVE_SOURCE_ROOT=realpathSync(cli);};
   const previous={binary:process.env.YSS_NATIVE_BINARY,sha:process.env.YSS_NATIVE_BINARY_SHA256,source:process.env.YSS_NATIVE_SOURCE_ROOT};t.after(()=>{for(const [key,value]of [['YSS_NATIVE_BINARY',previous.binary],['YSS_NATIVE_BINARY_SHA256',previous.sha],['YSS_NATIVE_SOURCE_ROOT',previous.source]]){if(value===undefined)delete process.env[key];else process.env[key]=value;}});bind(sha);
   return {base,repo,sha,binary,cli,bind,output:path.join(base,'evidence')};
 }
@@ -115,19 +114,6 @@ test('真实发布报告兼容 v1 baseline，并拒绝删除 syntax/终检、任
  const result=verify();assert.equal(result.valid,true,result.reasons.join('; '));assert.equal(result.bindings.strategy,'legacy-full');assert.equal(result.bindings.sources_manifest.families[0],'spec');
  full.results.pop();persist();assert.equal(verify().valid,false);
  full.results.push(terminal);full.plan.commands=[];persist();assert.equal(verify().valid,false);
-});
-
-test('发布检出允许历史私有模板未初始化，但仍要求三个 Agent 模板源就绪', t => {
-  const f = fixture(t);
-  const legacy = path.join(f.base, 'legacy-private-template');
-  mkdirSync(legacy);
-  git(legacy, 'init', '-q');
-  put(legacy, 'README.md', 'legacy private template\n');
-  commit(legacy);
-  git(f.repo, '-c', 'protocol.file.allow=always', 'submodule', 'add', '-q', legacy, 'submodules/yss-harness-dev-agent');
-  const sha = commit(f.repo);
-  git(f.repo, 'submodule', 'deinit', '-f', '--', 'submodules/yss-harness-dev-agent');
-  assert.doesNotThrow(() => assertReleaseCheckout(f.repo, sha));
 });
 
 test('退出零但缺失或不完整的全量报告阻止打包', t => {
@@ -203,22 +189,14 @@ test('发行验证在有 yss-cli 固定文件时只接受固定的二进制与�
   assert.throws(()=>collectReleaseSources({root:f.repo,commit:f.sha}),/不接受 YSS_NATIVE_BINARY_OVERRIDE/,'本地覆盖不能通过发行验证');
 });
 
-test('浮动版本、脏树、未初始化或漂移子模块不得用于发布；四旧执行器与显式 CLI 源无需 gitlink checkout', t => {
+test('浮动版本与脏树不得用于发布；Profile 已并入本仓，没有子模块来源需要核验', t => {
   const f = fixture(t);
-  const optional=['create-yss-spec','create-yss-strategic-design','create-yss-harness-backend','create-yss-harness-frontend'];
-  for(const name of optional)git(f.repo,'-c','protocol.file.allow=always','submodule','add','-q',f.cli,`submodules/${name}`);
-  f.sha=commit(f.repo);git(f.repo,'submodule','deinit','-f','--',...optional.map(name=>`submodules/${name}`));
   assert.equal(assertReleaseCheckout(f.repo,f.sha).template_commit,f.sha);
   assert.throws(() => assertReleaseCheckout(f.repo, 'main'), /40 位/);
   assert.throws(() => assertReleaseCheckout(f.repo, 'f'.repeat(40)), /不一致/);
   put(f.repo, 'user-change.txt', 'uncommitted');
   assert.throws(() => assertReleaseCheckout(f.repo, f.sha), /干净/);
   rmSync(path.join(f.repo, 'user-change.txt'));
-  const sub = path.join(f.repo, 'submodules/yss-harness-design-agent');
-  put(sub, 'new.txt', 'new'); commit(sub);
-  assert.throws(() => assertReleaseCheckout(f.repo, f.sha), /干净/);
-  git(f.repo, 'submodule', 'deinit', '-f', '--all');
-  assert.throws(() => assertReleaseCheckout(f.repo, f.sha), /子模块/);
 });
 
 test('失败保留报告和退出码，不执行后续打包', t => {

@@ -1,3 +1,4 @@
+import { composeProfileTree } from '../../../../scripts/lib/profile-tree.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -36,7 +37,7 @@ function nativeProjection(f, changes = {}) {
 }
 
 async function specialistTaskFixture(t, profile) {
-  const f = fixture(t), source = path.join(ROOT, `submodules/yss-harness-${profile}-agent`);
+  const f = fixture(t), source = composeProfileTree(profile);
   fs.cpSync(source, f.root, {recursive: true, filter: file => !path.relative(source, file).split(path.sep).some(part => ['.git', '.codegraph', 'node_modules'].includes(part))});
   const profileId = profile === 'design' ? 'harness.business-ddd-strategy-handoff' : `harness.${profile}-delivery`, hex = '0'.repeat(64);
   f.write('yss-project.yaml', 'schema_version: 1\nrepository_mode: project-instance\n');

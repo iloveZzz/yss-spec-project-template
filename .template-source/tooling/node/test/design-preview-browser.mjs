@@ -5,7 +5,7 @@ const {chromium}=await import(process.env.YSS_PLAYWRIGHT_MODULE||'playwright'),r
 const browser=await chromium.launch(),context=await browser.newContext({offline:true,reducedMotion:'reduce'}),page=await context.newPage(),errors=[];
 page.on('pageerror',e=>errors.push(e.message));page.on('requestfailed',r=>errors.push(r.url()));page.on('console',m=>{if(['warning','error'].includes(m.type()))errors.push(m.text());});
 try{
- for(const base of [root,path.join(root,'submodules/yss-harness-design-agent'),path.join(root,'submodules/yss-harness-frontend-agent')]){
+ for(const base of [root]){
   const md=await readFile(path.join(base,'DESIGN.md'),'utf8'),spec=parseDocument(md.slice(4,md.indexOf('\n---',4))).toJS();
   for(const width of [1440,390]){
    await page.setViewportSize({width,height:width===390?844:900});await page.goto(pathToFileURL(path.join(base,'.template-source/design/preview.html')).href);

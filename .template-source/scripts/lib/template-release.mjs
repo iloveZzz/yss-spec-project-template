@@ -19,37 +19,14 @@ function git(root, args) {
   return result.stdout.trim();
 }
 
-const OPTIONAL_UNINITIALIZED_SUBMODULES = new Set([
-  'submodules/yss-harness-dev-agent',
-  // Historical gitlinks may remain until the physical retirement checkpoint.
-  // Their source trees are no longer production inputs.
-  'submodules/create-yss-spec',
-  'submodules/create-yss-strategic-design',
-  'submodules/create-yss-harness-backend',
-  'submodules/create-yss-harness-frontend',
-]);
 // yss-cli 不是 submodule：CLI 来源由 .template-source/distribution/yss-cli-pin.json 固定，并从显式提交的源码目录核验。
 
 export function assertReleaseCheckout(root, commit) {
   assert.match(commit, /^[a-f0-9]{40}$/, '必须指定完整 40 位 commit SHA');
   assert.equal(git(root, ['rev-parse', 'HEAD']), commit, '检出版本与待发布版本不一致');
-  assert.equal(git(root, ['status', '--porcelain', '--untracked-files=normal', '--ignore-submodules=none']), '', '发布验证要求干净工作树及子模块');
-  const submodules = git(root, ['submodule', 'status', '--recursive']);
-  // 兼容期私有模板不参与主模板验证；GitHub 默认 token 无跨仓私有读取权限。
-  const invalidSubmodules = submodules.split('\n').filter(line => {
-    if (/^[+U]/.test(line)) return true;
-    if (!line.startsWith('-')) return false;
-    const match = /^-[a-f0-9]{40}\s+(\S+)/.exec(line);
-    return !match || !OPTIONAL_UNINITIALIZED_SUBMODULES.has(match[1]);
-  });
-  assert.deepEqual(invalidSubmodules, [], '必需子模块必须检出 gitlink 指定版本');
-  // The three Agent template sources remain required. The retired executors are
-  // deliberately absent from production input validation.
-  for(const name of ['design','backend','frontend']){
-    const ref=`submodules/yss-harness-${name}-agent`,match=/^160000 commit ([a-f0-9]{40})\t/.exec(git(root,['ls-tree',commit,'--',ref]));
-    assert.ok(match,`缺少固定模板源: ${ref}`);assert.equal(git(path.join(root,ref),['rev-parse','HEAD']),match[1],'模板源与 gitlink 不一致');
-  }
-  return { template_commit: commit, submodules };
+  assert.equal(git(root, ['status', '--porcelain', '--untracked-files=normal']), '', '发布验证要求干净工作树');
+  // Profile 已并入本仓 profiles/，没有任何子模块来源需要核验。
+  return { template_commit: commit };
 }
 
 export function verifyTemplateRelease({ root, commit, output, runtimeStore = 'off',cliFamily='all-four',base,baselineReport,baselineReportDigest,qualificationReport,qualificationReportDigest,concurrency=1,toolingMode='legacy',expectedPlan,artifactCoordinator }) {

@@ -34,7 +34,7 @@
 
 ## 来源同步与分发
 
-保留的 Node 治理工具以综合模板 `.template-source/cli-core/` 为共享模块权威来源。`scripts/sync-strategic-handoff-tools` 生成根工具副本及三个 Agent 模板的共享工具并更新同步锁；禁止手改复制品。原生 `yss` 的执行器与 Bundle 生产代码由独立 `yss-cli` Go 源码持有，不从四个旧 CLI 的私有模块取得。canonical Skill 仍位于 `.agents/skills`，投影及锁文件通过仓库脚本生成。
+保留的 Node 治理工具以综合模板 `.template-source/cli-core/` 为共享模块权威来源。三个专职 Profile 与根仓共用同一份内核文件，只在 `profiles/` 覆盖层里放差异；不再有生成复制品的同步脚本或同步锁。原生 `yss` 的执行器与 Bundle 生产代码由独立 `yss-cli` Go 源码持有，不从四个旧 CLI 的私有模块取得。canonical Skill 仍位于 `.agents/skills`，投影及锁文件通过仓库脚本生成。
 
 Node `>=22.13 <27` 的要求仅适用于继续保留的 Node 治理入口及其实际依赖；这些入口在目标写入前检查版本，最低版本使用已有的 `node:sqlite` API。原生 `yss` 二进制本身不要求安装 Node。Node 治理兼容矩阵覆盖 22.13、24、26 与 macOS、Linux、Windows，并验证 22.12 拒绝且无写入。Windows 的独立治理 runtime 验收入口为 `.template-source/scripts/verify-runtime-windows.mjs`；用 `--help` 查看版本路径、源码摘要清单及仓外报告参数。非 Windows 机械检查不形成 Windows 原生通过证据，便携源码包不替代固定提交来源的完整验证。
 

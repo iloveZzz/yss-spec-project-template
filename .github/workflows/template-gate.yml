@@ -21,7 +21,7 @@ jobs:
           persist-credentials: false
       - uses: ./.github/actions/setup-template
         with:
-          submodules: 'true'
+          toolchain: 'true'
           yss-commit: pin
       - name: scripts/ci-gate
         shell: bash

@@ -1,4 +1,6 @@
+import {pathToFileURL} from 'node:url';
 import {bindSyntheticEvidence} from './evidence-fixture.mjs';
+import {composeProfileTree} from '../../lib/profile-tree.mjs';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import fs from 'node:fs';
@@ -186,7 +188,7 @@ test('backend and frontend receiving distributions read the same authoritative v
   const f=pilotFixture();try {
     f.write('receiver.yaml',stringify({slice_contract:f.contract}));
     for(const profile of ['backend','frontend']) {
-      const receiver=new URL(`../../../submodules/yss-harness-${profile}-agent/`,import.meta.url);
+      const receiver=pathToFileURL(composeProfileTree(profile)+'/');
       const {readSliceContract}=await import(new URL('scripts/lib/slice-contract.mjs',receiver));
       const actual=readSliceContract('receiver.yaml',{root:f.root}).contract;
       assert.deepEqual(actual.common,normalizeSliceContract(f.contract,{root:f.root}).common);

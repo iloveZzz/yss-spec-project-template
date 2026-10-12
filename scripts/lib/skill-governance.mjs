@@ -3,7 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { isTemplateSource } from "./repository-mode.mjs";
 import { loadSkillRegistry } from "./skill-registry.mjs";
-import { treeHash, validateStrategicDesignSkillManifest, validateYssUiSkillManifest } from "./skill-supply-chain.mjs";
+import { treeHash, validateYssUiSkillManifest } from "./skill-supply-chain.mjs";
 
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
@@ -73,28 +73,6 @@ export function validateSkillGovernance({ read = (relative) => readFileSync(path
   const mcpGuide = read(yssUiManifest.mcp.global_install_guide);
   for (const marker of ["npx -y @yss-ui/mcp install codex", "不写用户主目录", "get_codegen_rules", "list_components"]) {
     if (!mcpGuide.includes(marker)) fail(`YSS UI MCP 指南缺少边界或自检标记: ${marker}`);
-  }
-
-  const strategicManifest = validateStrategicDesignSkillManifest(JSON.parse(read(".agents/skills/.strategic-design-skills-manifest.json")));
-  const strategicIds = ["prototype-review", "yss-prototype-stage", "yss-design-system", "yss-stage-decision"];
-  if (JSON.stringify(strategicManifest.skills.map(({ canonical }) => canonical).sort()) !== JSON.stringify(strategicIds.slice().sort())) {
-    fail("战略设计 skills 清单必须恰好覆盖四项公共技能");
-  }
-  for (const skill of strategicManifest.skills) {
-    if (isTemplateSource(ROOT)) {
-      const upstreamDirectory = path.join(ROOT, "submodules/yss-harness-design-agent", strategicManifest.source_root, skill.upstream);
-      if (!existsSync(path.join(upstreamDirectory, "SKILL.md"))) fail(`战略设计上游 skill 不存在: ${skill.upstream}`);
-      if (treeHash(upstreamDirectory) !== skill.upstream_hash) fail(`战略设计上游 hash 漂移: ${skill.upstream}`);
-    }
-    const item = lock.skills?.shared?.[skill.canonical];
-    if (!item || item.source !== strategicManifest.source || item.sourceRevision !== strategicManifest.source_revision || item.upstreamHash !== skill.upstream_hash) {
-      fail(`战略设计 skill 缺少一致的来源锁定: ${skill.canonical}`);
-    }
-    // 模板源的锁不再提交本地树哈希（FR-005）：现算 canonical 目录；实例锁里有打包器写入的值时与之相同。
-    const effectiveHash = item.effectiveHash ?? treeHash(path.join(ROOT, ".agents/skills", skill.canonical));
-    if (effectiveHash !== item.upstreamHash && item.adaptationRef !== strategicManifest.adaptation_ref) {
-      fail(`战略设计 skill 差异缺少薄适配引用: ${skill.canonical}`);
-    }
   }
 
   const registry = loadSkillRegistry();

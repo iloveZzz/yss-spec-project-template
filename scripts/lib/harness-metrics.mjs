@@ -29,7 +29,7 @@ const PIPELINE_PATTERNS = [
   /(^|\/)source-lock[^/]*\.json$/,
 ];
 export const PROJECTION_ROOT_CANDIDATES = [".codex/skills", ".cursor/skills", ".pi/skills", ".claude/skills"];
-const PROFILE_SUBMODULES = ["yss-harness-backend-agent", "yss-harness-design-agent", "yss-harness-frontend-agent"];
+const PROFILE_OVERLAYS = ["backend", "design", "frontend"];
 
 function listDirs(directory) {
   if (!existsSync(directory)) return [];
@@ -234,8 +234,10 @@ export function collectMetrics(root = process.cwd(), options = {}) {
   const canonicalRoot = path.join(root, ".agents/skills");
   const canonical = skillStats(canonicalRoot);
   const canonicalNames = new Set(listDirs(canonicalRoot).filter((entry) => entry.isDirectory()).map((entry) => entry.name));
-  const profiles = Object.fromEntries(PROFILE_SUBMODULES.map((name) => {
-    const dir = path.join(root, "submodules", name);
+  // Profile 并入后每个 Profile 只有覆盖层目录；旧的子模块键名保留，便于与基线对比。
+  const profiles = Object.fromEntries(PROFILE_OVERLAYS.map((short) => {
+    const name = `yss-harness-${short}-agent`;
+    const dir = path.join(root, "profiles", short);
     const stats = skillStats(path.join(dir, ".agents/skills"));
     return [name, { present: existsSync(dir), skills: stats.skills, claude: stats.claude, codex: stats.codex }];
   }));

@@ -1,5 +1,6 @@
 // Fixed native consumer smoke; temporary instances never qualify a release.
 import fs from 'node:fs';
+import {composeProfileTree} from '../../lib/profile-tree.mjs';
 import path from 'node:path';
 import os from 'node:os';
 import assert from 'node:assert/strict';
@@ -76,7 +77,7 @@ try{
   else{
    writing.lifecycle_writing_examples_sha256=asset(target,exampleRef);
    for(const name of ['diagnosing-bugs','grilling'])skills[name]=skill(target,root,name);
-   if(profile==='design'){skills['yss-strategic-design']=skill(target,path.join(root,'submodules/yss-harness-design-agent'),'yss-strategic-design');assert.ok(inspection.manifest.excludePaths.includes(retroRef));assert.equal(fs.existsSync(path.join(target,retroRef)),false);writing.retrospective='existing-profile-exclusion';}
+   if(profile==='design'){skills['yss-strategic-design']=skill(target,composeProfileTree('design'),'yss-strategic-design');assert.ok(inspection.manifest.excludePaths.includes(retroRef));assert.equal(fs.existsSync(path.join(target,retroRef)),false);writing.retrospective='existing-profile-exclusion';}
    else{writing.retro_sha256=asset(target,retroRef);for(const name of ['implement','tdd'])skills[name]=skill(target,root,name);}
   }
   fs.writeFileSync(path.join(target,'contract-smoke.md'),'# 合同阅读验收\n\n目标：保留约束。\n');

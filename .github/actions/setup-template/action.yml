@@ -4,8 +4,8 @@ inputs:
   python:
     description: 是否安装 schema 验证环境
     default: 'true'
-  submodules:
-    description: 是否初始化模板验证依赖的公开固定子模块
+  toolchain:
+    description: 是否准备原型作者工具链与固定版本的 Go
     default: 'false'
   yss-commit:
     description: 可选；yss-cli 的 40 位固定 SHA，或写 pin 取 .template-source/distribution/yss-cli-pin.json 里的固定提交（并核对构建出的二进制摘要）。现役 CLI 检查必须提供本输入或固定的 YSS_NATIVE_BINARY
@@ -29,12 +29,12 @@ runs:
     - shell: bash
       env:
         INPUT_PYTHON: ${{ inputs.python }}
-        INPUT_SUBMODULES: ${{ inputs.submodules }}
+        INPUT_TOOLCHAIN: ${{ inputs.toolchain }}
         INPUT_YSS_COMMIT: ${{ inputs.yss-commit }}
         YSS_CI_ENV_FILE: ${{ github.env }}
       run: |
         args=()
         [[ "$INPUT_PYTHON" == 'true' ]] || args+=(--no-python)
-        [[ "$INPUT_SUBMODULES" == 'true' ]] && args+=(--submodules)
+        [[ "$INPUT_TOOLCHAIN" == 'true' ]] && args+=(--toolchain)
         [[ -z "$INPUT_YSS_COMMIT" ]] || args+=(--yss-commit "$INPUT_YSS_COMMIT")
         scripts/ci-setup ${args[@]+"${args[@]}"}

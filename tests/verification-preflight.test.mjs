@@ -44,44 +44,6 @@ test('报告目录拒绝仓内、已有目录和符号链接逃逸',t=>{
   assert.equal(validateVerificationReportDirectory(root,path.join(temp,'new')),path.join(temp,'new'));
 });
 
-const fixedSHA='a'.repeat(40);
-const agentStatus=['design','backend','frontend'].map(name=>` ${fixedSHA} submodules/yss-harness-${name}-agent`).join('\n');
-test('日常只查所选子模块，允许当前 SHA，拒绝未初始化或冲突',()=>{
- for(const prefix of [' ','+','-','U']){
-  const result=verificationPreflight({root:process.cwd(),nodeVersion:'v24.1.0',plan:{strategy:'daily-necessary',commands:[{command:'go -C submodules/yss-harness-design-agent test ./internal/bundle'}]},probe:(file,args)=>{if(file==='go')return {status:0,stdout:'go version'};assert.equal(file,'git');assert.deepEqual(args,['submodule','status','--recursive','--','submodules/yss-harness-design-agent']);return {status:0,stdout:`${prefix}${fixedSHA} submodules/yss-harness-design-agent`};}});
-  assert.equal(result.status,['-','U'].includes(prefix)?'failed':'passed');
- }
-});
-function preflightWithSubmodules(status) {
-  const probe=(file,args)=>({status:0,stdout:file==='python3'?JSON.stringify({version:[3,12],jsonschema:'4.0',executable:'/fixture/python'}):args[0]==='submodule'?status:'',stderr:''});
-  return verificationPreflight({root:process.cwd(),nodeVersion:'v24.1.0',environment:{YSS_NATIVE_SOURCE_ROOT:path.resolve('/fixture/fixed-yss-source')},probe,plan:{commands:[]}});
-}
-test('三个 Agent 固定源已初始化时通过；yss-cli 不再是 submodule，没有例外',()=>{
-  const result=preflightWithSubmodules(agentStatus);
-  assert.equal(result.status,'passed',JSON.stringify(result.errors));
-  assert.equal(result.observations.find(item=>item.name==='submodule-source').status,'passed');
-});
-test('仍拒绝必需 Agent 缺失、任意 gitlink 漂移或冲突和未知未初始化源',async t=>{
-  const invalid=[
-    ...['design','backend','frontend'].map(name=>`${agentStatus}\n-${fixedSHA} submodules/yss-harness-${name}-agent`),
-    `${agentStatus}\n-${fixedSHA} submodules/yss-cli`,
-    `${agentStatus}\n+${fixedSHA} submodules/yss-cli`,
-    `${agentStatus}\nU${fixedSHA} submodules/yss-cli`,
-    `${agentStatus}\n+${fixedSHA} submodules/yss-harness-design-agent`,
-    `${agentStatus}\nU${fixedSHA} submodules/yss-harness-backend-agent`,
-    `${agentStatus}\n-${fixedSHA} submodules/unknown-source`,
-    `${agentStatus}\n-${fixedSHA} submodules/yss-cli/nested-source`,
-    `${agentStatus}\n-${fixedSHA} submodules/yss-cli-extra`,
-    `${agentStatus}\n-bad-sha submodules/yss-cli`,
-  ];
-  for(const [index,status] of invalid.entries())await t.test(`invalid state ${index+1}`,()=>{
-    const result=preflightWithSubmodules(status);
-    assert.equal(result.status,'failed');
-    assert.deepEqual(result.errors.map(item=>item.name),['submodule-source']);
-    assert.match(result.errors[0].error,/子模块未初始化或与 gitlink 不匹配/);
-  });
-});
-
 test('原生消费者的二进制必须与固定文件一致，本地联调可显式覆盖且 CI 不接受',t=>{
   const temp=fs.mkdtempSync(path.join(os.tmpdir(),'verification-pin-'));t.after(()=>fs.rmSync(temp,{recursive:true,force:true}));
   const sha=bytes=>createHash('sha256').update(bytes).digest('hex');

@@ -1,3 +1,4 @@
+import { composeProfileTree } from '../../../../scripts/lib/profile-tree.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -13,7 +14,7 @@ const ROOT = path.resolve(import.meta.dirname, '../../../..');
 test('consumer mapping preserves dedicated backend identity and rejects unknown wire IDs or out-of-profile targets', t => {
   const dir = fs.realpathSync(fs.mkdtempSync(path.join(tmpdir(), 'consumer-entry-policy-')));
   t.after(() => fs.rmSync(dir, { recursive: true, force: true }));
-  const source = path.join(ROOT, 'submodules/yss-harness-backend-agent');
+  const source = composeProfileTree('backend');
   for (const ref of ['.template-spec/process/harness-profile.yaml', '.template-spec/process/lifecycle-registry.yaml', '.agents/skills/harness-orchestrator/references/orchestration-contract.yaml']) {
     fs.mkdirSync(path.dirname(path.join(dir, ref)), { recursive: true });
     fs.copyFileSync(path.join(source, ref), path.join(dir, ref));

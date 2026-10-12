@@ -1,4 +1,6 @@
+import {pathToFileURL} from 'node:url';
 import {bindSyntheticEvidence} from './evidence-fixture.mjs';
+import {composeProfileTree} from '../../lib/profile-tree.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -78,7 +80,7 @@ test('registered cross-repo preparation and approved dispatch keep same-name pat
   const task=compileSliceTaskPackage(approved.binding,{root:f.root,work_unit_id:'work-unit.peer',task_id:'task.peer',actor_id:'peer.worker',runtime_id:'runtime.generic'});
   assert.match(task.objective,/peer/);
   for(const profile of ['backend','frontend']) {
-    const receiver=await import(`../../../submodules/yss-harness-${profile}-agent/scripts/lib/slice-contract.mjs`);
+    const receiver=await import(pathToFileURL(path.join(composeProfileTree(profile),'scripts/lib/slice-contract.mjs')).href);
     assert.throws(()=>receiver.readSliceContract(approved.binding.ref,{root:f.root}),/不支持当前来源/);
   }
   const unbound=structuredClone(f.contract);delete unbound.extensions.cross_repo.repository_bindings;

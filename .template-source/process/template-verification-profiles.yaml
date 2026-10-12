@@ -38,23 +38,80 @@ profiles:
           - "scripts/lib/doc-facts-patterns.json"
           - "tests/doc-facts.test.mjs"
           - "README.md"
+          - ".template-source/cli-core/README.md"
           - ".template-source/agents/*.md"
           - ".template-spec/agents/*.md"
           - ".template-source/contracts/harness-hardening-v1*.md"
           - ".template-source/contracts/architecture-iteration-v1*.md"
         depends_on: []
         failure_mode: "说明文档复述门禁数、阶段数、投影根数量或硬编码与 lock 不一致的上游 revision"
-      - id: check.profile-variants
-        run: "node --test tests/profile-variants.test.mjs"
+      - id: check.specialist-business-inputs
+        run: "node --test tests/specialist-business-inputs.test.mjs"
         group: feature-assets
         inputs_complete: true
         input_patterns:
-          - "scripts/lib/profile-variants.mjs"
-          - ".template-source/distribution/profile-variants.json"
-          - "scripts/sync-strategic-handoff-tools"
-          - "tests/profile-variants.test.mjs"
+          - "tests/specialist-business-inputs.test.mjs"
+          - "scripts/lib/profile-tree.mjs"
+          - "profiles/**"
         depends_on: []
-        failure_mode: "有意定制登记接受已与来源一致的副本、放过被改动的定制，或把未登记的 Profile 差异当成有意"
+        failure_mode: "专职 Profile 的 Plan/Spec 本地路线偏离上游的唯一日常政策，业务分析角色被允许当 Worker，或专职角色被允许写另一端"
+      - id: check.profile-consumers
+        run: "node --test --test-name-pattern='^(?!backend plugin receives)' tests/efficiency-distribution.test.mjs tests/native-context-retirement.test.mjs scripts/fixtures/contract-efficiency/distribution.test.mjs scripts/fixtures/reading-views/bundle.test.mjs scripts/fixtures/slice-contract-v3/round2.test.mjs scripts/fixtures/slice-contract-v3/scenarios.test.mjs scripts/fixtures/stage-tracking/tracking.test.mjs scripts/fixtures/spec-baseline/scenarios.mjs .template-source/tooling/node/test/approval-current.test.mjs .template-source/tooling/node/test/decision-continuation.test.mjs .template-source/tooling/node/test/lifecycle-progression.test.mjs .template-source/tooling/node/test/plugin-design-consumption.test.mjs .template-source/tooling/node/test/review-capabilities.test.mjs"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
+          - "tests/efficiency-distribution.test.mjs"
+          - "tests/native-context-retirement.test.mjs"
+          - "scripts/fixtures/contract-efficiency/distribution.test.mjs"
+          - "scripts/fixtures/reading-views/bundle.test.mjs"
+          - "scripts/fixtures/slice-contract-v3/round2.test.mjs"
+          - "scripts/fixtures/slice-contract-v3/scenarios.test.mjs"
+          - "scripts/fixtures/stage-tracking/tracking.test.mjs"
+          - "scripts/fixtures/spec-baseline/scenarios.mjs"
+          - ".template-source/tooling/node/test/approval-current.test.mjs"
+          - ".template-source/tooling/node/test/decision-continuation.test.mjs"
+          - ".template-source/tooling/node/test/lifecycle-progression.test.mjs"
+          - ".template-source/tooling/node/test/plugin-design-consumption.test.mjs"
+          - ".template-source/tooling/node/test/review-capabilities.test.mjs"
+          - "scripts/fixtures/spec-baseline/fixture.mjs"
+          - ".template-source/tooling/node/test/design-preview-browser.mjs"
+          - "scripts/lib/profile-tree.mjs"
+          - "profiles/**"
+        depends_on: []
+        failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各 Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
+      - id: check.harness-upgrade-generated
+        run: "node .template-source/scripts/sync-harness-upgrade.mjs --check"
+        group: skills
+        inputs_complete: true
+        input_patterns:
+          - ".template-source/scripts/sync-harness-upgrade.mjs"
+          - ".template-spec/process/harness-upgrade.md"
+          - ".template-spec/user-guide/unified-cli.md"
+          - ".agents/skills/setup-yss-harness/references/operation-contract.md"
+        depends_on: []
+        failure_mode: "setup-yss-harness 的操作合同参考与权威协议文档不一致"
+      - id: check.profile-tree
+        run: "node --test tests/profile-tree.test.mjs tests/advance-maintenance-root.test.mjs"
+        group: hygiene
+        inputs_complete: true
+        input_patterns:
+          - "scripts/lib/profile-tree.mjs"
+          - "tests/profile-tree.test.mjs"
+          - "scripts/advance-maintenance-iteration"
+          - "tests/advance-maintenance-root.test.mjs"
+          - "profiles/**"
+        depends_on: []
+        failure_mode: "Profile 的组合目录没有按「内核 < _specialist < Profile 覆盖层」取值、没有去掉该 Profile 排除的内核技能、投影链接指错目录，或 checkpoint 仍接受已不存在的专职仓 --root"
+      - id: check.yss-ui-skill-integration
+        run: "node --test .template-source/tooling/node/test/yss-ui-skill-integration.test.mjs"
+        group: skills
+        inputs_complete: true
+        input_patterns:
+          - ".template-source/tooling/node/test/yss-ui-skill-integration.test.mjs"
+          - ".agents/skills/.yss-skills-manifest.json"
+          - "scripts/lib/skill-supply-chain.mjs"
+        depends_on: []
+        failure_mode: "yss-ui 业务项目技能清单缺项、重复或校验器放过缺少上游哈希的条目"
       - id: check.profile-distribution
         run: "node --test tests/profile-distribution.test.mjs"
         group: hygiene
@@ -72,9 +129,29 @@ profiles:
           - "scripts/verify-profile-distribution"
           - "scripts/lib/profile-distribution.mjs"
           - ".template-source/distribution/bundle-profile.json"
+          - "profiles/**"
+          - ".gitmodules"
           - "submodules/yss-harness-*-agent"
+          - "scripts/sync-profile-skills"
+          - "scripts/lib/profile-skill-sync.mjs"
+          - "scripts/sync-strategic-handoff-tools"
+          - "scripts/verify-strategic-handoff-tools-lock"
+          - "scripts/lib/profile-variants.mjs"
+          - "tests/profile-variants.test.mjs"
+          - ".template-source/profile-skill-sync.json"
+          - ".template-source/profile-skill-patches/**"
+          - ".template-source/scripts/prepare-profile-skills.mjs"
+          - ".template-source/scripts/lib/profile-skills-preparation.mjs"
+          - ".template-source/tooling/node/test/profile-skill-sync.test.mjs"
+          - ".template-source/tooling/node/test/profile-skills-preparation.test.mjs"
+          - ".template-source/tooling/node/test/profile-skills-standalone.test.mjs"
+          - ".template-source/distribution/strategic-handoff-tools.lock.json"
+          - ".template-source/distribution/profile-variants.json"
+          - ".agents/skills/.strategic-design-skills-manifest.json"
+          - ".template-source/agents/strategic-design-skills-integration.md"
+          - "tests/fixtures/specialist-source-fixtures.py"
         depends_on: []
-        failure_mode: "backend / frontend / design 实例分发了根仓声明为仅模板源的脚本，或技能目录里的测试目录没有被排除"
+        failure_mode: "backend / frontend / design 实例分发了根仓声明为仅模板源的脚本，技能目录里的测试目录没有被排除，Profile 子模块或同步机制（同步脚本、共享工具锁、有意定制登记、设计技能清单）复活，或 profiles/ 下的覆盖层缺少该 Profile 的分发清单"
       - id: check.template-wiki-untracked
         run: "node --test tests/template-wiki-untracked.test.mjs"
         group: hygiene
@@ -121,7 +198,7 @@ profiles:
         depends_on: []
         failure_mode: "yss-cli 固定文件缺项、坏摘要或未知平台被放行，二进制摘要与固定版本不符时没有失败，或 CI 里接受了本地覆盖"
       - id: check.template-release-sources
-        run: "node --test --test-name-pattern '固定发行拒绝缺失|发行验证在有 yss-cli 固定文件时|浮动版本、脏树' .template-source/scripts/tests/template-ci.test.mjs"
+        run: "node --test --test-name-pattern '固定发行拒绝缺失|发行验证在有 yss-cli 固定文件时|浮动版本与脏树' .template-source/scripts/tests/template-ci.test.mjs"
         group: feature-assets
         inputs_complete: true
         input_patterns:
@@ -316,27 +393,13 @@ profiles:
           - "scripts/verify-maintenance-review-workflow-scenarios"
         depends_on: []
         failure_mode: "当前 L2 正式审查的候选绑定、任务包或发布门禁未闭合"
-      - id: "check.agents-shared-sync"
-        run: "scripts/sync-strategic-handoff-tools --check"
-        group: "strategic-handoff-package"
-        inputs_complete: true
-        input_patterns:
-          - "scripts/sync-strategic-handoff-tools"
-          - ".template-spec/process/subagent-collaboration.md"
-          - ".template-spec/process/stage-tracking.md"
-          - ".template-source/distribution/strategic-handoff-tools.lock.json"
-          - ".template-source/distribution/profile-variants.json"
-          - "scripts/lib/profile-variants.mjs"
-          - "submodules/yss-harness-*/.template-source/distribution/strategic-handoff-tools.lock.json"
-        depends_on: []
-        failure_mode: "共享协作和阶段路由说明未传播或来源锁仍绑定旧字节"
       - id: "check.agents-source-boundary"
         run: "node --test tests/governance-layout.test.mjs"
         group: "hygiene"
         inputs_complete: true
         input_patterns:
           - "AGENTS.md"
-          - "submodules/yss-harness-*/AGENTS.md"
+          - "profiles/*/AGENTS.md"
           - "scripts/verify-governance-layout"
           - "scripts/lib/governance-layout.mjs"
           - "tests/governance-layout.test.mjs"
@@ -407,13 +470,11 @@ profiles:
         depends_on: []
         failure_mode: "技能入口命名、引用或资源结构错误"
       - id: "check.prototype-work-layout"
-        run: "node --test .agents/skills/yss-prototype-stage/tests/reliability.test.mjs submodules/yss-harness-design-agent/.agents/skills/yss-prototype-stage/tests/reliability.test.mjs"
+        run: "node --test .agents/skills/yss-prototype-stage/tests/reliability.test.mjs"
         group: "work-layout"
         inputs_complete: true
         input_patterns:
           - ".agents/skills/yss-prototype-stage/tests/reliability.test.mjs"
-          - "submodules/yss-harness-design-agent"
-          - "submodules/yss-harness-design-agent/.agents/skills/yss-prototype-stage/**"
         depends_on: []
         failure_mode: "原型拒绝配置的工作包根、接受错目录或覆盖已存在内容"
       - id: "check.022dccdddca70b70"
@@ -434,43 +495,12 @@ profiles:
           - "tests/skill-sync-efficiency.test.mjs"
         depends_on: []
         failure_mode: "投影或锁更新遗漏、重复更新错误"
-      - id: "check.22712701df14f183"
-        inputs_complete: true
-        input_patterns:
-          - "scripts/sync-profile-skills"
-          - "scripts/lib/profile-skill-sync.mjs"
-          - ".template-source/profile-skill-sync.json"
-          - "submodules/yss-harness-design-agent/**"
-          - "submodules/yss-harness-design-agent"
-        depends_on: []
-        failure_mode: "Profile 分发投影与来源不一致的错误"
-      - id: "check.profile-skills-preparation"
-        run: "node --test .template-source/tooling/node/test/profile-skill-sync.test.mjs .template-source/tooling/node/test/profile-skills-preparation.test.mjs .template-source/tooling/node/test/profile-skills-standalone.test.mjs"
-        group: "skills"
-        inputs_complete: true
-        input_patterns:
-          - "scripts/sync-profile-skills"
-          - "scripts/lib/profile-skill-sync.mjs"
-          - ".template-source/profile-skill-sync.json"
-          - ".template-source/distribution/bundle-profile.json"
-          - ".template-source/profile-skill-patches/**"
-          - ".template-source/scripts/lib/profile-skills-preparation.mjs"
-          - ".template-source/scripts/prepare-profile-skills.mjs"
-          - ".template-source/tooling/node/test/profile-skill*.test.mjs"
-          - "submodules/yss-harness-backend-agent"
-          - "submodules/yss-harness-backend-agent/**"
-          - "submodules/yss-harness-frontend-agent"
-          - "submodules/yss-harness-frontend-agent/**"
-        depends_on: []
-        failure_mode: "完整技能生成、冲突保护或独立准备错误"
       - id: "check.a74d7c2cc539e456"
         inputs_complete: true
         input_patterns:
-          - ".agents/skills/.strategic-design-skills-manifest.json"
-          - "submodules/yss-harness-design-agent"
-          - "submodules/yss-harness-design-agent/**"
+          - "retired/profile-submodule-upstream-source"
         depends_on: []
-        failure_mode: "上游 Skill 来源未保留或来源摘要错误"
+        failure_mode: "已并入本仓的设计 Profile 仓库不再是上游来源；这条只为冻结的旧覆盖清单保留，随 AR-16 一起删除，当前不会被任何路径选中"
       - id: "check.208c7eedeff4e6e9"
         inputs_complete: true
         input_patterns:
@@ -679,8 +709,7 @@ profiles:
         input_patterns:
           - "scripts/lib/work-layout.mjs"
           - "scripts/verify-work-layout"
-          - "submodules/yss-harness-design-agent"
-          - "submodules/yss-harness-design-agent/**"
+          - "profiles/design/**"
           - ".template-source/scripts/sync-native-work-layout.mjs"
         depends_on: []
         failure_mode: "工作目录被硬编码到旧路径的错误"
@@ -1276,6 +1305,52 @@ routing:
     groups:
       - governance-release
   - patterns:
+      - profiles/**
+      - .gitmodules
+      - scripts/lib/profile-tree.mjs
+      - tests/profile-tree.test.mjs
+      - tests/advance-maintenance-root.test.mjs
+      - tests/specialist-business-inputs.test.mjs
+      - tests/efficiency-distribution.test.mjs
+      - tests/native-context-retirement.test.mjs
+      - scripts/fixtures/contract-efficiency/distribution.test.mjs
+      - scripts/fixtures/reading-views/bundle.test.mjs
+      - scripts/fixtures/slice-contract-v3/round2.test.mjs
+      - scripts/fixtures/slice-contract-v3/scenarios.test.mjs
+      - scripts/fixtures/stage-tracking/tracking.test.mjs
+      - scripts/fixtures/spec-baseline/scenarios.mjs
+      - .template-source/tooling/node/test/approval-current.test.mjs
+      - .template-source/tooling/node/test/decision-continuation.test.mjs
+      - .template-source/tooling/node/test/lifecycle-progression.test.mjs
+      - .template-source/tooling/node/test/plugin-design-consumption.test.mjs
+      - .template-source/tooling/node/test/review-capabilities.test.mjs
+      - scripts/fixtures/spec-baseline/fixture.mjs
+      - .template-source/tooling/node/test/design-preview-browser.mjs
+      - .template-source/scripts/sync-harness-upgrade.mjs
+      - scripts/lib/profile-distribution.mjs
+      - scripts/verify-profile-distribution
+      - tests/profile-distribution.test.mjs
+      - scripts/sync-profile-skills
+      - scripts/lib/profile-skill-sync.mjs
+      - scripts/sync-strategic-handoff-tools
+      - scripts/verify-strategic-handoff-tools-lock
+      - scripts/lib/profile-variants.mjs
+      - tests/profile-variants.test.mjs
+      - .template-source/profile-skill-sync.json
+      - .template-source/profile-skill-patches/**
+      - .template-source/scripts/prepare-profile-skills.mjs
+      - .template-source/scripts/lib/profile-skills-preparation.mjs
+      - .template-source/tooling/node/test/profile-skill-sync.test.mjs
+      - .template-source/tooling/node/test/profile-skills-preparation.test.mjs
+      - .template-source/tooling/node/test/profile-skills-standalone.test.mjs
+      - .template-source/distribution/strategic-handoff-tools.lock.json
+      - .template-source/distribution/profile-variants.json
+      - .agents/skills/.strategic-design-skills-manifest.json
+      - .template-source/agents/strategic-design-skills-integration.md
+      - submodules/yss-harness-*-agent
+    groups:
+      - hygiene
+  - patterns:
       - skills-lock.json
       - yss-public-skills.json
       - .agents/skills/**
@@ -1671,15 +1746,15 @@ groups:
       - run: node --test tests/skill-sync-efficiency.test.mjs
         when: template-source
         id: check.c80aaecf300ddc1f
-      - run: scripts/verify-skill-registry
-        id: check.022dccdddca70b70
-      - run: scripts/verify-skill-governance
-        id: check.93d2af5732ccdd96
       - run: scripts/verify-upstream-skill-source
           --source=iloveZzz/yss-harness-design-agent
           --source-root=submodules/yss-harness-design-agent
         when: template-source
         id: check.a74d7c2cc539e456
+      - run: scripts/verify-skill-registry
+        id: check.022dccdddca70b70
+      - run: scripts/verify-skill-governance
+        id: check.93d2af5732ccdd96
       - run: node --test
           .agents/skills/yss-skill-source-index-refresh/scripts/refresh-yss-skill-index.test.mjs
         id: check.208c7eedeff4e6e9
@@ -3079,14 +3154,6 @@ supplemental_checks:
     when: template-source
     task_id: supplemental.doc-facts-restatements
     source_requirement: committed
-  - id: check.profile-variants-supplemental
-    run: node --test tests/profile-variants.test.mjs
-    group: feature-assets
-    gate_ids: [check.verification-lifecycle]
-    depends_on: []
-    when: template-source
-    task_id: supplemental.profile-variants
-    source_requirement: committed
   - id: check.profile-distribution-supplemental
     run: node --test tests/profile-distribution.test.mjs
     group: hygiene
@@ -3277,11 +3344,3 @@ supplemental_checks:
     when: template-source
     source_requirement: committed
     task_id: supplemental.optimization-regressions
-  - id: check.profile-skills-preparation
-    run: node --test .template-source/tooling/node/test/profile-skill-sync.test.mjs .template-source/tooling/node/test/profile-skills-preparation.test.mjs .template-source/tooling/node/test/profile-skills-standalone.test.mjs
-    group: skills
-    gate_ids: [check.verification-skills]
-    depends_on: []
-    when: template-source
-    source_requirement: committed
-    task_id: supplemental.profile-skills-preparation

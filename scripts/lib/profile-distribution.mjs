@@ -60,12 +60,28 @@ function readManifest(repo, label) {
   }
 }
 
-/** 评估一个 Profile，返回违规与例外状态；不写任何文件。 */
+const KERNEL_SCOPE = ['.agents/skills', 'scripts', '.template-spec/process', '.template-spec/templates'];
+/** Profile 并入根仓后已删除的机制；这些路径重新出现说明同步机制复活。 */
+export const RETIRED_MACHINERY = [
+  'scripts/sync-profile-skills', 'scripts/lib/profile-skill-sync.mjs', '.template-source/profile-skill-sync.json',
+  'scripts/sync-strategic-handoff-tools', 'scripts/verify-strategic-handoff-tools-lock',
+  '.template-source/distribution/strategic-handoff-tools.lock.json', '.template-source/distribution/profile-variants.json',
+  'scripts/lib/profile-variants.mjs', '.agents/skills/.strategic-design-skills-manifest.json',
+];
+
+/** 评估一个 Profile（内核 + _specialist + 该 Profile 的覆盖层），返回违规与例外状态；不写任何文件。 */
 export function evaluateProfile({ root, profile, rootManifest }) {
-  const repo = path.join(root, 'submodules', `yss-harness-${profile}-agent`);
-  if (!existsSync(path.join(repo, '.git'))) fail(`${profile} 的 Profile 仓库未检出，无法评估`);
-  const manifest = readManifest(repo, profile);
-  const tracked = git(repo, ['ls-files']).split('\n').filter(Boolean);
+  const overlayRoot = path.join('profiles', profile);
+  if (!existsSync(path.join(root, overlayRoot))) fail(`${profile} 缺少覆盖层目录 ${overlayRoot}`);
+  const manifest = readManifest(path.join(root, overlayRoot), profile);
+  const strip = (prefix) => git(root, ['ls-files', '--', prefix]).split('\n').filter(Boolean).map((file) => [file.slice(prefix.length + 1), file]);
+  // 同一路径后面的覆盖前面的：内核 < _specialist < 该 Profile
+  const composed = new Map();
+  for (const file of git(root, ['ls-files']).split('\n').filter(Boolean)) {
+    if (KERNEL_SCOPE.some((scope) => beneath(file, scope))) composed.set(file, file);
+  }
+  for (const prefix of ['profiles/_specialist', overlayRoot]) for (const [relative, file] of strip(prefix)) composed.set(relative, file);
+  const tracked = [...composed.keys()];
   const rootOnly = list(rootManifest, 'excludePaths').filter((entry) => entry.startsWith('scripts/'));
 
   const findings = [];
@@ -76,7 +92,7 @@ export function evaluateProfile({ root, profile, rootManifest }) {
     const need = PROFILE_NEEDS[entry];
     if (need) {
       const user = need.by;
-      const text = tracked.includes(user) && shipped(user, manifest) ? readFileSync(path.join(repo, user), 'utf8') : '';
+      const text = composed.has(user) && shipped(user, manifest) ? readFileSync(path.join(root, composed.get(user)), 'utf8') : '';
       if (!text.includes(entry)) staleNeeds.push({ entry, by: user });
       continue;
     }
@@ -94,6 +110,13 @@ export function evaluateProfile({ root, profile, rootManifest }) {
     }
   }
   for (const item of collateral) findings.push({ kind: 'suffix-collateral', path: item });
+  for (const retired of RETIRED_MACHINERY) {
+    if (existsSync(path.join(root, retired))) findings.push({ kind: 'retired-machinery-present', path: retired });
+  }
+  const gitmodules = path.join(root, '.gitmodules');
+  if (existsSync(gitmodules) && /yss-harness-(design|backend|frontend)-agent/.test(readFileSync(gitmodules, 'utf8'))) {
+    findings.push({ kind: 'profile-submodule-present', path: '.gitmodules' });
+  }
   return { profile, tracked: tracked.length, findings, staleNeeds };
 }
 
@@ -107,6 +130,8 @@ const MESSAGES = {
   'template-source-script-shipped': (f) => `根仓声明为「仅模板源」的 ${f.path}（${f.files} 个文件）会随该 Profile 的实例分发；写进该 Profile 的 excludePaths，若实例确实需要它则登记到 PROFILE_NEEDS 并写明原因`,
   'test-directory-not-excluded': (f) => `分发策略缺少 excludePathSuffixes: "${f.path}"，技能目录里的测试目录会随实例分发`,
   'suffix-collateral': (f) => `后缀规则会误伤 ${f.path}`,
+  'retired-machinery-present': (f) => `${f.path} 属于 Profile 并入前的同步机制，已删除，不应重新出现`,
+  'profile-submodule-present': (f) => `${f.path} 重新登记了 Profile 子模块；Profile 现在是 profiles/ 下的覆盖层`,
 };
 
 export function formatReport(result) {

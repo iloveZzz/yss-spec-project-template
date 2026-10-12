@@ -1,3 +1,4 @@
+import { composeProfileTree } from '../../../../scripts/lib/profile-tree.mjs';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync} from 'node:fs';
@@ -194,7 +195,7 @@ test('one v2 capability task strictly binds different per-check subjects across 
   const current=base.checks[row.gate_id];
   await assert.doesNotReject(()=>sourceApproval(row,rolesDoc,root,{ref:current.subject_ref,approval_context:current}),`source check ${i}`);
  }
- const profiles=['yss-harness-design-agent','yss-harness-frontend-agent','yss-harness-backend-agent'];
+ const profiles=['design','frontend','backend'];
  const isolatedSourceCheck=`const {sourceApproval}=await import(process.argv[1]);
  const input=JSON.parse(process.argv[2]);let verified=0;
  for(const row of input.records){const current=input.checks[row.gate_id];
@@ -205,7 +206,7 @@ test('one v2 capability task strictly binds different per-check subjects across 
  console.log(JSON.stringify({verified,mode:input.stale?'stale-rejected':'current-accepted'}));`;
  const verifyProfiles=stale=>{
   for(const profile of profiles){
-   const module=path.join(ROOT,'submodules',profile,'scripts/lib/strategic-handoff.mjs');
+   const module=path.join(composeProfileTree(profile),'scripts/lib/strategic-handoff.mjs');
    const result=spawnSync(process.execPath,['--input-type=module','-e',isolatedSourceCheck,module,JSON.stringify({records:bundle.reviews,roles:rolesDoc,root,checks:base.checks,stale})],{encoding:'utf8',cwd:root});
    assert.equal(result.status,0,`${profile}: ${result.stderr}`);
    assert.deepEqual(JSON.parse(result.stdout),{verified:2,mode:stale?'stale-rejected':'current-accepted'});

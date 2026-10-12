@@ -13,9 +13,6 @@
     "iloveZzz/yss-ui": {
       "revision": "c4d958f18cc947cb91cbe1bd48783fa4601cc18f"
     },
-    "iloveZzz/yss-harness-design-agent": {
-      "revision": "5602a7e7ab96882e6ff4a19fcceb3dde2810b8a1"
-    },
     "ayghri/i-have-adhd": {
       "revision": "839872f9d1cd634fed642b4589ce7226199cc15f"
     }
@@ -281,12 +278,9 @@
         ]
       },
       "prototype-review": {
-        "source": "iloveZzz/yss-harness-design-agent",
-        "sourceType": "git-submodule",
+        "source": "project",
+        "sourceType": "local",
         "skillPath": ".agents/skills/prototype-review/SKILL.md",
-        "sourceRevision": "5602a7e7ab96882e6ff4a19fcceb3dde2810b8a1",
-        "upstreamHash": "16cd912969a487808a53711f0c0e13d56d68abd5e07d144a4007187f8430f959",
-        "adaptationRef": ".template-source/agents/strategic-design-skills-integration.md",
         "targets": [
           ".agents/skills"
         ]
@@ -477,12 +471,9 @@
         ]
       },
       "yss-design-system": {
-        "source": "iloveZzz/yss-harness-design-agent",
-        "sourceType": "git-submodule",
+        "source": "project",
+        "sourceType": "local",
         "skillPath": ".agents/skills/yss-design-system/SKILL.md",
-        "sourceRevision": "5602a7e7ab96882e6ff4a19fcceb3dde2810b8a1",
-        "upstreamHash": "2ad84479f0fb20fde3e6dda07825eddf6b67c9f571e498f70609e7b4c5083a65",
-        "adaptationRef": ".template-source/agents/strategic-design-skills-integration.md",
         "targets": [
           ".agents/skills"
         ]
@@ -611,12 +602,9 @@
         ]
       },
       "yss-prototype-stage": {
-        "source": "iloveZzz/yss-harness-design-agent",
-        "sourceType": "git-submodule",
+        "source": "project",
+        "sourceType": "local",
         "skillPath": ".agents/skills/yss-prototype-stage/SKILL.md",
-        "sourceRevision": "5602a7e7ab96882e6ff4a19fcceb3dde2810b8a1",
-        "upstreamHash": "d33acdba362e09ea464410d6b0a2f573c018608cf0c9ca7beeda04c6966c1da8",
-        "adaptationRef": ".template-source/agents/strategic-design-skills-integration.md",
         "targets": [
           ".agents/skills"
         ]
@@ -665,12 +653,9 @@
         ]
       },
       "yss-stage-decision": {
-        "source": "iloveZzz/yss-harness-design-agent",
-        "sourceType": "git-submodule",
+        "source": "project",
+        "sourceType": "local",
         "skillPath": ".agents/skills/yss-stage-decision/SKILL.md",
-        "sourceRevision": "5602a7e7ab96882e6ff4a19fcceb3dde2810b8a1",
-        "upstreamHash": "094c50ddf430bb830500db015046c5f7dcd5a80f0e9aef68e665d2edf234cc7a",
-        "adaptationRef": ".template-source/agents/strategic-design-skills-integration.md",
         "targets": [
           ".agents/skills"
         ]

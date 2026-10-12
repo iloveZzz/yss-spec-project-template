@@ -6,6 +6,7 @@ import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import {NATIVE_PROFILES,initializeNative,runNative} from '../.template-source/scripts/lib/native-yss.mjs';
+import {composeProfileTree} from '../scripts/lib/profile-tree.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const coreRef = '.template-source/cli-core/runtime-store.mjs';
@@ -49,17 +50,14 @@ test('Node 22.12 startup rejection precedes runtime storage and maintenance outp
   assert.equal(fs.existsSync(runtimeHome), false);
 });
 
-test('runtime module copies and synchronization locks bind the canonical source', () => {
+test('runtime module copies bind the canonical source in every composed Profile', () => {
   const canonical = read(coreRef);
   for (const ref of ['scripts/lib/runtime-store.mjs']) {
     assert.ok(read(ref).equals(canonical), ref);
   }
   for (const side of ['design', 'backend', 'frontend']) {
-    const target = `submodules/yss-harness-${side}-agent`;
-    for (const ref of sharedRefs) assert.ok(read(`${target}/${ref}`).equals(read(ref)), `${target}/${ref}`);
-    const lock = json(`${target}/.template-source/distribution/strategic-handoff-tools.lock.json`);
-    assert.ok(lock.source_files[coreRef], `${target}: canonical source absent`);
-    for (const ref of sharedRefs) assert.ok(lock.effective_files[ref], `${target}/${ref}: lock absent`);
+    const tree = composeProfileTree(side);
+    for (const ref of sharedRefs) assert.ok(fs.readFileSync(path.join(tree, ref)).equals(read(ref)), `${side}/${ref}`);
   }
 });
 

@@ -81,14 +81,12 @@
       "scripts/inspect-maintenance-candidate",
       "scripts/prepare-maintenance-review",
       "scripts/run-template-verification",
-      "scripts/sync-strategic-handoff-tools",
       "scripts/verify-maintenance-checkpoint",
       "scripts/verify-maintenance-review-record",
       "scripts/verify-governance-release",
       "scripts/verify-retired-skill-ids",
       "scripts/verify-skill-governance",
       "scripts/verify-skill-registry",
-      "scripts/verify-strategic-handoff-tools-lock",
       "scripts/verify-doc-facts",
       "scripts/verify-template",
       "scripts/verify-template-candidate",
@@ -110,8 +108,7 @@
       "scripts/lib/verification-report.mjs",
       "scripts/lib/maintenance-counterexample.mjs",
       ".work",
-      "scripts/sync-profile-skills",
-      "scripts/lib/profile-skill-sync.mjs"
+      "scripts/lib/profile-tree.mjs"
     ],
     "excludePathSuffixes": [
       "-scenarios"

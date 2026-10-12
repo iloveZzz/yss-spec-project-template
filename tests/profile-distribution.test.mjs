@@ -32,21 +32,21 @@ const manifest = (overrides = {}) => ({
 const GOOD_PROFILE = manifest({ excludePaths: ['scripts/verify-template', 'scripts/fixtures'], excludePathSuffixes: ['tests', 'test'] });
 const FILES = ['scripts/verify-template', 'scripts/verify-lifecycle-registry', 'scripts/fixtures/a.json', '.agents/skills/x/SKILL.md', '.agents/skills/x/tests/a.test.mjs', NEED, NEED_BY];
 
-/** 根仓 + 三个 Profile 的最小仓库；profiles 里的函数可改每个 Profile 的策略与文件。 */
+/** 根仓（内核 + 三个 Profile 覆盖层）的最小仓库；tweak 里的函数可改每个 Profile 的策略与覆盖文件。 */
 function workspace(t, tweak = {}) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'yss-profile-distribution-'));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  git(root, 'init', '-q');
   write(root, BUNDLE_PROFILE_REF, `${JSON.stringify({ manifest: manifest({ excludePaths: ['scripts/verify-template', 'scripts/fixtures', NEED] }) })}\n`);
+  for (const file of FILES) write(root, file, file === NEED_BY ? `run("node", ["${NEED}", "--check"]);\n` : 'x\n');
   for (const profile of ['backend', 'design', 'frontend']) {
-    const repo = path.join(root, 'submodules', `yss-harness-${profile}-agent`);
-    fs.mkdirSync(repo, { recursive: true });
-    git(repo, 'init', '-q');
-    const options = { policy: GOOD_PROFILE, files: FILES, referenceNeed: true, ...(tweak[profile] ?? {}) };
-    write(repo, BUNDLE_PROFILE_REF, `${JSON.stringify({ manifest: options.policy })}\n`);
-    for (const file of options.files) write(repo, file, file === NEED_BY && options.referenceNeed ? `run("node", ["${NEED}", "--check"]);\n` : 'x\n');
-    git(repo, 'add', '-A');
-    git(repo, 'commit', '-q', '-m', 'fixture');
+    const options = { policy: GOOD_PROFILE, files: [], referenceNeed: true, ...(tweak[profile] ?? {}) };
+    write(root, `profiles/${profile}/${BUNDLE_PROFILE_REF}`, `${JSON.stringify({ manifest: options.policy })}\n`);
+    for (const file of options.files) write(root, `profiles/${profile}/${file}`, 'x\n');
+    if (!options.referenceNeed) write(root, `profiles/${profile}/${NEED_BY}`, 'x\n');
   }
+  git(root, 'add', '-A');
+  git(root, 'commit', '-q', '-m', 'fixture');
   return root;
 }
 
@@ -108,7 +108,7 @@ test('违规：测试目录没有被后缀规则排除', (t) => {
 });
 
 test('违规：后缀规则会误伤名字恰好以 test 结尾的路径段（如 latest、contest），带扩展名的文件名不受影响', (t) => {
-  const root = workspace(t, { backend: { files: [...FILES, '.agents/skills/latest/SKILL.md', 'scripts/contest'] } });
+  const root = workspace(t, { backend: { files: ['.agents/skills/latest/SKILL.md', 'scripts/contest'] } });
   const backend = evaluateAll(root).reports.find((report) => report.profile === 'backend');
   const collateral = backend.findings.filter((finding) => finding.kind === 'suffix-collateral').map((finding) => finding.path);
   assert.equal(collateral.length, 2);
@@ -116,13 +116,25 @@ test('违规：后缀规则会误伤名字恰好以 test 结尾的路径段（�
   assert.equal(shipped('scripts/contest.mjs', manifest({ excludePathSuffixes: ['test'] })), true, 'contest.mjs 以 .mjs 结尾，不会被 test 后缀命中');
 });
 
-test('无法评估时失败而不是通过：Profile 未检出、策略缺失', (t) => {
+test('无法评估时失败而不是通过：覆盖层目录缺失、策略缺失', (t) => {
   const root = workspace(t);
-  fs.rmSync(path.join(root, 'submodules/yss-harness-design-agent'), { recursive: true });
-  assert.throws(() => evaluateAll(root), /design 的 Profile 仓库未检出/);
+  fs.rmSync(path.join(root, 'profiles/design'), { recursive: true });
+  git(root, 'add', '-A');
+  assert.throws(() => evaluateAll(root), /design 缺少覆盖层目录 profiles\/design/);
   const missingPolicy = workspace(t);
-  fs.rmSync(path.join(missingPolicy, 'submodules/yss-harness-backend-agent', BUNDLE_PROFILE_REF));
+  fs.rmSync(path.join(missingPolicy, 'profiles/backend', BUNDLE_PROFILE_REF));
   assert.throws(() => evaluateAll(missingPolicy), /缺少 backend 的分发策略/);
+});
+
+test('违规：已删除的同步机制或 Profile 子模块登记重新出现', (t) => {
+  const root = workspace(t);
+  write(root, 'scripts/sync-profile-skills', 'x\n');
+  write(root, '.gitmodules', '[submodule "submodules/yss-harness-design-agent"]\n\tpath = submodules/yss-harness-design-agent\n');
+  const result = evaluateAll(root);
+  assert.equal(result.ok, false);
+  const kinds = result.reports[0].findings.map((finding) => finding.kind);
+  assert.ok(kinds.includes('retired-machinery-present') && kinds.includes('profile-submodule-present'), kinds.join());
+  assert.match(formatReport(result), /不应重新出现/);
 });
 
 test('命令行：合规退出 0，违规退出 1 并写 stderr，参数错误退出 1', (t) => {

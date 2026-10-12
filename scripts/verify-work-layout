@@ -21,8 +21,8 @@ function scan(base,predicate) {
 }
 scan('scripts/lib',ref=>/\.(mjs|js|py)$/.test(ref)&&!ref.includes('.test.'));
 scan('.agents/skills',ref=>ref.includes('/scripts/')&&/\.(mjs|js|py)$/.test(ref)&&!ref.includes('.test.'));
-const design = 'submodules/yss-harness-design-agent';
-if (fs.existsSync(path.join(root, design, '.agents/skills'))) {
+const design = 'profiles/design';
+if (fs.existsSync(path.join(root, design))) {
   exceptions.set(`${design}/scripts/lib/work-layout.mjs`, '上游 Design 的当前/历史根合同');
   scan(`${design}/scripts/lib`,ref=>/\.(mjs|js|py)$/.test(ref)&&!ref.includes('.test.'));
   scan(`${design}/.agents/skills`,ref=>ref.includes('/scripts/')&&/\.(mjs|js|py)$/.test(ref)&&!ref.includes('.test.'));

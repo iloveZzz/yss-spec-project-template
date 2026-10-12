@@ -58,7 +58,7 @@ test('配置根不能通过符号链接越过项目边界', t => {
 
 test('硬编码检查同时覆盖 Design 上游且允许集中历史根合同', t => {
   const root = project(t);
-  const design = 'submodules/yss-harness-design-agent';
+  const design = 'profiles/design';
   for (const ref of ['scripts/lib', '.agents/skills', `${design}/scripts/lib`, `${design}/.agents/skills`]) fs.mkdirSync(path.join(root, ref), { recursive: true });
   const checker = path.join(root, 'scripts/verify-work-layout');
   fs.copyFileSync(new URL('../scripts/verify-work-layout', import.meta.url), checker);

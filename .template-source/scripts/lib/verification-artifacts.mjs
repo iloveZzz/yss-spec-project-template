@@ -5,10 +5,8 @@ import {spawnSync} from 'node:child_process';
 import {NATIVE_PROFILES, nativeBinary, nativeDigest as hash, inspectNative, initializeNative, runNative, applyNative} from './native-yss.mjs';
 import {readYssCliPin, verifyPinnedBinary} from './yss-cli-pin.mjs';
 const ensure=(ok,message)=>{if(!ok)throw new TypeError(message);};
-const templates={spec:null,design:'yss-harness-design-agent',backend:'yss-harness-backend-agent',frontend:'yss-harness-frontend-agent'};
 const historicalPackages={spec:'create-yss-spec',design:'create-yss-harness-design',backend:'create-yss-harness-backend',frontend:'create-yss-harness-frontend'};
 function git(root,args){const result=spawnSync('git',args,{cwd:root,encoding:'utf8'});ensure(result.status===0,result.stderr||'无法核验固定 Git 来源');return result.stdout.trim();}
-function gitlink(root,commit,ref){const match=/^160000 commit ([a-f0-9]{40})\t/.exec(git(root,['ls-tree',commit,'--',ref]));ensure(match,`缺少固定模板 gitlink: ${ref}`);return match[1];}
 function treeEntries(directory){
  ensure(fs.lstatSync(directory).isDirectory()&&!fs.lstatSync(directory).isSymbolicLink(),'安装目录必须是普通目录');const entries=[];
  const walk=(current,prefix='')=>{for(const name of fs.readdirSync(current).sort()){const file=path.join(current,name),ref=prefix?`${prefix}/${name}`:name,stat=fs.lstatSync(file),mode=stat.mode&0o777;
@@ -45,12 +43,12 @@ export function collectReleaseSources({root,commit,families=NATIVE_PROFILES,envi
  const pin=readYssCliPin(root);
  if(pin){ensure(verifyPinnedBinary({digest:binary.digest,pin,environment}).pinned,'发布验证必须使用固定的 yss 二进制，不接受 YSS_NATIVE_BINARY_OVERRIDE');ensure(sourceCommit===pin.commit,`yss 源码提交 ${sourceCommit.slice(0,8)} 与固定文件的 ${pin.commit.slice(0,8)} 不一致`);}
  const entries=families.map(family=>{
-  ensure(NATIVE_PROFILES.includes(family),'未知发布 Profile');const template_path=templates[family]?`submodules/${templates[family]}`:'.',template_commit=templates[family]?gitlink(root,commit,template_path):commit;
+  ensure(NATIVE_PROFILES.includes(family),'未知发布 Profile');const template_commit=commit;
   const bundle=inspectNative(family,{environment});
   ensure([2,3].includes(bundle.schemaVersion)&&bundle.sourceState==='committed'&&bundle.templateCommit===template_commit,'Bundle 与固定模板来源不匹配');
   const cli_commit=version.cliCommit||version.commit||bundle.cliCommit;
   ensure((version.sourceState||bundle.cliSourceState)==='committed','发行二进制必须来自已提交的 yss 源码');
-  return {...sourceTuple({namespace:'candidate-release',family,cli_commit,template_commit,core_commit:commit,package_name:'yss',version:version.version,template_version:bundle.templateVersion,source_contract_version:2,protocol_version:version.protocolVersion,snapshot_hash:bundle.sourceSnapshotHash,manifest_hash:bundle.manifestHash,bundle_hash:bundle.bundleHash,binary_sha256:binary.digest}),template_path};
+  return {...sourceTuple({namespace:'candidate-release',family,cli_commit,template_commit,core_commit:commit,package_name:'yss',version:version.version,template_version:bundle.templateVersion,source_contract_version:2,protocol_version:version.protocolVersion,snapshot_hash:bundle.sourceSnapshotHash,manifest_hash:bundle.manifestHash,bundle_hash:bundle.bundleHash,binary_sha256:binary.digest}),template_path:'.'};
  });
  return {schema_version:2,kind:'template-release-sources',root_commit:commit,families:[...families],entries};
 }

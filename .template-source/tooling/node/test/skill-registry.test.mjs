@@ -1,3 +1,4 @@
+import { composeProfileTree } from '../../../../scripts/lib/profile-tree.mjs';
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import path from "node:path";
@@ -391,10 +392,10 @@ test("frontend conditional routes require registered skills", () => {
 
 
 test('Pi invocation metadata rejects missing restrictions and non-boolean flags in all profiles', async () => {
-  for (const prefix of ['', 'submodules/yss-harness-backend-agent/', 'submodules/yss-harness-design-agent/', 'submodules/yss-harness-frontend-agent/']) {
-    const module = await import(path.join(ROOT, prefix, 'scripts/lib/skill-registry.mjs'));
+  for (const base of [ROOT, ...['backend', 'design', 'frontend'].map((profile) => composeProfileTree(profile))]) {
+    const module = await import(path.join(base, 'scripts/lib/skill-registry.mjs'));
     const data = module.loadSkillRegistry();
-    const source = (id) => readFileSync(path.join(ROOT, prefix, '.agents/skills', id, 'SKILL.md'), 'utf8');
+    const source = (id) => readFileSync(path.join(base, '.agents/skills', id, 'SKILL.md'), 'utf8');
     assert.doesNotThrow(() => module.validateSkillRegistry(data, { skillMetadata: metadataSource(data), skillSource: source }));
     for (const value of ['false', '"true"', 'null']) {
       assert.throws(() => module.validateSkillRegistry(data, {

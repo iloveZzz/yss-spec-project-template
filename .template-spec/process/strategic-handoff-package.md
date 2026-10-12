@@ -97,7 +97,7 @@ scripts/strategic-feedback verify-adjudication --root <消费者项目根> <adju
 
 ## 维护与同步
 
-共享脚本和包 schema 以主模板为维护源，通过 `scripts/sync-strategic-handoff-tools` 同步到设计/研发模板；源战略 schema 的离线验证副本由该脚本从 canonical `yss-stage-decision/references` 派生。各仓技能仍只编辑 `.agents/skills`，再生成各 runtime 投影与锁。CLI 快照使用各自同步工具，工作树快照用于集成验证，不代表已发布 commit。共享同步仅从主技能注册表投影 `existing_project_profiles` 验证元数据，保留接收模板自己的 Recipe、capability 与创作技能；源注册表及目标有效字节写入工具锁。后端接收模板使用独立视觉 wire runtime，不安装原型创作技能。超出本 profile 职责的技术设计/编译资产在预检中明确标记不支持，战略交接路线不依赖这些后端资产。
+共享脚本和包 schema 以主模板为维护源，作为内核文件由设计/研发 Profile 直接组合使用（不再有同步脚本）；源战略 schema 的离线验证副本由该脚本从 canonical `yss-stage-decision/references` 派生。各仓技能仍只编辑 `.agents/skills`，再生成各 runtime 投影与锁。CLI 快照按来源锁里的覆盖层组合，工作树快照用于集成验证，不代表已发布 commit。共享同步仅从主技能注册表投影 `existing_project_profiles` 验证元数据，保留接收模板自己的 Recipe、capability 与创作技能；源注册表及目标有效字节写入工具锁。后端接收模板使用独立视觉 wire runtime，不安装原型创作技能。超出本 profile 职责的技术设计/编译资产在预检中明确标记不支持，战略交接路线不依赖这些后端资产。
 
 ## 当前用户决定与交接复核
 

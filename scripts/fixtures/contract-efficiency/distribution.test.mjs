@@ -1,4 +1,5 @@
 import test from 'node:test';
+import {composeProfileTree} from '../../lib/profile-tree.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -6,20 +7,11 @@ import {spawnSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {pilotFixture} from '../slice-contract-v3/pilot-fixture.mjs';
 import {stringify} from '../../vendor/yaml.mjs';
-test('every receiving template matches the effective bytes in its shared tool lock',()=>{
- for(const receiver of ['.','submodules/yss-harness-design-agent','submodules/yss-harness-backend-agent','submodules/yss-harness-frontend-agent']){
-  const lock=JSON.parse(fs.readFileSync(path.join(receiver,'.template-source/distribution/strategic-handoff-tools.lock.json')));
-  for(const [ref,expected] of Object.entries(lock.effective_files)){
-   const actual=`sha256:${createHash('sha256').update(fs.readFileSync(path.join(receiver,ref))).digest('hex')}`;
-   assert.equal(actual,expected,`${receiver}/${ref}: projected bytes differ from lock`);
-  }
- }
-});
 test('design/backend/frontend receivers expose identical review and task constraints using original YAML',()=>{
  const f=pilotFixture();try{
  f.write('slice.yaml',stringify({slice_contract:f.contract}));
  let expected;
- for(const receiver of ['.','submodules/yss-harness-design-agent','submodules/yss-harness-backend-agent','submodules/yss-harness-frontend-agent']){
+ for(const receiver of ['.',...['design','backend','frontend'].map(name=>composeProfileTree(name))]){
   for(const profile of ['review','task']){
    const args=[path.resolve(receiver,'scripts/contract'),'view','slice.yaml','--kind','slice','--profile',profile,'--unit','work-unit.slice-backend','--root',f.root,'--json'];
    const result=spawnSync(process.execPath,args,{encoding:'utf8'});assert.equal(result.status,0,`${receiver}: ${result.stderr}`);

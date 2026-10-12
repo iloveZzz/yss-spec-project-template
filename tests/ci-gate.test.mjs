@@ -278,16 +278,15 @@ test("命令行：用法错误退出 2，帮助退出 0，仓库失败退出 1",
   assert.equal(failing.status, 1);
 });
 
-test("ci-setup：dry-run 只打印计划，覆盖子模块、yss 构建、pnpm 与 Python", () => {
+test("ci-setup：dry-run 只打印计划，覆盖工具链、yss 构建、pnpm 与 Python", () => {
   const sha = "0123456789abcdef0123456789abcdef01234567";
-  const result = spawnSync(CI_SETUP, ["--dry-run", "--submodules", "--yss-commit", sha], { encoding: "utf8", env: { ...process.env, CI: "" } });
+  const result = spawnSync(CI_SETUP, ["--dry-run", "--toolchain", "--yss-commit", sha], { encoding: "utf8", env: { ...process.env, CI: "" } });
   assert.equal(result.status, 0, result.stderr);
-  for (const expected of [/Node 主版本必须是 24/, /repository-mode/, /submodule update --init -- submodules\/yss-harness-design-agent /, /sync-profile-skills --apply --profile=all/, new RegExp(sha), /pnpm --dir \.template-source\/tooling\/node install --frozen-lockfile/, /jsonschema==4\.23\.0/, /环境准备完成/]) {
+  for (const expected of [/Node 主版本必须是 24/, /repository-mode/, new RegExp(sha), /pnpm --dir \.template-source\/tooling\/node install --frozen-lockfile/, /jsonschema==4\.23\.0/, /环境准备完成/]) {
     assert.match(result.stdout, expected);
   }
-  assert.doesNotMatch(result.stdout, /--depth=1 -- submodules\/yss-harness/, "构建 yss 需要 Profile 仓库的完整历史");
-  const shallow = spawnSync(CI_SETUP, ["--dry-run", "--submodules"], { encoding: "utf8", env: { ...process.env, CI: "" } });
-  assert.match(shallow.stdout, /submodule update --init --depth=1 -- submodules\/yss-harness-design-agent /);
+  assert.doesNotMatch(result.stdout, /submodule update|sync-profile-skills/, "Profile 已并入根仓，CI 不再初始化子模块或物化技能");
+  const shallow = spawnSync(CI_SETUP, ["--dry-run", "--toolchain"], { encoding: "utf8", env: { ...process.env, CI: "" } });
   assert.doesNotMatch(shallow.stdout, /submodules\/yss-cli/, "yss-cli 不再是 submodule");
   const minimal = spawnSync(CI_SETUP, ["--dry-run", "--no-python"], { encoding: "utf8", env: { ...process.env, CI: "" } });
   assert.equal(minimal.status, 0, minimal.stderr);
@@ -303,7 +302,7 @@ test("ci-setup：--print-versions 打印可直接追加到 GITHUB_OUTPUT 的目�
 });
 
 test("ci-setup：Python 必须恰为目标版本，缺失时的补装与 Go 的补装都写进 dry-run 计划", () => {
-  const plan = spawnSync(CI_SETUP, ["--dry-run", "--submodules"], { encoding: "utf8", env: { ...process.env, CI: "" } });
+  const plan = spawnSync(CI_SETUP, ["--dry-run", "--toolchain"], { encoding: "utf8", env: { ...process.env, CI: "" } });
   assert.equal(plan.status, 0, plan.stderr);
   assert.match(plan.stdout, /不是 3\.12 时，在 root 容器内经 uv==\d+\.\d+\.\d+ 补装/);
   assert.match(plan.stdout, /Go：版本取自 yss-cli 固定文件的 go_version/);

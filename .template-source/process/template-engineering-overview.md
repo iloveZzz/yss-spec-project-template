@@ -81,7 +81,6 @@ YSS 模板工程是一套可版本化的研发治理系统。它用仓库身份�
 | 同步共享 skill 投影 | `scripts/sync-skills` |
 | 校验 skills lock | `scripts/update-skill-lock --check` |
 | 校验生命周期注册表 | `scripts/verify-lifecycle-registry` |
-| 校验 Profile 共享工具与来源一致 | `scripts/sync-strategic-handoff-tools --check`；Profile 暂时有意保持差异时，写入 `.template-source/distribution/profile-variants.json`（原因、解除条件与副本摘要），登记不替代同步，过期或被改动的登记会让检查失败 |
 | 固定的 yss 二进制（版本号、构建提交、Go 版本、各平台 SHA-256） | `.template-source/distribution/yss-cli-pin.json`；`tests/yss-cli-pin.test.mjs` 校验结构，预检与 `tests/cli-retirement.test.mjs` 核对实际二进制，发布验证只接受固定的二进制与源码提交；本地联调自己构建的二进制设 `YSS_NATIVE_BINARY_OVERRIDE=1`（CI 不接受）。yss-cli 不是 submodule，也没有「落后多少」的检查：模板的普通提交不需要刷新它，发布 CLI 时才用 `tools/refresh-source-lock.mjs --tag vX.Y.Z` 钉到模板 tag |
 | 校验维护 checkpoint | `scripts/verify-maintenance-checkpoint <file>` |
 

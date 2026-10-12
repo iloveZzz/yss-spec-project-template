@@ -26,7 +26,7 @@ test("适配器只调用 scripts/ci-setup 与 scripts/ci-gate，不含检查逻�
     assert.deepEqual([...called].filter((name) => !["ci-setup", "ci-gate"].includes(name)), [], file);
   }
   assert.match(code(WORKFLOW), /scripts\/ci-gate --mode pr/);
-  assert.match(code(GITLAB), /scripts\/ci-setup --submodules/);
+  assert.match(code(GITLAB), /scripts\/ci-setup --toolchain/);
 });
 
 test("GitHub：PR 与 main 推送触发，只读权限，完整历史，base 经环境变量传入", () => {
@@ -87,10 +87,10 @@ test("setup-template 是薄封装：运行时版本取自 ci-setup，不在 YAML
   assert.match(printed.python, /^\d+\.\d+$/);
 });
 
-test("两个平台都不跳过子模组，并都按 yss-cli 固定文件构建 yss（fast 的部分测试需要原生二进制）", () => {
-  assert.match(code(WORKFLOW), /submodules: 'true'\n\s+yss-commit: pin/);
-  assert.match(code(GITLAB), /scripts\/ci-setup --submodules --yss-commit pin/);
-  assert.match(read("scripts/ci-setup"), /git -c protocol\.version=2 submodule update --init/);
+test("两个平台都准备工具链，并都按 yss-cli 固定文件构建 yss（fast 的部分测试需要原生二进制）", () => {
+  assert.match(code(WORKFLOW), /toolchain: 'true'\n\s+yss-commit: pin/);
+  assert.match(code(GITLAB), /scripts\/ci-setup --toolchain --yss-commit pin/);
+  assert.doesNotMatch(read("scripts/ci-setup"), /submodule update|sync-profile-skills/, "Profile 已并入根仓，CI 不再初始化子模块");
 });
 
 test("GitLab 适配器与 CI 用的环境文件不进仓库，并排除出实例分发", () => {
