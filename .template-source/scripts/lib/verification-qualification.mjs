@@ -384,7 +384,7 @@ export function validateQualification({root,config,reportFile,expectedDigest,exp
         if(!receipt)throw Error('qualification-all-four-release-missing');
         const bound=evidenceFile(directory,receipt.report_ref,receipt.report_sha256);
         const checked=reportValidators.validateQualificationIntegration({root,reportFile:bound.file,expectedDigest:receipt.report_sha256,expectedCommit:proof.representative_commit});
-        if(!checked.valid||checked.bindings?.families?.join(',')!=='spec,design,backend,frontend')throw Error('qualification-all-four-release-invalid');
+        if(!checked.valid||checked.bindings?.families?.join(',')!=='spec,design,backend')throw Error('qualification-all-four-release-invalid');
       }
     }
     return {valid:true,reasons:[],bindings,report_digest:hash(bytes),performance:qualificationPerformance(legacy,candidate)};

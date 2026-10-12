@@ -141,7 +141,7 @@ async function runPrepared(input) {
       await runGroups(preparationPlan,mode,concurrency,{cwd:root,environment,execute:executeFor('artifact'),logRoot,signal:controller.signal,runtimeSession:session,runtimeEvent:'check-result',completedTasks:[{task:preflightTask,result:preflightRow}],onResult:row=>{
         const task=preparationPlan.commands[row.index];
         if(row.code===0&&!row.skipped&&!row.storageError)try{
-          if(task.kind==='artifact-prepare'&&/^check\.cli-artifact-(?:spec|design|backend|frontend)$/.test(task.id)){
+          if(task.kind==='artifact-prepare'&&/^check\.cli-artifact-(?:spec|design|backend)$/.test(task.id)){
             const family=task.id.replace('check.cli-artifact-',''),artifact=JSON.parse(fs.readFileSync(path.join(reportDir,'artifacts',family,'artifact.json')));
             validateArtifact(artifact,report.sources_manifest.entries.find(source=>source.family===family));
             report.artifacts=[...(report.artifacts||[]).filter(existing=>existing.source_tuple?.family!==family),artifact];

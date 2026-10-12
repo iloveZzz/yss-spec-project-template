@@ -2655,10 +2655,10 @@ gates:
     release_families:
       - backend
   - id: check.verification-frontend-cli
-    title: Frontend CLI 包与真实入口
+    title: Frontend CLI 包与真实入口（已移除，保留 G16 编号占位）
     trigger: four-cli-delivery
     execution_scope: release-integration
-    required_at_release: true
+    required_at_release: false
     inputs_complete: false
     input_patterns: []
     impact_dependencies: []
@@ -2666,8 +2666,7 @@ gates:
     check_ids: []
     audit_status: pending
     display_id: G16
-    release_families:
-      - frontend
+    release_families: []
   - id: check.verification-cli-migration
     title: 四家族迁移与回滚
     trigger: four-cli-delivery
@@ -2684,7 +2683,6 @@ gates:
       - spec
       - design
       - backend
-      - frontend
   - id: check.verification-distribution
     title: 生成实例分发与交付
     trigger: always

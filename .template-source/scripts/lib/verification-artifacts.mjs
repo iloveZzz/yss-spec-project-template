@@ -5,7 +5,7 @@ import {spawnSync} from 'node:child_process';
 import {NATIVE_PROFILES, nativeBinary, nativeDigest as hash, inspectNative, initializeNative, runNative, applyNative} from './native-yss.mjs';
 import {readYssCliPin, verifyPinnedBinary} from './yss-cli-pin.mjs';
 const ensure=(ok,message)=>{if(!ok)throw new TypeError(message);};
-const historicalPackages={spec:'create-yss-spec',design:'create-yss-harness-design',backend:'create-yss-harness-backend',frontend:'create-yss-harness-frontend'};
+const historicalPackages={spec:'create-yss-spec',design:'create-yss-harness-design',backend:'create-yss-harness-backend'};
 function git(root,args){const result=spawnSync('git',args,{cwd:root,encoding:'utf8'});ensure(result.status===0,result.stderr||'无法核验固定 Git 来源');return result.stdout.trim();}
 function treeEntries(directory){
  ensure(fs.lstatSync(directory).isDirectory()&&!fs.lstatSync(directory).isSymbolicLink(),'安装目录必须是普通目录');const entries=[];

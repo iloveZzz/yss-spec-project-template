@@ -27,9 +27,9 @@ export function validateLegacyRecoveryMatrix({file,sha256,binarySha256}={}){
  ensure(report.schema_version===1&&report.kind==='native-legacy-recovery-matrix'&&report.status==='passed','恢复矩阵尚未通过');
  ensure(report.fixture===undefined||report.fixture===false,'合成 fixture 不能作为正式恢复证据');
  ensure(report.binary_sha256===binarySha256&&report.input_drift===false,'恢复矩阵二进制错配或输入漂移');
- ensure(JSON.stringify(report.families)===JSON.stringify(NATIVE_PROFILES),'恢复矩阵必须覆盖四个 Profile');
+ ensure(JSON.stringify(report.families)===JSON.stringify(NATIVE_PROFILES),'恢复矩阵必须覆盖全部维护的 Profile');
  ensure(Array.isArray(report.unexecuted)&&report.unexecuted.length===0,'恢复矩阵必需项未执行');
- ensure(Array.isArray(report.packages)&&report.packages.length===4,'旧固定执行器来源缺失');
+ ensure(Array.isArray(report.packages)&&report.packages.length===NATIVE_PROFILES.length,'旧固定执行器来源缺失');
  const packages=new Map();
  for(const pin of report.packages){
   ensure(NATIVE_PROFILES.includes(pin.family)&&!packages.has(pin.family),'旧固定执行器重复或家族非法');

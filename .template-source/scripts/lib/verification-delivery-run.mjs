@@ -7,8 +7,8 @@ import {createHash} from 'node:crypto';
 import {collectReleaseSources, produceCliArtifact, prepareArtifactConsumers, verifyInstalledCliMigration, validateArtifact, sourceTuple} from './verification-artifacts.mjs';
 
 const entry=fileURLToPath(import.meta.url);
-const families=['spec','design','backend','frontend'];
-const gates={spec:'check.verification-spec-cli',design:'check.verification-design-cli',backend:'check.verification-backend-cli',frontend:'check.verification-frontend-cli'};
+const families=['spec','design','backend'];
+const gates={spec:'check.verification-spec-cli',design:'check.verification-design-cli',backend:'check.verification-backend-cli'};
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 const quote=value=>`'${String(value).replaceAll("'","'\\''")}'`;
 const ensure=(condition,message)=>{if(!condition)throw new TypeError(message);};

@@ -50,19 +50,19 @@ function fixture(t) {
  finalizeVerificationReport(report,{status:'passed',wallMs:1,repositoryMode:'template-source'});report.input_after_sha256=sha;report.input_drift=false;report.final_exit={code:0,signal:null,observed:true};fs.writeFileSync(path.join(directory,'report.json'),JSON.stringify(report));})().catch(error=>{console.error(error);process.exitCode=1});
 `, 0o755);
   const sha=commit(repo),binary=path.join(base,'yss-fixture');
-  const bind=templateSha=>{const ldflags=`-X main.cliCommit=${cliCommit} -X main.templateCommit=${templateSha} -X main.designCommit=${templateSha} -X main.backendCommit=${templateSha} -X main.frontendCommit=${templateSha}`;const built=spawnSync('go',['build','-trimpath','-ldflags',ldflags,'-o',binary,'.'],{cwd:cli,env:{...process.env,CGO_ENABLED:'0'},encoding:'utf8'});assert.equal(built.status,0,built.stderr);process.env.YSS_NATIVE_BINARY=binary;process.env.YSS_NATIVE_BINARY_SHA256=hash(readFileSync(binary));process.env.YSS_NATIVE_SOURCE_ROOT=realpathSync(cli);};
+  const bind=templateSha=>{const ldflags=`-X main.cliCommit=${cliCommit} -X main.templateCommit=${templateSha} -X main.designCommit=${templateSha} -X main.backendCommit=${templateSha}`;const built=spawnSync('go',['build','-trimpath','-ldflags',ldflags,'-o',binary,'.'],{cwd:cli,env:{...process.env,CGO_ENABLED:'0'},encoding:'utf8'});assert.equal(built.status,0,built.stderr);process.env.YSS_NATIVE_BINARY=binary;process.env.YSS_NATIVE_BINARY_SHA256=hash(readFileSync(binary));process.env.YSS_NATIVE_SOURCE_ROOT=realpathSync(cli);};
   const previous={binary:process.env.YSS_NATIVE_BINARY,sha:process.env.YSS_NATIVE_BINARY_SHA256,source:process.env.YSS_NATIVE_SOURCE_ROOT};t.after(()=>{for(const [key,value]of [['YSS_NATIVE_BINARY',previous.binary],['YSS_NATIVE_BINARY_SHA256',previous.sha],['YSS_NATIVE_SOURCE_ROOT',previous.source]]){if(value===undefined)delete process.env[key];else process.env[key]=value;}});bind(sha);
   return {base,repo,sha,binary,cli,bind,output:path.join(base,'evidence')};
 }
 
 test('synthetic 固定源 Go 消费者真实编译、复制和公开导出产生命令证据', t => {
   const f = fixture(t);
-  // Four-profile publication algorithms are exercised with a synthetic Go
+  // Three-profile publication algorithms are exercised with a synthetic Go
   // producer. They cannot replace the separate historical recovery matrix.
   const sources=collectReleaseSources({root:f.repo,commit:f.sha}),records=[];
   const run=(file,args,cwd,env)=>{const observed=spawnSync(file,args,{cwd,env,encoding:'utf8'});records.push({file,args,cwd,exit_code:observed.status});return observed;};
   for(const source of sources.entries){const artifact=produceCliArtifact({root:f.repo,source,directory:path.join(f.base,'algorithm-fixture',source.family),run});assert.equal(verifyInstalledCliMigration({artifact,directory:path.join(f.base,'upgrade-fixture',source.family),run}).status,'passed');}
-  assert.equal(records.filter(row=>row.args[0]==='bundle'&&row.args[1]==='export').length,4);assert.ok(records.every(row=>row.exit_code===0));
+  assert.equal(records.filter(row=>row.args[0]==='bundle'&&row.args[1]==='export').length,3);assert.ok(records.every(row=>row.exit_code===0));
   assert.throws(()=>verifyTemplateRelease({root:f.repo,commit:f.sha,output:path.join(f.base,'formal-refusal')}),/LEGACY_RECOVERY_EVIDENCE/);
   assert.equal(JSON.parse(readFileSync(path.join(f.base,'formal-refusal/release-verification.json'))).status,'failed');
   const result = verifyTemplateRelease({ root: f.repo, commit: f.sha, output: f.output,cliFamily:'spec' });
@@ -80,13 +80,13 @@ test('synthetic 固定源 Go 消费者真实编译、复制和公开导出产生
 
 test('恢复矩阵 validator 的合成合同单元样例拒绝缺项、fixture、包/日志/二进制和退出码错配',t=>{
  const base=realpathSync(mkdtempSync(path.join(os.tmpdir(),'recovery-contract-unit-')));t.after(()=>rmSync(base,{recursive:true,force:true}));
- const families=['spec','design','backend','frontend'],packages=[],cases=[],binarySha='1'.repeat(64);
+ const families=['spec','design','backend'],packages=[],cases=[],binarySha='1'.repeat(64);
  // This temporary input tests validation algorithms only. It contains no real
  // historical executor evidence and never enters a release invocation.
  for(const family of families){const ref=path.join(base,`${family}.tgz`);writeFileSync(ref,'synthetic package bytes');const sha256=hash(readFileSync(ref));packages.push({family,ref,sha256,version:'0.0.0-fixture',cli_commit:'2'.repeat(40)});
   for(const name of REQUIRED_LEGACY_RECOVERY_CASES){const log_ref=`${family}-${name}.log`,refusals={'legacy-requires-explicit-migration':'MIGRATION_REQUIRED','legacy-pending-migration-refusal':'LEGACY_INTERRUPTED','modified-after-apply-rollback-refusal':'CONCURRENT'},negative=Boolean(refusals[name]);writeFileSync(path.join(base,log_ref),'synthetic validator unit data\n');cases.push({family,case:name,exit_code:negative?1:0,expected_code:refusals[name]||'OK',passed:true,log_ref,log_sha256:hash(readFileSync(path.join(base,log_ref))),legacy_package_sha256:sha256});}}
  const report={schema_version:1,kind:'native-legacy-recovery-matrix',status:'passed',input_drift:false,binary_sha256:binarySha,families,packages,cases,unexecuted:[]},file=path.join(base,'matrix.json');
- const persist=()=>writeFileSync(file,JSON.stringify(report)),verify=()=>validateLegacyRecoveryMatrix({file,sha256:hash(readFileSync(file)),binarySha256:binarySha});persist();assert.equal(verify().cases,48);
+ const persist=()=>writeFileSync(file,JSON.stringify(report)),verify=()=>validateLegacyRecoveryMatrix({file,sha256:hash(readFileSync(file)),binarySha256:binarySha});persist();assert.equal(verify().cases,36);
  report.fixture=true;persist();assert.throws(verify,/fixture/);delete report.fixture;
  report.unexecuted=['unfinished-fixed-executor-recovery'];persist();assert.throws(verify,/未执行/);report.unexecuted=[];
  const row=cases.pop();persist();assert.throws(verify,/必需恢复场景/);cases.push(row);
@@ -94,7 +94,7 @@ test('恢复矩阵 validator 的合成合同单元样例拒绝缺项、fixture�
  row.exit_code=1;persist();assert.throws(verify,/预期错误码矛盾/);row.exit_code=0;
  row.expected_code='INPUT_DRIFT';row.exit_code=1;persist();assert.throws(verify,/成功目标场景/);row.expected_code='OK';row.exit_code=0;
  const refusal=cases.find(value=>value.case==='modified-after-apply-rollback-refusal');refusal.expected_code='RECOVERY_FAILED';persist();assert.throws(verify,/拒绝语义/);refusal.expected_code='CONCURRENT';
- row.legacy_package_sha256='4'.repeat(64);persist();assert.throws(verify,/对应旧固定包/);row.legacy_package_sha256=packages[3].sha256;
+ row.legacy_package_sha256='4'.repeat(64);persist();assert.throws(verify,/对应旧固定包/);row.legacy_package_sha256=packages[2].sha256;
  persist();writeFileSync(path.join(base,row.log_ref),'changed');assert.throws(verify,/摘要漂移/);
 });
 
@@ -104,7 +104,7 @@ test('真实发布报告兼容 v1 baseline，并拒绝删除 syntax/终检、任
  const verify=()=>validateBaselineReport({root:f.repo,base:f.sha,reportFile:file,expectedDigest:hash(readFileSync(file))});
  const initial=verify();assert.equal(initial.valid,true,initial.reasons.join('; '));
  outer.error='outer integration consumer failure';writeFileSync(file,JSON.stringify(outer));assert.equal(verify().valid,false);delete outer.error;
- const specSources=outer.sources_manifest;outer.cli_families=['spec','design','backend','frontend'];outer.sources_manifest=collectReleaseSources({root:f.repo,commit:f.sha});outer.cli_integrations=[{family:'spec',status:'failed'}];writeFileSync(file,JSON.stringify(outer));const missingIntegration=verify();assert.equal(missingIntegration.valid,false);assert.match(missingIntegration.reasons.join('; '),/集成|integration/);
+ const specSources=outer.sources_manifest;outer.cli_families=['spec','design','backend'];outer.sources_manifest=collectReleaseSources({root:f.repo,commit:f.sha});outer.cli_integrations=[{family:'spec',status:'failed'}];writeFileSync(file,JSON.stringify(outer));const missingIntegration=verify();assert.equal(missingIntegration.valid,false);assert.match(missingIntegration.reasons.join('; '),/集成|integration/);
  outer.cli_families=['spec'];outer.sources_manifest=specSources;delete outer.cli_integrations;writeFileSync(file,JSON.stringify(outer));
  // Model the old runner's separately logged syntax/terminal validators.
  full.schema_version=1;full.plan.commands=full.plan.commands.filter(row=>row.group!=='postchecks'&&row.kind!=='preflight');full.plan.syntax_files=[];

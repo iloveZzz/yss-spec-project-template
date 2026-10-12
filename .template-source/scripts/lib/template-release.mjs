@@ -46,7 +46,7 @@ export function verifyTemplateRelease({ root, commit, output, runtimeStore = 'of
   output = realpathSync(output);
   const relative = path.relative(root, output);
   assert.ok(relative.startsWith(`..${path.sep}`) || path.isAbsolute(relative), '证据目录必须在仓库外');
-  const families=cliFamily==='all-four'?['spec','design','backend','frontend']:['spec'];
+  const families=cliFamily==='all-four'?['spec','design','backend']:['spec'];
   const report = { schema_version: 2,kind:'template-release-verification',purpose:'verification', requested_commit: commit,cli_families:families, status: 'failed',
     verification_scope:'local-template-and-cli',release_readiness:'not-evaluated',
     started_at: new Date().toISOString(), commands: [], publication: 'not-performed' };

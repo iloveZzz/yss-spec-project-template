@@ -226,7 +226,7 @@ export function validateQualificationIntegration({root,reportFile,expectedDigest
   const directory=fs.realpathSync(path.dirname(reportFile));reportFile=path.join(directory,path.basename(reportFile));assertEvidenceFile(reportFile,directory,expectedDigest);
   const report=JSON.parse(fs.readFileSync(reportFile,'utf8')),commit=expectedCommit||report.requested_commit;
   ensure(report.schema_version===2&&report.kind==='template-release-verification'&&report.status==='passed'&&!report.error&&report.requested_commit===commit&&report.template_commit===commit,'integration 来源或结论未绑定或存在外层失败');
-  const families=['spec','design','backend','frontend'];assert.deepEqual(report.cli_families,families,'integration 未覆盖 all-four');
+  const families=['spec','design','backend'];assert.deepEqual(report.cli_families,families,'integration 未覆盖 all-four');
   const expected=collectReleaseSources({root,commit,families});
   const recovery=report.legacy_recovery;
   validateLegacyRecoveryMatrix({file:recovery?.ref,sha256:recovery?.sha256,binarySha256:expected.entries[0].binary_sha256});
