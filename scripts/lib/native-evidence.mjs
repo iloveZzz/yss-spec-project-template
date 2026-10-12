@@ -1,11 +1,28 @@
 // 校验语义归 yss；这里只负责定位固定版本的二进制、拼参数、解码信封并透传退出码。
 import {spawnSync} from 'node:child_process';
-import {mkdirSync, readFileSync, realpathSync, rmSync, statSync, writeFileSync} from 'node:fs';
+import {copyFileSync, mkdirSync, readFileSync, realpathSync, rmSync, statSync, writeFileSync} from 'node:fs';
 import {randomUUID} from 'node:crypto';
 import path from 'node:path';
 import {contextBinary} from './native-context.mjs';
 
-export function nativeEvidenceVerify({root, kind, file, extra = [], environment = process.env, group = 'evidence'}) {
+// 命令行薄壳的输入可以在项目根外（例如维护反例生成器把输入写在仓外目录）：yss 只读根内路径，
+// 这时把文件复制到根下临时目录再校验，用完即删；记录里的相对引用仍按项目根解析，与进程内实现一致。
+function stagedInput(root, file) {
+  if (!path.isAbsolute(file)) return {file, cleanup() {}};
+  const rel = path.relative(root, file);
+  if (rel && !rel.startsWith('..') && !path.isAbsolute(rel)) return {file: rel.split(path.sep).join('/'), cleanup() {}};
+  const dir = path.join(root, '.work', 'native-candidates', `input-${process.pid}-${randomUUID()}`);
+  mkdirSync(dir, {recursive: true});
+  copyFileSync(file, path.join(dir, path.basename(file)));
+  return {file: path.relative(root, path.join(dir, path.basename(file))).split(path.sep).join('/'), cleanup() { rmSync(dir, {recursive: true, force: true}); }};
+}
+
+export function nativeEvidenceVerify({root, kind, file: given, extra = [], environment = process.env, group = 'evidence'}) {
+  const staged = stagedInput(root, given);
+  try { return runNativeVerify({root, kind, file: staged.file, extra, environment, group}); } finally { staged.cleanup(); }
+}
+
+function runNativeVerify({root, kind, file, extra, environment, group}) {
   const {binary} = contextBinary(environment);
   // lifecycle 领域的资产选择器是 --checkpoint，其余领域是 --kind 加 --file。
   const selector = group === 'lifecycle' ? ['--checkpoint', file] : ['--kind', kind, '--file', file];

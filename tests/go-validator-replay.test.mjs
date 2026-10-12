@@ -465,3 +465,85 @@ for (const [name, mutate] of Object.entries(checkpointVariants)) {
     assert.equal(go.exitCode === 0, node.status === 0, `结论不一致：Node=${node.status} ${node.stderr.trim().slice(0, 120)} Go=${go.exitCode} ${go.message.slice(0, 120)}`);
   });
 }
+
+// 带已批准门禁的 checkpoint：门禁状态、批准记录、用户决定、主体与依据全部落在实例内，
+// 通过实例自带的 Node 脚本与 yss 各校验一次；覆盖批准路径在整份 checkpoint 里的结论。
+function approvedGateCheckpoint() {
+  const c = trackedCheckpoint();
+  const gate = 'gate.spec-baseline-approved';
+  const dir = path.join(path.dirname(c.ref), 'approval');
+  mkdirSync(path.join(c.inst, dir), {recursive: true});
+  const rel = (name) => path.join(dir, name);
+  const put = (name, value) => { writeFileSync(path.join(c.inst, rel(name)), typeof value === 'string' ? value : JSON.stringify(value)); return rel(name); };
+  const evidenceRef = put('evidence.log', 'synthetic independent comparison');
+  const evidence = {ref: evidenceRef, digest: decisionDigest(readFileSync(path.join(c.inst, evidenceRef))).slice(7)};
+  const subjectRef = put('subject.json', {gate_id: gate, approval_scope: ['feature.demo'], basis: [evidence], drafter_principal_ref: 'synthetic.drafter'});
+  const decision = buildDecisionFixture(path.join(c.inst, dir, 'decision'), {boundary: gate, subjectRef: path.join(c.inst, subjectRef)});
+  // 夹具里的引用是绝对路径；决定与请求都落在实例内，保持绝对路径即可
+  decision.record.request.items[0].subject.ref = subjectRef; // 批准记录用实例相对引用，决定里的主体引用必须相同
+  decision.record.request.items[0].subject.digest = decisionDigest(readFileSync(path.join(c.inst, subjectRef)));
+  decision.present(); decision.record.responses = []; decision.respond(); decision.save();
+  const subjectDigest = decisionDigest(readFileSync(path.join(c.inst, subjectRef))).slice(7);
+  const record = {schema_version: 1, gate_id: gate, decision: 'approved', actor_kind: 'digital-human', role_id: 'role.product-manager', runtime_id: 'runtime.generic', principal_ref: 'synthetic.reviewer', drafter_principal_ref: 'synthetic.drafter', subject_ref: subjectRef, subject_digest: subjectDigest, approval_scope: ['feature.demo'], basis: [evidence], user_decision_ref: path.relative(c.inst, decision.ref)};
+  const approvalRef = put('approval.json', record);
+  const state = {status: 'approved', reason: '同步骤批准', evidence_refs: [evidenceRef, approvalRef, subjectRef], evidence: {'evidence.approval-record': [approvalRef]}, approval_ref: approvalRef, subject_ref: subjectRef, subject_digest: subjectDigest, approval_scope: ['feature.demo'], basis: [evidence], drafter_principal_ref: 'synthetic.drafter'};
+  const a = {...c, gate, state, record, approvalRef, put, subjectRef, evidenceRef, decision, stateOverride: {}, withGate: (x) => {
+    // 状态里的依据摘要在写出 checkpoint 时按当前文件字节计算，变异用例只改变它要测的那一项
+    const digest = (ref) => decisionDigest(readFileSync(path.join(c.inst, ref))).slice(7);
+    const gateState = structuredClone(state);
+    gateState.basis = [{ref: evidenceRef, digest: digest(evidenceRef)}, {ref: subjectRef, digest: digest(subjectRef)}, {ref: approvalRef, digest: digest(approvalRef)}];
+    return {...x, gates: {...x.gates, [gate]: Object.assign(gateState, a.state, {basis: gateState.basis})}};
+  }};
+  return a;
+}
+const approvedCases = {
+  '批准有效': () => {},
+  '审查人自签': (a) => { a.record.principal_ref = 'synthetic.drafter'; a.put('approval.json', a.record); },
+  '会签角色不对': (a) => { a.record.role_id = 'role.test-engineer'; a.put('approval.json', a.record); },
+  '主体被改动': (a) => { writeFileSync(path.join(a.inst, a.subjectRef), JSON.stringify({changed: true})); },
+  '依据被改动': (a) => { writeFileSync(path.join(a.inst, a.evidenceRef), 'tampered'); },
+  '状态范围与记录不同': (a) => { a.state.approval_scope = ['other.scope']; },
+  '缺批准引用': (a) => { delete a.state.approval_ref; },
+  '批准引用不存在': (a) => { a.state.approval_ref = 'none/approval.json'; },
+};
+for (const [name, mutate] of Object.entries(approvedCases)) {
+  test(`checkpoint 回放（带批准门禁）：${name}`, {skip}, () => {
+    const a = approvedGateCheckpoint();
+    mutate(a);
+    writeFileSync(path.join(a.inst, a.ref), JSON.stringify(a.withGate(a.base)));
+    const node = spawnSync(process.execPath, [path.join(a.inst, 'scripts/verify-lifecycle-checkpoint'), a.ref], {cwd: a.inst, encoding: 'utf8'});
+    const go = nativeLifecycleVerify({root: a.inst, file: a.ref});
+    assert.equal(go.exitCode === 0, node.status === 0, `结论不一致：Node=${node.status} ${node.stderr.trim().slice(0, 160)} Go=${go.exitCode} ${go.message.slice(0, 160)}`);
+    if (name === '批准有效') assert.equal(node.status, 0, `基线夹具本身必须通过：${node.stderr.trim().slice(0, 200)}`);
+  });
+}
+
+// 旧实例（tracker 没有 lifecycle_tracking_version）的未跟踪 checkpoint：Node 不要求功能身份与跟踪，yss 必须与之一致。
+const legacyCases = {
+  '模板基线': (x) => x,
+  'next=null': (x) => ({...x, next_work_unit: null}),
+  'mode=audit': (x) => ({...x, mode: 'audit'}),
+  '边界 handoff 缺依据': (x) => ({...x, phase_boundary: {decision: 'handoff'}}),
+  '边界 handoff 有依据': (x) => ({...x, phase_boundary: {decision: 'handoff', reason: 't', source_ref: 'CONTEXT.md', destination_ref: 'AGENTS.md'}}),
+  'status=completed 无验收': (x) => ({...x, status: 'completed', next_work_unit: null}),
+  '下一工作单元未登记': (x) => ({...x, next_work_unit: 'work-unit.unknown'}),
+};
+for (const [name, mutate] of Object.entries(legacyCases)) {
+  test(`checkpoint 回放（旧实例未启用追踪）：${name}`, {skip}, () => {
+    site = 'instance';
+    const inst = setup();
+    const dir = `.work/replay-legacy-${++seq}`;
+    mkdirSync(path.join(inst, dir), {recursive: true});
+    const tracker = path.join(inst, '.template-spec/agents/issue-tracker.md');
+    const original = readFileSync(tracker, 'utf8');
+    writeFileSync(tracker, '---\ntracker: {platform: local-markdown, root: docs/.scratch}\n---\n');
+    try {
+      const template = parseYamlText(readFileSync(path.join(inst, '.template-spec/process/templates/lifecycle-checkpoint-template.yaml'), 'utf8'));
+      const ref = `${dir}/checkpoint.json`;
+      writeFileSync(path.join(inst, ref), JSON.stringify(mutate(structuredClone(template))));
+      const node = spawnSync(process.execPath, [path.join(inst, 'scripts/verify-lifecycle-checkpoint'), ref], {cwd: inst, encoding: 'utf8'});
+      const go = nativeLifecycleVerify({root: inst, file: ref});
+      assert.equal(go.exitCode === 0, node.status === 0, `结论不一致：Node=${node.status} ${node.stderr.trim().slice(0, 160)} Go=${go.exitCode} ${go.message.slice(0, 160)}`);
+    } finally { writeFileSync(tracker, original); }
+  });
+}

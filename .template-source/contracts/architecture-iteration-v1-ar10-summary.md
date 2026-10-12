@@ -1,6 +1,6 @@
-# AR-10 进展：task 已完成，checkpoint 已量测，slice 待决定
+# AR-10 进展：task、checkpoint 已完成，slice 待决定
 
-状态：task 校验入口完成；checkpoint 完成对拍量测并固化为回放（§4），薄壳待决定；slice 停在输出形态决定点（§3）。沿用 AR-09 的口径：删除 Node 实现与删除规则随 AR-11，本包做回放、薄壳和委托。
+状态：task、checkpoint 的校验入口已换成 yss 薄壳（§4、§6）；slice 停在输出形态决定点（§3）。沿用 AR-09 的口径：删除 Node 实现与删除规则随 AR-11，本包做回放、薄壳和委托。
 
 ## 1. 已完成：task（`contract verify --kind task`）
 
@@ -41,3 +41,16 @@
 
 - checkpoint：对拍一致率足够，建议换薄壳并把上述 6 个测试迁到真实实例；先补一轮「带批准门禁」的对拍再换。
 - slice：先定输出形态（见 §3）。
+
+## 6. checkpoint 薄壳完成（按 §5 建议执行）
+
+- 补对拍：带已批准门禁的 checkpoint（`gate.spec-baseline-approved`，门禁状态、v1 批准记录、用户决定、主体与依据全落在实例内）8 类（有效、审查人自签、会签角色不对、主体被改、依据被改、状态范围与记录不同、缺批准引用、批准引用不存在），含对基线夹具本身必须通过的断言，结论一致；旧实例（tracker 无 `lifecycle_tracking_version`）的未跟踪 checkpoint 7 类，结论一致。checkpoint 回放共 35 类。
+- 对拍中发现并修掉的 Go/Node 差异（yss-cli `40926d1`）：
+  1. 旧实例的未跟踪 checkpoint：Node 不要求功能身份，yss 一律要求路径与 `feature_id` 一致，会拒绝旧实例的 checkpoint。现在没有 `feature_id` 也没有 `stage_tracking` 时不要求（任一出现仍须与登记一致）。
+  2. 没有消费上下文时的顺序：Node 先核验会签身份与规则（否决、角色）再要求期望，yss 先要求期望，导致维护反例里「生物人否决」被报成「缺少上下文」。现在先核验会签再要求上下文。
+  3. 拒绝原因合并成一句：yss 把「非会签门禁、decision 不是 approved、被生物人否决」合并成同一条文案；现在分开，措辞与 Node 一致。
+- 薄壳：`scripts/verify-lifecycle-checkpoint [--history]`；yss 只读项目根内路径，输入在根外时（如维护反例生成器把输入写在仓外）薄壳先把文件复制到根下临时目录再校验、用完即删，对 `verify-lifecycle-checkpoint`、`verify-approval-record`、`verify-user-decision`、`verify-digital-human-task-package` 四个薄壳都生效。
+- **这顺带修了一处 AR-09 遗留的回归**：AR-09 把 `verify-approval-record` 换成薄壳后，维护反例生成器（`tests/scenarios/verify-maintenance-risk-scenarios.mjs`）因输入在仓外而失败，当时没跑到它。现已修复并在新固定二进制下生成成功；生成器里对 checkpoint 反例的期望诊断改为 yss 的措辞（`missing properties 'source_ref'`）。
+- 迁移的测试：`tests/checkpoint-boundary.test.mjs` 改在真实实例里运行并按旧实例未启用追踪处理；`tests/project-ci.test.mjs` 不用改（修好后 15 个通过）；`flow-verification-routing`、`lifecycle-status-feedback`、`verify-lifecycle-operator-scenarios` 本来就通过。
+- 仍未覆盖：Plan 聚合、业务票通过审查的组合、执行范围终点（`loadExecutionScope`）、`--history` 与 yss 的对拍。
+- 固定二进制：`40926d1542a2537ae74278c5c56169049268f13d`（四个平台已重建、固定档已更新）。**从下一片起按维护者新要求：每片只在本机验证，攒几片再统一重建并更新固定档。**
