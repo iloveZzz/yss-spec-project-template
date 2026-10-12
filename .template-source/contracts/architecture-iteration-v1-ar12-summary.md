@@ -1,6 +1,6 @@
 # AR-12 进展（第 4 步：backend、frontend 的校验部分）
 
-状态：进行中。第 1～3 片完成（OpenAPI 校验、后端终点、后端交付包）；前端三项因决定整条移除而不迁移；slice 执行前检查与脚手架决定记录待定。沿用口径：回放 → 薄壳 → 最后统一删除；每片只在本机单平台验证，固定档攒几片再统一重建（仍为 `40926d1`，未更新）。
+状态：进行中。第 1～4 片完成（OpenAPI 校验、后端终点、后端交付包、脚手架架构选择记录）；前端三项因决定整条移除而不迁移；slice 执行前检查待定。沿用口径：回放 → 薄壳 → 最后统一删除；每片只在本机单平台验证，固定档攒几片再统一重建（仍为 `40926d1`，未更新）。
 
 ## 1. 入口盘点
 
@@ -11,19 +11,22 @@
 | `backend-delivery verify` | 校验 | **第 3 片完成**：yss 公开 `handoff verify --kind backend-delivery --package <目录\|ZIP>`；`export`、`import` 是工作流，留 Node |
 | `verify-frontend-delivery`、`verify-frontend-strategic-preflight`、`verify-frontend-implementation-evidence` | 校验 | **不迁移**（见 §4）：前端移交验证整条线后续会移除 |
 | `slice-contract verify`（执行前检查，AR-10 移交） | 校验 | **待定**：见 §5 |
-| `verify-scaffold-architecture-decisions` | 校验 | **待定**：见 §5 |
+| `verify-scaffold-architecture-decisions` | 校验 | **第 4 片完成**（维护者选「yss 新增独立 kind」）：yss 公开 `contract verify --kind scaffold-decisions [--allow-template]` |
 | `verify-yss-dto-openapi-profile` | 模板数据检查 | 不迁：校验技能参考数据，不是项目资产，Go 里没有对应 |
 | `verify-backend-platform-matrix`、`backend-platforms`、`backend-standards-coverage`、`audit-*`、`preflight-delivery` | 工作流与工具 | 留 Node（FR-010） |
 
-## 2. 三片结果
+## 2. 四片结果
 
 | 片 | yss（`.work/yss-cli`，分支 `arch/ar-12`） | 根仓 | 回放 |
 |---|---|---|---|
 | 1 OpenAPI 校验 | `0d32ef4`，令牌 `contract.openapi-validation.v1` | `1ccb6287` | 17 类（含 `--allow-template`）与 Node 结论一致；原场景改用真实实例根 |
 | 2 后端终点 | `5546023`，令牌 `contract.backend-terminal.v1` | `c84f2425` | 真实 Backend 实例夹具：通过、缺 check、错 Slice、错 Profile、缺契约报告、缺下游责任、审查状态与交付记录字节变化、无类型 Fresh 报告共 9 类一致；通过时 coverage 与 Node 结果逐字段相等 |
 | 3 后端交付包 | `9924f65`，令牌 `handoff.backend-delivery-package.v1` | `7b111eaf` | 同一夹具导出的包：目录、ZIP 通过，载荷字节变化、清单文件被删、多出文件、`bundle_digest` 被改、版本被改、缺清单共 8 类一致 |
+| 4 脚手架架构选择记录 | `c6a0863`，令牌 `contract.scaffold-decisions.v1` | 本提交 | 14 类（通过、继承通过、缺确认引用、模块闭包缺失、继承不一致、覆盖无说明、project_id 重复、父项目不存在、根默认声明父项目、未知 Profile、未知平台、数据库不是 h2、正式记录标成模板、输入摘要变化）加 `--allow-template`，与 Node 结论一致 |
 
-回放在独立文件 `tests/go-validator-replay-delivery.test.mjs`（夹具构建约 40 秒，整份约 2.5 分钟），登记为 `check.go-validator-replay-delivery`，只在相关路径变化时选中；OpenAPI 回放并入 `tests/go-validator-replay.test.mjs`，场景登记为 `check.openapi-validation-scenarios`。三个薄壳（`verify-openapi-draft-validation-record`、`complete-backend-delivery verify`、`backend-delivery verify`）只翻译参数、透传结论与退出码；缺能力令牌时给出升级提示。
+第 4 片：Node 校验逻辑从脚本搬到 `scripts/lib/scaffold-decisions-verify.mjs`（回放对照，AR-12b 删除），`scripts/verify-scaffold-architecture-decisions` 改为薄壳（新增 `--root`，默认仓根）；回放在 Backend 实例里跑（平台目录与证据只在 Backend 实例里），并入 `tests/go-validator-replay.test.mjs`；原场景改用 Backend 实例根，登记 `check.scaffold-decisions-scenarios`。
+
+后端回放在独立文件 `tests/go-validator-replay-delivery.test.mjs`（夹具构建约 40 秒，整份约 2.5 分钟），登记为 `check.go-validator-replay-delivery`，只在相关路径变化时选中；OpenAPI 回放并入 `tests/go-validator-replay.test.mjs`，场景登记为 `check.openapi-validation-scenarios`。三个薄壳（`verify-openapi-draft-validation-record`、`complete-backend-delivery verify`、`backend-delivery verify`）只翻译参数、透传结论与退出码；缺能力令牌时给出升级提示。
 
 ## 3. 回放发现并修掉的 Go 缺陷
 
@@ -40,10 +43,10 @@
 
 ## 5. 待定（未动手）
 
-1. **slice 执行前检查**：维护者在 AR-10 选了「yss 输出同形的执行前检查报告」。批准与新鲜度原因码（`registry-digest-changed`、`compiler-contract-digest-changed`、`technical-design-stale-or-unavailable`、`architecture-identity-*`、`component-binding-drift` 等）来自 Node 独有的 `evaluateContractFreshness` 与 `createApprovedExecutionContext`，要先在 Go 里移植。
-2. **脚手架架构决定**（`verify-scaffold-architecture-decisions`）：Go 里没有独立 kind，决定文件的检查嵌在脚手架合同校验里。需要决定是新增 kind，还是随脚手架生成流程由合同校验覆盖后退役。
+（原第 2 项「脚手架架构决定」已由维护者选定并完成，见第 4 片。）
 
-两项都需要维护者给出方向后再做。
+1. **slice 执行前检查**：维护者在 AR-10 选了「yss 输出同形的执行前检查报告」。批准与新鲜度原因码（`registry-digest-changed`、`compiler-contract-digest-changed`、`technical-design-stale-or-unavailable`、`architecture-identity-*`、`component-binding-drift` 等）来自 Node 独有的 `evaluateContractFreshness` 与 `createApprovedExecutionContext`，要先在 Go 里移植。
+这一项需要维护者确认后再做；做的时候先移植原因码，再做回放与薄壳。
 
 ## 6. 验证口径与限制
 

@@ -121,6 +121,8 @@ profiles:
           - "scripts/verify-strategic-handoff-consumption"
           - "scripts/verify-openapi-draft-validation-record"
           - "scripts/lib/openapi-draft-validation.mjs"
+          - "scripts/verify-scaffold-architecture-decisions"
+          - "scripts/lib/scaffold-decisions-verify.mjs"
           - "scripts/lib/strategic-handoff-consumption.mjs"
           - "scripts/fixtures/strategic-handoff/fixture.mjs"
           - "scripts/lib/native-evidence.mjs"
@@ -193,6 +195,19 @@ profiles:
           - ".template-spec/process/schemas/openapi-draft-validation-record.schema.json"
         depends_on: []
         failure_mode: "OpenAPI Draft validation record 的薄壳不再把正式记录交给 yss 校验，或放行摘要过期、命令指向别的 Draft、锁文件未绑定版本、$ref 无法解析的记录"
+      - id: check.scaffold-decisions-scenarios
+        run: "node tests/scenarios/verify-scaffold-architecture-decision-scenarios.mjs"
+        group: feature-assets
+        resources: ["native-cli"]
+        inputs_complete: true
+        input_patterns:
+          - "scripts/verify-scaffold-architecture-decisions"
+          - "scripts/verify-scaffold-architecture-decision-scenarios"
+          - "tests/scenarios/verify-scaffold-architecture-decision-scenarios.mjs"
+          - "scripts/fixtures/user-decision/build-fixture.mjs"
+          - ".template-spec/process/schemas/scaffold-architecture-decisions.schema.json"
+        depends_on: []
+        failure_mode: "脚手架架构选择记录的薄壳不再把正式记录交给 yss 校验，或放行缺用户确认、模块闭包缺失、继承值与父项目不一致的记录"
       - id: check.contract-review-preparation
         run: "node --test tests/contract-review-preparation.test.mjs"
         group: feature-assets

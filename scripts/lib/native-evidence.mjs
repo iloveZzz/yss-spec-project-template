@@ -52,6 +52,7 @@ export const NEEDS = {
   openapiValidation: ['contract.openapi-validation.v1'],
   backendTerminal: ['contract.backend-terminal.v1'],
   backendDeliveryPackage: ['handoff.backend-delivery-package.v1'],
+  scaffoldDecisions: ['contract.scaffold-decisions.v1'],
 };
 const capabilityCache = new Map();
 export function nativeCapabilities(environment = process.env) {

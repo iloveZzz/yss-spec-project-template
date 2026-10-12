@@ -16,6 +16,8 @@ import {verifyConsumption} from '../scripts/lib/strategic-handoff-consumption.mj
 import {verifyContextReconciliation} from '../scripts/lib/context-reconciliation.mjs';
 import {validateOpenApiDraftValidationRecord} from '../scripts/lib/openapi-draft-validation.mjs';
 import {readWorkLayout} from '../scripts/lib/work-layout.mjs';
+import {verifyScaffoldArchitectureDecisions} from '../scripts/lib/scaffold-decisions-verify.mjs';
+import {attachScaffoldDecisionFixture} from '../scripts/fixtures/user-decision/build-fixture.mjs';
 import {read as readHandoff, json as handoffJson} from '../scripts/lib/strategic-handoff-io.mjs';
 import {makeRoot} from './helpers/yss-instance.mjs';
 import {readdirSync, cpSync, unlinkSync, appendFileSync} from 'node:fs';
@@ -826,4 +828,51 @@ test('OpenAPI Draft validation 回放：--allow-template 只接受模板记录',
   const c = openapiCase();
   assert.throws(() => validateOpenApiDraftValidationRecord(path.join(c.target, c.ref), {root: c.target, allowTemplate: true}));
   assert.notEqual(nativeContractVerify({root: c.target, kind: 'openapi-validation', file: c.ref, extra: ['--allow-template']}).exitCode, 0);
+});
+
+// 脚手架架构选择记录（contract verify --kind scaffold-decisions）：Node 的 verifyScaffoldArchitectureDecisions 与 yss 结论一致。
+const scaffoldConfirmation = {confirmed_by: 'user', channel: 'codex', confirmation_ref: 'turn://1', confirmed_at: '2026-09-05T01:00:00+08:00', normalized_text: '确认 MVC'};
+const scaffoldDecision = (extra = {}) => ({decision_id: 'scaffold-decision.main', project_id: 'main', parent_project_id: null, status: 'lifecycle-approved', recommended_architecture: 'layered-mvc', recommendation_reasons: ['CRUD 与报表为主'], confirmed_architecture: 'layered-mvc', override_reason: null,
+  inheritance_mode: 'root-default', inherited_from: null, platform_profile: 'spring-boot-2.7-jdk8', architecture_profile: 'layered-mvc-service', verification_database: 'h2', production_database: 'not-bound', requested_capabilities: ['feign-client'],
+  resolved_modules: ['server', 'service', 'repository', 'client', 'feign-client'], resolution_version: 1, user_confirmation: scaffoldConfirmation, decision_inputs_digest: `sha256:${'1'.repeat(64)}`, ...extra});
+const scaffoldChild = (extra = {}) => scaffoldDecision({decision_id: 'scaffold-decision.child', project_id: 'child', parent_project_id: 'main', recommended_architecture: 'domain-driven', recommendation_reasons: ['存在复杂状态机'], override_reason: '继承本体的统一架构',
+  inheritance_mode: 'inherit', inherited_from: 'main', requested_capabilities: [], resolved_modules: ['server', 'service', 'repository'], ...extra});
+const scaffoldVariants = {
+  '单个 MVC 决定通过': {decisions: [scaffoldDecision()], ok: true},
+  '子项目继承通过': {decisions: [scaffoldDecision(), scaffoldChild()], ok: true},
+  '缺少用户确认引用': {decisions: [scaffoldDecision({user_confirmation: {...scaffoldConfirmation, confirmation_ref: null}})]},
+  '模块闭包缺少 capability 模块': {decisions: [scaffoldDecision({resolved_modules: ['server', 'service', 'repository']})]},
+  '继承值与父项目不一致': {decisions: [scaffoldDecision(), scaffoldChild({confirmed_architecture: 'domain-driven', override_reason: null})]},
+  '覆盖推荐没有说明': {decisions: [scaffoldDecision({recommended_architecture: 'domain-driven'})]},
+  'project_id 重复': {decisions: [scaffoldDecision(), scaffoldDecision({decision_id: 'scaffold-decision.other'})]},
+  '引用不存在的父项目': {decisions: [scaffoldChild({parent_project_id: 'ghost', inherited_from: 'ghost'})]},
+  '根默认却声明父项目': {decisions: [scaffoldDecision({parent_project_id: 'x'})]},
+  '未知架构 Profile': {decisions: [scaffoldDecision({architecture_profile: 'no-such-profile'})]},
+  '未知平台': {decisions: [scaffoldDecision()], afterAttach: (d) => { d.platform_profile = 'spring-boot-9'; }},
+  '数据库绑定不是 h2': {decisions: [scaffoldDecision({verification_database: 'mysql'})]},
+  '正式记录标成模板': {decisions: [scaffoldDecision()], template: true},
+  '用户所见快照被改（输入摘要变化）': {decisions: [scaffoldDecision()], afterAttach: (d) => { d.decision_inputs_digest = `sha256:${'2'.repeat(64)}`; }},
+};
+for (const [name, spec] of Object.entries(scaffoldVariants)) {
+  test(`脚手架架构选择回放：${name}`, {skip}, () => {
+    const target = makeRoot('yss-scaffold-replay-', 'backend'); // 平台目录与证据只在 Backend 实例里
+    const record = {schema_version: 1, kind: 'scaffold-architecture-decisions', template: spec.template ?? false, status: 'current',
+      decisions: spec.decisions.map((decision) => attachScaffoldDecisionFixture(path.join(target, '.work', `scaffold-${++seq}`, decision.project_id), decision))};
+    if (spec.afterAttach) record.decisions.forEach(spec.afterAttach);
+    const ref = `scaffold-decisions-${seq}.json`;
+    writeFileSync(path.join(target, ref), JSON.stringify(record));
+    let node;
+    try { verifyScaffoldArchitectureDecisions(path.join(target, ref)); node = {ok: true}; } catch (error) { node = {ok: false, message: String(error.message).slice(0, 100)}; }
+    const go = nativeContractVerify({root: target, kind: 'scaffold-decisions', file: ref});
+    assert.equal(go.exitCode === 0, node.ok, `结论不一致：Node=${JSON.stringify(node)} Go=${go.exitCode} ${go.message.slice(0, 160)}`);
+    if (spec.ok) assert.equal(node.ok, true, `基线必须通过：${node.message}`);
+    else assert.doesNotMatch(String(node.message), /ENOENT/, '拒绝原因不能是找不到记录文件');
+  });
+}
+test('脚手架架构选择回放：--allow-template 接受模板记录', {skip}, () => {
+  const ref = '.template-spec/process/templates/scaffold-architecture-decisions-template.yaml';
+  verifyScaffoldArchitectureDecisions(path.join(REPO, ref), {allowTemplate: true});
+  const go = nativeContractVerify({root: REPO, kind: 'scaffold-decisions', file: ref, extra: ['--allow-template']});
+  assert.equal(go.exitCode, 0, go.message);
+  assert.notEqual(nativeContractVerify({root: REPO, kind: 'scaffold-decisions', file: ref}).exitCode, 0);
 });
