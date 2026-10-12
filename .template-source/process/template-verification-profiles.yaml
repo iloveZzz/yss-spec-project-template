@@ -140,6 +140,7 @@ profiles:
           - "tests/go-validator-replay-delivery.test.mjs"
           - "tests/helpers/yss-instance.mjs"
           - "scripts/complete-backend-delivery"
+          - "scripts/backend-delivery"
           - "scripts/lib/native-evidence.mjs"
           - "scripts/fixtures/backend-delivery/backend-profile-terminal-fixture.mjs"
           - "scripts/fixtures/backend-delivery/approval-fixture.mjs"
@@ -150,7 +151,7 @@ profiles:
           - "scripts/fixtures/existing-backend/fixture.mjs"
           - ".template-source/distribution/yss-cli-pin.json"
         depends_on: []
-        failure_mode: "Backend 实例自带的终点校验与固定版本 yss 对同一份终点夹具的通过/拒绝结论或结果字段不一致，或 complete-backend-delivery verify 薄壳不再只调用 yss（该回放较慢，约 2 分钟，只在这些路径变化时选中）"
+        failure_mode: "Backend 实例自带的终点校验与固定版本 yss 对同一份终点夹具的通过/拒绝结论或结果字段不一致，或 complete-backend-delivery verify、backend-delivery verify 薄壳不再只调用 yss（后端终点 9 类与交付包 8 类；该回放较慢，约 2 分钟，只在这些路径变化时选中）"
       - id: check.user-decision-scenarios
         run: "scripts/verify-user-decision-scenarios"
         group: feature-assets
@@ -1441,6 +1442,7 @@ routing:
       - tests/go-validator-replay.test.mjs
       - tests/go-validator-replay-delivery.test.mjs
       - scripts/complete-backend-delivery
+      - scripts/backend-delivery
       - tests/helpers/yss-instance.mjs
       - scripts/fixtures/user-decision/plan-fixture.mjs
       - .template-source/process/node-core-layer.json

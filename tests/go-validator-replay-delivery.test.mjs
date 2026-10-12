@@ -5,7 +5,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
-import {nativeContractVerify} from '../scripts/lib/native-evidence.mjs';
+import {pathToFileURL} from 'node:url';
+import {nativeContractVerify, nativeEvidenceVerify} from '../scripts/lib/native-evidence.mjs';
 import {contextBinary} from '../scripts/lib/native-context.mjs';
 import {makeRoot} from './helpers/yss-instance.mjs';
 import {backendProfileTerminalFixture} from '../scripts/fixtures/backend-delivery/backend-profile-terminal-fixture.mjs';
@@ -14,8 +15,9 @@ let binary;
 try { binary = contextBinary().binary; } catch { binary = null; }
 const skip = binary ? false : '需要固定版本的 yss（YSS_NATIVE_BINARY）';
 
-// 后端终点（contract verify --kind backend-delivery-terminal）：夹具根自己携带的 Node 实现（真实 Backend 实例的脚本）与 yss 对拍。
-test('后端终点回放：通过与反例结论一致', {skip}, async (t) => {
+// 后端终点（contract verify --kind backend-delivery-terminal）与后端交付包（handoff verify --kind backend-delivery）：
+// 夹具根自己携带的 Node 实现（真实 Backend 实例的脚本）与 yss 对拍。
+test('后端交付回放（终点与交付包）：通过与反例结论一致', {skip}, async (t) => {
   const seed = makeRoot('yss-backend-seed-', 'backend');
   const f = await backendProfileTerminalFixture({nativeSeed: seed});
   t.after(() => f.cleanup());
@@ -108,5 +110,49 @@ test('后端终点回放：通过与反例结论一致', {skip}, async (t) => {
       assert.equal(JSON.parse(run.stderr).result, 'blocked');
       assert.equal(run.stdout, '');
     } finally { restore(); }
+  });
+
+  // 后端交付包（handoff verify --kind backend-delivery）：实例自带的 openBackendDelivery 与 yss 对同一个包的结论一致。
+  const producer = await import(pathToFileURL(path.join(f.root, 'scripts/lib/backend-delivery.mjs')));
+  const nodePackage = async (input) => { try { return {ok: true, value: await producer.openBackendDelivery(input, (b) => ({result: 'verified', delivery_id: b.delivery.delivery_id, version: b.delivery.version, bundle_digest: b.manifest.bundle_digest, live_service_checked: false}))}; } catch (error) { return {ok: false, message: String(error.message).slice(0, 120)}; } };
+  const goPackage = (input) => nativeEvidenceVerify({root: f.root, kind: 'backend-delivery', file: input, group: 'handoff'});
+  const packageRef = f.terminal.bundle_ref;
+  let variant = 0;
+  const copyPackage = () => { const ref = `.work/package-variants/p${++variant}`; fs.mkdirSync(path.join(f.root, path.dirname(ref)), {recursive: true}); fs.cpSync(path.join(f.root, packageRef), path.join(f.root, ref), {recursive: true}); return ref; };
+  const comparePackage = async (name, ref, expectOk) => {
+    const node = await nodePackage(path.join(f.root, ref)), go = goPackage(ref);
+    assert.equal(node.ok, expectOk, `${name}：Node 结论与预期不符 ${JSON.stringify(node)}`);
+    assert.equal(go.exitCode === 0, expectOk, `${name}：yss 结论与预期不符 ${go.exitCode} ${go.message.slice(0, 200)}`);
+    return {node, go};
+  };
+  await t.test('交付包目录通过，coverage 与 Node 一致', async () => {
+    const {node, go} = await comparePackage('原包', packageRef, true);
+    assert.deepEqual(go.envelope.result.coverage, node.value);
+  });
+  await t.test('交付包 ZIP 通过', async () => {
+    const out = '.work/package-variants/zip-source';
+    await producer.exportBackendDelivery({sourceRoot: f.root, deliveryRef: 'profile-delivery.json', output: path.join(f.root, out), zip: true});
+    await comparePackage('ZIP', `${out}.zip`, true);
+  });
+  const manifestOf = (ref) => JSON.parse(fs.readFileSync(path.join(f.root, ref, 'manifest.json'), 'utf8'));
+  const packageChanges = {
+    '载荷文件被改一个字节': (ref) => { const file = manifestOf(ref).files[0].path; fs.appendFileSync(path.join(f.root, ref, file), '\n'); },
+    '清单列出的文件被删': (ref) => { fs.rmSync(path.join(f.root, ref, manifestOf(ref).files[0].path)); },
+    '包里多出清单没有的文件': (ref) => { fs.writeFileSync(path.join(f.root, ref, 'extra.txt'), 'x'); },
+    '清单 bundle_digest 被改': (ref) => { const m = manifestOf(ref); m.bundle_digest = `sha256:${'0'.repeat(64)}`; fs.writeFileSync(path.join(f.root, ref, 'manifest.json'), JSON.stringify(m, null, 2)); },
+    '清单版本被改但摘要未更新': (ref) => { const m = manifestOf(ref); m.version = 'v9'; fs.writeFileSync(path.join(f.root, ref, 'manifest.json'), JSON.stringify(m, null, 2)); },
+    '缺清单': (ref) => { fs.rmSync(path.join(f.root, ref, 'manifest.json')); },
+  };
+  for (const [name, mutate] of Object.entries(packageChanges)) {
+    await t.test(`交付包：${name}`, async () => { const ref = copyPackage(); mutate(ref); await comparePackage(name, ref, false); });
+  }
+  await t.test('薄壳：backend-delivery verify 只调用 yss', async () => {
+    const run = spawnSync(process.execPath, [path.resolve(import.meta.dirname, '../scripts/backend-delivery'), 'verify', '--bundle', path.join(f.root, packageRef)], {encoding: 'utf8', env: process.env});
+    assert.equal(run.status, 0, run.stderr);
+    assert.deepEqual(JSON.parse(run.stdout), (await nodePackage(path.join(f.root, packageRef))).value);
+    const bad = copyPackage(); packageChanges['载荷文件被改一个字节'](bad);
+    const rejected = spawnSync(process.execPath, [path.resolve(import.meta.dirname, '../scripts/backend-delivery'), 'verify', '--bundle', path.join(f.root, bad)], {encoding: 'utf8', env: process.env});
+    assert.notEqual(rejected.status, 0);
+    assert.equal(JSON.parse(rejected.stderr).result, 'blocked');
   });
 });

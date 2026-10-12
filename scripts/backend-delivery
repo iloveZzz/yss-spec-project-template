@@ -3,6 +3,7 @@ import { parseArgs } from 'node:util';
 import path from 'node:path';
 import { exportBackendDelivery, openBackendDelivery, importBackendDelivery } from './lib/backend-delivery.mjs';
 import { read, safe, ensure } from './lib/strategic-handoff-io.mjs';
+import { nativeEvidenceVerify, assertNativeCapabilities, NEEDS } from './lib/native-evidence.mjs';
 
 async function preflightExport(values) {
   const root=path.resolve(values['source-root']),delivery=read(safe(root,values.delivery));
@@ -23,7 +24,13 @@ try {
   if(positionals.length!==1)throw new TypeError('必须指定 export / verify / import');
   let result;
   if(positionals[0]==='export'&&values['source-root']&&values.delivery&&values.output){await preflightExport(values);result=await exportBackendDelivery({sourceRoot:values['source-root'],deliveryRef:values.delivery,output:values.output,zip:values.zip});}
-  else if(positionals[0]==='verify'&&values.bundle)result=await openBackendDelivery(path.resolve(values.bundle),b=>({result:'verified',delivery_id:b.delivery.delivery_id,version:b.delivery.version,bundle_digest:b.manifest.bundle_digest,live_service_checked:false}));
+  else if(positionals[0]==='verify'&&values.bundle){
+    // 包校验归 yss（handoff verify --kind backend-delivery）；这里只翻译参数、透传结论与退出码。
+    assertNativeCapabilities(NEEDS.backendDeliveryPackage);
+    const verdict=nativeEvidenceVerify({root:path.resolve(import.meta.dirname,'..'),kind:'backend-delivery',file:path.resolve(values.bundle),group:'handoff'});
+    if(verdict.exitCode!==0){process.stderr.write(`${JSON.stringify({result:'blocked',error:verdict.message})}\n`);process.exitCode=verdict.exitCode;process.exit();}
+    result=verdict.envelope.result.coverage;
+  }
   else if(positionals[0]==='import'&&values.bundle&&values['target-root'])result=await importBackendDelivery({bundle:path.resolve(values.bundle),targetRoot:values['target-root']});
   else throw new TypeError('用法: backend-delivery export --source-root <repo> --delivery <ref> --output <new-dir> [--preflight-input <file>] [--zip] | verify --bundle <dir|zip> | import --bundle <dir|zip> --target-root <repo>');
   process.stdout.write(`${JSON.stringify(result,null,2)}\n`);

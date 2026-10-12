@@ -26,7 +26,7 @@ export function nativeEvidenceVerify({root, kind, file: given, extra = [], envir
 function runNativeVerify({root, kind, file, extra, environment, group}) {
   const {binary} = contextBinary(environment);
   // lifecycle 领域的资产选择器是 --checkpoint，其余领域是 --kind 加 --file。
-  const selector = group === 'lifecycle' ? ['--checkpoint', file] : group === 'handoff' && (kind === 'package' || kind === 'spec-baseline') ? ['--kind', kind, '--package', file] : ['--kind', kind, '--file', file];
+  const selector = group === 'lifecycle' ? ['--checkpoint', file] : group === 'handoff' && (kind === 'package' || kind === 'spec-baseline' || kind === 'backend-delivery') ? ['--kind', kind, '--package', file] : ['--kind', kind, '--file', file];
   const args = [group, 'verify', '--root', root, ...selector, ...extra, '--json'];
   const run = spawnSync(binary, args, {cwd: root, env: environment, encoding: 'utf8', timeout: 120000, maxBuffer: 32 * 1024 * 1024});
   if (run.error || run.signal || !Number.isInteger(run.status)) throw new Error(`NATIVE_INTERRUPTED: ${run.error?.message || run.signal}`);
@@ -51,6 +51,7 @@ export const NEEDS = {
   contextReconciliation: ['evidence.context-reconciliation.v1'],
   openapiValidation: ['contract.openapi-validation.v1'],
   backendTerminal: ['contract.backend-terminal.v1'],
+  backendDeliveryPackage: ['handoff.backend-delivery-package.v1'],
 };
 const capabilityCache = new Map();
 export function nativeCapabilities(environment = process.env) {
