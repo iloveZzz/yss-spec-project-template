@@ -2,7 +2,7 @@
   "schema_version": 1,
   "target_id": "template-root",
   "source_repository": "yss-spec-project-template",
-  "source_revision": "8b92c3e1dc76c82dc2b0f2d53acfd9dda689b3f8",
+  "source_revision": "82b33d4ed4a2b496b7f07038a983f4f4a77021d7",
   "source_state": "committed",
   "transformation_set": [
     "identity"
@@ -309,7 +309,7 @@
     "tests/scenarios/verify-strategic-context-import-scenarios.mjs": "sha256:424ccdbb2e91e3619f800efe1aad463be0470716547f5d767215f944611e4b14",
     "tests/scenarios/verify-strategic-handoff-package-scenarios.mjs": "sha256:2674f132a7f3d41797b578ff7bd21c718c3d5b855095f8637716589918347d82",
     ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml": "sha256:7f359562f83e2ccb781e66d31b12f1e218e01cc8822832c94ad03d0bf5262860",
-    ".template-spec/agents/yss-skill-registry.yaml": "sha256:8b8c9add85e520cbcdfc7f5130365bf12d2a3ae614cb30add8a98f3dda5d305f",
+    ".template-spec/agents/yss-skill-registry.yaml": "sha256:ad02895ecf8dbb76e15410646ed0513afe2a7952dce79825656dbd198b9523b6",
     ".template-source/cli-core/native-context.mjs": "sha256:f2130c19be1777414dae8e4d425a9e3f528cee17068f4441108a6838319dd1c7",
     ".template-source/cli-core/runtime-store.mjs": "sha256:ff4c078bde10b3e9bbd874246d7fd513d98330e212bc9d50979d241cd2a1bb4b",
     ".template-source/cli-core/work-layout.mjs": "sha256:c47bb00d33d4cfe0ef166eaddb116daed807128be3a465a53860079bb6edffbb"
@@ -616,6 +616,6 @@
     "tests/scenarios/verify-strategic-context-import-scenarios.mjs": "sha256:424ccdbb2e91e3619f800efe1aad463be0470716547f5d767215f944611e4b14",
     "tests/scenarios/verify-strategic-handoff-package-scenarios.mjs": "sha256:2674f132a7f3d41797b578ff7bd21c718c3d5b855095f8637716589918347d82",
     ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml": "sha256:7f359562f83e2ccb781e66d31b12f1e218e01cc8822832c94ad03d0bf5262860",
-    ".template-spec/agents/yss-skill-registry.yaml": "sha256:8b8c9add85e520cbcdfc7f5130365bf12d2a3ae614cb30add8a98f3dda5d305f"
+    ".template-spec/agents/yss-skill-registry.yaml": "sha256:ad02895ecf8dbb76e15410646ed0513afe2a7952dce79825656dbd198b9523b6"
   }
 }
