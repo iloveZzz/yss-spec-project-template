@@ -149,6 +149,15 @@ profiles:
           - "tests/helpers/yss-instance.mjs"
         depends_on: []
         failure_mode: "Plan→Spec 入口的批准、用户决定与上下文调和在真实实例根上被放行或误拒"
+      - id: check.strategic-context-import-retired
+        run: "node scripts/verify-strategic-context-import-scenarios"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
+          - "scripts/verify-strategic-context-import"
+          - "scripts/verify-strategic-context-import-scenarios"
+        depends_on: []
+        failure_mode: "已退役的 verify-strategic-context-import 不再失败退出，或不再指向 consumption、context-reconciliation、strategic-handoff verify 三个替代入口"
       - id: check.contract-review-preparation
         run: "node --test tests/contract-review-preparation.test.mjs"
         group: feature-assets

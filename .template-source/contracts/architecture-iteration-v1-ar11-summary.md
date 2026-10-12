@@ -22,7 +22,7 @@
 | `verify-strategic-handoff-consumption` ↔ `handoff verify --kind consumption` | **已做（§4）** |
 | `spec-baseline verify --bundle` | **已做（§5）**；`--checkpoint` 绑定校验仍在 Node（yss 的 `--file <receipt> --checkpoint` 语义不同） |
 | `verify-context-reconciliation` | **已做（§5）**：公开为 `evidence verify --kind context-reconciliation` |
-| `verify-strategic-context-import` | 无对应的公开 Go 命令（交接 YAML 对目标 Context 与对账的导入前检查，yss 在 `handoff import` 计划内部做同类检查）；需决定退役还是公开，未做 |
+| `verify-strategic-context-import` | **已退役（§6）** |
 | `strategic-handoff.mjs` 的 `sourceApproval`（约占 approval/user-decision 进程内回退的 47%）、`user-decision-reuse`（约 20%） | 它们是 AR-09 删除清单的前置，需随 consumption 对拍一起迁 |
 | AR-09 移交的删除（approval/user-decision 的 Node 实现与删除规则） | 以上迁完后一次性删除 |
 
@@ -42,3 +42,10 @@
 - **spec-baseline `--bundle`**：`handoff verify --kind spec-baseline --package` 在报告里返回 `coverage.spec_baseline_package`（`baseline_id`、`version`、`bundle_digest`），能力令牌 `handoff.spec-baseline-package.v1`；`scripts/spec-baseline verify --bundle` 委托给 yss。对拍：用 spec-baseline 场景在 native 模式下由 yss 导出的真实基线包，委托输出与进程内实现逐字节相同；被篡改的包两边都拒绝（措辞不同）。该场景本身（`YSS_SPEC_BASELINE_NATIVE_CLI`）早已把 Node 夹具与 yss 校验对拍，所以没有再造一份回放。`--checkpoint` 绑定模式留在 Node。
 - **Context 对账**：公开 `evidence verify --kind context-reconciliation`（能力令牌 `evidence.context-reconciliation.v1`），回放 10 类（已对账、blocked 且有未解决术语、project-instance 但 pending、reconciled 却有未解决术语、变更不存在的术语、同一术语跨分类重复、证据不存在、快照摘要不一致、仓库身份矛盾、缺必填字段）与 Node 结论一致，且基线必须通过、拒绝原因不能是「找不到文件」（早期版本的用例因相对路径对 Node 无效而恒真，已修正）。`scripts/verify-context-reconciliation` 的普通校验委托给 yss；`--validation-dependencies`（内部依赖清单模式）、旧版 yss、合成根仍走进程内实现。进程内 `verifyConsumption` 的回退路径固定用依赖清单模式调用该脚本，不受薄壳影响。
 - 误操作记录：中途不小心在共享仓库里执行了裸 `git stash`，立即用该条目的哈希 `git stash apply` 恢复并只删除自己的那一条，其他会话的 stash 条目未动。
+
+## 6. `verify-strategic-context-import` 退役（维护者决定，2026-10-12）
+
+- 原因：没有对应的公开 Go 命令；它检查的内容已被已迁移的入口覆盖——交接是否对账到目标 `CONTEXT.md`（`context_delta`）与对账记录（`verify-strategic-handoff-consumption`）、对账记录本身（`verify-context-reconciliation`）、交接包完整性（`strategic-handoff verify --bundle`）。生产导入由 yss 的 handoff 流程完成。
+- 做法：脚本改为退役桩——失败退出（退出码 1）、不输出任何通过信息，并指向三个替代入口；对应场景 `verify-strategic-context-import-scenarios` 改为断言这一行为，并登记为快速检查 `check.strategic-context-import-retired`。文件暂不删除，因为冻结的旧覆盖清单（117 条命令逐字节不变）仍按旧名引用该脚本与场景，随 AR-16 旧清单退役时一并删除，同时在发布的删除规则里让已有实例可拒绝地清理这个脚本。
+- 技能：`yss-tactical-design`（根与 backend 覆盖层）里「必须先用 `scripts/verify-strategic-context-import`」改为 `scripts/verify-strategic-handoff-consumption`，并说明可用 `verify-context-reconciliation` 单独核验。
+- 未改变：`verify-strategic-context-import` 里与 Handoff 旧版本相关的提示（v1/v2 只读历史、需升级 v5）随脚本一起退役；这类提示仍由 yss 的 handoff 包与消费校验在版本不支持时给出。
