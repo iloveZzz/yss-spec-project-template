@@ -53,6 +53,7 @@ export const NEEDS = {
   backendTerminal: ['contract.backend-terminal.v1'],
   backendDeliveryPackage: ['handoff.backend-delivery-package.v1'],
   scaffoldDecisions: ['contract.scaffold-decisions.v1'],
+  slicePreflight: ['contract.slice-preflight-report.v1'],
 };
 const capabilityCache = new Map();
 export function nativeCapabilities(environment = process.env) {

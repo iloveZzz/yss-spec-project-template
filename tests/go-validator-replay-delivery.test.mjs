@@ -112,6 +112,42 @@ test('后端交付回放（终点与交付包）：通过与反例结论一致',
     } finally { restore(); }
   });
 
+  // Slice 执行前检查（contract verify --kind slice-preflight）：实例自带的 inspectSliceContract 与 yss 的报告逐字段一致（结构、批准、新鲜度三层）。
+  const preflightModule = await import(pathToFileURL(path.join(f.root, 'scripts/lib/slice-execution-preflight.mjs')));
+  const sliceRef = f.binding.ref, sliceApproval = f.binding.approval_ref;
+  const nodePreflight = (ref = sliceRef, approval = sliceApproval) => { try { return {report: preflightModule.inspectSliceContract(ref, {root: f.root, ...(approval ? {approval_ref: approval} : {})}).report}; } catch (error) { return {error: String(error.message).slice(0, 120)}; } };
+  const goPreflight = (ref = sliceRef, approval = sliceApproval) => { const run = nativeContractVerify({root: f.root, kind: 'slice-preflight', file: ref, extra: approval ? ['--approval-ref', approval] : []}); return {run, report: run.envelope.result?.coverage?.slice_preflight}; };
+  const sortKeys = (value) => Array.isArray(value) ? value.map(sortKeys) : value && typeof value === 'object' ? Object.fromEntries(Object.entries(value).sort().map(([k, v]) => [k, sortKeys(v)])) : value;
+  const comparePreflight = (name, {sameBlockers = true} = {}) => {
+    const node = nodePreflight(), go = goPreflight();
+    assert.ok(node.report && go.report, `${name}：两边都应给出报告 Node=${JSON.stringify(node)} Go=${go.run.message}`);
+    assert.equal(go.run.exitCode === 0, node.report.blockers.length === 0, `${name}：退出结论不一致`);
+    if (sameBlockers) assert.deepEqual(sortKeys(go.report), sortKeys(node.report));
+    else { assert.deepEqual(sortKeys({...go.report, blockers: 0}), sortKeys({...node.report, blockers: 0})); assert.ok(go.report.blockers.length > 0 && node.report.blockers.length > 0); }
+    return {node, go};
+  };
+  await t.test('Slice 执行前检查：当前批准的 Slice 报告一致且允许执行', () => { const {node} = comparePreflight('通过'); assert.equal(node.report.execution_allowed, true); });
+  await t.test('Slice 执行前检查：不给批准引用时只报告可读性与结构', () => {
+    const node = nodePreflight(sliceRef, null), go = goPreflight(sliceRef, null);
+    assert.deepEqual(sortKeys(go.report), sortKeys(node.report)); assert.equal(go.report.execution_allowed, false); assert.equal(go.run.exitCode, 0);
+  });
+  const touch = (ref, edit) => { const file = path.join(f.root, ref), bytes = fs.readFileSync(file); edit(file); return () => fs.writeFileSync(file, bytes); };
+  await t.test('Slice 执行前检查：Skill 注册表内容变化属于批准层阻断', () => { const undo = touch('.template-spec/agents/yss-skill-registry.yaml', (file) => fs.appendFileSync(file, '\nzz_extra: 1\n')); try { comparePreflight('注册表变化'); } finally { undo(); } });
+  await t.test('Slice 执行前检查：Compiler 合同内容变化属于批准层阻断', () => { const undo = touch('.agents/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml', (file) => fs.appendFileSync(file, '\nzz_extra: 1\n')); try { comparePreflight('Compiler 变化'); } finally { undo(); } });
+  await t.test('Slice 执行前检查：Slice 原始字节变化，批准失效（原因码按各自实现命名，只比较结论）', () => { const undo = touch(sliceRef, (file) => fs.appendFileSync(file, '\n# x\n')); try { const {node} = comparePreflight('字节变化', {sameBlockers: false}); assert.equal(node.report.checks.approval, 'failed'); } finally { undo(); } });
+  await t.test('Slice 执行前检查：批准引用不存在', () => { const node = nodePreflight(sliceRef, 'no-such.json'), go = goPreflight(sliceRef, 'no-such.json'); assert.equal(node.report.checks.approval, 'failed'); assert.equal(go.report.checks.approval, 'failed'); assert.equal(go.report.execution_allowed, false); assert.notEqual(go.run.exitCode, 0); });
+  await t.test('Slice 执行前检查：上游技术设计原始字节变化，合同无法读取', () => { const undo = touch('technical-design.json', (file) => fs.appendFileSync(file, '\n \n')); try { assert.ok(nodePreflight().error); const go = goPreflight(); assert.notEqual(go.run.exitCode, 0); assert.equal(go.report, undefined); } finally { undo(); } });
+
+  await t.test('薄壳：slice-contract verify 只调用 yss，报告与 Node 同形（含键序），有阻断时退出码非 0', () => {
+    const shell = (...args) => spawnSync(process.execPath, [path.resolve(import.meta.dirname, '../scripts/slice-contract'), 'verify', '--root', f.root, sliceRef, ...args], {encoding: 'utf8', env: process.env});
+    const ok = shell('--approval-ref', sliceApproval);
+    assert.equal(ok.status, 0, ok.stderr);
+    assert.deepEqual(JSON.parse(ok.stdout), nodePreflight().report);
+    assert.equal(ok.stdout, `${JSON.stringify(nodePreflight().report, null, 2)}\n`);
+    const undo = touch(sliceRef, (file) => fs.appendFileSync(file, '\n# x\n'));
+    try { const blocked = shell('--approval-ref', sliceApproval); assert.notEqual(blocked.status, 0); assert.equal(JSON.parse(blocked.stdout).execution_allowed, false); } finally { undo(); }
+  });
+
   // 后端交付包（handoff verify --kind backend-delivery）：实例自带的 openBackendDelivery 与 yss 对同一个包的结论一致。
   const producer = await import(pathToFileURL(path.join(f.root, 'scripts/lib/backend-delivery.mjs')));
   const nodePackage = async (input) => { try { return {ok: true, value: await producer.openBackendDelivery(input, (b) => ({result: 'verified', delivery_id: b.delivery.delivery_id, version: b.delivery.version, bundle_digest: b.manifest.bundle_digest, live_service_checked: false}))}; } catch (error) { return {ok: false, message: String(error.message).slice(0, 120)}; } };
