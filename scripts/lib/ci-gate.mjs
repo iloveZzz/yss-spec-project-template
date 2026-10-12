@@ -50,18 +50,6 @@ export const STEPS = [
     fix: "按日志修正 .template-spec/agents/yss-skill-registry.yaml",
   },
   {
-    id: "handoff-tools-sync",
-    title: "Profile 共享工具与来源一致（含有意定制登记）",
-    command: ["scripts/sync-strategic-handoff-tools", "--check"],
-    fix: "scripts/sync-strategic-handoff-tools；Profile 暂时有意保持差异时，登记到 .template-source/distribution/profile-variants.json（写明原因与解除条件）",
-  },
-  {
-    id: "handoff-tools-lock",
-    title: "共享工具锁与文件字节一致",
-    command: ["scripts/verify-strategic-handoff-tools-lock"],
-    fix: "scripts/sync-strategic-handoff-tools 重新生成锁",
-  },
-  {
     id: "doc-facts",
     title: "说明文档事实",
     command: ["scripts/verify-doc-facts"],

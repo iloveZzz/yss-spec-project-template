@@ -1,9 +1,0 @@
-[submodule "submodules/yss-harness-design-agent"]
-	path = submodules/yss-harness-design-agent
-	url = https://github.com/iloveZzz/yss-harness-design-agent.git
-[submodule "submodules/yss-harness-backend-agent"]
-	path = submodules/yss-harness-backend-agent
-	url = https://github.com/iloveZzz/yss-harness-backend-agent.git
-[submodule "submodules/yss-harness-frontend-agent"]
-	path = submodules/yss-harness-frontend-agent
-	url = https://github.com/iloveZzz/yss-harness-frontend-agent.git
