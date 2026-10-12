@@ -62,3 +62,14 @@
 - 回放测试新增能力协商用例（用只声明一个令牌的桩 yss 验证：缺令牌不委托、薄壳提示升级、齐全时放行）。
 - 以后新增委托路径必须同时新增令牌与 `NEEDS` 条目。
 - 本片按维护者新要求只在本机构建验证（固定档未更新，仍指向 `40926d1`，不含 `nodeDelegation`）。**统一重建固定档之前，固定二进制下委托路径不会生效（缺令牌→退回 Node）**，统一重建时必须一并更新。
+
+## 8. slice：维护者选了「yss 提供同形的执行前检查输出」，量过后建议随 AR-12 做
+
+维护者在 §3 的两个选项里选了第一个（yss 输出与 Node `slice-contract verify` 同形的报告）。动手前量了范围：
+
+- 报告形状：`{read_only, ref/id/version/digest, checks:{readable, structure, approval, freshness}, approval_validity, execution_allowed, blockers[]}`，调用方读取 `blockers`。
+- 结构部分（可读性、`slice_contract_required` 必填字段、三个 `required_skills`、工作单元与合同的 id/version 一致、`primary_skill`）：yss 已有 `loadNativeSlice` 做规范化，补一个必填字段检查即可，量小。
+- **批准与新鲜度部分是大头**：`blockers` 的内容来自 `evaluateContractFreshness`（`implementation-contract-compiler.mjs`，Node 独有）与 `createApprovedExecutionContext`（`approved-execution-context.mjs`，167 行），原因码至少包括 `registry-digest-changed`、`compiler-contract-digest-changed`、`technical-design-stale-or-unavailable`、`frontend-delivery-stale-or-unavailable`、`architecture-identity-invalid`、`architecture-identity-digest-changed`、`architecture-evidence-stale-or-unavailable`、`component-binding-drift` 等。这些依赖后端架构证据与前端交付证据，正是 AR-12（backend、frontend 的校验部分）要迁的内容。
+- yss 现有的 slice 校验要求必须带批准引用（无批准引用返回 `SLICE_APPROVAL_REQUIRED`），而 Node 的检查没有批准引用时仍给出结构报告，两者的前置条件也不同。
+
+结论：结构部分现在能做，但有批准引用的真实用法占绝大多数，只做结构部分得到的是半个入口；完整做需要先迁新鲜度原因码，与 AR-12 的后端/前端架构证据校验重叠。建议 slice 的 `verify` 并入 AR-12，输出形态按维护者的选择（yss 输出同形报告）实现；AR-10 在此收口（task、checkpoint 完成，slice 移交 AR-12）。需要维护者确认这一调整。
