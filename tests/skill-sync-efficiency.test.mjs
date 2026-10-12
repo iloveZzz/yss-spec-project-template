@@ -26,3 +26,10 @@ test("FR-006：没有投影根时 Skill 同步不创建任何投影目录，检�
     rmSync(root, { recursive: true, force: true });
   }
 });
+
+test("实例锁的 effectiveHash 由 update-skill-lock 保持在 skillPath 之后，与打包器写入的键序一致", async () => {
+  const { withEffectiveHash } = await import(pathToFileURL(path.resolve("scripts/lib/skill-supply-chain.mjs")).href);
+  const item = { source: "project", sourceType: "local", skillPath: ".agents/skills/probe/SKILL.md", upstreamHash: "u", targets: [".agents/skills"] };
+  assert.deepEqual(Object.keys(withEffectiveHash(item, "h")), ["source", "sourceType", "skillPath", "effectiveHash", "upstreamHash", "targets"]);
+  assert.equal(withEffectiveHash(item, "h").effectiveHash, "h");
+});

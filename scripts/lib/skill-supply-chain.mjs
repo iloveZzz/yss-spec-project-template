@@ -60,6 +60,11 @@ export function lockedTreeHashMatches(record, actual) {
   return record?.effectiveHash === undefined || record.effectiveHash === actual;
 }
 
+// 实例锁里的 effectiveHash 由打包器写在 skillPath 之后；已有该字段时按当前内容重算并保持键序，模板锁没有就不加。
+export function withEffectiveHash(item, effectiveHash) {
+  return Object.fromEntries(Object.entries(item).flatMap(([key, value]) => key === "skillPath" ? [[key, value], ["effectiveHash", effectiveHash]] : [[key, value]]));
+}
+
 // treeHash is the published, normalized Skill digest. A no-op copy needs the
 // stricter filesystem comparison so modes, links and raw line endings survive.
 function projectionMatchesSource(source, target) {
@@ -322,7 +327,7 @@ export function updateSkillLock(arguments_ = process.argv.slice(2), { hashCache 
       else delete item.adaptationRef;
     }
     item.targets = targets;
-    return [name, item];
+    return [name, previous[name]?.effectiveHash === undefined ? item : withEffectiveHash(item, effectiveHash)];
   }));
   const platform = {};
   for (const root of PROJECTION_ROOTS) {
