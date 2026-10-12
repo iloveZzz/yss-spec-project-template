@@ -1,6 +1,6 @@
 # AR-12c 进展（前端整线移除）
 
-状态：**已完成（本机单平台验证；未推送，固定档仍为 `40926d1`，`bundles.json.gz` 与帮助视图待统一重建）**。范围见 `architecture-iteration-v1-ar12b-frontend-inventory.md` §4：前端整条线移除，包含 Spec 生命周期里的本地前端实现；前端技能（`yss-ui`、`formily` 系列、`yss-frontend-scaffold-generator` 等）与脚手架就绪检查保留。
+状态：**已完成（本机验证；未推送）**。Bundle、帮助视图、帮助参考已重建，固定档已改指 yss-cli `4acb0ae`（darwin-arm64、linux-amd64、linux-arm64 三平台摘要）。范围见 `architecture-iteration-v1-ar12b-frontend-inventory.md` §4：前端整条线移除，包含 Spec 生命周期里的本地前端实现；前端技能（`yss-ui`、`formily` 系列、`yss-frontend-scaffold-generator` 等）与脚手架就绪检查保留。
 
 ## 1. 采用的做法：软移除
 
@@ -30,14 +30,17 @@
 - yss 本机构建 `$S/yss-ar12c`：冒烟确认旧前端实例拒绝且文件不变、`help` 不再出现 frontend。yss-cli 无 Go 测试。
 - 既有失败（基线 `HEAD` 一并失败，与本片无关）：`plan-review-control` 的「真实 CLI 分发」、`plugin-*` 系列（`native-binary-required`）、`skill-supply-chain` 的两项投影用例、`strategic-handoff-sealed-owner`/`plan-clarification-replay` 的四项、`native-instance-drift` 系列（工作树缺 `.strategic-design-skills-manifest.json`）、`verification-qualification` 的「资格报告成对」用例。
 
-## 4. 未覆盖与顺延
+## 4. 重建与固定档
 
-- **发行/候选链仍是四家族口径，随固定档更新再改**：`NATIVE_PROFILES`、`legacy-recovery-matrix`（需 4 个旧固定执行器）、`verification-report-validator`/`verification-qualification` 的 `spec,design,backend,frontend`、`check.verification-frontend-cli`（G16）与 `release_families`、`template-release` 的 `all-four`，都属于冻结台账（117 条旧检查）和已记录的发行证据，改它们要同时重录恢复矩阵与发行报告，留给「根仓提交 → 刷新来源锁 → 重建 yss → 更新固定档」那一步。本片尝试改成三家族后冻结台账测试失败，已撤回。
-- 冻结覆盖清单仍按名字登记 `verify-frontend-delivery-scenarios`、`verify-frontend-implementation-evidence-scenarios`，两个入口保留为只断言「已移除」的占位场景，覆盖清单本身未改。
-- 与固定档耦合的用例（`efficiency-distribution`、`runtime-store-distribution` 中遍历 `NATIVE_PROFILES` 的「四个 Bundle」用例）用新构建的 yss 会失败（`init --profile frontend` 被拒绝），用固定档二进制通过；固定档更新时同步改为三家族。
+- 来源锁仍钉在 `v4.0.0`（`1afff73`）：`refresh-source-lock` 拒绝在已钉 tag 的来源上按 HEAD 刷新，新 tag 需要单独授权，所以本片没有刷新锁。做法是锁里删掉 `frontend` 条目后按原锁重建 Bundle：三个 Profile 的模板内容不变，只去掉 frontend（`bundles.json.gz`、`internal/helpview/assets/*.json`、`docs/cli-help.md`、`version-table.json` 的 frontend 行）。yss-cli `4acb0ae`；`artifacts.mjs check --scope derived` 通过，`helpview --check`、`helpdocs --reference --check` 通过。
+- 根仓固定文件 `yss-cli-pin.json` 改指 `4acb0ae`，三平台摘要来自 `tools/build-candidate.mjs`（固定 Go 环境、`-trimpath`）；`tests/cli-retirement.test.mjs` 对固定二进制通过（10）。
+- 发行/候选链改为三家族：`NATIVE_PROFILES`、发行报告与资格校验的家族集合、恢复矩阵（需 3 个旧固定执行器、36 个场景）、交付运行器、合成 fixture 与计数同步。冻结台账要求 G01～G20 共 20 个 Gate 且编号连续，所以 `check.verification-frontend-cli`（G16）保留为已移除占位（`release_families: []`、不要求发行）。
+- 冻结覆盖清单（117 条）仍按名字登记 `verify-frontend-delivery-scenarios`、`verify-frontend-implementation-evidence-scenarios`；清单是历史追溯的冻结件，两个入口保留为只断言「已移除」的占位场景。
+- 模板内容（`.template-spec`、技能、脚本）里 AR-12c 的改动要等下一个发布 tag 才进入 Bundle；到那时再用 `refresh-source-lock --tag` 刷新锁并重建。
+- 发行时的 `--cli-family all-four` 参数名保留（含义改为全部维护的三个 Profile）。
 
-- `bundles.json.gz`、`internal/helpview/assets/*.json`、`docs/cli-help.md`、版本对照表需要「根仓先提交 → 刷新来源锁 → 重建 yss → 更新固定档」，按「攒几片再统一重建」的节奏留到下一次集中重建；此前三个 Profile 的来源锁条目已更新，frontend 条目已删。生成前，旧二进制仍内置前端 Profile。
-- 冻结的旧覆盖清单（`legacy-coverage` 的历史命令列表）没有改动；指向已删路径的条目按非结构化模式登记。
-- 实例迁移（把被取代的前端文件作为可拒绝的删除提出，FR-016）未做：当前策略是明确拒绝升级且不动文件，删除规则随下次固定档重建一并提出。
+## 5. 未覆盖与顺延
+
+- 旧前端实例不做迁移也不提出删除：按维护者决定，`sync`、`doctor`、`diff`、`migrate plan` 一律明确拒绝并提示「前端 Profile 已移除」，文件保持原样（FR-016 的删除规则对它不适用）。
 - 前端技能文本里个别「前端实现计划」等措辞保留（技能本身保留，指向实现仓的前端工程）。
 - AR-12b 余下部分（approval、user-decision 等 Node 实现删除）与本片互不依赖，仍待做。
