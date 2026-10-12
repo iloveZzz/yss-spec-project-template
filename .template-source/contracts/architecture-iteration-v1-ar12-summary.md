@@ -54,4 +54,4 @@
 - 每片只跑受影响范围：回放、对应场景、`legacy-coverage`、导入方向检查、语法检查；`scripts/verify-template-fast --plan` 在起点之后的整段改动上没有「未映射路径」。未跑 `verify-template-fast` 全量。
 - 既有失败（与本批无关）：`verification-selection` 的资格用例、`verification-execution` 的「显式legacy」用例；`profile-consumers` 里依赖 PATH 上旧 yss 的用例需用本机构建的 yss（`YSS_NATIVE_BINARY`）。
 - 新增三个能力令牌，未更新固定档；PATH 上的旧 yss 缺令牌时薄壳提示升级。
-- 本批把 `contractSliceFresh` 里的工程与工作单元选择抽成 `contractSliceSelect`，行为不变，但没有重跑 `tests/go-validator-replay.test.mjs` 全量（维护者要求快速验证）；跑过的是后端交付回放 30 个（含 slice 的既有 `contract verify --kind slice` 无单独回放）。风险点在 AR-12b 开工前补跑全量。
+- 第五片抽出 `contractSliceSelect` 后，补跑了 `tests/go-validator-replay.test.mjs` 全量（196 个，约 4.5 分钟）与后端交付回放（30 个），全部通过；yss 为 `ec917e5` 本机构建。
