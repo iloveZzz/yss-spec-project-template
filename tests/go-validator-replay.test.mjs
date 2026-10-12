@@ -16,8 +16,17 @@ let binary;
 try { binary = contextBinary().binary; } catch { binary = null; }
 const skip = binary ? false : '需要固定版本的 yss（YSS_NATIVE_BINARY）';
 
+// 两个运行位置：现场初始化的 spec 实例，以及模板源仓根本身（scripts/verify-* 在模板源里直接在仓根运行）。
+const REPO = path.resolve(import.meta.dirname, '..');
+let site = 'instance';
 let instance;
 function setup() {
+  if (site === 'template-source') {
+    const dir = path.join(REPO, '.work', `replay-${process.pid}`);
+    mkdirSync(dir, {recursive: true});
+    process.on('exit', () => rmSync(dir, {recursive: true, force: true}));
+    return REPO;
+  }
   if (instance) return instance;
   const base = realpathSync(mkdtempSync(path.join(os.tmpdir(), 'yss-replay-')));
   process.on('exit', () => rmSync(base, {recursive: true, force: true}));
@@ -27,7 +36,7 @@ function setup() {
 }
 
 let seq = 0;
-const fixture = (opts) => buildDecisionFixture(path.join(setup(), '.work', 'replay', `case-${++seq}`), opts);
+const fixture = (opts) => buildDecisionFixture(path.join(setup(), '.work', ...(site === 'template-source' ? [`replay-${process.pid}`] : ['replay']), `case-${++seq}`), opts);
 const nodeVerdict = (f) => {
   try { validateUserDecision(f.record, {expected: [f.requirement]}); return {ok: true}; } catch (error) { return {ok: false, code: error.code}; }
 };
@@ -62,8 +71,9 @@ const cases = {
 // 两边都拒绝，但拒绝码粒度不同：Node 对 schema 违规不带码，Go 统一报 SCHEMA；来源不可读时 Go 报 INPUT。结论一致即可。
 const codeDiffers = new Set(['默认选项冒充原始消息', '来源文件缺失', '只有 Agent 摘要']);
 
-for (const [name, mutate] of Object.entries(cases)) {
-  test(`用户决定回放：${name}`, {skip}, () => {
+for (const [name, mutate] of Object.entries(cases)) for (const where of ['instance', 'template-source']) {
+  test(`用户决定回放（${where}）：${name}`, {skip}, () => {
+    site = where;
     const f = fixture();
     mutate(f);
     const node = nodeVerdict(f);
@@ -75,14 +85,15 @@ for (const [name, mutate] of Object.entries(cases)) {
 
 const approvalRecord = {schema_version: 1, gate_id: 'gate.spec-baseline-approved', decision: 'approved', actor_kind: 'digital-human', role_id: 'role.product-manager', runtime_id: 'runtime.generic', principal_ref: 'instance:product'};
 const goApproval = (extra) => {
-  const file = path.join(setup(), '.work', 'replay', `approval-${++seq}.json`);
+  const file = path.join(setup(), '.work', ...(site === 'template-source' ? [`replay-${process.pid}`] : ['replay']), `approval-${++seq}.json`);
   mkdirSync(path.dirname(file), {recursive: true});
   writeFileSync(file, JSON.stringify(approvalRecord));
   const r = nativeEvidenceVerify({root: setup(), kind: 'approval', file, extra});
   return {ok: r.exitCode === 0, code: r.diagnostics[0]?.code, message: r.message};
 };
 
-test('批准记录回放：历史数字人记录可读，但没有当前上下文不能关闭关键门禁', {skip}, () => {
+for (const where of ['instance', 'template-source']) test(`批准记录回放（${where}）：历史数字人记录可读，但没有当前上下文不能关闭关键门禁`, {skip}, () => {
+  site = where;
   assert.doesNotThrow(() => validateApprovalRecord(approvalRecord, {history: true}));
   assert.equal(goApproval(['--history']).ok, true);
   assert.throws(() => validateApprovalRecord(approvalRecord, {requireApproved: true}), (error) => error.code === 'APPROVAL_CONTEXT_REQUIRED');
