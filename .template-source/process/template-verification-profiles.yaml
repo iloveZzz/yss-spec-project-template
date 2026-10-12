@@ -116,6 +116,8 @@ profiles:
           - "scripts/verify-digital-human-task-package"
           - "scripts/verify-lifecycle-checkpoint"
           - "scripts/strategic-handoff"
+          - "scripts/spec-baseline"
+          - "scripts/verify-context-reconciliation"
           - "scripts/verify-strategic-handoff-consumption"
           - "scripts/lib/strategic-handoff-consumption.mjs"
           - "scripts/fixtures/strategic-handoff/fixture.mjs"

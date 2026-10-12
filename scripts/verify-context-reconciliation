@@ -1,12 +1,22 @@
 #!/usr/bin/env node
+import path from "node:path";
 import {withValidationPhase,validationDependencies} from "./lib/validation-phase.mjs";
 import { parseArgs } from "node:util";
 import { verifyContextReconciliation } from "./lib/context-reconciliation.mjs";
+import { nativeEvidenceVerify, nativeDelegationAvailable, NEEDS } from "./lib/native-evidence.mjs";
 try {
   const { values, positionals } = parseArgs({ options: { "validation-dependencies": {type:"boolean",default:false}, root: { type: "string", default: process.cwd() } }, allowPositionals: true, strict: true });
   if (positionals.length !== 1) throw new TypeError("用法: scripts/verify-context-reconciliation [--root <repo>] <record.yaml|json>");
+  // 校验归 yss（evidence verify --kind context-reconciliation）；需要依赖清单的内部调用（--validation-dependencies）、旧版 yss 和合成根仍走进程内实现。
+  // 合成根（缺治理权威文件）同样退回进程内实现。
+  if (!values["validation-dependencies"] && nativeDelegationAvailable(path.resolve(values.root), {}, process.env, [], NEEDS.contextReconciliation)) {
+    const result = nativeEvidenceVerify({ root: path.resolve(values.root), kind: "context-reconciliation", file: path.resolve(positionals[0]) });
+    if (result.exitCode !== 0) { process.stderr.write(`Context reconciliation 验证失败: ${result.message}\n`); process.exitCode = result.exitCode; }
+    else process.stdout.write("Context reconciliation 验证通过\n");
+  } else {
   const result=withValidationPhase({root:values.root,purpose:"context-reconciliation",readOnly:true},()=>{verifyContextReconciliation(positionals[0], { root: values.root });return values["validation-dependencies"]?{result:"verified",validation_dependencies:validationDependencies()}:null;});
   process.stdout.write(result?JSON.stringify(result)+"\n":"Context reconciliation 验证通过\n");
+  }
 } catch (error) {
   process.stderr.write(`Context reconciliation 验证失败: ${error.message}\n`);
   process.exitCode = 1;

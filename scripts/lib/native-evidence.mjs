@@ -26,7 +26,7 @@ export function nativeEvidenceVerify({root, kind, file: given, extra = [], envir
 function runNativeVerify({root, kind, file, extra, environment, group}) {
   const {binary} = contextBinary(environment);
   // lifecycle 领域的资产选择器是 --checkpoint，其余领域是 --kind 加 --file。
-  const selector = group === 'lifecycle' ? ['--checkpoint', file] : group === 'handoff' && kind === 'package' ? ['--kind', kind, '--package', file] : ['--kind', kind, '--file', file];
+  const selector = group === 'lifecycle' ? ['--checkpoint', file] : group === 'handoff' && (kind === 'package' || kind === 'spec-baseline') ? ['--kind', kind, '--package', file] : ['--kind', kind, '--file', file];
   const args = [group, 'verify', '--root', root, ...selector, ...extra, '--json'];
   const run = spawnSync(binary, args, {cwd: root, env: environment, encoding: 'utf8', timeout: 120000, maxBuffer: 32 * 1024 * 1024});
   if (run.error || run.signal || !Number.isInteger(run.status)) throw new Error(`NATIVE_INTERRUPTED: ${run.error?.message || run.signal}`);
@@ -47,6 +47,8 @@ export const NEEDS = {
   checkpoint: ['lifecycle.legacy-untracked-checkpoint.v1', 'template-source.verify-root.v1'],
   handoffPackage: ['handoff.package-identity.v1'],
   handoffConsumption: ['handoff.consumption-report.v1'],
+  specBaselinePackage: ['handoff.spec-baseline-package.v1'],
+  contextReconciliation: ['evidence.context-reconciliation.v1'],
 };
 const capabilityCache = new Map();
 export function nativeCapabilities(environment = process.env) {
@@ -60,11 +62,14 @@ export function nativeCapabilities(environment = process.env) {
   }
   return capabilityCache.get(key);
 }
+// 找不到 yss 视为缺少全部能力（调用方据此退回进程内实现）；需要明确报错的薄壳用 assertNativeCapabilities。
 export function missingCapabilities(needs, environment = process.env) {
-  const have = nativeCapabilities(environment);
+  let have;
+  try { have = nativeCapabilities(environment); } catch { return [...needs]; }
   return needs.filter((token) => !have.has(token));
 }
 export function assertNativeCapabilities(needs, environment = process.env) {
+  contextBinary(environment); // 找不到 yss 时给出定位错误，而不是「缺少能力」
   const missing = missingCapabilities(needs, environment);
   if (missing.length) throw new Error(`NATIVE_CAPABILITY: 当前 yss 缺少能力 ${missing.join('、')}，请升级 yss（yss upgrade）后重试`);
 }

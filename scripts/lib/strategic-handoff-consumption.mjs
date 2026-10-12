@@ -32,7 +32,8 @@ export async function verifyConsumption(data,{root=process.cwd(),sliceRef,consum
     const route=receipt.routes.find(item=>item.capability===capability);
     ensure(route&&route.activation!=='not-applicable'&&binding.route_id===route.route_id,`${capability} 未绑定当前 Handoff v4/v5 route_id`);
   }
-  const result=spawnSync(process.execPath,[path.join(ROOT,'scripts/verify-context-reconciliation'),'--root',root,safe(root,binding.context_reconciliation_ref),...(inValidationPhase()?['--validation-dependencies']:[])],{encoding:'utf8',timeout:60000,maxBuffer:16*1024*1024});
+  // 进程内实现始终用依赖清单模式调用对账脚本：该模式留在 Node（命令行薄壳只接管不要依赖清单的普通校验），合成根里也能工作。
+  const result=spawnSync(process.execPath,[path.join(ROOT,'scripts/verify-context-reconciliation'),'--root',root,safe(root,binding.context_reconciliation_ref),'--validation-dependencies'],{encoding:'utf8',timeout:60000,maxBuffer:16*1024*1024});
   ensure(result.status===0,`目标术语对账未通过: ${result.error?.message || result.stderr}`);
   if(inValidationPhase()){let value;try{value=JSON.parse(result.stdout);}catch{throw new TypeError('VALIDATION_RECEIPT_INVALID: Context 子进程未返回依赖');}acceptValidationDependencies(value.validation_dependencies);}
   const context=parseContextContract({root});

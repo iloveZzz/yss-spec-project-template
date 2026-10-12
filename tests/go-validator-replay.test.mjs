@@ -13,6 +13,7 @@ import {parse as parseYamlText} from '../scripts/vendor/yaml.mjs';
 import {fixture as handoffFixture, context as handoffContext} from '../scripts/fixtures/strategic-handoff/fixture.mjs';
 import {exportBundle, openBundle, importBundle} from '../scripts/lib/strategic-handoff.mjs';
 import {verifyConsumption} from '../scripts/lib/strategic-handoff-consumption.mjs';
+import {verifyContextReconciliation} from '../scripts/lib/context-reconciliation.mjs';
 import {read as readHandoff, json as handoffJson} from '../scripts/lib/strategic-handoff-io.mjs';
 import {makeRoot} from './helpers/yss-instance.mjs';
 import {readdirSync, cpSync, unlinkSync, appendFileSync} from 'node:fs';
@@ -621,7 +622,7 @@ let consumptionBuilt;
 async function consumptionCase() {
   consumptionBuilt ??= buildConsumption(); // 导出、导入一次，各用例只改各自的战术合同副本
   const built = await consumptionBuilt;
-  return {target: built.target, tactical: structuredClone(built.tactical)};
+  return {target: built.target, tactical: structuredClone(built.tactical), snapshot: built.snapshot};
 }
 async function buildConsumption() {
   const base = realpathSync(mkdtempSync(path.join(os.tmpdir(), 'yss-consume-replay-')));
@@ -638,7 +639,7 @@ async function buildConsumption() {
   const tactical = {schema_version: 1, status: 'approved', strategic_handoff: {...draft, context_reconciliation_ref: 'reconciliation.yaml'}, behavior_catalog: [{behavior_id: 'behavior.submit'}], test_seams: [{seam_id: 'test-seam.submit', subject_ref: 'behavior.submit'}]};
   writeFileSync(path.join(target, 'reconciliation.yaml'), handoffJson({schema_version: 1, repository_mode: 'project-instance', stage: 'stage.system-data-engineering', work_unit: 'work-unit.technical-analysis', status: 'reconciled', context_snapshot: f.snapshot, changes: {added: ['Global/Supplier'], updated: [], deprecated: []}, unresolved_terms: [], evidence_refs: ['CONTEXT.md']}));
   for (const row of tactical.strategic_handoff.rows) Object.assign(row, {disposition: 'implemented', tactical_refs: ['behavior.submit'], test_seam_refs: ['test-seam.submit'], scenario_tests: [{outcome: 'success', seam_ref: 'test-seam.submit'}, {outcome: 'failure', seam_ref: 'test-seam.submit'}], evidence_refs: ['CONTEXT.md'], dependency_status: 'known', dependent_slice_refs: ['slice.submit']});
-  return {target, tactical};
+  return {target, tactical, snapshot: f.snapshot};
 }
 const sortKeys = (value) => Array.isArray(value) ? value.map(sortKeys) : value && typeof value === 'object' ? Object.fromEntries(Object.keys(value).sort().map((k) => [k, sortKeys(value[k])])) : value;
 const consumptionCases = {
@@ -701,5 +702,33 @@ for (const [name, spec] of Object.entries({'整体消费通过': consumptionCase
     const inProcess = await verifyConsumption(tactical, {...options, native: false});
     const delegated = await verifyConsumption(tactical, options);
     assert.deepEqual(sortKeys(delegated), sortKeys(inProcess));
+  });
+}
+
+// Context 对账记录（evidence verify --kind context-reconciliation）：Node 的 verifyContextReconciliation 与 yss 结论一致。
+const reconciliationBase = (snapshot) => ({schema_version: 1, repository_mode: 'project-instance', stage: 'stage.system-data-engineering', work_unit: 'work-unit.technical-analysis', status: 'reconciled', context_snapshot: snapshot, changes: {added: ['Global/Supplier'], updated: [], deprecated: []}, unresolved_terms: [], evidence_refs: ['CONTEXT.md']});
+const reconciliationVariants = {
+  '已对账': (r) => r,
+  '状态 blocked 且有未解决术语': (r) => ({...r, status: 'blocked', unresolved_terms: [{term: 'Supplier', reason: '冲突', owner: '需求负责人', next_action: '回交战略方'}]}),
+  'project-instance 但状态 pending': (r) => ({...r, status: 'pending'}),
+  'reconciled 却有未解决术语': (r) => ({...r, unresolved_terms: [{term: 'Supplier', reason: '冲突', owner: '需求负责人', next_action: '回交战略方'}]}),
+  '变更了不存在的术语': (r) => ({...r, changes: {added: ['Global/Ghost'], updated: [], deprecated: []}}),
+  '同一术语跨分类重复': (r) => ({...r, changes: {added: ['Global/Supplier'], updated: ['Global/Supplier'], deprecated: []}}),
+  '证据文件不存在': (r) => ({...r, evidence_refs: ['missing-evidence.md']}),
+  '快照摘要不一致': (r) => ({...r, context_snapshot: {...r.context_snapshot, document_digest: `sha256:${'2'.repeat(64)}`}}),
+  '仓库身份矛盾': (r) => ({...r, repository_mode: 'template-source'}),
+  '缺少必填字段': (r) => { const x = {...r}; delete x.work_unit; return x; },
+};
+for (const [name, mutate] of Object.entries(reconciliationVariants)) {
+  test(`Context 对账回放：${name}`, {skip}, async () => {
+    const {target, snapshot} = await consumptionCase();
+    const ref = `reconciliation-variant-${++seq}.json`;
+    writeFileSync(path.join(target, ref), JSON.stringify(mutate(structuredClone(reconciliationBase(snapshot)))));
+    let node;
+    try { verifyContextReconciliation(path.join(target, ref), {root: target}); node = {ok: true}; } catch (error) { node = {ok: false, message: String(error.message).slice(0, 100)}; }
+    const go = nativeEvidenceVerify({root: target, kind: 'context-reconciliation', file: ref});
+    assert.equal(go.exitCode === 0, node.ok, `结论不一致：Node=${JSON.stringify(node)} Go=${go.exitCode} ${go.message.slice(0, 160)}`);
+    if (name === '已对账') assert.equal(node.ok, true, `基线必须通过：${node.message}`);
+    else assert.doesNotMatch(String(node.message), /ENOENT/, '拒绝原因不能是找不到记录文件');
   });
 }

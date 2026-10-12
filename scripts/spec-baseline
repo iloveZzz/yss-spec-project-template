@@ -3,11 +3,20 @@ import {parseArgs} from 'node:util';
 import {withValidationPhase} from './lib/validation-phase.mjs';
 import {read,safe} from './lib/strategic-handoff-io.mjs';
 import {verifySpecBaselineBinding,verifySpecBaselinePackage} from './lib/spec-baseline.mjs';
+import path from 'node:path';
+import {nativeEvidenceVerify,missingCapabilities,NEEDS} from './lib/native-evidence.mjs';
 try {
   const {values,positionals}=parseArgs({options:{root:{type:'string',default:process.cwd()},checkpoint:{type:'string'},bundle:{type:'string'}},allowPositionals:true});
   const [action]=positionals;
   const result=await withValidationPhase({root:values.root,purpose:'spec-baseline',readOnly:action==='verify'},async()=>{
     if(action==='verify'&&values.checkpoint){const proof=verifySpecBaselineBinding(read(safe(values.root,values.checkpoint)),{root:values.root});return {result:proof.result,next_work_unit:proof.next_work_unit,ready_for_agent:false};}
+    // 基线包校验归 yss（handoff verify --kind spec-baseline --package）；绑定校验（--checkpoint）与旧版 yss 仍走进程内实现。
+    if(action==='verify'&&values.bundle&&!missingCapabilities(NEEDS.specBaselinePackage).length) {
+      const r=nativeEvidenceVerify({root:path.resolve(values.root),kind:'spec-baseline',file:path.resolve(values.bundle),group:'handoff'});
+      const id=r.envelope.result?.coverage?.spec_baseline_package;
+      if(r.exitCode!==0||!id)throw new Error(r.message);
+      return {result:'spec-baseline-package-verified',baseline_id:id.baseline_id,version:id.version,bundle_digest:id.bundle_digest,ready_for_agent:false};
+    }
     if(action==='verify'&&values.bundle){const {manifest}=verifySpecBaselinePackage(values.bundle);return {result:'spec-baseline-package-verified',baseline_id:manifest.baseline_id,version:manifest.version,bundle_digest:manifest.bundle_digest,ready_for_agent:false};}
     throw new TypeError('用法: spec-baseline verify --checkpoint <ref> 或 --bundle <dir>（只读；持久写入使用 native yss handoff saved plan/apply）');
   });
