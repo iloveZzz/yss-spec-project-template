@@ -387,10 +387,11 @@ profiles:
           - "skills-lock.json"
           - "scripts/lib/skill-supply-chain.mjs"
           - "scripts/lib/lifecycle-context-query.mjs"
+          - "scripts/query-lifecycle-context"
           - "scripts/lib/backend-standards-coverage.mjs"
           - "tests/skill-lock-readers.test.mjs"
         depends_on: []
-        failure_mode: "根锁重新带回本地树哈希，读取方把没有 effectiveHash 的模板锁判成漂移，或对带 effectiveHash 的实例锁放过哈希不符、未登记的技能"
+        failure_mode: "根锁重新带回本地树哈希，没有运行时登记的实例被要求 --agent-runtime，读取方把没有 effectiveHash 的模板锁判成漂移，或对带 effectiveHash 的实例锁放过哈希不符、未登记的技能"
       - id: "check.93d2af5732ccdd96"
         inputs_complete: true
         input_patterns:

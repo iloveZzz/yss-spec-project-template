@@ -53,3 +53,23 @@ test('技能就绪检查：模板锁无哈希放行，实例锁哈希不符仍�
     fs.rmSync(root, { recursive: true, force: true });
   }
 });
+
+test('技能就绪检查：没有任何运行时登记时不要求 --agent-runtime', () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'skill-lock-readers-'));
+  try {
+    const source = path.join(root, '.agents/skills/main');
+    fs.mkdirSync(source, { recursive: true });
+    fs.writeFileSync(path.join(source, 'SKILL.md'), '---\nname: main\n---\nFixture\n');
+    const registry = { agent_runtime_roots: {}, skills: [{ id: 'main', maturity: 'supported', aliases: [] }], external_skills: [], skill_dependencies: {} };
+    const route = { primary_skill: 'main' };
+    const metadata = (runtimes) => ({ metadataSchemaVersion: 3, templateName: 'create-yss-spec', distribution: { mode: 'selected', runtimes, installedSkills: ['main'] }, managedFiles: {} });
+    const write = (runtimes) => {
+      fs.writeFileSync(path.join(root, '.yss-template.json'), JSON.stringify(metadata(runtimes)));
+      fs.writeFileSync(path.join(root, 'skills-lock.json'), JSON.stringify({ version: 3, projectionRoots: [], skills: { shared: { main: { targets: ['.agents/skills'] } } } }));
+    };
+    write([]);
+    assert.deepEqual(inspectWorkUnitSkills({ root, registry, route }).issues.map((issue) => issue.code), []);
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
