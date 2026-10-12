@@ -57,7 +57,7 @@ test('product design can continue after independent review without a repeated hu
 test('source approval continuation is verified by all three dedicated receivers', () => fixture(f => {
   const record = { schema_version: 1, gate_id: f.requirement.boundary, decision: 'approved', actor_kind: 'digital-human', role_id: 'role.test-engineer', runtime_id: 'runtime.generic', principal_ref: 'synthetic.reviewer', drafter_principal_ref: 'synthetic.worker', subject_ref: f.subject.ref, subject_digest:f.asset(f.subject.ref).digest.slice(7), basis:f.basis.map(x=>({ref:x.ref,digest:x.digest.slice(7)})), approval_scope: f.requirement.scope, continuation_ref: f.requirement.continuation_ref };
   const input = f.save('source-approval.json', { record, currentAssetRef:f.subject.ref, roles: loadDigitalHumanRoles() });
-  for (const profile of ['design', 'backend', 'frontend']) {
+  for (const profile of ['design', 'backend']) {
     const moduleUrl = pathToFileURL(path.join(composeProfileTree(profile), 'scripts/lib/strategic-handoff.mjs')).href;
     const code = `import {readFileSync} from 'node:fs'; import {sourceApproval} from ${JSON.stringify(moduleUrl)}; const {record,roles,currentAssetRef}=JSON.parse(readFileSync(process.argv[1])); await sourceApproval(record,roles,process.argv[2],currentAssetRef);`;
     const result = spawnSync(process.execPath, ['--input-type=module', '-e', code, input, f.root], { encoding: 'utf8' });

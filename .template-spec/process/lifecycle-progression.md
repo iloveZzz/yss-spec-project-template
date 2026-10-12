@@ -13,16 +13,11 @@ CLI 输入草稿使用当前功能包已有且被项目忽略的 `tmp` 目录，
 | `spec-approved`：Spec 批准 | 当前原始 Spec 基线批准有效，适用业务草案与 FR/AC 覆盖通过验证 |
 | `product-design-completed`：产品设计完成 | 当前 Spec、命中的产品设计批准与正式业务 Ticket 通过验证；无 UI 设计影响时以当前影响依据显示设计不适用，不创建空原型 |
 | `backend-deliverable`：后端可交付 | 当前工程与 Slice 批准、真实接口/实现/独立审查和构建部署证据通过验证；显式外部消费者或后端职责范围需要实际 Backend Delivery 包；不等于业务验收 |
-| `frontend-accepted`：前端验收 | 当前 Slice 与交付验收批准、真实前端视觉/交互/构建和接收证据通过验证；无生产 UI 影响时显示不适用 |
-| `business-accepted`：业务验收 | 主控当前 `gate.delivery-accepted`、业务场景及实际验证证据通过核验；当前批准范围中的后端、API 或数据影响还须有同功能本地后端交付或显式后端消费者的当前交付，适用前端验收及必要交接同时闭合 |
+| `business-accepted`：业务验收 | 主控当前 `gate.delivery-accepted`、业务场景及实际验证证据通过核验；当前批准范围中的后端、API 或数据影响还须有同功能本地后端交付或显式后端消费者的当前交付，必要交接同时闭合 |
 
 “已批准”“completed”、文件存在或上一会话的文字结论均不能建立上述完成。到达终点后停止派发下游写任务，仍保留真实 `next_work_unit`；用户明确扩大终点后，先复验当前来源、有效批准和职责，再继续尚未完成工作。只读状态和目标查询不创建资产或批准，也不授予实现权限。旧 CLI 缺能力或目标不可验证时停止受影响推进。
 
-默认在一个 Spec 项目内由数字人分工完成设计、后端和前端。只有明确需要独立工作空间或交付责任时才接入专职 Profile：Design 完成业务设计和战略交接，Backend 完成后端交付，Frontend 完成前端验收。产品设计里程碑不等于 Design Profile 的整个战略交接终点；专职终点也不等于 Spec 主控的整个业务验收。
-
-本地前端的设计与合同准备读取同功能当前批准输入，不创建外部 Receipt，也不等待尚未产生的后端交付。生产前端工作单元发包与正式还原验证重新读取完整 Slice：有后端、API 或数据依赖时，必须核验当前接口和本地后端交付，或显式 Backend 消费者的当前接收与交付，并对账 Spec、接口与版本；纯 UI 使用批准且当前的不适用依据。裁剪到单个前端工作单元不能删除整个切片的后端依赖。已有外部前端交付绑定继续使用 Receipt 校验，失效时不得回退到本地。正式前端计划和还原证据通过现有 `spec_ref`、`slice_contract_ref` 或明确 checkpoint 绑定当前功能，不按所在目录猜归属。
-
-本地前端完成消费已登记的 `artifact.frontend-implementation-plan` 与 `artifact.frontend-implementation-verification`，继续使用现有 schema v2 的原始 pnpm、交互、console、图片及适用视觉还原证据。职责完成还须当前独立审查和 `check.frontend-implementation-verified`；输入资格不授予完成或执行。整体业务验收仍须当前 `gate.delivery-accepted`，不生成本地 Receipt。
+默认在一个 Spec 项目内由数字人分工完成设计和后端实现；前端实现已不在本生命周期内。只有明确需要独立工作空间或交付责任时才接入专职 Profile：Design 完成业务设计和战略交接，Backend 完成后端交付。产品设计里程碑不等于 Design Profile 的整个战略交接终点；专职终点也不等于 Spec 主控的整个业务验收。
 
 原生 Backend Profile 的正式交付终点直接绑定自己的明确 checkpoint 与唯一登记 map，在功能目录保存 `backend-delivery.json`。它消费真实正式包、独立审查与当前提交，不需要 Spec 推进意图或 `plan-to-backend` 范围；本地 `local-evidence` 终点仍只用于 Spec 功能目标。
 
@@ -30,9 +25,9 @@ CLI 输入草稿使用当前功能包已有且被项目忽略的 `tmp` 目录，
 
 Spec 只有在显式外部实现专职消费者需要时，才派发 `work-unit.strategic-design-handoff`、登记交接资产和门禁。产品经理起草，需求经理独立审查，源角色政策声明 `business-ticket-approval-v1`；所有来源批准当前，finalize 成包且整包实际验证通过后才算源交接完成。接收回执可异步，但在本次目标要求联合交付时必须核验本功能的当前接收证据。默认本地综合流程直接消费资产，不能自导自入。
 
-执行范围是硬上限：例如 `plan-to-backend` 可以选择 Spec、产品设计或后端终点，不能以目标配置扩大到前端或业务验收。完整 Spec 选择一次后端终点不会永久改成后端职责范围；本地核验既有后端实现与验证，不因目标自行导出战略包或自导自入。显式外部后端消费者需要的包记录定位到本功能 map 目录，实际交付仍限制在已批准后端写路径，并保留命中的产品 UI 设计门禁。业务验收与实际 merge/release 分开授权。
+执行范围是硬上限：例如 `plan-to-backend` 可以选择 Spec、产品设计或后端终点，不能以目标配置扩大到业务验收。完整 Spec 选择一次后端终点不会永久改成后端职责范围；本地核验既有后端实现与验证，不因目标自行导出战略包或自导自入。显式外部后端消费者需要的包记录定位到本功能 map 目录，实际交付仍限制在已批准后端写路径，并保留命中的产品 UI 设计门禁。业务验收与实际 merge/release 分开授权。
 
-本地后端证据在当前验证单元登记，适用于后端目标、前端目标的适用后端依赖，以及业务验收的后端范围。当前 Slice 批准、后端实现、独立审查、契约测试与构建部署记录齐备后，按 [Backend Delivery schema](schemas/backend-delivery.schema.json) 准备 `delivery_mode: local-evidence` 的本地交付证据；不填战略包字段。完整 Spec 的这些工程目标允许同一批准切片包含前端范围，该记录只证明后端职责完成，不能代替前端验收；`plan-to-backend` 和专职 Backend 的职责上限不扩大。终点输入包含 `delivery_mode`、当前 `checkpoint_ref`、`delivery` 和 `review_state` 的 `{ref, digest}` 原字节绑定，以及 `downstream` 的 `owner`、`ticket_ref`、`verification_plan`、`target_version`。运行：
+本地后端证据在当前验证单元登记，适用于后端目标及业务验收的后端范围。当前 Slice 批准、后端实现、独立审查、契约测试与构建部署记录齐备后，按 [Backend Delivery schema](schemas/backend-delivery.schema.json) 准备 `delivery_mode: local-evidence` 的本地交付证据；不填战略包字段。`plan-to-backend` 和专职 Backend 的职责上限不扩大。终点输入包含 `delivery_mode`、当前 `checkpoint_ref`、`delivery` 和 `review_state` 的 `{ref, digest}` 原字节绑定，以及 `downstream` 的 `owner`、`ticket_ref`、`verification_plan`、`target_version`。运行：
 
 ```bash
 scripts/complete-backend-delivery complete --root <当前根> --checkpoint <当前checkpoint> --input <终点输入.json>

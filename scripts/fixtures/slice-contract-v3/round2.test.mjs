@@ -26,7 +26,7 @@ test('frozen Ticket keeps tracker updates outside the requirement binding and re
  }finally{f.cleanup();}
 });
 
-test('low risk applicability comes from lifecycle rules; frontend existing baseline cannot hide UI changes',()=>{
+test('low risk applicability comes from lifecycle rules',()=>{
  const f=pilotFixture();try {
   const sources={...f.sources};delete sources.architecture_review;
   const input={root:f.root,ticket_ref:f.ticket,sources,refinements:{...f.refinements,scope:{...f.refinements.scope,risk_level:'low'}}};
@@ -79,7 +79,7 @@ test('registered cross-repo preparation and approved dispatch keep same-name pat
   assert.equal(assertApprovedExecutionContext(execution,{root:f.root}).contract.resolution.architecture_identity.repository_id,'synthetic-peer');
   const task=compileSliceTaskPackage(approved.binding,{root:f.root,work_unit_id:'work-unit.peer',task_id:'task.peer',actor_id:'peer.worker',runtime_id:'runtime.generic'});
   assert.match(task.objective,/peer/);
-  for(const profile of ['backend','frontend']) {
+  for(const profile of ['backend']) {
     const receiver=await import(pathToFileURL(path.join(composeProfileTree(profile),'scripts/lib/slice-contract.mjs')).href);
     assert.throws(()=>receiver.readSliceContract(approved.binding.ref,{root:f.root}),/不支持当前来源/);
   }
@@ -111,25 +111,6 @@ test('cross-repo execution result rejects same-name evidence substitution and mi
   assert.equal(validateExecutionResult(joint,f.contract,current).status,'accepted');
   delete joint.verification_results[1].dependency_roots;
   assert.ok(validateExecutionResult(joint,f.contract,current).blockers.includes('verification-coverage-or-cwd-missing'));
- }finally{f.cleanup();}
-});
-
-test('existing UI baseline is fully verified and cannot replace new UI design evidence',async()=>{
- const {baselineFixture}=await import('../existing-ui-baseline/fixture.mjs');
- const {normalizeSliceContract}=await import('../../lib/slice-contract.mjs');
- const f=pilotFixture();try {
-  const baseline=baselineFixture(path.join(f.root,'existing-ui'));
-  f.contract.basis.existing_ui_baseline=f.write('existing-ui/existing-ui-baseline.json',baseline.data);
-  f.contract.basis.frontend_delivery=f.write('frontend-acceptance.json',{});
-  f.contract.applicability.frontend={status:'required',baseline_kind:'existing-ui-baseline',ui_change:'none'};
-  f.contract.extensions.frontend={visual_baseline_case_ids:['submit']};
-  assert.equal(normalizeSliceContract(f.contract,{root:f.root}).frontend.status,'required');
-  const changed=structuredClone(f.contract);changed.scope.impacted_areas.push('ui');
-  assert.throws(()=>normalizeSliceContract(changed,{root:f.root}),/UI 变化/);
-  changed.scope.impacted_areas=[];changed.applicability.frontend={status:'required',baseline_kind:'prototype',ui_change:'required'};
-  assert.throws(()=>normalizeSliceContract(changed,{root:f.root}),/requirement_freeze/);
-  fs.appendFileSync(path.join(f.root,'existing-ui/source/src/App.vue'),'changed');
-  assert.throws(()=>normalizeSliceContract(f.contract,{root:f.root}),/既有 UI 基线不可消费/);
  }finally{f.cleanup();}
 });
 

@@ -7,7 +7,7 @@ import { ROOT, read, safe, ensure } from './strategic-handoff-io.mjs';
 export function loadDeliveryProfile(root=ROOT) {
   const instance=readInstanceMetadata(root);
   const native=instance?.kind==='native';
-  const metadata=native?(['backend','frontend'].includes(instance.profile)?[instance.profile]:[]):['backend','frontend'].filter(side=>existsSync(path.join(root,`.yss-harness-${side}.json`)));
+  const metadata=native?(['backend'].includes(instance.profile)?[instance.profile]:[]):['backend'].filter(side=>existsSync(path.join(root,`.yss-harness-${side}.json`)));
   ensure(metadata.length<=1,'专职 Harness metadata 身份冲突');
   const profilePath=path.join(root,'.template-spec/process/harness-profile.yaml');
   ensure(!metadata.length||existsSync(profilePath),'专职 Harness 缺少 profile，不得绕过执行门禁');
@@ -28,7 +28,7 @@ export function loadDeliveryProfile(root=ROOT) {
 
 function activeProfile(root) {
   const profile=loadDeliveryProfile(root);
-  if (!['harness.backend-delivery','harness.frontend-delivery'].includes(profile?.profile_id)) return null;
+  if (!['harness.backend-delivery'].includes(profile?.profile_id)) return null;
   const identity=read(safe(root,'yss-project.yaml'));
   ensure(identity.schema_version===1&&['template-source','project-instance'].includes(identity.repository_mode),'专职 Harness 仓库身份无效');
   return identity.repository_mode==='project-instance'?profile:null;
@@ -52,7 +52,7 @@ export function enforceHarnessTaskScope(task,{root=ROOT}={}) {
   const local=[...profile.audience.target_user_roles,...profile.audience.control_plane_roles];
   const crossReview=['Explorer','Reviewer'].includes(task.execution_state)&&task.allowed_write_paths.length===0;
   ensure(local.includes(task.role_id)||crossReview,'专职 Harness 不允许派发另一端的实现/起草任务');
-  const opposite=profile.profile_id==='harness.frontend-delivery'?'backend':'frontend';
+  const opposite='frontend';
   ensure(task.allowed_write_paths.every(ref=>!new RegExp(`^apps/${opposite}(?:/|$)`).test(ref)),'专职 Harness 不允许写入另一端工程');
 }
 
@@ -66,8 +66,8 @@ export function enforceHarnessSkillScope(skills,registry,{root=ROOT}={}) {
   }
   const profile=activeProfile(root);
   if (!profile) return;
-  const side=profile.profile_id==='harness.frontend-delivery'?'frontend':'backend';
-  const opposite=side==='frontend'?'backend':'frontend';
+  const side='backend';
+  const opposite='frontend';
   for (const id of skills) {
     const impacts=registry.skills.find(skill=>skill.id===id)?.impacts||[];
     ensure(!impacts.includes(opposite)||impacts.includes(side)||impacts.includes('lifecycle'),`专职 Harness 不允许编译另一端技能: ${id}`);

@@ -12,7 +12,6 @@ const GROUP_ID = /^group\.[a-z0-9][a-z0-9-]*$/;
 const RUNTIME_ID = /^runtime\.[a-z0-9][a-z0-9-]*$/;
 const REQUIRED_ROLES = [
   "role.architecture-agent",
-  "role.frontend-agent",
   "role.backend-agent",
   "role.test-agent"
 ];

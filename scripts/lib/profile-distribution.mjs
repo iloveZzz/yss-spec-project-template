@@ -9,7 +9,7 @@ import { spawnSync } from 'node:child_process';
  * excludePaths，就会进入每一个新实例。本检查以根仓已声明的「仅模板源」脚本为准，核对每个 Profile 有没有同样排除，并保证
  * 技能目录里的测试目录不分发。判定逻辑镜像 yss-cli 的 internal/bundle/producer.go includedByManifest。
  */
-export const PROFILES = ['backend', 'design', 'frontend'];
+export const PROFILES = ['backend', 'design'];
 export const BUNDLE_PROFILE_REF = '.template-source/distribution/bundle-profile.json';
 /** 必须被后缀规则排除的路径段名：技能目录里的测试目录。 */
 export const REQUIRED_SUFFIXES = ['tests', 'test'];

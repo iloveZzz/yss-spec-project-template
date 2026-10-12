@@ -3,7 +3,7 @@ import { createHash } from 'node:crypto';
 import { existsSync, lstatSync, readFileSync } from './validation-phase.mjs';
 import { parseAsset } from './structured-assets.mjs';
 
-const profiles={spec:{id:'harness.spec-template',legacy:'.yss-template.json'},design:{id:'harness.business-ddd-strategy-handoff',legacy:'.yss-harness-design.json'},backend:{id:'harness.backend-delivery',legacy:'.yss-harness-backend.json'},frontend:{id:'harness.frontend-delivery',legacy:'.yss-harness-frontend.json'}};
+const profiles={spec:{id:'harness.spec-template',legacy:'.yss-template.json'},design:{id:'harness.business-ddd-strategy-handoff',legacy:'.yss-harness-design.json'},backend:{id:'harness.backend-delivery',legacy:'.yss-harness-backend.json'}};
 const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
 const hex=value=>typeof value==='string'&&/^[a-f0-9]{64}$/.test(value);
 const ensure=(ok,message)=>{if(!ok)throw new TypeError('INSTANCE_IDENTITY: '+message);};

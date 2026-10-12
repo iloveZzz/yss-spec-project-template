@@ -19,7 +19,6 @@ import { assertImplementationDecision } from "./user-decision.mjs";
 import { validateNextRoute } from "./lifecycle-transition.mjs";
 import { assertPlanSpecEntry } from "./plan-spec-entry.mjs";
 import { enforceHarnessTaskScope } from "./harness-execution-scope.mjs";
-import { enforceFrontendDelivery } from "./frontend-delivery-boundary.mjs";
 import { LEGACY_TASK_PACKAGE_SCHEMA, TASK_PACKAGE_SCHEMA, validateTaskPackageSchema } from "./task-package-schema.mjs";
 
 export { LEGACY_TASK_PACKAGE_SCHEMA, TASK_PACKAGE_SCHEMA, validateTaskPackageSchema };
@@ -244,10 +243,6 @@ function validateTaskPackageInternal(value, { rolesDoc, lifecycleDoc, root = ROO
     return validateReadOnlyIntake(value, { root, runDir, roles: registry, lifecycle: lifecycleDoc || loadRegistry() });
   }
   enforceHarnessTaskScope(value);
-  const intake = value.execution_state === "Explorer" && value.allowed_write_paths.length === 0 && ["work-unit.entry-triage", "work-unit.harness-entry"].includes(value.work_unit_id);
-  if (!intake) {
-    enforceFrontendDelivery(value, { phase: value.contract.kind === "slice-implementation" ? "implementation" : "inputs" });
-  }
   const registry = rolesDoc || loadDigitalHumanRoles();
   const lifecycle = lifecycleDoc || loadRegistry();
   validateCommon(value, registry, lifecycle);

@@ -63,9 +63,9 @@ test('固定原生 CLI 来源不匹配时拒绝执行且不写入项目', t => {
 
 test('原生同步与回滚保留用户文件，碰撞拒绝不写入项目', t => {
   const base = temporary(t);
-  // The retired migration counterexample exercised Frontend; the retained
-  // cli-retirement suite separately covers ordinary sync for all four Profiles.
-  for (const profile of ['frontend']) {
+  // The retired migration counterexample exercised Backend; the retained
+  // cli-retirement suite separately covers ordinary sync for all Profiles.
+  for (const profile of ['backend']) {
     const target = path.join(base, profile);
     initializeNative(profile, target);
     const metadataPath = path.join(target, '.yss.json'), managedRef = 'scripts/sync-skills';

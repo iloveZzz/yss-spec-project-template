@@ -1,5 +1,0 @@
-version: 1
-interface:
-  display_name: "Test Agent"
-  short_description: "建立测试 seam 并独立验证切片"
-  default_prompt: "使用 $test-agent 先建立测试 seam，再独立执行契约、集成、E2E 和 Fresh Verification；不得替实现者修改生产代码掩盖失败。"

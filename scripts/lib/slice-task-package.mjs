@@ -6,7 +6,6 @@ import { createApprovedExecutionContext, assertApprovedExecutionContext } from '
 import { assertImplementationDecision } from './user-decision.mjs';
 import { taskPackageDefaults, loadDigitalHumanRoles } from './digital-human-roles.mjs';
 import { validateTaskPackageSchema } from './task-package-schema.mjs';
-import {enforceFrontendDelivery} from './frontend-delivery-boundary.mjs';
 const fail=message=>{throw new TypeError(message);};
 const equalArrays=(a,b)=>Array.isArray(a)&&a.length===b.length&&a.every((x,i)=>x===b[i]);
 export function sliceImplementationStage(root=ROOT) {
@@ -62,8 +61,6 @@ export function assertSliceV3TaskPackage(value,slice,{root=ROOT}={}) {
   const bytes=readFileSync(safe(root,contract.slice_contract_ref));
   const execution=createApprovedExecutionContext({ref:contract.slice_contract_ref,digest:hash(bytes),id:current.contract_id,version:current.contract_version,approval_ref:contract.gate_refs[0]},{root,work_unit_id:value.work_unit_id});
   const {contract:selected}=assertApprovedExecutionContext(execution,{root,contract:current});
-  if(['Drafter','Worker'].includes(value.execution_state))enforceFrontendDelivery(selected,{root,sliceRef:contract.slice_contract_ref,
-    workUnitId:value.work_unit_id,phase:'implementation'});
   for(const allowed of value.allowed_write_paths)if(!unit.allowed_write_paths.some(parent=>withinSlicePath(allowed,parent)))fail('任务写范围超出 Slice v3');
   for(const key of ['verification_commands','expected_evidence_files']) {
     const required=key==='verification_commands'?unit.work_unit.verification_commands:unit.work_unit.expected_evidence;

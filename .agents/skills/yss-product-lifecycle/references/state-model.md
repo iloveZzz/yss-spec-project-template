@@ -62,12 +62,11 @@ AND Backend Slice Implementation Contract（后端适用）和 Build Architectur
 AND backend 影响且 scaffold_status=required 时，`gate.backend-architecture-platform-approved` 已由用户同时确认 DDD / MVC 与精确 Spring Boot 版本并达到 lifecycle-approved、统一 schema v4 合同与 Manifest 当前、对应 DDD / Layered MVC 基线、Wrapper 验证和 实现合同编译器重编译均已完成；既有工程只核验并复用当前登记值
 AND frontend 影响且无已有工程时，统一 schema v4 Project Scaffold Contract 已批准、持久化且当前，模板 bundled manifest 摘要或 Git commit 已锁定，`pnpm install --frozen-lockfile` 与工程基线要求的 lint/type-check/build 已实际通过
 AND 所有后续生成代码均绑定主 YSS skill、依赖闭包、允许写路径、预期证据和 YSS Skill Execution Result
-AND UI 影响切片的前端实现还原计划已通过 schema 校验、`template=false`、`status=approved`，且基线引用可读取
 ```
 
 父 Ticket、Spec、设计、原型、OpenAPI Draft、wayfinder map 和 decision ticket 不得使用 `ready-for-agent`。
 
-发布前还必须满足所有已触发门禁均为 `approved` 或 `not-applicable`；UI 影响切片必须额外通过 `check.frontend-implementation-verified`，不能只凭 fresh verification 和回滚点放行。
+发布前还必须满足所有已触发门禁均为 `approved` 或 `not-applicable`；不能只凭 fresh verification 和回滚点放行。
 
 任何 `project-instance` 工作单元进入下一步、任何阶段会签暂停或阶段完成 checkpoint，还必须引用当前工作单元的 `context_reconciliation`。其中 `status=reconciled`、`context_ref=CONTEXT.md`、`document_digest` 与 `referenced_terms_digest` 必须和根目录唯一 `CONTEXT.md` 一致；该证据不改变门禁数量。`template-source` 仅允许以带原因的 `not-applicable` 表示它只校验模板合同，不产生产品业务术语。
 

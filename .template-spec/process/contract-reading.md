@@ -17,7 +17,7 @@ scripts/contract diff <旧资产> <新资产> --kind <类型> [--json]
 | `api-decision`、`data-decision` | API / 数据决定 | 对应决定校验、工程契约批准 |
 | `scaffold`、`scaffold-decision` | 脚手架合同、架构选择 | 脚手架所有者及原始用户决定 |
 | `slice` | Slice 与工作单元 | `scripts/slice-contract inspect`、原批准与派发 |
-| `handoff`、`backend-delivery`、`frontend-acceptance` | 战略交接、后端交付、前端接收 | 对应包 / 交付 / 接收验证器 |
+| `handoff`、`backend-delivery` | 战略交接、后端交付 | 对应包 / 交付验证器 |
 | `approval`、`user-decision`、`context-reconciliation` | 会签、原始回复、Context 对账 | 原批准 / 用户决定 / Context 校验 |
 
 通用适配器保留未知字段，只做可读取、适用 schema 和可识别来源绑定核对；不支持结构核验的类型会明确标记。专用资产所有者的业务校验并未被通用视图替代。Markdown 正文完整保留。API v2 审查结果从绑定的实际记录展示。摘要字段变化、数组顺序和纯字节变化均在 diff 中保留，不据此自动认定批准可沿用。
@@ -61,13 +61,7 @@ scripts/contract prepare-review <前资产> <后资产> --kind <类型> [--unit 
 
 输出来源字节绑定、差异、完整约束、原决定与缺口及恢复动作。`approval_reusable: false`、`execution_allowed: false` 固定不授予批准或执行权；语义等价、风险接受、原回复真实性和批准延续由原审查及决定验证器处理。缺少原决定标记未提供，不能据此沿用批准。
 
-## 当前前端交互证据
-
 模板正式研究的路由、实际验证及收尾见 [研究收尾协议](research-completion.md)。
-
-前端 verification schema v2 保留读取历史交互文字；正式完成校验要求 `implementation_plan: {ref, digest}` 绑定当前批准计划，`interaction_results` 使用 `{case_id, state, result, evidence_ref, evidence_digest}`，覆盖计划全部 state_cases 和选定 case_id。只有 `result: pass` 可继续。console、实现截图、视觉差异与实际命令日志均须绑定当前字节摘要，命令必须覆盖计划中的 pnpm_commands。
-
-历史文字报告返回 `legacy-interaction-binding-missing`；先重验计划与批准，再真实执行交互、console、截图及适用命令并另存新报告，不给旧报告补造通过记录。摘要校验不证明交互语义，实际浏览器轨迹和独立前端审查仍按既有边界执行。
 
 ## 首批中文阅读页与显式托管
 

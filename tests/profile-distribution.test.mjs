@@ -39,7 +39,7 @@ function workspace(t, tweak = {}) {
   git(root, 'init', '-q');
   write(root, BUNDLE_PROFILE_REF, `${JSON.stringify({ manifest: manifest({ excludePaths: ['scripts/verify-template', 'scripts/fixtures', NEED] }) })}\n`);
   for (const file of FILES) write(root, file, file === NEED_BY ? `run("node", ["${NEED}", "--check"]);\n` : 'x\n');
-  for (const profile of ['backend', 'design', 'frontend']) {
+  for (const profile of ['backend', 'design']) {
     const options = { policy: GOOD_PROFILE, files: [], referenceNeed: true, ...(tweak[profile] ?? {}) };
     write(root, `profiles/${profile}/${BUNDLE_PROFILE_REF}`, `${JSON.stringify({ manifest: options.policy })}\n`);
     for (const file of options.files) write(root, `profiles/${profile}/${file}`, 'x\n');
@@ -101,8 +101,8 @@ test('例外：实例确实需要的脚本被登记在 PROFILE_NEEDS 里就不�
 });
 
 test('违规：测试目录没有被后缀规则排除', (t) => {
-  const root = workspace(t, { frontend: { policy: manifest({ excludePaths: ['scripts/verify-template', 'scripts/fixtures'], excludePathSuffixes: ['tests'] }) } });
-  const frontend = evaluateAll(root).reports.find((report) => report.profile === 'frontend');
+  const root = workspace(t, { design: { policy: manifest({ excludePaths: ['scripts/verify-template', 'scripts/fixtures'], excludePathSuffixes: ['tests'] }) } });
+  const frontend = evaluateAll(root).reports.find((report) => report.profile === 'design');
   assert.deepEqual(frontend.findings.map((finding) => finding.kind), ['test-directory-not-excluded']);
   assert.equal(frontend.findings[0].path, 'test');
 });
@@ -140,7 +140,7 @@ test('违规：已删除的同步机制或 Profile 子模块登记重新出现',
 test('命令行：合规退出 0，违规退出 1 并写 stderr，参数错误退出 1', (t) => {
   const ok = spawnSync(process.execPath, [SCRIPT, '--root', workspace(t)], { encoding: 'utf8' });
   assert.equal(ok.status, 0, ok.stderr);
-  assert.match(ok.stdout, /通过 frontend/);
+  assert.match(ok.stdout, /通过 design/);
   const bad = workspace(t, { backend: { policy: manifest() } });
   const failed = spawnSync(process.execPath, [SCRIPT, '--root', bad], { encoding: 'utf8' });
   assert.equal(failed.status, 1);

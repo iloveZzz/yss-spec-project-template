@@ -413,7 +413,6 @@
         ".template-spec/process/implementation-repo-integration.md",
         ".template-spec/process/existing-backend-architecture.md",
         ".template-spec/process/existing-ui-baseline.md",
-        ".template-spec/process/frontend-backend-delivery.md",
         ".template-spec/templates/implementation-repo-registry-template.md"
       ],
       "scripts": [

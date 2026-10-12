@@ -44,7 +44,7 @@ export function businessAuthoringEnabled(root) {
   if(businessTicketVersion(root)!==1)return false;
   const profile=businessPath(root,'.template-spec/process/harness-profile.yaml');
   const policy=fs.existsSync(profile)?yamlValue(fs.readFileSync(profile,'utf8')):null;
-  return !['harness.backend-delivery','harness.frontend-delivery'].includes(policy?.profile_id)||policy.business_input?.modes?.includes('standalone')===true;
+  return !['harness.backend-delivery'].includes(policy?.profile_id)||policy.business_input?.modes?.includes('standalone')===true;
 }
 export function assertImplementationTicket(text, ref = '') {
   const kind = ticketMetadata(text)?.kind;

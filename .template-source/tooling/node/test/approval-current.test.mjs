@@ -195,7 +195,7 @@ test('one v2 capability task strictly binds different per-check subjects across 
   const current=base.checks[row.gate_id];
   await assert.doesNotReject(()=>sourceApproval(row,rolesDoc,root,{ref:current.subject_ref,approval_context:current}),`source check ${i}`);
  }
- const profiles=['design','frontend','backend'];
+ const profiles=['design','backend'];
  const isolatedSourceCheck=`const {sourceApproval}=await import(process.argv[1]);
  const input=JSON.parse(process.argv[2]);let verified=0;
  for(const row of input.records){const current=input.checks[row.gate_id];

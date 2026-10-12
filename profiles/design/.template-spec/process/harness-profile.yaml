@@ -46,7 +46,6 @@ lifecycle:
     - work-unit.technical-analysis
     - work-unit.ticket-decomposition
     - work-unit.slice-implementation
-    - work-unit.frontend-implementation-verification
     - work-unit.code-review
     - work-unit.release-and-retrospective
   forbidden_artifacts:

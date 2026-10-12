@@ -29,7 +29,7 @@ const PIPELINE_PATTERNS = [
   /(^|\/)source-lock[^/]*\.json$/,
 ];
 export const PROJECTION_ROOT_CANDIDATES = [".codex/skills", ".cursor/skills", ".pi/skills", ".claude/skills"];
-const PROFILE_OVERLAYS = ["backend", "design", "frontend"];
+const PROFILE_OVERLAYS = ["backend", "design"];
 
 function listDirs(directory) {
   if (!existsSync(directory)) return [];

@@ -2,7 +2,6 @@ import {approvalExpectationForBoundAsset} from './approval-consumption.mjs';
 import {assertReadingTransition} from './reading-view-bundle.mjs';
 import { assertTrackingTransition } from './stage-tracking.mjs';
 import { validateBackendReview } from "./backend-review.mjs";
-import { enforceFrontendDelivery } from "./frontend-delivery-boundary.mjs";
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import path from "node:path";
@@ -175,10 +174,6 @@ export function validateNextRoute(currentWorkUnit, nextRoute, state, options = {
     catch (error) { return blockedResult(["backend-review-incomplete"], [error.message]); }
   }
 
-  if (["work-unit.technical-design", CONTRACT_WORK_UNIT, IMPLEMENTATION_WORK_UNIT, VERIFICATION_WORK_UNIT].includes(nextRoute)) {
-    try { enforceFrontendDelivery(state, { root: options.root, phase: nextRoute === IMPLEMENTATION_WORK_UNIT ? "implementation" : "inputs" }); }
-    catch (error) { return blockedResult(["frontend-delivery-blocked"], [error.message]); }
-  }
   const routes = NEXT_ROUTES[currentWorkUnit];
   if (!routes) return blockedResult([BLOCKING_SIGNALS.invalidRoute], ["known_current_work_unit"]);
   if (nextRoute === null && routes.length === 0) return allowedResult();
@@ -191,8 +186,6 @@ export function validateNextRoute(currentWorkUnit, nextRoute, state, options = {
 }
 
 export function validateSliceContractReadiness(state, options = {}) {
-  try { enforceFrontendDelivery(state, { root: options.root, phase: "implementation" }); }
-  catch (error) { return blockedResult(["frontend-delivery-blocked"], [error.message]); }
   const contract = state?.slice_contract || state;
   const required = [
     "upstream_inputs_current_and_approved",
@@ -224,8 +217,6 @@ export function validateSliceContractReadiness(state, options = {}) {
 }
 
 export function validateImplementationEntry(state, options = {}) {
-  try { enforceFrontendDelivery(state, { root: options.root, phase: "implementation" }); }
-  catch (error) { return blockedResult(["frontend-delivery-blocked"], [error.message]); }
   const repositories = validateImplementationRepositoriesReady(state, options);
   if (repositories.result === "blocked") return repositories;
   const readiness = validateSliceContractReadiness(state, options);

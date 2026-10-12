@@ -542,12 +542,6 @@ strategic_handoff_consumption:
   stale_policy: latest-imported-source-digest-and-dependent-slices
   unknown_dependency: block-all
   compiler_must_not_approve: true
-frontend_delivery_readiness:
-  when: upstream-handoff-or-explicit-frontend-delivery-binding
-  source: .template-spec/process/frontend-backend-delivery.md
-  verifier: scripts/verify-frontend-delivery
-  output_binding: frontend.delivery
-  inputs_verified_is_implementation_approval: false
 
 technical_design_consumption:
   when: backend-technical-design-impact

@@ -43,7 +43,7 @@ try {
   assert.equal(finalized.result,'packaged');
   cpSync(finalized.delivery,output,{recursive:true,errorOnExist:true,force:false});
   rmSync(source,{recursive:true,force:true});
-  for(const receiver of [target,path.join(scratch,'frontend'),path.join(scratch,'spec')]) {
+  for(const receiver of [target,path.join(scratch,'spec')]) {
     for(const bundle of [output,path.join(output,'package.zip')]) {
       const verified=JSON.parse(await run(path.join(receiver,'scripts/strategic-handoff'),['verify','--bundle',bundle]));
       assert.equal(verified.rules,1);assert.equal(verified.scenarios,1);assert.equal(verified.bundle_digest,finalized.bundle_digest);

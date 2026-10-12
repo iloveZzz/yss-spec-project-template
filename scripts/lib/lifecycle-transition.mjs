@@ -13,7 +13,6 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { parseDocument } from "../vendor/yaml.mjs";
 import { assertWorkUnitUserDecision, assertImplementationDecision } from "./user-decision.mjs";
-import { enforceFrontendDelivery } from "./frontend-delivery-boundary.mjs";
 import { validatePlanSpecEntry } from "./plan-spec-entry.mjs";
 import path from "node:path";
 import { validateApiContractDecision } from "./api-contract-decision.mjs";
@@ -60,8 +59,7 @@ const NEXT_ROUTES = deepFreeze({
   [REPOSITORY_PREPARATION_WORK_UNIT]: [SERVICE_INITIALIZATION_WORK_UNIT, TICKET_DECOMPOSITION_WORK_UNIT],
   [SERVICE_INITIALIZATION_WORK_UNIT]: [REPOSITORY_PREPARATION_WORK_UNIT],
   [TICKET_DECOMPOSITION_WORK_UNIT]: [IMPLEMENTATION_WORK_UNIT],
-  [IMPLEMENTATION_WORK_UNIT]: ["work-unit.frontend-implementation-verification", "work-unit.code-review"],
-  "work-unit.frontend-implementation-verification": ["work-unit.code-review"],
+  [IMPLEMENTATION_WORK_UNIT]: ["work-unit.code-review"],
   "work-unit.code-review": ["work-unit.release-and-retrospective", IMPLEMENTATION_WORK_UNIT, "work-unit.backend-delivery"],
   "work-unit.backend-delivery": ["work-unit.release-and-retrospective"],
   "work-unit.release-and-retrospective": [],
@@ -203,10 +201,6 @@ export function validateNextRoute(currentWorkUnit, nextRoute, decisionState, opt
   }
 
 
-  if (["work-unit.technical-analysis", TICKET_DECOMPOSITION_WORK_UNIT, IMPLEMENTATION_WORK_UNIT, "work-unit.frontend-implementation-verification"].includes(nextRoute)) {
-    try { enforceFrontendDelivery(decisionState, { root: options.root, checkpointRef: options.checkpointRef, phase: nextRoute === IMPLEMENTATION_WORK_UNIT ? "implementation" : "inputs", localPhase: nextRoute === 'work-unit.frontend-implementation-verification' ? 'verification' : 'contract' }); }
-    catch (error) { return blockedResult(["frontend-delivery-blocked"], [error.message]); }
-  }
   const routes = NEXT_ROUTES[currentWorkUnit] && scopedNextRoutes(currentWorkUnit, entryRoutes || NEXT_ROUTES[currentWorkUnit], {...options, checkpointRef: decisionState?.checkpoint_ref});
   if (!routes) return blockedResult([BLOCKING_SIGNALS.invalidRoute], ["known_current_work_unit"]);
   if (nextRoute === REPOSITORY_PREPARATION_WORK_UNIT && !["work-unit.technical-analysis", SERVICE_INITIALIZATION_WORK_UNIT].includes(currentWorkUnit)) {
@@ -266,8 +260,6 @@ export function validateTicketFormalization(state, { exists = existsSync, read =
       if (kind === "stage-work-item") return blockedResult(["stage-work-item-not-implementable"], ["vertical-slice-ticket required"]);
     } catch(error) { return blockedResult([error.message.includes("stage-work-item")?"stage-work-item-not-implementable":error.message.includes("business-ticket")?"business-ticket-not-implementable":"ticket-content-unreadable"], [error.message]); }
   }
-  try { enforceFrontendDelivery(state, { root: decisionOptions.root, checkpointRef: decisionOptions.checkpointRef, phase: "implementation", localPhase: 'contract' }); }
-  catch (error) { return blockedResult(["frontend-delivery-blocked"], [error.message]); }
   const repositoryResult = validateImplementationRepositoriesReady(state, { exists, read, ...decisionOptions });
   if (repositoryResult.result === "blocked") return repositoryResult;
   const decomposition = state?.ticket_decomposition_result;

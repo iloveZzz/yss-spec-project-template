@@ -18,8 +18,7 @@ export function readingLocation(root, checkpoint){
   const profile=parseSliceYaml(read(profileRef)),skill={
    'harness.spec-template':'yss-product-lifecycle',
    'harness.business-ddd-strategy-handoff':'yss-strategic-design',
-   'harness.backend-delivery':'harness-orchestrator',
-   'harness.frontend-delivery':'harness-orchestrator'
+   'harness.backend-delivery':'harness-orchestrator'
   }[profile.profile_id];
   if(!skill)throw Error('reading-profile-identity');
   const contractRef='.agents/skills/'+skill+'/references/orchestration-contract.yaml';

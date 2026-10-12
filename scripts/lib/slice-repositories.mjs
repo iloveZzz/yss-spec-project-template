@@ -36,7 +36,6 @@ export function sliceRepositories(contract,sources,{root=process.cwd()}={}) {
   const resolution={...contract.resolution};delete resolution.architecture_identity;
   if(identity){resolution.architecture_identity=identity;resolution.architecture_identity_digest=digest(identity).slice(7);resolution.architecture_evidence=sliceArchitectureEvidence({basis,resolution},selected);}
   if(basis.technical_design)resolution.technical_design=basis.technical_design;
-  if(basis.frontend_delivery)resolution.frontend_delivery={acceptance_ref:basis.frontend_delivery.ref,digest:basis.frontend_delivery.digest};
   result[projectRoot]={registration,project:project[0],basis,resolution,recipe_refs:keys.recipe_refs,capability_refs:keys.capability_refs};
  }
  check(Object.keys(result).length===contract.scope.project_roots.length&&contract.scope.project_roots.every(p=>result[p]),'多仓绑定必须完整覆盖工程根');

@@ -130,32 +130,6 @@ roles:
       - yss-web-controller
     description: 按已确认 DDD / MVC 架构承接批准需求、规则、关键场景、分层和事务，形成 Technical Design Contract
       与测试边界；不写生产实现，不自行批准。
-  - id: role.frontend-agent
-    name: 前端 Agent
-    kind: digital-human
-    title: Vue 前端垂直切片 Agent
-    stages:
-      - stage.slice-contract
-      - stage.slice-implementation
-      - stage.verification
-    draft_artifact_ids:
-      - artifact.frontend-implementation-plan
-    owned_evidence_ids:
-      - evidence.frontend-verification
-    core_skills:
-      - code-review
-      - yss-research
-    forbidden_skills:
-      - harness-orchestrator
-      - architecture-agent
-      - backend-agent
-      - test-agent
-      - yss-domain
-      - yss-application
-      - yss-repository
-      - yss-mybatis
-      - yss-web-controller
-    description: 仅保留上游批准身份与只读输入审查；不分发本端实现技能，不在本仓起草或实现。
   - id: role.backend-agent
     name: 后端 Agent
     kind: digital-human
@@ -210,7 +184,6 @@ roles:
       - artifact.test-seams
     owned_evidence_ids:
       - evidence.fresh-verification
-      - evidence.frontend-verification
       - evidence.backend-verification
     core_skills:
       - test-agent
@@ -310,7 +283,6 @@ stage_groups:
     members:
       - role.harness-orchestrator
       - role.architecture-agent
-      - role.frontend-agent
       - role.backend-agent
       - role.test-agent
   - id: group.implementation-repository-preparation
@@ -326,7 +298,6 @@ stage_groups:
     stage: stage.slice-implementation
     members:
       - role.harness-orchestrator
-      - role.frontend-agent
       - role.backend-agent
       - role.test-agent
   - id: group.verification
@@ -359,7 +330,6 @@ gate_policy:
     - gate.slice-contract-approved
     - gate.slice-ready-for-agent
   evidence_only:
-    - gate.frontend-delivery-inputs-verified
     - gate.repository-identity-valid
   biological_human:
     - gate.backend-architecture-platform-approved
@@ -528,7 +498,6 @@ review_capabilities:
     name: OpenAPI Draft 契约与客户端适配审查
     eligible_roles:
       - role.test-agent
-      - role.frontend-agent
     review_skills:
       - yss-openapi-draft-review
   - id: capability.engineering-baseline

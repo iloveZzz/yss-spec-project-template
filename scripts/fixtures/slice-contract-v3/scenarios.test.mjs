@@ -181,13 +181,13 @@ test('Slice professional review consumes bundle identity before granting executi
   }finally{f.cleanup();}
 });
 
-test('backend and frontend receiving distributions read the same authoritative v3 constraints',async()=>{
+test('backend receiving distribution reads the same authoritative v3 constraints',async()=>{
   const {pilotFixture}=await import('./pilot-fixture.mjs');
   const {stringify}=await import('../../vendor/yaml.mjs');
   const {execFileSync}=await import('node:child_process');
   const f=pilotFixture();try {
     f.write('receiver.yaml',stringify({slice_contract:f.contract}));
-    for(const profile of ['backend','frontend']) {
+    for(const profile of ['backend']) {
       const receiver=pathToFileURL(composeProfileTree(profile)+'/');
       const {readSliceContract}=await import(new URL('scripts/lib/slice-contract.mjs',receiver));
       const actual=readSliceContract('receiver.yaml',{root:f.root}).contract;
@@ -241,14 +241,12 @@ test('explicit v2 migration preserves effective scope, rejects conflicts and nev
   }finally{f.cleanup();}
 });
 
-test('frontend and cross-repository extensions preserve required inputs and order',()=>{
+test('前端子合同已移除（必需会被拒绝）；跨仓扩展保留必需输入与顺序',()=>{
   const f=fixture();try {
     const c=f.contract;
     c.applicability.frontend={status:'required'};
-    for(const key of ['requirement_freeze','low_fidelity_review','prototype_review','prototype_profile_decision','prototype_deliverable','prototype_deliverable_verification','prototype_confirmation','visual_baseline','state_matrix'])c.basis[key]='spec';
-    c.extensions={frontend:{visual_baseline_case_ids:['case.main'],component_test_seams:['validate'],e2e_paths:['submit']}};
-    const n=normalizeSliceContract(c,{root:f.root});assert.deepEqual(n.frontend.visual_baseline_case_ids,['case.main']);
-    delete c.basis.visual_baseline;assert.throws(()=>normalizeSliceContract(c,{root:f.root}),/visual_baseline/);c.basis.visual_baseline='spec';
+    assert.throws(()=>normalizeSliceContract(c,{root:f.root}),/前端实现已从生命周期移除/);
+    c.applicability.frontend={status:'not-applicable',reason:'前端实现已移除'};c.extensions={};
     c.applicability.cross_repo={status:'required'};c.scope.project_roots.push(path.join(f.root,'second'));c.work_units[0].project_root=f.root;
     c.extensions.cross_repo={delivery_order:['backend','frontend'],integration_verification:['joint-e2e'],rollback_order:['frontend','backend']};
     assert.deepEqual(normalizeSliceContract(c,{root:f.root}).cross_repo.rollback_order,['frontend','backend']);
@@ -296,15 +294,15 @@ test('stage work item cannot be disguised as the implementation contract ticket'
 });
 
 test('single-repository specialist Agent units preserve source and frozen scope',()=>{
- for(const role of ['role.backend-engineer','role.frontend-engineer','role.backend-agent','role.frontend-agent']) {
+ for(const role of ['role.backend-engineer','role.backend-agent']) {
   const f=fixture();try {
    f.contract.work_units[0].role_id=role;f.contract.work_units[0].project_root=f.root;f.contract.work_units[0].allowed_write_paths=['src/owned'];
    const original=structuredClone(f.contract),normalized=normalizeSliceContract(f.contract,{root:f.root}),selected=selectSliceWorkUnit(normalized,'validate');
    assert.deepEqual(selected.common.allowed_write_paths,['src/owned']);assert.deepEqual(selected.common.project_roots,[f.root]);
    assert.deepEqual(sourceSliceContract(selected),original);assert.deepEqual(f.contract,original);
-   const opposite=role.includes('backend')?'frontend':'backend';assert.deepEqual(selected[opposite],{status:'not-applicable'});
+   assert.deepEqual(selected.frontend,{status:'not-applicable'});
    normalized.work_units[0].role_id='role.requirements-manager';assert.throws(()=>selectSliceWorkUnit(normalized,'validate'),/原始合同冲突/);
-   f.contract.work_units[0].role_id='role.requirements-manager';assert.throws(()=>selectSliceWorkUnit(normalizeSliceContract(f.contract,{root:f.root}),'validate'),/明确后端或前端角色/);
+   f.contract.work_units[0].role_id='role.requirements-manager';assert.throws(()=>selectSliceWorkUnit(normalizeSliceContract(f.contract,{root:f.root}),'validate'),/明确后端角色/);
    f.contract.work_units[0].allowed_write_paths=['outside'];assert.throws(()=>normalizeSliceContract(f.contract,{root:f.root}),/写范围/);
   }finally{f.cleanup();}
  }

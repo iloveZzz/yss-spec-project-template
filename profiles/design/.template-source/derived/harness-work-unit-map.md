@@ -24,7 +24,6 @@
 | `work-unit.business-ticket-formalization` | project-instance | 业务级 Ticket 正式化 | 已批准的 Spec、页面原型、业务边界与规则设计和方案决策包。 | 可追溯 FR/AC、规则、场景与设计的业务 Ticket 集；保持 ready-for-human。 | Ticket 范围、优先级、验收、依赖和业务风险可审查，并可纳入业务方案交接包。 |
 | `work-unit.strategic-design-handoff` | project-instance | 业务方案交接 | 批准的业务边界与规则设计、方案决策包、Spec、页面原型和业务级 Ticket 集。 | 面向下游研发团队的业务方案交接包。 | Handoff v5 与来源资产已获当前批准；不可变交付目录自动成包并整包验证通过，交付记录已写入 checkpoint。研发接收可异步进行，不阻断本工作单元完成。 |
 | `work-unit.slice-implementation` | project-instance | 垂直切片实现 | 当前版本 Slice Implementation Contract 和允许写路径。 | 前后端实现、TDD 和 YSS Skill Execution Result。 | 行为通过 `behavior-tdd`；UI 影响完成还原验证计划；无 drift/violation。 |
-| `work-unit.frontend-implementation-verification` | project-instance | 前端实现还原验证 | 冻结原型、状态矩阵、实现候选和视觉验收用例。 | 桌面/窄屏视觉、状态、交互、console 和 pnpm 验证证据。 | 关键场景无未解释差异；独立 Reviewer 通过 UI fidelity 轴。 |
 | `work-unit.code-review` | project-instance | 独立代码审查与验证 | 不可变候选快照、Spec、Ticket、合同和执行结果。 | Standards、Spec、UI fidelity 三轴 Review 与 fresh verification。 | findings 已处理；首轮覆盖全部适用审查项，修复后按差异、受影响结论及直接 / 传递依赖定向复审；未受影响结论仅凭可核验依据复用，全部结论重新绑定当前候选。 |
 | `work-unit.release-and-retrospective` | project-instance | 发布与复盘 | 已审查候选、发布窗口和回滚点。 | 发布/回滚证据和复盘记录。 | 人工发布裁决、fresh verification 和治理回流均完成。 |
 <!-- lifecycle-registry:work-units:end -->

@@ -27,7 +27,7 @@ function fixture(run) {
  } finally {rmSync(dir,{recursive:true,force:true});}
 }
 test('registry retains seven approval gates, adds a conditional handoff gate and rejects cycles',()=>{
- const r=loadRegistry();assert.equal(r.stages.length,8);assert.equal(r.gates.length,8);assert.equal(r.checks.length,14);
+ const r=loadRegistry();assert.equal(r.stages.length,8);assert.equal(r.gates.length,8);assert.equal(r.checks.length,12);
  const handoffId='gate.strategic-design-handoff-approved';
  const retainedGateIds=['gate.plan-approved','gate.spec-baseline-approved','gate.product-design-approved','gate.backend-architecture-platform-approved','gate.engineering-contract-approved','gate.slice-contract-approved','gate.delivery-accepted'];
  assert.deepEqual(r.gates.filter(gate=>gate.id!==handoffId).map(gate=>gate.id).sort(),retainedGateIds.sort());
@@ -101,11 +101,11 @@ test('delivery acceptance does not require a release decision; runtime actions s
 });
 
 test('professional checks require current subject, matching scope and an independent reviewer',()=>fixture(f=>{
- const id='check.frontend-implementation-verified';
- f.registry.checks=[{id,evidence:['evidence.frontend-implementation-verification']}];f.registry.gates[0].requires_checks=[id];
+ const id='check.engineering-baseline-accepted';
+ f.registry.checks=[{id,evidence:['evidence.fresh-verification']}];f.registry.gates[0].requires_checks=[id];
  f.save('subject.md','current implementation');
  const record={schema_version:1,gate_id:id,decision:'approved',actor_kind:'digital-human',role_id:'role.test-engineer',runtime_id:'runtime.generic',principal_ref:'synthetic.qa',drafter_principal_ref:'synthetic.frontend',subject_ref:'subject.md',subject_digest:f.asset('subject.md').digest,approval_scope:['slice.demo'],basis:[f.asset('evidence.txt')]};
- const refresh=()=>{f.save('review.json',record);const basis=['evidence.txt','subject.md','review.json'].map(f.asset);f.state.checks={[id]:{status:'approved',applicable:true,basis,subject_ref:'subject.md',approval_ref:'review.json',approval_scope:['slice.demo'],drafter_principal_ref:'synthetic.frontend',evidence:{'evidence.frontend-implementation-verification':['evidence.txt']}}};f.state.gates[f.gateId].basis=structuredClone(basis);};
+ const refresh=()=>{f.save('review.json',record);const basis=['evidence.txt','subject.md','review.json'].map(f.asset);f.state.checks={[id]:{status:'approved',applicable:true,basis,subject_ref:'subject.md',approval_ref:'review.json',approval_scope:['slice.demo'],drafter_principal_ref:'synthetic.frontend',evidence:{'evidence.fresh-verification':['evidence.txt']}}};f.state.gates[f.gateId].basis=structuredClone(basis);};
  refresh();assert.equal(f.verify().result,'passed');
  record.drafter_principal_ref=record.principal_ref;refresh();assert.throws(f.verify,/独立审查/);
  record.drafter_principal_ref='synthetic.frontend';record.subject_digest='0'.repeat(64);refresh();assert.throws(f.verify,/审查资产摘要/);

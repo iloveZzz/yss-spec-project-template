@@ -33,7 +33,7 @@ function declaredProgressionPolicy(contract) {
 /** Select the native local policy; current approval and execution still require their validators. */
 export function hasLocalImplementationInputs(root) {
   const metadata = readInstanceMetadata(root);
-  if (metadata?.kind !== 'native' || !['spec','frontend'].includes(metadata.profile)) return false;
+  if (metadata?.kind !== 'native' || !['spec'].includes(metadata.profile)) return false;
   const identity = parse(read(root, 'yss-project.yaml'));
   if (identity.schema_version !== 1 || identity.repository_mode !== 'project-instance') return false;
   check(parse(read(root, '.template-spec/process/harness-profile.yaml')).profile_id === metadata.metadata.profileId, 'native Spec 与 Harness Profile 不一致');
@@ -41,8 +41,7 @@ export function hasLocalImplementationInputs(root) {
   if (policy?.local_implementation_inputs === undefined) return false;
   check(policy.schema_version === 1 && Array.isArray(policy.required_capabilities) && policy.required_capabilities.includes(PROGRESSION_CAPABILITY)
     && Array.isArray(policy.writer_profiles)
-    && ((metadata.profile === 'spec' && policy.writer_profiles.includes('spec') && policy.local_implementation_inputs === 'native-spec-current-feature-approved-assets')
-      || (metadata.profile === 'frontend' && policy.local_implementation_inputs === 'native-profile-current-feature-approved-assets')), 'CAPABILITY: 不支持的本地前端输入政策');
+    && (metadata.profile === 'spec' && policy.writer_profiles.includes('spec') && policy.local_implementation_inputs === 'native-spec-current-feature-approved-assets'), 'CAPABILITY: 不支持的本地实现输入政策');
   return true;
 }
 
@@ -120,7 +119,7 @@ export function readProgressionTarget({root, checkpointRef, assetRef, includeDef
   check(Array.isArray(config.consumers), 'consumers 消费者必须为数组');
   const seen = new Set();
   for (const consumer of config.consumers) {
-    check(keys(consumer, ['profile', 'root', 'checkpoint_ref']) && ['design', 'backend', 'frontend'].includes(consumer.profile) && path.isAbsolute(consumer.root ?? '') && typeof consumer.checkpoint_ref === 'string' && consumer.checkpoint_ref, 'consumer 消费者缺显式 Profile、root 或 checkpoint');
+    check(keys(consumer, ['profile', 'root', 'checkpoint_ref']) && ['design', 'backend'].includes(consumer.profile) && path.isAbsolute(consumer.root ?? '') && typeof consumer.checkpoint_ref === 'string' && consumer.checkpoint_ref, 'consumer 消费者缺显式 Profile、root 或 checkpoint');
     safeFile(consumer.root, consumer.checkpoint_ref);
     check(!seen.has(consumer.profile), 'consumer Profile 消费者重复'); seen.add(consumer.profile);
   }

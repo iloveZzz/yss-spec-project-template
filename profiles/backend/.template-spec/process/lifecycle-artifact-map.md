@@ -26,7 +26,6 @@
 
 | 稳定 ID | 门禁 | 所属阶段 | 触发条件 | 前置门禁 | 必须留下的证据 |
 |---|---|---|---|---|---|
-| `gate.frontend-delivery-inputs-verified` | 前端联合输入核验 | `stage.slice-contract` | 专职前端 profile 或显式 frontend_delivery 绑定的任务启动、恢复、合同编译、实现和验证；实际执行 scripts/verify-frontend-delivery，输入就绪不等于实现获批。 | 无 | `evidence.fresh-verification` |
 | `gate.repository-identity-valid` | 仓库身份有效 | `stage.harness-entry` | 每次进入 Harness。 | 无 | `evidence.repository-identity-check` |
 | `gate.technical-design-approved` | Technical Design 批准 | `stage.technical-design` | 存在后端用例、规则、分层、状态、一致性或持久化设计影响。 | 无 | `evidence.technical-design-review`、`evidence.approval-record` |
 | `gate.high-risk-architecture-confirmed` | 高风险架构确认 | `stage.technical-design` | 存在不可逆或跨边界高风险架构取舍。 | 无 | `evidence.architecture-decision`、`evidence.approval-record` |
@@ -62,7 +61,6 @@
 | `artifact.data-architecture-decision` | 数据架构影响决定 | `stage.technical-design` | 每个后端交付；required 绑定数据架构，not-applicable 绑定评估、原因和证据。 |
 | `artifact.implementation-repository-preparation-result` | 实现仓库准备结果 | `stage.implementation-repository-preparation` | Technical Design 与工程合同批准后、Slice Contract 编译前。 |
 | `artifact.slice-implementation-contract` | Slice Implementation Contract | `stage.slice-contract` | 任一 Agent 进入实现。 |
-| `artifact.frontend-implementation-plan` | 前端实现计划 | `stage.slice-contract` | 存在 UI 影响。 |
 | `artifact.test-strategy` | 测试策略 | `stage.slice-contract` | 每个行为切片。 |
 | `artifact.test-seams` | 测试 seam 与 fixture | `stage.slice-contract` | 进入实现前。 |
 | `artifact.fresh-verification` | Fresh Verification | `stage.verification` | 实现完成后。 |
@@ -87,7 +85,6 @@
 | `evidence.tactical-design-review` | DDD 战术设计评审证据 | 聚合、Entity、Value Object、行为、不变量、状态、一致性、Gateway、持久化和测试 seam 的评审结果。 |
 | `evidence.architecture-decision` | 架构决策证据 | API、数据、跨边界和高风险架构取舍的可追溯决策。 |
 | `evidence.contract-approval` | Slice Contract 批准记录 | 当前版本 Slice Implementation Contract 的生成、校验和批准引用。 |
-| `evidence.frontend-verification` | 前端验证证据 | 前端页面、状态、交互、组件和 pnpm 命令的实际验证结果。 |
 | `evidence.backend-verification` | 后端验证证据 | Domain、Application、API、数据和 ./mvnw 命令的实际验证结果。 |
 | `evidence.test-verification` | 测试验证证据 | 测试 seam、fixture、契约、集成、E2E 和覆盖率结果。 |
 | `evidence.fresh-verification` | Fresh Verification 记录 | 本轮重新执行的验证命令、退出码、执行时间和可读输出引用。 |

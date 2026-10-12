@@ -1,9 +1,7 @@
 import { assertImplementationTicket, assertSliceBusinessSources, businessTicketVersion } from './business-tickets.mjs';
-import {validateExistingUiBaseline} from './existing-ui-baseline.mjs';
 import {violation as implementationPathViolation} from './implementation-path-policy.mjs';
 import { sliceCheckApplicability } from './slice-applicability.mjs';
 import { validImplementationPath } from './implementation-path-policy.mjs';
-import {hasLocalImplementationInputs} from './lifecycle-progression.mjs';
 import fs, {validationMemo} from './validation-phase.mjs';
 import path from 'node:path';
 import { parseDocument } from '../vendor/yaml.mjs';
@@ -158,23 +156,15 @@ export function normalizeSliceContract(document, options = {}) {
   const repositories=sliceRepositories(raw,sources,options);
   for (const key of ['frontend','backend','api','cross_repo']) {
     const item=raw.applicability[key];
+    if (key === 'frontend') requireThat(item.status !== 'required' && !extension.frontend, '前端实现已从生命周期移除；Slice 合同不能声明 frontend 子合同（前端适用性必须为 not-applicable）');
     if (item.status === 'required') requireThat(extension[key],`命中 ${key} 影响但缺少子合同`);
     else {
       requireThat(nonempty(item.reason),`${key} 不适用缺少理由`);
       requireThat(!extension[key],`${key} 不适用时不得保存空子合同`);
     }
   }
-  for(const [impact,section]of [['frontend','frontend'],['ui','frontend'],['backend','backend'],['api','api'],['cross-repo','cross_repo']])if(scope.impacted_areas.includes(impact))requireThat(raw.applicability[section].status==='required',`影响面 ${impact} 与适用性冲突`);
+  for(const [impact,section]of [['backend','backend'],['api','api'],['cross-repo','cross_repo']])if(scope.impacted_areas.includes(impact))requireThat(raw.applicability[section].status==='required',`影响面 ${impact} 与适用性冲突`);
   if(scope.impacted_areas.some(x=>['data','persistence'].includes(x)))requireKeys(refs,['data_architecture'],'数据依据');
-  if (extension.frontend && raw.applicability.frontend.baseline_kind==='existing-ui-baseline') {
-    requireThat(raw.applicability.frontend.ui_change==='none'&&!scope.impacted_areas.includes('ui'),'既有 UI 基线不能承接 UI 变化');
-    requireKeys(refs,['existing_ui_baseline'],'既有 UI 依据');
-    if(!hasLocalImplementationInputs(options.root||process.cwd()))requireKeys(refs,['frontend_delivery'],'既有 UI 依据');
-    const observed=parseSliceYaml(sources.existing_ui_baseline.text);
-    const validation=validateExistingUiBaseline(observed,{bundleRoot:path.dirname(safe(options.root||process.cwd(),sources.existing_ui_baseline.ref))});
-    requireThat(validation.errors.length===0,`既有 UI 基线不可消费: ${validation.errors.join('; ')}`);
-    requireThat(extension.frontend.visual_baseline_case_ids.every(id=>observed.cases.some(c=>c.case_id===id)),'既有 UI 用例未被基线覆盖');
-  } else if (extension.frontend) requireKeys(refs,['requirement_freeze','low_fidelity_review','prototype_review','prototype_profile_decision','prototype_deliverable','prototype_deliverable_verification','prototype_confirmation','visual_baseline','state_matrix'],'前端依据');
   if (extension.backend) {
     requireKeys(refs,['technical_design','repository_registration','manifest','backend_repository','maven_wrapper'],'后端依据');
     requireThat(resolution.architecture_identity||repositories&&Object.values(repositories).some(r=>r.resolution.architecture_identity),'后端缺少架构身份');
@@ -227,10 +217,9 @@ export function normalizeSliceContract(document, options = {}) {
     resolution.architecture_evidence=sliceArchitectureEvidence(raw,sources);
   }
   if(refs.technical_design)resolution.technical_design=resolveSliceBasis(raw,'technical_design');
-  if(refs.frontend_delivery)resolution.frontend_delivery={acceptance_ref:refs.frontend_delivery,digest:sources.frontend_delivery.digest};
   const common={...scope,required_capabilities:resolution.required_capabilities,required_skills:resolution.required_skills,verification_commands:allChecks.map(c=>c.command),expected_evidence_files:unique(allChecks.flatMap(c=>c.expected_evidence)),quality_baseline_ref:refs.engineering_baseline,forbidden_patterns:scope.forbidden_patterns||[],full_reroute_triggers:scope.full_reroute_triggers||[]};
   const normalized={...structuredClone(raw),...(repositories?{repositories}:{}),common,resolution,lifecycle_refs:{...refs,openapi_freeze_or_no_impact:refs.openapi_freeze||refs.no_api_impact_record},readiness:{blockers:[],stale_inputs:[],not_applicable:Object.entries(raw.applicability).filter(([,a])=>a.status==='not-applicable').map(([item,a])=>({item,reason:a.reason}))},work_units,
-    frontend:extension.frontend?{status:'required',...extension.frontend,approved_prototype_ref:refs.prototype_confirmation,state_matrix_ref:refs.state_matrix,visual_baseline_ref:refs.visual_baseline,...(resolution.frontend_delivery?{delivery:resolution.frontend_delivery}:{})}:{status:'not-applicable'},
+    frontend:{status:'not-applicable'},
     backend:extension.backend?{status:'required',...extension.backend}:{status:'not-applicable'},
     contract:{api_impact:!!extension.api,...(extension.api?{freeze_ref:refs.openapi_freeze,...extension.api}:{no_api_impact_ref:refs.no_api_impact_record})},
     cross_repo:extension.cross_repo?{repositories:scope.project_roots,...extension.cross_repo}:{}
@@ -260,13 +249,13 @@ export function selectSliceWorkUnit(contract,workUnitId) {
  if(contract.repositories) {
    const repo=contract.repositories[unit.project_root];
    requireThat(repo,'工作单元未绑定当前登记工程');
-   selected={...contract,backend:repo.project.delivery_role==='backend'?contract.backend:{status:'not-applicable'},frontend:repo.project.delivery_role==='frontend'?{...contract.frontend,...(repo.resolution.frontend_delivery?{delivery:repo.resolution.frontend_delivery}:{})}:{status:'not-applicable'},resolution:{...repo.resolution,freshness:contract.resolution.freshness},common:{...contract.common,project_roots:[unit.project_root],allowed_write_paths:unit.allowed_write_paths},lifecycle_refs:{...contract.lifecycle_refs,...Object.fromEntries(Object.entries(repo.basis).map(([k,v])=>[k,v.ref]))}};
+   selected={...contract,backend:repo.project.delivery_role==='backend'?contract.backend:{status:'not-applicable'},frontend:{status:'not-applicable'},resolution:{...repo.resolution,freshness:contract.resolution.freshness},common:{...contract.common,project_roots:[unit.project_root],allowed_write_paths:unit.allowed_write_paths},lifecycle_refs:{...contract.lifecycle_refs,...Object.fromEntries(Object.entries(repo.basis).map(([k,v])=>[k,v.ref]))}};
  } else {
-   requireThat(['role.backend-engineer','role.frontend-engineer','role.backend-agent','role.frontend-agent'].includes(unit.role_id),'单仓职责选择需要明确后端或前端角色');
+   requireThat(['role.backend-engineer','role.backend-agent'].includes(unit.role_id),'单仓职责选择需要明确后端角色（前端实现已移除）');
    requireThat(contract.common.project_roots.includes(unit.project_root)
      &&allowed.length>0&&allowed.every(ref=>contract.common.allowed_write_paths.some(parent=>withinSlicePath(ref,parent))),'工作单元超出当前工程或已冻结写范围');
    selected={...contract,backend:['role.backend-engineer','role.backend-agent'].includes(unit.role_id)?contract.backend:{status:'not-applicable'},
-     frontend:['role.frontend-engineer','role.frontend-agent'].includes(unit.role_id)?contract.frontend:{status:'not-applicable'},
+     frontend:{status:'not-applicable'},
      work_units:[unit],common:{...contract.common,project_roots:[unit.project_root],allowed_write_paths:[...allowed]}};
  }
  originals.set(selected,{source,selection:Object.freeze({work_unit_id:unit.id,role_id:unit.role_id,

@@ -9,6 +9,9 @@ id_policy:
   published_ids_immutable: true
   baseline: .template-spec/process/lifecycle-registry-baseline.json
   deprecated_ids:
+    - evidence.frontend-verification
+    - gate.frontend-delivery-inputs-verified
+    - artifact.frontend-implementation-plan
     - stage.tactical-design
     - work-unit.tactical-design
     - gate.tactical-design-approved
@@ -84,9 +87,6 @@ evidence:
   - id: evidence.contract-approval
     name: Slice Contract 批准记录
     description: 当前版本 Slice Implementation Contract 的生成、校验和批准引用。
-  - id: evidence.frontend-verification
-    name: 前端验证证据
-    description: 前端页面、状态、交互、组件和 pnpm 命令的实际验证结果。
   - id: evidence.backend-verification
     name: 后端验证证据
     description: Domain、Application、API、数据和 ./mvnw 命令的实际验证结果。
@@ -138,13 +138,6 @@ checks:
       - check.domain-strategy-approved
 
 gates:
-  - id: gate.frontend-delivery-inputs-verified
-    name: 前端联合输入核验
-    stage: stage.slice-contract
-    trigger: 专职前端 profile 或显式 frontend_delivery 绑定的任务启动、恢复、合同编译、实现和验证；实际执行
-      scripts/verify-frontend-delivery，输入就绪不等于实现获批。
-    evidence:
-      - evidence.fresh-verification
   - id: gate.repository-identity-valid
     name: 仓库身份有效
     stage: stage.harness-entry
@@ -275,10 +268,6 @@ artifacts:
     name: Slice Implementation Contract
     stage: stage.slice-contract
     trigger: 任一 Agent 进入实现。
-  - id: artifact.frontend-implementation-plan
-    name: 前端实现计划
-    stage: stage.slice-contract
-    trigger: 存在 UI 影响。
   - id: artifact.test-strategy
     name: 测试策略
     stage: stage.slice-contract

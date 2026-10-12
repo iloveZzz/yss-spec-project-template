@@ -1,6 +1,6 @@
 # 统一 CLI 操作说明
 
-四个 Profile 使用同一固定 `yss` 二进制。`spec` 是综合研发主控，`design` 是产品与业务设计，`backend` 和 `frontend` 是专职交付。三个 Agent 模板源继续维护，退役范围仅限四个旧生成器。
+三个 Profile 使用同一固定 `yss` 二进制。`spec` 是综合研发主控，`design` 是产品与业务设计，`backend` 是专职交付。前端 Profile 已移除，旧前端实例升级/同步会被明确拒绝且不改动文件。三个 Agent 模板源继续维护，退役范围仅限四个旧生成器。
 
 ## 安装与来源核验
 
@@ -105,7 +105,7 @@ yss lifecycle target --root /absolute/path/spec --checkpoint .work/example/check
 yss lifecycle target --root /absolute/path/spec --checkpoint .work/example/checkpoint.json --input .work/example/tmp/target-input.json --plan --out /absolute/path/target-plan.json --json
 ```
 
-目标只能填写 `spec-approved`、`product-design-completed`、`backend-deliverable`、`frontend-accepted` 或 `business-accepted`。`intent_source` 保存原始用户指令来源，不填自报批准或完成状态。`plan-to-backend` 的永久职责只允许前三项；专职 Profile 的只读 `profile-terminal` 不能写入此 JSON。
+目标只能填写 `spec-approved`、`product-design-completed`、`backend-deliverable` 或 `business-accepted`。`intent_source` 保存原始用户指令来源，不填自报批准或完成状态。`plan-to-backend` 的永久职责只允许前三项；专职 Profile 的只读 `profile-terminal` 不能写入此 JSON。
 
 保存计划放在治理工程外的新路径，保留输入草稿直到 apply 完成。核对计划中的功能、输入摘要、目标和实际写入范围；设置目标不更改阶段、批准、冻结合同、交接包或 Receipt。
 
@@ -143,14 +143,13 @@ apply 重新编译并核验原输入，拒绝输入漂移和篡改计划；成�
 ```json
 "consumers": [
   {"profile": "design", "root": "/absolute/path/design", "checkpoint_ref": ".work/example/checkpoint.json"},
-  {"profile": "backend", "root": "/absolute/path/backend", "checkpoint_ref": ".work/example/checkpoint.json"},
-  {"profile": "frontend", "root": "/absolute/path/frontend", "checkpoint_ref": ".work/example/checkpoint.json"}
+  {"profile": "backend", "root": "/absolute/path/backend", "checkpoint_ref": ".work/example/checkpoint.json"}
 ]
 ```
 
 此处展示 JSON 对象的成员片段，需放回完整输入；每个 checkpoint 使用接收方实际登记，属于同一 `feature_id`，每种 Profile 最多一项。尚未创建的消费者可先登记明确意图，但在身份、checkpoint、Receipt 和 Context 对账核验前保持待核验。一个工程有多个功能时只汇总这里显式绑定的记录，不从相邻目录或完成标签猜消费者。
 
-设置消费者不导出、导入或批准资产。Spec → Design 通过原生 SpecBaseline 导出、导入和 Receipt 核验继续设计；独立 Backend／Frontend 接收同一冻结战略基线，前端再接收适用当前后端交付。操作见 `yss handoff export --help`、`yss handoff import --help`、`yss handoff verify --help` ；交接步骤按[本地用户手册索引](用户手册索引.md)进入本端说明。版本失配、过期 Receipt、Context 冲突或缺适用证据不能汇总为业务完成。
+设置消费者不导出、导入或批准资产。Spec → Design 通过原生 SpecBaseline 导出、导入和 Receipt 核验继续设计；独立 Backend 接收同一冻结战略基线。操作见 `yss handoff export --help`、`yss handoff import --help`、`yss handoff verify --help` ；交接步骤按[本地用户手册索引](用户手册索引.md)进入本端说明。版本失配、过期 Receipt、Context 冲突或缺适用证据不能汇总为业务完成。
 
 ### 6. 失败、恢复与回退
 
@@ -221,14 +220,13 @@ yss 1.3.5 — Spec / Design / Backend / Frontend 统一入口
 
 Profile 职责:
   spec 综合研发主控；支持目标政策的完整正式功能默认推进业务验收。
-  design 产品与业务设计；backend/frontend 承担技术设计与专职交付。
+  design 产品与业务设计；backend 承担技术设计与专职交付。
   本次目标、本端职责与整体业务分别核验；旧实例先核对能力并显式同步。
 
 快速上手（选择一个 Profile，在独立新目录运行）:
   yss init --profile spec --root ./demo-spec --project-name 演示项目
   yss init --profile design --root ./demo-design --project-name 演示项目
   yss init --profile backend --root ./demo-backend --project-name 演示项目
-  yss init --profile frontend --root ./demo-frontend --project-name 演示项目
   yss doctor --root ./demo-spec --human
   yss context verify --root ./demo-spec --json
 
@@ -285,7 +283,7 @@ Profile 职责:
 
 项目常用参数（程序升级不接受这些参数）:
   --root <目录>    项目根，默认当前目录
-  --profile <Profile>  spec|design|backend|frontend；init 必需，其余从身份检测
+  --profile <Profile>  spec|design|backend；init 必需，其余从身份检测
 
 升级、同步与恢复:
   yss upgrade --check                         查询 CLI 稳定版本
@@ -296,7 +294,7 @@ Profile 职责:
 
 帮助: yss -h | yss <命令/子命令> --help | yss help <命令/子命令>
 完整离线教程: yss help tutorial
-按主题阅读: yss help tutorial quickstart|daily|governed|spec|design|backend|frontend|maintenance
+按主题阅读: yss help tutorial quickstart|daily|governed|spec|design|backend|maintenance
 示例索引: yss help examples [命令/子命令]
 错误索引: yss help errors [错误码]
 入口区别: upgrade 升级程序；sync 同步模板；migrate 迁移旧实例；recover 恢复未完成事务；rollback 回退最近成功事务。
@@ -309,7 +307,7 @@ Profile 职责:
 
 ```text
 快速上手
-前置条件：在独立新目录选择一个 Profile；spec 综合研发主控，design 产品与业务设计，backend/frontend 承担技术设计与专职交付。新正式 Spec 功能默认推进到业务验收，可按里程碑续推。
+前置条件：在独立新目录选择一个 Profile；spec 综合研发主控，design 产品与业务设计，backend 承担技术设计与专职交付。新正式 Spec 功能默认推进到业务验收，可按里程碑续推。
 输入材料：项目名称与目标目录；已有工程改用 attach 的保存计划。
 
   yss version --json
@@ -342,9 +340,8 @@ Profile 职责:
   spec-approved：当前 Spec 批准、业务 Ticket 草案和需求/验收覆盖已核验。
   product-design-completed：适用产品设计审查、验证、批准和业务 Ticket 正式化闭合；产品设计不适用须有当前依据，不生成空原型。
   backend-deliverable：当前批准合同、适用 API、后端实现、独立审查、构建及契约/部署验证闭合。
-  frontend-accepted：当前前端实现、适用还原验证和独立验收闭合；前端不适用须另核批准影响评估及 Slice。
   business-accepted：Spec 主控完成同一业务范围的统一验收。验收完成不自动提交、合并或发布。
-专职工程只读显示 profile-terminal，它是本端职责终点，不是第六个可写目标。
+专职工程只读显示 profile-terminal，它是本端职责终点，不是可写目标。
 
 示例：用户要求“先完成 Spec”。先按实际 Tracker/map 登记替换 feature_id、checkpoint_ref 和目录；不要按目录名猜功能身份。创建项目内 .work/feature/tmp/target-input.json，JSON 内容为：
 {
@@ -375,9 +372,9 @@ plan 只保存计划；apply 重新核验当前输入并拒绝篡改或漂移，
 每次改目标后重验已有证据，从首个合法未完成工作单元续推；有效批准和稳定业务 Ticket ID 可复用。真实资产或批准依据变化仍使受影响证据失效。
 
 本地或独立专职：
-  consumers=[]：同一 Spec 主线消费本地批准资产，在已登记实现仓写代码；无需另建三个治理工程或自导自入。本地前端有后端/API/数据依赖时等待当前后端交付；纯 UI 以有依据的不适用记录核验。
-  外部专职：consumers 每项给 profile（design/backend/frontend）、绝对 root、同功能 checkpoint_ref，每种最多一个；不能指向主控自身。未来尚未创建的端只能登记意图，未核验当前接收前不会报完成。
-  Spec→Design 使用当前 SpecBaseline、Receipt 和目标 Context 对账；Spec/Design→Backend/Frontend 消费同一冻结战略基线；Backend→Frontend 消费当前接口及运行证据。前端可先准备设计与计划，正式实现仍核验当前依赖。
+  consumers=[]：同一 Spec 主线消费本地批准资产，在已登记实现仓写代码；无需另建三个治理工程或自导自入。
+  外部专职：consumers 每项给 profile（design/backend）、绝对 root、同功能 checkpoint_ref，每种最多一个；不能指向主控自身。未来尚未创建的端只能登记意图，未核验当前接收前不会报完成。
+  Spec→Design 使用当前 SpecBaseline、Receipt 和目标 Context 对账；Spec/Design→Backend 消费同一冻结战略基线。
   主控只汇总显式绑定的同功能交付；过期 Receipt、版本失配和 Context 冲突阻断受影响完成判定。Context 以既有词汇归一化合同核验。
 
 读结果：progression 给目标、来源、reached 和完成依据；completion.milestone/profile/business 区分本次、本端与整体；coordination 给显式消费者状态；next_action 给承接者、工程、工作单元或等待原因。pending 等待证据，blocked 先处理诊断，not-applicable 须有已核验依据。next_action 不授予执行授权。
@@ -526,9 +523,8 @@ Profile spec
   spec-approved：当前 Spec 批准、业务 Ticket 草案和需求/验收覆盖已核验。
   product-design-completed：适用产品设计审查、验证、批准和业务 Ticket 正式化闭合；产品设计不适用须有当前依据，不生成空原型。
   backend-deliverable：当前批准合同、适用 API、后端实现、独立审查、构建及契约/部署验证闭合。
-  frontend-accepted：当前前端实现、适用还原验证和独立验收闭合；前端不适用须另核批准影响评估及 Slice。
   business-accepted：Spec 主控完成同一业务范围的统一验收。验收完成不自动提交、合并或发布。
-专职工程只读显示 profile-terminal，它是本端职责终点，不是第六个可写目标。
+专职工程只读显示 profile-terminal，它是本端职责终点，不是可写目标。
 
 示例：用户要求“先完成 Spec”。先按实际 Tracker/map 登记替换 feature_id、checkpoint_ref 和目录；不要按目录名猜功能身份。创建项目内 .work/feature/tmp/target-input.json，JSON 内容为：
 {
@@ -559,9 +555,9 @@ plan 只保存计划；apply 重新核验当前输入并拒绝篡改或漂移，
 每次改目标后重验已有证据，从首个合法未完成工作单元续推；有效批准和稳定业务 Ticket ID 可复用。真实资产或批准依据变化仍使受影响证据失效。
 
 本地或独立专职：
-  consumers=[]：同一 Spec 主线消费本地批准资产，在已登记实现仓写代码；无需另建三个治理工程或自导自入。本地前端有后端/API/数据依赖时等待当前后端交付；纯 UI 以有依据的不适用记录核验。
-  外部专职：consumers 每项给 profile（design/backend/frontend）、绝对 root、同功能 checkpoint_ref，每种最多一个；不能指向主控自身。未来尚未创建的端只能登记意图，未核验当前接收前不会报完成。
-  Spec→Design 使用当前 SpecBaseline、Receipt 和目标 Context 对账；Spec/Design→Backend/Frontend 消费同一冻结战略基线；Backend→Frontend 消费当前接口及运行证据。前端可先准备设计与计划，正式实现仍核验当前依赖。
+  consumers=[]：同一 Spec 主线消费本地批准资产，在已登记实现仓写代码；无需另建三个治理工程或自导自入。
+  外部专职：consumers 每项给 profile（design/backend）、绝对 root、同功能 checkpoint_ref，每种最多一个；不能指向主控自身。未来尚未创建的端只能登记意图，未核验当前接收前不会报完成。
+  Spec→Design 使用当前 SpecBaseline、Receipt 和目标 Context 对账；Spec/Design→Backend 消费同一冻结战略基线。
   主控只汇总显式绑定的同功能交付；过期 Receipt、版本失配和 Context 冲突阻断受影响完成判定。Context 以既有词汇归一化合同核验。
 
 读结果：progression 给目标、来源、reached 和完成依据；completion.milestone/profile/business 区分本次、本端与整体；coordination 给显式消费者状态；next_action 给承接者、工程、工作单元或等待原因。pending 等待证据，blocked 先处理诊断，not-applicable 须有已核验依据。next_action 不授予执行授权。
@@ -798,7 +794,7 @@ Profile backend
   yss stage query --root ./demo-backend --id stage.technical-design --json
   yss handoff verify --root ./demo-backend --kind package --package docs/handoff --json --diagnostics
   yss lifecycle status --root ./demo-backend --checkpoint .work/feature/checkpoint.yaml --json
-  消费当前上游接收与工程约束；适用的技术/前端设计 Skill 及负责人完成设计、独立审查和批准。输入通过不授予实现资格。
+  消费当前上游接收与工程约束；适用的技术设计 Skill 及负责人完成设计、独立审查和批准。输入通过不授予实现资格。
 预期结果：查询/核验当前输入与适用条件。
 下一步条件：新建后端的架构与精确 Spring Boot 版本已由用户确认，既有工程已核验并复用登记架构与实际版本；后端 Technical Design Contract 已批准且当前；数据影响为真时数据架构已批准，否则有可核验的不适用记录；gate.engineering-contract-approved 已通过。
 失败恢复：查看当前报告的逐项诊断，从最近可信阶段补齐受影响材料；yss help errors。
@@ -845,115 +841,6 @@ Profile backend
 
 ```
 
-## 教程：frontend
-
-```text
-Profile frontend
-职责：核验战略与后端交接输入，在批准合同内完成前端交付。
-日常政策启用：false
-
-前置条件：独立新目录，或先 attach 接管已有工程；已有任务从最近可信接入点恢复。
-输入材料：项目名称、当前职责对应的合同/交接材料。
-
-  yss init --profile frontend --root ./demo-frontend --project-name 演示项目
-  yss doctor --root ./demo-frontend --json
-  yss context verify --root ./demo-frontend --json
-  yss lifecycle query --root ./demo-frontend --id work-unit.harness-entry --json
-  yss assets list --root ./demo-frontend --json
-  yss skills list --root ./demo-frontend --json
-
-预期结果：仅安装该 Profile 支持的资源，返回实际来源与输入状态。
-下一步：按以下固定 Profile 顺序继续；交接核验见 yss handoff verify --help。
-失败恢复：身份、依赖或交接材料不匹配时补当前输入；未支持能力明确返回 UNPORTED。
-
-正式生命周期（frontend）
-来源摘要：template=85ebd4fa0e9041b09aa8fc393cfd9ba9e12cac7c；registry=347a8002f15be52cb67a819392d6b26a75b74895a9bcfbb8436b036ff175a2b1；profile=c4c1a7f9fb065b0b7f2b77fe3b204f81c0d98ce418066f5265e43167fa40690a；policy=尚未登记
-前置条件：合法项目身份，从当前任务最近可信阶段继续；阶段触发与退出条件由该 Profile 固定模板及项目当前资产核验。
-输入材料：当前 checkpoint、已确认战略/Spec/合同和相应证据。路径示例使用新项目 .work；旧项目按 tracker.root 替换。以下需要当前资产的命令在材料齐备后执行。
-
-1. Plan（战略规划）（stage.plan）
-目标：确认目标、业务边界、关键规则、MVP / 非目标、优先级和交接责任，为 Spec 提供战略输入；按影响面探索并复用仍有效的结论。
-  yss stage query --root ./demo-frontend --id stage.plan --json
-  yss stage register --root ./demo-frontend --checkpoint .work/feature/checkpoint.json --items docs/work-items.json > ./demo-frontend/docs/stage-plan.json
-  yss stage apply --root ./demo-frontend --plan-file docs/stage-plan.json --json
-  工作项 JSON 与 checkpoint 由当前任务准备；重定向保存原始计划，不加 --json envelope。Plan 撰写和批准由对应 Skill/负责人完成。
-预期结果：查询/核验当前输入与适用条件。
-下一步条件：命中的战略与阶段决策检查通过，用户统一批准当前 Plan；影响业务边界、关键规则或 MVP 的问题已解决，其他未决项有责任人和解决时点；下游可进入 Spec，不代表可实现。
-失败恢复：查看当前报告的逐项诊断，从最近可信阶段补齐受影响材料；yss help errors。
-
-2. Spec / 功能架构（stage.spec-architecture）
-目标：固化解决方案和功能边界。
-  yss stage query --root ./demo-frontend --id stage.spec-architecture --json
-  yss stage update --root ./demo-frontend --checkpoint .work/feature/checkpoint.json --items docs/work-items.json > ./demo-frontend/docs/stage-plan-next.json
-  yss lifecycle verify --root ./demo-frontend --checkpoint .work/feature/checkpoint.json --json --diagnostics
-  更新计划经审阅后使用 stage apply；Spec 由批准的战略输入承接。
-预期结果：查询/核验当前输入与适用条件。
-下一步条件：Spec 基线和功能边界可审查。
-失败恢复：查看当前报告的逐项诊断，从最近可信阶段补齐受影响材料；yss help errors。
-
-3. Harness 入口（stage.harness-entry）
-目标：校验仓库身份、上游输入、影响面和实现仓库上下文。
-  yss stage query --root ./demo-frontend --id stage.harness-entry --json
-  yss doctor --root ./demo-frontend --json
-  yss context verify --root ./demo-frontend --json
-  yss lifecycle query --root ./demo-frontend --id work-unit.harness-entry --json
-预期结果：查询/核验当前输入与适用条件。
-下一步条件：上游输入版本当前，影响面、项目根、分支、写入范围和验证命令可解释。
-失败恢复：查看当前报告的逐项诊断，从最近可信阶段补齐受影响材料；yss help errors。
-
-4. 前端工程设计（stage.frontend-engineering-design）
-目标：联合输入通过后定义组件、状态管理、API 消费和前端测试边界。
-  yss stage query --root ./demo-frontend --id stage.frontend-engineering-design --json
-  yss handoff verify --root ./demo-frontend --kind package --package docs/handoff --json --diagnostics
-  yss lifecycle status --root ./demo-frontend --checkpoint .work/feature/checkpoint.yaml --json
-  消费当前上游接收与工程约束；适用的技术/前端设计 Skill 及负责人完成设计、独立审查和批准。输入通过不授予实现资格。
-预期结果：查询/核验当前输入与适用条件。
-下一步条件：前端实现计划可审阅；本地无领域影响已记录 not-applicable，新领域问题回交上游。
-失败恢复：查看当前报告的逐项诊断，从最近可信阶段补齐受影响材料；yss help errors。
-
-5. Slice Contract（stage.slice-contract）
-目标：将当前前端工程设计、条件化后端交付和冻结契约编译为前端垂直切片实现合同。
-  yss stage query --root ./demo-frontend --id stage.slice-contract --json
-  yss contract verify --root ./demo-frontend --kind slice --file docs/contract.json --checkpoint .work/feature/checkpoint.yaml --json --diagnostics
-  消费批准且当前的 Slice 合同、条件化交接与工程输入；编译器不创建批准。
-预期结果：查询/核验当前输入与适用条件。
-下一步条件：合同版本当前、四个角色分区完整、写路径和验证命令明确，且就绪公式满足。
-失败恢复：查看当前报告的逐项诊断，从最近可信阶段补齐受影响材料；yss help errors。
-
-6. 垂直切片实现（stage.slice-implementation）
-目标：由前端、后端和测试 Agent 按同一合同并行实现和验证。
-  yss stage query --root ./demo-frontend --id stage.slice-implementation --json
-  yss skills list --root ./demo-frontend --json
-  yss lifecycle status --root ./demo-frontend --checkpoint .work/feature/checkpoint.yaml --json
-  仅按批准合同的写范围实现；需要的 Skill 闭包来自当前合同。前端在实际实现仓 pnpm，后端优先根 ./mvnw；记录真实测试并由独立审查者审查。
-预期结果：查询/核验当前输入与适用条件。
-下一步条件：行为实现、测试证据、契约一致性和写入边界均满足合同。
-失败恢复：查看当前报告的逐项诊断，从最近可信阶段补齐受影响材料；yss help errors。
-
-7. 独立验证（stage.verification）
-目标：由测试 Agent 以独立执行态完成 Fresh Verification 和合并前复核。
-  yss stage query --root ./demo-frontend --id stage.verification --json
-  yss evidence verify --root ./demo-frontend --kind verification --file docs/verification.json --json --diagnostics
-  yss project-ci verify --root ./demo-frontend --base "<已确认40位SHA>" --runtime-store off --json
-  yss lifecycle verify --root ./demo-frontend --checkpoint .work/feature/checkpoint.yaml --json
-  核验消费已有证据；真实发布、推送与外部动作消费相应授权，复盘保留实际结论。
-预期结果：查询/核验当前输入与适用条件。
-下一步条件：所有命中门禁通过，阻塞信号清空，证据可读且 checkpoint 可追溯。
-失败恢复：查看当前报告的逐项诊断，从最近可信阶段补齐受影响材料；yss help errors。
-
-8. 产品设计（stage.product-design）
-目标：在存在产品设计影响时校准页面流和状态。
-  yss stage query --root ./demo-frontend --id stage.product-design --json
-  yss assets list --root ./demo-frontend --json
-  yss lifecycle status --root ./demo-frontend --checkpoint .work/feature/checkpoint.yaml --json
-  仅命中产品设计影响时使用原型与设计技能；未命中项按权威条件说明适用性。
-预期结果：查询/核验当前输入与适用条件。
-下一步条件：命中的设计门禁通过；未命中项记录 not-applicable 及原因。
-失败恢复：查看当前报告的逐项诊断，从最近可信阶段补齐受影响材料；yss help errors。
-
-
-```
-
 ## 教程：maintenance
 
 ```text
@@ -972,7 +859,7 @@ YSS 离线入门教程
    yss version --json
    yss capabilities --json
    yss init --profile spec --root ./demo-spec --project-name 演示项目
-   也可选择 design、backend、frontend；在各自的新目录初始化。
+   也可选择 design、backend；在各自的新目录初始化。
 
 2. 检查实例（只读）
    yss doctor --root ./demo-spec --json
@@ -1067,7 +954,6 @@ YSS 离线入门教程
 | `compat` | 显式旧命令兼容适配。 | `yss help examples compat` |
 | `compat create-yss-harness-backend` | 固定旧别名的显式原生适配。 | `yss help examples compat create-yss-harness-backend` |
 | `compat create-yss-harness-design` | 固定旧别名的显式原生适配。 | `yss help examples compat create-yss-harness-design` |
-| `compat create-yss-harness-frontend` | 固定旧别名的显式原生适配。 | `yss help examples compat create-yss-harness-frontend` |
 | `compat create-yss-spec` | 固定旧别名的显式原生适配。 | `yss help examples compat create-yss-spec` |
 | `compat-api` | 供现役 JavaScript 消费者使用的原生传输接口。 | `yss help examples compat-api` |
 | `compat-api native.run` | 版本化兼容传输方法。 | `yss help examples compat-api native.run` |

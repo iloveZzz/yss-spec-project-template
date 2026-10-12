@@ -71,8 +71,6 @@
 | `artifact.parent-ticket` | 功能父 Ticket | `stage.plan` | 每个功能首次进入 Plan 或最近可信接入阶段时建立，正式化时复用；Design profile 不创建工程父 Ticket。 |
 | `artifact.vertical-slice-ticket` | 垂直切片 Ticket | `stage.ticket-formalization` | 进入实现前。 |
 | `artifact.slice-implementation-contract` | Slice Implementation Contract | `stage.ticket-formalization` | Agent 进入实现。 |
-| `artifact.frontend-implementation-plan` | 前端实现还原计划 | `stage.ticket-formalization` | UI 影响切片提升 ready-for-agent 前。 |
-| `artifact.frontend-implementation-verification` | 前端实现还原验证记录 | `stage.verification-release-retrospective` | UI 影响切片完成实现并准备合并、发布或阶段完成。 |
 | `artifact.business-ticket-set` | 业务级 Ticket 集 | `stage.ticket-formalization` | 产品角色需要将已批准的 Spec 和原型拆成业务能力、用户行为和验收级 Ticket。 |
 | `artifact.retrospective` | 复盘记录 | `stage.verification-release-retrospective` | 发布后或阶段性完成后满足复盘触发条件。 |
 
@@ -97,7 +95,6 @@
 | `evidence.openapi-draft-review` | OpenAPI Draft 审查记录 | P0、错误、分页、幂等和契约测试审查记录。 |
 | `evidence.contract-approval` | Slice 合同批准记录 | 生命周期编排器批准且已持久化的当前版本合同引用。 |
 | `evidence.yss-skill-execution-result` | YSS Skill Execution Result | 专项 skill 的合同版本、写入、验证、延期 seam 与偏离证据。 |
-| `evidence.frontend-implementation-verification` | 前端实现还原验证证据 | UI 实现相对冻结原型和 Spec 的桌面/窄屏视觉、状态、交互、控制台与 pnpm 验证记录。 |
 | `evidence.fresh-verification` | Fresh Verification 记录 | 本轮实际执行的验证命令、结果和时间。 |
 | `evidence.checkpoint-and-rollback` | Checkpoint 与回滚点 | 可追溯的变更边界、发布记录和恢复动作。 |
 <!-- lifecycle-registry:structure:end -->

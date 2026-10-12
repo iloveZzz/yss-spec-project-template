@@ -38,8 +38,7 @@ const NEXT_ROUTES = deepFreeze({
   "work-unit.prototype-design": ["work-unit.technical-analysis", TICKET_DECOMPOSITION_WORK_UNIT],
   "work-unit.technical-analysis": [TICKET_DECOMPOSITION_WORK_UNIT],
   [TICKET_DECOMPOSITION_WORK_UNIT]: [IMPLEMENTATION_WORK_UNIT],
-  [IMPLEMENTATION_WORK_UNIT]: ["work-unit.frontend-implementation-verification", "work-unit.code-review"],
-  "work-unit.frontend-implementation-verification": ["work-unit.code-review"],
+  [IMPLEMENTATION_WORK_UNIT]: ["work-unit.code-review"],
   "work-unit.code-review": ["work-unit.release-and-retrospective", IMPLEMENTATION_WORK_UNIT],
   "work-unit.release-and-retrospective": [],
 });

@@ -75,9 +75,6 @@ exclude_paths:
   - .template-spec/architecture/templates/system-overview-design-template.md
   - .template-spec/architecture/templates/tech-design-template.md
   - .template-spec/process/implementation-repo-integration.md
-  - .template-spec/process/schemas/frontend-implementation-evidence.schema.json
-  - .template-spec/process/templates/frontend-implementation-plan-template.yaml
-  - .template-spec/process/templates/frontend-implementation-verification-template.yaml
   - .template-spec/templates/build-architecture-checklist-template.md
   - .template-spec/templates/cross-repo-slice-template.md
   - .template-spec/templates/implementation-repo-registry-template.md
@@ -88,7 +85,6 @@ exclude_paths:
   - .template-spec/templates/vertical-slice-ticket-template.md
   - scripts/gitworks
   - scripts/lib/git-submodule-fixtures.mjs
-  - scripts/verify-frontend-implementation-evidence
   - scripts/verify-governance-release
   - scripts/verify-implementation-path-scenarios
   - scripts/verify-openapi-json-handoff-scenarios

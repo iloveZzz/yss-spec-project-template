@@ -94,7 +94,6 @@ profile_registry:
       work-unit.technical-analysis,
       work-unit.ticket-decomposition,
       work-unit.slice-implementation,
-      work-unit.frontend-implementation-verification,
       work-unit.code-review,
       work-unit.release-and-retrospective
     ]
@@ -517,12 +516,6 @@ work_unit_routes:
     applies_when: downstream_profile_approved
     not_applicable_reason: downstream_only
   work-unit.slice-implementation:
-    downstream: true
-    owner: downstream-rd-team
-    handoff: strategic-design-handoff
-    applies_when: downstream_profile_approved
-    not_applicable_reason: downstream_only
-  work-unit.frontend-implementation-verification:
     downstream: true
     owner: downstream-rd-team
     handoff: strategic-design-handoff
@@ -1028,10 +1021,6 @@ consumer_entry_routes:
     backend-technical-design:
       source_work_unit: work-unit.technical-design
       target_work_unit: work-unit.technical-design
-  harness.frontend-delivery:
-    frontend-engineering-design:
-      source_work_unit: work-unit.frontend-engineering-design
-      target_work_unit: work-unit.frontend-engineering-design
 
 stage_tracking:
   contract: .template-spec/process/stage-tracking.md
@@ -1198,16 +1187,11 @@ profile_guidance:
       targets:
         - design
         - backend
-        - frontend
       default: continue-current-spec
     design:
       targets:
         - backend
-        - frontend
     backend:
-      targets:
-        - frontend
-    frontend:
       targets: []
   evidence: explicit-profile-links-and-current-approved-inputs
   emit_on:
@@ -1229,7 +1213,6 @@ request_triage:
     enabled_profiles:
       - spec
       - backend
-      - frontend
     eligible_requirements:
       - goal
       - acceptance
@@ -1256,7 +1239,7 @@ request_triage:
     read_only_capabilities:
       - lifecycle.route
       - lifecycle.verify-daily
-    public_summary: Spec、Backend、Frontend
+    public_summary: Spec、Backend
       日常任务在目标、验收、写范围、一处已知实现仓、可回滚依据、可读工程基线、验证命令与适用 YSS 技能齐全且无排除风险时，
       走需求与验收、技术技能、实现、测试、独立审查，仅更新同一 Ticket 或 PR，不生成阶段 checkpoint、正式 Slice
       或多级批准。专职 Profile 的本地业务分析不扩大另一端实现写范围。 缺事实先调查；无法证明条件时恢复完整治理。旧 CLI 或未声明能力的
@@ -1321,7 +1304,6 @@ request_triage:
     standalone_authority: local-plan-spec-and-current-approved-design
     upstream_conflicts: confirm-with-authority-before-dependent-work
     own_side_completion: not-cross-side-business-acceptance
-    frontend_backend_dependency: current-alignment-or-reasoned-not-applicable
     standalone_scaffold: mechanical-only-no-business-authorization
   interpretation:
     inputs:

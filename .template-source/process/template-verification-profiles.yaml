@@ -208,6 +208,76 @@ profiles:
           - ".template-spec/process/schemas/scaffold-architecture-decisions.schema.json"
         depends_on: []
         failure_mode: "脚手架架构选择记录的薄壳不再把正式记录交给 yss 校验，或放行缺用户确认、模块闭包缺失、继承值与父项目不一致的记录"
+      - id: check.frontend-removed
+        run: "node --test tests/frontend-removed.test.mjs"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
+          - "tests/frontend-removed.test.mjs"
+          - "profiles/frontend/**"
+          - "scripts/verify-frontend-delivery"
+          - "scripts/verify-frontend-strategic-preflight"
+          - "scripts/verify-frontend-implementation-evidence"
+          - "scripts/verify-frontend-delivery-scenarios"
+          - "scripts/verify-frontend-implementation-evidence-scenarios"
+          - "tests/scenarios/verify-frontend-delivery-scenarios.mjs"
+          - "tests/scenarios/verify-frontend-implementation-evidence-scenarios.mjs"
+          - "scripts/fixtures/frontend-delivery/**"
+          - "scripts/lib/frontend-delivery.mjs"
+          - "scripts/lib/frontend-delivery-boundary.mjs"
+          - "scripts/lib/profile-tree.mjs"
+          - ".template-source/scripts/run-lifecycle-cross-repo-pilot"
+          - ".template-source/scripts/verify-delivery-harness-distribution.mjs"
+          - ".template-source/scripts/verify-strategic-handoff-distribution.mjs"
+          - ".template-spec/process/lifecycle-registry.yaml"
+          - ".template-spec/process/schemas/progression-target.schema.json"
+          - ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml"
+        depends_on: []
+        failure_mode: "已移除的前端 Profile、前端移交验证入口、前端生命周期稳定 ID 或 frontend-accepted 推进目标重新出现"
+      - id: check.backend-delivery-terminal
+        run: "node --test --test-concurrency=1 tests/backend-delivery-terminal.test.mjs"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
+          - "tests/backend-delivery-terminal.test.mjs"
+          - "scripts/fixtures/backend-delivery/local-terminal-fixture.mjs"
+          - "scripts/lib/slice-contract.mjs"
+          - "scripts/lib/backend-delivery-terminal.mjs"
+        depends_on: []
+        failure_mode: "本地后端终点复用批准 Slice 的证据被错放行或误拒，或 Slice 合同仍接受前端子合同"
+      - id: check.existing-ui-baseline-scenarios
+        run: "node tests/scenarios/verify-existing-ui-baseline-scenarios.mjs"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
+          - "tests/scenarios/verify-existing-ui-baseline-scenarios.mjs"
+          - "scripts/verify-existing-ui-baseline-scenarios"
+          - "scripts/lib/strategic-handoff.mjs"
+          - "scripts/lib/strategic-handoff-consumption.mjs"
+        depends_on: []
+        failure_mode: "既有 UI 基线的交接导出、验包与导入被错放行或误拒，或导入重新生成前端草案"
+      - id: check.frontend-removal-consumers
+        run: "node --test .template-source/tooling/node/test/lifecycle-controls.test.mjs scripts/fixtures/business-tickets/handoff.test.mjs tests/slice-task-package-frontend-boundary.test.mjs tests/cli-core-retirement.test.mjs"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
+          - ".template-source/tooling/node/test/lifecycle-controls.test.mjs"
+          - "scripts/fixtures/business-tickets/handoff.test.mjs"
+          - "tests/slice-task-package-frontend-boundary.test.mjs"
+          - "tests/cli-core-retirement.test.mjs"
+          - ".agents/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml"
+          - "profiles/backend/.agents/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml"
+        depends_on: []
+        failure_mode: "生命周期控制数量、业务票交接或 Slice 任务包仍按前端实现线判断，或 Compiler 合同重新声明前端交付绑定"
+      - id: check.strategic-handoff-package-scenarios
+        run: "node tests/scenarios/verify-strategic-handoff-package-scenarios.mjs"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
+          - "tests/scenarios/verify-strategic-handoff-package-scenarios.mjs"
+          - "scripts/verify-strategic-handoff-package-scenarios"
+        depends_on: []
+        failure_mode: "战略交接包的导出、验包、导入仍生成或消费前端草案，或后端消费者草案缺失"
       - id: check.contract-review-preparation
         run: "node --test tests/contract-review-preparation.test.mjs"
         group: feature-assets
@@ -1456,6 +1526,19 @@ routing:
       - tests/import-direction.test.mjs
       - tests/go-validator-replay.test.mjs
       - tests/go-validator-replay-delivery.test.mjs
+      - tests/frontend-removed.test.mjs
+      - tests/backend-delivery-terminal.test.mjs
+      - scripts/fixtures/backend-delivery/local-terminal-fixture.mjs
+      - tests/scenarios/verify-existing-ui-baseline-scenarios.mjs
+      - scripts/verify-existing-ui-baseline-scenarios
+      - scripts/verify-frontend-delivery
+      - scripts/verify-frontend-strategic-preflight
+      - scripts/verify-frontend-implementation-evidence
+      - tests/scenarios/verify-frontend-delivery-scenarios.mjs
+      - tests/scenarios/verify-frontend-implementation-evidence-scenarios.mjs
+      - scripts/fixtures/frontend-delivery/**
+      - scripts/lib/frontend-delivery.mjs
+      - scripts/lib/frontend-delivery-boundary.mjs
       - scripts/complete-backend-delivery
       - scripts/backend-delivery
       - scripts/slice-contract

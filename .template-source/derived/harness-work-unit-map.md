@@ -26,7 +26,6 @@
 | `work-unit.service-project-initialization` | project-instance | 独立服务项目初始化 | 逐项目批准的架构决策、Technical Design、Data Architecture Decision、工程合同批准、schema v4 初始化合同、战略上下文交接及目标/skillUtils 写范围。 | 独立 Git project-instance、锁定 skillUtils、唯一根 CONTEXT、架构身份、Manifest 和验证证据；父项目仅保留引用。 | 当前合同与交接摘要一致，真实 Wrapper 三命令通过后仅 empty-scaffold-verified；首切片仍须独立批准和验证。 |
 | `work-unit.ticket-decomposition` | project-instance | 实现切片拆分与合同准入 | 已正式化业务 Ticket、冻结 Spec、设计、契约、当前实现仓库准备和阻塞关系。 | 更新既有功能父 Ticket 的关联、形成垂直切片和批准的 Slice Implementation Contract。 | 切片可独立验证；生命周期复算后才能 ready-for-agent。 |
 | `work-unit.slice-implementation` | project-instance | 垂直切片实现 | 当前版本 Slice Implementation Contract 和允许写路径。 | 前后端实现、TDD 和 YSS Skill Execution Result。 | 行为通过 `behavior-tdd`；UI 影响完成还原验证计划；无 drift/violation。 |
-| `work-unit.frontend-implementation-verification` | project-instance | 前端实现还原验证 | 冻结原型、状态矩阵、实现候选和视觉验收用例。 | 桌面/窄屏视觉、状态、交互、console 和 pnpm 验证证据。 | 关键场景无未解释差异；独立 Reviewer 通过 UI fidelity 轴。 |
 | `work-unit.code-review` | project-instance | 独立代码审查与验证 | 不可变候选快照、Spec、Ticket、合同和执行结果。 | Standards、Spec、UI fidelity 三轴 Review 与 fresh verification。 | findings 已处理；首轮覆盖全部适用审查项，修复后按差异、受影响结论及直接 / 传递依赖定向复审；未受影响结论仅凭可核验依据复用，全部结论重新绑定当前候选。 |
 | `work-unit.backend-delivery` | project-instance | 后端职责交付终点 | plan-to-backend 职责范围、当前 Slice 批准与独立代码审查、Backend Delivery 源文件及正式导出包。 | 绑定当前源、独立审查和正式包的后端终点记录及下游前端待办。 | 完整复验源文件与正式包；仅后端可交付，不能宣布全业务完成或自动发布。 |
 | `work-unit.release-and-retrospective` | project-instance | 发布与复盘 | 已审查候选、发布窗口和回滚点。 | 发布/回滚证据和复盘记录。 | 人工发布裁决、fresh verification 和治理回流均完成。 |

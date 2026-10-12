@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { parseArgs } from 'node:util';
 import path from 'node:path';
-import { exportBackendDelivery, openBackendDelivery, importBackendDelivery } from './lib/backend-delivery.mjs';
+import { exportBackendDelivery } from './lib/backend-delivery.mjs';
 import { read, safe, ensure } from './lib/strategic-handoff-io.mjs';
 import { nativeEvidenceVerify, assertNativeCapabilities, NEEDS } from './lib/native-evidence.mjs';
 
@@ -20,8 +20,8 @@ async function preflightExport(values) {
   if(result.exit_code!==0){const error=new TypeError('delivery-preflight-blocked: 请按每项 recovery 补证，再从正常导出入口重试');error.preflight=result;throw error;}
 }
 try {
-  const {values,positionals}=parseArgs({allowPositionals:true,options:{'source-root':{type:'string'},delivery:{type:'string'},output:{type:'string'},zip:{type:'boolean'},bundle:{type:'string'},'target-root':{type:'string'},'preflight-input':{type:'string'}}});
-  if(positionals.length!==1)throw new TypeError('必须指定 export / verify / import');
+  const {values,positionals}=parseArgs({allowPositionals:true,options:{'source-root':{type:'string'},delivery:{type:'string'},output:{type:'string'},zip:{type:'boolean'},bundle:{type:'string'},'preflight-input':{type:'string'}}});
+  if(positionals.length!==1)throw new TypeError('必须指定 export / verify（后端交付包的导入随前端移除，已删除）');
   let result;
   if(positionals[0]==='export'&&values['source-root']&&values.delivery&&values.output){await preflightExport(values);result=await exportBackendDelivery({sourceRoot:values['source-root'],deliveryRef:values.delivery,output:values.output,zip:values.zip});}
   else if(positionals[0]==='verify'&&values.bundle){
@@ -31,7 +31,6 @@ try {
     if(verdict.exitCode!==0){process.stderr.write(`${JSON.stringify({result:'blocked',error:verdict.message})}\n`);process.exitCode=verdict.exitCode;process.exit();}
     result=verdict.envelope.result.coverage;
   }
-  else if(positionals[0]==='import'&&values.bundle&&values['target-root'])result=await importBackendDelivery({bundle:path.resolve(values.bundle),targetRoot:values['target-root']});
-  else throw new TypeError('用法: backend-delivery export --source-root <repo> --delivery <ref> --output <new-dir> [--preflight-input <file>] [--zip] | verify --bundle <dir|zip> | import --bundle <dir|zip> --target-root <repo>');
+  else throw new TypeError('用法: backend-delivery export --source-root <repo> --delivery <ref> --output <new-dir> [--preflight-input <file>] [--zip] | verify --bundle <dir|zip>');
   process.stdout.write(`${JSON.stringify(result,null,2)}\n`);
 } catch(error) { process.stderr.write(`${JSON.stringify({result:'blocked',error:error.message,...(error.preflight?{preflight:error.preflight}:{})})}\n`);process.exitCode=1; }

@@ -98,13 +98,13 @@ test('cross-root preparation and validation use the target lifecycle and skill r
 });
 
 test('真实专职政策允许独立Slice工程审查并绑定当前编译候选',t=>{
-  for(const profile of ['backend','frontend']) {
+  for(const profile of ['backend']) {
     const f=fixture(t),source=composeProfileTree(profile);
     for(const ref of [policyRef,'.template-spec/process/lifecycle-registry.yaml','.template-spec/agents/yss-skill-registry.yaml']) f.write(ref,fs.readFileSync(path.join(source,ref)));
     const localRegistry=loadRegistry(path.join(source,'.template-spec/process/lifecycle-registry.yaml'));
     const localRoles=loadDigitalHumanRoles(path.join(source,policyRef));
     const compiled=compileReviewCapabilities({checkIds:['check.design-reviewed'],roleId:'role.architecture-agent',rolesDoc:localRoles,registry:localRegistry});
-    assert.deepEqual(compiled.capability_ids,[profile==='backend'?'capability.technical-design':'capability.frontend-engineering']);
+    assert.deepEqual(compiled.capability_ids,['capability.technical-design']);
     const subject='compiled-slice.yaml';
     f.write(subject,'schema_version: 3\ncontract_id: synthetic.current-compiled-slice\n');
     f.write(f.checkpointRef,JSON.stringify({checks:{'check.design-reviewed':{...f.checkpoint.checks[checkIds[0]],subject_ref:subject,subject_digest:reviewDigest(fs.readFileSync(path.join(f.root,subject))) }},gates:{}}));

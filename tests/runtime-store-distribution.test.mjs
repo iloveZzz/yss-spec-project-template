@@ -55,7 +55,7 @@ test('runtime module copies bind the canonical source in every composed Profile'
   for (const ref of ['scripts/lib/runtime-store.mjs']) {
     assert.ok(read(ref).equals(canonical), ref);
   }
-  for (const side of ['design', 'backend', 'frontend']) {
+  for (const side of ['design', 'backend']) {
     const tree = composeProfileTree(side);
     for (const ref of sharedRefs) assert.ok(fs.readFileSync(path.join(tree, ref)).equals(read(ref)), `${side}/${ref}`);
   }
