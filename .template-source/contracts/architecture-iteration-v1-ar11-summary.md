@@ -49,3 +49,40 @@
 - 做法：脚本改为退役桩——失败退出（退出码 1）、不输出任何通过信息，并指向三个替代入口；对应场景 `verify-strategic-context-import-scenarios` 改为断言这一行为，并登记为快速检查 `check.strategic-context-import-retired`。文件暂不删除，因为冻结的旧覆盖清单（117 条命令逐字节不变）仍按旧名引用该脚本与场景，随 AR-16 旧清单退役时一并删除，同时在发布的删除规则里让已有实例可拒绝地清理这个脚本。
 - 技能：`yss-tactical-design`（根与 backend 覆盖层）里「必须先用 `scripts/verify-strategic-context-import`」改为 `scripts/verify-strategic-handoff-consumption`，并说明可用 `verify-context-reconciliation` 单独核验。
 - 未改变：`verify-strategic-context-import` 里与 Handoff 旧版本相关的提示（v1/v2 只读历史、需升级 v5）随脚本一起退役；这类提示仍由 yss 的 handoff 包与消费校验在版本不支持时给出。
+
+## 7. 收口与顺延（维护者确认，2026-10-12）
+
+AR-11 按「handoff/context 校验入口薄壳 + `verify-strategic-context-import` 退役」收口。AR-09 移交的「删除 approval/user-decision 的 Node 实现与删除规则」顺延为 **AR-12b**（依赖 AR-12），原因与量化如下。
+
+**为什么不能在 AR-11 内删净。** 删除的前提是所有进程内调用方都能委托给 yss，而下面三类仍不能：
+
+1. `strategic-handoff.mjs` 的源检查（`inspectSource`、`openBundle`、`openDelivery`、`sourceApproval`）：传入「交接包源」的虚拟读取器、源包自带的 rolesDoc 与合成的 registry。Go 里已有对应实现（`contractInspectHandoff`、`contractSourceApproval`，包校验与消费校验已在用），但没有以公开命令暴露；Node 的 `exportBundle`、`finalizeDelivery`、`importBundle` 还要靠它们返回的解析结果工作。
+2. `business-tickets` 校验（`checkBusinessTickets`、`assertBusinessApprovalBasis`）：不在 FR-010 列出的四步里，仍在 Node，且自己校验批准。
+3. 依赖合成根的测试与夹具：根上没有 Profile 身份文件或治理权威文件，委托判断返回否。
+
+**实测的进程内回退分布**（本机构建的 yss，埋点只在测试进程里记录「本该委托却没委托」的原因与调用点，埋点用完已还原，没有提交；只跑到 `tests/*.test.mjs`、部分 `.template-source/tooling/node/test` 与夹具测试，未跑完，共 2495 次）：
+
+| 原因 | 次数 |
+|---|---|
+| `no-profile-identity`（合成根没有 Profile 身份文件） | 1014 |
+| `custom-read`（调用方自带读取器） | 846 |
+| `custom-roles/registry`（自带 rolesDoc/registry） | 283 |
+| `synthetic-root`（缺治理权威文件） | 265 |
+| `native=false`（显式要求进程内） | 61 |
+| `ref-outside-root` | 25 |
+
+| 调用点（回退次数） | 所属域 |
+|---|---|
+| `strategic-handoff.mjs` 676 | handoff（顺延 AR-12b） |
+| `approved-execution-context.mjs` 657 | backend/frontend（AR-12） |
+| `user-decision.mjs` 355（内部，上游调用方见各行） | — |
+| `existing-backend-architecture.mjs` 353 | backend（AR-12） |
+| `lifecycle-readiness.mjs` 188 | backend（AR-12） |
+| `approval-record.mjs` 54、`plan-spec-entry.mjs` 22、`validate-technical-design.mjs` 18、`backend-scaffold-prerequisites.mjs` 18 | 其余 |
+
+backend/frontend 域的调用点（前四行中的两行半以上加上 `backend-scaffold-prerequisites`、`validate-technical-design`）占约一半，AR-12 迁走后剩余调用方最少，所以删除放在 AR-12 之后一次做完。**AR-12b 的删除范围**包括 AR-09 总结 §4 的清单，以及 AR-09～AR-12 各步骤里作为回放对照暂留的 Node 实现（task、checkpoint、handoff 包与消费、spec-baseline 包、Context 对账、OpenAPI 校验等）：此时回放从「Node 对 yss 现场对拍」改为「录制 fixture 回放」（FR-011），再删 Node 实现和写删除规则。
+
+**AR-11 收口时的事实。**
+
+- 提交：`13a83cc3`（第一片）、`d457c734`（第二片）、`224c1635`（第三片）、`3bf7c774`（`verify-strategic-context-import` 退役）、`20ff8e39`（计划，AR-12b 与决定记录）。yss-cli 在 `.work/yss-cli` 的分支 `arch/ar-11c`（`2759692`），固定档仍为 `40926d1`，未更新。
+- 验证：回放 `tests/go-validator-replay.test.mjs` 在本机构建的 yss 下通过；退役桩场景 `check.strategic-context-import-retired` 通过。fast 计划（16 项）里有 3 项失败，均为 AR-09 总结 §5 已记录的既有失败：`verification-selection` 的资格用例、`verification-execution` 的「显式legacy」用例，以及 `profile-consumers` 里依赖 PATH 上旧 yss 的用例（用本机构建的 yss 重跑，对应的 `native-context-retirement`、`efficiency-distribution`、`approval-current` 用例全部通过）。
