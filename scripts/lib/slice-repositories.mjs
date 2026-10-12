@@ -1,8 +1,8 @@
 import fs from './validation-phase.mjs';
-import * as lifecycle from './lifecycle-transition.mjs';
+import * as lifecycle from './lifecycle-readiness.mjs';
 import path from 'node:path';
 import {digest,schema} from './strategic-handoff-io.mjs';
-import {parseSliceYaml,resolveSliceBasis,withinSlicePath,sliceArchitectureEvidence} from './slice-contract.mjs';
+import {parseSliceYaml,resolveSliceBasis,withinSlicePath,sliceArchitectureEvidence,registerSliceRepositories} from './slice-contract.mjs';
 const check=(ok,message)=>{if(!ok)throw new TypeError(`slice-repository-invalid: ${message}`);};
 /** All file facts stay in basis. Repository entries only select those facts. */
 export function sliceRepositories(contract,sources,{root=process.cwd()}={}) {
@@ -47,3 +47,4 @@ export function sliceRepositories(contract,sources,{root=process.cwd()}={}) {
  }
  return result;
 }
+registerSliceRepositories(sliceRepositories);

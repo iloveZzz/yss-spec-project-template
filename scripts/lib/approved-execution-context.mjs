@@ -1,3 +1,4 @@
+import './slice-repositories.mjs'; // 登记多项目准备核验器（工作流层），见 slice-contract.mjs
 import {approvalExpectationForCheckpoint,approvalExpectationForBoundAsset} from './approval-consumption.mjs';
 import {validateJsonSchemas} from './json-schema.mjs';
 import { assertScopeSlice, assertScopeWorkUnit } from './lifecycle-execution-scope.mjs';

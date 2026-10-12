@@ -1,3 +1,4 @@
+import './slice-repositories.mjs'; // 登记多项目准备核验器（工作流层），见 slice-contract.mjs
 import { normalizeSliceContract, sourceSliceContract, parseSliceYaml, selectSliceWorkUnit, selectedSliceWorkUnit } from './slice-contract.mjs';
 import { hasLocalImplementationInputs, readProgressionTarget } from './lifecycle-progression.mjs';
 import { contextBinary } from './native-context.mjs';

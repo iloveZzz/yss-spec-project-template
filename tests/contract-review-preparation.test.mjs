@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
-import { prepareContractReview, viewContract } from '../scripts/lib/contract-views.mjs';
+import { viewContract } from '../scripts/lib/contract-views.mjs';
+import { prepareContractReview } from '../scripts/lib/contract-review-preparation.mjs';
 import { approvedFixture } from '../scripts/fixtures/delivery-preflight/approved-execution-fixture.mjs';
 import { pilotFixture } from '../scripts/fixtures/slice-contract-v3/pilot-fixture.mjs';
 function fixture(t){const root=fs.mkdtempSync(path.join(os.tmpdir(),'yss-review-prep-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));fs.writeFileSync(path.join(root,'old.md'),'---\nversion: 1\n---\n风险：需要用户确认\n');fs.writeFileSync(path.join(root,'new.md'),'---\nversion: 2\n---\n风险：扩大权限\n未知约束：不得省略\n');return root;}

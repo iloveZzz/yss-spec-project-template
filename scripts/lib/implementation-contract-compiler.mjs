@@ -1,3 +1,4 @@
+import './slice-repositories.mjs'; // 登记多项目准备核验器（工作流层），见 slice-contract.mjs
 import { resolveBackendPlatform, resolveComponentCapabilities } from "./backend-platform.mjs";
 import { executionEvidenceBlockers } from './execution-evidence.mjs';
 import { safe } from './strategic-handoff-io.mjs';

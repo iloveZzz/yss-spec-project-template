@@ -1,6 +1,5 @@
 import { assertImplementationTicket, assertSliceBusinessSources, businessTicketVersion } from './business-tickets.mjs';
 import {validateExistingUiBaseline} from './existing-ui-baseline.mjs';
-import {sliceRepositories} from './slice-repositories.mjs';
 import {violation as implementationPathViolation} from './implementation-path-policy.mjs';
 import { sliceCheckApplicability } from './slice-applicability.mjs';
 import { validImplementationPath } from './implementation-path-policy.mjs';
@@ -113,6 +112,15 @@ export function sliceAcceptanceText(contract, sources) {
   }));
 }
 /** Validate the authoritative v3 document, then expand inherited facts ONLY in memory. */
+// 多项目准备的核验属于工作流层（需要 approval-record 等），不能由本领域模块反向导入；
+// slice-repositories 在被加载时登记，需要多仓合同的入口只要加载工作流模块即可。没有登记时遇到多仓绑定会明确失败。
+let repositoriesProvider=null;
+export function registerSliceRepositories(provider){repositoriesProvider=provider;}
+function sliceRepositories(raw,sources,options){
+  if(!raw.extensions?.cross_repo?.repository_bindings)return null;
+  if(typeof repositoriesProvider!=='function')throw new TypeError('slice-repository-invalid: 接收端不支持当前来源的多项目准备协议（多项目准备核验器未加载，须经 slice-repositories 登记），不能套用本地默认规则');
+  return repositoriesProvider(raw,sources,options);
+}
 export function normalizeSliceContract(document, options = {}) {
   const raw = sourceSliceContract(document);
   requireThat(raw && [2,3].includes(raw.schema_version), 'Slice Implementation Contract schema v1 已停止支持；需要 schema v2 或 v3');

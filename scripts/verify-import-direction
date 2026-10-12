@@ -1,0 +1,18 @@
+#!/usr/bin/env node
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { checkImportDirection } from "./lib/import-direction.mjs";
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+try {
+  const result = checkImportDirection(root);
+  if (!result.ok) {
+    for (const item of result.violations) process.stderr.write(`违规 ${item.kind}: ${item.detail}\n`);
+    process.exitCode = 1;
+  } else {
+    process.stdout.write(`通过：${result.modules} 个模块没有导入环，${result.core} 个 core 层模块只导入 core 层\n`);
+  }
+} catch (error) {
+  process.stderr.write(`verify-import-direction 错误: ${error.message}\n`);
+  process.exitCode = 1;
+}

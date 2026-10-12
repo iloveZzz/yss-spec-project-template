@@ -1,3 +1,4 @@
+import './slice-repositories.mjs'; // 登记多项目准备核验器（工作流层），见 slice-contract.mjs
 import { compileWorkUnitReviewCapabilities, compileReviewCapabilities, validateReviewTaskBinding } from './review-capabilities.mjs';
 import { validateReadOnlyIntake } from './read-only-intake.mjs';
 import { parseAsset } from './structured-assets.mjs';

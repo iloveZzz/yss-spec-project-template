@@ -108,7 +108,9 @@
       "scripts/lib/verification-report.mjs",
       "scripts/lib/maintenance-counterexample.mjs",
       ".work",
-      "scripts/lib/profile-tree.mjs"
+      "scripts/lib/profile-tree.mjs",
+      "scripts/verify-import-direction",
+      "scripts/lib/import-direction.mjs"
     ],
     "excludePathSuffixes": [
       "-scenarios"

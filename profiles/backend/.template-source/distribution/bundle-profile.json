@@ -126,7 +126,9 @@
       "scripts/verify-profile-distribution",
       "scripts/verify-project-instance",
       "scripts/verify-work-layout",
-      "scripts/lib/profile-tree.mjs"
+      "scripts/lib/profile-tree.mjs",
+      "scripts/verify-import-direction",
+      "scripts/lib/import-direction.mjs"
     ],
     "excludeRootEntries": [
       ".git",

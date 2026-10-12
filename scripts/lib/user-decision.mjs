@@ -7,36 +7,9 @@ import { ROOT } from "./lifecycle-registry.mjs";
 import { loadDigitalHumanRoles } from "./digital-human-roles.mjs";
 import { validateJsonSchema } from "./json-schema.mjs";
 import { assertDecisionContinuation } from './decision-continuation.mjs';
+import { decisionError, decisionDigest, requestDigest, decisionIO, requireText } from './user-decision-core.mjs';
+export { decisionError, decisionDigest, requestDigest, decisionIO };
 import { platformProfile } from './backend-platform.mjs';
-
-export function decisionError(code, detail) {
-  const error = new TypeError(`${code}: ${detail}`);
-  error.code = code;
-  throw error;
-}
-const requireText = (value, label) => {
-  if (typeof value !== "string" || !value.trim()) decisionError("user-decision-missing", label);
-};
-const canonical = (value) => Array.isArray(value) ? value.map(canonical) : value && typeof value === "object"
-  ? Object.fromEntries(Object.keys(value).sort().map((key) => [key, canonical(value[key])])) : value;
-export const decisionDigest = (value) => `sha256:${createHash("sha256").update(typeof value === "string" || Buffer.isBuffer(value) ? value : JSON.stringify(canonical(value))).digest("hex")}`;
-export function requestDigest(request) {
-  const { presented_source, ...snapshot } = request;
-  return decisionDigest(snapshot);
-}
-export function decisionIO({ root = ROOT, read = (ref) => readFileSync(ref), ...rest } = {}) {
-  const resolve = (ref) => /^(?:https?:|\w+:\/\/)/.test(ref) ? ref : path.resolve(root, ref);
-  const bytes = (ref) => {
-    requireText(ref, "可读引用");
-    try { return read(resolve(ref)); } catch { decisionError("user-decision-source-unreadable", ref); }
-  };
-  const document = (ref) => {
-    const doc = parseDocument(String(bytes(ref)), { maxAliasCount: 0, uniqueKeys: true });
-    if (doc.errors.length || !doc.toJS()) decisionError("user-decision-source-invalid", ref);
-    return doc.toJS({ maxAliasCount: 0 });
-  };
-  return { root, bytes, document, ...rest };
-}
 
 // A capture preserves original author/time/text/reference. It is evidence, not an identity signature.
 function messageFromSource(source, io, policy) {
@@ -165,7 +138,7 @@ export function verifyUserDecisionFile(ref, options = {}) {
 export function assertUserDecisionRequirement(requirement, options = {}) {
   if (!requirement) decisionError("user-decision-response-required", "缺少当前决定及其范围");
   if (requirement.user_decision_ref && requirement.continuation_ref) decisionError("user-decision-proof-conflict", "当前决定与批准延续是两种证明路径，不得同时提供");
-  if (requirement.continuation_ref) return assertDecisionContinuation(requirement, options.rolesDoc || loadDigitalHumanRoles(), options);
+  if (requirement.continuation_ref) return assertDecisionContinuation(requirement, options.rolesDoc || loadDigitalHumanRoles(), { ...options, assertRequirement: assertUserDecisionRequirement });
   return verifyUserDecisionFile(requirement.user_decision_ref, { ...options, expected: [requirement] });
 }
 

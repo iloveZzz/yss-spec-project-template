@@ -90,6 +90,38 @@ profiles:
           - ".agents/skills/setup-yss-harness/references/operation-contract.md"
         depends_on: []
         failure_mode: "setup-yss-harness 的操作合同参考与权威协议文档不一致"
+      - id: check.import-direction
+        run: "node --test tests/import-direction.test.mjs"
+        group: hygiene
+        inputs_complete: true
+        input_patterns:
+          - "scripts/lib/*.mjs"
+          - "scripts/verify-import-direction"
+          - "tests/import-direction.test.mjs"
+          - ".template-source/process/node-core-layer.json"
+        depends_on: []
+        failure_mode: "scripts/lib 出现导入环，或 core 层模块反向导入上层（当前仓库的真实扫描在 1 秒内完成）"
+      - id: check.contract-review-preparation
+        run: "node --test tests/contract-review-preparation.test.mjs"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
+          - "tests/contract-review-preparation.test.mjs"
+          - "scripts/lib/contract-review-preparation.mjs"
+          - "scripts/lib/contract-views.mjs"
+          - "scripts/contract"
+        depends_on: []
+        failure_mode: "合同审查准备放过过期的阅读视图、前后资产身份冲突，或把原决定当成已批准"
+      - id: check.plan-review-control-unit
+        run: "node --test --test-name-pattern='^(?!real CLI dispatch)' .template-source/tooling/node/test/plan-review-control.test.mjs"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
+          - ".template-source/tooling/node/test/plan-review-control.test.mjs"
+          - "scripts/plan-review-control"
+          - "scripts/lib/plan-review-control.mjs"
+        depends_on: []
+        failure_mode: "Plan 审查周期的绑定、派发或完成校验放过未绑定的证据（\"real CLI dispatch\" 用例在 AR-05 提交上就已失败，未纳入）"
       - id: check.profile-tree
         run: "node --test tests/profile-tree.test.mjs tests/advance-maintenance-root.test.mjs"
         group: hygiene
@@ -1309,6 +1341,13 @@ routing:
       - .gitmodules
       - scripts/lib/profile-tree.mjs
       - tests/profile-tree.test.mjs
+      - scripts/plan-review-control
+      - scripts/lib/plan-review-control.mjs
+      - .template-source/tooling/node/test/plan-review-control.test.mjs
+      - tests/contract-review-preparation.test.mjs
+      - scripts/verify-import-direction
+      - tests/import-direction.test.mjs
+      - .template-source/process/node-core-layer.json
       - tests/advance-maintenance-root.test.mjs
       - tests/specialist-business-inputs.test.mjs
       - tests/efficiency-distribution.test.mjs

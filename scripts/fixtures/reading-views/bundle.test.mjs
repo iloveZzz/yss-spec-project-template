@@ -35,7 +35,7 @@ test('registered root checkpoint renders an idempotent bundle without navigation
  }
 });
 test('root Design checkpoint review preparation retains managed missing and stale reading gaps',async()=>{
- const {prepareContractReview}=await import('../../lib/contract-views.mjs');
+ const {prepareContractReview}=await import('../../lib/contract-review-preparation.mjs');
  const {readingCheckpointsForAsset,renderReadingBundle}=await import('../../lib/reading-view-bundle.mjs');
  const f=registeredReading('design');try{
   f.put('.template-spec/process/reading-policy.yaml',{schema_version:1,mode:'managed',checkpoints:[f.checkpoint]});
@@ -127,7 +127,7 @@ test('adding or changing project display names invalidates the reading bundle',a
  }finally{f.cleanup();}
 });
 test('preparation rejects a stale managed bundle through the public API',async()=>{
- const {prepareContractReview}=await import('../../lib/contract-views.mjs');const f=setup();try{
+ const {prepareContractReview}=await import('../../lib/contract-review-preparation.mjs');const f=setup();try{
   assert.equal(f.cli('plan-enable','--checkpoint',cp,'--output','enable.json').status,0);assert.equal(f.cli('apply-enable','enable.json').status,0);
   const ref='docs/.scratch/demo/plan/domain-strategy.yaml';f.put('old.yaml',f.strategy);f.strategy.domain_version='v999';f.put(ref,f.strategy);
   const r=prepareContractReview('old.yaml',ref,{root:f.root,kind:'domain-strategy'});assert.ok(r.gaps.some(x=>x.code==='READING_VIEWS_STALE'));
