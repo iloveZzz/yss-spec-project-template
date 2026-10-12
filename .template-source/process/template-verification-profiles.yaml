@@ -122,7 +122,6 @@ profiles:
           - "scripts/verify-openapi-draft-validation-record"
           - "scripts/lib/openapi-draft-validation.mjs"
           - "scripts/verify-scaffold-architecture-decisions"
-          - "scripts/lib/scaffold-decisions-verify.mjs"
           - "scripts/lib/strategic-handoff-consumption.mjs"
           - "scripts/fixtures/strategic-handoff/fixture.mjs"
           - "scripts/lib/native-evidence.mjs"

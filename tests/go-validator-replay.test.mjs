@@ -16,7 +16,6 @@ import {verifyConsumption} from '../scripts/lib/strategic-handoff-consumption.mj
 import {verifyContextReconciliation} from '../scripts/lib/context-reconciliation.mjs';
 import {validateOpenApiDraftValidationRecord} from '../scripts/lib/openapi-draft-validation.mjs';
 import {readWorkLayout} from '../scripts/lib/work-layout.mjs';
-import {verifyScaffoldArchitectureDecisions} from '../scripts/lib/scaffold-decisions-verify.mjs';
 import {attachScaffoldDecisionFixture} from '../scripts/fixtures/user-decision/build-fixture.mjs';
 import {read as readHandoff, json as handoffJson} from '../scripts/lib/strategic-handoff-io.mjs';
 import {makeRoot} from './helpers/yss-instance.mjs';
@@ -830,7 +829,7 @@ test('OpenAPI Draft validation 回放：--allow-template 只接受模板记录',
   assert.notEqual(nativeContractVerify({root: c.target, kind: 'openapi-validation', file: c.ref, extra: ['--allow-template']}).exitCode, 0);
 });
 
-// 脚手架架构选择记录（contract verify --kind scaffold-decisions）：Node 的 verifyScaffoldArchitectureDecisions 与 yss 结论一致。
+// 脚手架架构选择记录（contract verify --kind scaffold-decisions）：yss 的结论与录制的预期一致（预期来自 AR-12 对拍时 Node 实现的结论：通过 2 类，其余全部拒绝；Node 对照实现已随 AR-12b 删除）。
 const scaffoldConfirmation = {confirmed_by: 'user', channel: 'codex', confirmation_ref: 'turn://1', confirmed_at: '2026-09-05T01:00:00+08:00', normalized_text: '确认 MVC'};
 const scaffoldDecision = (extra = {}) => ({decision_id: 'scaffold-decision.main', project_id: 'main', parent_project_id: null, status: 'lifecycle-approved', recommended_architecture: 'layered-mvc', recommendation_reasons: ['CRUD 与报表为主'], confirmed_architecture: 'layered-mvc', override_reason: null,
   inheritance_mode: 'root-default', inherited_from: null, platform_profile: 'spring-boot-2.7-jdk8', architecture_profile: 'layered-mvc-service', verification_database: 'h2', production_database: 'not-bound', requested_capabilities: ['feign-client'],
@@ -861,17 +860,13 @@ for (const [name, spec] of Object.entries(scaffoldVariants)) {
     if (spec.afterAttach) record.decisions.forEach(spec.afterAttach);
     const ref = `scaffold-decisions-${seq}.json`;
     writeFileSync(path.join(target, ref), JSON.stringify(record));
-    let node;
-    try { verifyScaffoldArchitectureDecisions(path.join(target, ref)); node = {ok: true}; } catch (error) { node = {ok: false, message: String(error.message).slice(0, 100)}; }
     const go = nativeContractVerify({root: target, kind: 'scaffold-decisions', file: ref});
-    assert.equal(go.exitCode === 0, node.ok, `结论不一致：Node=${JSON.stringify(node)} Go=${go.exitCode} ${go.message.slice(0, 160)}`);
-    if (spec.ok) assert.equal(node.ok, true, `基线必须通过：${node.message}`);
-    else assert.doesNotMatch(String(node.message), /ENOENT/, '拒绝原因不能是找不到记录文件');
+    assert.equal(go.exitCode === 0, spec.ok === true, `结论与录制预期不一致：预期${spec.ok ? '通过' : '拒绝'}，yss=${go.exitCode} ${go.message.slice(0, 160)}`);
+    if (!spec.ok) assert.doesNotMatch(go.message, /输入不可读|ENOENT/, '拒绝原因不能是找不到记录文件');
   });
 }
 test('脚手架架构选择回放：--allow-template 接受模板记录', {skip}, () => {
   const ref = '.template-spec/process/templates/scaffold-architecture-decisions-template.yaml';
-  verifyScaffoldArchitectureDecisions(path.join(REPO, ref), {allowTemplate: true});
   const go = nativeContractVerify({root: REPO, kind: 'scaffold-decisions', file: ref, extra: ['--allow-template']});
   assert.equal(go.exitCode, 0, go.message);
   assert.notEqual(nativeContractVerify({root: REPO, kind: 'scaffold-decisions', file: ref}).exitCode, 0);
