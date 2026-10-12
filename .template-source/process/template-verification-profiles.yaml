@@ -73,7 +73,7 @@ profiles:
           - ".template-source/distribution/bundle-profile.json"
           - "submodules/yss-harness-*-agent"
         depends_on: []
-        failure_mode: "backend / frontend / design 实例分发了根仓声明为仅模板源的脚本，或技能目录里的测试目录没有被排除"
+        failure_mode: "backend / frontend / design 实例分发了根仓声明为仅模板源的脚本，或使用测试目录后缀规则批量移除了旧实例已登记的 Skill 文件"
       - id: check.template-wiki-untracked
         run: "node --test tests/template-wiki-untracked.test.mjs"
         group: hygiene
