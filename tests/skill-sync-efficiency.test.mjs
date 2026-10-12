@@ -16,16 +16,16 @@ test("write-mode Skill sync skips identical projections and repairs raw structur
     writeFileSync(path.join(source, "SKILL.md"), "---\r\nname: probe\r\n---\r\n");
     writeFileSync(path.join(source, "payload.txt"), "payload\n");
     symlinkSync("payload.txt", path.join(source, "linked.txt"));
-    for (const projection of [".codex/skills", ".cursor/skills", ".pi/skills"]) {
+    for (const projection of [".claude/skills"]) {
       const target = path.join(root, projection, "probe");
       mkdirSync(path.dirname(target), { recursive: true });
       cpSync(source, target, { recursive: true, verbatimSymlinks: true });
     }
     writeFileSync(path.join(root, "skills-lock.json"), JSON.stringify({ version: 3, skills: { shared: { probe: {} }, platform: {} } }));
     assert.equal(spawnSync("git", ["init", "-q", root]).status, 0);
-    assert.equal(spawnSync("git", ["-C", root, "add", ".codex/skills", ".cursor/skills", ".pi/skills"]).status, 0);
+    assert.equal(spawnSync("git", ["-C", root, "add", ".claude/skills"]).status, 0);
     const { syncSkills } = await import(pathToFileURL(path.join(root, "scripts/lib/skill-supply-chain.mjs")).href);
-    const target = path.join(root, ".codex/skills/probe");
+    const target = path.join(root, ".claude/skills/probe");
     const skillFile = path.join(target, "SKILL.md");
     const before = statSync(skillFile).mtimeMs;
     assert.match(syncSkills(), /synchronized 1 shared skills/);

@@ -199,7 +199,7 @@ export function composeProfileSkills({ root, config, profile }) {
   for (const item of [...(definition.exact ?? []), ...(definition.adapted ?? [])]) {
     if (item.files?.length) fail(`${profile}/${item.id} 生成模式需要完整适配树`);
     const target = item.target ?? `.agents/skills/${item.id}`;
-    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(item.id) || ![`.agents/skills/${item.id}`, `.codex/skills/${item.id}`].includes(target)) fail(`生成技能目标非法: ${target}`);
+    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(item.id) || target !== `.agents/skills/${item.id}`) fail(`生成技能目标非法: ${target}`);
     const source = safe(root, item.source ?? `.agents/skills/${item.id}`, "source");
     if (!existsSync(source)) fail(`缺少共享技能源: ${item.id}`);
     const modes = new Map();

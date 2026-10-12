@@ -23,7 +23,7 @@ export function validateSkillGovernance({ read = (relative) => readFileSync(path
     if (globalRules.includes(staleHeading)) fail(`YSS UI 薄入口不得回流技能清单或实现步骤: ${staleHeading}`);
   }
   const cursorRules = read(".cursorrules");
-  for (const marker of ["yss-project.yaml", ".template-spec/agents/yss-skill-registry.yaml", "yss-ui-business-page-generation", ".cursor/skills"]) {
+  for (const marker of ["yss-project.yaml", ".template-spec/agents/yss-skill-registry.yaml", "yss-ui-business-page-generation", ".claude/skills"]) {
     if (!cursorRules.includes(marker)) fail(`Cursor 薄入口缺少路由标记: ${marker}`);
   }
   if (cursorRules.includes("YSS AI SKILLS START")) fail("Cursor 薄入口不得回流技能清单");

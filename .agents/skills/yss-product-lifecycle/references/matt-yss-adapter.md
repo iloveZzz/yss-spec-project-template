@@ -11,7 +11,7 @@
 先用固定执行器的 `skills resolve --help` 确认能力；旧 CLI 沿用下节预检，不把版本号或查询退出成功当成支持或就绪。spec、backend、frontend 的自然语言任务由 Agent 对照 `skills list --details --root <项目根> --json` 的描述和 `invocation` 选择规范 ID，例如“审查代码”选择 `code-review`，“分析模块边界”选择 `codebase-design`。详情仅观察注册信息和安装声明，不核验整个技能库。
 
 ```text
-<固定yss> skills resolve <id...> --agent-runtime codex --root <项目根> --json
+<固定yss> skills resolve <id...> --agent-runtime claude --root <项目根> --json
 ```
 
 条件依赖使用逗号分隔的 `--when <已登记条件列表>`；只展开 `context-required` 和命中的 `context-conditional`，不加载整套角色技能。消费 `result.status`，查询退出 0 仅表示查询完成：
@@ -27,7 +27,7 @@
 准备调用原生工作单元的专项技能前，运行：
 
 ```bash
-scripts/query-lifecycle-context --work-unit work-unit.plan-requirements --check-skills --agent-runtime codex
+scripts/query-lifecycle-context --work-unit work-unit.plan-requirements --check-skills --agent-runtime claude
 ```
 
 运行时只在实例登记了唯一平台时可以省略；条件依赖用重复的 `--when <条件>` 传入。查询只检查当前工作单元和已触发依赖，不加载兼容入口的纯引用或整个角色技能包。普通查询仍不证明技能已安装。

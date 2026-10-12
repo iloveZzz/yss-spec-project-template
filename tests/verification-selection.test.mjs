@@ -51,8 +51,8 @@ test('日常检查选择包含明确消费者和前置，legacy与shadow保持�
  assert.equal(new Set(occurrences.map(item=>item.task_id)).size,occurrences.length,'恢复原组范围也必须保留重复任务的独立身份');
  assert.ok(planTemplateVerification({changedFiles:['scripts/lib/user-decision.mjs'],selection:'legacy'}).commands.length>0);
  const executable='.agents/skills/yss-research/scripts/lib/evidence.mjs';
- const projected=executable.replace('.agents/','.codex/');
- assert.deepEqual(planTemplateVerification({changedFiles:[executable]}).commands.map(item=>item.id),planTemplateVerification({changedFiles:[projected]}).commands.map(item=>item.id));
+ const retired=executable.replace('.agents/','.codex/');
+ assert.ok(planTemplateVerification({changedFiles:[retired]}).commands.some(item=>item.id==='check.claude-entry'),'已删除的投影根路径必须由检查登记，避免复活后无人发现');
 });
 test('目标意图的候选当前性及其消费者必须选择真实 Git 边界检查', () => {
  for (const ref of ['scripts/lib/implementation-candidate-current.mjs', 'scripts/lib/backend-review.mjs', 'scripts/lib/backend-standards-coverage.mjs', 'scripts/lib/existing-backend-architecture.mjs', 'tests/implementation-candidate-current.test.mjs']) {

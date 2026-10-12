@@ -124,7 +124,7 @@ export function applySkillPreparation(plan,{write=fs.writeFileSync}={}) {
 export function makeSkillSourceLock({root,config,profile}) {
   const revision=spawnSync('git',['-C',root,'rev-parse','HEAD'],{encoding:'utf8'});
   if(revision.status!==0||!/^[a-f0-9]{40}$/.test(revision.stdout.trim()))fail('Spec 来源提交不可读');
-  const refs=['.agents/skills','.codex/skills/product-design',configRef,'.template-source/profile-skill-patches','scripts/lib/profile-skill-sync.mjs','.template-source/scripts/lib/profile-skills-preparation.mjs'];
+  const refs=['.agents/skills',configRef,'.template-source/profile-skill-patches','scripts/lib/profile-skill-sync.mjs','.template-source/scripts/lib/profile-skills-preparation.mjs'];
   const status=spawnSync('git',['-C',root,'status','--porcelain=v1','--untracked-files=all','--',...refs],{encoding:'utf8',maxBuffer:64*1024*1024});
   if(status.status!==0)fail('Spec 来源状态不可读');
   return {schemaVersion:1,profile,sourceCommit:revision.stdout.trim(),sourceState:status.stdout?'working-tree':'committed',configurationPath:configRef,configurationHash:hash(fs.readFileSync(path.join(root,configRef))),skillsDigest:skillCompositionDigest(composeProfileSkills({root,config,profile})),generatedRoots:sharedSkillRoots(config.profiles[profile])};

@@ -3,9 +3,6 @@
   "generatedBy": "scripts/update-skill-lock",
   "canonicalRoot": ".agents/skills",
   "projectionRoots": [
-    ".codex/skills",
-    ".cursor/skills",
-    ".pi/skills",
     ".claude/skills"
   ],
   "sources": {
@@ -33,9 +30,6 @@
         "skillPath": ".agents/skills/alibaba-java-code-style/SKILL.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -48,9 +42,6 @@
         "adaptationRef": ".template-source/agents/archify-integration.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -63,9 +54,6 @@
         "adaptationRef": ".template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -78,9 +66,6 @@
         "adaptationRef": ".template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -90,9 +75,6 @@
         "skillPath": "sales/skills/competitive-intelligence/SKILL.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -102,9 +84,6 @@
         "skillPath": ".agents/skills/cross-repo-implementation-routing/SKILL.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -117,9 +96,6 @@
         "adaptationRef": ".template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -132,9 +108,6 @@
         "adaptationRef": ".template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -147,9 +120,6 @@
         "adaptationRef": ".template-source/agents/yss-ui-skills-integration.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -162,9 +132,6 @@
         "adaptationRef": ".template-source/agents/yss-ui-skills-integration.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -177,9 +144,6 @@
         "adaptationRef": ".template-source/agents/yss-ui-skills-integration.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -192,9 +156,6 @@
         "adaptationRef": ".template-source/agents/yss-ui-skills-integration.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -207,9 +168,6 @@
         "adaptationRef": ".template-source/agents/yss-ui-skills-integration.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -222,9 +180,6 @@
         "adaptationRef": ".template-source/agents/yss-ui-skills-integration.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -234,9 +189,6 @@
         "skillPath": ".agents/skills/git-commit-core/SKILL.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -249,9 +201,6 @@
         "adaptationRef": ".template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -264,9 +213,6 @@
         "adaptationRef": ".template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -279,9 +225,6 @@
         "adaptationRef": ".agents/skills/i-have-adhd/references/yss-adaptation.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -294,9 +237,6 @@
         "adaptationRef": ".template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -306,9 +246,6 @@
         "skillPath": ".agents/skills/implementation-repo-onboarding/SKILL.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -318,9 +255,6 @@
         "skillPath": ".agents/skills/java-backend-commit/SKILL.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -330,9 +264,6 @@
         "skillPath": ".agents/skills/llm-wiki/SKILL.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -343,9 +274,6 @@
         "upstreamHash": "b27bd55f695271de1c22fbdc1c4c4520ed48f05e6352eb760bfc32822139475e",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -355,9 +283,6 @@
         "skillPath": ".agents/skills/maintaining-skills/SKILL.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -368,9 +293,6 @@
         "upstreamHash": "50dcb3a41a92bb42b6714e8ab9fd1e7149fa89774a05c6e21c7711368dbb6443",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -383,9 +305,6 @@
         "adaptationRef": ".template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -398,9 +317,6 @@
         "adaptationRef": ".template-source/agents/strategic-design-skills-integration.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -410,9 +326,6 @@
         "skillPath": ".agents/skills/publish-skills-sh/SKILL.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -425,9 +338,6 @@
         "adaptationRef": ".template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -440,9 +350,6 @@
         "adaptationRef": ".template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -452,9 +359,6 @@
         "skillPath": ".agents/skills/setup-yss-harness/SKILL.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -467,9 +371,6 @@
         "adaptationRef": ".template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -482,9 +383,6 @@
         "adaptationRef": ".template-source/agents/yss-ui-skills-integration.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -497,9 +395,6 @@
         "adaptationRef": ".template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -512,9 +407,6 @@
         "adaptationRef": ".template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -527,9 +419,6 @@
         "adaptationRef": ".template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -539,9 +428,6 @@
         "skillPath": ".agents/skills/using-git-worktrees/SKILL.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -554,9 +440,6 @@
         "adaptationRef": ".template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -569,9 +452,6 @@
         "adaptationRef": ".template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -584,9 +464,6 @@
         "adaptationRef": ".template-source/agents/yss-ui-skills-integration.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -599,9 +476,6 @@
         "adaptationRef": ".template-source/agents/yss-ui-skills-integration.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -611,9 +485,6 @@
         "skillPath": ".agents/skills/yss-application/SKILL.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -623,9 +494,6 @@
         "skillPath": ".agents/skills/yss-audit-log/SKILL.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -635,9 +503,6 @@
         "skillPath": ".agents/skills/yss-backend-spec-review/SKILL.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -647,9 +512,6 @@
         "skillPath": ".agents/skills/yss-cache/SKILL.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -659,9 +521,6 @@
         "skillPath": ".agents/skills/yss-ddd-scaffold-generator/SKILL.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -674,9 +533,6 @@
         "adaptationRef": ".template-source/agents/strategic-design-skills-integration.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -686,9 +542,6 @@
         "skillPath": ".agents/skills/yss-distributed-id/SKILL.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -698,9 +551,6 @@
         "skillPath": ".agents/skills/yss-domain/SKILL.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -710,9 +560,6 @@
         "skillPath": ".agents/skills/yss-dto/SKILL.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -722,9 +569,6 @@
         "skillPath": ".agents/skills/yss-excel-mvc/SKILL.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -734,9 +578,6 @@
         "skillPath": ".agents/skills/yss-exception/SKILL.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -749,9 +590,6 @@
         "adaptationRef": ".template-source/agents/yss-ui-skills-integration.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -761,9 +599,6 @@
         "skillPath": ".agents/skills/yss-formily-schema-generator/SKILL.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -773,9 +608,6 @@
         "skillPath": ".agents/skills/yss-frontend-scaffold-generator/SKILL.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -785,9 +617,6 @@
         "skillPath": ".agents/skills/yss-hook/SKILL.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -797,9 +626,6 @@
         "skillPath": ".agents/skills/yss-implementation-contract-compiler/SKILL.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -809,9 +635,6 @@
         "skillPath": ".agents/skills/yss-layered-mvc-scaffold-generator/SKILL.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -821,9 +644,6 @@
         "skillPath": ".agents/skills/yss-mybatis/SKILL.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -833,9 +653,6 @@
         "skillPath": ".agents/skills/yss-openapi-draft-review/SKILL.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -845,9 +662,6 @@
         "skillPath": ".agents/skills/yss-openapi-governance/SKILL.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -857,9 +671,6 @@
         "skillPath": ".agents/skills/yss-product-lifecycle/SKILL.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -872,9 +683,6 @@
         "adaptationRef": ".template-source/agents/strategic-design-skills-integration.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -884,9 +692,6 @@
         "skillPath": ".agents/skills/yss-repository/SKILL.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -899,9 +704,6 @@
         "adaptationRef": ".template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -911,9 +713,6 @@
         "skillPath": ".agents/skills/yss-resilience4j/SKILL.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -923,9 +722,6 @@
         "skillPath": ".agents/skills/yss-security-algorithm/SKILL.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -935,9 +731,6 @@
         "skillPath": ".agents/skills/yss-skill-source-index-refresh/SKILL.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -950,9 +743,6 @@
         "adaptationRef": ".template-source/agents/strategic-design-skills-integration.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -962,9 +752,6 @@
         "skillPath": ".agents/skills/yss-tactical-design/SKILL.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -974,9 +761,6 @@
         "skillPath": ".agents/skills/yss-technical-design/SKILL.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -986,9 +770,6 @@
         "skillPath": ".agents/skills/yss-ui/SKILL.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -1001,9 +782,6 @@
         "adaptationRef": ".template-source/agents/yss-ui-skills-integration.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -1013,9 +791,6 @@
         "skillPath": ".agents/skills/yss-up-springboot3/SKILL.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -1025,9 +800,6 @@
         "skillPath": ".agents/skills/yss-userinfo/SKILL.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -1037,9 +809,6 @@
         "skillPath": ".agents/skills/yss-validation/SKILL.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -1049,9 +818,6 @@
         "skillPath": ".agents/skills/yss-web-controller/SKILL.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -1064,9 +830,6 @@
         "adaptationRef": ".template-source/agents/yss-ui-skills-integration.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       },
@@ -1079,24 +842,10 @@
         "adaptationRef": ".template-source/agents/yss-ui-skills-integration.md",
         "targets": [
           ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills",
           ".claude/skills"
         ]
       }
     },
-    "platform": {
-      ".codex/skills": {
-        "product-design": {
-          "source": "project",
-          "sourceType": "local",
-          "skillPath": ".codex/skills/product-design/SKILL.md",
-          "targets": [
-            ".codex/skills"
-          ]
-        }
-      }
-    }
+    "platform": {}
   }
 }

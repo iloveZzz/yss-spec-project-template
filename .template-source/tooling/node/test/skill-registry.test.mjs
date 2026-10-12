@@ -91,11 +91,10 @@ test("alias that collides with another id is rejected", () => {
   assert.throws(() => validateSkillRegistry(data), /alias 冲突/);
 });
 
-test("missing Cursor runtime root is rejected", () => {
+test("retired Cursor runtime root is rejected as an unknown runtime", () => {
   const data = registry();
-  const { cursor, ...rest } = data.agent_runtime_roots;
-  data.agent_runtime_roots = rest;
-  assert.throws(() => validateSkillRegistry(data), /agent_runtime_roots.cursor/);
+  data.agent_runtime_roots = { ...data.agent_runtime_roots, cursor: ".cursor/skills" };
+  assert.throws(() => validateSkillRegistry(data), /未知 Agent 运行时根: cursor/);
 });
 
 test("skill invocation contract is required and derives impact triggers", () => {
@@ -145,6 +144,7 @@ test("实现合同编译器合同不得重复 typed dependency 事实", () => {
 
 test("platform aliases resolve lifecycle external runtime entries", () => {
   const data = registry();
+  data.platform_skills = [{ id: "product-design", root: ".codex/skills", layer: "specialist", instance_default_discoverable: false, aliases: ["product-design:index"] }];
   const route = {
     primary_skill: "product-design:index",
     supporting_skills: [],

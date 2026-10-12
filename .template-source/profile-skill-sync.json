@@ -55,11 +55,6 @@
           "id": "code-review"
         },
         {
-          "id": "product-design",
-          "source": ".codex/skills/product-design",
-          "target": ".codex/skills/product-design"
-        },
-        {
           "id": "setup-yss-harness"
         }
       ],
@@ -189,9 +184,6 @@
         "to-questionnaire",
         "improve-codebase-architecture",
         "yss-harness-upgrade"
-      ],
-      "reference_roots": [
-        ".codex/skills/product-design"
       ]
     },
     "backend": {
@@ -538,7 +530,6 @@
         "improve-codebase-architecture",
         "yss-harness-upgrade"
       ],
-      "reference_roots": [],
       "materialization": "generated"
     },
     "frontend": {
@@ -672,11 +663,6 @@
         },
         {
           "id": "yss-ui"
-        },
-        {
-          "id": "product-design",
-          "source": ".codex/skills/product-design",
-          "target": ".codex/skills/product-design"
         },
         {
           "id": "frontend-commit"
@@ -868,9 +854,6 @@
         "to-questionnaire",
         "improve-codebase-architecture",
         "yss-harness-upgrade"
-      ],
-      "reference_roots": [
-        ".codex/skills/product-design"
       ],
       "materialization": "generated"
     }

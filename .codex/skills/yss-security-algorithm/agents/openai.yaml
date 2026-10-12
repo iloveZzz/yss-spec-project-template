@@ -1,4 +1,0 @@
-interface:
-  display_name: "yss-security-algorithm"
-  short_description: "YSS component skill for yss-security-algorithm"
-  default_prompt: "Use yss-security-algorithm for this YSS backend component task."

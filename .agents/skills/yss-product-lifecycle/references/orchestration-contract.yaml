@@ -588,8 +588,8 @@ work_unit_routes:
   work-unit.prototype-design-v2:
     native: { source: yss-product-lifecycle, skill: yss-product-lifecycle, invocation_mode: model-invoked }
     primary_skill: yss-prototype-stage
-    supporting_skills: [ prototype-review, yss-design-system, product-design:index ]
-    skills: [ prototype-review, yss-design-system, yss-prototype-stage, product-design:index ]
+    supporting_skills: [ prototype-review, yss-design-system ]
+    skills: [ prototype-review, yss-design-system, yss-prototype-stage ]
     execution_order: [ yss-design-system, low-fidelity-assets, prototype-review, prototype-profile-routing, profile-adapter-build, browser-design-qa-accessibility, user-confirmation ]
     profile_routing_ref: .agents/skills/yss-prototype-stage/references/prototype-profile-routing.md
     prototype_adapter_ref: .agents/skills/yss-prototype-stage/references/product-design-adapter.md

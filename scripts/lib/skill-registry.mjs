@@ -350,9 +350,6 @@ export function validateSkillRegistry(registry, { lock, compilerContract, lifecy
   const roots = registry.agent_runtime_roots;
   if (!roots || typeof roots !== "object" || Array.isArray(roots)) fail("缺少 agent_runtime_roots");
   const expected = {
-    codex: ".codex/skills",
-    cursor: ".cursor/skills",
-    pi: ".pi/skills",
     claude: ".claude/skills"
   };
   for (const [agent, root] of Object.entries(expected)) {

@@ -65,7 +65,7 @@ try {
     const r=spawnSync('git',['-C',root,'show',lock.sourceCommit+':'+ref],{encoding:null,maxBuffer:64*1024*1024});
     if(r.status!==0||!r.stdout.equals(fs.readFileSync(file)))throw Error('Spec 生成工具与固定提交不一致');
   }
-  if(git(['status','--porcelain=v1','--untracked-files=all','--','yss-project.yaml','.template-source/distribution/bundle-profile.json','.agents/skills','.codex/skills/product-design',lock.configurationPath,'.template-source/profile-skill-patches',...modules]))throw Error('Spec 相关来源含未提交修改');
+  if(git(['status','--porcelain=v1','--untracked-files=all','--','yss-project.yaml','.template-source/distribution/bundle-profile.json','.agents/skills',lock.configurationPath,'.template-source/profile-skill-patches',...modules]))throw Error('Spec 相关来源含未提交修改');
   const {prepareStandaloneSkills}=await import(pathToFileURL(path.join(root,modules[0])).href);
   const result=prepareStandaloneSkills({root,targetRoot,check:values.check});
   process.stdout.write(JSON.stringify({status:'ok',profile:lock.profile,...result})+'\n');

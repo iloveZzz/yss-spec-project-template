@@ -33,6 +33,14 @@ test("FR-006：.claude/skills 是登记的投影根，与 canonical 一一对应
   }
 });
 
+test("FR-006/AC-006：投影根只剩 .claude/skills，旧的三个根不再存在，注册表与锁不再登记平台技能", () => {
+  assert.deepEqual(PROJECTION_ROOTS, [".claude/skills"]);
+  for (const old of [".codex/skills", ".cursor/skills", ".pi/skills"]) assert.equal(fs.existsSync(path.join(ROOT, old)), false, `${old} 不应存在`);
+  assert.deepEqual(registry.instance_distribution.runtimes, ["claude"]);
+  assert.deepEqual(json("skills-lock.json").skills.platform, {});
+  assert.ok(!read("scripts/fixtures/contract-efficiency/distribution-smoke.mjs").includes(".codex/skills"));
+});
+
 test("注册表与锁在 claude 上一致：运行时、投影根、agent_runtime_roots、lock 的 projectionRoots 与每个技能的 targets", () => {
   assert.ok(registry.instance_distribution.runtimes.includes("claude"));
   assert.equal(registry.instance_distribution.projection_roots.claude, ".claude/skills");
