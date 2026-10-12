@@ -54,3 +54,11 @@
 - 迁移的测试：`tests/checkpoint-boundary.test.mjs` 改在真实实例里运行并按旧实例未启用追踪处理；`tests/project-ci.test.mjs` 不用改（修好后 15 个通过）；`flow-verification-routing`、`lifecycle-status-feedback`、`verify-lifecycle-operator-scenarios` 本来就通过。
 - 仍未覆盖：Plan 聚合、业务票通过审查的组合、执行范围终点（`loadExecutionScope`）、`--history` 与 yss 的对拍。
 - 固定二进制：`40926d1542a2537ae74278c5c56169049268f13d`（四个平台已重建、固定档已更新）。**从下一片起按维护者新要求：每片只在本机验证，攒几片再统一重建并更新固定档。**
+
+## 7. 能力协商（实测暴露的健壮性问题）
+
+- 问题：着手 slice 时在一个没设置 `YSS_NATIVE_BINARY` 的环境里跑夹具，进程内委托去调用了 PATH 上**较旧的 yss**，它不认识 `--binding`，返回 `ARGUMENT`，委托把它当成校验失败抛出——旧版 yss 加新版脚本会让原本通过的校验失败。这违反「实例不强制升级」（FR-016）。
+- 修复：yss 的 `capabilities --json` 新增 `nodeDelegation` 能力令牌列表（`user-decision.from-record.v1`、`user-decision.requirements-object.v1`、`user-decision.validated-rows.v1`、`approval.expected.v1`、`approval.binding.v1`、`approval.rule-rows.v1`、`task.directory-write-scope.v1`、`lifecycle.legacy-untracked-checkpoint.v1`、`template-source.verify-root.v1`）。Node 每个委托路径声明所需令牌（`NEEDS`），进程内入口缺令牌时**退回 Node 实现**，命令行薄壳缺令牌时给出「当前 yss 缺少能力…请升级 yss」。结果按二进制缓存，每个进程最多查询一次。
+- 回放测试新增能力协商用例（用只声明一个令牌的桩 yss 验证：缺令牌不委托、薄壳提示升级、齐全时放行）。
+- 以后新增委托路径必须同时新增令牌与 `NEEDS` 条目。
+- 本片按维护者新要求只在本机构建验证（固定档未更新，仍指向 `40926d1`，不含 `nodeDelegation`）。**统一重建固定档之前，固定二进制下委托路径不会生效（缺令牌→退回 Node）**，统一重建时必须一并更新。

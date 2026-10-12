@@ -2,7 +2,7 @@
 // 薄壳：校验语义归 yss（contract verify --kind task），这里只翻译参数、透传结论与退出码。
 import path from "node:path";
 import { parseArgs } from "node:util";
-import { nativeContractVerify } from "./lib/native-evidence.mjs";
+import { nativeContractVerify, assertNativeCapabilities, NEEDS } from "./lib/native-evidence.mjs";
 
 try {
   const { positionals, values } = parseArgs({ options: { help:{type:"boolean"}, "run-dir": { type: "string" } }, allowPositionals: true, strict: true });
@@ -10,6 +10,7 @@ try {
   else {
   if (positionals.length !== 1) throw new TypeError("用法: scripts/verify-digital-human-task-package <task-package.yaml|task-package.json>");
   const root = path.resolve(import.meta.dirname, "..");
+  assertNativeCapabilities(NEEDS.task);
   const result = nativeContractVerify({ root, kind: "task", file: path.resolve(positionals[0]), extra: values["run-dir"] ? ["--run-dir", path.resolve(values["run-dir"])] : [] });
   if (result.exitCode !== 0) { process.stderr.write(`数字人任务包验证失败: ${result.message}\n`); process.exitCode = result.exitCode; }
   else process.stdout.write("数字人任务包验证通过\n");

@@ -3,7 +3,7 @@
 import path from "node:path";
 import { parseArgs } from "node:util";
 import { decisionIO } from "./lib/user-decision-core.mjs";
-import { nativeEvidenceVerify } from "./lib/native-evidence.mjs";
+import { nativeEvidenceVerify, assertNativeCapabilities, NEEDS } from "./lib/native-evidence.mjs";
 const fail = (message, code = 1) => { process.stderr.write(`用户决定校验失败: ${message}\n`); process.exitCode = code; };
 try {
   const { positionals, values } = parseArgs({ allowPositionals: true, options: { root: { type: "string" }, requirements: { type: "string" }, continuation: { type: "boolean" } } });
@@ -19,6 +19,7 @@ try {
     extra.push("--continuation", "--requirements", inside(positionals[0]));
   } else if (values.requirements) extra.push("--requirements", inside(values.requirements));
   else extra.push("--from-record");
+  assertNativeCapabilities(NEEDS.userDecision);
   const result = nativeEvidenceVerify({ root, kind: "user-decision", file: inside(file), extra });
   if (result.exitCode === 0) process.stdout.write(values.continuation ? "已有授权与当前延续范围校验通过\n" : "用户决定及当前批准范围校验通过\n");
   else fail(result.message, result.exitCode);

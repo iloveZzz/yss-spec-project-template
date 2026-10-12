@@ -7,7 +7,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {contextBinary} from '../scripts/lib/native-context.mjs';
-import {nativeEvidenceVerify, nativeContractVerify, nativeLifecycleVerify, nativeDelegationAvailable, rootBoundRead} from '../scripts/lib/native-evidence.mjs';
+import {nativeEvidenceVerify, nativeContractVerify, nativeLifecycleVerify, nativeDelegationAvailable, rootBoundRead, NEEDS, missingCapabilities} from '../scripts/lib/native-evidence.mjs';
 import {generateTaskPackageDefaults, validateTaskPackage} from '../scripts/lib/task-package.mjs';
 import {parse as parseYamlText} from '../scripts/vendor/yaml.mjs';
 import {buildDecisionFixture} from '../scripts/lib/testing/user-decision-fixture.mjs';
@@ -547,3 +547,19 @@ for (const [name, mutate] of Object.entries(legacyCases)) {
     } finally { writeFileSync(tracker, original); }
   });
 }
+
+// 能力协商：yss 比这些脚本旧（没有对应能力令牌）时，进程内入口退回 Node 实现，命令行薄壳给出升级提示，而不是把 yss 的参数错误当成校验结论。
+test('能力协商：旧 yss 不委托，薄壳提示升级；新 yss 放行', {skip}, () => {
+  const stubDir = realpathSync(mkdtempSync(path.join(os.tmpdir(), 'yss-old-')));
+  process.on('exit', () => rmSync(stubDir, {recursive: true, force: true}));
+  const stub = path.join(stubDir, 'yss');
+  writeFileSync(stub, '#!/bin/sh\necho \'{"outputVersion":1,"status":"ok","code":"OK","result":{"nodeDelegation":["user-decision.requirements-object.v1"]}}\'\n', {mode: 0o755});
+  const env = {...process.env, YSS_NATIVE_BINARY: stub};
+  assert.deepEqual(missingCapabilities(NEEDS.approval, env), NEEDS.approval);
+  assert.deepEqual(missingCapabilities(['user-decision.requirements-object.v1'], env), []);
+  assert.equal(nativeDelegationAvailable(REPO, {}, env, [], NEEDS.approval), false);
+  assert.equal(nativeDelegationAvailable(REPO, {}, process.env, [], NEEDS.approval), true);
+  const shell = spawnSync(path.join(REPO, 'scripts', 'verify-approval-record'), ['--history', 'x.json'], {encoding: 'utf8', env});
+  assert.notEqual(shell.status, 0);
+  assert.match(shell.stderr, /缺少能力.*升级 yss/);
+});

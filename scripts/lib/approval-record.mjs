@@ -6,7 +6,7 @@ import {loadDigitalHumanRoles, countersignRuleForGate} from './digital-human-rol
 import {assertGateChecks} from './lifecycle-controls.mjs';
 import {assertImportedSpecPrerequisite} from './spec-baseline.mjs';
 import {assertPlanAggregateApproval} from './plan-spec-entry.mjs';
-import {nativeDelegationAvailable, nativeApprovalRecord, approvalDelegationRefs} from './native-evidence.mjs';
+import {nativeDelegationAvailable, nativeApprovalRecord, approvalDelegationRefs, NEEDS} from './native-evidence.mjs';
 import {assertUserDecisionRequirement, assertWorkUnitUserDecision, assertImplementationDecision} from './user-decision.mjs';
 import {validateAssetStructure, canonicalValue} from './structured-assets.mjs';
 import {assertCurrentApproval, approvalExpectationFromState, assertCurrentApprovalEvidenceRef, assertCurrentApprovalReferences} from './approval-current.mjs';
@@ -52,7 +52,7 @@ function delegableExpectation(record, options) {
   // v2 记录必须带消费者独立指定的审查任务上下文，否则交给进程内实现给出明确拒绝
   if (record.schema_version === 2 && !expected.review_context?.review_task_ref) return null;
   const root = path.resolve(options.root || ROOT);
-  return nativeDelegationAvailable(root, options, process.env, approvalDelegationRefs(record, expected)) ? expected : null;
+  return nativeDelegationAvailable(root, options, process.env, approvalDelegationRefs(record, expected), NEEDS.approval) ? expected : null;
 }
 // 已落盘的记录或组合包：每一行都有显式期望、且全部引用在根内才委托。
 function delegableFileExpectation(filePath, options) {
@@ -65,7 +65,7 @@ function delegableFileExpectation(filePath, options) {
   if (rows.some((row, i) => row.gate_id === 'gate.plan-approved' || !expected[i] || !Array.isArray(expected[i].basis) || !Array.isArray(expected[i].approval_scope)
     || row.schema_version === 2 && !expected[i].review_context?.review_task_ref)) return null;
   const refs = [filePath, ...rows.flatMap((row, i) => approvalDelegationRefs(row, expected[i]))];
-  return nativeDelegationAvailable(root, options, process.env, refs) ? (record.kind === 'review-bundle' ? expected : expected[0]) : null;
+  return nativeDelegationAvailable(root, options, process.env, refs, NEEDS.approval) ? (record.kind === 'review-bundle' ? expected : expected[0]) : null;
 }
 export function validateApprovalRecord(record, options = {}) {
   if (options.history === true || options.requireApproved === false) {
@@ -113,7 +113,7 @@ export function assertApprovedGateHasValidApproval(gateId,gateState,options = {}
     const root=path.resolve(options.root || ROOT);
     // 唯一实现在 yss：同一根的默认规则下，把门禁状态算出的期望交给 yss 判定（组合包按 gate 取行）。
     if (record.kind!=='review-bundle' && !options.read && Array.isArray(expected.basis) && !(record.schema_version===2 && !expected.review_context?.review_task_ref)
-      && nativeDelegationAvailable(root,{...options,defaultAuthorities:options.defaultAuthorities ?? !options.rolesDoc},process.env,[file,...approvalDelegationRefs(record,expected)]))
+      && nativeDelegationAvailable(root,{...options,defaultAuthorities:options.defaultAuthorities ?? !options.rolesDoc},process.env,[file,...approvalDelegationRefs(record,expected)],NEEDS.approval))
       return nativeApprovalRecord({root,file,gate:gateId,expected});
     return assertCurrentApproval(record,expected,{...options,rolesDoc});
   });

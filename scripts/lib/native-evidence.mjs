@@ -37,10 +37,39 @@ function runNativeVerify({root, kind, file, extra, environment, group}) {
 
 // 进程内调用方（工作流里校验已落盘的用户决定）的适配：只在能唯一定位 yss 且根是合法项目身份时才委托；
 // 自定义 rolesDoc/read 等注入项意味着调用方要的是进程内语义，不委托。
+// 每个委托路径依赖的 yss 能力令牌（yss capabilities --json 的 nodeDelegation）。缺令牌说明 yss 比这些脚本旧，
+// 进程内入口退回 Node 实现，命令行薄壳给出明确的升级提示，而不是把 yss 的 ARGUMENT 错误当成校验结论。
+export const NEEDS = {
+  userDecision: ['user-decision.requirements-object.v1', 'user-decision.validated-rows.v1'],
+  approval: ['approval.expected.v1', 'approval.binding.v1', 'approval.rule-rows.v1'],
+  task: ['task.directory-write-scope.v1'],
+  checkpoint: ['lifecycle.legacy-untracked-checkpoint.v1', 'template-source.verify-root.v1'],
+};
+const capabilityCache = new Map();
+export function nativeCapabilities(environment = process.env) {
+  const {binary, digest} = contextBinary(environment);
+  const key = `${binary}\0${digest}`;
+  if (!capabilityCache.has(key)) {
+    const run = spawnSync(binary, ['capabilities', '--json'], {encoding: 'utf8', timeout: 30000});
+    let tokens = [];
+    try { tokens = JSON.parse(run.stdout).result?.nodeDelegation ?? []; } catch { tokens = []; }
+    capabilityCache.set(key, new Set(tokens));
+  }
+  return capabilityCache.get(key);
+}
+export function missingCapabilities(needs, environment = process.env) {
+  const have = nativeCapabilities(environment);
+  return needs.filter((token) => !have.has(token));
+}
+export function assertNativeCapabilities(needs, environment = process.env) {
+  const missing = missingCapabilities(needs, environment);
+  if (missing.length) throw new Error(`NATIVE_CAPABILITY: 当前 yss 缺少能力 ${missing.join('、')}，请升级 yss（yss upgrade）后重试`);
+}
+
 // 标记「只是按项目根读取」的读取器：与默认读取等价，不影响委托；任何其他自带读取器（虚拟源、内存夹具）仍然阻止委托。
 export const rootBoundRead = (read) => Object.assign(read, {rootBound: true});
 
-export function nativeDelegationAvailable(root, options = {}, environment = process.env, refs = []) {
+export function nativeDelegationAvailable(root, options = {}, environment = process.env, refs = [], needs = []) {
   // 调用方自己注入的规则/读取器要的是进程内语义；defaultAuthorities 表示 rolesDoc/registry 只是从同一个根加载的默认值，可以委托。
   if (options.native === false || (options.read && options.read.rootBound !== true) || ((options.rolesDoc || options.registry) && options.defaultAuthorities !== true)) return false;
   // yss 只读项目根内的路径；引用落在根外（合成夹具等）时无法委托。
@@ -49,6 +78,7 @@ export function nativeDelegationAvailable(root, options = {}, environment = proc
   if (!refs.every(inside)) return false;
   try {
     contextBinary(environment);
+    if (needs.length && missingCapabilities(needs, environment).length) return false; // yss 比这些脚本旧：退回进程内实现
     // yss 需要完整的治理权威文件；合成夹具只有 yss-project.yaml 时不委托。
     const has = (ref) => statSync(path.join(root, ref), {throwIfNoEntry: false})?.isFile() === true;
     if (!has('yss-project.yaml') || !has('.template-spec/agents/digital-human-roles.yaml') || !has('.template-spec/process/lifecycle-registry.yaml')) return false;

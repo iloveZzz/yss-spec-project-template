@@ -2,7 +2,7 @@
 // 薄壳：校验语义归 yss（lifecycle verify --checkpoint），这里只翻译参数、透传结论与退出码。
 import path from "node:path";
 import { parseArgs } from "node:util";
-import { nativeLifecycleVerify } from "./lib/native-evidence.mjs";
+import { nativeLifecycleVerify, assertNativeCapabilities, NEEDS } from "./lib/native-evidence.mjs";
 
 // yss 的资产引用是项目根内的相对路径；根外路径原样交给 yss 拒绝。
 const inside = (root, ref) => { const rel = path.relative(root, path.resolve(ref)); return rel && !rel.startsWith("..") && !path.isAbsolute(rel) ? rel.split(path.sep).join("/") : path.resolve(ref); };
@@ -13,6 +13,7 @@ try {
   else {
     if (positionals.length !== 1) throw new TypeError("用法: scripts/verify-lifecycle-checkpoint <checkpoint.yaml|checkpoint.json>");
     const root = path.resolve(import.meta.dirname, "..");
+    assertNativeCapabilities(NEEDS.checkpoint);
     const result = nativeLifecycleVerify({ root, file: inside(root, positionals[0]), extra: values.history ? ["--history"] : [] });
     if (result.exitCode !== 0) { process.stderr.write(`生命周期 checkpoint 验证失败: ${result.message}\n`); process.exitCode = result.exitCode; }
     else process.stdout.write(values.history ? "历史兼容结构检查完成；不证明当前批准或流转，execution_authorization=not-evaluated\n" : "生命周期 checkpoint 验证通过\n");
