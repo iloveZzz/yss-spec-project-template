@@ -101,6 +101,21 @@ profiles:
           - ".template-source/process/node-core-layer.json"
         depends_on: []
         failure_mode: "scripts/lib 出现导入环，或 core 层模块反向导入上层（当前仓库的真实扫描在 1 秒内完成）"
+      - id: check.go-validator-replay
+        run: "node --test tests/go-validator-replay.test.mjs"
+        group: feature-assets
+        resources: ["native-cli"]
+        inputs_complete: true
+        input_patterns:
+          - "tests/go-validator-replay.test.mjs"
+          - "scripts/lib/native-evidence.mjs"
+          - "scripts/lib/native-context.mjs"
+          - "scripts/lib/user-decision.mjs"
+          - "scripts/lib/approval-record.mjs"
+          - "scripts/lib/testing/user-decision-fixture.mjs"
+          - ".template-source/distribution/yss-cli-pin.json"
+        depends_on: []
+        failure_mode: "Node 与固定版本 yss 对同一批用户决定、批准记录夹具的通过/拒绝结论或拒绝码不一致（唯一实现退役前的等价回放）"
       - id: check.contract-review-preparation
         run: "node --test tests/contract-review-preparation.test.mjs"
         group: feature-assets
@@ -1347,6 +1362,7 @@ routing:
       - tests/contract-review-preparation.test.mjs
       - scripts/verify-import-direction
       - tests/import-direction.test.mjs
+      - tests/go-validator-replay.test.mjs
       - .template-source/process/node-core-layer.json
       - tests/advance-maintenance-root.test.mjs
       - tests/specialist-business-inputs.test.mjs
