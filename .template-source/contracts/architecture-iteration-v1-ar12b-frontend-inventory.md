@@ -24,3 +24,26 @@
 2. 根仓：删 `profiles/frontend`，删前端 Node 实现与调用点（含 backend 覆盖层副本），删场景、夹具、验证登记与路由；文档、来源锁、分发清单去掉 frontend。
 3. 迁移规则：已有实例里被取代的前端文件按 FR-016 作为可拒绝的删除提出。
 4. 再继续 AR-12b 其余删除（approval/user-decision 等）。
+
+## 4. 维护者决定与实测规模（2026-10-13）
+
+维护者的决定：前端整条线都移除，包含 Spec 生命周期里的本地前端实现；前端技能（`yss-ui`、`formily` 系列、`yss-frontend-scaffold-generator` 等）保留；旧前端实例升级时明确拒绝并提示已移除，不删除、不迁移。
+
+按这个范围实测，根仓里提到 frontend 的非 Profile 文件（不含 `archify` 示例页与冻结的旧覆盖清单）有 70 多个，规模最大的几类：
+
+- 生命周期与合同：`lifecycle-registry.yaml`、`lifecycle-registry-baseline*.json`、`orchestration-contract.yaml`（41 处）、`digital-human-roles.yaml`（22 处）、`yss-skill-registry.yaml`（26 处）、`compiler-contract.yaml`、`project-scaffold-contract.schema.json`。**Slice 合同本身带 `frontend` 段**（`slice-contract.mjs`、`slice-contract-preparation.mjs`、`implementation-contract-compiler.mjs`、`harness-execution-scope.mjs`、`lifecycle-transition.mjs`、`lifecycle-readiness.mjs`、`lifecycle-execution-scope.mjs`），删它等于改 Slice 合同的 schema 与稳定 ID。
+- 交接域：`strategic-handoff.mjs`、`strategic-handoff-consumption.mjs`、`backend-delivery.mjs` 里的前端消费者路线（Handoff v4/v5 的 `consumer_routes` 含 `frontend-engineering-design`），同样要改交接包 schema 的消费者能力集合。
+- 测试与夹具：约 25 个文件（前端交付、既有 UI 基线、Slice 合同 v3、任务包前端边界、生命周期推进等）。
+- yss：Profile 登记、打包与发布工具、帮助与教程、约 16 个治理语义文件；`bundles.json.gz`、来源锁（四个 Profile 的数量约束）、版本对照表、固定二进制都要按「根仓先提交、再刷新来源锁、再重建 yss、再更新固定档」的顺序重来一遍。
+
+这不是 AR-12b 里一片能做完的事：它改稳定 ID、Slice 合同 schema 和 Handoff schema，并且依赖多步发布顺序，每一步都需要完整的验证。建议单独立项为 **AR-12c「前端整线移除」**，按下面顺序、每片独立提交与验证：
+
+1. 规格与计划修订（FR-016 的删除规则、旧实例「常驻两代」、被取代的稳定 ID 清单、冻结覆盖清单的处理），维护者确认。
+2. 交接域：Handoff 消费者路线去掉 frontend（schema 常驻两代，旧版只读）。
+3. Slice 合同与编译器：去掉 `frontend` 段（schema 常驻两代）。
+4. 生命周期注册表、编排合同、角色、技能注册表：去掉前端门禁、工作单元、产物、检查与推进目标。
+5. 根仓：删前端 Node 实现、场景、夹具、验证登记与路由，删 `profiles/frontend`。
+6. yss：移除 Profile 与前端治理语义，旧前端实例升级时明确拒绝；重建打包与固定档。
+7. 实例迁移：被取代的前端文件作为可拒绝的删除提出。
+
+AR-12b 余下部分（approval、user-decision 等 Node 实现的删除，以及各步骤保留的回放对照实现改为录制 fixture）与 AR-12c 互不依赖，可先做；其中交接源检查与 `business-tickets` 校验迁到 yss 的前置工作见 AR-11 总结第 7 节。

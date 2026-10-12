@@ -49,6 +49,8 @@ flowchart LR
   AR01 --> AR15[AR-15 schema 两代]
   AR12 --> AR12b[AR-12b Node 实现删除]
   AR12b --> AR17[AR-17 复测]
+  AR12 --> AR12c[AR-12c 前端整线移除]
+  AR12c --> AR17
   AR14 --> AR17
   AR15 --> AR17
   AR16 --> AR17
@@ -87,7 +89,8 @@ S3 的 AR-08 可以和 S1、S2 并行。S4 的 AR-15 只依赖 AR-01，可以提
 | AR-14 | FR-013、NFR-003 | L2：lifecycle-gate、cross-repo-contract（需反例） | yss-cli、根仓 | `lifecycle route --json` 返回规则摘录；`AGENTS.md` 只保留入口与硬门禁；lifecycle 技能入口相应修改 | AR-08、AR-13 | — |
 | AR-15 | FR-014 | L2：release-semantics、cross-repo-contract | yss-cli、根仓 | 每个 schema 常驻两代；更早版本移入 `yss migrate` 的读取范围；实例分发相应调整 | AR-01 | — |
 | AR-16 | FR-015、NFR-006 | L2：core-validator、release-semantics（需反例） | 根仓 | `template-verification-profiles.yaml` 只留 `fast` 与 `release` 两档；删除 `candidate`、`legacy-full`、`legacy_coverage`；删除资格校验层（`verification-qualification*`、`verification-report-validator`）或并入选择与报告模块；`ci-gate` 步骤相应调整 | AR-06 | — |
-| AR-17 | NFR-001、NFR-002 | L1：textual-only | 根仓 | 本计划第 7 节、规格状态 | AR-12b、AR-14、AR-15、AR-16 | — |
+| AR-12c | FR-010、FR-016 | L2：lifecycle-gate、cross-repo-contract、release-semantics（需反例） | yss-cli、根仓 | 前端整线移除：交接域与 Slice 合同的前端段、生命周期注册表与编排合同的前端门禁和工作单元、前端 Node 实现与 `profiles/frontend`、yss 的前端 Profile 与治理语义；旧实例明确拒绝升级；前端技能保留 | AR-12 | 顺序见盘点文档 §4 |
+| AR-17 | NFR-001、NFR-002 | L1：textual-only | 根仓 | 本计划第 7 节、规格状态 | AR-12b、AR-12c、AR-14、AR-15、AR-16 | — |
 
 「允许写入」之外的路径只读。`lifecycle-registry.yaml` 的阶段、门禁和工作单元结构，以及批准记录、交接包、数字人会签的语义，在本轮全部只读（规格「非目标范围」）。
 
@@ -153,6 +156,7 @@ S3 的 AR-08 可以和 S1、S2 并行。S4 的 AR-15 只依赖 AR-01，可以提
 | 2026-10-12 | AR-09 收口范围 | AR-09 验收缩为「入口薄壳 + 非交接调用方委托」，approval/user-decision 的 Node 实现删除与对应删除规则随 AR-11：实测回退中 47% 来自 `strategic-handoff` 的交接包源读取器、约 20% 来自战略决定复用，二者属 handoff 领域，不为现在就删而给 Go 加虚拟读取器；AC-010 的「技能里不再引用被退役实现」按领域分次满足 | 维护者 |
 | 2026-10-12 | AR-11 收口范围 | AR-11 按「handoff/context 校验入口薄壳 + `verify-strategic-context-import` 退役」收口；approval/user-decision 的 Node 实现删除顺延为 AR-12b（依赖 AR-12）。理由：阻塞点是 `strategic-handoff` 的源检查（虚拟读取器、源包自带规则）与 `business-tickets` 校验，二者仍在 Node 且自己校验批准；约 20 个生产调用点里一半以上属 backend/frontend 域，AR-12 迁走后剩余调用方最少，一次删净 | 维护者 |
 | 2026-10-13 | 前端移交验证不迁移 | 前端接收（`verify-frontend-delivery`）、前端战略预检、前端实现证据三项因这条线后续整个移除而不迁移到 yss；AR-12 第四片及未提交的第五片、yss-cli 对应改动全部丢弃；AR-12b 把前端移交验证的 Node 实现整条删除 | 维护者 |
+| 2026-10-13 | 前端整线移除范围 | 维护者：前端整条线移除，包含 Spec 生命周期里的本地前端实现；前端技能保留；旧前端实例升级时明确拒绝并提示已移除。实测改动涉及稳定 ID、Slice 合同与 Handoff 的 schema 和多步发布顺序，从 AR-12b 拆出为 AR-12c（见 `architecture-iteration-v1-ar12b-frontend-inventory.md`） | 维护者 |
 | 2026-10-11 | 合流方式 | 另立本合同，不并入 hardening；hardening 的 WP-08 移交本合同，WP-11 照常签署 | 维护者 |
 | 2026-10-11 | 重开的旧决定 | repo-slimming 地图中的「Profile 子模块形态」「Node 与 Go 单源方向」「共享脚本库单源化」「投影根收敛（WP-08）」「是否结束 `legacy-full`」五张票重开，由上面各项决定取代 | 维护者 |
 
@@ -175,7 +179,9 @@ S3 的 AR-08 可以和 S1、S2 并行。S4 的 AR-15 只依赖 AR-01，可以提
 | AR-10 | **task 已完成；slice、checkpoint 停在决定点（见 `architecture-iteration-v1-ar10-summary.md`）** | 根仓 `arch/ar-10`（基于 `arch/ar-09h`）；yss-cli `arch/ar-10`（`d25928e`，已固定到根仓） | task：回放 7 类 + 薄壳冒烟，对拍一致；修掉一处 Go/Node 差异（yss 拒绝 Node 生成的、以 `/` 结尾的目录写范围，现允许单个尾部 `/`）；写范围通配符 `**` 有意保留差异；`verify-digital-human-task-package` 换成 yss 薄壳；任务包全生命周期压力场景通过；固定二进制 `d25928e`。未做进程内委托（约 30 个调用点，命令行入口已覆盖主要生产调用）。**决定点**：`slice-contract verify` 是执行前检查（报告含 blockers），不等价于 `contract verify --kind slice` 的合同语义校验，需先定输出形态；`verify-lifecycle-checkpoint` 是约 12 个子校验的组合，与 yss `lifecycle verify` 的覆盖与一致率未量，建议先做只统计不改入口的对拍量测 | 未推送、未合并 |
 | AR-11 | **已完成（入口收口，删除顺延 AR-12b）；第三片后追加 `verify-strategic-context-import` 退役** | 根仓 `arch/ar-11`（基于 `arch/ar-10d`）；yss-cli `arch/ar-11`（本机构建验证，固定档未更新） | 见 `architecture-iteration-v1-ar11-summary.md`：交接包校验回放 8 类对拍一致（含 ZIP）；`scripts/strategic-handoff verify --bundle` 对目录与 ZIP 包委托给 yss（交付目录与旧 yss 仍走进程内）；新增能力令牌 `handoff.package-identity.v1`。第二片：交接消费回放 10 类一致并委托；第三片：spec-baseline 包校验与 Context 对账委托；`verify-strategic-context-import` 退役桩（提交 `3bf7c774`）。**顺延**：`sourceApproval`、`user-decision-reuse` 与 AR-09 的删除清单移交 AR-12b |
 | AR-12 | **已完成（前端三项不迁移）：第 1～5 片** | 根仓 `arch/ar-12`（基于 `arch/ar-11d`）；yss-cli `arch/ar-12`（`ec917e5`；均未推送，固定档仍为 `40926d1`） | 见 `architecture-iteration-v1-ar12-summary.md`：OpenAPI Draft validation record（`1ccb6287`，回放 17 类）、后端终点（`c84f2425`，9 类）、后端交付包（`7b111eaf`，8 类）、脚手架架构选择记录（14 类 + 模板模式，维护者选「yss 新增独立 kind」）、Slice 执行前检查（7 类，同形报告）换成 yss 薄壳；回放发现并修掉 Go 跨文件 `$ref` 缓存缺陷。**前端接收、前端预检、前端实现证据因决定整条移除而不迁移**（2026-10-13），第四片与第五片已丢弃，AR-12b 整条删除其 Node 实现 |
-| AR-12b～AR-17 | 未开始 | — | 规格与计划已 `accepted` |
+| AR-12b | **未开始（已调研）**：前端部分拆给 AR-12c，余下是 approval/user-decision 等 Node 实现的删除 | `arch/ar-12b`（基于 `arch/ar-12`） | 前端盘点见 `architecture-iteration-v1-ar12b-frontend-inventory.md` |
+| AR-12c | **未开始**：前端整线移除（待维护者确认第 1 步的规格修订后开工） | — | 同上 |
+| AR-13～AR-17 | 未开始 | — | 规格与计划已 `accepted` |
 
 ## 附录 A：度量口径
 
