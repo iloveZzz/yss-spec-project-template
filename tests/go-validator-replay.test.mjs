@@ -7,7 +7,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {contextBinary} from '../scripts/lib/native-context.mjs';
-import {nativeEvidenceVerify} from '../scripts/lib/native-evidence.mjs';
+import {nativeEvidenceVerify, nativeDelegationAvailable, rootBoundRead} from '../scripts/lib/native-evidence.mjs';
 import {buildDecisionFixture} from '../scripts/lib/testing/user-decision-fixture.mjs';
 import {validateUserDecision, assertUserDecisionRequirement} from '../scripts/lib/user-decision.mjs';
 import {validateApprovalRecord, approvalExpectationFromSubject} from '../scripts/lib/approval-record.mjs';
@@ -350,4 +350,15 @@ test('期望被调用方改动后不再采用绑定：委托的判定以改动�
   assert.equal(delegated.ok, false);
   assert.equal(delegated.code, inProcess.code);
   assert.equal(delegated.native, true);
+});
+
+// 委托判断：只按项目根读取的读取器与同根默认规则不阻止委托，其他自带读取器或规则仍然阻止（过渡期不改变进程内语义）。
+test('委托判断：rootBoundRead 与 defaultAuthorities 放行，自带虚拟读取器与自带规则仍阻止', {skip}, () => {
+  const read = (ref) => ref;
+  assert.equal(nativeDelegationAvailable(REPO, {}), true);
+  assert.equal(nativeDelegationAvailable(REPO, {read: rootBoundRead(read.bind(null))}), true);
+  assert.equal(nativeDelegationAvailable(REPO, {read}), false);
+  assert.equal(nativeDelegationAvailable(REPO, {rolesDoc: {}}), false);
+  assert.equal(nativeDelegationAvailable(REPO, {rolesDoc: {}, registry: {}, defaultAuthorities: true}), true);
+  assert.equal(nativeDelegationAvailable(REPO, {rolesDoc: {}, defaultAuthorities: true, native: false}), false);
 });

@@ -121,7 +121,7 @@ export function verifyExistingArchitecture(identity,bindings,{root,registry,exec
  const declaredReviews=new Set(collectCountersignGateIds(roles.gate_policy));
  const reviewBoundary=['check.architecture-reviewed','gate.technical-design-approved'].find(boundary=>declaredReviews.has(boundary));
  requireThat(reviewBoundary,'ARCH_REVIEW_MISSING','当前来源政策缺少既有架构边界审查入口');
- validateApprovalRecord(review,{rolesDoc:roles,requireApproved:true,root,expected:approvalExpectationForBoundAsset(reviewBoundary,bindings.manifest,{root})});
+ validateApprovalRecord(review,{rolesDoc:roles,defaultAuthorities:true,requireApproved:true,root,expected:approvalExpectationForBoundAsset(reviewBoundary,bindings.manifest,{root})});
  requireThat(['check.architecture-reviewed','gate.technical-design-approved'].includes(review.gate_id)&&text(baseline.id)&&text(baseline.version),'ARCH_REVIEW_MISSING','需要架构边界审查');
  const basis=existingArchitectureDigest(Object.fromEntries(Object.entries(baseline).filter(([k])=>k!=='boundary_review')));
  requireThat(review.artifact_bindings?.some(x=>x.id===baseline.id&&x.version===baseline.version&&x.digest===basis),'ARCH_REVIEW_STALE','架构审查未绑定当前基线');

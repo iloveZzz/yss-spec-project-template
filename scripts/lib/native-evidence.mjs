@@ -18,9 +18,12 @@ export function nativeEvidenceVerify({root, kind, file, extra = [], environment 
 
 // 进程内调用方（工作流里校验已落盘的用户决定）的适配：只在能唯一定位 yss 且根是合法项目身份时才委托；
 // 自定义 rolesDoc/read 等注入项意味着调用方要的是进程内语义，不委托。
+// 标记「只是按项目根读取」的读取器：与默认读取等价，不影响委托；任何其他自带读取器（虚拟源、内存夹具）仍然阻止委托。
+export const rootBoundRead = (read) => Object.assign(read, {rootBound: true});
+
 export function nativeDelegationAvailable(root, options = {}, environment = process.env, refs = []) {
   // 调用方自己注入的规则/读取器要的是进程内语义；defaultAuthorities 表示 rolesDoc/registry 只是从同一个根加载的默认值，可以委托。
-  if (options.native === false || options.read || ((options.rolesDoc || options.registry) && options.defaultAuthorities !== true)) return false;
+  if (options.native === false || (options.read && options.read.rootBound !== true) || ((options.rolesDoc || options.registry) && options.defaultAuthorities !== true)) return false;
   // yss 只读项目根内的路径；引用落在根外（合成夹具等）时无法委托。
   const real = (target) => { try { return realpathSync(target); } catch { return path.resolve(target); } };
   const inside = (ref) => typeof ref === 'string' && ref !== '' && !/^\w+:\/\//.test(ref) && !path.relative(real(root), real(path.resolve(root, ref))).startsWith('..');

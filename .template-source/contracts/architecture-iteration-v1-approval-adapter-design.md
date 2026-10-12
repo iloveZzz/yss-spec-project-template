@@ -1,6 +1,6 @@
 # 批准记录族 Node→Go 适配层设计（AR-09c）
 
-状态：设计；分片 1～4 已实现（见 §8～§11）；分片 5 已估算（§12），未开始。
+状态：设计；分片 1～4 已实现（见 §8～§11）；分片 5 已估算（§12）；维护者确认「5c 随 AR-11」，5a 已做（§13）。
 前置：`architecture-iteration-v1-plan.md` 的 AR-09b 行（用户决定入口已委托）。
 
 ## 1. 要解决的问题
@@ -150,3 +150,11 @@ yss-cli 分支 `arch/ar-09c` 加入 `--expected`（约 40 行，只接线，不�
 ### 需要维护者确认
 1. 接受「5c 随 AR-11」并修订 AR-09 的验收范围？
 2. 5a、5b 现在就做，先 5a？
+
+## 13. 分片 5a 实现记录
+
+- 维护者确认：5c（删除 Node 实现）随 AR-11；先做 5a。AR-09 的验收范围相应缩为「入口薄壳 + 非交接调用方委托」，Node 库保留给交接域。
+- 做法：不删除任何注入，而是**标记**注入是默认等价的：`rootBoundRead(fn)` 标记「只按项目根读取」的读取器（委托判断不再把它当自带读取器）；`defaultAuthorities: true` 标记 rolesDoc/registry 是从同一根读出的默认值。进程内语义完全不变，只是不再无谓地阻止委托。
+- 标记的生产调用点：`approved-execution-context`（读取器与三处 rolesDoc）、`existing-backend-architecture`、`business-ticket-lifecycle`、`lifecycle-transition` 的 `validateTicketFormalization` 默认读取器。
+- 不标记（仍在进程内）：`delivery-preflight`（传入的是经 `sourceApprovalPolicy` 变换后的政策，不是默认值）、`strategic-handoff`、`user-decision-reuse`（交接域，随 AR-11）；三个 Profile 里各自的 `lifecycle-transition` 副本（与根不同的覆盖版本）。
+- 验证：回放测试增委托判断 1 组，共 87 个通过；`approved-execution`、`existing-backend`、`business-tickets/handoff` 夹具测试与生命周期转换场景通过，共 114 个。这些测试多用合成根，不会真的走委托路径，所以标记的实际生效由「委托判断」测试与代码走查保证；真实实例上的端到端委托留待 5b 的实例化测试覆盖。

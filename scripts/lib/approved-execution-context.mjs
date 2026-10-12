@@ -10,6 +10,7 @@ import { ROOT, read, parse, safe, hash, digest, schema } from './strategic-hando
 import { countersignRuleForGate } from './digital-human-roles.mjs';
 import { validateApprovalRecord, loadApprovalRecord } from './approval-record.mjs';
 import { assertImplementationDecision } from './user-decision.mjs';
+import { rootBoundRead } from './native-evidence.mjs';
 import { loadSkillRegistry } from './skill-registry.mjs';
 
 const primeCache=Symbol('approval-schema-prime');
@@ -17,7 +18,7 @@ const contexts=new WeakMap();
 const gateId='gate.slice-contract-approved';
 const check=(ok,code,message)=>{if(!ok){const error=new TypeError(`${code}: ${message}`);error.code=code;throw error;}};
 const same=(a,b)=>digest(a)===digest(b);
-const ioFor=root=>({root,read:ref=>readFileSync(safe(root,path.relative(root,ref).split(path.sep).join('/')))});
+const ioFor=root=>({root,read:rootBoundRead(ref=>readFileSync(safe(root,path.relative(root,ref).split(path.sep).join('/'))))});
 
 /** Existing registrations require persisted input sections; array properties disappear in JSON. */
 export function assertExistingSliceStructure(contract) {
@@ -53,11 +54,11 @@ export function verifySliceContractApproval(binding,{root=process.cwd(),contract
     check(approval.repository_mode==='project-instance'&&approval.status!=='blocked'&&approval.blockers.length===0,'EXECUTION_APPROVAL_BLOCKED','主控 checkpoint 仍有阻断或不是产品实例');
     check(gate?.status==='approved'&&gate.subject_ref===binding.ref,'EXECUTION_APPROVAL_SCOPE','主控 gate 未批准当前持久化 Slice');
     check(review.implementation?.slice_contract_ref===binding.ref,'EXECUTION_APPROVAL_SCOPE','实施批准不指向当前 Slice 原始文件');
-    assertImplementationDecision({...review.implementation,user_decisions:review.user_decisions||[]},{...ioFor(root),rolesDoc:roles});
+    assertImplementationDecision({...review.implementation,user_decisions:review.user_decisions||[]},{...ioFor(root),rolesDoc:roles,defaultAuthorities:true});
     checkpointRef = binding.approval_ref;
   } else {
     // Historical source profiles that declared this a countersign gate retain their policy.
-    validateApprovalRecord(approval,{...ioFor(root),rolesDoc:roles,requireApproved:true,expected:approvalExpectationForBoundAsset(gateId,binding,{...ioFor(root),review_package:false})});
+    validateApprovalRecord(approval,{...ioFor(root),rolesDoc:roles,defaultAuthorities:true,requireApproved:true,expected:approvalExpectationForBoundAsset(gateId,binding,{...ioFor(root),review_package:false})});
     check(approval.gate_id===gateId&&approval.artifact_bindings?.some(item=>item.id===contract.contract_id&&item.version===contract.contract_version&&item.digest===binding.digest),'EXECUTION_APPROVAL_SCOPE','源会签未绑定当前 Slice 的身份、版本和字节');
   }
   if(contract.schema_version===3) verifySliceProfessionalReview(approval,{...binding,id:contract.contract_id,version:contract.contract_version},roles,root);
@@ -156,7 +157,7 @@ function verifySliceProfessionalReview(approval,binding,roles,root) {
     // Loading the selected conclusion validates the entire container and carries
     // its task/session identity into the same current-approval kernel.
     const row=loadApprovalRecord(safe(root,ref),'check.design-reviewed',ioFor(root));
-      validateApprovalRecord(row,{...ioFor(root),rolesDoc:roles,requireApproved:true,expected:approvalExpectationForCheckpoint('check.design-reviewed',approval.checks?.['check.design-reviewed'],{...ioFor(root),review_package:false})});
+      validateApprovalRecord(row,{...ioFor(root),rolesDoc:roles,defaultAuthorities:true,requireApproved:true,expected:approvalExpectationForCheckpoint('check.design-reviewed',approval.checks?.['check.design-reviewed'],{...ioFor(root),review_package:false})});
       check(row.drafter_principal_ref&&row.principal_ref!==row.drafter_principal_ref,'EXECUTION_REVIEW_NOT_INDEPENDENT','Slice 工程审查必须独立于起草者');
       check(row.subject_digest===binding.digest.slice(7)&&row.artifact_bindings?.some(x=>x.id===binding.id&&x.version===binding.version&&x.digest===binding.digest),'EXECUTION_REVIEW_STALE','Slice 工程审查未绑定当前合同');
       check(Array.isArray(row.findings)&&row.findings.every(x=>x.kind==='suggestion'?!!x.follow_up:['requirement-violation','missing-evidence','important-risk'].includes(x.kind)&&x.status==='resolved'),'EXECUTION_REVIEW_BLOCKED','Slice 工程审查有未关闭问题');
