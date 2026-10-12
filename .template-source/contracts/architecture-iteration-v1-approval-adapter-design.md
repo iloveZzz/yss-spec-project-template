@@ -1,6 +1,6 @@
 # 批准记录族 Node→Go 适配层设计（AR-09c）
 
-状态：设计，已用 Go 原型验证可行；实现分片见 §6，尚未开始。
+状态：设计；分片 1 已实现（见 §8）。
 前置：`architecture-iteration-v1-plan.md` 的 AR-09b 行（用户决定入口已委托）。
 
 ## 1. 要解决的问题
@@ -84,3 +84,11 @@ yss-cli 分支 `arch/ar-09c` 加入 `--expected`（约 40 行，只接线，不�
 1. 拒绝文案差异按 §5.1 建议处理（Go 在文案里保留内部码）？
 2. 分片 1 之前是否先扫描现有资产中「`.md` 主体但正文为 JSON」的用法（§5.2）？
 3. 分片 5 的合成根测试迁移是否单独成包并先估算？
+
+## 8. 分片 1 实现记录
+
+- 维护者确认：拒绝文案由 Go 保留内部码；先扫描 `.md` 主体；合成根测试迁移单独成包并先估算。
+- `.md` 主体扫描：仓库内只有 `tests/scenarios/verify-user-decision-scenarios.mjs` 的一处夹具把 JSON 写进 `subject.md`，真实资产没有；该夹具只在 Node 场景里用，未改动，新回放用 `.json` 主体。
+- Go：`--expected`（`arch/ar-09c`）；批准拒绝文案保留 `user-decision-responder-mismatch`。**未加** §3.1 的 `coverage.approval_validated`：仓库内没有调用方使用 `validateApprovalRecord` / `assertCurrentApproval` 的返回值（唯一一处在传入 rolesDoc 的 `plan-spec-entry`，不委托），适配层自行返回 `{subject_ref, approval_scope, execution_authorization}`。
+- Node：`nativeApprovalRecord`，`validateApprovalRecord` 在「v1、非 review-bundle、调用方给出显式期望、无 checkpoint、非 Plan 聚合、引用都在根内、无注入的 rolesDoc/read/registry」时委托。
+- 回放：`tests/go-validator-replay.test.mjs` 增 8 组（进程内与委托的结论、拒绝码一致，内部码保留），共 64 个通过。

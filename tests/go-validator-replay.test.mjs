@@ -10,7 +10,9 @@ import {contextBinary} from '../scripts/lib/native-context.mjs';
 import {nativeEvidenceVerify} from '../scripts/lib/native-evidence.mjs';
 import {buildDecisionFixture} from '../scripts/lib/testing/user-decision-fixture.mjs';
 import {validateUserDecision, assertUserDecisionRequirement} from '../scripts/lib/user-decision.mjs';
-import {validateApprovalRecord} from '../scripts/lib/approval-record.mjs';
+import {validateApprovalRecord, approvalExpectationFromSubject} from '../scripts/lib/approval-record.mjs';
+import {decisionDigest} from '../scripts/lib/user-decision-core.mjs';
+import {readFileSync} from 'node:fs';
 
 let binary;
 try { binary = contextBinary().binary; } catch { binary = null; }
@@ -165,3 +167,48 @@ test('verify-user-decision 薄壳：延续模式缺 continuation_ref 时拒绝�
   assert.notEqual(run.status, 0);
   assert.match(run.stderr, /continuation_ref/);
 });
+
+// 当前批准（v1，调用方给出显式期望）：进程内实现与委托给 yss 的结论、拒绝码必须一致，拒绝文案保留内部码。
+function currentApprovalCase() {
+  site = 'template-source';
+  const boundary = 'gate.product-design-approved';
+  const f = fixture({boundary});
+  const evidence = f.write('review-evidence.log', 'synthetic independent comparison');
+  const basis = [{ref: evidence, digest: decisionDigest(readFileSync(evidence)).slice(7)}];
+  const subjectRef = f.write('subject.json', JSON.stringify({gate_id: boundary, approval_scope: f.requirement.scope, basis, drafter_principal_ref: 'synthetic.drafter'}));
+  f.requirement.subject_ref = subjectRef;
+  f.record.request.items[0].subject.ref = subjectRef;
+  f.record.request.items[0].subject.digest = decisionDigest(readFileSync(subjectRef));
+  f.present(); f.record.responses = []; f.respond(); f.save();
+  const expected = approvalExpectationFromSubject(boundary, subjectRef, {root: REPO});
+  const record = {schema_version: 1, gate_id: boundary, decision: 'approved', actor_kind: 'biological-human', role_id: 'role.biological-human', runtime_id: 'runtime.generic', principal_ref: 'person.requester', subject_ref: subjectRef, approval_scope: f.requirement.scope, user_decision_ref: f.ref, subject_digest: decisionDigest(readFileSync(subjectRef)).slice(7), drafter_principal_ref: 'synthetic.drafter', basis};
+  return {f, record, expected, evidence, subjectRef};
+}
+const approvalCases = {
+  '通过': () => {},
+  '审查人不是原回复者': (c) => { c.record.principal_ref = 'person.someone-else'; },
+  '起草者自签': (c) => { c.record.principal_ref = 'synthetic.drafter'; },
+  '期望范围不同': (c) => { c.expected.approval_scope = ['other.scope']; },
+  '主体被改动': (c) => { writeFileSync(c.subjectRef, JSON.stringify({changed: true})); },
+  '依据过期': (c) => { writeFileSync(c.evidence, 'tampered'); },
+  '缺少起草者来源': (c) => { delete c.expected.drafter_principal_ref; },
+  '生物人门禁由数字人签': (c) => { c.record.actor_kind = 'digital-human'; c.record.role_id = 'role.product-manager'; },
+};
+for (const [name, mutate] of Object.entries(approvalCases)) {
+  test(`适配层等价（validateApprovalRecord 当前批准）：${name}`, {skip}, () => {
+    const c = currentApprovalCase();
+    mutate(c);
+    const run = (native) => {
+      try { validateApprovalRecord(c.record, {requireApproved: true, root: REPO, expected: c.expected, native}); return {ok: true}; } catch (error) { return {ok: false, code: error.code, message: error.message}; }
+    };
+    const inProcess = run(false);
+    const delegated = run(true);
+    assert.equal(delegated.ok, inProcess.ok, `结论不一致：进程内=${JSON.stringify(inProcess)} 委托=${JSON.stringify(delegated)}`);
+    if (!inProcess.ok) {
+      assert.equal(delegated.code, inProcess.code);
+      assert.equal(delegated.native, undefined);
+      // 进程内文案里的内部码（如 user-decision-responder-mismatch）委托后也必须保留
+      for (const token of inProcess.message.match(/user-decision-[a-z-]+/g) ?? []) assert.match(delegated.message, new RegExp(token));
+    }
+  });
+}

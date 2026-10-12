@@ -6,6 +6,7 @@ import {loadDigitalHumanRoles, countersignRuleForGate} from './digital-human-rol
 import {assertGateChecks} from './lifecycle-controls.mjs';
 import {assertImportedSpecPrerequisite} from './spec-baseline.mjs';
 import {assertPlanAggregateApproval} from './plan-spec-entry.mjs';
+import {nativeDelegationAvailable, nativeApprovalRecord, approvalDelegationRefs} from './native-evidence.mjs';
 import {assertUserDecisionRequirement, assertWorkUnitUserDecision, assertImplementationDecision} from './user-decision.mjs';
 import {validateAssetStructure, canonicalValue} from './structured-assets.mjs';
 import {assertCurrentApproval, approvalExpectationFromState, assertCurrentApprovalEvidenceRef, assertCurrentApprovalReferences} from './approval-current.mjs';
@@ -44,6 +45,13 @@ function validatePlanApproval(record, options) {
   if (JSON.stringify(canonicalValue(approvalIO(options).document(ref))) !== JSON.stringify(canonicalValue(record))) approvalError('APPROVAL_CURRENT_INVALID', '待验 Plan 记录不是 checkpoint 当前聚合批准');
   return assertPlanAggregateApproval(checkpoint, options);
 }
+function delegableExpectation(record, options) {
+  if (record.schema_version !== 1 || record.kind === 'review-bundle' || options.checkpoint || !options.expected) return null;
+  const expected = expectedFor(record, options);
+  if (!expected || !Array.isArray(expected.basis) || !Array.isArray(expected.approval_scope)) return null;
+  const root = path.resolve(options.root || ROOT);
+  return nativeDelegationAvailable(root, options, process.env, approvalDelegationRefs(record, expected)) ? expected : null;
+}
 export function validateApprovalRecord(record, options = {}) {
   if (options.history === true || options.requireApproved === false) {
     validateAssetStructure(record,'approval-record');
@@ -52,6 +60,9 @@ export function validateApprovalRecord(record, options = {}) {
   }
   assertCurrentApprovalReferences(record);
   if (record.gate_id === 'gate.plan-approved' && boundedPlanApproval(record, options)) return validatePlanApproval(record, options);
+  // 唯一实现在 yss：v1 记录、调用方给出显式期望时委托（v2 审查任务、review-bundle、checkpoint 推出的期望随后分片迁移）。
+  const delegated = delegableExpectation(record, options);
+  if (delegated) return nativeApprovalRecord({root: path.resolve(options.root || ROOT), record, expected: delegated});
   return withValidationPhase({root:options.root || ROOT,purpose:'approval-current',readOnly:true},()=>assertCurrentApproval(record,expectedFor(record,options),options));
 }
 export function validateApprovalRecordFile(filePath, options = {}) {
