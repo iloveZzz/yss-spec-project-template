@@ -6,6 +6,8 @@ import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {contextBinary} from '../../scripts/lib/native-context.mjs';
 
+const roots = new Set(); // 退出时统一清理，调用方也可以提前清理
+process.on('exit', () => { for (const dir of roots) rmSync(dir, {recursive: true, force: true}); });
 let template;
 let binary;
 try { binary = contextBinary().binary; } catch { binary = null; }
@@ -24,6 +26,7 @@ function templateInstance() {
 /** 返回一个新的项目根（已 realpath）；调用方负责清理。 */
 export function makeRoot(prefix = 'yss-test-') {
   const dir = realpathSync(mkdtempSync(path.join(os.tmpdir(), prefix)));
+  roots.add(dir);
   if (!binary) return dir;
   cpSync(templateInstance(), dir, {recursive: true, verbatimSymlinks: true});
   // init 留下的已完成事务日志绑定在原路径上，复制后会被识别为身份不符；它只是历史记录，复制件里不需要。

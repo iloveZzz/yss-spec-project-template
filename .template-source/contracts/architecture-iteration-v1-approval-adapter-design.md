@@ -1,6 +1,6 @@
 # 批准记录族 Node→Go 适配层设计（AR-09c）
 
-状态：设计；分片 1～4 已实现（见 §8～§11）；分片 5 已估算（§12）；维护者确认「5c 随 AR-11」，5a 已做（§13），5b 第一批已做（§14）。
+状态：设计；分片 1～4 已实现（见 §8～§11）；分片 5 已估算（§12）；维护者确认「5c 随 AR-11」，5a 已做（§13），5b 第一、二批已做（§14、§15）。
 前置：`architecture-iteration-v1-plan.md` 的 AR-09b 行（用户决定入口已委托）。
 
 ## 1. 要解决的问题
@@ -170,3 +170,10 @@ yss-cli 分支 `arch/ar-09c` 加入 `--expected`（约 40 行，只接线，不�
   4. 两处措辞不同的拒绝（决定依据变化的延续、组合包里 rejected 的行）：测试里放宽为接受两种措辞，码相同。
 - 已知限制：两个测试进程同时在模板源仓根下写 `.work` 并运行 yss 时，yss 的 Context 扫描会因目录变化报 `INPUT_DRIFT`（观察到一次）。`--test-concurrency=1`（fast 检查的默认）下不会发生；并行跑多个会写模板源仓根的测试文件时可能偶发。
 - 本批后依赖合成根的文件还剩约 10 个（见 §12），其中需要改写注册表写法的约 5 个。
+
+## 15. 分片 5b 第二批实现记录
+
+- 迁移 `tests/scenarios/verify-plan-spec-entry-scenarios.mjs`：其 Plan 夹具（`scripts/fixtures/user-decision/plan-fixture.mjs`）原先在合成根里写最小 `yss-project.yaml`，现在根已是真实实例时保留实例自己的身份文件，合成根才写最小身份。场景里 15+ 个 Plan 夹具根改用 `makeRoot`；用计数包装的 yss 实测，这个场景现在有 13 次 `evidence verify` 真正走到 yss（此前为 0）。无 yss 时同样通过。
+- 辅助 `makeRoot` 的退出清理改为统一的一个 `exit` 监听，避免多次创建时的监听器警告。
+- 验证登记要点（踩过）：`tests/scenarios/` 下由 `scripts/` 迁来的场景文件，在核验计划里按**历史路径**（`scripts/verify-*-scenarios`）匹配，登记检查的输入模式与命令要用历史路径，否则报「先登记本次行为和消费者」。
+- 评估后暂缓的文件：`slice-contract-v3/round2` 与 `approved-execution` 夹具族（根由 `approvedFixture`/`pilotFixture` 多层构造，已有 `nativeSeed` 机制，应改为复用它而不是 `makeRoot`）、`plan-review-control`（本身有多项既有失败，先修基线再迁）、`lifecycle-transition` 场景（大量调用不传 `root`，需逐个补）、`validate-technical-design` 等技能脚本测试。这些各自要改的是夹具构造，不是简单换根，逐个估算后再做。

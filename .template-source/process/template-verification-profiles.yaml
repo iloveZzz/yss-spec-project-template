@@ -60,6 +60,7 @@ profiles:
         group: feature-assets
         inputs_complete: true
         input_patterns:
+          - "scripts/fixtures/user-decision/plan-fixture.mjs"
           - ".template-source/tooling/node/test/approval-consumption.test.mjs"
           - "tests/helpers/yss-instance.mjs"
           - "tests/efficiency-distribution.test.mjs"
@@ -129,6 +130,17 @@ profiles:
           - "tests/scenarios/verify-user-decision-scenarios.mjs"
         depends_on: []
         failure_mode: "用户决定的 Node 实现（来源、展示、范围、撤回、会签绑定）在场景里被放行或误拒"
+      - id: check.plan-spec-entry-scenarios
+        run: "node scripts/verify-plan-spec-entry-scenarios"
+        group: feature-assets
+        resources: ["native-cli"]
+        inputs_complete: true
+        input_patterns:
+          - "scripts/verify-plan-spec-entry-scenarios"
+          - "scripts/fixtures/user-decision/plan-fixture.mjs"
+          - "tests/helpers/yss-instance.mjs"
+        depends_on: []
+        failure_mode: "Plan→Spec 入口的批准、用户决定与上下文调和在真实实例根上被放行或误拒"
       - id: check.contract-review-preparation
         run: "node --test tests/contract-review-preparation.test.mjs"
         group: feature-assets
@@ -1377,6 +1389,7 @@ routing:
       - tests/import-direction.test.mjs
       - tests/go-validator-replay.test.mjs
       - tests/helpers/yss-instance.mjs
+      - scripts/fixtures/user-decision/plan-fixture.mjs
       - .template-source/process/node-core-layer.json
       - tests/advance-maintenance-root.test.mjs
       - tests/specialist-business-inputs.test.mjs

@@ -9,6 +9,7 @@ import { assertPlanSpecEntry, assertPlanCheckpoint } from '../../scripts/lib/pla
 import { readFileSync } from 'node:fs';
 import { decisionDigest } from '../../scripts/lib/user-decision.mjs';
 import { buildPlanReviewFixture, completeSyntheticPlanReview } from '../../scripts/fixtures/plan-review-control/build-fixture.mjs';
+import { makeRoot } from '../helpers/yss-instance.mjs';
 
 // These replies are synthetic fixtures, never evidence for a real Plan approval.
 function verifyClarificationEntryBoundaries(temp) {
@@ -28,13 +29,13 @@ function verifyClarificationEntryBoundaries(temp) {
     for (const absent of [true, false]) cases.push([`延期 ${field} ${absent ? '缺失' : '空白'}`, f => { const item = deferred(); if (absent) delete item[field]; else item[field] = '  '; f.review.open_items.push(item); }, new RegExp(`延期项缺少 ${field}`)]);
   }
   for (const [name, mutate, expected] of cases) {
-    const f = buildPlanFixture(path.join(temp, `clarification-${name}`));
+    const f = buildPlanFixture(makeRoot('yss-plan-entry-'));
     mutate(f); f.reapprove();
     assert.throws(() => assertPlanSpecEntry(f.state, { root: f.root }), expected, name);
     process.stdout.write(`PASS 澄清入口拒绝: ${name}\n`);
   }
 
-  const f = buildPlanFixture(path.join(temp, 'combined-final-confirmation'));
+  const f = buildPlanFixture(makeRoot('yss-plan-entry-'));
   const summary = '共同理解：目标为小范围修订；MVP 为当前功能；非目标为新增业务边界；关键规则保持现状；验收例子为既有流程可执行；关键未决项已解决；非关键细节按责任人与解决时点延期；剩余不确定性明确。';
   f.write('clarification.md', `${summary}\n解决证据：原始决策回复和当前 Plan。\n`);
   const summaryAsset = { ref: 'clarification.md', digest: decisionDigest(readFileSync(path.join(f.root, 'clarification.md'))) };
@@ -109,7 +110,7 @@ try {
     ['错误范围', f => f.state.feature_id = 'feature.other'],
     ['调和未通过', f => f.review.context_reconciliation_ref = 'plan.md'],
   ];
-  const valid = buildPlanFixture(path.join(temp, 'valid'));
+  const valid = buildPlanFixture(makeRoot('yss-plan-entry-'));
   assert.equal(assertPlanSpecEntry(valid.state, { root: valid.root }).result, 'allowed');
   assert.equal(validateNextRoute('work-unit.plan-opportunity', 'work-unit.spec-synthesis', valid.state, { root: valid.root }).result, 'allowed');
   valid.review.open_items = [{ id: 'q-detail', critical: false, runnable_blocker: false, status: 'deferred', noncritical_reason: '不影响范围或关键规则', owner: '测试负责人', resolution_point: 'Spec 评审前', downstream_recipient: '测试需求负责人', evidence_refs: ['plan.md'] }];
@@ -171,13 +172,13 @@ try {
   valid.review.internal_checks['check.domain-strategy-approved'].approval_scope = ['feature.other']; valid.reapprove();
   assert.throws(() => assertPlanSpecEntry(valid.state, { root: valid.root }), /会签资产或范围不匹配/);
   for (const [name, mutate] of mutations) {
-    const f = buildPlanFixture(path.join(temp, name)); mutate(f); f.save();
+    const f = buildPlanFixture(makeRoot('yss-plan-entry-')); mutate(f); f.save();
     assert.throws(() => assertPlanSpecEntry(f.state, { root: f.root }), undefined, name);
   }
   for (const checkpoint of [{ next_work_unit: 'work-unit.spec-synthesis' }, { stage: 'stage.spec-architecture' }, { stage_trace: { completed_work_unit: 'work-unit.spec-synthesis' } }]) {
     assert.throws(() => assertPlanCheckpoint({ repository_mode: 'project-instance', ...checkpoint }), /plan-spec-entry-blocked/);
   }
-  const stale = buildPlanFixture(path.join(temp, 'stale-review'));
+  const stale = buildPlanFixture(makeRoot('yss-plan-entry-'));
   stale.review.internal_checks['check.domain-strategy-approved'].reason += ' changed'; stale.save();
   assert.throws(() => assertPlanSpecEntry(stale.state, { root: stale.root }), /user-decision-stale/);
 } finally { rmSync(temp, { recursive: true, force: true }); }
