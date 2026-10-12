@@ -5,9 +5,9 @@ import {randomUUID} from 'node:crypto';
 import path from 'node:path';
 import {contextBinary} from './native-context.mjs';
 
-export function nativeEvidenceVerify({root, kind, file, extra = [], environment = process.env}) {
+export function nativeEvidenceVerify({root, kind, file, extra = [], environment = process.env, group = 'evidence'}) {
   const {binary} = contextBinary(environment);
-  const args = ['evidence', 'verify', '--root', root, '--kind', kind, '--file', file, ...extra, '--json'];
+  const args = [group, 'verify', '--root', root, '--kind', kind, '--file', file, ...extra, '--json'];
   const run = spawnSync(binary, args, {cwd: root, env: environment, encoding: 'utf8', timeout: 120000, maxBuffer: 32 * 1024 * 1024});
   if (run.error || run.signal || !Number.isInteger(run.status)) throw new Error(`NATIVE_INTERRUPTED: ${run.error?.message || run.signal}`);
   let envelope;
@@ -99,4 +99,9 @@ export function nativeApprovalRecord({root: given, record, file, gate, expected,
   } finally {
     rmSync(dir, {recursive: true, force: true});
   }
+}
+
+// contract 领域（slice、task、scaffold、frontend-delivery）的校验，与 evidence 同一信封。
+export function nativeContractVerify(options) {
+  return nativeEvidenceVerify({...options, group: 'contract'});
 }

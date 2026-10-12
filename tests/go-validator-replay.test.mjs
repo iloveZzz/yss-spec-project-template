@@ -7,7 +7,8 @@ import os from 'node:os';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {contextBinary} from '../scripts/lib/native-context.mjs';
-import {nativeEvidenceVerify, nativeDelegationAvailable, rootBoundRead} from '../scripts/lib/native-evidence.mjs';
+import {nativeEvidenceVerify, nativeContractVerify, nativeDelegationAvailable, rootBoundRead} from '../scripts/lib/native-evidence.mjs';
+import {generateTaskPackageDefaults, validateTaskPackage} from '../scripts/lib/task-package.mjs';
 import {buildDecisionFixture} from '../scripts/lib/testing/user-decision-fixture.mjs';
 import {validateUserDecision, assertUserDecisionRequirement} from '../scripts/lib/user-decision.mjs';
 import {validateApprovalRecord, approvalExpectationFromSubject} from '../scripts/lib/approval-record.mjs';
@@ -361,4 +362,53 @@ test('委托判断：rootBoundRead 与 defaultAuthorities 放行，自带虚拟�
   assert.equal(nativeDelegationAvailable(REPO, {rolesDoc: {}}), false);
   assert.equal(nativeDelegationAvailable(REPO, {rolesDoc: {}, registry: {}, defaultAuthorities: true}), true);
   assert.equal(nativeDelegationAvailable(REPO, {rolesDoc: {}, defaultAuthorities: true, native: false}), false);
+});
+
+// 任务包（contract verify --kind task）：同一批生命周期任务包同时交给 Node 与 yss，结论一致；
+// 写范围条目允许以「/」结尾表示目录（Node 生成的任务包就是这样写），通配符「**」不是支持的写法，两边结论可以不同（见 AR-10 总结）。
+function taskPackage() {
+  site = 'template-source';
+  setup();
+  const dir = path.join(REPO, '.work', `replay-${process.pid}`);
+  mkdirSync(dir, {recursive: true});
+  const evidence = path.join(dir, `task-evidence-${++seq}.json`);
+  writeFileSync(evidence, JSON.stringify({ok: true}));
+  return {dir, value: generateTaskPackageDefaults('role.requirements-manager', {task_id: 'task-discovery', work_unit_id: 'work-unit.plan-opportunity', actor_id: 'role.requirements-manager.instance-1', stage_id: 'stage.plan', runtime_id: 'runtime.skill-projection', execution_state: 'Worker', workflow_status: 'not-started',
+    contract: {kind: 'lifecycle-work-unit', contract_id: 'lifecycle-discovery', contract_version: 1, status: 'issued', contract_ref: '.template-spec/process/lifecycle-registry.yaml', lifecycle_ref: '.template-spec/process/lifecycle-registry.yaml', artifact_refs: ['artifact.plan-record'], gate_refs: []},
+    inputs: ['CONTEXT.md'], objective: '执行有界生命周期工作单元', allowed_write_paths: ['docs/.scratch/'], forbidden_actions: ['不得越过主控门禁'], expected_outputs: ['结构化工作结果'], expected_evidence_files: [path.relative(REPO, evidence)], verification_commands: ['scripts/verify-template'], verification_results: [], downstream_consumers: ['role.lifecycle-orchestrator'],
+    convergence: {parent_work_unit: 'work-unit.plan-opportunity', convergence_ref: 'checkpoint:test', conflict_escalation: '返回主控'}})};
+}
+const taskCases = {
+  '通过（目录以 / 结尾）': () => {},
+  '通过（无尾斜杠）': (p) => { p.allowed_write_paths = ['docs/x']; },
+  '角色未覆盖阶段': (p) => { p.role_id = 'role.test-engineer'; },
+  '写路径是绝对路径': (p) => { p.allowed_write_paths = ['/etc/']; },
+  '缺目标': (p) => { delete p.objective; },
+  '未知工作单元': (p) => { p.work_unit_id = 'work-unit.unknown'; },
+  '合同引用不可读': (p) => { p.contract.contract_ref = 'none.yaml'; },
+};
+for (const [name, mutate] of Object.entries(taskCases)) {
+  test(`任务包回放：${name}`, {skip}, () => {
+    const c = taskPackage();
+    mutate(c.value);
+    const node = outcome(() => validateTaskPackage(c.value, {}));
+    const file = path.join(c.dir, `task-${++seq}.json`);
+    writeFileSync(file, JSON.stringify(c.value));
+    const r = nativeContractVerify({root: REPO, kind: 'task', file: path.relative(REPO, file)});
+    assert.equal(r.exitCode === 0, node.ok, `结论不一致：Node=${JSON.stringify(node)} Go=${r.exitCode} ${r.message}`);
+  });
+}
+test('verify-digital-human-task-package 薄壳：通过与拒绝都透传', {skip}, () => {
+  const c = taskPackage();
+  const file = path.join(c.dir, `task-shell-${++seq}.json`);
+  writeFileSync(file, JSON.stringify(c.value));
+  const run = (f) => spawnSync(path.join(REPO, 'scripts', 'verify-digital-human-task-package'), [f], {encoding: 'utf8', env: {...process.env, YSS_NATIVE_BINARY: binary}});
+  const ok = run(file);
+  assert.equal(ok.status, 0, ok.stderr);
+  assert.match(ok.stdout, /数字人任务包验证通过/);
+  c.value.work_unit_id = 'work-unit.unknown';
+  writeFileSync(file, JSON.stringify(c.value));
+  const bad = run(file);
+  assert.notEqual(bad.status, 0);
+  assert.match(bad.stderr, /数字人任务包验证失败/);
 });
