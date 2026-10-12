@@ -10,6 +10,7 @@ import { assertDecisionContinuation } from './decision-continuation.mjs';
 import { decisionError, decisionDigest, requestDigest, decisionIO, requireText } from './user-decision-core.mjs';
 export { decisionError, decisionDigest, requestDigest, decisionIO };
 import { platformProfile } from './backend-platform.mjs';
+import { nativeDelegationAvailable, nativeUserDecisionRequirement } from './native-evidence.mjs';
 
 // A capture preserves original author/time/text/reference. It is evidence, not an identity signature.
 function messageFromSource(source, io, policy) {
@@ -138,6 +139,10 @@ export function verifyUserDecisionFile(ref, options = {}) {
 export function assertUserDecisionRequirement(requirement, options = {}) {
   if (!requirement) decisionError("user-decision-response-required", "缺少当前决定及其范围");
   if (requirement.user_decision_ref && requirement.continuation_ref) decisionError("user-decision-proof-conflict", "当前决定与批准延续是两种证明路径，不得同时提供");
+  // 唯一实现在 yss：能委托就委托；无法定位 yss、根不是合法身份或注入了自定义规则时走下面的进程内实现（退役完成前的过渡）。
+  if (nativeDelegationAvailable(path.resolve(options.root || ROOT), options, process.env, [requirement.user_decision_ref || requirement.continuation_ref, requirement.subject_ref])) {
+    return nativeUserDecisionRequirement({ root: path.resolve(options.root || ROOT), requirement });
+  }
   if (requirement.continuation_ref) return assertDecisionContinuation(requirement, options.rolesDoc || loadDigitalHumanRoles(), { ...options, assertRequirement: assertUserDecisionRequirement });
   return verifyUserDecisionFile(requirement.user_decision_ref, { ...options, expected: [requirement] });
 }

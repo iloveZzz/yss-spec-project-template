@@ -9,7 +9,7 @@ import {spawnSync} from 'node:child_process';
 import {contextBinary} from '../scripts/lib/native-context.mjs';
 import {nativeEvidenceVerify} from '../scripts/lib/native-evidence.mjs';
 import {buildDecisionFixture} from '../scripts/lib/testing/user-decision-fixture.mjs';
-import {validateUserDecision} from '../scripts/lib/user-decision.mjs';
+import {validateUserDecision, assertUserDecisionRequirement} from '../scripts/lib/user-decision.mjs';
 import {validateApprovalRecord} from '../scripts/lib/approval-record.mjs';
 
 let binary;
@@ -133,4 +133,35 @@ test('verify-approval-record 薄壳：历史结构可读，没有当前上下文
   const current = run([file]);
   assert.notEqual(current.status, 0);
   assert.match(current.stderr, /会签记录校验失败/);
+});
+
+// 适配层：进程内入口 assertUserDecisionRequirement 委托给 yss 后，结论、拒绝码与已核验事项必须和进程内实现一致。
+for (const [name, mutate] of Object.entries(cases)) {
+  test(`适配层等价（assertUserDecisionRequirement）：${name}`, {skip}, () => {
+    site = 'template-source';
+    const f = fixture();
+    mutate(f);
+    f.save();
+    const run = (native) => {
+      try {
+        const r = assertUserDecisionRequirement(f.requirement, {root: REPO, native});
+        return {ok: true, validated: r.validated};
+      } catch (error) { return {ok: false, code: error.code}; }
+    };
+    const inProcess = run(false);
+    const delegated = run(true);
+    assert.equal(delegated.ok, inProcess.ok, `结论不一致：进程内=${JSON.stringify(inProcess)} 委托=${JSON.stringify(delegated)}`);
+    if (!inProcess.ok && !codeDiffers.has(name)) assert.equal(delegated.code, inProcess.code);
+    if (inProcess.ok) assert.deepEqual(delegated.validated.map((row) => [row.item_id, row.boundary, row.principal_ref, row.scope]), inProcess.validated.map((row) => [row.item_id, row.boundary, row.principal_ref, row.scope]));
+  });
+}
+
+test('verify-user-decision 薄壳：延续模式缺 continuation_ref 时拒绝，不静默通过', {skip}, () => {
+  site = 'template-source';
+  const f = fixture();
+  const input = path.join(path.dirname(f.ref), 'requirement.json');
+  writeFileSync(input, JSON.stringify(f.requirement));
+  const run = spawnSync(path.join(REPO, 'scripts', 'verify-user-decision'), ['--continuation', input], {encoding: 'utf8', env: {...process.env, YSS_NATIVE_BINARY: binary}});
+  assert.notEqual(run.status, 0);
+  assert.match(run.stderr, /continuation_ref/);
 });

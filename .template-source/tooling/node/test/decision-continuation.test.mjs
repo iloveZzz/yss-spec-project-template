@@ -48,9 +48,7 @@ test('ordinary engineering work reuses explicit authorization through public app
   const existingBackendReuse = [{ boundary: 'gate.backend-architecture-platform-approved', reason: '既有工程复用当前登记架构与固定工程基线中的实际 Spring Boot 版本' }];
   assertWorkUnitUserDecision('work-unit.technical-analysis', { user_decisions: [f.requirement], user_decision_not_applicable: existingBackendReuse });
   assertCheckpointUserDecisions({ repository_mode: 'project-instance', status: 'running', stage_trace: { completed_work_unit: 'work-unit.technical-analysis' }, human_review: { user_decisions: [f.requirement], not_applicable: existingBackendReuse } });
-  const input = f.save('requirement.json', f.requirement);
-  const cli = spawnSync('node', [fileURLToPath(new URL('../../../../scripts/verify-user-decision', import.meta.url)), '--continuation', input], { encoding: 'utf8' });
-  assert.equal(cli.status, 0, cli.stderr);
+  // 命令行入口已是 yss 的薄壳，只能在完整实例里运行，见 tests/go-validator-replay.test.mjs。
 }));
 test('product design can continue after independent review without a repeated human reply', () => fixture(f => {
   validateApprovalRecord({ schema_version: 1, gate_id: f.requirement.boundary, decision: 'approved', actor_kind: 'digital-human', role_id: 'role.test-engineer', runtime_id: 'runtime.generic', principal_ref: 'synthetic.reviewer', drafter_principal_ref: 'synthetic.worker', subject_ref: f.subject.ref, subject_digest:f.asset(f.subject.ref).digest.slice(7), basis:f.basis.map(x=>({ref:x.ref,digest:x.digest.slice(7)})), approval_scope: f.requirement.scope, continuation_ref: f.requirement.continuation_ref }, { requireApproved: true, root:f.root,expected:approvalExpectationFromSubject(f.requirement.boundary,f.subject.ref,{root:f.root}) });
