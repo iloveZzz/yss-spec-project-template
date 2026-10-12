@@ -56,10 +56,12 @@ profiles:
         depends_on: []
         failure_mode: "专职 Profile 的 Plan/Spec 本地路线偏离上游的唯一日常政策，业务分析角色被允许当 Worker，或专职角色被允许写另一端"
       - id: check.profile-consumers
-        run: "node --test --test-name-pattern='^(?!backend plugin receives)' tests/efficiency-distribution.test.mjs tests/native-context-retirement.test.mjs scripts/fixtures/contract-efficiency/distribution.test.mjs scripts/fixtures/reading-views/bundle.test.mjs scripts/fixtures/slice-contract-v3/round2.test.mjs scripts/fixtures/slice-contract-v3/scenarios.test.mjs scripts/fixtures/stage-tracking/tracking.test.mjs scripts/fixtures/spec-baseline/scenarios.mjs .template-source/tooling/node/test/approval-current.test.mjs .template-source/tooling/node/test/decision-continuation.test.mjs .template-source/tooling/node/test/lifecycle-progression.test.mjs .template-source/tooling/node/test/plugin-design-consumption.test.mjs .template-source/tooling/node/test/review-capabilities.test.mjs"
+        run: "node --test --test-name-pattern='^(?!backend plugin receives)' tests/efficiency-distribution.test.mjs tests/native-context-retirement.test.mjs scripts/fixtures/contract-efficiency/distribution.test.mjs scripts/fixtures/reading-views/bundle.test.mjs scripts/fixtures/slice-contract-v3/round2.test.mjs scripts/fixtures/slice-contract-v3/scenarios.test.mjs scripts/fixtures/stage-tracking/tracking.test.mjs scripts/fixtures/spec-baseline/scenarios.mjs .template-source/tooling/node/test/approval-consumption.test.mjs .template-source/tooling/node/test/approval-current.test.mjs .template-source/tooling/node/test/decision-continuation.test.mjs .template-source/tooling/node/test/lifecycle-progression.test.mjs .template-source/tooling/node/test/plugin-design-consumption.test.mjs .template-source/tooling/node/test/review-capabilities.test.mjs"
         group: feature-assets
         inputs_complete: true
         input_patterns:
+          - ".template-source/tooling/node/test/approval-consumption.test.mjs"
+          - "tests/helpers/yss-instance.mjs"
           - "tests/efficiency-distribution.test.mjs"
           - "tests/native-context-retirement.test.mjs"
           - "scripts/fixtures/contract-efficiency/distribution.test.mjs"
@@ -1374,6 +1376,7 @@ routing:
       - scripts/verify-import-direction
       - tests/import-direction.test.mjs
       - tests/go-validator-replay.test.mjs
+      - tests/helpers/yss-instance.mjs
       - .template-source/process/node-core-layer.json
       - tests/advance-maintenance-root.test.mjs
       - tests/specialist-business-inputs.test.mjs

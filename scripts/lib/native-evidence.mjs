@@ -50,7 +50,8 @@ export function nativeUserDecisionRequirement({root: given, requirement, environ
   try {
     const result = nativeEvidenceVerify({root, kind: 'user-decision', file, extra: ['--requirements', path.relative(root, candidate), ...(continuation ? ['--continuation'] : [])], environment});
     if (result.exitCode !== 0) throw Object.assign(new Error(result.message), {code: result.diagnostics[0]?.code ?? result.code, native: true});
-    return {validated: result.envelope.result?.coverage?.user_decision_validated ?? []};
+    const coverage = result.envelope.result?.coverage ?? {};
+    return {validated: coverage.user_decision_validated ?? [], ...(continuation ? {continued: coverage.user_decision_continuation?.continued === true, review_ref: coverage.user_decision_continuation?.review_ref} : {})};
   } finally {
     rmSync(candidate, {force: true});
   }
@@ -84,13 +85,15 @@ export function nativeApprovalRecord({root: given, record, file, gate, expected,
   const rows = Array.isArray(expected) ? expected : [expected];
   const bindings = rows.map(bindingFor);
   const byBinding = bindings.every(Boolean);
-  writeFileSync(expectedFile, JSON.stringify(byBinding ? bindings.map((binding, i) => ({...binding, boundary: rows[i].boundary})) : expected));
+  writeFileSync(expectedFile, JSON.stringify(byBinding ? bindings.map((binding, i) => ({...binding, boundary: rows[i].boundary, frozen: rows[i]})) : expected));
   let target = file ? path.resolve(root, file) : path.join(dir, 'candidate.json');
   if (!file) writeFileSync(target, JSON.stringify(record));
   try {
     const result = nativeEvidenceVerify({root, kind: 'approval', file: path.relative(root, target), extra: ['--require-approved', byBinding ? '--binding' : '--expected', path.relative(root, expectedFile), ...(gate ? ['--gate', gate] : [])], environment});
     if (result.exitCode !== 0) throw Object.assign(new Error(result.message), {code: result.diagnostics[0]?.code ?? result.code, native: true});
-    const done = rows.map((row) => ({subject_ref: row.subject_ref, approval_scope: [...row.approval_scope], execution_authorization: 'not-evaluated'}));
+    const rules = result.envelope.result?.coverage?.approval_validated ?? [];
+    // 与进程内一致：返回会签规则（bucket 等）再加主体、范围；组合包时 rules 按 gate 对应各行
+    const done = rows.map((row) => ({...(rules.find((entry) => entry.gate_id === row.boundary)?.rule ?? {}), subject_ref: row.subject_ref, approval_scope: [...row.approval_scope], execution_authorization: 'not-evaluated'}));
     if (byBinding) Object.defineProperty(done[0], 'expected_by_yss', {value: result.envelope.result?.coverage?.approval_expected, enumerable: false}); // 供对拍测试读取 yss 自己算出的期望（组合包时为最后一行）
     return Array.isArray(expected) ? done : done[0];
   } finally {

@@ -16,10 +16,11 @@ import {approvalExpectedFromTask} from '../../../../scripts/lib/review-capabilit
 import {parseDocument} from '../../../../scripts/vendor/yaml.mjs';
 import {readFileSync as snapshotRead} from '../../../../scripts/lib/validation-phase.mjs';
 import {sourceApproval} from '../../../../scripts/lib/strategic-handoff.mjs';
+import {makeRoot} from '../../../../tests/helpers/yss-instance.mjs';
 
 const digest = bytes => createHash('sha256').update(bytes).digest('hex');
 function fixture(run) {
- const root = mkdtempSync(path.join(tmpdir(), 'yss-current-approval-'));
+ const root = makeRoot('yss-current-approval-');
  const save = (ref, value) => writeFileSync(path.join(root, ref), typeof value === 'string' ? value : JSON.stringify(value));
  const asset = ref => ({ref,digest:digest(readFileSync(path.join(root,ref)))});
  try {

@@ -1,6 +1,6 @@
 # 批准记录族 Node→Go 适配层设计（AR-09c）
 
-状态：设计；分片 1～4 已实现（见 §8～§11）；分片 5 已估算（§12）；维护者确认「5c 随 AR-11」，5a 已做（§13）。
+状态：设计；分片 1～4 已实现（见 §8～§11）；分片 5 已估算（§12）；维护者确认「5c 随 AR-11」，5a 已做（§13），5b 第一批已做（§14）。
 前置：`architecture-iteration-v1-plan.md` 的 AR-09b 行（用户决定入口已委托）。
 
 ## 1. 要解决的问题
@@ -158,3 +158,15 @@ yss-cli 分支 `arch/ar-09c` 加入 `--expected`（约 40 行，只接线，不�
 - 标记的生产调用点：`approved-execution-context`（读取器与三处 rolesDoc）、`existing-backend-architecture`、`business-ticket-lifecycle`、`lifecycle-transition` 的 `validateTicketFormalization` 默认读取器。
 - 不标记（仍在进程内）：`delivery-preflight`（传入的是经 `sourceApprovalPolicy` 变换后的政策，不是默认值）、`strategic-handoff`、`user-decision-reuse`（交接域，随 AR-11）；三个 Profile 里各自的 `lifecycle-transition` 副本（与根不同的覆盖版本）。
 - 验证：回放测试增委托判断 1 组，共 87 个通过；`approved-execution`、`existing-backend`、`business-tickets/handoff` 夹具测试与生命周期转换场景通过，共 114 个。这些测试多用合成根，不会真的走委托路径，所以标记的实际生效由「委托判断」测试与代码走查保证；真实实例上的端到端委托留待 5b 的实例化测试覆盖。
+
+## 14. 分片 5b 第一批实现记录
+
+- 测试辅助 `tests/helpers/yss-instance.mjs`：有固定版本 yss 时，现场 `yss init --profile spec` 一次，之后每个用例复制一份（删掉复制来的 `.yss/transactions`——init 留下的已完成事务日志绑定在原路径上，复制后会被识别为身份不符）；没有 yss 时退回临时目录，测试仍可跑。
+- 迁移了三个测试：`decision-continuation`（16 个）、`approval-current` 的 `fixture` 部分、`approval-consumption`（4 个）。这是第一次在真实实例上端到端走委托：延续证明由 yss 校验、批准按绑定期望校验。
+- 因此暴露并修掉的差异：
+  1. 延续证明通过时调用方需要 `continued`、`review_ref`：yss 新增 `coverage.user_decision_continuation`。
+  2. 调用方需要通过校验的会签规则（`bucket` 等）：yss 新增 `coverage.approval_validated`。
+  3. **绑定重算削弱了「期望冻结」**：主体在算出期望之后被改动、记录又随之更新时，按绑定重算会放行，进程内（冻结期望）会拒绝。修法：绑定条目随带冻结的期望（`frozen`），yss 重算后必须与之一致，否则 `APPROVAL_CURRENT_INVALID: 当前主体摘要与消费边界冻结摘要不匹配`，与进程内措辞一致。
+  4. 两处措辞不同的拒绝（决定依据变化的延续、组合包里 rejected 的行）：测试里放宽为接受两种措辞，码相同。
+- 已知限制：两个测试进程同时在模板源仓根下写 `.work` 并运行 yss 时，yss 的 Context 扫描会因目录变化报 `INPUT_DRIFT`（观察到一次）。`--test-concurrency=1`（fast 检查的默认）下不会发生；并行跑多个会写模板源仓根的测试文件时可能偶发。
+- 本批后依赖合成根的文件还剩约 10 个（见 §12），其中需要改写注册表写法的约 5 个。
