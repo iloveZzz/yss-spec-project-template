@@ -1,6 +1,6 @@
 # 批准记录族 Node→Go 适配层设计（AR-09c）
 
-状态：设计；分片 1、2 已实现（见 §8、§9）。
+状态：设计；分片 1、2、3 已实现（见 §8～§10）。
 前置：`architecture-iteration-v1-plan.md` 的 AR-09b 行（用户决定入口已委托）。
 
 ## 1. 要解决的问题
@@ -99,3 +99,10 @@ yss-cli 分支 `arch/ar-09c` 加入 `--expected`（约 40 行，只接线，不�
 - Go 无需改动（`--expected` 数组按 boundary 取项已覆盖组合包；固定二进制仍是 `c03edea`）。
 - 回放：在模板源仓根用真实注册表与角色政策生成待审包（`prepareReviewPackage`），批准后对拍进程内与委托，6 类（通过、仍 pending、审查人自签、期望范围与任务不符、任务摘要过期、主体被改动）× 组合包文件与单行记录，结论与拒绝码一致；除「审查人自签」在读取记录结构的进程内前置检查就被拒绝外，其余拒绝都经过委托。共 70 个通过。
 - 影响范围测试：approval-current、review-capabilities、approval-consumption、lifecycle-progression、lifecycle-controls 共 94 个，以及生命周期转换场景，全部通过。
+
+## 10. 分片 3 实现记录（缩小范围）
+
+- 设计原定「整份 checkpoint 一次委托」。实现时改为在 `assertApprovedGateHasValidApproval`（`assertCheckpointApprovals` 与 `assertStrategicWorkUnitDecision` 都经过它）里，把由门禁状态算出的期望交给分片 1、2 已有的显式期望入口，并用 `--gate` 让组合包只取该门禁的行。原因：期望的计算分片 4 才迁移，整份 checkpoint 委托会让 Go 重算期望，与 Node 同时存在两套；逐门禁委托不改任何校验语义，只改判定的执行位置，且每个门禁各一次子进程的开销与进程内逐门禁校验同量级。
+- `assertCheckpointApprovals` 向内传 `defaultAuthorities`：它自己加载的 rolesDoc/registry 只是同一根的默认值，不再因此拒绝委托；调用方自己传入的 rolesDoc/registry 仍然不委托。
+- 不委托、仍在进程内：Plan 聚合批准、门禁检查（`assertGateChecks`）、自定义 rolesDoc/registry/read。
+- 回放：门禁状态 6 类（通过、审查人非原回复者、起草者自签、状态范围与记录不同、主体被改动、依据过期），进程内与委托结论和拒绝码一致，拒绝都经过委托。回放测试共 76 个通过；影响范围测试（approval-current、digital-human-roles、lifecycle-controls、用户决定场景）通过。

@@ -19,7 +19,8 @@ export function nativeEvidenceVerify({root, kind, file, extra = [], environment 
 // 进程内调用方（工作流里校验已落盘的用户决定）的适配：只在能唯一定位 yss 且根是合法项目身份时才委托；
 // 自定义 rolesDoc/read 等注入项意味着调用方要的是进程内语义，不委托。
 export function nativeDelegationAvailable(root, options = {}, environment = process.env, refs = []) {
-  if (options.native === false || options.rolesDoc || options.read || options.registry) return false;
+  // 调用方自己注入的规则/读取器要的是进程内语义；defaultAuthorities 表示 rolesDoc/registry 只是从同一个根加载的默认值，可以委托。
+  if (options.native === false || options.read || ((options.rolesDoc || options.registry) && options.defaultAuthorities !== true)) return false;
   // yss 只读项目根内的路径；引用落在根外（合成夹具等）时无法委托。
   const real = (target) => { try { return realpathSync(target); } catch { return path.resolve(target); } };
   const inside = (ref) => typeof ref === 'string' && ref !== '' && !/^\w+:\/\//.test(ref) && !path.relative(real(root), real(path.resolve(root, ref))).startsWith('..');
@@ -60,7 +61,7 @@ export function approvalDelegationRefs(record, expected) {
 
 // 委托校验当前批准：record 为待验记录（内存对象，写成候选文件）或 file 为已落盘的记录/组合包路径；
 // expected 为调用方独立算出的当前消费期望（单个对象，或组合包按 boundary 区分的数组）。拒绝时抛出带 yss 拒绝码的错误。
-export function nativeApprovalRecord({root: given, record, file, expected, environment = process.env}) {
+export function nativeApprovalRecord({root: given, record, file, gate, expected, environment = process.env}) {
   const root = realpathSync(given);
   const dir = path.join(root, '.work', 'native-candidates', `approval-${process.pid}-${randomUUID()}`);
   mkdirSync(dir, {recursive: true});
@@ -69,7 +70,7 @@ export function nativeApprovalRecord({root: given, record, file, expected, envir
   let target = file ? path.resolve(root, file) : path.join(dir, 'candidate.json');
   if (!file) writeFileSync(target, JSON.stringify(record));
   try {
-    const result = nativeEvidenceVerify({root, kind: 'approval', file: path.relative(root, target), extra: ['--require-approved', '--expected', path.relative(root, expectedFile)], environment});
+    const result = nativeEvidenceVerify({root, kind: 'approval', file: path.relative(root, target), extra: ['--require-approved', '--expected', path.relative(root, expectedFile), ...(gate ? ['--gate', gate] : [])], environment});
     if (result.exitCode !== 0) throw Object.assign(new Error(result.message), {code: result.diagnostics[0]?.code ?? result.code, native: true});
     const rows = Array.isArray(expected) ? expected : [expected];
     const done = rows.map((row) => ({subject_ref: row.subject_ref, approval_scope: [...row.approval_scope], execution_authorization: 'not-evaluated'}));

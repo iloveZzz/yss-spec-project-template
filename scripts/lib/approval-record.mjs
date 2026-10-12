@@ -109,7 +109,13 @@ export function assertApprovedGateHasValidApproval(gateId,gateState,options = {}
     const file=resolveApprovalRef(gateState.approval_ref,options.checkpointPath || ROOT,options);
     // A gate assertion always consumes current authority. History options only
     // belong to the separate history reader and cannot weaken this boundary.
-    return assertCurrentApproval(loadApprovalRecord(file,gateId,options),approvalExpectationFromState(gateId,gateState,options),{...options,rolesDoc});
+    const record=loadApprovalRecord(file,gateId,options),expected=approvalExpectationFromState(gateId,gateState,options);
+    const root=path.resolve(options.root || ROOT);
+    // 唯一实现在 yss：同一根的默认规则下，把门禁状态算出的期望交给 yss 判定（组合包按 gate 取行）。
+    if (record.kind!=='review-bundle' && !options.read && Array.isArray(expected.basis) && !(record.schema_version===2 && !expected.review_context?.review_task_ref)
+      && nativeDelegationAvailable(root,{...options,defaultAuthorities:options.defaultAuthorities ?? !options.rolesDoc},process.env,[file,...approvalDelegationRefs(record,expected)]))
+      return nativeApprovalRecord({root,file,gate:gateId,expected});
+    return assertCurrentApproval(record,expected,{...options,rolesDoc});
   });
 }
 export function assertCheckpointApprovals(checkpoint,checkpointPath,options = {}) {
@@ -119,7 +125,7 @@ export function assertCheckpointApprovals(checkpoint,checkpointPath,options = {}
     for (const [gateId,state] of Object.entries(checkpoint?.gates || {})) {
       if (!known.has(gateId)) approvalError('APPROVAL_CURRENT_INVALID',`未知或已退役门禁: ${gateId}；历史记录只读，不自动迁移批准`);
       if (state.status === 'approved') assertGateChecks(gateId,checkpoint,{...options,registry,rolesDoc});
-      assertApprovedGateHasValidApproval(gateId,state,{...options,checkpoint,checkpointPath,registry,rolesDoc});
+      assertApprovedGateHasValidApproval(gateId,state,{...options,checkpoint,checkpointPath,registry,rolesDoc,defaultAuthorities:!options.rolesDoc && !options.registry});
     }
   });
 }

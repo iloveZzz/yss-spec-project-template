@@ -19,7 +19,7 @@ import {approvalExpectedFromTask} from '../scripts/lib/review-capabilities.mjs';
 import {loadRegistry} from '../scripts/lib/lifecycle-registry.mjs';
 import {loadDigitalHumanRoles} from '../scripts/lib/digital-human-roles.mjs';
 import {parseDocument} from '../scripts/vendor/yaml.mjs';
-import {validateApprovalRecordFile} from '../scripts/lib/approval-record.mjs';
+import {validateApprovalRecordFile, assertApprovedGateHasValidApproval} from '../scripts/lib/approval-record.mjs';
 
 let binary;
 try { binary = contextBinary().binary; } catch { binary = null; }
@@ -270,5 +270,38 @@ for (const [name, mutate] of Object.entries(v2Cases)) {
     };
     check('组合包文件', (native) => validateApprovalRecordFile(path.join(REPO, c.bundleFile), {requireApproved: true, root: REPO, expected: c.expected, native}));
     check('单行记录', (native) => validateApprovalRecord(c.bundle.reviews[1], {requireApproved: true, root: REPO, expected: c.expected[1], native}));
+  });
+}
+
+// 门禁状态：checkpoint 里 approved 的门禁由状态算出期望，再判定其批准记录（assertApprovedGateHasValidApproval 的委托）。
+function gateStateCase() {
+  const c = currentApprovalCase();
+  const rel = (file) => path.relative(REPO, file);
+  const approvalRef = path.join(path.dirname(rel(c.f.ref)), 'approval.json');
+  const state = {status: 'approved', approval_ref: approvalRef, subject_ref: rel(c.subjectRef), approval_scope: [...c.record.approval_scope], basis: c.record.basis.map((asset) => ({ref: rel(asset.ref), digest: asset.digest})), drafter_principal_ref: 'synthetic.drafter'};
+  c.record.subject_ref = rel(c.subjectRef);
+  c.record.basis = state.basis;
+  c.record.user_decision_ref = rel(c.f.ref);
+  const writeRecord = () => writeFileSync(path.join(REPO, approvalRef), JSON.stringify(c.record));
+  writeRecord();
+  return {...c, state, writeRecord};
+}
+const gateCases = {
+  '通过': () => {},
+  '审查人不是原回复者': (c) => { c.record.principal_ref = 'person.someone-else'; c.writeRecord(); },
+  '起草者自签': (c) => { c.record.principal_ref = 'synthetic.drafter'; c.writeRecord(); },
+  '状态范围与记录不同': (c) => { c.state.approval_scope = ['other.scope']; },
+  '主体被改动': (c) => { writeFileSync(c.subjectRef, JSON.stringify({changed: true})); },
+  '依据过期': (c) => { writeFileSync(c.evidence, 'tampered'); },
+};
+for (const [name, mutate] of Object.entries(gateCases)) {
+  test(`适配层等价（assertApprovedGateHasValidApproval 门禁状态）：${name}`, {skip}, () => {
+    const c = gateStateCase();
+    mutate(c);
+    const gate = 'gate.product-design-approved';
+    const run = (native) => outcome(() => assertApprovedGateHasValidApproval(gate, c.state, {root: REPO, checkpointPath: REPO, native}));
+    const inProcess = run(false), delegated = run(true);
+    assert.equal(delegated.ok, inProcess.ok, `结论不一致：进程内=${JSON.stringify(inProcess)} 委托=${JSON.stringify(delegated)}`);
+    if (!inProcess.ok) { assert.equal(delegated.code, inProcess.code); assert.equal(delegated.native, true, '应已委托'); }
   });
 }
