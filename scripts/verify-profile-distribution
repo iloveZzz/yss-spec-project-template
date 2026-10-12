@@ -6,7 +6,7 @@ import { evaluateAll, formatReport } from './lib/profile-distribution.mjs';
 const SCRIPT_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 function usage() {
-  return '用法: scripts/verify-profile-distribution [--root <目录>]\n只读；backend / frontend / design 的分发策略没有排除根仓声明的「仅模板源」脚本、或让技能目录里的测试目录随实例分发时失败。无法评估（Profile 未检出）也失败。';
+  return '用法: scripts/verify-profile-distribution [--root <目录>]\n只读；backend / frontend / design 的分发策略没有排除根仓声明的「仅模板源」脚本、或批量排除旧实例已登记的 Skill 测试目录时失败。无法评估（Profile 未检出）也失败。';
 }
 
 try {

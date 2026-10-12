@@ -7,12 +7,12 @@ import { spawnSync } from 'node:child_process';
  *
  * backend / frontend / design 的分发策略是「整目录放行 + 排除清单」：新增一个仅模板源使用的脚本，只要没写进该 Profile 自己的
  * excludePaths，就会进入每一个新实例。本检查以根仓已声明的「仅模板源」脚本为准，核对每个 Profile 有没有同样排除，并保证
- * 技能目录里的测试目录不分发。判定逻辑镜像 yss-cli 的 internal/bundle/producer.go includedByManifest。
+ * 不用后缀规则批量移除旧实例已登记的 Skill 测试文件。判定逻辑镜像 yss-cli 的 internal/bundle/producer.go includedByManifest。
  */
 export const PROFILES = ['backend', 'design', 'frontend'];
 export const BUNDLE_PROFILE_REF = '.template-source/distribution/bundle-profile.json';
-/** 必须被后缀规则排除的路径段名：技能目录里的测试目录。 */
-export const REQUIRED_SUFFIXES = ['tests', 'test'];
+/** 批量排除这些目录会破坏旧实例迁移；退役必须另外满足逐文件的可信来源合同。 */
+const MANAGED_TEST_SUFFIXES = ['tests', 'test'];
 
 /**
  * 根仓排除、但 Profile 实例里确实需要的脚本。写明谁在用它；依赖消失后这一条会自己失效并让检查失败，提示删除。
@@ -84,8 +84,8 @@ export function evaluateProfile({ root, profile, rootManifest }) {
   }
 
   const suffixes = list(manifest, 'excludePathSuffixes');
-  for (const required of REQUIRED_SUFFIXES) {
-    if (!suffixes.includes(required)) findings.push({ kind: 'test-directory-not-excluded', path: required });
+  for (const suffix of MANAGED_TEST_SUFFIXES) {
+    if (suffixes.includes(suffix)) findings.push({ kind: 'managed-test-directory-excluded', path: suffix });
   }
   const collateral = new Set();
   for (const file of tracked) {
@@ -105,14 +105,14 @@ export function evaluateAll(root) {
 
 const MESSAGES = {
   'template-source-script-shipped': (f) => `根仓声明为「仅模板源」的 ${f.path}（${f.files} 个文件）会随该 Profile 的实例分发；写进该 Profile 的 excludePaths，若实例确实需要它则登记到 PROFILE_NEEDS 并写明原因`,
-  'test-directory-not-excluded': (f) => `分发策略缺少 excludePathSuffixes: "${f.path}"，技能目录里的测试目录会随实例分发`,
+  'managed-test-directory-excluded': (f) => `excludePathSuffixes: "${f.path}" 会批量移除旧实例已登记的 Skill 文件；在逐文件可信退役合同完成前继续分发，避免迁移冲突`,
   'suffix-collateral': (f) => `后缀规则会误伤 ${f.path}`,
 };
 
 export function formatReport(result) {
   const lines = [];
   for (const report of result.reports) {
-    if (!report.findings.length && !report.staleNeeds.length) { lines.push(`通过 ${report.profile.padEnd(9)} 已排除仅模板源脚本，测试目录不分发（跟踪 ${report.tracked} 个文件）`); continue; }
+    if (!report.findings.length && !report.staleNeeds.length) { lines.push(`通过 ${report.profile.padEnd(9)} 已排除仅模板源脚本，未使用测试目录批量排除规则（跟踪 ${report.tracked} 个文件）`); continue; }
     for (const finding of report.findings) lines.push(`违规 ${report.profile}: ${MESSAGES[finding.kind](finding)}`);
     for (const stale of report.staleNeeds) lines.push(`过期 ${report.profile}: PROFILE_NEEDS 里的 ${stale.entry} 不再被 ${stale.by} 引用，请从 PROFILE_NEEDS 删除`);
   }
