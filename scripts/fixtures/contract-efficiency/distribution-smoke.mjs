@@ -40,7 +40,7 @@ function state(directory,prefix=''){return fs.readdirSync(path.join(directory,pr
  return [{...item,type:'file',digest:hash(fs.readFileSync(file))}];
 });}
 function conflictTdd(target){
- for(const base of ['.agents/skills','.claude/skills']){
+ for(const base of ['.agents/skills']){
   const conflict=path.join(scratch,`conflict-${base.split('/')[0].slice(1)}`);fs.cpSync(target,conflict,{recursive:true});
   const file=path.join(conflict,base,'tdd/SKILL.md');fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,'# 用户已有 TDD 定制\n');
   const before=state(conflict),plan=path.join(scratch,`${path.basename(conflict)}.json`);

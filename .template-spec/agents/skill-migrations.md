@@ -4,9 +4,9 @@
 
 ## 投影根收敛与 `product-design` 移出（2026-10-12）
 
-Codex、Cursor、Pi 直接读取 `.agents/skills`，不再需要各自的投影副本；只有 Claude Code 需要 `.claude/skills`（指向 `.agents/skills` 的符号链接）。模板与新实例不再分发 `.codex/skills`、`.cursor/skills`、`.pi/skills`；实例运行时只剩 `claude`，注册表与锁的投影根、`bundle-profile.json` 随之收敛。
+Codex、Cursor、Pi、Claude Code 都直接读取 `.agents/skills`，不再需要任何投影副本。模板与新实例不再分发 `.claude/skills`、`.codex/skills`、`.cursor/skills`、`.pi/skills`；注册表与锁的运行时、投影根清空，`bundle-profile.json` 随之收敛。
 
-- 旧实例升级时，这三个目录里的受管文件按迁移规则提议删除，可逐文件选择保留本地内容；用户自己改过的文件不会被覆盖。
+- 旧实例升级时，这些目录里的受管文件按迁移规则提议删除，可逐文件选择保留本地内容；用户自己改过的文件不会被覆盖。
 - `product-design` 是 OpenAI 的第三方 Codex 插件，不属于模板，也不再随模板、Profile 或新实例分发。需要时由使用者按插件官方方式自行安装；生命周期路由不再把 `product-design:index` 列为必选或支持技能，`yss-prototype-stage` 与 `yss-design-system` 里「有已选视觉稿时可调用」的说明仅在已安装时适用。
 - `platform_skills` 机制保留，当前登记为空。
 

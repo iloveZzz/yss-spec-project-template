@@ -8,7 +8,7 @@
 
 | 操作 | 已有入口 | 写入与证据 |
 |---|---|---|
-| 规则与技能查询 | `scripts/query-lifecycle-context --mode route --stage stage.plan --work-unit work-unit.plan-requirements --include execution_efficiency --check-skills --agent-runtime claude` | 只读；示例 runtime 按当前安装改为 codex/cursor/pi；预检成功不批准阶段 |
+| 规则与技能查询 | `scripts/query-lifecycle-context --mode route --stage stage.plan --work-unit work-unit.plan-requirements --include execution_efficiency --check-skills` | 只读；示例 runtime 按当前安装改为 codex/cursor/pi；预检成功不批准阶段 |
 | 进度与恢复诊断 | `scripts/lifecycle-status --root <项目根> --checkpoint <根相对引用> --format json` | 只写 stdout；需要当前证据复验时显式 `--preflight` |
 | 当前 Slice 准备 | `scripts/slice-contract prepare <Ticket> --input <细化.yaml> --output <新合同.yaml>` | 起草新 YAML，来源摘要和依赖闭包由准备器生成；不批准 |
 | 当前 Slice 验证 | `scripts/slice-contract verify <合同.yaml> --root <项目根> --unit <工作单元>` | 校验当前来源；批准记录按当前合同参数传入 |

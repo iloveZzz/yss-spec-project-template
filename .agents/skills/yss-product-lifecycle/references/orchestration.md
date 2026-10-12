@@ -11,7 +11,7 @@
 5. 执行最小生命周期工作单元：主控先按 `.template-spec/process/schemas/digital-human-task-package.schema.json` 编译并校验任务包，再只实际调用允许的 model-invoked skill；原生工作单元可直接持有正式资产，Matt 兼容 user-invoked skill 仅作为 workflow reference，仍由用户显式启动。将结果归一化为 `Workflow Execution Result`，验收输出并回写状态与证据。任务包的 `contract.kind` 按工作单元选择；只有实现子任务使用 `slice-implementation` 并消费 Slice Implementation Contract，其他阶段不伪造该合同。
 6. 若仍在授权和自动推进边界内，回到第 3 步；否则暂停。
 
-第 5 步调用专项技能前，执行 `scripts/query-lifecycle-context --work-unit <当前工作单元> --check-skills`，多运行时显式指定 `--agent-runtime`，条件依赖传入 `--when`。按 `skill_preflight` 和 [来源与补装协议](matt-yss-adapter.md) 处理结果：缺失时核对现有 CLI 计划，在既有授权内安装并重新预检；漂移、冲突、缺运行时和版本不匹配暂停当前调用。纯查询、安装或预检通过均不能代替调用资格、批准或完成证据。
+第 5 步调用专项技能前，执行 `scripts/query-lifecycle-context --work-unit <当前工作单元> --check-skills`，条件依赖传入 `--when`。按 `skill_preflight` 和 [来源与补装协议](matt-yss-adapter.md) 处理结果：缺失时核对现有 CLI 计划，在既有授权内安装并重新预检；漂移、冲突、缺运行时和版本不匹配暂停当前调用。纯查询、安装或预检通过均不能代替调用资格、批准或完成证据。
 
 不要仅输出下一个提示词后结束 `orchestrate`/`resume`。不要因进入业务代码阶段而退出主控；应把实现交给专项 skill，并在返回后继续核验。
 

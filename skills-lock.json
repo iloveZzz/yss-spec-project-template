@@ -2,9 +2,7 @@
   "version": 3,
   "generatedBy": "scripts/update-skill-lock",
   "canonicalRoot": ".agents/skills",
-  "projectionRoots": [
-    ".claude/skills"
-  ],
+  "projectionRoots": [],
   "sources": {
     "mattpocock/skills": {
       "revision": "0ab1b63a410a03d3627979a109c8695de27af954"
@@ -29,8 +27,7 @@
         "sourceType": "local",
         "skillPath": ".agents/skills/alibaba-java-code-style/SKILL.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "archify": {
@@ -41,8 +38,7 @@
         "upstreamHash": "a04c5666d6a5f46bc6f220a36b851e96aaa69ff0630049631364fb23fa5b2ee5",
         "adaptationRef": ".template-source/agents/archify-integration.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "code-review": {
@@ -53,8 +49,7 @@
         "upstreamHash": "12daafb9c4f77deb3c3303dc2e6f8a3c2a0ff7928fc004af959ba18b8bd38068",
         "adaptationRef": ".template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "codebase-design": {
@@ -65,8 +60,7 @@
         "upstreamHash": "9f457cc65ef2d70eb5b8a44a4dae2b139840078b6596a67ee8c4e95f5a0e6f5c",
         "adaptationRef": ".template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "competitive-intelligence": {
@@ -74,8 +68,7 @@
         "sourceType": "local",
         "skillPath": "sales/skills/competitive-intelligence/SKILL.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "cross-repo-implementation-routing": {
@@ -83,8 +76,7 @@
         "sourceType": "local",
         "skillPath": ".agents/skills/cross-repo-implementation-routing/SKILL.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "diagnosing-bugs": {
@@ -95,8 +87,7 @@
         "upstreamHash": "bcdaec9e1033901c396437fcb102161d8ad3cd87632007aaf270b19e03e70117",
         "adaptationRef": ".template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "domain-modeling": {
@@ -107,8 +98,7 @@
         "upstreamHash": "2bc3bb0a64ea9c6f5c3bcf78fc17f0fcdc7c062edc547ef006441de0b576d248",
         "adaptationRef": ".template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "file-export-download": {
@@ -119,8 +109,7 @@
         "upstreamHash": "3c281969780e6e6ea6e38818211d84b61655bcc242536785b0375de30d05a458",
         "adaptationRef": ".template-source/agents/yss-ui-skills-integration.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "formily-foundation": {
@@ -131,8 +120,7 @@
         "upstreamHash": "7736711494f368750d930e96f918bc8ae2d8a0c6b7fd404be165d03441546d9d",
         "adaptationRef": ".template-source/agents/yss-ui-skills-integration.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "formily-linkage-effects": {
@@ -143,8 +131,7 @@
         "upstreamHash": "2b30d5755b672affdfbe1a21742be2ae4423361ca82d28fc5c1b7b55ef256b6e",
         "adaptationRef": ".template-source/agents/yss-ui-skills-integration.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "formily-mode-slot-detail": {
@@ -155,8 +142,7 @@
         "upstreamHash": "857d4416264c7aadffc19560a6b04eeb4df72a3b1b9110f30d97b2e15de8ce2b",
         "adaptationRef": ".template-source/agents/yss-ui-skills-integration.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "formily-step-flow": {
@@ -167,8 +153,7 @@
         "upstreamHash": "600a0a9a72f3bcb30db83d274b8d1082c036adf10c197dff616f76bec1a33d80",
         "adaptationRef": ".template-source/agents/yss-ui-skills-integration.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "frontend-commit": {
@@ -179,8 +164,7 @@
         "upstreamHash": "ffc1c7813607705c7c1158f4c5d3111aca79e73f1843e33bbc95eda9b5c726de",
         "adaptationRef": ".template-source/agents/yss-ui-skills-integration.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "git-commit-core": {
@@ -188,8 +172,7 @@
         "sourceType": "local",
         "skillPath": ".agents/skills/git-commit-core/SKILL.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "grilling": {
@@ -200,8 +183,7 @@
         "upstreamHash": "0ca4cfe5105d79c6ef6755491492e056c43e88b82666376d8ecd7fac695d96e6",
         "adaptationRef": ".template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "handoff": {
@@ -212,8 +194,7 @@
         "upstreamHash": "e5a44fccc710f5402deee06beaf5178397885765773375f186aefd179565f23f",
         "adaptationRef": ".template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "i-have-adhd": {
@@ -224,8 +205,7 @@
         "upstreamHash": "4c88635cbcb4765b63528d608d27589596840708e89607fda9c9fa5726c11f7e",
         "adaptationRef": ".agents/skills/i-have-adhd/references/yss-adaptation.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "implement": {
@@ -236,8 +216,7 @@
         "upstreamHash": "b49a049477c7eec7f8dd90745dbc3f27bf75617b832d5b5f33c55aab7638a12e",
         "adaptationRef": ".template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "implementation-repo-onboarding": {
@@ -245,8 +224,7 @@
         "sourceType": "local",
         "skillPath": ".agents/skills/implementation-repo-onboarding/SKILL.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "java-backend-commit": {
@@ -254,8 +232,7 @@
         "sourceType": "local",
         "skillPath": ".agents/skills/java-backend-commit/SKILL.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "llm-wiki": {
@@ -263,8 +240,7 @@
         "sourceType": "local",
         "skillPath": ".agents/skills/llm-wiki/SKILL.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "lombok": {
@@ -273,8 +249,7 @@
         "skillPath": "skills/languages/lombok/SKILL.md",
         "upstreamHash": "b27bd55f695271de1c22fbdc1c4c4520ed48f05e6352eb760bfc32822139475e",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "maintaining-skills": {
@@ -282,8 +257,7 @@
         "sourceType": "local",
         "skillPath": ".agents/skills/maintaining-skills/SKILL.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "mapstruct": {
@@ -292,8 +266,7 @@
         "skillPath": "skills/languages/mapstruct/SKILL.md",
         "upstreamHash": "50dcb3a41a92bb42b6714e8ab9fd1e7149fa89774a05c6e21c7711368dbb6443",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "prototype": {
@@ -304,8 +277,7 @@
         "upstreamHash": "492e4433fcd9cf88c0854aba063829ee248b208849e5827a45da8424199fd10f",
         "adaptationRef": ".template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "prototype-review": {
@@ -316,8 +288,7 @@
         "upstreamHash": "16cd912969a487808a53711f0c0e13d56d68abd5e07d144a4007187f8430f959",
         "adaptationRef": ".template-source/agents/strategic-design-skills-integration.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "publish-skills-sh": {
@@ -325,8 +296,7 @@
         "sourceType": "local",
         "skillPath": ".agents/skills/publish-skills-sh/SKILL.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "resolving-merge-conflicts": {
@@ -337,8 +307,7 @@
         "upstreamHash": "310fa72a34cddd1dd1a9790f9ebc17bf2c83caeae5cdf87e2485be8b1abec90e",
         "adaptationRef": ".template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "setup-matt-pocock-skills": {
@@ -349,8 +318,7 @@
         "upstreamHash": "80cd6b5be4f67913f1b10f5acd97fccaeb6401682ae7ff3a971460cb73d86cbe",
         "adaptationRef": ".template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "setup-yss-harness": {
@@ -358,8 +326,7 @@
         "sourceType": "local",
         "skillPath": ".agents/skills/setup-yss-harness/SKILL.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "tdd": {
@@ -370,8 +337,7 @@
         "upstreamHash": "28b5e430968370f51b03b88b4b4a046286192733d2f45bd5b8049e16f45fd234",
         "adaptationRef": ".template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "theme-token-usage": {
@@ -382,8 +348,7 @@
         "upstreamHash": "b38acb4caf5012c9134df16a312b6be31b2b5d3fd6b976cfccee8d845f27c0ef",
         "adaptationRef": ".template-source/agents/yss-ui-skills-integration.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "to-spec": {
@@ -394,8 +359,7 @@
         "upstreamHash": "f8041146ec1678c32304f46c9de99b73a4b5dadf664e35a8124be47c4cfe3196",
         "adaptationRef": ".template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "to-tickets": {
@@ -406,8 +370,7 @@
         "upstreamHash": "597a1a0af4f7391ab459a02a3f33576109b6bc61ecdc5e7e05149336858b4f29",
         "adaptationRef": ".template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "triage": {
@@ -418,8 +381,7 @@
         "upstreamHash": "461668611d1bd0eeb0533f347c11690a556c966a75938363a171914dcc42481a",
         "adaptationRef": ".template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "using-git-worktrees": {
@@ -427,8 +389,7 @@
         "sourceType": "local",
         "skillPath": ".agents/skills/using-git-worktrees/SKILL.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "wayfinder": {
@@ -439,8 +400,7 @@
         "upstreamHash": "93d2a866764b048ad641e82e27e7a1940fc370e7933470bffeb937fa1fb3922b",
         "adaptationRef": ".template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "writing-for-agents": {
@@ -451,8 +411,7 @@
         "upstreamHash": "0071124a923559493bc8924a90fb87bceb048d31ad2ce785fa4281d7c506bfa7",
         "adaptationRef": ".template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "yedit-table-usage": {
@@ -463,8 +422,7 @@
         "upstreamHash": "a2fa606b85783fc140dd1775f02d7cddde02d8f4fc2dc3c2a017cc2f9fe998b1",
         "adaptationRef": ".template-source/agents/yss-ui-skills-integration.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "yss-api-integration": {
@@ -475,8 +433,7 @@
         "upstreamHash": "53d265c846f767c5dee9c92f2dc0caced341efd8888631f4b37a46eb486fbbeb",
         "adaptationRef": ".template-source/agents/yss-ui-skills-integration.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "yss-application": {
@@ -484,8 +441,7 @@
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-application/SKILL.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "yss-audit-log": {
@@ -493,8 +449,7 @@
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-audit-log/SKILL.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "yss-backend-spec-review": {
@@ -502,8 +457,7 @@
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-backend-spec-review/SKILL.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "yss-cache": {
@@ -511,8 +465,7 @@
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-cache/SKILL.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "yss-ddd-scaffold-generator": {
@@ -520,8 +473,7 @@
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-ddd-scaffold-generator/SKILL.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "yss-design-system": {
@@ -532,8 +484,7 @@
         "upstreamHash": "2ad84479f0fb20fde3e6dda07825eddf6b67c9f571e498f70609e7b4c5083a65",
         "adaptationRef": ".template-source/agents/strategic-design-skills-integration.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "yss-distributed-id": {
@@ -541,8 +492,7 @@
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-distributed-id/SKILL.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "yss-domain": {
@@ -550,8 +500,7 @@
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-domain/SKILL.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "yss-dto": {
@@ -559,8 +508,7 @@
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-dto/SKILL.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "yss-excel-mvc": {
@@ -568,8 +516,7 @@
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-excel-mvc/SKILL.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "yss-exception": {
@@ -577,8 +524,7 @@
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-exception/SKILL.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "yss-formily": {
@@ -589,8 +535,7 @@
         "upstreamHash": "f30e312a632c592c9050d00c35c22f2dc032658e6d9fdd6e2b5dc4ac0ea970c8",
         "adaptationRef": ".template-source/agents/yss-ui-skills-integration.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "yss-formily-schema-generator": {
@@ -598,8 +543,7 @@
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-formily-schema-generator/SKILL.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "yss-frontend-scaffold-generator": {
@@ -607,8 +551,7 @@
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-frontend-scaffold-generator/SKILL.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "yss-hook": {
@@ -616,8 +559,7 @@
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-hook/SKILL.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "yss-implementation-contract-compiler": {
@@ -625,8 +567,7 @@
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-implementation-contract-compiler/SKILL.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "yss-layered-mvc-scaffold-generator": {
@@ -634,8 +575,7 @@
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-layered-mvc-scaffold-generator/SKILL.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "yss-mybatis": {
@@ -643,8 +583,7 @@
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-mybatis/SKILL.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "yss-openapi-draft-review": {
@@ -652,8 +591,7 @@
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-openapi-draft-review/SKILL.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "yss-openapi-governance": {
@@ -661,8 +599,7 @@
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-openapi-governance/SKILL.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "yss-product-lifecycle": {
@@ -670,8 +607,7 @@
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-product-lifecycle/SKILL.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "yss-prototype-stage": {
@@ -682,8 +618,7 @@
         "upstreamHash": "d33acdba362e09ea464410d6b0a2f573c018608cf0c9ca7beeda04c6966c1da8",
         "adaptationRef": ".template-source/agents/strategic-design-skills-integration.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "yss-repository": {
@@ -691,8 +626,7 @@
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-repository/SKILL.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "yss-research": {
@@ -703,8 +637,7 @@
         "upstreamHash": "75b7f9bbd7ccff6755a006f8b25d319a46ecbf6bd4b4c3323965ed9cb65e78ff",
         "adaptationRef": ".template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "yss-resilience4j": {
@@ -712,8 +645,7 @@
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-resilience4j/SKILL.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "yss-security-algorithm": {
@@ -721,8 +653,7 @@
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-security-algorithm/SKILL.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "yss-skill-source-index-refresh": {
@@ -730,8 +661,7 @@
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-skill-source-index-refresh/SKILL.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "yss-stage-decision": {
@@ -742,8 +672,7 @@
         "upstreamHash": "094c50ddf430bb830500db015046c5f7dcd5a80f0e9aef68e665d2edf234cc7a",
         "adaptationRef": ".template-source/agents/strategic-design-skills-integration.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "yss-tactical-design": {
@@ -751,8 +680,7 @@
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-tactical-design/SKILL.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "yss-technical-design": {
@@ -760,8 +688,7 @@
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-technical-design/SKILL.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "yss-ui": {
@@ -769,8 +696,7 @@
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-ui/SKILL.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "yss-ui-business-page-generation": {
@@ -781,8 +707,7 @@
         "upstreamHash": "97ef56c4b60c0281039996ac582ab01987b4d2bbb89989662594a6ce8a77c95f",
         "adaptationRef": ".template-source/agents/yss-ui-skills-integration.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "yss-up-springboot3": {
@@ -790,8 +715,7 @@
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-up-springboot3/SKILL.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "yss-userinfo": {
@@ -799,8 +723,7 @@
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-userinfo/SKILL.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "yss-validation": {
@@ -808,8 +731,7 @@
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-validation/SKILL.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "yss-web-controller": {
@@ -817,8 +739,7 @@
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-web-controller/SKILL.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "ytable-usage": {
@@ -829,8 +750,7 @@
         "upstreamHash": "7b3e8b3d761d910c5506ea17bf6cb264b2f313172748fe081b0fe5c9e9bbfff6",
         "adaptationRef": ".template-source/agents/yss-ui-skills-integration.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       },
       "ytree-usage": {
@@ -841,8 +761,7 @@
         "upstreamHash": "acf2de9d3391b93b636640445e738cbca747c3a963a7514dc70ef48dbe03801e",
         "adaptationRef": ".template-source/agents/yss-ui-skills-integration.md",
         "targets": [
-          ".agents/skills",
-          ".claude/skills"
+          ".agents/skills"
         ]
       }
     },

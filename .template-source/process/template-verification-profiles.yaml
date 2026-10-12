@@ -190,11 +190,11 @@ profiles:
         inputs_complete: true
         input_patterns:
           - "CLAUDE.md"
-          - ".claude/skills/**"
+          - ".claude/skills/*"
+          - ".claude/skills/*/**"
           - "skills-lock.json"
           - ".template-spec/agents/yss-skill-registry.yaml"
           - "scripts/lib/skill-supply-chain.mjs"
-          - "scripts/lib/harness-metrics.mjs"
           - "tests/claude-entry.test.mjs"
           - ".codex/skills/*"
           - ".codex/skills/*/**"
@@ -205,7 +205,7 @@ profiles:
           - "scripts/fixtures/contract-efficiency/distribution-smoke.mjs"
           - ".template-source/distribution/bundle-profile.json"
         depends_on: []
-        failure_mode: "Claude Code 入口复制了 AGENTS.md 的内容、.claude/skills 与 canonical 脱节或不是符号链接、注册表与锁在 claude 上不一致，旧的 .codex/.cursor/.pi 投影根复活、平台技能重新登记，或 hook 设置进入实例分发"
+        failure_mode: "Claude Code 入口复制了 AGENTS.md 的内容、任何投影根（.claude/.codex/.cursor/.pi 的 skills）复活、注册表与锁重新登记运行时或投影根，或 hook 设置进入实例分发"
       - id: check.explicit-invocation
         run: "node --test tests/explicit-invocation.test.mjs"
         group: feature-assets

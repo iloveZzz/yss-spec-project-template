@@ -131,8 +131,6 @@
       ".template-spec/agents/backend-architecture-profiles.md",
       ".agents/skills/yss-design-system/SKILL.md",
       ".agents/skills/yss-design-system/references/data-quality-theme.md",
-      ".claude/skills/yss-design-system/SKILL.md",
-      ".claude/skills/yss-design-system/references/data-quality-theme.md",
       "yss-project.yaml"
     ],
     "exampleDocPaths": [],

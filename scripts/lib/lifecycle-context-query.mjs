@@ -126,7 +126,7 @@ export function inspectWorkUnitSkills({ root = ROOT, registry, route, agentRunti
     Object.keys(roots).filter(runtime => lock?.projectionRoots?.includes(roots[runtime]));
   if (!agentRuntime && registeredRuntimes.length === 1) agentRuntime = registeredRuntimes[0];
   if (agentRuntime && !Object.hasOwn(roots, agentRuntime)) throw new TypeError('未知 Agent 运行时: ' + agentRuntime);
-  if (!agentRuntime) report('runtime-required', null, metadataRef, '请用 --agent-runtime 明确指定运行时；只在登记了唯一运行时时自动选择');
+  if (!agentRuntime) { if (registeredRuntimes.length) report('runtime-required', null, metadataRef, '请用 --agent-runtime 明确指定运行时；只在登记了唯一运行时时自动选择'); }
   else if (!registeredRuntimes.includes(agentRuntime)) report('runtime-not-installed', null, metadataRef, '所选运行时未登记；先核对运行时安装范围');
   if (!lock?.skills?.shared || !Array.isArray(lock.projectionRoots)) report('skill-lock-invalid', null, 'skills-lock.json', '技能锁缺失或结构不支持；先恢复锁文件或规划迁移');
   if (selected && (!Array.isArray(selected.installedSkills) || !Array.isArray(selected.runtimes) ||
