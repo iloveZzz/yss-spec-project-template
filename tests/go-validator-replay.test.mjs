@@ -10,6 +10,9 @@ import {contextBinary} from '../scripts/lib/native-context.mjs';
 import {nativeEvidenceVerify, nativeContractVerify, nativeLifecycleVerify, nativeDelegationAvailable, rootBoundRead, NEEDS, missingCapabilities} from '../scripts/lib/native-evidence.mjs';
 import {generateTaskPackageDefaults, validateTaskPackage} from '../scripts/lib/task-package.mjs';
 import {parse as parseYamlText} from '../scripts/vendor/yaml.mjs';
+import {fixture as handoffFixture} from '../scripts/fixtures/strategic-handoff/fixture.mjs';
+import {exportBundle, openBundle} from '../scripts/lib/strategic-handoff.mjs';
+import {readdirSync, cpSync, unlinkSync, appendFileSync} from 'node:fs';
 import {buildDecisionFixture} from '../scripts/lib/testing/user-decision-fixture.mjs';
 import {validateUserDecision, assertUserDecisionRequirement} from '../scripts/lib/user-decision.mjs';
 import {validateApprovalRecord, approvalExpectationFromSubject} from '../scripts/lib/approval-record.mjs';
@@ -563,3 +566,46 @@ test('能力协商：旧 yss 不委托，薄壳提示升级；新 yss 放行', {
   assert.notEqual(shell.status, 0);
   assert.match(shell.stderr, /缺少能力.*升级 yss/);
 });
+
+// 战略交接包（handoff verify --kind package）：Node 导出的包，被篡改后 Node 的 openBundle 与 yss 的校验结论必须一致。
+let designInstance;
+function designRoot() {
+  if (designInstance) return designInstance;
+  const base = realpathSync(mkdtempSync(path.join(os.tmpdir(), 'yss-replay-design-')));
+  process.on('exit', () => rmSync(base, {recursive: true, force: true}));
+  const init = spawnSync(binary, ['init', '--profile', 'design', '--root', path.join(base, 'inst'), '--project-name', 'replay'], {encoding: 'utf8'});
+  assert.equal(init.status, 0, init.stderr || init.stdout);
+  return (designInstance = path.join(base, 'inst'));
+}
+const listFiles = (dir, rel = '') => readdirSync(path.join(dir, rel), {withFileTypes: true}).flatMap((e) => e.isDirectory() ? listFiles(dir, path.join(rel, e.name)) : [path.join(rel, e.name)]);
+const handoffVariants = {
+  '原包': () => {},
+  '载荷文件被改一个字节': (dir) => { const f = listFiles(dir).find((x) => x.startsWith('payload/files/')); appendFileSync(path.join(dir, f), ' '); },
+  '清单列出的文件被删': (dir) => { unlinkSync(path.join(dir, listFiles(dir).find((x) => x.startsWith('payload/files/')))); },
+  '包里多出清单没有的文件': (dir) => { writeFileSync(path.join(dir, 'payload/files/extra.md'), '额外文件'); },
+  '清单 bundle_digest 被改': (dir) => { const m = JSON.parse(readFileSync(path.join(dir, 'manifest.json'), 'utf8')); m.bundle_digest = `sha256:${'0'.repeat(64)}`; writeFileSync(path.join(dir, 'manifest.json'), JSON.stringify(m, null, 2)); },
+  '清单版本被改但摘要未更新': (dir) => { const m = JSON.parse(readFileSync(path.join(dir, 'manifest.json'), 'utf8')); m.version = 'v9'; writeFileSync(path.join(dir, 'manifest.json'), JSON.stringify(m, null, 2)); },
+  '索引文件被改': (dir) => { appendFileSync(path.join(dir, 'indexes/rules.json'), ' '); },
+  '缺清单': (dir) => { unlinkSync(path.join(dir, 'manifest.json')); },
+};
+for (const [name, mutate] of Object.entries(handoffVariants)) {
+  test(`交接包回放：${name}`, {skip}, async () => {
+    const base = realpathSync(mkdtempSync(path.join(os.tmpdir(), 'yss-handoff-replay-')));
+    try {
+      const source = path.join(base, 'source');
+      mkdirSync(source);
+      await handoffFixture(source);
+      const out = path.join(base, 'package');
+      await exportBundle({sourceRoot: source, handoffRef: 'handoff.yaml', output: out});
+      mutate(out);
+      let node;
+      try { await openBundle(out, (b) => b.manifest.bundle_digest); node = {ok: true}; } catch (error) { node = {ok: false, message: String(error.message).slice(0, 120)}; }
+      const inst = designRoot();
+      const rel = `.work/replay-handoff-${++seq}`;
+      mkdirSync(path.join(inst, '.work'), {recursive: true});
+      cpSync(out, path.join(inst, rel), {recursive: true});
+      const go = nativeEvidenceVerify({root: inst, kind: 'package', file: rel, group: 'handoff', extra: []});
+      assert.equal(go.exitCode === 0, node.ok, `结论不一致：Node=${JSON.stringify(node)} Go=${go.exitCode} ${go.message.slice(0, 160)}`);
+    } finally { rmSync(base, {recursive: true, force: true}); }
+  });
+}

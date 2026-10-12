@@ -115,6 +115,8 @@ profiles:
           - "scripts/verify-user-decision"
           - "scripts/verify-digital-human-task-package"
           - "scripts/verify-lifecycle-checkpoint"
+          - "scripts/strategic-handoff"
+          - "scripts/fixtures/strategic-handoff/fixture.mjs"
           - "scripts/lib/native-evidence.mjs"
           - "scripts/lib/native-context.mjs"
           - "scripts/lib/user-decision.mjs"

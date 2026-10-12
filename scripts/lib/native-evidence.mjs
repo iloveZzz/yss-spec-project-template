@@ -1,6 +1,6 @@
 // 校验语义归 yss；这里只负责定位固定版本的二进制、拼参数、解码信封并透传退出码。
 import {spawnSync} from 'node:child_process';
-import {copyFileSync, mkdirSync, readFileSync, realpathSync, rmSync, statSync, writeFileSync} from 'node:fs';
+import {copyFileSync, cpSync, mkdirSync, readFileSync, realpathSync, rmSync, statSync, writeFileSync} from 'node:fs';
 import {randomUUID} from 'node:crypto';
 import path from 'node:path';
 import {contextBinary} from './native-context.mjs';
@@ -13,7 +13,8 @@ function stagedInput(root, file) {
   if (rel && !rel.startsWith('..') && !path.isAbsolute(rel)) return {file: rel.split(path.sep).join('/'), cleanup() {}};
   const dir = path.join(root, '.work', 'native-candidates', `input-${process.pid}-${randomUUID()}`);
   mkdirSync(dir, {recursive: true});
-  copyFileSync(file, path.join(dir, path.basename(file)));
+  if (statSync(file).isDirectory()) cpSync(file, path.join(dir, path.basename(file)), {recursive: true, verbatimSymlinks: true});
+  else copyFileSync(file, path.join(dir, path.basename(file)));
   return {file: path.relative(root, path.join(dir, path.basename(file))).split(path.sep).join('/'), cleanup() { rmSync(dir, {recursive: true, force: true}); }};
 }
 
@@ -25,7 +26,7 @@ export function nativeEvidenceVerify({root, kind, file: given, extra = [], envir
 function runNativeVerify({root, kind, file, extra, environment, group}) {
   const {binary} = contextBinary(environment);
   // lifecycle 领域的资产选择器是 --checkpoint，其余领域是 --kind 加 --file。
-  const selector = group === 'lifecycle' ? ['--checkpoint', file] : ['--kind', kind, '--file', file];
+  const selector = group === 'lifecycle' ? ['--checkpoint', file] : group === 'handoff' && kind === 'package' ? ['--kind', kind, '--package', file] : ['--kind', kind, '--file', file];
   const args = [group, 'verify', '--root', root, ...selector, ...extra, '--json'];
   const run = spawnSync(binary, args, {cwd: root, env: environment, encoding: 'utf8', timeout: 120000, maxBuffer: 32 * 1024 * 1024});
   if (run.error || run.signal || !Number.isInteger(run.status)) throw new Error(`NATIVE_INTERRUPTED: ${run.error?.message || run.signal}`);
@@ -44,6 +45,7 @@ export const NEEDS = {
   approval: ['approval.expected.v1', 'approval.binding.v1', 'approval.rule-rows.v1'],
   task: ['task.directory-write-scope.v1'],
   checkpoint: ['lifecycle.legacy-untracked-checkpoint.v1', 'template-source.verify-root.v1'],
+  handoffPackage: ['handoff.package-identity.v1'],
 };
 const capabilityCache = new Map();
 export function nativeCapabilities(environment = process.env) {
