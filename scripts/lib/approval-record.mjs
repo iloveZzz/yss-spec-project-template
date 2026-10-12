@@ -46,11 +46,26 @@ function validatePlanApproval(record, options) {
   return assertPlanAggregateApproval(checkpoint, options);
 }
 function delegableExpectation(record, options) {
-  if (record.schema_version !== 1 || record.kind === 'review-bundle' || options.checkpoint || !options.expected) return null;
+  if (record.kind === 'review-bundle' || options.checkpoint || !options.expected) return null;
   const expected = expectedFor(record, options);
   if (!expected || !Array.isArray(expected.basis) || !Array.isArray(expected.approval_scope)) return null;
+  // v2 记录必须带消费者独立指定的审查任务上下文，否则交给进程内实现给出明确拒绝
+  if (record.schema_version === 2 && !expected.review_context?.review_task_ref) return null;
   const root = path.resolve(options.root || ROOT);
   return nativeDelegationAvailable(root, options, process.env, approvalDelegationRefs(record, expected)) ? expected : null;
+}
+// 已落盘的记录或组合包：每一行都有显式期望、且全部引用在根内才委托。
+function delegableFileExpectation(filePath, options) {
+  if (options.checkpoint || !options.expected) return null;
+  const root = path.resolve(options.root || ROOT);
+  const record = readApprovalDocument(filePath, options);
+  if (record.gate_id === 'gate.plan-approved' && boundedPlanApproval(record, options)) return null;
+  const rows = record.kind === 'review-bundle' ? reviewBundleRows(record) : [record];
+  const expected = rows.map(row => expectedFor(row, options));
+  if (rows.some((row, i) => row.gate_id === 'gate.plan-approved' || !expected[i] || !Array.isArray(expected[i].basis) || !Array.isArray(expected[i].approval_scope)
+    || row.schema_version === 2 && !expected[i].review_context?.review_task_ref)) return null;
+  const refs = [filePath, ...rows.flatMap((row, i) => approvalDelegationRefs(row, expected[i]))];
+  return nativeDelegationAvailable(root, options, process.env, refs) ? (record.kind === 'review-bundle' ? expected : expected[0]) : null;
 }
 export function validateApprovalRecord(record, options = {}) {
   if (options.history === true || options.requireApproved === false) {
@@ -60,7 +75,7 @@ export function validateApprovalRecord(record, options = {}) {
   }
   assertCurrentApprovalReferences(record);
   if (record.gate_id === 'gate.plan-approved' && boundedPlanApproval(record, options)) return validatePlanApproval(record, options);
-  // 唯一实现在 yss：v1 记录、调用方给出显式期望时委托（v2 审查任务、review-bundle、checkpoint 推出的期望随后分片迁移）。
+  // 唯一实现在 yss：调用方给出显式期望时委托（checkpoint 推出的期望与 Plan 聚合随后分片迁移）。
   const delegated = delegableExpectation(record, options);
   if (delegated) return nativeApprovalRecord({root: path.resolve(options.root || ROOT), record, expected: delegated});
   return withValidationPhase({root:options.root || ROOT,purpose:'approval-current',readOnly:true},()=>assertCurrentApproval(record,expectedFor(record,options),options));
@@ -68,6 +83,8 @@ export function validateApprovalRecord(record, options = {}) {
 export function validateApprovalRecordFile(filePath, options = {}) {
   if (options.history === true || options.requireApproved === false) return readApprovalHistory(filePath,options);
   assertCurrentApprovalEvidenceRef(filePath);
+  const delegated = delegableFileExpectation(filePath, options);
+  if (delegated) return nativeApprovalRecord({root: path.resolve(options.root || ROOT), file: filePath, expected: delegated});
   return withValidationPhase({root:options.root || ROOT,purpose:'approval-current',readOnly:true},()=>{
     const record = readApprovalDocument(filePath,options);
     assertCurrentApprovalReferences(record);

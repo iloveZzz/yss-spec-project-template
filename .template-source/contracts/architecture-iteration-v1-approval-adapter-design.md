@@ -1,6 +1,6 @@
 # 批准记录族 Node→Go 适配层设计（AR-09c）
 
-状态：设计；分片 1 已实现（见 §8）。
+状态：设计；分片 1、2 已实现（见 §8、§9）。
 前置：`architecture-iteration-v1-plan.md` 的 AR-09b 行（用户决定入口已委托）。
 
 ## 1. 要解决的问题
@@ -92,3 +92,10 @@ yss-cli 分支 `arch/ar-09c` 加入 `--expected`（约 40 行，只接线，不�
 - Go：`--expected`（`arch/ar-09c`）；批准拒绝文案保留 `user-decision-responder-mismatch`。**未加** §3.1 的 `coverage.approval_validated`：仓库内没有调用方使用 `validateApprovalRecord` / `assertCurrentApproval` 的返回值（唯一一处在传入 rolesDoc 的 `plan-spec-entry`，不委托），适配层自行返回 `{subject_ref, approval_scope, execution_authorization}`。
 - Node：`nativeApprovalRecord`，`validateApprovalRecord` 在「v1、非 review-bundle、调用方给出显式期望、无 checkpoint、非 Plan 聚合、引用都在根内、无注入的 rolesDoc/read/registry」时委托。
 - 回放：`tests/go-validator-replay.test.mjs` 增 8 组（进程内与委托的结论、拒绝码一致，内部码保留），共 64 个通过。
+
+## 9. 分片 2 实现记录
+
+- 范围：v2 记录（带 `review_task_ref`/`review_task_digest`，期望携带 `review_context`）与 review-bundle 组合包；仍要求调用方给出显式期望。`validateApprovalRecord` 放开 v1 限制，新增 `validateApprovalRecordFile` 的委托（已落盘的记录或组合包，逐行取期望，任何一行缺期望、含 Plan 聚合行、引用越出根或 v2 缺审查任务上下文都不委托）。
+- Go 无需改动（`--expected` 数组按 boundary 取项已覆盖组合包；固定二进制仍是 `c03edea`）。
+- 回放：在模板源仓根用真实注册表与角色政策生成待审包（`prepareReviewPackage`），批准后对拍进程内与委托，6 类（通过、仍 pending、审查人自签、期望范围与任务不符、任务摘要过期、主体被改动）× 组合包文件与单行记录，结论与拒绝码一致；除「审查人自签」在读取记录结构的进程内前置检查就被拒绝外，其余拒绝都经过委托。共 70 个通过。
+- 影响范围测试：approval-current、review-capabilities、approval-consumption、lifecycle-progression、lifecycle-controls 共 94 个，以及生命周期转换场景，全部通过。

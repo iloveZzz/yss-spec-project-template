@@ -13,6 +13,13 @@ import {validateUserDecision, assertUserDecisionRequirement} from '../scripts/li
 import {validateApprovalRecord, approvalExpectationFromSubject} from '../scripts/lib/approval-record.mjs';
 import {decisionDigest} from '../scripts/lib/user-decision-core.mjs';
 import {readFileSync} from 'node:fs';
+import {createHash} from 'node:crypto';
+import {prepareReviewPackage} from '../scripts/lib/review-package.mjs';
+import {approvalExpectedFromTask} from '../scripts/lib/review-capabilities.mjs';
+import {loadRegistry} from '../scripts/lib/lifecycle-registry.mjs';
+import {loadDigitalHumanRoles} from '../scripts/lib/digital-human-roles.mjs';
+import {parseDocument} from '../scripts/vendor/yaml.mjs';
+import {validateApprovalRecordFile} from '../scripts/lib/approval-record.mjs';
 
 let binary;
 try { binary = contextBinary().binary; } catch { binary = null; }
@@ -210,5 +217,58 @@ for (const [name, mutate] of Object.entries(approvalCases)) {
       // 进程内文案里的内部码（如 user-decision-responder-mismatch）委托后也必须保留
       for (const token of inProcess.message.match(/user-decision-[a-z-]+/g) ?? []) assert.match(delegated.message, new RegExp(token));
     }
+  });
+}
+
+// v2 记录与组合包：用真实注册表和角色政策在模板源仓根生成待审包，批准后对拍进程内实现与委托。
+const sha = (bytes) => createHash('sha256').update(bytes).digest('hex');
+function v2Case() {
+  site = 'template-source';
+  setup();
+  const rel = path.join('.work', `replay-${process.pid}`, `v2-${++seq}`);
+  const abs = path.join(REPO, rel);
+  mkdirSync(abs, {recursive: true});
+  const checkIds = ['check.openapi-draft-reviewed', 'check.engineering-baseline-accepted'];
+  const checks = {};
+  checkIds.forEach((id, i) => {
+    const subject = path.join(rel, `subject-${i}.yaml`), evidence = path.join(rel, `evidence-${i}.txt`);
+    writeFileSync(path.join(REPO, subject), `schema_version: 1\nsubject: ${i}\n`);
+    writeFileSync(path.join(REPO, evidence), `actual evidence ${i}\n`);
+    checks[id] = {applicable: true, status: 'pending', subject_ref: subject, subject_digest: sha(readFileSync(path.join(REPO, subject))), approval_scope: [`scope-${i}`], drafter_principal_ref: `instance:author-${i}`, basis: [{ref: evidence, digest: sha(readFileSync(path.join(REPO, evidence)))}], evidence_refs: [evidence]};
+  });
+  const checkpointRef = path.join(rel, 'checkpoint.json');
+  writeFileSync(path.join(REPO, checkpointRef), JSON.stringify({checks, gates: {}}));
+  const registry = loadRegistry(), rolesDoc = loadDigitalHumanRoles();
+  const result = prepareReviewPackage({root: REPO, registry, checkpointRef, checkIds, roleId: 'role.test-engineer', runtimeId: 'runtime.generic', actorId: 'agent.reviewer', reviewerPrincipalRef: 'instance:qa', drafterPrincipalRef: 'instance:packet-owner', implementationActorId: 'agent.worker', taskId: 'review.api-baseline', reviewSessionId: 'session:one', workUnitId: 'work-unit.technical-analysis', outputDir: path.join(rel, 'reviews')});
+  const task = JSON.parse(readFileSync(path.join(REPO, result.task_ref)));
+  const bundle = parseDocument(readFileSync(path.join(REPO, result.bundle_ref), 'utf8')).toJS();
+  for (const row of bundle.reviews) row.decision = 'approved';
+  const expectedFor = (row) => approvalExpectedFromTask(task, {root: REPO, rolesDoc, registry, boundary: row.gate_id, reviewTaskRef: result.task_ref, reviewTaskDigest: result.task_digest});
+  const expected = bundle.reviews.map(expectedFor);
+  const bundleFile = path.join(rel, 'reviews', 'approved-bundle.json');
+  const write = () => writeFileSync(path.join(REPO, bundleFile), JSON.stringify(bundle));
+  write();
+  return {bundle, expected, bundleFile, write, result, task, rel};
+}
+const outcome = (run) => { try { run(); return {ok: true}; } catch (error) { return {ok: false, code: error.code, message: error.message, native: error.native}; } };
+const v2Cases = {
+  '通过': () => {},
+  '仍是 pending': (c) => { c.bundle.reviews[0].decision = 'pending'; c.write(); },
+  '审查人自签': (c) => { c.bundle.reviews[0].principal_ref = c.bundle.reviews[0].drafter_principal_ref; c.write(); },
+  '期望范围与任务不符': (c) => { c.expected[0].approval_scope = ['other']; },
+  '任务摘要过期': (c) => { c.expected[0].review_context = {...c.expected[0].review_context, review_task_digest: '0'.repeat(64)}; },
+  '主体被改动': (c) => { writeFileSync(path.join(REPO, c.bundle.reviews[0].subject_ref), 'schema_version: 1\nsubject: changed\n'); },
+};
+for (const [name, mutate] of Object.entries(v2Cases)) {
+  test(`适配层等价（v2 组合包与单行）：${name}`, {skip}, () => {
+    const c = v2Case();
+    mutate(c);
+    const check = (label, run) => {
+      const inProcess = outcome(() => run(false)), delegated = outcome(() => run(true));
+      assert.equal(delegated.ok, inProcess.ok, `${label} 结论不一致：进程内=${JSON.stringify(inProcess)} 委托=${JSON.stringify(delegated)}`);
+      if (!inProcess.ok) { assert.equal(delegated.code, inProcess.code, label); if (name !== '审查人自签') assert.equal(delegated.native, true, `${label} 应已委托`); } // 自签在读取记录结构时就被进程内前置检查拒绝，到不了委托
+    };
+    check('组合包文件', (native) => validateApprovalRecordFile(path.join(REPO, c.bundleFile), {requireApproved: true, root: REPO, expected: c.expected, native}));
+    check('单行记录', (native) => validateApprovalRecord(c.bundle.reviews[1], {requireApproved: true, root: REPO, expected: c.expected[1], native}));
   });
 }

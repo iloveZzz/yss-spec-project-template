@@ -52,26 +52,28 @@ export function nativeUserDecisionRequirement({root: given, requirement, environ
   }
 }
 
-// 批准记录引用的、需要在项目根内才能委托的全部资产路径。
+// 批准记录引用的、需要在项目根内才能委托的全部资产路径（含 v2 审查任务与组合包依据）。
 export function approvalDelegationRefs(record, expected) {
-  return [record.subject_ref, record.user_decision_ref, record.continuation_ref, record.decision_reuse_ref, expected.subject_ref,
-    ...(record.basis ?? []).map((asset) => asset?.ref), ...(expected.basis ?? []).map((asset) => asset?.ref)].filter((ref) => ref !== undefined && ref !== null);
+  return [record.subject_ref, record.user_decision_ref, record.continuation_ref, record.decision_reuse_ref, record.review_task_ref, expected.subject_ref, expected.review_context?.review_task_ref,
+    ...(record.basis ?? []).map((asset) => asset?.ref), ...(record.review_bundle_basis ?? []).map((asset) => asset?.ref), ...(expected.basis ?? []).map((asset) => asset?.ref)].filter((ref) => ref !== undefined && ref !== null);
 }
 
-// 委托校验一条当前批准：record 为待验记录（可以是内存对象），expected 为调用方独立算出的当前消费期望。
-// 两者写入根下临时目录，交给 yss evidence verify --kind approval --expected；拒绝时抛出带 yss 拒绝码的错误。
-export function nativeApprovalRecord({root: given, record, expected, environment = process.env}) {
+// 委托校验当前批准：record 为待验记录（内存对象，写成候选文件）或 file 为已落盘的记录/组合包路径；
+// expected 为调用方独立算出的当前消费期望（单个对象，或组合包按 boundary 区分的数组）。拒绝时抛出带 yss 拒绝码的错误。
+export function nativeApprovalRecord({root: given, record, file, expected, environment = process.env}) {
   const root = realpathSync(given);
   const dir = path.join(root, '.work', 'native-candidates', `approval-${process.pid}-${randomUUID()}`);
   mkdirSync(dir, {recursive: true});
-  const recordFile = path.join(dir, 'candidate.json');
   const expectedFile = path.join(dir, 'expected.json');
-  writeFileSync(recordFile, JSON.stringify(record));
   writeFileSync(expectedFile, JSON.stringify(expected));
+  let target = file ? path.resolve(root, file) : path.join(dir, 'candidate.json');
+  if (!file) writeFileSync(target, JSON.stringify(record));
   try {
-    const result = nativeEvidenceVerify({root, kind: 'approval', file: path.relative(root, recordFile), extra: ['--require-approved', '--expected', path.relative(root, expectedFile)], environment});
+    const result = nativeEvidenceVerify({root, kind: 'approval', file: path.relative(root, target), extra: ['--require-approved', '--expected', path.relative(root, expectedFile)], environment});
     if (result.exitCode !== 0) throw Object.assign(new Error(result.message), {code: result.diagnostics[0]?.code ?? result.code, native: true});
-    return {subject_ref: expected.subject_ref, approval_scope: [...expected.approval_scope], execution_authorization: 'not-evaluated'};
+    const rows = Array.isArray(expected) ? expected : [expected];
+    const done = rows.map((row) => ({subject_ref: row.subject_ref, approval_scope: [...row.approval_scope], execution_authorization: 'not-evaluated'}));
+    return Array.isArray(expected) ? done : done[0];
   } finally {
     rmSync(dir, {recursive: true, force: true});
   }
