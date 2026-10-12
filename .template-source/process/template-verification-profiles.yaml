@@ -351,6 +351,9 @@ profiles:
       - id: "check.skill-projection-identity"
         inputs_complete: true
         input_patterns:
+          - ".codex/skills/release-yss-cli"
+          - ".cursor/skills/release-yss-cli"
+          - ".pi/skills/release-yss-cli"
           - ".agents/skills/**"
           - ".codex/skills/**"
           - ".cursor/skills/**"

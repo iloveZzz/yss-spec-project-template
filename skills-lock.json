@@ -444,6 +444,19 @@
           ".claude/skills"
         ]
       },
+      "release-yss-cli": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/release-yss-cli/SKILL.md",
+        "effectiveHash": "fddee4746bee1e087bb67025d1d2e13af2a503947c02f9442ec5c0ea7565a41b",
+        "targets": [
+          ".agents/skills",
+          ".codex/skills",
+          ".cursor/skills",
+          ".pi/skills",
+          ".claude/skills"
+        ]
+      },
       "resolving-merge-conflicts": {
         "source": "mattpocock/skills",
         "sourceType": "github",
