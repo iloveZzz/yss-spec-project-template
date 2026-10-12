@@ -131,6 +131,26 @@ profiles:
           - ".template-source/distribution/yss-cli-pin.json"
         depends_on: []
         failure_mode: "Node 与固定版本 yss 对同一批用户决定、批准记录夹具的通过/拒绝结论或拒绝码不一致（唯一实现退役前的等价回放）"
+      - id: check.go-validator-replay-delivery
+        run: "node --test --test-concurrency=1 tests/go-validator-replay-delivery.test.mjs"
+        group: feature-assets
+        resources: ["native-cli"]
+        inputs_complete: true
+        input_patterns:
+          - "tests/go-validator-replay-delivery.test.mjs"
+          - "tests/helpers/yss-instance.mjs"
+          - "scripts/complete-backend-delivery"
+          - "scripts/lib/native-evidence.mjs"
+          - "scripts/fixtures/backend-delivery/backend-profile-terminal-fixture.mjs"
+          - "scripts/fixtures/backend-delivery/approval-fixture.mjs"
+          - "scripts/fixtures/backend-standards/terminal-fixture.mjs"
+          - "scripts/fixtures/slice-contract-v3/pilot-fixture.mjs"
+          - "scripts/fixtures/delivery-preflight/approved-execution-fixture.mjs"
+          - "scripts/fixtures/strategic-handoff/fixture.mjs"
+          - "scripts/fixtures/existing-backend/fixture.mjs"
+          - ".template-source/distribution/yss-cli-pin.json"
+        depends_on: []
+        failure_mode: "Backend 实例自带的终点校验与固定版本 yss 对同一份终点夹具的通过/拒绝结论或结果字段不一致，或 complete-backend-delivery verify 薄壳不再只调用 yss（该回放较慢，约 2 分钟，只在这些路径变化时选中）"
       - id: check.user-decision-scenarios
         run: "scripts/verify-user-decision-scenarios"
         group: feature-assets
@@ -1419,6 +1439,8 @@ routing:
       - scripts/verify-import-direction
       - tests/import-direction.test.mjs
       - tests/go-validator-replay.test.mjs
+      - tests/go-validator-replay-delivery.test.mjs
+      - scripts/complete-backend-delivery
       - tests/helpers/yss-instance.mjs
       - scripts/fixtures/user-decision/plan-fixture.mjs
       - .template-source/process/node-core-layer.json

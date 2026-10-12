@@ -50,6 +50,7 @@ export const NEEDS = {
   specBaselinePackage: ['handoff.spec-baseline-package.v1'],
   contextReconciliation: ['evidence.context-reconciliation.v1'],
   openapiValidation: ['contract.openapi-validation.v1'],
+  backendTerminal: ['contract.backend-terminal.v1'],
 };
 const capabilityCache = new Map();
 export function nativeCapabilities(environment = process.env) {
