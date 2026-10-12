@@ -1,21 +1,22 @@
 import { createHash } from "node:crypto";
-import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
-import os from "node:os";
+import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
+import { makeRoot } from "../helpers/yss-instance.mjs";
+import { readWorkLayout } from "../../scripts/lib/work-layout.mjs";
 
 const repoRoot = path.resolve(import.meta.dirname, "../..");
-const root = mkdtempSync(path.join(os.tmpdir(), "yss-openapi-validation-"));
+// 校验归 yss：根必须是真实实例（没有固定版本 yss 时退回临时目录，薄壳会给出升级提示而失败）。
+const root = makeRoot("yss-openapi-validation-");
 const write = (relative, value) => {
   const file = path.join(root, relative);
   mkdirSync(path.dirname(file), { recursive: true });
   writeFileSync(file, value);
   return file;
 };
-const draftRef = "docs/.scratch/example/api/example.yaml";
-
-write('.template-spec/agents/issue-tracker.md','---\ntracker:\n  platform: local-markdown\n  root: docs/.scratch\n---\n');
-const evidenceRef = "docs/.scratch/example/api/example-redocly-lint.txt";
+const featureBase = readWorkLayout(root).featureRoot("example");
+const draftRef = `${featureBase}/api/example.yaml`;
+const evidenceRef = `${featureBase}/api/example-redocly-lint.txt`;
 const draft = `openapi: 3.1.0
 info: { title: Example, version: 0.1.0-draft }
 paths:
@@ -72,13 +73,13 @@ function run(name, record, expected, pattern) {
 }
 
 run("valid", base, 0, /验证通过/);
-run("stale-digest", { ...base, draft: { ...base.draft, sha256: `sha256:${"0".repeat(64)}` } }, 1, /SHA-256 不匹配/);
-run("failed-lint", { ...base, status: "blocked", toolchain: { ...base.toolchain, exit_code: 1 }, checks: { ...base.checks, lint: "blocked" } }, 1, /status: passed/);
-run("wrong-command-target", { ...base, toolchain: { ...base.toolchain, command: "pnpm exec redocly lint docs/.scratch/example/api/other.yaml" } }, 1, /精确指向当前 Draft/);
-run("unlocked-version", { ...base, toolchain: { ...base.toolchain, version: "2.1.0" } }, 1, /lockfile 未绑定/);
+run("stale-digest", { ...base, draft: { ...base.draft, sha256: `sha256:${"0".repeat(64)}` } }, 1, /依据原始字节变化/);
+run("failed-lint", { ...base, status: "blocked", toolchain: { ...base.toolchain, exit_code: 1 }, checks: { ...base.checks, lint: "blocked" } }, 1, /实际 lint 未通过/);
+run("wrong-command-target", { ...base, toolchain: { ...base.toolchain, command: `pnpm exec redocly lint ${featureBase}/api/other.yaml` } }, 1, /实际 lint 未通过或未指向当前 Draft/);
+run("unlocked-version", { ...base, toolchain: { ...base.toolchain, version: "2.1.0" } }, 1, /锁文件未绑定/);
 write(draftRef, draft.replace("#/components/schemas/Widget", "#/components/schemas/Missing"));
 const brokenDigest = `sha256:${createHash("sha256").update(draft.replace("#/components/schemas/Widget", "#/components/schemas/Missing")).digest("hex")}`;
-run("broken-ref", { ...base, draft: { ...base.draft, sha256: brokenDigest } }, 1, /\$ref 无法解析/);
+run("broken-ref", { ...base, draft: { ...base.draft, sha256: brokenDigest } }, 1, /引用不可解析/);
 
 const template = path.join(repoRoot, ".template-spec/api/templates/openapi-draft-validation-record-template.yaml");
 const templateResult = spawnSync("scripts/verify-openapi-draft-validation-record", ["--allow-template", template], { cwd: repoRoot, encoding: "utf8" });

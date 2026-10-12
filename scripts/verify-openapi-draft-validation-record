@@ -1,25 +1,20 @@
 #!/usr/bin/env node
+// 薄壳：校验语义归 yss（contract verify --kind openapi-validation），这里只翻译参数、透传结论与退出码。
 import path from "node:path";
 import { parseArgs } from "node:util";
-import { fileURLToPath } from "node:url";
-import { validateOpenApiDraftValidationRecord } from "./lib/openapi-draft-validation.mjs";
-
-const templateRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+import { nativeContractVerify, assertNativeCapabilities, NEEDS } from "./lib/native-evidence.mjs";
 
 try {
-  const { values, positionals } = parseArgs({
-    options: { "allow-template": { type: "boolean" }, root: { type: "string", default: templateRoot } },
-    allowPositionals: true,
-    strict: true,
-  });
+  const { values, positionals } = parseArgs({ options: { "allow-template": { type: "boolean" }, root: { type: "string", default: path.resolve(import.meta.dirname, "..") } }, allowPositionals: true, strict: true });
   if (positionals.length !== 1) throw new TypeError("用法: scripts/verify-openapi-draft-validation-record [--allow-template] [--root <project>] <record.yaml>");
-  const result = validateOpenApiDraftValidationRecord(path.resolve(positionals[0]), {
-    root: path.resolve(values.root),
-    allowTemplate: values["allow-template"] === true,
-  });
-  process.stdout.write(result.template
-    ? "OpenAPI Draft validation record 模板验证通过\n"
-    : `OpenAPI Draft validation record 验证通过: ${result.record.draft.sha256}\n`);
+  assertNativeCapabilities(NEEDS.openapiValidation);
+  const root = path.resolve(values.root);
+  const result = nativeContractVerify({ root, kind: "openapi-validation", file: path.resolve(positionals[0]), extra: values["allow-template"] ? ["--allow-template"] : [] });
+  if (result.exitCode !== 0) { process.stderr.write(`OpenAPI Draft validation record 验证失败: ${result.message}\n`); process.exitCode = result.exitCode; }
+  else {
+    const coverage = result.envelope.result?.coverage?.openapi_validation;
+    process.stdout.write(coverage?.template ? "OpenAPI Draft validation record 模板验证通过\n" : `OpenAPI Draft validation record 验证通过: ${coverage?.draft_sha256}\n`);
+  }
 } catch (error) {
   process.stderr.write(`OpenAPI Draft validation record 验证失败: ${error.message}\n`);
   process.exitCode = 1;

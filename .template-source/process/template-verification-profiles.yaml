@@ -119,6 +119,8 @@ profiles:
           - "scripts/spec-baseline"
           - "scripts/verify-context-reconciliation"
           - "scripts/verify-strategic-handoff-consumption"
+          - "scripts/verify-openapi-draft-validation-record"
+          - "scripts/lib/openapi-draft-validation.mjs"
           - "scripts/lib/strategic-handoff-consumption.mjs"
           - "scripts/fixtures/strategic-handoff/fixture.mjs"
           - "scripts/lib/native-evidence.mjs"
@@ -158,6 +160,18 @@ profiles:
           - "scripts/verify-strategic-context-import-scenarios"
         depends_on: []
         failure_mode: "已退役的 verify-strategic-context-import 不再失败退出，或不再指向 consumption、context-reconciliation、strategic-handoff verify 三个替代入口"
+      - id: check.openapi-validation-scenarios
+        run: "node tests/scenarios/verify-openapi-draft-validation-scenarios.mjs"
+        group: feature-assets
+        resources: ["native-cli"]
+        inputs_complete: true
+        input_patterns:
+          - "scripts/verify-openapi-draft-validation-record"
+          - "scripts/verify-openapi-draft-validation-scenarios"
+          - "tests/scenarios/verify-openapi-draft-validation-scenarios.mjs"
+          - ".template-spec/process/schemas/openapi-draft-validation-record.schema.json"
+        depends_on: []
+        failure_mode: "OpenAPI Draft validation record 的薄壳不再把正式记录交给 yss 校验，或放行摘要过期、命令指向别的 Draft、锁文件未绑定版本、$ref 无法解析的记录"
       - id: check.contract-review-preparation
         run: "node --test tests/contract-review-preparation.test.mjs"
         group: feature-assets

@@ -14,6 +14,8 @@ import {fixture as handoffFixture, context as handoffContext} from '../scripts/f
 import {exportBundle, openBundle, importBundle} from '../scripts/lib/strategic-handoff.mjs';
 import {verifyConsumption} from '../scripts/lib/strategic-handoff-consumption.mjs';
 import {verifyContextReconciliation} from '../scripts/lib/context-reconciliation.mjs';
+import {validateOpenApiDraftValidationRecord} from '../scripts/lib/openapi-draft-validation.mjs';
+import {readWorkLayout} from '../scripts/lib/work-layout.mjs';
 import {read as readHandoff, json as handoffJson} from '../scripts/lib/strategic-handoff-io.mjs';
 import {makeRoot} from './helpers/yss-instance.mjs';
 import {readdirSync, cpSync, unlinkSync, appendFileSync} from 'node:fs';
@@ -732,3 +734,96 @@ for (const [name, mutate] of Object.entries(reconciliationVariants)) {
     else assert.doesNotMatch(String(node.message), /ENOENT/, '拒绝原因不能是找不到记录文件');
   });
 }
+
+// OpenAPI Draft validation record（contract verify --kind openapi-validation）：Node 的 validateOpenApiDraftValidationRecord 与 yss 结论一致。
+const openapiDraft = `openapi: 3.1.0
+info: { title: Example, version: 0.1.0-draft }
+paths:
+  /widgets/{id}:
+    get:
+      operationId: getWidget
+      parameters:
+        - { $ref: '#/components/parameters/WidgetId' }
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Widget' }
+components:
+  parameters:
+    WidgetId:
+      name: id
+      in: path
+      required: true
+      schema: { type: string }
+  schemas:
+    Widget:
+      type: object
+      properties: { id: { type: string } }
+`;
+const sha256 = (text) => `sha256:${createHash('sha256').update(text).digest('hex')}`;
+function openapiCase({draft = openapiDraft, record = (r) => r, extraFiles = {}, lock = "lockfileVersion: '9.0'\npackages:\n  '@redocly/cli@2.0.0': {}\n", withEvidence = true, draftName = 'example.yaml'} = {}) {
+  const target = makeRoot('yss-openapi-replay-');
+  const feature = `example${++seq}`;
+  const base = readWorkLayout(target).featureRoot(feature);
+  const draftRef = `${base}/api/${draftName}`;
+  const evidenceRef = `${base}/api/lint.txt`;
+  const put = (ref, text) => { mkdirSync(path.dirname(path.join(target, ref)), {recursive: true}); writeFileSync(path.join(target, ref), text); };
+  put(draftRef, draft);
+  if (withEvidence) put(evidenceRef, 'redocly lint passed\n');
+  put('pnpm-lock.yaml', lock);
+  for (const [ref, text] of Object.entries(extraFiles)) put(`${base}/api/${ref}`, text);
+  const value = record({
+    schema_version: 1, kind: 'openapi-draft-validation', template: false, status: 'passed',
+    draft: {ref: draftRef, sha256: sha256(draft), oas_version: '3.1.0'},
+    toolchain: {package: '@redocly/cli', version: '2.0.0', lockfile_ref: 'pnpm-lock.yaml', command: `pnpm exec redocly lint ${draftRef}`, exit_code: 0, executed_at: '2026-09-10T00:00:00Z', evidence_ref: evidenceRef},
+    checks: {single_document: 'passed', oas_3_1: 'passed', ref_resolution: 'passed', path_parameters: 'passed', operation_ids: 'passed', lint: 'passed'},
+  }, {draftRef, base});
+  const ref = `openapi-record-${seq}.json`;
+  put(ref, JSON.stringify(value));
+  return {target, ref, draftRef};
+}
+const openapiVariants = {
+  '通过': {},
+  '摘要过期': {record: (r) => ({...r, draft: {...r.draft, sha256: `sha256:${'0'.repeat(64)}`}})},
+  'lint 失败': {record: (r) => ({...r, status: 'blocked', toolchain: {...r.toolchain, exit_code: 1}, checks: {...r.checks, lint: 'blocked'}})},
+  '命令指向其他 Draft': {record: (r, c) => ({...r, toolchain: {...r.toolchain, command: `pnpm exec redocly lint ${c.base}/api/other.yaml`}})},
+  '锁文件未绑定版本': {record: (r) => ({...r, toolchain: {...r.toolchain, version: '2.1.0'}})},
+  '锁文件为 pnpm 9 风格': {lock: "lockfileVersion: '9.0'\npackages:\n  '@redocly/cli':\n    version: 2.0.0\n"},
+  '$ref 无法解析': {draft: openapiDraft.replace('#/components/schemas/Widget', '#/components/schemas/Missing')},
+  'operationId 重复': {draft: openapiDraft.replace('      responses:', '      responses:').replace('paths:', 'paths:\n  /other:\n    get:\n      operationId: getWidget\n      responses:\n        \'200\': { description: ok }')},
+  '缺少 required path 参数': {draft: openapiDraft.replace("        - { $ref: '#/components/parameters/WidgetId' }\n", '')},
+  'OAS 3.0': {draft: openapiDraft.replace('openapi: 3.1.0', 'openapi: 3.0.3'), record: (r) => ({...r, draft: {...r.draft, oas_version: '3.0.3'}})},
+  '远程 $ref': {draft: openapiDraft.replace('#/components/schemas/Widget', 'https://example.com/w.yaml#/Widget')},
+  '$ref 越出 API 目录': {draft: openapiDraft.replace('#/components/schemas/Widget', '../../outside.yaml#/Widget')},
+  '指向其他文件的合法 $ref': {draft: openapiDraft.replace('#/components/schemas/Widget', 'shared.yaml#/Widget'), extraFiles: {'shared.yaml': 'Widget:\n  type: object\n'}},
+  '证据文件不存在': {withEvidence: false},
+  '正式记录被标成模板': {record: (r) => ({...r, template: true})},
+  'Draft 不在功能包 API 目录': {record: (r, c) => ({...r, draft: {...r.draft, ref: 'docs/loose.yaml'}, toolchain: {...r.toolchain, command: 'pnpm exec redocly lint docs/loose.yaml'}})},
+};
+for (const [name, spec] of Object.entries(openapiVariants)) {
+  test(`OpenAPI Draft validation 回放：${name}`, {skip}, () => {
+    const {record, ...rest} = spec;
+    let base;
+    const c = openapiCase({...rest, record: (r, ctx) => { base = ctx.base; return record ? record(r, ctx) : r; }});
+    let node;
+    try { validateOpenApiDraftValidationRecord(path.join(c.target, c.ref), {root: c.target}); node = {ok: true}; } catch (error) { node = {ok: false, message: String(error.message).slice(0, 100)}; }
+    const go = nativeContractVerify({root: c.target, kind: 'openapi-validation', file: c.ref});
+    assert.equal(go.exitCode === 0, node.ok, `结论不一致：Node=${JSON.stringify(node)} Go=${go.exitCode} ${go.message.slice(0, 160)}`);
+    if (name === '通过') assert.equal(node.ok, true, `基线必须通过：${node.message}`);
+    else assert.doesNotMatch(String(node.message), /ENOENT.*\.json/, '拒绝原因不能是找不到记录文件');
+  });
+}
+test('OpenAPI Draft validation 回放：--allow-template 只接受模板记录', {skip}, () => {
+  const template = path.join(REPO, '.template-spec/api/templates/openapi-draft-validation-record-template.yaml');
+  const ref = '.template-spec/api/templates/openapi-draft-validation-record-template.yaml';
+  assert.equal(validateOpenApiDraftValidationRecord(template, {root: REPO, allowTemplate: true}).template, true);
+  const go = nativeContractVerify({root: REPO, kind: 'openapi-validation', file: ref, extra: ['--allow-template']});
+  assert.equal(go.exitCode, 0, go.message);
+  assert.equal(go.envelope.result.coverage.openapi_validation.template, true);
+  // 正式记录加 --allow-template 必须拒绝（模板标记为 false）
+  const c = openapiCase();
+  assert.throws(() => validateOpenApiDraftValidationRecord(path.join(c.target, c.ref), {root: c.target, allowTemplate: true}));
+  assert.notEqual(nativeContractVerify({root: c.target, kind: 'openapi-validation', file: c.ref, extra: ['--allow-template']}).exitCode, 0);
+});
