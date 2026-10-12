@@ -53,6 +53,18 @@ export function nativeUserDecisionRequirement({root: given, requirement, environ
   }
 }
 
+// 期望的来源绑定：approvalExpectationFrom*/ForBoundAsset 算出期望时登记「它是怎么来的」，委托时让 yss 自己按同一绑定重新计算期望。
+// 只有期望对象与登记时完全一致才采用绑定；调用方改过任何字段就退回显式期望，避免绑定与实际期望不一致。
+const expectationBindings = new WeakMap();
+export function attachExpectationBinding(expected, binding) {
+  expectationBindings.set(expected, {binding, snapshot: JSON.stringify(expected)});
+  return expected;
+}
+function bindingFor(expected) {
+  const entry = expectationBindings.get(expected);
+  return entry && entry.snapshot === JSON.stringify(expected) ? entry.binding : null;
+}
+
 // 批准记录引用的、需要在项目根内才能委托的全部资产路径（含 v2 审查任务与组合包依据）。
 export function approvalDelegationRefs(record, expected) {
   return [record.subject_ref, record.user_decision_ref, record.continuation_ref, record.decision_reuse_ref, record.review_task_ref, expected.subject_ref, expected.review_context?.review_task_ref,
@@ -66,14 +78,17 @@ export function nativeApprovalRecord({root: given, record, file, gate, expected,
   const dir = path.join(root, '.work', 'native-candidates', `approval-${process.pid}-${randomUUID()}`);
   mkdirSync(dir, {recursive: true});
   const expectedFile = path.join(dir, 'expected.json');
-  writeFileSync(expectedFile, JSON.stringify(expected));
+  const rows = Array.isArray(expected) ? expected : [expected];
+  const bindings = rows.map(bindingFor);
+  const byBinding = bindings.every(Boolean);
+  writeFileSync(expectedFile, JSON.stringify(byBinding ? bindings.map((binding, i) => ({...binding, boundary: rows[i].boundary})) : expected));
   let target = file ? path.resolve(root, file) : path.join(dir, 'candidate.json');
   if (!file) writeFileSync(target, JSON.stringify(record));
   try {
-    const result = nativeEvidenceVerify({root, kind: 'approval', file: path.relative(root, target), extra: ['--require-approved', '--expected', path.relative(root, expectedFile), ...(gate ? ['--gate', gate] : [])], environment});
+    const result = nativeEvidenceVerify({root, kind: 'approval', file: path.relative(root, target), extra: ['--require-approved', byBinding ? '--binding' : '--expected', path.relative(root, expectedFile), ...(gate ? ['--gate', gate] : [])], environment});
     if (result.exitCode !== 0) throw Object.assign(new Error(result.message), {code: result.diagnostics[0]?.code ?? result.code, native: true});
-    const rows = Array.isArray(expected) ? expected : [expected];
     const done = rows.map((row) => ({subject_ref: row.subject_ref, approval_scope: [...row.approval_scope], execution_authorization: 'not-evaluated'}));
+    if (byBinding) Object.defineProperty(done[0], 'expected_by_yss', {value: result.envelope.result?.coverage?.approval_expected, enumerable: false}); // 供对拍测试读取 yss 自己算出的期望（组合包时为最后一行）
     return Array.isArray(expected) ? done : done[0];
   } finally {
     rmSync(dir, {recursive: true, force: true});

@@ -1,6 +1,7 @@
 import {createHash} from 'node:crypto';
 import {approvalIO, approvalError} from './approval-record-io.mjs';
 import {approvalExpectationFromSubject, approvalExpectationFromState} from './approval-current.mjs';
+import {attachExpectationBinding} from './native-evidence.mjs';
 
 const hex = value => value?.replace(/^sha256:/, '');
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
@@ -27,7 +28,7 @@ export function approvalExpectationForBoundAsset(boundary, binding, context = {}
     if (!frozen) expected.basis = [...(expected.basis || []), {ref:assetRef,digest:hash(bytes)}];
   }
   if (context.scope && JSON.stringify([...context.scope].sort()) !== JSON.stringify([...expected.approval_scope].sort())) approvalError('APPROVAL_CURRENT_INVALID', '当前资产消费范围与审阅包不匹配');
-  return {...expected, review_package: context.review_package ?? expected.review_package};
+  return attachExpectationBinding({...expected, review_package: context.review_package ?? expected.review_package},{mode:'bound-asset',binding,...(context.scope===undefined?{}:{scope:context.scope}),...(context.review_package===undefined?{}:{review_package:context.review_package})});
 }
 
 export function approvalExpectationForCheckpoint(boundary, state, context = {}) {

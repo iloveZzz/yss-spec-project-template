@@ -11,6 +11,8 @@ import {nativeEvidenceVerify} from '../scripts/lib/native-evidence.mjs';
 import {buildDecisionFixture} from '../scripts/lib/testing/user-decision-fixture.mjs';
 import {validateUserDecision, assertUserDecisionRequirement} from '../scripts/lib/user-decision.mjs';
 import {validateApprovalRecord, approvalExpectationFromSubject} from '../scripts/lib/approval-record.mjs';
+import {approvalExpectationForBoundAsset} from '../scripts/lib/approval-consumption.mjs';
+import {approvalExpectationFromState} from '../scripts/lib/approval-current.mjs';
 import {decisionDigest} from '../scripts/lib/user-decision-core.mjs';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
@@ -212,7 +214,8 @@ for (const [name, mutate] of Object.entries(approvalCases)) {
     const delegated = run(true);
     assert.equal(delegated.ok, inProcess.ok, `结论不一致：进程内=${JSON.stringify(inProcess)} 委托=${JSON.stringify(delegated)}`);
     if (!inProcess.ok) {
-      assert.equal(delegated.code, inProcess.code);
+      // 期望算出后主体又被改动：进程内用冻结的期望得到「摘要过期」，委托时 yss 按绑定重新计算，主体已不满足期望前提得到「缺少上下文」。两边都拒绝，码不同（见设计 §11）。
+      if (name !== '主体被改动') assert.equal(delegated.code, inProcess.code);
       assert.equal(delegated.native, undefined);
       // 进程内文案里的内部码（如 user-decision-responder-mismatch）委托后也必须保留
       for (const token of inProcess.message.match(/user-decision-[a-z-]+/g) ?? []) assert.match(delegated.message, new RegExp(token));
@@ -305,3 +308,46 @@ for (const [name, mutate] of Object.entries(gateCases)) {
     if (!inProcess.ok) { assert.equal(delegated.code, inProcess.code); assert.equal(delegated.native, true, '应已委托'); }
   });
 }
+
+// 期望由 yss 计算：Node 三种期望来源（状态、主体、绑定资产）算出的期望，与 yss 按同一绑定算出的期望逐字段一致，且判定一致。
+const strip = (digest) => String(digest).replace(/^sha256:/, '');
+const keyFields = (expected) => ({boundary: expected.boundary, subject_ref: expected.subject_ref, subject_digest: strip(expected.subject_digest), approval_scope: [...expected.approval_scope].sort(), basis: expected.basis.map((asset) => ({ref: asset.ref, digest: strip(asset.digest)})), drafter_principal_ref: expected.drafter_principal_ref, review_package: expected.review_package});
+function bindingCase() {
+  const c = gateStateCase();
+  const gate = 'gate.product-design-approved';
+  const rel = (file) => path.relative(REPO, file);
+  const sources = {
+    '状态': () => approvalExpectationFromState(gate, c.state, {root: REPO}),
+    '主体': () => approvalExpectationFromSubject(gate, rel(c.subjectRef), {root: REPO}),
+    '绑定资产': () => approvalExpectationForBoundAsset(gate, rel(c.subjectRef), {root: REPO, scope: c.state.approval_scope}),
+  };
+  return {c, gate, sources};
+}
+for (const source of ['状态', '主体', '绑定资产']) for (const [name, mutate] of Object.entries({'通过': () => {}, '审查人不是原回复者': (c) => { c.record.principal_ref = 'person.someone-else'; c.writeRecord(); }, '主体被改动': (c) => { writeFileSync(c.subjectRef, JSON.stringify({changed: true})); }})) {
+  test(`期望由 yss 计算（${source}）：${name}`, {skip}, () => {
+    const {c, gate, sources} = bindingCase();
+    // 主体与绑定资产来源要求主体自带范围与依据；夹具里 subject.json 已含这些，且记录用相对引用
+    mutate(c);
+    const node = outcome(() => sources[source]());
+    if (!node.ok) return; // 期望本身就无法算出时没有可对拍的期望
+    const expected = sources[source]();
+    const inProcess = outcome(() => validateApprovalRecordFile(path.join(REPO, c.state.approval_ref), {requireApproved: true, root: REPO, expected, native: false}));
+    let viaYss;
+    const delegated = outcome(() => { viaYss = validateApprovalRecordFile(path.join(REPO, c.state.approval_ref), {requireApproved: true, root: REPO, expected, native: true}); });
+    assert.equal(delegated.ok, inProcess.ok, `结论不一致：进程内=${JSON.stringify(inProcess)} 委托=${JSON.stringify(delegated)}`);
+    if (!inProcess.ok) assert.equal(delegated.code, inProcess.code);
+    if (delegated.ok) assert.deepEqual(keyFields(viaYss.expected_by_yss), keyFields(expected));
+  });
+}
+
+test('期望被调用方改动后不再采用绑定：委托的判定以改动后的期望为准', {skip}, () => {
+  const {c, gate, sources} = bindingCase();
+  const expected = sources['状态']();
+  expected.approval_scope = ['other.scope'];
+  const run = (native) => outcome(() => validateApprovalRecordFile(path.join(REPO, c.state.approval_ref), {requireApproved: true, root: REPO, expected, native}));
+  const inProcess = run(false), delegated = run(true);
+  assert.equal(inProcess.ok, false);
+  assert.equal(delegated.ok, false);
+  assert.equal(delegated.code, inProcess.code);
+  assert.equal(delegated.native, true);
+});

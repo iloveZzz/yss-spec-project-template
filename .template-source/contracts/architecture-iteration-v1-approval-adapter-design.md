@@ -1,6 +1,6 @@
 # 批准记录族 Node→Go 适配层设计（AR-09c）
 
-状态：设计；分片 1、2、3 已实现（见 §8～§10）。
+状态：设计；分片 1～4 已实现（见 §8～§11）。
 前置：`architecture-iteration-v1-plan.md` 的 AR-09b 行（用户决定入口已委托）。
 
 ## 1. 要解决的问题
@@ -106,3 +106,12 @@ yss-cli 分支 `arch/ar-09c` 加入 `--expected`（约 40 行，只接线，不�
 - `assertCheckpointApprovals` 向内传 `defaultAuthorities`：它自己加载的 rolesDoc/registry 只是同一根的默认值，不再因此拒绝委托；调用方自己传入的 rolesDoc/registry 仍然不委托。
 - 不委托、仍在进程内：Plan 聚合批准、门禁检查（`assertGateChecks`）、自定义 rolesDoc/registry/read。
 - 回放：门禁状态 6 类（通过、审查人非原回复者、起草者自签、状态范围与记录不同、主体被改动、依据过期），进程内与委托结论和拒绝码一致，拒绝都经过委托。回放测试共 76 个通过；影响范围测试（approval-current、digital-human-roles、lifecycle-controls、用户决定场景）通过。
+
+## 11. 分片 4 实现记录
+
+- 做法与 §6 略有不同：不让调用方改传「状态/资产」，而是让 Node 的三个期望构造函数（`approvalExpectationFromState`、`approvalExpectationFromSubject`、`approvalExpectationForBoundAsset`，`ForCheckpoint` 经由第一个）在算出期望时登记「它是怎么来的」（`attachExpectationBinding`，WeakMap 保存绑定与期望快照）。委托时若期望对象与登记时完全一致，就把绑定交给 yss（`--binding`，与 `--expected` 互斥），由 yss 自己计算期望并判定；调用方改过期望的任何字段则退回显式期望。调用方代码不用改。
+- Go：`--binding`（模式 `state`、`subject`、`bound-asset`），新增 `ApprovalExpectationFromSubject`、`ApprovalExpectationForBoundAsset`，`FromState` 增加调用方 `review_package` 覆盖；算出的期望写入 `coverage.approval_expected`，供对拍。
+- 对拍：三种来源 × （通过、审查人非原回复者、主体被改动）；通过时 yss 算出的期望与 Node 的期望在关键字段（边界、主体引用与摘要、范围、依据、起草者、审阅包标志）逐项一致。
+- 已知差异：期望算出之后、校验之前主体被改动时，进程内用冻结期望报「摘要过期」，委托时 yss 按绑定在校验当下重算，报「缺少上下文」；两边都拒绝，码不同，已在测试中登记。
+- 仍在 Node：这三个构造函数的实现还在（调用方仍要拿到期望对象，进程内路径也要用）。删除它们属于分片 5，与「调用方改为只传绑定」一起做。
+- 影响范围测试：回放 86 个（含期望由 yss 计算 9 组与改动期望 1 组）、approval-current、approval-consumption、lifecycle-controls、digital-human-roles、review-capabilities、生命周期转换/用户决定/Plan→Spec 场景，全部通过。
