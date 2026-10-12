@@ -1,10 +1,15 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { mkdtemp, readFile, rm, stat } from "node:fs/promises";
+import { mkdtemp, readFile, rm, stat, writeFile } from "node:fs/promises";
 import { spawnSync } from "node:child_process";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+
+import { generatedTreeDigest } from '../../../../scripts/lib/backend-platform-provenance.mjs';
+import { assertStandaloneManifest } from '../../../../scripts/lib/standalone-backend-scaffold.mjs';
+import { platformDigest } from '../../../../scripts/lib/backend-platform.mjs';
+import { parse } from '../../../../scripts/vendor/yaml.mjs';
 
 const scripts = path.dirname(fileURLToPath(import.meta.url));
 function args(output) {
@@ -120,3 +125,56 @@ test("DDD 与 MVC 收到任意正式合同参数时不回退成直接生成", as
   const before=await readFile(path.join(root,"demo-service/pom.xml"));assert.notEqual(spawnSync(process.execPath,[entry,...args(root)]).status,0);assert.deepEqual(await readFile(path.join(root,"demo-service/pom.xml")),before);
  }
  });
+
+for (const skill of ["yss-ddd-scaffold-generator", "yss-layered-mvc-scaffold-generator"]) {
+  test(`${skill} 默认参考工程独立构建、绑定清单且可显式禁用`, async t => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "yss-reference-"));
+    t.after(() => rm(root, { recursive: true, force: true }));
+    const entry = path.resolve(scripts, "../../", skill, "scripts/generate_scaffold.mjs");
+    for (const enabled of [true, false]) {
+      const output = path.join(root, String(enabled));
+      const result = spawnSync(process.execPath, [entry, ...args(output), ...(enabled ? [] : ["--without-example"])], { encoding: "utf8" });
+      assert.equal(result.status, 0, result.stderr);
+      const project = path.join(output, "demo-service");
+      const manifest = JSON.parse(await readFile(path.join(project, ".yss/scaffold-generation.json"), "utf8"));
+      assert.equal(manifest.schema_version, 2);
+      assert.equal(manifest.reference_example.enabled, enabled);
+      assert.doesNotMatch(await readFile(path.join(project, "pom.xml"), "utf8"), /<module>examples/);
+      const reference = path.join(project, "examples/reference");
+      if (enabled) {
+        const oas = parse(await readFile(path.join(reference, 'openapi.yaml'), 'utf8'));
+        const wire = parse(await readFile(path.resolve(scripts, '../../yss-dto/references/openapi-wire-profile.yaml'), 'utf8'));
+        assert.deepEqual(oas.components.schemas.YssResultMeta.properties, Object.fromEntries(Object.entries(wire.common_response.fields).map(([key, field]) => [key, { type: field.wire_types }])));
+        assert.equal(oas.components.responses.Entry.content['application/json'].schema.allOf[0].$ref, '#/components/schemas/YssResultMeta');
+        assert.equal(oas['x-yss-wire-profile'].schema_version, wire.schema_version);
+        assert.match(await readFile(path.join(reference, "pom.xml"), "utf8"), /demo-service-reference/);
+        assert.ok((await stat(path.join(reference, "mvnw"))).mode & 0o111);
+        assert.ok(manifest.ownership.generated_files.some(f => f.path.startsWith("examples/reference/") && f.path.endsWith("ReferenceEntryController.java")));
+        assert.equal(manifest.reference_example.id, "reference-entry");
+        assert.match(manifest.reference_example.template_digest, /^sha256:[a-f0-9]{64}$/);
+        assert.equal(manifest.reference_verification.status, "not-executed");
+        assert.equal(generatedTreeDigest(project, manifest), manifest.generated_tree_digest);
+        const readme = path.join(reference, 'README.md'), bytes = await readFile(readme);
+        await writeFile(readme, 'changed reference');
+        assert.throws(() => generatedTreeDigest(project, manifest), /generated file drift/);
+        await writeFile(readme, bytes);
+        await rm(reference, { recursive: true });
+        const stripped = { ...manifest, ownership: { generated_files: manifest.ownership.generated_files.filter(f => !f.path.startsWith('examples/')) } };
+        assert.throws(() => generatedTreeDigest(project, stripped), /文件所有权缺失/);
+      } else {
+        await assert.rejects(stat(reference), { code: "ENOENT" });
+        const legacy = structuredClone(manifest); legacy.schema_version = 1;
+        delete legacy.reference_example; delete legacy.generation_input.reference_example;
+        delete legacy.reference_verification; legacy.input_digest = platformDigest(legacy.generation_input);
+        assert.doesNotThrow(() => assertStandaloneManifest(legacy));
+        legacy.reference_example = manifest.reference_example;
+        assert.throws(() => assertStandaloneManifest(legacy), /历史 v1/);
+      }
+    }
+    const output = path.join(root, "conflicting");
+    const conflict = spawnSync(process.execPath, [entry, ...args(output), "--with-example", "--without-example"], { encoding: "utf8" });
+    assert.equal(conflict.status, 1);
+    assert.match(conflict.stderr, /不能同时|不得同时/);
+    await assert.rejects(stat(output), { code: "ENOENT" });
+  });
+}

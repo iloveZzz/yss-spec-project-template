@@ -2,7 +2,7 @@
 
 ## 1. 准备批准合同
 
-新合同是服务级工程基线，使用统一 Project Scaffold Contract schema v4 与 `scaffold_request_id`。以下仅展示身份、Profile 和生成策略片段；实际平台、Maven 坐标、设计与批准绑定必须来自当前已批准输入，示例值不能作为生成授权：
+新合同是服务级工程基线，使用统一 Project Scaffold Contract schema v5（历史 v4 保留空工程语义） 与 `scaffold_request_id`。以下仅展示身份、Profile 和生成策略片段；实际平台、Maven 坐标、设计与批准绑定必须来自当前已批准输入，示例值不能作为生成授权：
 
 ```json
 {
@@ -114,7 +114,7 @@ metadata-service/
     └── src/main/java/com/yss/metadata/MetadataServiceApplication.java
 ```
 
-生成器只提供工程结构、POM、项目级 Maven 配置、机械启动入口和通用测试依赖，不生成实体、表、Controller、业务 API 或示例 CRUD。
+生成器只提供工程结构、POM、项目级 Maven 配置、机械启动入口和通用测试依赖，业务空工程不生成产品实体、表、Controller 或 API；默认 examples/reference/ 包含独立 ReferenceEntry 示例 CRUD。
 
 ## 4. 后续路由
 

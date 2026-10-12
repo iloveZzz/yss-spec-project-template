@@ -1,0 +1,44 @@
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::               (v3.5.16)
+
+2026-10-13 02:17:18.461 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.3.Final
+2026-10-13 02:17:18.487 [main] INFO  c.y.r.DddProbeApplication - Starting DddProbeApplication v1.0.0-SNAPSHOT using Java 17.0.16 with PID 48708 (/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-bootstrap/target/ddd-probe-bootstrap-1.0.0-SNAPSHOT.jar started by zhudaoming in /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe)
+2026-10-13 02:17:18.488 [main] INFO  c.y.r.DddProbeApplication - The following 1 profile is active: "scaffold-local"
+2026-10-13 02:17:18.913 [main] INFO  c.y.c.m.config.MapperConfiguration - 【MapperConfiguration】mapperScannerConfigurer 初始化mapper扫描 com.yss.cloud.**.mapper
+2026-10-13 02:17:18.917 [main] WARN  o.m.s.mapper.ClassPathMapperScanner - No MyBatis mapper was found in '[com.yss.cloud.**.mapper]' package. Please check your configuration.
+2026-10-13 02:17:19.104 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 50737 (http)
+2026-10-13 02:17:19.110 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-127.0.0.1-50737"]
+2026-10-13 02:17:19.111 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-10-13 02:17:19.111 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.55]
+2026-10-13 02:17:19.128 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2026-10-13 02:17:19.129 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 622 ms
+2026-10-13 02:17:19.327 [main] INFO  c.y.c.m.config.MapperConfiguration - 【MapperConfiguration】PageInterceptor 完成初始化分页插件 PageInterceptor{helperDialect='mysql', reasonable=true, supportMethodsArguments=true, params='count=countSql', autoRuntimeDialect=true}
+2026-10-13 02:17:19.330 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-10-13 02:17:19.431 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:ddd_probe user=SA
+2026-10-13 02:17:19.432 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-10-13 02:17:19.435 [main] INFO  c.y.c.m.config.MapperConfiguration - 【MapperConfiguration】根据 JDBC URL 识别 DbType: H2
+2026-10-13 02:17:19.438 [main] INFO  c.y.c.m.config.MapperConfiguration - 【MapperConfiguration】根据 JDBC URL 识别 DbType: H2
+2026-10-13 02:17:19.444 [main] INFO  c.y.c.m.config.MapperConfiguration - 【MapperConfiguration】根据 JDBC URL 识别 DbType: H2
+ _ _   |_  _ _|_. ___ _ |    _ 
+| | |\/|_)(_| | |_\  |_)||_|_\ 
+     /               |         
+                        3.5.16 
+2026-10-13 02:17:19.491 [main] INFO  c.b.m.e.s.MybatisPlusApplicationContextAware - Register ApplicationContext instances org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext@27953a83
+2026-10-13 02:17:19.578 [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 1 endpoint beneath base path '/actuator'
+2026-10-13 02:17:19.606 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-127.0.0.1-50737"]
+2026-10-13 02:17:19.614 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 50737 (http) with context path '/'
+2026-10-13 02:17:19.623 [main] INFO  c.y.r.DddProbeApplication - Started DddProbeApplication in 1.405 seconds (process running for 1.605)
+2026-10-13 02:17:19.803 [http-nio-127.0.0.1-50737-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-10-13 02:17:19.803 [http-nio-127.0.0.1-50737-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-10-13 02:17:19.804 [http-nio-127.0.0.1-50737-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 0 ms
+2026-10-13 02:17:19.860 [SpringApplicationShutdownHook] INFO  o.s.b.w.e.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2026-10-13 02:17:19.862 [tomcat-shutdown] INFO  o.s.b.w.e.tomcat.GracefulShutdown - Graceful shutdown complete
+2026-10-13 02:17:19.864 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2026-10-13 02:17:19.893 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.

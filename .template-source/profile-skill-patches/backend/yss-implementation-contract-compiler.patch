@@ -1,8 +1,7 @@
 diff --git a/SKILL.md b/SKILL.md
-index 64607db..5b70c26 100644
 --- a/SKILL.md
 +++ b/SKILL.md
-@@ -11,72 +11,68 @@ description: "编译或重验 YSS Slice Implementation Contract、最小 Skill 
+@@ -11,71 +11,67 @@
  
  Slice v3 的当前执行结果须按 `references/yss-skill-execution-result.md` 绑定验收、验证项、合同原字节、实际证据和执行来源；`legacy-evidence-binding-missing` 表示历史可读但不能据此完成当前任务，不补造历史执行信息。
  
@@ -27,7 +26,7 @@ index 64607db..5b70c26 100644
 -6. 为切片生成基线合同；为当前行为生成工作单元增量路由。
 -7. 选择 `behavior-tdd` 或 `controlled-generation`。
 -8. 输出 `draft`、`blocked` 或 `ready-for-lifecycle-review`，交生命周期编排器核验和持久化。
-+当 backend `scaffold_status=required` 时，还必须读取当前 `scaffold-architecture-decisions.yaml`。Harness Orchestrator 先基于领域复杂度给出 `domain-driven` / `layered-mvc` 推荐，并通过 `gate.backend-architecture-platform-approved` 取得用户对架构与精确 Spring Boot 版本的同一次逐项目确认；本体选择只作为子项目预填默认，编译器不得自行默认、提问或批准。确认 DDD 时绑定 `yss-ddd-scaffold-generator`，确认 MVC 时绑定 `yss-layered-mvc-scaffold-generator`，并把 decision ref / id / digest、精确平台配置、Profile、确定性模块闭包、批准且当前的 Technical Design、Data Architecture Decision v1、API Contract Decision（新建 v2；历史 v1 只读兼容，准备与迁移见 `.template-spec/process/contract-reading.md`） 及真实工程合同批准记录写入 scaffold contract schema v4。既有工程核验并复用当前登记架构及固定工程基线/POM 中的实际版本，不重新询问或生成。API `required` 时工程批准还必须直接绑定冻结 OpenAPI YAML；`not-applicable` 时必须绑定影响评估、原因和证据。历史 v3 只允许补齐技术/数据/API 对账后的 Manifest 恢复审计，不得新生成。
++当 backend `scaffold_status=required` 时，还必须读取当前 `scaffold-architecture-decisions.yaml`。Harness Orchestrator 先基于领域复杂度给出 `domain-driven` / `layered-mvc` 推荐，并通过 `gate.backend-architecture-platform-approved` 取得用户对架构与精确 Spring Boot 版本的同一次逐项目确认；本体选择只作为子项目预填默认，编译器不得自行默认、提问或批准。确认 DDD 时绑定 `yss-ddd-scaffold-generator`，确认 MVC 时绑定 `yss-layered-mvc-scaffold-generator`，并把 decision ref / id / digest、精确平台配置、Profile、确定性模块闭包、批准且当前的 Technical Design、Data Architecture Decision v1、API Contract Decision（新建 v2；历史 v1 只读兼容，准备与迁移见 `.template-spec/process/contract-reading.md`） 及真实工程合同批准记录写入 scaffold contract schema v5（历史 v4 保留空骨架语义）。既有工程核验并复用当前登记架构及固定工程基线/POM 中的实际版本，不重新询问或生成。API `required` 时工程批准还必须直接绑定冻结 OpenAPI YAML；`not-applicable` 时必须绑定影响评估、原因和证据。历史 v3 只允许补齐技术/数据/API 对账后的 Manifest 恢复审计，不得新生成。
  
 -完整草案使用 `scripts/slice-contract prepare` 或 `prepareSliceImplementationContract` 从已有 Ticket / checkpoint 和必要细化组装；执行前读取唯一 YAML，视图和检查报告不授予权限。
  
@@ -36,30 +35,13 @@ index 64607db..5b70c26 100644
  
 -合同结构见 [slice-implementation-contract.md](references/slice-implementation-contract.md)，专项返回协议见 [yss-skill-execution-result.md](references/yss-skill-execution-result.md)。前端、后端和测试子任务必须由生命周期主控从批准的 Slice Contract 编译任务包；任务包 schema 为 `.template-spec/process/schemas/subagent-task-package.schema.json`，技能列表必须来自 `taskPackageDefaults`，不能由编译器或执行 Agent 另行手写。
 +## 编译结果
- 
--## 硬规则
++
 +来源摘要、闭包、阅读视图和校验直接复用本 Profile 已安装的 `slice-contract` / `contract` 入口；工具或参数缺失按 消费项目 `.template-spec/process/script-execution.md` 诊断，不用临时校验替代当前合同门禁。
- 
--按 `.template-spec/process/frontend-backend-delivery.md` 区分来源：上游战略交接或显式 `frontend_delivery` 绑定须核验联合交付并冻结接收摘要；本地已批准资产须绑定当前功能 checkpoint 与 Spec，实际核验适用的设计和后端/API 依赖，不要求外部接收回执。纯 UI 无后端/API 影响时记录有理由的 not-applicable。无效的显式绑定不得回退本地路径；正式实现、生成和恢复仍须当前批准的 Slice Contract，接口或部署漂移使受影响证据失效。
++
 +新合同使用 Slice v3 唯一 YAML：basis、scope、resolution、acceptance、verification、work_units 与适用 extensions 单点保存；任务包由批准合同派生。v2 按原规则读取，修改时显式迁移新草案，不继承批准。
- 
--- 编译器不得输出 `approved`、`ready-for-agent` 或 `completed`。
--- Registry 使用其权威 schema v3，编译规则保持 schema v2；新 Slice 使用 v3，旧 Slice v2 按原规则读取和显式迁移。已停止支持的 schema 一律拒绝，不自动升级，不提供未登记的旧技能名兼容。
--- `required_capabilities` 与 `required_skills` 必须同时冻结；Registry 或编译器摘要变化后合同立即 `stale`，重新编译后仍须交生命周期重新批准。
--- UI 影响按来源分支核验：新设计保持正式原型确认与 Visual Baseline；无 UI 改动才允许 `existing-ui-baseline` v1，并须当前真实基线确认及 `case_id`。任一来源缺少当前批准或摘要绑定时，不得路由页面实现。模型必须先读 manifest 与语义引用，再查看对应 PNG；禁止目录 glob 和图片独立猜义。
--- Repository/数据模型影响缺少数据架构时，不得路由持久化实现。
--- 后端技术设计由 `yss-technical-design` 先行组织。消费批准且版本当前的 Technical Design Contract，核对其架构与工程基线一致；DDD 才消费聚合、Gateway 等战术字段并路由 `yss-domain`，MVC 消费用例、分层、规则和事务设计并按 Profile 路由。旧 v1 战术合同只按 DDD 显式兼容读取。无相关影响记录带原因的 `not-applicable`。
--- API 变化必须回到生命周期 Draft/Review/Freeze；半成品 backend 不得冒充稳定 source of truth。
--- 后端端到端切片必须包含 Application；对象/POJO 影响按契约自动补 `mapstruct`、`lombok`、`alibaba-java-code-style`。
--- Harness 内实现路径必须是已登记的具体项目相对路径，默认布局为 `apps/backend/<project>/` 或 `apps/frontend/<project>/`；`apps/backend/`、`apps/frontend/` 只能作为容器。外部实现仓库使用其登记的真实项目根路径。`git-submodule` 使用 `implementation_path_policy: git-submodule-harness-apps`，空 gitlink、detached HEAD 或 `--force` 覆盖挂载点不得脚手架；`inspectWorkingTreeScope.writable` 必须为显式布尔值。
--- 当前用户、缓存、审计、Excel、分布式 ID、请求校验、错误映射、加解密或网关韧性命中时，必须按 `compiler-contract.yaml` 的 `impact_to_capabilities` 补齐入口 capability；不能只在 `boundaries.md` 中提及。仅复用已经验证的平台认证 / 授权能力不算 component impact，不自动增加权限专项 skill。
--- 业务行为使用 `behavior-tdd`；只有机械脚手架/生成物可用 `controlled-generation`，并记录例外和验证。
--- 无工程且需要机械生成时，先读取 [脚手架合同编译](references/scaffold-compilation.md)。只起草 Project Scaffold Contract schema v4，由生命周期批准并持久化后运行；既有工程不重新生成。脚手架合同不能替代后续批准的 Slice Contract，业务行为必须重路由。
++
 +编译器必须计算：
- 
--- 专项结果中的越界路径、缺失证据、`drift`、`violation` 或 `new_impacts` 必须阻断或重路由。
--- 前后端子任务必须使用同一 `contract_id/contract_version`，并在任务包中记录 `role_id`、`runtime_id`、`execution_state`、`allowed_write_paths`、`downstream_consumers` 和 `convergence_ref`；版本不一致或汇合引用缺失时输出 `blocked`。
--- 长尾 skill 不可用时显式 `blocked`，不得用通用知识假装已应用 YSS 规范。
++
 +- 按 `compiler-contract.yaml` 将 impact 映射为入口 capability；Recipe 只能引用 capability。
 +- 合并多个窄 Recipe 后只计算一次闭包；只递归 `context-required`，显式 condition 命中时才加载 `context-conditional`，其他类型不扩张实现上下文。
 +- 按 Recipe 声明顺序、依赖拓扑和 skill ID 兜底确定性排序；去重 skill 并保留全部原因链。
@@ -69,14 +51,37 @@ index 64607db..5b70c26 100644
 +- 实现仓库、分支、项目根、CI、验证命令、回滚点和允许写路径。
 +- `required_capabilities`、`required_skills`、Registry/Compiler digest、TDD 模式、预期证据和完整重路由触发器。
  
--## 三级编译模式
-+## 硬规则
+ ## 硬规则
  
+-按 `.template-spec/process/frontend-backend-delivery.md` 区分来源：上游战略交接或显式 `frontend_delivery` 绑定须核验联合交付并冻结接收摘要；本地已批准资产须绑定当前功能 checkpoint 与 Spec，实际核验适用的设计和后端/API 依赖，不要求外部接收回执。纯 UI 无后端/API 影响时记录有理由的 not-applicable。无效的显式绑定不得回退本地路径；正式实现、生成和恢复仍须当前批准的 Slice Contract，接口或部署漂移使受影响证据失效。
+-
+-- 编译器不得输出 `approved`、`ready-for-agent` 或 `completed`。
++- 编译器不得输出 approved、ready-for-agent 或 completed。
+ - Registry 使用其权威 schema v3，编译规则保持 schema v2；新 Slice 使用 v3，旧 Slice v2 按原规则读取和显式迁移。已停止支持的 schema 一律拒绝，不自动升级，不提供未登记的旧技能名兼容。
+-- `required_capabilities` 与 `required_skills` 必须同时冻结；Registry 或编译器摘要变化后合同立即 `stale`，重新编译后仍须交生命周期重新批准。
+-- UI 影响按来源分支核验：新设计保持正式原型确认与 Visual Baseline；无 UI 改动才允许 `existing-ui-baseline` v1，并须当前真实基线确认及 `case_id`。任一来源缺少当前批准或摘要绑定时，不得路由页面实现。模型必须先读 manifest 与语义引用，再查看对应 PNG；禁止目录 glob 和图片独立猜义。
+-- Repository/数据模型影响缺少数据架构时，不得路由持久化实现。
+-- 后端技术设计由 `yss-technical-design` 先行组织。消费批准且版本当前的 Technical Design Contract，核对其架构与工程基线一致；DDD 才消费聚合、Gateway 等战术字段并路由 `yss-domain`，MVC 消费用例、分层、规则和事务设计并按 Profile 路由。旧 v1 战术合同只按 DDD 显式兼容读取。无相关影响记录带原因的 `not-applicable`。
+-- API 变化必须回到生命周期 Draft/Review/Freeze；半成品 backend 不得冒充稳定 source of truth。
+-- 后端端到端切片必须包含 Application；对象/POJO 影响按契约自动补 `mapstruct`、`lombok`、`alibaba-java-code-style`。
+-- Harness 内实现路径必须是已登记的具体项目相对路径，默认布局为 `apps/backend/<project>/` 或 `apps/frontend/<project>/`；`apps/backend/`、`apps/frontend/` 只能作为容器。外部实现仓库使用其登记的真实项目根路径。`git-submodule` 使用 `implementation_path_policy: git-submodule-harness-apps`，空 gitlink、detached HEAD 或 `--force` 覆盖挂载点不得脚手架；`inspectWorkingTreeScope.writable` 必须为显式布尔值。
+-- 当前用户、缓存、审计、Excel、分布式 ID、请求校验、错误映射、加解密或网关韧性命中时，必须按 `compiler-contract.yaml` 的 `impact_to_capabilities` 补齐入口 capability；不能只在 `boundaries.md` 中提及。仅复用已经验证的平台认证 / 授权能力不算 component impact，不自动增加权限专项 skill。
+-- 业务行为使用 `behavior-tdd`；只有机械脚手架/生成物可用 `controlled-generation`，并记录例外和验证。
+-- 无工程且需要机械生成时，先读取 [脚手架合同编译](references/scaffold-compilation.md)。后端新合同起草 Project Scaffold Contract schema v5 并绑定 reference_example；前端保持 v4，历史后端 v4 保留空工程语义，由生命周期批准并持久化后运行；既有工程不重新生成。脚手架合同不能替代后续批准的 Slice Contract，业务行为必须重路由。
+-
+-- 专项结果中的越界路径、缺失证据、`drift`、`violation` 或 `new_impacts` 必须阻断或重路由。
+-- 前后端子任务必须使用同一 `contract_id/contract_version`，并在任务包中记录 `role_id`、`runtime_id`、`execution_state`、`allowed_write_paths`、`downstream_consumers` 和 `convergence_ref`；版本不一致或汇合引用缺失时输出 `blocked`。
+-- 长尾 skill 不可用时显式 `blocked`，不得用通用知识假装已应用 YSS 规范。
+-
+-## 三级编译模式
+-
 -- 切片基线编译：生成完整合同和技能闭包。
 -- 工作单元增量编译：绑定一个行为、主/辅 skills、TDD 模式、路径和证据。
 -- 完整重编译：API/schema、状态机、数据模型、仓库、写路径、skill、测试 seam 或架构约束发生实质变化时触发。实现中出现未冻结的新行为（包括明确的权限业务行为）统一写入 `new_impacts`，由生命周期按普通影响面重新分诊。
-+- 编译器不得输出 approved、ready-for-agent 或 completed。
-+- Registry 使用其权威 schema v3，编译规则保持 schema v2；新 Slice 使用 v3，旧 Slice v2 按原规则读取和显式迁移。已停止支持的 schema 一律拒绝，不自动升级，不提供未登记的旧技能名兼容。
+-
+-## 输出
+-
+-输出唯一 YAML 合同草案及派生报告；报告包含 capability/Recipe 解析记录、技能依赖闭包、不适用理由、阻塞项、TDD 模式、工作单元、预期证据、验证命令、人工审查点、完整重路由触发器，以及建议的 `suggested_owner_role_id`（UI 影响 → `role.frontend-engineer`，后端影响 → `role.backend-engineer`，测试/审查 → `role.test-engineer`）。自然语言说明不能替代结构化合同字段。编译器不得自行批准合同、设置 `ready-for-agent` 或关闭会签门禁；owner 建议只供主控派活。
 +- 任一 Registry/Compiler digest 变化使合同 `stale`；重新编译后仍须由 `harness-orchestrator` 再批准。
 +- 后端技术设计影响必须绑定批准且当前的 `basis.technical_design`（v2 为 resolution.technical_design），核对版本、摘要、切片与架构；DDD 才消费战术字段并路由 Domain，MVC 消费用例、分层和事务设计。旧 v1 DDD 合同用 `legacy_ddd: true` 显式兼容，不自动迁移或批准。
 +- API、状态、Visual Baseline 版本或 digest、数据模型、写路径、测试 seam 或验证命令变化时，必须返回 new_impacts / drift 并完整重路由。
@@ -86,16 +91,13 @@ index 64607db..5b70c26 100644
 +- 已存在或已初始化工程不得因架构选择而重新生成；DDD/MVC 互转必须完整重路由到独立迁移工作单元。
 +- 任务包写入范围、证据和命令必须能被独立验证，不能用自然语言说明替代结构化字段。
  
--## 输出
-+## 战略交接快照包
- 
--输出唯一 YAML 合同草案及派生报告；报告包含 capability/Recipe 解析记录、技能依赖闭包、不适用理由、阻塞项、TDD 模式、工作单元、预期证据、验证命令、人工审查点、完整重路由触发器，以及建议的 `suggested_owner_role_id`（UI 影响 → `role.frontend-engineer`，后端影响 → `role.backend-engineer`，测试/审查 → `role.test-engineer`）。自然语言说明不能替代结构化合同字段。编译器不得自行批准合同、设置 `ready-for-agent` 或关闭会签门禁；owner 建议只供主控派活。
-+使用 `scripts/strategic-handoff export / verify / import`；源资产冻结、规则身份与批准绑定、目标术语对账和逐条承接合同以 `.template-spec/process/strategic-handoff-package.md` 为准。来自导入包时，战术合同绑定 `strategic_handoff`；批准/流转前执行 `scripts/verify-strategic-handoff-consumption --root <target> <tactical>`，切片消费追加 `--slice <slice-id>`。存在延期时仅允许无依赖且核验通过的切片继续；未知依赖扩大阻断。
- 
--## 战略交接快照包
-+## Slice v3 准备与批准
+ ## 战略交接快照包
  
 -消费战略包时必须绑定导入收据、包摘要、目标对账和逐条承接。按 [跨仓承接核验](references/strategic-handoff-routing.md) 执行；源变化使依赖项 stale，未知依赖扩大阻断，编译器不能补字段后沿用旧批准。
++使用 `scripts/strategic-handoff export / verify / import`；源资产冻结、规则身份与批准绑定、目标术语对账和逐条承接合同以 `.template-spec/process/strategic-handoff-package.md` 为准。来自导入包时，战术合同绑定 `strategic_handoff`；批准/流转前执行 `scripts/verify-strategic-handoff-consumption --root <target> <tactical>`，切片消费追加 `--slice <slice-id>`。存在延期时仅允许无依赖且核验通过的切片继续；未知依赖扩大阻断。
++
++## Slice v3 准备与批准
++
 +使用 `scripts/slice-contract prepare/view/diff/migrate`，字段与接口见 [Slice v3](references/slice-implementation-contract.md)。用户只确认目标、范围、验收和关键取舍，已有有效确认按原协议延续；独立专业审查核验工程约束，主控汇总批准。原因链、缺口、检查结果和任务进度留在派生报告或现有证据，不改写权威合同。不得从普通 Spec 确认推断实施授权。
  
  ## 后端脚手架平台承接
@@ -104,15 +106,13 @@ index 64607db..5b70c26 100644
 +消费Harness Orchestrator已确认的架构与 `platform_configuration` v2；不得自行选择、批准或静默升级 Boot/Java。平台清单执行 `scripts/backend-platforms` 查询；只允许已验证 YSS 组合，新生成缺少配置或证据即阻断。决定、合同、Manifest 与下游架构身份须绑定同一平台及兼容摘要。详见 仓库共享合同 `.template-spec/engineering/backend-platforms.md`。
  
  后端 Slice 解析出 `component_binding: required` 的 capability 或其主 Skill 时，必须在同一平台兼容条目中逐项解析 `component_capabilities`。编译结果保存 `component_bindings` 与 `component_bindings_digest`；未登记、未验证、架构证据缺失、构件坐标冲突或摘要漂移均阻断。旧合同含组件 Skill 但没有组件绑定时直接 `stale`，重新编译并交生命周期批准，禁止自动补字段后沿用原批准。
- 
++
 +
 +仅消费战略交接包时，按 [跨仓承接核验](references/strategic-handoff-routing.md) 追加当前摘要与逐规则承接检查；本 profile 的主控批准边界不变。
-+
+ 
  ## 业务来源
  
- 按 `.template-spec/process/business-tickets.md` 执行 Spec 业务草案、Design 校准与业务正式化。业务票放在 `business-tickets/`，集合引用进入 Spec / map / checkpoint；业务票不授予实现资格。实现票仍在 `issues/`，受工程准备、当前 Slice 合同批准和完整就绪检查约束。 新规则项目必须验证 business_ticket_refs 与 acceptance_refs，使用现有 basis.business_ticket_set 绑定当前集合原字节；原始验收仍从 basis.spec 定位，不升级 Slice 主 schema。业务票及阶段工作项不能充当实现票。来源过期返回战略/技术分析，不由编译器重写批准。
 diff --git a/agents/openai.yaml b/agents/openai.yaml
-index b2b097f..9278c4b 100644
 --- a/agents/openai.yaml
 +++ b/agents/openai.yaml
 @@ -1,4 +1,4 @@
@@ -122,7 +122,6 @@ index b2b097f..9278c4b 100644
 -  default_prompt: "Use yss-implementation-contract-compiler to compile the approved slice capabilities, deterministic skill closure, evidence plan, and v3 contract draft."
 +  default_prompt: "Use yss-implementation-contract-compiler to compile approved capabilities, deterministic skill closure, evidence, and a v3 contract draft."
 diff --git a/references/boundaries.md b/references/boundaries.md
-index 85769ce..6a208e6 100644
 --- a/references/boundaries.md
 +++ b/references/boundaries.md
 @@ -18,15 +18,15 @@
@@ -144,12 +143,11 @@ index 85769ce..6a208e6 100644
  | `architecture.tactical-domain` | `yss-tactical-design` | `guidance`, `integration`, `slice-implementation`, `review-input` |
  | `layer.domain` | `yss-domain` | `guidance`, `integration`, `slice-implementation`, `troubleshooting`, `review-input` |
  | `layer.application` | `yss-application` | `guidance`, `integration`, `slice-implementation`, `troubleshooting`, `review-input` |
-@@ -48,9 +48,10 @@
+@@ -48,8 +48,10 @@
  | `component.gateway-resilience` | `yss-resilience4j` | `guidance`, `integration`, `slice-implementation`, `troubleshooting`, `component-maintenance`, `review-input` |
  | `scaffold.ddd` | `yss-ddd-scaffold-generator` | `integration`, `component-maintenance` |
  | `scaffold.layered-mvc` | `yss-layered-mvc-scaffold-generator` | `integration`, `component-maintenance` |
 -| `scaffold.frontend-vue3` | `yss-frontend-scaffold-generator` | `integration`, `component-maintenance` |
--| `project-init.mvc-data-analysis` | `yss-layered-mvc-scaffold-generator` | `component-maintenance` |
  | `migration.springboot3` | `yss-up-springboot3` | `guidance`, `integration`, `troubleshooting`, `component-maintenance`, `review-input` |
 +| `architecture.technical-design` | `yss-technical-design` | `guidance`, `integration`, `review-input` |
 +| `architecture.mvc-design` | `yss-technical-design` | `guidance`, `integration`, `review-input` |
@@ -157,7 +155,7 @@ index 85769ce..6a208e6 100644
  
  ## Narrow Recipes
  
-@@ -58,13 +59,17 @@
+@@ -57,13 +59,17 @@
  
  | Recipe | Capabilities |
  | --- | --- |
@@ -176,7 +174,7 @@ index 85769ce..6a208e6 100644
  | `backend.current-user-context` | `component.current-user-context`, `contract.dto-wire` |
  | `backend.cached-current-user` | `component.current-user-context`, `component.cache`, `contract.dto-wire` |
  | `backend.audit-event` | `component.audit-log`, `component.current-user-context`, `contract.dto-wire` |
-@@ -74,13 +79,15 @@
+@@ -73,13 +79,15 @@
  | `backend.distributed-id` | `component.distributed-id` |
  | `backend.ddd-scaffold` | `scaffold.ddd`, `quality.java-code-style` |
  | `backend.mvc-scaffold` | `scaffold.layered-mvc`, `quality.java-code-style` |
@@ -193,7 +191,7 @@ index 85769ce..6a208e6 100644
  | `domain-impact` | `layer.domain`, `layer.application` |
  | `tactical-domain-impact` | `architecture.tactical-domain` |
  | `persistence-impact` | `layer.persistence` |
-@@ -105,33 +112,22 @@
+@@ -104,33 +112,22 @@
  
  | Skill | Dependency | Type | Condition |
  | --- | --- | --- | --- |
@@ -232,7 +230,7 @@ index 85769ce..6a208e6 100644
  | `yss-tactical-design` | `domain-modeling` | `coordination-only` | — |
  | `yss-tactical-design` | `yss-openapi-draft-review` | `review-only` | `api-impact` |
  | `yss-tactical-design` | `yss-repository` | `component-dependency` | `data-impact` |
-@@ -155,12 +151,8 @@
+@@ -154,12 +151,8 @@
  | `yss-validation` | `yss-exception` | `component-dependency` | — |
  | `yss-security-algorithm` | `yss-exception` | `component-dependency` | — |
  | `yss-exception` | `yss-dto` | `context-required` | — |
@@ -251,10 +249,9 @@ index 85769ce..6a208e6 100644
 +| `yss-backend-spec-review` | `yss-implementation-contract-compiler` | `coordination-only` | — |
 +| `yss-backend-spec-review` | `code-review` | `review-only` | — |
 diff --git a/references/compiler-contract.yaml b/references/compiler-contract.yaml
-index 22e13cc..972a954 100644
 --- a/references/compiler-contract.yaml
 +++ b/references/compiler-contract.yaml
-@@ -8,140 +8,174 @@ slice_contract_versions:
+@@ -8,140 +8,174 @@
  backend_architecture:
    registry_source: .template-spec/agents/yss-skill-registry.yaml
    identity_schema: .template-spec/process/schemas/backend-architecture-identity.schema.json
@@ -539,7 +536,7 @@ index 22e13cc..972a954 100644
    component_bindings:
      when: any-required-capability-provider-kind-is-yss-component
      platform_configuration: required-v2
-@@ -150,298 +184,384 @@ resolution_contract:
+@@ -150,299 +184,386 @@
      exact_artifact_binding: [group_id, artifact_id, declared_version, resolved_version, pom_sha256, jar_sha256, source_tree]
      digest_change_status: stale
      old_contract_without_binding: stale-and-recompile-no-auto-upgrade
@@ -638,15 +635,16 @@ index 22e13cc..972a954 100644
 +    - verification_commands
 +    - behavior_tests_after_generation
 +scaffold_contract_schema:
-   schema_version: 4
+   schema_version: 5
+   legacy_versions: [4]
    schema_ref: .template-spec/process/schemas/project-scaffold-contract.schema.json
    identity: project-engineering-baseline
 -  discriminant: delivery_role
 -  delivery_roles:
 -    backend:
--      scaffold_kinds: [backend-ddd, backend-layered-mvc, backend-mvc-data-analysis]
+-      scaffold_kinds: [backend-ddd, backend-layered-mvc]
 -      generators: [yss-ddd-scaffold-generator, yss-layered-mvc-scaffold-generator]
--      requires: [scaffold_request_id, architecture_family, decision_ref, decision_id, decision_digest, project_name, base_package, maven_coordinates, profiles, module_profile, design_prerequisites]
+-      requires: [scaffold_request_id, architecture_family, decision_ref, decision_id, decision_digest, project_name, base_package, maven_coordinates, profiles, module_profile, design_prerequisites, reference_example]
 -      design_prerequisites:
 -        required: [technical_design, data_architecture_decision, api_contract_decision, engineering_contract_approval_ref]
 -        artifact_binding: [ref, version, digest]
@@ -723,6 +721,7 @@ index 22e13cc..972a954 100644
 +  - work_unit
 +  - generation_policy
 +  - design_prerequisites
++  - reference_example
 +  design_prerequisites:
 +    required:
 +    - technical_design
@@ -1166,21 +1165,7 @@ index 22e13cc..972a954 100644
    new_generation_requires: [exact-boot-java, confirmed-decision, matching-yss-coordinates, verified-compatibility-entry]
    candidate_generation: maintenance-only
    candidate_downstream: blocked
-diff --git a/references/scaffold-compilation.md b/source/references/scaffold-compilation.md
-deleted file mode 100644
-index 1c4fae6..0000000
---- a/references/scaffold-compilation.md
-+++ /dev/null
-@@ -1,7 +0,0 @@
--# 脚手架合同编译
--
--仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。仓库脚本与 pnpm 命令从当前登记的项目根目录执行。
--
--- 阶段 5 若命中交付面且无已有工程，按 Project Scaffold Contract schema v4 编译 `controlled-generation` 合同 draft。后端先读取已通过 `gate.backend-architecture-platform-approved` 的架构与精确 Spring Boot 版本决定，并以原始字节 digest 绑定批准且当前的 Technical Design、Data Architecture Decision v1、API Contract Decision（新建 v2；历史 v1 只读兼容，准备与迁移见 `.template-spec/process/contract-reading.md`） 及 `gate.engineering-contract-approved` 真实批准记录；编译器不得自行默认、提问或批准。既有工程核验并复用当前登记架构及固定工程基线/POM 中的实际版本，不重新询问或生成。API `required` 时工程批准还必须直接绑定冻结 OpenAPI YAML 的版本与摘要，`not-applicable` 时必须有影响评估、明确原因和证据。前端绑定标准模板精确 commit、应用标识、路由、OpenAPI 影响、目标路径和 `init_git` 决定。合同经生命周期批准并持久化后才能运行生成器。历史后端 schema v3 只允许 Manifest 只读恢复审计，并须补齐 API 对账，不得新生成；前端只接受 v4。生成与验证完成、仓库登记并通过 `check.implementation-repositories-ready` 后，才编译 Ticket 与业务 Slice Contract。
--- 脚手架合同在编译阶段只能是 `draft` / `ready-for-lifecycle-review` / `blocked`；只有生命周期编排器可以把已持久化脚手架合同标记为 `approved`。脚手架合同只覆盖业务代码前的工程骨架工作单元；生成、基线校验和合同重编译完成后，它不能替代脚手架后的 Slice Implementation Contract。
--- 脚手架输出消费批准的脚手架合同；脚手架后的所有生成后端代码都必须绑定当前批准且版本当前的 Slice Implementation Contract、主 YSS skill、依赖闭包、允许写路径、预期证据和 YSS Skill Execution Result。打印命令、`./mvnw validate` 单项通过或脚手架成功不能替代合同批准；生成范围从机械内容变成业务行为时触发完整重路由。
 diff --git a/references/slice-implementation-contract-v2.md b/references/slice-implementation-contract-v2.md
-index 24ae0f9..0f4f437 100644
 --- a/references/slice-implementation-contract-v2.md
 +++ b/references/slice-implementation-contract-v2.md
 @@ -1,100 +1,64 @@
@@ -1310,7 +1295,7 @@ index 24ae0f9..0f4f437 100644
      state_matrix_ref:
      visual_baseline_ref:
      visual_baseline_case_ids: []
-@@ -110,28 +74,21 @@ slice_contract:
+@@ -110,28 +74,21 @@
      application_boundary:
      transaction_boundary:
      persistence_strategy:
@@ -1351,7 +1336,7 @@ index 24ae0f9..0f4f437 100644
      verification_commands: []
    contract:
      api_impact: false
-@@ -142,73 +99,21 @@ slice_contract:
+@@ -142,73 +99,21 @@
      regeneration_commands: []
    cross_repo:
      repositories: []
@@ -1421,22 +1406,21 @@ index 24ae0f9..0f4f437 100644
 -    behavior_tests_after_generation: []
 -```
 +只有当前批准的本地输入或已核验的上游输入、战术设计 / not-applicable、API / 数据 / UI 影响、实现仓库、写路径、测试 seam、验证命令和证据均满足，且不存在 blocked / stale / drift / violation / new_impacts 时，Orchestrator 才能把合同和切片设置为 ready-for-agent。
-+
-+API schema、数据库 schema、状态机、Visual Baseline 版本或 digest、聚合、不变量、Gateway、写路径、测试 seam、验证命令、Registry digest 或 Compiler digest 发生实质变化时，当前合同变为 stale，所有下游任务暂停并递增 contract_version；重新编译后仍须由 Orchestrator 再批准。UI 切片只消费 `visual_baseline_case_ids` 指定的图片；Agent 必须先读 manifest 与语义引用，不得按目录 glob 猜测图片含义。
  
 -`controlled_generation` 仅在 `tdd_mode: controlled-generation` 时必填；其他模式标记 `not-applicable`。明确写入需求的权限业务行为仍使用 `behavior-tdd`；API schema 与 database schema 分别触发契约或数据架构回退，不得用一个含糊的 schema 类型决定路线。
-+一个切片可以组合多个窄 Recipe，但只计算一次闭包。Recipe 只能引用 capability；合同必须同时冻结 `required_capabilities`、`required_skills`、原因链与两个 digest。
++API schema、数据库 schema、状态机、Visual Baseline 版本或 digest、聚合、不变量、Gateway、写路径、测试 seam、验证命令、Registry digest 或 Compiler digest 发生实质变化时，当前合同变为 stale，所有下游任务暂停并递增 contract_version；重新编译后仍须由 Orchestrator 再批准。UI 切片只消费 `visual_baseline_case_ids` 指定的图片；Agent 必须先读 manifest 与语义引用，不得按目录 glob 猜测图片含义。
  
 -`work_units` 中的前端、后端和测试任务是切片级子任务，不是新的生命周期阶段。每个子任务必须引用独立任务包；任务包只能消费同一份已批准且版本当前的 Slice Contract。`workflow_status` 追踪执行过程，不能替代生命周期状态；`contract_id`、`contract_version` 或 resolution digest 不一致时必须阻断并回到实现合同编译器。
-+实现任务包使用 execution_state: Worker；测试 Agent 的独立 Review / Verifier 必须使用不同 actor_id。结果必须符合 workflow-execution-result-v1，并记录实际命令、退出码、执行时间和证据引用。
++一个切片可以组合多个窄 Recipe，但只计算一次闭包。Recipe 只能引用 capability；合同必须同时冻结 `required_capabilities`、`required_skills`、原因链与两个 digest。
  
 -一个切片可以组合多个窄 Recipe，但只计算一次闭包。Recipe 只能引用 capability；合同同时冻结 `required_capabilities`、`required_skills`、完整原因链和 Registry/Compiler digest。任一 digest 或 Visual Baseline 版本 / digest 改变时，当前合同标记 `stale`，重新编译后仍须由 `yss-product-lifecycle` 再批准。UI 切片只消费 `visual_baseline_case_ids` 指定的图片，并先读取 manifest 与语义引用，禁止按目录 glob 猜测图片含义。
-+## 技术设计绑定
++实现任务包使用 execution_state: Worker；测试 Agent 的独立 Review / Verifier 必须使用不同 actor_id。结果必须符合 workflow-execution-result-v1，并记录实际命令、退出码、执行时间和证据引用。
  
 -技术设计编译绑定使用 `technical_design: {ref, version, digest}` 与 `slice_id`，校验器规则见 `yss-technical-design/references/technical-design-contract.md`。`backend.tactical_ddd` 仅适用于 `domain-driven`；MVC 消费共同技术设计绑定与 `design` 的用例、规则、事务和测试 seam，不填聚合或 Gateway 字段。
++## 技术设计绑定
++
 +后端设计影响使用 `resolution.technical_design: {ref, version, digest}`，同时绑定 `slice_id` 和架构来源。当前批准的 v2 合同根据架构消费 `design`，DDD 专属字段仅适用于 `domain-driven`。旧 v1 DDD 可显式加 `legacy_ddd: true` 只读消费。编译与 freshness 都重验文件、版本、摘要、批准及切片依赖；不得自动迁移或批准。
 diff --git a/references/yss-skill-execution-result.md b/references/yss-skill-execution-result.md
-index 998decd..ed0b201 100644
 --- a/references/yss-skill-execution-result.md
 +++ b/references/yss-skill-execution-result.md
 @@ -12,7 +12,7 @@
@@ -1448,7 +1432,7 @@ index 998decd..ed0b201 100644
    skill:
    slice_id:
    work_unit_id:
-@@ -24,9 +24,6 @@ execution_result:
+@@ -24,9 +24,6 @@
      contract_digest: # 已批准 Slice 文件原始字节 SHA-256
      registry_digest:
      compiler_contract_digest:
@@ -1458,7 +1442,7 @@ index 998decd..ed0b201 100644
    changed_files:
      - path:
        contract_area: common | frontend | backend | contract | cross_repo
-@@ -53,9 +50,6 @@ execution_result:
+@@ -53,9 +50,6 @@
        constraint:
        status: passed | failed | not-applicable
        evidence_ref:
@@ -1468,7 +1452,7 @@ index 998decd..ed0b201 100644
    seam_deferred:
      - risk:
        owner:
-@@ -76,7 +70,7 @@ execution_result:
+@@ -76,7 +70,7 @@
  
  实现合同编译器必须验证：
  
@@ -1478,7 +1462,6 @@ index 998decd..ed0b201 100644
  3. `expected_evidence_files` 全部存在并能回指行为。
  4. 验证命令包含实际结果和时间；计划命令不算证据。
 diff --git a/tests/compiler-scenarios.test.mjs b/tests/compiler-scenarios.test.mjs
-index 967988c..e317754 100644
 --- a/tests/compiler-scenarios.test.mjs
 +++ b/tests/compiler-scenarios.test.mjs
 @@ -1,6 +1,5 @@
@@ -1488,7 +1471,7 @@ index 967988c..e317754 100644
  import {
    compileImplementationContract,
    digestDocument,
-@@ -126,12 +125,3 @@ test("marks legacy component contracts without component bindings stale", () =>
+@@ -126,12 +125,3 @@
    const contract = { schema_version: 2, contract_id: "legacy-component", contract_version: 1, resolution };
    assert.ok(evaluateContractFreshness(contract, { registry, compilerContract }).reasons.includes("component-binding-drift"));
  });

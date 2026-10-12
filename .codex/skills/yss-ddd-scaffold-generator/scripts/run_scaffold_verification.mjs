@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 /** 在生成项目根目录实际执行 YSS 脚手架的固定验证命令并留证。 */
+import { assertContractExample } from "../../../../scripts/lib/scaffold-reference-example.mjs";
 import { assertSourceFingerprint, generatedTreeDigest } from "../../../../scripts/lib/backend-platform-provenance.mjs";
 import { assertContractPlatform, assertPlatformAgreement, platformDigest } from "../../../../scripts/lib/backend-platform.mjs";
 import { verifyPlatformDependencies, verifyPlatformStartup, verifyPlatformTests, platformEvidenceArtifacts } from "../../../../scripts/lib/backend-platform-verification.mjs";
@@ -81,10 +82,10 @@ function classifyFailure(phase, outcome) {
 function parseArgs(argv) { const result = {}; for (let index = 0; index < argv.length; index += 1) { let token = argv[index]; if (token === "--help" || token === "-h") { result.help = true; continue; } const equals = token.indexOf("="); let value; if (equals !== -1) { value = token.slice(equals + 1); token = token.slice(0, equals); } if (!["--project-root", "--evidence-dir", "--timeout-ms"].includes(token)) throw new Error(`不支持的参数: ${token}`); if (value === undefined) value = argv[++index]; if (!value || value.startsWith("--")) throw new Error(`参数 ${token} 缺少值`); if (token === "--timeout-ms") result.timeoutMs = Number(value); else result[token === "--project-root" ? "projectRoot" : "evidenceDir"] = path.resolve(value); } if (result.help) return result; if (!result.projectRoot || !result.evidenceDir) throw new Error("必须提供 --project-root 和 --evidence-dir"); return result; }
 function validateManifest(manifest) {
   if (manifest.kind === "standalone-backend-scaffold") { assertStandaloneManifest(manifest); return; }
-  if (![2, 3, 4].includes(manifest.schema_version)) throw new Error(`unsupported: scaffold Manifest schema_version=${manifest.schema_version}；只读兼容 v2，并验证当前 v3/v4`);
+  if (![2, 3, 4, 5].includes(manifest.schema_version)) throw new Error(`unsupported: scaffold Manifest schema_version=${manifest.schema_version}；只读兼容 v2，并验证当前 v3/v4`);
   const required = ["schema_version", "contract_id", "contract_version", "scaffold_request_id", "contract_digest", "profiles", "ownership", "readiness", "generation_policy", "completion_level", "approval_ref", "approver", "lifecycle_approval_ref", "compiler_draft_ref", "persisted_ref", "contract_file_ref", "current_version", "allowed_write_paths", "expected_evidence_files", "verification_commands", "generation_mode"];
   if (manifest.schema_version >= 3) required.push("architecture_family", "generator_skill", "decision_id", "decision_digest", "module_profile");
-  if (manifest.schema_version === 4) required.push("design_prerequisites");
+  if (manifest.schema_version >= 4) required.push("design_prerequisites");
   const missing = required.filter((field) => manifest[field] === undefined || manifest[field] === null || manifest[field] === "");
   if (manifest.generation_mode !== "controlled-generation" || missing.length) throw new Error(`脚手架生成元数据清单不完整或不是 controlled-generation: ${missing.join(", ")}`);
   if (manifest.schema_version >= 3) {
@@ -95,10 +96,10 @@ function validateManifest(manifest) {
     const supportedArchitecture = manifest.architecture_family === "domain-driven" && manifest.generator_skill === "yss-ddd-scaffold-generator" && manifest.profiles.architecture === "target-domain-model"
       || manifest.architecture_family === "layered-mvc" && manifest.generator_skill === "yss-layered-mvc-scaffold-generator" && manifest.profiles.architecture === "layered-mvc";
     if (!supportedArchitecture || manifest.module_profile?.resolution_version !== 1 || !Array.isArray(manifest.module_profile?.resolved_modules)) throw new Error("Manifest v3/v4 的架构族、生成器、Profile 或模块闭包不一致");
-    if (manifest.schema_version === 4 && (!manifest.design_prerequisites?.technical_design || !manifest.design_prerequisites?.data_architecture_decision || !manifest.design_prerequisites?.engineering_contract_approval_ref)) throw new Error("Manifest v4 缺少设计门禁绑定");
+    if (manifest.schema_version >= 4 && (!manifest.design_prerequisites?.technical_design || !manifest.design_prerequisites?.data_architecture_decision || !manifest.design_prerequisites?.engineering_contract_approval_ref)) throw new Error("Manifest v4 缺少设计门禁绑定");
   } else if (manifest.profiles.architecture !== "target-domain-model") throw new Error("历史 Manifest v2 只读兼容仅支持 target-domain-model");
   if (manifest.generation_policy.mode !== "initialize-only" || manifest.generation_policy.existing_target !== "unsupported" || manifest.generation_policy.old_project_migration !== "unsupported" || manifest.generation_policy.template_upgrade !== "unsupported") throw new Error("Manifest 必须声明严格 initialize-only；已有目标、旧项目迁移和模板升级均须为 unsupported");
-  if (manifest.schema_version === 4 ? manifest.current_version !== true : manifest.current_version !== manifest.contract_version) throw new Error("脚手架生成元数据清单不是当前合同版本");
+  if (manifest.schema_version >= 4 ? manifest.current_version !== true : manifest.current_version !== manifest.contract_version) throw new Error("脚手架生成元数据清单不是当前合同版本");
   if (JSON.stringify(manifest.verification_commands) !== JSON.stringify(COMMANDS)) throw new Error("脚手架生成元数据清单验证命令不符合固定合同");
 }
 export async function run(projectRoot, evidenceDir, environment = process.env, { timeoutMs = 0, signal, platformOptions = {}, firstSlice = false, systemProperties = {} } = {}) {
@@ -107,6 +108,7 @@ export async function run(projectRoot, evidenceDir, environment = process.env, {
   if (!await isFile(manifestPath)) throw new Error(`项目根目录缺少脚手架生成元数据清单: ${manifestPath}`);
   let manifest; try { manifest = JSON.parse(await readFile(manifestPath, "utf8")); } catch { throw new Error(`脚手架生成元数据清单无法读取或不是合法 JSON: ${manifestPath}`); }
   validateManifest(manifest);
+  if (manifest.architecture_profile === "mvc-data-analysis-v1") throw new Error("retired: 数据分析 Manifest 仅允许 audit-legacy-backend-scaffold 只读审计");
   const standalone = manifest.kind === "standalone-backend-scaffold";
   const verificationMode = standalone ? STANDALONE_MODE : "controlled-generation";
   if (standalone && firstSlice) throw new Error("独立骨架没有生命周期合同或业务实现资格，不能进入首切片验证");
@@ -124,6 +126,8 @@ export async function run(projectRoot, evidenceDir, environment = process.env, {
     const contractBytes = await readFile(manifest.contract_file_ref);
     if (platformDigest(contractBytes).replace(/^sha256:/, "") !== manifest.contract_digest.replace(/^sha256:/, "")) throw new Error("backend-platform: contract digest drift");
     const contract = JSON.parse(contractBytes);
+    assertContractExample(contract, {});
+    if (platformDigest(manifest.reference_example) !== platformDigest(contract.reference_example)) throw new Error("reference_example 与合同不一致");
     assertPlatformAgreement(manifest.platform_configuration, contract.platform_configuration);
     if (firstSlice) {
       if (manifest.platform_verification !== "verified" || manifest.completion_level !== "empty-scaffold-verified") throw new Error("backend-platform: first slice requires a verified empty scaffold");
@@ -190,6 +194,21 @@ export async function run(projectRoot, evidenceDir, environment = process.env, {
     });
   }
   let failureCategory = commands.find((item) => item.failure_category)?.failure_category ?? null;
+  const referenceVerification = { status: manifest.reference_example?.enabled ? "not-executed" : "not-applicable", commands: [] };
+  if (manifest.reference_example?.enabled && failureCategory === null) {
+    const referenceRoot = path.join(projectRoot, manifest.reference_example.path);
+    for (const phase of PHASES) {
+      const stdoutPath = path.join(evidenceDir, `reference-${phase}.stdout.log`);
+      const stderrPath = path.join(evidenceDir, `reference-${phase}.stderr.log`);
+      const startedAt = isoNow();
+      const args = [phase, ...settings.args, ...Object.entries(systemProperties).map(([key, value]) => `-D${key}=${value}`)];
+      const outcome = await runCommand(path.join(referenceRoot, "mvnw"), args, { cwd: referenceRoot, env: environment, timeoutMs, signal, stdoutFile: stdoutPath, stderrFile: stderrPath, secrets: settings.secrets, progress: true });
+      referenceVerification.commands.push({ command: `./mvnw ${args.join(" ")}`, cwd: referenceRoot, phase, exit_code: outcome.status, started_at: startedAt, executed_at: isoNow(), stdout_ref: stdoutPath, stderr_ref: stderrPath });
+      if (outcome.status !== 0) break;
+    }
+    referenceVerification.status = referenceVerification.commands.length === PHASES.length && referenceVerification.commands.every(item => item.exit_code === 0) ? "passed" : "failed";
+    if (referenceVerification.status === "failed") failureCategory = "reference-verification";
+  }
   const platformDependencies = !standalone && selectedPlatform && failureCategory === null ? await verifyPlatformDependencies(projectRoot, evidenceDir, selectedPlatform, environment, { timeoutMs, signal, manifest, components: selectedEntry.components, mavenArgs: settings.args, secrets: settings.secrets }) : null;
   if (platformDependencies?.status === "failed") failureCategory = "platform-dependencies";
   const integrationTests = !standalone && selectedPlatform && failureCategory === null ? await verifyPlatformTests(projectRoot, evidenceDir, manifest, verificationStartedAt) : null;
@@ -209,6 +228,7 @@ export async function run(projectRoot, evidenceDir, environment = process.env, {
     failure_category: failureCategory,
     completion_level: standalone ? failureCategory === null ? "standalone-scaffold-verified" : "generated" : firstSlice ? manifest.completion_level : failureCategory === null && manifest.platform_verification !== "candidate" ? "empty-scaffold-verified" : "generated",
     preflight,
+    reference_verification: referenceVerification,
     commands
   };
 }

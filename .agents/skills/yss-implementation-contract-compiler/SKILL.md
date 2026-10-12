@@ -51,7 +51,7 @@ Slice v3 的当前执行结果须按 `references/yss-skill-execution-result.md` 
 - Harness 内实现路径必须是已登记的具体项目相对路径，默认布局为 `apps/backend/<project>/` 或 `apps/frontend/<project>/`；`apps/backend/`、`apps/frontend/` 只能作为容器。外部实现仓库使用其登记的真实项目根路径。`git-submodule` 使用 `implementation_path_policy: git-submodule-harness-apps`，空 gitlink、detached HEAD 或 `--force` 覆盖挂载点不得脚手架；`inspectWorkingTreeScope.writable` 必须为显式布尔值。
 - 当前用户、缓存、审计、Excel、分布式 ID、请求校验、错误映射、加解密或网关韧性命中时，必须按 `compiler-contract.yaml` 的 `impact_to_capabilities` 补齐入口 capability；不能只在 `boundaries.md` 中提及。仅复用已经验证的平台认证 / 授权能力不算 component impact，不自动增加权限专项 skill。
 - 业务行为使用 `behavior-tdd`；只有机械脚手架/生成物可用 `controlled-generation`，并记录例外和验证。
-- 无工程且需要机械生成时，先读取 [脚手架合同编译](references/scaffold-compilation.md)。只起草 Project Scaffold Contract schema v4，由生命周期批准并持久化后运行；既有工程不重新生成。脚手架合同不能替代后续批准的 Slice Contract，业务行为必须重路由。
+- 无工程且需要机械生成时，先读取 [脚手架合同编译](references/scaffold-compilation.md)。后端新合同起草 Project Scaffold Contract schema v5 并绑定 reference_example；前端保持 v4，历史后端 v4 保留空工程语义，由生命周期批准并持久化后运行；既有工程不重新生成。脚手架合同不能替代后续批准的 Slice Contract，业务行为必须重路由。
 
 - 专项结果中的越界路径、缺失证据、`drift`、`violation` 或 `new_impacts` 必须阻断或重路由。
 - 前后端子任务必须使用同一 `contract_id/contract_version`，并在任务包中记录 `role_id`、`runtime_id`、`execution_state`、`allowed_write_paths`、`downstream_consumers` 和 `convergence_ref`；版本不一致或汇合引用缺失时输出 `blocked`。

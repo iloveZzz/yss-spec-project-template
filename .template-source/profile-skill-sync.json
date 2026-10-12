@@ -342,6 +342,9 @@
         },
         {
           "id": "setup-yss-harness"
+        },
+        {
+          "id": "yss-layered-mvc-scaffold-generator"
         }
       ],
       "adapted": [
@@ -361,7 +364,7 @@
           "id": "yss-implementation-contract-compiler",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/backend/yss-implementation-contract-compiler.patch",
-          "source_tree_sha256": "c64c8daa6b4f042bfa1cad653023ae41717a2e7042bb0377dc72438aa8d95629"
+          "source_tree_sha256": "293fa03c75158f5083f43b84cac16529de8e09e4dacd740e6ce92cee645b2c42"
         },
         {
           "id": "yss-openapi-governance",
@@ -392,15 +395,6 @@
               "count": 3
             }
           ]
-        },
-        {
-          "id": "yss-layered-mvc-scaffold-generator",
-          "file_modes": {
-            "scripts/scaffold-generator.test.mjs": "0644"
-          },
-          "strategy": "patch",
-          "patch": ".template-source/profile-skill-patches/backend/yss-layered-mvc-scaffold-generator.patch",
-          "source_tree_sha256": "d338c8edea1af089878554e666d358319fe0c01237a713cef8a95709c942b7fc"
         }
       ],
       "assets": [
@@ -510,6 +504,12 @@
         {
           "source": ".template-source/scripts/prepare-profile-skills.mjs",
           "target": "scripts/prepare-skills"
+        },
+        {
+          "source": "scripts/lib/scaffold-reference-example.mjs"
+        },
+        {
+          "source": ".template-spec/engineering/evidence/scaffold-3.2.0/resolution.json"
         }
       ],
       "upstream": [],
@@ -692,7 +692,7 @@
           "id": "yss-implementation-contract-compiler",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/frontend/yss-implementation-contract-compiler.patch",
-          "source_tree_sha256": "c64c8daa6b4f042bfa1cad653023ae41717a2e7042bb0377dc72438aa8d95629"
+          "source_tree_sha256": "293fa03c75158f5083f43b84cac16529de8e09e4dacd740e6ce92cee645b2c42"
         },
         {
           "id": "yss-openapi-governance",

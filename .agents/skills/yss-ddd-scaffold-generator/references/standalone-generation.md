@@ -19,7 +19,7 @@ node scripts/generate_scaffold.mjs \
   --parent-version 3.0.0-SNAPSHOT --yss-components-version 3.0.0-SNAPSHOT
 ```
 
-DDD 生成固定五模块及嵌套 Web 模块；MVC 生成 `server/service/repository` 三模块。此路径不初始化治理实例、Git、业务 API、领域行为、生产数据库或批准记录；数据分析治理初始化仍走批准合同。
+DDD 生成固定五模块及嵌套 Web 模块；MVC 生成 `server/service/repository` 三模块。业务空工程不初始化治理实例、Git、产品 API、生产数据库或批准记录。默认附带 examples/reference/ 独立参考工程；--without-example 禁用，--with-example 显式启用，两者互斥。独立 Manifest v2 绑定示例输入与所有权；旧 v1 不追加样例。数据分析入口退役，改用通用 MVC 后按需单独运行 setup-yss-harness。
 
 目录、gitlink、挂载、initialize-only 和凭据守卫同时适用于独立路径。目标项目目录必须不存在；禁止覆盖已有项目或用 `--force` 绕过限制。`--standalone` 不接受任何合同或批准参数。
 
@@ -28,3 +28,5 @@ DDD 生成固定五模块及嵌套 Web 模块；MVC 生成 `server/service/repos
 独立清单是 `.yss/scaffold-generation.json`，`kind=standalone-backend-scaffold`、`generation_mode=standalone-generation`。它记录明确输入、模板和生成文件摘要，固定 `platform_verification=unverified`、`readiness.lifecycle_approved=false`、`readiness.ready_for_agent=false`，不携带合同或批准字段。仅生成时为 `generated` / `verification.status=not-executed`；三条实际验证均成功后为 `standalone-scaffold-verified`。实际验证状态和日志引用单独记录，不提升共享平台资格。
 
 生成后即可开展工程开发，无需为使用骨架补建治理合同。独立结果不替代正式治理的业务批准、API Freeze 或 Slice Implementation Contract；之后选择接入 Harness 时按既有工程接入流程补齐设计与当前合同。
+
+历史独立 v1 和正式 v4 Manifest 可用 `scripts/audit-legacy-backend-scaffold --project-root <工程目录>` 只读核验所有权与文件摘要，不隐式追加示例，也不重新授予平台、生成或生命周期资格；当前平台重新验收仍要求当前生成器与验证器指纹。

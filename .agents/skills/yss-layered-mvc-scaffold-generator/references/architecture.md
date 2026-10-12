@@ -11,7 +11,7 @@
 
 合同保存 `requested_capabilities`、`resolved_modules` 和 `resolution_version: 1`。模块按 `server`、`service`、`repository`、`adapter`、`client`、`feign-client` 的稳定顺序生成。
 
-`mvc-data-analysis-v1` 是本生成器的固定 Profile，不使用上述可选闭包：模块严格为 `server`、`core`、`client`、`repository`、`adapter`、`feign-client`。`core` 承载薄应用编排，不能依赖 `client`、Spring Web 或生产数据库驱动；CONTEXT handoff、project-instance 治理信封、同级 `skillUtils` 与独立 Git 必须在最终 rename 前完成。
+`mvc-data-analysis-v1` 已退役，仅保留历史六模块身份和只读审计；不再生成治理信封、skillUtils 或 Git。替代入口为通用 MVC 后按需 setup-yss-harness。
 
 ## 职责和依赖
 
@@ -30,4 +30,6 @@ MVC 模式不等于禁止领域分析。若技术分析发现聚合不变量、�
 
 ## 生成边界
 
-允许生成 POM、Wrapper、启动入口、环境配置、包级占位、架构测试与上下文加载测试。禁止生成业务 API、DTO、字段、查询、状态、事务规则、权限、错误映射和 Mock 业务数据。
+允许生成 POM、Wrapper、启动入口、环境配置、包级占位、架构测试与上下文加载测试。业务空工程不生成业务 API、DTO、字段、查询、状态、事务规则、权限、错误映射和 Mock 业务数据；独立参考工程仅生成下述固定参考场景。
+
+新生成默认附带 examples/reference/ 独立 ReferenceEntry reactor；Service 承担规则和事务，Repository 持久化，Server 持有公开 DTO、校验和接口。示例不进入业务构建或扫描。

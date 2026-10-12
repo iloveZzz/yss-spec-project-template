@@ -103,7 +103,8 @@ test("production registry has no deprecated backend skills and replacements own 
   for (const profile of Object.values(registry.architecture_profiles)) assert.equal(deprecated.has(profile.generator_skill), false);
   assert.equal(registry.architecture_profiles["mvc-data-analysis-v1"].generator_skill, "yss-layered-mvc-scaffold-generator");
   assert.equal(registry.capabilities.find((item) => item.id === "architecture.mvc-design").primary_skill, "yss-technical-design");
-  assert.equal(registry.capabilities.find((item) => item.id === "project-init.mvc-data-analysis").primary_skill, "yss-layered-mvc-scaffold-generator");
+  assert.equal(registry.capabilities.find((item) => item.id === "project-init.mvc-data-analysis"), undefined);
+  assert.equal(registry.architecture_profiles["mvc-data-analysis-v1"].maturity, "deprecated");
 });
 
 test("new use of deprecated fixtures and retired production IDs returns stable codes", () => {

@@ -143,7 +143,7 @@ test("version, digest, namespace, YSS coordinates and decision mismatches are re
   assert.throws(() => resolveBackendPlatform(binding, { catalog }), /not verified/);
   for (const java of [8, 11, 21]) assert.throws(() => assertJavaPlatform(`Java version: ${java}.0.1`, binding), /JDK mismatch/);
   assert.doesNotThrow(() => assertJavaPlatform('openjdk version "17.0.16"', binding));
-  assert.ok(loadBackendPlatforms().compatibility.every(item => item.status !== "verified"), "real combinations are not open without real evidence");
+  assert.ok(loadBackendPlatforms().compatibility.filter(item => item.bom.version !== "3.2.0-SNAPSHOT").every(item => item.status !== "verified"), "historical unqualified combinations remain closed");
 });
 
 function dependencyFixture(profile = profiles[3]) {
@@ -158,6 +158,8 @@ test("runtime dependencies require startup module, proper scope and exact indepe
   const f = dependencyFixture();
   const verify = trees => checkPlatformDependencies(f.profile, f.pom, trees, f.options);
   assert.equal(verify([f.tree]).status, "passed");
+  // Maven can render a globally compile-scoped dependency below its first test-scoped path.
+  assert.equal(verify([{...f.tree, children: [{groupId:"test", artifactId:"test-path", scope:"test", children:f.tree.children}]}]).status, "passed");
   for (const scope of ["test", "provided"]) assert.throws(() => verify([{...f.tree, children: f.tree.children.map(n => ({...n, scope}))}]), /absent/);
   assert.throws(() => verify([{...f.tree, artifactId: "other-module"}]), /startup-module/);
   const changed = structuredClone(f.tree); changed.children.find(n => n.artifactId === "spring-webmvc").version = "7.0.0";
@@ -167,10 +169,25 @@ test("runtime dependencies require startup module, proper scope and exact indepe
   assert.equal(verify([{...f.tree, children: [...f.tree.children, {groupId:"javax.sql",artifactId:"test-java-se-marker",version:"1.0"}]}]).status,"passed");
 });
 
+test("explicit platform recipe overrides Boot defaults but still rejects version drift", () => {
+  const f = dependencyFixture();
+  f.options.bootBom = f.options.bootBom.replace("</dependencies>", "<dependency><groupId>org.yaml</groupId><artifactId>snakeyaml</artifactId><version>2.4</version></dependency></dependencies>");
+  const yaml = { groupId: "org.yaml", artifactId: "snakeyaml", version: "2.5", scope: "compile" };
+  f.tree.children.push(yaml);
+  const verify = () => checkPlatformDependencies(f.profile, f.pom, [f.tree], f.options);
+  assert.throws(verify, /BOM\/recipe/);
+  f.options.components["org.yaml:snakeyaml"] = "2.5";
+  assert.equal(verify().status, "passed");
+  yaml.version = "2.6";
+  assert.throws(verify, /BOM\/recipe/);
+});
+
 test("packaged runtime jar must contain every runtime artifact", () => {
   const f=dependencyFixture();
   const entries=f.tree.children.map(n=>`BOOT-INF/lib/${n.artifactId}-${n.version}.jar`).join("\n");
   assert.equal(checkRuntimeArchive(entries,f.tree.children).status,"passed");
+  const first = `BOOT-INF/lib/${f.tree.children[0].artifactId}-${f.tree.children[0].version}.jar`;
+  assert.equal(checkRuntimeArchive(entries.split("\n").slice(1).join("\n"), f.tree.children, {dependencyOnlyArtifacts:[first]}).status, "passed");
   assert.throws(()=>checkRuntimeArchive(entries+"\nBOOT-INF/lib/javax.servlet-api-4.0.1.jar",f.tree.children),/unexpected packaged/);
   assert.equal(checkRuntimeArchive(entries+`\nBOOT-INF/lib/spring-boot-jarmode-tools-${f.profile.spring_boot_version}.jar`,f.tree.children).status,"passed");
   assert.equal(checkRuntimeArchive(entries+"\nBOOT-INF/lib/lombok-1.18.42.jar",f.tree.children,{providedLombokVersion:"1.18.42"}).status,"passed");
@@ -238,7 +255,7 @@ test("component capabilities are nested by registry capability id and uncertifie
   assert.equal(catalog.schema_version, 2);
   assert.equal(Object.hasOwn(catalog, "component_capabilities"), false);
   assert.equal(Object.hasOwn(catalog, "component_capability_ids"), false);
-  assert.equal(catalog.compatibility.length, 2);
+  assert.equal(catalog.compatibility.length, 3);
   const entry = catalog.compatibility[0];
   assert.equal(entry.profile_id, "spring-boot-2.7-jdk8");
   assert.equal(catalog.profiles.find(item => item.id === entry.profile_id).component_platform_line, "boot2-java8");
@@ -371,6 +388,11 @@ test("artifact resolution evidence binds catalog coordinates and bytes", async t
   await writeFile(path.join(root, ".template-spec/engineering/backend-platforms.json"), JSON.stringify(catalog, null, 2));
   const evidence = await readFile(path.resolve(binding.ref));
   await writeFile(path.join(root, binding.ref), evidence);
+  for (const entry of catalog.compatibility.slice(1)) if (entry.artifact_resolution_evidence) {
+    const ref = entry.artifact_resolution_evidence.ref;
+    await mkdir(path.dirname(path.join(root, ref)), { recursive: true });
+    await writeFile(path.join(root, ref), await readFile(path.resolve(ref)));
+  }
   assert.doesNotThrow(() => loadBackendPlatforms(root));
   await writeFile(path.join(root, binding.ref), Buffer.concat([evidence, Buffer.from("\n")]));
   assert.throws(() => loadBackendPlatforms(root), error => error.code === "component-binding-drift");
@@ -498,7 +520,7 @@ test("backend-platforms require-profile exposes nested component blockers and ex
   assert.match(output.required_profile.blockers.join("\n"), /YSS combination .* is not verified/);
 
   const boot3Result = spawnSync(path.resolve("scripts/backend-platforms"), ["--require-profile", "spring-boot-3.5-jdk17"], { encoding: "utf8" });
-  assert.equal(boot3Result.status, 1);
+  assert.equal(boot3Result.status, 0);
   const boot3Output = JSON.parse(boot3Result.stdout).required_profile;
   assert.equal(boot3Output.component_platform_line, "boot3-java17");
   const boot3 = boot3Output.combinations[0];
@@ -518,4 +540,16 @@ test("resume never regenerates or accepts changed files, extra source or changed
   await writeFile(source,"user change"); assert.throws(resume,/file drift/); assert.equal(await readFile(source,"utf8"),"user change");
   await writeFile(source,original); await writeFile(path.join(f.project,"extra-source.java"),"user code");
   assert.throws(resume,/unexpected source/);
+});
+
+test('3.2.0 精确记录仅认证有当前运行证据的两个架构及四个能力', () => {
+  const catalog = loadBackendPlatforms();
+  const entry = catalog.compatibility.find(e => e.bom.version === '3.2.0-SNAPSHOT');
+  const profile = catalog.profiles.find(p => p.id === entry.profile_id);
+  const binding = platformBinding(profile, entry);
+  assert.equal(entry.status, 'verified');
+  assert.equal(entry.components['org.yaml:snakeyaml'], '2.5');
+  assert.equal(resolveBackendPlatform(binding, {catalog}).evidenceReports.length, 2);
+  for (const family of ['domain-driven', 'layered-mvc']) assert.equal(resolveComponentCapabilities(binding, ['contract.dto-wire','contract.request-validation','contract.error-mapping','framework.mybatis'], family, {catalog}).length, 4);
+  assert.throws(() => resolveComponentCapabilities(binding, ['component.cache'], 'domain-driven', {catalog}), /component/);
 });

@@ -53,21 +53,6 @@
                 <scope>import</scope>
             </dependency>
             <dependency>
-                <groupId>com.yss.cloud</groupId>
-                <artifactId>yss-component-excel-mvc</artifactId>
-                <version>${yss-components.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.yss.cloud</groupId>
-                <artifactId>yss-component-distributed-id</artifactId>
-                <version>${yss-components.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.yss.cloud</groupId>
-                <artifactId>yss-component-spring-cache</artifactId>
-                <version>${yss-components.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>com.tngtech.archunit</groupId>
                 <artifactId>archunit-junit5</artifactId>
                 <version>${archunit.version}</version>
@@ -97,7 +82,7 @@
 
     <build>
         <plugins>
-            <plugin><groupId>org.springframework.boot</groupId><artifactId>spring-boot-maven-plugin</artifactId><version>{{boot_version}}</version></plugin>
+            <plugin><groupId>org.springframework.boot</groupId><artifactId>spring-boot-maven-plugin</artifactId><version>{{boot_version}}</version><configuration><skip>true</skip></configuration></plugin>
             <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-surefire-plugin</artifactId><version>{{surefire_version}}</version></plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "kind": "backend-component-capability-evidence",
+  "status": "passed",
+  "capability_id": "contract.error-mapping",
+  "compatibility_id": "yss-cloud-microservice-3.2.0-snapshot-boot-3.5-jdk17",
+  "profile_id": "spring-boot-3.5-jdk17",
+  "spring_boot_version": "3.5.16",
+  "architecture_family": "layered-mvc",
+  "component_digest": "sha256:8c0043e95f6f7577eb681ac5c59481ffc956c737db52ab63be5f7c30bd36f42e",
+  "artifacts": [
+    {
+      "group_id": "com.yss.cloud",
+      "artifact_id": "yss-component-exception",
+      "declared_version": "3.2.0-SNAPSHOT",
+      "resolved_version": "3.2.0-20261011.074005-1",
+      "pom_sha256": "sha256:c4d61831d8b65a322abfb59777c079c6fd314a87449db8bb34884da01f5cf748",
+      "jar_sha256": "sha256:63c4cce496a7856eccb6e9a61f3a3b2a923931c23d9c8718c9a7ca3c2ab1272a",
+      "source_tree": "f084af7699e4f12c1fb2811ac573d47d0c6a8b95"
+    }
+  ],
+  "evidence": [
+    {
+      "architecture_family": "layered-mvc",
+      "ref": ".template-spec/engineering/evidence/scaffold-3.2.0/mvc/qualification.json",
+      "digest": "sha256:53a544b94d2e0e6d3f8533b441b06ce977c3c7cb1e054b31e087f0ad5978a03c"
+    }
+  ],
+  "scope": "ReferenceEntry HTTP create/read/rename, blank-name validation, missing entry, DTO wire format, MapStruct bean, MyBatis/H2 persistence and Spring service transaction rollback. No blanket component API or production certification.",
+  "source_state": "working-tree"
+}

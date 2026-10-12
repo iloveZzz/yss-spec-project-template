@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "kind": "backend-component-capability-evidence",
+  "status": "passed",
+  "capability_id": "framework.mybatis",
+  "compatibility_id": "yss-cloud-microservice-3.2.0-snapshot-boot-3.5-jdk17",
+  "profile_id": "spring-boot-3.5-jdk17",
+  "spring_boot_version": "3.5.16",
+  "architecture_family": "layered-mvc",
+  "component_digest": "sha256:c3e8404076c238dcaed06c86fc72e516919916f008951513a8642ad585ae7aa7",
+  "artifacts": [
+    {
+      "group_id": "com.yss.cloud",
+      "artifact_id": "yss-component-mybatis-plus-starter",
+      "declared_version": "3.2.0-SNAPSHOT",
+      "resolved_version": "3.2.0-20261011.074005-1",
+      "pom_sha256": "sha256:4b0a8f786ac85d6e28f32b780720901660e7b59c2bbeb6d9edf373373b72eaa7",
+      "jar_sha256": "sha256:bbf05ba21d1501f16343cce52835ff0dc0251158376c4e9dbb53c7710f682736",
+      "source_tree": "ddee61eee4a106128886d8a5a6de96ac48980c07"
+    },
+    {
+      "group_id": "com.yss.cloud",
+      "artifact_id": "yss-component-mybatis-mapper",
+      "declared_version": "3.2.0-SNAPSHOT",
+      "resolved_version": "3.2.0-20261011.074005-1",
+      "pom_sha256": "sha256:f7881c19fc5acaf735a129af4154aa763367f88e9eec816cd3733ccd796e7ecb",
+      "jar_sha256": "sha256:6526685f281a1b475336f874d6b59898d0b34b89ac660770001874e8e8157519",
+      "source_tree": "77bb889699c265049b2ea71d4391cf8bc55dfdb5"
+    },
+    {
+      "group_id": "com.yss.cloud",
+      "artifact_id": "yss-component-persistence-common",
+      "declared_version": "3.2.0-SNAPSHOT",
+      "resolved_version": "3.2.0-20261011.074005-1",
+      "pom_sha256": "sha256:d76e8f889977678c3b43cec2404be01068e89c0092284a6b617368258bb6ba9c",
+      "jar_sha256": "sha256:3f5d78ebe780770e7546b15f7b9e37917c1356585d388013bd0a0f5e88d1665c",
+      "source_tree": "a30368475031e13a214fd9f891899d7084d8b07a"
+    }
+  ],
+  "evidence": [
+    {
+      "architecture_family": "layered-mvc",
+      "ref": ".template-spec/engineering/evidence/scaffold-3.2.0/mvc/qualification.json",
+      "digest": "sha256:53a544b94d2e0e6d3f8533b441b06ce977c3c7cb1e054b31e087f0ad5978a03c"
+    }
+  ],
+  "scope": "ReferenceEntry HTTP create/read/rename, blank-name validation, missing entry, DTO wire format, MapStruct bean, MyBatis/H2 persistence and Spring service transaction rollback. No blanket component API or production certification.",
+  "source_state": "working-tree"
+}

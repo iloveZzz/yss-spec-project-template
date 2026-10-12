@@ -77,7 +77,7 @@ function requireEngineeringPackage(root, approval, contract, technical, data, ap
 }
 
 export async function validateBackendScaffoldPrerequisites(contract, { contractFile, root = findGovernanceRoot(contractFile) } = {}) {
-  if (contract?.schema_version !== 4 || contract?.delivery_role !== "backend") fail("后端新生成只接受 Project Scaffold Contract v4");
+  if (![4, 5].includes(contract?.schema_version) || contract?.delivery_role !== "backend") fail("后端新生成只接受 Project Scaffold Contract v4/v5");
   const prerequisites = contract.design_prerequisites;
   if (!prerequisites || typeof prerequisites !== "object") fail("后端脚手架合同缺少 design_prerequisites");
 

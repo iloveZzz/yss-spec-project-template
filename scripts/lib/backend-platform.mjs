@@ -40,6 +40,9 @@ function validateArtifactBinding(binding, label, { role, expected, snapshot, all
   if (expected && (binding.group_id !== expected.group_id || binding.artifact_id !== expected.artifact_id || binding.declared_version !== expected.version)) componentFail("component-binding-drift", `candidate artifact differs from compatibility coordinates: ${label}`);
   if (snapshot !== binding.declared_version.endsWith("-SNAPSHOT")) componentFail("component-artifact-coordinate-conflict", `candidate artifact release kind mismatch: ${label}`);
   if (binding.status === "candidate" && !candidateArtifactFieldsEmpty(binding)) componentFail("component-evidence-missing", `candidate artifact must remain unresolved until evidence is published: ${label}`);
+  if (binding.status === "resolved-pom") {
+    if (!["parent", "bom"].includes(role) || !snapshot || !/^\d+\.\d+\.\d+-\d{8}\.\d{6}-\d+$/.test(binding.resolved_version ?? "") || !sha256(binding.pom_sha256) || !gitTree(binding.source_tree) || binding.jar_sha256 !== null || binding.sources_jar_sha256 !== null || !Array.isArray(binding.evidence) || !binding.evidence.length || binding.evidence.some(item => !portableEvidence(item)) || !Array.isArray(binding.blockers) || binding.blockers.length) componentFail("component-evidence-missing", `resolved platform POM lacks exact snapshot/source evidence: ${label}`);
+  }
   if (binding.status === "resolved") {
     if (snapshot || binding.resolved_version !== binding.declared_version || !sha256(binding.pom_sha256) || !sha256(binding.jar_sha256) || !sha256(binding.sources_jar_sha256)) componentFail("component-evidence-missing", `resolved external release lacks immutable version or POM/JAR/sources digest: ${label}`);
     if (binding.published_at !== null && (typeof binding.published_at !== "string" || !binding.published_at.length)) componentFail("component-binding-drift", `invalid external release timestamp: ${label}`);
@@ -62,6 +65,8 @@ function validateBoot3Java17Policy(entry, profile) {
     if (!Array.isArray(artifacts) || artifacts.length !== expected.length || artifacts.some((artifact, index) => `${artifact.group_id}:${artifact.artifact_id}:${artifact.declared_version}` !== expected[index])) componentFail("component-binding-drift", `Boot 3.5/JDK17 component coordinates changed: ${entry.id}:${capabilityId}`);
   };
   exactComponent("contract.request-validation", [`org.springframework.boot:spring-boot-starter-validation:${profile.spring_boot_version}`]);
+  // Historical 3.0 candidate recipes remain frozen; newer exact combinations use the normal evidence gates.
+  if (entry.bom.version !== "3.0.0-SNAPSHOT") return;
   exactComponent("component.cache", ["com.yss.cloud:yss-component-cache-starter:3.1.0-SNAPSHOT"]);
   exactComponent("component.distributed-id", ["com.yss.cloud:yss-component-distributed-id:3.1.0-SNAPSHOT"]);
   if (Object.values(components).some(item => item.artifacts?.some(artifact => artifact.artifact_id === "yss-component-excel-starter"))) componentFail("component-new-adoption-forbidden", `removed yss-component-excel-starter is present: ${entry.id}`);
@@ -81,8 +86,8 @@ function validateComponentCatalog(value, root = PLATFORM_ROOT) {
     if (!COMPONENT_PLATFORM_LINES.has(generation.line) || profile.component_platform_line !== generation.line) componentFail("component-platform-generation-mismatch", `profile component line does not match ${generation.line}: ${profile.id}`);
     if (entry.platform_artifact_bindings !== undefined) {
       if (!entry.platform_artifact_bindings || Array.isArray(entry.platform_artifact_bindings) || Object.keys(entry.platform_artifact_bindings).sort().join(",") !== "bom,parent") componentFail("component-binding-drift", `platform artifact bindings must contain parent and bom: ${entry.id}`);
-      validateArtifactBinding(entry.platform_artifact_bindings.parent, `${entry.id}:parent`, { role: "parent", expected: entry.parent, snapshot: true });
-      validateArtifactBinding(entry.platform_artifact_bindings.bom, `${entry.id}:bom`, { role: "bom", expected: entry.bom, snapshot: true });
+      validateArtifactBinding(entry.platform_artifact_bindings.parent, `${entry.id}:parent`, { role: "parent", expected: entry.parent, snapshot: true, allowedStatuses: ["candidate", "resolved-pom"] });
+      validateArtifactBinding(entry.platform_artifact_bindings.bom, `${entry.id}:bom`, { role: "bom", expected: entry.bom, snapshot: true, allowedStatuses: ["candidate", "resolved-pom"] });
     }
     for (const [field, snapshot] of [["external_snapshot_bindings", true], ["external_artifact_bindings", false]]) {
       const bindings = entry[field];
@@ -108,6 +113,10 @@ function validateComponentCatalog(value, root = PLATFORM_ROOT) {
       catch { componentFail("component-binding-drift", `artifact resolution evidence is not valid JSON: ${entry.id}`); }
       if (artifactResolution.schema_version !== 1 || artifactResolution.kind !== "backend-component-artifact-resolution" || artifactResolution.report_id !== binding.report_id || artifactResolution.repository?.id !== binding.repository_id || !Array.isArray(artifactResolution.artifacts)) componentFail("component-binding-drift", `artifact resolution evidence identity mismatch: ${entry.id}`);
       artifactResolution = new Map(artifactResolution.artifacts.map(item => [`${item.group_id}:${item.artifact_id}:${item.declared_version}`, item]));
+    }
+    for (const binding of Object.values(entry.platform_artifact_bindings ?? {})) if (binding.status === "resolved-pom") {
+      const resolved = artifactResolution?.get(`${binding.group_id}:${binding.artifact_id}:${binding.declared_version}`);
+      if (!resolved || binding.resolved_version !== resolved.resolved_version || binding.pom_sha256 !== `sha256:${resolved.pom_sha256}` || binding.source_tree !== resolved.source_tree || resolved.pom_matches_source_tree !== true || binding.evidence.some(item => platformDigest(readFileSync(path.join(root, item.ref))) !== item.digest)) componentFail("component-binding-drift", `platform POM differs from resolution evidence: ${entry.id}:${binding.role}`);
     }
     if (entry.component_capabilities === undefined) continue;
     if (!entry.component_capabilities || Array.isArray(entry.component_capabilities) || typeof entry.component_capabilities !== "object") componentFail("component-evidence-missing", `component capability map is invalid: ${entry.id}`);
@@ -207,7 +216,7 @@ export function resolveBackendPlatform(binding, options = {}) {
       if (!/^sha256:[a-f0-9]{64}$/.test(report.generated_tree_digest ?? "")) fail("missing generated tree digest");
       evidenceReports.push(report);
       if (report.status !== "passed" || report.spring_boot_version !== profile.spring_boot_version || report.java_version !== profile.java_version || report.architecture_family !== item.architecture_family || platformDigest(report.parent) !== platformDigest(entry.parent) || platformDigest(report.bom) !== platformDigest(entry.bom)) fail("compatibility evidence identity mismatch");
-      for (const phase of ["validate", "test", "package"]) if (!report.commands?.some(cmd => cmd.command === `./mvnw ${phase}` && cmd.exit_code === 0 && cmd.stdout_ref && cmd.stderr_ref && cmd.executed_at)) fail("missing real Maven evidence");
+      for (const phase of ["validate", "test", "package"]) if (!report.commands?.some(cmd => (cmd.command === `./mvnw ${phase}` || cmd.phase === phase && cmd.command.startsWith(`./mvnw ${phase} `) && !/skipTests|maven.test.skip/.test(cmd.command)) && cmd.exit_code === 0 && cmd.stdout_ref && cmd.stderr_ref && cmd.executed_at)) fail("missing real Maven evidence");
       if (report.dependency_check !== "passed" || report.startup_check !== "passed" || report.integration_tests?.status !== "passed") fail("missing dependency/startup/integration-test evidence");
       const required = ["effective-pom.xml", "dependency-trees.json", "platform-tests.xml", "boot-bom-effective.xml", "runtime-jar-entries.log", "startup.stdout.log", "startup.stderr.log", ...["validate", "test", "package"].flatMap(phase => [`mvnw-${phase}.stdout.log`, `mvnw-${phase}.stderr.log`])];
       if (!Array.isArray(report.evidence_artifacts) || required.some(ref => !report.evidence_artifacts.some(artifact => artifact.ref === ref))) fail("missing portable evidence artifacts");
@@ -362,7 +371,7 @@ class PlatformIntegrationTest {
     private void httpProbe(String value, int expectedStatus) throws Exception {
         java.net.HttpURLConnection connection = (java.net.HttpURLConnection) new java.net.URL("http://127.0.0.1:" + port + "/__scaffold_probe").openConnection();
         connection.setConnectTimeout(5000); connection.setReadTimeout(5000);
-        connection.setRequestMethod("POST"); connection.setRequestProperty("Content-Type", "application/json"); connection.setDoOutput(true);
+        connection.setRequestMethod("POST"); connection.setRequestProperty("Content-Type", "application/json"); connection.setRequestProperty("Accept", "application/json"); connection.setDoOutput(true);
         ProbePayload request = new ProbePayload(); request.setValue(value);
         try {
             try (java.io.OutputStream stream = connection.getOutputStream()) { stream.write(mapper.writeValueAsBytes(request)); }

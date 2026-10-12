@@ -39,7 +39,7 @@
 以下入口已完成硬退役，不保留 alias、物理目录、投影、Registry 条目或 lock 条目：
 
 - `yss-mvc-design`：新工作使用 `yss-technical-design`。MVC schema、规则和 API impact 的 OpenAPI review 条件依赖由技术设计入口持有。
-- `yss-mvc-data-analysis-project-initializer`：新工作使用 `yss-layered-mvc-scaffold-generator` 的 `mvc-data-analysis-v1` Profile，继续保留六模块、H2、CONTEXT handoff、skillUtils 和独立 Git 行为。
+- `yss-mvc-data-analysis-project-initializer`：数据分析 Profile 的新建能力已退役；新工作先生成通用 MVC，再按需使用 `setup-yss-harness` 接入治理；历史合同只读审计。
 - `yss-backend-scaffold-parent`：新工作使用 `yss-ddd-scaffold-generator`；工程基线由生成器内部 `references/engineering-baseline.md` 和验证器持有。
 
 硬退役统一规则：
@@ -53,7 +53,7 @@
 以下入口已硬退役，不保留 alias、物理目录、投影或 lock 条目：
 
 - DDD 嵌套包装：`yss-backend-scaffold-adapter`、`yss-application-layer-reference`、`yss-domain-layer-reference`、`yss-infrastructure-layer-reference`、`yss-web-layer-reference`。
-- 旧数据分析初始化器：`yss-mvc-scaffold-generator`，新工作统一使用 `yss-layered-mvc-scaffold-generator`；数据分析工程选择 `mvc-data-analysis-v1` Profile。
+- 旧数据分析初始化器：`yss-mvc-scaffold-generator`，新工作统一使用 `yss-layered-mvc-scaffold-generator`；`mvc-data-analysis-v1` 仅供历史审计，不再新建。
 - 前端组件总入口：`yss-components`。
 
 DDD 脚手架的 Parent 工程约束由 `yss-ddd-scaffold-generator/references/engineering-baseline.md` 内部持有。生成后的 Application、Domain、Infrastructure、Web 和 Adapter 实现从 `yss-ddd-scaffold-generator/references/layer-skill-routing.md` 路由到顶层权威 Skill，不再把普通参考目录暴露为可发现 Skill。

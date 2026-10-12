@@ -1,0 +1,50 @@
+package {{base_package}}.service.service;
+
+import {{base_package}}.service.ReferenceEntryException;
+import {{base_package}}.repository.ReferenceEntryRecord;
+import {{base_package}}.repository.repository.ReferenceEntryRepository;
+import {{base_package}}.service.command.ReferenceEntryCommand;
+import {{base_package}}.service.result.ReferenceEntryResult;
+import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@RequiredArgsConstructor
+public class ReferenceEntryService {
+    private static final int MAX_NAME_LENGTH = 100;
+    private final ReferenceEntryRepository repository;
+
+    @Transactional(rollbackFor = Exception.class)
+    public ReferenceEntryResult create(ReferenceEntryCommand command) {
+        validateName(command.getName());
+        ReferenceEntryRecord entry = new ReferenceEntryRecord(UUID.randomUUID().toString(), command.getName());
+        repository.save(entry);
+        return new ReferenceEntryResult(entry.getId(), entry.getName());
+    }
+
+    public ReferenceEntryResult find(String id) {
+        ReferenceEntryRecord entry = load(id);
+        return new ReferenceEntryResult(entry.getId(), entry.getName());
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public ReferenceEntryResult rename(String id, ReferenceEntryCommand command) {
+        validateName(command.getName());
+        ReferenceEntryRecord original = load(id);
+        ReferenceEntryRecord entry = new ReferenceEntryRecord(original.getId(), command.getName());
+        repository.save(entry);
+        return new ReferenceEntryResult(entry.getId(), entry.getName());
+    }
+
+    private ReferenceEntryRecord load(String id) {
+        return repository.find(id).orElseThrow(() -> new ReferenceEntryException("REFERENCE_NOT_FOUND", "参考条目不存在"));
+    }
+
+    private void validateName(String name) {
+        if (name == null || name.trim().isEmpty() || name.length() > MAX_NAME_LENGTH) {
+            throw new ReferenceEntryException("REFERENCE_NAME_INVALID", "名称须为1至100个字符");
+        }
+    }
+}

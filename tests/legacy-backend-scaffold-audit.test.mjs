@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, mkdir, rm, readFile, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
@@ -61,4 +61,35 @@ test("审计器拒绝将 v4 当作历史恢复输入", async (t) => {
   const manifestFile = path.join(data.root, ".yss/scaffold-generation.json");
   await writeFile(manifestFile, JSON.stringify({ schema_version: 4, ownership: { generated_files: [] } }));
   await assert.rejects(() => auditLegacyBackendScaffold(data.root), /历史 v3/);
+});
+
+test("退役数据分析 v4 只读审计不授予恢复或流转", async t => {
+ const data = await fixture(t);
+ const file = path.join(data.root, ".yss/scaffold-generation.json");
+ const manifest = JSON.parse(await readFile(file, "utf8"));
+ Object.assign(manifest, { schema_version: 4, architecture_profile: "mvc-data-analysis-v1", kind: "service-project-initialization" });
+ await writeFile(file, JSON.stringify(manifest));
+ const before = await readFile(file);
+ const result = await auditLegacyBackendScaffold(data.root);
+ assert.equal(result.status, "retired-read-only");
+ assert.equal(result.lifecycle_transition_allowed, false);
+ assert.deepEqual(await readFile(file), before);
+});
+
+for (const family of ['domain-driven', 'layered-mvc']) for (const version of [1, 4]) test(`历史 ${family} v${version} 保留所有权验证且不授予新资格`, async t => {
+  const data = await fixture(t), file = path.join(data.root, '.yss/scaffold-generation.json');
+  const manifest = JSON.parse(await readFile(file, 'utf8'));
+  Object.assign(manifest, { schema_version: version, kind: version === 1 ? 'standalone-backend-scaffold' : 'backend-scaffold', generation_mode: version === 1 ? 'standalone-generation' : 'controlled-generation', architecture_family: family, architecture_profile: family === 'domain-driven' ? 'target-domain-model' : 'layered-mvc-service', source_fingerprint: { generator_digest: 'sha256:' + '1'.repeat(64), verifier_digest: 'sha256:' + '2'.repeat(64) } });
+  await writeFile(file, JSON.stringify(manifest));
+  const before = await readFile(file), result = await auditLegacyBackendScaffold(data.root);
+  assert.equal(result.status, 'read-only-audited');
+  assert.equal(result.execution_allowed, false); assert.equal(result.lifecycle_transition_allowed, false); assert.equal(result.platform_requalification, false);
+  assert.deepEqual(await readFile(file), before);
+  await writeFile(path.join(data.root, data.source), 'tampered');
+  assert.equal((await auditLegacyBackendScaffold(data.root)).generated_file_drift[0].reason, 'digest-drift');
+  await rm(path.join(data.root, data.source));
+  assert.equal((await auditLegacyBackendScaffold(data.root)).generated_file_drift[0].reason, 'missing');
+  manifest.reference_example = { enabled: true };
+  await writeFile(file, JSON.stringify(manifest));
+  await assert.rejects(() => auditLegacyBackendScaffold(data.root), /不得夹带/);
 });

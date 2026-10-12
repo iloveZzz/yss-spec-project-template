@@ -92,6 +92,7 @@ async function main() {
     if (passed || verification.verification_mode === "standalone-generation") {
       const manifestPath = path.join(args.projectRoot, ".yss", "scaffold-generation.json");
       const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
+      if (verification.reference_verification) manifest.reference_verification = verification.reference_verification;
       manifest.completion_level = manifest.generation_mode === "standalone-generation" ? verification.completion_level : "empty-scaffold-verified";
       if (manifest.generation_mode === "standalone-generation") manifest.verification = { status: verification.status, failure_category: verification.failure_category, commands: verification.commands, report_ref: verificationPath };
       if (passed) {

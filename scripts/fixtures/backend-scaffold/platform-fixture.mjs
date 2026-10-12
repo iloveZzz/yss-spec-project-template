@@ -11,7 +11,7 @@ export function fixtureCatalog(contract) {
   return catalog;
 }
 export function attachPlatformFixture(root, contract) {
-  if (!["yss-ddd-scaffold-generator", "yss-layered-mvc-scaffold-generator"].includes(contract.generator_skill) || contract.schema_version !== 4) return;
+  if (!["yss-ddd-scaffold-generator", "yss-layered-mvc-scaffold-generator"].includes(contract.generator_skill) || ![4, 5].includes(contract.schema_version)) return;
   const catalog = fixtureCatalog(contract);
   const profile = platformProfile(contract.profiles.platform, catalog);
   if (!profile.component_platform_line) return;

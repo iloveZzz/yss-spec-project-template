@@ -335,19 +335,53 @@ profiles:
         inputs_complete: true
         input_patterns:
           - "scripts/lib/standalone-backend-scaffold.mjs"
+          - "scripts/lib/scaffold-reference-example.mjs"
+          - "scripts/lib/backend-platform-provenance.mjs"
+          - ".agents/skills/yss-ddd-scaffold-generator/assets/**"
+          - ".codex/skills/yss-ddd-scaffold-generator/assets/**"
           - ".agents/skills/yss-ddd-scaffold-generator/scripts/**"
           - ".agents/skills/yss-layered-mvc-scaffold-generator/scripts/**"
         depends_on: []
-        failure_mode: "MVC/DDD 无合同默认生成失败、显式合同错误回退、验证报告模式错误或目录保护失效"
-      - id: "check.mvc-data-analysis-entry"
-        run: "node --test --test-name-pattern='数据分析|AGENTS|入口' .agents/skills/yss-layered-mvc-scaffold-generator/scripts/scaffold-generator.test.mjs"
+        failure_mode: "MVC/DDD 无合同默认生成失败、参考工程遗漏或未纳入来源和所有权、显式合同错误回退、验证报告模式错误或目录保护失效"
+      - id: check.backend-platform-mechanisms
+        run: "node --test scripts/fixtures/backend-scaffold/platform-scenarios.test.mjs tests/scenarios/verify-scaffold-architecture-decision-scenarios.mjs"
+        group: implementation
+        inputs_complete: true
+        input_patterns:
+          - "scripts/fixtures/backend-scaffold/platform-fixture.mjs"
+          - "scripts/fixtures/backend-scaffold/platform-scenarios.test.mjs"
+          - "scripts/lib/backend-platform-verification.mjs"
+          - "scripts/lib/backend-platform.mjs"
+          - "scripts/verify-scaffold-architecture-decisions"
+          - ".template-spec/engineering/backend-platforms*"
+          - ".template-spec/engineering/evidence/scaffold-3.2.0/**"
+        depends_on: [check.backend-scaffold-direct-generation]
+        failure_mode: "精确平台绑定、运行证据或退役架构决策接受错误；真实平台证据另按选定两个组合执行"
+      - id: check.scaffold-contract-consumers
+        run: "node --test .agents/skills/yss-implementation-contract-compiler/tests/backend-profiles.test.mjs tests/legacy-backend-scaffold-audit.test.mjs tests/yss-backend-skill-governance.test.mjs"
+        group: implementation
+        inputs_complete: true
+        input_patterns:
+          - "scripts/lib/backend-scaffold-prerequisites.mjs"
+          - "scripts/lib/implementation-contract-compiler.mjs"
+          - "scripts/lib/legacy-backend-scaffold-audit.mjs"
+          - "scripts/lib/lifecycle-transition.mjs"
+          - "scripts/lib/backend-platform.mjs"
+          - ".agents/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml"
+          - ".agents/skills/yss-implementation-contract-compiler/tests/backend-profiles.test.mjs"
+          - "tests/legacy-backend-scaffold-audit.test.mjs"
+          - "tests/yss-backend-skill-governance.test.mjs"
+        depends_on: [check.backend-scaffold-direct-generation]
+        failure_mode: "v5 前置或退役路由漂移，历史架构审计被误当新生成或恢复批准"
+      - id: "check.mvc-data-analysis-retirement"
+        run: "node --test --test-name-pattern='退役|历史' .agents/skills/yss-layered-mvc-scaffold-generator/scripts/scaffold-generator.test.mjs"
         group: "implementation"
         inputs_complete: true
         input_patterns:
           - "AGENTS.md"
           - ".agents/skills/yss-layered-mvc-scaffold-generator/scripts/**"
         depends_on: []
-        failure_mode: "数据分析工程入口泄漏模板规则、工具包身份错误或非法标记产生部分输出"
+        failure_mode: "退役数据分析入口仍创建目录、Git 或 skillUtils，历史 Schema 或只读审计失效"
       - id: "check.skill-projection-identity"
         inputs_complete: true
         input_patterns:
@@ -1285,6 +1319,8 @@ syntax_files:
   - tests/verification-delivery-run.test.mjs
   - .template-source/scripts/lib/verification-qualification-plan.mjs
 routing:
+  - patterns: ["tests/yss-backend-skill-governance.test.mjs"]
+    groups: [implementation]
   - patterns:
       - tests/verification-preflight.test.mjs
       - tests/verification-artifacts.test.mjs

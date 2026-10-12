@@ -51,6 +51,7 @@ try {
       assertScaffoldUserDecision(decision);
     }
     const registry = loadSkillRegistry();
+    if (registry.architecture_profiles?.[decision.architecture_profile]?.maturity === "deprecated") throw new TypeError("retired: 数据分析架构只允许历史只读审计，不能选择新建");
     validateArchitectureIdentity({ ...decision, architecture_family: decision.confirmed_architecture ?? decision.recommended_architecture, generator_skill: registry.architecture_profiles?.[decision.architecture_profile]?.generator_skill, contract_digest: decision.decision_inputs_digest }, registry);
   }
   for (const decision of value.decisions) {

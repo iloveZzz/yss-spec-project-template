@@ -131,3 +131,11 @@ test('原生实例可以声明 claude 运行时，投影根必须与运行时一
  assert.throws(()=>nativeInstalledSkillRefs(metadata,{...lock,projectionRoots:['.codex/skills']},none),/INSTANCE_DISTRIBUTION:.*Skill 平台范围与实例运行时不一致/);
  assert.throws(()=>nativeInstalledSkillRefs({distribution:{runtimes:['claude','unknown-runtime'],installedSkills:[]},managedFiles:{}},lock,none),/INSTANCE_DISTRIBUTION:.*未知或重复运行时声明/);
 });
+
+test('本地工作树模板必须绑定不可变 tree 且由工作树 CLI 执行', t => {
+ const f=nativeFixture(t,3);
+ Object.assign(f.metadata,{templateSourceState:'working-tree',templateVersion:'worktree:'+'f'.repeat(40),cliSourceState:'working-tree'});f.save();
+ assert.equal(readInstanceMetadata(f.root).kind,'native');
+ f.metadata.templateVersion='worktree:HEAD';f.save();assert.throws(()=>readInstanceMetadata(f.root),/来源/);
+ f.metadata.templateVersion='worktree:'+'f'.repeat(40);f.metadata.cliSourceState='committed';f.save();assert.throws(()=>readInstanceMetadata(f.root),/来源/);
+});

@@ -37,7 +37,7 @@ infrastructure-+
 
 ## 生成与验证
 
-- 默认直接生成，输入为项目名、包名、输出目录、精确平台及 Maven 坐标，不要求合同或设计审批。正式路径输入是批准、持久化且当前的服务级 scaffold contract schema v4，身份为 `scaffold_request_id`，并绑定已确认的 `architecture_family=domain-driven` 架构决策、Technical Design、Data Architecture Decision v1 与真实工程合同批准；不使用 `slice_id`。历史 Manifest v2/v3 仅供验证器只读兼容。
+- 默认直接生成，输入为项目名、包名、输出目录、精确平台及 Maven 坐标，不要求合同或设计审批。正式路径输入是批准、持久化且当前的服务级 scaffold contract schema v5（历史 v4 保留空工程语义），身份为 `scaffold_request_id`，并绑定已确认的 `architecture_family=domain-driven` 架构决策、Technical Design、Data Architecture Decision v1 与真实工程合同批准；不使用 `slice_id`。历史 Manifest v2/v3 仅供验证器只读兼容。
 - 生成器严格 initialize-only：目标工程目录必须不存在，`--force`、旧项目迁移和当前模板升级均为 `unsupported`。
 - Maven 内部仓库通过命名 profile `yss-internal` 与环境变量注入；共享模板不写内部 URL 或凭据。
 - Wrapper 必须带 checksum；DEBUG 和 MyBatis stdout SQL 只允许在 `application-local.yml`。
@@ -52,7 +52,7 @@ infrastructure-+
 - Web：`yss-web-controller` + `yss-dto` + `yss-exception`
 - 横切实现约束：`yss-validation` + `mapstruct` + `lombok` + `alibaba-java-code-style`
 
-脚手架只生成机械工程资产。接入正式 Harness 治理后的业务代码回到 `yss-implementation-contract-compiler`，消费批准且版本当前的 Slice Implementation Contract，并采用 `behavior-tdd`。
+业务空工程只生成机械工程资产，独立参考工程按 reference_example 绑定。接入正式 Harness 治理后的业务代码回到 `yss-implementation-contract-compiler`，消费批准且版本当前的 Slice Implementation Contract，并采用 `behavior-tdd`。
 
 ## 生成来源与当前基线
 

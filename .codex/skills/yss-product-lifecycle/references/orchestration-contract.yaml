@@ -153,14 +153,6 @@ backend_architecture_identity_policy:
   agreement: exact-identity-and-digest
   missing_or_drift: blocked-and-recompile
   new_profile_readiness: supported-only
-service_project_initialization:
-  work_unit: work-unit.service-project-initialization
-  skill: yss-layered-mvc-scaffold-generator
-  architecture_profile: mvc-data-analysis-v1
-  context_inputs: [ context_handoff_ref, context_handoff_digest ]
-  approval: current-schema-v4-scaffold-contract-with-approved-technical-and-data-design
-  parent_ownership: service-references-and-handoff-only
-  child_ownership: independent-git-project-instance-root-context-and-lifecycle
 supported_state_schema_versions: [ 1 ]
 
 implementation_path_policy:
@@ -669,16 +661,6 @@ work_unit_routes:
     result_schema_version: 2
     backend_design_prerequisites_required: [ technical_design, data_architecture_decision, api_contract_decision, engineering_contract_approval_ref ]
     must_complete_before: work-unit.ticket-decomposition
-  work-unit.service-project-initialization:
-    native: { source: yss-product-lifecycle, skill: yss-product-lifecycle, invocation_mode: model-invoked }
-    primary_skill: yss-layered-mvc-scaffold-generator
-    supporting_skills: []
-    skills: [ yss-layered-mvc-scaffold-generator ]
-    parent_work_unit: work-unit.implementation-repository-preparation
-    return_to: work-unit.implementation-repository-preparation
-    applies_when: new_backend_project_with_approved_current_v4_mvc-data-analysis-v1_contract
-    completion_evidence: [ scaffold-manifest-v4, scaffold-verification, workflow-execution-result, context-handoff-digest ]
-    not_applicable_reason: existing_project_or_other_architecture_profile
   work-unit.ticket-decomposition:
     native: { source: yss-product-lifecycle, skill: yss-product-lifecycle, invocation_mode: model-invoked }
     primary_skill: yss-product-lifecycle
@@ -876,7 +858,8 @@ implementation_repository_preparation:
     remote_repository_creation: explicit-authorization-only
     approved_project_scaffold_contract_required: true
     frontend_contract_minimum_schema_version: 4
-    backend_new_generation_schema_version: 4
+    backend_new_generation_schema_version: 5
+    backend_legacy_empty_generation_schema_versions: [ 4 ]
     backend_historical_read_only_schema_versions: [ 3 ]
     target_policy: nonexistent-or-empty
     force_overwrite: forbidden
@@ -908,8 +891,7 @@ transition_graph:
     work-unit.spec-synthesis: [ work-unit.prototype-design-v2, work-unit.technical-analysis, work-unit.business-ticket-formalization ]
     work-unit.prototype-design-v2: [ work-unit.technical-analysis, work-unit.business-ticket-formalization ]
     work-unit.technical-analysis: [ work-unit.implementation-repository-preparation ]
-    work-unit.implementation-repository-preparation: [ work-unit.service-project-initialization, work-unit.ticket-decomposition ]
-    work-unit.service-project-initialization: [ work-unit.implementation-repository-preparation ]
+    work-unit.implementation-repository-preparation: [ work-unit.ticket-decomposition ]
     work-unit.ticket-decomposition: [ work-unit.slice-implementation ]
     work-unit.slice-implementation: [ work-unit.frontend-implementation-verification, work-unit.code-review ]
     work-unit.frontend-implementation-verification: [ work-unit.code-review ]
@@ -1220,13 +1202,13 @@ backend_scaffold:
     layered-mvc: { recipe: backend.mvc-scaffold, generator_skill: yss-layered-mvc-scaffold-generator, baseline_skills: [] }
   tdd_mode: controlled-generation
   contract_schema:
-    schema_version: 4
-    current_schema_version: 4
+    schema_version: 5
+    current_schema_version: 5
     schema_ref: .template-spec/process/schemas/project-scaffold-contract.schema.json
-    compatible_backend_versions: [ 3, 4 ]
+    compatible_backend_versions: [ 3, 4, 5 ]
     frontend_minimum_version: 4
     identity: service-engineering-baseline
-    required: [ contract_id, contract_version, scaffold_request_id, status, compiler_draft_ref, lifecycle_approval_ref, persisted_ref, current_version, implementation_repository, backend_repository, scaffold_status, project_name, target_output_dir, base_package, architecture_family, generator_skill, decision_ref, decision_id, decision_digest, maven_coordinates, profiles, module_profile, allowed_write_paths, expected_evidence_files, verification_commands, approval, work_unit, generation_policy ]
+    required: [ contract_id, contract_version, scaffold_request_id, status, compiler_draft_ref, lifecycle_approval_ref, persisted_ref, current_version, implementation_repository, backend_repository, scaffold_status, project_name, target_output_dir, base_package, architecture_family, generator_skill, decision_ref, decision_id, decision_digest, maven_coordinates, profiles, module_profile, reference_example, allowed_write_paths, expected_evidence_files, verification_commands, approval, work_unit, generation_policy ]
     status_by_owner:
       router: [ draft, ready-for-lifecycle-review, blocked ]
       lifecycle: [ approved, stale, blocked ]
@@ -1259,9 +1241,10 @@ backend_scaffold:
       slice_id: forbidden-as-scaffold-identity
       existing_project: reject-no-scaffold-migration
   required_inputs: [ implementation_repository, backend_repository, scaffold_status, scaffold_target_confirmed, scaffold_request_id, target_output_dir, project_name, base_package, architecture_family, generator_skill, decision_ref, decision_id, decision_digest, technical_design_ref, technical_design_version, technical_design_digest, data_architecture_decision_ref, data_architecture_decision_version, data_architecture_decision_digest, engineering_contract_approval_ref, maven_group_id, project_version, parent_group_id, parent_artifact_id, parent_version, yss_components_version, architecture_profile, persistence_profile, verification_database, production_database, platform_profile, validation_namespace, dto_placement, repository_profile, requested_capabilities, resolved_modules, resolution_version, scaffold_contract_file, scaffold_contract_draft, scaffold_contract_id, scaffold_contract_version, scaffold_contract_status, scaffold_contract_approved, scaffold_contract_compiler_draft_ref, scaffold_contract_lifecycle_approval_ref, scaffold_contract_persisted, scaffold_contract_persisted_ref, scaffold_contract_current_version ]
-  required_evidence: [ scaffold_architecture_decision, user_confirmation_ref, decision_digest, technical_design, data_architecture_decision, engineering_contract_approval, generator_inputs, expected_files, scaffold_generation_manifest_v4, generated_project_structure, generation_execution_result, verification_execution_result, architecture_rules, ./mvnw_validate, ./mvnw_test, ./mvnw_package, yss_skill_execution_result ]
+  required_evidence: [ scaffold_architecture_decision, user_confirmation_ref, decision_digest, technical_design, data_architecture_decision, engineering_contract_approval, generator_inputs, expected_files, scaffold_generation_manifest_v5, generated_project_structure, generation_execution_result, verification_execution_result, architecture_rules, ./mvnw_validate, ./mvnw_test, ./mvnw_package, yss_skill_execution_result ]
   generation_options:
-    with_example: false
+    with_example: true
+    legacy_v4_with_example: false
     force: forbidden-by-default
     regeneration: unsupported
     template_upgrade: unsupported
@@ -1617,7 +1600,6 @@ execution_scopes:
       - work-unit.prototype-design-v2
       - work-unit.technical-analysis
       - work-unit.implementation-repository-preparation
-      - work-unit.service-project-initialization
       - work-unit.scaffold-generation
       - work-unit.ticket-decomposition
       - work-unit.slice-implementation
