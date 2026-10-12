@@ -1,0 +1,8 @@
+# YSS Strategic Design Harness
+
+先读取根目录 `AGENTS.md` 与 `yss-project.yaml`。技能身份、别名、能力与默认可发现性以
+`.template-spec/agents/yss-skill-registry.yaml` 为准；`.agents/skills` 是共享技能权威内容，
+`.cursor/skills` 是生成投影，不得手工修改。
+
+本 profile 只负责 Discovery、战略设计、阶段决策、产品设计与 Strategic Design Handoff。
+不得在此仓库启动 Tactical DDD、OpenAPI Freeze、Slice Contract、生产实现、代码审查或发布流程。

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Prototype Review"
+  short_description: "Gate UI prototypes before Spec calibration"
+  default_prompt: "Use $prototype-review to review low-fidelity readiness before Spec calibration and the active lifecycle profile's downstream handoff."

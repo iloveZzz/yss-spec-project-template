@@ -1,0 +1,12 @@
+#!/usr/bin/env node
+import { validateInstanceDistribution } from "./lib/instance-distribution.mjs";
+
+try {
+  const result = validateInstanceDistribution();
+  process.stdout.write(
+    `实例分发面校验通过: ${result.cli_package} / ${result.metadata_file}\n`,
+  );
+} catch (error) {
+  process.stderr.write(`${error.message}\n`);
+  process.exitCode = 1;
+}

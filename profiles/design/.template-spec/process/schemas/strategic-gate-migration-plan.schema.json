@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yss.example/schemas/strategic-gate-migration-plan-v1.schema.json",
+  "title": "Strategic gate migration plan v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "kind", "root", "feature", "generated_at", "inputs", "mappings", "historical_evidence", "reapproval_required", "blockers", "operations"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "kind": { "const": "strategic-gate-migration-plan-v1" },
+    "root": { "type": "string", "minLength": 1 },
+    "feature": { "type": ["string", "null"] },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "inputs": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/input" }
+    },
+    "mappings": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": { "type": "string", "pattern": "^(gate|check)\\." }
+    },
+    "historical_evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["ref", "gate_id", "disposition"],
+        "properties": {
+          "ref": { "type": "string", "minLength": 1 },
+          "gate_id": { "type": "string", "pattern": "^gate\\." },
+          "disposition": { "const": "historical-only" }
+        }
+      }
+    },
+    "reapproval_required": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "enum": ["gate.plan-approved", "gate.spec-baseline-approved", "gate.product-design-approved"] }
+    },
+    "blockers": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+    "operations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["ref", "input_digest", "output_digest", "output"],
+        "properties": {
+          "ref": { "type": "string", "pattern": "^docs/\\.scratch/" },
+          "input_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+          "output_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+          "output": { "type": "string", "contentEncoding": "base64" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref", "digest"],
+      "properties": {
+        "ref": { "type": "string", "pattern": "^docs/\\.scratch/" },
+        "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
+    }
+  }
+}

@@ -1,0 +1,221 @@
+{
+  "manifest": {
+    "allowFiles": [
+      ".template-spec/adr/README.md"
+    ],
+    "allowRootEntries": [
+      ".agents",
+      ".codex",
+      ".cursor",
+      ".pi",
+      ".template-spec",
+      "scripts"
+    ],
+    "allowRootFiles": [
+      ".cursorrules",
+      ".gitignore",
+      ".nvmrc",
+      "AGENTS.md",
+      "CLAUDE.md",
+      "CONTEXT.md",
+      "DESIGN.md",
+      "README.md",
+      "skills-lock.json",
+      "yss-project.yaml",
+      "yss-public-skills.json"
+    ],
+    "exampleDocPaths": [
+      ".template-spec/discovery/IDEATION.md"
+    ],
+    "excludePathSuffixes": [
+      "tests",
+      "test"
+    ],
+    "excludePaths": [
+      ".codex/hooks.json",
+      ".codex/config.toml",
+      ".codex/settings.local.json",
+      ".codex/skills/.DS_Store",
+      ".pi/settings.json",
+      ".cursor/environment.json",
+      "docs/.scratch",
+      "docs/reviews",
+      "docs/adr",
+      "scripts/instantiate-harness",
+      "scripts/verify-strategic-handoff-tools-lock",
+      ".work",
+      "scripts/prepare-skills",
+      "scripts/fixtures",
+      "scripts/audit-yss-backend-skills",
+      "scripts/cache-template-commit",
+      "scripts/capture-maintenance-candidate",
+      "scripts/export-yss-skills",
+      "scripts/generate-yss-skill-boundaries",
+      "scripts/inspect-maintenance-candidate",
+      "scripts/run-template-verification",
+      "scripts/verify-maintenance-checkpoint",
+      "scripts/verify-maintenance-review-record",
+      "scripts/verify-governance-release",
+      "scripts/verify-retired-skill-ids",
+      "scripts/verify-skill-governance",
+      "scripts/verify-skill-registry",
+      "scripts/verify-template",
+      "scripts/verify-template-candidate",
+      "scripts/verify-template-fast",
+      "scripts/verify-upstream-skill-source",
+      "scripts/lib/maintenance-intensity.mjs",
+      "scripts/lib/maintenance-review.mjs",
+      "scripts/lib/skill-governance.mjs",
+      "scripts/lib/template-commit-cache.mjs",
+      "scripts/lib/template-verification.mjs",
+      "scripts/lib/maintenance-counterexample.mjs",
+      ".agents/skills/alibaba-java-code-style",
+      ".agents/skills/archify",
+      ".agents/skills/java-backend-commit",
+      ".agents/skills/lombok",
+      ".agents/skills/mapstruct",
+      ".agents/skills/yss-application",
+      ".agents/skills/yss-audit-log",
+      ".agents/skills/yss-backend-spec-review",
+      ".agents/skills/yss-cache",
+      ".agents/skills/yss-ddd-scaffold-generator",
+      ".agents/skills/yss-distributed-id",
+      ".agents/skills/yss-domain",
+      ".agents/skills/yss-dto",
+      ".agents/skills/yss-excel-mvc",
+      ".agents/skills/yss-exception",
+      ".agents/skills/yss-implementation-contract-compiler/references/scaffold-compilation.md",
+      ".agents/skills/yss-layered-mvc-scaffold-generator",
+      ".agents/skills/yss-mybatis",
+      ".agents/skills/yss-product-lifecycle",
+      ".agents/skills/yss-repository",
+      ".agents/skills/yss-resilience4j",
+      ".agents/skills/yss-security-algorithm",
+      ".agents/skills/yss-skill-source-index-refresh/references",
+      ".agents/skills/yss-skill-source-index-refresh/scripts/check-backend-skill-source-index.mjs",
+      ".agents/skills/yss-tactical-design",
+      ".agents/skills/yss-technical-design",
+      ".agents/skills/yss-up-springboot3",
+      ".agents/skills/yss-userinfo",
+      ".agents/skills/yss-validation",
+      ".agents/skills/yss-web-controller",
+      ".template-spec/process/plan-migration.md",
+      ".template-spec/process/process-glossary.md",
+      ".template-spec/process/schemas/data-architecture-decision.schema.json",
+      ".template-spec/process/schemas/implementation-repository-preparation-result.schema.json",
+      ".template-spec/process/templates/context-reconciliation-template.yaml",
+      ".template-spec/process/templates/user-decision-template.yaml",
+      "scripts/advance-maintenance-iteration",
+      "scripts/agent-hook",
+      "scripts/audit-legacy-backend-scaffold",
+      "scripts/ci-gate",
+      "scripts/ci-setup",
+      "scripts/evaluate-maintenance-review-round",
+      "scripts/harness-metrics",
+      "scripts/lib/agent-config-safety.mjs",
+      "scripts/lib/agent-hook.mjs",
+      "scripts/lib/backend-scaffold-prerequisites.mjs",
+      "scripts/lib/checkpoint-commit.mjs",
+      "scripts/lib/ci-gate.mjs",
+      "scripts/lib/doc-facts-patterns.json",
+      "scripts/lib/doc-facts.mjs",
+      "scripts/lib/harness-metrics.mjs",
+      "scripts/lib/legacy-backend-scaffold-audit.mjs",
+      "scripts/lib/legacy-coverage.mjs",
+      "scripts/lib/maintenance-review-workflow.mjs",
+      "scripts/lib/plan-spec-entry-view.mjs",
+      "scripts/lib/profile-distribution.mjs",
+      "scripts/lib/template-verification-runner.mjs",
+      "scripts/lib/verification-report.mjs",
+      "scripts/lib/verification-selection.mjs",
+      "scripts/plan-spec-entry",
+      "scripts/prepare-maintenance-review",
+      "scripts/verify-agent-config",
+      "scripts/verify-backend-platform-matrix",
+      "scripts/verify-doc-facts",
+      "scripts/verify-maintenance-research",
+      "scripts/verify-openapi-draft-validation-record",
+      "scripts/verify-plan-spec-entry",
+      "scripts/verify-profile-distribution",
+      "scripts/verify-project-instance",
+      "scripts/verify-user-decision",
+      "scripts/verify-work-layout"
+    ],
+    "excludeRootEntries": [
+      ".git",
+      ".codegraph",
+      ".codebuddy",
+      ".idea",
+      ".uploads",
+      "node_modules",
+      ".ua",
+      ".qwen",
+      ".template-source",
+      "packages",
+      ".github",
+      "wiki",
+      "tests"
+    ],
+    "excludeRootFiles": [
+      "package-lock.json",
+      "package.json",
+      "template.manifest.json",
+      "template.snapshot.json",
+      ".gitmodules"
+    ],
+    "initExcludePaths": [],
+    "initExcludeRootEntries": [],
+    "initExcludeRootFiles": [
+      "yss-public-skills.json"
+    ],
+    "ownershipPolicy": {
+      "default": "managed",
+      "rules": [
+        {
+          "ownership": "user-owned",
+          "pattern": ".work/**"
+        }
+      ],
+      "version": 1
+    },
+    "renderPaths": [
+      "README.md",
+      "yss-project.yaml"
+    ]
+  },
+  "profile": "frontend",
+  "schemaVersion": 1,
+  "upgradePolicy": {
+    "assets": [
+      {
+        "kind": "preserve",
+        "paths": [
+          "CONTEXT.md",
+          "yss-project.yaml",
+          ".template-spec/agents/issue-tracker.md",
+          "README.md"
+        ]
+      },
+      {
+        "kind": "customizable",
+        "paths": [
+          "AGENTS.md",
+          ".gitignore",
+          "DESIGN.md"
+        ]
+      },
+      {
+        "generator": "native-bundle",
+        "kind": "generated",
+        "paths": [
+          "skills-lock.json",
+          ".template-spec/process/harness-profile.yaml",
+          ".agents/skills/.public-skills.json",
+          ".agents/skills/.skills-manifest.json"
+        ]
+      }
+    ],
+    "rules": [],
+    "schemaVersion": 1
+  }
+}

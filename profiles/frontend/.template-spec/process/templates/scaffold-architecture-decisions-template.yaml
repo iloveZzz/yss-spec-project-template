@@ -1,0 +1,30 @@
+schema_version: 1
+kind: scaffold-architecture-decisions
+template: true
+status: draft
+decisions:
+  - decision_id: scaffold-decision.main-service
+    project_id: main-service
+    parent_project_id: null
+    status: awaiting-user-decision
+    recommended_architecture: domain-driven
+    recommendation_reasons:
+      - 存在聚合不变量或复杂状态转换
+    confirmed_architecture: null
+    override_reason: null
+    inheritance_mode: root-default
+    inherited_from: null
+    platform_profile: spring-boot-2.7-jdk8
+    architecture_profile: target-domain-model
+    verification_database: h2
+    production_database: not-bound
+    requested_capabilities: []
+    resolved_modules: [domain, application, infrastructure, adapter, bootstrap]
+    resolution_version: 1
+    user_confirmation:
+      confirmed_by: null
+      channel: null
+      confirmation_ref: null
+      confirmed_at: null
+      normalized_text: null
+    decision_inputs_digest: sha256:0000000000000000000000000000000000000000000000000000000000000000

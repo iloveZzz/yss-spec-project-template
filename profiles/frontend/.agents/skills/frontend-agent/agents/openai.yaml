@@ -1,0 +1,5 @@
+version: 1
+interface:
+  display_name: "Frontend Agent"
+  short_description: "实现 Vue 前端垂直切片并验证"
+  default_prompt: "使用 $frontend-agent 消费当前批准的 Slice Implementation Contract，实现前端垂直切片并用 pnpm 返回可复验的验证证据。"

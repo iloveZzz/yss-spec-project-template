@@ -1,0 +1,473 @@
+schema_version: 1
+registry_id: yss.lifecycle
+status: active
+description: 前端专职 harness-agent 的生命周期事实源。流程从已确认的战略输入进入前端工程设计，按影响条件接收后端交付，经过统一
+  Slice Implementation Contract 完成前端实现和独立验证。
+id_policy:
+  pattern: ^(stage|gate|check|artifact|work-unit|evidence)\.[a-z0-9][a-z0-9-]*$
+  published_ids_immutable: true
+  baseline: .template-spec/process/lifecycle-registry-baseline.json
+  deprecated_ids:
+    - stage.tactical-design
+    - work-unit.tactical-design
+    - gate.tactical-design-approved
+    - artifact.tactical-design
+    - evidence.tactical-design-review
+stages:
+  - id: stage.harness-entry
+    name: Harness 入口
+    goal: 校验仓库身份、上游输入、影响面和实现仓库上下文。
+    exit_criteria: 上游输入版本当前，影响面、项目根、分支、写入范围和验证命令可解释。
+  - id: stage.slice-contract
+    name: Slice Contract
+    goal: 将当前前端工程设计、条件化后端交付和冻结契约编译为前端垂直切片实现合同。
+    exit_criteria: 合同版本当前、四个角色分区完整、写路径和验证命令明确，且就绪公式满足。
+  - id: stage.slice-implementation
+    name: 垂直切片实现
+    goal: 由前端、后端和测试 Agent 按同一合同并行实现和验证。
+    exit_criteria: 行为实现、测试证据、契约一致性和写入边界均满足合同。
+  - id: stage.verification
+    name: 独立验证
+    goal: 由测试 Agent 以独立执行态完成 Fresh Verification 和合并前复核。
+    exit_criteria: 所有命中门禁通过，阻塞信号清空，证据可读且 checkpoint 可追溯。
+  - id: stage.frontend-engineering-design
+    name: 前端工程设计
+    goal: 联合输入通过后定义组件、状态管理、API 消费和前端测试边界。
+    exit_criteria: 前端实现计划可审阅；本地无领域影响已记录 not-applicable，新领域问题回交上游。
+  - id: stage.plan
+    name: Plan（战略规划）
+    goal: 确认目标、业务边界、关键规则、MVP / 非目标、优先级和交接责任，为 Spec 提供战略输入；按影响面探索并复用仍有效的结论。
+    exit_criteria: 命中的战略与阶段决策检查通过，用户统一批准当前 Plan；影响业务边界、关键规则或 MVP
+      的问题已解决，其他未决项有责任人和解决时点；下游可进入 Spec，不代表可实现。
+    spec_entry:
+      required_checks:
+        - goals
+        - scope_and_priority
+        - boundaries_and_rules
+        - open_questions
+        - handoff
+        - context_reconciliation
+        - grill_exit
+      gate_impacts:
+        gate.plan-approved: plan
+      check_impacts:
+        check.domain-strategy-approved: domain_strategy
+        check.stage-decision-package-approved: stage_decision
+  - id: stage.spec-architecture
+    name: Spec / 功能架构
+    goal: 固化解决方案和功能边界。
+    exit_criteria: Spec 基线和功能边界可审查。
+  - id: stage.product-design
+    name: 产品设计
+    goal: 在存在产品设计影响时校准页面流和状态。
+    exit_criteria: 命中的设计门禁通过；未命中项记录 not-applicable 及原因。
+evidence:
+  - id: evidence.frontend-implementation-verification
+    name: 前端实现还原验证证据
+    description: UI 实现相对冻结原型和 Spec 的桌面/窄屏视觉、状态、交互、控制台与 pnpm 验证记录。
+  - id: evidence.repository-identity-check
+    name: 仓库身份校验结果
+    description: yss-project.yaml 合法性与 repository_mode 裁决。
+  - id: evidence.upstream-input-check
+    name: 上游输入校验结果
+    description: Spec、战略设计、原型、OpenAPI、数据架构和工程约束的版本与批准状态。
+  - id: evidence.frontend-engineering-design-review
+    name: 前端工程设计评审证据
+    description: 组件边界、状态与交互、API 消费、视觉基线和前端测试 seam 的评审结果。
+  - id: evidence.architecture-decision
+    name: 架构决策证据
+    description: API、数据、跨边界和高风险架构取舍的可追溯决策。
+  - id: evidence.contract-approval
+    name: Slice Contract 批准记录
+    description: 当前版本 Slice Implementation Contract 的生成、校验和批准引用。
+  - id: evidence.frontend-verification
+    name: 前端验证证据
+    description: 前端页面、状态、交互、组件和 pnpm 命令的实际验证结果。
+  - id: evidence.backend-verification
+    name: 后端验证证据
+    description: Domain、Application、API、数据和 ./mvnw 命令的实际验证结果。
+  - id: evidence.test-verification
+    name: 测试验证证据
+    description: 测试 seam、fixture、契约、集成、E2E 和覆盖率结果。
+  - id: evidence.fresh-verification
+    name: Fresh Verification 记录
+    description: 本轮重新执行的验证命令、退出码、执行时间和可读输出引用。
+  - id: evidence.checkpoint-and-rollback
+    name: Checkpoint 与回滚点
+    description: 变更边界、仓库顺序、提交引用和恢复动作。
+  - id: evidence.approval-record
+    name: 人工批准记录
+    description: 高风险架构、OpenAPI Freeze 或合并裁决的可追溯记录。
+  - id: evidence.domain-strategy-review
+    name: DDD 战略设计评审证据
+    description: 子域、限界上下文、统一语言、Context Map、场景和不变量的结构化评审结果。
+  - id: evidence.stage-decision-package
+    name: 阶段决策包验证证据
+    description: 阶段决策包的 Schema、引用、语义一致性、影响传播和下游消费验证结果。
+  - id: evidence.strategic-design-handoff
+    name: 业务方案交接包验证证据
+    description: 显式外部 Backend 或 Frontend 实现消费者所需 Handoff v5 来源批准、不可变交付目录与整包实际验证证据。
+  - id: evidence.prototype-review-result
+    name: 原型评审结果
+    description: 低保真页面、流程、状态与 API 反推的独立评审结论和阻断项。
+  - id: evidence.prototype-profile-decision
+    name: 原型档位选择证据
+    description: 基于低保真评审后的风险触发、决定目标、H1/H2 计算结果以及人工升降级依据。
+  - id: evidence.prototype-deliverable-verification
+    name: 原型交付物验证证据
+    description: schema v3 共同证据与所选档位的浏览器、Design QA、无障碍、组件事实或真实组件合同验证结果。
+  - id: evidence.prototype-confirmation
+    name: 原型用户确认记录
+    description: 高保真原型、验证清单和进入下游阶段范围的人工确认结论。
+checks:
+  - id: check.frontend-implementation-verified
+    name: 前端实现还原验证
+    stage: stage.verification
+    trigger: UI 影响切片完成实现并准备合并、发布或阶段完成。
+    evidence:
+      - evidence.frontend-implementation-verification
+  - id: check.design-reviewed
+    name: Slice 工程设计独立审查
+    stage: stage.slice-contract
+    trigger: 当前编译并持久化的 Slice v3 在批准实施前；独立专业审查绑定当前合同 ID、版本、原字节摘要与审查主体，不复用旧工程设计批准。
+    evidence:
+      - evidence.contract-approval
+      - evidence.approval-record
+  - id: check.domain-strategy-approved
+    name: 业务边界与规则评审
+    stage: stage.plan
+    trigger: 存在 DDD 战略设计影响或需要确定领域边界、统一语言和核心规则。
+    evidence:
+      - evidence.domain-strategy-review
+      - evidence.approval-record
+  - id: check.stage-decision-package-approved
+    name: 阶段决策包评审
+    stage: stage.plan
+    trigger: Plan 到 Spec 入口需要稳定的阶段决策合同。
+    evidence:
+      - evidence.stage-decision-package
+      - evidence.approval-record
+    requires_checks:
+      - check.domain-strategy-approved
+  - id: check.prototype-reviewed
+    name: 原型评审
+    stage: stage.product-design
+    trigger: 命中产品设计影响，且低保真页面、流程、状态或 API 反推需要独立评审。
+    evidence:
+      - evidence.prototype-review-result
+  - id: check.prototype-verified
+    name: 原型交付物验证
+    stage: stage.product-design
+    trigger: 产品设计影响需要通过 H1/H2 原型交付物进行视觉或流程校准；真实组件验证留到前端实现阶段。
+    evidence:
+      - evidence.prototype-profile-decision
+      - evidence.prototype-deliverable-verification
+
+gates:
+  - id: gate.frontend-delivery-inputs-verified
+    name: 前端联合输入核验
+    stage: stage.frontend-engineering-design
+    trigger: 专职前端 profile 或显式 frontend_delivery 绑定的任务启动、恢复、合同编译、实现和验证；实际执行
+      scripts/verify-frontend-delivery，输入就绪不等于实现获批。
+    evidence:
+      - evidence.fresh-verification
+  - id: gate.repository-identity-valid
+    name: 仓库身份有效
+    stage: stage.harness-entry
+    trigger: 每次进入 Harness。
+    evidence:
+      - evidence.repository-identity-check
+  - id: gate.high-risk-architecture-confirmed
+    name: 高风险架构确认
+    stage: stage.frontend-engineering-design
+    trigger: 存在不可逆或跨边界的前端架构取舍。
+    evidence:
+      - evidence.architecture-decision
+      - evidence.approval-record
+  - id: gate.slice-contract-approved
+    name: Slice Contract 批准
+    stage: stage.slice-contract
+    trigger: 任一 Agent 进入切片实现前。
+    evidence:
+      - evidence.contract-approval
+    requires_checks:
+      - check.design-reviewed
+  - id: gate.slice-ready-for-agent
+    name: 切片实现就绪
+    stage: stage.slice-contract
+    trigger: Slice Contract 满足完整就绪公式。
+    evidence:
+      - evidence.contract-approval
+  - id: gate.openapi-freeze-confirmed
+    name: OpenAPI Freeze 确认
+    stage: stage.slice-contract
+    trigger: 切片有 API 影响且契约进入实现。
+    evidence:
+      - evidence.approval-record
+  - id: gate.fresh-verification-passed
+    name: Fresh Verification 通过
+    stage: stage.verification
+    trigger: 实现完成并准备进入合并前复核。
+    evidence:
+      - evidence.fresh-verification
+      - evidence.test-verification
+  - id: gate.merge-approved
+    name: 合并批准
+    stage: stage.verification
+    trigger: 切片完成合并前裁决。
+    evidence:
+      - evidence.approval-record
+      - evidence.checkpoint-and-rollback
+  - id: gate.plan-approved
+    name: Plan 批准
+    stage: stage.plan
+    trigger: Plan 结论进入 Spec；汇总战略检查，核验当前规划范围的原始批准或有效授权延续。
+    evidence:
+      - evidence.approval-record
+    requires_checks:
+      - check.domain-strategy-approved
+      - check.stage-decision-package-approved
+  - id: gate.spec-baseline-approved
+    name: Spec 基线批准
+    stage: stage.spec-architecture
+    trigger: 新功能、行为变化或范围扩大进入 Spec 基线；已授权范围内细化复用当前有效授权，实质变化重新决定。
+    evidence:
+      - evidence.approval-record
+    requires_checks: []
+  - id: gate.strategic-design-handoff-approved
+    name: 业务方案交接验收
+    stage: stage.product-design
+    trigger: 明确绑定外部 Backend 或 Frontend 实现消费者；Design 仅消费 SpecBaseline，本地综合研发直接消费资产时不适用。
+    evidence:
+      - evidence.strategic-design-handoff
+      - evidence.approval-record
+      - evidence.fresh-verification
+    requires_gates:
+      - gate.plan-approved
+      - gate.spec-baseline-approved
+      - gate.product-design-approved
+  - id: gate.product-design-approved
+    name: 产品设计批准
+    stage: stage.product-design
+    trigger: 存在产品设计影响；独立原型评审与交付物验证通过后核验原批准或授权延续，新增体验取舍由用户决定。
+    evidence:
+      - evidence.prototype-confirmation
+    requires_checks:
+      - check.prototype-reviewed
+      - check.prototype-verified
+artifacts:
+  - id: artifact.frontend-implementation-verification
+    name: 前端实现还原验证记录
+    stage: stage.verification
+    trigger: UI 影响切片完成实现并准备合并、发布或阶段完成。
+  - id: artifact.impact-assessment
+    name: 影响面分析
+    stage: stage.harness-entry
+    trigger: 每次进入 Harness。
+  - id: artifact.upstream-inputs
+    name: 上游输入包
+    stage: stage.harness-entry
+    trigger: 进入前端工程设计前。
+  - id: artifact.frontend-engineering-design
+    name: 前端工程设计
+    stage: stage.frontend-engineering-design
+    trigger: 存在 UI 或前端工程影响。
+  - id: artifact.api-boundary
+    name: API 边界
+    stage: stage.slice-contract
+    trigger: 存在 API 影响。
+  - id: artifact.openapi-draft
+    name: OpenAPI Draft
+    stage: stage.slice-contract
+    trigger: 存在 API 影响且需要进入 Freeze 审查。
+  - id: artifact.data-architecture
+    name: 数据架构
+    stage: stage.slice-contract
+    trigger: 存在数据模型、存储或一致性影响。
+  - id: artifact.slice-implementation-contract
+    name: Slice Implementation Contract
+    stage: stage.slice-contract
+    trigger: 任一 Agent 进入实现。
+  - id: artifact.frontend-implementation-plan
+    name: 前端实现计划
+    stage: stage.slice-contract
+    trigger: 存在 UI 影响。
+  - id: artifact.test-strategy
+    name: 测试策略
+    stage: stage.slice-contract
+    trigger: 每个行为切片。
+  - id: artifact.test-seams
+    name: 测试 seam 与 fixture
+    stage: stage.slice-contract
+    trigger: 进入实现前。
+  - id: artifact.fresh-verification
+    name: Fresh Verification
+    stage: stage.verification
+    trigger: 实现完成后。
+  - id: artifact.checkpoint
+    name: Git Checkpoint
+    stage: stage.verification
+    trigger: 合并前或发生阻塞 / 责任变化时。
+  - id: artifact.business-ticket-set
+    name: 上游业务 Ticket 集
+    stage: stage.harness-entry
+    trigger: 只读消费已批准战略来源，核验业务 Ticket 与原 FR/AC、规则和场景，随后细化实现 Slice。
+  - id: artifact.domain-strategy
+    name: DDD 战略设计
+    stage: stage.plan
+    trigger: 新产品/模块、跨上下文功能、统一语言冲突、服务边界或核心规则变化。
+  - id: artifact.stage-decision-package
+    name: 阶段决策包
+    stage: stage.plan
+    trigger: Plan 到 Spec 入口需要结构化上游决策。
+  - id: artifact.plan-record
+    name: Plan 记录
+    stage: stage.plan
+    trigger: 新问题或边界不清。
+  - id: artifact.spec
+    name: Spec
+    stage: stage.spec-architecture
+    trigger: 新功能、行为变化或范围扩大。
+  - id: artifact.product-overview
+    name: 产品总体设计
+    stage: stage.spec-architecture
+    trigger: 进入 Spec 基线。
+  - id: artifact.functional-architecture
+    name: 功能架构
+    stage: stage.spec-architecture
+    trigger: 新模块或跨边界变化。
+  - id: artifact.spec-delta
+    name: Spec Delta
+    stage: stage.spec-architecture
+    trigger: 已有冻结 Spec 的高风险行为变化。
+  - id: artifact.parent-ticket
+    name: 功能父 Ticket
+    stage: stage.plan
+    trigger: 每个功能首次进入 Plan 或最近可信接入阶段时建立，正式化时复用；Design profile 不创建工程父 Ticket。
+  - id: artifact.strategic-design-handoff
+    name: 业务方案交接包
+    stage: stage.product-design
+    trigger: 同一功能明确交付外部 Backend 或 Frontend 实现消费者，需要冻结战略来源并形成可验证交付目录。
+  - id: artifact.interaction-spec
+    name: 交互说明
+    stage: stage.product-design
+    trigger: 命中产品设计影响。
+  - id: artifact.low-fidelity-prototype
+    name: 低保真原型
+    stage: stage.product-design
+    trigger: 命中产品设计影响。
+  - id: artifact.state-matrix
+    name: 状态矩阵
+    stage: stage.product-design
+    trigger: 存在状态流转、异常或恢复。
+  - id: artifact.prototype-deliverable
+    name: 原型交付物
+    stage: stage.product-design
+    trigger: 低保真评审后需要 H1 视觉或 H2 流程校准。
+  - id: artifact.prototype-review-v2
+    name: 原型评审记录
+    stage: stage.product-design
+    trigger: 命中 check.prototype-reviewed。
+  - id: artifact.prototype-confirmation-v2
+    name: 原型确认记录
+    stage: stage.product-design
+    trigger: 命中 gate.product-design-approved。
+work_units:
+  - id: work-unit.harness-entry
+    name: Harness 入口校验
+    scope: project-instance
+    input: yss-project.yaml、CONTEXT.md 和已确认的上游输入。
+    output: 影响面、仓库上下文和上游输入证据。
+    completion: 身份、输入版本和写入边界可解释。
+  - id: work-unit.slice-contract
+    name: Slice Contract 编译与批准
+    scope: project-instance
+    input: 当前上游资产、前端工程设计、条件化 Backend Delivery、API / 数据 / UI 影响和实现仓库登记。
+    output: 当前版本 Slice Implementation Contract 和四角色任务包草案。
+    completion: 合同通过校验并满足 ready-for-agent 公式。
+  - id: work-unit.slice-implementation
+    name: 垂直切片实现
+    scope: project-instance
+    input: 已批准且版本当前的 Slice Implementation Contract。
+    output: 前端、后端和测试实现及 YSS Skill Execution Result。
+    completion: 行为测试、工程验证、契约一致性和写入边界全部满足。
+  - id: work-unit.verification
+    name: 独立验证
+    scope: project-instance
+    input: 实现候选、合同、验收标准和测试 seam。
+    output: Fresh Verification、Review 结果和 checkpoint。
+    completion: 测试 Agent 独立验证通过，且无阻塞信号。
+  - id: work-unit.ssot-update
+    name: Harness 权威资产更新
+    scope: template-source
+    input: 模板维护变更合同。
+    output: 权威文档、schema、脚本或技能。
+    completion: 权威资产可被校验器读取。
+  - id: work-unit.skill-projection-sync
+    name: 技能投影同步
+    scope: template-source
+    input: .agents/skills 和 skills-lock.json。
+    output: 各 Agent runtime root 的同步投影。
+    completion: scripts/sync-skills --check 通过。
+  - id: work-unit.intensity-aware-verification
+    name: 分级 Fresh Verification
+    scope: template-source
+    input: 变更仓库、维护强度和最低证据。
+    output: 校验命令输出与维护证据。
+    completion: 命中等级的结构、行为和压力验证通过。
+  - id: work-unit.intensity-aware-review
+    name: 分级独立审查
+    scope: template-source
+    input: 变更 diff、维护强度和验证证据。
+    output: self-check、聚焦审查或正式独立审查结论。
+    completion: 没有未处理阻断项。
+  - id: work-unit.release-and-rollback
+    name: Harness Checkpoint 与回滚
+    scope: template-source
+    input: 已审查模板资产。
+    output: Checkpoint、回滚点和发布说明。
+    completion: 变更边界和恢复动作可追溯。
+  - id: work-unit.frontend-engineering-design
+    name: 前端工程设计
+    scope: project-instance
+    input: 当前战略与后端联合接收结果、视觉基线、真实接口和实现仓约束。
+    output: 前端工程设计、frontend_implementation_plan 草案与可执行验收用例。
+    completion: 输入仍然有效，设计可审阅且可进入前端 Slice Contract 准备；不放行代码实现。
+  - id: work-unit.plan-opportunity
+    name: 机会调研
+    scope: project-instance
+    input: 用户问题、市场/竞品事实需求和现有上下文。
+    output: Plan 机会结论、证据、替代方案和关键假设。
+    completion: 机会继续/停止建议可审查；事实已 research 或记录为假设。
+  - id: work-unit.plan-requirements
+    name: 需求分析
+    scope: project-instance
+    input: 机会结论、用户反馈和领域词汇。
+    output: 用户、MVP、非目标、成功标准、测试 seam 和未决项。
+    completion: frontier 清空；用户确认；无 runnable blocker。
+  - id: work-unit.domain-strategy-design
+    name: DDD 战略设计
+    scope: project-instance
+    input: 已澄清的业务场景、领域词汇、约束和现有上下文。
+    output: 子域、限界上下文、Context Map、统一语言、事件、核心领域概念候选和不变量。
+    completion: 边界、语义方向、规则所有权和关键场景可审查；无未解释冲突。
+  - id: work-unit.stage-decision
+    name: 阶段决策包综合
+    scope: project-instance
+    input: Plan、DDD 战略设计以及产品经理负责的商业约束输入。
+    output: 带版本、digest、证据和下游映射的阶段决策包。
+    completion: 必填字段、引用、影响面和下游消费验证通过；批准门禁完成。
+  - id: work-unit.spec-synthesis
+    name: Spec 综合
+    scope: project-instance
+    input: 已确认的 Plan 记录和测试 seam。
+    output: Spec、产品总体设计、功能架构及业务 Ticket 草案集合。
+    completion: Spec 和业务 Ticket 草案可审查，FR/AC 覆盖与依赖可读取；进入 ready-for-human，下游推进仍需
+      gate.spec-baseline-approved。
+  - id: work-unit.prototype-design-v2
+    name: 原型设计与验证
+    scope: project-instance
+    input: Spec、产品设计影响和状态矩阵。
+    output: 交互说明、低保真、状态矩阵、H1/H2 原型交付物、统一 Design QA、档位验证证据与前端实现交接事项。
+    completion: 低保真评审、schema v4 原型交付物验证和用户确认门禁均通过；Visual Baseline Bundle
+      和生产组件待验事项已交接到前端实现计划。 同步校准业务 Ticket，复用稳定 ID，随后进入业务正式化。

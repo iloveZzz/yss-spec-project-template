@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "mode": "read-only-snapshot",
+  "repository": "https://github.com/iloveZzz/yss-harness-backend-agent.git",
+  "revision": "25973a39eca1f420f9b20e53efd85b3bf293541c",
+  "path": ".agents/skills/yss-dto/references/openapi-wire-profile.yaml",
+  "sha256": "a2bfe4296f2e2e1196f34eb484f795162ab327756078de99b8f540431151b78b"
+}

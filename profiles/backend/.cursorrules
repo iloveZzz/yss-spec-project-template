@@ -1,0 +1,8 @@
+# YSS Development Harness Router
+
+先读取根目录 `AGENTS.md`、`yss-project.yaml` 与 `.template-spec/process/harness-profile.yaml`。
+技能身份、别名和触发条件以 `.template-spec/agents/yss-skill-registry.yaml` 为准；`.agents/skills` 是共享技能权威内容，
+`.cursor/skills` 是生成投影，不得手工修改。
+
+`project-instance` 由 `harness-orchestrator` 编排，只加载本仓注册的后端技能。
+前端实现和原型构建回交对应项目；本仓消费交接证据与接口需求。

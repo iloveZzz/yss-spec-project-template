@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "repository": "iloveZzz/yss-spec-dev-skills",
+  "canonical_root": ".agents/skills",
+  "skills": [
+    "yss-audit-log",
+    "yss-application",
+    "yss-cache",
+    "yss-ddd-scaffold-generator",
+    "yss-distributed-id",
+    "yss-domain",
+    "yss-dto",
+    "yss-excel-mvc",
+    "yss-exception",
+    "yss-layered-mvc-scaffold-generator",
+    "yss-mybatis",
+    "yss-openapi-draft-review",
+    "yss-openapi-governance",
+    "yss-repository",
+    "yss-resilience4j",
+    "yss-implementation-contract-compiler",
+    "yss-security-algorithm",
+    "yss-skill-source-index-refresh",
+    "yss-up-springboot3",
+    "yss-userinfo",
+    "yss-validation",
+    "yss-web-controller"
+  ],
+  "groupings": [
+    {
+      "title": "生命周期",
+      "description": "用于 YSS 产品生命周期、路由和跨仓库协作的技能。",
+      "skills": [
+        "yss-implementation-contract-compiler",
+        "yss-skill-source-index-refresh"
+      ]
+    },
+    {
+      "title": "后端",
+      "description": "用于 YSS Java、DDD、数据访问和服务端契约实现的技能。",
+      "skills": [
+        "yss-application",
+        "yss-ddd-scaffold-generator",
+        "yss-domain",
+        "yss-dto",
+        "yss-layered-mvc-scaffold-generator",
+        "yss-mybatis",
+        "yss-repository",
+        "yss-web-controller"
+      ]
+    },
+    {
+      "title": "OpenAPI",
+      "description": "用于 YSS API 设计、审查、治理和生成集成的技能。",
+      "skills": [
+        "yss-openapi-draft-review",
+        "yss-openapi-governance"
+      ]
+    },
+    {
+      "title": "基础组件",
+      "description": "用于 YSS 缓存、基础设施、文件、日志和通用组件接入的技能。",
+      "skills": [
+        "yss-cache",
+        "yss-distributed-id",
+        "yss-excel-mvc",
+        "yss-exception",
+        "yss-resilience4j",
+        "yss-security-algorithm",
+        "yss-up-springboot3",
+        "yss-userinfo",
+        "yss-validation"
+      ]
+    },
+    {
+      "title": "质量治理",
+      "description": "用于审计、质量门禁和工程治理的技能。",
+      "skills": [
+        "yss-audit-log"
+      ]
+    }
+  ]
+}

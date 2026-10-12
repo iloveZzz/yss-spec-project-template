@@ -1,0 +1,561 @@
+schema_version: 1
+registry_id: yss.digital-human-roles
+status: active
+description: harness-agent 的角色与运行时绑定事实源。研发角色严格限制为架构、前端、后端和测试； Harness
+  Orchestrator 是系统编排组件，不计入四类研发角色。
+canonical_path: .template-spec/agents/digital-human-roles.yaml
+runtime_policy:
+  lifecycle_control: harness-orchestrator
+  default_invocation: orchestrator
+  dispatch: orchestrator-one-to-one
+  per_feature_instances: forbidden
+  implementer_must_differ: true
+  biological_veto: true
+  write_isolation: task-package-policy
+  task_package_schema: .template-spec/process/schemas/digital-human-task-package.schema.json
+  contract_schema: slice-implementation-contract-v1
+  execution_states:
+    - Explorer
+    - Drafter
+    - Worker
+    - Reviewer
+    - Verifier
+runtimes:
+  - id: runtime.generic
+    kind: generic
+    instance_kind: agent-session
+    skill_root: null
+    covers_skill_registry_roots: false
+    collaboration: task-package-and-handoff
+    max_collaboration_group_size: null
+    overflow: not-applicable
+    shared_workspace_is_not_security_boundary: false
+    side_effect_approval: biological-human
+    notes: 任何能加载角色技能并接受任务包的 Agent 会话。
+  - id: runtime.skill-projection
+    kind: projected-agent-root
+    instance_kind: agent-session-or-subagent
+    skill_root: from-skill-registry
+    covers_skill_registry_roots: true
+    collaboration: subagent-task-package
+    max_collaboration_group_size: null
+    overflow: not-applicable
+    shared_workspace_is_not_security_boundary: false
+    side_effect_approval: biological-human
+    notes: 从 .agents/skills 投影到各 Agent runtime root。
+  - id: runtime.grok
+    kind: grok-bot
+    instance_kind: durable-bot
+    skill_root: null
+    covers_skill_registry_roots: false
+    collaboration: group-chat-or-async-dm
+    max_collaboration_group_size: 4
+    min_collaboration_group_size: 2
+    overflow: one-to-one-handoff
+    shared_workspace_is_not_security_boundary: true
+    side_effect_approval: biological-human
+    notes: 仅作为运行时适配器，不改变四角色职责或生命周期语义。
+orchestrator:
+  id: role.harness-orchestrator
+  name: Harness Orchestrator
+  kind: orchestrator
+  title: Harness Agent 生命周期编排器
+  stages:
+    - stage.harness-entry
+    - stage.frontend-engineering-design
+    - stage.slice-contract
+    - stage.slice-implementation
+    - stage.verification
+    - stage.plan
+    - stage.spec-architecture
+    - stage.product-design
+  default_dual_hat: []
+  draft_artifact_ids:
+    - artifact.impact-assessment
+    - artifact.slice-implementation-contract
+  owned_evidence_ids:
+    - evidence.fresh-verification
+    - evidence.checkpoint-and-rollback
+  core_skills:
+    - harness-orchestrator
+    - implementation-repo-onboarding
+    - cross-repo-implementation-routing
+    - handoff
+  forbidden_skills:
+    - architecture-agent
+    - frontend-agent
+    - backend-agent
+    - test-agent
+    - yss-domain
+    - yss-ui
+    - implement
+  description: 负责四角色 Harness Agent 的入口、影响面、合同版本、任务包、状态转移、证据汇合和重路由。
+    不写业务代码，不替专业角色做领域或产品决策，不自行关闭独立验证门禁。协作汇总只消费显式同功能 checkpoint 和当前 Receipt，不改写综合
+    Spec 的推进意图，不把前端职责完成宣布为整体业务验收。 本地需求先派发需求与产品分析角色；分析不扩大另一端代码写范围。
+roles:
+  - id: role.architecture-agent
+    name: 架构 Agent
+    kind: digital-human
+    title: 前端工程架构 Agent
+    stages:
+      - stage.harness-entry
+      - stage.frontend-engineering-design
+      - stage.slice-contract
+      - stage.verification
+    draft_artifact_ids:
+      - artifact.frontend-engineering-design
+      - artifact.api-boundary
+      - artifact.data-architecture
+      - artifact.slice-implementation-contract
+    owned_evidence_ids:
+      - evidence.frontend-engineering-design-review
+      - evidence.architecture-decision
+    core_skills:
+      - architecture-agent
+      - codebase-design
+      - yss-research
+      - tdd
+    forbidden_skills:
+      - harness-orchestrator
+      - frontend-agent
+      - backend-agent
+      - test-agent
+      - yss-ui
+      - yss-domain
+      - yss-repository
+      - yss-web-controller
+    description: 负责联合输入后的前端工程设计、API 消费边界与合同；后端领域变化回交上游。
+  - id: role.frontend-agent
+    name: 前端 Agent
+    kind: digital-human
+    title: Vue 前端垂直切片 Agent
+    stages:
+      - stage.slice-contract
+      - stage.slice-implementation
+      - stage.verification
+    draft_artifact_ids:
+      - artifact.frontend-implementation-plan
+    owned_evidence_ids:
+      - evidence.frontend-verification
+    core_skills:
+      - frontend-agent
+      - yss-ui
+      - yss-formily
+      - yss-api-integration
+      - yss-hook
+      - yss-ui-business-page-generation
+      - ytable-usage
+      - yedit-table-usage
+      - ytree-usage
+      - theme-token-usage
+      - tdd
+    forbidden_skills:
+      - harness-orchestrator
+      - architecture-agent
+      - backend-agent
+      - test-agent
+      - yss-domain
+      - yss-application
+      - yss-repository
+      - yss-mybatis
+      - yss-web-controller
+    description: 消费冻结的交互、状态和 Slice Contract，负责前端页面、组件、API 消费和前端测试；不创造产品规则、 不修改后端领域和
+      API 契约，不为自己实现的切片独立验收。
+  - id: role.backend-agent
+    name: 后端 Agent
+    kind: digital-human
+    title: 后端垂直切片 Agent
+    stages:
+      - stage.slice-contract
+      - stage.slice-implementation
+      - stage.verification
+    draft_artifact_ids:
+      - artifact.openapi-draft
+      - artifact.data-architecture
+    owned_evidence_ids:
+      - evidence.backend-verification
+    core_skills:
+      - code-review
+      - yss-research
+    forbidden_skills:
+      - harness-orchestrator
+      - architecture-agent
+      - frontend-agent
+      - test-agent
+      - yss-ui
+      - yss-formily
+      - yss-frontend-scaffold-generator
+    description: 仅保留上游批准身份与只读输入审查；不分发本端实现技能，不在本仓起草或实现。
+  - id: role.test-agent
+    name: 测试 Agent
+    kind: digital-human
+    title: 独立测试与验证 Agent
+    stages:
+      - stage.frontend-engineering-design
+      - stage.slice-contract
+      - stage.slice-implementation
+      - stage.verification
+    draft_artifact_ids:
+      - artifact.test-strategy
+      - artifact.test-seams
+      - artifact.frontend-implementation-verification
+    owned_evidence_ids:
+      - evidence.fresh-verification
+      - evidence.frontend-verification
+      - evidence.frontend-implementation-verification
+      - evidence.backend-verification
+    core_skills:
+      - test-agent
+      - tdd
+      - diagnosing-bugs
+      - code-review
+      - yss-research
+    forbidden_skills:
+      - harness-orchestrator
+      - architecture-agent
+      - frontend-agent
+      - backend-agent
+      - yss-ddd-scaffold-generator
+      - yss-layered-mvc-scaffold-generator
+      - implement
+    description: 从前端工程设计和 Slice Contract 建立测试 seam、fixture 和失败基线，独立执行契约、集成、E2E 和
+      Fresh Verification；不修改产品范围、领域规则或生产实现来掩盖失败。
+  - id: role.requirements-manager
+    name: 需求经理
+    kind: digital-human
+    contract_version: 1
+    title: YSS 需求经理
+    stages:
+      - stage.plan
+      - stage.spec-architecture
+      - stage.product-design
+    draft_artifact_ids:
+      - artifact.plan-record
+      - artifact.spec
+      - artifact.business-ticket-set
+    core_skills:
+      - grilling
+      - domain-modeling
+      - yss-research
+      - competitive-intelligence
+    forbidden_skills:
+      - yss-ui
+      - yss-frontend-scaffold-generator
+      - implement
+      - tdd
+    description: Own Plan language, users, MVP, non-goals, success criteria, test
+      seams, and Spec prose. Propose CONTEXT.md glossary entries. Do not freeze
+      visual prototypes, OpenAPI, or code. Do not guess unconfirmed business
+      rules. Hand off to the orchestrator when the frontier is empty.
+  - id: role.product-manager
+    name: 产品经理
+    kind: digital-human
+    contract_version: 1
+    title: YSS 产品经理
+    stages:
+      - stage.plan
+      - stage.spec-architecture
+      - stage.product-design
+    draft_artifact_ids:
+      - artifact.business-ticket-set
+      - artifact.product-overview
+      - artifact.functional-architecture
+    core_skills:
+      - yss-design-system
+      - yss-prototype-stage
+      - prototype-review
+      - yss-research
+      - competitive-intelligence
+    forbidden_skills:
+      - yss-ui
+      - implement
+      - tdd
+    description: Own priority, product-design impact, interaction, state matrix,
+      prototype confirmation recommendation, and the commercial constraints,
+      delivery commitments, release window, and commercial non-goals for Plan
+      and release. May reject Spec scope. Do not write production code or freeze
+      OpenAPI alone. Do not independently approve external commercial contracts
+      or formal commitments; those require biological-human approval. Frontend
+      implementation uses the frontend-engineer role and yss-ui. Prototypes use
+      offline HTML/CSS/JavaScript and project DESIGN.md; production component
+      facts remain downstream.
+stage_groups:
+  - id: group.harness-entry
+    name: Harness 入口
+    stage: stage.harness-entry
+    members:
+      - role.harness-orchestrator
+      - role.architecture-agent
+      - role.test-agent
+  - id: group.slice-contract
+    name: Slice Contract
+    stage: stage.slice-contract
+    members:
+      - role.harness-orchestrator
+      - role.architecture-agent
+      - role.frontend-agent
+      - role.backend-agent
+      - role.test-agent
+  - id: group.slice-implementation
+    name: 垂直切片实现
+    stage: stage.slice-implementation
+    members:
+      - role.harness-orchestrator
+      - role.frontend-agent
+      - role.backend-agent
+      - role.test-agent
+  - id: group.verification
+    name: 独立验证
+    stage: stage.verification
+    members:
+      - role.harness-orchestrator
+      - role.architecture-agent
+      - role.test-agent
+  - id: group.frontend-engineering-design
+    name: 前端工程设计
+    stage: stage.frontend-engineering-design
+    members:
+      - role.harness-orchestrator
+      - role.architecture-agent
+      - role.test-agent
+  - id: group.plan
+    name: Plan
+    stage: stage.plan
+    members:
+      - role.harness-orchestrator
+      - role.requirements-manager
+      - role.product-manager
+  - id: group.spec
+    name: Spec
+    stage: stage.spec-architecture
+    members:
+      - role.harness-orchestrator
+      - role.requirements-manager
+      - role.product-manager
+      - role.test-agent
+gate_policy:
+  default_if_unlisted: reject-unlisted
+  runtime_side_effect_approval: biological-human
+  commercial_contract: biological-human
+  orchestrator:
+    - gate.slice-contract-approved
+    - gate.slice-ready-for-agent
+  evidence_only:
+    - gate.frontend-delivery-inputs-verified
+    - gate.repository-identity-valid
+  biological_human:
+    - gate.high-risk-architecture-confirmed
+    - gate.openapi-freeze-confirmed
+    - gate.merge-approved
+    - gate.product-design-approved
+  digital_human_review:
+    - gate: gate.fresh-verification-passed
+      drafter: role.test-agent
+      countersigners:
+        - role.architecture-agent
+      capability_ids:
+        - capability.implementation-assurance
+    - gate: gate.strategic-design-handoff-approved
+      drafter: role.product-manager
+      countersigners:
+        - role.requirements-manager
+      capability_ids:
+        - capability.strategic-handoff
+  digital_human_review_work_units:
+    - work_unit: work-unit.frontend-engineering-design
+      countersigners:
+        - role.test-agent
+      implementer_must_differ: true
+      capability_ids:
+        - capability.frontend-engineering
+        - capability.openapi-contract
+        - capability.engineering-baseline
+    - work_unit: work-unit.slice-implementation
+      countersigners:
+        - role.test-agent
+      implementer_must_differ: true
+      capability_ids:
+        - capability.implementation-assurance
+  dual_digital_human:
+    - gate: gate.plan-approved
+      capability_ids:
+        - capability.business-rules
+      drafter: role.requirements-manager
+      countersigners:
+        - role.product-manager
+    - gate: gate.spec-baseline-approved
+      capability_ids:
+        - capability.spec-acceptance
+      drafter: role.requirements-manager
+      countersigners:
+        - role.product-manager
+  check_reviews:
+    - gate: check.frontend-implementation-verified
+      drafter: role.frontend-agent
+      countersigners:
+        - role.test-agent
+      capability_ids:
+        - capability.implementation-assurance
+    - gate: check.design-reviewed
+      countersigners:
+        - role.architecture-agent
+        - role.test-agent
+      capability_ids:
+        - capability.frontend-engineering
+    - gate: check.domain-strategy-approved
+      capability_ids:
+        - capability.business-rules
+      drafter: role.requirements-manager
+      countersigners:
+        - role.product-manager
+    - gate: check.stage-decision-package-approved
+      capability_ids:
+        - capability.business-rules
+      drafter: role.requirements-manager
+      countersigners:
+        - role.product-manager
+    - gate: check.prototype-reviewed
+      capability_ids:
+        - capability.prototype-assurance
+      drafter: role.product-manager
+      countersigners:
+        - role.frontend-agent
+  automatic_checks:
+    - check.prototype-verified
+  product_digital_human_with_biological_veto: []
+  review_execution:
+    default_owner_count: 1
+    default_independent_reviewer_count: 1
+    additional_reviewers: uncovered-expertise-or-external-requirement
+    adjacent_checks: one-review-with-per-check-conclusions
+    suggestions: backlog-without-blocking
+    violations_or_missing_evidence: blocking
+    review_bundles:
+      - bundle_id: review-bundle.plan
+        work_unit: work-unit.plan-requirements
+        aggregate_gate: gate.plan-approved
+        checks:
+          - check.domain-strategy-approved
+          - check.stage-decision-package-approved
+        check_order: domain-strategy-before-stage-decision
+        aggregate_professional_result: reuse-internal-check-conclusions
+        aggregate_additional_review_task: forbidden
+        review_control_ref: .agents/skills/harness-orchestrator/references/orchestration-contract.yaml#planning.review_control
+  continuation_reviews:
+    gate.plan-approved:
+      - role.product-manager
+    gate.spec-baseline-approved:
+      - role.product-manager
+    gate.product-design-approved:
+      - role.frontend-agent
+      - role.test-agent
+    implementation-scope:
+      - role.test-agent
+
+# 本地 Plan/Spec/产品设计及实现消费适用原始用户决定；上游交接仍核验来源批准。
+user_decision_policy:
+  schema_version: 1
+  required_capabilities:
+    - business-ticket-approval-v1
+  default_responder: requester
+  delegate_requires_requester_evidence: true
+  continuation:
+    capability: approved-scope-continuation-v1
+    source_boundary: delivery-scope
+    boundaries:
+      - gate.plan-approved
+      - gate.spec-baseline-approved
+      - gate.product-design-approved
+      - implementation-scope
+    material_changes:
+      - business-scope
+      - acceptance
+      - contract-commitments
+      - authorization
+      - risk-acceptance
+      - quality
+      - external-commitments
+    unknown_change: blocked
+    external_requirements: preserve-project-policy
+    external_policy_unconfirmed: no-automatic-continuation
+  source_kinds:
+    - platform-message
+    - session-export
+    - user-confirmation-file
+  gates:
+    - gate.plan-approved
+    - gate.spec-baseline-approved
+    - gate.product-design-approved
+  work_units:
+    work-unit.slice-implementation: implementation-scope
+  work_unit_gates:
+    work-unit.spec-synthesis:
+      - gate.spec-baseline-approved
+    work-unit.prototype-design-v2:
+      - gate.product-design-approved
+  conditional_decisions:
+    - scaffold-choice
+    - external-input
+    - new-authorization
+    - risk-acceptance
+  waiting_allows: independent-work-only
+  expiry: basis-change-or-revocation-only
+  record_schema: .template-spec/process/schemas/user-decision.schema.json
+  verifier: scripts/verify-user-decision
+
+review_capabilities:
+  - id: capability.frontend-engineering
+    name: 前端工程设计与边界审查
+    eligible_roles:
+      - role.test-agent
+      - role.architecture-agent
+    review_skills:
+      - codebase-design
+      - code-review
+  - id: capability.openapi-contract
+    name: 冻结接口消费与客户端适配审查
+    eligible_roles:
+      - role.test-agent
+      - role.backend-agent
+    review_skills:
+      - yss-openapi-draft-review
+  - id: capability.engineering-baseline
+    name: 前端工程基线与验证审查
+    eligible_roles:
+      - role.test-agent
+    review_skills:
+      - code-review
+  - id: capability.implementation-assurance
+    name: 前端实现与交付证据审查
+    eligible_roles:
+      - role.test-agent
+      - role.architecture-agent
+    review_skills:
+      - code-review
+  - id: capability.business-rules
+    name: 业务边界与规则审查
+    eligible_roles:
+      - role.product-manager
+    review_skills:
+      - domain-modeling
+      - yss-stage-decision
+  - id: capability.spec-acceptance
+    name: Spec 范围与验收审查
+    eligible_roles:
+      - role.product-manager
+    review_skills:
+      - code-review
+  - id: capability.strategic-handoff
+    name: 战略交接与证据审查
+    eligible_roles:
+      - role.requirements-manager
+    review_skills:
+      - code-review
+  - id: capability.prototype-assurance
+    name: 原型与体验审查
+    eligible_roles:
+      - role.frontend-agent
+      - role.test-agent
+    review_skills:
+      - prototype-review
+      - yss-design-system

@@ -1,0 +1,143 @@
+schema_version: 2
+profile_id: harness.frontend-delivery
+status: active
+name: 前端专职交付 Harness
+purpose: 联合接收批准战略与后端交付，形成前端工程计划和合同，完成实现、视觉交互验证及前端验收；可按需协作于显式 Spec 主控，前端职责完成不等于整体业务验收。
+audience:
+  target_user_roles:
+    - role.architecture-agent
+    - role.frontend-agent
+    - role.test-agent
+    - role.requirements-manager
+    - role.product-manager
+  control_plane_roles:
+    - role.harness-orchestrator
+  non_target_role_policy: 另一端角色只允许无写路径的只读输入评审；不得派发另一端实现或起草任务。共享角色表保留来源批准身份。
+  boundary: 职责按业务切片接力；后端交付、前端验收和统一管理方业务验收分别记录。上游规则及 API 变化回交权威方，不在本仓静默重定义。
+lifecycle:
+  repository_modes:
+    - project-instance
+  allowed_stages:
+    - stage.plan
+    - stage.spec-architecture
+    - stage.harness-entry
+    - stage.frontend-engineering-design
+    - stage.slice-contract
+    - stage.slice-implementation
+    - stage.verification
+    - stage.product-design
+  entry_work_unit: work-unit.harness-entry
+  allowed_work_units:
+    - work-unit.harness-entry
+    - work-unit.frontend-engineering-design
+    - work-unit.slice-contract
+    - work-unit.slice-implementation
+    - work-unit.verification
+    - work-unit.plan-opportunity
+    - work-unit.plan-requirements
+    - work-unit.domain-strategy-design
+    - work-unit.stage-decision
+    - work-unit.spec-synthesis
+    - work-unit.prototype-design-v2
+  terminal_work_unit: work-unit.verification
+  terminal_stage: stage.verification
+  forbidden_work_units:
+    - work-unit.ssot-update
+    - work-unit.skill-projection-sync
+    - work-unit.intensity-aware-verification
+    - work-unit.intensity-aware-review
+    - work-unit.release-and-rollback
+upstream:
+  kind: local-business-or-approved-upstream
+  default_entry: work-unit.harness-entry
+  discovery_is_default: false
+  strategic_design_handoff:
+    schema_ref: .template-spec/process/schemas/strategic-design-handoff.schema.json
+    accepted_schema_versions:
+      - 3
+      - 4
+      - 5
+    current_schema_version: 5
+    ui_impact_requires_visual_baseline_schema_version: 1
+    stale_baseline_policy: block-and-reroute
+  compatibility_skills:
+    - to-spec
+    - to-tickets
+handoff:
+  consumer_capabilities:
+    - frontend-engineering-design
+instantiation:
+  cli_package: yss
+  native_profile: frontend
+  metadata_file: .yss.json
+  legacy_cli_package: create-yss-harness-frontend
+  legacy_metadata_file: .yss-harness-frontend.json
+  foreign_metadata_files:
+    - .yss-template.json
+    - .yss-harness-dev.json
+    - .yss-harness-backend.json
+  template_source: github:iloveZzz/yss-harness-frontend-agent
+  distribution_manifest: .template-source/distribution/template.manifest.json
+  command: yss init --profile frontend --root <directory>
+execution:
+  side: frontend
+  terminal_conclusion: frontend-accepted
+  business_acceptance_owner: local-scope-owner-or-registered-coordinator
+frontend_delivery:
+  mode: conditional-by-route
+  strategic_preflight: required-for-upstream-handoff-local-approved-assets-otherwise
+  backend_required_when_any:
+    - api
+    - backend
+    - data
+  contract_ref: .template-spec/process/frontend-backend-delivery.md
+  verifier: scripts/verify-frontend-delivery
+  recheck:
+    - start
+    - resume
+    - compile
+    - implementation
+    - verification
+  preflight_allows: frontend-engineering-design-draft
+  final_acceptance_requires: route-consistent-backend-binding-or-not-applicable
+  implementation_requires: approved-current-slice-contract-and-final-acceptance
+skill_scope:
+  policy: local-workflow-only
+  retired_local_skills:
+    - alibaba-java-code-style
+    - backend-agent
+    - java-backend-commit
+    - lombok
+    - mapstruct
+    - yss-application
+    - yss-audit-log
+    - yss-cache
+    - yss-ddd-scaffold-generator
+    - yss-distributed-id
+    - yss-domain
+    - yss-dto
+    - yss-excel-mvc
+    - yss-exception
+    - yss-layered-mvc-scaffold-generator
+    - yss-mvc-data-analysis-project-initializer
+    - yss-mybatis
+    - yss-repository
+    - yss-resilience4j
+    - yss-security-algorithm
+    - yss-technical-design
+    - yss-mvc-design
+    - yss-tactical-design
+    - yss-up-springboot3
+    - yss-userinfo
+    - yss-validation
+    - yss-web-controller
+business_input:
+  modes:
+    - standalone
+    - upstream
+  standalone: local-plan-spec-and-current-approved-design
+  upstream: reuse-current-approved-assets-preserve-authority
+  conflicts: confirm-with-authority-before-dependent-work
+  delivery_path_policy_ref: .agents/skills/harness-orchestrator/references/orchestration-contract.yaml#request_triage.delivery_path
+  analysis_grants_opposite_side_write: false
+  terminal_claim: own-side-only

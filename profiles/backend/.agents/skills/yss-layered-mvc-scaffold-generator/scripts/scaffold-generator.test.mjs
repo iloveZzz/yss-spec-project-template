@@ -1,0 +1,363 @@
+import { attachScaffoldDecisionFixture } from "../../../../scripts/fixtures/user-decision/build-fixture.mjs";
+import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
+import { spawnSync } from "node:child_process";
+import { cp, mkdtemp, mkdir, readFile, readdir, rm, stat, writeFile } from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
+import test from "node:test";
+import { fileURLToPath } from "node:url";
+import { attachDesignPrerequisites } from "../../../../scripts/fixtures/backend-scaffold/design-prerequisites.mjs";
+import { validateNextRoute } from "../../../../scripts/lib/lifecycle-transition.mjs";
+import { renderDataAnalysisAgents } from "./data-analysis-profile.mjs";
+
+const script = path.join(path.dirname(fileURLToPath(import.meta.url)), "generate_scaffold.mjs");
+const digest = (value) => `sha256:${createHash("sha256").update(value).digest("hex")}`;
+const capabilityModules = {
+  basic: { capabilities: [], modules: ["server", "service", "repository"] },
+  adapter: { capabilities: ["external-integration"], modules: ["server", "service", "repository", "adapter"] },
+  client: { capabilities: ["published-client"], modules: ["server", "service", "repository", "client"] },
+  feign: { capabilities: ["feign-client"], modules: ["server", "service", "repository", "client", "feign-client"] },
+  combined: { capabilities: ["external-integration", "feign-client"], modules: ["server", "service", "repository", "adapter", "client", "feign-client"] }
+};
+
+async function fixture(t, { profile = capabilityModules.basic, architectureProfile = "layered-mvc-service", skillId = "yss-layered-mvc-scaffold-generator", schemaVersion = 4, dataImpact = "not-applicable", apiImpact = "not-applicable" } = {}) {
+  const root = await mkdtemp(path.join(os.tmpdir(), "yss-layered-mvc-"));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const output = path.join(root, "backend");
+  await mkdir(output);
+  let decisionText = `${JSON.stringify({ schema_version: 1, kind: "scaffold-architecture-decisions", template: false, status: "current", decisions: [{ decision_id: "scaffold-decision.demo-service", project_id: "demo-service", parent_project_id: null, status: "lifecycle-approved", recommended_architecture: "layered-mvc", recommendation_reasons: ["薄 CRUD 服务"], confirmed_architecture: "layered-mvc", override_reason: null, inheritance_mode: "root-default", inherited_from: null, platform_profile: "spring-boot-2.7-jdk8", architecture_profile: architectureProfile, verification_database: "h2", production_database: "not-bound", requested_capabilities: profile.capabilities, resolved_modules: profile.modules, resolution_version: 1, user_confirmation: { confirmed_by: "tester", channel: "test", confirmation_ref: "test://confirmation", confirmed_at: "2026-09-05T00:00:00Z", normalized_text: "确认使用 MVC" }, decision_inputs_digest: `sha256:${"1".repeat(64)}` }] }, null, 2)}\n`;
+  const decisionSet = JSON.parse(decisionText);
+  decisionSet.decisions = decisionSet.decisions.map((decision) => attachScaffoldDecisionFixture(path.join(root, "user-decision"), decision));
+  decisionText = JSON.stringify(decisionSet, null, 2) + "\n";
+  const decisionFile = path.join(root, "scaffold-architecture-decisions.yaml");
+  await writeFile(decisionFile, decisionText);
+  const contract = {
+    schema_version: schemaVersion,
+    kind: "project-scaffold-contract",
+    delivery_role: "backend",
+    scaffold_kind: architectureProfile === "mvc-data-analysis-v1" ? "backend-mvc-data-analysis" : "backend-layered-mvc",
+    repository_scope: "external-repository",
+    init_git: architectureProfile === "mvc-data-analysis-v1",
+    contract_id: "scaffold.demo-service.v1",
+    contract_version: 1,
+    scaffold_request_id: "request.demo-service",
+    status: "approved",
+    compiler_draft_ref: "compiler://demo/1",
+    lifecycle_approval_ref: "approval://demo/1",
+    persisted_ref: "contract://demo/1",
+    current_version: schemaVersion === 4 ? true : 1,
+    implementation_repository: "external",
+    backend_repository: "external",
+    scaffold_status: "required",
+    project_name: "demo-service",
+    target_output_dir: output,
+    base_package: "com.yss.demo",
+    architecture_family: "layered-mvc", architecture_profile: architectureProfile,
+    generator_skill: skillId,
+    decision_ref: decisionFile,
+    decision_id: "scaffold-decision.demo-service",
+    decision_digest: digest(decisionText),
+    maven_coordinates: { group_id: "com.yss.demo", project_version: "1.0.0-SNAPSHOT", parent: { group_id: "com.yss.cloud", artifact_id: "yss-cloud-microservice", version: "2.0.0-SNAPSHOT" }, yss_components_version: "2.0.0-SNAPSHOT" },
+    profiles: { architecture: "layered-mvc", persistence: "mybatis-plus", verification_database: "h2", production_database: "not-bound", platform: "spring-boot-2.7-jdk8", validation_namespace: "javax", repository: "yss-internal" },
+    module_profile: { requested_capabilities: profile.capabilities, resolved_modules: profile.modules, resolution_version: 1 },
+    allowed_write_paths: ["."],
+    expected_evidence_files: [".yss/scaffold-generation.json"],
+    verification_commands: ["./mvnw validate", "./mvnw test", "./mvnw package"],
+    approval: { approval_ref: "approval://demo/1", approver: "lifecycle", persisted_ref: "contract://demo/1", current_version: 1 },
+    work_unit: { id: "scaffold.demo", behavior: "project-scaffold", primary_skill: skillId, supporting_skills: ["yss-implementation-contract-compiler"], tdd_mode: "controlled-generation", allowed_write_paths: ["."], expected_evidence: [".yss/scaffold-generation.json"], verification_commands: ["./mvnw validate", "./mvnw test", "./mvnw package"], controlled_generation: true },
+    generation_policy: { mode: "initialize-only", existing_target: "unsupported", old_project_migration: "unsupported", template_upgrade: "unsupported" }
+  };
+  const design = attachDesignPrerequisites(root, contract, { dataImpact, apiImpact });
+  const contractFile = path.join(root, "contract.json");
+  await writeFile(contractFile, `${JSON.stringify(contract, null, 2)}\n`);
+  const args = ["--project-name", "demo-service", "--base-package", "com.yss.demo", "--output-dir", output, "--contract-file", contractFile, "--contract-id", contract.contract_id, "--contract-version", "1", "--approval-ref", contract.lifecycle_approval_ref, "--compiler-draft-ref", contract.compiler_draft_ref, "--persisted-ref", contract.persisted_ref, "--group-id", "com.yss.demo", "--project-version", "1.0.0-SNAPSHOT", "--parent-group-id", "com.yss.cloud", "--parent-artifact-id", "yss-cloud-microservice", "--parent-version", "2.0.0-SNAPSHOT", "--yss-components-version", "2.0.0-SNAPSHOT"];
+  return { root, output, decisionFile, contractFile, contract, design, args, project: path.join(output, "demo-service") };
+}
+
+test("AGENTS 入口裁剪不依赖标题且拒绝非法标记", () => {
+  const start = "<!-- YSS_TEMPLATE_SOURCE_ONLY_START -->", end = "<!-- YSS_TEMPLATE_SOURCE_ONLY_END -->";
+  const input = `产品规则\n${start}\n## 任意标题\n源仓规则\n${end}\n授权 .agents/skills/test\n`;
+  const expected = "产品规则\n\n授权 ../skillUtils/.agents/skills/test\n";
+  assert.equal(renderDataAnalysisAgents(input), expected);
+  assert.equal(renderDataAnalysisAgents(expected), expected);
+  for (const invalid of [start, end, end + start, start + start + end, start + end + end]) {
+    assert.throws(() => renderDataAnalysisAgents(invalid), /AGENTS_SOURCE_ONLY_MARKERS/);
+  }
+  assert.equal(renderDataAnalysisAgents("## 4. `template-source` 模板维护路由\n旧维护\n## 5. 产品规则\n"), "## 4. 模板维护\n\n本仓为 project-instance；模板维护回上游执行。\n\n## 5. 产品规则\n");
+});
+
+test("数据分析初始化生成 H2 六模块和独立治理信封", async (t) => {
+  const data = await fixture(t, { architectureProfile: "mvc-data-analysis-v1", profile: { capabilities: [], modules: ["server", "core", "client", "repository", "adapter", "feign-client"] } });
+  const context = "---\ncontext_schema_version: 1\n---\n# 业务上下文\n\n## 业务术语\n\n| 术语 | 含义 | 英文标识 | 适用业务责任区 | 避免 / 备注 |\n|---|---|---|---|---|\n";
+  await writeFile(path.join(data.root, "context-handoff.md"), context);
+  data.contract.context_handoff_ref = "context-handoff.md";
+  data.contract.context_handoff_digest = digest(context);
+  await writeFile(data.contractFile, JSON.stringify(data.contract));
+  const contractBytes = await readFile(data.contractFile);
+  const state = { service_project_initialization: {
+    project_id: "demo-service", contract_ref: data.contractFile, contract_digest: digest(contractBytes),
+    project_root: data.project, context_handoff_digest: digest(context)
+  } };
+  const edge = (from, to, value = state) => validateNextRoute(from, to, value, { root: data.root });
+  assert.equal(edge("work-unit.implementation-repository-preparation", "work-unit.service-project-initialization").result, "allowed", JSON.stringify(edge("work-unit.implementation-repository-preparation", "work-unit.service-project-initialization")));
+  const missingContract = structuredClone(state); missingContract.service_project_initialization.contract_ref = path.join(data.root, "missing-contract.json");
+  assert.equal(edge("work-unit.implementation-repository-preparation", "work-unit.service-project-initialization", missingContract).result, "blocked");
+  const changedContract = structuredClone(state); changedContract.service_project_initialization.contract_digest = digest("stale");
+  assert.equal(edge("work-unit.implementation-repository-preparation", "work-unit.service-project-initialization", changedContract).result, "blocked");
+  const approvedContract = structuredClone(data.contract);
+  data.contract.design_prerequisites.engineering_contract_approval_ref = "missing-approval.json";
+  await writeFile(data.contractFile, JSON.stringify(data.contract));
+  const missingApproval = structuredClone(state); missingApproval.service_project_initialization.contract_digest = digest(await readFile(data.contractFile));
+  assert.equal(edge("work-unit.implementation-repository-preparation", "work-unit.service-project-initialization", missingApproval).result, "blocked");
+  await writeFile(data.contractFile, JSON.stringify(approvedContract));
+  assert.equal(edge("work-unit.service-project-initialization", "work-unit.implementation-repository-preparation").result, "blocked");
+  const result = spawnSync(process.execPath, [path.resolve(path.dirname(script), "../../../../scripts/fixtures/backend-scaffold/generate-candidate.mjs"), script, ...data.args], { encoding: "utf8" });
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(edge("work-unit.implementation-repository-preparation", "work-unit.service-project-initialization").result, "blocked", "重复初始化不得放行");
+  const manifest = JSON.parse(await readFile(path.join(data.project, ".yss/scaffold-generation.json"), "utf8"));
+  assert.equal(manifest.architecture_identity.architecture_profile, "mvc-data-analysis-v1");
+  assert.equal(manifest.generator_skill, "yss-layered-mvc-scaffold-generator");
+  assert.equal(await readFile(path.join(data.project, "CONTEXT.md"), "utf8"), context);
+  await stat(path.join(data.project, ".git"));
+  await stat(path.join(data.output, "skillUtils/skills-lock.json"));
+  const agents = await readFile(path.join(data.project, "AGENTS.md"), "utf8");
+  assert.doesNotMatch(agents, /YSS_TEMPLATE_SOURCE_ONLY|## 模板源维护|\.template-source\/process\/maintenance-intensity/);
+  assert.match(agents, /daily/);
+  assert.match(agents, /governed/);
+  assert.match(agents, /\.\.\/skillUtils\/\.agents\/skills/);
+  const toolsAgents = await readFile(path.join(data.output, "skillUtils/AGENTS.md"), "utf8");
+  assert.match(toolsAgents, /yss-skill-utils \/ skill-utils-v1/);
+  assert.doesNotMatch(toolsAgents, /每个任务先读|先读根/);
+  assert.ok(!manifest.ownership.generated_files.some((entry) => entry.path.startsWith(".git/")));
+  const manifestRef = path.join(data.project, ".yss/scaffold-generation.json");
+  const verificationRef = path.join(data.root, "scaffold-verification.json");
+  const resultRef = path.join(data.root, "service-result.json");
+  manifest.completion_level = "empty-scaffold-verified";
+  await writeFile(manifestRef, JSON.stringify(manifest));
+  const commands = [];
+  for (const phase of ["validate", "test", "package"]) {
+    const stdout_ref = path.join(data.root, `${phase}.stdout.log`), stderr_ref = path.join(data.root, `${phase}.stderr.log`);
+    await writeFile(stdout_ref, "synthetic route fixture"); await writeFile(stderr_ref, "");
+    commands.push({ phase, command: `./mvnw ${phase}`, exit_code: 0, stdout_ref, stderr_ref });
+  }
+  await writeFile(verificationRef, JSON.stringify({ status: "passed", completion_level: "empty-scaffold-verified", project_root: data.project, commands }));
+  await writeFile(resultRef, JSON.stringify({ result_schema: "workflow-execution-result-v1", work_unit: "work-unit.service-project-initialization", result: "completed", evidence_refs: [manifestRef, verificationRef] }));
+  Object.assign(state.service_project_initialization, { manifest_ref: manifestRef, verification_ref: verificationRef, result_ref: resultRef });
+  assert.equal(edge("work-unit.service-project-initialization", "work-unit.implementation-repository-preparation").result, "allowed");
+  const stale = structuredClone(state); stale.service_project_initialization.context_handoff_digest = digest("stale");
+  assert.equal(edge("work-unit.service-project-initialization", "work-unit.implementation-repository-preparation", stale).result, "blocked");
+  commands[0].exit_code = 1; await writeFile(verificationRef, JSON.stringify({ status: "passed", completion_level: "empty-scaffold-verified", project_root: data.project, commands }));
+  assert.equal(edge("work-unit.service-project-initialization", "work-unit.implementation-repository-preparation").result, "blocked", "Wrapper 非零退出不得放行");
+  commands[0].exit_code = 0;
+  commands.pop(); await writeFile(verificationRef, JSON.stringify({ status: "passed", completion_level: "empty-scaffold-verified", project_root: data.project, commands }));
+  assert.equal(edge("work-unit.service-project-initialization", "work-unit.implementation-repository-preparation").result, "blocked", "缺失 Wrapper 命令不得放行");
+  const core = await readFile(path.join(data.project, "demo-service-core/pom.xml"), "utf8");
+  assert.doesNotMatch(core, /demo-service-client|spring-web|ojdbc|mysql-connector/);
+});
+
+test("数据分析 AGENTS 非法标记在创建输出前零写入", async (t) => {
+  const data = await fixture(t, { architectureProfile: "mvc-data-analysis-v1", profile: { capabilities: [], modules: ["server", "core", "client", "repository", "adapter", "feign-client"] } });
+  const context = "---\ncontext_schema_version: 1\n---\n# 业务上下文\n";
+  await writeFile(path.join(data.root, "context-handoff.md"), context);
+  Object.assign(data.contract, { context_handoff_ref: "context-handoff.md", context_handoff_digest: digest(context) });
+  await writeFile(data.contractFile, JSON.stringify(data.contract));
+  const source = path.join(data.root, "source");
+  const repository = path.resolve(path.dirname(script), "../../../..");
+  for (const ref of ["scripts", ".agents/skills", ".template-spec", ".template-source/process"]) {
+    await cp(path.join(repository, ref), path.join(source, ref), { recursive: true });
+  }
+  const start = "<!-- YSS_TEMPLATE_SOURCE_ONLY_START -->", end = "<!-- YSS_TEMPLATE_SOURCE_ONLY_END -->";
+  for (const invalid of [start, end, end + start, start + start + end, start + end + end]) {
+    await writeFile(path.join(source, "AGENTS.md"), invalid);
+    const result = spawnSync(process.execPath, [path.join(source, "scripts/fixtures/backend-scaffold/generate-candidate.mjs"), path.join(source, ".agents/skills/yss-layered-mvc-scaffold-generator/scripts/generate_scaffold.mjs"), ...data.args], { encoding: "utf8" });
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /AGENTS_SOURCE_ONLY_MARKERS/);
+    assert.deepEqual(await readdir(data.output), []);
+  }
+});
+
+test("数据分析 Profile 缺少 CONTEXT handoff 或独立 Git 合同时零写入阻断", async (t) => {
+  const profile = { capabilities: [], modules: ["server", "core", "client", "repository", "adapter", "feign-client"] };
+  const missingContext = await fixture(t, { architectureProfile: "mvc-data-analysis-v1", profile });
+  const missingResult = spawnSync(process.execPath, [path.resolve(path.dirname(script), "../../../../scripts/fixtures/backend-scaffold/generate-candidate.mjs"), script, ...missingContext.args], { encoding: "utf8" });
+  assert.notEqual(missingResult.status, 0);
+  assert.match(missingResult.stderr, /CONTEXT handoff/);
+  await assert.rejects(stat(missingContext.project), { code: "ENOENT" });
+
+  const noGit = await fixture(t, { architectureProfile: "mvc-data-analysis-v1", profile });
+  const context = "---\ncontext_schema_version: 1\n---\n# 业务上下文\n";
+  await writeFile(path.join(noGit.root, "context-handoff.md"), context);
+  Object.assign(noGit.contract, { init_git: false, context_handoff_ref: "context-handoff.md", context_handoff_digest: digest(context) });
+  await writeFile(noGit.contractFile, JSON.stringify(noGit.contract));
+  const noGitResult = spawnSync(process.execPath, [path.resolve(path.dirname(script), "../../../../scripts/fixtures/backend-scaffold/generate-candidate.mjs"), script, ...noGit.args], { encoding: "utf8" });
+  assert.notEqual(noGitResult.status, 0);
+  assert.match(noGitResult.stderr, /独立 Git/);
+  await assert.rejects(stat(noGit.project), { code: "ENOENT" });
+});
+
+test("旧数据库和 Mock 参数在写入前被拒绝", async (t) => {
+  const data = await fixture(t);
+  for (const args of [["--database", "mysql"], ["--with-mock"]]) {
+    const result = spawnSync(process.execPath, [script, ...data.args, ...args], { encoding: "utf8" });
+    assert.notEqual(result.status, 0);
+    await assert.rejects(stat(data.project), { code: "ENOENT" });
+  }
+});
+
+test("统一 Project Scaffold Contract v4 可生成 Layered MVC 后端并保留设计门禁", async (t) => {
+  const data = await fixture(t);
+  const result = spawnSync(process.execPath, [path.resolve(path.dirname(script), "../../../../scripts/fixtures/backend-scaffold/generate-candidate.mjs"), script, ...data.args], { encoding: "utf8" });
+  assert.equal(result.status, 0, result.stderr);
+  const manifest = JSON.parse(await readFile(path.join(data.project, ".yss/scaffold-generation.json"), "utf8"));
+  assert.equal(manifest.schema_version, 4);
+  assert.equal(manifest.design_prerequisites.data_architecture_decision.impact, "not-applicable");
+});
+
+test("数据影响为 required 时绑定数据架构后可生成 Layered MVC 后端", async (t) => {
+  const data = await fixture(t, { dataImpact: "required" });
+  const result = spawnSync(process.execPath, [path.resolve(path.dirname(script), "../../../../scripts/fixtures/backend-scaffold/generate-candidate.mjs"), script, ...data.args], { encoding: "utf8" });
+  assert.equal(result.status, 0, result.stderr);
+  const manifest = JSON.parse(await readFile(path.join(data.project, ".yss/scaffold-generation.json"), "utf8"));
+  assert.equal(manifest.design_prerequisites.data_architecture_decision.impact, "required");
+});
+
+test("API 影响为 required 时绑定同字节 Draft、Validation、Review 和 Freeze 后可生成 Layered MVC 后端", async (t) => {
+  const data = await fixture(t, { apiImpact: "required" });
+  const result = spawnSync(process.execPath, [path.resolve(path.dirname(script), "../../../../scripts/fixtures/backend-scaffold/generate-candidate.mjs"), script, ...data.args], { encoding: "utf8" });
+  assert.equal(result.status, 0, result.stderr);
+  const manifest = JSON.parse(await readFile(path.join(data.project, ".yss/scaffold-generation.json"), "utf8"));
+  assert.equal(manifest.design_prerequisites.api_contract_decision.impact, "required");
+});
+
+test("缺少设计门禁时在写文件前拒绝 Layered MVC 新生成", async (t) => {
+  const data = await fixture(t);
+  delete data.contract.design_prerequisites;
+  await writeFile(data.contractFile, JSON.stringify(data.contract));
+  const result = spawnSync(process.execPath, [path.resolve(path.dirname(script), "../../../../scripts/fixtures/backend-scaffold/generate-candidate.mjs"), script, ...data.args], { encoding: "utf8" });
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /design_prerequisites|Technical Design/);
+  await assert.rejects(stat(data.project), { code: "ENOENT" });
+});
+
+test("技术和数据设计齐全但缺少 API Decision 时在写文件前拒绝 Layered MVC 新生成", async (t) => {
+  const data = await fixture(t);
+  delete data.contract.design_prerequisites.api_contract_decision;
+  await writeFile(data.contractFile, JSON.stringify(data.contract));
+  const result = spawnSync(process.execPath, [path.resolve(path.dirname(script), "../../../../scripts/fixtures/backend-scaffold/generate-candidate.mjs"), script, ...data.args], { encoding: "utf8" });
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /API Contract Decision|api_contract_decision/);
+  await assert.rejects(stat(data.project), { code: "ENOENT" });
+});
+
+test("API Draft、Validation、Review 或工程批准异常时均在零写入状态阻断 Layered MVC", async (t) => {
+  const mutations = [
+    async (data) => writeFile(data.design.openapi.file, "\n# drift\n", { flag: "a" }),
+    async (data) => {
+      const decision = JSON.parse(await readFile(data.design.api.file, "utf8"));
+      const file = path.join(data.root, decision.validation_record.ref);
+      const record = JSON.parse(await readFile(file, "utf8"));
+      record.status = "blocked";
+      record.toolchain.exit_code = 1;
+      record.checks.lint = "blocked";
+      await writeFile(file, `${JSON.stringify(record, null, 2)}\n`);
+      decision.validation_record.digest = digest(await readFile(file));
+      await writeFile(data.design.api.file, `${JSON.stringify(decision, null, 2)}\n`);
+      data.contract.design_prerequisites.api_contract_decision.digest = digest(await readFile(data.design.api.file));
+      await writeFile(data.contractFile, `${JSON.stringify(data.contract, null, 2)}\n`);
+    },
+    async (data) => {
+      const decision = JSON.parse(await readFile(data.design.api.file, "utf8"));
+      const file = path.join(data.root, decision.draft_review.ref);
+      const review = JSON.parse(await readFile(file, "utf8"));
+      review.result = "blocked";
+      review.blocking_findings = ["breaking response"];
+      await writeFile(file, `${JSON.stringify(review, null, 2)}\n`);
+      decision.draft_review.digest = digest(await readFile(file));
+      await writeFile(data.design.api.file, `${JSON.stringify(decision, null, 2)}\n`);
+      data.contract.design_prerequisites.api_contract_decision.digest = digest(await readFile(data.design.api.file));
+      await writeFile(data.contractFile, `${JSON.stringify(data.contract, null, 2)}\n`);
+    },
+    async (data) => {
+      const approval = JSON.parse(await readFile(data.design.approval.file, "utf8"));
+      approval.subject_ref = "approval://self-asserted";
+      await writeFile(data.design.approval.file, `${JSON.stringify(approval, null, 2)}\n`);
+    },
+  ];
+  for (const mutate of mutations) {
+    const data = await fixture(t, { apiImpact: "required" });
+    await mutate(data);
+    const result = spawnSync(process.execPath, [path.resolve(path.dirname(script), "../../../../scripts/fixtures/backend-scaffold/generate-candidate.mjs"), script, ...data.args], { encoding: "utf8" });
+    assert.notEqual(result.status, 0, result.stderr);
+    await assert.rejects(stat(data.project), { code: "ENOENT" });
+  }
+});
+
+test("schema v3 只读兼容但禁止用于 Layered MVC 新生成", async (t) => {
+  const data = await fixture(t, { schemaVersion: 3 });
+  const result = spawnSync(process.execPath, [path.resolve(path.dirname(script), "../../../../scripts/fixtures/backend-scaffold/generate-candidate.mjs"), script, ...data.args], { encoding: "utf8" });
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /Project Scaffold Contract v4|新生成/);
+  await assert.rejects(stat(data.project), { code: "ENOENT" });
+});
+
+test("可选离线 Maven 可行性检查（不替代受控仓库验收）", { skip: process.env.YSS_BACKEND_OFFLINE_PROBE !== "1" }, async (t) => {
+  const data = await fixture(t);
+  const generated = spawnSync(process.execPath, [path.resolve(path.dirname(script), "../../../../scripts/fixtures/backend-scaffold/generate-candidate.mjs"), script, ...data.args], { encoding: "utf8" });
+  assert.equal(generated.status, 0, generated.stderr);
+  for (const phase of ["validate", "test", "package"]) {
+    const result = spawnSync(path.join(data.project, "mvnw"), ["-o", phase], { cwd: data.project, encoding: "utf8", timeout: 60_000 });
+    t.diagnostic(`./mvnw -o ${phase}: exit=${result.status}; ${result.error?.message ?? ""}`);
+    assert.equal(result.status, 0, `${result.stdout}\n${result.stderr}`);
+  }
+});
+
+for (const database of ["h2"]) {
+  test(`生成 ${database} 基础 Profile`, async (t) => {
+    const data = await fixture(t, { database });
+    const result = spawnSync(process.execPath, [path.resolve(path.dirname(script), "../../../../scripts/fixtures/backend-scaffold/generate-candidate.mjs"), script, ...data.args], { encoding: "utf8" });
+    assert.equal(result.status, 0, result.stderr);
+    const manifest = JSON.parse(await readFile(path.join(data.project, ".yss/scaffold-generation.json"), "utf8"));
+    assert.equal(manifest.schema_version, 4);
+    assert.equal(manifest.architecture_family, "layered-mvc");
+    assert.equal(manifest.profiles.verification_database, database);
+    assert.equal(manifest.profiles.production_database, "not-bound");
+    assert.equal(manifest.architecture_identity.architecture_profile, "layered-mvc-service");
+    const config = await readFile(path.join(data.project, "demo-service-server/src/main/resources/application.yml"), "utf8");
+    assert.doesNotMatch(config, /datasource|profiles|jdbc:/);
+    const local = await readFile(path.join(data.project, "demo-service-server/src/main/resources/application-scaffold-local.yml"), "utf8");
+    assert.match(local, /jdbc:h2:mem:/);
+    assert.deepEqual(manifest.module_profile.resolved_modules, capabilityModules.basic.modules);
+    await stat(path.join(data.project, "demo-service-server/src/main/java/com/yss/demo/DemoServiceApplication.java"));
+    await assert.rejects(stat(path.join(data.project, "demo-service-server/src/main/java/com/yss/demo/server/controller")), { code: "ENOENT" });
+  });
+}
+
+for (const [name, profile] of Object.entries(capabilityModules)) {
+  test(`能力闭包 ${name}`, async (t) => {
+    const data = await fixture(t, { profile });
+    const result = spawnSync(process.execPath, [path.resolve(path.dirname(script), "../../../../scripts/fixtures/backend-scaffold/generate-candidate.mjs"), script, ...data.args], { encoding: "utf8" });
+    assert.equal(result.status, 0, result.stderr);
+    const pom = await readFile(path.join(data.project, "pom.xml"), "utf8");
+    for (const module of profile.modules) assert.match(pom, new RegExp(`<module>demo-service-${module}</module>`));
+    for (const module of ["adapter", "client", "feign-client"].filter((item) => !profile.modules.includes(item))) assert.doesNotMatch(pom, new RegExp(`<module>demo-service-${module}</module>`));
+  });
+}
+
+test("选择缺失、digest 漂移和非空目标均阻断", async (t) => {
+  const missing = await fixture(t);
+  missing.contract.decision_id = "decision.missing";
+  await writeFile(missing.contractFile, `${JSON.stringify(missing.contract)}\n`);
+  assert.notEqual(spawnSync(process.execPath, [script, ...missing.args], { encoding: "utf8" }).status, 0);
+
+  const drift = await fixture(t);
+  drift.contract.decision_digest = `sha256:${"0".repeat(64)}`;
+  await writeFile(drift.contractFile, `${JSON.stringify(drift.contract)}\n`);
+  assert.notEqual(spawnSync(process.execPath, [script, ...drift.args], { encoding: "utf8" }).status, 0);
+
+  const existing = await fixture(t);
+  await mkdir(existing.project);
+  const blocked = spawnSync(process.execPath, [script, ...existing.args], { encoding: "utf8" });
+  assert.notEqual(blocked.status, 0);
+  assert.match(blocked.stderr, /目标已存在/);
+});

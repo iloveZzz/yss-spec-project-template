@@ -1,0 +1,14 @@
+#!/usr/bin/env node
+import { parseArgs } from 'node:util';
+import { findStrategicGateMigrationIssues, MIGRATION_REQUIRED } from './lib/strategic-gate-migration.mjs';
+
+try {
+  const { values } = parseArgs({ options: { root: { type: 'string' }, feature: { type: 'string' } }, strict: true });
+  if (!values.root) throw new TypeError('用法: verify-strategic-gate-migration --root <project> [--feature <slug>]');
+  const issues = findStrategicGateMigrationIssues({ root: values.root, feature: values.feature });
+  if (issues.length) throw new TypeError(`${MIGRATION_REQUIRED}: ${issues.map(item => `${item.ref}:${item.location}=${item.gate_id}`).join(', ')}`);
+  process.stdout.write('战略门禁迁移校验通过\n');
+} catch (error) {
+  process.stderr.write(`${error.message}\n`);
+  process.exitCode = 1;
+}

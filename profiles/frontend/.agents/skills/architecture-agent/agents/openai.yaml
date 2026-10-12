@@ -1,0 +1,5 @@
+version: 1
+interface:
+  display_name: "Architecture Agent"
+  short_description: "完成 前端工程设计 与架构边界"
+  default_prompt: "使用 $architecture-agent 消费批准的上游输入，产出 前端工程设计合同 和 Slice Contract architecture 分区；不得写业务实现或自行批准。"

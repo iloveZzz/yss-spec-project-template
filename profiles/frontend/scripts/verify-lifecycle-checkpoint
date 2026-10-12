@@ -1,0 +1,52 @@
+#!/usr/bin/env node
+import { assertStageTracking } from './lib/stage-tracking.mjs';
+import { readFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
+import path from "node:path";
+import { parseArgs } from "node:util";
+import { fileURLToPath } from "node:url";
+import { parseDocument } from "./vendor/yaml.mjs";
+import { assertCheckpointApprovals } from "./lib/approval-record.mjs";
+
+import { assertCheckpointBoundary } from './lib/checkpoint-boundary.mjs';
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const schemaPath = path.join(root, ".template-spec/process/schemas/lifecycle-checkpoint.schema.json");
+const validator = String.raw`
+import json
+import sys
+from jsonschema import Draft202012Validator
+schema = json.load(open(sys.argv[1], encoding="utf-8"))
+if sys.argv[2] == 'history':
+    for key in ['phase_boundary', 'stage_trace']:
+        schema['properties'][key] = {'type': 'object'}
+value = json.load(sys.stdin)
+errors = sorted(Draft202012Validator(schema).iter_errors(value), key=lambda error: list(error.absolute_path))
+for error in errors:
+    location = ".".join(str(part) for part in error.absolute_path) or "<root>"
+    print(f"{location}: {error.message}", file=sys.stderr)
+sys.exit(1 if errors else 0)
+`;
+
+try {
+  const { positionals, values } = parseArgs({ allowPositionals: true, strict: true, options:{history:{type:"boolean"},help:{type:"boolean"}} });
+  if(values.help)process.stdout.write("用法: scripts/verify-lifecycle-checkpoint [--history] <checkpoint.yaml|json>\n0=当前检查通过或历史结构检查完成；1=失败。历史结果不用于当前批准或流转。\n");
+  else {
+  if (positionals.length !== 1) throw new TypeError("用法: scripts/verify-lifecycle-checkpoint <checkpoint.yaml|checkpoint.json>");
+  const sourcePath = path.resolve(positionals[0]);
+  const document = parseDocument(readFileSync(sourcePath, "utf8"), { maxAliasCount: 0, uniqueKeys: true });
+  if (document.errors.length) throw new TypeError(document.errors[0].message);
+  const value = document.toJS({ maxAliasCount: 0 });
+  const result = spawnSync("python3", ["-c", validator, schemaPath, values.history?"history":"current"], { cwd: root, encoding: "utf8", input: JSON.stringify(value) });
+  if (result.status !== 0) throw new TypeError(`${result.stdout}${result.stderr}`.trim());
+  if(values.history)process.stdout.write("历史兼容结构检查完成；不证明当前批准或流转。\n");
+  else {
+  assertCheckpointBoundary(value,{root});
+  assertStageTracking(value, { root, checkpointRef: path.relative(root, sourcePath), nextWorkUnit: value.next_work_unit, entering: value.mode === 'resume' || value.mode === 'orchestrate' });
+  assertCheckpointApprovals(value, sourcePath);
+  process.stdout.write("生命周期 checkpoint 验证通过\n");
+  }
+  }
+} catch (error) {
+  process.stderr.write(`生命周期 checkpoint 验证失败: ${error.message}\n`);
+  process.exitCode = 1;
+}

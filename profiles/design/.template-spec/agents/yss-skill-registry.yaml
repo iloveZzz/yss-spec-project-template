@@ -1,0 +1,508 @@
+schema_version: 2
+registry_id: yss.skill-routing
+status: active
+description: >-
+  当前分支战略设计 Harness 的技能路由注册表。只暴露产品、需求、商务在战略设计上游 所需的技能；实现、OpenAPI、战术设计和发布技能由下游研发
+  profile 管理。
+canonical_content_root: .agents/skills
+runtime_policy:
+  consumed_by_compiler: false
+  consumed_by_lifecycle: true
+  discovery_enforced: true
+capability_contract:
+  schema_version: 2
+  id_pattern: "^[a-z][a-z0-9-]*(?:\\.[a-z][a-z0-9-]*)+$"
+  dependency_types:
+    [
+      context-required,
+      context-conditional,
+      coordination-only,
+      review-only,
+      component-dependency
+    ]
+  task_modes:
+    [
+      guidance,
+      integration,
+      slice-implementation,
+      troubleshooting,
+      component-maintenance,
+      review-input,
+      contract-compilation,
+      reroute,
+      result-validation,
+      source-index-refresh
+    ]
+  closure:
+    recursive_types: [ context-required ]
+    conditional_type: context-conditional
+    non_expanding_types: [ coordination-only, review-only, component-dependency ]
+    deduplicate_skills: true
+    preserve_all_reasons: true
+  deterministic_order: [ recipe-declaration, dependency-topology, skill-id ]
+capabilities:
+  - {
+      id: writing.lifecycle-document,
+      primary_skill: i-have-adhd,
+      task_modes: [ guidance ]
+    }
+  - {
+      id: discovery.competitive-intelligence,
+      primary_skill: competitive-intelligence,
+      task_modes: [ guidance ]
+    }
+  - {
+      id: discovery.domain-modeling,
+      primary_skill: domain-modeling,
+      task_modes: [ guidance, integration ]
+    }
+  - {
+      id: discovery.requirements-interview,
+      primary_skill: grilling,
+      task_modes: [ guidance ]
+    }
+  - {
+      id: discovery.research-evidence,
+      primary_skill: yss-research,
+      task_modes: [ guidance ]
+    }
+  - {
+      id: lifecycle.stage-decision,
+      primary_skill: yss-stage-decision,
+      task_modes: [ guidance, integration, reroute ]
+    }
+  - {
+      id: lifecycle.strategic-design,
+      primary_skill: yss-strategic-design,
+      task_modes: [ guidance, integration, reroute ]
+    }
+  - {
+      id: lifecycle.strategic-handoff,
+      primary_skill: handoff,
+      task_modes: [ integration, reroute ]
+    }
+  - {
+      id: prototype.review,
+      primary_skill: prototype-review,
+      task_modes: [ review-input, result-validation ]
+    }
+  - {
+      id: prototype.design-system,
+      primary_skill: yss-design-system,
+      task_modes: [ guidance, integration ]
+    }
+  - {
+      id: prototype.delivery,
+      primary_skill: yss-prototype-stage,
+      task_modes: [ guidance, integration, result-validation ]
+    }
+  - {
+      id: quality.diagnosis,
+      primary_skill: diagnosing-bugs,
+      task_modes: [ troubleshooting ]
+    }
+  - {
+      id: quality.merge-conflict,
+      primary_skill: resolving-merge-conflicts,
+      task_modes: [ troubleshooting ]
+    }
+  - {
+      id: knowledge.wiki,
+      primary_skill: llm-wiki,
+      task_modes: [ guidance, component-maintenance ]
+    }
+  - {
+      id: maintenance.skill,
+      primary_skill: maintaining-skills,
+      task_modes: [ component-maintenance ]
+    }
+recipes:
+  - {
+      id: discovery.strategy-evidence,
+      capabilities:
+        [
+          discovery.research-evidence,
+          discovery.domain-modeling,
+          discovery.competitive-intelligence
+        ]
+    }
+  - {
+      id: discovery.requirements,
+      capabilities: [ discovery.requirements-interview, discovery.domain-modeling ]
+    }
+  - {
+      id: prototype.strategic-delivery,
+      capabilities: [ prototype.design-system, prototype.review, prototype.delivery ]
+    }
+  - {
+      id: lifecycle.strategic-handoff,
+      capabilities:
+        [
+          lifecycle.stage-decision,
+          lifecycle.strategic-design,
+          lifecycle.strategic-handoff
+        ]
+    }
+skill_dependencies:
+  code-review:
+    - {
+        skill: i-have-adhd,
+        type: context-conditional,
+        when: lifecycle-document-output
+      }
+  yss-research:
+    - {
+        skill: i-have-adhd,
+        type: context-conditional,
+        when: lifecycle-document-output
+      }
+  yss-prototype-stage:
+    - {
+        skill: i-have-adhd,
+        type: context-conditional,
+        when: lifecycle-document-output
+      }
+    - { skill: prototype-review, type: review-only }
+    - { skill: yss-design-system, type: coordination-only }
+  yss-stage-decision:
+    - {
+        skill: i-have-adhd,
+        type: context-conditional,
+        when: lifecycle-document-output
+      }
+    - { skill: domain-modeling, type: coordination-only }
+    - { skill: yss-research, type: context-conditional, when: external-evidence }
+    - { skill: grilling, type: coordination-only }
+  yss-strategic-design:
+    - {
+        skill: i-have-adhd,
+        type: context-conditional,
+        when: lifecycle-document-output
+      }
+    - { skill: yss-stage-decision, type: context-required }
+    - { skill: handoff, type: coordination-only }
+  prototype-review:
+    - {
+        skill: i-have-adhd,
+        type: context-conditional,
+        when: lifecycle-document-output
+      }
+    - { skill: yss-design-system, type: coordination-only }
+  llm-wiki:
+    - { skill: writing-for-agents, type: coordination-only }
+  setup-yss-harness:
+    - skill: i-have-adhd
+      type: context-conditional
+      when: lifecycle-document-output
+invocation_contract:
+  schema_version: 2
+  runtime_metadata_version: 1
+  scope: discovery-only
+  required_fields: [ invocation_mode, trigger_conditions, exclusion_conditions, primary_output ]
+  allowed_invocation_modes: [ user, model, both ]
+  trigger_source: impacts
+  trigger_encoding: "impact:<impact>"
+  default:
+    invocation_mode: model
+    trigger_conditions: [ registered-skill-request ]
+    exclusion_conditions: [ no-trigger-match ]
+    primary_output: skill-guidance
+  layer_defaults:
+    core:
+      invocation_mode: both
+      primary_output: workflow-result
+    specialist:
+      invocation_mode: model
+      primary_output: specialist-guidance
+    compatibility:
+      invocation_mode: user
+      primary_output: explicit-user-compatibility-input
+    maintainer-only:
+      invocation_mode: user
+      primary_output: maintenance-operation
+  overrides:
+    i-have-adhd:
+      invocation_mode: model
+      trigger_conditions: [ lifecycle-document-output ]
+      exclusion_conditions: [ code-only-work, command-only-work, unrelated-conversation, user-disabled ]
+      primary_output: document-writing-assistance
+    yss-prototype-stage:
+      invocation_mode: both
+      trigger_conditions: [ impact:prototype ]
+      exclusion_conditions: [ no-product-design-impact ]
+      primary_output: artifact.prototype-deliverable
+    yss-stage-decision:
+      invocation_mode: both
+      trigger_conditions: [ impact:discovery, impact:lifecycle, decision-boundary:strategic-design ]
+      exclusion_conditions: [ decision-boundary:downstream-implementation ]
+      primary_output: artifact.stage-decision-package
+    yss-strategic-design:
+      invocation_mode: both
+      trigger_conditions: [ impact:discovery, impact:prototype, impact:lifecycle ]
+      exclusion_conditions: [ task:downstream-implementation ]
+      primary_output: artifact.strategic-design-handoff
+    writing-for-agents:
+      invocation_mode: both
+      trigger_conditions: [ agent-document-writing ]
+      exclusion_conditions: [ unrelated-document ]
+      primary_output: agent-document
+    handoff:
+      invocation_mode: user
+      trigger_conditions: [ explicit-handoff-request ]
+      exclusion_conditions: [ no-handoff-request ]
+      primary_output: session-handoff
+    code-review:
+      invocation_mode: both
+      trigger_conditions: [ review-request ]
+      exclusion_conditions: [ outside-authorized-scope ]
+      primary_output: review-findings
+    maintaining-skills:
+      invocation_mode: both
+      trigger_conditions: [ skill-maintenance-request ]
+      exclusion_conditions: [ outside-authorized-scope ]
+      primary_output: skill-maintenance-evidence
+    publish-skills-sh:
+      invocation_mode: user
+    llm-wiki:
+      invocation_mode: user
+agent_runtime_roots:
+  codex: .codex/skills
+  cursor: .cursor/skills
+  pi: .pi/skills
+
+skills:
+  - {
+      id: i-have-adhd,
+      layer: core,
+      maturity: supported,
+      instance_default_discoverable: true,
+      aliases: [],
+      impacts: [ writing ]
+    }
+  - {
+      id: ask-matt,
+      layer: compatibility,
+      maturity: supported,
+      instance_default_discoverable: false,
+      aliases: [],
+      impacts: [ lifecycle ]
+    }
+  - {
+      id: code-review,
+      layer: maintainer-only,
+      maturity: supported,
+      instance_default_discoverable: false,
+      aliases: [],
+      impacts: [ quality ]
+    }
+  - {
+      id: competitive-intelligence,
+      layer: core,
+      maturity: supported,
+      instance_default_discoverable: true,
+      aliases: [],
+      impacts: [ discovery ]
+    }
+  - {
+      id: diagnosing-bugs,
+      layer: core,
+      maturity: supported,
+      instance_default_discoverable: true,
+      aliases: [],
+      impacts: [ quality ]
+    }
+  - {
+      id: domain-modeling,
+      layer: core,
+      maturity: supported,
+      instance_default_discoverable: true,
+      aliases: [],
+      impacts: [ discovery ]
+    }
+  - {
+      id: grilling,
+      layer: core,
+      maturity: supported,
+      instance_default_discoverable: true,
+      aliases: [],
+      impacts: [ discovery ]
+    }
+  - {
+      id: handoff,
+      layer: core,
+      maturity: supported,
+      instance_default_discoverable: true,
+      aliases: [],
+      impacts: [ lifecycle ]
+    }
+  - {
+      id: llm-wiki,
+      layer: core,
+      maturity: supported,
+      instance_default_discoverable: true,
+      aliases: [],
+      impacts: [ knowledge ]
+    }
+  - {
+      id: maintaining-skills,
+      layer: maintainer-only,
+      maturity: supported,
+      instance_default_discoverable: false,
+      aliases: [],
+      impacts: [ template-maintenance ]
+    }
+  - {
+      id: publish-skills-sh,
+      layer: core,
+      maturity: verified,
+      instance_default_discoverable: true,
+      aliases: [],
+      impacts: [ template-maintenance ]
+    }
+  - {
+      id: prototype-review,
+      layer: core,
+      maturity: supported,
+      instance_default_discoverable: true,
+      aliases: [],
+      impacts: [ prototype ]
+    }
+  - {
+      id: resolving-merge-conflicts,
+      layer: core,
+      maturity: supported,
+      instance_default_discoverable: true,
+      aliases: [],
+      impacts: [ quality ]
+    }
+  - {
+      id: yss-research,
+      layer: core,
+      maturity: supported,
+      instance_default_discoverable: true,
+      aliases: [ research ],
+      impacts: [ discovery ]
+    }
+  - {
+      id: to-spec,
+      layer: compatibility,
+      maturity: supported,
+      instance_default_discoverable: false,
+      aliases: [],
+      impacts: [ lifecycle ]
+    }
+  - {
+      id: to-tickets,
+      layer: compatibility,
+      maturity: supported,
+      instance_default_discoverable: false,
+      aliases: [],
+      impacts: [ lifecycle ]
+    }
+  - {
+      id: triage,
+      layer: compatibility,
+      maturity: supported,
+      instance_default_discoverable: false,
+      aliases: [],
+      impacts: [ lifecycle ]
+    }
+  - {
+      id: wayfinder,
+      layer: maintainer-only,
+      maturity: supported,
+      instance_default_discoverable: false,
+      aliases: [],
+      impacts: [ lifecycle ]
+    }
+  - {
+      id: writing-for-agents,
+      layer: maintainer-only,
+      maturity: supported,
+      instance_default_discoverable: false,
+      aliases: [],
+      impacts: [ writing ]
+    }
+  - {
+      id: yss-design-system,
+      layer: core,
+      maturity: supported,
+      instance_default_discoverable: true,
+      aliases: [],
+      impacts: [ prototype ]
+    }
+  - {
+      id: yss-prototype-stage,
+      layer: core,
+      maturity: supported,
+      instance_default_discoverable: true,
+      aliases: [],
+      impacts: [ prototype ]
+    }
+  - {
+      id: yss-stage-decision,
+      layer: core,
+      maturity: draft,
+      instance_default_discoverable: true,
+      aliases: [],
+      impacts: [ discovery, lifecycle ]
+    }
+  - {
+      id: yss-strategic-design,
+      layer: core,
+      maturity: supported,
+      instance_default_discoverable: true,
+      aliases: [],
+      impacts: [ discovery, prototype, lifecycle ]
+    }
+
+  - {
+      id: yss-product-lifecycle,
+      layer: core,
+      maturity: supported,
+      instance_default_discoverable: true,
+      aliases: [],
+      impacts: [ lifecycle ]
+    }
+  - id: setup-yss-harness
+    layer: core
+    maturity: supported
+    instance_default_discoverable: true
+    aliases: []
+    impacts:
+      - lifecycle
+
+platform_skills: []
+
+external_skills:
+  - { id: implement, source: downstream-rd-profile }
+  - { id: tdd, source: downstream-rd-profile }
+  - { id: yss-domain, source: downstream-rd-profile }
+  - { id: yss-implementation-contract-compiler, source: downstream-rd-profile }
+  - { id: yss-openapi-governance, source: downstream-rd-profile }
+  - { id: yss-page-module-development, source: downstream-rd-profile }
+  - { id: yss-repository, source: downstream-rd-profile }
+  - { id: yss-technical-design, source: downstream-rd-profile }
+  - { id: yss-tactical-design, source: downstream-rd-profile }
+  - { id: yss-ui, source: downstream-rd-profile }
+  - { id: yss-web-controller, source: downstream-rd-profile }
+existing_project_profiles:
+  existing-domain-driven-maven:
+    source_kind: existing-registration
+    architecture_family: domain-driven
+    build_system: maven
+    maturity: supported
+    required_roles:
+      - domain
+      - application
+      - infrastructure
+      - web
+  existing-layered-mvc-maven:
+    source_kind: existing-registration
+    architecture_family: layered-mvc
+    build_system: maven
+    maturity: supported
+    required_roles:
+      - application
+      - persistence
+      - web

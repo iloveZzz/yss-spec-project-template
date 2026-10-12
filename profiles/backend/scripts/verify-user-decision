@@ -1,0 +1,17 @@
+#!/usr/bin/env node
+import { parseArgs } from "node:util";
+import { decisionIO, verifyUserDecisionFile } from "./lib/user-decision.mjs";
+try {
+  const { positionals, values } = parseArgs({ allowPositionals: true, options: { root: { type: "string" }, requirements: { type: "string" } } });
+  if (positionals.length !== 1) throw new TypeError("用法: scripts/verify-user-decision [--root <repo>] [--requirements <当前事项.json>] <record.yaml>");
+  const options = values.root ? { root: values.root } : {};
+  const io = decisionIO(options);
+  const record = io.document(positionals[0]);
+  // No requirements means verify every requested item for approval; partial approvals need explicit current requirements.
+  options.expected = values.requirements ? io.document(values.requirements) : record.request.items.map((item) => ({ boundary: item.boundary, subject_ref: item.subject.ref, scope: item.scope }));
+  verifyUserDecisionFile(positionals[0], options);
+  process.stdout.write("用户决定及当前批准范围校验通过\n");
+} catch (error) {
+  process.stderr.write(`用户决定校验失败: ${error.message}\n`);
+  process.exitCode = 1;
+}

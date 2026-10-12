@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "repository": "iloveZzz/yss-spec-dev-skills",
+  "canonical_root": ".agents/skills",
+  "skills": [
+    "yss-api-integration",
+    "yss-design-system",
+    "yss-formily",
+    "yss-formily-schema-generator",
+    "yss-frontend-scaffold-generator",
+    "yss-hook",
+    "yss-openapi-draft-review",
+    "yss-openapi-governance",
+    "yss-ui-business-page-generation",
+    "yss-prototype-stage",
+    "yss-implementation-contract-compiler",
+    "yss-ui"
+  ],
+  "groupings": [
+    {
+      "title": "生命周期",
+      "description": "用于 YSS 产品生命周期、路由和跨仓库协作的技能。",
+      "skills": [
+        "yss-implementation-contract-compiler"
+      ]
+    },
+    {
+      "title": "前端",
+      "description": "用于 YSS Vue、Formily、页面模块和 UI 实现的技能。",
+      "skills": [
+        "yss-design-system",
+        "yss-formily",
+        "yss-formily-schema-generator",
+        "yss-frontend-scaffold-generator",
+        "yss-hook",
+        "yss-ui-business-page-generation",
+        "yss-prototype-stage",
+        "yss-ui"
+      ]
+    },
+    {
+      "title": "OpenAPI",
+      "description": "用于 YSS API 设计、审查、治理和生成集成的技能。",
+      "skills": [
+        "yss-api-integration",
+        "yss-openapi-draft-review",
+        "yss-openapi-governance"
+      ]
+    }
+  ]
+}

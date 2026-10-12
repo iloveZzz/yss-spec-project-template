@@ -1,0 +1,132 @@
+schema_version: 1
+profile_id: harness.business-ddd-strategy-handoff
+template_source: github:iloveZzz/yss-harness-design-agent
+cli_package: yss
+description: >-
+  业务方案设计 Harness 的模板实例分发面。CLI 的 template.manifest.json 必须由此文件投影， 禁止在 CLI 仓库另写一套
+  allow/deny。
+
+allow_root_entries:
+  - .agents
+  - .codex
+  - .cursor
+  - .pi
+  - .template-spec
+  - scripts
+
+allow_root_files:
+  - .cursorrules
+  - .gitignore
+  - .nvmrc
+  - AGENTS.md
+  - CLAUDE.md
+  - CONTEXT.md
+  - DESIGN.md
+  - README.md
+  - skills-lock.json
+  - yss-project.yaml
+
+allow_files:
+  - .template-spec/adr/README.md
+  - .template-spec/architecture/templates/business-architecture-template.md
+  - .template-spec/architecture/templates/functional-architecture-template.md
+
+exclude_root_entries:
+  - .git
+  - .codegraph
+  - .codebuddy
+  - .idea
+  - .uploads
+  - node_modules
+  - .ua
+  - .qwen
+  - .template-source
+  - packages
+  - .github
+  - wiki
+  - submodules
+  - tests
+
+exclude_root_files:
+  - package-lock.json
+  - package.json
+  - template.manifest.json
+  - template.snapshot.json
+  - .gitmodules
+  - yss-public-skills.json
+
+exclude_paths:
+  - docs/discovery
+  - .codex/hooks.json
+  - .codex/settings.local.json
+  - .cursor/environment.json
+  - .pi/settings.json
+  - docs/.scratch
+  - docs/adr
+  - docs/api
+  - docs/implementation
+  - docs/releases
+  - docs/reviews
+  - .template-spec/architecture/README.md
+  - .template-spec/architecture/templates/architecture-deepening-template.md
+  - .template-spec/architecture/templates/architecture-review-checklist.md
+  - .template-spec/architecture/templates/data-architecture-template.md
+  - .template-spec/architecture/templates/engineering-baseline-review-template.md
+  - .template-spec/architecture/templates/system-overview-design-template.md
+  - .template-spec/architecture/templates/tech-design-template.md
+  - .template-spec/process/implementation-repo-integration.md
+  - .template-spec/process/schemas/frontend-implementation-evidence.schema.json
+  - .template-spec/process/templates/frontend-implementation-plan-template.yaml
+  - .template-spec/process/templates/frontend-implementation-verification-template.yaml
+  - .template-spec/templates/build-architecture-checklist-template.md
+  - .template-spec/templates/cross-repo-slice-template.md
+  - .template-spec/templates/implementation-repo-registry-template.md
+  - .template-spec/templates/local-parent-ticket-template.md
+  - .template-spec/templates/openapi-spec-template.yaml
+  - .template-spec/templates/release-note-template.md
+  - .template-spec/templates/retro-report-template.md
+  - .template-spec/templates/vertical-slice-ticket-template.md
+  - scripts/gitworks
+  - scripts/lib/git-submodule-fixtures.mjs
+  - scripts/verify-frontend-implementation-evidence
+  - scripts/verify-governance-release
+  - scripts/verify-implementation-path-scenarios
+  - scripts/verify-openapi-json-handoff-scenarios
+  - scripts/verify-openapi-yaml-first-scenarios
+  - scripts/verify-prototype-backend-scaffold-scenarios
+  - scripts/verify-repository-scope-scenarios
+  - scripts/verify-scaffold-generator-scenarios
+  - scripts/verify-strategic-handoff-tools-lock
+  - scripts/verify-upstream-skill-source
+  - scripts/verify-yss-dto-openapi-profile
+  - scripts/verify-yss-dto-openapi-scenarios
+  - scripts/verify-yss-router-scenarios
+  - scripts/verify-yss-ui-scenarios
+
+render_paths:
+  - AGENTS.md
+  - README.md
+  - yss-project.yaml
+  - .template-spec/agents/issue-tracker.md
+
+init_exclude_root_entries: []
+init_exclude_root_files:
+  - yss-public-skills.json
+init_exclude_paths: []
+
+instance_forbidden_paths:
+  - .template-source
+  - .github
+  - wiki
+  - package.json
+  - yss-public-skills.json
+  - .yss-template.json
+  - .template-spec/templates/openapi-spec-template.yaml
+  - .template-spec/templates/vertical-slice-ticket-template.md
+  - .template-spec/templates/local-parent-ticket-template.md
+  - .template-spec/templates/cross-repo-slice-template.md
+  - .template-spec/process/implementation-repo-integration.md
+  - docs/api
+  - scripts/verify-yss-router-scenarios
+  - scripts/verify-yss-ui-scenarios
+  - scripts/verify-openapi-yaml-first-scenarios

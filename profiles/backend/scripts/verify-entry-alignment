@@ -1,0 +1,39 @@
+#!/usr/bin/env node
+import assert from "node:assert/strict";
+import { checkEntryAlignment, loadEntryAlignmentSources } from "./lib/entry-alignment.mjs";
+
+try {
+  const live = checkEntryAlignment();
+  const sources = loadEntryAlignmentSources();
+  const mutations = [
+    ["missing profile", (candidate) => {
+      candidate.agentsText = candidate.agentsText.replaceAll(sources.profile.profile_id, "harness.unspecified");
+    }, /profile/],
+    ["missing profile pointer", (candidate) => {
+      candidate.agentsText = candidate.agentsText.replaceAll(".template-spec/process/harness-profile.yaml", ".template-spec/process/missing-profile.yaml");
+    }, /harness-profile/],
+    ["discovery becomes default", (candidate) => {
+      candidate.agentsText = candidate.agentsText.replace("Discovery 不是默认阶段", "Discovery 是默认阶段");
+    }, /Discovery/],
+    ["upstream work unit leaks into local chain", (candidate) => {
+      candidate.agentsText += "\nwork-unit.discovery-opportunity\n";
+    }, /上游工作单元/],
+    ["retired router returns", (candidate) => {
+      candidate.agentsText += "\nyss-product-lifecycle\n";
+    }, /退役入口/],
+  ];
+  for (const [name, mutate, pattern] of mutations) {
+    const candidate = {
+      profile: sources.profile,
+      skills: sources.skills,
+      agentsText: sources.agentsText,
+      glossaryText: sources.glossaryText,
+    };
+    mutate(candidate);
+    assert.throws(() => checkEntryAlignment(candidate), pattern, name);
+  }
+  process.stdout.write(`入口规则与开发落地 profile 对齐校验通过: ${live.profile_id} / ${live.entry_work_unit} → ${live.terminal_work_unit}\n`);
+} catch (error) {
+  process.stderr.write(`入口规则与开发落地 profile 对齐校验失败:\n${error.message}\n`);
+  process.exitCode = 1;
+}

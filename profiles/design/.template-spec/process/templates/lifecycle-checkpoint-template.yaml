@@ -1,0 +1,36 @@
+schema_version: 1
+repository_mode: project-instance
+mode: route
+status: routing
+stage: stage.entry-triage
+artifacts: {}
+gates: {}
+context_reconciliation:
+  status: pending
+  ref: null
+  reason: 等待当前工作单元完成稳定术语回写与核对
+  evidence_refs: []
+next_work_unit: work-unit.plan-opportunity
+phase_boundary:
+  decision: continue
+  reason: initial routing
+stage_trace:
+  stage: stage.entry-triage
+  upstream_refs: []
+  artifact_refs: []
+  gate_decisions: []
+  downstream_impacts: []
+ticket_sync:
+  status: pending
+  refs: []
+verification:
+  commands: []
+  evidence_refs: []
+human_review:
+  required: false
+  status: not-applicable
+git_checkpoint:
+  required: false
+  status: not-applicable
+blockers: []
+rollback: []
