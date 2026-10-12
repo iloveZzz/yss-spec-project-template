@@ -10,8 +10,11 @@ import {contextBinary} from '../scripts/lib/native-context.mjs';
 import {nativeEvidenceVerify, nativeContractVerify, nativeLifecycleVerify, nativeDelegationAvailable, rootBoundRead, NEEDS, missingCapabilities} from '../scripts/lib/native-evidence.mjs';
 import {generateTaskPackageDefaults, validateTaskPackage} from '../scripts/lib/task-package.mjs';
 import {parse as parseYamlText} from '../scripts/vendor/yaml.mjs';
-import {fixture as handoffFixture} from '../scripts/fixtures/strategic-handoff/fixture.mjs';
-import {exportBundle, openBundle} from '../scripts/lib/strategic-handoff.mjs';
+import {fixture as handoffFixture, context as handoffContext} from '../scripts/fixtures/strategic-handoff/fixture.mjs';
+import {exportBundle, openBundle, importBundle} from '../scripts/lib/strategic-handoff.mjs';
+import {verifyConsumption} from '../scripts/lib/strategic-handoff-consumption.mjs';
+import {read as readHandoff, json as handoffJson} from '../scripts/lib/strategic-handoff-io.mjs';
+import {makeRoot} from './helpers/yss-instance.mjs';
 import {readdirSync, cpSync, unlinkSync, appendFileSync} from 'node:fs';
 import {buildDecisionFixture} from '../scripts/lib/testing/user-decision-fixture.mjs';
 import {validateUserDecision, assertUserDecisionRequirement} from '../scripts/lib/user-decision.mjs';
@@ -51,6 +54,8 @@ function setup() {
   return (instance = path.join(base, 'inst'));
 }
 
+const cleanupDirs = new Set(); // 退出时统一清理，避免给 process 加过多监听器
+process.on('exit', () => { for (const dir of cleanupDirs) rmSync(dir, {recursive: true, force: true}); });
 let seq = 0;
 const fixture = (opts) => buildDecisionFixture(path.join(setup(), '.work', ...(site === 'template-source' ? [`replay-${process.pid}`] : ['replay']), `case-${++seq}`), opts);
 const nodeVerdict = (f) => {
@@ -607,5 +612,94 @@ for (const [name, mutate] of Object.entries(handoffVariants)) {
       const go = nativeEvidenceVerify({root: inst, kind: 'package', file: rel, group: 'handoff', extra: []});
       assert.equal(go.exitCode === 0, node.ok, `结论不一致：Node=${JSON.stringify(node)} Go=${go.exitCode} ${go.message.slice(0, 160)}`);
     } finally { rmSync(base, {recursive: true, force: true}); }
+  });
+}
+
+// 战略交接消费（handoff verify --kind consumption）：Node 的 verifyConsumption 与 yss 的报告逐字段一致（含摘要、issues、blocked_slice_refs），
+// Node 抛出错误的用例，yss 必须同样拒绝。
+let consumptionBuilt;
+async function consumptionCase() {
+  consumptionBuilt ??= buildConsumption(); // 导出、导入一次，各用例只改各自的战术合同副本
+  const built = await consumptionBuilt;
+  return {target: built.target, tactical: structuredClone(built.tactical)};
+}
+async function buildConsumption() {
+  const base = realpathSync(mkdtempSync(path.join(os.tmpdir(), 'yss-consume-replay-')));
+  cleanupDirs.add(base);
+  const source = path.join(base, 'source');
+  mkdirSync(source);
+  const f = await handoffFixture(source);
+  const out = path.join(base, 'package');
+  await exportBundle({sourceRoot: source, handoffRef: 'handoff.yaml', output: out});
+  const target = makeRoot('yss-consume-', 'backend');
+  writeFileSync(path.join(target, 'CONTEXT.md'), handoffContext);
+  const imported = await importBundle({bundle: out, targetRoot: target});
+  const draft = readHandoff(path.join(target, imported.traceability_ref));
+  const tactical = {schema_version: 1, status: 'approved', strategic_handoff: {...draft, context_reconciliation_ref: 'reconciliation.yaml'}, behavior_catalog: [{behavior_id: 'behavior.submit'}], test_seams: [{seam_id: 'test-seam.submit', subject_ref: 'behavior.submit'}]};
+  writeFileSync(path.join(target, 'reconciliation.yaml'), handoffJson({schema_version: 1, repository_mode: 'project-instance', stage: 'stage.system-data-engineering', work_unit: 'work-unit.technical-analysis', status: 'reconciled', context_snapshot: f.snapshot, changes: {added: ['Global/Supplier'], updated: [], deprecated: []}, unresolved_terms: [], evidence_refs: ['CONTEXT.md']}));
+  for (const row of tactical.strategic_handoff.rows) Object.assign(row, {disposition: 'implemented', tactical_refs: ['behavior.submit'], test_seam_refs: ['test-seam.submit'], scenario_tests: [{outcome: 'success', seam_ref: 'test-seam.submit'}, {outcome: 'failure', seam_ref: 'test-seam.submit'}], evidence_refs: ['CONTEXT.md'], dependency_status: 'known', dependent_slice_refs: ['slice.submit']});
+  return {target, tactical};
+}
+const sortKeys = (value) => Array.isArray(value) ? value.map(sortKeys) : value && typeof value === 'object' ? Object.fromEntries(Object.keys(value).sort().map((k) => [k, sortKeys(value[k])])) : value;
+const consumptionCases = {
+  '整体消费通过': {mutate: () => {}},
+  '延期阻断依赖切片': {slice: 'slice.submit', mutate: (t) => Object.assign(t.strategic_handoff.rows[0], {disposition: 'deferred', reason: '分批实现', risk: '不能提交', owner: '需求负责人', followup_ticket_ref: 'ticket.followup', verification_plan: '提交测试', target_version: 'v2'})},
+  '延期不阻断无关切片': {slice: 'slice.other', mutate: (t) => Object.assign(t.strategic_handoff.rows[0], {disposition: 'deferred', reason: '分批实现', risk: '不能提交', owner: '需求负责人', followup_ticket_ref: 'ticket.followup', verification_plan: '提交测试', target_version: 'v2'})},
+  '未知依赖扩大阻断': {slice: 'slice.other', mutate: (t) => Object.assign(t.strategic_handoff.rows[0], {disposition: 'deferred', reason: '分批实现', risk: '不能提交', owner: '需求负责人', followup_ticket_ref: 'ticket.followup', verification_plan: '提交测试', target_version: 'v2', dependency_status: 'unknown'})},
+  '缺少承接行': {mutate: (t) => { t.strategic_handoff.rows.pop(); }},
+  '来源摘要过期': {mutate: (t) => { t.strategic_handoff.rows[0].source_digest = `sha256:${'1'.repeat(64)}`; }},
+  '承接行指向不存在的来源': {mutate: (t) => { t.strategic_handoff.rows.push({...t.strategic_handoff.rows[0], source_id: 'rule.ghost'}); }},
+  '战术落点悬空': {mutate: (t) => { t.strategic_handoff.rows[0].tactical_refs = ['aggregate.fake']; }},
+  '切片只能消费 approved 合同': {slice: 'slice.submit', mutate: (t) => { t.status = 'draft'; }},
+  '重复承接': {mutate: (t) => { t.strategic_handoff.rows.push(structuredClone(t.strategic_handoff.rows[0])); }},
+};
+for (const [name, spec] of Object.entries(consumptionCases)) {
+  test(`交接消费回放：${name}`, {skip}, async () => {
+    const {target, tactical} = await consumptionCase();
+    spec.mutate(tactical);
+    let node;
+    try { node = {report: await verifyConsumption(tactical, {root: target, ...(spec.slice ? {sliceRef: spec.slice} : {})})}; } catch (error) { node = {error: String(error.message).slice(0, 100)}; }
+    writeFileSync(path.join(target, 'tactical.json'), JSON.stringify(tactical));
+    const go = nativeEvidenceVerify({root: target, kind: 'consumption', file: 'tactical.json', group: 'handoff', extra: [...(spec.slice ? ['--slice', spec.slice] : [])]});
+    const report = go.envelope.result?.coverage?.handoff_consumption;
+    if (node.error) { assert.notEqual(go.exitCode, 0, `Node 拒绝（${node.error}）而 yss 通过`); return; }
+    assert.ok(report, `yss 没有返回报告：${go.message}`);
+    assert.deepEqual(sortKeys(report), sortKeys(node.report));
+    assert.equal(go.exitCode === 0, node.report.result === 'verified');
+  });
+}
+
+test('verify-strategic-handoff-consumption 薄壳：通过、阻断、拒绝都与旧输出同形', {skip}, async () => {
+  const {target, tactical} = await consumptionCase();
+  const run = (value, args = []) => {
+    writeFileSync(path.join(target, 'shell-tactical.json'), JSON.stringify(value));
+    return spawnSync(path.join(REPO, 'scripts', 'verify-strategic-handoff-consumption'), ['--root', target, ...args, path.join(target, 'shell-tactical.json')], {encoding: 'utf8', env: {...process.env, YSS_NATIVE_BINARY: binary}});
+  };
+  const ok = run(tactical);
+  assert.equal(ok.status, 0, ok.stderr);
+  const report = JSON.parse(ok.stdout);
+  assert.equal(report.result, 'verified');
+  assert.deepEqual(Object.keys(report).slice(0, 3), ['result', 'bundle_digest', 'consumed_bundle_digest']);
+  const blocked = structuredClone(tactical);
+  Object.assign(blocked.strategic_handoff.rows[0], {disposition: 'deferred', reason: '分批实现', risk: '不能提交', owner: '需求负责人', followup_ticket_ref: 'ticket.followup', verification_plan: '提交测试', target_version: 'v2'});
+  const stopped = run(blocked, ['--slice', 'slice.submit']);
+  assert.equal(stopped.status, 1);
+  assert.equal(JSON.parse(stopped.stdout).result, 'blocked');
+  const bad = structuredClone(tactical);
+  bad.strategic_handoff.rows[0].tactical_refs = ['aggregate.fake'];
+  const rejected = run(bad);
+  assert.notEqual(rejected.status, 0);
+  assert.match(rejected.stderr, /"result":"blocked"/);
+});
+
+// 进程内入口 verifyConsumption 委托给 yss 后，报告与进程内实现一致（native:false 为进程内）。
+for (const [name, spec] of Object.entries({'整体消费通过': consumptionCases['整体消费通过'], '延期阻断依赖切片': consumptionCases['延期阻断依赖切片'], '延期不阻断无关切片': consumptionCases['延期不阻断无关切片'], '缺少承接行': consumptionCases['缺少承接行']})) {
+  test(`适配层等价（verifyConsumption）：${name}`, {skip}, async () => {
+    const {target, tactical} = await consumptionCase();
+    spec.mutate(tactical);
+    const options = {root: target, ...(spec.slice ? {sliceRef: spec.slice} : {})};
+    const inProcess = await verifyConsumption(tactical, {...options, native: false});
+    const delegated = await verifyConsumption(tactical, options);
+    assert.deepEqual(sortKeys(delegated), sortKeys(inProcess));
   });
 }

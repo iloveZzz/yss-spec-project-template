@@ -46,6 +46,7 @@ export const NEEDS = {
   task: ['task.directory-write-scope.v1'],
   checkpoint: ['lifecycle.legacy-untracked-checkpoint.v1', 'template-source.verify-root.v1'],
   handoffPackage: ['handoff.package-identity.v1'],
+  handoffConsumption: ['handoff.consumption-report.v1'],
 };
 const capabilityCache = new Map();
 export function nativeCapabilities(environment = process.env) {
@@ -160,4 +161,23 @@ export function nativeContractVerify(options) {
 // lifecycle 领域（checkpoint）的校验。
 export function nativeLifecycleVerify(options) {
   return nativeEvidenceVerify({...options, kind: 'checkpoint', group: 'lifecycle'});
+}
+
+// 委托校验一份战略交接消费（战术/前端接收合同）：data 为内存里的合同，写成候选文件交给 yss；
+// 返回 yss 的消费报告（通过或阻断都有报告）；没有报告（输入非法、拒绝）时抛出带 yss 拒绝码的错误。
+export function nativeHandoffConsumption({root: given, data, sliceRef, consumer = 'tactical', environment = process.env}) {
+  const root = realpathSync(given);
+  const dir = path.join(root, '.work', 'native-candidates', `consumption-${process.pid}-${randomUUID()}`);
+  mkdirSync(dir, {recursive: true});
+  const file = path.join(dir, 'candidate.json');
+  writeFileSync(file, JSON.stringify(data));
+  try {
+    const extra = [...(sliceRef ? ['--slice', sliceRef] : []), ...(consumer === 'tactical' ? [] : ['--consumer', consumer])];
+    const result = nativeEvidenceVerify({root, kind: 'consumption', file: path.relative(root, file), group: 'handoff', extra, environment});
+    const report = result.envelope.result?.coverage?.handoff_consumption;
+    if (report) return report;
+    throw Object.assign(new Error(result.message), {code: result.diagnostics[0]?.code ?? result.code, native: true});
+  } finally {
+    rmSync(dir, {recursive: true, force: true});
+  }
 }

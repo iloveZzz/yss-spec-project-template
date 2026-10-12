@@ -6,6 +6,7 @@ import { openBundle,assertImportReceipt } from './strategic-handoff.mjs';
 import { read, safe, ensure, ROOT, digest, project } from './strategic-handoff-io.mjs';
 import { designTargets } from './strategic-handoff-design-targets.mjs';
 import { parseContextContract } from './context-contract.mjs';
+import { nativeDelegationAvailable, nativeHandoffConsumption, NEEDS } from './native-evidence.mjs';
 const present=x=>typeof x==='string'&&x.trim();
 const list=x=>Array.isArray(x)&&x.length&&x.every(present);
 const without=(value,keys)=>Object.fromEntries(Object.entries(value).filter(([key])=>!keys.includes(key)));
@@ -13,8 +14,10 @@ const strategyBasis=value=>({
   ...without(value,['domain_version','approval','rule_catalog','scenarios','invariants']),
   invariants:(value.invariants||[]).map(item=>without(item,['statement'])),
 });
-export async function verifyConsumption(data,{root=process.cwd(),sliceRef,consumer='tactical',readOnly=false}={}) {
+export async function verifyConsumption(data,{root=process.cwd(),sliceRef,consumer='tactical',readOnly=false,native}={}) {
   project(root);
+  // 消费校验归 yss：真实项目根且 yss 具备能力时委托；合成根、旧 yss、native:false 走下面的进程内实现（过渡期）。
+  if(nativeDelegationAvailable(path.resolve(root),{native},process.env,[],NEEDS.handoffConsumption))return nativeHandoffConsumption({root:path.resolve(root),data,sliceRef,consumer});
   ensure(['tactical','frontend'].includes(consumer),'未知战略消费者');
   if (data.schema_version === 2 && consumer === 'tactical') ensure(['domain-driven','layered-mvc'].includes(data.architecture?.family), '未知技术设计架构');
   if (sliceRef) ensure(data.status === (consumer==='frontend'?'accepted':'approved'), consumer==='frontend'?'前端接收记录尚未 accepted':'切片只能消费 approved 战术合同');
