@@ -1,6 +1,6 @@
 # 批准记录族 Node→Go 适配层设计（AR-09c）
 
-状态：设计；分片 1～4 已实现（见 §8～§11）。
+状态：设计；分片 1～4 已实现（见 §8～§11）；分片 5 已估算（§12），未开始。
 前置：`architecture-iteration-v1-plan.md` 的 AR-09b 行（用户决定入口已委托）。
 
 ## 1. 要解决的问题
@@ -115,3 +115,38 @@ yss-cli 分支 `arch/ar-09c` 加入 `--expected`（约 40 行，只接线，不�
 - 已知差异：期望算出之后、校验之前主体被改动时，进程内用冻结期望报「摘要过期」，委托时 yss 按绑定在校验当下重算，报「缺少上下文」；两边都拒绝，码不同，已在测试中登记。
 - 仍在 Node：这三个构造函数的实现还在（调用方仍要拿到期望对象，进程内路径也要用）。删除它们属于分片 5，与「调用方改为只传绑定」一起做。
 - 影响范围测试：回放 86 个（含期望由 yss 计算 9 组与改动期望 1 组）、approval-current、approval-consumption、lifecycle-controls、digital-human-roles、review-capabilities、生命周期转换/用户决定/Plan→Spec 场景，全部通过。
+
+## 12. 分片 5 估算
+
+### 方法
+临时给 `nativeDelegationAvailable` 加了「不能委托时记录原因与调用点」的仪表（用完已还原，没有提交），在固定 yss 下跑 `.template-source/tooling/node/test`（28 个文件）、`scripts/fixtures/*/*.test.mjs` 和 `tests/scenarios` 的一部分，共 5028 次「本该委托却走进程内」的记录。这是实测的回退分布，不是静态猜测。场景脚本那一轮没跑完就停了（与测试集合里 15 个失败一样，其中多数是插件、投影根相关的既有失败，没有逐个对基线核对）。
+
+### 回退原因分布（5028 次）
+| 原因 | 次数 | 含义 |
+|---|---|---|
+| `read-injected` | 3835（76%） | 调用方自带 `read` 读取器 |
+| `authorities-injected` | 731（15%） | 调用方自带 rolesDoc/registry |
+| `no-profile-identity` | 约 250 | 合成根没有 Profile 身份文件 |
+| `refs-outside-root` | 约 78 | 引用落在根外（合成夹具） |
+| `root-not-governance` | 约 75 | 合成根缺治理权威文件 |
+
+### 关键结论
+1. **阻塞删除的主因在生产代码，不在测试。** `read-injected` 的 3835 次里，2321 次来自 `strategic-handoff.mjs`，997 次来自 `user-decision-reuse.mjs`（战略决定复用），723 次来自 `approved-execution-context.mjs`。前两者传入的是「交接包源」的虚拟读取器、源包自带的 rolesDoc 和合成的 registry，属于 handoff 领域（原计划第 3 步 AR-11 才退役），不是靠换成 `yss init` 实例能解决的。所以**批准/用户决定的 Node 实现在 AR-11 完成之前不能删**。
+2. 能快速解决的一类：`approved-execution-context`、`delivery-preflight`、`lifecycle-transition`、`plan-spec-entry` 里的 `read: ref=>readFileSync(safe(root, …))` 与「从同一根读出 rolesDoc 再传入」只是默认行为的重复写法，去掉冗余注入（或标 `defaultAuthorities`）即可让这些路径委托。约 6 个生产文件、每个几行，风险低。
+3. 测试里依赖合成根的文件约 13 个（`slice-contract-v3/round2`、`lifecycle-transition` 场景、`decision-continuation`、`approval-current`、`plan-review-control`、`matt-yss-integration` 场景、`plan-spec-entry` 场景、`backend-scaffold/platform-scenarios`、`digital-human-task-package` 场景、`validate-technical-design`、`approval-consumption`、`lifecycle-core/research`、`verify-scaffold-architecture-decisions`）。转换办法是提供一个测试辅助：现场 `yss init` 一次、复制为各用例的根；其中约 8 个只需换根，约 5 个还要改写测试内修改注册表/角色政策的写法（写进根里的文件而不是传参）。
+
+### 工作量（粗估，按工作包计，不含评审等待）
+| 子包 | 内容 | 规模 |
+|---|---|---|
+| 5a | 去掉冗余的 `read`/rolesDoc 注入，让默认根路径委托；每处补等价回放 | 小：约 6 个生产文件 |
+| 5b | 合成根测试辅助 + 迁移约 13 个测试文件 | 中：1 个辅助 + 约 13 个文件，其中 5 个需改写 |
+| 5c | 删除 Node 实现与对应删除规则、技能里不再引用被退役实现 | **被 AR-11 阻塞**：strategic-handoff 与 user-decision-reuse 仍依赖进程内实现 |
+
+### 建议
+- 做 5a 与 5b：它们让所有「非交接领域」的调用方真正只走一份实现，并把测试从合成根迁到真实实例，价值明确、风险可控。
+- 5c 改到 AR-11 之后：把 AR-09 的「删除」目标缩为「入口薄壳 + 非交接调用方委托」，Node 库保留给交接域，AR-11 迁完交接后再一次性删除。需要同步修订计划里 AR-09/AR-10/AR-11 的验收（AC-010 的「技能里不再引用被退役的 Node 实现」按领域分次满足）。
+- 不建议为了现在就删除而给 Go 增加「虚拟读取器/源包」入口：那等于把 handoff 的消费语义提前搬一遍。
+
+### 需要维护者确认
+1. 接受「5c 随 AR-11」并修订 AR-09 的验收范围？
+2. 5a、5b 现在就做，先 5a？
