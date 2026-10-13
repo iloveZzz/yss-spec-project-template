@@ -24,7 +24,7 @@ test('日常核心验证器保持 fast，缺映射和依赖错误在执行前拒
  const plan=planTemplateVerification({changedFiles:['scripts/lib/json-schema.mjs']});
  assert.equal(plan.effective_profile,'fast');
  assert.ok(plan.commands.some(item=>item.command.includes('schema-rejection.test.mjs')));
- assert.throws(()=>planTemplateVerification({changedFiles:['scripts/lib/user-decision.mjs']}),/INCOMPLETE_VERIFICATION_INPUTS/);
+ assert.ok(planTemplateVerification({changedFiles:['scripts/lib/user-decision.mjs']}).commands.some(item=>item.id==='check.go-validator-replay'),'已迁移的用户决定校验仍须选择 Go 对拍');
  assert.throws(()=>planTemplateVerification({changedFiles:['.agents/skills/yss-cache/scripts/unmapped.mjs']}),/INCOMPLETE_VERIFICATION_INPUTS/,'技能树一致性不能掩盖缺失的脚本行为映射');
  const incomplete=loadVerificationProfiles();incomplete.profiles.fast.checks[0].inputs_complete=false;
  assert.throws(()=>planTemplateVerification({changedFiles:['.agents/skills/yss-cache/SKILL.md'],config:incomplete}),/INCOMPLETE_VERIFICATION_INPUTS/);

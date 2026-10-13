@@ -86,8 +86,8 @@ test('真实Git退役四gitlink差异纳入完整门禁，仍保留三个Agent�
     assert.equal(plan.effective_profile,'release');assert.equal(plan.compatibility_required,true);assert.deepEqual(plan.unknown_files,[]);if(profile==='candidate')assert.match(plan.escalation_reason,/\.gitmodules/);
     for(const group of ['drift-identity','candidate-integrity','dedicated-cli-core','cli-sync','strategic-handoff-package','implementation'])assert.ok(plan.groups.includes(group),`${profile}: ${group}`);
     const execution=addVerificationExecutionTasks(plan,{root:sourceRoot,reportDir:path.join(root,`report-${profile}`)});
-    assert.ok(execution.commands.some(item=>item.command.includes('verify-delivery-harness-distribution')),'公开四Profile交接分发不能被裁掉');
-    assert.equal(execution.commands.filter(item=>item.kind==='artifact-prepare').length,4,'四Profile公开Bundle生产准备不能被裁掉');
+    assert.ok(execution.commands.some(item=>item.command.includes('verify-delivery-harness-distribution')),'公开交接分发不能被裁掉');
+    assert.equal(execution.commands.filter(item=>item.kind==='artifact-prepare').length,3,'三个维护中的 Profile 的公开 Bundle 生产准备不能被裁掉');
     assert.ok(execution.commands.some(item=>item.command.includes('native-consumer-routing.test.mjs')),'活跃专职源与统一CLI消费者检查不能被裁掉');
   }
   assert.throws(()=>planTemplateVerification({profile:'fast',changedFiles:['unknown-retirement-policy.asset'],root:sourceRoot}),/UNKNOWN_VERIFICATION_PATH/);

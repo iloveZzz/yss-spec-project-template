@@ -65,6 +65,24 @@ for(const profile of NATIVE_PROFILES)test(`${profile}: 内容来源、预演、�
   runNative(['sync','--root',target,'--force'],{expectedCode:'ARGUMENT'});assert.deepEqual(tree(target),initialized);
 });
 
+test('已移除前端 Profile 的旧版和原生实例明确拒绝维护且保留全部文件',t=>{
+  const base=scratch(t);
+  for(const identity of ['legacy','native']) {
+    const root=path.join(base,identity);
+    if(identity==='legacy')put(root,'.yss-harness-frontend.json','{"metadataSchemaVersion":2,"profileId":"harness.frontend-delivery"}\n');
+    else put(root,'.yss.json',JSON.stringify({schemaVersion:3,protocolVersion:1,profile:'frontend',profileId:'harness.frontend-delivery'}));
+    put(root,'src/business.txt','未提交的业务内容',0o600);put(root,'.git/index','staged index',0o600);
+    const before=tree(root);
+    for(const args of [['sync'],['sync','--plan','--out',path.join(base,`${identity}-sync.json`)],['doctor'],['diff'],['migrate','plan','--out',path.join(base,`${identity}-migrate.json`)]]) {
+      const result=runNative([...args,'--root',root],{expectedCode:'IDENTITY'});
+      assert.match(JSON.stringify(result),/前端 Profile 已移除/);
+      assert.deepEqual(tree(root),before,`${identity}: ${args.join(' ')} 不得修改用户文件、权限或暂存区`);
+    }
+    assert.equal(fs.existsSync(path.join(base,`${identity}-sync.json`)),false);
+    assert.equal(fs.existsSync(path.join(base,`${identity}-migrate.json`)),false);
+  }
+});
+
 test('项目内计划输出与后续输入漂移按各自错误码拒绝并保留现场',t=>{
   nativeBinary();const base=scratch(t),target=path.join(base,'project');initializeNative('spec',target);
   put(target,'.git/index','original index');const initial=tree(target);
@@ -72,6 +90,42 @@ test('项目内计划输出与后续输入漂移按各自错误码拒绝并保�
   const plan=path.join(base,'sync.json');runNative(['sync','--root',target,'--plan','--out',plan]);
   fs.appendFileSync(path.join(target,'CONTEXT.md'),'\n后续用户修改\n');const modified=tree(target);
   runNative(['sync','--root',target,'--apply','--plan-file',plan],{expectedCode:'INPUT_DRIFT'});assert.deepEqual(tree(target),modified);
+});
+
+test('Spec 日常路线拒绝前端声明与实际前端文件，保留后端路线',t=>{
+  const base=scratch(t),root=path.join(base,'spec');let repo=path.join(base,'implementation');
+  const source=path.resolve(import.meta.dirname,'..');
+  put(root,'yss-project.yaml','schema_version: 1\nrepository_mode: project-instance\n');
+  put(root,'.yss-template.json',JSON.stringify({metadataSchemaVersion:3,templateSource:'github:iloveZzz/yss-spec-project-template'}));
+  for(const ref of ['CONTEXT.md','AGENTS.md','.template-spec/agents/issue-tracker.md','.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml'])put(root,ref,fs.readFileSync(path.join(source,ref)));
+  put(root,'facts.md','目标、验收、风险、基线与回滚均为本次测试输入。\n');
+  const skill='适用后端技能\n';put(root,'skill.md',skill);
+  put(repo,'src/server.js','export const enabled = false;\n');
+  const git=(...args)=>{const r=spawnSync('git',args,{cwd:repo,encoding:'utf8'});assert.equal(r.status,0,r.stderr);return r.stdout.trim();};
+  git('init','--quiet');git('add','.');git('-c','user.name=Test','-c','user.email=test@example.invalid','commit','--quiet','-m','baseline');
+  const baseline=git('rev-parse','HEAD');
+  const record={task_id:'AR12C-DAILY',delivery_path:'daily',formal_bindings:[],goal_ref:'facts.md',acceptance_ref:'facts.md',repository:{root:repo,baseline_sha:baseline,baseline_ref:'facts.md',rollback_ref:'facts.md'},scope:{paths:['src/'],impacts:['backend','no-api'],risk_ref:'facts.md'},skills:[{ref:'skill.md',digest:`sha256:${nativeDigest(skill)}`}],inputs:[],commands:[{argv:['node','--check','src/server.js'],cwd:'.'}],api:{mode:'none',reason:'无 API 变化'}};
+  const task=()=>put(root,'task.md',`# 日常任务\n\n<!-- yss-task-evidence -->\n\`\`\`json\n${JSON.stringify(record)}\n\`\`\`\n`);
+  const args=action=>['lifecycle',action,'--root',root,'--task','task.md','--implementation-root',repo,'--base',baseline];
+  put(repo,'src/server.js','export const enabled = true;\n');task();
+  assert.equal(runNative(args('route')).result.delivery_path,'daily');
+  for(const scenario of [{impacts:['frontend','no-api']},{impacts:['ui','no-api']},{side:'frontend'},{file:'src/Page.vue'},{file:'src/Page.tsx'},{file:'src/Page.jsx'},{paths:['apps/frontend/']},{file:'apps/frontend/main.js',paths:['apps/']}]) {
+    record.scope.impacts=scenario.impacts??['no-api'];record.repository.side=scenario.side??'backend';record.scope.paths=['src/',...(scenario.paths??[])];
+    if(scenario.file)put(repo,scenario.file,'前端页面\n');task();
+    const before=tree(repo);
+    for(const action of ['route','verify-daily']) {
+      const result=runNative(args(action),{expectedCode:'FRONTEND_REMOVED'});
+      assert.match(JSON.stringify(result),/前端实现已从生命周期移除/);
+      assert.notEqual(result.result.delivery_path,'daily');assert.deepEqual(tree(repo),before);
+    }
+    if(scenario.file)fs.unlinkSync(path.join(repo,scenario.file));
+  }
+  const frontendRoot=path.join(base,'apps/frontend');fs.mkdirSync(path.dirname(frontendRoot),{recursive:true});fs.renameSync(repo,frontendRoot);repo=frontendRoot;
+  record.repository.root=repo;delete record.repository.side;record.scope.impacts=['no-api'];record.scope.paths=['src/'];task();
+  for(const action of ['route','verify-daily']) {
+    const before=tree(repo),result=runNative(args(action),{expectedCode:'FRONTEND_REMOVED'});
+    assert.match(JSON.stringify(result),/前端实现已从生命周期移除/);assert.deepEqual(tree(repo),before);
+  }
 });
 
 test('公开 Bundle 导出保持完整文件 bytes、mode 和 manifest，拒绝覆盖目录',t=>{

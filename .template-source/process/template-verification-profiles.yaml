@@ -208,6 +208,20 @@ profiles:
           - ".template-spec/process/schemas/scaffold-architecture-decisions.schema.json"
         depends_on: []
         failure_mode: "脚手架架构选择记录的薄壳不再把正式记录交给 yss 校验，或放行缺用户确认、模块闭包缺失、继承值与父项目不一致的记录"
+      - id: check.release-profile-consumers
+        run: "node --test tests/verification-gates.test.mjs tests/verification-qualification.test.mjs tests/verification-delivery-run.test.mjs"
+        group: candidate-integrity
+        resources: ["native-cli"]
+        inputs_complete: true
+        input_patterns:
+          - ".template-source/scripts/lib/verification-qualification.mjs"
+          - ".template-source/scripts/lib/verification-delivery-run.mjs"
+          - ".template-source/process/template-verification-profiles.yaml"
+          - "tests/verification-qualification.test.mjs"
+          - "tests/verification-delivery-run.test.mjs"
+          - "tests/verification-gates.test.mjs"
+        depends_on: []
+        failure_mode: "资格输入仍绑定已删除的文件，三 Profile 交付任务或资格报告放行、拒绝与实际执行不一致"
       - id: check.frontend-removed
         run: "node --test tests/frontend-removed.test.mjs"
         group: feature-assets
@@ -257,7 +271,7 @@ profiles:
         depends_on: []
         failure_mode: "既有 UI 基线的交接导出、验包与导入被错放行或误拒，或导入重新生成前端草案"
       - id: check.frontend-removal-consumers
-        run: "node --test .template-source/tooling/node/test/lifecycle-controls.test.mjs scripts/fixtures/business-tickets/handoff.test.mjs tests/slice-task-package-frontend-boundary.test.mjs tests/cli-core-retirement.test.mjs"
+        run: "node --test .template-source/tooling/node/test/lifecycle-controls.test.mjs scripts/fixtures/business-tickets/handoff.test.mjs tests/cli-core-retirement.test.mjs"
         group: feature-assets
         inputs_complete: true
         input_patterns:
@@ -865,6 +879,7 @@ profiles:
           - ".template-source/scripts/lib/verification-execution-plan.mjs"
           - ".template-source/process/template-verification-profiles.yaml"
           - ".template-source/scripts/lib/verification-report-validator.mjs"
+          - ".template-source/scripts/lib/legacy-recovery-matrix.mjs"
           - ".template-source/process/schemas/template-verification-report.schema.json"
           - "tests/verification-report.test.mjs"
           - "tests/verification-report-v2.test.mjs"
@@ -900,6 +915,7 @@ profiles:
         input_patterns:
           - ".template-source/distribution/yss-cli-pin.json"
           - "tests/cli-retirement.test.mjs"
+          - ".template-source/scripts/lib/native-yss.mjs"
           - "submodules/create-yss-spec/**"
         depends_on: []
         failure_mode: "固定的 yss 二进制与 yss-cli 固定文件的版本、提交或摘要不符，或原生 CLI 消费入口、兼容或来源身份错误"
@@ -2279,7 +2295,6 @@ gate_policy:
     - .template-source/scripts/lib/verification-artifacts.mjs
     - .template-source/scripts/lib/verification-report-validator.mjs
     - .template-source/scripts/lib/legacy-verification.mjs
-    - scripts/fixtures/frontend-delivery/scenarios.mjs
     - tests/verification-preflight.test.mjs
     - tests/verification-artifacts.test.mjs
     - tests/verification-report-v2.test.mjs
@@ -2299,7 +2314,6 @@ gate_policy:
     - tests/cli-core-retirement.test.mjs
     - .template-source/tooling/node/test/approval-consumption.test.mjs
     - .template-source/scripts/lib/verification-qualification-plan.mjs
-    - .template-source/distribution/strategic-handoff-tools.lock.json
   qualification_input_patterns:
     - tests/**
     - .template-source/profile-skill-sync.json
