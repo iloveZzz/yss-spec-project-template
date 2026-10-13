@@ -11,20 +11,20 @@ test('固定来源任务使用候选入口并将路径作为数据传给shell',t
   const root=path.join(temp,"source ' $(touch escaped)"),reportDir=path.join(temp,"report ' $(touch escaped)");fs.mkdirSync(root);
   const module=path.join(root,'.template-source/scripts/lib/verification-delivery-run.mjs');fs.mkdirSync(path.dirname(module),{recursive:true});
   fs.writeFileSync(module,"process.stdout.write(JSON.stringify(process.argv.slice(2)))\n");
-  const compiled=compileDeliveryPreparationTasks({strategy:'qualification-shadow',effective_profile:'release'},{root,reportDir});
+  const compiled=compileDeliveryPreparationTasks({strategy:'release',effective_profile:'release'},{root,reportDir});
   const outcome=spawnSync(compiled.tasks[0].command,{cwd:temp,shell:true,encoding:'utf8'});
   assert.equal(outcome.status,0,outcome.stderr);
   const args=JSON.parse(outcome.stdout);
   assert.equal(args[args.indexOf('--root')+1],root);
   assert.equal(args[args.indexOf('--directory')+1],reportDir);
   assert.equal(fs.existsSync(path.join(temp,'escaped')),false,'路径不能执行命令替换');
-  assert.throws(()=>compileDeliveryPreparationTasks({strategy:'qualification-shadow'},{root,reportDir:path.join(root,'evidence')}),/源码仓库外/);
+  assert.throws(()=>compileDeliveryPreparationTasks({strategy:'release',effective_profile:'release'},{root,reportDir:path.join(root,'evidence')}),/源码仓库外/);
 });
 
 test('legacy-full准备任务显式登记，清理只删除本轮可写实例',t=>{
   const temp=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'delivery-cleanup-')));t.after(()=>fs.rmSync(temp,{recursive:true,force:true}));
   const root=path.join(temp,'source'),directory=path.join(temp,'report');fs.mkdirSync(root);fs.mkdirSync(directory);
-  const plan={strategy:'legacy-full',commands:[{task_id:'legacy.010',command:'node --test submodules/create-yss-spec/tests/sync-fast-smoke.test.js'},{command:'node .template-source/scripts/verify-cli-upgrade.mjs'}]};
+  const plan={strategy:'release',effective_profile:'release',commands:[{task_id:'legacy.010',command:'node --test submodules/create-yss-spec/tests/sync-fast-smoke.test.js'},{command:'node .template-source/scripts/verify-cli-upgrade.mjs'}]};
   const prepared=compileDeliveryPreparationTasks(plan,{root,reportDir:directory});
   assert.equal(prepared.tasks.length,7);
   assert.deepEqual(plan.commands[0].depends_on,['check.cli-artifact-consumers']);

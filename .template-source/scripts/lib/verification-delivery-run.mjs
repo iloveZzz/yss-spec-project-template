@@ -20,9 +20,9 @@ function outside(root,directory){
   ensure(relative==='..'||relative.startsWith(`..${path.sep}`)||path.isAbsolute(relative),'产物目录必须位于源码仓库外');
 }
 
-/** Supplemental four-family tasks remain individually visible beside the old coverage. */
+/** Release artifact production and consumption remain explicit report tasks. */
 export function compileDeliveryPreparationTasks(plan,{root,reportDir}={}) {
-  const enabled=['qualification-shadow','legacy-reference','legacy-full'].includes(plan.strategy)||plan.strategy==='qualified-gates'&&plan.effective_profile==='release';
+  const enabled=plan.effective_profile==='release'||['legacy-reference','legacy-full'].includes(plan.strategy);
   if(!enabled)return {tasks:[],families:[],receiptFile:null,artifactDirectory:null};
   ensure(reportDir,'四 CLI 固定来源验证需要独立报告目录');outside(root,reportDir);
   const artifactDirectory=path.join(reportDir,'artifacts'),receiptFile=path.join(reportDir,'consumption','receipt.json');
@@ -63,7 +63,7 @@ export function validateReceipt(envelope,{root,receiptFile,expectedSourcesManife
   outside(root,receiptFile);
   const expected=expectedSourcesManifest||sources(root);
   ensure(JSON.stringify(envelope.sources_manifest.entries.map(sourceTuple))===JSON.stringify(expected.entries.map(sourceTuple)),'产物回执固定来源错配');
-  ensure(envelope.artifacts?.length===4&&new Set(envelope.artifacts.map(row=>row.source_tuple.family)).size===4,'产物回执缺少四 CLI');
+  ensure(envelope.artifacts?.length===expected.entries.length&&new Set(envelope.artifacts.map(row=>row.source_tuple.family)).size===expected.entries.length,'产物回执缺少四 CLI');
   for(const source of expected.entries){const artifact=envelope.artifacts.find(row=>row.source_tuple.family===source.family);ensure(artifact?.installed_root&&/^[a-f0-9]{64}$/.test(artifact.installed_tree_sha256||''),'产物回执缺少真实安装树');validateArtifact(artifact,source);}
   const consumption=path.dirname(receiptFile),allowed=new Set(['YSS_NATIVE_BINARY','YSS_NATIVE_BINARY_SHA256','YSS_DEDICATED_INSTANCE_ROOT']);
   ensure(Object.keys(envelope.environment||{}).length===allowed.size,'产物回执环境字段缺失');
@@ -77,22 +77,6 @@ export function validateReceipt(envelope,{root,receiptFile,expectedSourcesManife
     const relative=path.relative(consumption,resolved);ensure(relative&&!relative.startsWith('..')&&!path.isAbsolute(relative),'产物回执消费目录越界');
   }
   return envelope;
-}
-
-export function assembleQualificationIntegration({root,directory}={}) {
-  const manifest=sources(root),artifacts=families.map(family=>read(artifactFile(directory,family)));
-  const integrations=families.map(family=>read(path.join(directory,'migration-results',`${family}.json`)));
-  const commands=[...artifacts.flatMap(row=>row.command_records||[]),...integrations.flatMap(row=>row.command_records||[])];
-  for(const source of manifest.entries)validateArtifact(artifacts.find(row=>row.source_tuple.family===source.family),source);
-  ensure(integrations.every(row=>row.status==='passed')&&commands.length>0,'四 CLI 集成尚未完成');
-  for(const command of commands) {
-    ensure(command.actual_exit_code_observed&&command.actual_exit_code===0&&command.actual_exit_signal===null,'四 CLI 内部命令未实际通过');
-    for(const [file,digest]of [[command.stdoutFile,command.stdout_sha256],[command.stderrFile,command.stderr_sha256]])ensure(hash(fs.readFileSync(file))===digest,'四 CLI 内部日志摘要漂移');
-  }
-  const envelope={schema_version:2,kind:'template-release-verification',purpose:'qualification',status:'passed',
-    verification_scope:'local-template-and-cli',release_readiness:'not-evaluated',
-    requested_commit:manifest.root_commit,template_commit:manifest.root_commit,cli_families:[...families],sources_manifest:manifest,artifacts,cli_integrations:integrations,commands};
-  const file=path.join(directory,'integration-record.json');write(file,envelope);return {file,sha256:hash(fs.readFileSync(file)),envelope};
 }
 
 export function runDeliveryTask({root,directory,action,family}={}) {

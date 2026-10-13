@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { execFileSync } from "node:child_process";
-import { cpSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
@@ -16,7 +16,7 @@ function entry(name, type) {
   };
 }
 
-test("large unrelated Git inventories preserve unlocked projection diagnostics", async () => {
+test("FR-006：大型 Git 清单下技能同步不再检查或删除用户保留的旧投影", async () => {
   const root = mkdtempSync(path.join(os.tmpdir(), "yss-skill-inventory-"));
   try {
     const git = (args, input) => execFileSync("git", args, { cwd: root, input, encoding: "utf8" });
@@ -32,7 +32,9 @@ test("large unrelated Git inventories preserve unlocked projection diagnostics",
     git(["add", ".codex/skills/unlocked/SKILL.md"]);
     writeFileSync(path.join(root, "skills-lock.json"), JSON.stringify({ version: 3, skills: { shared: {} } }));
     const { syncSkills } = await import(pathToFileURL(path.join(root, "scripts/lib/skill-supply-chain.mjs")).href);
-    assert.throws(() => syncSkills({ check: true }), /unlocked projection: \.codex\/skills\/unlocked/);
+    assert.doesNotThrow(() => syncSkills({ check: true }));
+    assert.doesNotThrow(() => syncSkills());
+    assert.equal(readFileSync(path.join(root, ".codex/skills/unlocked/SKILL.md"), "utf8"), "unlocked");
   } finally {
     rmSync(root, { recursive: true, force: true });
   }
@@ -66,12 +68,8 @@ test("physical canonical skills must be present in the lock", () => {
   );
 });
 
-test("Cursor is a first-class shared skill projection root", () => {
-  assert.ok(PROJECTION_ROOTS.includes(".cursor/skills"));
-  assert.deepEqual(
-    PROJECTION_ROOTS,
-    [".codex/skills", ".cursor/skills", ".pi/skills"]
-  );
+test("FR-006：canonical 技能不再声明运行时投影根", () => {
+  assert.deepEqual(PROJECTION_ROOTS, []);
 });
 
 test("nested SKILL.md files cannot bypass external skill registration", () => {

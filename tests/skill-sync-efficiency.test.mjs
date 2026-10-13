@@ -6,11 +6,11 @@ import os from "node:os";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
-test("FR-006：没有投影根时 Skill 同步不创建任何投影目录，检查也通过", async () => {
+for (const sourceRoot of [".", "profiles/backend", "profiles/design"]) test(`FR-006：${sourceRoot} Skill 同步不创建任何投影目录，检查也通过`, async () => {
   const root = mkdtempSync(path.join(os.tmpdir(), "yss-skill-sync-"));
   try {
     mkdirSync(path.join(root, "scripts/lib"), { recursive: true });
-    cpSync(path.resolve("scripts/lib/skill-supply-chain.mjs"), path.join(root, "scripts/lib/skill-supply-chain.mjs"));
+    cpSync(path.resolve(sourceRoot, "scripts/lib/skill-supply-chain.mjs"), path.join(root, "scripts/lib/skill-supply-chain.mjs"));
     const source = path.join(root, ".agents/skills/probe");
     mkdirSync(source, { recursive: true });
     writeFileSync(path.join(source, "SKILL.md"), "---\nname: probe\n---\n");

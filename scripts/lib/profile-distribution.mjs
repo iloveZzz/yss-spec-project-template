@@ -86,6 +86,11 @@ export function evaluateProfile({ root, profile, rootManifest }) {
 
   const findings = [];
   const staleNeeds = [];
+  for (const file of tracked) {
+    if (/^\.(claude|codex|cursor|pi)\/skills(?:\/|$)/.test(file) && shipped(file, manifest)) {
+      findings.push({ kind: 'skill-projection-shipped', path: file });
+    }
+  }
   for (const entry of rootOnly) {
     const present = tracked.filter((file) => beneath(file, entry));
     if (!present.length || !shipped(present[0], manifest)) continue;
@@ -127,6 +132,7 @@ export function evaluateAll(root) {
 }
 
 const MESSAGES = {
+  'skill-projection-shipped': (f) => `已退役的技能投影 ${f.path} 仍随 Profile 分发；只分发 .agents/skills`,
   'template-source-script-shipped': (f) => `根仓声明为「仅模板源」的 ${f.path}（${f.files} 个文件）会随该 Profile 的实例分发；写进该 Profile 的 excludePaths，若实例确实需要它则登记到 PROFILE_NEEDS 并写明原因`,
   'test-directory-not-excluded': (f) => `分发策略缺少 excludePathSuffixes: "${f.path}"，技能目录里的测试目录会随实例分发`,
   'suffix-collateral': (f) => `后缀规则会误伤 ${f.path}`,

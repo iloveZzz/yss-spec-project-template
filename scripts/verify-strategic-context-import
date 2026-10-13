@@ -1,9 +1,0 @@
-#!/usr/bin/env node
-// 已退役（AR-11，2026-10-12 维护者决定）：本脚本的导入前检查没有对应的公开 Go 命令，生产导入由 yss 的 handoff 流程覆盖。
-// 保留这个入口只为旧调用方得到明确指引；冻结的旧覆盖清单仍引用它，待旧清单随 AR-16 退役时再删除文件。
-process.stderr.write(`scripts/verify-strategic-context-import 已退役。
-- 导入后核验交接是否已对账到目标 CONTEXT.md、UI baseline 与对账记录：scripts/verify-strategic-handoff-consumption（即 yss handoff verify --kind consumption）
-- 单独核验目标 Context 对账记录：scripts/verify-context-reconciliation（即 yss evidence verify --kind context-reconciliation）
-- 交接包本身：scripts/strategic-handoff verify --bundle（即 yss handoff verify --kind package）
-`);
-process.exitCode = 1;

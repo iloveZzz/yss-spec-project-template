@@ -2,7 +2,7 @@
 // 夹具在测试里现场构建，改动夹具里的判定输入，回放就应当失败。
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync} from 'node:fs';
+import {mkdirSync, mkdtempSync, realpathSync, renameSync, rmSync, symlinkSync, writeFileSync} from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
@@ -14,7 +14,6 @@ import {fixture as handoffFixture, context as handoffContext} from '../scripts/f
 import {exportBundle, openBundle, importBundle} from '../scripts/lib/strategic-handoff.mjs';
 import {verifyConsumption} from '../scripts/lib/strategic-handoff-consumption.mjs';
 import {verifyContextReconciliation} from '../scripts/lib/context-reconciliation.mjs';
-import {validateOpenApiDraftValidationRecord} from '../scripts/lib/openapi-draft-validation.mjs';
 import {readWorkLayout} from '../scripts/lib/work-layout.mjs';
 import {attachScaffoldDecisionFixture} from '../scripts/fixtures/user-decision/build-fixture.mjs';
 import {read as readHandoff, json as handoffJson} from '../scripts/lib/strategic-handoff-io.mjs';
@@ -736,7 +735,7 @@ for (const [name, mutate] of Object.entries(reconciliationVariants)) {
   });
 }
 
-// OpenAPI Draft validation record（contract verify --kind openapi-validation）：Node 的 validateOpenApiDraftValidationRecord 与 yss 结论一致。
+// OpenAPI Draft validation record：预期经删除 Node 实现前的 17 组对拍确认，三类正式输入通过，其余拒绝。
 const openapiDraft = `openapi: 3.1.0
 info: { title: Example, version: 0.1.0-draft }
 paths:
@@ -805,27 +804,21 @@ const openapiVariants = {
 };
 for (const [name, spec] of Object.entries(openapiVariants)) {
   test(`OpenAPI Draft validation 回放：${name}`, {skip}, () => {
-    const {record, ...rest} = spec;
-    let base;
-    const c = openapiCase({...rest, record: (r, ctx) => { base = ctx.base; return record ? record(r, ctx) : r; }});
-    let node;
-    try { validateOpenApiDraftValidationRecord(path.join(c.target, c.ref), {root: c.target}); node = {ok: true}; } catch (error) { node = {ok: false, message: String(error.message).slice(0, 100)}; }
+    const c = openapiCase(spec);
+    const expectedPassed = ['通过', '锁文件为 pnpm 9 风格', '指向其他文件的合法 $ref'].includes(name);
     const go = nativeContractVerify({root: c.target, kind: 'openapi-validation', file: c.ref});
-    assert.equal(go.exitCode === 0, node.ok, `结论不一致：Node=${JSON.stringify(node)} Go=${go.exitCode} ${go.message.slice(0, 160)}`);
-    if (name === '通过') assert.equal(node.ok, true, `基线必须通过：${node.message}`);
-    else assert.doesNotMatch(String(node.message), /ENOENT.*\.json/, '拒绝原因不能是找不到记录文件');
+    assert.equal(go.exitCode === 0, expectedPassed, `固定预期不一致：${name} Go=${go.exitCode} ${go.message.slice(0, 160)}`);
+    if (expectedPassed) assert.equal(go.envelope.result.coverage.openapi_validation.draft_ref, c.draftRef);
+    else assert.doesNotMatch(go.message, /ENOENT.*openapi-record/, '拒绝原因不能是找不到记录文件');
   });
 }
 test('OpenAPI Draft validation 回放：--allow-template 只接受模板记录', {skip}, () => {
-  const template = path.join(REPO, '.template-spec/api/templates/openapi-draft-validation-record-template.yaml');
   const ref = '.template-spec/api/templates/openapi-draft-validation-record-template.yaml';
-  assert.equal(validateOpenApiDraftValidationRecord(template, {root: REPO, allowTemplate: true}).template, true);
   const go = nativeContractVerify({root: REPO, kind: 'openapi-validation', file: ref, extra: ['--allow-template']});
   assert.equal(go.exitCode, 0, go.message);
   assert.equal(go.envelope.result.coverage.openapi_validation.template, true);
   // 正式记录加 --allow-template 必须拒绝（模板标记为 false）
   const c = openapiCase();
-  assert.throws(() => validateOpenApiDraftValidationRecord(path.join(c.target, c.ref), {root: c.target, allowTemplate: true}));
   assert.notEqual(nativeContractVerify({root: c.target, kind: 'openapi-validation', file: c.ref, extra: ['--allow-template']}).exitCode, 0);
 });
 
@@ -870,4 +863,51 @@ test('脚手架架构选择回放：--allow-template 接受模板记录', {skip}
   const go = nativeContractVerify({root: REPO, kind: 'scaffold-decisions', file: ref, extra: ['--allow-template']});
   assert.equal(go.exitCode, 0, go.message);
   assert.notEqual(nativeContractVerify({root: REPO, kind: 'scaffold-decisions', file: ref}).exitCode, 0);
+});
+
+test('维护任务回放：嵌套 Git 不阻断仓外证据，登记仓库与符号链接仍受保护', {skip}, () => {
+  const base = realpathSync(mkdtempSync(path.join(os.tmpdir(), 'maintenance-task-replay-')));
+  cleanupDirs.add(base);
+  const root = path.join(base, 'template'), home = path.join(base, 'runtime');
+  mkdirSync(root);
+  for (const ref of ['yss-project.yaml', 'CONTEXT.md', '.template-spec', '.agents/skills/yss-product-lifecycle/references', '.template-source/process/maintenance-intensity.yaml']) {
+    mkdirSync(path.dirname(path.join(root, ref)), {recursive: true});
+    cpSync(path.join(REPO, ref), path.join(root, ref), {recursive: true, verbatimSymlinks: true});
+  }
+  const maintenance = path.join(home, createHash('sha256').update(root).digest('hex'), 'maintenance/checkpoints');
+  mkdirSync(maintenance, {recursive: true});
+  writeFileSync(path.join(maintenance, 'fixture.json'), JSON.stringify({schema_version: 1, intensity: 'L1', classification_reason: 'maintenance read fixture', triggers: ['textual-only'], changed_assets: ['CONTEXT.md'], verification_evidence: [{kind: 'relevant-check', command: 'fixture', result: 'pass'}], review_mode: 'self-check', escalation: 'none'}));
+  const value = generateTaskPackageDefaults('role.backend-engineer', {task_id: 'maintenance-read', work_unit_id: 'work-unit.maintenance-research', actor_id: 'fixture.worker', runtime_id: 'runtime.generic', execution_state: 'Worker', workflow_status: 'active',
+    contract: {kind: 'template-maintenance', contract_id: 'fixture', contract_version: 1, status: 'issued', contract_ref: 'CONTEXT.md', maintenance_ref: 'maintenance:checkpoints/fixture.json'},
+    inputs: ['CONTEXT.md'], objective: '核验维护引用读取边界', allowed_write_paths: ['CONTEXT.md'], forbidden_actions: ['修改实现'], expected_outputs: ['校验结果'], expected_evidence_files: ['CONTEXT.md'], verification_commands: ['fixture'], verification_results: [], downstream_consumers: ['fixture.controller'], convergence: {parent_work_unit: 'work-unit.maintenance-research', convergence_ref: 'CONTEXT.md', conflict_escalation: 'fixture.controller'}});
+  writeFileSync(path.join(root, 'task.json'), JSON.stringify(value));
+  const verify = (runtimeHome = home) => nativeContractVerify({root, kind: 'task', file: 'task.json', environment: {...process.env, YSS_RUNTIME_HOME: runtimeHome}});
+  const pass = () => { const r = verify(); assert.equal(r.exitCode, 0, r.message); };
+  pass();
+  const child = path.join(root, '.work/cli'); mkdirSync(path.join(child, '.git'), {recursive: true}); pass();
+  rmSync(path.join(child, '.git'), {recursive: true}); writeFileSync(path.join(child, '.git'), 'gitdir: /fixture-only'); pass(); unlinkSync(path.join(child, '.git'));
+  mkdirSync(path.join(child, 'node_modules')); writeFileSync(path.join(child, 'node_modules/package.json'), '{}'); pass(); rmSync(path.join(child, 'node_modules'), {recursive: true});
+  const external = path.join(base, 'registered'); mkdirSync(external);
+  writeFileSync(path.join(child, 'registration.json'), JSON.stringify({project_root: external}));
+  const denied = verify(path.join(external, 'runtime')); assert.notEqual(denied.exitCode, 0); assert.match(denied.message, /已登记仓库/);
+  for (const name of ['.git', 'node_modules', 'linked']) {
+    // 真实链接必须拒绝，不能被目录过滤规则隐藏。
+    symlinkSync(external, path.join(child, name), 'dir');
+    const linked = verify(); assert.notEqual(linked.exitCode, 0); assert.match(linked.message, /符号链接/); unlinkSync(path.join(child, name));
+  }
+  unlinkSync(path.join(child, 'registration.json'));
+  const runtimeRoot = path.join(base, 'runtime-instance');
+  const initialized = spawnSync(binary, ['init', '--profile', 'spec', '--root', runtimeRoot, '--project-name', 'capacity'], {encoding: 'utf8'});
+  assert.equal(initialized.status, 0, initialized.stderr || initialized.stdout);
+  const crowded = path.join(runtimeRoot, '.work/crowded'); mkdirSync(crowded, {recursive: true});
+  for (let i = 0; i < 20000; i++) writeFileSync(path.join(crowded, 'file-' + String(i).padStart(5, '0') + '.txt'), '');
+  const inspect = runtimeHome => spawnSync(binary, ['runtime', 'inspect', '--root', runtimeRoot, '--json'], {encoding: 'utf8', env: {...process.env, YSS_RUNTIME_HOME: runtimeHome}});
+  const ordinary = inspect(home); assert.equal(ordinary.status, 0, ordinary.stderr || ordinary.stdout);
+  // 登记项排在全部普通文件之后，证明普通路径保护完整扫描，不能到达上限后成功截断。
+  writeFileSync(path.join(crowded, 'z-registration.json'), JSON.stringify({project_root: external}));
+  const protectedLate = inspect(path.join(external, 'runtime'));
+  assert.notEqual(protectedLate.status, 0); assert.match(protectedLate.stderr + protectedLate.stdout, /已登记仓库/);
+  renameSync(crowded, path.join(root, '.work/crowded'));
+  const bounded = verify(); assert.notEqual(bounded.exitCode, 0); assert.match(bounded.message, /20000/);
+
 });

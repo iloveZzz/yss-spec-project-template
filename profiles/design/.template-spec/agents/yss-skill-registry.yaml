@@ -265,10 +265,7 @@ invocation_contract:
       invocation_mode: user
     llm-wiki:
       invocation_mode: user
-agent_runtime_roots:
-  codex: .codex/skills
-  cursor: .cursor/skills
-  pi: .pi/skills
+agent_runtime_roots: {}
 
 skills:
   - {

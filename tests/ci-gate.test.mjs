@@ -76,9 +76,9 @@ async function gate(t, options = {}, env = {}) {
   return { ...f, ...result, out: out.text, err: err.text, calls };
 }
 
-test("步骤集中在一个数组里，顺序固定，后续工作包只追加", () => {
+test("步骤集中在一个数组里，按固定顺序执行合入检查", () => {
   assert.deepEqual(STEPS.map((step) => step.id), [
-    "agent-config", "sync-skills", "skill-lock", "lifecycle-registry", "skill-registry", "doc-facts", "node-engines", "verify-template", "verify-candidate",
+    "agent-config", "sync-skills", "skill-lock", "lifecycle-registry", "skill-registry", "doc-facts", "node-engines", "verify-template",
   ]);
   assert.equal(new Set(STEPS.map((step) => step.id)).size, STEPS.length);
   assert.ok(STEPS.every((step) => step.title && (step.command || step.run)));
@@ -139,7 +139,7 @@ test("AC-004：推送模式全部通过，报告在仓外，仓内没有新增�
   const run = await gate(t);
   assert.equal(run.exitCode, 0, run.err);
   assert.equal(run.report.status, "passed");
-  assert.deepEqual(run.report.steps.map((step) => step.id), [...STEPS.map((step) => step.id).filter((id) => id !== "verify-candidate"), "repository-unchanged"]);
+  assert.deepEqual(run.report.steps.map((step) => step.id), [...STEPS.map((step) => step.id), "repository-unchanged"]);
   assert.ok(run.report.steps.every((step) => step.status === "passed" && step.exit_code === 0 && fs.existsSync(step.log)));
   assert.equal(run.reportPath, path.join(run.reportDir, "report.json"));
   assert.ok(path.relative(run.root, run.reportDir).startsWith(".."));
@@ -159,7 +159,7 @@ test("推送模式的 fast 以 HEAD^ 为范围基准，没有上一提交时不�
   assert.ok(fast && !fast.includes("--base"), fast);
 });
 
-test("PR 模式把完整 base SHA 交给 fast（阻断）与 candidate（非阻断）", async (t) => {
+test("PR 模式只执行 fast 阻断验证并传递完整 base SHA", async (t) => {
   const run = await gate(t, { mode: "pr" });
   assert.equal(run.exitCode, 0, run.err);
   assert.equal(run.report.base, run.base);
@@ -168,19 +168,8 @@ test("PR 模式把完整 base SHA 交给 fast（阻断）与 candidate（非阻�
   assert.equal(fast.length, 1);
   assert.match(fast[0], new RegExp(`--base ${run.base} --report-dir ${path.join(run.reportDir, "verification").replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`));
   const candidate = run.calls.filter((line) => line.startsWith("verify-template-candidate "));
-  assert.equal(candidate.length, 1);
-  assert.match(candidate[0], new RegExp(`--base ${run.base} --report-dir ${path.join(run.reportDir, "candidate").replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`));
-  assert.equal(run.report.steps.find((step) => step.id === "verify-candidate").status, "passed");
-});
-
-test("PR 模式 candidate 失败只记录，退出码仍由阻断步骤决定", async (t) => {
-  const run = await gate(t, { mode: "pr" }, { STUB_FAIL: "verify-template-candidate" });
-  assert.equal(run.exitCode, 0, run.err);
-  assert.equal(run.report.status, "passed");
-  const candidate = run.report.steps.find((step) => step.id === "verify-candidate");
-  assert.equal(candidate.status, "failed-nonblocking");
-  assert.equal(candidate.exit_code, 1);
-  assert.match(run.err, /步骤: verify-candidate/);
+  assert.equal(candidate.length, 0);
+  assert.ok(!run.report.steps.some((step) => step.id === "verify-candidate"));
 });
 
 test("AC-003：投影检查失败时输出步骤名、命令、日志与修复命令，并继续跑其它便宜检查", async (t) => {
@@ -195,7 +184,7 @@ test("AC-003：投影检查失败时输出步骤名、命令、日志与修复�
   assert.match(fs.readFileSync(failed.log, "utf8"), /sync-skills 失败输出/);
   assert.match(run.err, new RegExp(failed.log.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
   assert.equal(run.report.steps.find((step) => step.id === "skill-registry").status, "passed");
-  for (const id of ["verify-template", "verify-candidate"]) assert.equal(run.report.steps.find((step) => step.id === id).status, "skipped", id);
+  assert.equal(run.report.steps.find((step) => step.id === "verify-template").status, "skipped");
   assert.ok(!run.calls.some((line) => line.startsWith("verify-template-")));
   assert.match(run.out, /ci-gate 失败：sync-skills/);
 });
@@ -208,11 +197,12 @@ test("每个检查脚本失败都会让整体失败并落在报告里", async (t
   }
 });
 
-test("fast 失败时报告失败并保留退出码，PR 模式下 candidate 随之跳过", async (t) => {
+test("PR 模式 fast 失败时报告失败并保留退出码", async (t) => {
   const run = await gate(t, { mode: "pr" }, { STUB_FAIL: "verify-template-fast" });
   assert.equal(run.exitCode, 1);
   assert.equal(run.report.steps.find((step) => step.id === "verify-template").exit_code, 1);
-  assert.equal(run.report.steps.find((step) => step.id === "verify-candidate").status, "skipped");
+  assert.equal(run.report.status, "failed");
+  assert.ok(!run.calls.some((line) => line.startsWith("verify-template-candidate")));
 });
 
 test("非阻断步骤失败只记录，不改变退出码", async (t) => {

@@ -1,4 +1,5 @@
 import test from 'node:test';
+import {loadLegacyManifest} from '../.template-source/scripts/lib/legacy-verification.mjs';
 import {composeProfileTree} from '../scripts/lib/profile-tree.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -65,7 +66,8 @@ test('未知迁移、缺失真实目标和链接逃逸不能回落到已退役�
 });
 
 test('冻结legacy清单和覆盖身份不因入口迁移被改写',()=>{
-  const ref=new URL('../.template-source/process/template-verification-legacy.json',import.meta.url),manifest=JSON.parse(fs.readFileSync(ref));
+  // 本历史清单在现役树中已退役，只读取明确包含它的固定提交。
+  const root=new URL('..',import.meta.url).pathname,commit='0abbe49ee4cfd8608beab95243520888228dad41',manifest=loadLegacyManifest(root,commit);
   const {coverage_digest,...body}=manifest;
   assert.equal(createHash('sha256').update(JSON.stringify(body)).digest('hex'),coverage_digest);
   assert.equal(coverage_digest,'3aa58425b03fda2291ebc78eea62381c602cd4592d4c4db87f197f82da9705f4');

@@ -16,9 +16,6 @@
 
 ```text
 ├── .agents/                 ← 跨 Agent 共享 skills 的权威内容
-├── .codex/                  ← Codex skills 投影与平台专属 skills
-├── .cursor/                 ← Cursor skills 投影
-├── .pi/                     ← Pi skills 投影与平台专属 skills
 ├── AGENTS.md                ← AI 指令
 ├── CONTEXT.md               ← 业务词汇表
 ├── yss-project.yaml         ← 仓库身份清单
@@ -40,7 +37,7 @@
 
 1. 先读取 `yss-project.yaml`，按 `repository_mode` 选择模板维护或内部兼容 ID `harness.business-ddd-strategy-handoff` 对应的业务方案设计流程。
 2. 必读入口为 `AGENTS.md` 与 `CONTEXT.md`；本地职责边界以 `.template-spec/process/harness-profile.yaml` 为准，生命周期 ID 以 `.template-spec/process/lifecycle-registry.yaml` 为准。
-3. `template-source` 修改后默认执行 `scripts/verify-template-fast`；共享 skill 变化时再执行必要的投影与 lock 更新。PR 使用 candidate 核验，发布使用完整门禁。
+3. `template-source` 修改后默认执行 `scripts/verify-template-fast`；共享 skill 变化时再执行必要的 lock 更新。PR 使用 `scripts/verify-template-fast --base <完整 SHA>`，发布使用完整门禁。
 4. `project-instance` 使用 `yss-strategic-design`：机会调研 → Spec → 页面原型 → 业务级 Ticket → `work-unit.strategic-design-handoff`。不要在本地拆垂直切片或进入实现。
 5. OpenAPI、技术设计、实现仓库和覆盖率门禁属于下游研发 profile，不是本仓硬门禁。
 
@@ -61,10 +58,9 @@ yss init --profile design --root /absolute/path/to/project --apply --plan-file /
 
 ## 模板配置取舍
 
-`.agents/skills` 是共享技能的权威内容；其他 Agent root 只保存同步投影和平台专属技能。共享技能只能在权威目录修改，随后运行：
+`.agents/skills` 是唯一技能目录，不再生成 Agent 投影。模板源在根仓内核与 Profile 覆盖层维护技能，并在组合后的完整目录更新锁；实例保留有效哈希校验：
 
 ```bash
-scripts/sync-skills
 scripts/update-skill-lock
 ```
 
@@ -76,14 +72,16 @@ Matt skills 的上游来源与固定 revision 见 [`skills-lock.json`](skills-lo
 
 ```bash
 scripts/verify-template-fast
-scripts/verify-template-candidate
+# PR 按完整基线选择本轮检查
+scripts/verify-template-fast --base <完整 SHA>
+# 正式发布
 scripts/verify-template
 ```
 
-`fast` 按 Git 影响面选择检查组并并行执行；`candidate` 追加候选完整性检查；`verify-template` 保留不可裁剪的完整发布门禁。未映射路径和核心核验资产变化会自动升级到完整门禁。检查内容包括：
+`fast` 按 Git 影响面选择必要检查，报告范围为 `limited`；`verify-template` 执行 release 的全部适用检查，要求已提交来源。未映射路径或非法依赖在计划阶段拒绝，核心变化按对应行为与消费者选择检查。检查内容包括：
 
 - `yss-project.yaml`、权威流程资产、Harness profile 和实例分发清单是否完整。
-- 共享技能投影及 `skills-lock.json` 的完整树哈希是否一致。
+- canonical 技能及 `skills-lock.json` 的完整树哈希是否一致。
 - `project-instance` 不得包含 OpenAPI / 垂直切片实现 / 模板源治理区等禁止路径。
 - 流程压力场景是否符合条件门禁和仓库身份路由。
 - Git diff 是否存在空白错误。

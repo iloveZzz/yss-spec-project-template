@@ -137,6 +137,18 @@ test('违规：已删除的同步机制或 Profile 子模块登记重新出现',
   assert.match(formatReport(result), /不应重新出现/);
 });
 
+test('FR-006：分发守卫拒绝技能投影和根内旧清单，但允许明确排除及非技能配置', (t) => {
+  const files = ['.claude/skills/x/SKILL.md', '.codex/skills/x/SKILL.md', '.cursor/skills/.yss-skills-manifest.json', '.pi/skills/x/SKILL.md'];
+  const policy = { ...GOOD_PROFILE, allowRootEntries: [...GOOD_PROFILE.allowRootEntries, '.claude', '.codex', '.cursor', '.pi'] };
+  const root = workspace(t, { backend: { policy, files: [...files, '.codex/instructions.md'] } });
+  const result = evaluateAll(root);
+  assert.equal(result.ok, false);
+  assert.deepEqual(result.reports.find((report) => report.profile === 'backend').findings.map((finding) => finding.path).sort(), [...files].sort());
+  assert.match(formatReport(result), /技能投影/);
+  const excluded = { ...policy, excludePaths: [...policy.excludePaths, '.claude/skills', '.codex/skills', '.cursor/skills', '.pi/skills'] };
+  assert.equal(evaluateAll(workspace(t, { backend: { policy: excluded, files: [...files, '.codex/instructions.md'] } })).ok, true);
+});
+
 test('命令行：合规退出 0，违规退出 1 并写 stderr，参数错误退出 1', (t) => {
   const ok = spawnSync(process.execPath, [SCRIPT, '--root', workspace(t)], { encoding: 'utf8' });
   assert.equal(ok.status, 0, ok.stderr);

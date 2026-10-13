@@ -3,21 +3,28 @@ import path from "node:path";
 
 /**
  * Node 治理内核的导入方向检查：只读、纯文本解析，不加载任何模块。
- *   1. scripts/lib 内部不得有导入环（强连通分量大于 1 的模块集合）；
+ *   1. scripts/lib 与 .template-source/scripts/lib 之间不得有导入环（强连通分量大于 1 的模块集合）；
  *   2. 登记在 core 层的模块只能导入 core 层模块（以及 node: 内置与 ../vendor）。
  * core 层登记在 .template-source/process/node-core-layer.json，只列最底层的读写、schema、注册表、摘要与决定 IO。
  */
 export const CORE_LAYER_REGISTRY = ".template-source/process/node-core-layer.json";
-const IMPORT = /(?:from\s+|import\s*\(\s*|import\s+)["'](\.\/[^"']+\.mjs)["']/g;
+const IMPORT = /(?:from\s+|import\s*\(\s*|import\s+)["'](\.\.?\/[^"']+\.mjs)["']/g;
 
 export function scanImports(root) {
-  const dir = path.join(root, "scripts/lib");
-  const graph = new Map();
-  for (const file of readdirSync(dir).filter((name) => name.endsWith(".mjs")).sort()) {
-    const text = readFileSync(path.join(dir, file), "utf8");
-    graph.set(file.replace(/\.mjs$/, ""), [...new Set([...text.matchAll(IMPORT)].map((match) => match[1].slice(2).replace(/\.mjs$/, "")))]);
+  const graph = new Map(), files = new Map();
+  const name = ref => ref.startsWith('scripts/lib/') ? ref.slice('scripts/lib/'.length, -4) : ref.slice(0, -4);
+  for (const directory of ['scripts/lib', '.template-source/scripts/lib']) {
+    const dir = path.join(root, directory);
+    if (!existsSync(dir)) continue;
+    for (const file of readdirSync(dir).filter(file => file.endsWith('.mjs')).sort()) {
+      const ref = `${directory}/${file}`;
+      files.set(path.resolve(root, ref), name(ref));
+    }
   }
-  for (const [name, deps] of graph) graph.set(name, deps.filter((dep) => graph.has(dep)));
+  for (const [file, id] of files) {
+    const deps = [...readFileSync(file, 'utf8').matchAll(IMPORT)].map(match => files.get(path.resolve(path.dirname(file), match[1]))).filter(Boolean);
+    graph.set(id, [...new Set(deps)]);
+  }
   return graph;
 }
 
@@ -36,7 +43,7 @@ export function findCycles(graph) {
       const members = [];
       let member;
       do { member = stack.pop(); onStack.delete(member); members.push(member); } while (member !== node);
-      if (members.length > 1) components.push(members.sort());
+      if (members.length > 1 || graph.get(node)?.includes(node)) components.push(members.sort());
     }
   };
   for (const node of graph.keys()) if (!index.has(node)) visit(node);

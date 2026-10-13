@@ -2,6 +2,14 @@
 
 本文记录已退役技能入口的迁移路径。退役技能不保留物理目录、投影或 lock 条目；本文件是历史名称的唯一持久兼容说明。
 
+## 投影根收敛与 `product-design` 移出（2026-10-13）
+
+`.agents/skills` 是唯一技能目录；新实例不再分发 `.claude/skills`、`.codex/skills`、`.cursor/skills`、`.pi/skills`，注册表和锁不再关联运行时与投影根。运行环境按其实际能力引用 canonical 技能，不依赖投影自动发现。
+
+- 原生旧实例通过 `yss sync --plan` 审阅这些目录内受管文件的删除，包括旧投影清单；可逐文件选择 `keep-local`。定制内容进入冲突处理，不自动覆盖；保留决定由后续同步继续遵守。
+- `product-design` 不再随 Profile 或新实例分发，需要时由使用者自行安装官方插件；模板不代为安装。
+- `platform_skills` 机制保留，当前登记为空；实例锁仍计算并核验 `effectiveHash`。
+
 ## `yss-harness-upgrade` 更名（2026-10-08）
 
 安装和实例维护入口统一为 `setup-yss-harness`，支持用户级独立调用、环境分流及有效授权内的规划、应用与验收。新请求命中旧 ID 返回 `skill-retired` 并指向新技能；活跃源码不保留旧目录、投影、Registry alias 或 lock 条目。

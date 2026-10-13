@@ -5,9 +5,20 @@ import {createHash} from 'node:crypto';
 import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {compileDeliveryPreparationTasks} from './verification-delivery-run.mjs';
-import {compileVerificationCheck} from './verification-gates.mjs';
 
 const hash=value=>createHash('sha256').update(value).digest('hex');
+export const verificationCheckId = item => item.id || `check.${hash(`${item.when||''}\0${item.command||item.run}`).slice(0,16)}`;
+
+export function compileVerificationCheck(raw,{group,profile='release',gateIds=[],taskId}={}) {
+  const item=typeof raw==='string'?{run:raw}:raw;
+  if(typeof item.run!=='string'||!item.run)throw Error('VERIFICATION_COMMAND_INVALID');
+  const sourceProfile=profile==='legacy-full'?'release':profile;
+  const command=`${item.run}${item.require_committed_for?.includes(sourceProfile)&&!item.run.endsWith(' --require-committed')?' --require-committed':''}`;
+  const result={id:verificationCheckId(item),group:group||item.group,command,when:item.when??null,depends_on:[...(item.depends_on||[])],gate_ids:[...gateIds]};
+  if(taskId||item.task_id)result.task_id=taskId||item.task_id;
+  for(const field of ['lane','resources','parallel_unless_env'])if(item[field]!==undefined)result[field]=structuredClone(item[field]);
+  return result;
+}
 const quote=value=>`'${String(value).replaceAll("'","'\\''")}'`;
 
 // Frozen legacy commands retain their identity; only their observed execution
@@ -83,8 +94,14 @@ export function assertVerificationSources(plan,root) {
   }
   if(missing.length)throw new TypeError(`缺少模板必需文件: ${missing.join(', ')}`);
 }
-function observedRetiredTarget(root,ref) {
+function observedRetiredTarget(root,ref,fixedCommit) {
   const target=resolveVerificationSource(ref),file=path.resolve(root,target);
+  if(fixedCommit){
+    if(!/^[a-f0-9]{40}$/.test(fixedCommit))throw new TypeError('历史来源必须绑定完整 SHA');
+    const observed=spawnSync('git',['ls-tree',fixedCommit,'--',target],{cwd:root,encoding:'utf8'});
+    if(observed.status!==0||!/^100(?:644|755) blob [a-f0-9]{40}\t/.test(observed.stdout))throw new TypeError(`HISTORICAL_SCRIPT_TARGET_MISSING: ${target}`);
+    return file;
+  }
   if(!fs.existsSync(file))throw new TypeError(`RETIRED_SCRIPT_TARGET_MISSING: ${ref} -> ${target}`);
   const relative=path.relative(fs.realpathSync(root),fs.realpathSync(file));
   if(fs.lstatSync(file).isSymbolicLink()||!fs.statSync(file).isFile()||relative.startsWith(`..${path.sep}`)||relative==='..'||path.isAbsolute(relative))throw new TypeError(`RETIRED_SCRIPT_TARGET_INVALID: ${ref}`);
@@ -120,7 +137,7 @@ export function compileTaskExecution(task,{root,reportDir,fixedCommit}={}){
   // current profile calls the public native tests directly with its own request.
   if(task.task_id==='legacy.012'||requested===retiredCoreTestCommand) {
     if(task.task_id!=='legacy.012'||task.id!=='check.371da192d6338e6d'||task.command!==retiredCoreTestCommand)throw new TypeError('RETIRED_CHECK_REQUEST_MISMATCH');
-    const file=observedRetiredTarget(root,retiredCoreTestSource);
+    const file=observedRetiredTarget(root,retiredCoreTestSource,fixedCommit);
     return {requested_command:task.command,file:process.execPath,args:['--test','--test-concurrency=1',file],cwd:root,environment:{}};
   }
   if(/^(?:node\s+)?scripts\/verify-context-contract(?:\s|$)/.test(requested)) {
@@ -137,7 +154,7 @@ export function compileTaskExecution(task,{root,reportDir,fixedCommit}={}){
   if(retiredRequest) {
     const [ref,...args]=shellWords(requested);
     if(ref==='scripts/instantiate-harness')throw new TypeError('RETIRED_SCRIPT_REQUEST_UNSUPPORTED: instantiate-harness');
-    const file=observedRetiredTarget(root,ref);
+    const file=observedRetiredTarget(root,ref,fixedCommit);
     return file.endsWith('.py')?pythonExecution(task,root,file,args):{requested_command:task.command,file:process.execPath,args:[file,...args],cwd:root,environment:{}};
   }
   if(!/^(?:node(?:\.exe)?|['"][^'"]*[\\/]node(?:\.exe)?['"]|\S*[\\/]node(?:\.exe)?)\s/.test(requested))return null;
@@ -148,7 +165,7 @@ export function compileTaskExecution(task,{root,reportDir,fixedCommit}={}){
   if(!words.includes('-e')&&!words.includes('--eval')&&!words.includes('--input-type=module')) {
     const refs=words.filter(word=>retiredSources.has(word)||/^scripts\/verify-[^/]+-scenarios$/.test(word));
     if(refs.length) {
-      const mapped=words.map(word=>refs.includes(word)?observedRetiredTarget(root,word):word);
+      const mapped=words.map(word=>refs.includes(word)?observedRetiredTarget(root,word,fixedCommit):word);
       const python=mapped.filter(word=>word.endsWith('.py'));
       if(python.length) {
         if(python.length!==1||mapped.length!==2||mapped[0]!=='--check')throw new TypeError('RETIRED_SCRIPT_PYTHON_REQUEST_UNSUPPORTED');
@@ -205,7 +222,7 @@ export function addVerificationExecutionTasks(plan,{root,repositoryMode='templat
   plan.not_applicable??=[];
   plan.commands=plan.commands.filter(task=>{if(task.when&&task.when!==repositoryMode){plan.not_applicable.push({...task,reason:'repository-mode'});return false;}return true;});
   const append=item=>{if(!plan.commands.some(task=>task.task_id===item.task_id))plan.commands.push(item);};
-  if(daily||plan.effective_profile==='release'||plan.strategy==='qualified-gates') {
+  if(daily||plan.effective_profile==='release') {
     const selected=daily?dailyParsingTargets(plan,root):(plan.syntax_files||[]);
     const extras=reference?[]:(plan.changed_files||[]).filter(ref=>fs.existsSync(path.join(root,ref))&&fs.statSync(path.join(root,ref)).isFile()).filter(ref=>/\.(mjs|cjs|js)$/.test(ref)||ref.startsWith('scripts/')&&!path.extname(ref)&&/^#!\s*(?:\S*\/)?(?:node(?:\.exe)?|env\s+(?:-S\s+)?node(?:\.exe)?)(?:\s|$)/.test(fs.readFileSync(path.join(root,ref),'utf8').split(/\r?\n/,1)[0]));
     const files=reference?selected:[...new Set([...selected,...extras])];

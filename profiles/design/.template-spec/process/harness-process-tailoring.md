@@ -44,9 +44,9 @@ Fresh Verification 指当前范围的真实验证，不等于全仓检查。按�
 
 命中 counterexample_triggers 的每项风险还须有对应真实拒绝运行记录。L1 不人为构造 RED；普通 L2 不强制通用反例；权限边界、生命周期门禁、发布语义仍须对应实际反例。未知 trigger 先更新策略；发现新影响重新分级并补受影响证据。重要缺陷与必要证据继续阻断。
 
-日常交付默认 implementation-ready，执行本轮改动及直接 / 传递依赖的定向检查。先看 scripts/verify-template-fast --plan；计划扩大到全量时改做有明确范围的定向检查，记录选择依据、实际命令、退出码与未覆盖风险。未知影响先调查，不用全量兜底；定向通过不冒充整个 fast / candidate / release 通过。
+日常交付默认 implementation-ready，执行本轮改动及直接 / 传递依赖的定向检查。先看 scripts/verify-template-fast --plan；计划扩大到全量时改做有明确范围的定向检查，记录选择依据、实际命令、退出码与未覆盖风险。未知影响先调查，不用全量兜底；定向通过不冒充整个 fast / release 通过。
 
-日常不因交付措辞、维护等级、当前分支为 main 或缺发布 baseline 自动全量，也不依次运行三个入口。PR 候选使用 scripts/verify-template-candidate；main 集成验证及正式发布任务使用 scripts/verify-template。各入口的机器计划、拒绝与回退规则保持生效，正式任务选中集合不得手工删减；发布另须固定版本生成器与实例兼容证据及实际授权。
+日常不因交付措辞、维护等级、当前分支为 main 或缺发布 baseline 自动全量，不自动追加 release。PR 使用 `scripts/verify-template-fast --base <完整 SHA>`；main 集成验证及正式发布任务使用 scripts/verify-template。fast 保留输入选择与拒绝规则，release 执行当前全部适用集合，正式任务选中集合不得手工删减；发布另须固定版本生成器与实例兼容证据及实际授权。
 
 当前维护策略 schema v2 只定义 L1/L2，L1 有 3 项触发、L2 有 9 项具体影响触发，默认 L2。冻结 maintenance-intensity-v1.yaml 仅供 --history 按原规则只读核验历史 L1/L2/L3；当前拒绝 L3，不改写旧批准、状态或摘要。新维护 checkpoint 使用 schema v2；历史 v1 只读兼容。日常形状如下，逐条 evidence 填本轮实际范围，verification_profile 表示交付层级：
 

@@ -5,9 +5,10 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { inspectWorkUnitSkills } from '../scripts/lib/lifecycle-context-query.mjs';
 import { lockedTreeHashMatches, treeHash } from '../scripts/lib/skill-supply-chain.mjs';
+import { composeProfileTree, PROFILE_NAMES } from '../scripts/lib/profile-tree.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -69,6 +70,30 @@ test('技能就绪检查：没有任何运行时登记时不要求 --agent-runti
     };
     write([]);
     assert.deepEqual(inspectWorkUnitSkills({ root, registry, route }).issues.map((issue) => issue.code), []);
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
+for (const profile of PROFILE_NAMES) test(`${profile} 技能预检：无运行时仍就绪，实例哈希漂移和未登记技能仍拒绝`, async () => {
+  const { inspectWorkUnitSkills: inspect } = await import(pathToFileURL(path.join(composeProfileTree(profile), 'scripts/lib/lifecycle-context-query.mjs')));
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), `skill-lock-${profile}-`));
+  try {
+    const source = path.join(root, '.agents/skills/main');
+    fs.mkdirSync(source, { recursive: true });
+    fs.writeFileSync(path.join(source, 'SKILL.md'), '---\nname: main\n---\nFixture\n');
+    fs.writeFileSync(path.join(root, '.yss-template.json'), JSON.stringify({ metadataSchemaVersion: 3, templateName: `create-yss-${profile}`, distribution: { mode: 'profile-full' }, managedFiles: {} }));
+    const registry = { agent_runtime_roots: {}, skills: [{ id: 'main', maturity: 'supported', aliases: [] }], external_skills: [], skill_dependencies: {} };
+    const writeLock = (shared) => fs.writeFileSync(path.join(root, 'skills-lock.json'), JSON.stringify({ version: 3, projectionRoots: [], skills: { shared } }));
+    const codes = () => inspect({ root, registry, route: { primary_skill: 'main' } }).issues.map((issue) => issue.code);
+    writeLock({ main: { targets: ['.agents/skills'], effectiveHash: treeHash(source) } });
+    assert.deepEqual(codes(), []);
+    writeLock({ main: { targets: ['.agents/skills'] } });
+    assert.deepEqual(codes(), ['skill-hash-drift'], '专职 Profile 的实例锁不能省略 effectiveHash');
+    writeLock({ main: { targets: ['.agents/skills'], effectiveHash: '0'.repeat(64) } });
+    assert.ok(codes().includes('skill-hash-drift'));
+    writeLock({});
+    assert.ok(codes().includes('skill-path-conflict'));
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
   }

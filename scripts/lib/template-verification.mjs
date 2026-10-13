@@ -1,12 +1,11 @@
-import { applyVerificationSelection, applyDailyVerificationSelection, verificationCheckId } from './verification-selection.mjs';
-import {buildGatePlan, compileVerificationCheck, validateGateConfiguration, loadLegacyManifest, verificationPolicyDigest, assertQualificationReportParameters} from '../../.template-source/scripts/lib/verification-gates.mjs';
+import { applyDailyVerificationSelection, verificationCheckId } from './verification-selection.mjs';
+import {buildReleasePlan, compileVerificationCheck, verificationPolicyDigest} from '../../.template-source/scripts/lib/verification-gates.mjs';
 import {assertBaselineParameters,validateBaseline} from '../../.template-source/scripts/lib/verification-baseline.mjs';
 import {assertVerificationSources,verificationSourceIdentities} from '../../.template-source/scripts/lib/verification-execution-plan.mjs';
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseDocument } from "../vendor/yaml.mjs";
-import { expandLegacyCoverage } from "./legacy-coverage.mjs";
 
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 export const PROFILE_FILE = path.join(ROOT, ".template-source/process/template-verification-profiles.yaml");
@@ -34,9 +33,8 @@ export function loadVerificationProfiles(source = readFileSync(PROFILE_FILE, "ut
   const document = parseDocument(source, { uniqueKeys: true });
   ensure(document.errors.length === 0, document.errors[0]?.message || "核验 profile 无法解析");
   const config = document.toJS({ maxAliasCount: 0 });
-  expandLegacyCoverage(config);
   ensure(config?.schema_version === 1, "核验 profile schema_version 必须为 1");
-  ensure(config.profiles?.fast && config.profiles?.candidate && config.profiles?.release, "必须声明 fast、candidate、release profile");
+  ensure(config.profiles?.fast && config.profiles?.release && Object.keys(config.profiles).every(name=>['fast','release'].includes(name)), "必须只声明 fast、release profile");
   ensure(config.groups && typeof config.groups === "object", "核验 profile 缺少 groups");
   for (const rule of config.routing || []) {
     for (const field of ["patterns", "exclude_patterns", "groups"]) {
@@ -50,7 +48,7 @@ export function loadVerificationProfiles(source = readFileSync(PROFILE_FILE, "ut
       ensure(entry && typeof entry === "object", `检查组 ${name} 包含无效命令`);
       if(entry.id!==undefined)ensure(/^check\.[a-zA-Z0-9._-]+$/.test(entry.id),`检查组 ${name} 的 id 无效`);
       if(entry.inputs_complete!==undefined)ensure(typeof entry.inputs_complete==='boolean',`检查组 ${name} 的 inputs_complete 无效`);
-      if(entry.require_committed_for!==undefined)ensure(Array.isArray(entry.require_committed_for)&&entry.require_committed_for.every(value=>['candidate','release'].includes(value)),`检查组 ${name} 的 require_committed_for 无效`);
+      if(entry.require_committed_for!==undefined)ensure(Array.isArray(entry.require_committed_for)&&entry.require_committed_for.every(value=>value==='release'),`检查组 ${name} 的 require_committed_for 无效`);
       if (entry.lane !== undefined) ensure(typeof entry.lane === "string" && entry.lane, `检查组 ${name} 的 lane 无效`);
       for (const field of ["resources", "parallel_unless_env", "input_patterns", "depends_on"]) {
         if (entry[field] !== undefined) ensure(Array.isArray(entry[field]) && entry[field].every((value) => typeof value === "string" && value), `检查组 ${name} 的 ${field} 无效`);
@@ -86,27 +84,23 @@ function matchedGroups(config, changedFiles) {
 }
 
 export function planTemplateVerification({ profile = "fast", changedFiles = [], config = loadVerificationProfiles(), selection, root = ROOT, base, baselineReport, baselineReportDigest, baselineAssessment, baselineValidator, qualificationReport, qualificationReportDigest, qualificationAssessment } = {}) {
-  ensure(Object.hasOwn(config.profiles, profile), `未知核验 profile: ${profile}`);
+  ensure(['fast','release'].includes(profile)&&Object.hasOwn(config.profiles, profile), `未知核验 profile: ${profile}`);
   assertBaselineParameters({root,base,baselineReport,baselineReportDigest});
   if(baselineReport!==undefined) {
     const checked=validateBaseline({root,base,baselineReport,baselineReportDigest,assessment:baselineAssessment,validator:baselineValidator,policyDigest:verificationPolicyDigest(config)});
     ensure(checked.valid,`BASELINE_REPORT_INVALID: ${checked.reasons.join(', ')}`);
   }
-  assertQualificationReportParameters({qualificationReport,qualificationReportDigest});
+  ensure(qualificationReport===undefined&&qualificationReportDigest===undefined&&qualificationAssessment===undefined,'QUALIFICATION_RETIRED');
   ensure(Array.isArray(changedFiles), "changedFiles 必须是数组");
   const normalized = [...new Set(changedFiles.map((file) => file.replaceAll("\\", "/")).filter(Boolean))].sort();
   ensure(normalized.every(file=>!path.posix.isAbsolute(file)&&!file.split('/').includes('..')), 'VERIFICATION_CHANGED_PATH_INVALID');
   const routed = matchedGroups(config, normalized);
   ensure(routed.unknown.length===0, `UNKNOWN_VERIFICATION_PATH: 未映射路径必须登记: ${routed.unknown.join(', ')}`);
-  const coreChange = normalized.find((file) => (config.core_escalation_patterns || []).some((pattern) => matches(file, pattern)));
-  let effectiveProfile = profile;
-  let escalationReason = null;
-  const daily=profile==='fast'&&Array.isArray(config.profiles.fast.checks);
-  selection??=daily?'allowlist':config.default_selection||'legacy';
-  if (!daily && profile !== "release" && profile !== 'legacy-full' && coreChange) {
-    effectiveProfile = "release";
-    escalationReason = `核心核验资产变化: ${coreChange}`;
-  }
+  const effectiveProfile = profile, escalationReason = null;
+  const daily=profile==='fast';
+  if(daily)ensure(Array.isArray(config.profiles.fast.checks),'INCOMPLETE_VERIFICATION_INPUTS: fast checks 缺失');
+  selection??=daily?'allowlist':'all';
+  if(!daily)ensure(selection==='all','RELEASE_SELECTION_REFUSED');
   const groups = new Set();
   if (config.profiles[effectiveProfile].all_groups) Object.keys(config.groups).forEach((group) => groups.add(group));
   else {
@@ -123,13 +117,7 @@ export function planTemplateVerification({ profile = "fast", changedFiles = [], 
   const compatibilityRequired = effectiveProfile === "release" || normalized.some((file) => (config.compatibility_patterns || []).some((pattern) => matches(file, pattern)));
   const plan = { source_requirement: profile === 'fast' ? 'current' : 'committed', compatibility_required: compatibilityRequired, requested_profile: profile, effective_profile: effectiveProfile, escalation_reason: escalationReason, changed_files: normalized, unknown_files: routed.unknown, groups: orderedGroups, commands, supplemental_checks:structuredClone(config.supplemental_checks||[]), required_files: config.required_files || [], syntax_files: config.syntax_files || [], max_concurrency: config.max_concurrency || 4 };
   if(daily)return {...applyDailyVerificationSelection(plan,{selection,config}),compatibility_required:false,policy_digest:verificationPolicyDigest(config),fallback_reasons:[]};
-  if(config.gate_policy && (['candidate','release','legacy-full'].includes(profile)||effectiveProfile==='release')) {
-    const gated=buildGatePlan(plan,{config,root,base,baselineReport,baselineReportDigest,baselineAssessment,baselineValidator,qualificationAssessment,qualificationReport,qualificationReportDigest});
-    return applyVerificationSelection(gated,{selection,config,root,base});
-  }
-  const selected=applyVerificationSelection(plan,{selection,config,root,base});
-  if(config.gate_policy){const manifest=loadLegacyManifest(root);validateGateConfiguration(config,manifest);return {...selected,strategy:'legacy-routed',gates:[],not_applicable:[],policy_digest:verificationPolicyDigest(config),fallback_reasons:[],shadow_commands:selected.selection.candidate};}
-  return selected;
+  return buildReleasePlan(plan,{config});
 }
 
 export function assertRequiredFiles(plan, root = ROOT) {

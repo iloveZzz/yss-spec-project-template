@@ -7,6 +7,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { assertReleaseCheckout, verifyTemplateRelease } from '../lib/template-release.mjs';
 import { RuntimeStore } from '../../cli-core/runtime-store.mjs';
+import {validateReceipt} from '../lib/verification-delivery-run.mjs';
 import {validateBaselineReport} from '../lib/verification-report-validator.mjs';
 import {createHash} from 'node:crypto';
 import {collectReleaseSources} from '../lib/verification-artifacts.mjs';
@@ -38,7 +39,8 @@ function fixture(t) {
   put(cli,'go.mod','module github.com/iloveZzz/yss-cli\n\ngo 1.27.1\n');put(cli,'main.go',readFileSync(path.join(root,'.template-source/scripts/tests/fixtures/native-release.go'),'utf8'));const cliCommit=commit(cli);
   put(repo,'yss-project.yaml','schema_version: 1\nrepository_mode: template-source\n');put(repo,'scripts/repository-mode','#!/bin/sh\necho template-source\n',0o755);
   put(repo,'.template-source/scripts/lib/verification-preflight.mjs','process.stdout.write(JSON.stringify({status:"passed",errors:[]}));');
-  put(repo,'.template-source/process/template-verification-profiles.yaml',JSON.stringify({schema_version:1,default_selection:'legacy',profiles:{fast:{all_groups:true},candidate:{all_groups:true},release:{all_groups:true}},groups:{fixture:{commands:[{id:'check.fixture',run:'node -e ""'}]}},required_files:[],syntax_files:[],routing:[]}));
+  put(repo,'.template-source/scripts/lib/verification-delivery-run.mjs',`import {parseArgs} from 'node:util';import {runDeliveryTask} from ${JSON.stringify(pathToFileURL(path.join(root,'.template-source/scripts/lib/verification-delivery-run.mjs')).href)};const {values}=parseArgs({options:{root:{type:'string'},directory:{type:'string'},action:{type:'string'},family:{type:'string'}}});runDeliveryTask(values);`);
+  put(repo,'.template-source/process/template-verification-profiles.yaml',JSON.stringify({schema_version:1,profiles:{fast:{checks:[]},release:{all_groups:true}},groups:{fixture:{commands:[{id:'check.fixture',run:'node -e ""'}]}},required_files:[],syntax_files:[],routing:[]}));
   put(repo, 'scripts/verify-template', `#!/usr/bin/env node
 (async()=>{const fs=require('fs'),path=require('path'),{spawnSync}=require('child_process'),{createHash}=require('crypto');const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
  const {verificationInputDigest,createVerificationReport,finalizeVerificationReport}=await import(${JSON.stringify(pathToFileURL(path.join(root,'scripts/lib/verification-report.mjs')).href)});
@@ -67,6 +69,13 @@ test('synthetic 固定源 Go 消费者真实编译、复制和公开导出产生
   assert.equal(JSON.parse(readFileSync(path.join(f.base,'formal-refusal/release-verification.json'))).status,'failed');
   const result = verifyTemplateRelease({ root: f.repo, commit: f.sha, output: f.output,cliFamily:'spec' });
   assert.equal(result.status, 'passed');
+  const receiptFile=path.join(realpathSync(f.output),'full-verification/consumption/receipt.json'),receipt=JSON.parse(readFileSync(receiptFile));
+  const receiptOptions={root:f.repo,receiptFile,expectedSourcesManifest:sources,requireLiveConsumers:false};
+  assert.equal(validateReceipt(receipt,receiptOptions).artifacts.length,3);
+  for(const mutate of [r=>r.artifacts.pop(),r=>r.artifacts.push(structuredClone(r.artifacts[0])),r=>r.artifacts[1]=structuredClone(r.artifacts[0]),r=>r.sources_manifest.entries[0].template_commit='0'.repeat(40)]){
+    const altered=structuredClone(receipt);mutate(altered);assert.throws(()=>validateReceipt(altered,receiptOptions));
+  }
+
   assert.equal(result.template_commit, f.sha);
   assert.deepEqual(result.commands.find(row => row.command === 'scripts/verify-template')?.args, ['--concurrency', '1', '--runtime-store', 'off', '--report-dir', path.join(realpathSync(f.output), 'full-verification')]);
   assert.equal(result.full_verification.status, 'passed');
@@ -107,9 +116,9 @@ test('真实发布报告兼容 v1 baseline，并拒绝删除 syntax/终检、任
  const specSources=outer.sources_manifest;outer.cli_families=['spec','design','backend'];outer.sources_manifest=collectReleaseSources({root:f.repo,commit:f.sha});outer.cli_integrations=[{family:'spec',status:'failed'}];writeFileSync(file,JSON.stringify(outer));const missingIntegration=verify();assert.equal(missingIntegration.valid,false);assert.match(missingIntegration.reasons.join('; '),/集成|integration/);
  outer.cli_families=['spec'];outer.sources_manifest=specSources;delete outer.cli_integrations;writeFileSync(file,JSON.stringify(outer));
  // Model the old runner's separately logged syntax/terminal validators.
- full.schema_version=1;full.plan.commands=full.plan.commands.filter(row=>row.group!=='postchecks'&&row.kind!=='preflight');full.plan.syntax_files=[];
+ full.schema_version=1;full.plan.commands=full.plan.commands.filter(row=>row.group==='fixture');full.plan.syntax_files=[];
  const terminal=full.results.find(row=>row.task_id==='post.git-diff-check');terminal.command=JSON.stringify(['git','diff','--check']);
- full.results=[...full.results.filter(row=>row.group!=='postchecks'&&row.kind!=='preflight').map((row,index)=>({...row,index})),terminal];
+ full.results=[...full.results.filter(row=>row.group==='fixture').map((row,index)=>({...row,index})),terminal];
  const persist=()=>{writeFileSync(fullFile,JSON.stringify(full));outer.full_verification.report_sha256=hash(readFileSync(fullFile));writeFileSync(file,JSON.stringify(outer));};persist();
  const result=verify();assert.equal(result.valid,true,result.reasons.join('; '));assert.equal(result.bindings.strategy,'legacy-full');assert.equal(result.bindings.sources_manifest.families[0],'spec');
  full.results.pop();persist();assert.equal(verify().valid,false);

@@ -25,7 +25,7 @@ test('基线成功证据必须绑定同一 SHA、报告字节和当前策略', t
   assert.equal(validateBaseline({...f,validator}).valid,true);
   assert.equal(validateBaseline({...f,validator,baselineReportDigest:'0'.repeat(64)}).valid,false);
   const incompatible=()=>({valid:true,reasons:[],bindings:{base_sha:f.base,report_digest:f.baselineReportDigest,strategy:'qualified-gates',policy_digest:'older'}});
-  assert.ok(validateBaseline({...f,validator:incompatible,policyDigest:'current'}).reasons.includes('baseline-policy-mismatch'));
+  assert.ok(validateBaseline({...f,validator:incompatible,policyDigest:'current'}).reasons.includes('historical-qualified-baseline-refused'));
 });
 test('未来和非祖先提交不能缩小当前候选', t=> {
   const f=fixture(t);fs.writeFileSync(path.join(f.root,'input'),'second');f.git('add','input');f.git('commit','-qm','second');const future=f.git('rev-parse','HEAD');f.git('checkout','--detach',f.base);
@@ -40,9 +40,9 @@ test('Gitlink 基线差异按真实提交登记而不是工作树版本猜测',t
 });
 
 test('公共计划拒绝显式非法基线参数与伪报告，只有完整祖先 SHA 单独给出允许全量回退',t=>{
-  const f=fixture(t),source=path.join(f.root,'.template-source/process');fs.mkdirSync(source,{recursive:true});fs.copyFileSync(path.join(ROOT,'.template-source/process/template-verification-legacy.json'),path.join(source,'template-verification-legacy.json'));
+  const f=fixture(t);
   const plan=options=>planTemplateVerification({root:f.root,profile:'release',changedFiles:['README.md'],...options});
-  for(const profile of ['fast','candidate','release']) {
+  for(const profile of ['fast','release']) {
     assert.throws(()=>plan({profile,base:'HEAD'}),/BASELINE_SHA_INVALID/);
     assert.throws(()=>plan({profile,base:f.base,baselineReport:f.baselineReport}),/PARAMETERS_INCOMPLETE/);
     assert.throws(()=>plan({profile,base:f.base,baselineReportDigest:f.baselineReportDigest}),/PARAMETERS_INCOMPLETE/);
@@ -52,7 +52,7 @@ test('公共计划拒绝显式非法基线参数与伪报告，只有完整祖�
     assert.throws(()=>plan({profile,base:f.base,baselineReport:f.baselineReport,baselineReportDigest:f.baselineReportDigest,baselineAssessment:{valid:false,reasons:['forged-or-incomplete'],bindings:null}}),/BASELINE_REPORT_INVALID.*forged/);
   }
   const link=path.join(f.root,'symlink.json');fs.symlinkSync(f.baselineReport,link);assert.throws(()=>plan({base:f.base,baselineReport:link,baselineReportDigest:f.baselineReportDigest}),/PATH_INVALID/);
-  assert.equal(plan({base:f.base}).strategy,'legacy-full');
+  assert.equal(plan({base:f.base}).strategy,'release');
   fs.writeFileSync(path.join(f.root,'input'),'future');f.git('add','input');f.git('commit','-qm','future');const future=f.git('rev-parse','HEAD');f.git('checkout','--detach',f.base);
   assert.throws(()=>plan({base:future}),/BASELINE_NOT_ANCESTOR/);
 });

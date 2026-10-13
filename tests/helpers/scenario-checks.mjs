@@ -231,7 +231,7 @@ const profiles = {
       ".template-spec/api/templates/openapi-draft-validation-record-template.yaml",
       ".template-spec/process/schemas/openapi-draft-validation-record.schema.json",
       "scripts/verify-openapi-draft-validation-record",
-      "scripts/lib/openapi-draft-validation.mjs"
+      "scripts/lib/api-contract-decision.mjs"
     ],
     markers: [
       [".template-spec/templates/openapi-spec-template.yaml", "openapi: 3.1.0"],
@@ -242,7 +242,7 @@ const profiles = {
       [".template-spec/api/templates/openapi-draft-review-checklist.md", "P0 字段级追踪矩阵"],
       [".template-spec/api/templates/openapi-draft-review-checklist.md", "Create / Update requiredness"],
       [".template-spec/process/schemas/openapi-draft-validation-record.schema.json", "openapi-draft-validation"],
-      ["scripts/lib/openapi-draft-validation.mjs", "Draft SHA-256 不匹配"]
+      ["scripts/lib/api-contract-decision.mjs", "NEEDS.openapiValidation"]
     ]
   },
   openapiJson: {

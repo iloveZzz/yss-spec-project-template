@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const SOURCE_ROOT = path.join(ROOT, ".agents/skills");
 const LOCK_PATH = path.join(ROOT, "skills-lock.json");
-export const PROJECTION_ROOTS = [".codex/skills", ".cursor/skills", ".pi/skills"];
+export const PROJECTION_ROOTS = [];
 export const OBSOLETE = new Set([
   "wait-what",
   "grill-with-docs",

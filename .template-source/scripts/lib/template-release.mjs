@@ -6,7 +6,7 @@ import path from 'node:path';
 import { createHash } from 'node:crypto';
 import { assertNodeVersion, beginRuntimeRun } from '../../cli-core/runtime-store.mjs';
 import { verificationInputDigest } from '../../../scripts/lib/verification-report.mjs';
-import {compileExpectedVerificationPlan,validateVerificationReport,validateQualificationIntegration,assertEvidenceFile} from './verification-report-validator.mjs';
+import {compileExpectedVerificationPlan,validateVerificationReport,validateReleaseIntegration,assertEvidenceFile} from './verification-report-validator.mjs';
 import {collectReleaseSources,createArtifactCoordinator,produceCliArtifact,verifyInstalledCliMigration,validateArtifact} from './verification-artifacts.mjs';
 import {validateReceipt} from './verification-delivery-run.mjs';
 import {initializeNative, runNative, applyNative} from './native-yss.mjs';
@@ -31,6 +31,7 @@ export function assertReleaseCheckout(root, commit) {
 
 export function verifyTemplateRelease({ root, commit, output, runtimeStore = 'off',cliFamily='all-four',base,baselineReport,baselineReportDigest,qualificationReport,qualificationReportDigest,concurrency=1,toolingMode='legacy',expectedPlan,artifactCoordinator }) {
   assertNodeVersion();
+  assert.ok(qualificationReport===undefined&&qualificationReportDigest===undefined,'QUALIFICATION_RETIRED');
   assert.ok(['sqlite','off'].includes(runtimeStore), 'runtime-store 必须为 sqlite 或 off');
   assert.ok(['spec','all-four'].includes(cliFamily),'cli-family 必须为 spec 或 all-four');
   assert.ok(Number.isInteger(concurrency)&&concurrency>=1&&concurrency<=4,'concurrency 必须为 1..4');
@@ -73,7 +74,7 @@ export function verifyTemplateRelease({ root, commit, output, runtimeStore = 'of
     assert.equal(readFileSync(path.join(output, '01.log'), 'utf8').trim(), 'template-source', '只允许模板源发布验证');
     const fullDirectory = path.join(output, 'full-verification');
     const fullArgs=['--concurrency',String(concurrency),'--runtime-store',runtimeStore,'--report-dir',fullDirectory,...(toolingMode==='legacy'?[]:['--tooling-mode',toolingMode]),
-      ...(base?['--base',base]:[]),...(baselineReport?['--baseline-report',baselineReport]:[]),...(baselineReportDigest?['--baseline-report-sha256',baselineReportDigest]:[]),...(qualificationReport?['--qualification-report',qualificationReport]:[]),...(qualificationReportDigest?['--qualification-report-sha256',qualificationReportDigest]:[])];
+      ...(base?['--base',base]:[]),...(baselineReport?['--baseline-report',baselineReport]:[]),...(baselineReportDigest?['--baseline-report-sha256',baselineReportDigest]:[])];
     const independentPlan=expectedPlan||compileExpectedVerificationPlan({root,args:fullArgs});
     const fullExit=run('scripts/verify-template',fullArgs);
     const fullFile=assertEvidenceFile(path.join(fullDirectory,'report.json'),output);
@@ -81,7 +82,6 @@ export function verifyTemplateRelease({ root, commit, output, runtimeStore = 'of
     const allSources=collectReleaseSources({root,commit});
     validateVerificationReport(full,{root,expectedPlan:independentPlan,reportDirectory:fullDirectory,expectedInvocation:{command:path.join(root,'scripts/run-template-verification'),args:['--profile','release',...fullArgs]},observedExitCode:fullExit.status,expectedSourcesManifest:allSources});
     report.execution={requested_concurrency:concurrency,requested_tooling_mode:toolingMode,actual_concurrency:full.environment.concurrency,actual_tooling_mode:full.environment.tooling_mode||'legacy',strategy:full.plan.strategy};
-    if(full.plan.strategy==='qualified-gates')assert.ok(concurrency===full.environment.concurrency&&toolingMode===full.environment.tooling_mode,'qualified 实际执行条件与明确请求不同');
     report.full_verification={report:fullFile,report_sha256:hash(readFileSync(fullFile)),input_sha256:full.input_sha256,status:full.status};
     report.sources_manifest=collectReleaseSources({root,commit,families});
     writeFileSync(path.join(output,'sources.json'),JSON.stringify(report.sources_manifest,null,2)+'\n');
@@ -118,7 +118,7 @@ export function verifyTemplateRelease({ root, commit, output, runtimeStore = 'of
     report.status = 'passed';
     if(cliFamily==='all-four'){
       const integrationFile=path.join(output,'release-verification.json');writeFileSync(integrationFile,JSON.stringify(report,null,2)+'\n');
-      const integration=validateQualificationIntegration({root,reportFile:integrationFile,expectedDigest:hash(readFileSync(integrationFile)),expectedCommit:commit});
+      const integration=validateReleaseIntegration({root,reportFile:integrationFile,expectedDigest:hash(readFileSync(integrationFile)),expectedCommit:commit});
       assert.ok(integration.valid,integration.reasons.join('; '));
     }
   } catch (error) {

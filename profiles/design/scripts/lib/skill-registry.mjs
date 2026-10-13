@@ -176,19 +176,9 @@ export function validateSkillRegistry(registry, { lock, routerContract, lifecycl
   }
   const roots = registry.agent_runtime_roots;
   if (!roots || typeof roots !== "object" || Array.isArray(roots)) fail("缺少 agent_runtime_roots");
-  const expected = {
-    codex: ".codex/skills",
-    cursor: ".cursor/skills",
-    pi: ".pi/skills"
-  };
-  for (const [agent, root] of Object.entries(expected)) {
-    if (roots[agent] !== root) fail(`agent_runtime_roots.${agent} 必须为 ${root}`);
-  }
-  const extraAgents = Object.keys(roots).filter((key) => !(key in expected));
+  const extraAgents = Object.keys(roots);
   if (extraAgents.length) fail(`未知 Agent 运行时根: ${extraAgents.join(", ")}`);
-  if (JSON.stringify(Object.values(expected).sort()) !== JSON.stringify([...PROJECTION_ROOTS].sort())) {
-    fail("agent_runtime_roots 与投影根清单不一致");
-  }
+  if (PROJECTION_ROOTS.length) fail("agent_runtime_roots 与投影根清单不一致");
 
   const skills = registry.skills;
   if (!Array.isArray(skills) || skills.length === 0) fail("skills 不能为空");

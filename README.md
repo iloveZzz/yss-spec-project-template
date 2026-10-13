@@ -81,7 +81,7 @@ scripts/verify-template-fast
 - 示例 OpenAPI YAML 是否可解析。
 - Git diff 是否存在空白错误。
 
-PR 执行 `scripts/verify-template-candidate`；main 与正式发布前执行不可裁剪的 `scripts/verify-template`。独立审查和候选冻结仅在显式采用旧兼容协议时执行。
+PR 执行 `scripts/verify-template-fast --base <完整 SHA>`；显式 main 集成与正式发布任务执行 `scripts/verify-template` 的完整适用集合。独立审查和候选冻结仅在显式采用旧兼容协议时执行。
 
 ## 关键文档
 

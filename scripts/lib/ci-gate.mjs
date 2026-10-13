@@ -9,7 +9,7 @@ const FULL_SHA = /^[0-9a-f]{40}$/;
 const SKIPPED_AFTER_FAILURE = "前置步骤失败，已跳过";
 
 /**
- * ci-gate 的步骤列表。后续工作包只在这里追加数组项，不改执行逻辑。
+ * ci-gate 的步骤列表。步骤增减在此维护，不改执行逻辑。
  * - command：相对仓库根的命令；重步骤用函数按模式生成。
  * - run：进程内检查，返回 { ok, lines }。
  * - fix：失败时打印的修复建议，优先写可直接运行的命令。
@@ -67,17 +67,6 @@ export const STEPS = [
     heavy: true,
     command: (context) => ["scripts/verify-template-fast", ...(context.scopeBase ? ["--base", context.scopeBase] : []), "--report-dir", path.join(context.reportDir, "verification")],
     fix: "查看该步骤日志与 verification 报告中第一个失败的检查；本地用同一命令复现",
-  },
-  {
-    id: "verify-candidate",
-    title: "候选验证（非阻断）",
-    heavy: true,
-    modes: ["pr"],
-    // 规格风险表：candidate 依赖固定 yss 二进制，其 Bundle 逐提交绑定来源，托管 runner 上无法对新提交通过；
-    // 先以 fast 为必需检查、candidate 只记录，按 NFR-002 基线与 Q-008 再决定是否转为必需。
-    blocking: false,
-    command: (context) => ["scripts/verify-template-candidate", "--base", context.base, "--report-dir", path.join(context.reportDir, "candidate")],
-    fix: "非阻断：需要固定 yss 二进制（scripts/ci-setup --yss-commit），且其 Bundle 必须绑定被验证提交；见执行计划第 6 节 2026-10-11 记录",
   },
 ];
 

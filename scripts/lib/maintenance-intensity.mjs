@@ -125,7 +125,7 @@ export function validateMaintenanceCheckpoint(data, options = {}) {
 function validateCheckpointState(data, evidenceKinds, reviewKind,options) {
   const states = ["implementation-ready", "review-ready", "release-ready", "needs-human"];
   const targets = ["implementation-ready", "review-ready", "release-ready"];
-  const profiles = ["fast", "candidate", "release"];
+  const profiles = options.history ? ["fast", "candidate", "release"] : ["fast", "release"];
   ensure(targets.includes(data.target_state), "target_state 无效");
   ensure(states.includes(data.current_state), "current_state 无效");
   ensure(profiles.includes(data.verification_profile), "verification_profile 无效");
@@ -158,14 +158,15 @@ function validateCheckpointState(data, evidenceKinds, reviewKind,options) {
     if (selfCheck) {
       ensure(data.verification_profile === "fast", "维护者自检的 review-ready 必须使用 fast profile");
     } else {
-      ensure(data.verification_profile === "candidate", "review-ready 必须使用 candidate profile");
+      const expected = options.history ? "candidate" : "release";
+      ensure(data.verification_profile === expected, `review-ready 必须使用 ${expected} profile`);
     }
     return;
   }
   if (data.current_state === "needs-human") {
     ensure(data.target_state === "release-ready", "needs-human 必须保留 release-ready 目标");
     ensure(data.review_round === 2, "needs-human 只允许在第二轮审查后进入");
-    ensure(["candidate", "release"].includes(data.verification_profile), "needs-human 必须来自 candidate 或 release profile");
+    ensure(data.verification_profile === "release" || options.history && data.verification_profile === "candidate", "needs-human 必须来自 release profile；历史记录允许 candidate");
     return;
   }
   ensure(data.verification_profile === "release", "release-ready 必须使用 release profile");

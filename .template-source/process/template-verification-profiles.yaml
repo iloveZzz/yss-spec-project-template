@@ -56,7 +56,7 @@ profiles:
         depends_on: []
         failure_mode: "专职 Profile 的 Plan/Spec 本地路线偏离上游的唯一日常政策，业务分析角色被允许当 Worker，或专职角色被允许写另一端"
       - id: check.profile-consumers
-        run: "node --test --test-name-pattern='^(?!backend plugin receives)' tests/efficiency-distribution.test.mjs tests/native-context-retirement.test.mjs scripts/fixtures/contract-efficiency/distribution.test.mjs scripts/fixtures/reading-views/bundle.test.mjs scripts/fixtures/slice-contract-v3/round2.test.mjs scripts/fixtures/slice-contract-v3/scenarios.test.mjs scripts/fixtures/stage-tracking/tracking.test.mjs scripts/fixtures/spec-baseline/scenarios.mjs .template-source/tooling/node/test/approval-consumption.test.mjs .template-source/tooling/node/test/approval-current.test.mjs .template-source/tooling/node/test/decision-continuation.test.mjs .template-source/tooling/node/test/lifecycle-progression.test.mjs .template-source/tooling/node/test/plugin-design-consumption.test.mjs .template-source/tooling/node/test/review-capabilities.test.mjs"
+        run: "node --test --test-skip-pattern='^backend plugin receives' tests/efficiency-distribution.test.mjs tests/native-context-retirement.test.mjs scripts/fixtures/contract-efficiency/distribution.test.mjs scripts/fixtures/reading-views/bundle.test.mjs scripts/fixtures/slice-contract-v3/round2.test.mjs scripts/fixtures/slice-contract-v3/scenarios.test.mjs scripts/fixtures/stage-tracking/tracking.test.mjs scripts/fixtures/spec-baseline/scenarios.mjs .template-source/tooling/node/test/approval-consumption.test.mjs .template-source/tooling/node/test/approval-current.test.mjs .template-source/tooling/node/test/decision-continuation.test.mjs .template-source/tooling/node/test/lifecycle-progression.test.mjs .template-source/tooling/node/test/plugin-design-consumption.test.mjs .template-source/tooling/node/test/review-capabilities.test.mjs"
         group: feature-assets
         inputs_complete: true
         input_patterns:
@@ -98,16 +98,17 @@ profiles:
         group: hygiene
         inputs_complete: true
         input_patterns:
-          - "scripts/lib/*.mjs"
-          - "scripts/verify-import-direction"
-          - "tests/import-direction.test.mjs"
-          - ".template-source/process/node-core-layer.json"
+          - scripts/lib/*.mjs
+          - scripts/verify-import-direction
+          - tests/import-direction.test.mjs
+          - .template-source/process/node-core-layer.json
+          - .template-source/scripts/lib/*.mjs
         depends_on: []
-        failure_mode: "scripts/lib 出现导入环，或 core 层模块反向导入上层（当前仓库的真实扫描在 1 秒内完成）"
+        failure_mode: "scripts/lib 与 .template-source/scripts/lib 的完整相对导入图出现环，或 core 层模块反向导入上层"
       - id: check.go-validator-replay
         run: "node --test tests/go-validator-replay.test.mjs"
         group: feature-assets
-        resources: ["native-cli"]
+        resources: [ "native-cli" ]
         inputs_complete: true
         input_patterns:
           - "tests/go-validator-replay.test.mjs"
@@ -132,10 +133,30 @@ profiles:
           - ".template-source/distribution/yss-cli-pin.json"
         depends_on: []
         failure_mode: "Node 与固定版本 yss 对同一批用户决定、批准记录夹具的通过/拒绝结论或拒绝码不一致（唯一实现退役前的等价回放）"
+      - id: check.business-ticket-native-report
+        run: "node --test tests/business-ticket-native-report.test.mjs"
+        group: feature-assets
+        resources: [ "native-cli" ]
+        inputs_complete: true
+        input_patterns:
+          - "tests/business-ticket-native-report.test.mjs"
+          - "tests/helpers/yss-instance.mjs"
+          - "scripts/lib/business-tickets.mjs"
+          - "scripts/fixtures/strategic-handoff/fixture.mjs"
+          - "scripts/lib/strategic-handoff.mjs"
+          - "scripts/lib/strategic-handoff-io.mjs"
+          - "scripts/vendor/yaml.mjs"
+          - "scripts/fixtures/spec-baseline/fixture.mjs"
+          - "scripts/fixtures/slice-contract-v3/pilot-fixture.mjs"
+          - "scripts/lib/native-evidence.mjs"
+          - "scripts/lib/native-context.mjs"
+          - ".template-source/distribution/yss-cli-pin.json"
+        depends_on: []
+        failure_mode: "业务票原生报告字段、多诊断、draft/formal 拒绝、业务读集或导入快照与既有合同不一致"
       - id: check.go-validator-replay-delivery
         run: "node --test --test-concurrency=1 tests/go-validator-replay-delivery.test.mjs"
         group: feature-assets
-        resources: ["native-cli"]
+        resources: [ "native-cli" ]
         inputs_complete: true
         input_patterns:
           - "tests/go-validator-replay-delivery.test.mjs"
@@ -166,7 +187,7 @@ profiles:
       - id: check.plan-spec-entry-scenarios
         run: "node scripts/verify-plan-spec-entry-scenarios"
         group: feature-assets
-        resources: ["native-cli"]
+        resources: [ "native-cli" ]
         inputs_complete: true
         input_patterns:
           - "scripts/verify-plan-spec-entry-scenarios"
@@ -174,19 +195,10 @@ profiles:
           - "tests/helpers/yss-instance.mjs"
         depends_on: []
         failure_mode: "Plan→Spec 入口的批准、用户决定与上下文调和在真实实例根上被放行或误拒"
-      - id: check.strategic-context-import-retired
-        run: "node scripts/verify-strategic-context-import-scenarios"
-        group: feature-assets
-        inputs_complete: true
-        input_patterns:
-          - "scripts/verify-strategic-context-import"
-          - "scripts/verify-strategic-context-import-scenarios"
-        depends_on: []
-        failure_mode: "已退役的 verify-strategic-context-import 不再失败退出，或不再指向 consumption、context-reconciliation、strategic-handoff verify 三个替代入口"
       - id: check.openapi-validation-scenarios
         run: "node tests/scenarios/verify-openapi-draft-validation-scenarios.mjs"
         group: feature-assets
-        resources: ["native-cli"]
+        resources: [ "native-cli" ]
         inputs_complete: true
         input_patterns:
           - "scripts/verify-openapi-draft-validation-record"
@@ -198,7 +210,7 @@ profiles:
       - id: check.scaffold-decisions-scenarios
         run: "node tests/scenarios/verify-scaffold-architecture-decision-scenarios.mjs"
         group: feature-assets
-        resources: ["native-cli"]
+        resources: [ "native-cli" ]
         inputs_complete: true
         input_patterns:
           - "scripts/verify-scaffold-architecture-decisions"
@@ -209,19 +221,33 @@ profiles:
         depends_on: []
         failure_mode: "脚手架架构选择记录的薄壳不再把正式记录交给 yss 校验，或放行缺用户确认、模块闭包缺失、继承值与父项目不一致的记录"
       - id: check.release-profile-consumers
-        run: "node --test tests/verification-gates.test.mjs tests/verification-qualification.test.mjs tests/verification-delivery-run.test.mjs"
+        run: "node --test tests/verification-gates.test.mjs tests/verification-baseline.test.mjs tests/verification-qualification.test.mjs tests/verification-delivery-run.test.mjs tests/legacy-verification.test.mjs"
         group: candidate-integrity
-        resources: ["native-cli"]
+        resources: [ "native-cli" ]
         inputs_complete: true
         input_patterns:
-          - ".template-source/scripts/lib/verification-qualification.mjs"
-          - ".template-source/scripts/lib/verification-delivery-run.mjs"
-          - ".template-source/process/template-verification-profiles.yaml"
-          - "tests/verification-qualification.test.mjs"
-          - "tests/verification-delivery-run.test.mjs"
-          - "tests/verification-gates.test.mjs"
+          - .template-source/scripts/lib/verification-qualification.mjs
+          - .template-source/scripts/lib/verification-delivery-run.mjs
+          - .template-source/process/template-verification-profiles.yaml
+          - tests/verification-qualification.test.mjs
+          - tests/verification-delivery-run.test.mjs
+          - tests/verification-gates.test.mjs
+          - .template-source/scripts/lib/legacy-verification.mjs
+          - .template-source/scripts/lib/verification-baseline.mjs
+          - .template-source/scripts/lib/verification-gates.mjs
+          - .template-source/scripts/lib/verification-qualification-plan.mjs
+          - .template-source/scripts/qualify-template-verification.mjs
+          - .template-source/scripts/verify-template-release.mjs
+          - scripts/verify-strategic-context-import
+          - scripts/verify-template-candidate
+          - tests/legacy-verification.test.mjs
+          - tests/scenarios/verify-strategic-context-import-scenarios.mjs
+          - tests/scenarios/verify-template-verification-scenarios.mjs
+          - tests/verification-baseline.test.mjs
+          - scripts/verify-strategic-context-import-scenarios
+          - scripts/verify-template-verification-scenarios
         depends_on: []
-        failure_mode: "资格输入仍绑定已删除的文件，三 Profile 交付任务或资格报告放行、拒绝与实际执行不一致"
+        failure_mode: "两档入口接受已退役 profile 或资格材料、release 遗漏当前检查或 Gate 绑定、历史基线来源与报告字节不匹配、三 Profile 制品准备任务缺失"
       - id: check.frontend-removed
         run: "node --test tests/frontend-removed.test.mjs"
         group: feature-assets
@@ -320,11 +346,34 @@ profiles:
         input_patterns:
           - "scripts/lib/profile-tree.mjs"
           - "tests/profile-tree.test.mjs"
+          - "scripts/lib/lifecycle-context-query-core.mjs"
+          - "scripts/lib/lifecycle-context-query.mjs"
           - "scripts/advance-maintenance-iteration"
           - "tests/advance-maintenance-root.test.mjs"
           - "profiles/**"
         depends_on: []
-        failure_mode: "Profile 的组合目录没有按「内核 < _specialist < Profile 覆盖层」取值、没有去掉该 Profile 排除的内核技能、投影链接指错目录，或 checkpoint 仍接受已不存在的专职仓 --root"
+        failure_mode: "Profile 的组合目录没有按「内核 < _specialist < Profile 覆盖层」取值、技能投影复活、锁或注册表仍依赖投影，或 checkpoint 仍接受已不存在的专职仓 --root"
+      - id: check.skill-supply-chain-unit
+        run: "node --test .template-source/tooling/node/test/skill-supply-chain.test.mjs"
+        group: skills
+        inputs_complete: true
+        input_patterns:
+          - ".template-source/tooling/node/test/skill-supply-chain.test.mjs"
+          - "scripts/lib/skill-supply-chain.mjs"
+        depends_on: []
+        failure_mode: "无投影模型被旧断言拒绝，或 Skill 派生文件和引用规范化不一致"
+      - id: check.1ebcb1124ce67eb1
+        run: "node --test scripts/fixtures/contract-efficiency/api-v2.test.mjs tests/api-contract-decision.test.mjs"
+        group: implementation
+        resources: [ "native-cli" ]
+        inputs_complete: true
+        input_patterns:
+          - "scripts/lib/api-contract-decision.mjs"
+          - "scripts/lib/openapi-draft-validation.mjs"
+          - "scripts/fixtures/contract-efficiency/api-v2.test.mjs"
+          - "tests/api-contract-decision.test.mjs"
+        depends_on: []
+        failure_mode: "API 决定接受缺失原生能力，丢失 Go 读取输入的漂移观察，或破坏 v1/v2 校验与迁移"
       - id: check.yss-ui-skill-integration
         run: "node --test .template-source/tooling/node/test/yss-ui-skill-integration.test.mjs"
         group: skills
@@ -342,6 +391,7 @@ profiles:
         input_patterns:
           - "scripts/lib/profile-distribution.mjs"
           - "tests/profile-distribution.test.mjs"
+          - "profiles/*/.template-source/distribution/bundle-profile.json"
         depends_on: []
         failure_mode: "分发判定镜像与 yss-cli 的 includedByManifest 不一致，或守卫放过了未排除的仅模板源脚本与会误伤的后缀规则"
       - id: check.profile-distribution-gate
@@ -404,7 +454,7 @@ profiles:
           - "tests/legacy-coverage.test.mjs"
           - ".template-source/process/template-verification-profiles.yaml"
         depends_on: []
-        failure_mode: "压缩后的旧检查覆盖展开出与压缩前不同的字段、顺序或内容，使 policy_digest 或某条旧检查的门禁归属悄悄改变"
+        failure_mode: "固定历史策略中的旧覆盖展开字段、顺序或内容漂移，破坏历史 policy 摘要与责任绑定"
       - id: check.yss-cli-pin
         run: "node --test tests/yss-cli-pin.test.mjs"
         group: feature-assets
@@ -673,11 +723,48 @@ profiles:
           - "skills-lock.json"
           - "scripts/lib/skill-supply-chain.mjs"
           - "scripts/lib/lifecycle-context-query.mjs"
+          - "scripts/lib/lifecycle-context-query-core.mjs"
           - "scripts/query-lifecycle-context"
           - "scripts/lib/backend-standards-coverage.mjs"
           - "tests/skill-lock-readers.test.mjs"
+          - "profiles/*/skills-lock.json"
+          - "profiles/*/scripts/lib/lifecycle-context-query.mjs"
+          - "profiles/*/scripts/lib/skill-supply-chain.mjs"
         depends_on: []
         failure_mode: "根锁重新带回本地树哈希，没有运行时登记的实例被要求 --agent-runtime，读取方把没有 effectiveHash 的模板锁判成漂移，或对带 effectiveHash 的实例锁放过哈希不符、未登记的技能"
+      - id: check.cca7321527c13629
+        run: "node tests/scenarios/verify-lifecycle-context-query-scenarios.mjs"
+        group: lifecycle
+        inputs_complete: true
+        input_patterns:
+          - ".agents/skills/yss-product-lifecycle/SKILL.md"
+          - "scripts/lib/lifecycle-context-query-core.mjs"
+          - "scripts/lib/lifecycle-context-query.mjs"
+          - "scripts/query-lifecycle-context"
+          - "tests/scenarios/verify-lifecycle-context-query-scenarios.mjs"
+        depends_on: []
+        failure_mode: "共享查询核心改变公开模式、路由、按需合同子树或技能就绪的接受与拒绝行为，或生命周期技能入口超出 8 KB 预算、缺少必需边界"
+      - id: check.lifecycle-query-freshness
+        run: "node --test tests/lifecycle-query-freshness.test.mjs"
+        group: lifecycle
+        inputs_complete: true
+        input_patterns:
+          - "scripts/lib/lifecycle-context-query-core.mjs"
+          - "scripts/lib/lifecycle-context-query.mjs"
+          - "scripts/lib/validation-phase.mjs"
+          - "tests/lifecycle-query-freshness.test.mjs"
+        depends_on: []
+        failure_mode: "查询摘要未绑定当前输入、重复查询不确定、读取期间漂移或非法项目身份被接受"
+      - id: check.lifecycle-query-profile-snapshot
+        run: "node --test --test-name-pattern='^design query parsing and binding' tests/efficiency-distribution.test.mjs"
+        group: lifecycle
+        inputs_complete: true
+        input_patterns:
+          - "scripts/lib/lifecycle-context-query-core.mjs"
+          - "profiles/*/scripts/lib/lifecycle-context-query.mjs"
+          - "tests/efficiency-distribution.test.mjs"
+        depends_on: []
+        failure_mode: "专职 Profile 查询解析与摘要绑定读取了不同输入快照，未拒绝读取期间漂移"
       - id: "check.93d2af5732ccdd96"
         inputs_complete: true
         input_patterns:
@@ -716,14 +803,10 @@ profiles:
         input_patterns:
           - "scripts/lib/skill-supply-chain.mjs"
           - "tests/skill-sync-efficiency.test.mjs"
+          - "profiles/*/scripts/lib/skill-supply-chain.mjs"
+          - "profiles/*/skills-lock.json"
         depends_on: []
         failure_mode: "投影或锁更新遗漏、重复更新错误"
-      - id: "check.a74d7c2cc539e456"
-        inputs_complete: true
-        input_patterns:
-          - "retired/profile-submodule-upstream-source"
-        depends_on: []
-        failure_mode: "已并入本仓的设计 Profile 仓库不再是上游来源；这条只为冻结的旧覆盖清单保留，随 AR-16 一起删除，当前不会被任何路径选中"
       - id: "check.208c7eedeff4e6e9"
         inputs_complete: true
         input_patterns:
@@ -778,7 +861,7 @@ profiles:
         depends_on: []
         failure_mode: "治理身份、目录或资产引用布局错误"
       - id: "check.structured-assets"
-        resources: ["python-jsonschema"]
+        resources: [ "python-jsonschema" ]
         inputs_complete: true
         input_patterns:
           - ".template-spec/process/schemas/**"
@@ -787,7 +870,7 @@ profiles:
         depends_on: []
         failure_mode: "结构化资产解析或 Schema 拒绝错误"
       - id: "check.schema-runtime"
-        resources: ["python-jsonschema"]
+        resources: [ "python-jsonschema" ]
         inputs_complete: true
         input_patterns:
           - "scripts/lib/json-schema.mjs"
@@ -811,7 +894,7 @@ profiles:
         depends_on: []
         failure_mode: "Plan/Spec 必需业务内容或模板边界错误"
       - id: "check.daily-checkpoint"
-        resources: ["python-jsonschema"]
+        resources: [ "python-jsonschema" ]
         run: "node --test tests/checkpoint-boundary.test.mjs"
         group: "lifecycle"
         inputs_complete: true
@@ -824,7 +907,7 @@ profiles:
         depends_on: []
         failure_mode: "阶段 checkpoint 越界接受或编排合同错误"
       - id: "check.daily-selection"
-        resources: ["python-jsonschema"]
+        resources: [ "python-jsonschema" ]
         run: "node --test --test-name-pattern '日常|试点|unknown, mixed|path sets|dependency closure|qualification binds|missing dependency|正式 Schema|选中的 Schema|目标意图|既有补充|补充检查拒绝' tests/verification-selection.test.mjs"
         group: "candidate-integrity"
         inputs_complete: true
@@ -839,7 +922,7 @@ profiles:
         depends_on: []
         failure_mode: "检查选择遗漏、错误扩大或依赖闭包错误"
       - id: "check.daily-execution"
-        resources: ["python-jsonschema"]
+        resources: [ "python-jsonschema" ]
         run: "node --test tests/verification-execution.test.mjs"
         group: "candidate-integrity"
         inputs_complete: true
@@ -867,7 +950,7 @@ profiles:
         depends_on: []
         failure_mode: "环境缺失未提前拒绝或无关环境被强制要求的错误"
       - id: "check.daily-report"
-        resources: ["python-jsonschema"]
+        resources: [ "python-jsonschema" ]
         run: "node --test tests/verification-report.test.mjs tests/verification-report-v2.test.mjs"
         group: "candidate-integrity"
         inputs_complete: true
@@ -907,10 +990,10 @@ profiles:
         inputs_complete: true
         input_patterns:
           - ".template-source/scripts/benchmark-tooling.py"
-        depends_on: ["check.daily-flow"]
+        depends_on: [ "check.daily-flow" ]
         failure_mode: "已有性能对照入口的 Python 语法错误；对照仍显式使用原组范围"
       - id: "check.cli-content-identity"
-        resources: ["native-cli"]
+        resources: [ "native-cli" ]
         inputs_complete: true
         input_patterns:
           - ".template-source/distribution/yss-cli-pin.json"
@@ -938,13 +1021,7 @@ profiles:
           - ".template-source/scripts/sync-native-work-layout.mjs"
         depends_on: []
         failure_mode: "工作目录被硬编码到旧路径的错误"
-  candidate:
-    always_groups:
-      - hygiene
-      - candidate-integrity
   release:
-    all_groups: true
-  legacy-full:
     all_groups: true
 compatibility_patterns:
   - .gitmodules
@@ -1065,7 +1142,6 @@ required_files:
   - CONTEXT.md
   - skills-lock.json
   - .agents/skills/.yss-skills-manifest.json
-  - .agents/skills/.strategic-design-skills-manifest.json
   - .agents/mcp_config.json
   - .cursor/mcp.json
   - .vscode/mcp.json
@@ -1083,7 +1159,6 @@ required_files:
   - tests/yss-skill-source-index.test.mjs
   - .agents/skills/yss-repository/tests/profile-routing.test.mjs
   - .template-source/agents/yss-ui-skills-integration.md
-  - .template-source/agents/strategic-design-skills-integration.md
   - .template-spec/user-guide/yss-ui-mcp.md
   - .template-spec/agents/digital-human-roles.yaml
   - .template-spec/process/lifecycle-registry.yaml
@@ -1097,7 +1172,6 @@ required_files:
   - .template-spec/process/schemas/lifecycle-checkpoint.schema.json
   - .template-spec/process/schemas/context-reconciliation.schema.json
   - .template-spec/process/schemas/strategic-design-handoff.schema.json
-  - .template-spec/process/schemas/frontend-implementation-evidence.schema.json
   - .template-spec/process/schemas/scaffold-architecture-decisions.schema.json
   - .template-spec/process/schemas/project-scaffold-contract.schema.json
   - .template-spec/process/schemas/data-architecture-decision.schema.json
@@ -1107,8 +1181,6 @@ required_files:
   - .template-spec/process/schemas/subagent-task-package.schema.json
   - .template-spec/process/templates/lifecycle-checkpoint-template.yaml
   - .template-spec/process/templates/context-reconciliation-template.yaml
-  - .template-spec/process/templates/frontend-implementation-plan-template.yaml
-  - .template-spec/process/templates/frontend-implementation-verification-template.yaml
   - .template-spec/process/templates/scaffold-architecture-decisions-template.yaml
   - .template-spec/design/templates/visual-baseline-template.yaml
   - .template-source/process/templates/maintenance-checkpoint-template.yaml
@@ -1144,7 +1216,6 @@ required_files:
   - scripts/lib/task-package.mjs
   - scripts/run-template-verification
   - scripts/verify-template-fast
-  - scripts/verify-template-candidate
   - scripts/verify-template
   - scripts/verify-business-language-scenarios
   - scripts/query-lifecycle-context
@@ -1155,7 +1226,6 @@ required_files:
   - scripts/lib/plan-spec-entry-view.mjs
   - scripts/lib/lifecycle-status.mjs
   - scripts/verify-lifecycle-operator-scenarios
-  - scripts/verify-frontend-implementation-evidence-scenarios
   - scripts/prepare-maintenance-review
   - scripts/evaluate-maintenance-review-round
   - scripts/cache-template-commit
@@ -1166,9 +1236,7 @@ required_files:
   - .template-source/scripts/verify-strategic-handoff-distribution.mjs
   - .template-source/scripts/lib/verification-gates.mjs
   - .template-source/scripts/lib/verification-baseline.mjs
-  - .template-source/scripts/lib/verification-qualification.mjs
   - .template-source/scripts/lib/template-verification-worker.mjs
-  - .template-source/scripts/qualify-template-verification.mjs
   - .template-source/scripts/lib/verification-preflight.mjs
   - .template-source/scripts/lib/verification-artifacts.mjs
   - .template-source/scripts/lib/verification-report-validator.mjs
@@ -1177,10 +1245,8 @@ required_files:
   - .template-source/scripts/lib/verification-execution-plan.mjs
   - tests/verification-selection.test.mjs
   - tests/verification-delivery-run.test.mjs
-  - .template-source/scripts/lib/verification-qualification-plan.mjs
   - tests/verification-gates.test.mjs
   - tests/verification-baseline.test.mjs
-  - tests/verification-qualification.test.mjs
   - tests/verification-execution.test.mjs
   - tests/verification-script-retirement.test.mjs
   - tests/verification-preflight.test.mjs
@@ -1202,8 +1268,6 @@ syntax_files:
   - scripts/update-skill-lock
   - scripts/verify-upstream-skill-source
   - scripts/lib/skill-supply-chain.mjs
-  - scripts/lib/profile-skill-sync.mjs
-  - scripts/sync-profile-skills
   - .agents/skills/yss-skill-source-index-refresh/scripts/refresh-yss-skill-index.mjs
   - .agents/skills/yss-skill-source-index-refresh/scripts/refresh-yss-skill-index.test.mjs
   - .agents/skills/yss-repository/tests/profile-routing.test.mjs
@@ -1220,9 +1284,6 @@ syntax_files:
   - scripts/verify-context-reconciliation
   - scripts/verify-context-reconciliation-scenarios
   - scripts/verify-plan-requirements-context-scenarios
-  - scripts/verify-strategic-context-import
-  - scripts/verify-strategic-context-import-scenarios
-  - scripts/verify-frontend-implementation-evidence
   - scripts/verify-scaffold-architecture-decisions
   - scripts/verify-scaffold-architecture-decision-scenarios
   - scripts/lib/task-package-schema.mjs
@@ -1295,17 +1356,13 @@ syntax_files:
   - tests/maintenance-iteration.test.mjs
   - .template-source/scripts/lib/verification-gates.mjs
   - .template-source/scripts/lib/verification-baseline.mjs
-  - .template-source/scripts/lib/verification-qualification.mjs
-  - .template-source/scripts/qualify-template-verification.mjs
   - .template-source/scripts/lib/template-verification-worker.mjs
   - tests/verification-gates.test.mjs
   - tests/verification-baseline.test.mjs
-  - tests/verification-qualification.test.mjs
   - .template-source/scripts/lib/verification-preflight.mjs
   - .template-source/scripts/lib/verification-artifacts.mjs
   - .template-source/scripts/lib/verification-report-validator.mjs
   - .template-source/scripts/lib/legacy-verification.mjs
-  - scripts/fixtures/frontend-delivery/scenarios.mjs
   - tests/verification-preflight.test.mjs
   - tests/verification-artifacts.test.mjs
   - tests/cli-core-retirement.test.mjs
@@ -1321,7 +1378,6 @@ syntax_files:
   - .template-source/scripts/lib/verification-execution-plan.mjs
   - tests/verification-selection.test.mjs
   - tests/verification-delivery-run.test.mjs
-  - .template-source/scripts/lib/verification-qualification-plan.mjs
 routing:
   - patterns:
       - tests/verification-preflight.test.mjs
@@ -1517,7 +1573,7 @@ routing:
       - .template-source/README.md
       - .template-spec/**
       - docs/**
-      - .template-source/wiki/**  # 已不再提交（被 .gitignore 排除）；由 check.template-wiki-untracked 守卫
+      - .template-source/wiki/** # 已不再提交（被 .gitignore 排除）；由 check.template-wiki-untracked 守卫
       - tests/template-wiki-untracked.test.mjs
       - tests/governance-layout.test.mjs
       - scripts/lib/governance-layout.mjs
@@ -1542,6 +1598,7 @@ routing:
       - tests/import-direction.test.mjs
       - tests/go-validator-replay.test.mjs
       - tests/go-validator-replay-delivery.test.mjs
+      - tests/business-ticket-native-report.test.mjs
       - tests/frontend-removed.test.mjs
       - tests/backend-delivery-terminal.test.mjs
       - scripts/fixtures/backend-delivery/local-terminal-fixture.mjs
@@ -1869,8 +1926,7 @@ groups:
         id: check.work-layout-hardcodes
   drift-identity:
     commands:
-      - run: node --test tests/content-identity.test.mjs tests/drift-report.test.mjs
-          tests/maintenance-iteration.test.mjs
+      - run: node --test tests/content-identity.test.mjs tests/drift-report.test.mjs tests/maintenance-iteration.test.mjs
         when: template-source
         id: check.drift-identity
       - run: node --test tests/cli-retirement.test.mjs
@@ -1886,10 +1942,7 @@ groups:
     commands:
       - run: node --test scripts/fixtures/structured-assets/*.test.mjs
         id: check.structured-assets
-      - run: node --test scripts/fixtures/contract-efficiency/schema-rejection.test.mjs
-          scripts/fixtures/contract-efficiency/security.test.mjs
-          scripts/fixtures/contract-efficiency/phase.test.mjs
-          scripts/fixtures/delivery-preflight/json-schema-framing.test.mjs
+      - run: node --test scripts/fixtures/contract-efficiency/schema-rejection.test.mjs scripts/fixtures/contract-efficiency/security.test.mjs scripts/fixtures/contract-efficiency/phase.test.mjs scripts/fixtures/delivery-preflight/json-schema-framing.test.mjs
         id: check.schema-runtime
   feature-assets:
     commands:
@@ -1902,8 +1955,7 @@ groups:
         id: check.business-ticket-contract
   plan-spec-content:
     commands:
-      - run: node --test .template-source/tooling/node/test/plan-spec-quality.test.mjs
-          tests/plan-spec-template-contract.test.mjs
+      - run: node --test .template-source/tooling/node/test/plan-spec-quality.test.mjs tests/plan-spec-template-contract.test.mjs
       - run: node .agents/skills/i-have-adhd/tests/verify-integration.mjs
   cli-sync:
     commands:
@@ -1923,19 +1975,9 @@ groups:
       - run: node --test tests/implementation-candidate-current.test.mjs
         when: template-source
         id: check.implementation-candidate-current
-      - run: node --test tests/slice-task-package-frontend-boundary.test.mjs
-        when: template-source
-        id: check.slice-task-frontend-inputs
       - run: node --test tests/backend-delivery-terminal.test.mjs
         when: template-source
         id: check.backend-delivery-terminal
-      - run: scripts/verify-frontend-delivery-scenarios
-        lane: source-scenarios
-        parallel_unless_env:
-          - YSS_DEDICATED_INSTANCE_ROOT
-          - YSS_DELIVERY_TEST_BACKEND_ROOT
-          - YSS_DELIVERY_TEST_FRONTEND_ROOT
-        id: check.1f1753b1299c14cf
       - run: node .template-source/scripts/verify-delivery-harness-distribution.mjs
         when: template-source
         lane: generated-distribution
@@ -1955,9 +1997,6 @@ groups:
       - run: node --test tests/progression-target-evidence.test.mjs
         when: template-source
         id: check.progression-target-evidence
-      - run: scripts/verify-strategic-handoff-tools-lock
-        when: template-source
-        id: check.17d5665535e89587
       - run: node --check scripts/lib/strategic-handoff.mjs
         id: check.ba0fad1faed81f06
       - run: scripts/verify-strategic-handoff-package-scenarios
@@ -1976,8 +2015,7 @@ groups:
         id: check.8cd499a929b8a5a4
   tooling:
     commands:
-      - run: python3 -m unittest discover -s .template-source/scripts/tests -p
-          'test_skills_agent_eval.py' -v
+      - run: python3 -m unittest discover -s .template-source/scripts/tests -p 'test_skills_agent_eval.py' -v
         when: template-source
         id: check.44ea73f718bcecec
       - run: pnpm --dir .template-source/tooling/node test
@@ -1988,9 +2026,6 @@ groups:
         id: check.637af2529c59dfe5
   skills:
     commands:
-      - run: scripts/sync-profile-skills --check --profile=all
-        when: template-source
-        id: check.22712701df14f183
       - run: scripts/sync-skills --check
         id: check.4301e56b48a9d570
       - run: scripts/update-skill-lock --check
@@ -1998,17 +2033,11 @@ groups:
       - run: node --test tests/skill-sync-efficiency.test.mjs
         when: template-source
         id: check.c80aaecf300ddc1f
-      - run: scripts/verify-upstream-skill-source
-          --source=iloveZzz/yss-harness-design-agent
-          --source-root=submodules/yss-harness-design-agent
-        when: template-source
-        id: check.a74d7c2cc539e456
       - run: scripts/verify-skill-registry
         id: check.022dccdddca70b70
       - run: scripts/verify-skill-governance
         id: check.93d2af5732ccdd96
-      - run: node --test
-          .agents/skills/yss-skill-source-index-refresh/scripts/refresh-yss-skill-index.test.mjs
+      - run: node --test .agents/skills/yss-skill-source-index-refresh/scripts/refresh-yss-skill-index.test.mjs
         id: check.208c7eedeff4e6e9
         inputs_complete: true
         input_patterns:
@@ -2028,16 +2057,13 @@ groups:
         depends_on: []
   tactical-design:
     commands:
-      - run: node .agents/skills/yss-technical-design/scripts/generate-schema.mjs
-          --check
+      - run: node .agents/skills/yss-technical-design/scripts/generate-schema.mjs --check
         id: check.3d61dc45c4a35922
       - run: node .agents/skills/yss-technical-design/tests/run-scenarios.mjs
         id: check.4bade53d828a7468
-      - run: node --test
-          .agents/skills/yss-technical-design/tests/engineering-scenarios.mjs
+      - run: node --test .agents/skills/yss-technical-design/tests/engineering-scenarios.mjs
         id: check.f03591c3ea92405b
-      - run: node --check
-          .agents/skills/yss-tactical-design/scripts/validate-tactical-design.mjs
+      - run: node --check .agents/skills/yss-tactical-design/scripts/validate-tactical-design.mjs
         id: check.0eda9c9e0a08adf6
       - run: node --check .agents/skills/yss-tactical-design/tests/run-scenarios.mjs
         id: check.9c058e5d7cf873aa
@@ -2058,17 +2084,14 @@ groups:
       - run: node scripts/verify-plan-review-control-scenarios
         when: template-source
         id: check.plan-review-control-convergence
-      - run: node --test .template-source/tooling/node/test/approval-current.test.mjs
-          .template-source/tooling/node/test/review-capabilities.test.mjs
-          .template-source/tooling/node/test/approval-consumption.test.mjs
+      - run: node --test .template-source/tooling/node/test/approval-current.test.mjs .template-source/tooling/node/test/review-capabilities.test.mjs .template-source/tooling/node/test/approval-consumption.test.mjs
         when: template-source
         id: check.role-gates-current-capability
       - run: scripts/verify-digital-human-roles
         id: check.a3cc57f168071cc8
       - run: scripts/verify-digital-human-roles-scenarios
         id: check.fa7fc43e32417857
-      - run: scripts/verify-approval-record --history
-          .template-spec/templates/approval-record-template.yaml
+      - run: scripts/verify-approval-record --history .template-spec/templates/approval-record-template.yaml
         id: check.aab6b1527f8c70f0
       - run: scripts/verify-subagent-task-package-scenarios
         id: check.ffe328872703d3c0
@@ -2081,16 +2104,14 @@ groups:
     commands:
       - run: node --test tests/plan-clarification-replay.test.mjs
         when: template-source
-      - run: node --test tests/checkpoint-boundary.test.mjs
-          tests/flow-verification-routing.test.mjs tests/project-ci.test.mjs
+      - run: node --test tests/checkpoint-boundary.test.mjs tests/flow-verification-routing.test.mjs tests/project-ci.test.mjs
       - run: node --test scripts/fixtures/reading-views/*.test.mjs
         when: template-source
         id: check.document-reading-views
       - run: node --test scripts/fixtures/stage-tracking/tracking.test.mjs
         when: template-source
         id: check.92a3623cf3550ba8
-      - run: node --test
-          .template-source/tooling/node/test/decision-continuation.test.mjs
+      - run: node --test .template-source/tooling/node/test/decision-continuation.test.mjs
         when: template-source
         id: check.c17b4b0ba6c92cfc
       - run: scripts/verify-user-decision-scenarios
@@ -2107,27 +2128,15 @@ groups:
         id: check.7752ee8d6f74f638
       - run: scripts/verify-plan-requirements-context-scenarios
         id: check.14755c909a41ebee
-      - run: scripts/verify-strategic-context-import-scenarios
-        id: check.220f79ecb19875df
       - run: scripts/verify-lifecycle-registry
         id: check.9f66238a57e457bf
       - run: scripts/verify-lifecycle-context-query-scenarios
         id: check.cca7321527c13629
       - run: scripts/verify-lifecycle-operator-scenarios
         id: check.aafa7bdc8a88bf84
-      - run: scripts/verify-lifecycle-checkpoint
-          .template-spec/process/templates/lifecycle-checkpoint-template.yaml
+      - run: scripts/verify-lifecycle-checkpoint .template-spec/process/templates/lifecycle-checkpoint-template.yaml
         id: check.56ea690765beec6f
-      - run: scripts/verify-frontend-implementation-evidence --allow-template
-          .template-spec/process/templates/frontend-implementation-plan-template.yaml
-        id: check.058e2e3f6c3cf54b
-      - run: scripts/verify-frontend-implementation-evidence --allow-template
-          .template-spec/process/templates/frontend-implementation-verification-template.yaml
-        id: check.f8325b4489484a22
-      - run: scripts/verify-frontend-implementation-evidence-scenarios
-        id: check.67adfa48ba9308b2
-      - run: scripts/verify-scaffold-architecture-decisions --allow-template
-          .template-spec/process/templates/scaffold-architecture-decisions-template.yaml
+      - run: scripts/verify-scaffold-architecture-decisions --allow-template .template-spec/process/templates/scaffold-architecture-decisions-template.yaml
         id: check.bbef469ead80be51
       - run: scripts/verify-scaffold-architecture-decision-scenarios
         id: check.66e3685569009833
@@ -2174,11 +2183,9 @@ groups:
         id: check.a156e5fff5a8dfdd
       - run: node --test scripts/fixtures/backend-scaffold/platform-scenarios.test.mjs
         id: check.a53e61d79c3befc1
-      - run: node --test
-          .agents/skills/yss-ddd-scaffold-generator/scripts/scaffold-generator.test.mjs
+      - run: node --test .agents/skills/yss-ddd-scaffold-generator/scripts/scaffold-generator.test.mjs
         id: check.edf25d8db265d921
-      - run: node --test
-          .agents/skills/yss-layered-mvc-scaffold-generator/scripts/scaffold-generator.test.mjs
+      - run: node --test .agents/skills/yss-layered-mvc-scaffold-generator/scripts/scaffold-generator.test.mjs
         id: check.c860ed22ba605f8d
       - run: node --test scripts/lib/legacy-backend-scaffold-audit.test.mjs
         id: check.fcef5f013dd0e7f4
@@ -2202,27 +2209,18 @@ groups:
         id: check.842384deeb868cce
       - run: scripts/verify-yss-prototype-contract-scenarios
         id: check.2c43904888dff190
-      - run: node --test
-          .agents/skills/yss-prototype-stage/tests/verification-entry.test.mjs
+      - run: node --test .agents/skills/yss-prototype-stage/tests/verification-entry.test.mjs
         id: check.3a2236d542e47171
-      - run: node .agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs
-          validate-evidence
-          .template-spec/design/templates/prototype-evidence-template.yaml
-          --allow-template
+      - run: node .agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs validate-evidence .template-spec/design/templates/prototype-evidence-template.yaml --allow-template
         id: check.7126152a480689b5
-      - run: node
-          .agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs
-          validate .template-spec/design/templates/visual-baseline-template.yaml
-          --allow-template
+      - run: node .agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs validate .template-spec/design/templates/visual-baseline-template.yaml --allow-template
         id: check.f96c759bbc30d99e
       - run: node --test tests/contract-review-preparation.test.mjs
         when: template-source
         id: check.contract-review-preparation
   runtime-storage:
     commands:
-      - run: node --test --test-concurrency=1 tests/runtime-store.test.mjs
-          tests/runtime-store-integration.test.mjs
-          tests/runtime-store-distribution.test.mjs
+      - run: node --test --test-concurrency=1 tests/runtime-store.test.mjs tests/runtime-store-integration.test.mjs tests/runtime-store-distribution.test.mjs
         when: template-source
         id: check.runtime-storage
   governance-release:
@@ -2231,12 +2229,6 @@ groups:
         id: check.010ab85199ad1140
   candidate-integrity:
     commands:
-      - run: scripts/verify-strategic-handoff-tools-lock
-        require_committed_for:
-          - candidate
-          - release
-        when: template-source
-        id: check.a047149f13d2d04e
       - run: node scripts/verify-template-verification-scenarios
         id: check.1f905d7e659c8525
       - run: node scripts/verify-template-cache-scenarios
@@ -2244,93 +2236,19 @@ groups:
       - run: node --test .template-source/scripts/tests/template-ci.test.mjs
         when: template-source
         id: check.af45fd40af913057
-      - run: node --test tests/verification-selection.test.mjs
-          tests/verification-report.test.mjs
+      - run: node --test tests/verification-selection.test.mjs tests/verification-report.test.mjs
         when: template-source
         id: check.verification-selection
   research-evidence:
     commands:
       - run: node .agents/skills/yss-research/tests/run-scenarios.mjs
         id: check.research-evidence-scenarios
-      - run: node --test
-          .agents/skills/yss-research/tests/competitive-scenarios.test.mjs
+      - run: node --test .agents/skills/yss-research/tests/competitive-scenarios.test.mjs
         id: check.competitive-evidence-scenarios
   document-writing:
     commands:
       - id: check.document-writing-integration
         run: node .agents/skills/i-have-adhd/tests/verify-integration.mjs
-default_selection: shadow
-allowlist:
-  skills:
-    - yss-research
-    - i-have-adhd
-  qualification_ref: null
-  qualification_inputs:
-    - scripts/lib/verification-selection.mjs
-    - scripts/lib/template-verification.mjs
-    - scripts/lib/template-verification-runner.mjs
-    - scripts/run-template-verification
-    - tests/verification-selection.test.mjs
-gate_policy:
-  schema_version: 1
-  activation: legacy-full
-  legacy_manifest_ref: .template-source/process/template-verification-legacy.json
-  legacy_manifest_digest: 3aa58425b03fda2291ebc78eea62381c602cd4592d4c4db87f197f82da9705f4
-  qualification_ref: null
-  qualification_inputs:
-    - scripts/lib/template-verification.mjs
-    - scripts/lib/verification-selection.mjs
-    - .template-source/scripts/lib/verification-gates.mjs
-    - .template-source/scripts/lib/verification-baseline.mjs
-    - .template-source/scripts/lib/verification-qualification.mjs
-    - .template-source/scripts/lib/template-verification-worker.mjs
-    - scripts/lib/template-verification-runner.mjs
-    - scripts/lib/verification-report.mjs
-    - scripts/run-template-verification
-    - .template-source/scripts/qualify-template-verification.mjs
-    - tests/verification-gates.test.mjs
-    - tests/verification-baseline.test.mjs
-    - tests/verification-qualification.test.mjs
-    - .template-source/scripts/lib/verification-preflight.mjs
-    - .template-source/scripts/lib/verification-artifacts.mjs
-    - .template-source/scripts/lib/verification-report-validator.mjs
-    - .template-source/scripts/lib/legacy-verification.mjs
-    - tests/verification-preflight.test.mjs
-    - tests/verification-artifacts.test.mjs
-    - tests/verification-report-v2.test.mjs
-    - tests/verification-report.test.mjs
-    - tests/legacy-verification.test.mjs
-    - tests/verification-execution.test.mjs
-    - tests/verification-script-retirement.test.mjs
-    - .template-source/scripts/lib/verification-delivery-run.mjs
-    - .template-source/scripts/verify-delivery-harness-distribution.mjs
-    - .template-source/scripts/verify-strategic-handoff-distribution.mjs
-    - tests/verification-selection.test.mjs
-    - .template-source/process/schemas/template-verification-report.schema.json
-    - .template-source/scripts/lib/template-release.mjs
-    - .template-source/scripts/verify-template-release.mjs
-    - .template-source/scripts/lib/verification-execution-plan.mjs
-    - tests/verification-delivery-run.test.mjs
-    - tests/cli-core-retirement.test.mjs
-    - .template-source/tooling/node/test/approval-consumption.test.mjs
-    - .template-source/scripts/lib/verification-qualification-plan.mjs
-  qualification_input_patterns:
-    - tests/**
-    - .template-source/profile-skill-sync.json
-    - .template-source/distribution/**
-    - scripts/**
-    - .template-source/scripts/**
-    - .template-source/tooling/node/**
-    - .template-source/cli-core/**
-    - .template-source/process/schemas/**
-    - .template-spec/**.yaml
-    - .template-spec/**.json
-    - .agents/skills/**/scripts/**
-    - .agents/skills/**/tests/**
-    - .agents/skills/**/references/**.yaml
-    - .agents/skills/**/references/**.json
-    - skills-lock.json
-    - .agents/skills/**/assets/**
 gates:
   - id: check.verification-fixed-source
     title: 仓库身份与固定来源
@@ -2347,8 +2265,7 @@ gates:
       - check.cli-content-identity
     audit_status: conservative-complete
     display_id: G01
-    audit_basis: Every registered changed path retains this risk; no narrowing or
-      retirement.
+    audit_basis: Every registered changed path retains this risk; no narrowing or retirement.
   - id: check.verification-environment
     title: 环境预检
     trigger: always
@@ -2362,8 +2279,7 @@ gates:
     check_ids: []
     audit_status: conservative-complete
     display_id: G02
-    audit_basis: Every registered changed path retains this risk; no narrowing or
-      retirement.
+    audit_basis: Every registered changed path retains this risk; no narrowing or retirement.
   - id: check.verification-skills
     title: Skill 投影与锁
     trigger: always
@@ -2377,19 +2293,16 @@ gates:
     check_ids:
       - check.skill-projection-identity
       - check.skill-lock-current
-      - check.22712701df14f183
       - check.4301e56b48a9d570
       - check.eb4247ef92d2c0d0
       - check.c80aaecf300ddc1f
       - check.022dccdddca70b70
       - check.93d2af5732ccdd96
-      - check.a74d7c2cc539e456
       - check.208c7eedeff4e6e9
       - check.f8acc69a55fea6b0
     audit_status: conservative-complete
     display_id: G03
-    audit_basis: Every registered changed path retains this risk; no narrowing or
-      retirement.
+    audit_basis: Every registered changed path retains this risk; no narrowing or retirement.
   - id: check.verification-governance-syntax
     title: 语法、Schema 与治理布局
     trigger: always
@@ -2406,8 +2319,7 @@ gates:
       - check.8cd499a929b8a5a4
     audit_status: conservative-complete
     display_id: G04
-    audit_basis: Every registered changed path retains this risk; no narrowing or
-      retirement.
+    audit_basis: Every registered changed path retains this risk; no narrowing or retirement.
   - id: check.verification-tooling-dependencies
     title: 工具依赖与 vendor
     trigger: always
@@ -2425,8 +2337,7 @@ gates:
       - check.runtime-storage
     audit_status: conservative-complete
     display_id: G05
-    audit_basis: Every registered changed path retains this risk; no narrowing or
-      retirement.
+    audit_basis: Every registered changed path retains this risk; no narrowing or retirement.
   - id: check.verification-plan-spec
     title: Plan、Spec 与业务票据
     trigger: impact
@@ -2439,18 +2350,16 @@ gates:
     depends_on: []
     check_ids:
       - check.business-ticket-contract
-      - check.292502d15942f4de
-      - check.57446ae09b82f3cd
-      - check.e9c24c657e0a67e7
       - check.14755c909a41ebee
       - check.d87d713b76204ae4
       - check.research-evidence-scenarios
       - check.competitive-evidence-scenarios
       - check.document-writing-integration
+      - check.292502d15942f4de
+      - check.57446ae09b82f3cd
     audit_status: conservative-complete
     display_id: G06
-    audit_basis: Every registered changed path retains this risk; no narrowing or
-      retirement.
+    audit_basis: Every registered changed path retains this risk; no narrowing or retirement.
   - id: check.verification-lifecycle
     title: Context 与生命周期
     trigger: impact
@@ -2462,7 +2371,6 @@ gates:
     impact_dependencies: []
     depends_on: []
     check_ids:
-      - check.657837436fa3e2f8
       - check.document-reading-views
       - check.92a3623cf3550ba8
       - check.1451647ba2722b30
@@ -2470,24 +2378,21 @@ gates:
       - check.c959490d7a86d5c9
       - check.fbcca7d04b9634fc
       - check.7752ee8d6f74f638
-      - check.220f79ecb19875df
       - check.9f66238a57e457bf
       - check.cca7321527c13629
       - check.aafa7bdc8a88bf84
       - check.56ea690765beec6f
-      - check.058e2e3f6c3cf54b
-      - check.f8325b4489484a22
-      - check.67adfa48ba9308b2
       - check.bbef469ead80be51
       - check.66e3685569009833
       - check.0c8201229a241875
       - check.84142f2eab38b8a4
       - check.ad648590e5e06103
       - check.lifecycle-query-freshness
+      - check.e9c24c657e0a67e7
+      - check.657837436fa3e2f8
     audit_status: conservative-complete
     display_id: G07
-    audit_basis: Every registered changed path retains this risk; no narrowing or
-      retirement.
+    audit_basis: Every registered changed path retains this risk; no narrowing or retirement.
   - id: check.verification-approval
     title: 审批、能力与用户决定
     trigger: impact
@@ -2516,8 +2421,7 @@ gates:
       - check.a5802dc214ecfcda
     audit_status: conservative-complete
     display_id: G08
-    audit_basis: Every registered changed path retains this risk; no narrowing or
-      retirement.
+    audit_basis: Every registered changed path retains this risk; no narrowing or retirement.
   - id: check.verification-strategic-contract
     title: 战略交接与技术设计
     trigger: impact
@@ -2529,7 +2433,6 @@ gates:
     impact_dependencies: []
     depends_on: []
     check_ids:
-      - check.17d5665535e89587
       - check.ba0fad1faed81f06
       - check.83f08a7516716a38
       - check.3d61dc45c4a35922
@@ -2538,10 +2441,12 @@ gates:
       - check.0eda9c9e0a08adf6
       - check.9c058e5d7cf873aa
       - check.0b0ff4c1ba24fa6e
+      - check.strategic-handoff-readonly
+      - check.strategic-handoff-sealed-owner
+      - check.progression-target-evidence
     audit_status: conservative-complete
     display_id: G09
-    audit_basis: Every registered changed path retains this risk; no narrowing or
-      retirement.
+    audit_basis: Every registered changed path retains this risk; no narrowing or retirement.
   - id: check.verification-design-ui
     title: 设计系统与 UI 基线
     trigger: impact
@@ -2565,8 +2470,7 @@ gates:
       - check.f96c759bbc30d99e
     audit_status: conservative-complete
     display_id: G10
-    audit_basis: Every registered changed path retains this risk; no narrowing or
-      retirement.
+    audit_basis: Every registered changed path retains this risk; no narrowing or retirement.
   - id: check.verification-implementation
     title: 实现合同与仓库边界
     trigger: impact
@@ -2599,10 +2503,11 @@ gates:
       - check.e8232d4ab54fc999
       - check.156d8dea8b8d6810
       - check.contract-review-preparation
+      - check.implementation-candidate-current
+      - check.backend-delivery-terminal
     audit_status: conservative-complete
     display_id: G11
-    audit_basis: Every registered changed path retains this risk; no narrowing or
-      retirement.
+    audit_basis: Every registered changed path retains this risk; no narrowing or retirement.
   - id: check.verification-cli-core
     title: 共享 CLI core
     trigger: always
@@ -2619,8 +2524,7 @@ gates:
       - check.371da192d6338e6d
     audit_status: conservative-complete
     display_id: G12
-    audit_basis: Every registered changed path retains this risk; no narrowing or
-      retirement.
+    audit_basis: Every registered changed path retains this risk; no narrowing or retirement.
   - id: check.verification-spec-cli
     title: Spec CLI 包与真实入口
     trigger: always
@@ -2636,8 +2540,7 @@ gates:
       - check.2b52a050306077cc
     audit_status: conservative-complete
     display_id: G13
-    audit_basis: Every registered changed path retains this risk; no narrowing or
-      retirement.
+    audit_basis: Every registered changed path retains this risk; no narrowing or retirement.
     release_families:
       - spec
   - id: check.verification-design-cli
@@ -2668,19 +2571,6 @@ gates:
     display_id: G15
     release_families:
       - backend
-  - id: check.verification-frontend-cli
-    title: Frontend CLI 包与真实入口（已移除，保留 G16 编号占位）
-    trigger: four-cli-delivery
-    execution_scope: release-integration
-    required_at_release: false
-    inputs_complete: false
-    input_patterns: []
-    impact_dependencies: []
-    depends_on: []
-    check_ids: []
-    audit_status: pending
-    display_id: G16
-    release_families: []
   - id: check.verification-cli-migration
     title: 四家族迁移与回滚
     trigger: four-cli-delivery
@@ -2708,12 +2598,10 @@ gates:
     impact_dependencies: []
     depends_on: []
     check_ids:
-      - check.1f1753b1299c14cf
       - check.629b3c9ec897593f
     audit_status: conservative-complete
     display_id: G18
-    audit_basis: Every registered changed path retains this risk; no narrowing or
-      retirement.
+    audit_basis: Every registered changed path retains this risk; no narrowing or retirement.
   - id: check.verification-platform
     title: Node 与平台兼容窗口
     trigger: impact
@@ -2738,642 +2626,20 @@ gates:
     depends_on: []
     check_ids:
       - check.010ab85199ad1140
-      - check.a047149f13d2d04e
       - check.1f905d7e659c8525
       - check.e970cf29c7cd81e3
       - check.af45fd40af913057
       - check.verification-selection
+      - check.work-layout
+      - check.work-layout-hardcodes
     audit_status: conservative-complete
     display_id: G20
-    audit_basis: Every registered changed path retains this risk; no narrowing or
-      retirement.
-# 旧检查覆盖（冻结，共 117 条）。逐条只写不同的字段；其余由下面的 defaults 与 gates 表在加载时展开，
-# 展开结果与压缩前逐字节相同（规则与校验见 scripts/lib/legacy-coverage.mjs，等价性见 tests/legacy-coverage.test.mjs）。
-legacy_coverage_defaults:
-  owner: role.test-engineer
-  input_patterns: ["**"]
-  depends_on: []
-  duration_ms: null
-  disposition: merge
-  audit_status: preserved
-  counterexample_ref: null
-  evidence_ref: .template-source/process/template-verification-legacy.json
-legacy_coverage_gates:
-  check.verification-fixed-source: G01
-  check.verification-skills: G03
-  check.verification-governance-syntax: G04
-  check.verification-design-ui: G10
-  check.verification-plan-spec: G06
-  check.verification-spec-cli: G13
-  check.verification-cli-core: G12
-  check.verification-distribution: G18
-  check.verification-strategic-contract: G09
-  check.verification-tooling-dependencies: G05
-  check.verification-implementation: G11
-  check.verification-approval: G08
-  check.verification-lifecycle: G07
-  check.verification-final-integrity: G20
-legacy_coverage:
-  - old_id: legacy.000
-    check_id: check.drift-identity
-    group: drift-identity
-    gate: check.verification-fixed-source
-    command: "node --test tests/content-identity.test.mjs tests/drift-report.test.mjs tests/maintenance-iteration.test.mjs"
-  - old_id: legacy.001
-    check_id: check.cli-content-identity
-    group: drift-identity
-    gate: check.verification-fixed-source
-    command: "node --test submodules/create-yss-spec/tests/content-identity.test.js"
-    replacement_command: "node --test tests/cli-retirement.test.mjs"
-    retirement_disposition: public-native-content-identity
-  - old_id: legacy.002
-    check_id: check.skill-projection-identity
-    group: drift-identity
-    gate: check.verification-skills
-    command: "scripts/sync-skills --check"
-  - old_id: legacy.003
-    check_id: check.skill-lock-current
-    group: drift-identity
-    gate: check.verification-skills
-    command: "scripts/update-skill-lock --check"
-  - old_id: legacy.004
-    check_id: check.structured-assets
-    group: schema-runtime
-    gate: check.verification-governance-syntax
-    command: "node --test scripts/fixtures/structured-assets/*.test.mjs"
-  - old_id: legacy.005
-    check_id: check.schema-runtime
-    group: schema-runtime
-    gate: check.verification-governance-syntax
-    command: "node --test scripts/fixtures/contract-efficiency/schema-rejection.test.mjs scripts/fixtures/contract-efficiency/security.test.mjs scripts/fixtures/contract-efficiency/phase.test.mjs scripts/fixtures/delivery-preflight/json-schema-framing.test.mjs"
-  - old_id: legacy.006
-    check_id: check.feature-assets
-    group: feature-assets
-    gate: check.verification-design-ui
-    command: "node --test tests/feature-assets.test.mjs tests/browser-session.test.mjs"
-  - old_id: legacy.007
-    check_id: check.business-ticket-contract
-    group: business-tickets
-    gate: check.verification-plan-spec
-    command: "node --test scripts/fixtures/business-tickets/*.test.mjs"
-  - old_id: legacy.008
-    check_id: check.292502d15942f4de
-    group: plan-spec-content
-    gate: check.verification-plan-spec
-    command: "node --test .template-source/tooling/node/test/plan-spec-quality.test.mjs tests/plan-spec-template-contract.test.mjs"
-  - old_id: legacy.009
-    check_id: check.57446ae09b82f3cd
-    group: plan-spec-content
-    gate: check.verification-plan-spec
-    command: "node .agents/skills/i-have-adhd/tests/verify-integration.mjs"
-  - old_id: legacy.010
-    check_id: check.517fe9954d913f53
-    group: cli-sync
-    gate: check.verification-spec-cli
-    gate_ids: ["check.verification-spec-cli", "check.verification-cli-core"]
-    command: "node --test submodules/create-yss-spec/tests/sync-fast-smoke.test.js"
-    replacement_command: "node --test tests/cli-retirement.test.mjs"
-    retirement_disposition: public-native-sync-protection
-  - old_id: legacy.011
-    check_id: check.2b52a050306077cc
-    group: cli-sync
-    gate: check.verification-spec-cli
-    gate_ids: ["check.verification-spec-cli", "check.verification-cli-core"]
-    command: "scripts/verify-repository-scope-scenarios"
-  - old_id: legacy.012
-    check_id: check.371da192d6338e6d
-    group: dedicated-cli-core
-    gate: check.verification-cli-core
-    command: "node --test .template-source/cli-core/tests/*.test.mjs"
-    replacement_command: "node --test tests/cli-core-retirement.test.mjs"
-    retirement_disposition: public-native-core-protection
-    counterexample_ref: "tests/cli-core-retirement.test.mjs"
-    source_ref: "tests/cli-core-retirement.test.mjs"
-  - old_id: legacy.013
-    check_id: check.1f1753b1299c14cf
-    group: frontend-delivery
-    gate: check.verification-distribution
-    command: "scripts/verify-frontend-delivery-scenarios"
-  - old_id: legacy.014
-    check_id: check.629b3c9ec897593f
-    group: frontend-delivery
-    gate: check.verification-distribution
-    command: "node .template-source/scripts/verify-delivery-harness-distribution.mjs"
-  - old_id: legacy.015
-    check_id: check.17d5665535e89587
-    group: strategic-handoff-package
-    gate: check.verification-strategic-contract
-    command: "scripts/verify-strategic-handoff-tools-lock"
-  - old_id: legacy.016
-    check_id: check.ba0fad1faed81f06
-    group: strategic-handoff-package
-    gate: check.verification-strategic-contract
-    command: "node --check scripts/lib/strategic-handoff.mjs"
-  - old_id: legacy.017
-    check_id: check.83f08a7516716a38
-    group: strategic-handoff-package
-    gate: check.verification-strategic-contract
-    command: "scripts/verify-strategic-handoff-package-scenarios"
-  - old_id: legacy.018
-    check_id: check.5178854477253978
-    group: design-system
-    gate: check.verification-design-ui
-    command: "node .template-source/tooling/node/scripts/design-md.mjs lint DESIGN.md"
-  - old_id: legacy.019
-    check_id: check.a27805ecf41a23e5
-    group: design-system
-    gate: check.verification-design-ui
-    command: "node .template-source/tooling/node/scripts/design-md.mjs drift"
-  - old_id: legacy.020
-    check_id: check.8cd499a929b8a5a4
-    group: hygiene
-    gate: check.verification-governance-syntax
-    command: "scripts/verify-governance-layout"
-  - old_id: legacy.021
-    check_id: check.44ea73f718bcecec
-    group: tooling
-    gate: check.verification-tooling-dependencies
-    command: "python3 -m unittest discover -s .template-source/scripts/tests -p 'test_skills_agent_eval.py' -v"
-  - old_id: legacy.022
-    check_id: check.71586a7291afee4f
-    group: tooling
-    gate: check.verification-tooling-dependencies
-    command: "pnpm --dir .template-source/tooling/node test"
-  - old_id: legacy.023
-    check_id: check.637af2529c59dfe5
-    group: tooling
-    gate: check.verification-tooling-dependencies
-    command: "pnpm --dir .template-source/tooling/node check:vendor"
-  - old_id: legacy.024
-    check_id: check.22712701df14f183
-    group: skills
-    gate: check.verification-skills
-    command: "scripts/sync-profile-skills --check --profile=all"
-  - old_id: legacy.025
-    check_id: check.4301e56b48a9d570
-    group: skills
-    gate: check.verification-skills
-    command: "scripts/sync-skills --check"
-  - old_id: legacy.026
-    check_id: check.eb4247ef92d2c0d0
-    group: skills
-    gate: check.verification-skills
-    command: "scripts/update-skill-lock --check"
-  - old_id: legacy.027
-    check_id: check.c80aaecf300ddc1f
-    group: skills
-    gate: check.verification-skills
-    command: "node --test tests/skill-sync-efficiency.test.mjs"
-  - old_id: legacy.028
-    check_id: check.022dccdddca70b70
-    group: skills
-    gate: check.verification-skills
-    command: "scripts/verify-skill-registry"
-  - old_id: legacy.029
-    check_id: check.93d2af5732ccdd96
-    group: skills
-    gate: check.verification-skills
-    command: "scripts/verify-skill-governance"
-  - old_id: legacy.030
-    check_id: check.a74d7c2cc539e456
-    group: skills
-    gate: check.verification-skills
-    command: "scripts/verify-upstream-skill-source --source=iloveZzz/yss-harness-design-agent --source-root=submodules/yss-harness-design-agent"
-  - old_id: legacy.031
-    check_id: check.208c7eedeff4e6e9
-    group: skills
-    gate: check.verification-skills
-    command: "node --test .agents/skills/yss-skill-source-index-refresh/scripts/refresh-yss-skill-index.test.mjs"
-  - old_id: legacy.032
-    check_id: check.f8acc69a55fea6b0
-    group: skills
-    gate: check.verification-skills
-    command: "node --test .agents/skills/yss-repository/tests/profile-routing.test.mjs"
-  - old_id: legacy.033
-    check_id: check.3d61dc45c4a35922
-    group: tactical-design
-    gate: check.verification-strategic-contract
-    command: "node .agents/skills/yss-technical-design/scripts/generate-schema.mjs --check"
-  - old_id: legacy.034
-    check_id: check.4bade53d828a7468
-    group: tactical-design
-    gate: check.verification-strategic-contract
-    command: "node .agents/skills/yss-technical-design/tests/run-scenarios.mjs"
-  - old_id: legacy.035
-    check_id: check.f03591c3ea92405b
-    group: tactical-design
-    gate: check.verification-strategic-contract
-    command: "node --test .agents/skills/yss-technical-design/tests/engineering-scenarios.mjs"
-  - old_id: legacy.036
-    check_id: check.0eda9c9e0a08adf6
-    group: tactical-design
-    gate: check.verification-strategic-contract
-    command: "node --check .agents/skills/yss-tactical-design/scripts/validate-tactical-design.mjs"
-  - old_id: legacy.037
-    check_id: check.9c058e5d7cf873aa
-    group: tactical-design
-    gate: check.verification-strategic-contract
-    command: "node --check .agents/skills/yss-tactical-design/tests/run-scenarios.mjs"
-  - old_id: legacy.038
-    check_id: check.0b0ff4c1ba24fa6e
-    group: tactical-design
-    gate: check.verification-strategic-contract
-    command: "node .agents/skills/yss-tactical-design/tests/run-scenarios.mjs"
-  - old_id: legacy.039
-    check_id: check.0bbbe97175f9674e
-    group: contracts
-    gate: check.verification-implementation
-    command: "scripts/verify-yss-dto-openapi-profile"
-  - old_id: legacy.040
-    check_id: check.eeb6e42ce91ac26a
-    group: contracts
-    gate: check.verification-implementation
-    command: "scripts/verify-yss-dto-openapi-scenarios"
-  - old_id: legacy.041
-    check_id: check.d3535102c1a26a7d
-    group: contracts
-    gate: check.verification-implementation
-    command: "scripts/verify-openapi-yaml-first-scenarios"
-  - old_id: legacy.042
-    check_id: check.b636f17f4fdfecf1
-    group: contracts
-    gate: check.verification-implementation
-    command: "scripts/verify-openapi-json-handoff-scenarios"
-  - old_id: legacy.043
-    check_id: check.plan-review-control-convergence
-    group: collaboration
-    gate: check.verification-approval
-    command: "node scripts/verify-plan-review-control-scenarios"
-  - old_id: legacy.044
-    check_id: check.role-gates-current-capability
-    group: collaboration
-    gate: check.verification-approval
-    command: "node --test .template-source/tooling/node/test/approval-current.test.mjs .template-source/tooling/node/test/review-capabilities.test.mjs .template-source/tooling/node/test/approval-consumption.test.mjs"
-  - old_id: legacy.045
-    check_id: check.a3cc57f168071cc8
-    group: collaboration
-    gate: check.verification-approval
-    command: "scripts/verify-digital-human-roles"
-  - old_id: legacy.046
-    check_id: check.fa7fc43e32417857
-    group: collaboration
-    gate: check.verification-approval
-    command: "scripts/verify-digital-human-roles-scenarios"
-  - old_id: legacy.047
-    check_id: check.aab6b1527f8c70f0
-    group: collaboration
-    gate: check.verification-approval
-    command: "scripts/verify-approval-record --history .template-spec/templates/approval-record-template.yaml"
-  - old_id: legacy.048
-    check_id: check.ffe328872703d3c0
-    group: collaboration
-    gate: check.verification-approval
-    command: "scripts/verify-subagent-task-package-scenarios"
-  - old_id: legacy.049
-    check_id: check.b593997f977be2c5
-    group: collaboration
-    gate: check.verification-approval
-    command: "scripts/verify-digital-human-task-package-scenarios"
-  - old_id: legacy.050
-    check_id: check.read-only-intake
-    group: collaboration
-    gate: check.verification-approval
-    command: "node --test tests/read-only-intake.test.mjs"
-  - old_id: legacy.051
-    check_id: check.e9c24c657e0a67e7
-    group: lifecycle
-    gate: check.verification-plan-spec
-    command: "node --test tests/plan-clarification-replay.test.mjs"
-  - old_id: legacy.052
-    check_id: check.657837436fa3e2f8
-    group: lifecycle
-    gate: check.verification-lifecycle
-    command: "node --test tests/checkpoint-boundary.test.mjs tests/flow-verification-routing.test.mjs tests/project-ci.test.mjs"
-  - old_id: legacy.053
-    check_id: check.document-reading-views
-    group: lifecycle
-    gate: check.verification-lifecycle
-    command: "node --test scripts/fixtures/reading-views/*.test.mjs"
-  - old_id: legacy.054
-    check_id: check.92a3623cf3550ba8
-    group: lifecycle
-    gate: check.verification-lifecycle
-    command: "node --test scripts/fixtures/stage-tracking/tracking.test.mjs"
-  - old_id: legacy.055
-    check_id: check.c17b4b0ba6c92cfc
-    group: lifecycle
-    gate: check.verification-approval
-    command: "node --test .template-source/tooling/node/test/decision-continuation.test.mjs"
-  - old_id: legacy.056
-    check_id: check.491faba2d1fdef3b
-    group: lifecycle
-    gate: check.verification-approval
-    command: "scripts/verify-user-decision-scenarios"
-  - old_id: legacy.057
-    check_id: check.1451647ba2722b30
-    group: lifecycle
-    gate: check.verification-lifecycle
-    command: "scripts/verify-context-contract --root . --json"
-  - old_id: legacy.058
-    check_id: check.b5ec80cdc570194f
-    group: lifecycle
-    gate: check.verification-lifecycle
-    command: "scripts/verify-context-contract-scenarios"
-  - old_id: legacy.059
-    check_id: check.c959490d7a86d5c9
-    group: lifecycle
-    gate: check.verification-lifecycle
-    command: "node scripts/verify-business-language-scenarios"
-  - old_id: legacy.060
-    check_id: check.fbcca7d04b9634fc
-    group: lifecycle
-    gate: check.verification-lifecycle
-    command: "scripts/verify-context-reconciliation-scenarios"
-  - old_id: legacy.061
-    check_id: check.7752ee8d6f74f638
-    group: lifecycle
-    gate: check.verification-lifecycle
-    command: "node scripts/verify-script-performance-scenarios"
-  - old_id: legacy.062
-    check_id: check.14755c909a41ebee
-    group: lifecycle
-    gate: check.verification-plan-spec
-    command: "scripts/verify-plan-requirements-context-scenarios"
-  - old_id: legacy.063
-    check_id: check.220f79ecb19875df
-    group: lifecycle
-    gate: check.verification-lifecycle
-    command: "scripts/verify-strategic-context-import-scenarios"
-  - old_id: legacy.064
-    check_id: check.9f66238a57e457bf
-    group: lifecycle
-    gate: check.verification-lifecycle
-    command: "scripts/verify-lifecycle-registry"
-  - old_id: legacy.065
-    check_id: check.cca7321527c13629
-    group: lifecycle
-    gate: check.verification-lifecycle
-    command: "scripts/verify-lifecycle-context-query-scenarios"
-  - old_id: legacy.066
-    check_id: check.aafa7bdc8a88bf84
-    group: lifecycle
-    gate: check.verification-lifecycle
-    command: "scripts/verify-lifecycle-operator-scenarios"
-  - old_id: legacy.067
-    check_id: check.56ea690765beec6f
-    group: lifecycle
-    gate: check.verification-lifecycle
-    command: "scripts/verify-lifecycle-checkpoint .template-spec/process/templates/lifecycle-checkpoint-template.yaml"
-  - old_id: legacy.068
-    check_id: check.058e2e3f6c3cf54b
-    group: lifecycle
-    gate: check.verification-lifecycle
-    command: "scripts/verify-frontend-implementation-evidence --allow-template .template-spec/process/templates/frontend-implementation-plan-template.yaml"
-  - old_id: legacy.069
-    check_id: check.f8325b4489484a22
-    group: lifecycle
-    gate: check.verification-lifecycle
-    command: "scripts/verify-frontend-implementation-evidence --allow-template .template-spec/process/templates/frontend-implementation-verification-template.yaml"
-  - old_id: legacy.070
-    check_id: check.67adfa48ba9308b2
-    group: lifecycle
-    gate: check.verification-lifecycle
-    command: "scripts/verify-frontend-implementation-evidence-scenarios"
-  - old_id: legacy.071
-    check_id: check.bbef469ead80be51
-    group: lifecycle
-    gate: check.verification-lifecycle
-    command: "scripts/verify-scaffold-architecture-decisions --allow-template .template-spec/process/templates/scaffold-architecture-decisions-template.yaml"
-  - old_id: legacy.072
-    check_id: check.66e3685569009833
-    group: lifecycle
-    gate: check.verification-lifecycle
-    command: "scripts/verify-scaffold-architecture-decision-scenarios"
-  - old_id: legacy.073
-    check_id: check.0c8201229a241875
-    group: lifecycle
-    gate: check.verification-lifecycle
-    command: "scripts/verify-lifecycle-scenarios"
-  - old_id: legacy.074
-    check_id: check.84142f2eab38b8a4
-    group: lifecycle
-    gate: check.verification-lifecycle
-    command: "scripts/verify-lifecycle-transition-scenarios"
-  - old_id: legacy.075
-    check_id: check.d87d713b76204ae4
-    group: lifecycle
-    gate: check.verification-plan-spec
-    command: "node scripts/verify-plan-spec-entry-scenarios"
-  - old_id: legacy.076
-    check_id: check.ad648590e5e06103
-    group: lifecycle
-    gate: check.verification-lifecycle
-    command: "scripts/verify-frontend-scaffold-generator-scenarios"
-  - old_id: legacy.077
-    check_id: check.lifecycle-query-freshness
-    group: lifecycle
-    gate: check.verification-lifecycle
-    command: "node --test tests/lifecycle-query-freshness.test.mjs"
-  - old_id: legacy.078
-    check_id: check.maintenance-storage
-    group: maintenance
-    gate: check.verification-approval
-    command: "node --test scripts/fixtures/maintenance-storage/scenarios.test.mjs"
-  - old_id: legacy.079
-    check_id: check.evidence-archive-fixtures
-    group: maintenance
-    gate: check.verification-approval
-    command: "node --test .template-source/scripts/tests/evidence-archive.test.mjs"
-  - old_id: legacy.080
-    check_id: check.maintenance-counterexample
-    group: maintenance
-    gate: check.verification-approval
-    command: "node --test tests/maintenance-counterexample.test.mjs"
-  - old_id: legacy.081
-    check_id: check.5fa31f4262e122b1
-    group: maintenance
-    gate: check.verification-approval
-    command: "scripts/verify-maintenance-intensity-scenarios"
-  - old_id: legacy.082
-    check_id: check.a5802dc214ecfcda
-    group: maintenance
-    gate: check.verification-approval
-    command: "node scripts/verify-maintenance-review-workflow-scenarios"
-  - old_id: legacy.083
-    check_id: check.f74a919c8173a935
-    group: existing-project-delivery
-    gate: check.verification-implementation
-    command: "scripts/verify-existing-backend-architecture-scenarios"
-  - old_id: legacy.084
-    check_id: check.9ceb4a3839391bb6
-    group: existing-project-delivery
-    gate: check.verification-implementation
-    command: "scripts/verify-delivery-preflight-scenarios"
-  - old_id: legacy.085
-    check_id: check.a7f4f092f5b64b8d
-    group: existing-project-delivery
-    gate: check.verification-design-ui
-    command: "scripts/verify-existing-ui-baseline-scenarios"
-  - old_id: legacy.086
-    check_id: check.7ea1e4340f4611ee
-    group: implementation
-    gate: check.verification-implementation
-    command: "scripts/verify-implementation-path-scenarios"
-  - old_id: legacy.087
-    check_id: check.5a81832cac0ee7be
-    group: implementation
-    gate: check.verification-implementation
-    command: "scripts/verify-repository-scope-scenarios"
-  - old_id: legacy.088
-    check_id: check.a156e5fff5a8dfdd
-    group: implementation
-    gate: check.verification-implementation
-    command: "scripts/verify-scaffold-generator-scenarios"
-  - old_id: legacy.089
-    check_id: check.a53e61d79c3befc1
-    group: implementation
-    gate: check.verification-implementation
-    command: "node --test scripts/fixtures/backend-scaffold/platform-scenarios.test.mjs"
-  - old_id: legacy.090
-    check_id: check.edf25d8db265d921
-    group: implementation
-    gate: check.verification-implementation
-    command: "node --test .agents/skills/yss-ddd-scaffold-generator/scripts/scaffold-generator.test.mjs"
-  - old_id: legacy.091
-    check_id: check.c860ed22ba605f8d
-    group: implementation
-    gate: check.verification-implementation
-    command: "node --test .agents/skills/yss-layered-mvc-scaffold-generator/scripts/scaffold-generator.test.mjs"
-  - old_id: legacy.092
-    check_id: check.fcef5f013dd0e7f4
-    group: implementation
-    gate: check.verification-implementation
-    command: "node --test scripts/lib/legacy-backend-scaffold-audit.test.mjs"
-  - old_id: legacy.093
-    check_id: check.1ebcb1124ce67eb1
-    group: implementation
-    gate: check.verification-implementation
-    command: "node --test scripts/lib/api-contract-decision.test.mjs"
-  - old_id: legacy.094
-    check_id: check.ad648590e5e06103
-    group: implementation
-    gate: check.verification-implementation
-    command: "scripts/verify-frontend-scaffold-generator-scenarios"
-  - old_id: legacy.095
-    check_id: check.3851a250b368d3ae
-    group: implementation
-    gate: check.verification-design-ui
-    command: "scripts/verify-prototype-backend-scaffold-scenarios"
-  - old_id: legacy.096
-    check_id: check.d32468f5dd6a4654
-    group: implementation
-    gate: check.verification-implementation
-    command: "scripts/verify-matt-yss-integration-scenarios"
-  - old_id: legacy.097
-    check_id: check.9a4dc0890f5759ad
-    group: implementation
-    gate: check.verification-implementation
-    command: "scripts/verify-yss-implementation-contract-compiler-scenarios"
-  - old_id: legacy.098
-    check_id: check.7cffb7c441bd4709
-    group: implementation
-    gate: check.verification-implementation
-    command: "scripts/generate-yss-skill-boundaries --check"
-  - old_id: legacy.099
-    check_id: check.e8232d4ab54fc999
-    group: implementation
-    gate: check.verification-implementation
-    command: "scripts/audit-yss-backend-skills --check"
-  - old_id: legacy.100
-    check_id: check.156d8dea8b8d6810
-    group: implementation
-    gate: check.verification-implementation
-    command: "scripts/verify-retired-skill-ids"
-  - old_id: legacy.101
-    check_id: check.842384deeb868cce
-    group: implementation
-    gate: check.verification-design-ui
-    command: "scripts/verify-yss-ui-scenarios"
-  - old_id: legacy.102
-    check_id: check.2c43904888dff190
-    group: implementation
-    gate: check.verification-design-ui
-    command: "scripts/verify-yss-prototype-contract-scenarios"
-  - old_id: legacy.103
-    check_id: check.3a2236d542e47171
-    group: implementation
-    gate: check.verification-design-ui
-    command: "node --test .agents/skills/yss-prototype-stage/tests/verification-entry.test.mjs"
-  - old_id: legacy.104
-    check_id: check.7126152a480689b5
-    group: implementation
-    gate: check.verification-design-ui
-    command: "node .agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs validate-evidence .template-spec/design/templates/prototype-evidence-template.yaml --allow-template"
-  - old_id: legacy.105
-    check_id: check.f96c759bbc30d99e
-    group: implementation
-    gate: check.verification-design-ui
-    command: "node .agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs validate .template-spec/design/templates/visual-baseline-template.yaml --allow-template"
-  - old_id: legacy.106
-    check_id: check.contract-review-preparation
-    group: implementation
-    gate: check.verification-implementation
-    command: "node --test tests/contract-review-preparation.test.mjs"
-  - old_id: legacy.107
-    check_id: check.runtime-storage
-    group: runtime-storage
-    gate: check.verification-tooling-dependencies
-    command: "node --test --test-concurrency=1 tests/runtime-store.test.mjs tests/runtime-store-integration.test.mjs tests/runtime-store-distribution.test.mjs"
-  - old_id: legacy.108
-    check_id: check.010ab85199ad1140
-    group: governance-release
-    gate: check.verification-final-integrity
-    command: "scripts/verify-governance-release"
-  - old_id: legacy.109
-    check_id: check.a047149f13d2d04e
-    group: candidate-integrity
-    gate: check.verification-final-integrity
-    command: "scripts/verify-strategic-handoff-tools-lock"
-  - old_id: legacy.110
-    check_id: check.1f905d7e659c8525
-    group: candidate-integrity
-    gate: check.verification-final-integrity
-    command: "node scripts/verify-template-verification-scenarios"
-  - old_id: legacy.111
-    check_id: check.e970cf29c7cd81e3
-    group: candidate-integrity
-    gate: check.verification-final-integrity
-    command: "node scripts/verify-template-cache-scenarios"
-  - old_id: legacy.112
-    check_id: check.af45fd40af913057
-    group: candidate-integrity
-    gate: check.verification-final-integrity
-    command: "node --test .template-source/scripts/tests/template-ci.test.mjs"
-  - old_id: legacy.113
-    check_id: check.verification-selection
-    group: candidate-integrity
-    gate: check.verification-final-integrity
-    command: "node --test tests/verification-selection.test.mjs tests/verification-report.test.mjs"
-  - old_id: legacy.114
-    check_id: check.research-evidence-scenarios
-    group: research-evidence
-    gate: check.verification-plan-spec
-    command: "node .agents/skills/yss-research/tests/run-scenarios.mjs"
-  - old_id: legacy.115
-    check_id: check.competitive-evidence-scenarios
-    group: research-evidence
-    gate: check.verification-plan-spec
-    command: "node --test .agents/skills/yss-research/tests/competitive-scenarios.test.mjs"
-  - old_id: legacy.116
-    check_id: check.document-writing-integration
-    group: document-writing
-    gate: check.verification-plan-spec
-    command: "node .agents/skills/i-have-adhd/tests/verify-integration.mjs"
+    audit_basis: Every registered changed path retains this risk; no narrowing or retirement.
 supplemental_checks:
   - id: check.work-layout-supplemental
     run: node --test tests/work-layout.test.mjs
     group: feature-assets
-    gate_ids: [check.verification-lifecycle]
+    gate_ids: [ check.verification-lifecycle ]
     depends_on: []
     when: template-source
     task_id: supplemental.work-layout
@@ -3381,7 +2647,7 @@ supplemental_checks:
   - id: check.work-layout-hardcodes-supplemental
     run: node scripts/verify-work-layout
     group: feature-assets
-    gate_ids: [check.verification-lifecycle]
+    gate_ids: [ check.verification-lifecycle ]
     depends_on: []
     when: template-source
     task_id: supplemental.work-layout-hardcodes
@@ -3389,7 +2655,7 @@ supplemental_checks:
   - id: check.doc-facts-supplemental
     run: node --test tests/doc-facts.test.mjs
     group: feature-assets
-    gate_ids: [check.verification-lifecycle]
+    gate_ids: [ check.verification-lifecycle ]
     depends_on: []
     when: template-source
     task_id: supplemental.doc-facts
@@ -3397,7 +2663,7 @@ supplemental_checks:
   - id: check.doc-facts-restatements-supplemental
     run: node scripts/verify-doc-facts
     group: hygiene
-    gate_ids: [check.verification-lifecycle]
+    gate_ids: [ check.verification-lifecycle ]
     depends_on: []
     when: template-source
     task_id: supplemental.doc-facts-restatements
@@ -3405,7 +2671,7 @@ supplemental_checks:
   - id: check.profile-distribution-supplemental
     run: node --test tests/profile-distribution.test.mjs
     group: hygiene
-    gate_ids: [check.verification-lifecycle]
+    gate_ids: [ check.verification-lifecycle ]
     depends_on: []
     when: template-source
     task_id: supplemental.profile-distribution
@@ -3413,7 +2679,7 @@ supplemental_checks:
   - id: check.profile-distribution-gate-supplemental
     run: node scripts/verify-profile-distribution
     group: hygiene
-    gate_ids: [check.verification-lifecycle]
+    gate_ids: [ check.verification-lifecycle ]
     depends_on: []
     when: template-source
     task_id: supplemental.profile-distribution-gate
@@ -3421,7 +2687,7 @@ supplemental_checks:
   - id: check.template-wiki-untracked-supplemental
     run: node --test tests/template-wiki-untracked.test.mjs
     group: hygiene
-    gate_ids: [check.verification-lifecycle]
+    gate_ids: [ check.verification-lifecycle ]
     depends_on: []
     when: template-source
     task_id: supplemental.template-wiki-untracked
@@ -3429,7 +2695,7 @@ supplemental_checks:
   - id: check.legacy-coverage-supplemental
     run: node --test tests/legacy-coverage.test.mjs
     group: feature-assets
-    gate_ids: [check.verification-lifecycle]
+    gate_ids: [ check.verification-lifecycle ]
     depends_on: []
     when: template-source
     task_id: supplemental.legacy-coverage
@@ -3437,7 +2703,7 @@ supplemental_checks:
   - id: check.yss-cli-pin-supplemental
     run: node --test tests/yss-cli-pin.test.mjs
     group: feature-assets
-    gate_ids: [check.verification-lifecycle]
+    gate_ids: [ check.verification-lifecycle ]
     depends_on: []
     when: template-source
     task_id: supplemental.yss-cli-pin
@@ -3445,7 +2711,7 @@ supplemental_checks:
   - id: check.skill-lock-readers-supplemental
     run: node --test tests/skill-lock-readers.test.mjs
     group: feature-assets
-    gate_ids: [check.verification-lifecycle]
+    gate_ids: [ check.verification-lifecycle ]
     depends_on: []
     when: template-source
     task_id: supplemental.skill-lock-readers
@@ -3453,7 +2719,7 @@ supplemental_checks:
   - id: check.harness-metrics-supplemental
     run: node --test tests/harness-metrics.test.mjs
     group: feature-assets
-    gate_ids: [check.verification-lifecycle]
+    gate_ids: [ check.verification-lifecycle ]
     depends_on: []
     when: template-source
     task_id: supplemental.harness-metrics
@@ -3461,7 +2727,7 @@ supplemental_checks:
   - id: check.agent-config-safety
     run: node --test tests/agent-config-safety.test.mjs
     group: feature-assets
-    gate_ids: [check.verification-lifecycle]
+    gate_ids: [ check.verification-lifecycle ]
     depends_on: []
     when: template-source
     task_id: supplemental.agent-config-safety
@@ -3469,7 +2735,7 @@ supplemental_checks:
   - id: check.agent-config-tracked
     run: node scripts/verify-agent-config
     group: feature-assets
-    gate_ids: [check.verification-lifecycle]
+    gate_ids: [ check.verification-lifecycle ]
     depends_on: []
     when: template-source
     task_id: supplemental.agent-config-tracked
@@ -3477,7 +2743,7 @@ supplemental_checks:
   - id: check.ci-gate-supplemental
     run: node --test tests/ci-gate.test.mjs
     group: feature-assets
-    gate_ids: [check.verification-lifecycle]
+    gate_ids: [ check.verification-lifecycle ]
     depends_on: []
     when: template-source
     task_id: supplemental.ci-gate
@@ -3485,7 +2751,7 @@ supplemental_checks:
   - id: check.ci-adapters-supplemental
     run: node --test tests/ci-adapters.test.mjs
     group: feature-assets
-    gate_ids: [check.verification-lifecycle]
+    gate_ids: [ check.verification-lifecycle ]
     depends_on: []
     when: template-source
     task_id: supplemental.ci-adapters
@@ -3493,7 +2759,7 @@ supplemental_checks:
   - id: check.agent-hook-supplemental
     run: node --test tests/agent-hook.test.mjs
     group: feature-assets
-    gate_ids: [check.verification-lifecycle]
+    gate_ids: [ check.verification-lifecycle ]
     depends_on: []
     when: template-source
     task_id: supplemental.agent-hook
@@ -3501,7 +2767,7 @@ supplemental_checks:
   - id: check.claude-entry-supplemental
     run: node --test tests/claude-entry.test.mjs
     group: feature-assets
-    gate_ids: [check.verification-lifecycle]
+    gate_ids: [ check.verification-lifecycle ]
     depends_on: []
     when: template-source
     task_id: supplemental.claude-entry
@@ -3509,7 +2775,7 @@ supplemental_checks:
   - id: check.explicit-invocation-supplemental
     run: node --test tests/explicit-invocation.test.mjs
     group: feature-assets
-    gate_ids: [check.verification-lifecycle]
+    gate_ids: [ check.verification-lifecycle ]
     depends_on: []
     when: template-source
     task_id: supplemental.explicit-invocation
@@ -3517,7 +2783,7 @@ supplemental_checks:
   - id: check.process-glossary-supplemental
     run: node --test tests/process-glossary.test.mjs
     group: feature-assets
-    gate_ids: [check.verification-lifecycle]
+    gate_ids: [ check.verification-lifecycle ]
     depends_on: []
     when: template-source
     task_id: supplemental.process-glossary
@@ -3525,7 +2791,7 @@ supplemental_checks:
   - id: check.design-docs-supplemental
     run: node --test tests/design-docs.test.mjs
     group: feature-assets
-    gate_ids: [check.verification-lifecycle]
+    gate_ids: [ check.verification-lifecycle ]
     depends_on: []
     when: template-source
     task_id: supplemental.design-docs
@@ -3533,7 +2799,7 @@ supplemental_checks:
   - id: check.legacy-runtime-scan-supplemental
     run: node --test tests/legacy-runtime-scan.test.mjs
     group: feature-assets
-    gate_ids: [check.verification-lifecycle]
+    gate_ids: [ check.verification-lifecycle ]
     depends_on: []
     when: template-source
     task_id: supplemental.legacy-runtime-scan
@@ -3541,14 +2807,13 @@ supplemental_checks:
   - id: check.native-context-retirement
     run: node --test tests/native-context-retirement.test.mjs
     group: lifecycle
-    gate_ids: [check.verification-lifecycle]
+    gate_ids: [ check.verification-lifecycle ]
     depends_on: []
     when: template-source
     source_requirement: committed
     task_id: supplemental.native-context-retirement
   - id: check.native-instance-drift
-    run: node --test --test-concurrency=1 tests/instance-metadata.test.mjs
-      tests/native-instance-drift.test.mjs
+    run: node --test --test-concurrency=1 tests/instance-metadata.test.mjs tests/native-instance-drift.test.mjs
     group: drift-identity
     gate_ids:
       - check.verification-fixed-source
@@ -3575,16 +2840,7 @@ supplemental_checks:
     source_requirement: committed
     task_id: supplemental.native-consumer-routing
   - id: check.verification-optimization-regressions
-    run: node --test tests/verification-gates.test.mjs
-      tests/verification-baseline.test.mjs
-      tests/verification-qualification.test.mjs
-      tests/verification-execution.test.mjs
-      tests/verification-script-retirement.test.mjs
-      tests/verification-preflight.test.mjs
-      tests/verification-report-v2.test.mjs
-      tests/verification-artifacts.test.mjs
-      tests/verification-delivery-run.test.mjs
-      tests/legacy-verification.test.mjs
+    run: node --test tests/verification-gates.test.mjs tests/verification-baseline.test.mjs tests/verification-execution.test.mjs tests/verification-script-retirement.test.mjs tests/verification-preflight.test.mjs tests/verification-report-v2.test.mjs tests/verification-artifacts.test.mjs tests/verification-delivery-run.test.mjs tests/legacy-verification.test.mjs
     group: verification-optimization
     gate_ids:
       - check.verification-final-integrity

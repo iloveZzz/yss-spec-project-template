@@ -21,9 +21,9 @@ yss init --profile backend --root /absolute/path/to/project --apply --plan-file 
 
 ## 维护与验收
 
-仅在本模板源码仓使用：共享技能与适配由 Spec 模板的 Profile 清单维护，本仓只维护专有技能。独立克隆后运行 `node scripts/prepare-skills --source <来源锁指定提交的Spec源码目录> --apply`；以后用 `node scripts/prepare-skills --check` 离线核验。准备过程中拒绝覆盖修改或未知占用，重复执行不写入。CLI 创建的业务实例已携带完整技能，不执行源码准备。
+本 Profile 由根仓内核与 `profiles/_specialist`、`profiles/backend` 覆盖层组合。共享技能在根仓 `.agents/skills` 维护，专有内容在覆盖层维护；在组合后的完整目录运行 `scripts/update-skill-lock`，按影响面执行定向检查。实例只携带 `.agents/skills`，不运行源码准备或生成投影，锁保留有效哈希校验。
 
-修改本端专有 `.agents/skills` 后运行 `scripts/sync-skills`、`scripts/update-skill-lock` 和 `scripts/verify-template-fast`。共享接力工具由综合模板源同步，避免分别维护。同一业务切片须由统一管理方汇总战略、接口、部署及前端版本的端到端证据；本端完成不能替代整体业务验收。
+同一业务切片须由统一管理方汇总战略、接口、部署及前端版本的端到端证据；本端完成不能替代整体业务验收。
 
 原生实例使用同家族 yss sync；历史实例通过显式迁移接入。跨家族和无法证明身份来源的旧 repository-local 实例不自动转换。
 

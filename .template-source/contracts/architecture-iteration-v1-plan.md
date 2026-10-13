@@ -1,15 +1,15 @@
 ---
 design_id: architecture-iteration-v1-plan
-version: 0.2.0
+version: 0.3.0
 status: accepted
 repository_mode: template-source
 spec: architecture-iteration-v1.md
-updated_at: 2026-10-11
+updated_at: 2026-10-13
 ---
 
 # 架构迭代执行计划
 
-本计划执行[架构迭代规格](architecture-iteration-v1.md)。规格负责需求、验收和未决项；本文只负责顺序、写入范围、验证和回退。两者冲突时以规格为准，并修正本文。
+本计划执行[架构迭代规格](architecture-iteration-v1.md)。规格负责需求、验收和未决项；本文只负责顺序、写入范围、验证和回退。第 7 节保留历史执行记录；续推当前状态与欠项统一维护在第 8 节。两者冲突时以规格为准，并修正本文。
 
 ## 1. 执行规则
 
@@ -75,7 +75,7 @@ S3 的 AR-08 可以和 S1、S2 并行。S4 的 AR-15 只依赖 AR-01，可以提
 | AR-01 | FR-003、FR-004、NFR-004 | L2：release-semantics、cross-repo-contract（需反例） | yss-cli | 迁移规则的版本区间匹配、删除动作的「保留」决定、「commit → 版本」对照表生成工具与产物 | AR-00 | — |
 | AR-02 | FR-001、FR-002 | L2：release-semantics、cross-repo-contract（需反例） | yss-cli、根仓 | 来源锁改钉 tag，`refresh-source-lock` 并入发布流程；根仓删除 `submodules/yss-cli` gitlink，新增固定版本文件，改写 `check.cli-content-identity`，删除 N7 的手动落后工具及其登记；首个 tag 为 `v4.0.0` | AR-01 | — |
 | AR-03 | FR-005 | L2：generation-semantics、release-semantics | yss-cli、根仓 | 同步上游 yss-cli 后收窄：根 `skills-lock.json` 不再提交 `effectiveHash`，`skill-supply-chain.mjs` 与读取方现算或按实例锁严格比较，打包器缺哈希时按旧键序补回；yss-cli 的 `bundles.json.gz`、离线帮助 JSON、`docs/cli-help.md` 保持提交，由上游 CI 校验、只在发布时重新生成；固定二进制改按上游的 `tools/build-candidate.mjs` 构建 | AR-02 | — |
-| AR-04 | FR-006 | L2：generation-semantics、cross-repo-contract、release-semantics（需反例） | yss-cli、根仓 | 删除 `.codex/skills`、`.cursor/skills`、`.pi/skills`；`projectionLink` 接受 `.claude`；根仓移出 `.codex/skills/product-design`，注册表 `platform_skills` 与锁的平台技能组清空；实例运行时模型、注册表与锁、`bundle-profile.json`、`skill-migrations.md` 登记 | AR-01、AR-03 | Q-003 |
+| AR-04 | FR-006 | L2：generation-semantics、cross-repo-contract、release-semantics（需反例） | yss-cli、根仓 | 删除 `.codex/skills`、`.cursor/skills`、`.pi/skills`；`.claude/skills` 一并删除；打包器仅为历史来源保留识别能力；根仓移出 `.codex/skills/product-design`，注册表 `platform_skills` 与锁的平台技能组清空；实例运行时模型、注册表与锁、`bundle-profile.json`、`skill-migrations.md` 登记 | AR-01、AR-03 | Q-003 |
 | AR-05 | FR-007 | L2：generation-semantics、cross-repo-contract | yss-cli | `internal/bundle/skill_composition.go`、`producer.go` 的来源读取、`rules/*.json`；组合配置格式 | AR-02 | — |
 | AR-06 | FR-008、NFR-002 | L2：template-structure、generation-semantics、cross-repo-contract | 根仓（旧 Profile 仓只归档） | `profiles/**`（新增，导入时排除 design Profile 里的 `product-design` 副本）、`.gitmodules`、删除同步脚本、`strategic-handoff-tools.lock.json`、`profile-variants.json`、`.strategic-design-skills-manifest.json` 与对应检查；来源锁 `sourcePath`；evidence 与 wiki 移到仓外归档 | AR-03、AR-05 | — |
 | AR-07 | FR-009 | L2：core-validator | 根仓 | `scripts/lib/**` 中切断 5 条边、把 user-decision 的读写与摘要工具下沉到 core；新增导入方向检查与登记 | AR-06 | — |
@@ -84,15 +84,15 @@ S3 的 AR-08 可以和 S1、S2 并行。S4 的 AR-15 只依赖 AR-01，可以提
 | AR-10 | 同上 | 同上 | yss-cli、根仓 | 第 2 步：checkpoint、slice、task 的校验 | AR-09 | Q-004。**checkpoint 对拍**：在真实实例里用 `yss stage plan/apply` 生成已跟踪的 checkpoint，Node 脚本与 yss 对 20 类变体结论全部一致；覆盖缺口（带批准门禁、Plan 聚合、业务票、执行范围终点、`--history`）未量；薄壳化需迁 6 个依赖合成根的测试，详见 AR-10 总结 §4–§5。**checkpoint 薄壳已做**：补对拍带批准门禁 8 类与旧实例未跟踪 7 类，checkpoint 回放共 35 类一致；修 3 处 Go/Node 差异（旧实例未跟踪 checkpoint 不要求功能身份、先核验会签再要求上下文、拒绝原因分开）；薄壳对根外输入先复制到根下临时目录；顺带修复 AR-09 遗留的维护反例生成器回归；迁 `checkpoint-boundary` 测试。固定二进制 `40926d1`。未覆盖：Plan 聚合、业务票组合、执行范围终点、`--history`。**能力协商**：yss `capabilities` 新增 `nodeDelegation` 令牌，Node 委托路径缺令牌退回进程内、薄壳缺令牌提示升级（修旧 yss 加新脚本使校验失败的问题）。**slice**：维护者选「yss 提供同形执行前检查报告」；量得结构部分小，但批准与新鲜度原因码（8 类以上）依赖后端/前端架构证据，与 AR-12 重叠，建议随 AR-12 做（总结 §8）。本片起按维护者要求只在本机单平台验证，固定档暂未更新（仍为 `40926d1`，不含 `nodeDelegation`，统一重建时一并更新） |
 | AR-11 | 同上 | 同上 | yss-cli、根仓 | 第 3 步：handoff、context 的校验入口；AR-09 移交的 approval/user-decision 的 Node 实现删除与删除规则于 2026-10-12 顺延至 AR-12b | AR-10 | Q-004。**第二片**：交接消费回放 10 类对拍一致（yss 按 Node 同形返回 `issues`、阻断切片、摘要，命令行暴露 `--slice`）；`verify-strategic-handoff-consumption` 与进程内 `verifyConsumption` 委托（能力令牌 `handoff.consumption-report.v1`），4 类等价一致。**第三片**：`spec-baseline verify --bundle` 委托（令牌 `handoff.spec-baseline-package.v1`）；`evidence verify --kind context-reconciliation` 公开，回放 10 类一致，`verify-context-reconciliation` 普通校验委托（令牌 `evidence.context-reconciliation.v1`）；`verify-strategic-context-import` 无对应公开 Go 命令，待决定退役或公开。**入口收口（2026-10-12 维护者确认）**：AR-11 按「handoff/context 校验入口薄壳 + 退役」收口，approval/user-decision 的 Node 实现删除顺延 AR-12b。**退役**：维护者决定退役 `verify-strategic-context-import`（退役桩失败退出并指向 consumption、context-reconciliation、strategic-handoff verify 三个替代入口；场景与 `yss-tactical-design` 技能同步；文件随 AR-16 旧覆盖清单退役时删除） |
 | AR-12 | 同上 | 同上 | yss-cli、根仓 | 第 4 步：backend、frontend 的校验部分（含 AR-10 移交的 slice 执行前检查）。**前端接收、前端预检、前端实现证据不迁移**（2026-10-13 维护者决定，该线整条移除） | AR-11 | 详见 `architecture-iteration-v1-ar12-summary.md` |
-| AR-12b | FR-010、FR-016 | L2：core-validator、release-semantics（需反例） | yss-cli、根仓 | 收尾：AR-09 移交的 approval/user-decision Node 实现删除与对应版本的删除规则（清单见 AR-09 总结 §4，并含适配层脚手架与进程内回退）；前提是 `strategic-handoff` 的源检查（`inspectSource`、`openBundle`、`openDelivery`）与 `business-tickets` 校验已改走 yss，依赖合成根的测试已迁到真实实例，AR-12 迁走后剩余的进程内调用方清单已重新实测；**整条删除前端移交验证的 Node 实现**（前端接收、前端战略预检、前端实现证据及其场景），不替换为 yss | AR-12 | 来由见 AR-11 总结 §7 |
-| AR-13 | FR-012 | L2：lifecycle-gate、template-structure（需反例） | 根仓 | 编排合同按层和领域拆成多个文件，`work_unit_routes` 每个工作单元一个文件；逐项写明策略的 owner 与消费者，写不出来的删除；读取合同的 Node 与 Go 代码相应调整 | AR-07 | — |
+| AR-12b | FR-010、FR-016 | L2：core-validator、release-semantics（需反例） | yss-cli、根仓 | 收尾：AR-09 移交的 approval/user-decision Node 实现删除与对应版本的删除规则（清单见 AR-09 总结 §4，并含适配层脚手架与进程内回退）；前提是 `strategic-handoff` 的源检查（`inspectSource`、`openBundle`、`openDelivery`）与 `business-tickets` 校验已改走 yss，依赖合成根的测试已迁到真实实例，AR-12 迁走后剩余的进程内调用方清单已重新实测；前端移交验证整线删除已移交 AR-12c，本包不重复实施 | AR-12 | 来由见 AR-11 总结 §7 |
+| AR-13 | FR-012 | L2：lifecycle-gate、template-structure、cross-repo-contract（需反例） | 根仓、yss-cli | 编排合同按层和领域拆成多个文件，`work_unit_routes` 每个工作单元一个文件；逐项写明策略的 owner 与消费者，写不出来的删除；根仓 Node 读取方与 yss-cli 的合同加载、路由和合同摘要计算相应调整，跨仓核验合成内容与摘要语义 | AR-07 | — |
 | AR-14 | FR-013、NFR-003 | L2：lifecycle-gate、cross-repo-contract（需反例） | yss-cli、根仓 | `lifecycle route --json` 返回规则摘录；`AGENTS.md` 只保留入口与硬门禁；lifecycle 技能入口相应修改 | AR-08、AR-13 | — |
 | AR-15 | FR-014 | L2：release-semantics、cross-repo-contract | yss-cli、根仓 | 每个 schema 常驻两代；更早版本移入 `yss migrate` 的读取范围；实例分发相应调整 | AR-01 | — |
-| AR-16 | FR-015、NFR-006 | L2：core-validator、release-semantics（需反例） | 根仓 | `template-verification-profiles.yaml` 只留 `fast` 与 `release` 两档；删除 `candidate`、`legacy-full`、`legacy_coverage`；删除资格校验层（`verification-qualification*`、`verification-report-validator`）或并入选择与报告模块；`ci-gate` 步骤相应调整 | AR-06 | — |
+| AR-16 | FR-015、NFR-006 | L2：core-validator、release-semantics（需反例） | 根仓、yss-cli 维护状态消费者 | `template-verification-profiles.yaml` 只留 `fast` 与 `release` 两档；删除 `candidate`、`legacy-full`、`legacy_coverage` 的现役执行与资格校验层（`verification-qualification*`）；`verification-report-validator` 仅退役资格优化职责，保留实际发布报告及历史证据核验；`ci-gate` 步骤相应调整 | AR-06 | — |
 | AR-12c | FR-010、FR-016 | L2：lifecycle-gate、cross-repo-contract、release-semantics（需反例） | yss-cli、根仓 | 前端整线移除：交接域与 Slice 合同的前端段、生命周期注册表与编排合同的前端门禁和工作单元、前端 Node 实现与 `profiles/frontend`、yss 的前端 Profile 与治理语义；旧实例明确拒绝升级；前端技能保留 | AR-12 | 顺序见盘点文档 §4 |
 | AR-17 | NFR-001、NFR-002 | L1：textual-only | 根仓 | 本计划第 7 节、规格状态 | AR-12b、AR-12c、AR-14、AR-15、AR-16 | — |
 
-「允许写入」之外的路径只读。`lifecycle-registry.yaml` 的阶段、门禁和工作单元结构，以及批准记录、交接包、数字人会签的语义，在本轮全部只读（规格「非目标范围」）。
+「允许写入」之外的路径只读。`lifecycle-registry.yaml` 的阶段、门禁和工作单元结构，以及批准记录、交接包、数字人会签的语义，除已批准 AR-12c 前端退役范围外，在本轮只读（规格「非目标范围」）。
 
 ## 4. 工作包说明
 
@@ -161,7 +161,7 @@ S3 的 AR-08 可以和 S1、S2 并行。S4 的 AR-15 只依赖 AR-01，可以提
 | 2026-10-11 | 合流方式 | 另立本合同，不并入 hardening；hardening 的 WP-08 移交本合同，WP-11 照常签署 | 维护者 |
 | 2026-10-11 | 重开的旧决定 | repo-slimming 地图中的「Profile 子模块形态」「Node 与 Go 单源方向」「共享脚本库单源化」「投影根收敛（WP-08）」「是否结束 `legacy-full`」五张票重开，由上面各项决定取代 | 维护者 |
 
-## 7. 执行状态
+## 7. 历史执行记录（截至各包记录时点）
 
 | 工作包 | 状态 | 分支 | 说明 |
 |---|---|---|---|
@@ -184,6 +184,92 @@ S3 的 AR-08 可以和 S1、S2 并行。S4 的 AR-15 只依赖 AR-01，可以提
 | AR-12c | **实现及来源锁收尾；limited 本机定向验证**：前端整线移除，Bundle 与帮助产物已重建；本地 tag `v4.0.1` 固定模板 `332560ac`，固定档指向 CLI `09517522`；三平台构建，本机 darwin-arm64 执行验证 | 根仓 `arch/ar-12c`（基于 `arch/ar-12b`）；yss-cli `arch/ar-12c`（`09517522`；均未推送） | 见 `architecture-iteration-v1-ar12c-summary.md`：Slice 合同与 Handoff 保留形状但拒绝前端、八个前端稳定 ID 进 `deprecated_ids`、`frontend-accepted` 去除、`profiles/frontend` 删除、yss 对旧前端实例明确拒绝且不改文件 |
 | AR-13～AR-17 | 未开始 | — | 规格与计划已 `accepted` |
 
+## 8. Codex 续推进计划（2026-10-13）
+
+### 8.1 目标、授权与事实基线
+
+维护者本次要求“构建推进计划与codex进行协作持续推进完成”，并选择“由本聊天组织 Codex 子代理”。本轮在既有 architecture-iteration-v1 范围内持续实施、定向验证和独立审查。主控维护本节，子代理只写派发的互不重叠路径；不新增一套进度文档。
+
+- 模板实施基线：`0abbe49ee4cfd8608beab95243520888228dad41`（AR-12c），CLI 基线：`0951752204eed69ab946b5df261bf04e02477cdc`。CLI 来源 tag 为本地 `v4.0.1`，指向模板 `332560acfbfe59208b3e499074429a4450fb5748`。
+- 原 Claude 的 `arch-ar-00` worktree 与其中被忽略的 `.work/yss-cli` 独立 clone 保留；`arch-ar-13` 的 15 个已跟踪改动与 28 个未跟踪文件保留，不覆盖、不移动、不清理。
+- Codex 在独立 worktree `architecture-iteration-closeout` 推进；主 checkout 的 main 不作为可直接覆盖的目标。调查时本地 main 与架构分支分别有 36、64 个独有提交，集成必须逐项保留两边已完成的修复。
+- 初始授权仅覆盖本地实施与协作；2026-10-13 侧边对话传达维护者新要求“后续注重推进效率完成发布合并主分支，测试和验证要注意非严格的验证和测试”，当前目标已扩展为完成范围内实现、合并 main 并发布，包含这些交付所必要的提交、推送与新版本 tag，不重复请求已有范围授权。具体目标与版本先以实际事实确定，存在实质歧义时才询问唯一所需决定；外部仓库归档仍单独判断，原有 tag 不移动。来源与边界记录于 `maintenance:checkpoints/architecture-iteration-resume/ar12b-business-report/user-direction-main-release.json`。
+- 本地必要验证通过只交付 `implementation-ready / limited`；PR、main 集成、发布仍走各自合同。AR-17 必须在全部阶段完成后真实观察 30 天，不能通过包数或提交数预先证明。
+
+### 8.2 当前包状态与未闭合验收
+
+原始 18 包，加 AR-12b、AR-12c 共 20 包。以下“本地完成”仅指已记录的收窄范围实现和定向证据，不代表全量验收、集成或发布；欠项保留原 FR/AC 归属，不因转交删除。
+
+**禁止重做既有成果。** 后续每次派发先核对本地 `arch/ar-*` 提交、当前实现、总结与验收证据，区分已完成、部分完成和未开始；未合入 main 不等于未实现。任务包必须列出“已有成果与证据”“本次确认未完成的缺口”“不重复的范围”，只实施缺口。已有证据仅在相关输入变化后定向重验，不能从 AR-00 起重新执行；保留原 Claude 分支、worktree 与未提交成果。
+
+| 包 | 当前状态 | 后续必须闭合的事项 |
+|---|---|---|
+| AR-00 | 本地完成 | AR-17 用相同口径复测收益 |
+| AR-01 | 本地完成 | 集成时保留版本区间、未知历史来源、逐文件拒绝删除覆盖；一次性用例不冒充持久回归 |
+| AR-02 | 本地完成 | tag 与固定档已存在；远端可取回性和正式发行尚未验收 |
+| AR-03 | 本地完成，收窄范围 | bundle/help 保持提交与 CI；根锁无哈希，实例锁仍严格校验；完整 CI 不由旧 fast 代替 |
+| AR-04 | 源码投影收敛已补齐，limited | 本轮已补 backend/design 覆盖层、注册表、锁和可拒绝清理；临时 Bundle 三个新实例与四个旧实例升级场景通过，不再重做。正式固定 Bundle、各运行时自动发现及发行范围仍待后续验收；旧二进制内的投影不代表源码尚未实现 |
+| AR-05 | 部分完成 | 组合能力完成；FR-007 查询共享核心已补入当前 worktree，验收入口见 8.5；物理合同路径及 Go Producer 的其余替换尚未闭合，归 AR-06 收尾 |
+| AR-06 | 部分完成 | 保留导入与归档证据；查询三份实现已收敛为共享核心与两参数适配器，不再重做；仍需处理其余共享脚本、物理路径与 Producer 替换；GitHub 旧仓归档仍待实际授权 |
+| AR-07 | 本地完成，核心 Node 范围 | 验证子系统的环归 AR-16；覆盖层行为不得漏验 |
+| AR-08 | 部分完成 | 仅抽出 kernel 基础层，领域拆包与核心环仍未完成；保留 FR-009 目标 |
+| AR-09 | 本地完成，入口与非交接委托 | Node 语义、回退与版本删除规则归 AR-12b；verification 等覆盖缺口随该领域补齐 |
+| AR-10 | 本地完成，入口范围 | task/checkpoint 已薄壳，slice 已在 AR-12 完成；Plan 聚合、业务票组合、执行终点、history 覆盖与进程内语义归 AR-12b |
+| AR-11 | 本地完成，入口与退役范围 | handoff source、旧回退、spec-baseline checkpoint 模式及 Node 实现删除归 AR-12b |
+| AR-12 | 本地完成，调整后五项范围 | v2 Slice、部分新鲜度原因、local-evidence 的覆盖缺口须在相关语义改动时补齐；前端不迁移 |
+| AR-12b | 部分完成 | 已删脚手架架构选择对照实现；本轮又闭合 OpenAPI 生产调用并删除其 Node 校验，24 项相关行为测试及定向审查已通过，不再重做。其余 business-tickets、handoff source 等先闭合调用方，再录制回放、删除实现与发布可拒绝删除规则 |
+| AR-12c | 本地完成，limited | 22 项检查、169 个测试及独立定向复审通过；完整 CI、恢复矩阵、Linux 运行和发布未覆盖 |
+| AR-13 | 已开始，未提交 | 27 个合同部件、17 个工作单元文件与 Node 读取方在原 worktree；Go 部件加载、摘要绑定、完整消费者与验证未闭合；不得覆盖在途字节 |
+| AR-14 | 未开始 | AR-13 完成后交付 route 规则摘录与 daily 起步 ≤10 KB |
+| AR-15 | 未开始 | AR-01 后可独立推进；常驻两代与 migrate 读取旧代一起验收 |
+| AR-16 | 本地实现，验收以回执为准 | CI 首片已完成；两档、孤儿检查、资格层及跨目录环的实现与验收见 8.5 的退役片回执；仅限回执记录的必要验证，不代表完整发行或整轮完成 |
+| AR-17 | 未开始 | 全部阶段完成后开始 30 天观察；同口径管道提交 <10%，抽查五次内核修复 |
+
+### 8.3 实施顺序与协作
+
+主控负责合同、任务包、分支保护、跨仓汇合、fresh verification 与状态；实施者只做自己的包；独立审查者不修改实现。并行仅用于互不重叠的调查或已固定写范围的切片，不在同一 CLI clone 或同一事实源并发写入。
+
+| 顺序 | 交付范围 | 依赖与负责人 | 完成条件 |
+|---|---|---|---|
+| 1 | 同步合同、状态与本续推计划 | 主控；独立审查核对原决定与当前事实 | 不取消未完成 FR；文档检查、当前字节审查通过，记录实际证据 |
+| 2 | AR-04/06 投影收敛首片 | 分发 Explorer 定位后，由专属 Worker 实施；主控汇合 | 现役三个 Profile 新实例无投影；锁、注册表、运行时一致；旧实例删除可拒绝，改过文件冲突且保留 |
+| 3 | AR-05/06 共享布局与参数化收尾 | 首片通过后；仅该 Worker 写分发与覆盖层 | 列明每个字节替换与覆盖副本的替代；直接消费者同形；未调整内容路径/digest/mode/ownership 对比一致 |
+| 4 | AR-16 验证两档 | AR-06 剩余对象明确后；专属 Worker，独立 Reviewer | 删除失去对象检查和旧资格层；fast/release 的输入选择、拒绝和证据消费保持，旧记录只读兼容 |
+| 5 | AR-12b 分批闭合调用方并退役 | 退役 Explorer 定位；每片先 CLI 能力再 Node 消费者 | business-tickets 同形报告 → handoff source → 真实实例夹具 → approval/user-decision 及其余语义删除 → 版本化删除规则；每片录制回放与薄壳冒烟 |
+| 6 | AR-08 领域拆包余项 | AR-12b 明确最终语义依赖后 | 先消除已量测依赖环，再按领域拆；公开命令与序列化不变，有真实校验路径回放 |
+| 7 | 接续 AR-13，再 AR-14 | 先确认原 worktree 无其他实施者写入，以完整字节快照接入 AR-12c 最终基线 | Node/Go 同一合并与摘要语义；策略 owner/消费者及删除清单齐备；route 给当前规则，起步字节达标 |
+| 8 | AR-15 两代 schema | 可与只读调查并行；源码写入避免碰 AR-12b/13 的 CLI 文件 | 当前/上一代常驻，旧代仅 migrate；不降低历史资产校验 |
+| 9 | main 集成与发布 | 上述实现完成；单独整合两个仓最新 main，保留双方修复；已按维护者新指示授权交付目标 | 形成可审阅固定来源结果，执行影响相关的必要集成/发布检查；复用有效证据，披露可选未覆盖，不以全量回归拖延交付；版本/目标存在实质歧义才询问 |
+| 10 | AR-17 效果复测 | 全部阶段完成后满 30 天 | 达到原 NFR-001/002，未达标记录原因，不调整目标冒充完成 |
+
+本轮首先实施顺序 2 的现役 Profile 投影收敛；调查确认 OpenAPI 校验已有 Go 能力且与投影写范围不重叠，因此并行实施顺序 5 的 OpenAPI 最小退役片。两片通过后进入顺序 3 的共享布局与参数化；不自动并入领域迁移或验证框架重写。顺序 5/7/8 可提前只读定位；如确认无共享写路径和依赖，可由主控在本表记录后并行派发。
+
+### 8.4 验证、证据与恢复
+
+沿用当前 AGENTS.md 的日常必要验证策略：先 `scripts/verify-template-fast --plan --json`，处理未知输入与依赖，再运行命中行为及直接/传递消费者。L2 命中生命周期、发布或权限触发时保留真实反例；不因“持续推进”执行全量回归，也不改选集制造通过。正式候选/main/发布使用其对应合同。
+
+- 文档收口只运行文档事实检查和差异检查；投影首片复用 `profile-tree`、`profile-distribution`、`skill-sync-efficiency`、实例锁与升级场景；具体命令由调查结果和 fast 计划确定，不预填通过。
+- 每片在当前 worktree 的仓外 maintenance 目录保存基线、允许写范围、命令/退出码、结果引用/摘要、独立审查和未覆盖边界。本节只保留当前状态与证据入口。
+- 不修改历史 checkpoint 的失败结论，不把 AR-12c 的 limited 报告推广成整轮验收。源码、工具、参数或输入变化后仅重验受影响证据。
+- 恢复以固定基线及任务允许写清单为界；保留原 worktree、CLI clone、AR-13 未提交文件和所有 tag。禁止 reset/clean/stash 或覆盖他人改动；需要撤回本轮修改时先展示具体差异。
+
+### 8.5 本轮执行记录
+
+- 2026-10-13：已建立独立 worktree，模板基线 `0abbe49e`，CLI 基线 `09517522`；原 Claude worktree 与 AR-13 未提交资产保留。文档审查补齐 AR-13 跨仓范围和旧前端拒绝验收，定向复审无未关闭 P1/P2。
+- 投影首片：两名实施者中的分发 Worker 删除 `_specialist/backend/design` 中 203 个投影条目，同步锁、注册表、预检与分发防复活检查；主控补 CLI 对已登记旧 `.cursor/skills/.yss-skills-manifest.json` 的精确退役识别。其他隐藏文件不在该规则内。独立静态审查无未关闭 P1/P2。
+- OpenAPI 首片：另一 Worker 将最后一个生产校验调用委托 Go，保留输入观察，删除重复 Node 验证函数；迁移现有实例夹具与固定预期回放。独立审查发现的测试摘要环境问题已修复并定向复审；不表示 business-tickets、handoff source 或其余 AR-12b 实现已经退役。
+- FR-007 查询片：在已完成的组合、投影与 OpenAPI 基线上，只将 spec/design/backend 的查询重复实现收敛为一个核心，以查询 Profile 和编排合同路径配置薄适配器；保留公开接口、输出、输入观察及模板锁可缺哈希、专职实例锁严格校验的区别。结果登记于 `maintenance:checkpoints/architecture-iteration-resume/fr007-query/delivery-receipt.json`，该文件生成并核验前不视为交付通过；整项 FR-007/AC-007 尚未完成。原查询场景的技能入口 8 KB 断言在新旧实现均失败（当前技能 15054 字节），保留原失败，不改阈值；该预算欠项归 AR-14，完整旧场景通过不在本片结论内。
+- FR-007 Producer 证据路径片：复核当前模板与来源锁 `332560ac` 的两个后端证据引用均不命中旧替换，仅删除 CLI `render.go` 的两个失效 case（8 行），保留其余实例化、`renderPaths`、来源锁与已有迁移改动。固定同一测试模板提交和来源锁，前后 Producer 三端 `files/initial` 共 4,923 条 path/digest/mode/ownership 映射零差异，压缩 Bundle 也逐字节一致；新构建 CLI 的平台证据导出、篡改/缺失拒绝及脚手架缺合同反例通过。证据与独立审查登记于 `maintenance:checkpoints/architecture-iteration-resume/fr007-render/delivery-receipt.json`，回执未生成并核验前不视为交付通过。本片按独立 Go CLI 的本地 `AGENTS.md` 完成普通源码维护。正式任务包校验另有既有阻塞：`maintenance:` 引用为保护已登记仓库扫描 `.work`，遇 `.work/yss-cli/.git` 被路径保护拒绝；纯模板写范围的下一 Worker 包也复现同一错误，不能解释为本片 CLI 写授权缺失。保留两次实际 exit=2 与日志；未修复前不声称正式派发或生命周期汇合通过。下一已确认的源码缺口仅为 backend 的 `skill-registry.mjs` 与内核逐字节相同覆盖副本；该删除尚未派发，先闭合此派发阻塞。
+- 维护引用派发修复：将 Go 的登记仓库保护与维护引用输入观察统一为专用登记扫描，先拒绝符号链接，再跳过真实 Git 元数据及依赖目录；通用扫描与路径保护保持原语义。原阻塞任务包已可通过，现有任务与新增嵌套 Git/登记仓库边界回放 9 项通过，仓外确定性检查覆盖登记增删、内容与身份替换、目录、tracker 和 `.gitmodules` 漂移，及普通扫描/虚拟来源拒绝。证据与独立审查登记于 `maintenance:checkpoints/architecture-iteration-resume/maintenance-reference-scan/delivery-receipt.json`，回执生成并核验前不视为本片完成；该修复只恢复本地派发，后端重复注册表仍单独交付。
+- FR-007 后端注册表片：仅删除与共享核心逐字节一致的 backend `skill-registry.mjs` 覆盖副本（50,492 字节、737 行），由既有覆盖组合继承同一逻辑路径；保留 design 特化、实例迁移与所有调用接口。单个固定 Producer 对仅差该删除的两个测试提交比较，三端六组共 4,924 条 path/digest/mode/ownership 及解池后原始字节零差异，仅测试来源提交与 Bundle 摘要元数据不同。实际删除后的完整源码与 after 夹具一致；组合目录/根定位 6 项、Pi 元数据 1 项通过。证据与独立审查登记于 `maintenance:checkpoints/architecture-iteration-resume/fr007-backend-registry/delivery-receipt.json`，回执生成并核验前不视为本片完成；其余 Producer 替换与编排合同物理路径仍待闭合。
+- FR-007 来源预处理片：仅删除当前模板与固定来源 `332560ac` 均不命中的三段旧替换，共 7 行；保留 AGENTS 标记校验、两条有效裁剪、专职 Profile 透传与实例指导。相同模板提交和来源锁下，新旧 Producer 三端六组 4,924 条映射及原始内容零差异，压缩 Bundle 逐字节相同；缺失配对 AGENTS 标记的新旧真实 Producer 均以 `AGENTS_SOURCE_ONLY_MARKERS` 拒绝。证据与独立审查登记于 `maintenance:checkpoints/architecture-iteration-resume/fr007-prepare-source/delivery-receipt.json`，回执生成并核验前不视为本片完成。剩余三种物理编排合同内容不等价，路径统一与 AR-13 最终部件装载一并规划，保留当前覆盖语义与在途资产。
+- 扫描容量兼容补片：独立审查发现登记扫描的 20,000 项上限被误用到普通运行路径保护（`SCAN-COMPAT-001`）；已用合法实例的真实 `runtime inspect` 复现，再将上限仅限定于维护会话。扩展持久回归确认普通大目录通过、排序在第 20,000 项之后的登记仍拒绝运行目录侵入、维护会话继续超限拒绝；相关任务回放 9/9 通过。证据与 P2 关闭记录见 `maintenance:checkpoints/architecture-iteration-resume/maintenance-capacity/delivery-receipt.json`，回执核验前不将累计候选视为无阻断。FR-007 剩余合同/脚本/Producer 对象清单见 `maintenance:checkpoints/architecture-iteration-resume/fr007-physical-path/intake.json`；按 8.3 可进入 AR-16，FR-007/AC-007 仍为部分完成。
+- AR-16 CI 入口片：沿用已完成的 CI 执行器、fast 按影响选择、输入观察与固定来源保护，仅取消 PR 中额外的非阻断 candidate 步骤；PR 与推送都由既有 fast 阻断，并同步帮助及三个 Profile 相关的现役 PR 用法。完整 base SHA、推送 HEAD^、失败跳过、通用非阻断能力、报告仓外和仓库不变保护保持。证据与独立审查见 `maintenance:checkpoints/architecture-iteration-resume/ar16-ci-candidate/delivery-receipt.json`，回执生成并核验前不视为本片完成；独立 candidate 入口、现有发布资格与历史合同不在本片删除范围。剩余两档转换及七模块验证环的安全消费边界见 `maintenance:checkpoints/architecture-iteration-resume/ar16-intake/cycles-intake.json`，保留发布报告防伪、历史固定来源和恢复校验，不将 CI 首片记为完整 AR-16/AC-015 通过。
+- 验证：先补全 fast 计划缺失的两个已有测试映射，再按计划执行。审查修复后的最终结果、输入摘要、CLI 本地构建、临时 Bundle 新实例与升级反例集中登记在 `maintenance:checkpoints/architecture-iteration-resume/delivery-receipt.json`；该文件生成并通过前，不将本记录视为交付通过。临时源码样本的 Git 提交仅供测试，未改变真实仓库 HEAD、来源锁、版本固定或发行资格。
+- 续推：由本聊天主控恢复同一计划，每片独立实施与审查，更新同一执行记录及仓外证据。优先闭合当前片的验证，再按 8.3 推进。仅在范围内自主写入；提交、推送、tag、发布、外部仓库归档仍分别等待具体授权。AR-17 从全部阶段完成后计满 30 天，当前不得提前关闭。
+
+- AR-16 两档与退役片：从 `ar16-ci-candidate` 最新绑定恢复，已核对 255 项绑定及模板/CLI HEAD，先读取 fast 计划（52 项，未执行全量）。已有 CI、FR-007 与 Claude 子批次不重做。本片现役仅保留 fast/release；删除失去对象的检查、旧资格驱动和旧覆盖清单，历史固定提交以纯数据读取，不执行旧校验代码，历史 qualified-gates 不作为当前基线。消除共享目录与模板源目录间七模块验证环；发布报告仍核验独立期望台账、日志/退出/输入/来源和恢复证据。Node/Go 当前正式审查转为 release，历史 candidate 只读兼容；三 Profile 发行回执按实际固定家族集合校验。运行内核与维护状态由互不重叠 Worker 实施，主控维护文案；仅删空置的验证检查 Gate G16，其余稳定 ID 不重排，不新增生命周期术语或门禁。独立审查另发现历史测试依赖移动 HEAD（`AR16-HISTORY-HEAD-001`），提交退役改动后会丢失旧清单；本片将其固定到完整历史 SHA，并用隔离提交后的回放验收，问题关闭以最终复审为准。必要验证、反例、独立审查及最终字节绑定见 `maintenance:checkpoints/architecture-iteration-resume/ar16-retirement/delivery-receipt.json`；回执生成并核验前不视为本片通过。此片不包含全量 fast/release、真实发行、跨平台或当前 Bundle 等价认证，不将本地实现记为整轮完成。
+
 ## 附录 A：度量口径
 
 - **管道提交（NFR-001）**：根仓的非合并提交里，只改下列路径的提交算作管道提交：`skills-lock.json`、`submodules/*`、`*.lock.json`、`*manifest.json`、`.codex/skills/**`、`.cursor/skills/**`、`.pi/skills/**`、`.claude/skills/**`、`profile-skill-sync.json`、`pnpm-lock.yaml`、来源锁（文件名为 `source-lock*.json`，不含名字里带 source-lock 的脚本和测试）。之后这些路径即使已被删除，口径也保持不变，以便前后可比。实现是 `scripts/lib/harness-metrics.mjs` 的 `pipelineCommitStats`，输出在 `scripts/harness-metrics` 的 `pipeline_commits`；没有改动任何文件的提交不计入。
@@ -194,3 +280,7 @@ S3 的 AR-08 可以和 S1、S2 并行。S4 的 AR-15 只依赖 AR-01，可以提
   - 起点 57,013 B（约 56 KiB），由这些文件构成：`AGENTS.md`、`CONTEXT.md`、`.agents/skills/yss-product-lifecycle/SKILL.md`、`.agents/skills/yss-product-lifecycle/references/daily-delivery.md`、`.agents/skills/yss-product-lifecycle/references/user-decisions.md`，加上编排合同的 `request_triage` 段（原文 6,094 B）。
   - 实现是 `scripts/harness-metrics` 的 `daily_start`，`profile` 为 `pre-s4`；AR-14 切换口径时把 profile 改为新值，前后数字不混用。
   - S4 之后的口径：`AGENTS.md`、`CONTEXT.md`、`yss lifecycle route --json` 的输出。
+
+- AR-12b 业务 Ticket 报告片：从 AR-16 最终回执恢复并核验 301 项当前绑定，保留全部已有 arch/ar 子批次。已派发独立 CLI Worker，仅复用现有严格校验补公开同形报告、受控导入来源视图与真实二进制回放；主控维护本计划与检查映射，独立审查另派。Node 生产调用、旧实现和回退暂未迁移，本片不将公开报告等同于 Node 退役。实现与本机定向回放已落地：新报告及五类严格消费者的 14 项真实二进制回放通过，旧二进制对同批合格来源的 6 次公开入口回放也通过；检查映射与文档 26 项通过。独立初审指出正式审查证据的既有 Basis 保护和直接输入映射两项 P2，按三文件最小范围修复并定向复审；初审、反例和修复证据分别保留，不覆盖旧候选。最终通过状态、主控复验与独立审查以 `maintenance:checkpoints/architecture-iteration-resume/ar12b-business-report/delivery-receipt.json` 为准，回执生成并核验前不视为交付通过。普通来源与战略 Handoff v5 导入已覆盖，Spec 基线包报告和并发 Finish 漂移注入未覆盖；不以本片代替 Node 调用迁移、全量发行或整轮验收。
+
+- 发行批次准备：按维护者的效率与交付方向集中组织一次 main/发行批次，已盘点最新 main、现有脚手架提交、版本与真实发行前置。AR-12c 前端整线退役作为已完成基线，不恢复整线，保留明确保留的前端技能。已补现役三 Profile 装配数量与 source-lock schema 2/3、版本/tag/commit 身份兼容，公开装配前缀定向检查分别 9/9 与 24/24 通过；正确合成输入只到非 Go 二进制哨兵，不是发行资格。生命周期入口由 15,054 B 降为 8,041 B，条件细节按需引用，既有查询场景、技能/锁/链接必要检查通过，入口检查映射已补齐；不展开整个 AR-14。固定来源收集器的提交互锁已确认，仍待按批准发行边界闭合；未执行完整 native 装配或正式发行。维护增量统一独立审查与当前字节见 `maintenance:checkpoints/architecture-iteration-resume/release-intake/maintenance-review/`，报告生成并核验前不判审查通过。CLI v2.0.0、模板 v4.0.2、中间发行范围及变更驱动发行验证的单次汇总决定已提出，待用户回复，不预先修改版本或将 limited 证据提升为正式发行。批次输入与实际维护进展见 `maintenance:checkpoints/architecture-iteration-resume/release-intake/release-proposal.md` 和 `maintenance:checkpoints/architecture-iteration-resume/fr007-next-slice.json`；本项不是独立微切片或发行通过回执。

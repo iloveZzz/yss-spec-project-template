@@ -53,6 +53,16 @@ test("core 层登记缺失或指向不存在的模块时失败", (t) => {
   assert.throws(() => checkImportDirection(root), /缺少 core 层登记/);
 });
 
+test("AR16：跨模板源目录的相对导入与再导出构成的环必须拒绝", (t) => {
+  const root = fixture(t, { public: [] }, []);
+  fs.mkdirSync(path.join(root, ".template-source/scripts/lib"), {recursive:true});
+  fs.writeFileSync(path.join(root, "scripts/lib/public.mjs"), 'export * from "../../.template-source/scripts/lib/private.mjs";\n');
+  fs.writeFileSync(path.join(root, ".template-source/scripts/lib/private.mjs"), 'export const load = () => import("../../../scripts/lib/public.mjs");\n');
+  const result = checkImportDirection(root);
+  assert.equal(result.ok, false);
+  assert.ok(result.violations.some(item => item.kind === 'import-cycle' && item.detail.includes('private') && item.detail.includes('public')));
+});
+
 test("被切断的导入改为由入口注入：plan-review-control 入口提供决定核验器，decision-continuation 由 user-decision 注入原批准核验器", () => {
   const read = (ref) => fs.readFileSync(path.join(ROOT, ref), "utf8");
   assert.match(read("scripts/plan-review-control"), /verifyDecision:\s*verifyUserDecisionFile/);

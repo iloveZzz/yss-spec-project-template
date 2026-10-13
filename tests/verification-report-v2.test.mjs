@@ -4,8 +4,8 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { createVerificationReport, finalizeVerificationReport,saveVerificationReport,verificationInputDigest } from '../scripts/lib/verification-report.mjs';
-import { validateVerificationReport,compileExpectedVerificationPlan,assertQualificationExecutionContract } from '../.template-source/scripts/lib/verification-report-validator.mjs';
-import {compileLegacyPlan} from '../.template-source/scripts/lib/legacy-verification.mjs';
+import { validateVerificationReport,compileExpectedVerificationPlan } from '../.template-source/scripts/lib/verification-report-validator.mjs';
+import {compileLegacyPlan,loadLegacyManifest} from '../.template-source/scripts/lib/legacy-verification.mjs';
 import {addVerificationExecutionTasks,compileTaskExecution} from '../.template-source/scripts/lib/verification-execution-plan.mjs';
 import {validateJsonSchema} from '../scripts/lib/json-schema.mjs';
 import {validateMaintenanceVerificationEvidence} from '../scripts/lib/maintenance-intensity.mjs';
@@ -16,7 +16,7 @@ import {pathToFileURL} from 'node:url';
 function fixture(t) {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'verification-v2-'));
   t.after(() => fs.rmSync(directory, { recursive: true, force: true }));
-  const plan = { effective_profile: 'release', source_requirement: 'committed', strategy: 'legacy-full', selection: {effective: 'legacy', omitted: []}, policy_digest: 'a'.repeat(64), gates: [{id: 'G04', selected: true, check_ids: ['check.syntax']}], commands: [{id: 'check.syntax', task_id: 'syntax.0', command: 'node --check source.mjs', gate_ids: ['G04']}] };
+  const plan = { effective_profile: 'release', source_requirement: 'committed', strategy: 'release', selection: {effective: 'legacy', omitted: []}, policy_digest: 'a'.repeat(64), gates: [{id: 'G04', selected: true, check_ids: ['check.syntax']}], commands: [{id: 'check.syntax', task_id: 'syntax.0', command: 'node --check source.mjs', gate_ids: ['G04']}] };
   const invocation = {command: 'scripts/verify-template', args: ['--report-dir', directory]};
   const report = createVerificationReport(plan, {root: directory, inputDigest: 'b'.repeat(64), scope: {kind: 'complete-candidate'}, concurrency: 1, invocation});
   const stdoutFile = path.join(directory, 'stdout.log'), stderrFile = path.join(directory, 'stderr.log');
@@ -141,23 +141,23 @@ test('真实轻量 worker 的依赖失败、中断及 SIGKILL 终态保存登记
  fs.mkdirSync(path.join(root,'.template-source/scripts/lib'),{recursive:true});fs.copyFileSync(new URL('../.template-source/scripts/lib/verification-preflight.mjs',import.meta.url),path.join(root,'.template-source/scripts/lib/verification-preflight.mjs'));
  for(const args of [['init','-q'],['add','.'],['-c','user.name=Fixture','-c','user.email=fixture@example.invalid','commit','-qm','fixture']]){const row=spawnSync('git',args,{cwd:root,encoding:'utf8'});assert.equal(row.status,0,row.stderr);}
  const quote=value=>`'${String(value).replaceAll("'","'\\''")}'`,node=source=>`${quote(process.execPath)} -e ${quote(source)}`,gateId='check.verification-final-integrity';
- const plan=commands=>({strategy:'qualified-gates',requested_profile:'candidate',effective_profile:'candidate',source_requirement:'current',required_files:[],syntax_files:[],groups:['checks'],selection:{effective:'legacy',omitted:[]},gates:[{id:gateId,selected:true,check_ids:[]}],commands:commands.map(task=>({...task,group:'checks',gate_ids:[gateId]}))});
+ const plan=commands=>({strategy:'release',requested_profile:'diagnostic',effective_profile:'diagnostic',source_requirement:'current',required_files:[],syntax_files:[],groups:['checks'],selection:{effective:'legacy',omitted:[]},gates:[{id:gateId,selected:true,check_ids:[]}],commands:commands.map(task=>({...task,group:'checks',gate_ids:[gateId]}))});
  const failed=await executeVerificationPlan({root,plan:plan([
   {id:'check.failure',task_id:'failure',command:node('process.exit(7)')},
   {id:'check.dependent',task_id:'dependent',command:node('process.exit(99)'),depends_on:['failure']},
   {id:'check.independent',task_id:'independent',command:node('console.log("independent")')},
- ]),reportDir:path.join(directory,'failed-report'),purpose:'qualification'});
+ ]),reportDir:path.join(directory,'failed-report'),purpose:'diagnostic'});
  assert.equal(failed.code,1);assert.deepEqual(failed.report.unexecuted.map(({task_id,reason})=>({task_id,reason})),[{task_id:'dependent',reason:'dependency-failed'}]);
  assert.equal(failed.report.results.find(row=>row.task_id==='failure').actual_exit_code,7);assert.equal(failed.report.results.find(row=>row.task_id==='independent').actual_exit_code,0);assert.equal(failed.report.gate_results.find(row=>row.id===gateId).status,'failed');
  const marker=path.join(directory,'started'),controller=new AbortController();t.after(()=>controller.abort());
  const execution=executeVerificationPlan({root,plan:plan([
   {id:'check.wait',task_id:'wait',command:node(`require('node:fs').writeFileSync(${JSON.stringify(marker)},String(process.pid));setInterval(()=>{},1000);`)},
   {id:'check.pending',task_id:'pending',command:node('process.exit(99)'),depends_on:['wait']},
- ]),reportDir:path.join(directory,'interrupted-report'),purpose:'qualification',signal:controller.signal});
+ ]),reportDir:path.join(directory,'interrupted-report'),purpose:'diagnostic',signal:controller.signal});
  const deadline=Date.now()+10000;while(!fs.existsSync(marker)&&Date.now()<deadline)await new Promise(resolve=>setTimeout(resolve,10));
  assert.ok(fs.existsSync(marker),'真实 wait 任务必须先启动');controller.abort();const interrupted=await execution;
  assert.equal(interrupted.code,130);assert.equal(interrupted.report.status,'interrupted');
- assert.deepEqual(interrupted.report.unexecuted.map(({task_id,reason})=>({task_id,reason})),['pending','post-legacy-runtime-call','post-legacy-runtime-path','post.git-diff-check'].map(task_id=>({task_id,reason:'cancelled'})));
+ assert.deepEqual(interrupted.report.unexecuted.map(({task_id,reason})=>({task_id,reason})),['pending','post.git-diff-check'].map(task_id=>({task_id,reason:'cancelled'})));
  const started=interrupted.report.results.find(row=>row.task_id==='wait');assert.notEqual(started.skipped,true);assert.equal(started.termination,'cancelled');assert.equal(started.actual_exit_code_observed,false);assert.ok(started.actual_exit_signal);
  assert.equal(interrupted.report.gate_results.find(row=>row.id===gateId).status,'failed');
  const killedMarker=path.join(directory,'killed-task-pid'),forcedController=new AbortController();t.after(()=>forcedController.abort());
@@ -165,14 +165,14 @@ test('真实轻量 worker 的依赖失败、中断及 SIGKILL 终态保存登记
   {id:'check.completed',task_id:'completed',command:node('console.log("completed before kill")')},
   {id:'check.kill-wait',task_id:'kill-wait',command:node(`require('node:fs').writeFileSync(${JSON.stringify(killedMarker)},String(process.pid));setInterval(()=>{},1000);`)},
   {id:'check.kill-pending',task_id:'kill-pending',command:node('process.exit(99)'),depends_on:['kill-wait']},
- ]),reportDir:path.join(directory,'killed-report'),purpose:'qualification',signal:forcedController.signal});
+ ]),reportDir:path.join(directory,'killed-report'),purpose:'diagnostic',signal:forcedController.signal});
  const killedDeadline=Date.now()+10000;while(!fs.existsSync(killedMarker)&&Date.now()<killedDeadline)await new Promise(resolve=>setTimeout(resolve,10));
  assert.ok(fs.existsSync(killedMarker));let workerPid,current=Number(fs.readFileSync(killedMarker,'utf8'));
  for(let index=0;index<10;index++){const parent=Number(spawnSync('ps',['-p',String(current),'-o','ppid='],{encoding:'utf8'}).stdout.trim());if(parent===process.pid){workerPid=current;break;}assert.ok(parent>1);current=parent;}
  assert.ok(workerPid>1);forcedController.abort();process.kill(workerPid,'SIGKILL');const forced=await forcedExecution;
  assert.equal(forced.code,130);assert.deepEqual(forced.report.final_exit,{code:null,signal:'SIGKILL',observed:false});assert.equal(forced.report.status,'interrupted');assert.equal(forced.report.finished_at,undefined);
  assert.equal(forced.report.results.find(row=>row.task_id==='completed').actual_exit_code,0);
- assert.deepEqual(forced.report.unexecuted.map(({task_id,reason})=>({task_id,reason})),['kill-wait','kill-pending','post-legacy-runtime-call','post-legacy-runtime-path','post.git-diff-check'].map(task_id=>({task_id,reason:'failure-or-interruption'})));
+ assert.deepEqual(forced.report.unexecuted.map(({task_id,reason})=>({task_id,reason})),['kill-wait','kill-pending','post.git-diff-check'].map(task_id=>({task_id,reason:'failure-or-interruption'})));
  assert.equal(forced.report.gate_results.find(row=>row.id===gateId).status,'failed');assert.deepEqual(JSON.parse(fs.readFileSync(forced.reportFile)).unexecuted,forced.report.unexecuted);
 });
 
@@ -205,21 +205,6 @@ test('维护证据保留固定 command 并逐字绑定实际 report invocation �
  assert.equal(f.report.input_sha256,original);
 });
 
-test('qualified 请求与实际执行条件必须匹配独立资格合同',t=>{
- const f=fixture(t),contract={concurrency:2,tooling_mode:'optimized',test_concurrency:2};
- f.plan.strategy='qualified-gates';f.plan.qualification={valid:true,bindings:{execution_contract:contract}};
- assert.throws(()=>assertQualificationExecutionContract(f.plan),{code:'QUALIFICATION_EXECUTION_CONTRACT_MISMATCH'});
- assertQualificationExecutionContract(f.plan,{concurrency:2,toolingMode:'optimized'});
- for(const requested of [{concurrency:1,toolingMode:'optimized'},{concurrency:2,toolingMode:'legacy'},{concurrency:2,toolingMode:'optimized',testConcurrency:1}])assert.throws(()=>assertQualificationExecutionContract(f.plan,requested),{code:'QUALIFICATION_EXECUTION_CONTRACT_MISMATCH'});
- f.report.plan=structuredClone(f.plan);f.report.environment.concurrency=2;f.report.environment.tooling_mode='optimized';f.report.environment.test_concurrency=2;
- f.report.plan.tooling={verification_concurrency:2,effective_mode:'optimized',test_concurrency:2};
- assert.equal(validateVerificationReport(f.report,f.options).status,'passed');
- for(const mutate of [r=>r.environment.concurrency=1,r=>r.environment.tooling_mode='legacy',r=>r.environment.test_concurrency=1,r=>delete r.environment.test_concurrency,r=>r.plan.tooling.test_concurrency=1]) {
-  const report=structuredClone(f.report);mutate(report);assert.throws(()=>validateVerificationReport(report,f.options),/QUALIFICATION_EXECUTION_CONTRACT_MISMATCH|实际|台账/);
- }
- const report=structuredClone(f.report);report.plan.qualification.bindings.execution_contract={concurrency:1,tooling_mode:'legacy',test_concurrency:1};report.environment.concurrency=1;report.environment.tooling_mode='legacy';report.environment.test_concurrency=1;report.plan.tooling={verification_concurrency:1,effective_mode:'legacy',test_concurrency:1};
- assert.throws(()=>validateVerificationReport(report,f.options),{code:'QUALIFICATION_EXECUTION_CONTRACT_MISMATCH'});
-});
 
 test('同轮复用必须具有相同依赖、资源、来源及完整执行输入',t=>{
  const f=fixture(t),first={...f.plan.commands[0],resources:['shared'],source_requirement:'committed',depends_on:[]},second={...first,id:'check.second',task_id:'syntax.1'};
@@ -264,7 +249,10 @@ test('project-instance 共享消费者与历史 checkpoint 不加载未分发的
 
 test('独立编译 explicit legacy-full 保留冻结117检查与115 syntax occurrence',t=>{
  const root=path.resolve(import.meta.dirname,'..'),directory=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'expected-reference-')));t.after(()=>fs.rmSync(directory,{recursive:true,force:true}));
- const args=['--profile','legacy-full','--report-dir',path.join(directory,'report')],manifest=JSON.parse(fs.readFileSync(path.join(root,'.template-source/process/template-verification-legacy.json')));
- const expected=addVerificationExecutionTasks(compileLegacyPlan(manifest),{root,reference:true,reportDir:path.join(directory,'report'),purpose:'verification'}),actual=compileExpectedVerificationPlan({root,args});
+ // manifest、映射目标和独立期望编译消费同一历史提交，不依赖现役 HEAD。
+ const fixedCommit='0abbe49ee4cfd8608beab95243520888228dad41',args=['--profile','legacy-full','--report-dir',path.join(directory,'report')],manifest=loadLegacyManifest(root,fixedCommit);
+ const expected=addVerificationExecutionTasks(compileLegacyPlan(manifest),{root,reference:true,fixedCommit,reportDir:path.join(directory,'report'),purpose:'verification'}),actual=compileExpectedVerificationPlan({root,args,fixedCommit});
  assert.equal(actual.strategy,'legacy-reference');assert.deepEqual(actual.gates,[]);assert.deepEqual(actual.commands,expected.commands);assert.equal(actual.commands.filter(row=>row.kind==='syntax').length,manifest.syntax_files.length);
 });
+
+test('qualified 历史报告不能为当前 release 提供执行许可',t=>{const f=fixture(t);f.plan.strategy='qualified-gates';f.report.plan.strategy='qualified-gates';assert.throws(()=>validateVerificationReport(f.report,f.options),/HISTORICAL_QUALIFIED_BASELINE_REFUSED/);});

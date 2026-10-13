@@ -1,24 +1,51 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import os from 'node:os';
 import path from 'node:path';
 import {hash} from '../../lib/strategic-handoff-io.mjs';
 import {validateApiContractDecision,migrateApiContractDecision,prepareApiContractDecision} from '../../lib/api-contract-decision.mjs';
+import {makeRoot} from '../../../tests/helpers/yss-instance.mjs';
+import {readWorkLayout} from '../../lib/work-layout.mjs';
+import {withValidationPhase} from '../../lib/validation-phase.mjs';
 function fixture(){
- const root=fs.mkdtempSync(path.join(os.tmpdir(),'api-v2-'));
+ const root=makeRoot('api-v2-');
  const write=(ref,value)=>{fs.mkdirSync(path.dirname(path.join(root,ref)),{recursive:true});fs.writeFileSync(path.join(root,ref),typeof value==='string'?value:JSON.stringify(value));return{ref,digest:hash(fs.readFileSync(path.join(root,ref)))};};
  const assessment=write('assessment.json',{}),evidence=write('evidence.md','synthetic evidence only'),extra=write('extra.md','legacy branch evidence');
- const draft=write('docs/.scratch/synthetic/api/synthetic.yaml','openapi: 3.1.0\ninfo: {title: synthetic, version: v1}\npaths: {}\n');
+ const apiRoot=`${readWorkLayout(root).featureRoot('synthetic')}/api`;
+ const draft=write(`${apiRoot}/synthetic.yaml`,"openapi: 3.1.0\ninfo: {title: synthetic, version: v1}\npaths: {}\ncomponents:\n  schemas:\n    Item: {$ref: './shared.yaml#/Item'}\n");
+ const shared=write(`${apiRoot}/shared.yaml`,'Item: {type: string}\n');
  write('pnpm-lock.yaml',"lockfileVersion: '9.0'\npackages:\n  '@redocly/cli@2.0.0': {}\n");
- const validation=write('validation.json',{schema_version:1,kind:'openapi-draft-validation',template:false,status:'passed',draft:{ref:draft.ref,sha256:draft.digest,oas_version:'3.1.0'},toolchain:{package:'@redocly/cli',version:'2.0.0',lockfile_ref:'pnpm-lock.yaml',command:'pnpm exec redocly lint docs/.scratch/synthetic/api/synthetic.yaml',exit_code:0,executed_at:'2026-09-22T00:00:00Z',evidence_ref:evidence.ref},checks:Object.fromEntries(['single_document','oas_3_1','ref_resolution','path_parameters','operation_ids','lint'].map(k=>[k,'passed']))});
+ const validation=write('validation.json',{schema_version:1,kind:'openapi-draft-validation',template:false,status:'passed',draft:{ref:draft.ref,sha256:draft.digest,oas_version:'3.1.0'},toolchain:{package:'@redocly/cli',version:'2.0.0',lockfile_ref:'pnpm-lock.yaml',command:`pnpm exec redocly lint ${draft.ref}`,exit_code:0,executed_at:'2026-09-22T00:00:00Z',evidence_ref:evidence.ref},checks:Object.fromEntries(['single_document','oas_3_1','ref_resolution','path_parameters','operation_ids','lint'].map(k=>[k,'passed']))});
  const record={schema_version:1,kind:'openapi-draft-review',result:'approved',blocking_findings:[],draft_ref:draft.ref,draft_digest:draft.digest,evidence_refs:[evidence.ref]};
  const review=write('review.json',record);
  const v1={schema_version:1,kind:'api-contract-decision',decision_id:'api.synthetic',decision_version:'v1',status:'approved',current_version:true,impact:'required',assessment_ref:assessment.ref,assessment_digest:assessment.digest,evidence_refs:[evidence.ref],openapi:{id:'api',version:'v1',...draft},validation_record:validation,draft_review:{...review,...record,evidence_refs:[extra.ref]},freeze:{version:'v1',frozen_at:'2026-09-22T00:01:00Z',draft_ref:draft.ref,draft_digest:draft.digest}};
  delete v1.draft_review.schema_version;delete v1.draft_review.kind;
  const binding={...write('v1.json',v1),version:'v1',impact:'required'};
- return{root,write,v1,binding,record,cleanup:()=>fs.rmSync(root,{recursive:true,force:true})};
+ return{root,write,v1,binding,record,shared,cleanup:()=>fs.rmSync(root,{recursive:true,force:true})};
 }
+test('API 决定缺少原生 OpenAPI 校验能力时拒绝，不回退到 Node',()=>{
+ const f=fixture(),previous=process.env.YSS_NATIVE_BINARY,previousSha=process.env.YSS_NATIVE_BINARY_SHA256;
+ try{
+  process.env.YSS_NATIVE_BINARY=process.execPath;
+  process.env.YSS_NATIVE_BINARY_SHA256=hash(fs.readFileSync(process.execPath)).slice(7);
+  assert.throws(()=>validateApiContractDecision(f.binding,{root:f.root}),/NATIVE_CAPABILITY/);
+ }finally{
+  if(previous===undefined)delete process.env.YSS_NATIVE_BINARY;else process.env.YSS_NATIVE_BINARY=previous;
+  if(previousSha===undefined)delete process.env.YSS_NATIVE_BINARY_SHA256;else process.env.YSS_NATIVE_BINARY_SHA256=previousSha;
+  f.cleanup();
+ }
+});
+test('API 决定把原生校验的外部引用、锁文件和证据交回当前验证阶段',()=>{
+ const f=fixture();
+ try{for(const ref of [f.shared.ref,'pnpm-lock.yaml','evidence.md','.yss/asset-transactions/recovery.lock']){
+  const file=path.join(f.root,ref),before=fs.existsSync(file)?fs.readFileSync(file):null;
+  try{assert.throws(()=>withValidationPhase({root:f.root,purpose:'api-consumer',readOnly:true},()=>{
+   validateApiContractDecision(f.binding,{root:f.root});
+   fs.mkdirSync(path.dirname(file),{recursive:true});
+   fs.appendFileSync(file,'\n# changed after validation\n');
+  }),error=>error.code==='VALIDATION_INPUT_CHANGED');}finally{if(before)fs.writeFileSync(file,before);else fs.rmSync(file,{force:true});}
+ }}finally{f.cleanup();}
+});
 test('v2 migration preserves old bytes and extra evidence, reduces fields, and never inherits approval',t=>{
  const f=fixture();try{
  const bytes=fs.readFileSync(path.join(f.root,'v1.json'));
