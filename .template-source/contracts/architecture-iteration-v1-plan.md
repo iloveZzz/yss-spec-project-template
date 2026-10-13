@@ -274,6 +274,8 @@ S3 的 AR-08 可以和 S1、S2 并行。S4 的 AR-15 只依赖 AR-01，可以提
 
 - 发行安装与 CI 补缺：更新器原先仍要求四 Profile 且拒绝合法 backend 覆盖层，现已复用共享覆盖层路径校验修复，并以 40 项公开入口回放、19 项独立回放及构建核验，CLI 提交 `9259fed8` 已推送；验收工具新增真实公开 `upgrade --to 2.0.0` 路径，经独立审查固定为 `788cbd7e`，尚未实际运行双平台发行验收。模板第二次 CI `38406440397` 的启动已成功，但在 30 分钟被取消：285 个计划任务中 247 条实际通过（含 198 条语法检查）、12 条实际失败、2 条依赖失败未执行、1 条运行中取消、23 条尚未开始。原始归档和分诊见 `maintenance:checkpoints/architecture-iteration-resume/release-intake/ci-second-diagnosis/`；正修复退役引用、夹具身份/来源、临时目录隔离及分发/独立 CLI 登记缺口，不重做已实现 AR。为容纳已观测的串行检查耗时，CI 预算改为有界 60 分钟，选集、依赖和拒绝/恢复检查保持。修复后必须定向验证和独立审查，未执行项不得记通过；最终来源锁、Bundle、main 合入与发行仍待完成。
 
+- 维护 CLI 来源闭合：上述 CI 修复及新增的夹具发行环境污染、发行 CLI 与维护 pin 混淆两项 P2 已独立复审关闭，固定模板来源为 `f6cf3e4f`（S）。旧维护 CLI `afdb8aa1` 的代码与内嵌 `332560ac` 资产不一致，故在既有授权内进行一次内部维护锁重建：以 S 的真实提交和政策字节生成三 Profile Bundle，保留旧锁与 tag，不将该步骤称为正式发行刷新。现役生成、重复生成检查与生产包编译通过；独立审查确认六份文件映射、对象、权限/归属、技能锁及保留资产符合预期。新维护 CLI `e65bb37b`（P2）已提交、推送，并通过 CLI 构建/生成资产 CI；精确 Go 1.27.1 的三个维护平台构建摘要已写入 pin，Linux 仍仅为交叉编译。Darwin 上两项原失败（按需安装后直接生成 DDD/MVC 参考工程、严格 Slice 业务审查消费）、同源/漂移拒绝伴随检查及 pin 身份检查共四条命令实际通过，输入无漂移。完整证据见 `maintenance:checkpoints/architecture-iteration-resume/release-intake/maintenance-pin-refresh/`。P2 内嵌 S，后继模板 T 更新维护 pin；最终发行 CLI C 仍须从正式 `v4.0.2` 的 T 生成，不能把内部 P2、局部回放或交叉编译当作最终发行资格。模板后继 CI、双平台原生与公开安装、main 合入和正式 Release 尚待完成；剩余 AR 与 AR-17 边界不变。
+
 ## 附录 A：度量口径
 
 - **管道提交（NFR-001）**：根仓的非合并提交里，只改下列路径的提交算作管道提交：`skills-lock.json`、`submodules/*`、`*.lock.json`、`*manifest.json`、`.codex/skills/**`、`.cursor/skills/**`、`.pi/skills/**`、`.claude/skills/**`、`profile-skill-sync.json`、`pnpm-lock.yaml`、来源锁（文件名为 `source-lock*.json`，不含名字里带 source-lock 的脚本和测试）。之后这些路径即使已被删除，口径也保持不变，以便前后可比。实现是 `scripts/lib/harness-metrics.mjs` 的 `pipelineCommitStats`，输出在 `scripts/harness-metrics` 的 `pipeline_commits`；没有改动任何文件的提交不计入。
