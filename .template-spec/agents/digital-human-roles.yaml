@@ -344,7 +344,6 @@ user_decision_policy:
     - gate.backend-architecture-platform-approved
     - gate.engineering-contract-approved
   work_units:
-    work-unit.service-project-initialization: scaffold-choice
     work-unit.implementation-repository-preparation: scaffold-choice
     work-unit.slice-implementation: implementation-scope
   work_unit_gates:

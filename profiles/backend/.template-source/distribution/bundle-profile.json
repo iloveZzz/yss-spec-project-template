@@ -69,6 +69,7 @@
       "scripts/lib/template-commit-cache.mjs",
       "scripts/lib/template-verification.mjs",
       "scripts/lib/maintenance-counterexample.mjs",
+      ".agents/skills/release-yss-cli",
       ".agents/skills/archify",
       ".agents/skills/file-export-download",
       ".agents/skills/formily-foundation",

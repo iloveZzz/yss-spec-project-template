@@ -28,8 +28,10 @@ if(!reviewFixture){
     for(const ref of ['AGENTS.md','CONTEXT.md','skills-lock.json'])fs.copyFileSync(path.join(ROOT,ref),path.join(source,ref));
     mkdirSync(path.join(source,'.agents/skills/maintaining-skills'),{recursive:true});fs.copyFileSync(path.join(ROOT,'.agents/skills/maintaining-skills/SKILL.md'),path.join(source,'.agents/skills/maintaining-skills/SKILL.md'));
     writeFileSync(path.join(source,'yss-project.yaml'),'schema_version: 1\nrepository_mode: template-source\n');
-    writeFileSync(path.join(source,'.template-source/process/template-verification-profiles.yaml'),JSON.stringify({schema_version:1,profiles:{fast:{all_groups:true},release:{all_groups:true}},groups:{fixture:{commands:[{id:'check.review-fixture',run:'node -e "require(\'node:assert/strict\').equal(2+2,4)"'}]}},required_files:[],syntax_files:[],routing:[]}));
+    const check={id:'check.review-fixture',run:'node -e "require(\'node:assert/strict\').equal(2+2,4)"',group:'fixture',inputs_complete:true,input_patterns:['**'],depends_on:[],failure_mode:'review fixture execution failure'};
+    writeFileSync(path.join(source,'.template-source/process/template-verification-profiles.yaml'),JSON.stringify({schema_version:1,profiles:{fast:{checks:[check]},release:{selection:'impact'}},groups:{fixture:{commands:[check]}},required_files:[],syntax_files:[],routing:[{patterns:['**'],groups:['fixture']}]}));
     const gitAt=(cwd,...args)=>{const result=spawnSync('git',args,{cwd,encoding:'utf8'});assert.equal(result.status,0,result.stderr);},git=(...args)=>gitAt(source,...args);git('init','-q');
+    git('-c','user.name=fixture','-c','user.email=fixture@example.invalid','commit','--allow-empty','-qm','prior release fixture');
     git('add','.');git('-c','user.name=fixture','-c','user.email=fixture@example.invalid','commit','-qm','isolated review fixture');
     // A real compiled Go fixture exercises observed report/source protocols.
     // It supplies no historical recovery evidence and never qualifies release.
@@ -38,7 +40,9 @@ if(!reviewFixture){
     const cliCommit=spawnSync('git',['rev-parse','HEAD'],{cwd:cli,encoding:'utf8'}).stdout.trim(),templateCommit=spawnSync('git',['rev-parse','HEAD'],{cwd:source,encoding:'utf8'}).stdout.trim();
     const flags=`-X main.cliCommit=${cliCommit} -X main.templateCommit=${templateCommit} -X main.designCommit=${templateCommit} -X main.backendCommit=${templateCommit}`;
     const built=spawnSync('go',['build','-trimpath','-ldflags',flags,'-o',binary,'.'],{cwd:cli,env:{...process.env,CGO_ENABLED:'0'},encoding:'utf8'});assert.equal(built.status,0,built.stderr);
-    const result=spawnSync(process.execPath,[path.join(source,'tests/scenarios/verify-maintenance-review-workflow-scenarios.mjs'),'--review-fixture'],{cwd:source,env:{...process.env,YSS_RUNTIME_HOME:path.join(base,'runtime'),YSS_NATIVE_BINARY:binary,YSS_NATIVE_BINARY_SHA256:hash(fs.readFileSync(binary)),YSS_NATIVE_SOURCE_ROOT:fs.realpathSync(cli)},encoding:'utf8',maxBuffer:16*1024*1024});assert.equal(result.status,0,result.stderr||result.stdout);
+    const environment={...process.env,YSS_RUNTIME_HOME:path.join(base,'runtime'),YSS_NATIVE_BINARY:binary,YSS_NATIVE_BINARY_SHA256:hash(fs.readFileSync(binary)),YSS_NATIVE_SOURCE_ROOT:fs.realpathSync(cli)};
+    for(const key of ['YSS_RELEASE_NATIVE_INPUT','YSS_RELEASE_NATIVE_INPUT_SHA256','YSS_RELEASE_REQUIRED_PLATFORMS','YSS_RELEASE_SOURCE_EVIDENCE_DIR'])delete environment[key];
+    const result=spawnSync(process.execPath,[path.join(source,'tests/scenarios/verify-maintenance-review-workflow-scenarios.mjs'),'--review-fixture'],{cwd:source,env:environment,encoding:'utf8',maxBuffer:16*1024*1024});assert.equal(result.status,0,result.stderr||result.stdout);
     process.stdout.write('合成 Go fixture 仅覆盖 Reviewer observed-report 合同，不构成实际四类发行或旧执行器恢复证据\n');
   }finally{rmSync(base,{recursive:true,force:true});}
 }else{
@@ -50,8 +54,10 @@ try {
   const candidateRef = `${relativeRoot}/candidate-manifest.yaml`;
   const outputDir = `${relativeRoot}/reviews`;
   const verificationRef = `${relativeRoot}/verification/report.json`,reportDirectory=path.join(fixtureRoot,'verification');
-  const args=['--concurrency','1','--runtime-store','off','--report-dir',reportDirectory],verified=spawnSync(path.join(ROOT,'scripts/verify-template'),args,{cwd:ROOT,encoding:'utf8',maxBuffer:16*1024*1024});assert.equal(verified.status,0,verified.stderr||verified.stdout);
+  const baseline=spawnSync('git',['rev-parse','HEAD^'],{cwd:ROOT,encoding:'utf8'});assert.equal(baseline.status,0,baseline.stderr);
+  const args=['--base',baseline.stdout.trim(),'--concurrency','1','--runtime-store','off','--report-dir',reportDirectory],verified=spawnSync(path.join(ROOT,'scripts/verify-template'),args,{cwd:ROOT,encoding:'utf8',maxBuffer:16*1024*1024});assert.equal(verified.status,0,verified.stderr||verified.stdout);
   const reportFile=path.join(reportDirectory,'report.json'),report=JSON.parse(fs.readFileSync(reportFile));assert.equal(report.final_exit.observed,true);assert.equal(report.final_exit.code,0);
+  assert.equal(report.scope.base,baseline.stdout.trim());assert.ok(report.results.some(row=>row.id==='check.review-fixture'&&row.actual_exit_code_observed&&row.actual_exit_code===0));
   mkdirSync(path.join(fixtureRoot,'reviews'));
   const checkpoint={
     schema_version: 2,

@@ -238,7 +238,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-prototype-stage/SKILL.md",
-        "effectiveHash": "d33acdba362e09ea464410d6b0a2f573c018608cf0c9ca7beeda04c6966c1da8",
+        "effectiveHash": "a0227653ef139fc1cc0b1ebddc1ecfe79f7081a054776776b13ae2636fc875a6",
         "targets": [
           ".agents/skills"
         ]
@@ -259,7 +259,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-stage-decision/SKILL.md",
-        "effectiveHash": "7c239ae0c66de50103ec6706dffab6d4e0c8b03715de0a3aaa717c2bb190c509",
+        "effectiveHash": "338d9c955b6d07027fd1f9eb143a105ad8f6b518d86af2fb4ca34e41ccf44bc6",
         "targets": [
           ".agents/skills"
         ]
@@ -268,7 +268,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-strategic-design/SKILL.md",
-        "effectiveHash": "8cfb6eed03f8845952ed14753bcf04323cd7ec67707489a8cda171d725b2a9ee",
+        "effectiveHash": "f22abdea6b06cc7c37c1e0e9d3c10e0aa44f7ee4b0a27ea18a6f4d9b35bf5cc1",
         "targets": [
           ".agents/skills"
         ]

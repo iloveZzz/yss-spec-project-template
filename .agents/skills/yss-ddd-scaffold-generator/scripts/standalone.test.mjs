@@ -58,16 +58,18 @@ test("MVC 默认直接生成三模块，无需合同或 --standalone，不初始
 });
 
 test("DDD 与 MVC 可在明确选择的 Harness 自定义布局生成，仍拒绝覆盖", async t => {
-  const repositoryRoot=path.resolve(scripts,"../../../..");
-  const root=await mkdtemp(path.join(repositoryRoot,".scaffold-layout-"));
+  const root=await mkdtemp(path.join(os.tmpdir(),"yss-scaffold-layout-"));
   t.after(()=>rm(root,{recursive:true,force:true}));
+  const initialized=spawnSync('git',['init','-q',root],{encoding:'utf8'});
+  assert.equal(initialized.status,0,initialized.stderr);
+  await writeFile(path.join(root,'yss-project.yaml'),'schema_version: 1\nrepository_mode: project-instance\n');
   for(const skill of ["yss-ddd-scaffold-generator","yss-layered-mvc-scaffold-generator"]) {
     const entry=path.resolve(scripts,"../../",skill,"scripts/generate_scaffold.mjs");
     const output=path.join(root,skill,"app/backend");
-    const generated=spawnSync(process.execPath,[entry,...args(output)],{encoding:"utf8"});
+    const generated=spawnSync(process.execPath,[entry,...args(output)],{cwd:root,encoding:"utf8"});
     assert.equal(generated.status,0,generated.stderr);
     const pom=path.join(output,"demo-service/pom.xml"),before=await readFile(pom);
-    assert.notEqual(spawnSync(process.execPath,[entry,...args(output)],{encoding:"utf8"}).status,0);
+    assert.notEqual(spawnSync(process.execPath,[entry,...args(output)],{cwd:root,encoding:"utf8"}).status,0);
     assert.deepEqual(await readFile(pom),before);
   }
 });

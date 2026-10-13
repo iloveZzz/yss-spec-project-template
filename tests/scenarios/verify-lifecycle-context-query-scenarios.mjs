@@ -151,10 +151,11 @@ assert.ok(prototype.lifecycle.artifacts.some(item=>item.id==='artifact.prototype
 assert.ok(prototype.lifecycle.artifacts.some(item=>item.id==='artifact.prototype-confirmation-v2' && item.trigger.includes('gate.product-design-approved')));
 assert.throws(()=>queryLifecycleContext({workUnitId:'work-unit.intensity-aware-verification'}),/未知工作单元/);
 assert.equal(queryLifecycleContext({workUnitId:'work-unit.intensity-aware-verification-v2'}).lifecycle.work_unit.scope,'template-source');
-const service = queryLifecycleContext({ stageId: 'stage.system-data-engineering', workUnitId: 'work-unit.service-project-initialization' });
-assert.equal(service.execution.work_unit_route.primary_skill, 'yss-layered-mvc-scaffold-generator');
-assert.equal(service.execution.work_unit_route.parent_work_unit, 'work-unit.implementation-repository-preparation');
-assert.deepEqual(service.execution.transition.next, ['work-unit.implementation-repository-preparation']);
+assert.throws(() => queryLifecycleContext({ workUnitId: 'work-unit.service-project-initialization' }), /未知工作单元/);
+const service = queryLifecycleContext({ stageId: 'stage.system-data-engineering', workUnitId: 'work-unit.implementation-repository-preparation' });
+assert.equal(service.execution.work_unit_route.primary_skill, 'implementation-repo-onboarding');
+assert.equal(service.execution.work_unit_route.decision_boundary, 'scaffold-choice');
+assert.deepEqual(service.execution.transition.next, ['work-unit.ticket-decomposition']);
 
 for (const invalid of [
   { mode: "invalid" },

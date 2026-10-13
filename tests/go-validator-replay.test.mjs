@@ -565,7 +565,10 @@ test('能力协商：旧 yss 不委托，薄壳提示升级；新 yss 放行', {
   process.on('exit', () => rmSync(stubDir, {recursive: true, force: true}));
   const stub = path.join(stubDir, 'yss');
   writeFileSync(stub, '#!/bin/sh\necho \'{"outputVersion":1,"status":"ok","code":"OK","result":{"nodeDelegation":["user-decision.requirements-object.v1"]}}\'\n', {mode: 0o755});
-  const env = {...process.env, YSS_NATIVE_BINARY: stub};
+  const env = {...process.env};
+  for (const key of Object.keys(env)) if (key === 'YSS_BINARY' || key.startsWith('YSS_NATIVE_') || key.startsWith('YSS_RELEASE_')) delete env[key];
+  env.YSS_NATIVE_BINARY = stub;
+  env.YSS_NATIVE_BINARY_SHA256 = createHash('sha256').update(readFileSync(stub)).digest('hex');
   assert.deepEqual(missingCapabilities(NEEDS.approval, env), NEEDS.approval);
   assert.deepEqual(missingCapabilities(['user-decision.requirements-object.v1'], env), []);
   assert.equal(nativeDelegationAvailable(REPO, {}, env, [], NEEDS.approval), false);

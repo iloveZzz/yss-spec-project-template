@@ -803,6 +803,7 @@ profiles:
           - "scripts/lib/lifecycle-context-query.mjs"
           - "scripts/query-lifecycle-context"
           - "tests/scenarios/verify-lifecycle-context-query-scenarios.mjs"
+          - "scripts/verify-lifecycle-context-query-scenarios"
         depends_on: []
         failure_mode: "共享查询核心改变公开模式、路由、按需合同子树或技能就绪的接受与拒绝行为，或生命周期技能入口超出 8 KB 预算、缺少必需边界"
       - id: check.lifecycle-query-freshness

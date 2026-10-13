@@ -96,6 +96,7 @@
       "scripts/lib/template-commit-cache.mjs",
       "scripts/lib/template-verification.mjs",
       "scripts/lib/maintenance-counterexample.mjs",
+      ".agents/skills/release-yss-cli",
       ".agents/skills/.strategic-design-skills-manifest.json",
       ".agents/skills/.yss-skills-manifest.json",
       ".agents/skills/alibaba-java-code-style",

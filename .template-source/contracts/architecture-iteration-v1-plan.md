@@ -272,6 +272,8 @@ S3 的 AR-08 可以和 S1、S2 并行。S4 的 AR-15 只依赖 AR-01，可以提
 
 - 阶段性发行集成：模板候选 `43e968e9` 已推送至草稿 PR #66，CLI 版本/文档候选为 `d0bfbd49`；仓外 Producer 对该固定模板完成三 Profile 生成（exit 0、输入无漂移），完整 path/digest/mode/ownership 差异及归因见 `maintenance:checkpoints/architecture-iteration-resume/release-intake/producer-preflight/`。该预检没有改正式锁、Bundle 或 tag，不授予发行资格。独立审查后的双平台执行工具已固定为 `07bd997d` 并登记 Windows workflow，实际平台执行仍待最终源码冻结。PR 首次 CI 在准备维护 CLI 时失败，尚未执行检查：旧启动步骤重新生成已提交的历史 Bundle 造成漂移，runner 的 Go stable 也不等于 pin 的精确版本；修复与原失败日志保留在 `maintenance:checkpoints/architecture-iteration-resume/release-intake/ci-bootstrap-repair/` 和 `template-main-integration/`，不删除源码洁净或摘要门禁。
 
+- 发行安装与 CI 补缺：更新器原先仍要求四 Profile 且拒绝合法 backend 覆盖层，现已复用共享覆盖层路径校验修复，并以 40 项公开入口回放、19 项独立回放及构建核验，CLI 提交 `9259fed8` 已推送；验收工具新增真实公开 `upgrade --to 2.0.0` 路径，经独立审查固定为 `788cbd7e`，尚未实际运行双平台发行验收。模板第二次 CI `38406440397` 的启动已成功，但在 30 分钟被取消：285 个计划任务中 247 条实际通过（含 198 条语法检查）、12 条实际失败、2 条依赖失败未执行、1 条运行中取消、23 条尚未开始。原始归档和分诊见 `maintenance:checkpoints/architecture-iteration-resume/release-intake/ci-second-diagnosis/`；正修复退役引用、夹具身份/来源、临时目录隔离及分发/独立 CLI 登记缺口，不重做已实现 AR。为容纳已观测的串行检查耗时，CI 预算改为有界 60 分钟，选集、依赖和拒绝/恢复检查保持。修复后必须定向验证和独立审查，未执行项不得记通过；最终来源锁、Bundle、main 合入与发行仍待完成。
+
 ## 附录 A：度量口径
 
 - **管道提交（NFR-001）**：根仓的非合并提交里，只改下列路径的提交算作管道提交：`skills-lock.json`、`submodules/*`、`*.lock.json`、`*manifest.json`、`.codex/skills/**`、`.cursor/skills/**`、`.pi/skills/**`、`.claude/skills/**`、`profile-skill-sync.json`、`pnpm-lock.yaml`、来源锁（文件名为 `source-lock*.json`，不含名字里带 source-lock 的脚本和测试）。之后这些路径即使已被删除，口径也保持不变，以便前后可比。实现是 `scripts/lib/harness-metrics.mjs` 的 `pipelineCommitStats`，输出在 `scripts/harness-metrics` 的 `pipeline_commits`；没有改动任何文件的提交不计入。
