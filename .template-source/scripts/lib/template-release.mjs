@@ -19,7 +19,7 @@ function git(root, args) {
   return result.stdout.trim();
 }
 
-// yss-cli 不是 submodule：CLI 来源由 .template-source/distribution/yss-cli-pin.json 固定，并从显式提交的源码目录核验。
+// 维护工具由 pin 固定；最终发行 CLI 也可从显式 clean 源码和原始 native 装配证据独立核验。
 
 export function assertReleaseCheckout(root, commit) {
   assert.match(commit, /^[a-f0-9]{40}$/, '必须指定完整 40 位 commit SHA');
@@ -69,6 +69,9 @@ export function verifyTemplateRelease({ root, commit, output, runtimeStore = 'of
   };
   try {
     Object.assign(report, assertReleaseCheckout(root, commit));
+    report.source_verifications=[];
+    const sourceOptions={root,commit,onSourceVerification:observed=>report.source_verifications.push(observed)};
+    const allSources=collectReleaseSources(sourceOptions);
     if(cliFamily==='all-four')report.legacy_recovery=requiredLegacyRecoveryMatrix();
     run('scripts/repository-mode', []);
     assert.equal(readFileSync(path.join(output, '01.log'), 'utf8').trim(), 'template-source', '只允许模板源发布验证');
@@ -79,11 +82,10 @@ export function verifyTemplateRelease({ root, commit, output, runtimeStore = 'of
     const fullExit=run('scripts/verify-template',fullArgs);
     const fullFile=assertEvidenceFile(path.join(fullDirectory,'report.json'),output);
     const full=JSON.parse(readFileSync(fullFile,'utf8'));
-    const allSources=collectReleaseSources({root,commit});
     validateVerificationReport(full,{root,expectedPlan:independentPlan,reportDirectory:fullDirectory,expectedInvocation:{command:path.join(root,'scripts/run-template-verification'),args:['--profile','release',...fullArgs]},observedExitCode:fullExit.status,expectedSourcesManifest:allSources});
     report.execution={requested_concurrency:concurrency,requested_tooling_mode:toolingMode,actual_concurrency:full.environment.concurrency,actual_tooling_mode:full.environment.tooling_mode||'legacy',strategy:full.plan.strategy};
     report.full_verification={report:fullFile,report_sha256:hash(readFileSync(fullFile)),input_sha256:full.input_sha256,status:full.status};
-    report.sources_manifest=collectReleaseSources({root,commit,families});
+    report.sources_manifest=collectReleaseSources({...sourceOptions,families});
     writeFileSync(path.join(output,'sources.json'),JSON.stringify(report.sources_manifest,null,2)+'\n');
     report.sources_manifest_sha256=hash(readFileSync(path.join(output,'sources.json')));
     let prepared;
@@ -114,6 +116,7 @@ export function verifyTemplateRelease({ root, commit, output, runtimeStore = 'of
     for(const artifact of report.artifacts)validateArtifact(artifact,artifact.source_tuple);
     assert.equal(verificationInputDigest(root),full.input_sha256,'发布集成结束后输入已漂移');
     assertReleaseCheckout(root, commit);
+    assert.deepEqual(collectReleaseSources(sourceOptions),allSources,'发布集成结束后 CLI 来源已漂移');
     if(cliFamily==='all-four')assert.deepEqual(requiredLegacyRecoveryMatrix(),report.legacy_recovery,'历史恢复证据在发行验证期间漂移');
     report.status = 'passed';
     if(cliFamily==='all-four'){

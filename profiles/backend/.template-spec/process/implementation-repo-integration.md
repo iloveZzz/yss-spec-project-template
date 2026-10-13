@@ -83,3 +83,5 @@ scripts/verify-template
 ```
 
 CLI 仓库至少执行固定 commit 的 `YSS_HARNESS_TEMPLATE_REF=<pinned-commit> npm test`、`npm pack --dry-run`，并在解包后的 CLI 上验证 init、attach、sync、家族隔离、迁移冲突和回滚。共同发布前记录两个仓库的 commit、模板快照 hash、测试结果、独立审查结论和 rollback 路径。
+
+仅请求生成新 MVC/DDD 开发脚手架时，按[直接生成说明](../../.agents/skills/yss-ddd-scaffold-generator/references/standalone-generation.md) 调用对应技能，无需需求合同、原型确认、设计审批或先登记治理工程。目录与已有工程保护继续有效；显式合同调用仍校验原合同，之后选择接入正式治理时按既有工程完成接入。

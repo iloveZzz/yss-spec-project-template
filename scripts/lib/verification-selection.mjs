@@ -1,7 +1,7 @@
 import path from 'node:path';
 import {verificationCheckId,verificationPatternMatches as patternMatches,compileVerificationCheck} from '../../.template-source/scripts/lib/verification-gates.mjs';
 export {verificationCheckId,patternMatches};
-export function applyDailyVerificationSelection(plan,{selection='allowlist',config}) {
+export function applyDailyVerificationSelection(plan,{selection='allowlist',config,profile='fast',mandatoryChecks=[]}) {
   if(!['legacy','shadow','allowlist'].includes(selection))throw new TypeError(`未知 selection: ${selection}`);
   const definitions=new Map();
   for(const [group,value] of Object.entries(config.groups))for(const raw of value.commands){
@@ -27,12 +27,19 @@ export function applyDailyVerificationSelection(plan,{selection='allowlist',conf
   const validate=id=>{if(visiting.has(id))throw new TypeError(`检查依赖循环: ${id}`);if(visited.has(id))return;const item=checks.get(id);if(!item)throw new TypeError(`未知检查依赖: ${id}`);visiting.add(id);for(const dep of item.depends_on)validate(dep);visiting.delete(id);visited.add(id);};
   for(const id of checks.keys())validate(id);
   const reasons=new Map();
-  const select=(id,reason)=>{if(reasons.has(id))return;const item=checks.get(id);reasons.set(id,reason);for(const dep of item.depends_on)select(dep,`dependency-of:${id} -> ${checks.get(dep).failure_mode}`);};
+  const select=(id,reason)=>{if(reasons.has(id))return;let item=checks.get(id);if(!item){const definition=definitions.get(id);if(!definition)throw new TypeError(`未知检查依赖: ${id}`);item={...definition,depends_on:definition.depends_on||[]};checks.set(id,item);}reasons.set(id,reason);for(const dep of item.depends_on)select(dep,`dependency-of:${id} -> ${checks.get(dep).failure_mode}`);};
   for(const item of checks.values()) {
     const matched=plan.changed_files.filter(file=>item.input_patterns.some(pattern=>matches(file,pattern)));
     if(matched.length)select(item.id,`input-match:${matched.join(', ')} -> ${item.failure_mode}`);
   }
-  const candidate=[...checks.values()].filter(item=>reasons.has(item.id)).map(item=>({...compileVerificationCheck(item,{group:item.group,profile:'fast',taskId:item.id}),selection_reason:reasons.get(item.id)}));
+  for(const id of mandatoryChecks){if(!checks.has(id)){const definition=definitions.get(id);if(!definition)throw new TypeError(`未知发行必需检查: ${id}`);checks.set(id,{...definition,depends_on:definition.depends_on||[]});}select(id,'release-required');}
+  if(profile==='release') {
+    const gates=new Map((config.gates||[]).map(gate=>[gate.id,gate])),expanded=new Set();
+    const expand=gate=>{if(expanded.has(gate.id))return;expanded.add(gate.id);for(const id of [...gate.depends_on,...gate.impact_dependencies]){const dependency=gates.get(id);if(!dependency)throw new TypeError(`未知 Gate 依赖: ${id}`);for(const check of dependency.check_ids)select(check,`gate-dependency:${gate.id}`);expand(dependency);}};
+    for(const gate of gates.values())if(gate.check_ids.some(id=>reasons.has(id)))expand(gate);
+  }
+  const candidate=[...checks.values()].filter(item=>reasons.has(item.id)).map(item=>({...compileVerificationCheck(item,{group:item.group,profile,taskId:item.id}),selection_reason:reasons.get(item.id)}));
+  if(profile==='release')return {...plan,commands:candidate,groups:[...new Set(candidate.map(item=>item.group))],selection:{requested:'impact',effective:'impact',eligible:true,qualified:false,omitted:plan.commands.filter(item=>!candidate.some(check=>check.id===item.id)).map(item=>({id:item.id,reason:'outside-release-inputs'}))}};
   const commands=selection==='allowlist'?candidate:plan.commands.map((item,index)=>({...item,task_id:item.task_id||`daily.group.${index+1}`,resources:[...new Set([...(item.resources||[]),...(checks.get(item.id)?.resources||[])])],selection_reason:`explicit-group:${item.group}`}));
   return {...plan,strategy:'daily-necessary',commands,groups:[...new Set(commands.map(item=>item.group))],required_files:[],supplemental_checks:[],gates:[],not_applicable:[],selection:{requested:selection,effective:selection,eligible:!unknown.length,qualified:false,baseline:plan.commands,candidate,omitted:plan.commands.filter(item=>!candidate.some(check=>check.id===item.id)).map(item=>({...item,reason:'outside-daily-inputs'})),fallback_reason:unknown.length?`incomplete-daily-inputs:${unknown.join(', ')}`:null}};
 }

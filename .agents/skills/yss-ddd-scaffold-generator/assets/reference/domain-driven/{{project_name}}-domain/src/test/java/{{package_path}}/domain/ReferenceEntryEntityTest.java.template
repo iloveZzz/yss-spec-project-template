@@ -1,0 +1,16 @@
+package {{base_package}}.domain;
+
+import {{base_package}}.domain.entity.ReferenceEntryEntity;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+class ReferenceEntryEntityTest {
+    @Test
+    void invalidRenameKeepsPreviousName() {
+        ReferenceEntryEntity entry = ReferenceEntryEntity.restore("entry-1", "原名称");
+        assertThrows(ReferenceEntryException.class, () -> entry.rename(" "));
+        assertEquals("原名称", entry.getName());
+        entry.rename("新名称");
+        assertEquals("新名称", entry.getName());
+    }
+}

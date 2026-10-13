@@ -1,4 +1,5 @@
 import { attachScaffoldDecisionFixture } from "../../../../scripts/fixtures/user-decision/build-fixture.mjs";
+import { referenceExample } from "../../../../scripts/lib/scaffold-reference-example.mjs";
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { spawnSync } from "node:child_process";
@@ -9,7 +10,6 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 import { attachDesignPrerequisites } from "../../../../scripts/fixtures/backend-scaffold/design-prerequisites.mjs";
 import { validateNextRoute } from "../../../../scripts/lib/lifecycle-transition.mjs";
-import { renderDataAnalysisAgents } from "./data-analysis-profile.mjs";
 
 const script = path.join(path.dirname(fileURLToPath(import.meta.url)), "generate_scaffold.mjs");
 const digest = (value) => `sha256:${createHash("sha256").update(value).digest("hex")}`;
@@ -34,6 +34,7 @@ async function fixture(t, { profile = capabilityModules.basic, architectureProfi
   await writeFile(decisionFile, decisionText);
   const contract = {
     schema_version: schemaVersion,
+    ...(schemaVersion >= 5 ? { reference_example: referenceExample() } : {}),
     kind: "project-scaffold-contract",
     delivery_role: "backend",
     scaffold_kind: architectureProfile === "mvc-data-analysis-v1" ? "backend-mvc-data-analysis" : "backend-layered-mvc",
@@ -46,7 +47,7 @@ async function fixture(t, { profile = capabilityModules.basic, architectureProfi
     compiler_draft_ref: "compiler://demo/1",
     lifecycle_approval_ref: "approval://demo/1",
     persisted_ref: "contract://demo/1",
-    current_version: schemaVersion === 4 ? true : 1,
+    current_version: schemaVersion >= 4 ? true : 1,
     implementation_repository: "external",
     backend_repository: "external",
     scaffold_status: "required",
@@ -75,125 +76,15 @@ async function fixture(t, { profile = capabilityModules.basic, architectureProfi
   return { root, output, decisionFile, contractFile, contract, design, args, project: path.join(output, "demo-service") };
 }
 
-test("AGENTS 入口裁剪不依赖标题且拒绝非法标记", () => {
-  const start = "<!-- YSS_TEMPLATE_SOURCE_ONLY_START -->", end = "<!-- YSS_TEMPLATE_SOURCE_ONLY_END -->";
-  const input = `产品规则\n${start}\n## 任意标题\n源仓规则\n${end}\n授权 .agents/skills/test\n`;
-  const expected = "产品规则\n\n授权 ../skillUtils/.agents/skills/test\n";
-  assert.equal(renderDataAnalysisAgents(input), expected);
-  assert.equal(renderDataAnalysisAgents(expected), expected);
-  for (const invalid of [start, end, end + start, start + start + end, start + end + end]) {
-    assert.throws(() => renderDataAnalysisAgents(invalid), /AGENTS_SOURCE_ONLY_MARKERS/);
-  }
-  assert.equal(renderDataAnalysisAgents("## 4. `template-source` 模板维护路由\n旧维护\n## 5. 产品规则\n"), "## 4. 模板维护\n\n本仓为 project-instance；模板维护回上游执行。\n\n## 5. 产品规则\n");
-});
-
-test("数据分析初始化生成 H2 六模块和独立治理信封", async (t) => {
+test("退役数据分析入口在目录、Git 和 skillUtils 写入前拒绝", async t => {
   const data = await fixture(t, { architectureProfile: "mvc-data-analysis-v1", profile: { capabilities: [], modules: ["server", "core", "client", "repository", "adapter", "feign-client"] } });
-  const context = "---\ncontext_schema_version: 1\n---\n# 业务上下文\n\n## 业务术语\n\n| 术语 | 含义 | 英文标识 | 适用业务责任区 | 避免 / 备注 |\n|---|---|---|---|---|\n";
-  await writeFile(path.join(data.root, "context-handoff.md"), context);
-  data.contract.context_handoff_ref = "context-handoff.md";
-  data.contract.context_handoff_digest = digest(context);
-  await writeFile(data.contractFile, JSON.stringify(data.contract));
-  const contractBytes = await readFile(data.contractFile);
-  const state = { service_project_initialization: {
-    project_id: "demo-service", contract_ref: data.contractFile, contract_digest: digest(contractBytes),
-    project_root: data.project, context_handoff_digest: digest(context)
-  } };
-  const edge = (from, to, value = state) => validateNextRoute(from, to, value, { root: data.root });
-  assert.equal(edge("work-unit.implementation-repository-preparation", "work-unit.service-project-initialization").result, "allowed", JSON.stringify(edge("work-unit.implementation-repository-preparation", "work-unit.service-project-initialization")));
-  const missingContract = structuredClone(state); missingContract.service_project_initialization.contract_ref = path.join(data.root, "missing-contract.json");
-  assert.equal(edge("work-unit.implementation-repository-preparation", "work-unit.service-project-initialization", missingContract).result, "blocked");
-  const changedContract = structuredClone(state); changedContract.service_project_initialization.contract_digest = digest("stale");
-  assert.equal(edge("work-unit.implementation-repository-preparation", "work-unit.service-project-initialization", changedContract).result, "blocked");
-  const approvedContract = structuredClone(data.contract);
-  data.contract.design_prerequisites.engineering_contract_approval_ref = "missing-approval.json";
-  await writeFile(data.contractFile, JSON.stringify(data.contract));
-  const missingApproval = structuredClone(state); missingApproval.service_project_initialization.contract_digest = digest(await readFile(data.contractFile));
-  assert.equal(edge("work-unit.implementation-repository-preparation", "work-unit.service-project-initialization", missingApproval).result, "blocked");
-  await writeFile(data.contractFile, JSON.stringify(approvedContract));
-  assert.equal(edge("work-unit.service-project-initialization", "work-unit.implementation-repository-preparation").result, "blocked");
-  const result = spawnSync(process.execPath, [path.resolve(path.dirname(script), "../../../../scripts/fixtures/backend-scaffold/generate-candidate.mjs"), script, ...data.args], { encoding: "utf8" });
-  assert.equal(result.status, 0, result.stderr);
-  assert.equal(edge("work-unit.implementation-repository-preparation", "work-unit.service-project-initialization").result, "blocked", "重复初始化不得放行");
-  const manifest = JSON.parse(await readFile(path.join(data.project, ".yss/scaffold-generation.json"), "utf8"));
-  assert.equal(manifest.architecture_identity.architecture_profile, "mvc-data-analysis-v1");
-  assert.equal(manifest.generator_skill, "yss-layered-mvc-scaffold-generator");
-  assert.equal(await readFile(path.join(data.project, "CONTEXT.md"), "utf8"), context);
-  await stat(path.join(data.project, ".git"));
-  await stat(path.join(data.output, "skillUtils/skills-lock.json"));
-  const agents = await readFile(path.join(data.project, "AGENTS.md"), "utf8");
-  assert.doesNotMatch(agents, /YSS_TEMPLATE_SOURCE_ONLY|## 模板源维护|\.template-source\/process\/maintenance-intensity/);
-  assert.match(agents, /daily/);
-  assert.match(agents, /governed/);
-  assert.match(agents, /\.\.\/skillUtils\/\.agents\/skills/);
-  const toolsAgents = await readFile(path.join(data.output, "skillUtils/AGENTS.md"), "utf8");
-  assert.match(toolsAgents, /yss-skill-utils \/ skill-utils-v1/);
-  assert.doesNotMatch(toolsAgents, /每个任务先读|先读根/);
-  assert.ok(!manifest.ownership.generated_files.some((entry) => entry.path.startsWith(".git/")));
-  const manifestRef = path.join(data.project, ".yss/scaffold-generation.json");
-  const verificationRef = path.join(data.root, "scaffold-verification.json");
-  const resultRef = path.join(data.root, "service-result.json");
-  manifest.completion_level = "empty-scaffold-verified";
-  await writeFile(manifestRef, JSON.stringify(manifest));
-  const commands = [];
-  for (const phase of ["validate", "test", "package"]) {
-    const stdout_ref = path.join(data.root, `${phase}.stdout.log`), stderr_ref = path.join(data.root, `${phase}.stderr.log`);
-    await writeFile(stdout_ref, "synthetic route fixture"); await writeFile(stderr_ref, "");
-    commands.push({ phase, command: `./mvnw ${phase}`, exit_code: 0, stdout_ref, stderr_ref });
+  const result = spawnSync(process.execPath, [script, ...data.args], { encoding: "utf8" });
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /retired.*setup-yss-harness/);
+  assert.deepEqual(await readdir(data.output), []);
+  for (const [from, to] of [["work-unit.implementation-repository-preparation", "work-unit.service-project-initialization"], ["work-unit.service-project-initialization", "work-unit.implementation-repository-preparation"]]) {
+    assert.equal(validateNextRoute(from, to, {}, { root: data.root }).result, "blocked");
   }
-  await writeFile(verificationRef, JSON.stringify({ status: "passed", completion_level: "empty-scaffold-verified", project_root: data.project, commands }));
-  await writeFile(resultRef, JSON.stringify({ result_schema: "workflow-execution-result-v1", work_unit: "work-unit.service-project-initialization", result: "completed", evidence_refs: [manifestRef, verificationRef] }));
-  Object.assign(state.service_project_initialization, { manifest_ref: manifestRef, verification_ref: verificationRef, result_ref: resultRef });
-  assert.equal(edge("work-unit.service-project-initialization", "work-unit.implementation-repository-preparation").result, "allowed");
-  const stale = structuredClone(state); stale.service_project_initialization.context_handoff_digest = digest("stale");
-  assert.equal(edge("work-unit.service-project-initialization", "work-unit.implementation-repository-preparation", stale).result, "blocked");
-  commands[0].exit_code = 1; await writeFile(verificationRef, JSON.stringify({ status: "passed", completion_level: "empty-scaffold-verified", project_root: data.project, commands }));
-  assert.equal(edge("work-unit.service-project-initialization", "work-unit.implementation-repository-preparation").result, "blocked", "Wrapper 非零退出不得放行");
-  commands[0].exit_code = 0;
-  commands.pop(); await writeFile(verificationRef, JSON.stringify({ status: "passed", completion_level: "empty-scaffold-verified", project_root: data.project, commands }));
-  assert.equal(edge("work-unit.service-project-initialization", "work-unit.implementation-repository-preparation").result, "blocked", "缺失 Wrapper 命令不得放行");
-  const core = await readFile(path.join(data.project, "demo-service-core/pom.xml"), "utf8");
-  assert.doesNotMatch(core, /demo-service-client|spring-web|ojdbc|mysql-connector/);
-});
-
-test("数据分析 AGENTS 非法标记在创建输出前零写入", async (t) => {
-  const data = await fixture(t, { architectureProfile: "mvc-data-analysis-v1", profile: { capabilities: [], modules: ["server", "core", "client", "repository", "adapter", "feign-client"] } });
-  const context = "---\ncontext_schema_version: 1\n---\n# 业务上下文\n";
-  await writeFile(path.join(data.root, "context-handoff.md"), context);
-  Object.assign(data.contract, { context_handoff_ref: "context-handoff.md", context_handoff_digest: digest(context) });
-  await writeFile(data.contractFile, JSON.stringify(data.contract));
-  const source = path.join(data.root, "source");
-  const repository = path.resolve(path.dirname(script), "../../../..");
-  for (const ref of ["scripts", ".agents/skills", ".template-spec", ".template-source/process"]) {
-    await cp(path.join(repository, ref), path.join(source, ref), { recursive: true });
-  }
-  const start = "<!-- YSS_TEMPLATE_SOURCE_ONLY_START -->", end = "<!-- YSS_TEMPLATE_SOURCE_ONLY_END -->";
-  for (const invalid of [start, end, end + start, start + start + end, start + end + end]) {
-    await writeFile(path.join(source, "AGENTS.md"), invalid);
-    const result = spawnSync(process.execPath, [path.join(source, "scripts/fixtures/backend-scaffold/generate-candidate.mjs"), path.join(source, ".agents/skills/yss-layered-mvc-scaffold-generator/scripts/generate_scaffold.mjs"), ...data.args], { encoding: "utf8" });
-    assert.notEqual(result.status, 0);
-    assert.match(result.stderr, /AGENTS_SOURCE_ONLY_MARKERS/);
-    assert.deepEqual(await readdir(data.output), []);
-  }
-});
-
-test("数据分析 Profile 缺少 CONTEXT handoff 或独立 Git 合同时零写入阻断", async (t) => {
-  const profile = { capabilities: [], modules: ["server", "core", "client", "repository", "adapter", "feign-client"] };
-  const missingContext = await fixture(t, { architectureProfile: "mvc-data-analysis-v1", profile });
-  const missingResult = spawnSync(process.execPath, [path.resolve(path.dirname(script), "../../../../scripts/fixtures/backend-scaffold/generate-candidate.mjs"), script, ...missingContext.args], { encoding: "utf8" });
-  assert.notEqual(missingResult.status, 0);
-  assert.match(missingResult.stderr, /CONTEXT handoff/);
-  await assert.rejects(stat(missingContext.project), { code: "ENOENT" });
-
-  const noGit = await fixture(t, { architectureProfile: "mvc-data-analysis-v1", profile });
-  const context = "---\ncontext_schema_version: 1\n---\n# 业务上下文\n";
-  await writeFile(path.join(noGit.root, "context-handoff.md"), context);
-  Object.assign(noGit.contract, { init_git: false, context_handoff_ref: "context-handoff.md", context_handoff_digest: digest(context) });
-  await writeFile(noGit.contractFile, JSON.stringify(noGit.contract));
-  const noGitResult = spawnSync(process.execPath, [path.resolve(path.dirname(script), "../../../../scripts/fixtures/backend-scaffold/generate-candidate.mjs"), script, ...noGit.args], { encoding: "utf8" });
-  assert.notEqual(noGitResult.status, 0);
-  assert.match(noGitResult.stderr, /独立 Git/);
-  await assert.rejects(stat(noGit.project), { code: "ENOENT" });
 });
 
 test("旧数据库和 Mock 参数在写入前被拒绝", async (t) => {
@@ -360,4 +251,21 @@ test("选择缺失、digest 漂移和非空目标均阻断", async (t) => {
   const blocked = spawnSync(process.execPath, [script, ...existing.args], { encoding: "utf8" });
   assert.notEqual(blocked.status, 0);
   assert.match(blocked.stderr, /目标已存在/);
+});
+
+test('v5 MVC 绑定默认示例，v4 不允许参数追加', async t => {
+  for (const schemaVersion of [4, 5]) {
+    const data = await fixture(t, { schemaVersion });
+    const candidate = path.resolve(path.dirname(script), '../../../../scripts/fixtures/backend-scaffold/generate-candidate.mjs');
+    if (schemaVersion === 4) {
+      const rejected = spawnSync(process.execPath, [candidate, script, ...data.args, '--with-example'], { encoding: 'utf8' });
+      assert.notEqual(rejected.status, 0); assert.match(rejected.stderr, /历史 v4/);
+    }
+    const result = spawnSync(process.execPath, [candidate, script, ...data.args], { encoding: 'utf8' });
+    assert.equal(result.status, 0, result.stderr);
+    const manifest = JSON.parse(await readFile(path.join(data.project, '.yss/scaffold-generation.json'), 'utf8'));
+    assert.equal(manifest.schema_version, schemaVersion);
+    if (schemaVersion === 5) assert.deepEqual(manifest.reference_example, referenceExample());
+    else await assert.rejects(stat(path.join(data.project, 'examples')), { code: 'ENOENT' });
+  }
 });

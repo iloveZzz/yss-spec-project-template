@@ -8,6 +8,7 @@ id_policy:
   published_ids_immutable: true
   baseline: .template-spec/process/lifecycle-registry-baseline.json
   deprecated_ids:
+    - work-unit.service-project-initialization
     - artifact.high-fidelity-html-prototype
     - work-unit.fresh-verification
     - work-unit.independent-review
@@ -480,12 +481,6 @@ work_units:
     input: 已完成的技术分析执行结果、Context reconciliation、战略交接消费结果、工程合同批准、工程影响面和实现仓库位置；新建后端还需批准且当前并绑定设计前置的 Project Scaffold Contract v4。
     output: 已有工程的 Repository Onboarding Result，或新工程的 Scaffold Manifest v4 与 Scaffold Verification；并汇总 Implementation Repository Preparation Result v2。
     completion: 每个后端项目均携带技术/数据设计门禁结果；新生成只接受 v4；历史 v3 仅在机械骨架未修改、设计补齐和恢复批准均通过时对账复用；检测到提前业务实现时保持 blocked。每个命中的交付面均为 existing-and-onboarded 或 initialized-and-verified，未命中的交付面有带原因的 not-applicable；聚合结果当前且证据可读。
-  - id: work-unit.service-project-initialization
-    name: 独立服务项目初始化
-    scope: project-instance
-    input: 逐项目批准的架构决策、Technical Design、Data Architecture Decision、工程合同批准、schema v4 初始化合同、战略上下文交接及目标/skillUtils 写范围。
-    output: 独立 Git project-instance、锁定 skillUtils、唯一根 CONTEXT、架构身份、Manifest 和验证证据；父项目仅保留引用。
-    completion: 当前合同与交接摘要一致，真实 Wrapper 三命令通过后仅 empty-scaffold-verified；首切片仍须独立批准和验证。
   - id: work-unit.ticket-decomposition
     name: 垂直切片 Ticket 正式化
     public_name: 实现切片拆分与合同准入

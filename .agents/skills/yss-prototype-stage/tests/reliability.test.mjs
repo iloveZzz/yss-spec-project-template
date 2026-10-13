@@ -12,7 +12,7 @@ test('scenario data is parsed without execution; IDs and generated script bind e
  const f=await comparisonFixture();const input=structuredClone(f.input);input.cases[0].scenario='missing';await writeFile(path.join(f.root,'input.json'),JSON.stringify(input));await assert.rejects(f.prepare(),/场景 ID 不存在/);
 });
 test('portable integrity and current project freshness are distinct checks',async()=>{
- const projectRoot=await project(),root=path.join(projectRoot,'docs/.scratch/test/design/prototypes');await prepareFlowPrototype({projectRoot,root,feature:'test',pattern:'workbench'});assert.deepEqual((await validatePrototypeProject({root,projectRoot})).errors,[]);
+ const projectRoot=await project(),root=path.join(projectRoot,'.work/test/design/prototypes');await prepareFlowPrototype({projectRoot,root,feature:'test',pattern:'workbench'});assert.deepEqual((await validatePrototypeProject({root,projectRoot})).errors,[]);
  await writeFile(path.join(projectRoot,'DESIGN.md'),'changed DESIGN');assert.equal((await validatePrototypeProject({root})).errors.length,0);assert.match((await validatePrototypeProject({root,projectRoot})).errors.join(),/来源已漂移/);
  await writeFile(path.join(root,'scenarios.js'),'window.prototypeScenarios=[]');assert.match((await validatePrototypeProject({root})).errors.join(),/派生脚本不一致/);
 });
@@ -27,7 +27,7 @@ test('CLI scripts execute through a filesystem alias instead of silently returni
 });
 
 test('new compact preset is explicit, invalid density is rejected and old manifest stays readable',async()=>{
- const projectRoot=await project(),root=path.join(projectRoot,'docs/.scratch/density/design/prototypes'),options={projectRoot,root,feature:'density',pattern:'workbench'};
+ const projectRoot=await project(),root=path.join(projectRoot,'.work/density/design/prototypes'),options={projectRoot,root,feature:'density',pattern:'workbench'};
  await assert.rejects(prepareFlowPrototype({...options,density:'tiny'}),/density/);await assert.rejects(readdir(root),{code:'ENOENT'});
  await prepareFlowPrototype(options);const file=path.join(root,'yss-prototype-adapter.json'),manifest=JSON.parse(await readFile(file,'utf8'));
  assert.equal(manifest.visual_preset.density,'compact');manifest.visual_preset.density='comfortable';await writeFile(file,JSON.stringify(manifest));assert.match((await validatePrototypeProject({root})).errors.join(),/密度不一致/);

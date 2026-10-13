@@ -33,7 +33,8 @@ test('日常核心验证器保持 fast，缺映射和依赖错误在执行前拒
  config.profiles.fast.checks.find(item=>item.id==='check.schema-runtime').depends_on=['missing'];
  assert.throws(()=>planTemplateVerification({changedFiles:['scripts/lib/json-schema.mjs'],config}),/未知检查依赖/);
  const original=planTemplateVerification({profile:'release',changedFiles:[pilot]});
- assert.equal(original.strategy,'release');assert.equal(original.commands.length,Object.values(loadVerificationProfiles().groups).reduce((sum,group)=>sum+group.commands.length,0));
+ assert.equal(original.strategy,'release');assert.equal(original.selection.effective,'impact');assert.ok(original.commands.some(task=>task.command==='scripts/sync-skills --check'));
+ assert.ok(original.commands.length<Object.values(loadVerificationProfiles().groups).reduce((sum,group)=>sum+group.commands.length,0));
 });
 test('日常检查选择包含明确消费者和前置，legacy与shadow保持原组范围',()=>{
  const config=loadVerificationProfiles();

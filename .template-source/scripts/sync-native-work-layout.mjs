@@ -9,7 +9,7 @@ const args=process.argv.slice(2),at=args.indexOf('--cli-root');
 if(at<0||!args[at+1])throw Error('--cli-root 必须显式指定 CLI 源仓');
 const cli=fs.realpathSync(args[at+1]),check=args.includes('--check');
 const refs=[
-  ...['work-layout','stage-tracking','stage-tracking-migration','reading-view-policy','reading-view-bundle','approval-checkpoint-discovery','asset-transactions','runtime-store','lifecycle-transition','feature-assets','project-governance','native-context','openapi-draft-validation'].map(id=>`scripts/lib/${id}.mjs`),
+  ...['work-layout','plan-review-control','review-package','stage-tracking','stage-tracking-migration','reading-view-policy','reading-view-bundle','approval-checkpoint-discovery','asset-transactions','runtime-store','lifecycle-transition','feature-assets','project-governance','native-context','openapi-draft-validation'].map(id=>`scripts/lib/${id}.mjs`),
   ...['build-shadcn-vue-prototype','export-vue-patterns','prototype-contract','offline-html','prototype-comparison'].map(id=>`.agents/skills/yss-prototype-stage/scripts/${id}.mjs`),
   '.template-spec/process/schemas/reading-policy.schema.json',
   '.template-spec/process/schemas/openapi-draft-validation-record.schema.json',

@@ -424,7 +424,7 @@ profiles:
           - ".template-source/agents/strategic-design-skills-integration.md"
           - "tests/fixtures/specialist-source-fixtures.py"
         depends_on: []
-        failure_mode: "backend / frontend / design 实例分发了根仓声明为仅模板源的脚本，技能目录里的测试目录没有被排除，Profile 子模块或同步机制（同步脚本、共享工具锁、有意定制登记、设计技能清单）复活，或 profiles/ 下的覆盖层缺少该 Profile 的分发清单"
+        failure_mode: "backend / design 实例分发了仅模板源脚本，使用后缀规则批量移除旧实例已登记的 Skill 文件，Profile 子模块或同步机制复活，或 profiles/ 覆盖层缺少分发清单"
       - id: check.template-wiki-untracked
         run: "node --test tests/template-wiki-untracked.test.mjs"
         group: hygiene
@@ -471,13 +471,14 @@ profiles:
         depends_on: []
         failure_mode: "yss-cli 固定文件缺项、坏摘要或未知平台被放行，二进制摘要与固定版本不符时没有失败，或 CI 里接受了本地覆盖"
       - id: check.template-release-sources
-        run: "node --test --test-name-pattern '固定发行拒绝缺失|发行验证在有 yss-cli 固定文件时|浮动版本与脏树' .template-source/scripts/tests/template-ci.test.mjs"
+        run: "node --test --test-name-pattern '固定发行拒绝缺失|发行验证在有 yss-cli 固定文件时|浮动版本与脏树|发行来源适配器' .template-source/scripts/tests/template-ci.test.mjs tests/verification-artifacts.test.mjs"
         group: feature-assets
         inputs_complete: true
         input_patterns:
           - ".template-source/scripts/lib/template-release.mjs"
           - ".template-source/scripts/lib/verification-artifacts.mjs"
           - ".template-source/scripts/tests/template-ci.test.mjs"
+          - "tests/verification-artifacts.test.mjs"
           - ".gitmodules"
           # AR-02 已移除的 yss-cli gitlink：删除也算变更路径，删除提交里仍需登记；合入之后可以移除。
           - "submodules/yss-cli"
@@ -631,11 +632,24 @@ profiles:
           - ".template-source/process/maintenance-intensity*.yaml"
           - "scripts/lib/maintenance-intensity.mjs"
           - "scripts/lib/maintenance-counterexample.mjs"
+          - "scripts/lib/maintenance-review.mjs"
           - "tests/maintenance-counterexample.test.mjs"
           - "tests/scenarios/verify-maintenance-risk-scenarios.mjs"
           - "scripts/verify-maintenance-risk-scenarios"
         depends_on: []
-        failure_mode: "两级触发项遗漏、当前 L3 被接受、三类强制反例缺失或运行证据伪造"
+        failure_mode: "两级触发项遗漏、当前 L3 被接受、三类强制反例缺失、运行证据伪造，或历史审查被误作当前执行授权"
+      - id: check.harness-skill-scope
+        run: "node --test tests/harness-skill-scope.test.mjs"
+        group: skills
+        inputs_complete: true
+        input_patterns:
+          - "scripts/lib/harness-execution-scope.mjs"
+          - "scripts/lib/harness-skill-scope.mjs"
+          - "tests/harness-skill-scope.test.mjs"
+          - "submodules/yss-harness-backend-agent"
+          - "submodules/yss-harness-frontend-agent"
+        depends_on: []
+        failure_mode: "专职端将跨仓参考或退役技能身份误作本地可执行技能，或伪装影响面绕过身份边界"
       - id: check.5fa31f4262e122b1
         group: maintenance
         inputs_complete: true
@@ -678,18 +692,65 @@ profiles:
           - "tests/governance-layout.test.mjs"
         depends_on: []
         failure_mode: "当前来源缺失、重复或倒序标记被历史兼容路径静默接受"
-      - id: "check.mvc-data-analysis-entry"
-        run: "node --test --test-name-pattern='数据分析|AGENTS|入口' .agents/skills/yss-layered-mvc-scaffold-generator/scripts/scaffold-generator.test.mjs"
+      - id: "check.backend-scaffold-direct-generation"
+        run: "node --test .agents/skills/yss-ddd-scaffold-generator/scripts/standalone.test.mjs .agents/skills/yss-ddd-scaffold-generator/scripts/scaffold-generator.test.mjs .agents/skills/yss-layered-mvc-scaffold-generator/scripts/scaffold-generator.test.mjs"
+        group: "implementation"
+        inputs_complete: true
+        input_patterns:
+          - "scripts/lib/standalone-backend-scaffold.mjs"
+          - "scripts/lib/scaffold-reference-example.mjs"
+          - "scripts/lib/backend-platform-provenance.mjs"
+          - ".agents/skills/yss-ddd-scaffold-generator/assets/**"
+          - ".codex/skills/yss-ddd-scaffold-generator/assets/**"
+          - ".agents/skills/yss-ddd-scaffold-generator/scripts/**"
+          - ".agents/skills/yss-layered-mvc-scaffold-generator/scripts/**"
+        depends_on: []
+        failure_mode: "MVC/DDD 无合同默认生成失败、参考工程遗漏或未纳入来源和所有权、显式合同错误回退、验证报告模式错误或目录保护失效"
+      - id: check.backend-platform-mechanisms
+        run: "node --test scripts/fixtures/backend-scaffold/platform-scenarios.test.mjs tests/scenarios/verify-scaffold-architecture-decision-scenarios.mjs"
+        group: implementation
+        inputs_complete: true
+        input_patterns:
+          - "scripts/fixtures/backend-scaffold/platform-fixture.mjs"
+          - "scripts/fixtures/backend-scaffold/platform-scenarios.test.mjs"
+          - "scripts/lib/backend-platform-verification.mjs"
+          - "scripts/lib/backend-platform.mjs"
+          - "scripts/verify-scaffold-architecture-decisions"
+          - ".template-spec/engineering/backend-platforms*"
+          - ".template-spec/engineering/evidence/scaffold-3.2.0/**"
+        depends_on: [check.backend-scaffold-direct-generation]
+        failure_mode: "精确平台绑定、运行证据或退役架构决策接受错误；真实平台证据另按选定两个组合执行"
+      - id: check.scaffold-contract-consumers
+        run: "node --test .agents/skills/yss-implementation-contract-compiler/tests/backend-profiles.test.mjs tests/legacy-backend-scaffold-audit.test.mjs tests/yss-backend-skill-governance.test.mjs"
+        group: implementation
+        inputs_complete: true
+        input_patterns:
+          - "scripts/lib/backend-scaffold-prerequisites.mjs"
+          - "scripts/lib/implementation-contract-compiler.mjs"
+          - "scripts/lib/legacy-backend-scaffold-audit.mjs"
+          - "scripts/lib/lifecycle-transition.mjs"
+          - "scripts/lib/backend-platform.mjs"
+          - ".agents/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml"
+          - ".agents/skills/yss-implementation-contract-compiler/tests/backend-profiles.test.mjs"
+          - "tests/legacy-backend-scaffold-audit.test.mjs"
+          - "tests/yss-backend-skill-governance.test.mjs"
+        depends_on: [check.backend-scaffold-direct-generation]
+        failure_mode: "v5 前置或退役路由漂移，历史架构审计被误当新生成或恢复批准"
+      - id: "check.mvc-data-analysis-retirement"
+        run: "node --test --test-name-pattern='退役|历史' .agents/skills/yss-layered-mvc-scaffold-generator/scripts/scaffold-generator.test.mjs"
         group: "implementation"
         inputs_complete: true
         input_patterns:
           - "AGENTS.md"
           - ".agents/skills/yss-layered-mvc-scaffold-generator/scripts/**"
         depends_on: []
-        failure_mode: "数据分析工程入口泄漏模板规则、工具包身份错误或非法标记产生部分输出"
+        failure_mode: "退役数据分析入口仍创建目录、Git 或 skillUtils，历史 Schema 或只读审计失效"
       - id: "check.skill-projection-identity"
         inputs_complete: true
         input_patterns:
+          - ".codex/skills/release-yss-cli"
+          - ".cursor/skills/release-yss-cli"
+          - ".pi/skills/release-yss-cli"
           - ".agents/skills/**"
           - ".codex/skills/**"
           - ".cursor/skills/**"
@@ -784,7 +845,8 @@ profiles:
         group: "work-layout"
         inputs_complete: true
         input_patterns:
-          - ".agents/skills/yss-prototype-stage/tests/reliability.test.mjs"
+          - ".agents/skills/yss-prototype-stage/tests/**"
+          - "profiles/design/.agents/skills/yss-prototype-stage/**"
         depends_on: []
         failure_mode: "原型拒绝配置的工作包根、接受错目录或覆盖已存在内容"
       - id: "check.022dccdddca70b70"
@@ -1015,14 +1077,236 @@ profiles:
       - id: "check.work-layout-hardcodes"
         inputs_complete: true
         input_patterns:
-          - "scripts/lib/work-layout.mjs"
-          - "scripts/verify-work-layout"
-          - "profiles/design/**"
+          - "profiles/**"
+          - ".agents/skills/yss-frontend-scaffold-generator/scripts/scaffold-generator.test.mjs"
+          - ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml"
+          - ".agents/skills/yss-prototype-stage/tests/browser-smoke.mjs"
+          - ".agents/skills/yss-prototype-stage/tests/compact-theme-browser.mjs"
+          - ".agents/skills/yss-prototype-stage/tests/comparison-fixture.mjs"
+          - ".agents/skills/yss-prototype-stage/tests/components-browser.mjs"
+          - ".agents/skills/yss-prototype-stage/tests/reliability.test.mjs"
+          - ".agents/skills/yss-prototype-stage/tests/shadcn-vue.test.mjs"
+          - ".agents/skills/yss-prototype-stage/tests/work-layout-fixture.mjs"
+          - ".agents/skills/yss-prototype-stage/tests/workbench-smoke.mjs"
+          - ".agents/skills/yss-prototype-stage/tests/workspace.test.mjs"
+          - ".agents/skills/yss-stage-decision/tests/fixtures/invalid-stage-decision-blocker.yaml"
+          - ".agents/skills/yss-stage-decision/tests/fixtures/valid-stage-decision-package.yaml"
+          - ".agents/skills/yss-stage-decision/tests/fixtures/valid-supplier-domain.yaml"
+          - ".agents/skills/yss-tactical-design/tests/fixtures/valid-tactical-design.yaml"
+          - ".template-source/cli-core/work-layout.mjs"
+          - ".template-source/distribution/strategic-handoff-tools.lock.json"
+          - ".template-source/process/work-layout-exceptions.json"
+          - ".template-source/profile-skill-sync.json"
+          - ".template-source/scripts/plan-clarification-scenarios.json"
+          - ".template-source/scripts/run-lifecycle-cross-repo-pilot"
           - ".template-source/scripts/sync-native-work-layout.mjs"
+          - ".template-source/tooling/node/test/plan-review-control.test.mjs"
+          - ".template-source/tooling/node/test/review-capabilities.test.mjs"
+          - ".template-spec/agents/issue-tracker.md"
+          - ".template-spec/process/work-layout.md"
+          - "scripts/fixtures/backend-scaffold/design-prerequisites.mjs"
+          - "scripts/fixtures/business-tickets/business-tickets.test.mjs"
+          - "scripts/fixtures/contract-efficiency/api-v2.test.mjs"
+          - "scripts/fixtures/plan-review-control/build-fixture.mjs"
+          - "scripts/fixtures/reading-views/bundle.test.mjs"
+          - "scripts/fixtures/reading-views/fixture.mjs"
+          - "scripts/fixtures/reading-views/reading.test.mjs"
+          - "scripts/fixtures/spec-baseline/fixture.mjs"
+          - "scripts/fixtures/stage-tracking/tracking.test.mjs"
+          - "scripts/fixtures/strategic-handoff/base-stage.json"
+          - "scripts/fixtures/strategic-handoff/base-strategy.json"
+          - "scripts/fixtures/structured-assets/assets.test.mjs"
+          - "scripts/fixtures/user-decision/plan-fixture.mjs"
+          - "scripts/lib/plan-review-control.mjs"
+          - "scripts/lib/review-package.mjs"
+          - "scripts/lib/work-layout.mjs"
+          - "scripts/verify-frontend-implementation-evidence"
+          - "scripts/verify-work-layout"
+          - "skills-lock.json"
+          - "submodules/yss-cli"
+          - "submodules/yss-harness-backend-agent"
+          - "submodules/yss-harness-design-agent"
+          - "submodules/yss-harness-frontend-agent"
+          - "tests/feature-assets.test.mjs"
+          - "tests/plan-clarification-replay.test.mjs"
+          - "tests/project-ci.test.mjs"
+          - "tests/scenarios/verify-digital-human-task-package-scenarios.mjs"
+          - "scripts/verify-digital-human-task-package-scenarios"
+          - "scripts/verify-subagent-task-package-scenarios"
+          - "tests/scenarios/verify-frontend-implementation-evidence-scenarios.mjs"
+          - "scripts/verify-frontend-implementation-evidence-scenarios"
+          - "tests/scenarios/verify-lifecycle-operator-scenarios.mjs"
+          - "scripts/verify-lifecycle-operator-scenarios"
+          - "tests/scenarios/verify-lifecycle-transition-scenarios.mjs"
+          - "scripts/verify-lifecycle-transition-scenarios"
+          - "tests/scenarios/verify-openapi-draft-validation-scenarios.mjs"
+          - "scripts/verify-openapi-draft-validation-scenarios"
+          - "tests/scenarios/verify-user-decision-scenarios.mjs"
+          - "scripts/verify-user-decision-scenarios"
+          - "tests/strategic-handoff-sealed-owner.test.mjs"
+          - "tests/work-layout.test.mjs"
+          - "submodules/**"
         depends_on: []
-        failure_mode: "工作目录被硬编码到旧路径的错误"
+        failure_mode: "旧路径硬编码错误：主仓、Profile 覆盖层及独立 CLI 新增命中、精确兼容例外缺失、次数变化或过期"
+      - id: check.work-layout-feature-assets
+        run: "node --test tests/feature-assets.test.mjs"
+        group: work-layout
+        inputs_complete: true
+        input_patterns:
+          - "tests/feature-assets.test.mjs"
+        depends_on: []
+        failure_mode: "功能资产在默认根下无法保留或引用"
+      - id: check.work-layout-project-ci
+        run: "node --test tests/project-ci.test.mjs"
+        group: work-layout
+        inputs_complete: true
+        input_patterns:
+          - "tests/project-ci.test.mjs"
+        depends_on: []
+        failure_mode: "项目 CI 遗漏当前工作包或删除基线"
+      - id: check.work-layout-plan-replay
+        run: "node --test tests/plan-clarification-replay.test.mjs"
+        group: work-layout
+        inputs_complete: true
+        input_patterns:
+          - "tests/plan-clarification-replay.test.mjs"
+          - ".template-source/scripts/plan-clarification-scenarios.json"
+        depends_on: []
+        failure_mode: "澄清回放样例的工作包引用与当前配置不一致"
+      - id: check.work-layout-sealed-owner
+        run: "node --test tests/strategic-handoff-sealed-owner.test.mjs"
+        group: work-layout
+        inputs_complete: true
+        input_patterns:
+          - "tests/strategic-handoff-sealed-owner.test.mjs"
+          - "scripts/fixtures/spec-baseline/**"
+          - "scripts/fixtures/user-decision/plan-fixture.mjs"
+        depends_on: []
+        failure_mode: "交接来源的 checkpoint 所有者绑定或证据闭包丢失"
+      - id: check.work-layout-reading
+        run: "node --test scripts/fixtures/reading-views/*.test.mjs"
+        group: work-layout
+        inputs_complete: true
+        input_patterns:
+          - "scripts/fixtures/reading-views/**"
+        depends_on: []
+        failure_mode: "阅读视图仍生成旧工作包路径"
+      - id: check.work-layout-stage-tracking
+        run: "node --test scripts/fixtures/stage-tracking/tracking.test.mjs"
+        group: work-layout
+        inputs_complete: true
+        input_patterns:
+          - "scripts/fixtures/stage-tracking/**"
+        depends_on: []
+        failure_mode: "阶段任务定义和 checkpoint 的根不一致"
+      - id: check.work-layout-tickets
+        run: "node --test scripts/fixtures/business-tickets/*.test.mjs"
+        group: work-layout
+        inputs_complete: true
+        input_patterns:
+          - "scripts/lib/business-tickets.mjs"
+          - "scripts/fixtures/business-tickets/**"
+          - "scripts/fixtures/strategic-handoff/base-*.json"
+        depends_on: []
+        failure_mode: "业务 Ticket 在默认根下引用或 formalize 失败"
+      - id: check.work-layout-assets
+        run: "node --test scripts/fixtures/structured-assets/*.test.mjs"
+        group: work-layout
+        inputs_complete: true
+        input_patterns:
+          - "scripts/fixtures/structured-assets/**"
+        depends_on: []
+        failure_mode: "结构化资产迁移或写范围错误"
+      - id: check.work-layout-api
+        run: "node --test scripts/fixtures/contract-efficiency/api-v2.test.mjs"
+        group: work-layout
+        inputs_complete: true
+        input_patterns:
+          - "scripts/fixtures/contract-efficiency/api-v2.test.mjs"
+        depends_on: []
+        failure_mode: "API 决策样例遗漏配置根或 Draft 绑定"
+      - id: check.work-layout-plan-review
+        run: "node --test .template-source/tooling/node/test/plan-review-control.test.mjs .template-source/tooling/node/test/review-capabilities.test.mjs"
+        group: work-layout
+        inputs_complete: true
+        input_patterns:
+          - "scripts/lib/plan-review-control.mjs"
+          - "scripts/lib/review-package.mjs"
+          - "scripts/lib/work-layout.mjs"
+          - "scripts/fixtures/plan-review-control/**"
+          - ".template-source/tooling/node/test/plan-review-control.test.mjs"
+          - ".template-source/tooling/node/test/review-capabilities.test.mjs"
+        depends_on: []
+        failure_mode: "Plan 审查写入忽略当前根、越界或丢失事务与证据绑定"
+      - id: check.work-layout-lifecycle-transition
+        run: "node tests/scenarios/verify-lifecycle-transition-scenarios.mjs"
+        group: work-layout
+        inputs_complete: true
+        input_patterns:
+          - "tests/scenarios/verify-lifecycle-transition-scenarios.mjs"
+          - "scripts/verify-lifecycle-transition-scenarios"
+          - "scripts/fixtures/user-decision/plan-fixture.mjs"
+        depends_on: []
+        failure_mode: "目录修正后对应生命周期或证据消费者接受错误引用或拒绝当前有效引用"
+      - id: check.work-layout-lifecycle-operator
+        run: "node tests/scenarios/verify-lifecycle-operator-scenarios.mjs"
+        group: work-layout
+        inputs_complete: true
+        input_patterns:
+          - "tests/scenarios/verify-lifecycle-operator-scenarios.mjs"
+          - "scripts/verify-lifecycle-operator-scenarios"
+        depends_on: []
+        failure_mode: "目录修正后对应生命周期或证据消费者接受错误引用或拒绝当前有效引用"
+      - id: check.work-layout-openapi-draft-validation
+        run: "node tests/scenarios/verify-openapi-draft-validation-scenarios.mjs"
+        group: work-layout
+        inputs_complete: true
+        input_patterns:
+          - "tests/scenarios/verify-openapi-draft-validation-scenarios.mjs"
+          - "scripts/verify-openapi-draft-validation-scenarios"
+        depends_on: []
+        failure_mode: "目录修正后对应生命周期或证据消费者接受错误引用或拒绝当前有效引用"
+      - id: check.work-layout-digital-human-task-package
+        run: "node tests/scenarios/verify-digital-human-task-package-scenarios.mjs"
+        group: work-layout
+        inputs_complete: true
+        input_patterns:
+          - "tests/scenarios/verify-digital-human-task-package-scenarios.mjs"
+          - "scripts/verify-digital-human-task-package-scenarios"
+          - "scripts/verify-subagent-task-package-scenarios"
+        depends_on: []
+        failure_mode: "目录修正后对应生命周期或证据消费者接受错误引用或拒绝当前有效引用"
+      - id: check.work-layout-user-decision
+        run: "node tests/scenarios/verify-user-decision-scenarios.mjs"
+        group: work-layout
+        inputs_complete: true
+        input_patterns:
+          - "tests/scenarios/verify-user-decision-scenarios.mjs"
+          - "scripts/verify-user-decision-scenarios"
+        depends_on: []
+        failure_mode: "目录修正后对应生命周期或证据消费者接受错误引用或拒绝当前有效引用"
+      - id: check.work-layout-design-migration
+        run: "node profiles/design/tests/scenarios/verify-strategic-gate-migration-scenarios.mjs"
+        group: work-layout
+        inputs_complete: true
+        input_patterns:
+          - "profiles/design/scripts/lib/strategic-gate-migration.mjs"
+          - "profiles/design/.template-spec/process/schemas/strategic-gate-migration-plan.schema.json"
+          - "profiles/design/tests/scenarios/verify-strategic-gate-migration-scenarios.mjs"
+        depends_on: []
+        failure_mode: "迁移计划拒绝配置根或越过功能、输入证据与恢复文件边界"
+      - id: check.work-layout-design-fixtures
+        run: "node --test .agents/skills/yss-stage-decision/tests/run-scenarios.mjs .agents/skills/yss-tactical-design/tests/run-scenarios.mjs .agents/skills/yss-frontend-scaffold-generator/scripts/scaffold-generator.test.mjs"
+        group: work-layout
+        inputs_complete: true
+        input_patterns:
+          - ".agents/skills/yss-stage-decision/tests/**"
+          - ".agents/skills/yss-tactical-design/tests/**"
+          - ".agents/skills/yss-frontend-scaffold-generator/scripts/scaffold-generator.test.mjs"
+        depends_on: []
+        failure_mode: "默认工作包样例在阶段决策、战术设计或前端脚手架中产生失效引用"
   release:
-    all_groups: true
+    selection: impact
 compatibility_patterns:
   - .gitmodules
   - scripts/**
@@ -1379,6 +1663,10 @@ syntax_files:
   - tests/verification-selection.test.mjs
   - tests/verification-delivery-run.test.mjs
 routing:
+  - patterns: ["tests/harness-skill-scope.test.mjs"]
+    groups: [skills]
+  - patterns: ["tests/yss-backend-skill-governance.test.mjs"]
+    groups: [implementation]
   - patterns:
       - tests/verification-preflight.test.mjs
       - tests/verification-artifacts.test.mjs
@@ -1790,6 +2078,7 @@ routing:
       - tests/work-layout.test.mjs
       - tests/fixtures/work-layout-cases.json
       - scripts/verify-work-layout
+      - .template-source/process/work-layout-exceptions.json
       - .template-spec/process/work-layout.md
       - .agents/skills/yss-prototype-stage/tests/work-layout-fixture.mjs
       - .template-source/scripts/sync-native-work-layout.mjs
@@ -2263,6 +2552,9 @@ gates:
     check_ids:
       - check.drift-identity
       - check.cli-content-identity
+      - check.yss-cli-pin
+      - check.template-release-sources
+      - check.instance-metadata
     audit_status: conservative-complete
     display_id: G01
     audit_basis: Every registered changed path retains this risk; no narrowing or retirement.
@@ -2300,6 +2592,12 @@ gates:
       - check.93d2af5732ccdd96
       - check.208c7eedeff4e6e9
       - check.f8acc69a55fea6b0
+      - check.skill-registry-unit
+      - check.harness-upgrade-generated
+      - check.skill-supply-chain-unit
+      - check.yss-ui-skill-integration
+      - check.harness-skill-scope
+      - check.skill-lock-readers
     audit_status: conservative-complete
     display_id: G03
     audit_basis: Every registered changed path retains this risk; no narrowing or retirement.
@@ -2317,6 +2615,25 @@ gates:
       - check.structured-assets
       - check.schema-runtime
       - check.8cd499a929b8a5a4
+      - check.import-direction
+      - check.template-wiki-untracked
+      - check.agents-source-boundary
+      - check.prototype-work-layout
+      - check.work-layout-feature-assets
+      - check.work-layout-project-ci
+      - check.work-layout-plan-replay
+      - check.work-layout-sealed-owner
+      - check.work-layout-reading
+      - check.work-layout-stage-tracking
+      - check.work-layout-tickets
+      - check.work-layout-assets
+      - check.work-layout-api
+      - check.work-layout-lifecycle-transition
+      - check.work-layout-lifecycle-operator
+      - check.work-layout-openapi-draft-validation
+      - check.work-layout-digital-human-task-package
+      - check.work-layout-design-migration
+      - check.work-layout-design-fixtures
     audit_status: conservative-complete
     display_id: G04
     audit_basis: Every registered changed path retains this risk; no narrowing or retirement.
@@ -2357,6 +2674,9 @@ gates:
       - check.document-writing-integration
       - check.292502d15942f4de
       - check.57446ae09b82f3cd
+      - check.business-ticket-native-report
+      - check.plan-spec-entry-scenarios
+      - check.daily-plan-spec
     audit_status: conservative-complete
     display_id: G06
     audit_basis: Every registered changed path retains this risk; no narrowing or retirement.
@@ -2390,6 +2710,20 @@ gates:
       - check.lifecycle-query-freshness
       - check.e9c24c657e0a67e7
       - check.657837436fa3e2f8
+      - check.doc-facts
+      - check.openapi-validation-scenarios
+      - check.frontend-removed
+      - check.frontend-removal-consumers
+      - check.legacy-coverage
+      - check.ci-gate
+      - check.ci-adapters
+      - check.legacy-runtime-scan
+      - check.agent-hook
+      - check.claude-entry
+      - check.explicit-invocation
+      - check.process-glossary
+      - check.harness-metrics
+      - check.daily-checkpoint
     audit_status: conservative-complete
     display_id: G07
     audit_basis: Every registered changed path retains this risk; no narrowing or retirement.
@@ -2419,6 +2753,12 @@ gates:
       - check.maintenance-counterexample
       - check.5fa31f4262e122b1
       - check.a5802dc214ecfcda
+      - check.go-validator-replay
+      - check.go-validator-replay-delivery
+      - check.user-decision-scenarios
+      - check.plan-review-control-unit
+      - check.work-layout-plan-review
+      - check.work-layout-user-decision
     audit_status: conservative-complete
     display_id: G08
     audit_basis: Every registered changed path retains this risk; no narrowing or retirement.
@@ -2444,6 +2784,7 @@ gates:
       - check.strategic-handoff-readonly
       - check.strategic-handoff-sealed-owner
       - check.progression-target-evidence
+      - check.strategic-handoff-package-scenarios
     audit_status: conservative-complete
     display_id: G09
     audit_basis: Every registered changed path retains this risk; no narrowing or retirement.
@@ -2468,6 +2809,8 @@ gates:
       - check.3a2236d542e47171
       - check.7126152a480689b5
       - check.f96c759bbc30d99e
+      - check.existing-ui-baseline-scenarios
+      - check.design-docs
     audit_status: conservative-complete
     display_id: G10
     audit_basis: Every registered changed path retains this risk; no narrowing or retirement.
@@ -2505,6 +2848,11 @@ gates:
       - check.contract-review-preparation
       - check.implementation-candidate-current
       - check.backend-delivery-terminal
+      - check.scaffold-decisions-scenarios
+      - check.backend-scaffold-direct-generation
+      - check.backend-platform-mechanisms
+      - check.scaffold-contract-consumers
+      - check.mvc-data-analysis-retirement
     audit_status: conservative-complete
     display_id: G11
     audit_basis: Every registered changed path retains this risk; no narrowing or retirement.
@@ -2599,6 +2947,13 @@ gates:
     depends_on: []
     check_ids:
       - check.629b3c9ec897593f
+      - check.specialist-business-inputs
+      - check.profile-consumers
+      - check.release-profile-consumers
+      - check.profile-tree
+      - check.profile-distribution
+      - check.profile-distribution-gate
+      - check.lifecycle-query-profile-snapshot
     audit_status: conservative-complete
     display_id: G18
     audit_basis: Every registered changed path retains this risk; no narrowing or retirement.
@@ -2632,6 +2987,13 @@ gates:
       - check.verification-selection
       - check.work-layout
       - check.work-layout-hardcodes
+      - check.verification-script-retirement
+      - check.daily-selection
+      - check.daily-execution
+      - check.daily-preflight
+      - check.daily-report
+      - check.daily-flow
+      - check.daily-benchmark-syntax
     audit_status: conservative-complete
     display_id: G20
     audit_basis: Every registered changed path retains this risk; no narrowing or retirement.

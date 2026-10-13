@@ -11,6 +11,8 @@ export const TARGET_ROLES = [
   "role.architecture-agent",
   "role.backend-agent",
   "role.test-agent",
+  "role.requirements-manager",
+  "role.product-manager"
 ];
 export const CONTROL_ROLES = ["role.harness-orchestrator"];
 export const ALLOWED_WORK_UNITS = [
@@ -20,8 +22,22 @@ export const ALLOWED_WORK_UNITS = [
   "work-unit.slice-contract",
   "work-unit.slice-implementation",
   "work-unit.verification",
+  "work-unit.plan-opportunity",
+  "work-unit.plan-requirements",
+  "work-unit.domain-strategy-design",
+  "work-unit.stage-decision",
+  "work-unit.spec-synthesis"
 ];
-export const ALLOWED_STAGES = ["stage.harness-entry", "stage.technical-design", "stage.implementation-repository-preparation", "stage.slice-contract", "stage.slice-implementation", "stage.verification"];
+export const ALLOWED_STAGES = [
+  "stage.plan",
+  "stage.spec-architecture",
+  "stage.harness-entry",
+  "stage.technical-design",
+  "stage.implementation-repository-preparation",
+  "stage.slice-contract",
+  "stage.slice-implementation",
+  "stage.verification"
+];
 export const CONSUMER_CAPABILITIES = ["backend-technical-design"];
 export const FORBIDDEN_WORK_UNITS = [
   "work-unit.ssot-update",
@@ -103,6 +119,7 @@ export function validateHarnessProfile(profile = loadHarnessProfile(), {
 
   const stageIds = new Set((lifecycle.stages || []).map((stage) => stage.id));
   const workUnitIds = new Set((lifecycle.work_units || []).map((unit) => unit.id));
+  if (!equalArray([...stageIds].sort(), [...ALLOWED_STAGES].sort())) fail("lifecycle 存在 profile 外活动阶段");
   if (!equalArray(profile.lifecycle?.allowed_work_units, ALLOWED_WORK_UNITS)) {
     fail("lifecycle.allowed_work_units 必须是包含仓库准备的开发落地工作单元");
   }
@@ -142,8 +159,8 @@ export function validateHarnessProfile(profile = loadHarnessProfile(), {
   const published=new Set([...(lifecycle.stages || []).map((item)=>item.id), ...(lifecycle.gates || []).map((item)=>item.id), ...(lifecycle.artifacts || []).map((item)=>item.id), ...(lifecycle.work_units || []).map((item)=>item.id)]);
   for (const id of lifecycle.id_policy?.deprecated_ids || []) if (published.has(id)) fail(`deprecated ID 仍在活动注册表: ${id}`);
 
-  if (profile.upstream?.kind !== "approved-spec-or-strategic-design") {
-    fail("upstream.kind 必须为 approved-spec-or-strategic-design");
+  if (profile.upstream?.kind !== "local-business-or-approved-upstream") {
+    fail("upstream.kind 必须为 local-business-or-approved-upstream");
   }
   if (profile.upstream?.discovery_is_default !== false) {
     fail("upstream.discovery_is_default 必须为 false");

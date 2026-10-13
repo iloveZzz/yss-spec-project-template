@@ -22,7 +22,7 @@
 
 ## DDD 分层包装入口收敛（2026-09-15）
 
-以下嵌套包装已硬退役，不保留 alias、物理入口或投影：`yss-backend-scaffold-adapter`、`yss-application-layer-reference`、`yss-domain-layer-reference`、`yss-infrastructure-layer-reference`、`yss-web-layer-reference`。旧 `yss-mvc-scaffold-generator`、`yss-mvc-data-analysis-project-initializer`、`yss-mvc-design` 和 `yss-backend-scaffold-parent` 同样不作为 Backend Agent 能力分发；数据分析初始化使用 `yss-layered-mvc-scaffold-generator` 的 `mvc-data-analysis-v1` Profile，MVC 设计使用 `yss-technical-design`。
+以下嵌套包装已硬退役，不保留 alias、物理入口或投影：`yss-backend-scaffold-adapter`、`yss-application-layer-reference`、`yss-domain-layer-reference`、`yss-infrastructure-layer-reference`、`yss-web-layer-reference`。旧 `yss-mvc-scaffold-generator`、`yss-mvc-data-analysis-project-initializer`、`yss-mvc-design` 和 `yss-backend-scaffold-parent` 同样不作为 Backend Agent 能力分发；数据分析 Profile 新建入口已退役，改用通用 MVC 后按需 `setup-yss-harness`，MVC 设计使用 `yss-technical-design`。
 
 DDD 脚手架的 Parent 工程约束由 `yss-ddd-scaffold-generator/references/engineering-baseline.md` 内部持有。生成后的分层实现从 `yss-ddd-scaffold-generator/references/layer-skill-routing.md` 路由到顶层权威 Skill。旧 ID 只允许存在于本迁移记录、retired/obsolete 清单、负向测试和不可变历史证据中。
 

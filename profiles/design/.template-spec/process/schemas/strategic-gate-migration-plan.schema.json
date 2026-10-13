@@ -46,7 +46,7 @@
         "additionalProperties": false,
         "required": ["ref", "input_digest", "output_digest", "output"],
         "properties": {
-          "ref": { "type": "string", "pattern": "^docs/\\.scratch/" },
+          "ref": { "$ref": "#/$defs/relativeRef" },
           "input_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
           "output_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
           "output": { "type": "string", "contentEncoding": "base64" }
@@ -55,12 +55,18 @@
     }
   },
   "$defs": {
+    "relativeRef": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?!.*(?:^|/)(?:\\.|\\.\\.)(?:/|$))[^/\\\\\\u0000-\\u001f:]+(?:/[^/\\\\\\u0000-\\u001f:]+)*$",
+      "description": "项目内相对引用；当前 tracker.root、功能范围和读写权限由迁移执行器核验。"
+    },
     "input": {
       "type": "object",
       "additionalProperties": false,
       "required": ["ref", "digest"],
       "properties": {
-        "ref": { "type": "string", "pattern": "^docs/\\.scratch/" },
+        "ref": { "$ref": "#/$defs/relativeRef" },
         "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
       }
     }

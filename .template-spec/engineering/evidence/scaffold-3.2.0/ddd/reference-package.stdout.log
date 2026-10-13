@@ -1,0 +1,408 @@
+[[1;33mWARNING[m] 
+[[1;33mWARNING[m] Some problems were encountered while building the effective settings
+[[1;33mWARNING[m] Unrecognised tag: 'distributionManagement' (position: START_TAG seen ...</properties>\r\n            <distributionManagement>... @206:37)  @ /Users/zhudaoming/.m2/settings.xml, line 206, column 37
+[[1;33mWARNING[m] 
+[[1;34mINFO[m] Scanning for projects...
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] [1mReactor Build Order:[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] ddd-probe-reference-parent                                         [pom]
+[[1;34mINFO[m] ddd-probe-reference-domain                                         [jar]
+[[1;34mINFO[m] ddd-probe-reference-application                                    [jar]
+[[1;34mINFO[m] ddd-probe-reference-infrastructure                                 [jar]
+[[1;34mINFO[m] ddd-probe-reference-adapter                                        [pom]
+[[1;34mINFO[m] ddd-probe-reference-web                                            [jar]
+[[1;34mINFO[m] ddd-probe-reference-bootstrap                                      [jar]
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m-------------< [0;36mcom.yss.example:ddd-probe-reference-parent[0;1m >-------------[m
+[[1;34mINFO[m] [1mBuilding ddd-probe-reference-parent 1.0.0-SNAPSHOT                 [1/7][m
+[[1;34mINFO[m] [1m--------------------------------[ pom ]---------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-enforcer-plugin:3.5.0:enforce[m [1m(enforce-target-ddd-baseline)[m @ [36mddd-probe-reference-parent[0;1m ---[m
+[[1;34mINFO[m] Rule 0: org.apache.maven.enforcer.rules.version.RequireJavaVersion passed
+[[1;34mINFO[m] Rule 1: org.apache.maven.enforcer.rules.version.RequireMavenVersion passed
+[[1;34mINFO[m] Rule 2: org.apache.maven.enforcer.rules.ReactorModuleConvergence passed
+[[1;34mINFO[m] Rule 3: org.apache.maven.enforcer.rules.dependency.DependencyConvergence passed
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mspring-boot-maven-plugin:3.5.16:repackage[m [1m(repackage)[m @ [36mddd-probe-reference-parent[0;1m ---[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m-------------< [0;36mcom.yss.example:ddd-probe-reference-domain[0;1m >-------------[m
+[[1;34mINFO[m] [1mBuilding ddd-probe-reference-domain 1.0.0-SNAPSHOT                 [2/7][m
+[[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-enforcer-plugin:3.5.0:enforce[m [1m(enforce-target-ddd-baseline)[m @ [36mddd-probe-reference-domain[0;1m ---[m
+[[1;34mINFO[m] Rule 3: org.apache.maven.enforcer.rules.dependency.DependencyConvergence passed
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:3.3.1:resources[m [1m(default-resources)[m @ [36mddd-probe-reference-domain[0;1m ---[m
+[[1;34mINFO[m] Copying 0 resource from src/main/resources to target/classes
+[[1;34mINFO[m] Copying 0 resource from src/main/resources to target/classes
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.14.1:compile[m [1m(default-compile)[m @ [36mddd-probe-reference-domain[0;1m ---[m
+[[1;34mINFO[m] Nothing to compile - all classes are up to date.
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:3.3.1:testResources[m [1m(default-testResources)[m @ [36mddd-probe-reference-domain[0;1m ---[m
+[[1;34mINFO[m] skip non existing resourceDirectory /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/examples/reference/ddd-probe-reference-domain/src/test/resources
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.14.1:testCompile[m [1m(default-testCompile)[m @ [36mddd-probe-reference-domain[0;1m ---[m
+[[1;34mINFO[m] Nothing to compile - all classes are up to date.
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-surefire-plugin:3.5.4:test[m [1m(default-test)[m @ [36mddd-probe-reference-domain[0;1m ---[m
+[[1;34mINFO[m] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[[1;34mINFO[m] 
+[[1;34mINFO[m] -------------------------------------------------------
+[[1;34mINFO[m]  T E S T S
+[[1;34mINFO[m] -------------------------------------------------------
+[[1;34mINFO[m] Running com.yss.referenceprobe.reference.domain.[1mReferenceEntryEntityTest[m
+[[1;34mINFO[m] [1;32mTests run: [0;1;32m1[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.016 s -- in com.yss.referenceprobe.reference.domain.[1mReferenceEntryEntityTest[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] Results:
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1;32mTests run: 1, Failures: 0, Errors: 0, Skipped: 0[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-jar-plugin:3.4.2:jar[m [1m(default-jar)[m @ [36mddd-probe-reference-domain[0;1m ---[m
+[[1;34mINFO[m] Building jar: /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/examples/reference/ddd-probe-reference-domain/target/ddd-probe-reference-domain-1.0.0-SNAPSHOT.jar
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mspring-boot-maven-plugin:3.5.16:repackage[m [1m(repackage)[m @ [36mddd-probe-reference-domain[0;1m ---[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m----------< [0;36mcom.yss.example:ddd-probe-reference-application[0;1m >-----------[m
+[[1;34mINFO[m] [1mBuilding ddd-probe-reference-application 1.0.0-SNAPSHOT            [3/7][m
+[[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-enforcer-plugin:3.5.0:enforce[m [1m(enforce-target-ddd-baseline)[m @ [36mddd-probe-reference-application[0;1m ---[m
+[[1;34mINFO[m] Rule 3: org.apache.maven.enforcer.rules.dependency.DependencyConvergence passed
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:3.3.1:resources[m [1m(default-resources)[m @ [36mddd-probe-reference-application[0;1m ---[m
+[[1;34mINFO[m] Copying 0 resource from src/main/resources to target/classes
+[[1;34mINFO[m] Copying 0 resource from src/main/resources to target/classes
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.14.1:compile[m [1m(default-compile)[m @ [36mddd-probe-reference-application[0;1m ---[m
+[[1;34mINFO[m] Recompiling the module because of [1mchanged dependency[m.
+[[1;34mINFO[m] Compiling 3 source files with javac [debug parameters release 17] to target/classes
+[[1;33mWARNING[m] 以下选项未被任何处理程序识别: '[mapstruct.verbose, mapstruct.suppressGeneratorVersionInfoComment, mapstruct.suppressGeneratorTimestamp]'
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:3.3.1:testResources[m [1m(default-testResources)[m @ [36mddd-probe-reference-application[0;1m ---[m
+[[1;34mINFO[m] skip non existing resourceDirectory /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/examples/reference/ddd-probe-reference-application/src/test/resources
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.14.1:testCompile[m [1m(default-testCompile)[m @ [36mddd-probe-reference-application[0;1m ---[m
+[[1;34mINFO[m] Recompiling the module because of [1mchanged dependency[m.
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-surefire-plugin:3.5.4:test[m [1m(default-test)[m @ [36mddd-probe-reference-application[0;1m ---[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-jar-plugin:3.4.2:jar[m [1m(default-jar)[m @ [36mddd-probe-reference-application[0;1m ---[m
+[[1;34mINFO[m] Building jar: /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/examples/reference/ddd-probe-reference-application/target/ddd-probe-reference-application-1.0.0-SNAPSHOT.jar
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mspring-boot-maven-plugin:3.5.16:repackage[m [1m(repackage)[m @ [36mddd-probe-reference-application[0;1m ---[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m---------< [0;36mcom.yss.example:ddd-probe-reference-infrastructure[0;1m >---------[m
+[[1;34mINFO[m] [1mBuilding ddd-probe-reference-infrastructure 1.0.0-SNAPSHOT         [4/7][m
+[[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-enforcer-plugin:3.5.0:enforce[m [1m(enforce-target-ddd-baseline)[m @ [36mddd-probe-reference-infrastructure[0;1m ---[m
+[[1;34mINFO[m] Rule 3: org.apache.maven.enforcer.rules.dependency.DependencyConvergence passed
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:3.3.1:resources[m [1m(default-resources)[m @ [36mddd-probe-reference-infrastructure[0;1m ---[m
+[[1;34mINFO[m] Copying 0 resource from src/main/resources to target/classes
+[[1;34mINFO[m] Copying 0 resource from src/main/resources to target/classes
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.14.1:compile[m [1m(default-compile)[m @ [36mddd-probe-reference-infrastructure[0;1m ---[m
+[[1;34mINFO[m] Recompiling the module because of [1mchanged dependency[m.
+[[1;34mINFO[m] Compiling 4 source files with javac [debug parameters release 17] to target/classes
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:3.3.1:testResources[m [1m(default-testResources)[m @ [36mddd-probe-reference-infrastructure[0;1m ---[m
+[[1;34mINFO[m] skip non existing resourceDirectory /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/examples/reference/ddd-probe-reference-infrastructure/src/test/resources
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.14.1:testCompile[m [1m(default-testCompile)[m @ [36mddd-probe-reference-infrastructure[0;1m ---[m
+[[1;34mINFO[m] Recompiling the module because of [1mchanged dependency[m.
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-surefire-plugin:3.5.4:test[m [1m(default-test)[m @ [36mddd-probe-reference-infrastructure[0;1m ---[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-jar-plugin:3.4.2:jar[m [1m(default-jar)[m @ [36mddd-probe-reference-infrastructure[0;1m ---[m
+[[1;34mINFO[m] Building jar: /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/examples/reference/ddd-probe-reference-infrastructure/target/ddd-probe-reference-infrastructure-1.0.0-SNAPSHOT.jar
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mspring-boot-maven-plugin:3.5.16:repackage[m [1m(repackage)[m @ [36mddd-probe-reference-infrastructure[0;1m ---[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m------------< [0;36mcom.yss.example:ddd-probe-reference-adapter[0;1m >-------------[m
+[[1;34mINFO[m] [1mBuilding ddd-probe-reference-adapter 1.0.0-SNAPSHOT                [5/7][m
+[[1;34mINFO[m] [1m--------------------------------[ pom ]---------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-enforcer-plugin:3.5.0:enforce[m [1m(enforce-target-ddd-baseline)[m @ [36mddd-probe-reference-adapter[0;1m ---[m
+[[1;34mINFO[m] Rule 3: org.apache.maven.enforcer.rules.dependency.DependencyConvergence passed
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mspring-boot-maven-plugin:3.5.16:repackage[m [1m(repackage)[m @ [36mddd-probe-reference-adapter[0;1m ---[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--------------< [0;36mcom.yss.example:ddd-probe-reference-web[0;1m >---------------[m
+[[1;34mINFO[m] [1mBuilding ddd-probe-reference-web 1.0.0-SNAPSHOT                    [6/7][m
+[[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-enforcer-plugin:3.5.0:enforce[m [1m(enforce-target-ddd-baseline)[m @ [36mddd-probe-reference-web[0;1m ---[m
+[[1;34mINFO[m] Rule 3: org.apache.maven.enforcer.rules.dependency.DependencyConvergence passed
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:3.3.1:resources[m [1m(default-resources)[m @ [36mddd-probe-reference-web[0;1m ---[m
+[[1;34mINFO[m] skip non existing resourceDirectory /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/examples/reference/ddd-probe-reference-adapter/ddd-probe-reference-web/src/main/resources
+[[1;34mINFO[m] skip non existing resourceDirectory /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/examples/reference/ddd-probe-reference-adapter/ddd-probe-reference-web/src/main/resources
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.14.1:compile[m [1m(default-compile)[m @ [36mddd-probe-reference-web[0;1m ---[m
+[[1;34mINFO[m] Recompiling the module because of [1mchanged dependency[m.
+[[1;34mINFO[m] Compiling 5 source files with javac [debug parameters release 17] to target/classes
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:3.3.1:testResources[m [1m(default-testResources)[m @ [36mddd-probe-reference-web[0;1m ---[m
+[[1;34mINFO[m] skip non existing resourceDirectory /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/examples/reference/ddd-probe-reference-adapter/ddd-probe-reference-web/src/test/resources
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.14.1:testCompile[m [1m(default-testCompile)[m @ [36mddd-probe-reference-web[0;1m ---[m
+[[1;34mINFO[m] No sources to compile
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-surefire-plugin:3.5.4:test[m [1m(default-test)[m @ [36mddd-probe-reference-web[0;1m ---[m
+[[1;34mINFO[m] No tests to run.
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-jar-plugin:3.4.2:jar[m [1m(default-jar)[m @ [36mddd-probe-reference-web[0;1m ---[m
+[[1;34mINFO[m] Building jar: /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/examples/reference/ddd-probe-reference-adapter/ddd-probe-reference-web/target/ddd-probe-reference-web-1.0.0-SNAPSHOT.jar
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mspring-boot-maven-plugin:3.5.16:repackage[m [1m(repackage)[m @ [36mddd-probe-reference-web[0;1m ---[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m-----------< [0;36mcom.yss.example:ddd-probe-reference-bootstrap[0;1m >------------[m
+[[1;34mINFO[m] [1mBuilding ddd-probe-reference-bootstrap 1.0.0-SNAPSHOT              [7/7][m
+[[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-enforcer-plugin:3.5.0:enforce[m [1m(enforce-target-ddd-baseline)[m @ [36mddd-probe-reference-bootstrap[0;1m ---[m
+[[1;34mINFO[m] Rule 3: org.apache.maven.enforcer.rules.dependency.DependencyConvergence passed
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:3.3.1:resources[m [1m(default-resources)[m @ [36mddd-probe-reference-bootstrap[0;1m ---[m
+[[1;34mINFO[m] Copying 2 resources from src/main/resources to target/classes
+[[1;34mINFO[m] Copying 2 resources from src/main/resources to target/classes
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.14.1:compile[m [1m(default-compile)[m @ [36mddd-probe-reference-bootstrap[0;1m ---[m
+[[1;34mINFO[m] Recompiling the module because of [1mchanged dependency[m.
+[[1;34mINFO[m] Compiling 1 source file with javac [debug parameters release 17] to target/classes
+[[1;33mWARNING[m] 以下选项未被任何处理程序识别: '[mapstruct.verbose, mapstruct.suppressGeneratorVersionInfoComment, mapstruct.suppressGeneratorTimestamp]'
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:3.3.1:testResources[m [1m(default-testResources)[m @ [36mddd-probe-reference-bootstrap[0;1m ---[m
+[[1;34mINFO[m] Copying 1 resource from src/test/resources to target/test-classes
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.14.1:testCompile[m [1m(default-testCompile)[m @ [36mddd-probe-reference-bootstrap[0;1m ---[m
+[[1;34mINFO[m] Recompiling the module because of [1mchanged dependency[m.
+[[1;34mINFO[m] Compiling 3 source files with javac [debug parameters release 17] to target/test-classes
+[[1;33mWARNING[m] /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/examples/reference/ddd-probe-reference-bootstrap/src/test/java/com/yss/referenceprobe/reference/ReferenceEntryHttpTest.java:[27,6] org.springframework.boot.test.mock.mockito 中的 org.springframework.boot.test.mock.mockito.SpyBean 已过时, 且标记为待删除
+[[1;33mWARNING[m] /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/examples/reference/ddd-probe-reference-bootstrap/src/test/java/com/yss/referenceprobe/reference/ReferenceEntryHttpTest.java:[27,6] org.springframework.boot.test.mock.mockito 中的 org.springframework.boot.test.mock.mockito.SpyBean 已过时, 且标记为待删除
+[[1;33mWARNING[m] /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/examples/reference/ddd-probe-reference-bootstrap/src/test/java/com/yss/referenceprobe/reference/ReferenceEntryHttpTest.java:[27,6] org.springframework.boot.test.mock.mockito 中的 org.springframework.boot.test.mock.mockito.SpyBean 已过时, 且标记为待删除
+[[1;33mWARNING[m] /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/examples/reference/ddd-probe-reference-bootstrap/src/test/java/com/yss/referenceprobe/reference/ReferenceEntryHttpTest.java:[27,6] org.springframework.boot.test.mock.mockito 中的 org.springframework.boot.test.mock.mockito.SpyBean 已过时, 且标记为待删除
+[[1;33mWARNING[m] /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/examples/reference/ddd-probe-reference-bootstrap/src/test/java/com/yss/referenceprobe/reference/ReferenceEntryHttpTest.java:[27,6] org.springframework.boot.test.mock.mockito 中的 org.springframework.boot.test.mock.mockito.SpyBean 已过时, 且标记为待删除
+[[1;33mWARNING[m] /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/examples/reference/ddd-probe-reference-bootstrap/src/test/java/com/yss/referenceprobe/reference/ReferenceEntryHttpTest.java:[27,6] org.springframework.boot.test.mock.mockito 中的 org.springframework.boot.test.mock.mockito.SpyBean 已过时, 且标记为待删除
+[[1;33mWARNING[m] /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/examples/reference/ddd-probe-reference-bootstrap/src/test/java/com/yss/referenceprobe/reference/ReferenceEntryHttpTest.java:[27,6] org.springframework.boot.test.mock.mockito 中的 org.springframework.boot.test.mock.mockito.SpyBean 已过时, 且标记为待删除
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-surefire-plugin:3.5.4:test[m [1m(default-test)[m @ [36mddd-probe-reference-bootstrap[0;1m ---[m
+[[1;34mINFO[m] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[[1;34mINFO[m] 
+[[1;34mINFO[m] -------------------------------------------------------
+[[1;34mINFO[m]  T E S T S
+[[1;34mINFO[m] -------------------------------------------------------
+[[1;34mINFO[m] Running com.yss.referenceprobe.reference.[1mPlatformIntegrationTest[m
+02:17:08.206 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.yss.referenceprobe.reference.PlatformIntegrationTest]: PlatformIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+02:17:08.249 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.yss.referenceprobe.reference.DddProbeReferenceApplication for test class com.yss.referenceprobe.reference.PlatformIntegrationTest
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::               (v3.5.16)
+
+2026-10-13 02:17:08.417 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.3.Final
+2026-10-13 02:17:08.435 [main] INFO  c.y.r.r.PlatformIntegrationTest - Starting PlatformIntegrationTest using Java 17.0.16 with PID 47040 (started by zhudaoming in /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/examples/reference/ddd-probe-reference-bootstrap)
+2026-10-13 02:17:08.435 [main] INFO  c.y.r.r.PlatformIntegrationTest - The following 1 profile is active: "scaffold-test"
+2026-10-13 02:17:08.742 [main] INFO  c.y.c.m.config.MapperConfiguration - 【MapperConfiguration】mapperScannerConfigurer 初始化mapper扫描 com.yss.referenceprobe.reference.infrastructure.mapper
+2026-10-13 02:17:08.902 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 0 (http)
+2026-10-13 02:17:08.907 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-127.0.0.1-auto-1"]
+2026-10-13 02:17:08.908 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-10-13 02:17:08.908 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.55]
+2026-10-13 02:17:08.933 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2026-10-13 02:17:08.934 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 492 ms
+2026-10-13 02:17:09.008 [main] INFO  c.y.c.m.config.MapperConfiguration - 【MapperConfiguration】PageInterceptor 完成初始化分页插件 PageInterceptor{helperDialect='mysql', reasonable=true, supportMethodsArguments=true, params='count=countSql', autoRuntimeDialect=true}
+2026-10-13 02:17:09.019 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-10-13 02:17:09.089 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:ddd_probe_reference_test user=SA
+2026-10-13 02:17:09.090 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-10-13 02:17:09.093 [main] INFO  c.y.c.m.config.MapperConfiguration - 【MapperConfiguration】根据 JDBC URL 识别 DbType: H2
+2026-10-13 02:17:09.099 [main] INFO  c.y.c.m.config.MapperConfiguration - 【MapperConfiguration】根据 JDBC URL 识别 DbType: H2
+2026-10-13 02:17:09.112 [main] INFO  c.y.c.m.config.MapperConfiguration - 【MapperConfiguration】根据 JDBC URL 识别 DbType: H2
+ _ _   |_  _ _|_. ___ _ |    _ 
+| | |\/|_)(_| | |_\  |_)||_|_\ 
+     /               |         
+                        3.5.16 
+2026-10-13 02:17:09.284 [main] INFO  c.b.m.e.s.MybatisPlusApplicationContextAware - Register ApplicationContext instances org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext@2881ad47
+2026-10-13 02:17:09.343 [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 1 endpoint beneath base path '/actuator'
+2026-10-13 02:17:09.430 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-127.0.0.1-auto-1"]
+2026-10-13 02:17:09.436 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 50670 (http) with context path '/'
+2026-10-13 02:17:09.447 [main] INFO  c.y.r.r.PlatformIntegrationTest - Started PlatformIntegrationTest in 1.155 seconds (process running for 1.523)
+2026-10-13 02:17:09.834 [main] WARN  jakarta.persistence.spi - jakarta.persistence.spi::No valid providers found.
+2026-10-13 02:17:09.875 [http-nio-127.0.0.1-auto-1-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-10-13 02:17:09.875 [http-nio-127.0.0.1-auto-1-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-10-13 02:17:09.875 [http-nio-127.0.0.1-auto-1-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 0 ms
+2026-10-13 02:17:09.902 [http-nio-127.0.0.1-auto-1-exec-1] WARN  jakarta.persistence.spi - jakarta.persistence.spi::No valid providers found.
+2026-10-13 02:17:09.918 [http-nio-127.0.0.1-auto-1-exec-2] WARN  c.y.c.e.advice.GlobalExceptionAdvice - Validation rejected code=A0104 count=1 type=MethodArgumentNotValidException traceId=500cdfe5-e845-4f77-b30b-7136a5bdf876
+[[1;34mINFO[m] [1;32mTests run: [0;1;32m6[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.759 s -- in com.yss.referenceprobe.reference.[1mPlatformIntegrationTest[m
+[[1;34mINFO[m] Running com.yss.referenceprobe.reference.[1mReferenceEntryHttpTest[m
+2026-10-13 02:17:09.937 [main] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.yss.referenceprobe.reference.ReferenceEntryHttpTest]: ReferenceEntryHttpTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-13 02:17:09.939 [main] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.yss.referenceprobe.reference.DddProbeReferenceApplication for test class com.yss.referenceprobe.reference.ReferenceEntryHttpTest
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::               (v3.5.16)
+
+2026-10-13 02:17:09.948 [main] INFO  c.y.r.r.ReferenceEntryHttpTest - Starting ReferenceEntryHttpTest using Java 17.0.16 with PID 47040 (started by zhudaoming in /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/examples/reference/ddd-probe-reference-bootstrap)
+2026-10-13 02:17:09.948 [main] INFO  c.y.r.r.ReferenceEntryHttpTest - No active profile set, falling back to 1 default profile: "default"
+2026-10-13 02:17:10.044 [main] INFO  c.y.c.m.config.MapperConfiguration - 【MapperConfiguration】mapperScannerConfigurer 初始化mapper扫描 com.yss.referenceprobe.reference.infrastructure.mapper
+2026-10-13 02:17:10.074 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 0 (http)
+2026-10-13 02:17:10.074 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-127.0.0.1-auto-2"]
+2026-10-13 02:17:10.074 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-10-13 02:17:10.074 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.55]
+2026-10-13 02:17:10.083 [main] INFO  o.a.c.c.C.[Tomcat-1].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2026-10-13 02:17:10.083 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 134 ms
+2026-10-13 02:17:10.103 [main] INFO  c.y.c.m.config.MapperConfiguration - 【MapperConfiguration】PageInterceptor 完成初始化分页插件 PageInterceptor{helperDialect='mysql', reasonable=true, supportMethodsArguments=true, params='count=countSql', autoRuntimeDialect=true}
+2026-10-13 02:17:10.106 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-2 - Starting...
+2026-10-13 02:17:10.107 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-2 - Added connection conn10: url=jdbc:h2:mem:reference user=SA
+2026-10-13 02:17:10.107 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-2 - Start completed.
+2026-10-13 02:17:10.107 [main] INFO  c.y.c.m.config.MapperConfiguration - 【MapperConfiguration】根据 JDBC URL 识别 DbType: H2
+2026-10-13 02:17:10.109 [main] INFO  c.y.c.m.config.MapperConfiguration - 【MapperConfiguration】根据 JDBC URL 识别 DbType: H2
+2026-10-13 02:17:10.110 [main] INFO  c.y.c.m.config.MapperConfiguration - 【MapperConfiguration】根据 JDBC URL 识别 DbType: H2
+ _ _   |_  _ _|_. ___ _ |    _ 
+| | |\/|_)(_| | |_\  |_)||_|_\ 
+     /               |         
+                        3.5.16 
+2026-10-13 02:17:10.288 [main] INFO  c.b.m.e.s.MybatisPlusApplicationContextAware - Register ApplicationContext instances org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext@2cdcedef
+2026-10-13 02:17:10.331 [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 1 endpoint beneath base path '/actuator'
+2026-10-13 02:17:10.346 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-127.0.0.1-auto-2"]
+2026-10-13 02:17:10.347 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 50681 (http) with context path '/'
+2026-10-13 02:17:10.352 [main] INFO  c.y.r.r.ReferenceEntryHttpTest - Started ReferenceEntryHttpTest in 0.412 seconds (process running for 2.427)
+2026-10-13 02:17:10.393 [http-nio-127.0.0.1-auto-2-exec-1] INFO  o.a.c.c.C.[Tomcat-1].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-10-13 02:17:10.393 [http-nio-127.0.0.1-auto-2-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-10-13 02:17:10.394 [http-nio-127.0.0.1-auto-2-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 1 ms
+2026-10-13 02:17:10.398 [http-nio-127.0.0.1-auto-2-exec-1] WARN  jakarta.persistence.spi - jakarta.persistence.spi::No valid providers found.
+2026-10-13 02:17:10.400 [http-nio-127.0.0.1-auto-2-exec-1] WARN  c.y.c.e.advice.GlobalExceptionAdvice - Validation rejected code=A0104 count=1 type=MethodArgumentNotValidException traceId=5df2da94-c899-48cf-aea4-7f21e4daf8b7
+2026-10-13 02:17:10.463 [http-nio-127.0.0.1-auto-2-exec-3] ERROR c.y.c.e.advice.GlobalExceptionAdvice - [系统运行时异常] RuntimeException message:private-storage-detail
+java.lang.IllegalStateException: private-storage-detail
+	at com.yss.referenceprobe.reference.ReferenceEntryHttpTest.lambda$failedWriteRollsBackAtServiceBoundaryAndHidesInternalError$0(ReferenceEntryHttpTest.java:71)
+	at org.mockito.internal.stubbing.StubbedInvocationMatcher.answer(StubbedInvocationMatcher.java:42)
+	at org.mockito.internal.handler.MockHandlerImpl.handle(MockHandlerImpl.java:103)
+	at org.mockito.internal.handler.NullResultGuardian.handle(NullResultGuardian.java:29)
+	at org.mockito.internal.handler.InvocationNotifierHandler.handle(InvocationNotifierHandler.java:34)
+	at org.mockito.internal.creation.bytebuddy.access.MockMethodInterceptor.doIntercept(MockMethodInterceptor.java:84)
+	at org.mockito.internal.creation.bytebuddy.MockMethodAdvice.handle(MockMethodAdvice.java:136)
+	at com.yss.referenceprobe.reference.infrastructure.repository.ReferenceEntryRepository.save(ReferenceEntryRepository.java:25)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:360)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:196)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
+	at org.springframework.dao.support.PersistenceExceptionTranslationInterceptor.invoke(PersistenceExceptionTranslationInterceptor.java:138)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:728)
+	at com.yss.referenceprobe.reference.infrastructure.repository.ReferenceEntryRepository$$SpringCGLIB$$0.save(<generated>)
+	at com.yss.referenceprobe.reference.application.service.ReferenceEntryService.rename(ReferenceEntryService.java:34)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:360)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:196)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:380)
+	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:119)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:728)
+	at com.yss.referenceprobe.reference.application.service.ReferenceEntryService$$SpringCGLIB$$0.rename(<generated>)
+	at com.yss.referenceprobe.reference.adapter.web.ReferenceEntryController.rename(ReferenceEntryController.java:32)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:258)
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:191)
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:118)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:991)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:896)
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1089)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
+	at org.springframework.web.servlet.FrameworkServlet.doPut(FrameworkServlet.java:925)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:593)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:162)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:162)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:162)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138)
+	at org.springframework.web.filter.ServerHttpObservationFilter.doFilterInternal(ServerHttpObservationFilter.java:110)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:162)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:162)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:165)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:88)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:492)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:113)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:83)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:72)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:342)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:399)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:1272)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1797)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:973)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:491)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+[[1;34mINFO[m] [1;32mTests run: [0;1;32m3[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.551 s -- in com.yss.referenceprobe.reference.[1mReferenceEntryHttpTest[m
+[[1;34mINFO[m] Running com.yss.referenceprobe.reference.[1mArchitectureRulesTest[m
+2026-10-13 02:17:10.497 [main] INFO  c.tngtech.archunit.core.PluginLoader - Detected Java version 17.0.16
+[[1;34mINFO[m] [1;32mTests run: [0;1;32m1[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.533 s -- in com.yss.referenceprobe.reference.[1mArchitectureRulesTest[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] Results:
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1;32mTests run: 10, Failures: 0, Errors: 0, Skipped: 0[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-jar-plugin:3.4.2:jar[m [1m(default-jar)[m @ [36mddd-probe-reference-bootstrap[0;1m ---[m
+[[1;34mINFO[m] Building jar: /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/examples/reference/ddd-probe-reference-bootstrap/target/ddd-probe-reference-bootstrap-1.0.0-SNAPSHOT.jar
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mspring-boot-maven-plugin:3.5.16:repackage[m [1m(repackage)[m @ [36mddd-probe-reference-bootstrap[0;1m ---[m
+[[1;34mINFO[m] Replacing main artifact /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/examples/reference/ddd-probe-reference-bootstrap/target/ddd-probe-reference-bootstrap-1.0.0-SNAPSHOT.jar with repackaged archive, adding nested dependencies in BOOT-INF/.
+[[1;34mINFO[m] The original artifact has been renamed to /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/examples/reference/ddd-probe-reference-bootstrap/target/ddd-probe-reference-bootstrap-1.0.0-SNAPSHOT.jar.original
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] [1mReactor Summary for ddd-probe-reference-parent 1.0.0-SNAPSHOT:[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] ddd-probe-reference-parent ......................... [1;32mSUCCESS[m [  0.138 s]
+[[1;34mINFO[m] ddd-probe-reference-domain ......................... [1;32mSUCCESS[m [  0.440 s]
+[[1;34mINFO[m] ddd-probe-reference-application .................... [1;32mSUCCESS[m [  0.425 s]
+[[1;34mINFO[m] ddd-probe-reference-infrastructure ................. [1;32mSUCCESS[m [  0.450 s]
+[[1;34mINFO[m] ddd-probe-reference-adapter ........................ [1;32mSUCCESS[m [  0.002 s]
+[[1;34mINFO[m] ddd-probe-reference-web ............................ [1;32mSUCCESS[m [  0.386 s]
+[[1;34mINFO[m] ddd-probe-reference-bootstrap ...................... [1;32mSUCCESS[m [  4.339 s]
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] [1;32mBUILD SUCCESS[m
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] Total time:  6.295 s
+[[1;34mINFO[m] Finished at: 2026-10-13T02:17:11+08:00
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m

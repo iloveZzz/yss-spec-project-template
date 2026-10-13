@@ -9,12 +9,12 @@ import { once } from 'node:events';
 import { applyAssets, planAssets } from '../scripts/lib/feature-assets.mjs';
 
 const cli = path.resolve('scripts/feature-assets');
-const feature = 'docs/.scratch/example';
+const feature = '.work/example';
 function fixture(t) {
   const area = fs.mkdtempSync(path.join(os.tmpdir(), 'feature-assets-test-'));
   const root = path.join(area, 'project'); fs.mkdirSync(root);
   const put = (ref, text) => { const file = path.join(root, ref); fs.mkdirSync(path.dirname(file), {recursive:true}); fs.writeFileSync(file, text); return file; };
-  put('.template-spec/agents/issue-tracker.md','---\ntracker:\n  platform: local-markdown\n  root: docs/.scratch\n---\n');
+  put('.template-spec/agents/issue-tracker.md','---\ntracker:\n  platform: local-markdown\n  root: .work\n---\n');
   put('yss-project.yaml', 'schema_version: 1\nrepository_mode: project-instance\n');
   put(`${feature}/checkpoint.yaml`, 'schema_version: 1\nrepository_mode: project-instance\nfeature_id: example\nstage: stage.plan\n');
   const call = (...args) => spawnSync(process.execPath, [cli, ...args, '--root', root], {encoding:'utf8'});
@@ -52,7 +52,7 @@ test('referenced drafts, raw replies, task packages and duplicate handoff source
 test('unresolved dynamic consumers keep the draft; a question referenced by message id is protected',t=>{
   const f=fixture(t),draft=`${feature}/verification/prototype-evidence-draft.yaml`,question=`${feature}/gates/captures/early-question.yaml`;
   f.put(draft,'draft: true\n');f.put(`${feature}/verification/prototype-evidence.yaml`,'result: pending\n');
-  f.put('scripts-local/consumer.mjs','readFileSync(`docs/.scratch/example/verification/${name}.yaml`);\n');
+  f.put('scripts-local/consumer.mjs','readFileSync(`.work/example/verification/${name}.yaml`);\n');
   f.put(question,'messages:\n  - id: q-1\n    actor_kind: digital-human\n');
   f.put(`${feature}/gates/reply.yaml`,'reply_to: q-1\n');
   const p=f.call('plan','--checkpoint',f.checkpoint,'--candidate',draft,'--candidate',question,'--archive-dir',path.join(f.area,'archive'));

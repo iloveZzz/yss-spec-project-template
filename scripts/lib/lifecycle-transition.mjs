@@ -1,6 +1,6 @@
 import './slice-repositories.mjs'; // 登记多项目准备核验器（工作流层），见 slice-contract.mjs
 import { readWorkLayout } from './work-layout.mjs';
-import { BLOCKING_SIGNALS, allowedResult, blockedResult, hasText, isReadable, readDecompositionResult, artifactBindingReady, backendDesignPrerequisitesReady, sameBackendDesignPrerequisites, validateImplementationRepositoriesReady, SLICE_REPOSITORY_PREPARATION_PROTOCOL } from './lifecycle-readiness.mjs';
+import { BLOCKING_SIGNALS, allowedResult, blockedResult, hasText, isReadable, readDecompositionResult, artifactBindingReady, sameBackendDesignPrerequisites, validateImplementationRepositoriesReady, SLICE_REPOSITORY_PREPARATION_PROTOCOL } from './lifecycle-readiness.mjs';
 export { validateImplementationRepositoriesReady, SLICE_REPOSITORY_PREPARATION_PROTOCOL };
 import {assertProgressionEntry, readProgressionTarget} from './lifecycle-progression.mjs';
 import {approvalExpectationForBoundAsset} from './approval-consumption.mjs';
@@ -8,8 +8,7 @@ import { assertBusinessApprovalBasis } from './business-ticket-lifecycle.mjs';
 import { assertBusinessTicketTransition, assertImplementationTicket } from './business-tickets.mjs';
 import {assertReadingTransition} from './reading-view-bundle.mjs';
 import { assertTrackingTransition } from './stage-tracking.mjs';
-import { assertScopeTransition, assertScopeImpacts, assertScopeWorkUnit, scopedNextRoutes } from './lifecycle-execution-scope.mjs';
-import { createHash } from "node:crypto";
+import { assertScopeTransition, assertScopeWorkUnit, assertScopeImpacts, scopedNextRoutes } from './lifecycle-execution-scope.mjs';
 import { existsSync, readFileSync } from "node:fs";
 import { parseDocument } from "../vendor/yaml.mjs";
 import { assertWorkUnitUserDecision, assertImplementationDecision } from "./user-decision.mjs";
@@ -18,7 +17,6 @@ import path from "node:path";
 import { validateApiContractDecision } from "./api-contract-decision.mjs";
 import { loadApprovalRecord, validateApprovalRecord } from "./approval-record.mjs";
 import { validateBackendReview } from "./backend-review.mjs";
-import { validateJsonSchema } from "./json-schema.mjs";
 import { ROOT } from "./lifecycle-registry.mjs";
 import { readRepositoryMode } from './repository-mode.mjs';
 import { validateResearchCompletion } from './maintenance-research.mjs';
@@ -56,8 +54,7 @@ const NEXT_ROUTES = deepFreeze({
   "work-unit.business-ticket-formalization": ["work-unit.technical-analysis", "work-unit.strategic-design-handoff"],
   "work-unit.strategic-design-handoff": ["work-unit.technical-analysis"],
   "work-unit.technical-analysis": [REPOSITORY_PREPARATION_WORK_UNIT],
-  [REPOSITORY_PREPARATION_WORK_UNIT]: [SERVICE_INITIALIZATION_WORK_UNIT, TICKET_DECOMPOSITION_WORK_UNIT],
-  [SERVICE_INITIALIZATION_WORK_UNIT]: [REPOSITORY_PREPARATION_WORK_UNIT],
+  [REPOSITORY_PREPARATION_WORK_UNIT]: [TICKET_DECOMPOSITION_WORK_UNIT],
   [TICKET_DECOMPOSITION_WORK_UNIT]: [IMPLEMENTATION_WORK_UNIT],
   [IMPLEMENTATION_WORK_UNIT]: ["work-unit.code-review"],
   "work-unit.code-review": ["work-unit.release-and-retrospective", IMPLEMENTATION_WORK_UNIT, "work-unit.backend-delivery"],
@@ -65,50 +62,9 @@ const NEXT_ROUTES = deepFreeze({
   "work-unit.release-and-retrospective": [],
 });
 
-/** The service branch reuses the approved v4 scaffold contract and its real verification. */
-export function validateServiceProjectInitialization(state, { root = ROOT, exists = existsSync, read = (ref) => readFileSync(ref, "utf8"), completed = false } = {}) {
-  const request = state?.service_project_initialization;
-  const resolved = ref => path.isAbsolute(ref) ? ref : path.resolve(root, ref);
-  const present = ref => hasText(ref) && exists(resolved(ref));
-  const contents = ref => read(resolved(ref));
-  const document = ref => readDecompositionResult(resolved(ref), contents);
-  const blocked = (detail, incomplete = false) => blockedResult(
-    [incomplete ? BLOCKING_SIGNALS.serviceInitializationIncomplete : BLOCKING_SIGNALS.serviceInitializationInvalid], [detail]);
-  if (!request || !hasText(request.project_id) || !hasText(request.contract_ref) || !hasText(request.contract_digest) || !hasText(request.project_root)) return blocked("project_id, contract_ref, contract_digest and project_root required");
-  const contractFile = resolved(request.contract_ref);
-  if (!present(contractFile)) return blocked("approved v4 scaffold contract must be readable");
-  let contractBytes;
-  try { contractBytes = contents(contractFile); } catch { return blocked("approved v4 scaffold contract must be readable"); }
-  const contract = document(contractFile);
-  if (!contract || request.contract_digest !== `sha256:${createHash("sha256").update(contractBytes).digest("hex")}`) return blocked("current scaffold contract digest mismatch");
-  try { validateJsonSchema(contract, path.join(ROOT, ".template-spec/process/schemas/project-scaffold-contract.schema.json")); }
-  catch (error) { return blocked(`scaffold contract schema: ${error.message}`); }
-  if (contract.schema_version !== 4 || contract.status !== "approved" || contract.current_version !== true || !hasText(contract.persisted_ref) || contract.architecture_profile !== "mvc-data-analysis-v1" || contract.scaffold_kind !== "backend-mvc-data-analysis" || contract.generator_skill !== "yss-layered-mvc-scaffold-generator" || contract.init_git !== true || contract.project_name !== request.project_id || path.resolve(contract.target_output_dir, contract.project_name) !== path.resolve(request.project_root)) return blocked("current approved mvc-data-analysis-v1 initialization contract required");
-  const contractRoot = path.dirname(contractFile);
-  const contractExists = ref => exists(path.isAbsolute(ref) ? ref : path.resolve(contractRoot, ref));
-  if (!backendDesignPrerequisitesReady(contract.design_prerequisites, contractExists, contractRoot, request.project_id)) return blocked("current technical, data, API and engineering approval bindings required");
-  const handoff = path.resolve(path.dirname(contractFile), contract.context_handoff_ref ?? "");
-  if (!handoff.startsWith(`${path.dirname(contractFile)}${path.sep}`) || !present(handoff)) return blocked("CONTEXT handoff must be inside the contract directory");
-  let handoffBytes;
-  try { handoffBytes = contents(handoff); } catch { return blocked("CONTEXT handoff must be readable"); }
-  const handoffDigest = `sha256:${createHash("sha256").update(handoffBytes).digest("hex")}`;
-  if (contract.context_handoff_digest !== handoffDigest || request.context_handoff_digest !== handoffDigest) return blocked("CONTEXT handoff digest mismatch");
-  if (!completed) {
-    if (present(request.project_root)) return blocked("service project already exists; initialization is not repeatable");
-    return allowedResult([request.contract_ref, contract.context_handoff_ref]);
-  }
-  for (const field of ["manifest_ref", "verification_ref", "result_ref"]) if (!present(request[field])) return blocked(`${field} must be readable`, true);
-  const manifest = document(request.manifest_ref);
-  const verification = document(request.verification_ref);
-  const result = document(request.result_ref);
-  if (result?.result_schema !== "workflow-execution-result-v1" || result.work_unit !== SERVICE_INITIALIZATION_WORK_UNIT || result.result !== "completed" || ![request.manifest_ref, request.verification_ref].every(ref => result.evidence_refs?.includes(ref))) return blocked("completed Workflow Execution Result with manifest and verification evidence required", true);
-  if (manifest?.schema_version !== 4 || manifest.kind !== "service-project-initialization" || manifest.architecture_profile !== "mvc-data-analysis-v1" || manifest.project_name !== request.project_id || manifest.contract_digest !== request.contract_digest || manifest.completion_level !== "empty-scaffold-verified") return blocked("current v4 service Manifest required", true);
-  const phases = ["validate", "test", "package"];
-  if (verification?.status !== "passed" || verification.completion_level !== "empty-scaffold-verified" || path.resolve(verification.project_root ?? "") !== path.resolve(request.project_root) || !Array.isArray(verification.commands) || phases.some(phase => !verification.commands.some(item => item.phase === phase && item.exit_code === 0 && item.command?.startsWith(`./mvnw ${phase}`) && present(item.stdout_ref) && present(item.stderr_ref)))) return blocked("real Maven Wrapper validate/test/package evidence required", true);
-  const childContext = path.join(request.project_root, "CONTEXT.md");
-  const initialization = document(path.join(request.project_root, ".template-spec/process/service-initialization.json"));
-  if (!present(childContext) || !present(path.join(request.project_root, ".git")) || !present(path.join(path.dirname(request.project_root), "skillUtils/skills-lock.json")) || contents(childContext) !== handoffBytes || initialization?.contract_id !== contract.contract_id || initialization.context_handoff_digest !== handoffDigest) return blocked("child project identity, CONTEXT and skillUtils must match the contract", true);
-  return allowedResult([request.result_ref, request.manifest_ref, request.verification_ref]);
+/** Retired records never grant new generation or lifecycle transitions. */
+export function validateServiceProjectInitialization() {
+  return blockedResult([BLOCKING_SIGNALS.serviceInitializationInvalid], ["retired: mvc-data-analysis-v1 仅允许历史只读审计；使用通用 MVC 脚手架，再按需单独使用 setup-yss-harness"]);
 }
 
 function validateTechnicalAnalysisCompletion(state, { exists = existsSync, read = (ref) => readFileSync(ref, "utf8"), root = ROOT } = {}) {

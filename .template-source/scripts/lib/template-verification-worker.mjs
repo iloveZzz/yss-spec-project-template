@@ -31,6 +31,7 @@ const options={help:{type:'boolean',default:false},profile:{type:'string',defaul
 export function validateVerificationArguments(values) {
   if(values.profile!==undefined&&!['fast','release'].includes(values.profile))throw new TypeError(`未知核验 profile: ${values.profile}`);
   if(values['qualification-report']!==undefined||values['qualification-report-sha256']!==undefined)throw new TypeError('QUALIFICATION_RETIRED');
+  if(values.profile==='release'&&!values.help&&!values.base)throw new TypeError('RELEASE_BASE_REQUIRED: --base 必须绑定上一正式发行完整 SHA');
   if(values.base!==undefined&&!/^[a-f0-9]{40}$/.test(values.base))throw new TypeError('--base 必须为完整 40 位 SHA');
   for(const [report,digest]of [['baseline-report','baseline-report-sha256']]){
     const hasReport=values[report]!==undefined,hasDigest=values[digest]!==undefined;
@@ -193,7 +194,7 @@ if(process.argv[1]&&path.resolve(process.argv[1])===workerFile) {
   } else {
     try {
       const input=await prepare(process.argv.slice(2),process.cwd());
-      if(input.help)process.stdout.write('用法: scripts/run-template-verification --profile fast|release [--base <完整SHA>] [--baseline-report <文件> --baseline-report-sha256 <摘要>] [--plan --json] [--report-dir <仓库外新目录>] [--concurrency 1..4] [--selection legacy|shadow|allowlist] [--fresh-inputs]\nfast 默认按检查选择必要集合，报告范围 limited；legacy / shadow 显式使用原组范围。\n--fresh-inputs 禁用本次运行内的文件摘要复用；release 始终完整读取字节。\nrelease 执行全部现役检查；历史策略仅用于独立报告读取，不提供执行入口。\n');
+      if(input.help)process.stdout.write('用法: scripts/run-template-verification --profile fast|release [--base <完整SHA>] [--baseline-report <文件> --baseline-report-sha256 <摘要>] [--plan --json] [--report-dir <仓库外新目录>] [--concurrency 1..4] [--selection legacy|shadow|allowlist] [--fresh-inputs]\nfast 默认按检查选择必要集合，报告范围 limited；legacy / shadow 显式使用原组范围。\n--fresh-inputs 禁用本次运行内的文件摘要复用；release 始终完整读取字节。\nrelease 必须提供上一正式发行 --base，覆盖全部真实变化并选择受影响检查，来源、安装与恢复要求保留；历史策略仅用于独立报告读取。\n');
       else if(input.values.plan)process.stdout.write(`${JSON.stringify(input.plan,null,input.values.json?2:0)}\n`);
       else await runPrepared(input);
     }catch(error){process.stderr.write(`模板核验失败: ${error.message}\n`);process.exitCode=1;}

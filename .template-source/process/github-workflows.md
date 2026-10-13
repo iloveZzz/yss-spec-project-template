@@ -45,17 +45,17 @@ Linux runner 上的两个测试曾因对 macOS 行为的隐性假设而失败，
 
 输入 SHA 与实际 HEAD 必须一致；该提交须具备本合同对应的验证脚本。发布证据绑定实际待验证提交，不再依赖 GitHub workflow 或 action 编排。
 
-`node .template-source/scripts/verify-template-release.mjs --commit <40位SHA> --output <仓库外绝对目录> --cli-family all-four` 要求干净模板和三个 Agent 模板源与固定 gitlink 一致。显式提供 `YSS_NATIVE_BINARY`、`YSS_NATIVE_BINARY_SHA256` 和固定源码的 `YSS_NATIVE_SOURCE_ROOT`；二进制和三 Profile Bundle 必须分别绑定已提交的统一 CLI 与模板来源。生产、公开 Bundle 导出、隔离安装副本、初始化、Skill 投影/锁校验及用户 `.github` 保留检查全部通过。当前发布集合始终覆盖三 Profile，旧 npm 包只用于仓外历史恢复，不参与现役生产。
+`node .template-source/scripts/verify-template-release.mjs --commit <40位SHA> --base <上一正式发行完整SHA> --output <仓库外绝对目录> --cli-family all-four` 要求干净模板、同仓三个 Profile 及固定 CLI 来源一致。显式提供 `YSS_NATIVE_BINARY`、`YSS_NATIVE_BINARY_SHA256` 和固定源码的 `YSS_NATIVE_SOURCE_ROOT`；二进制和三 Profile Bundle 必须分别绑定已提交的统一 CLI 与模板来源。生产、公开 Bundle 导出、隔离安装副本、初始化、Skill 投影/锁校验及用户 `.github` 保留检查全部通过。当前发布集合始终覆盖三 Profile，旧 npm 包只用于仓外历史恢复，不参与现役生产。
 
 三类发行还必须提供 `YSS_LEGACY_RECOVERY_REPORT` 及 `YSS_LEGACY_RECOVERY_REPORT_SHA256`。恢复矩阵逐家族绑定固定旧包、源码 SHA、版本、实际日志摘要、当前二进制摘要和十二项必要场景；预期拒绝须核对自己的错误码。未完成项、输入漂移、错配摘要和 `fixture: true` 阻断正式发行。六平台运行验收在独立最终门禁核验。`--cli-family spec` 仅用于定向诊断，不能替代三类发行验收；CI 合成 Go fixture 仅验证算法与拒绝语义。
 
 Go 生产用固定四源提交和 `bundle-profile.json` 声明政策，运行 `go run ./tools/bundle --source-root <模板根> --lock docs/source-lock.json --out internal/bundle/assets`，再以 `CGO_ENABLED=0` 构建。二进制、Bundle、插件摘要收录仓外生态发行清单，避免互相嵌入未来提交形成循环。模板 Node/Python 治理工具和 pnpm frozen 依赖继续保留。不会执行 publish、npm deprecated 或仓库归档。
 
-证据保存在仓库外的新目录：候选保留计划、完整 base/head/tested commit、实际调用参数与日志；发布保留 `release-verification.json`、每条命令实际退出码、日志、模板 SHA、生成器 SHA、子模块版本与新快照摘要；兼容验证分别记录日志。失败结果及缺失证据必须保留，不能宣称通过。发布就绪要求全部适用风险、集成和阻断兼容检查均成功；Node 26 观察失败可见但不阻断。
+证据保存在仓库外的新目录：候选保留计划、完整 base/head/tested commit、实际调用参数与日志；发布保留 `release-verification.json`、每条命令实际退出码、日志、模板 SHA、生成器 SHA、同仓 Profile 来源与新快照摘要；兼容验证分别记录日志。失败结果及缺失证据必须保留，不能宣称通过。发布就绪要求全部适用风险、集成和阻断兼容检查均成功；Node 26 观察失败可见但不阻断。
 
 ## 验证两档与证据恢复
 
-当前仅有 fast 与 release。fast 按输入与依赖选择必要检查；release 始终执行当前全部适用检查。检查定义、影响依赖、执行前置与风险归属只在 `template-verification-profiles.yaml` 维护。Gxx 是既有展示编号，退役项保留编号空位，机器检查保留 `check.*`；内部任务、语法检查和终检仍逐项记录。失去对象的检查随对象退役，现存验证责任直接绑定当前行为检查。
+当前仅有 fast 与 release。fast 按输入与依赖选择必要检查；release 基于上一正式发行的完整差异与当前输入选择受影响检查、依赖及必需来源/安装/恢复检查，未知输入拒绝，显式路径只能扩大范围。检查定义、影响依赖、执行前置与风险归属只在 `template-verification-profiles.yaml` 维护。Gxx 是既有展示编号，退役项保留编号空位，机器检查保留 `check.*`；内部任务、语法检查和终检仍逐项记录。失去对象的检查随对象退役，现存验证责任直接绑定当前行为检查。
 
 candidate、legacy-full 执行入口、legacy_coverage 记账、资格配对计时与策略激活层已退役。base 或 baseline 报告不能缩小 release 集合；显式提供报告时仍检查完整 SHA、祖先关系、报告摘要、来源与真实执行证据。参数不完整、错误摘要、非祖先 baseline、未知路径或依赖配置错误在昂贵任务前失败。
 

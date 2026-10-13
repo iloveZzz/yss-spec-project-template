@@ -1,6 +1,7 @@
-import { readFile, readdir, writeFile, stat } from "node:fs/promises";
+import { readFile, readdir, writeFile, stat, mkdtemp, rm } from "node:fs/promises";
 import { spawn } from "node:child_process";
 import net from "node:net";
+import os from "node:os";
 import path from "node:path";
 import { parseXmlDocument } from "../vendor/xml.mjs";
 import { runCommand } from "./command-runner.mjs";
@@ -42,14 +43,16 @@ export function checkPlatformDependencies(profile, effectivePom, dependencyTrees
   const main = dependencyTrees.filter(item => gav(item) === mainArtifact);
   if (main.length !== 1) fail("missing or duplicate startup-module runtime tree");
   const nodes = [];
-  const visit = item => { if (!["compile", "runtime"].includes(item.scope ?? "compile")) return; nodes.push(item); array(item.children).forEach(visit); };
+  // Maven nodes carry the mediated scope even below a first, test-scoped path.
+  const visit = item => { if (["compile", "runtime"].includes(item.scope ?? "compile")) nodes.push(item); array(item.children).forEach(visit); };
   array(main[0].children).forEach(visit);
   const bom = parseXmlDocument(bootBom ?? "<missing/>").project;
   if (bom?.groupId !== "org.springframework.boot" || bom.artifactId !== "spring-boot-dependencies" || bom.version !== profile.spring_boot_version) fail("wrong or missing independent Boot BOM");
   const managed = new Map(array(bom.dependencyManagement?.dependencies?.dependency).map(item => [gav(item), item.version]));
   if (!managed.size) fail("empty Boot BOM dependency management");
   for (const item of nodes) {
-    const expected = managed.get(gav(item)) ?? components[gav(item)];
+    // The exact YSS recipe includes deliberate Parent/BOM overrides of Boot defaults.
+    const expected = components[gav(item)] ?? managed.get(gav(item));
     if (/^(com\.baomidou|org\.springdoc|org\.springframework\.cloud|com\.yss\.cloud)$/.test(item.groupId) && !expected) fail(`missing component recipe: ${gav(item)}`);
     if (expected && String(item.version) !== String(expected)) fail(`resolved version differs from BOM/recipe: ${gav(item)}`);
     if (/^(org\.springframework(?:\.boot)?$|org\.apache\.tomcat\.embed|jakarta\.(servlet|validation)|javax\.(servlet|validation)|(?:tools|com\.fasterxml)\.jackson|org\.slf4j|ch\.qos\.logback)/.test(item.groupId) && !expected) fail(`unmanaged platform runtime artifact: ${gav(item)}`);
@@ -118,10 +121,10 @@ export async function verifyPlatformDependencies(projectRoot, evidenceDir, profi
     await run("platform-dependency-tree", ["org.apache.maven.plugins:maven-dependency-plugin:3.8.1:tree", "-DoutputType=json", "-DoutputFile=.yss/platform-dependencies.json"]);
     const trees = [];
     const visited = new Set();
-    for (const directory of [projectRoot, ...(await readdir(projectRoot, { withFileTypes: true })).filter(item => item.isDirectory() && item.name.startsWith(`${path.basename(projectRoot)}-`)).map(item => path.join(projectRoot, item.name))]) {
+    for (const directory of [projectRoot, ...(await readdir(projectRoot, { withFileTypes: true })).filter(item => item.isDirectory() && item.name.startsWith(`${options.manifest.project_name}-`)).map(item => path.join(projectRoot, item.name))]) {
       const candidates = [directory];
       // DDD adapter contains the nested web module.
-      for (const entry of await readdir(directory, { withFileTypes: true })) if (entry.isDirectory() && entry.name.startsWith(`${path.basename(projectRoot)}-`)) candidates.push(path.join(directory, entry.name));
+      for (const entry of await readdir(directory, { withFileTypes: true })) if (entry.isDirectory() && entry.name.startsWith(`${options.manifest.project_name}-`)) candidates.push(path.join(directory, entry.name));
       for (const candidate of candidates) {
         if (visited.has(candidate)) continue;
         visited.add(candidate);
@@ -141,14 +144,14 @@ async function freePort() {
   await new Promise(resolve => server.close(resolve));
   return port;
 }
-export function checkRuntimeArchive(entries, artifacts, { providedLombokVersion } = {}) {
+export function checkRuntimeArchive(entries, artifacts, { providedLombokVersion, dependencyOnlyArtifacts = [] } = {}) {
   if (!Array.isArray(artifacts) || !artifacts.length) fail("missing runtime artifact inventory");
   const names = new Set(entries.split(/\r?\n/));
   const expected = new Set();
   for (const item of artifacts.filter(item => (item.type ?? "jar") === "jar")) {
     const name = `BOOT-INF/lib/${item.artifactId}-${item.version}${item.classifier ? `-${item.classifier}` : ""}.jar`;
     expected.add(name);
-    if (!names.has(name)) fail(`runtime jar missing ${name}`);
+    if (!names.has(name) && !dependencyOnlyArtifacts.includes(name)) fail(`runtime jar missing ${name}`);
   }
   const bootVersion = artifacts.find(item => item.groupId === "org.springframework.boot")?.version;
   // Boot's repackage goal injects its matching jarmode helper outside the dependency tree.
@@ -163,7 +166,29 @@ async function inspectRuntimeJar(jar, evidenceDir, environment, options) {
   const stderrFile = path.join(evidenceDir, "runtime-jar.stderr.log");
   const result = await runCommand(tool, ["tf", jar], { env: environment, timeoutMs: 30000, stdoutFile, stderrFile });
   if (result.status !== 0) fail("cannot inspect packaged runtime jar");
-  return checkRuntimeArchive(result.stdout, options.runtimeArtifacts, options);
+  const missingStarters = options.runtimeArtifacts.filter(item => item.groupId === "org.springframework.boot" && item.artifactId.startsWith("spring-boot-starter") && !result.stdout.includes(`BOOT-INF/lib/${item.artifactId}-${item.version}.jar\n`));
+  const dependencyOnlyArtifacts = [], omitted = [];
+  if (missingStarters.length) {
+    const repository = await platformCommand(options.projectRoot, evidenceDir, "platform-local-repository", ["help:evaluate", "-Dexpression=settings.localRepository", "-q", "-DforceStdout"], environment, options);
+    if (repository.exit_code !== 0) fail("cannot resolve local artifact repository");
+    const repositoryRoot = repository.stdout.replace(/\u001b\[[0-9;]*m/g, "").trim();
+    if (!path.isAbsolute(repositoryRoot)) fail("invalid local artifact repository");
+    const scratch = await mkdtemp(path.join(os.tmpdir(), "yss-jar-manifest-"));
+    try {
+      for (const item of new Map(missingStarters.map(item => [gav(item), item])).values()) {
+        const source = path.join(repositoryRoot, item.groupId.replaceAll(".", "/"), item.artifactId, item.version, `${item.artifactId}-${item.version}.jar`);
+        await rm(path.join(scratch, "META-INF"), { recursive: true, force: true });
+        const extracted = await runCommand(tool, ["xf", source, "META-INF/MANIFEST.MF"], { cwd: scratch, env: environment, timeoutMs: 30000 });
+        if (extracted.status !== 0) fail(`cannot read starter manifest: ${gav(item)}`);
+        const manifest = await readFile(path.join(scratch, "META-INF/MANIFEST.MF"), "utf8");
+        if (!/^Spring-Boot-Jar-Type: dependencies-starter\r?$/m.test(manifest)) fail(`missing non-starter runtime jar: ${gav(item)}`);
+        dependencyOnlyArtifacts.push(`BOOT-INF/lib/${item.artifactId}-${item.version}.jar`);
+        omitted.push({ coordinate: gav(item), version: item.version, jar_digest: platformDigest(await readFile(source)), manifest });
+      }
+    } finally { await rm(scratch, { recursive: true, force: true }); }
+  }
+  await writeFile(path.join(evidenceDir, "dependency-only-jars.log"), JSON.stringify(omitted, null, 2));
+  return checkRuntimeArchive(result.stdout, options.runtimeArtifacts, { ...options, dependencyOnlyArtifacts });
 }
 export async function verifyPlatformStartup(projectRoot, evidenceDir, manifest, environment, options = {}) {
   const runtimeModule = `${manifest.project_name}-${manifest.architecture_family === "domain-driven" ? "bootstrap" : "server"}`;
@@ -171,9 +196,9 @@ export async function verifyPlatformStartup(projectRoot, evidenceDir, manifest, 
   try {
     const packaged = (await readdir(runtimeTarget)).filter(name => name.endsWith(".jar") && !/-sources|-javadoc|-tests/.test(name));
     if (packaged.length !== 1) fail("expected exactly one production runtime jar");
-    await inspectRuntimeJar(path.join(runtimeTarget, packaged[0]), evidenceDir, environment, options);
+    await inspectRuntimeJar(path.join(runtimeTarget, packaged[0]), evidenceDir, environment, { ...options, projectRoot });
   } catch (error) { return { status: "failed", error: error.message, commands: [] }; }
-  const packaging = await platformCommand(projectRoot, evidenceDir, "platform-local-package", ["-Pscaffold-local", "package", "-DskipTests"], environment, options);
+  const packaging = await platformCommand(projectRoot, evidenceDir, "platform-local-package", ["-Pscaffold-local", "clean", "package", "-DskipTests"], environment, options);
   const { stdout: ignoredOut, stderr: ignoredErr, ...command } = packaging;
   if (packaging.exit_code !== 0) return { status: "failed", error: "local packaging failed", commands: [command] };
   const module = `${manifest.project_name}-${manifest.architecture_family === "domain-driven" ? "bootstrap" : "server"}`;
@@ -190,12 +215,20 @@ export async function verifyPlatformStartup(projectRoot, evidenceDir, manifest, 
   child.stderr.on("data", data => { errors += data; });
   child.on("error", error => { errors += error.message; exited = true; });
   const closed = new Promise(resolve => child.once("close", code => { exited = true; resolve(code); }));
+  const probePath = manifest.architecture_family === "domain-driven" ? "/actuator/health" : "/";
   let passed = false;
+  let probe = null;
   const deadline = Date.now() + Math.min(options.timeoutMs || 60000, 120000);
   try {
     while (!exited && Date.now() < deadline && !options.signal?.aborted) {
       if (started) {
-        try { const response = await fetch(`http://127.0.0.1:${port}/`, { signal: AbortSignal.timeout(1000) }); if (response.status > 0 && response.status < 500) { passed = true; break; } } catch {}
+        try {
+          const response = await fetch(`http://127.0.0.1:${port}${probePath}`, { headers: { Accept: "application/json" }, signal: AbortSignal.timeout(1000) });
+          const body = await response.json();
+          probe = { path: probePath, status: response.status, body };
+          passed = probePath === "/actuator/health" ? response.status === 200 && body.status === "UP" : response.status === 404;
+          if (passed) break;
+        } catch {}
       }
       await new Promise(resolve => setTimeout(resolve, 250));
     }
@@ -207,5 +240,5 @@ export async function verifyPlatformStartup(projectRoot, evidenceDir, manifest, 
   const redact = text => [...(options.secrets ?? []), environment.MAVEN_REPO_USERNAME, environment.MAVEN_REPO_PASSWORD].filter(Boolean).reduce((value, secret) => value.replaceAll(secret, "[REDACTED]"), text);
   await writeFile(path.join(evidenceDir, "startup.stdout.log"), redact(output));
   await writeFile(path.join(evidenceDir, "startup.stderr.log"), redact(errors));
-  return { status: passed ? "passed" : "failed", commands: [command], executed_at: processStartedAt, artifact_digest: platformDigest(await readFile(path.join(target, jars[0]))), stdout_ref: path.join(evidenceDir, "startup.stdout.log"), stderr_ref: path.join(evidenceDir, "startup.stderr.log") };
+  return { status: passed ? "passed" : "failed", probe, commands: [command], executed_at: processStartedAt, artifact_digest: platformDigest(await readFile(path.join(target, jars[0]))), stdout_ref: path.join(evidenceDir, "startup.stdout.log"), stderr_ref: path.join(evidenceDir, "startup.stderr.log") };
 }

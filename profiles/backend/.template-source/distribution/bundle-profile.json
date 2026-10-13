@@ -26,10 +26,7 @@
     "exampleDocPaths": [
       ".template-spec/discovery/IDEATION.md"
     ],
-    "excludePathSuffixes": [
-      "tests",
-      "test"
-    ],
+    "excludePathSuffixes": [],
     "excludePaths": [
       ".pi/skills",
       ".cursor/skills",

@@ -293,6 +293,14 @@
           ".agents/skills"
         ]
       },
+      "release-yss-cli": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/release-yss-cli/SKILL.md",
+        "targets": [
+          ".agents/skills"
+        ]
+      },
       "resolving-merge-conflicts": {
         "source": "mattpocock/skills",
         "sourceType": "github",

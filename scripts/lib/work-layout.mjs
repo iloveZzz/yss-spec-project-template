@@ -75,3 +75,21 @@ export function workScanRoots(root) {
   for (const ref of roots) safePath(root, ref);
   return Object.freeze([...new Set(roots)].sort());
 }
+
+// Template feature names are meaningful only in reference fields, not prose.
+export function assertNoTemplateReferences(value, { root }) {
+  const layout = readWorkLayout(root);
+  function visit(node, reference = false) {
+    if (typeof node === 'string') {
+      const ref = !path.isAbsolute(node) && /^[a-z][a-z0-9+.-]*:/i.test(node) ? node : path.relative(root, path.resolve(root, node)).split(path.sep).join('/');
+      if (reference && (/REPLACE_ME|<[^>]+>/.test(node) || layout.scanRoots.some(base => ref === `${base}/example` || ref.startsWith(`${base}/example/`)))) {
+        throw new TypeError(`正式证据不得保留模板占位引用: ${node}`);
+      }
+    } else if (Array.isArray(node)) {
+      for (const item of node) visit(item, reference);
+    } else if (node && typeof node === 'object') {
+      for (const [key, item] of Object.entries(node)) visit(item, /(?:^|_)refs?$/.test(key));
+    }
+  }
+  visit(value);
+}

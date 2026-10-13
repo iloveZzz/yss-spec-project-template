@@ -1,9 +1,11 @@
 import { createHash } from 'node:crypto';
 import { existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, renameSync, rmSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { parseDocument } from '../vendor/yaml.mjs';
 import { loadRegistry } from './lifecycle-registry.mjs';
 import { readWorkLayout, TRACKER_REF } from './work-layout.mjs';
+import { validateJsonSchema } from './json-schema.mjs';
 
 export const MIGRATION_KIND = 'strategic-gate-migration-plan-v1';
 export const MIGRATION_REQUIRED = 'STRATEGIC_GATE_MIGRATION_REQUIRED';
@@ -24,6 +26,48 @@ const fail = message => { throw new TypeError(message); };
 const sha256 = bytes => createHash('sha256').update(bytes).digest('hex');
 const canonical = value => Array.isArray(value) ? value.map(canonical) : value && typeof value === 'object' ? Object.fromEntries(Object.keys(value).sort().map(key => [key, canonical(value[key])])) : value;
 const render = value => `${JSON.stringify(canonical(value), null, 2)}\n`;
+const planSchema = fileURLToPath(new URL('../../.template-spec/process/schemas/strategic-gate-migration-plan.schema.json', import.meta.url));
+
+function validatePlanScope(plan, projectRoot) {
+  validateJsonSchema(plan, planSchema);
+  const layout = readWorkLayout(projectRoot);
+  const tracker = plan.inputs.filter(input => input.ref === TRACKER_REF);
+  if (tracker.length !== 1) fail('迁移计划缺少唯一配置绑定，请重新生成计划');
+  if (sha256(readFileSync(path.join(projectRoot, TRACKER_REF))) !== tracker[0].digest) fail(`输入摘要漂移: ${TRACKER_REF}`);
+  const asset = ref => {
+    const feature = layout.featureOf(ref);
+    if (ref === layout.featureRoot(feature) || plan.feature && feature !== plan.feature) fail(`超出迁移范围: ${ref}`);
+  };
+  const inputs = new Map();
+  for (const input of plan.inputs) {
+    if (inputs.has(input.ref)) fail(`重复迁移输入: ${input.ref}`);
+    if (input.ref !== TRACKER_REF) asset(input.ref);
+    inputs.set(input.ref, input.digest);
+  }
+  const operations = new Set();
+  const registry = loadRegistry(), deprecated = new Set(registry.id_policy.deprecated_ids), active = new Set(registry.gates.map(item => item.id));
+  for (const operation of plan.operations) {
+    asset(operation.ref);
+    if (!EXTENSIONS.has(path.extname(operation.ref))) fail(`历史证据或非结构化资产不可写入: ${operation.ref}`);
+    const currentBytes = readFileSync(path.join(projectRoot, operation.ref)), current = parse(currentBytes, operation.ref);
+    if (!isMigratable(current)) fail(`历史证据或非迁移资产不可写入: ${operation.ref}`);
+    if (operations.has(operation.ref)) fail(`重复迁移操作: ${operation.ref}`);
+    if (inputs.get(operation.ref) !== operation.input_digest) fail(`迁移操作输入绑定不一致: ${operation.ref}`);
+    if (sha256(Buffer.from(operation.output, 'base64')) !== operation.output_digest) fail(`计划输出摘要无效: ${operation.ref}`);
+    if (sha256(currentBytes) !== operation.output_digest) {
+      if (sha256(currentBytes) !== operation.input_digest) fail(`输入摘要漂移: ${operation.ref}`);
+      const next = clone(current), blockers = [], reapproval = new Set();
+      const changed = transformCheckpoint(next, deprecated, active, blockers, reapproval) || transformPlanReview(next, blockers, reapproval);
+      if (!changed || sha256(Buffer.from(render(next))) !== operation.output_digest) fail(`计划输出不是受支持的迁移结果: ${operation.ref}`);
+      if (blockers.length && !plan.blockers.length) fail(`迁移计划存在阻塞: ${blockers.join('; ')}`);
+    }
+    operations.add(operation.ref);
+  }
+  for (const evidence of plan.historical_evidence) {
+    asset(evidence.ref);
+    if (!inputs.has(evidence.ref) || operations.has(evidence.ref)) fail(`历史证据不可写入: ${evidence.ref}`);
+  }
+}
 
 function parse(bytes, ref) {
   const document = parseDocument(String(bytes), { maxAliasCount: 0, uniqueKeys: true });
@@ -143,7 +187,11 @@ function transformPlanReview(value, blockers, reapproval) {
 }
 
 function isApproval(value) {
-  return value.schema_version === 1 && typeof value.gate_id === 'string' && typeof value.decision === 'string' && typeof value.actor_kind === 'string';
+  return typeof value.gate_id === 'string' && typeof value.decision === 'string' && typeof value.actor_kind === 'string';
+}
+
+function isMigratable(value) {
+  return !isApproval(value) && (value.kind === 'plan-entry-review' || value.repository_mode === 'project-instance' && value.gates && typeof value.gates === 'object' && !Array.isArray(value.gates));
 }
 
 export function inspectStrategicGateMigration({ root, feature } = {}) {
@@ -164,6 +212,7 @@ export function inspectStrategicGateMigration({ root, feature } = {}) {
       historical.push({ ref, gate_id: value.gate_id, disposition: 'historical-only' });
       continue;
     }
+    if (!isMigratable(value)) continue;
     const next = clone(value);
     const localBlockers = [];
     const changed = transformCheckpoint(next, deprecated, active, localBlockers, reapproval) || transformPlanReview(next, localBlockers, reapproval);
@@ -173,7 +222,7 @@ export function inspectStrategicGateMigration({ root, feature } = {}) {
       if (!bytes.equals(output)) operations.push({ ref, input_digest: sha256(bytes), output_digest: sha256(output), output: output.toString('base64') });
     }
   }
-  return {
+  const plan = {
     schema_version: 1,
     kind: MIGRATION_KIND,
     root: projectRoot,
@@ -186,21 +235,33 @@ export function inspectStrategicGateMigration({ root, feature } = {}) {
     blockers: [...new Set(blockers)].sort(),
     operations
   };
+  validatePlanScope(plan, projectRoot);
+  return plan;
 }
 
 export function applyStrategicGateMigration(plan, { root } = {}) {
   if (plan?.schema_version !== 1 || plan?.kind !== MIGRATION_KIND) fail('迁移计划身份无效');
   const projectRoot = path.resolve(root || plan.root || '.');
   if (path.resolve(plan.root) !== projectRoot) fail('迁移计划 root 与目标不一致');
+  validatePlanScope(plan, projectRoot);
   if (plan.blockers?.length) fail(`迁移计划存在阻塞: ${plan.blockers.join('; ')}`);
   const operations = plan.operations || [];
   const alreadyApplied = operations.length > 0 && operations.every(op => existsSync(path.join(projectRoot, op.ref)) && sha256(readFileSync(path.join(projectRoot, op.ref))) === op.output_digest);
-  if (alreadyApplied) return { result: 'already-applied', files: operations.map(op => op.ref) };
+  const operationRefs = new Set(operations.map(op => op.ref));
   for (const input of plan.inputs || []) {
+    if (alreadyApplied && operationRefs.has(input.ref)) continue;
     const file = path.join(projectRoot, input.ref);
     if (!existsSync(file) || sha256(readFileSync(file)) !== input.digest) fail(`输入摘要漂移: ${input.ref}`);
   }
-  for (const op of operations) if (sha256(Buffer.from(op.output, 'base64')) !== op.output_digest) fail(`计划输出摘要无效: ${op.ref}`);
+  if (alreadyApplied) return { result: 'already-applied', files: operations.map(op => op.ref) };
+  for (const op of operations) {
+    for (const suffix of ['.strategic-gate-migration.tmp', '.strategic-gate-migration.bak']) {
+      try {
+        lstatSync(path.join(projectRoot, op.ref + suffix));
+        fail(`迁移恢复文件已存在: ${op.ref + suffix}`);
+      } catch (error) { if (error.code !== 'ENOENT') throw error; }
+    }
+  }
   const staged = [], backups = [];
   try {
     for (const op of operations) {

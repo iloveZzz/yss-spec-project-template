@@ -1,6 +1,6 @@
 # 关键决策的真实用户回复协议
 
-本协议的阶段批准记录与授权延续适用于 `governed` 的既有决定。已合格普通任务使用原请求明确的范围和验收，不为日常实现另建阶段批准包；commit、push、运行时外部副作用及项目强制决定仍核验真实授权。普通路径不生成 `approved` 或把真实回复扩展到未知范围；见 [普通任务交付](daily-delivery.md)。
+本协议消费 `governed` 的阶段批准记录与授权延续。Design Profile 尚未启用普通任务路径；当前路由以 [orchestration-contract.yaml](orchestration-contract.yaml) 的 `request_triage.delivery_path` 为准，不自行启用 `daily`。commit、push、运行时外部副作用及项目强制决定仍核验真实授权，不把真实回复扩展到未知范围。
 
 适用门禁、工作单元和条件事项只由 `.template-spec/agents/digital-human-roles.yaml.user_decision_policy` 定义。本协议解释执行和证据格式，不新增阶段、门禁或 Ticket 状态。专业审查记录与用户决定分别保存；关键决定缺少任一适用条件都不能放行。
 

@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://yss.example/schemas/project-scaffold-contract.schema.json",
-  "title": "YSS Project Scaffold Contract v4",
+  "title": "YSS Project Scaffold Contract v5 (v4 read compatibility)",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -27,7 +27,10 @@
   ],
   "properties": {
     "schema_version": {
-      "const": 4
+      "enum": [
+        4,
+        5
+      ]
     },
     "kind": {
       "const": "project-scaffold-contract"
@@ -556,6 +559,35 @@
           }
         }
       }
+    },
+    "reference_example": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "enabled",
+        "id",
+        "version",
+        "path",
+        "template_digest"
+      ],
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "id": {
+          "const": "reference-entry"
+        },
+        "version": {
+          "const": 1
+        },
+        "path": {
+          "const": "examples/reference"
+        },
+        "template_digest": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        }
+      }
     }
   },
   "allOf": [
@@ -660,6 +692,68 @@
         "required": [
           "platform_configuration"
         ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "schema_version": {
+            "const": 4
+          }
+        }
+      },
+      "then": {
+        "not": {
+          "required": [
+            "reference_example"
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "schema_version": {
+            "const": 5
+          },
+          "delivery_role": {
+            "const": "backend"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "reference_example"
+        ],
+        "properties": {
+          "scaffold_kind": {
+            "enum": [
+              "backend-ddd",
+              "backend-layered-mvc"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "delivery_role": {
+            "const": "frontend"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "schema_version": {
+            "const": 4
+          }
+        },
+        "not": {
+          "required": [
+            "reference_example"
+          ]
+        }
       }
     }
   ],

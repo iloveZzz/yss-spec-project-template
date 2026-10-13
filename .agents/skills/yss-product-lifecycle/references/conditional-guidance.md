@@ -63,5 +63,8 @@ Spec 是综合研发主控；Spec 文档批准只是一个里程碑。正式功�
 
 YSS CLI 安装与升级、治理工程新建与接管、实例模板同步、旧身份迁移、资源补装及事务恢复回退用 `setup-yss-harness`，遵循 `.template-spec/process/harness-upgrade.md`；默认查询 GitHub 最新正式 Release 后固定来源，不推进产品阶段或重写历史批准。
 
-专职 Backend/Frontend 同样可从原始需求完成本地业务分析与本端交付。按唯一 `request_triage.delivery_path` 选择日常/正式路径；本地 Plan/Spec 复用现有门禁，上游输入复用批准且当前的来源，规则冲突回交权威方。角色分析权限不扩大另一端实现范围，本端完成不等于跨端业务验收。独立机械脚手架使用生成器 `--standalone`，不生成批准或业务资格。
+专职 Backend/Frontend 同样可从原始需求完成本地业务分析与本端交付。按唯一 `request_triage.delivery_path` 选择日常/正式路径；本地 Plan/Spec 复用现有门禁，上游输入复用批准且当前的来源，规则冲突回交权威方。角色分析权限不扩大另一端实现范围，本端完成不等于跨端业务验收。独立机械脚手架按 [直接生成说明](../../yss-ddd-scaffold-generator/references/standalone-generation.md) 直接生成，不生成批准或业务资格。
 
+### 直接生成脚手架
+
+仅请求生成 MVC/DDD 开发脚手架时，按 [直接生成说明](../../yss-ddd-scaffold-generator/references/standalone-generation.md) 直接调用对应生成技能，无需先创建治理实例、需求合同、原型或设计审批。未传合同参数时默认直接生成，`--standalone` 可省略；已有正式任务保留原路径。业务与治理任务仍按生命周期入口分流。

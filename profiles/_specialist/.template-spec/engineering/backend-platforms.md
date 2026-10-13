@@ -46,7 +46,7 @@ Boot 3.5 / JDK 17 Profile 固定 `Spring Cloud 2025.0.3`、`Spring Cloud Alibaba
 
 当前 `spring-boot-2.7-jdk8` 组合登记为 `blocked`。阿里云 Maven 私服已解析出 12 个 timestamped SNAPSHOT 及 POM/JAR SHA-256；其中 11 个构件的发布 POM 与 sources JAR 可逐字节绑定到固定 Git tree，Cache 3.x 没有发布 sources JAR，仍缺源码绑定。Exception、UserInfo、Security 和 Resilience4j 的已解析构件对应固定提交，不包含当前隔离工作树中的加固候选。所有能力仍缺 DDD 与 Layered MVC 消费应用认证，因此未写入 `verified_architectures` 或组件 evidence。
 
-Boot 2 私服中的 Cache `3.0.0-SNAPSHOT` 使用 JDK 8 构建且 BOM 2.x 管理的是 `2.0.0-SNAPSHOT`；Distributed ID 3.x 同样是 JDK 8 / `javax` 代际。这两个坐标不能作为 Boot 3 主线证据。UserInfo 源模块继承 `com.yss.cloud`，BOM 仍登记 `com.yss.datamiddle`，坐标冲突继续阻断。Boot 3.5 候选单独绑定 Cache 与 Distributed ID `3.1.0-SNAPSHOT`，Validation 使用平台管理的 `org.springframework.boot:spring-boot-starter-validation:3.5.16`；Excel 只保留 `yss-component-excel-mvc`，已移除的 `yss-component-excel-starter` 不再登记。Fesod `2.1.0-SNAPSHOT` 在当前私服不可解析，因此 `external_snapshot_bindings` 为空；Excel 外部依赖改用 Apache 正式发布的 `org.apache.fesod:fesod-sheet:2.0.2-incubating`，并以实际 POM、二进制 JAR 与 sources JAR SHA-256 保存为不可变 `resolved` release binding。Fesod 字节绑定不替代消费认证；YSS parent/BOM、timestamped SNAPSHOT、源码绑定、`AutoConfiguration.imports` 与 DDD/Layered MVC 消费证据仍未闭合，所以 Boot 3.5 compatibility 继续 `blocked`。Boot 4.1 没有 compatibility entry；当前目录不对任何 Profile 宣称可选择。
+Boot 2 私服中的 Cache `3.0.0-SNAPSHOT` 使用 JDK 8 构建且 BOM 2.x 管理的是 `2.0.0-SNAPSHOT`；Distributed ID 3.x 同样是 JDK 8 / `javax` 代际。这两个坐标不能作为 Boot 3 主线证据。UserInfo 源模块继承 `com.yss.cloud`，BOM 仍登记 `com.yss.datamiddle`，坐标冲突继续阻断。Boot 3.5 候选单独绑定 Cache 与 Distributed ID `3.1.0-SNAPSHOT`，Validation 使用平台管理的 `org.springframework.boot:spring-boot-starter-validation:3.5.16`；Excel 只保留 `yss-component-excel-mvc`，已移除的 `yss-component-excel-starter` 不再登记。Fesod `2.1.0-SNAPSHOT` 在当前私服不可解析，因此 `external_snapshot_bindings` 为空；Excel 外部依赖改用 Apache 正式发布的 `org.apache.fesod:fesod-sheet:2.0.2-incubating`，并以实际 POM、二进制 JAR 与 sources JAR SHA-256 保存为不可变 `resolved` release binding。Fesod 字节绑定不替代消费认证；YSS parent/BOM、timestamped SNAPSHOT、源码绑定、`AutoConfiguration.imports` 与 DDD/Layered MVC 消费证据仍未闭合，所以 Boot 3.5 compatibility 继续 `blocked`。Boot 4.1 没有 compatibility entry；该历史条目不授予选择资格；3.2.0 的定向认证见下文。
 
 `compatibility[].artifact_resolution_evidence` 绑定私服解析报告的相对路径和原始字节摘要。加载 catalog 时会同时核对 report ID、仓库 ID、timestamped version、POM/JAR SHA-256 与可证明的 Git tree；报告字节或任一构件绑定变化都返回 `component-binding-drift`。报告不保存 Maven 用户名、密码或令牌。用户级 `settings.xml` 只提供下载配置；其中 profile 下的 `distributionManagement` 会被 Maven 忽略，发布目标必须由发布 POM 持有。
 
@@ -88,7 +88,7 @@ Boot 4 使用对应 MVC / MVC 测试 starter、Jackson 3 默认栈与新的模�
 
 ## 验证绑定与安全重试
 
-新生成使用平台配置 v2；Project Scaffold Contract 仍为 v4。v1 原始记录保留只读审计，不能原样用于新生成或新的支持认证。
+新生成使用平台配置 v2；新后端 Project Scaffold Contract 为 v5，v4 保留空工程兼容。v1 原始记录保留只读审计，不能原样用于新生成或新的支持认证。
 
 兼容证据同时绑定 recipe_digest、generator/verifier source_fingerprint 和 generated_tree_digest。模板、Wrapper、共享生成逻辑或验证逻辑改变时，旧证据不能开放新生成；源文件摘要不包括 Skill 说明文字。输入配方与验证记录分离不代表忽略证据，报告或日志缺失、漂移、失败仍阻断。
 
@@ -117,3 +117,13 @@ HTTP JSON/Validation 错误响应、MapStruct 编译与字段映射、MyBatis �
 夹具在 test scope 使用 H2、标准 MyBatis RowBounds 和 TransactionTemplate；它不证明生产方言、YSS 自动分页切面、业务 Service 代理事务或特定
 组件能力。对应能力仍须读取所选平台的源码索引、验证实际组件并绑定独立证据。新增用例必须出现在本次
 Surefire XML 中，空测试、跳过或旧报告不可通过。没有凭据、构件、真实批准合同或组件兼容证据时保持阻断。
+
+## 本次 3.2.0-SNAPSHOT 定向验证
+
+新增 `yss-cloud-microservice-3.2.0-snapshot-boot-3.5-jdk17`，仅覆盖 Boot 3.5.16 / JDK 17 的 DDD 和通用 MVC。Parent、BOM 和样例所用组件的唯一 SNAPSHOT、POM/JAR 摘要及仓库来源见 `evidence/scaffold-3.2.0/resolution.json`；旧版本条目保持原状态。
+
+两种空工程及两个独立参考工程均完成 validate/test/package、有效 POM、依赖树、打包检查和真实启动。独立参考工程通过创建、查询、重命名、空名称校验、不存在记录、YSS 响应/异常序列化、MapStruct 注入、MyBatis/H2 和真实 Service 事务回滚。该条目及实际执行的 DTO、错误映射、请求校验和 MyBatis 能力登记为 `verified`，证据仅覆盖这两个架构和这些行为。样例证据不授予业务生命周期批准。
+
+精确配方按实际 Parent 声明使用 SnakeYAML 2.5，覆盖 Boot BOM 的默认 2.4；不改变 Boot/JDK/YSS 版本。打包检查依据真实 starter 清单中的 `Spring-Boot-Jar-Type: dependencies-starter` 识别 Boot 省略的空 starter，其他运行 JAR 继续核验。DDD 启动探测使用现有 `/actuator/health` 并要求 HTTP 200/UP，通用 MVC 空工程要求未声明根路由返回 404。已知异常组件对未定义静态资源返回 500 的行为保留记录，不属于本次参考接口认证；未修改或发布组件。
+
+源码证据逐字节核对远端 POM、sources JAR 与本地组件源码，再以隔离 Git tree 保存源归档/POM 的内容身份，不冒充上游提交。来源状态为 working-tree；正式固定提交及发布资格另行闭合。未认证缓存、Excel、生产数据库、其他平台或组件全部 API。真实报告与日志位于 `evidence/scaffold-3.2.0/{ddd,mvc}/`。

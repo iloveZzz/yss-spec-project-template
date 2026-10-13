@@ -10,6 +10,7 @@ import {withValidationPhase} from '../../lib/validation-phase.mjs';
 function fixture(){
  const root=makeRoot('api-v2-');
  const write=(ref,value)=>{fs.mkdirSync(path.dirname(path.join(root,ref)),{recursive:true});fs.writeFileSync(path.join(root,ref),typeof value==='string'?value:JSON.stringify(value));return{ref,digest:hash(fs.readFileSync(path.join(root,ref)))};};
+ write('.template-spec/agents/issue-tracker.md','---\ntracker:\n  platform: local-markdown\n  root: .work\n---\n');
  const assessment=write('assessment.json',{}),evidence=write('evidence.md','synthetic evidence only'),extra=write('extra.md','legacy branch evidence');
  const apiRoot=`${readWorkLayout(root).featureRoot('synthetic')}/api`;
  const draft=write(`${apiRoot}/synthetic.yaml`,"openapi: 3.1.0\ninfo: {title: synthetic, version: v1}\npaths: {}\ncomponents:\n  schemas:\n    Item: {$ref: './shared.yaml#/Item'}\n");

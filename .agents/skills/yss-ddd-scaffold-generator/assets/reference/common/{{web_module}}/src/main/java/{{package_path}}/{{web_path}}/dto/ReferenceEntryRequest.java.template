@@ -1,0 +1,16 @@
+package {{base_package}}.{{web_package}}.dto;
+
+import {{validation_namespace}}.validation.constraints.NotBlank;
+import {{validation_namespace}}.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+@Getter
+@Setter
+@ToString
+public class ReferenceEntryRequest {
+    @NotBlank(message = "名称不能为空")
+    @Size(max = 100, message = "名称不能超过100个字符")
+    private String name;
+}

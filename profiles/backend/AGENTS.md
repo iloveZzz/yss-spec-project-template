@@ -4,6 +4,8 @@
 
 ## 1. 仓库身份
 
+仅请求新建 MVC/DDD 后端开发脚手架时，按对应技能的[直接生成说明](.agents/skills/yss-ddd-scaffold-generator/references/standalone-generation.md) 执行，无需需求合同、原型确认、设计审批或先初始化治理实例。未传合同参数时默认直接生成；显式正式合同调用继续原有校验。以下产品阶段前提用于业务与治理任务。
+
 路径相对当前治理仓根；本地身份、Profile 和工具由本入口解释。进入独立实现仓后消费其入口；共同授权、用户工作保护与允许写范围继续有效。每个任务先读取当前仓库根的 `yss-project.yaml`：
 
 - `template-source` 使用模板维护流程，不生成具体产品的 Spec、原型、OpenAPI 或垂直切片 Ticket。
@@ -88,7 +90,7 @@ README、用户指南和 `CLAUDE.md` 只解释或指向上述事实，不定义�
 日常实施消费本节的工程接入、工具、写范围和真实验证边界；正式 Slice、脚手架与 ready-for-agent 条件仅在相应正式工作触发时消费。
 
 - 进入工程接入或正式切片实现时，读取 `.template-spec/process/implementation-repo-integration.md`，核验目标仓、项目根、分支、CI、验证命令和回滚点；已有登记当前且适用时复用，缺项先补齐。正式切片由 `yss-implementation-contract-compiler` 编译最小技能集与合同草案；只读任务和未触发切片的小改动按裁剪路线处理。编译器不批准合同、不设置状态、不宣布完成。
-- 无可复用后端工程时，`harness-orchestrator` 在技术设计前根据批准需求与工程约束给出 `domain-driven` / `layered-mvc` 推荐并由用户逐项目确认；确认后分别使用 `yss-ddd-scaffold-generator` / `yss-layered-mvc-scaffold-generator`。前端工程回交前端项目。
+- 正式治理任务无可复用后端工程时，`harness-orchestrator` 在技术设计前根据批准需求与工程约束给出 `domain-driven` / `layered-mvc` 推荐并由用户逐项目确认；确认后分别使用 `yss-ddd-scaffold-generator` / `yss-layered-mvc-scaffold-generator`。前端工程回交前端项目。
 - 正式脚手架仅在 `scaffold_status=required`、架构决定已确认、Technical Design 与 Data Architecture Decision 当前、`gate.engineering-contract-approved` 真实批准且 schema v4 生成合同已持久化后运行；所有前置校验必须在创建输出目录前完成，生成器只产 POM、模块、配置、Wrapper、启动类和架构测试。历史 v3 只允许只读恢复审计；提前出现的业务代码保留并标记 `premature-implementation-detected`。Controller、Repository 实现、SQL 和领域行为必须等待批准的 Slice Implementation Contract。
 - UI 影响及其 `frontend_implementation_plan` / `frontend_implementation_verification` 转交前端项目，回收当前切片的必要消费证据；本仓不执行前端生产实现。
 - 后端验证优先项目根 `./mvnw`，按当前合同、工程基线和已采纳 CI 条件选择模块 / 用例。缺失 Wrapper 时记录受控例外和实际命令。

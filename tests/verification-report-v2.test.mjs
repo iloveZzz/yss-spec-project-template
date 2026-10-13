@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { createVerificationReport, finalizeVerificationReport,saveVerificationReport,verificationInputDigest } from '../scripts/lib/verification-report.mjs';
+import {collectReleaseSources} from '../.template-source/scripts/lib/verification-artifacts.mjs';
 import { validateVerificationReport,compileExpectedVerificationPlan } from '../.template-source/scripts/lib/verification-report-validator.mjs';
 import {compileLegacyPlan,loadLegacyManifest} from '../.template-source/scripts/lib/legacy-verification.mjs';
 import {addVerificationExecutionTasks,compileTaskExecution} from '../.template-source/scripts/lib/verification-execution-plan.mjs';
@@ -25,7 +26,9 @@ function fixture(t) {
   finalizeVerificationReport(report, {status: 'passed', wallMs: 1, repositoryMode: 'template-source'});
   report.input_after_sha256 = report.input_sha256; report.input_drift = false;
   report.final_exit = {code: 0, signal: null, observed: true};
-  const options = {root: directory, reportDirectory: directory, expectedPlan: plan, expectedInvocation: invocation, currentInputDigest: report.input_sha256, observedExitCode: 0};
+ const sources={kind:'template-release-sources',families:['spec'],entries:[{namespace:'candidate-release',family:'spec',cli_commit:'1'.repeat(40),template_commit:'2'.repeat(40),core_commit:'3'.repeat(40),package_name:'yss',version:'1.0.0',template_version:'git:'+'2'.repeat(40),source_contract_version:2,protocol_version:1,snapshot_hash:'4'.repeat(64),manifest_hash:'5'.repeat(64),bundle_hash:'6'.repeat(64),binary_sha256:'7'.repeat(64)}]};
+  report.sources_manifest=structuredClone(sources);
+  const options = {expectedSourcesManifest:sources, root: directory, reportDirectory: directory, expectedPlan: plan, expectedInvocation: invocation, currentInputDigest: report.input_sha256, observedExitCode: 0};
   return {directory, plan, report, options};
 }
 
@@ -184,25 +187,38 @@ test('v2 schema 与 fresh consumer 拒绝实际退出、Gate、日志、invocati
  }
  const currentSource=structuredClone(f.report);currentSource.plan.source_requirement='current';assert.throws(()=>validateVerificationReport(currentSource,f.options),/committed/);
  const malformed=structuredClone(f.report);malformed.final_exit.observed='yes';assert.throws(()=>validateJsonSchema(malformed,schema));
- const sources={kind:'template-release-sources',families:['spec'],entries:[{namespace:'candidate-release',family:'spec',cli_commit:'1'.repeat(40),template_commit:'2'.repeat(40),core_commit:'3'.repeat(40),package_name:'yss',version:'1.0.0',template_version:'git:'+'2'.repeat(40),source_contract_version:2,protocol_version:1,snapshot_hash:'4'.repeat(64),manifest_hash:'5'.repeat(64),bundle_hash:'6'.repeat(64),binary_sha256:'7'.repeat(64)}]};
+ const sources=structuredClone(f.options.expectedSourcesManifest);
  f.report.sources_manifest=structuredClone(sources);validateVerificationReport(f.report,{...f.options,expectedSourcesManifest:sources});
  f.report.sources_manifest.entries[0].template_commit='4'.repeat(40);assert.throws(()=>validateVerificationReport(f.report,{...f.options,expectedSourcesManifest:sources}),/来源/);
+ f.report.sources_manifest=structuredClone(sources);
  assert.throws(()=>validateVerificationReport(f.report,{...f.options,expectedFamilies:['spec','design','backend']}),/家族/);
 });
 
-test('维护证据保留固定 command 并逐字绑定实际 report invocation 和摘要',t=>{
- const f=fixture(t),file=path.join(f.directory,'report.json');fs.writeFileSync(file,JSON.stringify(f.report));
- const digest=()=>createHash('sha256').update(fs.readFileSync(file)).digest('hex');
- const evidence={command:'scripts/verify-template',args:['--report-dir',f.directory],exit_code:0,evidence_ref:file,evidence_digest:digest()};
- const source=path.join(f.directory,'source');fs.mkdirSync(source);fs.writeFileSync(path.join(source,'yss-project.yaml'),'schema_version: 1\nrepository_mode: template-source\n');assert.equal(spawnSync('git',['init','-q'],{cwd:source}).status,0);assert.equal(spawnSync('git',['-c','user.name=fixture','-c','user.email=fixture@example.invalid','commit','--allow-empty','-qm','fixture'],{cwd:source}).status,0);
- f.report.root=fs.realpathSync(source);f.report.input_sha256=verificationInputDigest(source);f.report.input_after_sha256=f.report.input_sha256;
- f.report.invocation={command:path.join(source,'scripts/run-template-verification'),args:['--profile','release',...evidence.args]};fs.writeFileSync(file,JSON.stringify(f.report));evidence.evidence_digest=digest();
- // The public seam never trusts report.plan. This fixture supplies the independent plan.
- const original=f.report.input_sha256;
+test('无 gitmodules 的维护证据仍独立核验真实来源、command、invocation 和摘要',t=>{
+ const f=fixture(t),file=path.join(f.directory,'report.json'),source=path.join(f.directory,'source'),cli=path.join(f.directory,'cli');
+ const git=(cwd,...args)=>{const r=spawnSync('git',args,{cwd,encoding:'utf8'});assert.equal(r.status,0,r.stderr);return r.stdout.trim();};
+ const commit=cwd=>{git(cwd,'add','.');git(cwd,'-c','user.name=fixture','-c','user.email=fixture@example.invalid','commit','-qm','fixture');return git(cwd,'rev-parse','HEAD');};
+ fs.mkdirSync(source);fs.mkdirSync(cli);git(source,'init','-q');git(cli,'init','-q');
+ fs.writeFileSync(path.join(source,'yss-project.yaml'),'schema_version: 1\nrepository_mode: template-source\n');const templateCommit=commit(source);
+ // Synthetic native identity exercises the real collector and maintenance subprocess, not release qualification.
+ fs.writeFileSync(path.join(cli,'go.mod'),'module github.com/iloveZzz/yss-cli\n\ngo 1.27.1\n');fs.copyFileSync(new URL('../.template-source/scripts/tests/fixtures/native-release.go',import.meta.url),path.join(cli,'main.go'));const cliCommit=commit(cli);
+ const binary=path.join(f.directory,'yss-fixture'),built=spawnSync('go',['build','-trimpath','-ldflags',`-X main.cliCommit=${cliCommit} -X main.templateCommit=${templateCommit} -X main.designCommit=${templateCommit} -X main.backendCommit=${templateCommit}`,'-o',binary,'.'],{cwd:cli,env:{...process.env,CGO_ENABLED:'0'},encoding:'utf8'});assert.equal(built.status,0,built.stderr);
+ const keys=[...new Set(['YSS_NATIVE_BINARY','YSS_NATIVE_BINARY_SHA256','YSS_NATIVE_SOURCE_ROOT','YSS_NATIVE_BINARY_OVERRIDE',...Object.keys(process.env).filter(key=>key.startsWith('YSS_RELEASE_'))])],previous=Object.fromEntries(keys.map(key=>[key,process.env[key]]));
+ t.after(()=>{for(const key of keys)if(previous[key]===undefined)delete process.env[key];else process.env[key]=previous[key];});for(const key of keys)delete process.env[key];
+ Object.assign(process.env,{YSS_NATIVE_BINARY:binary,YSS_NATIVE_BINARY_SHA256:createHash('sha256').update(fs.readFileSync(binary)).digest('hex'),YSS_NATIVE_SOURCE_ROOT:fs.realpathSync(cli)});
+ const sources=collectReleaseSources({root:source,commit:templateCommit});assert.equal(fs.existsSync(path.join(source,'.gitmodules')),false);
+ f.report.root=fs.realpathSync(source);f.report.input_sha256=verificationInputDigest(source);f.report.input_after_sha256=f.report.input_sha256;f.report.sources_manifest=structuredClone(sources);
+ const evidence={command:'scripts/verify-template',args:['--report-dir',f.directory],exit_code:0,evidence_ref:file};
+ f.report.invocation={command:path.join(source,'scripts/run-template-verification'),args:['--profile','release',...evidence.args]};
+ const save=()=>{fs.writeFileSync(file,JSON.stringify(f.report));evidence.evidence_digest=createHash('sha256').update(fs.readFileSync(file)).digest('hex');};save();
+ // Only the independent execution plan is supplied; sources are recollected by the public consumer.
  assert.equal(validateMaintenanceVerificationEvidence(evidence,{root:source,expectedPlan:f.plan}).verified.status,'passed');
+ for(const mutate of [r=>delete r.sources_manifest,r=>r.sources_manifest.entries[0].template_commit='4'.repeat(40),r=>r.sources_manifest.families=['spec']]){
+  f.report.sources_manifest=structuredClone(sources);mutate(f.report);save();assert.throws(()=>validateMaintenanceVerificationEvidence(evidence,{root:source,expectedPlan:f.plan}),/来源|家族/);
+ }
+ f.report.sources_manifest=structuredClone(sources);save();
  assert.throws(()=>validateMaintenanceVerificationEvidence({...evidence,args:[]},{root:source,expectedPlan:f.plan}),/invocation/);
  assert.throws(()=>validateMaintenanceVerificationEvidence({...evidence,evidence_digest:'0'.repeat(64)},{root:source,expectedPlan:f.plan}),/摘要/);
- assert.equal(f.report.input_sha256,original);
 });
 
 
@@ -256,3 +272,23 @@ test('独立编译 explicit legacy-full 保留冻结117检查与115 syntax occur
 });
 
 test('qualified 历史报告不能为当前 release 提供执行许可',t=>{const f=fixture(t);f.plan.strategy='qualified-gates';f.report.plan.strategy='qualified-gates';assert.throws(()=>validateVerificationReport(f.report,f.options),/HISTORICAL_QUALIFIED_BASELINE_REFUSED/);});
+
+
+test('release 拒绝报告自选变化路径、基线和遗漏集合',t=>{
+ const f=fixture(t);f.plan.changed_files=['README.md'];f.plan.selection={effective:'impact',omitted:[]};f.plan.scope={kind:'complete-candidate',files:['README.md'],explicit_files:[],base:'1'.repeat(40)};f.report.plan=structuredClone(f.plan);f.report.scope=structuredClone(f.plan.scope);
+ assert.equal(validateVerificationReport(f.report,f.options).status,'passed');
+ for(const mutate of [r=>r.plan.changed_files=[],r=>r.scope.base='2'.repeat(40),r=>r.scope.files=[],r=>r.plan.selection.omitted=[{id:'check.syntax'}]]){const report=structuredClone(f.report);mutate(report);assert.throws(()=>validateVerificationReport(report,f.options));}
+});
+
+test('干净发行仍从固定基线纳入全部提交差异，显式子集不能隐藏未知输入',t=>{
+ const f=fixture(t),root=f.directory,git=(...args)=>{const r=spawnSync('git',args,{cwd:root,encoding:'utf8'});assert.equal(r.status,0,r.stderr);return r.stdout.trim();};
+ git('init','-q');fs.writeFileSync(path.join(root,'README.md'),'before');git('add','.');git('-c','user.name=t','-c','user.email=t@example.invalid','commit','-qm','previous release');const base=git('rev-parse','HEAD');
+ const check={id:'check.example',run:'node -e "process.exit(0)"',group:'checks',input_patterns:['README.md'],inputs_complete:true,depends_on:[],failure_mode:'content behavior'};
+ const config={schema_version:1,groups:{checks:{commands:[check]}},profiles:{fast:{checks:[check]},release:{selection:'impact'}},routing:[{patterns:['README.md','unknown.asset'],groups:['checks']}],gates:[],required_files:[],syntax_files:[]};
+ fs.writeFileSync(path.join(root,'unknown.asset'),'actual unregistered source');git('add','.');git('-c','user.name=t','-c','user.email=t@example.invalid','commit','-qm','new source');
+ assert.throws(()=>compileExpectedVerificationPlan({root,config}),/RELEASE_BASE_REQUIRED/);
+ assert.throws(()=>compileExpectedVerificationPlan({root,config,args:['--base',base,'--changed-file','README.md']}),/INCOMPLETE_VERIFICATION_INPUTS.*unknown.asset/);
+ config.profiles.fast.checks[0].input_patterns.push('unknown.asset');
+ const plan=compileExpectedVerificationPlan({root,config,reportDirectory:path.join(os.tmpdir(),path.basename(root)+'-report'),args:['--base',base,'--changed-file','README.md']});
+ assert.deepEqual(plan.changed_files,['README.md','unknown.asset']);assert.equal(plan.scope.base,base);assert.ok(plan.commands.some(task=>task.id==='check.example'));
+});

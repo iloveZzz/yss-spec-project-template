@@ -13,7 +13,7 @@ await mkdir(path.join(source,'.template-spec/design/tokens'),{recursive:true});f
 const results=[];const browser=await chromium.launch(process.env.YSS_BROWSER_CHANNEL?{channel:process.env.YSS_BROWSER_CHANNEL}:{});
 try{
  for(const kind of ['native','shadcn']){
-  const root=path.join(source,`docs/.scratch/${kind}/design/prototypes`);
+  const root=path.join(source,`.work/${kind}/design/prototypes`);
   if(kind==='native')await prepareFlowPrototype({projectRoot:source,root,feature:kind,pattern:'workbench'});
   else{await assert.rejects(buildShadcnVuePrototype({projectRoot:source,root,feature:kind}),/toolchain/);await buildShadcnVuePrototype({projectRoot:source,root,feature:kind,toolchain:process.env.YSS_VUE_TOOLCHAIN,config:new URL('../assets/vue-business-patterns/conflict-standard.config.json',import.meta.url).pathname,profile:'H2'});}
   assert.deepEqual((await validatePrototypeProject({root,componentBasis:kind==='shadcn'?'vue-shadcn-prebuilt':'html-css-js'})).errors,[]);
@@ -62,7 +62,7 @@ try{
   }
   assert.deepEqual(failures,[]);await context.close();
  }
- const h1Root=path.join(source,'docs/.scratch/shadcn-h1/design/prototypes');
+ const h1Root=path.join(source,'.work/shadcn-h1/design/prototypes');
  await buildShadcnVuePrototype({projectRoot:source,root:h1Root,feature:'shadcn-h1',profile:'H1',toolchain:process.env.YSS_VUE_TOOLCHAIN});
  assert.deepEqual((await validatePrototypeProject({root:h1Root,profile:'H1'})).errors,[]);
  assert((await validatePrototypeProject({root:h1Root,profile:'H2'})).errors.length);

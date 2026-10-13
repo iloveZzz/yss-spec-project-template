@@ -129,6 +129,7 @@ export function compileImplementationContract({
   let architectureProfile;
   if (architectural || architecture_identity) {
     architectureProfile = validateArchitectureIdentity(architecture_identity, registry);
+    if (!readOnly && architectureProfile.maturity === "deprecated") fail("retired: architecture Profile 仅允许历史只读审计");
     if (!architecture_evidence?.engineering_baseline || !architecture_evidence?.repository_registration || !architecture_evidence?.manifest) fail("缺少工程基线、仓库登记或 Manifest 架构证据");
     verifyArchitectureEvidence(architecture_identity, architecture_evidence, { root, registry, execution:recompilationExecution, assetRef:approved_slice?.ref });
     for (const recipe of orderedRecipes) if (recipe.architecture_family && recipe.architecture_family !== architecture_identity.architecture_family) fail(`Recipe ${recipe.id} 与架构族不匹配`);

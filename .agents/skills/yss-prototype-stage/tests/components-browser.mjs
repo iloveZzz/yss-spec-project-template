@@ -49,7 +49,7 @@ for(const [engine,type] of [['chromium',chromium],['webkit',webkit]]){
 // Comfortable is built through the supported author configuration, not patched CSS.
 const fixture=path.join(out,'comfortable-fixture');await mkdir(path.join(fixture,'.template-spec/design/tokens'),{recursive:true});
 for(const ref of ['DESIGN.md','.template-spec/design/tokens/variables.css'])await cp(path.join(root,ref),path.join(fixture,ref));
-const comfortable=path.join(fixture,'docs/.scratch/catalog/design/prototypes');
+const comfortable=path.join(fixture,'.work/catalog/design/prototypes');
 await fixtureTracker(fixture);
 await buildShadcnVuePrototype({projectRoot:fixture,root:comfortable,feature:'catalog',toolchain:process.env.YSS_VUE_TOOLCHAIN,config:path.join(root,'.agents/skills/yss-prototype-stage/assets/vue-business-patterns/component-states-standard.config.json'),density:'comfortable'});
 const browser=await chromium.launch();try{const context=await browser.newContext({offline:true,reducedMotion:'reduce'}),page=await context.newPage();

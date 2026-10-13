@@ -1,0 +1,204 @@
+[[1;33mWARNING[m] 
+[[1;33mWARNING[m] Some problems were encountered while building the effective settings
+[[1;33mWARNING[m] Unrecognised tag: 'distributionManagement' (position: START_TAG seen ...</properties>\r\n            <distributionManagement>... @206:37)  @ /Users/zhudaoming/.m2/settings.xml, line 206, column 37
+[[1;33mWARNING[m] 
+[[1;34mINFO[m] Scanning for projects...
+[[1;33mWARNING[m] 
+[[1;33mWARNING[m] Some problems were encountered while building the effective model for com.yss.example:mvc-probe-server:jar:1.0.0-SNAPSHOT
+[[1;33mWARNING[m] 'dependencies.dependency.(groupId:artifactId:type:classifier)' must be unique: org.projectlombok:lombok:jar -> duplicate declaration of version 1.18.42 @ line 2, column 1386
+[[1;33mWARNING[m] 
+[[1;33mWARNING[m] It is highly recommended to fix these problems because they threaten the stability of your build.
+[[1;33mWARNING[m] 
+[[1;33mWARNING[m] For this reason, future Maven versions might no longer support building such malformed projects.
+[[1;33mWARNING[m] 
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] [1mReactor Build Order:[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] mvc-probe                                                          [pom]
+[[1;34mINFO[m] mvc-probe-repository                                               [jar]
+[[1;34mINFO[m] mvc-probe-service                                                  [jar]
+[[1;34mINFO[m] mvc-probe-server                                                   [jar]
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m---------------------< [0;36mcom.yss.example:mvc-probe[0;1m >----------------------[m
+[[1;34mINFO[m] [1mBuilding mvc-probe 1.0.0-SNAPSHOT                                  [1/4][m
+[[1;34mINFO[m] [1m--------------------------------[ pom ]---------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-enforcer-plugin:3.5.0:enforce[m [1m(enforce-platform)[m @ [36mmvc-probe[0;1m ---[m
+[[1;34mINFO[m] Rule 0: org.apache.maven.enforcer.rules.version.RequireJavaVersion passed
+[[1;34mINFO[m] Rule 1: org.apache.maven.enforcer.rules.version.RequireMavenVersion passed
+[[1;34mINFO[m] Rule 2: org.apache.maven.enforcer.rules.dependency.DependencyConvergence passed
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m----------------< [0;36mcom.yss.example:mvc-probe-repository[0;1m >----------------[m
+[[1;34mINFO[m] [1mBuilding mvc-probe-repository 1.0.0-SNAPSHOT                       [2/4][m
+[[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-enforcer-plugin:3.5.0:enforce[m [1m(enforce-platform)[m @ [36mmvc-probe-repository[0;1m ---[m
+[[1;34mINFO[m] Rule 2: org.apache.maven.enforcer.rules.dependency.DependencyConvergence passed
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:3.3.1:resources[m [1m(default-resources)[m @ [36mmvc-probe-repository[0;1m ---[m
+[[1;34mINFO[m] skip non existing resourceDirectory /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v7/mvc-probe/mvc-probe-repository/src/main/resources
+[[1;34mINFO[m] skip non existing resourceDirectory /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v7/mvc-probe/mvc-probe-repository/src/main/resources
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.14.1:compile[m [1m(default-compile)[m @ [36mmvc-probe-repository[0;1m ---[m
+[[1;34mINFO[m] Recompiling the module because of [1mchanged source code[m.
+[[1;34mINFO[m] Compiling 1 source file with javac [debug parameters release 17] to target/classes
+[[1;33mWARNING[m] 以下选项未被任何处理程序识别: '[mapstruct.verbose, mapstruct.suppressGeneratorVersionInfoComment, mapstruct.suppressGeneratorTimestamp]'
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:3.3.1:testResources[m [1m(default-testResources)[m @ [36mmvc-probe-repository[0;1m ---[m
+[[1;34mINFO[m] skip non existing resourceDirectory /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v7/mvc-probe/mvc-probe-repository/src/test/resources
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.14.1:testCompile[m [1m(default-testCompile)[m @ [36mmvc-probe-repository[0;1m ---[m
+[[1;34mINFO[m] No sources to compile
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-surefire-plugin:3.5.4:test[m [1m(default-test)[m @ [36mmvc-probe-repository[0;1m ---[m
+[[1;34mINFO[m] No tests to run.
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m-----------------< [0;36mcom.yss.example:mvc-probe-service[0;1m >------------------[m
+[[1;34mINFO[m] [1mBuilding mvc-probe-service 1.0.0-SNAPSHOT                          [3/4][m
+[[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-enforcer-plugin:3.5.0:enforce[m [1m(enforce-platform)[m @ [36mmvc-probe-service[0;1m ---[m
+[[1;34mINFO[m] Rule 2: org.apache.maven.enforcer.rules.dependency.DependencyConvergence passed
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:3.3.1:resources[m [1m(default-resources)[m @ [36mmvc-probe-service[0;1m ---[m
+[[1;34mINFO[m] skip non existing resourceDirectory /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v7/mvc-probe/mvc-probe-service/src/main/resources
+[[1;34mINFO[m] skip non existing resourceDirectory /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v7/mvc-probe/mvc-probe-service/src/main/resources
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.14.1:compile[m [1m(default-compile)[m @ [36mmvc-probe-service[0;1m ---[m
+[[1;34mINFO[m] Recompiling the module because of [1mchanged dependency[m.
+[[1;34mINFO[m] Compiling 1 source file with javac [debug parameters release 17] to target/classes
+[[1;33mWARNING[m] 以下选项未被任何处理程序识别: '[mapstruct.verbose, mapstruct.suppressGeneratorVersionInfoComment, mapstruct.suppressGeneratorTimestamp]'
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:3.3.1:testResources[m [1m(default-testResources)[m @ [36mmvc-probe-service[0;1m ---[m
+[[1;34mINFO[m] skip non existing resourceDirectory /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v7/mvc-probe/mvc-probe-service/src/test/resources
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.14.1:testCompile[m [1m(default-testCompile)[m @ [36mmvc-probe-service[0;1m ---[m
+[[1;34mINFO[m] No sources to compile
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-surefire-plugin:3.5.4:test[m [1m(default-test)[m @ [36mmvc-probe-service[0;1m ---[m
+[[1;34mINFO[m] No tests to run.
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m------------------< [0;36mcom.yss.example:mvc-probe-server[0;1m >------------------[m
+[[1;34mINFO[m] [1mBuilding mvc-probe-server 1.0.0-SNAPSHOT                           [4/4][m
+[[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-enforcer-plugin:3.5.0:enforce[m [1m(enforce-platform)[m @ [36mmvc-probe-server[0;1m ---[m
+[[1;34mINFO[m] Rule 2: org.apache.maven.enforcer.rules.dependency.DependencyConvergence passed
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:3.3.1:resources[m [1m(default-resources)[m @ [36mmvc-probe-server[0;1m ---[m
+[[1;34mINFO[m] Copying 2 resources from src/main/resources to target/classes
+[[1;34mINFO[m] Copying 0 resource from src/main/resources to target/classes
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.14.1:compile[m [1m(default-compile)[m @ [36mmvc-probe-server[0;1m ---[m
+[[1;34mINFO[m] Recompiling the module because of [1mchanged dependency[m.
+[[1;34mINFO[m] Compiling 2 source files with javac [debug parameters release 17] to target/classes
+[[1;33mWARNING[m] 以下选项未被任何处理程序识别: '[mapstruct.verbose, mapstruct.suppressGeneratorVersionInfoComment, mapstruct.suppressGeneratorTimestamp]'
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:3.3.1:testResources[m [1m(default-testResources)[m @ [36mmvc-probe-server[0;1m ---[m
+[[1;34mINFO[m] Copying 1 resource from src/test/resources to target/test-classes
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.14.1:testCompile[m [1m(default-testCompile)[m @ [36mmvc-probe-server[0;1m ---[m
+[[1;34mINFO[m] Recompiling the module because of [1mchanged dependency[m.
+[[1;34mINFO[m] Compiling 3 source files with javac [debug parameters release 17] to target/test-classes
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-surefire-plugin:3.5.4:test[m [1m(default-test)[m @ [36mmvc-probe-server[0;1m ---[m
+[[1;34mINFO[m] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[[1;34mINFO[m] 
+[[1;34mINFO[m] -------------------------------------------------------
+[[1;34mINFO[m]  T E S T S
+[[1;34mINFO[m] -------------------------------------------------------
+[[1;34mINFO[m] Running com.yss.referenceprobe.[1mPlatformIntegrationTest[m
+02:41:32.808 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.yss.referenceprobe.PlatformIntegrationTest]: PlatformIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+02:41:32.877 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.yss.referenceprobe.MvcProbeApplication for test class com.yss.referenceprobe.PlatformIntegrationTest
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::               (v3.5.16)
+
+2026-10-13T02:41:33.119+08:00  INFO 1969 --- [mvc-probe] [           main] c.y.r.PlatformIntegrationTest            : Starting PlatformIntegrationTest using Java 17.0.16 with PID 1969 (started by zhudaoming in /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v7/mvc-probe/mvc-probe-server)
+2026-10-13T02:41:33.120+08:00  INFO 1969 --- [mvc-probe] [           main] c.y.r.PlatformIntegrationTest            : The following 1 profile is active: "scaffold-test"
+2026-10-13T02:41:33.426+08:00  INFO 1969 --- [mvc-probe] [           main] c.y.c.m.config.MapperConfiguration       : 【MapperConfiguration】mapperScannerConfigurer 初始化mapper扫描 com.yss.cloud.**.mapper
+2026-10-13T02:41:33.431+08:00  WARN 1969 --- [mvc-probe] [           main] o.m.s.mapper.ClassPathMapperScanner      : No MyBatis mapper was found in '[com.yss.cloud.**.mapper]' package. Please check your configuration.
+2026-10-13T02:41:33.612+08:00  INFO 1969 --- [mvc-probe] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 0 (http)
+2026-10-13T02:41:33.619+08:00  INFO 1969 --- [mvc-probe] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-13T02:41:33.619+08:00  INFO 1969 --- [mvc-probe] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.55]
+2026-10-13T02:41:33.644+08:00  INFO 1969 --- [mvc-probe] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-10-13T02:41:33.644+08:00  INFO 1969 --- [mvc-probe] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 517 ms
+2026-10-13T02:41:33.810+08:00  INFO 1969 --- [mvc-probe] [           main] c.y.c.m.config.MapperConfiguration       : 【MapperConfiguration】PageInterceptor 完成初始化分页插件 PageInterceptor{helperDialect='mysql', reasonable=true, supportMethodsArguments=true, params='count=countSql', autoRuntimeDialect=true}
+2026-10-13T02:41:33.814+08:00  INFO 1969 --- [mvc-probe] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-10-13T02:41:33.911+08:00  INFO 1969 --- [mvc-probe] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:mvc_probe_test user=SA
+2026-10-13T02:41:33.911+08:00  INFO 1969 --- [mvc-probe] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-10-13T02:41:33.915+08:00  INFO 1969 --- [mvc-probe] [           main] c.y.c.m.config.MapperConfiguration       : 【MapperConfiguration】根据 JDBC URL 识别 DbType: H2
+2026-10-13T02:41:33.918+08:00  INFO 1969 --- [mvc-probe] [           main] c.y.c.m.config.MapperConfiguration       : 【MapperConfiguration】根据 JDBC URL 识别 DbType: H2
+2026-10-13T02:41:33.927+08:00  INFO 1969 --- [mvc-probe] [           main] c.y.c.m.config.MapperConfiguration       : 【MapperConfiguration】根据 JDBC URL 识别 DbType: H2
+ _ _   |_  _ _|_. ___ _ |    _ 
+| | |\/|_)(_| | |_\  |_)||_|_\ 
+     /               |         
+                        3.5.16 
+2026-10-13T02:41:33.964+08:00  INFO 1969 --- [mvc-probe] [           main] m.e.s.MybatisPlusApplicationContextAware : Register ApplicationContext instances org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext@3a627c80
+2026-10-13T02:41:34.065+08:00  INFO 1969 --- [mvc-probe] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 58441 (http) with context path '/'
+2026-10-13T02:41:34.069+08:00  INFO 1969 --- [mvc-probe] [           main] c.y.r.PlatformIntegrationTest            : Started PlatformIntegrationTest in 1.118 seconds (process running for 1.617)
+2026-10-13T02:41:34.591+08:00  WARN 1969 --- [mvc-probe] [           main] jakarta.persistence.spi                  : jakarta.persistence.spi::No valid providers found.
+2026-10-13T02:41:34.642+08:00  INFO 1969 --- [mvc-probe] [o-auto-1-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-10-13T02:41:34.642+08:00  INFO 1969 --- [mvc-probe] [o-auto-1-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-10-13T02:41:34.643+08:00  INFO 1969 --- [mvc-probe] [o-auto-1-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2026-10-13T02:41:34.674+08:00  WARN 1969 --- [mvc-probe] [o-auto-1-exec-1] jakarta.persistence.spi                  : jakarta.persistence.spi::No valid providers found.
+2026-10-13T02:41:34.690+08:00  WARN 1969 --- [mvc-probe] [o-auto-1-exec-2] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.bind.MethodArgumentNotValidException: Validation failed for argument [0] in public com.yss.referenceprobe.PlatformIntegrationTest$ProbePayload com.yss.referenceprobe.PlatformIntegrationTest$ProbeController.echo(com.yss.referenceprobe.PlatformIntegrationTest$ProbePayload): [Field error in object 'probePayload' on field 'value': rejected value []; codes [NotBlank.probePayload.value,NotBlank.value,NotBlank.java.lang.String,NotBlank]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [probePayload.value,value]; arguments []; default message [value]]; default message [不能为空]] ]
+[[1;34mINFO[m] [1;32mTests run: [0;1;32m6[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.961 s -- in com.yss.referenceprobe.[1mPlatformIntegrationTest[m
+[[1;34mINFO[m] Running com.yss.referenceprobe.[1mMvcProbeApplicationTest[m
+2026-10-13T02:41:34.716+08:00  INFO 1969 --- [mvc-probe] [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.yss.referenceprobe.MvcProbeApplicationTest]: MvcProbeApplicationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-13T02:41:34.717+08:00  INFO 1969 --- [mvc-probe] [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.yss.referenceprobe.MvcProbeApplication for test class com.yss.referenceprobe.MvcProbeApplicationTest
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::               (v3.5.16)
+
+2026-10-13T02:41:34.728+08:00  INFO 1969 --- [mvc-probe] [           main] c.y.r.MvcProbeApplicationTest            : Starting MvcProbeApplicationTest using Java 17.0.16 with PID 1969 (started by zhudaoming in /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v7/mvc-probe/mvc-probe-server)
+2026-10-13T02:41:34.729+08:00  INFO 1969 --- [mvc-probe] [           main] c.y.r.MvcProbeApplicationTest            : The following 1 profile is active: "scaffold-test"
+2026-10-13T02:41:34.791+08:00  INFO 1969 --- [mvc-probe] [           main] c.y.c.m.config.MapperConfiguration       : 【MapperConfiguration】mapperScannerConfigurer 初始化mapper扫描 com.yss.cloud.**.mapper
+2026-10-13T02:41:34.792+08:00  WARN 1969 --- [mvc-probe] [           main] o.m.s.mapper.ClassPathMapperScanner      : No MyBatis mapper was found in '[com.yss.cloud.**.mapper]' package. Please check your configuration.
+2026-10-13T02:41:34.838+08:00  INFO 1969 --- [mvc-probe] [           main] c.y.c.m.config.MapperConfiguration       : 【MapperConfiguration】PageInterceptor 完成初始化分页插件 PageInterceptor{helperDialect='mysql', reasonable=true, supportMethodsArguments=true, params='count=countSql', autoRuntimeDialect=true}
+2026-10-13T02:41:34.839+08:00  INFO 1969 --- [mvc-probe] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Starting...
+2026-10-13T02:41:34.839+08:00  INFO 1969 --- [mvc-probe] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-2 - Added connection conn10: url=jdbc:h2:mem:mvc_probe_test user=SA
+2026-10-13T02:41:34.839+08:00  INFO 1969 --- [mvc-probe] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Start completed.
+2026-10-13T02:41:34.839+08:00  INFO 1969 --- [mvc-probe] [           main] c.y.c.m.config.MapperConfiguration       : 【MapperConfiguration】根据 JDBC URL 识别 DbType: H2
+2026-10-13T02:41:34.840+08:00  INFO 1969 --- [mvc-probe] [           main] c.y.c.m.config.MapperConfiguration       : 【MapperConfiguration】根据 JDBC URL 识别 DbType: H2
+2026-10-13T02:41:34.842+08:00  INFO 1969 --- [mvc-probe] [           main] c.y.c.m.config.MapperConfiguration       : 【MapperConfiguration】根据 JDBC URL 识别 DbType: H2
+ _ _   |_  _ _|_. ___ _ |    _ 
+| | |\/|_)(_| | |_\  |_)||_|_\ 
+     /               |         
+                        3.5.16 
+2026-10-13T02:41:34.849+08:00  INFO 1969 --- [mvc-probe] [           main] m.e.s.MybatisPlusApplicationContextAware : Register ApplicationContext instances org.springframework.web.context.support.GenericWebApplicationContext@51e1e058
+2026-10-13T02:41:34.858+08:00  INFO 1969 --- [mvc-probe] [           main] c.y.r.MvcProbeApplicationTest            : Started MvcProbeApplicationTest in 0.138 seconds (process running for 2.405)
+[[1;34mINFO[m] [1;32mTests run: [0;1;32m1[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.148 s -- in com.yss.referenceprobe.[1mMvcProbeApplicationTest[m
+[[1;34mINFO[m] Running com.yss.referenceprobe.architecture.[1mLayeredMvcArchitectureTest[m
+2026-10-13T02:41:34.873+08:00  INFO 1969 --- [mvc-probe] [           main] com.tngtech.archunit.core.PluginLoader   : Detected Java version 17.0.16
+[[1;34mINFO[m] [1;32mTests run: [0;1;32m1[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.423 s -- in com.yss.referenceprobe.architecture.[1mLayeredMvcArchitectureTest[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] Results:
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1;32mTests run: 8, Failures: 0, Errors: 0, Skipped: 0[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] [1mReactor Summary for mvc-probe 1.0.0-SNAPSHOT:[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] mvc-probe .......................................... [1;32mSUCCESS[m [  0.071 s]
+[[1;34mINFO[m] mvc-probe-repository ............................... [1;32mSUCCESS[m [  0.707 s]
+[[1;34mINFO[m] mvc-probe-service .................................. [1;32mSUCCESS[m [  0.157 s]
+[[1;34mINFO[m] mvc-probe-server ................................... [1;32mSUCCESS[m [  4.248 s]
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] [1;32mBUILD SUCCESS[m
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] Total time:  5.286 s
+[[1;34mINFO[m] Finished at: 2026-10-13T02:41:35+08:00
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m

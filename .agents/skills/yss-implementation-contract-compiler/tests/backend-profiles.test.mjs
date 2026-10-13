@@ -15,7 +15,7 @@ function input(name) {
   }};
 }
 
-for (const name of Object.keys(registry.architecture_profiles)) {
+for (const name of Object.keys(registry.architecture_profiles).filter(name => registry.architecture_profiles[name].maturity !== "deprecated")) {
   test(`${name} selects architecture recipe and explicit Skill Profile`, () => {
     const data = input(name);
     const mvc = data.architecture_identity.architecture_family === "layered-mvc";
@@ -42,4 +42,10 @@ test("rejects unsupported capability closure and production driver defaults", ()
   assert.throws(() => validateArchitectureIdentity({ ...identity, resolved_modules: ["server"] }), /模块闭包/);
   assert.throws(() => validateArchitectureIdentity({ ...identity, production_database: "oracle" }), /H2/);
   assert.throws(() => compileDefaultImplementationContract({ ...input("layered-mvc-service"), requiredCapabilities: ["layer.domain"] }), /不匹配/);
+});
+
+test("retired data-analysis identity remains readable but cannot compile a new work unit", () => {
+ const data = input("mvc-data-analysis-v1");
+ assert.equal(validateArchitectureIdentity(data.architecture_identity).maturity, "deprecated");
+ assert.throws(() => compileDefaultImplementationContract({ ...data, recipeIds: ["backend.mvc-service-behavior"] }), /retired/);
 });

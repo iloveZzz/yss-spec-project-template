@@ -95,7 +95,7 @@ export async function approvedSpecFixture(root,{productDesign=true,nativeSeed}={
  strategic.handoff.source.business_ticket_set_ref.digest=businessDigest;strategic.sign();
  const context=fs.readFileSync(path.join(root,'CONTEXT.md')),sourceRoles=fs.readFileSync(path.join(root,'.template-spec/agents/digital-human-roles.yaml'));
  const plan=buildPlanFixture(root,{nativeSeed});fs.writeFileSync(path.join(root,'CONTEXT.md'),context);
- plan.write('.template-spec/agents/issue-tracker.md','---\ntracker:\n  platform: local-markdown\n  root: docs/.scratch\n  business_ticket_version: 1\n---\n# Synthetic source tracker\n');
+ plan.write('.template-spec/agents/issue-tracker.md','---\ntracker:\n  platform: local-markdown\n  root: .work\n  business_ticket_version: 1\n---\n# Synthetic source tracker\n');
  plan.review.feature_id='feature.supplier';plan.state.feature_id='feature.supplier';
  plan.state.plan_review_control.feature_id='feature.supplier';plan.state.plan_review_control.scope_ids=['feature.supplier'];
  plan.review.basis=plan.review.basis.map(row=>({...row,digest:hash(fs.readFileSync(path.join(root,row.ref)))}));
@@ -123,7 +123,7 @@ export async function approvedSpecFixture(root,{productDesign=true,nativeSeed}={
  state.gates['gate.plan-approved'].basis=state.gates['gate.plan-approved'].basis.map(row=>row.ref===plan.state.plan_approval_ref?{...row,digest:hash(fs.readFileSync(path.join(root,row.ref))).slice(7)}:row);
  if(!nativeSeed){writeIdentity(root,'spec');
  plan.write('.template-spec/process/harness-profile.yaml',{schema_version:2,profile_id:'harness.spec-template',instantiation:{cli_package:'yss',metadata_file:'.yss.json',native_profile:'spec',template_source:'github:iloveZzz/yss-spec-project-template'}});}
- const checkpointRef='docs/.scratch/feature.supplier/checkpoint.json';plan.write(checkpointRef,state);
+ const checkpointRef='.work/feature.supplier/checkpoint.json';plan.write(checkpointRef,state);
  // The design selector is read from approved stage bytes, rather than a caller flag.
  // This fixture exercises the required prototype route by default.
  return {root,state,checkpointRef,plan,strategic,synthetic_fixture:true};
@@ -139,6 +139,6 @@ export async function designFixture(root,{nativeSeed,productDesign=true}={}) {
   const file=path.join(root,ref);fs.mkdirSync(path.dirname(file),{recursive:true});fs.copyFileSync(path.join(composeProfileTree('design'),ref),file);
  }}
  fs.mkdirSync(path.join(root,'.template-spec/agents'),{recursive:true});
- fs.writeFileSync(path.join(root,'.template-spec/agents/issue-tracker.md'),'---\ntracker:\n  platform: local-markdown\n  root: docs/.scratch\n  business_ticket_version: 1\n---\n# Synthetic Design tracker\n');
+ fs.writeFileSync(path.join(root,'.template-spec/agents/issue-tracker.md'),'---\ntracker:\n  platform: local-markdown\n  root: .work\n  business_ticket_version: 1\n---\n# Synthetic Design tracker\n');
  if(!nativeSeed)writeIdentity(root,'design');return {root,...target,synthetic_fixture:true};
 }

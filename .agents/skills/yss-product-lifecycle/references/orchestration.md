@@ -73,6 +73,8 @@ Matt phase boundary 是工作阶段之间的上下文决策，不是新的生命
 
 ## 原型到后端脚手架的接力
 
+本节适用于正式生命周期工作单元。用户仅要求创建 MVC/DDD 开发脚手架时，按 [直接生成说明](../../yss-ddd-scaffold-generator/references/standalone-generation.md) 直接进入对应生成技能，不要求原型、需求合同、设计批准或 `scaffold_status`；缺少这些资产不阻断直接生成。
+
 阶段 5 在技术分析后固定进入 `work-unit.implementation-repository-preparation`。编排器按 backend / frontend 影响逐项目展示已有或新建工程、Agent 推荐、仓库 scope、目标路径、Git 初始化、验证命令和风险，取得真实用户确认后再执行。已有工程调用 `implementation-repo-onboarding`；新后端按已确认架构调用对应生成器；新前端调用 `yss-frontend-scaffold-generator`。默认 `external-repository`，`harness-apps` / `git-submodule`、`git init` 和远端仓库创建均须显式选择或授权。
 
 所有命中项目必须达到 `existing-and-onboarded` 或 `initialized-and-verified`，未命中的交付面必须有带原因的 `not-applicable`。聚合结果、Manifest、验证和 onboarding 证据必须可读且当前；否则 `check.implementation-repositories-ready` 阻断实现切片拆分与合同准入。旧实例恢复时保留已有 Ticket，但将相关 Ticket / Slice Contract 标为 `blocked` / `stale` 并返回本工作单元。

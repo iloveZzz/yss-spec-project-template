@@ -5,7 +5,7 @@ import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, realpathSy
 import { pathToFileURL } from 'node:url';
 import os from 'node:os';
 import path from 'node:path';
-import { assertReleaseCheckout, verifyTemplateRelease } from '../lib/template-release.mjs';
+import { assertReleaseCheckout, verifyTemplateRelease as verifyRelease } from '../lib/template-release.mjs';
 import { RuntimeStore } from '../../cli-core/runtime-store.mjs';
 import {validateReceipt} from '../lib/verification-delivery-run.mjs';
 import {validateBaselineReport} from '../lib/verification-report-validator.mjs';
@@ -17,6 +17,10 @@ import {validateLegacyRecoveryMatrix,REQUIRED_LEGACY_RECOVERY_CASES} from '../li
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 
 const root = path.resolve(import.meta.dirname, '../../..');
+const fixtureBases=new Map();
+const releaseSourceKeys=['YSS_RELEASE_NATIVE_INPUT','YSS_RELEASE_NATIVE_INPUT_SHA256','YSS_RELEASE_REQUIRED_PLATFORMS','YSS_RELEASE_SOURCE_EVIDENCE_DIR'];
+const fixtureEnvironments=new WeakSet();
+const verifyTemplateRelease=options=>verifyRelease({...options,base:options.base??fixtureBases.get(realpathSync(options.root))});
 function put(base, name, text, mode = 0o644) {
   mkdirSync(path.dirname(path.join(base, name)), { recursive: true });
   writeFileSync(path.join(base, name), text, { mode });
@@ -32,33 +36,44 @@ function commit(cwd) {
   return git(cwd, 'rev-parse', 'HEAD');
 }
 function fixture(t) {
+  if(!fixtureEnvironments.has(t)) {
+    const keys=['YSS_NATIVE_BINARY','YSS_NATIVE_BINARY_SHA256','YSS_NATIVE_SOURCE_ROOT',...releaseSourceKeys],previous=Object.fromEntries(keys.map(key=>[key,process.env[key]]));
+    fixtureEnvironments.add(t);
+    t.after(()=>{for(const [key,value]of Object.entries(previous)){if(value===undefined)delete process.env[key];else process.env[key]=value;}fixtureEnvironments.delete(t);});
+  }
+  for(const key of releaseSourceKeys)delete process.env[key];
   const base = mkdtempSync(path.join(os.tmpdir(), 'yss-release-test-'));
   t.after(() => rmSync(base, { recursive: true, force: true }));
   const cli=path.join(base,'native-source'),repo=path.join(base,'template');mkdirSync(cli);mkdirSync(repo);
   git(cli,'init','-q');git(repo,'init','-q');
+  put(repo,'README.md','fixed prior release fixture\n');const releaseBase=commit(repo),fixtureRoot=realpathSync(repo);fixtureBases.set(fixtureRoot,releaseBase);t.after(()=>fixtureBases.delete(fixtureRoot));
   put(cli,'go.mod','module github.com/iloveZzz/yss-cli\n\ngo 1.27.1\n');put(cli,'main.go',readFileSync(path.join(root,'.template-source/scripts/tests/fixtures/native-release.go'),'utf8'));const cliCommit=commit(cli);
   put(repo,'yss-project.yaml','schema_version: 1\nrepository_mode: template-source\n');put(repo,'scripts/repository-mode','#!/bin/sh\necho template-source\n',0o755);
   put(repo,'.template-source/scripts/lib/verification-preflight.mjs','process.stdout.write(JSON.stringify({status:"passed",errors:[]}));');
   put(repo,'.template-source/scripts/lib/verification-delivery-run.mjs',`import {parseArgs} from 'node:util';import {runDeliveryTask} from ${JSON.stringify(pathToFileURL(path.join(root,'.template-source/scripts/lib/verification-delivery-run.mjs')).href)};const {values}=parseArgs({options:{root:{type:'string'},directory:{type:'string'},action:{type:'string'},family:{type:'string'}}});runDeliveryTask(values);`);
-  put(repo,'.template-source/process/template-verification-profiles.yaml',JSON.stringify({schema_version:1,profiles:{fast:{checks:[]},release:{all_groups:true}},groups:{fixture:{commands:[{id:'check.fixture',run:'node -e ""'}]}},required_files:[],syntax_files:[],routing:[]}));
+  const check={id:'check.fixture',run:'node -e ""',group:'fixture',inputs_complete:true,input_patterns:['**'],depends_on:[],failure_mode:'fixture consumer failure'};
+  put(repo,'.template-source/process/template-verification-profiles.yaml',JSON.stringify({schema_version:1,profiles:{fast:{checks:[check]},release:{selection:'impact'}},groups:{fixture:{commands:[check]}},required_files:[],syntax_files:[],routing:[{patterns:['**'],groups:['fixture']}]}));
   put(repo, 'scripts/verify-template', `#!/usr/bin/env node
 (async()=>{const fs=require('fs'),path=require('path'),{spawnSync}=require('child_process'),{createHash}=require('crypto');const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
  const {verificationInputDigest,createVerificationReport,finalizeVerificationReport}=await import(${JSON.stringify(pathToFileURL(path.join(root,'scripts/lib/verification-report.mjs')).href)});
  const {compileExpectedVerificationPlan}=await import(${JSON.stringify(pathToFileURL(path.join(root,'.template-source/scripts/lib/verification-report-validator.mjs')).href)});
  const {collectReleaseSources}=await import(${JSON.stringify(pathToFileURL(path.join(root,'.template-source/scripts/lib/verification-artifacts.mjs')).href)});
  const args=process.argv.slice(2),directory=args[args.indexOf('--report-dir')+1],source=fs.realpathSync(process.cwd()),sha=verificationInputDigest(source),plan=compileExpectedVerificationPlan({root:source,args});fs.mkdirSync(directory,{recursive:true});
- const report=createVerificationReport(plan,{root:source,inputDigest:sha,scope:{kind:'complete-candidate'},concurrency:1,invocation:{command:path.join(source,'scripts/run-template-verification'),args:['--profile','release',...args]},sourcesManifest:collectReleaseSources({root:source,commit:spawnSync('git',['rev-parse','HEAD'],{cwd:source,encoding:'utf8'}).stdout.trim()})});
+ const report=createVerificationReport(plan,{root:source,inputDigest:sha,scope:plan.scope,concurrency:1,invocation:{command:path.join(source,'scripts/run-template-verification'),args:['--profile','release',...args]},sourcesManifest:collectReleaseSources({root:source,commit:spawnSync('git',['rev-parse','HEAD'],{cwd:source,encoding:'utf8'}).stdout.trim()})});
  for(const [index,task] of plan.commands.entries()){const r=spawnSync('/bin/sh',['-c',task.command],{cwd:source,encoding:'utf8'}),stdoutFile=path.join(directory,'task-'+index+'.stdout'),stderrFile=path.join(directory,'task-'+index+'.stderr');fs.writeFileSync(stdoutFile,r.stdout||'');fs.writeFileSync(stderrFile,r.stderr||'');report.results.push({...task,index,code:r.status,actual_exit_code:r.status,actual_exit_code_observed:true,actual_exit_signal:r.signal,stdoutFile,stderrFile,log_digests:{stdoutFile:hash(fs.readFileSync(stdoutFile)),stderrFile:hash(fs.readFileSync(stderrFile))}});if(r.status!==0)throw Error(r.stderr);}
  finalizeVerificationReport(report,{status:'passed',wallMs:1,repositoryMode:'template-source'});report.input_after_sha256=sha;report.input_drift=false;report.final_exit={code:0,signal:null,observed:true};fs.writeFileSync(path.join(directory,'report.json'),JSON.stringify(report));})().catch(error=>{console.error(error);process.exitCode=1});
 `, 0o755);
   const sha=commit(repo),binary=path.join(base,'yss-fixture');
   const bind=templateSha=>{const ldflags=`-X main.cliCommit=${cliCommit} -X main.templateCommit=${templateSha} -X main.designCommit=${templateSha} -X main.backendCommit=${templateSha}`;const built=spawnSync('go',['build','-trimpath','-ldflags',ldflags,'-o',binary,'.'],{cwd:cli,env:{...process.env,CGO_ENABLED:'0'},encoding:'utf8'});assert.equal(built.status,0,built.stderr);process.env.YSS_NATIVE_BINARY=binary;process.env.YSS_NATIVE_BINARY_SHA256=hash(readFileSync(binary));process.env.YSS_NATIVE_SOURCE_ROOT=realpathSync(cli);};
-  const previous={binary:process.env.YSS_NATIVE_BINARY,sha:process.env.YSS_NATIVE_BINARY_SHA256,source:process.env.YSS_NATIVE_SOURCE_ROOT};t.after(()=>{for(const [key,value]of [['YSS_NATIVE_BINARY',previous.binary],['YSS_NATIVE_BINARY_SHA256',previous.sha],['YSS_NATIVE_SOURCE_ROOT',previous.source]]){if(value===undefined)delete process.env[key];else process.env[key]=value;}});bind(sha);
-  return {base,repo,sha,binary,cli,bind,output:path.join(base,'evidence')};
+  bind(sha);
+  return {base,repo,sha,binary,cli,bind,releaseBase,output:path.join(base,'evidence')};
 }
 
 test('synthetic 固定源 Go 消费者真实编译、复制和公开导出产生命令证据', t => {
+  const inherited=Object.fromEntries(releaseSourceKeys.map(key=>[key,process.env[key]]));
   const f = fixture(t);
+  assert.ok(releaseSourceKeys.every(key=>process.env[key]===undefined));
+  t.after(()=>assert.deepEqual(Object.fromEntries(releaseSourceKeys.map(key=>[key,process.env[key]])),inherited));
   // Three-profile publication algorithms are exercised with a synthetic Go
   // producer. They cannot replace the separate historical recovery matrix.
   const sources=collectReleaseSources({root:f.repo,commit:f.sha}),records=[];
@@ -77,7 +92,7 @@ test('synthetic 固定源 Go 消费者真实编译、复制和公开导出产生
   }
 
   assert.equal(result.template_commit, f.sha);
-  assert.deepEqual(result.commands.find(row => row.command === 'scripts/verify-template')?.args, ['--concurrency', '1', '--runtime-store', 'off', '--report-dir', path.join(realpathSync(f.output), 'full-verification')]);
+  assert.deepEqual(result.commands.find(row => row.command === 'scripts/verify-template')?.args, ['--concurrency', '1', '--runtime-store', 'off', '--report-dir', path.join(realpathSync(f.output), 'full-verification'),'--base',f.releaseBase]);
   assert.equal(result.full_verification.status, 'passed');
   assert.ok(readFileSync(result.full_verification.report).length > 0);
   assert.ok(!result.commands.some(row=>row.command==='npm'));assert.equal(result.artifacts.length,1);assert.ok(result.commands.some(row=>row.args[0]==='bundle'&&row.args[1]==='export'));
@@ -190,6 +205,7 @@ test('发行验证在有 yss-cli 固定文件时只接受固定的二进制与�
   delete process.env.YSS_NATIVE_BINARY_OVERRIDE;
   writePin();
   assert.equal(collectReleaseSources({root:f.repo,commit:f.sha}).kind,'template-release-sources','与固定文件一致时通过');
+  assert.throws(()=>collectReleaseSources({root:f.repo,commit:f.sha,environment:{...process.env,YSS_RELEASE_NATIVE_INPUT:path.join(f.base,'missing-native-input.json')}}),/native input.*完整|发行装配.*完整/,'显式但不完整的发行证据不得回退成维护 pin 通过');
   writePin({binaries:{[platformKey()]:{sha256:'0'.repeat(64)}}});
   assert.throws(()=>collectReleaseSources({root:f.repo,commit:f.sha}),/与固定版本不符/,'二进制摘要不符');
   writePin({commit:'f'.repeat(40)});

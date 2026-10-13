@@ -8,11 +8,13 @@ description: 编排后端专职 Harness 的输入接收、合同、任务派发�
 
 # Harness Orchestrator
 
+仅请求创建 MVC/DDD 开发脚手架时，直接路由到 `yss-layered-mvc-scaffold-generator` 或 `yss-ddd-scaffold-generator`，按[直接生成说明](../yss-ddd-scaffold-generator/references/standalone-generation.md) 收集工程输入。无需需求合同、Plan/Spec、原型、设计审批、checkpoint、`scaffold_status` 或治理实例；未传合同参数时默认直接生成，`--standalone` 可省略。已有正式任务与显式合同调用继续原路径，以下交付流程不作为纯骨架生成的前提。
+
 本入口是后端专职协作方。本端职责终点由当前后端交付合同与实际 Backend Delivery 包验证决定；不写 Spec 主控的推进意图配置，不保存第二套整体进度。主控只汇总显式同功能 checkpoint 与当前 Receipt。后端可交付不等于完整业务验收；新增 v5 交付的 `strategic_bundle_ref` 必须指向完整不可变 delivery wrapper，裸 package 仅保留历史兼容读取。
 
 正式包终点按本端明确 checkpoint 与唯一登记 map 写入功能目录的 `backend-delivery.json`，无需 Spec 目标配置或后端专用执行范围。它必须核验当前 Slice、独立审查和当前构建提交；本地批准业务输入可显式使用 `local-evidence`，核验同一功能的当前 Slice、真实构建、契约/部署与独立 Fresh Verification；不伪造战略或后端交付包。有上游交接或对外接收要求时保留原正式包。
 
-后端新骨架必须消费注册表 architecture_profiles，并在工程基线、登记、Manifest、Slice/work unit 和结果中保持相同 architecture_identity。DDD/MVC 都固定本地/测试 H2，生产数据库 not-bound；不得添加默认外部驱动或数据源。配套技能按 `.template-spec/agents/backend-architecture-profiles.md` 分流，MVC 不加载 yss-domain。Profile 仍为 draft 时不得 ready-for-agent，也不得把结构测试当作真实首切片兼容证明。
+正式治理的新骨架必须消费注册表 architecture_profiles，并在工程基线、登记、Manifest、Slice/work unit 和结果中保持相同 architecture_identity。DDD/MVC 都固定本地/测试 H2，生产数据库 not-bound；不得添加默认外部驱动或数据源。配套技能按 `.template-spec/agents/backend-architecture-profiles.md` 分流，MVC 不加载 yss-domain。Profile 仍为 draft 时不得 ready-for-agent，也不得把结构测试当作真实首切片兼容证明。
 
 这是本专职 Harness 的唯一编排入口。它负责读取 `yss-project.yaml` 与 `CONTEXT.md`、判断影响面、选择下一个未阻塞工作单元、编译任务包、维护合同版本、汇合执行结果和触发重路由。
 
@@ -33,7 +35,7 @@ upstream 模式或显式 `frontend_delivery` 输入，按 `.template-spec/proces
 
 先按根 `AGENTS.md` 和 `.template-spec/process/harness-process-tailoring.md` 区分只读咨询、模板维护和产品行动。只读查询不创建 Ticket、checkpoint 或审查任务；模板日常维护由 `maintaining-skills` 自检，仅明确选择独立审查时路由 `work-unit.intensity-aware-review`。注册表有 `public_*` 时优先消费当前展示说明，旧字段保留兼容语义。下列产品流程用于选择当前缺失的工作，已有当前批准资产、登记、父票及 Slice 合同先核验复用，不重走全部阶段或要求未来产物。Fresh Verification 只覆盖当前工作及直接 / 传递依赖；证据复用和边界重验按裁剪合同执行。
 
-## 主流程
+## 正式业务交付主流程
 
 1. 校验仓库身份和业务输入模式：standalone 从原始需求完成本端 Plan/Spec 的分析、独立审查与批准；upstream 核验当前上游批准输入，冲突回交权威方。随后按实际影响核验实现仓与当前合同版本。
 2. 在设计前完成 `gate.backend-architecture-platform-approved`：既有工程核验并沿用当前登记架构与固定工程基线/POM 中的实际 Spring Boot 版本，将该门禁记录为 `not-applicable`，不重复询问；新工程基于批准需求和工程约束推荐 `domain-driven` 或 `layered-mvc`，运行 `scripts/backend-platforms`，把架构、Boot 精确补丁、Java 和 YSS 父 POM/BOM 在同一次用户决定中展示；独立子项目可继承或覆盖，逐项目确认（可一次确认明确列出的多个项目），持久化 `scaffold-architecture-decisions.yaml`。不得从目录或默认值推断。
@@ -56,7 +58,7 @@ upstream 模式或显式 `frontend_delivery` 输入，按 `.template-spec/proces
 
 先消费 `.template-spec/process/harness-profile.yaml` 的职责与输入条件，再依 `.template-spec/process/frontend-backend-delivery.md` 接力。不得派发另一端实现任务；跨端输入评审必须只读。终点只关闭本端验证，整体业务验收由登记的统一管理方汇总。
 
-新 DDD/MVC 脚手架合同必须绑定 `platform_configuration` v2。仅清单中真实验证过的 YSS 组合可生成；缺兼容组件或证据时阻断，不替代为官方组件。已有当前批准展示摘要后复用；依赖配方变化重编合同，单纯补充同配置证据只重验。同一 Maven Reactor 平台一致，候选维护产物不可进入业务切片。详见 `.template-spec/engineering/backend-platforms.md`。
+正式路径的新 DDD/MVC 脚手架合同必须绑定 `platform_configuration` v2。仅清单中真实验证过的 YSS 组合可生成；缺兼容组件或证据时阻断，不替代为官方组件。已有当前批准展示摘要后复用；依赖配方变化重编合同，单纯补充同配置证据只重验。同一 Maven Reactor 平台一致，候选维护产物不可进入业务切片。详见 `.template-spec/engineering/backend-platforms.md`。
 
 ## 阶段工作追踪
 

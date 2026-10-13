@@ -25,10 +25,7 @@
       "skills-lock.json",
       "yss-project.yaml"
     ],
-    "excludePathSuffixes": [
-      "tests",
-      "test"
-    ],
+    "excludePathSuffixes": [],
     "excludePaths": [
       ".pi/skills",
       ".cursor/skills",

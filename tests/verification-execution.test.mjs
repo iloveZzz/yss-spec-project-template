@@ -79,16 +79,7 @@ test('真实Git退役四gitlink差异纳入完整门禁，仍保留三个Agent�
   assert.deepEqual(changed,['.gitmodules',...retired].sort());
   const remaining=git('ls-files','--stage').split('\n').filter(line=>line.startsWith('160000 ')).map(line=>line.split('\t')[1]).sort();
   assert.deepEqual(remaining,active.sort(),'退役差异不能删除三个Agent来源');
-  assert.throws(()=>planTemplateVerification({profile:'fast',changedFiles:changed,root:sourceRoot}),/INCOMPLETE_VERIFICATION_INPUTS/,'缺日常映射不能转换为发布任务');
-  for(const profile of ['release']){
-    const plan=planTemplateVerification({profile,changedFiles:changed,root:sourceRoot});
-    assert.equal(plan.effective_profile,'release');assert.equal(plan.compatibility_required,true);assert.deepEqual(plan.unknown_files,[]);if(profile==='candidate')assert.match(plan.escalation_reason,/\.gitmodules/);
-    for(const group of ['drift-identity','candidate-integrity','dedicated-cli-core','cli-sync','strategic-handoff-package','implementation'])assert.ok(plan.groups.includes(group),`${profile}: ${group}`);
-    const execution=addVerificationExecutionTasks(plan,{root:sourceRoot,reportDir:path.join(root,`report-${profile}`)});
-    assert.ok(execution.commands.some(item=>item.command.includes('verify-delivery-harness-distribution')),'公开交接分发不能被裁掉');
-    assert.equal(execution.commands.filter(item=>item.kind==='artifact-prepare').length,3,'三个维护中的 Profile 的公开 Bundle 生产准备不能被裁掉');
-    assert.ok(execution.commands.some(item=>item.command.includes('native-consumer-routing.test.mjs')),'活跃专职源与统一CLI消费者检查不能被裁掉');
-  }
+  for(const profile of ['fast','release']){const plan=planTemplateVerification({profile,changedFiles:changed,root:sourceRoot});assert.deepEqual(plan.changed_files,changed);assert.ok(plan.commands.some(check=>check.id==='check.work-layout-hardcodes'),'旧 gitlink 删除路径仍纳入全来源扫描');}
   assert.throws(()=>planTemplateVerification({profile:'fast',changedFiles:['unknown-retirement-policy.asset'],root:sourceRoot}),/UNKNOWN_VERIFICATION_PATH/);
 });
 test('原生实例必要检查纳入各profile及完整真实变更计划，保持退役门禁',t=>{
@@ -112,11 +103,12 @@ test('原生实例必要检查纳入各profile及完整真实变更计划，保�
   assert.throws(()=>planTemplateVerification({profile:'fast',changedFiles:[nativeRef],root}),/INCOMPLETE_VERIFICATION_INPUTS/);
   const daily=addVerificationExecutionTasks(planTemplateVerification({profile:'fast',changedFiles:[],root}),{root});
   assert.ok(!daily.commands.some(task=>task.task_id?.startsWith('supplemental.')),'日常不无条件追加补充回归');
-  for(const profile of ['release'])for(const [scope,changedFiles]of [['native',[nativeRef]],['complete',actual],['clean',[]]]){
+  assert.throws(()=>planTemplateVerification({profile:'release',changedFiles:[nativeRef],root}),/INCOMPLETE_VERIFICATION_INPUTS/);
+  for(const profile of ['release'])for(const [scope,changedFiles]of [['clean',[]]]){
     const plan=planTemplateVerification({profile,changedFiles,root});
     assert.deepEqual(plan.unknown_files,[]);
     assert.deepEqual(plan.changed_files,[...new Set(changedFiles)].sort());
-    if(scope==='native'||plan.effective_profile==='release')for(const group of ['drift-identity','implementation','cli-sync'])assert.ok(plan.groups.includes(group),`${profile}/${scope}: ${group}`);
+    assert.equal(plan.selection.effective,'impact');
     const execution=addVerificationExecutionTasks(plan,{root,reportDir:path.join(directory,`${profile}-${scope}`)});
     const check=execution.commands.find(item=>item.task_id==='supplemental.native-instance-drift');
     assert.ok(check,'路径有路由还必须实际编译必要检查');
@@ -125,12 +117,8 @@ test('原生实例必要检查纳入各profile及完整真实变更计划，保�
     assert.deepEqual(check.gate_ids,['check.verification-fixed-source']);
     assert.deepEqual(check.execution.args,['--test','--test-concurrency=1','tests/instance-metadata.test.mjs','tests/native-instance-drift.test.mjs']);
     assert.ok(check.depends_on.includes('check.verification-environment'));
-    if(scope==='complete'&&actual.includes('.gitmodules')){
-      assert.equal(plan.commands.filter(item=>item.task_id?.startsWith('legacy.')).length,117,'冻结历史检查不能改变');
-      assert.equal(execution.commands.filter(item=>item.kind==='artifact-prepare').length,4);
-      assert.ok(execution.commands.some(item=>item.command.includes('verify-delivery-harness-distribution')));
-      assert.ok(execution.commands.some(item=>item.command.includes('native-consumer-routing.test.mjs')));
-    }
+    assert.equal(execution.commands.filter(item=>item.kind==='artifact-prepare').length,3);
+    assert.ok(execution.commands.some(item=>item.command.includes('native-consumer-routing.test.mjs')));
   }
   for(const profile of ['fast','release'])assert.throws(()=>planTemplateVerification({profile,changedFiles:['unregistered-native-instance.asset'],root}),/UNKNOWN_VERIFICATION_PATH/);
 });
@@ -198,7 +186,7 @@ test('两项退役Spec源码检查保留历史请求并执行原生公开行为'
 });
 test('无report-dir的完整CLI计划分配新仓外报告且包含真实准备台账',t=>{
   const root=fileURLToPath(new URL('..',import.meta.url)),entry=fileURLToPath(new URL('../scripts/run-template-verification',import.meta.url));
-  const plan=JSON.parse(execFileSync(process.execPath,[entry,'--profile','release','--plan','--json'],{cwd:root,encoding:'utf8',timeout:10000}));
+  const plan=JSON.parse(execFileSync(process.execPath,[entry,'--profile','release','--base',execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),'--plan','--json'],{cwd:root,encoding:'utf8',timeout:10000}));
   const consumer=plan.commands.find(task=>task.kind==='artifact-consumers');assert.ok(consumer);assert.ok(path.isAbsolute(consumer.receipt_file));assert.equal(fs.existsSync(path.dirname(consumer.receipt_file)),false);assert.ok(!consumer.receipt_file.startsWith(root+path.sep));assert.equal(plan.commands.some(task=>task.kind==='source-test-consumer'),false);assert.ok(plan.commands.find(task=>task.kind!=='preflight'&&task.command.includes('tests/cli-retirement.test.mjs')).depends_on.includes(consumer.id));
 });
 test('真实进程超时返回124并保留最终观测，后续独立检查完成', async t => {
@@ -284,7 +272,7 @@ test('新DAG复用绑定不同前置occurrence与资源，相同argv真实分别
 });
 test('真实CLI可独立加载纯台账并生成完整计划',t=>{
   const root=fileURLToPath(new URL('..',import.meta.url)),entry=fileURLToPath(new URL('../scripts/run-template-verification',import.meta.url));
-  const plan=JSON.parse(execFileSync(process.execPath,[entry,'--profile','release','--plan','--json','--report-dir',path.join(temporary(t),'report')],{cwd:root,encoding:'utf8',timeout:10000}));
+  const plan=JSON.parse(execFileSync(process.execPath,[entry,'--profile','release','--base',execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),'--plan','--json','--report-dir',path.join(temporary(t),'report')],{cwd:root,encoding:'utf8',timeout:10000}));
   assert.equal(plan.commands[0].kind,'preflight');assert.ok(plan.commands.every(row=>row.id.startsWith('check.')));assert.equal(plan.strategy,'release');
 });
 test('报告参数完整性独立于来源校验，显式legacy-full不能忽略缺配对或坏摘要',t=>{
@@ -297,10 +285,11 @@ test('报告参数完整性独立于来源校验，显式legacy-full不能忽略
   }
   assert.throws(()=>validateVerificationArguments({'baseline-report':'unavailable.json','baseline-report-sha256':digest}),/需要 --base/);
   assert.equal(validateVerificationArguments({profile:'release',base}).base,base);
+  assert.throws(()=>validateVerificationArguments({profile:'release'}),/RELEASE_BASE_REQUIRED/);
   const root=fileURLToPath(new URL('..',import.meta.url)),entry=fileURLToPath(new URL('../scripts/run-template-verification',import.meta.url));
   for(const args of [['--baseline-report','unavailable.json'],['--qualification-report-sha256',digest],['--qualification-report','unavailable.json','--qualification-report-sha256','bad']]){
     const reportDir=path.join(temporary(t),'report');
-    assert.throws(()=>execFileSync(process.execPath,[entry,'--profile','release','--plan','--json','--report-dir',reportDir,...args],{cwd:root,stdio:'pipe',timeout:10000}),error=>error.status===1&&/必须成对提供|64 位 SHA-256|QUALIFICATION_RETIRED/.test(error.stderr.toString()));
+    assert.throws(()=>execFileSync(process.execPath,[entry,'--profile','release','--base',execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),'--plan','--json','--report-dir',reportDir,...args],{cwd:root,stdio:'pipe',timeout:10000}),error=>error.status===1&&/必须成对提供|64 位 SHA-256|QUALIFICATION_RETIRED/.test(error.stderr.toString()));
     assert.equal(fs.existsSync(reportDir),false);
   }
 });
@@ -310,7 +299,7 @@ test('仅提供base仍支持完整回退，显式legacy参考覆盖不被裁剪'
   for(const profile of ['release']){
     const plan=JSON.parse(execFileSync(process.execPath,[entry,'--profile',profile,'--base',base,'--plan','--json','--report-dir',path.join(temporary(t),'report')],{cwd:root,encoding:'utf8',timeout:10000}));
     assert.equal(plan.strategy,'release');
-    assert.ok(plan.commands.some(task=>task.task_id?.startsWith('release.')));
+    assert.equal(plan.selection.effective,'impact');assert.ok(plan.commands.some(task=>task.selection_reason==='release-required'));
     if(profile==='legacy-full')assert.equal(plan.commands.filter(task=>task.kind==='syntax').length,115);
   }
 });
@@ -343,7 +332,9 @@ test('监督父进程观察worker close后持久化退出，失败报告保留�
 });
 test('监督中断拒绝成功并保留实际 close 与日志',async t=>{
   const {directory,root}=fixtureRoot(t),marker=path.join(directory,'child-pid'),controller=new AbortController();
-  const plan={strategy:'release',requested_profile:'diagnostic',effective_profile:'diagnostic',source_requirement:'current',required_files:[],groups:['check'],selection:{effective:'legacy',omitted:[]},commands:[{id:'check.wait',task_id:'wait',group:'check',command:node(`require('node:fs').writeFileSync(${JSON.stringify(marker)},String(process.pid));setInterval(()=>{},1000);`)}]};
+  const waitCommand=node(`require('node:fs').writeFileSync(${JSON.stringify(marker)},String(process.pid));setInterval(()=>{},1000);`);
+  // Observe the supervised process itself, not an orphan whose reaping depends on container PID 1.
+  const plan={strategy:'release',requested_profile:'diagnostic',effective_profile:'diagnostic',source_requirement:'current',required_files:[],groups:['check'],selection:{effective:'legacy',omitted:[]},commands:[{id:'check.wait',task_id:'wait',group:'check',command:process.platform==='win32'?waitCommand:`exec ${waitCommand}`} ]};
   const execution=executeVerificationPlan({root,plan,reportDir:path.join(directory,'report'),purpose:'diagnostic',signal:controller.signal});
   const deadline=Date.now()+10000;while(!fs.existsSync(marker)&&Date.now()<deadline)await new Promise(resolve=>setTimeout(resolve,10));
   assert.ok(fs.existsSync(marker));const pid=Number(fs.readFileSync(marker,'utf8'));controller.abort();

@@ -64,7 +64,7 @@ test('workspace builds as a portable Vue package with exact page source closure'
  const projectRoot=await mkdtemp(path.join(os.tmpdir(),'yss-workspace-contract-'));await mkdir(path.join(projectRoot,'.template-spec/design/tokens'),{recursive:true});
  for(const file of ['DESIGN.md','.template-spec/design/tokens/variables.css'])await cp(new URL('../../../../'+file,import.meta.url),path.join(projectRoot,file));
  await fixtureTracker(projectRoot);
- const root=path.join(projectRoot,'docs/.scratch/workspace/design/prototypes');const manifest=await buildShadcnVuePrototype({projectRoot,root,feature:'workspace',toolchain:process.env.YSS_VUE_TOOLCHAIN,config:new URL('../assets/vue-business-patterns/workspace-standard.config.json',import.meta.url).pathname});
+ const root=path.join(projectRoot,'.work/workspace/design/prototypes');const manifest=await buildShadcnVuePrototype({projectRoot,root,feature:'workspace',toolchain:process.env.YSS_VUE_TOOLCHAIN,config:new URL('../assets/vue-business-patterns/workspace-standard.config.json',import.meta.url).pathname});
  assert.equal(manifest.component_basis,'vue-shadcn-prebuilt');assert.equal(manifest.build_provenance.component_groups.length,27);assert.deepEqual((await validatePrototypeProject({root,projectRoot})).errors,[]);
  for(const source of ['ListDetail.vue','MultiStep.vue','Approval.vue','Conflict.vue','Analysis.vue','workspace-model.js','workspace-page.ts','workspace-definition.ts'])assert(manifest.files['authoring-sources/'+source],source);
  const scenarios=JSON.parse(await readFile(path.join(root,'scenarios.json')));for(const item of Object.values(scenarios.scenarios[0].initial_data.pages))assert.equal(manifest.files[item.source_ref],item.source_digest,'bound page fixture must travel with the package');

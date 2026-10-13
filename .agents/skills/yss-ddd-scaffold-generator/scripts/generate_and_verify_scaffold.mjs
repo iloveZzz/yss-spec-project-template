@@ -7,6 +7,7 @@ import process from "node:process";
 import { fileURLToPath } from "node:url";
 
 import { run } from "./run_scaffold_verification.mjs";
+import { parseArgs as parseGeneratorArgs } from "./generate_scaffold.mjs";
 
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 const GENERATOR = path.join(SCRIPT_DIR, "generate_scaffold.mjs");
@@ -39,7 +40,8 @@ function parseArgs(argv) {
   }
   if (!evidenceDir) throw new Error("必须提供 --evidence-dir");
   if (!projectName || !outputDir) throw new Error("必须提供 --project-name 和 --output-dir");
-  return { evidenceDir, generatorArgs, workflowMode: generatorArgs.includes("--standalone") ? "standalone-generation" : "controlled-generation", projectRoot: path.join(path.resolve(outputDir), projectName) };
+  const options = parseGeneratorArgs(generatorArgs);
+  return { evidenceDir, generatorArgs, workflowMode: options.standalone ? "standalone-generation" : "controlled-generation", projectRoot: path.join(path.resolve(outputDir), projectName) };
 }
 
 function executeGenerator(args) {
@@ -90,6 +92,7 @@ async function main() {
     if (passed || verification.verification_mode === "standalone-generation") {
       const manifestPath = path.join(args.projectRoot, ".yss", "scaffold-generation.json");
       const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
+      if (verification.reference_verification) manifest.reference_verification = verification.reference_verification;
       manifest.completion_level = manifest.generation_mode === "standalone-generation" ? verification.completion_level : "empty-scaffold-verified";
       if (manifest.generation_mode === "standalone-generation") manifest.verification = { status: verification.status, failure_category: verification.failure_category, commands: verification.commands, report_ref: verificationPath };
       if (passed) {

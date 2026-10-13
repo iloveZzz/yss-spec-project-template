@@ -46,7 +46,7 @@ architecture_profiles:
   mvc-data-analysis-v1:
     architecture_family: layered-mvc
     generator_skill: yss-layered-mvc-scaffold-generator
-    maturity: draft
+    maturity: deprecated
     core_modules:
       - server
       - core
@@ -146,12 +146,6 @@ capabilities:
       - slice-implementation
       - troubleshooting
       - review-input
-  - id: project-init.mvc-data-analysis
-    primary_skill: yss-layered-mvc-scaffold-generator
-    provider:
-      kind: none
-    task_modes:
-      - component-maintenance
   - id: governance.implementation-contract
     primary_skill: yss-implementation-contract-compiler
     provider:

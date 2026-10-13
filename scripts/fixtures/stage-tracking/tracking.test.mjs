@@ -9,27 +9,27 @@ import { stringify } from '../../vendor/yaml.mjs';
 import { assertStageTracking, assertTrackingTransition, parseYaml, binding, refreshTracking, sha256 } from '../../lib/stage-tracking.mjs';
 import { planTracking, applyTracking, checkTracking } from '../../lib/stage-tracking-migration.mjs';
 const repo = path.resolve(import.meta.dirname, '../../..');
-const checkpointRef = 'docs/.scratch/demo/checkpoint.json';
+const checkpointRef = '.work/demo/checkpoint.json';
 function put(root, ref, value) { const p = path.join(root, ref); mkdirSync(path.dirname(p), { recursive: true }); writeFileSync(p, typeof value === 'string' ? value : ref.endsWith('.json') ? JSON.stringify(value, null, 2) : stringify(value)); }
-function fixture({ design = false, enabled = false, platform = 'local-markdown', workRoot = 'docs/.scratch' } = {}) {
+function fixture({ design = false, enabled = false, platform = 'local-markdown', workRoot = '.work' } = {}) {
   const root = mkdtempSync(path.join(os.tmpdir(), 'yss-stage-tracking-'));
   for (const ref of ['.template-spec/process/checkpoint-boundary.yaml', '.template-spec/process/schemas/stage-tracking.schema.json', '.template-spec/process/schemas/lifecycle-checkpoint.schema.json', '.template-spec/process/templates/lifecycle-checkpoint-template.yaml', '.template-spec/process/lifecycle-registry.yaml']) put(root, ref, readFileSync(path.join(repo, ref), 'utf8'));
   put(root, 'yss-project.yaml', { schema_version: 1, repository_mode: 'project-instance' });
   put(root, 'CONTEXT.md', '# 测试词汇');
   put(root, '.template-spec/agents/issue-tracker.md', `---\ntracker:\n  platform: ${platform}\n  root: ${workRoot}\n${enabled ? '  lifecycle_tracking_version: 1\n' : ''}---\n# Tracker\n`);
   if (design) put(root, '.template-spec/process/harness-profile.yaml', { profile_id: 'harness.business-ddd-strategy-handoff', allowed_work_units: ['work-unit.plan-requirements', 'work-unit.spec-synthesis', 'work-unit.prototype-design-v2'] });
-  put(root, 'docs/.scratch/demo/plan/input.md', '# 已确认的问题');
+  put(root, '.work/demo/plan/input.md', '# 已确认的问题');
   return root;
 }
-const seed = (id = 'scope') => ({ id, title: '明确导入覆盖规则', stage: 'stage.plan', work_unit: 'work-unit.plan-requirements', owner: '需求负责人', scope: '明确重复数据如何处理', acceptance: ['覆盖规则有明确实例'], source_refs: ['docs/.scratch/demo/plan/input.md'] });
+const seed = (id = 'scope') => ({ id, title: '明确导入覆盖规则', stage: 'stage.plan', work_unit: 'work-unit.plan-requirements', owner: '需求负责人', scope: '明确重复数据如何处理', acceptance: ['覆盖规则有明确实例'], source_refs: ['.work/demo/plan/input.md'] });
 function start(opts = {}, items = [seed()]) {
   const root = fixture(opts), plan = planTracking(root, { checkpoint_ref: checkpointRef, items });
   applyTracking(root, plan); return { root, plan, checkpoint: parseYaml(readFileSync(path.join(root, checkpointRef), 'utf8')) };
 }
 function complete(root, cp, id = 'scope') {
   const item = cp.stage_tracking.items.find(x => x.id === id);
-  put(root, `docs/.scratch/demo/verification/${id}.md`, '规则已逐例验证');
-  item.completion = item.acceptance.map(criterion => ({ criterion, evidence_refs: [binding(root, `docs/.scratch/demo/verification/${id}.md`)] })); item.progress = 'completed';
+  put(root, `.work/demo/verification/${id}.md`, '规则已逐例验证');
+  item.completion = item.acceptance.map(criterion => ({ criterion, evidence_refs: [binding(root, `.work/demo/verification/${id}.md`)] })); item.progress = 'completed';
 }
 function registeredFixture({design=false,workRoot='.work'}={}){
  const root=fixture({design,workRoot}),ref=design?'intake-checkpoint.json':`${workRoot}/demo/checkpoint.json`,base=`${workRoot}/demo`;
@@ -86,9 +86,9 @@ test('new Plan: unique parent, inline item, no slice; check and plan are read-on
   assert.equal(checkTracking(root, checkpointRef).status, 'missing-checkpoint');
   assert.equal(applyTracking(root, plan).status, 'applied');
   assert.equal(checkTracking(root, checkpointRef).status, 'valid');
-  assert.equal(existsSync(path.join(root, 'docs/.scratch/demo/parent-ticket.md')), true);
-  assert.equal(existsSync(path.join(root, 'docs/.scratch/demo/work-items')), false);
-  assert.equal(existsSync(path.join(root, 'docs/.scratch/demo/issues')), false);
+  assert.equal(existsSync(path.join(root, '.work/demo/parent-ticket.md')), true);
+  assert.equal(existsSync(path.join(root, '.work/demo/work-items')), false);
+  assert.equal(existsSync(path.join(root, '.work/demo/issues')), false);
   assert.equal(applyTracking(root, plan).status, 'unchanged');
   assert.equal(planTracking(root, plan.input).changes.length, 0);
 });
@@ -104,12 +104,12 @@ test('configured new and custom roots generate one consistent checkpoint, parent
     assert.equal(cp.stage_tracking.entry.ref,`${workRoot}/demo/parent-ticket.md`);
     assert.equal(cp.stage_tracking.items[0].definition_ref,`${workRoot}/demo/work-items/scope.md`);
     assert.equal(checkTracking(root,checkpoint_ref).status,'valid');
-    assert.throws(()=>planTracking(root,{checkpoint_ref:checkpointRef,items:[item]}),/WORK_LAYOUT_CHECKPOINT/);
+    assert.throws(()=>planTracking(root,{checkpoint_ref:'unconfigured-work/demo/checkpoint.json',items:[item]}),/WORK_LAYOUT_CHECKPOINT/);
   }
 });
 test('Design entry uses checkpoint and never engineering parent', () => {
   const { root, checkpoint } = start({ design: true });
-  assert.equal(existsSync(path.join(root, 'docs/.scratch/demo/parent-ticket.md')), false);
+  assert.equal(existsSync(path.join(root, '.work/demo/parent-ticket.md')), false);
   assert.equal(checkpoint.stage_tracking.entry.kind, 'checkpoint');
   checkpoint.stage_tracking.entry.kind = 'parent-ticket';
   assert.throws(() => assertStageTracking(checkpoint, { root }), /design-parent-forbidden/);
@@ -135,14 +135,14 @@ test('completion requires mapped, current evidence and frozen source digests', (
   const { root, checkpoint } = start(); checkpoint.stage_tracking.items[0].progress = 'completed';
   assert.throws(() => assertStageTracking(checkpoint, { root }), /acceptance-evidence-required/);
   complete(root, checkpoint); assert.equal(assertStageTracking(checkpoint, { root }).status, 'valid');
-  put(root, 'docs/.scratch/demo/verification/scope.md', '证据已改变');
+  put(root, '.work/demo/verification/scope.md', '证据已改变');
   assert.throws(() => assertStageTracking(checkpoint, { root }), /stale-completion/);
 });
 test('refresh propagates only to dependents and retains previous evidence', () => {
   const { root, checkpoint } = start({}, [seed(), { ...seed('other'), source_refs: ['CONTEXT.md'] }, { ...seed('dependent'), dependencies: ['scope'] }]);
   complete(root, checkpoint); complete(root, checkpoint, 'other'); complete(root, checkpoint, 'dependent');
   const evidence = structuredClone(checkpoint.stage_tracking.items[0].completion);
-  put(root, 'docs/.scratch/demo/plan/input.md', '规则变化');
+  put(root, '.work/demo/plan/input.md', '规则变化');
   const next = refreshTracking(root, checkpoint);
   assert.deepEqual(next.stale_item_ids.sort(), ['dependent', 'scope']);
   assert.equal(next.checkpoint.stage_tracking.items[1].progress, 'completed');
@@ -191,13 +191,13 @@ test('migration rejects source drift and altered plan; failed writes roll back',
   assert.equal(existsSync(path.join(root, checkpointRef)), false);
 });
 test('migration protects symlink paths and profile boundaries', () => {
-  const root = fixture(); mkdirSync(path.join(root, 'docs/.scratch/demo/work-items'));
-  symlinkSync(path.join(root, 'CONTEXT.md'), path.join(root, 'docs/.scratch/demo/work-items/scope.md'));
+  const root = fixture(); mkdirSync(path.join(root, '.work/demo/work-items'));
+  symlinkSync(path.join(root, 'CONTEXT.md'), path.join(root, '.work/demo/work-items/scope.md'));
   assert.throws(() => planTracking(root, { checkpoint_ref: checkpointRef, items: [{ ...seed(), split_reasons: ['different-owner'] }] }), /symlink/);
 });
 test('remote tracker stays pending; local requires no remote issue', () => {
   const { root } = start({ platform: 'github' });
-  assert.match(readFileSync(path.join(root, 'docs/.scratch/demo/parent-ticket.md'), 'utf8'), /publication: pending\npending_publication_to: github/);
+  assert.match(readFileSync(path.join(root, '.work/demo/parent-ticket.md'), 'utf8'), /publication: pending\npending_publication_to: github/);
 });
 test('CLI check/plan/apply roundtrip and meaningful exit codes', () => {
   const root = fixture(), items = path.join(root, 'items.yaml'), planFile = path.join(root, 'plan.json'); put(root, 'items.yaml', [seed()]);
@@ -210,8 +210,8 @@ test('CLI check/plan/apply roundtrip and meaningful exit codes', () => {
 });
 
 test('deferral needs independent record and remains non-completed', () => {
-  const root = fixture(); put(root, 'docs/.scratch/demo/gates/deferral.md', '测试决定引用；不替代阶段批准');
-  const item = { ...seed(), deferred: { owner: '负责人', resolve_by: '2099-01-01T00:00:00Z', receiver: '需求接收方', verification_plan: '复验边界', risk: '后续范围不确定', follow_up_ref: 'follow-up-1', decision_ref: 'docs/.scratch/demo/gates/deferral.md' } };
+  const root = fixture(); put(root, '.work/demo/gates/deferral.md', '测试决定引用；不替代阶段批准');
+  const item = { ...seed(), deferred: { owner: '负责人', resolve_by: '2099-01-01T00:00:00Z', receiver: '需求接收方', verification_plan: '复验边界', risk: '后续范围不确定', follow_up_ref: 'follow-up-1', decision_ref: '.work/demo/gates/deferral.md' } };
   applyTracking(root, planTracking(root, { checkpoint_ref: checkpointRef, items: [item] }));
   const cp = parseYaml(readFileSync(path.join(root, checkpointRef), 'utf8'));
   assert.ok(cp.stage_tracking.items[0].definition_ref);
@@ -239,8 +239,8 @@ test('checkpoint schema embeds the canonical stage tracking schema exactly', () 
 
 test('source changes during apply are detected and preserved while own writes roll back', () => {
   const root = fixture(), p = planTracking(root, { checkpoint_ref: checkpointRef, items: [seed()] });
-  assert.throws(() => applyTracking(root, p, { afterWrite: (_, count) => { if (count === 1) put(root, 'docs/.scratch/demo/plan/input.md', '并发更新的业务规则'); } }), /concurrent-change.*rollback-complete/);
-  assert.equal(readFileSync(path.join(root, 'docs/.scratch/demo/plan/input.md'), 'utf8'), '并发更新的业务规则');
+  assert.throws(() => applyTracking(root, p, { afterWrite: (_, count) => { if (count === 1) put(root, '.work/demo/plan/input.md', '并发更新的业务规则'); } }), /concurrent-change.*rollback-complete/);
+  assert.equal(readFileSync(path.join(root, '.work/demo/plan/input.md'), 'utf8'), '并发更新的业务规则');
   assert.equal(existsSync(path.join(root, checkpointRef)), false);
 });
 
@@ -254,7 +254,7 @@ test('migration preserves existing stable feature IDs independently of folder sl
 });
 test('a quoted stage-work-item moved under issues still cannot become an implementation ticket', async () => {
   const { validateTicketFormalization } = await import('../../lib/lifecycle-transition.mjs');
-  const root = fixture(), slice = 'docs/.scratch/demo/issues/01-fake.md', resultRef = 'docs/.scratch/demo/verification/decomposition.yaml';
+  const root = fixture(), slice = '.work/demo/issues/01-fake.md', resultRef = '.work/demo/verification/decomposition.yaml';
   put(root, slice, '---\nkind: "stage-work-item"\n---\n# 设计工作\n');
   put(root, resultRef, { result_schema: 'workflow-execution-result-v1', work_unit: 'work-unit.ticket-decomposition', result: 'completed', evidence_refs: [resultRef] });
   const state = { tracker_kind: 'local-markdown', ticket_decomposition_result_ref: resultRef, ticket_decomposition_result: { result: 'completed', evidence_refs: [resultRef] }, vertical_slice_ticket_ref: slice, vertical_slice_ticket_role: 'ready-for-agent', vertical_slice_ticket_kind: 'vertical-slice-ticket', vertical_slice_ticket: { ref: slice, role: 'ready-for-agent', kind: 'vertical-slice-ticket' }, slice_contract: { ticket_ref: slice, status: 'approved', persisted: true, current_version: true } };

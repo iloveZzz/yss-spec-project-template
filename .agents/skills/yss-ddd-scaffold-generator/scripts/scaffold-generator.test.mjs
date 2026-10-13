@@ -1,4 +1,5 @@
 import { attachScaffoldDecisionFixture } from "../../../../scripts/fixtures/user-decision/build-fixture.mjs";
+import { referenceExample } from "../../../../scripts/lib/scaffold-reference-example.mjs";
 import assert from "node:assert/strict";
 import { execFile } from "node:child_process";
 import { createHash } from "node:crypto";
@@ -655,4 +656,23 @@ test("验证日志会脱敏 Maven 仓库凭据", async (t) => {
   const log = await readFile(path.join(evidence, "mvnw-validate.stdout.log"), "utf8");
   assert.doesNotMatch(log, /sensitive-user|sensitive-password/);
   assert.match(log, /\[REDACTED:MAVEN_REPO_USERNAME\].*\[REDACTED:MAVEN_REPO_PASSWORD\]/);
+});
+
+for (const enabled of [true, false]) test(`v5 DDD 合同按批准的 reference_example=${enabled} 生成`, async t => {
+  const data = await fixture({ schema_version: 5, reference_example: referenceExample(enabled) });
+  t.after(() => rm(data.root, { recursive: true, force: true }));
+  const result = await command(data.args);
+  assert.equal(result.code, 0, result.stderr);
+  const project = path.join(data.output, 'demo-service');
+  const manifest = JSON.parse(await readFile(path.join(project, '.yss/scaffold-generation.json'), 'utf8'));
+  assert.equal(manifest.schema_version, 5);
+  assert.deepEqual(manifest.reference_example, referenceExample(enabled));
+  assert.equal(existsSync(path.join(project, 'examples/reference/pom.xml')), enabled);
+});
+test('v4 DDD 不追加样例且拒绝显式启用', async t => {
+  const data = await fixture(); t.after(() => rm(data.root, { recursive: true, force: true }));
+  const rejected = await command([...data.args, '--with-example']);
+  assert.notEqual(rejected.code, 0); assert.match(rejected.stderr, /历史 v4/);
+  const accepted = await command(data.args); assert.equal(accepted.code, 0, accepted.stderr);
+  assert.equal(existsSync(path.join(data.output, 'demo-service/examples')), false);
 });

@@ -5,6 +5,8 @@ description: 编排 YSS 研发全生命周期；当阶段、产物、门禁或 S
 
 # YSS Product Lifecycle
 
+仅生成 DDD/MVC 脚手架时，先读[直接生成](references/conditional-guidance.md#直接生成脚手架)。
+
 先按 `references/orchestration-contract.yaml.request_triage.delivery_path` 选择交付路径；`daily` 操作见 [普通任务交付](references/daily-delivery.md)。路径不是阶段、Ticket 状态或批准。
 
 ## 事实源

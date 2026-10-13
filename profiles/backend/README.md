@@ -8,6 +8,8 @@
 
 ## 初始化
 
+只需开发脚手架时，直接使用 `yss-layered-mvc-scaffold-generator`（MVC）或 `yss-ddd-scaffold-generator`（DDD）。提供工程名、包名、输出目录、精确平台和 Maven 坐标即可，无需需求合同、原型或设计审批，也无需先初始化治理实例；命令见[直接生成说明](.agents/skills/yss-ddd-scaffold-generator/references/standalone-generation.md)。以下步骤用于创建治理项目。
+
 统一 CLI `yss` 使用 `backend` Profile 创建 `harness.backend-delivery` 实例。使用已验收的固定二进制，先运行 `yss bundle inspect --profile backend --json` 核对模板提交和 Bundle 来源。
 
 ```bash

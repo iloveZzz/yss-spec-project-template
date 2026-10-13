@@ -95,7 +95,7 @@ architecture_profiles:
   mvc-data-analysis-v1:
     architecture_family: layered-mvc
     generator_skill: yss-layered-mvc-scaffold-generator
-    maturity: draft
+    maturity: deprecated
     core_modules: [server, core, client, repository, adapter, feign-client]
     capability_modules: {}
     application_module: core
@@ -165,7 +165,6 @@ capabilities:
   - { id: scaffold.ddd, primary_skill: yss-ddd-scaffold-generator, provider: { kind: none }, task_modes: [integration, component-maintenance] }
   - { id: scaffold.layered-mvc, primary_skill: yss-layered-mvc-scaffold-generator, provider: { kind: none }, task_modes: [integration, component-maintenance] }
   - { id: scaffold.frontend-vue3, primary_skill: yss-frontend-scaffold-generator, provider: { kind: none }, task_modes: [integration, component-maintenance] }
-  - { id: project-init.mvc-data-analysis, primary_skill: yss-layered-mvc-scaffold-generator, provider: { kind: none }, task_modes: [component-maintenance] }
   - { id: migration.springboot3, primary_skill: yss-up-springboot3, provider: { kind: none }, task_modes: [guidance, integration, troubleshooting, component-maintenance, review-input] }
 recipes:
   - { id: backend.spec-conformance, capabilities: [governance.backend-spec-conformance, quality.java-code-style] }
@@ -304,6 +303,11 @@ invocation_contract:
       invocation_mode: user
       primary_output: maintenance-operation
   overrides:
+    release-yss-cli:
+      invocation_mode: both
+      trigger_conditions: [yss-cli-release-request]
+      exclusion_conditions: [existing-cli-install-only, skill-authoring-only]
+      primary_output: verified-cli-release
     i-have-adhd:
       invocation_mode: model
       trigger_conditions: [lifecycle-document-output]
@@ -493,6 +497,12 @@ skills:
     instance_default_discoverable: true
     aliases: []
     impacts: [quality]
+  - id: release-yss-cli
+    layer: maintainer-only
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [template-maintenance]
   - id: setup-matt-pocock-skills
     layer: compatibility
     maturity: supported

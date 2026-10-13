@@ -20,10 +20,10 @@ tracker:
 | 字段 | 值 |
 |---|---|
 | `platform` | `local-markdown` |
-| `root` | `.work/` |
+| `root` | 读取上方 `tracker.root`（新项目默认 `.work`） |
 | `feature_layout` | 完整功能包 |
 | `remote_mirror` | 可选，默认关闭 |
-| `legacy_roots` | `.scratch/`、`docs/requirements/tickets/`（只读迁移来源） |
+| `legacy_roots` | 上方配置只用于历史扫描，不授予写权限；规则见 [工作包布局](../process/work-layout.md#历史兼容边界) |
 
 `tracker.root` 是唯一功能包根；本文 `.work/` 是新初始化示例，旧实例 attach、sync、升级保留原配置和资产。
 
@@ -37,7 +37,7 @@ tracker:
 2. 初始化或迁移时用户明确选择 GitHub / GitLab，则更新本文件后使用所选平台。
 3. Git remote 只用于代码托管、分支、PR / MR 和 CI；不能单独把 Ticket tracker 改成远程平台。
 4. 多个持久化配置声明不同平台时返回 `conflict`，暂停并要求迁移，不覆盖任何配置。
-5. 选定 GitHub / GitLab 但凭据或平台暂不可用时，先在 `.work/<feature>/` 生成“待发布平台”草案；`map.md` 保留目标平台、标记 `publication: pending` 和 `pending_publication_to`；不得自动改投另一远程平台。
+5. 选定 GitHub / GitLab 但凭据或平台暂不可用时，先在配置根下的 `<feature>/` 生成“待发布平台”草案；`map.md` 保留目标平台、标记 `publication: pending` 和 `pending_publication_to`；不得自动改投另一远程平台。
 
 ## Local Markdown 主 tracker
 
@@ -64,14 +64,13 @@ Local 主 tracker 的完整功能包结构如下：
 - Local 主 tracker 不要求远程 Ticket 存在；本地禁止 `ready-for-agent` 和技术切片。
 - 显式调用 `to-tickets` 或原生业务 Ticket 正式化均生成业务任务，初始 `Status: ready-for-human`，回交战略主控。
 - GitHub / GitLab 可以作为显式开启的镜像，在功能包中记录 URL、编号和最近同步时间；镜像失败不改变 Local 主 tracker 的权威性。
-- 根目录 `.scratch/` 与 `docs/requirements/tickets/` 是旧路径，只允许用于只读迁移检查；不再作为新 Ticket 或阶段证据的写入目录。
-- 仅发现旧路径资产时，readiness 不得进入 `ready`，必须保留 `migration_ref` 并先完成迁移；新旧路径同时存在时返回 `conflict`，不得静默覆盖或合并。
+- 当前写入位置只由 `tracker.root` 决定；历史扫描命中不改变配置根。历史根与当前根之间出现重复或引用冲突时，按 [历史兼容边界](../process/work-layout.md#历史兼容边界) 诊断，不静默覆盖或合并。
 
 ## 生命周期状态同步
 
 Spec、生命周期和交付任务状态必须同步到当前主 tracker：
 
-- `local-markdown`：写入 `.work/<feature>/`，本地文件即 Ticket 和阶段证据的权威载体。
+- `local-markdown`：写入配置根下的 `<feature>/`，本地文件即 Ticket 和阶段证据的权威载体。
 - `github`：使用 GitHub Issues，并在本地功能包记录 URL / 编号和最近同步时间；平台不可用时保留 `tracker: github`、`publication: pending`、`pending_publication_to: github`。
 - `gitlab`：使用 GitLab Issues，并在本地功能包记录 URL / IID 和最近同步时间；平台不可用时保留 `tracker: gitlab`、`publication: pending`、`pending_publication_to: gitlab`。
 
@@ -109,10 +108,10 @@ GitLab 相关配置和 MR / CI 工作流见 `.template-spec/agents/gitlab-workfl
 
 ## Local Markdown 操作
 
-- 创建或发布 Ticket：创建 `.work/<feature>/`，按上述结构写入 `map.md`、`spec.md` 或 `issues/NN-<slug>.md`。
-- 读取 Ticket：优先读取用户提供的 `.work/<feature>/` 或具体 Ticket 路径；如果引用旧路径，进入迁移检查，不把旧路径当作新写入目标。
+- 创建或发布 Ticket：在配置根下创建 `<feature>/`，按上述结构写入 `map.md`、`spec.md` 或 `issues/NN-<slug>.md`。
+- 读取 Ticket：优先读取用户提供的功能包或具体 Ticket 路径；路径属于当前配置根时正常操作，属于其他历史根时只读诊断。
 - 更新状态：修改文件顶部的 `Status:`，并在 `## Comments` 追加原因和证据。
-- Wayfinder map：使用 `.work/<feature>/map.md`，子 Ticket 放在 `issues/`。
+- Wayfinder map：使用配置根下的 `<feature>/map.md`，子 Ticket 放在该功能包的 `issues/`。
 
 ## Triage Surface
 

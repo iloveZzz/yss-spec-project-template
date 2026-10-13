@@ -175,3 +175,19 @@ test('现役 archify 与 yss-research 补装不能绕过 UNPORTED，安装闭包
  assert.deepEqual(fs.readFileSync(path.join(target,'CONTEXT.md')),context);
  const preview=runNative(['sync','--root',target]).result;assert.equal(preview.stats.changed,0);assert.equal(preview.stats.conflicts,0);
 });
+
+test('按需安装两个后端脚手架包含平台证据且可默认生成参考工程', t => {
+  const base = scratch(t), target = path.join(base, 'scaffold');
+  initializeNative('spec', target);
+  for (const skill of ['yss-ddd-scaffold-generator', 'yss-layered-mvc-scaffold-generator']) {
+    applyNative('skills', 'spec', target, path.join(base, skill + '.json'), ['ensure', skill]);
+    const generated = spawnSync(process.execPath, [`.agents/skills/${skill}/scripts/generate_scaffold.mjs`,
+      '--project-name', 'reference-probe', '--base-package', 'com.yss.probe', '--output-dir', path.join(base, skill),
+      '--platform-profile', 'spring-boot-3.5-jdk17', '--spring-boot-version', '3.5.16', '--java-version', '17',
+      '--group-id', 'com.yss.example', '--project-version', '1.0.0-SNAPSHOT', '--parent-group-id', 'com.yss.cloud',
+      '--parent-artifact-id', 'yss-cloud-microservice', '--parent-version', '3.2.0-SNAPSHOT',
+      '--yss-components-version', '3.2.0-SNAPSHOT'], {cwd: target, encoding: 'utf8', timeout: 30000});
+    assert.equal(generated.status, 0, generated.stderr);
+    assert.ok(fs.existsSync(path.join(base, skill, 'reference-probe/examples/reference/openapi.yaml')));
+  }
+});

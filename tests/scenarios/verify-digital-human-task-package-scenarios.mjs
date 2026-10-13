@@ -27,7 +27,7 @@ const contract = {
   contract_version: 2,
   slice_id: "todo",
   status: "approved",
-  lifecycle_refs: { ticket: "docs/.scratch/todo/issues/01-todo.md", engineering_baseline: evidenceRef },
+  lifecycle_refs: { ticket: ".work/todo/issues/01-todo.md", engineering_baseline: evidenceRef },
   common: { project_roots: ["apps/frontend/todo", "apps/backend/todo"], allowed_write_paths: ["apps/frontend/todo/", "apps/backend/todo/"] },
   readiness: {},
   work_units: [
@@ -73,7 +73,7 @@ function packageBase(roleId, taskId, workUnitId, kind, contractFields, stageId) 
     contract: { kind, contract_id: `${kind}-${taskId}`, contract_version: 1, status: "issued", contract_ref: ".template-spec/process/lifecycle-registry.yaml", ...contractFields },
     inputs: ["CONTEXT.md"],
     objective: "执行有界生命周期工作单元",
-    allowed_write_paths: ["docs/.scratch/"],
+    allowed_write_paths: [".work/"],
     forbidden_actions: ["不得越过主控门禁"],
     expected_outputs: ["结构化工作结果"],
     expected_evidence_files: [evidenceRef],

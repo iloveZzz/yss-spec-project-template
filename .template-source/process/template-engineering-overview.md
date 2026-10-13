@@ -63,7 +63,7 @@ YSS 模板工程是一套可版本化的研发治理系统。它用仓库身份�
 1. **分级**：根据 `.template-source/process/maintenance-intensity.yaml` 计算 L1 或 L2；未知 trigger 先更新策略。
 2. **更新权威资产**：修改对应的单一事实来源，避免在说明文档中复制规则。
 3. **生成投影**：涉及 skills 时同步 Agent roots 和 `skills-lock.json`；涉及生命周期结构时同步派生视图；涉及实例分发时构建固定 commit 的 CLI 快照。
-4. **Fresh verification**：实现内循环先看 `scripts/verify-template-fast --plan`，按变化行为与消费者执行必要检查，通过即停在 `implementation-ready`，报告为 `limited`；缺输入映射先补映射，不自动运行全量。PR 执行 `scripts/verify-template-fast --base <完整 SHA>`；正式发布前执行 `scripts/verify-template`，核验全部适用风险。release 始终执行当前全部适用检查，不依赖资格优化或旧覆盖回退；跨仓 CLI 正式交付另执行固定 commit 的集成测试和打包校验。
+4. **Fresh verification**：实现内循环先看 `scripts/verify-template-fast --plan`，按变化行为与消费者执行必要检查，通过即停在 `implementation-ready`，报告为 `limited`；缺输入映射先补映射，不自动运行全量。PR 执行 `scripts/verify-template-fast --base <完整 SHA>`；正式发布前执行 `scripts/verify-template --base <上一正式发行完整 SHA>`，从完整发行差异与当前输入独立选择受影响检查及依赖；缺映射拒绝，手工路径只能扩大范围。固定来源、摘要、三 Profile 安装与恢复仍必需，终检按相同基线独立重编译检查集合，不依赖资格优化或旧覆盖回退；跨仓 CLI 正式交付另执行固定 commit 的集成测试和打包校验。
 5. **审查与发布**：L1/L2 日常使用维护者自检，不强制冻结候选或独立审查；分级只决定验证强度。正式发布前执行完整 `scripts/verify-template` 和固定版本生成器集成。本地验证及已移除的 GitHub workflow 边界见 `github-workflows.md`。
 6. **发布与回滚**：先发布或提交子仓，再更新父仓 gitlink；跨仓版本、验证命令、发布顺序和回滚点必须可以重建。
 

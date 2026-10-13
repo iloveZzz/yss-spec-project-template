@@ -229,7 +229,7 @@ export function validateImplementationRepositoriesReady(state, { exists = exists
           missing.push(`${project.project_id} confirmed backend architecture_family`);
         }
         const contract = project.scaffold_contract;
-        if (![3, 4].includes(contract?.schema_version) || contract?.status !== "approved" || contract?.persisted !== true || contract?.current_version !== true || (role === "frontend" && contract?.schema_version !== 4)) {
+        if (![3, 4, 5].includes(contract?.schema_version) || contract?.status !== "approved" || contract?.persisted !== true || contract?.current_version !== true || (role === "frontend" && contract?.schema_version !== 4)) {
           signals.push(BLOCKING_SIGNALS.scaffoldContractUnapproved);
           missing.push(`${project.project_id} approved persisted current scaffold contract`);
         }
@@ -238,8 +238,8 @@ export function validateImplementationRepositoriesReady(state, { exists = exists
           missing.push(`${project.project_id} readable scaffold manifest`);
         }
         const manifest = readDecompositionResult(project.scaffold_manifest_ref, read);
-        if (role === "backend" && contract?.schema_version === 4) {
-          if (manifest?.schema_version !== 4 || manifest?.completion_level !== "empty-scaffold-verified" || !sameBackendDesignPrerequisites(project.design_prerequisites, manifest?.design_prerequisites)) {
+        if (role === "backend" && contract?.schema_version >= 4) {
+          if (manifest?.schema_version !== contract.schema_version || manifest?.architecture_profile === "mvc-data-analysis-v1" || manifest?.completion_level !== "empty-scaffold-verified" || !sameBackendDesignPrerequisites(project.design_prerequisites, manifest?.design_prerequisites)) {
             signals.push(BLOCKING_SIGNALS.scaffoldGenerationIncomplete);
             missing.push(`${project.project_id} v4 Manifest with empty-scaffold-verified and matching design prerequisites`);
           }

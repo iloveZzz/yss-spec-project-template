@@ -13,8 +13,6 @@ export const HARNESS_PROFILE_PATH = ".template-spec/process/harness-profile.yaml
 const UPSTREAM_WORK_UNITS = [
   "work-unit.discovery-opportunity",
   "work-unit.discovery-requirements",
-  "work-unit.domain-strategy-design",
-  "work-unit.spec-synthesis",
   "work-unit.prototype-design",
 ];
 
@@ -51,6 +49,7 @@ export function checkEntryAlignment(sources = {}) {
   note(["cli_package", "native_profile", "metadata_file", "template_source"].every(field => profile?.instantiation?.[field] === INSTANTIATION[field]), "Harness profile 原生入口来源字段必须与本家族 native 合同一致");
   note(agentsText.includes(nativeCommand) && agentsText.includes(INSTANTIATION.metadata_file), "AGENTS.md 必须声明本家族原生初始化入口与 native metadata");
   if (isTemplateSource(ROOT)) note(readmeText.includes(nativeCommand), "README.md 必须提供本家族原生初始化入口");
+  note(profile.upstream?.discovery_is_default === false, "Discovery 不是默认阶段");
   const profileId = profile?.profile_id;
   const entry = profile?.lifecycle?.entry_work_unit;
   const terminal = profile?.lifecycle?.terminal_work_unit;
@@ -58,15 +57,13 @@ export function checkEntryAlignment(sources = {}) {
   note(agentsText.includes(HARNESS_PROFILE_PATH), `AGENTS.md 必须指向 ${HARNESS_PROFILE_PATH}`);
   note(Boolean(entry) && agentsText.includes(entry), `AGENTS.md 必须声明入口工作单元: ${entry}`);
   note(Boolean(terminal) && agentsText.includes(terminal), `AGENTS.md 必须声明终点工作单元: ${terminal}`);
-  for (const workUnit of profile?.lifecycle?.allowed_work_units ?? []) {
-    note(agentsText.includes(workUnit), `AGENTS.md 主链缺少允许工作单元: ${workUnit}`);
-  }
+  // Detailed work units are consumed through the canonical Profile, not duplicated in the entry.
+  note(/原始(?:业务)?需求/.test(agentsText) && /Plan\s*\/\s*Spec/.test(agentsText), "AGENTS.md 必须声明本端原始需求与 Plan/Spec 入口");
   for (const workUnit of UPSTREAM_WORK_UNITS) {
     note(!agentsText.includes(workUnit), `AGENTS.md 不得把上游工作单元写入本地主链: ${workUnit}`);
   }
 
-  note(/已批准 Spec 或 Strategic Design Handoff/.test(agentsText), "AGENTS.md 必须声明已批准的上游输入");
-  note(/Discovery 不是默认阶段/.test(agentsText), "AGENTS.md 必须声明 Discovery 非默认阶段");
+  note(/(?:当前批准的|已批准)\s*Spec 或 Strategic Design Handoff/.test(agentsText), "AGENTS.md 必须声明已批准的上游输入");
   note(agentsText.includes(profile.instantiation.cli_package), "AGENTS.md 必须声明 专职模板 CLI 初始化入口");
   note(!agentsText.includes("yss-product-lifecycle"), "AGENTS.md 不得恢复退役入口 yss-product-lifecycle");
   note(!agentsText.includes("yss-stage-decision"), "AGENTS.md 不得恢复退役入口 yss-stage-decision");

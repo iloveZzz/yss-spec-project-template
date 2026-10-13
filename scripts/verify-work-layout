@@ -1,54 +1,84 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
 import path from 'node:path';
-import assert from 'node:assert/strict';
-const root=path.resolve(import.meta.dirname,'..');
-const exceptions=new Map([
-  ['scripts/lib/work-layout.mjs','集中当前/历史根合同'],
-  ['scripts/lib/native-context.mjs','旧执行器能力兼容诊断'],
-]);
-const bad=[];
-const old=/docs(?:\/|\\\/)(?:\.|\\\.)scratch/;
-function scan(base,predicate) {
-  for(const entry of fs.readdirSync(path.join(root,base),{withFileTypes:true})) {
-    const ref=`${base}/${entry.name}`;
-    if(entry.isDirectory()) { if(!['tests','fixtures','assets','vendor'].includes(entry.name)) scan(ref,predicate); }
-    else if(entry.isFile()&&predicate(ref)) {
-      const content=fs.readFileSync(path.join(root,ref),'utf8');
-      if(old.test(content)&&!exceptions.has(ref))bad.push(ref);
+import { execFileSync } from 'node:child_process';
+import { parseArgs } from 'node:util';
+
+const { values } = parseArgs({ options: {
+  root: { type: 'string', default: path.resolve(import.meta.dirname, '..') },
+  'cli-root': { type: 'string' },
+  inventory: { type: 'boolean', default: false }
+} });
+const policyRef = '.template-source/process/work-layout-exceptions.json';
+const root = fs.realpathSync(values.root);
+const errors = [], inventory = [], visited = new Set(), repositories = new Set();
+const git = (cwd, args) => execFileSync('git', ['-C', cwd, ...args], { encoding: 'utf8', maxBuffer: 32 * 1024 * 1024 });
+const policy = values.inventory ? { schema_version: 1, exceptions: [] } : JSON.parse(fs.readFileSync(path.join(root, policyRef), 'utf8'));
+if (policy.schema_version !== 1 || !Array.isArray(policy.exceptions)) throw Error('无效的工作布局例外清单');
+const keys = new Set();
+for (const rule of policy.exceptions) {
+  const key = JSON.stringify([rule.repository, rule.file, rule.kind, rule.text]);
+  if (keys.has(key) || !['content', 'path', 'symlink'].includes(rule.kind) || typeof rule.text !== 'string' || !['compatibility', 'compatibility-test', 'history'].includes(rule.category) || !rule.reason?.trim() || !Number.isInteger(rule.count) || rule.count < 1) throw Error(`无效或重复的工作布局例外: ${key}`);
+  keys.add(key);
+}
+function legacy(text) {
+  // Normalize literal paths and regex/JSON escaped slashes and dots.
+  let previous;
+  do { previous = text; text = text.replace(/\\(?=[\\/.])/g, ''); } while (previous !== text);
+  return /docs\/\.scratch/.test(text) || /docs['"`]\s*,\s*['"`]\.scratch/.test(text);
+}
+function scan(repoRoot, repository) {
+  repoRoot = fs.realpathSync(repoRoot);
+  if (visited.has(repoRoot)) return;
+  visited.add(repoRoot); repositories.add(repository);
+  if (fs.realpathSync(git(repoRoot, ['rev-parse', '--show-toplevel']).trim()) !== repoRoot) throw Error(`子模块未初始化: ${repository}`);
+  const matches = new Map();
+  function hit(file, kind, text, line) {
+    if (!legacy(text)) return;
+    const key = JSON.stringify([file, kind, text]);
+    const item = matches.get(key) ?? { repository, file, kind, text, count: 0, line };
+    item.count++;
+    matches.set(key, item);
+  }
+  const submodules = new Map(git(repoRoot, ['ls-files', '--stage', '-z']).split('\0').filter(row => row.startsWith('160000 ')).map(row => [row.slice(row.indexOf('\t') + 1), true]));
+  const files = [...new Set(git(repoRoot, ['ls-files', '--cached', '--others', '--exclude-standard', '-z']).split('\0').filter(Boolean))].sort();
+  for (const file of files) {
+    if (submodules.has(file)) {
+      const child = path.join(repoRoot, file);
+      if (!fs.existsSync(path.join(child, '.git'))) { errors.push(`子模块未初始化: ${repository}/${file}`); continue; }
+      scan(child, file === 'submodules/yss-cli' && repository === '.' ? 'cli' : path.posix.join(repository, file));
+      continue;
     }
+    if (repository === '.' && file === policyRef) continue; // The policy is data consumed above, not a directory exemption.
+    const full = path.join(repoRoot, file);
+    let stat;
+    try { stat = fs.lstatSync(full); } catch (error) { if (error.code === 'ENOENT') continue; throw error; }
+    hit(file, 'path', file, 0);
+    if (stat.isSymbolicLink()) {
+      hit(file, 'symlink', fs.readlinkSync(full), 0);
+      const target = fs.realpathSync(full);
+      const relative = path.relative(repoRoot, target);
+      if (relative === '..' || relative.startsWith('../') || path.isAbsolute(relative)) errors.push(`扫描范围外的符号链接: ${repository}/${file}`);
+      continue; // Tracked canonical targets are scanned independently; generators verify projection identity.
+    }
+    if (!stat.isFile()) continue;
+    const bytes = fs.readFileSync(full);
+    if (bytes.includes(0)) continue;
+    bytes.toString('utf8').split(/\r?\n/).forEach((text, index) => hit(file, 'content', text, index + 1));
+  }
+  inventory.push(...matches.values());
+  if (values.inventory) return;
+  const rules = policy.exceptions.filter(rule => rule.repository === repository);
+  for (const item of matches.values()) {
+    const rule = rules.find(rule => rule.file === item.file && rule.kind === item.kind && rule.text === item.text);
+    if (!rule || rule.count !== item.count) errors.push(`未登记或次数变化: ${repository}/${item.file}:${item.line} (${item.count})`);
+  }
+  for (const rule of rules) {
+    if (!matches.has(JSON.stringify([rule.file, rule.kind, rule.text]))) errors.push(`失效例外: ${repository}/${rule.file} (${rule.reason})`);
   }
 }
-scan('scripts/lib',ref=>/\.(mjs|js|py)$/.test(ref)&&!ref.includes('.test.'));
-scan('.agents/skills',ref=>ref.includes('/scripts/')&&/\.(mjs|js|py)$/.test(ref)&&!ref.includes('.test.'));
-const design = 'profiles/design';
-if (fs.existsSync(path.join(root, design))) {
-  exceptions.set(`${design}/scripts/lib/work-layout.mjs`, '上游 Design 的当前/历史根合同');
-  scan(`${design}/scripts/lib`,ref=>/\.(mjs|js|py)$/.test(ref)&&!ref.includes('.test.'));
-  scan(`${design}/.agents/skills`,ref=>ref.includes('/scripts/')&&/\.(mjs|js|py)$/.test(ref)&&!ref.includes('.test.'));
-}
-assert.deepEqual(bad,[],'生产路径硬编码必须改为 work-layout；历史例外需说明用途');
-const cliIndex=process.argv.indexOf('--cli-root');
-if(cliIndex>=0) {
-  const cli=path.resolve(process.argv[cliIndex+1]);
-  assert.deepEqual(fs.readFileSync(path.join(cli,'internal/worklayout/testdata/cases.json')),fs.readFileSync(path.join(root,'tests/fixtures/work-layout-cases.json')),'JS/Go 共享路径用例必须逐字节一致');
-  const legacyGo=new Map([
-    ['internal/worklayout/layout.go','集中历史根合同'],
-    ['internal/project/work_layout.go','显式旧根到新根迁移及闭包核验'],
-    ['internal/project/work_layout_resolution.go','迁移候选重绑定的旧引用诊断'],
-    ['internal/bundle/native_work_layout.go','固定来源的旧指引适配'],
-    ['internal/bundle/producer.go','禁止打包实例资产的兼容根'],
-    ['internal/bundle/upgrade.go','实例资产保留策略的兼容根'],
-  ]);
-  function goScan(base) {
-    for(const entry of fs.readdirSync(path.join(cli,base),{withFileTypes:true})) {
-      const ref=`${base}/${entry.name}`;
-      if(entry.isDirectory()) { if(!['testdata','assets','native','work-layout-assets'].includes(entry.name))goScan(ref); }
-      else if(entry.isFile()&&ref.endsWith('.go')&&!ref.endsWith('_test.go')&&old.test(fs.readFileSync(path.join(cli,ref),'utf8'))&&!legacyGo.has(ref))bad.push(ref);
-    }
-  }
-  goScan('internal');
-  assert.deepEqual(bad,[],'Go 生产消费者不得硬编码旧工作包路径');
-  for(const [ref,reason] of legacyGo)exceptions.set(ref,reason);
-}
-console.log(JSON.stringify({status:'passed',production_hardcodes:bad,compatibility_exceptions:Object.fromEntries(exceptions)}));
+scan(root, '.');
+if (values['cli-root']) scan(values['cli-root'], 'cli');
+if (!values.inventory) for (const rule of policy.exceptions) if (!repositories.has(rule.repository)) errors.push(`失效仓库例外: ${rule.repository}`);
+if (errors.length) { console.error(errors.join('\n')); process.exitCode = 1; }
+else console.log(JSON.stringify(values.inventory ? inventory : { status: 'passed', repositories: visited.size, references: inventory.reduce((sum, item) => sum + item.count, 0), exceptions: policy.exceptions.length }, null, 2));

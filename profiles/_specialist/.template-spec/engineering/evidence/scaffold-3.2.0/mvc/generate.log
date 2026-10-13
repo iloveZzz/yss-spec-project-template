@@ -1,0 +1,9 @@
+{
+  "status": "generated",
+  "project_root": "/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v7/mvc-probe",
+  "modules": [
+    "server",
+    "service",
+    "repository"
+  ]
+}

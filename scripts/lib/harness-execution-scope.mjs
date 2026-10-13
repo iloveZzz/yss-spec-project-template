@@ -1,3 +1,4 @@
+import { assertLocalSkillReferences } from './harness-skill-scope.mjs';
 import {readInstanceMetadata} from './instance-metadata.mjs';
 import { loadExecutionScope, assertScopeWorkUnit } from './lifecycle-execution-scope.mjs';
 import { existsSync } from './validation-phase.mjs';
@@ -66,6 +67,7 @@ export function enforceHarnessSkillScope(skills,registry,{root=ROOT}={}) {
   }
   const profile=activeProfile(root);
   if (!profile) return;
+  assertLocalSkillReferences(skills, registry, profile);
   const side='backend';
   const opposite='frontend';
   for (const id of skills) {

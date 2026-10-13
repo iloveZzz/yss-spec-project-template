@@ -71,3 +71,6 @@ docs/graphify-out
 docs/.scratch/
 .work/
 # Preserved in calibration-and-environment-evidence.tar.gz with a SHA-256 manifest.
+
+# Portable selected-platform verification evidence
+!.template-spec/engineering/evidence/scaffold-3.2.0/**/*.log

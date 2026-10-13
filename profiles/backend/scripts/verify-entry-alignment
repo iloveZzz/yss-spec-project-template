@@ -13,7 +13,8 @@ try {
       candidate.agentsText = candidate.agentsText.replaceAll(".template-spec/process/harness-profile.yaml", ".template-spec/process/missing-profile.yaml");
     }, /harness-profile/],
     ["discovery becomes default", (candidate) => {
-      candidate.agentsText = candidate.agentsText.replace("Discovery 不是默认阶段", "Discovery 是默认阶段");
+      candidate.profile = structuredClone(candidate.profile);
+      candidate.profile.upstream.discovery_is_default = true;
     }, /Discovery/],
     ["upstream work unit leaks into local chain", (candidate) => {
       candidate.agentsText += "\nwork-unit.discovery-opportunity\n";

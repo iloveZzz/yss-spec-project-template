@@ -6,56 +6,12 @@ import path from "node:path";
 import { loadVerificationProfiles, planTemplateVerification } from "../../scripts/lib/template-verification.mjs";
 import { runCommandToFiles, runGroups } from "../../scripts/lib/template-verification-runner.mjs";
 
-const releaseBaseline = [
-  "pnpm --dir .template-source/tooling/node test",
-  "pnpm --dir .template-source/tooling/node check:vendor",
-  "scripts/sync-skills --check",
-  "scripts/update-skill-lock --check",
-  "scripts/verify-skill-registry",
-  "scripts/verify-skill-governance",
-  "node --check .agents/skills/yss-tactical-design/scripts/validate-tactical-design.mjs",
-  "node --check .agents/skills/yss-tactical-design/tests/run-scenarios.mjs",
-  "node .agents/skills/yss-tactical-design/tests/run-scenarios.mjs",
-  "scripts/verify-yss-dto-openapi-profile",
-  "scripts/verify-yss-dto-openapi-scenarios",
-  "scripts/verify-digital-human-roles",
-  "scripts/verify-digital-human-roles-scenarios",
-  "scripts/verify-approval-record --history .template-spec/templates/approval-record-template.yaml",
-  "scripts/verify-lifecycle-registry",
-  "yss context check --root . --json",
-  "scripts/verify-context-contract-scenarios",
-  "scripts/verify-context-reconciliation-scenarios",
-  "scripts/verify-plan-requirements-context-scenarios",
-  "scripts/verify-lifecycle-checkpoint .template-spec/process/templates/lifecycle-checkpoint-template.yaml",
-  "scripts/verify-subagent-task-package-scenarios",
-  "scripts/verify-digital-human-task-package-scenarios",
-  "scripts/verify-lifecycle-scenarios",
-  "scripts/verify-lifecycle-transition-scenarios",
-  "scripts/verify-maintenance-intensity-scenarios",
-  "scripts/verify-governance-release",
-  "scripts/verify-implementation-path-scenarios",
-  "scripts/verify-repository-scope-scenarios",
-  "scripts/verify-scaffold-generator-scenarios",
-  "scripts/verify-prototype-backend-scaffold-scenarios",
-  "scripts/verify-matt-yss-integration-scenarios",
-  "scripts/verify-yss-implementation-contract-compiler-scenarios",
-  "scripts/generate-yss-skill-boundaries --check",
-  "scripts/audit-yss-backend-skills --check",
-  "scripts/verify-retired-skill-ids",
-  "scripts/verify-yss-ui-scenarios",
-  "scripts/verify-yss-prototype-contract-scenarios",
-  "node .agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs validate-evidence .template-spec/design/templates/prototype-evidence-template.yaml --allow-template",
-  "scripts/verify-openapi-yaml-first-scenarios",
-  "scripts/verify-openapi-json-handoff-scenarios"
-].sort();
-
 const release = planTemplateVerification({ profile: "release", changedFiles: [] });
 assert.equal(release.effective_profile, "release");
-const releaseCommands = new Set(release.commands.map((entry) => entry.command));
-assert.deepEqual(releaseBaseline.filter((command) => !releaseCommands.has(command)), [], "release profile 必须保留现役发布门禁行为命令");
-assert.ok(releaseCommands.has("node scripts/verify-template-verification-scenarios"), "release profile 必须验证两档核验路由本身");
-assert.ok(releaseCommands.has("node --test tests/cli-retirement.test.mjs"), "release profile 必须保留 CLI 快速场景");
-assert.ok(release.commands.some(entry=>entry.command.includes('backend-delivery-terminal.test.mjs')));
+assert.equal(release.selection.effective, "impact");
+assert.ok(release.commands.some(entry=>entry.command==="node --test tests/cli-retirement.test.mjs"), "发行始终保留 CLI 必需检查");
+const releaseCommands = new Set(release.commands.map(entry=>entry.command));
+assert.ok(!releaseCommands.has("pnpm --dir .template-source/tooling/node test"), "无变化不能隐式扩大到全套测试");
 const instanceManifest = inspectNative('spec').manifest;
 assert.ok(instanceManifest.excludePaths.includes("scripts/lib/template-verification-runner.mjs"), "模板验证 runner 不得分发到 project-instance");
 assert.throws(() => loadVerificationProfiles(`
@@ -84,7 +40,7 @@ for (const file of [".template-source/distribution/bundle-profile.json", ".templ
   assert.ok(cli.groups.includes("cli-sync"), `${file} 运行原生 CLI 快速组`);
   assert.equal(cli.effective_profile, "fast");
   const candidateCli = planTemplateVerification({ profile: "release", changedFiles: [file] });
-  assert.ok(candidateCli.groups.includes("candidate-integrity"));
+  assert.ok(candidateCli.commands.some(task=>task.command==="node --test tests/cli-retirement.test.mjs"));
   assert.ok(candidateCli.groups.includes("cli-sync"));
 }
 const otherSubmodule = planTemplateVerification({ profile: "fast", selection:"legacy", changedFiles: ["submodules/another-agent/src/index.js"] });
@@ -97,8 +53,8 @@ assert.ok(prototypeContractChange.groups.includes("implementation"), "原型契�
 const candidate = planTemplateVerification({ profile: "release", changedFiles: [".template-spec/process/harness-process-tailoring.md"] });
 assert.equal(candidate.effective_profile, "release", "release 保持完整阻断");
 assert.equal(candidate.strategy, "release");
-assert.ok(candidate.groups.includes("maintenance"));
-assert.ok(candidate.groups.includes("candidate-integrity"));
+assert.ok(candidate.commands.some(task=>task.selection_reason.includes(".template-spec/process/harness-process-tailoring.md")));
+assert.equal(candidate.selection.effective,"impact");
 
 assert.throws(
   () => planTemplateVerification({ profile: "release", changedFiles: ["new-unmapped-root/file.txt"] }),
@@ -110,7 +66,7 @@ const core = planTemplateVerification({profile:'fast',changedFiles:['scripts/lib
 assert.equal(core.effective_profile,'fast');assert.equal(core.source_requirement,'current');
 assert.ok(core.commands.some(row=>row.command.includes('verification-selection.test.mjs')));
 const strict=planTemplateVerification({profile:'release',changedFiles:['scripts/lib/template-verification.mjs']});
-assert.equal(strict.source_requirement,'committed');assert.deepEqual(strict.commands,release.commands);
+assert.equal(strict.source_requirement,'committed');assert.ok(strict.commands.some(row=>row.command.includes('verification-selection.test.mjs')));assert.ok(release.commands.every(required=>strict.commands.some(task=>task.id===required.id)));
 assert.throws(() => loadVerificationProfiles(`
 schema_version: 1
 profiles: { fast: {}, release: {} }

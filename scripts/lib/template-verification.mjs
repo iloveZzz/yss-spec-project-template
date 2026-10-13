@@ -99,8 +99,8 @@ export function planTemplateVerification({ profile = "fast", changedFiles = [], 
   const effectiveProfile = profile, escalationReason = null;
   const daily=profile==='fast';
   if(daily)ensure(Array.isArray(config.profiles.fast.checks),'INCOMPLETE_VERIFICATION_INPUTS: fast checks 缺失');
-  selection??=daily?'allowlist':'all';
-  if(!daily)ensure(selection==='all','RELEASE_SELECTION_REFUSED');
+  selection??=daily?'allowlist':'impact';
+  if(!daily)ensure(selection==='impact','RELEASE_SELECTION_REFUSED');
   const groups = new Set();
   if (config.profiles[effectiveProfile].all_groups) Object.keys(config.groups).forEach((group) => groups.add(group));
   else {
@@ -117,7 +117,8 @@ export function planTemplateVerification({ profile = "fast", changedFiles = [], 
   const compatibilityRequired = effectiveProfile === "release" || normalized.some((file) => (config.compatibility_patterns || []).some((pattern) => matches(file, pattern)));
   const plan = { source_requirement: profile === 'fast' ? 'current' : 'committed', compatibility_required: compatibilityRequired, requested_profile: profile, effective_profile: effectiveProfile, escalation_reason: escalationReason, changed_files: normalized, unknown_files: routed.unknown, groups: orderedGroups, commands, supplemental_checks:structuredClone(config.supplemental_checks||[]), required_files: config.required_files || [], syntax_files: config.syntax_files || [], max_concurrency: config.max_concurrency || 4 };
   if(daily)return {...applyDailyVerificationSelection(plan,{selection,config}),compatibility_required:false,policy_digest:verificationPolicyDigest(config),fallback_reasons:[]};
-  return buildReleasePlan(plan,{config});
+  const mandatory=(config.gates||[]).filter(g=>g.required_at_release&&g.execution_scope==='template-verification').flatMap(g=>g.check_ids);
+  return buildReleasePlan(applyDailyVerificationSelection(plan,{selection:'allowlist',config,profile:'release',mandatoryChecks:mandatory}),{config});
 }
 
 export function assertRequiredFiles(plan, root = ROOT) {

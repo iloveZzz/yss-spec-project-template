@@ -1,0 +1,4 @@
+interface:
+  display_name: "YSS CLI 构建与发布"
+  short_description: "构建并发布 Windows x64 与 Mac ARM64 的 YSS CLI，验证原生安装和公开下载"
+  default_prompt: "使用 $release-yss-cli 查询最新正式 Release 并建议新版本号，等我明确确认后构建发布 Windows x64 与 Mac ARM64，并完成逐平台验收和公开下载验证。"

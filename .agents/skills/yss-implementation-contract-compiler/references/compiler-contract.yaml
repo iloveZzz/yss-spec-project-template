@@ -151,15 +151,16 @@ context_plan:
   missing_context_action: [blocked, reroute]
 
 project_scaffold_contract_schema:
-  schema_version: 4
+  schema_version: 5
+  legacy_versions: [4]
   schema_ref: .template-spec/process/schemas/project-scaffold-contract.schema.json
   identity: project-engineering-baseline
   discriminant: delivery_role
   delivery_roles:
     backend:
-      scaffold_kinds: [backend-ddd, backend-layered-mvc, backend-mvc-data-analysis]
+      scaffold_kinds: [backend-ddd, backend-layered-mvc]
       generators: [yss-ddd-scaffold-generator, yss-layered-mvc-scaffold-generator]
-      requires: [scaffold_request_id, architecture_family, decision_ref, decision_id, decision_digest, project_name, base_package, maven_coordinates, profiles, module_profile, design_prerequisites]
+      requires: [scaffold_request_id, architecture_family, decision_ref, decision_id, decision_digest, project_name, base_package, maven_coordinates, profiles, module_profile, design_prerequisites, reference_example]
       design_prerequisites:
         required: [technical_design, data_architecture_decision, api_contract_decision, engineering_contract_approval_ref]
         artifact_binding: [ref, version, digest]

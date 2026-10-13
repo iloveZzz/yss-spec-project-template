@@ -28,10 +28,12 @@ export function compileExpectedVerificationPlan({root,args=[],fixedCommit,config
  if(!fixedCommit)for(const argv of [['diff','--name-only','-z','--no-renames'],['diff','--cached','--name-only','-z','--no-renames'],['ls-files','-z','--others','--exclude-standard']])git(argv).split('\0').filter(Boolean).forEach(file=>files.add(file));
  config??=fixedCommit?readHistoricalProfiles(root,fixedCommit):loadVerificationProfiles(fs.readFileSync(path.join(root,'.template-source/process/template-verification-profiles.yaml'),'utf8'));
  const historical=!!fixedCommit&&(config.profiles?.candidate||config.profiles?.['legacy-full']);
+ if(!historical&&values.profile==='release')ensure(values.base,'RELEASE_BASE_REQUIRED: --base 必须绑定上一正式发行完整 SHA');
  if(values['qualification-report']!==undefined||values['qualification-report-sha256']!==undefined)throw new TypeError(historical?'HISTORICAL_QUALIFIED_BASELINE_REFUSED':'QUALIFICATION_RETIRED');
  if(!baselineAssessment&&values.base&&values['baseline-report']&&values['baseline-report-sha256'])baselineAssessment=validateBaselineReport({root,base:values.base,reportFile:values['baseline-report'],expectedDigest:values['baseline-report-sha256']});
  const reference=historical&&values.profile==='legacy-full';
  const plan=historical?compileHistoricalVerificationPlan({root,commit:fixedCommit,config,profile:values.profile,changedFiles:[...files]}):planTemplateVerification({root,config,profile:values.profile,changedFiles:[...files],base:values.base,baselineReport:values['baseline-report'],baselineReportDigest:values['baseline-report-sha256'],baselineAssessment,...(values.selection?{selection:values.selection}:{})});
+ plan.scope={kind:values.profile==='fast'?'limited':'complete-candidate',files:[...files].sort(),explicit_files:values['changed-file']||[],base:values.base||null};
  const reportDir=values['report-dir']?path.resolve(values['report-dir']):reportDirectory?path.resolve(reportDirectory):null;
  if(values['report-dir']&&reportDirectory)ensure(fs.realpathSync(reportDir)===fs.realpathSync(reportDirectory),'实际 report directory 与明确 invocation 不匹配');
  return addVerificationExecutionTasks(plan,{root,reference,fixedCommit,reportDir,purpose:'verification',checkpoints:values.checkpoint||[],taskPackages:values['task-package']||[]});
@@ -74,9 +76,10 @@ export function validateVerificationReport(report, {root,expectedPlan,reportDire
   ensure(Number.isFinite(Date.parse(report.started_at)) && Number.isFinite(Date.parse(report.finished_at)) && Date.parse(report.finished_at)>=Date.parse(report.started_at), '验证报告尚未完成或时间非法');
   ensure(report.input_drift === false && /^[a-f0-9]{64}$/.test(report.input_sha256) && report.input_after_sha256 === report.input_sha256, '验证输入漂移或摘要缺失');
   if (!historical) ensure(report.input_sha256 === (currentInputDigest || verificationInputDigest(root)), '验证源码已漂移');
-  if(!expectedSourcesManifest&&!historical&&fs.existsSync(path.join(root,'.gitmodules'))){const head=spawnSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'});ensure(head.status===0,'来源 HEAD 缺失');expectedSourcesManifest=collectReleaseSources({root,commit:head.stdout.trim()});}
+  if(!expectedSourcesManifest&&!historical){const head=spawnSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'});ensure(head.status===0,'来源 HEAD 缺失');expectedSourcesManifest=collectReleaseSources({root,commit:head.stdout.trim()});}
   ensure(Array.isArray(report.unexecuted) && report.unexecuted.length === 0, '验证存在未执行任务');
-  ensure(report.plan.selection?.effective !== 'allowlist' && !report.plan.selection?.omitted?.length, 'release 不允许裁剪或遗漏');
+  if(!historical){assert.deepEqual(report.plan.selection,expectedPlan.selection,'release 检查选择与独立完整变化集不匹配');assert.deepEqual(report.plan.changed_files,expectedPlan.changed_files,'release 变化路径不匹配');if(expectedPlan.scope)assert.deepEqual(report.scope,expectedPlan.scope,'release 范围或基线不匹配');}
+  else ensure(report.plan.selection?.effective !== 'allowlist' && !report.plan.selection?.omitted?.length, '历史 release 不允许裁剪或遗漏');
   const expectedTasks=selected(expectedPlan,repositoryMode), actualTasks=selected(report.plan,repositoryMode);
   ensure(expectedTasks.length > 0 && actualTasks.length === expectedTasks.length, '验证任务集合不完整');
   const expectedKeys=expectedTasks.map(task=>key(task,task.index));

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/** 依据生命周期批准的 schema v4 合同生成纯机械 YSS 分层 MVC 后端骨架。 */
+/** 直接生成纯机械 YSS 分层 MVC 后端骨架，也支持显式 schema v4/v5 合同。 */
 import { platformSourceFingerprint, generatedTreeDigest } from "../../../../scripts/lib/backend-platform-provenance.mjs";
 import { assertContractPlatform, platformTemplateVars, platformSmokeTest } from "../../../../scripts/lib/backend-platform.mjs";
 import { assertScaffoldUserDecision } from "../../../../scripts/lib/user-decision.mjs";
@@ -14,7 +14,7 @@ import { findGitRoot, gitSubmoduleScaffoldViolation, overlayMountViolation } fro
 import { assertLocalDatabaseProfile, localDatabaseConfiguration, scaffoldArchitectureIdentity } from "../../../../scripts/lib/scaffold-local-database.mjs";
 import { validateArchitectureIdentity } from "../../../../scripts/lib/backend-architecture.mjs";
 import { validateJsonSchema } from "../../../../scripts/lib/json-schema.mjs";
-import { finalizeDataAnalysisProfile, readDataAnalysisAgents } from "./data-analysis-profile.mjs";
+import { assertExampleFlags, assertContractExample, renderReferenceExample } from "../../../../scripts/lib/scaffold-reference-example.mjs";
 import { standaloneConfiguration, standaloneManifest } from "../../../../scripts/lib/standalone-backend-scaffold.mjs";
 
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
@@ -76,6 +76,7 @@ async function treeDigest(root) {
 }
 
 export function parseArgs(argv) {
+  assertExampleFlags(argv);
   const options = { force: false };
   const mapping = new Map([
     ["--project-name", "projectName"], ["--base-package", "basePackage"], ["--output-dir", "outputDir"],
@@ -89,6 +90,8 @@ export function parseArgs(argv) {
     let token = argv[index];
     if (token === "--help" || token === "-h") { options.help = true; continue; }
     if (token === "--standalone") { options.standalone = true; continue; }
+    if (token === "--with-example") { options.withExample = true; continue; }
+    if (token === "--without-example") { options.withExample = false; continue; }
     if (token === "--force") { options.force = true; continue; }
     const equal = token.indexOf("=");
     let value;
@@ -99,8 +102,11 @@ export function parseArgs(argv) {
     options[mapping.get(token)] = value;
   }
   if (options.help) return options;
-  if (!options.standalone && ["platformProfile", "springBootVersion", "javaVersion"].some(key => options[key] !== undefined)) fail("独立平台参数必须显式使用 --standalone，正式模式消费合同平台");
   const contractKeys = ["contractFile", "contractId", "contractVersion", "approvalRef", "compilerDraftRef", "persistedRef"];
+  const hasContract = contractKeys.some(key => options[key] !== undefined);
+  if (options.standalone && hasContract) fail("--standalone 不得携带合同或批准参数；已有合同须走正式治理路径");
+  options.standalone = !hasContract;
+  if (!options.standalone && ["platformProfile", "springBootVersion", "javaVersion"].some(key => options[key] !== undefined)) fail("正式模式消费合同平台，不接受独立平台参数");
   for (const key of mapping.values()) {
     if (["platformProfile", "springBootVersion", "javaVersion"].includes(key) || options.standalone && contractKeys.includes(key)) continue;
     if (!isPresent(options[key])) fail(`缺少必填参数: ${key}`);
@@ -130,12 +136,12 @@ function parentPom(contract, modules, platform) {
   <properties><java.version>${v.java_version}</java.version><spring-boot.version>${v.boot_version}</spring-boot.version><maven.compiler.source>${v.java_version}</maven.compiler.source><maven.compiler.target>${v.java_version}</maven.compiler.target><project.build.sourceEncoding>UTF-8</project.build.sourceEncoding><yss-components.version>${xml(c.yss_components_version)}</yss-components.version></properties>
   <modules>${modules.map((module) => `<module>${contract.project_name}-${module}</module>`).join("")}</modules>
   <dependencyManagement><dependencies>${dependency("org.springframework.boot", "spring-boot-dependencies", v.boot_version, "import").replace("</dependency>", "<type>pom</type></dependency>")}${dependency("com.yss.cloud", "yss-components-bom", "${yss-components.version}", "import").replace("</dependency>", "<type>pom</type></dependency>")}</dependencies></dependencyManagement>
-  <build><plugins><plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-enforcer-plugin</artifactId><version>${v.enforcer_version}</version><executions><execution><id>enforce-platform</id><goals><goal>enforce</goal></goals><configuration><rules><requireJavaVersion><version>${v.java_range}</version></requireJavaVersion><requireMavenVersion><version>[3.6.3,)</version></requireMavenVersion><dependencyConvergence/></rules></configuration></execution></executions></plugin></plugins><pluginManagement><plugins><plugin><groupId>org.springframework.boot</groupId><artifactId>spring-boot-maven-plugin</artifactId><version>${v.boot_version}</version><executions><execution><goals><goal>repackage</goal></goals></execution></executions></plugin><plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-surefire-plugin</artifactId><version>${v.surefire_version}</version></plugin><plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-compiler-plugin</artifactId><version>${v.compiler_version}</version><configuration><source>${v.java_version}</source><target>${v.java_version}</target><parameters>true</parameters><annotationProcessorPaths><path><groupId>org.projectlombok</groupId><artifactId>lombok</artifactId><version>${v.lombok_version}</version></path><path><groupId>org.mapstruct</groupId><artifactId>mapstruct-processor</artifactId><version>${v.mapstruct_version}</version></path><path><groupId>org.projectlombok</groupId><artifactId>lombok-mapstruct-binding</artifactId><version>${v.lombok_mapstruct_binding_version}</version></path></annotationProcessorPaths></configuration></plugin></plugins></pluginManagement></build>
+  <build><plugins><plugin><groupId>org.springframework.boot</groupId><artifactId>spring-boot-maven-plugin</artifactId><version>${v.boot_version}</version><configuration><skip>true</skip></configuration></plugin><plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-enforcer-plugin</artifactId><version>${v.enforcer_version}</version><executions><execution><id>enforce-platform</id><goals><goal>enforce</goal></goals><configuration><rules><requireJavaVersion><version>${v.java_range}</version></requireJavaVersion><requireMavenVersion><version>[3.6.3,)</version></requireMavenVersion><dependencyConvergence/></rules></configuration></execution></executions></plugin></plugins><pluginManagement><plugins><plugin><groupId>org.springframework.boot</groupId><artifactId>spring-boot-maven-plugin</artifactId><version>${v.boot_version}</version><executions><execution><goals><goal>repackage</goal></goals></execution></executions></plugin><plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-surefire-plugin</artifactId><version>${v.surefire_version}</version></plugin><plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-compiler-plugin</artifactId><version>${v.compiler_version}</version><configuration><source>${v.java_version}</source><target>${v.java_version}</target><parameters>true</parameters><annotationProcessorPaths><path><groupId>org.projectlombok</groupId><artifactId>lombok</artifactId><version>${v.lombok_version}</version></path><path><groupId>org.mapstruct</groupId><artifactId>mapstruct-processor</artifactId><version>${v.mapstruct_version}</version></path><path><groupId>org.projectlombok</groupId><artifactId>lombok-mapstruct-binding</artifactId><version>${v.lombok_mapstruct_binding_version}</version></path></annotationProcessorPaths></configuration></plugin></plugins></pluginManagement></build>
 </project>`;
 }
 
 function modulePom(contract, module, modules, platform) {
-  const applicationModule = modules.includes("core") ? "core" : "service";
+  const applicationModule = "service";
   const own = (name) => dependency(contract.maven_coordinates.group_id, `${contract.project_name}-${name}`, "${project.version}");
   const dependencies = [];
   if (module === "server") {
@@ -158,8 +164,8 @@ function modulePom(contract, module, modules, platform) {
   }
   if (module === "client") dependencies.push(dependency("com.yss.cloud", "yss-component-dto"), dependency(platform.validation_group, platform.validation_artifact));
   if (["server", "service", "core", "client", "repository"].includes(module)) dependencies.push(dependency("org.projectlombok", "lombok", platform.versions.lombok, "provided"));
-  if (module === "feign-client") dependencies.push(own("client"), dependency("org.springframework.cloud", contract.architecture_profile === "mvc-data-analysis-v1" ? "spring-cloud-openfeign-core" : "spring-cloud-starter-openfeign"));
-  const plugin = module === "server" ? `<profiles><profile><id>scaffold-local</id><dependencies>${dependency("com.h2database", "h2", null, "runtime")}</dependencies></profile></profiles><build><plugins><plugin><groupId>org.springframework.boot</groupId><artifactId>spring-boot-maven-plugin</artifactId></plugin></plugins></build>` : "";
+  if (module === "feign-client") dependencies.push(own("client"), dependency("org.springframework.cloud", "spring-cloud-starter-openfeign"));
+  const plugin = module === "server" ? `<profiles><profile><id>scaffold-local</id><dependencies>${dependency("com.h2database", "h2", null, "runtime")}</dependencies></profile></profiles><build><plugins><plugin><groupId>org.springframework.boot</groupId><artifactId>spring-boot-maven-plugin</artifactId><configuration><skip>false</skip></configuration></plugin></plugins></build>` : "";
   return `<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"><modelVersion>4.0.0</modelVersion><parent><groupId>${xml(contract.maven_coordinates.group_id)}</groupId><artifactId>${xml(contract.project_name)}</artifactId><version>${xml(contract.maven_coordinates.project_version)}</version></parent><artifactId>${xml(contract.project_name)}-${module}</artifactId><dependencies>${dependencies.join("")}</dependencies>${plugin}</project>`;
 }
@@ -174,14 +180,12 @@ export async function validateContract(options, skillId, architectureProfile, pl
   const contractText = await readFile(contractFile, "utf8").catch(() => fail(`脚手架合同不可读取: ${contractFile}`));
   let contract;
   try { contract = JSON.parse(contractText); } catch { fail("脚手架合同必须是 JSON 对象"); }
-  if (contract.schema_version !== 4) fail(`unsupported: 新生成只接受 scaffold contract v4，收到 v${contract.schema_version}`);
-  const expectedScaffoldKind = architectureProfile === "mvc-data-analysis-v1" ? "backend-mvc-data-analysis" : "backend-layered-mvc";
-  if (contract.kind !== "project-scaffold-contract" || contract.delivery_role !== "backend" || contract.scaffold_kind !== expectedScaffoldKind) fail(`schema v4 合同必须绑定 backend/${expectedScaffoldKind}`);
-  if (architectureProfile === "mvc-data-analysis-v1") {
-    if (contract.init_git !== true) fail("mvc-data-analysis-v1 必须由合同显式要求独立 Git 初始化");
-    if (!contract.context_handoff_ref || !contract.context_handoff_digest) fail("mvc-data-analysis-v1 缺少批准的 CONTEXT handoff");
-  }
+  if (![4, 5].includes(contract.schema_version)) fail(`unsupported: 新生成只接受 scaffold contract v4，收到 v${contract.schema_version}`);
+  if (architectureProfile === "mvc-data-analysis-v1" || contract.architecture_profile === "mvc-data-analysis-v1") fail("retired: mvc-data-analysis-v1 仅允许历史只读审计；使用通用 MVC 后按需单独运行 setup-yss-harness");
+  const expectedScaffoldKind = "backend-layered-mvc";
+  if (contract.kind !== "project-scaffold-contract" || contract.delivery_role !== "backend" || contract.scaffold_kind !== expectedScaffoldKind) fail(`schema v4/v5 合同必须绑定 backend/${expectedScaffoldKind}`);
   validateJsonSchema(contract, path.join(REPOSITORY_ROOT, ".template-spec/process/schemas/project-scaffold-contract.schema.json"), { label: "Project Scaffold Contract v4" });
+  assertContractExample(contract, options);
   const required = ["contract_id", "contract_version", "scaffold_request_id", "status", "compiler_draft_ref", "lifecycle_approval_ref", "persisted_ref", "current_version", "implementation_repository", "backend_repository", "scaffold_status", "project_name", "target_output_dir", "base_package", "architecture_family", "generator_skill", "decision_ref", "decision_id", "decision_digest", "maven_coordinates", "profiles", "module_profile", "allowed_write_paths", "expected_evidence_files", "verification_commands", "approval", "work_unit", "generation_policy"];
   const missing = required.filter((field) => !isPresent(contract[field]));
   if (missing.length) fail(`脚手架合同缺少字段: ${missing.join(", ")}`);
@@ -197,10 +201,10 @@ export async function validateContract(options, skillId, architectureProfile, pl
   for (const [field, value] of Object.entries(expectedProfiles)) if (contract.profiles?.[field] !== value) fail(`unsupported profile ${field}: ${contract.profiles?.[field]}`);
   assertLocalDatabaseProfile(contract.profiles);
   if (contract.architecture_profile !== architectureProfile) fail(`合同必须显式绑定 ${architectureProfile} Profile`);
-  if (architectureProfile !== "mvc-data-analysis-v1" && contract.init_git !== false) fail("通用 layered-mvc-service 脚手架不得初始化 Git");
+  if (contract.init_git !== false) fail("通用 layered-mvc-service 脚手架不得初始化 Git");
   const requested = contract.module_profile?.requested_capabilities;
   if (!Array.isArray(requested)) fail("module_profile.requested_capabilities 必须是数组");
-  const resolved = architectureProfile === "mvc-data-analysis-v1" ? ["server", "core", "client", "repository", "adapter", "feign-client"] : orderedModules(requested);
+  const resolved = orderedModules(requested);
   if (contract.module_profile.resolution_version !== 1 || JSON.stringify(contract.module_profile.resolved_modules) !== JSON.stringify(resolved)) fail("MVC 能力闭包与 resolution_version=1 不一致");
   if (JSON.stringify(contract.verification_commands) !== JSON.stringify(COMMANDS)) fail("验证命令必须固定为三条 ./mvnw 命令");
   if (!contract.expected_evidence_files.includes(".yss/scaffold-generation.json")) fail("expected_evidence_files 必须包含 Manifest");
@@ -249,47 +253,56 @@ async function profileFromContract(options) {
   catch { fail("脚手架合同必须是 JSON 对象"); }
 }
 
-export async function generate(options, { skillId = SKILL_ID, architectureProfile, finalize, platformOptions = {} } = {}) {
+async function renderMechanical(projectRoot, contract, platform) {
+    const modules = contract.module_profile.resolved_modules;
+    const packagePath = contract.base_package.replaceAll(".", "/");
+    await mkdir(projectRoot, { recursive: true });
+    await put(projectRoot, "pom.xml", parentPom(contract, modules, platform));
+    for (const module of modules) {
+      const moduleRoot = `${contract.project_name}-${module}`;
+      await put(projectRoot, `${moduleRoot}/pom.xml`, modulePom(contract, module, modules, platform));
+      await put(projectRoot, `${moduleRoot}/src/main/java/${packagePath}/${module.replaceAll("-", "/")}/package-info.java`, `/** ${module} mechanical package boundary. */\npackage ${contract.base_package}.${module.replaceAll("-", ".")};`);
+    }
+    const applicationClass = `${toUpperCamel(contract.project_name)}Application`;
+    const serverRoot = `${contract.project_name}-server`;
+    await put(projectRoot, `${serverRoot}/src/main/java/${packagePath}/${applicationClass}.java`, `package ${contract.base_package};\n\nimport org.springframework.boot.SpringApplication;\nimport org.springframework.boot.autoconfigure.SpringBootApplication;\n\n/** Mechanical Spring Boot entrypoint. */\n@SpringBootApplication\npublic class ${applicationClass} {\n    public static void main(String[] args) {\n        SpringApplication.run(${applicationClass}.class, args);\n    }\n}`);
+    await put(projectRoot, `${serverRoot}/src/main/resources/application.yml`, `spring:\n  application:\n    name: ${contract.project_name}`);
+    await put(projectRoot, `${serverRoot}/src/main/resources/application-scaffold-local.yml`, localDatabaseConfiguration(contract.project_name));
+    await put(projectRoot, `${serverRoot}/src/test/resources/application-scaffold-test.yml`, localDatabaseConfiguration(`${contract.project_name}_test`));
+    await put(projectRoot, `${serverRoot}/src/test/java/${packagePath}/${applicationClass}Test.java`, `package ${contract.base_package};\n\nimport org.junit.jupiter.api.Test;\nimport org.springframework.boot.test.context.SpringBootTest;\nimport org.springframework.test.context.ActiveProfiles;\n\n@SpringBootTest\n@ActiveProfiles("scaffold-test")\nclass ${applicationClass}Test {\n    @Test\n    void contextLoads() {\n    }\n}`);
+    const architectureTemplate = await readFile(path.join(SKILL_ROOT, "assets/templates/architecture-rules-test.java.template"), "utf8");
+    await put(projectRoot, `${serverRoot}/src/test/java/${packagePath}/architecture/LayeredMvcArchitectureTest.java`, architectureTemplate.replaceAll("{{base_package}}", contract.base_package));
+    await put(projectRoot, `${serverRoot}/src/test/java/${packagePath}/PlatformIntegrationTest.java`, platformSmokeTest(contract.base_package, platform, contract.module_profile.requested_capabilities));
+    const wrapper = path.join(REPOSITORY_ROOT, ".agents/skills/yss-ddd-scaffold-generator/assets/wrapper");
+    await cp(wrapper, projectRoot, { recursive: true });
+    await chmod(path.join(projectRoot, "mvnw"), 0o755);
+ }
+
+export async function generate(options, { skillId = SKILL_ID, architectureProfile, platformOptions = {} } = {}) {
   architectureProfile ??= options.standalone ? "layered-mvc-service" : await profileFromContract(options);
-  if (skillId !== SKILL_ID || !["layered-mvc-service", "mvc-data-analysis-v1"].includes(architectureProfile)) fail("unsupported MVC generator/Profile pair");
+  if (architectureProfile === "mvc-data-analysis-v1") fail("retired: mvc-data-analysis-v1 仅允许历史只读审计；新建请使用 layered-mvc-service，再按需使用 setup-yss-harness");
+  if (skillId !== SKILL_ID || architectureProfile !== "layered-mvc-service") fail("unsupported MVC generator/Profile pair");
   await validateOutputLayout(options.outputDir, options.projectName);
   const { contract, contractText, modules, designPrerequisites, platform } = await validateContract(options, skillId, architectureProfile, platformOptions);
-  const agents = architectureProfile === "mvc-data-analysis-v1" ? await readDataAnalysisAgents() : undefined;
   const outputDir = path.resolve(options.outputDir);
   await mkdir(outputDir, { recursive: true });
   const staging = await mkdtemp(path.join(outputDir, `.${options.projectName}.staging-`));
   const projectRoot = path.join(staging, options.projectName);
   const packagePath = options.basePackage.replaceAll(".", "/");
   try {
-    await mkdir(projectRoot, { recursive: true });
-    await put(projectRoot, "pom.xml", parentPom(contract, modules, platform));
-    for (const module of modules) {
-      const moduleRoot = `${options.projectName}-${module}`;
-      await put(projectRoot, `${moduleRoot}/pom.xml`, modulePom(contract, module, modules, platform));
-      await put(projectRoot, `${moduleRoot}/src/main/java/${packagePath}/${module.replaceAll("-", "/")}/package-info.java`, `/** ${module} mechanical package boundary. */\npackage ${options.basePackage}.${module.replaceAll("-", ".")};`);
-    }
+    await renderMechanical(projectRoot, contract, platform);
+    await renderReferenceExample(projectRoot, contract, platform, (root, config) => renderMechanical(root, config, platform));
     const applicationClass = `${toUpperCamel(options.projectName)}Application`;
     const serverRoot = `${options.projectName}-server`;
-    await put(projectRoot, `${serverRoot}/src/main/java/${packagePath}/${applicationClass}.java`, `package ${options.basePackage};\n\nimport org.springframework.boot.SpringApplication;\nimport org.springframework.boot.autoconfigure.SpringBootApplication;\n\n/** Mechanical Spring Boot entrypoint. */\n@SpringBootApplication\npublic class ${applicationClass} {\n    public static void main(String[] args) {\n        SpringApplication.run(${applicationClass}.class, args);\n    }\n}`);
-    await put(projectRoot, `${serverRoot}/src/main/resources/application.yml`, `spring:\n  application:\n    name: ${options.projectName}`);
-    await put(projectRoot, `${serverRoot}/src/main/resources/application-scaffold-local.yml`, localDatabaseConfiguration(options.projectName));
-    await put(projectRoot, `${serverRoot}/src/test/resources/application-scaffold-test.yml`, localDatabaseConfiguration(`${options.projectName}_test`));
-    await put(projectRoot, `${serverRoot}/src/test/java/${packagePath}/${applicationClass}Test.java`, `package ${options.basePackage};\n\nimport org.junit.jupiter.api.Test;\nimport org.springframework.boot.test.context.SpringBootTest;\nimport org.springframework.test.context.ActiveProfiles;\n\n@SpringBootTest\n@ActiveProfiles("scaffold-test")\nclass ${applicationClass}Test {\n    @Test\n    void contextLoads() {\n    }\n}`);
-    const architectureTemplate = await readFile(path.join(SKILL_ROOT, "assets/templates/architecture-rules-test.java.template"), "utf8");
-    await put(projectRoot, `${serverRoot}/src/test/java/${packagePath}/architecture/LayeredMvcArchitectureTest.java`, architectureTemplate.replaceAll("{{base_package}}", options.basePackage));
-    await put(projectRoot, `${serverRoot}/src/test/java/${packagePath}/PlatformIntegrationTest.java`, platformSmokeTest(options.basePackage, platform, contract.module_profile.requested_capabilities));
-    const wrapper = path.join(REPOSITORY_ROOT, ".agents/skills/yss-ddd-scaffold-generator/assets/wrapper");
-    await cp(wrapper, projectRoot, { recursive: true });
-    await chmod(path.join(projectRoot, "mvnw"), 0o755);
     const architectureIdentity = options.standalone ? undefined : scaffoldArchitectureIdentity(contract, sha256(contractText));
-    const profileFinalize = finalize ?? (architectureProfile === "mvc-data-analysis-v1" ? finalizeDataAnalysisProfile : null);
-    if (profileFinalize) await profileFinalize({ projectRoot, contract, architectureIdentity, options, agents });
-    await put(projectRoot, "README.md", `# ${options.projectName}\n\n平台：Spring Boot ${platform.spring_boot_version} / Java ${platform.java_version}。\n\n该工程由 ${skillId} ${options.standalone ? "按用户明确输入独立生成；尚无生命周期批准，平台和构建尚未验证" : `根据批准的 schema v${contract.schema_version} 合同生成`}。模块：${modules.join("、")}。不包含业务 API、SQL 或生产数据库绑定。\n\n本地运行需同时显式启用 Maven -Pscaffold-local 和 Spring scaffold-local Profile；测试独立使用 H2。生产数据库须由后续已批准存储工作单元接入。`);
+    await put(projectRoot, "README.md", `# ${options.projectName}\n\n平台：Spring Boot ${platform.spring_boot_version} / Java ${platform.java_version}。\n\n该工程由 ${skillId} ${options.standalone ? "按工程输入直接生成；平台和构建尚未验证" : `根据批准的 schema v${contract.schema_version} 合同生成`}。模块：${modules.join("、")}。不包含业务 API、SQL 或生产数据库绑定。\n\n本地运行需同时显式启用 Maven -Pscaffold-local 和 Spring scaffold-local Profile；测试独立使用 H2。可基于骨架继续开发并接入生产数据库；采用正式 Harness 治理时，由后续已批准存储工作单元接入。`);
     const generatedFiles = [];
     for (const entry of await fileEntries(projectRoot, new Set([".yss/scaffold-generation.json"]))) generatedFiles.push({ path: entry.relative, owner: "generator", sha256: rawSha256(await readFile(entry.target)) });
     const architectureRuleset = `${serverRoot}/src/test/java/${packagePath}/architecture/LayeredMvcArchitectureTest.java`;
     const downstream = {};
-    for (const skill of ["yss-application", "yss-repository", "yss-mybatis", "yss-web-controller", "yss-dto", "yss-exception", "yss-validation", "mapstruct", "lombok", "alibaba-java-code-style"]) downstream[skill] = (await treeDigest(path.join(REPOSITORY_ROOT, ".agents/skills", skill))).replace(/^sha256:/, "");
+    if (!options.standalone) {
+      for (const skill of ["yss-application", "yss-repository", "yss-mybatis", "yss-web-controller", "yss-dto", "yss-exception", "yss-validation", "mapstruct", "lombok", "alibaba-java-code-style"]) downstream[skill] = (await treeDigest(path.join(REPOSITORY_ROOT, ".agents/skills", skill))).replace(/^sha256:/, "");
+    }
     const manifest = options.standalone ? standaloneManifest(contract, {
       source_fingerprint: platformSourceFingerprint(contract.architecture_family), generated_tree_digest: generatedTreeDigest(projectRoot, { ownership: { generated_files: generatedFiles } }),
       bootstrap_main_class: `${options.basePackage}.${applicationClass}`, bootstrap_main_source: `${serverRoot}/src/main/java/${packagePath}/${applicationClass}.java`,
@@ -297,8 +310,9 @@ export async function generate(options, { skillId = SKILL_ID, architectureProfil
     }) : {
       ...(contract.platform_configuration ? { source_fingerprint: platformSourceFingerprint(contract.architecture_family), generated_tree_digest: generatedTreeDigest(projectRoot, { ownership: { generated_files: generatedFiles } }) } : {}),
       ...(contract.platform_configuration ? { platform_verification: platformOptions.candidate === true ? "candidate" : "verified", platform_configuration: contract.platform_configuration } : {}),
-      schema_version: 4,
-      kind: architectureProfile === "mvc-data-analysis-v1" ? "service-project-initialization" : "backend-scaffold",
+      schema_version: contract.schema_version,
+      ...(contract.reference_example ? { reference_example: contract.reference_example, reference_verification: { status: contract.reference_example.enabled ? "not-executed" : "not-applicable", commands: [] } } : {}),
+      kind: "backend-scaffold",
       architecture_profile: contract.architecture_profile,
       architecture_identity: architectureIdentity,
       contract_id: contract.contract_id,
@@ -350,7 +364,7 @@ export async function generate(options, { skillId = SKILL_ID, architectureProfil
 async function main() {
   try {
     const options = parseArgs(process.argv.slice(2));
-    if (options.help) { process.stdout.write("使用 --project-name --base-package --output-dir。独立模式显式传 --standalone、精确平台及完整 Maven 坐标；正式路径提供当前批准合同。验证数据库是 H2，生产数据库未绑定。\n"); return 0; }
+    if (options.help) { process.stdout.write("使用 --project-name --base-package --output-dir、精确平台及完整 Maven 坐标，默认直接生成，无需需求合同或设计审批；--standalone 可省略。正式路径显式提供当前批准合同及元数据。验证数据库是 H2，生产数据库未绑定。\n"); return 0; }
     await generate(options);
     return 0;
   } catch (error) {
