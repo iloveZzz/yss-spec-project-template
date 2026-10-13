@@ -1,5 +1,6 @@
 // Explicitly synthetic approvals and replies for protocol tests only.
 import fs from 'node:fs';
+import {composeProfileTree} from '../../lib/profile-tree.mjs';
 import path from 'node:path';
 import {ROOT,loadRegistry} from '../../lib/lifecycle-registry.mjs';
 import {fixture as strategicFixture} from '../strategic-handoff/fixture.mjs';
@@ -132,10 +133,10 @@ export async function designFixture(root,{nativeSeed,productDesign=true}={}) {
  if(nativeSeed)assertNativeIdentity(nativeSeed,'design');
  fs.mkdirSync(root,{recursive:true});
  const target=await strategicFixture(root,{nativeSeed,handoffVersion:5,businessTickets:true,...(!productDesign?{impacts:{ui:false,api:true,data:true,backend:true,frontend:false,cross_repo:false,high_risk:false}}:{})});
- if(!nativeSeed){fs.cpSync(path.join(ROOT,'submodules/yss-harness-design-agent/.template-spec/process/schemas'),path.join(root,'.template-spec/process/schemas'),{recursive:true});
- fs.copyFileSync(path.join(ROOT,'submodules/yss-harness-design-agent/.template-spec/agents/yss-skill-registry.yaml'),path.join(root,'.template-spec/agents/yss-skill-registry.yaml'));
+ if(!nativeSeed){fs.cpSync(path.join(composeProfileTree('design'),'.template-spec/process/schemas'),path.join(root,'.template-spec/process/schemas'),{recursive:true});
+ fs.copyFileSync(path.join(composeProfileTree('design'),'.template-spec/agents/yss-skill-registry.yaml'),path.join(root,'.template-spec/agents/yss-skill-registry.yaml'));
  for(const ref of ['.template-spec/process/lifecycle-registry.yaml','.template-spec/process/harness-profile.yaml','.template-spec/process/checkpoint-boundary.yaml','.agents/skills/yss-strategic-design/references/orchestration-contract.yaml']) {
-  const file=path.join(root,ref);fs.mkdirSync(path.dirname(file),{recursive:true});fs.copyFileSync(path.join(ROOT,'submodules/yss-harness-design-agent',ref),file);
+  const file=path.join(root,ref);fs.mkdirSync(path.dirname(file),{recursive:true});fs.copyFileSync(path.join(composeProfileTree('design'),ref),file);
  }}
  fs.mkdirSync(path.join(root,'.template-spec/agents'),{recursive:true});
  fs.writeFileSync(path.join(root,'.template-spec/agents/issue-tracker.md'),'---\ntracker:\n  platform: local-markdown\n  root: .work\n  business_ticket_version: 1\n---\n# Synthetic Design tracker\n');

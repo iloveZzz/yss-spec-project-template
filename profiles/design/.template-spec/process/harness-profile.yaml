@@ -1,0 +1,172 @@
+schema_version: 2
+profile_id: harness.business-ddd-strategy-handoff
+status: active
+name: 产品与业务设计专职协作模式
+purpose: >-
+  面向产品、需求和商务角色，把机会与业务约束收敛为可审查的业务边界、协作关系和关键规则，
+  形成可直接交付给下游研发团队的业务方案交接包。
+  可由一个 Spec 综合主控按需协作；产品设计里程碑与本端战略交接终点分开核验，整体业务验收由主控负责。
+
+audience:
+  target_user_roles:
+    - role.product-manager
+    - role.requirements-manager
+    - role.business
+  control_plane_roles:
+    - role.lifecycle-orchestrator
+  non_target_role_policy: >-
+    本分支仅注册产品、需求和商务三个业务角色；项目管理、前后端工程、测试和发布等
+    角色不在当前 profile 中注册或派发；完成当前职责后可建议接入对应下游 Profile。主分支与下游研发
+    模板可继续保留完整角色能力，由业务方案交接后接管。
+  boundary: >-
+    当前 Harness 只负责业务边界与规则设计、Spec、页面原型、业务级 Ticket 和业务方案交接包，
+    不进入下游技术设计、OpenAPI、技术 Ticket、代码实现或发布。
+
+lifecycle:
+  repository_modes: [project-instance]
+  allowed_stages:
+    - stage.entry-triage
+    - stage.plan
+    - stage.spec-architecture
+    - stage.product-design
+    - stage.ticket-formalization
+  entry_work_unit: work-unit.entry-triage
+  allowed_work_units:
+    - work-unit.plan-opportunity
+    - work-unit.plan-requirements
+    - work-unit.domain-strategy-design
+    - work-unit.stage-decision
+    - work-unit.spec-synthesis
+    - work-unit.prototype-design
+    - work-unit.business-ticket-formalization
+    - work-unit.strategic-design-handoff
+  terminal_work_unit: work-unit.strategic-design-handoff
+  terminal_stage: stage.ticket-formalization
+  forbidden_work_units:
+    - work-unit.technical-analysis
+    - work-unit.ticket-decomposition
+    - work-unit.slice-implementation
+    - work-unit.code-review
+    - work-unit.release-and-retrospective
+  forbidden_artifacts:
+    - artifact.openapi-draft
+    - artifact.openapi-freeze-record
+    - artifact.parent-ticket
+    - artifact.vertical-slice-ticket
+    - artifact.slice-implementation-contract
+    - artifact.tactical-design
+
+spec_baseline_intake:
+  schema_version: 1
+  source_profile_id: harness.spec-template
+  source_approval_policy: frozen-source-policy-and-current-plan-spec-proof
+  receipt_schema: .template-spec/process/schemas/spec-baseline-import-receipt.schema.json
+  checkpoint_binding: upstream_spec_baseline
+  acceptance: target-context-reconciliation-and-receipt-byte-binding
+  entry_route: registered-product-design-or-business-ticket-formalization
+  source_checkpoint: immutable-package-proof-only
+  local_plan_spec_gates: not-promoted-from-source
+
+handoff:
+  package_template: .template-spec/templates/strategic-design-handoff-template.yaml
+  package_schema: .template-spec/process/schemas/strategic-design-handoff.schema.json
+  accepted_schema_versions: [5]
+  current_schema_version: 5
+  consumer_capabilities:
+    - backend-technical-design
+    - frontend-engineering-design
+    - delivery-coordination
+  required_source_artifacts:
+    - artifact.domain-strategy
+    - artifact.stage-decision-package
+    - artifact.spec
+    - artifact.interaction-spec
+    - artifact.business-ticket-set
+  required_sections:
+    - source-context-snapshot
+    - context-delta
+    - consumer-routes
+    - problem-and-business-outcomes
+    - bounded-context-and-subdomain-map
+    - context-map-and-translation-responsibility
+    - ubiquitous-language-and-concept-candidates
+    - scenarios-and-business-invariants
+    - tactical-design-questions
+    - deferred-decisions-and-ownership
+    - evidence-and-version-digests
+  acceptance:
+    - domain-strategy-status-is-approved
+    - source-context-snapshot-and-context-delta-are-current
+    - active-consumer-routes-require-target-context-reconciliation
+    - stage-decision-package-status-is-approved
+    - source-digests-are-current
+    - every-deferred-item-has-owner-next-action-and-target-version
+    - no-aggregate-entity-repository-or-api-is-prescribed
+    - immutable-delivery-directory-is-packaged-and-verified
+
+skill_scope:
+  policy: local-workflow-only
+  retired_local_skills:
+  - alibaba-java-code-style
+  - backend-agent
+  - component-selection-imports
+  - file-export-download
+  - formily-foundation
+  - formily-linkage-effects
+  - formily-mode-slot-detail
+  - formily-step-flow
+  - frontend-agent
+  - frontend-commit
+  - java-backend-commit
+  - lombok
+  - mapstruct
+  - page-form-module
+  - page-list-module
+  - page-skeleton
+  - setup-ts-deep-modules
+  - theme-token-usage
+  - vue3-best-practices
+  - yedit-table-usage
+  - yss-api-integration
+  - yss-application
+  - yss-audit-log
+  - yss-cache
+  - yss-components
+  - yss-ddd-scaffold-generator
+  - yss-distributed-id
+  - yss-domain
+  - yss-dto
+  - yss-excel-mvc
+  - yss-exception
+  - yss-formily
+  - yss-formily-schema-generator
+  - yss-frontend-scaffold-generator
+  - yss-hook
+  - yss-layered-mvc-scaffold-generator
+  - yss-microapp-commit
+  - yss-mvc-data-analysis-project-initializer
+  - yss-mybatis
+  - yss-page-module-development
+  - yss-repository
+  - yss-resilience4j
+  - yss-security-algorithm
+  - yss-skill-source-index-refresh
+  - yss-technical-design
+  - yss-ui
+  - yss-up-springboot3
+  - yss-use-table-height
+  - yss-use-tree-height
+  - yss-userinfo
+  - yss-validation
+  - yss-web-controller
+  - ytable-usage
+  - ytree-usage
+
+instantiation:
+  cli_package: yss
+  native_profile: design
+  metadata_file: .yss.json
+  template_source: github:iloveZzz/yss-harness-design-agent
+  command: yss init --profile design --root <directory>
+  legacy_cli_package: create-yss-harness-design
+  legacy_metadata_file: .yss-harness-design.json

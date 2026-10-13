@@ -52,7 +52,6 @@
       ".claude/settings.json",
       ".codex/config.toml",
       ".codex/settings.local.json",
-      ".codex/skills/.DS_Store",
       ".pi/settings.json",
       ".cursor/environment.json",
       "docs/.scratch",
@@ -82,14 +81,12 @@
       "scripts/inspect-maintenance-candidate",
       "scripts/prepare-maintenance-review",
       "scripts/run-template-verification",
-      "scripts/sync-strategic-handoff-tools",
       "scripts/verify-maintenance-checkpoint",
       "scripts/verify-maintenance-review-record",
       "scripts/verify-governance-release",
       "scripts/verify-retired-skill-ids",
       "scripts/verify-skill-governance",
       "scripts/verify-skill-registry",
-      "scripts/verify-strategic-handoff-tools-lock",
       "scripts/verify-doc-facts",
       "scripts/verify-template",
       "scripts/verify-template-candidate",
@@ -111,8 +108,9 @@
       "scripts/lib/verification-report.mjs",
       "scripts/lib/maintenance-counterexample.mjs",
       ".work",
-      "scripts/sync-profile-skills",
-      "scripts/lib/profile-skill-sync.mjs"
+      "scripts/lib/profile-tree.mjs",
+      "scripts/verify-import-direction",
+      "scripts/lib/import-direction.mjs"
     ],
     "excludePathSuffixes": [
       "-scenarios"
@@ -132,14 +130,6 @@
       ".template-spec/agents/backend-architecture-profiles.md",
       ".agents/skills/yss-design-system/SKILL.md",
       ".agents/skills/yss-design-system/references/data-quality-theme.md",
-      ".codex/skills/yss-design-system/SKILL.md",
-      ".codex/skills/yss-design-system/references/data-quality-theme.md",
-      ".cursor/skills/yss-design-system/SKILL.md",
-      ".cursor/skills/yss-design-system/references/data-quality-theme.md",
-      ".pi/skills/yss-design-system/SKILL.md",
-      ".pi/skills/yss-design-system/references/data-quality-theme.md",
-      ".claude/skills/yss-design-system/SKILL.md",
-      ".claude/skills/yss-design-system/references/data-quality-theme.md",
       "yss-project.yaml"
     ],
     "exampleDocPaths": [],
@@ -423,7 +413,6 @@
         ".template-spec/process/implementation-repo-integration.md",
         ".template-spec/process/existing-backend-architecture.md",
         ".template-spec/process/existing-ui-baseline.md",
-        ".template-spec/process/frontend-backend-delivery.md",
         ".template-spec/templates/implementation-repo-registry-template.md"
       ],
       "scripts": [

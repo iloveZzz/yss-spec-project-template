@@ -1,0 +1,19 @@
+#!/usr/bin/env node
+import fs from 'node:fs';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {spawnSync} from 'node:child_process';
+import {isTemplateSource} from './lib/repository-mode.mjs';
+const skillRoot=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+if(fs.existsSync(path.join(skillRoot,'.template-source/profile-skills-source.json'))&&isTemplateSource(skillRoot)&&!process.argv.includes('--plan')&&!process.argv.includes('--help')){
+  const prepared=spawnSync(process.execPath,[path.join(skillRoot,'scripts/prepare-skills'),'--check'],{encoding:'utf8'});
+  if(prepared.status!==0){process.stderr.write(prepared.stderr||'先执行 node scripts/prepare-skills --source <固定Spec源码目录> --apply\n');process.exit(1);}
+}
+import { updateSkillLock } from "./lib/skill-supply-chain.mjs";
+
+try {
+  process.stdout.write(`${updateSkillLock()}\n`);
+} catch (error) {
+  process.stderr.write(`${error.message}\n`);
+  process.exitCode = 1;
+}

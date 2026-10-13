@@ -94,7 +94,6 @@ function validateInvocationBoundary(data) {
   for (const impact of ["api_impact", "formily_impact", "table_impact", "tree_impact", "export_impact", "theme_impact"]) {
     ensure(Array.isArray(frontendRoute?.conditional_skills?.[impact]) && frontendRoute.conditional_skills[impact].length > 0 && typeof frontendRoute.not_applicable_reasons?.[impact] === "string", `前端条件专项路由缺少 ${impact}`);
   }
-  ensure(routes?.["work-unit.frontend-implementation-verification"]?.skills?.includes("code-review") && routes?.["work-unit.frontend-implementation-verification"]?.applies_when === "ui_impact", "前端还原验证未绑定 UI fidelity 审查轴");
   const reviewRoute = routes?.["work-unit.code-review"];
   ensure(reviewRoute?.primary_skill === "code-review" && reviewRoute?.review_standards_route?.unique_default_skill === "code-review" && reviewRoute?.review_standards_route?.second_generic_review_skill === "forbidden", "code-review 不是唯一默认审查入口或允许第二套通用审查 skill");
   ensure(includesAll(reviewRoute?.supporting_skills, ["alibaba-java-code-style", "yss-ui", "yss-domain", "yss-repository", "yss-mybatis"]) && includesAll(reviewRoute?.skills, ["code-review", "alibaba-java-code-style", "yss-ui", "yss-repository", "yss-mybatis"]), "审查工作单元缺少 YSS / Alibaba / Repository / MyBatis 专项检查输入");
@@ -232,7 +231,7 @@ const profiles = {
       ".template-spec/api/templates/openapi-draft-validation-record-template.yaml",
       ".template-spec/process/schemas/openapi-draft-validation-record.schema.json",
       "scripts/verify-openapi-draft-validation-record",
-      "scripts/lib/openapi-draft-validation.mjs"
+      "scripts/lib/api-contract-decision.mjs"
     ],
     markers: [
       [".template-spec/templates/openapi-spec-template.yaml", "openapi: 3.1.0"],
@@ -243,7 +242,7 @@ const profiles = {
       [".template-spec/api/templates/openapi-draft-review-checklist.md", "P0 字段级追踪矩阵"],
       [".template-spec/api/templates/openapi-draft-review-checklist.md", "Create / Update requiredness"],
       [".template-spec/process/schemas/openapi-draft-validation-record.schema.json", "openapi-draft-validation"],
-      ["scripts/lib/openapi-draft-validation.mjs", "Draft SHA-256 不匹配"]
+      ["scripts/lib/api-contract-decision.mjs", "NEEDS.openapiValidation"]
     ]
   },
   openapiJson: {
@@ -281,8 +280,6 @@ export function runScenario(name) {
     const result = spawnSync("scripts/verify-lifecycle-registry", [], { cwd: root, encoding: "utf8" });
     ensure(result.status === 0, result.stderr || result.stdout);
     const registry = parseDocument(read(".template-spec/process/lifecycle-registry.yaml"), { uniqueKeys: true }).toJS({ maxAliasCount: 0 });
-    const releaseGate = registry.gates.find((gate) => gate.id === "gate.delivery-accepted");
-    ensure(releaseGate?.requires_checks?.includes("check.frontend-implementation-verified"), "发布就绪未依赖前端实现还原门禁");
     const contract = parseDocument(read(".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml"), { uniqueKeys: true }).toJS({ maxAliasCount: 0 });
     ensure(contract.ready_for_agent?.requires_vertical_slice_ticket === true && contract.ready_for_agent?.parent_ticket_as_implementation_ref === "forbidden", "ready_for_agent 未强制垂直切片且禁止父 Ticket 实现引用");
     ensure(includesAll(contract.ready_for_agent?.required, ["ticket_decomposition_result_ref", "vertical_slice_ticket_ref", "vertical_slice_ticket_role", "vertical_slice_ticket_kind"]), "ready_for_agent 缺少 Ticket 正式化必填字段");
@@ -299,9 +296,6 @@ export function runScenario(name) {
     ensure(contract.transition_graph?.routes?.["work-unit.implementation-repository-preparation"]?.includes("work-unit.ticket-decomposition"), "实现仓库准备未成为 Ticket 正式化前置");
     ensure(contract.implementation_repository_preparation?.check === "check.implementation-repositories-ready", "实现仓库准备聚合门禁缺失");
     ensure(lifecycleTransitionContract.next_routes["work-unit.ticket-decomposition"]?.includes("work-unit.slice-implementation"), "转换校验器未允许 Ticket 正式化后进入实现");
-    ensure(contract.release_readiness?.conditional?.ui_impact?.includes("check.frontend-implementation-verified") && contract.frontend_implementation_plan?.acceptance?.includes("no_template_placeholders"), "发布公式或前端计划实质校验不完整");
-    const templateRejected = spawnSync("scripts/verify-frontend-implementation-evidence", [".template-spec/process/templates/frontend-implementation-plan-template.yaml"], { cwd: root, encoding: "utf8" });
-    ensure(templateRejected.status !== 0 && templateRejected.stderr.includes("template: false"), "前端实现计划占位模板可冒充正式批准证据");
   }
   if (name === "matt") {
     const contract = parseDocument(read(".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml"), { uniqueKeys: true });

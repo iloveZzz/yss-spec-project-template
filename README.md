@@ -73,17 +73,17 @@ Matt skills 的上游来源与固定 revision 见 [`skills-lock.json`](skills-lo
 scripts/verify-template-fast
 ```
 
-快速入口先用 `--plan` 按 Git 影响面选择当前变化及直接/传递消费者的必要检查；未映射路径、缺输入映射或非法依赖先修正计划，不自动运行全量。来源为当前工作树，日常交付记录 `limited` 范围，必要检查通过后用于 `implementation-ready`。显式 candidate / 发布入口要求已提交来源。三个入口共同检查：
+快速入口先用 `--plan` 按 Git 影响面选择当前变化及直接/传递消费者的必要检查；未映射路径、缺输入映射或非法依赖先修正计划，不自动运行全量。来源为当前工作树，日常交付记录 `limited` 范围，必要检查通过后用于 `implementation-ready`。发布入口要求已提交来源，必须以 `--base <上一正式发行完整 SHA>` 覆盖完整发行差异，选择受影响检查与依赖并保留来源、安装与恢复验证。两个入口按适用范围检查：
 
 - `yss-project.yaml`、权威流程资产和模板是否完整。
-- 共享技能投影及 `skills-lock.json` 的完整树哈希是否一致。
+- 共享技能唯一 canonical 来源及 `skills-lock.json` 是否一致。
 - 过时技能、路径和规范用语是否已清理。
 - 五类流程压力场景是否符合条件门禁和仓库身份路由。
 - Markdown 相对链接是否指向现有文件。
 - 示例 OpenAPI YAML 是否可解析。
 - Git diff 是否存在空白错误。
 
-PR 执行 `scripts/verify-template-candidate`；main 与正式发布前执行不可裁剪的 `scripts/verify-template`。独立审查和候选冻结仅在显式采用旧兼容协议时执行。
+PR 执行 `scripts/verify-template-fast --base <完整 SHA>`；显式 main 集成与正式发布任务执行 `scripts/verify-template --base <上一正式发行完整 SHA>` 的必要检查集合，未映射路径不能静默省略。独立审查和候选冻结仅在显式采用旧兼容协议时执行。
 
 ## 关键文档
 

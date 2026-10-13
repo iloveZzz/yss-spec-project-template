@@ -1,3 +1,4 @@
+import { composeProfileTree } from '../../../../scripts/lib/profile-tree.mjs';
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import path from "node:path";
@@ -91,11 +92,10 @@ test("alias that collides with another id is rejected", () => {
   assert.throws(() => validateSkillRegistry(data), /alias 冲突/);
 });
 
-test("missing Cursor runtime root is rejected", () => {
+test("retired Cursor runtime root is rejected as an unknown runtime", () => {
   const data = registry();
-  const { cursor, ...rest } = data.agent_runtime_roots;
-  data.agent_runtime_roots = rest;
-  assert.throws(() => validateSkillRegistry(data), /agent_runtime_roots.cursor/);
+  data.agent_runtime_roots = { ...data.agent_runtime_roots, cursor: ".cursor/skills" };
+  assert.throws(() => validateSkillRegistry(data), /未知 Agent 运行时根: cursor/);
 });
 
 test("skill invocation contract is required and derives impact triggers", () => {
@@ -145,6 +145,7 @@ test("实现合同编译器合同不得重复 typed dependency 事实", () => {
 
 test("platform aliases resolve lifecycle external runtime entries", () => {
   const data = registry();
+  data.platform_skills = [{ id: "product-design", root: ".codex/skills", layer: "specialist", instance_default_discoverable: false, aliases: ["product-design:index"] }];
   const route = {
     primary_skill: "product-design:index",
     supporting_skills: [],
@@ -391,10 +392,10 @@ test("frontend conditional routes require registered skills", () => {
 
 
 test('Pi invocation metadata rejects missing restrictions and non-boolean flags in all profiles', async () => {
-  for (const prefix of ['', 'submodules/yss-harness-backend-agent/', 'submodules/yss-harness-design-agent/', 'submodules/yss-harness-frontend-agent/']) {
-    const module = await import(path.join(ROOT, prefix, 'scripts/lib/skill-registry.mjs'));
+  for (const base of [ROOT, ...['backend', 'design'].map((profile) => composeProfileTree(profile))]) {
+    const module = await import(path.join(base, 'scripts/lib/skill-registry.mjs'));
     const data = module.loadSkillRegistry();
-    const source = (id) => readFileSync(path.join(ROOT, prefix, '.agents/skills', id, 'SKILL.md'), 'utf8');
+    const source = (id) => readFileSync(path.join(base, '.agents/skills', id, 'SKILL.md'), 'utf8');
     assert.doesNotThrow(() => module.validateSkillRegistry(data, { skillMetadata: metadataSource(data), skillSource: source }));
     for (const value of ['false', '"true"', 'null']) {
       assert.throws(() => module.validateSkillRegistry(data, {

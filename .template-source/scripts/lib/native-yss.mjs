@@ -3,7 +3,7 @@ import path from 'node:path';
 import {createHash} from 'node:crypto';
 import {spawnSync} from 'node:child_process';
 
-export const NATIVE_PROFILES = ['spec','design','backend','frontend'];
+export const NATIVE_PROFILES = ['spec','design','backend'];
 export const nativeDigest = bytes => createHash('sha256').update(bytes).digest('hex');
 const fail = message => { throw new TypeError(message); };
 

@@ -1,0 +1,54 @@
+---
+name: yss-technical-design
+description: 在 YSS 技术分析中统一承接需求与战略输入，按已确认的 DDD 或传统 MVC 架构组织设计合同。
+---
+
+# YSS 技术设计
+
+已有生命周期资产优先用 `scripts/contract view <资产> --kind <类型>` 阅读；执行任务用 `--profile task --unit <ID>`，绑定与校验明细用 `--profile full`。视图不授予执行权限，仍按本 Skill 的原始来源和批准门禁处理。类型、准备和迁移见 `.template-spec/process/contract-reading.md`。
+
+由 `harness-orchestrator` 调度，负责 `work-unit.technical-design` 的技术设计，不另起生命周期、不生成生产代码。生命周期维护批准和状态；`yss-implementation-contract-compiler` 消费批准且当前的设计，起草实现合同。
+
+## 文档输出
+
+起草或修订技术设计解释正文时，按 `lifecycle-document-output` 条件调用 `i-have-adhd`，读取 `.template-spec/process/document-writing.md` 的共用写法及工程契约指引。作用域仅限当前产物，分支派发传递条件及引用；结构化合同保持原 schema 和验证要求。
+
+## 输入与架构选择
+
+先读根 `CONTEXT.md`、已批准且当前的 Spec、业务规则、关键场景、适用的 API 契约、ADR 和工程约束。没有 API 或其他专项影响时记录有依据的不适用，不生成占位设计。
+
+按项目绑定架构来源及摘要，架构族只允许 `domain-driven` 与 `layered-mvc`；不从目录推断或默认架构、Spring Boot 版本。具体 Profile 与模块边界消费技能注册表及 `.template-spec/agents/backend-architecture-profiles.md`。
+
+对象职责、命名及阿里/COLA 适配消费 `.template-spec/agents/backend-architecture-profiles.md` 的“对象命名与外部规范适配”；将实际类型与例外写入当前工程基线和设计映射，不因通用规范改变已确认 DDD/MVC、组件或 wire 协议。
+
+- 新工程先通过 `gate.backend-architecture-platform-approved`：展示 DDD / MVC 推荐依据及平台清单中的精确 Spring Boot、Java，用户在同一次决定确认架构与平台。决定持久化到 `scaffold-architecture-decisions.yaml`，设计与后续脚手架消费同一决定。
+- 既有工程核验并沿用当前登记架构及固定工程基线/POM 的实际 Spring Boot；该门禁记录带依据的 `not-applicable`，不重复询问。架构转换或平台升级单独立项。
+
+- `domain-driven`：调用 `yss-tactical-design`，补齐适用的战略领域输入。
+- `layered-mvc`：由本 skill 直接设计模块职责与依赖方向、用例流程、业务规则、状态转换、事务与回滚、幂等与并发、持久化映射、外部集成和公开测试 seam；不要求战略 DDD、聚合、值对象、Domain Event 或 DDD Gateway。分层边界消费 `.template-spec/agents/backend-architecture-profiles.md`，不得为 MVC 加载 `yss-domain` 或生成 DDD Gateway。
+
+已有 Strategic Design Handoff 时，两种分支都必须先完成导入和目标词汇对账，再逐条承接规则与关键场景。没有战略交接包的项目直接消费批准需求，不能为 MVC 补造战略 DDD。
+
+既有身份 v2 的纯工程变更可显式使用 `design_scope: engineering-only`；按 `references/engineering-design.schema.json` 绑定真实构建单元、写路径、只读依赖、失败处理与测试 seam。不得更改登记业务边界、领域模型、业务规则/状态、持久化、数据库 schema 或 UI；命中这些影响回原架构设计。缺省仍保留原 DDD/MVC 规则，不自动降级。工程分支仍需当前 Spec/API/工程依据、逐条承接、独立技术审查及正式 Slice 批准。
+
+## 合同与验证
+
+新产物使用 schema v2 Technical Design Contract：共同头记录架构来源、输入版本与摘要、规则/场景承接、评审证据和状态，`design` 保存架构专属内容。合同格式与兼容规则见 `references/technical-design-contract.md`，Schema 见 `references/technical-design.schema.json`。
+
+MVC `design` 分支由 `references/mvc-design.schema.json` 约束。无状态流转或外部集成时记录有依据的不适用；业务规则和关键场景必须关联具体用例与成功/失败测试 seam。MVC 与 DDD 使用同一承接和审查要求，不能因采用分层 MVC 省略规则、一致性或测试设计。旧 MVC 设计合同必须迁移到本入口并重新编译、批准。
+
+运行 `node .agents/skills/yss-technical-design/scripts/validate-technical-design.mjs <合同> --root <项目根>`。整体存在延期或冲突即阻断整体；相关切片可带 `--slice <切片ID>` 按依赖核验，仍须合同已批准。校验成功只返回审查输入，不批准、不设置 `ready-for-agent`。
+
+schema v1 战术合同只按 DDD 显式兼容读取；使用 `--legacy-ddd`，不能解释为 MVC。迁移不自动批准，输入或架构变化必须重新校验并按现有门禁审查。新合同使用 `artifact.technical-design` / `evidence.technical-design-review`；旧 DDD 稳定 ID 保留原含义。
+
+## 交接
+
+按现有架构审查门禁进行独立评审。批准且版本当前后交回生命周期，再交编译器；DDD 实现使用 `yss-domain`，MVC 实现按已登记 Profile 的能力与 Recipe 路由。发现 `stale`、`drift`、`new_impacts` 或路径越界时回交重路由。需要图示时按用户或合同要求调用 `archify`，图只作派生证据。
+
+## 后端脚手架平台承接
+
+消费生命周期已确认的架构与 `platform_configuration` v2；不得自行选择、批准或静默升级 Boot/Java。平台清单执行 `scripts/backend-platforms` 查询；只允许已验证 YSS 组合，新生成缺少配置或证据即阻断。决定、合同、Manifest 与下游架构身份须绑定同一平台及兼容摘要。详见 仓库共享合同 `.template-spec/engineering/backend-platforms.md`。
+
+## 业务拆分输入
+
+按 `.template-spec/process/business-tickets.md` 执行 Spec 业务草案、Design 校准与业务正式化。业务票放在 `business-tickets/`，集合引用进入 Spec / map / checkpoint；业务票不授予实现资格。实现票仍在 `issues/`，受工程准备、当前 Slice 合同批准和完整就绪检查约束。 核验业务票与原 FR/AC、适用规则和场景对应关系。可在技术分析中起草实现 Slice；既有工程事实须当前核验，新工程按批准的脚手架合同生成机械骨架。工程前置未闭合时保持待满足，不把它写为 not-applicable。

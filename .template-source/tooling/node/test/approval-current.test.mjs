@@ -1,3 +1,4 @@
+import { composeProfileTree } from '../../../../scripts/lib/profile-tree.mjs';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync} from 'node:fs';
@@ -15,10 +16,11 @@ import {approvalExpectedFromTask} from '../../../../scripts/lib/review-capabilit
 import {parseDocument} from '../../../../scripts/vendor/yaml.mjs';
 import {readFileSync as snapshotRead} from '../../../../scripts/lib/validation-phase.mjs';
 import {sourceApproval} from '../../../../scripts/lib/strategic-handoff.mjs';
+import {makeRoot} from '../../../../tests/helpers/yss-instance.mjs';
 
 const digest = bytes => createHash('sha256').update(bytes).digest('hex');
 function fixture(run) {
- const root = mkdtempSync(path.join(tmpdir(), 'yss-current-approval-'));
+ const root = makeRoot('yss-current-approval-');
  const save = (ref, value) => writeFileSync(path.join(root, ref), typeof value === 'string' ? value : JSON.stringify(value));
  const asset = ref => ({ref,digest:digest(readFileSync(path.join(root,ref)))});
  try {
@@ -188,13 +190,12 @@ test('one v2 capability task strictly binds different per-check subjects across 
  const options={root,rolesDoc,registry:live,expected};
  const paths=[()=>validateApprovalRecord(bundle.reviews[0],{...options,expected:expected[0]}),()=>validateApprovalRecordFile(path.join(root,'reviews/approved-0.json'),{...options,expected:expected[0]}),()=>validateApprovalRecordFile(path.join(root,'reviews/approved-bundle.json'),options),()=>assertApprovedGateHasValidApproval(checkIds[0],consumer.checks[checkIds[0]],{root,rolesDoc,registry:live}),()=>assertCheckpointApprovals(consumer,path.join(root,'reviews/consumer-checkpoint.json'),{root,rolesDoc,registry})];
  for(const verify of paths)assert.doesNotThrow(verify);
- const cliArgs=[path.join(ROOT,'scripts/verify-approval-record'),'--require-approved','--root',root,'--checkpoint',path.join(root,'reviews/consumer-checkpoint.json'),path.join(root,'reviews/approved-bundle.json')];
- const cli=spawnSync(process.execPath,cliArgs,{encoding:'utf8'});assert.equal(cli.status,0,cli.stderr);
+ // 命令行入口已是 yss 的薄壳，只能在完整实例里运行；与 Node 实现的等价回放见 tests/go-validator-replay.test.mjs。
  for(const [i,row]of bundle.reviews.entries()) {
   const current=base.checks[row.gate_id];
   await assert.doesNotReject(()=>sourceApproval(row,rolesDoc,root,{ref:current.subject_ref,approval_context:current}),`source check ${i}`);
  }
- const profiles=['yss-harness-design-agent','yss-harness-frontend-agent','yss-harness-backend-agent'];
+ const profiles=['design','backend'];
  const isolatedSourceCheck=`const {sourceApproval}=await import(process.argv[1]);
  const input=JSON.parse(process.argv[2]);let verified=0;
  for(const row of input.records){const current=input.checks[row.gate_id];
@@ -205,7 +206,7 @@ test('one v2 capability task strictly binds different per-check subjects across 
  console.log(JSON.stringify({verified,mode:input.stale?'stale-rejected':'current-accepted'}));`;
  const verifyProfiles=stale=>{
   for(const profile of profiles){
-   const module=path.join(ROOT,'submodules',profile,'scripts/lib/strategic-handoff.mjs');
+   const module=path.join(composeProfileTree(profile),'scripts/lib/strategic-handoff.mjs');
    const result=spawnSync(process.execPath,['--input-type=module','-e',isolatedSourceCheck,module,JSON.stringify({records:bundle.reviews,roles:rolesDoc,root,checks:base.checks,stale})],{encoding:'utf8',cwd:root});
    assert.equal(result.status,0,`${profile}: ${result.stderr}`);
    assert.deepEqual(JSON.parse(result.stdout),{verified:2,mode:stale?'stale-rejected':'current-accepted'});
@@ -236,5 +237,4 @@ test('one v2 capability task strictly binds different per-check subjects across 
   const before=bundle[field];bundle[field]=value;refresh();for(const verify of paths.slice(2))assert.throws(verify,/APPROVAL_CURRENT_INVALID|APPROVAL_BUNDLE_INVALID|REVIEW_BINDING_STALE/);bundle[field]=before;
  }
  refresh();write('input/evidence-0.txt','changed evidence');for(const verify of paths)assert.throws(verify,/STALE|证据过期/);
- const stale=spawnSync(process.execPath,cliArgs,{encoding:'utf8'});assert.equal(stale.status,1);assert.match(stale.stderr,/STALE|证据过期/);
 });

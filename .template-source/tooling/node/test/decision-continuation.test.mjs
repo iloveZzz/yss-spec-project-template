@@ -1,10 +1,11 @@
+import { composeProfileTree } from '../../../../scripts/lib/profile-tree.mjs';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { mkdtempSync, rmSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { buildDecisionFixture, buildImplementationFixture } from '../../../../scripts/fixtures/user-decision/build-fixture.mjs';
 import { buildPlanFixture } from '../../../../scripts/fixtures/user-decision/plan-fixture.mjs';
 import { assertPlanSpecEntry } from '../../../../scripts/lib/plan-spec-entry.mjs';
@@ -12,10 +13,11 @@ import { assertUserDecisionRequirement, assertWorkUnitUserDecision, assertImplem
 import { validateApprovalRecord, validateApprovalRecordFile, assertCheckpointUserDecisions } from '../../../../scripts/lib/approval-record.mjs';
 import { approvalExpectationFromSubject } from '../../../../scripts/lib/approval-current.mjs';
 import { loadDigitalHumanRoles } from '../../../../scripts/lib/digital-human-roles.mjs';
+import { makeRoot, hasYss } from '../../../../tests/helpers/yss-instance.mjs';
 
 // Synthetic approvals only; never used to capture a real user's decision.
 function fixture(run, boundary = 'gate.engineering-contract-approved') {
-  const root = mkdtempSync(path.join(tmpdir(), 'yss-continuation-'));
+  const root = makeRoot('yss-continuation-');
   try {
     const save = (name, data) => { const ref = path.join(root, name); writeFileSync(ref, typeof data === 'string' ? data : JSON.stringify(data)); return ref; };
     const asset = ref => ({ ref, version: 'v1', digest: decisionDigest(readFileSync(ref)) });
@@ -36,7 +38,7 @@ function fixture(run, boundary = 'gate.engineering-contract-approved') {
     const requirement = { boundary, subject_ref: subject.ref, scope: ['feature.demo'], continuation_ref: proofRef };
     const refresh = () => { save('review.json', review); proof.review = asset(reviewRef); save('continuation.json', proof); };
     const approveMandate = () => { save('external.json', external); mandate.external_policy = asset(externalRef); save('mandate.json', mandate); source.record.request.items[0].subject = asset(mandateRef); source.present(); source.record.responses = []; source.respond(); source.save(); };
-    const verify = () => assertUserDecisionRequirement(requirement);
+    const verify = () => assertUserDecisionRequirement(requirement, hasYss ? { root } : {}); // 没有 yss 时根只是临时目录，沿用默认根走进程内实现
     run({ root, save, asset, source, mandate, external, subject, basis, review, proof, requirement, refresh, approveMandate, verify });
   } finally { rmSync(root, { recursive: true, force: true }); }
 }
@@ -47,9 +49,7 @@ test('ordinary engineering work reuses explicit authorization through public app
   const existingBackendReuse = [{ boundary: 'gate.backend-architecture-platform-approved', reason: '既有工程复用当前登记架构与固定工程基线中的实际 Spring Boot 版本' }];
   assertWorkUnitUserDecision('work-unit.technical-analysis', { user_decisions: [f.requirement], user_decision_not_applicable: existingBackendReuse });
   assertCheckpointUserDecisions({ repository_mode: 'project-instance', status: 'running', stage_trace: { completed_work_unit: 'work-unit.technical-analysis' }, human_review: { user_decisions: [f.requirement], not_applicable: existingBackendReuse } });
-  const input = f.save('requirement.json', f.requirement);
-  const cli = spawnSync('node', [fileURLToPath(new URL('../../../../scripts/verify-user-decision', import.meta.url)), '--continuation', input], { encoding: 'utf8' });
-  assert.equal(cli.status, 0, cli.stderr);
+  // 命令行入口已是 yss 的薄壳，只能在完整实例里运行，见 tests/go-validator-replay.test.mjs。
 }));
 test('product design can continue after independent review without a repeated human reply', () => fixture(f => {
   validateApprovalRecord({ schema_version: 1, gate_id: f.requirement.boundary, decision: 'approved', actor_kind: 'digital-human', role_id: 'role.test-engineer', runtime_id: 'runtime.generic', principal_ref: 'synthetic.reviewer', drafter_principal_ref: 'synthetic.worker', subject_ref: f.subject.ref, subject_digest:f.asset(f.subject.ref).digest.slice(7), basis:f.basis.map(x=>({ref:x.ref,digest:x.digest.slice(7)})), approval_scope: f.requirement.scope, continuation_ref: f.requirement.continuation_ref }, { requireApproved: true, root:f.root,expected:approvalExpectationFromSubject(f.requirement.boundary,f.subject.ref,{root:f.root}) });
@@ -57,8 +57,8 @@ test('product design can continue after independent review without a repeated hu
 test('source approval continuation is verified by all three dedicated receivers', () => fixture(f => {
   const record = { schema_version: 1, gate_id: f.requirement.boundary, decision: 'approved', actor_kind: 'digital-human', role_id: 'role.test-engineer', runtime_id: 'runtime.generic', principal_ref: 'synthetic.reviewer', drafter_principal_ref: 'synthetic.worker', subject_ref: f.subject.ref, subject_digest:f.asset(f.subject.ref).digest.slice(7), basis:f.basis.map(x=>({ref:x.ref,digest:x.digest.slice(7)})), approval_scope: f.requirement.scope, continuation_ref: f.requirement.continuation_ref };
   const input = f.save('source-approval.json', { record, currentAssetRef:f.subject.ref, roles: loadDigitalHumanRoles() });
-  for (const profile of ['design', 'backend', 'frontend']) {
-    const moduleUrl = new URL(`../../../../submodules/yss-harness-${profile}-agent/scripts/lib/strategic-handoff.mjs`, import.meta.url).href;
+  for (const profile of ['design', 'backend']) {
+    const moduleUrl = pathToFileURL(path.join(composeProfileTree(profile), 'scripts/lib/strategic-handoff.mjs')).href;
     const code = `import {readFileSync} from 'node:fs'; import {sourceApproval} from ${JSON.stringify(moduleUrl)}; const {record,roles,currentAssetRef}=JSON.parse(readFileSync(process.argv[1])); await sourceApproval(record,roles,process.argv[2],currentAssetRef);`;
     const result = spawnSync(process.execPath, ['--input-type=module', '-e', code, input, f.root], { encoding: 'utf8' });
     assert.equal(result.status, 0, `${profile}: ${result.stderr}`);
@@ -121,7 +121,7 @@ test('material changes and unclassified changes require a decision', () => fixtu
 }));
 test('new risk, quality reduction or changed authorization cannot be labelled cosmetic', () => {
   for (const field of ['risk_acceptance', 'quality', 'authorization', 'contract_commitments']) fixture(f => {
-    f.review.decision_basis = { ...f.review.decision_basis, [field]: ['changed'] }; f.refresh(); assert.throws(f.verify, /实质变化/);
+    f.review.decision_basis = { ...f.review.decision_basis, [field]: ['changed'] }; f.refresh(); assert.throws(f.verify, /实质变化|未绑定当前资产、范围、证据或决定依据/); // 进程内与 yss 对决定依据变化的措辞不同，同为 user-decision-continuation-invalid
   });
 });
 test('self review, wrong expertise, missing comparisons and stale verification block', () => fixture(f => {
@@ -162,7 +162,7 @@ test('one review bundle retains explicit per-check outcomes and rejects duplicat
   const expected = ['check.design-reviewed','check.architecture-reviewed'].map(boundary=>approvalExpectationFromSubject(boundary,f.subject.ref,{root:f.root,review_package:false}));
   for(const row of bundle.reviews){row.subject_digest=f.asset(f.subject.ref).digest.slice(7);row.basis=f.basis.map(x=>({ref:x.ref,digest:x.digest.slice(7)}));}
   const ref = f.save('bundle.json', bundle); assert.equal(validateApprovalRecordFile(ref, { requireApproved: true, root:f.root,expected }).length, 2);
-  bundle.reviews[1].decision = 'rejected'; f.save('bundle.json', bundle); assert.throws(() => validateApprovalRecordFile(ref, { requireApproved: true, root:f.root,expected }), /必须为 approved/);
+  bundle.reviews[1].decision = 'rejected'; f.save('bundle.json', bundle); assert.throws(() => validateApprovalRecordFile(ref, { requireApproved: true, root:f.root,expected }), /必须为 approved|approved 结论/); // 进程内与 yss 的措辞不同，同为 APPROVAL_CURRENT_INVALID
   bundle.reviews[1] = bundle.reviews[0]; f.save('bundle.json', bundle); assert.throws(() => validateApprovalRecordFile(ref,{history:true}), /重复/);
   bundle.reviews = []; f.save('bundle.json', bundle); assert.throws(() => validateApprovalRecordFile(ref,{history:true}), /not valid under any|non-empty/);
 }));

@@ -1,0 +1,1271 @@
+{
+  "schema_version": 2,
+  "kind": "backend-platform-catalog",
+  "profiles": [
+    {
+      "id": "spring-boot-2.7-jdk8",
+      "spring_boot_version": "2.7.18",
+      "java_version": 8,
+      "framework_line": "5.3",
+      "tomcat_line": "9.0",
+      "servlet_version": "4.0",
+      "validation_namespace": "javax",
+      "validation_group": "javax.validation",
+      "validation_artifact": "validation-api",
+      "web_starter": "spring-boot-starter-web",
+      "web_test_starter": "spring-boot-starter-test",
+      "aop_starter": "spring-boot-starter-aop",
+      "mybatis_plus_starter": "mybatis-plus-boot-starter",
+      "springdoc_major": 1,
+      "jackson_major": 2,
+      "swagger_artifact": "swagger-annotations",
+      "versions": {
+        "mapstruct": "1.5.5.Final",
+        "lombok": "1.18.30",
+        "lombok_mapstruct_binding": "0.2.0",
+        "swagger": "2.2.22",
+        "archunit": "1.2.1",
+        "compiler": "3.11.0",
+        "enforcer": "3.5.0",
+        "surefire": "3.2.5"
+      },
+      "candidate_blockers": [
+        "YSS parent/BOM/starter combination and real Maven/startup evidence required"
+      ],
+      "spring_cloud_line": "2021.0",
+      "openfeign_line": "3.1",
+      "component_platform_line": "boot2-java8"
+    },
+    {
+      "id": "spring-boot-3.5-jdk17",
+      "spring_boot_version": "3.5.16",
+      "java_version": 17,
+      "framework_line": "6.2",
+      "tomcat_line": "10.1",
+      "servlet_version": "6.0",
+      "validation_namespace": "jakarta",
+      "validation_group": "jakarta.validation",
+      "validation_artifact": "jakarta.validation-api",
+      "web_starter": "spring-boot-starter-web",
+      "web_test_starter": "spring-boot-starter-test",
+      "aop_starter": "spring-boot-starter-aop",
+      "mybatis_plus_starter": "mybatis-plus-spring-boot3-starter",
+      "springdoc_major": 2,
+      "jackson_major": 2,
+      "swagger_artifact": "swagger-annotations-jakarta",
+      "versions": {
+        "mapstruct": "1.6.3",
+        "lombok": "1.18.42",
+        "lombok_mapstruct_binding": "0.2.0",
+        "swagger": "2.2.22",
+        "archunit": "1.4.1",
+        "compiler": "3.14.1",
+        "enforcer": "3.5.0",
+        "surefire": "3.5.4"
+      },
+      "candidate_blockers": [
+        "YSS parent/BOM/starter combination and real Maven/startup evidence required",
+        "component-evidence-missing: Boot 3/JDK17 candidate artifacts, exact resolution metadata, AutoConfiguration.imports and DDD/MVC evidence are not published"
+      ],
+      "spring_cloud_line": "2025.0",
+      "openfeign_line": "4.3",
+      "component_platform_line": "boot3-java17",
+      "spring_cloud_version": "2025.0.3",
+      "spring_cloud_alibaba_version": "2025.0.0.0",
+      "auto_configuration_imports_path": "META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports"
+    },
+    {
+      "id": "spring-boot-3.5-jdk21",
+      "spring_boot_version": "3.5.16",
+      "java_version": 21,
+      "framework_line": "6.2",
+      "tomcat_line": "10.1",
+      "servlet_version": "6.0",
+      "validation_namespace": "jakarta",
+      "validation_group": "jakarta.validation",
+      "validation_artifact": "jakarta.validation-api",
+      "web_starter": "spring-boot-starter-web",
+      "web_test_starter": "spring-boot-starter-test",
+      "aop_starter": "spring-boot-starter-aop",
+      "mybatis_plus_starter": "mybatis-plus-spring-boot3-starter",
+      "springdoc_major": 2,
+      "jackson_major": 2,
+      "swagger_artifact": "swagger-annotations-jakarta",
+      "versions": {
+        "mapstruct": "1.6.3",
+        "lombok": "1.18.42",
+        "lombok_mapstruct_binding": "0.2.0",
+        "swagger": "2.2.22",
+        "archunit": "1.4.1",
+        "compiler": "3.14.1",
+        "enforcer": "3.5.0",
+        "surefire": "3.5.4"
+      },
+      "candidate_blockers": [
+        "YSS parent/BOM/starter combination and real Maven/startup evidence required",
+        "component-unavailable-for-platform: no YSS Jakarta/Boot-specific component artifacts are registered for this profile"
+      ],
+      "spring_cloud_line": "2025.0",
+      "openfeign_line": "4.3",
+      "component_platform_line": "boot3-java17"
+    },
+    {
+      "id": "spring-boot-4.1-jdk17",
+      "spring_boot_version": "4.1.1",
+      "java_version": 17,
+      "framework_line": "7.0",
+      "tomcat_line": "11.0",
+      "servlet_version": "6.1",
+      "validation_namespace": "jakarta",
+      "validation_group": "jakarta.validation",
+      "validation_artifact": "jakarta.validation-api",
+      "web_starter": "spring-boot-starter-webmvc",
+      "web_test_starter": "spring-boot-starter-webmvc-test",
+      "aop_starter": "spring-boot-starter-aspectj",
+      "mybatis_plus_starter": "mybatis-plus-spring-boot4-starter",
+      "springdoc_major": 3,
+      "jackson_major": 3,
+      "swagger_artifact": "swagger-annotations-jakarta",
+      "versions": {
+        "mapstruct": "1.6.3",
+        "lombok": "1.18.42",
+        "lombok_mapstruct_binding": "0.2.0",
+        "swagger": "2.2.22",
+        "archunit": "1.4.1",
+        "compiler": "3.14.1",
+        "enforcer": "3.5.0",
+        "surefire": "3.5.4"
+      },
+      "candidate_blockers": [
+        "YSS parent/BOM/starter combination and real Maven/startup evidence required",
+        "component-unavailable-for-platform: no YSS Jakarta/Boot-specific component artifacts are registered for this profile"
+      ],
+      "spring_cloud_line": "2025.1",
+      "openfeign_line": "5.0",
+      "spring_cloud_minimum": "2025.1.2"
+    },
+    {
+      "id": "spring-boot-4.1-jdk21",
+      "spring_boot_version": "4.1.1",
+      "java_version": 21,
+      "framework_line": "7.0",
+      "tomcat_line": "11.0",
+      "servlet_version": "6.1",
+      "validation_namespace": "jakarta",
+      "validation_group": "jakarta.validation",
+      "validation_artifact": "jakarta.validation-api",
+      "web_starter": "spring-boot-starter-webmvc",
+      "web_test_starter": "spring-boot-starter-webmvc-test",
+      "aop_starter": "spring-boot-starter-aspectj",
+      "mybatis_plus_starter": "mybatis-plus-spring-boot4-starter",
+      "springdoc_major": 3,
+      "jackson_major": 3,
+      "swagger_artifact": "swagger-annotations-jakarta",
+      "versions": {
+        "mapstruct": "1.6.3",
+        "lombok": "1.18.42",
+        "lombok_mapstruct_binding": "0.2.0",
+        "swagger": "2.2.22",
+        "archunit": "1.4.1",
+        "compiler": "3.14.1",
+        "enforcer": "3.5.0",
+        "surefire": "3.5.4"
+      },
+      "candidate_blockers": [
+        "YSS parent/BOM/starter combination and real Maven/startup evidence required",
+        "component-unavailable-for-platform: no YSS Jakarta/Boot-specific component artifacts are registered for this profile"
+      ],
+      "spring_cloud_line": "2025.1",
+      "openfeign_line": "5.0",
+      "spring_cloud_minimum": "2025.1.2"
+    }
+  ],
+  "compatibility": [
+    {
+      "id": "yss-cloud-microservice-2.0.0-snapshot-boot-2.7-jdk8",
+      "profile_id": "spring-boot-2.7-jdk8",
+      "spring_boot_version": "2.7.18",
+      "parent": {
+        "group_id": "com.yss.cloud",
+        "artifact_id": "yss-cloud-microservice",
+        "version": "2.0.0-SNAPSHOT"
+      },
+      "bom": {
+        "group_id": "com.yss.cloud",
+        "artifact_id": "yss-components-bom",
+        "version": "2.0.0-SNAPSHOT"
+      },
+      "status": "blocked",
+      "capabilities": [],
+      "component_capabilities": {
+        "contract.dto-wire": {
+          "status": "blocked",
+          "verified_architectures": [],
+          "artifacts": [
+            {
+              "group_id": "com.yss.cloud",
+              "artifact_id": "yss-component-dto",
+              "declared_version": "2.0.0-SNAPSHOT",
+              "resolved_version": "2.0.0-20260916.162843-1",
+              "pom_sha256": "sha256:5653ee0785cc005efa9dfb626a00bc43a26c411f78a87da3c2efaa2fbac7c181",
+              "jar_sha256": "sha256:65d05ae596242fb683f29938d0d5f0247a445ff4a24cb03618f14622b41fa5a3",
+              "source_tree": "3add70b98d26f6534a4ebf7d9b09d74790ea60a5"
+            }
+          ],
+          "evidence": [],
+          "blockers": [
+            "component-evidence-missing: domain-driven and layered-mvc consuming-application certification is not recorded"
+          ],
+          "component_digest": "sha256:b66bef9e19909e82c582cddbe1d259fd76f5477fb7c01551c295edb782fb22b6",
+          "platform_line": "boot2-java8",
+          "lifecycle": "active",
+          "adoption_policy": "allowed"
+        },
+        "contract.request-validation": {
+          "status": "blocked",
+          "verified_architectures": [],
+          "artifacts": [
+            {
+              "group_id": "com.yss.cloud",
+              "artifact_id": "yss-component-validation-jsr303",
+              "declared_version": "2.0.0-SNAPSHOT",
+              "resolved_version": "2.0.0-20260916.163229-1",
+              "pom_sha256": "sha256:f0aef77e7b1f9e853cc7527b3977d29410cf7f953c3f19691ff6d788791b2a48",
+              "jar_sha256": "sha256:5a3a73e3ddd24cceb23ddd27680107952ac3cb030bd36ef1db243dacb0bedcc1",
+              "source_tree": "fe5b36afb474afa41541fe1187a6828bdae080dc"
+            }
+          ],
+          "evidence": [],
+          "blockers": [
+            "component-new-adoption-forbidden: validation is platform-managed; migrate to spring-boot-starter-validation",
+            "component-evidence-missing: domain-driven and layered-mvc consuming-application certification is not recorded"
+          ],
+          "component_digest": "sha256:5ec5fbac65d34914e62be351a2b1b808e47165c75385452771b7e6bc9a6fed14",
+          "platform_line": "boot2-java8",
+          "lifecycle": "deprecated",
+          "adoption_policy": "forbidden",
+          "replacement_gav": "org.springframework.boot:spring-boot-starter-validation"
+        },
+        "contract.error-mapping": {
+          "status": "blocked",
+          "verified_architectures": [],
+          "artifacts": [
+            {
+              "group_id": "com.yss.cloud",
+              "artifact_id": "yss-component-exception",
+              "declared_version": "2.0.0-SNAPSHOT",
+              "resolved_version": "2.0.0-20260916.162932-1",
+              "pom_sha256": "sha256:d51a60e37a97a686c295bb1d5001b376e939698eac256eb6b8cd4eee55ae68b3",
+              "jar_sha256": "sha256:520363b8ced9df0c6a664a6abb5eec6439818ccae0d92de77184d229e64b6732",
+              "source_tree": "e5d71e213f26cd7e52d419ded1c2f5e7b7fbf40b"
+            }
+          ],
+          "evidence": [],
+          "blockers": [
+            "component-binding-drift: resolved artifact binds the fixed source commit and does not include the current hardening candidate",
+            "component-evidence-missing: domain-driven and layered-mvc consuming-application certification is not recorded"
+          ],
+          "component_digest": "sha256:1e37fc04a5a8ac5583d4ed0713263afce8d45003c22cd74b42efe7d3163dde48",
+          "platform_line": "boot2-java8",
+          "lifecycle": "active",
+          "adoption_policy": "allowed"
+        },
+        "framework.mybatis": {
+          "status": "blocked",
+          "verified_architectures": [],
+          "artifacts": [
+            {
+              "group_id": "com.yss.cloud",
+              "artifact_id": "yss-component-mybatis-plus-starter",
+              "declared_version": "2.0.0-SNAPSHOT",
+              "resolved_version": "2.0.0-20260916.162918-1",
+              "pom_sha256": "sha256:51e036bc15fcf79e38c5656d056731c78385750adf700bcf885d7a0954bb9ff9",
+              "jar_sha256": "sha256:bdb2a477bef0825e2bc668c242f83e75b72f6ee5d9f34b3edfdb887481ff2a05",
+              "source_tree": "03e29e6d74cf0b2bc8e4b879f7252766fb607356"
+            }
+          ],
+          "evidence": [],
+          "blockers": [
+            "component-evidence-missing: domain-driven and layered-mvc consuming-application certification is not recorded"
+          ],
+          "component_digest": "sha256:46ab69b46b413d7f7f09eec237db829b39da9e5585724b171e29222945a61951",
+          "platform_line": "boot2-java8",
+          "lifecycle": "active",
+          "adoption_policy": "allowed"
+        },
+        "component.cache": {
+          "status": "blocked",
+          "verified_architectures": [],
+          "artifacts": [
+            {
+              "group_id": "com.yss.cloud",
+              "artifact_id": "yss-component-cache-starter",
+              "declared_version": "3.0.0-SNAPSHOT",
+              "resolved_version": "3.0.0-20260916.163035-1",
+              "pom_sha256": "sha256:55b57d85d2b21fe4ec3ca2536631b4a0c850a06a891e9104f620e9b8160b8bda",
+              "jar_sha256": "sha256:1631b4e5bc64d0d59727f3988366962c4bbc9fc368581f359e89aed757fe10c2",
+              "source_tree": null
+            }
+          ],
+          "evidence": [],
+          "blockers": [
+            "component-platform-generation-mismatch: component 3.x is reserved for Boot 3/JDK 17 and cannot bind to the Boot 2/JDK 8 line",
+            "component-artifact-coordinate-conflict: source module is 3.0.0-SNAPSHOT while yss-components-bom 2.0.0-SNAPSHOT manages 2.0.0-SNAPSHOT",
+            "component-evidence-missing: resolved artifact lacks a verified published-source-to-Git-tree binding",
+            "component-evidence-missing: domain-driven and layered-mvc consuming-application certification is not recorded"
+          ],
+          "component_digest": "sha256:740a5402670577a3e2b49a5337bb4957df23572fbf5e05261426fcaccca98df2",
+          "platform_line": "boot2-java8",
+          "lifecycle": "active",
+          "adoption_policy": "allowed"
+        },
+        "component.current-user-context": {
+          "status": "blocked",
+          "verified_architectures": [],
+          "artifacts": [
+            {
+              "group_id": "com.yss.cloud",
+              "artifact_id": "yss-component-userinfo-starter",
+              "declared_version": "2.0.0-SNAPSHOT",
+              "resolved_version": "2.0.0-20260916.163623-1",
+              "pom_sha256": "sha256:a56c3ed0e65f96ab81f8ebca378b70ad684b0c78e7a83e661aa5cef8912dbe0c",
+              "jar_sha256": "sha256:cf85f2c6528c06adb296dd9c050b954fa33e6316fb22cdb2c57db5a59acf10c9",
+              "source_tree": "fc77d57e0be6ee81b10247c0746baed6a09c6bb4"
+            }
+          ],
+          "evidence": [],
+          "blockers": [
+            "component-artifact-coordinate-conflict: source module inherits com.yss.cloud while yss-components-bom records com.yss.datamiddle",
+            "component-binding-drift: resolved artifact binds the fixed source commit and does not include the current hardening candidate",
+            "component-evidence-missing: domain-driven and layered-mvc consuming-application certification is not recorded"
+          ],
+          "component_digest": "sha256:df6b3e1c7863cedaf38a46d15b99e9fa8676a94e172b78800131bf73bebcfb93",
+          "platform_line": "boot2-java8",
+          "lifecycle": "active",
+          "adoption_policy": "allowed"
+        },
+        "component.audit-log": {
+          "status": "blocked",
+          "verified_architectures": [],
+          "artifacts": [
+            {
+              "group_id": "com.yss.cloud",
+              "artifact_id": "yss-component-audit-log",
+              "declared_version": "2.0.0-SNAPSHOT",
+              "resolved_version": "2.0.0-20260916.163223-1",
+              "pom_sha256": "sha256:1eb2d2d1495ddc539e033c55a8cf4981427c9d054936a8dc09e794d81e5ddc9b",
+              "jar_sha256": "sha256:01dd17d7fdf10bf1eef04957d59cf74f3b3abf2fbcf9bba6a1719055a537fb44",
+              "source_tree": "d00f2e156714e43e8ec70b28e0bd33967d130485"
+            }
+          ],
+          "evidence": [],
+          "blockers": [
+            "component-evidence-missing: domain-driven and layered-mvc consuming-application certification is not recorded"
+          ],
+          "component_digest": "sha256:c4307432942253f2087e27b97e7d3027e1db5e9148b35c791b85a4be8c17be13",
+          "platform_line": "boot2-java8",
+          "lifecycle": "active",
+          "adoption_policy": "allowed"
+        },
+        "component.excel-import-export": {
+          "status": "blocked",
+          "verified_architectures": [],
+          "artifacts": [
+            {
+              "group_id": "com.yss.cloud",
+              "artifact_id": "yss-component-excel-starter",
+              "declared_version": "2.0.0-SNAPSHOT",
+              "resolved_version": "2.0.0-20260916.163244-1",
+              "pom_sha256": "sha256:f106de25eef3c6b4a83dd5a5558cfc2e906b5a210b917638f26289be4019f466",
+              "jar_sha256": "sha256:1d5523b7b134c1bf63094ab274fa8d79fbea7c4e752cf434ef4b43a25ed86ce3",
+              "source_tree": "82345616c26950981497f254c45bf0b2bc2077a8"
+            },
+            {
+              "group_id": "com.yss.cloud",
+              "artifact_id": "yss-component-excel-mvc",
+              "declared_version": "2.0.0-SNAPSHOT",
+              "resolved_version": "2.0.0-20260916.163630-1",
+              "pom_sha256": "sha256:fa6e8fb94edfc492e1b6da0814be266328c0f526347564797c3eaed8c8ca6a10",
+              "jar_sha256": "sha256:986f4c5441749bd6f4d076893460b17c3015f74d2296969c89441da7d74e3bf7",
+              "source_tree": "acc02f7747905f715708dfe029c3f66a8457e3a5"
+            }
+          ],
+          "evidence": [],
+          "blockers": [
+            "component-evidence-missing: domain-driven and layered-mvc consuming-application certification is not recorded"
+          ],
+          "component_digest": "sha256:e346ae4a4cbc292cf3e7ae0b79e2197b52cc5b094e5e49e13599c37bbf3a3621",
+          "platform_line": "boot2-java8",
+          "lifecycle": "active",
+          "adoption_policy": "allowed"
+        },
+        "component.distributed-id": {
+          "status": "blocked",
+          "verified_architectures": [],
+          "artifacts": [
+            {
+              "group_id": "com.yss.cloud",
+              "artifact_id": "yss-component-distributed-id",
+              "declared_version": "3.0.0-SNAPSHOT",
+              "resolved_version": "3.0.0-20260916.163140-1",
+              "pom_sha256": "sha256:0f43860eb182da2c82c6668c75436bff44e392279033bb5b24694a4e4ab63fb6",
+              "jar_sha256": "sha256:b22f0751d4fd6e465621e1743bae3452a66f8a648dc3e0aa2e74f8a0b75e71a8",
+              "source_tree": "ac54e61f980cfea3e0a574b0559b5fc6a6ccb9f6"
+            }
+          ],
+          "evidence": [],
+          "blockers": [
+            "component-platform-generation-mismatch: component 3.x is reserved for Boot 3/JDK 17 and cannot bind to the Boot 2/JDK 8 line",
+            "component-evidence-missing: domain-driven and layered-mvc consuming-application certification is not recorded"
+          ],
+          "component_digest": "sha256:1ec80b096146056ad78b331560834e1f0a7da66cee2a3c31dc42adaf9654e858",
+          "platform_line": "boot2-java8",
+          "lifecycle": "active",
+          "adoption_policy": "allowed"
+        },
+        "component.security-algorithm": {
+          "status": "blocked",
+          "verified_architectures": [],
+          "artifacts": [
+            {
+              "group_id": "com.yss.cloud",
+              "artifact_id": "yss-component-security-algorithm",
+              "declared_version": "2.0.0-SNAPSHOT",
+              "resolved_version": "2.0.0-20260916.163215-1",
+              "pom_sha256": "sha256:e839c11d06abd1c324cc9e6c56339cbd65b7aad6e3fe80ea882372671e6a5a8a",
+              "jar_sha256": "sha256:e0a10bb655c24bb10397e8c75579bcb2b38469a48efc363a101d526f486f7f2d",
+              "source_tree": "a28f507af00845909eef3ad6bdf8b716660f5b9d"
+            }
+          ],
+          "evidence": [],
+          "blockers": [
+            "component-new-adoption-forbidden: use Spring Security and an approved external KMS or Secret Provider",
+            "component-binding-drift: resolved artifact binds the fixed source commit and does not include the current hardening candidate",
+            "component-evidence-missing: domain-driven and layered-mvc consuming-application certification is not recorded"
+          ],
+          "component_digest": "sha256:c6551ee47fdc1ba3ca8265ef63e26b8c621615c6adb36dcd9feb7a719fae8694",
+          "platform_line": "boot2-java8",
+          "lifecycle": "deprecated",
+          "adoption_policy": "forbidden",
+          "replacement_gav": "org.springframework.security:spring-security-core"
+        },
+        "component.gateway-resilience": {
+          "status": "blocked",
+          "verified_architectures": [],
+          "artifacts": [
+            {
+              "group_id": "com.yss.cloud",
+              "artifact_id": "yss-component-resilience4j-starter",
+              "declared_version": "2.0.0-SNAPSHOT",
+              "resolved_version": "2.0.0-20260916.163208-1",
+              "pom_sha256": "sha256:a4410689d02120d34e1b08cdbf46c513bec07aca0b3b9b8cdba9cf9149b68a59",
+              "jar_sha256": "sha256:69b92bb710267f5fe5d73cb144462157aaaa250c05685beeae62ee8aa623c58c",
+              "source_tree": "10cdf49599161c77137cac47d047b23998aad75b"
+            }
+          ],
+          "evidence": [],
+          "blockers": [
+            "component-binding-drift: resolved artifact binds the fixed source commit and does not include the current hardening candidate",
+            "component-evidence-missing: domain-driven and layered-mvc consuming-application certification is not recorded"
+          ],
+          "component_digest": "sha256:904769eb74998c1fde8dfcc9629191df2c5f9ed936fac2ed6496337a8537b58e",
+          "platform_line": "boot2-java8",
+          "lifecycle": "active",
+          "adoption_policy": "allowed"
+        }
+      },
+      "evidence": [],
+      "artifact_resolution_evidence": {
+        "report_id": "aliyun-maven-artifact-resolution-2026-09-18",
+        "repository_id": "2306938-snapshot-Yloqmt",
+        "ref": ".template-spec/engineering/evidence/aliyun-artifact-resolution.json",
+        "digest": "sha256:35a82e84eb93d35046900886affb806f3620b1416b4b097f67f42c658b676bca"
+      }
+    },
+    {
+      "id": "yss-cloud-microservice-3.0.0-snapshot-boot-3.5-jdk17",
+      "profile_id": "spring-boot-3.5-jdk17",
+      "spring_boot_version": "3.5.16",
+      "parent": {
+        "group_id": "com.yss.cloud",
+        "artifact_id": "yss-cloud-microservice",
+        "version": "3.0.0-SNAPSHOT"
+      },
+      "bom": {
+        "group_id": "com.yss.cloud",
+        "artifact_id": "yss-components-bom",
+        "version": "3.0.0-SNAPSHOT"
+      },
+      "status": "blocked",
+      "capabilities": [],
+      "component_capabilities": {
+        "contract.dto-wire": {
+          "status": "blocked",
+          "verified_architectures": [],
+          "artifacts": [
+            {
+              "group_id": "com.yss.cloud",
+              "artifact_id": "yss-component-dto",
+              "declared_version": "3.0.0-SNAPSHOT",
+              "resolved_version": null,
+              "pom_sha256": null,
+              "jar_sha256": null,
+              "source_tree": null
+            }
+          ],
+          "evidence": [],
+          "blockers": [
+            "component-evidence-missing: Boot 3/JDK 17 component 3.x artifacts, Jakarta namespace, AutoConfiguration.imports and DDD/MVC reports are not available"
+          ],
+          "component_digest": "sha256:9970b72c5081d552f0b6b4eb65aa290711e9fca88db55451e6ae700889d28a12",
+          "platform_line": "boot3-java17",
+          "lifecycle": "active",
+          "adoption_policy": "allowed"
+        },
+        "contract.error-mapping": {
+          "status": "blocked",
+          "verified_architectures": [],
+          "artifacts": [
+            {
+              "group_id": "com.yss.cloud",
+              "artifact_id": "yss-component-exception",
+              "declared_version": "3.0.0-SNAPSHOT",
+              "resolved_version": null,
+              "pom_sha256": null,
+              "jar_sha256": null,
+              "source_tree": null
+            }
+          ],
+          "evidence": [],
+          "blockers": [
+            "component-evidence-missing: Boot 3/JDK 17 component 3.x artifacts, Jakarta namespace, AutoConfiguration.imports and DDD/MVC reports are not available"
+          ],
+          "component_digest": "sha256:98f7ce8cae25562347ab6e3efde746fe9282a0b19d7c991eccbb8e5e98dee403",
+          "platform_line": "boot3-java17",
+          "lifecycle": "active",
+          "adoption_policy": "allowed"
+        },
+        "framework.mybatis": {
+          "status": "blocked",
+          "verified_architectures": [],
+          "artifacts": [
+            {
+              "group_id": "com.yss.cloud",
+              "artifact_id": "yss-component-mybatis-plus-starter",
+              "declared_version": "3.0.0-SNAPSHOT",
+              "resolved_version": null,
+              "pom_sha256": null,
+              "jar_sha256": null,
+              "source_tree": null
+            }
+          ],
+          "evidence": [],
+          "blockers": [
+            "component-evidence-missing: Boot 3/JDK 17 component 3.x artifacts, Jakarta namespace, AutoConfiguration.imports and DDD/MVC reports are not available"
+          ],
+          "component_digest": "sha256:28d682ba3ed2c86e6d49cd813e6d3e36fb87049673182b7d876483045b91241f",
+          "platform_line": "boot3-java17",
+          "lifecycle": "active",
+          "adoption_policy": "allowed"
+        },
+        "component.cache": {
+          "status": "blocked",
+          "verified_architectures": [],
+          "artifacts": [
+            {
+              "group_id": "com.yss.cloud",
+              "artifact_id": "yss-component-cache-starter",
+              "declared_version": "3.1.0-SNAPSHOT",
+              "resolved_version": null,
+              "pom_sha256": null,
+              "jar_sha256": null,
+              "source_tree": null
+            }
+          ],
+          "evidence": [],
+          "blockers": [
+            "component-evidence-missing: yss-component-cache-starter 3.1.0-SNAPSHOT resolved timestamp, POM/JAR SHA-256, source tree, AutoConfiguration.imports and DDD/MVC evidence are not published"
+          ],
+          "component_digest": "sha256:c57c6b6a2fae78d92f4c3101b9c51b8be8dd00e80a081cf45813bda67923b191",
+          "platform_line": "boot3-java17",
+          "lifecycle": "active",
+          "adoption_policy": "allowed"
+        },
+        "component.current-user-context": {
+          "status": "blocked",
+          "verified_architectures": [],
+          "artifacts": [
+            {
+              "group_id": "com.yss.cloud",
+              "artifact_id": "yss-component-userinfo-starter",
+              "declared_version": "3.0.0-SNAPSHOT",
+              "resolved_version": null,
+              "pom_sha256": null,
+              "jar_sha256": null,
+              "source_tree": null
+            }
+          ],
+          "evidence": [],
+          "blockers": [
+            "component-evidence-missing: Boot 3/JDK 17 component 3.x artifacts, Jakarta namespace, AutoConfiguration.imports and DDD/MVC reports are not available"
+          ],
+          "component_digest": "sha256:df0459c3aff3bb701d15cf557e6fc8a401700cb4c919799af760b2e179e2a02a",
+          "platform_line": "boot3-java17",
+          "lifecycle": "active",
+          "adoption_policy": "allowed"
+        },
+        "component.audit-log": {
+          "status": "blocked",
+          "verified_architectures": [],
+          "artifacts": [
+            {
+              "group_id": "com.yss.cloud",
+              "artifact_id": "yss-component-audit-log",
+              "declared_version": "3.0.0-SNAPSHOT",
+              "resolved_version": null,
+              "pom_sha256": null,
+              "jar_sha256": null,
+              "source_tree": null
+            }
+          ],
+          "evidence": [],
+          "blockers": [
+            "component-evidence-missing: Boot 3/JDK 17 component 3.x artifacts, Jakarta namespace, AutoConfiguration.imports and DDD/MVC reports are not available"
+          ],
+          "component_digest": "sha256:dc4a2478ceabf78f96b38f869552f2d2777ff7bbfa17973407b028ca5ca4752f",
+          "platform_line": "boot3-java17",
+          "lifecycle": "active",
+          "adoption_policy": "allowed"
+        },
+        "component.excel-import-export": {
+          "status": "blocked",
+          "verified_architectures": [],
+          "artifacts": [
+            {
+              "group_id": "com.yss.cloud",
+              "artifact_id": "yss-component-excel-mvc",
+              "declared_version": "3.0.0-SNAPSHOT",
+              "resolved_version": null,
+              "pom_sha256": null,
+              "jar_sha256": null,
+              "source_tree": null
+            }
+          ],
+          "evidence": [],
+          "blockers": [
+            "component-evidence-missing: yss-component-excel-mvc 3.0.0-SNAPSHOT resolved timestamp, POM/JAR SHA-256, source tree and DDD/MVC evidence are not published",
+            "component-evidence-missing: org.apache.fesod:fesod-sheet:2.0.2-incubating is byte-bound, but Excel consuming-application evidence is not recorded"
+          ],
+          "component_digest": "sha256:9ebc0322ef6cb941cb2ceb8ef31cdd07c905fc3b8a55f1ae1c460bf97a3eda11",
+          "platform_line": "boot3-java17",
+          "lifecycle": "active",
+          "adoption_policy": "allowed"
+        },
+        "component.distributed-id": {
+          "status": "blocked",
+          "verified_architectures": [],
+          "artifacts": [
+            {
+              "group_id": "com.yss.cloud",
+              "artifact_id": "yss-component-distributed-id",
+              "declared_version": "3.1.0-SNAPSHOT",
+              "resolved_version": null,
+              "pom_sha256": null,
+              "jar_sha256": null,
+              "source_tree": null
+            }
+          ],
+          "evidence": [],
+          "blockers": [
+            "component-evidence-missing: yss-component-distributed-id 3.1.0-SNAPSHOT resolved timestamp, POM/JAR SHA-256, source tree, AutoConfiguration.imports and DDD/MVC evidence are not published"
+          ],
+          "component_digest": "sha256:8348b9848a0da511a13f34f4680feccc477066eee3871ef087c3f12d97a44fa6",
+          "platform_line": "boot3-java17",
+          "lifecycle": "active",
+          "adoption_policy": "allowed"
+        },
+        "component.security-algorithm": {
+          "status": "blocked",
+          "verified_architectures": [],
+          "artifacts": [
+            {
+              "group_id": "com.yss.cloud",
+              "artifact_id": "yss-component-security-algorithm",
+              "declared_version": "3.0.0-SNAPSHOT",
+              "resolved_version": null,
+              "pom_sha256": null,
+              "jar_sha256": null,
+              "source_tree": null
+            }
+          ],
+          "evidence": [],
+          "blockers": [
+            "component-new-adoption-forbidden: security-algorithm has no Boot 3 production route; use Spring Security and an approved external KMS or Secret Provider",
+            "component-evidence-missing: Boot 3/JDK 17 component 3.x artifacts, Jakarta namespace, AutoConfiguration.imports and DDD/MVC reports are not available"
+          ],
+          "component_digest": "sha256:55abc7e0867eb5540a550a5edeb0a4cba6ac25624a2e2a99ba9c61ac881c4a8b",
+          "platform_line": "boot3-java17",
+          "lifecycle": "deprecated",
+          "adoption_policy": "forbidden",
+          "replacement_gav": "org.springframework.security:spring-security-core"
+        },
+        "component.gateway-resilience": {
+          "status": "blocked",
+          "verified_architectures": [],
+          "artifacts": [
+            {
+              "group_id": "com.yss.cloud",
+              "artifact_id": "yss-component-resilience4j-starter",
+              "declared_version": "3.0.0-SNAPSHOT",
+              "resolved_version": null,
+              "pom_sha256": null,
+              "jar_sha256": null,
+              "source_tree": null
+            }
+          ],
+          "evidence": [],
+          "blockers": [
+            "component-evidence-missing: Boot 3/JDK 17 component 3.x artifacts, Jakarta namespace, AutoConfiguration.imports and DDD/MVC reports are not available"
+          ],
+          "component_digest": "sha256:3e5cab72792915c7891f0f48250e225bd33fe75f36c4ab302b96053ecad7b7a6",
+          "platform_line": "boot3-java17",
+          "lifecycle": "active",
+          "adoption_policy": "allowed"
+        },
+        "contract.request-validation": {
+          "status": "blocked",
+          "provider_kind": "platform-managed",
+          "verified_architectures": [],
+          "artifacts": [
+            {
+              "group_id": "org.springframework.boot",
+              "artifact_id": "spring-boot-starter-validation",
+              "declared_version": "3.5.16",
+              "resolved_version": null,
+              "pom_sha256": null,
+              "jar_sha256": null,
+              "source_tree": null
+            }
+          ],
+          "evidence": [],
+          "blockers": [
+            "component-evidence-missing: Spring Boot 3.5.16 managed Validation resolution, Jakarta runtime and DDD/MVC consuming-application evidence are not recorded"
+          ],
+          "platform_line": "boot3-java17",
+          "lifecycle": "active",
+          "adoption_policy": "allowed",
+          "component_digest": "sha256:06d28817d0ef95d7c6db3637adc3426a691aac19c6e17b41e0bdb2bfec51cfec"
+        }
+      },
+      "evidence": [],
+      "platform_artifact_bindings": {
+        "parent": {
+          "role": "parent",
+          "status": "candidate",
+          "group_id": "com.yss.cloud",
+          "artifact_id": "yss-cloud-microservice",
+          "declared_version": "3.0.0-SNAPSHOT",
+          "resolved_version": null,
+          "published_at": null,
+          "pom_sha256": null,
+          "jar_sha256": null,
+          "source_tree": null,
+          "evidence": [],
+          "blockers": [
+            "component-evidence-missing: Boot 3 parent POM has not been published and byte-bound to a source tree"
+          ],
+          "sources_jar_sha256": null
+        },
+        "bom": {
+          "role": "bom",
+          "status": "candidate",
+          "group_id": "com.yss.cloud",
+          "artifact_id": "yss-components-bom",
+          "declared_version": "3.0.0-SNAPSHOT",
+          "resolved_version": null,
+          "published_at": null,
+          "pom_sha256": null,
+          "jar_sha256": null,
+          "source_tree": null,
+          "evidence": [],
+          "blockers": [
+            "component-evidence-missing: Boot 3 component BOM has not been published and byte-bound to a source tree"
+          ],
+          "sources_jar_sha256": null
+        }
+      },
+      "external_snapshot_bindings": [],
+      "external_artifact_bindings": [
+        {
+          "role": "excel-engine",
+          "status": "resolved",
+          "group_id": "org.apache.fesod",
+          "artifact_id": "fesod-sheet",
+          "declared_version": "2.0.2-incubating",
+          "resolved_version": "2.0.2-incubating",
+          "published_at": null,
+          "pom_sha256": "sha256:9c1f7a78ad39264c4d2a2689251562192a6074a79291adfe6b1806f199ee8df1",
+          "jar_sha256": "sha256:39d43ea6e6fcb26b712181869859c035d1cb0742a842e2758c8c58e79c112b4e",
+          "source_tree": null,
+          "evidence": [],
+          "blockers": [],
+          "sources_jar_sha256": "sha256:fb34dffa2a8844ea1033fc3896f497a55684842e98af428a9b7c5e29047a8b38"
+        }
+      ]
+    },
+    {
+      "id": "yss-cloud-microservice-3.2.0-snapshot-boot-3.5-jdk17",
+      "profile_id": "spring-boot-3.5-jdk17",
+      "spring_boot_version": "3.5.16",
+      "parent": {
+        "group_id": "com.yss.cloud",
+        "artifact_id": "yss-cloud-microservice",
+        "version": "3.2.0-SNAPSHOT"
+      },
+      "bom": {
+        "group_id": "com.yss.cloud",
+        "artifact_id": "yss-components-bom",
+        "version": "3.2.0-SNAPSHOT"
+      },
+      "status": "verified",
+      "capabilities": [],
+      "component_capabilities": {
+        "contract.dto-wire": {
+          "status": "verified",
+          "verified_architectures": [
+            "domain-driven",
+            "layered-mvc"
+          ],
+          "artifacts": [
+            {
+              "group_id": "com.yss.cloud",
+              "artifact_id": "yss-component-dto",
+              "declared_version": "3.2.0-SNAPSHOT",
+              "resolved_version": "3.2.0-20261011.074005-1",
+              "pom_sha256": "sha256:b85d65ee473f56d89dea0e6abd2c6cac5603c03123dd27e3ac1ff68cbf82fa22",
+              "jar_sha256": "sha256:b96de75e926eceac4dfd0f465edec95bf6758841b4b4f89a80721af7ca8532b3",
+              "source_tree": "8c6477ad842804485af6e193b2a62e46156c22a3"
+            }
+          ],
+          "evidence": [
+            {
+              "architecture_family": "domain-driven",
+              "ref": ".template-spec/engineering/evidence/scaffold-3.2.0/ddd/contract.dto-wire.json",
+              "digest": "sha256:82a25faa5cb16e8879d1d4891520cc41d6e3f451c0175382cb86759cb7093f99"
+            },
+            {
+              "architecture_family": "layered-mvc",
+              "ref": ".template-spec/engineering/evidence/scaffold-3.2.0/mvc/contract.dto-wire.json",
+              "digest": "sha256:a8b9ec86db423e9fc164ad544f1cadf3593ec75d3b14ad7a71d5769ca5418768"
+            }
+          ],
+          "blockers": [],
+          "platform_line": "boot3-java17",
+          "lifecycle": "active",
+          "adoption_policy": "allowed",
+          "component_digest": "sha256:7518777dac297bda437aa74723cf4f54b4cdc4967401684e707285a43ba029e6"
+        },
+        "contract.error-mapping": {
+          "status": "verified",
+          "verified_architectures": [
+            "domain-driven",
+            "layered-mvc"
+          ],
+          "artifacts": [
+            {
+              "group_id": "com.yss.cloud",
+              "artifact_id": "yss-component-exception",
+              "declared_version": "3.2.0-SNAPSHOT",
+              "resolved_version": "3.2.0-20261011.074005-1",
+              "pom_sha256": "sha256:c4d61831d8b65a322abfb59777c079c6fd314a87449db8bb34884da01f5cf748",
+              "jar_sha256": "sha256:63c4cce496a7856eccb6e9a61f3a3b2a923931c23d9c8718c9a7ca3c2ab1272a",
+              "source_tree": "f084af7699e4f12c1fb2811ac573d47d0c6a8b95"
+            }
+          ],
+          "evidence": [
+            {
+              "architecture_family": "domain-driven",
+              "ref": ".template-spec/engineering/evidence/scaffold-3.2.0/ddd/contract.error-mapping.json",
+              "digest": "sha256:17effd30e17327b085c8835438ebf62cf549d9da79c6ae7b5f90472f1f4305ad"
+            },
+            {
+              "architecture_family": "layered-mvc",
+              "ref": ".template-spec/engineering/evidence/scaffold-3.2.0/mvc/contract.error-mapping.json",
+              "digest": "sha256:0a3064f44cdc8e0e157b49dd8a640f8e4a1b3c8a29b9512839a6445a887fe4a6"
+            }
+          ],
+          "blockers": [],
+          "platform_line": "boot3-java17",
+          "lifecycle": "active",
+          "adoption_policy": "allowed",
+          "component_digest": "sha256:8c0043e95f6f7577eb681ac5c59481ffc956c737db52ab63be5f7c30bd36f42e"
+        },
+        "framework.mybatis": {
+          "status": "verified",
+          "verified_architectures": [
+            "domain-driven",
+            "layered-mvc"
+          ],
+          "artifacts": [
+            {
+              "group_id": "com.yss.cloud",
+              "artifact_id": "yss-component-mybatis-plus-starter",
+              "declared_version": "3.2.0-SNAPSHOT",
+              "resolved_version": "3.2.0-20261011.074005-1",
+              "pom_sha256": "sha256:4b0a8f786ac85d6e28f32b780720901660e7b59c2bbeb6d9edf373373b72eaa7",
+              "jar_sha256": "sha256:bbf05ba21d1501f16343cce52835ff0dc0251158376c4e9dbb53c7710f682736",
+              "source_tree": "ddee61eee4a106128886d8a5a6de96ac48980c07"
+            },
+            {
+              "group_id": "com.yss.cloud",
+              "artifact_id": "yss-component-mybatis-mapper",
+              "declared_version": "3.2.0-SNAPSHOT",
+              "resolved_version": "3.2.0-20261011.074005-1",
+              "pom_sha256": "sha256:f7881c19fc5acaf735a129af4154aa763367f88e9eec816cd3733ccd796e7ecb",
+              "jar_sha256": "sha256:6526685f281a1b475336f874d6b59898d0b34b89ac660770001874e8e8157519",
+              "source_tree": "77bb889699c265049b2ea71d4391cf8bc55dfdb5"
+            },
+            {
+              "group_id": "com.yss.cloud",
+              "artifact_id": "yss-component-persistence-common",
+              "declared_version": "3.2.0-SNAPSHOT",
+              "resolved_version": "3.2.0-20261011.074005-1",
+              "pom_sha256": "sha256:d76e8f889977678c3b43cec2404be01068e89c0092284a6b617368258bb6ba9c",
+              "jar_sha256": "sha256:3f5d78ebe780770e7546b15f7b9e37917c1356585d388013bd0a0f5e88d1665c",
+              "source_tree": "a30368475031e13a214fd9f891899d7084d8b07a"
+            }
+          ],
+          "evidence": [
+            {
+              "architecture_family": "domain-driven",
+              "ref": ".template-spec/engineering/evidence/scaffold-3.2.0/ddd/framework.mybatis.json",
+              "digest": "sha256:d0056566165112b953da658d16ac7e4acc43fcb37a8a4b49cf624537a0e93be2"
+            },
+            {
+              "architecture_family": "layered-mvc",
+              "ref": ".template-spec/engineering/evidence/scaffold-3.2.0/mvc/framework.mybatis.json",
+              "digest": "sha256:b1365b1c6960a2cb24863e7f90db7329058565ccb340d08e04238c822b560180"
+            }
+          ],
+          "blockers": [],
+          "platform_line": "boot3-java17",
+          "lifecycle": "active",
+          "adoption_policy": "allowed",
+          "component_digest": "sha256:c3e8404076c238dcaed06c86fc72e516919916f008951513a8642ad585ae7aa7"
+        },
+        "contract.request-validation": {
+          "status": "verified",
+          "provider_kind": "platform-managed",
+          "verified_architectures": [
+            "domain-driven",
+            "layered-mvc"
+          ],
+          "artifacts": [
+            {
+              "group_id": "org.springframework.boot",
+              "artifact_id": "spring-boot-starter-validation",
+              "declared_version": "3.5.16",
+              "resolved_version": "3.5.16",
+              "pom_sha256": "sha256:feeeea928b1bde262e4b03d9980aabc28271d8d939a16c359abfc5ca6da5a671",
+              "jar_sha256": "sha256:62e810a8fd4d540daed0217a653cac97f52c876f3ee82fd947a9ad7fdd811661",
+              "source_tree": "cbb1df3d8f49e1f3a1ddf67f5d88985e61c20bac"
+            }
+          ],
+          "evidence": [
+            {
+              "architecture_family": "domain-driven",
+              "ref": ".template-spec/engineering/evidence/scaffold-3.2.0/ddd/contract.request-validation.json",
+              "digest": "sha256:d9af083cfc443268bc1e8edecae6ddbbb2b95493602a07cb15ddbe66f517c35c"
+            },
+            {
+              "architecture_family": "layered-mvc",
+              "ref": ".template-spec/engineering/evidence/scaffold-3.2.0/mvc/contract.request-validation.json",
+              "digest": "sha256:8d2b0c05ebdc8577607c09f6d95573c6c77a0e579f4e90f57f88b93b82db8d6a"
+            }
+          ],
+          "blockers": [],
+          "platform_line": "boot3-java17",
+          "lifecycle": "active",
+          "adoption_policy": "allowed",
+          "component_digest": "sha256:1f32b37c06c1dcf2a34fe767f723ffab5a34284e528b5c47913007140eb8e2e1"
+        }
+      },
+      "evidence": [
+        {
+          "architecture_family": "domain-driven",
+          "ref": ".template-spec/engineering/evidence/scaffold-3.2.0/ddd/qualification.json",
+          "digest": "sha256:e6b7db832c7e63b0a73e499681146d93aa14841c1694a9e97313a929c18810d9"
+        },
+        {
+          "architecture_family": "layered-mvc",
+          "ref": ".template-spec/engineering/evidence/scaffold-3.2.0/mvc/qualification.json",
+          "digest": "sha256:53a544b94d2e0e6d3f8533b441b06ce977c3c7cb1e054b31e087f0ad5978a03c"
+        }
+      ],
+      "artifact_resolution_evidence": {
+        "ref": ".template-spec/engineering/evidence/scaffold-3.2.0/resolution.json",
+        "digest": "sha256:e5712f4b7472252292220ba4630ae3750a53646b7bc9b7d42c5f03209df23513",
+        "report_id": "scaffold-platform-3.2.0-20261013",
+        "repository_id": "2306938-snapshot-Yloqmt"
+      },
+      "platform_artifact_bindings": {
+        "parent": {
+          "role": "parent",
+          "status": "resolved-pom",
+          "group_id": "com.yss.cloud",
+          "artifact_id": "yss-cloud-microservice",
+          "declared_version": "3.2.0-SNAPSHOT",
+          "resolved_version": "3.2.0-20261011.074005-1",
+          "published_at": null,
+          "pom_sha256": "sha256:f85542fa63906c52d4bb5dccc1f1fc13c54134e895d22f4465073af7dc0d0743",
+          "jar_sha256": null,
+          "source_tree": "0ca3167d6b9e57d1da9ae7a291ed53499babfb0b",
+          "evidence": [
+            {
+              "ref": ".template-spec/engineering/evidence/scaffold-3.2.0/resolution.json",
+              "digest": "sha256:e5712f4b7472252292220ba4630ae3750a53646b7bc9b7d42c5f03209df23513"
+            }
+          ],
+          "blockers": [],
+          "sources_jar_sha256": null
+        },
+        "bom": {
+          "role": "bom",
+          "status": "resolved-pom",
+          "group_id": "com.yss.cloud",
+          "artifact_id": "yss-components-bom",
+          "declared_version": "3.2.0-SNAPSHOT",
+          "resolved_version": "3.2.0-20261011.074005-1",
+          "published_at": null,
+          "pom_sha256": "sha256:204cf14e0ad810f19a20373e3d12630a94d39523d6e480caa9b038ac9f8ce78d",
+          "jar_sha256": null,
+          "source_tree": "5eaf577169e0d147c4b6ca4cf4170249ef6eebb5",
+          "evidence": [
+            {
+              "ref": ".template-spec/engineering/evidence/scaffold-3.2.0/resolution.json",
+              "digest": "sha256:e5712f4b7472252292220ba4630ae3750a53646b7bc9b7d42c5f03209df23513"
+            }
+          ],
+          "blockers": [],
+          "sources_jar_sha256": null
+        }
+      },
+      "external_snapshot_bindings": [],
+      "external_artifact_bindings": [],
+      "blockers": [],
+      "verification_scope": {
+        "architectures": [
+          "domain-driven",
+          "layered-mvc"
+        ],
+        "java_version": 17,
+        "spring_boot_version": "3.5.16",
+        "empty_build": "passed",
+        "reference_tests_package_http": "passed",
+        "status": "verified",
+        "source_state": "working-tree",
+        "empty_runtime": "passed",
+        "limits": [
+          "Only DDD and generic MVC, Boot 3.5.16, JDK 17, exact resolved YSS 3.2.0 snapshots",
+          "No production database, optional components, release or lifecycle approval",
+          "YSS exception component maps undefined static resources to 500; empty DDD liveness uses its declared actuator health endpoint; reference missing-entry behavior is separately verified"
+        ]
+      },
+      "components": {
+        "com.baomidou:mybatis-plus": "3.5.16",
+        "com.baomidou:mybatis-plus-annotation": "3.5.16",
+        "com.baomidou:mybatis-plus-core": "3.5.16",
+        "com.baomidou:mybatis-plus-extension": "3.5.16",
+        "com.baomidou:mybatis-plus-jsqlparser": "3.5.16",
+        "com.baomidou:mybatis-plus-jsqlparser-4.9": "3.5.16",
+        "com.baomidou:mybatis-plus-jsqlparser-common": "3.5.16",
+        "com.baomidou:mybatis-plus-spring": "3.5.16",
+        "com.baomidou:mybatis-plus-spring-boot-autoconfigure": "3.5.16",
+        "com.baomidou:mybatis-plus-spring-boot3-starter": "3.5.16",
+        "com.yss.cloud:xxljob-sdk": "2.4.1",
+        "com.yss.cloud:yss-cloud-leaf-rest": "3.2.0-SNAPSHOT",
+        "com.yss.cloud:yss-component-anti-corrosion": "3.2.0-SNAPSHOT",
+        "com.yss.cloud:yss-component-anti-scheduler": "3.2.0-SNAPSHOT",
+        "com.yss.cloud:yss-component-anti-scheduler-api": "3.2.0-SNAPSHOT",
+        "com.yss.cloud:yss-component-anti-scheduler-xxljob": "3.2.0-SNAPSHOT",
+        "com.yss.cloud:yss-component-audit-log": "3.2.0-SNAPSHOT",
+        "com.yss.cloud:yss-component-cache-parent": "3.1.0-SNAPSHOT",
+        "com.yss.cloud:yss-component-cache-starter": "3.1.0-SNAPSHOT",
+        "com.yss.cloud:yss-component-config-secrets": "3.2.0-SNAPSHOT",
+        "com.yss.cloud:yss-component-dictionary": "3.2.0-SNAPSHOT",
+        "com.yss.cloud:yss-component-dictionary-client": "3.2.0-SNAPSHOT",
+        "com.yss.cloud:yss-component-dictionary-starter": "3.2.0-SNAPSHOT",
+        "com.yss.cloud:yss-component-dir": "3.2.0-SNAPSHOT",
+        "com.yss.cloud:yss-component-dir-common": "3.2.0-SNAPSHOT",
+        "com.yss.cloud:yss-component-dir-starter": "3.2.0-SNAPSHOT",
+        "com.yss.cloud:yss-component-distributed-id": "3.1.0-SNAPSHOT",
+        "com.yss.cloud:yss-component-dto": "3.2.0-SNAPSHOT",
+        "com.yss.cloud:yss-component-excel-mvc": "3.2.0-SNAPSHOT",
+        "com.yss.cloud:yss-component-exception": "3.2.0-SNAPSHOT",
+        "com.yss.cloud:yss-component-jdbc": "3.2.0-SNAPSHOT",
+        "com.yss.cloud:yss-component-jetcache": "3.1.0-SNAPSHOT",
+        "com.yss.cloud:yss-component-liquibase-starter": "3.2.0-SNAPSHOT",
+        "com.yss.cloud:yss-component-log-starter": "3.2.0-SNAPSHOT",
+        "com.yss.cloud:yss-component-mail-starter": "3.2.0-SNAPSHOT",
+        "com.yss.cloud:yss-component-message-starter": "3.2.0-SNAPSHOT",
+        "com.yss.cloud:yss-component-mybatis-mapper": "3.2.0-SNAPSHOT",
+        "com.yss.cloud:yss-component-mybatis-plus-starter": "3.2.0-SNAPSHOT",
+        "com.yss.cloud:yss-component-mybatis-starter": "3.2.0-SNAPSHOT",
+        "com.yss.cloud:yss-component-persistence": "3.2.0-SNAPSHOT",
+        "com.yss.cloud:yss-component-persistence-common": "3.2.0-SNAPSHOT",
+        "com.yss.cloud:yss-component-resilience4j-starter": "3.2.0-SNAPSHOT",
+        "com.yss.cloud:yss-component-security-algorithm": "3.2.0-SNAPSHOT",
+        "com.yss.cloud:yss-component-spring-cache": "3.1.0-SNAPSHOT",
+        "com.yss.cloud:yss-component-tag-repository": "3.2.0-SNAPSHOT",
+        "com.yss.cloud:yss-component-tag-starter": "3.2.0-SNAPSHOT",
+        "com.yss.cloud:yss-component-userinfo-starter": "3.2.0-SNAPSHOT",
+        "com.yss.cloud:yss-component-validation-jsr303": "3.2.0-SNAPSHOT",
+        "org.springframework.cloud:spring-cloud-bus": "4.3.2",
+        "org.springframework.cloud:spring-cloud-bus-rsocket": "4.3.2",
+        "org.springframework.cloud:spring-cloud-circuitbreaker-resilience4j": "3.3.3",
+        "org.springframework.cloud:spring-cloud-circuitbreaker-spring-retry": "3.3.3",
+        "org.springframework.cloud:spring-cloud-commons": "4.3.3",
+        "org.springframework.cloud:spring-cloud-config-client": "4.3.4",
+        "org.springframework.cloud:spring-cloud-config-monitor": "4.3.4",
+        "org.springframework.cloud:spring-cloud-config-server": "4.3.4",
+        "org.springframework.cloud:spring-cloud-consul-binder": "4.3.3",
+        "org.springframework.cloud:spring-cloud-consul-config": "4.3.3",
+        "org.springframework.cloud:spring-cloud-consul-core": "4.3.3",
+        "org.springframework.cloud:spring-cloud-consul-discovery": "4.3.3",
+        "org.springframework.cloud:spring-cloud-context": "4.3.3",
+        "org.springframework.cloud:spring-cloud-contract-converters": "4.3.4",
+        "org.springframework.cloud:spring-cloud-contract-gradle-plugin": "4.3.4",
+        "org.springframework.cloud:spring-cloud-contract-maven-plugin": "4.3.4",
+        "org.springframework.cloud:spring-cloud-contract-shade": "4.3.4",
+        "org.springframework.cloud:spring-cloud-contract-spec": "4.3.4",
+        "org.springframework.cloud:spring-cloud-contract-spec-groovy": "4.3.4",
+        "org.springframework.cloud:spring-cloud-contract-spec-java": "4.3.4",
+        "org.springframework.cloud:spring-cloud-contract-spec-kotlin": "4.3.4",
+        "org.springframework.cloud:spring-cloud-contract-stub-runner": "4.3.4",
+        "org.springframework.cloud:spring-cloud-contract-stub-runner-boot": "4.3.4",
+        "org.springframework.cloud:spring-cloud-contract-verifier": "4.3.4",
+        "org.springframework.cloud:spring-cloud-contract-wiremock": "4.3.4",
+        "org.springframework.cloud:spring-cloud-function-adapter-aws": "4.3.4",
+        "org.springframework.cloud:spring-cloud-function-adapter-azure": "4.3.4",
+        "org.springframework.cloud:spring-cloud-function-adapter-azure-web": "4.3.4",
+        "org.springframework.cloud:spring-cloud-function-adapter-gcp": "4.3.4",
+        "org.springframework.cloud:spring-cloud-function-context": "4.3.4",
+        "org.springframework.cloud:spring-cloud-function-core": "4.3.4",
+        "org.springframework.cloud:spring-cloud-function-deployer": "4.3.4",
+        "org.springframework.cloud:spring-cloud-function-grpc": "4.3.4",
+        "org.springframework.cloud:spring-cloud-function-grpc-cloudevent-ext": "4.3.4",
+        "org.springframework.cloud:spring-cloud-function-integration": "4.3.4",
+        "org.springframework.cloud:spring-cloud-function-kotlin": "4.3.4",
+        "org.springframework.cloud:spring-cloud-function-rsocket": "4.3.4",
+        "org.springframework.cloud:spring-cloud-function-serverless-web": "4.3.4",
+        "org.springframework.cloud:spring-cloud-function-web": "4.3.4",
+        "org.springframework.cloud:spring-cloud-gateway-mvc": "4.3.5",
+        "org.springframework.cloud:spring-cloud-gateway-proxyexchange-webflux": "4.3.5",
+        "org.springframework.cloud:spring-cloud-gateway-proxyexchange-webmvc": "4.3.5",
+        "org.springframework.cloud:spring-cloud-gateway-server": "4.3.5",
+        "org.springframework.cloud:spring-cloud-gateway-server-mvc": "4.3.5",
+        "org.springframework.cloud:spring-cloud-gateway-server-webflux": "4.3.5",
+        "org.springframework.cloud:spring-cloud-gateway-server-webmvc": "4.3.5",
+        "org.springframework.cloud:spring-cloud-gateway-webflux": "4.3.5",
+        "org.springframework.cloud:spring-cloud-kubernetes-client-autoconfig": "3.3.3",
+        "org.springframework.cloud:spring-cloud-kubernetes-client-config": "3.3.3",
+        "org.springframework.cloud:spring-cloud-kubernetes-client-discovery": "3.3.3",
+        "org.springframework.cloud:spring-cloud-kubernetes-client-loadbalancer": "3.3.3",
+        "org.springframework.cloud:spring-cloud-kubernetes-commons": "3.3.3",
+        "org.springframework.cloud:spring-cloud-kubernetes-discovery": "3.3.3",
+        "org.springframework.cloud:spring-cloud-kubernetes-fabric8-autoconfig": "3.3.3",
+        "org.springframework.cloud:spring-cloud-kubernetes-fabric8-config": "3.3.3",
+        "org.springframework.cloud:spring-cloud-kubernetes-fabric8-discovery": "3.3.3",
+        "org.springframework.cloud:spring-cloud-kubernetes-fabric8-istio": "3.3.3",
+        "org.springframework.cloud:spring-cloud-kubernetes-fabric8-leader": "3.3.3",
+        "org.springframework.cloud:spring-cloud-kubernetes-fabric8-loadbalancer": "3.3.3",
+        "org.springframework.cloud:spring-cloud-kubernetes-test-support": "3.3.3",
+        "org.springframework.cloud:spring-cloud-loadbalancer": "4.3.3",
+        "org.springframework.cloud:spring-cloud-netflix-eureka-client": "4.3.3",
+        "org.springframework.cloud:spring-cloud-netflix-eureka-server": "4.3.3",
+        "org.springframework.cloud:spring-cloud-openfeign-core": "4.3.3",
+        "org.springframework.cloud:spring-cloud-starter": "4.3.3",
+        "org.springframework.cloud:spring-cloud-starter-bootstrap": "4.3.3",
+        "org.springframework.cloud:spring-cloud-starter-bus-amqp": "4.3.2",
+        "org.springframework.cloud:spring-cloud-starter-bus-kafka": "4.3.2",
+        "org.springframework.cloud:spring-cloud-starter-bus-stream": "4.3.2",
+        "org.springframework.cloud:spring-cloud-starter-circuitbreaker-reactor-resilience4j": "3.3.3",
+        "org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j": "3.3.3",
+        "org.springframework.cloud:spring-cloud-starter-circuitbreaker-spring-retry": "3.3.3",
+        "org.springframework.cloud:spring-cloud-starter-config": "4.3.4",
+        "org.springframework.cloud:spring-cloud-starter-consul": "4.3.3",
+        "org.springframework.cloud:spring-cloud-starter-consul-all": "4.3.3",
+        "org.springframework.cloud:spring-cloud-starter-consul-bus": "4.3.3",
+        "org.springframework.cloud:spring-cloud-starter-consul-config": "4.3.3",
+        "org.springframework.cloud:spring-cloud-starter-consul-discovery": "4.3.3",
+        "org.springframework.cloud:spring-cloud-starter-contract-stub-runner": "4.3.4",
+        "org.springframework.cloud:spring-cloud-starter-contract-stub-runner-jetty": "4.3.4",
+        "org.springframework.cloud:spring-cloud-starter-contract-verifier": "4.3.4",
+        "org.springframework.cloud:spring-cloud-starter-function-web": "4.3.4",
+        "org.springframework.cloud:spring-cloud-starter-function-webflux": "4.3.4",
+        "org.springframework.cloud:spring-cloud-starter-gateway": "4.3.5",
+        "org.springframework.cloud:spring-cloud-starter-gateway-mvc": "4.3.5",
+        "org.springframework.cloud:spring-cloud-starter-gateway-server-webflux": "4.3.5",
+        "org.springframework.cloud:spring-cloud-starter-gateway-server-webmvc": "4.3.5",
+        "org.springframework.cloud:spring-cloud-starter-kubernetes-client": "3.3.3",
+        "org.springframework.cloud:spring-cloud-starter-kubernetes-client-all": "3.3.3",
+        "org.springframework.cloud:spring-cloud-starter-kubernetes-client-config": "3.3.3",
+        "org.springframework.cloud:spring-cloud-starter-kubernetes-client-loadbalancer": "3.3.3",
+        "org.springframework.cloud:spring-cloud-starter-kubernetes-discoveryclient": "3.3.3",
+        "org.springframework.cloud:spring-cloud-starter-kubernetes-fabric8": "3.3.3",
+        "org.springframework.cloud:spring-cloud-starter-kubernetes-fabric8-all": "3.3.3",
+        "org.springframework.cloud:spring-cloud-starter-kubernetes-fabric8-config": "3.3.3",
+        "org.springframework.cloud:spring-cloud-starter-kubernetes-fabric8-loadbalancer": "3.3.3",
+        "org.springframework.cloud:spring-cloud-starter-loadbalancer": "4.3.3",
+        "org.springframework.cloud:spring-cloud-starter-netflix-eureka-client": "4.3.3",
+        "org.springframework.cloud:spring-cloud-starter-netflix-eureka-server": "4.3.3",
+        "org.springframework.cloud:spring-cloud-starter-openfeign": "4.3.3",
+        "org.springframework.cloud:spring-cloud-starter-stream-kafka": "4.3.3",
+        "org.springframework.cloud:spring-cloud-starter-stream-rabbit": "4.3.3",
+        "org.springframework.cloud:spring-cloud-starter-task": "3.3.2",
+        "org.springframework.cloud:spring-cloud-starter-vault-config": "4.3.3",
+        "org.springframework.cloud:spring-cloud-starter-zookeeper": "4.3.3",
+        "org.springframework.cloud:spring-cloud-starter-zookeeper-all": "4.3.3",
+        "org.springframework.cloud:spring-cloud-starter-zookeeper-config": "4.3.3",
+        "org.springframework.cloud:spring-cloud-starter-zookeeper-discovery": "4.3.3",
+        "org.springframework.cloud:spring-cloud-stream": "4.3.3",
+        "org.springframework.cloud:spring-cloud-stream-binder-kafka": "4.3.3",
+        "org.springframework.cloud:spring-cloud-stream-binder-kafka-core": "4.3.3",
+        "org.springframework.cloud:spring-cloud-stream-binder-kafka-reactive": "4.3.3",
+        "org.springframework.cloud:spring-cloud-stream-binder-kafka-streams": "4.3.3",
+        "org.springframework.cloud:spring-cloud-stream-binder-pulsar": "4.3.3",
+        "org.springframework.cloud:spring-cloud-stream-binder-rabbit": "4.3.3",
+        "org.springframework.cloud:spring-cloud-stream-binder-rabbit-core": "4.3.3",
+        "org.springframework.cloud:spring-cloud-stream-binder-rabbit-test-support": "4.3.3",
+        "org.springframework.cloud:spring-cloud-stream-schema-registry-client": "4.3.3",
+        "org.springframework.cloud:spring-cloud-stream-schema-registry-core": "4.3.3",
+        "org.springframework.cloud:spring-cloud-stream-schema-registry-server": "4.3.3",
+        "org.springframework.cloud:spring-cloud-stream-test-binder": "4.3.3",
+        "org.springframework.cloud:spring-cloud-stream-test-support": "4.3.3",
+        "org.springframework.cloud:spring-cloud-task-batch": "3.3.2",
+        "org.springframework.cloud:spring-cloud-task-core": "3.3.2",
+        "org.springframework.cloud:spring-cloud-task-stream": "3.3.2",
+        "org.springframework.cloud:spring-cloud-test-support": "4.3.3",
+        "org.springframework.cloud:spring-cloud-vault-config": "4.3.3",
+        "org.springframework.cloud:spring-cloud-vault-config-aws": "4.3.3",
+        "org.springframework.cloud:spring-cloud-vault-config-consul": "4.3.3",
+        "org.springframework.cloud:spring-cloud-vault-config-databases": "4.3.3",
+        "org.springframework.cloud:spring-cloud-vault-config-rabbitmq": "4.3.3",
+        "org.springframework.cloud:spring-cloud-zookeeper-config": "4.3.3",
+        "org.springframework.cloud:spring-cloud-zookeeper-core": "4.3.3",
+        "org.springframework.cloud:spring-cloud-zookeeper-discovery": "4.3.3",
+        "org.yaml:snakeyaml": "2.5"
+      }
+    }
+  ],
+  "component_retirement_policy": {
+    "id": "organizational-zero-consumption",
+    "local_pom_scan": "candidate-only",
+    "required_evidence": [
+      "organization-code-search",
+      "maven-download-metrics",
+      "runtime-bean-and-configuration-scan",
+      "30-90-day-zero-usage-window"
+    ]
+  }
+}

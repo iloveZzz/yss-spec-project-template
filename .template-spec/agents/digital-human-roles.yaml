@@ -111,7 +111,6 @@ roles:
     contract_version: 1
     title: YSS 前端工程师
     stages: [ stage.product-design, stage.system-data-engineering, stage.ticket-formalization, stage.vertical-slice-implementation, stage.verification-release-retrospective ]
-    draft_artifact_ids: [ artifact.frontend-implementation-plan ]
     core_skills: [ yss-ui, yss-ui-business-page-generation, yss-formily, ytable-usage, ytree-usage, yedit-table-usage, yss-api-integration, yss-hook, theme-token-usage, tdd ]
     forbidden_skills: [ yss-domain, yss-application, yss-repository, yss-mybatis, yss-web-controller, yss-ddd-scaffold-generator, yss-layered-mvc-scaffold-generator, java-backend-commit ]
     description: >-
@@ -135,8 +134,7 @@ roles:
     contract_version: 1
     title: YSS 测试工程师
     stages: [ stage.spec-architecture, stage.vertical-slice-implementation, stage.verification-release-retrospective ]
-    draft_artifact_ids: [ artifact.frontend-implementation-verification ]
-    owned_evidence_ids: [ evidence.fresh-verification, evidence.frontend-implementation-verification ]
+    owned_evidence_ids: [ evidence.fresh-verification ]
     core_skills: [ tdd, diagnosing-bugs, code-review, alibaba-java-code-style, yss-ui, yss-design-system, yss-ui-business-page-generation, yss-domain, yss-application, yss-repository, yss-web-controller, yss-dto, mapstruct, lombok ]
     forbidden_skills: [ yss-ddd-scaffold-generator, yss-layered-mvc-scaffold-generator, yss-frontend-scaffold-generator, implement, to-spec ]
     description: >-
@@ -281,7 +279,6 @@ gate_policy:
     - gate.backend-architecture-platform-approved
   automatic_checks:
     - check.repository-identity-valid
-    - check.frontend-delivery-inputs-verified
     - check.prototype-verified
     - check.implementation-repositories-ready
     - check.slice-ready-for-agent
@@ -321,11 +318,6 @@ gate_policy:
       capability_ids: [capability.engineering-baseline]
       countersigners:
         - role.test-engineer
-    - gate: check.frontend-implementation-verified
-      capability_ids: [capability.implementation-assurance]
-      drafter: role.frontend-engineer
-      countersigners:
-        - role.test-engineer
   runtime_side_effect_approval: biological-human
   commercial_contract: biological-human
 
@@ -352,7 +344,6 @@ user_decision_policy:
     - gate.backend-architecture-platform-approved
     - gate.engineering-contract-approved
   work_units:
-    work-unit.service-project-initialization: scaffold-choice
     work-unit.implementation-repository-preparation: scaffold-choice
     work-unit.slice-implementation: implementation-scope
   work_unit_gates:

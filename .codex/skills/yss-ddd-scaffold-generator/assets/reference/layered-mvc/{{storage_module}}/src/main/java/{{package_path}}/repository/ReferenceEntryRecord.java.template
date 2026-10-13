@@ -1,9 +1,0 @@
-package {{base_package}}.repository;
-
-import lombok.Value;
-
-@Value
-public class ReferenceEntryRecord {
-    String id;
-    String name;
-}

@@ -6,7 +6,7 @@ import path from 'node:path';
 import { createHash } from 'node:crypto';
 import { assertNodeVersion, beginRuntimeRun } from '../../cli-core/runtime-store.mjs';
 import { verificationInputDigest } from '../../../scripts/lib/verification-report.mjs';
-import {compileExpectedVerificationPlan,validateVerificationReport,validateQualificationIntegration,assertEvidenceFile} from './verification-report-validator.mjs';
+import {compileExpectedVerificationPlan,validateVerificationReport,validateReleaseIntegration,assertEvidenceFile} from './verification-report-validator.mjs';
 import {collectReleaseSources,createArtifactCoordinator,produceCliArtifact,verifyInstalledCliMigration,validateArtifact} from './verification-artifacts.mjs';
 import {validateReceipt} from './verification-delivery-run.mjs';
 import {initializeNative, runNative, applyNative} from './native-yss.mjs';
@@ -19,42 +19,19 @@ function git(root, args) {
   return result.stdout.trim();
 }
 
-const OPTIONAL_UNINITIALIZED_SUBMODULES = new Set([
-  'submodules/yss-harness-dev-agent',
-  // Historical gitlinks may remain until the physical retirement checkpoint.
-  // Their source trees are no longer production inputs.
-  'submodules/create-yss-spec',
-  'submodules/create-yss-strategic-design',
-  'submodules/create-yss-harness-backend',
-  'submodules/create-yss-harness-frontend',
-  // CLI provenance is verified from the explicit committed source directory.
-  'submodules/yss-cli',
-]);
+// 维护工具由 pin 固定；最终发行 CLI 也可从显式 clean 源码和原始 native 装配证据独立核验。
 
 export function assertReleaseCheckout(root, commit) {
   assert.match(commit, /^[a-f0-9]{40}$/, '必须指定完整 40 位 commit SHA');
   assert.equal(git(root, ['rev-parse', 'HEAD']), commit, '检出版本与待发布版本不一致');
-  assert.equal(git(root, ['status', '--porcelain', '--untracked-files=normal', '--ignore-submodules=none']), '', '发布验证要求干净工作树及子模块');
-  const submodules = git(root, ['submodule', 'status', '--recursive']);
-  // 兼容期私有模板不参与主模板验证；GitHub 默认 token 无跨仓私有读取权限。
-  const invalidSubmodules = submodules.split('\n').filter(line => {
-    if (/^[+U]/.test(line)) return true;
-    if (!line.startsWith('-')) return false;
-    const match = /^-[a-f0-9]{40}\s+(\S+)/.exec(line);
-    return !match || !OPTIONAL_UNINITIALIZED_SUBMODULES.has(match[1]);
-  });
-  assert.deepEqual(invalidSubmodules, [], '必需子模块必须检出 gitlink 指定版本');
-  // The three Agent template sources remain required. The retired executors are
-  // deliberately absent from production input validation.
-  for(const name of ['design','backend','frontend']){
-    const ref=`submodules/yss-harness-${name}-agent`,match=/^160000 commit ([a-f0-9]{40})\t/.exec(git(root,['ls-tree',commit,'--',ref]));
-    assert.ok(match,`缺少固定模板源: ${ref}`);assert.equal(git(path.join(root,ref),['rev-parse','HEAD']),match[1],'模板源与 gitlink 不一致');
-  }
-  return { template_commit: commit, submodules };
+  assert.equal(git(root, ['status', '--porcelain', '--untracked-files=normal']), '', '发布验证要求干净工作树');
+  // Profile 已并入本仓 profiles/，没有任何子模块来源需要核验。
+  return { template_commit: commit };
 }
 
 export function verifyTemplateRelease({ root, commit, output, runtimeStore = 'off',cliFamily='all-four',base,baselineReport,baselineReportDigest,qualificationReport,qualificationReportDigest,concurrency=1,toolingMode='legacy',expectedPlan,artifactCoordinator }) {
   assertNodeVersion();
+  assert.ok(qualificationReport===undefined&&qualificationReportDigest===undefined,'QUALIFICATION_RETIRED');
   assert.ok(['sqlite','off'].includes(runtimeStore), 'runtime-store 必须为 sqlite 或 off');
   assert.ok(['spec','all-four'].includes(cliFamily),'cli-family 必须为 spec 或 all-four');
   assert.ok(Number.isInteger(concurrency)&&concurrency>=1&&concurrency<=4,'concurrency 必须为 1..4');
@@ -70,7 +47,7 @@ export function verifyTemplateRelease({ root, commit, output, runtimeStore = 'of
   output = realpathSync(output);
   const relative = path.relative(root, output);
   assert.ok(relative.startsWith(`..${path.sep}`) || path.isAbsolute(relative), '证据目录必须在仓库外');
-  const families=cliFamily==='all-four'?['spec','design','backend','frontend']:['spec'];
+  const families=cliFamily==='all-four'?['spec','design','backend']:['spec'];
   const report = { schema_version: 2,kind:'template-release-verification',purpose:'verification', requested_commit: commit,cli_families:families, status: 'failed',
     verification_scope:'local-template-and-cli',release_readiness:'not-evaluated',
     started_at: new Date().toISOString(), commands: [], publication: 'not-performed' };
@@ -92,22 +69,23 @@ export function verifyTemplateRelease({ root, commit, output, runtimeStore = 'of
   };
   try {
     Object.assign(report, assertReleaseCheckout(root, commit));
+    report.source_verifications=[];
+    const sourceOptions={root,commit,onSourceVerification:observed=>report.source_verifications.push(observed)};
+    const allSources=collectReleaseSources(sourceOptions);
     if(cliFamily==='all-four')report.legacy_recovery=requiredLegacyRecoveryMatrix();
     run('scripts/repository-mode', []);
     assert.equal(readFileSync(path.join(output, '01.log'), 'utf8').trim(), 'template-source', '只允许模板源发布验证');
     const fullDirectory = path.join(output, 'full-verification');
     const fullArgs=['--concurrency',String(concurrency),'--runtime-store',runtimeStore,'--report-dir',fullDirectory,...(toolingMode==='legacy'?[]:['--tooling-mode',toolingMode]),
-      ...(base?['--base',base]:[]),...(baselineReport?['--baseline-report',baselineReport]:[]),...(baselineReportDigest?['--baseline-report-sha256',baselineReportDigest]:[]),...(qualificationReport?['--qualification-report',qualificationReport]:[]),...(qualificationReportDigest?['--qualification-report-sha256',qualificationReportDigest]:[])];
+      ...(base?['--base',base]:[]),...(baselineReport?['--baseline-report',baselineReport]:[]),...(baselineReportDigest?['--baseline-report-sha256',baselineReportDigest]:[])];
     const independentPlan=expectedPlan||compileExpectedVerificationPlan({root,args:fullArgs});
     const fullExit=run('scripts/verify-template',fullArgs);
     const fullFile=assertEvidenceFile(path.join(fullDirectory,'report.json'),output);
     const full=JSON.parse(readFileSync(fullFile,'utf8'));
-    const allSources=collectReleaseSources({root,commit});
     validateVerificationReport(full,{root,expectedPlan:independentPlan,reportDirectory:fullDirectory,expectedInvocation:{command:path.join(root,'scripts/run-template-verification'),args:['--profile','release',...fullArgs]},observedExitCode:fullExit.status,expectedSourcesManifest:allSources});
     report.execution={requested_concurrency:concurrency,requested_tooling_mode:toolingMode,actual_concurrency:full.environment.concurrency,actual_tooling_mode:full.environment.tooling_mode||'legacy',strategy:full.plan.strategy};
-    if(full.plan.strategy==='qualified-gates')assert.ok(concurrency===full.environment.concurrency&&toolingMode===full.environment.tooling_mode,'qualified 实际执行条件与明确请求不同');
     report.full_verification={report:fullFile,report_sha256:hash(readFileSync(fullFile)),input_sha256:full.input_sha256,status:full.status};
-    report.sources_manifest=collectReleaseSources({root,commit,families});
+    report.sources_manifest=collectReleaseSources({...sourceOptions,families});
     writeFileSync(path.join(output,'sources.json'),JSON.stringify(report.sources_manifest,null,2)+'\n');
     report.sources_manifest_sha256=hash(readFileSync(path.join(output,'sources.json')));
     let prepared;
@@ -138,11 +116,12 @@ export function verifyTemplateRelease({ root, commit, output, runtimeStore = 'of
     for(const artifact of report.artifacts)validateArtifact(artifact,artifact.source_tuple);
     assert.equal(verificationInputDigest(root),full.input_sha256,'发布集成结束后输入已漂移');
     assertReleaseCheckout(root, commit);
+    assert.deepEqual(collectReleaseSources(sourceOptions),allSources,'发布集成结束后 CLI 来源已漂移');
     if(cliFamily==='all-four')assert.deepEqual(requiredLegacyRecoveryMatrix(),report.legacy_recovery,'历史恢复证据在发行验证期间漂移');
     report.status = 'passed';
     if(cliFamily==='all-four'){
       const integrationFile=path.join(output,'release-verification.json');writeFileSync(integrationFile,JSON.stringify(report,null,2)+'\n');
-      const integration=validateQualificationIntegration({root,reportFile:integrationFile,expectedDigest:hash(readFileSync(integrationFile)),expectedCommit:commit});
+      const integration=validateReleaseIntegration({root,reportFile:integrationFile,expectedDigest:hash(readFileSync(integrationFile)),expectedCommit:commit});
       assert.ok(integration.valid,integration.reasons.join('; '));
     }
   } catch (error) {

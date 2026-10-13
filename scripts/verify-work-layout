@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { parseArgs } from 'node:util';
+import { readYssCliPin } from '../.template-source/scripts/lib/yss-cli-pin.mjs';
 
 const { values } = parseArgs({ options: {
   root: { type: 'string', default: path.resolve(import.meta.dirname, '..') },
@@ -78,7 +79,30 @@ function scan(repoRoot, repository) {
   }
 }
 scan(root, '.');
-if (values['cli-root']) scan(values['cli-root'], 'cli');
+// ci-setup supplies a separate checkout after the CLI gitlink was retired.
+// Only a real template pin enables the environment default; explicit fixture roots remain supported.
+const pin = readYssCliPin(root);
+const cliRoot = values['cli-root'] || (pin && process.env.YSS_NATIVE_SOURCE_ROOT);
+if (cliRoot) {
+  if (pin) {
+    if (!path.isAbsolute(cliRoot) || fs.lstatSync(cliRoot).isSymbolicLink() || fs.realpathSync(cliRoot) !== path.resolve(cliRoot)) throw Error('CLI 来源必须是固定提交的真实绝对目录');
+    const cliCommit = git(cliRoot, ['rev-parse', 'HEAD']).trim();
+    if (cliCommit !== pin.commit) {
+      // A release C may differ from maintenance P only after the existing C/T source authority verifies it.
+      let sources;
+      try {
+        const { collectReleaseSources } = await import('../.template-source/scripts/lib/verification-artifacts.mjs');
+        sources = collectReleaseSources({ root, commit: git(root, ['rev-parse', 'HEAD']).trim(), environment: process.env });
+      } catch (cause) {
+        throw Error(`CLI 来源提交与 yss-cli pin 不一致，且发行来源认证失败: ${cause.message}`, { cause });
+      }
+      if (sources.source_authority?.kind !== 'native-assembly' || !sources.entries.length || sources.entries.some(entry => entry.cli_commit !== cliCommit)) throw Error('发行认证与实际扫描的 CLI 来源提交不一致');
+      if (git(cliRoot, ['rev-parse', 'HEAD']).trim() !== cliCommit) throw Error('实际扫描的 CLI 来源提交在认证过程中漂移');
+    }
+    if (git(cliRoot, ['status', '--porcelain', '--untracked-files=all']).trim()) throw Error('固定 CLI 来源工作树不干净');
+  }
+  scan(cliRoot, 'cli');
+}
 if (!values.inventory) for (const rule of policy.exceptions) if (!repositories.has(rule.repository)) errors.push(`失效仓库例外: ${rule.repository}`);
 if (errors.length) { console.error(errors.join('\n')); process.exitCode = 1; }
 else console.log(JSON.stringify(values.inventory ? inventory : { status: 'passed', repositories: visited.size, references: inventory.reduce((sum, item) => sum + item.count, 0), exceptions: policy.exceptions.length }, null, 2));

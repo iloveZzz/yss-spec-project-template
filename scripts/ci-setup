@@ -10,22 +10,18 @@ YSS_CI_PYTHON_MINOR="${YSS_CI_PYTHON_MINOR:-3.12}"
 YSS_CI_UV_VERSION="${YSS_CI_UV_VERSION:-0.13.0}"
 YSS_CI_JSONSCHEMA_VERSION="${YSS_CI_JSONSCHEMA_VERSION:-4.23.0}"
 YSS_CLI_REPOSITORY="${YSS_CLI_REPOSITORY:-https://github.com/iloveZzz/yss-cli.git}"
-# 都是公开仓库、gitlink 固定的提交。yss-cli 供 read-only-intake 等检查读取固定的 CLI 源码，历史约 1GB，永远只浅克隆。
-CLI_SUBMODULE=submodules/yss-cli
-PROFILE_SUBMODULES=(
-  submodules/yss-harness-design-agent
-  submodules/yss-harness-backend-agent
-  submodules/yss-harness-frontend-agent
-)
+# yss-cli 不是 submodule：它的版本、提交、Go 版本和各平台二进制摘要写在
+# .template-source/distribution/yss-cli-pin.json；供 read-only-intake 等检查读取的 CLI 源码历史约 1GB，永远只浅克隆那个固定提交。
+YSS_CLI_PIN=.template-source/scripts/lib/yss-cli-pin.mjs
 
 usage() {
   cat <<'EOF'
-用法: scripts/ci-setup [--no-python] [--submodules] [--yss-commit <40位SHA>|gitlink] [--dry-run]
+用法: scripts/ci-setup [--no-python] [--toolchain] [--yss-commit <40位SHA>|pin] [--dry-run]
        scripts/ci-setup --print-versions
   默认          校验 Node 主版本、确认 template-source、按 frozen lockfile 安装 pnpm 依赖、安装 Python schema 依赖
   --no-python   跳过 Python schema 依赖
-  --submodules  初始化三个公开固定的 Profile 子模块，并准备原型作者工具链
-  --yss-commit  从固定提交构建 yss 二进制（需要 go）；写 gitlink 表示取本仓 submodules/yss-cli 的固定提交
+  --toolchain   准备原型作者工具链，并（配合 --yss-commit）安装固定版本的 Go 以构建 yss
+  --yss-commit  从固定提交构建 yss 二进制（需要 go）；写 pin 表示取 yss-cli 固定文件里的提交，并在构建后核对固定的 sha256
   --dry-run     只打印计划，不执行
   --print-versions  打印 node= 与 python= 的目标版本（KEY=value，可直接追加到 $GITHUB_OUTPUT），供平台适配器选择运行时，不重复写版本号
 环境变量:
@@ -36,13 +32,13 @@ EOF
 }
 
 python=1
-submodules=0
+toolchain=0
 yss_commit=""
 dry_run=0
 while (($#)); do
   case "$1" in
     --no-python) python=0 ;;
-    --submodules) submodules=1 ;;
+    --toolchain) toolchain=1 ;;
     --yss-commit)
       shift
       yss_commit="${1:-}"
@@ -55,12 +51,18 @@ while (($#)); do
   shift
 done
 
+yss_pinned=0
 if [[ "$yss_commit" == gitlink ]]; then
-  yss_commit="$(git -C "$(dirname "${BASH_SOURCE[0]}")/.." rev-parse HEAD:submodules/yss-cli 2>/dev/null || true)"
-  [[ -n "$yss_commit" ]] || { echo "无法读取 submodules/yss-cli 的 gitlink" >&2; exit 2; }
+  echo "--yss-commit gitlink 已取消：yss-cli 不再是 submodule，改写 pin（取 .template-source/distribution/yss-cli-pin.json 的提交）" >&2
+  exit 2
+fi
+if [[ "$yss_commit" == pin ]]; then
+  yss_commit="$(node "$(dirname "${BASH_SOURCE[0]}")/../$YSS_CLI_PIN" commit 2>/dev/null || true)"
+  [[ -n "$yss_commit" ]] || { echo "无法读取 yss-cli 固定文件的 commit" >&2; exit 2; }
+  yss_pinned=1
 fi
 if [[ -n "$yss_commit" && ! "$yss_commit" =~ ^[a-f0-9]{40}$ ]]; then
-  echo "--yss-commit 必须是 40 位小写十六进制的完整提交 SHA，或写 gitlink" >&2
+  echo "--yss-commit 必须是 40 位小写十六进制的完整提交 SHA，或写 pin" >&2
   exit 2
 fi
 if ((!dry_run)) && [[ -z "${CI:-}" && "${YSS_CI_ALLOW_LOCAL:-}" != "1" ]]; then
@@ -105,16 +107,17 @@ ensure_python() {
   [[ "$(python_minor)" == "$YSS_CI_PYTHON_MINOR" ]] || fail "补装后 python3 仍不是 ${YSS_CI_PYTHON_MINOR}"
 }
 
-# Go 版本取自固定的 yss-cli 源码（go.mod 的 go 指令），不在这里再写一份；校验值取自 go.dev 公布的发布清单。
+# Go 版本取自 yss-cli 固定文件的 go_version（构建出固定摘要的那个版本，克隆源码后还会与 go.mod 核对），不在这里再写一份；校验值取自 go.dev 公布的发布清单。
 ensure_go() {
   local required have arch file sha tmp
-  required="${YSS_CI_GO_VERSION:-$(sed -n 's/^go \([0-9][0-9.]*\)$/\1/p' submodules/yss-cli/go.mod | head -n1)}"
-  [[ -n "$required" ]] || fail "无法从 submodules/yss-cli/go.mod 读出所需 Go 版本"
+  required="$(node "$ROOT_DIR/$YSS_CLI_PIN" go_version 2>/dev/null || true)"
+  [[ -n "$required" ]] || fail "无法从 yss-cli 固定文件读出所需 Go 版本"
+  [[ -z "${YSS_CI_GO_VERSION:-}" || "$YSS_CI_GO_VERSION" == "$required" ]] || fail "YSS_CI_GO_VERSION 必须等于固定文件的 go_version ${required}"
   if command -v go >/dev/null; then
     have="$(go env GOVERSION | sed 's/^go//')"
-    [[ "$(printf '%s\n%s\n' "$required" "$have" | sort -V | head -n1)" == "$required" ]] && return 0
+    [[ "$have" == "$required" ]] && return 0
   fi
-  can_provision || fail "需要 Go ${required} 或更新（当前 ${have:-未安装}）；请在 runner 镜像或 setup-go 中提供"
+  can_provision || fail "需要精确 Go ${required}（当前 ${have:-未安装}）；请在 runner 镜像或 setup-go 中提供"
   case "$(uname -m)" in x86_64) arch=amd64 ;; aarch64 | arm64) arch=arm64 ;; *) fail "不支持的架构 $(uname -m)" ;; esac
   read -r file sha < <(node -e '
     fetch("https://go.dev/dl/?mode=json&include=all").then((r) => r.json()).then((releases) => {
@@ -131,6 +134,7 @@ ensure_go() {
   ln -sf /usr/local/go/bin/go /usr/local/bin/go && ln -sf /usr/local/go/bin/gofmt /usr/local/bin/gofmt
   hash -r
   rm -rf "$tmp"
+  [[ "$(go env GOVERSION)" == "go${required}" ]] || fail "补装后 Go 仍不是 ${required}"
 }
 
 step "Node 主版本必须是 ${YSS_CI_NODE_MAJOR}（由 runner 镜像或 setup-node 提供）"
@@ -145,25 +149,12 @@ fi
 step "确认仓库模式为 template-source"
 if ((!dry_run)); then test "$(scripts/repository-mode)" = template-source; else echo "+ test \"\$(scripts/repository-mode)\" = template-source"; fi
 
-if ((submodules)); then
-  step "初始化公开固定子模块"
-  # 构建 yss 时 Bundle 工具要读 source-lock 固定的 Profile 历史提交，所以此时 Profile 仓库（各约 10MB）完整克隆；否则浅克隆即可。
-  depth_args=(--depth=1)
-  [[ -z "$yss_commit" ]] || depth_args=()
-  run git submodule sync -- "$CLI_SUBMODULE" "${PROFILE_SUBMODULES[@]}"
-  run git -c protocol.version=2 submodule update --init --depth=1 -- "$CLI_SUBMODULE"
-  run git -c protocol.version=2 submodule update --init ${depth_args[@]+"${depth_args[@]}"} -- "${PROFILE_SUBMODULES[@]}"
-  step "物化 Profile 的生成技能"
-  # Profile 子模块的提交里只有少数自有技能，其余由本仓 canonical 生成且被 .gitignore 忽略。
-  # 干净检出不物化时，sync-profile-skills --check 与 skill-registry.test.mjs 必然失败，任何改动技能的 PR 都会被拦。
-  run scripts/sync-profile-skills --apply --profile=all
-fi
-
-if ((submodules)); then
-  step "Go：版本取自 submodules/yss-cli/go.mod"
+if ((toolchain)) || [[ -n "$yss_commit" ]]; then
+  step "Go：版本取自 yss-cli 固定文件的 go_version"
   if ((dry_run)); then
-    echo "+ go 缺失或低于 go.mod 的 go 指令时，在 root 容器内按 go.dev 公布的 sha256 安装"
+    echo "+ go 缺失或不等于固定文件的 go_version 时，在 root 容器内按 go.dev 公布的 sha256 安装"
   else
+    export GOTOOLCHAIN=local # 固定编译器，不允许 go.mod 触发自动工具链切换。
     ensure_go
   fi
 fi
@@ -171,7 +162,7 @@ fi
 if [[ -n "$yss_commit" ]]; then
   step "从固定提交 ${yss_commit} 构建 yss"
   if ((dry_run)); then
-    echo "+ git fetch --depth 1 ${YSS_CLI_REPOSITORY} ${yss_commit} → go run ./tools/bundle → go build ./cmd/yss"
+    echo "+ git fetch --depth 1 ${YSS_CLI_REPOSITORY} ${yss_commit} → 使用提交内 Bundle 运行 node tools/build-candidate.mjs（官方候选构建配方；没有该脚本的旧提交退回 go build -trimpath）"
   else
     command -v go >/dev/null || { echo "构建 yss 需要 go；请在 runner 镜像中提供" >&2; exit 1; }
     yss_source="$(work_dir)/yss-cli-${yss_commit}"
@@ -181,13 +172,34 @@ if [[ -n "$yss_commit" ]]; then
     git -C "$yss_source" -c protocol.version=2 fetch -q --depth 1 origin "$yss_commit"
     git -C "$yss_source" checkout -q --detach FETCH_HEAD
     test "$(git -C "$yss_source" rev-parse HEAD)" = "$yss_commit"
-    (cd "$yss_source" && go run ./tools/bundle --source-root "$ROOT_DIR" --lock docs/source-lock.json --out internal/bundle/assets)
+    if ((yss_pinned)); then
+      go_mod_version="$(sed -n 's/^go \([0-9][0-9.]*\)$/\1/p' "$yss_source/go.mod" | head -n1)"
+      [[ "$go_mod_version" == "$(node "$ROOT_DIR/$YSS_CLI_PIN" go_version)" ]] || fail "固定提交的 go.mod 要求 Go ${go_mod_version}，与 yss-cli 固定文件的 go_version 不一致"
+    fi
+    # pin 的摘要绑定已提交资产；Bundle 在发行阶段由 artifacts 工具生成并校验，bootstrap 不重生成。
     test -z "$(git -C "$yss_source" status --porcelain --untracked-files=normal)"
-    yss_binary="$(dirname "$yss_source")/yss"
-    (cd "$yss_source" && CGO_ENABLED=0 go build -trimpath -o "$yss_binary" ./cmd/yss)
+    if [[ -f "$yss_source/tools/build-candidate.mjs" ]]; then
+      # yss-cli 自带的候选构建配方：固定 Go 环境、-mod=readonly -trimpath -buildvcs=false，提交号与来源状态用 -X 写入，并留下构建收据。
+      yss_build_out="$(dirname "$yss_source")/yss-build-${yss_commit}"
+      test ! -e "$yss_build_out"
+      node "$yss_source/tools/build-candidate.mjs" --root "$yss_source" --out "$yss_build_out"
+      yss_binary="$yss_build_out/yss"
+    else
+      yss_binary="$(dirname "$yss_source")/yss"
+      (cd "$yss_source" && CGO_ENABLED=0 go build -trimpath -o "$yss_binary" ./cmd/yss)
+    fi
+    yss_sha256="$(node -e 'process.stdout.write(require("node:crypto").createHash("sha256").update(require("node:fs").readFileSync(process.argv[1])).digest("hex"))' "$yss_binary")"
+    if ((yss_pinned)); then
+      # 同一提交、同一 Go 版本、同一构建配方构建出的二进制逐字节相同：摘要必须等于固定文件登记的值。
+      case "$(uname -m)" in x86_64) yss_arch=amd64 ;; aarch64 | arm64) yss_arch=arm64 ;; *) fail "不支持的架构 $(uname -m)" ;; esac
+      yss_expected="$(node "$ROOT_DIR/$YSS_CLI_PIN" sha256 "$(uname -s | tr '[:upper:]' '[:lower:]')-${yss_arch}")" || fail "yss-cli 固定文件没有登记当前平台的二进制摘要"
+      [[ "$yss_sha256" == "$yss_expected" ]] || fail "构建出的 yss 与固定文件的摘要不符：期望 ${yss_expected}，实际 ${yss_sha256}"
+    else
+      echo "注意：显式提交不是固定文件里的提交，没有核对固定摘要；验证预检仍会按固定文件拒绝它" >&2
+    fi
     export_var YSS_NATIVE_SOURCE_ROOT "$yss_source"
     export_var YSS_NATIVE_BINARY "$yss_binary"
-    export_var YSS_NATIVE_BINARY_SHA256 "$(node -e 'process.stdout.write(require("node:crypto").createHash("sha256").update(require("node:fs").readFileSync(process.argv[1])).digest("hex"))' "$yss_binary")"
+    export_var YSS_NATIVE_BINARY_SHA256 "$yss_sha256"
   fi
 fi
 
@@ -202,7 +214,7 @@ else
 fi
 run pnpm --dir .template-source/tooling/node install --frozen-lockfile
 
-if ((submodules)); then
+if ((toolchain)); then
   step "准备原型作者工具链"
   if ((dry_run)); then
     echo "+ cp .agents/skills/yss-prototype-stage/assets/shadcn-vue-authoring/{package.json,pnpm-lock.yaml} <临时目录> && pnpm --dir <临时目录> install --frozen-lockfile --ignore-scripts"

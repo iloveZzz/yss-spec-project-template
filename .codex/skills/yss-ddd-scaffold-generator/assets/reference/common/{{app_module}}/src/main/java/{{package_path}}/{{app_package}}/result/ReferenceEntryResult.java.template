@@ -1,9 +1,0 @@
-package {{base_package}}.{{app_package}}.result;
-
-import lombok.Value;
-
-@Value
-public class ReferenceEntryResult {
-    String id;
-    String name;
-}

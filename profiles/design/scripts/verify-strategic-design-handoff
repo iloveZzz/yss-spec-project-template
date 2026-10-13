@@ -1,0 +1,81 @@
+#!/usr/bin/env node
+import { existsSync, readFileSync } from "node:fs";
+import path from "node:path";
+import { spawnSync } from "node:child_process";
+import { parseArgs } from "node:util";
+import { fileURLToPath } from "node:url";
+import { parseDocument } from "./vendor/yaml.mjs";
+import { resolveContextTermRefs, verifyContextSnapshot } from "./lib/context-contract.mjs";
+import { validateVisualBaseline } from "../.agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs";
+
+import { inspectSource } from "./lib/strategic-handoff.mjs";
+
+const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const schemaPath = path.join(repoRoot, ".template-spec/process/schemas/strategic-design-handoff.schema.json");
+const pythonValidator = String.raw`
+import json, sys
+from jsonschema import Draft202012Validator
+schema = json.load(open(sys.argv[1], encoding="utf-8"))
+value = json.load(sys.stdin)
+errors = sorted(Draft202012Validator(schema).iter_errors(value), key=lambda error: list(error.absolute_path))
+for error in errors:
+    where = ".".join(str(part) for part in error.absolute_path) or "<root>"
+    print(f"{where}: {error.message}", file=sys.stderr)
+sys.exit(1 if errors else 0)
+`;
+
+function parseFile(file) {
+  const document = parseDocument(readFileSync(file, "utf8"), { maxAliasCount: 0, uniqueKeys: true });
+  if (document.errors.length) throw new TypeError(document.errors[0].message);
+  return document.toJS({ maxAliasCount: 0 });
+}
+
+try {
+  const { values, positionals } = parseArgs({ options: { root: { type: "string", default: process.cwd() } }, allowPositionals: true, strict: true });
+  if (positionals.length !== 1) throw new TypeError("用法: scripts/verify-strategic-design-handoff [--root <repo>] <handoff.yaml|json>");
+  const root = path.resolve(values.root);
+  const value = parseFile(path.resolve(positionals[0]));
+  if ([1, 2, 3, 4].includes(value.schema_version)) {
+    const error = new TypeError(`migration-required: Strategic Design Handoff v${value.schema_version} 是只读历史资产；修改或重新交付必须迁移到 Handoff v5 并重新批准`);
+    error.code = "migration-required";
+    throw error;
+  }
+  const schemaResult = spawnSync("python3", ["-c", pythonValidator, schemaPath], { encoding: "utf8", input: JSON.stringify(value) });
+  if (schemaResult.status !== 0) throw new TypeError(`${schemaResult.stdout}${schemaResult.stderr}`.trim());
+  const contract = verifyContextSnapshot(value.source_context_snapshot, { root });
+  const deltaTerms = [...value.context_delta.added, ...value.context_delta.updated, ...value.context_delta.deprecated];
+  const deltaRefs = deltaTerms.map((term) => term.term_ref);
+  const resolvedDelta = resolveContextTermRefs(contract, deltaRefs).terms;
+  if (new Set(deltaRefs).size !== deltaRefs.length) throw new TypeError("context_delta 中的术语引用不得跨分类重复");
+  for (let index = 0; index < deltaTerms.length; index += 1) {
+    const expected = resolvedDelta[index];
+    const actual = deltaTerms[index];
+    for (const field of ["term", "meaning", "english_identifier", "context_id"]) if (actual[field] !== expected[field]) throw new TypeError(`context_delta.${actual.term_ref}.${field} 与源 CONTEXT.md 不一致`);
+    if (JSON.stringify([...actual.forbidden_aliases].sort()) !== JSON.stringify([...expected.forbidden_aliases].sort())) throw new TypeError(`context_delta.${actual.term_ref}.forbidden_aliases 与源 CONTEXT.md 不一致`);
+  }
+  const snapshotRefs = new Set(value.source_context_snapshot.term_refs);
+  for (const ref of deltaRefs) if (!snapshotRefs.has(ref)) throw new TypeError(`context_delta 术语必须包含在 source_context_snapshot.term_refs: ${ref}`);
+  for (const ref of Object.values(value.source)) {
+    const persisted = path.resolve(root, ref.persisted_ref);
+    if (!persisted.startsWith(`${root}${path.sep}`) || !existsSync(persisted)) throw new TypeError(`source persisted_ref 不可读或越界: ${ref.persisted_ref}`);
+  }
+  const baselineRef = value.source.visual_baseline_ref;
+  const bundleRoot = path.resolve(root, baselineRef.persisted_ref);
+  const manifestPath = path.resolve(bundleRoot, baselineRef.manifest_ref);
+  if (!manifestPath.startsWith(`${bundleRoot}${path.sep}`) || !existsSync(manifestPath)) throw new TypeError(`Visual Baseline manifest 不可读或越界: ${baselineRef.manifest_ref}`);
+  const baseline = parseFile(manifestPath);
+  const baselineResult = await validateVisualBaseline(baseline, { bundleRoot });
+  if (baselineResult.errors.length) throw new TypeError(`Visual Baseline 无效: ${baselineResult.errors.join("; ")}`);
+  if (baseline.baseline_id !== baselineRef.baseline_id || baseline.version !== baselineRef.version || baseline.bundle.digest !== baselineRef.digest) throw new TypeError("Strategic Design Handoff 的 Visual Baseline 身份、版本或 digest 不一致");
+  const actualCaseIds = [...baseline.cases.map((item) => item.case_id)].sort();
+  if (JSON.stringify(actualCaseIds) !== JSON.stringify([...baselineRef.case_ids].sort())) throw new TypeError("Strategic Design Handoff 的 Visual Baseline case_ids 不一致");
+  for (const ref of value.evidence_and_version_digests) {
+    const evidence = path.resolve(root, ref);
+    if (!evidence.startsWith(`${root}${path.sep}`) || !existsSync(evidence)) throw new TypeError(`交接证据不可读或越界: ${ref}`);
+  }
+  if (value.package_export) await inspectSource(root, path.relative(root, path.resolve(positionals[0])).split(path.sep).join("/"));
+  process.stdout.write("Strategic Design Handoff v5 验证通过\n");
+} catch (error) {
+  process.stderr.write(`Strategic Design Handoff 验证失败: ${error.message}\n`);
+  process.exitCode = 1;
+}

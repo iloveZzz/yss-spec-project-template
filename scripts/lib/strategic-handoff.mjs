@@ -27,6 +27,8 @@ const SOURCE_SCHEMAS = new Map([
   [5,['.template-spec/process/schemas/strategic-handoff-domain-strategy-v3.schema.json','.template-spec/process/schemas/strategic-handoff-stage-decision-package-v3.schema.json']],
 ]);
 const CAPABILITIES=['backend-technical-design','frontend-engineering-design','delivery-coordination'];
+// 前端实现已从生命周期移除：交接包里仍声明前端消费者路线（协议兼容，常驻两代），但接收方不再生成或消费前端草案。
+const CONSUMER_CAPABILITIES=['backend-technical-design','delivery-coordination'];
 
 function sourceApprovalRecord(document, gateId) {
   return selectApprovalRecord(document, gateId);
@@ -580,15 +582,14 @@ export async function importBundle({bundle,targetRoot}) {
       }else{
         const profileRef=path.join(target,'.template-spec/process/harness-profile.yaml');
         const profile=existsSync(profileRef)?read(profileRef):null;
-        const capabilities=scopedConsumerCapabilities(target,profile?.handoff?.consumer_capabilities||CAPABILITIES);
-        ensure(Array.isArray(capabilities)&&capabilities.length&&capabilities.every(capability=>CAPABILITIES.includes(capability)),'目标 profile 未声明受支持的消费者能力');
+        const capabilities=scopedConsumerCapabilities(target,(profile?.handoff?.consumer_capabilities||CONSUMER_CAPABILITIES).filter(capability=>capability!=='frontend-engineering-design'));
+        ensure(Array.isArray(capabilities)&&capabilities.length&&capabilities.every(capability=>CONSUMER_CAPABILITIES.includes(capability)),'目标 profile 未声明受支持的消费者能力（前端消费者已移除）');
         const selected=b.handoff.consumer_routes.filter(route=>capabilities.includes(route.capability));
         ensure(selected.length===capabilities.length,'目标 profile 的消费者能力在 Handoff v4 中缺失');
         const commonRefs=[`${rel}/context-reconciliation-draft.json`,`${rel}/upstream-change-impact.json`];
         const routeRecords=selected.map(route=>{
           const artifactRefs=[...commonRefs];
           if(route.activation!=='not-applicable'&&route.capability==='backend-technical-design')artifactRefs.push(`${rel}/backend-technical-traceability-draft.json`);
-          if(route.activation!=='not-applicable'&&route.capability==='frontend-engineering-design')artifactRefs.push(`${rel}/frontend-strategic-preflight-draft.json`,`${rel}/frontend-traceability-draft.json`);
           if(route.activation!=='not-applicable'&&route.capability==='delivery-coordination')artifactRefs.push(`${rel}/consumer-status-index-draft.json`);
           return {route_id:route.route_id,capability:route.capability,activation:route.activation,artifact_refs:artifactRefs};
         });
@@ -600,14 +601,8 @@ export async function importBundle({bundle,targetRoot}) {
         write(stage,'context-reconciliation-draft.json',json({schema_version:2,status:'draft',import_receipt_ref:`${rel}/import-receipt.json`,target_context_digest:context.document_digest,route_ids:selected.map(route=>route.route_id),terms}));
         write(stage,'upstream-change-impact.json',json({schema_version:2,previous_bundle:b.manifest.previous_bundle,...(b.business?{business_ticket_set_ref:`${rel}/package/payload/files/${b.handoff.source.business_ticket_set_ref.persisted_ref}`,business_ticket_status:'requires-current-source-and-dependency-reconciliation',business_ticket_ids:b.business.tickets.map(t=>t.id)}:{}),routes:selected.map(route=>({route_id:route.route_id,capability:route.capability,activation:route.activation,changed_source_ids:[...b.changes.updated,...b.changes.removed],added_source_ids:b.changes.added,status:'requires-lifecycle-reconciliation'})),policy:'mark-only-known-dependent-contracts-stale; unknown-dependency-or-design-basis-change-blocks-all'}));
         const backendRoute=b.handoff.consumer_routes.find(route=>route.capability==='backend-technical-design');
-        const frontendRoute=b.handoff.consumer_routes.find(route=>route.capability==='frontend-engineering-design');
         const coordinationRoute=b.handoff.consumer_routes.find(route=>route.capability==='delivery-coordination');
         if(capabilities.includes('backend-technical-design')&&backendRoute.activation!=='not-applicable')write(stage,'backend-technical-traceability-draft.json',json({schema_version:2,route_id:backendRoute.route_id,import_receipt_ref:`${rel}/import-receipt.json`,bundle_digest:b.manifest.bundle_digest,rows}));
-        if(capabilities.includes('frontend-engineering-design')&&frontendRoute.activation!=='not-applicable'){
-          const preflight={schema_version:b.handoff.schema_version===5?2:1,status:'draft',route_id:frontendRoute.route_id,capability:frontendRoute.capability,import_receipt_ref:`${rel}/import-receipt.json`,bundle_digest:b.manifest.bundle_digest,context_reconciliation_ref:'',...(b.handoff.schema_version===5?{ui_baseline_kind:uiBaselineKind(b.handoff),ui_baseline_ref:`${rel}/package/payload/files/${uiBaselineRef(b.handoff).persisted_ref}/${uiBaselineRef(b.handoff).manifest_ref}`}:{visual_baseline_ref:`${rel}/package/payload/files/${uiBaselineRef(b.handoff).persisted_ref}/${uiBaselineRef(b.handoff).manifest_ref}`}),source_rule_refs:rows.filter(row=>row.kind!=='business-ticket').map(row=>row.source_id),backend_dependency:{mode:backendRoute.activation==='not-applicable'?'not-applicable':'required',route_id:backendRoute.route_id,...(backendRoute.activation==='not-applicable'?{reason:backendRoute.reason,impact_refs:backendRoute.impact_refs,evidence_refs:backendRoute.evidence_refs}:{})},ready_for_agent:false};
-          schema(preflight,b.handoff.schema_version===5?'.template-spec/process/schemas/frontend-strategic-preflight-v2.schema.json':'.template-spec/process/schemas/frontend-strategic-preflight.schema.json');
-          write(stage,'frontend-strategic-preflight-draft.json',json(preflight));write(stage,'frontend-traceability-draft.json',json({schema_version:1,route_id:frontendRoute.route_id,import_receipt_ref:`${rel}/import-receipt.json`,bundle_digest:b.manifest.bundle_digest,rows:rows.map(({tactical_refs,test_seam_refs,...row})=>({...row,frontend_case_refs:[]}))}));
-        }
         if(capabilities.includes('delivery-coordination')&&coordinationRoute.activation!=='not-applicable')write(stage,'consumer-status-index-draft.json',json({schema_version:1,status:'draft',import_receipt_ref:`${rel}/import-receipt.json`,routes:b.handoff.consumer_routes.map(route=>({route_id:route.route_id,capability:route.capability,activation:route.activation,consumer_status:route.activation==='not-applicable'?'not-applicable':'pending',receipt_refs:[],acceptance_refs:[],feedback_refs:[]}))}));
       }
       ensure(!existsSync(dest),'导入并发冲突');renameSync(stage,dest);

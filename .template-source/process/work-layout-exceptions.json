@@ -30,6 +30,15 @@
     },
     {
       "repository": ".",
+      "file": ".template-source/contracts/architecture-iteration-v1-ar10-summary.md",
+      "kind": "content",
+      "text": "- 发现并修掉的 Go/Node 差异（即 Q-004 的一例）：Node 生成的任务包把写范围写成目录前缀 `docs/.scratch/`（尾部 `/`），yss 把尾部空段判为非法路径，所以会拒绝 Node 自己生成的每一个任务包。yss 现在允许**单个**尾部 `/`，其余仍按可移植项目相对路径校验（`taskSafePath`）。",
+      "count": 1,
+      "category": "history",
+      "reason": "AR10 已完成同形回放的历史问题记录，保留实际旧路径样本，不作为当前工作根指引"
+    },
+    {
+      "repository": ".",
       "file": ".template-source/distribution/bundle-profile.json",
       "kind": "content",
       "text": "          \"pattern\": \"docs/.scratch/**\",",
@@ -102,6 +111,69 @@
     },
     {
       "repository": ".",
+      "file": "profiles/backend/.template-source/distribution/bundle-profile.json",
+      "kind": "content",
+      "text": "      \"docs/.scratch\",",
+      "count": 1,
+      "category": "compatibility",
+      "reason": "禁止分发实例资产或升级覆盖既有工作包的保护规则"
+    },
+    {
+      "repository": ".",
+      "file": "profiles/backend/.template-spec/agents/issue-tracker.md",
+      "kind": "content",
+      "text": "    - docs/.scratch",
+      "count": 1,
+      "category": "compatibility",
+      "reason": "机器配置 legacy_roots 只读扫描；正文使用当前 tracker.root"
+    },
+    {
+      "repository": ".",
+      "file": "profiles/backend/scripts/lib/instance-distribution.mjs",
+      "kind": "content",
+      "text": "  \"docs/.scratch\",",
+      "count": 1,
+      "category": "compatibility",
+      "reason": "禁止分发实例资产或升级覆盖既有工作包的保护规则"
+    },
+    {
+      "repository": ".",
+      "file": "profiles/design/.template-source/distribution/bundle-profile.json",
+      "kind": "content",
+      "text": "      \"docs/.scratch\",",
+      "count": 1,
+      "category": "compatibility",
+      "reason": "禁止分发实例资产或升级覆盖既有工作包的保护规则"
+    },
+    {
+      "repository": ".",
+      "file": "profiles/design/.template-spec/agents/issue-tracker.md",
+      "kind": "content",
+      "text": "    - docs/.scratch",
+      "count": 1,
+      "category": "compatibility",
+      "reason": "机器配置 legacy_roots 只读扫描；正文使用当前 tracker.root"
+    },
+    {
+      "repository": ".",
+      "file": "profiles/design/.template-spec/process/instance-distribution-manifest.yaml",
+      "kind": "content",
+      "text": "  - docs/.scratch",
+      "count": 1,
+      "category": "compatibility",
+      "reason": "禁止分发实例资产或升级覆盖既有工作包的保护规则"
+    },
+    {
+      "repository": ".",
+      "file": "profiles/design/tests/scenarios/verify-strategic-gate-migration-scenarios.mjs",
+      "kind": "content",
+      "text": " for (const workRoot of ['.work', 'docs/custom-work', 'docs/.scratch']) {",
+      "count": 1,
+      "category": "compatibility-test",
+      "reason": "复用 main Design 迁移场景，验证当前/自定义/历史配置根、写入前拒绝、摘要漂移和不可变历史证据"
+    },
+    {
+      "repository": ".",
       "file": "scripts/lib/work-layout.mjs",
       "kind": "content",
       "text": "export const HISTORICAL_WORK_ROOTS = Object.freeze(['docs/.scratch', '.scratch', 'docs/requirements/tickets']);",
@@ -120,6 +192,15 @@
     },
     {
       "repository": ".",
+      "file": "tests/checkpoint-boundary.test.mjs",
+      "kind": "content",
+      "text": "  fs.writeFileSync(path.join(dir, '.template-spec/agents/issue-tracker.md'), '---\\ntracker: {platform: local-markdown, root: docs/.scratch}\\n---\\n');",
+      "count": 1,
+      "category": "compatibility-test",
+      "reason": "真实旧实例未启用追踪的 checkpoint 边界回放，显式设置历史 tracker 根"
+    },
+    {
+      "repository": ".",
       "file": "tests/fixtures/work-layout-cases.json",
       "kind": "content",
       "text": "    {\"root\":\"docs/.scratch\",\"valid\":true,\"normalized\":\"docs/.scratch\",\"feature\":\"export-report\",\"checkpoint\":\"docs/.scratch/export-report/checkpoint.yaml\",\"ticket\":\"docs/.scratch/export-report/issues/01-download.md\"},",
@@ -129,12 +210,21 @@
     },
     {
       "repository": ".",
-      "file": "tests/scenarios/verify-frontend-implementation-evidence-scenarios.mjs",
+      "file": "tests/go-validator-replay.test.mjs",
       "kind": "content",
-      "text": "for (const workRoot of ['.work', 'docs/custom-work', 'docs/.scratch']) {",
+      "text": "    inputs: ['CONTEXT.md'], objective: '执行有界生命周期工作单元', allowed_write_paths: ['docs/.scratch/'], forbidden_actions: ['不得越过主控门禁'], expected_outputs: ['结构化工作结果'], expected_evidence_files: [path.relative(REPO, evidence)], verification_commands: ['scripts/verify-template'], verification_results: [], downstream_consumers: ['role.lifecycle-orchestrator'],",
       "count": 1,
       "category": "compatibility-test",
-      "reason": "显式覆盖旧配置、自定义根或遗留路径拒绝的回归场景"
+      "reason": "Node/Go 任务包同形回放保留旧目录根和尾部斜杠写范围的兼容样本"
+    },
+    {
+      "repository": ".",
+      "file": "tests/go-validator-replay.test.mjs",
+      "kind": "content",
+      "text": "    writeFileSync(tracker, '---\\ntracker: {platform: local-markdown, root: docs/.scratch}\\n---\\n');",
+      "count": 1,
+      "category": "compatibility-test",
+      "reason": "旧实例未启用追踪的 checkpoint 同形回放，临时设置并恢复历史 tracker 根"
     },
     {
       "repository": ".",
@@ -300,15 +390,6 @@
     },
     {
       "repository": "cli",
-      "file": "internal/bundle/rules/frontend.json",
-      "kind": "content",
-      "text": "      \"docs/.scratch\",",
-      "count": 1,
-      "category": "compatibility",
-      "reason": "禁止分发实例资产或升级覆盖既有工作包的保护规则"
-    },
-    {
-      "repository": "cli",
       "file": "internal/bundle/rules/spec.json",
       "kind": "content",
       "text": "          \"pattern\": \"docs/.scratch/**\",",
@@ -441,357 +522,6 @@
       "count": 1,
       "category": "compatibility",
       "reason": "集中定义历史扫描根，保留旧配置兼容"
-    },
-    {
-      "repository": "submodules/yss-harness-backend-agent",
-      "file": ".template-source/distribution/bundle-profile.json",
-      "kind": "content",
-      "text": "      \"docs/.scratch\",",
-      "count": 1,
-      "category": "compatibility",
-      "reason": "禁止分发实例资产或升级覆盖既有工作包的保护规则"
-    },
-    {
-      "repository": "submodules/yss-harness-backend-agent",
-      "file": ".template-source/distribution/template.manifest.json",
-      "kind": "content",
-      "text": "    \"docs/.scratch\",",
-      "count": 1,
-      "category": "compatibility",
-      "reason": "禁止分发实例资产或升级覆盖既有工作包的保护规则"
-    },
-    {
-      "repository": "submodules/yss-harness-backend-agent",
-      "file": ".template-source/evidence/maintenance/create-yss-harness-refactor-2026-08-28.md",
-      "kind": "content",
-      "text": "- 任务包压力场景 fixture 从 `.template-source/evidence/` 迁到 `docs/.scratch/_verify-task-package/`，结束后删除，避免 `project-instance` 被污染。",
-      "count": 1,
-      "category": "history",
-      "reason": "已完成维护的历史记录，保留原文；不作为当前路径指引"
-    },
-    {
-      "repository": "submodules/yss-harness-backend-agent",
-      "file": ".template-source/evidence/maintenance/research-antd-cli-skills-prototype-integration-2026-08-23.md",
-      "kind": "content",
-      "text": "| `high-fidelity-html-prototype` | 兼容入口；列出同一组命令；产物是 `docs/.scratch/<feature>/design/prototypes/index.html`；栈是 React 18 + `antd@6.x` |",
-      "count": 1,
-      "category": "history",
-      "reason": "已完成维护的历史记录，保留原文；不作为当前路径指引"
-    },
-    {
-      "repository": "submodules/yss-harness-backend-agent",
-      "file": ".template-source/wiki/raw/issue-tracker.md",
-      "kind": "content",
-      "text": "    - docs/.scratch",
-      "count": 1,
-      "category": "compatibility",
-      "reason": "机器配置 legacy_roots 只读扫描；正文使用当前 tracker.root"
-    },
-    {
-      "repository": "submodules/yss-harness-backend-agent",
-      "file": ".template-spec/agents/issue-tracker.md",
-      "kind": "content",
-      "text": "    - docs/.scratch",
-      "count": 1,
-      "category": "compatibility",
-      "reason": "机器配置 legacy_roots 只读扫描；正文使用当前 tracker.root"
-    },
-    {
-      "repository": "submodules/yss-harness-backend-agent",
-      "file": ".template-spec/process/work-layout.md",
-      "kind": "content",
-      "text": "| `tracker.root` 仍配置为 `docs/.scratch` | 它是该实例的当前根，允许正常读写；attach、sync、升级均不自动搬迁 |",
-      "count": 1,
-      "category": "compatibility",
-      "reason": "集中说明旧实例当前配置、迁移和只读历史边界"
-    },
-    {
-      "repository": "submodules/yss-harness-backend-agent",
-      "file": ".template-spec/process/work-layout.md",
-      "kind": "content",
-      "text": "| 当前根已是 `.work` 或受支持的自定义根，仍发现 `docs/.scratch` | 旧根只读定位；重复资产或跨根引用冲突需显式处理，不切换写入位置 |",
-      "count": 1,
-      "category": "compatibility",
-      "reason": "集中说明旧实例当前配置、迁移和只读历史边界"
-    },
-    {
-      "repository": "submodules/yss-harness-backend-agent",
-      "file": ".template-spec/process/work-layout.md",
-      "kind": "content",
-      "text": "本版只自动迁移配置为 `docs/.scratch` 的完整根到 `.work`。其他历史布局只读诊断。目录迁移不升级模板，不转换 YAML/JSON，不推进阶段、不批准资产。",
-      "count": 1,
-      "category": "compatibility",
-      "reason": "集中说明旧实例当前配置、迁移和只读历史边界"
-    },
-    {
-      "repository": "submodules/yss-harness-backend-agent",
-      "file": "scripts/lib/instance-distribution.mjs",
-      "kind": "content",
-      "text": "  \"docs/.scratch\",",
-      "count": 1,
-      "category": "compatibility",
-      "reason": "禁止分发实例资产或升级覆盖既有工作包的保护规则"
-    },
-    {
-      "repository": "submodules/yss-harness-backend-agent",
-      "file": "scripts/lib/work-layout.mjs",
-      "kind": "content",
-      "text": "export const HISTORICAL_WORK_ROOTS = Object.freeze(['docs/.scratch', '.scratch', 'docs/requirements/tickets']);",
-      "count": 1,
-      "category": "compatibility",
-      "reason": "集中定义历史扫描根，保留旧配置兼容"
-    },
-    {
-      "repository": "submodules/yss-harness-backend-agent",
-      "file": "tests/scenarios/verify-frontend-implementation-evidence-scenarios.mjs",
-      "kind": "content",
-      "text": "for (const workRoot of ['.work', 'docs/custom-work', 'docs/.scratch']) {",
-      "count": 1,
-      "category": "compatibility-test",
-      "reason": "子项目证据校验显式拒绝旧配置与自定义根的模板占位路径"
-    },
-    {
-      "repository": "submodules/yss-harness-design-agent",
-      "file": ".agents/skills/yss-prototype-stage/tests/reliability.test.mjs",
-      "kind": "content",
-      "text": " for(const workRoot of ['.work','docs/custom-work','docs/.scratch']){",
-      "count": 1,
-      "category": "compatibility-test",
-      "reason": "显式覆盖旧配置、自定义根或遗留路径拒绝的回归场景"
-    },
-    {
-      "repository": "submodules/yss-harness-design-agent",
-      "file": ".template-source/distribution/bundle-profile.json",
-      "kind": "content",
-      "text": "      \"docs/.scratch\",",
-      "count": 1,
-      "category": "compatibility",
-      "reason": "禁止分发实例资产或升级覆盖既有工作包的保护规则"
-    },
-    {
-      "repository": "submodules/yss-harness-design-agent",
-      "file": ".template-source/evidence/maintenance/research-antd-cli-skills-prototype-integration-2026-08-23.md",
-      "kind": "content",
-      "text": "| `high-fidelity-html-prototype` | 兼容入口；列出同一组命令；产物是 `docs/.scratch/<feature>/design/prototypes/index.html`；栈是 React 18 + `antd@6.x` |",
-      "count": 1,
-      "category": "history",
-      "reason": "已完成维护的历史记录，保留原文；不作为当前路径指引"
-    },
-    {
-      "repository": "submodules/yss-harness-design-agent",
-      "file": ".template-source/wiki/raw/issue-tracker.md",
-      "kind": "content",
-      "text": "    - docs/.scratch",
-      "count": 1,
-      "category": "compatibility",
-      "reason": "机器配置 legacy_roots 只读扫描；正文使用当前 tracker.root"
-    },
-    {
-      "repository": "submodules/yss-harness-design-agent",
-      "file": ".template-spec/agents/issue-tracker.md",
-      "kind": "content",
-      "text": "    - docs/.scratch",
-      "count": 1,
-      "category": "compatibility",
-      "reason": "机器配置 legacy_roots 只读扫描；正文使用当前 tracker.root"
-    },
-    {
-      "repository": "submodules/yss-harness-design-agent",
-      "file": ".template-spec/process/instance-distribution-manifest.yaml",
-      "kind": "content",
-      "text": "  - docs/.scratch",
-      "count": 1,
-      "category": "compatibility",
-      "reason": "禁止分发实例资产或升级覆盖既有工作包的保护规则"
-    },
-    {
-      "repository": "submodules/yss-harness-design-agent",
-      "file": ".template-spec/process/work-layout.md",
-      "kind": "content",
-      "text": "| `tracker.root` 仍配置为 `docs/.scratch` | 它是该实例的当前根，允许正常读写；attach、sync、升级均不自动搬迁 |",
-      "count": 1,
-      "category": "compatibility",
-      "reason": "集中说明旧实例当前配置、迁移和只读历史边界"
-    },
-    {
-      "repository": "submodules/yss-harness-design-agent",
-      "file": ".template-spec/process/work-layout.md",
-      "kind": "content",
-      "text": "| 当前根已是 `.work` 或受支持的自定义根，仍发现 `docs/.scratch` | 旧根只读定位；重复资产或跨根引用冲突需显式处理，不切换写入位置 |",
-      "count": 1,
-      "category": "compatibility",
-      "reason": "集中说明旧实例当前配置、迁移和只读历史边界"
-    },
-    {
-      "repository": "submodules/yss-harness-design-agent",
-      "file": ".template-spec/process/work-layout.md",
-      "kind": "content",
-      "text": "本版只自动迁移配置为 `docs/.scratch` 的完整根到 `.work`。其他历史布局只读诊断。目录迁移不升级模板，不转换 YAML/JSON，不推进阶段、不批准资产。",
-      "count": 1,
-      "category": "compatibility",
-      "reason": "集中说明旧实例当前配置、迁移和只读历史边界"
-    },
-    {
-      "repository": "submodules/yss-harness-design-agent",
-      "file": "scripts/lib/work-layout.mjs",
-      "kind": "content",
-      "text": "export const HISTORICAL_WORK_ROOTS = Object.freeze(['docs/.scratch', '.scratch', 'docs/requirements/tickets']);",
-      "count": 1,
-      "category": "compatibility",
-      "reason": "集中定义历史扫描根，保留旧配置兼容"
-    },
-    {
-      "repository": "submodules/yss-harness-design-agent",
-      "file": "tests/fixtures/upstream-source/.template-spec/agents/issue-tracker.md",
-      "kind": "content",
-      "text": "    - docs/.scratch",
-      "count": 1,
-      "category": "compatibility",
-      "reason": "机器配置 legacy_roots 只读扫描；正文使用当前 tracker.root"
-    },
-    {
-      "repository": "submodules/yss-harness-design-agent",
-      "file": "tests/fixtures/upstream-source/scripts/lib/work-layout.mjs",
-      "kind": "content",
-      "text": "export const HISTORICAL_WORK_ROOTS = Object.freeze(['docs/.scratch', '.scratch', 'docs/requirements/tickets']);",
-      "count": 1,
-      "category": "compatibility",
-      "reason": "集中定义历史扫描根，保留旧配置兼容"
-    },
-    {
-      "repository": "submodules/yss-harness-design-agent",
-      "file": "tests/scenarios/verify-strategic-gate-migration-scenarios.mjs",
-      "kind": "content",
-      "text": " for (const workRoot of ['.work', 'docs/custom-work', 'docs/.scratch']) {",
-      "count": 1,
-      "category": "compatibility-test",
-      "reason": "显式覆盖旧配置、自定义根或遗留路径拒绝的回归场景"
-    },
-    {
-      "repository": "submodules/yss-harness-frontend-agent",
-      "file": ".template-source/distribution/bundle-profile.json",
-      "kind": "content",
-      "text": "      \"docs/.scratch\",",
-      "count": 1,
-      "category": "compatibility",
-      "reason": "禁止分发实例资产或升级覆盖既有工作包的保护规则"
-    },
-    {
-      "repository": "submodules/yss-harness-frontend-agent",
-      "file": ".template-source/distribution/template.manifest.json",
-      "kind": "content",
-      "text": "    \"docs/.scratch\",",
-      "count": 1,
-      "category": "compatibility",
-      "reason": "禁止分发实例资产或升级覆盖既有工作包的保护规则"
-    },
-    {
-      "repository": "submodules/yss-harness-frontend-agent",
-      "file": ".template-source/evidence/maintenance/create-yss-harness-refactor-2026-08-28.md",
-      "kind": "content",
-      "text": "- 任务包压力场景 fixture 从 `.template-source/evidence/` 迁到 `docs/.scratch/_verify-task-package/`，结束后删除，避免 `project-instance` 被污染。",
-      "count": 1,
-      "category": "history",
-      "reason": "已完成维护的历史记录，保留原文；不作为当前路径指引"
-    },
-    {
-      "repository": "submodules/yss-harness-frontend-agent",
-      "file": ".template-source/evidence/maintenance/research-antd-cli-skills-prototype-integration-2026-08-23.md",
-      "kind": "content",
-      "text": "| `high-fidelity-html-prototype` | 兼容入口；列出同一组命令；产物是 `docs/.scratch/<feature>/design/prototypes/index.html`；栈是 React 18 + `antd@6.x` |",
-      "count": 1,
-      "category": "history",
-      "reason": "已完成维护的历史记录，保留原文；不作为当前路径指引"
-    },
-    {
-      "repository": "submodules/yss-harness-frontend-agent",
-      "file": ".template-source/wiki/raw/issue-tracker.md",
-      "kind": "content",
-      "text": "    - docs/.scratch",
-      "count": 1,
-      "category": "compatibility",
-      "reason": "机器配置 legacy_roots 只读扫描；正文使用当前 tracker.root"
-    },
-    {
-      "repository": "submodules/yss-harness-frontend-agent",
-      "file": ".template-spec/agents/issue-tracker.md",
-      "kind": "content",
-      "text": "    - docs/.scratch",
-      "count": 1,
-      "category": "compatibility",
-      "reason": "机器配置 legacy_roots 只读扫描；正文使用当前 tracker.root"
-    },
-    {
-      "repository": "submodules/yss-harness-frontend-agent",
-      "file": ".template-spec/process/work-layout.md",
-      "kind": "content",
-      "text": "| `tracker.root` 仍配置为 `docs/.scratch` | 它是该实例的当前根，允许正常读写；attach、sync、升级均不自动搬迁 |",
-      "count": 1,
-      "category": "compatibility",
-      "reason": "集中说明旧实例当前配置、迁移和只读历史边界"
-    },
-    {
-      "repository": "submodules/yss-harness-frontend-agent",
-      "file": ".template-spec/process/work-layout.md",
-      "kind": "content",
-      "text": "| 当前根已是 `.work` 或受支持的自定义根，仍发现 `docs/.scratch` | 旧根只读定位；重复资产或跨根引用冲突需显式处理，不切换写入位置 |",
-      "count": 1,
-      "category": "compatibility",
-      "reason": "集中说明旧实例当前配置、迁移和只读历史边界"
-    },
-    {
-      "repository": "submodules/yss-harness-frontend-agent",
-      "file": ".template-spec/process/work-layout.md",
-      "kind": "content",
-      "text": "本版只自动迁移配置为 `docs/.scratch` 的完整根到 `.work`。其他历史布局只读诊断。目录迁移不升级模板，不转换 YAML/JSON，不推进阶段、不批准资产。",
-      "count": 1,
-      "category": "compatibility",
-      "reason": "集中说明旧实例当前配置、迁移和只读历史边界"
-    },
-    {
-      "repository": "submodules/yss-harness-frontend-agent",
-      "file": "scripts/lib/instance-distribution.mjs",
-      "kind": "content",
-      "text": "  \"docs/.scratch\",",
-      "count": 1,
-      "category": "compatibility",
-      "reason": "禁止分发实例资产或升级覆盖既有工作包的保护规则"
-    },
-    {
-      "repository": "submodules/yss-harness-frontend-agent",
-      "file": "scripts/lib/work-layout.mjs",
-      "kind": "content",
-      "text": "export const HISTORICAL_WORK_ROOTS = Object.freeze(['docs/.scratch', '.scratch', 'docs/requirements/tickets']);",
-      "count": 1,
-      "category": "compatibility",
-      "reason": "集中定义历史扫描根，保留旧配置兼容"
-    },
-    {
-      "repository": "submodules/yss-harness-frontend-agent",
-      "file": "tests/fixtures/upstream-source/.template-spec/agents/issue-tracker.md",
-      "kind": "content",
-      "text": "    - docs/.scratch",
-      "count": 1,
-      "category": "compatibility",
-      "reason": "机器配置 legacy_roots 只读扫描；正文使用当前 tracker.root"
-    },
-    {
-      "repository": "submodules/yss-harness-frontend-agent",
-      "file": "tests/fixtures/upstream-source/scripts/lib/work-layout.mjs",
-      "kind": "content",
-      "text": "export const HISTORICAL_WORK_ROOTS = Object.freeze(['docs/.scratch', '.scratch', 'docs/requirements/tickets']);",
-      "count": 1,
-      "category": "compatibility",
-      "reason": "集中定义历史扫描根，保留旧配置兼容"
-    },
-    {
-      "repository": "submodules/yss-harness-frontend-agent",
-      "file": "tests/scenarios/verify-frontend-implementation-evidence-scenarios.mjs",
-      "kind": "content",
-      "text": "for (const workRoot of ['.work', 'docs/custom-work', 'docs/.scratch']) {",
-      "count": 1,
-      "category": "compatibility-test",
-      "reason": "子项目证据校验显式拒绝旧配置与自定义根的模板占位路径"
     }
   ]
 }

@@ -1,0 +1,83 @@
+[[1;33mWARNING[m] 
+[[1;33mWARNING[m] Some problems were encountered while building the effective settings
+[[1;33mWARNING[m] Unrecognised tag: 'distributionManagement' (position: START_TAG seen ...</properties>\r\n            <distributionManagement>... @206:37)  @ /Users/zhudaoming/.m2/settings.xml, line 206, column 37
+[[1;33mWARNING[m] 
+[[1;34mINFO[m] Scanning for projects...
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] [1mReactor Build Order:[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] ddd-probe-reference-parent                                         [pom]
+[[1;34mINFO[m] ddd-probe-reference-domain                                         [jar]
+[[1;34mINFO[m] ddd-probe-reference-application                                    [jar]
+[[1;34mINFO[m] ddd-probe-reference-infrastructure                                 [jar]
+[[1;34mINFO[m] ddd-probe-reference-adapter                                        [pom]
+[[1;34mINFO[m] ddd-probe-reference-web                                            [jar]
+[[1;34mINFO[m] ddd-probe-reference-bootstrap                                      [jar]
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m-------------< [0;36mcom.yss.example:ddd-probe-reference-parent[0;1m >-------------[m
+[[1;34mINFO[m] [1mBuilding ddd-probe-reference-parent 1.0.0-SNAPSHOT                 [1/7][m
+[[1;34mINFO[m] [1m--------------------------------[ pom ]---------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-enforcer-plugin:3.5.0:enforce[m [1m(enforce-target-ddd-baseline)[m @ [36mddd-probe-reference-parent[0;1m ---[m
+[[1;34mINFO[m] Rule 0: org.apache.maven.enforcer.rules.version.RequireJavaVersion passed
+[[1;34mINFO[m] Rule 1: org.apache.maven.enforcer.rules.version.RequireMavenVersion passed
+[[1;34mINFO[m] Rule 2: org.apache.maven.enforcer.rules.ReactorModuleConvergence passed
+[[1;34mINFO[m] Rule 3: org.apache.maven.enforcer.rules.dependency.DependencyConvergence passed
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m-------------< [0;36mcom.yss.example:ddd-probe-reference-domain[0;1m >-------------[m
+[[1;34mINFO[m] [1mBuilding ddd-probe-reference-domain 1.0.0-SNAPSHOT                 [2/7][m
+[[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-enforcer-plugin:3.5.0:enforce[m [1m(enforce-target-ddd-baseline)[m @ [36mddd-probe-reference-domain[0;1m ---[m
+[[1;34mINFO[m] Rule 3: org.apache.maven.enforcer.rules.dependency.DependencyConvergence passed
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m----------< [0;36mcom.yss.example:ddd-probe-reference-application[0;1m >-----------[m
+[[1;34mINFO[m] [1mBuilding ddd-probe-reference-application 1.0.0-SNAPSHOT            [3/7][m
+[[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-enforcer-plugin:3.5.0:enforce[m [1m(enforce-target-ddd-baseline)[m @ [36mddd-probe-reference-application[0;1m ---[m
+[[1;34mINFO[m] Rule 3: org.apache.maven.enforcer.rules.dependency.DependencyConvergence passed
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m---------< [0;36mcom.yss.example:ddd-probe-reference-infrastructure[0;1m >---------[m
+[[1;34mINFO[m] [1mBuilding ddd-probe-reference-infrastructure 1.0.0-SNAPSHOT         [4/7][m
+[[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-enforcer-plugin:3.5.0:enforce[m [1m(enforce-target-ddd-baseline)[m @ [36mddd-probe-reference-infrastructure[0;1m ---[m
+[[1;34mINFO[m] Rule 3: org.apache.maven.enforcer.rules.dependency.DependencyConvergence passed
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m------------< [0;36mcom.yss.example:ddd-probe-reference-adapter[0;1m >-------------[m
+[[1;34mINFO[m] [1mBuilding ddd-probe-reference-adapter 1.0.0-SNAPSHOT                [5/7][m
+[[1;34mINFO[m] [1m--------------------------------[ pom ]---------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-enforcer-plugin:3.5.0:enforce[m [1m(enforce-target-ddd-baseline)[m @ [36mddd-probe-reference-adapter[0;1m ---[m
+[[1;34mINFO[m] Rule 3: org.apache.maven.enforcer.rules.dependency.DependencyConvergence passed
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--------------< [0;36mcom.yss.example:ddd-probe-reference-web[0;1m >---------------[m
+[[1;34mINFO[m] [1mBuilding ddd-probe-reference-web 1.0.0-SNAPSHOT                    [6/7][m
+[[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-enforcer-plugin:3.5.0:enforce[m [1m(enforce-target-ddd-baseline)[m @ [36mddd-probe-reference-web[0;1m ---[m
+[[1;34mINFO[m] Rule 3: org.apache.maven.enforcer.rules.dependency.DependencyConvergence passed
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m-----------< [0;36mcom.yss.example:ddd-probe-reference-bootstrap[0;1m >------------[m
+[[1;34mINFO[m] [1mBuilding ddd-probe-reference-bootstrap 1.0.0-SNAPSHOT              [7/7][m
+[[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-enforcer-plugin:3.5.0:enforce[m [1m(enforce-target-ddd-baseline)[m @ [36mddd-probe-reference-bootstrap[0;1m ---[m
+[[1;34mINFO[m] Rule 3: org.apache.maven.enforcer.rules.dependency.DependencyConvergence passed
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] [1mReactor Summary for ddd-probe-reference-parent 1.0.0-SNAPSHOT:[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] ddd-probe-reference-parent ......................... [1;32mSUCCESS[m [  0.077 s]
+[[1;34mINFO[m] ddd-probe-reference-domain ......................... [1;32mSUCCESS[m [  0.009 s]
+[[1;34mINFO[m] ddd-probe-reference-application .................... [1;32mSUCCESS[m [  0.076 s]
+[[1;34mINFO[m] ddd-probe-reference-infrastructure ................. [1;32mSUCCESS[m [  0.046 s]
+[[1;34mINFO[m] ddd-probe-reference-adapter ........................ [1;32mSUCCESS[m [  0.003 s]
+[[1;34mINFO[m] ddd-probe-reference-web ............................ [1;32mSUCCESS[m [  0.028 s]
+[[1;34mINFO[m] ddd-probe-reference-bootstrap ...................... [1;32mSUCCESS[m [  0.016 s]
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] [1;32mBUILD SUCCESS[m
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] Total time:  0.376 s
+[[1;34mINFO[m] Finished at: 2026-10-13T02:16:58+08:00
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m

@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
+import {pathToFileURL} from 'node:url';
 import {createHash} from 'node:crypto';
 import {parse} from '../../lib/strategic-handoff-io.mjs';
 import {countersignRuleForGate,collectCountersignGateIds} from '../../lib/digital-human-roles.mjs';
@@ -47,7 +48,11 @@ export function fixture(family='layered-mvc',{nativeSeed}={}){
  }
  const artifactRefs=['effective-pom.xml','dependency-trees.json','platform-tests.xml','boot-bom-effective.xml','runtime-jar-entries.log','startup.stdout.log','startup.stderr.log',...['validate','test','package'].flatMap(phase=>[`mvnw-${phase}.stdout.log`,`mvnw-${phase}.stderr.log`])];
  for(const ref of artifactRefs)write(`docs/engineering/evidence/${ref}`,'synthetic mechanism fixture only');
- const platformReport={verification_scope:'empty-scaffold',recipe_digest:platformRecipeDigest(profile,entry),source_fingerprint:platformSourceFingerprint(family),generated_tree_digest:platformDigest('synthetic generated tree'),status:'passed',spring_boot_version:profile.spring_boot_version,java_version:profile.java_version,architecture_family:family,parent:entry.parent,bom:entry.bom,commands:['validate','test','package'].map(phase=>({command:`./mvnw ${phase}`,exit_code:0,executed_at:'test-only',stdout_ref:`mvnw-${phase}.stdout.log`,stderr_ref:`mvnw-${phase}.stderr.log`})),dependency_check:'passed',startup_check:'passed',integration_tests:{status:'passed'},evidence_artifacts:artifactRefs.map(ref=>({ref,digest:platformDigest('synthetic mechanism fixture only')}))};
+ // A seeded consumer must use its own installed provenance algorithm and source bytes.
+ const sourceFingerprint=nativeSeed ? JSON.parse(execFileSync(process.execPath,['--input-type=module','-e',
+  'const {platformSourceFingerprint}=await import(process.argv[1]);process.stdout.write(JSON.stringify(platformSourceFingerprint(process.argv[2])));',
+  pathToFileURL(path.join(path.resolve(nativeSeed),'scripts/lib/backend-platform-provenance.mjs')).href,family],{encoding:'utf8'})) : platformSourceFingerprint(family);
+ const platformReport={verification_scope:'empty-scaffold',recipe_digest:platformRecipeDigest(profile,entry),source_fingerprint:sourceFingerprint,generated_tree_digest:platformDigest('synthetic generated tree'),status:'passed',spring_boot_version:profile.spring_boot_version,java_version:profile.java_version,architecture_family:family,parent:entry.parent,bom:entry.bom,commands:['validate','test','package'].map(phase=>({command:`./mvnw ${phase}`,exit_code:0,executed_at:'test-only',stdout_ref:`mvnw-${phase}.stdout.log`,stderr_ref:`mvnw-${phase}.stderr.log`})),dependency_check:'passed',startup_check:'passed',integration_tests:{status:'passed'},evidence_artifacts:artifactRefs.map(ref=>({ref,digest:platformDigest('synthetic mechanism fixture only')}))};
  const platformEvidence=write('docs/engineering/evidence/platform.json',platformReport);
  entry.evidence=[{architecture_family:family,ref:platformEvidence.ref,digest:platformEvidence.digest}];
  catalog.compatibility=[entry];write('.template-spec/engineering/backend-platforms.json',catalog);

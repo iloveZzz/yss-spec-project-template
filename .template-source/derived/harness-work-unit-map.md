@@ -12,7 +12,7 @@
 | `work-unit.skill-projection-sync` | template-source | 技能投影同步 | .agents/skills。 | Agent root 投影、skills lock。 | --check 通过。 |
 | `work-unit.template-snapshot-build` | template-source | 模板快照构建 | 固定模板 commit。 | CLI bundled snapshot。 | commit 与 tree hash 可追踪。 |
 | `work-unit.attach-sync-integration` | template-source | attach / sync 集成 | 目标仓库、dry-run 计划。 | 受管资产和 metadata。 | 验证通过或完整回滚。 |
-| `work-unit.intensity-aware-verification-v2` | template-source | 分级 Fresh verification | 变更仓库、强度分级与对应最低证据。 | 命令输出与证据。 | L1 完成相关检查；L2 完成维护者自检与本轮 fresh verification，权限边界、生命周期门禁、发布语义逐项补实际反例。日常完成本轮影响及依赖的定向检查；fast 计划扩大到全量时记录范围并改做定向检查，不冒充完整 profile 通过。main 集成验证与正式发布另运行 scripts/verify-template；其完整适用集合、baseline、资格及 legacy-full 回退由验证 profile 核验。 |
+| `work-unit.intensity-aware-verification-v2` | template-source | 分级 Fresh verification | 变更仓库、强度分级与对应最低证据。 | 命令输出与证据。 | L1 完成相关检查；L2 完成维护者自检与本轮 fresh verification，权限边界、生命周期门禁、发布语义逐项补实际反例。日常完成本轮影响及依赖的定向检查；fast 计划扩大到全量时记录范围并改做定向检查，不冒充完整 profile 通过。main 集成验证与正式发布另运行 scripts/verify-template；其当前完整适用集合、已提交来源及真实执行证据由 release profile 核验。 |
 | `work-unit.intensity-aware-review-v2` | template-source | 分级审查 | 变更 diff、强度分级与验证证据。 | 维护者自检结论与阻断项；按需记录聚焦独立审查结果。 | 已完成当前 L1 / L2 要求的自检并处理阻断项；独立审查仅在另行触发时执行，不由维护等级自动强制。 |
 | `work-unit.release-and-rollback` | template-source | 发布与回滚 | 已审查 commit。 | release note、观察信号、回滚点。 | 两仓库顺序和恢复动作明确。 |
 | `work-unit.plan-opportunity` | project-instance | 机会调研 | 用户问题、市场/竞品事实需求和现有上下文。 | Plan 机会结论、证据、替代方案和关键假设。 | 机会继续/停止建议可审查；事实已 research 或记录为假设。 |
@@ -25,7 +25,6 @@
 | `work-unit.implementation-repository-preparation` | project-instance | 实现仓库准备 | 已完成的技术分析执行结果、Context reconciliation、战略交接消费结果、工程合同批准、工程影响面和实现仓库位置；新建后端还需批准且当前并绑定设计前置的 Project Scaffold Contract v4。 | 已有工程的 Repository Onboarding Result，或新工程的 Scaffold Manifest v4 与 Scaffold Verification；并汇总 Implementation Repository Preparation Result v2。 | 每个后端项目均携带技术/数据设计门禁结果；新生成只接受 v4；历史 v3 仅在机械骨架未修改、设计补齐和恢复批准均通过时对账复用；检测到提前业务实现时保持 blocked。每个命中的交付面均为 existing-and-onboarded 或 initialized-and-verified，未命中的交付面有带原因的 not-applicable；聚合结果当前且证据可读。 |
 | `work-unit.ticket-decomposition` | project-instance | 实现切片拆分与合同准入 | 已正式化业务 Ticket、冻结 Spec、设计、契约、当前实现仓库准备和阻塞关系。 | 更新既有功能父 Ticket 的关联、形成垂直切片和批准的 Slice Implementation Contract。 | 切片可独立验证；生命周期复算后才能 ready-for-agent。 |
 | `work-unit.slice-implementation` | project-instance | 垂直切片实现 | 当前版本 Slice Implementation Contract 和允许写路径。 | 前后端实现、TDD 和 YSS Skill Execution Result。 | 行为通过 `behavior-tdd`；UI 影响完成还原验证计划；无 drift/violation。 |
-| `work-unit.frontend-implementation-verification` | project-instance | 前端实现还原验证 | 冻结原型、状态矩阵、实现候选和视觉验收用例。 | 桌面/窄屏视觉、状态、交互、console 和 pnpm 验证证据。 | 关键场景无未解释差异；独立 Reviewer 通过 UI fidelity 轴。 |
 | `work-unit.code-review` | project-instance | 独立代码审查与验证 | 不可变候选快照、Spec、Ticket、合同和执行结果。 | Standards、Spec、UI fidelity 三轴 Review 与 fresh verification。 | findings 已处理；首轮覆盖全部适用审查项，修复后按差异、受影响结论及直接 / 传递依赖定向复审；未受影响结论仅凭可核验依据复用，全部结论重新绑定当前候选。 |
 | `work-unit.backend-delivery` | project-instance | 后端职责交付终点 | plan-to-backend 职责范围、当前 Slice 批准与独立代码审查、Backend Delivery 源文件及正式导出包。 | 绑定当前源、独立审查和正式包的后端终点记录及下游前端待办。 | 完整复验源文件与正式包；仅后端可交付，不能宣布全业务完成或自动发布。 |
 | `work-unit.release-and-retrospective` | project-instance | 发布与复盘 | 已审查候选、发布窗口和回滚点。 | 发布/回滚证据和复盘记录。 | 人工发布裁决、fresh verification 和治理回流均完成。 |

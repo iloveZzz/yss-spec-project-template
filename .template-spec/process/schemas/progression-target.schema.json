@@ -9,7 +9,7 @@
     "kind": {"const": "lifecycle-progression-target"},
     "feature_id": {"type": "string", "minLength": 1},
     "checkpoint_ref": {"type": "string", "minLength": 1},
-    "target": {"enum": ["spec-approved", "product-design-completed", "backend-deliverable", "frontend-accepted", "business-accepted"]},
+    "target": {"enum": ["spec-approved", "product-design-completed", "backend-deliverable", "business-accepted"]},
     "intent_source": {"type": "string", "minLength": 1},
     "consumers": {
       "type": "array", "uniqueItems": true, "maxItems": 3,

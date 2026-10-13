@@ -57,6 +57,24 @@ const accepted = [
 for (const checkpoint of accepted) validateMaintenanceCheckpoint(checkpoint, { history: checkpoint.intensity === "L3" });
 validateMaintenanceCheckpoint({ ...accepted[3], intensity: "L2", verification_evidence: [...evidence("fresh-verification"), { kind: "formal-independent-review", command: formalReview, result: "pass" }] });
 validateMaintenanceCheckpoint(v2Base);
+for (const current_state of ["review-ready", "needs-human"]) {
+  assert.throws(() => validateMaintenanceCheckpoint({
+    ...v2Base,
+    current_state,
+    target_state: "release-ready",
+    verification_profile: "candidate",
+    review_round: current_state === "needs-human" ? 2 : 1,
+    candidate_digest: "a".repeat(64),
+    verification_evidence: [...v2Base.verification_evidence, ...evidence("candidate-verification", "review-task-packages"), releaseEvidence("initial-release-verification")]
+  }), /verification_profile 无效/);
+}
+validateMaintenanceCheckpoint({
+  ...v2Base,
+  target_state: "review-ready",
+  current_state: "review-ready",
+  review_mode: "self-check",
+  verification_evidence: evidence("fresh-verification", "self-check")
+});
 validateMaintenanceCheckpoint({
   ...v2Base,
   intensity: "L3",

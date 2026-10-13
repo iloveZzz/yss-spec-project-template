@@ -22,13 +22,13 @@
 | `iloveZzz/yss-ui` | `.agents/skills/.yss-skills-manifest.json` 锁定的 revision / `packages/skills` | 13 个 `categories.app` 业务前端 skills；排除组件库内部 `categories.library` 和后端提交 skill，适配见 `.template-source/agents/yss-ui-skills-integration.md` |
 | 项目本地 | `.agents/skills` 或平台专属 root | YSS 适配与项目治理 skills |
 
-`skills-lock.json` 是技能清单、来源、上游哈希、当前有效内容哈希和投影目标的权威记录：
+`skills-lock.json` 是技能清单、来源、上游哈希和投影目标的权威记录；本地技能的当前内容哈希不再提交，验证与打包时现算：
 
 - `upstreamHash`：能够追溯时记录未经项目适配的上游内容哈希。
-- `effectiveHash`：当前实际生效的完整 skill 目录树哈希。
+- `effectiveHash`：当前实际生效的完整 skill 目录树哈希。模板源的锁不记录它（architecture-iteration-v1 FR-005），避免每次改技能正文都改锁；打包器按分发的技能树重算并写进实例里的锁，格式与旧版一致。
 - `targets`：权威内容应投影到的 Agent roots。
 
-项目允许按 YSS 流程适配上游 skill，但必须同时保留可追溯的上游信息和适配后的有效哈希。
+项目允许按 YSS 流程适配上游 skill，但必须保留可追溯的上游信息（`upstreamHash` 与 `adaptationRef`）；相对上游是否有改动，由现算的有效哈希与 `upstreamHash` 比较得出。
 
 当前 Matt 快照为 `0ab1b63a410a03d3627979a109c8695de27af954`。模板按 YSS capability 白名单收录上游 Skill；已退役的通用路由、个人工作流、教学、练习、写作实验和专项迁移 Skill 不再随 project-instance 分发。
 
@@ -61,53 +61,22 @@
    scripts/verify-template-fast --plan
    ```
 
-   fast 默认逐项选择输入及消费者，计划理由包含命中文件、变化行为和能发现的具体错误；未知路径、缺映射或非法依赖先补映射再执行。普通 Skill 文本仅执行相关一致性检查；脚本、研究证据或写作合同变化按各自输入加入已有行为场景。已有检查覆盖时不新增测试或启动环境，必要检查通过即结束；只在相关修改、失败或具体遗漏后追加。记录实际命令、退出码、`limited` 范围及未覆盖边界，无需逐项填写完整清单的跳过理由。`--selection legacy` 可显式恢复原组范围，维护等级、main 分支或缺发布资格不自动触发日常全量。自检由 `maintaining-skills` 承接，独立审查与候选冻结按实际条件执行。
+   fast 默认逐项选择输入及消费者，计划理由包含命中文件、变化行为和能发现的具体错误；未知路径、缺映射或非法依赖先补映射再执行。普通 Skill 文本仅执行相关一致性检查；脚本、研究证据或写作合同变化按各自输入加入已有行为场景。已有检查覆盖时不新增测试或启动环境，必要检查通过即结束；只在相关修改、失败或具体遗漏后追加。记录实际命令、退出码、`limited` 范围及未覆盖边界，无需逐项填写完整清单的跳过理由。维护等级、main 分支不自动触发日常全量。自检由 `maintaining-skills` 承接，独立审查与候选冻结按实际条件执行。
 
-   PR 候选使用 `scripts/verify-template-candidate --base <完整 SHA>`；main 集成验证和正式发布任务使用 `scripts/verify-template`，并遵守对应完整适用集合、资格与回退规则。三个入口属于不同任务边界，不依次作为每次日常交付的固定检查。
+   PR 使用 `scripts/verify-template-fast --base <完整 SHA>`；main 集成验证和正式发布任务使用 `scripts/verify-template`，执行当前完整适用集合并核验已提交来源。两档属于不同任务边界，不自动追加为每次日常交付的固定检查。
 
    模板源维护引入或更新分发到实例的 Node 工具时，维护侧依赖、构建和 vendor 校验只在模板源治理区及 CI 中执行；实例门禁不得安装依赖或重建 vendor。实例只消费已提交的 `scripts/lib/*.mjs` 与 `scripts/vendor/*.mjs`，具体维护侧命令和治理决策不属于项目实例文档。
 
 6. 需要重新加载技能的客户端在变更落地后重启或刷新项目。
 
-## Backend / Frontend 生成内容
+## 专职 Profile 覆盖层
 
-两端的 `materialization: generated` 由 `.template-source/profile-skill-sync.json` 声明。共享技能完整目录与三个 Agent 投影只在本地生成；各端四个 `local_only` 技能、技能锁、注册表、来源锁和适配材料继续受 Git 管理。Design 保留原同步模式及四个上游技能的所有权。Frontend 的 Product Design 平台包按完整包生成。
+design、backend、frontend 三个专职 Profile 不再是独立仓库，也没有同步脚本、共享工具锁或「有意定制」登记。Profile 的内容分三层，后面的覆盖前面的：内核（本仓的 `.agents/skills`、`scripts`、`.template-spec/process`、`.template-spec/templates`）、`profiles/_specialist/`（三个 Profile 共有的覆盖）、`profiles/<profile>/`（该 Profile 自己的覆盖，含它的分发清单 `.template-source/distribution/bundle-profile.json`）。yss-cli 在构建 Bundle 时按来源锁里的 `overlayPaths` 把三层组合起来；内核里不属于某个 Profile 的文件，写进它分发清单的 `excludePaths`。
 
-独立克隆后，先把可信 Spec 源码 checkout 到本端 `.template-source/profile-skills-source.json` 的完整提交，再显式运行：
-
-```sh
-node scripts/prepare-skills --source <固定Spec源码目录> --check
-node scripts/prepare-skills --source <固定Spec源码目录> --apply
-node scripts/prepare-skills --check
-```
-
-前两条在 Backend 或 Frontend 根目录执行；不联网、不切换来源、不自动安装。缺来源、错误提交、源文件漂移、适配基线变化、链接越界、已修改生成文件或未知占用均拒绝覆盖。应用失败恢复已触及文件；相同输入重复执行不写入。最后一条只核验本地生成回执，准备后无需保持来源目录在线。维护入口先执行这一检查；`--plan` 仍可用于未准备仓的只读调查。
-
-本模板维护期间，`scripts/sync-profile-skills --apply --profile=backend,frontend --update-source-lock` 显式更新生成内容和来源锁；不带 `--update-source-lock` 不改变锁。仅原样生成或登记的完整适配树可进入生成模式，片段替换保留计数基线，补丁保留整树基线，权限差异通过 `file_modes` 登记。禁止直接编辑两端的生成目录。源码尚有相关改动时，锁标记为 `working-tree`，只用于本地维护检查；独立准备及正式组合构建只接受 `committed`。
-
-CLI 的内部来源锁 v3 将两端固定提交与 `skillsSource` 的 Spec 提交、清单路径和摘要分别绑定。构建只读 Git 对象并重放适配，忽略本地生成目录和 dirty worktree；公开 Bundle 继续为 v3，组合来源、完整技能摘要位于 `manifest.skillComposition`，参与 manifest 和 Bundle 摘要校验。实例仍安装完整离线技能，不分发源码准备入口、来源回执或生成目录忽略规则。历史来源锁 v2、公开 Bundle 和实例读入及升级事务继续兼容。
-
-固定来源按以下顺序交付：先提交共享源、清单和生成实现；用该完整提交更新两端来源锁并提交两端；随后固定 CLI 来源锁并构建完整资产；最后更新父仓 gitlink。共享来源不绑定未来父仓提交，避免循环引用。提交、推送与发布分别遵守既有授权边界。仓库当前没有 GitHub workflow；以后接入 CI 时显式准备再校验，不增加隐式网络准备。
-
-## 专职 Profile 同步
-
-战略设计、后端和前端 Agent 子项目通过 `.template-source/profile-skill-sync.json` 声明跨仓消费关系。每个实际 Skill 入口都必须分类为原样同步、带适配同步、子项目独有、排除、退役或上游；`excluded` 只允许目标中不存在的技能，不能隐藏活跃副本。战略设计的四个公共 Skill 由战略源仓向本模板薄适配集成，其余登记项由本模板向消费 Profile 同步。
-
-维护者先预览，再显式应用；CI 只检查漂移：
-
-```bash
-scripts/sync-profile-skills --dry-run --profile=all
-scripts/sync-profile-skills --apply --profile=design,backend,frontend
-scripts/sync-profile-skills --check --profile=all
-```
-
-Profile 同步只维护登记的内容，不代替子项目的派生更新。应用后，在每个受影响子项目运行 `scripts/sync-skills`、`scripts/update-skill-lock`，再分别以 `--check` 验证。涉及 CLI 分发或正式发布时，再按固定来源合同重建其快照；普通 Skill 本地交付不自行升级 CLI 或扩大为发布任务。正文的 `effectiveHash` 变化必须在同批锁文件中体现；不能靠改来源 revision 掩盖过期摘要。验证和打包期间不要重建同一 CLI 的快照，以免测试前后读到不同输入。
-
-默认行为等同 `--dry-run`。`--json` 输出机器可读报告。实际入口未分类时检查失败，包括内容相同的副本和子项目独有入口。简单适配使用已登记的片段替换与计数基线；复杂适配的文件级补丁位于 `.template-source/profile-skill-patches/`，并绑定上游 Skill 树 hash。目标含未提交且与期望结果不同的改动、引用缺失、路径越界、上游基线漂移或补丁无法重放时禁止写入。应用会在整批预检后逐文件更新，并在写入失败时恢复本次已改文件；工具不提交、不推送，也不更新 CLI 的固定版本快照。
-
-平台专属包通过可选 `platform_roots` 与 `exact` / `adapted` 中的完整 `source`、`target` 包路径登记，继续使用 schema v1。主仓的 Product Design / Data Analytics 是这些仓内包的公共维护源；包内嵌套入口随整包同步，生成的共享投影不重复算作平台源。运行同步两次，第二次应无差异；保留角色技能的 `local_only` 和战略源的单向所有权。
-
-启用 `verify_entry_references` 后，检查器在计划应用后的文件集合中解析入口 Markdown 链接；新增参考文件可随同批变更通过，删除后失效的链接会阻断。`reference_roots` 登记平台包；代码围栏和行内代码中的示例不当作真实链接。Python 缓存不属于技能来源或同步差异。
+- 改内核文件，所有 Profile 的下一版 Bundle 同时带上；只想让某个 Profile 不同，就在它的覆盖层里放同一路径的文件。
+- 需要「整棵 Profile 目录」的测试和夹具用 `scripts/lib/profile-tree.mjs` 的 `composeProfileTree(profile)`，规则与 yss-cli 一致。
+- 覆盖层里的 `.codex/skills/<name>` 等链接是旧运行时投影，随旧模板线的 Profile 一起保留，下一步清理；覆盖层目录里不要带会忽略覆盖层自己内容的 `.gitignore`。
+- `scripts/verify-profile-distribution` 检查每个 Profile 是否排除了仅模板源脚本、已删除的同步机制是否复活。
 
 ## 真实 Agent 行为评测
 

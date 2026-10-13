@@ -6,9 +6,10 @@ import path from 'node:path';
 import {createHash} from 'node:crypto';
 import {approvalExpectationForBoundAsset} from '../../../../scripts/lib/approval-consumption.mjs';
 import {validateApprovalRecord} from '../../../../scripts/lib/approval-record.mjs';
+import {makeRoot} from '../../../../tests/helpers/yss-instance.mjs';
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 function fixture(run) {
- const root=mkdtempSync(path.join(tmpdir(),'yss-consumer-current-'));
+ const root=makeRoot('yss-consumer-current-');
  try {
   const put=(ref,data)=>writeFileSync(path.join(root,ref),typeof data==='string'?data:JSON.stringify(data));
   const basis=ref=>({ref,digest:hash(readFileSync(path.join(root,ref)))});

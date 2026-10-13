@@ -1,3 +1,4 @@
+import { composeProfileTree } from '../../../../scripts/lib/profile-tree.mjs';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import fs from 'node:fs';
@@ -79,7 +80,7 @@ test('a bounded gate-only profile omits checks without expanding its registry', 
 });
 
 test('cross-root preparation and validation use the target lifecycle and skill registries',t=>{
-  const f=fixture(t),profile=path.join(ROOT,'submodules/yss-harness-backend-agent');
+  const f=fixture(t),profile=composeProfileTree('backend');
   for(const ref of [policyRef,'.template-spec/process/lifecycle-registry.yaml','.template-spec/agents/yss-skill-registry.yaml'])f.write(ref,fs.readFileSync(path.join(profile,ref)));
   const boundary='gate.technical-design-approved';
   f.write(f.checkpointRef,JSON.stringify({gates:{[boundary]:f.checkpoint.checks[checkIds[0]]},checks:{}}));
@@ -97,13 +98,13 @@ test('cross-root preparation and validation use the target lifecycle and skill r
 });
 
 test('真实专职政策允许独立Slice工程审查并绑定当前编译候选',t=>{
-  for(const profile of ['backend','frontend']) {
-    const f=fixture(t),source=path.join(ROOT,`submodules/yss-harness-${profile}-agent`);
+  for(const profile of ['backend']) {
+    const f=fixture(t),source=composeProfileTree(profile);
     for(const ref of [policyRef,'.template-spec/process/lifecycle-registry.yaml','.template-spec/agents/yss-skill-registry.yaml']) f.write(ref,fs.readFileSync(path.join(source,ref)));
     const localRegistry=loadRegistry(path.join(source,'.template-spec/process/lifecycle-registry.yaml'));
     const localRoles=loadDigitalHumanRoles(path.join(source,policyRef));
     const compiled=compileReviewCapabilities({checkIds:['check.design-reviewed'],roleId:'role.architecture-agent',rolesDoc:localRoles,registry:localRegistry});
-    assert.deepEqual(compiled.capability_ids,[profile==='backend'?'capability.technical-design':'capability.frontend-engineering']);
+    assert.deepEqual(compiled.capability_ids,['capability.technical-design']);
     const subject='compiled-slice.yaml';
     f.write(subject,'schema_version: 3\ncontract_id: synthetic.current-compiled-slice\n');
     f.write(f.checkpointRef,JSON.stringify({checks:{'check.design-reviewed':{...f.checkpoint.checks[checkIds[0]],subject_ref:subject,subject_digest:reviewDigest(fs.readFileSync(path.join(f.root,subject))) }},gates:{}}));

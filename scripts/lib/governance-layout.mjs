@@ -48,7 +48,7 @@ export function verifyGovernanceLayout(root, mode) {
   }
   let oldFiles;
   if (mode === "template-source") {
-    for (const ref of ["AGENTS.md", ...["design", "backend", "frontend"].map(profile => `submodules/yss-harness-${profile}-agent/AGENTS.md`)]) {
+    for (const ref of ["AGENTS.md", ...["design", "backend"].map(profile => `profiles/${profile}/AGENTS.md`)]) {
       if (ref !== "AGENTS.md" && !existsSync(path.join(root, ref))) continue;
       const source = readFileSync(path.join(root, ref), "utf8");
       const start = "<!-- YSS_TEMPLATE_SOURCE_ONLY_START -->", end = "<!-- YSS_TEMPLATE_SOURCE_ONLY_END -->";

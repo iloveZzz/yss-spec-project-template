@@ -3,7 +3,7 @@ import { referenceExample } from "../../../../scripts/lib/scaffold-reference-exa
 import assert from "node:assert/strict";
 import { execFile } from "node:child_process";
 import { createHash } from "node:crypto";
-import { chmod, mkdtemp, mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
+import { chmod, mkdtemp, mkdir, readFile, readdir, realpath, rm, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -85,7 +85,7 @@ function contract(outputDir, overrides = {}) {
   };
 }
 async function fixture(contractOverrides = {}) {
-  const root = await mkdtemp(path.join(os.tmpdir(), "yss-scaffold-node-"));
+  const root = await realpath(await mkdtemp(path.join(os.tmpdir(), "yss-scaffold-node-")));
   const output = path.join(root, "implementation");
   await mkdir(output);
   const decisionFile = path.join(root, "scaffold-architecture-decisions.yaml");

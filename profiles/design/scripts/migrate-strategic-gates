@@ -1,0 +1,23 @@
+#!/usr/bin/env node
+import { readFileSync, writeFileSync } from 'node:fs';
+import path from 'node:path';
+import { parseArgs } from 'node:util';
+import { applyStrategicGateMigration, inspectStrategicGateMigration, MIGRATION_KIND } from './lib/strategic-gate-migration.mjs';
+
+try {
+  const { values } = parseArgs({ options: { root: { type: 'string' }, feature: { type: 'string' }, plan: { type: 'string' }, apply: { type: 'string' } }, strict: true });
+  if (!values.root || (!!values.plan === !!values.apply)) throw new TypeError('用法: migrate-strategic-gates --root <project> [--feature <slug>] --plan <migration.json> | --root <project> --apply <migration.json>');
+  if (values.plan) {
+    const plan = inspectStrategicGateMigration({ root: values.root, feature: values.feature });
+    writeFileSync(path.resolve(values.plan), `${JSON.stringify(plan, null, 2)}\n`, { flag: 'wx' });
+    process.stdout.write(`${MIGRATION_KIND}: 计划已生成；写入 0 个项目文件；操作 ${plan.operations.length}，阻塞 ${plan.blockers.length}，需重新确认 ${plan.reapproval_required.join(', ') || '无'}\n`);
+    if (plan.blockers.length) process.exitCode = 2;
+  } else {
+    const plan = JSON.parse(readFileSync(path.resolve(values.apply), 'utf8'));
+    const result = applyStrategicGateMigration(plan, { root: values.root });
+    process.stdout.write(`${MIGRATION_KIND}: ${result.result}；文件 ${result.files.length}\n`);
+  }
+} catch (error) {
+  process.stderr.write(`${MIGRATION_KIND}: ${error.message}\n`);
+  process.exitCode = 1;
+}

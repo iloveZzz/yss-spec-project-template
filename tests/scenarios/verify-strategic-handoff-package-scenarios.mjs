@@ -56,17 +56,16 @@ test('v5 finalize 生成固定不可变交付目录，支持幂等重验并拒�
  writeFileSync(path.join(f.source,'evidence/offline.log'),'changed but still approved evidence bytes');
  await assert.rejects(()=>finalizeDelivery({sourceRoot:f.source,handoffRef:'handoff.yaml'}),/delivery-version-conflict|APPROVAL_CURRENT_INVALID.*证据过期/);
 });
-test('v5 交付目录分别导入后端和前端，生成 Import Receipt v3 并保留原始 delivery record',async t=>{
+test('v5 交付目录导入后端，生成 Import Receipt v3 并保留原始 delivery record；前端消费者已移除',async t=>{
  const f=await setupV5(t);const finalized=await finalizeDelivery({sourceRoot:f.source,handoffRef:'handoff.yaml'});
  const recordBytes=readFileSync(path.join(finalized.delivery,'delivery-record.json'));
- for(const [profileId,capabilities] of [['yss-harness-backend',['backend-technical-design']],['yss-harness-frontend',['frontend-engineering-design']]]){
+ for(const [profileId,capabilities] of [['yss-harness-backend',['backend-technical-design']]]){
   const target=path.join(f.base,profileId);mkdirSync(path.join(target,'.template-spec/process'),{recursive:true});
   writeFileSync(path.join(target,'yss-project.yaml'),'schema_version: 1\nrepository_mode: project-instance\n');writeFileSync(path.join(target,'CONTEXT.md'),context);
   writeFileSync(path.join(target,'.template-spec/process/harness-profile.yaml'),json({schema_version:2,profile_id:profileId,handoff:{consumer_capabilities:capabilities}}));
   const imported=await importBundle({bundle:finalized.delivery,targetRoot:target});const receipt=read(path.join(target,imported.receipt_ref));
   assert.equal(receipt.schema_version,3);assert.equal(receipt.ready_for_agent,false);assert.equal(receipt.source_delivery_record_sha256,hash(recordBytes));
   assert.deepEqual(readFileSync(path.join(target,receipt.source_delivery_record_ref)),recordBytes);
-  if(profileId.endsWith('frontend'))assert.equal(read(path.join(target,path.dirname(imported.receipt_ref),'frontend-strategic-preflight-draft.json')).ready_for_agent,false);
  }
 });
 test('v3/v4 不允许 finalize，新交付必须迁移到 Handoff v5',async t=>{

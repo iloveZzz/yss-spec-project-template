@@ -7,7 +7,7 @@
 | spec | .yss.json | create-yss-spec / .yss-template.json |
 | design | .yss.json | create-yss-harness-design / .yss-harness-design.json |
 | backend | .yss.json | create-yss-harness-backend / .yss-harness-backend.json |
-| frontend | .yss.json | create-yss-harness-frontend / .yss-harness-frontend.json |
+| frontend（已移除） | — | 旧实例升级/同步被明确拒绝，文件保持原样 |
 
 原生身份绑定 `profile`、`profileId`、协议、模板提交、Bundle/manifest 摘要和受管基线。旧 CLI 版本和提交只表示历史迁移基线，不能作为 `yss` 来源。多个有效 metadata、旧 dev 家族、未知 schema、符号链接或矛盾 Profile 均不能自动接管。`migrate` 不是降级或跨家族转换工具。
 

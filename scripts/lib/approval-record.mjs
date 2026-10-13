@@ -6,6 +6,7 @@ import {loadDigitalHumanRoles, countersignRuleForGate} from './digital-human-rol
 import {assertGateChecks} from './lifecycle-controls.mjs';
 import {assertImportedSpecPrerequisite} from './spec-baseline.mjs';
 import {assertPlanAggregateApproval} from './plan-spec-entry.mjs';
+import {nativeDelegationAvailable, nativeApprovalRecord, approvalDelegationRefs, NEEDS} from './native-evidence.mjs';
 import {assertUserDecisionRequirement, assertWorkUnitUserDecision, assertImplementationDecision} from './user-decision.mjs';
 import {validateAssetStructure, canonicalValue} from './structured-assets.mjs';
 import {assertCurrentApproval, approvalExpectationFromState, assertCurrentApprovalEvidenceRef, assertCurrentApprovalReferences} from './approval-current.mjs';
@@ -44,6 +45,28 @@ function validatePlanApproval(record, options) {
   if (JSON.stringify(canonicalValue(approvalIO(options).document(ref))) !== JSON.stringify(canonicalValue(record))) approvalError('APPROVAL_CURRENT_INVALID', '待验 Plan 记录不是 checkpoint 当前聚合批准');
   return assertPlanAggregateApproval(checkpoint, options);
 }
+function delegableExpectation(record, options) {
+  if (record.kind === 'review-bundle' || options.checkpoint || !options.expected) return null;
+  const expected = expectedFor(record, options);
+  if (!expected || !Array.isArray(expected.basis) || !Array.isArray(expected.approval_scope)) return null;
+  // v2 记录必须带消费者独立指定的审查任务上下文，否则交给进程内实现给出明确拒绝
+  if (record.schema_version === 2 && !expected.review_context?.review_task_ref) return null;
+  const root = path.resolve(options.root || ROOT);
+  return nativeDelegationAvailable(root, options, process.env, approvalDelegationRefs(record, expected), NEEDS.approval) ? expected : null;
+}
+// 已落盘的记录或组合包：每一行都有显式期望、且全部引用在根内才委托。
+function delegableFileExpectation(filePath, options) {
+  if (options.checkpoint || !options.expected) return null;
+  const root = path.resolve(options.root || ROOT);
+  const record = readApprovalDocument(filePath, options);
+  if (record.gate_id === 'gate.plan-approved' && boundedPlanApproval(record, options)) return null;
+  const rows = record.kind === 'review-bundle' ? reviewBundleRows(record) : [record];
+  const expected = rows.map(row => expectedFor(row, options));
+  if (rows.some((row, i) => row.gate_id === 'gate.plan-approved' || !expected[i] || !Array.isArray(expected[i].basis) || !Array.isArray(expected[i].approval_scope)
+    || row.schema_version === 2 && !expected[i].review_context?.review_task_ref)) return null;
+  const refs = [filePath, ...rows.flatMap((row, i) => approvalDelegationRefs(row, expected[i]))];
+  return nativeDelegationAvailable(root, options, process.env, refs, NEEDS.approval) ? (record.kind === 'review-bundle' ? expected : expected[0]) : null;
+}
 export function validateApprovalRecord(record, options = {}) {
   if (options.history === true || options.requireApproved === false) {
     validateAssetStructure(record,'approval-record');
@@ -52,11 +75,16 @@ export function validateApprovalRecord(record, options = {}) {
   }
   assertCurrentApprovalReferences(record);
   if (record.gate_id === 'gate.plan-approved' && boundedPlanApproval(record, options)) return validatePlanApproval(record, options);
+  // 唯一实现在 yss：调用方给出显式期望时委托（checkpoint 推出的期望与 Plan 聚合随后分片迁移）。
+  const delegated = delegableExpectation(record, options);
+  if (delegated) return nativeApprovalRecord({root: path.resolve(options.root || ROOT), record, expected: delegated});
   return withValidationPhase({root:options.root || ROOT,purpose:'approval-current',readOnly:true},()=>assertCurrentApproval(record,expectedFor(record,options),options));
 }
 export function validateApprovalRecordFile(filePath, options = {}) {
   if (options.history === true || options.requireApproved === false) return readApprovalHistory(filePath,options);
   assertCurrentApprovalEvidenceRef(filePath);
+  const delegated = delegableFileExpectation(filePath, options);
+  if (delegated) return nativeApprovalRecord({root: path.resolve(options.root || ROOT), file: filePath, expected: delegated});
   return withValidationPhase({root:options.root || ROOT,purpose:'approval-current',readOnly:true},()=>{
     const record = readApprovalDocument(filePath,options);
     assertCurrentApprovalReferences(record);
@@ -81,7 +109,13 @@ export function assertApprovedGateHasValidApproval(gateId,gateState,options = {}
     const file=resolveApprovalRef(gateState.approval_ref,options.checkpointPath || ROOT,options);
     // A gate assertion always consumes current authority. History options only
     // belong to the separate history reader and cannot weaken this boundary.
-    return assertCurrentApproval(loadApprovalRecord(file,gateId,options),approvalExpectationFromState(gateId,gateState,options),{...options,rolesDoc});
+    const record=loadApprovalRecord(file,gateId,options),expected=approvalExpectationFromState(gateId,gateState,options);
+    const root=path.resolve(options.root || ROOT);
+    // 唯一实现在 yss：同一根的默认规则下，把门禁状态算出的期望交给 yss 判定（组合包按 gate 取行）。
+    if (record.kind!=='review-bundle' && !options.read && Array.isArray(expected.basis) && !(record.schema_version===2 && !expected.review_context?.review_task_ref)
+      && nativeDelegationAvailable(root,{...options,defaultAuthorities:options.defaultAuthorities ?? !options.rolesDoc},process.env,[file,...approvalDelegationRefs(record,expected)],NEEDS.approval))
+      return nativeApprovalRecord({root,file,gate:gateId,expected});
+    return assertCurrentApproval(record,expected,{...options,rolesDoc});
   });
 }
 export function assertCheckpointApprovals(checkpoint,checkpointPath,options = {}) {
@@ -91,7 +125,7 @@ export function assertCheckpointApprovals(checkpoint,checkpointPath,options = {}
     for (const [gateId,state] of Object.entries(checkpoint?.gates || {})) {
       if (!known.has(gateId)) approvalError('APPROVAL_CURRENT_INVALID',`未知或已退役门禁: ${gateId}；历史记录只读，不自动迁移批准`);
       if (state.status === 'approved') assertGateChecks(gateId,checkpoint,{...options,registry,rolesDoc});
-      assertApprovedGateHasValidApproval(gateId,state,{...options,checkpoint,checkpointPath,registry,rolesDoc});
+      assertApprovedGateHasValidApproval(gateId,state,{...options,checkpoint,checkpointPath,registry,rolesDoc,defaultAuthorities:!options.rolesDoc && !options.registry});
     }
   });
 }

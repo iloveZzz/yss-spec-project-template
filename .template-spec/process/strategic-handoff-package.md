@@ -54,10 +54,10 @@ Handoff v5 必须声明 `ui_baseline_kind: prototype | existing-ui-baseline`，`
 
 ## Handoff v5 消费者路由
 
-`consumer_routes` 固定表达三种能力，不绑定仓名：`backend-technical-design`、`frontend-engineering-design`、`delivery-coordination`。每条路由记录稳定 `route_id`、`required | optional | not-applicable`、影响引用、入口工作单元、预期输出、依赖和 Context Reconciliation 要求；`optional` / `not-applicable` 必须有原因与证据，不能产生 `ready-for-agent`。
+`consumer_routes` 固定表达三种能力（前端消费者已从生命周期移除，前端路线仅作协议兼容保留，接收方不生成或消费前端草案），不绑定仓名：`backend-technical-design`、`frontend-engineering-design`、`delivery-coordination`。每条路由记录稳定 `route_id`、`required | optional | not-applicable`、影响引用、入口工作单元、预期输出、依赖和 Context Reconciliation 要求；`optional` / `not-applicable` 必须有原因与证据，不能产生 `ready-for-agent`。
 
 - Backend/API/Data 任一影响为真时，backend 路由必须 `required`，入口是 `work-unit.technical-design`；架构只在下游按已批准决定分流 DDD/MVC。
-- Frontend/UI 任一影响为真时，frontend 路由必须 `required`，入口是 `work-unit.frontend-engineering-design`；仅在 backend 路由生效时依赖后端交付。
+- Frontend/UI 任一影响为真时，frontend 路由仍按协议标为 `required`，但本生命周期不再提供其消费入口，由团队另行处理。
 - 任一交付路由生效时 coordination 必须 `required`；全部无实现影响时三条路由均为有证据的 `not-applicable`。
 
 ## 下游接收与逐条追溯
@@ -80,7 +80,6 @@ node .agents/skills/yss-technical-design/scripts/validate-technical-design.mjs <
 
 Handoff v4/v5 后端消费必须绑定 `backend-technical-design` 的 `route_id`，先对账，再由 `yss-technical-design` 依据已批准架构进入自身 `layered-mvc` 分支或调用 `yss-tactical-design`。Handoff v3/v4 仅作历史只读兼容，不修改已冻结包。`tactical_refs` 在 v2 Technical Design 可指向 MVC 或 DDD 分支对象；无战略交接包的 MVC 项目直接消费批准需求，不补造战略 DDD。
 
-前端先验证与交接版本匹配的 Strategic Preflight：Handoff v4 使用 v1，Handoff v5 使用 v2 的 `ui_baseline_kind/ui_baseline_ref`，只允许起草前端工程设计与实现计划，固定返回 `ready_for_agent: false`。最终 Frontend Delivery Acceptance v2（Handoff v4）或 v3（Handoff v5）在 Backend/API/Data 有影响时必须绑定真实 Backend Delivery 收据与版本探测；UI-only 时使用与战略路由一致的 `backend-not-applicable`，此时 `operation_ids` 必须为空。无论哪条路径，当前且已批准的 Slice Contract 仍是实现入口。
 
 ## 消费者反馈闭环
 
@@ -97,7 +96,7 @@ scripts/strategic-feedback verify-adjudication --root <消费者项目根> <adju
 
 ## 维护与同步
 
-共享脚本和包 schema 以主模板为维护源，通过 `scripts/sync-strategic-handoff-tools` 同步到设计/研发模板；源战略 schema 的离线验证副本由该脚本从 canonical `yss-stage-decision/references` 派生。各仓技能仍只编辑 `.agents/skills`，再生成各 runtime 投影与锁。CLI 快照使用各自同步工具，工作树快照用于集成验证，不代表已发布 commit。共享同步仅从主技能注册表投影 `existing_project_profiles` 验证元数据，保留接收模板自己的 Recipe、capability 与创作技能；源注册表及目标有效字节写入工具锁。后端接收模板使用独立视觉 wire runtime，不安装原型创作技能。超出本 profile 职责的技术设计/编译资产在预检中明确标记不支持，战略交接路线不依赖这些后端资产。
+共享脚本和包 schema 以主模板为维护源，作为内核文件由设计/研发 Profile 直接组合使用（不再有同步脚本）；源战略 schema 的离线验证副本由该脚本从 canonical `yss-stage-decision/references` 派生。各仓技能仍只编辑 `.agents/skills`，再生成各 runtime 投影与锁。CLI 快照按来源锁里的覆盖层组合，工作树快照用于集成验证，不代表已发布 commit。共享同步仅从主技能注册表投影 `existing_project_profiles` 验证元数据，保留接收模板自己的 Recipe、capability 与创作技能；源注册表及目标有效字节写入工具锁。后端接收模板使用独立视觉 wire runtime，不安装原型创作技能。超出本 profile 职责的技术设计/编译资产在预检中明确标记不支持，战略交接路线不依赖这些后端资产。
 
 ## 当前用户决定与交接复核
 

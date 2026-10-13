@@ -1,3 +1,4 @@
+import { composeProfileTree } from '../../../../scripts/lib/profile-tree.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -10,7 +11,6 @@ import {lifecycleStatus} from '../../../../scripts/lib/lifecycle-status.mjs';
 import {ROOT} from '../../../../scripts/lib/lifecycle-registry.mjs';
 import {authorizeBackendDelivery} from '../../../../scripts/lib/lifecycle-execution-scope.mjs';
 import {assertCheckpointUserDecisions} from '../../../../scripts/lib/approval-record.mjs';
-import {enforceFrontendDelivery} from '../../../../scripts/lib/frontend-delivery-boundary.mjs';
 
 function fixture(t) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'yss-progression-'));
@@ -36,7 +36,7 @@ function nativeProjection(f, changes = {}) {
 }
 
 async function specialistTaskFixture(t, profile) {
-  const f = fixture(t), source = path.join(ROOT, `submodules/yss-harness-${profile}-agent`);
+  const f = fixture(t), source = composeProfileTree(profile);
   fs.cpSync(source, f.root, {recursive: true, filter: file => !path.relative(source, file).split(path.sep).some(part => ['.git', '.codegraph', 'node_modules'].includes(part))});
   const profileId = profile === 'design' ? 'harness.business-ddd-strategy-handoff' : `harness.${profile}-delivery`, hex = '0'.repeat(64);
   f.write('yss-project.yaml', 'schema_version: 1\nrepository_mode: project-instance\n');
@@ -46,7 +46,6 @@ async function specialistTaskFixture(t, profile) {
   f.write('.work/package-one/map.md', `---\ncheckpoint_ref: ${f.checkpointRef}\n---\n`);
   // This transport fixture isolates task admission. Actual frontend receipt and
   // native terminal verification are covered by their separate integration fixtures.
-  if (profile === 'frontend') f.write('scripts/verify-frontend-delivery', `process.stdout.write(${JSON.stringify(JSON.stringify({result: 'inputs-verified', ready_for_agent: false}))});\n`);
   const module = await import(path.join(f.root, 'scripts/lib/task-package.mjs'));
   const workUnit = profile === 'design' ? 'work-unit.plan-opportunity' : 'work-unit.harness-entry';
   const pkg = module.generateTaskPackageDefaults(profile === 'design' ? 'role.requirements-manager' : 'role.architecture-agent', {
@@ -56,12 +55,11 @@ async function specialistTaskFixture(t, profile) {
     inputs: ['CONTEXT.md'], objective: '检查已完成功能的专职写任务准入', allowed_write_paths: ['.work/package-one/outputs/'], forbidden_actions: ['不得扩大职责'],
     expected_outputs: ['当前功能的有界草稿'], expected_evidence_files: ['CONTEXT.md'], verification_commands: ['synthetic-admission-check'], verification_results: [],
     downstream_consumers: ['synthetic.orchestrator'], convergence: {parent_work_unit: workUnit, convergence_ref: 'checkpoint:synthetic', conflict_escalation: '返回主控'},
-    ...(profile === 'frontend' ? {slice_id: 'synthetic.slice', frontend_delivery: {acceptance_ref: 'synthetic.frontend-acceptance.json'}} : {}),
   });
   return {...f, module, pkg};
 }
 
-for (const profile of ['design', 'backend', 'frontend']) test(`specialist non-Slice ${profile} task admission stops reached/NA writes and retains readonly and legacy paths`, async t => {
+for (const profile of ['design', 'backend']) test(`specialist non-Slice ${profile} task admission stops reached/NA writes and retains readonly and legacy paths`, async t => {
   const f = await specialistTaskFixture(t, profile), before = fs.readFileSync(path.join(f.root, f.checkpointRef));
   const binaryBefore = process.env.YSS_NATIVE_BINARY, digestBefore = process.env.YSS_NATIVE_BINARY_SHA256;
   t.after(() => {
@@ -205,7 +203,7 @@ test('专职身份不能通过手工目标配置扩大成综合Spec后端交付'
   const f = fixture(t);
   f.write(f.configRef, JSON.stringify({...f.config, consumers: [{profile: 'backend', root: path.dirname(f.root), checkpoint_ref: 'checkpoint.yaml'}]}));
   const hex = '0'.repeat(64);
-  f.write('.yss.json', JSON.stringify({schemaVersion: 1, protocolVersion: 1, profile: 'frontend', profileId: 'harness.frontend-delivery', templateSourceState: 'committed', templateCommit: 'a'.repeat(40), snapshotHash: hex, manifestHash: hex, variables: {}, distribution: {}, managedFiles: {}, baselineDigest: createHash('sha256').update('{}').digest('hex')}));
+  f.write('.yss.json', JSON.stringify({schemaVersion: 1, protocolVersion: 1, profile: 'design', profileId: 'harness.business-ddd-strategy-handoff', templateSourceState: 'committed', templateCommit: 'a'.repeat(40), snapshotHash: hex, manifestHash: hex, variables: {}, distribution: {}, managedFiles: {}, baselineDigest: createHash('sha256').update('{}').digest('hex')}));
   assert.throws(() => authorizeBackendDelivery({root: f.root, checkpointRef: f.checkpointRef}), /真实 native Spec/);
 });
 
@@ -406,74 +404,4 @@ test('功能包外的当前Slice由checkpoint显式绑定定位，目录位置�
   }
   f.write(f.checkpointRef,checkpoint);
   assert.throws(()=>readProgressionTarget({root:f.root,assetRef:'.work/package-one/unbound-slice.yaml'}),/显式 feature checkpoint|登记资产/);
-});
-
-function localFrontendTransport(t, changes = {}, mutate = '') {
-  const f=fixture(t),hex='0'.repeat(64),specRef='.work/package-one/spec.md';
-  f.root=fs.realpathSync(f.root);
-  f.write('.yss.json',JSON.stringify({schemaVersion:1,protocolVersion:1,profile:'spec',profileId:'harness.spec-template',templateSourceState:'committed',templateCommit:'a'.repeat(40),snapshotHash:hex,manifestHash:hex,variables:{},distribution:{},managedFiles:{},baselineDigest:createHash('sha256').update('{}').digest('hex')}));
-  f.write('.template-spec/process/harness-profile.yaml','schema_version: 1\nprofile_id: harness.spec-template\n');
-  f.write('.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml',fs.readFileSync(path.join(ROOT,'.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml')));
-  f.write(f.checkpointRef,JSON.stringify({schema_version:1,repository_mode:'project-instance',feature_id:f.config.feature_id,spec_ref:specRef}));
-  f.write(specRef,'# Transport fixture; semantic approval is verified by native integration tests.\n');
-  const coverage={result:'inputs-verified',delivery_mode:'local-approved-assets',root:f.root,checkpoint_ref:f.checkpointRef,spec_ref:specRef,slice_contract_ref:null,slice_id:null,phase:'verification',inputs_current:true,ready_for_agent:false,...changes.coverage};
-  const result={kind:'governance-semantic-verification',status:'passed',read_only:true,approval_created:false,execution_authorization:'not-evaluated',...changes.report,coverage};
-  f.write('fake-yss',`#!${process.execPath}\nimport fs from 'node:fs';\n${mutate}\nprocess.stdout.write(${JSON.stringify(JSON.stringify({command:'contract',status:'ok',code:'OK',outputVersion:1,protocolVersion:1,result}))});\n`);
-  fs.chmodSync(path.join(f.root,'fake-yss'),0o755);
-  const oldBinary=process.env.YSS_NATIVE_BINARY,oldDigest=process.env.YSS_NATIVE_BINARY_SHA256;
-  t.after(()=>{if(oldBinary===undefined)delete process.env.YSS_NATIVE_BINARY;else process.env.YSS_NATIVE_BINARY=oldBinary;if(oldDigest===undefined)delete process.env.YSS_NATIVE_BINARY_SHA256;else process.env.YSS_NATIVE_BINARY_SHA256=oldDigest;});
-  process.env.YSS_NATIVE_BINARY=path.join(f.root,'fake-yss');
-  process.env.YSS_NATIVE_BINARY_SHA256=createHash('sha256').update(fs.readFileSync(process.env.YSS_NATIVE_BINARY)).digest('hex');
-  return {...f,specRef};
-}
-
-test('本地前端验证 transport 从当前登记Spec定位功能，不能跳为NA或授予实施',t=>{
-  const f=localFrontendTransport(t),before=fs.readFileSync(path.join(f.root,f.checkpointRef));
-  const result=enforceFrontendDelivery({kind:'verification',spec_ref:f.specRef},{root:f.root,phase:'verification'});
-  assert.equal(result.delivery_mode,'local-approved-assets');assert.equal(result.ready_for_agent,false);
-  assert.equal(enforceFrontendDelivery({kind:'verification'},{root:f.root,checkpointRef:f.checkpointRef,phase:'verification'}).delivery_mode,'local-approved-assets');
-  assert.equal(enforceFrontendDelivery({contract:{lifecycle_ref:'.template-spec/process/lifecycle-registry.yaml'}},{root:f.root,checkpointRef:f.checkpointRef,phase:'verification'}).delivery_mode,'local-approved-assets');
-  assert.equal(enforceFrontendDelivery({contract:{lifecycle_ref:f.checkpointRef}},{root:f.root,phase:'verification'}).delivery_mode,'local-approved-assets');
-  assert.throws(()=>enforceFrontendDelivery({checkpoint_ref:'other-checkpoint.yaml'},{root:f.root,checkpointRef:f.checkpointRef,phase:'verification'}),/checkpoint绑定冲突/);
-  assert.deepEqual(fs.readFileSync(path.join(f.root,f.checkpointRef)),before);
-  assert.equal(fs.existsSync(path.join(f.root,f.configRef)),false);
-  assert.throws(()=>enforceFrontendDelivery({kind:'verification'},{root:f.root,phase:'verification'}),/checkpoint|登记|绑定/);
-  assert.throws(()=>enforceFrontendDelivery({kind:'verification',spec_ref:'unregistered-spec.md'},{root:f.root,phase:'verification'}),/checkpoint|登记|绑定/);
-});
-
-test('本地前端输入 transport 拒绝错阶段、旧输入和批准能力伪装',t=>{
-  for(const changes of [{coverage:{phase:'contract'}},{coverage:{root:'/another-feature'}},{coverage:{spec_ref:'other-spec.md'}},{coverage:{inputs_current:false}},{coverage:{ready_for_agent:true}},{report:{read_only:false}},{report:{approval_created:true}},{report:{execution_authorization:'ready-for-agent'}}]) {
-    const f=localFrontendTransport(t,changes);
-    assert.throws(()=>enforceFrontendDelivery({spec_ref:f.specRef},{root:f.root,phase:'verification'}),/原生前端输入/);
-  }
-});
-
-test('明确checkpoint不能让另一功能资产复用当前前端成功响应',t=>{
-  const f=localFrontendTransport(t),other='.work/other/spec.md',cp='.work/other/checkpoint.yaml';
-  f.write(other,'# Another feature\n');
-  f.write(cp,JSON.stringify({schema_version:1,repository_mode:'project-instance',feature_id:'feature.other',spec_ref:other}));
-  f.write('.work/other/map.md',`---\ncheckpoint_ref: ${cp}\n---\n`);
-  assert.throws(()=>enforceFrontendDelivery({spec_ref:other},{root:f.root,checkpointRef:f.checkpointRef,phase:'verification'}),/资产与明确checkpoint不属于同一当前功能/);
-});
-
-test('本地前端输入核验期间checkpoint漂移不能复用成功响应',t=>{
-  const f=localFrontendTransport(t,{},"const cp=process.argv[process.argv.indexOf('--checkpoint')+1];fs.appendFileSync(cp,'\\n');");
-  assert.throws(()=>enforceFrontendDelivery({spec_ref:f.specRef},{root:f.root,phase:'verification'}),/漂移/);
-});
-
-test('显式外部前端绑定保留原inputs阶段，不回退本地或新增preflight要求',t=>{
-  const f=localFrontendTransport(t);
-  assert.throws(()=>enforceFrontendDelivery({slice_id:'slice.transport',frontend_delivery:{acceptance_ref:'missing-external.json'}},{root:f.root,phase:'inputs',localPhase:'design'}),error=>/frontend-delivery-blocked/.test(error.message)&&!/frontend-preflight-required/.test(error.message));
-});
-
-test('本地前端入口拒绝错误Profile、未知政策版本和缺Receipt的显式Frontend消费者',t=>{
-  const f=localFrontendTransport(t);
-  f.write(f.configRef,JSON.stringify({...f.config,consumers:[{profile:'frontend',root:path.dirname(f.root),checkpoint_ref:'external-checkpoint.yaml'}]}));
-  assert.throws(()=>enforceFrontendDelivery({spec_ref:f.specRef},{root:f.root,phase:'inputs',localPhase:'verification'}),/显式外部前端消费者.*接收绑定/);
-  f.write('.template-spec/process/harness-profile.yaml','schema_version: 1\nprofile_id: harness.frontend-delivery\n');
-  assert.throws(()=>enforceFrontendDelivery({spec_ref:f.specRef},{root:f.root,phase:'verification'}),/native Spec 与 Harness Profile/);
-  f.write('.template-spec/process/harness-profile.yaml','schema_version: 1\nprofile_id: harness.spec-template\n');
-  const ref='.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml',policy=parseDocument(fs.readFileSync(path.join(f.root,ref),'utf8')).toJS();
-  policy.progression_target.schema_version=2;f.write(ref,JSON.stringify(policy));
-  assert.throws(()=>enforceFrontendDelivery({spec_ref:f.specRef},{root:f.root,phase:'verification'}),/CAPABILITY.*本地前端输入政策/);
 });

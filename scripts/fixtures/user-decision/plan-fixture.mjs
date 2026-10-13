@@ -13,7 +13,8 @@ export function buildPlanFixture(root, { nativeSeed } = {}) {
   if (nativeSeed) copyNativeFixturePolicy(root, nativeSeed);
   mkdirSync(path.join(root, '.template-spec/process'), { recursive: true });
   const write = (ref, value) => { const file = path.resolve(root, ref); mkdirSync(path.dirname(file), { recursive: true }); writeFileSync(file, typeof value === 'string' ? value : JSON.stringify(value, null, 2)); };
-  write('yss-project.yaml', 'schema_version: 1\nrepository_mode: project-instance\n');
+  // 根已经是真实实例时保留它的身份文件；合成根才写最小身份。
+  if (!existsSync(path.join(root, 'yss-project.yaml'))) write('yss-project.yaml', 'schema_version: 1\nrepository_mode: project-instance\n');
   mkdirSync(path.join(root, '.template-spec/agents'), { recursive: true });
   write('.template-spec/agents/issue-tracker.md', '---\ntracker:\n  platform: local-markdown\n  root: .work\n---\n# Legacy Plan fixture\n');
   if (!nativeSeed) for (const ref of ['.template-spec/process/lifecycle-registry.yaml', '.template-spec/process/schemas/plan-review-control.schema.json', '.template-spec/agents/digital-human-roles.yaml', '.template-spec/agents/yss-skill-registry.yaml', '.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml']) write(ref, readFileSync(path.join(ROOT, ref), 'utf8'));

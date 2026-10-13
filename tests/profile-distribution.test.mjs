@@ -32,21 +32,21 @@ const manifest = (overrides = {}) => ({
 const GOOD_PROFILE = manifest({ excludePaths: ['scripts/verify-template', 'scripts/fixtures'] });
 const FILES = ['scripts/verify-template', 'scripts/verify-lifecycle-registry', 'scripts/fixtures/a.json', '.agents/skills/x/SKILL.md', '.agents/skills/x/tests/a.test.mjs', NEED, NEED_BY];
 
-/** 根仓 + 三个 Profile 的最小仓库；profiles 里的函数可改每个 Profile 的策略与文件。 */
+/** 根仓（内核 + 三个 Profile 覆盖层）的最小仓库；tweak 里的函数可改每个 Profile 的策略与覆盖文件。 */
 function workspace(t, tweak = {}) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'yss-profile-distribution-'));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  git(root, 'init', '-q');
   write(root, BUNDLE_PROFILE_REF, `${JSON.stringify({ manifest: manifest({ excludePaths: ['scripts/verify-template', 'scripts/fixtures', NEED] }) })}\n`);
-  for (const profile of ['backend', 'design', 'frontend']) {
-    const repo = path.join(root, 'submodules', `yss-harness-${profile}-agent`);
-    fs.mkdirSync(repo, { recursive: true });
-    git(repo, 'init', '-q');
-    const options = { policy: GOOD_PROFILE, files: FILES, referenceNeed: true, ...(tweak[profile] ?? {}) };
-    write(repo, BUNDLE_PROFILE_REF, `${JSON.stringify({ manifest: options.policy })}\n`);
-    for (const file of options.files) write(repo, file, file === NEED_BY && options.referenceNeed ? `run("node", ["${NEED}", "--check"]);\n` : 'x\n');
-    git(repo, 'add', '-A');
-    git(repo, 'commit', '-q', '-m', 'fixture');
+  for (const file of FILES) write(root, file, file === NEED_BY ? `run("node", ["${NEED}", "--check"]);\n` : 'x\n');
+  for (const profile of ['backend', 'design']) {
+    const options = { policy: GOOD_PROFILE, files: [], referenceNeed: true, ...(tweak[profile] ?? {}) };
+    write(root, `profiles/${profile}/${BUNDLE_PROFILE_REF}`, `${JSON.stringify({ manifest: options.policy })}\n`);
+    for (const file of options.files) write(root, `profiles/${profile}/${file}`, 'x\n');
+    if (!options.referenceNeed) write(root, `profiles/${profile}/${NEED_BY}`, 'x\n');
   }
+  git(root, 'add', '-A');
+  git(root, 'commit', '-q', '-m', 'fixture');
   return root;
 }
 
@@ -79,13 +79,13 @@ test('合规：Profile 排除了根仓的仅模板源脚本，保留 Skill 测�
 
 test('兼容迁移：保留已登记 Skill 测试文件的策略通过，批量排除被拒绝', (t) => {
   const compatible = manifest({ excludePaths: ['scripts/verify-template', 'scripts/fixtures'] });
-  const root = workspace(t, Object.fromEntries(['backend', 'design', 'frontend'].map((profile) => [profile, { policy: compatible }])));
+  const root = workspace(t, Object.fromEntries(['backend', 'design'].map((profile) => [profile, { policy: compatible }])));
   const result = evaluateAll(root);
   assert.equal(result.ok, true, formatReport(result));
   assert.equal(shipped('.agents/skills/x/tests/a.test.mjs', compatible), true);
   for (const suffix of ['test', 'tests']) {
-    const invalid = workspace(t, { frontend: { policy: { ...compatible, excludePathSuffixes: [suffix] } } });
-    const observed = evaluateAll(invalid).reports.find((report) => report.profile === 'frontend');
+    const invalid = workspace(t, { design: { policy: { ...compatible, excludePathSuffixes: [suffix] } } });
+    const observed = evaluateAll(invalid).reports.find((report) => report.profile === 'design');
     assert.ok(observed.findings.some((finding) => finding.kind === 'managed-test-directory-excluded' && finding.path === suffix));
   }
 });
@@ -122,19 +122,43 @@ test('违规：后缀规则会误伤名字恰好以 test 结尾的路径段（�
   assert.equal(shipped('scripts/contest.mjs', manifest({ excludePathSuffixes: ['test'] })), true, 'contest.mjs 以 .mjs 结尾，不会被 test 后缀命中');
 });
 
-test('无法评估时失败而不是通过：Profile 未检出、策略缺失', (t) => {
+test('无法评估时失败而不是通过：覆盖层目录缺失、策略缺失', (t) => {
   const root = workspace(t);
-  fs.rmSync(path.join(root, 'submodules/yss-harness-design-agent'), { recursive: true });
-  assert.throws(() => evaluateAll(root), /design 的 Profile 仓库未检出/);
+  fs.rmSync(path.join(root, 'profiles/design'), { recursive: true });
+  git(root, 'add', '-A');
+  assert.throws(() => evaluateAll(root), /design 缺少覆盖层目录 profiles\/design/);
   const missingPolicy = workspace(t);
-  fs.rmSync(path.join(missingPolicy, 'submodules/yss-harness-backend-agent', BUNDLE_PROFILE_REF));
+  fs.rmSync(path.join(missingPolicy, 'profiles/backend', BUNDLE_PROFILE_REF));
   assert.throws(() => evaluateAll(missingPolicy), /缺少 backend 的分发策略/);
+});
+
+test('违规：已删除的同步机制或 Profile 子模块登记重新出现', (t) => {
+  const root = workspace(t);
+  write(root, 'scripts/sync-profile-skills', 'x\n');
+  write(root, '.gitmodules', '[submodule "submodules/yss-harness-design-agent"]\n\tpath = submodules/yss-harness-design-agent\n');
+  const result = evaluateAll(root);
+  assert.equal(result.ok, false);
+  const kinds = result.reports[0].findings.map((finding) => finding.kind);
+  assert.ok(kinds.includes('retired-machinery-present') && kinds.includes('profile-submodule-present'), kinds.join());
+  assert.match(formatReport(result), /不应重新出现/);
+});
+
+test('FR-006：分发守卫拒绝技能投影和根内旧清单，但允许明确排除及非技能配置', (t) => {
+  const files = ['.claude/skills/x/SKILL.md', '.codex/skills/x/SKILL.md', '.cursor/skills/.yss-skills-manifest.json', '.pi/skills/x/SKILL.md'];
+  const policy = { ...GOOD_PROFILE, allowRootEntries: [...GOOD_PROFILE.allowRootEntries, '.claude', '.codex', '.cursor', '.pi'] };
+  const root = workspace(t, { backend: { policy, files: [...files, '.codex/instructions.md'] } });
+  const result = evaluateAll(root);
+  assert.equal(result.ok, false);
+  assert.deepEqual(result.reports.find((report) => report.profile === 'backend').findings.map((finding) => finding.path).sort(), [...files].sort());
+  assert.match(formatReport(result), /技能投影/);
+  const excluded = { ...policy, excludePaths: [...policy.excludePaths, '.claude/skills', '.codex/skills', '.cursor/skills', '.pi/skills'] };
+  assert.equal(evaluateAll(workspace(t, { backend: { policy: excluded, files: [...files, '.codex/instructions.md'] } })).ok, true);
 });
 
 test('命令行：合规退出 0，违规退出 1 并写 stderr，参数错误退出 1', (t) => {
   const ok = spawnSync(process.execPath, [SCRIPT, '--root', workspace(t)], { encoding: 'utf8' });
   assert.equal(ok.status, 0, ok.stderr);
-  assert.match(ok.stdout, /通过 frontend/);
+  assert.match(ok.stdout, /通过 design/);
   const bad = workspace(t, { backend: { policy: manifest() } });
   const failed = spawnSync(process.execPath, [SCRIPT, '--root', bad], { encoding: 'utf8' });
   assert.equal(failed.status, 1);

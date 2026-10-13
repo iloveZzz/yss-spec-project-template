@@ -6,132 +6,76 @@ import path from "node:path";
 import { loadVerificationProfiles, planTemplateVerification } from "../../scripts/lib/template-verification.mjs";
 import { runCommandToFiles, runGroups } from "../../scripts/lib/template-verification-runner.mjs";
 
-const releaseBaseline = [
-  "pnpm --dir .template-source/tooling/node test",
-  "pnpm --dir .template-source/tooling/node check:vendor",
-  "scripts/sync-skills --check",
-  "scripts/update-skill-lock --check",
-  "scripts/verify-skill-registry",
-  "scripts/verify-skill-governance",
-  "node --check .agents/skills/yss-tactical-design/scripts/validate-tactical-design.mjs",
-  "node --check .agents/skills/yss-tactical-design/tests/run-scenarios.mjs",
-  "node .agents/skills/yss-tactical-design/tests/run-scenarios.mjs",
-  "scripts/verify-yss-dto-openapi-profile",
-  "scripts/verify-yss-dto-openapi-scenarios",
-  "scripts/verify-digital-human-roles",
-  "scripts/verify-digital-human-roles-scenarios",
-  "scripts/verify-approval-record --history .template-spec/templates/approval-record-template.yaml",
-  "scripts/verify-lifecycle-registry",
-  "scripts/verify-context-contract --root . --json",
-  "scripts/verify-context-contract-scenarios",
-  "scripts/verify-context-reconciliation-scenarios",
-  "scripts/verify-plan-requirements-context-scenarios",
-  "scripts/verify-strategic-context-import-scenarios",
-  "scripts/verify-lifecycle-checkpoint .template-spec/process/templates/lifecycle-checkpoint-template.yaml",
-  "scripts/verify-frontend-implementation-evidence --allow-template .template-spec/process/templates/frontend-implementation-plan-template.yaml",
-  "scripts/verify-frontend-implementation-evidence --allow-template .template-spec/process/templates/frontend-implementation-verification-template.yaml",
-  "scripts/verify-subagent-task-package-scenarios",
-  "scripts/verify-digital-human-task-package-scenarios",
-  "scripts/verify-lifecycle-scenarios",
-  "scripts/verify-lifecycle-transition-scenarios",
-  "scripts/verify-maintenance-intensity-scenarios",
-  "scripts/verify-governance-release",
-  "scripts/verify-implementation-path-scenarios",
-  "scripts/verify-repository-scope-scenarios",
-  "scripts/verify-scaffold-generator-scenarios",
-  "scripts/verify-prototype-backend-scaffold-scenarios",
-  "scripts/verify-matt-yss-integration-scenarios",
-  "scripts/verify-yss-implementation-contract-compiler-scenarios",
-  "scripts/generate-yss-skill-boundaries --check",
-  "scripts/audit-yss-backend-skills --check",
-  "scripts/verify-retired-skill-ids",
-  "scripts/verify-yss-ui-scenarios",
-  "scripts/verify-yss-prototype-contract-scenarios",
-  "node .agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs validate-evidence .template-spec/design/templates/prototype-evidence-template.yaml --allow-template",
-  "scripts/verify-openapi-yaml-first-scenarios",
-  "scripts/verify-openapi-json-handoff-scenarios"
-].sort();
-
 const release = planTemplateVerification({ profile: "release", changedFiles: [] });
 assert.equal(release.effective_profile, "release");
-const releaseCommands = new Set(release.commands.map((entry) => entry.command));
-assert.deepEqual(releaseBaseline.filter((command) => !releaseCommands.has(command)), [], "release profile 必须保留旧发布门禁的全部行为命令");
-assert.ok(releaseCommands.has("node scripts/verify-template-verification-scenarios"), "release profile 必须验证三级核验路由本身");
-assert.ok(releaseCommands.has("node --test submodules/create-yss-spec/tests/sync-fast-smoke.test.js"), "release profile 必须保留 CLI 快速场景");
-const frontend = release.commands.filter((entry) => entry.group === "frontend-delivery");
-assert.deepEqual(frontend.map((entry) => entry.lane), ["source-scenarios", "generated-distribution"]);
-assert.equal(frontend.every((entry) => entry.parallel_unless_env.includes("YSS_DEDICATED_INSTANCE_ROOT")), true);
+assert.equal(release.selection.effective, "impact");
+assert.ok(release.commands.some(entry=>entry.command==="node --test tests/cli-retirement.test.mjs"), "发行始终保留 CLI 必需检查");
+const releaseCommands = new Set(release.commands.map(entry=>entry.command));
+assert.ok(!releaseCommands.has("pnpm --dir .template-source/tooling/node test"), "无变化不能隐式扩大到全套测试");
 const instanceManifest = inspectNative('spec').manifest;
 assert.ok(instanceManifest.excludePaths.includes("scripts/lib/template-verification-runner.mjs"), "模板验证 runner 不得分发到 project-instance");
 assert.throws(() => loadVerificationProfiles(`
 schema_version: 1
-profiles: { fast: {}, candidate: {}, release: {} }
+profiles: { fast: {}, release: {} }
 groups:
   invalid:
     commands: [{ run: check, lane: 1 }]
 `), /lane 无效/);
 
-const docsOnly = planTemplateVerification({ profile: "fast", changedFiles: [".template-spec/user-guide/example.md"] });
+const docsOnly = planTemplateVerification({ profile: "fast", selection:"legacy", changedFiles: [".template-spec/user-guide/example.md"] });
 assert.equal(docsOnly.effective_profile, "fast");
 assert.equal(docsOnly.compatibility_required, false);
 assert.equal(release.compatibility_required, true);
-assert.equal(planTemplateVerification({ changedFiles: [".template-source/tooling/node/package.json"] }).compatibility_required, true);
-assert.equal(planTemplateVerification({ changedFiles: [".github/workflows/template-ci.yml"] }).effective_profile, "release");
+assert.throws(()=>planTemplateVerification({changedFiles:['.template-source/tooling/node/package.json']}),/INCOMPLETE_VERIFICATION_INPUTS/);
+assert.throws(()=>planTemplateVerification({changedFiles:['.github/workflows/template-ci.yml']}),/INCOMPLETE_VERIFICATION_INPUTS/);
 assert.ok(docsOnly.groups.includes("hygiene"));
 assert.ok(!docsOnly.groups.includes("skills"), "文档内循环不得运行无关 skill 投影检查");
 
-const skillChange = planTemplateVerification({ profile: "fast", changedFiles: [".agents/skills/maintaining-skills/SKILL.md"] });
+const skillChange = planTemplateVerification({ profile: "fast", selection:"legacy", changedFiles: [".agents/skills/maintaining-skills/SKILL.md"] });
 assert.ok(skillChange.groups.includes("skills"));
 assert.ok(skillChange.groups.includes("hygiene"));
 
 for (const file of [".template-source/distribution/bundle-profile.json", ".template-source/scripts/lib/native-yss.mjs"]) {
-  const cli = planTemplateVerification({ profile: "fast", changedFiles: [file] });
+  const cli = planTemplateVerification({ profile: "fast", selection:"legacy", changedFiles: [file] });
   assert.ok(cli.groups.includes("cli-sync"), `${file} 运行原生 CLI 快速组`);
   assert.equal(cli.effective_profile, "fast");
-  const candidateCli = planTemplateVerification({ profile: "candidate", changedFiles: [file] });
-  assert.ok(candidateCli.groups.includes("candidate-integrity"));
+  const candidateCli = planTemplateVerification({ profile: "release", changedFiles: [file] });
+  assert.ok(candidateCli.commands.some(task=>task.command==="node --test tests/cli-retirement.test.mjs"));
   assert.ok(candidateCli.groups.includes("cli-sync"));
 }
-const otherSubmodule = planTemplateVerification({ profile: "fast", changedFiles: ["submodules/another-agent/src/index.js"] });
+const otherSubmodule = planTemplateVerification({ profile: "fast", selection:"legacy", changedFiles: ["submodules/another-agent/src/index.js"] });
 assert.ok(otherSubmodule.groups.includes("implementation"));
 assert.ok(!otherSubmodule.groups.includes("cli-sync"));
 
-const prototypeContractChange = planTemplateVerification({ profile: "fast", changedFiles: ["scripts/verify-yss-prototype-contract-scenarios"] });
+const prototypeContractChange = planTemplateVerification({ profile: "fast", selection:"legacy", changedFiles: ["scripts/verify-yss-prototype-contract-scenarios"] });
 assert.ok(prototypeContractChange.groups.includes("implementation"), "原型契约脚本变化必须运行实现压力场景");
 
-const candidate = planTemplateVerification({ profile: "candidate", changedFiles: [".template-spec/process/harness-process-tailoring.md"] });
-assert.equal(candidate.effective_profile, "release", "candidate 缺少可信 baseline 时保持旧完整阻断");
-assert.equal(candidate.strategy, "legacy-full");
-assert.ok(candidate.groups.includes("maintenance"));
-assert.ok(candidate.groups.includes("candidate-integrity"));
+const candidate = planTemplateVerification({ profile: "release", changedFiles: [".template-spec/process/harness-process-tailoring.md"] });
+assert.equal(candidate.effective_profile, "release", "release 保持完整阻断");
+assert.equal(candidate.strategy, "release");
+assert.ok(candidate.commands.some(task=>task.selection_reason.includes(".template-spec/process/harness-process-tailoring.md")));
+assert.equal(candidate.selection.effective,"impact");
 
 assert.throws(
-  () => planTemplateVerification({ profile: "candidate", changedFiles: ["new-unmapped-root/file.txt"] }),
+  () => planTemplateVerification({ profile: "release", changedFiles: ["new-unmapped-root/file.txt"] }),
   /UNKNOWN_VERIFICATION_PATH|未映射|未知路径/,
   "未知路径须在计划阶段拒绝，不能生成看似完整的可执行计划",
 );
 
-const core = planTemplateVerification({ profile: "fast", changedFiles: ["scripts/lib/template-verification.mjs"] });
-assert.equal(core.effective_profile, "release");
-assert.match(core.escalation_reason, /核心核验/);
-assert.equal(core.source_requirement, 'current', '快速检查自动升级强度时仍验证当前工作树来源');
-assert.equal(core.commands.length, release.commands.length, '自动升级不得裁剪完整验证命令');
-assert.ok(core.commands.some(x => x.command === 'scripts/verify-strategic-handoff-tools-lock'));
-assert.ok(!core.commands.some(x => x.command.endsWith('--require-committed')));
-for (const profile of ['candidate', 'release']) {
-  const strict = planTemplateVerification({profile, changedFiles: ['scripts/lib/template-verification.mjs']});
-  assert.equal(strict.source_requirement, 'committed');
-  assert.ok(strict.commands.some(x => x.command === 'scripts/verify-strategic-handoff-tools-lock --require-committed'));
-}
+const core = planTemplateVerification({profile:'fast',changedFiles:['scripts/lib/template-verification.mjs']});
+assert.equal(core.effective_profile,'fast');assert.equal(core.source_requirement,'current');
+assert.ok(core.commands.some(row=>row.command.includes('verification-selection.test.mjs')));
+const strict=planTemplateVerification({profile:'release',changedFiles:['scripts/lib/template-verification.mjs']});
+assert.equal(strict.source_requirement,'committed');assert.ok(strict.commands.some(row=>row.command.includes('verification-selection.test.mjs')));assert.ok(release.commands.every(required=>strict.commands.some(task=>task.id===required.id)));
 assert.throws(() => loadVerificationProfiles(`
 schema_version: 1
-profiles: { fast: {}, candidate: {}, release: {} }
+profiles: { fast: {}, release: {} }
 groups:
   invalid:
     commands: [{ run: check, require_committed_for: [fast] }]
 `), /require_committed_for/);
 
-const entryRule = planTemplateVerification({ profile: "candidate", changedFiles: ["AGENTS.md"] });
+const entryRule = planTemplateVerification({ profile: "release", changedFiles: ["AGENTS.md"] });
 assert.equal(entryRule.effective_profile, "release", "Agent 入口规则变化必须 fail-safe 到完整门禁");
 
 const schedulerPlan = {
@@ -205,4 +149,4 @@ try {
   rmSync(logRoot, { recursive: true, force: true });
 }
 
-process.stdout.write("模板三级核验路由场景验证通过\n");
+process.stdout.write("模板 fast/release 核验路由场景验证通过\n");

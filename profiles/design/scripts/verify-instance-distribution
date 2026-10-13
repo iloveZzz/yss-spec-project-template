@@ -1,0 +1,14 @@
+#!/usr/bin/env node
+import { readRepositoryMode } from "./lib/repository-mode.mjs";
+import { validateInstanceDistribution } from "./lib/instance-distribution.mjs";
+
+try {
+  const mode = readRepositoryMode();
+  const result = validateInstanceDistribution({ mode });
+  process.stdout.write(
+    `实例分发清单校验通过: ${result.profile_id} / ${result.cli_package}（${mode}，禁止路径 ${result.forbidden_count}）\n`,
+  );
+} catch (error) {
+  process.stderr.write(`${error.message}\n`);
+  process.exitCode = 1;
+}

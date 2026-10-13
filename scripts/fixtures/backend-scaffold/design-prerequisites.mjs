@@ -1,13 +1,14 @@
 // Synthetic design and approval sources for generator mechanism tests only.
 import { countersignRuleForGate, loadDigitalHumanRoles } from "../../lib/digital-human-roles.mjs";
 import { attachPlatformFixture } from "./platform-fixture.mjs";
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { cpSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { buildDecisionFixture } from "../user-decision/build-fixture.mjs";
 import { mvcFixture } from "../../../.agents/skills/yss-technical-design/tests/fixtures.mjs";
 import { technicalDigest } from "../../../.agents/skills/yss-technical-design/scripts/validate-technical-design.mjs";
 import { hash, read } from "../../lib/strategic-handoff-io.mjs";
+import { makeRoot } from "../../../tests/helpers/yss-instance.mjs";
 
 function write(root, ref, value) {
   const file = path.join(root, ref);
@@ -16,8 +17,12 @@ function write(root, ref, value) {
   return { ref, file, digest: hash(readFileSync(file)) };
 }
 
-function approvedTechnicalDesign(root, contract) {
+function approvedTechnicalDesign(root, contract, nativeContext) {
   const data = mvcFixture(root);
+  if (nativeContext !== undefined) {
+    write(root, "CONTEXT.md", nativeContext);
+    data.inputs = data.inputs.map(item => item.kind === "context" ? { ...item, digest: hash(readFileSync(path.join(root, item.ref))) } : item);
+  }
   data.status = "approved";
   data.technical_design_id = `technical-design.${contract.project_name}`;
   data.architecture = {
@@ -43,8 +48,24 @@ function approvedTechnicalDesign(root, contract) {
 }
 
 export function attachDesignPrerequisites(root, contract, { dataImpact = "not-applicable", apiImpact = "not-applicable" } = {}) {
+  let nativeContext;
+  if (apiImpact === "required") {
+    // The native validator consumes the same project identity as an installed instance.
+    const nativeIdentity = makeRoot("yss-scaffold-api-identity-");
+    try {
+      for (const ref of [
+        "yss-project.yaml", "CONTEXT.md", ".template-spec/process/harness-profile.yaml",
+        ".template-spec/process/lifecycle-registry.yaml", ".template-spec/agents/digital-human-roles.yaml",
+      ]) {
+        write(root, ref, readFileSync(path.join(nativeIdentity, ref), "utf8"));
+      }
+      // Approval and user-decision consumers validate their own schemas too.
+      cpSync(path.join(nativeIdentity, ".template-spec/process/schemas"), path.join(root, ".template-spec/process/schemas"), { recursive: true });
+      nativeContext = readFileSync(path.join(nativeIdentity, "CONTEXT.md"), "utf8");
+    } finally { rmSync(nativeIdentity, { recursive: true, force: true }); }
+  }
   attachPlatformFixture(root, contract);
-  const technical = approvedTechnicalDesign(root, contract);
+  const technical = approvedTechnicalDesign(root, contract, nativeContext);
   const assessment = write(root, "data-impact.json", { schema_version: 1, backend: true, data: dataImpact === "required", project_id: contract.project_name });
   const review = write(root, "data-review.md", "数据影响和数据架构评审测试证据；不构成真实项目批准。\n");
   const dataDecision = {

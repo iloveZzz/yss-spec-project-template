@@ -76,7 +76,7 @@ export function authorizeBackendDelivery({root = ROOT, checkpointRef, assetRef, 
   const external = intent.consumers.some(consumer => consumer.profile === 'backend' && path.resolve(consumer.root) !== intent.root);
   const existing = readOnly && existsSync(safe(root, terminalRef));
   const existingLocal = existing && read(root, terminalRef).delivery_mode === 'local-evidence';
-  const business = !external && (['backend-deliverable', 'frontend-accepted', 'business-accepted'].includes(intent.target) || existingLocal);
+  const business = !external && (['backend-deliverable', 'business-accepted'].includes(intent.target) || existingLocal);
   if (business) {
     check(contract.progression_target?.completion_policy?.['business-accepted']?.conditional_required_checks?.['backend-delivery'] === 'backend-api-data-impact', '当前业务政策缺少本地后端条件核验');
     const sliceRef = checkpoint.human_review?.implementation?.slice_contract_ref || checkpoint.review_input?.slice_contract_ref

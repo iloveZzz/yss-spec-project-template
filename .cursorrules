@@ -2,7 +2,7 @@
 
 先读取根目录 `AGENTS.md` 与 `yss-project.yaml`。技能身份、别名、触发条件和默认可发现性以
 `.template-spec/agents/yss-skill-registry.yaml` 为准；`.agents/skills` 是共享技能权威内容，
-`.cursor/skills` 是生成投影，不得手工修改。
+Codex、Cursor、Pi、Claude Code 都直接读取它，没有生成投影。
 
 生产 UI 实现先消费当前 Slice Implementation Contract，再进入 `yss-ui` 和命中的 canonical skill；
 完整业务页面使用 `yss-ui-business-page-generation`。原型阶段使用 `yss-prototype-stage`，不得调用 `yss-ui`。

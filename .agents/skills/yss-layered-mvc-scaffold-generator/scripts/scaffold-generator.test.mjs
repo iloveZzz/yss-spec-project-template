@@ -3,7 +3,7 @@ import { referenceExample } from "../../../../scripts/lib/scaffold-reference-exa
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { spawnSync } from "node:child_process";
-import { cp, mkdtemp, mkdir, readFile, readdir, rm, stat, writeFile } from "node:fs/promises";
+import { cp, mkdtemp, mkdir, readFile, readdir, realpath, rm, stat, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
@@ -22,7 +22,7 @@ const capabilityModules = {
 };
 
 async function fixture(t, { profile = capabilityModules.basic, architectureProfile = "layered-mvc-service", skillId = "yss-layered-mvc-scaffold-generator", schemaVersion = 4, dataImpact = "not-applicable", apiImpact = "not-applicable" } = {}) {
-  const root = await mkdtemp(path.join(os.tmpdir(), "yss-layered-mvc-"));
+  const root = await realpath(await mkdtemp(path.join(os.tmpdir(), "yss-layered-mvc-")));
   t.after(() => rm(root, { recursive: true, force: true }));
   const output = path.join(root, "backend");
   await mkdir(output);

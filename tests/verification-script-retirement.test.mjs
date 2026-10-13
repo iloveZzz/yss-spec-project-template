@@ -1,4 +1,6 @@
 import test from 'node:test';
+import {loadLegacyManifest} from '../.template-source/scripts/lib/legacy-verification.mjs';
+import {composeProfileTree} from '../scripts/lib/profile-tree.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -64,7 +66,8 @@ test('未知迁移、缺失真实目标和链接逃逸不能回落到已退役�
 });
 
 test('冻结legacy清单和覆盖身份不因入口迁移被改写',()=>{
-  const ref=new URL('../.template-source/process/template-verification-legacy.json',import.meta.url),manifest=JSON.parse(fs.readFileSync(ref));
+  // 本历史清单在现役树中已退役，只读取明确包含它的固定提交。
+  const root=new URL('..',import.meta.url).pathname,commit='0abbe49ee4cfd8608beab95243520888228dad41',manifest=loadLegacyManifest(root,commit);
   const {coverage_digest,...body}=manifest;
   assert.equal(createHash('sha256').update(JSON.stringify(body)).digest('hex'),coverage_digest);
   assert.equal(coverage_digest,'3aa58425b03fda2291ebc78eea62381c602cd4592d4c4db87f197f82da9705f4');
@@ -135,21 +138,29 @@ test('第三批兼容壳固定指向核心库或canonical原型入口，保留�
   }
 });
 
-test('第三批分发保留替代核心库并且当前阶段直接安装新路径',()=>{
+test('第三批分发保留替代核心库并且当前阶段直接安装新路径',t=>{
   const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
-  const read=ref=>JSON.parse(fs.readFileSync(path.join(root,ref),'utf8'));
-  for(const ref of ['submodules/yss-harness-design-agent/.template-source/distribution/bundle-profile.json','submodules/yss-cli/internal/bundle/rules/design.json']){
-    const policy=read(ref);
+  // yss-cli 不再是 submodule（由 yss-cli-pin.json 固定）：它的内置策略从显式提供的固定源码目录读取，没有提供就跳过这一部分。
+  const cliSource=process.env.YSS_NATIVE_SOURCE_ROOT;
+  const readFrom=(base,ref)=>JSON.parse(fs.readFileSync(path.join(base,ref),'utf8'));
+  const read=ref=>readFrom(root,ref);
+  if(!cliSource)t.diagnostic('未提供 YSS_NATIVE_SOURCE_ROOT：跳过 yss-cli 内置策略 rules/design.json、rules/spec.json 的核对');
+  const designPolicies=[['profiles/design/.template-source/distribution/bundle-profile.json',()=>read('profiles/design/.template-source/distribution/bundle-profile.json')]];
+  if(cliSource)designPolicies.push(['yss-cli internal/bundle/rules/design.json',()=>readFrom(cliSource,'internal/bundle/rules/design.json')]);
+  for(const [ref,load] of designPolicies){
+    const policy=load();
     for(const name of ['implementation-path-policy','repository-scope-policy']){
       assert.ok(!policy.manifest.excludePaths.includes(`scripts/lib/${name}.mjs`),`${ref} must retain the replacement library`);
       assert.ok(!policy.manifest.excludePaths.includes(`scripts/${name}`),`${ref} must not require the retired shell`);
     }
   }
-  const manifest=fs.readFileSync(path.join(root,'submodules/yss-harness-design-agent/.template-spec/process/instance-distribution-manifest.yaml'),'utf8');
+  const manifest=fs.readFileSync(path.join(composeProfileTree('design'),'.template-spec/process/instance-distribution-manifest.yaml'),'utf8');
   for(const name of ['implementation-path-policy','repository-scope-policy']) assert.ok(!manifest.includes(`- scripts/lib/${name}.mjs`),'Design instance manifest must retain replacement libraries');
-  for(const ref of ['.template-source/distribution/bundle-profile.json','submodules/yss-cli/internal/bundle/rules/spec.json']){
-    const policy=read(ref);
-    assert.ok(policy.stages['stage.system-data-engineering'].scripts.includes('scripts/lib/repository-scope-policy.mjs'));
+  const specPolicies=[['.template-source/distribution/bundle-profile.json',()=>read('.template-source/distribution/bundle-profile.json')]];
+  if(cliSource)specPolicies.push(['yss-cli internal/bundle/rules/spec.json',()=>readFrom(cliSource,'internal/bundle/rules/spec.json')]);
+  for(const [ref,load] of specPolicies){
+    const policy=load();
+    assert.ok(policy.stages['stage.system-data-engineering'].scripts.includes('scripts/lib/repository-scope-policy.mjs'),ref);
     assert.ok(policy.stages['stage.vertical-slice-implementation'].scripts.includes('scripts/lib/implementation-path-policy.mjs'));
   }
 });

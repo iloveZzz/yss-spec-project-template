@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
-import {createArtifactCoordinator,sourceTuple,validateArtifact,installedTreeDigest,produceCliArtifact,prepareCliSourceConsumer,validateCliSourceConsumer,verifyInstalledCliMigration} from '../.template-source/scripts/lib/verification-artifacts.mjs';
+import {collectReleaseSources,createArtifactCoordinator,sourceTuple,validateArtifact,installedTreeDigest,produceCliArtifact,prepareCliSourceConsumer,validateCliSourceConsumer,verifyInstalledCliMigration} from '../.template-source/scripts/lib/verification-artifacts.mjs';
 import {NATIVE_PROFILES,nativeBinary,nativeDigest as hash,inspectNative,runNative} from '../.template-source/scripts/lib/native-yss.mjs';
 const temporary=t=>{const dir=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'native-artifacts-')));t.after(()=>fs.rmSync(dir,{recursive:true,force:true}));return dir;};
 const source=(binarySha)=>({namespace:'candidate-release',family:'spec',cli_commit:'1'.repeat(40),template_commit:'2'.repeat(40),core_commit:'3'.repeat(40),package_name:'yss',version:'1.0.0-alpha.3',template_version:'git:'+'2'.repeat(40),source_contract_version:2,protocol_version:1,snapshot_hash:'4'.repeat(64),manifest_hash:'5'.repeat(64),bundle_hash:'6'.repeat(64),binary_sha256:binarySha});
@@ -54,4 +54,60 @@ test('四 Profile 真实原生受管升级执行非空事务、重新规划幂�
   for(const action of ['plan','apply','rollback'])assert.ok(commands.some(row=>row.file===artifact.binary&&row.args[0]==='migrate'&&row.args[1]===action),`${family}: ${action}`);
   assert.equal(commands.filter(row=>row.args[0]==='migrate'&&row.args[1]==='plan').length,2);
  }
+});
+
+
+test('发行来源适配器以实际装配调用解除维护 pin 环，并保留原始输入、平台和完整 inspect 拒绝',t=>{
+ // Synthetic Go producer/assembler exercise this adapter only. They do not
+ // supply native acceptance or replace the real tools/package validator.
+ const base=temporary(t),cli=path.join(base,'cli'),root=path.join(base,'template'),evidence=path.join(base,'source-evidence');fs.mkdirSync(cli);fs.mkdirSync(root);
+ const git=(cwd,...args)=>{const r=spawnSync('git',args,{cwd,encoding:'utf8'});assert.equal(r.status,0,r.stderr);return r.stdout.trim();};
+ const put=(cwd,ref,bytes)=>{const file=path.join(cwd,ref);fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,bytes);return file;};
+ const commit=cwd=>{git(cwd,'add','.');git(cwd,'-c','user.name=source fixture','-c','user.email=fixture@example.invalid','commit','-qm','source fixture');return git(cwd,'rev-parse','HEAD');};
+ for(const cwd of [cli,root])git(cwd,'init','-q');
+ put(cli,'go.mod','module github.com/iloveZzz/yss-cli\n\ngo 1.27.1\n');
+ put(cli,'main.go',fs.readFileSync(new URL('../.template-source/scripts/tests/fixtures/native-release.go',import.meta.url)));
+ put(cli,'tools/package/main.go',`package main
+import("archive/tar";"compress/gzip";"crypto/sha256";"encoding/json";"fmt";"os";"path/filepath";"sort";"strings")
+func main(){if len(os.Args)!=6||os.Args[1]!="--native-manifest"||os.Args[3]!="--required-platforms"{panic("wrong assembler invocation")};if os.Getenv("GOFLAGS")!=""||os.Getenv("GOWORK")!="off"{panic("unfixed Go environment")};raw,e:=os.ReadFile(os.Args[2]);if e!=nil{panic(e)};var v map[string]any;if e=json.Unmarshal(raw,&v);e!=nil{panic(e)};if v["fixtureFail"]==true{panic("synthetic assembler refusal")};out:=os.Args[5];if e=os.Mkdir(out,0700);e!=nil{panic(e)};platforms:=strings.Split(os.Args[4],",");sort.Strings(platforms);manifest:=v["fixtureManifest"];b,_:=json.Marshal(manifest);archive:="fixture.tar.gz";f,e:=os.Create(filepath.Join(out,archive));if e!=nil{panic(e)};g:=gzip.NewWriter(f);w:=tar.NewWriter(g);w.WriteHeader(&tar.Header{Name:"release-manifest.json",Mode:0644,Size:int64(len(b))});w.Write(b);w.Close();g.Close();f.Close();a,_:=os.ReadFile(filepath.Join(out,archive));m:=manifest.(map[string]any);proof:=map[string]any{"schemaVersion":2,"version":v["cliVersion"],"cliCommit":v["cliCommit"],"sourceState":"committed","stableReady":true,"qualificationScope":"local-platform-impacted-consumers","inputManifestSha256":fmt.Sprintf("%x",sha256.Sum256(raw)),"sourceLockSha256":v["sourceLockSha256"],"requiredPlatforms":platforms,"pending":[]string{},"artifacts":[]any{map[string]any{"platform":m["platform"],"archive":archive,"sha256":fmt.Sprintf("%x",sha256.Sum256(a)),"binarySha256":m["binarySha256"]}}};b,_=json.Marshal(proof);os.WriteFile(filepath.Join(out,"checksums.json"),b,0600);if v["fixtureDrift"]==true{os.WriteFile(os.Args[2],append(raw,' '),0600)}}`);
+ const cliCommit=commit(cli),pinCommit='f'.repeat(40),platform=`${process.platform==='win32'?'windows':process.platform}/${process.arch==='x64'?'amd64':process.arch}`;
+ put(root,'.template-source/distribution/yss-cli-pin.json',JSON.stringify({schema_version:1,repository:'https://example.test/yss-cli.git',version:'1.3.5',commit:pinCommit,go_version:'1.27.1',build:'go build',binaries:{[platform.replace('/','-')]:{sha256:'0'.repeat(64)}}}));
+ const templateCommit=commit(root),binary=path.join(base,'yss-fixture'),built=spawnSync('go',['build','-trimpath','-ldflags',`-X main.cliCommit=${cliCommit} -X main.templateCommit=${templateCommit} -X main.designCommit=${templateCommit} -X main.backendCommit=${templateCommit}`,'-o',binary,'.'],{cwd:cli,env:{...process.env,CGO_ENABLED:'0'},encoding:'utf8'});assert.equal(built.status,0,built.stderr);
+ const environment={...process.env,YSS_NATIVE_BINARY:binary,YSS_NATIVE_BINARY_SHA256:hash(fs.readFileSync(binary)),YSS_NATIVE_SOURCE_ROOT:cli};delete environment.YSS_NATIVE_BINARY_OVERRIDE;
+ for(const key of Object.keys(environment))if(key.startsWith('YSS_RELEASE_'))delete environment[key];
+ assert.throws(()=>collectReleaseSources({root,commit:templateCommit,environment}),/与固定版本不符/,'没有装配证据不能越过 P');
+ const version=runNative(['version'],{environment}),inspections=Object.fromEntries(NATIVE_PROFILES.map(p=>[p,runNative(['bundle','inspect','--profile',p],{environment})]));
+ const descriptor=(ref,bytes)=>{put(base,ref,bytes);return {path:ref,sha256:hash(bytes)};};
+ const versionRef=descriptor('version.json',JSON.stringify(version)),receipt={version:versionRef,bundleCommands:NATIVE_PROFILES.map(p=>({id:`native-inspect-${p}`,report:descriptor(`${p}.json`,JSON.stringify(inspections[p]))}))};
+ const receiptRef=descriptor('receipt.json',JSON.stringify(receipt)),gateRef=descriptor('gate.json','synthetic adapter gate'),inputFile=path.join(base,'native-input.json');
+ const manifest={cliCommit,cliVersion:version.result.version,protocolVersion:version.result.protocolVersion,binarySha256:environment.YSS_NATIVE_BINARY_SHA256,sourceLockSha256:'1'.repeat(64),nativeReceiptSha256:receiptRef.sha256,releaseGateSha256:gateRef.sha256,stableReady:true,platform,requiredPlatforms:[platform],bundles:Object.fromEntries(NATIVE_PROFILES.map(p=>[p,inspections[p].result]))};
+ const original={cliCommit,cliVersion:version.result.version,sourceLockSha256:manifest.sourceLockSha256,releaseGate:gateRef,artifacts:[{platform,binary:{path:path.basename(binary),sha256:manifest.binarySha256},receipt:receiptRef}],fixtureManifest:manifest};
+ const env={...environment,YSS_RELEASE_NATIVE_INPUT:inputFile,YSS_RELEASE_NATIVE_INPUT_SHA256:'',YSS_RELEASE_REQUIRED_PLATFORMS:platform,YSS_RELEASE_SOURCE_EVIDENCE_DIR:evidence};
+ const persist=value=>{fs.writeFileSync(inputFile,JSON.stringify(value));env.YSS_RELEASE_NATIVE_INPUT_SHA256=hash(fs.readFileSync(inputFile));};
+ const collect=overrides=>collectReleaseSources({root,commit:templateCommit,environment:{...env,...overrides}});
+ persist(original);const accepted=collect({GOFLAGS:'-overlay=/not-an-input.json',GOWORK:'/not-a-workspace'});
+ assert.equal(accepted.source_authority.kind,'native-assembly');assert.equal(accepted.source_authority.maintenance_pin_commit,pinCommit);assert.ok(accepted.entries.every(e=>e.cli_commit===cliCommit&&e.template_commit===templateCommit));
+ const sortedPlatforms=[...new Set([platform,'darwin/arm64','windows/amd64'])].sort(),reversedScope=[...sortedPlatforms].reverse().join(',');
+ const multiPlatform=structuredClone(original);multiPlatform.fixtureManifest.requiredPlatforms=sortedPlatforms;persist(multiPlatform);
+ const reversed=collect({YSS_RELEASE_REQUIRED_PLATFORMS:reversedScope});assert.deepEqual(reversed.source_authority.required_platforms,sortedPlatforms,'同一平台集合倒序输入应按现役 Go 装配排序匹配');
+ persist(original);
+ assert.throws(()=>collect({YSS_RELEASE_NATIVE_INPUT_SHA256:'0'.repeat(64)}),/原始字节摘要/);
+ assert.throws(()=>collect({YSS_NATIVE_BINARY_OVERRIDE:'1'}),/不接受/);
+ assert.throws(()=>collect({YSS_RELEASE_REQUIRED_PLATFORMS:platform+','+platform}),/平台范围非法/);
+ assert.throws(()=>collect({YSS_RELEASE_REQUIRED_PLATFORMS:platform+',unknown/amd64'}),/平台范围非法/);
+ assert.throws(()=>collect({YSS_RELEASE_SOURCE_EVIDENCE_DIR:path.join(root,'evidence')}),/两个来源仓外/);
+ const evidenceLink=path.join(base,'evidence-link');fs.symlinkSync(root,evidenceLink);assert.throws(()=>collect({YSS_RELEASE_SOURCE_EVIDENCE_DIR:path.join(evidenceLink,'must-not-create')}),/不得经过链接/);assert.equal(fs.existsSync(path.join(root,'must-not-create')),false);
+ const link=path.join(base,'input-link.json');fs.symlinkSync(inputFile,link);assert.throws(()=>collect({YSS_RELEASE_NATIVE_INPUT:link}),/无链接/);
+ for(const [change,pattern]of [
+  [v=>v.fixtureFail=true,/装配失败/],
+  [v=>v.fixtureDrift=true,/原始字节摘要/],
+  [v=>v.fixtureManifest.cliCommit='a'.repeat(40),/manifest.*不一致/],
+  [v=>v.fixtureManifest.bundles.spec.manifestHash='0'.repeat(64),/完整 inspect/],
+  [v=>v.artifacts[0].binary.path='../escape',/依赖路径越界/],
+ ]){const value=structuredClone(original);change(value);persist(value);assert.throws(()=>collect(),pattern);}
+ persist(original);const saved=fs.readFileSync(path.join(base,'spec.json'));fs.appendFileSync(path.join(base,'spec.json'),' ');assert.throws(()=>collect(),/原始字节摘要/);fs.writeFileSync(path.join(base,'spec.json'),saved);
+ put(cli,'uncommitted','dirty');assert.throws(()=>collect(),/干净固定/);fs.rmSync(path.join(cli,'uncommitted'));
+ put(root,'uncommitted','dirty');assert.throws(()=>collect(),/固定 T.*干净/);fs.rmSync(path.join(root,'uncommitted'));
+ assert.throws(()=>collectReleaseSources({root,commit:'a'.repeat(40),environment:env}),/Bundle 与固定模板来源/);
+ const logs=fs.readdirSync(evidence).map(ref=>JSON.parse(fs.readFileSync(path.join(evidence,ref,'source-verification.json'))));assert.ok(logs.some(row=>row.status==='passed'&&row.commands[0].exit_code===0));assert.ok(logs.some(row=>row.status==='failed'&&row.commands[0].exit_code!==0));assert.ok(logs.every(row=>row.commands.every(command=>Number.isInteger(command.exit_code)&&command.stdout.sha256&&command.stderr.sha256)));
 });

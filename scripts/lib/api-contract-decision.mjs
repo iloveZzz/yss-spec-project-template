@@ -1,11 +1,12 @@
 import {readContractSource} from './contract-source.mjs';
-import { readFileSync, withValidationPhase } from "./validation-phase.mjs";
+import { existsSync, readFileSync, withValidationPhase } from "./validation-phase.mjs";
 import { parseSliceYaml } from "./slice-contract.mjs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseDocument } from "../vendor/yaml.mjs";
 import { validateJsonSchema } from "./json-schema.mjs";
-import { openApiDigest, resolveOpenApiRef, validateOpenApiDraftValidationRecord } from "./openapi-draft-validation.mjs";
+import { openApiDigest, resolveOpenApiRef } from "./openapi-draft-validation.mjs";
+import { nativeContractVerify, assertNativeCapabilities, NEEDS } from "./native-evidence.mjs";
 
 const TEMPLATE_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const SCHEMA = path.join(TEMPLATE_ROOT, ".template-spec/process/schemas/api-contract-decision.schema.json");
@@ -52,8 +53,22 @@ function validate(binding, { root = TEMPLATE_ROOT } = {}) {
     decision.freeze={...decision.freeze,draft_ref:decision.openapi.ref,draft_digest:decision.openapi.digest};
   }
   for (const ref of decision.draft_review.evidence_refs) readBound(projectRoot, ref, "OpenAPI Draft Review 证据");
-  const validated = validateOpenApiDraftValidationRecord(validation.file, { root: projectRoot });
-  if (validated.record.draft.ref !== decision.openapi.ref || validated.draftDigest !== decision.openapi.digest) fail("OpenAPI Validation 未绑定当前权威 YAML");
+  assertNativeCapabilities(NEEDS.openapiValidation);
+  const verified = nativeContractVerify({ root: projectRoot, kind: 'openapi-validation', file: validation.file });
+  if (verified.exitCode !== 0) fail(`OpenAPI Validation: ${verified.message}`);
+  // 将原生读取的文件纳入外层验证阶段，防止校验后到工作流返回前发生漂移。
+  const inputs = verified.envelope.result?.inputs;
+  if (!Array.isArray(inputs) || ![decision.validation_record.ref, decision.openapi.ref].every(ref => inputs.some(input => input.root === projectRoot && input.ref === ref && input.descriptor?.type === 'file'))) fail('NATIVE_PROTOCOL: OpenAPI 校验缺少输入依据');
+  for (const input of inputs) {
+    if (input.root !== projectRoot || typeof input.ref !== 'string' || path.isAbsolute(input.ref) || input.ref.includes('\\') || input.ref.split('/').some(part => !part || part === '.' || part === '..')) fail('NATIVE_PROTOCOL: OpenAPI 校验输入越界');
+    if (input.descriptor?.type === 'file') {
+      if (openApiDigest(readFileSync(resolveOpenApiRef(projectRoot, input.ref))) !== `sha256:${input.descriptor.digest}`) fail(`VALIDATION_INPUT_CHANGED: ${input.ref}`);
+    } else if (input.descriptor?.type === 'missing') {
+      if (existsSync(path.resolve(projectRoot, input.ref))) fail(`VALIDATION_INPUT_CHANGED: ${input.ref}`);
+    } else fail('NATIVE_PROTOCOL: OpenAPI 校验输入类型未知');
+  }
+  const validated = verified.envelope.result?.coverage?.openapi_validation;
+  if (validated?.template !== false || validated.draft_ref !== decision.openapi.ref || validated.draft_sha256 !== decision.openapi.digest) fail("OpenAPI Validation 未绑定当前权威 YAML");
   if (decision.draft_review.draft_ref !== decision.openapi.ref || decision.draft_review.draft_digest !== decision.openapi.digest || decision.draft_review.blocking_findings.length) fail("OpenAPI Draft Review 未批准当前权威 YAML");
   if (decision.freeze.version !== decision.openapi.version || decision.freeze.draft_ref !== decision.openapi.ref || decision.freeze.draft_digest !== decision.openapi.digest) fail("OpenAPI Freeze 未绑定当前权威 YAML 版本和摘要");
   return { decision, openapi: decision.openapi, binding: { ref: binding.ref, version: binding.version, digest: binding.digest, impact: decision.impact } };

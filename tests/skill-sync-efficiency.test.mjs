@@ -1,52 +1,35 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { cpSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, rmSync, statSync, symlinkSync, writeFileSync, chmodSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import os from "node:os";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
-test("write-mode Skill sync skips identical projections and repairs raw structure or mode drift", async () => {
+for (const sourceRoot of [".", "profiles/backend", "profiles/design"]) test(`FR-006：${sourceRoot} Skill 同步不创建任何投影目录，检查也通过`, async () => {
   const root = mkdtempSync(path.join(os.tmpdir(), "yss-skill-sync-"));
   try {
     mkdirSync(path.join(root, "scripts/lib"), { recursive: true });
-    cpSync(path.resolve("scripts/lib/skill-supply-chain.mjs"), path.join(root, "scripts/lib/skill-supply-chain.mjs"));
+    cpSync(path.resolve(sourceRoot, "scripts/lib/skill-supply-chain.mjs"), path.join(root, "scripts/lib/skill-supply-chain.mjs"));
     const source = path.join(root, ".agents/skills/probe");
     mkdirSync(source, { recursive: true });
-    writeFileSync(path.join(source, "SKILL.md"), "---\r\nname: probe\r\n---\r\n");
-    writeFileSync(path.join(source, "payload.txt"), "payload\n");
-    symlinkSync("payload.txt", path.join(source, "linked.txt"));
-    for (const projection of [".codex/skills", ".cursor/skills", ".pi/skills"]) {
-      const target = path.join(root, projection, "probe");
-      mkdirSync(path.dirname(target), { recursive: true });
-      cpSync(source, target, { recursive: true, verbatimSymlinks: true });
-    }
+    writeFileSync(path.join(source, "SKILL.md"), "---\nname: probe\n---\n");
     writeFileSync(path.join(root, "skills-lock.json"), JSON.stringify({ version: 3, skills: { shared: { probe: {} }, platform: {} } }));
     assert.equal(spawnSync("git", ["init", "-q", root]).status, 0);
-    assert.equal(spawnSync("git", ["-C", root, "add", ".codex/skills", ".cursor/skills", ".pi/skills"]).status, 0);
-    const { syncSkills } = await import(pathToFileURL(path.join(root, "scripts/lib/skill-supply-chain.mjs")).href);
-    const target = path.join(root, ".codex/skills/probe");
-    const skillFile = path.join(target, "SKILL.md");
-    const before = statSync(skillFile).mtimeMs;
+    const { syncSkills, PROJECTION_ROOTS } = await import(pathToFileURL(path.join(root, "scripts/lib/skill-supply-chain.mjs")).href);
+    assert.deepEqual(PROJECTION_ROOTS, []);
     assert.match(syncSkills(), /synchronized 1 shared skills/);
-    assert.equal(statSync(skillFile).mtimeMs, before);
-    assert.equal(readFileSync(skillFile, "utf8"), readFileSync(path.join(source, "SKILL.md"), "utf8"));
-
-    writeFileSync(skillFile, "---\nname: probe\n---\n");
     assert.equal(syncSkills({ check: true }), "skill projections are synchronized");
-    syncSkills();
-    assert.equal(readFileSync(skillFile, "utf8"), "---\r\nname: probe\r\n---\r\n");
-
-    chmodSync(skillFile, 0o600);
-    syncSkills();
-    assert.equal(statSync(skillFile).mode & 0o777, statSync(path.join(source, "SKILL.md")).mode & 0o777);
-    rmSync(path.join(target, "linked.txt"));
-    writeFileSync(path.join(target, "linked.txt"), "payload\n");
-    syncSkills();
-    assert.equal(lstatSync(path.join(target, "linked.txt")).isSymbolicLink(), true);
-    assert.equal(readFileSync(path.join(target, "linked.txt"), "utf8"), "payload\n");
-    assert.equal(syncSkills({ check: true }), "skill projections are synchronized");
+    for (const hidden of [".claude", ".codex", ".cursor", ".pi"]) assert.equal(existsSync(path.join(root, hidden)), false, `${hidden} 不应被创建`);
+    assert.deepEqual(readdirSync(root).filter((name) => name.endsWith("skills")), []);
   } finally {
     rmSync(root, { recursive: true, force: true });
   }
+});
+
+test("实例锁的 effectiveHash 由 update-skill-lock 保持在 skillPath 之后，与打包器写入的键序一致", async () => {
+  const { withEffectiveHash } = await import(pathToFileURL(path.resolve("scripts/lib/skill-supply-chain.mjs")).href);
+  const item = { source: "project", sourceType: "local", skillPath: ".agents/skills/probe/SKILL.md", upstreamHash: "u", targets: [".agents/skills"] };
+  assert.deepEqual(Object.keys(withEffectiveHash(item, "h")), ["source", "sourceType", "skillPath", "effectiveHash", "upstreamHash", "targets"]);
+  assert.equal(withEffectiveHash(item, "h").effectiveHash, "h");
 });

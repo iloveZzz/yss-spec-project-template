@@ -1,6 +1,6 @@
 # Archify 集成合同
 
-本仓消费 [`tt-a1i/archify`](https://github.com/tt-a1i/archify) `v2.16.0`，固定 revision `199360cc6687a7857b54dd188d4922b09e466a4b`，许可证为 MIT。`.agents/skills/archify` 是完整上游包加 YSS 最小适配；`skills-lock.json` 分别记录未经适配的 `upstreamHash` 与当前 `effectiveHash`。
+本仓消费 [`tt-a1i/archify`](https://github.com/tt-a1i/archify) `v2.16.0`，固定 revision `199360cc6687a7857b54dd188d4922b09e466a4b`，许可证为 MIT。`.agents/skills/archify` 是完整上游包加 YSS 最小适配；`skills-lock.json` 记录未经适配的 `upstreamHash` 与适配引用；当前有效哈希不提交，现算并在实例锁里由打包器写入。
 
 ## 路由
 

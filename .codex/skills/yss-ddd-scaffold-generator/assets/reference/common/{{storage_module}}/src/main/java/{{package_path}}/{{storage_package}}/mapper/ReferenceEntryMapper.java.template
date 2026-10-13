@@ -1,9 +1,0 @@
-package {{base_package}}.{{storage_package}}.mapper;
-
-import {{base_package}}.{{storage_package}}.po.ReferenceEntryPO;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.apache.ibatis.annotations.Mapper;
-
-@Mapper
-public interface ReferenceEntryMapper extends BaseMapper<ReferenceEntryPO> {
-}

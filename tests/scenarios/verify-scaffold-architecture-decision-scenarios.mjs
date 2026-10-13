@@ -1,13 +1,13 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { mkdtempSync, rmSync, writeFileSync, readFileSync } from "node:fs";
-import os from "node:os";
+import { writeFileSync, readFileSync } from "node:fs";
+import { makeRoot } from "../helpers/yss-instance.mjs";
 import { attachScaffoldDecisionFixture } from "../../scripts/fixtures/user-decision/build-fixture.mjs";
 import path from "node:path";
 import { parseDocument } from "../../scripts/vendor/yaml.mjs";
 
-const root = mkdtempSync(path.join(os.tmpdir(), "scaffold-decision-scenarios-"));
-process.on("exit", () => rmSync(root, { recursive: true, force: true }));
+// 校验归 yss：根必须是真实 Backend 实例（平台目录与证据在里面），决定记录与用户决定文件都放在根内。
+const root = makeRoot("scaffold-decision-scenarios-", "backend");
 const verifier = path.resolve("scripts/verify-scaffold-architecture-decisions");
 const digest = `sha256:${"1".repeat(64)}`;
 const confirmation = `\n    user_confirmation:\n      confirmed_by: user\n      channel: codex\n      confirmation_ref: turn://1\n      confirmed_at: 2026-09-05T01:00:00+08:00\n      normalized_text: 确认 MVC`;
@@ -24,7 +24,7 @@ function run(name, body) {
     assert.ok(userDecision.request.items[0].scope.includes("spring-boot-2.7-jdk8@2.7.18/java8"));
   }
   writeFileSync(file, JSON.stringify(value));
-  return spawnSync(verifier, [file], { encoding: "utf8" });
+  return spawnSync(verifier, ["--root", root, file], { encoding: "utf8" });
 }
 const base = `schema_version: 1\nkind: scaffold-architecture-decisions\ntemplate: false\nstatus: current\ndecisions:\n`;
 const mvc = `${base}  - decision_id: scaffold-decision.main\n    project_id: main\n    parent_project_id: null\n    status: lifecycle-approved\n    recommended_architecture: layered-mvc\n    recommendation_reasons: [CRUD 与报表为主]\n    confirmed_architecture: layered-mvc\n    override_reason: null\n    inheritance_mode: root-default\n    inherited_from: null\n    platform_profile: spring-boot-2.7-jdk8\n    architecture_profile: layered-mvc-service\n    verification_database: h2\n    production_database: not-bound\n    requested_capabilities: [feign-client]\n    resolved_modules: [server, service, repository, client, feign-client]\n    resolution_version: 1${confirmation}\n    decision_inputs_digest: ${digest}\n`;

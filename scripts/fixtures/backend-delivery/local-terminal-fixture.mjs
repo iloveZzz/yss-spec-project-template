@@ -7,17 +7,9 @@ import * as producer from '../../lib/backend-delivery.mjs';
 import {hash,read,ROOT} from '../../lib/strategic-handoff-io.mjs';
 import {sliceCheckApplicability} from '../../lib/slice-applicability.mjs';
 
-export function localBackendTerminalFixture({apiRequired = true,mixed = false} = {}) {
+export function localBackendTerminalFixture({apiRequired = true} = {}) {
   const f=terminalReviewFixture({specText:'# 需求\nFR-1: 提交申请并校验必填材料。\nAC-1: 提交成功或返回必填校验失败。\n',apiRequired,
-    refineContract:mixed?(contract,fixture)=>{
-      // Synthetic bound inputs exercise backend responsibility in a mixed
-      // approved Slice; they do not certify frontend design or acceptance.
-      contract.applicability.frontend={status:'required'};
-      contract.scope.impacted_areas.push('frontend');
-      for(const key of ['requirement_freeze','low_fidelity_review','prototype_review','prototype_profile_decision','prototype_deliverable','prototype_deliverable_verification','prototype_confirmation','visual_baseline','state_matrix'])contract.basis[key]='spec';
-      contract.extensions.frontend={visual_baseline_case_ids:['case.synthetic'],component_test_seams:['validate'],e2e_paths:['submit']};
-      if(contract.applicability.checks)contract.applicability.checks=sliceCheckApplicability(contract.scope,read(path.join(fixture.root,'.template-spec/process/lifecycle-registry.yaml')));
-    }:undefined});
+  });
   const file=ref=>({ref,digest:hash(fs.readFileSync(path.join(f.root,ref)))});
   const api=apiRequired?attachArtifactApproval(f.root,'api.yaml','api.local','gate.engineering-contract-approved'):{binding:{mode:'not-applicable',...file('no-api-impact.json'),reason:'Synthetic backend internal behavior has no API change.'},supportingFiles:[]};
   f.write('data.md','Synthetic current local deployment data.');f.write('deployment.log','Synthetic current contract/deployment evidence.');
@@ -37,7 +29,6 @@ export function localBackendTerminalFixture({apiRequired = true,mixed = false} =
     '.template-spec/process/lifecycle-registry-baseline-v1.json','.template-spec/agents/yss-skill-registry.yaml','.agents/skills','skills-lock.json']) {
     fs.mkdirSync(path.dirname(path.join(f.root,ref)),{recursive:true});fs.cpSync(path.join(ROOT,ref),path.join(f.root,ref),{recursive:true});
   }
-  if(mixed)f.state.review_input.work_unit_id='work-unit.slice-backend';
   f.refreshCoverage();f.save();f.write('review-state.json',f.state);
   return {...f,file,delivery,verification};
 }

@@ -8,6 +8,7 @@ import {approvalIO, approvalError} from './approval-record-io.mjs';
 import {assertApprovalUserDecision} from './user-decision-reuse.mjs';
 import {assertReviewCapabilityBinding, approvalExpectedFromTask} from './review-capabilities.mjs';
 import {assertHandoffEvidenceRef} from './strategic-handoff-io.mjs';
+import {attachExpectationBinding} from './native-evidence.mjs';
 
 const hash = value => createHash('sha256').update(value).digest('hex');
 const hex = value => typeof value === 'string' ? value.replace(/^sha256:/, '') : value;
@@ -64,13 +65,13 @@ export function approvalExpectationFromState(boundary, state, context = {}) {
   const io = approvalIO(context), bytes = io.bytes(state.subject_ref);
   let subject;
   try {subject = parseAsset(bytes,io.resolve(state.subject_ref));} catch {subject = null;}
-  return {boundary,subject_ref:state.subject_ref,subject_digest:state.subject_digest || state.basis?.find(asset=>asset.ref===state.subject_ref)?.digest || hash(bytes),approval_scope:[...state.approval_scope],basis:state.basis?.filter(asset => ![state.approval_ref,state.subject_ref].includes(asset.ref)),drafter_principal_ref:state.drafter_principal_ref || subject?.drafter_principal_ref,review_package:context.review_package ?? state.review_package ?? boundary.startsWith('gate.'),review_context:state.review_context};
+  return attachExpectationBinding({boundary,subject_ref:state.subject_ref,subject_digest:state.subject_digest || state.basis?.find(asset=>asset.ref===state.subject_ref)?.digest || hash(bytes),approval_scope:[...state.approval_scope],basis:state.basis?.filter(asset => ![state.approval_ref,state.subject_ref].includes(asset.ref)),drafter_principal_ref:state.drafter_principal_ref || subject?.drafter_principal_ref,review_package:context.review_package ?? state.review_package ?? boundary.startsWith('gate.'),review_context:state.review_context},{mode:'state',state,...(context.review_package===undefined?{}:{review_package:context.review_package})});
 }
 export function approvalExpectationFromSubject(boundary, subjectRef, context = {}) {
   assertCurrentApprovalEvidenceRef(subjectRef);
   const io=approvalIO(context),bytes=io.bytes(subjectRef),subject=parseAsset(bytes,io.resolve(subjectRef)),scope=subject.approval_scope || subject.scope;
   if (!sameScope(scope,scope) || !subject.basis?.length) approvalError('APPROVAL_CONTEXT_REQUIRED','当前主体缺少独立范围及依据；请提供 checkpoint/task 消费上下文');
-  return {boundary,subject_ref:subjectRef,subject_digest:hash(bytes),approval_scope:[...scope],basis:subject.basis,drafter_principal_ref:subject.drafter_principal_ref,review_package:context.review_package ?? boundary.startsWith('gate.')};
+  return attachExpectationBinding({boundary,subject_ref:subjectRef,subject_digest:hash(bytes),approval_scope:[...scope],basis:subject.basis,drafter_principal_ref:subject.drafter_principal_ref,review_package:context.review_package ?? boundary.startsWith('gate.')},{mode:'subject',subject_ref:subjectRef,...(context.review_package===undefined?{}:{review_package:context.review_package})});
 }
 /** Validates only a supplied current binding; never derives expected values from the approval record. */
 function validateCurrentApproval(record, expected, context = {}) {

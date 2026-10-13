@@ -656,8 +656,7 @@ test('Plan to Spec still blocks missing Context, critical answers, and real user
 test('Spec, Design and implementation review preparation does not consume Plan review budget', t => {
   for (const [boundaries, roleId, workUnitId] of [
     [['gate.spec-baseline-approved'], 'role.product-manager', 'work-unit.spec-synthesis'],
-    [['check.prototype-reviewed'], 'role.frontend-engineer', 'work-unit.prototype-design-v2'],
-    [['check.frontend-implementation-verified'], 'role.test-engineer', 'work-unit.frontend-implementation-verification']
+    [['check.prototype-reviewed'], 'role.frontend-engineer', 'work-unit.prototype-design-v2']
   ]) {
     const f = fixture(t, { boundaries });
     const options = { ...f.options, roleId, workUnitId }; delete options.reviewPhase;

@@ -16,7 +16,7 @@ try {
     },
     strict: true,
   });
-  if(values.help)process.stdout.write('用法: scripts/query-lifecycle-context [--mode route] [--stage stage.plan] [--work-unit work-unit.plan-opportunity] [--include <资产>] [--check-skills [--agent-runtime codex|cursor|pi] [--when <条件>]]\n只读查询，不证明批准；退出码 0=查询完成（启用技能预检时表示技能可用）、1=输入或执行失败、2=启用预检且技能未就绪。\n');
+  if(values.help)process.stdout.write('用法: scripts/query-lifecycle-context [--mode route] [--stage stage.plan] [--work-unit work-unit.plan-opportunity] [--include <资产>] [--check-skills [--when <条件>]]\n只读查询，不证明批准；退出码 0=查询完成（启用技能预检时表示技能可用）、1=输入或执行失败、2=启用预检且技能未就绪。\n');
   else {
   const result = queryLifecycleContext({
     mode: values.mode,

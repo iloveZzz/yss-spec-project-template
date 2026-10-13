@@ -1,0 +1,98 @@
+{
+  "argv": [
+    "/Library/Java/JavaVirtualMachines/amazon-corretto-17.jdk/Contents/Home/bin/java",
+    "-jar",
+    "/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/examples/reference/ddd-probe-reference-bootstrap/target/ddd-probe-reference-bootstrap-1.0.0-SNAPSHOT.jar",
+    "--server.address=127.0.0.1",
+    "--server.port=51099"
+  ],
+  "artifact_sha256": "3fed93dcc8a90b181106f5ec96a084ee0573df7f62a65c75b539c72c8ef3be99",
+  "started_at": "2026-10-12T18:18:21.729195+00:00",
+  "http": [
+    {
+      "method": "POST",
+      "path": "/reference-entries",
+      "status": 200,
+      "body": {
+        "success": true,
+        "dataType": null,
+        "code": "DM-A0001",
+        "message": "数据返回正常",
+        "tips": "信息返回正常",
+        "data": {
+          "id": "3ef41983-2042-4129-be5a-b142fe879fb4",
+          "name": "initial"
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/reference-entries/3ef41983-2042-4129-be5a-b142fe879fb4",
+      "status": 200,
+      "body": {
+        "success": true,
+        "dataType": null,
+        "code": "DM-A0001",
+        "message": "数据返回正常",
+        "tips": "信息返回正常",
+        "data": {
+          "id": "3ef41983-2042-4129-be5a-b142fe879fb4",
+          "name": "initial"
+        }
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/reference-entries/3ef41983-2042-4129-be5a-b142fe879fb4/name",
+      "status": 200,
+      "body": {
+        "success": true,
+        "dataType": null,
+        "code": "DM-A0001",
+        "message": "数据返回正常",
+        "tips": "信息返回正常",
+        "data": {
+          "id": "3ef41983-2042-4129-be5a-b142fe879fb4",
+          "name": "renamed"
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/reference-entries/3ef41983-2042-4129-be5a-b142fe879fb4",
+      "status": 200,
+      "body": {
+        "success": true,
+        "dataType": null,
+        "code": "DM-A0001",
+        "message": "数据返回正常",
+        "tips": "信息返回正常",
+        "data": {
+          "id": "3ef41983-2042-4129-be5a-b142fe879fb4",
+          "name": "renamed"
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/reference-entries",
+      "status": 400,
+      "body": {
+        "errCode": "A0104",
+        "tips": "请根据错误提示将参数修改正确后请重试。",
+        "message": "[name]名称不能为空"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/reference-entries/999999",
+      "status": 404,
+      "body": {
+        "errCode": "REFERENCE_NOT_FOUND",
+        "tips": "请联系客服或技术支持人员协助解决",
+        "message": "参考条目不存在"
+      }
+    }
+  ],
+  "status": "passed"
+}

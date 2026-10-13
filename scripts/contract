@@ -3,7 +3,8 @@ import path from 'node:path';
 import {readFileSync,writeFileSync} from 'node:fs';
 import {safe} from './lib/strategic-handoff-io.mjs';
 import {renderReadingBundle,checkReadingViews,readingCheckpointsForAsset,saveReadingComparison,planEnableReading,applyEnableReading} from './lib/reading-view-bundle.mjs';
-import {viewContract,diffContract,prepareContractReview} from './lib/contract-views.mjs';
+import {viewContract,diffContract} from './lib/contract-views.mjs';
+import {prepareContractReview} from './lib/contract-review-preparation.mjs';
 import {isAssetCommand,runAssetCommand} from './lib/asset-command.mjs';
 if(isAssetCommand(process.argv[2])) {
  try { process.stdout.write(JSON.stringify(runAssetCommand(process.argv.slice(2)),null,2)+'\n'); }

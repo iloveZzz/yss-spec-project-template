@@ -2,7 +2,6 @@ import assert from "node:assert/strict";
 import { mkdtempSync, rmSync, writeFileSync, readFileSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { spawnSync } from "node:child_process";
 import { buildDecisionFixture, buildImplementationFixture } from "../../scripts/fixtures/user-decision/build-fixture.mjs";
 import { validateUserDecision, assertUserDecisionRequirement, assertImplementationDecision, decisionDigest, renderDecisionRequest } from "../../scripts/lib/user-decision.mjs";
 import { validateApprovalRecord, assertCheckpointApprovals, assertCheckpointUserDecisions } from "../../scripts/lib/approval-record.mjs";
@@ -75,10 +74,7 @@ check("Git 归一化不能扩大原回复的仓库、文件或远端范围", () 
 check("Git 自然语言意图不能被摘要推断为授权", () => {
   const f = gitFixture("commit", "intent-only"); f.record.responses = []; f.respond({ text: "准备提交本轮改动", decision: "approved" }); deny(f, "user-decision-ambiguous");
 });
-check("真实单项回复通过，CLI 校验通过", () => {
-  const f = fixture("single"); verify(f);
-  assert.equal(spawnSync("scripts/verify-user-decision", [f.ref], { encoding: "utf8" }).status, 0);
-});
+check("真实单项回复通过", () => { verify(fixture("single")); }); // 命令行薄壳的冒烟检查见 tests/go-validator-replay.test.mjs
 check("无回复保持等待", () => { const f = fixture("pending"); f.record.responses = []; deny(f, "user-decision-response-required"); });
 for (const decision of ["rejected", "changes-requested", "unclear", "revoked"]) check(`${decision} 不放行`, () => { const f = fixture(decision); f.record.responses = []; f.respond({ decision, text: decision, approvedScope: [] }); deny(f, "user-decision-not-approved"); });
 check("数字人代答无效", () => { const f = fixture("bot"); f.record.responses = []; f.respond({ actor: "digital-human" }); deny(f, "user-decision-responder-mismatch"); });

@@ -1,9 +1,0 @@
-package {{base_package}}.domain.gateway;
-
-import {{base_package}}.domain.entity.ReferenceEntryEntity;
-import java.util.Optional;
-
-public interface ReferenceEntryGateway {
-    Optional<ReferenceEntryEntity> find(String id);
-    void save(ReferenceEntryEntity entry);
-}

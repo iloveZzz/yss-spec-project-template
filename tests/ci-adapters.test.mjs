@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import { createRequire } from "node:module";
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -22,11 +23,11 @@ const versions = () => Object.fromEntries(spawnSync(path.join(ROOT, "scripts/ci-
 
 test("适配器只调用 scripts/ci-setup 与 scripts/ci-gate，不含检查逻辑（AC-005）", () => {
   for (const file of ADAPTERS) {
-    const called = new Set([...code(file).matchAll(/scripts\/([A-Za-z0-9_.-]+)/g)].map((match) => match[1]));
+    const called = new Set([...code(file).replaceAll(".template-source/scripts/lib/yss-cli-pin.mjs", "").matchAll(/scripts\/([A-Za-z0-9_.-]+)/g)].map((match) => match[1]));
     assert.deepEqual([...called].filter((name) => !["ci-setup", "ci-gate"].includes(name)), [], file);
   }
   assert.match(code(WORKFLOW), /scripts\/ci-gate --mode pr/);
-  assert.match(code(GITLAB), /scripts\/ci-setup --submodules/);
+  assert.match(code(GITLAB), /scripts\/ci-setup --toolchain/);
 });
 
 test("GitHub：PR 与 main 推送触发，只读权限，完整历史，base 经环境变量传入", () => {
@@ -73,7 +74,7 @@ test("GitLab 镜像主版本与 scripts/ci-setup 的目标 Node 一致", () => {
   assert.equal(image[1], versions().node);
 });
 
-test("setup-template 是薄封装：运行时版本取自 ci-setup，不在 YAML 里再写一份", () => {
+test("setup-template 是薄封装：先供给 Node，再从现有 pin reader 读取 Go 版本", (t) => {
   const text = code(ACTION);
   assert.match(text, /scripts\/ci-setup --print-versions >> "\$GITHUB_OUTPUT"/);
   assert.match(text, /node-version: \$\{\{ steps\.versions\.outputs\.node \}\}/);
@@ -82,15 +83,34 @@ test("setup-template 是薄封装：运行时版本取自 ci-setup，不在 YAML
   assert.match(text, /YSS_CI_ENV_FILE: \$\{\{ github\.env \}\}/);
   assert.match(text, /scripts\/ci-setup /);
   assert.match(text, /actions\/setup-go@v5/);
+  assert.match(text, /go-version: \$\{\{ steps\.go_version\.outputs\.go \}\}/);
+  assert.doesNotMatch(text, /go-version: stable/);
   const printed = versions();
   assert.match(printed.node, /^\d+$/);
   assert.match(printed.python, /^\d+\.\d+$/);
+  assert.equal(printed.go, undefined);
+  const nodeAt = text.indexOf("uses: actions/setup-node@v4"), readerAt = text.indexOf("id: go_version"), goAt = text.indexOf("uses: actions/setup-go@v5");
+  assert.ok(nodeAt >= 0 && readerAt > nodeAt && goAt > readerAt, "Go pin reader 必须位于 Node 安装后、Go 安装前");
+  const run = /    - id: go_version\n      shell: bash\n      run: \|\n((?:        .*\n)+)/.exec(text)?.[1].replace(/^        /gm, "");
+  assert.ok(run, "通过 bash 独立步骤读取 Go 版本");
+  assert.match(run, /go_version="\$\(node \.template-source\/scripts\/lib\/yss-cli-pin\.mjs go_version\)"\n/);
+  assert.match(run, /printf 'go=%s\\n' "\$go_version" >> "\$GITHUB_OUTPUT"/);
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "yss-ci-go-output-"));
+  t.after(() => fs.rmSync(directory, { recursive: true, force: true }));
+  const output = path.join(directory, "output"), noNode = path.join(directory, "no-node");
+  fs.mkdirSync(noNode);
+  const refused = spawnSync("/bin/bash", ["-e", "-c", run], { cwd: ROOT, encoding: "utf8", env: { ...process.env, PATH: noNode, GITHUB_OUTPUT: output } });
+  assert.equal(refused.status, 127, refused.stderr);
+  assert.equal(fs.existsSync(output), false, "pin reader 失败不能写出空 go= 或假成功");
+  const passed = spawnSync("/bin/bash", ["-e", "-c", run], { cwd: ROOT, encoding: "utf8", env: { ...process.env, GITHUB_OUTPUT: output } });
+  assert.equal(passed.status, 0, passed.stderr);
+  assert.equal(fs.readFileSync(output, "utf8"), `go=${JSON.parse(read(".template-source/distribution/yss-cli-pin.json")).go_version}\n`);
 });
 
-test("两个平台都不跳过子模组，并都用固定 gitlink 构建 yss（fast 的部分测试需要原生二进制）", () => {
-  assert.match(code(WORKFLOW), /submodules: 'true'\n\s+yss-commit: gitlink/);
-  assert.match(code(GITLAB), /scripts\/ci-setup --submodules --yss-commit gitlink/);
-  assert.match(read("scripts/ci-setup"), /git -c protocol\.version=2 submodule update --init/);
+test("两个平台都准备工具链，并都按 yss-cli 固定文件构建 yss（fast 的部分测试需要原生二进制）", () => {
+  assert.match(code(WORKFLOW), /toolchain: 'true'\n\s+yss-commit: pin/);
+  assert.match(code(GITLAB), /scripts\/ci-setup --toolchain --yss-commit pin/);
+  assert.doesNotMatch(read("scripts/ci-setup"), /submodule update|sync-profile-skills/, "Profile 已并入根仓，CI 不再初始化子模块");
 });
 
 test("GitLab 适配器与 CI 用的环境文件不进仓库，并排除出实例分发", () => {
@@ -108,5 +128,5 @@ test("AC-006：github-workflows.md 登记 template-gate，不再声明已移除�
   assert.match(doc, /scripts\/ci-gate/);
   assert.match(doc, /必需检查/);
   assert.match(doc, /不得跳过/);
-  assert.match(doc, /node \.template-source\/scripts\/verify-template-release\.mjs --commit <40位SHA> --output <仓库外绝对目录> --cli-family all-four/);
+  assert.match(doc, /node \.template-source\/scripts\/verify-template-release\.mjs --commit <40位SHA> --base <上一正式发行完整SHA> --output <仓库外绝对目录> --cli-family all-four/);
 });

@@ -9,7 +9,10 @@ import {exportSpecBaseline,importSpecBaseline} from './package.mjs';
 import {exportBundle,openBundle} from '../../lib/strategic-handoff.mjs';
 import {assertBusinessApprovalBasis} from '../../lib/business-ticket-lifecycle.mjs';
 import {read,json,hash,digest,safe,write} from '../../lib/strategic-handoff-io.mjs';
-import {validateNextRoute} from '../../../submodules/yss-harness-design-agent/scripts/lib/lifecycle-transition.mjs';
+import {composeProfileTree} from '../../lib/profile-tree.mjs';
+import {pathToFileURL as designFileURL} from 'node:url';
+import {join as designJoin} from 'node:path';
+const {validateNextRoute}=await import(designFileURL(designJoin(composeProfileTree('design'),'scripts/lib/lifecycle-transition.mjs')).href);
 import {assertCheckpointBoundary} from '../../lib/checkpoint-boundary.mjs';
 import {parseContextContract,resolveContextTermRefs} from '../../lib/context-contract.mjs';
 

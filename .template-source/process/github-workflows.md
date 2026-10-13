@@ -7,18 +7,17 @@
 | 入口 | 行为 | 结果边界 |
 |---|---|---|
 | 日常交付：`scripts/verify-template-fast` | 先看 `--plan`；按检查输入、变化行为及消费者选择必要集合，缺映射或非法依赖先修正，不自动运行全量 | `implementation-ready`，报告 `limited`，记录实际覆盖及未覆盖边界 |
-| 合入检查：`scripts/ci-gate --mode pr --base <完整 SHA>` / `--mode push` | 平台无关；PR、MR 与主分支推送由 `template-gate` 调用，详见下文“合入检查” | 合并前机器检查，不替代候选与发布验证 |
-| 候选：`scripts/verify-template-candidate --base <完整 SHA>` | 以显式 base 计算提交差异，并合并 index、工作树和未跟踪路径 | 合并前机器检查，不宣布发布就绪 |
-| main 集成验证与正式发布：`scripts/verify-template` | 核验完整 baseline 与当前资格后执行全部适用风险；缺失或失效时走独立 `legacy-full` | 检查完整候选；当前分支为 main 不单独触发 |
+| 合入检查：`scripts/ci-gate --mode pr --base <完整 SHA>` / `--mode push` | 平台无关；PR、MR 与主分支推送由 `template-gate` 调用，详见下文“合入检查” | 合并前机器检查，不替代发布验证 |
+| main 集成验证与正式发布：`scripts/verify-template` | 按当前策略执行全部适用检查、前后置与固定来源准备；要求已提交来源 | 检查完整候选；当前分支为 main 不单独触发 |
 | 固定版本：`verify-template-release.mjs` | 输入完整 40 位模板 commit，执行上述验证与指定 CLI 家族集成 | 产出证据，不打 tag、不创建 Release、不发布包 |
 
 主模板源提供两个薄适配器：`.github/workflows/template-gate.yml`（GitHub Actions）与 `.gitlab-ci.yml`（GitLab CI），检查名均为 `template-gate`，在 PR / MR 与主分支推送时运行，并登记为 PR / MR 必需检查。三个专职 Agent 模板和四个 CLI 仓库不设根 `.github/workflows`，它们的检查通过各自仓库的本地入口执行；手动 Actions 入口不再提供。正式发布仍由维护者通过上述本地入口执行并保存本轮证据。
 
-日常交付不依次执行三个入口，不因维护等级、交付措辞或缺少发布 baseline 自动升级为正式发布验证。定向选择依据、命令、退出码与未覆盖风险必须可读；未知影响先调查。候选、发布及已采纳 mandatory CI 命中后仍执行其完整适用集合，不能通过删计划项或改报告声明绕过。
+日常交付不自动追加 release，不因维护等级、交付措辞 自动升级为正式发布验证。定向选择依据、命令、退出码与未覆盖风险必须可读；未知影响先调查。发布及已采纳 mandatory CI 命中后仍执行其完整适用集合，不能通过删计划项或改报告声明绕过。
 
-模板验证首先要求 `template-source`。日常预检仅要求所选任务使用的工具、子模块或固定 CLI 输入，不准备未选制品或消费者；`--selection legacy` / `shadow` 保留显式原组范围。全量检查使用实际依赖的公开 gitlink 固定子模块，不追踪上游分支；运行前须初始化所需子模块。工具依赖使用固定 pnpm 与 frozen lockfile；Node 24 为验证运行器环境，Python 3.12（验证预检要求恰为该版本）与固定的 jsonschema 4.23.0 提供既有 schema 检查依赖；目标版本以 `scripts/ci-setup --print-versions` 为准。运行器缺少 Python 3.12 或所需 Go 时，`scripts/ci-setup` 只在 CI 的 root 容器内补装：Python 经固定版本的 uv，Go 取自固定 yss-cli 源码 `go.mod` 指定的版本并校验 go.dev 公布的 sha256；其它环境须由镜像自带。vendor 校验在临时目录重建并比较，不先覆盖受版本管理的 vendor。
+模板验证首先要求 `template-source`。日常预检仅要求所选任务使用的工具、子模块或固定 CLI 输入，不准备未选制品或消费者。全量检查使用实际依赖的公开 gitlink 固定子模块，不追踪上游分支；运行前须初始化所需子模块。工具依赖使用固定 pnpm 与 frozen lockfile；Node 24 为验证运行器环境，Python 3.12（验证预检要求恰为该版本）与固定的 jsonschema 4.23.0 提供既有 schema 检查依赖；目标版本以 `scripts/ci-setup --print-versions` 为准。运行器缺少 Python 3.12 或所需 Go 时，`scripts/ci-setup` 只在 CI 的 root 容器内补装：Python 经固定版本的 uv，Go 取自固定 yss-cli 源码 `go.mod` 指定的版本并校验 go.dev 公布的 sha256；其它环境须由镜像自带。vendor 校验在临时目录重建并比较，不先覆盖受版本管理的 vendor。
 
-三个入口均在执行前及结束时观察输入，失败和中断同样保留最终观测；漂移使本轮失败。fast / candidate 可按[运行内摘要复用规则](../../.template-spec/process/subagent-collaboration.md#只读分诊任务包-v2)减少未变化文件的重复字节读取，报告 `input_observation_metrics`；有效 profile 为 release 或显式传入 `--fresh-inputs` 时前后均完整读取字节。摘要、文件覆盖范围和漂移判定不变，普通问答不因此新增全仓验证要求。
+两档均在执行前及结束时观察输入，失败和中断同样保留最终观测；漂移使本轮失败。fast 可按[运行内摘要复用规则](../../.template-spec/process/subagent-collaboration.md#只读分诊任务包-v2)减少未变化文件的重复字节读取，报告 `input_observation_metrics`；有效 profile 为 release 或显式传入 `--fresh-inputs` 时前后均完整读取字节。摘要、文件覆盖范围和漂移判定不变，普通问答不因此新增全仓验证要求。
 
 本地复验应把独立 Node 24 的 bin 加入 PATH 后直接运行验证入口；不要用带 `--package` 的 `npm exec` 包住整条验证链，其包配置可能被内部 npx 继承，改变实际执行的工具。
 
@@ -34,11 +33,11 @@
 | GitLab `merge_request_event` | `--mode pr` | `CI_MERGE_REQUEST_DIFF_BASE_SHA` |
 | 主分支推送 | `--mode push` | 脚本取 `HEAD^`（合并提交的第一亲本即上一个主分支顶点） |
 
-两个平台都用完整历史检出。`verify-template-fast` 必须带范围基准：干净检出且不带 `--base` 时变更文件数为 0，只会空过。`verify-template-candidate` 在 PR 模式下是非阻断步骤，只记录结果：选择性 gate policy 未激活时它退化为完整的 `release` 验证，要求固定 yss 二进制且 Bundle 的模板来源等于被验证提交，对新提交无法在托管 runner 通过。转为必需检查的条件见执行计划与规格的 Q-008。
+两个平台都用完整历史检出，PR / MR 与主分支推送均执行阻断的 `verify-template-fast`。PR / MR 传入完整 base SHA；推送使用 `HEAD^`，仅首个提交没有上一提交时不带 `--base`。其它干净检出若不带范围基准，变更文件数为 0，只会空过。candidate 验证入口已退役；正式发布继续消费完整发布证据。
 
-fast 选中的部分检查需要原生 `yss` 二进制，所以两个平台都用 `scripts/ci-setup --yss-commit gitlink`，从本仓 `submodules/yss-cli` 固定的提交构建并导出 `YSS_NATIVE_BINARY`。环境准备依赖的子模组都是公开仓库，匿名可读，GitLab runner 不需要令牌或镜像。拉取子模组失败时 `scripts/ci-setup` 以非零退出，`template-gate` 失败并在日志中给出原因，不得跳过该步骤后报告通过。
+fast 选中的部分检查需要原生 `yss` 二进制，所以两个平台都用 `scripts/ci-setup --yss-commit pin`：取 `.template-source/distribution/yss-cli-pin.json` 固定的提交，按固定的 Go 版本、用 yss-cli 的 `tools/build-candidate.mjs` 构建，核对当前平台的 SHA-256 与固定文件一致后导出 `YSS_NATIVE_BINARY`；摘要不符即失败，CI 里也不接受 `YSS_NATIVE_BINARY_OVERRIDE`。yss-cli 不再是 submodule。环境准备依赖的子模组都是公开仓库，匿名可读，GitLab runner 不需要令牌或镜像。拉取子模组失败时 `scripts/ci-setup` 以非零退出，`template-gate` 失败并在日志中给出原因，不得跳过该步骤后报告通过。
 
-Linux runner 上的两个测试曾因对 macOS 行为的隐性假设而失败，已修复：超时测试显式 `exec`，使忽略 `SIGTERM` 的进程成为 `sh -c` 的直接子进程；候选、发布与 `qualified-gates` 的“旧运行时残留”后置检查改用 `.template-source/scripts/lib/legacy-runtime-scan.mjs`，不再依赖外部 ripgrep。`yss-cli` 的原生验证仍只对 darwin/arm64 做资格。
+Linux runner 上的两个测试曾因对 macOS 行为的隐性假设而失败，已修复：超时测试显式 `exec`，使忽略 `SIGTERM` 的进程成为 `sh -c` 的直接子进程；发布的“旧运行时残留”后置检查改用 `.template-source/scripts/lib/legacy-runtime-scan.mjs`，不再依赖外部 ripgrep。`yss-cli` 的原生验证仍只对 darwin/arm64 做资格。
 
 报告与日志写在仓外的 `/tmp/ci-gate`，两个平台都作为构建产物保留；两份报告的步骤名单、各步命令与退出码应一致。检查期间仓库出现任何新增改动都会使本轮失败。
 
@@ -46,35 +45,31 @@ Linux runner 上的两个测试曾因对 macOS 行为的隐性假设而失败，
 
 输入 SHA 与实际 HEAD 必须一致；该提交须具备本合同对应的验证脚本。发布证据绑定实际待验证提交，不再依赖 GitHub workflow 或 action 编排。
 
-`node .template-source/scripts/verify-template-release.mjs --commit <40位SHA> --output <仓库外绝对目录> --cli-family all-four` 要求干净模板和三个 Agent 模板源与固定 gitlink 一致。显式提供 `YSS_NATIVE_BINARY`、`YSS_NATIVE_BINARY_SHA256` 和固定源码的 `YSS_NATIVE_SOURCE_ROOT`；二进制和四 Profile Bundle 必须分别绑定已提交的统一 CLI 与模板来源。生产、公开 Bundle 导出、隔离安装副本、初始化、Skill 投影/锁校验及用户 `.github` 保留检查全部通过。当前发布集合始终覆盖四 Profile，旧 npm 包只用于仓外历史恢复，不参与现役生产。
+`node .template-source/scripts/verify-template-release.mjs --commit <40位SHA> --base <上一正式发行完整SHA> --output <仓库外绝对目录> --cli-family all-four` 要求干净模板、同仓三个 Profile 及固定 CLI 来源一致。显式提供 `YSS_NATIVE_BINARY`、`YSS_NATIVE_BINARY_SHA256` 和固定源码的 `YSS_NATIVE_SOURCE_ROOT`；二进制和三 Profile Bundle 必须分别绑定已提交的统一 CLI 与模板来源。生产、公开 Bundle 导出、隔离安装副本、初始化、Skill 投影/锁校验及用户 `.github` 保留检查全部通过。当前发布集合始终覆盖三 Profile，旧 npm 包只用于仓外历史恢复，不参与现役生产。
 
-四类发行还必须提供 `YSS_LEGACY_RECOVERY_REPORT` 及 `YSS_LEGACY_RECOVERY_REPORT_SHA256`。恢复矩阵逐家族绑定固定旧包、源码 SHA、版本、实际日志摘要、当前二进制摘要和十二项必要场景；预期拒绝须核对自己的错误码。未完成项、输入漂移、错配摘要和 `fixture: true` 阻断正式发行。六平台运行验收在独立最终门禁核验。`--cli-family spec` 仅用于定向诊断，不能替代四类发行验收；CI 合成 Go fixture 仅验证算法与拒绝语义。
+三类发行还必须提供 `YSS_LEGACY_RECOVERY_REPORT` 及 `YSS_LEGACY_RECOVERY_REPORT_SHA256`。恢复矩阵逐家族绑定固定旧包、源码 SHA、版本、实际日志摘要、当前二进制摘要和十二项必要场景；预期拒绝须核对自己的错误码。未完成项、输入漂移、错配摘要和 `fixture: true` 阻断正式发行。六平台运行验收在独立最终门禁核验。`--cli-family spec` 仅用于定向诊断，不能替代三类发行验收；CI 合成 Go fixture 仅验证算法与拒绝语义。
 
 Go 生产用固定四源提交和 `bundle-profile.json` 声明政策，运行 `go run ./tools/bundle --source-root <模板根> --lock docs/source-lock.json --out internal/bundle/assets`，再以 `CGO_ENABLED=0` 构建。二进制、Bundle、插件摘要收录仓外生态发行清单，避免互相嵌入未来提交形成循环。模板 Node/Python 治理工具和 pnpm frozen 依赖继续保留。不会执行 publish、npm deprecated 或仓库归档。
 
-证据保存在仓库外的新目录：候选保留计划、完整 base/head/tested commit、实际调用参数与日志；发布保留 `release-verification.json`、每条命令实际退出码、日志、模板 SHA、生成器 SHA、子模块版本与新快照摘要；兼容验证分别记录日志。失败结果及缺失证据必须保留，不能宣称通过。发布就绪要求全部适用风险、集成和阻断兼容检查均成功；Node 26 观察失败可见但不阻断。
+证据保存在仓库外的新目录：候选保留计划、完整 base/head/tested commit、实际调用参数与日志；发布保留 `release-verification.json`、每条命令实际退出码、日志、模板 SHA、生成器 SHA、同仓 Profile 来源与新快照摘要；兼容验证分别记录日志。失败结果及缺失证据必须保留，不能宣称通过。发布就绪要求全部适用风险、集成和阻断兼容检查均成功；Node 26 观察失败可见但不阻断。
 
-## 验证策略资格与恢复
+## 验证两档与证据恢复
 
-覆盖合同、影响依赖、执行前置、旧检查映射及资格输入仅在 `template-verification-profiles.yaml` 维护。G01–G20 是展示编号，机器检查保留 `check.*`；内部任务、语法检查和终检不能因合并展示而消失。旧完整参考使用冻结清单和独立执行器，不经过新选择器裁剪。
+当前仅有 fast 与 release。fast 按输入与依赖选择必要检查；release 基于上一正式发行的完整差异与当前输入选择受影响检查、依赖及必需来源/安装/恢复检查，未知输入拒绝，显式路径只能扩大范围。检查定义、影响依赖、执行前置与风险归属只在 `template-verification-profiles.yaml` 维护。Gxx 是既有展示编号，退役项保留编号空位，机器检查保留 `check.*`；内部任务、语法检查和终检仍逐项记录。失去对象的检查随对象退役，现存验证责任直接绑定当前行为检查。
 
-发布影响选择必须绑定已接受的完整验证 baseline，核验报告摘要、完整 SHA、祖先关系、来源清单、策略及实际完整执行证据。锁差异与路径差异使用同一 baseline。参数不完整、错误摘要、非祖先 baseline、未知路径或依赖配置错误在计划阶段失败；缺 baseline、资格缺失 / 过期、核心策略变化或未审计依赖执行 `legacy-full`。首次策略切换提交本身必须通过旧完整验证，建立初始 baseline。
+candidate、legacy-full 执行入口、legacy_coverage 记账、资格配对计时与策略激活层已退役。base 或 baseline 报告不能缩小 release 集合；显式提供报告时仍检查完整 SHA、祖先关系、报告摘要、来源与真实执行证据。参数不完整、错误摘要、非祖先 baseline、未知路径或依赖配置错误在昂贵任务前失败。
 
-常规全量回退保留冻结清单的全部覆盖，并由当前监督入口与依赖调度器执行；普通失败阻断下游，独立项继续。显式 `scripts/run-template-verification --profile legacy-full` 是独立旧参考入口，其 `legacy-reference` 计划使用冻结执行器，供新旧覆盖和性能对照，不消费新选择器的裁剪结果。两者均记录实际执行参数；Node 批量测试显式限制文件并发，`--concurrency 1` 不依赖环境变量间接约束。
+历史报告从其绑定提交读取策略与清单，只读编译期望台账；不运行历史执行器，不让历史 qualified-gates 自述恢复当前资格或缩减检查。无法独立验证的历史记录保持可追溯，但不能作为当前有效 baseline。旧候选快照、审查记录与证据 kind 不因验证档退役而删除。
 
-四 Profile 的固定二进制、Bundle 导出和安装副本属于可见准备任务。旧两项源码检查的稳定覆盖 ID 显式映射 `tests/cli-retirement.test.mjs` 的公开行为检查；历史冻结清单原样保留用于追溯，不继续 require 退役 gitlink。新检查覆盖版本化 envelope、真实退出码、bytes/mode 来源、四 Profile 初始化/同步、预演无写入、幂等、保护路径和针对预期码的拒绝。旧实例恢复矩阵单独执行仓外固定旧执行器，不将原生新建实例冒充旧实例迁移。
+三 Profile 的固定二进制、Bundle 导出和安装副本属于可见准备任务。旧两项源码检查的稳定覆盖 ID 映射 `tests/cli-retirement.test.mjs` 的公开行为检查，不继续 require 退役 gitlink。检查覆盖版本化 envelope、真实退出码、bytes/mode 来源、三 Profile 初始化/同步、预演无写入、幂等、保护路径和预期错误码。旧实例恢复矩阵单独执行仓外固定旧执行器，不将原生新建实例冒充旧实例迁移。
 
-固定来源本机报告使用 `verification_scope: local-template-and-cli` 与 `release_readiness: not-evaluated`。本机通过只闭合本机源码和 CLI 风险；整体可发布结论还须核验本节既有适用 Node / 平台合同及当前 SHA 的真实证据，缺项保持未就绪。
+固定来源本机报告使用 `verification_scope: local-template-and-cli` 与 `release_readiness: not-evaluated`。本机通过只闭合本机源码和 CLI 风险；整体可发布结论还须核验既有适用 Node / 平台合同及当前 SHA 的真实证据，缺项保持未就绪。
 
-资格绑定策略、选择器、执行器、报告验证器、旧清单、适配器、fixture 和反例摘要。至少五组同一固定代表候选的新旧成对测量交替执行顺序；每次包含预检、准备、构建、安装、迁移、执行、终检及清理。新策略中位耗时至少下降 20%，最大耗时不超过旧策略最大耗时，同时所有适用风险及拒绝场景闭合，才允许切换。资格报告必须包含实际配对结果和可读取报告；成功布尔值不能代替证据。中位 12 分钟、最长 18 分钟属于后续目标。
+新报告 v2 保留原始结果，独立消费者根据实际调用上下文及固定策略重新计算完整期望集合，核对 task/check ID、依赖、Gate、来源 tuple、实际 file/argv/cwd/env、日志边界及摘要。同轮复用仍须来自真实成功退出且执行输入等价；选中而未执行进入 `unexecuted`，不适用任务单独登记。监督入口在 worker 关闭后记录实际退出；缺日志、缺结果、不可观察退出或输入漂移均拒绝。历史 v1 只读，不补造 v2 字段，fast limited 报告不能成为发布证据。
 
-新报告 v2 保留原始结果，独立消费者根据实际调用上下文及锁定合同重新计算期望集合；选中而未执行才进入 `unexecuted`，不适用任务单独登记。监督入口在 worker 关闭后记录观察到的退出；缺日志、缺结果、不可观察退出或输入漂移均拒绝。历史 v1 只读，不补造 v2 字段。
+环境或来源错误在昂贵任务前停止。普通失败阻断依赖下游，继续独立检查；超时和取消停止相应启动，保留退出码、信号、日志及终止失败。制品准备与清理仍是实际任务。release 保持串行执行条件，Node 批量测试显式限制文件并发；工具测试按单文件 / 准备任务计时，不把整套累计耗时作为单文件超时。fast 既有受控并行不因此改变，`--concurrency 1` 限制所有层级。
 
-环境或来源错误在昂贵任务前停止。普通失败阻断依赖下游，继续独立检查；超时和取消停止相应启动，保留退出码、信号、日志及终止失败。工具测试继续按单文件 / 准备任务计时，不把整套累计耗时作为单文件超时。已有内层两路并发时外层 tooling 独占；`--concurrency 1` 限制所有层级。
-
-切换后记录连续五个独立候选的适用集合、耗时、失败及回退原因。发现漏检、输入漂移或证据失真时，恢复选择器、执行器、profile、消费者及治理合同的兼容版本，并对回滚后的当前候选重新完整验证。未达到性能或覆盖标准时保持旧发布策略；日常实现交付仍为 `implementation-ready`。
-
-正式发布前仍须对实际待发布提交运行以上入口，由维护者明确发起实际发布。
+发现漏检、输入漂移或证据失真时，恢复相互兼容的选择器、执行器、profile 与消费者，并对恢复后的当前输入重新验证受影响行为。正式发布前仍须对实际待发布提交运行 release 与固定版本集成，由维护者明确发起实际发布。
 
 ## 项目实例 CI 合同
 

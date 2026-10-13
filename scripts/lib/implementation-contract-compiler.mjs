@@ -1,3 +1,4 @@
+import './slice-repositories.mjs'; // 登记多项目准备核验器（工作流层），见 slice-contract.mjs
 import { resolveBackendPlatform, resolveComponentCapabilities } from "./backend-platform.mjs";
 import { executionEvidenceBlockers } from './execution-evidence.mjs';
 import { safe } from './strategic-handoff-io.mjs';
@@ -12,7 +13,6 @@ import { parseDocument } from "../vendor/yaml.mjs";
 import { DEFAULT_REGISTRY, loadSkillRegistry, resolveSkillForNewUse } from "./skill-registry.mjs";
 import { ROOT } from "./skill-supply-chain.mjs";
 import { architectureDigest, assertArchitectureAgreement, validateArchitectureIdentity, verifyArchitectureEvidence } from "./backend-architecture.mjs";
-import { enforceFrontendDelivery } from "./frontend-delivery-boundary.mjs";
 
 export const DEFAULT_COMPILER_CONTRACT = path.join(
   ROOT,
@@ -106,7 +106,6 @@ export function compileImplementationContract({
   work_unit_id,
   root = ROOT,
   slice_id,
-  frontend_delivery,
   checkpoint_ref,
   spec_ref,
   technical_design,
@@ -114,7 +113,6 @@ export function compileImplementationContract({
 }) {
   assertV3(registry, compilerContract);
   const recompilationExecution=approved_slice?createApprovedRecompilationContext(approved_slice,{root,work_unit_id}):undefined;
-  const deliveryInput = enforceFrontendDelivery({ slice_id, frontend_delivery, checkpoint_ref, spec_ref }, { root, phase: 'contract', sliceRef: approved_slice?.ref, workUnitId: work_unit_id });
   if (!Array.isArray(recipeIds) || !Array.isArray(requiredCapabilities) || !Array.isArray(conditions)) {
     fail("recipeIds、requiredCapabilities 与 conditions 必须是数组");
   }
@@ -234,7 +232,6 @@ export function compileImplementationContract({
   return {
     schema_version: 2,
     status: "draft",
-    ...(deliveryInput.result === "inputs-verified" && deliveryInput.delivery_mode !== 'local-approved-assets' ? { slice_id: deliveryInput.slice_id, frontend_delivery: { acceptance_ref: deliveryInput.acceptance_ref, digest: deliveryInput.acceptance_digest } } : {}),
     ...(architecture_identity ? {
       architecture_identity: structuredClone(architecture_identity),
       architecture_identity_digest: architectureDigest(architecture_identity),
@@ -285,8 +282,6 @@ export function evaluateContractFreshness(contract, { registry, compilerContract
   } catch(error) { reasons.push(error.code||'EXECUTION_APPROVAL_INVALID');trustedExecution=undefined; }
   try { enforceTechnicalDesign({ ...resolution, slice_id: contract.slice_id ?? resolution.slice_id }, { root,execution:trustedExecution,readOnly }); }
   catch { reasons.push("technical-design-stale-or-unavailable"); }
-  try { enforceFrontendDelivery(contract, { root, sliceRef: approved_slice?.ref, workUnitId: work_unit_id }); }
-  catch { reasons.push("frontend-delivery-stale-or-unavailable"); }
   if (resolution.registry_digest !== digestDocument(registry)) reasons.push("registry-digest-changed");
   if (resolution.compiler_contract_digest !== digestDocument(compilerContract)) reasons.push("compiler-contract-digest-changed");
   if (resolution.architecture_identity) {

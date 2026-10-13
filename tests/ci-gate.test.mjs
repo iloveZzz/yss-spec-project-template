@@ -6,6 +6,7 @@ import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { STEPS, checkNodeEngines, runGate, satisfiesNodeRange, validateOptions } from "../scripts/lib/ci-gate.mjs";
+import { readYssCliPin } from "../.template-source/scripts/lib/yss-cli-pin.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const CI_GATE = path.join(ROOT, "scripts/ci-gate");
@@ -75,9 +76,9 @@ async function gate(t, options = {}, env = {}) {
   return { ...f, ...result, out: out.text, err: err.text, calls };
 }
 
-test("步骤集中在一个数组里，顺序固定，后续工作包只追加", () => {
+test("步骤集中在一个数组里，按固定顺序执行合入检查", () => {
   assert.deepEqual(STEPS.map((step) => step.id), [
-    "agent-config", "sync-skills", "skill-lock", "lifecycle-registry", "skill-registry", "handoff-tools-sync", "handoff-tools-lock", "doc-facts", "node-engines", "verify-template", "verify-candidate",
+    "agent-config", "sync-skills", "skill-lock", "lifecycle-registry", "skill-registry", "doc-facts", "node-engines", "verify-template",
   ]);
   assert.equal(new Set(STEPS.map((step) => step.id)).size, STEPS.length);
   assert.ok(STEPS.every((step) => step.title && (step.command || step.run)));
@@ -138,7 +139,7 @@ test("AC-004：推送模式全部通过，报告在仓外，仓内没有新增�
   const run = await gate(t);
   assert.equal(run.exitCode, 0, run.err);
   assert.equal(run.report.status, "passed");
-  assert.deepEqual(run.report.steps.map((step) => step.id), [...STEPS.map((step) => step.id).filter((id) => id !== "verify-candidate"), "repository-unchanged"]);
+  assert.deepEqual(run.report.steps.map((step) => step.id), [...STEPS.map((step) => step.id), "repository-unchanged"]);
   assert.ok(run.report.steps.every((step) => step.status === "passed" && step.exit_code === 0 && fs.existsSync(step.log)));
   assert.equal(run.reportPath, path.join(run.reportDir, "report.json"));
   assert.ok(path.relative(run.root, run.reportDir).startsWith(".."));
@@ -158,7 +159,7 @@ test("推送模式的 fast 以 HEAD^ 为范围基准，没有上一提交时不�
   assert.ok(fast && !fast.includes("--base"), fast);
 });
 
-test("PR 模式把完整 base SHA 交给 fast（阻断）与 candidate（非阻断）", async (t) => {
+test("PR 模式只执行 fast 阻断验证并传递完整 base SHA", async (t) => {
   const run = await gate(t, { mode: "pr" });
   assert.equal(run.exitCode, 0, run.err);
   assert.equal(run.report.base, run.base);
@@ -167,19 +168,8 @@ test("PR 模式把完整 base SHA 交给 fast（阻断）与 candidate（非阻�
   assert.equal(fast.length, 1);
   assert.match(fast[0], new RegExp(`--base ${run.base} --report-dir ${path.join(run.reportDir, "verification").replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`));
   const candidate = run.calls.filter((line) => line.startsWith("verify-template-candidate "));
-  assert.equal(candidate.length, 1);
-  assert.match(candidate[0], new RegExp(`--base ${run.base} --report-dir ${path.join(run.reportDir, "candidate").replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`));
-  assert.equal(run.report.steps.find((step) => step.id === "verify-candidate").status, "passed");
-});
-
-test("PR 模式 candidate 失败只记录，退出码仍由阻断步骤决定", async (t) => {
-  const run = await gate(t, { mode: "pr" }, { STUB_FAIL: "verify-template-candidate" });
-  assert.equal(run.exitCode, 0, run.err);
-  assert.equal(run.report.status, "passed");
-  const candidate = run.report.steps.find((step) => step.id === "verify-candidate");
-  assert.equal(candidate.status, "failed-nonblocking");
-  assert.equal(candidate.exit_code, 1);
-  assert.match(run.err, /步骤: verify-candidate/);
+  assert.equal(candidate.length, 0);
+  assert.ok(!run.report.steps.some((step) => step.id === "verify-candidate"));
 });
 
 test("AC-003：投影检查失败时输出步骤名、命令、日志与修复命令，并继续跑其它便宜检查", async (t) => {
@@ -194,7 +184,7 @@ test("AC-003：投影检查失败时输出步骤名、命令、日志与修复�
   assert.match(fs.readFileSync(failed.log, "utf8"), /sync-skills 失败输出/);
   assert.match(run.err, new RegExp(failed.log.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
   assert.equal(run.report.steps.find((step) => step.id === "skill-registry").status, "passed");
-  for (const id of ["verify-template", "verify-candidate"]) assert.equal(run.report.steps.find((step) => step.id === id).status, "skipped", id);
+  assert.equal(run.report.steps.find((step) => step.id === "verify-template").status, "skipped");
   assert.ok(!run.calls.some((line) => line.startsWith("verify-template-")));
   assert.match(run.out, /ci-gate 失败：sync-skills/);
 });
@@ -207,11 +197,12 @@ test("每个检查脚本失败都会让整体失败并落在报告里", async (t
   }
 });
 
-test("fast 失败时报告失败并保留退出码，PR 模式下 candidate 随之跳过", async (t) => {
+test("PR 模式 fast 失败时报告失败并保留退出码", async (t) => {
   const run = await gate(t, { mode: "pr" }, { STUB_FAIL: "verify-template-fast" });
   assert.equal(run.exitCode, 1);
   assert.equal(run.report.steps.find((step) => step.id === "verify-template").exit_code, 1);
-  assert.equal(run.report.steps.find((step) => step.id === "verify-candidate").status, "skipped");
+  assert.equal(run.report.status, "failed");
+  assert.ok(!run.calls.some((line) => line.startsWith("verify-template-candidate")));
 });
 
 test("非阻断步骤失败只记录，不改变退出码", async (t) => {
@@ -277,39 +268,105 @@ test("命令行：用法错误退出 2，帮助退出 0，仓库失败退出 1",
   assert.equal(failing.status, 1);
 });
 
-test("ci-setup：dry-run 只打印计划，覆盖子模块、yss 构建、pnpm 与 Python", () => {
+test("ci-setup：dry-run 只打印计划，覆盖工具链、yss 构建、pnpm 与 Python", () => {
   const sha = "0123456789abcdef0123456789abcdef01234567";
-  const result = spawnSync(CI_SETUP, ["--dry-run", "--submodules", "--yss-commit", sha], { encoding: "utf8", env: { ...process.env, CI: "" } });
+  const result = spawnSync(CI_SETUP, ["--dry-run", "--toolchain", "--yss-commit", sha], { encoding: "utf8", env: { ...process.env, CI: "" } });
   assert.equal(result.status, 0, result.stderr);
-  for (const expected of [/Node 主版本必须是 24/, /repository-mode/, /submodule update --init --depth=1 -- submodules\/yss-cli\n/, /submodule update --init -- submodules\/yss-harness-design-agent /, /sync-profile-skills --apply --profile=all/, new RegExp(sha), /pnpm --dir \.template-source\/tooling\/node install --frozen-lockfile/, /jsonschema==4\.23\.0/, /环境准备完成/]) {
+  for (const expected of [/Node 主版本必须是 24/, /repository-mode/, new RegExp(sha), /pnpm --dir \.template-source\/tooling\/node install --frozen-lockfile/, /jsonschema==4\.23\.0/, /环境准备完成/]) {
     assert.match(result.stdout, expected);
   }
-  assert.doesNotMatch(result.stdout, /--depth=1 -- submodules\/yss-harness/, "构建 yss 需要 Profile 仓库的完整历史");
-  const shallow = spawnSync(CI_SETUP, ["--dry-run", "--submodules"], { encoding: "utf8", env: { ...process.env, CI: "" } });
-  assert.match(shallow.stdout, /submodule update --init --depth=1 -- submodules\/yss-harness-design-agent /);
-  assert.match(shallow.stdout, /submodule update --init --depth=1 -- submodules\/yss-cli\n/);
+  assert.doesNotMatch(result.stdout, /submodule update|sync-profile-skills/, "Profile 已并入根仓，CI 不再初始化子模块或物化技能");
+  const shallow = spawnSync(CI_SETUP, ["--dry-run", "--toolchain"], { encoding: "utf8", env: { ...process.env, CI: "" } });
+  assert.doesNotMatch(shallow.stdout, /submodules\/yss-cli/, "yss-cli 不再是 submodule");
   const minimal = spawnSync(CI_SETUP, ["--dry-run", "--no-python"], { encoding: "utf8", env: { ...process.env, CI: "" } });
   assert.equal(minimal.status, 0, minimal.stderr);
   assert.doesNotMatch(minimal.stdout, /jsonschema|submodule update|yss-cli|sync-profile-skills/);
 });
 
-test("ci-setup：--print-versions 打印可直接追加到 GITHUB_OUTPUT 的目标版本，且不要求 CI 环境", () => {
-  const result = spawnSync(CI_SETUP, ["--print-versions"], { encoding: "utf8", env: { ...process.env, CI: "", YSS_CI_NODE_MAJOR: "", YSS_CI_PYTHON_MINOR: "" } });
+test("ci-setup：--print-versions 无 Node 也能打印 GITHUB_OUTPUT 版本，且不要求 CI 环境", (t) => {
+  const noNodePath = fs.mkdtempSync(path.join(os.tmpdir(), "yss-ci-no-node-"));
+  t.after(() => fs.rmSync(noNodePath, { recursive: true, force: true }));
+  const result = spawnSync("/bin/bash", [CI_SETUP, "--print-versions"], { encoding: "utf8", env: { ...process.env, PATH: noNodePath, CI: "", YSS_CI_NODE_MAJOR: "", YSS_CI_PYTHON_MINOR: "" } });
   assert.equal(result.status, 0, result.stderr);
-  assert.match(result.stdout, /^node=\d+\npython=\d+\.\d+\n$/);
+  assert.equal(result.stdout, "node=24\npython=3.12\n");
   const overridden = spawnSync(CI_SETUP, ["--print-versions"], { encoding: "utf8", env: { ...process.env, CI: "", YSS_CI_NODE_MAJOR: "26", YSS_CI_PYTHON_MINOR: "3.13" } });
   assert.equal(overridden.stdout, "node=26\npython=3.13\n");
 });
 
 test("ci-setup：Python 必须恰为目标版本，缺失时的补装与 Go 的补装都写进 dry-run 计划", () => {
-  const plan = spawnSync(CI_SETUP, ["--dry-run", "--submodules"], { encoding: "utf8", env: { ...process.env, CI: "" } });
+  const plan = spawnSync(CI_SETUP, ["--dry-run", "--toolchain"], { encoding: "utf8", env: { ...process.env, CI: "" } });
   assert.equal(plan.status, 0, plan.stderr);
   assert.match(plan.stdout, /不是 3\.12 时，在 root 容器内经 uv==\d+\.\d+\.\d+ 补装/);
-  assert.match(plan.stdout, /Go：版本取自 submodules\/yss-cli\/go\.mod/);
+  assert.match(plan.stdout, /Go：版本取自 yss-cli 固定文件的 go_version/);
   assert.match(plan.stdout, /go\.dev 公布的 sha256/);
   const source = fs.readFileSync(CI_SETUP, "utf8");
   assert.doesNotMatch(source, /PYTHON_FLOOR/);
   assert.match(source, /sha256sum -c/);
+});
+
+// 真实 shell 与 Git checkout；候选构建在入口以 42 停止，只证明 bootstrap 路由，不生成发行资格。
+function setupFixture(t) {
+  const directory = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), "yss-ci-setup-")));
+  t.after(() => fs.rmSync(directory, { recursive: true, force: true }));
+  const root = path.join(directory, "template"), cli = path.join(directory, "cli"), bin = path.join(directory, "bin");
+  const write = (base, ref, value, mode = 0o644) => {
+    const target = path.join(base, ref);
+    fs.mkdirSync(path.dirname(target), { recursive: true });
+    fs.writeFileSync(target, value, { mode });
+  };
+  for (const ref of ["scripts/ci-setup", ".template-source/scripts/lib/yss-cli-pin.mjs"]) {
+    write(root, ref, fs.readFileSync(path.join(ROOT, ref)), 0o755);
+  }
+  write(root, "scripts/repository-mode", "#!/usr/bin/env bash\necho template-source\n", 0o755);
+  const pin = structuredClone(readYssCliPin(ROOT));
+  write(cli, "go.mod", `module fixture\ngo ${pin.go_version}\n`);
+  write(cli, "internal/bundle/assets/bundles.json.gz", "committed bundle bytes\n");
+  write(cli, "tools/build-candidate.mjs", 'if (process.env.GOTOOLCHAIN !== "local") process.exit(44); console.error("candidate-entry-reached"); process.exit(42);\n');
+  sh(cli, "init", "-q"); sh(cli, "add", "-A"); sh(cli, "commit", "-qm", "fixed bootstrap fixture");
+  pin.commit = sh(cli, "rev-parse", "HEAD");
+  write(root, ".template-source/distribution/yss-cli-pin.json", JSON.stringify(pin));
+  write(bin, "id", "#!/usr/bin/env bash\necho 1000\n", 0o755); // Never provision the host, even when tests run as root.
+  write(bin, "go", `#!/usr/bin/env bash
+if [[ "$*" == "env GOVERSION" ]]; then echo "$TEST_GO_VERSION"; exit 0; fi
+if [[ "$1" == run ]]; then echo regenerated > internal/bundle/assets/bundles.json.gz; exit 0; fi
+exit 43
+`, 0o755);
+  fs.symlinkSync(process.execPath, path.join(bin, "node"));
+  const readPin = spawnSync(path.join(bin, "node"), [path.join(root, ".template-source/scripts/lib/yss-cli-pin.mjs"), "commit"], { encoding: "utf8" });
+  assert.equal(readPin.status, 0, readPin.stderr);
+  assert.equal(readPin.stdout.trim(), pin.commit);
+  return { root, cli, pin, run(version, extra = {}) {
+    const temp = fs.mkdtempSync(path.join(directory, "run-"));
+    const result = spawnSync(path.join(root, "scripts/ci-setup"), ["--no-python", "--yss-commit", "pin"], {
+      encoding: "utf8", env: { ...process.env, CI: "", YSS_CI_ALLOW_LOCAL: "1", YSS_CI_NODE_MAJOR: process.versions.node.split(".")[0],
+        YSS_CI_GO_VERSION: "", GOTOOLCHAIN: "auto", YSS_CLI_REPOSITORY: cli, RUNNER_TEMP: temp,
+        PATH: `${bin}${path.delimiter}${process.env.PATH}`, TEST_GO_VERSION: `go${version}`, ...extra },
+    });
+    return { ...result, checkout: path.join(temp, `yss-cli-${pin.commit}`) };
+  } };
+}
+
+test("ci-setup：构建前拒绝较新或较旧 Go，环境覆盖不能偏离 pin", (t) => {
+  const f = setupFixture(t);
+  const [major, minor, patch] = f.pin.go_version.split(".").map(Number);
+  for (const version of [`${major}.${minor}.${patch + 1}`, `${major}.${minor - 1}.0`]) {
+    const result = f.run(version);
+    assert.equal(result.status, 1, result.stderr);
+    assert.match(result.stderr, /需要精确 Go/);
+    assert.equal(fs.existsSync(result.checkout), false, "版本不符必须在 checkout 和构建前拒绝");
+  }
+  const overridden = f.run(f.pin.go_version, { YSS_CI_GO_VERSION: `${major}.${minor}.${patch + 1}` });
+  assert.equal(overridden.status, 1, overridden.stderr);
+  assert.match(overridden.stderr, /YSS_CI_GO_VERSION.*go_version/);
+});
+
+test("ci-setup：固定 Go 构建提交内资产，不在 bootstrap 重生成 Bundle", (t) => {
+  const f = setupFixture(t), result = f.run(f.pin.go_version);
+  assert.equal(result.status, 42, result.stderr); // Reached the real candidate command after all checkout/clean guards.
+  assert.match(result.stderr, /candidate-entry-reached/);
+  assert.equal(sh(result.checkout, "rev-parse", "HEAD"), f.pin.commit);
+  assert.equal(sh(result.checkout, "status", "--porcelain"), "");
+  assert.equal(fs.readFileSync(path.join(result.checkout, "internal/bundle/assets/bundles.json.gz"), "utf8"), "committed bundle bytes\n");
 });
 
 test("ci-setup：本机非 dry-run 拒绝执行，非法参数退出 2", () => {
@@ -317,10 +374,15 @@ test("ci-setup：本机非 dry-run 拒绝执行，非法参数退出 2", () => {
   assert.equal(local.status, 2);
   assert.match(local.stderr, /只在 CI 环境运行/);
   assert.equal(spawnSync(CI_SETUP, ["--dry-run", "--yss-commit", "main"], { encoding: "utf8" }).status, 2);
-  const pinned = spawnSync(CI_SETUP, ["--dry-run", "--yss-commit", "gitlink"], { encoding: "utf8", env: { ...process.env, CI: "" } });
+  const pinned = spawnSync(CI_SETUP, ["--dry-run", "--yss-commit", "pin"], { encoding: "utf8", env: { ...process.env, CI: "" } });
   assert.equal(pinned.status, 0, pinned.stderr);
-  const gitlink = spawnSync("git", ["-C", ROOT, "rev-parse", "HEAD:submodules/yss-cli"], { encoding: "utf8" }).stdout.trim();
-  assert.match(pinned.stdout, new RegExp(`从固定提交 ${gitlink} 构建 yss`));
+  const pin = readYssCliPin(ROOT);
+  assert.match(pinned.stdout, new RegExp(`从固定提交 ${pin.commit} 构建 yss`));
+  const retired = spawnSync(CI_SETUP, ["--dry-run", "--yss-commit", "gitlink"], { encoding: "utf8", env: { ...process.env, CI: "" } });
+  assert.equal(retired.status, 2, "gitlink 已取消，必须明确拒绝而不是静默回退");
+  assert.match(retired.stderr, /已取消.*pin/);
+  const source = fs.readFileSync(CI_SETUP, "utf8");
+  assert.match(source, /构建出的 yss 与固定文件的摘要不符/, "固定提交构建后必须核对固定摘要");
   assert.equal(spawnSync(CI_SETUP, ["--bogus"], { encoding: "utf8" }).status, 2);
   assert.equal(spawnSync("bash", ["-n", CI_SETUP], { encoding: "utf8" }).status, 0);
 });

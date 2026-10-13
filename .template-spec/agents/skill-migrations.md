@@ -2,6 +2,14 @@
 
 本文记录已退役技能入口的迁移路径。退役技能不保留物理目录、投影或 lock 条目；本文件是历史名称的唯一持久兼容说明。
 
+## 投影根收敛与 `product-design` 移出（2026-10-12）
+
+Codex、Cursor、Pi、Claude Code 都直接读取 `.agents/skills`，不再需要任何投影副本。模板与新实例不再分发 `.claude/skills`、`.codex/skills`、`.cursor/skills`、`.pi/skills`；注册表与锁的运行时、投影根清空，`bundle-profile.json` 随之收敛。
+
+- 旧实例升级时，这些目录里的受管文件按迁移规则提议删除，可逐文件选择保留本地内容；用户自己改过的文件不会被覆盖。
+- `product-design` 是 OpenAI 的第三方 Codex 插件，不属于模板，也不再随模板、Profile 或新实例分发。需要时由使用者按插件官方方式自行安装；生命周期路由不再把 `product-design:index` 列为必选或支持技能，`yss-prototype-stage` 与 `yss-design-system` 里「有已选视觉稿时可调用」的说明仅在已安装时适用。
+- `platform_skills` 机制保留，当前登记为空。
+
 ## `yss-harness-upgrade` 更名（2026-10-08）
 
 安装和实例维护入口统一为 `setup-yss-harness`，支持用户级独立调用、环境分流及有效授权内的规划、应用与验收。新请求命中旧 ID 返回 `skill-retired` 并指向新技能；活跃源码不保留旧目录、投影、Registry alias 或 lock 条目。

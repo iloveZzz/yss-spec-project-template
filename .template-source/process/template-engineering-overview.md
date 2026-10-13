@@ -63,7 +63,7 @@ YSS 模板工程是一套可版本化的研发治理系统。它用仓库身份�
 1. **分级**：根据 `.template-source/process/maintenance-intensity.yaml` 计算 L1 或 L2；未知 trigger 先更新策略。
 2. **更新权威资产**：修改对应的单一事实来源，避免在说明文档中复制规则。
 3. **生成投影**：涉及 skills 时同步 Agent roots 和 `skills-lock.json`；涉及生命周期结构时同步派生视图；涉及实例分发时构建固定 commit 的 CLI 快照。
-4. **Fresh verification**：实现内循环先看 `scripts/verify-template-fast --plan`，按变化行为与消费者执行必要检查，通过即停在 `implementation-ready`，报告为 `limited`；缺输入映射先补映射，不自动运行全量。PR 执行 candidate 核验；正式发布前执行 `scripts/verify-template`，核验全部适用风险。正式入口的完整 baseline 和当前资格未闭合时走独立 `legacy-full`；跨仓 CLI 正式交付另执行固定 commit 的集成测试和打包校验。
+4. **Fresh verification**：实现内循环先看 `scripts/verify-template-fast --plan`，按变化行为与消费者执行必要检查，通过即停在 `implementation-ready`，报告为 `limited`；缺输入映射先补映射，不自动运行全量。PR 执行 `scripts/verify-template-fast --base <完整 SHA>`；正式发布前执行 `scripts/verify-template --base <上一正式发行完整 SHA>`，从完整发行差异与当前输入独立选择受影响检查及依赖；缺映射拒绝，手工路径只能扩大范围。固定来源、摘要、三 Profile 安装与恢复仍必需，终检按相同基线独立重编译检查集合，不依赖资格优化或旧覆盖回退；跨仓 CLI 正式交付另执行固定 commit 的集成测试和打包校验。
 5. **审查与发布**：L1/L2 日常使用维护者自检，不强制冻结候选或独立审查；分级只决定验证强度。正式发布前执行完整 `scripts/verify-template` 和固定版本生成器集成。本地验证及已移除的 GitHub workflow 边界见 `github-workflows.md`。
 6. **发布与回滚**：先发布或提交子仓，再更新父仓 gitlink；跨仓版本、验证命令、发布顺序和回滚点必须可以重建。
 
@@ -76,18 +76,17 @@ YSS 模板工程是一套可版本化的研发治理系统。它用仓库身份�
 | 判断仓库身份和下一阶段 | `yss-product-lifecycle` |
 | 修改或退役共享 skill | `maintaining-skills` |
 | 模板实现内循环 | `scripts/verify-template-fast` |
-| PR 验证 | `scripts/verify-template-candidate`；独立审查另按显式选择执行 |
+| PR 验证 | `scripts/verify-template-fast --base <完整 SHA>`；独立审查另按显式选择执行 |
 | 校验根模板发布候选 | `scripts/verify-template` |
 | 同步共享 skill 投影 | `scripts/sync-skills` |
 | 校验 skills lock | `scripts/update-skill-lock --check` |
 | 校验生命周期注册表 | `scripts/verify-lifecycle-registry` |
-| 校验 Profile 共享工具与来源一致 | `scripts/sync-strategic-handoff-tools --check`；Profile 暂时有意保持差异时，写入 `.template-source/distribution/profile-variants.json`（原因、解除条件与副本摘要），登记不替代同步，过期或被改动的登记会让检查失败 |
-| 查看 yss-cli 来源锁落后多少（手动，不是门禁） | `scripts/verify-source-lock-lag`（只读；统计触及 Bundle 输入的提交数，超过上限时退出 1，仅用于决定要不要刷新；候选与发布验证不执行它，也不要求刷新）；刷新用 yss-cli 的 `tools/refresh-source-lock.mjs`，目标提交须已推送 |
+| 固定的 yss 二进制（版本号、构建提交、Go 版本、各平台 SHA-256） | `.template-source/distribution/yss-cli-pin.json`；`tests/yss-cli-pin.test.mjs` 校验结构，预检与 `tests/cli-retirement.test.mjs` 核对实际二进制，发布验证只接受固定的二进制与源码提交；本地联调自己构建的二进制设 `YSS_NATIVE_BINARY_OVERRIDE=1`（CI 不接受）。yss-cli 不是 submodule，也没有「落后多少」的检查：模板的普通提交不需要刷新它，发布 CLI 时才用 `tools/refresh-source-lock.mjs --tag vX.Y.Z` 钉到模板 tag |
 | 校验维护 checkpoint | `scripts/verify-maintenance-checkpoint <file>` |
 
 ### 工具链测试执行模式
 
-`scripts/verify-template-fast --tooling-mode optimized --report-dir <仓库外新目录>` 可试运行单次准备复用与受控并行。tooling 默认值的既有资格合同继续有效；完整 fast 的三档成对性能验收和正确性反例全部通过后，才切换该默认值。显式 `--tooling-mode legacy` 使用原准备路径；`legacy-full` 参考保留旧串行执行。新 Gate 策略的试验与激活另按 `github-workflows.md` 及验证 profile 核验，不以一次 optimized 成功代替资格。所有 profile 的 `--concurrency 1` 同时限制内部测试为串行。
+`scripts/verify-template-fast --tooling-mode optimized --report-dir <仓库外新目录>` 可显式使用单次准备复用与受控并行；默认 tooling 行为保持，release 使用串行执行条件。旧资格配对与策略激活层已退役。所有 profile 的 `--concurrency 1` 同时限制内部测试为串行，报告绑定实际 file、argv、cwd、env 与真实退出。
 
 当选中 tooling 完整测试入口时，两种模式均执行该入口的完整测试集合，每次重新准备固定 CLI；普通 fast 的必要选集不因此追加完整 tooling 或制品准备。优化模式仅在本次运行内复制后端插件构建产物，消费测试各自持有独立副本；构建器本身仍真实构建。Handoff 接收、入口迁移、项目接入、产品设计插件四个测试文件最多使用两个 worker；其他文件及新增文件默认串行。失败、取消、产物或输入漂移不能作为成功复用。
 

@@ -13,7 +13,7 @@ export function consumerEntry(root, capability, sourceWorkUnit) {
     ensure(identity?.kind === 'native' && identity.profile === 'spec' && profile.instantiation?.cli_package === 'yss' && profile.instantiation?.native_profile === 'spec', 'consumer-entry-invalid-spec-profile');
   }
   const dedicated = profile && !fullSpec;
-  if (dedicated) ensure(['harness.business-ddd-strategy-handoff', 'harness.backend-delivery', 'harness.frontend-delivery'].includes(profile.profile_id) && Array.isArray(profile.lifecycle?.allowed_work_units), 'consumer-entry-invalid-profile');
+  if (dedicated) ensure(['harness.business-ddd-strategy-handoff', 'harness.backend-delivery'].includes(profile.profile_id) && Array.isArray(profile.lifecycle?.allowed_work_units), 'consumer-entry-invalid-profile');
   const contractRef = scope || !dedicated ? '.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml' : '.agents/skills/harness-orchestrator/references/orchestration-contract.yaml';
   const contract = read(safe(root, contractRef));
   const target = scope?.scope_id || (dedicated ? profile.profile_id : 'yss-full-lifecycle');

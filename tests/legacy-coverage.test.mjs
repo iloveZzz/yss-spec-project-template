@@ -2,7 +2,10 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { compactLegacyCoverage, expandLegacyCoverage } from '../scripts/lib/legacy-coverage.mjs';
-import { loadVerificationProfiles } from '../scripts/lib/template-verification.mjs';
+import {readHistoricalProfiles} from '../.template-source/scripts/lib/legacy-verification.mjs';
+// 固定含旧覆盖清单的历史策略，不能随当前 HEAD 的资产退役变化。
+const root=new URL('..',import.meta.url).pathname,commit='0abbe49ee4cfd8608beab95243520888228dad41';
+const loadVerificationProfiles=()=>readHistoricalProfiles(root,commit);
 
 const EVIDENCE = '.template-source/process/template-verification-legacy.json';
 const DEFAULTS = {
@@ -83,7 +86,7 @@ test('压缩格式写错一律拒绝：未知字段、缺字段、未登记门�
   }
 });
 
-test('仓库里的 profile：展开后恰好 117 条，且内容与压缩前逐字节一致', () => {
+test('固定历史 profile：展开后恰好 117 条，且内容与压缩前逐字节一致', () => {
   const loaded = loadVerificationProfiles();
   assert.equal(loaded.legacy_coverage.length, 117);
   // 冻结的旧检查覆盖清单：压缩前展开结果的 SHA-256。要改覆盖内容必须有意识地更新这个值

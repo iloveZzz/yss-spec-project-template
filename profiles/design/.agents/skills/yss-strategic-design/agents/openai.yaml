@@ -1,0 +1,4 @@
+interface:
+  display_name: "YSS 业务方案设计"
+  short_description: "编排业务方案设计、确认点与研发交接"
+  default_prompt: "使用 $yss-strategic-design，判断当前业务方案阶段并有界推进这个需求。"

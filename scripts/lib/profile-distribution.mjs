@@ -9,7 +9,7 @@ import { spawnSync } from 'node:child_process';
  * excludePaths，就会进入每一个新实例。本检查以根仓已声明的「仅模板源」脚本为准，核对每个 Profile 有没有同样排除，并保证
  * 不用后缀规则批量移除旧实例已登记的 Skill 测试文件。判定逻辑镜像 yss-cli 的 internal/bundle/producer.go includedByManifest。
  */
-export const PROFILES = ['backend', 'design', 'frontend'];
+export const PROFILES = ['backend', 'design'];
 export const BUNDLE_PROFILE_REF = '.template-source/distribution/bundle-profile.json';
 /** 批量排除这些目录会破坏旧实例迁移；退役必须另外满足逐文件的可信来源合同。 */
 const MANAGED_TEST_SUFFIXES = ['tests', 'test'];
@@ -60,23 +60,44 @@ function readManifest(repo, label) {
   }
 }
 
-/** 评估一个 Profile，返回违规与例外状态；不写任何文件。 */
+const KERNEL_SCOPE = ['.agents/skills', 'scripts', '.template-spec/process', '.template-spec/templates'];
+/** Profile 并入根仓后已删除的机制；这些路径重新出现说明同步机制复活。 */
+export const RETIRED_MACHINERY = [
+  'scripts/sync-profile-skills', 'scripts/lib/profile-skill-sync.mjs', '.template-source/profile-skill-sync.json',
+  'scripts/sync-strategic-handoff-tools', 'scripts/verify-strategic-handoff-tools-lock',
+  '.template-source/distribution/strategic-handoff-tools.lock.json', '.template-source/distribution/profile-variants.json',
+  'scripts/lib/profile-variants.mjs', '.agents/skills/.strategic-design-skills-manifest.json',
+];
+
+/** 评估一个 Profile（内核 + _specialist + 该 Profile 的覆盖层），返回违规与例外状态；不写任何文件。 */
 export function evaluateProfile({ root, profile, rootManifest }) {
-  const repo = path.join(root, 'submodules', `yss-harness-${profile}-agent`);
-  if (!existsSync(path.join(repo, '.git'))) fail(`${profile} 的 Profile 仓库未检出，无法评估`);
-  const manifest = readManifest(repo, profile);
-  const tracked = git(repo, ['ls-files']).split('\n').filter(Boolean);
+  const overlayRoot = path.join('profiles', profile);
+  if (!existsSync(path.join(root, overlayRoot))) fail(`${profile} 缺少覆盖层目录 ${overlayRoot}`);
+  const manifest = readManifest(path.join(root, overlayRoot), profile);
+  const strip = (prefix) => git(root, ['ls-files', '--', prefix]).split('\n').filter(Boolean).map((file) => [file.slice(prefix.length + 1), file]);
+  // 同一路径后面的覆盖前面的：内核 < _specialist < 该 Profile
+  const composed = new Map();
+  for (const file of git(root, ['ls-files']).split('\n').filter(Boolean)) {
+    if (KERNEL_SCOPE.some((scope) => beneath(file, scope))) composed.set(file, file);
+  }
+  for (const prefix of ['profiles/_specialist', overlayRoot]) for (const [relative, file] of strip(prefix)) composed.set(relative, file);
+  const tracked = [...composed.keys()];
   const rootOnly = list(rootManifest, 'excludePaths').filter((entry) => entry.startsWith('scripts/'));
 
   const findings = [];
   const staleNeeds = [];
+  for (const file of tracked) {
+    if (/^\.(claude|codex|cursor|pi)\/skills(?:\/|$)/.test(file) && shipped(file, manifest)) {
+      findings.push({ kind: 'skill-projection-shipped', path: file });
+    }
+  }
   for (const entry of rootOnly) {
     const present = tracked.filter((file) => beneath(file, entry));
     if (!present.length || !shipped(present[0], manifest)) continue;
     const need = PROFILE_NEEDS[entry];
     if (need) {
       const user = need.by;
-      const text = tracked.includes(user) && shipped(user, manifest) ? readFileSync(path.join(repo, user), 'utf8') : '';
+      const text = composed.has(user) && shipped(user, manifest) ? readFileSync(path.join(root, composed.get(user)), 'utf8') : '';
       if (!text.includes(entry)) staleNeeds.push({ entry, by: user });
       continue;
     }
@@ -94,6 +115,13 @@ export function evaluateProfile({ root, profile, rootManifest }) {
     }
   }
   for (const item of collateral) findings.push({ kind: 'suffix-collateral', path: item });
+  for (const retired of RETIRED_MACHINERY) {
+    if (existsSync(path.join(root, retired))) findings.push({ kind: 'retired-machinery-present', path: retired });
+  }
+  const gitmodules = path.join(root, '.gitmodules');
+  if (existsSync(gitmodules) && /yss-harness-(design|backend|frontend)-agent/.test(readFileSync(gitmodules, 'utf8'))) {
+    findings.push({ kind: 'profile-submodule-present', path: '.gitmodules' });
+  }
   return { profile, tracked: tracked.length, findings, staleNeeds };
 }
 
@@ -104,9 +132,12 @@ export function evaluateAll(root) {
 }
 
 const MESSAGES = {
+  'skill-projection-shipped': (f) => `已退役的技能投影 ${f.path} 仍随 Profile 分发；只分发 .agents/skills`,
   'template-source-script-shipped': (f) => `根仓声明为「仅模板源」的 ${f.path}（${f.files} 个文件）会随该 Profile 的实例分发；写进该 Profile 的 excludePaths，若实例确实需要它则登记到 PROFILE_NEEDS 并写明原因`,
   'managed-test-directory-excluded': (f) => `excludePathSuffixes: "${f.path}" 会批量移除旧实例已登记的 Skill 文件；在逐文件可信退役合同完成前继续分发，避免迁移冲突`,
   'suffix-collateral': (f) => `后缀规则会误伤 ${f.path}`,
+  'retired-machinery-present': (f) => `${f.path} 属于 Profile 并入前的同步机制，已删除，不应重新出现`,
+  'profile-submodule-present': (f) => `${f.path} 重新登记了 Profile 子模块；Profile 现在是 profiles/ 下的覆盖层`,
 };
 
 export function formatReport(result) {

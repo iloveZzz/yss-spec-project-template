@@ -1,0 +1,179 @@
+# 批准记录族 Node→Go 适配层设计（AR-09c）
+
+状态：设计；分片 1～4 已实现（见 §8～§11）；分片 5 已估算（§12）；维护者确认「5c 随 AR-11」，5a 已做（§13），5b 第一、二批已做（§14、§15）。
+前置：`architecture-iteration-v1-plan.md` 的 AR-09b 行（用户决定入口已委托）。
+
+## 1. 要解决的问题
+
+批准记录的校验在 Node 里被约 25 个调用方以「进程内函数」方式使用。它们的共同点：
+
+1. 核心是 `assertCurrentApproval(record, expected, context)`：`record` 是待验记录，`expected` 是调用方**独立**算出的当前消费期望（边界、主体引用与摘要、批准范围、依据、起草者、实施者、审查上下文），`context` 提供 root、可选的 rolesDoc/registry。
+2. `expected` 的来源有三种：调用方直接给出（`approvalExpectationForBoundAsset` 等，读取磁盘上的资产算出）、由 checkpoint 里的门禁状态推出（`approvalExpectationFromState`）、由正式审查任务推出（`approvalExpectedFromTask`）。
+3. `record`、`checkpoint` 常常是尚未落盘的内存对象；它们引用的**证据资产**（主体、依据、用户决定、审查任务）已经在磁盘上。
+
+Go 一侧的 `evidence verify --kind approval` 目前只支持上述来源里的后两种（`--checkpoint`、`--task`），第一种没有入口，这是适配层缺的那一块。
+
+## 2. 关键发现：Go 内核已经有同一个核心
+
+`kernel.AssertCurrentApprovalSemantic(s, record, expected)` 与 Node 的 `validateCurrentApproval` 逻辑逐段对应（签署人规则、v2 审查任务绑定、起草者独立性、摘要新鲜度、依据覆盖、用户决定复用），`kernel.ApprovalExpectationFromState` 对应 `approvalExpectationFromState`。缺的只是命令行入口把 `expected` 直接交给它。所以本设计**不新增校验语义**，只新增入口与返回字段。
+
+## 3. 设计
+
+### 3.1 Go：`--expected <文件>`
+
+`yss evidence verify --kind approval --file <记录> --expected <期望文件> --require-approved`
+
+- 期望文件是单个期望对象，或按 `boundary` 区分的数组（与 Node `expectedFor` 对 `options.expected` 的处理一致）；批准包按每个 gate 取对应一项。
+- 与 `--checkpoint`、`--task` 互斥，同用返回 `APPROVAL_CONTEXT_REQUIRED`。
+- 期望对象字段沿用 Node：`boundary`、`subject_ref`、`subject_digest`、`approval_scope`、`basis[]`、`drafter_principal_ref`、`implementer_principal_ref`、`subject_id`、`subject_version`、`review_package`、`review_context`。
+- 不改变默认：不给 `--expected`、`--checkpoint`、`--task` 仍返回 `APPROVAL_CONTEXT_REQUIRED`（当前批准必须由独立消费者提供期望）。
+- **返回**：`coverage.approval_validated` 行 `{gate_id, bucket, subject_ref, approval_scope, execution_authorization}`，对应 Node 返回的规则与主体信息。
+
+### 3.2 Node：`nativeApprovalRecord`
+
+放在 `scripts/lib/native-evidence.mjs`，与已有的 `nativeUserDecisionRequirement` 同一模式：
+
+- 把内存里的记录与期望写到根下 `.work/native-candidates/<uuid>/`（用完即删），调用上面的命令；有 `options.checkpoint` 时同样写出候选 checkpoint 并传 `--checkpoint`（Plan 聚合批准走 Go 现有的 `plan-aggregate` 校验）。
+- 委托条件与用户决定入口一致：能唯一定位 yss；根是完整治理根；引用都在根内（对根做 realpath）；调用方没有注入 rolesDoc/read/registry。不满足则走进程内实现（过渡期）。
+- 失败时抛出带 yss 拒绝码的错误；成功返回与进程内同形的 `{bucket, subject_ref, approval_scope, execution_authorization}`。
+
+### 3.3 期望的计算留在哪
+
+分两步，不在本设计一次做完：
+
+1. 先让 Node 继续算 `expected`（`approval-consumption.mjs`、`approvalExpectationFromState` 等约 160 行，读取磁盘资产），只把**判定**交给 Go。判定是风险最集中、逻辑最重的部分。
+2. 期望的计算随后由 Go 提供（`ApprovalExpectationFromState` 已有，缺 `ForBoundAsset`/`ForCheckpoint`），Node 的这几个函数在最后一步随 Node 库一起删除。
+
+## 4. 原型验证（已做）
+
+yss-cli 分支 `arch/ar-09c` 加入 `--expected`（约 40 行，只接线，不含新校验逻辑）。在模板源仓根用合成夹具对比 Node 的 `validateApprovalRecord(record,{requireApproved,root,expected})` 与 Go 的 `--expected`，8 组结论与拒绝码全部一致：
+
+| 场景 | Node | Go |
+|---|---|---|
+| 通过 | 通过 | 通过 |
+| 审查人不是原回复者 | `APPROVAL_CURRENT_INVALID` | `APPROVAL_CURRENT_INVALID` |
+| 起草者自签 | `APPROVAL_CURRENT_INVALID` | `APPROVAL_CURRENT_INVALID` |
+| 期望范围不同 | `APPROVAL_CURRENT_INVALID` | `APPROVAL_CURRENT_INVALID` |
+| 主体被改动 | `APPROVAL_CURRENT_INVALID` | `APPROVAL_CURRENT_INVALID` |
+| 依据过期 | `APPROVAL_CURRENT_INVALID` | `APPROVAL_CURRENT_INVALID` |
+| 缺少起草者来源 | `APPROVAL_CONTEXT_REQUIRED` | `APPROVAL_CONTEXT_REQUIRED` |
+| 生物人门禁由数字人签 | `APPROVAL_CURRENT_INVALID` | `APPROVAL_CURRENT_INVALID` |
+
+覆盖范围：v1 记录、非 Plan 聚合、无 review-bundle、无 v2 审查任务。**未验证**：v2 记录与审查任务、review-bundle、Plan 聚合批准、continuation 复用。这些必须在对应分片里逐类补回放后才能委托。
+
+## 5. 已知差异与风险
+
+1. **拒绝文本不同**：拒绝码一致，但文案不同。Node 把内部码拼进文案（如 `user-decision-responder-mismatch: …`），Go 只给文案。依赖文案正则的测试或调用方，委托后会失败；迁移时要么改为匹配拒绝码，要么让 Go 在文案里保留内部码。建议后者，范围小。
+2. **`.md` 主体**：Node 的 `parseAsset` 接受正文为 JSON 的 `.md` 文件；Go 对 `.md` 要求 frontmatter。夹具里这样写的主体在 Go 下会报「审阅包身份或依据缺失」。真实资产是否有此写法需在分片 1 前扫描；有则以 Go 为准并修资产，不放宽 Go。
+3. **合成根的测试**：很多测试在只有 `yss-project.yaml` 的合成目录里跑进程内校验，不能委托。退出过渡期要把这些测试改成现场 `yss init` 的实例；这是最后的删除阻塞项，量大，需单独估算。
+4. **性能**：每次委托一次子进程，约 0.15–0.3 秒。`assertCheckpointApprovals` 会对每个已批准门禁各校验一次，一个 checkpoint 可能产生十几次调用。分片 3 里改为一次调用整份 checkpoint（`--checkpoint` 路径 Go 已支持逐门禁校验）。
+5. **候选文件的并发与残留**：临时文件名含 pid 与 uuid，`finally` 删除；进程被杀可能残留在 `.work/native-candidates`，该目录加入忽略并由 `yss` 的现有清理规则覆盖，实现时确认。
+
+## 6. 实现分片（每片独立可合并，均要求「等价回放」先于「改调用」）
+
+| 片 | 内容 | 回放要补的类别 | 调用方 |
+|---|---|---|---|
+| 1 | Go `--expected` + 返回字段；Node `nativeApprovalRecord`；`validateApprovalRecord` 在 v1、非聚合时委托 | v1 记录、各拒绝路径（原型已覆盖 8 类，补入仓库测试） | `lifecycle-transition`、`strategic-handoff`、`business-ticket-lifecycle`、`lifecycle-readiness`、`approved-execution-context`、`delivery-preflight`、`existing-backend-architecture`、`backend-review`、`backend-scaffold-prerequisites`、`yss-stage-decision` 的两个脚本 |
+| 2 | v2 记录与审查任务、review-bundle | v2 能力绑定、组合包 | 同上，含 `review-capabilities` 路径 |
+| 3 | `assertCheckpointApprovals` / `assertApprovedGateHasValidApproval` 整份 checkpoint 委托（含 Plan 聚合） | 聚合批准、门禁多状态 | `verify-lifecycle-checkpoint`（四份）、`plan-spec-entry` |
+| 4 | 期望的计算改由 Go 提供；`assertCurrentApproval`、`approvalExpectationFor*` 的调用方改传「门禁状态/资产」而非「期望」 | 期望计算对拍 | `lifecycle-controls`、`plan-spec-entry`、`business-ticket-lifecycle` 等 |
+| 5 | 退出过渡期：合成根测试改为 `yss init` 实例；删除 Node 实现与对应删除规则；技能里不再引用被退役实现 | —— | 全部 |
+
+## 7. 需要维护者确认
+
+1. 拒绝文案差异按 §5.1 建议处理（Go 在文案里保留内部码）？
+2. 分片 1 之前是否先扫描现有资产中「`.md` 主体但正文为 JSON」的用法（§5.2）？
+3. 分片 5 的合成根测试迁移是否单独成包并先估算？
+
+## 8. 分片 1 实现记录
+
+- 维护者确认：拒绝文案由 Go 保留内部码；先扫描 `.md` 主体；合成根测试迁移单独成包并先估算。
+- `.md` 主体扫描：仓库内只有 `tests/scenarios/verify-user-decision-scenarios.mjs` 的一处夹具把 JSON 写进 `subject.md`，真实资产没有；该夹具只在 Node 场景里用，未改动，新回放用 `.json` 主体。
+- Go：`--expected`（`arch/ar-09c`）；批准拒绝文案保留 `user-decision-responder-mismatch`。**未加** §3.1 的 `coverage.approval_validated`：仓库内没有调用方使用 `validateApprovalRecord` / `assertCurrentApproval` 的返回值（唯一一处在传入 rolesDoc 的 `plan-spec-entry`，不委托），适配层自行返回 `{subject_ref, approval_scope, execution_authorization}`。
+- Node：`nativeApprovalRecord`，`validateApprovalRecord` 在「v1、非 review-bundle、调用方给出显式期望、无 checkpoint、非 Plan 聚合、引用都在根内、无注入的 rolesDoc/read/registry」时委托。
+- 回放：`tests/go-validator-replay.test.mjs` 增 8 组（进程内与委托的结论、拒绝码一致，内部码保留），共 64 个通过。
+
+## 9. 分片 2 实现记录
+
+- 范围：v2 记录（带 `review_task_ref`/`review_task_digest`，期望携带 `review_context`）与 review-bundle 组合包；仍要求调用方给出显式期望。`validateApprovalRecord` 放开 v1 限制，新增 `validateApprovalRecordFile` 的委托（已落盘的记录或组合包，逐行取期望，任何一行缺期望、含 Plan 聚合行、引用越出根或 v2 缺审查任务上下文都不委托）。
+- Go 无需改动（`--expected` 数组按 boundary 取项已覆盖组合包；固定二进制仍是 `c03edea`）。
+- 回放：在模板源仓根用真实注册表与角色政策生成待审包（`prepareReviewPackage`），批准后对拍进程内与委托，6 类（通过、仍 pending、审查人自签、期望范围与任务不符、任务摘要过期、主体被改动）× 组合包文件与单行记录，结论与拒绝码一致；除「审查人自签」在读取记录结构的进程内前置检查就被拒绝外，其余拒绝都经过委托。共 70 个通过。
+- 影响范围测试：approval-current、review-capabilities、approval-consumption、lifecycle-progression、lifecycle-controls 共 94 个，以及生命周期转换场景，全部通过。
+
+## 10. 分片 3 实现记录（缩小范围）
+
+- 设计原定「整份 checkpoint 一次委托」。实现时改为在 `assertApprovedGateHasValidApproval`（`assertCheckpointApprovals` 与 `assertStrategicWorkUnitDecision` 都经过它）里，把由门禁状态算出的期望交给分片 1、2 已有的显式期望入口，并用 `--gate` 让组合包只取该门禁的行。原因：期望的计算分片 4 才迁移，整份 checkpoint 委托会让 Go 重算期望，与 Node 同时存在两套；逐门禁委托不改任何校验语义，只改判定的执行位置，且每个门禁各一次子进程的开销与进程内逐门禁校验同量级。
+- `assertCheckpointApprovals` 向内传 `defaultAuthorities`：它自己加载的 rolesDoc/registry 只是同一根的默认值，不再因此拒绝委托；调用方自己传入的 rolesDoc/registry 仍然不委托。
+- 不委托、仍在进程内：Plan 聚合批准、门禁检查（`assertGateChecks`）、自定义 rolesDoc/registry/read。
+- 回放：门禁状态 6 类（通过、审查人非原回复者、起草者自签、状态范围与记录不同、主体被改动、依据过期），进程内与委托结论和拒绝码一致，拒绝都经过委托。回放测试共 76 个通过；影响范围测试（approval-current、digital-human-roles、lifecycle-controls、用户决定场景）通过。
+
+## 11. 分片 4 实现记录
+
+- 做法与 §6 略有不同：不让调用方改传「状态/资产」，而是让 Node 的三个期望构造函数（`approvalExpectationFromState`、`approvalExpectationFromSubject`、`approvalExpectationForBoundAsset`，`ForCheckpoint` 经由第一个）在算出期望时登记「它是怎么来的」（`attachExpectationBinding`，WeakMap 保存绑定与期望快照）。委托时若期望对象与登记时完全一致，就把绑定交给 yss（`--binding`，与 `--expected` 互斥），由 yss 自己计算期望并判定；调用方改过期望的任何字段则退回显式期望。调用方代码不用改。
+- Go：`--binding`（模式 `state`、`subject`、`bound-asset`），新增 `ApprovalExpectationFromSubject`、`ApprovalExpectationForBoundAsset`，`FromState` 增加调用方 `review_package` 覆盖；算出的期望写入 `coverage.approval_expected`，供对拍。
+- 对拍：三种来源 × （通过、审查人非原回复者、主体被改动）；通过时 yss 算出的期望与 Node 的期望在关键字段（边界、主体引用与摘要、范围、依据、起草者、审阅包标志）逐项一致。
+- 已知差异：期望算出之后、校验之前主体被改动时，进程内用冻结期望报「摘要过期」，委托时 yss 按绑定在校验当下重算，报「缺少上下文」；两边都拒绝，码不同，已在测试中登记。
+- 仍在 Node：这三个构造函数的实现还在（调用方仍要拿到期望对象，进程内路径也要用）。删除它们属于分片 5，与「调用方改为只传绑定」一起做。
+- 影响范围测试：回放 86 个（含期望由 yss 计算 9 组与改动期望 1 组）、approval-current、approval-consumption、lifecycle-controls、digital-human-roles、review-capabilities、生命周期转换/用户决定/Plan→Spec 场景，全部通过。
+
+## 12. 分片 5 估算
+
+### 方法
+临时给 `nativeDelegationAvailable` 加了「不能委托时记录原因与调用点」的仪表（用完已还原，没有提交），在固定 yss 下跑 `.template-source/tooling/node/test`（28 个文件）、`scripts/fixtures/*/*.test.mjs` 和 `tests/scenarios` 的一部分，共 5028 次「本该委托却走进程内」的记录。这是实测的回退分布，不是静态猜测。场景脚本那一轮没跑完就停了（与测试集合里 15 个失败一样，其中多数是插件、投影根相关的既有失败，没有逐个对基线核对）。
+
+### 回退原因分布（5028 次）
+| 原因 | 次数 | 含义 |
+|---|---|---|
+| `read-injected` | 3835（76%） | 调用方自带 `read` 读取器 |
+| `authorities-injected` | 731（15%） | 调用方自带 rolesDoc/registry |
+| `no-profile-identity` | 约 250 | 合成根没有 Profile 身份文件 |
+| `refs-outside-root` | 约 78 | 引用落在根外（合成夹具） |
+| `root-not-governance` | 约 75 | 合成根缺治理权威文件 |
+
+### 关键结论
+1. **阻塞删除的主因在生产代码，不在测试。** `read-injected` 的 3835 次里，2321 次来自 `strategic-handoff.mjs`，997 次来自 `user-decision-reuse.mjs`（战略决定复用），723 次来自 `approved-execution-context.mjs`。前两者传入的是「交接包源」的虚拟读取器、源包自带的 rolesDoc 和合成的 registry，属于 handoff 领域（原计划第 3 步 AR-11 才退役），不是靠换成 `yss init` 实例能解决的。所以**批准/用户决定的 Node 实现在 AR-11 完成之前不能删**。
+2. 能快速解决的一类：`approved-execution-context`、`delivery-preflight`、`lifecycle-transition`、`plan-spec-entry` 里的 `read: ref=>readFileSync(safe(root, …))` 与「从同一根读出 rolesDoc 再传入」只是默认行为的重复写法，去掉冗余注入（或标 `defaultAuthorities`）即可让这些路径委托。约 6 个生产文件、每个几行，风险低。
+3. 测试里依赖合成根的文件约 13 个（`slice-contract-v3/round2`、`lifecycle-transition` 场景、`decision-continuation`、`approval-current`、`plan-review-control`、`matt-yss-integration` 场景、`plan-spec-entry` 场景、`backend-scaffold/platform-scenarios`、`digital-human-task-package` 场景、`validate-technical-design`、`approval-consumption`、`lifecycle-core/research`、`verify-scaffold-architecture-decisions`）。转换办法是提供一个测试辅助：现场 `yss init` 一次、复制为各用例的根；其中约 8 个只需换根，约 5 个还要改写测试内修改注册表/角色政策的写法（写进根里的文件而不是传参）。
+
+### 工作量（粗估，按工作包计，不含评审等待）
+| 子包 | 内容 | 规模 |
+|---|---|---|
+| 5a | 去掉冗余的 `read`/rolesDoc 注入，让默认根路径委托；每处补等价回放 | 小：约 6 个生产文件 |
+| 5b | 合成根测试辅助 + 迁移约 13 个测试文件 | 中：1 个辅助 + 约 13 个文件，其中 5 个需改写 |
+| 5c | 删除 Node 实现与对应删除规则、技能里不再引用被退役实现 | **被 AR-11 阻塞**：strategic-handoff 与 user-decision-reuse 仍依赖进程内实现 |
+
+### 建议
+- 做 5a 与 5b：它们让所有「非交接领域」的调用方真正只走一份实现，并把测试从合成根迁到真实实例，价值明确、风险可控。
+- 5c 改到 AR-11 之后：把 AR-09 的「删除」目标缩为「入口薄壳 + 非交接调用方委托」，Node 库保留给交接域，AR-11 迁完交接后再一次性删除。需要同步修订计划里 AR-09/AR-10/AR-11 的验收（AC-010 的「技能里不再引用被退役的 Node 实现」按领域分次满足）。
+- 不建议为了现在就删除而给 Go 增加「虚拟读取器/源包」入口：那等于把 handoff 的消费语义提前搬一遍。
+
+### 需要维护者确认
+1. 接受「5c 随 AR-11」并修订 AR-09 的验收范围？
+2. 5a、5b 现在就做，先 5a？
+
+## 13. 分片 5a 实现记录
+
+- 维护者确认：5c（删除 Node 实现）随 AR-11；先做 5a。AR-09 的验收范围相应缩为「入口薄壳 + 非交接调用方委托」，Node 库保留给交接域。
+- 做法：不删除任何注入，而是**标记**注入是默认等价的：`rootBoundRead(fn)` 标记「只按项目根读取」的读取器（委托判断不再把它当自带读取器）；`defaultAuthorities: true` 标记 rolesDoc/registry 是从同一根读出的默认值。进程内语义完全不变，只是不再无谓地阻止委托。
+- 标记的生产调用点：`approved-execution-context`（读取器与三处 rolesDoc）、`existing-backend-architecture`、`business-ticket-lifecycle`、`lifecycle-transition` 的 `validateTicketFormalization` 默认读取器。
+- 不标记（仍在进程内）：`delivery-preflight`（传入的是经 `sourceApprovalPolicy` 变换后的政策，不是默认值）、`strategic-handoff`、`user-decision-reuse`（交接域，随 AR-11）；三个 Profile 里各自的 `lifecycle-transition` 副本（与根不同的覆盖版本）。
+- 验证：回放测试增委托判断 1 组，共 87 个通过；`approved-execution`、`existing-backend`、`business-tickets/handoff` 夹具测试与生命周期转换场景通过，共 114 个。这些测试多用合成根，不会真的走委托路径，所以标记的实际生效由「委托判断」测试与代码走查保证；真实实例上的端到端委托留待 5b 的实例化测试覆盖。
+
+## 14. 分片 5b 第一批实现记录
+
+- 测试辅助 `tests/helpers/yss-instance.mjs`：有固定版本 yss 时，现场 `yss init --profile spec` 一次，之后每个用例复制一份（删掉复制来的 `.yss/transactions`——init 留下的已完成事务日志绑定在原路径上，复制后会被识别为身份不符）；没有 yss 时退回临时目录，测试仍可跑。
+- 迁移了三个测试：`decision-continuation`（16 个）、`approval-current` 的 `fixture` 部分、`approval-consumption`（4 个）。这是第一次在真实实例上端到端走委托：延续证明由 yss 校验、批准按绑定期望校验。
+- 因此暴露并修掉的差异：
+  1. 延续证明通过时调用方需要 `continued`、`review_ref`：yss 新增 `coverage.user_decision_continuation`。
+  2. 调用方需要通过校验的会签规则（`bucket` 等）：yss 新增 `coverage.approval_validated`。
+  3. **绑定重算削弱了「期望冻结」**：主体在算出期望之后被改动、记录又随之更新时，按绑定重算会放行，进程内（冻结期望）会拒绝。修法：绑定条目随带冻结的期望（`frozen`），yss 重算后必须与之一致，否则 `APPROVAL_CURRENT_INVALID: 当前主体摘要与消费边界冻结摘要不匹配`，与进程内措辞一致。
+  4. 两处措辞不同的拒绝（决定依据变化的延续、组合包里 rejected 的行）：测试里放宽为接受两种措辞，码相同。
+- 已知限制：两个测试进程同时在模板源仓根下写 `.work` 并运行 yss 时，yss 的 Context 扫描会因目录变化报 `INPUT_DRIFT`（观察到一次）。`--test-concurrency=1`（fast 检查的默认）下不会发生；并行跑多个会写模板源仓根的测试文件时可能偶发。
+- 本批后依赖合成根的文件还剩约 10 个（见 §12），其中需要改写注册表写法的约 5 个。
+
+## 15. 分片 5b 第二批实现记录
+
+- 迁移 `tests/scenarios/verify-plan-spec-entry-scenarios.mjs`：其 Plan 夹具（`scripts/fixtures/user-decision/plan-fixture.mjs`）原先在合成根里写最小 `yss-project.yaml`，现在根已是真实实例时保留实例自己的身份文件，合成根才写最小身份。场景里 15+ 个 Plan 夹具根改用 `makeRoot`；用计数包装的 yss 实测，这个场景现在有 13 次 `evidence verify` 真正走到 yss（此前为 0）。无 yss 时同样通过。
+- 辅助 `makeRoot` 的退出清理改为统一的一个 `exit` 监听，避免多次创建时的监听器警告。
+- 验证登记要点（踩过）：`tests/scenarios/` 下由 `scripts/` 迁来的场景文件，在核验计划里按**历史路径**（`scripts/verify-*-scenarios`）匹配，登记检查的输入模式与命令要用历史路径，否则报「先登记本次行为和消费者」。
+- 评估后暂缓的文件：`slice-contract-v3/round2` 与 `approved-execution` 夹具族（根由 `approvedFixture`/`pilotFixture` 多层构造，已有 `nativeSeed` 机制，应改为复用它而不是 `makeRoot`）、`plan-review-control`（本身有多项既有失败，先修基线再迁）、`lifecycle-transition` 场景（大量调用不传 `root`，需逐个补）、`validate-technical-design` 等技能脚本测试。这些各自要改的是夹具构造，不是简单换根，逐个估算后再做。

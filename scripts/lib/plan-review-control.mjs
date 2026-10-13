@@ -5,7 +5,6 @@ import { readWorkLayout } from './work-layout.mjs';
 import { safeFile, orchestrationRef } from './governance-io.mjs';
 import { parseAsset, canonicalValue, serializeAsset, byteDigest, validateAssetStructure, TOOL_ROOT } from './structured-assets.mjs';
 import { runAssetTransaction } from './asset-transactions.mjs';
-import { verifyUserDecisionFile } from './user-decision.mjs';
 import { validateJsonSchema } from './json-schema.mjs';
 
 export const PLAN_REVIEW_PROTOCOL = 'bounded-plan-review-v1';
@@ -207,7 +206,8 @@ export function successorPlanReview(checkpoint, input, options = {}) {
   ensure(text(input.decision_subject_ref), 'PLAN_REVIEW_SUCCESSOR_REQUIRED', '缺少已展示范围变化资产');
   ensure(changes.some(row => row.ref === input.decision_subject_ref), 'PLAN_REVIEW_SUCCESSOR_REQUIRED', '真实决定必须覆盖本次差异');
   // Even tests which omit file evidence must supply an explicit decision verifier; no approved boolean is accepted.
-  const verifyDecision = options.verifyDecision || verifyUserDecisionFile;
+  const verifyDecision = options.verifyDecision;
+  ensure(typeof verifyDecision === 'function', 'PLAN_REVIEW_SUCCESSOR_REQUIRED', '后继周期必须由入口提供真实用户决定核验器');
   const checked = verifyDecision(input.user_decision_ref, { ...options, expected: [{ boundary: policy.aggregate_gate, subject_ref: input.decision_subject_ref, scope: input.scope_ids }] });
   ensure(checked?.validated?.length > 0, 'PLAN_REVIEW_SUCCESSOR_REQUIRED', '未核验真实用户决定');
   const control = freshControl(input, policy, { kind: 'successor', source_ref: changes[0].ref, source_digest: changes[0].digest }, options);

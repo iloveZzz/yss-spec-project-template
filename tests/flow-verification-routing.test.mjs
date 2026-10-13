@@ -7,7 +7,7 @@ import path from 'node:path';
 import { planTemplateVerification } from '../scripts/lib/template-verification.mjs';
 
 test('Plan/Spec、编排与 checkpoint 变更选择实际行为检查', () => {
-  for (const profile of ['fast', 'candidate']) {
+  for (const profile of ['fast', 'release']) {
     for (const file of ['.template-spec/templates/spec-template.md', '.template-spec/plan/templates/plan-template.md', '.template-spec/process/plan-spec-quality.md', '.template-spec/templates/examples/plan-spec/ordinary-valid.md']) {
       const plan = planTemplateVerification({ profile, changedFiles: [file] });
       assert.ok(plan.groups.includes('plan-spec-content'), `${profile}: ${file}`);
@@ -21,6 +21,7 @@ test('Plan/Spec、编排与 checkpoint 变更选择实际行为检查', () => {
   const combined = planTemplateVerification({ changedFiles: ['.template-spec/templates/spec-template.md', '.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml'] });
   assert.ok(combined.groups.includes('plan-spec-content') && combined.groups.includes('skills') && combined.groups.includes('lifecycle'));
   assert.throws(() => planTemplateVerification({ changedFiles: ['unmapped-file.xyz'] }), /UNKNOWN_VERIFICATION_PATH/);
+  assert.throws(() => planTemplateVerification({ profile: 'candidate', changedFiles: ['AGENTS.md'] }), /未知核验 profile/);
   assert.equal(planTemplateVerification({ changedFiles: ['scripts/run-template-verification'] }).effective_profile, 'fast');
 });
 
@@ -54,8 +55,11 @@ test('输出失败不返回成功',t=>{
 
 test('tooling 模式显式可选，串行限制传播且 release 强制 legacy', () => {
   const plan = (file, mode, concurrency = '4', profile='fast') => {
+    const base = spawnSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' });
+    assert.equal(base.status, 0, base.stderr);
     const r = spawnSync(process.execPath, ['scripts/run-template-verification', '--plan', '--json', '--changed-file', file,
-      '--tooling-mode', mode, '--concurrency', concurrency,'--profile',profile,'--selection','legacy'], { encoding: 'utf8', maxBuffer: 4 * 1024 * 1024 });
+      '--tooling-mode', mode, '--concurrency', concurrency,'--profile',profile,'--selection',profile==='release'?'impact':'legacy',
+      ...(profile==='release'?['--base',base.stdout.trim()]:[])], { encoding: 'utf8', maxBuffer: 4 * 1024 * 1024 });
     assert.equal(r.status, 0, r.stderr); return JSON.parse(r.stdout);
   };
   assert.equal(plan('.template-source/tooling/node/test/plugin-project.test.mjs', 'optimized').tooling.effective_mode, 'optimized');

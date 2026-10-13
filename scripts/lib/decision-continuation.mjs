@@ -1,4 +1,4 @@
-import { decisionIO, decisionDigest, decisionError, assertUserDecisionRequirement } from './user-decision.mjs';
+import { decisionIO, decisionDigest, decisionError } from './user-decision-core.mjs';
 
 export const CONTINUATION_CAPABILITY = 'approved-scope-continuation-v1';
 const fail = message => decisionError('user-decision-continuation-invalid', message);
@@ -19,7 +19,8 @@ export function assertDecisionContinuation(requirement, roles, options = {}) {
     return parse ? io.document(asset.ref) : null;
   };
   if (!proof.source || proof.source.continuation_ref || proof.source.boundary !== 'delivery-scope') fail('必须引用原始交付范围批准，不能链式扩权');
-  const sourceResult = assertUserDecisionRequirement(proof.source, { ...options, rolesDoc: roles });
+  if (typeof options.assertRequirement !== 'function') fail('缺少原始交付范围批准的核验器（由 user-decision 注入）');
+  const sourceResult = options.assertRequirement(proof.source, { ...options, rolesDoc: roles });
   const mandate = io.document(proof.source.subject_ref);
   if (mandate.schema_version !== 1 || mandate.kind !== 'delivery-authorization' || !Array.isArray(mandate.targets)) fail('缺少已展示并批准的交付授权清单');
   if (!requirement.scope.every(x => proof.source.scope.includes(x))) fail('超出原始批准范围');
@@ -71,7 +72,7 @@ export function assertDecisionContinuation(requirement, roles, options = {}) {
     for (const principal of obligation.principals) {
       const reply = proof.external_decisions?.find(x => x.obligation_id === obligation.id && x.principal_ref === principal);
       if (!reply || reply.requirement?.continuation_ref || reply.requirement?.boundary !== requirement.boundary || reply.requirement?.subject_ref !== requirement.subject_ref || !sameSet(reply.requirement?.scope, requirement.scope)) fail('外部强制审批缺失或范围不符');
-      const result = assertUserDecisionRequirement(reply.requirement, { ...options, rolesDoc: roles });
+      const result = options.assertRequirement(reply.requirement, { ...options, rolesDoc: roles });
       if (!result.validated.length || result.validated.some(x => x.principal_ref !== principal)) fail('外部审批人与制度要求不符');
     }
   }
