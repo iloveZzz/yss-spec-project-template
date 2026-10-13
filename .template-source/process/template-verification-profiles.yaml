@@ -1062,6 +1062,7 @@ profiles:
           - ".template-source/distribution/yss-cli-pin.json"
           - "tests/cli-retirement.test.mjs"
           - ".template-source/scripts/lib/native-yss.mjs"
+          - ".template-source/scripts/lib/verification-artifacts.mjs"
           - "submodules/create-yss-spec/**"
         depends_on: []
         failure_mode: "固定的 yss 二进制与 yss-cli 固定文件的版本、提交或摘要不符，或原生 CLI 消费入口、兼容或来源身份错误"
