@@ -283,10 +283,12 @@ test("ci-setup：dry-run 只打印计划，覆盖工具链、yss 构建、pnpm �
   assert.doesNotMatch(minimal.stdout, /jsonschema|submodule update|yss-cli|sync-profile-skills/);
 });
 
-test("ci-setup：--print-versions 打印可直接追加到 GITHUB_OUTPUT 的目标版本，且不要求 CI 环境", () => {
-  const result = spawnSync(CI_SETUP, ["--print-versions"], { encoding: "utf8", env: { ...process.env, CI: "", YSS_CI_NODE_MAJOR: "", YSS_CI_PYTHON_MINOR: "" } });
+test("ci-setup：--print-versions 无 Node 也能打印 GITHUB_OUTPUT 版本，且不要求 CI 环境", (t) => {
+  const noNodePath = fs.mkdtempSync(path.join(os.tmpdir(), "yss-ci-no-node-"));
+  t.after(() => fs.rmSync(noNodePath, { recursive: true, force: true }));
+  const result = spawnSync("/bin/bash", [CI_SETUP, "--print-versions"], { encoding: "utf8", env: { ...process.env, PATH: noNodePath, CI: "", YSS_CI_NODE_MAJOR: "", YSS_CI_PYTHON_MINOR: "" } });
   assert.equal(result.status, 0, result.stderr);
-  assert.match(result.stdout, /^node=\d+\npython=\d+\.\d+\n$/);
+  assert.equal(result.stdout, "node=24\npython=3.12\n");
   const overridden = spawnSync(CI_SETUP, ["--print-versions"], { encoding: "utf8", env: { ...process.env, CI: "", YSS_CI_NODE_MAJOR: "26", YSS_CI_PYTHON_MINOR: "3.13" } });
   assert.equal(overridden.stdout, "node=26\npython=3.13\n");
 });
@@ -300,6 +302,71 @@ test("ci-setup：Python 必须恰为目标版本，缺失时的补装与 Go 的�
   const source = fs.readFileSync(CI_SETUP, "utf8");
   assert.doesNotMatch(source, /PYTHON_FLOOR/);
   assert.match(source, /sha256sum -c/);
+});
+
+// 真实 shell 与 Git checkout；候选构建在入口以 42 停止，只证明 bootstrap 路由，不生成发行资格。
+function setupFixture(t) {
+  const directory = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), "yss-ci-setup-")));
+  t.after(() => fs.rmSync(directory, { recursive: true, force: true }));
+  const root = path.join(directory, "template"), cli = path.join(directory, "cli"), bin = path.join(directory, "bin");
+  const write = (base, ref, value, mode = 0o644) => {
+    const target = path.join(base, ref);
+    fs.mkdirSync(path.dirname(target), { recursive: true });
+    fs.writeFileSync(target, value, { mode });
+  };
+  for (const ref of ["scripts/ci-setup", ".template-source/scripts/lib/yss-cli-pin.mjs"]) {
+    write(root, ref, fs.readFileSync(path.join(ROOT, ref)), 0o755);
+  }
+  write(root, "scripts/repository-mode", "#!/usr/bin/env bash\necho template-source\n", 0o755);
+  const pin = structuredClone(readYssCliPin(ROOT));
+  write(cli, "go.mod", `module fixture\ngo ${pin.go_version}\n`);
+  write(cli, "internal/bundle/assets/bundles.json.gz", "committed bundle bytes\n");
+  write(cli, "tools/build-candidate.mjs", 'if (process.env.GOTOOLCHAIN !== "local") process.exit(44); console.error("candidate-entry-reached"); process.exit(42);\n');
+  sh(cli, "init", "-q"); sh(cli, "add", "-A"); sh(cli, "commit", "-qm", "fixed bootstrap fixture");
+  pin.commit = sh(cli, "rev-parse", "HEAD");
+  write(root, ".template-source/distribution/yss-cli-pin.json", JSON.stringify(pin));
+  write(bin, "id", "#!/usr/bin/env bash\necho 1000\n", 0o755); // Never provision the host, even when tests run as root.
+  write(bin, "go", `#!/usr/bin/env bash
+if [[ "$*" == "env GOVERSION" ]]; then echo "$TEST_GO_VERSION"; exit 0; fi
+if [[ "$1" == run ]]; then echo regenerated > internal/bundle/assets/bundles.json.gz; exit 0; fi
+exit 43
+`, 0o755);
+  fs.symlinkSync(process.execPath, path.join(bin, "node"));
+  const readPin = spawnSync(path.join(bin, "node"), [path.join(root, ".template-source/scripts/lib/yss-cli-pin.mjs"), "commit"], { encoding: "utf8" });
+  assert.equal(readPin.status, 0, readPin.stderr);
+  assert.equal(readPin.stdout.trim(), pin.commit);
+  return { root, cli, pin, run(version, extra = {}) {
+    const temp = fs.mkdtempSync(path.join(directory, "run-"));
+    const result = spawnSync(path.join(root, "scripts/ci-setup"), ["--no-python", "--yss-commit", "pin"], {
+      encoding: "utf8", env: { ...process.env, CI: "", YSS_CI_ALLOW_LOCAL: "1", YSS_CI_NODE_MAJOR: process.versions.node.split(".")[0],
+        YSS_CI_GO_VERSION: "", GOTOOLCHAIN: "auto", YSS_CLI_REPOSITORY: cli, RUNNER_TEMP: temp,
+        PATH: `${bin}${path.delimiter}${process.env.PATH}`, TEST_GO_VERSION: `go${version}`, ...extra },
+    });
+    return { ...result, checkout: path.join(temp, `yss-cli-${pin.commit}`) };
+  } };
+}
+
+test("ci-setup：构建前拒绝较新或较旧 Go，环境覆盖不能偏离 pin", (t) => {
+  const f = setupFixture(t);
+  const [major, minor, patch] = f.pin.go_version.split(".").map(Number);
+  for (const version of [`${major}.${minor}.${patch + 1}`, `${major}.${minor - 1}.0`]) {
+    const result = f.run(version);
+    assert.equal(result.status, 1, result.stderr);
+    assert.match(result.stderr, /需要精确 Go/);
+    assert.equal(fs.existsSync(result.checkout), false, "版本不符必须在 checkout 和构建前拒绝");
+  }
+  const overridden = f.run(f.pin.go_version, { YSS_CI_GO_VERSION: `${major}.${minor}.${patch + 1}` });
+  assert.equal(overridden.status, 1, overridden.stderr);
+  assert.match(overridden.stderr, /YSS_CI_GO_VERSION.*go_version/);
+});
+
+test("ci-setup：固定 Go 构建提交内资产，不在 bootstrap 重生成 Bundle", (t) => {
+  const f = setupFixture(t), result = f.run(f.pin.go_version);
+  assert.equal(result.status, 42, result.stderr); // Reached the real candidate command after all checkout/clean guards.
+  assert.match(result.stderr, /candidate-entry-reached/);
+  assert.equal(sh(result.checkout, "rev-parse", "HEAD"), f.pin.commit);
+  assert.equal(sh(result.checkout, "status", "--porcelain"), "");
+  assert.equal(fs.readFileSync(path.join(result.checkout, "internal/bundle/assets/bundles.json.gz"), "utf8"), "committed bundle bytes\n");
 });
 
 test("ci-setup：本机非 dry-run 拒绝执行，非法参数退出 2", () => {

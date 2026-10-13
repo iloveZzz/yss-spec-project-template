@@ -110,13 +110,14 @@ ensure_python() {
 # Go 版本取自 yss-cli 固定文件的 go_version（构建出固定摘要的那个版本，克隆源码后还会与 go.mod 核对），不在这里再写一份；校验值取自 go.dev 公布的发布清单。
 ensure_go() {
   local required have arch file sha tmp
-  required="${YSS_CI_GO_VERSION:-$(node "$ROOT_DIR/$YSS_CLI_PIN" go_version 2>/dev/null || true)}"
+  required="$(node "$ROOT_DIR/$YSS_CLI_PIN" go_version 2>/dev/null || true)"
   [[ -n "$required" ]] || fail "无法从 yss-cli 固定文件读出所需 Go 版本"
+  [[ -z "${YSS_CI_GO_VERSION:-}" || "$YSS_CI_GO_VERSION" == "$required" ]] || fail "YSS_CI_GO_VERSION 必须等于固定文件的 go_version ${required}"
   if command -v go >/dev/null; then
     have="$(go env GOVERSION | sed 's/^go//')"
-    [[ "$(printf '%s\n%s\n' "$required" "$have" | sort -V | head -n1)" == "$required" ]] && return 0
+    [[ "$have" == "$required" ]] && return 0
   fi
-  can_provision || fail "需要 Go ${required} 或更新（当前 ${have:-未安装}）；请在 runner 镜像或 setup-go 中提供"
+  can_provision || fail "需要精确 Go ${required}（当前 ${have:-未安装}）；请在 runner 镜像或 setup-go 中提供"
   case "$(uname -m)" in x86_64) arch=amd64 ;; aarch64 | arm64) arch=arm64 ;; *) fail "不支持的架构 $(uname -m)" ;; esac
   read -r file sha < <(node -e '
     fetch("https://go.dev/dl/?mode=json&include=all").then((r) => r.json()).then((releases) => {
@@ -133,6 +134,7 @@ ensure_go() {
   ln -sf /usr/local/go/bin/go /usr/local/bin/go && ln -sf /usr/local/go/bin/gofmt /usr/local/bin/gofmt
   hash -r
   rm -rf "$tmp"
+  [[ "$(go env GOVERSION)" == "go${required}" ]] || fail "补装后 Go 仍不是 ${required}"
 }
 
 step "Node 主版本必须是 ${YSS_CI_NODE_MAJOR}（由 runner 镜像或 setup-node 提供）"
@@ -147,11 +149,12 @@ fi
 step "确认仓库模式为 template-source"
 if ((!dry_run)); then test "$(scripts/repository-mode)" = template-source; else echo "+ test \"\$(scripts/repository-mode)\" = template-source"; fi
 
-if ((toolchain)); then
+if ((toolchain)) || [[ -n "$yss_commit" ]]; then
   step "Go：版本取自 yss-cli 固定文件的 go_version"
   if ((dry_run)); then
-    echo "+ go 缺失或低于固定文件的 go_version 时，在 root 容器内按 go.dev 公布的 sha256 安装"
+    echo "+ go 缺失或不等于固定文件的 go_version 时，在 root 容器内按 go.dev 公布的 sha256 安装"
   else
+    export GOTOOLCHAIN=local # 固定编译器，不允许 go.mod 触发自动工具链切换。
     ensure_go
   fi
 fi
@@ -159,7 +162,7 @@ fi
 if [[ -n "$yss_commit" ]]; then
   step "从固定提交 ${yss_commit} 构建 yss"
   if ((dry_run)); then
-    echo "+ git fetch --depth 1 ${YSS_CLI_REPOSITORY} ${yss_commit} → go run ./tools/bundle → node tools/build-candidate.mjs（官方候选构建配方；没有该脚本的旧提交退回 go build -trimpath）"
+    echo "+ git fetch --depth 1 ${YSS_CLI_REPOSITORY} ${yss_commit} → 使用提交内 Bundle 运行 node tools/build-candidate.mjs（官方候选构建配方；没有该脚本的旧提交退回 go build -trimpath）"
   else
     command -v go >/dev/null || { echo "构建 yss 需要 go；请在 runner 镜像中提供" >&2; exit 1; }
     yss_source="$(work_dir)/yss-cli-${yss_commit}"
@@ -173,7 +176,7 @@ if [[ -n "$yss_commit" ]]; then
       go_mod_version="$(sed -n 's/^go \([0-9][0-9.]*\)$/\1/p' "$yss_source/go.mod" | head -n1)"
       [[ "$go_mod_version" == "$(node "$ROOT_DIR/$YSS_CLI_PIN" go_version)" ]] || fail "固定提交的 go.mod 要求 Go ${go_mod_version}，与 yss-cli 固定文件的 go_version 不一致"
     fi
-    (cd "$yss_source" && go run ./tools/bundle --source-root "$ROOT_DIR" --lock docs/source-lock.json --out internal/bundle/assets)
+    # pin 的摘要绑定已提交资产；Bundle 在发行阶段由 artifacts 工具生成并校验，bootstrap 不重生成。
     test -z "$(git -C "$yss_source" status --porcelain --untracked-files=normal)"
     if [[ -f "$yss_source/tools/build-candidate.mjs" ]]; then
       # yss-cli 自带的候选构建配方：固定 Go 环境、-mod=readonly -trimpath -buildvcs=false，提交号与来源状态用 -X 写入，并留下构建收据。
