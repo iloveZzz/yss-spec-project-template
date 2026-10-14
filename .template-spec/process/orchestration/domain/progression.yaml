@@ -1,0 +1,170 @@
+# owner: yss-product-lifecycle
+# consumers: lifecycle route/query, current Profile workflows and governance validators
+progression_target:
+  schema_version: 1
+  required_capabilities:
+    - lifecycle-target-v1
+  config_file: progression-target.json
+  schema: .template-spec/process/schemas/progression-target.schema.json
+  default_target: business-accepted
+  scope_defaults:
+    plan-to-backend: backend-deliverable
+  writer_profiles:
+    - spec
+  default_applies_to: new-governed-feature-or-explicitly-synced-policy-readonly-default
+  legacy_instances: no-policy-requires-explicit-sync-never-backfill-sidecar-or-rewrite-checkpoint
+  identity_source: unique-map-checkpoint-registration-under-tracker-root
+  state_owner: checkpoint-and-current-original-verification
+  independent_of:
+    - checkpoint-bytes
+    - approval-bytes
+    - frozen-handoff-closure
+    - profile-terminal
+  change_target: preserve-next-and-current-approvals-revalidate-before-resume
+  writes_after_target_reached: stop-dispatch-preserve-next
+  unverifiable_target: block-affected-dispatch
+  execution_scope_upper_bound: preserve-and-reject-target-beyond-scope
+  specialist_status: explicit-same-feature-checkpoint-and-current-receipt-only
+  local_implementation_inputs: native-spec-current-feature-approved-assets
+  consumer_limit_per_profile: 1
+  release_authorization: separate-explicit-action
+  completion_policy:
+    spec-approved:
+      public_name: Spec 批准
+      required_gates:
+        - gate.spec-baseline-approved
+      required_checks:
+        - business-tickets-draft
+      allowed_execution_scopes:
+        - plan-to-backend
+    product-design-completed:
+      public_name: 产品设计完成
+      required_gates:
+        - gate.spec-baseline-approved
+        - gate.product-design-approved
+      required_checks:
+        - business-tickets-formal
+      conditional_required_checks:
+        strategic-handoff-delivery: explicit-external-implementation-consumer
+      conditional_gates:
+        gate.product-design-approved: product-design-impact
+      no_ui_presentation: not-applicable-with-current-impact-evidence
+      strategic_handoff_terminal: separate-responsibility
+      allowed_execution_scopes:
+        - plan-to-backend
+    backend-deliverable:
+      public_name: 后端可交付
+      required_gates:
+        - gate.engineering-contract-approved
+        - gate.slice-contract-approved
+      required_checks:
+        - backend-delivery
+      backend_completion_mode: local-current-verification-or-required-external-package
+      conditional_required_checks:
+        strategic-handoff-delivery: explicit-external-implementation-consumer
+      allowed_execution_scopes:
+        - plan-to-backend
+    business-accepted:
+      public_name: 业务验收
+      required_gates:
+        - gate.delivery-accepted
+      required_checks:
+        - business-acceptance
+      conditional_required_checks:
+        strategic-handoff-delivery: explicit-external-implementation-consumer
+        backend-delivery: backend-api-data-impact
+      allowed_execution_scopes: []
+  external_strategic_handoff:
+    work_unit: work-unit.strategic-design-handoff
+    gate: gate.strategic-design-handoff-approved
+    artifact: artifact.strategic-design-handoff
+    trigger: explicit-external-implementation-consumer
+    source_capability: business-ticket-approval-v1
+    source_drafter: role.product-manager
+    independent_reviewer: role.requirements-manager
+    default_local_self_export_or_import: forbidden
+    completion_requires: current-source-approvals-and-immutable-package-verification
+    receiver_receipt_blocks_source_completion: false
+    shared_progress_requires: explicit-consumer-checkpoint-and-current-receipt
+profile_guidance:
+  schema_version: 1
+  links_file: .yss-profile-links.json
+  required_capabilities:
+    - profile-guidance-v1
+    - spec-baseline-v1
+  routes:
+    spec:
+      targets:
+        - design
+        - backend
+      default: continue-current-spec
+    design:
+      targets:
+        - backend
+    backend:
+      targets: []
+  evidence: explicit-profile-links-and-current-approved-inputs
+  emit_on:
+    - approved-baseline
+    - completed-profile-responsibility
+    - status-request
+    - resume
+  recommendation: read-only-never-initialization-or-approval
+  confirmation: explicit-user-target-choice-before-prepare-or-import
+  unregistered_target: unknown-never-inferred-from-neighbor-directories
+  design_intake: frozen-spec-baseline-then-target-context-reconciliation
+  role_boundary: recommend-downstream-profile-without-dispatching-its-implementation
+  progression_intent: one-spec-controller-with-optional-specialists
+  specialist_terminal_is_business_acceptance: false
+execution_scopes:
+  plan-to-backend:
+    activation_ref: .yss-execution-scope.yaml
+    validator: scripts/lib/lifecycle-execution-scope.mjs
+    terminal_work_unit: work-unit.backend-delivery
+    terminal_record: .yss-backend-delivery.json
+    allowed_work_units:
+      - work-unit.entry-triage
+      - work-unit.plan-opportunity
+      - work-unit.plan-requirements
+      - work-unit.domain-strategy-design
+      - work-unit.stage-decision
+      - work-unit.spec-synthesis
+      - work-unit.prototype-design-v2
+      - work-unit.technical-analysis
+      - work-unit.implementation-repository-preparation
+      - work-unit.scaffold-generation
+      - work-unit.ticket-decomposition
+      - work-unit.slice-implementation
+      - work-unit.code-review
+      - work-unit.backend-delivery
+      - work-unit.business-ticket-formalization
+    route_overrides:
+      work-unit.code-review:
+        - work-unit.slice-implementation
+        - work-unit.backend-delivery
+      work-unit.slice-implementation:
+        - work-unit.code-review
+      work-unit.backend-delivery: []
+    product_ui_design: retain-all-triggered-gates
+    implementation_delivery_roles:
+      - backend
+    implementation_ui_impact: false
+    consumer_capabilities:
+      - backend-technical-design
+    completion_claim: backend-delivery-only
+    business_completion: forbidden
+    release: forbidden
+    resume: revalidate-current-scope-approvals-and-delivery
+consumer_entry_routes:
+  yss-full-lifecycle:
+    backend-technical-design:
+      source_work_unit: work-unit.technical-design
+      target_work_unit: work-unit.technical-analysis
+  plan-to-backend:
+    backend-technical-design:
+      source_work_unit: work-unit.technical-design
+      target_work_unit: work-unit.technical-analysis
+  harness.backend-delivery:
+    backend-technical-design:
+      source_work_unit: work-unit.technical-design
+      target_work_unit: work-unit.technical-design

@@ -1,3 +1,4 @@
+import { loadOrchestrationContract } from '../../../../scripts/lib/orchestration-contract.mjs';
 import { makeRoot } from '../../../../tests/helpers/yss-instance.mjs';
 import { contextBinary } from '../../../../scripts/lib/native-context.mjs';
 import { composeProfileTree } from '../../../../scripts/lib/profile-tree.mjs';
@@ -20,7 +21,7 @@ function fixture(t) {
   const write = (ref, value) => {fs.mkdirSync(path.dirname(path.join(root, ref)), {recursive: true}); fs.writeFileSync(path.join(root, ref), value);};
   write('yss-project.yaml', 'schema_version: 1\nrepository_mode: project-instance\n');
   write('.template-spec/agents/issue-tracker.md', '---\ntracker:\n  platform: local-markdown\n  root: .work\n---\n');
-  write('.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml', 'schema_version: 1\nprogression_target:\n  schema_version: 1\n  required_capabilities: [lifecycle-target-v1]\n  config_file: progression-target.json\n  writer_profiles: [spec]\n  default_target: business-accepted\n  completion_policy:\n    spec-approved:\n      public_name: Spec批准\n      required_gates: [gate.spec-baseline-approved]\n      required_checks: [business-tickets-draft]\n');
+  write('.template-spec/process/orchestration-contract.yaml', 'schema_version: 1\nprogression_target:\n  schema_version: 1\n  required_capabilities: [lifecycle-target-v1]\n  config_file: progression-target.json\n  writer_profiles: [spec]\n  default_target: business-accepted\n  completion_policy:\n    spec-approved:\n      public_name: Spec批准\n      required_gates: [gate.spec-baseline-approved]\n      required_checks: [business-tickets-draft]\n');
   const checkpointRef = '.work/package-one/checkpoint.yaml';
   write(checkpointRef, 'schema_version: 1\nrepository_mode: project-instance\nfeature_id: feature-one\nstatus: completed\ngates:\n  gate.spec-baseline-approved:\n    status: approved\n');
   write('.work/package-one/map.md', `---\ncheckpoint_ref: ${checkpointRef}\n---\n# Feature\n`);
@@ -83,7 +84,7 @@ for (const profile of ['design', 'backend']) test(`specialist non-Slice ${profil
     assert.equal(fs.existsSync(path.join(f.root, f.configRef)), false);
   }
   const intent = readProgressionTarget({root: f.root, checkpointRef: f.checkpointRef, includeDefault: true});
-  const policy = parseDocument(fs.readFileSync(path.join(f.root, intent.contract_ref), 'utf8')).toJS();
+  const policy = loadOrchestrationContract(ref=>fs.readFileSync(path.join(f.root,ref)),intent.contract_ref).value;
   delete policy.progression_target; f.write(intent.contract_ref, JSON.stringify(policy));
   assert.doesNotThrow(() => f.module.validateTaskPackage(f.pkg));
 });
@@ -121,7 +122,7 @@ test('活动map目录仅定位功能包，不把canonical feature ID当slug目�
     assert.equal(result.config_ref,`${directory}/progression-target.json`);
   }
   fs.unlinkSync(path.join(f.root,directory,'progression-target.json'));
-  const policyRef='.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml';
+  const policyRef='.template-spec/process/orchestration-contract.yaml';
   f.write(policyRef,fs.readFileSync(path.join(f.root,policyRef),'utf8').replace('default_target: business-accepted','default_target: spec-approved'));
   const result=readProgressionTarget({root:f.root,checkpointRef,includeDefault:true});
   assert.equal(result.config_digest,null);
@@ -146,7 +147,7 @@ test('活动map定位仍拒绝符号链接逃逸多重登记及未知政策', t 
     if(variant==='escape')f.write('.work/package-one/map.md','---\ncheckpoint_ref: ../outside.yaml\n---\n');
     if(variant==='duplicate')f.write('.work/feature.supplier/map.md',`---\ncheckpoint_ref: ${f.checkpointRef}\n---\n`);
     if(['policy-version','capability'].includes(variant)) {
-      const ref='.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml',source=fs.readFileSync(path.join(f.root,ref),'utf8');
+      const ref='.template-spec/process/orchestration-contract.yaml',source=fs.readFileSync(path.join(f.root,ref),'utf8');
       f.write(ref,variant==='policy-version'?source.replace('  schema_version: 1','  schema_version: 2'):source.replace('lifecycle-target-v1','unknown-target-v9'));
     }
     assert.throws(()=>readProgressionTarget({root:f.root,checkpointRef:f.checkpointRef,includeDefault:true}),/符号|symbolic|治理引用|多重|CAPABILITY/);
@@ -214,7 +215,7 @@ test('旧Backend合同本端交付绑定明确功能，未声明能力不能生�
   const f = fixture(t), hex = '0'.repeat(64);
   f.write('.yss.json', JSON.stringify({schemaVersion: 1, protocolVersion: 1, profile: 'backend', profileId: 'harness.backend-delivery', templateSourceState: 'committed', templateCommit: 'a'.repeat(40), snapshotHash: hex, manifestHash: hex, variables: {}, distribution: {}, managedFiles: {}, baselineDigest: createHash('sha256').update('{}').digest('hex')}));
   f.write('.template-spec/process/harness-profile.yaml', 'schema_version: 1\nprofile_id: harness.backend-delivery\n');
-  f.write('.agents/skills/harness-orchestrator/references/orchestration-contract.yaml', 'schema_version: 1\nprogression_target:\n  schema_version: 1\n  required_capabilities: [lifecycle-target-v1]\n  config_file: progression-target.json\n  writer_profiles: []\n  default_target: profile-terminal\n  completion_policy:\n    profile-terminal:\n      required_gates: [gate.slice-contract-approved]\n      required_checks: [backend-delivery]\n');
+  f.write('.template-spec/process/orchestration-contract.yaml', 'schema_version: 1\nprogression_target:\n  schema_version: 1\n  required_capabilities: [lifecycle-target-v1]\n  config_file: progression-target.json\n  writer_profiles: []\n  default_target: profile-terminal\n  completion_policy:\n    profile-terminal:\n      required_gates: [gate.slice-contract-approved]\n      required_checks: [backend-delivery]\n');
   f.write('.work/another/checkpoint.yaml', 'feature_id: feature-two\n');
   f.write('.work/another/map.md', '---\ncheckpoint_ref: .work/another/checkpoint.yaml\n---\n');
   assert.deepEqual(authorizeBackendDelivery({root: f.root, checkpointRef: f.checkpointRef}), {mode: 'backend-profile', checkpoint_ref: f.checkpointRef, terminal_ref: '.work/package-one/backend-delivery.json'});
@@ -234,7 +235,7 @@ test('已登记Backend本端目标达到或不适用时停止同feature写入，
     const f = fixture(t), hex = '0'.repeat(64);
     f.write('.yss.json', JSON.stringify({schemaVersion: 1, protocolVersion: 1, profile: 'backend', profileId: 'harness.backend-delivery', templateSourceState: 'committed', templateCommit: 'a'.repeat(40), snapshotHash: hex, manifestHash: hex, variables: {}, distribution: {}, managedFiles: {}, baselineDigest: createHash('sha256').update('{}').digest('hex')}));
     f.write('.template-spec/process/harness-profile.yaml', 'schema_version: 1\nprofile_id: harness.backend-delivery\n');
-    const policyRef = '.agents/skills/harness-orchestrator/references/orchestration-contract.yaml';
+    const policyRef = '.template-spec/process/orchestration-contract.yaml';
     f.write(policyRef, 'schema_version: 1\nprogression_target:\n  schema_version: 1\n  required_capabilities: [lifecycle-target-v1]\n  config_file: progression-target.json\n  writer_profiles: []\n  default_target: profile-terminal\n  completion_policy:\n    profile-terminal:\n      required_gates: [gate.slice-contract-approved]\n      required_checks: [backend-delivery]\n');
     f.write(f.checkpointRef, `${fs.readFileSync(path.join(f.root, f.checkpointRef), 'utf8')}profile_id: harness.backend-delivery\nnext_work_unit: work-unit.verification\n`);
     const before = fs.readFileSync(path.join(f.root, f.checkpointRef));
@@ -268,8 +269,8 @@ test('Spec条件战略交接门禁的注册不会把整体完成门禁降为战�
 
 test('当前无UI影响证据核验为不适用时正常停止，保留next和批准bytes', t => {
   const f=fixture(t);
-  const policyRef='.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml';
-  f.write(policyRef,fs.readFileSync(path.join(ROOT,policyRef)));
+  const policyRef='.template-spec/process/orchestration-contract.yaml';
+  for(const ref of loadOrchestrationContract(ref=>fs.readFileSync(path.join(ROOT,ref)),policyRef).refs)f.write(ref,fs.readFileSync(path.join(ROOT,ref)));
   for(const ref of ['.template-spec/process/lifecycle-registry.yaml','.template-spec/agents/digital-human-roles.yaml']) f.write(ref,fs.readFileSync(path.join(ROOT,ref)));
   const checkpoint={schema_version:1,repository_mode:'project-instance',feature_id:f.config.feature_id,stage:'stage.product-design',status:'routing',blockers:[],gates:{},artifacts:{},next_work_unit:'work-unit.technical-analysis'};
   f.write(f.checkpointRef,JSON.stringify(checkpoint));
@@ -317,7 +318,7 @@ test('未支持新政策的旧native实例和template-source不因缺map改变�
   const f=fixture(t),hex='0'.repeat(64);
   f.write('.yss.json',JSON.stringify({schemaVersion:1,protocolVersion:1,profile:'spec',profileId:'harness.spec-template',templateSourceState:'committed',templateCommit:'a'.repeat(40),snapshotHash:hex,manifestHash:hex,variables:{},distribution:{},managedFiles:{},baselineDigest:createHash('sha256').update('{}').digest('hex')}));
   fs.rmSync(path.join(f.root,'.work/package-one/map.md'));
-  const policy='.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml',current=fs.readFileSync(path.join(f.root,policy));
+  const policy='.template-spec/process/orchestration-contract.yaml',current=fs.readFileSync(path.join(f.root,policy));
   f.write(policy,'schema_version: 1\n');
   assert.equal(assertProgressionEntry('work-unit.slice-implementation',{root:f.root,checkpointRef:f.checkpointRef,env:{PATH:''}}),null);
   f.write(policy,current);f.write('yss-project.yaml','schema_version: 1\nrepository_mode: template-source\n');
@@ -325,8 +326,8 @@ test('未支持新政策的旧native实例和template-source不因缺map改变�
 });
 
 test('native Spec已声明非法目标政策不能按legacy跳过正式准入', async t => {
-  const ref='.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml';
-  const original=parseDocument(fs.readFileSync(path.join(ROOT,ref),'utf8')).toJS();
+  const ref='.template-spec/process/orchestration-contract.yaml';
+  const original=loadOrchestrationContract(ref=>fs.readFileSync(path.join(ROOT,ref)),ref).value;
   for(const mapped of [true,false]) for(const [name,value] of [
     ['null',null],['false',false],['empty',{}],
     ['version',{...original.progression_target,schema_version:2}],
@@ -376,7 +377,7 @@ test('真实批准执行入口只读可核验，正式执行缺当前活动featu
   const {createApprovedExecutionContext}=await import('../../../../scripts/lib/approved-execution-context.mjs');
   const f=approvedSpecFixture(approvedFixture);
   t.after(()=>f.cleanup());
-  f.write('.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml',fs.readFileSync(path.join(ROOT,'.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml'),'utf8'));
+  f.write('.template-spec/process/orchestration-contract.yaml',JSON.stringify(loadOrchestrationContract(ref=>fs.readFileSync(path.join(ROOT,ref)),'.template-spec/process/orchestration-contract.yaml').value));
   assert.doesNotThrow(()=>createApprovedExecutionContext(f.binding,{root:f.root,contract:f.contract,readOnly:true}));
   assert.throws(()=>createApprovedExecutionContext(f.binding,{root:f.root,contract:f.contract}),/正式 feature.*活动 map.*绑定/);
 });
@@ -386,7 +387,7 @@ test('Slice 批准 checkpoint 与活动推进 checkpoint 分别核验，目标�
   const {createApprovedExecutionContext,createApprovedRecompilationContext,assertApprovedExecutionContext}=await import('../../../../scripts/lib/approved-execution-context.mjs');
   const f=approvedSpecFixture(approvedFixture),checkpointRef='.work/current/checkpoint.json';
   t.after(()=>f.cleanup());
-  f.write('.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml',fs.readFileSync(path.join(ROOT,'.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml'),'utf8'));
+  f.write('.template-spec/process/orchestration-contract.yaml',JSON.stringify(loadOrchestrationContract(ref=>fs.readFileSync(path.join(ROOT,ref)),'.template-spec/process/orchestration-contract.yaml').value));
   f.write('.template-spec/agents/issue-tracker.md','---\ntracker:\n  platform: local-markdown\n  root: .work\n---\n');
   f.write(checkpointRef,{...f.checkpoint,feature_id:'feature.current'});
   f.write('.work/current/map.md',`---\ncheckpoint_ref: ${checkpointRef}\n---\n`);

@@ -1,3 +1,4 @@
+import { loadOrchestrationContract } from '../../../../scripts/lib/orchestration-contract.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -17,7 +18,7 @@ function fixture(t) {
   const put=(ref,value)=>{fs.mkdirSync(path.dirname(path.join(root,ref)),{recursive:true});fs.writeFileSync(path.join(root,ref),typeof value==='string'?value:JSON.stringify(value));};
   put('yss-project.yaml','schema_version: 1\nrepository_mode: project-instance\n');
   put('.yss-execution-scope.yaml',{schema_version:1,scope_id:'plan-to-backend'});
-  put('.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml',fs.readFileSync(path.join(ROOT,'.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml'),'utf8'));
+  put('.template-spec/process/orchestration-contract.yaml',JSON.stringify(loadOrchestrationContract(ref=>fs.readFileSync(path.join(ROOT,ref)),'.template-spec/process/orchestration-contract.yaml').value));
   return {root,put};
 }
 test('scope opt-in cannot silently disappear or accept a custom work-unit allowlist',t=>{

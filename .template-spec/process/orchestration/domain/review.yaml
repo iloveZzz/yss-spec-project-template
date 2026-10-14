@@ -1,0 +1,471 @@
+# owner: yss-product-lifecycle
+# consumers: lifecycle route/query, current Profile workflows and governance validators
+review_input:
+  schema_version: 1
+  required:
+    - review_mode
+    - review_base_ref
+    - implementation_candidate_ref
+    - candidate_snapshot_ref
+    - candidate_digest
+    - spec_ref
+    - ticket_ref
+    - slice_contract_ref
+    - build_architecture_checklist_ref
+    - yss_execution_result_refs
+  nullable:
+    - spec_ref
+  unique_default_skill: code-review
+  second_generic_review_skill: forbidden
+  axes:
+    - standards
+    - spec
+    - ui_fidelity_if_ui_impact
+  standards_sources:
+    - repo_coding_standards
+    - slice_contract_required_skills
+    - specialist_check_inputs
+    - review_report_template
+  scope_resolution:
+    sources:
+      - candidate-project-root
+      - implementation-repository-registry
+      - slice-project-roots
+      - allowed-write-paths
+    backend_includes:
+      - project-itself
+      - registered-backend-development-projects
+    excludes:
+      - frontend-projects
+      - unrelated-submodules
+      - vendor
+      - unregistered-directories
+  completed_requires_specialist_coverage: true
+  finding_disposition_required: true
+  completed_requires_no_open_mandatory_violations: true
+  completed_requires_no_blank_applicable_rows: true
+  reviewer_write_implementation: forbidden
+  repair_invalidates_candidate: true
+  repair_action: recapture_candidate_and_rereview_affected_conclusions_behavior_dependencies
+  rereview:
+    first_review: all-applicable-axes-and-specialist-checks
+    sequence:
+      - compare-old-and-current-candidate
+      - map-affected-conclusions-behavior-and-dependencies
+      - targeted-rereview-and-verification
+      - rebind-current-candidate-and-basis
+    reuse_requires:
+      - readable-comparison-evidence
+      - unchanged-check-conditions
+      - unchanged-basis
+      - unchanged-dependencies
+      - current-candidate-binding
+    unknown_impact: investigate-and-block-dependent-conclusions
+    full_axis_default_or_fallback: forbidden
+    digest_ui_new_impacts_alone: insufficient-for-full-axis-rereview
+    history: preserve-old-reports-and-bind-new-consumption-evidence
+  modes:
+    - committed
+    - worktree
+  committed:
+    candidate_ref: HEAD
+    diff_scope: merge-base-to-head
+  worktree:
+    candidate_ref: working-tree
+    diff_scope: merge-base-to-working-tree
+    required_coverage:
+      - committed
+      - staged
+      - unstaged
+      - untracked
+    tracked_diff_command: git diff --no-ext-diff --binary --full-index <merge-base>
+    untracked_inventory_command: git ls-files -z --others --exclude-standard
+    untracked_files_encoding: nul-delimited-raw-path-bytes
+    untracked_diff_command: git diff --no-index --no-ext-diff --binary --full-index -- /dev/null <path>
+    capture_once: true
+    verify_unchanged_after_review: true
+  manifest_required_by_mode:
+    committed:
+      - merge_base
+      - tracked_diff_command
+      - commit_list_command
+    worktree:
+      - merge_base
+      - tracked_diff_command
+      - untracked_inventory_command
+      - untracked_diff_command
+      - untracked_files
+      - commit_list_command
+  snapshot:
+    immutable: true
+    protocol: yss-worktree-candidate-v1
+    digest_algorithm: sha256
+    digest_framing: length-prefixed-path-and-bytes
+    path_order: bytewise
+    path_encoding: raw-bytes
+    length_encoding: uint64-big-endian
+    header_ascii: YSS-WORKTREE-CANDIDATE-V1
+    terminator_byte: "0x00"
+    tracked_record:
+      type_byte: "0x54"
+      fields:
+        - type_byte
+        - uint64be_content_length
+        - binary_diff_bytes
+      source: tracked_diff_command_stdout
+    untracked_record:
+      type_byte: "0x55"
+      fields:
+        - type_byte
+        - uint64be_path_length
+        - raw_path_bytes
+        - uint32be_file_mode
+        - entry_kind_byte
+        - uint64be_content_length
+        - content_bytes
+      order: bytewise-raw-path
+      entry_kinds:
+        regular: "0x52"
+        symlink: "0x4c"
+      regular_content_source: file_bytes
+      symlink_content_source: link_target_bytes
+    unsupported_entry_action: blocked
+    snapshot_artifact:
+      identity: candidate_digest
+      required:
+        - candidate-manifest.yaml
+        - tracked.diff
+        - untracked/
+      access: immutable-read-only
+    on_digest_change: blocked
+    completion_requires_current_digest: true
+release_readiness:
+  required:
+    - fresh_verification
+    - release_or_rollback_evidence
+    - independent_review
+    - all_triggered_gates_approved_or_not_applicable
+  conditional: {}
+  blocked_when:
+    - triggered_gate_blocked
+    - triggered_gate_stale
+    - triggered_gate_not_evaluated
+    - missing_evidence
+context_engineering:
+  contract_field: slice_contract.common.context_plan
+  raw_v2_contract_field: slice_contract.common.context_plan
+  raw_v3_contract_field: slice_contract.scope.context_plan
+  dispatch_reading: implementation-task-view-or-review-view
+  reading_reference: .template-spec/process/contract-reading.md
+  required_context:
+    - CONTEXT.md
+    - approved-spec
+    - current-slice-contract
+    - applicable-adr-or-baseline
+  on_demand_context:
+    - specialist-references
+    - implementation-repository-files
+    - historical-evidence
+  stop_rule: minimal-sufficient-evidence
+  missing_context_action:
+    - blocked
+    - reroute
+  numeric_token_budget: not-required
+doubt_driven_review:
+  applies_when:
+    - api-schema-impact
+    - database-schema-impact
+    - cross-repo-contract
+    - release-or-rollback
+    - authentication-authorization-tenant-or-sensitive-data-behavior
+    - lifecycle-or-generation-semantics
+  required:
+    - claim
+    - counterclaim
+    - evidence_refs
+    - residual_risks
+    - reviewer_ref
+  record_in:
+    - decision-record
+    - architecture-review
+    - contract-review
+    - release-review
+  blocking_when:
+    - missing-counterclaim
+    - insufficient-evidence
+    - unresolved-residual-risk
+  ordinary-low-risk_changes: not-required
+  no_new_lifecycle_stage: true
+impact_propagation:
+  wording:
+    targets:
+      - kind: artifact
+        name: spec
+        level: direct
+        when: always
+  ui-state:
+    targets:
+      - kind: artifact
+        name: product-design
+        level: direct
+        when: ui_impact
+      - kind: artifact
+        name: prototype
+        level: direct
+        when: ui_impact
+      - kind: gate
+        name: gate.product-design-approved
+        level: direct
+        when: ui_impact
+      - kind: artifact
+        name: openapi-draft
+        level: transitive
+        when: api_impact
+      - kind: gate
+        name: openapi-freeze
+        level: transitive
+        when: api_impact
+      - kind: artifact
+        name: vertical-slice-tickets
+        level: transitive
+        when: always
+  api-schema:
+    targets:
+      - kind: artifact
+        name: spec
+        level: direct
+        when: always
+      - kind: artifact
+        name: spec-delta
+        level: direct
+        when: existing_frozen_baseline
+      - kind: artifact
+        name: openapi-draft
+        level: direct
+        when: api_impact
+      - kind: gate
+        name: draft-review
+        level: transitive
+        when: api_impact
+      - kind: gate
+        name: design-review
+        level: transitive
+        when: api_impact
+      - kind: gate
+        name: openapi-freeze
+        level: transitive
+        when: api_impact
+      - kind: artifact
+        name: vertical-slice-tickets
+        level: transitive
+        when: api_impact
+      - kind: artifact
+        name: contract-tests
+        level: transitive
+        when: api_impact
+  state-machine:
+    targets:
+      - kind: artifact
+        name: spec
+        level: direct
+        when: always
+      - kind: artifact
+        name: spec-delta
+        level: direct
+        when: existing_frozen_baseline
+      - kind: artifact
+        name: product-design
+        level: direct
+        when: ui_impact
+      - kind: artifact
+        name: system-architecture
+        level: direct
+        when: always
+      - kind: artifact
+        name: data-architecture
+        level: direct
+        when: data_impact
+      - kind: gate
+        name: gate.spec-baseline-approved
+        level: direct
+        when: always
+      - kind: gate
+        name: gate.product-design-approved
+        level: direct
+        when: ui_impact
+      - kind: artifact
+        name: openapi-draft
+        level: transitive
+        when: api_impact
+      - kind: gate
+        name: design-review
+        level: transitive
+        when: always
+      - kind: gate
+        name: openapi-freeze
+        level: transitive
+        when: api_impact
+      - kind: artifact
+        name: vertical-slice-tickets
+        level: transitive
+        when: always
+      - kind: artifact
+        name: test-mapping
+        level: transitive
+        when: always
+  data-model:
+    targets:
+      - kind: artifact
+        name: spec
+        level: direct
+        when: always
+      - kind: artifact
+        name: spec-delta
+        level: direct
+        when: existing_frozen_baseline
+      - kind: artifact
+        name: data-architecture
+        level: direct
+        when: data_impact
+      - kind: gate
+        name: architecture-review
+        level: direct
+        when: data_impact
+      - kind: artifact
+        name: openapi-draft
+        level: transitive
+        when: api_impact
+      - kind: gate
+        name: openapi-freeze
+        level: transitive
+        when: api_impact
+      - kind: artifact
+        name: vertical-slice-tickets
+        level: transitive
+        when: always
+      - kind: artifact
+        name: data-migration
+        level: transitive
+        when: data_impact
+  service-boundary:
+    targets:
+      - kind: artifact
+        name: system-architecture
+        level: direct
+        when: always
+      - kind: artifact
+        name: engineering-baseline
+        level: direct
+        when: backend_impact
+      - kind: gate
+        name: architecture-review
+        level: direct
+        when: always
+      - kind: artifact
+        name: openapi-draft
+        level: transitive
+        when: api_impact
+      - kind: gate
+        name: openapi-freeze
+        level: transitive
+        when: api_impact
+      - kind: artifact
+        name: vertical-slice-tickets
+        level: transitive
+        when: always
+  nfr:
+    targets:
+      - kind: artifact
+        name: spec
+        level: direct
+        when: always
+      - kind: artifact
+        name: system-architecture
+        level: direct
+        when: always
+      - kind: gate
+        name: design-review
+        level: direct
+        when: always
+      - kind: artifact
+        name: vertical-slice-tickets
+        level: transitive
+        when: always
+      - kind: artifact
+        name: verification-strategy
+        level: transitive
+        when: always
+  deployment:
+    targets:
+      - kind: artifact
+        name: system-architecture
+        level: direct
+        when: always
+      - kind: artifact
+        name: rollout-plan
+        level: direct
+        when: always
+      - kind: artifact
+        name: rollback-plan
+        level: direct
+        when: always
+      - kind: gate
+        name: design-review
+        level: transitive
+        when: always
+      - kind: artifact
+        name: release-plan
+        level: transitive
+        when: always
+user_decision_evidence:
+  policy_ref: .template-spec/agents/digital-human-roles.yaml#user_decision_policy
+  schema_ref: .template-spec/process/schemas/user-decision.schema.json
+  protocol_ref: references/user-decisions.md
+  verifier: scripts/verify-user-decision
+  workflow_result_fields:
+    - user_decisions
+    - user_decision_not_applicable
+  implementation_fields:
+    - user_decisions
+    - slice_contract_ref
+    - vertical_slice_ticket_ref
+  checkpoint_carrier: human_review
+  professional_review_replaced: false
+  response_absent: paused-human-gate
+  invalid_response: blocked
+  basis_changed: revalidate_then_continue_only_with_independent_equivalence_evidence
+gate_consolidation:
+  source: .template-spec/process/lifecycle-registry.yaml
+  check_policy: .template-spec/agents/digital-human-roles.yaml
+  capability_source: .template-spec/agents/digital-human-roles.yaml#review_capabilities
+  checks: automatic_or_independent_review_without_separate_user_decision
+  check_failure: blocks_aggregate_gate
+  plan_decision_boundary: gate.plan-approved
+  readiness: computed_after_current_approved_contract_and_all_applicable_preconditions
+  api_freeze: atomic_with_engineering_contract_approval_same_version
+  acceptance_does_not_authorize:
+    - merge
+    - push
+    - release
+    - production_change
+  reuse: unchanged_approval_or_verified_approved_scope_continuation
+  default_review: one_owner_one_independent_reviewer
+  adjacent_reviews: one_bundle_with_explicit_per_check_outcomes
+  new_approval_and_review_bundle_schema: 2
+  current_validation: scripts/verify-approval-record --require-approved --checkpoint <current checkpoint>
+  expected_context: consumer-checkpoint-and-review-task-never-self-filled-from-record
+  extra_reviewers: uncovered_expertise_conflict_or_external_requirement
+  suggestions: recorded_backlog_without_blocking
+  continuation_protocol: references/user-decisions.md
+  invalidation: affected_dependencies_or_authorization_change_only
+  historical_gate_records: read_only_no_automatic_approval_migration
+  verifier: scripts/verify-lifecycle-checkpoint
+blocking_disposition:
+  professional_wait: autonomously-dispatch-or-inspect-existing-task-then-wait
+  verification_failure: repair-supply-evidence-or-reroute
+  unknown_impact: investigate-before-review-scope-or-decision
+  real_decision_or_new_authorization_missing: present-reviewable-assets-then-request-designated-human-response
+  unresolved_state_conflict: investigate-and-block-dependent-actions
+  independent_authorized_work: continue
+  completion_conclusion_alone: no-new-pause
+  question_count: minimum-actionable-independent-questions-may-be-batched

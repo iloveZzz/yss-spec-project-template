@@ -1,0 +1,22 @@
+# owner: yss-strategic-design
+# consumers: lifecycle route/query, current Profile workflows and governance validators
+work_unit_routes:
+  work-unit.plan-opportunity:
+    native:
+      source: yss-strategic-design
+      skill: yss-strategic-design
+      invocation_mode: model-invoked
+    primary_skill: yss-strategic-design
+    supporting_skills:
+      - competitive-intelligence
+      - yss-research
+    skills:
+      - competitive-intelligence
+      - yss-research
+    route_by:
+      market_or_competitor_fact: competitive-intelligence
+      technical_or_standard_fact: yss-research:technical-evidence
+      strategy_fact: yss-research:strategy-evidence
+      no_external_fact: yss-strategic-design
+    applies_when: opportunity_or_external_fact_requires_validation
+    not_applicable_reason: no_external_fact

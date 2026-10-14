@@ -1,0 +1,10 @@
+# owner: harness-orchestrator
+# consumers: lifecycle route/query, current Profile workflows and governance validators
+work_unit_routes:
+  work-unit.skill-projection-sync:
+    primary_skill: maintaining-skills
+    supporting_skills: []
+    skills:
+      - maintaining-skills
+    applies_when: canonical_skill_changes
+    not_applicable_reason: no_skill_change

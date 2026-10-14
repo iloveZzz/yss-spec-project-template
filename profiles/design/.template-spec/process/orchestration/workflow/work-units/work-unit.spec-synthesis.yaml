@@ -1,0 +1,21 @@
+# owner: yss-strategic-design
+# consumers: lifecycle route/query, current Profile workflows and governance validators
+work_unit_routes:
+  work-unit.spec-synthesis:
+    native:
+      source: yss-strategic-design
+      skill: yss-strategic-design
+      invocation_mode: model-invoked
+    primary_skill: yss-strategic-design
+    supporting_skills:
+      - domain-modeling
+    compatibility:
+      source: mattpocock/skills
+      skill: to-spec
+      invocation_mode: reference
+      formal_artifact_owner: explicit-user-entry
+    skills:
+      - domain-modeling
+    human_gate: gate.spec-baseline-approved
+    applies_when: new_feature_or_behavior_change
+    not_applicable_reason: existing_frozen_spec_is_current

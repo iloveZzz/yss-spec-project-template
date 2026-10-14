@@ -230,7 +230,7 @@ const markerFiles = [
   [".agents/skills/implementation-repo-onboarding/SKILL.md", "git-submodule"],
   [".agents/skills/yss-implementation-contract-compiler/references/slice-implementation-contract.md", "git-submodule-harness-apps"],
   [".agents/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml", "git-submodule-harness-apps"],
-  [".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml", "repository_scope=git-submodule"],
+  [".template-spec/process/orchestration/domain/implementation.yaml", "repository_scope=git-submodule"],
   [".agents/skills/yss-ddd-scaffold-generator/scripts/generate_scaffold.mjs", "gitSubmoduleScaffoldViolation"],
   [".agents/skills/yss-ddd-scaffold-generator/scripts/generate_scaffold.mjs", "refuseGitlinkAsRegularDirectory"]
 ];

@@ -1,3 +1,4 @@
+import { loadOrchestrationContract } from './orchestration-contract.mjs';
 import { existsSync, readFileSync } from "./validation-phase.mjs";
 import path from "node:path";
 import { parseDocument } from "../vendor/yaml.mjs";
@@ -6,7 +7,7 @@ import { PROJECTION_ROOTS, ROOT } from "./skill-supply-chain.mjs";
 export const DEFAULT_REGISTRY = path.join(ROOT, ".template-spec/agents/yss-skill-registry.yaml");
 const LOCK_PATH = path.join(ROOT, "skills-lock.json");
 const ROUTER_CONTRACT = null;
-const LIFECYCLE_CONTRACT = path.join(ROOT, ".agents/skills/yss-strategic-design/references/orchestration-contract.yaml");
+const LIFECYCLE_CONTRACT = path.join(ROOT, ".template-spec/process/orchestration-contract.yaml");
 const LAYERS = new Set(["core", "specialist", "compatibility", "maintainer-only"]);
 const MATURITIES = new Set(["draft", "verified", "supported", "deprecated"]);
 const INVOCATION_MODES = new Set(["user", "model", "both"]);
@@ -21,6 +22,7 @@ function fail(message) {
 }
 
 function yamlFromFile(filePath, label) {
+  if(filePath.endsWith("/orchestration-contract.yaml"))return loadOrchestrationContract(ref=>readFileSync(path.join(ROOT,ref)),path.relative(ROOT,filePath).split(path.sep).join("/")).value;
   let source;
   try {
     source = readFileSync(filePath, "utf8");

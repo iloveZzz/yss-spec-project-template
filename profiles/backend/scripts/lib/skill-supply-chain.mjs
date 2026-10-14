@@ -8,8 +8,16 @@ export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "
 const SOURCE_ROOT = path.join(ROOT, ".agents/skills");
 const LOCK_PATH = path.join(ROOT, "skills-lock.json");
 const YSS_UI_MANIFEST_PATH = path.join(SOURCE_ROOT, ".yss-skills-manifest.json");
-const STRATEGIC_DESIGN_MANIFEST_PATH = path.join(SOURCE_ROOT, ".strategic-design-skills-manifest.json");
 export const PROJECTION_ROOTS = [];
+function projectionRootsFor(lock) {
+  const identityPath = path.join(ROOT, "yss-project.yaml");
+  const isInstance = existsSync(identityPath) && /^repository_mode:\s*project-instance\s*$/m.test(readFileSync(identityPath, "utf8"));
+  if (!isInstance) return PROJECTION_ROOTS;
+  const roots = lock?.projectionRoots;
+  if (!Array.isArray(roots) || roots.some(root => ![".codex/skills", ".claude/skills", ".cursor/skills", ".pi/skills"].includes(root))) throw new TypeError("project-instance skills-lock.json 缺少有效 projectionRoots");
+  return [...new Set(roots)];
+}
+
 export const OBSOLETE = new Set(["yss-antd-design", "yss-antdv-next-design", "to-" + "prd", "to-" + "issues", "design-an-interface", "qa", "request-refactor-plan", "ubiquitous-language", "edit-article", "obsidian-vault", "writing-great-skills", "code-review-process", "yss-domain-modeling", "yss-dir", "yss-duckdb", "yss-file", "yss-filerunner", "yss-db2mybatis", "yss-mail", "yss-mapper-dynamic", "yss-quality", "yss-sql-condition", "yss-sql-tpl", "yss-valuation", "yss-variable", "yss-openapi", "web-design-engineer", "web-video-presentation", "wireframe-prototype", "wizard", "git-guardrails-claude-code", "claude-handoff", "batch-grill-me", "grill-me", "product-design-prototype", "research", "ask-matt", "dispatching-parallel-agents", "loop-me", "migrate-to-shoehorn", "prototype-page-acceptance", "scaffold-exercises", "setup-pre-commit", "setup-ts-deep-modules", "teach", "writing-beats", "writing-fragments", "writing-shape", "yss-microapp-commit", "yss-page-module-development", "yss-dictionary", "yss-jdbc", "yss-log", "yss-taskflow", "yss-backend-scaffold-application", "yss-backend-scaffold-domain", "yss-backend-scaffold-infrastructure", "yss-backend-scaffold-web", "yss-router", "yss-source-index"]);
 for (const id of ["component-selection-imports", "page-form-module", "page-list-module", "page-skeleton", "vue3-best-practices", "yss-use-table-height", "yss-use-tree-height", "yss-components", "yss-mvc-scaffold-generator", "yss-mvc-design", "yss-mvc-data-analysis-project-initializer", "yss-backend-scaffold-parent", "yss-backend-scaffold-adapter", "yss-application-layer-reference", "yss-domain-layer-reference", "yss-infrastructure-layer-reference", "yss-web-layer-reference"]) OBSOLETE.add(id);
 OBSOLETE.add("grill-with-docs");
@@ -120,32 +128,8 @@ export function validateYssUiSkillManifest(manifest) {
   return manifest;
 }
 
-export function validateStrategicDesignSkillManifest(manifest) {
-  if (!manifest || typeof manifest !== "object" || Array.isArray(manifest)) throw new TypeError("战略设计 skills 清单必须是对象");
-  for (const field of ["source", "source_type", "source_root", "source_revision", "adaptation_ref"]) {
-    if (typeof manifest[field] !== "string" || !manifest[field].trim()) throw new TypeError(`战略设计 skills 清单缺少 ${field}`);
-  }
-  if (manifest.schema_version !== 1) throw new TypeError("战略设计 skills 清单 schema_version 必须为 1");
-  if (!/^[0-9a-f]{40}$/.test(manifest.source_revision)) throw new TypeError("战略设计 skills source_revision 必须是完整 Git SHA");
-  if (!Array.isArray(manifest.skills) || manifest.skills.length === 0) throw new TypeError("战略设计 skills 清单缺少 skills");
-  const upstreamNames = new Set();
-  const canonicalNames = new Set();
-  for (const skill of manifest.skills) {
-    if (!skill || typeof skill.upstream !== "string" || typeof skill.canonical !== "string") throw new TypeError("战略设计 skill 缺少 upstream/canonical");
-    if (!/^[0-9a-f]{64}$/.test(skill.upstream_hash ?? "")) throw new TypeError(`${skill.canonical} 缺少有效 upstream_hash`);
-    if (upstreamNames.has(skill.upstream)) throw new TypeError(`战略设计 upstream 重复: ${skill.upstream}`);
-    if (canonicalNames.has(skill.canonical)) throw new TypeError(`战略设计 canonical 重复: ${skill.canonical}`);
-    upstreamNames.add(skill.upstream);
-    canonicalNames.add(skill.canonical);
-  }
-  return manifest;
-}
-
 function loadYssUiSkillManifest() {
   return validateYssUiSkillManifest(JSON.parse(readFileSync(YSS_UI_MANIFEST_PATH, "utf8")));
-}
-function loadStrategicDesignSkillManifest() {
-  return validateStrategicDesignSkillManifest(JSON.parse(readFileSync(STRATEGIC_DESIGN_MANIFEST_PATH, "utf8")));
 }
 function git(args) { return spawnSync("git", args, { cwd: ROOT, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }); }
 function trackedPaths() {
@@ -185,12 +169,13 @@ export function syncSkills({ check = false, hashCache = new Map() } = {}) {
   };
   const lock = parseLock();
   const shared = sharedFromLock(lock);
+  const projectionRoots = projectionRootsFor(lock);
   const absent = shared.filter((name) => !lstatSafe(path.join(SOURCE_ROOT, name))?.isDirectory());
   if (absent.length) throw new TypeError(`锁文件声明的共享 skills 缺少权威内容: ${absent.join(", ")}`);
   const obsolete = [...new Set([...shared.filter((name) => OBSOLETE.has(name)), ...obsoleteCanonicalResidues(skillNames(SOURCE_ROOT))])];
   if (obsolete.length) throw new TypeError(`obsolete skills remain in canonical root: ${obsolete.join(", ")}`);
   const drift = [];
-  for (const root of PROJECTION_ROOTS) {
+  for (const root of projectionRoots) {
     const projection = path.join(ROOT, root);
     ensureSafeProjection(projection);
     if (!check) mkdirSync(projection, { recursive: true });
@@ -272,13 +257,11 @@ function metadata(name, skillPath, directory, previous, canonical = false, sourc
   return result;
 }
 export function updateSkillLock(arguments_ = process.argv.slice(2), { hashCache = new Map() } = {}) {
-  const oldLock = parseLock(); const previous = priorMetadata(oldLock); const sources = sourceRevisionMap(oldLock, arguments_); const upstreamRoot = option(arguments_, "upstream-root");
+  const oldLock = parseLock(); const projectionRoots = projectionRootsFor(oldLock); const previous = priorMetadata(oldLock); const sources = sourceRevisionMap(oldLock, arguments_); const upstreamRoot = option(arguments_, "upstream-root");
+  delete sources["iloveZzz/yss-harness-design-agent"];
   const yssUiManifest = loadYssUiSkillManifest();
   sources[yssUiManifest.source] = { ...(sources[yssUiManifest.source] ?? {}), revision: yssUiManifest.source_revision };
   const yssUiSkills = new Map(yssUiManifest.skills.map((skill) => [skill.canonical, skill]));
-  const strategicDesignManifest = loadStrategicDesignSkillManifest();
-  sources[strategicDesignManifest.source] = { ...(sources[strategicDesignManifest.source] ?? {}), revision: strategicDesignManifest.source_revision };
-  const strategicDesignSkills = new Map(strategicDesignManifest.skills.map((skill) => [skill.canonical, skill]));
   if (upstreamRoot && !existsSync(upstreamRoot)) throw new TypeError(`--upstream-root 不存在: ${upstreamRoot}`);
   const additions = arguments_.filter((arg) => arg.startsWith("--add=")).map((arg) => arg.slice(6));
   const removals = new Set(arguments_.filter((arg) => arg.startsWith("--remove=")).map((arg) => arg.slice(9)));
@@ -289,7 +272,7 @@ export function updateSkillLock(arguments_ = process.argv.slice(2), { hashCache 
   if (absent.length) throw new TypeError(`锁文件声明的共享 skills 缺少权威内容: ${absent.join(", ")}`);
   const unlocked = unlockedCanonicalEntries(skillNames(SOURCE_ROOT), sharedNames, (name) => lstatSafe(path.join(SOURCE_ROOT, name, "SKILL.md"))?.isFile());
   if (unlocked.length) throw new TypeError(`发现未登记到 skills-lock.json 的已跟踪共享 skills: ${unlocked.join(", ")}\n确认新增后运行 scripts/update-skill-lock --add=<skill-name>`);
-  const targets = [".agents/skills", ...PROJECTION_ROOTS];
+  const targets = [".agents/skills", ...projectionRoots];
   const shared = Object.fromEntries(sharedNames.map((name) => {
     const item = metadata(name, `.agents/skills/${name}/SKILL.md`, path.join(SOURCE_ROOT, name), previous, true, sources, upstreamRoot, hashCache);
     const yssUiSkill = yssUiSkills.get(name);
@@ -302,21 +285,16 @@ export function updateSkillLock(arguments_ = process.argv.slice(2), { hashCache 
       if (item.effectiveHash !== item.upstreamHash) item.adaptationRef = yssUiManifest.adaptation_ref;
       else delete item.adaptationRef;
     }
-    const strategicDesignSkill = strategicDesignSkills.get(name);
-    if (strategicDesignSkill) {
-      item.source = strategicDesignManifest.source;
-      item.sourceType = strategicDesignManifest.source_type;
-      item.skillPath = `${strategicDesignManifest.source_root}/${strategicDesignSkill.upstream}/SKILL.md`;
-      item.sourceRevision = strategicDesignManifest.source_revision;
-      item.upstreamHash = strategicDesignSkill.upstream_hash;
-      if (item.effectiveHash !== item.upstreamHash) item.adaptationRef = strategicDesignManifest.adaptation_ref;
-      else delete item.adaptationRef;
+    if (["prototype-review", "yss-prototype-stage", "yss-design-system", "yss-stage-decision"].includes(name)) {
+      item.source = "project"; item.sourceType = "local";
+      item.skillPath = `.agents/skills/${name}/SKILL.md`;
+      delete item.sourceRevision; delete item.upstreamHash; delete item.adaptationRef;
     }
     item.targets = targets;
     return [name, item];
   }));
   const platform = {};
-  for (const root of PROJECTION_ROOTS) {
+  for (const root of projectionRoots) {
     const location = path.join(ROOT, root); const prior = oldLock?.version === 3 ? Object.keys(oldLock.skills?.platform?.[root] ?? {}) : skillNames(location).filter((name) => !sharedNames.includes(name));
     const names = [...new Set([...prior, ...platformAdds.filter(([key]) => key === root).map(([, name]) => name)])].filter((name) => !removals.has(name) && !sharedNames.includes(name) && !OBSOLETE.has(name)).sort();
     if (!names.length) continue;
@@ -324,7 +302,7 @@ export function updateSkillLock(arguments_ = process.argv.slice(2), { hashCache 
     if (absentPlatform.length) throw new TypeError(`锁文件声明的平台 skills 缺少内容 (${root}): ${absentPlatform.join(", ")}`);
     platform[root] = Object.fromEntries(names.map((name) => { const item = metadata(name, `${root}/${name}/SKILL.md`, path.join(location, name), previous, false, sources, upstreamRoot, hashCache); item.targets = [root]; return [name, item]; }));
   }
-  const manifest = { version: 3, generatedBy: "scripts/update-skill-lock", canonicalRoot: ".agents/skills", projectionRoots: PROJECTION_ROOTS, sources, skills: { shared, platform } };
+  const manifest = { version: 3, generatedBy: "scripts/update-skill-lock", canonicalRoot: ".agents/skills", projectionRoots, sources, skills: { shared, platform } };
   const rendered = `${JSON.stringify(manifest, null, 2)}\n`;
   const current = existsSync(LOCK_PATH) ? readFileSync(LOCK_PATH, "utf8") : null;
   if (arguments_.includes("--check")) { if (current !== rendered) throw new TypeError("skills-lock.json is stale; run scripts/update-skill-lock"); return "skills-lock.json matches distributed skills"; }

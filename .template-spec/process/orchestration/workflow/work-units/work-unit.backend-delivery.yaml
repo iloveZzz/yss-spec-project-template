@@ -1,0 +1,26 @@
+# owner: yss-product-lifecycle
+# consumers: lifecycle route/query, current Profile workflows and governance validators
+work_unit_routes:
+  work-unit.backend-delivery:
+    native:
+      source: yss-product-lifecycle
+      skill: yss-product-lifecycle
+      invocation_mode: model-invoked
+    primary_skill: yss-product-lifecycle
+    supporting_skills:
+      - code-review
+    skills:
+      - yss-product-lifecycle
+      - code-review
+    applies_when: backend-delivery-requested
+    request_sources:
+      - execution-scope-plan-to-backend
+      - explicit-external-backend-consumer
+    feature_terminal: unique-map-directory/backend-delivery.json
+    preserves:
+      - permanent-execution-scope
+      - recorded-next
+      - business-acceptance-boundary
+    not_applicable_reason: outside_plan_to_backend_execution_scope
+    verifier: scripts/complete-backend-delivery
+    completion: current-source-and-exported-package-verified

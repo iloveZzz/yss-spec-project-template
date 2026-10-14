@@ -1,7 +1,9 @@
+import { loadOrchestrationContract } from '../../../../scripts/lib/orchestration-contract.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
+import {tmpdir} from 'node:os';
 import { terminalReviewFixture } from '../../../../scripts/fixtures/backend-standards/terminal-fixture.mjs';
 import { fixture as strategyFixture } from '../../../../scripts/fixtures/strategic-handoff/fixture.mjs';
 import { attachArtifactApproval } from '../../../../scripts/fixtures/backend-delivery/approval-fixture.mjs';
@@ -9,14 +11,15 @@ import { exportBundle } from '../../../../scripts/lib/strategic-handoff.mjs';
 import { exportBackendDelivery, backendDeliveryBasis } from '../../../../scripts/lib/backend-delivery.mjs';
 import { completeBackendDelivery, verifyBackendDeliveryTerminal } from '../../../../scripts/lib/backend-delivery-terminal.mjs';
 import { hash, read, ROOT } from '../../../../scripts/lib/strategic-handoff-io.mjs';
+import { treeHash } from '../../../../scripts/lib/skill-supply-chain.mjs';
 import { assertScopeWorkUnit } from '../../../../scripts/lib/lifecycle-execution-scope.mjs';
 
 test('real validators close a synthetic backend package, preserve the terminal across resume and reject stale review/source',async t=>{
   const f=terminalReviewFixture();t.after(()=>f.cleanup());
-  const source=path.join(f.root,'strategy-source');fs.mkdirSync(source);
+  const source=fs.mkdtempSync(path.join(tmpdir(),'yss-strategy-source-'));t.after(()=>fs.rmSync(source,{recursive:true,force:true}));
   await strategyFixture(source,{handoffVersion:4});
   const strategy=await exportBundle({sourceRoot:source,handoffRef:'handoff.yaml',output:path.join(f.root,'strategy-package')});
-  f.write('.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml',fs.readFileSync(path.join(ROOT,'.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml'),'utf8'));
+  f.write('.template-spec/process/orchestration-contract.yaml',JSON.stringify(loadOrchestrationContract(ref=>fs.readFileSync(path.join(ROOT,ref)),'.template-spec/process/orchestration-contract.yaml').value));
   f.write('.yss-execution-scope.yaml',{schema_version:1,scope_id:'plan-to-backend'});
   const roles=read(path.join(f.root,'.template-spec/agents/digital-human-roles.yaml'));
   // Synthetic source policy for the fixture's existing OpenAPI gate.
@@ -35,12 +38,15 @@ test('real validators close a synthetic backend package, preserve the terminal a
   function all(dir,prefix='') {return fs.readdirSync(dir,{withFileTypes:true}).flatMap(e=>{const ref=prefix?`${prefix}/${e.name}`:e.name;if(['project','strategy-source','strategy-package'].includes(ref)||e.name==='.git')return[];return e.isDirectory()?all(path.join(dir,e.name),ref):[ref];});}
   delivery.supporting_files=[...all(f.root).filter(ref=>!['coverage.json','review-result.json','checks.log','skills-lock.json'].includes(ref)),'project/mvnw'];
   f.write('delivery.json',delivery);f.write('review-state.json',f.state);
-  const exported=await exportBackendDelivery({sourceRoot:f.root,deliveryRef:'delivery.json',output:path.join(f.root,'delivery-package')});
-  const input={delivery:file('delivery.json'),review_state:file('review-state.json'),bundle_ref:'delivery-package',bundle_digest:exported.bundle_digest,downstream:{owner:'synthetic-receiver',ticket_ref:'tickets/frontend.md',verification_plan:'receiver tests',target_version:'v1'}};
   for(const ref of ['scripts','.template-spec/process/schemas','.template-spec/process/lifecycle-registry-baseline.json','.template-spec/process/lifecycle-registry-baseline-v1.json','.template-spec/agents/yss-skill-registry.yaml','.agents/skills','skills-lock.json']) {
     fs.mkdirSync(path.dirname(path.join(f.root,ref)),{recursive:true});fs.cpSync(path.join(ROOT,ref),path.join(f.root,ref),{recursive:true});
   }
-  f.refreshCoverage();f.save();f.write('review-state.json',f.state);input.review_state=file('review-state.json');
+  const lock=read(path.join(f.root,'skills-lock.json'));
+  for(const [skill,record] of Object.entries(lock.skills.shared)) record.effectiveHash=treeHash(path.join(f.root,'.agents/skills',skill));
+  f.write('skills-lock.json',lock);
+  f.refreshCoverage();f.save();f.write('review-state.json',f.state);
+  const exported=await exportBackendDelivery({sourceRoot:f.root,deliveryRef:'delivery.json',output:path.join(f.root,'delivery-package')});
+  const input={delivery:file('delivery.json'),review_state:file('review-state.json'),bundle_ref:'delivery-package',bundle_digest:exported.bundle_digest,downstream:{owner:'synthetic-receiver',ticket_ref:'tickets/frontend.md',verification_plan:'receiver tests',target_version:'v1'}};
   const result=await completeBackendDelivery(f.root,input);
   assert.equal(result.result,'backend-delivered');assert.equal(result.business_completed,false);assert.equal(result.live_service_checked,false);
   assert.equal((await verifyBackendDeliveryTerminal(f.root)).bundle_digest,exported.bundle_digest);

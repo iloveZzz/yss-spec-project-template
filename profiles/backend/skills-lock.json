@@ -12,9 +12,6 @@
     },
     "iloveZzz/yss-ui": {
       "revision": "c4d958f18cc947cb91cbe1bd48783fa4601cc18f"
-    },
-    "iloveZzz/yss-harness-design-agent": {
-      "revision": "79e66e694a378d78f06c63399a494d0a69543ba3"
     }
   },
   "skills": {
@@ -50,7 +47,7 @@
         "source": "mattpocock/skills",
         "sourceType": "github",
         "skillPath": "skills/engineering/code-review/SKILL.md",
-        "effectiveHash": "0075dd0c03b23467cb2aea52942c3c6564a39dcbb0c4f06ee51baa6e7f93f686",
+        "effectiveHash": "56a7d317a4304b2c93ea0100c64c7dc2c28dc7c3ccf80056b839bd432ecbf5ec",
         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
         "upstreamHash": "12daafb9c4f77deb3c3303dc2e6f8a3c2a0ff7928fc004af959ba18b8bd38068",
         "adaptationRef": ".template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
@@ -149,7 +146,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/harness-orchestrator/SKILL.md",
-        "effectiveHash": "5768624c7b0c083def731a8b6e0c13cfb75513925fdfad6fcc7aa23d54e2159d",
+        "effectiveHash": "57db376e4f0a57b312495ee31ddd76e95898270d58e2c98cde898c4c952298f3",
         "targets": [
           ".agents/skills"
         ]
@@ -559,13 +556,10 @@
         ]
       },
       "yss-stage-decision": {
-        "source": "iloveZzz/yss-harness-design-agent",
-        "sourceType": "git-submodule",
+        "source": "project",
+        "sourceType": "local",
         "skillPath": ".agents/skills/yss-stage-decision/SKILL.md",
         "effectiveHash": "ff78fe036df7e2161ca0ccc689d3d7d379f3a0a9544335dae1eac2333fbd34cb",
-        "sourceRevision": "79e66e694a378d78f06c63399a494d0a69543ba3",
-        "upstreamHash": "77fa3075f90966821881998ff5fa9d674672bd2568e70b8d877402efeb360453",
-        "adaptationRef": ".template-source/agents/strategic-design-skills-integration.md",
         "targets": [
           ".agents/skills"
         ]

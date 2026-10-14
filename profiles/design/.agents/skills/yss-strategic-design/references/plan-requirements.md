@@ -1,6 +1,6 @@
 # 需求澄清与 Context 对账
 
-`work-unit.plan-requirements` 由 `yss-strategic-design` 或当前 profile 编排器执行。主控按 `orchestration-contract.yaml` 的 `planning.clarification_policy` 对必须解决的需求、业务规则、范围或取舍决策未决项主动调用 `grilling`；术语整理按需使用 `domain-modeling`，不另建批准入口。
+`work-unit.plan-requirements` 由 `yss-strategic-design` 或当前 profile 编排器执行。主控按 `.template-spec/process/orchestration-contract.yaml` 的 `planning.clarification_policy` 对必须解决的需求、业务规则、范围或取舍决策未决项主动调用 `grilling`；术语整理按需使用 `domain-modeling`，不另建批准入口。
 
 1. 读取 yss-project.yaml 与唯一根 CONTEXT.md，执行 `yss context check --root . --json`。缺失、大小写错误、嵌套合同、跨仓路径、伪锚点或不支持的 schema 都阻断；格式消费 `domain-modeling/CONTEXT-FORMAT.md`。
 2. 先查可发现事实；事实缺口自行调查或交 `yss-research`，执行阻塞安排原型或实际验证，专业审查等待由主控自主派发，验证失败和缺证据先修复或补证。口头同意不能关闭这些问题；未确认的术语留在 Plan，不能写成稳定事实。

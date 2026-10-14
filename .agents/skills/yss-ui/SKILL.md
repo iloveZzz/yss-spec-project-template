@@ -7,7 +7,7 @@ description: "选择和核验 YSS Vue 生产页面组件及 Ant Design Vue 兼�
 
 本技能是 YSS Vue 生产页面的统一入口。它负责组件与导入来源路由、版本预检、跨组件约束和交付证据；具体页面、组件、请求和表单实现交给最小专项 skill，避免重复维护 API 细节。
 
-交付路径消费 `yss-product-lifecycle` 的当前 `route` 结果，唯一政策见 Spec 项目中的 `.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml` 的 `request_triage.delivery_path`。只有已启用的 Spec 与支持该能力的 CLI 返回 `daily` 时，才使用下文的普通任务输入和记录；本技能不自行授予该资格。`governed`、专职 Frontend Profile 或已绑定正式交付的任务继续消费原正式合同。
+交付路径消费 `yss-product-lifecycle` 的当前 `route` 结果，唯一政策见 Spec 项目中的 `.template-spec/process/orchestration-contract.yaml` 的 `request_triage.delivery_path`。只有已启用的 Spec 与支持该能力的 CLI 返回 `daily` 时，才使用下文的普通任务输入和记录；本技能不自行授予该资格。`governed`、专职 Frontend Profile 或已绑定正式交付的任务继续消费原正式合同。
 
 ## 1. 权威事实顺序
 

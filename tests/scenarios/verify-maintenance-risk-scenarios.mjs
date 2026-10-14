@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import {loadOrchestrationContract} from '../../scripts/lib/orchestration-contract.mjs';
 import path from 'node:path';
 import { parseArgs } from 'node:util';
 import { spawnSync } from 'node:child_process';
@@ -24,7 +25,7 @@ try {
       {trigger:'lifecycle-gate',id:'handoff-without-evidence',script:'scripts/verify-lifecycle-checkpoint',expected_diagnostic:"missing properties 'source_ref'",input:{...cp,phase_boundary:{decision:'handoff',reason:'缺少交接证据'}}},
       {trigger:'release-semantics',id:'release-without-final-verification',script:'scripts/verify-maintenance-checkpoint',expected_diagnostic:'release-ready 缺少 final-release-verification 证据',input:release}
     ];
-    const code=['scripts/vendor/yaml.mjs','scripts/verify-approval-record','.template-spec/agents/digital-human-roles.yaml','.template-spec/process/lifecycle-registry.yaml','.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml','tests/scenarios/verify-maintenance-risk-scenarios.mjs','scripts/verify-lifecycle-checkpoint','scripts/verify-maintenance-checkpoint','.template-source/process/maintenance-intensity.yaml','.template-spec/process/schemas/lifecycle-checkpoint.schema.json',...fs.readdirSync(path.join(root,'scripts/lib')).filter(x=>x.endsWith('.mjs')).map(x=>'scripts/lib/'+x)];
+    const code=['scripts/vendor/yaml.mjs','scripts/verify-approval-record','.template-spec/agents/digital-human-roles.yaml','.template-spec/process/lifecycle-registry.yaml',...loadOrchestrationContract(ref=>fs.readFileSync(path.join(root,ref)),'.template-spec/process/orchestration-contract.yaml').refs,'tests/scenarios/verify-maintenance-risk-scenarios.mjs','scripts/verify-lifecycle-checkpoint','scripts/verify-maintenance-checkpoint','.template-source/process/maintenance-intensity.yaml','.template-spec/process/schemas/lifecycle-checkpoint.schema.json',...fs.readdirSync(path.join(root,'scripts/lib')).filter(x=>x.endsWith('.mjs')).map(x=>'scripts/lib/'+x)];
     const records=[];
     for(const scenario of cases) {
       const inputRef=`${values.output}/${scenario.trigger}.input.json`,logRef=`${values.output}/${scenario.trigger}.log.json`,runRef=`${values.output}/${scenario.trigger}.run.json`;

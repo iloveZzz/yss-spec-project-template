@@ -12,14 +12,15 @@ test('Plan/Spec、编排与 checkpoint 变更选择实际行为检查', () => {
       const plan = planTemplateVerification({ profile, changedFiles: [file] });
       assert.ok(plan.groups.includes('plan-spec-content'), `${profile}: ${file}`);
     }
-    for (const file of ['.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml', '.template-spec/process/schemas/lifecycle-checkpoint.schema.json', 'scripts/verify-lifecycle-checkpoint']) {
+    for (const file of ['.template-spec/process/orchestration-contract.yaml', '.template-spec/process/schemas/lifecycle-checkpoint.schema.json', 'scripts/verify-lifecycle-checkpoint']) {
       const plan = planTemplateVerification({ profile, changedFiles: [file] });
       assert.ok(plan.groups.includes('lifecycle'), `${profile}: ${file}`);
       assert.ok(plan.commands.some(x => x.command.includes('checkpoint-boundary.test.mjs')));
     }
   }
-  const combined = planTemplateVerification({ changedFiles: ['.template-spec/templates/spec-template.md', '.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml'] });
-  assert.ok(combined.groups.includes('plan-spec-content') && combined.groups.includes('skills') && combined.groups.includes('lifecycle'));
+  const combined = planTemplateVerification({ changedFiles: ['.template-spec/templates/spec-template.md', '.template-spec/process/orchestration-contract.yaml'] });
+  assert.ok(combined.groups.includes('plan-spec-content') && combined.groups.includes('skills-policy') && combined.groups.includes('lifecycle'));
+  assert.ok(combined.commands.some(x => x.command.includes('skill-registry.test.mjs')));
   assert.throws(() => planTemplateVerification({ changedFiles: ['unmapped-file.xyz'] }), /UNKNOWN_VERIFICATION_PATH/);
   assert.throws(() => planTemplateVerification({ profile: 'candidate', changedFiles: ['AGENTS.md'] }), /未知核验 profile/);
   assert.equal(planTemplateVerification({ changedFiles: ['scripts/run-template-verification'] }).effective_profile, 'fast');

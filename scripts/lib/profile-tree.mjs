@@ -1,4 +1,6 @@
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync } from "node:fs";
+import { loadOrchestrationContract } from './orchestration-contract.mjs';
+import { safeFile } from './governance-io.mjs';
+import { readdirSync, cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -35,6 +37,20 @@ export function composeProfileTree(profile, { root = ROOT } = {}) {
     for (const entry of JSON.parse(readFileSync(policyFile, "utf8")).manifest?.excludePaths ?? []) {
       if (entry.startsWith(".agents/skills/")) rmSync(path.join(target, entry), { recursive: true, force: true });
     }
+  }
+  const manifest = '.template-spec/process/orchestration-contract.yaml';
+  if (existsSync(path.join(target, manifest))) {
+    const loaded = loadOrchestrationContract(ref => readFileSync(safeFile(target, ref)), manifest);
+    const kept = new Set(loaded.refs);
+    const prune = ref => {
+      for (const entry of readdirSync(path.join(target, ref), { withFileTypes: true })) {
+        const child = `${ref}/${entry.name}`;
+        if (entry.isDirectory()) prune(child);
+        else if (!kept.has(child)) rmSync(path.join(target, child));
+      }
+    };
+    const parts = '.template-spec/process/orchestration';
+    if (existsSync(path.join(target, parts))) prune(parts);
   }
   cache.set(key, target);
   process.on("exit", () => rmSync(target, { recursive: true, force: true }));

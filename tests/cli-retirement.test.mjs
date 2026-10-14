@@ -1,3 +1,5 @@
+import {loadOrchestrationContract} from '../scripts/lib/orchestration-contract.mjs';
+import {dailyStartStats} from '../scripts/lib/harness-metrics.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -118,7 +120,8 @@ test('Spec 日常路线拒绝前端声明与实际前端文件，保留后端路
   const source=path.resolve(import.meta.dirname,'..');
   put(root,'yss-project.yaml','schema_version: 1\nrepository_mode: project-instance\n');
   put(root,'.yss-template.json',JSON.stringify({metadataSchemaVersion:3,templateSource:'github:iloveZzz/yss-spec-project-template'}));
-  for(const ref of ['CONTEXT.md','AGENTS.md','.template-spec/agents/issue-tracker.md','.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml'])put(root,ref,fs.readFileSync(path.join(source,ref)));
+  const orchestration=loadOrchestrationContract(ref=>fs.readFileSync(path.join(source,ref)),'.template-spec/process/orchestration-contract.yaml');
+  for(const ref of ['CONTEXT.md','AGENTS.md','.template-spec/agents/issue-tracker.md',...orchestration.refs])put(root,ref,fs.readFileSync(path.join(source,ref)));
   put(root,'facts.md','目标、验收、风险、基线与回滚均为本次测试输入。\n');
   const skill='适用后端技能\n';put(root,'skill.md',skill);
   put(repo,'src/server.js','export const enabled = false;\n');
@@ -130,6 +133,14 @@ test('Spec 日常路线拒绝前端声明与实际前端文件，保留后端路
   const args=action=>['lifecycle',action,'--root',root,'--task','task.md','--implementation-root',repo,'--base',baseline];
   put(repo,'src/server.js','export const enabled = true;\n');task();
   assert.equal(runNative(args('route')).result.delivery_path,'daily');
+  const agentProcess=spawnSync(nativeBinary().binary,[...args('route'),'--view','agent','--json'],{encoding:'utf8'});
+  assert.equal(agentProcess.status,0,agentProcess.stderr);
+  const agent=JSON.parse(agentProcess.stdout).result;
+  assert.equal(agent.view,'agent');assert.equal(agent.route,'daily');assert.equal(agent.execution_allowed,false);
+  assert.equal(agent.source_digests.orchestration_contract,`sha256:${orchestration.digest}`);
+  const budget=dailyStartStats(root,agentProcess.stdout);
+  assert.equal(budget.within_budget,true,JSON.stringify(budget));
+  t.diagnostic(JSON.stringify(budget));
   for(const scenario of [{impacts:['frontend','no-api']},{impacts:['ui','no-api']},{side:'frontend'},{file:'src/Page.vue'},{file:'src/Page.tsx'},{file:'src/Page.jsx'},{paths:['apps/frontend/']},{file:'apps/frontend/main.js',paths:['apps/']}]) {
     record.scope.impacts=scenario.impacts??['no-api'];record.repository.side=scenario.side??'backend';record.scope.paths=['src/',...(scenario.paths??[])];
     if(scenario.file)put(repo,scenario.file,'前端页面\n');task();

@@ -29,7 +29,7 @@
         "source": "mattpocock/skills",
         "sourceType": "github",
         "skillPath": "skills/engineering/code-review/SKILL.md",
-        "effectiveHash": "0075dd0c03b23467cb2aea52942c3c6564a39dcbb0c4f06ee51baa6e7f93f686",
+        "effectiveHash": "56a7d317a4304b2c93ea0100c64c7dc2c28dc7c3ccf80056b839bd432ecbf5ec",
         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
         "upstreamHash": "12daafb9c4f77deb3c3303dc2e6f8a3c2a0ff7928fc004af959ba18b8bd38068",
         "adaptationRef": ".template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
@@ -268,7 +268,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-strategic-design/SKILL.md",
-        "effectiveHash": "f22abdea6b06cc7c37c1e0e9d3c10e0aa44f7ee4b0a27ea18a6f4d9b35bf5cc1",
+        "effectiveHash": "f852a8adf28a8fdc1a867b14216c2d0734f1a062a96f432bba9daaa84e9b71ab",
         "targets": [
           ".agents/skills"
         ]

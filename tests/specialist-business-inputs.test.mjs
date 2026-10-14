@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {parse} from '../scripts/vendor/yaml.mjs';
+import {loadOrchestrationContract} from '../scripts/lib/orchestration-contract.mjs';
 import {enforceHarnessTaskScope} from '../scripts/lib/harness-execution-scope.mjs';
 import {businessAuthoringEnabled} from '../scripts/lib/business-tickets.mjs';
 import {planEntryPolicy} from '../scripts/lib/plan-spec-entry.mjs';
@@ -11,16 +12,16 @@ import {composeProfileTree} from '../scripts/lib/profile-tree.mjs';
 const root=path.resolve(import.meta.dirname,'..');
 const read=(base,ref)=>parse(fs.readFileSync(path.join(base,ref),'utf8'));
 test('专职 Profile 本地 Plan/Spec 与上游路线共享唯一日常政策，不扩另一端实现',()=>{
- const canonical=read(root,'.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml'),policy=canonical.request_triage;
+ const canonical=loadOrchestrationContract(ref=>fs.readFileSync(path.join(root,ref)),'.template-spec/process/orchestration-contract.yaml').value,policy=canonical.request_triage;
  for(const side of ['backend']) {
-  const base=composeProfileTree(side),profile=read(base,'.template-spec/process/harness-profile.yaml'),contract=read(base,'.agents/skills/harness-orchestrator/references/orchestration-contract.yaml'),registry=read(base,'.template-spec/process/lifecycle-registry.yaml');
+  const base=composeProfileTree(side),profile=read(base,'.template-spec/process/harness-profile.yaml'),contract=loadOrchestrationContract(ref=>fs.readFileSync(path.join(base,ref)),'.template-spec/process/orchestration-contract.yaml').value,registry=read(base,'.template-spec/process/lifecycle-registry.yaml');
   for(const command of ['scripts/verify-lifecycle-registry','scripts/verify-digital-human-roles']){const result=spawnSync(process.execPath,[command],{cwd:base,encoding:'utf8'});assert.equal(result.status,0,result.stderr||result.stdout);}
   assert.deepEqual(contract.request_triage,policy);
   assert.deepEqual(planEntryPolicy({root:base}),planEntryPolicy({root}));
   for(const key of ['phase_boundary','checkpoint_policy'])assert.deepEqual(contract[key],canonical[key]);
   const roles=read(base,'.template-spec/agents/digital-human-roles.yaml');
   const canonicalRoles=read(root,'.template-spec/agents/digital-human-roles.yaml'),gates=new Set(registry.gates.map(x=>x.id)),units=new Set(registry.work_units.map(x=>x.id));
-  assert.deepEqual(roles.gate_policy.review_execution.review_bundles,canonicalRoles.gate_policy.review_execution.review_bundles.filter(x=>gates.has(x.aggregate_gate)&&units.has(x.work_unit)).map(x=>({...x,review_control_ref:'.agents/skills/harness-orchestrator/references/orchestration-contract.yaml#planning.review_control'})));
+  assert.deepEqual(roles.gate_policy.review_execution.review_bundles,canonicalRoles.gate_policy.review_execution.review_bundles.filter(x=>gates.has(x.aggregate_gate)&&units.has(x.work_unit)).map(x=>({...x,review_control_ref:'.template-spec/process/orchestration-contract.yaml#planning.review_control'})));
   for(const ids of Object.values(roles.gate_policy.continuation_reviews))for(const id of ids)assert.ok(roles.roles.some(x=>x.id===id));
   assert.ok(roles.user_decision_policy.required_capabilities.includes('business-ticket-approval-v1'));
   for(const id of ['gate.plan-approved','gate.spec-baseline-approved'])assert.ok(roles.user_decision_policy.gates.includes(id));

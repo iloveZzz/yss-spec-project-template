@@ -1,3 +1,4 @@
+import {loadOrchestrationContract} from '../../lib/orchestration-contract.mjs';
 import test from 'node:test';
 import {composeProfileTree} from '../../lib/profile-tree.mjs';
 import assert from 'node:assert/strict';
@@ -8,7 +9,7 @@ const cp='.work/demo/checkpoint.yaml',manifest='.work/demo/reading/.manifest.jso
 function registeredReading(profile='spec',checkpoint='intake-checkpoint.json'){
  const f=readingFixture(),owner=profile==='design'?composeProfileTree('design'):repo;
  if(profile==='spec')f.put('.template-spec/process/harness-profile.yaml',{schema_version:1,profile_id:'harness.spec-template'});else f.put('.template-spec/process/harness-profile.yaml',readFileSync(path.join(owner,'.template-spec/process/harness-profile.yaml'),'utf8'));
- const contract=profile==='design'?'.agents/skills/yss-strategic-design/references/orchestration-contract.yaml':'.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml';f.put(contract,readFileSync(path.join(owner,contract),'utf8'));
+ const contract='.template-spec/process/orchestration-contract.yaml';f.put(contract,JSON.stringify(loadOrchestrationContract(ref=>readFileSync(path.join(owner,ref)),contract).value));
  f.put('.template-spec/agents/issue-tracker.md','---\ntracker:\n  platform: local-markdown\n  root: .work\n---\n');
  const c=JSON.parse(readFileSync(path.join(repo,'scripts/fixtures/reading-views/checkpoint.json'),'utf8'));c.feature_id='feature.supplier';c.artifacts={};f.put(checkpoint,JSON.stringify(c));
  f.put('.work/supplier/map.md','---\ncheckpoint_ref: '+checkpoint+'\n---\n# 当前功能\n');
@@ -54,7 +55,7 @@ test('registered reading refuses missing, duplicate and conflicting maps and uns
  const {readingLocation}=await import('../../lib/reading-view-policy.mjs');const {rmSync}=await import('node:fs');
  for(const scenario of ['missing','duplicate','wrong-checkpoint','wrong-tracker','unknown-version','null-policy']){
   const f=registeredReading();try{
-   const contract='.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml';
+   const contract='.template-spec/process/orchestration-contract.yaml';
    if(scenario==='missing')rmSync(path.join(f.root,'.work/supplier/map.md'));
    if(scenario==='duplicate')f.put('.work/duplicate/map.md','---\ncheckpoint_ref: '+f.checkpoint+'\n---\n');
    if(scenario==='wrong-checkpoint'){f.put('other-checkpoint.json',readFileSync(path.join(f.root,f.checkpoint),'utf8'));f.put('.work/supplier/map.md','---\ncheckpoint_ref: other-checkpoint.json\n---\n');}

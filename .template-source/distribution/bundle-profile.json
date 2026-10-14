@@ -110,7 +110,9 @@
       ".work",
       "scripts/lib/profile-tree.mjs",
       "scripts/verify-import-direction",
-      "scripts/lib/import-direction.mjs"
+      "scripts/lib/import-direction.mjs",
+      ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml",
+      ".template-spec/process/schemas/strategic-design-handoff-v3.schema.json"
     ],
     "excludePathSuffixes": [
       "-scenarios"
@@ -593,6 +595,28 @@
         },
         "action": "delete",
         "sourcePath": "scripts/lib/decision-continuation.mjs"
+      },
+      {
+        "id": "ar13-ar15-spec-1",
+        "from": {
+          "profile": "spec",
+          "versions": {
+            "max": "4.0.5"
+          }
+        },
+        "action": "delete",
+        "sourcePath": ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml"
+      },
+      {
+        "id": "ar13-ar15-spec-2",
+        "from": {
+          "profile": "spec",
+          "versions": {
+            "max": "4.0.5"
+          }
+        },
+        "action": "delete",
+        "sourcePath": ".template-spec/process/schemas/strategic-design-handoff-v3.schema.json"
       }
     ]
   }

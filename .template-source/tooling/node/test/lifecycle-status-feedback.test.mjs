@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import {loadOrchestrationContract} from '../../../../scripts/lib/orchestration-contract.mjs';
 import {cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import path from 'node:path';
@@ -10,7 +11,7 @@ const sourceRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '.
 const {lifecycleStatus} = await import(path.join(sourceRoot, 'scripts/lib/lifecycle-status.mjs'));
 const {renderLifecycleStatus} = await import(path.join(sourceRoot, 'scripts/lib/lifecycle-presentation.mjs'));
 const checkpointRef = 'docs/checkpoint.json';
-const copiedRefs = ['.template-spec/process/lifecycle-registry.yaml', '.template-spec/agents/digital-human-roles.yaml', '.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml', 'scripts/verify-lifecycle-checkpoint', 'scripts/verify-plan-spec-entry'];
+const copiedRefs = ['.template-spec/process/lifecycle-registry.yaml', '.template-spec/agents/digital-human-roles.yaml', ...loadOrchestrationContract(ref => readFileSync(path.join(sourceRoot, ref)), '.template-spec/process/orchestration-contract.yaml').refs, 'scripts/verify-lifecycle-checkpoint', 'scripts/verify-plan-spec-entry'];
 
 function fixture(run) {
   const root = mkdtempSync(path.join(tmpdir(), 'yss-status-feedback-'));
@@ -23,7 +24,7 @@ function fixture(run) {
     put('yss-project.yaml', {schema_version: 1, repository_mode: 'project-instance'});
     for (const ref of copiedRefs) {
       mkdirSync(path.dirname(path.join(root, ref)), {recursive: true});
-      cpSync(path.join(sourceRoot, ref), path.join(root, ref));
+      cpSync(path.join(sourceRoot, ref), path.join(root, ref), {recursive:true});
     }
     const checkpoint = {
       schema_version: 1, repository_mode: 'project-instance', mode: 'route', status: 'routing', stage: 'stage.plan',

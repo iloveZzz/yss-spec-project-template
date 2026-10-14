@@ -14,7 +14,7 @@ Strategic Design Handoff 是本 profile 的终点。Tactical DDD、OpenAPI、技
 ## 传播算法
 
 1. 将变化分类为 `wording`、`ui-state`、`domain-boundary` 或 `business-invariant`。
-2. 只遍历 `orchestration-contract.yaml.impact_propagation` 中与该类型匹配的边。
+2. 只遍历 `.template-spec/process/orchestration-contract.yaml.impact_propagation` 中与该类型匹配的边。
 3. 受影响下游先标记 `stale`，保留原资产和因果引用，不立即重建。
 4. 条件不满足时保持原状态，尤其不得把 `not-applicable` 改为 `stale`。
 5. 无法分类时暂停影响面裁决；不得推测下游技术影响。

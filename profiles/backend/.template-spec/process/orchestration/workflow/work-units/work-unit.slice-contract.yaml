@@ -1,0 +1,16 @@
+# owner: harness-orchestrator
+# consumers: lifecycle route/query, current Profile workflows and governance validators
+work_unit_routes:
+  work-unit.slice-contract:
+    primary_skill: harness-orchestrator
+    supporting_skills:
+      - architecture-agent
+      - yss-implementation-contract-compiler
+      - implementation-repo-onboarding
+    skills:
+      - harness-orchestrator
+      - architecture-agent
+      - yss-implementation-contract-compiler
+      - implementation-repo-onboarding
+    applies_when: implementation_repository_preparation_completed_and_frozen_contracts
+    not_applicable_reason: required_upstream_contract_not_current

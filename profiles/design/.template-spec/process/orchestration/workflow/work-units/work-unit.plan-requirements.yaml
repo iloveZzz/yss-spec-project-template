@@ -1,0 +1,19 @@
+# owner: yss-strategic-design
+# consumers: lifecycle route/query, current Profile workflows and governance validators
+work_unit_routes:
+  work-unit.plan-requirements:
+    native:
+      source: yss-strategic-design
+      skill: yss-strategic-design
+      invocation_mode: model-invoked
+    primary_skill: yss-strategic-design
+    supporting_skills:
+      - grilling
+      - domain-modeling
+    skills:
+      - grilling
+      - domain-modeling
+    applies_when: requirements_or_domain_boundary_unclear
+    not_applicable_reason: requirements_already_confirmed
+    review_bundle: review-bundle.plan
+    human_gate: gate.plan-approved

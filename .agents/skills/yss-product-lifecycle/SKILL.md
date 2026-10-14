@@ -7,7 +7,7 @@ description: 编排 YSS 研发全生命周期；当阶段、产物、门禁或 S
 
 仅生成 DDD/MVC 脚手架时，先读[直接生成](references/conditional-guidance.md#直接生成脚手架)。
 
-先按 `references/orchestration-contract.yaml.request_triage.delivery_path` 选择交付路径；`daily` 操作见 [普通任务交付](references/daily-delivery.md)。路径不是阶段、Ticket 状态或批准。
+先按编排合同 `request_triage.delivery_path` 选择交付路径；`daily` 操作见 [普通任务交付](references/daily-delivery.md)。路径不是阶段、Ticket 状态或批准。
 
 ## 事实源
 
@@ -16,7 +16,7 @@ description: 编排 YSS 研发全生命周期；当阶段、产物、门禁或 S
 | 事实 | 权威来源 |
 |---|---|
 | 阶段、门禁、产物、工作单元、证据及 ID | `.template-spec/process/lifecycle-registry.yaml` |
-| 执行、流转和授权合同 | `references/orchestration-contract.yaml` |
+| 执行、流转和授权合同 | `.template-spec/process/orchestration-contract.yaml` |
 | Skill 身份、能力、依赖和路由 | `.template-spec/agents/yss-skill-registry.yaml` |
 | 数字人角色、运行时和会签策略 | `.template-spec/agents/digital-human-roles.yaml` |
 | 影响面、裁剪与维护强度 | `.template-spec/process/harness-process-tailoring.md`、`.template-source/process/maintenance-intensity.yaml` |
@@ -25,9 +25,9 @@ description: 编排 YSS 研发全生命周期；当阶段、产物、门禁或 S
 scripts/query-lifecycle-context --work-unit work-unit.plan-requirements --check-skills
 ```
 
-上例用于 `governed` 工作单元。`--include` 限合同顶层键；调用前按 [来源与补装](references/matt-yss-adapter.md) 预检，在既有授权内补装并重验。`daily` 从当前任务影响选择并核验 YSS 技能，不能因省略正式合同漏掉技术约束。
+`--include` 限合同顶层键；调用前按 [来源与补装](references/matt-yss-adapter.md) 预检，在既有授权内补装并重验。`daily` 从当前任务影响选择并核验 YSS 技能，不能因省略正式合同漏掉技术约束。
 
-选择技能、查询阅读视图或复用资料与验证证据时，先读[查询与证据复用](references/conditional-guidance.md#查询与证据复用)。
+技能、阅读视图与证据复用先读[查询与证据复用](references/conditional-guidance.md#查询与证据复用)。
 
 ## 入口与模式
 
@@ -87,3 +87,5 @@ scripts/query-lifecycle-context --work-unit work-unit.plan-requirements --check-
 ## 条件维护与接入
 
 整理功能资产、迁移旧票、安装升级或接管治理工程、补装资源、恢复事务、处理专职工程或独立脚手架时，先读[资产整理与工程接入](references/conditional-guidance.md#资产整理与工程接入)；保持当前状态、批准依据和实现范围。
+
+按当前决定消费 `.template-spec/process/orchestration-policy-consumers.md` 登记的策略及执行位置。

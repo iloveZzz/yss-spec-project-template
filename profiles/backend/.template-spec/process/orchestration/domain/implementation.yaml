@@ -1,0 +1,279 @@
+# owner: harness-orchestrator
+# consumers: lifecycle route/query, current Profile workflows and governance validators
+backend_scaffold:
+  required_status: required
+  generator_by_architecture:
+    domain-driven: yss-ddd-scaffold-generator
+    layered-mvc: yss-layered-mvc-scaffold-generator
+  contract_schema:
+    schema_version: 4
+    schema_ref: .template-spec/process/schemas/project-scaffold-contract.schema.json
+    identity: project-engineering-baseline
+    required:
+      - contract_id
+      - contract_version
+      - kind
+      - delivery_role
+      - scaffold_kind
+      - scaffold_request_id
+      - status
+      - compiler_draft_ref
+      - lifecycle_approval_ref
+      - persisted_ref
+      - current_version
+      - implementation_repository
+      - backend_repository
+      - scaffold_status
+      - project_name
+      - target_output_dir
+      - repository_scope
+      - init_git
+      - base_package
+      - architecture_family
+      - generator_skill
+      - decision_ref
+      - decision_id
+      - decision_digest
+      - maven_coordinates
+      - profiles
+      - module_profile
+      - allowed_write_paths
+      - expected_evidence_files
+      - verification_commands
+      - approval
+      - work_unit
+      - generation_policy
+      - design_prerequisites
+    design_prerequisites:
+      required:
+        - technical_design
+        - data_architecture_decision
+        - api_contract_decision
+        - engineering_contract_approval_ref
+      artifact_binding:
+        - ref
+        - version
+        - digest
+      approval_gate: gate.engineering-contract-approved
+    status_by_owner:
+      compiler:
+        - draft
+        - ready-for-lifecycle-review
+        - blocked
+      orchestrator:
+        - approved
+        - stale
+        - blocked
+    approval:
+      required:
+        - approval_ref
+        - approver
+        - persisted_ref
+        - current_version
+    generation_policy:
+      required:
+        - mode
+        - existing_target
+        - old_project_migration
+        - template_upgrade
+      mode: initialize-only
+      existing_target: unsupported
+      old_project_migration: unsupported
+      template_upgrade: unsupported
+    maven_coordinates:
+      required:
+        - group_id
+        - project_version
+        - parent
+        - yss_components_version
+      parent_required:
+        - group_id
+        - artifact_id
+        - version
+      yss_components_version: 2.0.0-SNAPSHOT
+    profiles:
+      required:
+        - architecture
+        - persistence
+        - verification_database
+        - production_database
+        - platform
+        - validation_namespace
+        - dto_placement
+        - repository
+      supported_initial:
+        domain-driven:
+          architecture: target-domain-model
+          persistence: mybatis-plus
+          verification_database: h2
+          production_database: not-bound
+          platform: spring-boot-2.7-jdk8
+          validation_namespace: javax
+          dto_placement: web
+          repository: yss-internal
+        layered-mvc:
+          architecture: layered-mvc
+          persistence: mybatis-plus
+          verification_database: h2
+          production_database: not-bound
+          platform: spring-boot-2.7-jdk8
+          validation_namespace: javax
+          dto_placement: web
+          repository: yss-internal
+      unsupported:
+        - old-architecture-profile
+        - client-in-domain
+        - mybatis
+        - spring-boot-3
+        - jakarta
+        - separate-client-module
+    module_profile:
+      resolution_version: 1
+      domain-driven:
+        - domain
+        - application
+        - infrastructure
+        - adapter
+        - bootstrap
+      layered-mvc:
+        core:
+          - server
+          - service
+          - repository
+        capability_modules:
+          external-integration:
+            - adapter
+          published-client:
+            - client
+          feign-client:
+            - client
+            - feign-client
+    unsupported_inputs:
+      schema_v1: reject-no-auto-upgrade
+      schema_v2_for_new_generation: reject-read-only-history
+      schema_v3_for_new_generation: reject-historical-read-only
+      slice_id: forbidden-as-scaffold-identity
+      existing_project: reject-no-scaffold-migration
+  required_inputs:
+    - implementation_repository
+    - backend_repository
+    - scaffold_status
+    - scaffold_target_confirmed
+    - scaffold_request_id
+    - target_output_dir
+    - project_name
+    - base_package
+    - scaffold_architecture_decision_ref
+    - scaffold_architecture_decision_id
+    - scaffold_architecture_decision_digest
+    - architecture_family
+    - generator_skill
+    - module_profile
+    - maven_group_id
+    - project_version
+    - parent_group_id
+    - parent_artifact_id
+    - parent_version
+    - yss_components_version
+    - architecture_profile
+    - persistence_profile
+    - verification_database
+    - production_database
+    - platform_profile
+    - validation_namespace
+    - dto_placement
+    - repository_profile
+    - scaffold_contract_file
+    - scaffold_contract_draft
+    - scaffold_contract_id
+    - scaffold_contract_version
+    - scaffold_contract_status
+    - scaffold_contract_approved
+    - scaffold_contract_compiler_draft_ref
+    - scaffold_contract_lifecycle_approval_ref
+    - scaffold_contract_persisted
+    - scaffold_contract_persisted_ref
+    - scaffold_contract_current_version
+    - technical_design_ref
+    - technical_design_version
+    - technical_design_digest
+    - data_architecture_decision_ref
+    - data_architecture_decision_version
+    - data_architecture_decision_digest
+    - api_contract_decision_ref
+    - api_contract_decision_version
+    - api_contract_decision_digest
+    - engineering_contract_approval_ref
+  required_evidence:
+    - scaffold_architecture_decision
+    - generator_inputs
+    - expected_files
+    - scaffold_generation_manifest_v4
+    - generated_project_structure
+    - generation_execution_result
+    - verification_execution_result
+    - architecture_rules
+    - ./mvnw_validate
+    - ./mvnw_test
+    - ./mvnw_package
+    - yss_skill_execution_result
+  generation_options:
+    with_example: false
+    force: forbidden-by-default
+    regeneration: unsupported
+    template_upgrade: unsupported
+    old_project_migration: unsupported-separate-architecture-modernization-initiative
+  forbidden_generation:
+    - business_rules
+    - state_machine
+    - permission
+    - transaction
+    - complex_query
+    - error_mapping
+    - user_visible_behavior
+    - business_example_crud
+    - unapproved_force_overwrite
+  after_generation_by_architecture:
+    domain-driven:
+      - yss-implementation-contract-compiler
+    layered-mvc:
+      - yss-implementation-contract-compiler
+  existing_or_initialized:
+    - baseline_evidence
+    - wrapper_verification
+    - implementation_contract_recompile
+  verification:
+    commands:
+      - ./mvnw validate
+      - ./mvnw test
+      - ./mvnw package
+    requires_execution: true
+    printed_commands_are_not_evidence: true
+    completion_levels:
+      - generated
+      - empty-scaffold-verified
+      - first-slice-verified
+    downstream_readiness_claim_requires: first-slice-verified
+    completion_requires:
+      - validate_passed
+      - test_passed
+      - package_passed
+    evidence:
+      - preflight
+      - command
+      - exit_code
+      - failure_category
+      - duration_ms
+      - stdout_ref
+      - stderr_ref
+      - executed_at
+    failure_categories:
+      - repository-access
+      - project-model
+      - compilation
+      - bootstrap-entrypoint
+      - test-failure
+      - packaging
+      - maven-execution
+      - verification-preflight
+    failure_action: blocked

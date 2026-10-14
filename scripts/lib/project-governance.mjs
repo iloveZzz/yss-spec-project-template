@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { parseDocument } from '../vendor/yaml.mjs';
 import { assertCheckpointBoundary } from './checkpoint-boundary.mjs';
-import { safeFile, fileBinding, readDocument, digest, orchestrationRef } from './governance-io.mjs';
+import { safeFile, fileBinding, readDocument, digest, orchestrationRef, readOrchestrationContract } from './governance-io.mjs';
 
 export const CI_CONFIG='.template-spec/process/project-ci.yaml';
 export const TRACKER='.template-spec/agents/issue-tracker.md';
@@ -87,10 +87,10 @@ export function checkProjectGovernance({root,base,checkpointRef,taskRef,recovery
     if(result.status!==0)issue(unavailable?'capability-unavailable':'validation-failed',`${id}: ${result.error?.message||result.stderr||result.stdout}`,refs[0],Boolean(unavailable));
   };
   try {
-    for(const ref of ['yss-project.yaml',TRACKER,CI_CONFIG,'CONTEXT.md','.template-spec/process/harness-profile.yaml','.template-spec/process/checkpoint-boundary.yaml','.template-spec/process/lifecycle-registry.yaml','.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml'])observe(ref);
+    for(const ref of ['yss-project.yaml',TRACKER,CI_CONFIG,'CONTEXT.md','.template-spec/process/harness-profile.yaml','.template-spec/process/checkpoint-boundary.yaml','.template-spec/process/lifecycle-registry.yaml','.template-spec/process/orchestration-contract.yaml'])observe(ref);
     const {roots}=governanceScope(root);report.scope.roots=roots;
     const registry=readDocument(root,'.template-spec/process/lifecycle-registry.yaml');
-    observe(orchestrationRef(root));
+    readOrchestrationContract(root).refs.forEach(observe);
     const initial=governanceFiles(root,roots);report.scope.files=initial;
     // Validator code/schema changes invalidate this run too; do not import future Skill validators.
     const toolFiles=governanceFiles(root,['scripts','.template-spec/process/schemas','.template-spec/agents','.agents/skills/yss-product-lifecycle']);

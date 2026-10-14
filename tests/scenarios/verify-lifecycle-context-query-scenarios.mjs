@@ -182,7 +182,7 @@ assert.ok(Buffer.byteLength(skill) <= 8192, "生命周期入口 Skill 必须保�
 assert.equal(skill.includes("| 主阶段 |"), false, "入口 Skill 不得复制完整阶段表");
 for (const marker of [
   ".template-spec/process/lifecycle-registry.yaml",
-  "references/orchestration-contract.yaml",
+  ".template-spec/process/orchestration-contract.yaml",
   ".template-spec/agents/yss-skill-registry.yaml",
   "scripts/query-lifecycle-context",
   "### 仓库身份",

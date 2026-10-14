@@ -1,3 +1,4 @@
+import {loadOrchestrationContract} from '../../lib/orchestration-contract.mjs';
 // Explicitly synthetic approvals and replies for protocol tests only.
 import fs from 'node:fs';
 import {makeRoot} from '../../../tests/helpers/yss-instance.mjs';
@@ -36,10 +37,9 @@ export function localPlanFixture(owner,{featureId='feature.supplier',nativeSeed=
  assertNativeIdentity(root,'design');
  nativeSeed ||= makeRoot('local-plan-policy-','design');
  assertNativeIdentity(nativeSeed,'design');owner.nativeSeed=nativeSeed;
- const fullPolicy=path.join(root,'.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml'),fullPolicyBytes=fs.existsSync(fullPolicy)?fs.readFileSync(fullPolicy):null;
+ refs.push(...loadOrchestrationContract(ref=>fs.readFileSync(path.join(root,ref)),'.template-spec/process/orchestration-contract.yaml').refs);
  const saved=new Map(refs.map(ref=>[ref,fs.readFileSync(path.join(root,ref))]));
  const plan=buildPlanFixture(root,{nativeSeed});for(const [ref,bytes]of saved)fs.writeFileSync(path.join(root,ref),bytes);
- if(fullPolicyBytes)fs.writeFileSync(fullPolicy,fullPolicyBytes);else if(fs.existsSync(fullPolicy))fs.rmSync(fullPolicy);
  assertNativeIdentity(root,'design');
  plan.review.feature_id=featureId;plan.state.feature_id=featureId;
  reconcile(root,'reconciliation.json');
@@ -142,7 +142,7 @@ export async function designFixture(root,{nativeSeed,productDesign=true}={}) {
  const target=await strategicFixture(root,{nativeSeed,handoffVersion:5,businessTickets:true,...(!productDesign?{impacts:{ui:false,api:true,data:true,backend:true,frontend:false,cross_repo:false,high_risk:false}}:{})});
  if(!nativeSeed){fs.cpSync(path.join(composeProfileTree('design'),'.template-spec/process/schemas'),path.join(root,'.template-spec/process/schemas'),{recursive:true});
  fs.copyFileSync(path.join(composeProfileTree('design'),'.template-spec/agents/yss-skill-registry.yaml'),path.join(root,'.template-spec/agents/yss-skill-registry.yaml'));
- for(const ref of ['.template-spec/process/lifecycle-registry.yaml','.template-spec/process/harness-profile.yaml','.template-spec/process/checkpoint-boundary.yaml','.agents/skills/yss-strategic-design/references/orchestration-contract.yaml']) {
+ for(const ref of ['.template-spec/process/lifecycle-registry.yaml','.template-spec/process/harness-profile.yaml','.template-spec/process/checkpoint-boundary.yaml',...loadOrchestrationContract(ref=>fs.readFileSync(path.join(composeProfileTree('design'),ref)), '.template-spec/process/orchestration-contract.yaml').refs]) {
   const file=path.join(root,ref);fs.mkdirSync(path.dirname(file),{recursive:true});fs.copyFileSync(path.join(composeProfileTree('design'),ref),file);
  }}
  fs.mkdirSync(path.join(root,'.template-spec/agents'),{recursive:true});

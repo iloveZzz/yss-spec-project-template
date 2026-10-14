@@ -1,3 +1,4 @@
+import {loadOrchestrationContract} from '../../lib/orchestration-contract.mjs';
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
 import {pilotFixture} from '../slice-contract-v3/pilot-fixture.mjs';
 import {viewContract} from '../../lib/contract-views.mjs';
@@ -23,14 +24,15 @@ test('focused task includes unit and universal acceptance, preserves constraints
 });
 test('recovery view binds task and contract, refuses unknown or mismatched task and remains readonly',()=>{
  const f=pilotFixture();try{
-  f.write('.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml',fs.readFileSync('.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml','utf8'));
+  f.write('.template-spec/process/orchestration-contract.yaml',JSON.stringify(loadOrchestrationContract(ref=>fs.readFileSync(ref), '.template-spec/process/orchestration-contract.yaml').value));
+  f.write('.template-spec/process/lifecycle-registry.yaml',fs.readFileSync('.template-spec/process/lifecycle-registry.yaml','utf8'));
   f.write('slice.yaml',stringify({slice_contract:f.contract}));
   f.write('lifecycle.json',{schema_version:1,repository_mode:'project-instance',stage:'stage.vertical-slice-implementation',next_work_unit:'work-unit.slice-implementation',status:'running',blockers:[]});
   const task={work_unit_id:'work-unit.slice-backend',workflow_status:'active',convergence:{parent_work_unit:'work-unit.slice-implementation'},contract:{kind:'slice-implementation',slice_contract_ref:'slice.yaml',contract_id:f.contract.contract_id,contract_version:f.contract.contract_version},verification_results:[]};
   f.write('task.json',task);
   const options={root:f.root,checkpointRef:'lifecycle.json',taskPackageRef:'task.json'};
   const before=fs.readFileSync(f.root+'/task.json'),view=lifecycleStatus(options);
-  assert.equal(view.next_step.action_type,'inspect');assert.match(view.next_action,/不得重复派发/);
+  assert.equal(view.next_step.action_type,'inspect',JSON.stringify(view));assert.match(view.next_action,/不得重复派发/);
   assert.deepEqual(view.recovery.contract_view.command.slice(-2),['--unit',task.work_unit_id]);assert.ok(view.source_digests.task.digest);
   assert.equal(view.recovery.verification_items[0].id,'test');assert.equal(view.recovery.verification_items[0].status,'not-checked');
   assert.ok(view.recovery.prechecks.some(x=>x.command.includes('scripts/slice-contract')));

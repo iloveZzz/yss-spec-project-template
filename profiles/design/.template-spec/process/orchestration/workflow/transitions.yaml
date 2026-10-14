@@ -1,0 +1,47 @@
+# owner: yss-strategic-design
+# consumers: lifecycle route/query, current Profile workflows and governance validators
+transition_graph:
+  validator: scripts/lib/lifecycle-transition.mjs
+  routes:
+    work-unit.ssot-update:
+      - work-unit.skill-projection-sync
+      - work-unit.intensity-aware-verification
+    work-unit.skill-projection-sync:
+      - work-unit.template-snapshot-build
+      - work-unit.intensity-aware-verification
+    work-unit.template-snapshot-build:
+      - work-unit.attach-sync-integration
+      - work-unit.intensity-aware-verification
+    work-unit.attach-sync-integration:
+      - work-unit.intensity-aware-verification
+    work-unit.intensity-aware-verification:
+      - work-unit.intensity-aware-review
+    work-unit.intensity-aware-review:
+      - work-unit.release-and-rollback
+    work-unit.release-and-rollback: []
+    work-unit.plan-opportunity:
+      - work-unit.plan-requirements
+      - work-unit.domain-strategy-design
+      - work-unit.stage-decision
+    work-unit.plan-requirements:
+      - work-unit.domain-strategy-design
+      - work-unit.stage-decision
+    work-unit.domain-strategy-design:
+      - work-unit.stage-decision
+    work-unit.stage-decision:
+      - work-unit.spec-synthesis
+    work-unit.spec-synthesis:
+      - work-unit.prototype-design
+      - work-unit.business-ticket-formalization
+    work-unit.prototype-design:
+      - work-unit.business-ticket-formalization
+    work-unit.business-ticket-formalization:
+      - work-unit.strategic-design-handoff
+    work-unit.strategic-design-handoff: []
+  forbidden_shortcuts:
+    - from: work-unit.spec-synthesis
+      to: work-unit.technical-analysis
+    - from: work-unit.prototype-design
+      to: work-unit.slice-implementation
+    - from: work-unit.strategic-design-handoff
+      to: work-unit.slice-implementation

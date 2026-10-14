@@ -9,7 +9,7 @@ import { stringify } from '../../../../scripts/vendor/yaml.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../..');
 const CLI = path.join(ROOT, '.template-source/plugins/yss-backend-delivery/plan.mjs');
-const CONTRACT = '.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml';
+const CONTRACT = '.template-spec/process/orchestration-contract.yaml';
 const units = ['plan-opportunity', 'plan-requirements', 'domain-strategy-design', 'stage-decision',
   'spec-synthesis', 'prototype-design-v2', 'technical-analysis', 'implementation-repository-preparation', 'service-project-initialization',
   'ticket-decomposition', 'slice-implementation', 'code-review'].map(x => `work-unit.${x}`);

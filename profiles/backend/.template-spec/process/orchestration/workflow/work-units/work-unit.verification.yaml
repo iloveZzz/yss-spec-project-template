@@ -1,0 +1,16 @@
+# owner: harness-orchestrator
+# consumers: lifecycle route/query, current Profile workflows and governance validators
+work_unit_routes:
+  work-unit.verification:
+    primary_skill: test-agent
+    supporting_skills:
+      - code-review
+      - diagnosing-bugs
+      - tdd
+    skills:
+      - test-agent
+      - code-review
+      - diagnosing-bugs
+      - tdd
+    applies_when: implementation_candidate_ready_for_verification
+    not_applicable_reason: implementation_not_complete

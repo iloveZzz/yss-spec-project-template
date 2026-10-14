@@ -1,4 +1,4 @@
-import { readDocument, fileBinding } from './governance-io.mjs';
+import { readDocument, fileBinding, readOrchestrationContract, orchestrationRef } from './governance-io.mjs';
 import { assertAssetTransactionIdle, assertCurrentAssetReference } from './asset-transactions.mjs';
 import {verifySpecBaselineBinding} from './spec-baseline.mjs';
 
@@ -8,8 +8,8 @@ export function assertCheckpointBoundary(value, {root, history=false}={}) {
   if(value.upstream_spec_baseline)verifySpecBaselineBinding(value,{root,requireReconciliation:value.stage!=='stage.entry-triage'||value.context_reconciliation?.status==='reconciled'||Boolean(value.stage_trace?.completed_work_unit)});
   assertAssetTransactionIdle(root);
   if(value.stage_tracking?.checkpoint_ref)assertCurrentAssetReference(root,value.stage_tracking.checkpoint_ref);
-  const canonical='.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml';
-  const contract=readDocument(root,fileBinding(root,canonical)?canonical:'.template-spec/process/checkpoint-boundary.yaml');
+  const canonical=orchestrationRef(root);
+  const contract=readOrchestrationContract(root,fileBinding(root,canonical)?canonical:'.template-spec/process/checkpoint-boundary.yaml').value;
   const registry=readDocument(root,'.template-spec/process/lifecycle-registry.yaml');
   const stages=new Set(registry.stages.map(x=>x.id));
   if(!stages.has(value.stage))throw new Error('checkpoint-boundary: 当前 stage 未登记');

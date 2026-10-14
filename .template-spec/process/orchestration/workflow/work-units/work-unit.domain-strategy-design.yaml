@@ -1,0 +1,26 @@
+# owner: yss-product-lifecycle
+# consumers: lifecycle route/query, current Profile workflows and governance validators
+work_unit_routes:
+  work-unit.domain-strategy-design:
+    native:
+      source: yss-product-lifecycle
+      skill: yss-stage-decision
+      invocation_mode: model-invoked
+    primary_skill: yss-stage-decision
+    supporting_skills:
+      - domain-modeling
+      - yss-research
+      - grilling
+    skills:
+      - yss-stage-decision
+      - domain-modeling
+      - yss-research
+      - grilling
+    research_contract:
+      profile: strategy-evidence
+      mode_before_gate: evidence-audited
+      artifact_owner: yss-research
+      downstream_owner: yss-stage-decision
+    internal_review: check.domain-strategy-approved
+    applies_when: domain_boundary_or_language_or_core_rule_impact
+    not_applicable_reason: no_domain_strategy_impact

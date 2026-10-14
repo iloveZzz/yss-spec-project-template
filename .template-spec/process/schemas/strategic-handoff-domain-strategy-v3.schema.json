@@ -16,8 +16,7 @@
     "invariants",
     "context_snapshot",
     "downstream_mapping",
-    "evidence_refs",
-    "approval"
+    "evidence_refs"
   ],
   "properties": {
     "traceability_version": {
@@ -813,6 +812,24 @@
             }
           }
         }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "draft"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {},
+      "else": {
+        "required": [
+          "approval"
+        ]
       }
     }
   ]

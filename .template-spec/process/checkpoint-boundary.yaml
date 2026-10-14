@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "derived_from": ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml",
+  "derived_from": ".template-spec/process/orchestration-contract.yaml",
   "phase_boundary": {
     "choices": [
       "continue",

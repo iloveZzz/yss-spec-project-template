@@ -1,3 +1,4 @@
+import {loadOrchestrationContract} from '../../lib/orchestration-contract.mjs';
 // Synthetic protocol approvals and verification only; never product acceptance.
 // A real native installation supplies unchanged policy, schemas, skills and identity.
 import fs from 'node:fs';
@@ -13,7 +14,7 @@ import {technicalDigest} from '../../../.agents/skills/yss-technical-design/scri
 
 const protectedRefs=['.yss.json','.template-spec/process/harness-profile.yaml',
  '.template-spec/process/lifecycle-registry.yaml','.template-spec/agents/digital-human-roles.yaml',
- '.template-spec/agents/yss-skill-registry.yaml','.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml'];
+ '.template-spec/agents/yss-skill-registry.yaml','.template-spec/process/orchestration-contract.yaml'];
 function portableDecision(root,ref,{subjectRef,boundary,scope}) {
  const d=buildDecisionFixture(path.join(root,ref),{subjectRef:path.join(root,subjectRef),boundary,scope});
  const relative=value=>path.relative(root,value).split(path.sep).join('/');
@@ -48,7 +49,7 @@ export async function localImplementationFixture({nativeSeed,backendRequired=tru
  nativeSeed=path.resolve(nativeSeed);
  const identity=read(path.join(nativeSeed,'.yss.json'));
  if(identity.profile!=='spec'||identity.profileId!=='harness.spec-template')throw new Error('local implementation seed must be native Spec');
- const preserved=new Map(protectedRefs.map(ref=>[ref,{bytes:fs.readFileSync(path.join(nativeSeed,ref)),mode:fs.statSync(path.join(nativeSeed,ref)).mode}]));
+ const preserved=new Map([...protectedRefs, ...loadOrchestrationContract(ref=>fs.readFileSync(path.join(nativeSeed,ref)), '.template-spec/process/orchestration-contract.yaml').refs.filter(ref=>!protectedRefs.includes(ref))].map(ref=>[ref,{bytes:fs.readFileSync(path.join(nativeSeed,ref)),mode:fs.statSync(path.join(nativeSeed,ref)).mode}]));
  const scratch=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'yss-local-approved-spec-')));
  const load=(root,ref)=>import(pathToFileURL(path.join(root,ref)));
  let f;
@@ -235,9 +236,9 @@ export async function localImplementationFixture({nativeSeed,backendRequired=tru
   specProof=modules.spec.inspectSpecBaselineSource(f.root,checkpointRef,undefined,{localFrontend:!!nativeFrontendSeed});
   for(const [ref,saved]of preserved)if(!fs.readFileSync(path.join(nativeSeed,ref)).equals(saved.bytes)||fs.statSync(path.join(nativeSeed,ref)).mode!==saved.mode)throw Error('native Spec seed authority mutated: '+ref);
   const finalSeed=nativeFrontendSeed||nativeSeed;
-  for(const original of protectedRefs) {
+  for(const original of new Set([...protectedRefs,...loadOrchestrationContract(ref=>fs.readFileSync(path.join(finalSeed,ref)),'.template-spec/process/orchestration-contract.yaml').refs])) {
     const ref=nativeFrontendSeed&&original.startsWith('.agents/skills/yss-product-lifecycle/')?original.replace('yss-product-lifecycle','harness-orchestrator'):original;
-    if(!fs.readFileSync(path.join(f.root,ref)).equals(fs.readFileSync(path.join(finalSeed,ref))))throw Error('native receiver authority mutated: '+ref);
+    if(!fs.readFileSync(path.join(f.root,ref)).equals(fs.readFileSync(path.join(finalSeed,ref)))||fs.statSync(path.join(f.root,ref)).mode!==fs.statSync(path.join(finalSeed,ref)).mode)throw Error('native receiver authority mutated: '+ref);
   }
   return {...f,checkpoint,checkpointRef,sliceRef:f.binding.ref,sliceID:f.contract.slice_id,specRef:'source/spec.md',specProof,
    backendTerminalRef:result?.terminal_ref||null,frontendPlanRef,frontendVerificationRef,frontendWorkUnitId:'work-unit.slice-frontend',taskBinding:f.binding,

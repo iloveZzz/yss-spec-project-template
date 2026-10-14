@@ -1,6 +1,6 @@
 # Harness 流程裁剪与影响面判定
 
-项目实例先按本地主控 `.agents/skills/harness-orchestrator/references/orchestration-contract.yaml` 的 `request_triage.delivery_path` 与支持能力的 `yss lifecycle route` 分流。已核验的 daily 按同一任务记录、实际测试、独立审查和 verify-daily 交付，不要求正式 checkpoint 或 Slice；已有正式绑定不得降级，风险命中排除项时保留修改和证据并恢复 governed。
+项目实例先按本地主控 `.template-spec/process/orchestration-contract.yaml` 的 `request_triage.delivery_path` 与支持能力的 `yss lifecycle route` 分流。已核验的 daily 按同一任务记录、实际测试、独立审查和 verify-daily 交付，不要求正式 checkpoint 或 Slice；已有正式绑定不得降级，风险命中排除项时保留修改和证据并恢复 governed。
 
 本文件的阶段裁剪、阶段门禁和 Slice 条款适用于 governed 与模板维护，规定如何根据变更规模和风险选择最近可信阶段。裁剪只减少未触发的门禁，不得跳过已经命中的条件强制门禁。
 

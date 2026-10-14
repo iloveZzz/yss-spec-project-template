@@ -5,17 +5,10 @@ import path from "node:path";
 
 export const SCHEMA_VERSION = 1;
 export const RESIDENT_FILES = ["AGENTS.md", "CONTEXT.md", ".agents/skills/yss-product-lifecycle/SKILL.md"];
-// daily 起步必读（architecture-iteration-v1 附录 A）。S4 之后改为 AGENTS.md、CONTEXT.md 加 `yss lifecycle route --json` 的输出，届时调整 profile。
-export const DAILY_START_PROFILE = "pre-s4";
-const LIFECYCLE_REFERENCES = ".agents/skills/yss-product-lifecycle/references";
-export const DAILY_START_FILES = [
-  "AGENTS.md",
-  "CONTEXT.md",
-  ".agents/skills/yss-product-lifecycle/SKILL.md",
-  `${LIFECYCLE_REFERENCES}/daily-delivery.md`,
-  `${LIFECYCLE_REFERENCES}/user-decisions.md`,
-];
-export const DAILY_START_SECTIONS = [{ path: `${LIFECYCLE_REFERENCES}/orchestration-contract.yaml`, section: "request_triage" }];
+// 只计真实 agent JSON；缺少输出时不推算或宣称达标。
+export const DAILY_START_PROFILE = "route-agent-v1";
+export const DAILY_START_FILES = ["AGENTS.md", "CONTEXT.md"];
+export const DAILY_START_SECTIONS = [];
 export const PIPELINE_WINDOW_DAYS = 30;
 // 管道提交的路径口径（附录 A）。路径被删除后口径保持不变，前后才可比。
 const PIPELINE_PATTERNS = [
@@ -201,29 +194,13 @@ export function pipelineCommitStats(root, { since, until, rev } = {}) {
   };
 }
 
-function yamlSectionBytes(text, section) {
-  const lines = text.split(/(?<=\n)/);
-  const start = lines.findIndex((line) => line.startsWith(`${section}:`));
-  if (start < 0) return null;
-  let end = lines.length;
-  for (let index = start + 1; index < lines.length; index += 1) {
-    if (/^[^\s#]/.test(lines[index])) { end = index; break; }
-  }
-  return lines.slice(start, end).reduce((sum, line) => sum + Buffer.byteLength(line), 0);
-}
-
-/** daily 路径起步要读的字节：入口文件整份，加上编排合同里按名字取出的段落（原文字节，不依赖 YAML 库）。 */
-export function dailyStartStats(root) {
-  const files = DAILY_START_FILES.map((rel) => {
-    const file = path.join(root, rel);
-    return { path: rel, bytes: existsSync(file) ? readFileSync(file).length : null };
-  });
-  const sections = DAILY_START_SECTIONS.map(({ path: rel, section }) => {
-    const file = path.join(root, rel);
-    return { path: rel, section, bytes: existsSync(file) ? yamlSectionBytes(readFileSync(file, "utf8"), section) : null };
-  });
-  const total = [...files, ...sections].reduce((sum, item) => sum + (item.bytes ?? 0), 0);
-  return { profile: DAILY_START_PROFILE, files, sections, total_bytes: total };
+/** daily 起步字节：入口文件整份，加上实际 agent JSON 的 UTF-8 字节。 */
+export function dailyStartStats(root, agentJSON = null) {
+  const files = DAILY_START_FILES.map(rel => ({ path: rel, bytes: existsSync(path.join(root, rel)) ? readFileSync(path.join(root, rel)).length : null }));
+  const outputBytes = agentJSON === null ? null : Buffer.byteLength(agentJSON, 'utf8');
+  const complete = outputBytes !== null && files.every(item => item.bytes !== null);
+  const total = complete ? files.reduce((sum, item) => sum + item.bytes, outputBytes) : null;
+  return { profile: DAILY_START_PROFILE, files, sections: [], agent_output_bytes: outputBytes, total_bytes: total, budget_bytes: 10240, within_budget: complete ? total <= 10240 : null };
 }
 
 export function collectMetrics(root = process.cwd(), options = {}) {
@@ -244,7 +221,7 @@ export function collectMetrics(root = process.cwd(), options = {}) {
   return {
     schema_version: SCHEMA_VERSION,
     resident_context: { files: resident, total_bytes: resident.reduce((sum, item) => sum + (item.bytes ?? 0), 0) },
-    daily_start: dailyStartStats(root),
+    daily_start: dailyStartStats(root, options.agentJSON ?? null),
     pipeline_commits: pipelineCommitStats(root, options),
     skills: { canonical: { ...canonical, root: ".agents/skills" }, profiles },
     projection_roots: projectionStats(root, canonicalNames),

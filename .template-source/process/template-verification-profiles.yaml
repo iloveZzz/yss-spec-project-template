@@ -6,6 +6,23 @@ profiles:
     always_groups:
       - hygiene
     checks:
+      - id: check.lifecycle-core-views
+        run: "node --test scripts/fixtures/lifecycle-core/views.test.mjs"
+        group: lifecycle
+        inputs_complete: true
+        input_patterns:
+          - "scripts/fixtures/lifecycle-core/views.test.mjs"
+          - "scripts/lib/contract-views.mjs"
+        depends_on: []
+        failure_mode: "任务与恢复视图丢失约束或只读边界"
+      - id: check.repository-scope-scenarios
+        run: "node tests/scenarios/verify-repository-scope-scenarios.mjs"
+        group: lifecycle
+        inputs_complete: true
+        input_patterns:
+          - "scripts/verify-repository-scope-scenarios"
+        depends_on: []
+        failure_mode: "仓库职责与 gitlink 保护引用失效"
       - id: check.9f66238a57e457bf
         group: lifecycle
         inputs_complete: true
@@ -24,6 +41,9 @@ profiles:
         inputs_complete: true
         input_patterns:
           - "scripts/lib/skill-registry.mjs"
+          - "scripts/lib/orchestration-contract.mjs"
+          - ".template-spec/process/orchestration-contract.yaml"
+          - ".template-spec/process/orchestration/**"
           - ".template-source/tooling/node/test/skill-registry.test.mjs"
           - ".template-spec/agents/yss-skill-registry.yaml"
         depends_on: []
@@ -55,6 +75,47 @@ profiles:
           - "profiles/**"
         depends_on: []
         failure_mode: "专职 Profile 的 Plan/Spec 本地路线偏离上游的唯一日常政策，业务分析角色被允许当 Worker，或专职角色被允许写另一端"
+      - id: check.plugin-preparation
+        run: "node --test .template-source/tooling/node/test/plugin-preparation.test.mjs"
+        group: feature-assets
+        resources: [native-cli]
+        inputs_complete: true
+        input_patterns:
+          - ".template-source/plugins/yss-backend-delivery/plan.mjs"
+          - ".template-source/tooling/node/test/plugin-preparation.test.mjs"
+        depends_on: []
+        failure_mode: "插件准备遗漏合同分片或来源绑定"
+      - id: check.lifecycle-status-feedback
+        run: "node --test .template-source/tooling/node/test/lifecycle-status-feedback.test.mjs"
+        group: feature-assets
+        resources: [native-cli]
+        inputs_complete: true
+        input_patterns:
+          - ".template-source/tooling/node/test/lifecycle-status-feedback.test.mjs"
+          - "scripts/lib/lifecycle-status.mjs"
+        depends_on: []
+        failure_mode: "状态反馈与合同摘要不一致"
+      - id: check.plugin-scope-terminal
+        run: "node --test .template-source/tooling/node/test/plugin-scope.test.mjs .template-source/tooling/node/test/plugin-terminal.test.mjs"
+        group: feature-assets
+        resources: [native-cli]
+        inputs_complete: true
+        input_patterns:
+          - ".template-source/tooling/node/test/plugin-scope.test.mjs"
+          - ".template-source/tooling/node/test/plugin-terminal.test.mjs"
+          - "scripts/lib/lifecycle-execution-scope.mjs"
+        depends_on: []
+        failure_mode: "插件职责范围或交付终点漂移"
+      - id: check.implementation-candidate-current
+        run: "node --test tests/implementation-candidate-current.test.mjs"
+        group: feature-assets
+        resources: [native-cli]
+        inputs_complete: true
+        input_patterns:
+          - "tests/implementation-candidate-current.test.mjs"
+          - "scripts/lib/implementation-candidate-current.mjs"
+        depends_on: []
+        failure_mode: "实现候选未绑定当前合同或材料"
       - id: check.profile-consumers
         resources: [native-cli]
         run: "node --test --test-skip-pattern='^backend plugin receives' tests/efficiency-distribution.test.mjs tests/native-context-retirement.test.mjs scripts/fixtures/contract-efficiency/distribution.test.mjs scripts/fixtures/reading-views/bundle.test.mjs scripts/fixtures/slice-contract-v3/round2.test.mjs scripts/fixtures/slice-contract-v3/scenarios.test.mjs scripts/fixtures/stage-tracking/tracking.test.mjs scripts/fixtures/spec-baseline/scenarios.mjs .template-source/tooling/node/test/approval-consumption.test.mjs .template-source/tooling/node/test/approval-current.test.mjs .template-source/tooling/node/test/decision-continuation.test.mjs .template-source/tooling/node/test/lifecycle-progression.test.mjs .template-source/tooling/node/test/plugin-design-consumption.test.mjs .template-source/tooling/node/test/review-capabilities.test.mjs"
@@ -351,6 +412,8 @@ profiles:
           - ".template-source/scripts/verify-strategic-handoff-distribution.mjs"
           - ".template-spec/process/lifecycle-registry.yaml"
           - ".template-spec/process/schemas/progression-target.schema.json"
+          - ".template-spec/process/orchestration/**"
+          - ".template-spec/process/orchestration-contract.yaml"
           - ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml"
         depends_on: []
         failure_mode: "已移除的前端 Profile、前端移交验证入口、前端生命周期稳定 ID 或 frontend-accepted 推进目标重新出现"
@@ -646,6 +709,8 @@ profiles:
         inputs_complete: true
         input_patterns:
           - ".template-spec/agents/yss-skill-registry.yaml"
+          - ".template-spec/process/orchestration/**"
+          - ".template-spec/process/orchestration-contract.yaml"
           - ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml"
           - "scripts/lib/skill-registry.mjs"
           - "tests/explicit-invocation.test.mjs"
@@ -1047,6 +1112,8 @@ profiles:
         group: "lifecycle"
         inputs_complete: true
         input_patterns:
+          - ".template-spec/process/orchestration/**"
+          - ".template-spec/process/orchestration-contract.yaml"
           - ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml"
           - ".template-spec/process/schemas/lifecycle-checkpoint.schema.json"
           - "scripts/verify-lifecycle-checkpoint"
@@ -1166,6 +1233,8 @@ profiles:
         input_patterns:
           - "profiles/**"
           - ".agents/skills/yss-frontend-scaffold-generator/scripts/scaffold-generator.test.mjs"
+          - ".template-spec/process/orchestration/**"
+          - ".template-spec/process/orchestration-contract.yaml"
           - ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml"
           - ".agents/skills/yss-prototype-stage/tests/browser-smoke.mjs"
           - ".agents/skills/yss-prototype-stage/tests/compact-theme-browser.mjs"
@@ -1836,7 +1905,8 @@ routing:
     groups:
       - plan-spec-content
   - patterns:
-      - .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml
+      - .template-spec/process/orchestration/**
+      - .template-spec/process/orchestration-contract.yaml
       - .template-spec/process/schemas/lifecycle-checkpoint.schema.json
       - .template-spec/process/templates/lifecycle-checkpoint-template.yaml
       - .template-spec/process/templates/stage-checkpoint-template.md

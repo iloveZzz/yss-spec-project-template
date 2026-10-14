@@ -1,0 +1,25 @@
+# owner: yss-product-lifecycle
+# consumers: lifecycle route/query, current Profile workflows and governance validators
+work_unit_routes:
+  work-unit.strategic-design-handoff:
+    native:
+      source: yss-product-lifecycle
+      skill: yss-product-lifecycle
+      invocation_mode: model-invoked
+    primary_skill: yss-product-lifecycle
+    supporting_skills: []
+    skills:
+      - yss-product-lifecycle
+    human_gate: gate.strategic-design-handoff-approved
+    applies_when: explicit-external-implementation-consumer
+    not_applicable_reason: local-spec-assets-consumed-directly
+    post_approval_action:
+      command: scripts/strategic-handoff finalize --source-root <project-root> --handoff <approved-v5-ref>
+      output_root: docs/deliveries/strategic/<handoff-id>/<version>
+      checkpoint_artifact: artifact.strategic-design-handoff
+      checkpoint_evidence:
+        - delivery-record.json
+        - verification.json
+      checkpoint_verification: verification.strategic_delivery
+      failure_status: blocked
+      receiver_receipt_required: false

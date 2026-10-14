@@ -1,0 +1,26 @@
+schema_version: 2
+parts:
+  - orchestration/domain/progression.yaml
+  - orchestration/entry/execution.yaml
+  - orchestration/core/identity.yaml
+  - orchestration/core/state.yaml
+  - orchestration/entry/profile-policy.yaml
+  - orchestration/core/results.yaml
+  - orchestration/workflow/work-units/work-unit.plan-opportunity.yaml
+  - orchestration/workflow/work-units/work-unit.plan-requirements.yaml
+  - orchestration/workflow/work-units/work-unit.domain-strategy-design.yaml
+  - orchestration/workflow/work-units/work-unit.stage-decision.yaml
+  - orchestration/workflow/work-units/work-unit.spec-synthesis.yaml
+  - orchestration/workflow/work-units/work-unit.prototype-design.yaml
+  - orchestration/workflow/work-units/work-unit.business-ticket-formalization.yaml
+  - orchestration/workflow/work-units/work-unit.strategic-design-handoff.yaml
+  - orchestration/workflow/work-units/work-unit.technical-analysis.yaml
+  - orchestration/workflow/work-units/work-unit.ticket-decomposition.yaml
+  - orchestration/workflow/work-units/work-unit.slice-implementation.yaml
+  - orchestration/workflow/work-units/work-unit.code-review.yaml
+  - orchestration/workflow/work-units/work-unit.release-and-retrospective.yaml
+  - orchestration/workflow/transitions.yaml
+  - orchestration/domain/planning.yaml
+  - orchestration/domain/implementation.yaml
+  - orchestration/domain/review.yaml
+  - orchestration/entry/request-triage.yaml

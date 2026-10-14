@@ -1,0 +1,73 @@
+# owner: harness-orchestrator
+# consumers: lifecycle route/query, current Profile workflows and governance validators
+progression_target:
+  schema_version: 1
+  required_capabilities:
+    - lifecycle-target-v1
+  config_file: progression-target.json
+  writer_profiles: []
+  default_target: profile-terminal
+  coordinator: explicit-spec-root-and-same-feature-checkpoint
+  no_second_progress_state: true
+  business_completion: not-evaluated-local-terminal-only
+  completion_policy:
+    profile-terminal:
+      public_name: 后端交付职责完成
+      required_gates:
+        - gate.engineering-contract-approved
+        - gate.slice-contract-approved
+        - gate.fresh-verification-passed
+      required_checks:
+        - backend-delivery
+    backend-deliverable:
+      public_name: 后端可交付
+      required_gates:
+        - gate.engineering-contract-approved
+        - gate.slice-contract-approved
+        - gate.fresh-verification-passed
+      required_checks:
+        - backend-delivery
+  local_implementation_inputs: native-profile-current-feature-approved-assets
+consumer_entry_routes:
+  yss-full-lifecycle:
+    backend-technical-design:
+      source_work_unit: work-unit.technical-design
+      target_work_unit: work-unit.technical-analysis
+  plan-to-backend:
+    backend-technical-design:
+      source_work_unit: work-unit.technical-design
+      target_work_unit: work-unit.technical-analysis
+  harness.backend-delivery:
+    backend-technical-design:
+      source_work_unit: work-unit.technical-design
+      target_work_unit: work-unit.technical-design
+profile_guidance:
+  schema_version: 1
+  links_file: .yss-profile-links.json
+  required_capabilities:
+    - profile-guidance-v1
+    - spec-baseline-v1
+  routes:
+    spec:
+      targets:
+        - design
+        - backend
+      default: continue-current-spec
+    design:
+      targets:
+        - backend
+    backend:
+      targets: []
+  evidence: explicit-profile-links-and-current-approved-inputs
+  emit_on:
+    - approved-baseline
+    - completed-profile-responsibility
+    - status-request
+    - resume
+  recommendation: read-only-never-initialization-or-approval
+  confirmation: explicit-user-target-choice-before-prepare-or-import
+  unregistered_target: unknown-never-inferred-from-neighbor-directories
+  design_intake: frozen-spec-baseline-then-target-context-reconciliation
+  role_boundary: recommend-downstream-profile-without-dispatching-its-implementation
+  progression_intent: one-spec-controller-with-optional-specialists
+  specialist_terminal_is_business_acceptance: false

@@ -1,0 +1,21 @@
+# owner: yss-product-lifecycle
+# consumers: lifecycle route/query, current Profile workflows and governance validators
+work_unit_routes:
+  work-unit.spec-synthesis:
+    native:
+      source: yss-product-lifecycle
+      skill: yss-product-lifecycle
+      invocation_mode: model-invoked
+    primary_skill: yss-product-lifecycle
+    supporting_skills:
+      - domain-modeling
+    compatibility:
+      source: mattpocock/skills
+      skill: to-spec
+      invocation_mode: reference
+      formal_artifact_owner: explicit-user-entry
+    skills:
+      - domain-modeling
+    human_gate: spec-baseline
+    applies_when: new_feature_or_behavior_change
+    not_applicable_reason: existing_frozen_spec_is_current

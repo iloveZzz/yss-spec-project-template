@@ -139,14 +139,16 @@ test('批准主体路径等价仅限同一 authority 视图，跨根或越界仍
 });
 
 
-test('只读 Handoff v3/v4 使用完整旧来源政策，缺项和未知能力拒绝且不放宽普通审批',async t=>{
+test('Handoff v3 要求显式迁移，v4 保留旧来源政策且不放宽普通审批',async t=>{
   for(const version of [3,4]){
     const root=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),`ar12b-legacy-v${version}-`)));
     const fixture=await handoffFixture(root,{handoffVersion:version});
     t.after(()=>{for(const dir of [root,fixture.nativeSeed])if(dir)fs.rmSync(dir,{recursive:true,force:true});});
     const rolesFile=path.join(root,'.template-spec/agents/digital-human-roles.yaml'),original=fs.readFileSync(rolesFile),roles=parseYaml(original.toString());
     const source=()=>run(root,['handoff','verify','--kind','source','--file','handoff.yaml']);
-    const valid=source();assert.equal(valid.status,0,JSON.stringify(valid.envelope));assert.deepEqual(fs.readFileSync(rolesFile),original);
+    const valid=source();
+    if(version===3){assert.equal(valid.status,2);assert.equal(valid.envelope.code,'MIGRATION_REQUIRED');assert.deepEqual(fs.readFileSync(rolesFile),original);continue;}
+    assert.equal(valid.status,0,JSON.stringify(valid.envelope));assert.deepEqual(fs.readFileSync(rolesFile),original);
     const missing=structuredClone(roles);delete missing.user_decision_policy.gates;fs.writeFileSync(rolesFile,JSON.stringify(missing));
     const missingResult=source();assert.equal(missingResult.status,2);assert.equal(missingResult.envelope.code,'HANDOFF_POLICY_CAPABILITY');
     const unknown=structuredClone(roles);unknown.user_decision_policy.required_capabilities=['unknown-future-source-policy'];fs.writeFileSync(rolesFile,JSON.stringify(unknown));

@@ -1,0 +1,171 @@
+# owner: yss-strategic-design
+# consumers: lifecycle route/query, current Profile workflows and governance validators
+planning:
+  entry_validator: scripts/verify-plan-spec-entry
+  review_contract: .template-spec/plan/entry-review.md
+  check_policy: .template-spec/process/lifecycle-registry.yaml
+  default_check_status: pending
+  formal_spec_draft_requires_passed_entry: true
+  stage: stage.plan
+  record: artifact.plan-record
+  template: .template-spec/plan/templates/plan-template.md
+  exit_policy: .template-spec/process/lifecycle-registry.yaml
+  migration_policy: .template-spec/process/plan-migration.md
+  critical_open_questions: block-before-spec
+  deferred_details_require:
+    - noncritical_reason
+    - owner
+    - resolution_point
+    - downstream_recipient
+  reuse_requires:
+    - source_ref
+    - current_version
+    - applicable_scope
+    - reason
+  downstream: work-unit.spec-synthesis
+  implementation_authorized: false
+  frontier_scope: current-plan-decisions
+  deferred_details: excluded-from-frontier-only-after-user-confirms-deferral
+  clarification_policy:
+    trigger: required-plan-user-decision-unresolved
+    skill: grilling
+    invocation_mode: model-invoked
+    explicit_user_invocation_required: false
+    inputs:
+      - current_scope
+      - discovered_facts
+      - confirmed_decisions
+      - open_items
+      - decision_dependencies
+    dispositions:
+      required_user_decision: grilling-with-real-user-response
+      discoverable_fact: investigate-or-yss-research
+      runnable_blocker: prototype-or-actual-verification-with-evidence
+      professional_wait: autonomously-dispatch-or-inspect-existing-task-then-wait
+      verification_failure: repair-supply-evidence-or-reroute
+      noncritical_detail: existing-deferral-policy-with-user-confirmation
+    rounds:
+      frontier: decisions-with-settled-prerequisites
+      questions: all-independent-actionable-frontier-questions-with-recommendations
+      advance: after-real-user-response
+      unsettled_facts: wait-only-for-dependent-questions
+      reuse: unchanged-confirmed-decisions
+      correction: reopen-only-affected-decisions-and-dependencies
+      independent_authorized_work: continue
+    convergence:
+      summary:
+        - user_problem
+        - goals
+        - mvp
+        - non_goals
+        - key_rules
+        - acceptance_examples
+        - open_item_resolutions
+        - remaining_uncertainty
+      required_open_items: resolved-with-current-evidence
+      facts_and_verification: readable-evidence-required
+      preparation_check: grill_exit
+      preparation_passed_means: clarification-materials-and-prerequisites-ready
+      final_confirmation_boundary: gate.plan-approved
+      final_confirmation: shared-understanding-and-current-plan-in-one-real-response
+      final_confirmation_proof: plan_user_decision_ref-or-valid-plan_continuation_ref
+      confirmation_writeback: external-proof-without-review-or-basis-rewrite
+      completion: passed-preparation-and-valid-current-user-decision
+  review_control:
+    protocol: bounded-plan-review-v1
+    enabled: true
+    checkpoint_field: plan_review_control
+    schema: .template-spec/process/schemas/plan-review-control.schema.json
+    bundle_id: review-bundle.plan
+    aggregate_gate: gate.plan-approved
+    professional_check_ids:
+      - check.domain-strategy-approved
+      - check.stage-decision-package-approved
+    check_dependency: domain-strategy-before-stage-decision
+    aggregate_professional_result: reuse-internal-check-conclusions-without-third-review-task
+    limits:
+      regular: 2
+      exception: 1
+      total: 3
+    phase_order:
+      - initial
+      - rereview
+      - exception
+    counted: registered-professional-review-attempts
+    separately_counted:
+      - clarification
+      - machine-check
+      - read-only-diagnosis
+      - external-mandatory-approval
+    preparation: scripts/prepare-review-package
+    reservation: existing-asset-transaction-with-exclusive-lock-and-digest-recheck
+    dry_run: read-only-without-reservation
+    dispatch: registered-attempt-and-current-binding-required
+    duplicate_input: return-existing-task-reference
+    interrupted_attempt: resume-same-attempt-without-new-budget
+    cycle_identity: feature-and-confirmed-scope
+    resets_forbidden:
+      - task-name
+      - reviewer
+      - candidate-version
+      - candidate-digest
+      - process-restart
+    successor_requires:
+      - predecessor
+      - actual-scope-change-evidence
+      - real-user-decision
+    finding_kinds:
+      - violation
+      - missing-evidence
+      - suggestion
+    later_finding_origins:
+      - repair
+      - new-evidence
+      - initial-miss
+    initial_review: complete-applicable-check-coverage-and-all-discovered-blockers
+    finding_identity: stable-id-with-rule-scenario-evidence-and-close-condition
+    rereview: repairs-and-affected-direct-or-transitive-dependencies-only
+    closed_finding_reopen: changed-related-behavior-or-invalidated-close-evidence
+    suggestions: backlog-without-blocking
+    no_progress: stop-automatic-review-and-diagnose
+    second_review_blocked: stop-automatic-review-and-diagnose
+    exception_requires: completed-diagnosis-and-new-resolution-evidence
+    exception_scope: unresolved-finding-ids-and-affected-checks
+    exception_blocked: retain-blockers-and-stop-cycle-automatic-professional-review
+    budget_exhaustion: never-implies-approval-or-default-human-pause
+    external_mandatory_approval: separately-recorded-and-never-waived
+    immutable_candidate: business-content-and-decision-basis
+    separate_records:
+      - progress
+      - runtime-log
+      - raw-user-response
+      - final-aggregate-approval
+    countersign_writeback: finalize-byte-candidate-before-same-task-verification
+    final_user_confirmation: shared-understanding-and-current-plan-in-one-real-response
+    history: read-only-compatible-controlled-adoption-with-evidence
+    unknown_history_count: history-unknown-never-zero
+    history_over_limit: diagnosis-required
+    consumers:
+      - preparation
+      - dispatch
+      - result-consumption
+      - resume
+      - plan-to-spec-entry
+    applies_to:
+      - stage.plan
+grill_exit:
+  required:
+    - frontier_empty
+    - facts_resolved_or_routed
+    - decisions_confirmed
+    - shared_understanding_confirmed
+    - no_unresolved_runnable_blocker
+  facts_resolved_or_routed:
+    technical_fact: yss-research
+    runnable_question: handoff-prototype-handoff
+    external_decision: external-input-required
+  user_confirmation_required: true
+  preparation_check: grill_exit
+  final_confirmation_boundary: gate.plan-approved
+  completion: passed-preparation-and-valid-current-user-decision
+  output: plan-evidence

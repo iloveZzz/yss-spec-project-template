@@ -16,7 +16,7 @@ const MAX_BYTES = 512 * 1024 * 1024;
 const own = (a,b) => JSON.stringify(canonical(a)) === JSON.stringify(canonical(b));
 const nonempty = x => typeof x === 'string' && x.trim();
 const bytesDigest = (bytes, kind) => kind === 'canonical-json' ? digest(parse(bytes)) : kind === 'sha256-bytes' ? hash(bytes) : (() => { throw new TypeError(`未知摘要算法: ${kind}`); })();
-const HANDOFF_SCHEMAS = new Map([[3,'.template-spec/process/schemas/strategic-design-handoff-v3.schema.json'],[4,'.template-spec/process/schemas/strategic-design-handoff-v4.schema.json'],[5,'.template-spec/process/schemas/strategic-design-handoff-v5.schema.json']]);
+const HANDOFF_SCHEMAS = new Map([[4,'.template-spec/process/schemas/strategic-design-handoff-v4.schema.json'],[5,'.template-spec/process/schemas/strategic-design-handoff-v5.schema.json']]);
 const SOURCE_SCHEMAS = new Map([
   [3,['.template-spec/process/schemas/strategic-handoff-domain-strategy.schema.json','.template-spec/process/schemas/strategic-handoff-stage-decision-package.schema.json']],
   [4,['.template-spec/process/schemas/strategic-handoff-domain-strategy-v3.schema.json','.template-spec/process/schemas/strategic-handoff-stage-decision-package-v3.schema.json']],
@@ -47,7 +47,7 @@ function isDeliveryDirectory(input) {
 }
 
 function versionSchema(version, schemas, label) {
-  ensure(schemas.has(version), `${label} 未知 schema_version: ${String(version)}；支持版本: ${[...schemas.keys()].join(', ')}；请使用显式迁移器升级`);
+  if(!schemas.has(version))throw Object.assign(new TypeError(`${label} 未知 schema_version: ${String(version)}；支持版本: ${[...schemas.keys()].join(', ')}；请使用显式迁移器升级`),{code:label==='Handoff'&&version===3?'MIGRATION_REQUIRED':'CAPABILITY'});
   return schemas.get(version);
 }
 
@@ -62,12 +62,14 @@ export async function sourceApproval(record,roles,root,binding) {
 }
 
 export async function inspectSource(root,handoffRef) {
+ versionSchema(read(safe(root,handoffRef)).schema_version,HANDOFF_SCHEMAS,'Handoff');
  return nativeCoverage(nativeEvidenceVerify({root,group:'handoff',kind:'source',file:handoffRef,needs:NEEDS.handoffSource}),'handoff_source');
 }
 export function collectSourceClosure(root,handoffRef,handoff,config,{businessMode='formal',proof}={}) {
  const verified=proof||(businessMode==='draft'
   ?nativeCoverage(nativeEvidenceVerify({root,group:'handoff',kind:'spec-baseline',selector:'--checkpoint',file:handoffRef,needs:NEEDS.specBaselinePackage}),'spec_baseline_source')
   :nativeCoverage(nativeEvidenceVerify({root,group:'handoff',kind:'source',file:handoffRef,needs:NEEDS.handoffSource}),'handoff_source'));
+ if(businessMode!=='draft')versionSchema(handoff.schema_version,HANDOFF_SCHEMAS,'Handoff');
  ensure(Array.isArray(verified.closure),'NATIVE_PROTOCOL: 来源缺少完整导出闭包');
  return new Map(verified.closure.map(row=>{const bytes=readFileSync(safe(root,row.ref));ensure(hash(bytes)===row.digest,'VALIDATION_INPUT_CHANGED: '+row.ref);return[row.ref,bytes];}));
 }
@@ -83,6 +85,7 @@ export async function openBundle(input,action,{readOnly=false}={}) {
   }
   const result=nativeEvidenceVerify({root:ROOT,group:'handoff',kind:'package',file:root,needs:NEEDS.handoffPackage});
   const source=nativeCoverage(result,'handoff_source'),pack=nativeCoverage(result,'handoff_package');
+  versionSchema(source.handoff.schema_version,HANDOFF_SCHEMAS,'Handoff');
   return await action({root,manifest:pack.manifest,...source,changes:pack.changes});
  }finally{if(temp)rmSync(temp,{recursive:true,force:true});}
 }

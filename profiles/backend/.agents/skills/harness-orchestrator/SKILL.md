@@ -92,3 +92,5 @@ YSS CLI 安装与升级、治理工程新建与接管、实例模板同步、旧
 ## 本地业务分析与本端交付
 
 原始需求可在本项目完成目标与验收、Plan、业务边界和规则、Spec，再进入本端设计、实现、测试与独立审查；无需先创建独立 Spec/Design 工程。已有上游批准输入时复用当前来源，冲突回交权威方确认，禁止静默改写。小任务按主控合同 `request_triage.delivery_path` 与 `yss lifecycle route` 选择 daily；高风险或已正式绑定任务保留 governed。分析角色不授予另一端代码写入；本端交付完成不等于跨端业务验收。纯 UI 记录后端不适用的原因和当前依据；真实 API、数据与跨仓依赖必须对齐。独立脚手架只生成机械结构，不授予业务实施。
+
+按当前决定消费 `.template-spec/process/orchestration-policy-consumers.md` 中登记的对应策略；该清单给出逐策略 owner、事实源和代码或 Agent 执行位置。

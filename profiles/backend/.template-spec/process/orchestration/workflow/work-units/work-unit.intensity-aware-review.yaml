@@ -1,0 +1,12 @@
+# owner: harness-orchestrator
+# consumers: lifecycle route/query, current Profile workflows and governance validators
+work_unit_routes:
+  work-unit.intensity-aware-review:
+    primary_skill: code-review
+    supporting_skills:
+      - maintaining-skills
+    skills:
+      - code-review
+      - maintaining-skills
+    applies_when: explicit_independent_template_maintenance_review
+    not_applicable_reason: maintainer_self_check_or_no_independent_review
