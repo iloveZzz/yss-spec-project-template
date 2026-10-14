@@ -24,7 +24,7 @@ function fixture(t) {
   }
   fs.writeFileSync(path.join(root,'.template-spec/process/harness-profile.yaml'),'schema_version: 2\nprofile_id: harness.spec-template\ninstantiation:\n  cli_package: yss\n  metadata_file: .yss.json\n  native_profile: spec\n  template_source: github:iloveZzz/yss-spec-project-template\n');
   fs.mkdirSync(path.join(root, '.agents/skills'), { recursive: true });
-  for (const name of ['.yss-skills-manifest.json', '.strategic-design-skills-manifest.json']) {
+  for (const name of ['.yss-skills-manifest.json']) {
     fs.copyFileSync(path.join(SOURCE, '.agents/skills', name), path.join(root, '.agents/skills', name));
   }
   fs.writeFileSync(path.join(root, 'skills-lock.json'), JSON.stringify({ version: 3, sources: {}, skills: { shared: {}, platform: {} } }));
@@ -42,9 +42,8 @@ function fixture(t) {
   const metadata = { schemaVersion: 1, protocolVersion: 1, profile: 'spec', profileId: 'harness.spec-template',
     cliVersion: '1.0.0-alpha.3', templateVersion: '3.5.10', legacyCliVersion: '3.5.10',
     templateSourceState: 'committed', templateCommit: 'a'.repeat(40), snapshotHash: 'b'.repeat(64), manifestHash: 'c'.repeat(64),
-    // This unit fixture copies unrendered template governance, whose generated
-    // lock declares all three roots. Real B18 instances use their own selection.
-    variables: {}, distribution: { mode: 'selected', runtimes: ['codex', 'cursor', 'pi'], installedSkills: [] }, managedFiles,
+    // Current template governance distributes canonical Skills without projections.
+    variables: {}, distribution: { mode: 'selected', runtimes: [], installedSkills: [] }, managedFiles,
     baselineDigest: sha(JSON.stringify(managedFiles)) };
   const save = () => fs.writeFileSync(path.join(root, '.yss.json'), JSON.stringify(metadata));
   save();
@@ -99,11 +98,28 @@ function saveManaged(f) {
   f.save();
 }
 function platformFixture(t) {
-  // This Node regression copies the actual source plugin; it does not claim a
-  // fresh native init or replace the independently preserved B18 full fixture.
+  // Keep the historical Schema 2 platform contract from installedPlatformContract
+  // in instance-metadata.test.mjs; it is no longer an asset of the current template.
   const f = fixture(t); schema2(f);
   const prefix = '.codex/skills/product-design';
-  fs.cpSync(path.join(SOURCE, prefix), path.join(f.root, prefix), { recursive: true, preserveTimestamps: true });
+  const supply = path.join(f.root, 'scripts/lib/skill-supply-chain.mjs');
+  const source = fs.readFileSync(supply, 'utf8');
+  assert.ok(source.includes('export const PROJECTION_ROOTS = [];'));
+  // Only the copied historical instance's runtime configuration changes; all
+  // lock, physical-source, alias and drift validation code remains unchanged.
+  fs.writeFileSync(supply, source.replace('export const PROJECTION_ROOTS = [];', 'export const PROJECTION_ROOTS = [".codex/skills"];'));
+  f.metadata.distribution.runtimes = ['codex'];
+  const registry = path.join(f.root, '.template-spec/agents/yss-skill-registry.yaml');
+  const registrySource = fs.readFileSync(registry, 'utf8');
+  assert.ok(registrySource.includes('platform_skills: []'));
+  fs.writeFileSync(registry, registrySource.replace('platform_skills: []', 'platform_skills:\n  - { id: product-design, root: .codex/skills, layer: process, instance_default_discoverable: false, aliases: ["product-design:index"] }'));
+  for (const [ref, bytes] of [
+    [`${prefix}/.codex-plugin/plugin.json`, JSON.stringify({ skills: './skills/' })],
+    [`${prefix}/skills/index/SKILL.md`, '# Historical platform alias fixture\n'],
+  ]) {
+    fs.mkdirSync(path.dirname(path.join(f.root, ref)), { recursive: true });
+    fs.writeFileSync(path.join(f.root, ref), bytes);
+  }
   function record(ref) {
     const info = fs.lstatSync(path.join(f.root, ref));
     const descriptor = { type: 'file', digest: sha(fs.readFileSync(path.join(f.root, ref))), mode: info.mode & 0o777 };
@@ -123,7 +139,7 @@ function platformFixture(t) {
   return f;
 }
 
-test('真实平台源的必需 alias 入口缺 record 即使仍存在也须拒绝，未知 installed 声明不跳过', async t => {
+test('历史平台源的必需 alias 入口缺 record 即使仍存在也须拒绝，未知 installed 声明不跳过', async t => {
   for (const mutation of ['entry-record', 'source-record', 'unknown-installed']) await t.test(mutation, t => {
     const f = platformFixture(t); verifyWithoutWrites(f, 0);
     if (mutation === 'unknown-installed') f.metadata.distribution.installedSkills.push('unknown-installed');

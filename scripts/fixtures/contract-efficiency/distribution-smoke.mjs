@@ -40,9 +40,9 @@ function state(directory,prefix=''){return fs.readdirSync(path.join(directory,pr
  if(s.isSymbolicLink())return [{...item,type:'link',target:fs.readlinkSync(file)}];
  return [{...item,type:'file',digest:hash(fs.readFileSync(file))}];
 });}
-function conflictTdd(target){
+function conflictTdd(){
  for(const base of ['.agents/skills']){
-  const conflict=path.join(scratch,`conflict-${base.split('/')[0].slice(1)}`);fs.cpSync(target,conflict,{recursive:true});
+  const conflict=path.join(scratch,`conflict-${base.split('/')[0].slice(1)}`);initializeNative('spec',conflict,options);
   const file=path.join(conflict,base,'tdd/SKILL.md');fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,'# 用户已有 TDD 定制\n');
   const before=state(conflict),plan=path.join(scratch,`${path.basename(conflict)}.json`);
   const preview=runNative(['skills','ensure','tdd','--root',conflict,'--plan','--out',plan],options).result;
@@ -50,9 +50,12 @@ function conflictTdd(target){
   runNative(['skills','ensure','tdd','--root',conflict,'--apply','--plan-file',plan],{...options,expectedCode:'CONFLICT'});assert.deepEqual(state(conflict),before,'Apply refusal changed user bytes/modes/timestamps');
  }
 }
-function ensureSpec(target){
- assert.equal(fs.existsSync(path.join(target,exampleRef)),false);assert.equal(fs.existsSync(path.join(target,retroRef)),false);assert.equal(fs.existsSync(path.join(target,'.agents/skills/tdd')),false);
- conflictTdd(target);
+function ensureSpec(target,inspection){
+ // The initial writing Skill requires this example even in a stage-selective instance.
+ assert.ok(inspection.distribution.installedSkills.includes('i-have-adhd'));assert.ok(inspection.skillRequirements['i-have-adhd'].paths.includes(exampleRef));
+ const exampleHash=asset(target,exampleRef);assert.equal(exampleHash,inspection.files[exampleRef].digest);
+ assert.equal(fs.existsSync(path.join(target,retroRef)),false);assert.equal(fs.existsSync(path.join(target,'.agents/skills/tdd')),false);
+ conflictTdd();
  let before=state(target),plan=path.join(scratch,'tdd.json'),preview=runNative(['skills','ensure','tdd','--root',target,'--plan','--out',plan],options).result;
  assert.ok(preview.changes.some(row=>row.path==='.agents/skills/tdd/SKILL.md'));assert.deepEqual(state(target),before);
  runNative(['skills','ensure','tdd','--root',target,'--apply','--plan-file',plan],options);const tddHash=skill(target,root,'tdd');
@@ -61,19 +64,19 @@ function ensureSpec(target){
  preview=runNative(['assets','ensure',stage,'--root',target,'--plan','--out',plan],options).result;assert.ok(preview.changes.some(row=>row.path===retroRef));assert.deepEqual(state(target),before);
  runNative(['assets','ensure',stage,'--root',target,'--apply','--plan-file',plan],options);const retroHash=asset(target,retroRef);
  before=state(target);applyNative('assets','spec',target,path.join(scratch,'stage-replay.json'),['ensure',stage],options);assert.deepEqual(state(target),before,'Satisfied stage replay wrote files');
- return {initial_example:'intentionally-absent',retro_stage_ensure:'passed',retro_sha256:retroHash,tdd_plan_apply_replay:'passed',tdd_conflict_preservation:'passed',tdd_hash:tddHash};
+ return {initial_example:'initial-skill-dependency',lifecycle_writing_examples_sha256:exampleHash,retro_stage_ensure:'passed',retro_sha256:retroHash,tdd_plan_apply_replay:'passed',tdd_conflict_preservation:'passed',tdd_hash:tddHash};
 }
 try{
  assert.equal(hash(fs.readFileSync(binary)),pin.digest);
  const version=runNative(['version'],options).result;report.cli_version=version.version;report.cli_commit=version.cliCommit;report.cli_source_state=version.sourceState;
  for(const profile of NATIVE_PROFILES){
   const out=path.join(scratch,`${profile}-bundle`),exported=runNative(['bundle','export','--profile',profile,'--out',out],options).result,inspection=inspectNative(profile,options);
-  assert.equal(inspection.schemaVersion,2);assert.deepEqual(exported.inspection,inspection);
+  assert.equal(inspection.schemaVersion,3);assert.deepEqual(exported.inspection,inspection);
   for(const row of exported.files){const file=path.join(out,row.path);assert.equal(hash(fs.readFileSync(file)),row.digest);assert.equal(fs.statSync(file).mode&0o777,row.mode);}
   report.bundle_exports.push({profile,template_commit:inspection.templateCommit,bundle_sha256:inspection.bundleHash,manifest_sha256:inspection.manifestHash,files:exported.files.length,status:'passed'});
   const target=path.join(scratch,`${profile}-instance`);initializeNative(profile,target,options);
   const writing={document_writing_sha256:asset(target,writingRef)},skills={'i-have-adhd':skill(target,root,'i-have-adhd')};
-  if(profile==='spec')Object.assign(writing,ensureSpec(target));
+  if(profile==='spec')Object.assign(writing,ensureSpec(target,inspection));
   else{
    writing.lifecycle_writing_examples_sha256=asset(target,exampleRef);
    for(const name of ['diagnosing-bugs','grilling'])skills[name]=skill(target,root,name);
