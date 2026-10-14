@@ -737,6 +737,8 @@ function openapiCase({draft = openapiDraft, record = (r) => r, extraFiles = {}, 
   const draftRef = `${base}/api/${draftName}`;
   const evidenceRef = `${base}/api/lint.txt`;
   const put = (ref, text) => { mkdirSync(path.dirname(path.join(target, ref)), {recursive: true}); writeFileSync(path.join(target, ref), text); };
+  const schemaRef = '.template-spec/process/schemas/openapi-draft-validation-record.schema.json';
+  put(schemaRef, readFileSync(path.join(REPO, schemaRef), 'utf8'));
   put(draftRef, draft);
   if (withEvidence) put(evidenceRef, 'redocly lint passed\n');
   put('pnpm-lock.yaml', lock);

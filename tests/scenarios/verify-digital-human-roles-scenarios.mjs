@@ -1,3 +1,4 @@
+import { makeRoot } from '../helpers/yss-instance.mjs';
 import { validateDefaultDigitalHumanRoles, validateDigitalHumanRoles, loadDigitalHumanRoles, skillIdsFromRegistry } from "../../scripts/lib/digital-human-roles.mjs";
 import { loadRegistry } from "../../scripts/lib/lifecycle-registry.mjs";
 import { loadSkillRegistry } from "../../scripts/lib/skill-registry.mjs";
@@ -100,7 +101,8 @@ const missingGeneric = clone();
 missingGeneric.runtimes = missingGeneric.runtimes.filter((runtime) => runtime.id !== "runtime.generic");
 mustFail(missingGeneric, /缺少运行时绑定: runtime.generic/, "缺少通用运行时");
 
-validateApprovalRecordFile(".template-spec/templates/approval-record-template.yaml",{history:true});
+const root = makeRoot("yss-digital-human-roles-");
+validateApprovalRecordFile(".template-spec/templates/approval-record-template.yaml", {root, history:true});
 
 const rolesDoc = loadDigitalHumanRoles();
 try {
@@ -112,7 +114,7 @@ try {
     role_id: "role.requirements-manager",
     runtime_id: "runtime.generic",
     principal_ref: "instance:wrong"
-  }, { rolesDoc });
+  }, { root, rolesDoc });
   throw new TypeError("错误配置未被拒绝: 错误角色会签");
 } catch (error) {
   if (!/APPROVAL_CURRENT_INVALID: 会签角色未获当前门禁政策授权/.test(error.message)) throw new TypeError(`错误角色会签 失败原因不符合预期: ${error.message}`);
@@ -128,7 +130,7 @@ try {
     runtime_id: "runtime.generic",
     principal_ref: "instance:req",
     drafter_role_id: "role.requirements-manager"
-  }, { rolesDoc });
+  }, { root, rolesDoc });
   throw new TypeError("错误配置未被拒绝: 起草者自签会签记录");
 } catch (error) {
   if (!/APPROVAL_CURRENT_INVALID: 会签角色未获当前门禁政策授权/.test(error.message)) {
@@ -145,7 +147,7 @@ try {
     role_id: "role.product-manager",
     runtime_id: "runtime.generic",
     principal_ref: "instance:pm"
-  }, { rolesDoc });
+  }, { root, rolesDoc });
   throw new TypeError("错误配置未被拒绝: 非测试角色关闭交付验收");
 } catch (error) {
   if (!/APPROVAL_CURRENT_INVALID: 会签角色未获当前门禁政策授权/.test(error.message)) throw new TypeError(`非测试角色关闭交付验收 失败原因不符合预期: ${error.message}`);

@@ -3,7 +3,7 @@
 import { platformSourceFingerprint, generatedTreeDigest } from "../../../../scripts/lib/backend-platform-provenance.mjs";
 import { assertContractPlatform, platformTemplateVars, platformSmokeTest } from "../../../../scripts/lib/backend-platform.mjs";
 import { assertScaffoldUserDecision } from "../../../../scripts/lib/native-user-decision.mjs";
-import { validateBackendScaffoldPrerequisites } from "../../../../scripts/lib/backend-scaffold-prerequisites.mjs";
+import { findGovernanceRoot, validateBackendScaffoldPrerequisites } from "../../../../scripts/lib/backend-scaffold-prerequisites.mjs";
 import { createHash } from "node:crypto";
 import { chmod, cp, lstat, mkdir, mkdtemp, readFile, readdir, rename, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -232,7 +232,7 @@ export async function validateContract(options, skillId, architectureProfile, pl
   if (!decision || decision.status !== "lifecycle-approved" || decision.confirmed_architecture !== "layered-mvc" || decision.project_id !== contract.project_name) fail("架构决策未批准、项目不匹配或不是 layered-mvc");
   if (decision.platform_profile !== contract.profiles.platform || decision.architecture_profile !== contract.architecture_profile || decision.verification_database !== "h2" || decision.production_database !== "not-bound" || Object.hasOwn(decision, "database_profile") || JSON.stringify(decision.requested_capabilities) !== JSON.stringify(contract.module_profile.requested_capabilities) || JSON.stringify(decision.resolved_modules) !== JSON.stringify(contract.module_profile.resolved_modules)) fail("架构决策的 Profile 或模块闭包与脚手架合同不一致");
   if (!decision.user_confirmation || Object.values(decision.user_confirmation).some((value) => !isPresent(value))) fail("架构决策缺少完整用户确认记录");
-  assertScaffoldUserDecision(decision);
+  assertScaffoldUserDecision(decision, { root: findGovernanceRoot(contractFile) });
   validateArchitectureIdentity(scaffoldArchitectureIdentity(contract, sha256(contractText)));
   const designPrerequisites = await validateBackendScaffoldPrerequisites(contract, { contractFile });
   const platform = assertContractPlatform(contract, decision, { ...platformOptions, requireVerified: platformOptions.candidate !== true }).profile;

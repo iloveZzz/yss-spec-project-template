@@ -29,6 +29,7 @@ export function syntheticPlanSourceContext(plan, aggregateRef = plan.state.plan_
     approval_scope: [plan.state.feature_id], drafter_principal_ref: plan.review.drafter_principal_ref,
     basis: plan.review.basis.map(row => ({ ...row, digest: row.digest.replace(/^sha256:/, '') })) };
   const gate = { ...context, status: 'approved', approval_ref: aggregateRef,
+    reason: 'Synthetic current Plan source approval', evidence_refs: [plan.state.plan_review_ref, aggregateRef],
     basis: [...context.basis, asset(plan.state.plan_review_ref), asset(aggregateRef)] };
   const binding = { ref: plan.review.plan_ref, approval_ref: aggregateRef, approval_context: context };
   return { binding, gate, asset, synthetic_fixture: true };

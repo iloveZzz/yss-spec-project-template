@@ -5,7 +5,7 @@ import {existsSync,lstatSync,readFileSync} from './validation-phase.mjs';
 import {mkdirSync,mkdtempSync,renameSync,rmSync,cpSync} from 'node:fs';
 import path from 'node:path';
 import {tmpdir} from 'node:os';
-import {ensure,canonical,digest,hash,json,parse,read,safe,relative,files,write,project,schema,archive,ROOT} from './strategic-handoff-io.mjs';
+import {ensure,canonical,digest,hash,json,parse,read,safe,relative,files,write,project,schema,archive,ROOT,sourceContextRef} from './strategic-handoff-io.mjs';
 
 import {parseContextContract} from './context-contract.mjs';
 
@@ -55,7 +55,10 @@ export async function sourceApproval(record,roles,root,binding) {
  if(!binding?.approval_ref)throw new TypeError('APPROVAL_CONTEXT_REQUIRED: 源批准需要当前资产及独立批准引用');
  const document=read(safe(root,binding.approval_ref)),actual=document.kind==='review-bundle'?document.reviews?.find(row=>row.gate_id===record.gate_id):document;
  ensure(own(actual,record),'APPROVAL_CURRENT_INVALID: 待验记录不是当前来源批准');
- return nativeCoverage(nativeEvidenceVerify({root,kind:'source-approval',group:'handoff',document:binding,extra:['--gate',record.gate_id],needs:NEEDS.sourceApproval}),'source_approval');
+ const contextRef=sourceContextRef(root,'CONTEXT.md');
+ ensure(['CONTEXT.md','source-context.snapshot.md'].includes(contextRef),'READONLY_SOURCE_LAYOUT_REQUIRED: 源批准只支持显式固定 Context 快照');
+ const snapshot=contextRef==='source-context.snapshot.md';
+ return nativeCoverage(nativeEvidenceVerify({root,kind:'source-approval',group:'handoff',document:binding,extra:['--gate',record.gate_id,...(snapshot?['--source-context-snapshot']:[])],needs:[...NEEDS.sourceApproval,...(snapshot?NEEDS.sourceContextSnapshot:[])]}),'source_approval');
 }
 
 export async function inspectSource(root,handoffRef) {
@@ -124,8 +127,9 @@ export async function exportBundle({sourceRoot,handoffRef,output,zip=false,previ
 export async function openDelivery(input,action,{readOnly=false}={}) {
  const root=path.resolve(input),result=nativeEvidenceVerify({root:ROOT,group:'handoff',kind:'delivery',file:root,needs:NEEDS.handoffDelivery});
  const source=nativeCoverage(result,'handoff_source'),pack=nativeCoverage(result,'handoff_package'),delivery=nativeCoverage(result,'handoff_delivery');
- const recordBytes=readFileSync(safe(root,delivery.record_ref));ensure(hash(recordBytes)===delivery.record_digest,'VALIDATION_INPUT_CHANGED: delivery record');
- const packageRoot=safe(root,delivery.package_ref);
+ // Native report locators belong to its transport root; consume the verified original delivery here.
+ const recordBytes=readFileSync(safe(root,'delivery-record.json'));ensure(hash(recordBytes)===delivery.record_digest,'VALIDATION_INPUT_CHANGED: delivery record');
+ const packageRoot=safe(root,delivery.record.package_ref);
  return action({root:packageRoot,manifest:pack.manifest,...source,changes:pack.changes,deliveryRoot:root,packageRoot,record:delivery.record,recordBytes,verification:delivery.verification});
 }
 

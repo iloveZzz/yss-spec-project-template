@@ -3,14 +3,14 @@ import {prepareSliceImplementationContract} from '../../lib/slice-contract-prepa
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import os from 'node:os';
+import {makeRoot} from '../../../tests/helpers/yss-instance.mjs';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
 import {stringify} from '../../vendor/yaml.mjs';
 import {checkBusinessTickets,assertImplementationTicket,assertBusinessTicketTransition,assertSliceBusinessSources,assertBusinessCheckpoint,summarizeBusinessImplementation,businessSyncDiagnostics} from '../../lib/business-tickets.mjs';
 const sha=x=>`sha256:${createHash('sha256').update(x).digest('hex')}`;
 function fixture(t) {
- const root=fs.mkdtempSync(path.join(os.tmpdir(),'business-ticket-test-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ const root=makeRoot('business-ticket-test-');t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
  const put=(ref,value)=>{fs.mkdirSync(path.dirname(path.join(root,ref)),{recursive:true});fs.writeFileSync(path.join(root,ref),typeof value==='string'?value:stringify(value));};
  const bind=ref=>({ref,version:'v1',digest:sha(fs.readFileSync(path.join(root,ref)))});
  put('.template-spec/agents/issue-tracker.md','---\ntracker:\n  platform: local-markdown\n  business_ticket_version: 1\n---\n');
@@ -26,7 +26,7 @@ test('草案允许登记阻断未决项，正式化拒绝',t=>{const f=fixture(t
 test('需求与验收覆盖遗漏可定位',t=>{const f=fixture(t);f.ticket.acceptance_refs=[];f.save();assert.ok(f.check().diagnostics.some(x=>x.code==='COVERAGE_MISSING'&&x.locator==='AC-001'));});
 test('依赖环与未知依赖阻断',t=>{const f=fixture(t);f.ticket.dependencies=['BT-001','BT-999'];f.save();assert.ok(f.check().diagnostics.some(x=>x.code==='DEPENDENCY_CYCLE'));assert.ok(f.check().diagnostics.some(x=>x.code==='DANGLING_DEPENDENCY'));});
 test('摘要变化拒绝旧结果',t=>{const f=fixture(t);fs.appendFileSync(path.join(f.root,f.ref),'change');assert.ok(f.check().diagnostics.some(x=>x.code==='SOURCE_STALE'));});
-test('禁止来源越界与符号链接',t=>{const f=fixture(t);f.set.spec={...f.set.spec,ref:'../external.md'};f.put(f.setRef,f.set);assert.ok(f.check().diagnostics.some(x=>x.code==='BUSINESS_PATH_INVALID'));f.set.spec=f.ticket.spec;f.put(f.setRef,f.set);fs.unlinkSync(path.join(f.root,f.ref));fs.symlinkSync('/etc/hosts',path.join(f.root,f.ref));assert.ok(f.check().diagnostics.some(x=>x.code==='BUSINESS_SYMLINK_FORBIDDEN'));});
+test('禁止来源越界与符号链接',t=>{const f=fixture(t);f.set.spec={...f.set.spec,ref:'../external.md'};f.put(f.setRef,f.set);assert.ok(f.check().diagnostics.some(x=>x.code==='BUSINESS_PATH_INVALID'));f.set.spec=f.ticket.spec;f.put(f.setRef,f.set);fs.unlinkSync(path.join(f.root,f.ref));fs.symlinkSync('/etc/hosts',path.join(f.root,f.ref));const linked=f.check();assert.equal(linked.status,'blocked');assert.ok(linked.diagnostics.some(x=>x.code==='INPUT'&&x.source_ref===f.ref&&x.message.includes('拒绝符号链接')),JSON.stringify(linked.diagnostics));});
 test('内容类型隔离，不以目录判断实现资格',()=>{for(const kind of ['business-ticket','business-ticket-set','stage-work-item'])assert.throws(()=>assertImplementationTicket(`---\nkind: ${kind}\n---\n`,'.work/demo/issues/a.md'));});
 test('Spec 不可越过业务正式化；缺少集合不能完成',t=>{const f=fixture(t),state={business_ticket_set_ref:f.setRef};assert.throws(()=>assertBusinessTicketTransition(f.root,'work-unit.spec-synthesis','work-unit.technical-analysis',state),/BUSINESS_FORMALIZATION/);assert.doesNotThrow(()=>assertBusinessTicketTransition(f.root,'work-unit.spec-synthesis','work-unit.business-ticket-formalization',state));assert.throws(()=>assertBusinessTicketTransition(f.root,'work-unit.spec-synthesis','work-unit.prototype-design-v2',{}));});
 test('旧实例可读，不自动启用；未知版本不能绕过',t=>{const f=fixture(t);f.put('.template-spec/agents/issue-tracker.md','---\ntracker:\n  platform: local-markdown\n---\n');assert.doesNotThrow(()=>assertBusinessTicketTransition(f.root,'work-unit.spec-synthesis','work-unit.technical-analysis',{}));f.put('.template-spec/agents/issue-tracker.md','---\ntracker:\n  business_ticket_version: 2\n---\n');assert.throws(()=>assertBusinessTicketTransition(f.root,'work-unit.spec-synthesis','work-unit.technical-analysis',{}),/VERSION_UNSUPPORTED/);});

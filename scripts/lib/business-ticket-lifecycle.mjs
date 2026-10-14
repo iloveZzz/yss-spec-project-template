@@ -2,7 +2,7 @@ import {approvalExpectationForCheckpoint} from './native-approval.mjs';
 import fs from 'node:fs';
 import {businessAuthoringEnabled,businessPath,businessSetRef,checkBusinessTickets,assertBusinessDeferredApprovals} from './business-tickets.mjs';
 import {yamlValue} from './plan-spec-markdown.mjs';
-import {loadApprovalRecord,validateApprovalRecord} from './native-approval.mjs';
+import {loadApprovalRecord,validateApprovalRecordFile} from './native-approval.mjs';
 import {assertImportedSpecPrerequisite} from './spec-baseline.mjs';
 
 // Reuse existing approval protocols; this function creates no approval boundary.
@@ -26,7 +26,7 @@ export function assertBusinessApprovalBasis(root,state,{required=false}={}) {
     if(gate?.status!=='approved'||!gate.approval_ref)throw Error(`BUSINESS_APPROVAL_REQUIRED: ${id}`);
     const record=loadApprovalRecord(businessPath(root,gate.approval_ref),id);
     if(record.gate_id!==id||record.subject_ref!==gate.subject_ref||!gate.approval_scope?.length||JSON.stringify([...gate.approval_scope].sort())!==JSON.stringify([...(record.approval_scope||[])].sort()))throw Error(`BUSINESS_APPROVAL_SCOPE_MISMATCH: ${id}`);
-    validateApprovalRecord(record,{root,rolesDoc,requireApproved:true,expected:approvalExpectationForCheckpoint(id,gate,{root})});
+    validateApprovalRecordFile(businessPath(root,gate.approval_ref),{gate:id,root,rolesDoc,requireApproved:true,expected:approvalExpectationForCheckpoint(id,gate,{root})});
     if(id==='gate.spec-baseline-approved'&&record.subject_ref!==report.spec.ref) {
       // Existing approvals may cover a review package instead of the Spec itself.
       // Its signed bytes, rather than a mutable checkpoint label, bind the baseline.

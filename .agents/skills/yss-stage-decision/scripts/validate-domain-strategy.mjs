@@ -5,7 +5,7 @@ import { assertAssetTransactionIdle, assertCurrentAssetReference } from "../../.
 import process from "node:process";
 import { parseArgs } from "node:util";
 import { parseDocument } from "../../../../scripts/vendor/yaml.mjs";
-import { loadApprovalRecord, resolveApprovalRef, validateApprovalRecord } from "../../../../scripts/lib/native-approval.mjs";
+import { loadApprovalRecord, resolveApprovalRef, validateApprovalRecordFile } from "../../../../scripts/lib/native-approval.mjs";
 import { approvalExpectationForBoundAsset } from "../../../../scripts/lib/native-approval.mjs";
 import { verifyContextSnapshot } from "../../../../scripts/lib/context-contract.mjs";
 import { parseAsset, validateAssetStructure } from '../../../../scripts/lib/structured-assets.mjs';
@@ -204,7 +204,7 @@ function validate(data, contextRoot, currentRef) {
       const approvalPath = resolveApprovalRef(approval.approval_ref, currentRef, options);
       const expected = approvalExpectationForBoundAsset("check.domain-strategy-approved", { ref: currentRef }, options);
       const record = loadApprovalRecord(approvalPath, "check.domain-strategy-approved", options);
-      validateApprovalRecord(record, { ...options, requireApproved: true, expected });
+      validateApprovalRecordFile(approvalPath, { gate: 'check.domain-strategy-approved', ...options, requireApproved: true, expected });
       if (record.gate_id !== "check.domain-strategy-approved") errors.push("approval.approval_ref 的 gate_id 必须为 check.domain-strategy-approved");
       if (record.role_id !== approval.approver) errors.push("approval.approver 必须与会签记录 role_id 一致");
     } catch (error) { errors.push(`approval.approval_ref 会签记录无效: ${error.message}`); }

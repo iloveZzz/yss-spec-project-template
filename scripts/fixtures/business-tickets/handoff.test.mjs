@@ -17,7 +17,7 @@ const currentGate=(f,key)=>{
   return {status:'approved',reason:'Synthetic current source approval reuse; not a real decision.',approval_ref:approval.record_ref,subject_ref,subject_digest:hash(fs.readFileSync(path.join(f.root,subject_ref))).slice(7),approval_scope,basis,drafter_principal_ref,evidence_refs:basis.map(asset=>asset.ref)};
 };
 test('新能力将业务票绑定当前战略交接，Plan 不含晚生成资产',async t=>{const f=await setup(t);const r=await inspectSource(f.root,'handoff.yaml');assert.equal(r.business.status,'passed');assert.equal(f.handoff.package_export.approvals.business_ticket_set_ref.gate_id,'gate.strategic-design-handoff-approved');assert.equal(read(path.join(f.root,'source/plan-review-package.json')).assets.some(x=>x.id.startsWith('business-ticket-set.')),false);});
-test('新能力拒绝借用早期 Plan 批准',async t=>{const f=await setup(t);f.handoff.package_export.approvals.business_ticket_set_ref.gate_id='gate.plan-approved';f.sign();await assert.rejects(inspectSource(f.root,'handoff.yaml'),/错误批准门禁/);});
+test('新能力拒绝借用早期 Plan 批准',async t=>{const f=await setup(t);f.handoff.package_export.approvals.business_ticket_set_ref.gate_id='gate.plan-approved';f.sign();await assert.rejects(inspectSource(f.root,'handoff.yaml'),error=>error.code==='HANDOFF_APPROVAL');});
 test('业务导出包含票据、审查和全部来源闭包且重读成功',async t=>{const f=await setup(t);const dest=path.join(f.root,'bundle');await exportBundle({sourceRoot:f.root,handoffRef:'handoff.yaml',output:dest});await openBundle(dest,async pack=>{assert.equal(pack.business.tickets.length,1);const files=pack.manifest.files.map(x=>x.original_ref);for(const ref of ['source/business-tickets/BT-001.md','source/business-review.yaml','source/strategy.yaml'])assert.ok(files.includes(ref));});});
 test('Context 来源在只读包和导入集合中解析快照，普通源仓不隐式回退',async t=>{
   const f=await setup(t),ticketRef='source/business-tickets/BT-001.md';
@@ -40,7 +40,7 @@ test('Context 来源在只读包和导入集合中解析快照，普通源仓不
   assert.equal(fs.existsSync(path.join(dest,'payload/files/CONTEXT.md')),false);
   assert.deepEqual(fs.readFileSync(snapshot),before);
   fs.renameSync(path.join(f.root,'CONTEXT.md'),path.join(f.root,'source-context.snapshot.md'));
-  assert.equal(checkBusinessTickets({root:f.root,setRef:'source/tickets.yaml',mode:'formal'}).status,'blocked');
+  assert.throws(()=>checkBusinessTickets({root:f.root,setRef:'source/tickets.yaml',mode:'formal'}),error=>error.native===true&&error.code==='INPUT'&&error.message.includes('CONTEXT.md'));
 });
 test('未知源策略能力拒绝，不静默按旧批准解释',()=>{assert.throws(()=>sourceApprovalPolicy({user_decision_policy:{required_capabilities:['business-ticket-approval-v99']},gate_policy:{}}),/不支持/);});
 

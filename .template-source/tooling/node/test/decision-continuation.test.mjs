@@ -164,6 +164,6 @@ test('one review bundle retains explicit per-check outcomes and rejects duplicat
   for(const row of bundle.reviews){row.subject_digest=f.asset(f.subject.ref).digest.slice(7);row.basis=f.basis.map(x=>({ref:x.ref,digest:x.digest.slice(7)}));}
   const ref = f.save('bundle.json', bundle); assert.equal(validateApprovalRecordFile(ref, { requireApproved: true, root:f.root,expected }).length, 2);
   bundle.reviews[1].decision = 'rejected'; f.save('bundle.json', bundle); assert.throws(() => validateApprovalRecordFile(ref, { requireApproved: true, root:f.root,expected }), /必须为 approved|approved 结论/); // 进程内与 yss 的措辞不同，同为 APPROVAL_CURRENT_INVALID
-  bundle.reviews[1] = bundle.reviews[0]; f.save('bundle.json', bundle); assert.throws(() => validateApprovalRecordFile(ref,{history:true}), /重复/);
-  bundle.reviews = []; f.save('bundle.json', bundle); assert.throws(() => validateApprovalRecordFile(ref,{history:true}), /SCHEMA:.*review-bundle/);
+  bundle.reviews[1] = bundle.reviews[0]; f.save('bundle.json', bundle); assert.throws(() => validateApprovalRecordFile(ref,{root:f.root,history:true}), /重复/);
+  bundle.reviews = []; f.save('bundle.json', bundle); assert.throws(() => validateApprovalRecordFile(ref,{root:f.root,history:true}), /SCHEMA:.*review-bundle/);
 }));

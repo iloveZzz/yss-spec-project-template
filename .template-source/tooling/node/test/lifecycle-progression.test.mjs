@@ -1,3 +1,5 @@
+import { makeRoot } from '../../../../tests/helpers/yss-instance.mjs';
+import { contextBinary } from '../../../../scripts/lib/native-context.mjs';
 import { composeProfileTree } from '../../../../scripts/lib/profile-tree.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -26,11 +28,12 @@ function fixture(t) {
   return {root, write, checkpointRef, config, configRef: '.work/package-one/progression-target.json'};
 }
 
-function nativeProjection(f, changes = {}) {
+function nativeProjection(f, changes = {}, nativeBinary) {
   const intent = readProgressionTarget({root: f.root, checkpointRef: f.checkpointRef, includeDefault: true});
   const projection = {...intent, policy: undefined, status: 'pending', read_only: true, execution_authorization: 'not-evaluated', inputs_current: true, ...changes};
   const binary = path.join(f.root, 'fake-yss');
-  f.write('fake-yss', `#!${process.execPath}\nprocess.stdout.write(${JSON.stringify(JSON.stringify({outputVersion: 1, protocolVersion: 1, command: 'lifecycle', status: 'ok', code: 'OK', result: {action: 'target', progression: projection}}))});\n`);
+  const delegate = nativeBinary ? `import {spawnSync} from 'node:child_process';\nif(process.argv[2]!=='lifecycle'||process.argv[3]!=='target'){const run=spawnSync(${JSON.stringify(nativeBinary)},process.argv.slice(2),{stdio:'inherit',env:{...process.env,YSS_NATIVE_BINARY:${JSON.stringify(nativeBinary)},YSS_NATIVE_BINARY_SHA256:${JSON.stringify(createHash('sha256').update(fs.readFileSync(nativeBinary)).digest('hex'))}}});process.exit(run.status??1);}` : '';
+  f.write('fake-yss', `#!${process.execPath}\n${delegate}\nprocess.stdout.write(${JSON.stringify(JSON.stringify({outputVersion: 1, protocolVersion: 1, command: 'lifecycle', status: 'ok', code: 'OK', result: {action: 'target', progression: projection}}))});\n`);
   fs.chmodSync(binary, 0o755);
   return {YSS_NATIVE_BINARY: binary, PATH: ''};
 }
@@ -247,11 +250,19 @@ test('已登记Backend本端目标达到或不适用时停止同feature写入，
 });
 
 test('Spec条件战略交接门禁的注册不会把整体完成门禁降为战略交接', t => {
-  const f = fixture(t);
+  const root = makeRoot('yss-spec-completion-');
+  t.after(() => fs.rmSync(root, {recursive: true, force: true}));
+  const f = {root};
+  const registry = parseDocument(fs.readFileSync(path.join(root, '.template-spec/process/lifecycle-registry.yaml'), 'utf8')).toJS();
+  assert.ok(registry.gates.some(gate => gate.id === 'gate.strategic-design-handoff-approved'));
   const checkpoint = {repository_mode: 'project-instance', status: 'completed', blockers: [], gates: {'gate.strategic-design-handoff-approved': {status: 'approved'}}};
   assert.throws(() => assertCheckpointUserDecisions(checkpoint, {root: f.root}), /当前交付或战略交接验收/);
   checkpoint.gates['gate.delivery-accepted'] = {status: 'approved'};
   assert.doesNotThrow(() => assertCheckpointUserDecisions(checkpoint, {root: f.root}));
+  const designRoot = makeRoot('yss-design-completion-', 'design');
+  t.after(() => fs.rmSync(designRoot, {recursive: true, force: true}));
+  assert.doesNotThrow(() => assertCheckpointUserDecisions({...checkpoint, gates: {'gate.strategic-design-handoff-approved': {status: 'approved'}}}, {root: designRoot}));
+  assert.throws(() => assertCheckpointUserDecisions({...checkpoint, gates: {'gate.delivery-accepted': {status: 'approved'}}}, {root: designRoot}), /当前交付或战略交接验收/);
 });
 
 
@@ -344,12 +355,27 @@ test('native Spec已声明非法目标政策不能按legacy跳过正式准入', 
 });
 
 
+function approvedSpecFixture(approvedFixture) {
+  const nativeSeed = makeRoot('yss-approved-spec-');
+  // Backend compiler mechanism tests need tool sources that are intentionally absent from Spec distribution.
+  for (const skill of ['yss-layered-mvc-scaffold-generator', 'yss-ddd-scaffold-generator', 'yss-dto']) {
+    const ref = `.agents/skills/${skill}`;
+    fs.cpSync(path.join(ROOT, ref), path.join(nativeSeed, ref), {recursive: true});
+  }
+  const xmlRef = 'scripts/vendor/xml.mjs';
+  fs.mkdirSync(path.dirname(path.join(nativeSeed, xmlRef)), {recursive: true});
+  fs.copyFileSync(path.join(ROOT, xmlRef), path.join(nativeSeed, xmlRef));
+  const tracker = path.join(nativeSeed, '.template-spec/agents/issue-tracker.md');
+  // This test retains the existing supported v2 Slice protocol with a real Spec identity.
+  fs.writeFileSync(tracker, fs.readFileSync(tracker, 'utf8').replace(/^\s*business_ticket_version:\s*1\s*$/m, ''));
+  return approvedFixture('layered-mvc', {nativeSeed});
+}
+
 test('真实批准执行入口只读可核验，正式执行缺当前活动feature绑定仍拒绝', async t => {
   const {approvedFixture}=await import('../../../../scripts/fixtures/delivery-preflight/approved-execution-fixture.mjs');
   const {createApprovedExecutionContext}=await import('../../../../scripts/lib/approved-execution-context.mjs');
-  const f=approvedFixture('layered-mvc'),hex='0'.repeat(64);
+  const f=approvedSpecFixture(approvedFixture);
   t.after(()=>f.cleanup());
-  f.write('.yss.json',JSON.stringify({schemaVersion:1,protocolVersion:1,profile:'spec',profileId:'harness.spec-template',templateSourceState:'committed',templateCommit:'a'.repeat(40),snapshotHash:hex,manifestHash:hex,variables:{},distribution:{},managedFiles:{},baselineDigest:createHash('sha256').update('{}').digest('hex')}));
   f.write('.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml',fs.readFileSync(path.join(ROOT,'.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml'),'utf8'));
   assert.doesNotThrow(()=>createApprovedExecutionContext(f.binding,{root:f.root,contract:f.contract,readOnly:true}));
   assert.throws(()=>createApprovedExecutionContext(f.binding,{root:f.root,contract:f.contract}),/正式 feature.*活动 map.*绑定/);
@@ -358,9 +384,8 @@ test('真实批准执行入口只读可核验，正式执行缺当前活动featu
 test('Slice 批准 checkpoint 与活动推进 checkpoint 分别核验，目标续推不改原批准', async t => {
   const {approvedFixture}=await import('../../../../scripts/fixtures/delivery-preflight/approved-execution-fixture.mjs');
   const {createApprovedExecutionContext,createApprovedRecompilationContext,assertApprovedExecutionContext}=await import('../../../../scripts/lib/approved-execution-context.mjs');
-  const f=approvedFixture('layered-mvc'),hex='0'.repeat(64),checkpointRef='.work/current/checkpoint.json';
+  const f=approvedSpecFixture(approvedFixture),checkpointRef='.work/current/checkpoint.json';
   t.after(()=>f.cleanup());
-  f.write('.yss.json',JSON.stringify({schemaVersion:1,protocolVersion:1,profile:'spec',profileId:'harness.spec-template',templateSourceState:'committed',templateCommit:'a'.repeat(40),snapshotHash:hex,manifestHash:hex,variables:{},distribution:{},managedFiles:{},baselineDigest:createHash('sha256').update('{}').digest('hex')}));
   f.write('.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml',fs.readFileSync(path.join(ROOT,'.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml'),'utf8'));
   f.write('.template-spec/agents/issue-tracker.md','---\ntracker:\n  platform: local-markdown\n  root: .work\n---\n');
   f.write(checkpointRef,{...f.checkpoint,feature_id:'feature.current'});
@@ -370,7 +395,8 @@ test('Slice 批准 checkpoint 与活动推进 checkpoint 分别核验，目标�
   const originalApproval=fs.readFileSync(path.join(f.root,f.binding.approval_ref)),originalCheckpoint=fs.readFileSync(path.join(f.root,checkpointRef));
   const binaryBefore=process.env.YSS_NATIVE_BINARY,digestBefore=process.env.YSS_NATIVE_BINARY_SHA256;
   t.after(()=>{if(binaryBefore===undefined)delete process.env.YSS_NATIVE_BINARY;else process.env.YSS_NATIVE_BINARY=binaryBefore;if(digestBefore===undefined)delete process.env.YSS_NATIVE_BINARY_SHA256;else process.env.YSS_NATIVE_BINARY_SHA256=digestBefore;});
-  const project=status=>{process.env.YSS_NATIVE_BINARY=nativeProjection({...f,checkpointRef},{status}).YSS_NATIVE_BINARY;process.env.YSS_NATIVE_BINARY_SHA256=createHash('sha256').update(fs.readFileSync(process.env.YSS_NATIVE_BINARY)).digest('hex');};
+  const nativeBinary = contextBinary().binary;
+  const project=status=>{process.env.YSS_NATIVE_BINARY=nativeProjection({...f,checkpointRef},{status},nativeBinary).YSS_NATIVE_BINARY;process.env.YSS_NATIVE_BINARY_SHA256=createHash('sha256').update(fs.readFileSync(process.env.YSS_NATIVE_BINARY)).digest('hex');};
   project('pending');
   const execution=createApprovedExecutionContext(f.binding,{root:f.root});
   assert.doesNotThrow(()=>createApprovedRecompilationContext(f.binding,{root:f.root}));

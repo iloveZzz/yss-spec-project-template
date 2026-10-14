@@ -56,6 +56,7 @@ profiles:
         depends_on: []
         failure_mode: "专职 Profile 的 Plan/Spec 本地路线偏离上游的唯一日常政策，业务分析角色被允许当 Worker，或专职角色被允许写另一端"
       - id: check.profile-consumers
+        resources: [native-cli]
         run: "node --test --test-skip-pattern='^backend plugin receives' tests/efficiency-distribution.test.mjs tests/native-context-retirement.test.mjs scripts/fixtures/contract-efficiency/distribution.test.mjs scripts/fixtures/reading-views/bundle.test.mjs scripts/fixtures/slice-contract-v3/round2.test.mjs scripts/fixtures/slice-contract-v3/scenarios.test.mjs scripts/fixtures/stage-tracking/tracking.test.mjs scripts/fixtures/spec-baseline/scenarios.mjs .template-source/tooling/node/test/approval-consumption.test.mjs .template-source/tooling/node/test/approval-current.test.mjs .template-source/tooling/node/test/decision-continuation.test.mjs .template-source/tooling/node/test/lifecycle-progression.test.mjs .template-source/tooling/node/test/plugin-design-consumption.test.mjs .template-source/tooling/node/test/review-capabilities.test.mjs"
         group: feature-assets
         inputs_complete: true
@@ -365,6 +366,7 @@ profiles:
         depends_on: []
         failure_mode: "本地后端终点复用批准 Slice 的证据被错放行或误拒，或 Slice 合同仍接受前端子合同"
       - id: check.existing-ui-baseline-scenarios
+        resources: [native-cli]
         run: "node tests/scenarios/verify-existing-ui-baseline-scenarios.mjs"
         group: feature-assets
         inputs_complete: true
@@ -376,6 +378,7 @@ profiles:
         depends_on: []
         failure_mode: "既有 UI 基线的交接导出、验包与导入被错放行或误拒，或导入重新生成前端草案"
       - id: check.frontend-removal-consumers
+        resources: [native-cli]
         run: "node --test .template-source/tooling/node/test/lifecycle-controls.test.mjs scripts/fixtures/business-tickets/handoff.test.mjs tests/cli-core-retirement.test.mjs"
         group: feature-assets
         inputs_complete: true
@@ -389,6 +392,7 @@ profiles:
         depends_on: []
         failure_mode: "生命周期控制数量、业务票交接或 Slice 任务包仍按前端实现线判断，或 Compiler 合同重新声明前端交付绑定"
       - id: check.strategic-handoff-package-scenarios
+        resources: [native-cli]
         run: "node tests/scenarios/verify-strategic-handoff-package-scenarios.mjs"
         group: feature-assets
         inputs_complete: true
@@ -409,7 +413,7 @@ profiles:
         depends_on: []
         failure_mode: "合同审查准备放过过期的阅读视图、前后资产身份冲突，或把原决定当成已批准"
       - id: check.plan-review-control-unit
-        run: "node --test --test-name-pattern='^(?!real CLI dispatch)' .template-source/tooling/node/test/plan-review-control.test.mjs"
+        run: "node --test .template-source/tooling/node/test/plan-review-control.test.mjs"
         group: feature-assets
         inputs_complete: true
         input_patterns:
@@ -417,7 +421,7 @@ profiles:
           - "scripts/plan-review-control"
           - "scripts/lib/plan-review-control.mjs"
         depends_on: []
-        failure_mode: "Plan 审查周期的绑定、派发或完成校验放过未绑定的证据（\"real CLI dispatch\" 用例在 AR-05 提交上就已失败，未纳入）"
+        failure_mode: "Plan 审查周期的绑定、派发或完成校验放过未绑定的证据"
       - id: check.profile-tree
         run: "node --test tests/profile-tree.test.mjs tests/advance-maintenance-root.test.mjs"
         group: hygiene
@@ -1257,6 +1261,7 @@ profiles:
         depends_on: []
         failure_mode: "澄清回放样例的工作包引用与当前配置不一致"
       - id: check.work-layout-sealed-owner
+        resources: [native-cli]
         run: "node --test tests/strategic-handoff-sealed-owner.test.mjs"
         group: work-layout
         inputs_complete: true
@@ -1283,6 +1288,7 @@ profiles:
         depends_on: []
         failure_mode: "阶段任务定义和 checkpoint 的根不一致"
       - id: check.work-layout-tickets
+        resources: [native-cli]
         run: "node --test scripts/fixtures/business-tickets/*.test.mjs"
         group: work-layout
         inputs_complete: true
@@ -1350,6 +1356,7 @@ profiles:
         depends_on: []
         failure_mode: "目录修正后对应生命周期或证据消费者接受错误引用或拒绝当前有效引用"
       - id: check.work-layout-digital-human-task-package
+        resources: [native-cli]
         run: "node tests/scenarios/verify-digital-human-task-package-scenarios.mjs"
         group: work-layout
         inputs_complete: true
@@ -2327,6 +2334,7 @@ groups:
     commands:
       - run: node --test scripts/fixtures/business-tickets/*.test.mjs
         id: check.business-ticket-contract
+        resources: [native-cli]
   plan-spec-content:
     commands:
       - run: node --test .template-source/tooling/node/test/plan-spec-quality.test.mjs tests/plan-spec-template-contract.test.mjs
@@ -2368,6 +2376,7 @@ groups:
       - run: node --test tests/strategic-handoff-sealed-owner.test.mjs
         when: template-source
         id: check.strategic-handoff-sealed-owner
+        resources: [native-cli]
       - run: node --test tests/progression-target-evidence.test.mjs
         when: template-source
         id: check.progression-target-evidence
@@ -2375,6 +2384,7 @@ groups:
         id: check.ba0fad1faed81f06
       - run: scripts/verify-strategic-handoff-package-scenarios
         id: check.83f08a7516716a38
+        resources: [native-cli]
   design-system:
     commands:
       - run: node .template-source/tooling/node/scripts/design-md.mjs lint DESIGN.md
@@ -2469,8 +2479,10 @@ groups:
         id: check.aab6b1527f8c70f0
       - run: scripts/verify-subagent-task-package-scenarios
         id: check.ffe328872703d3c0
+        resources: [native-cli]
       - run: scripts/verify-digital-human-task-package-scenarios
         id: check.b593997f977be2c5
+        resources: [native-cli]
       - run: node --test tests/read-only-intake.test.mjs
         when: template-source
         id: check.read-only-intake

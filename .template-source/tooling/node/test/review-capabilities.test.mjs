@@ -1,3 +1,4 @@
+import { makeRoot } from '../../../../tests/helpers/yss-instance.mjs';
 import { composeProfileTree } from '../../../../scripts/lib/profile-tree.mjs';
 import assert from 'node:assert/strict';
 import test from 'node:test';
@@ -19,10 +20,11 @@ const registry = loadRegistry(), rolesDoc = loadDigitalHumanRoles();
 const policyRef = '.template-spec/agents/digital-human-roles.yaml';
 const checkIds = ['check.openapi-draft-reviewed', 'check.engineering-baseline-accepted'];
 function fixture(t) {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'yss-review-capability-'));
+  const root = makeRoot('yss-review-capability-');
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   const write = (ref, value) => { fs.mkdirSync(path.dirname(path.join(root, ref)), { recursive: true }); fs.writeFileSync(path.join(root, ref), value); };
-  write(policyRef, fs.readFileSync(path.join(ROOT, policyRef)));
+  for (const ref of [policyRef, '.template-spec/process/lifecycle-registry.yaml', '.template-spec/agents/yss-skill-registry.yaml']) write(ref, fs.readFileSync(path.join(ROOT, ref)));
+  fs.cpSync(path.join(ROOT, '.template-spec/process/schemas'), path.join(root, '.template-spec/process/schemas'), {recursive: true});
   write('yss-project.yaml', 'schema_version: 1\nrepository_mode: project-instance\n');
   const checkpointRef = '.work/feature/checkpoint.json';
   const rows = checkIds.map((id, i) => {

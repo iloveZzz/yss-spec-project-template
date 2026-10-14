@@ -1,5 +1,6 @@
 // Explicitly synthetic approvals and replies for protocol tests only.
 import fs from 'node:fs';
+import {makeRoot} from '../../../tests/helpers/yss-instance.mjs';
 import {composeProfileTree} from '../../lib/profile-tree.mjs';
 import path from 'node:path';
 import {ROOT,loadRegistry} from '../../lib/lifecycle-registry.mjs';
@@ -30,10 +31,16 @@ export function copyNativeIdentity(root,seed,profile) {
 }
 export function localPlanFixture(owner,{featureId='feature.supplier',nativeSeed=owner.nativeSeed}={}) {
  const root=owner.root,refs=['CONTEXT.md','.template-spec/process/lifecycle-registry.yaml','.template-spec/agents/digital-human-roles.yaml','.template-spec/agents/yss-skill-registry.yaml','.template-spec/agents/issue-tracker.md'];
+ // A local Design reapproval must retain its Profile policy throughout Plan
+ // construction and the caller's subsequent native Handoff binding.
+ assertNativeIdentity(root,'design');
+ nativeSeed ||= makeRoot('local-plan-policy-','design');
+ assertNativeIdentity(nativeSeed,'design');owner.nativeSeed=nativeSeed;
  const fullPolicy=path.join(root,'.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml'),fullPolicyBytes=fs.existsSync(fullPolicy)?fs.readFileSync(fullPolicy):null;
  const saved=new Map(refs.map(ref=>[ref,fs.readFileSync(path.join(root,ref))]));
  const plan=buildPlanFixture(root,{nativeSeed});for(const [ref,bytes]of saved)fs.writeFileSync(path.join(root,ref),bytes);
  if(fullPolicyBytes)fs.writeFileSync(fullPolicy,fullPolicyBytes);else if(fs.existsSync(fullPolicy))fs.rmSync(fullPolicy);
+ assertNativeIdentity(root,'design');
  plan.review.feature_id=featureId;plan.state.feature_id=featureId;
  reconcile(root,'reconciliation.json');
  const policy=planEntryPolicy({root});plan.review.checks=Object.fromEntries(policy.required_checks.map(id=>[id,{status:'passed',evidence_refs:['plan.md']}]));

@@ -290,6 +290,12 @@ S3 的 AR-08 可以和 S1、S2 并行。S4 的 AR-15 只依赖 AR-01，可以提
 
 - 2026-10-14 AR-12b 新版本来源准备：维护者已明确确认 CLI `v2.1.0`、模板 `v4.0.4`，继续 Mac ARM64 实际验收、Windows x64 仅构建打包和公开下载核验。模板内部来源 S 固定为 `7a3321d0143214c3f358f31d3befc6182f62bc6f`；CLI 生成器 D 固定为 `5ae489d44ea61bd2f3292e8392fd082aa6aff2c3`，按现有 schema 3 构造内部无 tag 的维护来源锁，再实际生成并重复校验 Bundle/helpview/help。三 Profile 的 files/initial 六份 path/digest/mode/ownership 映射与已回放候选完全一致，独立审查通过。维护执行器 P `42e0c35e5208170d99f84d2041687a7c3ce8eaf7` 已保留当前 main 祖先并提交推送；三维护平台标准构建均通过、来源为 committed、无输入漂移，本次 pin 记录其实际摘要，Linux 仍仅为交叉构建。正式模板 T、带 `v4.0.4` 来源锁的最终 CLI C、当前正式门禁和平台发行验收尚待完成，不将 S/P 或旧发行证据当作新版本资格。已审阅的仓外工具 W `ab4be9b17e132f09daa2931344b9788cc1ec9d0b` 只调整本批版本身份；其语法与拒绝边界检查不代表平台验收。新版本决定、源码与工具审查、实际构建和后续结果统一见 `maintenance:checkpoints/architecture-iteration-resume/release-final-v2.1.0-r1/`；其余 AR 和 AR-17 边界不变。
 
+- 2026-10-14 AR-12b CI 补缺与范围纠正：模板 PR #70 的首轮 CI 实际失败，原报告和日志保留；后续修复包括原生错误与 ZIP 输入运输、原始交付目录定位、完整批准容器消费、Spec/Design 完成门禁区分，以及真实 Profile 夹具的来源输入。定向回放已关闭已记录的 Basis 类型、部分承接状态和显式 Context 快照参数缺陷；批准边界 30/30、CI 行为 25/25、来源批准 2/2、用户决定 38 组，以及 Spec 基线承接 27 项和真实导出快照消费者均已实际通过。Design 本地重新批准夹具保持原 Profile 身份；最后两条受影响回放前后源码库存一致。当前 PR CI、固定来源生成及正式发行资格仍待刷新，以上结果不替代整轮 CI 或发行验收。这里的显式 Plan 消费兼容缺陷不等于普通交付必需的 Plan 前置；不能把失败报告改成通过，也不以此前 S/P 或局部回放授予新版本发行资格。当前字节、已通过与失败的命令及独立审查统一消费 `maintenance:checkpoints/architecture-iteration-resume/delivery-receipt.json` 指向的最新绑定与 checkpoint。
+
+- 维护者最新明确普通交付已不强制依赖 Plan 结果和校验，并建议放宽 CI 门禁。本批据此区分已取消前置及旧断言、显式 Plan 路径兼容诊断、当前主路径真实回归；不为修复历史测试恢复已取消的 Plan 强制依赖。CI 与发行阻断按当前合同和实际变化重新映射，保留来源与摘要、三 Profile 分发一致性、关键当前行为、Mac 安装与恢复，以及 Windows 构建和下载核验。明确选择的 Plan 或来源包仍按其适用合同校验，诊断失败与未执行项单独记录。该决定及具体门禁调整证据见 `maintenance:checkpoints/architecture-iteration-resume/release-final-v2.1.0-r1/ci-relaxation-intake/`；CLI `v2.1.0`、模板 `v4.0.4` 和其余 AR/AR-17 边界不变。
+
+- 本批 CI 放宽仅将独立文档事实扫描记为非阻断观察，保留其实际退出码和日志；配置安全、技能投影与锁、注册表、变更行为及工作树保护仍为必需检查。旧 Plan collector 半夹具不符合完整 Handoff 合同，改为验证原生 schema 明确拒绝，同时恢复该用例的完整执行。真实来源包的离线消费正例继续保留；bounded Plan 的 checkpoint、task、result、policy、schema 全闭包正例尚未覆盖，单列后续显式兼容诊断，不作为普通交付前置。修复、实际回放与独立审查分别记录，未执行项不记通过。
+
 ## 附录 A：度量口径
 
 - **管道提交（NFR-001）**：根仓的非合并提交里，只改下列路径的提交算作管道提交：`skills-lock.json`、`submodules/*`、`*.lock.json`、`*manifest.json`、`.codex/skills/**`、`.cursor/skills/**`、`.pi/skills/**`、`.claude/skills/**`、`profile-skill-sync.json`、`pnpm-lock.yaml`、来源锁（文件名为 `source-lock*.json`，不含名字里带 source-lock 的脚本和测试）。之后这些路径即使已被删除，口径也保持不变，以便前后可比。实现是 `scripts/lib/harness-metrics.mjs` 的 `pipelineCommitStats`，输出在 `scripts/harness-metrics` 的 `pipeline_commits`；没有改动任何文件的提交不计入。

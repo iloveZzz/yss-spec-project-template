@@ -14,7 +14,7 @@ export const NEEDS={
  approval:['approval.expected.v1','approval.binding.v1','approval.rule-rows.v1'],
  task:['task.directory-write-scope.v1'],checkpoint:['lifecycle.legacy-untracked-checkpoint.v1','template-source.verify-root.v1'],
  handoffPackage:['handoff.package-identity.v1','handoff.source-view.v1'],handoffSource:['handoff.source-view.v1'],
- handoffDelivery:['handoff.delivery-view.v1'],sourceApproval:['handoff.source-approval.v1'],
+ handoffDelivery:['handoff.delivery-view.v1'],sourceApproval:['handoff.source-approval.v1'],sourceContextSnapshot:['handoff.source-context-snapshot.v1'],
  handoffConsumption:['handoff.consumption-report.v1'],specBaselinePackage:['handoff.spec-baseline-package.v1','handoff.spec-baseline-source-view.v1'],
  specBaselineBinding:['contract.spec-baseline-binding.v1'],businessTickets:['contract.business-tickets-report.v1','contract.business-tickets-source-views.v1'],
  contextReconciliation:['evidence.context-reconciliation.v1'],openapiValidation:['contract.openapi-validation.v1'],
@@ -96,7 +96,7 @@ export function nativeEvidenceVerify({root:given,kind,file,extra=[],environment=
    const stage=(ref,name)=>{
     const source=path.resolve(root,ref);
     if(inside(root,source))return path.relative(root,source).split(path.sep).join('/');
-    const target=path.join(temporary.dir,name);copyObserved(source,target);transfers.push({source,target});
+    const target=path.join(temporary.dir,name+(lstatSync(source).isFile()?path.extname(source):''));copyObserved(source,target);transfers.push({source,target});
     return path.relative(root,target).split(path.sep).join('/');
    };
    let selected;
@@ -129,7 +129,7 @@ export function nativeEvidenceVerify({root:given,kind,file,extra=[],environment=
 }
 export function nativeCoverage(result,key,{allowBlocked=false}={}) {
  const value=result.envelope.result?.coverage?.[key];
- if(result.exitCode!==0&&!allowBlocked)throw Object.assign(new Error(result.message),{code:result.diagnostics[0]?.code??result.code,native:true});
+ if(result.exitCode!==0&&(!allowBlocked||!value))throw Object.assign(new Error(result.message),{code:result.diagnostics[0]?.code??result.code,native:true});
  if(!value||typeof value!=='object')fail('NATIVE_PROTOCOL',`缺少 ${key} 报告`);
  if(value.status&&((value.status==='passed')!==(result.exitCode===0)))fail('NATIVE_PROTOCOL',`${key} 与实际退出码不一致`);
  return value;
@@ -137,6 +137,7 @@ export function nativeCoverage(result,key,{allowBlocked=false}={}) {
 export const nativeContractVerify=options=>nativeEvidenceVerify({...options,group:'contract'});
 export const nativeLifecycleVerify=options=>nativeEvidenceVerify({...options,kind:'checkpoint',group:'lifecycle'});
 export function nativeUserDecisionRequirement({root,requirement,environment=process.env}) {
+ if(!requirement?.user_decision_ref&&!requirement?.continuation_ref)fail('user-decision-missing','缺少当前用户决定或延续记录引用');
  const continuation=Boolean(requirement.continuation_ref),result=nativeEvidenceVerify({root,kind:'user-decision',file:requirement.continuation_ref||requirement.user_decision_ref,documents:{'--requirements':[requirement]},extra:continuation?['--continuation']:[],environment,needs:NEEDS.userDecision});
  if(continuation){const continued=nativeCoverage(result,'user_decision_continuation'),validated=result.envelope.result.coverage.user_decision_validated;if(!Array.isArray(validated)||!continued.continued)fail('NATIVE_PROTOCOL','缺少延续核验结果');return {validated,...continued};}
  return nativeCoverage(result,'user_decision_result');

@@ -103,6 +103,7 @@ export function assertBusinessCheckpoint(root,state) {
   const artifact=state.artifacts?.['artifact.business-ticket-set'];
   const completedSpec=['work-unit.prototype-design','work-unit.prototype-design-v2','work-unit.business-ticket-formalization'].includes(state.next_work_unit)||state.stage_trace?.completed_work_unit==='work-unit.spec-synthesis'||(stage==='stage.spec-architecture'&&['completed','paused-human-gate'].includes(state.status));
   if(!pastSpec && !finalized && !artifact?.ref && !completedSpec)return;
+  if(!businessSetRef(state))fail('BUSINESS_CHECKPOINT_BLOCKED: 缺少业务票集合引用');
   const report=checkBusinessTickets({root,setRef:businessSetRef(state),mode:finalized?'formal':'draft'});
   if(report.status!=='passed')fail(`BUSINESS_CHECKPOINT_BLOCKED: ${report.diagnostics.map(x=>x.code).join(', ')}`);
   if(artifact?.digest && report.inputs.find(x=>x.ref===artifact.ref)?.digest!==artifact.digest)fail('BUSINESS_SYNC_STALE');

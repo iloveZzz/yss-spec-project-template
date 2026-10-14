@@ -107,11 +107,12 @@ export function validateApprovalRecord(record,options={}){
  return nativeApprovalRecord({root:rootFor(options),record,expected});
 }
 export function validateApprovalRecordFile(file,options={}){
- const record=readApprovalDocument(file,options);
- if(options.history===true||options.requireApproved===false)return validateApprovalRecord(record,options);
+ const document=readApprovalDocument(file,options);
+ if(options.history===true||options.requireApproved===false)return validateApprovalRecord(document,options);
+ const record=options.gate?selectApprovalRecord(document,options.gate):document;
  if(isPlan(record,options))return plan(record,options);
  const expected=record.kind==='review-bundle'?reviewBundleRows(record).map(row=>expectedFor(row,options)):expectedFor(record,options);
- return nativeApprovalRecord({root:rootFor(options),file,expected});
+ return nativeApprovalRecord({root:rootFor(options),file,gate:options.gate,expected});
 }
 export const readApprovalHistory=(file,options={})=>validateApprovalRecordFile(file,{...options,history:true});
 export const assertCurrentApproval=(record,expected,options={})=>validateApprovalRecord(record,{...options,expected,history:false,requireApproved:true});

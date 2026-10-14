@@ -13,10 +13,14 @@ import {countersignRuleForGate} from '../../lib/digital-human-roles.mjs';
 export function pilotFixture({specText,apiRequired = true,nativeSeed,nativeReaders} = {}) {
   const f=approvedFixture('layered-mvc',{specText,nativeSeed,nativeReaders});
   const ticket=f.contract.lifecycle_refs.ticket;
+  const historicalSources={};
   if(!nativeSeed) {
-    f.write('.template-spec/process/lifecycle-registry.yaml',fs.readFileSync(new URL('../../../.template-spec/process/lifecycle-registry.yaml',import.meta.url),'utf8'));
-    f.write('.template-spec/process/harness-process-tailoring.md',fs.readFileSync(new URL('../../../.template-spec/process/harness-process-tailoring.md',import.meta.url),'utf8'));
+    // Historical applicability is explicit source data, never the installed Profile policy.
+    historicalSources.lifecycle_registry=f.write('.work/fixtures/historical-lifecycle-registry.yaml',fs.readFileSync(new URL('../../../.template-spec/process/lifecycle-registry.yaml',import.meta.url),'utf8'));
+    historicalSources.process_tailoring=f.write('.work/fixtures/historical-process-tailoring.md',fs.readFileSync(new URL('../../../.template-spec/process/harness-process-tailoring.md',import.meta.url),'utf8'));
   }
+  const backendRole=read(path.join(f.root,'.template-spec/agents/digital-human-roles.yaml')).roles.find(role=>['role.backend-agent','role.backend-engineer'].includes(role.id))?.id;
+  if(!backendRole)throw new Error('Synthetic Slice fixture requires an installed backend role');
   f.write(ticket,'# 提交申请\n\n## 要构建什么\n提交完整材料并保存申请。\n\n## 非目标\n无新增审批规则。\n\n## 验收标准\n- [ ] AC-1 完整材料提交成功，缺失材料拒绝。\n');
   let businessSupportingFiles=[];
   if(nativeSeed) {
@@ -35,10 +39,10 @@ export function pilotFixture({specText,apiRequired = true,nativeSeed,nativeReade
   }
   f.write('api.yaml','openapi: 3.1.0\ninfo: {title: fixture, version: v1}\npaths: {}\n');
   f.write('project/mvnw','# synthetic wrapper reference; tests do not execute this file\n');
-  const sources={ticket:{ref:ticket,version:'v1'},spec:{ref:'spec.md'},engineering_baseline:f.bindings.engineering_baseline,implementation_repository:f.bindings.repository_registration,repository_registration:'implementation_repository',manifest:f.bindings.manifest,technical_design:f.technical_design,architecture_review:{ref:'review.json'},build_architecture_checklist:{ref:'review.md'},backend_repository:'implementation_repository',maven_wrapper:{ref:'project/mvnw'},openapi_freeze:{ref:'api.yaml'}};
+  const sources={...historicalSources,ticket:{ref:ticket,version:'v1'},spec:{ref:'spec.md'},engineering_baseline:f.bindings.engineering_baseline,implementation_repository:f.bindings.repository_registration,repository_registration:'implementation_repository',manifest:f.bindings.manifest,technical_design:f.technical_design,architecture_review:{ref:'review.json'},build_architecture_checklist:{ref:'review.md'},backend_repository:'implementation_repository',maven_wrapper:{ref:'project/mvnw'},openapi_freeze:{ref:'api.yaml'}};
   if(nativeSeed)sources.business_ticket_set={ref:businessSupportingFiles[0]};
   // No duplication of commands, paths, or Skill closure across frontend/backend/task sections.
-  const refinements={contract_id:f.contract.contract_id,contract_version:'v3-pilot',slice_id:f.contract.slice_id,scope:{impacted_areas:['backend','api'],implementation_path_policy:'external-repository-native',allowed_write_paths:['src/main/java'],forbidden_patterns:['不得绕过持久化约束']},applicability:{frontend:{status:'not-applicable',reason:'无 UI 变化'},backend:{status:'required'},api:{status:'required'},cross_repo:{status:'not-applicable',reason:'单个后端工程'}},recipe_ids:['backend.mvc-service-behavior','backend.mvc-http-api'],verification:{test:{command:'./mvnw test',cwd:f.project,expected_evidence:['results/test.log'],test_seams:['test-seam.success','test-seam.failure'],acceptance_refs:['AC-1']}},work_units:[{id:'work-unit.slice-backend',behavior:'提交申请并校验必填材料',role_id:'role.backend-engineer',primary_skill:'yss-web-controller',supporting_skills:['yss-application'],tdd_mode:'behavior-tdd',verification_refs:['test'],acceptance_refs:['AC-1']}],extensions:{backend:{affected_layers:['application','web'],component_impacts:[],design_refs:['pointer:/design']},api:{contract_tests:['test-seam.success','test-seam.failure']}}};
+  const refinements={contract_id:f.contract.contract_id,contract_version:'v3-pilot',slice_id:f.contract.slice_id,scope:{impacted_areas:['backend','api'],implementation_path_policy:'external-repository-native',allowed_write_paths:['src/main/java'],forbidden_patterns:['不得绕过持久化约束']},applicability:{frontend:{status:'not-applicable',reason:'无 UI 变化'},backend:{status:'required'},api:{status:'required'},cross_repo:{status:'not-applicable',reason:'单个后端工程'}},recipe_ids:['backend.mvc-service-behavior','backend.mvc-http-api'],verification:{test:{command:'./mvnw test',cwd:f.project,expected_evidence:['results/test.log'],test_seams:['test-seam.success','test-seam.failure'],acceptance_refs:['AC-1']}},work_units:[{id:'work-unit.slice-backend',behavior:'提交申请并校验必填材料',role_id:backendRole,primary_skill:'yss-web-controller',supporting_skills:['yss-application'],tdd_mode:'behavior-tdd',verification_refs:['test'],acceptance_refs:['AC-1']}],extensions:{backend:{affected_layers:['application','web'],component_impacts:[],design_refs:['pointer:/design']},api:{contract_tests:['test-seam.success','test-seam.failure']}}};
   if(!apiRequired) {
     const reason='Synthetic backend internal behavior has no API change.';
     sources.no_api_impact_record=f.write('no-api-impact.json',{status:'not-applicable',slice_id:refinements.slice_id,reason});

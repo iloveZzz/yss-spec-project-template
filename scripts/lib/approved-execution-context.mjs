@@ -8,7 +8,7 @@ import path from 'node:path';
 import { readFileSync, inValidationPhase, validationMemo, validationPhaseToken } from './validation-phase.mjs';
 import { ROOT, read, parse, safe, hash, digest, schema } from './strategic-handoff-io.mjs';
 import { countersignRuleForGate } from './digital-human-roles.mjs';
-import { validateApprovalRecord, loadApprovalRecord } from './native-approval.mjs';
+import { validateApprovalRecordFile, validateApprovalRecord, loadApprovalRecord } from './native-approval.mjs';
 import { assertImplementationDecision } from './native-user-decision.mjs';
 import { loadSkillRegistry } from './skill-registry.mjs';
 
@@ -153,10 +153,9 @@ function verifySliceProfessionalReview(approval,binding,roles,root) {
     const record=read(safe(root,ref));
     const rows=record.kind==='review-bundle'?record.reviews:[record];
     if(!(rows || []).some(row=>row.gate_id==='check.design-reviewed'&&row.subject_ref===binding.ref))continue;
-    // Loading the selected conclusion validates the entire container and carries
-    // its task/session identity into the same current-approval kernel.
+    // Verify the original container before consuming its selected conclusion.
     const row=loadApprovalRecord(safe(root,ref),'check.design-reviewed',ioFor(root));
-      validateApprovalRecord(row,{...ioFor(root),rolesDoc:roles,requireApproved:true,expected:approvalExpectationForCheckpoint('check.design-reviewed',approval.checks?.['check.design-reviewed'],{...ioFor(root),review_package:false})});
+      validateApprovalRecordFile(safe(root,ref),{gate:'check.design-reviewed',...ioFor(root),rolesDoc:roles,requireApproved:true,expected:approvalExpectationForCheckpoint('check.design-reviewed',approval.checks?.['check.design-reviewed'],{...ioFor(root),review_package:false})});
       check(row.drafter_principal_ref&&row.principal_ref!==row.drafter_principal_ref,'EXECUTION_REVIEW_NOT_INDEPENDENT','Slice 工程审查必须独立于起草者');
       check(row.subject_digest===binding.digest.slice(7)&&row.artifact_bindings?.some(x=>x.id===binding.id&&x.version===binding.version&&x.digest===binding.digest),'EXECUTION_REVIEW_STALE','Slice 工程审查未绑定当前合同');
       check(Array.isArray(row.findings)&&row.findings.every(x=>x.kind==='suggestion'?!!x.follow_up:['requirement-violation','missing-evidence','important-risk'].includes(x.kind)&&x.status==='resolved'),'EXECUTION_REVIEW_BLOCKED','Slice 工程审查有未关闭问题');

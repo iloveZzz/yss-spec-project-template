@@ -43,7 +43,7 @@ test('Handoff v5 既有基线从源导出、离线只读验包、前端导入 v2
 });
 test('Handoff v5 原型仍验证离线原型；v4 原版本保持，未知版本拒绝',async t=>{
  const base=root(t),source=path.join(base,'source');mkdirSync(source);const f=await handoffFixture(source,{kind:'prototype'}),output=path.join(base,'package');await exportBundle({sourceRoot:source,handoffRef:'handoff.yaml',output});assert.equal(await openBundle(output,b=>b.handoff.ui_baseline_kind,{readOnly:true}),'prototype');
- f.handoff.schema_version=99;f.sign();await assert.rejects(()=>inspectSource(source,'handoff.yaml'),/未知 schema_version/);
+ f.handoff.schema_version=99;f.sign();await assert.rejects(()=>inspectSource(source,'handoff.yaml'),error=>error.code==='CAPABILITY');
 });
 test('真实用户决定必须覆盖既有 manifest 当前原字节；结构批准不能代替',async t=>{
  const base=root(t),source=path.join(base,'source');mkdirSync(source);const f=await handoffFixture(source);await inspectSource(source,'handoff.yaml');
@@ -51,7 +51,7 @@ test('真实用户决定必须覆盖既有 manifest 当前原字节；结构批�
 });
 test('重算包内摘要不能复用旧用户批准；UI=true 不能走既有分支',async t=>{
  const base=root(t),source=path.join(base,'source');mkdirSync(source);const f=await handoffFixture(source),file=path.join(source,'existing-ui/existing-ui-baseline.json');
- writeFileSync(file,`${readFileSync(file,'utf8')}\n`);const next=hash(readFileSync(file));f.handoff.source.existing_ui_baseline_ref.digest=next;const approval=read(path.join(source,'approvals/existing-ui.json'));approval.artifact_bindings[0].digest=next;f.put('approvals/existing-ui.json',approval);f.save();await assert.rejects(()=>inspectSource(source,'handoff.yaml'),/user-decision|变化|digest|摘要/);
+ writeFileSync(file,`${readFileSync(file,'utf8')}\n`);const next=hash(readFileSync(file));f.handoff.source.existing_ui_baseline_ref.digest=next;const approval=read(path.join(source,'approvals/existing-ui.json'));approval.artifact_bindings[0].digest=next;f.put('approvals/existing-ui.json',approval);f.save();await assert.rejects(()=>inspectSource(source,'handoff.yaml'),error=>error.code==='APPROVAL_CURRENT_INVALID');
  f.stage.impact_assessment.ui=true;f.put('source/stage.yaml',f.stage);await assert.rejects(()=>inspectSource(source,'handoff.yaml'),/UI 影响/);
 });
 test('自洽摘要不能掩盖 build/source、API operation 与截图 viewport 冲突',t=>{
@@ -81,14 +81,14 @@ test('真实战略专职 policy 使用产品设计聚合门禁；ready-for-human
  assert(f.roles.user_decision_policy.gates.includes('gate.product-design-approved'));assert(!f.roles.user_decision_policy.gates.includes('gate.user-confirmation'));
  assert.equal(f.baseline.data.status,'ready-for-human');assert.equal(f.handoff.package_export.approvals.existing_ui_baseline_ref.gate_id,'gate.product-design-approved');
  const output=path.join(base,'package');await exportBundle({sourceRoot:source,handoffRef:'handoff.yaml',output});assert.equal(await openBundle(output,b=>b.handoff.ui_baseline_kind,{readOnly:true}),'existing-ui-baseline');
- const missingPolicy=structuredClone(f.roles);missingPolicy.user_decision_policy.gates=missingPolicy.user_decision_policy.gates.filter(gate=>gate!=='gate.product-design-approved');f.put('.template-spec/agents/digital-human-roles.yaml',missingPolicy);await assert.rejects(()=>inspectSource(source,'handoff.yaml'),/真实用户决定策略/);f.put('.template-spec/agents/digital-human-roles.yaml',f.roles);
+ const missingPolicy=structuredClone(f.roles);missingPolicy.user_decision_policy.gates=missingPolicy.user_decision_policy.gates.filter(gate=>gate!=='gate.product-design-approved');f.put('.template-spec/agents/digital-human-roles.yaml',missingPolicy);await assert.rejects(()=>inspectSource(source,'handoff.yaml'),error=>error.code==='HANDOFF_POLICY');f.put('.template-spec/agents/digital-human-roles.yaml',f.roles);
  const approvalRef=path.join(source,'approvals/existing-ui.json'),approval=read(approvalRef),original=structuredClone(approval);delete approval.user_decision_ref;f.put('approvals/existing-ui.json',approval);await assert.rejects(()=>inspectSource(source,'handoff.yaml'),/user-decision/);
  f.baseline.data.status='approved';f.baseline.put('existing-ui-baseline.json',f.baseline.data);const changed=f.baseline.binding('existing-ui-baseline.json').digest;f.handoff.source.existing_ui_baseline_ref.digest=changed;original.artifact_bindings[0].digest=changed;f.put('approvals/existing-ui.json',original);f.put('handoff.yaml',f.handoff);
- await assert.rejects(()=>inspectSource(source,'handoff.yaml'),/user-decision|变化|digest|摘要/);
+ await assert.rejects(()=>inspectSource(source,'handoff.yaml'),error=>error.code==='APPROVAL_CURRENT_INVALID');
 });
 test('既有 UI 全目录作为已验证观测文件集：源删除后可验包，治理悬空引用仍拒绝',async t=>{
  const base=root(t),source=path.join(base,'source');mkdirSync(source);const f=await handoffFixture(source,{sourceDocumentation:true});
- f.handoff.package_export.additional_files.push('missing-governance.md');f.save();await assert.rejects(()=>exportBundle({sourceRoot:source,handoffRef:'handoff.yaml',output:path.join(base,'invalid')}),/文件不可读.*missing-governance/);
+ f.handoff.package_export.additional_files.push('missing-governance.md');f.save();await assert.rejects(()=>exportBundle({sourceRoot:source,handoffRef:'handoff.yaml',output:path.join(base,'invalid')}),error=>error.code==='HANDOFF_CLOSURE'&&error.message.includes('missing-governance.md'));
  f.handoff.package_export.additional_files=[];f.save();const output=path.join(base,'package');await exportBundle({sourceRoot:source,handoffRef:'handoff.yaml',output});
  rmSync(source,{recursive:true});assert.equal(await openBundle(output,b=>b.handoff.ui_baseline_kind,{readOnly:true}),'existing-ui-baseline');
  const raw=readFileSync(path.join(output,'payload/files/existing-ui/source/README.md'),'utf8');assert.match(raw,/original-source/);
