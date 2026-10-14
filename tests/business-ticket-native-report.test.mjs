@@ -182,6 +182,6 @@ test('native transport rejects a symlink ancestor before writing and preserves e
  const original=path.join(outside,'input.json');fs.writeFileSync(original,fs.readFileSync(path.join(f.root,'.template-spec/templates/approval-record-template.json')));fs.chmodSync(original,0o600);
  const verify=()=>nativeEvidenceVerify({root:f.root,kind:'approval',file:original,extra:['--history']});
  const result=verify();assert.equal(result.exitCode,0,result.message);
- const staged=result.envelope.result.inputs.find(row=>row.ref.endsWith('/input'));assert.equal(staged?.descriptor.mode,0o600);
+ const staged=result.envelope.result.inputs.find(row=>row.ref.endsWith('/input.json'));assert.ok(staged);assert.equal(staged.descriptor.mode,0o600);
  assert.throws(()=>withValidationPhase({root:f.root,purpose:'external-mode'},()=>{assert.equal(verify().exitCode,0);fs.chmodSync(original,0o644);}),/VALIDATION_INPUT_CHANGED/);
 });
