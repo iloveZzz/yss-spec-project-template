@@ -13,12 +13,12 @@ import { buildLegacyPlanSourceFixture } from '../../../../scripts/fixtures/plan-
 import { localizeSyntheticPlanSource, syntheticPlanSourceContext } from '../../../../scripts/fixtures/plan-review-control/source-consumption-fixture.mjs';
 import { buildPlanFixture } from '../../../../scripts/fixtures/user-decision/plan-fixture.mjs';
 import { assertPlanSpecEntry, assertPlanAggregateApproval } from '../../../../scripts/lib/plan-spec-entry.mjs';
-import { validateApprovalRecord, validateApprovalRecordFile, assertApprovedGateHasValidApproval, assertCheckpointApprovals } from '../../../../scripts/lib/approval-record.mjs';
+import { validateApprovalRecord, validateApprovalRecordFile, assertApprovedGateHasValidApproval, assertCheckpointApprovals } from '../../../../scripts/lib/native-approval.mjs';
 import { assertGateChecks } from '../../../../scripts/lib/lifecycle-controls.mjs';
 import { sourceApproval } from '../../../../scripts/lib/strategic-handoff.mjs';
 import { withSourceContextSnapshot } from '../../../../scripts/lib/strategic-handoff-io.mjs';
 import { lifecycleStatus } from '../../../../scripts/lib/lifecycle-status.mjs';
-import { decisionDigest } from '../../../../scripts/lib/user-decision.mjs';
+import { decisionDigest } from '../../../../scripts/lib/native-user-decision.mjs';
 import {
   writePlanReviewCheckpoint, initializePlanReview, planReviewRequest, bindPlanReviewAttempt, dispatchPlanReview, completePlanReview, diagnosePlanReview, adoptPlanReview, reconcilePlanReviewHistory, summarizePlanReview, assertPlanReviewEntry
 } from '../../../../scripts/lib/plan-review-control.mjs';
@@ -109,13 +109,14 @@ test('legacy Plan source current approval remains readable with independently bo
   assert.doesNotThrow(() => validateApprovalRecord(f.record, options));
   assert.doesNotThrow(() => validateApprovalRecordFile(path.join(f.root, f.approvalRef), options));
   assert.doesNotThrow(() => assertApprovedGateHasValidApproval('gate.plan-approved', f.gate, { ...options, checkpoint: f.checkpoint }));
-  assert.equal(assertGateChecks('gate.plan-approved', f.checkpoint, options).result, 'passed');
+  // A synthetic empty registry cannot replace the actual source policy's required checks.
+  assert.throws(() => assertGateChecks('gate.plan-approved', f.checkpoint, options), /EVIDENCE_REQUIRED: 缺少当前依据/);
   await assert.doesNotReject(sourceApproval(f.record, f.rolesDoc, f.root, f.binding));
   assert.deepEqual(f.read(f.approvalRef), approvalBytes);
   assert.deepEqual(f.read(f.record.user_decision_ref), replyBytes);
   assert.throws(() => validateApprovalRecord({ ...f.record, subject_digest: '0'.repeat(64) }, options), /APPROVAL_CURRENT_INVALID/);
   fs.writeFileSync(path.join(f.root, 'evidence/offline.log'), 'Synthetic changed source evidence; original approval is stale.\n');
-  assert.throws(() => assertGateChecks('gate.plan-approved', f.checkpoint, options), /证据过期/);
+  assert.throws(() => validateApprovalRecord(f.record, options), /APPROVAL_CURRENT_INVALID/);
   await assert.rejects(sourceApproval(f.record, f.rolesDoc, f.root, f.binding), /APPROVAL_CURRENT_INVALID/);
 });
 
@@ -126,7 +127,7 @@ test('legacy Plan consumers default to the supplied source root policy without r
   assert.doesNotThrow(() => validateApprovalRecord(f.record, options));
   assert.doesNotThrow(() => validateApprovalRecordFile(path.join(f.root, f.approvalRef), options));
   assert.doesNotThrow(() => assertApprovedGateHasValidApproval('gate.plan-approved', f.gate, { ...options, checkpoint: f.checkpoint }));
-  assert.doesNotThrow(() => assertCheckpointApprovals(f.checkpoint, path.join(f.root, 'checkpoint.json'), options));
+  assert.throws(() => assertCheckpointApprovals(f.checkpoint, path.join(f.root, 'checkpoint.json'), options), /EVIDENCE_REQUIRED: 缺少当前依据/);
   assert.deepEqual(f.read(f.approvalRef), approvalBytes);
   assert.deepEqual(f.read(f.record.user_decision_ref), replyBytes);
   assert.throws(() => validateApprovalRecord({ ...f.record, subject_digest: '0'.repeat(64) }, options), /APPROVAL_CURRENT_INVALID/);
@@ -162,9 +163,9 @@ test('bounded Plan source policy rejects current aggregate approval without revi
   for (const consume of [
     () => validateApprovalRecord(record, options),
     () => validateApprovalRecordFile(f.state.plan_approval_ref, options),
-    () => assertApprovedGateHasValidApproval('gate.plan-approved', gate, options),
-    () => assertGateChecks('gate.plan-approved', checkpoint, options)
+    () => assertApprovedGateHasValidApproval('gate.plan-approved', gate, options)
   ]) assert.throws(consume, /PLAN_REVIEW_CONTROL_REQUIRED/);
+  assert.throws(() => assertGateChecks('gate.plan-approved', checkpoint, options), /EVIDENCE_REQUIRED: 缺少当前依据/);
   assert.throws(() => validateApprovalRecord(record, { root, rolesDoc, registry, expected: { boundary: 'gate.plan-approved', ...gate } }), /APPROVAL_CONTEXT_REQUIRED/);
 });
 

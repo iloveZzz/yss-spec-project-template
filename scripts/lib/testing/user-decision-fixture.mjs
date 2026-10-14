@@ -1,7 +1,7 @@
 // Synthetic test sources only; never use for real approval records.
 import {mkdirSync,writeFileSync,readFileSync} from "node:fs";
 import path from "node:path";
-import {decisionDigest,requestDigest,renderDecisionRequest} from "../user-decision.mjs";
+import {decisionDigest,requestDigest,renderDecisionRequest} from "../native-user-decision.mjs";
 export function buildDecisionFixture(root, { boundary = "gate.spec-baseline-approved", scope = ["feature.demo"], subjectRef, subjectContent = "冻结业务基线 v1\n", extraItems = [] } = {}) {
   mkdirSync(root, { recursive: true });
   const write = (name, value) => {

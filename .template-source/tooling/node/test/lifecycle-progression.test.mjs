@@ -10,7 +10,7 @@ import {readProgressionTarget, assertProgressionEntry} from '../../../../scripts
 import {lifecycleStatus} from '../../../../scripts/lib/lifecycle-status.mjs';
 import {ROOT} from '../../../../scripts/lib/lifecycle-registry.mjs';
 import {authorizeBackendDelivery} from '../../../../scripts/lib/lifecycle-execution-scope.mjs';
-import {assertCheckpointUserDecisions} from '../../../../scripts/lib/approval-record.mjs';
+import {assertCheckpointUserDecisions} from '../../../../scripts/lib/native-approval.mjs';
 
 function fixture(t) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'yss-progression-'));

@@ -12,7 +12,7 @@ import { compileReviewCapabilities, validateReviewCapabilityPolicy, validateRevi
 import { buildReviewPackage, prepareReviewPackage } from '../../../../scripts/lib/review-package.mjs';
 import { validateTaskPackageSchema } from '../../../../scripts/lib/task-package-schema.mjs';
 import { validateJsonSchema } from '../../../../scripts/lib/json-schema.mjs';
-import { readApprovalHistory, validateApprovalRecordFile } from '../../../../scripts/lib/approval-record.mjs';
+import { readApprovalHistory, validateApprovalRecordFile } from '../../../../scripts/lib/native-approval.mjs';
 
 const clone = structuredClone;
 const registry = loadRegistry(), rolesDoc = loadDigitalHumanRoles();

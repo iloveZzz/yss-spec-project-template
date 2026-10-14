@@ -1,7 +1,7 @@
 import { validateDefaultDigitalHumanRoles, validateDigitalHumanRoles, loadDigitalHumanRoles, skillIdsFromRegistry } from "../../scripts/lib/digital-human-roles.mjs";
 import { loadRegistry } from "../../scripts/lib/lifecycle-registry.mjs";
 import { loadSkillRegistry } from "../../scripts/lib/skill-registry.mjs";
-import { validateApprovalRecord, validateApprovalRecordFile } from "../../scripts/lib/approval-record.mjs";
+import { validateApprovalRecord, validateApprovalRecordFile } from "../../scripts/lib/native-approval.mjs";
 
 function clone() {
   return structuredClone(loadDigitalHumanRoles());
@@ -115,7 +115,7 @@ try {
   }, { rolesDoc });
   throw new TypeError("错误配置未被拒绝: 错误角色会签");
 } catch (error) {
-  if (!/会签角色必须是/.test(error.message)) throw new TypeError(`错误角色会签 失败原因不符合预期: ${error.message}`);
+  if (!/APPROVAL_CURRENT_INVALID: 会签角色未获当前门禁政策授权/.test(error.message)) throw new TypeError(`错误角色会签 失败原因不符合预期: ${error.message}`);
 }
 
 try {
@@ -131,7 +131,7 @@ try {
   }, { rolesDoc });
   throw new TypeError("错误配置未被拒绝: 起草者自签会签记录");
 } catch (error) {
-  if (!/会签角色必须是|起草者不得会签自己/.test(error.message)) {
+  if (!/APPROVAL_CURRENT_INVALID: 会签角色未获当前门禁政策授权/.test(error.message)) {
     throw new TypeError(`起草者自签会签记录 失败原因不符合预期: ${error.message}`);
   }
 }
@@ -148,7 +148,7 @@ try {
   }, { rolesDoc });
   throw new TypeError("错误配置未被拒绝: 非测试角色关闭交付验收");
 } catch (error) {
-  if (!/会签角色必须是/.test(error.message)) throw new TypeError(`非测试角色关闭交付验收 失败原因不符合预期: ${error.message}`);
+  if (!/APPROVAL_CURRENT_INVALID: 会签角色未获当前门禁政策授权/.test(error.message)) throw new TypeError(`非测试角色关闭交付验收 失败原因不符合预期: ${error.message}`);
 }
 
 process.stdout.write("数字人角色压力场景验证通过\n");

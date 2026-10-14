@@ -3,7 +3,7 @@
 import { assertExampleFlags, assertContractExample, renderReferenceExample } from "../../../../scripts/lib/scaffold-reference-example.mjs";
 import { platformSourceFingerprint, generatedTreeDigest } from "../../../../scripts/lib/backend-platform-provenance.mjs";
 import { assertContractPlatform, platformTemplateVars, platformSmokeTest } from "../../../../scripts/lib/backend-platform.mjs";
-import { assertScaffoldUserDecision } from "../../../../scripts/lib/user-decision.mjs";
+import { assertScaffoldUserDecision } from "../../../../scripts/lib/native-user-decision.mjs";
 import { createHash } from "node:crypto";
 import { chmod, cp, lstat, mkdir, mkdtemp, readFile, readdir, rename, rm, stat, writeFile, copyFile } from "node:fs/promises";
 import path from "node:path";

@@ -1,7 +1,7 @@
 // Portable synthetic Plan source references; never use to obtain real approval.
 import fs from 'node:fs';
 import path from 'node:path';
-import { decisionDigest } from '../../lib/user-decision.mjs';
+import { decisionDigest } from '../../lib/native-user-decision.mjs';
 
 export function localizeSyntheticPlanSource(plan) {
   const relative = ref => path.relative(plan.root, path.resolve(plan.root, ref)).split(path.sep).join('/');

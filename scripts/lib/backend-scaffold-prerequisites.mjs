@@ -1,9 +1,9 @@
-import {approvalExpectationForBoundAsset} from './approval-consumption.mjs';
+import {approvalExpectationForBoundAsset} from './native-approval.mjs';
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from './validation-phase.mjs';
 import path from "node:path";
 import { parseDocument } from "../vendor/yaml.mjs";
-import { loadApprovalRecord, validateApprovalRecord } from "./approval-record.mjs";
+import { loadApprovalRecord, validateApprovalRecord } from "./native-approval.mjs";
 import { validateJsonSchema } from "./json-schema.mjs";
 import { ROOT } from "./lifecycle-registry.mjs";
 import { validateTechnicalDesign } from "../../.agents/skills/yss-technical-design/scripts/validate-technical-design.mjs";

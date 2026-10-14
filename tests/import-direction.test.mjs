@@ -63,15 +63,12 @@ test("AR16：跨模板源目录的相对导入与再导出构成的环必须拒�
   assert.ok(result.violations.some(item => item.kind === 'import-cycle' && item.detail.includes('private') && item.detail.includes('public')));
 });
 
-test("被切断的导入改为由入口注入：plan-review-control 入口提供决定核验器，decision-continuation 由 user-decision 注入原批准核验器", () => {
+test("Plan 编排保留入口注入，原生决定适配不引入导入环", () => {
   const read = (ref) => fs.readFileSync(path.join(ROOT, ref), "utf8");
   assert.match(read("scripts/plan-review-control"), /verifyDecision:\s*verifyUserDecisionFile/);
   assert.match(read("scripts/lib/plan-review-control.mjs"), /typeof verifyDecision === 'function'/);
-  assert.match(read("scripts/lib/user-decision.mjs"), /assertRequirement:\s*assertUserDecisionRequirement/);
-  assert.match(read("scripts/lib/decision-continuation.mjs"), /typeof options\.assertRequirement !== 'function'/);
   const graph = scanImports(ROOT);
-  assert.equal(graph.get("plan-review-control").includes("user-decision"), false);
-  assert.equal(graph.get("decision-continuation").includes("user-decision"), false);
+  assert.equal(graph.get("plan-review-control").includes("native-user-decision"), false);
   assert.equal(graph.get("slice-contract").includes("slice-repositories"), false);
   assert.equal(graph.get("contract-views").includes("reading-view-bundle"), false);
 });

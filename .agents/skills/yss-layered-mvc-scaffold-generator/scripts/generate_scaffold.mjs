@@ -2,7 +2,7 @@
 /** 直接生成纯机械 YSS 分层 MVC 后端骨架，也支持显式 schema v4/v5 合同。 */
 import { platformSourceFingerprint, generatedTreeDigest } from "../../../../scripts/lib/backend-platform-provenance.mjs";
 import { assertContractPlatform, platformTemplateVars, platformSmokeTest } from "../../../../scripts/lib/backend-platform.mjs";
-import { assertScaffoldUserDecision } from "../../../../scripts/lib/user-decision.mjs";
+import { assertScaffoldUserDecision } from "../../../../scripts/lib/native-user-decision.mjs";
 import { validateBackendScaffoldPrerequisites } from "../../../../scripts/lib/backend-scaffold-prerequisites.mjs";
 import { createHash } from "node:crypto";
 import { chmod, cp, lstat, mkdir, mkdtemp, readFile, readdir, rename, rm, writeFile } from "node:fs/promises";

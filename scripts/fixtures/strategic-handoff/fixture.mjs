@@ -1,3 +1,4 @@
+import {makeRoot} from '../../../tests/helpers/yss-instance.mjs';
 import { mkdirSync, writeFileSync, readFileSync, cpSync, copyFileSync, chmodSync, lstatSync } from 'node:fs';
 import path from 'node:path';
 import { sealVisualBaseline } from '../../../.agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs';
@@ -36,7 +37,7 @@ export function copyNativeFixturePolicy(root, nativeSeed) {
 }
 // Handoff v3 remains the default for released CLI compatibility tests.
 export async function fixture(root, { nativeSeed, technicalDesign = false, handoffVersion = 3, businessTickets = false, impacts = { ui: true, api: true, data: true, backend: true, frontend: true, cross_repo: false, high_risk: false } } = {}) {
- if(nativeSeed)copyNativeFixturePolicy(root,nativeSeed);
+ const explicitSeed=Boolean(nativeSeed);nativeSeed ||= makeRoot('strategic-policy-','design');copyNativeFixturePolicy(root,nativeSeed);
  const put=(ref,value)=>{const p=path.join(root,ref);mkdirSync(path.dirname(p),{recursive:true});writeFileSync(p,typeof value==='string'?value:json(value));};
  put('yss-project.yaml','schema_version: 1\nrepository_mode: project-instance\n');put('CONTEXT.md',context);
  const source=parseContextSource(context), resolved=resolveContextTermRefs(source,['Global/Supplier']);
@@ -50,9 +51,9 @@ const baseline = { schema_version: 1, baseline_id: "visual-baseline.supplier", f
 writeFileSync(baselineFile, JSON.stringify(baseline)); const sealedBaseline = await sealVisualBaseline(baselineFile, bundleRoot);
 const visualBaselineRef = { baseline_id: sealedBaseline.baseline_id, version: sealedBaseline.version, digest: sealedBaseline.bundle.digest, status: "approved", persisted_ref: "source/visual-baseline-v1", manifest_ref: "visual-baseline.yaml", case_ids: sealedBaseline.cases.map((item) => item.case_id) };
 
- const roles=nativeSeed?read(path.join(root,'.template-spec/agents/digital-human-roles.yaml')):sourceApprovalPolicy(read(new URL(handoffVersion>=5?'./aggregate-source-roles.json':'./source-roles.json',import.meta.url)));
+ const roles=explicitSeed?read(path.join(root,'.template-spec/agents/digital-human-roles.yaml')):sourceApprovalPolicy(read(new URL(handoffVersion>=5?'./aggregate-source-roles.json':'./source-roles.json',import.meta.url)));
  const currentPlan=roles.user_decision_policy.gates.includes('gate.plan-approved');
- if(!nativeSeed)put('.template-spec/agents/digital-human-roles.yaml',roles);
+ if(!explicitSeed)put('.template-spec/agents/digital-human-roles.yaml',roles);
  put('preview/index.html','<!doctype html><html><body><button onclick="this.textContent=\'已提交\'">提交</button></body></html>');
  put('prototype-src/main.js','export const state = "ready";');
  put('prototype-src/pnpm-lock.yaml','lockfileVersion: 9');
@@ -88,7 +89,7 @@ const visualBaselineRef = { baseline_id: sealedBaseline.baseline_id, version: se
  put('source/stage.yaml',stage);put('source/spec.md','# 供应商提交\n');put('source/tickets.yaml',{status:'approved'});
  const ref=(id,p,kind)=>({id,version:'v1',status:'approved',persisted_ref:p,digest:kind==='canonical-json'?digest(read(path.join(root,p))):hash(readFileSync(path.join(root,p)))});
  if(businessTickets) {
-   if(nativeSeed){if(!roles.user_decision_policy.required_capabilities?.includes('business-ticket-approval-v1'))throw Error('Native policy lacks business-ticket-approval-v1');}
+   if(explicitSeed){if(!roles.user_decision_policy.required_capabilities?.includes('business-ticket-approval-v1'))throw Error('Native policy lacks business-ticket-approval-v1');}
    else{roles.user_decision_policy.required_capabilities=['business-ticket-approval-v1'];put('.template-spec/agents/digital-human-roles.yaml',roles);}
    put('source/spec.md','---\ncontent_profile: plan-spec-v1\n---\n## 功能需求\n| ID | 需求 |\n|---|---|\n| FR-001 | 提交供应商材料 |\n## 验收标准\n| ID | 需求引用 |\n|---|---|\n| AC-001 | FR-001 |\n');
    const bind=ref=>({ref,version:'v1',digest:hash(readFileSync(path.join(root,ref)))});
@@ -160,5 +161,5 @@ const visualBaselineRef = { baseline_id: sealedBaseline.baseline_id, version: se
      put(approval.record_ref,{schema_version:1,gate_id:approval.gate_id,decision:'approved',actor_kind:rule.bucket==='biological_human'?'biological-human':'digital-human',role_id:rule.countersigners[0],runtime_id:'runtime.generic',principal_ref:rule.bucket==='biological_human'?'person.requester':approval.gate_id==='gate.plan-approved'?'synthetic-plan-reviewer':'synthetic-maintenance-fixture',drafter_principal_ref:drafter,subject_ref:subjectRef,subject_digest:bound(subjectRef).digest,approval_scope:['feature.supplier'],basis:subject.basis,evidence_refs:['evidence/offline.log'],...(rule.drafter?{drafter_role_id:rule.drafter}:{}),...(approval.gate_id==='gate.plan-approved'?{review_session_id:'review-session.plan.supplier',review_bundle_ref:'approvals/plan-checks.yaml'}:{}),...(decisions[approval.gate_id]?{user_decision_ref:decisions[approval.gate_id]}:{}),artifact_bindings:[{id:asset.id||asset.baseline_id,version:asset.version,digest:asset.digest}]});
    }
  };
- sign();return{handoff,strategy,stage,put,sign,snapshot,...(nativeSeed?{nativeSeed}:{})};
+ sign();return{handoff,strategy,stage,put,sign,snapshot,...(explicitSeed?{nativeSeed}:{})};
 }

@@ -1,59 +1,28 @@
-// 校验语义归 yss；这里只负责定位固定版本的二进制、拼参数、解码信封并透传退出码。
+// Domain validation runs in the fixed yss executable. This module only transports inputs and adopts its observed dependencies.
 import {spawnSync} from 'node:child_process';
-import {copyFileSync, cpSync, mkdirSync, readFileSync, realpathSync, rmSync, statSync, writeFileSync} from 'node:fs';
-import {randomUUID} from 'node:crypto';
+import fs from 'node:fs';
+import {createHash,randomUUID} from 'node:crypto';
 import path from 'node:path';
 import {contextBinary} from './native-context.mjs';
+import {readFileSync,lstatSync,readdirSync,existsSync,withValidationPhase,acceptValidationDependencies,verifyValidationDependencies,atValidationFinish} from './validation-phase.mjs';
 
-// 命令行薄壳的输入可以在项目根外（例如维护反例生成器把输入写在仓外目录）：yss 只读根内路径，
-// 这时把文件复制到根下临时目录再校验，用完即删；记录里的相对引用仍按项目根解析，与进程内实现一致。
-function stagedInput(root, file) {
-  if (!path.isAbsolute(file)) return {file, cleanup() {}};
-  const rel = path.relative(root, file);
-  if (rel && !rel.startsWith('..') && !path.isAbsolute(rel)) return {file: rel.split(path.sep).join('/'), cleanup() {}};
-  const dir = path.join(root, '.work', 'native-candidates', `input-${process.pid}-${randomUUID()}`);
-  mkdirSync(dir, {recursive: true});
-  if (statSync(file).isDirectory()) cpSync(file, path.join(dir, path.basename(file)), {recursive: true, verbatimSymlinks: true});
-  else copyFileSync(file, path.join(dir, path.basename(file)));
-  return {file: path.relative(root, path.join(dir, path.basename(file))).split(path.sep).join('/'), cleanup() { rmSync(dir, {recursive: true, force: true}); }};
-}
-
-export function nativeEvidenceVerify({root, kind, file: given, extra = [], environment = process.env, group = 'evidence'}) {
-  const staged = stagedInput(root, given);
-  try { return runNativeVerify({root, kind, file: staged.file, extra, environment, group}); } finally { staged.cleanup(); }
-}
-
-function runNativeVerify({root, kind, file, extra, environment, group}) {
-  const {binary} = contextBinary(environment);
-  // lifecycle 领域的资产选择器是 --checkpoint，其余领域是 --kind 加 --file。
-  const selector = group === 'lifecycle' ? ['--checkpoint', file] : group === 'handoff' && (kind === 'package' || kind === 'spec-baseline' || kind === 'backend-delivery') ? ['--kind', kind, '--package', file] : ['--kind', kind, '--file', file];
-  const args = [group, 'verify', '--root', root, ...selector, ...extra, '--json'];
-  const run = spawnSync(binary, args, {cwd: root, env: environment, encoding: 'utf8', timeout: 120000, maxBuffer: 32 * 1024 * 1024});
-  if (run.error || run.signal || !Number.isInteger(run.status)) throw new Error(`NATIVE_INTERRUPTED: ${run.error?.message || run.signal}`);
-  let envelope;
-  try { envelope = JSON.parse(run.stdout); } catch { throw new Error(`NATIVE_PROTOCOL: 非 JSON 响应（退出码 ${run.status}）：${run.stderr || run.stdout}`.slice(0, 600)); }
-  const diagnostics = envelope.result?.diagnostics ?? [];
-  return {exitCode: run.status, status: envelope.status, code: envelope.code, diagnostics, message: diagnostics.map((item) => `${item.code}: ${item.message}`).join('；') || envelope.code, envelope};
-}
-
-// 进程内调用方（工作流里校验已落盘的用户决定）的适配：只在能唯一定位 yss 且根是合法项目身份时才委托；
-// 自定义 rolesDoc/read 等注入项意味着调用方要的是进程内语义，不委托。
-// 每个委托路径依赖的 yss 能力令牌（yss capabilities --json 的 nodeDelegation）。缺令牌说明 yss 比这些脚本旧，
-// 进程内入口退回 Node 实现，命令行薄壳给出明确的升级提示，而不是把 yss 的 ARGUMENT 错误当成校验结论。
-export const NEEDS = {
-  userDecision: ['user-decision.requirements-object.v1', 'user-decision.validated-rows.v1'],
-  approval: ['approval.expected.v1', 'approval.binding.v1', 'approval.rule-rows.v1'],
-  task: ['task.directory-write-scope.v1'],
-  checkpoint: ['lifecycle.legacy-untracked-checkpoint.v1', 'template-source.verify-root.v1'],
-  handoffPackage: ['handoff.package-identity.v1'],
-  handoffConsumption: ['handoff.consumption-report.v1'],
-  specBaselinePackage: ['handoff.spec-baseline-package.v1'],
-  contextReconciliation: ['evidence.context-reconciliation.v1'],
-  openapiValidation: ['contract.openapi-validation.v1'],
-  backendTerminal: ['contract.backend-terminal.v1'],
-  backendDeliveryPackage: ['handoff.backend-delivery-package.v1'],
-  scaffoldDecisions: ['contract.scaffold-decisions.v1'],
-  slicePreflight: ['contract.slice-preflight-report.v1'],
+const digest=bytes=>createHash('sha256').update(bytes).digest('hex');
+const inside=(root,file)=>file===root||file.startsWith(root+path.sep);
+const fail=(code,message)=>{throw Object.assign(new Error(`${code}: ${message}`),{code});};
+export const NEEDS={
+ userDecision:['user-decision.requirements-object.v1','user-decision.validated-rows.v1','user-decision.result.v1'],
+ approval:['approval.expected.v1','approval.binding.v1','approval.rule-rows.v1'],
+ task:['task.directory-write-scope.v1'],checkpoint:['lifecycle.legacy-untracked-checkpoint.v1','template-source.verify-root.v1'],
+ handoffPackage:['handoff.package-identity.v1','handoff.source-view.v1'],handoffSource:['handoff.source-view.v1'],
+ handoffDelivery:['handoff.delivery-view.v1'],sourceApproval:['handoff.source-approval.v1'],
+ handoffConsumption:['handoff.consumption-report.v1'],specBaselinePackage:['handoff.spec-baseline-package.v1','handoff.spec-baseline-source-view.v1'],
+ specBaselineBinding:['contract.spec-baseline-binding.v1'],businessTickets:['contract.business-tickets-report.v1','contract.business-tickets-source-views.v1'],
+ contextReconciliation:['evidence.context-reconciliation.v1'],openapiValidation:['contract.openapi-validation.v1'],
+ backendTerminal:['contract.backend-terminal.v1'],backendDeliveryPackage:['handoff.backend-delivery-package.v1'],
+ scaffoldDecisions:['contract.scaffold-decisions.v1'],slicePreflight:['contract.slice-preflight-report.v1'],
+ gateChecks:['contract.gate-checks.v1'],checkpointApprovals:['contract.checkpoint-approvals.v1'],planEntry:['contract.plan-entry.v1'],implementationScope:['contract.implementation-scope.v1'],
+ checkpointUserDecisions:['contract.checkpoint-user-decisions.v1'],scaffoldUserDecision:['contract.scaffold-user-decision.v1'],
+ dependencies:['governance.validation-dependencies.v1']
 };
 const capabilityCache = new Map();
 export function nativeCapabilities(environment = process.env) {
@@ -67,7 +36,7 @@ export function nativeCapabilities(environment = process.env) {
   }
   return capabilityCache.get(key);
 }
-// 找不到 yss 视为缺少全部能力（调用方据此退回进程内实现）；需要明确报错的薄壳用 assertNativeCapabilities。
+// 能力缺失始终拒绝，不选择另一套校验器。
 export function missingCapabilities(needs, environment = process.env) {
   let have;
   try { have = nativeCapabilities(environment); } catch { return [...needs]; }
@@ -79,115 +48,108 @@ export function assertNativeCapabilities(needs, environment = process.env) {
   if (missing.length) throw new Error(`NATIVE_CAPABILITY: 当前 yss 缺少能力 ${missing.join('、')}，请升级 yss（yss upgrade）后重试`);
 }
 
-// 标记「只是按项目根读取」的读取器：与默认读取等价，不影响委托；任何其他自带读取器（虚拟源、内存夹具）仍然阻止委托。
-export const rootBoundRead = (read) => Object.assign(read, {rootBound: true});
 
-export function nativeDelegationAvailable(root, options = {}, environment = process.env, refs = [], needs = []) {
-  // 调用方自己注入的规则/读取器要的是进程内语义；defaultAuthorities 表示 rolesDoc/registry 只是从同一个根加载的默认值，可以委托。
-  if (options.native === false || (options.read && options.read.rootBound !== true) || ((options.rolesDoc || options.registry) && options.defaultAuthorities !== true)) return false;
-  // yss 只读项目根内的路径；引用落在根外（合成夹具等）时无法委托。
-  const real = (target) => { try { return realpathSync(target); } catch { return path.resolve(target); } };
-  const inside = (ref) => typeof ref === 'string' && ref !== '' && !/^\w+:\/\//.test(ref) && !path.relative(real(root), real(path.resolve(root, ref))).startsWith('..');
-  if (!refs.every(inside)) return false;
+// shortcut: 同一来源根的并行薄壳校验会观测对方暂存目录；当前需串行，仓外认证运输尚未实现。
+const ownedTransportPaths=new Set();
+function transport(root) {
+ const created=[];
+ const dir=path.join(root,'.work','native-candidates',`input-${process.pid}-${randomUUID()}`);
+ const create=directory=>{try{const st=fs.lstatSync(directory);if(st.isSymbolicLink()||!st.isDirectory())fail('NATIVE_INPUT_INVALID',`传输祖先必须是普通目录: ${directory}`);if(directory!==path.parse(directory).root)create(path.dirname(directory));return;}catch(error){if(error.code!=='ENOENT')throw error;}create(path.dirname(directory));fs.mkdirSync(directory);created.push(directory);ownedTransportPaths.add(directory);};
+ let initialized=false;
+ return {get dir(){if(!initialized){create(dir);initialized=true;}return dir;},created,cleanup(){if(!initialized)return;fs.rmSync(dir,{recursive:true,force:true});ownedTransportPaths.delete(dir);for(const directory of [...ownedTransportPaths].sort((a,b)=>b.length-a.length)){if(!fs.existsSync(directory))ownedTransportPaths.delete(directory);else if(!fs.readdirSync(directory).length){fs.rmdirSync(directory);ownedTransportPaths.delete(directory);}}}};
+}
+function copyObserved(source,target) {
+ const stat=lstatSync(source);
+ if(stat.isSymbolicLink())fail('NATIVE_INPUT_INVALID','外部输入不能包含符号链接');
+ if(stat.isDirectory()){fs.mkdirSync(target);for(const name of readdirSync(source))copyObserved(path.join(source,name),path.join(target,name));fs.chmodSync(target,stat.mode&0o7777);}
+ else if(stat.isFile()){fs.writeFileSync(target,readFileSync(source));fs.chmodSync(target,stat.mode&0o7777);}
+ else fail('NATIVE_INPUT_INVALID','外部输入只能是普通文件或目录');
+}
+function normalizedDependencies(receipt,root,transfers,created,inputs=[],explicitRoots=[]) {
+ if(receipt?.schema_version!==1||!Array.isArray(receipt.files)||!Array.isArray(receipt.observations))fail('NATIVE_PROTOCOL','缺少受控原生依赖回执');
+ // Verify exactly what Go observed before removing any transport files.
+ const roots=new Set([root,...explicitRoots]),fileDigests=new Map(receipt.files.map(row=>[row.file,row.digest]));
+ // External roots must be backed by this fixed invocation's authenticated input
+ // descriptors and the same observed physical bytes; arbitrary reported roots
+ // and virtual archive members do not grant a new filesystem boundary.
+ for(const input of inputs){if(!path.isAbsolute(input.root||'')||typeof input.ref!=='string'||path.isAbsolute(input.ref)||input.ref.includes(':')||input.ref.split(/[\\/]/).includes('..'))continue;const file=path.resolve(input.root,input.ref),expected=input.descriptor?.digest?.replace(/^sha256:/,'');if(input.descriptor?.type==='file'&&inside(input.root,file)&&fileDigests.get(file)===expected&&/^[a-f0-9]{64}$/.test(expected))roots.add(input.root);}
+ for(const row of receipt.files)if(typeof row.file!=='string'||!path.isAbsolute(row.file)||![...roots].some(base=>inside(base,row.file)))fail('NATIVE_PROTOCOL','原生文件依赖越出本次认证来源');
+ for(const row of receipt.observations)if(typeof row.file!=='string'||!path.isAbsolute(row.file)||![...roots].some(base=>inside(base,row.file)||(row.kind==='stat'&&inside(row.file,base))))fail('NATIVE_PROTOCOL','原生路径依赖越出本次认证来源');
+ verifyValidationDependencies(receipt);
+ const ephemeral=file=>created.some(dir=>inside(dir,file));
+ const map=file=>{const transfer=transfers.find(row=>inside(row.target,file));return transfer?path.join(transfer.source,path.relative(transfer.target,file)):file;};
+ const files=receipt.files.filter(row=>!ephemeral(row.file)||transfers.some(t=>inside(t.target,row.file))).map(row=>({...row,file:map(row.file)}));
+ // Physical source files were observed during copying. Native staging inode values
+ // describe the copy, so only byte dependencies are mapped back to the original.
+ const observations=receipt.observations.filter(row=>!ephemeral(row.file)).map(row=>{
+  if(row.kind!=='directory')return row;
+  return {...row,value:row.value.filter(name=>!ownedTransportPaths.has(path.join(row.file,name)))};
+ });
+ return {schema_version:1,files,observations};
+}
+export function nativeEvidenceVerify({root:given,kind,file,extra=[],environment=process.env,group='evidence',selector,document,documents={},needs=[]}) {
+ const root=fs.realpathSync(given);
+ assertNativeCapabilities([...needs,...NEEDS.dependencies],environment);
+ return withValidationPhase({root,purpose:`native-${group}-${kind}`,readOnly:true},()=>{
+  const temporary=transport(root),transfers=[];let deferred=false;
   try {
-    contextBinary(environment);
-    if (needs.length && missingCapabilities(needs, environment).length) return false; // yss 比这些脚本旧：退回进程内实现
-    // yss 需要完整的治理权威文件；合成夹具只有 yss-project.yaml 时不委托。
-    const has = (ref) => statSync(path.join(root, ref), {throwIfNoEntry: false})?.isFile() === true;
-    if (!has('yss-project.yaml') || !has('.template-spec/agents/digital-human-roles.yaml') || !has('.template-spec/process/lifecycle-registry.yaml')) return false;
-    return has('.template-spec/process/harness-profile.yaml') || /repository_mode:\s*template-source/.test(readFileSync(path.join(root, 'yss-project.yaml'), 'utf8'));
-  } catch { return false; }
+   const stage=(ref,name)=>{
+    const source=path.resolve(root,ref);
+    if(inside(root,source))return path.relative(root,source).split(path.sep).join('/');
+    const target=path.join(temporary.dir,name);copyObserved(source,target);transfers.push({source,target});
+    return path.relative(root,target).split(path.sep).join('/');
+   };
+   let selected;
+   if(document!==undefined){selected=path.join(temporary.dir,'candidate.json');fs.writeFileSync(selected,JSON.stringify(document));selected=path.relative(root,selected);}
+   else selected=stage(file,'input');
+   const flags=[...extra];
+   for(const [flag,value]of Object.entries(documents)){const target=path.join(temporary.dir,flag.replace(/[^a-z-]/g,'')+'.json');fs.writeFileSync(target,JSON.stringify(value));flags.push(flag,path.relative(root,target));}
+   const selectedFlag=selector||(group==='lifecycle'?'--checkpoint':group==='handoff'&&['package','spec-baseline','backend-delivery','delivery'].includes(kind)?'--package':'--file');
+   const args=[group,'verify','--root',root,...(group==='lifecycle'?[]:['--kind',kind]),selectedFlag,selected,...flags,'--json'];
+   const {binary,digest:binaryDigest}=contextBinary(environment),fixedEnvironment={...environment,YSS_NATIVE_BINARY:binary,YSS_NATIVE_BINARY_SHA256:binaryDigest};
+   const execute=()=>{contextBinary(fixedEnvironment);const result=spawnSync(binary,args,{cwd:root,env:fixedEnvironment,encoding:'utf8',timeout:120000,maxBuffer:64*1024*1024});contextBinary(fixedEnvironment);return result;};
+   const run=execute();
+   if(run.error||run.signal||!Number.isInteger(run.status))fail('NATIVE_INTERRUPTED',run.error?.message||run.signal);
+   let envelope;try{envelope=JSON.parse(run.stdout);}catch{fail('NATIVE_PROTOCOL',`非 JSON 响应: ${run.stderr||run.stdout}`.slice(0,600));}
+   if(envelope.outputVersion!==1||envelope.protocolVersion!==1||envelope.command!==group||!['ok','error'].includes(envelope.status)||![0,1,2].includes(run.status)||(envelope.status==='ok')!==(run.status===0)||(envelope.code==='OK')!==(run.status===0))fail('NATIVE_PROTOCOL','协议与实际退出码不一致');
+   const receipt=envelope.result?.validation_dependencies;
+   // Argument/identity errors can happen before a validation Context exists.
+   if(receipt){
+    const explicitRoots=transfers.map(row=>row.source);for(let i=0;i<flags.length;i++)if(['--run-dir','--tool-root','--template-checkout'].includes(flags[i])&&typeof flags[i+1]==='string')explicitRoots.push(path.resolve(root,flags[++i]));
+    const adopted=normalizedDependencies(receipt,root,transfers,temporary.created,envelope.result.inputs,explicitRoots),git=envelope.result.git_inputs;
+    if(!Array.isArray(git))fail('NATIVE_PROTOCOL','缺少 Git 观测清单');
+    if(git.length){const observed=JSON.stringify(git);atValidationFinish(()=>{const replay=execute();let after;try{after=JSON.parse(replay.stdout);}catch{fail('VALIDATION_INPUT_CHANGED','Git 复验响应无效');}if(replay.error||replay.signal||replay.status!==run.status||after.command!==group||JSON.stringify(after.result?.git_inputs)!==observed)fail('VALIDATION_INPUT_CHANGED','原生 Git 观测已改变');},()=>temporary.cleanup());deferred=true;}
+    else temporary.cleanup();acceptValidationDependencies(adopted);
+   }
+   else if(run.status===0)fail('NATIVE_PROTOCOL','成功响应缺少受控依赖');
+   const diagnostics=envelope.result?.diagnostics??[];
+   return {exitCode:run.status,status:envelope.status,code:envelope.code,diagnostics,message:diagnostics.map(row=>`${row.code}: ${row.message}`).join('；')||envelope.code,envelope};
+  } finally {if(!deferred)temporary.cleanup();}
+ });
 }
-
-// 委托校验一条「用户决定要求」：requirement 是 Node 里的 {boundary, subject_ref, scope, user_decision_ref | continuation_ref}。
-// 要求写入根下 .work/native-candidates 的临时文件（yss 只读根内路径），用完即删；失败时抛出带 yss 拒绝码的错误。
-export function nativeUserDecisionRequirement({root: given, requirement, environment = process.env}) {
-  const root = realpathSync(given); // yss 要求项目根由普通目录组成（不含符号链接）
-  const continuation = Boolean(requirement.continuation_ref);
-  const file = continuation ? requirement.continuation_ref : requirement.user_decision_ref;
-  const dir = path.join(root, '.work', 'native-candidates');
-  mkdirSync(dir, {recursive: true});
-  const candidate = path.join(dir, `requirement-${process.pid}-${randomUUID()}.json`);
-  writeFileSync(candidate, JSON.stringify([requirement]));
-  try {
-    const result = nativeEvidenceVerify({root, kind: 'user-decision', file, extra: ['--requirements', path.relative(root, candidate), ...(continuation ? ['--continuation'] : [])], environment});
-    if (result.exitCode !== 0) throw Object.assign(new Error(result.message), {code: result.diagnostics[0]?.code ?? result.code, native: true});
-    const coverage = result.envelope.result?.coverage ?? {};
-    return {validated: coverage.user_decision_validated ?? [], ...(continuation ? {continued: coverage.user_decision_continuation?.continued === true, review_ref: coverage.user_decision_continuation?.review_ref} : {})};
-  } finally {
-    rmSync(candidate, {force: true});
-  }
+export function nativeCoverage(result,key,{allowBlocked=false}={}) {
+ const value=result.envelope.result?.coverage?.[key];
+ if(result.exitCode!==0&&!allowBlocked)throw Object.assign(new Error(result.message),{code:result.diagnostics[0]?.code??result.code,native:true});
+ if(!value||typeof value!=='object')fail('NATIVE_PROTOCOL',`缺少 ${key} 报告`);
+ if(value.status&&((value.status==='passed')!==(result.exitCode===0)))fail('NATIVE_PROTOCOL',`${key} 与实际退出码不一致`);
+ return value;
 }
-
-// 期望的来源绑定：approvalExpectationFrom*/ForBoundAsset 算出期望时登记「它是怎么来的」，委托时让 yss 自己按同一绑定重新计算期望。
-// 只有期望对象与登记时完全一致才采用绑定；调用方改过任何字段就退回显式期望，避免绑定与实际期望不一致。
-const expectationBindings = new WeakMap();
-export function attachExpectationBinding(expected, binding) {
-  expectationBindings.set(expected, {binding, snapshot: JSON.stringify(expected)});
-  return expected;
+export const nativeContractVerify=options=>nativeEvidenceVerify({...options,group:'contract'});
+export const nativeLifecycleVerify=options=>nativeEvidenceVerify({...options,kind:'checkpoint',group:'lifecycle'});
+export function nativeUserDecisionRequirement({root,requirement,environment=process.env}) {
+ const continuation=Boolean(requirement.continuation_ref),result=nativeEvidenceVerify({root,kind:'user-decision',file:requirement.continuation_ref||requirement.user_decision_ref,documents:{'--requirements':[requirement]},extra:continuation?['--continuation']:[],environment,needs:NEEDS.userDecision});
+ if(continuation){const continued=nativeCoverage(result,'user_decision_continuation'),validated=result.envelope.result.coverage.user_decision_validated;if(!Array.isArray(validated)||!continued.continued)fail('NATIVE_PROTOCOL','缺少延续核验结果');return {validated,...continued};}
+ return nativeCoverage(result,'user_decision_result');
 }
-function bindingFor(expected) {
-  const entry = expectationBindings.get(expected);
-  return entry && entry.snapshot === JSON.stringify(expected) ? entry.binding : null;
+export function nativeApprovalRecord({root,record,file,gate,expected,environment=process.env}) {
+ const result=nativeEvidenceVerify({root,kind:'approval',file,document:record,documents:expected===undefined?{}:{'--expected':expected},extra:['--require-approved',...(gate?['--gate',gate]:[])],needs:NEEDS.approval,environment});
+ if(result.exitCode!==0)throw Object.assign(new Error(result.message),{code:result.diagnostics[0]?.code??result.code,native:true});
+ const rules=result.envelope.result?.coverage?.approval_validated;
+ if(!Array.isArray(rules)||!rules.length)fail('NATIVE_PROTOCOL','缺少批准结果');
+ const done=rules.map(row=>({...row.rule,subject_ref:row.subject_ref??(Array.isArray(expected)?expected.find(e=>e.boundary===row.gate_id):expected)?.subject_ref,approval_scope:row.approval_scope??(Array.isArray(expected)?expected.find(e=>e.boundary===row.gate_id):expected)?.approval_scope,execution_authorization:'not-evaluated'}));
+ return Array.isArray(expected)?done:done[0];
 }
-
-// 批准记录引用的、需要在项目根内才能委托的全部资产路径（含 v2 审查任务与组合包依据）。
-export function approvalDelegationRefs(record, expected) {
-  return [record.subject_ref, record.user_decision_ref, record.continuation_ref, record.decision_reuse_ref, record.review_task_ref, expected.subject_ref, expected.review_context?.review_task_ref,
-    ...(record.basis ?? []).map((asset) => asset?.ref), ...(record.review_bundle_basis ?? []).map((asset) => asset?.ref), ...(expected.basis ?? []).map((asset) => asset?.ref)].filter((ref) => ref !== undefined && ref !== null);
-}
-
-// 委托校验当前批准：record 为待验记录（内存对象，写成候选文件）或 file 为已落盘的记录/组合包路径；
-// expected 为调用方独立算出的当前消费期望（单个对象，或组合包按 boundary 区分的数组）。拒绝时抛出带 yss 拒绝码的错误。
-export function nativeApprovalRecord({root: given, record, file, gate, expected, environment = process.env}) {
-  const root = realpathSync(given);
-  const dir = path.join(root, '.work', 'native-candidates', `approval-${process.pid}-${randomUUID()}`);
-  mkdirSync(dir, {recursive: true});
-  const expectedFile = path.join(dir, 'expected.json');
-  const rows = Array.isArray(expected) ? expected : [expected];
-  const bindings = rows.map(bindingFor);
-  const byBinding = bindings.every(Boolean);
-  writeFileSync(expectedFile, JSON.stringify(byBinding ? bindings.map((binding, i) => ({...binding, boundary: rows[i].boundary, frozen: rows[i]})) : expected));
-  let target = file ? path.resolve(root, file) : path.join(dir, 'candidate.json');
-  if (!file) writeFileSync(target, JSON.stringify(record));
-  try {
-    const result = nativeEvidenceVerify({root, kind: 'approval', file: path.relative(root, target), extra: ['--require-approved', byBinding ? '--binding' : '--expected', path.relative(root, expectedFile), ...(gate ? ['--gate', gate] : [])], environment});
-    if (result.exitCode !== 0) throw Object.assign(new Error(result.message), {code: result.diagnostics[0]?.code ?? result.code, native: true});
-    const rules = result.envelope.result?.coverage?.approval_validated ?? [];
-    // 与进程内一致：返回会签规则（bucket 等）再加主体、范围；组合包时 rules 按 gate 对应各行
-    const done = rows.map((row) => ({...(rules.find((entry) => entry.gate_id === row.boundary)?.rule ?? {}), subject_ref: row.subject_ref, approval_scope: [...row.approval_scope], execution_authorization: 'not-evaluated'}));
-    if (byBinding) Object.defineProperty(done[0], 'expected_by_yss', {value: result.envelope.result?.coverage?.approval_expected, enumerable: false}); // 供对拍测试读取 yss 自己算出的期望（组合包时为最后一行）
-    return Array.isArray(expected) ? done : done[0];
-  } finally {
-    rmSync(dir, {recursive: true, force: true});
-  }
-}
-
-// contract 领域（slice、task、scaffold、frontend-delivery）的校验，与 evidence 同一信封。
-export function nativeContractVerify(options) {
-  return nativeEvidenceVerify({...options, group: 'contract'});
-}
-
-// lifecycle 领域（checkpoint）的校验。
-export function nativeLifecycleVerify(options) {
-  return nativeEvidenceVerify({...options, kind: 'checkpoint', group: 'lifecycle'});
-}
-
-// 委托校验一份战略交接消费（战术/前端接收合同）：data 为内存里的合同，写成候选文件交给 yss；
-// 返回 yss 的消费报告（通过或阻断都有报告）；没有报告（输入非法、拒绝）时抛出带 yss 拒绝码的错误。
-export function nativeHandoffConsumption({root: given, data, sliceRef, consumer = 'tactical', environment = process.env}) {
-  const root = realpathSync(given);
-  const dir = path.join(root, '.work', 'native-candidates', `consumption-${process.pid}-${randomUUID()}`);
-  mkdirSync(dir, {recursive: true});
-  const file = path.join(dir, 'candidate.json');
-  writeFileSync(file, JSON.stringify(data));
-  try {
-    const extra = [...(sliceRef ? ['--slice', sliceRef] : []), ...(consumer === 'tactical' ? [] : ['--consumer', consumer])];
-    const result = nativeEvidenceVerify({root, kind: 'consumption', file: path.relative(root, file), group: 'handoff', extra, environment});
-    const report = result.envelope.result?.coverage?.handoff_consumption;
-    if (report) return report;
-    throw Object.assign(new Error(result.message), {code: result.diagnostics[0]?.code ?? result.code, native: true});
-  } finally {
-    rmSync(dir, {recursive: true, force: true});
-  }
+export function nativeHandoffConsumption({root,data,sliceRef,consumer='tactical',environment=process.env}) {
+ const result=nativeEvidenceVerify({root,kind:'consumption',document:data,group:'handoff',extra:[...(sliceRef?['--slice',sliceRef]:[]),...(consumer==='tactical'?[]:['--consumer',consumer])],environment,needs:NEEDS.handoffConsumption});
+ return nativeCoverage(result,'handoff_consumption',{allowBlocked:true});
 }

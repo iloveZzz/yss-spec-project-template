@@ -6,7 +6,7 @@ import path from "node:path";
 import { parseArgs } from "node:util";
 import { fileURLToPath } from "node:url";
 import { parseDocument } from "./vendor/yaml.mjs";
-import { assertCheckpointApprovals } from "./lib/approval-record.mjs";
+import { assertCheckpointApprovals } from "./lib/native-approval.mjs";
 
 import { assertCheckpointBoundary } from './lib/checkpoint-boundary.mjs';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");

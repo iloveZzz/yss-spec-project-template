@@ -1,6 +1,6 @@
 import {inspectCandidateBaseCommit, candidateHasIntentMaterial} from './implementation-candidate-current.mjs';
 import {collectCountersignGateIds} from './digital-human-roles.mjs';
-import {approvalExpectationForBoundAsset} from './approval-consumption.mjs';
+import {approvalExpectationForBoundAsset} from './native-approval.mjs';
 import {assertApprovedExecutionContext} from './approved-execution-context.mjs';
 import {createHash} from 'node:crypto';
 import { realpathSync } from 'node:fs';
@@ -8,7 +8,7 @@ import { readFileSync, lstatSync, readdirSync } from './validation-phase.mjs';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {parseDocument} from '../vendor/yaml.mjs';
-import {validateApprovalRecord} from './approval-record.mjs';
+import {validateApprovalRecord} from './native-approval.mjs';
 
 const sha=bytes=>`sha256:${createHash('sha256').update(bytes).digest('hex')}`;
 const stable=x=>Array.isArray(x)?x.map(stable):x&&typeof x==='object'?Object.fromEntries(Object.keys(x).sort().map(k=>[k,stable(x[k])])):x;
@@ -121,7 +121,7 @@ export function verifyExistingArchitecture(identity,bindings,{root,registry,exec
  const declaredReviews=new Set(collectCountersignGateIds(roles.gate_policy));
  const reviewBoundary=['check.architecture-reviewed','gate.technical-design-approved'].find(boundary=>declaredReviews.has(boundary));
  requireThat(reviewBoundary,'ARCH_REVIEW_MISSING','当前来源政策缺少既有架构边界审查入口');
- validateApprovalRecord(review,{rolesDoc:roles,defaultAuthorities:true,requireApproved:true,root,expected:approvalExpectationForBoundAsset(reviewBoundary,bindings.manifest,{root})});
+ validateApprovalRecord(review,{rolesDoc:roles,requireApproved:true,root,expected:approvalExpectationForBoundAsset(reviewBoundary,bindings.manifest,{root})});
  requireThat(['check.architecture-reviewed','gate.technical-design-approved'].includes(review.gate_id)&&text(baseline.id)&&text(baseline.version),'ARCH_REVIEW_MISSING','需要架构边界审查');
  const basis=existingArchitectureDigest(Object.fromEntries(Object.entries(baseline).filter(([k])=>k!=='boundary_review')));
  requireThat(review.artifact_bindings?.some(x=>x.id===baseline.id&&x.version===baseline.version&&x.digest===basis),'ARCH_REVIEW_STALE','架构审查未绑定当前基线');

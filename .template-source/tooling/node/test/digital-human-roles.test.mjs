@@ -64,7 +64,7 @@ test("digital human roles are runtime-agnostic and grok is only an adapter", asy
 
 test("approval records reject the wrong signer and approved countersign gates need approval_ref", async () => {
   const { loadDigitalHumanRoles } = await import(path.join(repositoryRoot, "scripts/lib/digital-human-roles.mjs"));
-  const { validateApprovalRecord, assertCheckpointApprovals } = await import(path.join(repositoryRoot, "scripts/lib/approval-record.mjs"));
+  const { validateApprovalRecord, assertCheckpointApprovals } = await import(path.join(repositoryRoot, "scripts/lib/native-approval.mjs"));
   const rolesDoc = loadDigitalHumanRoles();
   assert.throws(() => validateApprovalRecord({
     schema_version: 1,
@@ -74,7 +74,7 @@ test("approval records reject the wrong signer and approved countersign gates ne
     role_id: "role.frontend-engineer",
     runtime_id: "runtime.generic",
     principal_ref: "instance:fe"
-  }, { rolesDoc }), /会签角色必须是/);
+  }, { rolesDoc }), /APPROVAL_CURRENT_INVALID: 会签角色未获当前门禁政策授权/);
   assert.throws(() => validateApprovalRecord({
     schema_version: 1,
     gate_id: "gate.product-design-approved",
@@ -93,5 +93,5 @@ test("approval records reject the wrong signer and approved countersign gates ne
         evidence_refs: []
       }
     }
-  }, repositoryRoot), /缺少当前证据摘要/);
+  }, repositoryRoot), /EVIDENCE_REQUIRED: 缺少当前依据/);
 });

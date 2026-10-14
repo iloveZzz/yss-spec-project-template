@@ -1,6 +1,6 @@
 import {checkNativeContext, contextBinary} from './native-context.mjs';
 import { readWorkLayout } from './work-layout.mjs';
-import {findApprovalCheckpoint} from './approval-checkpoint-discovery.mjs';
+import {findApprovalCheckpoint} from './user-decision-core.mjs';
 import fs from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { parseDocument } from '../vendor/yaml.mjs';

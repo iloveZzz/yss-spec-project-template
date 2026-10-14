@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { realpathSync } from 'node:fs';
-import { assertUserDecisionRequirement, decisionDigest, decisionIO } from "../../../../scripts/lib/user-decision.mjs";
+import { assertUserDecisionRequirement, decisionDigest, decisionIO } from "../../../../scripts/lib/native-user-decision.mjs";
 import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { prepareOfflineHtml, validateOfflineHtml, sealOfflineHtml } from "./offline-html.mjs";

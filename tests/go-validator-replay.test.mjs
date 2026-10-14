@@ -1,4 +1,4 @@
-// 唯一实现的最低测试（FR-011）：同一批合成夹具同时交给 Node 校验与固定版本 yss，结论（通过/拒绝及拒绝码）必须一致。
+// 原生领域协议与 Node 调用适配回放：固定预期决定通过或拒绝，另检查适配与原生输出一致。
 // 夹具在测试里现场构建，改动夹具里的判定输入，回放就应当失败。
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -7,7 +7,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {contextBinary} from '../scripts/lib/native-context.mjs';
-import {nativeEvidenceVerify, nativeContractVerify, nativeLifecycleVerify, nativeDelegationAvailable, rootBoundRead, NEEDS, missingCapabilities} from '../scripts/lib/native-evidence.mjs';
+import {nativeEvidenceVerify, nativeContractVerify, nativeLifecycleVerify, assertNativeCapabilities, NEEDS, missingCapabilities} from '../scripts/lib/native-evidence.mjs';
 import {generateTaskPackageDefaults, validateTaskPackage} from '../scripts/lib/task-package.mjs';
 import {parse as parseYamlText} from '../scripts/vendor/yaml.mjs';
 import {fixture as handoffFixture, context as handoffContext} from '../scripts/fixtures/strategic-handoff/fixture.mjs';
@@ -20,10 +20,10 @@ import {read as readHandoff, json as handoffJson} from '../scripts/lib/strategic
 import {makeRoot} from './helpers/yss-instance.mjs';
 import {readdirSync, cpSync, unlinkSync, appendFileSync} from 'node:fs';
 import {buildDecisionFixture} from '../scripts/lib/testing/user-decision-fixture.mjs';
-import {validateUserDecision, assertUserDecisionRequirement} from '../scripts/lib/user-decision.mjs';
-import {validateApprovalRecord, approvalExpectationFromSubject} from '../scripts/lib/approval-record.mjs';
-import {approvalExpectationForBoundAsset} from '../scripts/lib/approval-consumption.mjs';
-import {approvalExpectationFromState} from '../scripts/lib/approval-current.mjs';
+import {validateUserDecision, assertUserDecisionRequirement} from '../scripts/lib/native-user-decision.mjs';
+import {validateApprovalRecord, approvalExpectationFromSubject} from '../scripts/lib/native-approval.mjs';
+import {approvalExpectationForBoundAsset} from '../scripts/lib/native-approval.mjs';
+import {approvalExpectationFromState} from '../scripts/lib/native-approval.mjs';
 import {decisionDigest} from '../scripts/lib/user-decision-core.mjs';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
@@ -32,7 +32,7 @@ import {approvalExpectedFromTask} from '../scripts/lib/review-capabilities.mjs';
 import {loadRegistry} from '../scripts/lib/lifecycle-registry.mjs';
 import {loadDigitalHumanRoles} from '../scripts/lib/digital-human-roles.mjs';
 import {parseDocument} from '../scripts/vendor/yaml.mjs';
-import {validateApprovalRecordFile, assertApprovedGateHasValidApproval} from '../scripts/lib/approval-record.mjs';
+import {validateApprovalRecordFile, assertApprovedGateHasValidApproval} from '../scripts/lib/native-approval.mjs';
 
 let binary;
 try { binary = contextBinary().binary; } catch { binary = null; }
@@ -62,7 +62,7 @@ process.on('exit', () => { for (const dir of cleanupDirs) rmSync(dir, {recursive
 let seq = 0;
 const fixture = (opts) => buildDecisionFixture(path.join(setup(), '.work', ...(site === 'template-source' ? [`replay-${process.pid}`] : ['replay']), `case-${++seq}`), opts);
 const nodeVerdict = (f) => {
-  try { validateUserDecision(f.record, {expected: [f.requirement]}); return {ok: true}; } catch (error) { return {ok: false, code: error.code}; }
+  try { validateUserDecision(f.record, {root:setup(),expected: [f.requirement]}); return {ok: true}; } catch (error) { return {ok: false, code: error.code}; }
 };
 const goVerdict = (f) => {
   f.save();
@@ -92,6 +92,12 @@ const cases = {
   '相反原文被归一化成批准': (f) => { f.record.responses = []; f.respond({text: '不同意，需要修改', decision: 'approved'}); },
 };
 
+const decisionCaseCodes={
+ '无回复保持等待':'user-decision-response-required','被拒绝':'user-decision-not-approved','要求修改':'user-decision-not-approved','意思不明':'user-decision-not-approved','撤回':'user-decision-not-approved',
+ '数字人代答':'user-decision-responder-mismatch','默认选项冒充原始消息':'SCHEMA','记录原文与来源不一致':'user-decision-responder-mismatch','来源文件缺失':'INPUT','只有 Agent 摘要':'SCHEMA',
+ '来源被篡改':'user-decision-source-changed','展示内容与当前请求不一致':'user-decision-presentation-mismatch','展示前回复':'user-decision-source-invalid','批准依据被改动':'user-decision-stale','批准范围扩大':'user-decision-subject-mismatch','相反原文被归一化成批准':'user-decision-ambiguous'
+};
+
 // 两边都拒绝，但拒绝码粒度不同：Node 对 schema 违规不带码，Go 统一报 SCHEMA；来源不可读时 Go 报 INPUT。结论一致即可。
 const codeDiffers = new Set(['默认选项冒充原始消息', '来源文件缺失', '只有 Agent 摘要']);
 
@@ -102,6 +108,7 @@ for (const [name, mutate] of Object.entries(cases)) for (const where of ['instan
     mutate(f);
     const node = nodeVerdict(f);
     const go = goVerdict(f);
+    assert.equal(node.ok,name==='真实单项回复通过',JSON.stringify(node));
     assert.equal(go.ok, node.ok, `结论不一致：Node=${JSON.stringify(node)} Go=${JSON.stringify(go)}`);
     if (!node.ok && !codeDiffers.has(name)) assert.equal(go.code, node.code, `拒绝码不一致：Node=${node.code} Go=${go.code}（${go.message}）`);
   });
@@ -159,24 +166,14 @@ test('verify-approval-record 薄壳：历史结构可读，没有当前上下文
   assert.match(current.stderr, /会签记录校验失败/);
 });
 
-// 适配层：进程内入口 assertUserDecisionRequirement 委托给 yss 后，结论、拒绝码与已核验事项必须和进程内实现一致。
+// 决定适配的预期取自夹具定义，不能把同一原生核心调用两次作为独立等价证据。
 for (const [name, mutate] of Object.entries(cases)) {
-  test(`适配层等价（assertUserDecisionRequirement）：${name}`, {skip}, () => {
-    site = 'template-source';
-    const f = fixture();
-    mutate(f);
-    f.save();
-    const run = (native) => {
-      try {
-        const r = assertUserDecisionRequirement(f.requirement, {root: REPO, native});
-        return {ok: true, validated: r.validated};
-      } catch (error) { return {ok: false, code: error.code}; }
-    };
-    const inProcess = run(false);
-    const delegated = run(true);
-    assert.equal(delegated.ok, inProcess.ok, `结论不一致：进程内=${JSON.stringify(inProcess)} 委托=${JSON.stringify(delegated)}`);
-    if (!inProcess.ok && !codeDiffers.has(name)) assert.equal(delegated.code, inProcess.code);
-    if (inProcess.ok) assert.deepEqual(delegated.validated.map((row) => [row.item_id, row.boundary, row.principal_ref, row.scope]), inProcess.validated.map((row) => [row.item_id, row.boundary, row.principal_ref, row.scope]));
+  test(`决定适配固定预期：${name}`, {skip}, () => {
+    site = 'template-source';const f = fixture();mutate(f);f.save();
+    if(name==='真实单项回复通过'){
+      const result=assertUserDecisionRequirement(f.requirement,{root:REPO});
+      assert.deepEqual(result.validated.map(row=>row.item_id),[f.record.request.items[0].id]);
+    }else assert.throws(()=>assertUserDecisionRequirement(f.requirement,{root:REPO}),error=>error.native===true&&error.code===decisionCaseCodes[name]);
   });
 }
 
@@ -190,7 +187,7 @@ test('verify-user-decision 薄壳：延续模式缺 continuation_ref 时拒绝�
   assert.match(run.stderr, /continuation_ref/);
 });
 
-// 当前批准（v1，调用方给出显式期望）：进程内实现与委托给 yss 的结论、拒绝码必须一致，拒绝文案保留内部码。
+// 当前批准（v1）使用独立期望来源，固定正反例必须保持。
 function currentApprovalCase() {
   site = 'template-source';
   const boundary = 'gate.product-design-approved';
@@ -220,23 +217,14 @@ for (const [name, mutate] of Object.entries(approvalCases)) {
   test(`适配层等价（validateApprovalRecord 当前批准）：${name}`, {skip}, () => {
     const c = currentApprovalCase();
     mutate(c);
-    const run = (native) => {
-      try { validateApprovalRecord(c.record, {requireApproved: true, root: REPO, expected: c.expected, native}); return {ok: true}; } catch (error) { return {ok: false, code: error.code, message: error.message}; }
-    };
-    const inProcess = run(false);
-    const delegated = run(true);
-    assert.equal(delegated.ok, inProcess.ok, `结论不一致：进程内=${JSON.stringify(inProcess)} 委托=${JSON.stringify(delegated)}`);
-    if (!inProcess.ok) {
-      // 期望算出后主体又被改动：进程内用冻结的期望得到「摘要过期」，委托时 yss 按绑定重新计算，主体已不满足期望前提得到「缺少上下文」。两边都拒绝，码不同（见设计 §11）。
-      if (name !== '主体被改动') assert.equal(delegated.code, inProcess.code);
-      assert.equal(delegated.native, undefined);
-      // 进程内文案里的内部码（如 user-decision-responder-mismatch）委托后也必须保留
-      for (const token of inProcess.message.match(/user-decision-[a-z-]+/g) ?? []) assert.match(delegated.message, new RegExp(token));
-    }
+    const run=()=>validateApprovalRecord(c.record,{requireApproved:true,root:REPO,expected:c.expected});
+    if(name==='通过')assert.equal(run().execution_authorization,'not-evaluated');
+    else assert.throws(run,error=>error.native===true&&error.code===(name==='缺少起草者来源'?'APPROVAL_CONTEXT_REQUIRED':'APPROVAL_CURRENT_INVALID'),name);
+
   });
 }
 
-// v2 记录与组合包：用真实注册表和角色政策在模板源仓根生成待审包，批准后对拍进程内实现与委托。
+// v2 记录与组合包：用真实注册表和角色政策生成待审包；受改动的行拒绝，未改动的另一行仍通过。
 const sha = (bytes) => createHash('sha256').update(bytes).digest('hex');
 function v2Case() {
   site = 'template-source';
@@ -279,13 +267,11 @@ for (const [name, mutate] of Object.entries(v2Cases)) {
   test(`适配层等价（v2 组合包与单行）：${name}`, {skip}, () => {
     const c = v2Case();
     mutate(c);
-    const check = (label, run) => {
-      const inProcess = outcome(() => run(false)), delegated = outcome(() => run(true));
-      assert.equal(delegated.ok, inProcess.ok, `${label} 结论不一致：进程内=${JSON.stringify(inProcess)} 委托=${JSON.stringify(delegated)}`);
-      if (!inProcess.ok) { assert.equal(delegated.code, inProcess.code, label); if (name !== '审查人自签') assert.equal(delegated.native, true, `${label} 应已委托`); } // 自签在读取记录结构时就被进程内前置检查拒绝，到不了委托
-    };
-    check('组合包文件', (native) => validateApprovalRecordFile(path.join(REPO, c.bundleFile), {requireApproved: true, root: REPO, expected: c.expected, native}));
-    check('单行记录', (native) => validateApprovalRecord(c.bundle.reviews[1], {requireApproved: true, root: REPO, expected: c.expected[1], native}));
+    const bundle=()=>validateApprovalRecordFile(path.join(REPO,c.bundleFile),{requireApproved:true,root:REPO,expected:c.expected});
+    if(name==='通过')assert.doesNotThrow(bundle);else assert.throws(bundle,error=>error.native===true&&error.code===(name==='审查人自签'?'APPROVAL_BUNDLE_INVALID':['任务摘要过期','主体被改动'].includes(name)?'REVIEW_BINDING_STALE':'APPROVAL_CURRENT_INVALID'));
+    const single=()=>validateApprovalRecord(c.bundle.reviews[1],{requireApproved:true,root:REPO,expected:c.expected[1]});
+    if(name==='主体被改动')assert.throws(single,error=>error.code==='REVIEW_BINDING_STALE');else assert.doesNotThrow(single);
+
   });
 }
 
@@ -315,10 +301,9 @@ for (const [name, mutate] of Object.entries(gateCases)) {
     const c = gateStateCase();
     mutate(c);
     const gate = 'gate.product-design-approved';
-    const run = (native) => outcome(() => assertApprovedGateHasValidApproval(gate, c.state, {root: REPO, checkpointPath: REPO, native}));
-    const inProcess = run(false), delegated = run(true);
-    assert.equal(delegated.ok, inProcess.ok, `结论不一致：进程内=${JSON.stringify(inProcess)} 委托=${JSON.stringify(delegated)}`);
-    if (!inProcess.ok) { assert.equal(delegated.code, inProcess.code); assert.equal(delegated.native, true, '应已委托'); }
+    const run=()=>assertApprovedGateHasValidApproval(gate,c.state,{root:REPO,checkpointPath:REPO});
+    if(name==='通过')assert.doesNotThrow(run);else assert.throws(run,error=>error.native===true&&error.code==='APPROVAL_CURRENT_INVALID');
+
   });
 }
 
@@ -341,15 +326,12 @@ for (const source of ['状态', '主体', '绑定资产']) for (const [name, mut
     const {c, gate, sources} = bindingCase();
     // 主体与绑定资产来源要求主体自带范围与依据；夹具里 subject.json 已含这些，且记录用相对引用
     mutate(c);
-    const node = outcome(() => sources[source]());
-    if (!node.ok) return; // 期望本身就无法算出时没有可对拍的期望
-    const expected = sources[source]();
-    const inProcess = outcome(() => validateApprovalRecordFile(path.join(REPO, c.state.approval_ref), {requireApproved: true, root: REPO, expected, native: false}));
-    let viaYss;
-    const delegated = outcome(() => { viaYss = validateApprovalRecordFile(path.join(REPO, c.state.approval_ref), {requireApproved: true, root: REPO, expected, native: true}); });
-    assert.equal(delegated.ok, inProcess.ok, `结论不一致：进程内=${JSON.stringify(inProcess)} 委托=${JSON.stringify(delegated)}`);
-    if (!inProcess.ok) assert.equal(delegated.code, inProcess.code);
-    if (delegated.ok) assert.deepEqual(keyFields(viaYss.expected_by_yss), keyFields(expected));
+    if(name==='主体被改动'){
+      assert.throws(()=>validateApprovalRecordFile(path.join(REPO,c.state.approval_ref),{requireApproved:true,root:REPO,expected:sources[source]()}),error=>['APPROVAL_CONTEXT_REQUIRED','APPROVAL_CURRENT_INVALID'].includes(error.code));return;
+    }
+    const expected=sources[source](),run=()=>validateApprovalRecordFile(path.join(REPO,c.state.approval_ref),{requireApproved:true,root:REPO,expected});
+    if(name==='通过')assert.equal(run().execution_authorization,'not-evaluated');else assert.throws(run,error=>error.native===true&&error.code==='APPROVAL_CURRENT_INVALID');
+
   });
 }
 
@@ -357,25 +339,10 @@ test('期望被调用方改动后不再采用绑定：委托的判定以改动�
   const {c, gate, sources} = bindingCase();
   const expected = sources['状态']();
   expected.approval_scope = ['other.scope'];
-  const run = (native) => outcome(() => validateApprovalRecordFile(path.join(REPO, c.state.approval_ref), {requireApproved: true, root: REPO, expected, native}));
-  const inProcess = run(false), delegated = run(true);
-  assert.equal(inProcess.ok, false);
-  assert.equal(delegated.ok, false);
-  assert.equal(delegated.code, inProcess.code);
-  assert.equal(delegated.native, true);
+  assert.throws(()=>validateApprovalRecordFile(path.join(REPO,c.state.approval_ref),{requireApproved:true,root:REPO,expected}),error=>error.native===true&&error.code==='APPROVAL_CURRENT_INVALID');
 });
 
-// 委托判断：只按项目根读取的读取器与同根默认规则不阻止委托，其他自带读取器或规则仍然阻止（过渡期不改变进程内语义）。
-test('委托判断：rootBoundRead 与 defaultAuthorities 放行，自带虚拟读取器与自带规则仍阻止', {skip}, () => {
-  const read = (ref) => ref;
-  assert.equal(nativeDelegationAvailable(REPO, {}), true);
-  assert.equal(nativeDelegationAvailable(REPO, {read: rootBoundRead(read.bind(null))}), true);
-  assert.equal(nativeDelegationAvailable(REPO, {read}), false);
-  assert.equal(nativeDelegationAvailable(REPO, {rolesDoc: {}}), false);
-  assert.equal(nativeDelegationAvailable(REPO, {rolesDoc: {}, registry: {}, defaultAuthorities: true}), true);
-  assert.equal(nativeDelegationAvailable(REPO, {rolesDoc: {}, defaultAuthorities: true, native: false}), false);
-});
-
+// 校验适配没有任意读取器或缺能力回退分支；退役文件由专门的分发检查覆盖。
 // 任务包（contract verify --kind task）：同一批生命周期任务包同时交给 Node 与 yss，结论一致；
 // 写范围条目允许以「/」结尾表示目录（Node 生成的任务包就是这样写），通配符「**」不是支持的写法，两边结论可以不同（见 AR-10 总结）。
 function taskPackage() {
@@ -559,8 +526,8 @@ for (const [name, mutate] of Object.entries(legacyCases)) {
   });
 }
 
-// 能力协商：yss 比这些脚本旧（没有对应能力令牌）时，进程内入口退回 Node 实现，命令行薄壳给出升级提示，而不是把 yss 的参数错误当成校验结论。
-test('能力协商：旧 yss 不委托，薄壳提示升级；新 yss 放行', {skip}, () => {
+// 能力缺失显式拒绝，不能把参数错误或回退当成领域结论。
+test('能力协商：旧 yss 拒绝并提示升级；新 yss 放行', {skip}, () => {
   const stubDir = realpathSync(mkdtempSync(path.join(os.tmpdir(), 'yss-old-')));
   process.on('exit', () => rmSync(stubDir, {recursive: true, force: true}));
   const stub = path.join(stubDir, 'yss');
@@ -571,8 +538,8 @@ test('能力协商：旧 yss 不委托，薄壳提示升级；新 yss 放行', {
   env.YSS_NATIVE_BINARY_SHA256 = createHash('sha256').update(readFileSync(stub)).digest('hex');
   assert.deepEqual(missingCapabilities(NEEDS.approval, env), NEEDS.approval);
   assert.deepEqual(missingCapabilities(['user-decision.requirements-object.v1'], env), []);
-  assert.equal(nativeDelegationAvailable(REPO, {}, env, [], NEEDS.approval), false);
-  assert.equal(nativeDelegationAvailable(REPO, {}, process.env, [], NEEDS.approval), true);
+  assert.throws(()=>assertNativeCapabilities(NEEDS.approval,env),/NATIVE_CAPABILITY/);
+  assert.doesNotThrow(()=>assertNativeCapabilities(NEEDS.approval));
   const shell = spawnSync(path.join(REPO, 'scripts', 'verify-approval-record'), ['--history', 'x.json'], {encoding: 'utf8', env});
   assert.notEqual(shell.status, 0);
   assert.match(shell.stderr, /缺少能力.*升级 yss/);
@@ -698,15 +665,12 @@ test('verify-strategic-handoff-consumption 薄壳：通过、阻断、拒绝都�
   assert.match(rejected.stderr, /"result":"blocked"/);
 });
 
-// 进程内入口 verifyConsumption 委托给 yss 后，报告与进程内实现一致（native:false 为进程内）。
+// 消费结果保留固定业务预期。
 for (const [name, spec] of Object.entries({'整体消费通过': consumptionCases['整体消费通过'], '延期阻断依赖切片': consumptionCases['延期阻断依赖切片'], '延期不阻断无关切片': consumptionCases['延期不阻断无关切片'], '缺少承接行': consumptionCases['缺少承接行']})) {
-  test(`适配层等价（verifyConsumption）：${name}`, {skip}, async () => {
-    const {target, tactical} = await consumptionCase();
-    spec.mutate(tactical);
-    const options = {root: target, ...(spec.slice ? {sliceRef: spec.slice} : {})};
-    const inProcess = await verifyConsumption(tactical, {...options, native: false});
-    const delegated = await verifyConsumption(tactical, options);
-    assert.deepEqual(sortKeys(delegated), sortKeys(inProcess));
+  test(`消费适配固定预期：${name}`, {skip}, async () => {
+    const {target,tactical}=await consumptionCase();spec.mutate(tactical);
+    const report=await verifyConsumption(tactical,{root:target,...(spec.slice?{sliceRef:spec.slice}:{})});
+    assert.equal(report.result,['整体消费通过','延期不阻断无关切片'].includes(name)?'verified':'blocked');
   });
 }
 

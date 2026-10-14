@@ -1,11 +1,8 @@
 import assert from "node:assert/strict";
 import { existsSync, mkdirSync, rmSync, writeFileSync, mkdtempSync, readFileSync } from "node:fs";
 import path from "node:path";
-import os from "node:os";
 import { buildDecisionFixture } from "../../scripts/fixtures/user-decision/build-fixture.mjs";
-import { decisionDigest } from "../../scripts/lib/user-decision.mjs";
-const decisionTemp = mkdtempSync(path.join(os.tmpdir(), "task-decision-test-"));
-process.on("exit", () => rmSync(decisionTemp, { recursive: true, force: true }));
+import { decisionDigest } from "../../scripts/lib/native-user-decision.mjs";
 let decisionRequirement;
 import { spawnSync } from "node:child_process";
 import { ROOT } from "../../scripts/lib/lifecycle-registry.mjs";
@@ -13,6 +10,7 @@ import { generateTaskPackageDefaults, validateTaskPackage, validateTaskPackageSe
 
 const scenarioRoot = mkdtempSync(path.join(ROOT, "scripts/fixtures/.task-package-"));
 const scenarioRef = path.relative(ROOT, scenarioRoot).split(path.sep).join("/");
+const decisionTemp = path.join(scenarioRoot, "decision");
 process.on("exit", () => rmSync(scenarioRoot, { recursive: true, force: true }));
 const contractRef = `${scenarioRef}/slice-contract.json`;
 const contractFile = path.join(ROOT, contractRef);
@@ -54,6 +52,7 @@ function writeFixtures() {
   writeFileSync(contractFile, JSON.stringify(contract));
   writeFileSync(evidenceFile, JSON.stringify({ ok: true }));
   writeFileSync(path.join(ROOT, maintenanceRef), JSON.stringify(maintenance));
+  mkdirSync(decisionTemp, { recursive: true });
   const scopeRef = path.join(decisionTemp, "scope.json");
   const asset = (ref) => ({ ref, version: "v1", digest: decisionDigest(readFileSync(path.join(ROOT, ref))) });
   writeFileSync(scopeRef, JSON.stringify({ kind: "implementation-scope", slices: [{ ticket_ref: contract.lifecycle_refs.ticket, contract: asset(contractRef), repositories: contract.common.project_roots, allowed_write_paths: contract.common.allowed_write_paths, baselines: [asset(evidenceRef)] }] }));
@@ -167,7 +166,7 @@ try {
   const frontend = slicePackage("role.frontend-engineer", "task-frontend", "work-unit.slice-frontend", "apps/frontend/todo/");
   const backend = slicePackage("role.backend-engineer", "task-backend", "work-unit.slice-backend", "apps/backend/todo/");
   [discovery, prototype, productBusinessReview, technical, tickets, review].forEach((pkg) => validateTaskPackage(pkg));
-  assert.throws(() => validateTaskPackage(spec), /plan-spec-entry-blocked/, "直接派发 Spec 缺 Plan 审阅须阻断");
+  assert.throws(() => validateTaskPackage(spec), /PLAN_CONTEXT_REQUIRED: 缺少 Plan 审阅包或功能身份/, "直接派发 Spec 缺 Plan 审阅须阻断");
   validateTaskPackage(maintenance);
   assert.deepEqual(validateHistoricalMaintenanceTaskPackage(maintenance), {status:'historical-only',execution_authorization:'not-evaluated'});
   assert.throws(() => validateHistoricalMaintenanceTaskPackage(discovery), /仅适用于模板维护/);

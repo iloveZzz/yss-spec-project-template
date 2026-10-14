@@ -3,7 +3,7 @@ import { readWorkLayout } from './work-layout.mjs';
 import { BLOCKING_SIGNALS, allowedResult, blockedResult, hasText, isReadable, readDecompositionResult, artifactBindingReady, sameBackendDesignPrerequisites, validateImplementationRepositoriesReady, SLICE_REPOSITORY_PREPARATION_PROTOCOL } from './lifecycle-readiness.mjs';
 export { validateImplementationRepositoriesReady, SLICE_REPOSITORY_PREPARATION_PROTOCOL };
 import {assertProgressionEntry, readProgressionTarget} from './lifecycle-progression.mjs';
-import {approvalExpectationForBoundAsset} from './approval-consumption.mjs';
+import {approvalExpectationForBoundAsset} from './native-approval.mjs';
 import { assertBusinessApprovalBasis } from './business-ticket-lifecycle.mjs';
 import { assertBusinessTicketTransition, assertImplementationTicket } from './business-tickets.mjs';
 import {assertReadingTransition} from './reading-view-bundle.mjs';
@@ -11,17 +11,16 @@ import { assertTrackingTransition } from './stage-tracking.mjs';
 import { assertScopeTransition, assertScopeWorkUnit, assertScopeImpacts, scopedNextRoutes } from './lifecycle-execution-scope.mjs';
 import { existsSync, readFileSync } from "node:fs";
 import { parseDocument } from "../vendor/yaml.mjs";
-import { assertWorkUnitUserDecision, assertImplementationDecision } from "./user-decision.mjs";
+import { assertWorkUnitUserDecision, assertImplementationDecision } from "./native-user-decision.mjs";
 import { validatePlanSpecEntry } from "./plan-spec-entry.mjs";
 import path from "node:path";
 import { validateApiContractDecision } from "./api-contract-decision.mjs";
-import { loadApprovalRecord, validateApprovalRecord } from "./approval-record.mjs";
+import { loadApprovalRecord, validateApprovalRecord } from "./native-approval.mjs";
 import { validateBackendReview } from "./backend-review.mjs";
 import { ROOT } from "./lifecycle-registry.mjs";
 import { readRepositoryMode } from './repository-mode.mjs';
 import { validateResearchCompletion } from './maintenance-research.mjs';
 import {verifySpecBaselineBinding} from './spec-baseline.mjs';
-import { rootBoundRead } from './native-evidence.mjs';
 
 const IMPLEMENTATION_WORK_UNIT = "work-unit.slice-implementation";
 const TICKET_DECOMPOSITION_WORK_UNIT = "work-unit.ticket-decomposition";
@@ -207,7 +206,7 @@ function validateDecisionBoundary(workUnit, state, options) {
  * Validate that Ticket formalization produced a real, implementable vertical slice.
  * `exists` is injectable so external adapters can resolve their own tracker refs.
  */
-export function validateTicketFormalization(state, { exists = existsSync, read = rootBoundRead((ref) => readFileSync(ref, "utf8")), ...decisionOptions } = {}) {
+export function validateTicketFormalization(state, { exists = existsSync, read = (ref) => readFileSync(ref, "utf8"), ...decisionOptions } = {}) {
   if ((state?.tracker_kind ?? "local-markdown") === "local-markdown" && state?.vertical_slice_ticket?.ref && isReadable(state.vertical_slice_ticket.ref, exists)) {
     try {
       assertImplementationTicket(read(state.vertical_slice_ticket.ref),state.vertical_slice_ticket.ref);
@@ -326,7 +325,7 @@ export function validateTicketFormalization(state, { exists = existsSync, read =
   }
 
   try {
-    assertImplementationDecision(state, { ...decisionOptions, read });
+    assertImplementationDecision(state, decisionOptions);
   } catch (error) {
     signals.push(error.code || "user-decision-invalid");
     missing.push(error.message);

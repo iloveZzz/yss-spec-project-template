@@ -6,7 +6,7 @@ import path from "node:path";
 import { parseArgs } from "node:util";
 import { fileURLToPath } from "node:url";
 import { parseDocument } from "./vendor/yaml.mjs";
-import { assertCheckpointApprovals, assertCheckpointUserDecisions } from "./lib/approval-record.mjs";
+import { assertCheckpointApprovals, assertCheckpointUserDecisions } from "./lib/native-approval.mjs";
 import { assertPlanCheckpoint } from './lib/plan-spec-entry.mjs';
 
 import { assertStrategicCheckpointScope } from "./lib/harness-profile.mjs";

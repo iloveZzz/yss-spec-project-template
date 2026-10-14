@@ -4,8 +4,8 @@ import {mkdtempSync,writeFileSync,readFileSync,rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
-import {approvalExpectationForBoundAsset} from '../../../../scripts/lib/approval-consumption.mjs';
-import {validateApprovalRecord} from '../../../../scripts/lib/approval-record.mjs';
+import {approvalExpectationForBoundAsset} from '../../../../scripts/lib/native-approval.mjs';
+import {validateApprovalRecord} from '../../../../scripts/lib/native-approval.mjs';
 import {makeRoot} from '../../../../tests/helpers/yss-instance.mjs';
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 function fixture(run) {

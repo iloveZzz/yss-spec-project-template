@@ -23,7 +23,7 @@ test('日常核心验证器保持 fast，缺映射和依赖错误在执行前拒
  const plan=planTemplateVerification({changedFiles:['scripts/lib/json-schema.mjs']});
  assert.equal(plan.effective_profile,'fast');
  assert.ok(plan.commands.some(item=>item.command.includes('schema-rejection.test.mjs')));
- assert.ok(planTemplateVerification({changedFiles:['scripts/lib/user-decision.mjs']}).commands.some(item=>item.id==='check.go-validator-replay'),'已迁移的用户决定校验仍须选择 Go 对拍');
+ assert.ok(planTemplateVerification({changedFiles:['scripts/lib/user-decision-core.mjs']}).commands.some(item=>item.id==='check.go-validator-replay'),'用户决定调用必须选择原生消费者回放');
  assert.throws(()=>planTemplateVerification({changedFiles:['.agents/skills/yss-cache/scripts/unmapped.mjs']}),/INCOMPLETE_VERIFICATION_INPUTS/,'技能树一致性不能掩盖缺失的脚本行为映射');
  const incomplete=loadVerificationProfiles();incomplete.profiles.fast.checks[0].inputs_complete=false;
  assert.throws(()=>planTemplateVerification({changedFiles:['.agents/skills/yss-cache/SKILL.md'],config:incomplete}),/INCOMPLETE_VERIFICATION_INPUTS/);
@@ -58,6 +58,17 @@ test('目标意图的候选当前性及其消费者必须选择真实 Git 边界
  for (const ref of ['scripts/lib/implementation-candidate-current.mjs', 'scripts/lib/backend-review.mjs', 'scripts/lib/backend-standards-coverage.mjs', 'scripts/lib/existing-backend-architecture.mjs', 'tests/implementation-candidate-current.test.mjs']) {
   const plan = planTemplateVerification({changedFiles: [ref],selection:'legacy',config:pilotConfig()});
   assert.ok(plan.commands.some(item => item.id === 'check.implementation-candidate-current'), ref);
+ }
+});
+
+test('AR12b 薄适配与来源依赖选择真实入口回放，退役规则选择来源约束检查',()=>{
+ assert.ok(planTemplateVerification({changedFiles:['tests/strategic-handoff-readonly.test.mjs']}).commands.some(row=>row.id==='check.strategic-handoff-readonly'));
+ for(const ref of ['scripts/lib/native-approval.mjs','scripts/lib/native-evidence.mjs','scripts/lib/validation-phase.mjs','tests/ar12b-source-native.test.mjs']){
+  const plan=planTemplateVerification({changedFiles:[ref]});
+  assert.ok(plan.commands.some(row=>row.id==='check.ar12b-source-native'),ref);
+ }
+ for(const ref of ['.template-source/distribution/bundle-profile.json','profiles/design/.template-source/distribution/bundle-profile.json','profiles/backend/.template-source/distribution/bundle-profile.json','tests/ar12b-retirement.test.mjs']){
+  assert.ok(planTemplateVerification({changedFiles:[ref]}).commands.some(row=>row.id==='check.ar12b-retirement'),ref);
  }
 });
 

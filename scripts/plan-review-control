@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import { parseArgs } from 'node:util';
 import { safeFile } from './lib/governance-io.mjs';
 import { parseAsset, byteDigest, TOOL_ROOT } from './lib/structured-assets.mjs';
-import { verifyUserDecisionFile } from './lib/user-decision.mjs';
+import { verifyUserDecisionFile } from './lib/native-user-decision.mjs';
 import { initializePlanReview, adoptPlanReview, reconcilePlanReviewHistory, successorPlanReview, dispatchPlanReview, completePlanReview, diagnosePlanReview, assertPlanReviewEntry, summarizePlanReview, writePlanReviewCheckpoint } from './lib/plan-review-control.mjs';
 
 try {

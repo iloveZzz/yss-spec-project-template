@@ -3,9 +3,9 @@ import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { parseDocument } from "../vendor/yaml.mjs";
 import { ROOT } from "./lifecycle-registry.mjs";
-import { loadApprovalRecord, validateApprovalRecord } from "./approval-record.mjs";
+import { loadApprovalRecord, validateApprovalRecord } from "./native-approval.mjs";
 import { assertScopeImpacts } from './lifecycle-execution-scope.mjs';
-import { approvalExpectationForBoundAsset } from './approval-consumption.mjs';
+import { approvalExpectationForBoundAsset } from './native-approval.mjs';
 import { validateApiContractDecision } from './api-contract-decision.mjs';
 
 // 工作流校验与「多项目准备」共用的就绪判定。放在 lifecycle-transition 之下，slice-repositories 才不必回头导入整个流转模块。

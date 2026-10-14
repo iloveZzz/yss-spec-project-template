@@ -313,7 +313,96 @@
         ]
       }
     ],
-    "rules": [],
+    "rules": [
+      {
+        "id": "ar12b-approval-record",
+        "from": {
+          "profile": "design",
+          "templateCommit": "7ac487880dcbda5ca6e121e1641ee7ebc8a55996",
+          "sourceSnapshotHash": "a24884caabbcfa84a0e29675cf29b3fc5594422c36d57e3dd5c9f633aa72e555",
+          "bundleHash": "2db26d46d4670bed76eb0a5a0871641f4a7770a1aceea4f1825490009fb3a188"
+        },
+        "action": "delete",
+        "sourcePath": "scripts/lib/approval-record.mjs"
+      },
+      {
+        "id": "ar12b-approval-current",
+        "from": {
+          "profile": "design",
+          "templateCommit": "7ac487880dcbda5ca6e121e1641ee7ebc8a55996",
+          "sourceSnapshotHash": "a24884caabbcfa84a0e29675cf29b3fc5594422c36d57e3dd5c9f633aa72e555",
+          "bundleHash": "2db26d46d4670bed76eb0a5a0871641f4a7770a1aceea4f1825490009fb3a188"
+        },
+        "action": "delete",
+        "sourcePath": "scripts/lib/approval-current.mjs"
+      },
+      {
+        "id": "ar12b-approval-consumption",
+        "from": {
+          "profile": "design",
+          "templateCommit": "7ac487880dcbda5ca6e121e1641ee7ebc8a55996",
+          "sourceSnapshotHash": "a24884caabbcfa84a0e29675cf29b3fc5594422c36d57e3dd5c9f633aa72e555",
+          "bundleHash": "2db26d46d4670bed76eb0a5a0871641f4a7770a1aceea4f1825490009fb3a188"
+        },
+        "action": "delete",
+        "sourcePath": "scripts/lib/approval-consumption.mjs"
+      },
+      {
+        "id": "ar12b-approval-record-io",
+        "from": {
+          "profile": "design",
+          "templateCommit": "7ac487880dcbda5ca6e121e1641ee7ebc8a55996",
+          "sourceSnapshotHash": "a24884caabbcfa84a0e29675cf29b3fc5594422c36d57e3dd5c9f633aa72e555",
+          "bundleHash": "2db26d46d4670bed76eb0a5a0871641f4a7770a1aceea4f1825490009fb3a188"
+        },
+        "action": "delete",
+        "sourcePath": "scripts/lib/approval-record-io.mjs"
+      },
+      {
+        "id": "ar12b-approval-checkpoint-discovery",
+        "from": {
+          "profile": "design",
+          "templateCommit": "7ac487880dcbda5ca6e121e1641ee7ebc8a55996",
+          "sourceSnapshotHash": "a24884caabbcfa84a0e29675cf29b3fc5594422c36d57e3dd5c9f633aa72e555",
+          "bundleHash": "2db26d46d4670bed76eb0a5a0871641f4a7770a1aceea4f1825490009fb3a188"
+        },
+        "action": "delete",
+        "sourcePath": "scripts/lib/approval-checkpoint-discovery.mjs"
+      },
+      {
+        "id": "ar12b-user-decision",
+        "from": {
+          "profile": "design",
+          "templateCommit": "7ac487880dcbda5ca6e121e1641ee7ebc8a55996",
+          "sourceSnapshotHash": "a24884caabbcfa84a0e29675cf29b3fc5594422c36d57e3dd5c9f633aa72e555",
+          "bundleHash": "2db26d46d4670bed76eb0a5a0871641f4a7770a1aceea4f1825490009fb3a188"
+        },
+        "action": "delete",
+        "sourcePath": "scripts/lib/user-decision.mjs"
+      },
+      {
+        "id": "ar12b-user-decision-reuse",
+        "from": {
+          "profile": "design",
+          "templateCommit": "7ac487880dcbda5ca6e121e1641ee7ebc8a55996",
+          "sourceSnapshotHash": "a24884caabbcfa84a0e29675cf29b3fc5594422c36d57e3dd5c9f633aa72e555",
+          "bundleHash": "2db26d46d4670bed76eb0a5a0871641f4a7770a1aceea4f1825490009fb3a188"
+        },
+        "action": "delete",
+        "sourcePath": "scripts/lib/user-decision-reuse.mjs"
+      },
+      {
+        "id": "ar12b-decision-continuation",
+        "from": {
+          "profile": "design",
+          "templateCommit": "7ac487880dcbda5ca6e121e1641ee7ebc8a55996",
+          "sourceSnapshotHash": "a24884caabbcfa84a0e29675cf29b3fc5594422c36d57e3dd5c9f633aa72e555",
+          "bundleHash": "2db26d46d4670bed76eb0a5a0871641f4a7770a1aceea4f1825490009fb3a188"
+        },
+        "action": "delete",
+        "sourcePath": "scripts/lib/decision-continuation.mjs"
+      }
+    ],
     "schemaVersion": 1
   }
 }

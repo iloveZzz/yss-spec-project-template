@@ -3,7 +3,7 @@ import { readFileSync, withValidationPhase } from './validation-phase.mjs';
 import { ROOT, hash, safe, digest } from './strategic-handoff-io.mjs';
 import { normalizeSliceContract, withinSlicePath, parseSliceYaml } from './slice-contract.mjs';
 import { createApprovedExecutionContext, assertApprovedExecutionContext } from './approved-execution-context.mjs';
-import { assertImplementationDecision } from './user-decision.mjs';
+import { assertImplementationDecision } from './native-user-decision.mjs';
 import { taskPackageDefaults, loadDigitalHumanRoles } from './digital-human-roles.mjs';
 import { validateTaskPackageSchema } from './task-package-schema.mjs';
 const fail=message=>{throw new TypeError(message);};

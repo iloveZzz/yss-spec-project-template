@@ -7,8 +7,8 @@ import { resolve } from "node:path";
 import process from "node:process";
 import { parseArgs } from "node:util";
 import { parseDocument } from "../../../../scripts/vendor/yaml.mjs";
-import { loadApprovalRecord, resolveApprovalRef, validateApprovalRecord } from "../../../../scripts/lib/approval-record.mjs";
-import { approvalExpectationForBoundAsset } from "../../../../scripts/lib/approval-consumption.mjs";
+import { loadApprovalRecord, resolveApprovalRef, validateApprovalRecord } from "../../../../scripts/lib/native-approval.mjs";
+import { approvalExpectationForBoundAsset } from "../../../../scripts/lib/native-approval.mjs";
 import { verifyContextSnapshot } from "../../../../scripts/lib/context-contract.mjs";
 import { parseAsset, validateAssetStructure } from '../../../../scripts/lib/structured-assets.mjs';
 

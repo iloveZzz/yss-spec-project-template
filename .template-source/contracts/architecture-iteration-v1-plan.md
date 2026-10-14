@@ -286,6 +286,8 @@ S3 的 AR-08 可以和 S1、S2 并行。S4 的 AR-15 只依赖 AR-01，可以提
 
 - 下一完整批次保持 AR-12b：先消费已有报告和调用方清单，只补确认未闭合的调用迁移、录制回放、旧实现删除与可拒绝退役规则，不重做已实现成果。本次中间发行不关闭其余 AR、FR-007/AC-007 或 architecture-iteration-v1；AR-17 尚未开始，仍须全部阶段完成后真实经过 30 天。继续从同一仓外 `delivery-receipt.json` / `fr007-next-slice.json` 的最新绑定与回执恢复。
 
+- 2026-10-14 AR-12b 完整批次本地补缺：以发行后文档维护提交 `8a556818` 和 CLI `dbc71541` 为基线，复用已发行的原生业务报告与共享严格核心，已迁移本批确认的普通来源、认证来源视图和 Node 生产调用，删除合同列明的八个旧校验实现及六份过时 CLI overlay；六个 canonical 技能和三 Profile 分发同步维护。三 Profile 退役规则只绑定已发布 T5 的精确提交、快照及 Bundle 摘要；实际 24 条事务命令验证 35 项分发文件的 path/digest/mode/ownership、受改文件拒绝、原始文件逐项 keep-local、删除和回滚，用户资产与实例状态恢复保持。该证据来自本批早期固定候选，不能改写成最新二进制重跑；受改固定文件仍按现有策略拒绝，不承诺保留其修改后继续应用。初始 280 项回放的 251 通过/29 失败及后续失败报告均保留；按失败影响修复封存交付包入口、v2 审查上下文、v3/v4 来源政策、独立批准期待和真实 owner 选择，定向重验分别记录，不合并声称 280 项整轮通过。最新实际二进制通过普通 git init 的 Context 边界、完整 Plan → Spec 场景（含旧 control、错误 owner 和 14 个批准反例）、阶段流转以及来源 4/4 正反例，无输入漂移；Spec 按需安装缺少三份 schema 与派生锁漂移亦已修复并定向通过。独立 CLI 源码复审关闭普通 .git 目录 P1，Standards/Spec 无未关闭问题，结论仅为 passed-limited。当前仍是未提交工作树，模板正式候选审查、main 集成和新版本固定来源发行验收未执行，不能沿用 C3/T5 的正式资格；AR-12b、FR-007/AC-007 和整轮仍未关闭，AR-17 未开始。当前源码绑定、实际命令、复用边界及下一步统一见 `maintenance:checkpoints/architecture-iteration-resume/ar12b-complete-batch/progress-checkpoint.json`。
+
 ## 附录 A：度量口径
 
 - **管道提交（NFR-001）**：根仓的非合并提交里，只改下列路径的提交算作管道提交：`skills-lock.json`、`submodules/*`、`*.lock.json`、`*manifest.json`、`.codex/skills/**`、`.cursor/skills/**`、`.pi/skills/**`、`.claude/skills/**`、`profile-skill-sync.json`、`pnpm-lock.yaml`、来源锁（文件名为 `source-lock*.json`，不含名字里带 source-lock 的脚本和测试）。之后这些路径即使已被删除，口径也保持不变，以便前后可比。实现是 `scripts/lib/harness-metrics.mjs` 的 `pipelineCommitStats`，输出在 `scripts/harness-metrics` 的 `pipeline_commits`；没有改动任何文件的提交不计入。

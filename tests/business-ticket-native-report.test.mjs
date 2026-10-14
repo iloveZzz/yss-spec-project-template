@@ -6,6 +6,8 @@ import path from 'node:path';
 import {createHash} from 'node:crypto';
 import {spawnSync} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
+import {nativeContractVerify,nativeEvidenceVerify} from '../scripts/lib/native-evidence.mjs';
+import {withValidationPhase} from '../scripts/lib/validation-phase.mjs';
 import {contextBinary} from '../scripts/lib/native-context.mjs';
 import {makeRoot} from './helpers/yss-instance.mjs';
 import {checkBusinessTickets,ticketMetadata} from '../scripts/lib/business-tickets.mjs';
@@ -41,6 +43,13 @@ function native(f,{mode='formal',reviewRef,file=f.setRef,extra=[]}={}) {
 }
 const codes=report=>report.diagnostics.map(x=>x.code);
 const node=(f,mode='formal',reviewRef)=>checkBusinessTickets({root:f.root,setRef:f.setRef,mode,reviewRef});
+
+test('业务调用方缺少原生执行器时拒绝，不回退进程内规则',t=>{
+  const f=fixture(t),previous=process.env.YSS_NATIVE_BINARY;
+  process.env.YSS_NATIVE_BINARY=path.join(f.root,'missing-yss');
+  try {assert.throws(()=>node(f),/NATIVE|原生|二进制|不存在|ENOENT/);}
+  finally {if(previous===undefined)delete process.env.YSS_NATIVE_BINARY;else process.env.YSS_NATIVE_BINARY=previous;}
+});
 
 for(const mode of ['draft','formal'])test(`公开业务报告：${mode} 与 Node 成功报告同形，业务闭包与完整读集分离`,t=>{
   const f=fixture(t),n=node(f,mode),g=native(f,{mode});assert.equal(g.status,0);assert.deepEqual(g.report,n);
@@ -130,7 +139,8 @@ test('公开业务报告：非法结构安全阻断，未知导入布局明确�
     const f=fixture(t);mutate(f);f.save();const p=native(f);assert.notEqual(p.status,0);assert.ok(codes(p.report).includes('SCHEMA_INVALID'));
   }
   const f=fixture(t);delete f.set.coverage_deferred;f.put(f.setRef,f.set);const absent=native(f);assert.ok(codes(absent.report).includes('SCHEMA_INVALID'));assert.deepEqual(absent.report.coverage_deferred,[]);
-  for(const file of ['docs/spec-baselines/spec-baseline.demo/v1/package/payload/files/source/tickets.yaml','docs/handoffs/demo/v1/package/handoff.yaml']){const p=native(f,{file});assert.equal(p.status,2);assert.ok(codes(p.report).includes('BUSINESS_SOURCE_LAYOUT_UNSUPPORTED'));}
+  for(const file of ['docs/spec-baselines/spec-baseline.demo/v1/package/payload/files/source/tickets.yaml','docs/handoffs/demo/v1/package/handoff.yaml']){const p=native(f,{file});assert.equal(p.status,2);assert.ok(codes(p.report).includes('INPUT'));assert.ok(p.report.diagnostics.some(row=>row.message.includes('manifest.json')));}
+  for(const file of ['docs/spec-baselines/spec-baseline.demo/v1/arbitrary/source/tickets.yaml','docs/handoffs/demo/latest/package/handoff.yaml']){const p=native(f,{file});assert.equal(p.status,2);assert.ok(codes(p.report).includes('BUSINESS_SOURCE_LAYOUT_UNSUPPORTED'));}
 });
 
 test('严格消费者：Spec baseline、checkpoint 与 progression 继续拒绝业务草案错误',async t=>{
@@ -162,4 +172,16 @@ test('严格消费者：Slice 不将 blocked 业务审查当作可执行来源',
   const setRef='.work/profile/business-ticket-set.yaml',reviewRef='.work/profile/business-review.json',review=parseYaml(fs.readFileSync(path.join(f.root,reviewRef),'utf8'));review.reviewer=review.drafter;f.write(reviewRef,review);
   assert.ok(codes(native({root:f.root,setRef}).report).includes('REVIEW_REQUIRED'));
   const denied=verify();assert.notEqual(denied.status,0);assert.equal(denied.envelope.code,'REVIEW_REQUIRED',JSON.stringify(denied.envelope));
+});
+
+test('native transport rejects a symlink ancestor before writing and preserves external input mode',t=>{
+ const f=fixture(t),outside=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'native-transport-')));t.after(()=>fs.rmSync(outside,{recursive:true,force:true}));
+ const work=path.join(f.root,'.work');fs.mkdirSync(work,{recursive:true});fs.symlinkSync(outside,path.join(work,'native-candidates'));
+ assert.throws(()=>nativeContractVerify({root:f.root,kind:'business-tickets',document:f.set,extra:['--mode','draft']}),/NATIVE_INPUT_INVALID:.*传输祖先/);
+ assert.deepEqual(fs.readdirSync(outside),[]);fs.unlinkSync(path.join(work,'native-candidates'));
+ const original=path.join(outside,'input.json');fs.writeFileSync(original,fs.readFileSync(path.join(f.root,'.template-spec/templates/approval-record-template.json')));fs.chmodSync(original,0o600);
+ const verify=()=>nativeEvidenceVerify({root:f.root,kind:'approval',file:original,extra:['--history']});
+ const result=verify();assert.equal(result.exitCode,0,result.message);
+ const staged=result.envelope.result.inputs.find(row=>row.ref.endsWith('/input'));assert.equal(staged?.descriptor.mode,0o600);
+ assert.throws(()=>withValidationPhase({root:f.root,purpose:'external-mode'},()=>{assert.equal(verify().exitCode,0);fs.chmodSync(original,0o644);}),/VALIDATION_INPUT_CHANGED/);
 });

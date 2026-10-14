@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {safe, hash, parse, ensure} from './strategic-handoff-io.mjs';
-import {assertUserDecisionRequirement} from './user-decision.mjs';
+import {assertUserDecisionRequirement} from './native-user-decision.mjs';
 import {resolveMaintenanceOutput, resolveMaintenanceReference, maintenanceReference} from './maintenance-storage.mjs';
 
 export const RESEARCH_VALIDATOR = '.agents/skills/yss-research/scripts/validate-research-package.mjs';

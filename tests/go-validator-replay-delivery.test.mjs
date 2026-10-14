@@ -7,6 +7,7 @@ import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
 import {nativeContractVerify, nativeEvidenceVerify} from '../scripts/lib/native-evidence.mjs';
+import {withValidationPhase} from '../scripts/lib/validation-phase.mjs';
 import {contextBinary} from '../scripts/lib/native-context.mjs';
 import {makeRoot} from './helpers/yss-instance.mjs';
 import {backendProfileTerminalFixture} from '../scripts/fixtures/backend-delivery/backend-profile-terminal-fixture.mjs';
@@ -38,6 +39,20 @@ test('后端交付回放（终点与交付包）：通过与反例结论一致',
     const {node, go} = await compare('通过', true);
     const coverage = go.envelope.result.coverage;
     assert.deepEqual(Object.fromEntries(Object.entries(coverage).sort()), Object.fromEntries(Object.entries(node.value).sort()));
+  });
+
+  await t.test('外层阶段结束拒绝非空 Git 观测的 HEAD 漂移', () => {
+    const head=f.git('rev-parse','HEAD'),tree=f.git('rev-parse','HEAD^{tree}');
+    const next=f.git('commit-tree',tree,'-p',head,'-m','Synthetic phase drift only');
+    try {
+      assert.throws(()=>withValidationPhase({root:f.root,purpose:'actual-backend-git-finish'},()=>{
+        const checked=goVerdict();assert.equal(checked.exitCode,0,checked.message);
+        assert.ok(checked.envelope.result.git_inputs.length>0,'actual backend verification must observe Git');
+        // Only this fixture's private repository changes; tracked worktree bytes stay fixed.
+        f.git('update-ref','HEAD',next);
+      }),/VALIDATION_INPUT_CHANGED: 原生 Git 观测已改变/);
+    } finally {f.git('update-ref','HEAD',head);}
+    assert.equal(f.git('rev-parse','HEAD'),head);
   });
 
   const changes = {
