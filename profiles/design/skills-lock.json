@@ -259,7 +259,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-stage-decision/SKILL.md",
-        "effectiveHash": "f928ff599160fcfc66f7e477f2ef513c1c0cee8f42e8ab636770f143835cd3d4",
+        "effectiveHash": "20e8a7ad75320895ae374f77cbc4adc6fed30c2fca569d68563c715fef951e26",
         "targets": [
           ".agents/skills"
         ]
