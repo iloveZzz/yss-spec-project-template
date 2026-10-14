@@ -100,10 +100,15 @@ test('原生实例必要检查纳入各profile及完整真实变更计划，保�
   assert.deepEqual(definition.gate_ids,['check.verification-fixed-source']);
   assert.deepEqual(definition.depends_on,[]);
   assert.ok(actual.every(ref=>typeof ref==='string'&&ref),'完整实际变更路径不可用显式子集代替');
-  assert.throws(()=>planTemplateVerification({profile:'fast',changedFiles:[nativeRef],root}),/INCOMPLETE_VERIFICATION_INPUTS/);
+  for(const profile of ['fast','release']){
+    const plan=planTemplateVerification({profile,changedFiles:[nativeRef],root});
+    assert.deepEqual(plan.unknown_files,[]);
+    const check=plan.commands.find(item=>item.id==='check.instance-metadata');
+    assert.ok(check,'已登记的原生漂移输入必须选中实例检查');
+    assert.deepEqual(compileTaskExecution(check,{root}).args,['--test','--test-concurrency=1','tests/instance-metadata.test.mjs',nativeRef]);
+  }
   const daily=addVerificationExecutionTasks(planTemplateVerification({profile:'fast',changedFiles:[],root}),{root});
   assert.ok(!daily.commands.some(task=>task.task_id?.startsWith('supplemental.')),'日常不无条件追加补充回归');
-  assert.throws(()=>planTemplateVerification({profile:'release',changedFiles:[nativeRef],root}),/INCOMPLETE_VERIFICATION_INPUTS/);
   for(const profile of ['release'])for(const [scope,changedFiles]of [['clean',[]]]){
     const plan=planTemplateVerification({profile,changedFiles,root});
     assert.deepEqual(plan.unknown_files,[]);
