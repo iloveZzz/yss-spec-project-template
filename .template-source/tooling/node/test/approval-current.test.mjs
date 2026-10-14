@@ -5,8 +5,8 @@ import {mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync} from 'node:
 import {tmpdir} from 'node:os';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
-import {validateApprovalRecordFile, validateApprovalRecord, assertApprovedGateHasValidApproval, assertCheckpointApprovals} from '../../../../scripts/lib/approval-record.mjs';
-import {assertCurrentApproval, approvalExpectationFromSubject} from '../../../../scripts/lib/approval-current.mjs';
+import {validateApprovalRecordFile, validateApprovalRecord, assertApprovedGateHasValidApproval, assertCheckpointApprovals} from '../../../../scripts/lib/native-approval.mjs';
+import {assertCurrentApproval, approvalExpectationFromSubject} from '../../../../scripts/lib/native-approval.mjs';
 import {loadDigitalHumanRoles} from '../../../../scripts/lib/digital-human-roles.mjs';
 import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
@@ -14,7 +14,7 @@ import {ROOT, loadRegistry} from '../../../../scripts/lib/lifecycle-registry.mjs
 import {prepareReviewPackage} from '../../../../scripts/lib/review-package.mjs';
 import {approvalExpectedFromTask} from '../../../../scripts/lib/review-capabilities.mjs';
 import {parseDocument} from '../../../../scripts/vendor/yaml.mjs';
-import {readFileSync as snapshotRead} from '../../../../scripts/lib/validation-phase.mjs';
+import {readFileSync as snapshotRead,withValidationPhase} from '../../../../scripts/lib/validation-phase.mjs';
 import {sourceApproval} from '../../../../scripts/lib/strategic-handoff.mjs';
 import {makeRoot} from '../../../../tests/helpers/yss-instance.mjs';
 
@@ -44,8 +44,8 @@ test('current approval refuses extra target intent as evidence while pure histor
   mkdirSync(path.dirname(path.join(f.root,ref)),{recursive:true});
   f.save(ref,{schema_version:1,kind:'lifecycle-progression-target',target:'spec-approved'});
   const contaminated={...f.record,basis:[...f.record.basis,f.asset(ref)]};
-  assert.throws(()=>assertCurrentApproval(contaminated,f.expected,{root:f.root}),/推进目标.*不能作为批准或交付证据/);
-  assert.throws(()=>assertCurrentApproval(f.record,{...f.expected,basis:[...f.expected.basis,f.asset(ref)]},{root:f.root}),/推进目标.*不能作为批准或交付证据/);
+  assert.throws(()=>assertCurrentApproval(contaminated,f.expected,{root:f.root}),/PROGRESSION_EVIDENCE|推进目标.*不能作为批准或交付证据/);
+  assert.throws(()=>assertCurrentApproval(f.record,{...f.expected,basis:[...f.expected.basis,f.asset(ref)]},{root:f.root}),/PROGRESSION_EVIDENCE|推进目标.*不能作为批准或交付证据/);
   assert.equal(validateApprovalRecord(contaminated,{root:f.root,history:true}).execution_authorization,'not-evaluated');
  }
 }));
@@ -54,14 +54,14 @@ test('current subject and approval aliases cannot masquerade as target configura
  for(const ref of ['progression-target.json','nested/PROGRESSION-TARGET.JSON']) {
   mkdirSync(path.dirname(path.join(f.root,ref)),{recursive:true});
   f.save(ref,f.record);
-  assert.throws(()=>validateApprovalRecordFile(path.join(f.root,ref),{root:f.root,expected:f.expected}),/推进目标.*不能作为批准或交付证据/);
+  assert.throws(()=>validateApprovalRecordFile(path.join(f.root,ref),{root:f.root,expected:f.expected}),/PROGRESSION_EVIDENCE|推进目标.*不能作为批准或交付证据/);
   assert.equal(validateApprovalRecordFile(path.join(f.root,ref),{root:f.root,history:true}).execution_authorization,'not-evaluated');
   const state={status:'approved',subject_ref:f.record.subject_ref,approval_ref:ref,approval_scope:f.record.approval_scope,basis:f.record.basis,drafter_principal_ref:f.record.drafter_principal_ref};
-  assert.throws(()=>assertApprovedGateHasValidApproval(f.record.gate_id,state,{root:f.root}),/推进目标.*不能作为批准或交付证据/);
-  assert.throws(()=>assertApprovedGateHasValidApproval('gate.plan-approved',state,{root:f.root,checkpoint:{gates:{'gate.plan-approved':state}}}),/推进目标.*不能作为批准或交付证据/);
+  assert.throws(()=>assertApprovedGateHasValidApproval(f.record.gate_id,state,{root:f.root}),/PROGRESSION_EVIDENCE|推进目标.*不能作为批准或交付证据/);
+  assert.throws(()=>assertApprovedGateHasValidApproval('gate.plan-approved',state,{root:f.root,checkpoint:{gates:{'gate.plan-approved':state}}}),/PROGRESSION_EVIDENCE|推进目标.*不能作为批准或交付证据/);
   f.save(ref,{gate_id:f.record.gate_id,basis:f.record.basis,drafter_principal_ref:f.record.drafter_principal_ref});
   const record={...f.record,subject_ref:ref,subject_digest:f.asset(ref).digest},expected={...f.expected,subject_ref:ref};
-  assert.throws(()=>assertCurrentApproval(record,expected,{root:f.root}),/推进目标.*不能作为批准或交付证据/);
+  assert.throws(()=>assertCurrentApproval(record,expected,{root:f.root}),/PROGRESSION_EVIDENCE|推进目标.*不能作为批准或交付证据/);
  }
 }));
 
@@ -83,13 +83,14 @@ test('approval cannot substitute a subject different from the consumer frozen di
 test('single, bundle, helper and checkpoint consume the same strict current binding',()=>fixture(f=>{
  const rolesDoc=loadDigitalHumanRoles(),checkId=f.expected.boundary,gateId='gate.slice-contract-approved';
  const registry={gates:[{id:gateId,requires_checks:[checkId],evidence:['evidence.contract-approval']}],checks:[{id:checkId,evidence:['evidence.fresh-verification']}]};
- const state={gates:{},checks:{}};
+ const fullRegistry=loadRegistry();fullRegistry.gates=fullRegistry.gates.map(row=>row.id===gateId?{...row,...registry.gates[0]}:row);fullRegistry.checks=fullRegistry.checks.map(row=>row.id===checkId?{...row,...registry.checks[0]}:row);f.save('.template-spec/process/lifecycle-registry.yaml',fullRegistry);
+ const state={schema_version:1,repository_mode:'project-instance',mode:'audit',status:'routing',stage:'stage.system-data-engineering',artifacts:{},gates:{},checks:{},context_reconciliation:{status:'pending',ref:null,evidence_refs:[]},next_work_unit:null,ticket_sync:{},verification:{},human_review:{},git_checkpoint:{},blockers:[],rollback:[]};
  const bundle=()=>({schema_version:1,kind:'review-bundle',bundle_id:'review-bundle.current',task_id:'task.current',work_unit_id:'work-unit.code-review',review_session_id:'session.current',role_id:f.record.role_id,runtime_id:f.record.runtime_id,principal_ref:f.record.principal_ref,reviews:[f.record]});
  const refresh=()=>{
   f.save('approval.json',f.record);f.save('bundle.json',bundle());
   const basis=['evidence.txt','subject.json','approval.json'].map(f.asset);
   state.checks[checkId]={status:'approved',applicable:true,subject_ref:'subject.json',approval_ref:'approval.json',approval_scope:['slice.current'],drafter_principal_ref:'synthetic.drafter',basis,evidence:{'evidence.fresh-verification':['evidence.txt']}};
-  state.gates[gateId]={status:'approved',basis,evidence:{'evidence.contract-approval':['evidence.txt']}};
+  state.gates[gateId]={status:'approved',reason:'Synthetic current binding',evidence_refs:['evidence.txt'],basis,evidence:{'evidence.contract-approval':['evidence.txt']}};
  };
  const options={root:f.root,rolesDoc,registry,expected:f.expected};
  const paths=[()=>assertCurrentApproval(f.record,f.expected,options),()=>validateApprovalRecord(f.record,options),()=>validateApprovalRecordFile(f.file,options),()=>validateApprovalRecordFile(path.join(f.root,'bundle.json'),options),()=>assertApprovedGateHasValidApproval(checkId,state.checks[checkId],options),()=>assertCheckpointApprovals(state,path.join(f.root,'checkpoint.json'),options)];
@@ -132,13 +133,7 @@ test('current expected author must come from the consumer, never only from the a
 }));
 
 test('current validation rechecks the input snapshot before returning success',()=>fixture(f=>{
- let changed=false;
- const read=file=>{
-  const bytes=snapshotRead(file);
-  if(file===path.join(f.root,'evidence.txt')&&!changed) {changed=true;writeFileSync(file,'drift during validation');}
-  return bytes;
- };
- assert.throws(()=>validateApprovalRecordFile(f.file,{root:f.root,expected:f.expected,read}),/VALIDATION_INPUT_CHANGED/);
+ assert.throws(()=>withValidationPhase({root:f.root,purpose:'approval-readset'},()=>{validateApprovalRecordFile(f.file,{root:f.root,expected:f.expected});writeFileSync(path.join(f.root,'evidence.txt'),'drift after native read before phase finish');}),/VALIDATION_INPUT_CHANGED/);
 }));
 
 test('derived current expectation freezes the subject version used for scope and author',()=>fixture(f=>{
@@ -146,11 +141,11 @@ test('derived current expectation freezes the subject version used for scope and
  const expected=approvalExpectationFromSubject(f.record.gate_id,'subject.json',{root:f.root});
  f.save('subject.json',{approval_scope:['slice.changed'],basis:f.expected.basis,drafter_principal_ref:'synthetic.changed-author'});
  f.record.subject_digest=f.asset('subject.json').digest;
- assert.throws(()=>validateApprovalRecord(f.record,{root:f.root,expected}),/当前主体摘要/);
+ assert.throws(()=>validateApprovalRecord(f.record,{root:f.root,expected}),/APPROVAL_CURRENT_INVALID:.*摘要/);
 }));
 
 test('one v2 capability task strictly binds different per-check subjects across single, bundle, helper, checkpoint, source and CLI',async t=>{
- const root=mkdtempSync(path.join(tmpdir(),'yss-current-v2-'));
+ const root=makeRoot('yss-current-v2-');
  t.after(()=>rmSync(root,{recursive:true,force:true}));
  const write=(ref,value)=>{mkdirSync(path.dirname(path.join(root,ref)),{recursive:true});writeFileSync(path.join(root,ref),typeof value==='string'||Buffer.isBuffer(value)?value:JSON.stringify(value));};
  const asset=ref=>({ref,digest:digest(readFileSync(path.join(root,ref)))});
@@ -193,13 +188,13 @@ test('one v2 capability task strictly binds different per-check subjects across 
  // 命令行入口已是 yss 的薄壳，只能在完整实例里运行；与 Node 实现的等价回放见 tests/go-validator-replay.test.mjs。
  for(const [i,row]of bundle.reviews.entries()) {
   const current=base.checks[row.gate_id];
-  await assert.doesNotReject(()=>sourceApproval(row,rolesDoc,root,{ref:current.subject_ref,approval_context:current}),`source check ${i}`);
+  await assert.doesNotReject(()=>sourceApproval(row,rolesDoc,root,{ref:current.subject_ref,approval_context:current,approval_ref:'reviews/approved-bundle.json'}),`source check ${i}`);
  }
  const profiles=['design','backend'];
  const isolatedSourceCheck=`const {sourceApproval}=await import(process.argv[1]);
  const input=JSON.parse(process.argv[2]);let verified=0;
  for(const row of input.records){const current=input.checks[row.gate_id];
-  try{await sourceApproval(row,input.roles,input.root,{ref:current.subject_ref,approval_context:current});if(input.stale)throw new Error('stale source was accepted');}
+  try{await sourceApproval(row,input.roles,input.root,{ref:current.subject_ref,approval_context:current,approval_ref:'reviews/approved-bundle.json'});if(input.stale)throw new Error('stale source was accepted');}
   catch(error){if(!input.stale||!/REVIEW_BINDING_STALE|未冻结实际注册表/.test(error.message))throw error;}
   verified++;
  }
@@ -217,7 +212,7 @@ test('one v2 capability task strictly binds different per-check subjects across 
  for(const ref of ['.template-spec/agents/digital-human-roles.yaml','.template-spec/process/lifecycle-registry.yaml','.template-spec/agents/yss-skill-registry.yaml']) {
   const before=readFileSync(path.join(root,ref));
   write(ref,Buffer.concat([before,Buffer.from('\n# byte drift after review\n')]));
-  await assert.rejects(()=>sourceApproval(bundle.reviews[0],rolesDoc,root,{ref:base.checks[checkIds[0]].subject_ref,approval_context:base.checks[checkIds[0]]}),/REVIEW_BINDING_STALE|未冻结实际注册表/);
+  await assert.rejects(()=>sourceApproval(bundle.reviews[0],rolesDoc,root,{ref:base.checks[checkIds[0]].subject_ref,approval_context:base.checks[checkIds[0]],approval_ref:'reviews/approved-bundle.json'}),/REVIEW_BINDING_STALE|未冻结实际注册表/);
   verifyProfiles(true);
   write(ref,before);
  }
@@ -225,7 +220,7 @@ test('one v2 capability task strictly binds different per-check subjects across 
  // These output bindings must not invalidate the task's unchanged review inputs.
  sameCheckpoint=true;write('input/checkpoint.json',consumer);
  for(const verify of paths)assert.doesNotThrow(verify);
- for(const row of bundle.reviews)await assert.doesNotReject(()=>sourceApproval(row,rolesDoc,root,{ref:base.checks[row.gate_id].subject_ref,approval_context:base.checks[row.gate_id]}));
+ for(const row of bundle.reviews)await assert.doesNotReject(()=>sourceApproval(row,rolesDoc,root,{ref:base.checks[row.gate_id].subject_ref,approval_context:base.checks[row.gate_id],approval_ref:'reviews/approved-bundle.json'}));
  const changedInput=structuredClone(consumer);changedInput.checks[checkIds[0]].approval_scope=['scope-new-input'];write('input/checkpoint.json',changedInput);
  for(const verify of paths)assert.throws(verify,/REVIEW_BINDING_STALE|APPROVAL_CURRENT_INVALID/);
  write('input/checkpoint.json',consumer);
@@ -236,5 +231,18 @@ test('one v2 capability task strictly binds different per-check subjects across 
  for(const [field,value]of [['task_id','task.unbound'],['work_unit_id','work-unit.code-review'],['review_task_digest','0'.repeat(64)],['capability_ids',['capability.openapi-contract']],['basis',[...bundle.basis,asset(bundle.reviews[0].subject_ref)]]]) {
   const before=bundle[field];bundle[field]=value;refresh();for(const verify of paths.slice(2))assert.throws(verify,/APPROVAL_CURRENT_INVALID|APPROVAL_BUNDLE_INVALID|REVIEW_BINDING_STALE/);bundle[field]=before;
  }
- refresh();write('input/evidence-0.txt','changed evidence');for(const verify of paths)assert.throws(verify,/STALE|证据过期/);
+ refresh();write('input/evidence-0.txt','changed evidence');for(const verify of paths)assert.throws(verify,/STALE|EVIDENCE_DRIFT: 依据过期: input\/evidence-0.txt/);
 });
+
+test('Plan helper refuses a same-approval state whose subject differs from the checkpoint',()=>fixture(f=>{
+ const record={...f.record,gate_id:'gate.plan-approved'};f.save('plan-approval.json',record);
+ const current={status:'approved',approval_ref:'plan-approval.json',subject_ref:'subject.json',approval_scope:['slice.current'],basis:f.expected.basis};
+ const changed={...current,subject_ref:'another-subject.json'};
+ assert.throws(()=>assertApprovedGateHasValidApproval('gate.plan-approved',changed,{root:f.root,checkpoint:{gates:{'gate.plan-approved':current}}}),error=>error.code==='APPROVAL_CURRENT_INVALID'&&error.message.includes('checkpoint'));
+}));
+
+test('a requested Spec gate cannot route through a Plan approval record',()=>fixture(f=>{
+ const record={...f.record,gate_id:'gate.plan-approved'};f.save('plan-approval.json',record);
+ const state={status:'approved',approval_ref:'plan-approval.json',subject_ref:'subject.json',approval_scope:['slice.current'],basis:f.expected.basis};
+ assert.throws(()=>assertApprovedGateHasValidApproval('gate.spec-baseline-approved',state,{root:f.root,checkpoint:{gates:{'gate.plan-approved':state}}}),error=>error.code==='APPROVAL_CURRENT_INVALID'&&error.message.includes('门禁'));
+}));

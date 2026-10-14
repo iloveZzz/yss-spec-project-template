@@ -1,4 +1,5 @@
 // Synthetic fixture only. These assets and replies never approve a real project.
+import { makeRoot } from '../../../tests/helpers/yss-instance.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import { context } from '../strategic-handoff/fixture.mjs';
@@ -21,6 +22,8 @@ export function buildPlanReviewFixture(root, { boundaries = PLAN_BOUNDARIES, wor
   const read = ref => fs.readFileSync(path.resolve(root, ref));
   const asset = ref => ({ ref, digest: reviewDigest(read(ref)) });
   const authorities = ['.template-spec/agents/digital-human-roles.yaml', '.template-spec/agents/yss-skill-registry.yaml', '.template-spec/process/lifecycle-registry.yaml', '.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml'];
+  const identityRoot = makeRoot('plan-review-policy-');
+  for (const ref of ['.yss.json', '.template-spec/process/harness-profile.yaml']) write(ref, fs.readFileSync(path.join(identityRoot, ref)));
   write('CONTEXT.md', context);
   for (const ref of authorities) write(ref, fs.readFileSync(path.join(ROOT, ref)));
   fs.cpSync(path.join(ROOT, '.template-spec/process/schemas'), path.join(root, '.template-spec/process/schemas'), { recursive: true });

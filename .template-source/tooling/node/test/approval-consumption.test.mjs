@@ -4,8 +4,9 @@ import {mkdtempSync,writeFileSync,readFileSync,rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
-import {approvalExpectationForBoundAsset} from '../../../../scripts/lib/approval-consumption.mjs';
-import {validateApprovalRecord} from '../../../../scripts/lib/approval-record.mjs';
+import {approvalExpectationForBoundAsset} from '../../../../scripts/lib/native-approval.mjs';
+import {validateApprovalRecord} from '../../../../scripts/lib/native-approval.mjs';
+import {nativeContractVerify,nativeEvidenceVerify,NEEDS} from '../../../../scripts/lib/native-evidence.mjs';
 import {makeRoot} from '../../../../tests/helpers/yss-instance.mjs';
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 function fixture(run) {
@@ -26,3 +27,23 @@ test('consumer selects independent package and freezes raw asset even for embedd
 test('approval cannot choose another self-consistent package or wider scope',()=>fixture(f=>{f.put('other.json',{...f.subject,approval_scope:['feature.other']});f.record.subject_ref='other.json';f.record.subject_digest=f.basis('other.json').digest;f.record.approval_scope=['feature.other'];assert.throws(f.verify,/对象不匹配|范围不匹配/);}));
 test('changing raw asset and unsigned-context digest cannot reuse old frozen approval',()=>fixture(f=>{f.put('asset.md','different contract');f.binding.digest=f.basis('asset.md').digest;assert.throws(f.verify,/证据过期|未覆盖证据/);}));
 test('a raw asset without consumer-owned approval context cannot derive authority from record',()=>fixture(f=>{delete f.binding.approval_context;assert.throws(f.verify,/APPROVAL_CONTEXT_REQUIRED/);}));
+
+test('partial gate consumer preserves current approval proof without becoming a complete checkpoint',()=>fixture(f=>{
+ const gate='gate.delivery-accepted';
+ f.subject.gate_id=gate;f.put('review.json',f.subject);
+ f.record.gate_id=gate;f.record.subject_digest=f.basis('review.json').digest;f.put('approval.json',f.record);
+ // This registered gate consumes two evidence kinds and an independent approval;
+ // the caller deliberately supplies no lifecycle checkpoint bookkeeping.
+ const state={profile_id:'harness.spec-template',gates:{[gate]:{
+  ...f.context,status:'approved',approval_ref:'approval.json',
+  basis:['evidence.log','asset.md','review.json','approval.json'].map(f.basis),
+  evidence:{'evidence.fresh-verification':['evidence.log'],'evidence.checkpoint-and-rollback':['asset.md']}
+ }}};
+ const verify=()=>nativeContractVerify({root:f.root,kind:'gate-checks',document:state,extra:['--gate',gate],needs:NEEDS.gateChecks});
+ const valid=verify();assert.equal(valid.exitCode,0,valid.message);
+ f.put('partial-state.json',state);
+ const completeCheckpoint=nativeEvidenceVerify({root:f.root,kind:'approval',file:'approval.json',extra:['--checkpoint','partial-state.json','--gate',gate],needs:NEEDS.approval});
+ assert.notEqual(completeCheckpoint.exitCode,0);assert.match(completeCheckpoint.message,/SCHEMA:.*lifecycle-checkpoint/);
+ state.gates[gate].approval_scope=['feature.other'];
+ const wrongScope=verify();assert.notEqual(wrongScope.exitCode,0);assert.match(wrongScope.message,/APPROVAL_CURRENT_INVALID/);
+}));

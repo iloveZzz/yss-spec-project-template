@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { decisionIO } from './lib/user-decision.mjs';
+import { decisionIO } from './lib/native-user-decision.mjs';
 import { assertPlanSpecEntry } from './lib/plan-spec-entry.mjs';
 try {
   if (process.argv.length !== 3) throw new TypeError('用法: node scripts/verify-plan-spec-entry <state.yaml|json>');

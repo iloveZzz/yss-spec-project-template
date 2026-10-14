@@ -5,7 +5,7 @@ import { ROOT } from './lifecycle-registry.mjs';
 import { assertTrackingTransition } from './stage-tracking.mjs';
 import { existsSync, readFileSync } from "node:fs";
 import { parseDocument } from "../vendor/yaml.mjs";
-import { assertStrategicWorkUnitDecision } from './approval-record.mjs';
+import { assertStrategicWorkUnitDecision } from './native-approval.mjs';
 import {verifySpecBaselineBinding} from './spec-baseline.mjs';
 import { validatePlanSpecEntry } from './plan-spec-entry.mjs';
 import { readWorkLayout } from './work-layout.mjs';

@@ -1,7 +1,7 @@
 // Synthetic sources for tests only. Never use these helpers to record a real user's approval.
 import { mkdirSync, writeFileSync, readFileSync } from "node:fs";
 import path from "node:path";
-import { decisionDigest, requestDigest, renderDecisionRequest, scaffoldDecisionSnapshot } from "../../lib/user-decision.mjs";
+import { decisionDigest, requestDigest, renderDecisionRequest, scaffoldDecisionSnapshot } from "../../lib/native-user-decision.mjs";
 import { platformProfile } from "../../lib/backend-platform.mjs";
 import { buildDecisionFixture } from "../../lib/testing/user-decision-fixture.mjs";
 export { buildDecisionFixture };
@@ -11,7 +11,8 @@ export function buildImplementationFixture(root, ticketRef) {
   const contractRef = path.join(root, "slice-contract.json");
   const scopeRef = path.join(root, "implementation-scope.json");
   writeFileSync(baselineRef, "已采纳工程基线 v1\n");
-  const contract = { lifecycle_refs: { ticket: ticketRef, engineering_baseline: baselineRef }, common: { project_roots: ["external/demo"], allowed_write_paths: ["src/demo/**"] } };
+  // Scope approval authenticates these fields; this is not an executable Slice.
+  const contract = {schema_version:2,contract_id:'contract.fixture',contract_version:'v1',slice_id:ticketRef,status:'draft',lifecycle_refs: { ticket: ticketRef, engineering_baseline: baselineRef }, common: { project_roots: ["external/demo"], allowed_write_paths: ["src/demo/**"] } };
   writeFileSync(contractRef, JSON.stringify(contract));
   const asset = (ref) => ({ ref, version: "v1", digest: decisionDigest(readFileSync(ref)) });
   writeFileSync(scopeRef, JSON.stringify({ kind: "implementation-scope", slices: [{ ticket_ref: ticketRef, contract: asset(contractRef), repositories: contract.common.project_roots, allowed_write_paths: contract.common.allowed_write_paths, baselines: [asset(baselineRef)] }] }));

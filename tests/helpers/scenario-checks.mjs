@@ -1,3 +1,4 @@
+import {makeRoot} from './yss-instance.mjs';
 import { existsSync, readFileSync, mkdtempSync, rmSync } from "node:fs";
 import path from "node:path";
 import { buildPlanFixture } from "../../scripts/fixtures/user-decision/plan-fixture.mjs";
@@ -7,7 +8,7 @@ import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
 import { parseDocument } from "../../scripts/vendor/yaml.mjs";
 import { lifecycleTransitionContract, validateImplementationEntry, validateNextRoute } from "../../scripts/lib/lifecycle-transition.mjs";
-import { decisionDigest } from "../../scripts/lib/user-decision.mjs";
+import { decisionDigest } from "../../scripts/lib/native-user-decision.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const read = (relative) => readFileSync(path.join(root, relative), "utf8");
@@ -303,11 +304,11 @@ export function runScenario(name) {
     const data = contract.toJS({ maxAliasCount: 0 });
     validateMattContract(data);
     validateInvocationBoundary(data);
-    const decisionTemp = mkdtempSync(path.join(os.tmpdir(), "matt-decision-test-"));
+    const decisionTemp = makeRoot("matt-decision-test-");
     process.on("exit", () => rmSync(decisionTemp, { recursive: true, force: true }));
     const specDecision = buildDecisionFixture(path.join(decisionTemp, "spec"));
     const implementationDecision = buildImplementationFixture(path.join(decisionTemp, "implementation"), ".work/demo/issues/01-valid-slice.md");
-    const planFixture = buildPlanFixture(path.join(decisionTemp, 'plan'));
+    const planFixture = buildPlanFixture(decisionTemp);
     planFixture.write('.template-spec/agents/issue-tracker.md', '---\ntracker:\n  platform: local-markdown\n  root: .work\n---\n# Implementation fixture\n');
     const validResult = {
       ...planFixture.state,

@@ -9,9 +9,9 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { buildDecisionFixture, buildImplementationFixture } from '../../../../scripts/fixtures/user-decision/build-fixture.mjs';
 import { buildPlanFixture } from '../../../../scripts/fixtures/user-decision/plan-fixture.mjs';
 import { assertPlanSpecEntry } from '../../../../scripts/lib/plan-spec-entry.mjs';
-import { assertUserDecisionRequirement, assertWorkUnitUserDecision, assertImplementationDecision, decisionDigest } from '../../../../scripts/lib/user-decision.mjs';
-import { validateApprovalRecord, validateApprovalRecordFile, assertCheckpointUserDecisions } from '../../../../scripts/lib/approval-record.mjs';
-import { approvalExpectationFromSubject } from '../../../../scripts/lib/approval-current.mjs';
+import { assertUserDecisionRequirement, assertWorkUnitUserDecision, assertImplementationDecision, decisionDigest } from '../../../../scripts/lib/native-user-decision.mjs';
+import { validateApprovalRecord, validateApprovalRecordFile, assertCheckpointUserDecisions } from '../../../../scripts/lib/native-approval.mjs';
+import { approvalExpectationFromSubject } from '../../../../scripts/lib/native-approval.mjs';
 import { loadDigitalHumanRoles } from '../../../../scripts/lib/digital-human-roles.mjs';
 import { makeRoot, hasYss } from '../../../../tests/helpers/yss-instance.mjs';
 
@@ -32,13 +32,13 @@ function fixture(run, boundary = 'gate.engineering-contract-approved') {
     const source = buildDecisionFixture(root, { boundary: 'delivery-scope', subjectRef: mandateRef });
     const basis = [verification];
     const review = { decision: 'approved', role_id: ['gate.spec-baseline-approved', 'gate.plan-approved'].includes(boundary) ? 'role.product-manager' : 'role.test-engineer', runtime_id: 'runtime.generic', principal_ref: 'synthetic.reviewer', drafter_principal_ref: 'synthetic.worker', classification: 'implementation-detail', material_changes: [], findings: [], boundary, scope: ['feature.demo'], subject, basis, decision_basis: decisionBasis, reason: '对照原授权，当前差异不改变已批准的决定依据', comparison: { before, after: subject } };
-    const reviewRef = save('review.json', review);
+    const reviewRef = save('continuation-review.json', review);
     const proof = { schema_version: 1, kind: 'approved-scope-continuation-v1', boundary, scope: ['feature.demo'], subject, basis, source: source.requirement, review: asset(reviewRef) };
     const proofRef = save('continuation.json', proof);
     const requirement = { boundary, subject_ref: subject.ref, scope: ['feature.demo'], continuation_ref: proofRef };
-    const refresh = () => { save('review.json', review); proof.review = asset(reviewRef); save('continuation.json', proof); };
+    const refresh = () => { save('continuation-review.json', review); proof.review = asset(reviewRef); save('continuation.json', proof); };
     const approveMandate = () => { save('external.json', external); mandate.external_policy = asset(externalRef); save('mandate.json', mandate); source.record.request.items[0].subject = asset(mandateRef); source.present(); source.record.responses = []; source.respond(); source.save(); };
-    const verify = () => assertUserDecisionRequirement(requirement, hasYss ? { root } : {}); // 没有 yss 时根只是临时目录，沿用默认根走进程内实现
+    const verify = () => assertUserDecisionRequirement(requirement, {root});
     run({ root, save, asset, source, mandate, external, subject, basis, review, proof, requirement, refresh, approveMandate, verify });
   } finally { rmSync(root, { recursive: true, force: true }); }
 }
@@ -47,8 +47,8 @@ test('ordinary engineering work reuses explicit authorization through public app
   assert.equal(f.verify().continued, true);
   validateApprovalRecord({ schema_version: 1, gate_id: f.requirement.boundary, decision: 'approved', actor_kind: 'digital-human', role_id: 'role.test-engineer', runtime_id: 'runtime.generic', principal_ref: 'synthetic.reviewer', drafter_principal_ref: 'synthetic.worker', subject_ref: f.subject.ref, subject_digest:f.asset(f.subject.ref).digest.slice(7), basis:f.basis.map(x=>({ref:x.ref,digest:x.digest.slice(7)})), approval_scope: f.requirement.scope, continuation_ref: f.requirement.continuation_ref }, { requireApproved: true, root:f.root,expected:approvalExpectationFromSubject(f.requirement.boundary,f.subject.ref,{root:f.root}) });
   const existingBackendReuse = [{ boundary: 'gate.backend-architecture-platform-approved', reason: '既有工程复用当前登记架构与固定工程基线中的实际 Spring Boot 版本' }];
-  assertWorkUnitUserDecision('work-unit.technical-analysis', { user_decisions: [f.requirement], user_decision_not_applicable: existingBackendReuse });
-  assertCheckpointUserDecisions({ repository_mode: 'project-instance', status: 'running', stage_trace: { completed_work_unit: 'work-unit.technical-analysis' }, human_review: { user_decisions: [f.requirement], not_applicable: existingBackendReuse } });
+  assertWorkUnitUserDecision('work-unit.technical-analysis', { user_decisions: [f.requirement], user_decision_not_applicable: existingBackendReuse },{root:f.root});
+  assertCheckpointUserDecisions({ repository_mode: 'project-instance', status: 'running', stage_trace: { completed_work_unit: 'work-unit.technical-analysis' }, human_review: { user_decisions: [f.requirement], not_applicable: existingBackendReuse } },{root:f.root});
   // 命令行入口已是 yss 的薄壳，只能在完整实例里运行，见 tests/go-validator-replay.test.mjs。
 }));
 test('product design can continue after independent review without a repeated human reply', () => fixture(f => {
@@ -56,7 +56,8 @@ test('product design can continue after independent review without a repeated hu
 }, 'gate.product-design-approved'));
 test('source approval continuation is verified by all three dedicated receivers', () => fixture(f => {
   const record = { schema_version: 1, gate_id: f.requirement.boundary, decision: 'approved', actor_kind: 'digital-human', role_id: 'role.test-engineer', runtime_id: 'runtime.generic', principal_ref: 'synthetic.reviewer', drafter_principal_ref: 'synthetic.worker', subject_ref: f.subject.ref, subject_digest:f.asset(f.subject.ref).digest.slice(7), basis:f.basis.map(x=>({ref:x.ref,digest:x.digest.slice(7)})), approval_scope: f.requirement.scope, continuation_ref: f.requirement.continuation_ref };
-  const input = f.save('source-approval.json', { record, currentAssetRef:f.subject.ref, roles: loadDigitalHumanRoles() });
+  f.save('source-approval-record.json',record);
+  const input = f.save('source-approval.json', {record,currentAssetRef:{ref:f.subject.ref,approval_ref:'source-approval-record.json'},roles:loadDigitalHumanRoles()});
   for (const profile of ['design', 'backend']) {
     const moduleUrl = pathToFileURL(path.join(composeProfileTree(profile), 'scripts/lib/strategic-handoff.mjs')).href;
     const code = `import {readFileSync} from 'node:fs'; import {sourceApproval} from ${JSON.stringify(moduleUrl)}; const {record,roles,currentAssetRef}=JSON.parse(readFileSync(process.argv[1])); await sourceApproval(record,roles,process.argv[2],currentAssetRef);`;
@@ -70,13 +71,13 @@ test('source approval continuation is verified by all three dedicated receivers'
   }
 }, 'gate.product-design-approved'));
 test('Plan entry consumes continuation and still blocks incomplete checks', () => fixture(f => {
-  const plan = buildPlanFixture(path.join(f.root, 'plan'));
+  const plan = buildPlanFixture(f.root);
   const subject = f.asset(plan.state.plan_review_ref);
   f.requirement.subject_ref = subject.ref; f.mandate.targets[0].subject_ref = subject.ref;
   f.proof.subject = subject; f.review.subject = subject; f.review.comparison.after = subject;
   f.approveMandate(); f.refresh();
   delete plan.state.plan_user_decision_ref; plan.state.plan_continuation_ref = f.requirement.continuation_ref;
-  assert.throws(() => assertPlanSpecEntry(plan.state, { root: plan.root }), /Plan 聚合批准未绑定当前批准延续/);
+  assert.throws(() => assertPlanSpecEntry(plan.state, { root: plan.root }), /PLAN_DECISION_BINDING/);
   const originalReply = readFileSync(plan.approval.ref);
   const aggregate = JSON.parse(readFileSync(plan.state.plan_approval_ref));
   delete aggregate.user_decision_ref; aggregate.continuation_ref = plan.state.plan_continuation_ref;
@@ -84,7 +85,7 @@ test('Plan entry consumes continuation and still blocks incomplete checks', () =
   assert.equal(assertPlanSpecEntry(plan.state, { root: plan.root }).result, 'allowed');
   assert.deepEqual(readFileSync(plan.approval.ref), originalReply);
   Object.values(plan.review.checks)[0].status = 'pending'; plan.save();
-  assert.throws(() => assertPlanSpecEntry(plan.state, { root: plan.root }), /检查未通过/);
+  assert.throws(() => assertPlanSpecEntry(plan.state, { root: plan.root }), /PLAN_CHECK_BLOCKED: Plan 检查未通过: goals/);
 }, 'gate.plan-approved'));
 test('implementation continuation preserves contract, repository and write-path checks', () => fixture(f => {
   const implementation = buildImplementationFixture(path.join(f.root, 'implementation'), 'feature.demo');
@@ -95,17 +96,17 @@ test('implementation continuation preserves contract, repository and write-path 
   f.proof.subject = subject; f.review.subject = subject; f.review.comparison.after = subject;
   f.approveMandate(); f.refresh();
   implementation.state.user_decisions = [f.requirement];
-  assert.doesNotThrow(() => assertImplementationDecision(implementation.state));
+  assert.doesNotThrow(() => assertImplementationDecision(implementation.state,{root:f.root}));
   writeFileSync(implementation.state.slice_contract_ref, 'changed contract');
-  assert.throws(() => assertImplementationDecision(implementation.state), /stale/);
+  assert.throws(() => assertImplementationDecision(implementation.state,{root:f.root}), /stale/);
   manifest.slices[0].allowed_write_paths = ['src/**', 'production/**'];
   writeFileSync(subject.ref, JSON.stringify(manifest));
   f.proof.subject = f.asset(subject.ref); f.review.subject = f.proof.subject; f.review.comparison.after = f.proof.subject; f.refresh();
-  assert.throws(() => assertImplementationDecision(implementation.state), /写路径超出/);
+  assert.throws(() => assertImplementationDecision(implementation.state,{root:f.root}), /写路径超出/);
 }, 'implementation-scope'));
 test('conflicting direct decision and continuation references are rejected', () => fixture(f => {
   f.requirement.user_decision_ref = f.source.ref;
-  assert.throws(f.verify, /两种证明路径/);
+  assert.throws(f.verify, /user-decision-proof-conflict/);
 }));
 test('no reply and revoked source authorization cannot continue', () => fixture(f => {
   f.source.record.responses = []; f.source.save(); assert.throws(f.verify, /response-required/);
@@ -151,8 +152,8 @@ test('formatting refresh requires new current review but not another source repl
   assert.equal(f.verify().continued, true); assert.equal(JSON.stringify(f.source.record.responses), originalReply);
 }));
 test('older receivers without continuation capability reject rather than silently approve', () => fixture(f => {
-  const rolesDoc = loadDigitalHumanRoles(); delete rolesDoc.user_decision_policy.continuation;
-  assert.throws(() => assertUserDecisionRequirement(f.requirement, { rolesDoc }), /延续边界/);
+  const rolesDoc=loadDigitalHumanRoles(path.join(f.root,'.template-spec/agents/digital-human-roles.yaml'));delete rolesDoc.user_decision_policy.continuation;f.save('.template-spec/agents/digital-human-roles.yaml',rolesDoc);
+  assert.throws(()=>assertUserDecisionRequirement(f.requirement,{root:f.root}),/延续边界/);
 }));
 test('one review bundle retains explicit per-check outcomes and rejects duplicates', () => fixture(f => {
   const record = id => ({ schema_version: 1, gate_id: id, decision: 'approved', actor_kind: 'digital-human', role_id: 'role.test-engineer', runtime_id: 'runtime.generic', principal_ref: 'synthetic.reviewer', drafter_principal_ref: 'synthetic.worker', subject_ref: f.subject.ref, subject_digest: f.subject.digest.slice(7), approval_scope: ['feature.continuation'], evidence_refs: [f.subject.ref] });
@@ -163,6 +164,6 @@ test('one review bundle retains explicit per-check outcomes and rejects duplicat
   for(const row of bundle.reviews){row.subject_digest=f.asset(f.subject.ref).digest.slice(7);row.basis=f.basis.map(x=>({ref:x.ref,digest:x.digest.slice(7)}));}
   const ref = f.save('bundle.json', bundle); assert.equal(validateApprovalRecordFile(ref, { requireApproved: true, root:f.root,expected }).length, 2);
   bundle.reviews[1].decision = 'rejected'; f.save('bundle.json', bundle); assert.throws(() => validateApprovalRecordFile(ref, { requireApproved: true, root:f.root,expected }), /必须为 approved|approved 结论/); // 进程内与 yss 的措辞不同，同为 APPROVAL_CURRENT_INVALID
-  bundle.reviews[1] = bundle.reviews[0]; f.save('bundle.json', bundle); assert.throws(() => validateApprovalRecordFile(ref,{history:true}), /重复/);
-  bundle.reviews = []; f.save('bundle.json', bundle); assert.throws(() => validateApprovalRecordFile(ref,{history:true}), /not valid under any|non-empty/);
+  bundle.reviews[1] = bundle.reviews[0]; f.save('bundle.json', bundle); assert.throws(() => validateApprovalRecordFile(ref,{root:f.root,history:true}), /重复/);
+  bundle.reviews = []; f.save('bundle.json', bundle); assert.throws(() => validateApprovalRecordFile(ref,{root:f.root,history:true}), /SCHEMA:.*review-bundle/);
 }));

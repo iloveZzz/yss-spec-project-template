@@ -1,13 +1,13 @@
 import assert from 'node:assert/strict';
 import { validateNextRoute } from '../../scripts/lib/lifecycle-transition.mjs';
 import { queryLifecycleContext } from '../../scripts/lib/lifecycle-context-query.mjs';
-import { mkdtempSync, rmSync } from 'node:fs';
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { buildPlanFixture } from '../../scripts/fixtures/user-decision/plan-fixture.mjs';
 import { assertPlanSpecEntry, assertPlanCheckpoint } from '../../scripts/lib/plan-spec-entry.mjs';
 import { readFileSync } from 'node:fs';
-import { decisionDigest } from '../../scripts/lib/user-decision.mjs';
+import { decisionDigest } from '../../scripts/lib/native-user-decision.mjs';
 import { buildPlanReviewFixture, completeSyntheticPlanReview } from '../../scripts/fixtures/plan-review-control/build-fixture.mjs';
 import { makeRoot } from '../helpers/yss-instance.mjs';
 
@@ -18,8 +18,8 @@ function verifyClarificationEntryBoundaries(temp) {
     ['非关键 open 仍阻断', f => f.review.open_items.push({ id: 'q-open', critical: false, runnable_blocker: false, status: 'open', evidence_refs: ['plan.md'] }), /未解决/],
     ['grill_exit 仍 pending', f => f.review.checks.grill_exit.status = 'pending', /检查未通过: grill_exit/],
     ['resolved 缺证据', f => f.review.open_items.push({ id: 'q-resolved', critical: true, runnable_blocker: false, status: 'resolved', evidence_refs: [] }), /缺少当前依据/],
-    ['resolved 引用未绑定证据', f => { f.write('unbound-evidence.md', '模拟澄清证据'); f.review.open_items.push({ id: 'q-resolved', critical: true, runnable_blocker: false, status: 'resolved', evidence_refs: ['unbound-evidence.md'] }); }, /缺少当前依据/],
-    ['resolved 依据摘要漂移', f => { f.write('resolution.md', '已确认旧结论'); f.review.basis.push({ ref: 'resolution.md', digest: decisionDigest(readFileSync(path.join(f.root, 'resolution.md'))) }); f.review.open_items.push({ id: 'q-resolved', critical: true, runnable_blocker: false, status: 'resolved', evidence_refs: ['resolution.md'] }); f.write('resolution.md', '用户纠正后的新结论'); }, /依据缺失、重复或已变更/],
+    ['resolved 引用未绑定证据', f => { f.write('unbound-evidence.md', '模拟澄清证据'); f.review.open_items.push({ id: 'q-resolved', critical: true, runnable_blocker: false, status: 'resolved', evidence_refs: ['unbound-evidence.md'] }); }, /PLAN_EVIDENCE_REQUIRED: 检查引用未绑定审阅包: unbound-evidence.md/],
+    ['resolved 依据摘要漂移', f => { f.write('resolution.md', '已确认旧结论'); f.review.basis.push({ ref: 'resolution.md', digest: decisionDigest(readFileSync(path.join(f.root, 'resolution.md'))) }); f.review.open_items.push({ id: 'q-resolved', critical: true, runnable_blocker: false, status: 'resolved', evidence_refs: ['resolution.md'] }); f.write('resolution.md', '用户纠正后的新结论'); }, /EVIDENCE_DRIFT: 依据过期: resolution.md/],
     ['延期缺当前证据', f => f.review.open_items.push({ ...deferred(), evidence_refs: [] }), /缺少当前依据/],
     ['纠正后重新打开关键问题', f => { f.review.open_items.push({ id: 'q-corrected', critical: true, runnable_blocker: false, status: 'resolved', evidence_refs: ['plan.md'] }); f.review.open_items[0].status = 'open'; }, /未解决/],
     ['完整关键延期仍阻断', f => f.review.open_items.push({ ...deferred(), critical: true }), /未解决/],
@@ -136,11 +136,30 @@ try {
   }
   valid.reapprove();
   assert.equal(assertPlanSpecEntry(valid.state, { root: valid.root }).result, 'allowed', '命中门禁、真实回复来源与当前资产绑定均通过');
+  const ownerRef = valid.state.plan_review_control.attempts.at(-1).checkpoint_ref;
+  const ownerBytes = reviewFixture.read(ownerRef), currentControl = structuredClone(valid.state.plan_review_control);
+  try {
+    const staleOwner = JSON.parse(ownerBytes); staleOwner.plan_review_control.status = 'blocked';
+    reviewFixture.write(ownerRef, staleOwner);
+    assert.throws(() => assertPlanSpecEntry(valid.state, { root: valid.root }), /PLAN_REVIEW_CHECKPOINT_DRIFT/);
+  } finally { writeFileSync(path.join(valid.root, ownerRef), ownerBytes); }
+  const wrongOwnerRef = '.work/feature-demo/wrong-owner.json';
+  try {
+    valid.state.plan_review_control = structuredClone(currentControl);
+    valid.state.plan_review_control.attempts.at(-1).checkpoint_ref = wrongOwnerRef;
+    const wrongOwner = JSON.parse(ownerBytes); wrongOwner.feature_id = 'feature.other';
+    wrongOwner.plan_review_control = valid.state.plan_review_control;
+    reviewFixture.write(wrongOwnerRef, wrongOwner);
+    assert.throws(() => assertPlanSpecEntry(valid.state, { root: valid.root }), /PLAN_REVIEW_CHECKPOINT_DRIFT/);
+  } finally {
+    valid.state.plan_review_control = currentControl;
+    rmSync(path.join(valid.root, wrongOwnerRef));
+  }
   const currentReview = structuredClone(valid.review);
   for (const [gateId, { approvalRef, record }] of internalApprovals) {
     for (const [name, mutate, expected] of [
       ['缺少独立原始依据', gate => { gate.evidence_refs = gate.evidence_refs.filter(ref => [gate.subject_ref, gate.approval_ref].includes(ref)); }, /APPROVAL_CONTEXT_REQUIRED/],
-      ['消费范围篡改', gate => { gate.approval_scope = ['feature.other']; }, /会签资产或范围不匹配/],
+      ['消费范围篡改', gate => { gate.approval_scope = ['feature.other']; }, /PLAN_APPROVAL_CONTEXT:.*会签主体或范围不匹配/],
       ['消费主体摘要过期', gate => { gate.subject_digest = `sha256:${'0'.repeat(64)}`; }, /APPROVAL_CURRENT_INVALID/],
       ['批准依据摘要篡改', (_gate, approval) => { approval.basis[0].digest = '0'.repeat(64); }, /APPROVAL_CURRENT_INVALID|APPROVAL_BUNDLE_INVALID/],
       ['消费起草者篡改', gate => { gate.drafter_principal_ref = 'test-only.other-drafter'; }, /APPROVAL_CURRENT_INVALID/],
@@ -170,13 +189,13 @@ try {
   }
   assert.equal(assertPlanSpecEntry(valid.state, { root: valid.root }).result, 'allowed', '反例恢复后两项影响检查仍允许合法进入 Spec');
   valid.review.internal_checks['check.domain-strategy-approved'].approval_scope = ['feature.other']; valid.reapprove();
-  assert.throws(() => assertPlanSpecEntry(valid.state, { root: valid.root }), /会签资产或范围不匹配/);
+  assert.throws(() => assertPlanSpecEntry(valid.state, { root: valid.root }), /PLAN_APPROVAL_CONTEXT:.*会签主体或范围不匹配/);
   for (const [name, mutate] of mutations) {
     const f = buildPlanFixture(makeRoot('yss-plan-entry-')); mutate(f); f.save();
     assert.throws(() => assertPlanSpecEntry(f.state, { root: f.root }), undefined, name);
   }
   for (const checkpoint of [{ next_work_unit: 'work-unit.spec-synthesis' }, { stage: 'stage.spec-architecture' }, { stage_trace: { completed_work_unit: 'work-unit.spec-synthesis' } }]) {
-    assert.throws(() => assertPlanCheckpoint({ repository_mode: 'project-instance', ...checkpoint }), /plan-spec-entry-blocked/);
+    assert.throws(() => assertPlanCheckpoint({ repository_mode: 'project-instance', ...checkpoint }), /PLAN_CONTEXT_REQUIRED/);
   }
   const stale = buildPlanFixture(makeRoot('yss-plan-entry-'));
   stale.review.internal_checks['check.domain-strategy-approved'].reason += ' changed'; stale.save();

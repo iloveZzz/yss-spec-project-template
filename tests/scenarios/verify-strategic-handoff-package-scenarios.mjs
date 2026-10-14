@@ -1,3 +1,4 @@
+import {makeRoot} from '../helpers/yss-instance.mjs';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync, mkdtempSync, mkdirSync, readFileSync, writeFileSync, cpSync, rmSync } from 'node:fs';
@@ -87,7 +88,7 @@ test('v4 路由必须与影响矩阵一致；未知版本 fail closed',async t=>
  const backendRoute=f.handoff.consumer_routes.find(route=>route.capability==='backend-technical-design');backendRoute.activation='not-applicable';backendRoute.reason='伪造不适用';backendRoute.evidence_refs=['evidence/offline.log'];f.sign();
  await assert.rejects(run,/路由.*影响|影响.*路由/);
  f.handoff.schema_version=99;f.sign();
- await assert.rejects(run,/支持版本.*3.*4|未知.*版本/);
+ await assert.rejects(run,error=>error.code==='CAPABILITY');
 });
 test('v4 无实现影响时三条路由均 N/A，且不生成消费者空合同',async t=>{
  const impacts={ui:false,api:false,data:false,backend:false,frontend:false,cross_repo:false,high_risk:false};
@@ -117,18 +118,18 @@ test('消费者反馈按源摘要裁决，amend 与 blocking defer 保持阻断'
 test('规则遗漏、摘要漂移、批准不匹配和离线资源丢失阻断导出',async t=>{
  const f=await setup(t);const run=()=>exportBundle({sourceRoot:f.source,handoffRef:'handoff.yaml',output:path.join(f.base,'out')});
  const text=readFileSync(path.join(f.source,'source/strategy.yaml'));f.put('source/strategy.yaml',{...f.strategy,traceability_version:undefined});
- await assert.rejects(run,/不一致|过期|migration/);writeFileSync(path.join(f.source,'source/strategy.yaml'),text);
- const approved=read(path.join(f.source,'approvals/spec_ref.yaml'));f.put('approvals/spec_ref.yaml',{...approved,artifact_bindings:[]});await assert.rejects(run,/批准记录未绑定/);f.put('approvals/spec_ref.yaml',approved);
+ await assert.rejects(run,error=>error.code==='HANDOFF_SOURCE_STALE');writeFileSync(path.join(f.source,'source/strategy.yaml'),text);
+ const approved=read(path.join(f.source,'approvals/spec_ref.yaml'));f.put('approvals/spec_ref.yaml',{...approved,artifact_bindings:[]});await assert.rejects(run,error=>error.code==='HANDOFF_APPROVAL');f.put('approvals/spec_ref.yaml',approved);
  const roles=read(path.join(f.source,'.template-spec/agents/digital-human-roles.yaml'));f.put('.template-spec/agents/digital-human-roles.yaml',{...roles,user_decision_policy:{...roles.user_decision_policy,gates:['gate.domain-strategy-approved']}});await assert.rejects(run,/user-decision|升级/);f.put('.template-spec/agents/digital-human-roles.yaml',roles);
- const sourceBytes=readFileSync(path.join(f.source,'prototype-src/main.js'));f.put('prototype-src/main.js','changed');await assert.rejects(run,/源码\/锁文件批准摘要/);writeFileSync(path.join(f.source,'prototype-src/main.js'),sourceBytes);
- const verification=read(path.join(f.source,'evidence/offline.json'));f.put('evidence/offline.json',{...verification,command:'changed'});await assert.rejects(run,/验证记录批准摘要/);f.put('evidence/offline.json',verification);
- f.put('preview/index.html','<img src="missing.png">');await assert.rejects(run,/过期/);
+ const sourceBytes=readFileSync(path.join(f.source,'prototype-src/main.js'));f.put('prototype-src/main.js','changed');await assert.rejects(run,error=>error.code==='HANDOFF_PREVIEW'&&error.message.includes('源码或锁文件批准摘要'));writeFileSync(path.join(f.source,'prototype-src/main.js'),sourceBytes);
+ const verification=read(path.join(f.source,'evidence/offline.json'));f.put('evidence/offline.json',{...verification,command:'changed'});await assert.rejects(run,error=>error.code==='CONTRACT_STALE'&&error.message.includes('evidence/offline.json'));f.put('evidence/offline.json',verification);
+ f.put('preview/index.html','<img src="missing.png">');await assert.rejects(run,error=>error.code==='HANDOFF_SOURCE_STALE'&&error.message.includes('prototype_ref'));
 });
 test('篡改 payload、重新封摘要后的虚构规则索引、额外文件均拒绝',async t=>{
  const f=await setup(t),output=path.join(f.base,'package');await exportBundle({sourceRoot:f.source,handoffRef:'handoff.yaml',output});
  const spec=path.join(output,'payload/files/source/spec.md'),bytes=readFileSync(spec);writeFileSync(spec,'tampered');await assert.rejects(()=>openBundle(output,()=>null),/摘要/);writeFileSync(spec,bytes);
  writeFileSync(path.join(output,'extra.txt'),'extra');await assert.rejects(()=>openBundle(output,()=>null),/未登记/);rmSync(path.join(output,'extra.txt'));
- const manifest=read(path.join(output,'manifest.json'));const idx=Buffer.from(json([]));writeFileSync(path.join(output,'indexes/rules.json'),idx);const row=manifest.files.find(x=>x.path==='indexes/rules.json');row.sha256=hash(idx);row.size_bytes=idx.length;delete manifest.bundle_digest;manifest.bundle_digest=digest(manifest);writeFileSync(path.join(output,'manifest.json'),json(manifest));await assert.rejects(()=>openBundle(output,()=>null),/索引与源/);
+ const manifest=read(path.join(output,'manifest.json'));const idx=Buffer.from(json([]));writeFileSync(path.join(output,'indexes/rules.json'),idx);const row=manifest.files.find(x=>x.path==='indexes/rules.json');row.sha256=hash(idx);row.size_bytes=idx.length;delete manifest.bundle_digest;manifest.bundle_digest=digest(manifest);writeFileSync(path.join(output,'manifest.json'),json(manifest));await assert.rejects(()=>openBundle(output,()=>null),error=>error.code==='HANDOFF_INDEX');
 });
 test('ZIP 路径穿越和重复条目拒绝',async t=>{
  const f=await setup(t);
@@ -146,10 +147,10 @@ test('版本差异绑定前版，重复版本不允许；修改规则产生更�
 test('受控延期只阻断依赖切片；未知依赖扩大阻断；目标未对账禁止消费',async t=>{
  const {verifyConsumption}=await import('../../scripts/lib/strategic-handoff-consumption.mjs');
  const f=await setup(t),output=path.join(f.base,'package');await exportBundle({sourceRoot:f.source,handoffRef:'handoff.yaml',output});
- const target=path.join(f.base,'target');mkdirSync(target);writeFileSync(path.join(target,'yss-project.yaml'),'schema_version: 1\nrepository_mode: project-instance\n');writeFileSync(path.join(target,'CONTEXT.md'),context);
+ const target=makeRoot('handoff-consumption-');t.after(()=>rmSync(target,{recursive:true,force:true}));writeFileSync(path.join(target,'CONTEXT.md'),context);
  const result=await importBundle({bundle:output,targetRoot:target});
  const draft=read(path.join(target,result.traceability_ref));
- const tactical={status:'approved',strategic_handoff:{...draft,context_reconciliation_ref:'reconciliation.yaml'},behavior_catalog:[{behavior_id:'behavior.submit'}],test_seams:[{seam_id:'test-seam.submit',subject_ref:'behavior.submit'}]};
+ const tactical={schema_version:1,status:'approved',strategic_handoff:{...draft,context_reconciliation_ref:'reconciliation.yaml'},behavior_catalog:[{behavior_id:'behavior.submit'}],test_seams:[{seam_id:'test-seam.submit',subject_ref:'behavior.submit'}]};
  const record={schema_version:1,repository_mode:'project-instance',stage:'stage.system-data-engineering',work_unit:'work-unit.technical-analysis',status:'reconciled',context_snapshot:f.snapshot,changes:{added:['Global/Supplier'],updated:[],deprecated:[]},unresolved_terms:[],evidence_refs:['CONTEXT.md']};
  writeFileSync(path.join(target,'reconciliation.yaml'),json(record));
  for(const row of tactical.strategic_handoff.rows)Object.assign(row,{disposition:'implemented',tactical_refs:['behavior.submit'],test_seam_refs:['test-seam.submit'],scenario_tests:[{outcome:'success',seam_ref:'test-seam.submit'},{outcome:'failure',seam_ref:'test-seam.submit'}],evidence_refs:['CONTEXT.md'],dependency_status:'known',dependent_slice_refs:['slice.submit']});
@@ -168,7 +169,7 @@ test('受控延期只阻断依赖切片；未知依赖扩大阻断；目标未�
  const stale=await verifyConsumption(tactical,{root:target,sliceRef:'slice.submit'});assert.equal(stale.result,'blocked');assert(stale.issues.some(x=>x.reason==='stale-source'));assert.equal((await verifyConsumption(tactical,{root:target,sliceRef:'slice.other'})).result,'verified');
  f.strategy.contexts[0].responsibilities.push('新增责任边界');advanceStrategy(f,'v3');const third=path.join(f.base,'v3');await exportBundle({sourceRoot:f.source,handoffRef:'handoff.yaml',output:third,previous:second});await importBundle({bundle:third,targetRoot:target});const changedBoundary=await verifyConsumption(tactical,{root:target,sliceRef:'slice.other'});assert.equal(changedBoundary.block_all,true);assert(changedBoundary.issues.some(x=>x.reason==='upstream-design-stale'));
  writeFileSync(path.join(target,'reconciliation.yaml'),json({...record,status:'blocked',unresolved_terms:[{term:'Supplier',reason:'冲突',owner:'需求负责人',next_action:'回交战略方'}]}));
- await assert.rejects(()=>verifyConsumption(tactical,{root:target}),/对账未通过/);
+ await assert.rejects(()=>verifyConsumption(tactical,{root:target}),error=>error.code==='CONTEXT'&&error.message.includes('对账状态不允许'));
 });
 
 test('源规则必须稳定可追溯，关键场景不能遗漏结果',async t=>{

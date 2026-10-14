@@ -3,7 +3,7 @@
 import { assertExampleFlags, assertContractExample, renderReferenceExample } from "../../../../scripts/lib/scaffold-reference-example.mjs";
 import { platformSourceFingerprint, generatedTreeDigest } from "../../../../scripts/lib/backend-platform-provenance.mjs";
 import { assertContractPlatform, platformTemplateVars, platformSmokeTest } from "../../../../scripts/lib/backend-platform.mjs";
-import { assertScaffoldUserDecision } from "../../../../scripts/lib/user-decision.mjs";
+import { assertScaffoldUserDecision } from "../../../../scripts/lib/native-user-decision.mjs";
 import { createHash } from "node:crypto";
 import { chmod, cp, lstat, mkdir, mkdtemp, readFile, readdir, rename, rm, stat, writeFile, copyFile } from "node:fs/promises";
 import path from "node:path";
@@ -13,7 +13,7 @@ import { parseDocument } from "../../../../scripts/vendor/yaml.mjs";
 import { assertLocalDatabaseProfile, localDatabaseConfiguration, scaffoldArchitectureIdentity } from "../../../../scripts/lib/scaffold-local-database.mjs";
 import { validateArchitectureIdentity } from "../../../../scripts/lib/backend-architecture.mjs";
 import { validateJsonSchema } from "../../../../scripts/lib/json-schema.mjs";
-import { validateBackendScaffoldPrerequisites } from "../../../../scripts/lib/backend-scaffold-prerequisites.mjs";
+import { findGovernanceRoot, validateBackendScaffoldPrerequisites } from "../../../../scripts/lib/backend-scaffold-prerequisites.mjs";
 import { standaloneConfiguration, standaloneManifest, assertStandaloneManifest } from "../../../../scripts/lib/standalone-backend-scaffold.mjs";
 
 import {
@@ -278,7 +278,7 @@ export class ScaffoldGenerator {
     if (!decision || decision.status !== "lifecycle-approved" || decision.confirmed_architecture !== "domain-driven" || decision.project_id !== contract.project_name) fail("架构决策未批准、项目不匹配或不是 domain-driven");
     if (decision.platform_profile !== contract.profiles.platform || decision.architecture_profile !== contract.architecture_profile || decision.verification_database !== "h2" || decision.production_database !== "not-bound" || Object.hasOwn(decision, "database_profile") || JSON.stringify(decision.requested_capabilities) !== JSON.stringify(contract.module_profile.requested_capabilities) || JSON.stringify(decision.resolved_modules) !== JSON.stringify(contract.module_profile.resolved_modules)) fail("架构决策的 Profile 或模块闭包与脚手架合同不一致");
     if (!decision.user_confirmation || Object.values(decision.user_confirmation).some((value) => !isPresent(value))) fail("架构决策缺少完整用户确认记录");
-    assertScaffoldUserDecision(decision);
+    assertScaffoldUserDecision(decision, { root: findGovernanceRoot(this.contractFile) });
     this.designPrerequisites = await validateBackendScaffoldPrerequisites(contract, { contractFile: this.contractFile });
     this.platform = assertContractPlatform(contract, decision, { ...this.platformOptions, requireVerified: this.platformOptions.candidate !== true }).profile;
     const generationPolicy = contract.generation_policy;

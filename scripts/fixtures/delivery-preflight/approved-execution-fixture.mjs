@@ -1,5 +1,6 @@
+import {makeRoot} from '../../../tests/helpers/yss-instance.mjs';
 // Synthetic local approval/decision sources for mechanism tests only; never pilot evidence.
-import {readFileSync} from 'node:fs';
+import {readFileSync,realpathSync} from 'node:fs';
 import path from 'node:path';
 import {fixture} from '../existing-backend/fixture.mjs';
 import {buildDecisionFixture} from '../user-decision/build-fixture.mjs';
@@ -11,7 +12,12 @@ import {countersignRuleForGate,collectCountersignGateIds} from '../../lib/digita
 import {context as fixtureContext} from '../strategic-handoff/fixture.mjs';
 
 export function approvedFixture(family='layered-mvc',{withDesign=family==='layered-mvc',specText,nativeSeed,nativeReaders}={}) {
- const f=fixture(family,{nativeSeed}),slice_id='slice.synthetic',ticket='tickets/synthetic.md';
+ const historicalProtocol=!nativeSeed;
+ nativeSeed ||= makeRoot('approved-execution-policy-','backend');
+ const f=fixture(family,{nativeSeed});f.root=realpathSync(f.root);f.project=realpathSync(f.project);
+ const slice_id='slice.synthetic',ticket='tickets/synthetic.md';
+ // This fixture exercises the supported v2 contract protocol; explicit native seeds retain their declared current policy.
+ if(historicalProtocol){const ref='.template-spec/agents/issue-tracker.md';f.write(ref,readFileSync(path.join(f.root,ref),'utf8').replace(/^\s*business_ticket_version:\s*1\s*$/m,''));}
  const roles=sourceApprovalPolicy(read(path.join(f.root,'.template-spec/agents/digital-human-roles.yaml')));
  let design,technical_design;
  if(withDesign){

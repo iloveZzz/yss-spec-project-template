@@ -48,22 +48,26 @@ function approvedTechnicalDesign(root, contract, nativeContext) {
 }
 
 export function attachDesignPrerequisites(root, contract, { dataImpact = "not-applicable", apiImpact = "not-applicable" } = {}) {
+  const nativeIdentity = makeRoot("yss-scaffold-identity-");
   let nativeContext;
-  if (apiImpact === "required") {
-    // The native validator consumes the same project identity as an installed instance.
-    const nativeIdentity = makeRoot("yss-scaffold-api-identity-");
-    try {
-      for (const ref of [
-        "yss-project.yaml", "CONTEXT.md", ".template-spec/process/harness-profile.yaml",
-        ".template-spec/process/lifecycle-registry.yaml", ".template-spec/agents/digital-human-roles.yaml",
-      ]) {
-        write(root, ref, readFileSync(path.join(nativeIdentity, ref), "utf8"));
-      }
-      // Approval and user-decision consumers validate their own schemas too.
-      cpSync(path.join(nativeIdentity, ".template-spec/process/schemas"), path.join(root, ".template-spec/process/schemas"), { recursive: true });
-      nativeContext = readFileSync(path.join(nativeIdentity, "CONTEXT.md"), "utf8");
-    } finally { rmSync(nativeIdentity, { recursive: true, force: true }); }
-  }
+  try {
+    // Every formal generator now validates decisions against its own project policy.
+    for (const ref of [
+      "yss-project.yaml", "CONTEXT.md", ".template-spec/process/harness-profile.yaml",
+      ".template-spec/process/lifecycle-registry.yaml", ".template-spec/agents/digital-human-roles.yaml",
+      ".template-spec/engineering/backend-platforms.json",
+    ]) {
+      write(root, ref, readFileSync(path.join(nativeIdentity, ref), "utf8"));
+    }
+    const catalog = read(path.join(nativeIdentity, ".template-spec/engineering/backend-platforms.json"));
+    const catalogEvidence = new Set(catalog.compatibility.flatMap(entry => [
+      ...(entry.artifact_resolution_evidence ? [entry.artifact_resolution_evidence.ref] : []),
+      ...Object.values(entry.platform_artifact_bindings || {}).filter(binding => binding.status === "resolved-pom").flatMap(binding => (binding.evidence || []).map(evidence => evidence.ref)),
+    ]));
+    for (const ref of catalogEvidence) write(root, ref, readFileSync(path.join(nativeIdentity, ref), "utf8"));
+    cpSync(path.join(nativeIdentity, ".template-spec/process/schemas"), path.join(root, ".template-spec/process/schemas"), { recursive: true });
+    nativeContext = readFileSync(path.join(nativeIdentity, "CONTEXT.md"), "utf8");
+  } finally { rmSync(nativeIdentity, { recursive: true, force: true }); }
   attachPlatformFixture(root, contract);
   const technical = approvedTechnicalDesign(root, contract, nativeContext);
   const assessment = write(root, "data-impact.json", { schema_version: 1, backend: true, data: dataImpact === "required", project_id: contract.project_name });
@@ -103,6 +107,8 @@ export function attachDesignPrerequisites(root, contract, { dataImpact = "not-ap
   };
   let openapi = null;
   if (apiImpact === "required") {
+    const schemaRef = ".template-spec/process/schemas/openapi-draft-validation-record.schema.json";
+    write(root, schemaRef, readFileSync(new URL("../../../" + schemaRef, import.meta.url), "utf8"));
     write(root, ".template-spec/agents/issue-tracker.md", "---\ntracker:\n  platform: local-markdown\n  root: .work\n---\n");
     const slug = contract.project_name.toLowerCase().replace(/[^a-z0-9-]+/g, "-").replace(/^-+|-+$/g, "") || "demo";
     openapi = write(root, `.work/${slug}/api/${slug}.yaml`, [

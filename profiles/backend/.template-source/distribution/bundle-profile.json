@@ -206,7 +206,96 @@
         ]
       }
     ],
-    "rules": [],
+    "rules": [
+      {
+        "id": "ar12b-approval-record",
+        "from": {
+          "profile": "backend",
+          "templateCommit": "7ac487880dcbda5ca6e121e1641ee7ebc8a55996",
+          "sourceSnapshotHash": "8d6e01e45d02a6d9f156fdfbec8de2477363db4377e8d0b6e0d9204db518f16b",
+          "bundleHash": "ea3f2f98c59abdd3e53ae60b7139fa7e5d6ad2f7fe80cbce17049dae5a27d440"
+        },
+        "action": "delete",
+        "sourcePath": "scripts/lib/approval-record.mjs"
+      },
+      {
+        "id": "ar12b-approval-current",
+        "from": {
+          "profile": "backend",
+          "templateCommit": "7ac487880dcbda5ca6e121e1641ee7ebc8a55996",
+          "sourceSnapshotHash": "8d6e01e45d02a6d9f156fdfbec8de2477363db4377e8d0b6e0d9204db518f16b",
+          "bundleHash": "ea3f2f98c59abdd3e53ae60b7139fa7e5d6ad2f7fe80cbce17049dae5a27d440"
+        },
+        "action": "delete",
+        "sourcePath": "scripts/lib/approval-current.mjs"
+      },
+      {
+        "id": "ar12b-approval-consumption",
+        "from": {
+          "profile": "backend",
+          "templateCommit": "7ac487880dcbda5ca6e121e1641ee7ebc8a55996",
+          "sourceSnapshotHash": "8d6e01e45d02a6d9f156fdfbec8de2477363db4377e8d0b6e0d9204db518f16b",
+          "bundleHash": "ea3f2f98c59abdd3e53ae60b7139fa7e5d6ad2f7fe80cbce17049dae5a27d440"
+        },
+        "action": "delete",
+        "sourcePath": "scripts/lib/approval-consumption.mjs"
+      },
+      {
+        "id": "ar12b-approval-record-io",
+        "from": {
+          "profile": "backend",
+          "templateCommit": "7ac487880dcbda5ca6e121e1641ee7ebc8a55996",
+          "sourceSnapshotHash": "8d6e01e45d02a6d9f156fdfbec8de2477363db4377e8d0b6e0d9204db518f16b",
+          "bundleHash": "ea3f2f98c59abdd3e53ae60b7139fa7e5d6ad2f7fe80cbce17049dae5a27d440"
+        },
+        "action": "delete",
+        "sourcePath": "scripts/lib/approval-record-io.mjs"
+      },
+      {
+        "id": "ar12b-approval-checkpoint-discovery",
+        "from": {
+          "profile": "backend",
+          "templateCommit": "7ac487880dcbda5ca6e121e1641ee7ebc8a55996",
+          "sourceSnapshotHash": "8d6e01e45d02a6d9f156fdfbec8de2477363db4377e8d0b6e0d9204db518f16b",
+          "bundleHash": "ea3f2f98c59abdd3e53ae60b7139fa7e5d6ad2f7fe80cbce17049dae5a27d440"
+        },
+        "action": "delete",
+        "sourcePath": "scripts/lib/approval-checkpoint-discovery.mjs"
+      },
+      {
+        "id": "ar12b-user-decision",
+        "from": {
+          "profile": "backend",
+          "templateCommit": "7ac487880dcbda5ca6e121e1641ee7ebc8a55996",
+          "sourceSnapshotHash": "8d6e01e45d02a6d9f156fdfbec8de2477363db4377e8d0b6e0d9204db518f16b",
+          "bundleHash": "ea3f2f98c59abdd3e53ae60b7139fa7e5d6ad2f7fe80cbce17049dae5a27d440"
+        },
+        "action": "delete",
+        "sourcePath": "scripts/lib/user-decision.mjs"
+      },
+      {
+        "id": "ar12b-user-decision-reuse",
+        "from": {
+          "profile": "backend",
+          "templateCommit": "7ac487880dcbda5ca6e121e1641ee7ebc8a55996",
+          "sourceSnapshotHash": "8d6e01e45d02a6d9f156fdfbec8de2477363db4377e8d0b6e0d9204db518f16b",
+          "bundleHash": "ea3f2f98c59abdd3e53ae60b7139fa7e5d6ad2f7fe80cbce17049dae5a27d440"
+        },
+        "action": "delete",
+        "sourcePath": "scripts/lib/user-decision-reuse.mjs"
+      },
+      {
+        "id": "ar12b-decision-continuation",
+        "from": {
+          "profile": "backend",
+          "templateCommit": "7ac487880dcbda5ca6e121e1641ee7ebc8a55996",
+          "sourceSnapshotHash": "8d6e01e45d02a6d9f156fdfbec8de2477363db4377e8d0b6e0d9204db518f16b",
+          "bundleHash": "ea3f2f98c59abdd3e53ae60b7139fa7e5d6ad2f7fe80cbce17049dae5a27d440"
+        },
+        "action": "delete",
+        "sourcePath": "scripts/lib/decision-continuation.mjs"
+      }
+    ],
     "schemaVersion": 1
   }
 }

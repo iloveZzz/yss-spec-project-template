@@ -23,12 +23,12 @@ test('legacy v4 原始交接布局只读复验保留所有原字节且不创建�
   assert.deepEqual(inventory(),before);
   const original=path.join(output,'handoff.yaml'),backup=path.join(root,'handoff-backup.yaml');
   fs.renameSync(original,backup);fs.symlinkSync(backup,original);
-  try{await assert.rejects(()=>openBundle(output,()=>null,{readOnly:true}),/symlink/);}
+  try{await assert.rejects(()=>openBundle(output,()=>null,{readOnly:true}),/NATIVE_INPUT_INVALID: 外部输入不能包含符号链接/);}
   finally{fs.unlinkSync(original);fs.renameSync(backup,original);}
   assert.deepEqual(inventory(),before);
   // A rehashed manifest cannot choose a different alias for an original source.
   const manifest=read(path.join(output,'manifest.json')),handoff=manifest.files.find(row=>row.original_ref==='handoff.yaml');
   fs.renameSync(path.join(output,handoff.path),path.join(output,'relocated-handoff.yaml'));handoff.path='relocated-handoff.yaml';
   const {bundle_digest,...body}=manifest;manifest.bundle_digest=digest(body);fs.writeFileSync(path.join(output,'manifest.json'),json(manifest));
-  await assert.rejects(()=>openBundle(output,()=>null,{readOnly:true}),/readonly-source-layout-required/);
+  await assert.rejects(()=>openBundle(output,()=>null,{readOnly:true}),/READONLY_SOURCE_LAYOUT_REQUIRED: 包需要只读来源布局/);
 });

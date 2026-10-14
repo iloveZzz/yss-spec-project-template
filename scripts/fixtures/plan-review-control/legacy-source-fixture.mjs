@@ -2,7 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { parseDocument } from '../../vendor/yaml.mjs';
-import { decisionDigest } from '../../lib/user-decision.mjs';
+import { decisionDigest } from '../../lib/native-user-decision.mjs';
 import { fixture as buildStrategicFixture } from '../strategic-handoff/fixture.mjs';
 
 export async function buildLegacyPlanSourceFixture(root) {
@@ -15,8 +15,8 @@ export async function buildLegacyPlanSourceFixture(root) {
   const rolesDoc = document('.template-spec/agents/digital-human-roles.yaml');
   const descriptor = source.handoff.source.domain_strategy_ref;
   const currentContext = structuredClone(descriptor.approval_context);
-  const binding = { ref: descriptor.persisted_ref, digest: asset(descriptor.persisted_ref).digest, approval_context: currentContext };
   const approvalRef = source.handoff.package_export.approvals.domain_strategy_ref.record_ref;
+  const binding = { ref: descriptor.persisted_ref, digest: asset(descriptor.persisted_ref).digest, approval_context: currentContext, approval_ref: approvalRef };
   const record = document(approvalRef);
   const expected = { boundary: 'gate.plan-approved', ...currentContext, subject_digest: asset(currentContext.subject_ref).digest };
   const gate = { ...currentContext, status: 'approved', approval_ref: approvalRef, subject_digest: expected.subject_digest,

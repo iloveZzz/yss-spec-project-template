@@ -6,7 +6,7 @@ import { verifyArchitectureEvidence } from '../../../../scripts/lib/backend-arch
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { parseArgs } from 'node:util';
-import { assertScaffoldUserDecision } from '../../../../scripts/lib/user-decision.mjs';
+import { assertScaffoldUserDecision } from '../../../../scripts/lib/native-user-decision.mjs';
 import { validateJsonSchema } from '../../../../scripts/lib/json-schema.mjs';
 import { read, safe, hash, digest, ensure } from '../../../../scripts/lib/strategic-handoff-io.mjs';
 import { validate as validateDdd } from '../../yss-tactical-design/scripts/validate-tactical-design.mjs';

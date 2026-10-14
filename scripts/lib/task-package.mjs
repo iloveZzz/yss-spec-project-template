@@ -15,7 +15,7 @@ import { parseDocument } from "../vendor/yaml.mjs";
 import { loadDigitalHumanRoles, taskPackageDefaults } from "./digital-human-roles.mjs";
 import { loadRegistry, ROOT } from "./lifecycle-registry.mjs";
 import { readRepositoryMode } from "./repository-mode.mjs";
-import { assertImplementationDecision } from "./user-decision.mjs";
+import { assertImplementationDecision } from "./native-user-decision.mjs";
 import { validateNextRoute } from "./lifecycle-transition.mjs";
 import { assertPlanSpecEntry } from "./plan-spec-entry.mjs";
 import { enforceHarnessTaskScope } from "./harness-execution-scope.mjs";

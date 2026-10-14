@@ -5,8 +5,8 @@ import path from 'node:path';
 import { createHash } from 'node:crypto';
 import { parseContent, yamlValue, ids as sourceIds } from './plan-spec-markdown.mjs';
 import { fileURLToPath } from 'node:url';
-import { validateJsonSchemas } from './json-schema.mjs';
-import { sourceContextRef, withSourceContextSnapshot } from './strategic-handoff-io.mjs';
+import {nativeContractVerify,nativeCoverage,NEEDS} from './native-evidence.mjs';
+import { sourceContextRef } from './strategic-handoff-io.mjs';
 
 export const BUSINESS_TICKET_PROTOCOL = 1;
 export const BUSINESS_TICKET_CAPABILITY = 'business-ticket-approval-v1';
@@ -53,138 +53,9 @@ export function assertImplementationTicket(text, ref = '') {
 }
 
 /** Structural evidence only. Business semantics and approval remain with lifecycle reviewers. */
-export function checkBusinessTickets({root, setRef, mode = 'draft', reviewRef} = {}) {
-  // Imported v5 sources retain root-relative bindings inside the immutable payload.
-  const imported=typeof setRef==='string'&&setRef.match(/^(docs\/handoffs\/[^/]+\/v[1-9][0-9]*\/package\/payload\/files\/)(.+)$/);
-  if(imported) {
-    const prefix=imported[1], sourceRoot=businessPath(root,prefix.slice(0,-1));
-    const result=withSourceContextSnapshot(sourceRoot,()=>checkBusinessTickets({root:sourceRoot,setRef:imported[2],mode,reviewRef:reviewRef?.startsWith(prefix)?reviewRef.slice(prefix.length):reviewRef}));
-    const mapped=ref=>typeof ref==='string'?prefix+(ref==='CONTEXT.md'?'source-context.snapshot.md':ref):ref;
-    result.inputs=result.inputs.map(x=>({...x,ref:mapped(x.ref)}));
-    result.diagnostics=result.diagnostics.map(x=>({...x,source_ref:mapped(x.source_ref)}));
-    result.tickets=result.tickets.map(x=>({...x,ref:mapped(x.ref)}));
-    if(result.spec)result.spec={...result.spec,ref:mapped(result.spec.ref)};
-    if(result.semantic_review)result.semantic_review={...result.semantic_review,ref:mapped(result.semantic_review.ref)};
-    return result;
-  }
-  const report = {schema_version:1, read_only:true, execution_authorization:'not-evaluated', mode, status:'passed', diagnostics:[], inputs:[], tickets:[], uncovered:[], unassessed:['business-granularity','semantic-fidelity','approval-validity']};
-  const observed = new Map();
-  const schemaInputs = [];
-  const schemaPath = fileURLToPath(new URL('../../.template-spec/process/schemas/business-tickets-v1.schema.json',import.meta.url));
-  const issue = (code, message, ref = setRef, locator = null) => report.diagnostics.push({code,message,source_ref:ref,locator,recovery:'核对来源、补齐引用或重新审查当前业务 Ticket 集'});
-  const read = ref => {
-    const bytes = fs.readFileSync(businessPath(root,ref)), digest = hash(bytes);
-    if (observed.has(ref) && observed.get(ref) !== digest) fail(`INPUT_DRIFT: ${ref}`);
-    observed.set(ref,digest); return bytes.toString('utf8');
-  };
-  const binding = value => {
-    if (!value || !nonempty(value.ref) || !/^v[1-9][0-9]*$/.test(value.version ?? '') || !/^sha256:[a-f0-9]{64}$/.test(value.digest ?? '')) fail('BINDING_INVALID: 需要 ref/version/digest');
-    const text = read(value.ref);
-    if (observed.get(value.ref) !== value.digest) issue('SOURCE_STALE','来源原始字节已变化',value.ref);
-    return text;
-  };
-  try {
-    if (!['draft','formal'].includes(mode)) fail('MODE_INVALID');
-    const set = yamlValue(read(setRef));
-    schemaInputs.push({value:set,schemaPath,label:setRef});
-    if (set?.schema_version !== 1 || set.kind !== 'business-ticket-set' || !nonempty(set.id) || !/^v[1-9][0-9]*$/.test(set.version ?? '') || !['draft','ready-for-human'].includes(set.status)) fail('BUSINESS_SET_INVALID');
-    report.id=set.id; report.version=set.version; report.spec=set.spec; report.coverage_deferred=set.coverage_deferred ?? [];
-    const spec = parseContent(binding(set.spec),set.spec.ref);
-    if (!spec.supported) issue('SPEC_FORMAT_UNASSESSED','Spec 需显式采用 plan-spec-v1；旧格式不推断覆盖',set.spec.ref);
-    const entries = spec.entries.filter(x => ['FR','NFR','AC'].includes(x.kind));
-    const ids = new Set();
-    for (const entry of entries) {
-      if (ids.has(entry.id)) issue('DUPLICATE_ID',`Spec ID 重复: ${entry.id}`,set.spec.ref,entry.position.start.line);
-      ids.add(entry.id);
-    }
-    if (!entries.some(x => x.kind === 'FR') || !entries.some(x => x.kind === 'AC')) issue('SPEC_COVERAGE_UNASSESSED','缺少可机械读取的 FR/AC',set.spec.ref);
-    if (!Array.isArray(set.tickets) || !set.tickets.length) fail('BUSINESS_TICKETS_REQUIRED');
-    const tickets = new Map(), covered = new Set(), seenPaths = new Set();
-    for (const entry of set.tickets) {
-      const text = binding(entry), ticket = ticketMetadata(text);
-      schemaInputs.push({value:ticket,schemaPath,label:entry.ref});
-      if (tickets.has(entry.id) || seenPaths.has(entry.ref)) issue('DUPLICATE_ID',`Ticket ID 或路径重复: ${entry.id}`,entry.ref);
-      seenPaths.add(entry.ref);
-      if (ticket.schema_version !== 1 || ticket.kind !== 'business-ticket' || !/^BT-[A-Za-z0-9][A-Za-z0-9._-]*$/.test(ticket.id ?? '') || ticket.id !== entry.id || ticket.version !== entry.version) issue('BUSINESS_TICKET_INVALID','类型、稳定 ID 或版本不匹配',entry.ref);
-      if (!['draft','ready-for-human'].includes(ticket.status)) issue('BUSINESS_READINESS_FORBIDDEN','业务票不得声明实现就绪',entry.ref);
-      if (!entry.ref.startsWith(`${path.posix.dirname(setRef)}/business-tickets/`) || !entry.ref.endsWith('.md')) issue('BUSINESS_TICKET_LOCATION','业务票需独立放在 business-tickets/',entry.ref);
-      if (['ref','version','digest'].some(key=>ticket.spec?.[key]!==set.spec?.[key])) issue('SPEC_BINDING_MISMATCH','票据与集合的 Spec 依据不一致',entry.ref);
-      for (const field of ['requirement_refs','acceptance_refs','dependencies']) if (!list(ticket[field])) issue('REQUIRED_FIELD',`缺少 ${field}`,entry.ref);
-      if (!ticket.requirement_refs?.length || !ticket.acceptance_refs?.length) issue('COVERAGE_REQUIRED','需要需求与验收引用',entry.ref);
-      for (const [field, pattern] of [['requirement_refs',/^(FR|NFR)-/],['acceptance_refs',/^AC-/]]) {
-        for (const id of Array.isArray(ticket[field]) ? ticket[field] : []) {
-          if (!ids.has(id) || !pattern.test(id)) issue('DANGLING_REFERENCE',`无效引用 ${id}`,entry.ref);
-          else covered.add(id);
-        }
-      }
-      for(const ac of Array.isArray(ticket.acceptance_refs)?ticket.acceptance_refs:[]) {
-        const requirementIds=sourceIds(entries.find(x=>x.id===ac)?.fields?.['需求引用'],['FR','NFR']);
-        if(!requirementIds.length || requirementIds.some(id=>!ticket.requirement_refs?.includes(id)))issue('AC_REQUIREMENT_MISMATCH',`验收 ${ac} 与本票需求来源不一致`,entry.ref,ac);
-      }
-      for (const source of ticket.source_refs ?? []) {
-        const sourceText = binding(source);
-        if (source.locator) {
-          let found;
-          if (/\.(yaml|yml|json)$/.test(source.ref)) {
-            const ids=[];
-            const walk=value=>{if(Array.isArray(value))value.forEach(walk);else if(value&&typeof value==='object')for(const [key,item]of Object.entries(value)){if((key==='id'||key.endsWith('_id'))&&typeof item==='string')ids.push(item);else walk(item);}};
-            walk(yamlValue(sourceText));found=source.locator_kind!=='heading'&&ids.filter(x=>x===source.locator).length===1;
-          } else {const parsed=parseContent(sourceText,source.ref);found=(source.locator_kind==='heading'?parsed.headings:parsed.locators).filter(x=>x.value===source.locator).length===1;}
-          if(!found)issue('DANGLING_REFERENCE',`来源定位缺失或不唯一: ${source.locator}`,source.ref,source.locator);
-        }
-      }
-      for (const heading of ['业务结果','范围','非目标','验收','风险']) if (!new RegExp(`^## ${heading}\\s*$`,'m').test(text)) issue('REQUIRED_SECTION',`缺少 ${heading}`,entry.ref);
-      for (const question of ticket.open_questions ?? []) {
-        if (![question.id,question.question,question.owner,question.resolve_by].every(nonempty) || typeof question.blocking !== 'boolean') issue('QUESTION_INCOMPLETE','未决项需问题、责任人、时点及阻断判断',entry.ref);
-        if (mode === 'formal' && question.blocking) issue('OPEN_BLOCKER',question.question,entry.ref);
-      }
-      if (mode === 'formal' && ticket.status !== 'ready-for-human') issue('TICKET_DRAFT','正式化仍有草案票',entry.ref);
-      tickets.set(entry.id,ticket);
-      report.tickets.push({id:entry.id,ref:entry.ref,version:entry.version,source_digest:entry.digest,source_refs:ticket.source_refs,requirement_refs:ticket.requirement_refs,acceptance_refs:ticket.acceptance_refs,dependencies:ticket.dependencies});
-    }
-    const visiting = new Set(), visited = new Set();
-    const visit = id => {
-      if (visiting.has(id)) { issue('DEPENDENCY_CYCLE',`依赖环包含 ${id}`); return; }
-      if (visited.has(id)) return;
-      visiting.add(id);
-      for (const dep of tickets.get(id)?.dependencies ?? []) {
-        if (!tickets.has(dep)) issue('DANGLING_DEPENDENCY',`${id} 依赖未知票 ${dep}`);
-        else visit(dep);
-      }
-      visiting.delete(id); visited.add(id);
-    };
-    tickets.forEach((_,id)=>visit(id));
-    const deferred = new Set();
-    for (const item of set.coverage_deferred ?? []) {
-      if (!ids.has(item.id) || deferred.has(item.id) || covered.has(item.id)) issue('DEFERRED_COVERAGE_INVALID',`延期引用无效或重复: ${item.id}`);
-      if (!['reason','risk','owner','target_version','followup_ticket_ref','verification_plan'].every(k=>nonempty(item[k]))) issue('DEFERRED_INCOMPLETE',`延期缺少责任或处理计划: ${item.id}`);
-      if (mode === 'formal') {
-        if (!item.decision) issue('DEFERRED_DECISION_REQUIRED',`延期缺少既有决定绑定: ${item.id}`);
-        else binding(item.decision);
-      }
-      deferred.add(item.id);
-    }
-    report.uncovered = [...ids].filter(id=>!covered.has(id)&&!deferred.has(id));
-    for (const id of report.uncovered) issue('COVERAGE_MISSING',`未覆盖 ${id}`,set.spec.ref,id);
-    if (mode === 'formal') {
-      if (set.status !== 'ready-for-human') issue('SET_DRAFT','业务集合尚未正式化');
-      const review = yamlValue(read(reviewRef || set.review_ref));
-      schemaInputs.push({value:review,schemaPath,label:reviewRef || set.review_ref});
-      if (review.kind !== 'business-ticket-review' || review.schema_version !== 1 || review.result !== 'passed' || review.subject_ref !== setRef || review.subject_digest !== observed.get(setRef) || !nonempty(review.reviewer) || !nonempty(review.drafter) || review.reviewer === review.drafter || !Array.isArray(review.evidence) || !review.evidence.length) issue('REVIEW_REQUIRED','需要独立且绑定当前集合的专业审查');
-      for (const ref of review.evidence ?? []) binding(ref);
-      report.semantic_review={status:'recorded',ref:reviewRef||set.review_ref,result:review.result,subject_digest:review.subject_digest};
-      report.unassessed = ['approval-validity','semantic-review-truth'];
-    }
-  } catch (error) { issue(error.message.split(':')[0],error.message); }
-  try { validateJsonSchemas(schemaInputs).forEach((result,index)=>{if(!result.valid)issue('SCHEMA_INVALID',result.error,schemaInputs[index].label);}); }
-  catch(error) {issue('SCHEMA_UNAVAILABLE',error.message);}
-  for (const [ref,digest] of observed) {
-    try { if (hash(fs.readFileSync(businessPath(root,ref))) !== digest) issue('INPUT_DRIFT','读取期间来源变化',ref); }
-    catch { issue('INPUT_DRIFT','读取期间来源消失',ref); }
-  }
-  report.inputs = [...observed].map(([ref,digest])=>({ref,digest}));
-  report.status = report.diagnostics.length ? 'blocked' : 'passed';
-  return report;
+export function checkBusinessTickets({root,setRef,mode='draft',reviewRef}={}) {
+ const result=nativeContractVerify({root,kind:'business-tickets',file:setRef,extra:['--mode',mode,...(reviewRef?['--review-ref',reviewRef]:[])],needs:NEEDS.businessTickets});
+ return nativeCoverage(result,'business_tickets',{allowBlocked:true});
 }
 
 export function businessSetRef(state) { return state?.artifacts?.['artifact.business-ticket-set']?.ref || state?.business_ticket_set_ref; }
@@ -232,6 +103,7 @@ export function assertBusinessCheckpoint(root,state) {
   const artifact=state.artifacts?.['artifact.business-ticket-set'];
   const completedSpec=['work-unit.prototype-design','work-unit.prototype-design-v2','work-unit.business-ticket-formalization'].includes(state.next_work_unit)||state.stage_trace?.completed_work_unit==='work-unit.spec-synthesis'||(stage==='stage.spec-architecture'&&['completed','paused-human-gate'].includes(state.status));
   if(!pastSpec && !finalized && !artifact?.ref && !completedSpec)return;
+  if(!businessSetRef(state))fail('BUSINESS_CHECKPOINT_BLOCKED: 缺少业务票集合引用');
   const report=checkBusinessTickets({root,setRef:businessSetRef(state),mode:finalized?'formal':'draft'});
   if(report.status!=='passed')fail(`BUSINESS_CHECKPOINT_BLOCKED: ${report.diagnostics.map(x=>x.code).join(', ')}`);
   if(artifact?.digest && report.inputs.find(x=>x.ref===artifact.ref)?.digest!==artifact.digest)fail('BUSINESS_SYNC_STALE');

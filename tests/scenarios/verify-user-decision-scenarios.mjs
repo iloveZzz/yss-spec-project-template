@@ -1,16 +1,23 @@
+import {makeRoot} from '../helpers/yss-instance.mjs';
 import assert from "node:assert/strict";
 import { mkdtempSync, rmSync, writeFileSync, readFileSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { buildDecisionFixture, buildImplementationFixture } from "../../scripts/fixtures/user-decision/build-fixture.mjs";
-import { validateUserDecision, assertUserDecisionRequirement, assertImplementationDecision, decisionDigest, renderDecisionRequest } from "../../scripts/lib/user-decision.mjs";
-import { validateApprovalRecord, assertCheckpointApprovals, assertCheckpointUserDecisions } from "../../scripts/lib/approval-record.mjs";
-import { approvalExpectationFromSubject } from "../../scripts/lib/approval-current.mjs";
+import { validateUserDecision as nativeValidateUserDecision, assertUserDecisionRequirement as nativeAssertUserDecisionRequirement, assertImplementationDecision as nativeAssertImplementationDecision, decisionDigest, renderDecisionRequest } from "../../scripts/lib/native-user-decision.mjs";
+import { validateApprovalRecord as nativeValidateApprovalRecord, assertCheckpointApprovals as nativeAssertCheckpointApprovals, assertCheckpointUserDecisions as nativeAssertCheckpointUserDecisions } from "../../scripts/lib/native-approval.mjs";
+import { approvalExpectationFromSubject } from "../../scripts/lib/native-approval.mjs";
 import { validateNextRoute } from "../../scripts/lib/lifecycle-transition.mjs";
 import { loadDigitalHumanRoles, countersignRuleForGate, collectCountersignGateIds } from "../../scripts/lib/digital-human-roles.mjs";
 
-const root = mkdtempSync(path.join(os.tmpdir(), "yss-user-decision-"));
+const root = makeRoot("yss-user-decision-");
 process.on("exit", () => rmSync(root, { recursive: true, force: true }));
+const validateUserDecision=(value,options={})=>nativeValidateUserDecision(value,{...options,root});
+const assertUserDecisionRequirement=(value,options={})=>nativeAssertUserDecisionRequirement(value,{...options,root});
+const assertImplementationDecision=(value,options={})=>nativeAssertImplementationDecision(value,{...options,root});
+const validateApprovalRecord=(value,options={})=>nativeValidateApprovalRecord(value,{...options,root});
+const assertCheckpointApprovals=(value,file,options={})=>nativeAssertCheckpointApprovals(value,file,{...options,root});
+const assertCheckpointUserDecisions=(value,options={})=>nativeAssertCheckpointUserDecisions(value,{...options,root});
 let count = 0;
 const check = (name, fn) => { fn(); count++; process.stdout.write(`PASS ${name}\n`); };
 const fixture = (name, opts) => buildDecisionFixture(path.join(root, name), opts);
@@ -19,10 +26,11 @@ function currentFixture(name, boundary) {
   const dir=path.join(root,name);const f=fixture(name,{boundary});
   const basisRef=f.write('review-evidence.log','synthetic independent comparison');
   const basis=[{ref:basisRef,digest:decisionDigest(readFileSync(basisRef)).slice(7)}];
-  f.write('subject.md',JSON.stringify({gate_id:boundary,approval_scope:f.requirement.scope,basis,drafter_principal_ref:'synthetic.drafter'}));
+  const subject=f.write('subject.json',{gate_id:boundary,approval_scope:f.requirement.scope,basis,drafter_principal_ref:'synthetic.drafter'});
+  f.requirement.subject_ref=subject;f.record.request.items[0].subject.ref=subject;
   f.record.request.items[0].subject.digest=decisionDigest(readFileSync(f.requirement.subject_ref));f.present();f.record.responses=[];f.respond();f.save();
   const expected=approvalExpectationFromSubject(boundary,f.requirement.subject_ref,{root:dir});
-  return {...f,basis,expected,context:{requireApproved:true,root:dir,expected},current:{subject_ref:f.requirement.subject_ref,subject_digest:decisionDigest(readFileSync(f.requirement.subject_ref)).slice(7),drafter_principal_ref:'synthetic.drafter',basis,approval_scope:f.requirement.scope,user_decision_ref:f.ref}};
+  return {...f,basis,expected,context:{requireApproved:true,root,expected},current:{subject_ref:f.requirement.subject_ref,subject_digest:decisionDigest(readFileSync(f.requirement.subject_ref)).slice(7),drafter_principal_ref:'synthetic.drafter',basis,approval_scope:f.requirement.scope,user_decision_ref:f.ref}};
 }
 
 const deny = (f, code) => assert.throws(() => verify(f), (error) => error.code === code, code);
@@ -55,7 +63,7 @@ check("Git 回复归一化仍拒绝缺少来源或批准范围字段", () => {
   assert.throws(() => assertUserDecisionRequirement(f.requirement), /user-decision-missing/);
 });
 check("Git 原始回复不可读或只有 Agent 摘要均不能复用", () => {
-  const f = gitFixture("commit", "unreadable"); f.record.responses[0].source.ref += ".missing"; deny(f, "user-decision-source-unreadable");
+  const f = gitFixture("commit", "unreadable"); f.record.responses[0].source.ref += ".missing"; assert.throws(()=>verify(f),error=>error.native===true&&error.code==='INPUT'&&error.message.includes(path.relative(root,f.record.responses[0].source.ref)));
   const g = gitFixture("push", "summary"); g.record.responses[0].source.kind = "agent-summary"; assert.throws(() => verify(g));
 });
 check("Git 回复来源摘要和当前候选摘要漂移均不能复用", () => {
@@ -80,7 +88,7 @@ for (const decision of ["rejected", "changes-requested", "unclear", "revoked"]) 
 check("数字人代答无效", () => { const f = fixture("bot"); f.record.responses = []; f.respond({ actor: "digital-human" }); deny(f, "user-decision-responder-mismatch"); });
 check("默认选项和无反对意见不能代替原始消息", () => { const f = fixture("default"); f.record.responses[0].source.kind = "default-option"; assert.throws(() => verify(f)); });
 check("记录原文与来源不一致无效", () => { const f = fixture("text"); f.record.responses[0].text = "我批准全部"; deny(f, "user-decision-responder-mismatch"); });
-check("缺失来源和仅 Agent 摘要无效", () => { const f = fixture("missing"); f.record.responses[0].source.ref += ".missing"; deny(f, "user-decision-source-unreadable"); const g = fixture("summary"); g.record.responses[0].source.kind = "agent-summary"; assert.throws(() => verify(g)); });
+check("缺失来源和仅 Agent 摘要无效", () => { const f = fixture("missing"); f.record.responses[0].source.ref += ".missing"; assert.throws(()=>verify(f),error=>error.native===true&&error.code==='INPUT'&&error.message.includes(path.relative(root,f.record.responses[0].source.ref))); const g = fixture("summary"); g.record.responses[0].source.kind = "agent-summary"; assert.throws(() => verify(g)); });
 check("来源篡改被拒绝", () => { const f = fixture("source-changed"); writeFileSync(f.record.responses[0].source.ref, "变更"); deny(f, "user-decision-source-changed"); });
 check("未展示当前请求不能批准", () => { const f = fixture("presentation"); f.record.request.items[0].recommendation = "不同方案"; deny(f, "user-decision-presentation-mismatch"); });
 check("展示前回复无效", () => { const f = fixture("time"); f.record.responses = []; f.respond({ time: "2026-09-05T01:01:00Z" }); deny(f, "user-decision-source-invalid"); });
@@ -139,7 +147,7 @@ check("默认生物人门禁纳入解析和 checkpoint", () => {
   for (const gate of ["gate.product-design-approved", "gate.backend-architecture-platform-approved"]) {
     assert.equal(countersignRuleForGate(roles.gate_policy, gate).bucket, "biological_human");
     assert.ok(collectCountersignGateIds(roles.gate_policy).includes(gate));
-    assert.throws(() => assertCheckpointApprovals({ gates: { [gate]: { status: "approved" } } }), /缺少检查|缺少当前证据摘要|approval_ref/);
+    assert.throws(() => assertCheckpointApprovals({ gates: { [gate]: { status: "approved" } } }), error => error.code === 'EVIDENCE_REQUIRED');
   }
 });
 check("历史数字人记录可读但不能关闭关键门禁", () => {

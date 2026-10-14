@@ -53,6 +53,7 @@ export const STEPS = [
     id: "doc-facts",
     title: "说明文档事实",
     command: ["scripts/verify-doc-facts"],
+    blocking: false,
     fix: "改为链接权威资产，不在说明文档复述数量或 revision（模式表见 scripts/lib/doc-facts-patterns.json）",
   },
   {

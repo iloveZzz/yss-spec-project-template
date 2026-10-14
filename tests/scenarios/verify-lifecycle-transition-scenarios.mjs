@@ -1,17 +1,18 @@
+import {makeRoot} from '../helpers/yss-instance.mjs';
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { mkdtempSync, mkdirSync, rmSync, readFileSync, existsSync, writeFileSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { buildDecisionFixture, buildImplementationFixture } from "../../scripts/fixtures/user-decision/build-fixture.mjs";
-const temp = mkdtempSync(path.join(os.tmpdir(), "lifecycle-decision-test-"));
+const temp = makeRoot("lifecycle-decision-test-");
 process.on("exit", () => rmSync(temp, { recursive: true, force: true }));
 const approval = buildImplementationFixture(temp, ".work/demo/issues/01-valid-slice.md");
 const scaffoldApproval = buildDecisionFixture(path.join(temp, "scaffold-choice"), { boundary: "scaffold-choice", scope: ["backend", "frontend"] });
 const backendArchitectureApproval = buildDecisionFixture(path.join(temp, "backend-architecture-platform"), { boundary: "gate.backend-architecture-platform-approved", scope: ["backend", "layered-mvc", "spring-boot-2.7-jdk8@2.7.18/java8"] });
 import { validateImplementationEntry, validateImplementationRepositoriesReady, validateNextRoute, validateTicketFormalization } from "../../scripts/lib/lifecycle-transition.mjs";
-import { approvalExpectationForBoundAsset } from "../../scripts/lib/approval-consumption.mjs";
-import { loadApprovalRecord, validateApprovalRecord } from "../../scripts/lib/approval-record.mjs";
+import { approvalExpectationForBoundAsset } from "../../scripts/lib/native-approval.mjs";
+import { loadApprovalRecord, validateApprovalRecord } from "../../scripts/lib/native-approval.mjs";
 
 const digest = (bytes) => `sha256:${createHash("sha256").update(bytes).digest("hex")}`;
 const writeProjectFile = (ref, value) => {
@@ -122,6 +123,7 @@ const options = { exists, read, root: temp };
 
 const validTicketState = {
   ...approval.state,
+  checkpoint_ref: ".work/demo/checkpoint.json",
   user_decisions: [...approval.state.user_decisions, scaffoldApproval.requirement],
   delivery_impacts: { backend: true, frontend: true },
   implementation_repository_preparation: {
@@ -228,11 +230,14 @@ const legacyPremature = structuredClone(legacyState);
 legacyPremature.implementation_repository_preparation.projects[0].legacy_reconciliation.premature_implementation = true;
 assert.ok(validateImplementationRepositoriesReady(legacyPremature, options).blocking_signals.includes("premature-implementation-detected"));
 
+// A native Spec instance needs a registered current feature even in an isolated transition fixture.
+writeProjectFile(".work/demo/map.md", "---\ncheckpoint_ref: .work/demo/checkpoint.json\n---\n# Synthetic feature\n");
+writeProjectFile(validTicketState.checkpoint_ref, { schema_version: 1, repository_mode: "project-instance", feature_id: "feature.demo", status: "running", gates: {}, checks: {}, blockers: [], vertical_slice_ticket_ref: validTicketState.vertical_slice_ticket_ref });
 const implementation = validateImplementationEntry({
   ...validTicketState,
   ready_for_agent: true,
 }, options);
-assert.equal(implementation.result, "allowed");
+assert.equal(implementation.result, "allowed", JSON.stringify(implementation));
 
 const cases = [
   ["missing repository preparation", { ...validTicketState, implementation_repository_preparation: undefined }, "implementation-repository-decision-required"],

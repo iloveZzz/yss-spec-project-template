@@ -1,9 +1,9 @@
-import {approvalExpectationForBoundAsset} from './approval-consumption.mjs';
+import {approvalExpectationForBoundAsset} from './native-approval.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
 import { parseSliceYaml, readSliceContract, selectSliceWorkUnit } from './slice-contract.mjs';
-import { validateApprovalRecord } from './approval-record.mjs';
+import { validateApprovalRecord } from './native-approval.mjs';
 import { inspectSliceContract } from './slice-execution-preflight.mjs';
 import { inspectMaintenanceCandidate } from './maintenance-candidate.mjs';
 import {inspectImplementationCandidate} from './implementation-candidate-current.mjs';

@@ -1,12 +1,14 @@
+import {nativeEvidenceVerify,NEEDS} from './native-evidence.mjs';
+import {withValidationPhase} from './validation-phase.mjs';
 import { verifySliceContractApproval } from './approved-execution-context.mjs';
-import { cpSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, renameSync, rmSync } from 'node:fs';
+import { cpSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { tmpdir } from 'node:os';
 import { readSliceContract } from './slice-contract.mjs';
 import { parseContent, ids } from './plan-spec-markdown.mjs';
 import {authorizeBackendDelivery} from './lifecycle-execution-scope.mjs';
 import { openBundle, openDelivery, importBundle, sourceApproval } from './strategic-handoff.mjs';
-import { read, safe, ensure, hash, digest, json, files, write, project, schema, archive, sourceApprovalPolicy, assertHandoffEvidenceRef } from './strategic-handoff-io.mjs';
+import { read, safe, ensure, hash, digest, json, files, write, project, schema, archive, sourceApprovalPolicy, assertHandoffEvidenceRef, ROOT, parse } from './strategic-handoff-io.mjs';
 
 // Evidence binds the deliverable basis, avoiding a circular hash through its own logs.
 export function backendDeliveryBasis(delivery) {
@@ -117,40 +119,32 @@ export async function inspectBackendDelivery(root, ref, { readOnly = false } = {
   }, { readOnly });
 }
 
-function validManifest(manifest,root) {
-  ensure(manifest.schema_version===1&&manifest.kind==='backend-delivery','后端包类型或 schema 不支持');
-  const {bundle_digest,...body}=manifest;
-  ensure(bundle_digest===digest(body),'后端包清单摘要不一致');
-  ensure(Array.isArray(manifest.files)&&manifest.files.length<=20000,'后端包文件清单无效');
-  const names=manifest.files.map(x=>x.path);
-  ensure(new Set(names.map(x=>x.toLowerCase())).size===names.length,'后端包路径重复');
-  ensure(json([...names,'manifest.json'].sort())===json(files(root).sort()),'后端包文件缺失或存在未登记文件');
-  ensure(manifest.files.reduce((total,file)=>total+file.size_bytes,0)<=512*1024*1024,'后端包大小超限');
-  const originals=manifest.files.filter(x=>x.original_ref).map(x=>x.original_ref);
-  ensure(new Set(originals.map(x=>x.toLowerCase())).size===originals.length,'后端包源路径重复');
-  originals.forEach(assertHandoffEvidenceRef);
-  const captured = new Map();
-  for(const file of manifest.files) {
-    const bytes=readFileSync(safe(root,file.path));
-    ensure(bytes.length===file.size_bytes&&hash(bytes)===file.sha256,`后端包文件摘要不一致: ${file.path}`);
-    captured.set(file.path, bytes);
-  }
-  return captured;
-}
-
+// The native package entry authenticates the sealed source policy and original
+// package bytes. The callback receives a materialized IO view, not a new authority.
 export async function openBackendDelivery(input, action) {
-  const temporary=mkdtempSync(path.join(tmpdir(),'yss-backend-delivery-'));
-  try {
-    ensure(existsSync(input)&&!lstatSync(input).isSymbolicLink(),'后端交付包不存在或是 symlink');
-    let root=path.resolve(input);
-    if(lstatSync(root).isFile()) { root=path.join(temporary,'unpacked');mkdirSync(root);archive('unpack',path.resolve(input),root); }
-    const manifest=read(safe(root,'manifest.json'));const captured=validManifest(manifest,root);
-    const source=path.join(temporary,'source');mkdirSync(source);
-    for(const file of manifest.files)if(file.original_ref)write(source,file.original_ref,captured.get(file.path));
-    const inspected=await inspectBackendDelivery(source,manifest.delivery_ref);
-    ensure(manifest.delivery_id===inspected.delivery.delivery_id&&manifest.version===inspected.delivery.version,'后端包身份不一致');
-    return await action({root,source,manifest,...inspected});
-  } finally { rmSync(temporary,{recursive:true,force:true}); }
+ const temporary=mkdtempSync(path.join(tmpdir(),'yss-backend-delivery-'));
+ try {
+  return await withValidationPhase({root:ROOT,purpose:'backend-delivery-package',readOnly:true},async()=>{
+   const result=nativeEvidenceVerify({root:ROOT,group:'handoff',kind:'backend-delivery',file:input,needs:NEEDS.backendDeliveryPackage});
+   if(result.exitCode!==0)throw Object.assign(new Error(result.message),{code:result.diagnostics[0]?.code??result.code,native:true});
+   const proof=result.envelope.result?.coverage;
+   ensure(proof?.result==='verified','NATIVE_PROTOCOL: 缺少 backend-delivery 报告');
+   let root=path.resolve(input);
+   if(lstatSync(root).isFile()){root=path.join(temporary,'unpacked');mkdirSync(root);archive('unpack',path.resolve(input),root);}
+   const manifest=parse(readFileSync(path.join(root,'manifest.json')));
+   const {bundle_digest,...body}=manifest;
+   ensure(bundle_digest===proof.bundle_digest&&digest(body)===proof.bundle_digest,'VALIDATION_INPUT_CHANGED: 后端包清单已改变');
+   const source=path.join(temporary,'source');mkdirSync(source);
+   let delivery;
+   for(const file of manifest.files){
+    const bytes=readFileSync(path.join(root,file.path));
+    ensure(bytes.length===file.size_bytes&&hash(bytes)===file.sha256,`VALIDATION_INPUT_CHANGED: ${file.path}`);
+    if(file.original_ref){const target=path.join(source,file.original_ref);mkdirSync(path.dirname(target),{recursive:true});writeFileSync(target,bytes);if(file.original_ref===manifest.delivery_ref)delivery=parse(bytes);}
+   }
+   ensure(delivery&&delivery.delivery_id===proof.delivery_id&&delivery.version===proof.version,'NATIVE_PROTOCOL: 后端包身份与认证结果不一致');
+   return await action({root,source,manifest,delivery,basis:backendDeliveryBasis(delivery)});
+  });
+ }finally{rmSync(temporary,{recursive:true,force:true});}
 }
 
 export async function exportBackendDelivery({sourceRoot,deliveryRef,output,zip=false}) {

@@ -324,7 +324,10 @@
       ".template-spec/process/schemas/progression-target.schema.json",
       ".template-spec/process/spec-baseline.md",
       ".template-spec/process/schemas/spec-baseline-package.schema.json",
-      ".template-spec/process/schemas/spec-baseline-import-receipt.schema.json"
+      ".template-spec/process/schemas/spec-baseline-import-receipt.schema.json",
+      ".template-spec/process/schemas/strategic-handoff-export.schema.json",
+      ".template-spec/process/schemas/strategic-handoff-export-v2.schema.json",
+      ".template-spec/process/schemas/strategic-handoff-package.schema.json"
     ],
     "scripts": [
       "scripts/verify-project-instance",
@@ -502,6 +505,95 @@
         "generator": "native-bundle"
       }
     ],
-    "rules": []
+    "rules": [
+      {
+        "id": "ar12b-approval-record",
+        "from": {
+          "profile": "spec",
+          "templateCommit": "7ac487880dcbda5ca6e121e1641ee7ebc8a55996",
+          "sourceSnapshotHash": "48e6d1ec8c5c6a6780678b970e5463c58c54445f31efbb971b827aa1b3d493f1",
+          "bundleHash": "343a828bfc887319b67165a6663c05f62c03e3e4a7c210f4eebd23542c8da4a3"
+        },
+        "action": "delete",
+        "sourcePath": "scripts/lib/approval-record.mjs"
+      },
+      {
+        "id": "ar12b-approval-current",
+        "from": {
+          "profile": "spec",
+          "templateCommit": "7ac487880dcbda5ca6e121e1641ee7ebc8a55996",
+          "sourceSnapshotHash": "48e6d1ec8c5c6a6780678b970e5463c58c54445f31efbb971b827aa1b3d493f1",
+          "bundleHash": "343a828bfc887319b67165a6663c05f62c03e3e4a7c210f4eebd23542c8da4a3"
+        },
+        "action": "delete",
+        "sourcePath": "scripts/lib/approval-current.mjs"
+      },
+      {
+        "id": "ar12b-approval-consumption",
+        "from": {
+          "profile": "spec",
+          "templateCommit": "7ac487880dcbda5ca6e121e1641ee7ebc8a55996",
+          "sourceSnapshotHash": "48e6d1ec8c5c6a6780678b970e5463c58c54445f31efbb971b827aa1b3d493f1",
+          "bundleHash": "343a828bfc887319b67165a6663c05f62c03e3e4a7c210f4eebd23542c8da4a3"
+        },
+        "action": "delete",
+        "sourcePath": "scripts/lib/approval-consumption.mjs"
+      },
+      {
+        "id": "ar12b-approval-record-io",
+        "from": {
+          "profile": "spec",
+          "templateCommit": "7ac487880dcbda5ca6e121e1641ee7ebc8a55996",
+          "sourceSnapshotHash": "48e6d1ec8c5c6a6780678b970e5463c58c54445f31efbb971b827aa1b3d493f1",
+          "bundleHash": "343a828bfc887319b67165a6663c05f62c03e3e4a7c210f4eebd23542c8da4a3"
+        },
+        "action": "delete",
+        "sourcePath": "scripts/lib/approval-record-io.mjs"
+      },
+      {
+        "id": "ar12b-approval-checkpoint-discovery",
+        "from": {
+          "profile": "spec",
+          "templateCommit": "7ac487880dcbda5ca6e121e1641ee7ebc8a55996",
+          "sourceSnapshotHash": "48e6d1ec8c5c6a6780678b970e5463c58c54445f31efbb971b827aa1b3d493f1",
+          "bundleHash": "343a828bfc887319b67165a6663c05f62c03e3e4a7c210f4eebd23542c8da4a3"
+        },
+        "action": "delete",
+        "sourcePath": "scripts/lib/approval-checkpoint-discovery.mjs"
+      },
+      {
+        "id": "ar12b-user-decision",
+        "from": {
+          "profile": "spec",
+          "templateCommit": "7ac487880dcbda5ca6e121e1641ee7ebc8a55996",
+          "sourceSnapshotHash": "48e6d1ec8c5c6a6780678b970e5463c58c54445f31efbb971b827aa1b3d493f1",
+          "bundleHash": "343a828bfc887319b67165a6663c05f62c03e3e4a7c210f4eebd23542c8da4a3"
+        },
+        "action": "delete",
+        "sourcePath": "scripts/lib/user-decision.mjs"
+      },
+      {
+        "id": "ar12b-user-decision-reuse",
+        "from": {
+          "profile": "spec",
+          "templateCommit": "7ac487880dcbda5ca6e121e1641ee7ebc8a55996",
+          "sourceSnapshotHash": "48e6d1ec8c5c6a6780678b970e5463c58c54445f31efbb971b827aa1b3d493f1",
+          "bundleHash": "343a828bfc887319b67165a6663c05f62c03e3e4a7c210f4eebd23542c8da4a3"
+        },
+        "action": "delete",
+        "sourcePath": "scripts/lib/user-decision-reuse.mjs"
+      },
+      {
+        "id": "ar12b-decision-continuation",
+        "from": {
+          "profile": "spec",
+          "templateCommit": "7ac487880dcbda5ca6e121e1641ee7ebc8a55996",
+          "sourceSnapshotHash": "48e6d1ec8c5c6a6780678b970e5463c58c54445f31efbb971b827aa1b3d493f1",
+          "bundleHash": "343a828bfc887319b67165a6663c05f62c03e3e4a7c210f4eebd23542c8da4a3"
+        },
+        "action": "delete",
+        "sourcePath": "scripts/lib/decision-continuation.mjs"
+      }
+    ]
   }
 }

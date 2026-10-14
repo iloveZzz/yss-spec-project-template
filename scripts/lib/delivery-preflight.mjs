@@ -1,12 +1,11 @@
 import './slice-repositories.mjs'; // 登记多项目准备核验器（工作流层），见 slice-contract.mjs
-import {approvalExpectationForBoundAsset} from './approval-consumption.mjs';
+import {sourceApproval} from './strategic-handoff.mjs';
 import { normalizeSliceContract, sourceSliceContract, parseSliceYaml } from './slice-contract.mjs';
 import { assertExistingSliceStructure, createApprovedExecutionContext, verifySliceContractApproval } from './approved-execution-context.mjs';
 import path from 'node:path';
 import { readFileSync, existsSync, withValidationPhase } from './validation-phase.mjs';
 import { ROOT, read, parse, safe, hash, digest, ensure, schema, sourceApprovalPolicy } from './strategic-handoff-io.mjs';
 import { parseContextContract } from './context-contract.mjs';
-import { validateApprovalRecord } from './approval-record.mjs';
 import { loadSkillRegistry } from './skill-registry.mjs';
 import * as architecture from './backend-architecture.mjs';
 
@@ -123,8 +122,7 @@ async function preflight(input,{stage,root=process.cwd(),work_unit_id}={}) {
 async function approved(root,binding,gates) {
   ensure(binding.approval_ref&&binding.id&&binding.version,'缺少当前资产 id/version/approval_ref');
   const record=read(safe(root,binding.approval_ref));
-  const roles=sourceApprovalPolicy(read(safe(root,'.template-spec/agents/digital-human-roles.yaml')));
-  validateApprovalRecord(record,{rolesDoc:roles,requireApproved:true,root,read:ref=>readFileSync(safe(root,path.relative(root,ref).split(path.sep).join('/'))),expected:approvalExpectationForBoundAsset(record.gate_id,binding,{root})});
+  await sourceApproval(record,undefined,root,binding);
   ensure(gates.includes(record.gate_id),'资产批准使用错误门禁');
   ensure(record.artifact_bindings?.some(x=>x.id===binding.id&&x.version===binding.version&&x.digest===binding.digest),'stale: 批准未绑定当前资产身份、版本及字节');
 }

@@ -2,8 +2,6 @@
   "schema_version": 1,
   "note": "最底层模块：只导入本清单内的模块；新增、移动模块时同步更新。检查见 scripts/verify-import-direction",
   "core": [
-    "approval-record-io",
-    "business-tickets",
     "governance-io",
     "instance-metadata",
     "json-schema",

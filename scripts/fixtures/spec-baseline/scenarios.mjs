@@ -31,7 +31,7 @@ const approvedGate=(owner,key)=>{
 try {
  const source=await approvedSpecFixture(src,{productDesign:!noDesign,nativeSeed:process.env.YSS_SPEC_BASELINE_NATIVE_SEED}),target=await designFixture(dst,{productDesign:!noDesign,nativeSeed:process.env.YSS_DESIGN_BASELINE_NATIVE_SEED});
  const sourceCheckpointBytes=fs.readFileSync(path.join(src,source.checkpointRef)),missingPlan=structuredClone(source.state);delete missingPlan.plan_review_ref;
- try{source.plan.write(source.checkpointRef,missingPlan);assert.throws(()=>inspectSpecBaselineSource(src,source.checkpointRef),/plan_review_ref/);checks++;}finally{fs.writeFileSync(path.join(src,source.checkpointRef),sourceCheckpointBytes);}
+ try{source.plan.write(source.checkpointRef,missingPlan);assert.throws(()=>inspectSpecBaselineSource(src,source.checkpointRef),error=>error.code==='PLAN_CONTEXT_REQUIRED');checks++;}finally{fs.writeFileSync(path.join(src,source.checkpointRef),sourceCheckpointBytes);}
  const rejectSource=(candidate,label)=>{
   try{
    source.plan.write(source.checkpointRef,candidate);
@@ -67,7 +67,7 @@ try {
  const receipt=read(path.join(dst,imported.receipt_ref)),prefix=`${receipt.package_ref}/payload/files/`;
  reconcile(dst,'intake-context.json',{receiptRef:imported.receipt_ref,sourceContextRef:prefix+'source-context.snapshot.md'});
  const proof=verifySpecBaselineBinding(state,{root:dst});
- assert.throws(()=>verifySpecBaselineBinding({...state,feature_id:'feature.other'},{root:dst}),/feature_id/);checks++;
+ assert.throws(()=>verifySpecBaselineBinding({...state,feature_id:'feature.other'},{root:dst}),error=>error.code==='SPEC_BASELINE_TARGET');checks++;
  const reconciliationBytes=fs.readFileSync(path.join(dst,'intake-context.json'));
  const emptyTerms=read(path.join(dst,'intake-context.json'));emptyTerms.context_snapshot.term_refs=[];emptyTerms.context_snapshot.referenced_terms_digest=resolveContextTermRefs(parseContextContract({root:dst}),[]).referenced_terms_digest;target.put('intake-context.json',emptyTerms);
  assert.throws(()=>verifySpecBaselineBinding(state,{root:dst}),/digest|术语|快照/);checks++;
@@ -75,7 +75,7 @@ try {
  const contextBytes=fs.readFileSync(path.join(dst,'CONTEXT.md')),firstTerm=parseContextContract({root:dst}).business_terms[0];
  const changed=contextBytes.toString().replace(firstTerm.meaning,firstTerm.meaning+' 合成含义冲突');assert.notEqual(changed,contextBytes.toString());fs.writeFileSync(path.join(dst,'CONTEXT.md'),changed);
  reconcile(dst,'intake-context.json',{receiptRef:imported.receipt_ref,sourceContextRef:prefix+'source-context.snapshot.md'});
- assert.throws(()=>verifySpecBaselineBinding(state,{root:dst}),/术语冲突/);checks++;
+ assert.throws(()=>verifySpecBaselineBinding(state,{root:dst}),error=>error.code==='SPEC_BASELINE_CONTEXT'&&error.message.includes('业务含义冲突'));checks++;
  fs.writeFileSync(path.join(dst,'CONTEXT.md'),contextBytes);fs.writeFileSync(path.join(dst,'intake-context.json'),reconciliationBytes);
  check(proof.next_work_unit===(noDesign?'work-unit.business-ticket-formalization':'work-unit.prototype-design'),'接入当前影响登记的Design单元');
  check(validateNextRoute('work-unit.entry-triage',proof.next_work_unit,state,{root:dst}).result==='allowed','entry-triage跳过已批准Plan/Spec');
@@ -126,7 +126,7 @@ try {
  }
  const specFile=safe(dst,proof.specRef),bytes=fs.readFileSync(specFile),mode=fs.statSync(specFile).mode&0o777;
  // Synthetic negative only: native packages are read-only, so simulate disk tampering explicitly.
- try{fs.chmodSync(specFile,mode|0o200);fs.appendFileSync(specFile,'\nchanged');assert.throws(()=>verifySpecBaselineBinding(state,{root:dst}),/漂移/);checks++;}finally{fs.writeFileSync(specFile,bytes);fs.chmodSync(specFile,mode);}
+ try{fs.chmodSync(specFile,mode|0o200);fs.appendFileSync(specFile,'\nchanged');assert.throws(()=>verifySpecBaselineBinding(state,{root:dst}),error=>error.code==='SPEC_BASELINE_DIGEST'&&error.message.includes('source/spec.md'));checks++;}finally{fs.writeFileSync(specFile,bytes);fs.chmodSync(specFile,mode);}
  // A changed local meaning needs current local strategic/Spec approvals, not an origin exemption.
  const localRoot=path.join(root,'local-design'),local=await designFixture(localRoot,{nativeSeed:process.env.YSS_DESIGN_BASELINE_NATIVE_SEED});
  const localImported=importSpecBaseline({bundle:pkg,targetRoot:localRoot}),localReceipt=read(path.join(localRoot,localImported.receipt_ref));
@@ -147,10 +147,10 @@ try {
  const localCurrent={feature_id:source.state.feature_id,stage:'stage.entry-triage',upstream_spec_baseline:{receipt_ref:localImported.receipt_ref,receipt_digest:localImported.receipt_digest},context_reconciliation:{status:'reconciled',ref:'local-intake-context.json',evidence_refs:[localImported.receipt_ref,'local-intake-context.json']},artifacts:{'artifact.spec':{status:'approved',ref:local.handoff.source.spec_ref.persisted_ref,evidence_refs:[local.handoff.package_export.approvals.spec_ref.record_ref]}},checks:{},gates:{'gate.plan-approved':approvedGate(local,'domain_strategy_ref'),'gate.spec-baseline-approved':approvedGate(local,'spec_ref')}};
  const currentPlan=localPlanFixture(local);if(local.nativeSeed)bindLocalPlanHandoff(local,currentPlan);Object.assign(localCurrent,currentPlan.state);localCurrent.gates['gate.spec-baseline-approved']=approvedGate(local,'spec_ref');
  check(assertCheckpointBoundary(localCurrent,{root:localRoot}).status==='passed','本地当前批准可以承接新Context并保留Receipt来源');
- assert.throws(()=>verifySpecBaselineBinding({...localCurrent,plan_review_ref:undefined},{root:localRoot}),/plan_review_ref/);checks++;
+ assert.throws(()=>verifySpecBaselineBinding({...localCurrent,plan_review_ref:undefined},{root:localRoot}),error=>error.code==='PLAN_CONTEXT_REQUIRED');checks++;
  local.put('local-intake-checkpoint.json',{...checkpoint,...localCurrent});
  const inherited=structuredClone(target.handoff.source.domain_strategy_ref);inherited.approval_context.source_baseline.context_reconciliation_ref='local-intake-context.json';
- assert.throws(()=>importedApprovalOrigin(localRoot,inherited),/术语冲突/);checks++;
+ assert.throws(()=>importedApprovalOrigin(localRoot,inherited),error=>error.code==='SPEC_BASELINE_CONTEXT'&&error.message.includes('业务含义冲突'));checks++;
  const localOut=path.join(root,'local-final-handoff');await exportBundle({sourceRoot:localRoot,handoffRef:'handoff.yaml',output:localOut});
  await openBundle(localOut,b=>{check(!Object.values(b.handoff.source).some(asset=>asset.approval_context?.source_baseline),'重新批准的本地终点不借用旧来源marker');},{readOnly:true});
  if(nativeCLI){native(['verify','--root',dst,'--kind','spec-baseline','--package',pkg]);checks++;native(['verify','--root',dst,'--kind','spec-baseline','--file',imported.receipt_ref,'--checkpoint','intake-checkpoint.json']);checks++;verifyTerminal(dst,out);}

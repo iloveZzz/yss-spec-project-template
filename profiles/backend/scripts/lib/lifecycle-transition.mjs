@@ -1,4 +1,4 @@
-import {approvalExpectationForBoundAsset} from './approval-consumption.mjs';
+import {approvalExpectationForBoundAsset} from './native-approval.mjs';
 import {assertReadingTransition} from './reading-view-bundle.mjs';
 import { assertTrackingTransition } from './stage-tracking.mjs';
 import { validateBackendReview } from "./backend-review.mjs";
@@ -6,7 +6,7 @@ import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { parseDocument } from "../vendor/yaml.mjs";
-import { loadApprovalRecord, validateApprovalRecord } from "./approval-record.mjs";
+import { loadApprovalRecord, validateApprovalRecord } from "./native-approval.mjs";
 import { validateApiContractDecision } from "./api-contract-decision.mjs";
 import { ROOT } from "./lifecycle-registry.mjs";
 const IMPLEMENTATION_WORK_UNIT = "work-unit.slice-implementation";

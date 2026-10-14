@@ -1,9 +1,9 @@
-import {approvalExpectationForBoundAsset} from './approval-consumption.mjs';
+import {approvalExpectationForBoundAsset} from './native-approval.mjs';
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from './validation-phase.mjs';
 import path from "node:path";
 import { parseDocument } from "../vendor/yaml.mjs";
-import { loadApprovalRecord, validateApprovalRecord } from "./approval-record.mjs";
+import { loadApprovalRecord, validateApprovalRecordFile } from "./native-approval.mjs";
 import { validateJsonSchema } from "./json-schema.mjs";
 import { ROOT } from "./lifecycle-registry.mjs";
 import { validateTechnicalDesign } from "../../.agents/skills/yss-technical-design/scripts/validate-technical-design.mjs";
@@ -104,7 +104,7 @@ export async function validateBackendScaffoldPrerequisites(contract, { contractF
   if (approvalRef !== contract.lifecycle_approval_ref || approvalRef !== contract.approval?.approval_ref) fail("工程合同批准引用与脚手架合同不一致");
   const approvalFile = resolveLocalRef(root, approvalRef, "工程合同批准记录");
   const approval = loadApprovalRecord(approvalFile, 'gate.engineering-contract-approved');
-  validateApprovalRecord(approval, { requireApproved: true, root, expected: approvalExpectationForBoundAsset('gate.engineering-contract-approved',prerequisites.technical_design,{root,scope:[contract.contract_id,contract.project_name]}) });
+  validateApprovalRecordFile(approvalFile, { gate: 'gate.engineering-contract-approved', requireApproved: true, root, expected: approvalExpectationForBoundAsset('gate.engineering-contract-approved',prerequisites.technical_design,{root,scope:[contract.contract_id,contract.project_name]}) });
   if (approval.gate_id !== "gate.engineering-contract-approved") fail("工程合同批准记录 gate_id 必须为 gate.engineering-contract-approved");
   if (!Array.isArray(approval.approval_scope) || !approval.approval_scope.includes(contract.contract_id) || !approval.approval_scope.includes(contract.project_name)) fail("工程合同批准范围未覆盖当前合同和项目");
   requireEngineeringPackage(root, approval, contract, technical, data, api, prerequisites);

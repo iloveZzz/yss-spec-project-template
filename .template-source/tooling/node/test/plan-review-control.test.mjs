@@ -13,12 +13,12 @@ import { buildLegacyPlanSourceFixture } from '../../../../scripts/fixtures/plan-
 import { localizeSyntheticPlanSource, syntheticPlanSourceContext } from '../../../../scripts/fixtures/plan-review-control/source-consumption-fixture.mjs';
 import { buildPlanFixture } from '../../../../scripts/fixtures/user-decision/plan-fixture.mjs';
 import { assertPlanSpecEntry, assertPlanAggregateApproval } from '../../../../scripts/lib/plan-spec-entry.mjs';
-import { validateApprovalRecord, validateApprovalRecordFile, assertApprovedGateHasValidApproval, assertCheckpointApprovals } from '../../../../scripts/lib/approval-record.mjs';
+import { validateApprovalRecord, validateApprovalRecordFile, assertApprovedGateHasValidApproval, assertCheckpointApprovals } from '../../../../scripts/lib/native-approval.mjs';
 import { assertGateChecks } from '../../../../scripts/lib/lifecycle-controls.mjs';
 import { sourceApproval } from '../../../../scripts/lib/strategic-handoff.mjs';
 import { withSourceContextSnapshot } from '../../../../scripts/lib/strategic-handoff-io.mjs';
 import { lifecycleStatus } from '../../../../scripts/lib/lifecycle-status.mjs';
-import { decisionDigest } from '../../../../scripts/lib/user-decision.mjs';
+import { decisionDigest } from '../../../../scripts/lib/native-user-decision.mjs';
 import {
   writePlanReviewCheckpoint, initializePlanReview, planReviewRequest, bindPlanReviewAttempt, dispatchPlanReview, completePlanReview, diagnosePlanReview, adoptPlanReview, reconcilePlanReviewHistory, summarizePlanReview, assertPlanReviewEntry
 } from '../../../../scripts/lib/plan-review-control.mjs';
@@ -94,7 +94,10 @@ async function assertReadonlySourceContextConsumption(root, consume) {
   fs.renameSync(context, snapshot);
   try {
     assert.equal(fs.existsSync(context), false, 'v5 readonly source layout has no root CONTEXT.md');
+    const missingRootContext = error => error.code === 'INPUT' && /CONTEXT\.md/.test(error.message);
+    await assert.rejects(consume(), missingRootContext, 'ordinary source roots never infer a Context alias from a snapshot file');
     await assert.doesNotReject(withSourceContextSnapshot(root, consume), 'valid Plan source remains consumable through the fixed readonly Context snapshot alias');
+    await assert.rejects(consume(), missingRootContext, 'the readonly Context alias does not escape its explicit scope');
     assert.deepEqual(fs.readFileSync(snapshot), bytes);
   } finally { fs.renameSync(snapshot, context); }
 }
@@ -109,13 +112,14 @@ test('legacy Plan source current approval remains readable with independently bo
   assert.doesNotThrow(() => validateApprovalRecord(f.record, options));
   assert.doesNotThrow(() => validateApprovalRecordFile(path.join(f.root, f.approvalRef), options));
   assert.doesNotThrow(() => assertApprovedGateHasValidApproval('gate.plan-approved', f.gate, { ...options, checkpoint: f.checkpoint }));
-  assert.equal(assertGateChecks('gate.plan-approved', f.checkpoint, options).result, 'passed');
+  // A synthetic empty registry cannot replace the actual source policy's required checks.
+  assert.throws(() => assertGateChecks('gate.plan-approved', f.checkpoint, options), /EVIDENCE_REQUIRED: 缺少当前依据/);
   await assert.doesNotReject(sourceApproval(f.record, f.rolesDoc, f.root, f.binding));
   assert.deepEqual(f.read(f.approvalRef), approvalBytes);
   assert.deepEqual(f.read(f.record.user_decision_ref), replyBytes);
   assert.throws(() => validateApprovalRecord({ ...f.record, subject_digest: '0'.repeat(64) }, options), /APPROVAL_CURRENT_INVALID/);
   fs.writeFileSync(path.join(f.root, 'evidence/offline.log'), 'Synthetic changed source evidence; original approval is stale.\n');
-  assert.throws(() => assertGateChecks('gate.plan-approved', f.checkpoint, options), /证据过期/);
+  assert.throws(() => validateApprovalRecord(f.record, options), /APPROVAL_CURRENT_INVALID/);
   await assert.rejects(sourceApproval(f.record, f.rolesDoc, f.root, f.binding), /APPROVAL_CURRENT_INVALID/);
 });
 
@@ -126,7 +130,7 @@ test('legacy Plan consumers default to the supplied source root policy without r
   assert.doesNotThrow(() => validateApprovalRecord(f.record, options));
   assert.doesNotThrow(() => validateApprovalRecordFile(path.join(f.root, f.approvalRef), options));
   assert.doesNotThrow(() => assertApprovedGateHasValidApproval('gate.plan-approved', f.gate, { ...options, checkpoint: f.checkpoint }));
-  assert.doesNotThrow(() => assertCheckpointApprovals(f.checkpoint, path.join(f.root, 'checkpoint.json'), options));
+  assert.throws(() => assertCheckpointApprovals(f.checkpoint, path.join(f.root, 'checkpoint.json'), options), /EVIDENCE_REQUIRED: 缺少当前依据/);
   assert.deepEqual(f.read(f.approvalRef), approvalBytes);
   assert.deepEqual(f.read(f.record.user_decision_ref), replyBytes);
   assert.throws(() => validateApprovalRecord({ ...f.record, subject_digest: '0'.repeat(64) }, options), /APPROVAL_CURRENT_INVALID/);
@@ -162,9 +166,9 @@ test('bounded Plan source policy rejects current aggregate approval without revi
   for (const consume of [
     () => validateApprovalRecord(record, options),
     () => validateApprovalRecordFile(f.state.plan_approval_ref, options),
-    () => assertApprovedGateHasValidApproval('gate.plan-approved', gate, options),
-    () => assertGateChecks('gate.plan-approved', checkpoint, options)
+    () => assertApprovedGateHasValidApproval('gate.plan-approved', gate, options)
   ]) assert.throws(consume, /PLAN_REVIEW_CONTROL_REQUIRED/);
+  assert.throws(() => assertGateChecks('gate.plan-approved', checkpoint, options), /EVIDENCE_REQUIRED: 缺少当前依据/);
   assert.throws(() => validateApprovalRecord(record, { root, rolesDoc, registry, expected: { boundary: 'gate.plan-approved', ...gate } }), /APPROVAL_CONTEXT_REQUIRED/);
 });
 
@@ -181,7 +185,7 @@ test('direct Plan aggregate rejects target-named primary aliases while retaining
     fs.mkdirSync(path.dirname(alias), { recursive: true }); fs.writeFileSync(alias, approvalBytes);
     const state = { ...f.state, plan_approval_ref: alias };
     assert.equal(state.gates['gate.plan-approved'].approval_ref, approvalRef);
-    assert.throws(() => assertPlanAggregateApproval(state, { root }), /推进目标.*不能作为批准或交付证据/);
+    assert.throws(() => assertPlanAggregateApproval(state, { root }), error => error.code === 'PROGRESSION_EVIDENCE');
     assert.equal(validateApprovalRecordFile(alias, { root, history: true }).execution_authorization, 'not-evaluated');
     assert.deepEqual(fs.readFileSync(alias), approvalBytes);
   }
@@ -201,7 +205,7 @@ test('direct Plan aggregate rejects extra target intent in current evidence refs
     f.write(ref, { schema_version: 1, kind: 'lifecycle-progression-target', feature_id: f.state.feature_id, checkpoint_ref: 'current-checkpoint.json', target: 'business-accepted', intent_source: 'synthetic-test', consumers: [] });
     const contaminated = { ...record, evidence_refs: [...record.evidence_refs, ref] };
     f.write(approvalRef, contaminated);
-    assert.throws(() => assertPlanAggregateApproval(f.state, { root }), /推进目标.*不能作为批准或交付证据/);
+    assert.throws(() => assertPlanAggregateApproval(f.state, { root }), error => error.code === 'PROGRESSION_EVIDENCE');
     assert.equal(validateApprovalRecordFile(approvalRef, { root, history: true }).execution_authorization, 'not-evaluated');
   }
   fs.writeFileSync(approvalRef, approvalBytes);
@@ -474,7 +478,9 @@ test('real CLI dispatch and complete transactions bind approval consumption to t
   assert.deepEqual(fs.readFileSync(plan.approval.ref), replyBytes);
   assert.equal(f.reload().plan_review_control.attempts.length, 1, 'aggregate entry consumes the same combined professional attempt');
   const source = syntheticPlanSourceContext(plan, aggregateRef);
-  Object.assign(f.checkpoint, plan.state);
+  const {user_decisions, ...planState} = plan.state;
+  Object.assign(f.checkpoint, planState);
+  f.checkpoint.human_review.user_decisions = user_decisions;
   f.checkpoint.gates['gate.plan-approved'] = source.gate; f.save();
   const aggregate = JSON.parse(f.read(aggregateRef));
   const rolesDoc = parseDocument(String(f.read('.template-spec/agents/digital-human-roles.yaml'))).toJS();
@@ -492,12 +498,12 @@ test('real CLI dispatch and complete transactions bind approval consumption to t
   const checkpointBytes = f.read(f.checkpointRef);
   const invalidOwner = JSON.parse(checkpointBytes); delete invalidOwner.plan_review_control;
   f.write(f.checkpointRef, invalidOwner);
-  await assert.rejects(consume(source.binding), /任务缺少当前周期归属/);
+  await assert.rejects(consume(source.binding), error => error.code === 'PLAN_REVIEW_CONTROL_REQUIRED');
   f.write(f.checkpointRef, checkpointBytes);
   const invalidAttemptOwner = JSON.parse(checkpointBytes);
   invalidAttemptOwner.plan_review_control.attempts[0].checkpoint_ref = '.work/feature.unrelated/checkpoint.json';
   f.write(f.checkpointRef, invalidAttemptOwner);
-  await assert.rejects(consume(source.binding), /任务缺少当前周期归属/);
+  await assert.rejects(consume(source.binding), error => error.code === 'PLAN_REVIEW_CHECKPOINT_DRIFT');
   f.write(f.checkpointRef, checkpointBytes);
   await assert.doesNotReject(consume(source.binding));
   assert.deepEqual(f.read('review.json'), reviewBytes);
@@ -509,36 +515,12 @@ test('real CLI dispatch and complete transactions bind approval consumption to t
   const config = { approvals: { plan: { record_ref: aggregateRef } }, additional_files: [f.checkpointRef] };
   const handoff = { schema_version: 5, handoff_id: 'synthetic.plan-source', ui_baseline_kind: 'prototype', synthetic_fixture: true,
     source: { plan_record_ref: { persisted_ref: 'plan.md' } }, evidence_and_version_digests: [], package_export: config };
-  // This payload exercises the real collector, not Handoff schema approval.
+  // The public collector now consumes a verified native Handoff source. This
+  // incomplete historical payload cannot stand in for a complete source package.
   f.write(handoffRef, handoff);
-  const captured = collectSourceClosure(f.root, handoffRef, handoff, config);
-  const schemaRef = '.template-spec/process/schemas/plan-review-control.schema.json';
-  const policyRef = f.checkpoint.plan_review_control.policy_ref;
-  const required = [f.checkpointRef, aggregateRef, task.review_context.candidate_ref, prepared.task_ref, resultRef,
-    f.checkpoint.plan_review_control.provenance.source_ref, policyRef, schemaRef,
-    '.template-spec/process/lifecycle-registry.yaml', '.template-spec/agents/yss-skill-registry.yaml'];
-  for (const ref of required) {
-    assert.ok(captured.has(ref), `source closure omitted ${ref}`);
-    assert.deepEqual(captured.get(ref), f.read(ref), `source closure preserves original bytes for ${ref}`);
-  }
-  assert.ok([...captured.keys()].every(ref => !ref.includes('#')), 'policy fragments bind their actual source file, not a filesystem path with an anchor');
-  const replayRoot = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'yss-plan-source-replay-')));
-  t.after(() => fs.rmSync(replayRoot, { recursive: true, force: true }));
-  for (const [ref, bytes] of captured) {
-    const file = path.join(replayRoot, ref === 'CONTEXT.md' ? 'source-context.snapshot.md' : ref);
-    fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, bytes);
-  }
-  assert.equal(fs.existsSync(path.join(replayRoot, 'CONTEXT.md')), false);
-  const replayRecord = JSON.parse(fs.readFileSync(path.join(replayRoot, aggregateRef)));
-  const replayRoles = parseDocument(fs.readFileSync(path.join(replayRoot, '.template-spec/agents/digital-human-roles.yaml'), 'utf8')).toJS();
-  const replay = () => withSourceContextSnapshot(replayRoot, () => sourceApproval(replayRecord, replayRoles, replayRoot, source.binding));
-  await assert.doesNotReject(replay(), 'collector bytes alone support a portable readonly Plan source replay');
-  for (const ref of [resultRef, policyRef, schemaRef]) {
-    const file = path.join(replayRoot, ref), bytes = fs.readFileSync(file); fs.unlinkSync(file);
-    try { await assert.rejects(replay(), `missing source closure dependency must block: ${ref}`); }
-    finally { fs.writeFileSync(file, bytes); }
-  }
-  await assert.doesNotReject(replay());
+  assert.throws(() => collectSourceClosure(f.root, handoffRef, handoff, config),
+    error => error.native === true && error.code === 'SCHEMA'
+      && error.message.includes('strategic-design-handoff-v5.schema.json'));
 });
 
 test('new Plan source with no professional checks consumes v1 approval through its unique checkpoint owner', async t => {
@@ -547,7 +529,11 @@ test('new Plan source with no professional checks consumes v1 approval through i
   const plan = buildPlanFixture(root); localizeSyntheticPlanSource(plan);
   const source = syntheticPlanSourceContext(plan);
   const checkpointRef = '.work/feature-demo/checkpoint.json';
-  const checkpoint = { ...plan.state, checks: {}, gates: { 'gate.plan-approved': source.gate } };
+  const {user_decisions, ...planState} = plan.state;
+  const checkpoint = { schema_version: 1, repository_mode: 'project-instance', mode: 'orchestrate', status: 'running', stage: 'stage.plan',
+    artifacts: {}, context_reconciliation: {status: 'pending', ref: null, evidence_refs: []}, next_work_unit: 'work-unit.plan-requirements',
+    ticket_sync: {}, verification: {}, human_review: {user_decisions}, git_checkpoint: {}, blockers: [], rollback: [],
+    ...planState, checks: {}, gates: { 'gate.plan-approved': source.gate } };
   plan.write(checkpointRef, checkpoint);
   const record = JSON.parse(fs.readFileSync(path.resolve(root, plan.state.plan_approval_ref)));
   const rolesDoc = parseDocument(fs.readFileSync(path.join(root, '.template-spec/agents/digital-human-roles.yaml'), 'utf8')).toJS();
@@ -559,12 +545,13 @@ test('new Plan source with no professional checks consumes v1 approval through i
   const decisionBytes = fs.readFileSync(plan.approval.ref);
   await assert.doesNotReject(consume(source.binding));
   const missingOwner = { ...source.binding }; delete missingOwner.approval_ref;
-  await assert.rejects(consume(missingOwner), /独立批准引用以定位 checkpoint/);
-  await assert.rejects(consume({ ...source.binding, approval_ref: 'unregistered-approval.json' }), /APPROVAL_CONTEXT_REQUIRED.*找到 0 个/);
+  await assert.rejects(consume(missingOwner), /^TypeError: APPROVAL_CONTEXT_REQUIRED:.*独立批准引用/);
+  plan.write('unregistered-approval.json', JSON.parse(approvalBytes));
+  await assert.rejects(consume({ ...source.binding, approval_ref: 'unregistered-approval.json' }), error => error.code === 'HANDOFF_PLAN_OWNER_REQUIRED' && /唯一/.test(error.message));
   const unrelated = structuredClone(source.binding); unrelated.approval_context.approval_scope = ['feature.unrelated'];
   await assert.rejects(consume(unrelated), /当前消费范围或作者不匹配/);
   plan.write('.work/feature-demo/duplicate-checkpoint.json', checkpoint);
-  await assert.rejects(consume(source.binding), /APPROVAL_CONTEXT_REQUIRED.*找到 2 个/);
+  await assert.rejects(consume(source.binding), error => error.code === 'HANDOFF_PLAN_OWNER_REQUIRED' && /唯一/.test(error.message));
   fs.unlinkSync(path.join(root, '.work/feature-demo/duplicate-checkpoint.json'));
   const invalidCheckpoint = structuredClone(checkpoint); delete invalidCheckpoint.plan_review_control;
   plan.write(checkpointRef, invalidCheckpoint);

@@ -3,9 +3,9 @@ import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { parseDocument } from "../vendor/yaml.mjs";
 import { ROOT } from "./lifecycle-registry.mjs";
-import { loadApprovalRecord, validateApprovalRecord } from "./approval-record.mjs";
+import { loadApprovalRecord, validateApprovalRecordFile } from "./native-approval.mjs";
 import { assertScopeImpacts } from './lifecycle-execution-scope.mjs';
-import { approvalExpectationForBoundAsset } from './approval-consumption.mjs';
+import { approvalExpectationForBoundAsset } from './native-approval.mjs';
 import { validateApiContractDecision } from './api-contract-decision.mjs';
 
 // 工作流校验与「多项目准备」共用的就绪判定。放在 lifecycle-transition 之下，slice-repositories 才不必回头导入整个流转模块。
@@ -140,7 +140,7 @@ export function backendDesignPrerequisitesReady(prerequisites, exists, root, pro
       ? prerequisites.engineering_contract_approval_ref
       : path.resolve(root, prerequisites.engineering_contract_approval_ref);
     const approval = loadApprovalRecord(approvalFile, 'gate.engineering-contract-approved');
-    validateApprovalRecord(approval, { requireApproved: true, root, expected: approvalExpectationForBoundAsset('gate.engineering-contract-approved',prerequisites.technical_design,{root}) });
+    validateApprovalRecordFile(approvalFile, { gate: 'gate.engineering-contract-approved', requireApproved: true, root, expected: approvalExpectationForBoundAsset('gate.engineering-contract-approved',prerequisites.technical_design,{root}) });
     if (approval.gate_id !== "gate.engineering-contract-approved" || !approval.approval_scope?.includes(projectId)) return false;
     if (!approvalHasBinding(approval, technical.expected) || !approvalHasBinding(approval, data.expected)) return false;
     if (!approvalHasBinding(approval, { id: api.decision.decision_id, version: api.decision.decision_version, digest: prerequisites.api_contract_decision.digest })) return false;

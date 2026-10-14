@@ -1,5 +1,5 @@
 import { readWorkLayout } from './work-layout.mjs';
-import {findApprovalCheckpoint} from './approval-checkpoint-discovery.mjs';
+import {findApprovalCheckpoint} from './user-decision-core.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
