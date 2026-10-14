@@ -1,3 +1,4 @@
+import {loadOrchestrationContract} from '../../scripts/lib/orchestration-contract.mjs';
 import {makeRoot} from './yss-instance.mjs';
 import { existsSync, readFileSync, mkdtempSync, rmSync } from "node:fs";
 import path from "node:path";
@@ -11,7 +12,8 @@ import { lifecycleTransitionContract, validateImplementationEntry, validateNextR
 import { decisionDigest } from "../../scripts/lib/native-user-decision.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
-const read = (relative) => readFileSync(path.join(root, relative), "utf8");
+const rawRead = (relative) => readFileSync(path.join(root, relative), "utf8");
+const read = (relative) => relative === ".template-spec/process/orchestration-contract.yaml" ? JSON.stringify(loadOrchestrationContract(rawRead, relative).value) : rawRead(relative);
 function ensure(condition, message) { if (!condition) throw new TypeError(message); }
 function exists(relative) { return existsSync(path.join(root, relative)); }
 function includesAll(actual, expected) { return Array.isArray(actual) && expected.every((item) => actual.includes(item)); }
@@ -192,7 +194,7 @@ function validateInvocationMetadata(boundary, skillContents) {
 
 function validateLifecycleEntrySkill(skill) {
   ensure(/^---\nname: yss-product-lifecycle\n/m.test(skill), "生命周期入口缺少有效 frontmatter");
-  for (const reference of [".template-spec/process/lifecycle-registry.yaml", "references/orchestration-contract.yaml", ".template-spec/agents/yss-skill-registry.yaml", "scripts/query-lifecycle-context"]) {
+  for (const reference of [".template-spec/process/lifecycle-registry.yaml", ".template-spec/process/orchestration-contract.yaml", ".template-spec/agents/yss-skill-registry.yaml", "scripts/query-lifecycle-context"]) {
     ensure(skill.includes(reference), `生命周期入口缺少权威引用: ${reference}`);
   }
   for (const heading of ["### 仓库身份", "### 流转与实现", "### 用户决定", "### 外部副作用与 Git"]) {
@@ -203,12 +205,12 @@ function validateLifecycleEntrySkill(skill) {
 const profiles = {
   lifecycle: {
     message: "六类生命周期压力场景验证通过",
-    files: [".agents/skills/yss-product-lifecycle/SKILL.md", ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml", ".template-spec/process/lifecycle-registry.yaml"],
-    markers: [[".agents/skills/yss-product-lifecycle/SKILL.md", "template-source-product-artifact-forbidden"], [".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml", "ready-for-agent"]]
+    files: [".agents/skills/yss-product-lifecycle/SKILL.md", ".template-spec/process/orchestration-contract.yaml", ".template-spec/process/lifecycle-registry.yaml"],
+    markers: [[".agents/skills/yss-product-lifecycle/SKILL.md", "template-source-product-artifact-forbidden"], [".template-spec/process/orchestration-contract.yaml", "ready-for-agent"]]
   },
   matt: {
     message: "Matt/YSS 集成压力场景验证通过",
-    files: [".agents/skills/yss-product-lifecycle/references/matt-yss-adapter.md", ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml", ".template-spec/process/templates/lifecycle-checkpoint-template.yaml", ".template-spec/process/templates/frontend-implementation-plan-template.yaml", ".template-spec/process/templates/frontend-implementation-verification-template.yaml"],
+    files: [".agents/skills/yss-product-lifecycle/references/matt-yss-adapter.md", ".template-spec/process/orchestration-contract.yaml", ".template-spec/process/templates/lifecycle-checkpoint-template.yaml", ".template-spec/process/templates/frontend-implementation-plan-template.yaml", ".template-spec/process/templates/frontend-implementation-verification-template.yaml"],
     markers: [[".agents/skills/yss-product-lifecycle/SKILL.md", "Workflow Execution Result"]]
   },
   prototype: {
@@ -281,7 +283,7 @@ export function runScenario(name) {
     const result = spawnSync("scripts/verify-lifecycle-registry", [], { cwd: root, encoding: "utf8" });
     ensure(result.status === 0, result.stderr || result.stdout);
     const registry = parseDocument(read(".template-spec/process/lifecycle-registry.yaml"), { uniqueKeys: true }).toJS({ maxAliasCount: 0 });
-    const contract = parseDocument(read(".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml"), { uniqueKeys: true }).toJS({ maxAliasCount: 0 });
+    const contract = parseDocument(read(".template-spec/process/orchestration-contract.yaml"), { uniqueKeys: true }).toJS({ maxAliasCount: 0 });
     ensure(contract.ready_for_agent?.requires_vertical_slice_ticket === true && contract.ready_for_agent?.parent_ticket_as_implementation_ref === "forbidden", "ready_for_agent 未强制垂直切片且禁止父 Ticket 实现引用");
     ensure(includesAll(contract.ready_for_agent?.required, ["ticket_decomposition_result_ref", "vertical_slice_ticket_ref", "vertical_slice_ticket_role", "vertical_slice_ticket_kind"]), "ready_for_agent 缺少 Ticket 正式化必填字段");
     ensure(contract.ticket_formalization?.implementation_predecessor === "work-unit.ticket-decomposition" && contract.ticket_formalization?.vertical_slice_ticket?.parent_ticket_ref_forbidden === true, "Ticket 正式化实现前置或父 Ticket 禁止规则缺失");
@@ -299,7 +301,7 @@ export function runScenario(name) {
     ensure(lifecycleTransitionContract.next_routes["work-unit.ticket-decomposition"]?.includes("work-unit.slice-implementation"), "转换校验器未允许 Ticket 正式化后进入实现");
   }
   if (name === "matt") {
-    const contract = parseDocument(read(".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml"), { uniqueKeys: true });
+    const contract = parseDocument(read(".template-spec/process/orchestration-contract.yaml"), { uniqueKeys: true });
     ensure(contract.errors.length === 0, contract.errors[0]?.message || "生命周期编排契约无法解析");
     const data = contract.toJS({ maxAliasCount: 0 });
     validateMattContract(data);
@@ -576,7 +578,7 @@ export function runScenario(name) {
     }
     const skill = read(".agents/skills/yss-product-lifecycle/SKILL.md");
     validateLifecycleEntrySkill(skill);
-    for (const relative of ["SKILL.md", "references/matt-yss-adapter.md", "references/orchestration-contract.yaml"]) {
+    for (const relative of ["SKILL.md", "references/matt-yss-adapter.md"]) {
       ensure(read(`.agents/skills/yss-product-lifecycle/${relative}`) === read(`.codex/skills/yss-product-lifecycle/${relative}`), `YSS 生命周期投影未同步: ${relative}`);
     }
   }

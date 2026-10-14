@@ -1,0 +1,28 @@
+# owner: harness-orchestrator
+# consumers: lifecycle route/query, current Profile workflows and governance validators
+work_unit_routes:
+  work-unit.technical-design:
+    primary_skill: architecture-agent
+    supporting_skills:
+      - yss-technical-design
+      - yss-openapi-governance
+      - yss-openapi-draft-review
+      - codebase-design
+      - yss-research
+      - tdd
+    skills:
+      - architecture-agent
+      - yss-technical-design
+      - yss-openapi-governance
+      - yss-openapi-draft-review
+      - codebase-design
+      - yss-research
+      - tdd
+    applies_when: backend_delivery_impact
+    not_applicable_reason: forbidden-for-backend-delivery
+    architecture_route:
+      domain-driven:
+        - yss-tactical-design
+        - domain-modeling
+      layered-mvc:
+        - yss-technical-design

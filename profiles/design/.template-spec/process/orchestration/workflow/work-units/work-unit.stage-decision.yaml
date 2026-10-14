@@ -1,0 +1,25 @@
+# owner: yss-strategic-design
+# consumers: lifecycle route/query, current Profile workflows and governance validators
+work_unit_routes:
+  work-unit.stage-decision:
+    native:
+      source: yss-strategic-design
+      skill: yss-stage-decision
+      invocation_mode: model-invoked
+    primary_skill: yss-stage-decision
+    supporting_skills:
+      - domain-modeling
+      - yss-research
+    skills:
+      - yss-stage-decision
+      - domain-modeling
+      - yss-research
+    research_contract:
+      profile: strategy-evidence
+      mode_before_gate: evidence-audited
+      artifact_owner: yss-research
+      downstream_owner: yss-stage-decision
+    internal_check: check.stage-decision-package-approved
+    aggregate_gate: gate.plan-approved
+    applies_when: plan_to_spec_requires_stable_decision_package
+    not_applicable_reason: existing_approved_stage_decision_current

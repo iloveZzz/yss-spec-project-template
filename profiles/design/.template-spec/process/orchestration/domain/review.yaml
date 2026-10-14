@@ -1,0 +1,63 @@
+# owner: yss-strategic-design
+# consumers: lifecycle route/query, current Profile workflows and governance validators
+impact_propagation:
+  wording:
+    targets:
+      - kind: artifact
+        name: spec
+        level: direct
+        when: always
+      - kind: artifact
+        name: strategic-design-handoff
+        level: transitive
+        when: always
+  ui-state:
+    targets:
+      - kind: artifact
+        name: product-design
+        level: direct
+        when: ui_impact
+      - kind: artifact
+        name: prototype
+        level: direct
+        when: ui_impact
+      - kind: artifact
+        name: strategic-design-handoff
+        level: transitive
+        when: always
+  domain-boundary:
+    targets:
+      - kind: artifact
+        name: domain-strategy
+        level: direct
+        when: always
+      - kind: artifact
+        name: stage-decision-package
+        level: transitive
+        when: always
+      - kind: artifact
+        name: spec
+        level: transitive
+        when: always
+      - kind: artifact
+        name: strategic-design-handoff
+        level: transitive
+        when: always
+  business-invariant:
+    targets:
+      - kind: artifact
+        name: domain-strategy
+        level: direct
+        when: always
+      - kind: artifact
+        name: spec
+        level: direct
+        when: always
+      - kind: artifact
+        name: business-ticket-set
+        level: transitive
+        when: always
+      - kind: artifact
+        name: strategic-design-handoff
+        level: transitive
+        when: always

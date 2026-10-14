@@ -6,7 +6,7 @@
 
 1. 源仓必须为 `project-instance`。新交付使用 Domain Strategy v3 与 Stage Decision Package v3；规则、场景、决定、假设、约束、成功标准、测试 seam 与 downstream mapping 使用稳定 ID 和证据。v2 仅用于历史 Handoff v3 的只读验证；修改或重发须显式迁移、重新批准。不得用行号、文字 hash 或导出顺序生成业务身份。
 2. 每个场景明确 `critical`、`rule_refs`、`success_results` 和既有 `failure_results`；兼容字段 `rules` 必须与引用规则正文一致。不变量使用 `rule_ref`，并通过 `scenario_refs` 指向确实覆盖该规则的场景。缺身份或关联先回战略方确认、更新并重新批准，导出器不猜测。
-3. 新原型与既有 UI 交接都使用 Handoff v5，分别选择 `prototype` 或 `existing-ui-baseline`。历史 Handoff v3/v4 与既有裸 v5 包继续按冻结 schema 执行 `verify/import`，但 v3/v4 不再创建新 export；修改或重新交付必须迁移到 v5 并重新批准。校验器先读取 `schema_version` 再选择固定 schema，未知版本输出支持列表并 fail closed。`package_export` 的 `approvals` 按 `source` 字段及 `handoff` 绑定批准记录，声明 `record_ref`、`gate_id`、`digest_kind`。当前战略 profile 的领域战略和阶段决策绑定 `gate.plan-approved`；声明 `business-ticket-approval-v1` 的业务 Ticket 集绑定当前 `gate.strategic-design-handoff-approved`（未声明能力的历史包保持原规则），Spec 绑定 `gate.spec-baseline-approved`，原型、视觉或既有 UI 基线绑定 `gate.product-design-approved`，交接自身绑定 `gate.strategic-design-handoff-approved`。历史包仍按包内明确登记的源批准规则验证，但旧门禁只能作为历史证据，不能作为当前输入继续流转。
+3. 新原型与既有 UI 交接都使用 Handoff v5，分别选择 `prototype` 或 `existing-ui-baseline`。历史 Handoff v4 与既有裸 v5 包继续按冻结 schema 执行 `verify/import`；v3 仅由固定 CLI 迁移资源读取，但 v3/v4 不再创建新 export；修改或重新交付必须迁移到 v5 并重新批准。校验器先读取 `schema_version` 再选择固定 schema，未知版本输出支持列表并 fail closed。`package_export` 的 `approvals` 按 `source` 字段及 `handoff` 绑定批准记录，声明 `record_ref`、`gate_id`、`digest_kind`。当前战略 profile 的领域战略和阶段决策绑定 `gate.plan-approved`；声明 `business-ticket-approval-v1` 的业务 Ticket 集绑定当前 `gate.strategic-design-handoff-approved`（未声明能力的历史包保持原规则），Spec 绑定 `gate.spec-baseline-approved`，原型、视觉或既有 UI 基线绑定 `gate.product-design-approved`，交接自身绑定 `gate.strategic-design-handoff-approved`。历史包仍按包内明确登记的源批准规则验证，但旧门禁只能作为历史证据，不能作为当前输入继续流转。
 4. 批准记录除既有会签字段，还要在 `artifact_bindings` 中逐项绑定 `{id, version, digest}`。战略/阶段建议 `canonical-json`；普通文件使用 `sha256-bytes`；视觉基线使用 `visual-baseline`。正文中的 `approved` 和可读取批准路径不能替代当前字节的批准绑定。源角色表要求用户决定记录时，接收端必须支持并核验该策略；旧工具缺少该能力时阻断并要求升级，不能按旧规则放行。
 5. `additional_files` 明确补充依赖；`reference_map` 将 `evidence.*` 稳定证据引用解析为仓内路径。源资产、批准记录、证据引用、Markdown 本地链接和显式目录共同形成依赖闭包。HTTP 引用保留为引用，不在导出时下载网页。
 6. 原型分支的 `prototype` 指定 `profile`、`preview_root`、`entry_ref`、`verification_ref`、`verification_digest`（验证记录的字节摘要）；H2 另须 `source_root`、`lock_ref` 和 `source_digest`（源码目录树摘要，算法同下述预览树）。源码交付目录不含 node_modules / .git；锁文件与源码一同保存。预览目录须资源闭合，可通过本地静态服务离线浏览。源码、锁文件或验证记录变化须更新交接摘要并重新批准。
@@ -62,7 +62,7 @@ Handoff v5 必须声明 `ui_baseline_kind: prototype | existing-ui-baseline`，`
 
 ## 下游接收与逐条追溯
 
-导入落盘到 `docs/handoffs/<handoff-id>/<version>/`。Handoff v3 继续生成 Import Receipt v1；历史裸 Handoff v4/v5 包继续生成 Import Receipt v2。新的 v5 交付目录生成 Import Receipt v3，保存源 `delivery-record.json` 原始字节及摘要，按目标 profile 的消费者能力登记 route、产物引用和状态，并分别生成后端追踪、Frontend Strategic Preflight / 前端追踪、协调状态索引草案。共同生成 route-aware Context Reconciliation 和 upstream impact 草案，所有入口固定 `ready_for_agent: false`。接收回执由研发仓持有，不反向修改战略仓；协调索引只保存回执引用。目标侧确认增量后更新唯一根 `CONTEXT.md` 并完成正式 reconciliation。
+导入落盘到 `docs/handoffs/<handoff-id>/<version>/`。Handoff v3 先显式迁移，不再由常规导入生成 Receipt v1；历史裸 Handoff v4/v5 包继续生成 Import Receipt v2。新的 v5 交付目录生成 Import Receipt v3，保存源 `delivery-record.json` 原始字节及摘要，按目标 profile 的消费者能力登记 route、产物引用和状态，并分别生成后端追踪、Frontend Strategic Preflight / 前端追踪、协调状态索引草案。共同生成 route-aware Context Reconciliation 和 upstream impact 草案，所有入口固定 `ready_for_agent: false`。接收回执由研发仓持有，不反向修改战略仓；协调索引只保存回执引用。目标侧确认增量后更新唯一根 `CONTEXT.md` 并完成正式 reconciliation。
 
 Technical Design Contract v2（DDD / MVC 共用）的 `strategic_handoff` 绑定 `import_receipt_ref`、`bundle_digest`、`context_reconciliation_ref` 和 `rows`。逐条覆盖全部规则与 `critical: true` 的成功/失败场景；行字段如下：
 
@@ -78,7 +78,7 @@ scripts/verify-strategic-handoff-consumption --root <研发项目根> --slice <�
 node .agents/skills/yss-technical-design/scripts/validate-technical-design.mjs <技术设计合同> --root <研发项目根>
 ```
 
-Handoff v4/v5 后端消费必须绑定 `backend-technical-design` 的 `route_id`，先对账，再由 `yss-technical-design` 依据已批准架构进入自身 `layered-mvc` 分支或调用 `yss-tactical-design`。Handoff v3/v4 仅作历史只读兼容，不修改已冻结包。`tactical_refs` 在 v2 Technical Design 可指向 MVC 或 DDD 分支对象；无战略交接包的 MVC 项目直接消费批准需求，不补造战略 DDD。
+Handoff v4/v5 后端消费必须绑定 `backend-technical-design` 的 `route_id`，先对账，再由 `yss-technical-design` 依据已批准架构进入自身 `layered-mvc` 分支或调用 `yss-tactical-design`。Handoff v4 仅作历史只读兼容，v3 仅支持显式迁移，不修改已冻结包。`tactical_refs` 在 v2 Technical Design 可指向 MVC 或 DDD 分支对象；无战略交接包的 MVC 项目直接消费批准需求，不补造战略 DDD。
 
 
 ## 消费者反馈闭环

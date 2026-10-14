@@ -1,11 +1,12 @@
 {
   "schema_version": 1,
-  "note": "最底层模块：只导入本清单内的模块；新增、移动模块时同步更新。检查见 scripts/verify-import-direction",
+  "note": "\u6700\u5e95\u5c42\u6a21\u5757\uff1a\u53ea\u5bfc\u5165\u672c\u6e05\u5355\u5185\u7684\u6a21\u5757\uff1b\u65b0\u589e\u3001\u79fb\u52a8\u6a21\u5757\u65f6\u540c\u6b65\u66f4\u65b0\u3002\u68c0\u67e5\u89c1 scripts/verify-import-direction",
   "core": [
     "governance-io",
     "instance-metadata",
     "json-schema",
     "lifecycle-registry",
+    "orchestration-contract",
     "plan-spec-markdown",
     "repository-mode",
     "source-context-snapshot",

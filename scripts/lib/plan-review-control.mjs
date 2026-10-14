@@ -1,3 +1,4 @@
+import { loadOrchestrationContract } from './orchestration-contract.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
@@ -54,7 +55,7 @@ function combinedEvidence(primary, secondary, options) {
 /** Policy is read from the current profile's orchestration contract; there is no fallback budget. */
 export function loadPlanReviewPolicy(options = {}) {
   const io = source(options), ref = options.policyRef || orchestrationRef(io.root);
-  const raw = options.policy || document(ref, options).planning?.review_control;
+  const raw = options.policy || loadOrchestrationContract(part => io.read(safeFile(io.root, part)), ref).value.planning?.review_control;
   ensure(raw && raw.enabled === true && raw.protocol === PLAN_REVIEW_PROTOCOL, 'PLAN_REVIEW_PROTOCOL_REQUIRED', '消费者需升级到当前 Plan 审查协议');
   ensure(strings(raw.professional_check_ids) && raw.professional_check_ids.length > 0 && raw.professional_check_ids.every(id => PLAN_BOUNDARIES.has(id) && id !== raw.aggregate_gate), 'PLAN_REVIEW_POLICY_INVALID', '专业检查边界');
   ensure(text(raw.aggregate_gate) && PLAN_BOUNDARIES.has(raw.aggregate_gate), 'PLAN_REVIEW_POLICY_INVALID', '聚合门禁');

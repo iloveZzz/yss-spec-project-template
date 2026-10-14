@@ -1,3 +1,4 @@
+import { loadOrchestrationContract } from '../../../../scripts/lib/orchestration-contract.mjs';
 import {makeRoot} from '../../../../tests/helpers/yss-instance.mjs';
 import assert from 'node:assert/strict';
 import test from 'node:test';
@@ -36,7 +37,7 @@ test('registry retains seven approval gates, adds a conditional handoff gate and
  const handoff=r.gates.find(gate=>gate.id===handoffId);
  assert.equal(handoff.stage,'stage.product-design');
  assert.deepEqual(handoff.requires_gates,['gate.plan-approved','gate.spec-baseline-approved','gate.product-design-approved']);
- const orchestration=parseDocument(readFileSync(path.join(root,'.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml'),'utf8')).toJS();
+ const orchestration=loadOrchestrationContract(ref=>readFileSync(path.join(root,ref)),'.template-spec/process/orchestration-contract.yaml').value;
  assert.equal(orchestration.work_unit_routes['work-unit.strategic-design-handoff'].applies_when,'explicit-external-implementation-consumer');
  const cyclic=structuredClone(r);cyclic.checks[0].requires_checks=[cyclic.checks[1].id];cyclic.checks[1].requires_checks=[cyclic.checks[0].id];
  assert.throws(()=>validateRegistry(cyclic,{baseline:null}),/依赖循环/);

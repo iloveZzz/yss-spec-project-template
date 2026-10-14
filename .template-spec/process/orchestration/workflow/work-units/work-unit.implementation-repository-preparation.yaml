@@ -1,0 +1,35 @@
+# owner: yss-product-lifecycle
+# consumers: lifecycle route/query, current Profile workflows and governance validators
+work_unit_routes:
+  work-unit.implementation-repository-preparation:
+    native:
+      source: yss-product-lifecycle
+      skill: yss-product-lifecycle
+      invocation_mode: model-invoked
+    primary_skill: implementation-repo-onboarding
+    supporting_skills:
+      - yss-implementation-contract-compiler
+      - yss-ddd-scaffold-generator
+      - yss-layered-mvc-scaffold-generator
+      - yss-frontend-scaffold-generator
+    skills:
+      - implementation-repo-onboarding
+      - yss-implementation-contract-compiler
+      - yss-ddd-scaffold-generator
+      - yss-layered-mvc-scaffold-generator
+      - yss-frontend-scaffold-generator
+    applies_when: before_ticket_formalization
+    not_applicable_reason: no_frontend_or_backend_delivery_impact
+    decision_boundary: scaffold-choice
+    completion_states:
+      - existing-and-onboarded
+      - initialized-and-verified
+      - not-applicable
+    automatic_check: check.implementation-repositories-ready
+    result_schema_version: 2
+    backend_design_prerequisites_required:
+      - technical_design
+      - data_architecture_decision
+      - api_contract_decision
+      - engineering_contract_approval_ref
+    must_complete_before: work-unit.ticket-decomposition

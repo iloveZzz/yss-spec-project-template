@@ -1,0 +1,123 @@
+# owner: yss-product-lifecycle
+# consumers: lifecycle route/query, current Profile workflows and governance validators
+supported_state_schema_versions:
+  - 1
+modes:
+  route: read_only
+  audit: read_only
+  orchestrate: bounded_write
+  resume: rebuild_then_bounded_write
+entry_routing:
+  manifest: yss-project.yaml
+  valid_modes:
+    - template-source
+    - project-instance
+  invalid_manifest:
+    action: migration-check
+  formal_user_entry:
+    skills:
+      - setup-matt-pocock-skills
+      - to-spec
+      - to-tickets
+      - implement
+    action: lifecycle-validate-and-accept
+    lifecycle_artifact_write: conditional-explicit-user-entry
+    return_to_orchestrator: required
+  template_source:
+    route: template-maintenance
+    forbidden_artifacts:
+      - product-spec
+      - prototype
+      - openapi
+      - vertical-slice-tickets
+    forbidden_flows:
+      - to-spec
+      - to-tickets
+      - implement
+      - release
+      - retrospective
+    on_forbidden_flow: blocked
+    block_reason: template-source-product-artifact-forbidden
+skill_source_contract:
+  lock_version: 3
+  source_revisions_required:
+    - mattpocock/skills
+    - iloveZzz/yss-ui
+  adaptation_ref_required_when_effective_diff: true
+  retired_shared_skills:
+    - yss-antd-design
+    - yss-antdv-next-design
+    - ask-matt
+    - batch-grill-me
+    - grill-me
+    - dispatching-parallel-agents
+    - loop-me
+    - migrate-to-shoehorn
+    - product-design-prototype
+    - prototype-page-acceptance
+    - scaffold-exercises
+    - setup-pre-commit
+    - setup-ts-deep-modules
+    - teach
+    - writing-beats
+    - writing-fragments
+    - writing-shape
+    - yss-components
+    - yss-dictionary
+    - yss-jdbc
+    - yss-log
+    - yss-microapp-commit
+    - yss-mvc-scaffold-generator
+    - yss-mvc-design
+    - yss-mvc-data-analysis-project-initializer
+    - yss-backend-scaffold-parent
+    - yss-page-module-development
+    - yss-taskflow
+    - yss-backend-scaffold-application
+    - yss-backend-scaffold-domain
+    - yss-backend-scaffold-infrastructure
+    - yss-backend-scaffold-web
+    - yss-backend-scaffold-adapter
+    - yss-application-layer-reference
+    - yss-domain-layer-reference
+    - yss-infrastructure-layer-reference
+    - yss-web-layer-reference
+skill_preflight:
+  command: scripts/query-lifecycle-context
+  enable_flag: --check-skills
+  scope: selected-work-unit-and-active-context-dependencies
+  readonly: true
+  statuses:
+    - ready
+    - missing
+    - blocked
+  exit_codes:
+    ready: 0
+    missing_or_blocked: 2
+    invalid_input_or_execution_error: 1
+  runtime_selection: explicit-or-single-registered-runtime
+  conditional_dependencies: explicit-when-triggers
+  excludes:
+    - compatibility-references
+    - complete-role-skill-lists
+    - other-work-units
+  installation: existing-family-cli-plan-then-apply
+  apply_requires:
+    - existing-task-authorization-covers-plan
+    - no-conflicts
+  after_apply: rerun-current-work-unit-preflight
+  never_grants:
+    - skill-invocation-permission
+    - stage-approval
+    - ready-for-agent
+    - completion
+  block_current_invocation_on:
+    - managed-file-missing
+    - hash-drift
+    - projection-drift
+    - path-conflict
+    - runtime-unavailable
+    - external-skill-unavailable
+    - retired-skill
+    - cli-snapshot-mismatch
+  automatic_force_or_migration: forbidden

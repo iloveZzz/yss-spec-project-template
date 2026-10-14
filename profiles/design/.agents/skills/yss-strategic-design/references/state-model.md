@@ -86,7 +86,7 @@ pause:
 
 ## Schema 兼容与迁移
 
-- 当前只支持 `schema_version: 1`，支持版本列表以 `orchestration-contract.yaml` 为准。
+- 当前只支持 `schema_version: 1`，支持版本列表以 `.template-spec/process/orchestration-contract.yaml` 为准。
 - 版本缺失、解析失败或版本不在支持列表时，必须暂停并进入迁移检查；不得按 v1 猜测、覆盖或降级写回。
 - checkpoint 优先，map.md 只作派生导航；旧 `ticket_sync.parent_ticket` 仅作历史引用。新旧索引必须明确指向同一 checkpoint；不可读、越界、循环或指向冲突即阻断，不静默合并、不自动产生批准。
 - 不得用旧版本状态覆盖较新版本。迁移记录至少包含来源版本、目标版本、来源载体、冲突、真实资产证据、迁移人和时间。

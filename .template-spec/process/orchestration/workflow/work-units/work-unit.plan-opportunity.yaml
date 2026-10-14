@@ -1,0 +1,22 @@
+# owner: yss-product-lifecycle
+# consumers: lifecycle route/query, current Profile workflows and governance validators
+work_unit_routes:
+  work-unit.plan-opportunity:
+    native:
+      source: yss-product-lifecycle
+      skill: yss-product-lifecycle
+      invocation_mode: model-invoked
+    primary_skill: yss-product-lifecycle
+    supporting_skills:
+      - competitive-intelligence
+      - yss-research
+    skills:
+      - competitive-intelligence
+      - yss-research
+    route_by:
+      market_or_competitor_fact: competitive-intelligence
+      technical_or_standard_fact: yss-research:technical-evidence
+      strategy_fact: yss-research:strategy-evidence
+      no_external_fact: yss-product-lifecycle
+    applies_when: opportunity_or_external_fact_requires_validation
+    not_applicable_reason: no_external_fact

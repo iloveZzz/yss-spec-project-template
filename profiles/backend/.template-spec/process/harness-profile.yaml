@@ -137,6 +137,6 @@ business_input:
   standalone: local-plan-spec-and-current-approved-design
   upstream: reuse-current-approved-assets-preserve-authority
   conflicts: confirm-with-authority-before-dependent-work
-  delivery_path_policy_ref: .agents/skills/harness-orchestrator/references/orchestration-contract.yaml#request_triage.delivery_path
+  delivery_path_policy_ref: .template-spec/process/orchestration-contract.yaml#request_triage.delivery_path
   analysis_grants_opposite_side_write: false
   terminal_claim: own-side-only

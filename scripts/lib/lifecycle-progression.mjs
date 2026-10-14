@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {parseDocument} from '../vendor/yaml.mjs';
-import {digest, orchestrationRef, safeFile} from './governance-io.mjs';
+import {digest, orchestrationRef, readOrchestrationContract, safeFile} from './governance-io.mjs';
 import {readWorkLayout, TRACKER_REF} from './work-layout.mjs';
 import {contextBinary} from './native-context.mjs';
 import {readInstanceMetadata} from './instance-metadata.mjs';
@@ -37,7 +37,7 @@ export function hasLocalImplementationInputs(root) {
   const identity = parse(read(root, 'yss-project.yaml'));
   if (identity.schema_version !== 1 || identity.repository_mode !== 'project-instance') return false;
   check(parse(read(root, '.template-spec/process/harness-profile.yaml')).profile_id === metadata.metadata.profileId, 'native Spec 与 Harness Profile 不一致');
-  const policy = parse(read(root, orchestrationRef(root))).progression_target;
+  const policy = readOrchestrationContract(root).value.progression_target;
   if (policy?.local_implementation_inputs === undefined) return false;
   check(policy.schema_version === 1 && Array.isArray(policy.required_capabilities) && policy.required_capabilities.includes(PROGRESSION_CAPABILITY)
     && Array.isArray(policy.writer_profiles)
@@ -102,14 +102,14 @@ export function readProgressionTarget({root, checkpointRef, assetRef, includeDef
   const map = matching[0], configRef = `${path.posix.dirname(map.map_ref)}/progression-target.json`;
   const exists = fs.existsSync(safeFile(root, configRef));
   if (!exists && !includeDefault) return null;
-  const contractRef = orchestrationRef(root), contractBytes = read(root, contractRef), policy = declaredProgressionPolicy(parse(contractBytes));
+  const contractRef = orchestrationRef(root), loadedContract = readOrchestrationContract(root, contractRef), policy = declaredProgressionPolicy(loadedContract.value);
   if (!exists && policy === null) return null; // An undeclared legacy policy retains its prior route.
   check(policy !== null, 'CAPABILITY: 当前合同不支持 lifecycle-target-v1');
   if (!exists) {
     let target = policy.default_target;
     if (fs.existsSync(safeFile(root, '.yss-execution-scope.yaml'))) target = policy.scope_defaults?.[parse(read(root, '.yss-execution-scope.yaml')).scope_id];
     check(object(policy.completion_policy?.[target]), `CAPABILITY: 未登记默认目标 ${target}`);
-    return {enabled: true, root, config_ref: configRef, schema_version: 1, kind: 'lifecycle-progression-target', feature_id: checkpoint.feature_id, checkpoint_ref: checkpointRef, target, intent_source: 'profile-default', consumers: [], map_ref: map.map_ref, config_digest: null, checkpoint_digest: digest(read(root, checkpointRef)), contract_ref: contractRef, contract_digest: digest(contractBytes), policy: policy.completion_policy[target]};
+    return {enabled: true, root, config_ref: configRef, schema_version: 1, kind: 'lifecycle-progression-target', feature_id: checkpoint.feature_id, checkpoint_ref: checkpointRef, target, intent_source: 'profile-default', consumers: [], map_ref: map.map_ref, config_digest: null, checkpoint_digest: digest(read(root, checkpointRef)), contract_ref: contractRef, contract_digest: loadedContract.digest, policy: policy.completion_policy[target]};
   }
   check(policy.writer_profiles.includes('spec'), 'CAPABILITY: 专职 Profile 不写综合推进意图');
   const bytes = read(root, configRef), config = JSON.parse(String(bytes));
@@ -124,7 +124,7 @@ export function readProgressionTarget({root, checkpointRef, assetRef, includeDef
     check(!seen.has(consumer.profile), 'consumer Profile 消费者重复'); seen.add(consumer.profile);
   }
   check(object(policy.completion_policy?.[config.target]), `CAPABILITY: 未登记目标 ${config.target}`);
-  return {enabled: true, root, config_ref: configRef, ...config, map_ref: map.map_ref, config_digest: digest(bytes), checkpoint_digest: digest(read(root, checkpointRef)), contract_ref: contractRef, contract_digest: digest(contractBytes), policy: policy.completion_policy[config.target]};
+  return {enabled: true, root, config_ref: configRef, ...config, map_ref: map.map_ref, config_digest: digest(bytes), checkpoint_digest: digest(read(root, checkpointRef)), contract_ref: contractRef, contract_digest: loadedContract.digest, policy: policy.completion_policy[config.target]};
 }
 
 export function evaluateProgressionTarget(options = {}) {
@@ -157,7 +157,7 @@ function requiresGovernedFeatureBinding(root) {
   const identity = parse(read(root, 'yss-project.yaml'));
   if (identity.schema_version === 1 && identity.repository_mode === 'template-source') return false;
   check(identity.schema_version === 1 && identity.repository_mode === 'project-instance', '正式目标准入缺少合法项目身份');
-  const policy = declaredProgressionPolicy(parse(read(root, orchestrationRef(root))));
+  const policy = declaredProgressionPolicy(readOrchestrationContract(root).value);
   if (policy === null) return false;
   check(policy.schema_version === 1 && policy.config_file === 'progression-target.json' && policy.writer_profiles?.includes('spec'), 'CAPABILITY: 当前 native Spec 目标政策不完整');
   return true;

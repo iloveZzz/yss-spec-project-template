@@ -215,7 +215,9 @@
       "scripts/verify-work-layout",
       "scripts/lib/profile-tree.mjs",
       "scripts/verify-import-direction",
-      "scripts/lib/import-direction.mjs"
+      "scripts/lib/import-direction.mjs",
+      ".agents/skills/yss-strategic-design/references/orchestration-contract.yaml",
+      ".template-spec/process/schemas/strategic-design-handoff-v3.schema.json"
     ],
     "excludeRootEntries": [
       ".git",
@@ -401,6 +403,28 @@
         },
         "action": "delete",
         "sourcePath": "scripts/lib/decision-continuation.mjs"
+      },
+      {
+        "id": "ar13-ar15-design-1",
+        "from": {
+          "profile": "design",
+          "versions": {
+            "max": "4.0.5"
+          }
+        },
+        "action": "delete",
+        "sourcePath": ".agents/skills/yss-strategic-design/references/orchestration-contract.yaml"
+      },
+      {
+        "id": "ar13-ar15-design-2",
+        "from": {
+          "profile": "design",
+          "versions": {
+            "max": "4.0.5"
+          }
+        },
+        "action": "delete",
+        "sourcePath": ".template-spec/process/schemas/strategic-design-handoff-v3.schema.json"
       }
     ],
     "schemaVersion": 1

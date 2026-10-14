@@ -8,6 +8,15 @@ export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "
 const SOURCE_ROOT = path.join(ROOT, ".agents/skills");
 const LOCK_PATH = path.join(ROOT, "skills-lock.json");
 export const PROJECTION_ROOTS = [];
+function projectionRootsFor(lock) {
+  const identityPath = path.join(ROOT, "yss-project.yaml");
+  const isInstance = existsSync(identityPath) && /^repository_mode:\s*project-instance\s*$/m.test(readFileSync(identityPath, "utf8"));
+  if (!isInstance) return PROJECTION_ROOTS;
+  const roots = lock?.projectionRoots;
+  if (!Array.isArray(roots) || roots.some(root => ![".codex/skills", ".claude/skills", ".cursor/skills", ".pi/skills"].includes(root))) throw new TypeError("project-instance skills-lock.json 缺少有效 projectionRoots");
+  return [...new Set(roots)];
+}
+
 export const OBSOLETE = new Set([
   "wait-what",
   "grill-with-docs",
@@ -77,12 +86,13 @@ export function syncSkills({ check = false } = {}) {
   };
   const lock = parseLock();
   const shared = sharedFromLock(lock);
+  const projectionRoots = projectionRootsFor(lock);
   const absent = shared.filter((name) => !lstatSafe(path.join(SOURCE_ROOT, name))?.isDirectory());
   if (absent.length) throw new TypeError(`锁文件声明的共享 skills 缺少权威内容: ${absent.join(", ")}`);
   const obsolete = [...new Set([...shared.filter((name) => OBSOLETE.has(name)), ...obsoleteCanonicalResidues(skillNames(SOURCE_ROOT))])];
   if (obsolete.length) throw new TypeError(`obsolete skills remain in canonical root: ${obsolete.join(", ")}`);
   const drift = [];
-  for (const root of PROJECTION_ROOTS) {
+  for (const root of projectionRoots) {
     const projection = path.join(ROOT, root);
     ensureSafeProjection(projection);
     if (!check) mkdirSync(projection, { recursive: true });
@@ -158,7 +168,7 @@ function metadata(name, skillPath, directory, previous, canonical = false, sourc
   return result;
 }
 export function updateSkillLock(arguments_ = process.argv.slice(2)) {
-  const oldLock = parseLock(); const previous = priorMetadata(oldLock); const sources = sourceRevisionMap(oldLock, arguments_); const upstreamRoot = option(arguments_, "upstream-root");
+  const oldLock = parseLock(); const projectionRoots = projectionRootsFor(oldLock); const previous = priorMetadata(oldLock); const sources = sourceRevisionMap(oldLock, arguments_); const upstreamRoot = option(arguments_, "upstream-root");
   if (upstreamRoot && !existsSync(upstreamRoot)) throw new TypeError(`--upstream-root 不存在: ${upstreamRoot}`);
   const additions = arguments_.filter((arg) => arg.startsWith("--add=")).map((arg) => arg.slice(6));
   const removals = new Set(arguments_.filter((arg) => arg.startsWith("--remove=")).map((arg) => arg.slice(9)));
@@ -169,12 +179,12 @@ export function updateSkillLock(arguments_ = process.argv.slice(2)) {
   if (absent.length) throw new TypeError(`锁文件声明的共享 skills 缺少权威内容: ${absent.join(", ")}`);
   const unlocked = unlockedCanonicalEntries(skillNames(SOURCE_ROOT), sharedNames, (name) => lstatSafe(path.join(SOURCE_ROOT, name, "SKILL.md"))?.isFile());
   if (unlocked.length) throw new TypeError(`发现未登记到 skills-lock.json 的已跟踪共享 skills: ${unlocked.join(", ")}\n确认新增后运行 scripts/update-skill-lock --add=<skill-name>`);
-  const targets = [".agents/skills", ...PROJECTION_ROOTS];
+  const targets = [".agents/skills", ...projectionRoots];
   const shared = Object.fromEntries(sharedNames.map((name) => {
     const item = metadata(name, `.agents/skills/${name}/SKILL.md`, path.join(SOURCE_ROOT, name), previous, true, sources, upstreamRoot); item.targets = targets; return [name, item];
   }));
   const platform = {};
-  for (const root of PROJECTION_ROOTS) {
+  for (const root of projectionRoots) {
     const location = path.join(ROOT, root); const prior = oldLock?.version === 3 ? Object.keys(oldLock.skills?.platform?.[root] ?? {}) : skillNames(location).filter((name) => !sharedNames.includes(name));
     const names = [...new Set([...prior, ...platformAdds.filter(([key]) => key === root).map(([, name]) => name)])].filter((name) => !removals.has(name) && !sharedNames.includes(name) && !OBSOLETE.has(name)).sort();
     if (!names.length) continue;
@@ -182,7 +192,7 @@ export function updateSkillLock(arguments_ = process.argv.slice(2)) {
     if (absentPlatform.length) throw new TypeError(`锁文件声明的平台 skills 缺少内容 (${root}): ${absentPlatform.join(", ")}`);
     platform[root] = Object.fromEntries(names.map((name) => { const item = metadata(name, `${root}/${name}/SKILL.md`, path.join(location, name), previous, false, sources, upstreamRoot); item.targets = [root]; return [name, item]; }));
   }
-  const manifest = { version: 3, generatedBy: "scripts/update-skill-lock", canonicalRoot: ".agents/skills", projectionRoots: PROJECTION_ROOTS, sources, skills: { shared, platform } };
+  const manifest = { version: 3, generatedBy: "scripts/update-skill-lock", canonicalRoot: ".agents/skills", projectionRoots, sources, skills: { shared, platform } };
   const rendered = `${JSON.stringify(manifest, null, 2)}\n`;
   if (arguments_.includes("--check")) { if (!existsSync(LOCK_PATH) || readFileSync(LOCK_PATH, "utf8") !== rendered) throw new TypeError("skills-lock.json is stale; run scripts/update-skill-lock"); return "skills-lock.json matches distributed skills"; }
   writeFileSync(LOCK_PATH, rendered); return `updated skills-lock.json with ${sharedNames.length} shared skills and ${Object.values(platform).reduce((sum, group) => sum + Object.keys(group).length, 0)} platform skills`;

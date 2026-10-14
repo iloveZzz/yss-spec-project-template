@@ -130,7 +130,10 @@
       "scripts/verify-work-layout",
       "scripts/lib/profile-tree.mjs",
       "scripts/verify-import-direction",
-      "scripts/lib/import-direction.mjs"
+      "scripts/lib/import-direction.mjs",
+      ".agents/skills/harness-orchestrator/references/orchestration-contract.yaml",
+      ".template-spec/process/schemas/strategic-design-handoff-v3.schema.json",
+      ".agents/skills/.strategic-design-skills-manifest.json"
     ],
     "excludeRootEntries": [
       ".git",
@@ -294,6 +297,39 @@
         },
         "action": "delete",
         "sourcePath": "scripts/lib/decision-continuation.mjs"
+      },
+      {
+        "id": "ar13-ar15-backend-1",
+        "from": {
+          "profile": "backend",
+          "versions": {
+            "max": "4.0.5"
+          }
+        },
+        "action": "delete",
+        "sourcePath": ".agents/skills/harness-orchestrator/references/orchestration-contract.yaml"
+      },
+      {
+        "id": "ar13-ar15-backend-2",
+        "from": {
+          "profile": "backend",
+          "versions": {
+            "max": "4.0.5"
+          }
+        },
+        "action": "delete",
+        "sourcePath": ".template-spec/process/schemas/strategic-design-handoff-v3.schema.json"
+      },
+      {
+        "id": "ar13-ar15-backend-4",
+        "from": {
+          "profile": "backend",
+          "versions": {
+            "max": "4.0.5"
+          }
+        },
+        "action": "delete",
+        "sourcePath": ".agents/skills/.strategic-design-skills-manifest.json"
       }
     ],
     "schemaVersion": 1

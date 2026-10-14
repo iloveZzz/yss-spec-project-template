@@ -1,0 +1,12 @@
+# owner: harness-orchestrator
+# consumers: lifecycle route/query, current Profile workflows and governance validators
+work_unit_routes:
+  work-unit.ssot-update:
+    primary_skill: maintaining-skills
+    supporting_skills:
+      - codebase-design
+    skills:
+      - maintaining-skills
+      - codebase-design
+    applies_when: template_authority_changes
+    not_applicable_reason: no_template_authority_change

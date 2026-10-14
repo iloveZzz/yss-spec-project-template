@@ -1,10 +1,10 @@
 # 编排执行协议
 
-本协议的正式工作单元、checkpoint、阶段和门禁循环仅适用于 `governed` 或模板维护。先按 `orchestration-contract.yaml.request_triage.delivery_path` 判定；已合格普通任务执行 [普通任务交付](daily-delivery.md)，不先运行本文件的正式循环。只有唯一政策启用的 Profile 及支持该能力的 CLI 可使用普通路径；说明文字不授予资格。
+本协议的正式工作单元、checkpoint、阶段和门禁循环仅适用于 `governed` 或模板维护。先按 `.template-spec/process/orchestration-contract.yaml.request_triage.delivery_path` 判定；已合格普通任务执行 [普通任务交付](daily-delivery.md)，不先运行本文件的正式循环。只有唯一政策启用的 Profile 及支持该能力的 CLI 可使用普通路径；说明文字不授予资格。
 
 ## 有界推进循环
 
-1. 按 `orchestration-contract.yaml.request_triage` 理解请求并选择模式，再识别仓库身份、任务规模和影响面；问题理解与澄清细节见 [请求分诊协议](request-triage.md)。查看已有项目进度可用 `scripts/lifecycle-status --root <项目> --checkpoint <引用>` 读取当前阶段、阻塞、负责人和下一动作；此视图不推进状态或代替流转校验。
+1. 按 `.template-spec/process/orchestration-contract.yaml.request_triage` 理解请求并选择模式，再识别仓库身份、任务规模和影响面；问题理解与澄清细节见 [请求分诊协议](request-triage.md)。查看已有项目进度可用 `scripts/lifecycle-status --root <项目> --checkpoint <引用>` 读取当前阶段、阻塞、负责人和下一动作；此视图不推进状态或代替流转校验。
 2. `setup readiness`：每个任务只执行一次，核对 tracker、五态标签和领域文档布局，并在本轮缓存结果；仅在 tracker、主远端、真实标签或配置变化时重查。
 3. 加载父 Ticket/checkpoint 与真实资产，计算最近可信阶段；按 `.template-spec/process/stage-tracking.md` 登记、恢复并核验当前阶段工作项，写入前确保 checkpoint 已持久化，工作单元结果带 checkpoint_ref。
 4. 评估资产、门禁和 `stale`，选择第一个未阻塞工作单元。进入 `work-unit.slice-implementation` 前，必须先通过 `scripts/lib/lifecycle-transition.mjs` 的实现切片拆分与合同准入、垂直切片绑定和合法 `next_route` 校验；父 Ticket、缺少垂直切片或 `ready-for-human` 的切片一律 `blocked`。
@@ -27,7 +27,7 @@
 
 ## 结果与友好提示
 
-按 `orchestration-contract.yaml.user_progress_report`，每轮主控返回、状态询问、恢复、阶段切换、阻塞和暂停都提供当前任务的中文说明。先回答当前在哪一步、这轮取得什么结果，再说明下一阶段或单元、进入条件及未满足项。阶段和名称读取注册表，状态来自当前 checkpoint、资产和适用验证；未核验写“待核验”，未登记负责人写“未登记”。普通过程更新只报有意义的变化，不重复整套状态。
+按 `.template-spec/process/orchestration-contract.yaml.user_progress_report`，每轮主控返回、状态询问、恢复、阶段切换、阻塞和暂停都提供当前任务的中文说明。先回答当前在哪一步、这轮取得什么结果，再说明下一阶段或单元、进入条件及未满足项。阶段和名称读取注册表，状态来自当前 checkpoint、资产和适用验证；未核验写“待核验”，未登记负责人写“未登记”。普通过程更新只报有意义的变化，不重复整套状态。
 
 下一工作单元可能仍在当前阶段，要说明先完成哪项工作，再流转到哪里。目标阶段从注册表的工作单元归属和经过验证的路由取得；缺少路由或归属时指出缺口，不按阶段顺序猜测，不把计划目标写成“已进入”。完成当前任务或命中执行范围终点时说明终点与验证依据；没有下一单元不自动代表完成。`template-source` 展示模板维护步骤、验证目标和余项，不套用产品阶段；身份非法时解释清单问题及迁移检查动作。
 
@@ -49,7 +49,7 @@
 
 ## 执行成本
 
-执行策略以 `orchestration-contract.yaml.execution_efficiency` 为准，通过同一次 `query-lifecycle-context` 查询取得。Plan → Spec → Ticket 的耗时应分清脚本执行、Agent 读取与编排、人工等待；没有计时记录时不把总时长归因于摘要计算。
+执行策略以 `.template-spec/process/orchestration-contract.yaml.execution_efficiency` 为准，通过同一次 `query-lifecycle-context` 查询取得。Plan → Spec → Ticket 的耗时应分清脚本执行、Agent 读取与编排、人工等待；没有计时记录时不把总时长归因于摘要计算。
 
 同一工作单元把 mode、stage、work-unit 和必要 include 放进一次查询。查询已给出的内容不再整份读取；已读资料在当前任务内未变化时复用，变化、新影响或恢复时重新加载。只问当前阶段尚缺且会影响判断的问题，独立问题可合并；依赖尚未形成资产的后续批准仍按用户决定协议逐边界取得。
 
@@ -116,7 +116,7 @@ tracker 选择和冲突按 `.template-spec/agents/issue-tracker.md` 裁决：已
 
 ## 审查与验证
 
-- 调用 `code-review` 前先固定 review input：`review_mode`、`review_base_ref`、`implementation_candidate_ref`、`candidate_snapshot_ref`、`candidate_digest`、Spec/Ticket、Slice Implementation Contract、Build Architecture Checklist 和 YSS Skill Execution Result 引用。`committed` 模式审查不可变 `HEAD`；`worktree` 模式一次捕获 committed、staged、unstaged 和 untracked 内容。必须按 `orchestration-contract.yaml.review_input` 的 manifest 按模式必填字段及 `yss-worktree-candidate-v1` 字节流（raw path、uint64 big-endian 长度、tracked/untracked record）计算 SHA-256，所有参与审查者（人数按 `orchestration-contract.yaml.gate_consolidation`） 必须消费同一不可变快照。返回后或完成 checkpoint 摘要变化时返回 `blocked`，由编排器决定重新审查。候选为空、漏项或 fixed point 不可解析时阻断。
+- 调用 `code-review` 前先固定 review input：`review_mode`、`review_base_ref`、`implementation_candidate_ref`、`candidate_snapshot_ref`、`candidate_digest`、Spec/Ticket、Slice Implementation Contract、Build Architecture Checklist 和 YSS Skill Execution Result 引用。`committed` 模式审查不可变 `HEAD`；`worktree` 模式一次捕获 committed、staged、unstaged 和 untracked 内容。必须按 `.template-spec/process/orchestration-contract.yaml.review_input` 的 manifest 按模式必填字段及 `yss-worktree-candidate-v1` 字节流（raw path、uint64 big-endian 长度、tracked/untracked record）计算 SHA-256，所有参与审查者（人数按 `.template-spec/process/orchestration-contract.yaml.gate_consolidation`） 必须消费同一不可变快照。返回后或完成 checkpoint 摘要变化时返回 `blocked`，由编排器决定重新审查。候选为空、漏项或 fixed point 不可解析时阻断。
 - 小改动和中等变更可由同一具备所需能力的独立执行者完成 `code-review` 与 fresh verification，并在同一报告中分别记录 findings、命令、结果和残余风险。专业任务按角色表 `review_capabilities` 和检查策略编译 `review_context`、`skill_source.review_skills`，当前候选、策略、范围、依据和独立主体均须可核验；不在流程正文另定义能力表。
 - 该执行者必须独立于实现者；新模块、高风险变更、职责冲突或需双人控制时，Reviewer 与 Verifier 分开。按能力覆盖缺口、专业结论冲突或外部制度增加专家，是与此分离要求不同的条件。
 - `code-review` 是唯一默认代码审查 skill。GitLab、CI、Sonar、Alibaba Java 与 YSS 前端 / 后端 skill 作为仓库规则或专项检查输入接入 Standards 轴，由 `review_standards_route` 按影响面编译；不再叠加第二个通用审查 skill。漏掉合同 `required_skills`、适用报告行空白、mandatory `violation` 未关闭或可机器检查规则既无工具结果也无原文引用时，不得 `completed`。

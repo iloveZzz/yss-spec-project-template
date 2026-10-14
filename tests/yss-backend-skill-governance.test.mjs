@@ -1,3 +1,4 @@
+import { loadOrchestrationContract } from "../scripts/lib/orchestration-contract.mjs";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
@@ -23,7 +24,7 @@ function yaml(path) {
   return document.toJS({ maxAliasCount: 0 });
 }
 
-const lifecycleContract = yaml(".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml");
+const lifecycleContract = loadOrchestrationContract(ref=>readFileSync(ref,"utf8"), ".template-spec/process/orchestration-contract.yaml").value;
 
 function registryWithDeprecatedSkill(cleanupStatus = "migration-only") {
   const data = structuredClone(registry);

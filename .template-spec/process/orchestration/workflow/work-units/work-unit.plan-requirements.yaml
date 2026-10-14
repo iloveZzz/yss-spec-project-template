@@ -1,0 +1,17 @@
+# owner: yss-product-lifecycle
+# consumers: lifecycle route/query, current Profile workflows and governance validators
+work_unit_routes:
+  work-unit.plan-requirements:
+    native:
+      source: yss-product-lifecycle
+      skill: yss-product-lifecycle
+      invocation_mode: model-invoked
+    primary_skill: yss-product-lifecycle
+    supporting_skills:
+      - grilling
+      - domain-modeling
+    skills:
+      - grilling
+      - domain-modeling
+    applies_when: requirements_or_domain_boundary_unclear
+    not_applicable_reason: requirements_already_confirmed

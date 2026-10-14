@@ -1,3 +1,4 @@
+import { loadOrchestrationContract } from "../scripts/lib/orchestration-contract.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
@@ -53,10 +54,10 @@ test("FR-007：三端查询保留各自合同、输出结构与完整内容摘�
     const query = spawnSync(process.execPath, [path.join(tree, "scripts/query-lifecycle-context"), "--work-unit", unit], { cwd: tree, encoding: "utf8" });
     assert.equal(query.status, 0, `${profile}: ${query.stderr}`);
     const { context_sha256, ...result } = JSON.parse(query.stdout);
-    const contractRef = `.agents/skills/${skill}/references/orchestration-contract.yaml`;
-    const contractHash = createHash("sha256").update(fs.readFileSync(path.join(tree, contractRef))).digest("hex");
-    assert.deepEqual(result.sources.orchestration_contract, { ref: contractRef, sha256: contractHash });
-    assert.ok(result.sources.read_set.some(row => row.ref === contractRef && row.sha256 === contractHash));
+    const contractRef = '.template-spec/process/orchestration-contract.yaml';
+    const loaded = loadOrchestrationContract(ref => fs.readFileSync(path.join(tree, ref)), contractRef);
+    assert.deepEqual(result.sources.orchestration_contract, { ref: contractRef, refs: loaded.refs, sha256: loaded.digest });
+    for (const ref of loaded.refs) assert.ok(result.sources.read_set.some(row => row.ref === ref && row.sha256 === createHash('sha256').update(fs.readFileSync(path.join(tree, ref))).digest('hex')));
     assert.equal(Object.hasOwn(result.lifecycle, "checks"), profile === "spec");
     assert.equal(Object.hasOwn(result, "presentation"), profile === "spec");
     assert.equal(result.query.work_unit, unit);

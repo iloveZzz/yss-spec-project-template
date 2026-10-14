@@ -1,0 +1,14 @@
+# owner: harness-orchestrator
+# consumers: lifecycle route/query, current Profile workflows and governance validators
+work_unit_routes:
+  work-unit.harness-entry:
+    primary_skill: harness-orchestrator
+    supporting_skills:
+      - implementation-repo-onboarding
+      - yss-research
+    skills:
+      - harness-orchestrator
+      - implementation-repo-onboarding
+      - yss-research
+    applies_when: harness_entry
+    not_applicable_reason: harness_context_already_verified

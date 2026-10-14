@@ -7,6 +7,7 @@ import { parseDocument } from '../vendor/yaml.mjs';
 import { createHash } from 'node:crypto';
 import {readProgressionTarget} from './lifecycle-progression.mjs';
 import {readInstanceMetadata} from './instance-metadata.mjs';
+import {loadOrchestrationContract} from './orchestration-contract.mjs';
 
 export const SCOPE_REF = '.yss-execution-scope.yaml';
 export const TERMINAL_REF = '.yss-backend-delivery.json';
@@ -16,6 +17,7 @@ const read = (root, ref) => {
   if (doc.errors.length) throw new TypeError(doc.errors[0].message);
   return doc.toJS({ maxAliasCount: 0 });
 };
+const readContract = (root, ref) => loadOrchestrationContract(part => readFileSync(safe(root, part, { missing: true })), ref).value;
 const check = (ok, message) => { if (!ok) throw new TypeError(`execution-scope-blocked: ${message}`); };
 
 /** The project opt-in selects a policy; callers cannot supply a replacement policy. */
@@ -41,7 +43,7 @@ export function loadExecutionScope(root = ROOT) {
   check(config.schema_version === 1 && config.scope_id === 'plan-to-backend'
     && Object.keys(config).every(key => ['schema_version', 'scope_id'].includes(key)), '未知或被扩大的职责配置');
   if (plugin) check(['yss-plan-to-backend', 'yss-backend-delivery'].includes(plugin.plugin) && plugin.execution_scope === config.scope_id, '插件与项目职责绑定不一致');
-  const contract = read(root, '.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml');
+  const contract = readContract(root, '.template-spec/process/orchestration-contract.yaml');
   const policy = contract.execution_scopes?.[config.scope_id];
   check(policy?.terminal_work_unit === 'work-unit.backend-delivery' && Array.isArray(policy.allowed_work_units), '匹配版本的主控合同缺少职责策略');
   return { ...policy, scope_id: config.scope_id };
@@ -56,7 +58,7 @@ export function authorizeBackendDelivery({root = ROOT, checkpointRef, assetRef, 
     check(identity.schema_version === 1 && identity.repository_mode === 'project-instance'
       && read(root, '.template-spec/process/harness-profile.yaml').profile_id === 'harness.backend-delivery', '后端专职实例身份不一致');
     check(typeof checkpointRef === 'string' && checkpointRef, '后端专职交付需要明确功能 checkpoint');
-    if(deliveryMode === 'local-evidence') check(read(root,'.agents/skills/harness-orchestrator/references/orchestration-contract.yaml').progression_target?.local_implementation_inputs === 'native-profile-current-feature-approved-assets','当前后端合同未支持本地业务交付证据');
+    if(deliveryMode === 'local-evidence') check(readContract(root,'.template-spec/process/orchestration-contract.yaml').progression_target?.local_implementation_inputs === 'native-profile-current-feature-approved-assets','当前后端合同未支持本地业务交付证据');
     const feature = readProgressionTarget({root, checkpointRef, includeDefault: true});
     check(feature?.target === 'profile-terminal' && feature.policy.required_checks?.includes('backend-delivery'), '当前后端合同缺少本端交付完成政策');
     const checkpoint = read(root, feature.checkpoint_ref);

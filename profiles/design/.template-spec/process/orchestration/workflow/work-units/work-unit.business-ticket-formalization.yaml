@@ -1,0 +1,20 @@
+# owner: yss-strategic-design
+# consumers: lifecycle route/query, current Profile workflows and governance validators
+work_unit_routes:
+  work-unit.business-ticket-formalization:
+    native:
+      source: yss-strategic-design
+      skill: yss-strategic-design
+      invocation_mode: model-invoked
+    primary_skill: yss-strategic-design
+    supporting_skills: []
+    compatibility:
+      source: mattpocock/skills
+      skill: to-tickets
+      invocation_mode: reference
+      formal_artifact_owner: explicit-user-entry
+    skills:
+      - yss-strategic-design
+    applies_when: business_scope_impact
+    not_applicable_reason: no_business_scope_impact
+    next_route: work-unit.strategic-design-handoff

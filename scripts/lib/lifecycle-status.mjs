@@ -1,5 +1,6 @@
 import { businessTicketVersion, businessAuthoringEnabled, businessSetRef, checkBusinessTickets, businessSyncDiagnostics, summarizeBusinessImplementation } from './business-tickets.mjs';
 import { orchestrationRef } from './governance-io.mjs';
+import { loadOrchestrationContract } from './orchestration-contract.mjs';
 import {checkReadingViews} from './reading-view-bundle.mjs';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
@@ -26,6 +27,16 @@ function source(root, ref) {
   }
 }
 
+function orchestrationSource(root, ref) {
+  try {
+    const loaded = loadOrchestrationContract(part => readFileSync(safeTrackingPath(root, part)), ref);
+    return { value: loaded.value, digest: `sha256:${loaded.digest}` };
+  } catch (error) {
+    error.lifecycle_input_ref ??= ref;
+    throw error;
+  }
+}
+
 /** Read-only projection; checkpoint, registry and orchestration remain authoritative. */
 export function lifecycleStatus({ root, checkpointRef, taskPackageRef, env }) {
   if (!root || !checkpointRef) throw new TypeError('root and checkpoint are required');
@@ -41,7 +52,7 @@ export function lifecycleStatus({ root, checkpointRef, taskPackageRef, env }) {
   }
   const registryRef = '.template-spec/process/lifecycle-registry.yaml';
   const contractRef = orchestrationRef(root);
-  const checkpoint = source(root, checkpointRef), registry = source(root, registryRef), contract = source(root, contractRef);
+  const checkpoint = source(root, checkpointRef), registry = source(root, registryRef), contract = orchestrationSource(root, contractRef);
   const value = checkpoint.value;
   const registeredText = value => typeof value === 'string' && value.trim() ? value : null;
   if (value.schema_version !== 1 || value.repository_mode !== 'project-instance') throw new TypeError('checkpoint 身份或版本无效');

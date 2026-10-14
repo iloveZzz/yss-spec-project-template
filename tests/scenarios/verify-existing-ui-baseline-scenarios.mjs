@@ -43,6 +43,7 @@ test('Handoff v5 既有基线从源导出、离线只读验包、前端导入 v2
 });
 test('Handoff v5 原型仍验证离线原型；v4 原版本保持，未知版本拒绝',async t=>{
  const base=root(t),source=path.join(base,'source');mkdirSync(source);const f=await handoffFixture(source,{kind:'prototype'}),output=path.join(base,'package');await exportBundle({sourceRoot:source,handoffRef:'handoff.yaml',output});assert.equal(await openBundle(output,b=>b.handoff.ui_baseline_kind,{readOnly:true}),'prototype');
+ f.handoff.schema_version=3;f.sign();await assert.rejects(()=>inspectSource(source,'handoff.yaml'),error=>error.code==='MIGRATION_REQUIRED');
  f.handoff.schema_version=99;f.sign();await assert.rejects(()=>inspectSource(source,'handoff.yaml'),error=>error.code==='CAPABILITY');
 });
 test('真实用户决定必须覆盖既有 manifest 当前原字节；结构批准不能代替',async t=>{

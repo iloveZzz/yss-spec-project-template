@@ -228,7 +228,7 @@ gate_policy:
         check_order: domain-strategy-before-stage-decision
         aggregate_professional_result: reuse-internal-check-conclusions
         aggregate_additional_review_task: forbidden
-        review_control_ref: .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml#planning.review_control
+        review_control_ref: .template-spec/process/orchestration-contract.yaml#planning.review_control
   continuation_reviews:
     gate.plan-approved: [role.product-manager]
     gate.spec-baseline-approved: [role.product-manager]

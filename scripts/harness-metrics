@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { writeFileSync, mkdirSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { collectMetrics, digest } from "./lib/harness-metrics.mjs";
@@ -8,7 +8,7 @@ import { resolveMaintenanceOutput } from "./lib/maintenance-storage.mjs";
 const SCRIPT_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
 function usage() {
-  return "用法: scripts/harness-metrics [--root <目录>] [--out maintenance:<类别/运行ID/文件>] [--rev <提交>] [--since <时间>] [--until <时间>]\n只读；默认向 stdout 输出 JSON。--out 写入仓外维护命名空间并输出 sha256。\n--rev、--since、--until 只影响 pipeline_commits：默认窗口是 rev（默认 HEAD）的提交时间往前 30 天，可用它们复现历史口径。";
+  return "用法: scripts/harness-metrics [--root <目录>] [--out maintenance:<类别/运行ID/文件>] [--rev <提交>] [--since <时间>] [--until <时间>] [--agent-output <真实 agent JSON 文件>]\n只读；默认向 stdout 输出 JSON。--out 写入仓外维护命名空间并输出 sha256。\n--rev、--since、--until 只影响 pipeline_commits：默认窗口是 rev（默认 HEAD）的提交时间往前 30 天，可用它们复现历史口径。";
 }
 
 try {
@@ -18,6 +18,7 @@ try {
   const options = {};
   for (let index = 0; index < args.length; index += 1) {
     if (args[index] === "--root") root = path.resolve(args[++index] ?? "");
+    else if (args[index] === "--agent-output") { options.agentJSON = readFileSync(args[++index], "utf8"); const parsed = JSON.parse(options.agentJSON); const view = parsed.result ?? parsed; if (view.view !== "agent" || !Object.hasOwn(view, "route")) throw new TypeError("需要真实 route agent JSON"); }
     else if (args[index] === "--out") out = args[++index];
     else if (["--rev", "--since", "--until"].includes(args[index])) options[args[index].slice(2)] = args[++index] ?? "";
     else if (args[index] === "--help") { process.stdout.write(`${usage()}\n`); process.exit(0); }

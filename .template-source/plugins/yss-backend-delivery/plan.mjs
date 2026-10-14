@@ -9,10 +9,11 @@ import { parseArgs } from 'node:util';
 import { parseDocument } from '../../../scripts/vendor/yaml.mjs';
 import { resolveSkillForNewUse } from '../../../scripts/lib/skill-registry.mjs';
 import { parseContextContract } from '../../../scripts/lib/context-contract.mjs';
+import { loadOrchestrationContract } from '../../../scripts/lib/orchestration-contract.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 const REGISTRY = '.template-spec/agents/yss-skill-registry.yaml';
-const CONTRACT = '.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml';
+const CONTRACT = '.template-spec/process/orchestration-contract.yaml';
 const UNITS = [
   'plan-opportunity', 'plan-requirements', 'domain-strategy-design', 'stage-decision',
   'spec-synthesis', 'prototype-design-v2', 'technical-analysis',
@@ -82,7 +83,7 @@ export function planPlugin(sourceRoot = ROOT) {
   if (identity.schema_version !== 1 || identity.repository_mode !== 'template-source') {
     throw new Error('source-identity-invalid: expected template-source schema 1');
   }
-  const registry = yaml(root, REGISTRY), contract = yaml(root, CONTRACT);
+  const registry = yaml(root, REGISTRY), contractLoaded = loadOrchestrationContract(ref => readFileSync(safe(root, ref)), CONTRACT), contract = contractLoaded.value;
   if (registry.status !== 'active' || registry.canonical_content_root !== '.agents/skills') {
     throw new Error('skill-registry-invalid');
   }
@@ -144,13 +145,13 @@ export function planPlugin(sourceRoot = ROOT) {
   const skillList = [...selected.values()].sort((a, b) => a.id.localeCompare(b.id));
   const skillRoots = skillList.map(item => `.agents/skills/${item.id}`);
   for (const ref of skillRoots) safe(root, `${ref}/SKILL.md`);
-  const authorityFiles = inventory(root, [REGISTRY, CONTRACT, '.template-spec/process/lifecycle-registry.yaml',
+  const authorityFiles = inventory(root, [REGISTRY, ...contractLoaded.refs, '.template-spec/process/lifecycle-registry.yaml',
     '.template-spec/agents/digital-human-roles.yaml', '.template-spec/process/schemas']);
   // Project-owned Context, AGENTS and DESIGN are not source-equality requirements.
   const skillFiles = inventory(root, skillRoots);
   const bindingFiles = [...new Map([...authorityFiles, ...skillFiles].map(file => [file.ref, file])).values()]
     .sort((a, b) => a.ref < b.ref ? -1 : a.ref > b.ref ? 1 : 0);
-  const candidateFiles = inventory(root, [...AUTHORITY, ...skillRoots, ...RESOURCE_FAMILIES]);
+  const candidateFiles = inventory(root, [...AUTHORITY, ...contractLoaded.refs, ...skillRoots, ...RESOURCE_FAMILIES]);
   const platform = JSON.parse(readFileSync(safe(root, '.template-spec/engineering/backend-platforms.json'), 'utf8'));
   return {
     schema_version: 1, kind: 'codex-plugin-preparation', phase: 'M1', result: 'planned',

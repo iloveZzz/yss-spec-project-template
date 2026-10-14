@@ -1,0 +1,12 @@
+# owner: harness-orchestrator
+# consumers: lifecycle route/query, current Profile workflows and governance validators
+work_unit_routes:
+  work-unit.release-and-rollback:
+    primary_skill: maintaining-skills
+    supporting_skills:
+      - handoff
+    skills:
+      - maintaining-skills
+      - handoff
+    applies_when: template_checkpoint_required
+    not_applicable_reason: no_checkpoint_required

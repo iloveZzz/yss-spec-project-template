@@ -1,3 +1,4 @@
+import {loadOrchestrationContract} from '../scripts/lib/orchestration-contract.mjs';
 // AR-12c：前端整线已移除。这些断言防止被删除的 Profile、入口与稳定 ID 悄悄回流；全部是只读的文件与注册表检查，亚秒级。
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -29,7 +30,7 @@ test('前端生命周期稳定 ID 已弃用且不再定义', () => {
 test('推进目标不再支持 frontend-accepted', () => {
   const schema = JSON.parse(read('.template-spec/process/schemas/progression-target.schema.json'));
   assert.equal(schema.properties.target.enum.includes('frontend-accepted'), false);
-  const contract = parse(read('.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml'));
+  const contract = loadOrchestrationContract(read, '.template-spec/process/orchestration-contract.yaml').value;
   assert.equal('frontend-accepted' in contract.progression_target.completion_policy, false);
 });
 

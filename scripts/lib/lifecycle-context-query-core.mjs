@@ -1,3 +1,4 @@
+import { loadOrchestrationContract } from './orchestration-contract.mjs';
 import {readInstanceMetadata} from './instance-metadata.mjs';
 import { loadExecutionScope, assertScopeWorkUnit, scopedNextRoutes } from './lifecycle-execution-scope.mjs';
 import { createHash } from "node:crypto";
@@ -240,7 +241,8 @@ export function createLifecycleContextQuery({ queryProfile, orchestrationContrac
     const scope = queryProfile === 'lifecycle' ? loadExecutionScope() : null;
     if (workUnitId && queryProfile === 'lifecycle') assertScopeWorkUnit(workUnitId, { readOnly: true });
     const lifecycle = validateRegistry(loadRegistry());
-    const orchestration = loadYaml(orchestrationContractRef, "生命周期编排合同");
+    const contractLoaded = loadOrchestrationContract(ref => readFileSync(path.join(ROOT, ref)), orchestrationContractRef);
+    const orchestration = contractLoaded.value;
     const skillRegistry = loadSkillRegistry();
     const planUnit = ['work-unit.plan-opportunity', 'work-unit.plan-requirements', 'work-unit.domain-strategy-design', 'work-unit.stage-decision', 'work-unit.spec-synthesis'].includes(workUnitId);
     const loadPlan = ['stage.plan', 'stage.spec-architecture'].includes(stageId) || planUnit;
@@ -291,8 +293,9 @@ export function createLifecycleContextQuery({ queryProfile, orchestrationContrac
           status: lifecycle.status,
         },
         orchestration_contract: {
-          ref: orchestrationContractRef,
-          sha256: sha256(read(orchestrationContractRef)),
+          ref: contractLoaded.refs[0],
+          refs: contractLoaded.refs,
+          sha256: contractLoaded.digest,
         },
         skill_registry: {
           ref: SKILL_REGISTRY_REF,
@@ -333,7 +336,7 @@ export function createLifecycleContextQuery({ queryProfile, orchestrationContrac
     Object.assign(result.presentation.names, presenter.catalog(result.execution));
     Object.assign(result.presentation.names, presenter.catalog(presenter.roleIds));
     }
-    result.references = [...collectPathReferences(result), LIFECYCLE_REGISTRY_REF, orchestrationContractRef, SKILL_REGISTRY_REF]
+    result.references = [...collectPathReferences(result), LIFECYCLE_REGISTRY_REF, ...contractLoaded.refs, SKILL_REGISTRY_REF]
       .filter((value, index, all) => all.indexOf(value) === index)
       .sort();
     result.sources.read_set = validationDependencies().files.map(row=>({ref:path.relative(ROOT,row.file).split(path.sep).join("/"),sha256:row.digest})).sort((a,b)=>a.ref.localeCompare(b.ref,"en"));

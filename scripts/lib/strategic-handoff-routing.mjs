@@ -1,7 +1,10 @@
-import { existsSync } from './validation-phase.mjs';
+import { existsSync, readFileSync } from './validation-phase.mjs';
 import path from 'node:path';
 import { read, safe, ensure } from './strategic-handoff-io.mjs';
 import { readInstanceMetadata } from './instance-metadata.mjs';
+import { loadOrchestrationContract } from './orchestration-contract.mjs';
+
+const readContract = (root, ref) => loadOrchestrationContract(part => readFileSync(safe(root, part, { missing: true })), ref).value;
 
 // Wire work-unit IDs belong to the immutable source package. Only target routing is adapted.
 export function consumerEntry(root, capability, sourceWorkUnit) {
@@ -14,8 +17,8 @@ export function consumerEntry(root, capability, sourceWorkUnit) {
   }
   const dedicated = profile && !fullSpec;
   if (dedicated) ensure(['harness.business-ddd-strategy-handoff', 'harness.backend-delivery'].includes(profile.profile_id) && Array.isArray(profile.lifecycle?.allowed_work_units), 'consumer-entry-invalid-profile');
-  const contractRef = scope || !dedicated ? '.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml' : '.agents/skills/harness-orchestrator/references/orchestration-contract.yaml';
-  const contract = read(safe(root, contractRef));
+  const contractRef = '.template-spec/process/orchestration-contract.yaml';
+  const contract = readContract(root, contractRef);
   const target = scope?.scope_id || (dedicated ? profile.profile_id : 'yss-full-lifecycle');
   const policy = contract.consumer_entry_routes?.[target]?.[capability];
   ensure(policy && policy.source_work_unit === sourceWorkUnit, `consumer-entry-unmapped: ${target}/${capability}/${sourceWorkUnit}`);
@@ -32,7 +35,7 @@ export function consumerEntry(root, capability, sourceWorkUnit) {
 export function scopedConsumerCapabilities(root, fallback) {
   if (!existsSync(path.join(root, '.yss-execution-scope.yaml'))) return fallback;
   const scope = read(safe(root, '.yss-execution-scope.yaml'));
-  const contract = read(safe(root, '.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml'));
+  const contract = readContract(root, '.template-spec/process/orchestration-contract.yaml');
   const capabilities = contract.execution_scopes?.[scope.scope_id]?.consumer_capabilities;
   ensure(scope.schema_version === 1 && Array.isArray(capabilities) && capabilities.length, 'consumer-scope-capabilities-missing');
   return capabilities;

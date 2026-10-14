@@ -1,16 +1,13 @@
 import { existsSync, readFileSync } from './validation-phase.mjs';
 import path from "node:path";
 import { parseDocument } from "../vendor/yaml.mjs";
+import { loadOrchestrationContract } from "./orchestration-contract.mjs";
 import { nestedSkillPaths, OBSOLETE, PROJECTION_ROOTS, ROOT, unregisteredNestedSkillPaths } from "./skill-supply-chain.mjs";
 
 export const DEFAULT_REGISTRY = path.join(ROOT, ".template-spec/agents/yss-skill-registry.yaml");
 const LOCK_PATH = path.join(ROOT, "skills-lock.json");
 const COMPILER_CONTRACT = path.join(ROOT, ".agents/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml");
-const LIFECYCLE_CONTRACT = [
-  path.join(ROOT, ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml"),
-  path.join(ROOT, ".agents/skills/harness-orchestrator/references/orchestration-contract.yaml"),
-].find((candidate) => existsSync(candidate))
-  ?? path.join(ROOT, ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml");
+const LIFECYCLE_CONTRACT = [".template-spec/process/orchestration-contract.yaml", ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml", ".agents/skills/harness-orchestrator/references/orchestration-contract.yaml"].map(ref=>path.join(ROOT,ref)).find(file=>existsSync(file)) ?? path.join(ROOT,".template-spec/process/orchestration-contract.yaml");
 const BACKEND_PLATFORMS = path.join(ROOT, ".template-spec/engineering/backend-platforms.json");
 const LAYERS = new Set(["core", "specialist", "compatibility", "maintainer-only"]);
 const MATURITIES = new Set(["draft", "verified", "supported", "deprecated"]);
@@ -41,6 +38,15 @@ export class SkillLifecycleError extends TypeError {
 
 function fail(message) {
   throw new TypeError(message);
+}
+
+function lifecycleContractFromFile(filePath, label) {
+  try {
+    return loadOrchestrationContract((file) => readFileSync(file), filePath).value;
+  } catch (error) {
+    if (error.code === "ENOENT") fail(`缺少${label}: ${filePath}`);
+    throw error;
+  }
 }
 
 function yamlFromFile(filePath, label) {
@@ -655,7 +661,7 @@ export function validateSkillRegistry(registry, { lock, compilerContract, lifecy
   }
 
   if (lifecycleContract || existsSync(LIFECYCLE_CONTRACT)) {
-    const lifecycle = lifecycleContract ?? yamlFromFile(LIFECYCLE_CONTRACT, "生命周期编排合同");
+    const lifecycle = lifecycleContract ?? lifecycleContractFromFile(LIFECYCLE_CONTRACT, "生命周期编排合同");
     const deprecatedLifecycleRefs = exactValuePaths(lifecycle, deprecatedSkillIds);
     if (deprecatedLifecycleRefs.length) fail(`生命周期编排合同仍引用 deprecated skill: ${deprecatedLifecycleRefs.join(", ")}`);
     const routes = lifecycle.work_unit_routes;
@@ -725,7 +731,7 @@ export function validateDefaultSkillRegistry() {
     lock,
     backendPlatforms,
     compilerContract,
-    lifecycleContract: yamlFromFile(LIFECYCLE_CONTRACT, "生命周期编排合同"),
+    lifecycleContract: lifecycleContractFromFile(LIFECYCLE_CONTRACT, "生命周期编排合同"),
     skillSource: (id) => readFileSync(path.join(ROOT, ".agents/skills", id, "SKILL.md"), "utf8"),
     skillMetadata: (id) => {
       const file = path.join(ROOT, '.agents/skills', id, 'agents/openai.yaml');

@@ -1,6 +1,6 @@
 # 请求分诊协议
 
-判断规则由 `orchestration-contract.yaml.request_triage` 定义，交付路径由其 `delivery_path` 定义，本文解释应用方式。分诊成功以理解用户目标并采取正确首个动作为准；技能名称命中只是中间结果。
+判断规则由 `.template-spec/process/orchestration-contract.yaml.request_triage` 定义，交付路径由其 `delivery_path` 定义，本文解释应用方式。分诊成功以理解用户目标并采取正确首个动作为准；技能名称命中只是中间结果。
 
 在正式工作单元之前，先用支持的 CLI 核验当前任务可否使用普通路径。已合格 `daily` 按 [普通任务交付](daily-delivery.md) 直接实现、测试并独立审查；`governed` 再进入既有生命周期。事实不足先调查，旧 CLI 或未启用的 Profile 明确 `daily unsupported`，不靠改标签豁免正式准入。本任务的现行/历史正式绑定保持 `governed`；无关资产不阻普通新任务。
 

@@ -3,6 +3,7 @@ import { readWorkLayout } from './work-layout.mjs';
 import {existsSync,readFileSync,readdirSync,lstatSync} from './validation-phase.mjs';
 import {safe,schema} from './strategic-handoff-io.mjs';
 import {parseSliceYaml} from './slice-contract.mjs';
+import {loadOrchestrationContract} from './orchestration-contract.mjs';
 export const READING_POLICY='.template-spec/process/reading-policy.yaml';
 export function readingPolicy(root){
  const file=safe(root,READING_POLICY,{missing:true});
@@ -21,9 +22,10 @@ export function readingLocation(root, checkpoint){
    'harness.backend-delivery':'harness-orchestrator'
   }[profile.profile_id];
   if(!skill)throw Error('reading-profile-identity');
-  const contractRef='.agents/skills/'+skill+'/references/orchestration-contract.yaml';
+  const canonical='.template-spec/process/orchestration-contract.yaml';
+  const contractRef=existsSync(safe(root,canonical,{missing:true}))?canonical:'.agents/skills/'+skill+'/references/orchestration-contract.yaml';
   if(existsSync(safe(root,contractRef,{missing:true}))){
-   const contract=parseSliceYaml(read(contractRef));
+   const contract=loadOrchestrationContract(read,contractRef).value;
    if(Object.hasOwn(contract,'progression_target')){
     const policy=contract.progression_target;
     if(![1,2].includes(profile.schema_version)||policy?.schema_version!==1||policy.config_file!=='progression-target.json'||!Array.isArray(policy.required_capabilities)||!policy.required_capabilities.includes('lifecycle-target-v1')||policy.required_capabilities.some(cap=>cap!=='lifecycle-target-v1'))throw Error('reading-capability-unsupported');

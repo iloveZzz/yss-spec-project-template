@@ -1,3 +1,4 @@
+import { loadOrchestrationContract } from "../scripts/lib/orchestration-contract.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
@@ -11,7 +12,7 @@ const read = (relative) => fs.readFileSync(path.join(ROOT, relative), "utf8");
 const yaml = (relative) => parseDocument(read(relative), { uniqueKeys: true, maxAliasCount: 0 }).toJS({ maxAliasCount: 0 });
 
 const registry = loadSkillRegistry();
-const contract = yaml(".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml");
+const contract = loadOrchestrationContract(read, ".template-spec/process/orchestration-contract.yaml").value;
 
 /** 显式 = 注册表有效调用意图为 user；与 validateInvocationMetadata 的判定一致。 */
 function mode(skill) {

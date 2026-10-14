@@ -1,3 +1,4 @@
+import {loadOrchestrationContract} from '../../scripts/lib/orchestration-contract.mjs';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
@@ -22,7 +23,7 @@ try {
   copy('.template-spec/agents/digital-human-roles.yaml');
   copy('scripts/verify-plan-spec-entry');
   copy('scripts/verify-lifecycle-checkpoint');
-  copy('.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml');
+  for(const ref of loadOrchestrationContract(ref=>readFileSync(path.join(sourceRoot,ref)),'.template-spec/process/orchestration-contract.yaml').refs)copy(ref);
   const draft = preparePlanSpecEntry({ root, featureId: 'demo', planRef: '.work/demo/plan.md', contextRef: '.work/demo/context.json' });
   assert.throws(() => preparePlanSpecEntry({ root, featureId: 'demo', planRef: '.work/demo/missing.md', contextRef: '.work/demo/context.json' }), /ENOENT/);
   assert.equal(draft.status, 'draft');

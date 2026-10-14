@@ -22,8 +22,7 @@
     "domain_strategy_ref",
     "impact_assessment",
     "downstream_mapping",
-    "evidence_refs",
-    "approval"
+    "evidence_refs"
   ],
   "properties": {
     "schema_version": {
@@ -615,6 +614,24 @@
             }
           }
         }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "draft"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {},
+      "else": {
+        "required": [
+          "approval"
+        ]
       }
     }
   ]

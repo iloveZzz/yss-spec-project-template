@@ -149,29 +149,16 @@ test('collectMetrics 在非 git 目录里 pipeline_commits 为 null，在仓库�
   assert.equal(collectMetrics(root).pipeline_commits.pipeline_only_ratio, 1);
 });
 
-test('daily 起步必读：累计入口文件与编排合同 request_triage 段，缺文件不计入', t => {
+test('daily 起步累计真实 agent JSON 的 UTF-8 字节，缺输入不宣称达标', t => {
   const root = project(t);
   fs.writeFileSync(path.join(root, 'AGENTS.md'), 'abc');
-  const references = '.agents/skills/yss-product-lifecycle/references';
-  fs.mkdirSync(path.join(root, references), { recursive: true });
-  fs.writeFileSync(path.join(root, references, 'daily-delivery.md'), 'ab');
-  fs.writeFileSync(path.join(root, references, 'orchestration-contract.yaml'), 'schema_version: 6\n# 注释\nrequest_triage:\n  owner: x\n  delivery_path: y\n\nexecution_efficiency:\n  a: 1\n');
-  const stats = dailyStartStats(root);
-  const triage = 'request_triage:\n  owner: x\n  delivery_path: y\n\n';
-  assert.equal(stats.profile, 'pre-s4');
-  assert.equal(stats.files.find((item) => item.path === 'AGENTS.md').bytes, 3);
-  assert.equal(stats.files.find((item) => item.path === 'CONTEXT.md').bytes, null);
-  assert.deepEqual(stats.sections, [{ path: `${references}/orchestration-contract.yaml`, section: 'request_triage', bytes: Buffer.byteLength(triage) }]);
-  assert.equal(stats.total_bytes, 3 + 2 + Buffer.byteLength(triage));
-  assert.equal(collectMetrics(root).daily_start.total_bytes, stats.total_bytes);
-});
-
-test('合同里没有 request_triage 段时该段为 null 且不计入总数', t => {
-  const root = project(t);
-  const references = '.agents/skills/yss-product-lifecycle/references';
-  fs.mkdirSync(path.join(root, references), { recursive: true });
-  fs.writeFileSync(path.join(root, references, 'orchestration-contract.yaml'), 'other:\n  a: 1\n');
-  const stats = dailyStartStats(root);
-  assert.equal(stats.sections[0].bytes, null);
-  assert.equal(stats.total_bytes, 0);
+  assert.equal(dailyStartStats(root).total_bytes, null);
+  assert.equal(dailyStartStats(root).within_budget, null);
+  fs.writeFileSync(path.join(root, 'CONTEXT.md'), '业务');
+  const output = JSON.stringify({view:'agent', route:'daily', rules:['规则不可截断']});
+  const stats = dailyStartStats(root, output);
+  assert.equal(stats.profile, 'route-agent-v1');
+  assert.equal(stats.total_bytes, 3 + Buffer.byteLength('业务') + Buffer.byteLength(output));
+  assert.equal(stats.within_budget, true);
+  assert.equal(dailyStartStats(root, output.repeat(1000)).within_budget, false);
 });

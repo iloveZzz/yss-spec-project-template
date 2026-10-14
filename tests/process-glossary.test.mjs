@@ -67,7 +67,7 @@ test("NFR-003：AGENTS.md、CONTEXT.md 与 yss-product-lifecycle/SKILL.md 合计
   assert.ok(total <= RESIDENT_BUDGET, `常驻读取 ${total} B 超过预算 ${RESIDENT_BUDGET} B：${files.map((item) => `${item.path} ${item.bytes}`).join("，")}`);
 });
 
-test("NFR-005：.template-spec/process 只净增术语表一个文件", () => {
-  const baseline = 94; // 加固开始时的文件数（harness-metrics 基线）
-  assert.ok(collectMetrics(ROOT).process_files <= baseline + 1, "流程文档数净增不得超过 1");
+test("架构迭代流程资产数量不超过 118", () => {
+  const budget = 118; // HEAD 86 + 本轮合同拆分、阅读政策与迁移资产 32。
+  assert.ok(collectMetrics(ROOT).process_files <= budget, "流程资产不得超出架构迭代预算");
 });

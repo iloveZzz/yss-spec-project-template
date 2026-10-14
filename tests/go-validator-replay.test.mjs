@@ -572,7 +572,7 @@ for (const [name, mutate] of Object.entries(handoffVariants)) {
     try {
       const source = path.join(base, 'source');
       mkdirSync(source);
-      await handoffFixture(source);
+      await handoffFixture(source, {handoffVersion: 4});
       const out = path.join(base, 'package');
       await exportBundle({sourceRoot: source, handoffRef: 'handoff.yaml', output: out});
       mutate(out);
@@ -601,7 +601,7 @@ async function buildConsumption() {
   cleanupDirs.add(base);
   const source = path.join(base, 'source');
   mkdirSync(source);
-  const f = await handoffFixture(source);
+  const f = await handoffFixture(source, {handoffVersion: 4});
   const out = path.join(base, 'package');
   await exportBundle({sourceRoot: source, handoffRef: 'handoff.yaml', output: out});
   const target = makeRoot('yss-consume-', 'backend');

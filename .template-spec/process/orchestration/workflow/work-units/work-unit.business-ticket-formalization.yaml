@@ -1,0 +1,14 @@
+# owner: yss-product-lifecycle
+# consumers: lifecycle route/query, current Profile workflows and governance validators
+work_unit_routes:
+  work-unit.business-ticket-formalization:
+    native:
+      source: yss-product-lifecycle
+      skill: yss-product-lifecycle
+      invocation_mode: model-invoked
+    primary_skill: yss-product-lifecycle
+    supporting_skills: []
+    skills:
+      - yss-product-lifecycle
+    applies_when: business_scope_impact
+    not_applicable_reason: no_business_scope_impact
