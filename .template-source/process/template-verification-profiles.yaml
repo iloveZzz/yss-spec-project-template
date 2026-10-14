@@ -585,14 +585,15 @@ profiles:
         depends_on: []
         failure_mode: "流程术语回流到根 CONTEXT.md、术语表违反英文标识或重复规则、入口链接断开、运行时平台细节混入流程术语，或常驻读取超过预算"
       - id: check.instance-metadata
-        run: "node --test --test-concurrency=1 tests/instance-metadata.test.mjs"
+        run: "node --test --test-concurrency=1 tests/instance-metadata.test.mjs tests/native-instance-drift.test.mjs"
         group: drift-identity
         inputs_complete: true
         input_patterns:
           - "scripts/lib/instance-metadata.mjs"
           - "tests/instance-metadata.test.mjs"
+          - "tests/native-instance-drift.test.mjs"
         depends_on: []
-        failure_mode: "实例元数据对运行时、投影根或平台技能声明的校验放行了不一致的声明，或拒绝了已登记的运行时"
+        failure_mode: "实例元数据放行不一致的运行时、投影根或平台技能声明，或原生资产的内容、权限、链接和受管记录漂移未被拒绝"
       - id: check.design-docs
         run: "node --test tests/design-docs.test.mjs"
         group: feature-assets
