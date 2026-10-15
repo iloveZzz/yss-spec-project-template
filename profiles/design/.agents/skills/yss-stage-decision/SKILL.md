@@ -1,6 +1,7 @@
 ---
 name: yss-stage-decision
 description: 编排 Plan 到 Spec 入口的方案决策与业务边界、协作和规则设计；当需求、业务责任区、统一业务词汇或下游影响尚未稳定时使用。
+disable-model-invocation: true
 ---
 
 # YSS Stage Decision

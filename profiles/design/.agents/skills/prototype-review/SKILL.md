@@ -1,6 +1,7 @@
 ---
 name: prototype-review
 description: Use when independently reviewing low-fidelity UI, interaction specs, or state matrices before choosing an H1/H2 prototype profile, calibrating Spec/OpenAPI, slicing, or implementation.
+disable-model-invocation: true
 ---
 
 # Prototype Review

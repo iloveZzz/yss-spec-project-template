@@ -1,6 +1,7 @@
 ---
 name: yss-prototype-stage
 description: Use when a YSS feature changes UI flows, states, permissions or UI-driven APIs and needs prototype assets, or hands off an unchanged UI baseline.
+disable-model-invocation: true
 ---
 
 # YSS Prototype Stage

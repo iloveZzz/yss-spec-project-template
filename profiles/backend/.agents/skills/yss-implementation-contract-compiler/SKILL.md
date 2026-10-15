@@ -1,6 +1,7 @@
 ---
 name: yss-implementation-contract-compiler
 description: "编译或重验 YSS Slice Implementation Contract、最小 Skill 集与证据计划；判定偏离及重新路由。"
+disable-model-invocation: true
 ---
 
 # YSS Implementation Contract Compiler

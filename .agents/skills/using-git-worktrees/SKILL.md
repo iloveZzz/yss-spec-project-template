@@ -1,6 +1,6 @@
 ---
 name: using-git-worktrees
-description: "Set up Git worktree isolation when requested or when concurrent work needs a separate checkout."
+description: "Set up Git worktree isolation for concurrent work."
 ---
 
 # Using Git Worktrees

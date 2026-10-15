@@ -1,6 +1,7 @@
 ---
 name: yss-stage-decision
 description: 需求、业务责任区、统一词汇或下游影响未稳定时，编排 Plan 到 Spec 的方案决策与业务边界设计。
+disable-model-invocation: true
 ---
 
 # YSS Stage Decision

@@ -1,6 +1,7 @@
 ---
 name: prototype-review
 description: Use when independently reviewing low-fidelity UI, interaction specs or state matrices before prototype profile choice or Spec/OpenAPI calibration.
+disable-model-invocation: true
 ---
 
 功能包根只从 `.template-spec/agents/issue-tracker.md` 的 `tracker.root` 读取；本文 `.work/` 路径是新项目示例，已有项目沿用已配置的根。
