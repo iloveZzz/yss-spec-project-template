@@ -74,3 +74,6 @@ docs/.scratch/
 
 # Portable selected-platform verification evidence
 !.template-spec/engineering/evidence/scaffold-3.2.0/**/*.log
+
+# graphify 生成的知识图谱
+graphify-out/
