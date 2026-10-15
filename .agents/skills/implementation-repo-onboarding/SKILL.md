@@ -1,6 +1,7 @@
 ---
 name: implementation-repo-onboarding
 description: Use when connecting an existing frontend, backend or fullstack Git repository to this Harness.
+disable-model-invocation: true
 ---
 
 # Implementation Repo Onboarding

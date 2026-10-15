@@ -1,6 +1,7 @@
 ---
 name: yss-openapi-draft-review
 description: "审查 YSS OpenAPI Draft 的需求覆盖、页面动作、响应、错误与测试 seam；不执行 Freeze。"
+disable-model-invocation: true
 ---
 
 功能包根只从 `.template-spec/agents/issue-tracker.md` 的 `tracker.root` 读取；本文 `.work/` 路径是新项目示例，已有项目沿用已配置的根。

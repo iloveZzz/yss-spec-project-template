@@ -1,6 +1,7 @@
 ---
 name: cross-repo-implementation-routing
 description: Use when a Harness change or slice may need work across external frontend/backend repositories.
+disable-model-invocation: true
 ---
 
 # Cross Repo Implementation Routing

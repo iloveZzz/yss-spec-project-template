@@ -1,6 +1,7 @@
 ---
 name: yss-tactical-design
 description: 技术分析阶段把批准的战略输入细化为聚合、行为、一致性和 Gateway 设计；不生成生产代码。
+disable-model-invocation: true
 ---
 
 # yss-tactical-design

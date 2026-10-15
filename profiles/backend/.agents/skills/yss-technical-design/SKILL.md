@@ -1,6 +1,7 @@
 ---
 name: yss-technical-design
 description: 在 YSS 技术分析中统一承接需求与战略输入，按已确认的 DDD 或传统 MVC 架构组织设计合同。
+disable-model-invocation: true
 ---
 
 # YSS 技术设计

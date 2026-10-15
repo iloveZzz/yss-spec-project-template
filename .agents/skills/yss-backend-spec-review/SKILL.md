@@ -1,6 +1,7 @@
 ---
 name: yss-backend-spec-review
 description: 审计既有 Java 后端对 YSS 规范与已批准 Spec 的符合性，并编排整改与复验；普通 PR 审查用 code-review。
+disable-model-invocation: true
 ---
 
 # 既有后端工程规格审查与整改

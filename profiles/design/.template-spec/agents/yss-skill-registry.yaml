@@ -227,15 +227,17 @@ invocation_contract:
       exclusion_conditions: [ code-only-work, command-only-work, unrelated-conversation, user-disabled ]
       primary_output: document-writing-assistance
     yss-prototype-stage:
-      invocation_mode: both
+      invocation_mode: user
       trigger_conditions: [ impact:prototype ]
       exclusion_conditions: [ no-product-design-impact ]
       primary_output: artifact.prototype-deliverable
     yss-stage-decision:
-      invocation_mode: both
+      invocation_mode: user
       trigger_conditions: [ impact:discovery, impact:lifecycle, decision-boundary:strategic-design ]
       exclusion_conditions: [ decision-boundary:downstream-implementation ]
       primary_output: artifact.stage-decision-package
+    prototype-review:
+      invocation_mode: user
     yss-strategic-design:
       invocation_mode: both
       trigger_conditions: [ impact:discovery, impact:prototype, impact:lifecycle ]
