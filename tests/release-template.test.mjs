@@ -106,7 +106,7 @@ test('发布：按 tag → 推送 → Release → 回读校验顺序执行，任
   const calls = [];
   // gh 以替身执行；git 走真实仓库，验证 tag 真的建在发布提交上并推送到远端。
   const fakeGh = (corrupt) => (command, args, options) => {
-    if (command !== 'gh') return defaultRun(command, args, options);
+    if (command !== 'gh') return defaultRun(command, args, { ...options, env: GIT_ENV });
     calls.push(args.slice(0, 2).join(' '));
     if (args[1] === 'download') {
       const dir = args[args.indexOf('--dir') + 1];
@@ -125,6 +125,6 @@ test('发布：按 tag → 推送 → Release → 回读校验顺序执行，任
   assert.match(git(f.root, 'ls-remote', '--tags', 'origin', 'refs/tags/v1.1.0'), /v1\.1\.0/);
   // 创建 Release 失败：不继续回读
   git(f.root, 'tag', '-d', 'v1.1.0'); git(f.root, 'push', '-q', 'origin', ':refs/tags/v1.1.0');
-  const failing = (command, args, options) => command === 'gh' ? { status: 1, stdout: '', stderr: 'denied' } : defaultRun(command, args, options);
+  const failing = (command, args, options) => command === 'gh' ? { status: 1, stdout: '', stderr: 'denied' } : defaultRun(command, args, { ...options, env: GIT_ENV });
   assert.throws(() => publish({ root: f.root, version: '1.1.0', commit: f.head, notesFile: ev.notesFile, assets: ev.assets, run: failing }), /创建 Release 失败.*denied/);
 });
