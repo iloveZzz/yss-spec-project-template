@@ -41,6 +41,17 @@ Linux runner 上的两个测试曾因对 macOS 行为的隐性假设而失败，
 
 报告与日志写在仓外的 `/tmp/ci-gate`，两个平台都作为构建产物保留；两份报告的步骤名单、各步命令与退出码应一致。检查期间仓库出现任何新增改动都会使本轮失败。
 
+## 轻量模板发布（默认）
+
+只发布模板、不同时发布 CLI 时，使用这条路径；它不要求 CLI 的 Bundle 绑定本次模板提交，也不要求恢复矩阵、原生装配或平台运行证据。
+
+1. 变更经 PR 合入 main，`template-gate` 必须通过。
+2. 在合入后的 main 提交上执行 `scripts/verify-template-fast --base <上一正式发行完整 SHA> --report-dir <仓库外新目录>`，保存 `limited` 范围的报告。
+3. 平台验收由维护者人工完成并自行记录（Mac、Windows、Linux 各自的安装、初始化与回滚）；发行说明写明「平台验收：人工，不在 CI 或发布门禁内」，不声称任何平台已验收。
+4. 在该提交上打 `vX.Y.Z` tag 并创建 GitHub Release，附上 fast 报告与 `SHA256SUMS`。发行说明列出配套 CLI 版本和本次未覆盖的范围。
+
+需要同时发布 CLI、或需要把模板绑定进 CLI Bundle 时，才使用下文的 `verify-template-release.mjs` 完整集成路径。完整路径保持不变，不因本节降低要求。
+
 ## 发布版本与证据
 
 输入 SHA 与实际 HEAD 必须一致；该提交须具备本合同对应的验证脚本。发布证据绑定实际待验证提交，不再依赖 GitHub workflow 或 action 编排。
