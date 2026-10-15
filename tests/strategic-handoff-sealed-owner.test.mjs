@@ -21,7 +21,7 @@ async function fixture(t){
  const root=path.join(directory,'source'),bundle=path.join(directory,'baseline');
  const source=await approvedSpecFixture(root,{nativeSeed:seed,productDesign:false});
  await exportSpecBaseline({sourceRoot:root,checkpointRef:source.checkpointRef,output:bundle});
- return {directory,root,bundle,source,verify:()=>verifySpecBaselinePackage(bundle)};
+ return {directory,root,bundle,source,verify:()=>verifySpecBaselinePackage(bundle,{root})};
 }
 function inventory(root){const rows=[];const visit=ref=>{const file=path.join(root,ref),stat=fs.lstatSync(file);rows.push([ref,stat.mode,stat.mtimeMs,stat.isDirectory()?null:hash(fs.readFileSync(file))]);if(stat.isDirectory())for(const name of fs.readdirSync(file).sort())visit(path.join(ref,name));};visit('');return rows;}
 function rewriteCheckpoint(f,change,{updateSource=true}={}){

@@ -24,7 +24,7 @@ export async function exportSpecBaseline({sourceRoot=process.cwd(),checkpointRef
   mkdirSync(path.dirname(output),{recursive:true});mkdirSync(staging);
   try {
     for(const file of manifest.files)write(staging,file.path,captured.get(file.original_ref));
-    write(staging,'manifest.json',json(manifest));verifySpecBaselinePackage(staging);
+    write(staging,'manifest.json',json(manifest));verifySpecBaselinePackage(staging,{root:sourceRoot});
     // Re-read the source proof before publishing the frozen snapshot.
     inspectSpecBaselineSource(sourceRoot,checkpointRef,proof.source);renameSync(staging,output);
   } catch(error){rmSync(staging,{recursive:true,force:true});throw error;}
@@ -65,7 +65,7 @@ function buildWorkingSet(proof,base) {
 }
 export function importSpecBaseline({bundle,targetRoot=process.cwd()}={}) {
   targetRoot=project(targetRoot);identity(targetRoot,'design');
-  const proof=verifySpecBaselinePackage(path.resolve(bundle)),{manifest}=proof;
+  const proof=verifySpecBaselinePackage(path.resolve(bundle),{root:targetRoot}),{manifest}=proof;
   const base=`docs/spec-baselines/${manifest.baseline_id}/${manifest.version}`,receiptRef=`${base}/receipt.json`;
   if(existsSync(path.join(targetRoot,base))) {
     const old=read(safe(targetRoot,receiptRef));ensure(old.bundle_digest===manifest.bundle_digest,'Spec baseline 身份/版本冲突');
@@ -80,7 +80,7 @@ export function importSpecBaseline({bundle,targetRoot=process.cwd()}={}) {
     for(const ref of files(path.resolve(bundle)))write(targetRoot,`${staging}/package/${ref}`,readFileSync(safe(path.resolve(bundle),ref)));
     for(const [ref,bytes]of copies)write(targetRoot,stagedRef(ref),bytes);
     write(targetRoot,`${staging}/working-set.json`,json(working));write(targetRoot,`${staging}/receipt.json`,json(receipt));
-    verifySpecBaselinePackage(safe(targetRoot,`${staging}/package`));
+    verifySpecBaselinePackage(safe(targetRoot,`${staging}/package`),{root:targetRoot});
     mkdirSync(path.dirname(path.join(targetRoot,base)),{recursive:true});renameSync(path.join(targetRoot,staging),path.join(targetRoot,base));
   }catch(error){rmSync(path.join(targetRoot,staging),{recursive:true,force:true});throw error;}
   return {result:'spec-baseline-imported',receipt_ref:receiptRef,receipt_digest:hash(readFileSync(safe(targetRoot,receiptRef))),working_set_ref:receipt.working_set_ref,status:receipt.status,ready_for_agent:false,pending:['target-context-reconciliation','design-entry-receipt-acceptance']};

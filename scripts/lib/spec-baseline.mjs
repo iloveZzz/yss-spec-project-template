@@ -8,8 +8,9 @@ export function inspectSpecBaselineSource(root,checkpointRef,expected) {
  if(expected)ensure(digest(proof.source)===digest(expected),'Spec baseline manifest 与源 checkpoint 事实不一致');
  return proof;
 }
-export function verifySpecBaselinePackage(packageRoot) {
- const result=nativeEvidenceVerify({root:ROOT,group:'handoff',kind:'spec-baseline',file:path.resolve(packageRoot),needs:NEEDS.specBaselinePackage});
+// root 决定原生校验暂存外部包的位置（root/.work/native-candidates）；默认是模板根，夹具与并行测试应传入自己的临时根，避免互相观察到对方的暂存目录。
+export function verifySpecBaselinePackage(packageRoot,{root=ROOT}={}) {
+ const result=nativeEvidenceVerify({root,group:'handoff',kind:'spec-baseline',file:path.resolve(packageRoot),needs:NEEDS.specBaselinePackage});
  const source=nativeCoverage(result,'spec_baseline_source'),pack=nativeCoverage(result,'spec_baseline_package');
  return {...source,manifest:pack.manifest,sourceRoot:safe(path.resolve(packageRoot),pack.source_prefix)};
 }
