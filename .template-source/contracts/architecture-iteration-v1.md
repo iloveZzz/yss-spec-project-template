@@ -1,12 +1,12 @@
 ---
 design_id: architecture-iteration-v1
-version: 0.3.0
+version: 0.3.1
 status: accepted
 content_profile: plan-spec-v1
 repository_mode: template-source
 intensity: L2
 owner: maintainer
-updated_at: 2026-10-13
+updated_at: 2026-10-15
 execution_plan: architecture-iteration-v1-plan.md
 ---
 
@@ -16,7 +16,9 @@ execution_plan: architecture-iteration-v1-plan.md
 
 本文是 `template-source` 的维护合同，状态为 `accepted`：各项决定已于 2026-10-11 由维护者在 wayfinder 决策地图里逐票确认，地图在仓外 `.work/architecture-iteration/`，决定摘要见[执行计划](architecture-iteration-v1-plan.md)第 6 节；同日维护者确认了本文措辞并解决 Q-001、Q-002。`accepted` 的含义是可以按执行计划派发工作包，每个工作包只能写入计划第 3 节列出的路径；推送、打 tag、发布 CLI、归档旧仓库仍按计划第 1 节第 8 条逐次授权。本文规定这轮改造要达到的可观察结果；执行顺序、写入范围和验证命令见执行计划。本文不是产品 Spec，不触发产品 Spec、OpenAPI、原型或 `context_reconciliation`，这些项记为 `not-applicable：模板源架构维护`。
 
-2026-10-13 续推校正：本版回写执行计划第 6 节已记录的 AR-03、AR-04、AR-09、AR-11 与 AR-12c 决定，不新增批准。现役 Profile 为 spec、design、backend；前端技能保留，前端 Profile 与 Spec 本地前端实现已退役，旧前端实例明确拒绝升级且保留原文件。现状证据表保留立项时的四 Profile 基线。当前进度、欠项和 Codex 分工以执行计划第 8 节为准；本地实现、集成、发布和效果复测分别验收。
+2026-10-13 续推校正：本版回写执行计划第 6 节已记录的 AR-03、AR-04、AR-09、AR-11 与 AR-12c 决定，不新增批准。现役 Profile 为 spec、design、backend；前端技能保留，前端 Profile 与 Spec 本地前端实现已退役，旧前端实例明确拒绝升级且保留原文件。现状证据表保留立项时的四 Profile 基线。当前进度、欠项和 Codex 分工以执行计划第 8 节为准；本地实现、集成与发布分别验收。
+
+2026-10-15 范围调整：维护者明确取消 AR-17 效果复测，同步移除 NFR-001 的管道提交占比验收目标与 AC-017，不再要求完成后观察 30 天或抽查 5 次内核修复。NFR-002 继续按 AC-008 验收；历史度量与执行记录保留，取消项不记为验收通过，其余编号不重排。
 
 本轮的主目标是**迭代速度**：一次内核改动从修改到实例可用，要经过多少个提交、多少个仓库、多少个人工步骤。次要目标是减少 Agent 起步要读的规则。本轮不推翻[模板加固规格](harness-hardening-v1.md)已交付的结果；hardening 的 WP-08 移交给本合同，WP-11 不受影响，照常签署。
 
@@ -87,8 +89,7 @@ execution_plan: architecture-iteration-v1-plan.md
 
 | ID | 需求 | 适用条件/负载 | 指标及单位 | 目标 | 确认状态 | 验证方法 | 来源引用 | 验收引用 | 未决项 |
 |---|---|---|---|---|---|---|---|---|---|
-| NFR-001 | 管道提交减少 | 根仓非合并提交，30 天窗口 | 只改锁、指针、投影、清单的提交占比 | 由 37.6%（2026-08-27 起；最近 30 天为 42.2%）降至 < 10% | 已确认 | 检查：`scripts/harness-metrics` 的 `pipeline_commits`，口径见执行计划附录 A | .template-source/contracts/architecture-iteration-v1.md :: heading:现状证据 | AC-017 | 无 |
-| NFR-002 | 修一次内核只碰一个仓 | 只改工作流或规则、不改校验语义的修复 | 涉及的仓库数 | 由 5 个降至 1 个（改校验语义时另加 yss-cli） | 已确认 | 检查：S2 之后抽查 5 次修复 | .template-source/contracts/architecture-iteration-v1.md :: heading:问题陈述 | AC-008, AC-017 | 无 |
+| NFR-002 | 修一次内核只碰一个仓 | 只改工作流或规则、不改校验语义的修复 | 涉及的仓库数 | 由 5 个降至 1 个（改校验语义时另加 yss-cli） | 已确认 | 检查：按 AC-008 修改一个共享内核文件并核对现役三个 Profile | .template-source/contracts/architecture-iteration-v1.md :: heading:问题陈述 | AC-008 | 无 |
 | NFR-003 | Agent 起步更轻 | daily 路径，首次进入 | 起步必读字节 | 由约 56 KB 降至 ≤ 10 KB | 已确认 | 检查：`harness-metrics` | .template-source/contracts/architecture-iteration-v1.md :: heading:现状证据 | AC-013 | 无 |
 | NFR-004 | 已有实例兼容 | 已按旧版本初始化的现役 Profile 实例；前端退役按 FR-016 明确拒绝并保留文件 | 升级失败数；强制删除数 | 都为 0；所有删除都经可审阅、可逐文件拒绝的计划 | 已确认 | 测试：升级场景与删除拒绝场景 | .template-spec/process/harness-upgrade.md :: heading:计划、冲突与保护 | AC-004, AC-016 | 无 |
 | NFR-005 | 新增检查轻量 | 本轮新增的每一项检查 | 单项耗时；是否只读；是否依赖构建二进制 | 亚秒级；只读；不依赖构建（fixture 回放在 `release` 档执行，不受此限） | 已确认 | 检查：fast 计划与耗时记录 | .template-source/contracts/architecture-iteration-v1.md :: heading:文档状态与范围 | AC-009, AC-011 | 无 |
@@ -114,7 +115,6 @@ execution_plan: architecture-iteration-v1-plan.md
 | AC-014 | FR-014 | S4 完成 | 检查实例里常驻的 schema；对旧版本资产运行 `yss migrate` | 每个 schema 最多常驻两代；更早的版本只能经 `yss migrate` 读取并升级 | 成功 | 无 |
 | AC-015 | FR-015, NFR-006 | S2 之后 | 查看验证 profile 与 ci-gate | 只剩 `fast` 与 `release` 两档；没有失去对象的检查；资格校验层已删除，验证子系统没有导入环；流程术语与门禁数没有增加 | 成功 | 无 |
 | AC-016 | FR-016, NFR-004 | 一个现役 Profile 的旧版本实例，本地改过某个将被薄壳取代的文件；另备一个已退役前端实例 | 对现役实例运行升级计划；对旧前端实例运行 `sync/doctor/diff/migrate plan` | 现役实例被改过的文件以冲突形式列出，由用户选择；退役副本以可拒绝的删除列出；不升级时实例照常可用。旧前端实例明确拒绝且不生成计划，目录、文件和暂存区保持不变；拒绝场景可复用 AR-12c 已绑定的回归证据 | 状态变化 / 拒绝 | 无 |
-| AC-017 | NFR-001, NFR-002 | 全部阶段完成后的 30 天 | 按执行计划附录口径统计 | 管道提交占比 < 10%；抽查的 5 次内核修复都只涉及根仓 | 成功 | 无 |
 
 ## 非目标范围
 
