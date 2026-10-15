@@ -104,10 +104,12 @@ test('发布：按 tag → 推送 → Release → 回读校验顺序执行，任
   fs.writeFileSync(reportFile, JSON.stringify({ status: 'passed', scope: { kind: 'limited' } }));
   const ev = writeEvidence({ output: path.join(base, 'out'), version: '1.1.0', commit: f.head, base: f.first, summary: 's', reportFile });
   const calls = [];
+  let releaseExists = false;
   // gh 以替身执行；git 走真实仓库，验证 tag 真的建在发布提交上并推送到远端。
   const fakeGh = (corrupt) => (command, args, options) => {
     if (command !== 'gh') return defaultRun(command, args, { ...options, env: GIT_ENV });
     calls.push(args.slice(0, 2).join(' '));
+    if (args[1] === 'view') return { status: releaseExists ? 0 : 1, stdout: '', stderr: releaseExists ? '' : 'release not found' };
     if (args[1] === 'download') {
       const dir = args[args.indexOf('--dir') + 1];
       for (const file of ev.assets) fs.copyFileSync(file, path.join(dir, path.basename(file)));
@@ -120,11 +122,66 @@ test('发布：按 tag → 推送 → Release → 回读校验顺序执行，任
   calls.length = 0;
   const done = publish({ root: f.root, version: '1.1.0', commit: f.head, notesFile: ev.notesFile, assets: ev.assets, run: fakeGh(false) });
   assert.deepEqual(done, { tag: 'v1.1.0', commit: f.head, verified_assets: 1 });
-  assert.deepEqual(calls, ['release create', 'release download']);
+  assert.deepEqual(calls, ['release view', 'release create', 'release download']);
   assert.equal(git(f.root, 'rev-parse', 'v1.1.0^{commit}'), f.head);
   assert.match(git(f.root, 'ls-remote', '--tags', 'origin', 'refs/tags/v1.1.0'), /v1\.1\.0/);
   // 创建 Release 失败：不继续回读
   git(f.root, 'tag', '-d', 'v1.1.0'); git(f.root, 'push', '-q', 'origin', ':refs/tags/v1.1.0');
   const failing = (command, args, options) => command === 'gh' ? { status: 1, stdout: '', stderr: 'denied' } : defaultRun(command, args, { ...options, env: GIT_ENV });
   assert.throws(() => publish({ root: f.root, version: '1.1.0', commit: f.head, notesFile: ev.notesFile, assets: ev.assets, run: failing }), /创建 Release 失败.*denied/);
+});
+
+test('发布可重试：tag 已推送但 Release 创建失败后，续做只补 Release，不移动 tag', t => {
+  const f = fixture(t);
+  const base = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'release-resume-')));
+  t.after(() => fs.rmSync(base, { recursive: true, force: true }));
+  const reportFile = path.join(base, 'report.json');
+  fs.writeFileSync(reportFile, JSON.stringify({ status: 'passed', scope: { kind: 'limited' } }));
+  const ev = writeEvidence({ output: path.join(base, 'out'), version: '1.1.0', commit: f.head, base: f.first, summary: 's', reportFile });
+  const calls = [];
+  const gh = ({ createFails, exists }) => (command, args, options) => {
+    if (command !== 'gh') { calls.push(`${command} ${args[0]}`); return defaultRun(command, args, { ...options, env: GIT_ENV }); }
+    calls.push(args.slice(0, 2).join(' '));
+    if (args[1] === 'view') return { status: exists ? 0 : 1, stdout: '', stderr: '' };
+    if (args[1] === 'create') return createFails ? { status: 1, stdout: '', stderr: 'transient' } : { status: 0, stdout: '', stderr: '' };
+    if (args[1] === 'download') { const dir = args[args.indexOf('--dir') + 1]; for (const file of ev.assets) fs.copyFileSync(file, path.join(dir, path.basename(file))); }
+    return { status: 0, stdout: '', stderr: '' };
+  };
+  assert.throws(() => publish({ root: f.root, version: '1.1.0', commit: f.head, notesFile: ev.notesFile, assets: ev.assets, run: gh({ createFails: true }) }), /创建 Release 失败.*transient/);
+  const tagObject = git(f.root, 'rev-parse', 'v1.1.0');
+  assert.match(git(f.root, 'ls-remote', '--tags', 'origin', 'refs/tags/v1.1.0'), /v1\.1\.0/, 'tag 已在远端');
+  // 前置核对在 resume 下接受已有的同名 tag；不带 resume 仍拒绝
+  assert.throws(() => check(f), /已存在/);
+  assert.equal(check(f, { resume: true }).tag, 'v1.1.0');
+  calls.length = 0;
+  const done = publish({ root: f.root, version: '1.1.0', commit: f.head, notesFile: ev.notesFile, assets: ev.assets, run: gh({ createFails: false }) });
+  assert.deepEqual(done, { tag: 'v1.1.0', commit: f.head, verified_assets: 1 });
+  assert.ok(!calls.includes('git tag') && !calls.includes('git push'), `不应重建或重推 tag: ${calls}`);
+  assert.deepEqual(calls.filter(call => call.startsWith('release')), ['release view', 'release create', 'release download']);
+  assert.equal(git(f.root, 'rev-parse', 'v1.1.0'), tagObject, 'tag 对象不变');
+  // Release 已存在：不再创建，只回读校验
+  calls.length = 0;
+  publish({ root: f.root, version: '1.1.0', commit: f.head, notesFile: ev.notesFile, assets: ev.assets, run: gh({ createFails: true, exists: true }) });
+  assert.ok(!calls.includes('release create'));
+});
+
+test('续做拒绝 tag 指向其他提交（本地或远端），不移动已有 tag', t => {
+  const f = fixture(t);
+  const gh = (command, args, options) => command === 'gh' ? { status: 1, stdout: '', stderr: '' } : defaultRun(command, args, { ...options, env: GIT_ENV });
+  // 本地 tag 指向别处
+  git(f.root, 'tag', '-a', 'v1.1.0', '-m', 'wrong', f.first);
+  assert.throws(() => publish({ root: f.root, version: '1.1.0', commit: f.head, notesFile: '/x', assets: [], run: gh }), /本地 tag v1\.1\.0 指向/);
+  assert.equal(git(f.root, 'rev-parse', 'v1.1.0^{commit}'), f.first, '本地 tag 未被移动');
+  // 远端 tag 指向别处（本地没有）
+  git(f.root, 'push', '-q', 'origin', 'v1.1.0');
+  git(f.root, 'tag', '-d', 'v1.1.0');
+  assert.throws(() => publish({ root: f.root, version: '1.1.0', commit: f.head, notesFile: '/x', assets: [], run: gh }), /远端 tag v1\.1\.0 指向|本地 tag v1\.1\.0 指向/);
+  assert.match(git(f.root, 'ls-remote', '--tags', 'origin', 'refs/tags/v1.1.0'), /v1\.1\.0/, '远端 tag 未被移动');
+});
+
+test('defaultRun 的超时会终止命令并标记 timedOut', () => {
+  const result = defaultRun(process.execPath, ['-e', 'setTimeout(()=>{}, 10000)'], { timeoutMs: 300 });
+  assert.equal(result.timedOut, true);
+  assert.notEqual(result.status, 0);
+  assert.equal(defaultRun(process.execPath, ['-e', 'process.exit(0)'], { timeoutMs: 5000 }).timedOut, undefined);
 });

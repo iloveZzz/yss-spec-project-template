@@ -22,13 +22,14 @@ export function compareVersions(left, right) {
   return 0;
 }
 
-export function defaultRun(command, args, { cwd, env } = {}) {
-  const result = spawnSync(command, args, { cwd, env: env ?? process.env, encoding: "utf8", maxBuffer: 64 * 1024 * 1024 });
-  return { status: result.status ?? 1, stdout: (result.stdout ?? "").trim(), stderr: (result.stderr ?? "").trim() };
+export function defaultRun(command, args, { cwd, env, timeoutMs } = {}) {
+  const result = spawnSync(command, args, { cwd, env: env ?? process.env, encoding: "utf8", maxBuffer: 64 * 1024 * 1024, ...(timeoutMs ? { timeout: timeoutMs, killSignal: "SIGTERM" } : {}) });
+  const timedOut = Boolean(timeoutMs) && (result.error?.code === "ETIMEDOUT" || result.signal === "SIGTERM");
+  return { status: result.status ?? 1, stdout: (result.stdout ?? "").trim(), stderr: (result.stderr ?? "").trim(), ...(timedOut ? { timedOut: true } : {}) };
 }
 
 /** 前置核对：全部通过才允许继续；返回将要发布的提交与上一个版本。 */
-export function checkPreconditions({ root, version, base, run = defaultRun, fetch = true }) {
+export function checkPreconditions({ root, version, base, run = defaultRun, fetch = true, resume = false }) {
   parseVersion(version);
   if (!/^[a-f0-9]{40}$/.test(base ?? "")) fail("base 必须是上一正式发行的完整 40 位 SHA");
   const git = (...args) => run("git", args, { cwd: root });
@@ -43,13 +44,14 @@ export function checkPreconditions({ root, version, base, run = defaultRun, fetc
   if (head !== remote) fail(`本地 main (${head.slice(0, 8)}) 与 origin/main (${remote.slice(0, 8)}) 不一致，先同步或推送`);
   if (git("merge-base", "--is-ancestor", base, head).status !== 0) fail("base 不是 HEAD 的祖先");
   const tag = `v${version}`;
-  if (must(["tag", "-l", tag], "无法读取 tag") !== "") fail(`tag ${tag} 已存在`);
+  // resume：上次发布在 tag 之后失败（例如 Release 创建失败）时续做；已有 tag 必须指向本次发布提交，由 publish 再核对。
+  if (!resume && must(["tag", "-l", tag], "无法读取 tag") !== "") fail(`tag ${tag} 已存在`);
   if (fetch) {
     const remoteTag = git("ls-remote", "--tags", "origin", `refs/tags/${tag}`);
     if (remoteTag.status !== 0) fail(`无法核对远端 tag: ${remoteTag.stderr}`);
-    if (remoteTag.stdout) fail(`远端已存在 tag ${tag}`);
+    if (!resume && remoteTag.stdout) fail(`远端已存在 tag ${tag}`);
   }
-  const tags = must(["tag", "-l", "v*"], "无法列出 tag").split("\n").filter((name) => VERSION_PATTERN.test(name.slice(1)));
+  const tags = must(["tag", "-l", "v*"], "无法列出 tag").split("\n").filter((name) => VERSION_PATTERN.test(name.slice(1)) && !(resume && name === tag));
   const previous = tags.map((name) => name.slice(1)).sort(compareVersions).at(-1) ?? null;
   if (previous && compareVersions(version, previous) <= 0) fail(`版本 ${version} 必须大于已发行的最新版本 ${previous}`);
   return { commit: head, tag, previous };
@@ -88,9 +90,19 @@ export function writeEvidence({ output, version, commit, base, summary, reportFi
 export function publish({ root, version, commit, notesFile, assets, run = defaultRun, repository }) {
   const tag = `v${version}`;
   const step = (command, args, message, options = {}) => { const result = run(command, args, { cwd: root, ...options }); if (result.status !== 0) fail(`${message}: ${result.stderr || result.stdout}`); return result; };
-  step("git", ["tag", "-a", tag, "-m", `模板 ${version}`, commit], "创建 tag 失败");
-  step("git", ["push", "origin", tag], "推送 tag 失败");
-  step("gh", ["release", "create", tag, "--verify-tag", "--title", `YSS 模板 v${version}`, "--notes-file", notesFile, ...assets, ...(repository ? ["-R", repository] : [])], "创建 Release 失败");
+  const repoArgs = repository ? ["-R", repository] : [];
+  // 每一步都可重试：已有的 tag / 远端 tag / Release 只在指向同一发布提交时复用，不重复创建、不移动。
+  const localTag = run("git", ["rev-parse", "-q", "--verify", `refs/tags/${tag}^{commit}`], { cwd: root });
+  if (localTag.status === 0) { if (localTag.stdout !== commit) fail(`本地 tag ${tag} 指向 ${localTag.stdout.slice(0, 8)}，不是发布提交 ${commit.slice(0, 8)}`); }
+  else step("git", ["tag", "-a", tag, "-m", `模板 ${version}`, commit], "创建 tag 失败");
+  const remoteTag = step("git", ["ls-remote", "origin", `refs/tags/${tag}`, `refs/tags/${tag}^{}`], "无法核对远端 tag");
+  const remoteLines = remoteTag.stdout.split("\n").filter(Boolean).map((line) => line.split(/\s+/));
+  if (remoteLines.length) {
+    const peeled = remoteLines.find(([, ref]) => ref.endsWith("^{}")) ?? remoteLines[0];
+    if (peeled[0] !== commit) fail(`远端 tag ${tag} 指向 ${peeled[0].slice(0, 8)}，不是发布提交 ${commit.slice(0, 8)}`);
+  } else step("git", ["push", "origin", tag], "推送 tag 失败");
+  const existing = run("gh", ["release", "view", tag, ...repoArgs], { cwd: root });
+  if (existing.status !== 0) step("gh", ["release", "create", tag, "--verify-tag", "--title", `YSS 模板 v${version}`, "--notes-file", notesFile, ...assets, ...repoArgs], "创建 Release 失败");
   const download = fs.mkdtempSync(path.join(path.dirname(notesFile), "download-"));
   step("gh", ["release", "download", tag, "--dir", download, ...(repository ? ["-R", repository] : [])], "回读下载失败");
   const sums = fs.readFileSync(path.join(download, "SHA256SUMS"), "utf8").trim().split("\n");
