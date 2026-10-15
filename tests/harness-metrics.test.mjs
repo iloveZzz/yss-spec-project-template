@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
-import { collectMetrics, dailyStartStats, isPipelinePath, parseSkillFrontmatter, pipelineCommitStats } from '../scripts/lib/harness-metrics.mjs';
+import { collectMetrics, dailyStartStats, isPipelinePath, parseSkillFrontmatter, pipelineCommitStats, PIPELINE_STRUCTURAL_BASELINE } from '../scripts/lib/harness-metrics.mjs';
 
 function project(t) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'yss-harness-metrics-'));
@@ -62,7 +62,21 @@ test('缺少文件时输出 null 而不是抛错，常驻上下文只累计存�
   assert.equal(metrics.resident_context.files.find((item) => item.path === 'CONTEXT.md').bytes, null);
   assert.equal(metrics.skills.canonical.exists, false);
   assert.equal(metrics.process_files, 0);
+  assert.equal(metrics.process_docs, 0);
+  assert.equal(metrics.process_shards, 0);
   assert.equal(metrics.timings_ms.ci_gate, null);
+});
+
+test('流程目录分三种口径：全部文件不变，根层文档与编排分片分别计数', t => {
+  const root = project(t);
+  const dir = path.join(root, '.template-spec/process');
+  fs.mkdirSync(path.join(dir, 'orchestration/entry'), { recursive: true });
+  fs.mkdirSync(path.join(dir, 'schemas'));
+  for (const file of ['a.md', 'b.md', 'registry.yaml', 'orchestration/entry/x.yaml', 'orchestration/y.yaml', 'schemas/s.json', 'schemas/n.md']) fs.writeFileSync(path.join(dir, file), '1');
+  const metrics = collectMetrics(root);
+  assert.equal(metrics.process_files, 7);
+  assert.equal(metrics.process_docs, 2, '只算根层 .md，不算子目录里的 .md 和根层其他格式');
+  assert.equal(metrics.process_shards, 2);
 });
 
 // ---- AR-00：管道提交占比与 daily 起步必读 ----
@@ -147,6 +161,9 @@ test('collectMetrics 在非 git 目录里 pipeline_commits 为 null，在仓库�
   const root = repo(t);
   commit(root, { 'skills-lock.json': '1' }, '2026-10-01T10:00:00Z');
   assert.equal(collectMetrics(root).pipeline_commits.pipeline_only_ratio, 1);
+  const baseline = collectMetrics(root).pipeline_commits_since_structural_baseline;
+  assert.equal(baseline.window.since, PIPELINE_STRUCTURAL_BASELINE);
+  assert.equal(baseline.total, 0, '结构基线之前的提交不计入');
 });
 
 test('daily 起步累计真实 agent JSON 的 UTF-8 字节，缺输入不宣称达标', t => {
