@@ -775,6 +775,22 @@ invocation_contract:
       invocation_mode: user
     llm-wiki:
       invocation_mode: user
+    yss-stage-decision:
+      invocation_mode: user
+    yss-technical-design:
+      invocation_mode: user
+    yss-tactical-design:
+      invocation_mode: user
+    yss-implementation-contract-compiler:
+      invocation_mode: user
+    cross-repo-implementation-routing:
+      invocation_mode: user
+    implementation-repo-onboarding:
+      invocation_mode: user
+    yss-backend-spec-review:
+      invocation_mode: user
+    yss-openapi-draft-review:
+      invocation_mode: user
 agent_runtime_roots: {}
 skills:
   - id: git-commit-core
