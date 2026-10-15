@@ -33,7 +33,7 @@ export function verifyTemplateRelease({ root, commit, output, runtimeStore = 'of
   assert.ok(qualificationReport===undefined&&qualificationReportDigest===undefined,'QUALIFICATION_RETIRED');
   assert.ok(['sqlite','off'].includes(runtimeStore), 'runtime-store 必须为 sqlite 或 off');
   assert.ok(['spec','all-four'].includes(cliFamily),'cli-family 必须为 spec 或 all-four');
-  assert.ok(Number.isInteger(concurrency)&&concurrency>=1&&concurrency<=4,'concurrency 必须为 1..4');
+  assert.ok(Number.isInteger(concurrency)&&concurrency>=1&&concurrency<=8,'concurrency 必须为 1..8');
   assert.ok(['legacy','optimized'].includes(toolingMode),'tooling-mode 必须为 legacy 或 optimized');
   if(base)assert.match(base,/^[a-f0-9]{40}$/,'base 必须为完整 SHA');
   root = realpathSync(root);

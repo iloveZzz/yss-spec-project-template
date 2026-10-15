@@ -14,6 +14,9 @@ function commandKey(item, cwd) {
   return `${item.when ?? ""}\0${cwd}\0${item.command.trim()}\0${JSON.stringify(item.depends_on || [])}`;
 }
 
+export const MAX_VERIFICATION_CONCURRENCY = 8;
+export const SHARED_TOOL_RESOURCES = new Set(['native-cli', 'python-jsonschema']);
+
 class ResourceLocks {
   #held = new Map();
 
@@ -206,7 +209,7 @@ async function replay(file, destination) {
 
 async function runDag(plan, repositoryMode, concurrency, options) {
   const {cwd,environment,execute,logRoot,signal,runtimeSession,runtimeEvent,onResult,completedTasks=[]}=options;
-  if(!Number.isInteger(concurrency)||concurrency<1||concurrency>4)throw new TypeError('concurrency 必须为 1..4');
+  if(!Number.isInteger(concurrency)||concurrency<1||concurrency>MAX_VERIFICATION_CONCURRENCY)throw new TypeError(`concurrency 必须为 1..${MAX_VERIFICATION_CONCURRENCY}`);
   const tasks=plan.commands.map((item,index)=>({...item,index})).filter(item=>!item.when||item.when===repositoryMode);
   const byTaskId=new Map(),byCheckId=new Map();
   const seeded=completedTasks.map(({task,result})=>({...task,seeded_result:result,index:-1}));
@@ -234,7 +237,8 @@ async function runDag(plan, repositoryMode, concurrency, options) {
   const results=new Map(),completed=new Map(),active=new Map(),executions=new Map();
   for(const item of seeded){if(!item.seeded_result||item.seeded_result.task_id!==item.task_id||item.seeded_result.id!==item.id)throw new TypeError('DAG_COMPLETED_TASK_BINDING_MISMATCH');completed.set(item.execution_id,item.seeded_result);}
   let sequence=0;
-  const resources=item=>item.resources||[];
+  // 只读工具能力（固定二进制、schema 校验器）只是前置条件，不是需要互斥的可变状态；自定义资源仍互斥。
+  const resources=item=>(item.resources||[]).filter(name=>!SHARED_TOOL_RESOURCES.has(name));
   const exclusive=item=>Number(environment.YSS_TOOLING_CONCURRENCY)>1&&(item.kind==='tooling'||/pnpm.*\.template-source\/tooling\/node\s+test/.test(item.command));
   const remember=(item,row)=>{
     row={...row,id:item.id,task_id:item.task_id,gate_ids:item.gate_ids||[],group:item.group,index:item.index};

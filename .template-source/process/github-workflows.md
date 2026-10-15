@@ -64,6 +64,15 @@ node .template-source/scripts/release-template.mjs --version X.Y.Z --base <上�
 
 发行说明的验证部分由脚本按证据生成：只写已执行的 fast 与其范围，固定写明「平台验收：人工」，不接受自述。
 
+**时间预算：准备步骤不超过 5 分钟。** 准备步骤用 `--max-seconds`（默认 300，下限 30）限制 fast 的总时长，超时即终止并失败，报告用时；耗时写入准备目录的 `plan.json`（`prepare_seconds`、`budget_seconds`）。为达到预算：
+
+- fast 的并发上限放宽到 1..8，`release-template` 按核数取 `max(2, min(6, cpus/2))`；CI 默认仍是 4。
+- 同一组的检查要并行，必须登记不同的 `lane`；同 lane 仍串行。`native-cli`、`python-jsonschema` 是只读工具前置条件，不再让检查互斥，自定义资源仍互斥。
+- 单个测试文件超过约 60 秒时拆成独立检查或按测试名分片（`--test-name-pattern` 与 `--test-skip-pattern` 的并集必须覆盖原文件的全部用例）。
+- 2026-10-15 在 14 核 macOS 上的实测：拆分前 571 秒，拆分并行后 275–286 秒（受机器负载影响有波动）。若某台机器超出预算，应先看 `verification/report.json` 里最长的任务再拆，不为凑时间删除检查。
+
+**发布可重试。** tag 已推送但 Release 创建失败时，重新执行发布步骤即可续做：已有的本地 tag、远端 tag 只在指向发布提交时复用，不重建、不移动；Release 已存在则只做回读校验。tag 指向其他提交时拒绝。
+
 需要核对固定 CLI 的初始化、迁移、回滚集成时，才使用下文的 `verify-template-release.mjs`；它同样不要求恢复矩阵、原生装配或 Bundle 绑定本次模板。
 
 ## 发布版本与证据

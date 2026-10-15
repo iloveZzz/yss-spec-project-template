@@ -116,28 +116,254 @@ profiles:
           - "scripts/lib/implementation-candidate-current.mjs"
         depends_on: []
         failure_mode: "实现候选未绑定当前合同或材料"
-      - id: check.profile-consumers
+      - id: check.profile-consumers-efficiency-distribution
         resources: [native-cli]
-        run: "node --test --test-skip-pattern='^backend plugin receives' tests/efficiency-distribution.test.mjs tests/native-context-retirement.test.mjs scripts/fixtures/contract-efficiency/distribution.test.mjs scripts/fixtures/reading-views/bundle.test.mjs scripts/fixtures/slice-contract-v3/round2.test.mjs scripts/fixtures/slice-contract-v3/scenarios.test.mjs scripts/fixtures/stage-tracking/tracking.test.mjs scripts/fixtures/spec-baseline/scenarios.mjs .template-source/tooling/node/test/approval-consumption.test.mjs .template-source/tooling/node/test/approval-current.test.mjs .template-source/tooling/node/test/decision-continuation.test.mjs .template-source/tooling/node/test/lifecycle-progression.test.mjs .template-source/tooling/node/test/plugin-design-consumption.test.mjs .template-source/tooling/node/test/review-capabilities.test.mjs"
+        lane: pc-efficiency-distribution
+        run: "node --test --test-skip-pattern='^backend plugin receives' tests/efficiency-distribution.test.mjs"
         group: feature-assets
         inputs_complete: true
         input_patterns:
+          - "tests/efficiency-distribution.test.mjs"
           - "scripts/fixtures/user-decision/plan-fixture.mjs"
           - ".template-source/tooling/node/test/approval-consumption.test.mjs"
           - "tests/helpers/yss-instance.mjs"
-          - "tests/efficiency-distribution.test.mjs"
+          - "scripts/fixtures/spec-baseline/fixture.mjs"
+          - ".template-source/tooling/node/test/design-preview-browser.mjs"
+          - "scripts/lib/profile-tree.mjs"
+          - "profiles/**"
+        depends_on: []
+        failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各 Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
+      - id: check.profile-consumers-native-context-retirement
+        resources: [native-cli]
+        lane: pc-native-context-retirement
+        run: "node --test --test-skip-pattern='^backend plugin receives' tests/native-context-retirement.test.mjs"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
           - "tests/native-context-retirement.test.mjs"
+          - "scripts/fixtures/user-decision/plan-fixture.mjs"
+          - ".template-source/tooling/node/test/approval-consumption.test.mjs"
+          - "tests/helpers/yss-instance.mjs"
+          - "scripts/fixtures/spec-baseline/fixture.mjs"
+          - ".template-source/tooling/node/test/design-preview-browser.mjs"
+          - "scripts/lib/profile-tree.mjs"
+          - "profiles/**"
+        depends_on: []
+        failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各 Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
+      - id: check.profile-consumers-contract-efficiency-distribution
+        resources: [native-cli]
+        lane: pc-contract-efficiency-distribution
+        run: "node --test --test-skip-pattern='^backend plugin receives' scripts/fixtures/contract-efficiency/distribution.test.mjs"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
           - "scripts/fixtures/contract-efficiency/distribution.test.mjs"
+          - "scripts/fixtures/user-decision/plan-fixture.mjs"
+          - ".template-source/tooling/node/test/approval-consumption.test.mjs"
+          - "tests/helpers/yss-instance.mjs"
+          - "scripts/fixtures/spec-baseline/fixture.mjs"
+          - ".template-source/tooling/node/test/design-preview-browser.mjs"
+          - "scripts/lib/profile-tree.mjs"
+          - "profiles/**"
+        depends_on: []
+        failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各 Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
+      - id: check.profile-consumers-reading-views-bundle
+        resources: [native-cli]
+        lane: pc-reading-views-bundle
+        run: "node --test --test-skip-pattern='^backend plugin receives' scripts/fixtures/reading-views/bundle.test.mjs"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
           - "scripts/fixtures/reading-views/bundle.test.mjs"
+          - "scripts/fixtures/user-decision/plan-fixture.mjs"
+          - ".template-source/tooling/node/test/approval-consumption.test.mjs"
+          - "tests/helpers/yss-instance.mjs"
+          - "scripts/fixtures/spec-baseline/fixture.mjs"
+          - ".template-source/tooling/node/test/design-preview-browser.mjs"
+          - "scripts/lib/profile-tree.mjs"
+          - "profiles/**"
+        depends_on: []
+        failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各 Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
+      - id: check.profile-consumers-slice-contract-v3-round2-xrepo
+        resources: [native-cli]
+        lane: pc-slice-contract-v3-round2-xrepo
+        run: "node --test --test-name-pattern='^cross-repo execution result rejects' scripts/fixtures/slice-contract-v3/round2.test.mjs"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
           - "scripts/fixtures/slice-contract-v3/round2.test.mjs"
+          - "scripts/fixtures/user-decision/plan-fixture.mjs"
+          - ".template-source/tooling/node/test/approval-consumption.test.mjs"
+          - "tests/helpers/yss-instance.mjs"
+          - "scripts/fixtures/spec-baseline/fixture.mjs"
+          - ".template-source/tooling/node/test/design-preview-browser.mjs"
+          - "scripts/lib/profile-tree.mjs"
+          - "profiles/**"
+        depends_on: []
+        failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各 Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
+      - id: check.profile-consumers-slice-contract-v3-round2-rest
+        resources: [native-cli]
+        lane: pc-slice-contract-v3-round2-rest
+        run: "node --test --test-skip-pattern='^backend plugin receives' --test-skip-pattern='^cross-repo execution result rejects' scripts/fixtures/slice-contract-v3/round2.test.mjs"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
+          - "scripts/fixtures/slice-contract-v3/round2.test.mjs"
+          - "scripts/fixtures/user-decision/plan-fixture.mjs"
+          - ".template-source/tooling/node/test/approval-consumption.test.mjs"
+          - "tests/helpers/yss-instance.mjs"
+          - "scripts/fixtures/spec-baseline/fixture.mjs"
+          - ".template-source/tooling/node/test/design-preview-browser.mjs"
+          - "scripts/lib/profile-tree.mjs"
+          - "profiles/**"
+        depends_on: []
+        failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各 Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
+      - id: check.profile-consumers-slice-contract-v3-scenarios
+        resources: [native-cli]
+        lane: pc-slice-contract-v3-scenarios
+        run: "node --test --test-skip-pattern='^backend plugin receives' scripts/fixtures/slice-contract-v3/scenarios.test.mjs"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
           - "scripts/fixtures/slice-contract-v3/scenarios.test.mjs"
+          - "scripts/fixtures/user-decision/plan-fixture.mjs"
+          - ".template-source/tooling/node/test/approval-consumption.test.mjs"
+          - "tests/helpers/yss-instance.mjs"
+          - "scripts/fixtures/spec-baseline/fixture.mjs"
+          - ".template-source/tooling/node/test/design-preview-browser.mjs"
+          - "scripts/lib/profile-tree.mjs"
+          - "profiles/**"
+        depends_on: []
+        failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各 Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
+      - id: check.profile-consumers-stage-tracking-tracking
+        resources: [native-cli]
+        lane: pc-stage-tracking-tracking
+        run: "node --test --test-skip-pattern='^backend plugin receives' scripts/fixtures/stage-tracking/tracking.test.mjs"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
           - "scripts/fixtures/stage-tracking/tracking.test.mjs"
+          - "scripts/fixtures/user-decision/plan-fixture.mjs"
+          - ".template-source/tooling/node/test/approval-consumption.test.mjs"
+          - "tests/helpers/yss-instance.mjs"
+          - "scripts/fixtures/spec-baseline/fixture.mjs"
+          - ".template-source/tooling/node/test/design-preview-browser.mjs"
+          - "scripts/lib/profile-tree.mjs"
+          - "profiles/**"
+        depends_on: []
+        failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各 Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
+      - id: check.profile-consumers-spec-baseline-scenarios
+        resources: [native-cli]
+        lane: pc-spec-baseline-scenarios
+        run: "node --test --test-skip-pattern='^backend plugin receives' scripts/fixtures/spec-baseline/scenarios.mjs"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
           - "scripts/fixtures/spec-baseline/scenarios.mjs"
+          - "scripts/fixtures/user-decision/plan-fixture.mjs"
+          - ".template-source/tooling/node/test/approval-consumption.test.mjs"
+          - "tests/helpers/yss-instance.mjs"
+          - "scripts/fixtures/spec-baseline/fixture.mjs"
+          - ".template-source/tooling/node/test/design-preview-browser.mjs"
+          - "scripts/lib/profile-tree.mjs"
+          - "profiles/**"
+        depends_on: []
+        failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各 Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
+      - id: check.profile-consumers-approval-consumption
+        resources: [native-cli]
+        lane: pc-approval-consumption
+        run: "node --test --test-skip-pattern='^backend plugin receives' .template-source/tooling/node/test/approval-consumption.test.mjs"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
+          - ".template-source/tooling/node/test/approval-consumption.test.mjs"
+          - "scripts/fixtures/user-decision/plan-fixture.mjs"
+          - "tests/helpers/yss-instance.mjs"
+          - "scripts/fixtures/spec-baseline/fixture.mjs"
+          - ".template-source/tooling/node/test/design-preview-browser.mjs"
+          - "scripts/lib/profile-tree.mjs"
+          - "profiles/**"
+        depends_on: []
+        failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各 Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
+      - id: check.profile-consumers-approval-current
+        resources: [native-cli]
+        lane: pc-approval-current
+        run: "node --test --test-skip-pattern='^backend plugin receives' .template-source/tooling/node/test/approval-current.test.mjs"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
           - ".template-source/tooling/node/test/approval-current.test.mjs"
+          - "scripts/fixtures/user-decision/plan-fixture.mjs"
+          - ".template-source/tooling/node/test/approval-consumption.test.mjs"
+          - "tests/helpers/yss-instance.mjs"
+          - "scripts/fixtures/spec-baseline/fixture.mjs"
+          - ".template-source/tooling/node/test/design-preview-browser.mjs"
+          - "scripts/lib/profile-tree.mjs"
+          - "profiles/**"
+        depends_on: []
+        failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各 Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
+      - id: check.profile-consumers-decision-continuation
+        resources: [native-cli]
+        lane: pc-decision-continuation
+        run: "node --test --test-skip-pattern='^backend plugin receives' .template-source/tooling/node/test/decision-continuation.test.mjs"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
           - ".template-source/tooling/node/test/decision-continuation.test.mjs"
+          - "scripts/fixtures/user-decision/plan-fixture.mjs"
+          - ".template-source/tooling/node/test/approval-consumption.test.mjs"
+          - "tests/helpers/yss-instance.mjs"
+          - "scripts/fixtures/spec-baseline/fixture.mjs"
+          - ".template-source/tooling/node/test/design-preview-browser.mjs"
+          - "scripts/lib/profile-tree.mjs"
+          - "profiles/**"
+        depends_on: []
+        failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各 Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
+      - id: check.profile-consumers-lifecycle-progression
+        resources: [native-cli]
+        lane: pc-lifecycle-progression
+        run: "node --test --test-skip-pattern='^backend plugin receives' .template-source/tooling/node/test/lifecycle-progression.test.mjs"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
           - ".template-source/tooling/node/test/lifecycle-progression.test.mjs"
+          - "scripts/fixtures/user-decision/plan-fixture.mjs"
+          - ".template-source/tooling/node/test/approval-consumption.test.mjs"
+          - "tests/helpers/yss-instance.mjs"
+          - "scripts/fixtures/spec-baseline/fixture.mjs"
+          - ".template-source/tooling/node/test/design-preview-browser.mjs"
+          - "scripts/lib/profile-tree.mjs"
+          - "profiles/**"
+        depends_on: []
+        failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各 Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
+      - id: check.profile-consumers-plugin-design-consumption
+        resources: [native-cli]
+        lane: pc-plugin-design-consumption
+        run: "node --test --test-skip-pattern='^backend plugin receives' .template-source/tooling/node/test/plugin-design-consumption.test.mjs"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
           - ".template-source/tooling/node/test/plugin-design-consumption.test.mjs"
+          - "scripts/fixtures/user-decision/plan-fixture.mjs"
+          - ".template-source/tooling/node/test/approval-consumption.test.mjs"
+          - "tests/helpers/yss-instance.mjs"
+          - "scripts/fixtures/spec-baseline/fixture.mjs"
+          - ".template-source/tooling/node/test/design-preview-browser.mjs"
+          - "scripts/lib/profile-tree.mjs"
+          - "profiles/**"
+        depends_on: []
+        failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各 Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
+      - id: check.profile-consumers-review-capabilities
+        resources: [native-cli]
+        lane: pc-review-capabilities
+        run: "node --test --test-skip-pattern='^backend plugin receives' .template-source/tooling/node/test/review-capabilities.test.mjs"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
           - ".template-source/tooling/node/test/review-capabilities.test.mjs"
+          - "scripts/fixtures/user-decision/plan-fixture.mjs"
+          - ".template-source/tooling/node/test/approval-consumption.test.mjs"
+          - "tests/helpers/yss-instance.mjs"
           - "scripts/fixtures/spec-baseline/fixture.mjs"
           - ".template-source/tooling/node/test/design-preview-browser.mjs"
           - "scripts/lib/profile-tree.mjs"
@@ -3189,7 +3415,21 @@ gates:
     check_ids:
       - check.629b3c9ec897593f
       - check.specialist-business-inputs
-      - check.profile-consumers
+      - check.profile-consumers-efficiency-distribution
+      - check.profile-consumers-native-context-retirement
+      - check.profile-consumers-contract-efficiency-distribution
+      - check.profile-consumers-reading-views-bundle
+      - check.profile-consumers-slice-contract-v3-round2-xrepo
+      - check.profile-consumers-slice-contract-v3-round2-rest
+      - check.profile-consumers-slice-contract-v3-scenarios
+      - check.profile-consumers-stage-tracking-tracking
+      - check.profile-consumers-spec-baseline-scenarios
+      - check.profile-consumers-approval-consumption
+      - check.profile-consumers-approval-current
+      - check.profile-consumers-decision-continuation
+      - check.profile-consumers-lifecycle-progression
+      - check.profile-consumers-plugin-design-consumption
+      - check.profile-consumers-review-capabilities
       - check.release-profile-consumers
       - check.profile-tree
       - check.profile-distribution
