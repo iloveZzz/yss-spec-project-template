@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
-import { checkPreconditions, buildNotes, writeEvidence, publish, compareVersions, parseVersion, defaultRun } from '../.template-source/scripts/lib/release-template.mjs';
+import { checkPreconditions, buildNotes, writeEvidence, publish, compareVersions, parseVersion, defaultRun, resolveGh } from '../.template-source/scripts/lib/release-template.mjs';
 
 const GIT_ENV = { ...process.env, GIT_AUTHOR_NAME: 't', GIT_AUTHOR_EMAIL: 't@t', GIT_COMMITTER_NAME: 't', GIT_COMMITTER_EMAIL: 't@t' };
 const git = (cwd, ...args) => { const r = spawnSync('git', args, { cwd, env: GIT_ENV, encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); return r.stdout.trim(); };
@@ -184,4 +184,21 @@ test('defaultRun 的超时会终止命令并标记 timedOut', () => {
   assert.equal(result.timedOut, true);
   assert.notEqual(result.status, 0);
   assert.equal(defaultRun(process.execPath, ['-e', 'process.exit(0)'], { timeoutMs: 5000 }).timedOut, undefined);
+});
+
+test('resolveGh 跳过本机跑不了的 gh，取第一个能运行的；YSS_GH_BIN 优先', t => {
+  const dir = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'gh-resolve-')));
+  t.after(() => fs.rmSync(dir, { recursive: true, force: true }));
+  const bad = path.join(dir, 'bad'), good = path.join(dir, 'good');
+  fs.mkdirSync(bad); fs.mkdirSync(good);
+  fs.writeFileSync(path.join(bad, 'gh'), ''); fs.writeFileSync(path.join(good, 'gh'), '');
+  const probe = file => file.startsWith(bad) ? { status: null, error: Object.assign(new Error('Bad CPU type'), { errno: -86 }) } : { status: 0 };
+  assert.equal(resolveGh({ env: { PATH: [bad, good].join(path.delimiter) }, probe }), path.join(good, 'gh'));
+  assert.equal(resolveGh({ env: { YSS_GH_BIN: '/x/gh', PATH: bad }, probe }), '/x/gh');
+});
+
+test('defaultRun 无法启动命令时保留真实原因，不留空消息', () => {
+  const result = defaultRun('/nonexistent/definitely-missing', []);
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /无法启动 \/nonexistent\/definitely-missing/);
 });

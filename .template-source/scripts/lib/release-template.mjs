@@ -22,10 +22,28 @@ export function compareVersions(left, right) {
   return 0;
 }
 
+// PATH 上的 gh 可能是本机跑不了的架构（例如没装 Rosetta 的 Apple Silicon 上的 x86_64 版，spawn 报 Bad CPU type）。
+// 逐个候选试 --version，取第一个真能运行的；可用 YSS_GH_BIN 显式指定。
+let resolvedGh;
+export function resolveGh({ env = process.env, probe = (file) => spawnSync(file, ["--version"], { encoding: "utf8" }) } = {}) {
+  if (env.YSS_GH_BIN) return env.YSS_GH_BIN;
+  if (resolvedGh) return resolvedGh;
+  const candidates = [...(env.PATH ?? "").split(path.delimiter).filter(Boolean).map((dir) => path.join(dir, "gh")), "/opt/homebrew/bin/gh", "/usr/local/bin/gh"];
+  for (const file of [...new Set(candidates)]) {
+    if (!fs.existsSync(file)) continue;
+    const result = probe(file);
+    if (!result.error && result.status === 0) { resolvedGh = file; return file; }
+  }
+  return "gh";
+}
+
 export function defaultRun(command, args, { cwd, env, timeoutMs } = {}) {
-  const result = spawnSync(command, args, { cwd, env: env ?? process.env, encoding: "utf8", maxBuffer: 64 * 1024 * 1024, ...(timeoutMs ? { timeout: timeoutMs, killSignal: "SIGTERM" } : {}) });
+  const file = command === "gh" ? resolveGh({ env: env ?? process.env }) : command;
+  const result = spawnSync(file, args, { cwd, env: env ?? process.env, encoding: "utf8", maxBuffer: 64 * 1024 * 1024, ...(timeoutMs ? { timeout: timeoutMs, killSignal: "SIGTERM" } : {}) });
   const timedOut = Boolean(timeoutMs) && (result.error?.code === "ETIMEDOUT" || result.signal === "SIGTERM");
-  return { status: result.status ?? 1, stdout: (result.stdout ?? "").trim(), stderr: (result.stderr ?? "").trim(), ...(timedOut ? { timedOut: true } : {}) };
+  // 命令根本没能启动（架构不符、找不到等）时保留真实原因，不能留空消息。
+  const spawnFailure = result.error && !timedOut ? `无法启动 ${file}: ${result.error.message}（错误码 ${result.error.errno ?? result.error.code}）` : "";
+  return { status: result.status ?? 1, stdout: (result.stdout ?? "").trim(), stderr: [(result.stderr ?? "").trim(), spawnFailure].filter(Boolean).join("\n"), ...(timedOut ? { timedOut: true } : {}) };
 }
 
 /** 前置核对：全部通过才允许继续；返回将要发布的提交与上一个版本。 */
