@@ -322,6 +322,15 @@
       ".template-spec/templates/review-report-template.md",
       ".template-spec/user-guide/用户手册.md",
       ".template-spec/user-guide/unified-cli.md",
+      ".template-spec/user-guide/cli/command-reference.md",
+      ".template-spec/user-guide/cli/daily-and-targets.md",
+      ".template-spec/user-guide/cli/error-index.md",
+      ".template-spec/user-guide/cli/install-and-verify.md",
+      ".template-spec/user-guide/cli/tutorial-backend.md",
+      ".template-spec/user-guide/cli/tutorial-daily-governed.md",
+      ".template-spec/user-guide/cli/tutorial-design.md",
+      ".template-spec/user-guide/cli/tutorial-maintenance.md",
+      ".template-spec/user-guide/cli/tutorial-spec.md",
       ".template-spec/process/lifecycle-progression.md",
       ".template-spec/process/schemas/progression-target.schema.json",
       ".template-spec/process/spec-baseline.md",
@@ -355,7 +364,8 @@
       "scripts/project-ci-transition",
       "scripts/lifecycle-status",
       "scripts/gitworks",
-      "scripts/spec-baseline"
+      "scripts/spec-baseline",
+      "scripts/delivery-metrics"
     ]
   },
   "stages": {

@@ -152,6 +152,7 @@ profiles:
           - ".template-source/scripts/sync-harness-upgrade.mjs"
           - ".template-spec/process/harness-upgrade.md"
           - ".template-spec/user-guide/unified-cli.md"
+          - ".template-spec/user-guide/cli/*.md"
           - ".agents/skills/setup-yss-harness/references/operation-contract.md"
         depends_on: []
         failure_mode: "setup-yss-harness 的操作合同参考与权威协议文档不一致"
@@ -763,6 +764,28 @@ profiles:
           - "tests/harness-metrics.test.mjs"
         depends_on: []
         failure_mode: "度量口径（管道提交占比、daily 起步必读、隐式技能 description 字符数、常驻上下文）计算错误，阶段基线与复测不可比"
+      - id: check.native-smoke
+        run: "node --test tests/native-smoke.test.mjs"
+        group: feature-assets
+        resources: [ "native-cli" ]
+        inputs_complete: true
+        input_patterns:
+          - "tests/native-smoke.test.mjs"
+          - ".template-source/distribution/yss-cli-pin.json"
+          - ".template-source/scripts/lib/native-yss.mjs"
+        depends_on: []
+        failure_mode: "固定的 yss 二进制在当前平台上无法完成初始化、只读查询、整体回退或重复回退幂等（CI 在 ubuntu 上原生构建，同时是 Linux 运行证据）"
+      - id: check.delivery-metrics
+        run: "node --test tests/delivery-metrics.test.mjs"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
+          - "scripts/delivery-metrics"
+          - "scripts/lib/delivery-metrics.mjs"
+          - "scripts/lib/work-layout.mjs"
+          - "tests/delivery-metrics.test.mjs"
+        depends_on: []
+        failure_mode: "实例交付统计误读 checkpoint 或日常记录、把缺失指标当 0 输出，或写入被检查的实例"
       - id: check.runtime-storage
         group: runtime-storage
         inputs_complete: true
@@ -2207,6 +2230,7 @@ routing:
       - .template-source/distribution/bundle-profile.json
       - .template-source/scripts/lib/native-yss.mjs
       - .template-spec/user-guide/unified-cli.md
+      - .template-spec/user-guide/cli/*.md
       - tests/cli-retirement.test.mjs
     groups:
       - cli-sync
@@ -2224,6 +2248,7 @@ routing:
     exclude_patterns:
       - .template-source/distribution/bundle-profile.json
       - .template-spec/user-guide/unified-cli.md
+      - .template-spec/user-guide/cli/*.md
       - tests/cli-retirement.test.mjs
     groups:
       - implementation
@@ -2289,6 +2314,17 @@ routing:
       - tests/profile-distribution.test.mjs
     groups:
       - hygiene
+  - patterns:
+      - tests/native-smoke.test.mjs
+      - .template-source/distribution/yss-cli-pin.json
+    groups:
+      - feature-assets
+  - patterns:
+      - scripts/delivery-metrics
+      - scripts/lib/delivery-metrics.mjs
+      - tests/delivery-metrics.test.mjs
+    groups:
+      - feature-assets
   - patterns:
       - scripts/harness-metrics
       - scripts/lib/harness-metrics.mjs
@@ -2890,6 +2926,8 @@ gates:
       - check.explicit-invocation
       - check.process-glossary
       - check.harness-metrics
+      - check.delivery-metrics
+      - check.native-smoke
       - check.daily-checkpoint
     audit_status: conservative-complete
     display_id: G07

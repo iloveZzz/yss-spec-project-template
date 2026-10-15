@@ -1,6 +1,6 @@
 ---
 name: yss-mybatis
-description: 用于 YSS MyBatis / MyBatis-Plus 组件能力核验、接入决策和排障；涉及 Mapper/Repository 基类、分页、批量 SQL、扫描配置或数据源能力时使用，不负责生成持久层结构。
+description: 核验、接入或排查 YSS MyBatis/MyBatis-Plus 的 Mapper/Repository 基类、分页、批量 SQL、扫描与数据源；不生成持久层结构。
 ---
 
 # yss-mybatis

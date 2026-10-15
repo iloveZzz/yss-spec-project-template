@@ -1,0 +1,16 @@
+#!/usr/bin/env node
+import path from "node:path";
+import { collectDeliveryMetrics } from "./lib/delivery-metrics.mjs";
+
+const args = process.argv.slice(2);
+if (args.includes("--help")) {
+  console.log("用法: scripts/delivery-metrics [--root <项目实例目录>]\n只读；向 stdout 输出 JSON：日常任务与正式 checkpoint 的数量、正式功能的状态分布、门禁记为不适用的次数。记录里没有的指标标为 unavailable，不推测。");
+  process.exit(0);
+}
+let root = process.cwd();
+for (let index = 0; index < args.length; index += 1) {
+  if (args[index] === "--root") root = path.resolve(args[++index] ?? "");
+  else { console.error(`delivery-metrics 错误: 未知参数 ${args[index]}`); process.exit(2); }
+}
+try { console.log(JSON.stringify(collectDeliveryMetrics(root), null, 2)); }
+catch (error) { console.error(`delivery-metrics 错误: ${error.message}`); process.exit(1); }

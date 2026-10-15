@@ -1,6 +1,6 @@
 ---
 name: competitive-intelligence
-description: "执行竞品、市场定位、定价、功能差距与用户口碑调研；复用现有模板输出竞品功能矩阵和深度分析报告，向 Plan、Spec 与产品策略提供证据。"
+description: "竞品、定位、定价、功能差距与口碑调研；输出竞品矩阵和深度报告，为 Plan、Spec 与产品策略提供证据。"
 ---
 
 # Competitive Intelligence
