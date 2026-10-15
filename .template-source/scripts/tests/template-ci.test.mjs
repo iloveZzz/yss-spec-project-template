@@ -13,7 +13,6 @@ import {createHash} from 'node:crypto';
 import {collectReleaseSources} from '../lib/verification-artifacts.mjs';
 import {PIN_FILE,platformKey} from '../lib/yss-cli-pin.mjs';
 import {produceCliArtifact,verifyInstalledCliMigration} from '../lib/verification-artifacts.mjs';
-import {validateLegacyRecoveryMatrix,REQUIRED_LEGACY_RECOVERY_CASES} from '../lib/legacy-recovery-matrix.mjs';
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 
 const root = path.resolve(import.meta.dirname, '../../..');
@@ -75,13 +74,11 @@ test('synthetic 固定源 Go 消费者真实编译、复制和公开导出产生
   assert.ok(releaseSourceKeys.every(key=>process.env[key]===undefined));
   t.after(()=>assert.deepEqual(Object.fromEntries(releaseSourceKeys.map(key=>[key,process.env[key]])),inherited));
   // Three-profile publication algorithms are exercised with a synthetic Go
-  // producer. They cannot replace the separate historical recovery matrix.
+  // producer. 旧实例恢复矩阵已从发布门禁移除，平台验收由维护者人工记录。
   const sources=collectReleaseSources({root:f.repo,commit:f.sha}),records=[];
   const run=(file,args,cwd,env)=>{const observed=spawnSync(file,args,{cwd,env,encoding:'utf8'});records.push({file,args,cwd,exit_code:observed.status});return observed;};
   for(const source of sources.entries){const artifact=produceCliArtifact({root:f.repo,source,directory:path.join(f.base,'algorithm-fixture',source.family),run});assert.equal(verifyInstalledCliMigration({artifact,directory:path.join(f.base,'upgrade-fixture',source.family),run}).status,'passed');}
   assert.equal(records.filter(row=>row.args[0]==='bundle'&&row.args[1]==='export').length,3);assert.ok(records.every(row=>row.exit_code===0));
-  assert.throws(()=>verifyTemplateRelease({root:f.repo,commit:f.sha,output:path.join(f.base,'formal-refusal')}),/LEGACY_RECOVERY_EVIDENCE/);
-  assert.equal(JSON.parse(readFileSync(path.join(f.base,'formal-refusal/release-verification.json'))).status,'failed');
   const result = verifyTemplateRelease({ root: f.repo, commit: f.sha, output: f.output,cliFamily:'spec' });
   assert.equal(result.status, 'passed');
   const receiptFile=path.join(realpathSync(f.output),'full-verification/consumption/receipt.json'),receipt=JSON.parse(readFileSync(receiptFile));
@@ -100,26 +97,6 @@ test('synthetic 固定源 Go 消费者真实编译、复制和公开导出产生
   assert.ok(result.commands.every(row => row.exit_code === 0));
   assert.equal(git(f.repo, 'status', '--porcelain'), '');
   assert.equal(JSON.parse(readFileSync(path.join(f.output, 'release-verification.json'))).status, 'passed');
-});
-
-test('恢复矩阵 validator 的合成合同单元样例拒绝缺项、fixture、包/日志/二进制和退出码错配',t=>{
- const base=realpathSync(mkdtempSync(path.join(os.tmpdir(),'recovery-contract-unit-')));t.after(()=>rmSync(base,{recursive:true,force:true}));
- const families=['spec','design','backend'],packages=[],cases=[],binarySha='1'.repeat(64);
- // This temporary input tests validation algorithms only. It contains no real
- // historical executor evidence and never enters a release invocation.
- for(const family of families){const ref=path.join(base,`${family}.tgz`);writeFileSync(ref,'synthetic package bytes');const sha256=hash(readFileSync(ref));packages.push({family,ref,sha256,version:'0.0.0-fixture',cli_commit:'2'.repeat(40)});
-  for(const name of REQUIRED_LEGACY_RECOVERY_CASES){const log_ref=`${family}-${name}.log`,refusals={'legacy-requires-explicit-migration':'MIGRATION_REQUIRED','legacy-pending-migration-refusal':'LEGACY_INTERRUPTED','modified-after-apply-rollback-refusal':'CONCURRENT'},negative=Boolean(refusals[name]);writeFileSync(path.join(base,log_ref),'synthetic validator unit data\n');cases.push({family,case:name,exit_code:negative?1:0,expected_code:refusals[name]||'OK',passed:true,log_ref,log_sha256:hash(readFileSync(path.join(base,log_ref))),legacy_package_sha256:sha256});}}
- const report={schema_version:1,kind:'native-legacy-recovery-matrix',status:'passed',input_drift:false,binary_sha256:binarySha,families,packages,cases,unexecuted:[]},file=path.join(base,'matrix.json');
- const persist=()=>writeFileSync(file,JSON.stringify(report)),verify=()=>validateLegacyRecoveryMatrix({file,sha256:hash(readFileSync(file)),binarySha256:binarySha});persist();assert.equal(verify().cases,36);
- report.fixture=true;persist();assert.throws(verify,/fixture/);delete report.fixture;
- report.unexecuted=['unfinished-fixed-executor-recovery'];persist();assert.throws(verify,/未执行/);report.unexecuted=[];
- const row=cases.pop();persist();assert.throws(verify,/必需恢复场景/);cases.push(row);
- report.binary_sha256='3'.repeat(64);persist();assert.throws(verify,/二进制错配/);report.binary_sha256=binarySha;
- row.exit_code=1;persist();assert.throws(verify,/预期错误码矛盾/);row.exit_code=0;
- row.expected_code='INPUT_DRIFT';row.exit_code=1;persist();assert.throws(verify,/成功目标场景/);row.expected_code='OK';row.exit_code=0;
- const refusal=cases.find(value=>value.case==='modified-after-apply-rollback-refusal');refusal.expected_code='RECOVERY_FAILED';persist();assert.throws(verify,/拒绝语义/);refusal.expected_code='CONCURRENT';
- row.legacy_package_sha256='4'.repeat(64);persist();assert.throws(verify,/对应旧固定包/);row.legacy_package_sha256=packages[2].sha256;
- persist();writeFileSync(path.join(base,row.log_ref),'changed');assert.throws(verify,/摘要漂移/);
 });
 
 test('真实发布报告兼容 v1 baseline，并拒绝删除 syntax/终检、任务自证和来源错配',t=>{
@@ -205,7 +182,6 @@ test('发行验证在有 yss-cli 固定文件时只接受固定的二进制与�
   delete process.env.YSS_NATIVE_BINARY_OVERRIDE;
   writePin();
   assert.equal(collectReleaseSources({root:f.repo,commit:f.sha}).kind,'template-release-sources','与固定文件一致时通过');
-  assert.throws(()=>collectReleaseSources({root:f.repo,commit:f.sha,environment:{...process.env,YSS_RELEASE_NATIVE_INPUT:path.join(f.base,'missing-native-input.json')}}),/native input.*完整|发行装配.*完整/,'显式但不完整的发行证据不得回退成维护 pin 通过');
   writePin({binaries:{[platformKey()]:{sha256:'0'.repeat(64)}}});
   assert.throws(()=>collectReleaseSources({root:f.repo,commit:f.sha}),/与固定版本不符/,'二进制摘要不符');
   writePin({commit:'f'.repeat(40)});

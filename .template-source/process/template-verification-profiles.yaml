@@ -764,6 +764,26 @@ profiles:
           - "tests/harness-metrics.test.mjs"
         depends_on: []
         failure_mode: "度量口径（管道提交占比、daily 起步必读、隐式技能 description 字符数、常驻上下文）计算错误，阶段基线与复测不可比"
+      - id: check.release-template
+        run: "node --test tests/release-template.test.mjs"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
+          - ".template-source/scripts/release-template.mjs"
+          - ".template-source/scripts/lib/release-template.mjs"
+          - "tests/release-template.test.mjs"
+        depends_on: []
+        failure_mode: "轻量模板发布在脏树、非 main、与 origin 不一致、tag 或版本冲突时仍放行，发行说明声称未执行的验证或平台验收，或 tag/Release 回读校验被跳过"
+      - id: check.ensure-native-yss
+        run: "node --test tests/ensure-native-yss.test.mjs"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
+          - ".template-source/scripts/ensure-native-yss.mjs"
+          - ".template-source/scripts/lib/ensure-native-yss.mjs"
+          - "tests/ensure-native-yss.test.mjs"
+        depends_on: []
+        failure_mode: "本机构建的固定 yss 与固定文件摘要不符仍被导出、缓存被篡改或源码不干净仍复用，或 Go 版本不符时没有拒绝"
       - id: check.native-smoke
         run: "node --test tests/native-smoke.test.mjs"
         group: feature-assets
@@ -1200,7 +1220,6 @@ profiles:
           - ".template-source/scripts/lib/verification-execution-plan.mjs"
           - ".template-source/process/template-verification-profiles.yaml"
           - ".template-source/scripts/lib/verification-report-validator.mjs"
-          - ".template-source/scripts/lib/legacy-recovery-matrix.mjs"
           - ".template-source/process/schemas/template-verification-report.schema.json"
           - "tests/verification-report.test.mjs"
           - "tests/verification-report-v2.test.mjs"
@@ -2320,6 +2339,18 @@ routing:
     groups:
       - feature-assets
   - patterns:
+      - .template-source/scripts/release-template.mjs
+      - .template-source/scripts/lib/release-template.mjs
+      - tests/release-template.test.mjs
+    groups:
+      - feature-assets
+  - patterns:
+      - .template-source/scripts/ensure-native-yss.mjs
+      - .template-source/scripts/lib/ensure-native-yss.mjs
+      - tests/ensure-native-yss.test.mjs
+    groups:
+      - feature-assets
+  - patterns:
       - scripts/delivery-metrics
       - scripts/lib/delivery-metrics.mjs
       - tests/delivery-metrics.test.mjs
@@ -2928,6 +2959,8 @@ gates:
       - check.harness-metrics
       - check.delivery-metrics
       - check.native-smoke
+      - check.release-template
+      - check.ensure-native-yss
       - check.daily-checkpoint
     audit_status: conservative-complete
     display_id: G07

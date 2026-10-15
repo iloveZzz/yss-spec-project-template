@@ -17,6 +17,8 @@
 
 模板验证首先要求 `template-source`。日常预检仅要求所选任务使用的工具、子模块或固定 CLI 输入，不准备未选制品或消费者。全量检查使用实际依赖的公开 gitlink 固定子模块，不追踪上游分支；运行前须初始化所需子模块。工具依赖使用固定 pnpm 与 frozen lockfile；Node 24 为验证运行器环境，Python 3.12（验证预检要求恰为该版本）与固定的 jsonschema 4.23.0 提供既有 schema 检查依赖；目标版本以 `scripts/ci-setup --print-versions` 为准。运行器缺少 Python 3.12 或所需 Go 时，`scripts/ci-setup` 只在 CI 的 root 容器内补装：Python 经固定版本的 uv，Go 取自固定 yss-cli 源码 `go.mod` 指定的版本并校验 go.dev 公布的 sha256；其它环境须由镜像自带。vendor 校验在临时目录重建并比较，不先覆盖受版本管理的 vendor。
 
+本机没有固定 yss 时，运行 `eval "$(node .template-source/scripts/ensure-native-yss.mjs)"`：按 `yss-cli-pin.json` 的提交在缓存目录（默认 `~/.yss-harness/pinned-yss`，可用 `YSS_PIN_CACHE` 改）构建一次并导出 `YSS_NATIVE_BINARY`、`YSS_NATIVE_BINARY_SHA256`、`YSS_NATIVE_SOURCE_ROOT`；之后复用，摘要必须等于固定文件登记值，本机 Go 必须等于固定的 `go_version`。
+
 两档均在执行前及结束时观察输入，失败和中断同样保留最终观测；漂移使本轮失败。fast 可按[运行内摘要复用规则](../../.template-spec/process/subagent-collaboration.md#只读分诊任务包-v2)减少未变化文件的重复字节读取，报告 `input_observation_metrics`；有效 profile 为 release 或显式传入 `--fresh-inputs` 时前后均完整读取字节。摘要、文件覆盖范围和漂移判定不变，普通问答不因此新增全仓验证要求。
 
 本地复验应把独立 Node 24 的 bin 加入 PATH 后直接运行验证入口；不要用带 `--package` 的 `npm exec` 包住整条验证链，其包配置可能被内部 npx 继承，改变实际执行的工具。
@@ -43,22 +45,34 @@ Linux runner 上的两个测试曾因对 macOS 行为的隐性假设而失败，
 
 ## 轻量模板发布（默认）
 
-只发布模板、不同时发布 CLI 时，使用这条路径；它不要求 CLI 的 Bundle 绑定本次模板提交，也不要求恢复矩阵、原生装配或平台运行证据。
+只发布模板、不同时发布 CLI 时，使用这条路径；它不要求恢复矩阵、原生装配、平台运行证据或 CLI Bundle 绑定本次模板提交。
 
 1. 变更经 PR 合入 main，`template-gate` 必须通过。
 2. 在合入后的 main 提交上执行 `scripts/verify-template-fast --base <上一正式发行完整 SHA> --report-dir <仓库外新目录>`，保存 `limited` 范围的报告。
 3. 平台验收由维护者人工完成并自行记录（Mac、Windows、Linux 各自的安装、初始化与回滚）；发行说明写明「平台验收：人工，不在 CI 或发布门禁内」，不声称任何平台已验收。
 4. 在该提交上打 `vX.Y.Z` tag 并创建 GitHub Release，附上 fast 报告与 `SHA256SUMS`。发行说明列出配套 CLI 版本和本次未覆盖的范围。
 
-需要同时发布 CLI、或需要把模板绑定进 CLI Bundle 时，才使用下文的 `verify-template-release.mjs` 完整集成路径。完整路径保持不变，不因本节降低要求。
+上面 1–4 步由 `.template-source/scripts/release-template.mjs` 分两步完成：
+
+```sh
+# 准备：核对前置（template-source、干净 main、与 origin/main 一致、base 是祖先、tag 未占用、版本递增），
+# 跑 fast，生成证据与发行说明；不改动远端
+node .template-source/scripts/release-template.mjs --version X.Y.Z --base <上一正式发行完整SHA> --summary <维护者摘要文件> --output <仓库外新绝对目录>
+# 发布：确认发行说明后，重新核对前置，打 tag、推送、创建 Release，并回读附件摘要与 tag 提交
+node .template-source/scripts/release-template.mjs --version X.Y.Z --base <上一正式发行完整SHA> --publish-from <准备目录>
+```
+
+发行说明的验证部分由脚本按证据生成：只写已执行的 fast 与其范围，固定写明「平台验收：人工」，不接受自述。
+
+需要核对固定 CLI 的初始化、迁移、回滚集成时，才使用下文的 `verify-template-release.mjs`；它同样不要求恢复矩阵、原生装配或 Bundle 绑定本次模板。
 
 ## 发布版本与证据
 
 输入 SHA 与实际 HEAD 必须一致；该提交须具备本合同对应的验证脚本。发布证据绑定实际待验证提交，不再依赖 GitHub workflow 或 action 编排。
 
-`node .template-source/scripts/verify-template-release.mjs --commit <40位SHA> --base <上一正式发行完整SHA> --output <仓库外绝对目录> --cli-family all-four` 要求干净模板、同仓三个 Profile 及固定 CLI 来源一致。显式提供 `YSS_NATIVE_BINARY`、`YSS_NATIVE_BINARY_SHA256` 和固定源码的 `YSS_NATIVE_SOURCE_ROOT`；二进制和三 Profile Bundle 必须分别绑定已提交的统一 CLI 与模板来源。生产、公开 Bundle 导出、隔离安装副本、初始化、Skill 投影/锁校验及用户 `.github` 保留检查全部通过。当前发布集合始终覆盖三 Profile，旧 npm 包只用于仓外历史恢复，不参与现役生产。
+`node .template-source/scripts/verify-template-release.mjs --commit <40位SHA> --base <上一正式发行完整SHA> --output <仓库外绝对目录> --cli-family all-four` 要求干净模板、同仓三个 Profile 及固定 CLI 来源一致。显式提供 `YSS_NATIVE_BINARY`、`YSS_NATIVE_BINARY_SHA256` 和固定源码的 `YSS_NATIVE_SOURCE_ROOT`；二进制必须是 `yss-cli-pin.json` 固定的那一份，三 Profile Bundle 必须来自已提交的模板来源，但**不要求 Bundle 绑定本次待发布的模板提交**。生产、公开 Bundle 导出、隔离安装副本、初始化、Skill 投影/锁校验及用户 `.github` 保留检查全部通过。当前发布集合始终覆盖三 Profile。`--cli-family spec` 仅用于定向诊断。
 
-三类发行还必须提供 `YSS_LEGACY_RECOVERY_REPORT` 及 `YSS_LEGACY_RECOVERY_REPORT_SHA256`。恢复矩阵逐家族绑定固定旧包、源码 SHA、版本、实际日志摘要、当前二进制摘要和十二项必要场景；预期拒绝须核对自己的错误码。未完成项、输入漂移、错配摘要和 `fixture: true` 阻断正式发行。六平台运行验收在独立最终门禁核验。`--cli-family spec` 仅用于定向诊断，不能替代三类发行验收；CI 合成 Go fixture 仅验证算法与拒绝语义。
+旧实例恢复矩阵、原生装配 native input 和平台范围声明已从发布门禁移除：这些平台验收由维护者人工处理并自行记录，发行说明写明「平台验收：人工」，门禁不检查、也不替任何平台背书。
 
 Go 生产用固定四源提交和 `bundle-profile.json` 声明政策，运行 `go run ./tools/bundle --source-root <模板根> --lock docs/source-lock.json --out internal/bundle/assets`，再以 `CGO_ENABLED=0` 构建。二进制、Bundle、插件摘要收录仓外生态发行清单，避免互相嵌入未来提交形成循环。模板 Node/Python 治理工具和 pnpm frozen 依赖继续保留。不会执行 publish、npm deprecated 或仓库归档。
 
