@@ -50,6 +50,18 @@ Linux runner 上的两个测试曾因对 macOS 行为的隐性假设而失败，
 3. 平台验收由维护者人工完成并自行记录（Mac、Windows、Linux 各自的安装、初始化与回滚）；发行说明写明「平台验收：人工，不在 CI 或发布门禁内」，不声称任何平台已验收。
 4. 在该提交上打 `vX.Y.Z` tag 并创建 GitHub Release，附上 fast 报告与 `SHA256SUMS`。发行说明列出配套 CLI 版本和本次未覆盖的范围。
 
+上面 1–4 步由 `.template-source/scripts/release-template.mjs` 分两步完成：
+
+```sh
+# 准备：核对前置（template-source、干净 main、与 origin/main 一致、base 是祖先、tag 未占用、版本递增），
+# 跑 fast，生成证据与发行说明；不改动远端
+node .template-source/scripts/release-template.mjs --version X.Y.Z --base <上一正式发行完整SHA> --summary <维护者摘要文件> --output <仓库外新绝对目录>
+# 发布：确认发行说明后，重新核对前置，打 tag、推送、创建 Release，并回读附件摘要与 tag 提交
+node .template-source/scripts/release-template.mjs --version X.Y.Z --base <上一正式发行完整SHA> --publish-from <准备目录>
+```
+
+发行说明的验证部分由脚本按证据生成：只写已执行的 fast 与其范围，固定写明「平台验收：人工」，不接受自述。
+
 需要同时发布 CLI、或需要把模板绑定进 CLI Bundle 时，才使用下文的 `verify-template-release.mjs` 完整集成路径。完整路径保持不变，不因本节降低要求。
 
 ## 发布版本与证据
