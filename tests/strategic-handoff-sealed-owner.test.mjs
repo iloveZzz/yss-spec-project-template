@@ -21,7 +21,8 @@ async function fixture(t){
  const root=path.join(directory,'source'),bundle=path.join(directory,'baseline');
  const source=await approvedSpecFixture(root,{nativeSeed:seed,productDesign:false});
  await exportSpecBaseline({sourceRoot:root,checkpointRef:source.checkpointRef,output:bundle});
- return {directory,root,bundle,source,verify:()=>verifySpecBaselinePackage(bundle,{root})};
+ // 用例会删除 source 再校验，所以暂存根必须选在整个用例期间都存在的临时实例（seed），不能用 source，也不能落到真实模板根。
+ return {directory,root,bundle,source,verify:()=>verifySpecBaselinePackage(bundle,{root:seed})};
 }
 function inventory(root){const rows=[];const visit=ref=>{const file=path.join(root,ref),stat=fs.lstatSync(file);rows.push([ref,stat.mode,stat.mtimeMs,stat.isDirectory()?null:hash(fs.readFileSync(file))]);if(stat.isDirectory())for(const name of fs.readdirSync(file).sort())visit(path.join(ref,name));};visit('');return rows;}
 function rewriteCheckpoint(f,change,{updateSource=true}={}){
