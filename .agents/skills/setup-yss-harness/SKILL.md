@@ -1,6 +1,6 @@
 ---
 name: setup-yss-harness
-description: 安全安装或升级 YSS CLI，并按目标工程的真实环境初始化、接管、同步或迁移研发治理实例；用于准备 YSS Harness 和修复其就绪缺口。
+description: 安装或升级 YSS CLI，并初始化、接管、同步或迁移研发治理实例，修复 Harness 就绪缺口。
 ---
 
 # YSS Harness 就绪

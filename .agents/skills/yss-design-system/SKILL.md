@@ -1,6 +1,6 @@
 ---
 name: yss-design-system
-description: 建立或核验 YSS 设计系统、主题 Token 与页面视觉一致性；用于设计规范变更、原型评审及按当前设计基线验收。
+description: 建立或核验 YSS 设计系统、主题 Token 与视觉一致性；用于规范变更、原型评审和设计验收。
 ---
 
 # YSS Design System

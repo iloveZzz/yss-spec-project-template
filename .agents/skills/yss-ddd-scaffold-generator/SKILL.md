@@ -1,6 +1,6 @@
 ---
 name: yss-ddd-scaffold-generator
-description: 直接生成 YSS DDD 多模块后端开发脚手架，无需需求合同、原型或设计审批；提供工程信息即可创建 Domain、Application、Infrastructure、Adapter、Bootstrap 骨架。
+description: 直接生成 YSS DDD 多模块后端脚手架，无需需求合同或设计审批。
 ---
 
 正式治理任务的功能包根从 `.template-spec/agents/issue-tracker.md` 的 `tracker.root` 读取；直接生成无需 tracker 或治理实例。本文 `.work/` 路径仅用于正式路径示例。

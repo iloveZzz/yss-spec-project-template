@@ -1,6 +1,6 @@
 ---
 name: yss-layered-mvc-scaffold-generator
-description: 直接生成 YSS 分层 MVC 后端开发脚手架及独立参考工程；无需需求合同或设计审批，显式正式合同仍完整校验。
+description: 直接生成 YSS 分层 MVC 后端脚手架及参考工程，无需需求合同或设计审批。
 ---
 
 # YSS Layered MVC Scaffold Generator

@@ -1,6 +1,6 @@
 ---
 name: yss-prototype-stage
-description: Use when a YSS feature has product-design impact on a primary flow, navigation, state, recovery, permission experience, or UI-driven API contract and needs profile-routed prototype assets before implementation readiness, or when handing off a confirmed unchanged existing UI baseline.
+description: Use when a YSS feature changes UI flows, states, permissions or UI-driven APIs and needs prototype assets, or hands off an unchanged UI baseline.
 ---
 
 # YSS Prototype Stage

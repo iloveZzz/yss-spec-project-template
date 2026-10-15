@@ -1,6 +1,6 @@
 ---
 name: yss-domain
-description: 在已确认的 DDD 边界内实现或重构领域行为、不变量、状态机与 Gateway；按当前交付路线消费输入，不负责起草领域设计。
+description: 在已确认的 DDD 边界内实现或重构领域行为、不变量、状态机与 Gateway；不起草领域设计。
 ---
 
 # yss-domain

@@ -1,6 +1,6 @@
 ---
 name: release-yss-cli
-description: 查询 YSS CLI 最新正式 Release、建议并确认新版本号，再构建发布 Windows x64 与 Mac ARM64 发行包，完成原生验收和公开下载安装验证。
+description: 查询最新 Release 并确认新版本号，构建发布 YSS CLI（Windows x64、Mac ARM64）并验证安装与公开下载。
 ---
 
 # YSS CLI 构建与发布

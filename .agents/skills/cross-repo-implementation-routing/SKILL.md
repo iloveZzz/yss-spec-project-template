@@ -1,6 +1,6 @@
 ---
 name: cross-repo-implementation-routing
-description: Use when a Harness change or vertical slice may require work across external frontend/backend implementation repositories.
+description: Use when a Harness change or slice may need work across external frontend/backend repositories.
 ---
 
 # Cross Repo Implementation Routing

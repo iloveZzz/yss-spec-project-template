@@ -1,6 +1,6 @@
 ---
 name: prototype-review
-description: Use when independently reviewing low-fidelity UI, interaction specs, or state matrices before choosing an H1/H2 prototype profile, calibrating Spec/OpenAPI, slicing, or implementation.
+description: Use when independently reviewing low-fidelity UI, interaction specs or state matrices before prototype profile choice or Spec/OpenAPI calibration.
 ---
 
 功能包根只从 `.template-spec/agents/issue-tracker.md` 的 `tracker.root` 读取；本文 `.work/` 路径是新项目示例，已有项目沿用已配置的根。
