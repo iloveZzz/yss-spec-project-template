@@ -1,6 +1,6 @@
 ---
 name: yss-validation
-description: "接入或排查 YSS Bean Validation、校验消息与校验错误映射；不存在的历史 EL 组件路由保持阻断。"
+description: "接入或排查 YSS Bean Validation、校验消息与校验错误映射。"
 ---
 
 # yss-validation

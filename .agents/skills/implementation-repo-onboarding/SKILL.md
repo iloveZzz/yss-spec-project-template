@@ -1,6 +1,6 @@
 ---
 name: implementation-repo-onboarding
-description: Use when connecting an existing frontend, backend, fullstack, or other implementation Git repository to this Harness repository.
+description: Use when connecting an existing frontend, backend or fullstack Git repository to this Harness.
 ---
 
 # Implementation Repo Onboarding

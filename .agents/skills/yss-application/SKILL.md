@@ -1,6 +1,6 @@
 ---
 name: yss-application
-description: 实现或排查 YSS 用例编排、事务边界、跨聚合协作、幂等和用例层模型转换；按已登记 DDD 或 MVC 架构执行。
+description: 实现或排查 YSS 用例编排、事务边界、跨聚合协作、幂等和用例层模型转换。
 ---
 
 # yss-application

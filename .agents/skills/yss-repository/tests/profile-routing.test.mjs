@@ -48,7 +48,8 @@ test("normative persistence skills do not contain business-specific templates or
 test("code review wires Repository and MyBatis with registered backend scope", async () => {
   const standards = await text(path.join(skillsRoot, "code-review/references/yss-review-standards.md"));
   const report = await text(path.join(projectRoot, ".template-spec/templates/review-report-template.md"));
-  const lifecycle = await text(path.join(skillsRoot, "yss-product-lifecycle/references/orchestration-contract.yaml"));
+  // 编排合同已拆为分片（AR-13），代码审查工作单元在此分片中登记后端范围。
+  const lifecycle = await text(path.join(projectRoot, ".template-spec/process/orchestration/workflow/work-units/work-unit.code-review.yaml"));
 
   for (const source of [standards, report, lifecycle]) {
     assert.match(source, /yss-repository/);

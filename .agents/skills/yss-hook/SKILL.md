@@ -1,6 +1,6 @@
 ---
 name: "yss-hook"
-description: Use when YSS Vue 页面涉及 vue-hooks-plus/useRequest、分页、请求缓存、轮询、URL query、异步 loading、数据转换或树数据加载。
+description: YSS Vue 页面用 vue-hooks-plus/useRequest 处理分页、缓存、轮询、URL query、loading 或树数据时使用。
 ---
 
 # YSS Hook 开发标准

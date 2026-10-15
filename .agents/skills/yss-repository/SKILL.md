@@ -1,6 +1,6 @@
 ---
 name: yss-repository
-description: 用于按当前路线已确认的 YSS 架构与持久化输入实现或重构 PO、Repository、Convertor、Domain Gateway/Query Adapter；负责结构路由、分层边界和验证，不内置可照抄的业务代码模板。
+description: 按已确认的 YSS 架构与持久化输入实现或重构 PO、Repository、Convertor、Gateway/Query Adapter；不提供可照抄的业务代码。
 ---
 
 # yss-repository

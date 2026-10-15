@@ -1,6 +1,6 @@
 ---
 name: yss-backend-spec-review
-description: 审计既有 Java 后端工程对 YSS 技能规范和已批准业务 Spec 的符合性，并在授权范围内编排整改、独立审查和复验直至达标。适用于历史工程规范补齐、全工程体检和持续整改；普通 PR 审查使用 code-review。
+description: 审计既有 Java 后端对 YSS 规范与已批准 Spec 的符合性，并编排整改与复验；普通 PR 审查用 code-review。
 ---
 
 # 既有后端工程规格审查与整改
