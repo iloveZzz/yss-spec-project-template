@@ -87,18 +87,7 @@ if (cliRoot) {
   if (pin) {
     if (!path.isAbsolute(cliRoot) || fs.lstatSync(cliRoot).isSymbolicLink() || fs.realpathSync(cliRoot) !== path.resolve(cliRoot)) throw Error('CLI 来源必须是固定提交的真实绝对目录');
     const cliCommit = git(cliRoot, ['rev-parse', 'HEAD']).trim();
-    if (cliCommit !== pin.commit) {
-      // A release C may differ from maintenance P only after the existing C/T source authority verifies it.
-      let sources;
-      try {
-        const { collectReleaseSources } = await import('../.template-source/scripts/lib/verification-artifacts.mjs');
-        sources = collectReleaseSources({ root, commit: git(root, ['rev-parse', 'HEAD']).trim(), environment: process.env });
-      } catch (cause) {
-        throw Error(`CLI 来源提交与 yss-cli pin 不一致，且发行来源认证失败: ${cause.message}`, { cause });
-      }
-      if (sources.source_authority?.kind !== 'native-assembly' || !sources.entries.length || sources.entries.some(entry => entry.cli_commit !== cliCommit)) throw Error('发行认证与实际扫描的 CLI 来源提交不一致');
-      if (git(cliRoot, ['rev-parse', 'HEAD']).trim() !== cliCommit) throw Error('实际扫描的 CLI 来源提交在认证过程中漂移');
-    }
+    if (cliCommit !== pin.commit) throw Error(`CLI 来源提交 ${cliCommit.slice(0, 8)} 与 yss-cli 固定提交 ${pin.commit.slice(0, 8)} 的 pin 不一致`);
     if (git(cliRoot, ['status', '--porcelain', '--untracked-files=all']).trim()) throw Error('固定 CLI 来源工作树不干净');
   }
   scan(cliRoot, 'cli');
