@@ -306,6 +306,8 @@
       ".template-spec/process/business-tickets.md",
       ".template-spec/process/schemas/business-tickets-v1.schema.json",
       ".template-spec/process/project-ci.md",
+      ".template-spec/process/git-workflow.md",
+      ".template-spec/process/schemas/git-policy.schema.json",
       ".template-spec/process/checkpoint-boundary.yaml",
       ".template-spec/process/schemas/context-reconciliation.schema.json",
       ".template-spec/process/schemas/digital-human-task-package.schema.json",
