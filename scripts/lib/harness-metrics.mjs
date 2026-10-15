@@ -10,6 +10,8 @@ export const DAILY_START_PROFILE = "route-agent-v1";
 export const DAILY_START_FILES = ["AGENTS.md", "CONTEXT.md"];
 export const DAILY_START_SECTIONS = [];
 export const PIPELINE_WINDOW_DAYS = 30;
+// 最近一次结构性减负（submodule 与 Profile 同步机制移除，AR-02/AR-06）的日期；从这里起算的占比不受旧指针提交拖累。
+export const PIPELINE_STRUCTURAL_BASELINE = "2026-10-12";
 // 管道提交的路径口径（附录 A）。路径被删除后口径保持不变，前后才可比。
 const PIPELINE_PATTERNS = [
   /^skills-lock\.json$/,
@@ -133,6 +135,14 @@ function countFiles(directory) {
   return total;
 }
 
+/** 流程目录的三种口径：全部文件（历史可比）、根层说明文档、编排合同分片。 */
+function processCounts(directory) {
+  const docs = existsSync(directory)
+    ? readdirSync(directory, { withFileTypes: true }).filter((entry) => entry.isFile() && entry.name.endsWith(".md")).length
+    : 0;
+  return { files: countFiles(directory), docs, shards: countFiles(path.join(directory, "orchestration")) };
+}
+
 export function isPipelinePath(file) {
   return PIPELINE_PATTERNS.some((pattern) => pattern.test(file));
 }
@@ -218,14 +228,18 @@ export function collectMetrics(root = process.cwd(), options = {}) {
     const stats = skillStats(path.join(dir, ".agents/skills"));
     return [name, { present: existsSync(dir), skills: stats.skills, claude: stats.claude, codex: stats.codex }];
   }));
+  const processStats = processCounts(path.join(root, ".template-spec/process"));
   return {
     schema_version: SCHEMA_VERSION,
     resident_context: { files: resident, total_bytes: resident.reduce((sum, item) => sum + (item.bytes ?? 0), 0) },
     daily_start: dailyStartStats(root, options.agentJSON ?? null),
     pipeline_commits: pipelineCommitStats(root, options),
+    pipeline_commits_since_structural_baseline: pipelineCommitStats(root, { rev: options.rev, since: PIPELINE_STRUCTURAL_BASELINE, until: options.until }),
     skills: { canonical: { ...canonical, root: ".agents/skills" }, profiles },
     projection_roots: projectionStats(root, canonicalNames),
-    process_files: countFiles(path.join(root, ".template-spec/process")),
+    process_files: processStats.files,
+    process_docs: processStats.docs,
+    process_shards: processStats.shards,
     timings_ms: { ci_gate: null, agent_hook: null },
   };
 }
