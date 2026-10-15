@@ -34,7 +34,7 @@ export function collectReleaseSources({root,commit,families=NATIVE_PROFILES,envi
  const binary=nativeBinary(environment),version=runNative(['version'],{environment}).result;
  ensure(version.sourceState==='committed','发行二进制必须来自已提交的 yss 源码');
  const cliSource=environment.YSS_NATIVE_SOURCE_ROOT;
- ensure(typeof cliSource==='string'&&path.isAbsolute(cliSource),'YSS_NATIVE_SOURCE_ROOT 必须显式指定固定 yss 源码绝对目录');
+ ensure(typeof cliSource==='string'&&path.isAbsolute(cliSource),'YSS_NATIVE_SOURCE_ROOT 必须显式指定固定 yss 源码绝对目录；本机可运行 eval "$(node .template-source/scripts/ensure-native-yss.mjs)" 导出');
  const cliStat=fs.lstatSync(cliSource);ensure(cliStat.isDirectory()&&!cliStat.isSymbolicLink()&&fs.realpathSync(cliSource)===path.resolve(cliSource),'yss 源码必须使用真实普通目录');
  ensure(git(cliSource,['rev-parse','--show-toplevel'])===cliSource,'yss 源码必须是仓库根');
  ensure(/^module\s+github\.com\/iloveZzz\/yss-cli\s*$/m.test(fs.readFileSync(path.join(cliSource,'go.mod'),'utf8')),'yss 源码 module 身份不匹配');

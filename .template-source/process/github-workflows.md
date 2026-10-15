@@ -17,6 +17,8 @@
 
 模板验证首先要求 `template-source`。日常预检仅要求所选任务使用的工具、子模块或固定 CLI 输入，不准备未选制品或消费者。全量检查使用实际依赖的公开 gitlink 固定子模块，不追踪上游分支；运行前须初始化所需子模块。工具依赖使用固定 pnpm 与 frozen lockfile；Node 24 为验证运行器环境，Python 3.12（验证预检要求恰为该版本）与固定的 jsonschema 4.23.0 提供既有 schema 检查依赖；目标版本以 `scripts/ci-setup --print-versions` 为准。运行器缺少 Python 3.12 或所需 Go 时，`scripts/ci-setup` 只在 CI 的 root 容器内补装：Python 经固定版本的 uv，Go 取自固定 yss-cli 源码 `go.mod` 指定的版本并校验 go.dev 公布的 sha256；其它环境须由镜像自带。vendor 校验在临时目录重建并比较，不先覆盖受版本管理的 vendor。
 
+本机没有固定 yss 时，运行 `eval "$(node .template-source/scripts/ensure-native-yss.mjs)"`：按 `yss-cli-pin.json` 的提交在缓存目录（默认 `~/.yss-harness/pinned-yss`，可用 `YSS_PIN_CACHE` 改）构建一次并导出 `YSS_NATIVE_BINARY`、`YSS_NATIVE_BINARY_SHA256`、`YSS_NATIVE_SOURCE_ROOT`；之后复用，摘要必须等于固定文件登记值，本机 Go 必须等于固定的 `go_version`。
+
 两档均在执行前及结束时观察输入，失败和中断同样保留最终观测；漂移使本轮失败。fast 可按[运行内摘要复用规则](../../.template-spec/process/subagent-collaboration.md#只读分诊任务包-v2)减少未变化文件的重复字节读取，报告 `input_observation_metrics`；有效 profile 为 release 或显式传入 `--fresh-inputs` 时前后均完整读取字节。摘要、文件覆盖范围和漂移判定不变，普通问答不因此新增全仓验证要求。
 
 本地复验应把独立 Node 24 的 bin 加入 PATH 后直接运行验证入口；不要用带 `--package` 的 `npm exec` 包住整条验证链，其包配置可能被内部 npx 继承，改变实际执行的工具。

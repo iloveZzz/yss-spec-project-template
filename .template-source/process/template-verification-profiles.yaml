@@ -764,6 +764,16 @@ profiles:
           - "tests/harness-metrics.test.mjs"
         depends_on: []
         failure_mode: "度量口径（管道提交占比、daily 起步必读、隐式技能 description 字符数、常驻上下文）计算错误，阶段基线与复测不可比"
+      - id: check.ensure-native-yss
+        run: "node --test tests/ensure-native-yss.test.mjs"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
+          - ".template-source/scripts/ensure-native-yss.mjs"
+          - ".template-source/scripts/lib/ensure-native-yss.mjs"
+          - "tests/ensure-native-yss.test.mjs"
+        depends_on: []
+        failure_mode: "本机构建的固定 yss 与固定文件摘要不符仍被导出、缓存被篡改或源码不干净仍复用，或 Go 版本不符时没有拒绝"
       - id: check.native-smoke
         run: "node --test tests/native-smoke.test.mjs"
         group: feature-assets
@@ -2319,6 +2329,12 @@ routing:
     groups:
       - feature-assets
   - patterns:
+      - .template-source/scripts/ensure-native-yss.mjs
+      - .template-source/scripts/lib/ensure-native-yss.mjs
+      - tests/ensure-native-yss.test.mjs
+    groups:
+      - feature-assets
+  - patterns:
       - scripts/delivery-metrics
       - scripts/lib/delivery-metrics.mjs
       - tests/delivery-metrics.test.mjs
@@ -2927,6 +2943,7 @@ gates:
       - check.harness-metrics
       - check.delivery-metrics
       - check.native-smoke
+      - check.ensure-native-yss
       - check.daily-checkpoint
     audit_status: conservative-complete
     display_id: G07
