@@ -50,14 +50,14 @@ test('四 Profile 真实原生受管升级执行非空事务、重新规划幂�
   const commands=[],run=(file,args,cwd,env)=>{commands.push({file,args,cwd});return spawnSync(file,args,{cwd,env,encoding:'utf8',maxBuffer:128*1024*1024});};
   const artifact=produceCliArtifact({root,source:tuple,directory:path.join(base,family,'artifact'),run});
   const result=verifyInstalledCliMigration({artifact,directory:path.join(base,family,'upgrade'),run});
-  assert.equal(result.status,'passed');assert.equal(result.migration_fixture,'native-managed-upgrade');assert.equal(result.historical_recovery,'separate-required-gate');
+  assert.equal(result.status,'passed');assert.equal(result.migration_fixture,'native-managed-upgrade');
   for(const action of ['plan','apply','rollback'])assert.ok(commands.some(row=>row.file===artifact.binary&&row.args[0]==='migrate'&&row.args[1]===action),`${family}: ${action}`);
   assert.equal(commands.filter(row=>row.args[0]==='migrate'&&row.args[1]==='plan').length,2);
  }
 });
 
 
-test('发行来源适配器以实际装配调用解除维护 pin 环，并保留原始输入、平台和完整 inspect 拒绝',t=>{
+test('发行来源收集：固定二进制与源码提交必须与固定文件一致，不要求 Bundle 绑定本次模板，也不接受装配输入',t=>{
  // Synthetic Go producer/assembler exercise this adapter only. They do not
  // supply native acceptance or replace the real tools/package validator.
  const base=temporary(t),cli=path.join(base,'cli'),root=path.join(base,'template'),evidence=path.join(base,'source-evidence');fs.mkdirSync(cli);fs.mkdirSync(root);
@@ -76,38 +76,21 @@ func main(){if len(os.Args)!=6||os.Args[1]!="--native-manifest"||os.Args[3]!="--
  const environment={...process.env,YSS_NATIVE_BINARY:binary,YSS_NATIVE_BINARY_SHA256:hash(fs.readFileSync(binary)),YSS_NATIVE_SOURCE_ROOT:cli};delete environment.YSS_NATIVE_BINARY_OVERRIDE;
  for(const key of Object.keys(environment))if(key.startsWith('YSS_RELEASE_'))delete environment[key];
  assert.throws(()=>collectReleaseSources({root,commit:templateCommit,environment}),/与固定版本不符/,'没有装配证据不能越过 P');
- const version=runNative(['version'],{environment}),inspections=Object.fromEntries(NATIVE_PROFILES.map(p=>[p,runNative(['bundle','inspect','--profile',p],{environment})]));
- const descriptor=(ref,bytes)=>{put(base,ref,bytes);return {path:ref,sha256:hash(bytes)};};
- const versionRef=descriptor('version.json',JSON.stringify(version)),receipt={version:versionRef,bundleCommands:NATIVE_PROFILES.map(p=>({id:`native-inspect-${p}`,report:descriptor(`${p}.json`,JSON.stringify(inspections[p]))}))};
- const receiptRef=descriptor('receipt.json',JSON.stringify(receipt)),gateRef=descriptor('gate.json','synthetic adapter gate'),inputFile=path.join(base,'native-input.json');
- const manifest={cliCommit,cliVersion:version.result.version,protocolVersion:version.result.protocolVersion,binarySha256:environment.YSS_NATIVE_BINARY_SHA256,sourceLockSha256:'1'.repeat(64),nativeReceiptSha256:receiptRef.sha256,releaseGateSha256:gateRef.sha256,stableReady:true,platform,requiredPlatforms:[platform],bundles:Object.fromEntries(NATIVE_PROFILES.map(p=>[p,inspections[p].result]))};
- const original={cliCommit,cliVersion:version.result.version,sourceLockSha256:manifest.sourceLockSha256,releaseGate:gateRef,artifacts:[{platform,binary:{path:path.basename(binary),sha256:manifest.binarySha256},receipt:receiptRef}],fixtureManifest:manifest};
- const env={...environment,YSS_RELEASE_NATIVE_INPUT:inputFile,YSS_RELEASE_NATIVE_INPUT_SHA256:'',YSS_RELEASE_REQUIRED_PLATFORMS:platform,YSS_RELEASE_SOURCE_EVIDENCE_DIR:evidence};
- const persist=value=>{fs.writeFileSync(inputFile,JSON.stringify(value));env.YSS_RELEASE_NATIVE_INPUT_SHA256=hash(fs.readFileSync(inputFile));};
- const collect=overrides=>collectReleaseSources({root,commit:templateCommit,environment:{...env,...overrides}});
- persist(original);const accepted=collect({GOFLAGS:'-overlay=/not-an-input.json',GOWORK:'/not-a-workspace'});
- assert.equal(accepted.source_authority.kind,'native-assembly');assert.equal(accepted.source_authority.maintenance_pin_commit,pinCommit);assert.ok(accepted.entries.every(e=>e.cli_commit===cliCommit&&e.template_commit===templateCommit));
- const sortedPlatforms=[...new Set([platform,'darwin/arm64','windows/amd64'])].sort(),reversedScope=[...sortedPlatforms].reverse().join(',');
- const multiPlatform=structuredClone(original);multiPlatform.fixtureManifest.requiredPlatforms=sortedPlatforms;persist(multiPlatform);
- const reversed=collect({YSS_RELEASE_REQUIRED_PLATFORMS:reversedScope});assert.deepEqual(reversed.source_authority.required_platforms,sortedPlatforms,'同一平台集合倒序输入应按现役 Go 装配排序匹配');
- persist(original);
- assert.throws(()=>collect({YSS_RELEASE_NATIVE_INPUT_SHA256:'0'.repeat(64)}),/原始字节摘要/);
- assert.throws(()=>collect({YSS_NATIVE_BINARY_OVERRIDE:'1'}),/不接受/);
- assert.throws(()=>collect({YSS_RELEASE_REQUIRED_PLATFORMS:platform+','+platform}),/平台范围非法/);
- assert.throws(()=>collect({YSS_RELEASE_REQUIRED_PLATFORMS:platform+',unknown/amd64'}),/平台范围非法/);
- assert.throws(()=>collect({YSS_RELEASE_SOURCE_EVIDENCE_DIR:path.join(root,'evidence')}),/两个来源仓外/);
- const evidenceLink=path.join(base,'evidence-link');fs.symlinkSync(root,evidenceLink);assert.throws(()=>collect({YSS_RELEASE_SOURCE_EVIDENCE_DIR:path.join(evidenceLink,'must-not-create')}),/不得经过链接/);assert.equal(fs.existsSync(path.join(root,'must-not-create')),false);
- const link=path.join(base,'input-link.json');fs.symlinkSync(inputFile,link);assert.throws(()=>collect({YSS_RELEASE_NATIVE_INPUT:link}),/无链接/);
- for(const [change,pattern]of [
-  [v=>v.fixtureFail=true,/装配失败/],
-  [v=>v.fixtureDrift=true,/原始字节摘要/],
-  [v=>v.fixtureManifest.cliCommit='a'.repeat(40),/manifest.*不一致/],
-  [v=>v.fixtureManifest.bundles.spec.manifestHash='0'.repeat(64),/完整 inspect/],
-  [v=>v.artifacts[0].binary.path='../escape',/依赖路径越界/],
- ]){const value=structuredClone(original);change(value);persist(value);assert.throws(()=>collect(),pattern);}
- persist(original);const saved=fs.readFileSync(path.join(base,'spec.json'));fs.appendFileSync(path.join(base,'spec.json'),' ');assert.throws(()=>collect(),/原始字节摘要/);fs.writeFileSync(path.join(base,'spec.json'),saved);
- put(cli,'uncommitted','dirty');assert.throws(()=>collect(),/干净固定/);fs.rmSync(path.join(cli,'uncommitted'));
- put(root,'uncommitted','dirty');assert.throws(()=>collect(),/固定 T.*干净/);fs.rmSync(path.join(root,'uncommitted'));
- assert.throws(()=>collectReleaseSources({root,commit:'a'.repeat(40),environment:env}),/Bundle 与固定模板来源/);
- const logs=fs.readdirSync(evidence).map(ref=>JSON.parse(fs.readFileSync(path.join(evidence,ref,'source-verification.json'))));assert.ok(logs.some(row=>row.status==='passed'&&row.commands[0].exit_code===0));assert.ok(logs.some(row=>row.status==='failed'&&row.commands[0].exit_code!==0));assert.ok(logs.every(row=>row.commands.every(command=>Number.isInteger(command.exit_code)&&command.stdout.sha256&&command.stderr.sha256)));
+ const pinFile=path.join(root,'.template-source/distribution/yss-cli-pin.json'),digest=hash(fs.readFileSync(binary)),key=platform.replace('/','-');
+ const writePin=(commitValue,sha)=>fs.writeFileSync(pinFile,JSON.stringify({schema_version:1,repository:'https://example.test/yss-cli.git',version:'1.3.5',commit:commitValue,go_version:'1.27.1',build:'go build',binaries:{[key]:{sha256:sha}}}));
+ writePin(cliCommit,digest);
+ const accepted=collectReleaseSources({root,commit:templateCommit,environment});
+ assert.equal(accepted.source_authority,undefined,'发布门禁不再产生原生装配来源认证');
+ assert.ok(accepted.entries.every(e=>e.cli_commit===cliCommit&&e.template_commit===templateCommit));
+ // 模板继续前进：Bundle 仍绑定旧模板提交，来源收集不因此失败，并如实记录 Bundle 实际绑定的模板提交。
+ put(root,'later.txt','later change');const later=commit(root);assert.notEqual(later,templateCommit);
+ const advanced=collectReleaseSources({root,commit:later,environment});
+ assert.ok(advanced.entries.every(e=>e.template_commit===templateCommit&&e.core_commit===later));
+ // 装配 native input 与平台范围变量已不再被识别：设置了也不改变结果。
+ const withLegacyKeys=collectReleaseSources({root,commit:later,environment:{...environment,YSS_RELEASE_NATIVE_INPUT:'/nonexistent',YSS_RELEASE_REQUIRED_PLATFORMS:'unknown/amd64'}});
+ assert.deepEqual(withLegacyKeys.entries.map(sourceTuple),advanced.entries.map(sourceTuple));
+ assert.throws(()=>collectReleaseSources({root,commit:later,environment:{...environment,YSS_NATIVE_BINARY_OVERRIDE:'1'}}),/不接受/);
+ writePin(cliCommit,'0'.repeat(64));assert.throws(()=>collectReleaseSources({root,commit:later,environment}),/与固定版本不符/);writePin(cliCommit,digest);
+ writePin('e'.repeat(40),digest);assert.throws(()=>collectReleaseSources({root,commit:later,environment}),/不一致/);writePin(cliCommit,digest);
+ put(cli,'uncommitted','dirty');assert.throws(()=>collectReleaseSources({root,commit:later,environment}),/干净固定/);fs.rmSync(path.join(cli,'uncommitted'));
 });

@@ -1200,7 +1200,6 @@ profiles:
           - ".template-source/scripts/lib/verification-execution-plan.mjs"
           - ".template-source/process/template-verification-profiles.yaml"
           - ".template-source/scripts/lib/verification-report-validator.mjs"
-          - ".template-source/scripts/lib/legacy-recovery-matrix.mjs"
           - ".template-source/process/schemas/template-verification-report.schema.json"
           - "tests/verification-report.test.mjs"
           - "tests/verification-report-v2.test.mjs"

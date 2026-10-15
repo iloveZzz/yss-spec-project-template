@@ -8,32 +8,11 @@ import os from 'node:os';
 import {spawnSync} from 'node:child_process';
 import {NATIVE_PROFILES, nativeBinary, nativeDigest, decodeNative, runNative, initializeNative, applyNative, inspectNative} from '../.template-source/scripts/lib/native-yss.mjs';
 import {readYssCliPin, verifyPinnedBinary} from '../.template-source/scripts/lib/yss-cli-pin.mjs';
-import {collectReleaseSources} from '../.template-source/scripts/lib/verification-artifacts.mjs';
 
 // FR-002：根仓不再用 submodule 固定 yss-cli，由 .template-source/distribution/yss-cli-pin.json 固定版本、提交与各平台摘要。
 test('固定的 yss 二进制与固定文件一致：摘要、版本号和构建提交',t=>{
   const root=path.resolve(import.meta.dirname,'..'),pin=readYssCliPin(root);
   assert.ok(pin,'仓库必须带 yss-cli 固定文件');
-  const releaseKeys=['YSS_RELEASE_NATIVE_INPUT','YSS_RELEASE_NATIVE_INPUT_SHA256','YSS_RELEASE_REQUIRED_PLATFORMS','YSS_RELEASE_SOURCE_EVIDENCE_DIR'];
-  if(releaseKeys.some(key=>process.env[key]!==undefined)){
-    // 发行 C 可异于维护 P；必须由现有原生装配认证，不按参数存在或自报成功放行。
-    const head=spawnSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'});
-    assert.equal(head.status,0,head.stderr);
-    const commit=head.stdout.trim(),sources=collectReleaseSources({root,commit});
-    const binary=nativeBinary(),reported=runNative(['version']).result;
-    assert.equal(sources.source_authority?.kind,'native-assembly');
-    assert.equal(sources.root_commit,commit);
-    assert.deepEqual(sources.families,NATIVE_PROFILES);
-    assert.deepEqual(sources.entries.map(entry=>entry.family),NATIVE_PROFILES);
-    assert.equal(reported.sourceState,'committed');
-    for(const entry of sources.entries){
-      assert.equal(entry.cli_commit,reported.cliCommit);
-      assert.equal(entry.template_commit,commit);
-      assert.equal(entry.binary_sha256,binary.digest);
-      assert.equal(entry.version,reported.version);
-    }
-    return;
-  }
   const verified=verifyPinnedBinary({digest:nativeBinary().digest,pin});
   if(!verified.pinned){t.diagnostic('本地覆盖（YSS_NATIVE_BINARY_OVERRIDE=1）：二进制未固定，不能当作固定版本通过');return;}
   const reported=runNative(['version']).result;
