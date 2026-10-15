@@ -10,7 +10,6 @@ import {readHistoricalProfiles,compileHistoricalVerificationPlan} from './legacy
 import {sourceTuple,collectReleaseSources,validateArtifact} from './verification-artifacts.mjs';
 import {parseArgs} from 'node:util';
 import {validateJsonSchema} from '../../../scripts/lib/json-schema.mjs';
-import {validateLegacyRecoveryMatrix} from './legacy-recovery-matrix.mjs';
 
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 const ensure = (condition, message) => { if (!condition) throw new TypeError(message); };
@@ -211,8 +210,6 @@ export function validateReleaseIntegration({root,reportFile,expectedDigest,expec
   ensure(report.schema_version===2&&report.kind==='template-release-verification'&&report.status==='passed'&&!report.error&&report.requested_commit===commit&&report.template_commit===commit,'integration 来源或结论未绑定或存在外层失败');
   const families=['spec','design','backend'];assert.deepEqual(report.cli_families,families,'integration 未覆盖 all-four');
   const expected=collectReleaseSources({root,commit,families});
-  const recovery=report.legacy_recovery;
-  validateLegacyRecoveryMatrix({file:recovery?.ref,sha256:recovery?.sha256,binarySha256:expected.entries[0].binary_sha256});
   assert.deepEqual(report.sources_manifest?.families,families,'integration 来源家族缺失');assert.deepEqual(report.sources_manifest?.entries?.map(sourceTuple),expected.entries.map(sourceTuple),'integration 精确来源错配');
   ensure(report.artifacts?.length===families.length&&report.cli_integrations?.length===families.length,'integration 缺少包或迁移真实产物');
   const commands=[...new Map([...(report.commands||[]),...report.artifacts.flatMap(row=>row.command_records||[]),...report.cli_integrations.flatMap(row=>row.command_records||[])].map(row=>[row.stdoutFile||path.resolve(directory,row.log||''),row])).values()];

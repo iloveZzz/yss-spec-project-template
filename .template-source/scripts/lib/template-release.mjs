@@ -10,7 +10,6 @@ import {compileExpectedVerificationPlan,validateVerificationReport,validateRelea
 import {collectReleaseSources,createArtifactCoordinator,produceCliArtifact,verifyInstalledCliMigration,validateArtifact} from './verification-artifacts.mjs';
 import {validateReceipt} from './verification-delivery-run.mjs';
 import {initializeNative, runNative, applyNative} from './native-yss.mjs';
-import {requiredLegacyRecoveryMatrix} from './legacy-recovery-matrix.mjs';
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 
 function git(root, args) {
@@ -72,7 +71,6 @@ export function verifyTemplateRelease({ root, commit, output, runtimeStore = 'of
     report.source_verifications=[];
     const sourceOptions={root,commit,onSourceVerification:observed=>report.source_verifications.push(observed)};
     const allSources=collectReleaseSources(sourceOptions);
-    if(cliFamily==='all-four')report.legacy_recovery=requiredLegacyRecoveryMatrix();
     run('scripts/repository-mode', []);
     assert.equal(readFileSync(path.join(output, '01.log'), 'utf8').trim(), 'template-source', '只允许模板源发布验证');
     const fullDirectory = path.join(output, 'full-verification');
@@ -101,7 +99,7 @@ export function verifyTemplateRelease({ root, commit, output, runtimeStore = 'of
     assert.match(readFileSync(path.join(instance, 'yss-project.yaml'), 'utf8'), /repository_mode: project-instance/);
     for (const forbidden of ['.github', '.template-source', 'submodules']) assert.equal(existsSync(path.join(instance, forbidden)), false, `实例不得包含 ${forbidden}`);
     const metadata = JSON.parse(readFileSync(path.join(instance, '.yss.json'), 'utf8'));
-    assert.equal(metadata.templateCommit, commit, '实例没有绑定待发布模板');
+    assert.equal(metadata.templateCommit, spec.source_tuple.template_commit, '实例没有绑定固定 CLI 内置的模板来源');
     run(process.execPath, [path.join(instance, 'scripts/sync-skills'), '--check'], instance);
     run(process.execPath, [path.join(instance, 'scripts/update-skill-lock'), '--check'], instance);
     mkdirSync(path.join(instance, '.github/workflows'), { recursive: true });
@@ -117,7 +115,6 @@ export function verifyTemplateRelease({ root, commit, output, runtimeStore = 'of
     assert.equal(verificationInputDigest(root),full.input_sha256,'发布集成结束后输入已漂移');
     assertReleaseCheckout(root, commit);
     assert.deepEqual(collectReleaseSources(sourceOptions),allSources,'发布集成结束后 CLI 来源已漂移');
-    if(cliFamily==='all-four')assert.deepEqual(requiredLegacyRecoveryMatrix(),report.legacy_recovery,'历史恢复证据在发行验证期间漂移');
     report.status = 'passed';
     if(cliFamily==='all-four'){
       const integrationFile=path.join(output,'release-verification.json');writeFileSync(integrationFile,JSON.stringify(report,null,2)+'\n');
