@@ -1477,6 +1477,43 @@ profiles:
         failure_mode: "已有性能对照入口的 Python 语法错误；对照仍显式使用原组范围"
       - id: "check.cli-content-identity"
         resources: [ "native-cli" ]
+        lane: cli-identity-scaffold
+        inputs_complete: true
+        input_patterns:
+          - ".template-source/distribution/yss-cli-pin.json"
+          - "tests/cli-retirement.test.mjs"
+          - ".template-source/scripts/lib/native-yss.mjs"
+          - ".template-source/scripts/lib/verification-artifacts.mjs"
+          - "submodules/create-yss-spec/**"
+        depends_on: []
+        failure_mode: "固定的 yss 二进制与 yss-cli 固定文件的版本、提交或摘要不符，或原生 CLI 消费入口、兼容或来源身份错误"
+      - id: "check.cli-content-identity-install"
+        resources: [ "native-cli" ]
+        lane: cli-identity-install
+        inputs_complete: true
+        input_patterns:
+          - ".template-source/distribution/yss-cli-pin.json"
+          - "tests/cli-retirement.test.mjs"
+          - ".template-source/scripts/lib/native-yss.mjs"
+          - ".template-source/scripts/lib/verification-artifacts.mjs"
+          - "submodules/create-yss-spec/**"
+        depends_on: []
+        failure_mode: "固定的 yss 二进制与 yss-cli 固定文件的版本、提交或摘要不符，或原生 CLI 消费入口、兼容或来源身份错误"
+      - id: "check.cli-content-identity-sync"
+        resources: [ "native-cli" ]
+        lane: cli-identity-sync
+        inputs_complete: true
+        input_patterns:
+          - ".template-source/distribution/yss-cli-pin.json"
+          - "tests/cli-retirement.test.mjs"
+          - ".template-source/scripts/lib/native-yss.mjs"
+          - ".template-source/scripts/lib/verification-artifacts.mjs"
+          - "submodules/create-yss-spec/**"
+        depends_on: []
+        failure_mode: "固定的 yss 二进制与 yss-cli 固定文件的版本、提交或摘要不符，或原生 CLI 消费入口、兼容或来源身份错误"
+      - id: "check.cli-content-identity-rest"
+        resources: [ "native-cli" ]
+        lane: cli-identity-rest
         inputs_complete: true
         input_patterns:
           - ".template-source/distribution/yss-cli-pin.json"
@@ -2673,9 +2710,18 @@ groups:
       - run: node --test tests/content-identity.test.mjs tests/drift-report.test.mjs tests/maintenance-iteration.test.mjs
         when: template-source
         id: check.drift-identity
-      - run: node --test tests/cli-retirement.test.mjs
+      - run: "node --test --test-name-pattern='^(按需安装两个后端脚手架|公开 Bundle 导出|已移除前端 Profile)' tests/cli-retirement.test.mjs"
         when: template-source
         id: check.cli-content-identity
+      - run: "node --test --test-name-pattern='^(Spec 原生阶段资源|现役 archify)' tests/cli-retirement.test.mjs"
+        when: template-source
+        id: check.cli-content-identity-install
+      - run: "node --test --test-name-pattern='^(backend|design): 内容来源' tests/cli-retirement.test.mjs"
+        when: template-source
+        id: check.cli-content-identity-sync
+      - run: "node --test --test-skip-pattern='^(按需安装两个后端脚手架|公开 Bundle 导出|已移除前端 Profile)' --test-skip-pattern='^(Spec 原生阶段资源|现役 archify)' --test-skip-pattern='^(backend|design): 内容来源' tests/cli-retirement.test.mjs"
+        when: template-source
+        id: check.cli-content-identity-rest
       - run: scripts/sync-skills --check
         when: template-source
         id: check.skill-projection-identity
@@ -2704,9 +2750,18 @@ groups:
       - run: node .agents/skills/i-have-adhd/tests/verify-integration.mjs
   cli-sync:
     commands:
-      - run: node --test tests/cli-retirement.test.mjs
+      - run: "node --test --test-name-pattern='^(按需安装两个后端脚手架|公开 Bundle 导出|已移除前端 Profile)' tests/cli-retirement.test.mjs"
         when: template-source
         id: check.517fe9954d913f53
+      - run: "node --test --test-name-pattern='^(Spec 原生阶段资源|现役 archify)' tests/cli-retirement.test.mjs"
+        when: template-source
+        id: check.517fe9954d913f53-install
+      - run: "node --test --test-name-pattern='^(backend|design): 内容来源' tests/cli-retirement.test.mjs"
+        when: template-source
+        id: check.517fe9954d913f53-sync
+      - run: "node --test --test-skip-pattern='^(按需安装两个后端脚手架|公开 Bundle 导出|已移除前端 Profile)' --test-skip-pattern='^(Spec 原生阶段资源|现役 archify)' --test-skip-pattern='^(backend|design): 内容来源' tests/cli-retirement.test.mjs"
+        when: template-source
+        id: check.517fe9954d913f53-rest
       - run: scripts/verify-repository-scope-scenarios
         when: template-source
         id: check.2b52a050306077cc
@@ -3012,6 +3067,9 @@ gates:
     check_ids:
       - check.drift-identity
       - check.cli-content-identity
+      - check.cli-content-identity-install
+      - check.cli-content-identity-sync
+      - check.cli-content-identity-rest
       - check.yss-cli-pin
       - check.template-release-sources
       - check.instance-metadata
@@ -3335,6 +3393,9 @@ gates:
     depends_on: []
     check_ids:
       - check.517fe9954d913f53
+      - check.517fe9954d913f53-install
+      - check.517fe9954d913f53-sync
+      - check.517fe9954d913f53-rest
       - check.2b52a050306077cc
       - check.371da192d6338e6d
     audit_status: conservative-complete
@@ -3352,6 +3413,9 @@ gates:
     depends_on: []
     check_ids:
       - check.517fe9954d913f53
+      - check.517fe9954d913f53-install
+      - check.517fe9954d913f53-sync
+      - check.517fe9954d913f53-rest
       - check.2b52a050306077cc
     audit_status: conservative-complete
     display_id: G13
