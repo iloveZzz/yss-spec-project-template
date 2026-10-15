@@ -364,7 +364,8 @@
       "scripts/project-ci-transition",
       "scripts/lifecycle-status",
       "scripts/gitworks",
-      "scripts/spec-baseline"
+      "scripts/spec-baseline",
+      "scripts/delivery-metrics"
     ]
   },
   "stages": {
