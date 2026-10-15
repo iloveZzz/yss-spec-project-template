@@ -98,7 +98,7 @@ profiles:
       - id: check.plugin-scope-terminal
         run: "node --test .template-source/tooling/node/test/plugin-scope.test.mjs .template-source/tooling/node/test/plugin-terminal.test.mjs"
         group: feature-assets
-        resources: [native-cli]
+        resources: [ native-cli, "repo-root-evidence" ]
         inputs_complete: true
         input_patterns:
           - ".template-source/tooling/node/test/plugin-scope.test.mjs"
@@ -286,7 +286,7 @@ profiles:
         depends_on: []
         failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各 Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
       - id: check.profile-consumers-approval-current
-        resources: [native-cli]
+        resources: [ native-cli, "repo-root-evidence" ]
         lane: pc-approval-current
         run: "node --test --test-skip-pattern='^backend plugin receives' .template-source/tooling/node/test/approval-current.test.mjs"
         group: feature-assets
@@ -397,7 +397,7 @@ profiles:
       - id: check.go-validator-replay
         run: "node --test tests/go-validator-replay.test.mjs"
         group: feature-assets
-        resources: [ "native-cli" ]
+        resources: [ "native-cli", "repo-root-evidence" ]
         inputs_complete: true
         input_patterns:
           - "tests/go-validator-replay.test.mjs"
@@ -428,7 +428,7 @@ profiles:
       - id: check.ar12b-source-native
         run: "node --test --test-concurrency=1 tests/ar12b-source-native.test.mjs"
         group: feature-assets
-        resources: [ "native-cli" ]
+        resources: [ "native-cli", "repo-root-evidence" ]
         inputs_complete: true
         input_patterns:
           - "tests/ar12b-source-native.test.mjs"
@@ -461,7 +461,7 @@ profiles:
       - id: check.business-ticket-native-report
         run: "node --test tests/business-ticket-native-report.test.mjs"
         group: feature-assets
-        resources: [ "native-cli" ]
+        resources: [ "native-cli", "repo-root-evidence" ]
         inputs_complete: true
         input_patterns:
           - "tests/business-ticket-native-report.test.mjs"
@@ -656,7 +656,7 @@ profiles:
         depends_on: []
         failure_mode: "本地后端终点复用批准 Slice 的证据被错放行或误拒，或 Slice 合同仍接受前端子合同"
       - id: check.existing-ui-baseline-scenarios
-        resources: [native-cli]
+        resources: [ native-cli, "repo-root-evidence" ]
         run: "node tests/scenarios/verify-existing-ui-baseline-scenarios.mjs"
         group: feature-assets
         inputs_complete: true
@@ -668,7 +668,7 @@ profiles:
         depends_on: []
         failure_mode: "既有 UI 基线的交接导出、验包与导入被错放行或误拒，或导入重新生成前端草案"
       - id: check.frontend-removal-consumers
-        resources: [native-cli]
+        resources: [ native-cli, "repo-root-evidence" ]
         run: "node --test .template-source/tooling/node/test/lifecycle-controls.test.mjs scripts/fixtures/business-tickets/handoff.test.mjs tests/cli-core-retirement.test.mjs"
         group: feature-assets
         inputs_complete: true
@@ -682,7 +682,7 @@ profiles:
         depends_on: []
         failure_mode: "生命周期控制数量、业务票交接或 Slice 任务包仍按前端实现线判断，或 Compiler 合同重新声明前端交付绑定"
       - id: check.strategic-handoff-package-scenarios
-        resources: [native-cli]
+        resources: [ native-cli, "repo-root-evidence" ]
         run: "node tests/scenarios/verify-strategic-handoff-package-scenarios.mjs"
         group: feature-assets
         inputs_complete: true
@@ -2789,6 +2789,7 @@ groups:
   strategic-handoff-package:
     commands:
       - run: node --test tests/strategic-handoff-readonly.test.mjs
+        resources: [ "repo-root-evidence" ]
         when: template-source
         id: check.strategic-handoff-readonly
       - run: node --test tests/strategic-handoff-sealed-owner.test.mjs
