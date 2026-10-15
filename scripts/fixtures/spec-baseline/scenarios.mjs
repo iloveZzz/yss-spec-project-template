@@ -115,12 +115,12 @@ try {
  const terminal=target.handoff.package_export.approvals.handoff,terminalRecord=read(path.join(dst,terminal.record_ref)),review=read(path.join(dst,terminalRecord.subject_ref));
  review.basis=review.basis.map(row=>row.ref==='handoff.yaml'?{...row,digest:hash(fs.readFileSync(path.join(dst,'handoff.yaml'))).slice(7)}:row);target.put(terminalRecord.subject_ref,review);
  terminalRecord.subject_digest=hash(fs.readFileSync(path.join(dst,terminalRecord.subject_ref))).slice(7);terminalRecord.basis=review.basis;terminalRecord.artifact_bindings[0].digest=hash(fs.readFileSync(path.join(dst,'handoff.yaml')));target.put(terminal.record_ref,terminalRecord);
- const out=path.join(root,'final-handoff');await exportBundle({sourceRoot:dst,handoffRef:'handoff.yaml',output:out});
- await openBundle(out,b=>{check(b.manifest.bundle_digest&&b.business.status==='passed','最终Handoff导出可独立读回验包');},{readOnly:true});
+ const out=path.join(root,'final-handoff');await exportBundle({sourceRoot:dst,handoffRef:'handoff.yaml',output:out,evidenceRoot:dst});
+ await openBundle(out,b=>{check(b.manifest.bundle_digest&&b.business.status==='passed','最终Handoff导出可独立读回验包');},{readOnly:true,evidenceRoot:dst});
  if(noDesign){
-  await openBundle(out,b=>{check(b.handoff.ui_baseline_kind==='not-applicable'&&!b.handoff.package_export.prototype&&!Object.keys(b.handoff.source).some(key=>['prototype_ref','visual_baseline_ref','existing_ui_baseline_ref'].includes(key))&&!Object.values(b.handoff.package_export.approvals).some(approval=>approval.gate_id==='gate.product-design-approved'),'无设计影响终点不要求产品设计批准');},{readOnly:true});
+  await openBundle(out,b=>{check(b.handoff.ui_baseline_kind==='not-applicable'&&!b.handoff.package_export.prototype&&!Object.keys(b.handoff.source).some(key=>['prototype_ref','visual_baseline_ref','existing_ui_baseline_ref'].includes(key))&&!Object.values(b.handoff.package_export.approvals).some(approval=>approval.gate_id==='gate.product-design-approved'),'无设计影响终点不要求产品设计批准');},{readOnly:true,evidenceRoot:dst});
   const unsupported=structuredClone(target.handoff);unsupported.ui_baseline_kind='prototype';target.put('unsupported-handoff.yaml',unsupported);
-  await assert.rejects(()=>exportBundle({sourceRoot:dst,handoffRef:'unsupported-handoff.yaml',output:path.join(root,'invalid-no-ui')}),/schema|Schema|不匹配|缺少/);checks++;
+  await assert.rejects(()=>exportBundle({sourceRoot:dst,handoffRef:'unsupported-handoff.yaml',output:path.join(root,'invalid-no-ui'),evidenceRoot:dst}),/schema|Schema|不匹配|缺少/);checks++;
   if(nativeCLI){native(['verify','--root',dst,'--kind','spec-baseline','--package',pkg]);checks++;native(['verify','--root',dst,'--kind','spec-baseline','--file',imported.receipt_ref,'--checkpoint','intake-checkpoint.json']);checks++;verifyTerminal(dst,out);}
   console.log(JSON.stringify({result:'passed',checks,synthetic_fixture:true,native_intake:Boolean(nativeCLI),no_design:true,root,source_root:src,checkpoint_ref:source.checkpointRef,design_root:dst,design_checkpoint_ref:'intake-checkpoint.json',baseline_package:pkg,handoff_package:out}));process.exit(0);
  }
@@ -151,8 +151,8 @@ try {
  local.put('local-intake-checkpoint.json',{...checkpoint,...localCurrent});
  const inherited=structuredClone(target.handoff.source.domain_strategy_ref);inherited.approval_context.source_baseline.context_reconciliation_ref='local-intake-context.json';
  assert.throws(()=>importedApprovalOrigin(localRoot,inherited),error=>error.code==='SPEC_BASELINE_CONTEXT'&&error.message.includes('业务含义冲突'));checks++;
- const localOut=path.join(root,'local-final-handoff');await exportBundle({sourceRoot:localRoot,handoffRef:'handoff.yaml',output:localOut});
- await openBundle(localOut,b=>{check(!Object.values(b.handoff.source).some(asset=>asset.approval_context?.source_baseline),'重新批准的本地终点不借用旧来源marker');},{readOnly:true});
+ const localOut=path.join(root,'local-final-handoff');await exportBundle({sourceRoot:localRoot,handoffRef:'handoff.yaml',output:localOut,evidenceRoot:localRoot});
+ await openBundle(localOut,b=>{check(!Object.values(b.handoff.source).some(asset=>asset.approval_context?.source_baseline),'重新批准的本地终点不借用旧来源marker');},{readOnly:true,evidenceRoot:localRoot});
  if(nativeCLI){native(['verify','--root',dst,'--kind','spec-baseline','--package',pkg]);checks++;native(['verify','--root',dst,'--kind','spec-baseline','--file',imported.receipt_ref,'--checkpoint','intake-checkpoint.json']);checks++;verifyTerminal(dst,out);}
  if(nativeCLI){native(['verify','--root',localRoot,'--kind','spec-baseline','--file',localImported.receipt_ref,'--checkpoint','local-intake-checkpoint.json']);checks++;verifyTerminal(localRoot,localOut);}
  console.log(JSON.stringify({result:'passed',checks,synthetic_fixture:true,native_intake:Boolean(nativeCLI),root,source_root:src,checkpoint_ref:source.checkpointRef,design_root:dst,baseline_package:pkg,handoff_package:out,local_design_root:localRoot,local_handoff_package:localOut}));

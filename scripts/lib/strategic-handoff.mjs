@@ -73,7 +73,8 @@ export function collectSourceClosure(root,handoffRef,handoff,config,{businessMod
  ensure(Array.isArray(verified.closure),'NATIVE_PROTOCOL: 来源缺少完整导出闭包');
  return new Map(verified.closure.map(row=>{const bytes=readFileSync(safe(root,row.ref));ensure(hash(bytes)===row.digest,'VALIDATION_INPUT_CHANGED: '+row.ref);return[row.ref,bytes];}));
 }
-export async function openBundle(input,action,{readOnly=false}={}) {
+// evidenceRoot 决定原生校验暂存外部包的位置（evidenceRoot/.work/native-candidates）；默认是模板根，夹具与并行测试传入自己的临时根，避免互相观察到对方的暂存目录。
+export async function openBundle(input,action,{readOnly=false,evidenceRoot=ROOT}={}) {
  const temp=readOnly?null:mkdtempSync(path.join(tmpdir(),'yss-handoff-'));
  try {
   ensure(existsSync(input)&&!lstatSync(input).isSymbolicLink(),'交接包不存在或是 symlink');
@@ -83,13 +84,13 @@ export async function openBundle(input,action,{readOnly=false}={}) {
    // Bind the original archive while Node materializes only the workflow callback view.
    readFileSync(root);const archiveRef=root;root=path.join(temp,'unpacked');mkdirSync(root);archive('unpack',archiveRef,root);
   }
-  const result=nativeEvidenceVerify({root:ROOT,group:'handoff',kind:'package',file:root,needs:NEEDS.handoffPackage});
+  const result=nativeEvidenceVerify({root:evidenceRoot,group:'handoff',kind:'package',file:root,needs:NEEDS.handoffPackage});
   const source=nativeCoverage(result,'handoff_source'),pack=nativeCoverage(result,'handoff_package');
   versionSchema(source.handoff.schema_version,HANDOFF_SCHEMAS,'Handoff');
   return await action({root,manifest:pack.manifest,...source,changes:pack.changes});
  }finally{if(temp)rmSync(temp,{recursive:true,force:true});}
 }
-export async function exportBundle({sourceRoot,handoffRef,output,zip=false,previous}) {
+export async function exportBundle({sourceRoot,handoffRef,output,zip=false,previous,evidenceRoot}) {
   const root=project(sourceRoot); parseContextContract({root}); relative(handoffRef);
   const current=await inspectSource(root,handoffRef);
   let prior=null;
@@ -117,7 +118,7 @@ export async function exportBundle({sourceRoot,handoffRef,output,zip=false,previ
     if(prior){put('indexes/previous-manifest.json',Buffer.from(json(prior.manifest)));put('indexes/previous-rules.json',prior.rulesBytes);put('indexes/previous-scenarios.json',prior.scenariosBytes);}
     const body={schema_version:1,bundle_id:current.handoff.handoff_id,version:current.handoff.handoff_version,handoff_ref:handoffRef,previous_bundle:previousBundle,files:entries.sort((a,b)=>a.path.localeCompare(b.path))};
     const manifest={...body,bundle_digest:digest(body)};write(staging,'manifest.json',json(manifest));
-    await openBundle(staging,()=>null);
+    await openBundle(staging,()=>null,evidenceRoot?{evidenceRoot}:{});
     // Recheck every captured source byte before publishing the immutable directory.
     for(const [ref,bytes]of snapshotFiles)ensure(hash(readFileSync(safe(root,ref)))===hash(bytes),`导出期间源文件变化: ${ref}`);
     if(zip)archive('pack',staging,`${staging}.zip`);
