@@ -59,7 +59,7 @@ async function prepare(argv,root) {
   }
   let plan=planTemplateVerification({profile:requested,changedFiles:scope.files,root,base:values.base,baselineReport:values['baseline-report'],baselineReportDigest:values['baseline-report-sha256'],baselineAssessment:assessment,...(values.selection?{selection:values.selection}:{})});
   plan.scope=scope;
-  const requestedConcurrency=Number(values.concurrency||plan.max_concurrency||1);if(!Number.isInteger(requestedConcurrency)||requestedConcurrency<1||requestedConcurrency>4)throw new TypeError('concurrency 必须为 1..4');
+  const requestedConcurrency=Number(values.concurrency||plan.max_concurrency||1);if(!Number.isInteger(requestedConcurrency)||requestedConcurrency<1||requestedConcurrency>8)throw new TypeError('concurrency 必须为 1..8');
   const release=plan.effective_profile==='release',concurrency=release?1:requestedConcurrency,requestedMode=values['tooling-mode']||'legacy';
   if(!['legacy','optimized'].includes(requestedMode))throw new TypeError('tooling-mode 必须为 legacy 或 optimized');
   const mode=release?'legacy':requestedMode;
@@ -194,7 +194,7 @@ if(process.argv[1]&&path.resolve(process.argv[1])===workerFile) {
   } else {
     try {
       const input=await prepare(process.argv.slice(2),process.cwd());
-      if(input.help)process.stdout.write('用法: scripts/run-template-verification --profile fast|release [--base <完整SHA>] [--baseline-report <文件> --baseline-report-sha256 <摘要>] [--plan --json] [--report-dir <仓库外新目录>] [--concurrency 1..4] [--selection legacy|shadow|allowlist] [--fresh-inputs]\nfast 默认按检查选择必要集合，报告范围 limited；legacy / shadow 显式使用原组范围。\n--fresh-inputs 禁用本次运行内的文件摘要复用；release 始终完整读取字节。\nrelease 必须提供上一正式发行 --base，覆盖全部真实变化并选择受影响检查，来源、安装与恢复要求保留；历史策略仅用于独立报告读取。\n');
+      if(input.help)process.stdout.write('用法: scripts/run-template-verification --profile fast|release [--base <完整SHA>] [--baseline-report <文件> --baseline-report-sha256 <摘要>] [--plan --json] [--report-dir <仓库外新目录>] [--concurrency 1..8] [--selection legacy|shadow|allowlist] [--fresh-inputs]\nfast 默认按检查选择必要集合，报告范围 limited；legacy / shadow 显式使用原组范围。\n--fresh-inputs 禁用本次运行内的文件摘要复用；release 始终完整读取字节。\nrelease 必须提供上一正式发行 --base，覆盖全部真实变化并选择受影响检查，来源、安装与恢复要求保留；历史策略仅用于独立报告读取。\n');
       else if(input.values.plan)process.stdout.write(`${JSON.stringify(input.plan,null,input.values.json?2:0)}\n`);
       else await runPrepared(input);
     }catch(error){process.stderr.write(`模板核验失败: ${error.message}\n`);process.exitCode=1;}

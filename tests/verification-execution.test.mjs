@@ -228,6 +228,32 @@ test('两路内部tooling独占外层预算，同资源检查互斥', async () =
   await runGroups(plan,'template-source',2,{cwd:'/fixture',environment:{YSS_TOOLING_CONCURRENCY:'2'},execute});
   assert.equal(peak,1);
 });
+test('只读工具资源（native-cli、python-jsonschema）不互斥，自定义资源仍互斥', async () => {
+  const peakOf = async resource => {
+    let active=0,peak=0;
+    const execute = async command => { active++; peak=Math.max(peak,active); await new Promise(resolve=>setTimeout(resolve,30)); active--; return {command,code:0}; };
+    const plan={strategy:'daily-necessary',groups:['a','b'],commands:[
+      {id:'one',group:'a',command:'one',resources:[resource]},
+      {id:'two',group:'b',command:'two',resources:[resource]},
+    ]};
+    await runGroups(plan,'template-source',2,{cwd:'/fixture',environment:{},execute});
+    return peak;
+  };
+  assert.equal(await peakOf('native-cli'),2);
+  assert.equal(await peakOf('python-jsonschema'),2);
+  assert.equal(await peakOf('custom-state'),1);
+});
+test('同组检查用不同 lane 可并行，同 lane 仍串行', async () => {
+  const peakOf = async lanes => {
+    let active=0,peak=0;
+    const execute = async command => { active++; peak=Math.max(peak,active); await new Promise(resolve=>setTimeout(resolve,30)); active--; return {command,code:0}; };
+    const plan={strategy:'daily-necessary',groups:['a'],commands:lanes.map((lane,index)=>({id:`c${index}`,group:'a',command:`c${index}`,...(lane?{lane}:{})}))};
+    await runGroups(plan,'template-source',2,{cwd:'/fixture',environment:{},execute});
+    return peak;
+  };
+  assert.equal(await peakOf(['x','y']),2);
+  assert.equal(await peakOf([null,null]),1);
+});
 test('未知依赖和循环在执行任何命令前拒绝', async () => {
   const options={cwd:'/fixture',execute:()=>assert.fail('must not execute')};
   await assert.rejects(()=>runGroups({strategy:'release',groups:['a'],commands:[{id:'a',group:'a',command:'a',depends_on:['missing']}]},'template-source',1,options),/未知.*依赖/);
