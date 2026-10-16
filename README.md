@@ -26,13 +26,10 @@
 
 ## Quickstart
 
-只需后端开发脚手架时，可直接使用 `yss-layered-mvc-scaffold-generator`（MVC）或 `yss-ddd-scaffold-generator`（DDD），无需先准备需求合同、原型、设计审批或初始化治理实例。提供工程信息即可生成，命令与参数见[直接生成开发脚手架](.agents/skills/yss-ddd-scaffold-generator/references/standalone-generation.md)。以下步骤用于治理项目。
+只需后端开发脚手架时，可直接使用 `yss-layered-mvc-scaffold-generator`（MVC）或 `yss-ddd-scaffold-generator`（DDD），无需先准备需求合同、原型、设计审批或初始化治理实例。提供工程信息即可生成，命令与参数见[直接生成开发脚手架](.agents/skills/yss-ddd-scaffold-generator/references/standalone-generation.md)。
 
-1. 先读取 `yss-project.yaml`，按 `repository_mode` 选择模板维护或产品研发生命周期。
-2. 必读入口为 `AGENTS.md` 与 `CONTEXT.md`；流程事实以生命周期注册表和裁剪指南为准。
-3. `template-source` 按 `maintenance-intensity.yaml` 判定 L1 / L2，先看 `scripts/verify-template-fast --plan`，日常执行受影响依赖的定向检查达到 `implementation-ready`；投影、锁和分发在 canonical 稳定后同步。
-4. `project-instance` 先用支持能力的 `yss lifecycle route` 按 `request_triage.delivery_path` 分流。`daily` 使用一张 Ticket/PR，按需求验收、技术技能、实现、测试、独立审查推进；`governed` 从最近可信阶段恢复正式治理。日常操作见[同一记录交付说明](.agents/skills/yss-product-lifecycle/references/daily-delivery.md)。
-5. 实现仓库接入、YSS 路由、独立审查、fresh verification 和 Git checkpoint 以 `AGENTS.md` 的硬门禁为准。
+- **项目使用者**：从[从这里开始](.template-spec/user-guide/用户手册索引.md)完成第一个日常任务。Agent 的入口与硬门禁只在 `AGENTS.md`。
+- **模板维护者**：按 `.template-source/process/maintenance-intensity.yaml` 判定 L1 / L2，先看 `scripts/verify-template-fast --plan`，日常执行受影响依赖的定向检查达到 `implementation-ready`；投影、锁和分发在 canonical 稳定后同步。
 
 YSS skills 的公开发布投影维护在 [iloveZzz/yss-spec-dev-skills](https://github.com/iloveZzz/yss-spec-dev-skills)，发布清单和导出命令见 [skills 维护说明](./.template-source/agents/skills-maintenance.md)。
 
