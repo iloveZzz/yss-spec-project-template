@@ -401,6 +401,7 @@ profiles:
         inputs_complete: true
         input_patterns:
           - "tests/go-validator-replay.test.mjs"
+          - "tests/go-validator-replay-delivery.test.mjs"
           - "scripts/verify-approval-record"
           - "scripts/verify-user-decision"
           - "scripts/verify-digital-human-task-package"
