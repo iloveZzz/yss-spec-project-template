@@ -64,7 +64,7 @@ node .template-source/scripts/release-template.mjs --version X.Y.Z --base <上�
 
 发行说明的验证部分由脚本按证据生成：只写已执行的 fast 与其范围，固定写明「平台验收：人工」，不接受自述。
 
-**时间预算：准备步骤不超过 5 分钟。** 准备步骤用 `--max-seconds`（默认 300，下限 30）限制 fast 的总时长，超时即终止并失败，报告用时；耗时写入准备目录的 `plan.json`（`prepare_seconds`、`budget_seconds`）。为达到预算：
+**时间预算：准备步骤不超过 200 秒。** 准备步骤用 `--max-seconds`（默认 200，下限 30）限制 fast 的总时长，超时即终止并失败，报告用时；耗时写入准备目录的 `plan.json`（`prepare_seconds`、`budget_seconds`）。为达到预算：
 
 - fast 的并发上限放宽到 1..8，`release-template` 按核数取 `max(2, min(6, cpus/2))`；CI 默认仍是 4。
 - 同一组的检查要并行，必须登记不同的 `lane`；同 lane 仍串行。`native-cli`、`python-jsonschema` 是只读工具前置条件，不再让检查互斥，自定义资源仍互斥。

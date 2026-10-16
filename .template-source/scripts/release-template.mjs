@@ -12,7 +12,7 @@ const USAGE = `用法:
   准备: node .template-source/scripts/release-template.mjs --version X.Y.Z --base <上一正式发行完整SHA> --summary <维护者摘要文件> --output <仓库外新绝对目录>
   发布: node .template-source/scripts/release-template.mjs --version X.Y.Z --base <上一正式发行完整SHA> --publish-from <准备目录> [--repository owner/repo]`;
 try {
-  const { values } = parseArgs({ options: { version: { type: "string" }, base: { type: "string" }, summary: { type: "string" }, output: { type: "string" }, "publish-from": { type: "string" }, repository: { type: "string" }, "max-seconds": { type: "string", default: "300" } }, strict: true });
+  const { values } = parseArgs({ options: { version: { type: "string" }, base: { type: "string" }, summary: { type: "string" }, output: { type: "string" }, "publish-from": { type: "string" }, repository: { type: "string" }, "max-seconds": { type: "string", default: "200" } }, strict: true });
   if (!values.version || !values.base || !(values["publish-from"] || (values.summary && values.output))) throw new TypeError(USAGE);
   const root = path.resolve(import.meta.dirname, "../..");
   const outside = (dir) => path.relative(root, dir).startsWith("..");

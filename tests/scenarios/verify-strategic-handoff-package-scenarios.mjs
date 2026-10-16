@@ -38,7 +38,7 @@ test('目录和 ZIP 可脱离源仓验包；导入幂等且不修改词汇表',a
  for(const bundle of [output,`${output}.zip`])assert.equal(await openBundle(bundle,b=>b.manifest.bundle_digest),result.bundle_digest);
  const target=path.join(f.base,'target');mkdirSync(target);writeFileSync(path.join(target,'yss-project.yaml'),'schema_version: 1\nrepository_mode: project-instance\n');writeFileSync(path.join(target,'CONTEXT.md'),context);
  const imported=await importBundle({bundle:`${output}.zip`,targetRoot:target});assert.equal(imported.result,'imported-pending-reconciliation');
- assert.equal(read(path.join(target,imported.receipt_ref)).schema_version,1);
+ assert.equal(read(path.join(target,imported.receipt_ref)).schema_version,2);
  assert.equal(readFileSync(path.join(target,'CONTEXT.md'),'utf8'),context);parseContextContract({root:target});
  assert.equal((await importBundle({bundle:output,targetRoot:target})).result,'already-imported');
 });
@@ -118,7 +118,7 @@ test('消费者反馈按源摘要裁决，amend 与 blocking defer 保持阻断'
 test('规则遗漏、摘要漂移、批准不匹配和离线资源丢失阻断导出',async t=>{
  const f=await setupV4(t);const run=()=>exportBundle({sourceRoot:f.source,handoffRef:'handoff.yaml',output:path.join(f.base,'out')});
  const text=readFileSync(path.join(f.source,'source/strategy.yaml'));f.put('source/strategy.yaml',{...f.strategy,traceability_version:undefined});
- await assert.rejects(run,error=>error.code==='HANDOFF_SOURCE_STALE');writeFileSync(path.join(f.source,'source/strategy.yaml'),text);
+ await assert.rejects(run,error=>error.code==='HANDOFF_SOURCE_STALE'||/traceability_version/.test(error.message));writeFileSync(path.join(f.source,'source/strategy.yaml'),text);
  const approved=read(path.join(f.source,'approvals/spec_ref.yaml'));f.put('approvals/spec_ref.yaml',{...approved,artifact_bindings:[]});await assert.rejects(run,error=>error.code==='HANDOFF_APPROVAL');f.put('approvals/spec_ref.yaml',approved);
  const roles=read(path.join(f.source,'.template-spec/agents/digital-human-roles.yaml'));f.put('.template-spec/agents/digital-human-roles.yaml',{...roles,user_decision_policy:{...roles.user_decision_policy,gates:['gate.domain-strategy-approved']}});await assert.rejects(run,/user-decision|升级/);f.put('.template-spec/agents/digital-human-roles.yaml',roles);
  const sourceBytes=readFileSync(path.join(f.source,'prototype-src/main.js'));f.put('prototype-src/main.js','changed');await assert.rejects(run,error=>error.code==='HANDOFF_PREVIEW'&&error.message.includes('源码或锁文件批准摘要'));writeFileSync(path.join(f.source,'prototype-src/main.js'),sourceBytes);

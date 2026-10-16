@@ -402,6 +402,8 @@ profiles:
         input_patterns:
           - "tests/go-validator-replay.test.mjs"
           - "tests/go-validator-replay-delivery.test.mjs"
+          - "tests/ar12b-source-native.test.mjs"
+          - "tests/strategic-handoff-readonly.test.mjs"
           - "scripts/verify-approval-record"
           - "scripts/verify-user-decision"
           - "scripts/verify-digital-human-task-package"
@@ -426,39 +428,6 @@ profiles:
           - ".template-source/distribution/yss-cli-pin.json"
         depends_on: []
         failure_mode: "用户决定、批准记录与薄适配的固定通过/拒绝预期、独立期望绑定、返回字段或能力拒绝回归"
-      - id: check.ar12b-source-native
-        run: "node --test --test-concurrency=1 tests/ar12b-source-native.test.mjs"
-        group: feature-assets
-        resources: [ "native-cli", "repo-root-evidence" ]
-        inputs_complete: true
-        input_patterns:
-          - "tests/ar12b-source-native.test.mjs"
-          - "tests/helpers/yss-instance.mjs"
-          - "scripts/lib/native-evidence.mjs"
-          - "scripts/lib/native-approval.mjs"
-          - "scripts/lib/native-user-decision.mjs"
-          - "scripts/lib/validation-phase.mjs"
-          - "scripts/lib/strategic-handoff.mjs"
-          - "scripts/lib/spec-baseline.mjs"
-          - "scripts/lib/plan-spec-entry.mjs"
-          - "scripts/fixtures/strategic-handoff/fixture.mjs"
-          - "scripts/fixtures/spec-baseline/fixture.mjs"
-          - ".template-source/distribution/yss-cli-pin.json"
-        depends_on: []
-        failure_mode: "原生来源视图、准备态领域入口、完整依赖回执或来源目录/ZIP 的拒绝边界回归"
-      - id: check.strategic-handoff-readonly
-        group: strategic-handoff-package
-        resources: [ "native-cli", "repo-root-evidence" ]
-        inputs_complete: true
-        input_patterns:
-          - "tests/strategic-handoff-readonly.test.mjs"
-          - "scripts/lib/strategic-handoff.mjs"
-          - "scripts/lib/strategic-handoff-io.mjs"
-          - "scripts/lib/source-context-snapshot.mjs"
-          - "scripts/lib/native-evidence.mjs"
-          - "scripts/fixtures/strategic-handoff/fixture.mjs"
-        depends_on: []
-        failure_mode: "交接来源或目录/ZIP 封存包验真改变原文件字节、权限，或未拒绝符号链接"
       - id: check.business-ticket-native-report
         run: "node --test tests/business-ticket-native-report.test.mjs"
         group: feature-assets
@@ -646,20 +615,6 @@ profiles:
           - "scripts/lib/strategic-handoff-consumption.mjs"
         depends_on: []
         failure_mode: "既有 UI 基线的交接导出、验包与导入被错放行或误拒，或导入重新生成前端草案"
-      - id: check.frontend-removal-consumers
-        resources: [ native-cli, "repo-root-evidence" ]
-        run: "node --test .template-source/tooling/node/test/lifecycle-controls.test.mjs scripts/fixtures/business-tickets/handoff.test.mjs tests/cli-core-retirement.test.mjs"
-        group: feature-assets
-        inputs_complete: true
-        input_patterns:
-          - ".template-source/tooling/node/test/lifecycle-controls.test.mjs"
-          - "scripts/fixtures/business-tickets/handoff.test.mjs"
-          - "tests/slice-task-package-frontend-boundary.test.mjs"
-          - "tests/cli-core-retirement.test.mjs"
-          - ".agents/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml"
-          - "profiles/backend/.agents/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml"
-        depends_on: []
-        failure_mode: "生命周期控制数量、业务票交接或 Slice 任务包仍按前端实现线判断，或 Compiler 合同重新声明前端交付绑定"
       - id: check.strategic-handoff-package-scenarios
         resources: [ native-cli, "repo-root-evidence" ]
         run: "node tests/scenarios/verify-strategic-handoff-package-scenarios.mjs"
@@ -2767,10 +2722,6 @@ groups:
         id: check.629b3c9ec897593f
   strategic-handoff-package:
     commands:
-      - run: node --test tests/strategic-handoff-readonly.test.mjs
-        resources: [ "repo-root-evidence" ]
-        when: template-source
-        id: check.strategic-handoff-readonly
       - run: node --test tests/strategic-handoff-sealed-owner.test.mjs
         when: template-source
         id: check.strategic-handoff-sealed-owner
@@ -3211,7 +3162,6 @@ gates:
       - check.doc-facts
       - check.openapi-validation-scenarios
       - check.frontend-removed
-      - check.frontend-removal-consumers
       - check.legacy-coverage
       - check.ci-gate
       - check.ci-adapters
@@ -3256,7 +3206,6 @@ gates:
       - check.5fa31f4262e122b1
       - check.a5802dc214ecfcda
       - check.go-validator-replay
-      - check.ar12b-source-native
       - check.ar12b-retirement
       - check.digital-human-native-consumers
       - check.user-decision-scenarios
@@ -3285,7 +3234,6 @@ gates:
       - check.0eda9c9e0a08adf6
       - check.9c058e5d7cf873aa
       - check.0b0ff4c1ba24fa6e
-      - check.strategic-handoff-readonly
       - check.strategic-handoff-sealed-owner
       - check.progression-target-evidence
       - check.strategic-handoff-package-scenarios

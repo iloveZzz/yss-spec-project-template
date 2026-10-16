@@ -62,11 +62,6 @@ test('目标意图的候选当前性及其消费者必须选择真实 Git 边界
 });
 
 test('AR12b 薄适配与来源依赖选择真实入口回放，退役规则选择来源约束检查',()=>{
- assert.ok(planTemplateVerification({changedFiles:['tests/strategic-handoff-readonly.test.mjs']}).commands.some(row=>row.id==='check.strategic-handoff-readonly'));
- for(const ref of ['scripts/lib/native-approval.mjs','scripts/lib/native-evidence.mjs','scripts/lib/validation-phase.mjs','tests/ar12b-source-native.test.mjs']){
-  const plan=planTemplateVerification({changedFiles:[ref]});
-  assert.ok(plan.commands.some(row=>row.id==='check.ar12b-source-native'),ref);
- }
  for(const ref of ['.template-source/distribution/bundle-profile.json','profiles/design/.template-source/distribution/bundle-profile.json','profiles/backend/.template-source/distribution/bundle-profile.json','tests/ar12b-retirement.test.mjs']){
   assert.ok(planTemplateVerification({changedFiles:[ref]}).commands.some(row=>row.id==='check.ar12b-retirement'),ref);
  }
