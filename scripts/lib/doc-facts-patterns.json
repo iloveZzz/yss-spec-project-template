@@ -20,6 +20,7 @@
       "profiles/backend/.template-spec/process/agent-entry-policy.md",
       "profiles/design/.template-spec/process/agent-entry-policy.md",
       "README.md",
+      "README.en.md",
       ".template-spec/user-guide/用户手册索引.md"
     ],
     "allow": [

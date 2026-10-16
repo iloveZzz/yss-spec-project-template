@@ -58,6 +58,7 @@ profiles:
           - "scripts/lib/doc-facts-patterns.json"
           - "tests/doc-facts.test.mjs"
           - "README.md"
+          - "README.en.md"
           - "AGENTS.md"
           - "profiles/*/AGENTS.md"
           - "profiles/*/.template-spec/process/agent-entry-policy.md"
@@ -2237,6 +2238,7 @@ routing:
       - package.json
       - .gitignore
       - README.md
+      - README.en.md
       - .template-source/README.md
       - .template-spec/**
       - docs/**

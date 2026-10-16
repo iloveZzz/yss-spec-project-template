@@ -1,5 +1,7 @@
 # YSS 综合研发主控模板（Spec Profile）
 
+English overview: [README.en.md](README.en.md).
+
 > 可版本化的研发治理系统：Matt Pocock Engineering Skills × YSS × OpenAPI，把产品研发从需求澄清连接到实现、审查、发布与复盘。
 
 ## 定位
