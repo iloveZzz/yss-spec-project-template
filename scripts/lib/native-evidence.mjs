@@ -22,7 +22,9 @@ export const NEEDS={
  scaffoldDecisions:['contract.scaffold-decisions.v1'],slicePreflight:['contract.slice-preflight-report.v1'],
  gateChecks:['contract.gate-checks.v1'],checkpointApprovals:['contract.checkpoint-approvals.v1'],planEntry:['contract.plan-entry.v1'],implementationScope:['contract.implementation-scope.v1'],
  checkpointUserDecisions:['contract.checkpoint-user-decisions.v1'],scaffoldUserDecision:['contract.scaffold-user-decision.v1'],
- dependencies:['governance.validation-dependencies.v1']
+ dependencies:['governance.validation-dependencies.v1'],
+ // managed 阅读视图的渲染、校验与启用在 yss 中完成；manual 实例不协商这三条（见 reading-view-bundle.mjs 的能力短路）。
+ readingViews:['reading.views.v1'],readingRender:['reading.render.v1'],readingEnable:['reading.enable.v1']
 };
 const capabilityCache = new Map();
 export function nativeCapabilities(environment = process.env) {
@@ -87,6 +89,24 @@ function normalizedDependencies(receipt,root,transfers,created,inputs=[],explici
  });
  return {schema_version:1,files,observations};
 }
+function decodeEnvelope(run,command) {
+ let envelope;try{envelope=JSON.parse(run.stdout);}catch{fail('NATIVE_PROTOCOL',`非 JSON 响应: ${run.stderr||run.stdout}`.slice(0,600));}
+ if(envelope.outputVersion!==1||envelope.protocolVersion!==1||envelope.command!==command||!['ok','error'].includes(envelope.status)||![0,1,2].includes(run.status)||(envelope.status==='ok')!==(run.status===0)||(envelope.code==='OK')!==(run.status===0))fail('NATIVE_PROTOCOL','协议与实际退出码不一致');
+ return envelope;
+}
+// 通用的一次性原生调用：协商能力、核对固定二进制摘要、解码 envelope。不收集依赖回执，只用于不进入验证阶段的 yss 命令（阅读视图的渲染、校验与启用）。
+// 业务拒绝（退出码 1、2）原样返回，由调用方按错误码处理；只有协议、中断和能力缺失抛出。
+export function nativeInvoke({root,args,needs=[],environment=process.env,timeout=120000}) {
+ assertNativeCapabilities(needs,environment);
+ const {binary,digest:binaryDigest}=contextBinary(environment),fixedEnvironment={...environment,YSS_NATIVE_BINARY:binary,YSS_NATIVE_BINARY_SHA256:binaryDigest};
+ const argv=args.includes('--json')?args:[...args,'--json'];
+ contextBinary(fixedEnvironment);
+ const run=spawnSync(binary,argv,{cwd:root,env:fixedEnvironment,encoding:'utf8',timeout,maxBuffer:64*1024*1024});
+ contextBinary(fixedEnvironment);
+ if(run.error||run.signal||!Number.isInteger(run.status))fail('NATIVE_INTERRUPTED',run.error?.message||run.signal);
+ const envelope=decodeEnvelope(run,args[0]);
+ return {exitCode:run.status,status:envelope.status,code:envelope.code,result:envelope.result,message:envelope.result?.message??envelope.code,envelope};
+}
 export function nativeEvidenceVerify({root:given,kind,file,extra=[],environment=process.env,group='evidence',selector,document,documents={},needs=[]}) {
  const root=fs.realpathSync(given);
  assertNativeCapabilities([...needs,...NEEDS.dependencies],environment);
@@ -110,8 +130,7 @@ export function nativeEvidenceVerify({root:given,kind,file,extra=[],environment=
    const execute=()=>{contextBinary(fixedEnvironment);const result=spawnSync(binary,args,{cwd:root,env:fixedEnvironment,encoding:'utf8',timeout:120000,maxBuffer:64*1024*1024});contextBinary(fixedEnvironment);return result;};
    const run=execute();
    if(run.error||run.signal||!Number.isInteger(run.status))fail('NATIVE_INTERRUPTED',run.error?.message||run.signal);
-   let envelope;try{envelope=JSON.parse(run.stdout);}catch{fail('NATIVE_PROTOCOL',`非 JSON 响应: ${run.stderr||run.stdout}`.slice(0,600));}
-   if(envelope.outputVersion!==1||envelope.protocolVersion!==1||envelope.command!==group||!['ok','error'].includes(envelope.status)||![0,1,2].includes(run.status)||(envelope.status==='ok')!==(run.status===0)||(envelope.code==='OK')!==(run.status===0))fail('NATIVE_PROTOCOL','协议与实际退出码不一致');
+   const envelope=decodeEnvelope(run,group);
    const receipt=envelope.result?.validation_dependencies;
    // Argument/identity errors can happen before a validation Context exists.
    if(receipt){
