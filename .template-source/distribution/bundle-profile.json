@@ -609,6 +609,18 @@
         "sourcePath": "scripts/lib/decision-continuation.mjs"
       },
       {
+        "id": "ar13-ar15-spec-git-7af9715c",
+        "from": {
+          "profile": "spec",
+          "templateCommit": "7af9715c6136d1b48e2c731fe92603806d7bf22a",
+          "sourceSnapshotHash": "dd5b96979d4bc41206df5334b3974ccb7e8ad009690c4abcfde67d8c9943e3c8",
+          "bundleHash": "94430d30a1f5ff40766db1f9f250f40de64b68ed8ea0b9477408ff818b0e9e52",
+          "templateVersion": "git:7af9715c6136d1b48e2c731fe92603806d7bf22a"
+        },
+        "action": "delete",
+        "sourcePath": ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml"
+      },
+      {
         "id": "ar13-ar15-spec-1",
         "from": {
           "profile": "spec",

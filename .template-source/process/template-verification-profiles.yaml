@@ -434,11 +434,12 @@ profiles:
         depends_on: []
         failure_mode: "业务票原生报告字段、多诊断、draft/formal 拒绝、业务读集或导入快照与既有合同不一致"
       - id: check.ar12b-retirement
-        run: "node --test tests/ar12b-retirement.test.mjs"
+        run: "node --test tests/ar12b-retirement.test.mjs .template-source/tooling/node/test/retirement.test.mjs"
         group: feature-assets
         inputs_complete: true
         input_patterns:
           - "tests/ar12b-retirement.test.mjs"
+          - ".template-source/tooling/node/test/retirement.test.mjs"
           - "scripts/lib/approval-record.mjs"
           - "scripts/lib/approval-current.mjs"
           - "scripts/lib/approval-consumption.mjs"

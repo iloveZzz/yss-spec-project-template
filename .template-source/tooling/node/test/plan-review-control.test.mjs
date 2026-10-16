@@ -6,6 +6,7 @@ import path from 'node:path';
 import { spawn, spawnSync } from 'node:child_process';
 import { parseDocument } from '../../../../scripts/vendor/yaml.mjs';
 import { ROOT } from '../../../../scripts/lib/lifecycle-registry.mjs';
+import { makeRoot } from '../../../../tests/helpers/yss-instance.mjs';
 import { validateReviewTaskBinding } from '../../../../scripts/lib/review-capabilities.mjs';
 import { prepareReviewPackage } from '../../../../scripts/lib/review-package.mjs';
 import { buildPlanReviewFixture, PLAN_BOUNDARIES } from '../../../../scripts/fixtures/plan-review-control/build-fixture.mjs';
@@ -561,6 +562,56 @@ test('new Plan source with no professional checks consumes v1 approval through i
   assert.deepEqual(fs.readFileSync(path.resolve(root, plan.state.plan_approval_ref)), approvalBytes);
   assert.deepEqual(fs.readFileSync(plan.approval.ref), decisionBytes);
   await assertReadonlySourceContextConsumption(root, () => consume(source.binding));
+});
+
+test('Spec review consumes current Plan checkpoint without copying its control ledger', async t => {
+  const root = makeRoot('yss-spec-plan-entry-');
+  t.after(() => fs.rmSync(root, {recursive: true, force: true}));
+  const plan = buildPlanFixture(root); localizeSyntheticPlanSource(plan);
+  const source = syntheticPlanSourceContext(plan), checkpointRef = '.work/feature-demo/checkpoint.json';
+  plan.write('.work/feature-demo/map.md', `---\ncheckpoint_ref: ${checkpointRef}\n---\n# Synthetic feature\n`);
+  const {user_decisions, ...state} = plan.state;
+  const boundary = 'gate.spec-baseline-approved';
+  plan.write('spec.md', 'Synthetic Spec for checkpoint consumption only.\n');
+  plan.write('spec-evidence.txt', 'Synthetic review evidence, separate from the subject.\n');
+  const checkpoint = {...state, schema_version: 1, repository_mode: 'project-instance', mode: 'orchestrate',
+    status: 'running', stage: 'stage.spec-architecture', next_work_unit: 'work-unit.spec-synthesis',
+    phase_boundary: {decision: 'continue', reason: 'Synthetic approved Plan enters Spec review'},
+    stage_trace: {stage: 'stage.spec-architecture', upstream_refs: ['review.json'], artifact_refs: ['spec.md'], gate_decisions: [], downstream_impacts: []},
+    checks: {}, human_review: {user_decisions}, gates: {
+    'gate.plan-approved': source.gate,
+    [boundary]: {applicable: true, status: 'pending', subject_ref: 'spec.md', subject_digest: source.asset('spec.md').digest,
+      approval_scope: [state.feature_id], drafter_principal_ref: 'synthetic.spec-author', basis: [source.asset('spec-evidence.txt')], evidence_refs: ['spec-evidence.txt']}
+  }};
+  plan.write(checkpointRef, checkpoint);
+  const result = prepareReviewPackage({root, checkpointRef, checkIds: [boundary], roleId: 'role.product-manager',
+    runtimeId: 'runtime.generic', actorId: 'agent.reviewer', reviewerPrincipalRef: 'synthetic.spec-reviewer',
+    drafterPrincipalRef: 'synthetic.packet-owner', implementationActorId: 'agent.worker', taskId: 'review.synthetic-spec',
+    reviewSessionId: 'synthetic.spec-session', workUnitId: 'work-unit.spec-synthesis', outputDir: '.work/feature-demo/reviews/spec'});
+  const task = JSON.parse(fs.readFileSync(path.join(root, result.task_ref)));
+  const {validateTaskPackage} = await import(path.join(root, 'scripts/lib/task-package.mjs'));
+  const consumeNative = value => {
+    plan.write(result.task_ref, value);
+    return spawnSync(process.execPath, [path.join(root, 'scripts/verify-digital-human-task-package'), path.join(root, result.task_ref)], {cwd: root, encoding: 'utf8'});
+  };
+  assert.equal(Object.hasOwn(task, 'plan_review_control'), false);
+  const accepted = consumeNative(task);
+  assert.equal(accepted.status, 0, accepted.stderr);
+  assert.doesNotThrow(() => validateTaskPackage(task));
+  for (const key of ['feature_id', 'plan_review_ref', 'plan_approval_ref', 'plan_user_decision_ref', 'plan_continuation_ref']) {
+    const changed = {...task, [key]: 'synthetic.unrelated'};
+    assert.throws(() => validateTaskPackage(changed), new RegExp(key));
+    const rejected = consumeNative(changed);
+    assert.notEqual(rejected.status, 0); assert.match(rejected.stderr, new RegExp(key));
+  }
+  const missing = {...task}; delete missing.plan_approval_ref;
+  assert.throws(() => validateTaskPackage(missing), /plan_approval_ref/);
+  const rejected = consumeNative(missing);
+  assert.notEqual(rejected.status, 0); assert.match(rejected.stderr, /plan_approval_ref/);
+  plan.write(checkpointRef, {...checkpoint, plan_review_control: undefined});
+  assert.throws(() => validateTaskPackage(task), /PLAN_REVIEW_CONTROL_REQUIRED/);
+  const noControl = consumeNative(task);
+  assert.notEqual(noControl.status, 0); assert.match(noControl.stderr, /PLAN_REVIEW_CONTROL_REQUIRED/);
 });
 
 test('lifecycle status projects counts, open issues, diagnosis and remaining budgets without writes', t => {
