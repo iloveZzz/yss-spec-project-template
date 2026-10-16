@@ -174,6 +174,7 @@ profiles:
         depends_on: []
         failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各 Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
       - id: check.profile-consumers-reading-views-bundle
+        tier: slow  # 实测约 63s；fast 中延后，按需（YSS_VERIFY_SLOW=1）或定时执行
         resources: [native-cli]
         lane: pc-reading-views-bundle
         run: "node --test --test-skip-pattern='^backend plugin receives' scripts/fixtures/reading-views/bundle.test.mjs"
@@ -191,6 +192,7 @@ profiles:
         depends_on: []
         failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各 Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
       - id: check.profile-consumers-slice-contract-v3-round2-xrepo
+        tier: slow  # 实测约 128s；fast 中延后，按需（YSS_VERIFY_SLOW=1）或定时执行
         resources: [native-cli]
         lane: pc-slice-contract-v3-round2-xrepo
         run: "node --test --test-name-pattern='^cross-repo execution result rejects' scripts/fixtures/slice-contract-v3/round2.test.mjs"
@@ -208,6 +210,7 @@ profiles:
         depends_on: []
         failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各 Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
       - id: check.profile-consumers-slice-contract-v3-round2-rest
+        tier: slow  # 实测约 98s；fast 中延后，按需（YSS_VERIFY_SLOW=1）或定时执行
         resources: [native-cli]
         lane: pc-slice-contract-v3-round2-rest
         run: "node --test --test-skip-pattern='^backend plugin receives' --test-skip-pattern='^cross-repo execution result rejects' scripts/fixtures/slice-contract-v3/round2.test.mjs"
@@ -225,6 +228,7 @@ profiles:
         depends_on: []
         failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各 Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
       - id: check.profile-consumers-slice-contract-v3-scenarios
+        tier: slow  # 实测约 113s；fast 中延后，按需（YSS_VERIFY_SLOW=1）或定时执行
         resources: [native-cli]
         lane: pc-slice-contract-v3-scenarios
         run: "node --test --test-skip-pattern='^backend plugin receives' scripts/fixtures/slice-contract-v3/scenarios.test.mjs"
@@ -343,6 +347,7 @@ profiles:
         depends_on: []
         failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各 Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
       - id: check.profile-consumers-review-capabilities
+        tier: slow  # 实测约 99s；fast 中延后，按需（YSS_VERIFY_SLOW=1）或定时执行
         resources: [native-cli]
         lane: pc-review-capabilities
         run: "node --test --test-skip-pattern='^backend plugin receives' .template-source/tooling/node/test/review-capabilities.test.mjs"
@@ -420,6 +425,7 @@ profiles:
         depends_on: []
         failure_mode: "用户决定、批准记录与薄适配的固定通过/拒绝预期、独立期望绑定、返回字段或能力拒绝回归"
       - id: check.business-ticket-native-report
+        tier: slow  # 实测约 74s；fast 中延后，按需（YSS_VERIFY_SLOW=1）或定时执行
         run: "node --test tests/business-ticket-native-report.test.mjs"
         group: feature-assets
         resources: [ "native-cli", "repo-root-evidence" ]
@@ -801,6 +807,7 @@ profiles:
         inputs_complete: true
         input_patterns:
           - ".github/workflows/template-gate.yml"
+          - ".github/workflows/template-slow-checks.yml"
           - ".github/actions/setup-template/action.yml"
           - ".gitlab-ci.yml"
           - "scripts/ci-setup"

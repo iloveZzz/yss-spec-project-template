@@ -43,6 +43,10 @@ Linux runner 上的两个测试曾因对 macOS 行为的隐性假设而失败，
 
 报告与日志写在仓外的 `/tmp/ci-gate`，两个平台都作为构建产物保留；两份报告的步骤名单、各步命令与退出码应一致。检查期间仓库出现任何新增改动都会使本轮失败。
 
+### 慢检查与 5 分钟上限
+
+测试与验证遵守 5 分钟硬上限，超时即失败。实测超过 60 秒的日常检查在 `template-verification-profiles.yaml` 的 fast 清单里标为 `tier: slow`：fast 命中时不执行，计入报告 `plan.selection.omitted`（`reason: deferred-slow-check`），运行结束打印“已延后”清单，不代表通过。慢检查由 `template-slow-checks` 工作流每日定时或手动运行（`scripts/ci-gate --mode slow`，测试步骤 5 分钟上限）；本地用 `YSS_VERIFY_SLOW=1`（fast 中一并执行命中的慢检查）或 `YSS_VERIFY_SLOW=only`（只执行全部慢检查）。release profile 不受影响。
+
 ## 轻量模板发布（默认）
 
 只发布模板、不同时发布 CLI 时，使用这条路径；它不要求恢复矩阵、原生装配、平台运行证据或 CLI Bundle 绑定本次模板提交。

@@ -152,6 +152,9 @@ async function runPrepared(input) {
     }catch(error){report.status='failed';report.error=[report.error,error.message].filter(Boolean).join('; ');exit=1;}
     if(report)try{report.input_after_sha256=inputObserver.digest();report.input_drift=report.input_after_sha256!==before;if(report.input_drift){report.status='failed';report.error=[report.error,'验证输入变化'].filter(Boolean).join('; ');exit=1;}}catch(error){report.status='failed';report.error=error.message;exit=1;}finally{if(report&&inputObserver)report.input_observation_metrics=inputObserver.metrics;}
     if(report){finalizeVerificationReport(report,{status:report.status,error:report.error,wallMs:Math.round(performance.now()-started),repositoryMode:mode});if(report.status==='passed'&&report.unexecuted.length){report.status='failed';report.error='存在未执行的选中任务';exit=1;}}
+    // tier: slow 的命中检查在 fast 中延后：不计入失败，但必须明确告知未执行，不能当作已通过。
+    const deferredSlow=(report?.plan?.selection?.omitted||[]).filter(item=>item.reason==='deferred-slow-check');
+    if(deferredSlow.length)process.stderr.write(`已延后 ${deferredSlow.length} 项慢检查（未执行，不代表通过；YSS_VERIFY_SLOW=1 或 ci-gate --mode slow 执行）: ${deferredSlow.map(item=>item.id).join(', ')}\n`);
     if(session)try{session.recordEvent('unexecuted',report?.unexecuted||[]);session.registerFiles(reportDir||session.runDir);session.finish({status:report?.status||'failed',exitCode:exit,report});session.close();}catch(error){if(report){report.status='failed';report.error=[report.error,error.message].filter(Boolean).join('; ');}exit=1;try{session.close();}catch{}}
     if(report)try{if(reportDir)saveVerificationReport(reportDir,report);process.send?.({kind:'completed-report',report});}catch(error){process.stderr.write(`报告保存失败: ${error.message}\n`);exit=1;}
     process.off('SIGINT',interrupt);process.off('SIGTERM',interrupt);

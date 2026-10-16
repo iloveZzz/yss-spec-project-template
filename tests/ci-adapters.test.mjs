@@ -11,7 +11,8 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const WORKFLOW = ".github/workflows/template-gate.yml";
 const ACTION = ".github/actions/setup-template/action.yml";
 const GITLAB = ".gitlab-ci.yml";
-const ADAPTERS = [WORKFLOW, ACTION, GITLAB];
+const SLOW_WORKFLOW = ".github/workflows/template-slow-checks.yml";
+const ADAPTERS = [WORKFLOW, ACTION, GITLAB, SLOW_WORKFLOW];
 const read = (relative) => fs.readFileSync(path.join(ROOT, relative), "utf8");
 const code = (relative) => read(relative).split("\n").filter((line) => !line.trim().startsWith("#")).join("\n");
 // yaml 只在 pnpm 安装过工具依赖后可用；缺失时跳过解析类断言，文本类断言照常执行。
@@ -72,6 +73,13 @@ test("GitLab 镜像主版本与 scripts/ci-setup 的目标 Node 一致", () => {
   const image = /^\s+image: node:(\d+)$/m.exec(code(GITLAB));
   assert.ok(image, ".gitlab-ci.yml 必须固定 node:<主版本> 镜像");
   assert.equal(image[1], versions().node);
+});
+
+test("慢检查工作流只定时或手动触发，测试步骤 5 分钟上限并调用 ci-gate --mode slow", () => {
+  const text = code(SLOW_WORKFLOW);
+  assert.match(text, /^on:\n  schedule:\n    - cron: '[^']+'\n  workflow_dispatch:$/m);
+  assert.doesNotMatch(text, /pull_request|push:/);
+  assert.match(text, /timeout-minutes: 5\n\s+shell: bash\n\s+run: scripts\/ci-gate --mode slow /);
 });
 
 test(".nvmrc 主版本与 scripts/ci-setup 的目标 Node 一致，本地与 CI 使用同一主版本", () => {

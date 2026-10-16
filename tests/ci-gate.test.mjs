@@ -78,7 +78,7 @@ async function gate(t, options = {}, env = {}) {
 
 test("步骤集中在一个数组里，按固定顺序执行合入检查", () => {
   assert.deepEqual(STEPS.map((step) => step.id), [
-    "agent-config", "sync-skills", "skill-lock", "lifecycle-registry", "skill-registry", "doc-facts", "context-budget", "node-engines", "verify-template",
+    "agent-config", "sync-skills", "skill-lock", "lifecycle-registry", "skill-registry", "doc-facts", "context-budget", "node-engines", "verify-template", "verify-slow",
   ]);
   assert.equal(new Set(STEPS.map((step) => step.id)).size, STEPS.length);
   assert.ok(STEPS.every((step) => step.title && (step.command || step.run)));
@@ -135,11 +135,20 @@ test("缺少声明或写法不受支持时失败而不是静默放行", (t) => {
   assert.match(checkNodeEngines(fixture(t, { engines: "~22.1" }).root).findings[0].detail, /不支持的 engines\.node 写法/);
 });
 
+test("slow 模式只运行慢检查步骤，并以 YSS_VERIFY_SLOW=only 调用 fast", async (t) => {
+  const run = await gate(t, { mode: "slow" });
+  assert.equal(run.exitCode, 0, run.err);
+  assert.deepEqual(run.report.steps.map((step) => step.id), ["verify-slow", "repository-unchanged"]);
+  assert.equal(run.calls.length, 1);
+  assert.match(run.calls[0], /^verify-template-fast --report-dir .*verification-slow$/);
+  assert.deepEqual(STEPS.find((step) => step.id === "verify-slow").env, { YSS_VERIFY_SLOW: "only" });
+});
+
 test("AC-004：推送模式全部通过，报告在仓外，仓内没有新增文件", async (t) => {
   const run = await gate(t);
   assert.equal(run.exitCode, 0, run.err);
   assert.equal(run.report.status, "passed");
-  assert.deepEqual(run.report.steps.map((step) => step.id), [...STEPS.map((step) => step.id), "repository-unchanged"]);
+  assert.deepEqual(run.report.steps.map((step) => step.id), [...STEPS.filter((step) => !step.modes).map((step) => step.id), "repository-unchanged"]);
   assert.ok(run.report.steps.every((step) => step.status === "passed" && step.exit_code === 0 && fs.existsSync(step.log)));
   assert.equal(run.reportPath, path.join(run.reportDir, "report.json"));
   assert.ok(path.relative(run.root, run.reportDir).startsWith(".."));
