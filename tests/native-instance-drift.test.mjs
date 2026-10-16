@@ -13,6 +13,10 @@ const original = Buffer.from('approved managed asset\n');
 function run(root, ref, args = [], options = {}) {
   return spawnSync(process.execPath, [path.join(root, ref), ...args], { cwd: root, encoding: 'utf8', ...options });
 }
+const RUNTIME_OF_ROOT = { '.claude/skills': 'claude', '.codex/skills': 'codex', '.cursor/skills': 'cursor', '.pi/skills': 'pi' };
+function lockRuntimes(root) {
+  return JSON.parse(fs.readFileSync(path.join(root, 'skills-lock.json'), 'utf8')).projectionRoots.map(ref => RUNTIME_OF_ROOT[ref]);
+}
 function fixture(t) {
   const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'yss-native-instance-drift-')));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
@@ -42,8 +46,8 @@ function fixture(t) {
   const metadata = { schemaVersion: 1, protocolVersion: 1, profile: 'spec', profileId: 'harness.spec-template',
     cliVersion: '1.0.0-alpha.3', templateVersion: '3.5.10', legacyCliVersion: '3.5.10',
     templateSourceState: 'committed', templateCommit: 'a'.repeat(40), snapshotHash: 'b'.repeat(64), manifestHash: 'c'.repeat(64),
-    // Current template governance distributes canonical Skills without projections.
-    variables: {}, distribution: { mode: 'selected', runtimes: [], installedSkills: [] }, managedFiles,
+    // 运行时与锁的投影根保持一致（当前模板源只投影 .claude/skills）。
+    variables: {}, distribution: { mode: 'selected', runtimes: lockRuntimes(root), installedSkills: [] }, managedFiles,
     baselineDigest: sha(JSON.stringify(managedFiles)) };
   const save = () => fs.writeFileSync(path.join(root, '.yss.json'), JSON.stringify(metadata));
   save();
@@ -104,10 +108,11 @@ function platformFixture(t) {
   const prefix = '.codex/skills/product-design';
   const supply = path.join(f.root, 'scripts/lib/skill-supply-chain.mjs');
   const source = fs.readFileSync(supply, 'utf8');
-  assert.ok(source.includes('export const PROJECTION_ROOTS = [];'));
+  const declaration = /export const PROJECTION_ROOTS = \[[^\]]*\];/;
+  assert.match(source, declaration);
   // Only the copied historical instance's runtime configuration changes; all
   // lock, physical-source, alias and drift validation code remains unchanged.
-  fs.writeFileSync(supply, source.replace('export const PROJECTION_ROOTS = [];', 'export const PROJECTION_ROOTS = [".codex/skills"];'));
+  fs.writeFileSync(supply, source.replace(declaration, 'export const PROJECTION_ROOTS = [".codex/skills"];'));
   f.metadata.distribution.runtimes = ['codex'];
   const registry = path.join(f.root, '.template-spec/agents/yss-skill-registry.yaml');
   const registrySource = fs.readFileSync(registry, 'utf8');

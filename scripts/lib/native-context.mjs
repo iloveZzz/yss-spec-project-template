@@ -5,6 +5,16 @@ import {createHash} from 'node:crypto';
 import {spawnSync} from 'node:child_process';
 
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
+// 同一进程内反复调用 yss 时不重复读取并哈希约 35 MB 的二进制；文件被替换（inode、大小或时间变化）即重新计算。
+const digestCache=new Map();
+function binaryDigest(binary,stat) {
+  const key=[stat.dev,stat.ino,stat.size,stat.mtimeMs,stat.ctimeMs].join(':');
+  const cached=digestCache.get(binary);
+  if(cached?.key===key)return cached.digest;
+  const digest=hash(fs.readFileSync(binary));
+  digestCache.set(binary,{key,digest});
+  return digest;
+}
 export function contextBinary(environment=process.env) {
   let binary=environment.YSS_NATIVE_BINARY||environment.YSS_BINARY;
   if(!binary) {
@@ -15,7 +25,7 @@ export function contextBinary(environment=process.env) {
   if(!binary||!path.isAbsolute(binary))throw new Error('CONTEXT_NATIVE_UNAVAILABLE: 需要 yss 二进制绝对路径或 PATH 上的 yss');
   const stat=fs.lstatSync(binary);
   if(!stat.isFile()||stat.isSymbolicLink())throw new Error('CONTEXT_NATIVE_INVALID: 二进制必须为普通文件');
-  const digest=hash(fs.readFileSync(binary));
+  const digest=binaryDigest(binary,stat);
   if(environment.YSS_NATIVE_BINARY_SHA256&&environment.YSS_NATIVE_BINARY_SHA256!==digest)throw new Error('CONTEXT_NATIVE_DRIFT: 二进制摘要不匹配');
   return {binary,digest};
 }
