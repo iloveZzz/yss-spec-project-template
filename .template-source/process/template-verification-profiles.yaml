@@ -71,6 +71,17 @@ profiles:
           - ".template-source/contracts/architecture-iteration-v1*.md"
         depends_on: []
         failure_mode: "说明文档复述门禁数、阶段数、投影根数量或硬编码与 lock 不一致的上游 revision"
+      - id: check.schema-generations
+        run: "node --test tests/schema-generations.test.mjs"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
+          - "tests/schema-generations.test.mjs"
+          - ".template-spec/process/schema-generations.json"
+          - ".template-spec/process/schemas/*.schema.json"
+          - ".template-source/distribution/bundle-profile.json"
+        depends_on: []
+        failure_mode: "schema 代际登记、常驻两代或分发排除与实际文件不一致"
       - id: check.specialist-business-inputs
         run: "node --test tests/specialist-business-inputs.test.mjs"
         group: feature-assets
@@ -2489,6 +2500,10 @@ routing:
       - tests/doc-facts.test.mjs
     groups:
       - hygiene
+      - feature-assets
+  - patterns:
+      - tests/schema-generations.test.mjs
+    groups:
       - feature-assets
   - patterns:
       - scripts/lib/profile-variants.mjs
