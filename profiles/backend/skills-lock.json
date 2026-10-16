@@ -113,7 +113,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/git-commit-core/SKILL.md",
-        "effectiveHash": "e55aa157746c91c29af55e7794294d814d40b40de7be0d70ba08071bdaef0842",
+        "effectiveHash": "910b8295206542c777a1a375e7c836d6ce95e766f0e9cca68183a4fbe0dbcfd4",
         "targets": [
           ".agents/skills"
         ]
