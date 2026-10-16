@@ -68,8 +68,8 @@ test("physical canonical skills must be present in the lock", () => {
   );
 });
 
-test("FR-006：canonical 技能不再声明运行时投影根", () => {
-  assert.deepEqual(PROJECTION_ROOTS, []);
+test("FR-006：根只保留 Claude Code 需要的 .claude/skills 投影根", () => {
+  assert.deepEqual(PROJECTION_ROOTS, [".claude/skills"]);
 });
 
 test("nested SKILL.md files cannot bypass external skill registration", () => {

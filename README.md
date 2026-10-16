@@ -12,7 +12,7 @@
 
 ```text
 ├── .agents/skills/          ← 共享技能权威内容
-├── .codex/、.cursor/、.pi/  ← 技能投影与平台专属能力
+├── .claude/skills/          ← Claude Code 技能入口（指向 .agents/skills 的生成链接）
 ├── AGENTS.md                ← Agent 入口规则
 ├── CONTEXT.md               ← 唯一业务词汇表
 ├── yss-project.yaml         ← 仓库身份
@@ -53,7 +53,7 @@ yss init --profile spec --root /absolute/path/project --apply --plan-file /absol
 
 ## 模板配置取舍
 
-`.agents/skills` 是共享技能的权威内容；其他 Agent root 只保存同步投影和平台专属技能。共享技能只能在权威目录修改，随后运行：
+`.agents/skills` 是共享技能的权威内容；Codex、Cursor、Pi 直接读取它，Claude Code 读取生成的 `.claude/skills` 链接。共享技能只能在权威目录修改，随后运行：
 
 ```bash
 scripts/sync-skills

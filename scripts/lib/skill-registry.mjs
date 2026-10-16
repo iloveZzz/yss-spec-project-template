@@ -355,9 +355,17 @@ export function validateSkillRegistry(registry, { lock, compilerContract, lifecy
   }
   const roots = registry.agent_runtime_roots;
   if (!roots || typeof roots !== "object" || Array.isArray(roots)) fail("缺少 agent_runtime_roots");
-  const extraAgents = Object.keys(roots);
+  // 期望的运行时根由本树的投影根推出：根（spec）为 claude，尚未恢复投影的专职 Profile 为空。
+  const RUNTIME_OF_ROOT = { ".claude/skills": "claude", ".codex/skills": "codex", ".cursor/skills": "cursor", ".pi/skills": "pi" };
+  const expected = Object.fromEntries(PROJECTION_ROOTS.map((root) => [RUNTIME_OF_ROOT[root], root]));
+  for (const [agent, root] of Object.entries(expected)) {
+    if (roots[agent] !== root) fail(`agent_runtime_roots.${agent} 必须为 ${root}`);
+  }
+  const extraAgents = Object.keys(roots).filter((key) => !(key in expected));
   if (extraAgents.length) fail(`未知 Agent 运行时根: ${extraAgents.join(", ")}`);
-  if (PROJECTION_ROOTS.length) fail("agent_runtime_roots 与投影根清单不一致");
+  if (JSON.stringify(Object.values(expected).sort()) !== JSON.stringify([...PROJECTION_ROOTS].sort())) {
+    fail("agent_runtime_roots 与投影根清单不一致");
+  }
 
   const skills = registry.skills;
   if (!Array.isArray(skills) || skills.length === 0) fail("skills 不能为空");

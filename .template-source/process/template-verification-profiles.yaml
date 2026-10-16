@@ -658,7 +658,7 @@ profiles:
           - ".template-source/tooling/node/test/skill-supply-chain.test.mjs"
           - "scripts/lib/skill-supply-chain.mjs"
         depends_on: []
-        failure_mode: "无投影模型被旧断言拒绝，或 Skill 派生文件和引用规范化不一致"
+        failure_mode: "根投影根偏离 .claude/skills，或 Skill 派生文件和引用规范化不一致"
       - id: check.1ebcb1124ce67eb1
         run: "node --test scripts/fixtures/contract-efficiency/api-v2.test.mjs tests/api-contract-decision.test.mjs"
         group: implementation
@@ -854,7 +854,7 @@ profiles:
           - "scripts/fixtures/contract-efficiency/distribution-smoke.mjs"
           - ".template-source/distribution/bundle-profile.json"
         depends_on: []
-        failure_mode: "Claude Code 入口复制了 AGENTS.md 的内容、任何投影根（.claude/.codex/.cursor/.pi 的 skills）复活、注册表与锁重新登记运行时或投影根，或 hook 设置进入实例分发"
+        failure_mode: "Claude Code 入口复制了 AGENTS.md 的内容、.claude/skills 投影缺失或与 canonical 不一致、.codex/.cursor/.pi 投影复活、注册表与锁的 claude 运行时不一致，或 hook 设置进入实例分发"
       - id: check.explicit-invocation
         run: "node --test tests/explicit-invocation.test.mjs"
         group: feature-assets

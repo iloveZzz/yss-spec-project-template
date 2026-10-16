@@ -8,7 +8,8 @@ const SOURCE_ROOT = path.join(ROOT, ".agents/skills");
 const LOCK_PATH = path.join(ROOT, "skills-lock.json");
 const YSS_UI_MANIFEST_PATH = path.join(SOURCE_ROOT, ".yss-skills-manifest.json");
 
-export const PROJECTION_ROOTS = [];
+// Claude Code 只从 .claude/skills 发现项目技能（不读 .agents/skills），所以保留这一个投影根。
+export const PROJECTION_ROOTS = [".claude/skills"];
 function projectionRootsFor(lock) {
   const identityPath = path.join(ROOT, "yss-project.yaml");
   const isInstance = existsSync(identityPath) && /^repository_mode:\s*project-instance\s*$/m.test(readFileSync(identityPath, "utf8"));
