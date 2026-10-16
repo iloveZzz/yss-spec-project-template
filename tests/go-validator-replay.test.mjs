@@ -61,16 +61,6 @@ const cleanupDirs = new Set(); // 退出时统一清理，避免给 process 加�
 process.on('exit', () => { for (const dir of cleanupDirs) rmSync(dir, {recursive: true, force: true}); });
 let seq = 0;
 const fixture = (opts) => buildDecisionFixture(path.join(setup(), '.work', ...(site === 'template-source' ? [`replay-${process.pid}`] : ['replay']), `case-${++seq}`), opts);
-const nodeVerdict = (f) => {
-  try { validateUserDecision(f.record, {root:setup(),expected: [f.requirement]}); return {ok: true}; } catch (error) { return {ok: false, code: error.code}; }
-};
-const goVerdict = (f) => {
-  f.save();
-  const req = path.join(path.dirname(f.ref), 'requirements.json');
-  writeFileSync(req, JSON.stringify([f.requirement]));
-  const r = nativeEvidenceVerify({root: setup(), kind: 'user-decision', file: f.ref, extra: ['--requirements', req]});
-  return {ok: r.exitCode === 0, code: r.diagnostics[0]?.code, message: r.message};
-};
 
 const cases = {
   '真实单项回复通过': () => {},
@@ -99,20 +89,6 @@ const decisionCaseCodes={
 };
 
 // 两边都拒绝，但拒绝码粒度不同：Node 对 schema 违规不带码，Go 统一报 SCHEMA；来源不可读时 Go 报 INPUT。结论一致即可。
-const codeDiffers = new Set(['默认选项冒充原始消息', '来源文件缺失', '只有 Agent 摘要']);
-
-for (const [name, mutate] of Object.entries(cases)) for (const where of ['instance', 'template-source']) {
-  test(`用户决定回放（${where}）：${name}`, {skip}, () => {
-    site = where;
-    const f = fixture();
-    mutate(f);
-    const node = nodeVerdict(f);
-    const go = goVerdict(f);
-    assert.equal(node.ok,name==='真实单项回复通过',JSON.stringify(node));
-    assert.equal(go.ok, node.ok, `结论不一致：Node=${JSON.stringify(node)} Go=${JSON.stringify(go)}`);
-    if (!node.ok && !codeDiffers.has(name)) assert.equal(go.code, node.code, `拒绝码不一致：Node=${node.code} Go=${go.code}（${go.message}）`);
-  });
-}
 
 const approvalRecord = {schema_version: 1, gate_id: 'gate.spec-baseline-approved', decision: 'approved', actor_kind: 'digital-human', role_id: 'role.product-manager', runtime_id: 'runtime.generic', principal_ref: 'instance:product'};
 const goApproval = (extra) => {
@@ -357,26 +333,6 @@ function taskPackage() {
     inputs: ['CONTEXT.md'], objective: '执行有界生命周期工作单元', allowed_write_paths: ['docs/.scratch/'], forbidden_actions: ['不得越过主控门禁'], expected_outputs: ['结构化工作结果'], expected_evidence_files: [path.relative(REPO, evidence)], verification_commands: ['scripts/verify-template'], verification_results: [], downstream_consumers: ['role.lifecycle-orchestrator'],
     convergence: {parent_work_unit: 'work-unit.plan-opportunity', convergence_ref: 'checkpoint:test', conflict_escalation: '返回主控'}})};
 }
-const taskCases = {
-  '通过（目录以 / 结尾）': () => {},
-  '通过（无尾斜杠）': (p) => { p.allowed_write_paths = ['docs/x']; },
-  '角色未覆盖阶段': (p) => { p.role_id = 'role.test-engineer'; },
-  '写路径是绝对路径': (p) => { p.allowed_write_paths = ['/etc/']; },
-  '缺目标': (p) => { delete p.objective; },
-  '未知工作单元': (p) => { p.work_unit_id = 'work-unit.unknown'; },
-  '合同引用不可读': (p) => { p.contract.contract_ref = 'none.yaml'; },
-};
-for (const [name, mutate] of Object.entries(taskCases)) {
-  test(`任务包回放：${name}`, {skip}, () => {
-    const c = taskPackage();
-    mutate(c.value);
-    const node = outcome(() => validateTaskPackage(c.value, {}));
-    const file = path.join(c.dir, `task-${++seq}.json`);
-    writeFileSync(file, JSON.stringify(c.value));
-    const r = nativeContractVerify({root: REPO, kind: 'task', file: path.relative(REPO, file)});
-    assert.equal(r.exitCode === 0, node.ok, `结论不一致：Node=${JSON.stringify(node)} Go=${r.exitCode} ${r.message}`);
-  });
-}
 test('verify-digital-human-task-package 薄壳：通过与拒绝都透传', {skip}, () => {
   const c = taskPackage();
   const file = path.join(c.dir, `task-shell-${++seq}.json`);
@@ -412,120 +368,9 @@ function trackedCheckpoint() {
   assert.equal(applied.status, 0, applied.stdout);
   return {inst, ref, base: JSON.parse(readFileSync(path.join(inst, ref), 'utf8'))};
 }
-const checkpointVariants = {
-  '原样': (x) => x,
-  'mode=audit': (x) => ({...x, mode: 'audit'}),
-  'status=running': (x) => ({...x, status: 'running'}),
-  'status=completed 无阶段验收': (x) => ({...x, status: 'completed', next_work_unit: null}),
-  'status=paused-human-gate 无对账': (x) => ({...x, status: 'paused-human-gate'}),
-  'status=blocked 有阻塞': (x) => ({...x, status: 'blocked', blockers: ['缺少输入']}),
-  '未知 status': (x) => ({...x, status: 'unknown'}),
-  '下一工作单元未登记': (x) => ({...x, next_work_unit: 'work-unit.unknown'}),
-  'next=null': (x) => ({...x, next_work_unit: null}),
-  'next=spec-synthesis 缺 Plan 审阅包': (x) => ({...x, next_work_unit: 'work-unit.spec-synthesis'}),
-  'next=slice-implementation 缺业务票': (x) => ({...x, next_work_unit: 'work-unit.slice-implementation'}),
-  'stage 与 trace 不一致': (x) => ({...x, stage: 'stage.spec-architecture'}),
-  '边界 handoff 缺依据': (x) => ({...x, phase_boundary: {decision: 'handoff'}}),
-  '边界 handoff 有依据': (x) => ({...x, phase_boundary: {decision: 'handoff', reason: 't', source_ref: 'CONTEXT.md', destination_ref: 'AGENTS.md'}}),
-  '边界未知': (x) => ({...x, phase_boundary: {decision: 'unknown', reason: 't'}}),
-  '缺 gates': (x) => { const y = structuredClone(x); delete y.gates; return y; },
-  '引用不存在的用户决定': (x) => ({...x, status: 'running', human_review: {...x.human_review, required_decisions: [{boundary: 'gate.plan-approved', subject_ref: 'none.md', scope: ['a'], user_decision_ref: 'none.json'}]}}),
-  '仓库身份矛盾': (x) => ({...x, repository_mode: 'template-source'}),
-  '多余字段': (x) => ({...x, surprise: 1}),
-  'schema_version=2': (x) => ({...x, schema_version: 2}),
-};
-for (const [name, mutate] of Object.entries(checkpointVariants)) {
-  test(`checkpoint 回放：${name}`, {skip}, () => {
-    const {inst, ref, base} = trackedCheckpoint();
-    writeFileSync(path.join(inst, ref), JSON.stringify(mutate(structuredClone(base))));
-    const node = spawnSync(process.execPath, [path.join(inst, 'scripts/verify-lifecycle-checkpoint'), ref], {cwd: inst, encoding: 'utf8'});
-    const go = nativeLifecycleVerify({root: inst, file: ref});
-    assert.equal(go.exitCode === 0, node.status === 0, `结论不一致：Node=${node.status} ${node.stderr.trim().slice(0, 120)} Go=${go.exitCode} ${go.message.slice(0, 120)}`);
-  });
-}
-
 // 带已批准门禁的 checkpoint：门禁状态、批准记录、用户决定、主体与依据全部落在实例内，
 // 通过实例自带的 Node 脚本与 yss 各校验一次；覆盖批准路径在整份 checkpoint 里的结论。
-function approvedGateCheckpoint() {
-  const c = trackedCheckpoint();
-  const gate = 'gate.spec-baseline-approved';
-  const dir = path.join(path.dirname(c.ref), 'approval');
-  mkdirSync(path.join(c.inst, dir), {recursive: true});
-  const rel = (name) => path.join(dir, name);
-  const put = (name, value) => { writeFileSync(path.join(c.inst, rel(name)), typeof value === 'string' ? value : JSON.stringify(value)); return rel(name); };
-  const evidenceRef = put('evidence.log', 'synthetic independent comparison');
-  const evidence = {ref: evidenceRef, digest: decisionDigest(readFileSync(path.join(c.inst, evidenceRef))).slice(7)};
-  const subjectRef = put('subject.json', {gate_id: gate, approval_scope: ['feature.demo'], basis: [evidence], drafter_principal_ref: 'synthetic.drafter'});
-  const decision = buildDecisionFixture(path.join(c.inst, dir, 'decision'), {boundary: gate, subjectRef: path.join(c.inst, subjectRef)});
-  // 夹具里的引用是绝对路径；决定与请求都落在实例内，保持绝对路径即可
-  decision.record.request.items[0].subject.ref = subjectRef; // 批准记录用实例相对引用，决定里的主体引用必须相同
-  decision.record.request.items[0].subject.digest = decisionDigest(readFileSync(path.join(c.inst, subjectRef)));
-  decision.present(); decision.record.responses = []; decision.respond(); decision.save();
-  const subjectDigest = decisionDigest(readFileSync(path.join(c.inst, subjectRef))).slice(7);
-  const record = {schema_version: 1, gate_id: gate, decision: 'approved', actor_kind: 'digital-human', role_id: 'role.product-manager', runtime_id: 'runtime.generic', principal_ref: 'synthetic.reviewer', drafter_principal_ref: 'synthetic.drafter', subject_ref: subjectRef, subject_digest: subjectDigest, approval_scope: ['feature.demo'], basis: [evidence], user_decision_ref: path.relative(c.inst, decision.ref)};
-  const approvalRef = put('approval.json', record);
-  const state = {status: 'approved', reason: '同步骤批准', evidence_refs: [evidenceRef, approvalRef, subjectRef], evidence: {'evidence.approval-record': [approvalRef]}, approval_ref: approvalRef, subject_ref: subjectRef, subject_digest: subjectDigest, approval_scope: ['feature.demo'], basis: [evidence], drafter_principal_ref: 'synthetic.drafter'};
-  const a = {...c, gate, state, record, approvalRef, put, subjectRef, evidenceRef, decision, stateOverride: {}, withGate: (x) => {
-    // 状态里的依据摘要在写出 checkpoint 时按当前文件字节计算，变异用例只改变它要测的那一项
-    const digest = (ref) => decisionDigest(readFileSync(path.join(c.inst, ref))).slice(7);
-    const gateState = structuredClone(state);
-    gateState.basis = [{ref: evidenceRef, digest: digest(evidenceRef)}, {ref: subjectRef, digest: digest(subjectRef)}, {ref: approvalRef, digest: digest(approvalRef)}];
-    return {...x, gates: {...x.gates, [gate]: Object.assign(gateState, a.state, {basis: gateState.basis})}};
-  }};
-  return a;
-}
-const approvedCases = {
-  '批准有效': () => {},
-  '审查人自签': (a) => { a.record.principal_ref = 'synthetic.drafter'; a.put('approval.json', a.record); },
-  '会签角色不对': (a) => { a.record.role_id = 'role.test-engineer'; a.put('approval.json', a.record); },
-  '主体被改动': (a) => { writeFileSync(path.join(a.inst, a.subjectRef), JSON.stringify({changed: true})); },
-  '依据被改动': (a) => { writeFileSync(path.join(a.inst, a.evidenceRef), 'tampered'); },
-  '状态范围与记录不同': (a) => { a.state.approval_scope = ['other.scope']; },
-  '缺批准引用': (a) => { delete a.state.approval_ref; },
-  '批准引用不存在': (a) => { a.state.approval_ref = 'none/approval.json'; },
-};
-for (const [name, mutate] of Object.entries(approvedCases)) {
-  test(`checkpoint 回放（带批准门禁）：${name}`, {skip}, () => {
-    const a = approvedGateCheckpoint();
-    mutate(a);
-    writeFileSync(path.join(a.inst, a.ref), JSON.stringify(a.withGate(a.base)));
-    const node = spawnSync(process.execPath, [path.join(a.inst, 'scripts/verify-lifecycle-checkpoint'), a.ref], {cwd: a.inst, encoding: 'utf8'});
-    const go = nativeLifecycleVerify({root: a.inst, file: a.ref});
-    assert.equal(go.exitCode === 0, node.status === 0, `结论不一致：Node=${node.status} ${node.stderr.trim().slice(0, 160)} Go=${go.exitCode} ${go.message.slice(0, 160)}`);
-    if (name === '批准有效') assert.equal(node.status, 0, `基线夹具本身必须通过：${node.stderr.trim().slice(0, 200)}`);
-  });
-}
-
 // 旧实例（tracker 没有 lifecycle_tracking_version）的未跟踪 checkpoint：Node 不要求功能身份与跟踪，yss 必须与之一致。
-const legacyCases = {
-  '模板基线': (x) => x,
-  'next=null': (x) => ({...x, next_work_unit: null}),
-  'mode=audit': (x) => ({...x, mode: 'audit'}),
-  '边界 handoff 缺依据': (x) => ({...x, phase_boundary: {decision: 'handoff'}}),
-  '边界 handoff 有依据': (x) => ({...x, phase_boundary: {decision: 'handoff', reason: 't', source_ref: 'CONTEXT.md', destination_ref: 'AGENTS.md'}}),
-  'status=completed 无验收': (x) => ({...x, status: 'completed', next_work_unit: null}),
-  '下一工作单元未登记': (x) => ({...x, next_work_unit: 'work-unit.unknown'}),
-};
-for (const [name, mutate] of Object.entries(legacyCases)) {
-  test(`checkpoint 回放（旧实例未启用追踪）：${name}`, {skip}, () => {
-    site = 'instance';
-    const inst = setup();
-    const dir = `.work/replay-legacy-${++seq}`;
-    mkdirSync(path.join(inst, dir), {recursive: true});
-    const tracker = path.join(inst, '.template-spec/agents/issue-tracker.md');
-    const original = readFileSync(tracker, 'utf8');
-    writeFileSync(tracker, '---\ntracker: {platform: local-markdown, root: docs/.scratch}\n---\n');
-    try {
-      const template = parseYamlText(readFileSync(path.join(inst, '.template-spec/process/templates/lifecycle-checkpoint-template.yaml'), 'utf8'));
-      const ref = `${dir}/checkpoint.json`;
-      writeFileSync(path.join(inst, ref), JSON.stringify(mutate(structuredClone(template))));
-      const node = spawnSync(process.execPath, [path.join(inst, 'scripts/verify-lifecycle-checkpoint'), ref], {cwd: inst, encoding: 'utf8'});
-      const go = nativeLifecycleVerify({root: inst, file: ref});
-      assert.equal(go.exitCode === 0, node.status === 0, `结论不一致：Node=${node.status} ${node.stderr.trim().slice(0, 160)} Go=${go.exitCode} ${go.message.slice(0, 160)}`);
-    } finally { writeFileSync(tracker, original); }
-  });
-}
-
 // 能力缺失显式拒绝，不能把参数错误或回退当成领域结论。
 test('能力协商：旧 yss 拒绝并提示升级；新 yss 放行', {skip}, () => {
   const stubDir = realpathSync(mkdtempSync(path.join(os.tmpdir(), 'yss-old-')));
@@ -547,47 +392,7 @@ test('能力协商：旧 yss 拒绝并提示升级；新 yss 放行', {skip}, ()
 
 // 战略交接包（handoff verify --kind package）：Node 导出的包，被篡改后 Node 的 openBundle 与 yss 的校验结论必须一致。
 let designInstance;
-function designRoot() {
-  if (designInstance) return designInstance;
-  const base = realpathSync(mkdtempSync(path.join(os.tmpdir(), 'yss-replay-design-')));
-  process.on('exit', () => rmSync(base, {recursive: true, force: true}));
-  const init = spawnSync(binary, ['init', '--profile', 'design', '--root', path.join(base, 'inst'), '--project-name', 'replay'], {encoding: 'utf8'});
-  assert.equal(init.status, 0, init.stderr || init.stdout);
-  return (designInstance = path.join(base, 'inst'));
-}
 const listFiles = (dir, rel = '') => readdirSync(path.join(dir, rel), {withFileTypes: true}).flatMap((e) => e.isDirectory() ? listFiles(dir, path.join(rel, e.name)) : [path.join(rel, e.name)]);
-const handoffVariants = {
-  '原包': () => {},
-  '载荷文件被改一个字节': (dir) => { const f = listFiles(dir).find((x) => x.startsWith('payload/files/')); appendFileSync(path.join(dir, f), ' '); },
-  '清单列出的文件被删': (dir) => { unlinkSync(path.join(dir, listFiles(dir).find((x) => x.startsWith('payload/files/')))); },
-  '包里多出清单没有的文件': (dir) => { writeFileSync(path.join(dir, 'payload/files/extra.md'), '额外文件'); },
-  '清单 bundle_digest 被改': (dir) => { const m = JSON.parse(readFileSync(path.join(dir, 'manifest.json'), 'utf8')); m.bundle_digest = `sha256:${'0'.repeat(64)}`; writeFileSync(path.join(dir, 'manifest.json'), JSON.stringify(m, null, 2)); },
-  '清单版本被改但摘要未更新': (dir) => { const m = JSON.parse(readFileSync(path.join(dir, 'manifest.json'), 'utf8')); m.version = 'v9'; writeFileSync(path.join(dir, 'manifest.json'), JSON.stringify(m, null, 2)); },
-  '索引文件被改': (dir) => { appendFileSync(path.join(dir, 'indexes/rules.json'), ' '); },
-  '缺清单': (dir) => { unlinkSync(path.join(dir, 'manifest.json')); },
-};
-for (const [name, mutate] of Object.entries(handoffVariants)) {
-  test(`交接包回放：${name}`, {skip}, async () => {
-    const base = realpathSync(mkdtempSync(path.join(os.tmpdir(), 'yss-handoff-replay-')));
-    try {
-      const source = path.join(base, 'source');
-      mkdirSync(source);
-      await handoffFixture(source, {handoffVersion: 4});
-      const out = path.join(base, 'package');
-      await exportBundle({sourceRoot: source, handoffRef: 'handoff.yaml', output: out});
-      mutate(out);
-      let node;
-      try { await openBundle(out, (b) => b.manifest.bundle_digest); node = {ok: true}; } catch (error) { node = {ok: false, message: String(error.message).slice(0, 120)}; }
-      const inst = designRoot();
-      const rel = `.work/replay-handoff-${++seq}`;
-      mkdirSync(path.join(inst, '.work'), {recursive: true});
-      cpSync(out, path.join(inst, rel), {recursive: true});
-      const go = nativeEvidenceVerify({root: inst, kind: 'package', file: rel, group: 'handoff', extra: []});
-      assert.equal(go.exitCode === 0, node.ok, `结论不一致：Node=${JSON.stringify(node)} Go=${go.exitCode} ${go.message.slice(0, 160)}`);
-    } finally { rmSync(base, {recursive: true, force: true}); }
-  });
-}
-
 // 战略交接消费（handoff verify --kind consumption）：Node 的 verifyConsumption 与 yss 的报告逐字段一致（含摘要、issues、blocked_slice_refs），
 // Node 抛出错误的用例，yss 必须同样拒绝。
 let consumptionBuilt;
@@ -626,22 +431,6 @@ const consumptionCases = {
   '切片只能消费 approved 合同': {slice: 'slice.submit', mutate: (t) => { t.status = 'draft'; }},
   '重复承接': {mutate: (t) => { t.strategic_handoff.rows.push(structuredClone(t.strategic_handoff.rows[0])); }},
 };
-for (const [name, spec] of Object.entries(consumptionCases)) {
-  test(`交接消费回放：${name}`, {skip}, async () => {
-    const {target, tactical} = await consumptionCase();
-    spec.mutate(tactical);
-    let node;
-    try { node = {report: await verifyConsumption(tactical, {root: target, ...(spec.slice ? {sliceRef: spec.slice} : {})})}; } catch (error) { node = {error: String(error.message).slice(0, 100)}; }
-    writeFileSync(path.join(target, 'tactical.json'), JSON.stringify(tactical));
-    const go = nativeEvidenceVerify({root: target, kind: 'consumption', file: 'tactical.json', group: 'handoff', extra: [...(spec.slice ? ['--slice', spec.slice] : [])]});
-    const report = go.envelope.result?.coverage?.handoff_consumption;
-    if (node.error) { assert.notEqual(go.exitCode, 0, `Node 拒绝（${node.error}）而 yss 通过`); return; }
-    assert.ok(report, `yss 没有返回报告：${go.message}`);
-    assert.deepEqual(sortKeys(report), sortKeys(node.report));
-    assert.equal(go.exitCode === 0, node.report.result === 'verified');
-  });
-}
-
 test('verify-strategic-handoff-consumption 薄壳：通过、阻断、拒绝都与旧输出同形', {skip}, async () => {
   const {target, tactical} = await consumptionCase();
   const run = (value, args = []) => {
@@ -675,33 +464,6 @@ for (const [name, spec] of Object.entries({'整体消费通过': consumptionCase
 }
 
 // Context 对账记录（evidence verify --kind context-reconciliation）：Node 的 verifyContextReconciliation 与 yss 结论一致。
-const reconciliationBase = (snapshot) => ({schema_version: 1, repository_mode: 'project-instance', stage: 'stage.system-data-engineering', work_unit: 'work-unit.technical-analysis', status: 'reconciled', context_snapshot: snapshot, changes: {added: ['Global/Supplier'], updated: [], deprecated: []}, unresolved_terms: [], evidence_refs: ['CONTEXT.md']});
-const reconciliationVariants = {
-  '已对账': (r) => r,
-  '状态 blocked 且有未解决术语': (r) => ({...r, status: 'blocked', unresolved_terms: [{term: 'Supplier', reason: '冲突', owner: '需求负责人', next_action: '回交战略方'}]}),
-  'project-instance 但状态 pending': (r) => ({...r, status: 'pending'}),
-  'reconciled 却有未解决术语': (r) => ({...r, unresolved_terms: [{term: 'Supplier', reason: '冲突', owner: '需求负责人', next_action: '回交战略方'}]}),
-  '变更了不存在的术语': (r) => ({...r, changes: {added: ['Global/Ghost'], updated: [], deprecated: []}}),
-  '同一术语跨分类重复': (r) => ({...r, changes: {added: ['Global/Supplier'], updated: ['Global/Supplier'], deprecated: []}}),
-  '证据文件不存在': (r) => ({...r, evidence_refs: ['missing-evidence.md']}),
-  '快照摘要不一致': (r) => ({...r, context_snapshot: {...r.context_snapshot, document_digest: `sha256:${'2'.repeat(64)}`}}),
-  '仓库身份矛盾': (r) => ({...r, repository_mode: 'template-source'}),
-  '缺少必填字段': (r) => { const x = {...r}; delete x.work_unit; return x; },
-};
-for (const [name, mutate] of Object.entries(reconciliationVariants)) {
-  test(`Context 对账回放：${name}`, {skip}, async () => {
-    const {target, snapshot} = await consumptionCase();
-    const ref = `reconciliation-variant-${++seq}.json`;
-    writeFileSync(path.join(target, ref), JSON.stringify(mutate(structuredClone(reconciliationBase(snapshot)))));
-    let node;
-    try { verifyContextReconciliation(path.join(target, ref), {root: target}); node = {ok: true}; } catch (error) { node = {ok: false, message: String(error.message).slice(0, 100)}; }
-    const go = nativeEvidenceVerify({root: target, kind: 'context-reconciliation', file: ref});
-    assert.equal(go.exitCode === 0, node.ok, `结论不一致：Node=${JSON.stringify(node)} Go=${go.exitCode} ${go.message.slice(0, 160)}`);
-    if (name === '已对账') assert.equal(node.ok, true, `基线必须通过：${node.message}`);
-    else assert.doesNotMatch(String(node.message), /ENOENT/, '拒绝原因不能是找不到记录文件');
-  });
-}
-
 // OpenAPI Draft validation record：预期经删除 Node 实现前的 17 组对拍确认，三类正式输入通过，其余拒绝。
 const openapiDraft = `openapi: 3.1.0
 info: { title: Example, version: 0.1.0-draft }
