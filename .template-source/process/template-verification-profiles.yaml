@@ -373,6 +373,8 @@ profiles:
           - scripts/lib/*.mjs
           - scripts/verify-import-direction
           - tests/import-direction.test.mjs
+          - scripts/fixtures/spec-baseline/package.mjs
+          - scripts/fixtures/spec-baseline/scenarios.mjs
           - .template-source/process/node-core-layer.json
           - .template-source/scripts/lib/*.mjs
         depends_on: []
