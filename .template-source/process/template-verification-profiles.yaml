@@ -930,6 +930,17 @@ profiles:
           - "tests/ensure-native-yss.test.mjs"
         depends_on: []
         failure_mode: "本机构建的固定 yss 与固定文件摘要不符仍被导出、缓存被篡改或源码不干净仍复用，或 Go 版本不符时没有拒绝"
+      - id: check.cli-core-retirement
+        run: "node --test tests/cli-core-retirement.test.mjs"
+        group: feature-assets
+        resources: [ "native-cli" ]
+        inputs_complete: true
+        input_patterns:
+          - "tests/cli-core-retirement.test.mjs"
+          - ".template-source/distribution/yss-cli-pin.json"
+          - ".template-source/scripts/lib/native-yss.mjs"
+        depends_on: []
+        failure_mode: "固定的 yss 的同步、回滚在用户修改过受管治理工具时覆盖用户文件，或碰撞拒绝仍写入项目"
       - id: check.native-smoke
         run: "node --test tests/native-smoke.test.mjs"
         group: feature-assets
