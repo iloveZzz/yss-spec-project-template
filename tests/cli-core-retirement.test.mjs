@@ -83,16 +83,17 @@ test('原生同步与回滚保留用户文件，碰撞拒绝不写入项目', t 
     put(target, '.github/workflows/user.yml', 'name: User\n');
     put(target, '.git/index', '用户暂存索引\n', 0o600);
 
-    // Explicit native migration must reject a user-edited governance tool even
+    // Explicit native sync must reject a user-edited governance tool even
     // though its recorded older baseline is eligible for a managed upgrade.
+    // (yss 2.3 removed the separate migrate command; sync plan/apply is the upgrade path.)
     const managedPath = path.join(target, managedRef);
     fs.appendFileSync(managedPath, '// user governance customization\n');
-    const customized = tree(target), collisionPlan = path.join(base, `${profile}.collision-migrate.json`);
-    const migration = runNative(['migrate', 'plan', '--profile', profile, '--root', target, '--out', collisionPlan]).result;
-    assert.ok(migration.conflicts.includes(managedRef), `${profile}: 迁移必须识别用户治理修改`);
-    assert.deepEqual(tree(target), customized, `${profile}: 迁移预演不能写入项目`);
-    runNative(['migrate', 'apply', '--profile', profile, '--root', target, '--plan-file', collisionPlan], { expectedCode: 'CONFLICT' });
-    assert.deepEqual(tree(target), customized, `${profile}: 迁移拒绝不能覆盖用户治理文件`);
+    const customized = tree(target), collisionPlan = path.join(base, `${profile}.collision-sync.json`);
+    const migration = runNative(['sync', '--profile', profile, '--root', target, '--plan', '--out', collisionPlan]).result;
+    assert.ok(JSON.stringify(migration).includes(managedRef), `${profile}: 同步必须识别用户治理修改`);
+    assert.deepEqual(tree(target), customized, `${profile}: 同步预演不能写入项目`);
+    runNative(['sync', '--profile', profile, '--root', target, '--apply', '--plan-file', collisionPlan], { expectedCode: 'CONFLICT' });
+    assert.deepEqual(tree(target), customized, `${profile}: 同步拒绝不能覆盖用户治理文件`);
     // Use a separate unmodified baseline scenario for the actual upgrade and
     // rollback; the conflict above never grants authority to overwrite it.
     fs.writeFileSync(managedPath, previousTool);
