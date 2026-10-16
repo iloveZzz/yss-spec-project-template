@@ -16,3 +16,4 @@ disable-model-invocation: true
 6. 运行专项入口要求的最小充分检查。仓库实际采用 commitlint 时通过 stdin 校验完整消息且退出 0，否则执行已有 hook/贡献规范，不临时安装工具。
 7. 提交前重新检查 `git diff --cached --check`、name-status 和完整暂存差异；正常执行 hooks，拒绝时修复，不绕过。hook 改文件后核对实际差异。
 8. 提交后检查 `git show --stat --oneline --decorate HEAD` 和 `git status --short`，报告 hash、消息、验证和剩余工作。生成消息或审查任务不执行提交。
+9. CLI 支持 `yss git` 时，分支、提交、钩子与推送可经其 `--plan`/`--apply` 执行，规则与授权分级读 `.template-spec/process/git-workflow.md`；上述检查仍先完成，`--paths` 只列用户意图内的明确路径，推送须用户确认远端。
