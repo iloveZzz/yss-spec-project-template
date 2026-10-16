@@ -453,60 +453,6 @@
     },
     {
       "repository": "cli",
-      "file": "internal/project/work_layout.go",
-      "kind": "content",
-      "text": "\t\t\tworkCheckReferences(doc.value, nil, inputs, nil, ref, \"docs/.scratch\", \"\", func(code, reason string) { closure = domain.Fail(code, reason) })",
-      "count": 1,
-      "category": "compatibility",
-      "reason": "集中定义历史扫描根，保留旧配置兼容"
-    },
-    {
-      "repository": "cli",
-      "file": "internal/project/work_layout.go",
-      "kind": "content",
-      "text": "\t\tif !inWork && !bytes.Contains(raw, []byte(l.Root+\"/\")) && !bytes.Contains(raw, []byte(\"docs/.scratch/\")) {",
-      "count": 1,
-      "category": "compatibility",
-      "reason": "集中定义历史扫描根，保留旧配置兼容"
-    },
-    {
-      "repository": "cli",
-      "file": "internal/project/work_layout.go",
-      "kind": "content",
-      "text": "\t\treturn nil, domain.Fail(\"WORK_LAYOUT_SOURCE\", \"本版只迁移 docs/.scratch 到 .work\")",
-      "count": 1,
-      "category": "compatibility",
-      "reason": "集中定义历史扫描根，保留旧配置兼容"
-    },
-    {
-      "repository": "cli",
-      "file": "internal/project/work_layout.go",
-      "kind": "content",
-      "text": "\tif layout.Root != worklayout.DefaultRoot && layout.Root != \"docs/.scratch\" {",
-      "count": 1,
-      "category": "compatibility",
-      "reason": "集中定义历史扫描根，保留旧配置兼容"
-    },
-    {
-      "repository": "cli",
-      "file": "internal/project/work_layout_resolution.go",
-      "kind": "content",
-      "text": "\t\treturn strings.Contains(v, \"docs/.scratch/\")",
-      "count": 1,
-      "category": "compatibility",
-      "reason": "显式迁移的源根校验及历史引用闭包检查"
-    },
-    {
-      "repository": "cli",
-      "file": "internal/project/work_layout_resolution.go",
-      "kind": "content",
-      "text": "\tif workContainsCurrentSource(current.value, \"\") || strings.Contains(string(current.body), \"docs/.scratch/\") {",
-      "count": 1,
-      "category": "compatibility",
-      "reason": "显式迁移的源根校验及历史引用闭包检查"
-    },
-    {
-      "repository": "cli",
       "file": "internal/worklayout/layout.go",
       "kind": "content",
       "text": "var HistoricalRoots = []string{\"docs/.scratch\", \".scratch\", \"docs/requirements/tickets\"}",

@@ -51,8 +51,11 @@ test('四 Profile 真实原生受管升级执行非空事务、重新规划幂�
   const artifact=produceCliArtifact({root,source:tuple,directory:path.join(base,family,'artifact'),run});
   const result=verifyInstalledCliMigration({artifact,directory:path.join(base,family,'upgrade'),run});
   assert.equal(result.status,'passed');assert.equal(result.migration_fixture,'native-managed-upgrade');
-  for(const action of ['plan','apply','rollback'])assert.ok(commands.some(row=>row.file===artifact.binary&&row.args[0]==='migrate'&&row.args[1]===action),`${family}: ${action}`);
-  assert.equal(commands.filter(row=>row.args[0]==='migrate'&&row.args[1]==='plan').length,2);
+  // yss 2.3 起没有 migrate：升级是 sync 的计划与应用，回退是 rollback --apply。
+  const sync=commands.filter(row=>row.file===artifact.binary&&row.args[0]==='sync');
+  assert.ok(sync.some(row=>row.args.includes('--apply')),`${family}: sync apply`);
+  assert.ok(commands.some(row=>row.file===artifact.binary&&row.args[0]==='rollback'&&row.args.includes('--apply')),`${family}: rollback`);
+  assert.ok(!commands.some(row=>row.args[0]==='migrate'),`${family}: migrate 已移除`);
  }
 });
 
