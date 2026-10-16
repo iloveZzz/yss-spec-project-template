@@ -219,15 +219,6 @@
     },
     {
       "repository": ".",
-      "file": "tests/go-validator-replay.test.mjs",
-      "kind": "content",
-      "text": "    writeFileSync(tracker, '---\\ntracker: {platform: local-markdown, root: docs/.scratch}\\n---\\n');",
-      "count": 1,
-      "category": "compatibility-test",
-      "reason": "旧实例未启用追踪的 checkpoint 同形回放，临时设置并恢复历史 tracker 根"
-    },
-    {
-      "repository": ".",
       "file": "tests/work-layout.test.mjs",
       "kind": "content",
       "text": "    assert.doesNotThrow(() => assertNoTemplateReferences({ spec_ref: `${base}/reports/spec.md`, explanation: '历史说明 docs/.scratch/example/spec.md' }, { root }));",
