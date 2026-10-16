@@ -86,14 +86,20 @@ scripts/contract render --checkpoint .work/<feature>/checkpoint.yaml
 scripts/contract prepare-review <旧资产> <新资产> --kind domain-strategy --checkpoint .work/<feature>/checkpoint.yaml --json
 ```
 
-策略由 `reading-policy.yaml` 持有；缺失或 `manual` 保留旧行为。实际人工阅读试验通过前，模板默认 `manual`。`apply-enable` 只将计划绑定的 checkpoint 登记为托管；其他功能不会被自动接管。领域与阶段决策页消费 checkpoint.artifacts 中对应 `artifact.domain-strategy`、`artifact.stage-decision-package` 的明确 ref；不扫描目录推断资产。其他未来资产保留原入口。
+策略由 `reading-policy.yaml` 持有；缺失或 `manual` 保留旧行为。实际人工阅读试验通过前，模板默认 `manual`。`apply-enable` 只将计划绑定的 checkpoint 登记为托管；其他功能不会被自动接管。
+
+托管阅读的渲染、校验与启用由固定的 `yss reading render|check-views|plan-enable|apply-enable|affected` 完成，`scripts/contract` 和 `scripts/lib/reading-view-bundle.mjs` 只转发。当前 `yss` 缺少 `reading.views.v1`、`reading.render.v1`、`reading.enable.v1` 时，托管实例不可用并提示升级 `yss`，不会回退到 Node 实现。手动实例（策略缺失、`manual`，或 checkpoint 不在托管列表）在 Node 侧短路：不协商能力、不调用 `yss reading`，也不依赖新版 `yss`；显式的 `render`、`plan-enable`、`apply-enable` 与 `check-views --required` 属于主动使用托管能力，需要新版 `yss`。领域与阶段决策页消费 checkpoint.artifacts 中对应 `artifact.domain-strategy`、`artifact.stage-decision-package` 的明确 ref；不扫描目录推断资产。其他未来资产保留原入口。
 
 输出放在功能目录 `reading/`：`status.review.md`、对应合同审阅页、`.manifest.json`；正式差异放在 `reading/changes/`。`map.md` 只维护 `YSS-READING:BEGIN/END` 标记范围，保留外部人工正文。manifest 只存依赖、代码与输出摘要和生成诊断，不保存可复用批准。
 
-`check-views` 核对源字节、明确引用、术语、schema、生成器依赖、输出和导航块；只读且不重建。`current` 表示呈现一致性，不代表业务门禁通过；`diagnostics` 中原资产的阻断仍由资产所有者处理。正式准备 API 对托管过期包返回缺口；CLI `prepare-review` 在准备前重建，实际流转代码再次只读检查。`lifecycle-status` 只报告阅读可用性。
+`check-views` 核对源字节、明确引用、术语、schema、渲染所读 Schema、输出和导航块；只读且不重建。`current` 表示呈现一致性，不代表业务门禁通过；`diagnostics` 中原资产的阻断仍由资产所有者处理。正式准备 API 对托管过期包返回缺口；CLI `prepare-review` 在准备前重建，实际流转代码再次只读检查。`lifecycle-status` 只报告阅读可用性。
 
-生成使用排他锁、恢复日志、逐文件原子替换，manifest 最后提交。人工改动、同名非托管文件、符号链接、坏 manifest 或导航块会保留并报冲突。先保存人工改动，再恢复对应旧生成物及 manifest 后重建；不提供覆盖式 force。检测到历史输出已不再登记时要求人工确认处置，不静默删除。
+`yss` 把输出、清单与 `map.md` 导航区放进同一个项目事务：提交后用新会话完整重新核验，不一致整体回滚；启用时阅读策略与全部阅读文件同样在一个事务里写入。人工改动、同名非托管文件、符号链接、坏 manifest 或导航块会保留并报冲突（`READING_OUTPUT_CONFLICT`、`READING_MANIFEST_INVALID`、`READING_NAVIGATION_CONFLICT`）。先保存人工改动，再恢复对应旧生成物及 manifest 后重建；不提供覆盖式 force。检测到历史输出已不再登记时要求人工确认处置（`READING_RETIRED_OUTPUT`），不静默删除。来源有阻断诊断时不写任何文件，而不是写出诊断视图。
 
-阶段追踪事务成功后调用共同 `finalizeReading`；`source_operation: applied` 与 `reading_update.status: failed` 可以同时出现。此时源已应用，只修复阅读冲突并运行 render，不能为了补阅读页重做源事务。进程中断后的生成日志只恢复仍匹配本轮字节的派生文件；他人改动会留下恢复冲突。
+清单有两代：`schema_version: 1` 的 `renderer` 登记 Node 工具闭包摘要，`schema_version: 2` 的 `renderer` 为 `{id: "yss-reading", rules_version}`，依赖只含项目文件与渲染所读 Schema，二者由 `reading-manifest.schema.json` 的 `oneOf` 接受。`yss` 在实例的清单 schema 接受 v2 时写 v2，否则写 v1；已有 v2 清单不会降级。旧 v1 清单在 Node 闭包文件已不存在时报 `reading-manifest-migration-required`：先运行 `yss reading render --all --dry-run` 确认只有清单变化，再运行 `yss reading render --all` 迁移。`rules_version` 高于当前 `yss` 时按能力不可用拒绝，低于当前时要求重新渲染。
+
+Node 渲染器遗留的 `reading/.lock` 与 `reading/.transaction.json` 不再被恢复或覆盖：`yss reading render` 拒绝（`READING_LEGACY_JOURNAL`），`check-views` 视为更新未完成。需要先用原渲染器恢复或确认后手动清理。缺少 `feature_id` 的 legacy 布局 checkpoint 不能作为托管阅读：`yss` 以 `TRACKING_FEATURE` 拒绝，`check-views` 报过期；补写 `feature_id` 并在功能 `map.md` 登记，或把策略改回 `manual`。`plan-enable` 写出的计划是 `yss` 格式（`kind: reading-enable-plan`，带 `plan_digest`），旧 Node 计划需重新生成。
+
+阶段追踪事务成功后调用共同 `finalizeReading`（托管实例转发 `yss reading render`；`yss stage apply` 自己提交后同样刷新托管阅读）；`source_operation: applied` 与 `reading_update.status: failed` 可以同时出现。此时源已应用，只修复阅读冲突并运行 render，不能为了补阅读页重做源事务。进程中断后由 `yss recover` 按项目事务恢复。
 
 迁移预览核对计划、内嵌 after 和 Base64 备份摘要；缺少匹配备份时显示“无法比较旧内容”，不以当前文件替代。单文件解码预览上限 2 MiB，超出时返回诊断，不截断或执行内容。receipt 只说明原事务状态。差异按已有稳定 ID 对齐，数组重排独立显示；`binding-change` 和 `unclassified` 仍须审阅，不自动沿用批准。

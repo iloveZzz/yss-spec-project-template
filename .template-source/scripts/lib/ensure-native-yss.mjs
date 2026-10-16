@@ -49,6 +49,11 @@ export function buildPinned({ cacheRoot, pin, platform = platformKey(), run = de
   if (step("git", ["rev-parse", "HEAD"], "读取提交失败", { cwd: source }).stdout !== pin.commit) fail("检出的提交与固定提交不一致");
   const goMod = /^go (\d+\.\d+\.\d+)$/m.exec(fs.readFileSync(path.join(source, "go.mod"), "utf8"))?.[1];
   if (goMod !== pin.go_version) fail(`固定提交的 go.mod 要求 Go ${goMod}，与固定文件的 go_version ${pin.go_version} 不一致`);
+  // 内嵌 Bundle 归档自 yss-cli 78cf81a 起不入库：构建前按其来源锁生成，并核对入库摘要。
+  if (fs.existsSync(path.join(source, "tools/fetch-bundle.mjs"))) {
+    log("生成内嵌 Bundle（tools/fetch-bundle.mjs）");
+    step("node", [path.join(source, "tools/fetch-bundle.mjs")], "生成内嵌 Bundle 失败", { cwd: source });
+  }
   log("构建（tools/build-candidate.mjs）");
   step("node", [path.join(source, "tools/build-candidate.mjs"), "--root", source, "--out", out], "构建失败", { cwd: source, env: { ...process.env, CGO_ENABLED: "0" } });
   const binary = path.join(out, "yss"), actual = sha256(fs.readFileSync(binary));

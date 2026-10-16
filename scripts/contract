@@ -1,7 +1,5 @@
 #!/usr/bin/env node
 import path from 'node:path';
-import {readFileSync,writeFileSync} from 'node:fs';
-import {safe} from './lib/strategic-handoff-io.mjs';
 import {renderReadingBundle,checkReadingViews,readingCheckpointsForAsset,saveReadingComparison,planEnableReading,applyEnableReading} from './lib/reading-view-bundle.mjs';
 import {viewContract,diffContract} from './lib/contract-views.mjs';
 import {prepareContractReview} from './lib/contract-review-preparation.mjs';
@@ -16,8 +14,7 @@ try{
  const config={kind:options.kind,include_reading_model:options.model===true,root:path.resolve(options.root||process.cwd()),profile:options.profile||'review',unit_id:options.unit,task_layout:options['task-layout']||'legacy',beforeRoot:options['before-root']?path.resolve(options['before-root']):undefined,decision_ref:options.decision};
  if(['render','check-views','plan-enable','apply-enable'].includes(mode)){
   if(mode==='apply-enable'?positional.length!==1:!options.checkpoint||positional.length)throw Error('reading-command-arguments-invalid');
-  const result=mode==='render'?renderReadingBundle(config.root,options.checkpoint):mode==='check-views'?checkReadingViews(config.root,options.checkpoint):mode==='plan-enable'?planEnableReading(config.root,options.checkpoint):applyEnableReading(config.root,JSON.parse(readFileSync(safe(config.root,positional[0]),'utf8')));
-  if(mode==='plan-enable'&&options.output)writeFileSync(safe(config.root,options.output,{missing:true}),JSON.stringify(result,null,2)+'\n',{flag:'wx'});
+  const result=mode==='render'?renderReadingBundle(config.root,options.checkpoint):mode==='check-views'?checkReadingViews(config.root,options.checkpoint):mode==='plan-enable'?planEnableReading(config.root,options.checkpoint,{output:options.output}):applyEnableReading(config.root,positional[0]);
   process.stdout.write(JSON.stringify(result,null,2)+'\n');if(result.blockers?.length||result.reading_update?.status==='failed')process.exitCode=1;
  }else{
  if(!options.kind)throw Error('必须用 --kind 明确资产类型');
