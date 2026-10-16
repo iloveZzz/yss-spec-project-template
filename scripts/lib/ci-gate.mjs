@@ -53,8 +53,7 @@ export const STEPS = [
     id: "doc-facts",
     title: "说明文档事实",
     command: ["scripts/verify-doc-facts"],
-    blocking: false,
-    fix: "改为链接权威资产，不在说明文档复述数量或 revision（模式表见 scripts/lib/doc-facts-patterns.json）",
+    fix: "改为链接权威资产，不在说明文档复述数量或 revision；引用路径不存在时修正路径，或在 scripts/lib/doc-facts-patterns.json 的 pathRefs.allow 登记原因",
   },
   {
     id: "node-engines",

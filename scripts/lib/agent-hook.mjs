@@ -29,6 +29,8 @@ const SKILL_REGISTRY = /^\.template-spec\/agents\/yss-skill-registry\.yaml$/;
 const LIFECYCLE_FILES = /^\.template-spec\/process\/(?:lifecycle-registry\.yaml|lifecycle-registry-baseline(?:-v1)?\.json|lifecycle-artifact-map\.md|schemas\/lifecycle-registry\.schema\.json)$/;
 const APPROVAL_FILES = /^\.work\/.+\/gates\/[^/]+-approval\.(?:ya?ml|json)$/;
 const CODEX_FILES = /^(?:submodules\/[^/]+\/)?\.codex\//;
+// 与 scripts/lib/doc-facts-patterns.json 的扫描清单对齐，另含检查自身的规则文件。
+const DOC_FACT_FILES = /^(?:README\.md|AGENTS\.md|profiles\/[^/]+\/(?:AGENTS\.md|\.template-spec\/process\/agent-entry-policy\.md)|docs\/process\/[^/]+\.md|\.template-source\/agents\/[^/]+\.md|\.template-spec\/(?:agents|process|user-guide)\/[^/]+\.md|scripts\/lib\/doc-facts(?:-patterns\.json|\.mjs))$/;
 
 /**
  * 路径 → 检查。只放毫秒级的检查；fast、candidate 与全量验证属于 ci-gate，不在这里。
@@ -45,6 +47,7 @@ export const RULES = [
     checks: (files) => files.map((file) => ({ ...APPROVAL_RECORD, command: ["scripts/verify-approval-record", "--history", file], target: file })),
   },
   { id: "agent-config", match: (file) => CODEX_FILES.test(file), checks: () => [stepCheck("agent-config")] },
+  { id: "doc-facts", match: (file) => DOC_FACT_FILES.test(file), checks: () => [stepCheck("doc-facts")] },
 ];
 
 /** 读取工作区相对 HEAD 的全部变更（已暂存、未暂存、未跟踪），重命名同时返回新旧路径。读取失败返回 null。 */

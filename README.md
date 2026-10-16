@@ -40,7 +40,7 @@ YSS UI 组件知识同时通过项目级 MCP 配置提供；支持的客户端�
 
 ## 模板初始化 CLI
 
-四种 Profile 使用 [yss-cli](https://github.com/iloveZzz/yss-cli) 的原生 `yss` 入口，模板和三个 Agent 模板源独立维护。初始化、预演、事务、迁移及 Bundle 导出消费版本化协议：
+现行 Profile（spec、design、backend）使用 [yss-cli](https://github.com/iloveZzz/yss-cli) 的原生 `yss` 入口，本模板和各 Agent 模板源独立维护。初始化、预演、事务、迁移及 Bundle 导出消费版本化协议：
 
 - [YSS 用户手册：CLI 能力与写入方式](./.template-spec/user-guide/用户手册.md#cli-能力与写入方式)
 - [YSS 用户手册：接管、同步与恢复](./.template-spec/user-guide/用户手册.md#接管同步与恢复)
@@ -117,4 +117,4 @@ PR 执行 `scripts/verify-template-fast --base <完整 SHA>`；显式 main 集�
 
 ## 按职责使用与升级
 
-[四个现行家族用户手册](.template-spec/user-guide/用户手册.md)提供选型、初始化及升级；[设备借用贯穿案例](.template-spec/user-guide/设备借用贯穿案例.md)演示战略、后端、前端与统一验收。[全部手册](.template-spec/user-guide/用户手册索引.md)给出本体和子项目入口。GitHub 当前能力、npm 发布版本与实例模板快照分别核对。
+[现行家族用户手册](.template-spec/user-guide/用户手册.md)提供选型、初始化及升级；[设备借用贯穿案例](.template-spec/user-guide/设备借用贯穿案例.md)演示战略、后端、前端与统一验收。[全部手册](.template-spec/user-guide/用户手册索引.md)给出本体和子项目入口。GitHub 当前能力、npm 发布版本与实例模板快照分别核对。

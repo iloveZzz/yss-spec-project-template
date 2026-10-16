@@ -1,6 +1,6 @@
 # Harness 流程裁剪与影响面判定
 
-先按生命周期编排合同 `request_triage.delivery_path` 分流；这是唯一日常路径策略。支持能力且政策启用的 Spec、Backend、Frontend 实例用 `yss lifecycle route --root <治理项目> --task <同一记录> --implementation-root <实现仓> --base <完整 SHA>` 返回 `daily / governed / needs-info`。以下阶段裁剪规则适用于 `governed` 与模板维护；不能反向要求已核验的 `daily` 创建正式阶段资产。
+先按生命周期编排合同 `request_triage.delivery_path` 分流；这是唯一日常路径策略。支持能力且政策启用的 Spec、Backend 实例用 `yss lifecycle route --root <治理项目> --task <同一记录> --implementation-root <实现仓> --base <完整 SHA>` 返回 `daily / governed / needs-info`。以下阶段裁剪规则适用于 `governed` 与模板维护；不能反向要求已核验的 `daily` 创建正式阶段资产。
 
 `daily` 只更新同一 Ticket/PR 的范围、验收、工程基线、Skills、实际测试、独立审查及回滚，消费技术技能后实现，用 `verify-daily` 核验当前证据。API 兼容边界与 Freeze 仍由上述唯一策略及 OpenAPI 技能控制。已有正式任务不能降级；无关正式资产不阻断新任务。实施发现风险时保留修改与证据，停止受影响工作并恢复最近可信阶段；缺政策的 Profile 或缺能力 CLI 明确不支持。操作说明见生命周期 `references/daily-delivery.md`。
 
@@ -109,7 +109,7 @@ candidate_digest: null | <sha256>
 
 使用 `scripts/verify-maintenance-checkpoint <file>` 或通过 stdin 传入 YAML / JSON 做只读校验。日常 `implementation-ready` 使用 fast、`review_round: 0`、`candidate_digest: null`；这里的 profile 表示交付层级，实际执行范围由逐条证据声明，定向结果不冒充整套 profile 通过。L2 必须有 fresh-verification、self-check；命中 `maintenance-intensity.yaml.counterexample_triggers` 的每项风险还须有对应实际 counterexample，必要证据不得因“待审”而跳过。L1 至少有 relevant-check。
 
-当前维护策略 schema v2 只定义 L1/L2，L1 有 3 项触发、L2 有 9 项具体影响触发，默认仍为 L2。冻结的 `maintenance-intensity-v1.yaml` 仅供 `--history` 按原映射和证据规则读取历史 L1/L2/L3；当前校验拒绝 L3，不自动改写旧批准、状态或摘要。旧消费者不支持策略 v2 时明确拒绝并升级，不补回 L3 绕过。
+当前维护策略 schema v2 只定义 L1/L2，各级触发项以 `.template-source/process/maintenance-intensity.yaml` 为准，默认仍为 L2。冻结的 `maintenance-intensity-v1.yaml` 仅供 `--history` 按原映射和证据规则读取历史 L1/L2/L3；当前校验拒绝 L3，不自动改写旧批准、状态或摘要。旧消费者不支持策略 v2 时明确拒绝并升级，不补回 L3 绕过。
 
 四项原判级标签已退役；当前记录使用下列替代归类，不新增别名或自动降级：
 

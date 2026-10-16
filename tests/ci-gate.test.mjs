@@ -190,23 +190,23 @@ test("AC-003：投影检查失败时输出步骤名、命令、日志与修复�
 });
 
 test("每个必需检查脚本失败都会让整体失败并落在报告里", async (t) => {
-  for (const name of ["verify-agent-config", "update-skill-lock", "verify-lifecycle-registry", "verify-skill-registry"]) {
+  for (const name of ["verify-agent-config", "update-skill-lock", "verify-lifecycle-registry", "verify-skill-registry", "verify-doc-facts"]) {
     const run = await gate(t, {}, { STUB_FAIL: name });
     assert.equal(run.exitCode, 1, name);
     assert.deepEqual(run.report.steps.filter((step) => step.status === "failed").map((step) => step.command.split(" ")[0]), [`scripts/${name}`], name);
   }
 });
 
-test("文档事实失败保留真实报告与日志，后续 fast 仍执行", async (t) => {
+test("文档事实失败阻断整体并保留真实报告与日志，后续 fast 不再执行", async (t) => {
   const run = await gate(t, { mode: "pr" }, { STUB_FAIL: "verify-doc-facts" });
-  assert.equal(run.exitCode, 0, run.err);
-  assert.equal(run.report.status, "passed");
+  assert.equal(run.exitCode, 1);
+  assert.equal(run.report.status, "failed");
   const observed = run.report.steps.find((step) => step.id === "doc-facts");
-  assert.equal(observed.status, "failed-nonblocking");
+  assert.equal(observed.status, "failed");
   assert.equal(observed.exit_code, 1);
   assert.match(fs.readFileSync(observed.log, "utf8"), /verify-doc-facts 失败输出/);
-  assert.equal(run.report.steps.find((step) => step.id === "verify-template").status, "passed");
-  assert.ok(run.calls.some((line) => line.startsWith("verify-template-fast ")));
+  assert.equal(run.report.steps.find((step) => step.id === "verify-template").status, "skipped");
+  assert.ok(!run.calls.some((line) => line.startsWith("verify-template-fast ")));
 });
 
 test("PR 模式 fast 失败时报告失败并保留退出码", async (t) => {

@@ -58,6 +58,11 @@ profiles:
           - "scripts/lib/doc-facts-patterns.json"
           - "tests/doc-facts.test.mjs"
           - "README.md"
+          - "AGENTS.md"
+          - "profiles/*/AGENTS.md"
+          - "profiles/*/.template-spec/process/agent-entry-policy.md"
+          - ".template-spec/process/*.md"
+          - ".template-spec/user-guide/*.md"
           - ".template-source/cli-core/README.md"
           - ".template-source/agents/*.md"
           - ".template-spec/agents/*.md"
@@ -798,6 +803,7 @@ profiles:
           - ".github/actions/setup-template/action.yml"
           - ".gitlab-ci.yml"
           - "scripts/ci-setup"
+          - ".nvmrc"
           - "tests/ci-adapters.test.mjs"
           - ".template-source/process/github-workflows.md"
           - ".template-source/distribution/bundle-profile.json"
@@ -2537,6 +2543,7 @@ routing:
       - .codex/config.toml
       - scripts/ci-gate
       - scripts/ci-setup
+      - .nvmrc
       - scripts/lib/ci-gate.mjs
       - tests/ci-gate.test.mjs
       - .gitlab-ci.yml

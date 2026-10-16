@@ -74,6 +74,10 @@ test("GitLab 镜像主版本与 scripts/ci-setup 的目标 Node 一致", () => {
   assert.equal(image[1], versions().node);
 });
 
+test(".nvmrc 主版本与 scripts/ci-setup 的目标 Node 一致，本地与 CI 使用同一主版本", () => {
+  assert.equal(read(".nvmrc").trim().split(".")[0], versions().node);
+});
+
 test("setup-template 是薄封装：先供给 Node，再从现有 pin reader 读取 Go 版本", (t) => {
   const text = code(ACTION);
   assert.match(text, /scripts\/ci-setup --print-versions >> "\$GITHUB_OUTPUT"/);
