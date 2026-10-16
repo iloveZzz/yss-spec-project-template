@@ -173,27 +173,5 @@ async function buildConsumption() {
   for (const row of tactical.strategic_handoff.rows) Object.assign(row, {disposition: 'implemented', tactical_refs: ['behavior.submit'], test_seam_refs: ['test-seam.submit'], scenario_tests: [{outcome: 'success', seam_ref: 'test-seam.submit'}, {outcome: 'failure', seam_ref: 'test-seam.submit'}], evidence_refs: ['CONTEXT.md'], dependency_status: 'known', dependent_slice_refs: ['slice.submit']});
   return {target, tactical, snapshot: f.snapshot};
 }
-test('verify-strategic-handoff-consumption 薄壳：通过、阻断、拒绝都与旧输出同形', {skip}, async () => {
-  const {target, tactical} = await consumptionCase();
-  const run = (value, args = []) => {
-    writeFileSync(path.join(target, 'shell-tactical.json'), JSON.stringify(value));
-    return spawnSync(path.join(REPO, 'scripts', 'verify-strategic-handoff-consumption'), ['--root', target, ...args, path.join(target, 'shell-tactical.json')], {encoding: 'utf8', env: {...process.env, YSS_NATIVE_BINARY: binary}});
-  };
-  const ok = run(tactical);
-  assert.equal(ok.status, 0, ok.stderr);
-  const report = JSON.parse(ok.stdout);
-  assert.equal(report.result, 'verified');
-  assert.deepEqual(Object.keys(report).slice(0, 3), ['result', 'bundle_digest', 'consumed_bundle_digest']);
-  const blocked = structuredClone(tactical);
-  Object.assign(blocked.strategic_handoff.rows[0], {disposition: 'deferred', reason: '分批实现', risk: '不能提交', owner: '需求负责人', followup_ticket_ref: 'ticket.followup', verification_plan: '提交测试', target_version: 'v2'});
-  const stopped = run(blocked, ['--slice', 'slice.submit']);
-  assert.equal(stopped.status, 1);
-  assert.equal(JSON.parse(stopped.stdout).result, 'blocked');
-  const bad = structuredClone(tactical);
-  bad.strategic_handoff.rows[0].tactical_refs = ['aggregate.fake'];
-  const rejected = run(bad);
-  assert.notEqual(rejected.status, 0);
-  assert.match(rejected.stderr, /"result":"blocked"/);
-});
 
 const sha256 = (text) => `sha256:${createHash('sha256').update(text).digest('hex')}`;

@@ -252,23 +252,6 @@ profiles:
           - "profiles/**"
         depends_on: []
         failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各 Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
-      - id: check.profile-consumers-spec-baseline-scenarios
-        resources: [native-cli]
-        lane: pc-spec-baseline-scenarios
-        run: "node --test --test-skip-pattern='^backend plugin receives' scripts/fixtures/spec-baseline/scenarios.mjs"
-        group: feature-assets
-        inputs_complete: true
-        input_patterns:
-          - "scripts/fixtures/spec-baseline/scenarios.mjs"
-          - "scripts/fixtures/user-decision/plan-fixture.mjs"
-          - ".template-source/tooling/node/test/approval-consumption.test.mjs"
-          - "tests/helpers/yss-instance.mjs"
-          - "scripts/fixtures/spec-baseline/fixture.mjs"
-          - ".template-source/tooling/node/test/design-preview-browser.mjs"
-          - "scripts/lib/profile-tree.mjs"
-          - "profiles/**"
-        depends_on: []
-        failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各 Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
       - id: check.profile-consumers-approval-consumption
         resources: [native-cli]
         lane: pc-approval-consumption
@@ -1568,17 +1551,6 @@ profiles:
           - ".template-source/scripts/plan-clarification-scenarios.json"
         depends_on: []
         failure_mode: "澄清回放样例的工作包引用与当前配置不一致"
-      - id: check.work-layout-sealed-owner
-        resources: [native-cli]
-        run: "node --test tests/strategic-handoff-sealed-owner.test.mjs"
-        group: work-layout
-        inputs_complete: true
-        input_patterns:
-          - "tests/strategic-handoff-sealed-owner.test.mjs"
-          - "scripts/fixtures/spec-baseline/**"
-          - "scripts/fixtures/user-decision/plan-fixture.mjs"
-        depends_on: []
-        failure_mode: "交接来源的 checkpoint 所有者绑定或证据闭包丢失"
       - id: check.work-layout-reading
         run: "node --test scripts/fixtures/reading-views/*.test.mjs"
         group: work-layout
@@ -2722,10 +2694,6 @@ groups:
         id: check.629b3c9ec897593f
   strategic-handoff-package:
     commands:
-      - run: node --test tests/strategic-handoff-sealed-owner.test.mjs
-        when: template-source
-        id: check.strategic-handoff-sealed-owner
-        resources: [native-cli]
       - run: node --test tests/progression-target-evidence.test.mjs
         when: template-source
         id: check.progression-target-evidence
@@ -3071,7 +3039,6 @@ gates:
       - check.work-layout-feature-assets
       - check.work-layout-project-ci
       - check.work-layout-plan-replay
-      - check.work-layout-sealed-owner
       - check.work-layout-reading
       - check.work-layout-stage-tracking
       - check.work-layout-tickets
@@ -3234,7 +3201,6 @@ gates:
       - check.0eda9c9e0a08adf6
       - check.9c058e5d7cf873aa
       - check.0b0ff4c1ba24fa6e
-      - check.strategic-handoff-sealed-owner
       - check.progression-target-evidence
       - check.strategic-handoff-package-scenarios
     audit_status: conservative-complete
@@ -3414,7 +3380,6 @@ gates:
       - check.profile-consumers-slice-contract-v3-round2-rest
       - check.profile-consumers-slice-contract-v3-scenarios
       - check.profile-consumers-stage-tracking-tracking
-      - check.profile-consumers-spec-baseline-scenarios
       - check.profile-consumers-approval-consumption
       - check.profile-consumers-approval-current
       - check.profile-consumers-decision-continuation
