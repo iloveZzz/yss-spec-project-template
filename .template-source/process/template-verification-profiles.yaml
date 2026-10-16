@@ -448,7 +448,7 @@ profiles:
         failure_mode: "原生来源视图、准备态领域入口、完整依赖回执或来源目录/ZIP 的拒绝边界回归"
       - id: check.strategic-handoff-readonly
         group: strategic-handoff-package
-        resources: [ "native-cli" ]
+        resources: [ "native-cli", "repo-root-evidence" ]
         inputs_complete: true
         input_patterns:
           - "tests/strategic-handoff-readonly.test.mjs"
