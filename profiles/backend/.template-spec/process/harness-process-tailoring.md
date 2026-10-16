@@ -50,7 +50,7 @@ Fresh Verification 指当前范围的真实验证，不等于全仓检查。按�
 
 日常不因交付措辞、维护等级、当前分支为 main 或缺发布 baseline 自动全量，不自动追加 release。PR 使用 `scripts/verify-template-fast --base <完整 SHA>`；main 集成验证及正式发布任务使用 scripts/verify-template。fast 保留输入选择与拒绝规则，release 执行当前全部适用集合，正式任务选中集合不得手工删减；发布另须固定版本生成器与实例兼容证据及实际授权。
 
-当前维护策略 schema v2 只定义 L1/L2，L1 有 3 项触发、L2 有 9 项具体影响触发，默认 L2。冻结 maintenance-intensity-v1.yaml 仅供 --history 按原规则只读核验历史 L1/L2/L3；当前拒绝 L3，不改写旧批准、状态或摘要。新维护 checkpoint 使用 schema v2；历史 v1 只读兼容。日常形状如下，逐条 evidence 填本轮实际范围，verification_profile 表示交付层级：
+当前维护策略 schema v2 只定义 L1/L2，各级触发项以 `.template-source/process/maintenance-intensity.yaml` 为准，默认 L2。冻结 maintenance-intensity-v1.yaml 仅供 --history 按原规则只读核验历史 L1/L2/L3；当前拒绝 L3，不改写旧批准、状态或摘要。新维护 checkpoint 使用 schema v2；历史 v1 只读兼容。日常形状如下，逐条 evidence 填本轮实际范围，verification_profile 表示交付层级：
 
 四项原判级标签已退役；当前记录使用下列替代归类，不新增别名或自动降级：
 

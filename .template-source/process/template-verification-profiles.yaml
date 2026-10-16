@@ -61,7 +61,7 @@ profiles:
           - "README.en.md"
           - "AGENTS.md"
           - "profiles/*/AGENTS.md"
-          - "profiles/*/.template-spec/process/agent-entry-policy.md"
+          - "profiles/*/.template-spec/process/*.md"
           - ".template-spec/process/*.md"
           - ".template-spec/user-guide/*.md"
           - ".template-source/cli-core/README.md"

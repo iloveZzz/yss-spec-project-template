@@ -6,6 +6,10 @@
     ".template-source/agents/*.md",
     ".template-spec/agents/*.md",
     ".template-spec/process/*.md",
+    "profiles/backend/.template-spec/process/*.md",
+    "profiles/design/.template-spec/process/*.md",
+    "profiles/backend/AGENTS.md",
+    "profiles/design/AGENTS.md",
     ".template-spec/user-guide/*.md"
   ],
   "revisionFiles": [
