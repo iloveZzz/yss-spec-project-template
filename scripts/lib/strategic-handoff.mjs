@@ -90,9 +90,10 @@ export async function openBundle(input,action,{readOnly=false,evidenceRoot=ROOT}
   return await action({root,manifest:pack.manifest,...source,changes:pack.changes});
  }finally{if(temp)rmSync(temp,{recursive:true,force:true});}
 }
-export async function exportBundle({sourceRoot,handoffRef,output,zip=false,previous,evidenceRoot}) {
+// inspected：调用方刚对同一 root/handoffRef 完成的 inspectSource 结果，传入后不再重复验证。
+export async function exportBundle({sourceRoot,handoffRef,output,zip=false,previous,evidenceRoot,inspected}) {
   const root=project(sourceRoot); parseContextContract({root}); relative(handoffRef);
-  const current=await inspectSource(root,handoffRef);
+  const current=inspected||await inspectSource(root,handoffRef);
   let prior=null;
   if(previous)prior=await openBundle(previous, b=>({manifest:b.manifest,indexes:b.indexes,handoff:b.handoff,rulesBytes:readFileSync(safe(b.root,'indexes/rules.json')),scenariosBytes:readFileSync(safe(b.root,'indexes/scenarios.json'))}));
   if(prior){ensure(prior.manifest.bundle_id===current.handoff.handoff_id,'前版属于不同交接');ensure(Number(current.handoff.handoff_version.slice(1))>Number(prior.manifest.version.slice(1)),'更新必须提升交接版本');for(const[key,ref]of Object.entries(current.handoff.source)){const old=prior.handoff.source[key];if(old&&old.digest!==ref.digest)ensure(old.version!==ref.version,`源资产内容变化必须提升版本: ${key}`);}}
@@ -174,13 +175,15 @@ export async function finalizeDelivery({sourceRoot,handoffRef,zip=false,previous
   if(previous&&isDeliveryDirectory(path.resolve(previous)))previousPackage=await openDelivery(path.resolve(previous),value=>value.packageRoot);
   const stage=mkdtempSync(path.join(parent,'.delivery-staging-'));
   try {
-    const exported=await exportBundle({sourceRoot:root,handoffRef,output:path.join(stage,'package'),zip,previous:previousPackage});
-    const handoffEntry=await openBundle(path.join(stage,'package'),bundle=>bundle.manifest.files.find(file=>file.original_ref===handoffRef));
+    const exported=await exportBundle({sourceRoot:root,handoffRef,output:path.join(stage,'package'),zip,previous:previousPackage,inspected:current});
+    // exportBundle 已对 staging 包整包验真；这里只读取同一份 manifest，不再重复验证。
+    const manifest=read(path.join(stage,'package','manifest.json'));
+    const handoffEntry=manifest.files.find(file=>file.original_ref===handoffRef);
     ensure(handoffEntry,'交付包缺少 Handoff 源文件');
     const verification={schema_version:1,kind:'strategic-delivery-verification-v1',result:'verified',command:`scripts/strategic-handoff verify --bundle docs/deliveries/strategic/${current.handoff.handoff_id}/${current.handoff.handoff_version}`,exit_code:0,executed_at:new Date().toISOString(),package_ref:'package',manifest_ref:'package/manifest.json',bundle_digest:exported.bundle_digest};
     schema(verification,'.template-spec/process/schemas/strategic-handoff-delivery-verification.schema.json');write(stage,'verification.json',json(verification));
     const sourceAssets=Object.entries(current.handoff.source).sort(([a],[b])=>a.localeCompare(b)).map(([sourceKey,value])=>({source_key:sourceKey,id:value.id||value.baseline_id,version:value.version,ref:value.persisted_ref,digest:value.digest}));
-    const previousDelivery=await openBundle(path.join(stage,'package'),bundle=>bundle.manifest.previous_bundle?{handoff_id:bundle.manifest.previous_bundle.bundle_id,version:bundle.manifest.previous_bundle.version,bundle_digest:bundle.manifest.previous_bundle.digest}:null);
+    const previousDelivery=manifest.previous_bundle?{handoff_id:manifest.previous_bundle.bundle_id,version:manifest.previous_bundle.version,bundle_digest:manifest.previous_bundle.digest}:null;
     const record={schema_version:1,kind:'strategic-handoff-delivery-v1',status:'packaged',handoff:{id:current.handoff.handoff_id,version:current.handoff.handoff_version,ref:handoffRef,sha256:handoffEntry.sha256,schema_version:5},source_assets:sourceAssets,package_ref:'package',manifest_ref:'package/manifest.json',bundle_digest:exported.bundle_digest,verification_ref:'verification.json',consumer_routes:current.handoff.consumer_routes.map(({route_id,capability,activation})=>({route_id,capability,activation})),...(zip?{zip:{ref:'package.zip',sha256:exported.zip_sha256}}:{}),previous_delivery:previousDelivery};
     schema(record,'.template-spec/process/schemas/strategic-handoff-delivery.schema.json');write(stage,'delivery-record.json',json(record));
     await openDelivery(stage,()=>null);
