@@ -2,13 +2,13 @@
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { collectMetrics, digest } from "./lib/harness-metrics.mjs";
+import { CONTEXT_BUDGET_REF, checkContextBudget, collectMetrics, digest } from "./lib/harness-metrics.mjs";
 import { resolveMaintenanceOutput } from "./lib/maintenance-storage.mjs";
 
 const SCRIPT_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
 function usage() {
-  return "用法: scripts/harness-metrics [--root <目录>] [--out maintenance:<类别/运行ID/文件>] [--rev <提交>] [--since <时间>] [--until <时间>] [--agent-output <真实 agent JSON 文件>]\n只读；默认向 stdout 输出 JSON。--out 写入仓外维护命名空间并输出 sha256。\n--rev、--since、--until 只影响 pipeline_commits：默认窗口是 rev（默认 HEAD）的提交时间往前 30 天，可用它们复现历史口径。";
+  return "用法: scripts/harness-metrics [--root <目录>] [--out maintenance:<类别/运行ID/文件>] [--rev <提交>] [--since <时间>] [--until <时间>] [--agent-output <真实 agent JSON 文件>] [--check-budget]\n只读；--check-budget 按 .template-source/process/context-budget.json 核对上下文预算，超限退出 1；默认向 stdout 输出 JSON。--out 写入仓外维护命名空间并输出 sha256。\n--rev、--since、--until 只影响 pipeline_commits：默认窗口是 rev（默认 HEAD）的提交时间往前 30 天，可用它们复现历史口径。";
 }
 
 try {
@@ -20,9 +20,18 @@ try {
     if (args[index] === "--root") root = path.resolve(args[++index] ?? "");
     else if (args[index] === "--agent-output") { options.agentJSON = readFileSync(args[++index], "utf8"); const parsed = JSON.parse(options.agentJSON); const view = parsed.result ?? parsed; if (view.view !== "agent" || !Object.hasOwn(view, "route")) throw new TypeError("需要真实 route agent JSON"); }
     else if (args[index] === "--out") out = args[++index];
+    else if (args[index] === "--check-budget") options.checkBudget = true;
     else if (["--rev", "--since", "--until"].includes(args[index])) options[args[index].slice(2)] = args[++index] ?? "";
     else if (args[index] === "--help") { process.stdout.write(`${usage()}\n`); process.exit(0); }
     else throw new TypeError(`未知参数 ${args[index]}\n${usage()}`);
+  }
+  if (options.checkBudget) {
+    const budget = JSON.parse(readFileSync(path.join(root, CONTEXT_BUDGET_REF), "utf8"));
+    const findings = checkContextBudget(collectMetrics(root, options), budget);
+    for (const f of findings) process.stderr.write(`${f.metric}: 实测 ${f.actual ?? "—"}，预算 ${f.limit}（${f.detail}）\n`);
+    if (findings.length) { process.stderr.write(`上下文预算检查失败：${findings.length} 项。精简后重测，或在 ${CONTEXT_BUDGET_REF} 说明理由后调整。\n`); process.exitCode = 1; }
+    else process.stdout.write("上下文预算检查通过\n");
+    process.exit();
   }
   const text = `${JSON.stringify(collectMetrics(root, options), null, 2)}\n`;
   if (out) {

@@ -5,13 +5,13 @@ description: 编排 YSS 研发全生命周期；当阶段、产物、门禁或 S
 
 # YSS Product Lifecycle
 
-仅生成 DDD/MVC 脚手架时，先读[直接生成](references/conditional-guidance.md#直接生成脚手架)。
+仅生成 DDD/MVC 脚手架时读[直接生成](references/conditional-guidance.md#直接生成脚手架)。
 
 先按编排合同 `request_triage.delivery_path` 选择交付路径；`daily` 操作见 [普通任务交付](references/daily-delivery.md)。路径不是阶段、Ticket 状态或批准。
 
 ## 事实源
 
-先读 `yss-project.yaml`、`AGENTS.md`、`CONTEXT.md`、当前任务及交付路径政策。只在当前 Profile 的政策已启用且固定 `yss` CLI 已支持 `route` / `verify-daily` 时进入 `daily`；旧 CLI、Profile 未启用或能力不可核验时明确 `daily unsupported`，不得按文字承诺放行。`governed` 再按当前工作单元读取以下事实源：
+先读 `yss-project.yaml`、`AGENTS.md`、`CONTEXT.md`、当前任务及交付路径政策。只在当前 Profile 的政策已启用且固定 `yss` CLI 已支持 `route` / `verify-daily` 时进入 `daily`；旧 CLI、Profile 未启用或能力不可核验时明确 `daily unsupported`，不得按文字承诺放行。`governed` 按当前工作单元查询以下事实源，不读全文：
 
 | 事实 | 权威来源 |
 |---|---|
@@ -25,7 +25,7 @@ description: 编排 YSS 研发全生命周期；当阶段、产物、门禁或 S
 scripts/query-lifecycle-context --work-unit work-unit.plan-requirements --check-skills
 ```
 
-`--include` 限合同顶层键；调用前按 [来源与补装](references/matt-yss-adapter.md) 预检，在既有授权内补装并重验。`daily` 从当前任务影响选择并核验 YSS 技能，不能因省略正式合同漏掉技术约束。
+`--include` 限合同顶层键；调用前按 [来源与补装](references/matt-yss-adapter.md) 预检，在既有授权内补装并重验。`daily` 从当前任务影响选择并核验 YSS 技能，不能因无正式合同漏掉技术约束。
 
 技能、阅读视图与证据复用先读[查询与证据复用](references/conditional-guidance.md#查询与证据复用)。
 

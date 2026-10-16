@@ -179,3 +179,20 @@ test('daily 起步累计真实 agent JSON 的 UTF-8 字节，缺输入不宣称�
   assert.equal(stats.within_budget, true);
   assert.equal(dailyStartStats(root, output.repeat(1000)).within_budget, false);
 });
+
+test("上下文预算：超限与无法测量都会报告，未知指标与非法上限视为配置错误", async () => {
+  const { checkContextBudget } = await import("../scripts/lib/harness-metrics.mjs");
+  const metrics = { resident_context: { total_bytes: 15000 }, skills: { canonical: { claude: { implicit_description_chars: 3900 }, largest_skill_md_bytes: [] } } };
+  const budget = { schema_version: 1, limits: { resident_context_bytes: 14000, implicit_description_chars: 4000, largest_skill_md_bytes: 12500 } };
+  assert.deepEqual(checkContextBudget(metrics, budget).map((f) => `${f.metric}:${f.actual}`), ["resident_context_bytes:15000", "largest_skill_md_bytes:null"]);
+  assert.throws(() => checkContextBudget(metrics, { schema_version: 1, limits: { other: 1 } }), /未知预算指标/);
+  assert.throws(() => checkContextBudget(metrics, { schema_version: 1, limits: { resident_context_bytes: 0 } }), /正整数/);
+  assert.throws(() => checkContextBudget(metrics, { limits: {} }), /schema_version/);
+});
+
+test("上下文预算：当前模板源在预算内", async () => {
+  const { checkContextBudget, collectMetrics, CONTEXT_BUDGET_REF } = await import("../scripts/lib/harness-metrics.mjs");
+  const root = path.resolve(import.meta.dirname, "..");
+  const budget = JSON.parse(fs.readFileSync(path.join(root, CONTEXT_BUDGET_REF), "utf8"));
+  assert.deepEqual(checkContextBudget(collectMetrics(root), budget), []);
+});

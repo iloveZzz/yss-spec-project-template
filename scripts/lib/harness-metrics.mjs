@@ -247,3 +247,28 @@ export function collectMetrics(root = process.cwd(), options = {}) {
 export function digest(text) {
   return createHash("sha256").update(text).digest("hex");
 }
+
+export const CONTEXT_BUDGET_REF = ".template-source/process/context-budget.json";
+
+/** 预算指标 → 从 collectMetrics 结果中取实测值。 */
+const BUDGET_METRICS = {
+  resident_context_bytes: (metrics) => metrics.resident_context?.total_bytes,
+  implicit_description_chars: (metrics) => metrics.skills?.canonical?.claude?.implicit_description_chars,
+  largest_skill_md_bytes: (metrics) => metrics.skills?.canonical?.largest_skill_md_bytes?.[0]?.bytes,
+};
+
+/** 返回超出预算或无法测量的指标；空数组表示全部在预算内。未知指标名视为配置错误。 */
+export function checkContextBudget(metrics, budget) {
+  const limits = budget?.limits;
+  if (budget?.schema_version !== 1 || !limits || typeof limits !== "object") throw new TypeError(`${CONTEXT_BUDGET_REF} 需要 schema_version: 1 与 limits`);
+  const findings = [];
+  for (const [metric, limit] of Object.entries(limits)) {
+    const measure = BUDGET_METRICS[metric];
+    if (!measure) throw new TypeError(`未知预算指标: ${metric}`);
+    if (!Number.isInteger(limit) || limit <= 0) throw new TypeError(`预算 ${metric} 必须是正整数`);
+    const actual = measure(metrics);
+    if (!Number.isFinite(actual)) findings.push({ metric, actual: null, limit, detail: "无法测量" });
+    else if (actual > limit) findings.push({ metric, actual, limit, detail: `超出 ${actual - limit}` });
+  }
+  return findings;
+}

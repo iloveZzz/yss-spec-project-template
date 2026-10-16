@@ -56,6 +56,12 @@ export const STEPS = [
     fix: "改为链接权威资产，不在说明文档复述数量或 revision；引用路径不存在时修正路径，或在 scripts/lib/doc-facts-patterns.json 的 pathRefs.allow 登记原因",
   },
   {
+    id: "context-budget",
+    title: "Agent 上下文预算",
+    command: ["scripts/harness-metrics", "--check-budget"],
+    fix: "精简常驻入口、隐式技能描述或最大的 SKILL.md；确需上调时在 .template-source/process/context-budget.json 写明理由",
+  },
+  {
     id: "node-engines",
     title: "Node 版本声明一致",
     run: (context) => runNodeEnginesCheck(context.root),

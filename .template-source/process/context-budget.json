@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "description": "Agent 上下文预算（棘轮：实测下降后同步下调，不上调）。超限时 scripts/harness-metrics --check-budget 失败，ci-gate 阻断。",
+  "limits": {
+    "resident_context_bytes": 14000,
+    "implicit_description_chars": 4000,
+    "largest_skill_md_bytes": 12500
+  }
+}

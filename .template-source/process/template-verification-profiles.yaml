@@ -914,8 +914,12 @@ profiles:
           - "scripts/harness-metrics"
           - "scripts/lib/harness-metrics.mjs"
           - "tests/harness-metrics.test.mjs"
+          - ".template-source/process/context-budget.json"
+          - "AGENTS.md"
+          - "CONTEXT.md"
+          - ".agents/skills/*/SKILL.md"
         depends_on: []
-        failure_mode: "度量口径（管道提交占比、daily 起步必读、隐式技能 description 字符数、常驻上下文）计算错误，阶段基线与复测不可比"
+        failure_mode: "度量口径（管道提交占比、daily 起步必读、隐式技能 description 字符数、常驻上下文）计算错误，阶段基线与复测不可比，或上下文超出 context-budget.json 预算"
       - id: check.release-template
         run: "node --test tests/release-template.test.mjs"
         group: feature-assets
@@ -2539,6 +2543,7 @@ routing:
       - scripts/harness-metrics
       - scripts/lib/harness-metrics.mjs
       - tests/harness-metrics.test.mjs
+      - .template-source/process/context-budget.json
       - scripts/verify-agent-config
       - scripts/lib/agent-config-safety.mjs
       - tests/agent-config-safety.test.mjs
