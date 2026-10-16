@@ -2328,6 +2328,7 @@ routing:
       - scripts/verify-import-direction
       - tests/import-direction.test.mjs
       - tests/go-validator-replay.test.mjs
+      - tests/go-validator-replay-delivery.test.mjs
       - tests/business-ticket-native-report.test.mjs
       - tests/ar12b-source-native.test.mjs
       - tests/ar12b-retirement.test.mjs
