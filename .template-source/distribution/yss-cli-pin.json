@@ -1,19 +1,19 @@
 {
   "schema_version": 1,
   "repository": "https://github.com/iloveZzz/yss-cli.git",
-  "version": "2.3.3",
-  "commit": "34f1ee0069095b4398c34691e181153c4fa4048d",
+  "version": "2.4.0",
+  "commit": "dd7a863f09effa18357247f55b846b894c199a90",
   "go_version": "1.27.1",
   "build": "node tools/build-candidate.mjs --out <\u4ed3\u5e93\u5916\u65b0\u76ee\u5f55>\uff08\u76ee\u6807\u5e73\u53f0\u7528 GOOS\u3001GOARCH \u6307\u5b9a\uff1b\u56fa\u5b9a Go \u73af\u5883\uff0c-mod=readonly -trimpath -buildvcs=false\uff0c\u63d0\u4ea4\u53f7\u4e0e\u6765\u6e90\u72b6\u6001\u7528 -X \u5199\u5165\uff09",
   "binaries": {
     "darwin-arm64": {
-      "sha256": "6f22b74fa35483154573bf515460d9d368f670536e77ab13e928713257460f3f"
+      "sha256": "599afc87116a107d609cb28bbd97708478ff7671fc334c490af23d591ca2c169"
     },
     "linux-amd64": {
-      "sha256": "4619b0c167656beced733f9ce7cc24a374aff235e046226089a363d14a7ff984"
+      "sha256": "34ccc02309cb0b9473f087864d31612b1aee12be4efdd5d250319006bbcc8cb3"
     },
     "linux-arm64": {
-      "sha256": "1ee8844a0ca49d3dc250a7868f682c0c9681a9527cc325edfe3bc957a5a841a9"
+      "sha256": "753a01a4e797154520d02475a759eeeb4397e1e9facc39d2c51c17b527e150f8"
     }
   }
 }
