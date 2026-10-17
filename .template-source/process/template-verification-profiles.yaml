@@ -435,6 +435,20 @@ profiles:
           - ".template-source/distribution/yss-cli-pin.json"
         depends_on: []
         failure_mode: "用户决定、批准记录与薄适配的固定通过/拒绝预期、独立期望绑定、返回字段或能力拒绝回归"
+      - id: check.artifact-analysis
+        run: "node --test tests/artifact-analysis.test.mjs"
+        group: feature-assets
+        resources: [native-cli]
+        inputs_complete: true
+        input_patterns:
+          - "scripts/analyze-artifacts"
+          - "scripts/lib/artifact-analysis.mjs"
+          - "tests/artifact-analysis.test.mjs"
+          - "scripts/lib/plan-spec-quality.mjs"
+          - "scripts/lib/business-tickets.mjs"
+          - "scripts/lib/plan-stage-coverage.mjs"
+        depends_on: []
+        failure_mode: "一致性分析漏掉某项诊断的发现、把未评估当作一致，或功能包资产识别错误"
       - id: check.business-ticket-native-report
         tier: slow  # 实测约 74s；fast 中延后，按需（YSS_VERIFY_SLOW=1）或定时执行
         run: "node --test tests/business-ticket-native-report.test.mjs"
@@ -2594,6 +2608,9 @@ routing:
       - scripts/edit-hook
       - scripts/lib/edit-hook.mjs
       - tests/edit-hook.test.mjs
+      - scripts/analyze-artifacts
+      - scripts/lib/artifact-analysis.mjs
+      - tests/artifact-analysis.test.mjs
       - .claude/settings.json
       - .codex/hooks.json
       - CLAUDE.md

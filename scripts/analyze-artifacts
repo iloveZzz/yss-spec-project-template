@@ -1,0 +1,21 @@
+#!/usr/bin/env node
+import { parseArgs } from 'node:util';
+import { analyzeArtifacts, exitCodeFor, renderText } from './lib/artifact-analysis.mjs';
+
+const help = `只读一致性分析：在同一功能包上汇总 Plan/Spec 诊断、业务票校验与实现覆盖、阶段决定覆盖。
+analyze-artifacts --root <项目根> --feature <功能包> [--plan <md>] [--spec <md>] [--slice <yaml>]... [--business-tickets <集合>] [--mode draft|formal] [--decisions <md> --package <json|yaml> [--mapping <json>]] [--json]
+未指定的输入按功能包内容自动识别；阶段决定覆盖只在给出 --decisions 与 --package 时运行。
+退出码 0：无发现；1：有发现；2：输入不足或有部分未评估。不改变阶段、批准或就绪状态。
+`;
+try {
+  const { values } = parseArgs({ strict: true, options: { root: { type: 'string' }, feature: { type: 'string' }, plan: { type: 'string' }, spec: { type: 'string' }, slice: { type: 'string', multiple: true }, 'business-tickets': { type: 'string' }, mode: { type: 'string' }, decisions: { type: 'string' }, package: { type: 'string' }, mapping: { type: 'string' }, json: { type: 'boolean' }, help: { type: 'boolean', short: 'h' } } });
+  if (values.help) process.stdout.write(help);
+  else {
+    const report = await analyzeArtifacts({ root: values.root, feature: values.feature, plan: values.plan, spec: values.spec, slices: values.slice, businessTickets: values['business-tickets'], mode: values.mode, decisions: values.decisions, package: values.package, mapping: values.mapping });
+    process.stdout.write(values.json ? `${JSON.stringify(report, null, 2)}\n` : renderText(report));
+    process.exitCode = exitCodeFor(report);
+  }
+} catch (error) {
+  process.stderr.write(`${error.message}\n`);
+  process.exitCode = error.exitCode ?? 2;
+}
