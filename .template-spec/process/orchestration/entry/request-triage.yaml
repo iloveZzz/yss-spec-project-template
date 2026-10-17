@@ -40,23 +40,9 @@ request_triage:
         actor_kind: human
         binds: spec-lite-digest
         original_response: required
-        independent_of:
-          - implementer
-          - reviewer
       spec_lite_template: .template-spec/templates/spec-lite-template.md
-      record_fields:
-        - spec_lite
-        - standard_decision
-      sequence:
-        - spec-lite
-        - standard-change-approved
-        - yss-technical-skills
-        - implementation
-        - tests
-        - independent-review
       escalation: daily-to-standard-to-governed-only
       unsupported_cli: governed
-      public_summary: 需求需要一页确认但不触及排除影响时走 standard：同一张任务记录加一页 Spec-lite，由一位生物人对其摘要作一次决定，其余条件与 daily 相同；不创建阶段 checkpoint、正式 Slice 或多级批准。daily 记录命中 standard 影响时升级为 standard，standard 命中排除影响时升级为 governed，不能反向降级；CLI 不支持时按 governed 推进。
     read_only_capabilities:
       - lifecycle.route
       - lifecycle.verify-daily
