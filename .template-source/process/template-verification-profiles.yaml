@@ -1274,6 +1274,8 @@ profiles:
           - "scripts/verify-skill-registry"
           - "scripts/lib/skill-registry.mjs"
           - "yss-public-skills.json"
+          - "scripts/*"
+          - "scripts/lib/*.mjs"
         depends_on: []
         failure_mode: "技能注册、别名或入口身份错误"
       - id: "check.c80aaecf300ddc1f"
