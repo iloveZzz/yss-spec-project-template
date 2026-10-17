@@ -72,7 +72,7 @@
                 "minItems": 1,
                 "items": {
                   "type": "string",
-                  "minLength": 1
+                  "pattern": "^/(?:[^~*]|~[01])+$"
                 }
               },
               "acceptance": {
@@ -80,7 +80,7 @@
                 "minItems": 1,
                 "items": {
                   "type": "string",
-                  "minLength": 1
+                  "pattern": "^/(?:[^~*]|~[01])+$"
                 }
               },
               "contract_commitments": {
@@ -88,7 +88,7 @@
                 "minItems": 1,
                 "items": {
                   "type": "string",
-                  "minLength": 1
+                  "pattern": "^/(?:[^~*]|~[01])+$"
                 }
               },
               "authorization": {
@@ -96,7 +96,7 @@
                 "minItems": 1,
                 "items": {
                   "type": "string",
-                  "minLength": 1
+                  "pattern": "^/(?:[^~*]|~[01])+$"
                 }
               },
               "risk_acceptance": {
@@ -104,7 +104,7 @@
                 "minItems": 1,
                 "items": {
                   "type": "string",
-                  "minLength": 1
+                  "pattern": "^/(?:[^~*]|~[01])+$"
                 }
               },
               "quality": {
@@ -112,7 +112,7 @@
                 "minItems": 1,
                 "items": {
                   "type": "string",
-                  "minLength": 1
+                  "pattern": "^/(?:[^~*]|~[01])+$"
                 }
               },
               "external_commitments": {
@@ -120,12 +120,89 @@
                 "minItems": 1,
                 "items": {
                   "type": "string",
-                  "minLength": 1
+                  "pattern": "^/(?:[^~*]|~[01])+$"
+                }
+              }
+            },
+            "description": "Seven required dimensions contain concrete JSON Pointer selectors into the originally approved subject model; values must remain equal. Markdown uses frontmatter and body."
+          },
+          "continuation_paths": {
+            "type": "object",
+            "additionalProperties": false,
+            "description": "Optional original authorization of existing nonprotected technical/evidence containers only; never permits future unknown fields or protected selector intersections.",
+            "properties": {
+              "implementation-detail": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "pattern": "^/(?:[^~*]|~[01])+$"
+                }
+              },
+              "evidence-supplement": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "pattern": "^/(?:[^~*]|~[01])+$"
+                }
+              }
+            }
+          },
+          "implementation_limits": {
+            "type": "object",
+            "minProperties": 1,
+            "additionalProperties": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "repositories",
+                "allowed_write_paths"
+              ],
+              "properties": {
+                "repositories": {
+                  "type": "array",
+                  "minItems": 1,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "allowed_write_paths": {
+                  "type": "array",
+                  "minItems": 1,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
                 }
               }
             }
           }
-        }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "boundary": {
+                  "const": "implementation-scope"
+                }
+              },
+              "required": [
+                "boundary"
+              ]
+            },
+            "then": {
+              "required": [
+                "implementation_limits"
+              ]
+            }
+          }
+        ]
       }
     }
   },

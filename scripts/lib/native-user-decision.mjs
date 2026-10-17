@@ -1,6 +1,5 @@
 import path from 'node:path';
 import {ROOT} from './lifecycle-registry.mjs';
-import {loadDigitalHumanRoles} from './digital-human-roles.mjs';
 import {platformProfile} from './backend-platform.mjs';
 import {decisionError} from './user-decision-core.mjs';
 import {nativeEvidenceVerify,nativeContractVerify,nativeCoverage,nativeUserDecisionRequirement,NEEDS} from './native-evidence.mjs';
@@ -19,14 +18,7 @@ export function assertUserDecisionRequirement(requirement,options={}) {
 }
 // Policy selects the workflow boundaries; each selected proof is validated only by yss.
 export function assertWorkUnitUserDecision(workUnit,state,options={}) {
- const policy=loadDigitalHumanRoles(path.join(rootFor(options),'.template-spec/agents/digital-human-roles.yaml')).user_decision_policy;
- const boundaries=[...(policy.work_unit_gates?.[workUnit]||[]),...(policy.work_units[workUnit]?[policy.work_units[workUnit]]:[])];
- for(const boundary of boundaries){
-  if(workUnit==='work-unit.technical-analysis'&&state?.user_decision_not_applicable?.find(item=>item.boundary===boundary)?.reason?.trim())continue;
-  const requirement=state?.user_decisions?.find(item=>item.boundary===boundary);
-  if(!requirement)decisionError('user-decision-response-required',boundary);
-  assertUserDecisionRequirement(requirement,options);
- }
+ return nativeCoverage(nativeContractVerify({root:rootFor(options),kind:'work-unit-user-decision',document:{work_unit:workUnit,state},needs:NEEDS.userDecision}),'user_decision_validated');
 }
 export function assertImplementationDecision(state,options={}) {
  return nativeCoverage(nativeContractVerify({root:rootFor(options),kind:'implementation-scope',document:state,needs:NEEDS.implementationScope}),'implementation_scope');
@@ -45,4 +37,9 @@ export function scaffoldDecisionSnapshot(decision) {
       java_version: profile.java_version,
     },
   };
+}
+
+// This query only computes the actual delta; classifications and original authorization remain native verification inputs.
+export function compareContinuationAssets(before,after,options={}) {
+ return nativeCoverage(nativeContractVerify({root:rootFor(options),kind:'continuation-comparison',document:{before,after},needs:NEEDS.userDecision}),'continuation_comparison');
 }

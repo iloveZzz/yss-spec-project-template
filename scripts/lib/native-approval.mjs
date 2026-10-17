@@ -93,7 +93,7 @@ function expectedFor(record,options){
 }
 function requireSuccess(result){if(result.exitCode!==0)throw Object.assign(new Error(result.message),{code:result.diagnostics[0]?.code??result.code,native:true});return result;}
 function currentRoles(options){return loadDigitalHumanRoles(path.join(rootFor(options),'.template-spec/agents/digital-human-roles.yaml'));}
-function isPlan(record,options){return record.gate_id==='gate.plan-approved'&&Boolean(record.plan_review_binding||options.checkpoint?.plan_review_control||currentRoles(options).gate_policy.review_execution?.review_bundles?.some(row=>row.aggregate_gate==='gate.plan-approved'&&row.aggregate_additional_review_task==='forbidden'));}
+function isPlan(record,options){return record.schema_version!==3&&record.gate_id==='gate.plan-approved'&&Boolean(record.plan_review_binding||options.checkpoint?.plan_review_control||currentRoles(options).gate_policy.review_execution?.review_bundles?.some(row=>row.aggregate_gate==='gate.plan-approved'&&row.aggregate_additional_review_task==='forbidden'));}
 function plan(record,options){
  const state=options.checkpoint,ref=state?.plan_approval_ref||state?.gates?.['gate.plan-approved']?.approval_ref;
  if(!ref)approvalError('APPROVAL_CONTEXT_REQUIRED','Plan 聚合批准需要完整当前 checkpoint');
@@ -117,12 +117,13 @@ export function validateApprovalRecordFile(file,options={}){
 export const readApprovalHistory=(file,options={})=>validateApprovalRecordFile(file,{...options,history:true});
 export const assertCurrentApproval=(record,expected,options={})=>validateApprovalRecord(record,{...options,expected,history:false,requireApproved:true});
 export function assertApprovedGateHasValidApproval(gateId,state,options={}){
- if(!countersignRuleForGate(currentRoles(options).gate_policy,gateId))return;
+ if(!state?.approval_ref&&!countersignRuleForGate(currentRoles(options).gate_policy,gateId))return;
  if(!state||typeof state!=='object')approvalError('APPROVAL_CONTEXT_REQUIRED','缺少门禁状态');
  if(state.status!=='approved')return;
  if(!state.approval_ref)approvalError('APPROVAL_REFERENCE_REQUIRED','已批准门禁缺少 approval_ref');
  assertCurrentApprovalEvidenceRef(state.approval_ref);
  const file=resolveApprovalRef(state.approval_ref,options.checkpointPath||ROOT,options),record=loadApprovalRecord(file,gateId,options);
+ if(record.schema_version!==3&&!countersignRuleForGate(currentRoles(options).gate_policy,gateId))return;
  if(record.gate_id!==gateId)approvalError('APPROVAL_CURRENT_INVALID','批准记录门禁与请求门禁不一致');
  if(gateId==='gate.plan-approved'&&isPlan(record,options)){if(JSON.stringify(canonicalValue(state))!==JSON.stringify(canonicalValue(options.checkpoint?.gates?.[gateId])))approvalError('APPROVAL_CURRENT_INVALID','传入 Plan 状态与当前 checkpoint 不一致');return plan(record,options);}
  return nativeApprovalRecord({root:rootFor(options),file,gate:gateId,expected:approvalExpectationFromState(gateId,state,options)});

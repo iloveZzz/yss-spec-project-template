@@ -126,7 +126,8 @@
                 "minLength": 1
               }
             }
-          }
+          },
+          "description": "Each ref/digest binds a JSON/YAML object {schema_version:1,changes:[{path,before:{present,value?},after:{present,value?}}]}. Go recomputes all actual JSON Pointer differences: objects recurse, arrays are atomic, missing differs from null. The union must match exactly. presentation-only requires equal parsed models (Markdown frontmatter plus body, CRLF normalized only) and empty changes. Other classes require an original continuation_paths selector outside all protected decision_basis and implementation limits."
         },
         "material_changes": {
           "type": "array",
