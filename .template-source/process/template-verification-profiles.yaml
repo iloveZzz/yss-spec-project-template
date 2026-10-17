@@ -723,12 +723,14 @@ profiles:
         depends_on: []
         failure_mode: "推进意图被当作冻结战略包的批准或交付证据"
       - id: check.role-independent-formal-current
-        run: "node --test --test-concurrency=1 scripts/fixtures/role-independent-draft/formal-plan.test.mjs scripts/fixtures/role-independent-draft/professional-plan.test.mjs scripts/fixtures/role-independent-draft/worker-chain.test.mjs"
+        run: "node --test --test-concurrency=1 scripts/fixtures/role-independent-draft/formal-plan.test.mjs scripts/fixtures/role-independent-draft/professional-plan.test.mjs scripts/fixtures/role-independent-draft/worker-chain.test.mjs scripts/fixtures/role-independent-draft/handoff-chain.test.mjs"
         group: implementation
         resources: [native-cli]
         inputs_complete: true
         input_patterns:
           - "scripts/fixtures/role-independent-draft/**"
+          - ".agents/skills/yss-stage-decision/references/domain-strategy.schema.json"
+          - ".agents/skills/yss-stage-decision/references/stage-decision-package.schema.json"
           - "scripts/lib/task-package.mjs"
           - "scripts/lib/review-package.mjs"
           - "scripts/lib/plan-review-control.mjs"
@@ -1845,6 +1847,8 @@ profiles:
         inputs_complete: true
         input_patterns:
           - ".agents/skills/yss-stage-decision/tests/**"
+          - ".agents/skills/yss-stage-decision/references/domain-strategy.schema.json"
+          - ".agents/skills/yss-stage-decision/references/stage-decision-package.schema.json"
           - ".agents/skills/yss-tactical-design/tests/**"
         depends_on: []
         failure_mode: "默认工作包样例在阶段决策或战术设计中产生失效引用"
