@@ -5,9 +5,13 @@ import {parseContextContract,resolveContextTermRefs} from '../../lib/context-con
 import {digest} from '../../lib/strategic-handoff-io.mjs';import {finalizeDelivery,importBundle} from '../../lib/strategic-handoff.mjs';
 
 test('installed Spec completes role-free Handoff5; Backend imports Receipt3 while source is unavailable',async()=>{
- const f=installedFixture('spec'),receiver=installedFixture('backend'),{root,read,write,asset,run}=f,feature='feature.demo',data=JSON.parse(fs.readFileSync(new URL('./handoff-data.json',import.meta.url)));
+ const previous=process.env.YSS_CHAIN_RESUME?JSON.parse(fs.readFileSync(process.env.YSS_CHAIN_RESUME)):null;
+ const f=installedFixture('spec',{existingRoot:previous?.source}),receiver=installedFixture('backend',{existingRoot:previous?.receiver}),{root,read,write,asset,run}=f,feature='feature.demo',data=JSON.parse(fs.readFileSync(new URL('./handoff-data.json',import.meta.url)));
  const doc=ref=>parseSliceYaml(read(ref)),bind=ref=>({...asset(ref),version:'v1',digest:'sha256:'+asset(ref).digest}),cpRef='.work/feature-demo/checkpoint.json',sourceSkillCommands=[];let delivery,imported;
  try{
+  if(previous){f.calls.push(...previous.source_calls);receiver.calls.push(...previous.receiver_calls);}
+  if(!fs.existsSync(path.join(root,'.agents/skills/yss-stage-decision/scripts/validate-domain-strategy.mjs'))){const plan=path.join(path.dirname(root),'source-skill-plan.json');run('plan-source-skill-install',['skills','ensure','yss-stage-decision','--plan','--out',plan]);run('apply-source-skill-install',['skills','--apply','--plan-file',plan]);}
+  if(!previous){
   for(const [ref,bytes]of Object.entries(data.assets))write(ref,bytes);
   write('progression-target.json',{schema_version:1,kind:'lifecycle-progression-target',target:'spec-approved'});
   write('spec-input.json',{feature_id:feature,scope:{impacted_areas:['backend']},status:'draft'});
@@ -22,6 +26,8 @@ test('installed Spec completes role-free Handoff5; Backend imports Receipt3 whil
   const artifact=key=>{const x=data.handoff.source[key];return {id:x.id,version:x.version,digest:['domain_strategy_ref','stage_decision_package_ref'].includes(key)?digest(doc(x.persisted_ref)):'sha256:'+asset(x.persisted_ref).digest};};
   p.aggregate.artifact_bindings=['domain_strategy_ref','stage_decision_package_ref'].map(artifact);write('plan-approval.json',p.aggregate);
   const cp=doc(cpRef);cp.gates['gate.plan-approved']={status:'approved',reason:'当前专业审查和原始TEST决定均通过',approval_ref:'plan-approval.json',subject_ref:p.aggregate.subject_ref,subject_digest:p.aggregate.subject_digest,approval_scope:p.aggregate.approval_scope,basis:p.aggregate.basis,evidence_refs:['professional/bundle.json','decision/decision.json']};write(cpRef,cp);
+  }
+  const p={aggregate:doc('plan-approval.json')},artifact=key=>{const x=data.handoff.source[key];return{id:x.id,version:x.version,digest:['domain_strategy_ref','stage_decision_package_ref'].includes(key)?digest(doc(x.persisted_ref)):'sha256:'+asset(x.persisted_ref).digest};};
   for(const [kind,ref]of [['domain-strategy','source/strategy.yaml'],['stage-decision-package','source/stage.yaml']]){
    const argv=[process.execPath,path.join(root,'.agents/skills/yss-stage-decision/scripts/validate-'+kind+'.mjs'),path.join(root,ref),'--root',root],r=spawnSync(argv[0],argv.slice(1),{cwd:root,encoding:'utf8'});sourceSkillCommands.push({argv,exit_code:r.status,stdout:r.stdout,stderr:r.stderr});assert.equal(r.status,0,r.stderr);
   }
@@ -31,7 +37,7 @@ test('installed Spec completes role-free Handoff5; Backend imports Receipt3 whil
    const task=f.draftTask({taskRef:name+'-review-task.json',unit,stage,impacts:['backend'],featureId:feature,checkpointRef:cpRef,inputs:['spec-input.json',source,subject,...(name==='handoff'?['source/tickets.yaml']:[])],paths:[name+'-reports'],outputs:[name+'-reports/report.json']});task.execution_state='Reviewer';task.review_context={candidate:asset(subject),policy:task.policy,check_ids:task.skill_source.check_ids,approval_scope:[feature],basis:task.input_bindings,review:{mode:'self-check',provenance:task.provenance}};write(name+'-reports/report.json',{result:'passed',subject:asset(subject),synthetic:true});f.finishTask(task,{scope:[feature],candidate:task.review_context.candidate});run('actual-'+name+'-self-check',['contract','verify','--kind','task','--file',task.provenance.task_ref]);
    const ref=name+'-approval.json';write(ref,{schema_version:3,artifact_bindings:artifacts,gate_id:gate,decision:'approved',actor_kind:'agent',subject_ref:subject,subject_digest:asset(subject).digest,approval_scope:[feature],basis:task.input_bindings,evidence_refs:[task.provenance.execution_ref],review_task_ref:task.provenance.task_ref,review_task_digest:asset(task.provenance.task_ref).digest,check_ids:task.skill_source.check_ids,policy:task.policy,review:task.review_context.review,...(decision?{user_decision_ref:decision}:{})});return ref;
   }
-  const specApproval=reviewAsset({name:'spec',subject:'source/spec.md',unit:'work-unit.spec-synthesis',stage:'stage.spec-architecture',source:prep.provenance.task_ref,gate:'gate.spec-baseline-approved',decision:'decision/decision.json',artifacts:[artifact('spec_ref')]});
+  const specApproval=reviewAsset({name:'spec',subject:'source/spec.md',unit:'work-unit.spec-synthesis',stage:'stage.spec-architecture',source:'spec-prepare.json',gate:'gate.spec-baseline-approved',decision:'decision/decision.json',artifacts:[artifact('spec_ref')]});
   const handoff=structuredClone(data.handoff);handoff.package_export.approvals={};
   for(const [key,source]of Object.entries(handoff.source)){
    const plan=['domain_strategy_ref','stage_decision_package_ref'].includes(key),business=key==='business_ticket_set_ref',ref=source.persisted_ref,approval=plan?p.aggregate:doc(specApproval);source.digest=plan?digest(doc(ref)):'sha256:'+asset(ref).digest;
