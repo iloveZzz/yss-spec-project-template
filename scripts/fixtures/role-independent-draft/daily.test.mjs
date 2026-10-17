@@ -25,6 +25,7 @@ try{
  const record={schema_version:2,policy_version:2,task_id:'DAILY-2',delivery_path:'daily',formal_bindings:[],goal_ref:'facts.md',acceptance_ref:'facts.md',repository:{root:repo,baseline_sha:base,baseline_ref:'facts.md',rollback_ref:'facts.md'},scope:{paths:['src'],impacts:['backend','no-api'],risk_ref:'facts.md'},skills:[{ref:'skill.md',digest:digest('skill.md')}],inputs:[],commands:[{argv:[process.execPath,'--check','src/server.mjs'],cwd:'.'}],api:{mode:'none',reason:'没有API变化'}};
  let sections='';const task=()=>write('task.md',`# 日常任务\n${sections}\n<!-- yss-task-evidence -->\n\`\`\`json\n${JSON.stringify(record)}\n\`\`\`\n`);
  const run=(label,action='verify-daily',expected='OK')=>{task();const args=['lifecycle',action,'--root',root,'--task','task.md','--implementation-root',repo,'--base',base,'--json'];const r=exec(label,bin,args,root),p=JSON.parse(r.stdout);assert.equal(p.code,expected,`${label}: ${JSON.stringify(p.result?.diagnostics)}`);return p.result;};
+ const human=label=>{task();const args=['lifecycle','route','--root',root,'--task','task.md','--implementation-root',repo,'--base',base,'--human'];const r=exec(label,bin,args,root);assert.equal(r.status,0,r.stderr);assert.ok(r.stdout.includes('测试 → 适用复核（默认真实自检，按当前要求提供独立或外部复核）'),r.stdout);assert.ok(r.stdout.includes('本路由只读，不授予实现、批准或发布资格'),r.stdout);};
  const populate=()=>{
   const current=run('route-current','route');assert.equal(current.delivery_path,record.delivery_path);
   const argv=record.commands[0].argv,r=exec('actual-implementation',argv[0],argv.slice(1),repo);assert.equal(r.status,0);
@@ -38,7 +39,7 @@ try{
   const assessment={mode:'self-check',provenance:{...provenance,execution_ref:'review-execution.json'}};
   const review={assessment,result:'passed',blocking_findings:[],candidate_digest:current.candidate_digest};write('review.json',review);record.review={...review,ref:'review.json',digest:digest('review.json')};return current;
  };
- const current=populate();run('ordinary-selfcheck-without-registry');
+ const current=populate();run('ordinary-selfcheck-without-registry');human('daily2-human-current');
  record.schema_version=1;run('mixed-record','route','DAILY_VERSION');record.schema_version=2;
  record.policy_version=99;run('unknown-policy','route','DAILY_VERSION');record.policy_version=2;
  record.tests[0].exit_code=1;run('failed-actual-test','verify-daily','DAILY_EVIDENCE');record.tests[0].exit_code=0;
@@ -70,7 +71,7 @@ try{
  write('spec-lite.md','当前功能、验收及 src 实现范围。\n');const user=buildDecisionFixture(path.join(root,'decision'),{boundary:'standard-change-approved',scope:['src'],subjectRef:path.join(root,'spec-lite.md')});
  record.delivery_path='standard';record.scope.impacts=['backend','no-api','behavior-change'];record.spec_lite={ref:'spec-lite.md',digest:digest('spec-lite.md')};
  record.standard_decision={id:'standard-change-approved',decision:'approved',actor_kind:'human',decided_by:'person.requester',spec_lite_digest:record.spec_lite.digest,response_ref:'decision/decision.json',response_digest:digest('decision/decision.json')};
- populate();run('standard-real-same-requester');
+ populate();run('standard-real-same-requester');human('standard2-human-current');
  user.respond({text:'撤回批准',decision:'rejected',time:'2026-09-05T01:04:00Z'});user.save();record.standard_decision.response_digest=digest('decision/decision.json');run('standard-revoked','route','user-decision-not-approved');
  // Backend uses its real current Profile policies and still requires actual business input.
  fs.cpSync(path.join(source,'profiles/backend/.template-spec/process'),path.join(root,'.template-spec/process'),{recursive:true});
