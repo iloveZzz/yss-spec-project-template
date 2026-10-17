@@ -19,6 +19,6 @@
 
 ## Grok 约束
 
-- 群聊 2–6 人。逻辑协作组更大时用 1:1 异步交接，不要改 YAML `stage_groups`。
+- 群聊 2–6 人。参与者更多时用 1:1 异步交接。
 - 全部 Bot 共享云计算机。写范围只写在任务包里。
 - 发邮件、改生产等走 Grok Allow；不等于生命周期门禁已过。会签写 git 记录并跑 `scripts/verify-approval-record`。

@@ -252,7 +252,7 @@ test('backend technical design and engineering contract share one prepared revie
  const {contextBinary}=await import('../../../../scripts/lib/native-context.mjs');
  const root=makeRoot('yss-backend-design-review-','backend');
  t.after(()=>rmSync(root,{recursive:true,force:true}));
- const write=(ref,value)=>{mkdirSync(path.dirname(path.join(root,ref)),{recursive:true});writeFileSync(path.join(root,ref),typeof value==='string'?value:JSON.stringify(value));};
+ const write=(ref,value)=>{mkdirSync(path.dirname(path.join(root,ref)),{recursive:true});writeFileSync(path.join(root,ref),typeof value==='string'||Buffer.isBuffer(value)?value:JSON.stringify(value));};
  const asset=ref=>({ref,digest:digest(readFileSync(path.join(root,ref)))});
  const gateIds=['gate.technical-design-approved','gate.engineering-contract-approved'];
  const checkpoint={schema_version:1,repository_mode:'project-instance',mode:'audit',status:'routing',stage:'stage.technical-design',artifacts:{},gates:{},checks:{},context_reconciliation:{status:'pending',ref:null,evidence_refs:[]},next_work_unit:null,ticket_sync:{},verification:{},human_review:{},git_checkpoint:{},blockers:[],rollback:[]};
@@ -262,11 +262,14 @@ test('backend technical design and engineering contract share one prepared revie
   checkpoint.gates[id]={status:'ready-for-human',reason:'待独立审查',subject_ref:`input/subject-${i}.json`,subject_digest:asset(`input/subject-${i}.json`).digest,approval_scope:[`scope-${i}`],drafter_principal_ref:'agent.architecture',basis:[asset(`input/evidence-${i}.txt`)],evidence_refs:[`input/evidence-${i}.txt`]};
  }
  write('input/checkpoint.json',checkpoint);
- const prepared=spawnSync(process.execPath,[path.join(root,'scripts/prepare-review-package'),'--root',root,'--checkpoint','input/checkpoint.json',...gateIds.flatMap(id=>['--check',id]),'--role','role.test-agent','--actor','agent.reviewer','--reviewer-principal','principal.reviewer','--drafter-principal','agent.architecture','--implementation-actor','agent.architecture','--task-id','design-review','--review-session','session.design','--work-unit','work-unit.technical-design','--output-dir','reviews/design'],{encoding:'utf8',cwd:root});
+ // 新字段随本仓 schema 与准备入口发布；初始化实例仍是固定版本 Bundle，这里覆盖为当前源。
+ for(const ref of ['.template-spec/process/schemas/approval-record.schema.json','.template-spec/process/schemas/review-bundle.schema.json','scripts/prepare-review-package'])write(ref,readFileSync(path.join(ROOT,ref)));
+ const prepared=spawnSync(process.execPath,[path.join(root,'scripts/prepare-review-package'),'--root',root,'--checkpoint','input/checkpoint.json',...gateIds.flatMap(id=>['--check',id]),'--role','role.test-agent','--actor','agent.reviewer','--reviewer-principal','principal.reviewer','--drafter-principal','agent.architecture','--implementation-actor','agent.architecture','--task-id','design-review','--review-session','session.design','--work-unit','work-unit.technical-design','--output-dir','reviews/design','--independence','same-session'],{encoding:'utf8',cwd:root});
  assert.equal(prepared.status,0,prepared.stderr);
  const bundle=parseDocument(readFileSync(path.join(root,JSON.parse(prepared.stdout).bundle_ref),'utf8')).toJS();
  assert.deepEqual(bundle.reviews.map(row=>row.gate_id).sort(),[...gateIds].sort());
  assert.ok(bundle.reviews.every(row=>row.decision==='pending'));
+ assert.deepEqual(bundle.independence,{mode:'same-session'},'独立性只如实记录');
  const verify=()=>spawnSync(contextBinary().binary,['evidence','verify','--kind','approval','--root',root,'--file','reviews/design/approved.yaml','--require-approved','--checkpoint','input/checkpoint.json'],{encoding:'utf8',cwd:root});
  for(const row of bundle.reviews)row.decision='approved';
  write('reviews/design/approved.yaml',stringifyYaml(bundle));

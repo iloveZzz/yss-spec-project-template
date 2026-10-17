@@ -134,6 +134,9 @@
     },
     "plan_review_binding": {
       "$ref": "plan-review-control.schema.json#/$defs/binding"
+    },
+    "independence": {
+      "$ref": "#/$defs/independence"
     }
   },
   "$comment": "Full structure schema retains history/draft readability. Current kernel requires nonempty independently bound subject/scope/basis/identity and current task; no history result authorizes execution.",
@@ -185,5 +188,27 @@
         }
       }
     }
-  ]
+  ],
+  "$defs": {
+    "independence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode"
+      ],
+      "description": "审查与起草/实现是否在不同 Agent 会话中进行；仅如实记录，不改变放行规则。缺省表示未声明。",
+      "properties": {
+        "mode": {
+          "enum": [
+            "separate-session",
+            "same-session"
+          ]
+        },
+        "evidence_ref": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
 }

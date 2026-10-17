@@ -262,66 +262,6 @@ roles:
       implementation uses the frontend-engineer role and yss-ui. Prototypes use
       offline HTML/CSS/JavaScript and project DESIGN.md; production component
       facts remain downstream.
-stage_groups:
-  - id: group.harness-entry
-    name: Harness 入口
-    stage: stage.harness-entry
-    members:
-      - role.harness-orchestrator
-      - role.architecture-agent
-      - role.test-agent
-  - id: group.tactical-design
-    name: 技术设计
-    stage: stage.technical-design
-    members:
-      - role.harness-orchestrator
-      - role.architecture-agent
-      - role.test-agent
-  - id: group.slice-contract
-    name: Slice Contract
-    stage: stage.slice-contract
-    members:
-      - role.harness-orchestrator
-      - role.architecture-agent
-      - role.backend-agent
-      - role.test-agent
-  - id: group.implementation-repository-preparation
-    name: 实现仓库准备
-    stage: stage.implementation-repository-preparation
-    members:
-      - role.harness-orchestrator
-      - role.architecture-agent
-      - role.backend-agent
-      - role.test-agent
-  - id: group.slice-implementation
-    name: 垂直切片实现
-    stage: stage.slice-implementation
-    members:
-      - role.harness-orchestrator
-      - role.backend-agent
-      - role.test-agent
-  - id: group.verification
-    name: 独立验证
-    stage: stage.verification
-    members:
-      - role.harness-orchestrator
-      - role.architecture-agent
-      - role.test-agent
-  - id: group.plan
-    name: Plan
-    stage: stage.plan
-    members:
-      - role.harness-orchestrator
-      - role.requirements-manager
-      - role.product-manager
-  - id: group.spec
-    name: Spec
-    stage: stage.spec-architecture
-    members:
-      - role.harness-orchestrator
-      - role.requirements-manager
-      - role.product-manager
-      - role.test-agent
 gate_policy:
   default_if_unlisted: reject-unlisted
   runtime_side_effect_approval: biological-human

@@ -1,6 +1,6 @@
 # 数字人角色
 
-结构化事实源是 `.template-spec/agents/digital-human-roles.yaml`。角色、技能、协作组和会签级别与运行时无关。Claude Code、Cursor、Codex、Hermes、Grok Bot 等只通过 YAML `runtimes` 绑定。冲突时以 YAML 为准。
+结构化事实源是 `.template-spec/agents/digital-human-roles.yaml`。角色、技能和会签级别与运行时无关。Claude Code、Cursor、Codex、Hermes、Grok Bot 等只通过 YAML `runtimes` 绑定。冲突时以 YAML 为准。
 
 ## 业务上游 profile 的用户边界
 
@@ -26,7 +26,7 @@
 
 ## 会签人
 
-`gate_policy.digital_human_review` 与 `dual_digital_human` 是「门禁 × 起草者 × 会签人」规则，不是门禁名单。`stage_groups` 只表示可协作成员，商务和主控不会因此成为会签人。战略 profile 使用 `default_if_unlisted: reject-unlisted`；新增活动 gate 未显式分类时以 `GATE_POLICY_REQUIRED` 阻断，不回退为人工会签。
+`gate_policy.digital_human_review` 与 `dual_digital_human` 是「门禁 × 起草者 × 会签人」规则，不是门禁名单。会签人只由本节规则与 `review_capabilities` 决定；旧版 `stage_groups` 已退役，旧实例保留时只读忽略。战略 profile 使用 `default_if_unlisted: reject-unlisted`；新增活动 gate 未显式分类时以 `GATE_POLICY_REQUIRED` 阻断，不回退为人工会签。
 
 | 门禁 / 工作单元 | 起草 | 会签 |
 |---|---|---|
@@ -39,13 +39,13 @@
 | `gate.strategic-design-handoff-approved` | `role.product-manager` | `role.requirements-manager` |
 | `gate.product-design-approved` | `role.product-manager` | 当前真实用户；无 UI/体验影响时带依据 `not-applicable` |
 
-按战略主路径计算，Plan bundle、Spec 复核和 Handoff 复核构成无 UI 场景的 3 次数字人审查任务，用户只在 Plan、Spec 暂停 2 次。命中 UI/体验影响时增加一次原型独立复核和一次产品设计确认，因此为 4 次数字人审查任务、3 次用户确认。`stage_groups`、商务输入、主控和自动检查不计为会签任务。
+按战略主路径计算，Plan bundle、Spec 复核和 Handoff 复核构成无 UI 场景的 3 次数字人审查任务，用户只在 Plan、Spec 暂停 2 次。命中 UI/体验影响时增加一次原型独立复核和一次产品设计确认，因此为 4 次数字人审查任务、3 次用户确认。商务输入、主控和自动检查不计为会签任务。
 
 当前活动战略 gate 只有 Plan、Spec、条件性产品设计和战略交接。`check.*` 保留专业结论与证据，不单独请求用户批准；旧 gate 只读，不得继续流转。
 
 Plan 的领域战略与阶段决策检查由产品经理在一个 `review-bundle.plan` 任务中逐项给出结论。bundle 只包含实际命中的 check；`gate.plan-approved` 使用独立批准记录，并通过同一个 `review_session_id` 复用本次审查。没有领域或阶段决策影响时不生成空 bundle。旧独立批准记录继续可读，不因协议升级失效。
 
-会签写入 `.work/<feature>/gates/<gate-id>-approval.yaml`，形状见 `.template-spec/templates/approval-record-template.yaml`。恢复前运行 `scripts/verify-approval-record`。错误会签只能得到 `blocked`，不能把门禁标成 `approved`。Checkpoint 里会签桶门禁为 `approved` 时必须有可读 `approval_ref`。
+会签写入 `.work/<feature>/gates/<gate-id>-approval.yaml`，形状见 `.template-spec/templates/approval-record-template.yaml`。记录可带 `independence`（`separate-session` / `same-session`），如实说明审查是否在独立 Agent 会话中进行；它只记录、不改变放行，`scripts/prepare-review-package --independence` 可写入。恢复前运行 `scripts/verify-approval-record`。错误会签只能得到 `blocked`，不能把门禁标成 `approved`。Checkpoint 里会签桶门禁为 `approved` 时必须有可读 `approval_ref`。
 
 `paused-human-gate` 表示等待上述指定会签人，不是「必须是生物人」。
 
@@ -55,7 +55,7 @@ Plan 的领域战略与阶段决策检查由产品经理在一个 `review-bundle
 
 1. 人默认只跟主控说话。
 2. 主控按阶段 1:1 指定一个 owner，并给任务包（输入、写范围、禁止 skill、验收、验证命令）。
-3. 需要可见会签时使用 YAML `stage_groups` 的**逻辑协作组**。这不是某个产品的群聊人数限制。
+3. 需要可见会签时由主控把相关角色拉入同一会话或按 1:1 交接；会签人只由 `gate_policy` 决定。
 4. 权威结论写回 git。运行时记忆只记该数字人的稳定偏好。
 5. 写隔离一律靠任务包。某运行时若共享磁盘或会话，适配器必须声明 `shared_workspace_is_not_security_boundary: true`，不得把实例当成沙箱。
 6. `project-instance` 复制角色实例并绑定仓库路径。禁止按功能再拆实例。
@@ -67,7 +67,7 @@ Plan 的领域战略与阶段决策检查由产品经理在一个 `review-bundle
 |---|---|---|
 | `runtime.generic` | 任何能加载 `core_skills` 并接受任务包的 Agent | 通用会话 / 人设 / system prompt |
 | `runtime.skill-projection` | `yss-skill-registry.yaml` 的 `agent_runtime_roots`（claude、codex、cursor、hermes、pi、qoder、trae） | 投影技能 + subagent 任务包 |
-| `runtime.grok` | Grok Bot | 持久 Bot、群聊或 1:1 交接；群超过 6 人改 1:1，不改逻辑协作组 |
+| `runtime.grok` | Grok Bot | 持久 Bot、群聊或 1:1 交接；群超过 6 人改 1:1 |
 
 新增平台：先加 `runtimes` 条目，再写适配说明。不要把平台限制写进 `roles`。
 

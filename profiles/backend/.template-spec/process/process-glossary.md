@@ -21,7 +21,6 @@
 | 运行时副作用审批 | 对发消息、改生产、付款、删数据等工具动作的账号级确认。 | — | 点 Allow 不等于门禁已批准或可发布。避免只称「Grok 平台审批」。 |
 | Ticket 状态 | Tracker 五态：`needs-triage`、`needs-info`、`ready-for-agent`、`ready-for-human`、`wontfix`。 | — | 不要称为数字人角色或「标准角色」；不要与合同状态混用。 |
 | 合同状态 | 战术设计合同与 Slice Contract 等资产状态：`draft`、`ready-for-human`、`approved`、`blocked`、`stale`、`drift`、`new_impacts`、`not-applicable`。 | — | 不要与 Ticket 五态混用。`ready-for-human` 出现在合同和 Ticket 时，以所在资产类型为准。 |
-| 阶段协作组 | 某阶段需要共同可见会签的逻辑成员集合。 | — | 不是某个产品的群聊；平台人数上限只写在对应 `runtimes`。 |
 | 需求经理 | `role.requirements-manager`：起草 Plan 与 Spec，提出 `CONTEXT.md` 术语。 | — | 不冻结原型、OpenAPI 或代码；不得会签自己起草的 Plan / Spec。 |
 | 产品经理 | `role.product-manager`：Plan / Spec 的独立会签人，负责优先级、产品设计影响与商业约束。 | — | 会签不替代真实用户决定；不得独立批准对外商务合同。 |
 | 商务（已退役） | 已退役旧职称。不构成当前研发角色。 | — | 禁止当作当前 `role.*` 或会签人。 |

@@ -2,7 +2,7 @@ schema_version: 1
 registry_id: yss.digital-human-roles
 status: active
 description: >-
-  数字人角色、主控、阶段协作组、技能启用/禁止与生命周期会签的单一事实源。 角色配置与运行时无关；Cursor / Codex / Grok 等只通过 runtimes 绑定。 Ticket 五态不是数字人角色。
+  数字人角色、主控、技能启用/禁止与生命周期会签的单一事实源。 角色配置与运行时无关；Cursor / Codex / Grok 等只通过 runtimes 绑定。 Ticket 五态不是数字人角色。
 canonical_path: .template-spec/agents/digital-human-roles.yaml
 runtime_policy:
   overlay_on_lifecycle: true
@@ -54,7 +54,7 @@ runtimes:
     shared_workspace_is_not_security_boundary: true
     side_effect_approval: biological-human
     notes: >-
-      Grok Bot 适配。群聊 2–6 人；超出则改 1:1 交接，不改逻辑阶段协作组。 全部 Bot 共享云计算机，写范围只靠任务包。不新增 agent_runtime_roots.grok。
+      Grok Bot 适配。群聊 2–6 人；超出则改 1:1 交接。 全部 Bot 共享云计算机，写范围只靠任务包。不新增 agent_runtime_roots.grok。
 
 orchestrator:
   id: role.lifecycle-orchestrator
@@ -140,37 +140,6 @@ roles:
     description: >-
       Own test code, defect records, fresh verification, and frontend implementation verification evidence. Review every implementation slice through the unique code-review skill, loading YSS and Alibaba specialist skills as read-only Standards sources. Recommend release readiness; do not close gate.delivery-accepted. Do not change product scope or write feature implementation. Must be a different instance from the implementer.
 
-stage_groups:
-  - id: group.plan
-    name: Plan
-    stage: stage.plan
-    members: [ role.lifecycle-orchestrator, role.requirements-manager, role.product-manager ]
-  - id: group.spec
-    name: Spec
-    stage: stage.spec-architecture
-    members: [ role.lifecycle-orchestrator, role.requirements-manager, role.product-manager, role.test-engineer ]
-  - id: group.product-design
-    name: 产品设计
-    stage: stage.product-design
-    members: [ role.lifecycle-orchestrator, role.product-manager, role.requirements-manager, role.frontend-engineer ]
-  - id: group.contract
-    name: 契约
-    stage: stage.system-data-engineering
-    members: [ role.lifecycle-orchestrator, role.backend-engineer, role.frontend-engineer, role.test-engineer, role.product-manager ]
-  - id: group.tickets
-    name: Ticket 正式化
-    stage: stage.ticket-formalization
-    members: [ role.lifecycle-orchestrator, role.project-manager, role.frontend-engineer, role.backend-engineer, role.test-engineer ]
-  - id: group.implementation
-    name: 实现
-    stage: stage.vertical-slice-implementation
-    members: [ role.lifecycle-orchestrator, role.frontend-engineer, role.backend-engineer, role.test-engineer ]
-  - id: group.release
-    name: 发布
-    stage: stage.verification-release-retrospective
-    members: [ role.lifecycle-orchestrator, role.project-manager, role.test-engineer, role.product-manager ]
-
-# 职称继续用于导航；正式专业审查按能力绑定同一独立实例，不授予实现权限。
 review_capabilities:
   - id: capability.strategic-handoff
     name: 战略交接与证据审查

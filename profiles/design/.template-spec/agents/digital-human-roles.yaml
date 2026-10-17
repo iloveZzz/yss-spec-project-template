@@ -40,7 +40,7 @@ user_decision_policy:
     - business-ticket-approval-v1
 registry_id: yss.digital-human-roles
 status: active
-description: 数字人角色、主控、阶段协作组、技能启用/禁止与生命周期会签的单一事实源。 角色配置与运行时无关；Claude / Cursor /
+description: 数字人角色、主控、技能启用/禁止与生命周期会签的单一事实源。 角色配置与运行时无关；Claude / Cursor /
   Codex / Grok 等只通过 runtimes 绑定。 Ticket 五态不是数字人角色。
 canonical_path: .template-spec/agents/digital-human-roles.yaml
 runtime_policy:
@@ -94,7 +94,7 @@ runtimes:
     overflow: one-to-one-handoff
     shared_workspace_is_not_security_boundary: true
     side_effect_approval: biological-human
-    notes: Grok Bot 适配。群聊 2–6 人；超出则改 1:1 交接，不改逻辑阶段协作组。 全部 Bot 共享云计算机，写范围只靠任务包。不新增
+    notes: Grok Bot 适配。群聊 2–6 人；超出则改 1:1 交接。 全部 Bot 共享云计算机，写范围只靠任务包。不新增
       agent_runtime_roots.grok。
 orchestrator:
   id: role.lifecycle-orchestrator
@@ -225,44 +225,6 @@ roles:
       non-goals in Plan and release windows. Do not finalize Spec, API, tickets,
       or code. External quotes and contracts stay behind runtime side-effect
       approval by a biological human.
-stage_groups:
-  - id: group.plan
-    name: Plan
-    stage: stage.plan
-    members:
-      - role.lifecycle-orchestrator
-      - role.requirements-manager
-      - role.product-manager
-      - role.business
-  - id: group.spec
-    name: Spec
-    stage: stage.spec-architecture
-    members:
-      - role.lifecycle-orchestrator
-      - role.requirements-manager
-      - role.product-manager
-  - id: group.product-design
-    name: 产品设计
-    stage: stage.product-design
-    members:
-      - role.lifecycle-orchestrator
-      - role.product-manager
-      - role.requirements-manager
-  - id: group.tickets
-    name: Ticket 正式化
-    stage: stage.ticket-formalization
-    members:
-      - role.lifecycle-orchestrator
-      - role.product-manager
-      - role.requirements-manager
-  - id: group.strategy-handoff
-    name: 业务方案交接
-    stage: stage.ticket-formalization
-    members:
-      - role.lifecycle-orchestrator
-      - role.product-manager
-      - role.requirements-manager
-      - role.business
 gate_policy:
   default_if_unlisted: reject-unlisted
   evidence_only: []

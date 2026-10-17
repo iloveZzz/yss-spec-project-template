@@ -1,6 +1,6 @@
 # Harness Agent 角色
 
-结构化事实源是 `.template-spec/agents/digital-human-roles.yaml`。本 Profile 注册五个数字人角色：研发侧架构、后端、测试，以及负责 Plan / Spec 的需求经理和产品经理；`role.harness-orchestrator` 是系统编排组件，不计入角色。前端 Agent 已随前端整线退役（AR-12c），本 Profile 不派发前端实现。角色职责、协作组、运行时绑定和会签规则均以 YAML 为准，本文与 YAML 冲突时以 YAML 为准。
+结构化事实源是 `.template-spec/agents/digital-human-roles.yaml`。本 Profile 注册五个数字人角色：研发侧架构、后端、测试，以及负责 Plan / Spec 的需求经理和产品经理；`role.harness-orchestrator` 是系统编排组件，不计入角色。前端 Agent 已随前端整线退役（AR-12c），本 Profile 不派发前端实现。角色职责、运行时绑定和会签规则均以 YAML 为准，本文与 YAML 冲突时以 YAML 为准。
 
 ## 角色边界
 
@@ -49,12 +49,13 @@ Slice Implementation Contract 沿用编译器合同的 `architecture`、`fronten
 - 同一阶段、同一审查者能力可覆盖的边界合并为一个任务，每个边界用一个 `--check`。`gate.technical-design-approved` 与 `gate.engineering-contract-approved` 都在 `stage.technical-design`，均可由 `role.test-agent` 审查，应一次准备、一次审查；工程合同行另附当前用户决定。
 - 不能合并：`check.design-reviewed`（Slice Contract 主体，`stage.slice-contract`）与 `gate.fresh-verification-passed`（测试 Agent 起草，须由架构 Agent 会签）。
 - 修复后复审传 `--previous-subject <原审阅包主体>`，生成机械差异，审查者只看受影响项；差异不构成批准。
+- 用 `--independence separate-session|same-session`（可加 `--independence-evidence <子会话或任务引用>`）如实声明审查是否在独立 Agent 会话中进行。声明只记录、不改变放行；未声明在统计中计为“未声明”。
 
 ## 任务包与运行时
 
 数字人任务包必须包含 `task_id`、`work_unit_id`、`actor_id`、角色 ID、`runtime_id`、执行态、从 YAML 复制的 `core_skills` / `forbidden_skills`、合同引用、允许写路径、验收标准、验证命令和证据。使用 `taskPackageDefaults(roleId)` 生成默认技能集合，禁止手写第二套职责。
 
-`runtime.grok` 只是运行时适配器，群聊上限以 YAML `runtimes` 为准；超出时使用 1:1 交接，不改变逻辑协作组或角色集合。`.agents/skills` 是技能权威目录，其他 Agent 目录仅为生成投影。
+`runtime.grok` 只是运行时适配器，群聊上限以 YAML `runtimes` 为准；超出时使用 1:1 交接，不改变角色集合。`.agents/skills` 是技能权威目录，其他 Agent 目录仅为生成投影。
 
 任务包 Schema：`.template-spec/process/schemas/digital-human-task-package.schema.json`。
 

@@ -60,14 +60,9 @@ const seven = [
   "role.test-engineer"
 ];
 
-const genericAllowsSeven = clone();
-genericAllowsSeven.stage_groups[0].members = seven;
-validateDigitalHumanRoles(genericAllowsSeven, deps());
-
-const grokForbidsSeven = clone();
-grokForbidsSeven.stage_groups[0].members = seven;
-grokForbidsSeven.runtimes.find((runtime) => runtime.id === "runtime.grok").overflow = "forbid";
-mustFail(grokForbidsSeven, /禁止超过 6 人/, "Grok 适配器在 overflow=forbid 时拒绝七人协作组");
+const legacyGroups = clone();
+legacyGroups.stage_groups = [{ id: "group.plan", members: seven }];
+validateDigitalHumanRoles(legacyGroups, deps());
 
 const coupled = clone();
 coupled.roles[0].grok_title = "legacy";

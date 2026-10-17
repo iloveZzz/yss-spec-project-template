@@ -25,6 +25,7 @@ drafter_principal_ref: null
 
 # 新批准使用能力审查任务；只读 intake v2 不得作为正式审查任务。
 review_task_ref: null
+# 会话独立性：{mode: separate-session|same-session, evidence_ref?}；仅如实记录，不改变放行，缺省为未声明；声明时写成 independence: {mode: same-session}。
 review_task_digest: null
 capability_ids: []
 basis: []
