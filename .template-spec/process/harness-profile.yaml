@@ -7,6 +7,15 @@ audience:
   qualification_registry: not-required
 lifecycle:
   repository_modes: [project-instance]
+  allowed_stages:
+    - stage.entry-triage
+    - stage.plan
+    - stage.spec-architecture
+    - stage.product-design
+    - stage.system-data-engineering
+    - stage.ticket-formalization
+    - stage.vertical-slice-implementation
+    - stage.verification-release-retrospective
   entry_work_unit: work-unit.entry-triage
   terminal_work_unit: work-unit.release-and-retrospective
   terminal_stage: stage.verification-release-retrospective
