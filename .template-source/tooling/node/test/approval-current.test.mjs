@@ -13,7 +13,7 @@ import {fileURLToPath} from 'node:url';
 import {ROOT, loadRegistry} from '../../../../scripts/lib/lifecycle-registry.mjs';
 import {prepareReviewPackage} from '../../../../scripts/lib/review-package.mjs';
 import {approvalExpectedFromTask} from '../../../../scripts/lib/review-capabilities.mjs';
-import {parseDocument} from '../../../../scripts/vendor/yaml.mjs';
+import {parseDocument, stringify as stringifyYaml} from '../../../../scripts/vendor/yaml.mjs';
 import {readFileSync as snapshotRead,withValidationPhase} from '../../../../scripts/lib/validation-phase.mjs';
 import {sourceApproval} from '../../../../scripts/lib/strategic-handoff.mjs';
 import {makeRoot} from '../../../../tests/helpers/yss-instance.mjs';
@@ -246,3 +246,36 @@ test('a requested Spec gate cannot route through a Plan approval record',()=>fix
  const state={status:'approved',approval_ref:'plan-approval.json',subject_ref:'subject.json',approval_scope:['slice.current'],basis:f.expected.basis};
  assert.throws(()=>assertApprovedGateHasValidApproval('gate.spec-baseline-approved',state,{root:f.root,checkpoint:{gates:{'gate.plan-approved':state}}}),error=>error.code==='APPROVAL_CURRENT_INVALID'&&error.message.includes('门禁'));
 }));
+
+test('backend technical design and engineering contract share one prepared review task and one bundle',async t=>{
+ const {buildDecisionFixture}=await import('../../../../scripts/lib/testing/user-decision-fixture.mjs');
+ const {contextBinary}=await import('../../../../scripts/lib/native-context.mjs');
+ const root=makeRoot('yss-backend-design-review-','backend');
+ t.after(()=>rmSync(root,{recursive:true,force:true}));
+ const write=(ref,value)=>{mkdirSync(path.dirname(path.join(root,ref)),{recursive:true});writeFileSync(path.join(root,ref),typeof value==='string'?value:JSON.stringify(value));};
+ const asset=ref=>({ref,digest:digest(readFileSync(path.join(root,ref)))});
+ const gateIds=['gate.technical-design-approved','gate.engineering-contract-approved'];
+ const checkpoint={schema_version:1,repository_mode:'project-instance',mode:'audit',status:'routing',stage:'stage.technical-design',artifacts:{},gates:{},checks:{},context_reconciliation:{status:'pending',ref:null,evidence_refs:[]},next_work_unit:null,ticket_sync:{},verification:{},human_review:{},git_checkpoint:{},blockers:[],rollback:[]};
+ for(const [i,id]of gateIds.entries()) {
+  write(`input/evidence-${i}.txt`,`synthetic evidence ${i}`);
+  write(`input/subject-${i}.json`,{kind:'synthetic-review-package',gate_id:id,basis:[asset(`input/evidence-${i}.txt`)],drafter_principal_ref:'agent.architecture'});
+  checkpoint.gates[id]={status:'ready-for-human',reason:'待独立审查',subject_ref:`input/subject-${i}.json`,subject_digest:asset(`input/subject-${i}.json`).digest,approval_scope:[`scope-${i}`],drafter_principal_ref:'agent.architecture',basis:[asset(`input/evidence-${i}.txt`)],evidence_refs:[`input/evidence-${i}.txt`]};
+ }
+ write('input/checkpoint.json',checkpoint);
+ const prepared=spawnSync(process.execPath,[path.join(root,'scripts/prepare-review-package'),'--root',root,'--checkpoint','input/checkpoint.json',...gateIds.flatMap(id=>['--check',id]),'--role','role.test-agent','--actor','agent.reviewer','--reviewer-principal','principal.reviewer','--drafter-principal','agent.architecture','--implementation-actor','agent.architecture','--task-id','design-review','--review-session','session.design','--work-unit','work-unit.technical-design','--output-dir','reviews/design'],{encoding:'utf8',cwd:root});
+ assert.equal(prepared.status,0,prepared.stderr);
+ const bundle=parseDocument(readFileSync(path.join(root,JSON.parse(prepared.stdout).bundle_ref),'utf8')).toJS();
+ assert.deepEqual(bundle.reviews.map(row=>row.gate_id).sort(),[...gateIds].sort());
+ assert.ok(bundle.reviews.every(row=>row.decision==='pending'));
+ const verify=()=>spawnSync(contextBinary().binary,['evidence','verify','--kind','approval','--root',root,'--file','reviews/design/approved.yaml','--require-approved','--checkpoint','input/checkpoint.json'],{encoding:'utf8',cwd:root});
+ for(const row of bundle.reviews)row.decision='approved';
+ write('reviews/design/approved.yaml',stringifyYaml(bundle));
+ const missing=verify();
+ assert.match(missing.stdout+missing.stderr,/user-decision-missing/);
+ const engineering=bundle.reviews.find(row=>row.gate_id==='gate.engineering-contract-approved');
+ const decision=buildDecisionFixture(path.join(root,'decision'),{boundary:engineering.gate_id,scope:['scope-1'],subjectRef:path.join(root,'input/subject-1.json')});
+ engineering.user_decision_ref=path.relative(root,decision.ref);
+ write('reviews/design/approved.yaml',stringifyYaml(bundle));
+ const result=verify();
+ assert.equal(result.status,0,result.stdout+result.stderr);
+});
