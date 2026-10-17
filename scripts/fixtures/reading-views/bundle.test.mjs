@@ -80,15 +80,16 @@ test('yss renders an idempotent v2 bundle without navigation self-dependency for
 });
 test('an instance whose manifest schema is still v1-only keeps receiving v1 manifests from yss',async()=>{
  const {renderReadingBundle,checkReadingViews}=await import('../../lib/reading-view-bundle.mjs');
- const f=readingInstance({manifestSchema:'embedded'});managedPolicy(f);
+ const f=readingInstance({manifestSchema:'v1'});managedPolicy(f);
  assert.equal(renderReadingBundle(f.root,icp).status,'rendered');
  const m=JSON.parse(f.read(imanifest));assert.equal(m.schema_version,1);assert.ok(Object.values(m.renderer).every(value=>/^sha256:[a-f0-9]{64}$/.test(value)));
  assert.equal(checkReadingViews(f.root,icp,{required:true}).status,'current');
 });
 test('a v1 manifest whose Node renderer closure is gone must be migrated by yss, not accepted or downgraded',async()=>{
  const {renderReadingBundle,checkReadingViews}=await import('../../lib/reading-view-bundle.mjs');
- const f=readingInstance({manifestSchema:'embedded'});managedPolicy(f);renderReadingBundle(f.root,icp);
+ const f=readingInstance({manifestSchema:'v1'});managedPolicy(f);renderReadingBundle(f.root,icp);
  const v1=readFileSync(path.join(f.root,imanifest));
+ assert.equal(JSON.parse(v1).schema_version,1);
  for(const ref of Object.keys(JSON.parse(v1).renderer))rmSync(path.join(f.root,ref),{force:true});
  const result=checkReadingViews(f.root,icp,{required:true});
  assert.equal(result.status,'stale');assert.ok(result.blockers.some(row=>/reading-manifest-migration-required/.test(row)),JSON.stringify(result));
