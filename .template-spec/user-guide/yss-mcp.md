@@ -34,6 +34,7 @@ yss capabilities --json
 | `contract_view` | `yss contract view --kind slice` |
 | `explain` | `yss explain` |
 | `check` | `yss check` |
+| `trace` | `yss trace --feature <功能包>`（不写 HTML） |
 | `verify_gate` | `yss verify --gate` |
 
 结果与命令行同一 JSON envelope；失败时 `isError` 为真，逐项诊断在 envelope 的 `result` 中。全部工具只读：不写文件、不创建批准、不提交或推送，也不授予实现、合并或发布资格。需要写入的动作（init、sync、stage apply、git 等）仍在命令行按原授权执行。
