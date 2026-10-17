@@ -1,6 +1,6 @@
 # 数字人角色
 
-结构化事实源是 `.template-spec/agents/digital-human-roles.yaml`。角色、技能、协作组和会签级别与运行时无关。Cursor、Codex、Grok Bot 等只通过 YAML `runtimes` 绑定。冲突时以 YAML 为准。
+结构化事实源是 `.template-spec/agents/digital-human-roles.yaml`。角色、技能和会签级别与运行时无关。Cursor、Codex、Grok Bot 等只通过 YAML `runtimes` 绑定。冲突时以 YAML 为准。
 
 ## 何时读本文
 
@@ -38,7 +38,7 @@ Plan、产品设计、工程契约统一呈现适用检查后批准。`gate.deli
 
 1. 人默认只跟主控说话。
 2. 主控按阶段 1:1 指定一个 owner，并给任务包（输入、写范围、禁止 skill、验收、验证命令）。
-3. 需要可见会签时使用 YAML `stage_groups` 的**逻辑协作组**。这不是某个产品的群聊人数限制。
+3. 会签人只由 YAML `gate_policy` 与 `review_capabilities` 决定；旧版 `stage_groups` 已退役，旧实例保留时只读忽略。
 4. 权威结论写回 git。运行时记忆只记该数字人的稳定偏好。
 5. 写隔离一律靠任务包。某运行时若共享磁盘或会话，适配器必须声明 `shared_workspace_is_not_security_boundary: true`，不得把实例当成沙箱。
 6. `project-instance` 复制角色实例并绑定仓库路径。禁止按功能再拆实例。
@@ -50,7 +50,7 @@ Plan、产品设计、工程契约统一呈现适用检查后批准。`gate.deli
 |---|---|---|
 | `runtime.generic` | 任何能加载 `core_skills` 并接受任务包的 Agent | 通用会话 / 人设 / system prompt |
 | `runtime.skill-projection` | `yss-skill-registry.yaml` 的 `agent_runtime_roots` | 投影技能 + subagent 任务包 |
-| `runtime.grok` | Grok Bot | 持久 Bot、群聊或 1:1 交接；群超过 6 人改 1:1，不改逻辑协作组。Bot 是该平台上的运行时实例，不是数字人角色、技能或门禁 |
+| `runtime.grok` | Grok Bot | 持久 Bot、群聊或 1:1 交接；群超过 6 人改 1:1。Bot 是该平台上的运行时实例，不是数字人角色、技能或门禁 |
 
 新增平台：先加 `runtimes` 条目，再写适配说明。不要把平台限制写进 `roles`。
 

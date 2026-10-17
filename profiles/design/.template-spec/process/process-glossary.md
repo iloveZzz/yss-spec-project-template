@@ -16,7 +16,6 @@
 | 生命周期会签 | 指定数字人或生物人关闭 `gate.*` / 独立审查并写入 `evidence.approval-record`。 | — | 不是运行时副作用审批。会签人由 `.template-spec/agents/digital-human-roles.yaml` 的 `gate_policy` 指定。起草者不得会签自己起草的资产。`paused-human-gate` 表示等待该会签人，不是必须生物人。 |
 | 运行时副作用审批 | 对发消息、改生产、付款、删数据等工具动作的账号级确认。 | — | 点 Allow 不等于门禁已批准或可发布。避免只称「Grok 平台审批」。 |
 | Ticket 状态 | Tracker 五态：`needs-triage`、`needs-info`、`ready-for-agent`、`ready-for-human`、`wontfix`。 | — | 不要称为数字人角色或「标准角色」。 |
-| 阶段协作组 | 某阶段需要共同可见会签的逻辑成员集合。 | — | 不是某个产品的群聊；平台人数上限只写在对应 `runtimes`。 |
 | 需求经理 | 主责 Plan 语言、用户/MVP/非目标、Spec 正文与测试 seam 的数字人角色。 | — | 不拥有原型视觉定稿，不 Freeze API，不写实现。 |
 | 产品经理 | 主责优先级、产品设计影响、原型确认建议和范围裁剪的数字人角色。 | — | 不写生产代码，不单独 Freeze API。 |
 | 商务 | 主责机会调研商业约束、交付承诺和发布窗口商务非目标的数字人角色。 | — | 不参与 Spec 定稿、契约、代码或 Ticket 状态推进。 |

@@ -69,3 +69,16 @@ test('单记录证据按路线与进度统计，开放阻断项与 standard 决�
   assert.deepEqual(m.clarification, { logs: 1, open: 1, decided: 1, superseded: 1, other: 0 });
   assert.ok(m.unavailable.rework_rounds && m.unavailable.cycle_time && m.unavailable.daily_rejection_reasons);
 });
+
+test('Plan 审查尝试按阶段统计复审轮次；审批记录按行统计结论与会话独立性', t => {
+  const root = instance(t);
+  const attempts = [{ phase: 'initial' }, { phase: 'rereview' }, { phase: 'exception' }];
+  write(root, '.work/feat-a/cp.json', checkpoint({ plan_review_control: { attempts } }));
+  write(root, '.work/feat-a/reviews/design/bundle.yaml', 'schema_version: 2\nkind: review-bundle\nindependence:\n  mode: same-session\nreviews:\n  - gate_id: gate.technical-design-approved\n    decision: approved\n  - gate_id: gate.engineering-contract-approved\n    decision: pending\n');
+  write(root, '.work/feat-a/gates/spec.json', JSON.stringify({ gate_id: 'gate.spec-baseline-approved', decision: 'approved', actor_kind: 'digital-human', independence: { mode: 'separate-session' } }));
+  write(root, '.work/feat-a/gates/old.json', JSON.stringify({ gate_id: 'gate.plan-approved', decision: 'approved', actor_kind: 'digital-human' }));
+  const m = collectDeliveryMetrics(root);
+  assert.deepEqual(m.plan_review, { checkpoints: 1, attempts: 3, by_phase: { initial: 1, rereview: 1, exception: 1 }, rework_rounds: 2 });
+  assert.equal(m.governed.checkpoints, 1, '审批记录不计为 checkpoint');
+  assert.deepEqual(m.approvals, { files: 3, rows: 4, by_decision: { approved: 3, pending: 1 }, independence: { 'separate-session': 1, 'same-session': 2, undeclared: 1 } });
+});

@@ -8,7 +8,6 @@ import { loadSkillRegistry } from "./skill-registry.mjs";
 export const DEFAULT_DIGITAL_HUMAN_ROLES = path.join(ROOT, ".template-spec/agents/digital-human-roles.yaml");
 
 const ROLE_ID = /^role\.[a-z0-9][a-z0-9-]*$/;
-const GROUP_ID = /^group\.[a-z0-9][a-z0-9-]*$/;
 const RUNTIME_ID = /^runtime\.[a-z0-9][a-z0-9-]*$/;
 const REQUIRED_ROLES = [
   "role.requirements-manager",
@@ -128,7 +127,7 @@ function validateActor(actor, { skillIds, stageIds, artifactIds, evidenceIds, ex
   if (overlap.length > 0) fail(`${actor.id} 的 core_skills 与 forbidden_skills 重叠: ${overlap.join(", ")}`);
 }
 
-function validateRuntimes(doc, skillRegistry, groupSizes) {
+function validateRuntimes(doc, skillRegistry) {
   if (!Array.isArray(doc.runtimes) || doc.runtimes.length === 0) fail("缺少 runtimes");
   const ids = [];
   let sawProjection = false;
@@ -154,11 +153,6 @@ function validateRuntimes(doc, skillRegistry, groupSizes) {
     } else {
       if (!Number.isInteger(max) || max < 2) fail(`${runtime.id}.max_collaboration_group_size 必须是 >=2 的整数`);
       if (runtime.overflow === "not-applicable") fail(`${runtime.id} 有人数上限时必须声明 overflow`);
-      if (runtime.overflow === "forbid") {
-        for (const [groupId, size] of groupSizes) {
-          if (size > max) fail(`${runtime.id} 禁止超过 ${max} 人的阶段协作组: ${groupId} 有 ${size} 人`);
-        }
-      }
     }
     if (runtime.id === "runtime.grok") {
       if (runtime.kind !== "grok-bot") fail("runtime.grok.kind 必须为 grok-bot");
@@ -306,24 +300,8 @@ export function validateDigitalHumanRoles(doc, { skillIds, stageIds, gateIds, ar
   }
 
   const actors = knownActorIds(doc);
-  if (!Array.isArray(doc.stage_groups) || doc.stage_groups.length === 0) fail("缺少 stage_groups");
-  const groupIds = [];
-  const groupSizes = [];
-  for (const group of doc.stage_groups) {
-    requireString(group.id, "stage_groups.id");
-    if (!GROUP_ID.test(group.id)) fail(`${group.id} 不符合 group.*`);
-    groupIds.push(group.id);
-    requireString(group.name, `${group.id}.name`);
-    if (!stageIds.has(group.stage)) fail(`${group.id} 引用了未知阶段: ${group.stage}`);
-    requireStringArray(group.members, `${group.id}.members`);
-    if (group.members.length < 2) fail(`${group.id} 逻辑协作组至少 2 人`);
-    groupSizes.push([group.id, group.members.length]);
-    for (const member of group.members) {
-      if (!actors.has(member)) fail(`${group.id} 包含未知成员: ${member}`);
-    }
-  }
-  if (new Set(groupIds).size !== groupIds.length) fail("stage_groups.id 重复");
-  validateRuntimes(doc, skillRegistry, groupSizes);
+  // stage_groups 已退役：CLI 与会签规则从不读取；旧实例与历史快照保留时只读忽略。
+  validateRuntimes(doc, skillRegistry);
 
   const policy = doc.gate_policy;
   if (!policy || typeof policy !== "object") fail("缺少 gate_policy");
@@ -414,7 +392,6 @@ export function validateDigitalHumanRoles(doc, { skillIds, stageIds, gateIds, ar
   }
   return {
     role_count: doc.roles.length,
-    group_count: doc.stage_groups.length,
     runtime_count: doc.runtimes.length,
     claimed_gates: claimed.size
   };

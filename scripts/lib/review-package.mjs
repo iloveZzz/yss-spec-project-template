@@ -33,8 +33,11 @@ function textDiff(before, after) {
   return ['机械字节差异，实质影响由独立 Reviewer 判断。', '```diff', '--- 原审阅包', '+++ 当前审阅包', ...a.slice(Math.max(0, prefix - 3), prefix).map(line => ' ' + line), ...a.slice(prefix, a.length - suffix).map(line => '-' + line), ...b.slice(prefix, b.length - suffix).map(line => '+' + line), ...b.slice(b.length - suffix, b.length - suffix + 3).map(line => ' ' + line), '```', ''].join('\n');
 }
 /** Build draft evidence from current checkpoint rows. Never sets an approved decision. */
-export function buildReviewPackage({ checkpointRef, checkIds, roleId, runtimeId = 'runtime.generic', actorId, reviewerPrincipalRef, drafterPrincipalRef, implementationActorId, taskId, reviewSessionId, workUnitId, outputDir, previousSubjectRef, reviewPhase, reviewInputRef, targetFindingIds, resolutionEvidence, root = ROOT, registry, skillRegistry }) {
+export function buildReviewPackage({ checkpointRef, checkIds, roleId, runtimeId = 'runtime.generic', actorId, reviewerPrincipalRef, drafterPrincipalRef, implementationActorId, taskId, reviewSessionId, workUnitId, outputDir, previousSubjectRef, reviewPhase, reviewInputRef, targetFindingIds, resolutionEvidence, independence, independenceEvidenceRef, root = ROOT, registry, skillRegistry }) {
   root = fs.realpathSync(root);
+  // 会话独立性只如实记录、不改变放行；未声明时不写字段，统计按“未声明”计。
+  if (independence !== undefined && !['separate-session', 'same-session'].includes(independence)) error(`未知独立性: ${independence}`);
+  if (independenceEvidenceRef !== undefined && independence === undefined) error('独立性证据须与 --independence 一起声明');
   for (const [name, value] of Object.entries({ checkpointRef, roleId, runtimeId, actorId, reviewerPrincipalRef, drafterPrincipalRef, implementationActorId, taskId, reviewSessionId, workUnitId, outputDir })) requireText(value, name);
   // Bind every derived reservation and its transaction precondition to one read.
   // Re-reading the checkpoint after assembly could accept a concurrent reservation.
@@ -127,9 +130,10 @@ export function buildReviewPackage({ checkpointRef, checkIds, roleId, runtimeId 
     notes: '所有行均待独立专业审查；自动化只形成当前输入、差异和覆盖草案，不产生 approved 结论。'
   };
   if (plan) bundle.plan_review_binding = reservation.binding;
+  if (independence) bundle.independence = { mode: independence, ...(independenceEvidenceRef ? { evidence_ref: independenceEvidenceRef } : {}) };
   validateJsonSchema(bundle, path.join(ROOT, '.template-spec/process/schemas/review-bundle.schema.json'));
   const names = new Map([...registry.gates, ...(registry.checks || [])].map(x => [x.id, x.public_name || x.name]));
-  const coverage = ['# 当前审阅包草案', '', '状态：待独立专业审查。来源、能力和摘要已机械绑定；没有批准、用户同意或实现资格。', '', `任务：${taskId}；同一独立实例：${reviewerPrincipalRef}；能力：${compiled.capability_ids.join('、')}。`, '', '| 检查 | 当前主体 | 范围 | 作者 | 依据 | 结论 |', '|---|---|---|---|---|---|', ...rows.map(row => `| ${names.get(row.boundary)}（${row.boundary}） | ${row.subject_ref} (${row.subject_digest}) | ${row.approval_scope.join('、')} | ${row.drafter_principal_ref} | ${row.basis.map(x => `${x.ref} (${x.digest})`).join('；')} | 待审查 |`), '', '每个检查保留独立结论。能力缺口增专家；未知影响先调查。实际验证与阻断由 Reviewer 记录，主控重新核对当前版本。', ''].join('\n');
+  const coverage = ['# 当前审阅包草案', '', '状态：待独立专业审查。来源、能力和摘要已机械绑定；没有批准、用户同意或实现资格。', '', `任务：${taskId}；同一独立实例：${reviewerPrincipalRef}；能力：${compiled.capability_ids.join('、')}。`, '', `会话独立性：${independence ?? '未声明'}${independenceEvidenceRef ? `（证据：${independenceEvidenceRef}）` : ''}；仅如实记录，不改变放行。`, '', '| 检查 | 当前主体 | 范围 | 作者 | 依据 | 结论 |', '|---|---|---|---|---|---|', ...rows.map(row => `| ${names.get(row.boundary)}（${row.boundary}） | ${row.subject_ref} (${row.subject_digest}) | ${row.approval_scope.join('、')} | ${row.drafter_principal_ref} | ${row.basis.map(x => `${x.ref} (${x.digest})`).join('；')} | 待审查 |`), '', '每个检查保留独立结论。能力缺口增专家；未知影响先调查。实际验证与阻断由 Reviewer 记录，主控重新核对当前版本。', ''].join('\n');
   const diff = textDiff(previousSubjectRef ? String(bytes(previousSubjectRef)) : undefined, subjectText);
   const files = { 'subject.json': subjectText, 'task.json': taskText, 'bundle-draft.yaml': stringify(bundle, { lineWidth: 0, aliasDuplicateObjects: false }), 'coverage.md': coverage, 'diff.md': '# 审阅包原始差异\n\n' + diff };
   if (plan) validateAssetStructure(planCheckpoint, 'checkpoint', { schemaRoot: root });

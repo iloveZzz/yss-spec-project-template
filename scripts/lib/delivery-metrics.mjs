@@ -19,12 +19,21 @@ function walk(directory, visit) {
   }
 }
 
-function readCheckpoint(file) {
+function readStructured(file) {
   try {
     const text = fs.readFileSync(file, "utf8");
     const doc = file.endsWith(".json") ? JSON.parse(text) : parseDocument(text).toJS();
-    return doc && typeof doc === "object" && doc.repository_mode === "project-instance" && typeof doc.stage === "string" && typeof doc.status === "string" ? doc : null;
+    return doc && typeof doc === "object" && !Array.isArray(doc) ? doc : null;
   } catch { return null; }
+}
+
+const isCheckpoint = (doc) => doc.repository_mode === "project-instance" && typeof doc.stage === "string" && typeof doc.status === "string";
+
+// 审批记录：组合记录按行计，单条记录计一行；会话独立性未声明时计入 undeclared。
+function approvalRows(doc) {
+  if (doc.kind === "review-bundle" && Array.isArray(doc.reviews)) return doc.reviews.map((row) => ({ decision: row?.decision, independence: row?.independence ?? doc.independence }));
+  if (typeof doc.gate_id === "string" && typeof doc.decision === "string" && typeof doc.actor_kind === "string") return [{ decision: doc.decision, independence: doc.independence }];
+  return [];
 }
 
 // 日常 / standard 记录的证据段：标记后紧跟一个 fenced JSON；解析失败只计入 unparsed，不猜字段。
@@ -61,6 +70,8 @@ export function collectDeliveryMetrics(root = process.cwd()) {
     schema_version: 1,
     scan_roots: [],
     governed: { checkpoints: 0, by_status: {}, by_stage: {}, blocked: 0, not_applicable: {}, blockers_open: 0 },
+    plan_review: { checkpoints: 0, attempts: 0, by_phase: { initial: 0, rereview: 0, exception: 0 }, rework_rounds: 0 },
+    approvals: { files: 0, rows: 0, by_decision: {}, independence: { "separate-session": 0, "same-session": 0, undeclared: 0 } },
     daily: { records: 0 },
     single_record: {
       by_path: {}, by_progress: {}, unparsed: 0,
@@ -69,7 +80,7 @@ export function collectDeliveryMetrics(root = process.cwd()) {
     clarification: { logs: 0, open: 0, decided: 0, superseded: 0, other: 0 },
     unavailable: {
       daily_rejection_reasons: "路径判定是只读命令，不落盘；被拒原因只在命令输出里，这里无法统计",
-      rework_rounds: "记录只保存当前证据，不保留历次审查或测试轮次",
+      rework_rounds: "只有 Plan 专业审查持久化尝试（见 plan_review）；其余审查与测试轮次只保存当前证据",
       cycle_time: "记录没有开始时间，无法计算周期",
     },
   };
@@ -79,10 +90,33 @@ export function collectDeliveryMetrics(root = process.cwd()) {
     walk(path.join(base, ref), (file) => {
       const relative = path.relative(base, file).split(path.sep).join("/");
       if (/\.(json|ya?ml)$/.test(file)) {
-        // checkpoint 位于 <根>/<功能>/ 下一层，避免把证据和模板文件误当 checkpoint。
-        if (relative.split("/").length - ref.split("/").length !== 2) return;
-        const doc = readCheckpoint(file);
+        const doc = readStructured(file);
         if (!doc) return;
+        const rows = approvalRows(doc);
+        if (rows.length) {
+          const approvals = result.approvals;
+          approvals.files += 1;
+          for (const row of rows) {
+            approvals.rows += 1;
+            const decision = typeof row.decision === "string" ? row.decision : "unknown";
+            approvals.by_decision[decision] = (approvals.by_decision[decision] ?? 0) + 1;
+            const mode = row.independence?.mode;
+            approvals.independence[mode === "separate-session" || mode === "same-session" ? mode : "undeclared"] += 1;
+          }
+          return;
+        }
+        // checkpoint 位于 <根>/<功能>/ 下一层，避免把证据和模板文件误当 checkpoint。
+        if (relative.split("/").length - ref.split("/").length !== 2 || !isCheckpoint(doc)) return;
+        const attempts = doc.plan_review_control?.attempts;
+        if (Array.isArray(attempts)) {
+          const plan = result.plan_review;
+          plan.checkpoints += 1;
+          for (const attempt of attempts) {
+            plan.attempts += 1;
+            if (attempt?.phase in plan.by_phase) plan.by_phase[attempt.phase] += 1;
+            if (attempt?.phase === "rereview" || attempt?.phase === "exception") plan.rework_rounds += 1;
+          }
+        }
         const governed = result.governed;
         governed.checkpoints += 1;
         governed.by_status[doc.status] = (governed.by_status[doc.status] ?? 0) + 1;

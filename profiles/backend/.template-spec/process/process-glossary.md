@@ -6,10 +6,10 @@
 
 | 术语 | 含义 | 英文标识 | 避免 / 备注 |
 |---|---|---|---|
-| Agent | 执行特定工作流步骤的 AI 协作者。本仓库当前只面向架构、前端、后端和测试四类 Agent。 | — | 不要与生物人审查者、Harness Orchestrator 或 Ticket 状态混用。 |
+| Agent | 执行特定工作流步骤的 AI 协作者。本 Profile 的数字人角色以 `.template-spec/agents/digital-human-roles.yaml` 为准：架构、后端、测试，以及负责 Plan / Spec 的需求经理和产品经理。 | — | 不要与生物人审查者、Harness Orchestrator 或 Ticket 状态混用。 |
 | 运行时绑定 | 把数字人角色落到某个 Agent 平台的适配声明，权威清单在数字人角色注册表的 `runtimes`。 | — | 不要为每个平台复制一套职称职责。 |
 | Grok Bot | Grok 平台上的持久数字队友实例；对应 `runtime.grok`。 | — | 不是数字人角色、技能或门禁。 |
-| 数字人角色 | `.template-spec/agents/digital-human-roles.yaml` 中定义的四类专业 Agent 身份：架构、前端、后端和测试。 | — | 不要恢复需求、产品、商务或按平台拆分的旧角色。 |
+| 数字人角色 | `.template-spec/agents/digital-human-roles.yaml` 中定义的角色身份：`role.architecture-agent`、`role.backend-agent`、`role.test-agent`、`role.requirements-manager`、`role.product-manager`。 | — | 不要恢复前端、商务或按平台拆分的旧角色；前端 Agent 已随 AR-12c 退役。 |
 | 当前工作区入口 | 只消费当前仓库根的 `yss-project.yaml` 与 `AGENTS.md`。 | — | 不要把父目录、兄弟 submodule 或其他模板仓的入口文件当作本仓路由。 |
 | Harness Orchestrator | 负责 Harness Agent 入口、影响面、合同、任务包、状态转移、证据汇合和重路由的系统编排组件。 | — | 不计入四类研发角色；不写业务代码，不替专业 Agent 做领域决策。不要称为「主控数字人」。 |
 | Technical Design Contract | 按已确认架构承接批准需求、业务规则与关键场景的技术设计合同。 | — | 分支细节由专属设计负责，不能替代实现合同或批准。 |
@@ -21,9 +21,8 @@
 | 运行时副作用审批 | 对发消息、改生产、付款、删数据等工具动作的账号级确认。 | — | 点 Allow 不等于门禁已批准或可发布。避免只称「Grok 平台审批」。 |
 | Ticket 状态 | Tracker 五态：`needs-triage`、`needs-info`、`ready-for-agent`、`ready-for-human`、`wontfix`。 | — | 不要称为数字人角色或「标准角色」；不要与合同状态混用。 |
 | 合同状态 | 战术设计合同与 Slice Contract 等资产状态：`draft`、`ready-for-human`、`approved`、`blocked`、`stale`、`drift`、`new_impacts`、`not-applicable`。 | — | 不要与 Ticket 五态混用。`ready-for-human` 出现在合同和 Ticket 时，以所在资产类型为准。 |
-| 阶段协作组 | 某阶段需要共同可见会签的逻辑成员集合。 | — | 不是某个产品的群聊；平台人数上限只写在对应 `runtimes`。 |
-| 需求经理（已退役） | 已退役旧职称。Discovery / Spec 语言由批准的上游输入进入 Harness，不由本仓角色表持有。 | — | 禁止当作当前 `role.*` 或会签人。 |
-| 产品经理（已退役） | 已退役旧职称。产品优先级与原型确认不由本仓四角色持有。 | — | 禁止当作当前 `role.*` 或会签人。 |
+| 需求经理 | `role.requirements-manager`：起草 Plan 与 Spec，提出 `CONTEXT.md` 术语。 | — | 不冻结原型、OpenAPI 或代码；不得会签自己起草的 Plan / Spec。 |
+| 产品经理 | `role.product-manager`：Plan / Spec 的独立会签人，负责优先级、产品设计影响与商业约束。 | — | 会签不替代真实用户决定；不得独立批准对外商务合同。 |
 | 商务（已退役） | 已退役旧职称。不构成当前研发角色。 | — | 禁止当作当前 `role.*` 或会签人。 |
 | 主控数字人（已退役） | 已退役称呼。当前编排职责由 Harness Orchestrator 承担。 | — | 不要把 Harness Orchestrator 叫成主控数字人或第八个业务职称。 |
 | Agent 入口规则 | Agent 启动任务时必须先遵守的全局路由、硬门禁和禁止事项。 | — | 不作为 YSS 后端、前端或其他专项编码规范的完整手册。 |

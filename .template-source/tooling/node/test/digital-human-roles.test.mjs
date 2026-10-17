@@ -34,11 +34,10 @@ test("digital human roles are runtime-agnostic and grok is only an adapter", asy
   const lifecycle = loadRegistry();
   const skills = loadSkillRegistry();
   const deps = depsFrom(lifecycle, skills, skillIdsFromRegistry);
-  const seven = structuredClone(loadDigitalHumanRoles());
-  seven.stage_groups[0].members.push("role.frontend-engineer", "role.backend-engineer", "role.test-engineer", "role.project-manager");
-  assert.doesNotThrow(() => validateDigitalHumanRoles(seven, deps));
-  seven.runtimes.find((runtime) => runtime.id === "runtime.grok").overflow = "forbid";
-  assert.throws(() => validateDigitalHumanRoles(seven, deps), /禁止超过 6 人/);
+  const legacy = structuredClone(loadDigitalHumanRoles());
+  assert.equal(legacy.stage_groups, undefined, "stage_groups 已退役，注册表不再声明");
+  legacy.stage_groups = [{ id: "group.plan", members: ["role.requirements-manager"] }];
+  assert.doesNotThrow(() => validateDigitalHumanRoles(legacy, deps), "旧实例保留的 stage_groups 只读忽略");
   const coupled = structuredClone(loadDigitalHumanRoles());
   coupled.orchestrator.grok_title = "nope";
   assert.throws(() => validateDigitalHumanRoles(coupled, deps), /平台耦合字段/);
