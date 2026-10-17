@@ -1,3 +1,4 @@
+import {nativeContractVerify,nativeCoverage} from './native-evidence.mjs';
 import { assertImplementationTicket, assertSliceBusinessSources, businessTicketVersion } from './business-tickets.mjs';
 import {violation as implementationPathViolation} from './implementation-path-policy.mjs';
 import { sliceCheckApplicability } from './slice-applicability.mjs';
@@ -121,7 +122,14 @@ function sliceRepositories(raw,sources,options){
 }
 export function normalizeSliceContract(document, options = {}) {
   const raw = sourceSliceContract(document);
-  requireThat(raw && [2,3].includes(raw.schema_version), 'Slice Implementation Contract schema v1 已停止支持；需要 schema v2 或 v3');
+  requireThat(raw && [2,3,4].includes(raw.schema_version), 'Slice Implementation Contract schema v1 已停止支持；需要 schema v2 或 v3');
+  if(raw.schema_version===4) {
+    const verdict=nativeContractVerify({root:options.root||process.cwd(),kind:'slice-draft',document:raw});
+    const contract=nativeCoverage(verdict,'slice_draft').contract;
+    if(!Object.keys(contract.repositories||{}).length)delete contract.repositories;
+    originals.set(contract,{source:raw});
+    return contract;
+  }
   if (raw.schema_version === 2) {
     requireThat(options.historicalReadOnly || businessTicketVersion(options.root || process.cwd())!==1,'BUSINESS_SLICE_V3_REQUIRED: 新业务拆分规则的实现必须使用 v3；v2 保留历史读取');
     const ref = raw.lifecycle_refs?.ticket;
@@ -236,8 +244,8 @@ export function readSliceContract(ref,{root=process.cwd(),diagnostic=false}={}) 
 
 /** Select only after full normalization; original raw identity is retained for approval comparison. */
 export function selectSliceWorkUnit(contract,workUnitId) {
- if(!contract.repositories&&(!workUnitId||contract.schema_version!==3))return contract;
- if(contract.schema_version===3)requireThat(originals.has(contract),'职责选择必须从完整正规化的原始合同生成');
+ if(!contract.repositories&&(!workUnitId||![3,4].includes(contract.schema_version)))return contract;
+ if([3,4].includes(contract.schema_version))requireThat(originals.has(contract),'职责选择必须从完整正规化的原始合同生成');
  const unit=contract.work_units.find(u=>u.id===workUnitId);
  requireThat(unit,'执行必须选择唯一已冻结 work_unit_id');
  const source=sourceSliceContract(contract),rawUnit=source.work_units.find(u=>u.id===workUnitId);
@@ -251,10 +259,10 @@ export function selectSliceWorkUnit(contract,workUnitId) {
    requireThat(repo,'工作单元未绑定当前登记工程');
    selected={...contract,backend:repo.project.delivery_role==='backend'?contract.backend:{status:'not-applicable'},frontend:{status:'not-applicable'},resolution:{...repo.resolution,freshness:contract.resolution.freshness},common:{...contract.common,project_roots:[unit.project_root],allowed_write_paths:unit.allowed_write_paths},lifecycle_refs:{...contract.lifecycle_refs,...Object.fromEntries(Object.entries(repo.basis).map(([k,v])=>[k,v.ref]))}};
  } else {
-   requireThat(['role.backend-engineer','role.backend-agent'].includes(unit.role_id),'单仓职责选择需要明确后端角色（前端实现已移除）');
+   requireThat(contract.schema_version===4||['role.backend-engineer','role.backend-agent'].includes(unit.role_id),'单仓职责选择需要明确后端角色（前端实现已移除）');
    requireThat(contract.common.project_roots.includes(unit.project_root)
      &&allowed.length>0&&allowed.every(ref=>contract.common.allowed_write_paths.some(parent=>withinSlicePath(ref,parent))),'工作单元超出当前工程或已冻结写范围');
-   selected={...contract,backend:['role.backend-engineer','role.backend-agent'].includes(unit.role_id)?contract.backend:{status:'not-applicable'},
+   selected={...contract,backend:(contract.schema_version===4||['role.backend-engineer','role.backend-agent'].includes(unit.role_id))?contract.backend:{status:'not-applicable'},
      frontend:{status:'not-applicable'},
      work_units:[unit],common:{...contract.common,project_roots:[unit.project_root],allowed_write_paths:[...allowed]}};
  }

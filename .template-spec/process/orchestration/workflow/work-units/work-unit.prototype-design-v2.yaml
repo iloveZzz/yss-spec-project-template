@@ -2,6 +2,26 @@
 # consumers: lifecycle route/query, current Profile workflows and governance validators
 work_unit_routes:
   work-unit.prototype-design-v2:
+    check_ids: [check.prototype-reviewed, check.prototype-verified]
+    impact_check_ids:
+      wording: []
+      ui-state: []
+      api-schema: []
+      state-machine: []
+      data-model: []
+      service-boundary: []
+      nfr: []
+      backend: []
+      domain: []
+      api: []
+      data: []
+      persistence: []
+      architecture: []
+      cross-repo: []
+      cross-boundary: []
+      high-risk: []
+      frontend: []
+      ui: []
     native:
       source: yss-product-lifecycle
       skill: yss-product-lifecycle

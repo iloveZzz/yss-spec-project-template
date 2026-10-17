@@ -270,6 +270,24 @@ profiles:
           - "profiles/**"
         depends_on: []
         failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各 Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
+      - id: check.role-independent-draft
+        resources: [native-cli]
+        run: "node --test scripts/fixtures/role-independent-draft/scenarios.test.mjs"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
+          - "scripts/fixtures/role-independent-draft/**"
+          - "scripts/lib/slice-contract.mjs"
+          - "scripts/lib/slice-contract-preparation.mjs"
+          - "scripts/lib/implementation-contract-compiler.mjs"
+          - "scripts/lib/contract-views.mjs"
+          - "scripts/lib/slice-contract-views.mjs"
+          - ".template-spec/process/orchestration/**"
+          - "profiles/backend/.template-spec/process/orchestration/**"
+          - ".template-spec/process/schemas/digital-human-task-package.schema.json"
+          - ".template-spec/process/schemas/slice-implementation-contract-v4.schema.json"
+        depends_on: []
+        failure_mode: "新政策草稿派发或Slice4读视图错误，检查映射遗漏当前Profile约束，或草稿绕过未就绪的执行/写入边界"
       - id: check.profile-consumers-slice-contract-v3-scenarios
         tier: slow  # 实测约 113s；fast 中延后，按需（YSS_VERIFY_SLOW=1）或定时执行
         resources: [native-cli]
@@ -2406,6 +2424,7 @@ routing:
       - scripts/fixtures/reading-views/bundle.test.mjs
       - scripts/fixtures/slice-contract-v3/round2.test.mjs
       - scripts/fixtures/slice-contract-v3/scenarios.test.mjs
+      - scripts/fixtures/role-independent-draft/scenarios.test.mjs
       - scripts/fixtures/stage-tracking/tracking.test.mjs
       - scripts/fixtures/spec-baseline/scenarios.mjs
       - .template-source/tooling/node/test/approval-current.test.mjs
@@ -3516,6 +3535,7 @@ gates:
       - check.profile-consumers-slice-contract-v3-round2-xrepo
       - check.profile-consumers-slice-contract-v3-round2-rest
       - check.profile-consumers-slice-contract-v3-scenarios
+      - check.role-independent-draft
       - check.profile-consumers-stage-tracking-tracking
       - check.profile-consumers-approval-consumption
       - check.profile-consumers-approval-current

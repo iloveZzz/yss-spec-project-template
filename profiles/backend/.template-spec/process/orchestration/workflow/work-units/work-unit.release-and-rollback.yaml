@@ -2,6 +2,23 @@
 # consumers: lifecycle route/query, current Profile workflows and governance validators
 work_unit_routes:
   work-unit.release-and-rollback:
+    check_ids: [gate.merge-approved]
+    impact_check_ids:
+      wording: []
+      api-schema: []
+      state-machine: []
+      data-model: []
+      service-boundary: []
+      nfr: []
+      backend: []
+      domain: []
+      api: []
+      data: []
+      persistence: []
+      architecture: []
+      cross-repo: []
+      cross-boundary: []
+      high-risk: []
     primary_skill: maintaining-skills
     supporting_skills:
       - handoff

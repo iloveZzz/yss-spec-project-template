@@ -270,7 +270,7 @@ export function compileDefaultImplementationContract(input = {}) {
 export function evaluateContractFreshness(contract, { registry, compilerContract, root = ROOT, approved_slice, readOnly = false, work_unit_id }, execution) {
   assertV3(registry, compilerContract);
   try { contract=normalizeSliceContract(contract,{root}); } catch(error) { return {freshness:'stale',reasons:[error.message]}; }
-  if (![2,3].includes(contract?.schema_version)) fail("Slice Implementation Contract schema v1 已停止支持；必须重新编译 v2 合同");
+  if (![2,3,4].includes(contract?.schema_version)) fail("Slice Implementation Contract schema v1 已停止支持；必须重新编译 v2 合同");
   const all=contract;
   try {contract=selectSliceWorkUnit(contract,work_unit_id);} catch(error){return {freshness:'stale',reasons:[error.message]};}
   const resolution = contract.resolution ?? contract;
@@ -328,6 +328,7 @@ export function evaluateContractFreshness(contract, { registry, compilerContract
 export function validateExecutionResult(result, contract, current) {
   if (result?.schema_version !== 2) fail("YSS Skill Execution Result schema v1 已停止支持；请迁移到 v2");
   contract=normalizeSliceContract(contract,{root:current?.root || ROOT});
+  if(contract.schema_version===4)fail("CAPABILITY: Slice4执行结果消费尚未启用；草稿编译不授予执行资格");
   if (![2,3].includes(contract?.schema_version)) fail("Slice Implementation Contract schema v1 已停止支持；必须重新编译 v2 合同");
   if (!EXECUTION_STATUSES.has(result.status)) fail(`未知 execution result status: ${result.status}`);
   if((contract.schema_version===3||contract.resolution?.architecture_identity?.schema_version===2)&&!current?.approved_slice)return {status:'stale',blockers:['EXECUTION_APPROVAL_REQUIRED']};

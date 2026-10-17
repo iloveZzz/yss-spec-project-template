@@ -2,6 +2,23 @@
 # consumers: lifecycle route/query, current Profile workflows and governance validators
 work_unit_routes:
   work-unit.ssot-update:
+    check_ids: [gate.repository-identity-valid]
+    impact_check_ids:
+      wording: []
+      api-schema: []
+      state-machine: []
+      data-model: []
+      service-boundary: []
+      nfr: []
+      backend: []
+      domain: []
+      api: []
+      data: []
+      persistence: []
+      architecture: []
+      cross-repo: []
+      cross-boundary: []
+      high-risk: []
     primary_skill: maintaining-skills
     supporting_skills:
       - codebase-design

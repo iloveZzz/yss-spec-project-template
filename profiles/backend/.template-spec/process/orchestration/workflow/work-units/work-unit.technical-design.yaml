@@ -2,6 +2,23 @@
 # consumers: lifecycle route/query, current Profile workflows and governance validators
 work_unit_routes:
   work-unit.technical-design:
+    check_ids: [work-unit.technical-design]
+    impact_check_ids:
+      wording: []
+      api-schema: [gate.engineering-contract-approved, gate.openapi-freeze-confirmed]
+      state-machine: []
+      data-model: []
+      service-boundary: [gate.high-risk-architecture-confirmed]
+      nfr: []
+      backend: []
+      domain: []
+      api: [gate.engineering-contract-approved, gate.openapi-freeze-confirmed]
+      data: []
+      persistence: []
+      architecture: [gate.high-risk-architecture-confirmed]
+      cross-repo: [gate.high-risk-architecture-confirmed]
+      cross-boundary: [gate.high-risk-architecture-confirmed]
+      high-risk: [gate.high-risk-architecture-confirmed]
     preparation_policy_ref: .template-spec/process/orchestration/domain/review.yaml#preparation_policy
     approval_requirement: formal-completion-and-implementation-only
     primary_skill: architecture-agent

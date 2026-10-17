@@ -1,3 +1,4 @@
+import {nativeContractVerify,nativeCoverage} from './native-evidence.mjs';
 import { assertImplementationTicket, assertSliceBusinessSources } from './business-tickets.mjs';
 import {readContractSource,contractSourceMetadata} from './contract-source.mjs';
 import {sliceRepositories} from './slice-repositories.mjs';
@@ -50,11 +51,13 @@ export function prepareSliceImplementationContract(options={}) {
  }
 }
 function prepare({root=process.cwd(),ticket_ref,checkpoint_ref,sources={},refinements={},approved_slice}={}) {
+  const identityFile=safe(root,'yss-project.yaml',{missing:true});
+  const version=fs.existsSync(identityFile)&&parseSliceYaml(fs.readFileSync(identityFile)).schema_version===2?4:3;
   const started=performance.now();
   const report={read_only:true,blockers:[],sources:{},provenance:[],reason_chains:{},checks:[]};
   const snapshots=new Map();
   const read=ref=>{if(!snapshots.has(ref))snapshots.set(ref,fs.readFileSync(safe(root,ref)));return snapshots.get(ref);};
-  let contract={schema_version:3,status:'blocked'};
+  let contract={schema_version:version,status:'blocked'};
   try {
     let ticketText='',ticket={},saved={};
     try {ticketText=read(ticket_ref).toString('utf8');ticket=metadata(ticketText);}catch(error){report.blockers.push({code:'SLICE_SOURCE_UNREADABLE',field:'basis.ticket',source_ref:ticket_ref,reason:error.message});}
@@ -67,7 +70,7 @@ function prepare({root=process.cwd(),ticket_ref,checkpoint_ref,sources={},refine
     for(const field of ['status','resolution','schema_version','readiness'])if(Object.hasOwn(input,field))report.blockers.push({field,reason:'由编译器生成，不接受调用方指定'});
     const inputKeys=['contract_id','contract_version','slice_id','sources','scope','applicability','recipe_ids','required_capabilities','conditions','acceptance','verification','work_units','extensions'];
     for(const field of Object.keys(input))if(!inputKeys.includes(field))report.blockers.push({field,reason:'未知输入字段，禁止静默丢弃'});
-    contract={schema_version:3,contract_id:input.contract_id,contract_version:input.contract_version,slice_id:input.slice_id,status:'blocked'};
+    contract={schema_version:version,contract_id:input.contract_id,contract_version:input.contract_version,slice_id:input.slice_id,status:'blocked'};
     for(const field of ['contract_id','contract_version','slice_id','scope','applicability','verification','work_units'])if(input[field]===undefined)report.blockers.push({code:'SLICE_INPUT_MISSING',field:`slice.${field}`,reason:'缺少切片必要输入',recovery:'优先从 Ticket / checkpoint 整理；只补缺失的切片细化'});
     for(const field of ['impacted_areas','allowed_write_paths'])if(input.scope?.[field]===undefined)report.blockers.push({code:'SLICE_INPUT_MISSING',field:`scope.${field}`,reason:'影响与授权范围未确定',responsibility:field==='allowed_write_paths'?'user-decision':'professional-review',recovery:'先确认影响与既有授权范围；不能从目录猜测'});
 
@@ -137,7 +140,11 @@ function prepare({root=process.cwd(),ticket_ref,checkpoint_ref,sources={},refine
     const resolution=Object.fromEntries(['required_capabilities','required_skills','recipe_ids','conditions','registry_digest','compiler_contract_digest','architecture_identity','component_bindings','component_bindings_digest'].filter(key=>compiled[key]!==undefined).map(key=>[key,compiled[key]]));
     const businessAcceptance=basis.business_ticket_set&&Array.isArray(ticket.acceptance_refs)
       ? Object.fromEntries(ticket.acceptance_refs.map(id=>[id,{source:'spec',locator:id}])) : undefined;
-    contract={schema_version:3,ticket_policy:{mode:'frozen-requirements',state_owner:'tracker-or-task-package'},contract_id:input.contract_id,contract_version:input.contract_version,slice_id:input.slice_id,status:'draft',basis,scope,applicability,resolution,acceptance:input.acceptance||businessAcceptance||markdownAcceptance(ticketText),verification:input.verification,work_units:input.work_units,...(input.extensions?{extensions:input.extensions}:{})};
+    contract={schema_version:version,ticket_policy:{mode:'frozen-requirements',state_owner:'tracker-or-task-package'},contract_id:input.contract_id,contract_version:input.contract_version,slice_id:input.slice_id,status:'draft',basis,scope,applicability,resolution,acceptance:input.acceptance||businessAcceptance||markdownAcceptance(ticketText),verification:input.verification,work_units:input.work_units,...(input.extensions?{extensions:input.extensions}:{})};
+    if(version===4) {
+      const selection=nativeCoverage(nativeContractVerify({root,kind:'task-selection',document:{work_unit_id:'work-unit.slice-implementation',impacts:scope.impacted_areas}}),'task_selection');
+      contract.work_units=contract.work_units.map(unit=>({...unit,check_ids:selection.check_ids}));
+    }
     report.reason_chains=compiled.reason_chains;
     for(const reason of compiled.readiness_blockers||[])report.blockers.push({reason});
     normalizeSliceContract(contract,{root});
@@ -169,6 +176,7 @@ import * as helpers from './slice-contract.mjs';
 
 export function persistSliceDraft(result,ref,{root=process.cwd()}={}) {
   if(!['draft','blocked','ready-for-lifecycle-review'].includes(result.slice_contract?.status))throw new TypeError('只能保存编译器草案');
+  if(result.slice_contract.schema_version===4){const guard=nativeContractVerify({root,kind:'governance-write',document:result.slice_contract});if(guard.exitCode!==0)throw new TypeError(guard.message);}
   for(const [source,expected]of Object.entries(result.report?.sources||{}))if(hash(fs.readFileSync(safe(root,source)))!==expected)throw new TypeError(`stale: 保存前来源变化 ${source}`);
   if(result.slice_contract.status!=='blocked')normalizeSliceContract(result.slice_contract,{root});
   const bytes=stringify({slice_contract:result.slice_contract});
