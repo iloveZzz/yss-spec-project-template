@@ -675,6 +675,27 @@ profiles:
           - "scripts/verify-strategic-handoff-package-scenarios"
         depends_on: []
         failure_mode: "战略交接包的导出、验包、导入仍生成或消费前端草案，或后端消费者草案缺失"
+      - id: check.progression-target-evidence
+        group: strategic-handoff-package
+        resources: [ native-cli, "repo-root-evidence" ]
+        inputs_complete: true
+        input_patterns:
+          - "tests/progression-target-evidence.test.mjs"
+          - "scripts/fixtures/strategic-handoff/fixture.mjs"
+          - "scripts/lib/strategic-handoff.mjs"
+          - "scripts/lib/strategic-handoff-io.mjs"
+        depends_on: []
+        failure_mode: "推进意图被当作冻结战略包的批准或交付证据"
+      - id: check.native-consumer-routing
+        group: cli-sync
+        inputs_complete: true
+        input_patterns:
+          - "tests/native-consumer-routing.test.mjs"
+          - "scripts/lib/strategic-handoff-routing.mjs"
+          - "scripts/lib/orchestration-contract.mjs"
+          - "scripts/lib/instance-metadata.mjs"
+        depends_on: []
+        failure_mode: "原生消费者误用 Profile 权限或忽略显式执行范围"
       - id: check.contract-review-preparation
         run: "node --test tests/contract-review-preparation.test.mjs"
         group: feature-assets
@@ -2750,6 +2771,9 @@ groups:
       - run: node .agents/skills/i-have-adhd/tests/verify-integration.mjs
   cli-sync:
     commands:
+      - run: node --test --test-concurrency=1 tests/native-consumer-routing.test.mjs
+        when: template-source
+        id: check.native-consumer-routing
       - run: "node --test --test-name-pattern='^(按需安装两个后端脚手架|公开 Bundle 导出|已移除前端 Profile)' tests/cli-retirement.test.mjs"
         when: template-source
         id: check.517fe9954d913f53
@@ -3398,6 +3422,7 @@ gates:
     impact_dependencies: []
     depends_on: []
     check_ids:
+      - check.native-consumer-routing
       - check.517fe9954d913f53
       - check.517fe9954d913f53-install
       - check.517fe9954d913f53-sync
@@ -3722,15 +3747,6 @@ supplemental_checks:
     when: template-source
     source_requirement: committed
     task_id: supplemental.native-profile-asset-consumption
-  - id: check.native-consumer-routing
-    run: node --test --test-concurrency=1 tests/native-consumer-routing.test.mjs
-    group: cli-sync
-    gate_ids:
-      - check.verification-spec-cli
-    depends_on: []
-    when: template-source
-    source_requirement: committed
-    task_id: supplemental.native-consumer-routing
   - id: check.verification-optimization-regressions
     run: node --test tests/verification-gates.test.mjs tests/verification-baseline.test.mjs tests/verification-execution.test.mjs tests/verification-script-retirement.test.mjs tests/verification-preflight.test.mjs tests/verification-report-v2.test.mjs tests/verification-artifacts.test.mjs tests/verification-delivery-run.test.mjs tests/legacy-verification.test.mjs
     group: verification-optimization

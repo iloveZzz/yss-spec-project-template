@@ -11,6 +11,14 @@ import './verification-baseline.test.mjs';
 import './verification-qualification.test.mjs';
 const pilot='.agents/skills/yss-research/SKILL.md';
 const pilotConfig=()=>loadVerificationProfiles();
+test('路由与推进意图测试按自身输入选择，发布路由检查必选且不重复',()=>{
+ for(const [file,id]of [['tests/native-consumer-routing.test.mjs','check.native-consumer-routing'],['tests/progression-target-evidence.test.mjs','check.progression-target-evidence']]){
+  const plan=planTemplateVerification({changedFiles:[file]});assert.equal(plan.commands.filter(row=>row.id===id).length,1);
+ }
+ const release=planTemplateVerification({profile:'release',changedFiles:[]});
+ assert.equal([...release.commands,...release.supplemental_checks].filter(row=>row.id==='check.native-consumer-routing').length,1);
+ assert.ok(release.commands.find(row=>row.id==='check.native-consumer-routing').gate_ids.includes('check.verification-spec-cli'));
+});
 test('日常 Skill 文本只选择一致性检查，不启动无关场景或发布准备',()=>{
  const plan=planTemplateVerification({changedFiles:['.agents/skills/yss-cache/SKILL.md']});
  assert.equal(plan.effective_profile,'fast');
