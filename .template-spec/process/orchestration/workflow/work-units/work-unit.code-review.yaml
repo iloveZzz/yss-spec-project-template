@@ -9,9 +9,7 @@ work_unit_routes:
     primary_skill: code-review
     supporting_skills:
       - alibaba-java-code-style
-      - yss-ui
       - yss-design-system
-      - yss-ui-business-page-generation
       - yss-domain
       - yss-application
       - yss-repository
@@ -23,9 +21,7 @@ work_unit_routes:
     skills:
       - code-review
       - alibaba-java-code-style
-      - yss-ui
       - yss-design-system
-      - yss-ui-business-page-generation
       - yss-domain
       - yss-application
       - yss-repository
@@ -71,9 +67,7 @@ work_unit_routes:
           - mapstruct
           - lombok
         ui_impact:
-          - yss-ui
           - yss-design-system
-          - yss-ui-business-page-generation
       not_applicable_reasons:
         backend_impact: no_backend_impact
         ui_impact: no_ui_impact

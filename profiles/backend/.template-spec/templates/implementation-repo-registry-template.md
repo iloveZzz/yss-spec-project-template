@@ -30,7 +30,7 @@ owner: ai
 | scaffold_status | existing / required / initialized |
 | scaffold_architecture | `domain-driven` / `layered-mvc` / frontend / none |
 | scaffold_decision_ref | `scaffold-architecture-decisions.yaml#<decision_id>` / none |
-| scaffold_skill | `yss-ddd-scaffold-generator` / `yss-layered-mvc-scaffold-generator` / `yss-frontend-scaffold-generator` / none |
+| scaffold_skill | `yss-ddd-scaffold-generator` / `yss-layered-mvc-scaffold-generator` / none |
 | scaffold_target_confirmed | 是 / 否 / 不适用 |
 | target_git_url_or_output_dir |  |
 | owner |  |

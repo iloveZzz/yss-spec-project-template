@@ -375,7 +375,7 @@ plan 只保存计划；apply 重新核验当前输入并拒绝篡改或漂移，
 每次改目标后重验已有证据，从首个合法未完成工作单元续推；有效批准和稳定业务 Ticket ID 可复用。真实资产或批准依据变化仍使受影响证据失效。
 
 本地或独立专职：
-  consumers=[]：同一 Spec 主线消费本地批准资产，在已登记实现仓写代码；无需另建三个治理工程或自导自入。本地前端有后端/API/数据依赖时等待当前后端交付；纯 UI 以有依据的不适用记录核验。
+  consumers=[]：同一 Spec 主线消费本地批准资产，在已登记实现仓写代码；无需另建三个治理工程或自导自入。前端实现由独立的前端规格与 CLI 维护，不在本主线。
   外部专职：consumers 每项给 profile（design/backend/frontend）、绝对 root、同功能 checkpoint_ref，每种最多一个；不能指向主控自身。未来尚未创建的端只能登记意图，未核验当前接收前不会报完成。
   Spec→Design 使用当前 SpecBaseline、Receipt 和目标 Context 对账；Spec/Design→Backend/Frontend 消费同一冻结战略基线；Backend→Frontend 消费当前接口及运行证据。前端可先准备设计与计划，正式实现仍核验当前依赖。
   主控只汇总显式绑定的同功能交付；过期 Receipt、版本失配和 Context 冲突阻断受影响完成判定。Context 以既有词汇归一化合同核验。
@@ -452,7 +452,7 @@ plan 只保存计划；apply 重新核验当前输入并拒绝篡改或漂移，
   yss stage query --root ./demo-spec --id stage.vertical-slice-implementation --json
   yss skills list --root ./demo-spec --json
   yss lifecycle status --root ./demo-spec --checkpoint .work/feature/checkpoint.yaml --json
-  仅按批准合同的写范围实现；需要的 Skill 闭包来自当前合同。前端在实际实现仓 pnpm，后端优先根 ./mvnw；记录真实测试并由独立审查者审查。
+  仅按批准合同的写范围实现；需要的 Skill 闭包来自当前合同。后端优先根 ./mvnw（前端实现由独立前端规格与 CLI 维护）；记录真实测试并由独立审查者审查。
 预期结果：查询/核验当前输入与适用条件。
 下一步条件：允许写路径、禁止模式、证据和验证命令全部满足。
 失败恢复：查看当前报告的逐项诊断，从最近可信阶段补齐受影响材料；yss help errors。
@@ -559,7 +559,7 @@ plan 只保存计划；apply 重新核验当前输入并拒绝篡改或漂移，
 每次改目标后重验已有证据，从首个合法未完成工作单元续推；有效批准和稳定业务 Ticket ID 可复用。真实资产或批准依据变化仍使受影响证据失效。
 
 本地或独立专职：
-  consumers=[]：同一 Spec 主线消费本地批准资产，在已登记实现仓写代码；无需另建三个治理工程或自导自入。本地前端有后端/API/数据依赖时等待当前后端交付；纯 UI 以有依据的不适用记录核验。
+  consumers=[]：同一 Spec 主线消费本地批准资产，在已登记实现仓写代码；无需另建三个治理工程或自导自入。前端实现由独立的前端规格与 CLI 维护，不在本主线。
   外部专职：consumers 每项给 profile（design/backend/frontend）、绝对 root、同功能 checkpoint_ref，每种最多一个；不能指向主控自身。未来尚未创建的端只能登记意图，未核验当前接收前不会报完成。
   Spec→Design 使用当前 SpecBaseline、Receipt 和目标 Context 对账；Spec/Design→Backend/Frontend 消费同一冻结战略基线；Backend→Frontend 消费当前接口及运行证据。前端可先准备设计与计划，正式实现仍核验当前依赖。
   主控只汇总显式绑定的同功能交付；过期 Receipt、版本失配和 Context 冲突阻断受影响完成判定。Context 以既有词汇归一化合同核验。
@@ -636,7 +636,7 @@ plan 只保存计划；apply 重新核验当前输入并拒绝篡改或漂移，
   yss stage query --root ./demo-spec --id stage.vertical-slice-implementation --json
   yss skills list --root ./demo-spec --json
   yss lifecycle status --root ./demo-spec --checkpoint .work/feature/checkpoint.yaml --json
-  仅按批准合同的写范围实现；需要的 Skill 闭包来自当前合同。前端在实际实现仓 pnpm，后端优先根 ./mvnw；记录真实测试并由独立审查者审查。
+  仅按批准合同的写范围实现；需要的 Skill 闭包来自当前合同。后端优先根 ./mvnw（前端实现由独立前端规格与 CLI 维护）；记录真实测试并由独立审查者审查。
 预期结果：查询/核验当前输入与适用条件。
 下一步条件：允许写路径、禁止模式、证据和验证命令全部满足。
 失败恢复：查看当前报告的逐项诊断，从最近可信阶段补齐受影响材料；yss help errors。
@@ -826,7 +826,7 @@ Profile backend
   yss stage query --root ./demo-backend --id stage.slice-implementation --json
   yss skills list --root ./demo-backend --json
   yss lifecycle status --root ./demo-backend --checkpoint .work/feature/checkpoint.yaml --json
-  仅按批准合同的写范围实现；需要的 Skill 闭包来自当前合同。前端在实际实现仓 pnpm，后端优先根 ./mvnw；记录真实测试并由独立审查者审查。
+  仅按批准合同的写范围实现；需要的 Skill 闭包来自当前合同。后端优先根 ./mvnw（前端实现由独立前端规格与 CLI 维护）；记录真实测试并由独立审查者审查。
 预期结果：查询/核验当前输入与适用条件。
 下一步条件：行为实现、测试证据、契约一致性和写入边界均满足合同。
 失败恢复：查看当前报告的逐项诊断，从最近可信阶段补齐受影响材料；yss help errors。
@@ -925,7 +925,7 @@ Profile frontend
   yss stage query --root ./demo-frontend --id stage.slice-implementation --json
   yss skills list --root ./demo-frontend --json
   yss lifecycle status --root ./demo-frontend --checkpoint .work/feature/checkpoint.yaml --json
-  仅按批准合同的写范围实现；需要的 Skill 闭包来自当前合同。前端在实际实现仓 pnpm，后端优先根 ./mvnw；记录真实测试并由独立审查者审查。
+  仅按批准合同的写范围实现；需要的 Skill 闭包来自当前合同。后端优先根 ./mvnw（前端实现由独立前端规格与 CLI 维护）；记录真实测试并由独立审查者审查。
 预期结果：查询/核验当前输入与适用条件。
 下一步条件：行为实现、测试证据、契约一致性和写入边界均满足合同。
 失败恢复：查看当前报告的逐项诊断，从最近可信阶段补齐受影响材料；yss help errors。

@@ -1,6 +1,6 @@
 # YSS HTML 原型适配器
 
-H1/H2 表示验证深度，不表示低/高保真。统一消费 Prototype Evidence schema v4 与 Visual Baseline schema v1。高保真主要采用 `vue-shadcn-prebuilt`，简单局部修改可用 `html-css-js`，接收者可离线打开；生产组件验证仍归下游 `yss-ui`，原型阶段不得调用。
+H1/H2 表示验证深度，不表示低/高保真。统一消费 Prototype Evidence schema v4 与 Visual Baseline schema v1。高保真主要采用 `vue-shadcn-prebuilt`，简单局部修改可用 `html-css-js`，接收者可离线打开；生产组件验证归独立维护的前端规格与 CLI，原型阶段不得调用生产组件库。
 
 ## 构建与交付
 

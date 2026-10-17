@@ -12,9 +12,6 @@
     "tt-a1i/archify": {
       "revision": "199360cc6687a7857b54dd188d4922b09e466a4b"
     },
-    "iloveZzz/yss-ui": {
-      "revision": "c4d958f18cc947cb91cbe1bd48783fa4601cc18f"
-    },
     "ayghri/i-have-adhd": {
       "revision": "839872f9d1cd634fed642b4589ce7226199cc15f"
     }
@@ -103,78 +100,6 @@
         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
         "upstreamHash": "2bc3bb0a64ea9c6f5c3bcf78fc17f0fcdc7c062edc547ef006441de0b576d248",
         "adaptationRef": ".template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
-        "targets": [
-          ".agents/skills",
-          ".claude/skills"
-        ]
-      },
-      "file-export-download": {
-        "source": "iloveZzz/yss-ui",
-        "sourceType": "github",
-        "skillPath": "packages/skills/file-export-download/SKILL.md",
-        "sourceRevision": "c4d958f18cc947cb91cbe1bd48783fa4601cc18f",
-        "upstreamHash": "3c281969780e6e6ea6e38818211d84b61655bcc242536785b0375de30d05a458",
-        "adaptationRef": ".template-source/agents/yss-ui-skills-integration.md",
-        "targets": [
-          ".agents/skills",
-          ".claude/skills"
-        ]
-      },
-      "formily-foundation": {
-        "source": "iloveZzz/yss-ui",
-        "sourceType": "github",
-        "skillPath": "packages/skills/formily-foundation/SKILL.md",
-        "sourceRevision": "c4d958f18cc947cb91cbe1bd48783fa4601cc18f",
-        "upstreamHash": "7736711494f368750d930e96f918bc8ae2d8a0c6b7fd404be165d03441546d9d",
-        "adaptationRef": ".template-source/agents/yss-ui-skills-integration.md",
-        "targets": [
-          ".agents/skills",
-          ".claude/skills"
-        ]
-      },
-      "formily-linkage-effects": {
-        "source": "iloveZzz/yss-ui",
-        "sourceType": "github",
-        "skillPath": "packages/skills/formily-linkage-effects/SKILL.md",
-        "sourceRevision": "c4d958f18cc947cb91cbe1bd48783fa4601cc18f",
-        "upstreamHash": "2b30d5755b672affdfbe1a21742be2ae4423361ca82d28fc5c1b7b55ef256b6e",
-        "adaptationRef": ".template-source/agents/yss-ui-skills-integration.md",
-        "targets": [
-          ".agents/skills",
-          ".claude/skills"
-        ]
-      },
-      "formily-mode-slot-detail": {
-        "source": "iloveZzz/yss-ui",
-        "sourceType": "github",
-        "skillPath": "packages/skills/formily-mode-slot-detail/SKILL.md",
-        "sourceRevision": "c4d958f18cc947cb91cbe1bd48783fa4601cc18f",
-        "upstreamHash": "857d4416264c7aadffc19560a6b04eeb4df72a3b1b9110f30d97b2e15de8ce2b",
-        "adaptationRef": ".template-source/agents/yss-ui-skills-integration.md",
-        "targets": [
-          ".agents/skills",
-          ".claude/skills"
-        ]
-      },
-      "formily-step-flow": {
-        "source": "iloveZzz/yss-ui",
-        "sourceType": "github",
-        "skillPath": "packages/skills/formily-step-flow/SKILL.md",
-        "sourceRevision": "c4d958f18cc947cb91cbe1bd48783fa4601cc18f",
-        "upstreamHash": "600a0a9a72f3bcb30db83d274b8d1082c036adf10c197dff616f76bec1a33d80",
-        "adaptationRef": ".template-source/agents/yss-ui-skills-integration.md",
-        "targets": [
-          ".agents/skills",
-          ".claude/skills"
-        ]
-      },
-      "frontend-commit": {
-        "source": "iloveZzz/yss-ui",
-        "sourceType": "github",
-        "skillPath": "packages/skills/frontend-commit/SKILL.md",
-        "sourceRevision": "c4d958f18cc947cb91cbe1bd48783fa4601cc18f",
-        "upstreamHash": "ffc1c7813607705c7c1158f4c5d3111aca79e73f1843e33bbc95eda9b5c726de",
-        "adaptationRef": ".template-source/agents/yss-ui-skills-integration.md",
         "targets": [
           ".agents/skills",
           ".claude/skills"
@@ -377,18 +302,6 @@
           ".claude/skills"
         ]
       },
-      "theme-token-usage": {
-        "source": "iloveZzz/yss-ui",
-        "sourceType": "github",
-        "skillPath": "packages/skills/theme-token-usage/SKILL.md",
-        "sourceRevision": "c4d958f18cc947cb91cbe1bd48783fa4601cc18f",
-        "upstreamHash": "b38acb4caf5012c9134df16a312b6be31b2b5d3fd6b976cfccee8d845f27c0ef",
-        "adaptationRef": ".template-source/agents/yss-ui-skills-integration.md",
-        "targets": [
-          ".agents/skills",
-          ".claude/skills"
-        ]
-      },
       "to-spec": {
         "source": "mattpocock/skills",
         "sourceType": "github",
@@ -453,30 +366,6 @@
         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
         "upstreamHash": "0071124a923559493bc8924a90fb87bceb048d31ad2ce785fa4281d7c506bfa7",
         "adaptationRef": ".template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
-        "targets": [
-          ".agents/skills",
-          ".claude/skills"
-        ]
-      },
-      "yedit-table-usage": {
-        "source": "iloveZzz/yss-ui",
-        "sourceType": "github",
-        "skillPath": "packages/skills/yedit-table-usage/SKILL.md",
-        "sourceRevision": "c4d958f18cc947cb91cbe1bd48783fa4601cc18f",
-        "upstreamHash": "a2fa606b85783fc140dd1775f02d7cddde02d8f4fc2dc3c2a017cc2f9fe998b1",
-        "adaptationRef": ".template-source/agents/yss-ui-skills-integration.md",
-        "targets": [
-          ".agents/skills",
-          ".claude/skills"
-        ]
-      },
-      "yss-api-integration": {
-        "source": "iloveZzz/yss-ui",
-        "sourceType": "github",
-        "skillPath": "packages/skills/api-integration/SKILL.md",
-        "sourceRevision": "c4d958f18cc947cb91cbe1bd48783fa4601cc18f",
-        "upstreamHash": "53d265c846f767c5dee9c92f2dc0caced341efd8888631f4b37a46eb486fbbeb",
-        "adaptationRef": ".template-source/agents/yss-ui-skills-integration.md",
         "targets": [
           ".agents/skills",
           ".claude/skills"
@@ -576,45 +465,6 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-exception/SKILL.md",
-        "targets": [
-          ".agents/skills",
-          ".claude/skills"
-        ]
-      },
-      "yss-formily": {
-        "source": "iloveZzz/yss-ui",
-        "sourceType": "github",
-        "skillPath": "packages/skills/yss-formily/SKILL.md",
-        "sourceRevision": "c4d958f18cc947cb91cbe1bd48783fa4601cc18f",
-        "upstreamHash": "f30e312a632c592c9050d00c35c22f2dc032658e6d9fdd6e2b5dc4ac0ea970c8",
-        "adaptationRef": ".template-source/agents/yss-ui-skills-integration.md",
-        "targets": [
-          ".agents/skills",
-          ".claude/skills"
-        ]
-      },
-      "yss-formily-schema-generator": {
-        "source": "project",
-        "sourceType": "local",
-        "skillPath": ".agents/skills/yss-formily-schema-generator/SKILL.md",
-        "targets": [
-          ".agents/skills",
-          ".claude/skills"
-        ]
-      },
-      "yss-frontend-scaffold-generator": {
-        "source": "project",
-        "sourceType": "local",
-        "skillPath": ".agents/skills/yss-frontend-scaffold-generator/SKILL.md",
-        "targets": [
-          ".agents/skills",
-          ".claude/skills"
-        ]
-      },
-      "yss-hook": {
-        "source": "project",
-        "sourceType": "local",
-        "skillPath": ".agents/skills/yss-hook/SKILL.md",
         "targets": [
           ".agents/skills",
           ".claude/skills"
@@ -758,27 +608,6 @@
           ".claude/skills"
         ]
       },
-      "yss-ui": {
-        "source": "project",
-        "sourceType": "local",
-        "skillPath": ".agents/skills/yss-ui/SKILL.md",
-        "targets": [
-          ".agents/skills",
-          ".claude/skills"
-        ]
-      },
-      "yss-ui-business-page-generation": {
-        "source": "iloveZzz/yss-ui",
-        "sourceType": "github",
-        "skillPath": "packages/skills/yss-ui-business-page-generation/SKILL.md",
-        "sourceRevision": "c4d958f18cc947cb91cbe1bd48783fa4601cc18f",
-        "upstreamHash": "97ef56c4b60c0281039996ac582ab01987b4d2bbb89989662594a6ce8a77c95f",
-        "adaptationRef": ".template-source/agents/yss-ui-skills-integration.md",
-        "targets": [
-          ".agents/skills",
-          ".claude/skills"
-        ]
-      },
       "yss-up-springboot3": {
         "source": "project",
         "sourceType": "local",
@@ -810,30 +639,6 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-web-controller/SKILL.md",
-        "targets": [
-          ".agents/skills",
-          ".claude/skills"
-        ]
-      },
-      "ytable-usage": {
-        "source": "iloveZzz/yss-ui",
-        "sourceType": "github",
-        "skillPath": "packages/skills/ytable-usage/SKILL.md",
-        "sourceRevision": "c4d958f18cc947cb91cbe1bd48783fa4601cc18f",
-        "upstreamHash": "7b3e8b3d761d910c5506ea17bf6cb264b2f313172748fe081b0fe5c9e9bbfff6",
-        "adaptationRef": ".template-source/agents/yss-ui-skills-integration.md",
-        "targets": [
-          ".agents/skills",
-          ".claude/skills"
-        ]
-      },
-      "ytree-usage": {
-        "source": "iloveZzz/yss-ui",
-        "sourceType": "github",
-        "skillPath": "packages/skills/ytree-usage/SKILL.md",
-        "sourceRevision": "c4d958f18cc947cb91cbe1bd48783fa4601cc18f",
-        "upstreamHash": "acf2de9d3391b93b636640445e738cbca747c3a963a7514dc70ef48dbe03801e",
-        "adaptationRef": ".template-source/agents/yss-ui-skills-integration.md",
         "targets": [
           ".agents/skills",
           ".claude/skills"

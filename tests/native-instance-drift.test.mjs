@@ -28,9 +28,6 @@ function fixture(t) {
   }
   fs.writeFileSync(path.join(root,'.template-spec/process/harness-profile.yaml'),'schema_version: 2\nprofile_id: harness.spec-template\ninstantiation:\n  cli_package: yss\n  metadata_file: .yss.json\n  native_profile: spec\n  template_source: github:iloveZzz/yss-spec-project-template\n');
   fs.mkdirSync(path.join(root, '.agents/skills'), { recursive: true });
-  for (const name of ['.yss-skills-manifest.json']) {
-    fs.copyFileSync(path.join(SOURCE, '.agents/skills', name), path.join(root, '.agents/skills', name));
-  }
   fs.writeFileSync(path.join(root, 'skills-lock.json'), JSON.stringify({ version: 3, sources: {}, skills: { shared: {}, platform: {} } }));
   const lock = run(root, 'scripts/update-skill-lock');
   assert.equal(lock.status, 0, lock.stderr || lock.stdout);

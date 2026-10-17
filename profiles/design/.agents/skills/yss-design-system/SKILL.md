@@ -26,7 +26,7 @@ description: 建立或核验 YSS 设计系统、主题 Token 与页面视觉一�
 2. 读取已有资产：先读根 `DESIGN.md`，再读 `.template-spec/design/design.md` 和 Token 派生快照，最后按任务读取相关 Spec、交互说明、状态矩阵、OpenAPI Draft、现有页面代码。
 3. 按设计系统基线约束输出或修改产物：颜色、排版、间距、圆角、动效、组件、状态、响应式。
 4. 若是产品设计阶段，先使用 `yss-prototype-stage`；规范直出由 YSS HTML adapter 执行；存在已选视觉稿时条件使用 `product-design:index`，其他 Agent 交付等价证据。
-5. 前端实现与真实组件核验回交消费方前端 profile；由其主控在已批准合同内路由 `yss-ui`、`yss-ui-business-page-generation` 和 `yss-formily`。战略 profile 只交付设计依据，不调用本地未安装的实现技能。
+5. 前端实现与真实组件核验交给独立维护的前端规格与 CLI。战略 profile 只交付设计依据，不调用前端实现技能。
 6. 若发现视觉 Token 或组件变体不足，先更新根 `DESIGN.md` 并重新生成投影；只有治理、流程或验收说明不足时才更新 `.template-spec/design/design.md`。
 
 新建高保真原型默认选择根规范已有的紧凑组件变体，按需读取 [原型默认主题](references/prototype-default-theme.md)；此选择不改变生产主题默认值或既有批准页面。
@@ -95,12 +95,10 @@ description: 建立或核验 YSS 设计系统、主题 Token 与页面视觉一�
 | 低保真原型进入高保真前评审 | `prototype-review` |
 | 低保真评审后的原型交付物 | `yss-prototype-stage` 选择 H1/H2；`high-fidelity-html-prototype` 仅只读迁移 |
 | 低保真线框或流程图 | 语义草图或 HTML；设计工具按需使用 |
-| 前端页面实现 | `yss-ui` / `yss-ui-business-page-generation` |
-| 表单 schema | `yss-formily` |
-| YTable / YTree / 高度自适应 | 消费方前端 profile 的 `ytable-usage` / `ytree-usage` / `yss-hook`（通过交接路由） |
+| 前端页面、表单、表格与树组件实现 | 不在本模板；由独立的前端规格与 CLI 维护 |
 | 原型交接前的六轴 QA | 规范直出由 YSS adapter 按 design-contract 验收；独立视觉稿才条件使用 design-qa 比对，项目 Token 优先 |
-| 原型渲染适配 | `yss-prototype-stage/references/product-design-adapter.md`；H1/H2 统一 HTML 交付、分别验证视觉与可操作流程；不得调用 `yss-ui` |
-| API 契约 / 接入 | `yss-openapi-governance` / `yss-api-integration` |
+| 原型渲染适配 | `yss-prototype-stage/references/product-design-adapter.md`；H1/H2 统一 HTML 交付、分别验证视觉与可操作流程；不得调用生产组件库 |
+| API 契约 | `yss-openapi-governance`；前端接入由独立前端规格维护 |
 
 搜索选择、日期范围、320 CSS px 重排或读屏风险检查时，按需读取 [搜索日期主题与无障碍](references/search-date-theme.md)，并入现有六轴 QA。
 

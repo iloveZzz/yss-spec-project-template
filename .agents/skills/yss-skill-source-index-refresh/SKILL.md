@@ -27,9 +27,9 @@ export YSS_SOURCE_ROOT_BOOT3_JAVA17="/path/to/boot3-java17/yss-cloud-microservic
 node "$YSS_SKILLS_ROOT/yss-skill-source-index-refresh/scripts/refresh-yss-skill-index.mjs"
 ```
 
-仅后端刷新时设置 `YSS_REFRESH_FRONTEND=false`，避免无关前端时间戳变化；用 `YSS_REFRESH_BACKEND_SKILLS=yss-mybatis`（多个 ID 逗号分隔）限定组件范围。所选组件仍刷新两条平台线，因此两个源码根都必须齐备。
+用 `YSS_REFRESH_BACKEND_SKILLS=yss-mybatis`（多个 ID 逗号分隔）限定组件范围。所选组件仍刷新两条平台线，因此两个源码根都必须齐备。
 
-后端输出稳定选择页 `references/source-index.md` 与两条平台生成索引；前端输出 `references/frontend-docs.md`。需要新增或调整技能到来源的映射时读取 [映射配置](references/source-map-config.md)。
+后端输出稳定选择页 `references/source-index.md` 与两条平台生成索引；前端文档索引已随前端技能退役。需要新增或调整技能到来源的映射时读取 [映射配置](references/source-map-config.md)。
 
 所有后端组件 Skill 共用 [平台与源码门禁](references/backend-component-platform-compatibility.md)。`references/source-index.md` 是稳定选择页；真实生成索引分别为 `source-index.boot2-java8.md` 与 `source-index.boot3-java17.md`。刷新后按共享门禁确认平台线（日常路径引用当前实际工程基线，完整治理引用批准的 `platform_configuration.component_platform_line`），运行 `scripts/check-backend-skill-source-index.mjs --skill <skill-id> --platform-line <line> --source-root <matching-root>`，确认组件 tree、组件子树状态和 v2 平台信号与所选源码行一致。
 

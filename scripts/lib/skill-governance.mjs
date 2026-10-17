@@ -3,86 +3,36 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { isTemplateSource } from "./repository-mode.mjs";
 import { loadSkillRegistry } from "./skill-registry.mjs";
-import { treeHash, validateYssUiSkillManifest } from "./skill-supply-chain.mjs";
+import { OBSOLETE } from "./skill-supply-chain.mjs";
 
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
+
+export const RETIRED_FRONTEND_SKILLS = ["file-export-download", "formily-foundation", "formily-linkage-effects", "formily-mode-slot-detail", "formily-step-flow", "frontend-commit", "theme-token-usage", "yedit-table-usage", "yss-api-integration", "yss-formily", "yss-formily-schema-generator", "yss-frontend-scaffold-generator", "yss-hook", "yss-ui", "yss-ui-business-page-generation", "ytable-usage", "ytree-usage"];
 
 function fail(message) {
   throw new TypeError(message);
 }
 
 export function validateSkillGovernance({ read = (relative) => readFileSync(path.join(ROOT, relative), "utf8"), exists = (relative) => existsSync(path.join(ROOT, relative)) } = {}) {
-  const globalRules = read(".agents/rules/yss-ai-skills.md");
-  const tableSkill = read(".agents/skills/ytable-usage/SKILL.md");
-  const pageSkill = read(".agents/skills/yss-ui-business-page-generation/SKILL.md");
-
-  for (const marker of ["trigger: always_on", ".template-spec/agents/yss-skill-registry.yaml", ".agents/skills/yss-ui/SKILL.md", "原型阶段"]) {
-    if (!globalRules.includes(marker)) fail(`YSS UI 薄入口缺少路由标记: ${marker}`);
-  }
-  for (const staleHeading of ["## Available Skills", "## Mandatory Workflow"]) {
-    if (globalRules.includes(staleHeading)) fail(`YSS UI 薄入口不得回流技能清单或实现步骤: ${staleHeading}`);
-  }
   const cursorRules = read(".cursorrules");
-  for (const marker of ["yss-project.yaml", ".template-spec/agents/yss-skill-registry.yaml", "yss-ui-business-page-generation", ".agents/skills", ".claude/skills"]) {
+  for (const marker of ["yss-project.yaml", ".template-spec/agents/yss-skill-registry.yaml", ".agents/skills", ".claude/skills"]) {
     if (!cursorRules.includes(marker)) fail(`Cursor 薄入口缺少路由标记: ${marker}`);
   }
   if (cursorRules.includes("YSS AI SKILLS START")) fail("Cursor 薄入口不得回流技能清单");
 
-  if (/toolbar-config\.custom.{0,30}(必须|必需)|必须.{0,30}toolbar-config\.custom/.test(globalRules)) {
-    fail("全局规则不得把 toolbar-config.custom 作为无条件要求");
+  // 前端技能整线退役（2026-10-17）：前端由独立规格与 CLI 维护，本模板不得回流前端技能、上游清单或 YSS UI MCP 配置。
+  for (const id of RETIRED_FRONTEND_SKILLS) {
+    if (!OBSOLETE.has(id)) fail(`退役前端技能未登记到 OBSOLETE: ${id}`);
+    if (exists(`.agents/skills/${id}`) || exists(`.claude/skills/${id}`)) fail(`退役前端技能不得保留物理目录或投影: ${id}`);
   }
-  for (const marker of ["主操作必须放入 `#toolbar-right`", "只有确实需要列设置时才使用", "toolbar-config"] ) {
-    if (!globalRules.includes(marker)) fail(`全局规则缺少条件化表格工具栏规则: ${marker}`);
-  }
-  for (const marker of ["无需配置 `:toolbar-config=\"{ custom: true }\"`", "仅在业务明确需要列设置时才传入"]) {
-    if (!tableSkill.includes(marker)) fail(`YTable 专项技能缺少条件化工具栏规则: ${marker}`);
-  }
-  if (!pageSkill.includes("仅在业务明确需要列设置时才传入")) {
-    fail("业务页面 canonical 技能缺少条件化 toolbar-config 规则");
-  }
-
-  const yssUiManifest = validateYssUiSkillManifest(JSON.parse(read(".agents/skills/.yss-skills-manifest.json")));
-  const lock = JSON.parse(read("skills-lock.json"));
-  for (const skill of yssUiManifest.skills) {
-    const skillPath = `.agents/skills/${skill.canonical}/SKILL.md`;
-    if (!exists(skillPath)) fail(`yss-ui 前端清单缺少 canonical skill: ${skill.canonical}`);
-    const item = lock.skills?.shared?.[skill.canonical];
-    if (!item || item.source !== yssUiManifest.source || item.sourceRevision !== yssUiManifest.source_revision) {
-      fail(`yss-ui skill 缺少一致的来源锁定: ${skill.canonical}`);
-    }
-    if (item.skillPath !== `${yssUiManifest.source_root}/${skill.upstream}/SKILL.md` || item.upstreamHash !== skill.upstream_hash) {
-      fail(`yss-ui skill 上游路径或 hash 不一致: ${skill.canonical}`);
-    }
-    const content = read(skillPath);
-    for (const match of content.matchAll(/\.\.\/([a-z0-9-]+)\/SKILL\.md/g)) {
-      if (!exists(`.agents/skills/${match[1]}/SKILL.md`)) fail(`${skill.canonical} 引用了不存在的本地 skill: ${match[1]}`);
-    }
-  }
-  const yssUiSkill = read(".agents/skills/yss-ui/SKILL.md");
-  if (!yssUiSkill.includes("`YFormily` 是新代码 canonical name")) fail("yss-ui 必须把 YFormily 声明为新代码 canonical name");
-  if (!yssUiSkill.includes("| 新建或改造完整业务页面 | `yss-ui-business-page-generation` |")) fail("yss-ui 缺少完整业务页面生成路由");
-  if (!yssUiSkill.includes("原型阶段不得调用本技能") || yssUiSkill.includes("prototype-component-facts")) fail("yss-ui 必须保持生产实现边界，不得暴露原型模式");
-  const expectedServer = { command: "npx", args: ["-y", "@yss-ui/mcp"] };
-  for (const config of yssUiManifest.mcp.project_configs) {
-    if (!exists(config.path)) fail(`缺少 yss-ui MCP 项目配置: ${config.path}`);
-    const document = JSON.parse(read(config.path));
-    if (JSON.stringify(document?.[config.container]?.[yssUiManifest.mcp.server_name]) !== JSON.stringify(expectedServer)) {
-      fail(`yss-ui MCP 配置不一致: ${config.path}`);
-    }
-  }
-  const mcpGuide = read(yssUiManifest.mcp.global_install_guide);
-  for (const marker of ["npx -y @yss-ui/mcp install codex", "不写用户主目录", "get_codegen_rules", "list_components"]) {
-    if (!mcpGuide.includes(marker)) fail(`YSS UI MCP 指南缺少边界或自检标记: ${marker}`);
+  for (const ref of [".agents/skills/.yss-skills-manifest.json", ".agents/rules/yss-ai-skills.md", ".agents/mcp_config.json", ".cursor/mcp.json", ".vscode/mcp.json", ".template-spec/user-guide/yss-ui-mcp.md"]) {
+    if (exists(ref)) fail(`前端技能退役后不得保留: ${ref}`);
   }
 
   const registry = loadSkillRegistry();
   const canonicalIds = new Set(registry.skills.map((skill) => skill.id));
   const aliases = new Map(registry.skills.flatMap((skill) => skill.aliases.map((alias) => [alias, skill.id])));
-  const legacy = new Set(["api-integration"]);
-  for (const alias of legacy) {
-    if (exists(`.agents/skills/${alias}`)) fail(`legacy alias 不得存在独立 canonical 目录: ${alias}`);
-    if (!aliases.has(alias)) fail(`legacy alias 未登记: ${alias}`);
-  }
+  const legacy = new Set();
   if (exists(".agents/skills/page-module-development") || exists(".agents/skills/yss-page-module-development") || aliases.has("page-module-development")) {
     fail("page-module-development / yss-page-module-development 已退役，不得保留物理目录或运行时 alias");
   }
@@ -96,8 +46,7 @@ export function validateSkillGovernance({ read = (relative) => readFileSync(path
   const prototypeAdapter = read(".agents/skills/yss-prototype-stage/references/product-design-adapter.md");
   const prototypeEvidence = read(".template-spec/design/templates/prototype-evidence-template.yaml");
   const projectDesign = read(".template-spec/design/design.md");
-  const antdvCompatibility = read(".agents/skills/yss-ui/references/antdv-compatibility.md");
-  for (const marker of ["product-design-adapter.md", "Prototype Evidence schema v4", "Visual Baseline schema v1", "H1", "H2", "原型阶段不得调用 `yss-ui`"]) {
+  for (const marker of ["product-design-adapter.md", "Prototype Evidence schema v4", "Visual Baseline schema v1", "H1", "H2", "原型阶段不得调用生产组件库"]) {
     if (!prototypeStage.includes(marker)) fail(`原型阶段合同缺少 YSS adapter 标记: ${marker}`);
   }
   for (const marker of ["prepare-static", "prepare-flow", "html-css-js", "offline-html-v1", "seal-project", "design-contract", "1440x900", "390x844"]) {
@@ -108,9 +57,6 @@ export function validateSkillGovernance({ read = (relative) => readFileSync(path
   }
   if (prototypeEvidence.includes("与官方 #1677ff / Inter / 8px")) fail("原型证据模板仍把 Inter/8px 误写为官方 v6 默认差异");
   if (projectDesign.includes("`antdv6-design.md`")) fail("design.md 仍引用不存在的 antdv6-design.md");
-  for (const marker of ["Ant Design v6", "Ant Design Vue 4.x", "版本号不同本身不是冲突", "visual_semantic_mapping"]) {
-    if (!antdvCompatibility.includes(marker)) fail(`AntDV 兼容策略缺少双轨边界: ${marker}`);
-  }
   for (const skill of registry.skills) {
     if (!canonicalIds.has(skill.id)) fail(`注册表 canonical skill 无效: ${skill.id}`);
     if (skill.maturity === "deprecated") {
@@ -121,5 +67,5 @@ export function validateSkillGovernance({ read = (relative) => readFileSync(path
       if (!/^\d{4}-\d{2}-\d{2}$/.test(skill.deprecation.remove_after ?? "")) fail(`deprecated 技能 remove_after 无效: ${skill.id}`);
     }
   }
-  return { checked: true, legacy_aliases: legacy.size, yss_ui_skills: yssUiManifest.skills.length };
+  return { checked: true, legacy_aliases: legacy.size, retired_frontend_skills: RETIRED_FRONTEND_SKILLS.length };
 }

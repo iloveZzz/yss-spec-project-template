@@ -259,7 +259,7 @@ roles:
       and release. May reject Spec scope. Do not write production code or freeze
       OpenAPI alone. Do not independently approve external commercial contracts
       or formal commitments; those require biological-human approval. Frontend
-      implementation uses the frontend-engineer role and yss-ui. Prototypes use
+      implementation is maintained by the separate frontend spec and CLI. Prototypes use
       offline HTML/CSS/JavaScript and project DESIGN.md; production component
       facts remain downstream.
 gate_policy:

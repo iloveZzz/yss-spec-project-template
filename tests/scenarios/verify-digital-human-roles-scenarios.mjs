@@ -39,10 +39,10 @@ function mustFail(doc, pattern, label) {
 validateDefaultDigitalHumanRoles();
 
 const tester = loadDigitalHumanRoles().roles.find((role) => role.id === "role.test-engineer");
-for (const skill of ["code-review", "alibaba-java-code-style", "yss-ui", "yss-ui-business-page-generation", "yss-domain", "yss-application", "yss-web-controller", "yss-dto", "mapstruct", "lombok"]) {
+for (const skill of ["code-review", "alibaba-java-code-style", "yss-design-system", "yss-domain", "yss-application", "yss-web-controller", "yss-dto", "mapstruct", "lombok"]) {
   if (!tester.core_skills.includes(skill)) throw new TypeError(`role.test-engineer 缺少只读专项检查 skill: ${skill}`);
 }
-if (tester.forbidden_skills.includes("yss-ui") || tester.forbidden_skills.includes("alibaba-java-code-style")) {
+if (tester.forbidden_skills.includes("yss-design-system") || tester.forbidden_skills.includes("alibaba-java-code-style")) {
   throw new TypeError("测试工程师不得禁止审查所需的 YSS / Alibaba skill");
 }
 const backend = loadDigitalHumanRoles().roles.find((role) => role.id === "role.backend-engineer");
@@ -73,7 +73,7 @@ unknownSkill.roles[0].core_skills = ["not-a-registered-skill"];
 mustFail(unknownSkill, /未登记技能/, "未知技能");
 
 const overlap = clone();
-overlap.roles.find((role) => role.id === "role.frontend-engineer").forbidden_skills.push("yss-ui");
+overlap.roles.find((role) => role.id === "role.frontend-engineer").forbidden_skills.push("yss-design-system");
 mustFail(overlap, /重叠/, "启用且禁止同一技能");
 
 const selfSign = clone();

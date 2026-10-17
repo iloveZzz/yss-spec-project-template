@@ -91,7 +91,7 @@ Profile backend
   yss stage query --root ./demo-backend --id stage.slice-implementation --json
   yss skills list --root ./demo-backend --json
   yss lifecycle status --root ./demo-backend --checkpoint .work/feature/checkpoint.yaml --json
-  仅按批准合同的写范围实现；需要的 Skill 闭包来自当前合同。前端在实际实现仓 pnpm，后端优先根 ./mvnw；记录真实测试并由独立审查者审查。
+  仅按批准合同的写范围实现；需要的 Skill 闭包来自当前合同。后端优先根 ./mvnw（前端实现由独立前端规格与 CLI 维护）；记录真实测试并由独立审查者审查。
 预期结果：查询/核验当前输入与适用条件。
 下一步条件：行为实现、测试证据、契约一致性和写入边界均满足合同。
 失败恢复：查看当前报告的逐项诊断，从最近可信阶段补齐受影响材料；yss help errors。

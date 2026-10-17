@@ -70,7 +70,7 @@ function validateInvocationBoundary(data) {
   ensure(JSON.stringify(boundary?.lifecycle_managed_user_entries) === JSON.stringify(["setup-matt-pocock-skills", "to-spec", "to-tickets", "implement"]), "生命周期管理的显式用户入口清单不完整");
   ensure(boundary?.lifecycle_may_invoke_user_invoked === false && boundary?.formal_artifact_owner === "explicit-user-entry", "生命周期仍可能自动调用 user-invoked skill 或产出其正式资产");
   ensure(JSON.stringify(boundary?.model_invoked_skills) === JSON.stringify(expectedModelInvoked) && JSON.stringify(boundary?.lifecycle_allowed_model_invoked_skills) === JSON.stringify(expectedLifecycleModelInvoked) && boundary?.continuous_orchestration === "compatibility-prepare-and-validate-only", "Matt invocation inventory 或生命周期 model-invoked 白名单不完整");
-  ensure(JSON.stringify(data.skill_source_contract?.source_revisions_required) === JSON.stringify(["mattpocock/skills", "iloveZzz/yss-ui"]) && data.skill_source_contract?.adaptation_ref_required_when_effective_diff === true && data.skill_source_contract?.retired_shared_skills?.includes("batch-grill-me"), "上游来源或退役 skill 供应链契约不完整");
+  ensure(JSON.stringify(data.skill_source_contract?.source_revisions_required) === JSON.stringify(["mattpocock/skills"]) && data.skill_source_contract?.adaptation_ref_required_when_effective_diff === true && data.skill_source_contract?.retired_shared_skills?.includes("batch-grill-me"), "上游来源或退役 skill 供应链契约不完整");
   validateInvocationMetadata(boundary, (skill) => read(`.agents/skills/${skill}/SKILL.md`));
   const setup = data.setup_readiness;
   ensure(setup?.missing_action === "needs-human" && setup?.requested_skill === "setup-matt-pocock-skills" && setup?.resume_route === "setup-readiness" && setup?.preserves?.includes("lifecycle.status"), "readiness=missing 未形成显式用户 setup 的结构化暂停");
@@ -89,17 +89,11 @@ function validateInvocationBoundary(data) {
   const stageDecisionResearch = routes?.["work-unit.stage-decision"]?.research_contract;
   ensure(routes?.["work-unit.stage-decision"]?.skills?.includes("yss-research") && stageDecisionResearch?.profile === "strategy-evidence" && stageDecisionResearch.mode_before_gate === "evidence-audited" && stageDecisionResearch.artifact_owner === "yss-research" && stageDecisionResearch.downstream_owner === "yss-stage-decision", "阶段决策工作单元缺少 evidence-audited 战略研究合同");
   const prototypeRoute = routes?.["work-unit.prototype-design-v2"];
-  ensure(!prototypeRoute?.skills?.includes("yss-ui") && !prototypeRoute?.supporting_skills?.includes("yss-ui"), "原型工作单元不得调用生产实现技能 yss-ui");
-  ensure(JSON.stringify(Object.keys(prototypeRoute?.profile_contract?.profiles ?? {})) === JSON.stringify(["H1", "H2"]) && prototypeRoute?.version_boundary?.prototype_must_not_call === "yss-ui", "原型档位必须仅包含 H1/H2 并明确 yss-ui 边界");
-  ensure(routes?.["work-unit.slice-implementation"]?.skills?.includes("tdd") && routes?.["work-unit.slice-implementation"]?.skills?.includes("yss-ui") && routes?.["work-unit.slice-implementation"]?.skills?.includes("yss-ui-business-page-generation"), "原生实现工作单元缺少 TDD、UI 或业务页面生成路由");
-  const frontendRoute = routes?.["work-unit.slice-implementation"]?.frontend_route;
-  ensure(frontendRoute?.primary_skill === "yss-ui" && frontendRoute?.page_generation_skill === "yss-ui-business-page-generation" && frontendRoute?.page_orchestration_skill === "yss-ui-business-page-generation", "前端实现路由缺少 yss-ui 主入口或统一业务页面技能");
-  for (const impact of ["api_impact", "formily_impact", "table_impact", "tree_impact", "export_impact", "theme_impact"]) {
-    ensure(Array.isArray(frontendRoute?.conditional_skills?.[impact]) && frontendRoute.conditional_skills[impact].length > 0 && typeof frontendRoute.not_applicable_reasons?.[impact] === "string", `前端条件专项路由缺少 ${impact}`);
-  }
+  ensure(JSON.stringify(Object.keys(prototypeRoute?.profile_contract?.profiles ?? {})) === JSON.stringify(["H1", "H2"]) && prototypeRoute?.version_boundary?.prototype_must_not_call === "production-component-library", "原型档位必须仅包含 H1/H2 并明确不调用生产组件库");
+  ensure(routes?.["work-unit.slice-implementation"]?.skills?.includes("tdd") && routes?.["work-unit.slice-implementation"]?.frontend_route === undefined, "原生实现工作单元缺少 TDD 路由或仍携带已退役的前端路由");
   const reviewRoute = routes?.["work-unit.code-review"];
   ensure(reviewRoute?.primary_skill === "code-review" && reviewRoute?.review_standards_route?.unique_default_skill === "code-review" && reviewRoute?.review_standards_route?.second_generic_review_skill === "forbidden", "code-review 不是唯一默认审查入口或允许第二套通用审查 skill");
-  ensure(includesAll(reviewRoute?.supporting_skills, ["alibaba-java-code-style", "yss-ui", "yss-domain", "yss-repository", "yss-mybatis"]) && includesAll(reviewRoute?.skills, ["code-review", "alibaba-java-code-style", "yss-ui", "yss-repository", "yss-mybatis"]), "审查工作单元缺少 YSS / Alibaba / Repository / MyBatis 专项检查输入");
+  ensure(includesAll(reviewRoute?.supporting_skills, ["alibaba-java-code-style", "yss-design-system", "yss-domain", "yss-repository", "yss-mybatis"]) && includesAll(reviewRoute?.skills, ["code-review", "alibaba-java-code-style", "yss-design-system", "yss-repository", "yss-mybatis"]), "审查工作单元缺少 YSS / Alibaba / Repository / MyBatis 专项检查输入");
   const reviewScope = reviewRoute?.review_standards_route?.project_scope;
   ensure(includesAll(reviewScope?.sources, ["candidate-project-root", "implementation-repository-registry", "slice-project-roots", "allowed-write-paths"]) && includesAll(reviewScope?.include, ["project-itself", "registered-backend-development-projects"]) && includesAll(reviewScope?.exclude, ["frontend-projects", "unrelated-submodules", "vendor", "unregistered-directories"]) && reviewScope?.fixed_apps_backend_assumption === "forbidden", "后端审查范围未绑定本体项目与已登记后端研发项目，或仍固定为 apps/backend");
   const disposition = reviewRoute?.review_standards_route?.finding_disposition;
@@ -250,8 +244,8 @@ const profiles = {
   },
   openapiJson: {
     message: "OpenAPI YAML-first JSON handoff scenarios passed",
-    files: [".template-spec/api/templates/openapi-json-export-record-template.md", ".agents/skills/yss-api-integration/SKILL.md"],
-    markers: [[".agents/skills/yss-api-integration/SKILL.md", "SHA-256"]]
+    files: [".template-spec/api/templates/openapi-json-export-record-template.md"],
+    markers: [[".template-spec/api/templates/openapi-json-export-record-template.md", "SHA-256"]]
   },
   yssDtoWire: {
     message: "YSS DTO OpenAPI wire-shape scenarios passed",
@@ -508,7 +502,7 @@ export function runScenario(name) {
     }
     const unavailableResult = structuredClone(validResult);
     unavailableResult.result = "blocked";
-    unavailableResult.unavailable_skill = { skill: "yss-ui", provider: "codex", fallback: "manual-review", resolution: "needs-human" };
+    unavailableResult.unavailable_skill = { skill: "yss-domain", provider: "codex", fallback: "manual-review", resolution: "needs-human" };
     unavailableResult.blocking_signals = ["missing_evidence"];
     validateWorkflowExecutionResult(unavailableResult, data.workflow_execution_result, data.work_unit_routes, { root: planFixture.root });
     const malformedUnavailable = structuredClone(unavailableResult);
