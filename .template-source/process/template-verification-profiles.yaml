@@ -91,6 +91,8 @@ profiles:
         inputs_complete: true
         input_patterns:
           - "tests/role-independent-contracts.test.mjs"
+          - ".template-spec/agents/digital-human-roles.yaml"
+          - "profiles/backend/.template-spec/agents/digital-human-roles.yaml"
           - ".template-spec/process/schemas/*.schema.json"
           - ".template-spec/process/orchestration-contract.yaml"
           - ".template-spec/process/orchestration/**"

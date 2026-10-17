@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { validateJsonSchemas } from '../scripts/lib/json-schema.mjs';
 import { loadOrchestrationContract } from '../scripts/lib/orchestration-contract.mjs';
+import { parse } from '../scripts/vendor/yaml.mjs';
 const root = path.resolve(import.meta.dirname, '..');
 const digest = 'a'.repeat(64);
 const asset = { ref: 'candidate.yaml', digest };
@@ -18,6 +19,15 @@ function validate(schema, values) { return validateJsonSchemas(values.map(value 
 function accepts(schema, value) { const [r] = validate(schema, [value]); assert.equal(r.valid, true, r.error); }
 function rejects(schema, value) { const [r] = validate(schema, [value]); assert.equal(r.valid, false); }
 const copy = value => structuredClone(value);
+function assertLegacyCheckIDs(policy, profile, rolesRef) {
+ const legacy=parse(fs.readFileSync(path.join(root,rolesRef),'utf8'));
+ const current=policy.gate_policy.profiles[profile], old=legacy.gate_policy;
+ assert.deepEqual(new Set(policy.technical_checks.filter(row=>row.profiles.includes(profile)).map(row=>row.id)),new Set(legacy.review_capabilities.map(row=>row.id)),`${profile}: professional check groups`);
+ const currentIDs=[...current.automatic_checks,...current.evidence_only,...current.user_decision_gates,...current.contract_approval_gates,...current.check_reviews.map(row=>row.gate),...current.technical_reviews.map(row=>row.gate)];
+ const legacyIDs=[...old.automatic_checks,...old.evidence_only,...old.biological_human,...old.orchestrator,...old.check_reviews.map(row=>row.gate),...old.dual_digital_human.map(row=>row.gate),...old.digital_human_review.map(row=>row.gate)];
+ assert.deepEqual(new Set(currentIDs),new Set(legacyIDs),`${profile}: complete gate/check IDs`);
+}
+
 test('new task3, approval3 and review-bundle3 accept role-free self-check without stable identity', () => { accepts('digital-human-task-package', task); accepts('approval-record', check); accepts('review-bundle', bundle); });
 test('legacy required role/runtime fields and readonly intake2 retain their meaning; unknown versions reject', () => {
  for (const [schema, sample] of [['digital-human-task-package', task], ['approval-record', check], ['review-bundle', bundle]]) for (const version of [1, 2, 99]) rejects(schema, { ...sample, schema_version: version });
@@ -25,6 +35,12 @@ test('legacy required role/runtime fields and readonly intake2 retain their mean
 test('new task rejects missing baseline, empty acceptance and role qualification fields', () => {
  for (const key of ['baseline', 'provenance', 'input_bindings', 'policy']) { const bad=copy(task); delete bad[key]; rejects('digital-human-task-package', bad); }
  rejects('digital-human-task-package', {...task, acceptance: []}); rejects('digital-human-task-package', {...task, role_id:'role.backend-engineer'});
+});
+test('formal task3 rejects empty expected evidence files', () => {
+ rejects('digital-human-task-package', {...task, expected_evidence_files: []});
+});
+test('formal task3 rejects empty verification commands', () => {
+ rejects('digital-human-task-package', {...task, verification_commands: []});
 });
 test('independent and external review require their actual source evidence, self-check cannot carry fake independence', () => {
  for (const mode of ['independent-review','external-required-review']) rejects('approval-record', {...check, review:{...review,mode}});
@@ -51,6 +67,7 @@ test('passed results cannot have failing exit codes or omit candidate/log bindin
 });
 test('policy2 extracts checks without holders, preserves all legacy check IDs and defaults to single executor', () => {
  const p=loadOrchestrationContract(ref=>fs.readFileSync(path.join(root,ref)),'.template-spec/process/orchestration-contract.yaml').value;
+ assertLegacyCheckIDs(p,'spec','.template-spec/agents/digital-human-roles.yaml');
  assert.equal(p.schema_version,2); assert.equal(p.task_package.schema_version,3); assert.equal(p.request_triage.delivery_path.version,2); assert.equal(p.request_triage.delivery_path.standard.version,2);
  assert.equal(p.review_verification.default_mode,'self-check'); assert.equal(p.governance_versions.required_capability,'role-independent-governance-v1');
  assert.deepEqual(p.profile_admission.new_profiles,['spec','backend']); assert.equal(p.profile_admission.legacy_design.write,'explicit-migration-only');
@@ -64,12 +81,12 @@ test('policy2 extracts checks without holders, preserves all legacy check IDs an
 
 test('Backend materialized policy selects only its declared gates/checks and retains delivery bounds', async () => {
  const { composeProfileTree } = await import('../scripts/lib/profile-tree.mjs');
- const { parse } = await import('../scripts/vendor/yaml.mjs');
  const tree=composeProfileTree('backend');
  const p=loadOrchestrationContract(ref=>fs.readFileSync(path.join(tree,ref)),'.template-spec/process/orchestration-contract.yaml').value;
  const registry=parse(fs.readFileSync(path.join(tree,'.template-spec/process/lifecycle-registry.yaml'),'utf8'));
  const ids=new Set(['gates','checks'].flatMap(k=>registry[k].map(x=>x.id)));
  const gates=p.gate_policy.profiles.backend;
+ assertLegacyCheckIDs(p,'backend','profiles/backend/.template-spec/agents/digital-human-roles.yaml');
  for(const id of [...gates.automatic_checks,...gates.user_decision_gates,...gates.contract_approval_gates,...gates.evidence_only,...gates.check_reviews.map(x=>x.gate),...gates.technical_reviews.map(x=>x.gate)]) assert.ok(ids.has(id),id);
  assert.ok(!gates.technical_reviews.some(x=>x.gate==='gate.delivery-accepted'));
  assert.equal(p.gate_policy.default_if_unlisted,'reject-unlisted');

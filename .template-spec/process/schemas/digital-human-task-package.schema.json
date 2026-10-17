@@ -1359,10 +1359,12 @@
           "$ref": "#/oneOf/0/properties/expected_outputs"
         },
         "expected_evidence_files": {
-          "$ref": "#/oneOf/0/properties/expected_evidence_files"
+          "$ref": "#/oneOf/0/properties/expected_evidence_files",
+          "minItems": 1
         },
         "verification_commands": {
-          "$ref": "#/oneOf/0/properties/verification_commands"
+          "$ref": "#/oneOf/0/properties/verification_commands",
+          "minItems": 1
         },
         "verification_results": {
           "type": "array",
