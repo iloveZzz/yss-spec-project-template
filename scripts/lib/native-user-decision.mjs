@@ -39,7 +39,10 @@ export function scaffoldDecisionSnapshot(decision) {
   };
 }
 
+// Write difference_json verbatim to differences.ref: JSON.parse can round numbers in the observational difference object.
 // This query only computes the actual delta; classifications and original authorization remain native verification inputs.
 export function compareContinuationAssets(before,after,options={}) {
- return nativeCoverage(nativeContractVerify({root:rootFor(options),kind:'continuation-comparison',document:{before,after},needs:NEEDS.userDecision}),'continuation_comparison');
+ const comparison=nativeCoverage(nativeContractVerify({root:rootFor(options),kind:'continuation-comparison',document:{before,after},needs:NEEDS.userDecision}),'continuation_comparison');
+ if(typeof comparison.difference_json!=='string'||!comparison.difference_json.length)decisionError('continuation-comparison-transport-missing','原生比较缺少精确 difference_json，不能通过舍入后的观察值回写证据');
+ return comparison;
 }
