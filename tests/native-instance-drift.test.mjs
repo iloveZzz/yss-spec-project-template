@@ -43,14 +43,16 @@ function fixture(t) {
     baseline: { type: 'file', digest: sha(fs.readFileSync(path.join(root, 'skills-lock.json'))), mode: 0o644 },
     lastApplied: { type: 'file', digest: sha(fs.readFileSync(path.join(root, 'skills-lock.json'))), mode: 0o644 }, ownership: 'generated',
   } };
-  const metadata = { schemaVersion: 1, protocolVersion: 1, profile: 'spec', profileId: 'harness.spec-template',
-    cliVersion: '1.0.0-alpha.3', templateVersion: '3.5.10', legacyCliVersion: '3.5.10',
+  // 2.3.1 起原生执行器只接受 schema 3 metadata（Bundle schema 3、CLI 来源、每条受管记录的 baselineSource）。
+  const metadata = { schemaVersion: 3, protocolVersion: 1, profile: 'spec', profileId: 'harness.spec-template',
+    cliVersion: '2.3.3', templateVersion: '4.4.1', legacyCliVersion: '3.5.10',
+    bundleSchemaVersion: 3, bundleHash: 'd'.repeat(64), cliCommit: 'e'.repeat(40), cliSourceState: 'committed',
     templateSourceState: 'committed', templateCommit: 'a'.repeat(40), snapshotHash: 'b'.repeat(64), manifestHash: 'c'.repeat(64),
     // 运行时与锁的投影根保持一致（当前模板源只投影 .claude/skills）。
     variables: {}, distribution: { mode: 'selected', runtimes: lockRuntimes(root), installedSkills: [] }, managedFiles,
-    baselineDigest: sha(JSON.stringify(managedFiles)) };
+    baselineDigest: '' };
   const save = () => fs.writeFileSync(path.join(root, '.yss.json'), JSON.stringify(metadata));
-  save();
+  saveManaged({ metadata, save });
   fs.mkdirSync(path.join(root, 'business'), { recursive: true });
   fs.mkdirSync(path.join(root, '.github'), { recursive: true });
   fs.writeFileSync(path.join(root, 'business/user-data.txt'), 'preserved business bytes\n', { mode: 0o640 });
@@ -91,14 +93,17 @@ function verifyWithoutWrites(f, expected, message) {
   assert.deepEqual(treeState(f.root), before, '只读校验不能修改任何文件、目录、metadata、Git index 或用户资产');
   return observed;
 }
-function schema2(f) {
-  Object.assign(f.metadata, { schemaVersion: 2, bundleSchemaVersion: 2, bundleHash: 'd'.repeat(64),
-    cliCommit: 'e'.repeat(40), cliSourceState: 'committed' });
-  f.save();
-}
+// 夹具已是现行 schema 3；保留调用点表示该用例依赖 Bundle/CLI 来源字段。
+function schema2(f) { f.save(); }
 
+// schema 3 每条受管记录都要有 baselineSource（夹具的手工资产没有模板来源，记为 unavailable），
+// 摘要按原生 json.Marshal：键排序、字段顺序 baseline、lastApplied、ownership、baselineSource。
 function saveManaged(f) {
-  f.metadata.baselineDigest = sha(JSON.stringify(Object.fromEntries(Object.entries(f.metadata.managedFiles).sort(([a], [b]) => a < b ? -1 : 1))));
+  const records = Object.entries(f.metadata.managedFiles).sort(([a], [b]) => a < b ? -1 : 1).map(([ref, item]) => [ref, {
+    baseline: item.baseline, lastApplied: item.lastApplied, ownership: item.ownership,
+    baselineSource: item.baselineSource ?? { kind: 'unavailable' }, ...(item.disposition ? { disposition: item.disposition } : {}) }]);
+  f.metadata.managedFiles = Object.fromEntries(records);
+  f.metadata.baselineDigest = sha(JSON.stringify(f.metadata.managedFiles));
   f.save();
 }
 function platformFixture(t) {
@@ -113,6 +118,9 @@ function platformFixture(t) {
   // Only the copied historical instance's runtime configuration changes; all
   // lock, physical-source, alias and drift validation code remains unchanged.
   fs.writeFileSync(supply, source.replace(declaration, 'export const PROJECTION_ROOTS = [".codex/skills"];'));
+  // 项目实例的投影根取自锁本身（projectionRootsFor），不是模板源默认值；同样只把这份历史实例的锁切到 codex。
+  const lockFile = path.join(f.root, 'skills-lock.json');
+  fs.writeFileSync(lockFile, JSON.stringify({ ...JSON.parse(fs.readFileSync(lockFile, 'utf8')), projectionRoots: ['.codex/skills'] }, null, 2) + '\n');
   f.metadata.distribution.runtimes = ['codex'];
   const registry = path.join(f.root, '.template-spec/agents/yss-skill-registry.yaml');
   const registrySource = fs.readFileSync(registry, 'utf8');
@@ -212,8 +220,7 @@ test('公开实例漂移 JSON 的小型与大型成功和拒绝报告都必须�
       f.metadata.managedFiles[ref] = { baseline: { type: 'file', digest: sha(original), mode: 0o644 },
         lastApplied: { type: 'file', digest: sha(original), mode: 0o644 }, ownership: 'managed' };
     }
-    f.metadata.baselineDigest = sha(JSON.stringify(Object.fromEntries(Object.entries(f.metadata.managedFiles).sort(([a], [b]) => a < b ? -1 : 1))));
-    f.save();
+    saveManaged(f);
     // The public report can exceed spawnSync's default 1 MiB buffer. This is a
     // test transport bound; the command's behavior and timing are unchanged.
     f.verify = () => run(f.root, 'scripts/verify-project-instance', ['--json'], { maxBuffer: 16 * 1024 * 1024 });
@@ -255,16 +262,14 @@ test('受管文件父目录被符号链接替换时不能读取链接外的相�
   fs.writeFileSync(path.join(f.root, 'real/asset.txt'), original, { mode: 0o644 });
   fs.symlinkSync('real', path.join(f.root, 'managed-dir'), 'dir');
   f.metadata.managedFiles = { 'managed-dir/asset.txt': f.metadata.managedFiles['managed.txt'], 'skills-lock.json': f.metadata.managedFiles['skills-lock.json'] };
-  f.metadata.baselineDigest = sha(JSON.stringify(f.metadata.managedFiles));
-  f.save();
+  saveManaged(f);
   const observed = verifyWithoutWrites(f, 1);
   assert.match(observed.stdout, /managed-asset-parent-must-be-directory/);
 });
 
-test('Schema 1 与 Schema 2 原生实例校验使用原生基线并保留旧 metadata 字节', async t => {
-  for (const version of [1, 2]) await t.test(`Schema ${version}`, t => {
+test('现行 Schema 3 原生实例校验使用原生基线并保留旧 metadata 字节', async t => {
+  for (const version of [3]) await t.test(`Schema ${version}`, t => {
     const f = fixture(t);
-    if (version === 2) schema2(f);
     // The historical baseline deliberately differs. Native lastApplied is the
     // current applied state; preserved legacy metadata is migration lineage.
     fs.writeFileSync(path.join(f.root, '.yss-template.json'), JSON.stringify({ metadataSchemaVersion: 3, templateSource:'github:iloveZzz/yss-spec-project-template',templateCommit:'a'.repeat(40), managedFiles: {
@@ -276,6 +281,19 @@ test('Schema 1 与 Schema 2 原生实例校验使用原生基线并保留旧 met
     assert.equal(report.entries.find(entry => entry.ref === 'managed.txt').kind, 'ok');
     assert.equal(report.summary.missing, 0);
     assert.equal(report.entries[0].expected, `sha256:${sha(original)}`);
+  });
+});
+
+test('已退役的 Schema 1 / 2 原生 metadata 由原生执行器拒绝且不写入', async t => {
+  // 2.3.1 起执行器只接受 schema 3；旧 schema 的实例须先用旧版执行器迁移，本 CLI 不再迁移。
+  for (const version of [1, 2]) await t.test(`Schema ${version}`, t => {
+    const f = fixture(t);
+    f.metadata.schemaVersion = version;
+    if (version === 1) for (const key of ['bundleSchemaVersion', 'bundleHash', 'cliCommit', 'cliSourceState']) delete f.metadata[key];
+    else f.metadata.bundleSchemaVersion = 2;
+    for (const item of Object.values(f.metadata.managedFiles)) delete item.baselineSource;
+    f.metadata.baselineDigest = sha(JSON.stringify(f.metadata.managedFiles)); f.save();
+    verifyWithoutWrites(f, 1, /IDENTITY: .*未知统一 CLI metadata 或协议版本/);
   });
 });
 
@@ -295,14 +313,14 @@ test('可定制内容保留但文件存在、普通类型、可读性及原生�
   await t.test('custom-content', t => {
     const f = fixture(t); schema2(f);
     f.metadata.managedFiles['managed.txt'].ownership = 'managed-customizable';
-    f.metadata.baselineDigest = sha(JSON.stringify(f.metadata.managedFiles)); f.save();
+    saveManaged(f);
     fs.writeFileSync(path.join(f.root, 'managed.txt'), 'user customization\n');
     verifyWithoutWrites(f, 0);
   });
   for (const kind of ['missing', 'directory', 'symlink', ...(process.platform === 'win32' ? [] : ['mode'])]) await t.test(kind, t => {
     const f = fixture(t); schema2(f);
     f.metadata.managedFiles['managed.txt'].ownership = 'managed-customizable';
-    f.metadata.baselineDigest = sha(JSON.stringify(f.metadata.managedFiles)); f.save();
+    saveManaged(f);
     if (kind === 'mode') fs.chmodSync(path.join(f.root, 'managed.txt'), 0o755);
     else {
       fs.rmSync(path.join(f.root, 'managed.txt'));
@@ -337,7 +355,9 @@ test('旧实例仍检查原字节基线，skills-lock 使用独立供应链检�
     fs.writeFileSync(path.join(f.root, '.yss-template.json'), JSON.stringify({ metadataSchemaVersion: 3, templateSource:'github:iloveZzz/yss-spec-project-template',templateCommit:'a'.repeat(40), managedFiles: {
       'managed.txt': { contentHash: sha(original), ownership: 'managed' },
     } }));
-    verifyWithoutWrites(f, 0);
+    // 2.3.1 起只有旧家族 metadata 的实例不再识别或迁移：原生 Context 校验以 LEGACY_INSTANCE_UNSUPPORTED
+    // 拒绝且不写入；旧字节基线的漂移不能让它转为通过。
+    verifyWithoutWrites(f, 1, /LEGACY: .*旧版实例不再受支持/);
     fs.writeFileSync(path.join(f.root, 'managed.txt'), 'legacy drift\n');
     verifyWithoutWrites(f, 1, /"kind": "drifted"/);
   });
@@ -354,7 +374,7 @@ test('原生初始化记录的用户资产允许后续用户修改或删除，�
   for (const ownership of ['user-owned', 'protected']) await t.test(ownership, t => {
     const f = fixture(t); schema2(f);
     f.metadata.managedFiles['managed.txt'].ownership = ownership;
-    f.metadata.baselineDigest = sha(JSON.stringify(f.metadata.managedFiles)); f.save();
+    saveManaged(f);
     fs.writeFileSync(path.join(f.root, 'managed.txt'), 'user-owned later bytes\n');
     verifyWithoutWrites(f, 0);
     fs.rmSync(path.join(f.root, 'managed.txt'));
@@ -367,7 +387,7 @@ test('原生初始化记录的用户资产允许后续用户修改或删除，�
       baseline: { type: 'file', digest: sha(bytes), mode: 0o644 },
       lastApplied: { type: 'file', digest: sha(bytes), mode: 0o644 }, ownership: 'user-owned',
     }, 'skills-lock.json': f.metadata.managedFiles['skills-lock.json'] };
-    f.metadata.baselineDigest = sha(JSON.stringify(f.metadata.managedFiles)); f.save();
+    saveManaged(f);
     fs.appendFileSync(path.join(f.root, 'CONTEXT.md'), '\n<!-- preserved project Context extension -->\n');
     verifyWithoutWrites(f, 0);
     fs.writeFileSync(path.join(f.root, 'CONTEXT.md'), 'broken Context contract\n');
@@ -386,7 +406,7 @@ test('原生分发声明已安装但未记录且缺失的 Skill 不能跳过补�
 test('原生可定制文件被 chmod 为不可读时以真实 mode 漂移拒绝', { skip: process.platform === 'win32' }, t => {
   const f = fixture(t); schema2(f);
   f.metadata.managedFiles['managed.txt'].ownership = 'managed-customizable';
-  f.metadata.baselineDigest = sha(JSON.stringify(f.metadata.managedFiles)); f.save();
+  saveManaged(f);
   fs.chmodSync(path.join(f.root, 'managed.txt'), 0);
   verifyWithoutWrites(f, 1, /managed-asset-mode-changed/);
   fs.chmodSync(path.join(f.root, 'managed.txt'), 0o644);
@@ -394,9 +414,9 @@ test('原生可定制文件被 chmod 为不可读时以真实 mode 漂移拒绝'
 });
 
 test('canonical 内容相同的原生 skills-lock 链接或权限变化不能绕过物理门禁', async t => {
-  for (const version of [1, 2]) await t.test(`Schema ${version}`, async t => {
+  for (const version of [3]) await t.test(`Schema ${version}`, async t => {
     for (const replacement of ['symlink', ...(process.platform === 'win32' ? [] : ['mode'])]) await t.test(replacement, t => {
-      const f = fixture(t); if (version === 2) schema2(f);
+      const f = fixture(t);
       const file = path.join(f.root, 'skills-lock.json');
       if (replacement === 'symlink') {
         fs.renameSync(file, path.join(f.root, 'same-canonical-lock.json'));
@@ -408,14 +428,14 @@ test('canonical 内容相同的原生 skills-lock 链接或权限变化不能绕
 });
 
 test('Spec generated 锁允许 Node 合法重生后的原始摘要变化，canonical 内容仍必须准确', async t => {
-  for (const version of [1, 2]) await t.test(`Schema ${version}`, t => {
-    const f = fixture(t); if (version === 2) schema2(f);
+  for (const version of [3]) await t.test(`Schema ${version}`, t => {
+    const f = fixture(t);
     const file = path.join(f.root, 'skills-lock.json');
     const compact = JSON.stringify(JSON.parse(fs.readFileSync(file, 'utf8')));
     fs.writeFileSync(file, compact);
     const record = f.metadata.managedFiles['skills-lock.json'];
     record.baseline.digest = sha(compact); record.lastApplied.digest = sha(compact);
-    f.metadata.baselineDigest = sha(JSON.stringify(f.metadata.managedFiles)); f.save();
+    saveManaged(f);
     const regenerated = run(f.root, 'scripts/update-skill-lock');
     assert.equal(regenerated.status, 0, regenerated.stderr || regenerated.stdout);
     assert.notEqual(sha(fs.readFileSync(file)), record.lastApplied.digest);
@@ -438,7 +458,7 @@ test('原生锁缺失、损坏或没有可信受管记录时必须失败，不�
   ];
   for (const [name, alter, error] of cases) await t.test(name, t => {
     const f = fixture(t); schema2(f); alter(f);
-    f.metadata.baselineDigest = sha(JSON.stringify(f.metadata.managedFiles)); f.save();
+    saveManaged(f);
     verifyWithoutWrites(f, 1, error);
   });
 });
@@ -450,7 +470,7 @@ test('managed 锁保留原始摘要校验，专职 Profile 不复用 Spec 锁豁
     const compact = JSON.stringify(JSON.parse(fs.readFileSync(file, 'utf8')));
     const record = f.metadata.managedFiles['skills-lock.json'];
     record.ownership = 'managed'; record.baseline.digest = sha(compact); record.lastApplied.digest = sha(compact);
-    f.metadata.baselineDigest = sha(JSON.stringify(f.metadata.managedFiles)); f.save();
+    saveManaged(f);
     // Current bytes pass the separate canonical validator but differ from the
     // explicit managed digest. Only a generated Spec lock receives that waiver.
     verifyWithoutWrites(f, 1, /"kind": "drifted"/);
@@ -470,6 +490,8 @@ test('历史没有 mode 的锁记录保留旧 canonical 校验，不报告原生
     'managed.txt': { contentHash: sha(original), ownership: 'managed' },
     'skills-lock.json': { contentHash: '0'.repeat(64), ownership: 'managed' },
   } }));
-  const report = JSON.parse(verifyWithoutWrites(f, 0).stdout);
+  // 漂移报告先于原生 Context 校验输出；2.3.1 起旧家族实例随后以 LEGACY_INSTANCE_UNSUPPORTED 拒绝。
+  const report = JSON.parse(verifyWithoutWrites(f, 1, /LEGACY: .*旧版实例不再受支持/).stdout);
+  assert.equal(report.summary.drifted, 0);
   assert.equal(report.entries.some(entry => entry.ref === 'skills-lock.json'), false);
 });
