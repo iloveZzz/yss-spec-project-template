@@ -927,7 +927,7 @@ profiles:
         depends_on: []
         failure_mode: "被生命周期编排器路由或合同声明为模型调用的技能被设为显式，或显式集合被无意改动"
       - id: check.process-glossary
-        run: "node --test tests/process-glossary.test.mjs"
+        run: "node --test tests/process-glossary.test.mjs tests/digital-human-roles-docs.test.mjs"
         group: feature-assets
         inputs_complete: true
         input_patterns:
@@ -935,13 +935,18 @@ profiles:
           - "AGENTS.md"
           - ".template-spec/process/process-glossary.md"
           - ".template-spec/agents/digital-human-roles.md"
+          - ".template-spec/agents/digital-human-roles.yaml"
+          - "profiles/*/.template-spec/agents/digital-human-roles.md"
+          - "profiles/*/.template-spec/agents/digital-human-roles.yaml"
+          - "profiles/*/.template-spec/process/process-glossary.md"
           - ".template-source/process/template-engineering-overview.md"
           - ".agents/skills/yss-product-lifecycle/SKILL.md"
           - "scripts/lib/context-contract.mjs"
           - "scripts/lib/harness-metrics.mjs"
           - "tests/process-glossary.test.mjs"
+          - "tests/digital-human-roles-docs.test.mjs"
         depends_on: []
-        failure_mode: "流程术语回流到根 CONTEXT.md、术语表违反英文标识或重复规则、入口链接断开、运行时平台细节混入流程术语，或常驻读取超过预算"
+        failure_mode: "流程术语回流到根 CONTEXT.md、术语表违反英文标识或重复规则、入口链接断开、运行时平台细节混入流程术语，常驻读取超过预算，或角色说明 / 术语表与数字人角色注册表漂移"
       - id: check.instance-metadata
         run: "node --test --test-concurrency=1 tests/instance-metadata.test.mjs tests/native-instance-drift.test.mjs"
         group: drift-identity
@@ -2645,6 +2650,7 @@ routing:
       - tests/claude-entry.test.mjs
       - tests/explicit-invocation.test.mjs
       - tests/process-glossary.test.mjs
+      - tests/digital-human-roles-docs.test.mjs
       - .template-spec/process/process-glossary.md
       - tests/design-docs.test.mjs
       - .template-source/contracts/spec-delta-rebaseline-design.md
@@ -3675,7 +3681,7 @@ supplemental_checks:
     task_id: supplemental.explicit-invocation
     source_requirement: committed
   - id: check.process-glossary-supplemental
-    run: node --test tests/process-glossary.test.mjs
+    run: node --test tests/process-glossary.test.mjs tests/digital-human-roles-docs.test.mjs
     group: feature-assets
     gate_ids: [ check.verification-lifecycle ]
     depends_on: []

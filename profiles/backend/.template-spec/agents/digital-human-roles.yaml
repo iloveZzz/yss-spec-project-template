@@ -1,8 +1,8 @@
 schema_version: 1
 registry_id: yss.digital-human-roles
 status: active
-description: harness-agent 的角色与运行时绑定事实源。研发角色严格限制为架构、前端、后端和测试； Harness
-  Orchestrator 是系统编排组件，不计入四类研发角色。
+description: harness-agent 的角色与运行时绑定事实源。研发角色为架构、后端和测试，需求经理与产品经理负责 Plan /
+  Spec；Harness Orchestrator 是系统编排组件，不计入角色。
 canonical_path: .template-spec/agents/digital-human-roles.yaml
 runtime_policy:
   lifecycle_control: harness-orchestrator
