@@ -852,6 +852,16 @@ profiles:
           - ".template-source/distribution/bundle-profile.json"
         depends_on: []
         failure_mode: "Stop hook 对相关路径漏检、对无关路径误检或误阻断、阻断协议与 Claude Code / Codex 不一致，或 hook 文件进入实例分发"
+      - id: check.edit-hook
+        run: "node --test tests/edit-hook.test.mjs"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
+          - "scripts/edit-hook"
+          - "scripts/lib/edit-hook.mjs"
+          - "tests/edit-hook.test.mjs"
+        depends_on: []
+        failure_mode: "编辑即时校验选错文件、误报通过、以工具缺口阻断编辑，或未把 yss check 的发现交给 agent"
       - id: check.claude-entry
         run: "node --test tests/claude-entry.test.mjs"
         group: feature-assets
@@ -2581,6 +2591,9 @@ routing:
       - scripts/agent-hook
       - scripts/lib/agent-hook.mjs
       - tests/agent-hook.test.mjs
+      - scripts/edit-hook
+      - scripts/lib/edit-hook.mjs
+      - tests/edit-hook.test.mjs
       - .claude/settings.json
       - .codex/hooks.json
       - CLAUDE.md
