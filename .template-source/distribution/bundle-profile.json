@@ -352,7 +352,6 @@
       "scripts/update-skill-lock",
       "scripts/lib/native-context.mjs",
       "scripts/verify-context-reconciliation",
-      "scripts/verify-digital-human-roles",
       "scripts/verify-digital-human-task-package",
       "scripts/verify-lifecycle-checkpoint",
       "scripts/verify-user-decision",
