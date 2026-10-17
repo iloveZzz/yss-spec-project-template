@@ -45,7 +45,7 @@ scripts/slice-contract migrate <旧v2.yaml> --input <迁移补充.yaml> --output
 ## 审查、批准与派发
 
 - 默认一名有对应能力的独立专业审查者，核验范围、验收覆盖、工程约束和验证充分性。相邻检查可共用现有 review-bundle；不重复要求用户审阅工程字段。
-- 当前合同的工程审查使用现有 `check.design-reviewed` 会签记录，绑定 `subject_ref`、无前缀 subject_digest、artifact_bindings，以及不同的 principal_ref / drafter_principal_ref；findings 为明确数组。未关闭缺陷、缺证据和重要风险阻断，建议须有 follow_up。
+- 历史 Slice v3 按原政策读取 `check.design-reviewed` 会签、资产绑定与原身份约束。新政策的 Slice v4 使用 approval3，绑定实际审查任务、主体、当前依据、检查项与诚实的自检/独立来源；不补造 principal 或数字人。findings 为明确数组；未关闭缺陷、缺证据和重要风险仍阻断，建议须有 follow_up。
 - 生命周期把审查记录引用放入 Slice gate 的 evidence_refs。合同最终字节（包含生命周期设置的状态）冻结后绑定审查和 checkpoint；单独的 `status: approved` 不授予执行权。
 - 用户决定沿用现有 user-decisions 协议：已覆盖且无实质变化时复用，缺失确认或决定变化才集中询问。Spec 确认不自动升级为实施授权，不改写原回复。
 - `compileSliceTaskPackage` 只从已批准原始 YAML 生成任务包，角色 Skill 来自 `taskPackageDefaults`；运行时身份在派发时选择。已有任务包 schema 不变，`contract.gate_refs` 为唯一当前批准 checkpoint 引用。

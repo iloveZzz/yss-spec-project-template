@@ -22,7 +22,7 @@ export function buildDecisionFixture(root, { boundary = "gate.spec-baseline-appr
   }, responses: [] };
   const present = () => { record.request.presented_source = capture("presentation", "agent.orchestrator", "digital-human", "2026-09-05T01:02:00Z", renderDecisionRequest(record.request)); };
   present();
-  const respond = ({ principal = "person.requester", actor = "biological-human", text = "同意", decision = "approved", selection = record.request.items.length === 1 ? "single" : "explicit-all", itemIds = record.request.items.map((item) => item.id), approvedScope = record.request.items.flatMap((item) => item.scope), time = "2026-09-05T01:03:00Z", name = `reply-${record.responses.length}` } = {}) => {
+  const respond = ({ principal = "person.requester", actor = "biological-human", text = "同意", decision = "approved", selection = record.request.items.length === 1 ? "single" : "explicit-all", itemIds = record.request.items.map((item) => item.id), approvedScope = [...new Set(record.request.items.flatMap((item) => item.scope))], time = "2026-09-05T01:03:00Z", name = `reply-${record.responses.length}` } = {}) => {
     record.responses.push({ source: capture(name, principal, actor, time, text, "session-export", JSON.parse(readFileSync(record.request.presented_source.ref, "utf8")).messages[0].original_ref), principal_ref: principal, responded_at: time, text, request_digest: requestDigest(record.request), selection, item_ids: itemIds, decision, approved_scope: approvedScope });
   };
   respond({ text: extraItems.length ? "同意以上全部事项" : "同意" });

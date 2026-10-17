@@ -34,13 +34,13 @@
 
 ## 来源同步与分发
 
-保留的 Node 治理工具以综合模板 `.template-source/cli-core/` 为共享模块权威来源。三个专职 Profile 与根仓共用同一份内核文件，只在 `profiles/` 覆盖层里放差异；不再有生成复制品的同步脚本或同步锁。原生 `yss` 的执行器与 Bundle 生产代码由独立 `yss-cli` Go 源码持有，不从四个旧 CLI 的私有模块取得。canonical Skill 仍位于 `.agents/skills`，投影及锁文件通过仓库脚本生成。
+保留的 Node 治理工具以综合模板 `.template-source/cli-core/` 为共享模块权威来源。当前 Spec、Backend 与根仓共用同一份内核文件，只在 `profiles/` 覆盖层里放差异；退役 Profile 的覆盖层仅用于原版本读取和迁移；不再有生成复制品的同步脚本或同步锁。原生 `yss` 的执行器与 Bundle 生产代码由独立 `yss-cli` Go 源码持有，不从四个旧 CLI 的私有模块取得。canonical Skill 仍位于 `.agents/skills`，投影及锁文件通过仓库脚本生成。
 
 Node `>=22.13 <27` 的要求仅适用于继续保留的 Node 治理入口及其实际依赖；这些入口在目标写入前检查版本，最低版本使用已有的 `node:sqlite` API。原生 `yss` 二进制本身不要求安装 Node。Node 治理兼容矩阵覆盖 22.13、24、26 与 macOS、Linux、Windows，并验证 22.12 拒绝且无写入。Windows 的独立治理 runtime 验收入口为 `.template-source/scripts/verify-runtime-windows.mjs`；用 `--help` 查看版本路径、源码摘要清单及仓外报告参数。非 Windows 机械检查不形成 Windows 原生通过证据，便携源码包不替代固定提交来源的完整验证。
 
-当前分发入口是固定原生 `yss`，操作与来源核验见 [统一 CLI 操作说明](../../.template-spec/user-guide/unified-cli.md)，迁移与恢复以 [模板实例升级协议](../../.template-spec/process/harness-upgrade.md) 为准。分发变更须从根模板及三个 Agent 模板的固定完整提交生成 Spec、Design、Backend、Frontend 四类 Bundle，分别核验 Bundle、manifest、快照、文件字节、类型、权限及分发规则；随后验证固定 Go 源码构建的实际二进制、两插件打包、干净目录初始化及公开入口。四个旧 CLI gitlink 不再是现役生产、构建、插件或发布输入；它们的旧 npm 固定包、源码 SHA、包摘要、快照和各自运行时要求仅保留在仓外历史迁移与恢复清单。
+当前分发入口是固定原生 `yss`，操作与来源核验见 [统一 CLI 操作说明](../../.template-spec/user-guide/unified-cli.md)，迁移与恢复以 [模板实例升级协议](../../.template-spec/process/harness-upgrade.md) 为准。当前分发变更从根模板的固定完整提交生成 Spec、Backend 两类 Bundle；Design、Frontend 仅保留已声明的历史兼容资源，分别核验 Bundle、manifest、快照、文件字节、类型、权限及分发规则；随后验证固定 Go 源码构建的实际二进制、两插件打包、干净目录初始化及公开入口。四个旧 CLI gitlink 不再是现役生产、构建、插件或发布输入；它们的旧 npm 固定包、源码 SHA、包摘要、快照和各自运行时要求仅保留在仓外历史迁移与恢复清单。
 
-单次运行的来源清单独立绑定统一 `yss` 版本、Go 源码完整提交、协议版本及实际二进制 SHA-256，根模板 / 保留的 Node 治理核心与三个 Agent 固定来源，以及四 Profile 的模板提交、Bundle、manifest、快照与来源锁摘要。插件固定自己的二进制、资产来源与插件包摘要，使用独立 pinned 槽位。旧 CLI 版本 / SHA 只表示历史基线，不能作为统一 CLI 身份；最终生态发行清单汇总这些独立来源，避免各仓循环嵌入尚不存在的提交哈希。
+单次运行的来源清单独立绑定统一 `yss` 版本、Go 源码完整提交、协议版本及实际二进制 SHA-256，根模板、保留的 Node 治理核心及 Spec、Backend 的模板提交、Bundle、manifest、快照与来源锁摘要；历史 Profile 使用各自原始来源清单。插件固定自己的二进制、资产来源与插件包摘要，使用独立 pinned 槽位。旧 CLI 版本 / SHA 只表示历史基线，不能作为统一 CLI 身份；最终生态发行清单汇总这些独立来源，避免各仓循环嵌入尚不存在的提交哈希。
 
 只有精确来源元组相同的构建产物才能在本轮共享。每个消费场景持有独立可写目录，消费前后复核摘要；共享产物不复用检查通过结论，重跑使用新报告目录。确定性 Bundle 构建继续真实执行两次。正式报告保留失败、超时、中断、终止失败及输入漂移的原始日志和状态，不拼接历史结果。
 

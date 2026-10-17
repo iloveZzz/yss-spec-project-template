@@ -13,7 +13,7 @@ YSS 模板工程是一套可版本化的研发治理系统。它用仓库身份�
 1. 读取根目录 `yss-project.yaml`，确认 `repository_mode`。
 2. 读取 `AGENTS.md`，取得当前仓库的入口规则、硬门禁和禁止事项。
 3. 读取 `CONTEXT.md` 取得业务语言；流程术语按需读取 `.template-spec/process/process-glossary.md`。
-4. 按任务读取生命周期注册表、裁剪规则、技能注册表和数字人角色注册表。
+4. 按任务读取生命周期注册表、裁剪规则、技能注册表和当前编排政策。
 
 完成标准：仓库身份合法，任务属于模板维护还是产品研发已经明确，影响面和下一工作单元可以由权威资产解释。
 
@@ -28,7 +28,7 @@ YSS 模板工程是一套可版本化的研发治理系统。它用仓库身份�
 
 ## 4. Harness 产品线
 
-模板工程按研发责任边界提供综合、战略、后端、前端入口；既有通用研发实例继续核对原固定版本。选型、CLI 支持与默认写入行为集中维护在[用户手册的 CLI 能力与写入方式](../../.template-spec/user-guide/用户手册.md#cli-能力与写入方式)。具体生命周期边界由对应实例的 profile 和生命周期注册表决定。
+模板工程提供 Spec 与 Backend 两个入口；Spec 包含必要产品设计，前端实现在独立规格与 CLI 中维护。旧 Design 实例保留原资料并显式迁移。选型、CLI 支持与默认写入行为集中维护在[用户手册的 CLI 能力与写入方式](../../.template-spec/user-guide/用户手册.md#cli-能力与写入方式)。具体生命周期边界由对应实例的 profile 和生命周期注册表决定。
 
 每条产品线使用独立的 profile、metadata 和固定模板 commit。CLI 之间遇到其他产品线的 metadata 时必须 fail closed，不能自动接管。
 
@@ -46,11 +46,11 @@ YSS 模板工程是一套可版本化的研发治理系统。它用仓库身份�
 
 `.template-spec/agents/yss-skill-registry.yaml` 管理技能分层、成熟度、别名和运行时发现；`skills-lock.json` 管理来源、版本、hash 与投影完整性。修改共享技能后必须同步投影并更新 lock，不能分别编辑平台副本。
 
-### 5.3 数字人协作
+### 5.3 任务执行与复核
 
-`.template-spec/agents/digital-human-roles.yaml` 定义数字人角色、运行时绑定和会签策略。角色叠加在生命周期编排器上，不形成第二套生命周期；实现者与独立审查者必须是不同实例。
+当前编排政策不要求岗位、数字人或运行环境注册。默认由同一 Agent 完成专业工作与真实自检；明确用户要求或已知外部规则需要独立复核时，核验不同实际上下文、同一冻结候选和只读证据。技术通过不生成真人批准。
 
-正式派发使用结构化任务包，任务包声明角色、运行时、合同、允许写路径、预期证据和汇合条件。共享工作区不替代写入边界。
+正式派发使用结构化任务包，声明合同、实际工具与任务来源、允许写路径、预期证据和汇合条件。身份不可得时如实说明；共享工作区不替代写入边界。旧版本记录继续按封存的原始政策解释。
 
 ## 6. 模板源与实例分发边界
 
@@ -103,7 +103,7 @@ YSS 模板工程是一套可版本化的研发治理系统。它用仓库身份�
 | 阶段、门禁和工作单元是什么 | `.template-spec/process/lifecycle-registry.yaml` |
 | 如何裁剪流程和判定维护强度 | `.template-spec/process/harness-process-tailoring.md`、`.template-source/process/maintenance-intensity.yaml` |
 | skills 如何发现与校验 | `.template-spec/agents/yss-skill-registry.yaml`、`skills-lock.json` |
-| 数字人如何协作和会签 | `.template-spec/agents/digital-human-roles.yaml` |
+| 如何执行与复核 | `.template-spec/process/orchestration-contract.yaml` |
 | 实现仓库如何接入 | `.template-spec/process/implementation-repo-integration.md` |
 
 说明文档负责导航和解释；当说明与权威资产冲突时，以表中权威资产为准，并修复说明文档的漂移。

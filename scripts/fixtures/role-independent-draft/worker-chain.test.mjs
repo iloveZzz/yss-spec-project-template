@@ -1,3 +1,4 @@
+import {backendTerminalFixture} from './backend-terminal-fixture.mjs';
 // Synthetic business sources exercise real Git, execution, approval and native consumer bindings.
 import {test} from 'node:test';
 import {spawnSync} from 'node:child_process';
@@ -16,7 +17,7 @@ import {verifyExistingArchitecture,existingArchitectureDigest} from '../../lib/e
 import {loadSkillRegistry} from '../../lib/skill-registry.mjs';
 import {parseContextContract,resolveContextTermRefs} from '../../lib/context-contract.mjs';
 
-test('installed Backend consumes a role-free current engineering source',()=>{
+test('installed Backend prepares, implements and delivers a role-free current Slice',async()=>{
  const f=installedFixture('backend'),e=existingFixture(),{root,write,read,asset,run}=f;
  try {
   for(const ref of ['.template-spec/engineering/backend-platforms.json','docs/engineering/evidence'])fs.cpSync(path.join(e.root,ref),path.join(root,ref),{recursive:true});
@@ -25,12 +26,13 @@ test('installed Backend consumes a role-free current engineering source',()=>{
 const dir=fs.mkdtempSync(path.join(os.tmpdir(),'boundary-java-'));
 try{const main=path.join(dir,'BoundarySmoke.java');fs.writeFileSync(main,'public class BoundarySmoke {public static void main(String[] args){if(new web.Boundary().accept(2)!=3)throw new AssertionError();for(int n:new int[]{-1,101}){boolean rejected=false;try{new web.Boundary().accept(n);}catch(IllegalArgumentException e){rejected=true;}if(!rejected)throw new AssertionError("invalid input accepted: "+n);}}}');
 const walk=p=>fs.readdirSync(p,{withFileTypes:true}).flatMap(e=>e.isDirectory()?walk(path.join(p,e.name)):[path.join(p,e.name)]).filter(p=>p.endsWith('.java'));
-for(const [cmd,args]of [['javac',['-d',dir,...walk('src/main/java'),main]],['java',['-cp',dir,'BoundarySmoke']]]){const r=spawnSync(cmd,args,{encoding:'utf8'});process.stdout.write(r.stdout||'');process.stderr.write(r.stderr||'');if(r.status!==0)process.exitCode=1;if(process.exitCode)break;}}finally{fs.rmSync(dir,{recursive:true,force:true});}`;
+for(const [cmd,args]of [['javac',['-d',dir,...walk('src/main/java'),main]],['java',['-cp',dir,'BoundarySmoke']]]){const r=spawnSync(cmd,args,{encoding:'utf8'});process.stdout.write(r.stdout||'');process.stderr.write(r.stderr||'');if(r.status!==0)process.exitCode=1;if(process.exitCode)break;}if(!process.exitCode){fs.mkdirSync('results',{recursive:true});const r=spawnSync('jar',['--create','--file','results/boundary.jar','-C',dir,'.'],{encoding:'utf8'});if(r.status!==0)throw Error(r.stderr);}}finally{fs.rmSync(dir,{recursive:true,force:true});}`;
   fs.writeFileSync(path.join(project,'verify-behavior.mjs'),verifier);
+  fs.writeFileSync(path.join(project,'.gitignore'),'/results/\n');
   fs.writeFileSync(path.join(project,'mvnw'),'#!/bin/sh\nexec mvn "$@"\n');fs.chmodSync(path.join(project,'mvnw'),0o755);
   e.git('add','.');e.git('commit','-qm','Freeze actual verifier and wrapper references');
   const files=e.git('ls-files').split('\n').map(ref=>({path:ref,base_blob:e.git('rev-parse',`HEAD:${ref}`),sha256:'sha256:'+hash(fs.readFileSync(path.join(project,ref)))}));
-  e.source={base_commit:e.git('rev-parse','HEAD'),roots:['pom.xml','src','verify-behavior.mjs','mvnw'],files};e.identity.source_digest=existingArchitectureDigest(e.source);
+  e.source={base_commit:e.git('rev-parse','HEAD'),roots:['pom.xml','src','verify-behavior.mjs','mvnw','.gitignore'],files};e.identity.source_digest=existingArchitectureDigest(e.source);
   e.baseline.source=e.source;e.manifest.source=e.source;
   const originalContext=read('CONTEXT.md'),design=mvcFixture(root);write('CONTEXT.md',originalContext);
   write('spec.md','---\ncontent_profile: plan-spec-v1\nversion: v1\n---\n## 功能需求\n| ID | 需求 |\n|---|---|\n| FR-1 | rule.valid：仅接受0到100的输入，成功返回输入加一，scenario.submit：非法输入拒绝。 |\n## 验收标准\n| ID | 需求引用 | 验收 |\n|---|---|---|\n| AC-1 | FR-1 | 输入2返回3，输入-1或101均拒绝。 |\n');
@@ -75,7 +77,7 @@ for(const [cmd,args]of [['javac',['-d',dir,...walk('src/main/java'),main]],['jav
   write('review.md','当前架构责任与可执行验证入口已核验；合成协议证据。');write('mvnw',fs.readFileSync(path.join(project,'mvnw')));
   write('no-api-impact.json',{status:'not-applicable',slice_id:'slice.worker',reason:'仅收紧已批准后端输入范围，无HTTP/UI变化。'});
   const sources={ticket:{ref:ticket,version:'v1'},spec:{ref:'spec.md'},business_ticket_set:{ref:setRef},engineering_baseline:bindings.engineering_baseline,implementation_repository:bindings.repository_registration,repository_registration:'implementation_repository',manifest:bindings.manifest,technical_design:{ref:'technical-design.json',version:'v1',id:design.technical_design_id},architecture_review:{ref:'architecture-review.json'},build_architecture_checklist:{ref:'review.md'},backend_repository:'implementation_repository',maven_wrapper:{ref:'mvnw'},no_api_impact_record:{ref:'no-api-impact.json'}};
-  const refinements={contract_id:'contract.worker',contract_version:'v1',slice_id:'slice.worker',scope:{impacted_areas:['backend'],implementation_path_policy:'external-repository-native',allowed_write_paths:['src/main/java']},applicability:{frontend:{status:'not-applicable',reason:'无UI变化'},backend:{status:'required'},api:{status:'not-applicable',reason:'无HTTP变化'},cross_repo:{status:'not-applicable',reason:'单工程'}},recipe_ids:['backend.mvc-service-behavior'],verification:{test:{command:'node verify-behavior.mjs',cwd:project,expected_evidence:['results/test.log'],test_seams:['test-seam.success','test-seam.failure'],acceptance_refs:['AC-1']}},work_units:[{id:'work-unit.worker',behavior:'实现0到100输入范围并保留成功与拒绝行为',primary_skill:'yss-application',tdd_mode:'behavior-tdd',verification_refs:['test'],acceptance_refs:['AC-1']}],extensions:{backend:{affected_layers:['application'],component_impacts:[],design_refs:['pointer:/design']}}};
+  const refinements={contract_id:'contract.worker',contract_version:'v1',slice_id:'slice.worker',scope:{impacted_areas:['backend'],implementation_path_policy:'external-repository-native',allowed_write_paths:['src/main/java']},applicability:{frontend:{status:'not-applicable',reason:'无UI变化'},backend:{status:'required'},api:{status:'not-applicable',reason:'无HTTP变化'},cross_repo:{status:'not-applicable',reason:'单工程'}},recipe_ids:['backend.mvc-service-behavior'],required_capabilities:['layer.mvc-web','layer.mvc-persistence'],verification:{test:{command:'node verify-behavior.mjs',cwd:project,expected_evidence:['results/test.log'],test_seams:['test-seam.success','test-seam.failure'],acceptance_refs:['AC-1']}},work_units:[{id:'work-unit.worker',behavior:'实现0到100输入范围并保留成功与拒绝行为',primary_skill:'yss-application',tdd_mode:'behavior-tdd',verification_refs:['test'],acceptance_refs:['AC-1']}],extensions:{backend:{affected_layers:['application'],component_impacts:[],design_refs:['pointer:/design']}}};
   const prepared=prepareSliceImplementationContract({root,ticket_ref:ticket,sources,refinements});
   assert.deepEqual(prepared.report.blockers,[]);write('slice.json',prepared.slice_contract);
   run('current-backend-slice4-draft',['contract','verify','--kind','slice-draft','--file','slice.json']);
@@ -85,7 +87,7 @@ for(const [cmd,args]of [['javac',['-d',dir,...walk('src/main/java'),main]],['jav
   const slicePrep=f.draftTask({taskRef:'slice-prepare.json',unit:'work-unit.slice-contract',stage:'stage.slice-contract',impacts:['backend'],featureId:feature,checkpointRef:cpRef,inputs:['slice-input.json','spec.md','technical-design.json'],paths:['slice-drafts'],outputs:['slice-drafts/contract.json']});
   f.finishTask(slicePrep);run('actual-slice-preparation',['contract','verify','--kind','task','--file',slicePrep.provenance.task_ref]);
   const sliceRef='slice-drafts/contract.json',sliceBinding={...versioned(sliceRef),id:prepared.slice_contract.contract_id,version:prepared.slice_contract.contract_version,approval_ref:cpRef};
-  cp.gates['gate.slice-contract-approved']={status:'pending',subject_ref:sliceRef};write(cpRef,cp);
+  cp.gates['gate.slice-contract-approved']={status:'not-evaluated',reason:'尚未完成当前 Slice 确认',subject_ref:sliceRef,evidence_refs:[]};write(cpRef,cp);
   run('draft-does-not-authorize-implementation',['contract','verify','--kind','slice','--file',sliceRef,'--approval-ref',cpRef],'SLICE_APPROVAL_REQUIRED');
   const technical=f.draftTask({taskRef:'slice-review-task.json',unit:'work-unit.slice-contract',stage:'stage.slice-contract',impacts:['backend'],featureId:feature,checkpointRef:cpRef,inputs:['slice-input.json',slicePrep.provenance.task_ref],paths:['slice-reports'],outputs:['slice-reports/result.json']});
   technical.execution_state='Reviewer';technical.review_context={candidate:asset(sliceRef),policy:technical.policy,check_ids:technical.skill_source.check_ids,approval_scope:[feature],basis:technical.input_bindings,review:{mode:'self-check',provenance:technical.provenance}};
@@ -93,7 +95,7 @@ for(const [cmd,args]of [['javac',['-d',dir,...walk('src/main/java'),main]],['jav
   run('actual-slice-self-check',['contract','verify','--kind','task','--file',technical.provenance.task_ref]);
   const technicalRecord={...proof,subject_ref:sliceRef,subject_digest:asset(sliceRef).digest,basis:technical.input_bindings,evidence_refs:[technical.provenance.execution_ref],review_task_ref:technical.provenance.task_ref,review_task_digest:asset(technical.provenance.task_ref).digest,check_ids:technical.skill_source.check_ids,policy:technical.policy,review:technical.review_context.review};write('slice-review.json',technicalRecord);
   cp.checks['check.design-reviewed']={status:'approved',subject_ref:sliceRef,subject_digest:asset(sliceRef).digest,approval_scope:[feature],basis:technical.input_bindings,approval_ref:'slice-review.json',evidence_refs:['slice-review.json']};
-  cp.gates['gate.slice-contract-approved']={status:'approved',subject_ref:sliceRef,subject_digest:asset(sliceRef).digest,evidence_refs:['slice-review.json']};
+  cp.gates['gate.slice-contract-approved']={status:'approved',reason:'当前 Slice 复核通过，执行另受用户确认约束',subject_ref:sliceRef,subject_digest:asset(sliceRef).digest,evidence_refs:['slice-review.json']};
   write('implementation-scope.json',{kind:'implementation-scope',slices:[{ticket_ref:ticket,contract:{ref:sliceRef,version:prepared.slice_contract.contract_version,digest:'sha256:'+asset(sliceRef).digest},repositories:[project],allowed_write_paths:['src/main/java'],baselines:[{...bindings.engineering_baseline,version:'v1'}]}]});
   const user=buildDecisionFixture(path.join(root,'implementation-decision'),{boundary:'implementation-scope',scope:[ticket],subjectRef:path.join(root,'implementation-scope.json')});
   const relative=ref=>path.relative(root,ref).split(path.sep).join('/');
@@ -110,6 +112,7 @@ for(const [cmd,args]of [['javac',['-d',dir,...walk('src/main/java'),main]],['jav
   const testArgv=[process.execPath,'verify-behavior.mjs'],red=spawnSync(testArgv[0],testArgv.slice(1),{cwd:project,encoding:'utf8'});
   f.calls.push({label:'actual-behavior-red',argv:testArgv,cwd:project,exit_code:red.status,stdout:red.stdout,stderr:red.stderr});assert.notEqual(red.status,0);
   const changed='src/main/java/application/Boundary.java';fs.writeFileSync(path.join(project,changed),fs.readFileSync(path.join(project,changed),'utf8').replace('if(n<0)','if(n<0||n>100)'));
+  e.git('add',changed);e.git('commit','-qm','Implement approved input boundary');
   const candidate=run('actual-worker-output-candidate',['contract','verify','--kind','task-candidate','--file','worker.json']).coverage.task_candidate.candidate;
   const green=spawnSync(testArgv[0],testArgv.slice(1),{cwd:project,encoding:'utf8'});assert.equal(green.status,0,green.stderr);
   const log={phase:'execution',tool:provenance.tool,task_ref:provenance.task_ref,identity:provenance.identity,command:worker.verification_commands[0],argv:testArgv,cwd:project,exit_code:green.status,executed_at:new Date().toISOString(),stdout:green.stdout,stderr:green.stderr,candidate_digest:candidate.digest,input_bindings:worker.input_bindings,baseline:worker.baseline,scope:worker.allowed_write_paths,expected_outputs:worker.expected_outputs,result:'passed',blocking_findings:[]};write(provenance.execution_ref,log);
@@ -120,5 +123,7 @@ for(const [cmd,args]of [['javac',['-d',dir,...walk('src/main/java'),main]],['jav
   run('actual-completed-worker',['contract','verify','--kind','task','--file','worker.json']);
   run('actual-slice4-execution-result',['contract','verify','--kind','slice-execution-result','--file','slice-result.json','--task','worker.json']);
   const original=structuredClone(result);result.changed_files=[];write('slice-result.json',result);run('unrelated-result-is-rejected',['contract','verify','--kind','slice-execution-result','--file','slice-result.json','--task','worker.json'],'SLICE_RESULT');write('slice-result.json',original);
- } finally {e.cleanup();f.cleanup();}
+  write('worker-stage.json',{project,sliceRef,sliceBinding,cpRef,feature,changed,completed:{worker:true}});
+  await backendTerminalFixture(f);
+ } finally {if(!process.env.YSS_CHAIN_PRESERVE)e.cleanup();f.cleanup();}
 });

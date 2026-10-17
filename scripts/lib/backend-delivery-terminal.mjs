@@ -1,4 +1,5 @@
 import {inspectImplementationCandidate, candidateSourceCommit} from './implementation-candidate-current.mjs';
+import {nativeContractVerify} from './native-evidence.mjs';
 import { existsSync, readFileSync, rmSync } from 'node:fs';
 import path from 'node:path';
 import { inspectBackendDelivery, inspectLocalBackendDelivery, openBackendDelivery } from './backend-delivery.mjs';
@@ -97,6 +98,11 @@ async function inspect(root, record, {checkpointRef, readOnly = false} = {}) {
 export async function verifyBackendDeliveryTerminal(root, {checkpointRef, assetRef} = {}) {
   root = path.resolve(root);
   const authorization = authorizeBackendDelivery({root, checkpointRef, assetRef, readOnly: true});
+  if(read(safe(root,'yss-project.yaml')).schema_version===2){
+    const verdict=nativeContractVerify({root,kind:'backend-delivery-terminal',file:authorization.terminal_ref,extra:['--checkpoint',authorization.checkpoint_ref]});
+    ensure(verdict.exitCode===0,verdict.message);
+    return verdict.envelope.result.coverage;
+  }
   return inspect(root, read(safe(root, authorization.terminal_ref)), {checkpointRef: authorization.checkpoint_ref, readOnly: true});
 }
 
@@ -110,10 +116,11 @@ export async function completeBackendDelivery(root, input, {checkpointRef} = {})
   const record = { ...input, schema_version: 1, kind: 'backend-delivery-terminal', business_completed: false, release_authorized: false };
   if (authorization.mode !== 'execution-scope') record.checkpoint_ref = authorization.checkpoint_ref;
   ensure(!existsSync(path.join(root, authorization.terminal_ref)), '终点已存在；只能复验，不覆盖旧终点');
-  const result = await inspect(root, record, {checkpointRef: authorization.checkpoint_ref});
+  const current=read(safe(root,'yss-project.yaml')).schema_version===2;
+  const result = current ? null : await inspect(root, record, {checkpointRef: authorization.checkpoint_ref});
   const bytes = json(record);
   write(root, authorization.terminal_ref, bytes);
-  try { await verifyBackendDeliveryTerminal(root, {checkpointRef: authorization.checkpoint_ref}); }
+  try { const verified=await verifyBackendDeliveryTerminal(root, {checkpointRef: authorization.checkpoint_ref});if(current)return verified; }
   catch (error) { if (readFileSync(safe(root, authorization.terminal_ref), 'utf8') === bytes) rmSync(safe(root, authorization.terminal_ref)); throw error; }
   return result;
 }

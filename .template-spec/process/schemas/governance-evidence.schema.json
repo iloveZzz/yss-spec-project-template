@@ -522,6 +522,200 @@
           }
         }
       ]
+    },
+    "legacySourceApprovalContext": {
+      "type": "object",
+      "required": [
+        "subject_ref",
+        "approval_scope",
+        "basis",
+        "drafter_principal_ref"
+      ],
+      "properties": {
+        "subject_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "subject_digest": {
+          "type": "string",
+          "pattern": "^(sha256:)?[a-f0-9]{64}$"
+        },
+        "approval_scope": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "basis": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "ref",
+              "digest"
+            ],
+            "properties": {
+              "ref": {
+                "type": "string",
+                "minLength": 1
+              },
+              "digest": {
+                "type": "string",
+                "pattern": "^(sha256:)?[a-f0-9]{64}$"
+              }
+            }
+          }
+        },
+        "drafter_principal_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "review_package": {
+          "type": "boolean"
+        },
+        "source_baseline": {
+          "$ref": "strategic-design-handoff-v5.schema.json#/$defs/specBaselineOrigin"
+        }
+      }
+    },
+    "currentSourceApprovalContext": {
+      "type": "object",
+      "required": [
+        "subject_ref",
+        "approval_scope",
+        "basis",
+        "schema_version"
+      ],
+      "properties": {
+        "subject_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "subject_digest": {
+          "type": "string",
+          "pattern": "^(sha256:)?[a-f0-9]{64}$"
+        },
+        "approval_scope": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "basis": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "ref",
+              "digest"
+            ],
+            "properties": {
+              "ref": {
+                "type": "string",
+                "minLength": 1
+              },
+              "digest": {
+                "type": "string",
+                "pattern": "^(sha256:)?[a-f0-9]{64}$"
+              }
+            }
+          }
+        },
+        "review_package": {
+          "type": "boolean"
+        },
+        "source_baseline": {
+          "$ref": "strategic-design-handoff-v5.schema.json#/$defs/specBaselineOrigin"
+        },
+        "schema_version": {
+          "const": 2
+        }
+      },
+      "$comment": "Current context2 uses approval3 actual tasks and provenance; source policy selects the version."
+    },
+    "sourceApprovalContext": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/legacySourceApprovalContext"
+        },
+        {
+          "$ref": "#/$defs/currentSourceApprovalContext"
+        }
+      ]
+    },
+    "legacyExportApprovalContext": {
+      "type": "object",
+      "required": [
+        "subject_ref",
+        "approval_scope",
+        "basis",
+        "drafter_principal_ref"
+      ],
+      "properties": {
+        "subject_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "subject_digest": {
+          "type": "string",
+          "pattern": "^(sha256:)?[a-f0-9]{64}$"
+        },
+        "approval_scope": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "basis": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "ref",
+              "digest"
+            ],
+            "properties": {
+              "ref": {
+                "type": "string",
+                "minLength": 1
+              },
+              "digest": {
+                "type": "string",
+                "pattern": "^(sha256:)?[a-f0-9]{64}$"
+              }
+            }
+          }
+        },
+        "drafter_principal_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "review_package": {
+          "type": "boolean"
+        }
+      }
+    },
+    "exportApprovalContext": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/legacyExportApprovalContext"
+        },
+        {
+          "$ref": "#/$defs/currentSourceApprovalContext"
+        }
+      ]
     }
   }
 }

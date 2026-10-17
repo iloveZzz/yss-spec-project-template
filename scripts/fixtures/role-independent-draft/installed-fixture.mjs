@@ -5,10 +5,10 @@ import assert from 'node:assert/strict';
 import {spawnSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 export const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
-export function installedFixture(profile='spec') {
+export function installedFixture(profile='spec',{existingRoot}={}) {
  const binary=process.env.YSS_NATIVE_BINARY;
  assert.ok(binary&&path.isAbsolute(binary),'current native candidate required');
- const scratch=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'role-free-chain-'))),root=path.join(scratch,profile),calls=[];
+ const scratch=existingRoot?path.dirname(existingRoot):fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'role-free-chain-'))),root=existingRoot||path.join(scratch,profile),calls=[];
  const write=(ref,value)=>{const file=path.join(root,ref);fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,typeof value==='string'||Buffer.isBuffer(value)?value:JSON.stringify(value));};
  const read=ref=>fs.readFileSync(path.join(root,ref));
  const asset=ref=>({ref,digest:hash(read(ref))});
@@ -18,10 +18,10 @@ export function installedFixture(profile='spec') {
   const d=JSON.parse(r.stdout);assert.equal(d.code,expected,`${label}: ${JSON.stringify(d.result.diagnostics||d.result.message)}`);assert.equal(r.status===0,expected==='OK');return d.result;
  };
  const git=(...args)=>{const r=spawnSync('git',args,{cwd:root,encoding:'utf8'});assert.equal(r.status,0,r.stderr);return r.stdout.trim();};
- run('actual-install',['init','--profile',profile]);
+ if(!existingRoot)run('actual-install',['init','--profile',profile]);
  assert.equal(JSON.parse(read('.yss.json')).schemaVersion,4);
  assert.equal(fs.existsSync(path.join(root,'.template-spec/agents/digital-human-roles.yaml')),false);
- git('init','-q');git('-c','user.name=test','-c','user.email=test@example.invalid','commit','--allow-empty','-qm','base');
+ if(!existingRoot){git('init','-q');git('-c','user.name=test','-c','user.email=test@example.invalid','commit','--allow-empty','-qm','base');}
  const commit=git('rev-parse','HEAD');
  function draftTask({taskRef,unit='work-unit.plan-requirements',impacts=['wording'],inputs=['input.json'],outputs=['drafts/subject.json'],paths=['drafts'],checkpointRef,featureId,stage='stage.plan'}) {
   write('selection.json',{work_unit_id:unit,impacts});
@@ -43,6 +43,6 @@ export function installedFixture(profile='spec') {
   task.result={result_schema:'workflow-execution-result-v1',work_unit:task.work_unit_id,workflow_reference:task.contract.contract_ref,result:'completed',skill:task.skill_source.skills[0],changed_files:changedFiles,context_reconciliation:{status:'reconciled',ref:'reconciliation.json'},evidence_refs:[executionRef,'reconciliation.json'],deferred_seams:[],drift:[],violation:[],new_impacts:[],stale_candidates:[],next_route:task.downstream_consumers[0],blocking_signals:[]};
   write(taskRef,task);return {task,candidate,log};
  }
- const cleanup=()=>{if(process.env.YSS_CHAIN_RECEIPT)fs.writeFileSync(process.env.YSS_CHAIN_RECEIPT,JSON.stringify({binary,sha256:hash(fs.readFileSync(binary)),pinned:false,root,calls},null,2));fs.rmSync(scratch,{recursive:true,force:true});};
+ const cleanup=()=>{if(process.env.YSS_CHAIN_RECEIPT)fs.writeFileSync(process.env.YSS_CHAIN_RECEIPT,JSON.stringify({binary,sha256:hash(fs.readFileSync(binary)),pinned:false,root,calls},null,2));if(!existingRoot&&!process.env.YSS_CHAIN_PRESERVE)fs.rmSync(scratch,{recursive:true,force:true});};
  return {root,write,read,asset,run,git,commit,draftTask,finishTask,cleanup,calls};
 }

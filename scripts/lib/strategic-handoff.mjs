@@ -117,7 +117,7 @@ export async function exportBundle({sourceRoot,handoffRef,output,zip=false,previ
     put('indexes/changes.json',Buffer.from(json({previous_bundle:previousBundle,...compareIndexes(current.indexes,prior?.indexes)})));
     if(current.handoff.schema_version===5)put('README.md',Buffer.from(deliveryReadme(current.handoff)));
     if(prior){put('indexes/previous-manifest.json',Buffer.from(json(prior.manifest)));put('indexes/previous-rules.json',prior.rulesBytes);put('indexes/previous-scenarios.json',prior.scenariosBytes);}
-    const body={schema_version:1,bundle_id:current.handoff.handoff_id,version:current.handoff.handoff_version,handoff_ref:handoffRef,previous_bundle:previousBundle,files:entries.sort((a,b)=>a.path.localeCompare(b.path))};
+    const body={schema_version:current.source_execution?2:1,...(current.source_execution?{source_execution:current.source_execution}:{}),bundle_id:current.handoff.handoff_id,version:current.handoff.handoff_version,handoff_ref:handoffRef,previous_bundle:previousBundle,files:entries.sort((a,b)=>a.path.localeCompare(b.path))};
     const manifest={...body,bundle_digest:digest(body)};write(staging,'manifest.json',json(manifest));
     await openBundle(staging,()=>null,evidenceRoot?{evidenceRoot}:{});
     // Recheck every captured source byte before publishing the immutable directory.

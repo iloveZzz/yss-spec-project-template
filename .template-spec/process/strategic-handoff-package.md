@@ -7,10 +7,16 @@
 1. 源仓必须为 `project-instance`。新交付使用 Domain Strategy v3 与 Stage Decision Package v3；规则、场景、决定、假设、约束、成功标准、测试 seam 与 downstream mapping 使用稳定 ID 和证据。v2 仅用于历史 Handoff v3 的只读验证；修改或重发须显式迁移、重新批准。不得用行号、文字 hash 或导出顺序生成业务身份。
 2. 每个场景明确 `critical`、`rule_refs`、`success_results` 和既有 `failure_results`；兼容字段 `rules` 必须与引用规则正文一致。不变量使用 `rule_ref`，并通过 `scenario_refs` 指向确实覆盖该规则的场景。缺身份或关联先回战略方确认、更新并重新批准，导出器不猜测。
 3. 新原型与既有 UI 交接都使用 Handoff v5，分别选择 `prototype` 或 `existing-ui-baseline`。历史 Handoff v4 与既有裸 v5 包继续按冻结 schema 执行 `verify/import`；v3 仅由固定 CLI 迁移资源读取，但 v3/v4 不再创建新 export；修改或重新交付必须迁移到 v5 并重新批准。校验器先读取 `schema_version` 再选择固定 schema，未知版本输出支持列表并 fail closed。`package_export` 的 `approvals` 按 `source` 字段及 `handoff` 绑定批准记录，声明 `record_ref`、`gate_id`、`digest_kind`。当前战略 profile 的领域战略和阶段决策绑定 `gate.plan-approved`；声明 `business-ticket-approval-v1` 的业务 Ticket 集绑定当前 `gate.strategic-design-handoff-approved`（未声明能力的历史包保持原规则），Spec 绑定 `gate.spec-baseline-approved`，原型、视觉或既有 UI 基线绑定 `gate.product-design-approved`，交接自身绑定 `gate.strategic-design-handoff-approved`。历史包仍按包内明确登记的源批准规则验证，但旧门禁只能作为历史证据，不能作为当前输入继续流转。
-4. 批准记录除既有会签字段，还要在 `artifact_bindings` 中逐项绑定 `{id, version, digest}`。战略/阶段建议 `canonical-json`；普通文件使用 `sha256-bytes`；视觉基线使用 `visual-baseline`。正文中的 `approved` 和可读取批准路径不能替代当前字节的批准绑定。源角色表要求用户决定记录时，接收端必须支持并核验该策略；旧工具缺少该能力时阻断并要求升级，不能按旧规则放行。
+4. 批准记录还要在 `artifact_bindings` 中逐项绑定 `{id, version, digest}`。新政策使用 approval3 和显式 `schema_version: 2` 的 `approval_context`，不要求岗位、数字人或起草者身份；实际来源、任务和执行证据仍须可核验。源资产必须是已完成审查的主体或当前依据，不能只追加资产声明扩大批准范围。战略/阶段的内嵌 `approval` 注解使用显式版本 2，引用实际 Plan 聚合记录；原无版本注解只表示历史来源。战略/阶段建议 `canonical-json`；普通文件使用 `sha256-bytes`；视觉基线使用 `visual-baseline`。正文中的 `approved` 和可读取批准路径不能替代当前字节的批准绑定。来源政策要求用户决定记录时，接收端必须支持并核验该策略；旧工具缺少该能力时阻断并要求升级，不能按旧规则放行。
 5. `additional_files` 明确补充依赖；`reference_map` 将 `evidence.*` 稳定证据引用解析为仓内路径。源资产、批准记录、证据引用、Markdown 本地链接和显式目录共同形成依赖闭包。HTTP 引用保留为引用，不在导出时下载网页。
 6. 原型分支的 `prototype` 指定 `profile`、`preview_root`、`entry_ref`、`verification_ref`、`verification_digest`（验证记录的字节摘要）；H2 另须 `source_root`、`lock_ref` 和 `source_digest`（源码目录树摘要，算法同下述预览树）。源码交付目录不含 node_modules / .git；锁文件与源码一同保存。预览目录须资源闭合，可通过本地静态服务离线浏览。源码、锁文件或验证记录变化须更新交接摘要并重新批准。
 7. 原型分支的离线浏览验证记录必须有 `network_mode: offline`、实际 `command`、`executed_at`、`exit_code: 0`、`case_ids`、`evidence_refs` 和 `preview_digest`。后者为按路径排序的预览文件 `{path: 相对preview_root路径, sha256: 字节摘要}` 数组的 canonical JSON SHA-256。记录须覆盖视觉基线 case；采集时禁用外网，动态资源与交互由实际浏览器验证。验包不执行来源代码；静态闭包检查不能替代浏览器证据。
+
+## 可离线核验的任务来源
+
+原政策的 package1 保留原角色政策、任务和批准原文。新治理政策使用 package2，并在清单 `source_execution` 中封存已完成 task3 的原字节绑定、原仓根、按内容寻址的 Git commit/tree/blob 对象，以及来源和实际任务范围内的文件摘要及权限。对象先核验 Git 对象摘要，再重算任务的提交/范围基线、当前候选、执行日志和实际结果；不能以 `verified: true` 代替这些事实。
+
+接收端只在清单、文件、布局和来源政策均通过后启用该只读来源视图，不访问原物理仓库，不执行 Git、来源命令或包内代码。package2 不能借用接收端政策，也不把源批准作为目标实现资格；目标仍需自己的 Context 对账与当前合同。来源对象缺失、任务/文件摘要变化、版本混用或范围遗漏均阻断。新格式不改变历史 package1 的读取规则。
 
 ## 命令
 
@@ -96,13 +102,13 @@ scripts/strategic-feedback verify-adjudication --root <消费者项目根> <adju
 
 ## 维护与同步
 
-共享脚本和包 schema 以主模板为维护源，作为内核文件由设计/研发 Profile 直接组合使用（不再有同步脚本）；源战略 schema 的离线验证副本由该脚本从 canonical `yss-stage-decision/references` 派生。各仓技能仍只编辑 `.agents/skills`，再生成各 runtime 投影与锁。CLI 快照按来源锁里的覆盖层组合，工作树快照用于集成验证，不代表已发布 commit。共享同步仅从主技能注册表投影 `existing_project_profiles` 验证元数据，保留接收模板自己的 Recipe、capability 与创作技能；源注册表及目标有效字节写入工具锁。后端接收模板使用独立视觉 wire runtime，不安装原型创作技能。超出本 profile 职责的技术设计/编译资产在预检中明确标记不支持，战略交接路线不依赖这些后端资产。
+共享脚本和包 schema 以主模板为维护源，作为内核文件由 Spec/Backend Profile 直接组合使用（不再有同步脚本）；源战略 schema 的离线验证副本由该脚本从 canonical `yss-stage-decision/references` 派生。各仓技能仍只编辑 `.agents/skills`，再生成各 runtime 投影与锁。CLI 快照按来源锁里的覆盖层组合，工作树快照用于集成验证，不代表已发布 commit。共享同步仅从主技能注册表投影 `existing_project_profiles` 验证元数据，保留接收模板自己的 Recipe、capability 与创作技能；源注册表及目标有效字节写入工具锁。后端接收模板使用独立视觉 wire runtime，不安装原型创作技能。超出本 profile 职责的技术设计/编译资产在预检中明确标记不支持，战略交接路线不依赖这些后端资产。
 
 ## 当前用户决定与交接复核
 
 当前用户决定只覆盖 Plan、Spec 和适用的产品设计。各批准记录使用 `subject_ref`、`approval_scope`、`user_decision_ref` 绑定最终可审阅资产与原始回复；Plan 审阅包聚合领域战略和阶段决策的内部检查结论，产品设计门禁聚合原型审查与浏览器验证结论。输入摘要、范围、风险或授权条件变化时，对应决定失效并重新确认。
 
-`gate.strategic-design-handoff-approved` 不要求新的用户回复，也不把旧决定改写为交接决定。产品经理形成完整交接包后，由需求经理独立复核来源批准新鲜度、完整包摘要、风险与范围，并以 Fresh Verification 关闭交接门禁。缺少独立复核、来源批准过期、摘要漂移或验证失败均阻断 finalize。
+`gate.strategic-design-handoff-approved` 不要求新的用户回复，也不把旧决定改写为交接决定。形成完整交接包后，以实际 Reviewer/Verifier 任务复核来源批准新鲜度、完整包摘要、风险与范围，并以 Fresh Verification 关闭交接门禁。默认可由同一 Agent 如实自检；用户或已知外部规则要求独立来源时，必须满足该要求。缺少实际复核、来源批准过期、摘要漂移或验证失败均阻断 finalize。
 
 历史包中的 `strategic-decision-reuse-v1`、`decision_reuse_ref` 和旧门禁批准保持可读，供离线 `verify/import` 复核当时证据。它们不能关闭当前聚合门禁；任何修改、重发或继续流转都必须先完成战略门禁迁移并重新批准。
 

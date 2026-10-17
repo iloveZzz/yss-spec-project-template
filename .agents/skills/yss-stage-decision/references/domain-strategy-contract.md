@@ -33,3 +33,5 @@
 ## 便携交付的逐条追溯
 
 正式导出要求场景 `rule_refs / critical / success_results / evidence_refs` 和不变量 `rule_ref / evidence_refs`。`downstream_mapping` 必须使用稳定 `mapping_id`、来源 ID、消费者能力、影响项、传播规则和证据。已有 v2 文档继续只读兼容；修改或重发须显式迁移为 v3 `draft` 并重新批准。具体合同见 `.template-spec/process/strategic-handoff-package.md`，不得由导出器发明业务身份。
+
+新治理政策的战略/阶段批准注解使用显式 `schema_version: 2`，引用已完成的 Plan 审阅包及其实际批准记录，不填写岗位或数字人身份。交接来源另以版本 2 `approval_context` 绑定当前主体、范围和依据；approval3 的 `artifact_bindings` 保留资产 ID、版本和摘要，资产必须已被实际审查。旧无版本注解只按来源原政策只读核验。

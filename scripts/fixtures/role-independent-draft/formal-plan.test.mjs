@@ -69,7 +69,7 @@ test('installed Spec prepares Plan once, uses actual self-check and current huma
   const currentRecord=structuredClone(record);record.subject_digest='0'.repeat(64);write('plan-approval.json',record);
   const rejected=run('stale-aggregate',['contract','verify','--kind','plan-entry','--file','checkpoint.json'],'PLAN_APPROVAL_CONTEXT');assert.equal(rejected.execution_authorization,'not-evaluated');
   write('plan-approval.json',currentRecord);cp.plan_user_decision_ref=null;write('checkpoint.json',cp);
-  run('missing-human-source',['contract','verify','--kind','plan-entry','--file','checkpoint.json'],'USER_DECISION');
+  run('missing-human-source',['contract','verify','--kind','plan-entry','--file','checkpoint.json'],'user-decision-missing');
  }finally{
   if(process.env.YSS_FORMAL_PLAN_RECEIPT)fs.writeFileSync(process.env.YSS_FORMAL_PLAN_RECEIPT,JSON.stringify({binary,sha256:hash(fs.readFileSync(binary)),pinned:false,calls},null,2));
   fs.rmSync(scratch,{recursive:true,force:true});
