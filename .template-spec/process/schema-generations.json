@@ -79,6 +79,21 @@
         "2": "strategic-handoff-import-receipt.schema.json",
         "3": "strategic-handoff-import-receipt-v3.schema.json"
       }
+    },
+    "slice-implementation-contract": {
+      "current": 4,
+      "resident": [
+        4,
+        3
+      ],
+      "schemas": {
+        "3": "slice-implementation-contract-v3.schema.json",
+        "4": "slice-implementation-contract-v4.schema.json"
+      },
+      "historical_readers": {
+        "2": "original-native-semantic-reader-preserved"
+      },
+      "migration": "explicit-new-draft-no-historical-rewrite"
     }
   },
   "migration_command": "yss migrate plan --migration-kind asset-schema --input <file>",

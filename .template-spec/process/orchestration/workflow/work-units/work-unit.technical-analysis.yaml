@@ -6,6 +6,8 @@ work_unit_routes:
       source: yss-product-lifecycle
       skill: yss-product-lifecycle
       invocation_mode: model-invoked
+    preparation_policy_ref: .template-spec/process/orchestration/domain/review.yaml#preparation_policy
+    approval_requirement: formal-completion-and-implementation-only
     primary_skill: yss-technical-design
     supporting_skills:
       - yss-openapi-governance
@@ -109,7 +111,7 @@ work_unit_routes:
       review_requires:
         - approved
         - no-blocking-findings
-        - independent-review-evidence
+        - applicable-review-evidence
       not_applicable_requires:
         - explicit_reason
         - evidence_refs

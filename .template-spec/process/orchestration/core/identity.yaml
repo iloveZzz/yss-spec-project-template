@@ -111,7 +111,7 @@ skill_preflight:
     ready: 0
     missing_or_blocked: 2
     invalid_input_or_execution_error: 1
-  runtime_selection: explicit-or-single-registered-runtime
+  runtime_selection: actual-available-tool-no-registration-required
   conditional_dependencies: explicit-when-triggers
   excludes:
     - compatibility-references
@@ -132,7 +132,7 @@ skill_preflight:
     - hash-drift
     - projection-drift
     - path-conflict
-    - runtime-unavailable
+    - required-tool-unavailable
     - external-skill-unavailable
     - retired-skill
     - cli-snapshot-mismatch

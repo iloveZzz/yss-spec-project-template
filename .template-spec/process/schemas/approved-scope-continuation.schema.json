@@ -1,0 +1,166 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "kind",
+    "boundary",
+    "scope",
+    "subject",
+    "basis",
+    "source",
+    "comparison",
+    "verification_results",
+    "review",
+    "external_rules"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 2
+    },
+    "kind": {
+      "const": "approved-scope-continuation-v2"
+    },
+    "boundary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "scope": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "subject": {
+      "$ref": "governance-evidence.schema.json#/$defs/asset"
+    },
+    "basis": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "governance-evidence.schema.json#/$defs/asset"
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "user_decision_ref",
+        "boundary",
+        "subject_ref",
+        "scope"
+      ],
+      "properties": {
+        "user_decision_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "boundary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "subject_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "scope": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "comparison": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "before",
+        "after",
+        "differences",
+        "material_changes",
+        "decision_basis_unchanged",
+        "affected_check_ids"
+      ],
+      "properties": {
+        "before": {
+          "$ref": "governance-evidence.schema.json#/$defs/asset"
+        },
+        "after": {
+          "$ref": "governance-evidence.schema.json#/$defs/asset"
+        },
+        "differences": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "ref",
+              "digest",
+              "classification",
+              "reason"
+            ],
+            "properties": {
+              "ref": {
+                "type": "string",
+                "minLength": 1
+              },
+              "digest": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "classification": {
+                "enum": [
+                  "presentation-only",
+                  "implementation-detail",
+                  "evidence-supplement"
+                ]
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "material_changes": {
+          "type": "array",
+          "maxItems": 0
+        },
+        "decision_basis_unchanged": {
+          "const": true
+        },
+        "affected_check_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "verification_results": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "governance-evidence.schema.json#/$defs/verification_result"
+      }
+    },
+    "review": {
+      "$ref": "governance-evidence.schema.json#/$defs/review"
+    },
+    "external_rules": {
+      "$ref": "governance-evidence.schema.json#/$defs/external_rules"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yss.dev/schemas/approved-scope-continuation.schema.json",
+  "title": "Continuation2; original true user decision and frozen scope remain authoritative"
+}

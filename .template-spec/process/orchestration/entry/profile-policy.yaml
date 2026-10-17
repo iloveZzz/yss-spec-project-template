@@ -22,17 +22,17 @@ backend_architecture_identity_policy:
   missing_or_drift: blocked-and-recompile
   new_profile_readiness: supported-only
 review_verification:
-  low_medium_combined_independent_executor: true
-  implementer_must_be_separate: true
-  split_when:
-    - new_module
-    - high_risk
-    - responsibility_conflict
-    - dual_control_required
-  capability_policy_ref: .template-spec/agents/digital-human-roles.yaml
+  default_mode: self-check
+  independent_when:
+    - explicit-user-requirement
+    - known-external-rule
+  same_account_separate_session: allowed-only-with-verifiable-distinct-context-and-execution
+  names_models_roles_or_runtime_ids: not-independence-proof
+  check_policy_ref: .template-spec/process/orchestration/domain/review.yaml
+  repair_invalidates_affected_review: true
 task_package:
-  schema_version: 1
-  applies_to: all-formal-digital-human-dispatches
+  schema_version: 3
+  applies_to: formal-work-units-and-explicit-cross-workspace-handoffs
   schema_ref: .template-spec/process/schemas/digital-human-task-package.schema.json
   compatibility_schema_ref: .template-spec/process/schemas/subagent-task-package.schema.json
   validator: scripts/verify-digital-human-task-package
@@ -42,9 +42,6 @@ task_package:
     - schema_version
     - task_id
     - work_unit_id
-    - actor_id
-    - role_id
-    - runtime_id
     - execution_state
     - workflow_status
     - skill_source
@@ -59,6 +56,12 @@ task_package:
     - verification_results
     - downstream_consumers
     - convergence
+    - profile
+    - policy
+    - provenance
+    - acceptance
+    - input_bindings
+    - baseline
   execution_states:
     - Explorer
     - Drafter
@@ -72,39 +75,29 @@ task_package:
     - resolved
     - failed
   skill_source:
-    registry_ref: .template-spec/agents/digital-human-roles.yaml
-    defaults: taskPackageDefaults(role_id)
-    copy_required:
-      - core_skills
-      - forbidden_skills
-    review_skills: compiled-from-review-capabilities-for-readonly-review
-    review_execution_states:
-      - Reviewer
-      - Verifier
-    review_skills_do_not_override:
-      - core_skills
-      - forbidden_skills
-      - allowed_write_paths
+    policy_ref: .template-spec/process/orchestration-contract.yaml
+    selection: work-unit-and-actual-impact
+    registry_ref: .template-spec/agents/yss-skill-registry.yaml
+    qualification_registry: forbidden
+    requires:
+      - skills
+      - check_ids
+      - policy_digest
+      - work_unit_id
+      - impacts
   review_context:
-    source: current-consumer-checkpoint-and-review-task
-    schema_ref: .template-spec/process/schemas/digital-human-task-package.schema.json
-    capability_policy_ref: .template-spec/agents/digital-human-roles.yaml
-    applicable_to: formal-v1-professional-review
+    source: current-consumer-candidate-and-check-scope
+    policy_ref: .template-spec/process/orchestration-contract.yaml
     required:
       - check_ids
-      - capability_ids
-      - candidate_ref
-      - candidate_digest
-      - policy_ref
-      - policy_digest
-      - reviewer_principal_ref
-      - drafter_principal_ref
+      - candidate
+      - policy
       - approval_scope
       - basis
+      - review
     candidate_and_policy: current-ref-and-byte-digest
-    reviewer_must_differ_from_drafter: true
-    compile_skills_from: review_capabilities
-    readonly_intake_v2: unchanged
+    ordinary_stable_identity: not-required
+    readonly_intake_v2: historical-unchanged
   contract:
     kinds:
       - lifecycle-work-unit
@@ -142,9 +135,9 @@ task_package:
         - slice_contract_ref
         - lifecycle_ref
   dispatch:
-    owner: role.lifecycle-orchestrator
-    mode: orchestrator-one-to-one
-    per_feature_instances: forbidden
+    mode: single-executor-default
+    multiple_executors: optional-explicit-user-or-tool-choice
+    qualification_registration: forbidden
   write_isolation:
     policy: task-package-policy
     changed_files_must_be_within_allowed_paths: true
@@ -163,8 +156,12 @@ task_package:
       - remove_ready-for-agent
       - reroute
   compatibility:
-    legacy_results: read-only-normalize
-    schema_version: 1
+    legacy_schema_versions:
+      - 1
+      - 2
+    legacy_results: read-only-original-semantics
+    schema2: read-only-intake
+    missing_role_file: never-a-mode-signal
 compatibility_flow_preconditions:
   to-spec:
     required:
@@ -365,7 +362,7 @@ lifecycle_work_unit_requirements:
   release:
     - fresh_verification
     - release_or_rollback_evidence
-    - independent_review
+    - applicable_review_evidence
     - all_triggered_gates_approved_or_not_applicable
   retrospective:
     - fresh_verification
@@ -427,7 +424,7 @@ external_input_pause:
   reason: required decision-maker input is not available to the Agent
   required:
     - questionnaire_ref
-    - recipient_role
+    - recipient_ref
     - requested_outputs
     - resume_route
   response_required:

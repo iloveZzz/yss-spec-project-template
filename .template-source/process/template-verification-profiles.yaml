@@ -85,6 +85,22 @@ profiles:
           - ".template-source/contracts/architecture-iteration-v1*.md"
         depends_on: []
         failure_mode: "说明文档复述门禁数、阶段数、投影根数量或硬编码与 lock 不一致的上游 revision"
+      - id: check.role-independent-contracts
+        run: "node --test tests/role-independent-contracts.test.mjs"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
+          - "tests/role-independent-contracts.test.mjs"
+          - ".template-spec/process/schemas/*.schema.json"
+          - ".template-spec/process/orchestration-contract.yaml"
+          - ".template-spec/process/orchestration/**"
+          - "profiles/backend/.template-spec/process/**"
+          - "scripts/lib/json-schema.mjs"
+          - "scripts/lib/orchestration-contract.mjs"
+          - "scripts/lib/profile-tree.mjs"
+          - "scripts/vendor/yaml.mjs"
+        depends_on: []
+        failure_mode: "新无角色合同缺输入绑定、旧记录被重解释或 Backend 检查范围被扩大"
       - id: check.schema-generations
         run: "node --test tests/schema-generations.test.mjs"
         group: feature-assets
@@ -2574,6 +2590,7 @@ routing:
       - feature-assets
   - patterns:
       - tests/schema-generations.test.mjs
+      - tests/role-independent-contracts.test.mjs
     groups:
       - feature-assets
   - patterns:

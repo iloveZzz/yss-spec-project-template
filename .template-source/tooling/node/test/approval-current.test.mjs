@@ -263,7 +263,7 @@ test('backend technical design and engineering contract share one prepared revie
  }
  write('input/checkpoint.json',checkpoint);
  // 新字段随本仓 schema 与准备入口发布；初始化实例仍是固定版本 Bundle，这里覆盖为当前源。
- for(const ref of ['.template-spec/process/schemas/approval-record.schema.json','.template-spec/process/schemas/review-bundle.schema.json','scripts/prepare-review-package'])write(ref,readFileSync(path.join(ROOT,ref)));
+ for(const ref of ['.template-spec/process/schemas/approval-record.schema.json','.template-spec/process/schemas/review-bundle.schema.json','.template-spec/process/schemas/governance-evidence.schema.json','scripts/prepare-review-package'])write(ref,readFileSync(path.join(ROOT,ref)));
  const prepared=spawnSync(process.execPath,[path.join(root,'scripts/prepare-review-package'),'--root',root,'--checkpoint','input/checkpoint.json',...gateIds.flatMap(id=>['--check',id]),'--role','role.test-agent','--actor','agent.reviewer','--reviewer-principal','principal.reviewer','--drafter-principal','agent.architecture','--implementation-actor','agent.architecture','--task-id','design-review','--review-session','session.design','--work-unit','work-unit.technical-design','--output-dir','reviews/design','--independence','same-session'],{encoding:'utf8',cwd:root});
  assert.equal(prepared.status,0,prepared.stderr);
  const bundle=parseDocument(readFileSync(path.join(root,JSON.parse(prepared.stdout).bundle_ref),'utf8')).toJS();

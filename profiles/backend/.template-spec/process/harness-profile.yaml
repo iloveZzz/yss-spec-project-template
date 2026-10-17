@@ -1,19 +1,11 @@
-schema_version: 2
+schema_version: 3
 profile_id: harness.backend-delivery
 status: active
 name: 后端专职交付 Harness
 purpose: 承接批准战略，完成后端战术设计、冻结接口及部署验证，按业务切片交付真实接口；可按需协作于显式 Spec 主控，后端职责完成不等于整体业务验收。
 audience:
-  target_user_roles:
-    - role.architecture-agent
-    - role.backend-agent
-    - role.test-agent
-    - role.requirements-manager
-    - role.product-manager
-  control_plane_roles:
-    - role.harness-orchestrator
-  non_target_role_policy: 另一端角色只允许无写路径的只读输入评审；不得派发另一端实现或起草任务。共享角色表保留来源批准身份。
   boundary: 职责按业务切片接力；后端交付、前端验收和统一管理方业务验收分别记录。上游规则及 API 变化回交权威方，不在本仓静默重定义。
+  qualification_registry: not-required
 lifecycle:
   repository_modes:
     - project-instance
@@ -85,7 +77,7 @@ instantiation:
 execution:
   side: backend
   terminal_conclusion: backend-deliverable
-  business_acceptance_owner: local-scope-owner-or-registered-coordinator
+  business_acceptance_owner: real-user-within-explicit-scope
 skill_scope:
   policy: local-workflow-only
   retired_local_skills:
@@ -140,3 +132,5 @@ business_input:
   delivery_path_policy_ref: .template-spec/process/orchestration-contract.yaml#request_triage.delivery_path
   analysis_grants_opposite_side_write: false
   terminal_claim: own-side-only
+required_capabilities:
+  - role-independent-governance-v1

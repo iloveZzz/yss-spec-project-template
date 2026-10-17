@@ -1,6 +1,8 @@
 # owner: yss-product-lifecycle
 # consumers: lifecycle route/query, current Profile workflows and governance validators
 transition_graph:
+  preparation_policy_ref: .template-spec/process/orchestration/domain/review.yaml#preparation_policy
+  preparation_does_not_promote_ticket: true
   validator: scripts/lib/lifecycle-transition.mjs
   implementation_requires_predecessor: work-unit.ticket-decomposition
   routes:

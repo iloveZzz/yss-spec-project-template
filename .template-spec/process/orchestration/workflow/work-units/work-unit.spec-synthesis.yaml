@@ -6,6 +6,8 @@ work_unit_routes:
       source: yss-product-lifecycle
       skill: yss-product-lifecycle
       invocation_mode: model-invoked
+    preparation_policy_ref: .template-spec/process/orchestration/domain/review.yaml#preparation_policy
+    approval_requirement: formal-completion-and-implementation-only
     primary_skill: yss-product-lifecycle
     supporting_skills:
       - domain-modeling

@@ -80,8 +80,8 @@ progression_target:
     artifact: artifact.strategic-design-handoff
     trigger: explicit-external-implementation-consumer
     source_capability: business-ticket-approval-v1
-    source_drafter: role.product-manager
-    independent_reviewer: role.requirements-manager
+    review_policy_ref: .template-spec/process/orchestration/domain/review.yaml#review_modes
+    source_authority: original-profile-and-current-approved-assets
     default_local_self_export_or_import: forbidden
     completion_requires: current-source-approvals-and-immutable-package-verification
     receiver_receipt_blocks_source_completion: false

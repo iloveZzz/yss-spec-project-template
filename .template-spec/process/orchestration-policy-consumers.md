@@ -84,3 +84,40 @@
 入口：`.agents/skills/yss-product-lifecycle/SKILL.md`。主控在当前任务开始与工作单元切换时按本表定位适用策略，在作出对应决定前读取事实源中的完整键值；不把规则读取等同于批准或执行授权。规则不适用时不加载无关分片。当前工作单元消费 `work_unit_routes.<id>`；授权、阶段流转、暂停、职责、证据与发布决定分别消费本表同名策略，不能仅依据摘要输出放行。
 
 本次不删除原有策略；原 AR-13 遗漏的策略继续保留于 entry/profile-policy.yaml，均在上表逐项登记。
+
+## 编排政策 2 的合同边界
+
+政策 2 的结构已定义，必须同时具备 `role-independent-governance-v1`、根实例身份 2、Profile 3、Bundle 4 与 metadata 4 的原生消费者才能向实例写入。模板源身份仍为 1；Schema 检查不授予执行资格。政策 1、任务 1/2、审批/审查包 1/2、延续 1 与历史 Design 按原合同只读解释，不重写历史字段或摘要。任务 2 仍只读 intake。
+
+以下字段由 `orchestration/domain/review.yaml` 唯一维护；原生 `kernel/approval/contracts/lifecycle` 消费者必须按当前明确 Profile 与版本选择，缺失或未知输入不能降级。此表列的是接入合同，并不声称 B1 已完成原生执行验收。
+
+| 策略 | 消费责任与拒绝边界 |
+|---|---|
+| `governance_versions` | 身份、任务、阶段 writer 在计划和应用时核验完整版本组合及总能力；旧政策只允许读、核验、显式迁移 |
+| `profile_admission` | init/profile prepare 仅新建 Spec/Backend；旧 Design 原身份只读，显式迁移不得静默改成 Spec；Backend 不获整体业务验收权限 |
+| `technical_checks` | 按 work unit、实际影响和精确 Profile 计算 Skills；`capability.*` 仅为历史延续的检查组 ID，无持有人或岗位资格；未知检查组拒绝 |
+| `gate_policy` | 只选 `profiles.spec` 或 `profiles.backend` 的完整门禁集，保留全部原检查 ID；禁止把另一个 Profile 的缺失边界当作可跳过 |
+| `user_decision_policy` | 使用 `profile_scope` 与 `continuation.boundaries_by_profile`；真实用户消息 schema1 不变，原决定/冻结快照/当前候选/逐项差异/受影响检查与实际验证必须绑定；禁止链式扩权 |
+| `review_modes` | 默认自检；明确用户或已知外部规则才要求独立复核；另一实际上下文、执行来源、同一冻结候选与范围、只读审查缺一不可；角色名、模型名、runtime 名不能证明独立 |
+| `external_rules_policy` | 未声明且未发现具体规则时无须空制度；已知无法核验则仅阻断依赖动作；新事实重新计算适用范围，不伪称平台批准 |
+| `preparation_policy` | 已授权准备范围内可消费前序草稿并继续起草 Plan/Spec/必要设计；不得产出批准、ready-for-agent 或业务验收；正式实现仍消费具体当前资产的真实决定与合同 |
+| `impact_review_matrix` | 保留 API Draft→内容审查→Freeze→实现、权限/不可逆变化反例与恢复、跨仓来源/路径/摘要约束；不可靠分类先只读调查 |
+
+`entry/profile-policy.yaml` 的任务 3 与 `entry/request-triage.yaml` 的 daily/standard 2 复用上述政策。daily 的同一 Ticket JSON 显式声明 `schema_version: 2`、`policy_version: 2`；`implementation.provenance` 替代必需 actor 身份，审查记录的 `assessment` 使用共用复核结构，原始审查记录与结果、阻断项、assessment、当前候选摘要一致。API 使用 `api_digest`，代码使用 `candidate_digest`，二者不可互换。缺版本是历史输入，不能猜为 2。
+
+## 旧强约束的去向
+
+| 原位置/约束 | 新位置或退休理由 | 消费者处置 |
+|---|---|---|
+| `digital-human-roles.yaml` 岗位、runtimes、orchestrator、人数、岗位技能白名单 | 从新写入资格退休；用户和外部工具管理执行编排，不建立替代岗位表 | 新 kernel 权威加载、task Skill 解析及预检不得读取这些资格；旧读取器保留原角色文件，不能以缺文件启用新模式 |
+| `review_capabilities.eligible_roles` | 仅删除资格映射；检查组 ID、专业 Skills 迁到 `technical_checks` | review compiler 按 Profile/工作单元/影响选检查，核验实际 Skill 存在和摘要 |
+| `gate_policy` drafter/countersigners/default 独立人数 | 默认单执行者及 `review_modes` 条件独立 | approval、review-bundle、daily、API 和 continuation 按新版本分派；旧字段仍按旧合同要求 |
+| 自动检查、技术检查、已列出的 gate/check 与未列拒绝 | `gate_policy.profiles`；Backend 原 evidence-only 和契约批准边界单独保留 | 原生 GateChecks 和审批当前性核验不得静默忽略未知边界 |
+| 用户决定、委托、撤回、来源与决定范围 | `user_decision_policy`，user-decision schema1 原字节结构不变 | 原始人类回复验证、当前候选/范围与决定依据比较仍由原生消费者执行 |
+| continuation 独立岗位与“外部制度先确认” | continuation2 自检默认；`external_rules_policy` 三态 | 原始授权快照对照及新字节验证不可省；已知规则不可核验时受影响动作继续阻断 |
+| task1/2 与 Slice3 的 role/runtime/actor 资格 | task3 与 Slice4 去除资格；Slice4 使用已有 Skills 加 `check_ids` | task/Slice 编译、视图、结果绑定迁到新格式；旧 Slice2/3 原读取语义保留，不能改旧审批摘要 |
+| 固定前序人工批准阻止草稿准备 | `preparation_policy` 与各 work-unit 的准备引用 | planning、transition 和 route 必须区分草稿准备与正式完成/实施，不因此提升 ready-for-agent |
+| 固定独立实现/验证者与发布默认独立 | `review_verification`、`review_modes`、适用复核证据 | 明确独立要求仍满足；自检不能签独立结果；提交/推送/发布和外部动作仍需已有有效用户授权 |
+| 路径/仓库/摘要/输入/冻结/真实日志/版本/候选约束 | 原位置保留，task3 新增明确输入绑定、基线和来源 | 原生路径规范化、symlink 防逃逸、实际命令/退出码/日志与候选校验不得因去岗位而放宽 |
+
+历史战略交接与回执格式不因无关岗位清理改写；新的 source approval 必须按其冻结源政策版本解释。Bundle/source-lock 的历史闭包由后续分发工作验证，旧 source snapshot、Design 身份、target_profile_id 与回执摘要必须保留。

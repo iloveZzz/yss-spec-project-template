@@ -2,6 +2,8 @@
 # consumers: lifecycle route/query, current Profile workflows and governance validators
 work_unit_routes:
   work-unit.technical-design:
+    preparation_policy_ref: .template-spec/process/orchestration/domain/review.yaml#preparation_policy
+    approval_requirement: formal-completion-and-implementation-only
     primary_skill: architecture-agent
     supporting_skills:
       - yss-technical-design

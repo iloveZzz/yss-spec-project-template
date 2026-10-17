@@ -1,4 +1,4 @@
-schema_version: 1
+schema_version: 2
 parts:
   - orchestration/domain/progression.yaml
   - orchestration/entry/execution.yaml

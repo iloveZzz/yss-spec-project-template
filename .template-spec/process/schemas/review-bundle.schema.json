@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://yss.dev/schemas/review-bundle.schema.json",
-  "title": "YSS Review Bundle v1/v2; draft never grants approval",
+  "title": "Review bundle1/2 history and role-independent bundle3",
   "oneOf": [
     {
       "type": "object",
@@ -353,6 +353,113 @@
         },
         "independence": {
           "$ref": "approval-record.schema.json#/$defs/independence"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "kind",
+        "bundle_id",
+        "task_id",
+        "work_unit_id",
+        "review_task_ref",
+        "review_task_digest",
+        "basis",
+        "reviews",
+        "check_ids",
+        "policy",
+        "review"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": 3
+        },
+        "kind": {
+          "const": "review-bundle"
+        },
+        "bundle_id": {
+          "type": "string",
+          "pattern": "^review-bundle\\.[a-z0-9][a-z0-9-]*$"
+        },
+        "task_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "work_unit_id": {
+          "type": "string",
+          "pattern": "^work-unit\\.[a-z0-9][a-z0-9-]*$"
+        },
+        "review_task_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "review_task_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "basis": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "ref",
+              "digest"
+            ],
+            "properties": {
+              "ref": {
+                "type": "string",
+                "minLength": 1
+              },
+              "digest": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              }
+            }
+          }
+        },
+        "notes": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reviews": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "allOf": [
+              {
+                "$ref": "approval-record.schema.json"
+              },
+              {
+                "properties": {
+                  "schema_version": {
+                    "const": 3
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "plan_review_binding": {
+          "$ref": "plan-review-control.schema.json#/$defs/binding"
+        },
+        "check_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "policy": {
+          "$ref": "governance-evidence.schema.json#/$defs/policy"
+        },
+        "review": {
+          "$ref": "governance-evidence.schema.json#/$defs/review"
         }
       }
     }

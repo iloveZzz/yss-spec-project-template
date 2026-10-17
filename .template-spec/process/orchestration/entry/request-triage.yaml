@@ -3,7 +3,7 @@
 request_triage:
   owner: yss-product-lifecycle
   delivery_path:
-    version: 1
+    version: 2
     enabled_profiles:
       - spec
       - backend
@@ -31,7 +31,7 @@ request_triage:
     single_record: markdown-with-embedded-evidence
     compatible_api: conservative-additive
     standard:
-      version: 1
+      version: 2
       impacts:
         - behavior-change
         - new-capability
@@ -40,20 +40,57 @@ request_triage:
         actor_kind: human
         binds: spec-lite-digest
         original_response: required
+        requester_may_confirm: true
+        agent_may_generate_user_response: false
       spec_lite_template: .template-spec/templates/spec-lite-template.md
       escalation: daily-to-standard-to-governed-only
       unsupported_cli: governed
     read_only_capabilities:
       - lifecycle.route
       - lifecycle.verify-daily
-    public_summary: Spec、Backend 日常任务在目标、验收、写范围、一处已知实现仓、可回滚依据、可读工程基线、验证命令与适用 YSS 技能齐全且无排除风险时， 走需求与验收、技术技能、实现、测试、独立审查，仅更新同一 Ticket 或 PR，不生成阶段 checkpoint、正式 Slice 或多级批准。专职 Profile 的本地业务分析不扩大另一端实现写范围。 缺事实先调查；无法证明条件时恢复完整治理。旧 CLI 或未声明能力的 Profile明确不支持，不降级正式校验器。
+    public_summary: Spec、Backend 日常任务在目标、验收、写范围、一处已知实现仓、可回滚依据、可读工程基线、验证命令与适用 YSS 技能齐全且无排除风险时， 走需求与验收、技术技能、实现、测试、适用复核，仅更新同一 Ticket 或 PR，不生成阶段 checkpoint、正式 Slice 或多级批准。专职 Profile 的本地业务分析不扩大另一端实现写范围。 缺事实先调查；无法证明条件时恢复完整治理。旧 CLI 或未声明能力的 Profile明确不支持，不降级正式校验器。
+    result_schema_version: 2
+    record_contract:
+      schema_version: 2
+      policy_version: 2
+      carrier: existing-yss-task-evidence-json-block
+      retained_fields:
+        - task_id
+        - delivery_path
+        - goal_ref
+        - acceptance_ref
+        - repository
+        - scope
+        - skills
+        - inputs
+        - commands
+        - formal_bindings
+        - tests
+        - api
+        - business_input
+      implementation:
+        required: [provenance, diff_digest, changed_files]
+        provenance_schema: .template-spec/process/schemas/governance-evidence.schema.json#/$defs/provenance
+        actor_id: historical-only-not-required
+      review:
+        required: [ref, digest, result, blocking_findings, assessment]
+        assessment_schema: .template-spec/process/schemas/governance-evidence.schema.json#/$defs/review
+        code_binding: candidate_digest
+        api_binding: api_digest
+        raw_record_match: [result, blocking_findings, assessment, current_binding]
+        reviewer_id: historical-only-not-required
+      external_rules_schema: .template-spec/process/schemas/governance-evidence.schema.json#/$defs/external_rules
+      unknown_version: reject-affected-write
+      missing_version: historical-read-only-never-infer-v2
+    review_policy_ref: .template-spec/process/orchestration/domain/review.yaml#review_modes
+    default_review: self-check
     ordinary_record_fields:
       - scope
       - acceptance
       - engineering-baseline
       - applicable-skills
       - actual-tests
-      - independent-review
+      - applicable-review-evidence
       - rollback
     unknown_facts: investigate-before-route
     unproven_eligibility: governed-or-needs-info
@@ -65,20 +102,20 @@ request_triage:
       - yss-technical-skills
       - implementation
       - tests
-      - independent-review
+      - applicable-review-evidence
     daily_formal_stage_packages: forbidden
     review_basis: current-diff-and-verification-evidence
     completion_requires:
       - current-scope
       - passing-actual-tests
-      - independent-review
+      - applicable-review-evidence
       - no-open-blocking-findings
       - current-api-evidence-if-applicable
     new_decisions_and_external_actions: require-applicable-existing-authorization-boundary
     compatible_api_sequence:
       - oas-3.1-yaml-draft
       - locked-tool-validation
-      - conservative-compatibility-and-independent-review
+      - conservative-compatibility-and-content-review
       - digest-freeze
       - implementation-and-contract-tests
     compatible_api_rule: new-independent-operations-only-existing-operations-and-reachable-normalized-reference-closure-identical

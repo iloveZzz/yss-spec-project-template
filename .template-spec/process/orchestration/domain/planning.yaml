@@ -5,13 +5,15 @@ planning:
   review_contract: .template-spec/plan/entry-review.md
   check_policy: .template-spec/process/lifecycle-registry.yaml
   default_check_status: pending
-  formal_spec_draft_requires_passed_entry: true
+  formal_spec_draft_requires_passed_entry: false
+  formal_spec_implementation_requires_current_approval: true
+  preparation_policy_ref: .template-spec/process/orchestration/domain/review.yaml#preparation_policy
   stage: stage.plan
   record: artifact.plan-record
   template: .template-spec/plan/templates/plan-template.md
   exit_policy: .template-spec/process/lifecycle-registry.yaml
   migration_policy: .template-spec/process/plan-migration.md
-  critical_open_questions: block-before-spec
+  critical_open_questions: block-dependent-conclusions-and-implementation
   deferred_details_require:
     - noncritical_reason
     - owner
@@ -148,12 +150,14 @@ planning:
       facts_and_verification: readable-evidence-required
       preparation_check: grill_exit
       preparation_passed_means: clarification-materials-and-prerequisites-ready
-      final_confirmation_boundary: gate.plan-approved
+      final_confirmation_boundary: consolidated-formed-plan-spec-and-applicable-design
       final_confirmation: shared-understanding-and-current-plan-in-one-real-response
       final_confirmation_proof: plan_user_decision_ref-or-valid-plan_continuation_ref
       confirmation_writeback: external-proof-without-review-or-basis-rewrite
       completion: passed-preparation-and-valid-current-user-decision
 grill_exit:
+  preparation_required: [facts_resolved_or_routed, no_unresolved_runnable_blocker]
+  preparation_does_not_claim_user_confirmation: true
   required:
     - frontier_empty
     - facts_resolved_or_routed
@@ -166,6 +170,6 @@ grill_exit:
     external_decision: external-input-required
   user_confirmation_required: true
   preparation_check: grill_exit
-  final_confirmation_boundary: gate.plan-approved
+  final_confirmation_boundary: consolidated-formed-plan-spec-and-applicable-design
   completion: passed-preparation-and-valid-current-user-decision
   output: plan-evidence

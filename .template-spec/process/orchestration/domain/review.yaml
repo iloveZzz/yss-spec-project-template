@@ -44,7 +44,7 @@ review_input:
   finding_disposition_required: true
   completed_requires_no_open_mandatory_violations: true
   completed_requires_no_blank_applicable_rows: true
-  reviewer_write_implementation: forbidden
+  reviewer_write_implementation: forbidden-during-frozen-review
   repair_invalidates_candidate: true
   repair_action: recapture_candidate_and_rereview_affected_conclusions_behavior_dependencies
   rereview:
@@ -143,7 +143,7 @@ release_readiness:
   required:
     - fresh_verification
     - release_or_rollback_evidence
-    - independent_review
+    - applicable_review_evidence
     - all_triggered_gates_approved_or_not_applicable
   conditional: {}
   blocked_when:
@@ -418,7 +418,7 @@ impact_propagation:
         level: transitive
         when: always
 user_decision_evidence:
-  policy_ref: .template-spec/agents/digital-human-roles.yaml#user_decision_policy
+  policy_ref: .template-spec/process/orchestration/domain/review.yaml#user_decision_policy
   schema_ref: .template-spec/process/schemas/user-decision.schema.json
   protocol_ref: references/user-decisions.md
   verifier: scripts/verify-user-decision
@@ -433,12 +433,12 @@ user_decision_evidence:
   professional_review_replaced: false
   response_absent: paused-human-gate
   invalid_response: blocked
-  basis_changed: revalidate_then_continue_only_with_independent_equivalence_evidence
+  basis_changed: revalidate_then_continue_only_with_original_approval_comparison_and_current_evidence
 gate_consolidation:
   source: .template-spec/process/lifecycle-registry.yaml
-  check_policy: .template-spec/agents/digital-human-roles.yaml
-  capability_source: .template-spec/agents/digital-human-roles.yaml#review_capabilities
-  checks: automatic_or_independent_review_without_separate_user_decision
+  check_policy: .template-spec/process/orchestration/domain/review.yaml#gate_policy
+  capability_source: .template-spec/process/orchestration/domain/review.yaml#technical_checks
+  checks: automatic_or_applicable_review_without_separate_user_decision
   check_failure: blocks_aggregate_gate
   plan_decision_boundary: gate.plan-approved
   readiness: computed_after_current_approved_contract_and_all_applicable_preconditions
@@ -449,12 +449,12 @@ gate_consolidation:
     - release
     - production_change
   reuse: unchanged_approval_or_verified_approved_scope_continuation
-  default_review: one_owner_one_independent_reviewer
+  default_review: self-check
   adjacent_reviews: one_bundle_with_explicit_per_check_outcomes
-  new_approval_and_review_bundle_schema: 2
+  new_approval_and_review_bundle_schema: 3
   current_validation: scripts/verify-approval-record --require-approved --checkpoint <current checkpoint>
   expected_context: consumer-checkpoint-and-review-task-never-self-filled-from-record
-  extra_reviewers: uncovered_expertise_conflict_or_external_requirement
+  extra_reviewers: explicit-user-or-known-external-requirement
   suggestions: recorded_backlog_without_blocking
   continuation_protocol: references/user-decisions.md
   invalidation: affected_dependencies_or_authorization_change_only
@@ -469,3 +469,454 @@ blocking_disposition:
   independent_authorized_work: continue
   completion_conclusion_alone: no-new-pause
   question_count: minimum-actionable-independent-questions-may-be-batched
+
+governance_versions:
+  required_capability: role-independent-governance-v1
+  activation: native-consumers-and-bundle-closure-required-before-instance-writes
+  unknown_or_mixed_versions: reject-affected-write
+  project_identity:
+    current: 2
+    history:
+    - 1
+    template_source: 1
+  harness_profile:
+    current: 3
+    history:
+    - 1
+    - 2
+  task:
+    current: 3
+    history:
+    - 1
+    - 2
+    schema2: read-only-intake
+  approval_record:
+    current: 3
+    history:
+    - 1
+    - 2
+  review_bundle:
+    current: 3
+    history:
+    - 1
+    - 2
+  continuation:
+    current: 2
+    history:
+    - 1
+  delivery_authorization:
+    current: 2
+    history:
+    - 1
+  daily:
+    current: 2
+    history:
+    - 1
+  standard:
+    current: 2
+    history:
+    - 1
+  user_decision:
+    current: 1
+  lifecycle_registry:
+    current: 1
+  native_bundle:
+    current: 4
+  native_metadata:
+    current: 4
+  source_lock:
+    current: 5
+  slice_implementation_contract:
+    current: 4
+    history: [2, 3]
+    schema_ref: .template-spec/process/schemas/slice-implementation-contract-v4.schema.json
+    history_access: original-read-only-semantics
+  workflow_execution_result:
+    current: 1
+    review_evidence: references-approval3-or-review-bundle3
+  legacy_policy: read-verify-explicit-migrate-only-no-new-task-or-stage-write
+profile_admission:
+  new_profiles:
+  - spec
+  - backend
+  legacy_design:
+    profile_id: harness.business-ddd-strategy-handoff
+    read: original-semantics
+    write: explicit-migration-only
+    new_request: reject-with-explicit-spec-migration-guidance
+    silent_alias: forbidden
+  spec:
+    product_design: all-applicable-inputs-checks-and-acceptance-retained
+    frontend_implementation: external-toolchain-only
+  backend:
+    terminal: backend-deliverable
+    business_accepted: false
+    release_authorized: false
+    frontend_write: false
+  legacy_roles:
+    source: .template-spec/agents/digital-human-roles.yaml
+    access: historical-contracts-only
+    missing_file: never-a-role-independent-mode-signal
+technical_checks:
+- id: capability.strategic-handoff
+  name: 战略交接与证据审查
+  review_skills:
+  - code-review
+  profiles:
+  - spec
+- id: capability.business-rules
+  name: 业务边界与规则审查
+  review_skills:
+  - domain-modeling
+  - yss-stage-decision
+  profiles:
+  - spec
+  - backend
+- id: capability.spec-acceptance
+  name: Spec 范围与验收审查
+  review_skills:
+  - code-review
+  profiles:
+  - spec
+  - backend
+- id: capability.prototype-assurance
+  name: 原型与体验审查
+  review_skills:
+  - prototype-review
+  - yss-design-system
+  profiles:
+  - spec
+- id: capability.openapi-contract
+  name: OpenAPI Draft 契约与客户端适配审查
+  review_skills:
+  - yss-openapi-draft-review
+  profiles:
+  - spec
+  - backend
+- id: capability.technical-design
+  name: 技术设计与架构审查
+  review_skills:
+  - yss-technical-design
+  profiles:
+  - spec
+  - backend
+  review_skills_by_profile:
+    backend:
+    - yss-technical-design
+    - code-review
+- id: capability.engineering-baseline
+  name: 工程基线与验证审查
+  review_skills:
+  - code-review
+  profiles:
+  - spec
+  - backend
+- id: capability.engineering-acceptance
+  name: 工程契约聚合审查
+  review_skills:
+  - code-review
+  profiles:
+  - spec
+- id: capability.implementation-assurance
+  name: 实现与交付证据审查
+  review_skills:
+  - code-review
+  profiles:
+  - spec
+  - backend
+gate_policy:
+  default_if_unlisted: reject-unlisted
+  review_execution:
+    additional_reviewers: explicit-user-or-known-external-requirement
+    adjacent_checks: one-review-with-per-check-conclusions
+    suggestions: backlog-without-blocking
+    violations_or_missing_evidence: blocking
+    review_bundles:
+    - bundle_id: review-bundle.plan
+      work_unit: work-unit.plan-requirements
+      aggregate_gate: gate.plan-approved
+      checks:
+      - check.domain-strategy-approved
+      - check.stage-decision-package-approved
+      check_order: domain-strategy-before-stage-decision
+      aggregate_professional_result: reuse-internal-check-conclusions
+      aggregate_additional_review_task: forbidden
+      review_control_ref: .template-spec/process/orchestration-contract.yaml#planning.review_control
+  commercial_contract: real-user-authorization
+  runtime_side_effect_approval: real-user-authorization
+  profiles:
+    spec:
+      automatic_checks:
+      - check.repository-identity-valid
+      - check.prototype-verified
+      - check.artifact-consistency-analyzed
+      - check.implementation-repositories-ready
+      - check.slice-ready-for-agent
+      - check.openapi-frozen
+      check_reviews:
+      - gate: check.domain-strategy-approved
+        capability_ids:
+        - capability.business-rules
+      - gate: check.stage-decision-package-approved
+        capability_ids:
+        - capability.business-rules
+      - gate: check.prototype-reviewed
+        capability_ids:
+        - capability.prototype-assurance
+      - gate: check.openapi-draft-reviewed
+        capability_ids:
+        - capability.openapi-contract
+      - gate: check.design-reviewed
+        capability_ids:
+        - capability.technical-design
+      - gate: check.architecture-reviewed
+        capability_ids:
+        - capability.technical-design
+      - gate: check.engineering-baseline-accepted
+        capability_ids:
+        - capability.engineering-baseline
+      technical_reviews:
+      - gate: gate.plan-approved
+        capability_ids:
+        - capability.business-rules
+      - gate: gate.spec-baseline-approved
+        capability_ids:
+        - capability.spec-acceptance
+      - gate: gate.engineering-contract-approved
+        capability_ids:
+        - capability.engineering-acceptance
+      - gate: gate.strategic-design-handoff-approved
+        capability_ids:
+        - capability.strategic-handoff
+      - gate: gate.delivery-accepted
+        capability_ids:
+        - capability.implementation-assurance
+      user_decision_gates:
+      - gate.product-design-approved
+      - gate.backend-architecture-platform-approved
+      contract_approval_gates:
+      - gate.slice-contract-approved
+      work_unit_reviews:
+      - work_unit: work-unit.code-review
+        capability_ids:
+        - capability.implementation-assurance
+      evidence_only: []
+    backend:
+      automatic_checks: []
+      check_reviews:
+      - gate: check.design-reviewed
+        capability_ids:
+        - capability.technical-design
+      - gate: check.domain-strategy-approved
+        capability_ids:
+        - capability.business-rules
+      - gate: check.stage-decision-package-approved
+        capability_ids:
+        - capability.business-rules
+      technical_reviews:
+      - gate: gate.plan-approved
+        capability_ids:
+        - capability.business-rules
+      - gate: gate.spec-baseline-approved
+        capability_ids:
+        - capability.spec-acceptance
+      - gate: gate.engineering-contract-approved
+        capability_ids:
+        - capability.openapi-contract
+        - capability.engineering-baseline
+      - gate: gate.technical-design-approved
+        capability_ids:
+        - capability.technical-design
+      - gate: gate.fresh-verification-passed
+        capability_ids:
+        - capability.implementation-assurance
+      user_decision_gates:
+      - gate.backend-architecture-platform-approved
+      - gate.high-risk-architecture-confirmed
+      - gate.openapi-freeze-confirmed
+      - gate.merge-approved
+      contract_approval_gates:
+      - gate.slice-contract-approved
+      - gate.slice-ready-for-agent
+      evidence_only:
+      - gate.repository-identity-valid
+      work_unit_reviews:
+      - work_unit: work-unit.technical-design
+        capability_ids:
+        - capability.technical-design
+        - capability.openapi-contract
+        - capability.engineering-baseline
+      - work_unit: work-unit.slice-implementation
+        capability_ids:
+        - capability.implementation-assurance
+  selection: exact-current-profile-no-fallback-and-no-unknown-boundary-skip
+user_decision_policy:
+  schema_version: 2
+  required_capabilities:
+  - role-independent-governance-v1
+  default_responder: requester
+  delegate_requires_requester_evidence: true
+  continuation:
+    capability: role-independent-governance-v1
+    source_boundary: delivery-scope
+    material_changes:
+    - business-scope
+    - acceptance
+    - contract-commitments
+    - authorization
+    - risk-acceptance
+    - quality
+    - external-commitments
+    unknown_change: blocked
+    external_requirements: preserve-project-policy
+    schema_version: 2
+    kind: approved-scope-continuation-v2
+    schema_ref: .template-spec/process/schemas/approved-scope-continuation.schema.json
+    review_mode: self-check-default
+    external_policy: classified-by-external-rules-state
+    original_approval_snapshot: required
+    comparison: original-frozen-approval-to-current-never-continuation-chain
+    differences_and_current_validation: required
+    digest_only_equivalence: forbidden
+    ordinary_stable_identity: not-required
+    boundaries_by_profile:
+      spec:
+      - gate.plan-approved
+      - gate.spec-baseline-approved
+      - gate.product-design-approved
+      - gate.backend-architecture-platform-approved
+      - gate.engineering-contract-approved
+      - implementation-scope
+      backend:
+      - gate.plan-approved
+      - gate.spec-baseline-approved
+      - gate.backend-architecture-platform-approved
+      - gate.engineering-contract-approved
+      - implementation-scope
+  source_kinds:
+  - platform-message
+  - session-export
+  - user-confirmation-file
+  conditional_decisions:
+  - scaffold-choice
+  - external-input
+  - new-authorization
+  - risk-acceptance
+  waiting_allows: independent-work-only
+  expiry: basis-change-or-revocation-only
+  record_schema: .template-spec/process/schemas/user-decision.schema.json
+  verifier: scripts/verify-user-decision
+  record_schema_version: 1
+  consolidated_confirmation: one-real-response-for-formed-assets-versions-acceptance-and-explicit-scope
+  future_assets: not-authorized
+  same_requester_and_responder: allowed
+  agent_generated_user_response: forbidden
+  profile_scope:
+    spec:
+      gates:
+      - gate.plan-approved
+      - gate.spec-baseline-approved
+      - gate.product-design-approved
+      - gate.backend-architecture-platform-approved
+      - gate.engineering-contract-approved
+      work_units:
+        work-unit.implementation-repository-preparation: scaffold-choice
+        work-unit.slice-implementation: implementation-scope
+      work_unit_gates:
+        work-unit.spec-synthesis:
+        - gate.spec-baseline-approved
+        work-unit.prototype-design-v2:
+        - gate.product-design-approved
+        work-unit.technical-analysis:
+        - gate.backend-architecture-platform-approved
+        - gate.engineering-contract-approved
+    backend:
+      gates:
+      - gate.plan-approved
+      - gate.spec-baseline-approved
+      - gate.backend-architecture-platform-approved
+      - gate.engineering-contract-approved
+      work_units:
+        work-unit.implementation-repository-preparation: scaffold-choice
+        work-unit.slice-implementation: implementation-scope
+      work_unit_gates:
+        work-unit.spec-synthesis:
+        - gate.spec-baseline-approved
+review_modes:
+  default: self-check
+  schema_ref: .template-spec/process/schemas/governance-evidence.schema.json#/$defs/review
+  independent_required_when:
+  - explicit-user-requirement
+  - known-applicable-external-rule
+  independent_requires:
+  - different-actual-execution-context
+  - verifiable-implementation-and-review-records
+  - same-frozen-candidate-and-scope
+  - readonly-review-result
+  same_account: permitted-unless-external-policy-forbids
+  self_check_never_substitutes:
+  - independent-review
+  - real-user-decision
+  - external-required-review
+  source_truth: native-reader-verifies-records-not-self-declared-names
+  ordinary_unavailable_identity: record-reason-without-blocking
+  no_pre_registration: true
+external_rules_policy:
+  states:
+    none-known: proceed-without-empty-policy-or-extra-confirmation-never-claim-external-approval
+    known-verifiable: consume-current-source-candidate-scope-and-status
+    known-unverifiable: unsatisfied-block-only-dependent-action
+  new_or_changed_rule: recompute-affected-scope
+  technical_completed: does-not-authorize-dependent-external-action-or-business-acceptance
+  platform_protection_changes: not-authorized-by-this-policy
+preparation_policy:
+  work_units:
+  - work-unit.plan-opportunity
+  - work-unit.plan-requirements
+  - work-unit.domain-strategy-design
+  - work-unit.stage-decision
+  - work-unit.spec-synthesis
+  - work-unit.prototype-design-v2
+  - work-unit.technical-analysis
+  - work-unit.technical-design
+  requires:
+  - authorized-preparation-scope
+  - current-input-bindings
+  - applicable-professional-checks
+  - explicit-unresolved-items
+  predecessor_user_approval: not-required-for-draft-preparation
+  unapproved_inputs: draft-only-preserve-status-and-provenance
+  grants_implementation: false
+  forbidden_outputs:
+  - user-approval
+  - ready-for-agent
+  - business-accepted
+  implementation_requires:
+  - current-formed-assets
+  - real-user-decision-or-valid-continuation
+  - approved-current-implementation-contract
+  - all-applicable-checks
+  - authorized-repository-and-write-scope
+  architecture_preparation: unconfirmed-options-may-be-drafted-never-generated-or-implemented
+
+impact_review_matrix:
+  localized_reversible:
+    required: [current-scope, self-check, necessary-verification, rollback]
+    escalation: changed-scope-or-unknown-facts
+  api_or_routine_business:
+    required: [draft, content-review, digest-freeze, implementation, contract-tests]
+    block: missing-input-or-unfrozen-contract-or-digest-drift
+  authorization_breaking_api_or_irreversible_data:
+    required: [impact-analysis, counterexamples, actual-verification, recovery-plan, applicable-user-decision]
+    block: unproven-recovery-or-missing-required-decision
+  cross_repository_or_external_input:
+    required: [trusted-source, known-version, normalized-paths, current-digests, applicable-scope, unresolved-items]
+    block: untrusted-input-or-missing-required-professional-evidence
+  explicit_independence:
+    required: [verifiable-independent-context, frozen-candidate, readonly-review]
+    block: missing-provenance-or-changed-candidate
+  external_rule:
+    policy_ref: .template-spec/process/orchestration/domain/review.yaml#external_rules_policy
+  unknown:
+    action: read-only-investigation-and-formal-entry
+    low_impact_default: forbidden

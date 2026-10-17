@@ -1,16 +1,9 @@
 # owner: harness-orchestrator
-# consumers: lifecycle route/query, current Profile workflows and governance validators
-contract_id: harness-backend-contract-v1
+# Backend engineering boundaries; common evidence policy is domain/review.yaml.
+contract_id: harness-backend-contract-v2
 status: active
-owner: role.harness-orchestrator
+owner: harness-orchestrator
 target_scope: backend-delivery
-orchestrator: role.harness-orchestrator
-roles:
-  - role.architecture-agent
-  - role.backend-agent
-  - role.test-agent
-  - role.requirements-manager
-  - role.product-manager
 states:
   - draft
   - ready-for-review
@@ -54,8 +47,6 @@ technical_design:
     - gateway_boundary
     - persistence_mapping
   no_impact: forbidden-for-backend-delivery
-  owner: role.architecture-agent
-  review_by: role.test-agent
   data_architecture_decision:
     schema_version: 1
     impact_modes:
@@ -99,7 +90,7 @@ technical_design:
     review_requires:
       - approved
       - no-blocking-findings
-      - independent-review-evidence
+      - applicable-review-evidence
     not_applicable_requires:
       - assessment_ref
       - assessment_digest
@@ -107,13 +98,14 @@ technical_design:
       - evidence_refs
     placeholder_assets: forbidden
   approval_gate: gate.engineering-contract-approved
+  review_mode: applicable-review-policy
 slice_contract:
   professional_review:
     required_from_schema_version: 3
     check_id: check.design-reviewed
     stage_id: stage.slice-contract
     subject: current-persisted-compiled-slice-by-id-version-and-raw-digest
-    independence: reviewer-principal-must-differ-from-actual-drafter
+    independence: conditional-on-explicit-user-or-external-rule
     prior_engineering_approval: not-a-slice-review
   id: slice-implementation-contract-v2
   one_contract_per_slice: true
@@ -140,7 +132,7 @@ readiness:
 parallelism:
   test_seam_before_implementation: true
   frontend_backend_parallel_after_contract: false
-  verifier_must_differ_from_worker: true
+  verifier_must_differ_from_worker: false
 gates:
   architecture:
     - gate.backend-architecture-platform-approved
@@ -170,7 +162,6 @@ re_route_on:
   - verification-command-changed
 scaffold_architecture_decision:
   applies_when: backend_scaffold_status_required
-  owner: role.harness-orchestrator
   gate: gate.backend-architecture-platform-approved
   timing: after-impact-and-platform-candidate-resolution-before-ddd-or-mvc-branch-design
   evidence_file: scaffold-architecture-decisions.yaml
@@ -224,3 +215,25 @@ business_input:
   delivery_path_policy_ref: .template-spec/process/orchestration-contract.yaml#request_triage.delivery_path
   analysis_grants_opposite_side_write: false
   terminal_claim: own-side-only
+review_verification:
+  default_mode: self-check
+  independent_when:
+    - explicit-user-requirement
+    - known-external-rule
+  same_account_separate_session: allowed-only-with-verifiable-distinct-context-and-execution
+  names_models_roles_or_runtime_ids: not-independence-proof
+  check_policy_ref: .template-spec/process/orchestration/domain/review.yaml
+  repair_invalidates_affected_review: true
+task_package:
+  schema_version: 3
+  schema_ref: .template-spec/process/schemas/digital-human-task-package.schema.json
+  selection: work-unit-and-actual-impact
+  dispatch: single-executor-default
+  legacy_schema_versions:
+    - 1
+    - 2
+  legacy_access: read-only-original-semantics
+  write_isolation:
+    policy: task-package-policy
+    changed_files_must_be_within_allowed_paths: true
+    shared_workspace_is_not_security_boundary: true
