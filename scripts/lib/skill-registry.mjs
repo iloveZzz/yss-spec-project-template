@@ -1,4 +1,5 @@
 import { existsSync, readFileSync } from './validation-phase.mjs';
+import { readdirSync, statSync } from "node:fs";
 import path from "node:path";
 import { parseDocument } from "../vendor/yaml.mjs";
 import { loadOrchestrationContract } from "./orchestration-contract.mjs";
@@ -747,11 +748,47 @@ export function validateSkillRegistry(registry, { lock, compilerContract, lifecy
   };
 }
 
+// 通用脚本按路径引用的技能不能标栈：`yss init --stack` 会裁掉另一栈的技能，通用脚本随之找不到文件。
+// 下面这些脚本本身就绑定某个栈（Java 脚手架、Vue 治理），可以引用同栈技能；其余脚本引用的标栈技能一律拒绝。
+export const STACK_BOUND_SCRIPTS = Object.freeze([
+  "scripts/lib/backend-platform-provenance.mjs",
+  "scripts/lib/scaffold-reference-example.mjs",
+  "scripts/lib/skill-governance.mjs",
+  "scripts/verify-backend-platform-matrix"
+]);
+
+export function genericScriptSkillReferences(skills, scripts, exempt = STACK_BOUND_SCRIPTS) {
+  const stackOf = new Map(skills.filter((skill) => skill.stack).map((skill) => [skill.id, skill.stack]));
+  const found = [];
+  for (const [file, text] of Object.entries(scripts)) {
+    if (exempt.includes(file)) continue;
+    for (const match of text.matchAll(/\.agents\/skills\/(yss-[a-z0-9-]+)\//g)) {
+      if (stackOf.has(match[1]) && !found.some((hit) => hit.file === file && hit.skill === match[1])) found.push({ file, skill: match[1], stack: stackOf.get(match[1]) });
+    }
+  }
+  return found;
+}
+
+function genericScriptTexts(root) {
+  const scripts = {};
+  const add = (dir, filter) => {
+    for (const name of readdirSync(path.join(root, dir))) {
+      const rel = `${dir}/${name}`;
+      if (statSync(path.join(root, rel)).isFile() && filter(name)) scripts[rel] = readFileSync(path.join(root, rel), "utf8");
+    }
+  };
+  add("scripts", () => true);
+  add("scripts/lib", (name) => name.endsWith(".mjs"));
+  return scripts;
+}
+
 export function validateDefaultSkillRegistry() {
   const registry = loadSkillRegistry();
   const lock = JSON.parse(readFileSync(LOCK_PATH, "utf8"));
   const backendPlatforms = JSON.parse(readFileSync(BACKEND_PLATFORMS, "utf8"));
   const compilerContract = yamlFromFile(COMPILER_CONTRACT, "实现合同编译器合同");
+  const stacked = genericScriptSkillReferences(registry.skills, genericScriptTexts(ROOT));
+  if (stacked.length) fail(`通用脚本引用了标栈技能，按栈裁剪后会找不到文件，应去掉 stack：${stacked.map((hit) => `${hit.skill}（${hit.stack}）← ${hit.file}`).join("；")}`);
   return validateSkillRegistry(registry, {
     lock,
     backendPlatforms,
