@@ -2,6 +2,22 @@
 
 本文记录已退役技能入口的迁移路径。退役技能不保留物理目录、投影或 lock 条目；本文件是历史名称的唯一持久兼容说明。
 
+## 前端技能整线退役（2026-10-17）
+
+前端实现改由独立的前端规格与 CLI 维护，本模板不再分发、路由或校验前端实现技能。以下入口已硬退役，不保留运行时 alias、物理目录、投影、Registry 条目或 lock 条目：
+
+- `yss-ui`、`yss-ui-business-page-generation`、`yss-hook`、`yss-api-integration`（含旧 alias `api-integration`）、`theme-token-usage`、`file-export-download`。
+- `yss-formily`、`yss-formily-schema-generator`、`formily-foundation`、`formily-linkage-effects`、`formily-mode-slot-detail`、`formily-step-flow`。
+- `ytable-usage`、`ytree-usage`、`yedit-table-usage`。
+- `yss-frontend-scaffold-generator`（含 `scaffold.frontend-vue3` 能力与 `frontend.vue3-scaffold` recipe）、`frontend-commit`。
+
+同时移除：`iloveZzz/yss-ui` 上游清单 `.agents/skills/.yss-skills-manifest.json`、`.agents/rules/yss-ai-skills.md`、YSS UI MCP 项目配置（`.agents/mcp_config.json`、`.cursor/mcp.json`、`.vscode/mcp.json`）与接入指南、`work-unit.slice-implementation` 的 `frontend_route`。`role.frontend-engineer` 保留为 OpenAPI 客户端适配与原型可行性的会签角色，不再携带前端实现技能。
+
+- 新请求命中旧 ID 返回 `skill-retired`；前端实现到独立的前端规格与 CLI 中进行。
+- 设计阶段技能 `yss-design-system`、`yss-prototype-stage`、`prototype-review` 保留，原型阶段不得调用生产组件库。
+- 已有实例升级时，`yss sync` 从安装选择中移除这些已退役技能，不因目标 Bundle 缺少它们而失败；本地已有的技能文件按 retired-preserved 原样保留，由使用者自行决定是否删除。
+- 已有的 `frontend-yss-vue3` 脚手架合同与前端脚手架验证文件原样保留，但 `yss` 不再校验通过（`SCAFFOLD_CONTRACT` / `CAPABILITY` 明确拒绝）；实现仓准备中 frontend 只能声明 `not-applicable`。
+
 ## 恢复 `.claude/skills` 投影（2026-10-16）
 
 Claude Code 只从 `.claude/skills/<名称>/SKILL.md` 发现项目技能，不读取 `.agents/skills`，也没有设置项可追加技能目录（见 Claude Code Skills 文档）。因此 spec Profile 重新登记唯一投影根 `.claude/skills`：模板源提交指向 `.agents/skills/<名称>` 的相对符号链接，Bundle 构建时展开为副本分发到实例；注册表 `runtimes: [claude]`，锁的 `projectionRoots` 与各技能 `targets` 同步。`.codex/skills`、`.cursor/skills`、`.pi/skills` 仍不恢复，这些运行时直接读取 `.agents/skills`。design、backend Profile 的投影另行恢复。

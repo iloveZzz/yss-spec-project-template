@@ -1,6 +1,6 @@
 ---
 name: git-commit-core
-description: Internal shared commit safety and message contract consumed by frontend-commit and java-backend-commit.
+description: Internal shared commit safety and message contract consumed by java-backend-commit.
 disable-model-invocation: true
 ---
 

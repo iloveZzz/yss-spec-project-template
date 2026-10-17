@@ -14,7 +14,7 @@
 2. 普通任务绑定的适用 YSS 技能；正式切片再取 Slice Implementation Contract 的 `required_skills`。读取对应 `.agents/skills/<id>/SKILL.md` 及其按影响指明的 references，已读且当前资料不重复整读。
 3. 影响面专项检查输入（与合同并集，不得互相替代）：
    - 后端：`alibaba-java-code-style`、`yss-domain`、`yss-application`、`yss-repository`、`yss-mybatis`、`yss-web-controller`、`yss-dto`、`mapstruct`、`lombok`
-   - UI：`yss-ui`、`yss-design-system`、`yss-ui-business-page-generation`
+   - UI：`yss-design-system`（前端实现规范由独立前端规格维护，不在本模板）
 4. 普通任务的专项检查结论，或正式报告模板中的后端 / 前端门禁表。适用覆盖缺失视为 `missing_evidence`。
 
 YSS 页面模块约定（YTable、YFormily、页面骨架等）走 Standards，不并入 UI fidelity。UI fidelity 只核原型与状态矩阵。

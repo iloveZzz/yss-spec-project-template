@@ -41,7 +41,7 @@
 
 Codex `$design-qa` 的 Colors/tokens 与 Fonts/typography 对照必须以根 `DESIGN.md` 为 source visual truth，并用 `.template-spec/design/tokens/*` 复核实际投影；不得回退到上游默认或历史品牌值。执行清单见 `.agents/skills/yss-design-system/references/design-qa-theme.md`。
 
-高保真 H1/H2 优先使用 `vue-shadcn-prebuilt`，`react-shadcn-prebuilt` 仅历史只读，轻量局部修改可保留 `html-css-js`；二者以本地 Token CSS 保留 YSS 企业后台视觉语言。React AntD 原型生成路线已退役。生产实现只在目标工程按 lockfile 核验组件 API；原型阶段不调用 `yss-ui`。已有项目中冻结的组件库原型及其事实证据保持只读；模板不再预置 Antdv Next fact pack，也不生成新的 Provider 事实包。
+高保真 H1/H2 优先使用 `vue-shadcn-prebuilt`，`react-shadcn-prebuilt` 仅历史只读，轻量局部修改可保留 `html-css-js`；二者以本地 Token CSS 保留 YSS 企业后台视觉语言。React AntD 原型生成路线已退役。生产实现只在目标工程按 lockfile 核验组件 API；原型阶段不调用生产组件库。已有项目中冻结的组件库原型及其事实证据保持只读；模板不再预置 Antdv Next fact pack，也不生成新的 Provider 事实包。
 
 ### HTML 与生产主题的映射
 
@@ -210,7 +210,7 @@ Margin 使用规则：组件自身默认不声明外部 margin，兄弟元素之
 | H2 `flow-review` | 主流程、权限、失败恢复、复杂联动和冲突 | 浏览器可运行流程；主要使用 shadcn-vue 预构建离线资源包，场景可重复触发和重置 | H1 共同证据 + 主流程、关键异常、zoom/reduced-motion；视觉回归按风险 |
 
 - H1 不得为了“显得完整”创建空 `package.json`、lockfile 或空组件证据。H2 不得声明真实目标组件已验证。
-- 原型中识别出的生产组件假设与待验行为写入 `implementation_handoff`，由 `frontend_implementation_plan` 和 `frontend_implementation_verification` 承接；不得在原型阶段引入 `yss-ui`、目标 lockfile 或 Storybook。
+- 原型中识别出的生产组件假设与待验行为写入 `implementation_handoff`，交给独立维护的前端规格与 CLI 承接；不得在原型阶段引入生产组件库、目标 lockfile 或 Storybook。
 - 新视觉方向、信息架构不确定或有多个合理方案时执行三方案 ideation；复用已批准视觉模式时记录 source visual 与 `not-applicable` 理由。
 - 新原型默认使用根 `DESIGN.md` 的 compact 命名变体，comfortable 可显式选择；页面 padding、gap、Card 圆角、Card padding 和控件高度必须在浏览器计算样式中可复核。
 - Design QA、浏览器验证和视觉目标使用同一视口与同一状态；默认 desktop `1440×900`、narrow `390×844`。

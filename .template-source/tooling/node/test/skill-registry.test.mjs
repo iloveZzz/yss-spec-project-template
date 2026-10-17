@@ -76,7 +76,7 @@ test("unknown layer is rejected", () => {
 
 test("stack grouping is an explicit list and cross-stack context edges must declare stacks", () => {
   const data = registry();
-  assert.equal(data.skills.find((skill) => skill.id === "theme-token-usage").stack, "vue");
+  assert.equal(data.skills.some((skill) => skill.stack === "vue"), false);
   assert.equal(data.skills.find((skill) => skill.id === "yss-backend-spec-review").stack, "java");
   assert.equal(data.skills.find((skill) => skill.id === "yss-design-system").stack, undefined);
   const withSkill = (id, patch) => ({ ...data, skills: data.skills.map((skill) => skill.id === id ? { ...skill, ...patch } : skill) });
@@ -84,7 +84,8 @@ test("stack grouping is an explicit list and cross-stack context edges must decl
   const edges = (rows) => ({ ...data, skill_dependencies: { ...data.skill_dependencies, "code-review": rows } });
   const undeclared = data.skill_dependencies["code-review"].map(({ stacks, ...edge }) => edge);
   assert.throws(() => validateSkillRegistry(edges(undeclared)), /须声明 stacks: \[java\]/);
-  assert.throws(() => validateSkillRegistry(edges([{ skill: "yss-ui", type: "context-required" }])), /不得 context-required 依赖 vue 栈/);
+  const vueData = withSkill("yss-design-system", { stack: "vue" });
+  assert.throws(() => validateSkillRegistry({ ...vueData, skill_dependencies: { ...vueData.skill_dependencies, "code-review": [{ skill: "yss-design-system", type: "context-required" }] } }), /不得 context-required 依赖 vue 栈/);
   assert.throws(() => validateSkillRegistry(edges([{ skill: "tdd", type: "review-only", stacks: ["java"] }])), /只用于 context-conditional/);
 });
 
@@ -102,7 +103,7 @@ test("shadow registry cannot be marked as runtime consumed", () => {
 
 test("alias that collides with another id is rejected", () => {
   const data = registry();
-  data.skills = data.skills.map((skill) => skill.id === "yss-api-integration" ? { ...skill, aliases: ["tdd"] } : skill);
+  data.skills = data.skills.map((skill) => skill.id === "yss-dto" ? { ...skill, aliases: ["tdd"] } : skill);
   assert.throws(() => validateSkillRegistry(data), /alias 冲突/);
 });
 
@@ -217,11 +218,11 @@ test("prototype design route requires independent prototype-review", () => {
 
 test("deprecated skills require migration and cleanup metadata", () => {
   const data = registry();
-  data.skills = data.skills.map((skill) => skill.id === "yss-api-integration"
+  data.skills = data.skills.map((skill) => skill.id === "yss-excel-mvc"
     ? {
         ...skill,
         maturity: "deprecated",
-        replacement_skill: "yss-ui-business-page-generation",
+        replacement_skill: "yss-dto",
         deprecation: { new_use: "forbidden", remove_after: "2026-12-31" }
       }
     : skill);
@@ -262,8 +263,8 @@ function findingDisposition(overrides = {}) {
 function codeReviewRoute(overrides = {}) {
   return {
     primary_skill: "code-review",
-    supporting_skills: ["alibaba-java-code-style", "yss-ui", "yss-design-system", "yss-ui-business-page-generation", "yss-domain", "yss-application", "yss-repository", "yss-mybatis", "yss-web-controller", "yss-dto", "mapstruct", "lombok"],
-    skills: ["code-review", "alibaba-java-code-style", "yss-ui", "yss-design-system", "yss-ui-business-page-generation", "yss-domain", "yss-application", "yss-repository", "yss-mybatis", "yss-web-controller", "yss-dto", "mapstruct", "lombok"],
+    supporting_skills: ["alibaba-java-code-style", "yss-design-system", "yss-domain", "yss-application", "yss-repository", "yss-mybatis", "yss-web-controller", "yss-dto", "mapstruct", "lombok"],
+    skills: ["code-review", "alibaba-java-code-style", "yss-design-system", "yss-domain", "yss-application", "yss-repository", "yss-mybatis", "yss-web-controller", "yss-dto", "mapstruct", "lombok"],
     applies_when: "implementation_candidate_exists",
     not_applicable_reason: "no_implementation_candidate",
     review_standards_route: {
@@ -285,7 +286,7 @@ function codeReviewRoute(overrides = {}) {
       },
       conditional_skills: {
         backend_impact: ["alibaba-java-code-style", "yss-domain", "yss-application", "yss-repository", "yss-mybatis", "yss-web-controller", "yss-dto", "mapstruct", "lombok"],
-        ui_impact: ["yss-ui", "yss-design-system", "yss-ui-business-page-generation"]
+        ui_impact: ["yss-design-system"]
       },
       not_applicable_reasons: {
         backend_impact: "no_backend_impact",
@@ -316,7 +317,7 @@ test("code-review route without review_standards_route is rejected", () => {
 
 test("code-review route cannot replace the unique default review skill", () => {
   const data = registry();
-  const route = codeReviewRoute({ primary_skill: "yss-ui" });
+  const route = codeReviewRoute({ primary_skill: "yss-design-system" });
   assert.throws(() => validateSkillRegistry(data, {
     lifecycleContract: { work_unit_routes: { "work-unit.code-review": route } }
   }), /唯一默认审查技能/);
@@ -383,25 +384,19 @@ test("review_input without finding disposition completion flags is rejected", ()
   }), /finding_disposition_required/);
 });
 
-test("frontend conditional routes require registered skills", () => {
+test("retired frontend_route is rejected on lifecycle routes", () => {
   const data = registry();
   const route = {
-    primary_skill: "yss-ui",
+    primary_skill: "tdd",
     supporting_skills: [],
-    skills: ["yss-ui"],
+    skills: ["tdd"],
     applies_when: "ready_for_agent",
     not_applicable_reason: "not_ready",
-    frontend_route: {
-      primary_skill: "yss-ui",
-      page_generation_skill: "yss-ui-business-page-generation",
-      page_orchestration_skill: "yss-ui-business-page-generation",
-      conditional_skills: { api_impact: ["missing-api-skill"] },
-      not_applicable_reasons: { api_impact: "no_api_impact" }
-    }
+    frontend_route: { primary_skill: "tdd", conditional_skills: {} }
   };
   assert.throws(() => validateSkillRegistry(data, {
     lifecycleContract: { work_unit_routes: { "work-unit.slice-implementation": route } }
-  }), /前端条件路由引用了未登记技能/);
+  }), /frontend_route 已随前端技能退役/);
 });
 
 

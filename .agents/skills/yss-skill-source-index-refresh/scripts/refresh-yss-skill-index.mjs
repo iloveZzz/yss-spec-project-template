@@ -54,21 +54,6 @@ export function backendPlatformIndexPath(skillsRoot, skill, platformLine) {
   return path.join(skillsRoot, skill, "references", `source-index.${platformLine}.md`);
 }
 
-const FRONTEND = {
-  "yss-ui": ["components", "hooks", "skills"],
-  "yss-hook": ["hooks"],
-  "yss-ui-business-page-generation": ["components", "hooks", "skills"],
-  "ytable-usage": ["hooks"],
-  "yedit-table-usage": ["hooks"],
-  "ytree-usage": ["hooks"],
-};
-
-const URLS = {
-  components: "http://192.168.164.27:3200/components",
-  hooks: "http://192.168.164.27:3200/hooks",
-  skills: "http://192.168.164.27:3200/skills",
-};
-
 const KEYS = [
   "Audit", "Cache", "Clear", "Command", "Configuration", "Controller", "DTO", "Data", "Enable", "Excel",
   "Handler", "Interceptor", "Jdbc", "Mapper", "Mybatis", "Page", "Properties", "Query", "Repository", "Request",
@@ -507,7 +492,6 @@ export async function refresh({
   skillsRoot,
   sources,
   now = new Date().toISOString(),
-  frontend = true,
   backendSkills = Object.keys(BACKEND),
   stateResolver = sourceState,
 }) {
@@ -544,26 +528,7 @@ export async function refresh({
     ].join("\n"), "utf8");
   }
 
-  if (frontend) {
-    for (const [skill, keys] of Object.entries(FRONTEND)) {
-      if (!await exists(path.join(skillsRoot, skill))) continue;
-      const target = path.join(skillsRoot, skill, "references", "frontend-docs.md");
-      await mkdir(path.dirname(target), { recursive: true });
-      await writeFile(target, [
-        `# ${skill} Frontend Documentation`,
-        "",
-        `Generated: ${now}`,
-        "",
-        "Use these YSS UI documentation entry points as authoritative references when local repo examples are insufficient.",
-        "",
-        ...keys.map((key) => `- ${key}: ${URLS[key]}`),
-        "",
-        "When documentation and local code differ, inspect the current project code before editing and prefer established local usage.",
-        "",
-      ].join("\n"), "utf8");
-    }
-  }
-  return { backend: backendSkills.length, backendTracks: backendSkills.length * sourceEntries.length, frontend: frontend ? Object.keys(FRONTEND).length : 0 };
+  return { backend: backendSkills.length, backendTracks: backendSkills.length * sourceEntries.length };
 }
 
 async function main() {
@@ -572,12 +537,11 @@ async function main() {
     const result = await refresh({
       skillsRoot: path.resolve(process.env.YSS_SKILLS_ROOT || path.join(script, "../..")),
       sources: await configuredSourceRoots(),
-      frontend: !["0", "false", "no"].includes((process.env.YSS_REFRESH_FRONTEND || "true").toLowerCase()),
       backendSkills: process.env.YSS_REFRESH_BACKEND_SKILLS
         ? process.env.YSS_REFRESH_BACKEND_SKILLS.split(",").map((skill) => skill.trim()).filter(Boolean)
         : Object.keys(BACKEND),
     });
-    console.log(`Updated ${result.backendTracks} backend platform indexes for ${result.backend} skills and ${result.frontend} frontend doc references.`);
+    console.log(`Updated ${result.backendTracks} backend platform indexes for ${result.backend} skills.`);
   } catch (error) {
     console.error(error.message);
     process.exitCode = 1;

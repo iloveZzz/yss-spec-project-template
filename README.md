@@ -35,7 +35,7 @@ English overview: [README.en.md](README.en.md).
 
 YSS skills 的公开发布投影维护在 [iloveZzz/yss-spec-dev-skills](https://github.com/iloveZzz/yss-spec-dev-skills)，发布清单和导出命令见 [skills 维护说明](./.template-source/agents/skills-maintenance.md)。
 
-YSS UI 组件知识同时通过项目级 MCP 配置提供；支持的客户端、Codex 全局安装和自检方法见 [YSS UI MCP 接入](./.template-spec/user-guide/yss-ui-mcp.md)。
+前端实现技能（YSS UI、Formily、表格/树组件、前端脚手架等）已从本模板退役，改由独立的前端规格与 CLI 维护；退役 ID 与迁移说明见 [技能迁移说明](./.template-spec/agents/skill-migrations.md)。
 
 ## 模板初始化 CLI
 
@@ -100,7 +100,6 @@ PR 执行 `scripts/verify-template-fast --base <完整 SHA>`；显式 main 集�
 | [.template-spec/process/implementation-repo-integration.md](./.template-spec/process/implementation-repo-integration.md) | 外部前端 / 后端实现仓库接入与跨仓库切片绑定 |
 | [.template-spec/agents/README.md](./.template-spec/agents/README.md) | Agent 协作文档目录说明 |
 | [.template-source/agents/skills-maintenance.md](./.template-source/agents/skills-maintenance.md) | Agent skills 安装与维护 |
-| [.template-spec/user-guide/yss-ui-mcp.md](./.template-spec/user-guide/yss-ui-mcp.md) | YSS UI MCP 项目配置、全局安装边界与自检 |
 | [.template-spec/architecture/README.md](./.template-spec/architecture/README.md) | 架构设计 + 审查清单 |
 
 ## 核心模板

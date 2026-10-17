@@ -48,7 +48,6 @@
 | `component.gateway-resilience` | `yss-resilience4j` | `guidance`, `integration`, `slice-implementation`, `troubleshooting`, `component-maintenance`, `review-input` |
 | `scaffold.ddd` | `yss-ddd-scaffold-generator` | `integration`, `component-maintenance` |
 | `scaffold.layered-mvc` | `yss-layered-mvc-scaffold-generator` | `integration`, `component-maintenance` |
-| `scaffold.frontend-vue3` | `yss-frontend-scaffold-generator` | `integration`, `component-maintenance` |
 | `migration.springboot3` | `yss-up-springboot3` | `guidance`, `integration`, `troubleshooting`, `component-maintenance`, `review-input` |
 
 ## Narrow Recipes
@@ -73,7 +72,6 @@
 | `backend.distributed-id` | `component.distributed-id` |
 | `backend.ddd-scaffold` | `scaffold.ddd`, `quality.java-code-style` |
 | `backend.mvc-scaffold` | `scaffold.layered-mvc`, `quality.java-code-style` |
-| `frontend.vue3-scaffold` | `scaffold.frontend-vue3` |
 | `backend.springboot3-migration` | `migration.springboot3`, `quality.java-code-style` |
 
 ## Impact Entry Mapping
@@ -104,7 +102,6 @@
 
 | Skill | Dependency | Type | Condition |
 | --- | --- | --- | --- |
-| `frontend-commit` | `git-commit-core` | `context-required` | — |
 | `java-backend-commit` | `git-commit-core` | `context-required` | — |
 | `yss-backend-spec-review` | `alibaba-java-code-style` | `context-required` | — |
 | `yss-backend-spec-review` | `yss-implementation-contract-compiler` | `coordination-only` | — |
@@ -154,12 +151,3 @@
 | `yss-validation` | `yss-exception` | `component-dependency` | — |
 | `yss-security-algorithm` | `yss-exception` | `component-dependency` | — |
 | `yss-exception` | `yss-dto` | `context-required` | — |
-| `yss-ui-business-page-generation` | `yss-ui` | `context-required` | — |
-| `yss-ui-business-page-generation` | `yss-hook` | `context-conditional` | `hooks` |
-| `yss-ui-business-page-generation` | `yss-formily` | `context-conditional` | `form` |
-| `yss-ui-business-page-generation` | `yss-api-integration` | `context-conditional` | `api` |
-| `yss-formily` | `formily-foundation` | `context-required` | — |
-| `yss-formily` | `formily-linkage-effects` | `context-conditional` | `formily-linkage` |
-| `yss-formily` | `formily-mode-slot-detail` | `context-conditional` | `formily-mode-detail` |
-| `yss-formily` | `formily-step-flow` | `context-conditional` | `formily-step-flow` |
-| `yss-api-integration` | `yss-openapi-governance` | `context-conditional` | `regeneration` |

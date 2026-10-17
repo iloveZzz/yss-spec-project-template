@@ -46,7 +46,7 @@ API lint/compatibility/review/Freeze 绑定独立 `api_digest`，实现测试/�
    - 记录 YAML SHA-256、JSON SHA-256、OAS 版本、Redocly CLI 版本与 lockfile 引用、完整命令、metafile、`$ref` 例外以及结果。
 
 5. **交给下游前端**
-   - 仅当 Freeze、JSON 派生记录和 JSON 校验均通过时，才把派生 JSON 交给 `yss-api-integration` 与目标前端实现仓库。
+   - 仅当 Freeze、JSON 派生记录和 JSON 校验均通过时，才把派生 JSON 交给独立前端规格与目标前端实现仓库。
    - JSON 的治理产物位于配置的功能包根（示例 `.work/<feature>/api/<feature>.json`）。跨仓库时只能由批准的 Cross-repo 子合同或项目脚本将同一字节内容物化为 `<frontend>/openapi/openapi.json`，并记录两端相同的 SHA-256 与交接路径。
    - 本模板不读取、修改或验证目标前端项目的客户端生成配置，不执行客户端生成，也不把生成动作加入 CI；目标前端项目在需要时手动运行其既有代码生成命令。
    - 接口调整回写 YAML，而不是编辑 JSON 或生成的 TypeScript。

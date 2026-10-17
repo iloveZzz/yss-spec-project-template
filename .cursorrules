@@ -4,5 +4,4 @@
 `.template-spec/agents/yss-skill-registry.yaml` 为准；`.agents/skills` 是共享技能权威内容，
 Codex、Cursor、Pi 直接读取它；Claude Code 只读 `.claude/skills`，那里是由 `scripts/sync-skills` 生成的链接，不得手工修改。
 
-生产 UI 实现先消费当前 Slice Implementation Contract，再进入 `yss-ui` 和命中的 canonical skill；
-完整业务页面使用 `yss-ui-business-page-generation`。原型阶段使用 `yss-prototype-stage`，不得调用 `yss-ui`。
+原型阶段使用 `yss-prototype-stage`，不得调用生产组件库。前端实现技能已从本模板退役，由独立的前端规格与 CLI 维护。

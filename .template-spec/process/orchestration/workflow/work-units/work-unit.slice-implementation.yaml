@@ -9,8 +9,6 @@ work_unit_routes:
     primary_skill: yss-implementation-contract-compiler
     supporting_skills:
       - tdd
-      - yss-ui
-      - yss-ui-business-page-generation
     compatibility:
       source: mattpocock/skills
       skill: implement
@@ -19,33 +17,6 @@ work_unit_routes:
     skills:
       - tdd
       - yss-implementation-contract-compiler
-      - yss-ui
-      - yss-ui-business-page-generation
-    frontend_route:
-      primary_skill: yss-ui
-      page_generation_skill: yss-ui-business-page-generation
-      page_orchestration_skill: yss-ui-business-page-generation
-      conditional_skills:
-        api_impact:
-          - yss-api-integration
-        formily_impact:
-          - yss-formily
-        table_impact:
-          - ytable-usage
-          - yedit-table-usage
-        tree_impact:
-          - ytree-usage
-        export_impact:
-          - file-export-download
-        theme_impact:
-          - theme-token-usage
-      not_applicable_reasons:
-        api_impact: no_api_impact
-        formily_impact: no_formily_impact
-        table_impact: no_table_impact
-        tree_impact: no_tree_impact
-        export_impact: no_export_impact
-        theme_impact: no_theme_impact
     applies_when: ready_for_agent
     not_applicable_reason: slice_contract_not_approved
     requires_completed_work_units:

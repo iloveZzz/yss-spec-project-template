@@ -164,7 +164,6 @@ capabilities:
   - { id: component.gateway-resilience, primary_skill: yss-resilience4j, provider: { kind: yss-component, binding_id: component.gateway-resilience }, task_modes: [guidance, integration, slice-implementation, troubleshooting, component-maintenance, review-input] }
   - { id: scaffold.ddd, primary_skill: yss-ddd-scaffold-generator, provider: { kind: none }, task_modes: [integration, component-maintenance] }
   - { id: scaffold.layered-mvc, primary_skill: yss-layered-mvc-scaffold-generator, provider: { kind: none }, task_modes: [integration, component-maintenance] }
-  - { id: scaffold.frontend-vue3, primary_skill: yss-frontend-scaffold-generator, provider: { kind: none }, task_modes: [integration, component-maintenance] }
   - { id: migration.springboot3, primary_skill: yss-up-springboot3, provider: { kind: none }, task_modes: [guidance, integration, troubleshooting, component-maintenance, review-input] }
 recipes:
   - { id: backend.spec-conformance, capabilities: [governance.backend-spec-conformance, quality.java-code-style] }
@@ -186,11 +185,8 @@ recipes:
   - { id: backend.distributed-id, capabilities: [component.distributed-id] }
   - { id: backend.ddd-scaffold, capabilities: [scaffold.ddd, quality.java-code-style] }
   - { id: backend.mvc-scaffold, capabilities: [scaffold.layered-mvc, quality.java-code-style] }
-  - { id: frontend.vue3-scaffold, capabilities: [scaffold.frontend-vue3] }
   - { id: backend.springboot3-migration, capabilities: [migration.springboot3, quality.java-code-style] }
 skill_dependencies:
-  frontend-commit:
-    - { skill: git-commit-core, type: context-required }
   java-backend-commit:
     - { skill: git-commit-core, type: context-required }
   yss-backend-spec-review:
@@ -264,18 +260,6 @@ skill_dependencies:
     - { skill: yss-exception, type: component-dependency }
   yss-exception:
     - { skill: yss-dto, type: context-required }
-  yss-ui-business-page-generation:
-    - { skill: yss-ui, type: context-required }
-    - { skill: yss-hook, type: context-conditional, when: hooks }
-    - { skill: yss-formily, type: context-conditional, when: form }
-    - { skill: yss-api-integration, type: context-conditional, when: api }
-  yss-formily:
-    - { skill: formily-foundation, type: context-required }
-    - { skill: formily-linkage-effects, type: context-conditional, when: formily-linkage }
-    - { skill: formily-mode-slot-detail, type: context-conditional, when: formily-mode-detail }
-    - { skill: formily-step-flow, type: context-conditional, when: formily-step-flow }
-  yss-api-integration:
-    - { skill: yss-openapi-governance, type: context-conditional, when: regeneration }
 invocation_contract:
   schema_version: 2
   runtime_metadata_version: 1
@@ -323,11 +307,6 @@ invocation_contract:
       trigger_conditions: [public-commit-entry-dependency]
       exclusion_conditions: [standalone-task-selection]
       primary_output: internal-commit-contract
-    frontend-commit:
-      invocation_mode: user
-      trigger_conditions: [frontend-commit-assistance]
-      exclusion_conditions: [no-commit-related-request]
-      primary_output: frontend-commit-guidance
     java-backend-commit:
       invocation_mode: user
       trigger_conditions: [backend-commit-assistance]
@@ -573,13 +552,6 @@ skills:
     instance_default_discoverable: false
     aliases: []
     impacts: [writing]
-  - id: yss-api-integration
-    layer: specialist
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: [api-integration]
-    impacts: [frontend, api]
-    stack: vue
   - id: yss-audit-log
     layer: specialist
     maturity: supported
@@ -670,34 +642,6 @@ skills:
     aliases: []
     impacts: [backend]
     stack: java
-  - id: yss-formily
-    layer: specialist
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [frontend]
-    stack: vue
-  - id: yss-formily-schema-generator
-    layer: specialist
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [frontend]
-    stack: vue
-  - id: yss-frontend-scaffold-generator
-    layer: specialist
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [frontend]
-    stack: vue
-  - id: yss-hook
-    layer: specialist
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [frontend]
-    stack: vue
   - id: yss-mybatis
     layer: specialist
     maturity: supported
@@ -768,20 +712,6 @@ skills:
     instance_default_discoverable: false
     aliases: []
     impacts: [template-maintenance]
-  - id: yss-ui
-    layer: specialist
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [frontend]
-    stack: vue
-  - id: yss-ui-business-page-generation
-    layer: specialist
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [frontend]
-    stack: vue
   - id: yss-up-springboot3
     layer: specialist
     maturity: supported
@@ -817,48 +747,7 @@ skills:
     aliases: []
     impacts: [backend, api]
     stack: java
-  - id: file-export-download
-    layer: specialist
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [frontend, api]
-    stack: vue
-  - id: formily-foundation
-    layer: specialist
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [frontend]
-    stack: vue
-  - id: formily-linkage-effects
-    layer: specialist
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [frontend]
-    stack: vue
-  - id: formily-mode-slot-detail
-    layer: specialist
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [frontend]
-    stack: vue
-  - id: formily-step-flow
-    layer: specialist
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [frontend]
-    stack: vue
   - id: git-commit-core
-    layer: maintainer-only
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [template-maintenance]
-  - id: frontend-commit
     layer: maintainer-only
     maturity: supported
     instance_default_discoverable: false
@@ -870,33 +759,5 @@ skills:
     instance_default_discoverable: false
     aliases: []
     impacts: [template-maintenance]
-  - id: theme-token-usage
-    layer: specialist
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [frontend, prototype]
-    stack: vue
-  - id: yedit-table-usage
-    layer: specialist
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [frontend]
-    stack: vue
-  - id: ytable-usage
-    layer: specialist
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [frontend]
-    stack: vue
-  - id: ytree-usage
-    layer: specialist
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [frontend]
-    stack: vue
 platform_skills: []
 external_skills: []

@@ -11,13 +11,11 @@ work_unit_routes:
       - yss-implementation-contract-compiler
       - yss-ddd-scaffold-generator
       - yss-layered-mvc-scaffold-generator
-      - yss-frontend-scaffold-generator
     skills:
       - implementation-repo-onboarding
       - yss-implementation-contract-compiler
       - yss-ddd-scaffold-generator
       - yss-layered-mvc-scaffold-generator
-      - yss-frontend-scaffold-generator
     applies_when: before_ticket_formalization
     not_applicable_reason: no_frontend_or_backend_delivery_impact
     decision_boundary: scaffold-choice

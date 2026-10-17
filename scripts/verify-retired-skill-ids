@@ -43,6 +43,23 @@ const retired = [
   "yss-page-module-development",
   "yss-router",
   "yss-source-index",
+  "file-export-download",
+  "formily-foundation",
+  "formily-linkage-effects",
+  "formily-mode-slot-detail",
+  "formily-step-flow",
+  "frontend-commit",
+  "theme-token-usage",
+  "yedit-table-usage",
+  "yss-api-integration",
+  "yss-formily",
+  "yss-formily-schema-generator",
+  "yss-frontend-scaffold-generator",
+  "yss-hook",
+  "yss-ui",
+  "yss-ui-business-page-generation",
+  "ytable-usage",
+  "ytree-usage",
 ];
 const allowed = (relative, line) => relative === ".template-spec/agents/skill-migrations.md"
   || relative === ".template-source/profile-skill-sync.json"

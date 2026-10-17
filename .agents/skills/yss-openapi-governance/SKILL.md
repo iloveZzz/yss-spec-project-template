@@ -42,7 +42,7 @@ YSS DTO 的可复用 HTTP/JSON 映射由 `.agents/skills/yss-dto/references/open
 不使用本 skill 来替代：
 
 - `yss-openapi-draft-review`：独立、fail-closed 的语义评审与 P0 追踪。
-- `yss-api-integration`：消费已派生的 JSON，并在目标前端实现仓库中接入既有客户端生成流程。
+- 前端客户端接入：由独立的前端规格与 CLI 消费已派生的 JSON，不在本模板。
 - `to-tickets`：在 Freeze 后正式化垂直切片。
 
 ## 受控工具链

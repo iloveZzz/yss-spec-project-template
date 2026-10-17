@@ -9,7 +9,7 @@ Review a pinned candidate: all applicable axes initially, then affected conclusi
 
 - **Standards** — does the code conform to this repo's documented coding standards **and**, for YSS slices, the specialist check inputs compiled in [yss-review-standards.md](references/yss-review-standards.md)?
 - **Spec** — does the code faithfully implement the originating issue / spec?
-- **UI fidelity** (only when the change has UI impact) — does the candidate match the daily task's confirmed acceptance/current visual baseline, or the governed prototype, and `yss-design-system` / `yss-ui`? Type-check or claiming "already aligned" is not a pass. Invoke those skills' verification notes; do not collapse this axis into Standards or Spec. YSS page-module conventions stay on Standards.
+- **UI fidelity** (only when the change has UI impact) — does the candidate match the daily task's confirmed acceptance/current visual baseline, or the governed prototype, and `yss-design-system`? Type-check or claiming "already aligned" is not a pass. Invoke those skills' verification notes; do not collapse this axis into Standards or Spec. YSS page-module conventions stay on Standards.
 
 普通功能默认由一名与实现者独立的审查者完成 Standards、Spec 和适用的 UI fidelity 检查，分别报告结论。只有专业能力缺口、结论冲突、明确外部制度或用户指定时，才拆成多个审查者；多个无依赖审查可以并行。检查轴不等于会签人数，不能要求用户为每个轴重复确认。
 
@@ -40,7 +40,7 @@ Look for the originating spec, in this order:
 
 ### 3. Identify the standards sources
 
-Compile sources **before** review. For YSS implementation candidates follow [yss-review-standards.md](references/yss-review-standards.md): run machine checks that exist in the implementation repo; then collect repo docs (`CODING_STANDARDS.md` / `CONTRIBUTING.md` if present) and impact-conditioned specialist inputs (`alibaba-java-code-style`, `yss-ui`, `yss-domain`, …). Daily work uses the skills and engineering baseline bound by its task; governed slices also consume every Slice `required_skills` file and the formal review template. Missing applicable coverage is `missing_evidence`, not a pass.
+Compile sources **before** review. For YSS implementation candidates follow [yss-review-standards.md](references/yss-review-standards.md): run machine checks that exist in the implementation repo; then collect repo docs (`CODING_STANDARDS.md` / `CONTRIBUTING.md` if present) and impact-conditioned specialist inputs (`alibaba-java-code-style`, `yss-design-system`, `yss-domain`, …). Daily work uses the skills and engineering baseline bound by its task; governed slices also consume every Slice `required_skills` file and the formal review template. Missing applicable coverage is `missing_evidence`, not a pass.
 
 Resolve daily backend roots from its verified single implementation root and allowed scope, and governed roots from the registered project and Slice scope; exclude frontend, vendor, unrelated submodules and unregistered roots. Assess both `yss-repository` and `yss-mybatis` for every backend candidate, including impact, selected Profile and current component source index per the standards reference. Without persistence impact, record concrete `not-applicable` reasons for both.
 
