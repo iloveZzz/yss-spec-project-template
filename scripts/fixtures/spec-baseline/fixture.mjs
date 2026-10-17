@@ -122,6 +122,10 @@ export async function approvedSpecFixture(root,{productDesign=true,nativeSeed}={
  const ids={domain_strategy_ref:'artifact.domain-strategy',stage_decision_package_ref:'artifact.stage-decision-package',spec_ref:'artifact.spec',business_ticket_set_ref:'artifact.business-ticket-set'};
  for(const [key,id]of Object.entries(ids))state.artifacts[id]={ref:strategic.handoff.source[key].persisted_ref,status:key==='business_ticket_set_ref'?'ready-for-human':'approved',evidence_refs:['evidence/offline.log']};
  state.artifacts['artifact.plan']={ref:'plan.md',status:'approved',evidence_refs:['review.json']};
+ if(registry.gates.find(row=>row.id==='gate.spec-baseline-approved').requires_checks?.includes('check.artifact-consistency-analyzed')){
+  const analysisRef='source/artifact-analysis.json',basis=strategic.handoff.source.spec_ref.approval_context.basis.filter(row=>row.ref===analysisRef);
+  state.checks['check.artifact-consistency-analyzed']={status:'passed',applicable:true,basis,evidence:{'evidence.artifact-consistency-analysis':[analysisRef]}};
+ }
  delete state.user_decisions;state.human_review.user_decisions=plan.state.user_decisions;
  const specContext=structuredClone(strategic.handoff.source.spec_ref.approval_context),specApproval=strategic.handoff.package_export.approvals.spec_ref.record_ref;
  state.gates['gate.spec-baseline-approved']={...specContext,status:'approved',approval_ref:specApproval,subject_digest:hash(fs.readFileSync(path.join(root,specContext.subject_ref))).slice(7),basis:[...specContext.basis,{ref:specContext.subject_ref,digest:hash(fs.readFileSync(path.join(root,specContext.subject_ref))).slice(7)},{ref:specApproval,digest:hash(fs.readFileSync(path.join(root,specApproval))).slice(7)}],evidence:{'evidence.approval-record':[specApproval]}};

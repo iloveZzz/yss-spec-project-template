@@ -1997,7 +1997,8 @@ syntax_files:
   - scripts/lib/runtime-store.mjs
   - .template-source/scripts/measure-runtime-store.mjs
   - .template-source/cli-core/runtime-store.mjs
-  - scripts/lib/user-decision.mjs
+  - scripts/lib/native-user-decision.mjs
+  - scripts/lib/user-decision-core.mjs
   - scripts/verify-user-decision
   - scripts/verify-user-decision-scenarios
   - scripts/sync-skills

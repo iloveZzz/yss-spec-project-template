@@ -2,6 +2,11 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {loadVerificationProfiles, planTemplateVerification, ROOT} from '../scripts/lib/template-verification.mjs';
 import {compileVerificationCheck, validateGateConfiguration,validateSupplementalChecks} from '../.template-source/scripts/lib/verification-gates.mjs';
+import {assertVerificationSources} from '../.template-source/scripts/lib/verification-execution-plan.mjs';
+
+test('现役语法清单必须指向存在的源文件或明确登记的迁移目标',()=>{
+  assertVerificationSources({required_files:loadVerificationProfiles().syntax_files},ROOT);
+});
 
 test('AR16：现役仅 fast 与 release，退役 profile 不授予执行', () => {
   assert.deepEqual(Object.keys(loadVerificationProfiles().profiles), ['fast', 'release']);

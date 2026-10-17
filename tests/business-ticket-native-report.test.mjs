@@ -153,6 +153,11 @@ test('严格消费者：Spec baseline、checkpoint 与 progression 继续拒绝�
   const checkpoint=()=>run(['lifecycle','verify','--root',root,'--checkpoint',f.checkpointRef,'--json']);
   const progression=()=>run(['lifecycle','target','--root',root,'--checkpoint',f.checkpointRef,'--json']);
   const base=baseline('valid');assert.equal(base.status,0,JSON.stringify(base.envelope));
+  const analysis=f.state.checks['check.artifact-consistency-analyzed'];delete f.state.checks['check.artifact-consistency-analyzed'];f.plan.write(f.checkpointRef,f.state);
+  const missingAnalysis=baseline('missing-analysis');assert.notEqual(missingAnalysis.status,0);assert.equal(missingAnalysis.envelope.code,'EVIDENCE_REQUIRED',JSON.stringify(missingAnalysis.envelope));assert.equal(fs.existsSync(path.join(output,'missing-analysis')),false);
+  f.state.checks['check.artifact-consistency-analyzed']=analysis;f.plan.write(f.checkpointRef,f.state);
+  const analysisFile=path.join(root,analysis.basis[0].ref),analysisBytes=fs.readFileSync(analysisFile);fs.appendFileSync(analysisFile,'\n');
+  const staleAnalysis=baseline('stale-analysis');assert.notEqual(staleAnalysis.status,0);assert.equal(staleAnalysis.envelope.code,'EVIDENCE_DRIFT',JSON.stringify(staleAnalysis.envelope));assert.equal(fs.existsSync(path.join(output,'stale-analysis')),false);fs.writeFileSync(analysisFile,analysisBytes);
   const cp=checkpoint();assert.equal(cp.status,0,JSON.stringify(cp.envelope));
   const progress=progression();assert.equal(progress.status,0,JSON.stringify(progress.envelope));assert.equal(progress.envelope.result.progression.status,'reached',JSON.stringify(progress.envelope));
   const setRef='source/tickets.yaml',set=parseYaml(fs.readFileSync(path.join(root,setRef),'utf8')),ref=set.tickets[0].ref,text=fs.readFileSync(path.join(root,ref),'utf8'),ticket=ticketMetadata(text);ticket.acceptance_refs=[];f.strategic.put(ref,'---\n'+JSON.stringify(ticket)+'\n---\n'+text.split(/\n---\n/)[1]);set.tickets[0].digest=sha(fs.readFileSync(path.join(root,ref)));f.strategic.put(setRef,set);
