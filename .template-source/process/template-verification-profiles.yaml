@@ -48,6 +48,20 @@ profiles:
           - ".template-spec/agents/yss-skill-registry.yaml"
         depends_on: []
         failure_mode: "维护技能层级或调用元数据的接受与拒绝语义回归"
+      - id: check.lifecycle-controls-unit
+        run: "node --test .template-source/tooling/node/test/lifecycle-controls.test.mjs"
+        group: lifecycle
+        resources: [ "native-cli" ]
+        inputs_complete: true
+        input_patterns:
+          - ".template-source/tooling/node/test/lifecycle-controls.test.mjs"
+          - ".template-spec/process/lifecycle-registry.yaml"
+          - ".template-spec/process/lifecycle-registry-baseline.json"
+          - ".template-spec/agents/digital-human-roles.yaml"
+          - "scripts/lib/lifecycle-controls.mjs"
+          - "scripts/lib/lifecycle-registry.mjs"
+        depends_on: []
+        failure_mode: "门禁、检查数量、交接门禁依赖或检查点用户决定的接受与拒绝语义回归"
       - id: check.doc-facts
         run: "node --test tests/doc-facts.test.mjs"
         group: feature-assets
