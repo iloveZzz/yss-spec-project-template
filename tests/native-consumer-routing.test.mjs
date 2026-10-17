@@ -16,7 +16,7 @@ test('native Spec uses lifecycle authority and preserves explicit backend scope'
   const route={source_work_unit:'work-unit.technical-design',target_work_unit:'work-unit.technical-analysis'};
   write('.yss.json',metadata);write('.template-spec/process/harness-profile.yaml',profile);
   write('.template-spec/process/lifecycle-registry.yaml',{work_units:[{id:route.target_work_unit}]});
-  write('.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml',{consumer_entry_routes:{'yss-full-lifecycle':{'backend-technical-design':route},'plan-to-backend':{'backend-technical-design':route}},execution_scopes:{'plan-to-backend':{allowed_work_units:[route.target_work_unit]}}});
+  write('.template-spec/process/orchestration-contract.yaml',{consumer_entry_routes:{'yss-full-lifecycle':{'backend-technical-design':route},'plan-to-backend':{'backend-technical-design':route}},execution_scopes:{'plan-to-backend':{allowed_work_units:[route.target_work_unit]}}});
   assert.equal(consumerEntry(root,'backend-technical-design',route.source_work_unit).target_profile,'yss-full-lifecycle');
   write('.yss-execution-scope.yaml',{schema_version:1,scope_id:'plan-to-backend'});
   assert.equal(consumerEntry(root,'backend-technical-design',route.source_work_unit).target_profile,'plan-to-backend');

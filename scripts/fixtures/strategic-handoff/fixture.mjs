@@ -61,6 +61,10 @@ const visualBaselineRef = { baseline_id: sealedBaseline.baseline_id, version: se
  const previewDigest=digest(files(root,'preview').map(ref=>({path:path.posix.relative('preview',ref),sha256:hash(readFileSync(path.join(root,ref)))})));
  put('evidence/offline.json',{network_mode:'offline',exit_code:0,command:'synthetic fixture',executed_at:'2026-09-05T00:00:00Z',preview_digest:previewDigest,case_ids:['primary-desktop','primary-narrow'],evidence_refs:['evidence/offline.log']});
  const bound=ref=>({ref,digest:hash(readFileSync(path.join(root,ref))).slice(7)});
+ const specGate=read(path.join(root,'.template-spec/process/lifecycle-registry.yaml')).gates.find(row=>row.id==='gate.spec-baseline-approved');
+ const specAnalysisRefs=specGate?.requires_checks?.includes('check.artifact-consistency-analyzed')?['source/artifact-analysis.json']:[];
+ // 合成成功态只测试门禁与批准绑定，不代表实际项目的一致性分析。
+ for(const ref of specAnalysisRefs)put(ref,{kind:'artifact-analysis',status:'consistent',diagnostic_only:true,execution_authorization:'not-granted',synthetic_fixture:true,findings:[],semantic_review:'required'});
  const drafter='synthetic-requirements-drafter';
  const approvalContext=subjectRef=>({subject_ref:subjectRef,approval_scope:['feature.supplier'],basis:[bound('evidence/offline.log')],drafter_principal_ref:drafter,review_package:!['source/strategy.yaml','source/stage.yaml'].includes(subjectRef)});
  const baseStrategy=read(new URL('./base-strategy.json',import.meta.url));
@@ -132,12 +136,12 @@ const visualBaselineRef = { baseline_id: sealedBaseline.baseline_id, version: se
    const gateFor=key=>approvals[key]?.gate_id||gates[key];
    const subjectFor=key=>gateFor(key)==='gate.plan-approved'?planRef:gateFor(key)==='gate.product-design-approved'?productRef:`source/review-packages/${key}.json`;
    const fileFor=key=>key==='handoff'?'handoff.yaml':['visual_baseline_ref','existing_ui_baseline_ref'].includes(key)?`${sourceRefs[key].persisted_ref}/${sourceRefs[key].manifest_ref}`:sourceRefs[key].persisted_ref;
-   for(const key of Object.keys(sourceRefs))sourceRefs[key].approval_context={...approvalContext(subjectFor(key)),basis:[bound('evidence/offline.log'),bound(fileFor(key))]};
+   for(const key of Object.keys(sourceRefs))sourceRefs[key].approval_context={...approvalContext(subjectFor(key)),basis:[bound('evidence/offline.log'),bound(fileFor(key)),...(key==='spec_ref'?specAnalysisRefs.map(bound):[])]};
    // The handoff contains this descriptor. Its own hash is bound in the separate
    // review package, rather than embedded in the bytes it is meant to describe.
    approvals.handoff.approval_context=approvalContext(subjectFor('handoff'));
    put('handoff.yaml',handoff);
-   const packageFor=(gateId,keys,kind='approval-review-package')=>({schema_version:1,kind,gate_id:gateId,approval_scope:['feature.supplier'],drafter_principal_ref:drafter,basis:[bound('evidence/offline.log'),...keys.map(key=>bound(fileFor(key)))],assets:keys.filter(key=>key!=='handoff').map(key=>sourceRefs[key])});
+   const packageFor=(gateId,keys,kind='approval-review-package')=>({schema_version:1,kind,gate_id:gateId,approval_scope:['feature.supplier'],drafter_principal_ref:drafter,basis:[bound('evidence/offline.log'),...keys.map(key=>bound(fileFor(key))),...(keys.includes('spec_ref')?specAnalysisRefs.map(bound):[])],assets:keys.filter(key=>key!=='handoff').map(key=>sourceRefs[key])});
    for(const key of [...Object.keys(sourceRefs),'handoff']) {
      const subjectRef=subjectFor(key);
      if(![planRef,productRef].includes(subjectRef))put(subjectRef,packageFor(gateFor(key),[key]));
